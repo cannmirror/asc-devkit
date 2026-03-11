@@ -20,12 +20,14 @@ protected:
         AscendC::SetGCoreType(1);
         is_mock_copy_matrix_cc_to_gm = true;
         gm_addr_global = nullptr;
+        quant_pre_global = static_cast<uint64_t>(QuantMode_t::NoQuant);
     }
     
     void TearDown() override {
         AscendC::SetGCoreType(0);
         is_mock_copy_matrix_cc_to_gm = false;
         gm_addr_global = nullptr;
+        quant_pre_global = static_cast<uint64_t>(QuantMode_t::NoQuant);
     }
 };
 
@@ -43,7 +45,7 @@ struct InputInfo {
     using T = TYPE;
 };
 
-template <class L0C_TYPE, class C_TYPE, QuantMode_t QUANT_MODE, bool HAS_COORD>
+template <class L0C_TYPE, class C_TYPE, QuantMode_t QUANT_MODE, bool IS_TENSOR, bool HAS_COORD>
 class TestCase {
     using DstT = typename C_TYPE::T;
     using L0cT = typename L0C_TYPE::T;
@@ -58,7 +60,7 @@ public:
         qAddr = reinterpret_cast<__cbuf__ uint64_t*>(0);
         l0cAddr = reinterpret_cast<__cc__ L0cT*>(0);
         constexpr uint32_t base = 16;
-        constexpr static FixpipeTrait trait(QUANT_MODE, false, false, 0, 0);
+        quant_pre_global = static_cast<uint64_t>(QUANT_MODE);
         auto l0cIterator = MakeL0CmemPtr(l0cAddr);
         auto l0cMatrixLayout = MakeL0CLayout(mLength_, nLength_);
         auto l0cTensor = MakeTensor(l0cIterator, l0cMatrixLayout);
@@ -102,32 +104,33 @@ public:
 
         auto gmTensor = MakeGMTensor();
 
-        if constexpr (QUANT_MODE == QuantMode_t::F322F16) {
+        if constexpr (QUANT_MODE == QuantMode_t::NoQuant || QUANT_MODE == QuantMode_t::F322F16) {
             if constexpr (HAS_COORD) {
                 gm_addr_global = gmTensor(MakeCoord(base, base), gmTensor.Layout().Shape()).Data().Get();
-                Fixpipe<trait>(gmTensor, l0cTensor, (uint64_t)0, MakeCoord(base, base));
+                Fixpipe<DEFAULT_FIXPIPE_TRAIT>(gmTensor, l0cTensor, MakeCoord(base, base));
             } else {
                 gm_addr_global = gmC_;
-                Fixpipe<trait>(gmTensor, l0cTensor, (uint64_t)0);
+                Fixpipe<DEFAULT_FIXPIPE_TRAIT>(gmTensor, l0cTensor);
             }
-        } else if constexpr (QUANT_MODE == QuantMode_t::NoQuant) {
-            if constexpr (HAS_COORD) {
-                gm_addr_global = gmTensor(MakeCoord(base, base), gmTensor.Layout().Shape()).Data().Get();
-                Fixpipe<trait>(gmTensor, l0cTensor, MakeCoord(base, base));
-            } else {
-                gm_addr_global = gmC_;
-                Fixpipe<trait>(gmTensor, l0cTensor);
-            }
-        } else {
+        } else if constexpr (IS_TENSOR) {
             auto qIterator = MakeL1memPtr(qAddr);
             auto qMatrixLayout = MakeNDLayout<uint64_t>(1, nLength_);
             auto qTensor = MakeTensor(qIterator, qMatrixLayout);
             if constexpr (HAS_COORD) {
                 gm_addr_global = gmTensor(MakeCoord(base, base), gmTensor.Layout().Shape()).Data().Get();
-                Fixpipe<trait>(gmTensor, l0cIterator, qTensor, MakeCoord(base, base));
+                Fixpipe<DEFAULT_FIXPIPE_TRAIT>(gmTensor, l0cTensor, qTensor, MakeCoord(base, base));
             } else {
                 gm_addr_global = gmC_;
-                Fixpipe<trait>(gmTensor, l0cIterator, qTensor);
+                Fixpipe<DEFAULT_FIXPIPE_TRAIT>(gmTensor, l0cTensor, qTensor);
+            }
+        } else {
+            uint64_t quant = 1;
+            if constexpr (HAS_COORD) {
+                gm_addr_global = gmTensor(MakeCoord(base, base), gmTensor.Layout().Shape()).Data().Get();
+                Fixpipe<DEFAULT_FIXPIPE_TRAIT>(gmTensor, l0cTensor, quant, MakeCoord(base, base));
+            } else {
+                gm_addr_global = gmC_;
+                Fixpipe<DEFAULT_FIXPIPE_TRAIT>(gmTensor, l0cTensor, quant);
             }
         }
     }
@@ -161,7 +164,7 @@ private:
 
 };
 
-template <class L0C_TYPE, class C_TYPE, QuantMode_t QUANT_MODE, bool HAS_COORD>
+template <class L0C_TYPE, class C_TYPE, QuantMode_t QUANT_MODE, bool IS_TENSOR, bool HAS_COORD>
 __aicore__ inline void TestFixpipe(GM_ADDR cGM, int32_t m, int32_t n, int32_t usedCoreNum)
 {
     // cube core cases, ignore vector core
@@ -178,28 +181,30 @@ __aicore__ inline void TestFixpipe(GM_ADDR cGM, int32_t m, int32_t n, int32_t us
 
     auto gmC = reinterpret_cast<__gm__ C_T *>(cGM);
 
-    TestCase<L0C_TYPE, C_TYPE, QUANT_MODE, HAS_COORD> ins;
+    TestCase<L0C_TYPE, C_TYPE, QUANT_MODE, IS_TENSOR, HAS_COORD> ins;
     ins.TestRun(m, n, gmC);
 }
 
-#define KERNEL_TENSOR_API_FIXPIPE_E2E(coreNum, M, N, C_Format, L0C_DType, C_DType, Quant_Mode, Has_Coord) \
-    TEST_F(TEST_TENSOR_API_FIXPIPE, kernel_tensor_api_fixpipe_##coreNum##_##M##_##N##_##C_Format##_##L0C_DType##_##C_DType##_##Quant_Mode##_##Has_Coord) \
+#define KERNEL_TENSOR_API_FIXPIPE_E2E(coreNum, M, N, C_Format, L0C_DType, C_DType, Quant_Mode, Is_Tensor, Has_Coord) \
+    TEST_F(TEST_TENSOR_API_FIXPIPE, kernel_tensor_api_fixpipe_##coreNum##_##M##_##N##_##C_Format##_##L0C_DType##_##C_DType##_##Quant_Mode##_##Is_Tensor##_##Has_Coord) \
     { \
         uint8_t cGM[M * N * sizeof(C_DType)] = {0}; \
         typedef InputInfo<CubeFormat::NZ, L0C_DType> l0cType; \
         typedef InputInfo<CubeFormat::C_Format, C_DType> cType; \
-        TestFixpipe<l0cType, cType, QuantMode_t::Quant_Mode, Has_Coord>(cGM, M, N, coreNum); \
+        TestFixpipe<l0cType, cType, QuantMode_t::Quant_Mode, Is_Tensor, Has_Coord>(cGM, M, N, coreNum); \
         for (uint32_t i = 0; i < M * N; i++) { \
             EXPECT_EQ(cGM[i], 0x00); \
         } \
     }
 
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 16, 16, ND, float, float, NoQuant, false)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 16, 16, NZ, float, float, NoQuant, false)
-// KERNEL_TENSOR_API_FIXPIPE_E2E(1, 16, 16, DN, float, float, NoQuant, false)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, ND, float, float, NoQuant, false)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, ND, float, float, NoQuant, true)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, NZ, float, float, NoQuant, false)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, NZ, float, float, NoQuant, true)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 16, 16, ND, float, half, F322F16, false)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, ND, float, half, F322F16, true)
+KERNEL_TENSOR_API_FIXPIPE_E2E(1, 16, 16, ND, float, float, NoQuant, false, false)
+KERNEL_TENSOR_API_FIXPIPE_E2E(1, 16, 16, NZ, float, float, NoQuant, false, false)
+// KERNEL_TENSOR_API_FIXPIPE_E2E(1, 16, 16, DN, float, float, NoQuant, false, false)
+KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, ND, float, float, NoQuant, false, false)
+KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, ND, float, float, NoQuant, false, true)
+KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, NZ, float, float, NoQuant, false, false)
+KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, NZ, float, float, NoQuant, false, true)
+KERNEL_TENSOR_API_FIXPIPE_E2E(1, 16, 16, ND, float, half, F322F16, false, false)
+KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, ND, float, half, F322F16, false, true)
+KERNEL_TENSOR_API_FIXPIPE_E2E(1, 16, 16, ND, float, half, VQF322F16_PRE, true, false)
+KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, ND, int32_t, int8_t, REQ8, false, false)

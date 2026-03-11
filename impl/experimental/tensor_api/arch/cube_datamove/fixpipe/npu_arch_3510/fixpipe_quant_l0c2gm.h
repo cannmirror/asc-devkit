@@ -86,10 +86,10 @@ private:
     template <const FixpipeTrait& trait, typename T, typename U, typename V>
     __aicore__ inline void Execute(const T& dst, const U& src, const V& quant)
     {
-        CheckFixpipeQuantParams<trait, T, U>();
+        constexpr auto quantPre = GetFixpipeQuantPre<trait, T, U, V>();
         using FixpipeQuantL0C2GM =
-            typename FormatRegistorFixpipe2Gm3510<GetDataFormat<T>(), GetDataFormat<U>(), GetQuantMode<trait>()>::type;
-        FixpipeQuantL0C2GM{}.template Run<trait, T, U, V>(dst, src, quant);
+            typename FormatRegistorFixpipe2Gm3510<GetDataFormat<T>(), GetDataFormat<U>(), GetQuantMode<quantPre>()>::type;
+        FixpipeQuantL0C2GM{}.template Run<trait, quantPre, T, U, V>(dst, src, quant);
     }
 };
 }  // namespace Te

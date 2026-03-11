@@ -32,15 +32,16 @@ public:
 private:
     template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline void Execute(const T& dst, const U& src, const Coord& coord) {
+        constexpr auto quantPre = GetFixpipeQuantPre<trait, T, U>();
         if constexpr (IsL0cNZFormat<U>::value && IsNZFormat<T>::value) {
             Fixpipe2UbNz2NzBase3510 nz2NzStrategy;
-            nz2NzStrategy.Run<trait, T, U, Coord>(dst, src, coord);
+            nz2NzStrategy.Run<trait, quantPre, T, U, Coord>(dst, src, coord);
         } else if constexpr (IsL0cNZFormat<U>::value && IsNDFormat<T>::value) {
             Fixpipe2UbNz2NdBase3510 nz2NdStrategy;
-            nz2NdStrategy.Run<trait, T, U, Coord>(dst, src, coord);
+            nz2NdStrategy.Run<trait, quantPre, T, U, Coord>(dst, src, coord);
         } else if constexpr (IsL0cNZFormat<U>::value && IsDNFormat<T>::value) {
             Fixpipe2UbNz2DnBase3510 nz2DnStrategy;
-            nz2DnStrategy.Run<trait, T, U, Coord>(dst, src, coord);
+            nz2DnStrategy.Run<trait, quantPre, T, U, Coord>(dst, src, coord);
         }
     }
 };

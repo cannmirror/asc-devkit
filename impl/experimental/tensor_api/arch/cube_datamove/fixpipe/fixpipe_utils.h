@@ -155,56 +155,100 @@ public:
 };
 
 
-template <const FixpipeTrait& trait, typename T, typename U>
-__aicore__ inline void CheckFixpipeQuantParams()
+template <const FixpipeTrait& trait, typename T, typename U, typename S = void>
+__aicore__ inline constexpr QuantMode_t GetFixpipeQuantPre()
 {
     using srcType = typename U::elementType;
     using dstType = typename T::elementType;
-    using currentType = Std::tuple<srcType, dstType>;
+    constexpr bool isTensor = IsTileTensorV<S>;
+    constexpr bool isScalar = Std::is_same_v<S, uint64_t>;
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
-    if constexpr (trait.quantPre == QuantMode_t::NoQuant) {
-        using quantDataType1 = Std::tuple<__cc__ float, __gm__ float>;
-        using quantDataType2 = Std::tuple<__cc__ int32_t, __gm__ int32_t>;
-        static_assert((Std::is_one_of_v<currentType, quantDataType1, quantDataType2>), "Failed to check quantPre value in Fixpipe");
-    } else if constexpr (trait.quantPre == QuantMode_t::F322F16 || trait.quantPre == QuantMode_t::QF322F16_PRE
-                         || trait.quantPre == QuantMode_t::VQF322F16_PRE) {
-        using quantDataType = Std::tuple<__cc__ float, __gm__ half>;
-        static_assert((Std::is_one_of_v<currentType, quantDataType>), "Failed to check quantPre value in Fixpipe");
-    } else if constexpr (trait.quantPre == QuantMode_t::F322BF16 || trait.quantPre == QuantMode_t::QF322BF16_PRE
-                         || trait.quantPre == QuantMode_t::VQF322BF16_PRE) {
-        using quantDataType = Std::tuple<__cc__ float, __gm__ bfloat16_t>;
-        static_assert((Std::is_one_of_v<currentType, quantDataType>), "Failed to check quantPre value in Fixpipe");
-    } else if constexpr (trait.quantPre == QuantMode_t::DEQF16 || trait.quantPre == QuantMode_t::VDEQF16) {
-        using quantDataType = Std::tuple<__cc__ int32_t, __gm__ half>;
-        static_assert((Std::is_one_of_v<currentType, quantDataType>), "Failed to check quantPre value in Fixpipe");
-    } else if constexpr (trait.quantPre == QuantMode_t::QF322B8_PRE || trait.quantPre == QuantMode_t::VQF322B8_PRE) {
-        using quantDataType1 = Std::tuple<__cc__ float, __gm__ int8_t>;
-        using quantDataType2 = Std::tuple<__cc__ float, __gm__ uint8_t>;
-        static_assert((Std::is_one_of_v<currentType, quantDataType1, quantDataType2>), "Failed to check quantPre value in Fixpipe");
-    } else if constexpr (trait.quantPre == QuantMode_t::REQ8 || trait.quantPre == QuantMode_t::VREQ8) {
-        using quantDataType1 = Std::tuple<__cc__ int32_t, __gm__ int8_t>;
-        using quantDataType2 = Std::tuple<__cc__ int32_t, __gm__ uint8_t>;
-        static_assert((Std::is_one_of_v<currentType, quantDataType1, quantDataType2>), "Failed to check quantPre value in Fixpipe");
-    } else if constexpr (trait.quantPre == QuantMode_t::QF322FP8_PRE || trait.quantPre == QuantMode_t::VQF322FP8_PRE) {
-        using quantDataType = Std::tuple<__cc__ float, __gm__ fp8_e4m3fn_t>;
-        static_assert((Std::is_one_of_v<currentType, quantDataType>), "Failed to check quantPre value in Fixpipe");
-    } else if constexpr (trait.quantPre == QuantMode_t::QF322HIF8_PRE || trait.quantPre == QuantMode_t::VQF322HIF8_PRE
-                         || trait.quantPre == QuantMode_t::QF322HIF8_PRE_HYBRID
-                         || trait.quantPre == QuantMode_t::VQF322HIF8_PRE_HYBRID) {
-        using quantDataType = Std::tuple<__cc__ float, __gm__ hifloat8_t>;
-        static_assert((Std::is_one_of_v<currentType, quantDataType>), "Failed to check quantPre value in Fixpipe");
-    } else if constexpr (trait.quantPre == QuantMode_t::QS322BF16_PRE
-                         || trait.quantPre == QuantMode_t::VQS322BF16_PRE) {
-        using quantDataType = Std::tuple<__cc__ int32_t, __gm__ bfloat16_t>;
-        static_assert((Std::is_one_of_v<currentType, quantDataType>), "Failed to check quantPre value in Fixpipe");
-    } else if constexpr (trait.quantPre == QuantMode_t::QF322F32_PRE || trait.quantPre == QuantMode_t::VQF322F32_PRE) {
-        using quantDataType = Std::tuple<__cc__ float, __gm__ float>;
-        static_assert((Std::is_one_of_v<currentType, quantDataType>), "Failed to check quantPre value in Fixpipe");
+    if constexpr (trait.roundMode == RoundMode::HYBRID) {
+        static_assert(
+            (Std::is_same_v<srcType, __cc__ float> && Std::is_one_of_v<dstType, __gm__ hifloat8_t, __ubuf__ hifloat8_t>),
+            "Only when L0CType is float and output Type is hifloat8_t support RoundMode::HYBRID in Fixpipe");
     }
-
+    if constexpr (isTensor) {
+        if constexpr (Std::is_same_v<srcType, __cc__ int32_t> && Std::is_one_of_v<dstType, __gm__ half, __ubuf__ half>) {
+            return QuantMode_t::VDEQF16;
+        } else if constexpr (Std::is_same_v<srcType, __cc__ float> &&
+            Std::is_one_of_v<dstType, __gm__ uint8_t, __gm__ int8_t, __ubuf__ uint8_t, __ubuf__ int8_t>) {
+            return QuantMode_t::VQF322B8_PRE;
+        } else if constexpr (Std::is_same_v<srcType, __cc__ int32_t> &&
+            Std::is_one_of_v<dstType, __gm__ uint8_t, __gm__ int8_t, __ubuf__ uint8_t, __ubuf__ int8_t>) {
+            return QuantMode_t::VREQ8;
+        } else if constexpr (Std::is_same_v<srcType, __cc__ float> &&
+            Std::is_one_of_v<dstType, __gm__ fp8_e4m3fn_t, __ubuf__ fp8_e4m3fn_t>) {
+            return QuantMode_t::VQF322FP8_PRE;
+        } else if constexpr (Std::is_same_v<srcType, __cc__ float> &&
+            Std::is_one_of_v<dstType, __gm__ hifloat8_t, __ubuf__ hifloat8_t>) {
+            if constexpr (trait.roundMode == RoundMode::HYBRID) {
+                return QuantMode_t::VQF322HIF8_PRE_HYBRID;
+            } else {
+                return QuantMode_t::VQF322HIF8_PRE;
+            }
+        } else if constexpr (Std::is_same_v<srcType, __cc__ int32_t> &&
+            Std::is_one_of_v<dstType, __gm__ bfloat16_t, __ubuf__ bfloat16_t>) {
+            return QuantMode_t::VQS322BF16_PRE;
+        } else if constexpr (Std::is_same_v<srcType, __cc__ float> &&
+            Std::is_one_of_v<dstType, __gm__ half, __ubuf__ half>) {
+            return QuantMode_t::VQF322F16_PRE;
+        } else if constexpr (Std::is_same_v<srcType, __cc__ float> &&
+            Std::is_one_of_v<dstType, __gm__ bfloat16_t, __ubuf__ bfloat16_t>) {
+            return QuantMode_t::VQF322BF16_PRE;
+        } else if constexpr (Std::is_same_v<srcType, __cc__ float> &&
+            Std::is_one_of_v<dstType, __gm__ float, __ubuf__ float>) {
+            return QuantMode_t::VQF322F32_PRE;
+        }
+    } else if constexpr (isScalar) {
+        if constexpr (Std::is_same_v<srcType, __cc__ int32_t> &&
+            Std::is_one_of_v<dstType, __gm__ half, __ubuf__ half>) {
+            return QuantMode_t::DEQF16;
+        } else if constexpr (Std::is_same_v<srcType, __cc__ float> &&
+            Std::is_one_of_v<dstType, __gm__ uint8_t, __gm__ int8_t, __ubuf__ uint8_t, __ubuf__ int8_t>) {
+            return QuantMode_t::QF322B8_PRE;
+        } else if constexpr (Std::is_same_v<srcType, __cc__ int32_t> &&
+            Std::is_one_of_v<dstType, __gm__ uint8_t, __gm__ int8_t, __ubuf__ uint8_t, __ubuf__ int8_t>) {
+            return QuantMode_t::REQ8;
+        } else if constexpr (Std::is_same_v<srcType, __cc__ float> &&
+            Std::is_one_of_v<dstType, __gm__ fp8_e4m3fn_t, __ubuf__ fp8_e4m3fn_t>) {
+            return QuantMode_t::QF322FP8_PRE;
+        } else if constexpr (Std::is_same_v<srcType, __cc__ float> &&
+            Std::is_one_of_v<dstType, __gm__ hifloat8_t, __ubuf__ hifloat8_t>) {
+            if constexpr (trait.roundMode == RoundMode::HYBRID) {
+                return QuantMode_t::QF322HIF8_PRE_HYBRID;
+            } else {
+                return QuantMode_t::QF322HIF8_PRE;
+            }
+        } else if constexpr (Std::is_same_v<srcType, __cc__ int32_t> &&
+            Std::is_one_of_v<dstType, __gm__ bfloat16_t, __ubuf__ bfloat16_t>) {
+            return QuantMode_t::QS322BF16_PRE;
+        } else if constexpr (Std::is_same_v<srcType, __cc__ float> &&
+            Std::is_one_of_v<dstType, __gm__ half, __ubuf__ half>) {
+            return QuantMode_t::QF322F16_PRE;
+        } else if constexpr (Std::is_same_v<srcType, __cc__ float>
+            && Std::is_one_of_v<dstType, __gm__ bfloat16_t, __ubuf__ bfloat16_t>) {
+            return QuantMode_t::QF322BF16_PRE;
+        } else if constexpr (Std::is_same_v<srcType, __cc__ float> &&
+            Std::is_one_of_v<dstType, __gm__ float, __ubuf__ float>) {
+            return QuantMode_t::QF322F32_PRE;
+        }
+    } else {
+        if constexpr (Std::is_same_v<srcType, __cc__ float> && Std::is_one_of_v<dstType, __gm__ half, __ubuf__ half>) {
+            return QuantMode_t::F322F16;
+        } else if constexpr (Std::is_same_v<srcType, __cc__ float> &&
+            Std::is_one_of_v<dstType, __gm__ bfloat16_t, __ubuf__ bfloat16_t>) {
+            return QuantMode_t::F322BF16;
+        } else {
+            return QuantMode_t::NoQuant;
+        }
+    }
+    return QuantMode_t::NoQuant;
+#else
+    return QuantMode_t::NoQuant;
 #endif
 }
-    
+
 enum class Format3510 : uint8_t { None, NZ, ND, DN };
 enum class QuantMode3510 : uint8_t { None, Scalar, Vector, Direct };
 
@@ -221,14 +265,14 @@ __aicore__ inline constexpr Format3510 GetDataFormat()
     return Format3510::None;
 }
 
-template <const FixpipeTrait& trait>
+template <const QuantMode_t quantPre>
 __aicore__ inline constexpr QuantMode3510 GetQuantMode()
 {
-    if constexpr (IsVectorQuantMode<trait.quantPre>()) {
+    if constexpr (IsVectorQuantMode<quantPre>()) {
         return QuantMode3510::Vector;
-    } else if constexpr (IsScalarQuantMode<trait.quantPre>()) {
+    } else if constexpr (IsScalarQuantMode<quantPre>()) {
         return QuantMode3510::Scalar;
-    } else if constexpr (IsDirectQuantMode<trait.quantPre>()) {
+    } else if constexpr (IsDirectQuantMode<quantPre>()) {
         return QuantMode3510::Direct;
     }
     return QuantMode3510::None;
@@ -236,9 +280,9 @@ __aicore__ inline constexpr QuantMode3510 GetQuantMode()
 
 class FormatRegistorIgnore3510 {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename V, typename Coord>
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Coord& coord) {}
-    template <const FixpipeTrait& trait, typename T, typename U, typename V>
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V>
     __aicore__ inline void Run(const T& dst, const U& src, const V& quant) {}
 };
 

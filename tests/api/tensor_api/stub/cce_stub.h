@@ -25,6 +25,7 @@ static uint16_t src_stride_global = 0;
 static bool NZ2ND_en_global = false;
 static bool NZ2DN_en_global = false;
 static void* gm_addr_global = nullptr;
+static uint64_t quant_pre_global = 0;
 
 #define mock_copy_matrix_cc_to_gm(DstT, L0cT) \
 inline void copy_matrix_cc_to_gm( \
@@ -41,6 +42,7 @@ inline void copy_matrix_cc_to_gm( \
             EXPECT_EQ(NZ2ND_en, NZ2ND_en_global); \
             EXPECT_EQ(NZ2DN_en, NZ2DN_en_global); \
             EXPECT_EQ(dst_addr, gm_addr_global); \
+            EXPECT_EQ(quant_pre, quant_pre_global); \
         } \
     } \
 

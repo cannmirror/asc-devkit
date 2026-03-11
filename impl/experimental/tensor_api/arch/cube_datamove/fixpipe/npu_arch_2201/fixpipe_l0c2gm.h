@@ -22,10 +22,10 @@ namespace Te {
 
 class FixpipetNz2Nz2201Base : public Copy2201MatrixCcToGmBase {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U>
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U>
     __aicore__ inline void Run(const T& dst, const U& src) {
         auto params = GenFixpipeParams<trait, T, U>(dst, src); 
-        DataCopy<trait, T, U, decltype(params)>(dst, src, params);
+        DataCopy<trait, quantPre, T, U, decltype(params)>(dst, src, params);
     }
 
 private:
@@ -82,13 +82,13 @@ private:
 
 class FixpipetNz2Nd2201Base : public Copy2201MatrixCcToGmBase, public SetRegister2201Base {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U>
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U>
     __aicore__ inline void Run(const T& dst, const U& src) {
         auto ndParams = GenRegisterParams<trait, T, U>(dst, src);
         SetRegister<decltype(ndParams)>(ndParams);
         auto params = GenFixpipeParams<trait, T, U>(dst, src);
 
-        DataCopy<trait, T, U, decltype(params)>(dst, src, params);
+        DataCopy<trait, quantPre, T, U, decltype(params)>(dst, src, params);
     }
 
 private:
@@ -178,10 +178,11 @@ public:
 private:
     template <const FixpipeTrait& trait, typename T, typename U>
     __aicore__ inline void Execute(const T& dst, const U& src) {
+        constexpr auto quantPre = GetFixpipe2201QuantPre<trait, T, U>();
         if constexpr (IsL0cNZFormat<U>::value && IsL0cNZFormat<T>::value) {
-            FixpipetNz2Nz2201Base::Run<trait, T, U>(dst, src);
+            FixpipetNz2Nz2201Base::Run<trait, quantPre, T, U>(dst, src);
         } else if constexpr (IsL0cNZFormat<U>::value && IsNDFormat<T>::value) {
-            FixpipetNz2Nd2201Base::Run<trait, T, U>(dst, src);
+            FixpipetNz2Nd2201Base::Run<trait, quantPre, T, U>(dst, src);
         }
     }
 };

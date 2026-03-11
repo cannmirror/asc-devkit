@@ -22,14 +22,14 @@ namespace Te {
 
 class FixpipeNZ2NZ2201SimpleQuant : public Copy2201MatrixCcToGmBase, public SetRegister2201Base {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename S>
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename S>
     __aicore__ inline void Run(const T& dst, const U& src, const S& quant)
     {
         auto nzParams = GenRegisterParams<trait, T, U>(dst, src);
         SetRegister<S, decltype(nzParams)>(quant, nzParams);
         auto copyParams = GenFixpipeQuantParams<trait, T, U>(dst, src);
 
-        DataCopy<trait, T, U, decltype(copyParams)>(dst, src, copyParams);
+        DataCopy<trait, quantPre, T, U, decltype(copyParams)>(dst, src, copyParams);
     }
 
 private:
@@ -91,18 +91,18 @@ private:
 
 class FixpipeNZ2NZ2201VectorBase : public Copy2201MatrixCcToGmBase, public Copy2201DeqTensorToFbuf {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename S, typename V>
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename S, typename V>
     __aicore__ inline void FixpipeNZ2NZVectorEntrance(const T& dst, const U& src, const S& quant, const V& params)
     {
-        FixpipeNZ2NZVectorImpl<trait, T, U, S, V>(dst, src, quant, params, tuple_sequence<decltype(params)>{});
+        FixpipeNZ2NZVectorImpl<trait, quantPre, T, U, S, V>(dst, src, quant, params, tuple_sequence<decltype(params)>{});
     }
 
 private:
-    template <const FixpipeTrait& trait, typename T, typename U, typename S, typename V, size_t... Is>
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename S, typename V, size_t... Is>
     __aicore__ inline void FixpipeNZ2NZVectorImpl(
         const T& dst, const U& src, const S& quant, const V& tupleParams, Std::index_sequence<Is...>)
     {
-        FixpipeNZ2NZVectorCompute<trait, T, U, S>(dst, src, quant, Std::get<Is>(tupleParams)...);
+        FixpipeNZ2NZVectorCompute<trait, quantPre, T, U, S>(dst, src, quant, Std::get<Is>(tupleParams)...);
     }
 
     template <const FixpipeTrait& trait, typename T, typename U, bool isTail>
@@ -133,7 +133,7 @@ private:
         return params;
     }
 
-    template <const FixpipeTrait& trait, typename T, typename U, typename S>
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename S>
     __aicore__ inline void FixpipeNZ2NZVectorCompute(const T& dst, const U& src, const S& quant,
         uint32_t nIterNum, uint32_t calNSize, uint32_t tailNSize, uint32_t dstOffset, uint32_t srcOffset)
     {
@@ -145,7 +145,7 @@ private:
             auto srcTensor = MakeTensorWithCoord<U>(src, coordZero, srcOffset * i);
             auto dstTensor = MakeTensorWithCoord<T>(dst, coordZero, dstOffset * i);
 
-            DataCopy<trait, T, U, decltype(mainLoopParam)>(dstTensor, srcTensor, mainLoopParam);
+            DataCopy<trait, quantPre, T, U, decltype(mainLoopParam)>(dstTensor, srcTensor, mainLoopParam);
         }
         auto tailParam = GenParams<trait, T, U, true>(dst, src);
         if (tailNSize) {
@@ -155,18 +155,18 @@ private:
             auto srcTensor = MakeTensorWithCoord<U>(src, coordZero, srcOffset * nIterNum);
             auto dstTensor = MakeTensorWithCoord<T>(dst, coordZero, dstOffset * nIterNum);
 
-            DataCopy<trait, T, U, decltype(tailParam)>(dstTensor, srcTensor, tailParam);
+            DataCopy<trait, quantPre, T, U, decltype(tailParam)>(dstTensor, srcTensor, tailParam);
         }
     }
 };
 
 class FixpipeNZ2NZ2201VectorQuant : public FixpipeNZ2NZ2201VectorBase {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename S>
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename S>
     __aicore__ inline void Run(const T& dst, const U& src, const S& quant)
     {
         auto params = GenParams<trait, T, U>(dst, src);
-        FixpipeNZ2NZVectorEntrance<trait, T, U, S, decltype(params)>(dst, src, quant, params);
+        FixpipeNZ2NZVectorEntrance<trait, quantPre, T, U, S, decltype(params)>(dst, src, quant, params);
     }
 
 private:

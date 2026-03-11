@@ -23,14 +23,14 @@ namespace Te {
 
 class Fixpipe2GmNz2NdBase3510 {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U>
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U>
     __aicore__ inline void Run(const T& dst, const U& src) {
         SetRegisterImpl<trait, T, U>(dst, src);
-        DataCopyImpl<trait, T, U>(dst, src);
+        DataCopyImpl<trait, quantPre, T, U>(dst, src);
     }
 
 private:
-    template <const FixpipeTrait& trait, typename T, typename U>
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
         using srcType = typename U::elementType;
@@ -39,8 +39,12 @@ private:
         formatCheckInst.CheckNDTemplate<T>();
         formatCheckInst.CheckL0CNZTemplate<U>();
 #if defined(__NPU_ARCH__ ) && __NPU_ARCH__ == 3510
-        static_assert(Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__gm__ float, __cc__ float>, 
-            Std::tuple<__gm__ int32_t, __cc__ int32_t>>, "The data type is not supported.");
+        static_assert((quantPre == QuantMode_t::NoQuant && Std::is_one_of_v<Std::tuple<dstType, srcType>,
+            Std::tuple<__gm__ float, __cc__ float>, Std::tuple<__gm__ int32_t, __cc__ int32_t>>) ||
+            (quantPre == QuantMode_t::F322F16 && Std::is_one_of_v<Std::tuple<dstType, srcType>,
+            Std::tuple<__gm__ half, __cc__ float>>) || (quantPre == QuantMode_t::F322BF16 &&
+            Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__gm__ bfloat16_t, __cc__ float>>),
+            "The data type is not supported.");
 #endif
     }
 
@@ -54,10 +58,10 @@ private:
         setRegisterInst.SetRegister(ndNum, dstNdStride, srcNdStride);
     }
 
-    template <const FixpipeTrait& trait, typename T, typename U>
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U>
     __aicore__ inline void DataCopyImpl(const T& dst, const U& src)
     {
-        CheckTemplate<trait, T, U>();
+        CheckTemplate<trait, quantPre, T, U>();
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
         uint32_t nSize = Std::min(GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout)
@@ -79,7 +83,7 @@ private:
         bool nz2ndEn = true;
         bool nz2dnEn = false;
         CopyMatrixCcToGmBase3510 copyInst;
-        copyInst.DataCopy<trait, T, U>(dst, src, nSize, mSize, srcStride, dstStride,
+        copyInst.DataCopy<trait, quantPre, T, U>(dst, src, nSize, mSize, srcStride, dstStride,
             cacheMode, reluEn, unitFlag, isChannelSplit, nz2ndEn, nz2dnEn);
     }
 };

@@ -26,6 +26,52 @@ namespace Te {
 constexpr uint32_t MAIN_LOOP_N_SIZE_2201 = 512;
 constexpr uint32_t CBURST_NUM_2201 = MAIN_LOOP_N_SIZE_2201 / FRACTAL_FIXED;
 
+template <const FixpipeTrait& trait, typename T, typename U, typename S = void>
+__aicore__ inline constexpr QuantMode_t GetFixpipe2201QuantPre()
+{
+    using srcType = typename U::elementType;
+    using dstType = typename T::elementType;
+    constexpr bool isTensor = IsTileTensorV<S>;
+    constexpr bool isScalar = Std::is_same_v<S, uint64_t>;
+    if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V2201) {
+        if constexpr (isTensor) {
+            if constexpr (Std::is_same_v<srcType, __cc__ int32_t> && Std::is_same_v<dstType, __gm__ half>) {
+                return QuantMode_t::VDEQF16;
+            } else if constexpr (
+                Std::is_same_v<srcType, __cc__ float> && Std::is_one_of_v<dstType, __gm__ uint8_t, __gm__ int8_t>) {
+                return QuantMode_t::VQF322B8_PRE;
+            } else if constexpr (
+                Std::is_same_v<srcType, __cc__ int32_t> && Std::is_one_of_v<dstType, __gm__ uint8_t, __gm__ int8_t>) {
+                return QuantMode_t::VREQ8;
+            } else {
+                return QuantMode_t::NoQuant;
+            }
+        } else if constexpr (isScalar) {
+            if constexpr (Std::is_same_v<srcType, __cc__ int32_t> && Std::is_same_v<dstType, __gm__ half>) {
+                return QuantMode_t::DEQF16;
+            } else if constexpr (
+                Std::is_same_v<srcType, __cc__ float> && Std::is_one_of_v<dstType, __gm__ uint8_t, __gm__ int8_t>) {
+                return QuantMode_t::QF322B8_PRE;
+            } else if constexpr (
+                Std::is_same_v<srcType, __cc__ int32_t> && Std::is_one_of_v<dstType, __gm__ uint8_t, __gm__ int8_t>) {
+                return QuantMode_t::REQ8;
+            } else {
+                return QuantMode_t::NoQuant;
+            }
+        } else {
+            if constexpr (Std::is_same_v<srcType, __cc__ float> && Std::is_same_v<dstType, __gm__ half>) {
+                return QuantMode_t::F322F16;
+            } else if constexpr (Std::is_same_v<srcType, __cc__ float> && Std::is_same_v<dstType, __gm__ bfloat16_t>) {
+                return QuantMode_t::F322BF16;
+            } else {
+                return QuantMode_t::NoQuant;
+            }
+        }
+    } else {
+        return QuantMode_t::NoQuant;
+    }
+}
+
 template <typename T, typename U, typename Coord>
 __aicore__ inline void CheckCoord(const T& dst, const U& src, const Coord& coord)
 {
@@ -139,19 +185,19 @@ private:
 
 class Copy2201MatrixCcToGmBase {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename S>
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename S>
     __aicore__ inline void DataCopy(const T& dst, const U& src, const S& params)
     {
-        DataCopyImpl<trait, T, U, S>(dst, src, params, tuple_sequence<decltype(params)>{});
+        DataCopyImpl<trait, quantPre, T, U, S>(dst, src, params, tuple_sequence<decltype(params)>{});
     }
 
 private:
-    template <const FixpipeTrait& trait, typename T, typename U, typename S, size_t... Is>
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename S, size_t... Is>
     __aicore__ inline void DataCopyImpl(const T& dst, const U& src, const S& tupleParams, Std::index_sequence<Is...>)
     {
         using srcType = typename U::elementType;
         using dstType = typename T::elementType;
-        CopyMatrixCcToGm<trait.quantPre, dstType, srcType>(
+        CopyMatrixCcToGm<quantPre, dstType, srcType>(
             (__gm__ dstType *)dst.Data().Get(), (__cc__ srcType *)src.Data().Get(), Std::get<Is>(tupleParams)...);
     }
 

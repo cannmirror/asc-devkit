@@ -35,14 +35,14 @@ __aicore__ inline constexpr Format2201 GetDataFormat2201()
     return Format2201::None;
 }
 
-template <const FixpipeTrait& trait>
+template <const QuantMode_t quantPre>
 __aicore__ inline constexpr QuantMode2201 GetQuantMode2201()
 {
-    if constexpr (IsVectorQuantMode<trait.quantPre>()) {
+    if constexpr (IsVectorQuantMode<quantPre>()) {
         return QuantMode2201::Vector;
-    } else if constexpr (IsScalarQuantMode<trait.quantPre>()) {
+    } else if constexpr (IsScalarQuantMode<quantPre>()) {
         return QuantMode2201::Scalar;
-    } else if constexpr (IsDirectQuantMode<trait.quantPre>()) {
+    } else if constexpr (IsDirectQuantMode<quantPre>()) {
         return QuantMode2201::Direct;
     }
     return QuantMode2201::None;
@@ -50,7 +50,7 @@ __aicore__ inline constexpr QuantMode2201 GetQuantMode2201()
 
 class Format2201RegistorIgnore {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename S>
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename S>
     __aicore__ inline void Run(const T& dst, const U& src, const S& quant) {}
 };
 
@@ -89,44 +89,6 @@ struct Format2201Registor<Format2201::ND, Format2201::NZ, QuantMode2201::Vector>
     using type = FixpipeNZ2ND2201VectorQuant;
 };
 
-template <const FixpipeTrait& trait, typename T, typename U>
-__aicore__ inline void CheckFixpipe2201QuantParams()
-{
-    using srcType = typename U::elementType;
-    using dstType = typename T::elementType;
-    using currentType = Std::tuple<srcType, dstType>;
-    if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V2201) {
-        if constexpr (trait.quantPre == QuantMode_t::NoQuant) {
-            using quantDataType1 = Std::tuple<__cc__ float, __gm__ float>;
-            using quantDataType2 = Std::tuple<__cc__ int32_t, __gm__ int32_t>;
-            static_assert((Std::is_one_of_v<currentType, quantDataType1, quantDataType2>),
-                "Failed to check quantPre value in Fixpipe");
-        } else if constexpr (trait.quantPre == QuantMode_t::F322F16) {
-            using quantDataType = Std::tuple<__cc__ float, __gm__ half>;
-            static_assert((Std::is_one_of_v<currentType, quantDataType>),
-                "Failed to check quantPre value in Fixpipe");
-        } else if constexpr (trait.quantPre == QuantMode_t::F322BF16) {
-            using quantDataType = Std::tuple<__cc__ float, __gm__ bfloat16_t>;
-            static_assert((Std::is_one_of_v<currentType, quantDataType>),
-                "Failed to check quantPre value in Fixpipe");
-        } else if constexpr (trait.quantPre == QuantMode_t::DEQF16 || trait.quantPre == QuantMode_t::VDEQF16) {
-            using quantDataType = Std::tuple<__cc__ int32_t, __gm__ half>;
-            static_assert((Std::is_one_of_v<currentType, quantDataType>),
-                "Failed to check quantPre value in Fixpipe");
-        } else if constexpr (trait.quantPre == QuantMode_t::QF322B8_PRE || trait.quantPre == QuantMode_t::VQF322B8_PRE) {
-            using quantDataType1 = Std::tuple<__cc__ float, __gm__ int8_t>;
-            using quantDataType2 = Std::tuple<__cc__ float, __gm__ uint8_t>;
-            static_assert((Std::is_one_of_v<currentType, quantDataType1, quantDataType2>),
-                "Failed to check quantPre value in Fixpipe");
-        } else if constexpr (trait.quantPre == QuantMode_t::REQ8 || trait.quantPre == QuantMode_t::VREQ8) {
-            using quantDataType1 = Std::tuple<__cc__ int32_t, __gm__ int8_t>;
-            using quantDataType2 = Std::tuple<__cc__ int32_t, __gm__ uint8_t>;
-            static_assert((Std::is_one_of_v<currentType, quantDataType1, quantDataType2>),
-                "Failed to check quantPre value in Fixpipe");
-        } 
-    }
-}
-
 class FixpipeQuantFourDim2201L0C2GM {
 public:
     template <const FixpipeTrait& trait, typename T, typename U, typename S>
@@ -139,10 +101,10 @@ private:
     template <const FixpipeTrait& trait, typename T, typename U, typename S>
     __aicore__ inline void Execute(const T& dst, const U& src, const S& quant)
     {
-        CheckFixpipe2201QuantParams<trait, T, U>();
+        constexpr auto quantPre = GetFixpipe2201QuantPre<trait, T, U, S>();
         using FixpipeQuantCoordL0C2GM =
-            typename Format2201Registor<GetDataFormat2201<T>(), GetDataFormat2201<U>(), GetQuantMode2201<trait>()>::type;
-        FixpipeQuantCoordL0C2GM{}.template Run<trait, T, U, S>(dst, src, quant);
+            typename Format2201Registor<GetDataFormat2201<T>(), GetDataFormat2201<U>(), GetQuantMode2201<quantPre>()>::type;
+        FixpipeQuantCoordL0C2GM{}.template Run<trait, quantPre, T, U, S>(dst, src, quant);
     }
 };
 }  // namespace Te

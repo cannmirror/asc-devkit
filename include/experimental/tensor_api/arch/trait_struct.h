@@ -50,23 +50,28 @@ struct MmadParams {
 
 struct DataCopyTrait {};
 
+enum class RoundMode : uint8_t {
+    DEFAULT = 0,
+    HYBRID,
+};
+
 struct FixpipeTrait {
     __aicore__ constexpr FixpipeTrait() {}
     __aicore__ constexpr FixpipeTrait(
-        QuantMode_t quantPreIn,
+        RoundMode roundModeIn,
         bool enableReluIn,
         bool enableChannelSplitIn,
         uint8_t unitFlagIn,
         uint8_t dualDstCtlIn
     ) :
-        quantPre(quantPreIn),
+        roundMode(roundModeIn),
         enableRelu(enableReluIn),
         enableChannelSplit(enableChannelSplitIn),
         unitFlag(unitFlagIn),
         dualDstCtl(dualDstCtlIn)
     {}
 
-    QuantMode_t quantPre = QuantMode_t::NoQuant;
+    RoundMode roundMode = RoundMode::DEFAULT;
     bool enableRelu = false;
     bool enableChannelSplit = false;
     uint8_t unitFlag = false;

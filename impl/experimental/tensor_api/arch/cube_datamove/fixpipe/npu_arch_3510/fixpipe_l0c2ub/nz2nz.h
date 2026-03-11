@@ -23,13 +23,13 @@ namespace Te {
 
 class Fixpipe2UbNz2NzBase3510 {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
-        DataCopyImpl<trait, T, U, Coord>(dst, src, coord);
+        DataCopyImpl<trait, quantPre, T, U, Coord>(dst, src, coord);
     }
 
 private:
-    template <const FixpipeTrait& trait, typename T, typename U>
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
         using srcType = typename U::elementType;
@@ -39,15 +39,19 @@ private:
         formatCheck.CheckNZTemplate<T>();
         formatCheck.CheckL0CNZTemplate<U>();
 #if defined(__NPU_ARCH__ ) && __NPU_ARCH__ == 3510
-        static_assert(Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__gm__ float, __cc__ float>, 
-            Std::tuple<__gm__ int32_t, __cc__ int32_t>>, "The data type is not supported.");
+        static_assert((quantPre == QuantMode_t::NoQuant && Std::is_one_of_v<Std::tuple<dstType, srcType>,
+            Std::tuple<__ubuf__ float, __cc__ float>, Std::tuple<__ubuf__ int32_t, __cc__ int32_t>>) ||
+            (quantPre == QuantMode_t::F322F16 && Std::is_one_of_v<Std::tuple<dstType, srcType>,
+            Std::tuple<__ubuf__ half, __cc__ float>>) || (quantPre == QuantMode_t::F322BF16 &&
+            Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__ubuf__ bfloat16_t, __cc__ float>>),
+            "The data type is not supported.");
 #endif
     }
 
-    template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename Coord>
     __aicore__ inline void DataCopyImpl(const T& dst, const U& src, const Coord& coord)
     {
-        CheckTemplate<trait, T, U>();
+        CheckTemplate<trait, quantPre, T, U>();
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
         uint32_t nSize = Std::min(GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout)
@@ -70,7 +74,7 @@ private:
         bool nz2dnEn = false;
         auto dstDNTensor = dst(coord, dst.Layout().Shape());
         CopyMatrixCcToUbBase3510 copyInst;
-        copyInst.DataCopy<trait, T, U>(dstDNTensor, src, nSize, mSize, srcStride, dstStride, dualDstCtl,
+        copyInst.DataCopy<trait, quantPre, T, U>(dstDNTensor, src, nSize, mSize, srcStride, dstStride, dualDstCtl,
             reluEn, unitFlag, subBlockId, nz2ndEn, nz2dnEn);
     }
 };
