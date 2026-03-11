@@ -21,6 +21,8 @@
 #warning "impl/utils/debug/asc_printf_simt_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "utils/debug/asc_printf.h" and use public functions or variables defined in interface header files."
 #endif
 
+#include "impl/utils/sys_macros.h"
+
 #ifndef __SIMT_DEVICE_FUNCTIONS_DECL__
 #if defined(__NPU_COMPILER_INTERNAL_PURE_SIMT__)
 #define __SIMT_DEVICE_FUNCTIONS_DECL__ __aicore__
@@ -29,43 +31,17 @@
 #endif
 #endif
 
-#ifdef __NPU_COMPILER_INTERNAL_PURE_SIMT__
-#define __gm__ 
-#endif
-
-#ifndef __host_aicore__
-#define __host_aicore__ [host, aicore]
-#endif // __host_aicore__
-
-#if (_ASCENDC_HAS_BISHENG_COMPILER)
-#ifndef ASCENDC_HOST
-#define ASCENDC_HOST __host__
-#endif
-#ifndef ASCENDC_AICORE
-#define ASCENDC_AICORE __aicore__
-#endif
-#ifndef ASCENDC_HOST_AICORE
-#define ASCENDC_HOST_AICORE __host_aicore__
-#endif
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
+#define __simt_gm__ __gm__
 #else
-#ifndef ASCENDC_HOST
-#define ASCENDC_HOST
-#endif
-#ifndef ASCENDC_AICORE
-#define ASCENDC_AICORE
-#endif
-#ifndef ASCENDC_HOST_AICORE
-#define ASCENDC_HOST_AICORE
-#endif
+#define __simt_gm__ 
 #endif
 
-#include "impl/utils/std/type_traits/is_same.h"
-
-inline __gm__ uint8_t* __gm__ g_sysSimtPrintFifoSpace = nullptr;
+inline __simt_gm__ uint8_t* __simt_gm__ g_sysSimtPrintFifoSpace = nullptr;
 
 namespace AscendC {
 namespace Simt {
-__aicore__ inline void SetSimtDumpWorkspace(__gm__ uint8_t* workspace)
+__aicore__ inline void SetSimtDumpWorkspace(__simt_gm__ uint8_t* workspace)
 {
 }
 }
@@ -164,7 +140,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void enable_printf()
         __attribute__((used, section(".ascend.meta"))) = {4, 4, 4};
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t get_string_length(const __gm__ char* s)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t get_string_length(const __simt_gm__ char* s)
 {
     uint32_t i = 0;
     while (*(s + i) != '\0') {
@@ -182,7 +158,7 @@ template <typename... Args>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t get_print_args_len(uint32_t& args_num, Args&&... args);
 
 template <typename... Args>
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t get_print_args_len_impl(uint32_t& args_num, __gm__ const char* s,
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t get_print_args_len_impl(uint32_t& args_num, __simt_gm__ const char* s,
     Args&&... args)
 {
     constexpr uint32_t param_size = sizeof(uint64_t);
@@ -206,7 +182,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t get_print_args_len(uint32_t& args
 }
 
 template <typename... Args>
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t get_print_tlv_len(uint32_t& args_num, __gm__ const char* fmt,
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t get_print_tlv_len(uint32_t& args_num, __simt_gm__ const char* fmt,
     Args&&... args)
 {
     constexpr uint32_t print_info_len = sizeof(PrintTlvInfoHead);
@@ -215,23 +191,23 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t get_print_tlv_len(uint32_t& args_
     return print_info_len + args_len + fmt_len;
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline __gm__ RingBufReadInfo* get_ring_buf_read_info(
-    __gm__ BlockRingBufInfo* block_ring_buf_info)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline __simt_gm__ RingBufReadInfo* get_ring_buf_read_info(
+    __simt_gm__ BlockRingBufInfo* block_ring_buf_info)
 {
-    __gm__ uint8_t* block_head = reinterpret_cast<__gm__ uint8_t*>(block_ring_buf_info);
+    __simt_gm__ uint8_t* block_head = reinterpret_cast<__simt_gm__ uint8_t*>(block_ring_buf_info);
 
-    return reinterpret_cast<__gm__ RingBufReadInfo*>(block_head + sizeof(BlockRingBufInfo));
+    return reinterpret_cast<__simt_gm__ RingBufReadInfo*>(block_head + sizeof(BlockRingBufInfo));
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline __gm__ RingBufWriteInfo* get_ring_buf_write_info(
-    __gm__ BlockRingBufInfo* block_ring_buf_info)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline __simt_gm__ RingBufWriteInfo* get_ring_buf_write_info(
+    __simt_gm__ BlockRingBufInfo* block_ring_buf_info)
 {
-    __gm__ uint8_t* ring_buf_addr = reinterpret_cast<__gm__ uint8_t*>(block_ring_buf_info->ringBufAddr);
+    __simt_gm__ uint8_t* ring_buf_addr = reinterpret_cast<__simt_gm__ uint8_t*>(block_ring_buf_info->ringBufAddr);
 
-    return reinterpret_cast<__gm__ RingBufWriteInfo*>(ring_buf_addr + block_ring_buf_info->ringBufLen);
+    return reinterpret_cast<__simt_gm__ RingBufWriteInfo*>(ring_buf_addr + block_ring_buf_info->ringBufLen);
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void ring_buffer_wait(__gm__ RingBufReadInfo* read_info, uint64_t end_offset)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void ring_buffer_wait(__simt_gm__ RingBufReadInfo* read_info, uint64_t end_offset)
 {
     volatile uint64_t tmp = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>(&read_info->bufOffset);
     while (end_offset >= tmp) {
@@ -240,10 +216,10 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void ring_buffer_wait(__gm__ RingBufReadIn
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint64_t check_and_wait_ring_buf_space(
-    __gm__ BlockRingBufInfo* block_ring_buf_info, uint64_t tlv_len)
+    __simt_gm__ BlockRingBufInfo* block_ring_buf_info, uint64_t tlv_len)
 {
-    __gm__ RingBufReadInfo* read_info = get_ring_buf_read_info(block_ring_buf_info);
-    __gm__ RingBufWriteInfo* write_info = get_ring_buf_write_info(block_ring_buf_info);
+    __simt_gm__ RingBufReadInfo* read_info = get_ring_buf_read_info(block_ring_buf_info);
+    __simt_gm__ RingBufWriteInfo* write_info = get_ring_buf_write_info(block_ring_buf_info);
 
     uint64_t start_offset = atomicAdd(&write_info->bufOffset, tlv_len);
     uint64_t end_offset = start_offset + tlv_len;
@@ -253,11 +229,11 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint64_t check_and_wait_ring_buf_space(
     return start_offset;
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void write_ring_buf_tlv_head(__gm__ BlockRingBufInfo* block_ring_buf_info,
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void write_ring_buf_tlv_head(__simt_gm__ BlockRingBufInfo* block_ring_buf_info,
     uint32_t& write_ptr, uint32_t tlv_len, uint32_t args_num)
 {
     if (write_ptr + sizeof(PrintTlvInfoHead) > block_ring_buf_info->ringBufLen) {
-        __gm__ uint8_t* data_ptr = reinterpret_cast<__gm__ uint8_t*>(block_ring_buf_info->ringBufAddr);
+        __simt_gm__ uint8_t* data_ptr = reinterpret_cast<__simt_gm__ uint8_t*>(block_ring_buf_info->ringBufAddr);
         TlvHeadToBytes tmp{.tlv_head = {static_cast<uint32_t>(DumpType::DUMP_WAIT),
                                         static_cast<uint32_t>(tlv_len - (sizeof(uint32_t) * 2)),
                                         {static_cast<uint32_t>(blockIdx.x), static_cast<uint32_t>(blockIdx.y),
@@ -277,8 +253,8 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void write_ring_buf_tlv_head(__gm__ BlockR
         }
         write_ptr = part2_len;
     } else {
-        __gm__ PrintTlvInfoHead* print_tlv =
-            reinterpret_cast<__gm__ PrintTlvInfoHead*>(block_ring_buf_info->ringBufAddr + write_ptr);
+        __simt_gm__ PrintTlvInfoHead* print_tlv =
+            reinterpret_cast<__simt_gm__ PrintTlvInfoHead*>(block_ring_buf_info->ringBufAddr + write_ptr);
         print_tlv->type = static_cast<uint32_t>(DumpType::DUMP_WAIT);
         print_tlv->length = static_cast<uint32_t>(tlv_len - (sizeof(uint32_t) * 2)); // 2: exclude type and length
         print_tlv->blockIdx[0] = blockIdx.x;
@@ -296,12 +272,12 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void write_ring_buf_tlv_head(__gm__ BlockR
     }
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t write_string(__gm__ BlockRingBufInfo* block_ring_buf_info,
-    __gm__ const char* str, uint32_t write_ptr)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t write_string(__simt_gm__ BlockRingBufInfo* block_ring_buf_info,
+    __simt_gm__ const char* str, uint32_t write_ptr)
 {
     write_ptr = write_ptr % block_ring_buf_info->ringBufLen;
     uint32_t str_len = get_string_length(str);
-    __gm__ char* data_ptr = reinterpret_cast<__gm__ char*>(block_ring_buf_info->ringBufAddr);
+    __simt_gm__ char* data_ptr = reinterpret_cast<__simt_gm__ char*>(block_ring_buf_info->ringBufAddr);
     if (write_ptr + str_len > block_ring_buf_info->ringBufLen) {
         uint32_t part1_len = block_ring_buf_info->ringBufLen - write_ptr;
         for (int32_t index = 0; index < part1_len; index++) {
@@ -336,19 +312,17 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float bf16_to_float(bfloat16_t x)
 }
 
 template <typename T>
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void write_scalar(__gm__ BlockRingBufInfo* block_ring_buf_info,
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void write_scalar(__simt_gm__ BlockRingBufInfo* block_ring_buf_info,
     uint32_t write_ptr, T scalar)
 {
     TypeToByte8 tmp{0};
-    if constexpr (AscendC::Std::is_same_v<T, half> || AscendC::Std::is_same_v<T, float>) {
+    if constexpr (std::is_same_v<T, half> || std::is_same_v<T, float>) {
         tmp.value_f32 = static_cast<float>(scalar);
-    } else if constexpr (AscendC::Std::is_same_v<T, double>) {
-        tmp.value_f64 = static_cast<double>(scalar);
     } else if constexpr (std::is_signed<T>::value) {
         tmp.value_s64 = static_cast<int64_t>(scalar);
     } else if constexpr (std::is_unsigned<T>::value) {
         tmp.value_u64 = static_cast<uint64_t>(scalar);
-    } else if constexpr (AscendC::Std::is_same_v<T, bfloat16_t>) {
+    } else if constexpr (std::is_same_v<T, bfloat16_t>) {
         tmp.value_f32 = bf16_to_float(scalar);
     } else if constexpr (std::is_pointer<T>::value) {
         tmp.value_u64 = (uintptr_t)scalar;
@@ -358,7 +332,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void write_scalar(__gm__ BlockRingBufInfo*
 
     write_ptr = write_ptr % block_ring_buf_info->ringBufLen;
     if (write_ptr + sizeof(uint64_t) > block_ring_buf_info->ringBufLen) {
-        __gm__ uint8_t* data_ptr = reinterpret_cast<__gm__ uint8_t*>(block_ring_buf_info->ringBufAddr);
+        __simt_gm__ uint8_t* data_ptr = reinterpret_cast<__simt_gm__ uint8_t*>(block_ring_buf_info->ringBufAddr);
         uint32_t part1_len = block_ring_buf_info->ringBufLen - write_ptr;
         for (int32_t index = 0; index < part1_len; index++) {
             data_ptr[write_ptr + index] = tmp.bytes[index];
@@ -368,24 +342,24 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void write_scalar(__gm__ BlockRingBufInfo*
             data_ptr[index] = tmp.bytes[part1_len + index];
         }
     } else {
-        __gm__ uint64_t* data_ptr = reinterpret_cast<__gm__ uint64_t*>(block_ring_buf_info->ringBufAddr + write_ptr);
+        __simt_gm__ uint64_t* data_ptr = reinterpret_cast<__simt_gm__ uint64_t*>(block_ring_buf_info->ringBufAddr + write_ptr);
         *data_ptr = tmp.value_u64;
     }
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void set_param(__gm__ BlockRingBufInfo* block_ring_buf_info,
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void set_param(__simt_gm__ BlockRingBufInfo* block_ring_buf_info,
     uint32_t start_offset, uint32_t param_idx, uint32_t str_offset)
 {
     return;
 }
 
 template <typename... Args>
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void set_param(__gm__ BlockRingBufInfo* block_ring_buf_info,
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void set_param(__simt_gm__ BlockRingBufInfo* block_ring_buf_info,
     uint32_t start_offset, uint32_t param_idx, uint32_t str_offset, Args&&... args);
 
 template <typename... Args>
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void set_param_impl(__gm__ BlockRingBufInfo* block_ring_buf_info,
-    uint32_t start_offset, uint32_t param_idx, uint32_t str_offset, __gm__ const char* s, Args&&... args)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void set_param_impl(__simt_gm__ BlockRingBufInfo* block_ring_buf_info,
+    uint32_t start_offset, uint32_t param_idx, uint32_t str_offset, __simt_gm__ const char* s, Args&&... args)
 {
     uint32_t param_offset = sizeof(uint64_t) * param_idx;
     write_scalar(block_ring_buf_info, start_offset + param_offset , str_offset - param_offset);
@@ -394,7 +368,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void set_param_impl(__gm__ BlockRingBufInf
 }
 
 template <typename T, typename... Args>
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void set_param_impl(__gm__ BlockRingBufInfo* block_ring_buf_info,
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void set_param_impl(__simt_gm__ BlockRingBufInfo* block_ring_buf_info,
     uint32_t start_offset, uint32_t param_idx, uint32_t str_offset, T scalar, Args&&... args)
 {
     uint32_t param_offset = sizeof(uint64_t) * param_idx;
@@ -403,28 +377,28 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void set_param_impl(__gm__ BlockRingBufInf
 }
 
 template <typename... Args>
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void set_param(__gm__ BlockRingBufInfo* block_ring_buf_info,
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void set_param(__simt_gm__ BlockRingBufInfo* block_ring_buf_info,
     uint32_t start_offset, uint32_t param_idx, uint32_t str_offset, Args&&... args)
 {
     set_param_impl(block_ring_buf_info, start_offset, param_idx, str_offset, args...);
 }
 
 template <typename... Args>
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void write_ring_buf_tlv_data(__gm__ BlockRingBufInfo* block_ring_buf_info,
-    uint32_t start_offset, uint32_t args_num, __gm__ const char* fmt, Args&&... args)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void write_ring_buf_tlv_data(__simt_gm__ BlockRingBufInfo* block_ring_buf_info,
+    uint32_t start_offset, uint32_t args_num, __simt_gm__ const char* fmt, Args&&... args)
 {
     uint32_t fmt_offset = args_num * sizeof(uint64_t);
     uint32_t str_len = write_string(block_ring_buf_info, fmt, start_offset + fmt_offset);
     set_param(block_ring_buf_info, start_offset, 0, fmt_offset + str_len, args...);
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void write_finish(__gm__ BlockRingBufInfo* block_ring_buf_info,
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void write_finish(__simt_gm__ BlockRingBufInfo* block_ring_buf_info,
     uint64_t write_ptr, DumpType print_type)
 {
     TypeToByte4 tmp{.value = static_cast<uint32_t>(print_type)};
 
     if (static_cast<uint32_t>(write_ptr) + sizeof(uint32_t) > block_ring_buf_info->ringBufLen) {
-        __gm__ uint8_t* data_ptr = reinterpret_cast<__gm__ uint8_t*>(block_ring_buf_info->ringBufAddr);
+        __simt_gm__ uint8_t* data_ptr = reinterpret_cast<__simt_gm__ uint8_t*>(block_ring_buf_info->ringBufAddr);
         uint32_t part1_len = block_ring_buf_info->ringBufLen - static_cast<uint32_t>(write_ptr);
         for (int32_t index = 0; index < part1_len; index++) {
             data_ptr[write_ptr + index] = tmp.bytes[index];
@@ -434,24 +408,24 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void write_finish(__gm__ BlockRingBufInfo*
             data_ptr[index] = tmp.bytes[part1_len + index];
         }
     } else {
-        __gm__ uint32_t* data_ptr = reinterpret_cast<__gm__ uint32_t*>(block_ring_buf_info->ringBufAddr + write_ptr);
+        __simt_gm__ uint32_t* data_ptr = reinterpret_cast<__simt_gm__ uint32_t*>(block_ring_buf_info->ringBufAddr + write_ptr);
         *data_ptr = tmp.value;
     }
 
-    __gm__ RingBufWriteInfo* write_info = get_ring_buf_write_info(block_ring_buf_info);
+    __simt_gm__ RingBufWriteInfo* write_info = get_ring_buf_write_info(block_ring_buf_info);
     atomicAdd(&write_info->packIdx, 1);
 }
 #endif
 
 template <typename... Args>
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void simt_printf_impl(DumpType print_type, __gm__ const char* fmt, Args&&... args)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void simt_printf_impl(DumpType print_type, __simt_gm__ const char* fmt, Args&&... args)
 {
 #ifndef ASCENDC_CPU_DEBUG
     enable_printf();
     if (g_sysSimtPrintFifoSpace == nullptr) {
         return;
     }
-    __gm__ BlockRingBufInfo* block_ring_buf_info = reinterpret_cast<__gm__ BlockRingBufInfo*>(g_sysSimtPrintFifoSpace);
+    __simt_gm__ BlockRingBufInfo* block_ring_buf_info = reinterpret_cast<__simt_gm__ BlockRingBufInfo*>(g_sysSimtPrintFifoSpace);
     if (block_ring_buf_info->magic != MAGIC) {
         return;
     }
@@ -465,11 +439,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void simt_printf_impl(DumpType print_type,
     uint32_t write_ptr = static_cast<uint32_t>(start_offset);
     write_ring_buf_tlv_head(block_ring_buf_info, write_ptr, tlv_len, args_num);
     write_ring_buf_tlv_data(block_ring_buf_info, write_ptr, args_num, fmt, args...);
-    __cce_scalar::dcci(reinterpret_cast<__gm__ uint8_t*>(block_ring_buf_info->ringBufAddr + start_offset), 1, 1);
 
     __threadfence();
     write_finish(block_ring_buf_info, start_offset, print_type);
-    __cce_scalar::dcci(reinterpret_cast<__gm__ uint8_t*>(block_ring_buf_info->ringBufAddr + start_offset), 0, 1);
     if (print_type == DumpType::DUMP_SIMT_ASSERT) {
         __sync_workitems();
     }
@@ -479,7 +451,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void simt_printf_impl(DumpType print_type,
 #ifndef __CHECK_FEATURE_AT_PRECOMPILE
 
 template <class... Args>
-static __attribute__((noinline)) __SIMT_DEVICE_FUNCTIONS_DECL__ void printf(const __gm__ char* fmt, Args&&... args)
+static __attribute__((noinline)) __SIMT_DEVICE_FUNCTIONS_DECL__ void printf(const __simt_gm__ char* fmt, Args&&... args)
 {
 #if !defined (ASCENDC_DUMP) || (ASCENDC_DUMP != 0)
     simt_printf_impl(DumpType::DUMP_SIMT_PRINTF, fmt, args...);
