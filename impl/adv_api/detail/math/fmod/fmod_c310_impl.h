@@ -43,9 +43,9 @@ constexpr FloatU32Union negInf(F32_NEG_INF);
 constexpr FloatU32Union nan(F32_NAN);
 constexpr uint16_t oneRepSize = static_cast<uint16_t>(GetVecLen() / sizeof(float));
 
-constexpr MicroAPI::CastTrait castTraitS322F32 = {
-    MicroAPI::RegLayout::UNKNOWN, MicroAPI::SatMode::UNKNOWN, 
-    MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT
+constexpr Reg::CastTrait castTraitS322F32 = {
+    Reg::RegLayout::UNKNOWN, Reg::SatMode::UNKNOWN, 
+    Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT
 };
 
 constexpr FloatS32Union scaleList1[FMOD_ITERATION_NUM_MAX] = {
@@ -63,93 +63,93 @@ constexpr FloatS32Union scaleList2[FMOD_ITERATION_NUM_MAX] = {
 
 template <typename T>
 __simd_callee__ inline void LoadDataWithT(
-    __ubuf__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& mask, uint32_t offset)
+    __ubuf__ T* src, Reg::RegTensor<float>& dstReg, Reg::MaskReg& mask, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
-        MicroAPI::RegTensor<T> srcOrigin;
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcOrigin, src + offset);
+        Reg::RegTensor<T> srcOrigin;
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(srcOrigin, src + offset);
         Cast<float, T, layoutZMrgZ>(dstReg, srcOrigin, mask);
     } else {
-        MicroAPI::LoadAlign(dstReg, src + offset);
+        Reg::LoadAlign(dstReg, src + offset);
     }
 }
 
 template <typename T>
 __simd_callee__ inline void SaveDataWithT(
-    __ubuf__ T* dst, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask, uint32_t offset)
+    __ubuf__ T* dst, Reg::RegTensor<float>& srcReg, Reg::MaskReg& mask, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
-        MicroAPI::RegTensor<T> regT;
-        MicroAPI::Cast<T, float, LayoutZMrgZRndRSatNS>(regT, srcReg, mask);
-        MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_PACK_B32>(dst + offset, regT, mask);
+        Reg::RegTensor<T> regT;
+        Reg::Cast<T, float, LayoutZMrgZRndRSatNS>(regT, srcReg, mask);
+        Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B32>(dst + offset, regT, mask);
     } else {
-        MicroAPI::StoreAlign(dst + offset, srcReg, mask);
+        Reg::StoreAlign(dst + offset, srcReg, mask);
     }
 }
 
 __simd_callee__ inline void GetSignBit(
-    MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask)
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, Reg::MaskReg& mask)
 {
     constexpr int16_t signRightNum = 31;
-    MicroAPI::RegTensor<uint32_t> oneReg;
-    MicroAPI::RegTensor<uint32_t> tmpReg;
-    MicroAPI::Duplicate(oneReg, 1, mask);
-    MicroAPI::ShiftRights(tmpReg, (MicroAPI::RegTensor<uint32_t>&)srcReg, signRightNum, mask);
-    MicroAPI::And(tmpReg, tmpReg, oneReg, mask);
-    MicroAPI::Cast<float, int32_t, FmodInternal::castTraitS322F32>(dstReg, (MicroAPI::RegTensor<int32_t>&)tmpReg, mask);
+    Reg::RegTensor<uint32_t> oneReg;
+    Reg::RegTensor<uint32_t> tmpReg;
+    Reg::Duplicate(oneReg, 1, mask);
+    Reg::ShiftRights(tmpReg, (Reg::RegTensor<uint32_t>&)srcReg, signRightNum, mask);
+    Reg::And(tmpReg, tmpReg, oneReg, mask);
+    Reg::Cast<float, int32_t, FmodInternal::castTraitS322F32>(dstReg, (Reg::RegTensor<int32_t>&)tmpReg, mask);
 }
 
 template <int32_t iterationNum>
-__simd_callee__ inline void SolveScale(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& src1Reg,
-    const float scale1, const float scale2, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void SolveScale(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& src1Reg,
+    const float scale1, const float scale2, Reg::MaskReg& mask)
 {
     constexpr float maxValue = 3.4028235e38;
     constexpr float subnormal = 1.1754944e-38;
 
-    MicroAPI::MaskReg subnormalMask;
-    MicroAPI::RegTensor<float> bTmpReg;
-    MicroAPI::RegTensor<float> tmpReg;
-    MicroAPI::RegTensor<float> kReg;
-    MicroAPI::RegTensor<float> signReg;
+    Reg::MaskReg subnormalMask;
+    Reg::RegTensor<float> bTmpReg;
+    Reg::RegTensor<float> tmpReg;
+    Reg::RegTensor<float> kReg;
+    Reg::RegTensor<float> signReg;
 
     if constexpr (iterationNum == 1) { // iter 1 (last iteration) handles subnormal case
-        MicroAPI::CompareScalar<float, CMPMODE::LE>(subnormalMask, src1Reg, subnormal, mask);
-        MicroAPI::Muls(tmpReg, src1Reg, scale1, subnormalMask);
-        MicroAPI::Select(bTmpReg, tmpReg, src1Reg, subnormalMask);
-        MicroAPI::Muls(tmpReg, dstReg, scale1, subnormalMask);
-        MicroAPI::Select(dstReg, tmpReg, dstReg, subnormalMask);
+        Reg::CompareScalar<float, CMPMODE::LE>(subnormalMask, src1Reg, subnormal, mask);
+        Reg::Muls(tmpReg, src1Reg, scale1, subnormalMask);
+        Reg::Select(bTmpReg, tmpReg, src1Reg, subnormalMask);
+        Reg::Muls(tmpReg, dstReg, scale1, subnormalMask);
+        Reg::Select(dstReg, tmpReg, dstReg, subnormalMask);
 
-        MicroAPI::Div(kReg, dstReg, bTmpReg, mask);
-        MicroAPI::Truncate<float, RoundMode::CAST_RINT>(kReg, kReg, mask);
+        Reg::Div(kReg, dstReg, bTmpReg, mask);
+        Reg::Truncate<float, RoundMode::CAST_RINT>(kReg, kReg, mask);
     } else {
-        MicroAPI::Muls(bTmpReg, src1Reg, scale1, mask);
+        Reg::Muls(bTmpReg, src1Reg, scale1, mask);
         if constexpr (iterationNum > 5) { // last 5 iterations do not need extra scaling
-            MicroAPI::Muls(bTmpReg, bTmpReg, scale2, mask);
+            Reg::Muls(bTmpReg, bTmpReg, scale2, mask);
         }
-        MicroAPI::Div(kReg, dstReg, bTmpReg, mask);
-        MicroAPI::Truncate<float, RoundMode::CAST_ROUND>(kReg, kReg, mask);
+        Reg::Div(kReg, dstReg, bTmpReg, mask);
+        Reg::Truncate<float, RoundMode::CAST_ROUND>(kReg, kReg, mask);
     }
 
     // not necessary to check for inf in the final iteration
     if constexpr (iterationNum != 1) {
-        MicroAPI::Mins(bTmpReg, bTmpReg, maxValue, mask);
+        Reg::Mins(bTmpReg, bTmpReg, maxValue, mask);
     }
-    MicroAPI::Neg(kReg, kReg, mask);
+    Reg::Neg(kReg, kReg, mask);
     // res = -k * bTmp + y
-    MicroAPI::MulAddDst(dstReg, kReg, bTmpReg, mask);
+    Reg::MulAddDst(dstReg, kReg, bTmpReg, mask);
 
     if constexpr (iterationNum == 1) { // iter 1 handles subnormal case
         // r = r + np.float32(np.signbit(r)) * btmp
         GetSignBit(signReg, dstReg, mask);
-        MicroAPI::Mul(signReg, signReg, bTmpReg, mask);
-        MicroAPI::Add(dstReg, dstReg, signReg, mask);
+        Reg::Mul(signReg, signReg, bTmpReg, mask);
+        Reg::Add(dstReg, dstReg, signReg, mask);
     }
 }
 
 // recurse from itermax to 1
 template <int32_t iterationNum>
 __simd_callee__ inline void SolveScaleIter (
-    MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& src1Reg, MicroAPI::MaskReg& mask)
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& src1Reg, Reg::MaskReg& mask)
 {
     SolveScale<iterationNum>(dstReg, src1Reg, scaleList1[iterationNum - 1].f, scaleList2[iterationNum - 1].f, mask);
 
@@ -160,42 +160,42 @@ __simd_callee__ inline void SolveScaleIter (
 
 template <int32_t iterationNum>
 __simd_callee__ inline void SolveScale(__ubuf__ float* dst, __ubuf__ float* src, const uint16_t unitRepTimes,
-    const float scale1, const float scale2, MicroAPI::MaskReg& mask)
+    const float scale1, const float scale2, Reg::MaskReg& mask)
 {
-    MicroAPI::RegTensor<float> src1OriginReg;
-    MicroAPI::RegTensor<float> src1Reg;
-    MicroAPI::RegTensor<float> dstReg;
+    Reg::RegTensor<float> src1OriginReg;
+    Reg::RegTensor<float> src1Reg;
+    Reg::RegTensor<float> dstReg;
     for (uint16_t i = 0; i < unitRepTimes; i++) {
-        MicroAPI::LoadAlign(src1OriginReg, src + i * FmodInternal::oneRepSize);
-        MicroAPI::LoadAlign(dstReg, dst + i * FmodInternal::oneRepSize);
-        MicroAPI::Abs(src1Reg, src1OriginReg, mask);
+        Reg::LoadAlign(src1OriginReg, src + i * FmodInternal::oneRepSize);
+        Reg::LoadAlign(dstReg, dst + i * FmodInternal::oneRepSize);
+        Reg::Abs(src1Reg, src1OriginReg, mask);
         SolveScale<iterationNum>(dstReg, src1Reg, scale1, scale2, mask);
-        MicroAPI::StoreAlign(dst + i * FmodInternal::oneRepSize, dstReg, mask);
+        Reg::StoreAlign(dst + i * FmodInternal::oneRepSize, dstReg, mask);
     }
 }
 
 template <int32_t iterationNum>
 __simd_callee__ inline void SolveScaleInit(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float* src1, 
-    const uint16_t unitRepTimes, const float scale1, const float scale2, MicroAPI::MaskReg& mask)
+    const uint16_t unitRepTimes, const float scale1, const float scale2, Reg::MaskReg& mask)
 {
-    MicroAPI::RegTensor<float> src0OriginReg;
-    MicroAPI::RegTensor<float> src1OriginReg;
-    MicroAPI::RegTensor<float> src1Reg;
-    MicroAPI::RegTensor<float> dstReg;
+    Reg::RegTensor<float> src0OriginReg;
+    Reg::RegTensor<float> src1OriginReg;
+    Reg::RegTensor<float> src1Reg;
+    Reg::RegTensor<float> dstReg;
     for (uint16_t i = 0; i < unitRepTimes; i++) {
-        MicroAPI::LoadAlign(src0OriginReg, src0 + i * FmodInternal::oneRepSize);
-        MicroAPI::LoadAlign(src1OriginReg, src1 + i * FmodInternal::oneRepSize);
-        MicroAPI::Abs(dstReg, src0OriginReg, mask);
-        MicroAPI::Abs(src1Reg, src1OriginReg, mask);
+        Reg::LoadAlign(src0OriginReg, src0 + i * FmodInternal::oneRepSize);
+        Reg::LoadAlign(src1OriginReg, src1 + i * FmodInternal::oneRepSize);
+        Reg::Abs(dstReg, src0OriginReg, mask);
+        Reg::Abs(src1Reg, src1OriginReg, mask);
         SolveScale<iterationNum>(dstReg, src1Reg, scale1, scale2, mask);
-        MicroAPI::StoreAlign(dst + i * FmodInternal::oneRepSize, dstReg, mask);
+        Reg::StoreAlign(dst + i * FmodInternal::oneRepSize, dstReg, mask);
     }
 }
 
 template <int32_t iterationNum, int32_t totalIterationNum>
 __simd_callee__ inline void SolveScaleIterImpl(
     __ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float* src1, 
-    const uint16_t unitRepTimes, MicroAPI::MaskReg& mask)
+    const uint16_t unitRepTimes, Reg::MaskReg& mask)
 {
     if (iterationNum == totalIterationNum) { // first iteration, initialization
         SolveScaleInit<iterationNum>(dst, src0, src1, unitRepTimes, scaleList1[iterationNum - 1].f, scaleList2[iterationNum - 1].f, mask);
@@ -204,62 +204,62 @@ __simd_callee__ inline void SolveScaleIterImpl(
     }
 
     if constexpr (iterationNum > 1) {
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
         SolveScaleIterImpl<iterationNum - 1, totalIterationNum>(dst, src0, src1, unitRepTimes, mask);
     }
 }
 
 template <int32_t iterationNum>
 __simd_callee__ inline void SolveScaleIter(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float* src1, 
-    const uint16_t unitRepTimes, MicroAPI::MaskReg& mask)
+    const uint16_t unitRepTimes, Reg::MaskReg& mask)
 {
     SolveScaleIterImpl<iterationNum, iterationNum>(dst, src0, src1, unitRepTimes, mask);
 }
     
 
-__simd_callee__ inline void SolveExceptionScenarios(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& src0Reg,
-    MicroAPI::RegTensor<float>& src1Reg, MicroAPI::RegTensor<float> nanReg, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void SolveExceptionScenarios(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& src0Reg,
+    Reg::RegTensor<float>& src1Reg, Reg::RegTensor<float> nanReg, Reg::MaskReg& mask)
 {
-    MicroAPI::MaskReg src0Is0CmpReg;
-    MicroAPI::MaskReg src0IsNeg0CmpReg;
-    MicroAPI::MaskReg src0InfCmpReg;
-    MicroAPI::MaskReg src0NegInfCmpReg;
-    MicroAPI::MaskReg src1InfCmpReg;
-    MicroAPI::MaskReg src1NegInfCmpReg;
-    MicroAPI::MaskReg srcBothInfCmpReg;
-    MicroAPI::MaskReg src1Not0CmpReg;
-    MicroAPI::MaskReg src1NotNeg0CmpReg;
-    MicroAPI::MaskReg src1NotNanCmpReg;
+    Reg::MaskReg src0Is0CmpReg;
+    Reg::MaskReg src0IsNeg0CmpReg;
+    Reg::MaskReg src0InfCmpReg;
+    Reg::MaskReg src0NegInfCmpReg;
+    Reg::MaskReg src1InfCmpReg;
+    Reg::MaskReg src1NegInfCmpReg;
+    Reg::MaskReg srcBothInfCmpReg;
+    Reg::MaskReg src1Not0CmpReg;
+    Reg::MaskReg src1NotNeg0CmpReg;
+    Reg::MaskReg src1NotNanCmpReg;
     // if src1Tensor is inf return src0Reg
-    MicroAPI::CompareScalar(src1InfCmpReg, src1Reg, inf.f, mask);
-    MicroAPI::Select(dstReg, src0Reg, dstReg, src1InfCmpReg);
+    Reg::CompareScalar(src1InfCmpReg, src1Reg, inf.f, mask);
+    Reg::Select(dstReg, src0Reg, dstReg, src1InfCmpReg);
     // if src1Tensor is -inf return src0Reg
-    MicroAPI::CompareScalar(src1NegInfCmpReg, src1Reg, negInf.f, mask);
-    MicroAPI::Select(dstReg, src0Reg, dstReg, src1NegInfCmpReg);
+    Reg::CompareScalar(src1NegInfCmpReg, src1Reg, negInf.f, mask);
+    Reg::Select(dstReg, src0Reg, dstReg, src1NegInfCmpReg);
     // if src0Tensor is inf
-    MicroAPI::CompareScalar(src0InfCmpReg, src0Reg, inf.f, mask);
+    Reg::CompareScalar(src0InfCmpReg, src0Reg, inf.f, mask);
     // if src0Tensor is -inf
-    MicroAPI::CompareScalar(src0NegInfCmpReg, src0Reg, negInf.f, mask);
+    Reg::CompareScalar(src0NegInfCmpReg, src0Reg, negInf.f, mask);
     // if src0Tensor and src1Tensor both inf return inf
-    MicroAPI::MaskOr(src0InfCmpReg, src0InfCmpReg, src0NegInfCmpReg, mask);
-    MicroAPI::MaskOr(src1InfCmpReg, src1InfCmpReg, src1NegInfCmpReg, mask);
-    MicroAPI::MaskAnd(srcBothInfCmpReg, src0InfCmpReg, src1InfCmpReg, mask);
-    MicroAPI::Select(dstReg, nanReg, dstReg, srcBothInfCmpReg);
+    Reg::MaskOr(src0InfCmpReg, src0InfCmpReg, src0NegInfCmpReg, mask);
+    Reg::MaskOr(src1InfCmpReg, src1InfCmpReg, src1NegInfCmpReg, mask);
+    Reg::MaskAnd(srcBothInfCmpReg, src0InfCmpReg, src1InfCmpReg, mask);
+    Reg::Select(dstReg, nanReg, dstReg, srcBothInfCmpReg);
     // if src0Tensor is ±0 and src1Tensor is not ±0 and not nan, return src0Tensor
-    MicroAPI::CompareScalar(src0Is0CmpReg, src0Reg, static_cast<float>(0), mask);
-    MicroAPI::CompareScalar(src0IsNeg0CmpReg, src0Reg, static_cast<float>(-0), mask);
-    MicroAPI::MaskOr(src0Is0CmpReg, src0Is0CmpReg, src0IsNeg0CmpReg, mask);
+    Reg::CompareScalar(src0Is0CmpReg, src0Reg, static_cast<float>(0), mask);
+    Reg::CompareScalar(src0IsNeg0CmpReg, src0Reg, static_cast<float>(-0), mask);
+    Reg::MaskOr(src0Is0CmpReg, src0Is0CmpReg, src0IsNeg0CmpReg, mask);
 
-    MicroAPI::CompareScalar<float, CMPMODE::NE>(src1Not0CmpReg, src1Reg, static_cast<float>(0), mask);
-    MicroAPI::CompareScalar<float, CMPMODE::NE>(src1NotNeg0CmpReg, src1Reg, static_cast<float>(-0), mask);
-    MicroAPI::Compare<float, CMPMODE::NE>(src1NotNanCmpReg, src1Reg, src1Reg, mask);
-    MicroAPI::MaskNot(src1NotNanCmpReg, src1NotNanCmpReg, mask);
+    Reg::CompareScalar<float, CMPMODE::NE>(src1Not0CmpReg, src1Reg, static_cast<float>(0), mask);
+    Reg::CompareScalar<float, CMPMODE::NE>(src1NotNeg0CmpReg, src1Reg, static_cast<float>(-0), mask);
+    Reg::Compare<float, CMPMODE::NE>(src1NotNanCmpReg, src1Reg, src1Reg, mask);
+    Reg::MaskNot(src1NotNanCmpReg, src1NotNanCmpReg, mask);
 
-    MicroAPI::MaskOr(src1Not0CmpReg, src1Not0CmpReg, src1NotNeg0CmpReg, mask);
-    MicroAPI::MaskAnd(src1Not0CmpReg, src1Not0CmpReg, src1NotNanCmpReg, mask);
+    Reg::MaskOr(src1Not0CmpReg, src1Not0CmpReg, src1NotNeg0CmpReg, mask);
+    Reg::MaskAnd(src1Not0CmpReg, src1Not0CmpReg, src1NotNanCmpReg, mask);
 
-    MicroAPI::MaskAnd(src0Is0CmpReg, src0Is0CmpReg, src1Not0CmpReg, mask);
-    MicroAPI::Select(dstReg, src0Reg, dstReg, src0Is0CmpReg);
+    Reg::MaskAnd(src0Is0CmpReg, src0Is0CmpReg, src1Not0CmpReg, mask);
+    Reg::Select(dstReg, src0Reg, dstReg, src0Is0CmpReg);
 }
 } // namespace FmodInternal
 
@@ -271,74 +271,74 @@ __simd_vf__ inline void FmodComputeIterationF32(__ubuf__ float* dstTensor, __ubu
     constexpr FmodInternal::FloatU32Union scale1(0x4B800000); // 2**24
     constexpr FmodInternal::FloatU32Union scale2(0x33800000); // 2**-24
     constexpr float subnormal = 1.1754944e-38;
-    MicroAPI::RegTensor<float> src0OriginReg;
-    MicroAPI::RegTensor<float> src1OriginReg;
-    MicroAPI::RegTensor<float> src1Reg;
-    MicroAPI::RegTensor<float> dstReg;
-    MicroAPI::RegTensor<float> nanReg;
-    MicroAPI::RegTensor<float> zeroReg;
-    MicroAPI::RegTensor<float> n2Reg;
-    MicroAPI::RegTensor<float> oneReg;
-    MicroAPI::RegTensor<float> src0SignBitReg;
-    MicroAPI::RegTensor<float> src0SignBitTmpReg;
-    MicroAPI::RegTensor<float> dstSignBitReg;
-    MicroAPI::RegTensor<float> bTmpReg;
-    MicroAPI::RegTensor<float> tmpReg;
-    MicroAPI::MaskReg maskReg;
-    MicroAPI::MaskReg subnormalMask;
-    MicroAPI::MaskReg maskFull = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::Duplicate(nanReg, FmodInternal::nan.f, maskFull);
-    MicroAPI::Duplicate(zeroReg, static_cast<float>(0.0), maskFull);
-    MicroAPI::Duplicate(n2Reg, static_cast<float>(-2.0), maskFull);
-    MicroAPI::Duplicate(oneReg, static_cast<float>(1), maskFull);
+    Reg::RegTensor<float> src0OriginReg;
+    Reg::RegTensor<float> src1OriginReg;
+    Reg::RegTensor<float> src1Reg;
+    Reg::RegTensor<float> dstReg;
+    Reg::RegTensor<float> nanReg;
+    Reg::RegTensor<float> zeroReg;
+    Reg::RegTensor<float> n2Reg;
+    Reg::RegTensor<float> oneReg;
+    Reg::RegTensor<float> src0SignBitReg;
+    Reg::RegTensor<float> src0SignBitTmpReg;
+    Reg::RegTensor<float> dstSignBitReg;
+    Reg::RegTensor<float> bTmpReg;
+    Reg::RegTensor<float> tmpReg;
+    Reg::MaskReg maskReg;
+    Reg::MaskReg subnormalMask;
+    Reg::MaskReg maskFull = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
+    Reg::Duplicate(nanReg, FmodInternal::nan.f, maskFull);
+    Reg::Duplicate(zeroReg, static_cast<float>(0.0), maskFull);
+    Reg::Duplicate(n2Reg, static_cast<float>(-2.0), maskFull);
+    Reg::Duplicate(oneReg, static_cast<float>(1), maskFull);
 
     FmodInternal::SolveScaleIter<iterationNum>(dstTensor, src0Tensor, src1Tensor, mainRepeatTimes, maskFull);
 
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     for (uint16_t i = 0; i < mainRepeatTimes; i++) {
         FmodInternal::LoadDataWithT(src0Tensor, src0OriginReg, maskFull, i * FmodInternal::oneRepSize);
         FmodInternal::LoadDataWithT(src1Tensor, src1OriginReg, maskFull, i * FmodInternal::oneRepSize);
-        MicroAPI::Abs(src1Reg, src1OriginReg, maskFull);
-        MicroAPI::LoadAlign(dstReg, dstTensor + i * FmodInternal::oneRepSize);
+        Reg::Abs(src1Reg, src1OriginReg, maskFull);
+        Reg::LoadAlign(dstReg, dstTensor + i * FmodInternal::oneRepSize);
 
         // res = res*(np.float32(signbit)*np.float32(-2.0) + np.float32(1))
         FmodInternal::GetSignBit(src0SignBitReg, src0OriginReg, maskFull);
-        MicroAPI::Mul(src0SignBitTmpReg, src0SignBitReg, n2Reg, maskFull);
-        MicroAPI::Add(src0SignBitTmpReg, src0SignBitTmpReg, oneReg, maskFull);
-        MicroAPI::Mul(dstReg, dstReg, src0SignBitTmpReg, maskFull);
+        Reg::Mul(src0SignBitTmpReg, src0SignBitReg, n2Reg, maskFull);
+        Reg::Add(src0SignBitTmpReg, src0SignBitTmpReg, oneReg, maskFull);
+        Reg::Mul(dstReg, dstReg, src0SignBitTmpReg, maskFull);
 
-        MicroAPI::CompareScalar<float, CMPMODE::LE>(subnormalMask, src1Reg, subnormal, maskFull);
-        MicroAPI::Muls(tmpReg, src1Reg, scale1.f, subnormalMask);
-        MicroAPI::Select(bTmpReg, tmpReg, src1Reg, subnormalMask);
+        Reg::CompareScalar<float, CMPMODE::LE>(subnormalMask, src1Reg, subnormal, maskFull);
+        Reg::Muls(tmpReg, src1Reg, scale1.f, subnormalMask);
+        Reg::Select(bTmpReg, tmpReg, src1Reg, subnormalMask);
 
-        MicroAPI::Muls(tmpReg, dstReg, scale2.f, subnormalMask);
-        MicroAPI::Select(dstReg, tmpReg, dstReg, subnormalMask);
+        Reg::Muls(tmpReg, dstReg, scale2.f, subnormalMask);
+        Reg::Select(dstReg, tmpReg, dstReg, subnormalMask);
 
         FmodInternal::SolveExceptionScenarios(dstReg, src0OriginReg, src1OriginReg, nanReg, maskFull);
         FmodInternal::SaveDataWithT(dstTensor, dstReg, maskFull, i * FmodInternal::oneRepSize);
     }
 
     for (uint16_t i = 0; i < tailRepeatTimes; i++) {
-        maskReg = MicroAPI::UpdateMask<float>(tailCount);
+        maskReg = Reg::UpdateMask<float>(tailCount);
         FmodInternal::LoadDataWithT(src0Tensor, src0OriginReg, maskReg, mainBlockLen + i * FmodInternal::oneRepSize);
         FmodInternal::LoadDataWithT(src1Tensor, src1OriginReg, maskReg, mainBlockLen + i * FmodInternal::oneRepSize);
 
-        MicroAPI::Abs(dstReg, src0OriginReg, maskReg);
-        MicroAPI::Abs(src1Reg, src1OriginReg, maskReg);
+        Reg::Abs(dstReg, src0OriginReg, maskReg);
+        Reg::Abs(src1Reg, src1OriginReg, maskReg);
         FmodInternal::SolveScaleIter<iterationNum>(dstReg, src1Reg, maskReg);
 
         // res = res*(np.float32(signbit)*np.float32(-2.0) + np.float32(1))
         FmodInternal::GetSignBit(src0SignBitReg, src0OriginReg, maskReg);
-        MicroAPI::Mul(src0SignBitTmpReg, src0SignBitReg, n2Reg, maskReg);
-        MicroAPI::Add(src0SignBitTmpReg, src0SignBitTmpReg, oneReg, maskReg);
-        MicroAPI::Mul(dstReg, dstReg, src0SignBitTmpReg, maskReg);
+        Reg::Mul(src0SignBitTmpReg, src0SignBitReg, n2Reg, maskReg);
+        Reg::Add(src0SignBitTmpReg, src0SignBitTmpReg, oneReg, maskReg);
+        Reg::Mul(dstReg, dstReg, src0SignBitTmpReg, maskReg);
 
-        MicroAPI::CompareScalar<float, CMPMODE::LE>(subnormalMask, src1Reg, subnormal, maskReg);
-        MicroAPI::Muls(tmpReg, src1Reg, scale1.f, subnormalMask);
-        MicroAPI::Select(bTmpReg, tmpReg, src1Reg, subnormalMask);
-        MicroAPI::Muls(tmpReg, dstReg, scale2.f, subnormalMask);
-        MicroAPI::Select(dstReg, tmpReg, dstReg, subnormalMask);
+        Reg::CompareScalar<float, CMPMODE::LE>(subnormalMask, src1Reg, subnormal, maskReg);
+        Reg::Muls(tmpReg, src1Reg, scale1.f, subnormalMask);
+        Reg::Select(bTmpReg, tmpReg, src1Reg, subnormalMask);
+        Reg::Muls(tmpReg, dstReg, scale2.f, subnormalMask);
+        Reg::Select(dstReg, tmpReg, dstReg, subnormalMask);
 
         FmodInternal::SolveExceptionScenarios(dstReg, src0OriginReg, src1OriginReg, nanReg, maskReg);
         FmodInternal::SaveDataWithT(dstTensor, dstReg, maskReg, mainBlockLen + i * FmodInternal::oneRepSize);
@@ -367,24 +367,24 @@ template <typename T>
 __simd_vf__ inline void FmodComputeVF(__ubuf__ T* dstTensor, __ubuf__ T* src0Tensor, __ubuf__ T* src1Tensor, 
     const uint16_t repeatTimes, uint32_t count)
 {
-    MicroAPI::RegTensor<float> src0Reg;
-    MicroAPI::RegTensor<float> src1Reg;
-    MicroAPI::RegTensor<float> negReg;
-    MicroAPI::RegTensor<float> divReg;
-    MicroAPI::RegTensor<float> dstReg;
-    MicroAPI::RegTensor<float> nanReg;
-    MicroAPI::MaskReg maskReg;
-    MicroAPI::MaskReg maskFull = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::Duplicate(nanReg, FmodInternal::nan.f, maskFull);
+    Reg::RegTensor<float> src0Reg;
+    Reg::RegTensor<float> src1Reg;
+    Reg::RegTensor<float> negReg;
+    Reg::RegTensor<float> divReg;
+    Reg::RegTensor<float> dstReg;
+    Reg::RegTensor<float> nanReg;
+    Reg::MaskReg maskReg;
+    Reg::MaskReg maskFull = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
+    Reg::Duplicate(nanReg, FmodInternal::nan.f, maskFull);
 
     for (uint16_t i = 0; i < repeatTimes; i++) {
-        maskReg = MicroAPI::UpdateMask<float>(count);
+        maskReg = Reg::UpdateMask<float>(count);
         FmodInternal::LoadDataWithT<T>(src0Tensor, src0Reg, maskReg, i * FmodInternal::oneRepSize);
         FmodInternal::LoadDataWithT<T>(src1Tensor, src1Reg, maskReg, i * FmodInternal::oneRepSize);
-        MicroAPI::Div(divReg, src0Reg, src1Reg, maskReg);
-        MicroAPI::Truncate<float, RoundMode::CAST_TRUNC, MicroAPI::MaskMergeMode::ZEROING>(dstReg, divReg, maskReg);
-        MicroAPI::Neg(negReg, src1Reg, maskReg);
-        MicroAPI::FusedMulDstAdd(dstReg, negReg, src0Reg, maskReg);
+        Reg::Div(divReg, src0Reg, src1Reg, maskReg);
+        Reg::Truncate<float, RoundMode::CAST_TRUNC, Reg::MaskMergeMode::ZEROING>(dstReg, divReg, maskReg);
+        Reg::Neg(negReg, src1Reg, maskReg);
+        Reg::FusedMulDstAdd(dstReg, negReg, src0Reg, maskReg);
         FmodInternal::SolveExceptionScenarios(dstReg, src0Reg, src1Reg, nanReg, maskReg);
         FmodInternal::SaveDataWithT(dstTensor, dstReg, maskReg, i * FmodInternal::oneRepSize);
     }

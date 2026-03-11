@@ -54,14 +54,14 @@ constexpr uint32_t U16_STRIDE = 65535;
 constexpr uint16_t REGULAR_FOLD_NUM = 2;
 constexpr uint16_t NO_REUSE_FOLD_NUM = 2;
 
-static constexpr MicroAPI::CastTrait CastTraitBF16F32 = { MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN,
-    MicroAPI::MaskMergeMode::ZEROING };
-static constexpr MicroAPI::CastTrait CastTraitF32BF16 = { MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT,
-    MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT };
-static constexpr MicroAPI::CastTrait CastTraitB8F16 = { MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN,
-    MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT };
-static constexpr MicroAPI::CastTrait CastTraitF16B8 = { MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT,
-    MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT };
+static constexpr Reg::CastTrait CastTraitBF16F32 = { Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN,
+    Reg::MaskMergeMode::ZEROING };
+static constexpr Reg::CastTrait CastTraitF32BF16 = { Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT,
+    Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT };
+static constexpr Reg::CastTrait CastTraitB8F16 = { Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN,
+    Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT };
+static constexpr Reg::CastTrait CastTraitF16B8 = { Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT,
+    Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT };
 
 __aicore__ inline uint32_t CalculateMainR(int64_t dimR, bool isAR, uint16_t vlSize)
 {
@@ -94,22 +94,22 @@ __aicore__ inline uint16_t CalculateFolds(const uint16_t count)
     return folds;
 }
 
-template <class T, class U, const MicroAPI::RegTrait &Trait, const MicroAPI::CastTrait &CastTraitUppper,
-    const MicroAPI::CastTrait &CastTraitLower, auto Binaryfunc, auto Reducefunc>
-__simd_callee__ inline void ReduceARCastfoldOneToThree(MicroAPI::RegTensor<T, Trait> &vreg0,
-    MicroAPI::RegTensor<T, Trait> &vreg1, MicroAPI::MaskReg &fullMask)
+template <class T, class U, const Reg::RegTrait &Trait, const Reg::CastTrait &CastTraitUppper,
+    const Reg::CastTrait &CastTraitLower, auto Binaryfunc, auto Reducefunc>
+__simd_callee__ inline void ReduceARCastfoldOneToThree(Reg::RegTensor<T, Trait> &vreg0,
+    Reg::RegTensor<T, Trait> &vreg1, Reg::MaskReg &fullMask)
 {
-    MicroAPI::RegTensor<U, Trait> vreg0CastB32;
-    MicroAPI::RegTensor<U, Trait> vreg1CastB32;
-    MicroAPI::RegTensor<T, Trait> vreg2;
-    MicroAPI::RegTensor<T, Trait> vreg3;
-    MicroAPI::RegTensor<T, Trait> vreg4;
+    Reg::RegTensor<U, Trait> vreg0CastB32;
+    Reg::RegTensor<U, Trait> vreg1CastB32;
+    Reg::RegTensor<T, Trait> vreg2;
+    Reg::RegTensor<T, Trait> vreg3;
+    Reg::RegTensor<T, Trait> vreg4;
     Duplicate(vreg4, static_cast<T>(0), fullMask);
     Interleave(vreg2, vreg3, vreg0, vreg4);
     Binaryfunc(vreg0, vreg2, vreg3, fullMask);
-    MicroAPI::Cast<U, T, CastTraitUppper>(vreg0CastB32, vreg0, fullMask);
+    Reg::Cast<U, T, CastTraitUppper>(vreg0CastB32, vreg0, fullMask);
     Reducefunc(vreg1CastB32, vreg0CastB32, fullMask);
-    MicroAPI::Cast<T, U, CastTraitLower>(vreg1, vreg1CastB32, fullMask);
+    Reg::Cast<T, U, CastTraitLower>(vreg1, vreg1CastB32, fullMask);
 }
 
 template <class T>
@@ -118,12 +118,12 @@ __simd_vf__ inline void ReduceCopyOutImpl(__ubuf__ T *dst, __ubuf__ T *src, cons
     uint16_t repeatElm = GetVecLen();
     uint32_t sreg = calCount * sizeof(T);
     uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(sreg, repeatElm));
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<uint8_t> srcReg;
+    Reg::MaskReg preg;
+    Reg::RegTensor<uint8_t> srcReg;
     for (uint16_t i = 0; i < repeatTime; ++i) {
-        preg = MicroAPI::UpdateMask<uint8_t>(sreg);
-        MicroAPI::LoadAlign(srcReg, (__ubuf__ uint8_t *)src + i * repeatElm);
-        MicroAPI::StoreAlign((__ubuf__ uint8_t *)dst + i * repeatElm, srcReg, preg);
+        preg = Reg::UpdateMask<uint8_t>(sreg);
+        Reg::LoadAlign(srcReg, (__ubuf__ uint8_t *)src + i * repeatElm);
+        Reg::StoreAlign((__ubuf__ uint8_t *)dst + i * repeatElm, srcReg, preg);
     }
 }
 

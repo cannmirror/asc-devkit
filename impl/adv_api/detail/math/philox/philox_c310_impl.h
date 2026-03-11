@@ -63,12 +63,12 @@ struct PhiloxRandomParams {
     uint32_t column;
 };
 
-__simd_callee__ inline void AddWith128Bits(MicroAPI::RegTensor<uint32_t> &ctr0, MicroAPI::RegTensor<uint32_t> &ctr1,
-    MicroAPI::RegTensor<uint32_t> &ctr2, MicroAPI::RegTensor<uint32_t> &ctr3, MicroAPI::RegTensor<uint32_t> &value,
-    MicroAPI::MaskReg &pg)
+__simd_callee__ inline void AddWith128Bits(Reg::RegTensor<uint32_t> &ctr0, Reg::RegTensor<uint32_t> &ctr1,
+    Reg::RegTensor<uint32_t> &ctr2, Reg::RegTensor<uint32_t> &ctr3, Reg::RegTensor<uint32_t> &value,
+    Reg::MaskReg &pg)
 {
-    MicroAPI::MaskReg pd;
-    MicroAPI::RegTensor<uint32_t> vZero;
+    Reg::MaskReg pd;
+    Reg::RegTensor<uint32_t> vZero;
     Duplicate(vZero, 0x0);
     AddCarryOut(pd, ctr0, ctr0, value, pg);
     AddCarryOuts(pd, ctr1, ctr1, vZero, pd, pg);
@@ -76,10 +76,10 @@ __simd_callee__ inline void AddWith128Bits(MicroAPI::RegTensor<uint32_t> &ctr0, 
     AddCarryOuts(pd, ctr3, ctr3, vZero, pd, pg);
 }
 
-__simd_callee__ inline void UInt2Float(MicroAPI::RegTensor<uint32_t> &tmpCtr0, MicroAPI::RegTensor<uint32_t> &tmpCtr1,
-    MicroAPI::RegTensor<uint32_t> &tmpCtr2, MicroAPI::RegTensor<uint32_t> &tmpCtr3, MicroAPI::MaskReg &pg)
+__simd_callee__ inline void UInt2Float(Reg::RegTensor<uint32_t> &tmpCtr0, Reg::RegTensor<uint32_t> &tmpCtr1,
+    Reg::RegTensor<uint32_t> &tmpCtr2, Reg::RegTensor<uint32_t> &tmpCtr3, Reg::MaskReg &pg)
 {
-    MicroAPI::RegTensor<uint32_t> vb32ManMask, vb32ExpMask;
+    Reg::RegTensor<uint32_t> vb32ManMask, vb32ExpMask;
     Duplicate(vb32ManMask, PhiloxInternal::MANTISSA);
     Duplicate(vb32ExpMask, PhiloxInternal::EXP_MASK);
     And(tmpCtr0, tmpCtr0, vb32ManMask, pg);
@@ -90,19 +90,19 @@ __simd_callee__ inline void UInt2Float(MicroAPI::RegTensor<uint32_t> &tmpCtr0, M
     Or(tmpCtr1, tmpCtr1, vb32ExpMask, pg);
     Or(tmpCtr2, tmpCtr2, vb32ExpMask, pg);
     Or(tmpCtr3, tmpCtr3, vb32ExpMask, pg);
-    Adds((MicroAPI::RegTensor<float> &)tmpCtr0, (MicroAPI::RegTensor<float> &)tmpCtr0, -1.0f, pg);
-    Adds((MicroAPI::RegTensor<float> &)tmpCtr1, (MicroAPI::RegTensor<float> &)tmpCtr1, -1.0f, pg);
-    Adds((MicroAPI::RegTensor<float> &)tmpCtr2, (MicroAPI::RegTensor<float> &)tmpCtr2, -1.0f, pg);
-    Adds((MicroAPI::RegTensor<float> &)tmpCtr3, (MicroAPI::RegTensor<float> &)tmpCtr3, -1.0f, pg);
+    Adds((Reg::RegTensor<float> &)tmpCtr0, (Reg::RegTensor<float> &)tmpCtr0, -1.0f, pg);
+    Adds((Reg::RegTensor<float> &)tmpCtr1, (Reg::RegTensor<float> &)tmpCtr1, -1.0f, pg);
+    Adds((Reg::RegTensor<float> &)tmpCtr2, (Reg::RegTensor<float> &)tmpCtr2, -1.0f, pg);
+    Adds((Reg::RegTensor<float> &)tmpCtr3, (Reg::RegTensor<float> &)tmpCtr3, -1.0f, pg);
 }
 
 template <uint16_t Rounds>
-__simd_callee__ inline void SpNetworkKernel(MicroAPI::RegTensor<uint32_t> &tmpL0, MicroAPI::RegTensor<uint32_t> &tmpH0,
-    MicroAPI::RegTensor<uint32_t> &tmpL1, MicroAPI::RegTensor<uint32_t> &tmpH1, MicroAPI::RegTensor<uint32_t> &tmpCtr0,
-    MicroAPI::RegTensor<uint32_t> &tmpCtr1, MicroAPI::RegTensor<uint32_t> &tmpCtr2,
-    MicroAPI::RegTensor<uint32_t> &tmpCtr3, MicroAPI::RegTensor<uint32_t> &tmpKey0,
-    MicroAPI::RegTensor<uint32_t> &tmpKey1, MicroAPI::RegTensor<uint32_t> &cMul0, MicroAPI::RegTensor<uint32_t> &cMul1,
-    MicroAPI::MaskReg &pg)
+__simd_callee__ inline void SpNetworkKernel(Reg::RegTensor<uint32_t> &tmpL0, Reg::RegTensor<uint32_t> &tmpH0,
+    Reg::RegTensor<uint32_t> &tmpL1, Reg::RegTensor<uint32_t> &tmpH1, Reg::RegTensor<uint32_t> &tmpCtr0,
+    Reg::RegTensor<uint32_t> &tmpCtr1, Reg::RegTensor<uint32_t> &tmpCtr2,
+    Reg::RegTensor<uint32_t> &tmpCtr3, Reg::RegTensor<uint32_t> &tmpKey0,
+    Reg::RegTensor<uint32_t> &tmpKey1, Reg::RegTensor<uint32_t> &cMul0, Reg::RegTensor<uint32_t> &cMul1,
+    Reg::MaskReg &pg)
 {
     // pragma unroll vs manual unroll(442).
     // when count=16384, round 10, cycles(6904 vs 5549), vex(6822 vs 4260), ipc(0.988 vs 0.768)
@@ -123,18 +123,18 @@ __simd_callee__ inline void SpNetworkKernel(MicroAPI::RegTensor<uint32_t> &tmpL0
 
 template <uint16_t Rounds, typename T, bool DstUnalign = false>
 __simd_callee__ inline void SpNetworkFull(__ubuf__ uint32_t *dstUbTail, uint16_t tailCount,
-    MicroAPI::RegTensor<uint32_t> &ctr0, MicroAPI::RegTensor<uint32_t> &ctr1, MicroAPI::RegTensor<uint32_t> &ctr2,
-    MicroAPI::RegTensor<uint32_t> &ctr3, MicroAPI::RegTensor<uint32_t> &key0, MicroAPI::RegTensor<uint32_t> &key1,
-    MicroAPI::RegTensor<uint32_t> &cMul0, MicroAPI::RegTensor<uint32_t> &cMul1, MicroAPI::MaskReg &pg)
+    Reg::RegTensor<uint32_t> &ctr0, Reg::RegTensor<uint32_t> &ctr1, Reg::RegTensor<uint32_t> &ctr2,
+    Reg::RegTensor<uint32_t> &ctr3, Reg::RegTensor<uint32_t> &key0, Reg::RegTensor<uint32_t> &key1,
+    Reg::RegTensor<uint32_t> &cMul0, Reg::RegTensor<uint32_t> &cMul1, Reg::MaskReg &pg)
 {
-    MicroAPI::RegTensor<uint32_t> tmpCtr3, tmpCtr2, tmpCtr1, tmpCtr0;
+    Reg::RegTensor<uint32_t> tmpCtr3, tmpCtr2, tmpCtr1, tmpCtr0;
     tmpCtr0 = ctr0;
     tmpCtr1 = ctr1;
     tmpCtr2 = ctr2;
     tmpCtr3 = ctr3;
-    MicroAPI::RegTensor<uint32_t> tmpKey0 = key0;
-    MicroAPI::RegTensor<uint32_t> tmpKey1 = key1;
-    MicroAPI::RegTensor<uint32_t> tmpL0, tmpH0, tmpL1, tmpH1;
+    Reg::RegTensor<uint32_t> tmpKey0 = key0;
+    Reg::RegTensor<uint32_t> tmpKey1 = key1;
+    Reg::RegTensor<uint32_t> tmpL0, tmpH0, tmpL1, tmpH1;
     SpNetworkKernel<Rounds>(tmpL0, tmpH0, tmpL1, tmpH1, tmpCtr0, tmpCtr1, tmpCtr2, tmpCtr3, tmpKey0, tmpKey1, cMul0,
         cMul1, pg);
 
@@ -143,109 +143,109 @@ __simd_callee__ inline void SpNetworkFull(__ubuf__ uint32_t *dstUbTail, uint16_t
     }
 
     if constexpr (DstUnalign) {
-        MicroAPI::RegTensor<uint32_t> reorderIndex;
-        MicroAPI::Arange((MicroAPI::RegTensor<int32_t> &)reorderIndex, 0);
+        Reg::RegTensor<uint32_t> reorderIndex;
+        Reg::Arange((Reg::RegTensor<int32_t> &)reorderIndex, 0);
         Muls(reorderIndex, reorderIndex, PhiloxInternal::PHILOX_ONCE_COUNTER_NUM, pg);
         // column % 4 = 0, scatter pgTail is tailCount / 4
         uint32_t sreg = static_cast<uint32_t>(tailCount / PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
-        MicroAPI::MaskReg pgTail = MicroAPI::UpdateMask<T>(sreg);
-        MicroAPI::Scatter(dstUbTail, tmpCtr0, reorderIndex, pgTail);
-        MicroAPI::Scatter(dstUbTail + 1, tmpCtr1, reorderIndex, pgTail);
-        MicroAPI::Scatter(dstUbTail + 2, tmpCtr2, reorderIndex, pgTail);
-        MicroAPI::Scatter(dstUbTail + 3, tmpCtr3, reorderIndex, pgTail);
+        Reg::MaskReg pgTail = Reg::UpdateMask<T>(sreg);
+        Reg::Scatter(dstUbTail, tmpCtr0, reorderIndex, pgTail);
+        Reg::Scatter(dstUbTail + 1, tmpCtr1, reorderIndex, pgTail);
+        Reg::Scatter(dstUbTail + 2, tmpCtr2, reorderIndex, pgTail);
+        Reg::Scatter(dstUbTail + 3, tmpCtr3, reorderIndex, pgTail);
     } else {
         Interleave(tmpCtr0, tmpCtr2, tmpCtr0, tmpCtr2);
         Interleave(tmpCtr1, tmpCtr3, tmpCtr1, tmpCtr3);
         Interleave(tmpCtr0, tmpCtr1, tmpCtr0, tmpCtr1);
         Interleave(tmpCtr2, tmpCtr3, tmpCtr2, tmpCtr3);
         uint32_t sreg = static_cast<uint32_t>(tailCount);
-        MicroAPI::MaskReg pgTail = MicroAPI::UpdateMask<T>(sreg);
-        MicroAPI::StoreAlign<uint32_t, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dstUbTail, tmpCtr0,
+        Reg::MaskReg pgTail = Reg::UpdateMask<T>(sreg);
+        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbTail, tmpCtr0,
             PhiloxInternal::ELE_CNT_B32_ONCE, pgTail);
-        pgTail = MicroAPI::UpdateMask<T>(sreg);
-        MicroAPI::StoreAlign<uint32_t, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dstUbTail, tmpCtr1,
+        pgTail = Reg::UpdateMask<T>(sreg);
+        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbTail, tmpCtr1,
             PhiloxInternal::ELE_CNT_B32_ONCE, pgTail);
-        pgTail = MicroAPI::UpdateMask<T>(sreg);
-        MicroAPI::StoreAlign<uint32_t, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dstUbTail, tmpCtr2,
+        pgTail = Reg::UpdateMask<T>(sreg);
+        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbTail, tmpCtr2,
             PhiloxInternal::ELE_CNT_B32_ONCE, pgTail);
-        pgTail = MicroAPI::UpdateMask<T>(sreg);
-        MicroAPI::StoreAlign<uint32_t, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dstUbTail, tmpCtr3,
+        pgTail = Reg::UpdateMask<T>(sreg);
+        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbTail, tmpCtr3,
             PhiloxInternal::ELE_CNT_B32_ONCE, pgTail);
     }
 }
 
 template <bool DstUnalign = false>
-__simd_callee__ inline void PhiloxUnrollStoreTmpCtrl(__ubuf__ uint32_t *&dstUbT, MicroAPI::RegTensor<uint32_t> &tmpCtr0,
-    MicroAPI::RegTensor<uint32_t> &tmpCtr1, MicroAPI::RegTensor<uint32_t> &tmpCtr2,
-    MicroAPI::RegTensor<uint32_t> &tmpCtr3, MicroAPI::MaskReg &pg)
+__simd_callee__ inline void PhiloxUnrollStoreTmpCtrl(__ubuf__ uint32_t *&dstUbT, Reg::RegTensor<uint32_t> &tmpCtr0,
+    Reg::RegTensor<uint32_t> &tmpCtr1, Reg::RegTensor<uint32_t> &tmpCtr2,
+    Reg::RegTensor<uint32_t> &tmpCtr3, Reg::MaskReg &pg)
 {
     if constexpr (DstUnalign) {
-        MicroAPI::UnalignReg ureg;
-        MicroAPI::StoreUnAlign<uint32_t, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr0, ureg,
+        Reg::UnalignReg ureg;
+        Reg::StoreUnAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr0, ureg,
             PhiloxInternal::ELE_CNT_B32_ONCE);
-        MicroAPI::StoreUnAlign<uint32_t, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr1, ureg,
+        Reg::StoreUnAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr1, ureg,
             PhiloxInternal::ELE_CNT_B32_ONCE);
-        MicroAPI::StoreUnAlign<uint32_t, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr2, ureg,
+        Reg::StoreUnAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr2, ureg,
             PhiloxInternal::ELE_CNT_B32_ONCE);
-        MicroAPI::StoreUnAlign<uint32_t, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr3, ureg,
+        Reg::StoreUnAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr3, ureg,
             PhiloxInternal::ELE_CNT_B32_ONCE);
-        MicroAPI::StoreUnAlignPost<uint32_t, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dstUbT, ureg, 0);
+        Reg::StoreUnAlignPost<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbT, ureg, 0);
     } else {
-        MicroAPI::StoreAlign<uint32_t, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr0,
+        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr0,
             PhiloxInternal::ELE_CNT_B32_ONCE, pg);
-        MicroAPI::StoreAlign<uint32_t, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr1,
+        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr1,
             PhiloxInternal::ELE_CNT_B32_ONCE, pg);
-        MicroAPI::StoreAlign<uint32_t, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr2,
+        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr2,
             PhiloxInternal::ELE_CNT_B32_ONCE, pg);
-        MicroAPI::StoreAlign<uint32_t, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr3,
+        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr3,
             PhiloxInternal::ELE_CNT_B32_ONCE, pg);
     }
 }
 
 template <bool DstUnalign = false>
 __simd_callee__ inline void PhiloxUnrollLoadTmpCtrl(__ubuf__ uint32_t *&dstUbTT0, __ubuf__ uint32_t *&dstUbTT1,
-    __ubuf__ uint32_t *&dstUbTT2, __ubuf__ uint32_t *&dstUbTT3, MicroAPI::RegTensor<uint32_t> &tmpCtr0,
-    MicroAPI::RegTensor<uint32_t> &tmpCtr1, MicroAPI::RegTensor<uint32_t> &tmpCtr2,
-    MicroAPI::RegTensor<uint32_t> &tmpCtr3)
+    __ubuf__ uint32_t *&dstUbTT2, __ubuf__ uint32_t *&dstUbTT3, Reg::RegTensor<uint32_t> &tmpCtr0,
+    Reg::RegTensor<uint32_t> &tmpCtr1, Reg::RegTensor<uint32_t> &tmpCtr2,
+    Reg::RegTensor<uint32_t> &tmpCtr3)
 {
     if constexpr (DstUnalign) {
-        MicroAPI::UnalignReg ureg;
-        MicroAPI::LoadUnAlignPre(ureg, dstUbTT0);
-        MicroAPI::LoadUnAlign(tmpCtr0, ureg, dstUbTT0,
+        Reg::UnalignReg ureg;
+        Reg::LoadUnAlignPre(ureg, dstUbTT0);
+        Reg::LoadUnAlign(tmpCtr0, ureg, dstUbTT0,
             PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
-        MicroAPI::LoadUnAlignPre(ureg, dstUbTT1);
-        MicroAPI::LoadUnAlign(tmpCtr1, ureg, dstUbTT1,
+        Reg::LoadUnAlignPre(ureg, dstUbTT1);
+        Reg::LoadUnAlign(tmpCtr1, ureg, dstUbTT1,
             PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
-        MicroAPI::LoadUnAlignPre(ureg, dstUbTT2);
-        MicroAPI::LoadUnAlign(tmpCtr2, ureg, dstUbTT2,
+        Reg::LoadUnAlignPre(ureg, dstUbTT2);
+        Reg::LoadUnAlign(tmpCtr2, ureg, dstUbTT2,
             PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
-        MicroAPI::LoadUnAlignPre(ureg, dstUbTT3);
-        MicroAPI::LoadUnAlign(tmpCtr3, ureg, dstUbTT3,
+        Reg::LoadUnAlignPre(ureg, dstUbTT3);
+        Reg::LoadUnAlign(tmpCtr3, ureg, dstUbTT3,
             PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
     } else {
-        MicroAPI::LoadAlign<uint32_t, MicroAPI::PostLiteral::POST_MODE_UPDATE>(tmpCtr0, dstUbTT0,
+        Reg::LoadAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(tmpCtr0, dstUbTT0,
             PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
-        MicroAPI::LoadAlign<uint32_t, MicroAPI::PostLiteral::POST_MODE_UPDATE>(tmpCtr1, dstUbTT1,
+        Reg::LoadAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(tmpCtr1, dstUbTT1,
             PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
-        MicroAPI::LoadAlign<uint32_t, MicroAPI::PostLiteral::POST_MODE_UPDATE>(tmpCtr2, dstUbTT2,
+        Reg::LoadAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(tmpCtr2, dstUbTT2,
             PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
-        MicroAPI::LoadAlign<uint32_t, MicroAPI::PostLiteral::POST_MODE_UPDATE>(tmpCtr3, dstUbTT3,
+        Reg::LoadAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(tmpCtr3, dstUbTT3,
             PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
     }
 }
 
 template <typename T, bool DstUnalign = false>
 __simd_callee__ inline void PhiloxRound10MainBlockUnroll442(__ubuf__ uint32_t *dstUb, uint16_t mainIter,
-    MicroAPI::RegTensor<uint32_t> &ctr0, MicroAPI::RegTensor<uint32_t> &ctr1, MicroAPI::RegTensor<uint32_t> &ctr2,
-    MicroAPI::RegTensor<uint32_t> &ctr3, MicroAPI::RegTensor<uint32_t> &key0, MicroAPI::RegTensor<uint32_t> &key1,
-    MicroAPI::RegTensor<uint32_t> &cMul0, MicroAPI::RegTensor<uint32_t> &cMul1,
-    MicroAPI::RegTensor<uint32_t> &vEleStrideB32OneRow, MicroAPI::MaskReg &pg)
+    Reg::RegTensor<uint32_t> &ctr0, Reg::RegTensor<uint32_t> &ctr1, Reg::RegTensor<uint32_t> &ctr2,
+    Reg::RegTensor<uint32_t> &ctr3, Reg::RegTensor<uint32_t> &key0, Reg::RegTensor<uint32_t> &key1,
+    Reg::RegTensor<uint32_t> &cMul0, Reg::RegTensor<uint32_t> &cMul1,
+    Reg::RegTensor<uint32_t> &vEleStrideB32OneRow, Reg::MaskReg &pg)
 {
-    MicroAPI::RegTensor<uint32_t> tmpCtr3, tmpCtr2, tmpCtr1, tmpCtr0;
+    Reg::RegTensor<uint32_t> tmpCtr3, tmpCtr2, tmpCtr1, tmpCtr0;
     __ubuf__ uint32_t *dstUbT = dstUb;
 
-    MicroAPI::RegTensor<uint32_t> reorderIndex;
-    Arange((MicroAPI::RegTensor<int32_t> &)reorderIndex, 0);
+    Reg::RegTensor<uint32_t> reorderIndex;
+    Arange((Reg::RegTensor<int32_t> &)reorderIndex, 0);
     Muls(reorderIndex, reorderIndex, PhiloxInternal::PHILOX_ONCE_COUNTER_NUM, pg);
 
     for (uint16_t i = 0; i < mainIter; i++) {
@@ -253,9 +253,9 @@ __simd_callee__ inline void PhiloxRound10MainBlockUnroll442(__ubuf__ uint32_t *d
         tmpCtr1 = ctr1;
         tmpCtr2 = ctr2;
         tmpCtr3 = ctr3;
-        MicroAPI::RegTensor<uint32_t> tmpKey0 = key0;
-        MicroAPI::RegTensor<uint32_t> tmpKey1 = key1;
-        MicroAPI::RegTensor<uint32_t> tmpL0, tmpH0, tmpL1, tmpH1;
+        Reg::RegTensor<uint32_t> tmpKey0 = key0;
+        Reg::RegTensor<uint32_t> tmpKey1 = key1;
+        Reg::RegTensor<uint32_t> tmpL0, tmpH0, tmpL1, tmpH1;
 
         Mull(tmpL0, tmpH0, tmpCtr0, cMul0, pg);
         Mull(tmpL1, tmpH1, tmpCtr2, cMul1, pg);
@@ -310,13 +310,13 @@ __simd_callee__ inline void PhiloxRound10MainBlockUnroll442(__ubuf__ uint32_t *d
     __ubuf__ uint32_t *dstUbTT1 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE;
     __ubuf__ uint32_t *dstUbTT2 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE * 2;
     __ubuf__ uint32_t *dstUbTT3 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE * 3;
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     for (uint16_t i = 0; i < mainIter; i++) {
         PhiloxUnrollLoadTmpCtrl<DstUnalign>(dstUbTT0, dstUbTT1, dstUbTT2, dstUbTT3, tmpCtr0, tmpCtr1, tmpCtr2, tmpCtr3);
 
-        MicroAPI::RegTensor<uint32_t> tmpKey0 = key0;
-        MicroAPI::RegTensor<uint32_t> tmpKey1 = key1;
+        Reg::RegTensor<uint32_t> tmpKey0 = key0;
+        Reg::RegTensor<uint32_t> tmpKey1 = key1;
 
         Adds(tmpKey0, tmpKey0, PhiloxInternal::CONST_KEY_ADD_0, pg);
         Adds(tmpKey1, tmpKey1, PhiloxInternal::CONST_KEY_ADD_1, pg);
@@ -330,7 +330,7 @@ __simd_callee__ inline void PhiloxRound10MainBlockUnroll442(__ubuf__ uint32_t *d
         Adds(tmpKey0, tmpKey0, PhiloxInternal::CONST_KEY_ADD_0, pg);
         Adds(tmpKey1, tmpKey1, PhiloxInternal::CONST_KEY_ADD_1, pg);
 
-        MicroAPI::RegTensor<uint32_t> tmpL0, tmpH0, tmpL1, tmpH1;
+        Reg::RegTensor<uint32_t> tmpL0, tmpH0, tmpL1, tmpH1;
 
         Mull(tmpL0, tmpH0, tmpCtr0, cMul0, pg);
         Mull(tmpL1, tmpH1, tmpCtr2, cMul1, pg);
@@ -384,13 +384,13 @@ __simd_callee__ inline void PhiloxRound10MainBlockUnroll442(__ubuf__ uint32_t *d
     dstUbTT1 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE;
     dstUbTT2 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE * 2;
     dstUbTT3 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE * 3;
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     for (uint16_t i = 0; i < mainIter; i++) {
         PhiloxUnrollLoadTmpCtrl<DstUnalign>(dstUbTT0, dstUbTT1, dstUbTT2, dstUbTT3, tmpCtr0, tmpCtr1, tmpCtr2, tmpCtr3);
 
-        MicroAPI::RegTensor<uint32_t> tmpKey0 = key0;
-        MicroAPI::RegTensor<uint32_t> tmpKey1 = key1;
+        Reg::RegTensor<uint32_t> tmpKey0 = key0;
+        Reg::RegTensor<uint32_t> tmpKey1 = key1;
 
         Adds(tmpKey0, tmpKey0, PhiloxInternal::CONST_KEY_ADD_0, pg);
         Adds(tmpKey1, tmpKey1, PhiloxInternal::CONST_KEY_ADD_1, pg);
@@ -416,7 +416,7 @@ __simd_callee__ inline void PhiloxRound10MainBlockUnroll442(__ubuf__ uint32_t *d
         Adds(tmpKey0, tmpKey0, PhiloxInternal::CONST_KEY_ADD_0, pg);
         Adds(tmpKey1, tmpKey1, PhiloxInternal::CONST_KEY_ADD_1, pg);
 
-        MicroAPI::RegTensor<uint32_t> tmpL0, tmpH0, tmpL1, tmpH1;
+        Reg::RegTensor<uint32_t> tmpL0, tmpH0, tmpL1, tmpH1;
 
         Mull(tmpL0, tmpH0, tmpCtr0, cMul0, pg);
         Mull(tmpL1, tmpH1, tmpCtr2, cMul1, pg);
@@ -442,26 +442,26 @@ __simd_callee__ inline void PhiloxRound10MainBlockUnroll442(__ubuf__ uint32_t *d
             UInt2Float(tmpCtr0, tmpCtr1, tmpCtr2, tmpCtr3, pg);
         }
 
-        MicroAPI::Scatter(dstUb, tmpCtr0, reorderIndex, pg);
-        MicroAPI::Scatter(dstUb + 1, tmpCtr1, reorderIndex, pg);
-        MicroAPI::Scatter(dstUb + 2, tmpCtr2, reorderIndex, pg);
-        MicroAPI::Scatter(dstUb + 3, tmpCtr3, reorderIndex, pg);
+        Reg::Scatter(dstUb, tmpCtr0, reorderIndex, pg);
+        Reg::Scatter(dstUb + 1, tmpCtr1, reorderIndex, pg);
+        Reg::Scatter(dstUb + 2, tmpCtr2, reorderIndex, pg);
+        Reg::Scatter(dstUb + 3, tmpCtr3, reorderIndex, pg);
         Adds(reorderIndex, reorderIndex, PhiloxInternal::PHILOX_ONCE_REPEAT_NUM, pg);
     }
 }
 
 template <typename T, bool DstUnalign = false>
 __simd_callee__ inline void PhiloxRound7MainBlockUnroll43(__ubuf__ uint32_t *dstUb, uint16_t mainIter,
-    MicroAPI::RegTensor<uint32_t> &ctr0, MicroAPI::RegTensor<uint32_t> &ctr1, MicroAPI::RegTensor<uint32_t> &ctr2,
-    MicroAPI::RegTensor<uint32_t> &ctr3, MicroAPI::RegTensor<uint32_t> &key0, MicroAPI::RegTensor<uint32_t> &key1,
-    MicroAPI::RegTensor<uint32_t> &cMul0, MicroAPI::RegTensor<uint32_t> &cMul1,
-    MicroAPI::RegTensor<uint32_t> &vEleStrideB32OneRow, MicroAPI::MaskReg &pg)
+    Reg::RegTensor<uint32_t> &ctr0, Reg::RegTensor<uint32_t> &ctr1, Reg::RegTensor<uint32_t> &ctr2,
+    Reg::RegTensor<uint32_t> &ctr3, Reg::RegTensor<uint32_t> &key0, Reg::RegTensor<uint32_t> &key1,
+    Reg::RegTensor<uint32_t> &cMul0, Reg::RegTensor<uint32_t> &cMul1,
+    Reg::RegTensor<uint32_t> &vEleStrideB32OneRow, Reg::MaskReg &pg)
 {
-    MicroAPI::RegTensor<uint32_t> tmpCtr3, tmpCtr2, tmpCtr1, tmpCtr0;
+    Reg::RegTensor<uint32_t> tmpCtr3, tmpCtr2, tmpCtr1, tmpCtr0;
     __ubuf__ uint32_t *dstUbT = dstUb;
 
-    MicroAPI::RegTensor<uint32_t> reorderIndex;
-    MicroAPI::Arange((MicroAPI::RegTensor<int32_t> &)reorderIndex, 0);
+    Reg::RegTensor<uint32_t> reorderIndex;
+    Reg::Arange((Reg::RegTensor<int32_t> &)reorderIndex, 0);
     Muls(reorderIndex, reorderIndex, PhiloxInternal::PHILOX_ONCE_COUNTER_NUM, pg);
 
     for (uint16_t i = 0; i < mainIter; i++) {
@@ -469,9 +469,9 @@ __simd_callee__ inline void PhiloxRound7MainBlockUnroll43(__ubuf__ uint32_t *dst
         tmpCtr1 = ctr1;
         tmpCtr2 = ctr2;
         tmpCtr3 = ctr3;
-        MicroAPI::RegTensor<uint32_t> tmpKey0 = key0;
-        MicroAPI::RegTensor<uint32_t> tmpKey1 = key1;
-        MicroAPI::RegTensor<uint32_t> tmpL0, tmpH0, tmpL1, tmpH1;
+        Reg::RegTensor<uint32_t> tmpKey0 = key0;
+        Reg::RegTensor<uint32_t> tmpKey1 = key1;
+        Reg::RegTensor<uint32_t> tmpL0, tmpH0, tmpL1, tmpH1;
 
         Mull(tmpL0, tmpH0, tmpCtr0, cMul0, pg);
         Mull(tmpL1, tmpH1, tmpCtr2, cMul1, pg);
@@ -526,13 +526,13 @@ __simd_callee__ inline void PhiloxRound7MainBlockUnroll43(__ubuf__ uint32_t *dst
     __ubuf__ uint32_t *dstUbTT1 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE;
     __ubuf__ uint32_t *dstUbTT2 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE * 2;
     __ubuf__ uint32_t *dstUbTT3 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE * 3;
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     for (uint16_t i = 0; i < mainIter; i++) {
         PhiloxUnrollLoadTmpCtrl<DstUnalign>(dstUbTT0, dstUbTT1, dstUbTT2, dstUbTT3, tmpCtr0, tmpCtr1, tmpCtr2, tmpCtr3);
 
-        MicroAPI::RegTensor<uint32_t> tmpKey0 = key0;
-        MicroAPI::RegTensor<uint32_t> tmpKey1 = key1;
+        Reg::RegTensor<uint32_t> tmpKey0 = key0;
+        Reg::RegTensor<uint32_t> tmpKey1 = key1;
 
         Adds(tmpKey0, tmpKey0, PhiloxInternal::CONST_KEY_ADD_0, pg);
         Adds(tmpKey1, tmpKey1, PhiloxInternal::CONST_KEY_ADD_1, pg);
@@ -546,7 +546,7 @@ __simd_callee__ inline void PhiloxRound7MainBlockUnroll43(__ubuf__ uint32_t *dst
         Adds(tmpKey0, tmpKey0, PhiloxInternal::CONST_KEY_ADD_0, pg);
         Adds(tmpKey1, tmpKey1, PhiloxInternal::CONST_KEY_ADD_1, pg);
 
-        MicroAPI::RegTensor<uint32_t> tmpL0, tmpH0, tmpL1, tmpH1;
+        Reg::RegTensor<uint32_t> tmpL0, tmpH0, tmpL1, tmpH1;
 
         Mull(tmpL0, tmpH0, tmpCtr0, cMul0, pg);
         Mull(tmpL1, tmpH1, tmpCtr2, cMul1, pg);
@@ -583,20 +583,20 @@ __simd_callee__ inline void PhiloxRound7MainBlockUnroll43(__ubuf__ uint32_t *dst
             UInt2Float(tmpCtr0, tmpCtr1, tmpCtr2, tmpCtr3, pg);
         }
 
-        MicroAPI::Scatter(dstUb, tmpCtr0, reorderIndex, pg);
-        MicroAPI::Scatter(dstUb + 1, tmpCtr1, reorderIndex, pg);
-        MicroAPI::Scatter(dstUb + 2, tmpCtr2, reorderIndex, pg);
-        MicroAPI::Scatter(dstUb + 3, tmpCtr3, reorderIndex, pg);
+        Reg::Scatter(dstUb, tmpCtr0, reorderIndex, pg);
+        Reg::Scatter(dstUb + 1, tmpCtr1, reorderIndex, pg);
+        Reg::Scatter(dstUb + 2, tmpCtr2, reorderIndex, pg);
+        Reg::Scatter(dstUb + 3, tmpCtr3, reorderIndex, pg);
         Adds(reorderIndex, reorderIndex, PhiloxInternal::PHILOX_ONCE_REPEAT_NUM, pg);
     }
 }
 
 template <uint16_t Rounds = 7, typename T, bool DstUnalign = false>
 __simd_callee__ inline void PhiloxRoundMainBlockUnroll(__ubuf__ uint32_t *dstUb, uint16_t mainIter,
-    MicroAPI::RegTensor<uint32_t> &ctr0, MicroAPI::RegTensor<uint32_t> &ctr1, MicroAPI::RegTensor<uint32_t> &ctr2,
-    MicroAPI::RegTensor<uint32_t> &ctr3, MicroAPI::RegTensor<uint32_t> &key0, MicroAPI::RegTensor<uint32_t> &key1,
-    MicroAPI::RegTensor<uint32_t> &cMul0, MicroAPI::RegTensor<uint32_t> &cMul1,
-    MicroAPI::RegTensor<uint32_t> &vEleStrideB32OneRow, MicroAPI::MaskReg &pg)
+    Reg::RegTensor<uint32_t> &ctr0, Reg::RegTensor<uint32_t> &ctr1, Reg::RegTensor<uint32_t> &ctr2,
+    Reg::RegTensor<uint32_t> &ctr3, Reg::RegTensor<uint32_t> &key0, Reg::RegTensor<uint32_t> &key1,
+    Reg::RegTensor<uint32_t> &cMul0, Reg::RegTensor<uint32_t> &cMul1,
+    Reg::RegTensor<uint32_t> &vEleStrideB32OneRow, Reg::MaskReg &pg)
 {
     if constexpr (Rounds == 10) {
         // main block with 4 + 4 + 2 unroll
@@ -609,36 +609,36 @@ __simd_callee__ inline void PhiloxRoundMainBlockUnroll(__ubuf__ uint32_t *dstUb,
     }
 }
 
-__simd_callee__ inline void PhiloxCounterInit(const PhiloxCounter &philoxCounter, MicroAPI::RegTensor<uint32_t> &ctr0,
-    MicroAPI::RegTensor<uint32_t> &ctr1, MicroAPI::RegTensor<uint32_t> &ctr2, MicroAPI::RegTensor<uint32_t> &ctr3,
-    MicroAPI::RegTensor<int32_t> &incIdx, MicroAPI::MaskReg &pg)
+__simd_callee__ inline void PhiloxCounterInit(const PhiloxCounter &philoxCounter, Reg::RegTensor<uint32_t> &ctr0,
+    Reg::RegTensor<uint32_t> &ctr1, Reg::RegTensor<uint32_t> &ctr2, Reg::RegTensor<uint32_t> &ctr3,
+    Reg::RegTensor<int32_t> &incIdx, Reg::MaskReg &pg)
 {
     Duplicate(ctr0, philoxCounter[0]);
     Duplicate(ctr1, philoxCounter[1]);
     Duplicate(ctr2, philoxCounter[2]);
     Duplicate(ctr3, philoxCounter[3]);
-    AddWith128Bits(ctr0, ctr1, ctr2, ctr3, (MicroAPI::RegTensor<uint32_t> &)incIdx, pg);
+    AddWith128Bits(ctr0, ctr1, ctr2, ctr3, (Reg::RegTensor<uint32_t> &)incIdx, pg);
 }
 
 template <uint16_t Rounds = 7, typename T, bool DstUnalign = false>
 __simd_vf__ inline void PhiloxRandomOneRow(__ubuf__ uint32_t *dstUb, __ubuf__ uint32_t *dstUbTail,
     const philoxStruct philox, uint16_t mainIter, uint16_t tailCount)
 {
-    MicroAPI::MaskReg pg = MicroAPI::CreateMask<uint32_t>();
+    Reg::MaskReg pg = Reg::CreateMask<uint32_t>();
 
-    MicroAPI::RegTensor<uint32_t> ctr3, ctr2, ctr1, ctr0;
-    MicroAPI::RegTensor<int32_t> incIdx;
-    MicroAPI::Arange(incIdx, 0);
+    Reg::RegTensor<uint32_t> ctr3, ctr2, ctr1, ctr0;
+    Reg::RegTensor<int32_t> incIdx;
+    Reg::Arange(incIdx, 0);
     PhiloxCounterInit(philox.philoxCounter, ctr0, ctr1, ctr2, ctr3, incIdx, pg);
 
-    MicroAPI::RegTensor<uint32_t> vEleStrideB32OneRow;
+    Reg::RegTensor<uint32_t> vEleStrideB32OneRow;
     Duplicate(vEleStrideB32OneRow, PhiloxInternal::ELE_CNT_B32_ONCE);
 
-    MicroAPI::RegTensor<uint32_t> key1, key0;
+    Reg::RegTensor<uint32_t> key1, key0;
     Duplicate(key0, philox.philoxKey[0]);
     Duplicate(key1, philox.philoxKey[1]);
 
-    MicroAPI::RegTensor<uint32_t> cMul0, cMul1;
+    Reg::RegTensor<uint32_t> cMul0, cMul1;
     Duplicate(cMul0, PhiloxInternal::CONST_MUL_0);
     Duplicate(cMul1, PhiloxInternal::CONST_MUL_1);
 
@@ -686,20 +686,20 @@ __simd_callee__ inline void PhiloxRandomIndexCal(__ubuf__ int32_t *indexUb, cons
     const uint32_t fuseFactor)
 {
     __ubuf__ int32_t *indexUbT = indexUb;
-    MicroAPI::MaskReg pg = MicroAPI::CreateMask<uint32_t>();
-    MicroAPI::RegTensor<int32_t> index, incIdx;
-    MicroAPI::UnalignReg ureg;
+    Reg::MaskReg pg = Reg::CreateMask<uint32_t>();
+    Reg::RegTensor<int32_t> index, incIdx;
+    Reg::UnalignReg ureg;
     uint32_t stride = static_cast<uint32_t>(params.stride / PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
     uint32_t elementNum = params.column / PhiloxInternal::PHILOX_ONCE_COUNTER_NUM;
     for (uint16_t i = 0; i < fuseFactor; i++) {
-        MicroAPI::Duplicate(index, i);
-        MicroAPI::Muls(index, index, stride, pg);
-        MicroAPI::Arange(incIdx, 0);
-        MicroAPI::Add(index, index, incIdx, pg);
-        MicroAPI::StoreUnAlign<int32_t, MicroAPI::PostLiteral::POST_MODE_UPDATE>(indexUbT, index, ureg, elementNum);
+        Reg::Duplicate(index, i);
+        Reg::Muls(index, index, stride, pg);
+        Reg::Arange(incIdx, 0);
+        Reg::Add(index, index, incIdx, pg);
+        Reg::StoreUnAlign<int32_t, Reg::PostLiteral::POST_MODE_UPDATE>(indexUbT, index, ureg, elementNum);
     }
-    MicroAPI::StoreUnAlignPost<int32_t, MicroAPI::PostLiteral::POST_MODE_UPDATE>(indexUbT, ureg, 0);
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::StoreUnAlignPost<int32_t, Reg::PostLiteral::POST_MODE_UPDATE>(indexUbT, ureg, 0);
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 }
 
 template <uint16_t Rounds = 7, typename T, bool DstBlockUnalign, bool DstRepeatUnalign>
@@ -708,22 +708,22 @@ __simd_vf__ inline void PhiloxRandomMultiRowWithFuse(__ubuf__ uint32_t *dstUbSta
     const uint32_t mainRowsNum, const uint32_t tailFuseAxis)
 {
     PhiloxRandomIndexCal(indexUb, params, fuseFactor);
-    MicroAPI::RegTensor<uint32_t> ctr3, ctr2, ctr1, ctr0;
+    Reg::RegTensor<uint32_t> ctr3, ctr2, ctr1, ctr0;
 
-    MicroAPI::MaskReg pg = MicroAPI::CreateMask<uint32_t>();
-    MicroAPI::RegTensor<int32_t> incIdx;
-    MicroAPI::LoadAlign(incIdx, indexUb);
+    Reg::MaskReg pg = Reg::CreateMask<uint32_t>();
+    Reg::RegTensor<int32_t> incIdx;
+    Reg::LoadAlign(incIdx, indexUb);
     PhiloxCounterInit(philox.philoxCounter, ctr0, ctr1, ctr2, ctr3, incIdx, pg);
 
-    MicroAPI::RegTensor<uint32_t> key1, key0;
+    Reg::RegTensor<uint32_t> key1, key0;
     Duplicate(key0, philox.philoxKey[0]);
     Duplicate(key1, philox.philoxKey[1]);
 
-    MicroAPI::RegTensor<uint32_t> cMul0, cMul1;
+    Reg::RegTensor<uint32_t> cMul0, cMul1;
     Duplicate(cMul0, PhiloxInternal::CONST_MUL_0);
     Duplicate(cMul1, PhiloxInternal::CONST_MUL_1);
 
-    MicroAPI::RegTensor<uint32_t> vEleStrideB32OneRow;
+    Reg::RegTensor<uint32_t> vEleStrideB32OneRow;
     Duplicate(vEleStrideB32OneRow, fuseFactor * params.stride / PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
 
     if constexpr (!DstRepeatUnalign) {
@@ -751,26 +751,26 @@ __simd_vf__ inline void PhiloxRandomMultiRowNoFuse(__ubuf__ uint32_t *dstUbStart
     const PhiloxRandomParams params, uint32_t strideCounterOneRow, uint16_t mainIter, uint16_t tailCount,
     uint16_t hasTail)
 {
-    MicroAPI::RegTensor<uint32_t> vEleStrideB32OneRow;
+    Reg::RegTensor<uint32_t> vEleStrideB32OneRow;
     Duplicate(vEleStrideB32OneRow, PhiloxInternal::ELE_CNT_B32_ONCE);
 
-    MicroAPI::RegTensor<uint32_t> key1, key0;
+    Reg::RegTensor<uint32_t> key1, key0;
     Duplicate(key0, philox.philoxKey[0]);
     Duplicate(key1, philox.philoxKey[1]);
 
-    MicroAPI::RegTensor<uint32_t> cMul0, cMul1;
+    Reg::RegTensor<uint32_t> cMul0, cMul1;
     Duplicate(cMul0, PhiloxInternal::CONST_MUL_0);
     Duplicate(cMul1, PhiloxInternal::CONST_MUL_1);
 
-    MicroAPI::RegTensor<uint32_t> ctr3, ctr2, ctr1, ctr0;
-    MicroAPI::MaskReg pg = MicroAPI::CreateMask<uint32_t>();
+    Reg::RegTensor<uint32_t> ctr3, ctr2, ctr1, ctr0;
+    Reg::MaskReg pg = Reg::CreateMask<uint32_t>();
 
     for (uint16_t i = 0; i < params.row; i++) {
         __ubuf__ uint32_t *dstUb = dstUbStart + i * params.column;
         __ubuf__ uint32_t *dstUbTail = dstUb + mainIter * PhiloxInternal::PHILOX_ONCE_REPEAT_NUM;
 
-        MicroAPI::RegTensor<int32_t> incIdx;
-        MicroAPI::Arange(incIdx, i * strideCounterOneRow);
+        Reg::RegTensor<int32_t> incIdx;
+        Reg::Arange(incIdx, i * strideCounterOneRow);
         PhiloxCounterInit(philox.philoxCounter, ctr0, ctr1, ctr2, ctr3, incIdx, pg);
         PhiloxRoundMainBlockUnroll<Rounds, T, DstUnalign>(dstUb, mainIter, ctr0, ctr1, ctr2, ctr3, key0, key1, cMul0,
             cMul1, vEleStrideB32OneRow, pg);

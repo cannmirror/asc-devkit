@@ -52,20 +52,20 @@ private:
         uint32_t rep = srcDataSize/oneRepSize;
         __VEC_SCOPE__
         {
-            MicroAPI::RegTensor<SrcType> vreg0;
-            MicroAPI::RegTensor<DstType> vreg1;
-            MicroAPI::RegTensor<SrcType> dst0;
-            MicroAPI::RegTensor<SrcType> dst1;
+            Reg::RegTensor<SrcType> vreg0;
+            Reg::RegTensor<DstType> vreg1;
+            Reg::RegTensor<SrcType> dst0;
+            Reg::RegTensor<SrcType> dst1;
             uint32_t sreg =  static_cast<uint32_t>(dstDataSize);
             constexpr uint32_t sregLower =  static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(float));
-            MicroAPI::MaskReg preg1;
+            Reg::MaskReg preg1;
             __ubuf__ DstType* dstPtr = (__ubuf__ DstType*)dstLocal.GetPhyAddr();
             __ubuf__ SrcType* srcPtr = (__ubuf__ SrcType*)srcLocal.GetPhyAddr();
             uint32_t dist = 2;
-            MicroAPI::MaskReg preg = MicroAPI::CreateMask<DstType>();
+            Reg::MaskReg preg = Reg::CreateMask<DstType>();
             for (uint16_t i = 0; i < rep; i++) {
-                preg1 = MicroAPI::UpdateMask<float>(sreg);
-                MicroAPI::DataCopy(vreg0, srcPtr + i * sregLower);
+                preg1 = Reg::UpdateMask<float>(sreg);
+                Reg::DataCopy(vreg0, srcPtr + i * sregLower);
                 vintlv(dst0, dst1, vreg0, vreg0);
                 vcvt(vreg1, dst0, preg1, PART_EVEN, MODE_ZEROING);
                 vcvt(vreg0, vreg1, preg1, ROUND_R, RS_ENABLE, PART_EVEN, MODE_ZEROING);

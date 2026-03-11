@@ -399,21 +399,21 @@ __simd_vf__ inline void VecCopyLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T *src, co
     uint32_t count = Internal::VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
     uint16_t newRepeatTimes = 0;
     newRepeatTimes = Internal::VecMicroGetRepeatTimes<T, isNormalMode>(count, repeatTimes);
-    MicroAPI::MaskReg maskReg;
+    Reg::MaskReg maskReg;
     constexpr uint8_t ElePerBlkT = GetDataBlockSizeInBytes() / sizeof(T);
     if constexpr (isNormalMode) {
         maskReg = Internal::VecMicroGetMaskReg<T, isSetMask, isNormalMode, isMaskBitMode>(maskBuf, count);
         for (uint16_t index = 0; index < newRepeatTimes; ++index) {
-            MicroAPI::RegTensor<T> srcVreg;
-            MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
-            MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(srcVreg,
+            Reg::RegTensor<T> srcVreg;
+            Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
+            Reg::DataCopy<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(srcVreg,
                 src + index * repeatParams.srcRepeatSize * ElePerBlkT, repeatParams.srcStride, maskReg);
-            MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+            Reg::DataCopy<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(
                 dst + index * repeatParams.dstRepeatSize * ElePerBlkT, srcVreg, repeatParams.dstStride, maskReg);
         }
     } else {
-        MicroAPI::RegTensor<T> srcReg;
-        MicroAPI::MaskReg maskReg;
+        Reg::RegTensor<T> srcReg;
+        Reg::MaskReg maskReg;
         uint32_t sreg;
         __ubuf__ T *dstTmp = dst;
         __ubuf__ T *srcTmp = src;
@@ -421,11 +421,11 @@ __simd_vf__ inline void VecCopyLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T *src, co
         uint32_t dstRepeatStride = repeatParams.dstStride * DEFAULT_BLK_NUM;
         sreg = static_cast<uint32_t>(count);
         for (uint16_t i = 0; i < static_cast<uint16_t>(newRepeatTimes); ++i) {
-                maskReg = MicroAPI::UpdateMask<T>(sreg);
-                MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
-                MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
+                maskReg = Reg::UpdateMask<T>(sreg);
+                Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
+                Reg::DataCopy<T, Reg::DataCopyMode::DATA_BLOCK_COPY, Reg::PostLiteral::POST_MODE_UPDATE>(
                     srcReg, src, repeatParams.srcStride, srcRepeatStride, maskReg);
-                MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
+                Reg::DataCopy<T, Reg::DataCopyMode::DATA_BLOCK_COPY, Reg::PostLiteral::POST_MODE_UPDATE>(
                     dst, srcReg, repeatParams.dstStride, dstRepeatStride, maskReg);
         }
     }

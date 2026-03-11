@@ -47,24 +47,24 @@ private:
  
         __VEC_SCOPE__
         {
-            MicroAPI::RegTensor<T> vDstReg;
-            MicroAPI::RegTensor<U> vSrcReg;
+            Reg::RegTensor<T> vDstReg;
+            Reg::RegTensor<U> vSrcReg;
             uint32_t sreg = static_cast<uint32_t>(elementCount);
-            MicroAPI::MaskReg preg;
+            Reg::MaskReg preg;
             uint32_t repeatElm = VECTOR_REG_WIDTH / sizeof(T);
             uint16_t repeatTimes = CeilDivision(elementCount, repeatElm);
             T scalar = 1;
             for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTimes); ++i) {
-                preg = MicroAPI::UpdateMask<T>(sreg);
-                MicroAPI::DataCopy(vSrcReg, srcPtr + i * repeatElm);
+                preg = Reg::UpdateMask<T>(sreg);
+                Reg::DataCopy(vSrcReg, srcPtr + i * repeatElm);
                 if constexpr(mode == 0) {
-                    MicroAPI::ReduceSumWithDataBlock(vDstReg, vSrcReg, preg);
+                    Reg::ReduceSumWithDataBlock(vDstReg, vSrcReg, preg);
                 } else if constexpr(mode == 1) {
-                    MicroAPI::ReduceMaxWithDataBlock(vDstReg, vSrcReg, preg);
+                    Reg::ReduceMaxWithDataBlock(vDstReg, vSrcReg, preg);
                 } else if constexpr(mode == 2) {
-                    MicroAPI::ReduceMinWithDataBlock(vDstReg, vSrcReg, preg);
+                    Reg::ReduceMinWithDataBlock(vDstReg, vSrcReg, preg);
                 }
-                MicroAPI::DataCopy(dstPtr + i * repeatElm, vDstReg, preg);
+                Reg::DataCopy(dstPtr + i * repeatElm, vDstReg, preg);
             }
         }
        

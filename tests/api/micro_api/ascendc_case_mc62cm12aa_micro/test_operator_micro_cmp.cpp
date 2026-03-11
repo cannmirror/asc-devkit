@@ -82,49 +82,49 @@ private:
         T scalar = 1;
         __VEC_SCOPE__
         {
-            MicroAPI::RegTensor<T> vSrcReg0;
-            MicroAPI::RegTensor<SCR1_T> vSrcReg1;
-            MicroAPI::RegTensor<T> vDstReg0;
-            MicroAPI::RegTensor<T> vDstReg1;
+            Reg::RegTensor<T> vSrcReg0;
+            Reg::RegTensor<SCR1_T> vSrcReg1;
+            Reg::RegTensor<T> vDstReg0;
+            Reg::RegTensor<T> vDstReg1;
             vector_bool carryOut;
             vector_bool cmpReg;
             uint32_t sreg = (uint32_t)mask;
-            MicroAPI::MaskReg maskReg;
-            maskReg = MicroAPI::UpdateMask<T>(sreg);
+            Reg::MaskReg maskReg;
+            maskReg = Reg::UpdateMask<T>(sreg);
             for (uint16_t i = 0; i < (uint16_t)rep; i++) {
-                MicroAPI::DataCopy(vSrcReg0, src0Ptr + i * one_rep_size);
-                MicroAPI::DataCopy(vSrcReg1, src1Ptr + i * one_rep_size);
+                Reg::DataCopy(vSrcReg0, src0Ptr + i * one_rep_size);
+                Reg::DataCopy(vSrcReg1, src1Ptr + i * one_rep_size);
                 if constexpr (MD == 0) {
-                    MicroAPI::Compare<T, CMPMODE::EQ>(cmpReg, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::Compare<T, CMPMODE::EQ>(cmpReg, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (MD == 1) {
-                    MicroAPI::Compare<T, CMPMODE::GE>(cmpReg, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::Compare<T, CMPMODE::GE>(cmpReg, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (MD == 2) {
-                    MicroAPI::Compare<T, CMPMODE::GT>(cmpReg, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::Compare<T, CMPMODE::GT>(cmpReg, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (MD == 3) {
-                    MicroAPI::Compare<T, CMPMODE::LE>(cmpReg, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::Compare<T, CMPMODE::LE>(cmpReg, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (MD == 4) {
-                    MicroAPI::Compare<T, CMPMODE::LT>(cmpReg, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::Compare<T, CMPMODE::LT>(cmpReg, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (MD == 5) {
-                    MicroAPI::Compare<T, CMPMODE::NE>(cmpReg, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::Compare<T, CMPMODE::NE>(cmpReg, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (MD == 6) {
-                    MicroAPI::CompareScalar<T, CMPMODE::EQ>(cmpReg, vSrcReg0, scalar, maskReg);
+                    Reg::CompareScalar<T, CMPMODE::EQ>(cmpReg, vSrcReg0, scalar, maskReg);
                 } else if constexpr (MD == 7) {
-                    MicroAPI::CompareScalar<T, CMPMODE::GE>(cmpReg, vSrcReg0, scalar, maskReg);
+                    Reg::CompareScalar<T, CMPMODE::GE>(cmpReg, vSrcReg0, scalar, maskReg);
                 } else if constexpr (MD == 8) {
-                    MicroAPI::CompareScalar<T, CMPMODE::GT>(cmpReg, vSrcReg0, scalar, maskReg);
+                    Reg::CompareScalar<T, CMPMODE::GT>(cmpReg, vSrcReg0, scalar, maskReg);
                 } else if constexpr (MD == 9) {
-                    MicroAPI::CompareScalar<T, CMPMODE::LE>(cmpReg, vSrcReg0, scalar, maskReg);
+                    Reg::CompareScalar<T, CMPMODE::LE>(cmpReg, vSrcReg0, scalar, maskReg);
                 } else if constexpr (MD == 10) {
-                    MicroAPI::CompareScalar<T, CMPMODE::LT>(cmpReg, vSrcReg0, scalar, maskReg);
+                    Reg::CompareScalar<T, CMPMODE::LT>(cmpReg, vSrcReg0, scalar, maskReg);
                 } else if constexpr (MD == 11) {
-                    MicroAPI::CompareScalar<T, CMPMODE::NE>(cmpReg, vSrcReg0, scalar, maskReg);
+                    Reg::CompareScalar<T, CMPMODE::NE>(cmpReg, vSrcReg0, scalar, maskReg);
                 } else if constexpr (MD == 12) {
                     if constexpr (std::is_same<T, bool>::value) {
-                        cmpReg = MicroAPI::CreateMask<int8_t, MicroAPI::MaskPattern::ALLF>();
-                        MicroAPI::Select(vDstReg1, vSrcReg0, vSrcReg1, cmpReg);
+                        cmpReg = Reg::CreateMask<int8_t, Reg::MaskPattern::ALLF>();
+                        Reg::Select(vDstReg1, vSrcReg0, vSrcReg1, cmpReg);
                     } else {
-                        MicroAPI::Compare<T, CMPMODE::EQ>(cmpReg, vSrcReg0, vSrcReg1, maskReg);
-                        MicroAPI::Select(vDstReg1, vSrcReg0, vSrcReg1, cmpReg);
+                        Reg::Compare<T, CMPMODE::EQ>(cmpReg, vSrcReg0, vSrcReg1, maskReg);
+                        Reg::Select(vDstReg1, vSrcReg0, vSrcReg1, cmpReg);
                     }
                 }
             }

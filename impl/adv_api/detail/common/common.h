@@ -21,10 +21,10 @@
 
 namespace AscendC {
 namespace Internal {
-constexpr MicroAPI::CastTrait castTraitB16ToB32 = {
-    MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
-constexpr MicroAPI::CastTrait castTraitB32ToB16 = {
-    MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait castTraitB16ToB32 = {
+    Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN, Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait castTraitB32ToB16 = {
+    Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 }
 }
 

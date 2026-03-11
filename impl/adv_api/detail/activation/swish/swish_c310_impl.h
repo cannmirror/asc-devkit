@@ -31,18 +31,18 @@ __simd_vf__ inline void SwishComputeVF(__ubuf__ T* dst, __ubuf__ T* src, uint32_
     const uint16_t repeatTimes)
 {
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
-    MicroAPI::RegTensor<T> srcVreg;
-    MicroAPI::RegTensor<T> vreg0;
-    MicroAPI::RegTensor<T> dstVreg;
-    MicroAPI::MaskReg mask;
+    Reg::RegTensor<T> srcVreg;
+    Reg::RegTensor<T> vreg0;
+    Reg::RegTensor<T> dstVreg;
+    Reg::MaskReg mask;
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = MicroAPI::UpdateMask<T>(count);
-        MicroAPI::LoadAlign(srcVreg, src + i * oneRepElm);
-        MicroAPI::Muls(vreg0, srcVreg, scalarValue, mask);
-        MicroAPI::Exp(vreg0, vreg0, mask);
-        MicroAPI::Adds(vreg0, vreg0, 1.0f, mask);
-        MicroAPI::Div(dstVreg, srcVreg, vreg0, mask);
-        MicroAPI::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
+        mask = Reg::UpdateMask<T>(count);
+        Reg::LoadAlign(srcVreg, src + i * oneRepElm);
+        Reg::Muls(vreg0, srcVreg, scalarValue, mask);
+        Reg::Exp(vreg0, vreg0, mask);
+        Reg::Adds(vreg0, vreg0, 1.0f, mask);
+        Reg::Div(dstVreg, srcVreg, vreg0, mask);
+        Reg::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
     } 
 }
 } // namespace Internal

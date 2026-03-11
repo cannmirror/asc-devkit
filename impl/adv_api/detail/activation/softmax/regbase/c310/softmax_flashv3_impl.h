@@ -37,111 +37,111 @@ __simd_vf__ __aicore__ inline void SoftmaxFlashV3NDNoUpdateImpl(__ubuf__ T* dstU
     constexpr uint32_t blockStride = GetDataBlockSizeInBytes() / sizeof(U);
     constexpr uint16_t repeatTime = static_cast<uint16_t>(repeatStride / blockStride);
 
-    MicroAPI::MaskReg maskCnt;
-    MicroAPI::MaskReg maskFull = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::MaskReg maskOnePt = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL1>();
-    MicroAPI::MaskReg maskOneBlk = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL8>();
-    MicroAPI::RegTensor<float> srcVreg;
-    MicroAPI::RegTensor<float> maxVreg;
-    MicroAPI::RegTensor<float> sumVreg;
-    MicroAPI::RegTensor<float> meanVreg;
-    MicroAPI::RegTensor<float> tmpVreg;
-    MicroAPI::RegTensor<float> dstVreg;
-    MicroAPI::RegTensor<float> minVreg;
-    MicroAPI::RegTensor<T> castVreg;
-    MicroAPI::UnalignReg ureg0, ureg1;
+    Reg::MaskReg maskCnt;
+    Reg::MaskReg maskFull = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
+    Reg::MaskReg maskOnePt = Reg::CreateMask<uint32_t, Reg::MaskPattern::VL1>();
+    Reg::MaskReg maskOneBlk = Reg::CreateMask<uint32_t, Reg::MaskPattern::VL8>();
+    Reg::RegTensor<float> srcVreg;
+    Reg::RegTensor<float> maxVreg;
+    Reg::RegTensor<float> sumVreg;
+    Reg::RegTensor<float> meanVreg;
+    Reg::RegTensor<float> tmpVreg;
+    Reg::RegTensor<float> dstVreg;
+    Reg::RegTensor<float> minVreg;
+    Reg::RegTensor<T> castVreg;
+    Reg::UnalignReg ureg0, ureg1;
     NotNumUnion notNum;
     notNum.i = F32_NEG_INF;
 
-    MicroAPI::Duplicate(minVreg, notNum.f);
+    Reg::Duplicate(minVreg, notNum.f);
     for (uint16_t i = 0; i < srcM; ++i) {
         for (uint16_t j = 0; j < repeatTime; ++j) {
             LoadIfNeedCast<T>(srcVreg, srcUb + i * srcK + j * repeatStride, maskFull);
-            MicroAPI::ReduceSumWithDataBlock(sumVreg, srcVreg, maskFull);
-            MicroAPI::StoreAlign<float>(workUb + i * repeatStride + j * blockStride, sumVreg, maskOneBlk);
+            Reg::ReduceSumWithDataBlock(sumVreg, srcVreg, maskFull);
+            Reg::StoreAlign<float>(workUb + i * repeatStride + j * blockStride, sumVreg, maskOneBlk);
         }
     }
 
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     for (uint16_t i = 0; i < srcM; ++i) {
-        MicroAPI::LoadAlign<float>(sumVreg, workUb + i * repeatStride);
+        Reg::LoadAlign<float>(sumVreg, workUb + i * repeatStride);
         for (uint16_t j = 0; j < remainRepeatTime; ++j) {
             LoadIfNeedCast<T>(srcVreg, srcUb + i * srcK + repeatStride * splitMeanCnt + j * repeatStride, maskFull);
-            MicroAPI::Add(sumVreg, srcVreg, sumVreg, maskFull);
+            Reg::Add(sumVreg, srcVreg, sumVreg, maskFull);
         }
-        MicroAPI::StoreAlign<float>(workUb + i * repeatStride, sumVreg, maskFull);
+        Reg::StoreAlign<float>(workUb + i * repeatStride, sumVreg, maskFull);
     }
 
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     for (uint16_t i = 0; i < srcM; ++i) {
-        MicroAPI::LoadAlign<float>(sumVreg, workUb + i * repeatStride);
-        MicroAPI::ReduceSumWithDataBlock(sumVreg, sumVreg, maskFull);
-        MicroAPI::Muls(meanVreg, sumVreg, r0, maskOneBlk);
+        Reg::LoadAlign<float>(sumVreg, workUb + i * repeatStride);
+        Reg::ReduceSumWithDataBlock(sumVreg, sumVreg, maskFull);
+        Reg::Muls(meanVreg, sumVreg, r0, maskOneBlk);
 
-        MicroAPI::ReduceSum(tmpVreg, meanVreg, maskOneBlk);
-        MicroAPI::Muls(tmpVreg, tmpVreg, r1, maskOnePt);
-        MicroAPI::Duplicate(tmpVreg, tmpVreg, maskOneBlk);
+        Reg::ReduceSum(tmpVreg, meanVreg, maskOneBlk);
+        Reg::Muls(tmpVreg, tmpVreg, r1, maskOnePt);
+        Reg::Duplicate(tmpVreg, tmpVreg, maskOneBlk);
         StoreIfNeedCast<U>(meanUb + i * blockStride, tmpVreg, maskOneBlk);
-        MicroAPI::Sub(tmpVreg, tmpVreg, meanVreg, maskOneBlk);
-        MicroAPI::Muls(tmpVreg, tmpVreg, scalar, maskOneBlk); // scalar = alpha / (1 - alpha)
-        MicroAPI::StoreAlign<float>(workUb + i * blockStride, tmpVreg, maskOneBlk);
+        Reg::Sub(tmpVreg, tmpVreg, meanVreg, maskOneBlk);
+        Reg::Muls(tmpVreg, tmpVreg, scalar, maskOneBlk); // scalar = alpha / (1 - alpha)
+        Reg::StoreAlign<float>(workUb + i * blockStride, tmpVreg, maskOneBlk);
     }
 
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     for (uint16_t i = 0; i < srcM; ++i) {
-        MicroAPI::Duplicate(maxVreg, notNum.f);
+        Reg::Duplicate(maxVreg, notNum.f);
         for (uint16_t j = 0; j < splitMeanCnt; ++j) { // 8
-            MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_BRC_B32>(meanVreg, workUb + i * splitMeanCnt + j);
+            Reg::LoadAlign<float, Reg::LoadDist::DIST_BRC_B32>(meanVreg, workUb + i * splitMeanCnt + j);
             uint32_t sreg = baseK;
             for (uint16_t k = 0; k < baseKRepeatTime; ++k) { // baseK / 64
-                maskCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
+                maskCnt = Reg::UpdateMask<uint32_t>(sreg);
                 __ubuf__ T *srcUbTmp = srcUb + i * srcK + j * baseK + k * repeatStride;
-                MicroAPI::LoadUnAlignPre(ureg0, srcUbTmp);
-                MicroAPI::LoadUnAlign(castVreg, ureg0, srcUbTmp, repeatStride);
-                MicroAPI::UnPack<uint32_t, uint16_t>(
-                    (MicroAPI::RegTensor<uint32_t>&)castVreg, (MicroAPI::RegTensor<uint16_t>&)castVreg);
-                MicroAPI::Cast<float, T, Internal::castTraitB16ToB32>(srcVreg, castVreg, maskCnt);
-                MicroAPI::Sub(srcVreg, srcVreg, meanVreg, maskCnt);
+                Reg::LoadUnAlignPre(ureg0, srcUbTmp);
+                Reg::LoadUnAlign(castVreg, ureg0, srcUbTmp, repeatStride);
+                Reg::UnPack<uint32_t, uint16_t>(
+                    (Reg::RegTensor<uint32_t>&)castVreg, (Reg::RegTensor<uint16_t>&)castVreg);
+                Reg::Cast<float, T, Internal::castTraitB16ToB32>(srcVreg, castVreg, maskCnt);
+                Reg::Sub(srcVreg, srcVreg, meanVreg, maskCnt);
                 __ubuf__ float *newSrcUbTmp = newSrcUb + i * srcK + j * baseK + k * repeatStride;
-                MicroAPI::StoreUnAlign(newSrcUbTmp, srcVreg, ureg1, repeatStride);
-                MicroAPI::StoreUnAlignPost(newSrcUbTmp, ureg1, 0);
-                MicroAPI::Max(maxVreg, maxVreg, srcVreg, maskFull);
+                Reg::StoreUnAlign(newSrcUbTmp, srcVreg, ureg1, repeatStride);
+                Reg::StoreUnAlignPost(newSrcUbTmp, ureg1, 0);
+                Reg::Max(maxVreg, maxVreg, srcVreg, maskFull);
             }
-            maskCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
+            maskCnt = Reg::UpdateMask<uint32_t>(sreg);
             __ubuf__ T *srcUbTmp = srcUb + i * srcK + j * baseK + baseKRepeatTime * repeatStride;
-            MicroAPI::LoadUnAlignPre(ureg0, srcUbTmp);
-            MicroAPI::LoadUnAlign(castVreg, ureg0, srcUbTmp, tail);
-            MicroAPI::UnPack<uint32_t, uint16_t>(
-                (MicroAPI::RegTensor<uint32_t>&)castVreg, (MicroAPI::RegTensor<uint16_t>&)castVreg);
-            MicroAPI::Cast<float, T, Internal::castTraitB16ToB32>(srcVreg, castVreg, maskCnt);
-            MicroAPI::Sub(srcVreg, srcVreg, meanVreg, maskCnt);
+            Reg::LoadUnAlignPre(ureg0, srcUbTmp);
+            Reg::LoadUnAlign(castVreg, ureg0, srcUbTmp, tail);
+            Reg::UnPack<uint32_t, uint16_t>(
+                (Reg::RegTensor<uint32_t>&)castVreg, (Reg::RegTensor<uint16_t>&)castVreg);
+            Reg::Cast<float, T, Internal::castTraitB16ToB32>(srcVreg, castVreg, maskCnt);
+            Reg::Sub(srcVreg, srcVreg, meanVreg, maskCnt);
             __ubuf__ float *newSrcUbTmp = newSrcUb + i * srcK + j * baseK + baseKRepeatTime * repeatStride;
-            MicroAPI::StoreUnAlign(newSrcUbTmp, srcVreg, ureg1, tail);
-            MicroAPI::StoreUnAlignPost(newSrcUbTmp, ureg1, 0);
-            MicroAPI::Select(srcVreg, srcVreg, minVreg, maskCnt);
-            MicroAPI::Max(maxVreg, maxVreg, srcVreg, maskFull);
+            Reg::StoreUnAlign(newSrcUbTmp, srcVreg, ureg1, tail);
+            Reg::StoreUnAlignPost(newSrcUbTmp, ureg1, 0);
+            Reg::Select(srcVreg, srcVreg, minVreg, maskCnt);
+            Reg::Max(maxVreg, maxVreg, srcVreg, maskFull);
         }
-        MicroAPI::ReduceMax(maxVreg, maxVreg, maskFull);
-        MicroAPI::Duplicate(maxVreg, maxVreg, maskOneBlk);
+        Reg::ReduceMax(maxVreg, maxVreg, maskFull);
+        Reg::Duplicate(maxVreg, maxVreg, maskOneBlk);
         StoreIfNeedCast<U>(maxUb + i * blockStride, maxVreg, maskOneBlk);
     }
 
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     for (uint16_t i = 0; i < srcM; ++i) {
-        MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_BRC_B32>(maxVreg, maxUb + i * blockStride);
-        MicroAPI::Duplicate(sumVreg, 0);
+        Reg::LoadAlign<float, Reg::LoadDist::DIST_BRC_B32>(maxVreg, maxUb + i * blockStride);
+        Reg::Duplicate(sumVreg, 0);
         for (uint16_t k = 0; k < kRepeatTime; ++k) { // k / 64
-            MicroAPI::LoadAlign<float>(srcVreg, newSrcUb + i * srcK + k * repeatStride);
-            MicroAPI::FusedExpSub(dstVreg, srcVreg, maxVreg, maskFull);
+            Reg::LoadAlign<float>(srcVreg, newSrcUb + i * srcK + k * repeatStride);
+            Reg::FusedExpSub(dstVreg, srcVreg, maxVreg, maskFull);
             StoreIfNeedCast<T>(dstUb + i * srcK + k * repeatStride, dstVreg, maskFull);
-            MicroAPI::Add(sumVreg, sumVreg, dstVreg, maskFull);
+            Reg::Add(sumVreg, sumVreg, dstVreg, maskFull);
         }
-        MicroAPI::ReduceSum(sumVreg, sumVreg, maskFull);
-        MicroAPI::Duplicate(sumVreg, sumVreg, maskOneBlk);
+        Reg::ReduceSum(sumVreg, sumVreg, maskFull);
+        Reg::Duplicate(sumVreg, sumVreg, maskOneBlk);
         StoreIfNeedCast<U>(expSumUb + i * blockStride, sumVreg, maskOneBlk);
     }
 }
@@ -161,140 +161,140 @@ __simd_vf__ __aicore__ inline void SoftmaxFlashV3NDUpdateImpl(__ubuf__ T* dstUb,
     constexpr uint32_t blockStride = GetDataBlockSizeInBytes() / sizeof(U);
     constexpr uint16_t repeatTime = static_cast<uint16_t>(repeatStride / blockStride);
     
-    MicroAPI::MaskReg maskCnt;
-    MicroAPI::MaskReg maskFull = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::MaskReg maskOnePt = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL1>();
-    MicroAPI::MaskReg maskOneBlk = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL8>();
-    MicroAPI::MaskReg maskOut = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL16>();
-    MicroAPI::RegTensor<float> srcVreg;
-    MicroAPI::RegTensor<float> maxVreg;
-    MicroAPI::RegTensor<float> sumVreg;
-    MicroAPI::RegTensor<float> meanVreg;
-    MicroAPI::RegTensor<float> inputVreg;
-    MicroAPI::RegTensor<float> shiftVreg;
-    MicroAPI::RegTensor<float> tmpVreg;
-    MicroAPI::RegTensor<float> dstVreg;
-    MicroAPI::RegTensor<float> minVreg;
-    MicroAPI::RegTensor<T> castVreg;
-    MicroAPI::UnalignReg ureg0, ureg1;
+    Reg::MaskReg maskCnt;
+    Reg::MaskReg maskFull = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
+    Reg::MaskReg maskOnePt = Reg::CreateMask<uint32_t, Reg::MaskPattern::VL1>();
+    Reg::MaskReg maskOneBlk = Reg::CreateMask<uint32_t, Reg::MaskPattern::VL8>();
+    Reg::MaskReg maskOut = Reg::CreateMask<uint32_t, Reg::MaskPattern::VL16>();
+    Reg::RegTensor<float> srcVreg;
+    Reg::RegTensor<float> maxVreg;
+    Reg::RegTensor<float> sumVreg;
+    Reg::RegTensor<float> meanVreg;
+    Reg::RegTensor<float> inputVreg;
+    Reg::RegTensor<float> shiftVreg;
+    Reg::RegTensor<float> tmpVreg;
+    Reg::RegTensor<float> dstVreg;
+    Reg::RegTensor<float> minVreg;
+    Reg::RegTensor<T> castVreg;
+    Reg::UnalignReg ureg0, ureg1;
     NotNumUnion notNum;
     notNum.i = F32_NEG_INF;
 
-    MicroAPI::Duplicate(minVreg, notNum.f);
+    Reg::Duplicate(minVreg, notNum.f);
     for (uint16_t i = 0; i < srcM; ++i) {
         for (uint16_t j = 0; j < repeatTime; ++j) {
             LoadIfNeedCast<T>(srcVreg, srcUb + i * srcK + j * repeatStride, maskFull);
-            MicroAPI::ReduceSumWithDataBlock(sumVreg, srcVreg, maskFull);
-            MicroAPI::StoreAlign<float>(workUb + i * repeatStride + j * blockStride, sumVreg, maskOneBlk);
+            Reg::ReduceSumWithDataBlock(sumVreg, srcVreg, maskFull);
+            Reg::StoreAlign<float>(workUb + i * repeatStride + j * blockStride, sumVreg, maskOneBlk);
         }
     }
 
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     for (uint16_t i = 0; i < srcM; ++i) {
-        MicroAPI::LoadAlign<float>(sumVreg, workUb + i * repeatStride);
+        Reg::LoadAlign<float>(sumVreg, workUb + i * repeatStride);
         for (uint16_t j = 0; j < remainRepeatTime; ++j) {
             LoadIfNeedCast<T>(srcVreg, srcUb + i * srcK + repeatStride * splitMeanCnt + j * repeatStride, maskFull);
-            MicroAPI::Add(sumVreg, srcVreg, sumVreg, maskFull);
+            Reg::Add(sumVreg, srcVreg, sumVreg, maskFull);
         }
-        MicroAPI::StoreAlign<float>(workUb + i * repeatStride, sumVreg, maskFull);
+        Reg::StoreAlign<float>(workUb + i * repeatStride, sumVreg, maskFull);
     }
 
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     for (uint16_t i = 0; i < srcM; ++i) {
-        MicroAPI::LoadAlign<float>(sumVreg, workUb + i * repeatStride);
-        MicroAPI::ReduceSumWithDataBlock(sumVreg, sumVreg, maskFull);
-        MicroAPI::Muls(meanVreg, sumVreg, r0, maskOneBlk);
+        Reg::LoadAlign<float>(sumVreg, workUb + i * repeatStride);
+        Reg::ReduceSumWithDataBlock(sumVreg, sumVreg, maskFull);
+        Reg::Muls(meanVreg, sumVreg, r0, maskOneBlk);
 
-        MicroAPI::ReduceSum(tmpVreg, meanVreg, maskOneBlk);
-        MicroAPI::Muls(tmpVreg, tmpVreg, r1, maskOnePt);
-        MicroAPI::Duplicate(tmpVreg, tmpVreg, maskOneBlk);
-        MicroAPI::StoreAlign<float>(tmpUb + i * blockStride, tmpVreg, maskOneBlk);
-        MicroAPI::Sub(tmpVreg, tmpVreg, meanVreg, maskOneBlk);
-        MicroAPI::Muls(tmpVreg, tmpVreg, scalar, maskOneBlk); // scalar = alpha / (1 - alpha)
-        MicroAPI::StoreAlign<float>(workUb + i * blockStride, tmpVreg, maskOneBlk);
+        Reg::ReduceSum(tmpVreg, meanVreg, maskOneBlk);
+        Reg::Muls(tmpVreg, tmpVreg, r1, maskOnePt);
+        Reg::Duplicate(tmpVreg, tmpVreg, maskOneBlk);
+        Reg::StoreAlign<float>(tmpUb + i * blockStride, tmpVreg, maskOneBlk);
+        Reg::Sub(tmpVreg, tmpVreg, meanVreg, maskOneBlk);
+        Reg::Muls(tmpVreg, tmpVreg, scalar, maskOneBlk); // scalar = alpha / (1 - alpha)
+        Reg::StoreAlign<float>(workUb + i * blockStride, tmpVreg, maskOneBlk);
     }
 
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     for (uint16_t i = 0; i < srcM; ++i) {
         LoadIfNeedCast<U>(inputVreg, inMeanUb + i * blockStride, maskOneBlk);
-        MicroAPI::LoadAlign<float>(tmpVreg, tmpUb + i * blockStride);
-        MicroAPI::Muls(shiftVreg, inputVreg, r2, maskOneBlk);
-        MicroAPI::Add(shiftVreg, shiftVreg, tmpVreg, maskOneBlk);
-        MicroAPI::Muls(shiftVreg, shiftVreg, r3, maskOneBlk);
+        Reg::LoadAlign<float>(tmpVreg, tmpUb + i * blockStride);
+        Reg::Muls(shiftVreg, inputVreg, r2, maskOneBlk);
+        Reg::Add(shiftVreg, shiftVreg, tmpVreg, maskOneBlk);
+        Reg::Muls(shiftVreg, shiftVreg, r3, maskOneBlk);
         StoreIfNeedCast<U>(meanUb + i * blockStride, shiftVreg, maskOneBlk);
 
-        MicroAPI::Duplicate(maxVreg, notNum.f);
+        Reg::Duplicate(maxVreg, notNum.f);
         for (uint16_t j = 0; j < splitMeanCnt; ++j) { // 8
-            MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_BRC_B32>(meanVreg, workUb + i * splitMeanCnt + j);
+            Reg::LoadAlign<float, Reg::LoadDist::DIST_BRC_B32>(meanVreg, workUb + i * splitMeanCnt + j);
             uint32_t sreg = baseK;
             for (uint16_t k = 0; k < baseKRepeatTime; ++k) { // baseK / 64
-                maskCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
+                maskCnt = Reg::UpdateMask<uint32_t>(sreg);
                 __ubuf__ T *srcUbTmp = srcUb + i * srcK + j * baseK + k * repeatStride;
-                MicroAPI::LoadUnAlignPre(ureg0, srcUbTmp);
-                MicroAPI::LoadUnAlign(castVreg, ureg0, srcUbTmp, repeatStride);
-                MicroAPI::UnPack<uint32_t, uint16_t>(
-                    (MicroAPI::RegTensor<uint32_t>&)castVreg, (MicroAPI::RegTensor<uint16_t>&)castVreg);
-                MicroAPI::Cast<float, T, Internal::castTraitB16ToB32>(srcVreg, castVreg, maskCnt);
-                MicroAPI::Sub(srcVreg, srcVreg, meanVreg, maskCnt);
+                Reg::LoadUnAlignPre(ureg0, srcUbTmp);
+                Reg::LoadUnAlign(castVreg, ureg0, srcUbTmp, repeatStride);
+                Reg::UnPack<uint32_t, uint16_t>(
+                    (Reg::RegTensor<uint32_t>&)castVreg, (Reg::RegTensor<uint16_t>&)castVreg);
+                Reg::Cast<float, T, Internal::castTraitB16ToB32>(srcVreg, castVreg, maskCnt);
+                Reg::Sub(srcVreg, srcVreg, meanVreg, maskCnt);
                 __ubuf__ float *newSrcUbTmp = newSrcUb + i * srcK + j * baseK + k * repeatStride;
-                MicroAPI::StoreUnAlign(newSrcUbTmp, srcVreg, ureg1, repeatStride);
-                MicroAPI::StoreUnAlignPost(newSrcUbTmp, ureg1, 0);
-                MicroAPI::Max(maxVreg, maxVreg, srcVreg, maskFull);
+                Reg::StoreUnAlign(newSrcUbTmp, srcVreg, ureg1, repeatStride);
+                Reg::StoreUnAlignPost(newSrcUbTmp, ureg1, 0);
+                Reg::Max(maxVreg, maxVreg, srcVreg, maskFull);
             }
-            maskCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
+            maskCnt = Reg::UpdateMask<uint32_t>(sreg);
             __ubuf__ T *srcUbTmp = srcUb + i * srcK + j * baseK + baseKRepeatTime * repeatStride;
-            MicroAPI::LoadUnAlignPre(ureg0, srcUbTmp);
-            MicroAPI::LoadUnAlign(castVreg, ureg0, srcUbTmp, tail);
-            MicroAPI::UnPack<uint32_t, uint16_t>(
-                (MicroAPI::RegTensor<uint32_t>&)castVreg, (MicroAPI::RegTensor<uint16_t>&)castVreg);
-            MicroAPI::Cast<float, T, Internal::castTraitB16ToB32>(srcVreg, castVreg, maskCnt);
-            MicroAPI::Sub(srcVreg, srcVreg, meanVreg, maskCnt);
+            Reg::LoadUnAlignPre(ureg0, srcUbTmp);
+            Reg::LoadUnAlign(castVreg, ureg0, srcUbTmp, tail);
+            Reg::UnPack<uint32_t, uint16_t>(
+                (Reg::RegTensor<uint32_t>&)castVreg, (Reg::RegTensor<uint16_t>&)castVreg);
+            Reg::Cast<float, T, Internal::castTraitB16ToB32>(srcVreg, castVreg, maskCnt);
+            Reg::Sub(srcVreg, srcVreg, meanVreg, maskCnt);
             __ubuf__ float *newSrcUbTmp = newSrcUb + i * srcK + j * baseK + baseKRepeatTime * repeatStride;
-            MicroAPI::StoreUnAlign(newSrcUbTmp, srcVreg, ureg1, tail);
-            MicroAPI::StoreUnAlignPost(newSrcUbTmp, ureg1, 0);
-            MicroAPI::Select(srcVreg, srcVreg, minVreg, maskCnt);
-            MicroAPI::Max(maxVreg, maxVreg, srcVreg, maskFull);
+            Reg::StoreUnAlign(newSrcUbTmp, srcVreg, ureg1, tail);
+            Reg::StoreUnAlignPost(newSrcUbTmp, ureg1, 0);
+            Reg::Select(srcVreg, srcVreg, minVreg, maskCnt);
+            Reg::Max(maxVreg, maxVreg, srcVreg, maskFull);
         }
-        MicroAPI::ReduceMax(maxVreg, maxVreg, maskFull);
-        MicroAPI::Duplicate(maxVreg, maxVreg, maskOneBlk);
+        Reg::ReduceMax(maxVreg, maxVreg, maskFull);
+        Reg::Duplicate(maxVreg, maxVreg, maskOneBlk);
 
-        MicroAPI::Sub(dstVreg, tmpVreg, shiftVreg, maskOneBlk);
-        MicroAPI::Muls(dstVreg, dstVreg, scalar, maskOneBlk); // scalar = alpha / (1 - alpha)
-        MicroAPI::Sub(tmpVreg, inputVreg, shiftVreg, maskOneBlk);
-        MicroAPI::Muls(tmpVreg, tmpVreg, scalar, maskOneBlk); // scalar = alpha / (1 - alpha)
-        MicroAPI::Add(maxVreg, dstVreg, maxVreg, maskOneBlk);
+        Reg::Sub(dstVreg, tmpVreg, shiftVreg, maskOneBlk);
+        Reg::Muls(dstVreg, dstVreg, scalar, maskOneBlk); // scalar = alpha / (1 - alpha)
+        Reg::Sub(tmpVreg, inputVreg, shiftVreg, maskOneBlk);
+        Reg::Muls(tmpVreg, tmpVreg, scalar, maskOneBlk); // scalar = alpha / (1 - alpha)
+        Reg::Add(maxVreg, dstVreg, maxVreg, maskOneBlk);
         LoadIfNeedCast<U>(inputVreg, inMaxUb + i * blockStride, maskOneBlk);
-        MicroAPI::Add(tmpVreg, inputVreg, tmpVreg, maskOneBlk);
-        MicroAPI::Max(maxVreg, tmpVreg, maxVreg, maskOneBlk);
+        Reg::Add(tmpVreg, inputVreg, tmpVreg, maskOneBlk);
+        Reg::Max(maxVreg, tmpVreg, maxVreg, maskOneBlk);
         StoreIfNeedCast<U>(maxUb + i * blockStride, maxVreg, maskOneBlk);
-        MicroAPI::Sub(maxVreg, maxVreg, dstVreg, maskOneBlk);
-        MicroAPI::StoreAlign<float>(tmpUb + i * blockStride, maxVreg, maskOneBlk);
-        MicroAPI::FusedExpSub(tmpVreg, tmpVreg, maxVreg, maskFull);
+        Reg::Sub(maxVreg, maxVreg, dstVreg, maskOneBlk);
+        Reg::StoreAlign<float>(tmpUb + i * blockStride, maxVreg, maskOneBlk);
+        Reg::FusedExpSub(tmpVreg, tmpVreg, maxVreg, maskFull);
         LoadIfNeedCast<U>(inputVreg, inExpSumUb + i * blockStride, maskOneBlk);
-        MicroAPI::Mul(sumVreg, tmpVreg, inputVreg, maskOneBlk);
-        MicroAPI::StoreAlign<float>(expSumUb + i * blockStride, sumVreg, maskOneBlk);
-        MicroAPI::Interleave(tmpVreg, dstVreg, tmpVreg, tmpVreg);
+        Reg::Mul(sumVreg, tmpVreg, inputVreg, maskOneBlk);
+        Reg::StoreAlign<float>(expSumUb + i * blockStride, sumVreg, maskOneBlk);
+        Reg::Interleave(tmpVreg, dstVreg, tmpVreg, tmpVreg);
         StoreIfNeedCast<T>(expMaxUb + i * blockStride * 2, tmpVreg, maskOut);
     }
 
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     for (uint16_t i = 0; i < srcM; ++i) {
-        MicroAPI::Duplicate(sumVreg, 0);
-        MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_BRC_B32>(maxVreg, tmpUb + i * blockStride);
+        Reg::Duplicate(sumVreg, 0);
+        Reg::LoadAlign<float, Reg::LoadDist::DIST_BRC_B32>(maxVreg, tmpUb + i * blockStride);
         for (uint16_t k = 0; k < kRepeatTime; ++k) { // k / 64
-            MicroAPI::LoadAlign<float>(srcVreg, newSrcUb + i * srcK + k * repeatStride);
-            MicroAPI::FusedExpSub(dstVreg, srcVreg, maxVreg, maskFull);
+            Reg::LoadAlign<float>(srcVreg, newSrcUb + i * srcK + k * repeatStride);
+            Reg::FusedExpSub(dstVreg, srcVreg, maxVreg, maskFull);
             StoreIfNeedCast<T>(dstUb + i * srcK + k * repeatStride, dstVreg, maskFull);
-            MicroAPI::Add(sumVreg, sumVreg, dstVreg, maskFull);
+            Reg::Add(sumVreg, sumVreg, dstVreg, maskFull);
         }
-        MicroAPI::ReduceSum(sumVreg, sumVreg, maskFull);
-        MicroAPI::Duplicate(sumVreg, sumVreg, maskOneBlk);
-        MicroAPI::LoadAlign<float>(tmpVreg, expSumUb + i * blockStride);
-        MicroAPI::Add(sumVreg, tmpVreg, sumVreg, maskOneBlk);
+        Reg::ReduceSum(sumVreg, sumVreg, maskFull);
+        Reg::Duplicate(sumVreg, sumVreg, maskOneBlk);
+        Reg::LoadAlign<float>(tmpVreg, expSumUb + i * blockStride);
+        Reg::Add(sumVreg, tmpVreg, sumVreg, maskOneBlk);
         StoreIfNeedCast<U>(expSumUb + i * blockStride, sumVreg, maskOneBlk);
     }
 }

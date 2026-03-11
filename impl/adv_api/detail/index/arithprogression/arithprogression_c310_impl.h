@@ -30,33 +30,33 @@ namespace AscendC {
 template <typename RegT, typename ScalarT>
 __simd_callee__ inline void GetBaseArithProgression(RegT &dstReg, const ScalarT firstValue, const ScalarT diffValue)
 {
-    MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<uint8_t>();
-    MicroAPI::Arange(dstReg, ScalarT(0));
-    MicroAPI::Muls(dstReg, dstReg, diffValue, fullMask);
-    MicroAPI::Adds(dstReg, dstReg, firstValue, fullMask);
+    Reg::MaskReg fullMask = Reg::CreateMask<uint8_t>();
+    Reg::Arange(dstReg, ScalarT(0));
+    Reg::Muls(dstReg, dstReg, diffValue, fullMask);
+    Reg::Adds(dstReg, dstReg, firstValue, fullMask);
 }
 
-template <typename T, const MicroAPI::RegTrait &regTrait>
+template <typename T, const Reg::RegTrait &regTrait>
 __simd_vf__ inline void VfCallArithProgression(__ubuf__ T *dstLocalAddr, const T firstValue, const T diffValue,
     const int32_t count, const uint16_t repeatTimes)
 {
-    MicroAPI::RegTensor<T, regTrait> tmpReg;
-    MicroAPI::RegTensor<T, regTrait> stepReg;
-    MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL, regTrait>();
+    Reg::RegTensor<T, regTrait> tmpReg;
+    Reg::RegTensor<T, regTrait> stepReg;
+    Reg::MaskReg fullMask = Reg::CreateMask<T, Reg::MaskPattern::ALL, regTrait>();
     GetBaseArithProgression(tmpReg, firstValue, diffValue);
     uint32_t sreg = static_cast<uint32_t>(count);
-    MicroAPI::MaskReg preg;
+    Reg::MaskReg preg;
     const uint32_t sregLower = static_cast<uint32_t>(regTrait.REG_NUM * ONE_REPEAT_BYTE_SIZE / sizeof(T));
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
-    MicroAPI::Duplicate(stepReg, static_cast<T>(static_cast<int32_t>(sregLower)));
+    Reg::Duplicate(stepReg, static_cast<T>(static_cast<int32_t>(sregLower)));
 #else
-    MicroAPI::Duplicate(stepReg, static_cast<T>(sregLower));
+    Reg::Duplicate(stepReg, static_cast<T>(sregLower));
 #endif
-    MicroAPI::Muls(stepReg, stepReg, diffValue, fullMask);
+    Reg::Muls(stepReg, stepReg, diffValue, fullMask);
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        preg = MicroAPI::UpdateMask<T, regTrait>(sreg);
-        MicroAPI::StoreAlign(dstLocalAddr + i * sregLower, tmpReg, preg);
-        MicroAPI::Add(tmpReg, tmpReg, stepReg, fullMask);
+        preg = Reg::UpdateMask<T, regTrait>(sreg);
+        Reg::StoreAlign(dstLocalAddr + i * sregLower, tmpReg, preg);
+        Reg::Add(tmpReg, tmpReg, stepReg, fullMask);
     }
 }
 
@@ -74,10 +74,10 @@ __aicore__ inline void ArithProgressionImpl(const LocalTensor<T> &dstLocal, cons
     __ubuf__ T* dstLocalAddr = (__ubuf__ T*)dstLocal.GetPhyAddr();
     if constexpr(sizeof(T) != 8) {
         uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(count, ONE_REPEAT_BYTE_SIZE / sizeof(T)));
-        VfCallArithProgression<T, MicroAPI::RegTraitNumOne>(dstLocalAddr, firstValue, diffValue, count, repeatTimes);
+        VfCallArithProgression<T, Reg::RegTraitNumOne>(dstLocalAddr, firstValue, diffValue, count, repeatTimes);
     } else {
         uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(count, 2 * ONE_REPEAT_BYTE_SIZE / sizeof(T)));
-        VfCallArithProgression<T, MicroAPI::RegTraitNumTwo>(dstLocalAddr, firstValue, diffValue, count, repeatTimes);
+        VfCallArithProgression<T, Reg::RegTraitNumTwo>(dstLocalAddr, firstValue, diffValue, count, repeatTimes);
     }
 }
 

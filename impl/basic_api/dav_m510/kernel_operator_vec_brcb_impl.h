@@ -31,23 +31,23 @@ __aicore__ inline void BrcbB64Impl(
     int32_t dstRepOffset = 0;
     int32_t sreg0 = 0;
     uint32_t sreg1 = ONE_BLK_FLOAT_NUM;
-    MicroAPI::RegTensor<uint32_t> srcRegLow;
-    MicroAPI::RegTensor<uint32_t> srcRegHigh;
-    MicroAPI::RegTensor<uint32_t> dstReg;
-    MicroAPI::RegTensor<uint32_t> tmpReg;
-    MicroAPI::MaskReg preg = MicroAPI::UpdateMask<uint32_t>(sreg1);
+    Reg::RegTensor<uint32_t> srcRegLow;
+    Reg::RegTensor<uint32_t> srcRegHigh;
+    Reg::RegTensor<uint32_t> dstReg;
+    Reg::RegTensor<uint32_t> tmpReg;
+    Reg::MaskReg preg = Reg::UpdateMask<uint32_t>(sreg1);
     for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
         sreg0 = (int32_t)repeatParams.dstRepStride * i * ONE_BLK_FLOAT_NUM;
         for (uint16_t j = 0; j < (uint16_t)BRCB_BROADCAST_NUMBER; ++j) {
             dstRepOffset = sreg0 + dstBlkStride * j * ONE_BLK_FLOAT_NUM;
-            MicroAPI::LoadAlign<uint32_t, MicroAPI::LoadDist::DIST_BRC_B32>(
+            Reg::LoadAlign<uint32_t, Reg::LoadDist::DIST_BRC_B32>(
                 srcRegLow, (__ubuf__ uint32_t *)src + (i * BRCB_BROADCAST_NUMBER + j) * 2);
-            MicroAPI::LoadAlign<uint32_t, MicroAPI::LoadDist::DIST_BRC_B32>(
+            Reg::LoadAlign<uint32_t, Reg::LoadDist::DIST_BRC_B32>(
                 srcRegHigh, (__ubuf__ uint32_t *)src + (i * BRCB_BROADCAST_NUMBER + j) * 2 + 1);
-            MicroAPI::Duplicate(srcRegLow, srcRegLow, preg);
-            MicroAPI::Duplicate(srcRegHigh, srcRegHigh, preg);
-            MicroAPI::Interleave(dstReg, tmpReg, srcRegLow, srcRegHigh);
-            MicroAPI::StoreAlign((__ubuf__ uint32_t *)dst + dstRepOffset, dstReg, preg);
+            Reg::Duplicate(srcRegLow, srcRegLow, preg);
+            Reg::Duplicate(srcRegHigh, srcRegHigh, preg);
+            Reg::Interleave(dstReg, tmpReg, srcRegLow, srcRegHigh);
+            Reg::StoreAlign((__ubuf__ uint32_t *)dst + dstRepOffset, dstReg, preg);
         }
     }
 }
@@ -60,15 +60,15 @@ __aicore__ inline void BrcbB8Impl(
     constexpr uint32_t oneBlkSize = ONE_BLK_SIZE / sizeof(T);
     int32_t sreg0 = 0;
     uint32_t sreg1 = oneBlkSize;
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::MaskReg preg = MicroAPI::UpdateMask<T>(sreg1);
+    Reg::RegTensor<T> srcReg;
+    Reg::MaskReg preg = Reg::UpdateMask<T>(sreg1);
     for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
         sreg0 = (int32_t)repeatParams.dstRepStride * i * oneBlkSize;
         for (uint16_t j = 0; j < (uint16_t)BRCB_BROADCAST_NUMBER; ++j) {
             dstRepOffset = sreg0 + dstBlkStride * j * oneBlkSize;
-            MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_BRC_B8>(srcReg, src + i * BRCB_BROADCAST_NUMBER + j);
-            MicroAPI::Duplicate(srcReg, srcReg, preg);
-            MicroAPI::StoreAlign(dst + dstRepOffset, srcReg, preg);
+            Reg::LoadAlign<T, Reg::LoadDist::DIST_BRC_B8>(srcReg, src + i * BRCB_BROADCAST_NUMBER + j);
+            Reg::Duplicate(srcReg, srcReg, preg);
+            Reg::StoreAlign(dst + dstRepOffset, srcReg, preg);
         }
     }
 }
@@ -78,16 +78,16 @@ __aicore__ inline void BrcbCommonImpl(
     __ubuf__ T *dst, __ubuf__ T *src, const uint8_t repeatTime, const BrcbRepeatParams &repeatParams, int32_t dstBlkStride)
 {
     int32_t dstRepOffset = 0;
-    MicroAPI::RegTensor<T> srcReg;
+    Reg::RegTensor<T> srcReg;
     constexpr uint32_t oneBlkSize = ONE_BLK_SIZE / sizeof(T);
-    MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL>();
+    Reg::MaskReg fullMask = Reg::CreateMask<T, Reg::MaskPattern::ALL>();
     for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
         if constexpr (sizeof(T) == 2) {
-            MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_E2B_B16>(srcReg, src + i * BRCB_BROADCAST_NUMBER);
+            Reg::LoadAlign<T, Reg::LoadDist::DIST_E2B_B16>(srcReg, src + i * BRCB_BROADCAST_NUMBER);
         } else {
-            MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_E2B_B32>(srcReg, src + i * BRCB_BROADCAST_NUMBER);
+            Reg::LoadAlign<T, Reg::LoadDist::DIST_E2B_B32>(srcReg, src + i * BRCB_BROADCAST_NUMBER);
         }
-        MicroAPI::StoreAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+        Reg::StoreAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(
             dst + i * repeatParams.dstRepStride * oneBlkSize, srcReg, dstBlkStride, fullMask);
     }
 }

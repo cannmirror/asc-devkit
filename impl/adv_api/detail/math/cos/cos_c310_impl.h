@@ -55,100 +55,100 @@ constexpr float COS_M4_SCA = 4.0;
 constexpr float COS_K2_SCA = -2.0;
 constexpr float SCALAR_ONE = 1.0;
 
-__simd_callee__ inline void CosPolynomialApproximation(MicroAPI::RegTensor<float>& dstReg,
-    MicroAPI::RegTensor<float>& srcReg, MicroAPI::RegTensor<float>& x, MicroAPI::RegTensor<float>& round,
-    MicroAPI::RegTensor<float>& kpi, MicroAPI::MaskReg mask)
+__simd_callee__ inline void CosPolynomialApproximation(Reg::RegTensor<float>& dstReg,
+    Reg::RegTensor<float>& srcReg, Reg::RegTensor<float>& x, Reg::RegTensor<float>& round,
+    Reg::RegTensor<float>& kpi, Reg::MaskReg mask)
 {
     // k = round(x * invpi + 1/2)
-    MicroAPI::Muls(round, srcReg, COS_PI_FOR_X_TODIV, mask);
-    MicroAPI::Adds(round, round, COS_POINT_FIVE, mask);
+    Reg::Muls(round, srcReg, COS_PI_FOR_X_TODIV, mask);
+    Reg::Adds(round, round, COS_POINT_FIVE, mask);
     // tie to even
-    MicroAPI::Truncate<float, RoundMode::CAST_RINT, MicroAPI::MaskMergeMode::ZEROING>(round, round, mask);
+    Reg::Truncate<float, RoundMode::CAST_RINT, Reg::MaskMergeMode::ZEROING>(round, round, mask);
     // x -= k * pi_0
-    MicroAPI::Muls(kpi, round, PI_0, mask);
-    MicroAPI::Sub(x, srcReg, kpi, mask);
+    Reg::Muls(kpi, round, PI_0, mask);
+    Reg::Sub(x, srcReg, kpi, mask);
 
     // x -= k * pi_1
-    MicroAPI::Muls(kpi, round, COS_KPI_FIRS_PI_MULS, mask);
-    MicroAPI::Sub(x, x, kpi, mask);
+    Reg::Muls(kpi, round, COS_KPI_FIRS_PI_MULS, mask);
+    Reg::Sub(x, x, kpi, mask);
 
     // x = x + COS_PI_DOWN
-    MicroAPI::Adds(x, x, COS_PI_DOWN, mask);
+    Reg::Adds(x, x, COS_PI_DOWN, mask);
 
     // x -= k * pi_2
-    MicroAPI::Muls(kpi, round, COS_KPI_TWI_PI_MULS, mask);
-    MicroAPI::Sub(x, x, kpi, mask);
+    Reg::Muls(kpi, round, COS_KPI_TWI_PI_MULS, mask);
+    Reg::Sub(x, x, kpi, mask);
 
     // x -= k * pi_3
-    MicroAPI::Muls(kpi, round, COS_KPI_THIR_PI_MULS, mask);
-    MicroAPI::Sub(x, x, kpi, mask);
+    Reg::Muls(kpi, round, COS_KPI_THIR_PI_MULS, mask);
+    Reg::Sub(x, x, kpi, mask);
 
     // x -= k * pi_4
-    MicroAPI::Muls(kpi, round, COS_KPI_FOR_PI_MULS, mask);
-    MicroAPI::Sub(x, x, kpi, mask);
+    Reg::Muls(kpi, round, COS_KPI_FOR_PI_MULS, mask);
+    Reg::Sub(x, x, kpi, mask);
 
     // x = x + COS_PI_RESDOWN_ADDS_NEG
-    MicroAPI::Adds(x, x, COS_PI_RESDOWN_ADDS_NEG, mask);
+    Reg::Adds(x, x, COS_PI_RESDOWN_ADDS_NEG, mask);
 
     // x^2 = mul(input_x, input_x)
-    MicroAPI::Mul(kpi, x, x, mask);
+    Reg::Mul(kpi, x, x, mask);
     // kover2
-    MicroAPI::Muls(dstReg, round, COS_POINT_FIVE, mask);
-    MicroAPI::Truncate<float, RoundMode::CAST_FLOOR, MicroAPI::MaskMergeMode::ZEROING>(dstReg, dstReg, mask);
+    Reg::Muls(dstReg, round, COS_POINT_FIVE, mask);
+    Reg::Truncate<float, RoundMode::CAST_FLOOR, Reg::MaskMergeMode::ZEROING>(dstReg, dstReg, mask);
 
     // kover2floorm4
-    MicroAPI::Muls(dstReg, dstReg, COS_M4_SCA, mask);
+    Reg::Muls(dstReg, dstReg, COS_M4_SCA, mask);
     // k2
-    MicroAPI::Muls(round, round, COS_K2_SCA, mask);
+    Reg::Muls(round, round, COS_K2_SCA, mask);
     // sign
-    MicroAPI::Add(dstReg, dstReg, round, mask);
-    MicroAPI::Adds(dstReg, dstReg, SCALAR_ONE, mask);
+    Reg::Add(dstReg, dstReg, round, mask);
+    Reg::Adds(dstReg, dstReg, SCALAR_ONE, mask);
 
     // res_up = mul(x^2, 2.604926501e-6)
-    MicroAPI::Muls(round, kpi, COS_RES_MULTI_SCA, mask);
-    MicroAPI::Adds(round, round, COS_RES_ADDICT_UP, mask);
+    Reg::Muls(round, kpi, COS_RES_MULTI_SCA, mask);
+    Reg::Adds(round, round, COS_RES_ADDICT_UP, mask);
     // res_up = mul(res_up, x^2)
-    MicroAPI::Mul(round, round, kpi, mask);
-    MicroAPI::Adds(round, round, COS_2ADDS, mask);
+    Reg::Mul(round, round, kpi, mask);
+    Reg::Adds(round, round, COS_2ADDS, mask);
     // res_up = mul(res_up, x^2)
-    MicroAPI::Mul(round, round, kpi, mask);
-    MicroAPI::Adds(round, round, COS_3ADDS, mask);
+    Reg::Mul(round, round, kpi, mask);
+    Reg::Adds(round, round, COS_3ADDS, mask);
     // res_up = mul(res_up, x^2)
-    MicroAPI::Mul(round, round, kpi, mask);
-    MicroAPI::Adds(round, round, SCALAR_ONE, mask);
+    Reg::Mul(round, round, kpi, mask);
+    Reg::Adds(round, round, SCALAR_ONE, mask);
     // sin(x) = xP(x)
-    MicroAPI::Mul(round, round, x, mask);
-    MicroAPI::Mul(dstReg, round, dstReg, mask);
-    MicroAPI::Mins(dstReg, dstReg, SCALAR_ONE, mask);
-    MicroAPI::Maxs(dstReg, dstReg, -SCALAR_ONE, mask);
+    Reg::Mul(round, round, x, mask);
+    Reg::Mul(dstReg, round, dstReg, mask);
+    Reg::Mins(dstReg, dstReg, SCALAR_ONE, mask);
+    Reg::Maxs(dstReg, dstReg, -SCALAR_ONE, mask);
 }
 
 template <typename T>
 __simd_vf__ inline void CosPolynomial(__ubuf__ T* dst, __ubuf__ T* src, uint32_t calCount, uint16_t repeat)
 {
-    MicroAPI::RegTensor<T> x;
-    MicroAPI::RegTensor<float> xTmp;
-    MicroAPI::RegTensor<float> round;
-    MicroAPI::RegTensor<float> kpi;
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::RegTensor<float> srcTmp;
-    MicroAPI::RegTensor<T> dstReg;
-    MicroAPI::RegTensor<float> dstTmp;
+    Reg::RegTensor<T> x;
+    Reg::RegTensor<float> xTmp;
+    Reg::RegTensor<float> round;
+    Reg::RegTensor<float> kpi;
+    Reg::RegTensor<T> srcReg;
+    Reg::RegTensor<float> srcTmp;
+    Reg::RegTensor<T> dstReg;
+    Reg::RegTensor<float> dstTmp;
     constexpr uint32_t oneRepSize = GetVecLen() / sizeof(float);
-    MicroAPI::MaskReg mask;
-    MicroAPI::MaskReg maskAll = MicroAPI::CreateMask<uint8_t>();
+    Reg::MaskReg mask;
+    Reg::MaskReg maskAll = Reg::CreateMask<uint8_t>();
     for (uint16_t i = 0; i < repeat; i++) {
-        mask = MicroAPI::UpdateMask<float>(calCount);
+        mask = Reg::UpdateMask<float>(calCount);
         if constexpr (std::is_same<T, half>::value) {
-            MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcReg, src + i * oneRepSize);
-            MicroAPI::Cast<float, half, castTraitB16ToB32>(srcTmp, srcReg, mask);
+            Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(srcReg, src + i * oneRepSize);
+            Reg::Cast<float, half, castTraitB16ToB32>(srcTmp, srcReg, mask);
             CosPolynomialApproximation(dstTmp, srcTmp, xTmp, round, kpi, mask);
-            MicroAPI::Cast<half, float, castTraitB32ToB16>(dstReg, dstTmp, mask);
-            MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_PACK_B32>(dst + i * oneRepSize, dstReg, mask);
+            Reg::Cast<half, float, castTraitB32ToB16>(dstReg, dstTmp, mask);
+            Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B32>(dst + i * oneRepSize, dstReg, mask);
         } else {
-            MicroAPI::LoadAlign(srcReg, src + i * oneRepSize);
+            Reg::LoadAlign(srcReg, src + i * oneRepSize);
             CosPolynomialApproximation(dstReg, srcReg, xTmp, round, kpi, mask);
-            MicroAPI::StoreAlign(dst + i * oneRepSize, dstReg, mask);
+            Reg::StoreAlign(dst + i * oneRepSize, dstReg, mask);
         }
     }
 }

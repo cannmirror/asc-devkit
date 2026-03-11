@@ -66,15 +66,15 @@ __simd_vf__ inline void ComputeMean64(__ubuf__ float *meanUb, __ubuf__ float *va
 {
     constexpr uint16_t sregLower = static_cast<uint16_t>(GetVecLen() / sizeof(float)); // 64
     uint32_t count = rLength;
-    MicroAPI::RegTensor<float> src0Reg;
-    MicroAPI::RegTensor<float> src1Reg;
-    MicroAPI::RegTensor<float> dstReg;
-    MicroAPI::RegTensor<float> meanReg;
-    MicroAPI::RegTensor<float> varianceReg;
+    Reg::RegTensor<float> src0Reg;
+    Reg::RegTensor<float> src1Reg;
+    Reg::RegTensor<float> dstReg;
+    Reg::RegTensor<float> meanReg;
+    Reg::RegTensor<float> varianceReg;
 
-    MicroAPI::MaskReg preg = MicroAPI::UpdateMask<float>(count);
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::MaskReg pregOne = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::VL1>();
+    Reg::MaskReg preg = Reg::UpdateMask<float>(count);
+    Reg::MaskReg pregFull = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
+    Reg::MaskReg pregOne = Reg::CreateMask<float, Reg::MaskPattern::VL1>();
     for (uint16_t i = 0; i < static_cast<uint16_t>(aLength); i++) {
         LoadDataWithT<T>(srcUb, src0Reg, preg, i * rLengthWithPadding);
         Muls(src1Reg, src0Reg, k2Rec, preg);
@@ -84,7 +84,7 @@ __simd_vf__ inline void ComputeMean64(__ubuf__ float *meanUb, __ubuf__ float *va
         } else {
             Muls(meanReg, dstReg, k2RRec, pregOne);
         }
-        MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>((meanUb + i), meanReg, pregOne);
+        Reg::StoreAlign<float, Reg::StoreDist::DIST_FIRST_ELEMENT_B32>((meanUb + i), meanReg, pregOne);
     }
 }
 
@@ -108,56 +108,56 @@ __simd_vf__ inline void ComputeMeanVF(__ubuf__ float *meanUb, __ubuf__ float *va
     uint16_t repeatTimes1 = static_cast<uint16_t>(CeilDivision(m, sregLower));
     uint16_t repeatTimes2 = static_cast<uint16_t>(CeilDivision(mainTailCount, sregLower));
 
-    MicroAPI::RegTensor<float> src0Reg;
-    MicroAPI::RegTensor<float> src1Reg;
-    MicroAPI::RegTensor<float> dstReg;
-    MicroAPI::RegTensor<float> meanReg;
+    Reg::RegTensor<float> src0Reg;
+    Reg::RegTensor<float> src1Reg;
+    Reg::RegTensor<float> dstReg;
+    Reg::RegTensor<float> meanReg;
 
-    MicroAPI::MaskReg preg;
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::MaskReg pregOne = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::VL1>();
+    Reg::MaskReg preg;
+    Reg::MaskReg pregFull = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
+    Reg::MaskReg pregOne = Reg::CreateMask<float, Reg::MaskPattern::VL1>();
 
     for (uint16_t j = 0; j < static_cast<uint16_t>(aLength); j++) {
         // tail block add to main block
         count = m;
         for (uint16_t i = 0; i < repeatTimes1; i++) {
-            preg = MicroAPI::UpdateMask<float>(count);
+            preg = Reg::UpdateMask<float>(count);
             LoadDataWithT<T>(srcUb, srcUb, src0Reg, src1Reg, pregFull, preg, j * rLengthWithPadding + i * sregLower,
                 j * rLengthWithPadding + rHeadLength + i * sregLower);
             Muls(src0Reg, src0Reg, k2Rec, pregFull);
             Muls(src1Reg, src1Reg, k2Rec, preg);
             Add(dstReg, src0Reg, src1Reg, pregFull);
             ReduceSum(dstReg, dstReg, pregFull);
-            MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>((workUbOrigin + i), dstReg, pregOne);
+            Reg::StoreAlign<float, Reg::StoreDist::DIST_FIRST_ELEMENT_B32>((workUbOrigin + i), dstReg, pregOne);
         }
 
         // Processes the remaining data of the entire block.
         count = mainTailCount;
         for (uint16_t i = 0; i < repeatTimes2; i++) {
-            preg = MicroAPI::UpdateMask<float>(count);
+            preg = Reg::UpdateMask<float>(count);
             LoadDataWithT<T>(srcUb, src0Reg, pregFull, j * rLengthWithPadding + mVL + i * sregLower);
             Muls(dstReg, src0Reg, k2Rec, pregFull);
             ReduceSum(dstReg, dstReg, pregFull);
-            MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>((workUbOrigin + repeatTimes1 + i), dstReg,
+            Reg::StoreAlign<float, Reg::StoreDist::DIST_FIRST_ELEMENT_B32>((workUbOrigin + repeatTimes1 + i), dstReg,
                 pregOne);
         }
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
         // Fold the tmpbuffer in half.
         uint16_t currentHalfAddTimes = halfAddTimes;
         for (uint16_t k = 0; k < static_cast<uint16_t>(halfAddRepeatTimes); k++) {
             currentHalfAddTimes = currentHalfAddTimes / Internal::kWelfordFinalizeFoldNum; // Fold
             for (uint16_t i = 0; i < currentHalfAddTimes; i++) {
-                MicroAPI::LoadAlign(src0Reg, workUbOrigin + i * sregLower);
-                MicroAPI::LoadAlign(src1Reg, workUbOrigin + (currentHalfAddTimes + i) * sregLower);
+                Reg::LoadAlign(src0Reg, workUbOrigin + i * sregLower);
+                Reg::LoadAlign(src1Reg, workUbOrigin + (currentHalfAddTimes + i) * sregLower);
                 Add(dstReg, src0Reg, src1Reg, pregFull);
-                MicroAPI::StoreAlign(workUbOrigin + i * sregLower, dstReg, pregFull);
+                Reg::StoreAlign(workUbOrigin + i * sregLower, dstReg, pregFull);
             }
-            MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+            Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
         }
         // the last reducesum
         count = lastCount;
-        preg = MicroAPI::UpdateMask<float>(count);
-        MicroAPI::LoadAlign(src0Reg, workUbOrigin);
+        preg = Reg::UpdateMask<float>(count);
+        Reg::LoadAlign(src0Reg, workUbOrigin);
         ReduceSum(dstReg, src0Reg, preg);
         // save mean
         if constexpr (isCorrection) {
@@ -165,7 +165,7 @@ __simd_vf__ inline void ComputeMeanVF(__ubuf__ float *meanUb, __ubuf__ float *va
         } else {
             Muls(meanReg, dstReg, k2RRec, preg);
         }
-        MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>((meanUb + j), meanReg, pregOne);
+        Reg::StoreAlign<float, Reg::StoreDist::DIST_FIRST_ELEMENT_B32>((meanUb + j), meanReg, pregOne);
     }
 }
 
@@ -216,28 +216,28 @@ __simd_vf__ inline void WelfordFinalizeWithCountsOutMeanVF(__ubuf__ float *outMe
     __ubuf__ int32_t *counts, __ubuf__ float *inMean, __ubuf__ float *inVar,
     __ubuf__ float *tmpbuffer, uint32_t K, uint32_t sregLower, uint16_t repeat, uint16_t m)
 {
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<int32_t> srcVreg;
-    MicroAPI::RegTensor<float> f32vreg;
-    MicroAPI::RegTensor<float> tmpVreg;
+    Reg::MaskReg preg;
+    Reg::RegTensor<int32_t> srcVreg;
+    Reg::RegTensor<float> f32vreg;
+    Reg::RegTensor<float> tmpVreg;
 
-    MicroAPI::RegTensor<float> meanVreg;
-    MicroAPI::RegTensor<float> varVreg;
-    MicroAPI::RegTensor<float> outMeanreg;
-    MicroAPI::RegTensor<float> outVarreg;
+    Reg::RegTensor<float> meanVreg;
+    Reg::RegTensor<float> varVreg;
+    Reg::RegTensor<float> outMeanreg;
+    Reg::RegTensor<float> outVarreg;
 
     uint32_t sreg = static_cast<uint32_t>(K);
 
     for (uint16_t i = 0; i < repeat; ++i) {
-        preg = MicroAPI::UpdateMask<uint32_t>(sreg);
-        MicroAPI::LoadAlign<int32_t, MicroAPI::LoadDist::DIST_NORM>(srcVreg, counts + i * sregLower);
-        MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_NORM>(meanVreg, inMean + i * sregLower + m * K);
-        MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_NORM>(varVreg, inVar + i * sregLower + m * K);
+        preg = Reg::UpdateMask<uint32_t>(sreg);
+        Reg::LoadAlign<int32_t, Reg::LoadDist::DIST_NORM>(srcVreg, counts + i * sregLower);
+        Reg::LoadAlign<float, Reg::LoadDist::DIST_NORM>(meanVreg, inMean + i * sregLower + m * K);
+        Reg::LoadAlign<float, Reg::LoadDist::DIST_NORM>(varVreg, inVar + i * sregLower + m * K);
 
-        MicroAPI::Cast<float, int32_t, MrgZRndA>(f32vreg, srcVreg, preg);
+        Reg::Cast<float, int32_t, MrgZRndA>(f32vreg, srcVreg, preg);
 
-        MicroAPI::Mul(outMeanreg, f32vreg, meanVreg, preg);
-        MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_NORM_B32>(tmpbuffer + i * sregLower, outMeanreg,
+        Reg::Mul(outMeanreg, f32vreg, meanVreg, preg);
+        Reg::StoreAlign<float, Reg::StoreDist::DIST_NORM_B32>(tmpbuffer + i * sregLower, outMeanreg,
             preg);
     }
 }
@@ -247,28 +247,28 @@ __simd_vf__ inline void WelfordFinalizeWithCountsOutVarVF(__ubuf__ float *outMea
     __ubuf__ int32_t *counts, __ubuf__ float *inMean, __ubuf__ float *inVar,
     __ubuf__ float *tmpbuffer, uint32_t K, uint32_t sregLower, uint16_t repeat, uint16_t m)
 {
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<int32_t> srcVreg;
-    MicroAPI::RegTensor<float> f32vreg;
-    MicroAPI::RegTensor<float> meanVreg;
-    MicroAPI::RegTensor<float> varVreg;
-    MicroAPI::RegTensor<float> outMeanreg;
-    MicroAPI::RegTensor<float> outVarreg;
-    MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_BRC_B32>(outMeanreg, outMean + m);
+    Reg::MaskReg preg;
+    Reg::RegTensor<int32_t> srcVreg;
+    Reg::RegTensor<float> f32vreg;
+    Reg::RegTensor<float> meanVreg;
+    Reg::RegTensor<float> varVreg;
+    Reg::RegTensor<float> outMeanreg;
+    Reg::RegTensor<float> outVarreg;
+    Reg::LoadAlign<float, Reg::LoadDist::DIST_BRC_B32>(outMeanreg, outMean + m);
     uint32_t sreg = static_cast<uint32_t>(K);
     for (uint16_t i = 0; i < repeat; ++i) {
-        preg = MicroAPI::UpdateMask<uint32_t>(sreg);
-        MicroAPI::LoadAlign<int32_t, MicroAPI::LoadDist::DIST_NORM>(srcVreg, counts + i * sregLower);
-        MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_NORM>(varVreg, inVar + i * sregLower + m * K);
-        MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_NORM>(meanVreg, inMean + i * sregLower + m * K);
+        preg = Reg::UpdateMask<uint32_t>(sreg);
+        Reg::LoadAlign<int32_t, Reg::LoadDist::DIST_NORM>(srcVreg, counts + i * sregLower);
+        Reg::LoadAlign<float, Reg::LoadDist::DIST_NORM>(varVreg, inVar + i * sregLower + m * K);
+        Reg::LoadAlign<float, Reg::LoadDist::DIST_NORM>(meanVreg, inMean + i * sregLower + m * K);
 
-        MicroAPI::Cast<float, int32_t, MrgZRndA>(f32vreg, srcVreg, preg);
-        MicroAPI::Sub(meanVreg, meanVreg, outMeanreg, preg);
-        MicroAPI::Mul(meanVreg, meanVreg, meanVreg, preg);
+        Reg::Cast<float, int32_t, MrgZRndA>(f32vreg, srcVreg, preg);
+        Reg::Sub(meanVreg, meanVreg, outMeanreg, preg);
+        Reg::Mul(meanVreg, meanVreg, meanVreg, preg);
 
-        MicroAPI::Mul(meanVreg, meanVreg, f32vreg, preg);
-        MicroAPI::Add(outVarreg, meanVreg, varVreg, preg);
-        MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_NORM_B32>(tmpbuffer + i * sregLower, outVarreg,
+        Reg::Mul(meanVreg, meanVreg, f32vreg, preg);
+        Reg::Add(outVarreg, meanVreg, varVreg, preg);
+        Reg::StoreAlign<float, Reg::StoreDist::DIST_NORM_B32>(tmpbuffer + i * sregLower, outVarreg,
             preg);
     }
 }
@@ -302,29 +302,29 @@ template <bool isReuseSource = false, const WelfordFinalizeConfig &config = WFFI
 __simd_vf__ inline void WelfordFinalizeForB32RnVF(__ubuf__ float *outMean, __ubuf__ float *inMean,
     __ubuf__ float *inVar, __ubuf__ float *tmpbuffer, const WelfordFinalizePara para, uint16_t m)
 {
-    MicroAPI::RegTensor<float> outmeanReg;
-    MicroAPI::RegTensor<float> inMeanReg;
-    MicroAPI::RegTensor<float> invarReg;
-    MicroAPI::RegTensor<float> outVarreg;
-    MicroAPI::RegTensor<float> tmpVreg;
+    Reg::RegTensor<float> outmeanReg;
+    Reg::RegTensor<float> inMeanReg;
+    Reg::RegTensor<float> invarReg;
+    Reg::RegTensor<float> outVarreg;
+    Reg::RegTensor<float> tmpVreg;
     uint32_t K = para.headCountLength;
     uint32_t sregLower = static_cast<uint32_t>(Internal::WELFORD_B32_VF_LEN);
     uint16_t repeat = static_cast<uint16_t>(CeilDivision(K, sregLower));
 
-    MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_BRC_B32>(outmeanReg, outMean + m);
+    Reg::LoadAlign<float, Reg::LoadDist::DIST_BRC_B32>(outmeanReg, outMean + m);
     uint32_t sreg = static_cast<uint32_t>(K);
     float rn = para.rnLength;
     for (uint16_t i = 0; i < repeat; ++i) {
-        MicroAPI::MaskReg preg = MicroAPI::UpdateMask<uint32_t>(sreg);
-        MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_NORM>(inMeanReg,
+        Reg::MaskReg preg = Reg::UpdateMask<uint32_t>(sreg);
+        Reg::LoadAlign<float, Reg::LoadDist::DIST_NORM>(inMeanReg,
             inMean + i * sregLower + m * para.headCountLength);
-        MicroAPI::Sub(inMeanReg, inMeanReg, outmeanReg, preg);
-        MicroAPI::Mul(inMeanReg, inMeanReg, inMeanReg, preg);
-        MicroAPI::Muls(inMeanReg, inMeanReg, rn, preg);
-        MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_NORM>(invarReg,
+        Reg::Sub(inMeanReg, inMeanReg, outmeanReg, preg);
+        Reg::Mul(inMeanReg, inMeanReg, inMeanReg, preg);
+        Reg::Muls(inMeanReg, inMeanReg, rn, preg);
+        Reg::LoadAlign<float, Reg::LoadDist::DIST_NORM>(invarReg,
             inVar + i * sregLower + m * para.headCountLength);
-        MicroAPI::Add(outVarreg, invarReg, inMeanReg, preg);
-        MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_NORM_B32>(tmpbuffer + i * sregLower, outVarreg,
+        Reg::Add(outVarreg, invarReg, inMeanReg, preg);
+        Reg::StoreAlign<float, Reg::StoreDist::DIST_NORM_B32>(tmpbuffer + i * sregLower, outVarreg,
             preg);
     }
 }
@@ -333,27 +333,27 @@ template <bool isReuseSource = false, const WelfordFinalizeConfig &config = WFFI
 __simd_vf__ inline void WelfordFinalizeForB32OutMeanVF(__ubuf__ float *inMean, __ubuf__ float *tmpbuffer,
     const WelfordFinalizePara para, uint32_t sregLower, uint32_t K, uint16_t m, uint16_t hRepeat, uint16_t abRepeat)
 {
-    MicroAPI::RegTensor<float> inMeanReg;
-    MicroAPI::RegTensor<float> headReg;
-    MicroAPI::RegTensor<float> tailReg;
-    MicroAPI::MaskReg preg;
+    Reg::RegTensor<float> inMeanReg;
+    Reg::RegTensor<float> headReg;
+    Reg::RegTensor<float> tailReg;
+    Reg::MaskReg preg;
     Duplicate(headReg, (float)para.headCount / (float)para.tailCount);
     Duplicate(tailReg, para.tailCount);
     uint32_t sreg = K;
     for (uint16_t i = 0; i < abRepeat; ++i) {
-        preg = MicroAPI::UpdateMask<uint32_t>(sreg);
-        MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_NORM>(inMeanReg, inMean + i * sregLower + m * K);
-        MicroAPI::Mul(inMeanReg, inMeanReg, tailReg, preg);
-        MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_NORM_B32>(tmpbuffer + i * sregLower, inMeanReg,
+        preg = Reg::UpdateMask<uint32_t>(sreg);
+        Reg::LoadAlign<float, Reg::LoadDist::DIST_NORM>(inMeanReg, inMean + i * sregLower + m * K);
+        Reg::Mul(inMeanReg, inMeanReg, tailReg, preg);
+        Reg::StoreAlign<float, Reg::StoreDist::DIST_NORM_B32>(tmpbuffer + i * sregLower, inMeanReg,
             preg);
     }
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
     sreg = static_cast<uint32_t>(para.headCountLength);
     for (uint16_t i = 0; i < hRepeat; ++i) {
-        preg = MicroAPI::UpdateMask<uint32_t>(sreg);
-        MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_NORM>(inMeanReg, tmpbuffer + i * sregLower);
-        MicroAPI::Mul(inMeanReg, inMeanReg, headReg, preg);
-        MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_NORM_B32>(tmpbuffer + i * sregLower, inMeanReg,
+        preg = Reg::UpdateMask<uint32_t>(sreg);
+        Reg::LoadAlign<float, Reg::LoadDist::DIST_NORM>(inMeanReg, tmpbuffer + i * sregLower);
+        Reg::Mul(inMeanReg, inMeanReg, headReg, preg);
+        Reg::StoreAlign<float, Reg::StoreDist::DIST_NORM_B32>(tmpbuffer + i * sregLower, inMeanReg,
             preg);
     }
 }
@@ -363,45 +363,45 @@ __simd_vf__ inline void WelfordFinalizeForB32OutVarVF(__ubuf__ float *outMean, _
     __ubuf__ float *inVar, __ubuf__ float *tmpbuffer, const WelfordFinalizePara para,
     uint32_t sregLower, uint32_t K, uint16_t m, uint16_t hRepeat, uint16_t abRepeat)
 {
-    MicroAPI::RegTensor<float> outmeanReg;
-    MicroAPI::RegTensor<float> inMeanReg;
-    MicroAPI::RegTensor<float> invarReg;
-    MicroAPI::RegTensor<float> outVarreg;
-    MicroAPI::RegTensor<float> tmpVreg;
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<float> headReg;
-    MicroAPI::RegTensor<float> tailReg;
+    Reg::RegTensor<float> outmeanReg;
+    Reg::RegTensor<float> inMeanReg;
+    Reg::RegTensor<float> invarReg;
+    Reg::RegTensor<float> outVarreg;
+    Reg::RegTensor<float> tmpVreg;
+    Reg::MaskReg preg;
+    Reg::RegTensor<float> headReg;
+    Reg::RegTensor<float> tailReg;
     Duplicate(headReg, (float)para.headCount / (float)para.tailCount);
     Duplicate(tailReg, para.tailCount);
 
-    MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_BRC_B32>(outmeanReg, outMean + m);
+    Reg::LoadAlign<float, Reg::LoadDist::DIST_BRC_B32>(outmeanReg, outMean + m);
     uint32_t sreg = static_cast<uint32_t>(K);
     for (uint16_t i = 0; i < abRepeat; ++i) {
-        preg = MicroAPI::UpdateMask<uint32_t>(sreg);
-        MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_NORM>(inMeanReg, inMean + i * sregLower + m * K);
-        MicroAPI::Sub(inMeanReg, inMeanReg, outmeanReg, preg);
-        MicroAPI::Mul(inMeanReg, inMeanReg, inMeanReg, preg);
-        MicroAPI::Mul(inMeanReg, inMeanReg, tailReg, preg);
-        MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_NORM_B32>(tmpbuffer + i * sregLower, inMeanReg,
+        preg = Reg::UpdateMask<uint32_t>(sreg);
+        Reg::LoadAlign<float, Reg::LoadDist::DIST_NORM>(inMeanReg, inMean + i * sregLower + m * K);
+        Reg::Sub(inMeanReg, inMeanReg, outmeanReg, preg);
+        Reg::Mul(inMeanReg, inMeanReg, inMeanReg, preg);
+        Reg::Mul(inMeanReg, inMeanReg, tailReg, preg);
+        Reg::StoreAlign<float, Reg::StoreDist::DIST_NORM_B32>(tmpbuffer + i * sregLower, inMeanReg,
             preg);
     }
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
     sreg = static_cast<uint32_t>(para.headCountLength);
     for (uint16_t i = 0; i < hRepeat; ++i) {
-        preg = MicroAPI::UpdateMask<uint32_t>(sreg);
-        MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_NORM>(inMeanReg, tmpbuffer + i * sregLower);
-        MicroAPI::Mul(inMeanReg, inMeanReg, headReg, preg);
-        MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_NORM_B32>(tmpbuffer + i * sregLower, inMeanReg,
+        preg = Reg::UpdateMask<uint32_t>(sreg);
+        Reg::LoadAlign<float, Reg::LoadDist::DIST_NORM>(inMeanReg, tmpbuffer + i * sregLower);
+        Reg::Mul(inMeanReg, inMeanReg, headReg, preg);
+        Reg::StoreAlign<float, Reg::StoreDist::DIST_NORM_B32>(tmpbuffer + i * sregLower, inMeanReg,
             preg);
     }
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
     sreg = static_cast<uint32_t>(K);
     for (uint16_t i = 0; i < abRepeat; ++i) {
-        preg = MicroAPI::UpdateMask<uint32_t>(sreg);
-        MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_NORM>(tmpVreg, tmpbuffer + i * sregLower);
-        MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_NORM>(outVarreg, inVar + i * sregLower + m * K);
-        MicroAPI::Add(outVarreg, outVarreg, tmpVreg, preg);
-        MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_NORM_B32>(tmpbuffer + i * sregLower, outVarreg,
+        preg = Reg::UpdateMask<uint32_t>(sreg);
+        Reg::LoadAlign<float, Reg::LoadDist::DIST_NORM>(tmpVreg, tmpbuffer + i * sregLower);
+        Reg::LoadAlign<float, Reg::LoadDist::DIST_NORM>(outVarreg, inVar + i * sregLower + m * K);
+        Reg::Add(outVarreg, outVarreg, tmpVreg, preg);
+        Reg::StoreAlign<float, Reg::StoreDist::DIST_NORM_B32>(tmpbuffer + i * sregLower, outVarreg,
             preg);
     }
 }

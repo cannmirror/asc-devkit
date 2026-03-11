@@ -27,20 +27,20 @@ __aicore__ inline void VfGatherApi0B16(__ubuf__ T *dst, __ubuf__ T *src, __ubuf_
     const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t &dstRepStride, uint32_t dstRepeatCount,
     uint32_t u32OffsetRepeatCount, uint32_t blkCount, const uint64_t maskCount)
 {
-    MicroAPI::RegTensor<uint32_t> offsetReg0;
-    MicroAPI::RegTensor<uint32_t> offsetReg1;
-    MicroAPI::RegTensor<uint16_t> indexReg;
-    MicroAPI::RegTensor<uint16_t> dstReg;
+    Reg::RegTensor<uint32_t> offsetReg0;
+    Reg::RegTensor<uint32_t> offsetReg1;
+    Reg::RegTensor<uint16_t> indexReg;
+    Reg::RegTensor<uint16_t> dstReg;
     uint32_t sregPlt = static_cast<uint32_t>(maskCount);
-    MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint32_t>();
-    MicroAPI::MaskReg selectMask = MicroAPI::CreateMask<uint16_t, MicroAPI::MaskPattern::H>();
-    MicroAPI::MaskReg dstMask;
+    Reg::MaskReg indexMask = Reg::CreateMask<uint32_t>();
+    Reg::MaskReg selectMask = Reg::CreateMask<uint16_t, Reg::MaskPattern::H>();
+    Reg::MaskReg dstMask;
     if constexpr (isNormalMode) {
-        dstMask = MicroAPI::MoveMask<T>();
+        dstMask = Reg::MoveMask<T>();
     }
     for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
         if constexpr (!isNormalMode) {
-            dstMask = MicroAPI::UpdateMask<T>(sregPlt);
+            dstMask = Reg::UpdateMask<T>(sregPlt);
         }
         DataCopy(offsetReg0, srcOffset + (2 * i) * u32OffsetRepeatCount);
         DataCopy(offsetReg1, srcOffset + (2 * i + 1) * u32OffsetRepeatCount);
@@ -52,13 +52,13 @@ __aicore__ inline void VfGatherApi0B16(__ubuf__ T *dst, __ubuf__ T *src, __ubuf_
         // 0x00FF00FE00FD... ->0xFFFEFD...000000...
         // for offsetReg1, pack every higher 16-bit into the higher half of the vreg:
         // 0x001100120013... -> 0x000000...111213...
-        MicroAPI::Pack<uint16_t, uint32_t, MicroAPI::HighLowPart::LOWEST>((MicroAPI::RegTensor<uint16_t> &)offsetReg0,
+        Reg::Pack<uint16_t, uint32_t, Reg::HighLowPart::LOWEST>((Reg::RegTensor<uint16_t> &)offsetReg0,
             offsetReg0);
-        MicroAPI::Pack<uint16_t, uint32_t, MicroAPI::HighLowPart::HIGHEST>((MicroAPI::RegTensor<uint16_t> &)offsetReg1,
+        Reg::Pack<uint16_t, uint32_t, Reg::HighLowPart::HIGHEST>((Reg::RegTensor<uint16_t> &)offsetReg1,
             offsetReg1);
         // Select the effective data in offsetReg0 and offsetReg1 and joint them into a complete uint16_t type
         // indexReg：0xFFFEFD...111213...
-        Select(indexReg, (MicroAPI::RegTensor<uint16_t> &)offsetReg0, (MicroAPI::RegTensor<uint16_t> &)offsetReg1,
+        Select(indexReg, (Reg::RegTensor<uint16_t> &)offsetReg0, (Reg::RegTensor<uint16_t> &)offsetReg1,
             selectMask);
         DataCopyGather(dstReg, (__ubuf__ uint16_t *)src + srcBaseIndex, indexReg, dstMask);
         DataCopy((__ubuf__ uint16_t *)dst + i * dstRepStride * blkCount, dstReg, dstMask);
@@ -81,19 +81,19 @@ __aicore__ inline void VfGatherApi0B32(__ubuf__ T *dst, __ubuf__ T *src, __ubuf_
     const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t &dstRepStride, uint32_t dstRepeatCount,
     uint32_t u32OffsetRepeatCount, uint32_t blkCount, const uint64_t maskCount)
 {
-    MicroAPI::RegTensor<uint32_t> offsetReg;
-    MicroAPI::RegTensor<uint32_t> indexReg;
-    MicroAPI::RegTensor<uint32_t> dstReg;
+    Reg::RegTensor<uint32_t> offsetReg;
+    Reg::RegTensor<uint32_t> indexReg;
+    Reg::RegTensor<uint32_t> dstReg;
     uint32_t sregPlt = static_cast<uint32_t>(maskCount);
-    MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<T>();
-    MicroAPI::MaskReg dstMask;
-    MicroAPI::MaskReg offsetMask = MicroAPI::CreateMask<uint32_t>();
+    Reg::MaskReg indexMask = Reg::CreateMask<T>();
+    Reg::MaskReg dstMask;
+    Reg::MaskReg offsetMask = Reg::CreateMask<uint32_t>();
     if constexpr (isNormalMode) {
-        dstMask = MicroAPI::MoveMask<T>();
+        dstMask = Reg::MoveMask<T>();
     }
     for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
         if constexpr (!isNormalMode) {
-            dstMask = MicroAPI::UpdateMask<T>(sregPlt);
+            dstMask = Reg::UpdateMask<T>(sregPlt);
         }
         DataCopy(offsetReg, srcOffset + i * u32OffsetRepeatCount);
         // convert addr offset into B32 element index: divide by 4 (implemented by ShiftRight 2 bit)

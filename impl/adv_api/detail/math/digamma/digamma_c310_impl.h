@@ -48,206 +48,206 @@ constexpr float tmp1HalfCalcConst[] = {1.0, 2.0};
 constexpr float picotCalcConst[] = {0.00326538085938f, 0.0242919921875f, 0.053466796875f,
                                     0.133377909660f, 0.333332300186f};
 
-static constexpr MicroAPI::CastTrait FLOAT_TO_INT_CAST_TRAIT = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
-static constexpr MicroAPI::CastTrait INT_TO_FLOAT_CAST_TRAIT = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
+static constexpr Reg::CastTrait FLOAT_TO_INT_CAST_TRAIT = {Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
+static constexpr Reg::CastTrait INT_TO_FLOAT_CAST_TRAIT = {Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
 
 template <CMPMODE cmpMode>
-__simd_callee__ inline void DigammaGenCompareMask(MicroAPI::MaskReg& maskDst, MicroAPI::RegTensor<float>& srcReg, const float scalar, MicroAPI::MaskReg& mask) {
-    MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::RegTensor<float> tmpScalarReg;
-    MicroAPI::Duplicate(tmpScalarReg, scalar, fullMask);
-    MicroAPI::Compare<float, cmpMode>(maskDst, srcReg, tmpScalarReg, mask);
+__simd_callee__ inline void DigammaGenCompareMask(Reg::MaskReg& maskDst, Reg::RegTensor<float>& srcReg, const float scalar, Reg::MaskReg& mask) {
+    Reg::MaskReg fullMask = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
+    Reg::RegTensor<float> tmpScalarReg;
+    Reg::Duplicate(tmpScalarReg, scalar, fullMask);
+    Reg::Compare<float, cmpMode>(maskDst, srcReg, tmpScalarReg, mask);
 }
 
 __simd_callee__ inline void DigammaSelect(
-    MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg,
-    MicroAPI::RegTensor<float>& tmpReg, MicroAPI::MaskReg& mask)
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg,
+    Reg::RegTensor<float>& tmpReg, Reg::MaskReg& mask)
 {
-    MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::RegTensor<float> tmpScalarReg;
-    MicroAPI::Duplicate(tmpScalarReg, 0.0f, fullMask);
-    MicroAPI::Select(tmpReg, srcReg, tmpScalarReg, mask);
-    MicroAPI::Add(dstReg, tmpReg, dstReg, fullMask);
+    Reg::MaskReg fullMask = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
+    Reg::RegTensor<float> tmpScalarReg;
+    Reg::Duplicate(tmpScalarReg, 0.0f, fullMask);
+    Reg::Select(tmpReg, srcReg, tmpScalarReg, mask);
+    Reg::Add(dstReg, tmpReg, dstReg, fullMask);
 }
 
-__simd_callee__ inline void DigammaPositiveTmp0(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg)
+__simd_callee__ inline void DigammaPositiveTmp0(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg)
 {
-    MicroAPI::MaskReg mask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::RegTensor<float> tmpReg1;
-    MicroAPI::RegTensor<float> tmpReg2;
-    MicroAPI::RegTensor<float> tmpScalarReg;
-    MicroAPI::Adds(tmpReg1, srcReg, 10.0f, mask);
-    MicroAPI::Ln(dstReg, tmpReg1, mask);
-    MicroAPI::Duplicate(tmpScalarReg, 1.0f, mask);
-    MicroAPI::Div(tmpReg1, tmpScalarReg, tmpReg1, mask);
-    MicroAPI::Muls(tmpReg2, tmpReg1, 0.5f, mask);
-    MicroAPI::Sub(dstReg, dstReg, tmpReg2, mask);
-    MicroAPI::Mul(tmpReg1, tmpReg1, tmpReg1, mask);
-    MicroAPI::Duplicate(tmpReg2, 8.33333333333333333333e-2, mask);
-    MicroAPI::Duplicate(tmpScalarReg, posCalcConst[0U], mask);
-    MicroAPI::Mul(tmpReg2, tmpReg1, tmpReg2, mask);
-    MicroAPI::Sub(tmpReg2, tmpScalarReg, tmpReg2, mask);
-    MicroAPI::Duplicate(tmpScalarReg, posCalcConst[1U], mask);
-    MicroAPI::Mul(tmpReg2, tmpReg1, tmpReg2, mask);
-    MicroAPI::Sub(tmpReg2, tmpScalarReg, tmpReg2, mask);
-    MicroAPI::Duplicate(tmpScalarReg, posCalcConst[2U], mask);
-    MicroAPI::Mul(tmpReg2, tmpReg1, tmpReg2, mask);
-    MicroAPI::Sub(tmpReg2, tmpScalarReg, tmpReg2, mask);
-    MicroAPI::Duplicate(tmpScalarReg, posCalcConst[3U], mask);
-    MicroAPI::Mul(tmpReg2, tmpReg1, tmpReg2, mask);
-    MicroAPI::Sub(tmpReg2, tmpScalarReg, tmpReg2, mask);
-    MicroAPI::Duplicate(tmpScalarReg, posCalcConst[4U], mask);
-    MicroAPI::Mul(tmpReg2, tmpReg1, tmpReg2, mask);
-    MicroAPI::Sub(tmpReg2, tmpScalarReg, tmpReg2, mask);
-    MicroAPI::Duplicate(tmpScalarReg, posCalcConst[5U], mask);
-    MicroAPI::Mul(tmpReg2, tmpReg1, tmpReg2, mask);
-    MicroAPI::Sub(tmpReg2, tmpScalarReg, tmpReg2, mask);
-    MicroAPI::Mul(tmpReg2, tmpReg1, tmpReg2, mask);
-    MicroAPI::Sub(dstReg, dstReg, tmpReg2, mask);
+    Reg::MaskReg mask = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
+    Reg::RegTensor<float> tmpReg1;
+    Reg::RegTensor<float> tmpReg2;
+    Reg::RegTensor<float> tmpScalarReg;
+    Reg::Adds(tmpReg1, srcReg, 10.0f, mask);
+    Reg::Ln(dstReg, tmpReg1, mask);
+    Reg::Duplicate(tmpScalarReg, 1.0f, mask);
+    Reg::Div(tmpReg1, tmpScalarReg, tmpReg1, mask);
+    Reg::Muls(tmpReg2, tmpReg1, 0.5f, mask);
+    Reg::Sub(dstReg, dstReg, tmpReg2, mask);
+    Reg::Mul(tmpReg1, tmpReg1, tmpReg1, mask);
+    Reg::Duplicate(tmpReg2, 8.33333333333333333333e-2, mask);
+    Reg::Duplicate(tmpScalarReg, posCalcConst[0U], mask);
+    Reg::Mul(tmpReg2, tmpReg1, tmpReg2, mask);
+    Reg::Sub(tmpReg2, tmpScalarReg, tmpReg2, mask);
+    Reg::Duplicate(tmpScalarReg, posCalcConst[1U], mask);
+    Reg::Mul(tmpReg2, tmpReg1, tmpReg2, mask);
+    Reg::Sub(tmpReg2, tmpScalarReg, tmpReg2, mask);
+    Reg::Duplicate(tmpScalarReg, posCalcConst[2U], mask);
+    Reg::Mul(tmpReg2, tmpReg1, tmpReg2, mask);
+    Reg::Sub(tmpReg2, tmpScalarReg, tmpReg2, mask);
+    Reg::Duplicate(tmpScalarReg, posCalcConst[3U], mask);
+    Reg::Mul(tmpReg2, tmpReg1, tmpReg2, mask);
+    Reg::Sub(tmpReg2, tmpScalarReg, tmpReg2, mask);
+    Reg::Duplicate(tmpScalarReg, posCalcConst[4U], mask);
+    Reg::Mul(tmpReg2, tmpReg1, tmpReg2, mask);
+    Reg::Sub(tmpReg2, tmpScalarReg, tmpReg2, mask);
+    Reg::Duplicate(tmpScalarReg, posCalcConst[5U], mask);
+    Reg::Mul(tmpReg2, tmpReg1, tmpReg2, mask);
+    Reg::Sub(tmpReg2, tmpScalarReg, tmpReg2, mask);
+    Reg::Mul(tmpReg2, tmpReg1, tmpReg2, mask);
+    Reg::Sub(dstReg, dstReg, tmpReg2, mask);
 }
 
-__simd_callee__ inline void DigammaPositiveTmp1(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg)
+__simd_callee__ inline void DigammaPositiveTmp1(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg)
 {
-    MicroAPI::MaskReg mask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::RegTensor<float> tmpReg2;
-    MicroAPI::RegTensor<float> tmpScalarReg;
-    MicroAPI::Duplicate(tmpScalarReg, 1.0f, mask);
-    MicroAPI::Div(dstReg, tmpScalarReg, srcReg, mask);
-    MicroAPI::Adds(tmpReg2, srcReg, tmp1CalcConst[0U], mask);
-    MicroAPI::Div(tmpReg2, tmpScalarReg, tmpReg2, mask);
-    MicroAPI::Add(dstReg, dstReg, tmpReg2, mask);
-    MicroAPI::Adds(tmpReg2, srcReg, tmp1CalcConst[1U], mask);
-    MicroAPI::Div(tmpReg2, tmpScalarReg, tmpReg2, mask);
-    MicroAPI::Add(dstReg, dstReg, tmpReg2, mask);
-    MicroAPI::Adds(tmpReg2, srcReg, tmp1CalcConst[2U], mask);
-    MicroAPI::Div(tmpReg2, tmpScalarReg, tmpReg2, mask);
-    MicroAPI::Add(dstReg, dstReg, tmpReg2, mask);
-    MicroAPI::Adds(tmpReg2, srcReg, tmp1CalcConst[3U], mask);
-    MicroAPI::Div(tmpReg2, tmpScalarReg, tmpReg2, mask);
-    MicroAPI::Add(dstReg, dstReg, tmpReg2, mask);
-    MicroAPI::Adds(tmpReg2, srcReg, tmp1CalcConst[4U], mask);
-    MicroAPI::Div(tmpReg2, tmpScalarReg, tmpReg2, mask);
-    MicroAPI::Add(dstReg, dstReg, tmpReg2, mask);
-    MicroAPI::Adds(tmpReg2, srcReg, tmp1CalcConst[5U], mask);
-    MicroAPI::Div(tmpReg2, tmpScalarReg, tmpReg2, mask);
-    MicroAPI::Add(dstReg, dstReg, tmpReg2, mask);
-    MicroAPI::Adds(tmpReg2, srcReg, tmp1CalcConst[6U], mask);
-    MicroAPI::Div(tmpReg2, tmpScalarReg, tmpReg2, mask);
-    MicroAPI::Add(dstReg, dstReg, tmpReg2, mask);
-    MicroAPI::Adds(tmpReg2, srcReg, tmp1CalcConst[7U], mask);
-    MicroAPI::Div(tmpReg2, tmpScalarReg, tmpReg2, mask);
-    MicroAPI::Add(dstReg, dstReg, tmpReg2, mask);
-    MicroAPI::Adds(tmpReg2, srcReg, tmp1CalcConst[8U], mask);
-    MicroAPI::Div(tmpReg2, tmpScalarReg, tmpReg2, mask);
-    MicroAPI::Add(dstReg, dstReg, tmpReg2, mask);
+    Reg::MaskReg mask = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
+    Reg::RegTensor<float> tmpReg2;
+    Reg::RegTensor<float> tmpScalarReg;
+    Reg::Duplicate(tmpScalarReg, 1.0f, mask);
+    Reg::Div(dstReg, tmpScalarReg, srcReg, mask);
+    Reg::Adds(tmpReg2, srcReg, tmp1CalcConst[0U], mask);
+    Reg::Div(tmpReg2, tmpScalarReg, tmpReg2, mask);
+    Reg::Add(dstReg, dstReg, tmpReg2, mask);
+    Reg::Adds(tmpReg2, srcReg, tmp1CalcConst[1U], mask);
+    Reg::Div(tmpReg2, tmpScalarReg, tmpReg2, mask);
+    Reg::Add(dstReg, dstReg, tmpReg2, mask);
+    Reg::Adds(tmpReg2, srcReg, tmp1CalcConst[2U], mask);
+    Reg::Div(tmpReg2, tmpScalarReg, tmpReg2, mask);
+    Reg::Add(dstReg, dstReg, tmpReg2, mask);
+    Reg::Adds(tmpReg2, srcReg, tmp1CalcConst[3U], mask);
+    Reg::Div(tmpReg2, tmpScalarReg, tmpReg2, mask);
+    Reg::Add(dstReg, dstReg, tmpReg2, mask);
+    Reg::Adds(tmpReg2, srcReg, tmp1CalcConst[4U], mask);
+    Reg::Div(tmpReg2, tmpScalarReg, tmpReg2, mask);
+    Reg::Add(dstReg, dstReg, tmpReg2, mask);
+    Reg::Adds(tmpReg2, srcReg, tmp1CalcConst[5U], mask);
+    Reg::Div(tmpReg2, tmpScalarReg, tmpReg2, mask);
+    Reg::Add(dstReg, dstReg, tmpReg2, mask);
+    Reg::Adds(tmpReg2, srcReg, tmp1CalcConst[6U], mask);
+    Reg::Div(tmpReg2, tmpScalarReg, tmpReg2, mask);
+    Reg::Add(dstReg, dstReg, tmpReg2, mask);
+    Reg::Adds(tmpReg2, srcReg, tmp1CalcConst[7U], mask);
+    Reg::Div(tmpReg2, tmpScalarReg, tmpReg2, mask);
+    Reg::Add(dstReg, dstReg, tmpReg2, mask);
+    Reg::Adds(tmpReg2, srcReg, tmp1CalcConst[8U], mask);
+    Reg::Div(tmpReg2, tmpScalarReg, tmpReg2, mask);
+    Reg::Add(dstReg, dstReg, tmpReg2, mask);
 }
 
-__simd_callee__ inline void DigammaPositive(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void DigammaPositive(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, Reg::MaskReg& mask)
 {
-    MicroAPI::RegTensor<float> tmpRegForPos;
+    Reg::RegTensor<float> tmpRegForPos;
     DigammaPositiveTmp0(dstReg, srcReg);
     DigammaPositiveTmp1(tmpRegForPos, srcReg);
-    MicroAPI::Sub(dstReg, dstReg, tmpRegForPos, mask);
+    Reg::Sub(dstReg, dstReg, tmpRegForPos, mask);
 }
 
-__simd_callee__ inline void DigammaNegPicotPix(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg)
+__simd_callee__ inline void DigammaNegPicotPix(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg)
 {
-    MicroAPI::MaskReg mask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::MaskReg mask1;
-    MicroAPI::MaskReg mask2;
-    MicroAPI::RegTensor<float> tmpReg1;
-    MicroAPI::RegTensor<float> tmpReg2;
-    MicroAPI::RegTensor<float> tmpReg3;
-    MicroAPI::RegTensor<float> tmpScalarReg;
-    MicroAPI::RegTensor<int32_t> tmpReg2s32;
-    MicroAPI::Add(tmpReg1, srcReg, srcReg, mask);
-    MicroAPI::Cast<int32_t, float, FLOAT_TO_INT_CAST_TRAIT>(tmpReg2s32, tmpReg1, mask);
-    MicroAPI::Cast<float, int32_t, INT_TO_FLOAT_CAST_TRAIT>(tmpReg2, tmpReg2s32, mask);
-    MicroAPI::Sub(tmpReg1, tmpReg1, tmpReg2, mask);
-    MicroAPI::Muls(tmpReg1, tmpReg1, 1.5707963267948966f, mask);
-    MicroAPI::Cast<int32_t, float, FLOAT_TO_INT_CAST_TRAIT>(tmpReg2s32, tmpReg2, mask);
-    MicroAPI::Duplicate((MicroAPI::RegTensor<int32_t> &)tmpReg3, 1, mask);
-    MicroAPI::And<uint16_t>((MicroAPI::RegTensor<uint16_t> &)tmpReg2s32, (MicroAPI::RegTensor<uint16_t> &)tmpReg2s32, (MicroAPI::RegTensor<uint16_t> &)tmpReg3, mask);
-    MicroAPI::Cast<float, int32_t, INT_TO_FLOAT_CAST_TRAIT>(tmpReg2, tmpReg2s32, mask);
+    Reg::MaskReg mask = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
+    Reg::MaskReg mask1;
+    Reg::MaskReg mask2;
+    Reg::RegTensor<float> tmpReg1;
+    Reg::RegTensor<float> tmpReg2;
+    Reg::RegTensor<float> tmpReg3;
+    Reg::RegTensor<float> tmpScalarReg;
+    Reg::RegTensor<int32_t> tmpReg2s32;
+    Reg::Add(tmpReg1, srcReg, srcReg, mask);
+    Reg::Cast<int32_t, float, FLOAT_TO_INT_CAST_TRAIT>(tmpReg2s32, tmpReg1, mask);
+    Reg::Cast<float, int32_t, INT_TO_FLOAT_CAST_TRAIT>(tmpReg2, tmpReg2s32, mask);
+    Reg::Sub(tmpReg1, tmpReg1, tmpReg2, mask);
+    Reg::Muls(tmpReg1, tmpReg1, 1.5707963267948966f, mask);
+    Reg::Cast<int32_t, float, FLOAT_TO_INT_CAST_TRAIT>(tmpReg2s32, tmpReg2, mask);
+    Reg::Duplicate((Reg::RegTensor<int32_t> &)tmpReg3, 1, mask);
+    Reg::And<uint16_t>((Reg::RegTensor<uint16_t> &)tmpReg2s32, (Reg::RegTensor<uint16_t> &)tmpReg2s32, (Reg::RegTensor<uint16_t> &)tmpReg3, mask);
+    Reg::Cast<float, int32_t, INT_TO_FLOAT_CAST_TRAIT>(tmpReg2, tmpReg2s32, mask);
     DigammaGenCompareMask<CMPMODE::LT>(mask1, tmpReg2, 0.5f, mask);
     DigammaGenCompareMask<CMPMODE::GE>(mask2, tmpReg2, 0.5f, mask);
-    MicroAPI::Mul(tmpReg2, tmpReg1, tmpReg1, mask);
-    MicroAPI::Duplicate(dstReg, 0.0093383789065f, mask);
-    MicroAPI::Mul(dstReg, dstReg, tmpReg2, mask);
-    MicroAPI::Adds(dstReg, dstReg, picotCalcConst[0U], mask);
-    MicroAPI::Mul(dstReg, dstReg, tmpReg2, mask);
-    MicroAPI::Adds(dstReg, dstReg, picotCalcConst[1U], mask);
-    MicroAPI::Mul(dstReg, dstReg, tmpReg2, mask);
-    MicroAPI::Adds(dstReg, dstReg, picotCalcConst[2U], mask);
-    MicroAPI::Mul(dstReg, dstReg, tmpReg2, mask);
-    MicroAPI::Adds(dstReg, dstReg, picotCalcConst[3U], mask);
-    MicroAPI::Mul(dstReg, dstReg, tmpReg2, mask);
-    MicroAPI::Adds(dstReg, dstReg, picotCalcConst[4U], mask);
-    MicroAPI::Mul(dstReg, dstReg, tmpReg2, mask);
-    MicroAPI::Mul(dstReg, dstReg, tmpReg1, mask);
-    MicroAPI::Add(tmpReg1, dstReg, tmpReg1, mask);
-    MicroAPI::Duplicate(dstReg, 0.0f, mask);
+    Reg::Mul(tmpReg2, tmpReg1, tmpReg1, mask);
+    Reg::Duplicate(dstReg, 0.0093383789065f, mask);
+    Reg::Mul(dstReg, dstReg, tmpReg2, mask);
+    Reg::Adds(dstReg, dstReg, picotCalcConst[0U], mask);
+    Reg::Mul(dstReg, dstReg, tmpReg2, mask);
+    Reg::Adds(dstReg, dstReg, picotCalcConst[1U], mask);
+    Reg::Mul(dstReg, dstReg, tmpReg2, mask);
+    Reg::Adds(dstReg, dstReg, picotCalcConst[2U], mask);
+    Reg::Mul(dstReg, dstReg, tmpReg2, mask);
+    Reg::Adds(dstReg, dstReg, picotCalcConst[3U], mask);
+    Reg::Mul(dstReg, dstReg, tmpReg2, mask);
+    Reg::Adds(dstReg, dstReg, picotCalcConst[4U], mask);
+    Reg::Mul(dstReg, dstReg, tmpReg2, mask);
+    Reg::Mul(dstReg, dstReg, tmpReg1, mask);
+    Reg::Add(tmpReg1, dstReg, tmpReg1, mask);
+    Reg::Duplicate(dstReg, 0.0f, mask);
     DigammaSelect(dstReg, tmpReg1, tmpReg3, mask2);
-    MicroAPI::Duplicate(tmpScalarReg, -1.0f, mask);
-    MicroAPI::Div(tmpReg1, tmpScalarReg, tmpReg1, mask);
+    Reg::Duplicate(tmpScalarReg, -1.0f, mask);
+    Reg::Div(tmpReg1, tmpScalarReg, tmpReg1, mask);
     DigammaSelect(dstReg, tmpReg1, tmpReg3, mask1);
-    MicroAPI::Muls(dstReg, dstReg, DIGAMMA_PI, mask);
+    Reg::Muls(dstReg, dstReg, DIGAMMA_PI, mask);
 }
 
-__simd_callee__ inline void DigammaNegative(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void DigammaNegative(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, Reg::MaskReg& mask)
 {
-    MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::RegTensor<float> tmpReg3;
-    MicroAPI::RegTensor<float> tmpReg4;
-    MicroAPI::Muls(tmpReg3, srcReg, -1.0f, fullMask);
-    MicroAPI::Adds(tmpReg3, tmpReg3, 1.0f, fullMask);
+    Reg::MaskReg fullMask = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
+    Reg::RegTensor<float> tmpReg3;
+    Reg::RegTensor<float> tmpReg4;
+    Reg::Muls(tmpReg3, srcReg, -1.0f, fullMask);
+    Reg::Adds(tmpReg3, tmpReg3, 1.0f, fullMask);
     DigammaPositive(dstReg, tmpReg3, mask);
     DigammaNegPicotPix(tmpReg4, srcReg);
-    MicroAPI::Add(dstReg, dstReg, tmpReg4, mask);
+    Reg::Add(dstReg, dstReg, tmpReg4, mask);
 }
 
-__simd_callee__ inline void DigammaGenNegIntMask(MicroAPI::MaskReg& maskdst, MicroAPI::RegTensor<float>& srcReg, const float scalar, MicroAPI::RegTensor<float>& tmpCal1, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void DigammaGenNegIntMask(Reg::MaskReg& maskdst, Reg::RegTensor<float>& srcReg, const float scalar, Reg::RegTensor<float>& tmpCal1, Reg::MaskReg& mask)
 {
-    MicroAPI::MaskReg tmpmask;
-    MicroAPI::MaskReg mask1;
-    MicroAPI::MaskReg mask2;
-    MicroAPI::RegTensor<int32_t> tmpReg2s32;
+    Reg::MaskReg tmpmask;
+    Reg::MaskReg mask1;
+    Reg::MaskReg mask2;
+    Reg::RegTensor<int32_t> tmpReg2s32;
     DigammaGenCompareMask<CMPMODE::LT>(mask1, srcReg, 0.0f, mask);
     DigammaGenCompareMask<CMPMODE::GT>(mask2, srcReg, MIN_NEG_FLOAT, mask);
-    MicroAPI::MaskAnd(mask1, mask1, mask2, mask);
-    MicroAPI::Cast<int32_t, float, FLOAT_TO_INT_CAST_TRAIT>(tmpReg2s32, srcReg, mask);
-    MicroAPI::Cast<float, int32_t, INT_TO_FLOAT_CAST_TRAIT>(tmpCal1, tmpReg2s32, mask);
-    MicroAPI::Compare<float, CMPMODE::EQ>(mask2, srcReg, tmpCal1, mask);
-    MicroAPI::MaskAnd(maskdst, mask1, mask2, mask);
+    Reg::MaskAnd(mask1, mask1, mask2, mask);
+    Reg::Cast<int32_t, float, FLOAT_TO_INT_CAST_TRAIT>(tmpReg2s32, srcReg, mask);
+    Reg::Cast<float, int32_t, INT_TO_FLOAT_CAST_TRAIT>(tmpCal1, tmpReg2s32, mask);
+    Reg::Compare<float, CMPMODE::EQ>(mask2, srcReg, tmpCal1, mask);
+    Reg::MaskAnd(maskdst, mask1, mask2, mask);
 }
 
-__simd_callee__ inline void DigammaGenNanMask(MicroAPI::MaskReg& mask0, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask1, MicroAPI::MaskReg& mask2, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void DigammaGenNanMask(Reg::MaskReg& mask0, Reg::RegTensor<float>& srcReg, Reg::MaskReg& mask1, Reg::MaskReg& mask2, Reg::MaskReg& mask)
 {
     DigammaGenCompareMask<CMPMODE::LT>(mask1, srcReg, 0.0f, mask);
     DigammaGenCompareMask<CMPMODE::GE>(mask2, srcReg, 0.0f, mask);
-    MicroAPI::MaskNot(mask1, mask1, mask);
-    MicroAPI::MaskNot(mask2, mask2, mask);
-    MicroAPI::MaskAnd(mask0, mask1, mask2, mask);
+    Reg::MaskNot(mask1, mask1, mask);
+    Reg::MaskNot(mask2, mask2, mask);
+    Reg::MaskAnd(mask0, mask1, mask2, mask);
 }
 
 __simd_callee__ inline void DigammaComputeImpl(
-    MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>&srcReg, MicroAPI::MaskReg& mask)
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>&srcReg, Reg::MaskReg& mask)
 {
-    MicroAPI::MaskReg mask0;
-    MicroAPI::MaskReg mask1;
-    MicroAPI::MaskReg mask2;
-    MicroAPI::RegTensor<float> resultReg;
-    MicroAPI::RegTensor<float> tmpCal1;
-    MicroAPI::RegTensor<float> tmpCal2;
-    MicroAPI::RegTensor<float> tmpCal3;
-    MicroAPI::RegTensor<float> tmpCal4;
-    MicroAPI::RegTensor<float> tmpCal5;
-    MicroAPI::RegTensor<float> tmpScalar;
+    Reg::MaskReg mask0;
+    Reg::MaskReg mask1;
+    Reg::MaskReg mask2;
+    Reg::RegTensor<float> resultReg;
+    Reg::RegTensor<float> tmpCal1;
+    Reg::RegTensor<float> tmpCal2;
+    Reg::RegTensor<float> tmpCal3;
+    Reg::RegTensor<float> tmpCal4;
+    Reg::RegTensor<float> tmpCal5;
+    Reg::RegTensor<float> tmpScalar;
 
     NotNumUnion notNum;
     notNum.i = F32_NAN;
-    MicroAPI::Duplicate(dstReg, 0.0f, mask);
-    MicroAPI::Duplicate(resultReg, notNum.f, mask);
+    Reg::Duplicate(dstReg, 0.0f, mask);
+    Reg::Duplicate(resultReg, notNum.f, mask);
     DigammaGenCompareMask<CMPMODE::LE>(mask0, srcReg, MIN_NEG_FLOAT, mask);
     DigammaSelect(dstReg, resultReg, tmpCal3, mask0);
     DigammaGenNegIntMask(mask1, srcReg, MIN_NEG_FLOAT, tmpCal1, mask);
@@ -268,15 +268,15 @@ __simd_vf__ inline void DigammaImpl(__ubuf__ float *dstUb, __ubuf__ float *srcUb
 {
     constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(float));
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
-    MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::RegTensor<float> dstReg;
-    MicroAPI::RegTensor<float> srcReg;
-    MicroAPI::MaskReg mask;
+    Reg::MaskReg fullMask = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
+    Reg::RegTensor<float> dstReg;
+    Reg::RegTensor<float> srcReg;
+    Reg::MaskReg mask;
     for (uint16_t i = 0; i < repeatTime; ++i) {
-        mask = MicroAPI::UpdateMask<float>(calCount);
-        MicroAPI::LoadAlign(srcReg, srcUb + i * sregLower);
+        mask = Reg::UpdateMask<float>(calCount);
+        Reg::LoadAlign(srcReg, srcUb + i * sregLower);
         DigammaComputeImpl(dstReg, srcReg, fullMask);
-        MicroAPI::StoreAlign(dstUb + i * sregLower, dstReg, mask);
+        Reg::StoreAlign(dstUb + i * sregLower, dstReg, mask);
     }
 }
 } // namespace DigammaInternel

@@ -29,46 +29,46 @@
 namespace AscendC {
 namespace ReduceXorSumAPI {
 
-constexpr MicroAPI::CastTrait castTraitF16F32 = {
-    MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
-constexpr MicroAPI::CastTrait castTraitF32F16 = {
-    MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait castTraitF16F32 = {
+    Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN, Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait castTraitF32F16 = {
+    Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
 template<typename T>
-__simd_callee__ inline void LoadSrcDataAndXor(MicroAPI::RegTensor<float>& srcReg, __ubuf__ T* src0, 
-    __ubuf__ T* src1, uint16_t index, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void LoadSrcDataAndXor(Reg::RegTensor<float>& srcReg, __ubuf__ T* src0, 
+    __ubuf__ T* src1, uint16_t index, Reg::MaskReg& mask)
 {
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(float);
-    MicroAPI::RegTensor<T> src0TmpReg, src1TmpReg;
-    MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(src0TmpReg, src0 + index * eleCountPerVL);
-    MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(src1TmpReg, src1 + index * eleCountPerVL);
-    MicroAPI::Xor(src0TmpReg, src0TmpReg, src1TmpReg, mask);
-    MicroAPI::Cast<float, T, castTraitF16F32>(srcReg, src0TmpReg, mask);
+    Reg::RegTensor<T> src0TmpReg, src1TmpReg;
+    Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(src0TmpReg, src0 + index * eleCountPerVL);
+    Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(src1TmpReg, src1 + index * eleCountPerVL);
+    Reg::Xor(src0TmpReg, src0TmpReg, src1TmpReg, mask);
+    Reg::Cast<float, T, castTraitF16F32>(srcReg, src0TmpReg, mask);
 }
 
 template<typename T>
 __simd_vf__ inline void ReduceXorSumCoreImpl(__ubuf__ T* dstUb, __ubuf__ T* src0Ub,
     __ubuf__ T* src1Ub,  uint32_t calCount)
 {
-    MicroAPI::MaskReg mask;
-    MicroAPI::UnalignReg ureg;
-    MicroAPI::RegTensor<T> dstReg;
-    MicroAPI::RegTensor<float> srcTmpReg, dstTmpReg, tmpReg, zeroReg;
-    MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<float>();
+    Reg::MaskReg mask;
+    Reg::UnalignReg ureg;
+    Reg::RegTensor<T> dstReg;
+    Reg::RegTensor<float> srcTmpReg, dstTmpReg, tmpReg, zeroReg;
+    Reg::MaskReg fullMask = Reg::CreateMask<float>();
     constexpr int32_t eleCountPerVL = GetVecLen() / sizeof(float);
     uint16_t repeatTimes = CeilDivision(calCount, eleCountPerVL);
-    MicroAPI::Duplicate(zeroReg, 0, fullMask);
+    Reg::Duplicate(zeroReg, 0, fullMask);
     for (uint16_t i = 0; i < repeatTimes; i++) {
-        mask = MicroAPI::UpdateMask<float>(calCount);
+        mask = Reg::UpdateMask<float>(calCount);
         LoadSrcDataAndXor(srcTmpReg, src0Ub, src1Ub, i, mask);
-        MicroAPI::ReduceSum(dstTmpReg, srcTmpReg, mask);
-        MicroAPI::Add(zeroReg, zeroReg, dstTmpReg, mask);
+        Reg::ReduceSum(dstTmpReg, srcTmpReg, mask);
+        Reg::Add(zeroReg, zeroReg, dstTmpReg, mask);
     }
-    MicroAPI::Cast<T, float, castTraitF32F16>(dstReg, zeroReg, fullMask);
-    MicroAPI::Pack<uint16_t, uint32_t, MicroAPI::HighLowPart::LOWEST>(
-        (MicroAPI::RegTensor<uint16_t>&)dstReg, (MicroAPI::RegTensor<uint32_t>&)dstReg);
-    MicroAPI::StoreUnAlign(dstUb, dstReg, ureg, 1);
-    MicroAPI::StoreUnAlignPost(dstUb, ureg, 0);
+    Reg::Cast<T, float, castTraitF32F16>(dstReg, zeroReg, fullMask);
+    Reg::Pack<uint16_t, uint32_t, Reg::HighLowPart::LOWEST>(
+        (Reg::RegTensor<uint16_t>&)dstReg, (Reg::RegTensor<uint32_t>&)dstReg);
+    Reg::StoreUnAlign(dstUb, dstReg, ureg, 1);
+    Reg::StoreUnAlignPost(dstUb, ureg, 0);
 }
 } // namespace ReduceXorSumAPI
 

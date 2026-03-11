@@ -44,48 +44,48 @@ __simd_vf__ inline void IsInfImplVF(__ubuf__ T* dst, __ubuf__ U* src, uint32_t c
     constexpr uint32_t halfInf = 0x7c00;
     constexpr uint32_t halfNInf = 0xfc00;
 
-    MicroAPI::RegTensor<U> srcVreg;
-    MicroAPI::RegTensor<T> dstVreg;
-    MicroAPI::RegTensor<T> vReg0;
-    MicroAPI::RegTensor<T> vReg1;
-    MicroAPI::MaskReg mask;
-    MicroAPI::MaskReg cmpMaskReg;
-    MicroAPI::MaskReg cmpInfMask;
-    MicroAPI::MaskReg cmpNInfMask;
+    Reg::RegTensor<U> srcVreg;
+    Reg::RegTensor<T> dstVreg;
+    Reg::RegTensor<T> vReg0;
+    Reg::RegTensor<T> vReg1;
+    Reg::MaskReg mask;
+    Reg::MaskReg cmpMaskReg;
+    Reg::MaskReg cmpInfMask;
+    Reg::MaskReg cmpNInfMask;
     if constexpr (Std::is_same_v<T, bool>) {
-        MicroAPI::Duplicate((MicroAPI::RegTensor<uint8_t>&)vReg0, 0u);
-        MicroAPI::Duplicate((MicroAPI::RegTensor<uint8_t>&)vReg1, 1u);
+        Reg::Duplicate((Reg::RegTensor<uint8_t>&)vReg0, 0u);
+        Reg::Duplicate((Reg::RegTensor<uint8_t>&)vReg1, 1u);
     } else {
-        MicroAPI::Duplicate(vReg0, 0.0);
-        MicroAPI::Duplicate(vReg1, 1.0);
+        Reg::Duplicate(vReg0, 0.0);
+        Reg::Duplicate(vReg1, 1.0);
     }
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = MicroAPI::UpdateMask<U>(count);
-        MicroAPI::LoadAlign(srcVreg, src + i * oneRepElm);
+        mask = Reg::UpdateMask<U>(count);
+        Reg::LoadAlign(srcVreg, src + i * oneRepElm);
         if constexpr (Std::is_same_v<U, float>) {
-            MicroAPI::CompareScalar<uint32_t, CMPMODE::EQ>(cmpInfMask, (MicroAPI::RegTensor<uint32_t>&)srcVreg, floatInf, mask);
-            MicroAPI::CompareScalar<uint32_t, CMPMODE::EQ>(cmpNInfMask, (MicroAPI::RegTensor<uint32_t>&)srcVreg, floatNInf, mask);
+            Reg::CompareScalar<uint32_t, CMPMODE::EQ>(cmpInfMask, (Reg::RegTensor<uint32_t>&)srcVreg, floatInf, mask);
+            Reg::CompareScalar<uint32_t, CMPMODE::EQ>(cmpNInfMask, (Reg::RegTensor<uint32_t>&)srcVreg, floatNInf, mask);
         } else if constexpr (Std::is_same_v<U, half>) {
-            MicroAPI::CompareScalar<uint16_t, CMPMODE::EQ>(cmpInfMask, (MicroAPI::RegTensor<uint16_t>&)srcVreg, halfInf, mask);
-            MicroAPI::CompareScalar<uint16_t, CMPMODE::EQ>(cmpNInfMask, (MicroAPI::RegTensor<uint16_t>&)srcVreg, halfNInf, mask);
+            Reg::CompareScalar<uint16_t, CMPMODE::EQ>(cmpInfMask, (Reg::RegTensor<uint16_t>&)srcVreg, halfInf, mask);
+            Reg::CompareScalar<uint16_t, CMPMODE::EQ>(cmpNInfMask, (Reg::RegTensor<uint16_t>&)srcVreg, halfNInf, mask);
         }
-        MicroAPI::MaskOr(cmpMaskReg, cmpInfMask, cmpNInfMask, mask);
+        Reg::MaskOr(cmpMaskReg, cmpInfMask, cmpNInfMask, mask);
         if constexpr (Std::is_same_v<T, bool>) {
             if constexpr (Std::is_same_v<U, float>) {
-                MicroAPI::MaskPack(cmpMaskReg, cmpMaskReg);
-                MicroAPI::MaskPack(cmpMaskReg, cmpMaskReg);
-                MicroAPI::Select(dstVreg, vReg1, vReg0, cmpMaskReg);
-                MicroAPI::MaskPack(mask, mask);
-                MicroAPI::MaskPack(mask, mask);
+                Reg::MaskPack(cmpMaskReg, cmpMaskReg);
+                Reg::MaskPack(cmpMaskReg, cmpMaskReg);
+                Reg::Select(dstVreg, vReg1, vReg0, cmpMaskReg);
+                Reg::MaskPack(mask, mask);
+                Reg::MaskPack(mask, mask);
             } else if constexpr (Std::is_same_v<U, half>) {
-                MicroAPI::MaskPack(cmpMaskReg, cmpMaskReg);
-                MicroAPI::Select(dstVreg, vReg1, vReg0, cmpMaskReg);
-                MicroAPI::MaskPack(mask, mask);
+                Reg::MaskPack(cmpMaskReg, cmpMaskReg);
+                Reg::Select(dstVreg, vReg1, vReg0, cmpMaskReg);
+                Reg::MaskPack(mask, mask);
             }
         } else {
-            MicroAPI::Select(dstVreg, vReg1, vReg0, cmpMaskReg);
+            Reg::Select(dstVreg, vReg1, vReg0, cmpMaskReg);
         }
-        MicroAPI::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
+        Reg::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
     }
 }
 

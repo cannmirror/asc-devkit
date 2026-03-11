@@ -13,7 +13,7 @@
 using namespace std;
 using namespace AscendC;
 
-using MicroAPI::DataCopyMode;
+using Reg::DataCopyMode;
 
 template <typename T, int Mode>
 class KernelMicroDataCopy {
@@ -46,59 +46,59 @@ private:
 
     __aicore__ inline void ComputeMode0(__ubuf__ T *dst, __ubuf__ T *src)
     {
-        MicroAPI::RegTensor<T> vreg0;
+        Reg::RegTensor<T> vreg0;
         uint32_t sreg = (uint32_t)dstSize;
-        MicroAPI::MaskReg preg;
+        Reg::MaskReg preg;
         constexpr uint32_t sregLower = (uint32_t)(VECTOR_REG_WIDTH / sizeof(T));
         uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
         for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-            preg = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::DataCopy(vreg0, src + i * sregLower);
-            MicroAPI::DataCopy(dst + i * sregLower, vreg0, preg);
+            preg = Reg::UpdateMask<T>(sreg);
+            Reg::DataCopy(vreg0, src + i * sregLower);
+            Reg::DataCopy(dst + i * sregLower, vreg0, preg);
         }
     }
 
     __aicore__ inline void ComputeMode1(__ubuf__ T *dst, __ubuf__ T *src)
     {
-        MicroAPI::RegTensor<T> vreg0;
+        Reg::RegTensor<T> vreg0;
         uint32_t sreg = (uint32_t)dstSize;
-        MicroAPI::MaskReg preg;
+        Reg::MaskReg preg;
         constexpr uint32_t sregLower = (uint32_t)(VECTOR_REG_WIDTH / sizeof(T));
         uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
         for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-            preg = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::DataCopy<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(vreg0, src, sregLower);
-            MicroAPI::DataCopy<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dst, vreg0, sregLower, preg);
+            preg = Reg::UpdateMask<T>(sreg);
+            Reg::DataCopy<T, Reg::PostLiteral::POST_MODE_UPDATE>(vreg0, src, sregLower);
+            Reg::DataCopy<T, Reg::PostLiteral::POST_MODE_UPDATE>(dst, vreg0, sregLower, preg);
         }
     }
 
     __aicore__ inline void ComputeMode2(__ubuf__ T *dst, __ubuf__ T *src)
     {
-        MicroAPI::RegTensor<T> vreg0;
+        Reg::RegTensor<T> vreg0;
         uint32_t sreg = (uint32_t)dstSize;
-        MicroAPI::MaskReg preg;
+        Reg::MaskReg preg;
         constexpr uint32_t sregLower = (uint32_t)(VECTOR_REG_WIDTH / sizeof(T));
         uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
         for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-            preg = MicroAPI::UpdateMask<T>(sreg);
-            auto aReg = MicroAPI::CreateAddrReg<T>(sregLower);
-            MicroAPI::DataCopy(vreg0, src + i * sregLower);
-            MicroAPI::DataCopy(dst, vreg0, aReg, preg);
+            preg = Reg::UpdateMask<T>(sreg);
+            auto aReg = Reg::CreateAddrReg<T>(sregLower);
+            Reg::DataCopy(vreg0, src + i * sregLower);
+            Reg::DataCopy(dst, vreg0, aReg, preg);
         }
     }
 
     __aicore__ inline void ComputeMode3(__ubuf__ T *dst, __ubuf__ T *src)
     {
-        MicroAPI::RegTensor<T> vreg0;
+        Reg::RegTensor<T> vreg0;
         uint32_t sreg = (uint32_t)dstSize;
-        MicroAPI::MaskReg preg;
+        Reg::MaskReg preg;
         constexpr uint32_t sregLower = (uint32_t)(VECTOR_REG_WIDTH / sizeof(T));
         uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
         for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-            preg = MicroAPI::UpdateMask<T>(sreg);
-            auto aReg = MicroAPI::CreateAddrReg<T>(sregLower);
-            MicroAPI::DataCopy(vreg0, src, aReg);
-            MicroAPI::DataCopy(dst, vreg0, aReg, preg);
+            preg = Reg::UpdateMask<T>(sreg);
+            auto aReg = Reg::CreateAddrReg<T>(sregLower);
+            Reg::DataCopy(vreg0, src, aReg);
+            Reg::DataCopy(dst, vreg0, aReg, preg);
         }
     }
 
@@ -106,12 +106,12 @@ private:
     {
         constexpr uint32_t repeatElm = GetVecLen() / sizeof(T) * 2;
         uint16_t repeatTimes = CeilDivision(dstSize, repeatElm);
-        MicroAPI::RegTensor<T> reg0;
-        MicroAPI::RegTensor<T> reg1;
-        MicroAPI::MaskReg mask = MicroAPI::CreateMask<uint8_t, MicroAPI::MaskPattern::ALL>();
+        Reg::RegTensor<T> reg0;
+        Reg::RegTensor<T> reg1;
+        Reg::MaskReg mask = Reg::CreateMask<uint8_t, Reg::MaskPattern::ALL>();
         for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-            MicroAPI::DataCopy<T, MicroAPI::LoadDist::DIST_DINTLV_B8>(reg0, reg1, src + i * repeatElm);
-            MicroAPI::DataCopy<T, MicroAPI::StoreDist::DIST_INTLV_B8>(dst + i * repeatElm, reg0, reg1, mask);
+            Reg::DataCopy<T, Reg::LoadDist::DIST_DINTLV_B8>(reg0, reg1, src + i * repeatElm);
+            Reg::DataCopy<T, Reg::StoreDist::DIST_INTLV_B8>(dst + i * repeatElm, reg0, reg1, mask);
         }
     }
 
@@ -119,92 +119,92 @@ private:
     {
         constexpr uint32_t repeatElm = GetVecLen() / sizeof(T) * 2;
         uint16_t repeatTimes = CeilDivision(dstSize, repeatElm);
-        MicroAPI::RegTensor<T> reg0;
-        MicroAPI::RegTensor<T> reg1;
-        MicroAPI::MaskReg mask = MicroAPI::CreateMask<uint8_t, MicroAPI::MaskPattern::ALL>();
+        Reg::RegTensor<T> reg0;
+        Reg::RegTensor<T> reg1;
+        Reg::MaskReg mask = Reg::CreateMask<uint8_t, Reg::MaskPattern::ALL>();
         for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-            MicroAPI::DataCopy<T, MicroAPI::PostLiteral::POST_MODE_UPDATE, MicroAPI::LoadDist::DIST_DINTLV_B8>(
+            Reg::DataCopy<T, Reg::PostLiteral::POST_MODE_UPDATE, Reg::LoadDist::DIST_DINTLV_B8>(
                 reg0, reg1, src, repeatElm);
-            MicroAPI::DataCopy<T, MicroAPI::StoreDist::DIST_INTLV_B8>(dst + i * repeatElm, reg0, reg1, mask);
+            Reg::DataCopy<T, Reg::StoreDist::DIST_INTLV_B8>(dst + i * repeatElm, reg0, reg1, mask);
         }
     }
 
     __aicore__ inline void ComputeMode4(__ubuf__ T *dst, __ubuf__ T *src)
     {
-        MicroAPI::RegTensor<T> vreg0;
-        MicroAPI::MaskReg preg = MicroAPI::CreateMask<T>();
+        Reg::RegTensor<T> vreg0;
+        Reg::MaskReg preg = Reg::CreateMask<T>();
         constexpr uint32_t sregLower = (uint32_t)(VECTOR_REG_WIDTH / sizeof(T));
         uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
         for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-            MicroAPI::DataCopy<T, DataCopyMode::DATA_BLOCK_COPY>(vreg0, src + i * sregLower, 1, preg);
-            MicroAPI::DataCopy<T, DataCopyMode::DATA_BLOCK_COPY>(dst + i * sregLower, vreg0, 1, preg);
+            Reg::DataCopy<T, DataCopyMode::DATA_BLOCK_COPY>(vreg0, src + i * sregLower, 1, preg);
+            Reg::DataCopy<T, DataCopyMode::DATA_BLOCK_COPY>(dst + i * sregLower, vreg0, 1, preg);
         }
     }
 
     __aicore__ inline void ComputeMode5(__ubuf__ T *dst, __ubuf__ T *src)
     {
-        MicroAPI::RegTensor<T> vreg0;
-        MicroAPI::MaskReg preg = MicroAPI::CreateMask<T>();
+        Reg::RegTensor<T> vreg0;
+        Reg::MaskReg preg = Reg::CreateMask<T>();
         constexpr uint32_t sregLower = (uint32_t)(VECTOR_REG_WIDTH / sizeof(T));
         uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
         for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-            MicroAPI::DataCopy<T, DataCopyMode::DATA_BLOCK_COPY>(vreg0, src, 1, preg);
-            MicroAPI::DataCopy<T, DataCopyMode::DATA_BLOCK_COPY>(dst, vreg0, 1, preg);
+            Reg::DataCopy<T, DataCopyMode::DATA_BLOCK_COPY>(vreg0, src, 1, preg);
+            Reg::DataCopy<T, DataCopyMode::DATA_BLOCK_COPY>(dst, vreg0, 1, preg);
         }
     }
 
     __aicore__ inline void ComputeMode6(__ubuf__ T *dst, __ubuf__ T *src)
     {
-        MicroAPI::RegTensor<T> vreg0;
-        MicroAPI::MaskReg preg = MicroAPI::CreateMask<T>();
+        Reg::RegTensor<T> vreg0;
+        Reg::MaskReg preg = Reg::CreateMask<T>();
         constexpr uint32_t sregLower = (uint32_t)(VECTOR_REG_WIDTH / sizeof(T));
         uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
         for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-            MicroAPI::DataCopy<T, DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(vreg0, src, 1, 8, preg);
-            MicroAPI::DataCopy<T, DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dst, vreg0, 1, 8, preg);
+            Reg::DataCopy<T, DataCopyMode::DATA_BLOCK_COPY, Reg::PostLiteral::POST_MODE_UPDATE>(vreg0, src, 1, 8, preg);
+            Reg::DataCopy<T, DataCopyMode::DATA_BLOCK_COPY, Reg::PostLiteral::POST_MODE_UPDATE>(dst, vreg0, 1, 8, preg);
         }
     }
 
     __aicore__ inline void ComputeMode7(__ubuf__ T *dst, __ubuf__ T *src)
     {
-        MicroAPI::RegTensor<T> vreg0;
-        MicroAPI::UnalignReg u0;
-        MicroAPI::UnalignReg u1;
-        MicroAPI::MaskReg preg = MicroAPI::CreateMask<T>();
+        Reg::RegTensor<T> vreg0;
+        Reg::UnalignReg u0;
+        Reg::UnalignReg u1;
+        Reg::MaskReg preg = Reg::CreateMask<T>();
         constexpr uint32_t sregLower = 15;  // to process unalign data
         uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
         for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
             auto srcUbT = src + i * sregLower;
-            MicroAPI::DataCopyUnAlignPre(u0, srcUbT);
-            MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_LOAD, MicroAPI::MemType::VEC_STORE>();
-            MicroAPI::DataCopyUnAlign(vreg0, u0, srcUbT);
-            MicroAPI::DataCopyUnAlign(dst, vreg0, u1, sregLower);
+            Reg::DataCopyUnAlignPre(u0, srcUbT);
+            Reg::LocalMemBar<Reg::MemType::VEC_LOAD, Reg::MemType::VEC_STORE>();
+            Reg::DataCopyUnAlign(vreg0, u0, srcUbT);
+            Reg::DataCopyUnAlign(dst, vreg0, u1, sregLower);
         }
-        MicroAPI::DataCopyUnAlignPost(dst, u1, 0);
+        Reg::DataCopyUnAlignPost(dst, u1, 0);
     }
 
     __aicore__ inline void ComputeMode8(__ubuf__ T *dst, __ubuf__ T *src)
     {
-        MicroAPI::RegTensor<T> vreg0;
-        MicroAPI::UnalignReg u0;
-        MicroAPI::UnalignReg u1;
-        MicroAPI::MaskReg preg = MicroAPI::CreateMask<T>();
+        Reg::RegTensor<T> vreg0;
+        Reg::UnalignReg u0;
+        Reg::UnalignReg u1;
+        Reg::MaskReg preg = Reg::CreateMask<T>();
         constexpr uint32_t sregLower = 15;  // to process unalign data
         uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
         for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-            MicroAPI::DataCopyUnAlignPre(u0, src);
-            MicroAPI::DataCopyUnAlign(vreg0, u0, src, sregLower);
-            MicroAPI::DataCopyUnAlign(dst, vreg0, u1, sregLower);
+            Reg::DataCopyUnAlignPre(u0, src);
+            Reg::DataCopyUnAlign(vreg0, u0, src, sregLower);
+            Reg::DataCopyUnAlign(dst, vreg0, u1, sregLower);
         }
-        MicroAPI::DataCopyUnAlignPost(dst, u1, 0);
+        Reg::DataCopyUnAlignPost(dst, u1, 0);
     }
 
     __aicore__ inline void ComputeMode81(__ubuf__ T *dst, __ubuf__ T *src)
     {
-        MicroAPI::RegTensor<T> vreg0;
-        MicroAPI::UnalignReg u0;
-        MicroAPI::UnalignReg u1;
-        MicroAPI::MaskReg preg = MicroAPI::CreateMask<T>();
+        Reg::RegTensor<T> vreg0;
+        Reg::UnalignReg u0;
+        Reg::UnalignReg u1;
+        Reg::MaskReg preg = Reg::CreateMask<T>();
         constexpr uint32_t sregLower = 15;  // to process unalign data
         uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
         for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
@@ -218,20 +218,20 @@ private:
     __aicore__ inline void  ComputeMode9(
         __ubuf__ T *dst, __ubuf__ T *src)
     {
-        MicroAPI::MaskReg preg = MicroAPI::CreateMask<T>();
+        Reg::MaskReg preg = Reg::CreateMask<T>();
         constexpr uint32_t repeatElm = (uint32_t)(VECTOR_REG_WIDTH / 8 / sizeof(T));
         uint16_t repeatTimes = CeilDivision(dstSize, repeatElm);
         if constexpr (sizeof(T) == 8) {
             for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-                auto aReg = MicroAPI::CreateAddrReg<uint32_t>(i, repeatElm);
-                MicroAPI::DataCopy(preg, src, aReg);
-                MicroAPI::DataCopy(dst, preg, aReg);
+                auto aReg = Reg::CreateAddrReg<uint32_t>(i, repeatElm);
+                Reg::DataCopy(preg, src, aReg);
+                Reg::DataCopy(dst, preg, aReg);
             }
         } else {
             for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-                auto aReg = MicroAPI::CreateAddrReg<T>(i, repeatElm);
-                MicroAPI::DataCopy(preg, src, aReg);
-                MicroAPI::DataCopy(dst, preg, aReg);
+                auto aReg = Reg::CreateAddrReg<T>(i, repeatElm);
+                Reg::DataCopy(preg, src, aReg);
+                Reg::DataCopy(dst, preg, aReg);
             }
         }
     }
@@ -239,21 +239,21 @@ private:
     __aicore__ inline void ComputeMode10(
         __ubuf__ T *dst, __ubuf__ T *src)
     {
-        MicroAPI::RegTensor<T> vreg;
-        MicroAPI::MaskReg preg = MicroAPI::CreateMask<T>();
+        Reg::RegTensor<T> vreg;
+        Reg::MaskReg preg = Reg::CreateMask<T>();
         constexpr uint32_t repeatElm = (uint32_t)(VECTOR_REG_WIDTH / sizeof(T));
         uint16_t repeatTimes = CeilDivision(dstSize, repeatElm);
         if constexpr (sizeof(T) == 8) {
             for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-                auto aReg = MicroAPI::CreateAddrReg<uint32_t>(i, repeatElm);
-                MicroAPI::DataCopy(vreg, src, aReg);
-                MicroAPI::DataCopy(dst, vreg, aReg, preg);
+                auto aReg = Reg::CreateAddrReg<uint32_t>(i, repeatElm);
+                Reg::DataCopy(vreg, src, aReg);
+                Reg::DataCopy(dst, vreg, aReg, preg);
             }
         } else {
             for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-                auto aReg = MicroAPI::CreateAddrReg<T>(i, repeatElm);
-                MicroAPI::DataCopy(vreg, src, aReg);
-                MicroAPI::DataCopy(dst, vreg, aReg, preg);
+                auto aReg = Reg::CreateAddrReg<T>(i, repeatElm);
+                Reg::DataCopy(vreg, src, aReg);
+                Reg::DataCopy(dst, vreg, aReg, preg);
             }
         }
     }
@@ -261,42 +261,42 @@ private:
     __aicore__ inline void ComputeMode11(
         __ubuf__ T *dst, __ubuf__ T *src)
     {
-        MicroAPI::RegTensor<T> vreg0, vreg1;
-        MicroAPI::MaskReg preg = MicroAPI::CreateMask<T>();
+        Reg::RegTensor<T> vreg0, vreg1;
+        Reg::MaskReg preg = Reg::CreateMask<T>();
         constexpr uint32_t repeatElm = (uint32_t)(VECTOR_REG_WIDTH / sizeof(T));
         uint16_t repeatTimes = CeilDivision(dstSize, repeatElm);
         for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-            auto aReg = MicroAPI::CreateAddrReg<T>(i, repeatElm);
-            MicroAPI::DataCopy<T, MicroAPI::LoadDist::DIST_DINTLV_B8>(vreg0, vreg1, src, aReg);
-            MicroAPI::DataCopy<T, MicroAPI::StoreDist::DIST_INTLV_B8>(dst, vreg0, vreg1, aReg, preg);
+            auto aReg = Reg::CreateAddrReg<T>(i, repeatElm);
+            Reg::DataCopy<T, Reg::LoadDist::DIST_DINTLV_B8>(vreg0, vreg1, src, aReg);
+            Reg::DataCopy<T, Reg::StoreDist::DIST_INTLV_B8>(dst, vreg0, vreg1, aReg, preg);
         }
     }
 
     __aicore__ inline void ComputeMode12(
         __ubuf__ T *dst, __ubuf__ T *src)
     {
-        MicroAPI::RegTensor<T> vreg;
-        MicroAPI::MaskReg preg = MicroAPI::CreateMask<T>();
-        MicroAPI::UnalignReg u0, u1;
-        MicroAPI::AddrReg aReg0;
+        Reg::RegTensor<T> vreg;
+        Reg::MaskReg preg = Reg::CreateMask<T>();
+        Reg::UnalignReg u0, u1;
+        Reg::AddrReg aReg0;
         constexpr uint32_t repeatElm = 15;  // to process unalign data
         uint16_t repeatTimes = CeilDivision(dstSize, repeatElm);
         if constexpr (sizeof(T) == 8) {
             for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-                aReg0 = MicroAPI::CreateAddrReg<uint32_t>(i, repeatElm);
-                MicroAPI::DataCopyUnAlignPre(u0, src, aReg0);
-                MicroAPI::DataCopyUnAlign<T>(vreg, u0, src, aReg0, 0);
-                MicroAPI::DataCopyUnAlign(dst, vreg, u1, aReg0);
+                aReg0 = Reg::CreateAddrReg<uint32_t>(i, repeatElm);
+                Reg::DataCopyUnAlignPre(u0, src, aReg0);
+                Reg::DataCopyUnAlign<T>(vreg, u0, src, aReg0, 0);
+                Reg::DataCopyUnAlign(dst, vreg, u1, aReg0);
             }
         } else {
             for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-                aReg0 = MicroAPI::CreateAddrReg<T>(i, repeatElm);
-                MicroAPI::DataCopyUnAlignPre(u0, src, aReg0);
-                MicroAPI::DataCopyUnAlign<T>(vreg, u0, src, aReg0, 0);
-                MicroAPI::DataCopyUnAlign(dst, vreg, u1, aReg0);
+                aReg0 = Reg::CreateAddrReg<T>(i, repeatElm);
+                Reg::DataCopyUnAlignPre(u0, src, aReg0);
+                Reg::DataCopyUnAlign<T>(vreg, u0, src, aReg0, 0);
+                Reg::DataCopyUnAlign(dst, vreg, u1, aReg0);
             }
         }
-        MicroAPI::DataCopyUnAlignPost(dst, u1, aReg0);
+        Reg::DataCopyUnAlignPost(dst, u1, aReg0);
     }
 
     __aicore__ inline void Compute()

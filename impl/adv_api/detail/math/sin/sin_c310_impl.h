@@ -52,31 +52,31 @@ constexpr float SIN_POINT_FIVE = 0.5;
 constexpr float SIN_M4_SCA = 4.0;
 constexpr float SIN_K2_SCA = -2.0;
 constexpr float SIN_SCALAR_ONE = 1.0;
-constexpr MicroAPI::CastTrait sinCastTraitF16F32 = { MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN,
-                                                     MicroAPI::MaskMergeMode::ZEROING };
-constexpr MicroAPI::CastTrait sinCastTraitF32F16 = { MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT,
-                                                     MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT };
+constexpr Reg::CastTrait sinCastTraitF16F32 = { Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN,
+                                                     Reg::MaskMergeMode::ZEROING };
+constexpr Reg::CastTrait sinCastTraitF32F16 = { Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT,
+                                                     Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT };
 
-__simd_callee__ inline void SinPolynomialApproximation(MicroAPI::RegTensor<float> &dstReg,
-    MicroAPI::RegTensor<float> &srcReg, MicroAPI::RegTensor<float> &x, MicroAPI::RegTensor<float> &round,
-    MicroAPI::RegTensor<float> &kpi, MicroAPI::MaskReg mask)
+__simd_callee__ inline void SinPolynomialApproximation(Reg::RegTensor<float> &dstReg,
+    Reg::RegTensor<float> &srcReg, Reg::RegTensor<float> &x, Reg::RegTensor<float> &round,
+    Reg::RegTensor<float> &kpi, Reg::MaskReg mask)
 {
     // normalized x to [-π/2, π/2] using x = x-round(x/π)*π
     // k = round(x * invpi)
-    MicroAPI::Muls(round, srcReg, SIN_PI_FOR_X_TODIV, mask);
-    MicroAPI::Truncate<float, RoundMode::CAST_RINT, MicroAPI::MaskMergeMode::ZEROING>(round, round, mask);
+    Reg::Muls(round, srcReg, SIN_PI_FOR_X_TODIV, mask);
+    Reg::Truncate<float, RoundMode::CAST_RINT, Reg::MaskMergeMode::ZEROING>(round, round, mask);
     // x -= k * pi_0
-    MicroAPI::Muls(kpi, round, SIN_PI_V2, mask);
-    MicroAPI::Sub(x, srcReg, kpi, mask);
+    Reg::Muls(kpi, round, SIN_PI_V2, mask);
+    Reg::Sub(x, srcReg, kpi, mask);
     // x -= k * pi_1
-    MicroAPI::Muls(kpi, round, SIN_KPI_FIRS_PI_MULS, mask);
-    MicroAPI::Sub(x, x, kpi, mask);
+    Reg::Muls(kpi, round, SIN_KPI_FIRS_PI_MULS, mask);
+    Reg::Sub(x, x, kpi, mask);
     // x -= k * pi_2
-    MicroAPI::Muls(kpi, round, SIN_KPI_TWI_PI_MULS, mask);
-    MicroAPI::Sub(x, x, kpi, mask);
+    Reg::Muls(kpi, round, SIN_KPI_TWI_PI_MULS, mask);
+    Reg::Sub(x, x, kpi, mask);
     // x -= k * pi_3
-    MicroAPI::Muls(kpi, round, SIN_KPI_THIR_PI_MULS, mask);
-    MicroAPI::Sub(x, x, kpi, mask);
+    Reg::Muls(kpi, round, SIN_KPI_THIR_PI_MULS, mask);
+    Reg::Sub(x, x, kpi, mask);
 
     /*
     sin(x) = (-1)^k*sin(x0)
@@ -84,60 +84,60 @@ __simd_callee__ inline void SinPolynomialApproximation(MicroAPI::RegTensor<float
     P(x) = (((x^2 * R0 + R1) * x^2 + R2) * x^2 + R3) * x^2 + 1.0
     */
     // x^2 = mul(input_x, input_x)
-    MicroAPI::Mul(kpi, x, x, mask);
+    Reg::Mul(kpi, x, x, mask);
     // kover2
-    MicroAPI::Muls(dstReg, round, SIN_POINT_FIVE, mask);
-    MicroAPI::Truncate<float, RoundMode::CAST_FLOOR, MicroAPI::MaskMergeMode::ZEROING>(dstReg, dstReg, mask);
+    Reg::Muls(dstReg, round, SIN_POINT_FIVE, mask);
+    Reg::Truncate<float, RoundMode::CAST_FLOOR, Reg::MaskMergeMode::ZEROING>(dstReg, dstReg, mask);
     // kover2floorm4
-    MicroAPI::Muls(dstReg, dstReg, SIN_M4_SCA, mask);
+    Reg::Muls(dstReg, dstReg, SIN_M4_SCA, mask);
     // k2
-    MicroAPI::Muls(round, round, SIN_K2_SCA, mask);
+    Reg::Muls(round, round, SIN_K2_SCA, mask);
     // sign
-    MicroAPI::Add(dstReg, dstReg, round, mask);
-    MicroAPI::Adds(dstReg, dstReg, SIN_SCALAR_ONE, mask);
+    Reg::Add(dstReg, dstReg, round, mask);
+    Reg::Adds(dstReg, dstReg, SIN_SCALAR_ONE, mask);
     // res_up = mul(x^2, 2.604926501e-6)
-    MicroAPI::Muls(round, kpi, SIN_RES_MULTI_SCA, mask);
-    MicroAPI::Adds(round, round, SIN_RES_ADDICT_UP, mask);
+    Reg::Muls(round, kpi, SIN_RES_MULTI_SCA, mask);
+    Reg::Adds(round, round, SIN_RES_ADDICT_UP, mask);
     // res_up = mul(res_up, x^2)
-    MicroAPI::Mul(round, round, kpi, mask);
-    MicroAPI::Adds(round, round, SIN_2ADDS, mask);
+    Reg::Mul(round, round, kpi, mask);
+    Reg::Adds(round, round, SIN_2ADDS, mask);
     // res_up = mul(res_up, x^2)
-    MicroAPI::Mul(round, round, kpi, mask);
-    MicroAPI::Adds(round, round, SIN_3ADDS, mask);
+    Reg::Mul(round, round, kpi, mask);
+    Reg::Adds(round, round, SIN_3ADDS, mask);
     // res_up = mul(res_up, x^2)
-    MicroAPI::Mul(round, round, kpi, mask);
-    MicroAPI::Adds(round, round, SIN_SCALAR_ONE, mask);
+    Reg::Mul(round, round, kpi, mask);
+    Reg::Adds(round, round, SIN_SCALAR_ONE, mask);
     // res_up = mul(res_up, input_x)
-    MicroAPI::Mul(round, round, x, mask);
-    MicroAPI::Mul(dstReg, round, dstReg, mask);
+    Reg::Mul(round, round, x, mask);
+    Reg::Mul(dstReg, round, dstReg, mask);
 }
 
 template <typename T>
 __simd_vf__ inline void SinPolynomial(__ubuf__ T *dst, __ubuf__ T *src, uint32_t calCount, uint16_t repeat)
 {
-    MicroAPI::RegTensor<T> x;
-    MicroAPI::RegTensor<float> xTmp;
-    MicroAPI::RegTensor<float> round;
-    MicroAPI::RegTensor<float> kpi;
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::RegTensor<float> srcTmp;
-    MicroAPI::RegTensor<T> dstReg;
-    MicroAPI::RegTensor<float> dstTmp;
-    MicroAPI::MaskReg mask;
+    Reg::RegTensor<T> x;
+    Reg::RegTensor<float> xTmp;
+    Reg::RegTensor<float> round;
+    Reg::RegTensor<float> kpi;
+    Reg::RegTensor<T> srcReg;
+    Reg::RegTensor<float> srcTmp;
+    Reg::RegTensor<T> dstReg;
+    Reg::RegTensor<float> dstTmp;
+    Reg::MaskReg mask;
     constexpr uint32_t oneRepSize = GetVecLen() / sizeof(float);
-    MicroAPI::MaskReg maskAll = MicroAPI::CreateMask<uint8_t>();
+    Reg::MaskReg maskAll = Reg::CreateMask<uint8_t>();
     for (uint16_t i = 0; i < (uint16_t)repeat; i++) {
-        mask = MicroAPI::UpdateMask<float>(calCount);
+        mask = Reg::UpdateMask<float>(calCount);
         if constexpr (std::is_same<T, half>::value) {
-            MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcReg, src + i * oneRepSize);
-            MicroAPI::Cast<float, half, sinCastTraitF16F32>(srcTmp, srcReg, mask);
+            Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(srcReg, src + i * oneRepSize);
+            Reg::Cast<float, half, sinCastTraitF16F32>(srcTmp, srcReg, mask);
             SinPolynomialApproximation(dstTmp, srcTmp, xTmp, round, kpi, mask);
-            MicroAPI::Cast<half, float, sinCastTraitF32F16>(dstReg, dstTmp, mask);
-            MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_PACK_B32>(dst + i * oneRepSize, dstReg, mask);
+            Reg::Cast<half, float, sinCastTraitF32F16>(dstReg, dstTmp, mask);
+            Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B32>(dst + i * oneRepSize, dstReg, mask);
         } else {
-            MicroAPI::LoadAlign(srcReg, src + i * oneRepSize);
+            Reg::LoadAlign(srcReg, src + i * oneRepSize);
             SinPolynomialApproximation(dstReg, srcReg, xTmp, round, kpi, mask);
-            MicroAPI::StoreAlign(dst + i * oneRepSize, dstReg, mask);
+            Reg::StoreAlign(dst + i * oneRepSize, dstReg, mask);
         }
     }
 }
@@ -201,7 +201,7 @@ __aicore__ inline void SinImpl(const LocalTensor<T>& dstTensor, const LocalTenso
     });
 
     if constexpr (config.algo == SinAlgo::POLYNOMIAL_APPROXIMATION) {
-        MicroAPI::Sin::SinPolynomialImpl((__ubuf__ T *)dstTensor.GetPhyAddr(),
+        Reg::Sin::SinPolynomialImpl((__ubuf__ T *)dstTensor.GetPhyAddr(),
             (__ubuf__ T *)srcTensor.GetPhyAddr(), calCount);
     } else if constexpr (config.algo == SinAlgo::RADIAN_REDUCTION) {
         uint32_t sharedTmpBufferSize = GetSinTmpBufferSize<T>(sharedTmpBuffer);

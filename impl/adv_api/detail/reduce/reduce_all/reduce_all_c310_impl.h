@@ -39,14 +39,14 @@ __aicore__ inline void ReduceAllARImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr,
     using CastType = typename ReduceOpInternal::template ExtractReduceCastType<T>::CastT;
 
     if (dimR <= vlSize) {
-        ReduceARReuseSourceLessThanVL<T, MicroAPI::RegTraitNumOne, vlSize,
-            MicroAPI::Min<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>,
-            MicroAPI::ReduceMin<CastType, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<CastType>>>(
+        ReduceARReuseSourceLessThanVL<T, Reg::RegTraitNumOne, vlSize,
+            Reg::Min<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>,
+            Reg::ReduceMin<CastType, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<CastType>>>(
                 dstAddr, srcAddr, dimA, dimR);
     } else {
-        ReduceAROverVLImpl<T, MicroAPI::RegTraitNumOne, vlSize,
-            MicroAPI::Min<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>,
-            MicroAPI::ReduceMin<CastType, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<CastType>>,
+        ReduceAROverVLImpl<T, Reg::RegTraitNumOne, vlSize,
+            Reg::Min<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>,
+            Reg::ReduceMin<CastType, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<CastType>>,
             isReuseSource>(dstAddr, srcAddr, tmpAddr, dimA, dimR);
     }
 }
@@ -72,8 +72,8 @@ __aicore__ inline void ReduceAllImpl(const LocalTensor<T>& dst, const LocalTenso
     if constexpr (std::is_same_v<pattern, Pattern::Reduce::AR>) {
         ReduceAllARImpl<T, isReuseSource>(dstAddr, srcAddr, tmpAddr, srcShape[0], srcShape[1]);
     } else {
-        ReduceRAImpl<T, MicroAPI::RegTraitNumOne,
-            MicroAPI::Min<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>, isReuseSource>(
+        ReduceRAImpl<T, Reg::RegTraitNumOne,
+            Reg::Min<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>, isReuseSource>(
             dstAddr, srcAddr, tmpAddr, srcShape[1], srcShape[0]);
     }
 }

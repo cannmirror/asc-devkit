@@ -39,17 +39,17 @@ __simd_vf__ inline void FmaImplVF(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T*
     uint32_t count, uint16_t repeatTimes)
 {
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
-    MicroAPI::RegTensor<T> srcVreg0;
-    MicroAPI::RegTensor<T> srcVreg1;
-    MicroAPI::RegTensor<T> srcVreg2;
-    MicroAPI::MaskReg mask;
+    Reg::RegTensor<T> srcVreg0;
+    Reg::RegTensor<T> srcVreg1;
+    Reg::RegTensor<T> srcVreg2;
+    Reg::MaskReg mask;
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = MicroAPI::UpdateMask<T>(count);
-        MicroAPI::LoadAlign(srcVreg0, src0 + i * oneRepElm);
-        MicroAPI::LoadAlign(srcVreg1, src1 + i * oneRepElm);
-        MicroAPI::LoadAlign(srcVreg2, src2 + i * oneRepElm);
-        MicroAPI::FusedMulDstAdd(srcVreg0, srcVreg1, srcVreg2, mask);
-        MicroAPI::StoreAlign(dst + i * oneRepElm, srcVreg0, mask);
+        mask = Reg::UpdateMask<T>(count);
+        Reg::LoadAlign(srcVreg0, src0 + i * oneRepElm);
+        Reg::LoadAlign(srcVreg1, src1 + i * oneRepElm);
+        Reg::LoadAlign(srcVreg2, src2 + i * oneRepElm);
+        Reg::FusedMulDstAdd(srcVreg0, srcVreg1, srcVreg2, mask);
+        Reg::StoreAlign(dst + i * oneRepElm, srcVreg0, mask);
     }
 }
 

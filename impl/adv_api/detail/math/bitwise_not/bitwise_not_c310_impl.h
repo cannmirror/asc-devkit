@@ -31,28 +31,28 @@ struct BitwiseNotConfig {
     bool isReuseSource;
 };
 constexpr BitwiseNotConfig DEFAULT_BITWISE_NOT_CONFIG = {false};
-template <typename T, typename RegT, const MicroAPI::RegTrait& Trait = MicroAPI::RegTraitNumOne>
+template <typename T, typename RegT, const Reg::RegTrait& Trait = Reg::RegTraitNumOne>
 __simd_vf__ inline void BitwiseNotCompute(__ubuf__ T* dst, __ubuf__ T* src, uint32_t count,
                                          uint16_t repeatTime, uint32_t oneRepElm, uint32_t offset)
 {
-    MicroAPI::MaskReg mask;
+    Reg::MaskReg mask;
     RegT srcVreg;
     RegT dstVreg;
 
     for (uint16_t i = 0; i < repeatTime; ++i) {
-        mask = MicroAPI::UpdateMask<T, Trait>(count);
-        MicroAPI::LoadAlign(srcVreg, src + i * oneRepElm);
-        MicroAPI::Not(dstVreg, srcVreg, mask);
-        MicroAPI::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
-        mask = MicroAPI::UpdateMask<T, Trait>(count);
-        MicroAPI::LoadAlign(srcVreg, src + i * oneRepElm + offset);
-        MicroAPI::Not(dstVreg, srcVreg, mask);
-        MicroAPI::StoreAlign(dst + i * oneRepElm + offset, dstVreg, mask);
+        mask = Reg::UpdateMask<T, Trait>(count);
+        Reg::LoadAlign(srcVreg, src + i * oneRepElm);
+        Reg::Not(dstVreg, srcVreg, mask);
+        Reg::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
+        mask = Reg::UpdateMask<T, Trait>(count);
+        Reg::LoadAlign(srcVreg, src + i * oneRepElm + offset);
+        Reg::Not(dstVreg, srcVreg, mask);
+        Reg::StoreAlign(dst + i * oneRepElm + offset, dstVreg, mask);
     }
-    mask = MicroAPI::UpdateMask<T, Trait>(count);
-    MicroAPI::LoadAlign(srcVreg, src + repeatTime * oneRepElm * 2);
-    MicroAPI::Not(dstVreg, srcVreg, mask);
-    MicroAPI::StoreAlign(dst + repeatTime * oneRepElm * 2, dstVreg, mask);
+    mask = Reg::UpdateMask<T, Trait>(count);
+    Reg::LoadAlign(srcVreg, src + repeatTime * oneRepElm * 2);
+    Reg::Not(dstVreg, srcVreg, mask);
+    Reg::StoreAlign(dst + repeatTime * oneRepElm * 2, dstVreg, mask);
 }
 
 template <const BitwiseNotConfig& config, typename T>
@@ -73,13 +73,13 @@ __aicore__ inline void BitwiseNotImpl(const LocalTensor<T>& dst, const LocalTens
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T) * 2);
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm) / 2);
         uint32_t offset = repeatTime * oneRepElm;
-        BitwiseNotCompute<T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>, MicroAPI::RegTraitNumTwo>(
+        BitwiseNotCompute<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>, Reg::RegTraitNumTwo>(
             dstTensor, srcTensor, count, repeatTime, oneRepElm, offset);
     } else {
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm) / 2);
         uint32_t offset = repeatTime * oneRepElm;
-        BitwiseNotCompute<T, MicroAPI::RegTensor<T>>(dstTensor, srcTensor, count, repeatTime, oneRepElm,
+        BitwiseNotCompute<T, Reg::RegTensor<T>>(dstTensor, srcTensor, count, repeatTime, oneRepElm,
                                                               offset);
     }
 }

@@ -72,7 +72,7 @@ private:
         }
         LocalTensor<T> src0Local = inQueueX.DeQue<T>();
         LocalTensor<Scr1T> src1Local = inQueueX2.DeQue<Scr1T>();
-        static constexpr MicroAPI::DivSpecificMode divMode = {MicroAPI::MaskMergeMode::ZEROING, true};
+        static constexpr Reg::DivSpecificMode divMode = {Reg::MaskMergeMode::ZEROING, true};
         uint16_t maskBitSize = 256;
         uint16_t oneRepSize = maskBitSize/sizeof(T);
         uint16_t rep = dataSize/oneRepSize;
@@ -82,44 +82,44 @@ private:
         __ubuf__ Scr1T* src1Ptr = (__ubuf__ Scr1T*)src1Local.GetPhyAddr();
         __VEC_SCOPE__
         {
-            MicroAPI::RegTensor<T> vSrcReg0;
-            MicroAPI::RegTensor<Scr1T> vSrcReg1;
-            MicroAPI::RegTensor<int32_t> vSrcReg2;
-            MicroAPI::RegTensor<T> vDstReg0;
-            MicroAPI::RegTensor<T> vDstReg1;
-            MicroAPI::RegTensor<float> fp32DstReg;
+            Reg::RegTensor<T> vSrcReg0;
+            Reg::RegTensor<Scr1T> vSrcReg1;
+            Reg::RegTensor<int32_t> vSrcReg2;
+            Reg::RegTensor<T> vDstReg0;
+            Reg::RegTensor<T> vDstReg1;
+            Reg::RegTensor<float> fp32DstReg;
             vector_bool carryOut;
             vector_bool carrySrc;
             uint32_t sreg = static_cast<uint32_t>(mask);
-            MicroAPI::MaskReg maskReg;
-            maskReg = MicroAPI::UpdateMask<T>(sreg);
+            Reg::MaskReg maskReg;
+            maskReg = Reg::UpdateMask<T>(sreg);
             for (uint16_t i = 0; i < static_cast<uint16_t>(rep); i++) {
-                MicroAPI::DataCopy(vSrcReg0, src0Ptr + i * oneRepSize);
-                MicroAPI::DataCopy(vSrcReg1, src1Ptr + i * oneRepSize);
+                Reg::DataCopy(vSrcReg0, src0Ptr + i * oneRepSize);
+                Reg::DataCopy(vSrcReg1, src1Ptr + i * oneRepSize);
                 if constexpr (mD == 0) {
-                    MicroAPI::Add(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::Add(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (mD == 1) {
-                    MicroAPI::Sub(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::Sub(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (mD == 2) {
-                    MicroAPI::Mul(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::Mul(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (mD == 3) {
-                    MicroAPI::Div(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::Div(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (mD == 4) {
-                    MicroAPI::Max(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::Max(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (mD == 5) {
-                    MicroAPI::Min(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::Min(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (mD == 6) {
-                    MicroAPI::ShiftLeft(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::ShiftLeft(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (mD == 7) {
-                    MicroAPI::ShiftRight(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::ShiftRight(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (mD == 8) {
-                    MicroAPI::And(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::And(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (mD == 9) {
-                    MicroAPI::Or(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::Or(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (mD == 10) {
-                    MicroAPI::Xor(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::Xor(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (mD == 11) {
-                    MicroAPI::Mull(vDstReg0, vDstReg1, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::Mull(vDstReg0, vDstReg1, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (mD == 12) {
                     carryOut = pset_b8(PAT_ALL);
                     vaddc(carryOut, vDstReg1, vSrcReg0, vSrcReg1, maskReg);
@@ -133,19 +133,19 @@ private:
                     vsubcs(carryOut, vDstReg1, vSrcReg0, vSrcReg1, carrySrc, maskReg);
                     psts(carryOut, (__ubuf__ uint32_t *)dst1Ptr, i * oneRepSize, NORM);
                 } else if constexpr (mD == 17) {
-                    MicroAPI::Div<T, &divMode>(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::Div<T, &divMode>(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (mD == 20) {
-                    MicroAPI::FusedExpSub(fp32DstReg, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::FusedExpSub(fp32DstReg, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (mD == 21) {
-                    MicroAPI::FusedAbsSub(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::FusedAbsSub(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (mD == 22) {
                     Prelu(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
                 } else if constexpr (mD == 23) {
-                    MicroAPI::FusedMulDstAdd(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
+                    Reg::FusedMulDstAdd(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
                 }
-                MicroAPI::DataCopy(dstPtr + i * oneRepSize, vDstReg0, maskReg);
+                Reg::DataCopy(dstPtr + i * oneRepSize, vDstReg0, maskReg);
                 if constexpr (mD == 15) {
-                    MicroAPI::DataCopy(dst1Ptr + i * oneRepSize, vDstReg1, maskReg);
+                    Reg::DataCopy(dst1Ptr + i * oneRepSize, vDstReg1, maskReg);
                 }
             }
         }

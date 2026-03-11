@@ -14,9 +14,9 @@
 
 using namespace std;
 using namespace AscendC;
-using AscendC::MicroAPI::RegTensor;
-using AscendC::MicroAPI::MaskReg;
-using AscendC::MicroAPI::UpdateMask;
+using AscendC::Reg::RegTensor;
+using AscendC::Reg::MaskReg;
+using AscendC::Reg::UpdateMask;
 
 template <typename T, uint8_t Mode>
 class KernelGmAccess {

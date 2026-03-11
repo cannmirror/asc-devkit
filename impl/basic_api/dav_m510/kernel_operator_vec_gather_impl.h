@@ -33,23 +33,23 @@ __aicore__ inline void VfGatherApi0B16(__ubuf__ T *dst, __ubuf__ T *src, __ubuf_
     const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t &dstRepStride, uint32_t dstRepeatCount,
     uint32_t u32OffsetRepeatCount, uint32_t blkCount, const uint64_t maskCount)
 {
-    MicroAPI::RegTensor<uint32_t> offsetReg0;
-    MicroAPI::RegTensor<uint32_t> offsetReg1;
-    MicroAPI::RegTensor<uint16_t> indexReg;
-    MicroAPI::RegTensor<uint16_t> dstReg;
+    Reg::RegTensor<uint32_t> offsetReg0;
+    Reg::RegTensor<uint32_t> offsetReg1;
+    Reg::RegTensor<uint16_t> indexReg;
+    Reg::RegTensor<uint16_t> dstReg;
     uint32_t sregPlt = static_cast<uint32_t>(maskCount);
-    MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint32_t>();
-    MicroAPI::MaskReg selectMask = MicroAPI::CreateMask<uint16_t, MicroAPI::MaskPattern::H>();
-    MicroAPI::MaskReg dstMask;
+    Reg::MaskReg indexMask = Reg::CreateMask<uint32_t>();
+    Reg::MaskReg selectMask = Reg::CreateMask<uint16_t, Reg::MaskPattern::H>();
+    Reg::MaskReg dstMask;
     if constexpr (isNormalMode) {
-        dstMask = MicroAPI::MoveMask<T>();
+        dstMask = Reg::MoveMask<T>();
     }
     for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
         if constexpr (!isNormalMode) {
-            dstMask = MicroAPI::UpdateMask<T>(sregPlt);
+            dstMask = Reg::UpdateMask<T>(sregPlt);
         }
-        MicroAPI::LoadAlign(offsetReg0, srcOffsetLocal + (2 * i) * u32OffsetRepeatCount);
-        MicroAPI::LoadAlign(offsetReg1, srcOffsetLocal + (2 * i + 1) * u32OffsetRepeatCount);
+        Reg::LoadAlign(offsetReg0, srcOffsetLocal + (2 * i) * u32OffsetRepeatCount);
+        Reg::LoadAlign(offsetReg1, srcOffsetLocal + (2 * i + 1) * u32OffsetRepeatCount);
         // convert addr offset into B16 element index: divide by 2 (implemented by ShiftRight 1 bit)
         ShiftRights(offsetReg0, offsetReg0, (int16_t)1, indexMask);
         ShiftRights(offsetReg1, offsetReg1, (int16_t)1, indexMask);
@@ -58,16 +58,16 @@ __aicore__ inline void VfGatherApi0B16(__ubuf__ T *dst, __ubuf__ T *src, __ubuf_
         // 0x00FF00FE00FD... ->0xFFFEFD...000000...
         // for offsetReg1, pack every higher 16-bit into the higher half of the vreg:
         // 0x001100120013... -> 0x000000...111213...
-        MicroAPI::Pack<uint16_t, uint32_t, MicroAPI::HighLowPart::LOWEST>((MicroAPI::RegTensor<uint16_t> &)offsetReg0,
+        Reg::Pack<uint16_t, uint32_t, Reg::HighLowPart::LOWEST>((Reg::RegTensor<uint16_t> &)offsetReg0,
             offsetReg0);
-        MicroAPI::Pack<uint16_t, uint32_t, MicroAPI::HighLowPart::HIGHEST>((MicroAPI::RegTensor<uint16_t> &)offsetReg1,
+        Reg::Pack<uint16_t, uint32_t, Reg::HighLowPart::HIGHEST>((Reg::RegTensor<uint16_t> &)offsetReg1,
             offsetReg1);
         // Select the effective data in offsetReg0 and offsetReg1 and joint them into a complete uint16_t type
         // indexReg：0xFFFEFD...111213...
-        Select(indexReg, (MicroAPI::RegTensor<uint16_t> &)offsetReg0, (MicroAPI::RegTensor<uint16_t> &)offsetReg1,
+        Select(indexReg, (Reg::RegTensor<uint16_t> &)offsetReg0, (Reg::RegTensor<uint16_t> &)offsetReg1,
             selectMask);
-        MicroAPI::Gather(dstReg, (__ubuf__ uint16_t *)src + srcBaseIndex, indexReg, dstMask);
-        MicroAPI::StoreAlign((__ubuf__ uint16_t *)dst + i * dstRepStride * blkCount, dstReg, dstMask);
+        Reg::Gather(dstReg, (__ubuf__ uint16_t *)src + srcBaseIndex, indexReg, dstMask);
+        Reg::StoreAlign((__ubuf__ uint16_t *)dst + i * dstRepStride * blkCount, dstReg, dstMask);
     }
 }
 
@@ -87,25 +87,25 @@ __aicore__ inline void VfGatherApi0B32(__ubuf__ T *dst, __ubuf__ T *src, __ubuf_
     const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t &dstRepStride, uint32_t dstRepeatCount,
     uint32_t u32OffsetRepeatCount, uint32_t blkCount, const uint64_t maskCount)
 {
-    MicroAPI::RegTensor<uint32_t> offsetReg;
-    MicroAPI::RegTensor<uint32_t> indexReg;
-    MicroAPI::RegTensor<uint32_t> dstReg;
+    Reg::RegTensor<uint32_t> offsetReg;
+    Reg::RegTensor<uint32_t> indexReg;
+    Reg::RegTensor<uint32_t> dstReg;
     uint32_t sregPlt = static_cast<uint32_t>(maskCount);
-    MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<T>();
-    MicroAPI::MaskReg dstMask;
-    MicroAPI::MaskReg offsetMask = MicroAPI::CreateMask<uint32_t>();
+    Reg::MaskReg indexMask = Reg::CreateMask<T>();
+    Reg::MaskReg dstMask;
+    Reg::MaskReg offsetMask = Reg::CreateMask<uint32_t>();
     if constexpr (isNormalMode) {
-        dstMask = MicroAPI::MoveMask<T>();
+        dstMask = Reg::MoveMask<T>();
     }
     for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
         if constexpr (!isNormalMode) {
-            dstMask = MicroAPI::UpdateMask<T>(sregPlt);
+            dstMask = Reg::UpdateMask<T>(sregPlt);
         }
-        MicroAPI::LoadAlign(offsetReg, srcOffsetLocal + i * u32OffsetRepeatCount);
+        Reg::LoadAlign(offsetReg, srcOffsetLocal + i * u32OffsetRepeatCount);
         // convert addr offset into B32 element index: divide by 4 (implemented by ShiftRight 2 bit)
         ShiftRights(indexReg, offsetReg, (int16_t)2, indexMask);
-        MicroAPI::Gather(dstReg, (__ubuf__ uint32_t *)src + srcBaseIndex, indexReg, dstMask);
-        MicroAPI::StoreAlign((__ubuf__ uint32_t *)dst + i * dstRepStride * blkCount, dstReg, dstMask);
+        Reg::Gather(dstReg, (__ubuf__ uint32_t *)src + srcBaseIndex, indexReg, dstMask);
+        Reg::StoreAlign((__ubuf__ uint32_t *)dst + i * dstRepStride * blkCount, dstReg, dstMask);
     }
 }
 
@@ -125,23 +125,23 @@ __aicore__ inline void VfGatherApi0B64Normal(__ubuf__ T *dst, __ubuf__ T *src, _
     const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t &dstRepStride, uint32_t u64OffsetRepeatCount,
     uint32_t u32BlkCount, const uint64_t maskCount)
 {
-    MicroAPI::RegTensor<uint32_t> offsetReg;
-    MicroAPI::RegTensor<uint32_t> indexReg;
-    MicroAPI::RegTensor<uint32_t> oddIndexReg;
-    MicroAPI::RegTensor<uint32_t> tmpReg;
-    MicroAPI::RegTensor<uint32_t> indexU32Reg;
-    MicroAPI::RegTensor<uint32_t> dstReg;
+    Reg::RegTensor<uint32_t> offsetReg;
+    Reg::RegTensor<uint32_t> indexReg;
+    Reg::RegTensor<uint32_t> oddIndexReg;
+    Reg::RegTensor<uint32_t> tmpReg;
+    Reg::RegTensor<uint32_t> indexU32Reg;
+    Reg::RegTensor<uint32_t> dstReg;
     uint32_t sregPlt = static_cast<uint32_t>(maskCount);
-    MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::H>();
-    MicroAPI::MaskReg dstMask;
+    Reg::MaskReg indexMask = Reg::CreateMask<uint32_t, Reg::MaskPattern::H>();
+    Reg::MaskReg dstMask;
     if constexpr (isNormalMode) {
-        dstMask = MicroAPI::UpdateMask<uint32_t>(sregPlt);
+        dstMask = Reg::UpdateMask<uint32_t>(sregPlt);
     }
     for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
         if constexpr (!isNormalMode) {
-            dstMask = MicroAPI::UpdateMask<uint32_t>(sregPlt);
+            dstMask = Reg::UpdateMask<uint32_t>(sregPlt);
         }
-        MicroAPI::LoadAlign(offsetReg, srcOffsetLocal + i * u64OffsetRepeatCount);
+        Reg::LoadAlign(offsetReg, srcOffsetLocal + i * u64OffsetRepeatCount);
         // convert addr offset into B64 element index: divide by 8 (implemented by ShiftRight 3 bit)
         ShiftRights(indexReg, offsetReg, (int16_t)3, indexMask);
         // Consider every B64 element as two B32 elements
@@ -150,8 +150,8 @@ __aicore__ inline void VfGatherApi0B64Normal(__ubuf__ T *dst, __ubuf__ T *src, _
         Adds(oddIndexReg, indexReg, 1, indexMask);
         // Interleave the seperately calculated indices of the lower and higher 32-bit of every B64 element
         Interleave(indexU32Reg, tmpReg, indexReg, oddIndexReg);
-        MicroAPI::Gather(dstReg, (__ubuf__ uint32_t *)src + srcBaseIndex, indexU32Reg, dstMask);
-        MicroAPI::StoreAlign((__ubuf__ uint32_t *)dst + i * dstRepStride * u32BlkCount, dstReg, dstMask);
+        Reg::Gather(dstReg, (__ubuf__ uint32_t *)src + srcBaseIndex, indexU32Reg, dstMask);
+        Reg::StoreAlign((__ubuf__ uint32_t *)dst + i * dstRepStride * u32BlkCount, dstReg, dstMask);
     }
 }
 
@@ -171,29 +171,29 @@ __aicore__ inline void VfGatherApi0B64Bits(__ubuf__ T *dst, __ubuf__ T *src, __u
     const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t &dstRepStride, uint32_t u64OffsetRepeatCount,
     uint32_t u32BlkCount, const uint64_t maskCount)
 {
-    MicroAPI::RegTensor<uint32_t> offsetReg;
-    MicroAPI::RegTensor<uint32_t> bitsIndexReg;
-    MicroAPI::RegTensor<uint32_t> bitsOddIndexReg;
-    MicroAPI::RegTensor<uint32_t> tmpReg;
-    MicroAPI::RegTensor<uint32_t> indexU32Reg;
-    MicroAPI::RegTensor<uint32_t> dstReg;
+    Reg::RegTensor<uint32_t> offsetReg;
+    Reg::RegTensor<uint32_t> bitsIndexReg;
+    Reg::RegTensor<uint32_t> bitsOddIndexReg;
+    Reg::RegTensor<uint32_t> tmpReg;
+    Reg::RegTensor<uint32_t> indexU32Reg;
+    Reg::RegTensor<uint32_t> dstReg;
     uint32_t sregPlt = static_cast<uint32_t>(maskCount);
-    MicroAPI::MaskReg dstMask;
-    MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::H>();
+    Reg::MaskReg dstMask;
+    Reg::MaskReg indexMask = Reg::CreateMask<uint32_t, Reg::MaskPattern::H>();
     if constexpr (isNormalMode) {
-        MicroAPI::MaskReg tmpMask0;
-        MicroAPI::MaskReg tmpMask1 = MicroAPI::MoveMask<uint16_t>();
-        MicroAPI::MaskPack(tmpMask1, tmpMask1);
-        MicroAPI::MaskInterleave<uint8_t>(dstMask, tmpMask0, tmpMask1, tmpMask1);
-        MicroAPI::MaskUnPack(dstMask, dstMask);
-        MicroAPI::MaskUnPack(dstMask, dstMask);
+        Reg::MaskReg tmpMask0;
+        Reg::MaskReg tmpMask1 = Reg::MoveMask<uint16_t>();
+        Reg::MaskPack(tmpMask1, tmpMask1);
+        Reg::MaskInterleave<uint8_t>(dstMask, tmpMask0, tmpMask1, tmpMask1);
+        Reg::MaskUnPack(dstMask, dstMask);
+        Reg::MaskUnPack(dstMask, dstMask);
     }
 
     for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
         if constexpr (!isNormalMode) {
-            dstMask = MicroAPI::UpdateMask<uint32_t>(sregPlt);
+            dstMask = Reg::UpdateMask<uint32_t>(sregPlt);
         }
-        MicroAPI::LoadAlign(offsetReg, srcOffsetLocal + i * u64OffsetRepeatCount);
+        Reg::LoadAlign(offsetReg, srcOffsetLocal + i * u64OffsetRepeatCount);
         // convert addr offset into B64 element index: divide by 8 (implemented by ShiftRight 3 bit)
         ShiftRights(bitsIndexReg, offsetReg, (int16_t)3, indexMask);
         // Consider every B64 element as two B32 elements
@@ -202,8 +202,8 @@ __aicore__ inline void VfGatherApi0B64Bits(__ubuf__ T *dst, __ubuf__ T *src, __u
         Adds(bitsOddIndexReg, bitsIndexReg, 1, indexMask);
         // Interleave the seperately calculated indices of the lower and higher 32-bit of every B64 element
         Interleave(indexU32Reg, tmpReg, bitsIndexReg, bitsOddIndexReg);
-        MicroAPI::Gather(dstReg, (__ubuf__ uint32_t *)src + srcBaseIndex, indexU32Reg, dstMask);
-        MicroAPI::StoreAlign((__ubuf__ uint32_t *)dst + i * dstRepStride * u32BlkCount, dstReg, dstMask);
+        Reg::Gather(dstReg, (__ubuf__ uint32_t *)src + srcBaseIndex, indexU32Reg, dstMask);
+        Reg::StoreAlign((__ubuf__ uint32_t *)dst + i * dstRepStride * u32BlkCount, dstReg, dstMask);
     }
 }
 
@@ -222,39 +222,39 @@ template <typename T>
 __aicore__ inline void VfGatherApi2B8(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
     const uint32_t srcBaseIndex, const uint32_t count, uint32_t u32OffsetRepeatCount, uint32_t u8GatherRepeatCount)
 {
-    MicroAPI::RegTensor<uint32_t> offsetReg0;
-    MicroAPI::RegTensor<uint32_t> offsetReg1;
-    MicroAPI::RegTensor<uint16_t> indexReg;
-    MicroAPI::RegTensor<uint16_t> dstReg;
+    Reg::RegTensor<uint32_t> offsetReg0;
+    Reg::RegTensor<uint32_t> offsetReg1;
+    Reg::RegTensor<uint16_t> indexReg;
+    Reg::RegTensor<uint16_t> dstReg;
     uint32_t sreg = (uint32_t)count;
-    MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint16_t>();
-    MicroAPI::MaskReg dstMask;
+    Reg::MaskReg indexMask = Reg::CreateMask<uint16_t>();
+    Reg::MaskReg dstMask;
     uint16_t repeatTime = CeilDivision(count, u8GatherRepeatCount);
-    MicroAPI::MaskReg selectMask = MicroAPI::CreateMask<uint16_t, MicroAPI::MaskPattern::H>();
+    Reg::MaskReg selectMask = Reg::CreateMask<uint16_t, Reg::MaskPattern::H>();
     for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
-        dstMask = MicroAPI::UpdateMask<uint16_t>(sreg);
-        MicroAPI::LoadAlign(offsetReg0, srcOffsetLocal + (2 * i) * u32OffsetRepeatCount);
-        MicroAPI::LoadAlign(offsetReg1, srcOffsetLocal + (2 * i + 1) * u32OffsetRepeatCount);
+        dstMask = Reg::UpdateMask<uint16_t>(sreg);
+        Reg::LoadAlign(offsetReg0, srcOffsetLocal + (2 * i) * u32OffsetRepeatCount);
+        Reg::LoadAlign(offsetReg1, srcOffsetLocal + (2 * i + 1) * u32OffsetRepeatCount);
         // extract the lower 16-bit of uint32_t offset data into uint16_t index data:
         // for offsetReg0，pack every lower 16-bit into the lower half of the vreg：
         // 0x00FF00FE00FD... -> 0xFFFEFD...000000...
         // for offsetReg1, pack every higher 16-bit into the higher half of the vreg:
         // 0x001100120013... -> 0x000000...111213...
-        MicroAPI::Pack<uint16_t, uint32_t, MicroAPI::HighLowPart::LOWEST>((MicroAPI::RegTensor<uint16_t> &)offsetReg0,
+        Reg::Pack<uint16_t, uint32_t, Reg::HighLowPart::LOWEST>((Reg::RegTensor<uint16_t> &)offsetReg0,
             offsetReg0);
-        MicroAPI::Pack<uint16_t, uint32_t, MicroAPI::HighLowPart::HIGHEST>((MicroAPI::RegTensor<uint16_t> &)offsetReg1,
+        Reg::Pack<uint16_t, uint32_t, Reg::HighLowPart::HIGHEST>((Reg::RegTensor<uint16_t> &)offsetReg1,
             offsetReg1);
         // Select the effective data in offsetReg0 and offsetReg1 and joint them into a complete uint16_t type indexReg:
         // 0xFFFEFD...111213...
-        Select(indexReg, (MicroAPI::RegTensor<uint16_t> &)offsetReg0, (MicroAPI::RegTensor<uint16_t> &)offsetReg1,
+        Select(indexReg, (Reg::RegTensor<uint16_t> &)offsetReg0, (Reg::RegTensor<uint16_t> &)offsetReg1,
             selectMask);
-        MicroAPI::Gather(dstReg, (__ubuf__ uint8_t *)src + srcBaseIndex, indexReg, dstMask);
+        Reg::Gather(dstReg, (__ubuf__ uint8_t *)src + srcBaseIndex, indexReg, dstMask);
         // remove the higher zeros of the uint16_t data gathered by the Micro Gather instr, and pack into continuous B8
         // data: 0x010203... -> 0x123...000... (only the lower 128 elements are effective)
-        MicroAPI::Pack((MicroAPI::RegTensor<uint8_t> &)dstReg, dstReg);
+        Reg::Pack((Reg::RegTensor<uint8_t> &)dstReg, dstReg);
         // convert uint16_t type preg to B8 type preg：0b010101... -> 0b111...000... (lower 128-bit effective)
-        MicroAPI::MaskPack(dstMask, dstMask);
-        MicroAPI::StoreAlign((__ubuf__ uint8_t *)dst + i * u8GatherRepeatCount, (MicroAPI::RegTensor<uint8_t> &)dstReg, dstMask);
+        Reg::MaskPack(dstMask, dstMask);
+        Reg::StoreAlign((__ubuf__ uint8_t *)dst + i * u8GatherRepeatCount, (Reg::RegTensor<uint8_t> &)dstReg, dstMask);
     }
 }
 
@@ -273,18 +273,18 @@ __aicore__ inline void VfGatherApi2B16(__ubuf__ T *dst, __ubuf__ T *src, __ubuf_
     const uint32_t srcBaseIndex, const uint32_t count, uint32_t dstRepeatCount, uint32_t u32OffsetRepeatCount,
     uint16_t repeatTime)
 {
-    MicroAPI::RegTensor<uint32_t> api2OffsetReg0;
-    MicroAPI::RegTensor<uint32_t> api2OffsetReg1;
-    MicroAPI::RegTensor<uint16_t> indexReg;
-    MicroAPI::RegTensor<uint16_t> dstReg;
-    MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint16_t>();
-    MicroAPI::MaskReg dstMask;
-    MicroAPI::MaskReg selectMask = MicroAPI::CreateMask<uint16_t, MicroAPI::MaskPattern::H>();
+    Reg::RegTensor<uint32_t> api2OffsetReg0;
+    Reg::RegTensor<uint32_t> api2OffsetReg1;
+    Reg::RegTensor<uint16_t> indexReg;
+    Reg::RegTensor<uint16_t> dstReg;
+    Reg::MaskReg indexMask = Reg::CreateMask<uint16_t>();
+    Reg::MaskReg dstMask;
+    Reg::MaskReg selectMask = Reg::CreateMask<uint16_t, Reg::MaskPattern::H>();
     uint32_t sreg = (uint32_t)count;
     for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
-        dstMask = MicroAPI::UpdateMask<uint16_t>(sreg);
-        MicroAPI::LoadAlign(api2OffsetReg0, srcOffsetLocal + (2 * i) * u32OffsetRepeatCount);
-        MicroAPI::LoadAlign(api2OffsetReg1, srcOffsetLocal + (2 * i + 1) * u32OffsetRepeatCount);
+        dstMask = Reg::UpdateMask<uint16_t>(sreg);
+        Reg::LoadAlign(api2OffsetReg0, srcOffsetLocal + (2 * i) * u32OffsetRepeatCount);
+        Reg::LoadAlign(api2OffsetReg1, srcOffsetLocal + (2 * i + 1) * u32OffsetRepeatCount);
         // convert addr offset into B32 element index: divide by 4 (implemented by ShiftRight 2 bit)
         ShiftRights(api2OffsetReg0, api2OffsetReg0, (int16_t)1, indexMask);
         ShiftRights(api2OffsetReg1, api2OffsetReg1, (int16_t)1, indexMask);
@@ -293,16 +293,16 @@ __aicore__ inline void VfGatherApi2B16(__ubuf__ T *dst, __ubuf__ T *src, __ubuf_
         // 0x00FF00FE00FD... -> 0xFFFEFD...000000...
         // for api2OffsetReg1, pack every higher 16-bit into the higher half of the vreg:
         // 0x001100120013... -> 0x000000...111213...
-        MicroAPI::Pack<uint16_t, uint32_t, MicroAPI::HighLowPart::LOWEST>((MicroAPI::RegTensor<uint16_t> &)api2OffsetReg0,
+        Reg::Pack<uint16_t, uint32_t, Reg::HighLowPart::LOWEST>((Reg::RegTensor<uint16_t> &)api2OffsetReg0,
             api2OffsetReg0);
-        MicroAPI::Pack<uint16_t, uint32_t, MicroAPI::HighLowPart::HIGHEST>((MicroAPI::RegTensor<uint16_t> &)api2OffsetReg1,
+        Reg::Pack<uint16_t, uint32_t, Reg::HighLowPart::HIGHEST>((Reg::RegTensor<uint16_t> &)api2OffsetReg1,
             api2OffsetReg1);
         // Select the effective data in api2OffsetReg0 and api2OffsetReg1 and joint them into a complete uint16_t type
         // indexReg：0xFFFEFD...111213...
-        Select(indexReg, (MicroAPI::RegTensor<uint16_t> &)api2OffsetReg0, (MicroAPI::RegTensor<uint16_t> &)api2OffsetReg1,
+        Select(indexReg, (Reg::RegTensor<uint16_t> &)api2OffsetReg0, (Reg::RegTensor<uint16_t> &)api2OffsetReg1,
             selectMask);
-        MicroAPI::Gather(dstReg, (__ubuf__ uint16_t *)src + srcBaseIndex, indexReg, dstMask);
-        MicroAPI::StoreAlign((__ubuf__ uint16_t *)dst + i * dstRepeatCount, dstReg, dstMask);
+        Reg::Gather(dstReg, (__ubuf__ uint16_t *)src + srcBaseIndex, indexReg, dstMask);
+        Reg::StoreAlign((__ubuf__ uint16_t *)dst + i * dstRepeatCount, dstReg, dstMask);
     }
 }
 
@@ -322,19 +322,19 @@ __aicore__ inline void VfGatherApi2B32(__ubuf__ T *dst, __ubuf__ T *src, __ubuf_
     const uint32_t srcBaseIndex, const uint32_t count, uint32_t dstRepeatCount, uint32_t u32OffsetRepeatCount,
     uint16_t repeatTime)
 {
-    MicroAPI::RegTensor<uint32_t> offsetReg;
-    MicroAPI::RegTensor<uint32_t> indexReg;
-    MicroAPI::RegTensor<uint32_t> dstReg;
-    MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<T>();
-    MicroAPI::MaskReg dstMask;
+    Reg::RegTensor<uint32_t> offsetReg;
+    Reg::RegTensor<uint32_t> indexReg;
+    Reg::RegTensor<uint32_t> dstReg;
+    Reg::MaskReg indexMask = Reg::CreateMask<T>();
+    Reg::MaskReg dstMask;
     uint32_t sreg = (uint32_t)count;
     for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
-        dstMask = MicroAPI::UpdateMask<uint32_t>(sreg);
-        MicroAPI::LoadAlign(offsetReg, srcOffsetLocal + i * u32OffsetRepeatCount);
+        dstMask = Reg::UpdateMask<uint32_t>(sreg);
+        Reg::LoadAlign(offsetReg, srcOffsetLocal + i * u32OffsetRepeatCount);
         // convert addr offset into B32 element index: divide by 4 (implemented by ShiftRight 2 bit)
         ShiftRights(indexReg, offsetReg, (int16_t)2, indexMask);
-        MicroAPI::Gather(dstReg, (__ubuf__ uint32_t *)src + srcBaseIndex, indexReg, dstMask);
-        MicroAPI::StoreAlign((__ubuf__ uint32_t *)dst + i * dstRepeatCount, dstReg, dstMask);
+        Reg::Gather(dstReg, (__ubuf__ uint32_t *)src + srcBaseIndex, indexReg, dstMask);
+        Reg::StoreAlign((__ubuf__ uint32_t *)dst + i * dstRepeatCount, dstReg, dstMask);
     }
 }
 
@@ -354,18 +354,18 @@ __aicore__ inline void VfGatherApi2B64(__ubuf__ T *dst, __ubuf__ T *src, __ubuf_
     const uint32_t srcBaseIndex, const uint32_t count, uint32_t u32Count, uint32_t u64OffsetRepeatCount,
     uint32_t u32RepeatCount, uint16_t repeatTime)
 {
-    MicroAPI::RegTensor<uint32_t> offsetReg;
-    MicroAPI::RegTensor<uint32_t> indexReg;
-    MicroAPI::RegTensor<uint32_t> oddIndexReg;
-    MicroAPI::RegTensor<uint32_t> tmpReg;
-    MicroAPI::RegTensor<uint32_t> indexU32Reg;
-    MicroAPI::RegTensor<uint32_t> dstReg;
-    MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::H>();
-    MicroAPI::MaskReg dstMask;
+    Reg::RegTensor<uint32_t> offsetReg;
+    Reg::RegTensor<uint32_t> indexReg;
+    Reg::RegTensor<uint32_t> oddIndexReg;
+    Reg::RegTensor<uint32_t> tmpReg;
+    Reg::RegTensor<uint32_t> indexU32Reg;
+    Reg::RegTensor<uint32_t> dstReg;
+    Reg::MaskReg indexMask = Reg::CreateMask<uint32_t, Reg::MaskPattern::H>();
+    Reg::MaskReg dstMask;
     uint32_t sreg = (uint32_t)u32Count;
     for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
-        dstMask = MicroAPI::UpdateMask<uint32_t>(sreg);
-        MicroAPI::LoadAlign(offsetReg, srcOffsetLocal + i * u64OffsetRepeatCount);
+        dstMask = Reg::UpdateMask<uint32_t>(sreg);
+        Reg::LoadAlign(offsetReg, srcOffsetLocal + i * u64OffsetRepeatCount);
         // convert addr offset into B64 element index: divide by 8 (implemented by ShiftRight 3 bit)
         ShiftRights(indexReg, offsetReg, (int16_t)3, indexMask);
         // Consider every B64 element as two B32 elements
@@ -374,8 +374,8 @@ __aicore__ inline void VfGatherApi2B64(__ubuf__ T *dst, __ubuf__ T *src, __ubuf_
         Adds(oddIndexReg, indexReg, 1, indexMask);
         // Interleave the seperately calculated indices of the lower and higher 32-bit of every B64 element
         Interleave(indexU32Reg, tmpReg, indexReg, oddIndexReg);
-        MicroAPI::Gather(dstReg, (__ubuf__ uint32_t *)src + srcBaseIndex, indexU32Reg, dstMask);
-        MicroAPI::StoreAlign((__ubuf__ uint32_t *)dst + i * u32RepeatCount, dstReg, dstMask);
+        Reg::Gather(dstReg, (__ubuf__ uint32_t *)src + srcBaseIndex, indexU32Reg, dstMask);
+        Reg::StoreAlign((__ubuf__ uint32_t *)dst + i * u32RepeatCount, dstReg, dstMask);
     }
 }
 
@@ -524,25 +524,25 @@ __aicore__ inline void GatherbImpl(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ ui
     constexpr uint32_t oneBlkNum = static_cast<uint32_t>(ONE_BLK_SIZE / sizeof(T));
     __VEC_SCOPE__
     {
-        MicroAPI::RegTensor<T> srcReg;
-        MicroAPI::RegTensor<T> dstReg;
-        MicroAPI::RegTensor<uint32_t> indexReg;
-        MicroAPI::MaskReg fullPreg = MicroAPI::CreateMask<uint8_t>();
+        Reg::RegTensor<T> srcReg;
+        Reg::RegTensor<T> dstReg;
+        Reg::RegTensor<uint32_t> indexReg;
+        Reg::MaskReg fullPreg = Reg::CreateMask<uint8_t>();
 
         constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
         for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
-            MicroAPI::LoadAlign(indexReg, srcOffsetLocal + i * DEFAULT_BLK_NUM);
+            Reg::LoadAlign(indexReg, srcOffsetLocal + i * DEFAULT_BLK_NUM);
             if constexpr (sizeof(T) == 8) {
                 // pg is the predicate for block index, and regarded as B32 format.
                 // For convenience, we use fullPreg format to represent it.
-                MicroAPI::GatherB(dstReg, src, indexReg, fullPreg);
-                MicroAPI::StoreAlign<uint32_t, MicroAPI::DataCopyMode::DATA_BLOCK_COPY,
-                    MicroAPI::PostLiteral::POST_MODE_UPDATE>((__ubuf__ uint32_t *&)dst,
-                    (MicroAPI::RegTensor<uint32_t> &)dstReg, static_cast<uint32_t>(repeatParams.dstBlkStride),
+                Reg::GatherB(dstReg, src, indexReg, fullPreg);
+                Reg::StoreAlign<uint32_t, Reg::DataCopyMode::DATA_BLOCK_COPY,
+                    Reg::PostLiteral::POST_MODE_UPDATE>((__ubuf__ uint32_t *&)dst,
+                    (Reg::RegTensor<uint32_t> &)dstReg, static_cast<uint32_t>(repeatParams.dstBlkStride),
                     static_cast<uint32_t>(repeatParams.dstRepStride), fullPreg);
             } else {
-                MicroAPI::GatherB(dstReg, src, indexReg, fullPreg);
-                MicroAPI::StoreAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+                Reg::GatherB(dstReg, src, indexReg, fullPreg);
+                Reg::StoreAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(
                     dst + i * repeatParams.dstRepStride * oneBlkNum, dstReg, repeatParams.dstBlkStride, fullPreg);
             }
         }

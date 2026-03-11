@@ -45,53 +45,53 @@ private:
 
     __aicore__ inline void ComputeMode0(__ubuf__ T *dst, __ubuf__ T *src)
     {
-        MicroAPI::RegTensor<T> vreg0;
+        Reg::RegTensor<T> vreg0;
         uint32_t sreg = static_cast<uint32_t>(dstSize);
         // Pat { ALL, VL1, VL2, VL3, VL4, VL8, VL16, VL32, VL64, VL128, M3, M4, H, Q, ALLF = 15 }
-        MicroAPI::MaskReg preg = MicroAPI::CreateMask<T, static_cast<MicroAPI::MaskPattern>(mode2)>();
+        Reg::MaskReg preg = Reg::CreateMask<T, static_cast<Reg::MaskPattern>(mode2)>();
         constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
         uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
         for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTimes); ++i) {
-            MicroAPI::MaskReg cur = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::DataCopy(vreg0, src + i * sregLower);
+            Reg::MaskReg cur = Reg::UpdateMask<T>(sreg);
+            Reg::DataCopy(vreg0, src + i * sregLower);
             Adds(vreg0, vreg0, 0, preg);
-            MicroAPI::DataCopy(dst + i * sregLower, vreg0, cur);
+            Reg::DataCopy(dst + i * sregLower, vreg0, cur);
         }
     }
 
     __aicore__ inline void ComputeMode200(__ubuf__ T *dst, __ubuf__ T *src)
     {
-        MicroAPI::RegTensor<T> vreg0;
+        Reg::RegTensor<T> vreg0;
         uint32_t sreg = static_cast<uint32_t>(dstSize);
-        MicroAPI::MaskReg preg = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALLF>();
-        MicroAPI::MaskReg newMask;
+        Reg::MaskReg preg = Reg::CreateMask<T, Reg::MaskPattern::ALLF>();
+        Reg::MaskReg newMask;
         constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
         uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
         for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTimes); ++i) {
-            MicroAPI::MaskReg cur = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::DataCopy(vreg0, src + i * sregLower);
-            MicroAPI::MaskNot(newMask, preg, cur);
-            MicroAPI:: Adds(vreg0, vreg0, 0, newMask);
-            MicroAPI::DataCopy(dst + i * sregLower, vreg0, cur);
+            Reg::MaskReg cur = Reg::UpdateMask<T>(sreg);
+            Reg::DataCopy(vreg0, src + i * sregLower);
+            Reg::MaskNot(newMask, preg, cur);
+            Reg:: Adds(vreg0, vreg0, 0, newMask);
+            Reg::DataCopy(dst + i * sregLower, vreg0, cur);
         }
     }
 
     __aicore__ inline void ComputeMode300(__ubuf__ T *dst, __ubuf__ T *src)
     {
-        MicroAPI::RegTensor<T> vreg0;
+        Reg::RegTensor<T> vreg0;
         uint32_t sreg = static_cast<uint32_t>(dstSize);
-        MicroAPI::MaskReg preg0 = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL>();
-        MicroAPI::MaskReg preg1 = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALLF>();
-        MicroAPI::MaskReg newMask;
+        Reg::MaskReg preg0 = Reg::CreateMask<T, Reg::MaskPattern::ALL>();
+        Reg::MaskReg preg1 = Reg::CreateMask<T, Reg::MaskPattern::ALLF>();
+        Reg::MaskReg newMask;
         constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
         uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
         for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTimes); ++i) {
-            MicroAPI::MaskReg cur = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::DataCopy(vreg0, src + i * sregLower);
-            MicroAPI::MaskXor(newMask, preg0, preg1, cur);
-            MicroAPI::MaskOr(newMask, preg0, preg1, cur);
-            MicroAPI::Adds(vreg0, vreg0, 0, newMask);
-            MicroAPI::DataCopy(dst + i * sregLower, vreg0, cur);
+            Reg::MaskReg cur = Reg::UpdateMask<T>(sreg);
+            Reg::DataCopy(vreg0, src + i * sregLower);
+            Reg::MaskXor(newMask, preg0, preg1, cur);
+            Reg::MaskOr(newMask, preg0, preg1, cur);
+            Reg::Adds(vreg0, vreg0, 0, newMask);
+            Reg::DataCopy(dst + i * sregLower, vreg0, cur);
         }
     }
 
@@ -99,10 +99,10 @@ private:
     {
         vector_bf16 vreg1, vreg2;
         vector_bool preg0;
-        constexpr auto mode = MicroAPI::MaskMergeMode::MERGING;
+        constexpr auto mode = Reg::MaskMergeMode::MERGING;
         constexpr auto modeValue = std::integral_constant<::CpuMode, static_cast<::CpuMode>(mode)>();
         vmov(vreg1, vreg2, preg0, modeValue);
-        constexpr auto mode1 = MicroAPI::MaskMergeMode::ZEROING;
+        constexpr auto mode1 = Reg::MaskMergeMode::ZEROING;
         constexpr auto modeValue1 = std::integral_constant<::CpuMode, static_cast<::CpuMode>(mode)>();
         vector_f16 vreg3, vreg4;
         vadd(vreg1, vreg1, vreg2, preg0, MODE_MERGING);
@@ -111,21 +111,21 @@ private:
     // MakseMov Test
     __aicore__ inline void ComputeMode600(__ubuf__ T *dst, __ubuf__ T *src)
     {
-        MicroAPI::RegTensor<T> vreg0;
+        Reg::RegTensor<T> vreg0;
         uint32_t sreg = static_cast<uint32_t>(dstSize);
-        MicroAPI::MaskReg maskFull = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL>();
-        MicroAPI::MaskReg newMask0;
-        MicroAPI::MaskReg newMask1;
-        MicroAPI::MaskMov(newMask0, maskFull);
-        MicroAPI::MaskMov(newMask1, maskFull, maskFull);
+        Reg::MaskReg maskFull = Reg::CreateMask<T, Reg::MaskPattern::ALL>();
+        Reg::MaskReg newMask0;
+        Reg::MaskReg newMask1;
+        Reg::MaskMov(newMask0, maskFull);
+        Reg::MaskMov(newMask1, maskFull, maskFull);
         constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
         uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
         for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTimes); ++i) {
-            MicroAPI::MaskReg cur = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::DataCopy(vreg0, src + i * sregLower);
-            MicroAPI::Adds(vreg0, vreg0, 0, newMask0);
-            MicroAPI::Adds(vreg0, vreg0, 0, newMask1);
-            MicroAPI::DataCopy(dst + i * sregLower, vreg0, cur);
+            Reg::MaskReg cur = Reg::UpdateMask<T>(sreg);
+            Reg::DataCopy(vreg0, src + i * sregLower);
+            Reg::Adds(vreg0, vreg0, 0, newMask0);
+            Reg::Adds(vreg0, vreg0, 0, newMask1);
+            Reg::DataCopy(dst + i * sregLower, vreg0, cur);
         }
     }
 

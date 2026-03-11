@@ -49,20 +49,20 @@ __simd_vf__ inline void VecCreateVecIndexLevel0VFImpl(__ubuf__ T *dst, const T f
     constexpr uint16_t sreg = GetVecLen() / sizeof(T);
     uint32_t count = VecMicroGetCount<true, isNormalMode, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
     uint16_t newRepeatTimes = VecMicroGetRepeatTimes<T, isNormalMode>(count, repeatTime);
-    MicroAPI::MaskReg maskReg;
+    Reg::MaskReg maskReg;
     if constexpr (isNormalMode) {
         maskReg = VecMicroGetMaskReg<T, true, isNormalMode, isMaskBitMode>(maskBuf, count);
     }
     constexpr uint8_t ElePerBlkT = GetDataBlockSizeInBytes() / sizeof(T);
-    MicroAPI::RegTensor<T> dstVreg;
-    MicroAPI::Arange(dstVreg, firstValue);
+    Reg::RegTensor<T> dstVreg;
+    Reg::Arange(dstVreg, firstValue);
     for (uint16_t index = 0; index < newRepeatTimes; ++index) {
         if constexpr (!isNormalMode) {
             maskReg = VecMicroGetMaskReg<T, true, isNormalMode, isMaskBitMode>(maskBuf, count);
         }
-        MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+        Reg::DataCopy<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(
             dst + index * dstRepStride * ElePerBlkT, dstVreg, dstBlkStride, maskReg);
-        MicroAPI::Adds(dstVreg, dstVreg, static_cast<int32_t>(sreg), maskReg);
+        Reg::Adds(dstVreg, dstVreg, static_cast<int32_t>(sreg), maskReg);
     }
 }
 

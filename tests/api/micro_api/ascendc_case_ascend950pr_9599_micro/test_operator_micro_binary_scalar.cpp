@@ -76,37 +76,37 @@ private:
         T mulsCastScalar = src0Local.GetValue(0);
         __VEC_SCOPE__
         {
-            MicroAPI::RegTensor<T> vSrcReg0;
-            MicroAPI::RegTensor<Scr1T> vSrcReg1;
-            MicroAPI::RegTensor<int32_t> vSrcReg2;
-            MicroAPI::RegTensor<T> vDstReg0;
-            MicroAPI::RegTensor<T> vDstReg1;
-            MicroAPI::RegTensor<half> halfReg;
+            Reg::RegTensor<T> vSrcReg0;
+            Reg::RegTensor<Scr1T> vSrcReg1;
+            Reg::RegTensor<int32_t> vSrcReg2;
+            Reg::RegTensor<T> vDstReg0;
+            Reg::RegTensor<T> vDstReg1;
+            Reg::RegTensor<half> halfReg;
             vector_bool carryOut;
             uint32_t sreg = static_cast<uint32_t>(mask);
-            MicroAPI::MaskReg maskReg;
-            maskReg = MicroAPI::UpdateMask<T>(sreg);
+            Reg::MaskReg maskReg;
+            maskReg = Reg::UpdateMask<T>(sreg);
             for (uint16_t i = 0; i < static_cast<uint16_t>(rep); i++) {
-                MicroAPI::DataCopy(vSrcReg0, src0Ptr + i * oneRepSize);
-                MicroAPI::DataCopy(vSrcReg1, src1Ptr + i * oneRepSize);
+                Reg::DataCopy(vSrcReg0, src0Ptr + i * oneRepSize);
+                Reg::DataCopy(vSrcReg1, src1Ptr + i * oneRepSize);
                 if constexpr (mD == 0) {
-                    MicroAPI::Adds(vDstReg1, vSrcReg0, scalar, maskReg);
+                    Reg::Adds(vDstReg1, vSrcReg0, scalar, maskReg);
                 } else if constexpr (mD == 1) {
-                    MicroAPI::Muls(vDstReg1, vSrcReg0, scalar, maskReg);
+                    Reg::Muls(vDstReg1, vSrcReg0, scalar, maskReg);
                 } else if constexpr (mD == 2) {
-                    MicroAPI::Maxs(vDstReg0, vSrcReg0, scalar, maskReg);
+                    Reg::Maxs(vDstReg0, vSrcReg0, scalar, maskReg);
                 } else if constexpr (mD == 3) {
-                    MicroAPI::Mins(vDstReg1, vSrcReg0, scalar, maskReg);
+                    Reg::Mins(vDstReg1, vSrcReg0, scalar, maskReg);
                 } else if constexpr (mD == 4) {
-                    MicroAPI::ShiftLefts(vDstReg1, vSrcReg0, static_cast<int16_t>(scalar), maskReg);
+                    Reg::ShiftLefts(vDstReg1, vSrcReg0, static_cast<int16_t>(scalar), maskReg);
                 } else if constexpr (mD == 5) {
-                    MicroAPI::ShiftRights(vDstReg1, vSrcReg0, static_cast<int16_t>(scalar), maskReg);
+                    Reg::ShiftRights(vDstReg1, vSrcReg0, static_cast<int16_t>(scalar), maskReg);
                 } else if constexpr (mD == 6) {
-                    MicroAPI::FusedMulsCast(halfReg, vSrcReg0, mulsCastScalar, maskReg);
+                    Reg::FusedMulsCast(halfReg, vSrcReg0, mulsCastScalar, maskReg);
                 } else if constexpr (mD == 7) {
-                    MicroAPI::LeakyRelu(vDstReg1, vSrcReg0, scalar, maskReg);
+                    Reg::LeakyRelu(vDstReg1, vSrcReg0, scalar, maskReg);
                 }
-                MicroAPI::DataCopy(dstPtr + i * oneRepSize, vDstReg0, maskReg);
+                Reg::DataCopy(dstPtr + i * oneRepSize, vDstReg0, maskReg);
             }
         }
         outQueue.EnQue<T>(dst0Local);

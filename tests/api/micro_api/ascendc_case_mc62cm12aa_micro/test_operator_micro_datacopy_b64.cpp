@@ -13,10 +13,10 @@
 using namespace std;
 using namespace AscendC;
 
-using MicroAPI::CreateMask;
-using MicroAPI::MaskReg;
-using MicroAPI::RegTensor;
-using MicroAPI::UpdateMask;
+using Reg::CreateMask;
+using Reg::MaskReg;
+using Reg::RegTensor;
+using Reg::UpdateMask;
 
 template <typename T, int Mode, int Count, int TraitNum> class KernelMicroDataCopyB64 {
 public:
@@ -50,19 +50,19 @@ private:
     {
         // Pat { ALL, VL1, VL2, VL3, VL4, VL8, VL16, VL32, VL64, VL128, M3, M4, H, Q, ALLF = 15 }
         if constexpr (TraitNum == 1) {
-            RegTensor<T, MicroAPI::RegTraitNumOne> vreg0;
+            RegTensor<T, Reg::RegTraitNumOne> vreg0;
             uint32_t sregLower = 32;
             MaskReg preg =
-                CreateMask<T, static_cast<MicroAPI::MaskPattern>(Mode), MicroAPI::RegTraitNumOne>();
+                CreateMask<T, static_cast<Reg::MaskPattern>(Mode), Reg::RegTraitNumOne>();
             for (uint16_t i = 0; i < (uint16_t)1; ++i) {
                 DataCopy(vreg0, src + i * sregLower);
                 DataCopy(dst + i * sregLower, vreg0, preg);
             }
         } else {
-            RegTensor<T, MicroAPI::RegTraitNumTwo> vreg0;
+            RegTensor<T, Reg::RegTraitNumTwo> vreg0;
             uint32_t sregLower = 64;
             MaskReg preg =
-                CreateMask<T, static_cast<MicroAPI::MaskPattern>(Mode), MicroAPI::RegTraitNumTwo>();
+                CreateMask<T, static_cast<Reg::MaskPattern>(Mode), Reg::RegTraitNumTwo>();
             for (uint16_t i = 0; i < (uint16_t)1; ++i) {
                 DataCopy(vreg0, src + i * sregLower);
                 DataCopy(dst + i * sregLower, vreg0, preg);
@@ -74,22 +74,22 @@ private:
     {
         uint32_t sreg = (uint32_t)Count;
         if constexpr (TraitNum == 1) {
-            RegTensor<T, MicroAPI::RegTraitNumOne> vreg0;
+            RegTensor<T, Reg::RegTraitNumOne> vreg0;
             uint32_t sregLower = 32;
             uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
             MaskReg preg;
             for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-                preg = UpdateMask<T, MicroAPI::RegTraitNumOne>(sreg);
+                preg = UpdateMask<T, Reg::RegTraitNumOne>(sreg);
                 DataCopy(vreg0, src + i * sregLower);
                 DataCopy(dst + i * sregLower, vreg0, preg);
             }
         } else {
-            RegTensor<T, MicroAPI::RegTraitNumTwo> vreg0;
+            RegTensor<T, Reg::RegTraitNumTwo> vreg0;
             uint32_t sregLower = 64;
             uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
             MaskReg preg;
             for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-                preg = UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
+                preg = UpdateMask<T, Reg::RegTraitNumTwo>(sreg);
                 DataCopy(vreg0, src + i * sregLower);
                 DataCopy(dst + i * sregLower, vreg0, preg);
             }
@@ -100,24 +100,24 @@ private:
     {
         uint32_t sreg = (uint32_t)Count;
         if constexpr (TraitNum == 1) {
-            RegTensor<T, MicroAPI::RegTraitNumOne> vreg0;
+            RegTensor<T, Reg::RegTraitNumOne> vreg0;
             uint32_t sregLower = 32;
             uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
             MaskReg preg;
             for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-                preg = UpdateMask<T, MicroAPI::RegTraitNumOne>(sreg);
-                DataCopy<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(vreg0, src, sregLower);
-                DataCopy<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dst, vreg0, sregLower, preg);
+                preg = UpdateMask<T, Reg::RegTraitNumOne>(sreg);
+                DataCopy<T, Reg::PostLiteral::POST_MODE_UPDATE>(vreg0, src, sregLower);
+                DataCopy<T, Reg::PostLiteral::POST_MODE_UPDATE>(dst, vreg0, sregLower, preg);
             }
         } else {
-            RegTensor<T, MicroAPI::RegTraitNumTwo> vreg0;
+            RegTensor<T, Reg::RegTraitNumTwo> vreg0;
             uint32_t sregLower = 64;
             uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
             MaskReg preg;
             for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-                preg = UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
-                DataCopy<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(vreg0, src, sregLower);
-                DataCopy<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dst, vreg0, sregLower, preg);
+                preg = UpdateMask<T, Reg::RegTraitNumTwo>(sreg);
+                DataCopy<T, Reg::PostLiteral::POST_MODE_UPDATE>(vreg0, src, sregLower);
+                DataCopy<T, Reg::PostLiteral::POST_MODE_UPDATE>(dst, vreg0, sregLower, preg);
             }
         }
     }
@@ -126,33 +126,33 @@ private:
     {
         uint32_t sreg = (uint32_t)Count;
         if constexpr (TraitNum == 1) {
-            RegTensor<T, MicroAPI::RegTraitNumOne> vreg0;
+            RegTensor<T, Reg::RegTraitNumOne> vreg0;
             uint32_t sregLower = 32;
             uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
             MaskReg preg;
-            MicroAPI::UnalignReg u0;
-            MicroAPI::UnalignReg u1;
+            Reg::UnalignReg u0;
+            Reg::UnalignReg u1;
             for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-                preg = UpdateMask<T, MicroAPI::RegTraitNumOne>(sreg);
-                MicroAPI::DataCopyUnAlignPre(u0, src);
-                MicroAPI::DataCopyUnAlign(vreg0, u0, src, sregLower);
-                MicroAPI::DataCopyUnAlign(dst, vreg0, u1, sregLower);
+                preg = UpdateMask<T, Reg::RegTraitNumOne>(sreg);
+                Reg::DataCopyUnAlignPre(u0, src);
+                Reg::DataCopyUnAlign(vreg0, u0, src, sregLower);
+                Reg::DataCopyUnAlign(dst, vreg0, u1, sregLower);
             }
-            MicroAPI::DataCopyUnAlignPost(dst, u1, 0);
+            Reg::DataCopyUnAlignPost(dst, u1, 0);
         } else {
-            RegTensor<T, MicroAPI::RegTraitNumTwo> vreg0;
+            RegTensor<T, Reg::RegTraitNumTwo> vreg0;
             uint32_t sregLower = 64;
             uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
             MaskReg preg;
-            MicroAPI::UnalignReg u0;
-            MicroAPI::UnalignReg u1;
+            Reg::UnalignReg u0;
+            Reg::UnalignReg u1;
             for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-                preg = UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
-                MicroAPI::DataCopyUnAlignPre(u0, src);
-                MicroAPI::DataCopyUnAlign(vreg0, u0, src, sregLower);
-                MicroAPI::DataCopyUnAlign(dst, vreg0, u1, sregLower);
+                preg = UpdateMask<T, Reg::RegTraitNumTwo>(sreg);
+                Reg::DataCopyUnAlignPre(u0, src);
+                Reg::DataCopyUnAlign(vreg0, u0, src, sregLower);
+                Reg::DataCopyUnAlign(dst, vreg0, u1, sregLower);
             }
-            MicroAPI::DataCopyUnAlignPost(dst, u1, 0);
+            Reg::DataCopyUnAlignPost(dst, u1, 0);
         }
     }
 
@@ -165,8 +165,8 @@ private:
             MaskReg preg0;
             int32_t sreg = (int32_t)dstSize;
             for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-                MicroAPI::DataCopy(preg0, src + i * sregLower);
-                MicroAPI::DataCopy(dst + i * sregLower, preg0);
+                Reg::DataCopy(preg0, src + i * sregLower);
+                Reg::DataCopy(dst + i * sregLower, preg0);
             }
         }
     }
@@ -180,10 +180,10 @@ private:
             MaskReg preg0;
             int32_t sreg = (int32_t)sregLower;
             for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
-                MicroAPI::DataCopy<T, MicroAPI::PostLiteral::POST_MODE_UPDATE,
-                    MicroAPI::MaskDist::DIST_NORM>(preg0, src, sreg);
-                MicroAPI::DataCopy<T, MicroAPI::PostLiteral::POST_MODE_UPDATE,
-                    MicroAPI::MaskDist::DIST_NORM>(dst, preg0, sreg);
+                Reg::DataCopy<T, Reg::PostLiteral::POST_MODE_UPDATE,
+                    Reg::MaskDist::DIST_NORM>(preg0, src, sreg);
+                Reg::DataCopy<T, Reg::PostLiteral::POST_MODE_UPDATE,
+                    Reg::MaskDist::DIST_NORM>(dst, preg0, sreg);
             }
         }
     }

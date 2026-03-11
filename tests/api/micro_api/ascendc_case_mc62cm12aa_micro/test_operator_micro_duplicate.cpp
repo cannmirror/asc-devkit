@@ -47,22 +47,22 @@ private:
 
         __VEC_SCOPE__
         {
-            MicroAPI::RegTensor<T> vSrcReg;
-            MicroAPI::RegTensor<T> vSrcReg1;
+            Reg::RegTensor<T> vSrcReg;
+            Reg::RegTensor<T> vSrcReg1;
             T1 src = 0;
-            MicroAPI::RegTensor<T> vDstReg;
-            MicroAPI::RegTensor<T> vDstReg1;
+            Reg::RegTensor<T> vDstReg;
+            Reg::RegTensor<T> vDstReg1;
             uint32_t sreg = (uint32_t)m_elementCount;
-            MicroAPI::MaskReg preg;
-            preg = MicroAPI::UpdateMask<T>(sreg);
+            Reg::MaskReg preg;
+            preg = Reg::UpdateMask<T>(sreg);
             if (computeMode == 0) {
                 Duplicate(vDstReg, src);
                 Duplicate(vDstReg, src, preg);
                 Duplicate(vDstReg, vSrcReg, preg);
             } else if (computeMode == 1) {
-                MicroAPI::Interleave(vDstReg, vDstReg1, vSrcReg, vSrcReg1);
+                Reg::Interleave(vDstReg, vDstReg1, vSrcReg, vSrcReg1);
             } else if (computeMode == 2) {
-                MicroAPI::DeInterleave(vDstReg, vDstReg1, vSrcReg, vSrcReg1);
+                Reg::DeInterleave(vDstReg, vDstReg1, vSrcReg, vSrcReg1);
             }
         }
 

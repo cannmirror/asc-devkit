@@ -69,17 +69,17 @@ private:
         T scalar = src1Ptr[0];
         __VEC_SCOPE__
         {
-            MicroAPI::RegTensor<T> vSrcReg0;
-            MicroAPI::RegTensor<U> vSrcReg1;
-            MicroAPI::RegTensor<T> vDstReg0;
+            Reg::RegTensor<T> vSrcReg0;
+            Reg::RegTensor<U> vSrcReg1;
+            Reg::RegTensor<T> vDstReg0;
             uint32_t sreg = (uint32_t)dataSize;
-            MicroAPI::MaskReg preg;
+            Reg::MaskReg preg;
             for (uint16_t i = 0; i < (uint16_t)rep; i++) {
-                preg = MicroAPI::UpdateMask<T>(sreg);
-                MicroAPI::DataCopy(vSrcReg0, src0Ptr + i * one_rep_size);
-                MicroAPI::DataCopy(vSrcReg1, src1Ptr + i * one_rep_size);
-                MicroAPI::Gather<T, U>(vDstReg0, vSrcReg0, vSrcReg1);
-                MicroAPI::DataCopy(dstPtr + i * one_rep_size, vDstReg0, preg);
+                preg = Reg::UpdateMask<T>(sreg);
+                Reg::DataCopy(vSrcReg0, src0Ptr + i * one_rep_size);
+                Reg::DataCopy(vSrcReg1, src1Ptr + i * one_rep_size);
+                Reg::Gather<T, U>(vDstReg0, vSrcReg0, vSrcReg1);
+                Reg::DataCopy(dstPtr + i * one_rep_size, vDstReg0, preg);
             }
         }
         outQueue.EnQue<T>(dst0Local);

@@ -30,68 +30,68 @@
 
 namespace AscendC {
 namespace AxpyAPI {
-constexpr MicroAPI::CastTrait castTraitF162F32 = {
-    MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait castTraitF162F32 = {
+    Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN, Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
 template<typename T, typename U>
 __simd_vf__ inline void AxpyCompute(__ubuf__ T* dst, __ubuf__ U* src, U scalarValue, uint32_t calCount,
                                    uint16_t repeatTimes, uint16_t oneRepSize, uint32_t mainBlockCount,
                                    uint32_t tailCount, uint16_t offset, uint16_t singleMainBlockCtrl)
 {
-    MicroAPI::MaskReg mask, maskTail;
-    MicroAPI::RegTensor<T> dstVreg;
-    MicroAPI::RegTensor<U> srcVreg;
-    mask = MicroAPI::UpdateMask<T>(mainBlockCount);
-    maskTail = MicroAPI::UpdateMask<T>(tailCount);
+    Reg::MaskReg mask, maskTail;
+    Reg::RegTensor<T> dstVreg;
+    Reg::RegTensor<U> srcVreg;
+    mask = Reg::UpdateMask<T>(mainBlockCount);
+    maskTail = Reg::UpdateMask<T>(tailCount);
     if constexpr (IsSameType<U, half>::value && IsSameType<T, float>::value) {
-        MicroAPI::RegTensor<float> tempSrcVreg;
+        Reg::RegTensor<float> tempSrcVreg;
         for (uint16_t i = 0; i < repeatTimes; ++i) {
-            MicroAPI::LoadAlign<U, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcVreg, src + i * oneRepSize);
-            MicroAPI::Cast<float, U, castTraitF162F32>(tempSrcVreg, srcVreg, mask);
-            MicroAPI::LoadAlign(dstVreg, dst + i * oneRepSize);
-            MicroAPI::Axpy(dstVreg, tempSrcVreg, scalarValue, mask);
-            MicroAPI::StoreAlign(dst + i * oneRepSize, dstVreg, mask);
+            Reg::LoadAlign<U, Reg::LoadDist::DIST_UNPACK_B16>(srcVreg, src + i * oneRepSize);
+            Reg::Cast<float, U, castTraitF162F32>(tempSrcVreg, srcVreg, mask);
+            Reg::LoadAlign(dstVreg, dst + i * oneRepSize);
+            Reg::Axpy(dstVreg, tempSrcVreg, scalarValue, mask);
+            Reg::StoreAlign(dst + i * oneRepSize, dstVreg, mask);
             // unroll
-            MicroAPI::LoadAlign<U, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcVreg, src + i * oneRepSize + offset);
-            MicroAPI::Cast<float, U, castTraitF162F32>(tempSrcVreg, srcVreg, mask);
-            MicroAPI::LoadAlign(dstVreg, dst + i * oneRepSize + offset);
-            MicroAPI::Axpy(dstVreg, tempSrcVreg, scalarValue, mask);
-            MicroAPI::StoreAlign(dst + i * oneRepSize + offset, dstVreg, mask);
+            Reg::LoadAlign<U, Reg::LoadDist::DIST_UNPACK_B16>(srcVreg, src + i * oneRepSize + offset);
+            Reg::Cast<float, U, castTraitF162F32>(tempSrcVreg, srcVreg, mask);
+            Reg::LoadAlign(dstVreg, dst + i * oneRepSize + offset);
+            Reg::Axpy(dstVreg, tempSrcVreg, scalarValue, mask);
+            Reg::StoreAlign(dst + i * oneRepSize + offset, dstVreg, mask);
         }
         for (uint16_t j = 0; j < singleMainBlockCtrl; ++j) {
-            MicroAPI::LoadAlign<U, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcVreg, src + repeatTimes * oneRepSize * 2);
-            MicroAPI::Cast<float, U, castTraitF162F32>(tempSrcVreg, srcVreg, mask);
-            MicroAPI::LoadAlign(dstVreg, dst + repeatTimes * oneRepSize * 2);
-            MicroAPI::Axpy(dstVreg, tempSrcVreg, scalarValue, mask);
-            MicroAPI::StoreAlign(dst + repeatTimes * oneRepSize * 2, dstVreg, mask);
+            Reg::LoadAlign<U, Reg::LoadDist::DIST_UNPACK_B16>(srcVreg, src + repeatTimes * oneRepSize * 2);
+            Reg::Cast<float, U, castTraitF162F32>(tempSrcVreg, srcVreg, mask);
+            Reg::LoadAlign(dstVreg, dst + repeatTimes * oneRepSize * 2);
+            Reg::Axpy(dstVreg, tempSrcVreg, scalarValue, mask);
+            Reg::StoreAlign(dst + repeatTimes * oneRepSize * 2, dstVreg, mask);
         }
-        MicroAPI::LoadAlign<U, MicroAPI::LoadDist::DIST_UNPACK_B16>(
+        Reg::LoadAlign<U, Reg::LoadDist::DIST_UNPACK_B16>(
             srcVreg, src + repeatTimes * oneRepSize * 2 + singleMainBlockCtrl * oneRepSize);
-        MicroAPI::Cast<float, U, castTraitF162F32>(tempSrcVreg, srcVreg, maskTail);
-        MicroAPI::LoadAlign(dstVreg, dst + repeatTimes * oneRepSize * 2 + singleMainBlockCtrl * oneRepSize);
-        MicroAPI::Axpy(dstVreg, tempSrcVreg, scalarValue, maskTail);
-        MicroAPI::StoreAlign(dst + repeatTimes * oneRepSize * 2 + singleMainBlockCtrl * oneRepSize, dstVreg, maskTail);
+        Reg::Cast<float, U, castTraitF162F32>(tempSrcVreg, srcVreg, maskTail);
+        Reg::LoadAlign(dstVreg, dst + repeatTimes * oneRepSize * 2 + singleMainBlockCtrl * oneRepSize);
+        Reg::Axpy(dstVreg, tempSrcVreg, scalarValue, maskTail);
+        Reg::StoreAlign(dst + repeatTimes * oneRepSize * 2 + singleMainBlockCtrl * oneRepSize, dstVreg, maskTail);
     } else {
         for (uint16_t i = 0; i < repeatTimes; ++i) {
-            MicroAPI::LoadAlign(srcVreg, src + i * oneRepSize);
-            MicroAPI::LoadAlign(dstVreg, dst + i * oneRepSize);
-            MicroAPI::Axpy(dstVreg, srcVreg, scalarValue, mask);
-            MicroAPI::StoreAlign(dst + i * oneRepSize, dstVreg, mask);
+            Reg::LoadAlign(srcVreg, src + i * oneRepSize);
+            Reg::LoadAlign(dstVreg, dst + i * oneRepSize);
+            Reg::Axpy(dstVreg, srcVreg, scalarValue, mask);
+            Reg::StoreAlign(dst + i * oneRepSize, dstVreg, mask);
             // unroll
-            MicroAPI::LoadAlign(srcVreg, src + i * oneRepSize + offset);
-            MicroAPI::LoadAlign(dstVreg, dst + i * oneRepSize + offset);
-            MicroAPI::Axpy(dstVreg, srcVreg, scalarValue, mask);
-            MicroAPI::StoreAlign(dst + i * oneRepSize + offset, dstVreg, mask);
+            Reg::LoadAlign(srcVreg, src + i * oneRepSize + offset);
+            Reg::LoadAlign(dstVreg, dst + i * oneRepSize + offset);
+            Reg::Axpy(dstVreg, srcVreg, scalarValue, mask);
+            Reg::StoreAlign(dst + i * oneRepSize + offset, dstVreg, mask);
         }
         for (uint16_t j = 0; j < singleMainBlockCtrl; ++j) {
-            MicroAPI::LoadAlign(srcVreg, src + repeatTimes * oneRepSize * 2);
-            MicroAPI::LoadAlign(dstVreg, dst + repeatTimes * oneRepSize * 2);
-            MicroAPI::Axpy(dstVreg, srcVreg, scalarValue, mask);
-            MicroAPI::StoreAlign(dst + repeatTimes * oneRepSize * 2, dstVreg, mask);
+            Reg::LoadAlign(srcVreg, src + repeatTimes * oneRepSize * 2);
+            Reg::LoadAlign(dstVreg, dst + repeatTimes * oneRepSize * 2);
+            Reg::Axpy(dstVreg, srcVreg, scalarValue, mask);
+            Reg::StoreAlign(dst + repeatTimes * oneRepSize * 2, dstVreg, mask);
         }
-        MicroAPI::LoadAlign(srcVreg, src + repeatTimes * oneRepSize * 2 + singleMainBlockCtrl * oneRepSize);
-        MicroAPI::LoadAlign(dstVreg, dst + repeatTimes * oneRepSize * 2 + singleMainBlockCtrl * oneRepSize);
-        MicroAPI::Axpy(dstVreg, srcVreg, scalarValue, maskTail);
-        MicroAPI::StoreAlign(dst + repeatTimes * oneRepSize * 2 + singleMainBlockCtrl * oneRepSize, dstVreg, maskTail);
+        Reg::LoadAlign(srcVreg, src + repeatTimes * oneRepSize * 2 + singleMainBlockCtrl * oneRepSize);
+        Reg::LoadAlign(dstVreg, dst + repeatTimes * oneRepSize * 2 + singleMainBlockCtrl * oneRepSize);
+        Reg::Axpy(dstVreg, srcVreg, scalarValue, maskTail);
+        Reg::StoreAlign(dst + repeatTimes * oneRepSize * 2 + singleMainBlockCtrl * oneRepSize, dstVreg, maskTail);
     }
 }
 }//namespace AxpyAPI

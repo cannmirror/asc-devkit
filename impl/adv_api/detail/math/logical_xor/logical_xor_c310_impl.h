@@ -40,7 +40,7 @@ __aicore__ inline void LogicalXorImpl(const LocalTensor<T>& dst, const LocalTens
         return;
     }
     CHECK_FUNC_HIGHLEVEL_API(LogicalXor, (T, U, config.isReuseSource), (dst, src0, src1, count));
-    auto constexpr func = MicroAPI::MaskXor;
+    auto constexpr func = Reg::MaskXor;
     LogicalTemplateImpl<func, T, U>(dst, src0, src1, count);
 }
 

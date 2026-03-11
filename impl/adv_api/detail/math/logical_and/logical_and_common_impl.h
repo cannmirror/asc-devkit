@@ -44,7 +44,7 @@ __aicore__ inline void LogicalAndImpl(const LocalTensor<T>& dst, const LocalTens
         return;
     }
     CHECK_FUNC_HIGHLEVEL_API(LogicalAnd, (T, U, config.isReuseSource), (dst, src0, src1, count));
-    auto constexpr func = MicroAPI::MaskAnd;
+    auto constexpr func = Reg::MaskAnd;
     LogicalTemplateImpl<func, T, U>(dst, src0, src1, count);
 }
 

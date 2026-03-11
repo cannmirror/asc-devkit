@@ -44,7 +44,7 @@ __aicore__ inline void LogicalOrsImpl(const LocalTensor<T>& dst, const U& src0, 
         return;
     }
     CHECK_FUNC_HIGHLEVEL_API(LogicalOrs, (T, U, S, config.isReuseSource), (dst, src0, src1, count));
-    auto constexpr func = MicroAPI::MaskOr;
+    auto constexpr func = Reg::MaskOr;
     LogicalTemplateScalarImpl<func, T, U, S, config.scalarTensorIndex>(dst, src0, src1, count);
 }
 

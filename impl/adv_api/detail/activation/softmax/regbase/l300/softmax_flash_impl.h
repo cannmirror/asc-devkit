@@ -38,51 +38,51 @@ __simd_vf__ inline void SoftmaxFlashNDImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumU
     NotNumUnion notNum;
     notNum.i = F32_NEG_INF;
 
-    MicroAPI::MaskReg maskFull = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::MaskReg maskExpMax = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL16>();
-    MicroAPI::MaskReg maskOneBlk;
+    Reg::MaskReg maskFull = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
+    Reg::MaskReg maskExpMax = Reg::CreateMask<uint32_t, Reg::MaskPattern::VL16>();
+    Reg::MaskReg maskOneBlk;
     if constexpr (IsSameType<T2, half>::value) {
-        maskOneBlk = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL16>();
+        maskOneBlk = Reg::CreateMask<uint32_t, Reg::MaskPattern::VL16>();
     } else {
-        maskOneBlk = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL8>();
+        maskOneBlk = Reg::CreateMask<uint32_t, Reg::MaskPattern::VL8>();
     }
-    MicroAPI::RegTensor<float> srcVreg;
-    MicroAPI::RegTensor<float> maxVreg;
-    MicroAPI::RegTensor<float> expMaxVreg;
-    MicroAPI::RegTensor<float> sumVreg;
-    MicroAPI::RegTensor<float> tmpVreg;
-    MicroAPI::RegTensor<float> dstVreg;
-    MicroAPI::RegTensor<T1> t1Reg;
+    Reg::RegTensor<float> srcVreg;
+    Reg::RegTensor<float> maxVreg;
+    Reg::RegTensor<float> expMaxVreg;
+    Reg::RegTensor<float> sumVreg;
+    Reg::RegTensor<float> tmpVreg;
+    Reg::RegTensor<float> dstVreg;
+    Reg::RegTensor<T1> t1Reg;
 
     for (uint16_t i = 0; i < srcM; ++i) {
-        MicroAPI::Duplicate(maxVreg, notNum.f);
+        Reg::Duplicate(maxVreg, notNum.f);
         for (uint16_t j = 0; j < repeatTimes; ++j) {
             LoadIfNeedCast<T1>(srcVreg, srcUb + i * srcK + j * stride, maskFull);
-            MicroAPI::Max(maxVreg, maxVreg, srcVreg, maskFull);
+            Reg::Max(maxVreg, maxVreg, srcVreg, maskFull);
         }
-        MicroAPI::ReduceMax(maxVreg, maxVreg, maskFull);
-        MicroAPI::Duplicate(maxVreg, maxVreg, maskOneBlk);
+        Reg::ReduceMax(maxVreg, maxVreg, maskFull);
+        Reg::Duplicate(maxVreg, maxVreg, maskOneBlk);
         LoadIfNeedCast<T2>(tmpVreg, inMaxUb + i * blockStride, maskOneBlk);
-        MicroAPI::Max(maxVreg, maxVreg, tmpVreg, maskOneBlk);
+        Reg::Max(maxVreg, maxVreg, tmpVreg, maskOneBlk);
         StoreIfNeedCast<T2>(maxUb + i * blockStride, maxVreg, maskOneBlk);
 
-        MicroAPI::FusedExpSub(expMaxVreg, tmpVreg, maxVreg, maskOneBlk);
-        MicroAPI::Duplicate(sumVreg, 0);
-        MicroAPI::Duplicate(maxVreg, maxVreg, maskFull);
+        Reg::FusedExpSub(expMaxVreg, tmpVreg, maxVreg, maskOneBlk);
+        Reg::Duplicate(sumVreg, 0);
+        Reg::Duplicate(maxVreg, maxVreg, maskFull);
         for (uint16_t j = 0; j < repeatTimes; ++j) {
             LoadIfNeedCast<T1>(srcVreg, srcUb + i * srcK + j * stride, maskFull);
-            MicroAPI::FusedExpSub(tmpVreg, srcVreg, maxVreg, maskFull);
+            Reg::FusedExpSub(tmpVreg, srcVreg, maxVreg, maskFull);
             StoreIfNeedCast<float>(workUb + i * srcK + j * stride, tmpVreg, maskFull);
-            MicroAPI::Add(sumVreg, sumVreg, tmpVreg, maskFull);
+            Reg::Add(sumVreg, sumVreg, tmpVreg, maskFull);
         }
-        MicroAPI::ReduceSum(sumVreg, sumVreg, maskFull);
-        MicroAPI::Duplicate(sumVreg, sumVreg, maskOneBlk);
+        Reg::ReduceSum(sumVreg, sumVreg, maskFull);
+        Reg::Duplicate(sumVreg, sumVreg, maskOneBlk);
         LoadIfNeedCast<T2>(tmpVreg, inSumUb + i * blockStride, maskOneBlk);
-        MicroAPI::MulAddDst(sumVreg, expMaxVreg, tmpVreg, maskOneBlk);
-        MicroAPI::Mul(tmpVreg, expMaxVreg, tmpVreg, maskOneBlk);
-        MicroAPI::Div(expMaxVreg, tmpVreg, sumVreg, maskOneBlk);
+        Reg::MulAddDst(sumVreg, expMaxVreg, tmpVreg, maskOneBlk);
+        Reg::Mul(tmpVreg, expMaxVreg, tmpVreg, maskOneBlk);
+        Reg::Div(expMaxVreg, tmpVreg, sumVreg, maskOneBlk);
         if constexpr (sizeof(T1) == 2 && sizeof (T2) == 4) {
-            MicroAPI::Interleave(expMaxVreg, tmpVreg, expMaxVreg, expMaxVreg);
+            Reg::Interleave(expMaxVreg, tmpVreg, expMaxVreg, expMaxVreg);
             StoreIfNeedCast<T1>(expMaxUb + i * blockStride * 2, expMaxVreg, maskExpMax);
         } else {
             StoreIfNeedCast<T1>(expMaxUb + i * blockStride, expMaxVreg, maskOneBlk);
@@ -90,22 +90,22 @@ __simd_vf__ inline void SoftmaxFlashNDImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumU
 
         StoreIfNeedCast<T2>(sumUb + i * blockStride, sumVreg, maskOneBlk);
         if constexpr (sizeof(T2) == sizeof(half)) {
-            MicroAPI::DataCopy(tmpUb + i * blockStride, sumVreg, maskOneBlk);
+            Reg::DataCopy(tmpUb + i * blockStride, sumVreg, maskOneBlk);
         }
     }
 
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     for (uint16_t i = 0; i < srcM; ++i) {
         if constexpr (sizeof(T2) == sizeof(half)) {
-            MicroAPI::DataCopy(sumVreg, tmpUb + i * blockStride);
+            Reg::DataCopy(sumVreg, tmpUb + i * blockStride);
         } else {
-            MicroAPI::DataCopy(sumVreg, sumUb + i * blockStride);
+            Reg::DataCopy(sumVreg, sumUb + i * blockStride);
         }
-        MicroAPI::Duplicate(sumVreg, sumVreg, maskFull);
+        Reg::Duplicate(sumVreg, sumVreg, maskFull);
         for (uint16_t j = 0; j < repeatTimes; ++j) {
-            MicroAPI::DataCopy(tmpVreg, workUb + i * srcK + j * stride);
-            MicroAPI::Div(dstVreg, tmpVreg, sumVreg, maskFull);
+            Reg::DataCopy(tmpVreg, workUb + i * srcK + j * stride);
+            Reg::Div(dstVreg, tmpVreg, sumVreg, maskFull);
             StoreIfNeedCast<T1>(dstUb + i * srcK + j * stride, dstVreg, maskFull);
         }
     }
@@ -122,87 +122,87 @@ __simd_vf__ inline void SoftmaxFlashNDWithTailImpl(__ubuf__ T1* dstUb, __ubuf__ 
     NotNumUnion notNum;
     notNum.i = F32_NEG_INF;
 
-    MicroAPI::MaskReg maskCnt;
-    MicroAPI::MaskReg maskFull = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::MaskReg maskExpMax = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL16>();
-    MicroAPI::MaskReg maskOneBlk;
+    Reg::MaskReg maskCnt;
+    Reg::MaskReg maskFull = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
+    Reg::MaskReg maskExpMax = Reg::CreateMask<uint32_t, Reg::MaskPattern::VL16>();
+    Reg::MaskReg maskOneBlk;
     if constexpr (IsSameType<T2, half>::value) {
-        maskOneBlk = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL16>();
+        maskOneBlk = Reg::CreateMask<uint32_t, Reg::MaskPattern::VL16>();
     } else {
-        maskOneBlk = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL8>();
+        maskOneBlk = Reg::CreateMask<uint32_t, Reg::MaskPattern::VL8>();
     }
-    MicroAPI::RegTensor<float> srcVreg;
-    MicroAPI::RegTensor<float> maxVreg;
-    MicroAPI::RegTensor<float> expMaxVreg;
-    MicroAPI::RegTensor<float> sumVreg;
-    MicroAPI::RegTensor<float> tmpVreg;
-    MicroAPI::RegTensor<float> minVreg;
-    MicroAPI::RegTensor<float> dstVreg;
-    MicroAPI::RegTensor<T1> t1Reg;
+    Reg::RegTensor<float> srcVreg;
+    Reg::RegTensor<float> maxVreg;
+    Reg::RegTensor<float> expMaxVreg;
+    Reg::RegTensor<float> sumVreg;
+    Reg::RegTensor<float> tmpVreg;
+    Reg::RegTensor<float> minVreg;
+    Reg::RegTensor<float> dstVreg;
+    Reg::RegTensor<T1> t1Reg;
 
     Duplicate(minVreg, notNum.f);
     for (uint16_t i = 0; i < srcM; ++i) {
         uint32_t sreg = originK;
         Duplicate(maxVreg, notNum.f);
         for (uint16_t j = 0; j < static_cast<uint16_t>(repeatTimes - 1); ++j) {
-            maskCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
+            maskCnt = Reg::UpdateMask<uint32_t>(sreg);
             LoadIfNeedCast<T1>(srcVreg, srcUb + i * srcK + j * stride, maskFull);
-            MicroAPI::Max(maxVreg, maxVreg, srcVreg, maskCnt);
+            Reg::Max(maxVreg, maxVreg, srcVreg, maskCnt);
         }
-        maskCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
+        maskCnt = Reg::UpdateMask<uint32_t>(sreg);
         LoadIfNeedCast<T1>(srcVreg, srcUb + i * srcK + (repeatTimes - 1) * stride, maskFull);
-        MicroAPI::Select(srcVreg, srcVreg, minVreg, maskCnt);
-        MicroAPI::Max(maxVreg, maxVreg, srcVreg, maskFull);
+        Reg::Select(srcVreg, srcVreg, minVreg, maskCnt);
+        Reg::Max(maxVreg, maxVreg, srcVreg, maskFull);
 
-        MicroAPI::ReduceMax(maxVreg, maxVreg, maskFull);
+        Reg::ReduceMax(maxVreg, maxVreg, maskFull);
         Duplicate(maxVreg, maxVreg, maskOneBlk);
         LoadIfNeedCast<T2>(tmpVreg, inMaxUb + i *blockStride, maskOneBlk);
-        MicroAPI::Max(maxVreg, maxVreg, tmpVreg, maskOneBlk);
+        Reg::Max(maxVreg, maxVreg, tmpVreg, maskOneBlk);
         StoreIfNeedCast<T2>(maxUb + i * blockStride, maxVreg, maskOneBlk);
 
-        MicroAPI::FusedExpSub(expMaxVreg, tmpVreg, maxVreg, maskOneBlk);
+        Reg::FusedExpSub(expMaxVreg, tmpVreg, maxVreg, maskOneBlk);
         Duplicate(sumVreg, 0);
         Duplicate(maxVreg, maxVreg, maskFull);
         sreg = originK;
         for (uint16_t j = 0; j < repeatTimes; ++j) {
-            maskCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
+            maskCnt = Reg::UpdateMask<uint32_t>(sreg);
             LoadIfNeedCast<T1>(srcVreg, srcUb + i * srcK + j * stride, maskFull);
-            MicroAPI::FusedExpSub(tmpVreg, srcVreg, maxVreg, maskCnt);
+            Reg::FusedExpSub(tmpVreg, srcVreg, maxVreg, maskCnt);
             StoreIfNeedCast<float>(workUb + i * srcK + j * stride, tmpVreg, maskCnt);
-            MicroAPI::Add(sumVreg, sumVreg, tmpVreg, maskFull);
+            Reg::Add(sumVreg, sumVreg, tmpVreg, maskFull);
         }
-        MicroAPI::ReduceSum(sumVreg, sumVreg, maskFull);
+        Reg::ReduceSum(sumVreg, sumVreg, maskFull);
         Duplicate(sumVreg, sumVreg, maskOneBlk);
         LoadIfNeedCast<T2>(tmpVreg, inSumUb + i * blockStride, maskOneBlk);
-        MicroAPI::MulAddDst(sumVreg, expMaxVreg, tmpVreg, maskOneBlk);
-        MicroAPI::Mul(tmpVreg, expMaxVreg, tmpVreg, maskOneBlk);
-        MicroAPI::Div(expMaxVreg, tmpVreg, sumVreg, maskOneBlk);
+        Reg::MulAddDst(sumVreg, expMaxVreg, tmpVreg, maskOneBlk);
+        Reg::Mul(tmpVreg, expMaxVreg, tmpVreg, maskOneBlk);
+        Reg::Div(expMaxVreg, tmpVreg, sumVreg, maskOneBlk);
         if constexpr (sizeof(T1) == 2 && sizeof (T2) == 4) {
-            MicroAPI::Interleave(expMaxVreg, tmpVreg, expMaxVreg, expMaxVreg);
+            Reg::Interleave(expMaxVreg, tmpVreg, expMaxVreg, expMaxVreg);
             StoreIfNeedCast<T1>(expMaxUb + i * blockStride * 2, expMaxVreg, maskExpMax);
         } else {
             StoreIfNeedCast<T1>(expMaxUb + i * blockStride, expMaxVreg, maskOneBlk);
         }
         StoreIfNeedCast<T2>(sumUb + i * blockStride, sumVreg, maskOneBlk);
         if constexpr (sizeof(T2) == sizeof(half)) {
-            MicroAPI::DataCopy(tmpUb + i * blockStride, sumVreg, maskOneBlk);
+            Reg::DataCopy(tmpUb + i * blockStride, sumVreg, maskOneBlk);
         }
     }
 
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     for (uint16_t i = 0; i < srcM; ++i) {
         if constexpr (sizeof(T2) == sizeof(half)) {
-            MicroAPI::DataCopy(sumVreg, tmpUb + i * blockStride);
+            Reg::DataCopy(sumVreg, tmpUb + i * blockStride);
         } else {
-            MicroAPI::DataCopy(sumVreg, sumUb + i * blockStride);
+            Reg::DataCopy(sumVreg, sumUb + i * blockStride);
         }
         Duplicate(sumVreg, sumVreg, maskFull);
         uint32_t sreg = originK;
         for (uint16_t j = 0; j < repeatTimes; ++j) {
-            maskCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
-            MicroAPI::DataCopy(tmpVreg, workUb + i * srcK + j * stride);
-            MicroAPI::Div(dstVreg, tmpVreg, sumVreg, maskCnt);
+            maskCnt = Reg::UpdateMask<uint32_t>(sreg);
+            Reg::DataCopy(tmpVreg, workUb + i * srcK + j * stride);
+            Reg::Div(dstVreg, tmpVreg, sumVreg, maskCnt);
             StoreIfNeedCast<T1>(dstUb + i * srcK + j * stride, dstVreg, maskCnt);
         }
     }

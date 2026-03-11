@@ -25,97 +25,97 @@
 
 namespace AscendC {
 
-constexpr MicroAPI::CastTrait layoutZMrgZ = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN,
-                                             MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait layoutZMrgZ = {Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN,
+                                             Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
 
-constexpr MicroAPI::CastTrait layoutZSatSMrgZ = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
-                                                 MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait layoutZSatSMrgZ = {Reg::RegLayout::ZERO, Reg::SatMode::SAT,
+                                                 Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
 
-constexpr MicroAPI::CastTrait layoutZSatSMrgZRndA = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
-                                                     MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
+constexpr Reg::CastTrait layoutZSatSMrgZRndA = {Reg::RegLayout::ZERO, Reg::SatMode::SAT,
+                                                     Reg::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
 
-constexpr MicroAPI::CastTrait layoutZSatSMrgZRndR = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
-                                                     MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait layoutZSatSMrgZRndR = {Reg::RegLayout::ZERO, Reg::SatMode::SAT,
+                                                     Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
-constexpr MicroAPI::CastTrait layoutZMrgZRndR = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN,
-                                                 MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait layoutZMrgZRndR = {Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN,
+                                                 Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
-constexpr MicroAPI::CastTrait layoutZMrgZRndA = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN,
-                                                 MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
+constexpr Reg::CastTrait layoutZMrgZRndA = {Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN,
+                                                 Reg::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
 
-constexpr MicroAPI::CastTrait layoutZMrgZRndC = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN,
-                                                 MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_CEIL};
+constexpr Reg::CastTrait layoutZMrgZRndC = {Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN,
+                                                 Reg::MaskMergeMode::ZEROING, RoundMode::CAST_CEIL};
 
-constexpr MicroAPI::CastTrait layoutZMrgZRndF = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN,
-                                                 MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_FLOOR};
+constexpr Reg::CastTrait layoutZMrgZRndF = {Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN,
+                                                 Reg::MaskMergeMode::ZEROING, RoundMode::CAST_FLOOR};
 
-constexpr MicroAPI::CastTrait layoutZMrgZRndZ = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN,
-                                                 MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_TRUNC};
+constexpr Reg::CastTrait layoutZMrgZRndZ = {Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN,
+                                                 Reg::MaskMergeMode::ZEROING, RoundMode::CAST_TRUNC};
 
-constexpr MicroAPI::CastTrait MrgZRndR = {MicroAPI::RegLayout::UNKNOWN, MicroAPI::SatMode::UNKNOWN,
-                                          MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait MrgZRndR = {Reg::RegLayout::UNKNOWN, Reg::SatMode::UNKNOWN,
+                                          Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
-constexpr MicroAPI::CastTrait MrgZRndA = {MicroAPI::RegLayout::UNKNOWN, MicroAPI::SatMode::UNKNOWN,
-                                          MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
+constexpr Reg::CastTrait MrgZRndA = {Reg::RegLayout::UNKNOWN, Reg::SatMode::UNKNOWN,
+                                          Reg::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
 
-constexpr MicroAPI::CastTrait MrgZRndF = {MicroAPI::RegLayout::UNKNOWN, MicroAPI::SatMode::UNKNOWN,
-                                          MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_CEIL};
+constexpr Reg::CastTrait MrgZRndF = {Reg::RegLayout::UNKNOWN, Reg::SatMode::UNKNOWN,
+                                          Reg::MaskMergeMode::ZEROING, RoundMode::CAST_CEIL};
 
-constexpr MicroAPI::CastTrait MrgZRndC = {MicroAPI::RegLayout::UNKNOWN, MicroAPI::SatMode::UNKNOWN,
-                                          MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_FLOOR};
+constexpr Reg::CastTrait MrgZRndC = {Reg::RegLayout::UNKNOWN, Reg::SatMode::UNKNOWN,
+                                          Reg::MaskMergeMode::ZEROING, RoundMode::CAST_FLOOR};
 
-constexpr MicroAPI::CastTrait MrgZRndZ = {MicroAPI::RegLayout::UNKNOWN, MicroAPI::SatMode::UNKNOWN,
-                                          MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_TRUNC};
+constexpr Reg::CastTrait MrgZRndZ = {Reg::RegLayout::UNKNOWN, Reg::SatMode::UNKNOWN,
+                                          Reg::MaskMergeMode::ZEROING, RoundMode::CAST_TRUNC};
 
-constexpr MicroAPI::CastTrait MrgZRndRSatS = {MicroAPI::RegLayout::UNKNOWN, MicroAPI::SatMode::SAT,
-                                              MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait MrgZRndRSatS = {Reg::RegLayout::UNKNOWN, Reg::SatMode::SAT,
+                                              Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
-constexpr MicroAPI::CastTrait MrgZRndASatS = {MicroAPI::RegLayout::UNKNOWN, MicroAPI::SatMode::SAT,
-                                              MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
+constexpr Reg::CastTrait MrgZRndASatS = {Reg::RegLayout::UNKNOWN, Reg::SatMode::SAT,
+                                              Reg::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
 
-constexpr MicroAPI::CastTrait MrgZRndFSatS = {MicroAPI::RegLayout::UNKNOWN, MicroAPI::SatMode::SAT,
-                                              MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_CEIL};
+constexpr Reg::CastTrait MrgZRndFSatS = {Reg::RegLayout::UNKNOWN, Reg::SatMode::SAT,
+                                              Reg::MaskMergeMode::ZEROING, RoundMode::CAST_CEIL};
 
-constexpr MicroAPI::CastTrait MrgZRndCSatS = {MicroAPI::RegLayout::UNKNOWN, MicroAPI::SatMode::SAT,
-                                              MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_FLOOR};
+constexpr Reg::CastTrait MrgZRndCSatS = {Reg::RegLayout::UNKNOWN, Reg::SatMode::SAT,
+                                              Reg::MaskMergeMode::ZEROING, RoundMode::CAST_FLOOR};
 
-constexpr MicroAPI::CastTrait MrgZRndZSatS = {MicroAPI::RegLayout::UNKNOWN, MicroAPI::SatMode::SAT,
-                                              MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_TRUNC};
+constexpr Reg::CastTrait MrgZRndZSatS = {Reg::RegLayout::UNKNOWN, Reg::SatMode::SAT,
+                                              Reg::MaskMergeMode::ZEROING, RoundMode::CAST_TRUNC};
 
-constexpr MicroAPI::CastTrait LayoutZMrgZRndRSatS = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
-                                                     MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait LayoutZMrgZRndRSatS = {Reg::RegLayout::ZERO, Reg::SatMode::SAT,
+                                                     Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
-constexpr MicroAPI::CastTrait LayoutZMrgZRndASatS = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
-                                                     MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
+constexpr Reg::CastTrait LayoutZMrgZRndASatS = {Reg::RegLayout::ZERO, Reg::SatMode::SAT,
+                                                     Reg::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
 
-constexpr MicroAPI::CastTrait LayoutZMrgZRndRSatNS = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT,
-                                                      MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait LayoutZMrgZRndRSatNS = {Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT,
+                                                      Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
-constexpr MicroAPI::CastTrait LayoutZMrgZRndASatNS = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT,
-                                                      MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
+constexpr Reg::CastTrait LayoutZMrgZRndASatNS = {Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT,
+                                                      Reg::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
 
-constexpr MicroAPI::CastTrait MrgZRndRSatNS = {MicroAPI::RegLayout::UNKNOWN, MicroAPI::SatMode::NO_SAT,
-                                               MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait MrgZRndRSatNS = {Reg::RegLayout::UNKNOWN, Reg::SatMode::NO_SAT,
+                                               Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
 namespace CastParam {
-constexpr MicroAPI::CastTrait AddReluCastTrait = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
-                                                  MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
-constexpr MicroAPI::CastTrait SubReluCastTrait = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
-                                                  MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
-constexpr MicroAPI::CastTrait s162halfTrait = {MicroAPI::RegLayout::UNKNOWN, MicroAPI::SatMode::SAT,
-                                               MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
-constexpr MicroAPI::CastTrait s162f32CastTrait = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
-                                                  MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
-constexpr MicroAPI::CastTrait f322s16CastTrait = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
-                                                  MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
-constexpr MicroAPI::CastTrait TrueHalfBlockCastTrait = {MicroAPI::RegLayout::ONE, MicroAPI::SatMode::SAT,
-                                                        MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
-constexpr MicroAPI::CastTrait FalseHalfBlockCastTrait = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
-                                                         MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
-constexpr MicroAPI::CastTrait TrueHalfBlockCastNoSatTrait = {MicroAPI::RegLayout::ONE, MicroAPI::SatMode::NO_SAT,
-                                                             MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
-constexpr MicroAPI::CastTrait FalseHalfBlockCastNoSatTrait = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT,
-                                                              MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait AddReluCastTrait = {Reg::RegLayout::ZERO, Reg::SatMode::SAT,
+                                                  Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait SubReluCastTrait = {Reg::RegLayout::ZERO, Reg::SatMode::SAT,
+                                                  Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait s162halfTrait = {Reg::RegLayout::UNKNOWN, Reg::SatMode::SAT,
+                                               Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait s162f32CastTrait = {Reg::RegLayout::ZERO, Reg::SatMode::SAT,
+                                                  Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait f322s16CastTrait = {Reg::RegLayout::ZERO, Reg::SatMode::SAT,
+                                                  Reg::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
+constexpr Reg::CastTrait TrueHalfBlockCastTrait = {Reg::RegLayout::ONE, Reg::SatMode::SAT,
+                                                        Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait FalseHalfBlockCastTrait = {Reg::RegLayout::ZERO, Reg::SatMode::SAT,
+                                                         Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait TrueHalfBlockCastNoSatTrait = {Reg::RegLayout::ONE, Reg::SatMode::NO_SAT,
+                                                             Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait FalseHalfBlockCastNoSatTrait = {Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT,
+                                                              Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
 }  // namespace CastParam
 
 // micro adaptor
@@ -264,24 +264,24 @@ __aicore__ inline void CastAdaptor(RegTensor<T> &dstReg, RegTensor<U> &srcReg, M
             uint16_t oneRepSize = (uint32_t)(VECTOR_REG_WIDTH / sizeof(srcType));                                \
             uint16_t repeatTimes = CeilDivision(calCount, oneRepSize);                                           \
             uint32_t sreg = static_cast<uint32_t>(calCount);                                                     \
-            static constexpr MicroAPI::CastTrait castTrait = {                                                   \
-                MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, rndMode};   \
-            MicroAPI::MaskReg preg, pregDst, pregTemp;                                                           \
-            MicroAPI::RegTensor<srcType> srcVreg;                                                                \
-            MicroAPI::RegTensor<int4x2_t> dstVreg;                                                               \
-            MicroAPI::RegTensor<uint8_t> tmpVreg;                                                                \
+            static constexpr Reg::CastTrait castTrait = {                                                   \
+                Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, rndMode};   \
+            Reg::MaskReg preg, pregDst, pregTemp;                                                           \
+            Reg::RegTensor<srcType> srcVreg;                                                                \
+            Reg::RegTensor<int4x2_t> dstVreg;                                                               \
+            Reg::RegTensor<uint8_t> tmpVreg;                                                                \
             for (uint16_t i = 0; i < repeatTimes; ++i) {                                                         \
-                preg = MicroAPI::UpdateMask<srcType>(sreg);                                                      \
-                MicroAPI::MaskPack(pregTemp, preg);                                                              \
-                MicroAPI::MaskPack(pregDst, pregTemp);                                                           \
-                MicroAPI::DataCopy(srcVreg, src + i * oneRepSize);                                               \
-                MicroAPI::Cast<int4x2_t, srcType, castTrait>(dstVreg, srcVreg, preg);                            \
-                MicroAPI::DeInterleave((MicroAPI::RegTensor<uint8_t> &)dstVreg, tmpVreg,                         \
-                                       (MicroAPI::RegTensor<uint8_t> &)dstVreg, tmpVreg);                        \
-                MicroAPI::DeInterleave((MicroAPI::RegTensor<uint8_t> &)dstVreg, tmpVreg,                         \
-                                       (MicroAPI::RegTensor<uint8_t> &)dstVreg, tmpVreg);                        \
-                MicroAPI::DataCopy( (__ubuf__ uint8_t *)dst + (i * oneRepSize) / 2,                         \
-                    (MicroAPI::RegTensor<uint8_t> &)dstVreg, pregDst);                                           \
+                preg = Reg::UpdateMask<srcType>(sreg);                                                      \
+                Reg::MaskPack(pregTemp, preg);                                                              \
+                Reg::MaskPack(pregDst, pregTemp);                                                           \
+                Reg::DataCopy(srcVreg, src + i * oneRepSize);                                               \
+                Reg::Cast<int4x2_t, srcType, castTrait>(dstVreg, srcVreg, preg);                            \
+                Reg::DeInterleave((Reg::RegTensor<uint8_t> &)dstVreg, tmpVreg,                         \
+                                       (Reg::RegTensor<uint8_t> &)dstVreg, tmpVreg);                        \
+                Reg::DeInterleave((Reg::RegTensor<uint8_t> &)dstVreg, tmpVreg,                         \
+                                       (Reg::RegTensor<uint8_t> &)dstVreg, tmpVreg);                        \
+                Reg::DataCopy( (__ubuf__ uint8_t *)dst + (i * oneRepSize) / 2,                         \
+                    (Reg::RegTensor<uint8_t> &)dstVreg, pregDst);                                           \
             }                                                                                                    \
         }                                                                                                        \
     }                                                                                                            \
@@ -601,111 +601,111 @@ template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode>
 __simd_vf__ inline void CastIntrinsicsB64ImplVF2(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const BasicAPIMaskStruct maskArrayStruct,
     uint8_t repeatTime, const UnaryRepeatParams repeatParams)
 {
-    static constexpr MicroAPI::CastTrait castTrait = {
-        MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, roundMode};
+    static constexpr Reg::CastTrait castTrait = {
+        Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, roundMode};
     constexpr uint8_t elePerBlk = GetDataBlockSizeInBytes() / sizeof(uint32_t);
-    MicroAPI::RegTensor<SRC_TYPE> srcVreg;
-    MicroAPI::RegTensor<DST_TYPE> dstVreg;
-    MicroAPI::RegTensor<uint32_t> zeroVreg, tmpVreg;
-    MicroAPI::MaskReg fullPreg = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::MaskReg b32Preg = MicroAPI::MoveMask<uint32_t>();
-    MicroAPI::MaskReg b64Preg, tmpPreg;
-    MicroAPI::MaskInterleave<uint32_t>(b64Preg, tmpPreg, b32Preg, b32Preg);
-    MicroAPI::Duplicate(zeroVreg, 0, fullPreg);
+    Reg::RegTensor<SRC_TYPE> srcVreg;
+    Reg::RegTensor<DST_TYPE> dstVreg;
+    Reg::RegTensor<uint32_t> zeroVreg, tmpVreg;
+    Reg::MaskReg fullPreg = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
+    Reg::MaskReg b32Preg = Reg::MoveMask<uint32_t>();
+    Reg::MaskReg b64Preg, tmpPreg;
+    Reg::MaskInterleave<uint32_t>(b64Preg, tmpPreg, b32Preg, b32Preg);
+    Reg::Duplicate(zeroVreg, 0, fullPreg);
     for (uint16_t i = 0; i < repeatTime; ++i) {
         if constexpr (sizeof(DST_TYPE) == sizeof(int64_t)) {
             // b32->b64
-            MicroAPI::DataCopy<uint32_t, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>((MicroAPI::RegTensor<uint32_t> &)srcVreg,
+            Reg::DataCopy<uint32_t, Reg::DataCopyMode::DATA_BLOCK_COPY>((Reg::RegTensor<uint32_t> &)srcVreg,
                 (__ubuf__ uint32_t *&)src + i * repeatParams.srcRepStride * elePerBlk, repeatParams.srcBlkStride, b32Preg);
-            MicroAPI::Interleave(
-                (MicroAPI::RegTensor<uint32_t> &)srcVreg, tmpVreg, (MicroAPI::RegTensor<uint32_t> &)srcVreg, zeroVreg);
+            Reg::Interleave(
+                (Reg::RegTensor<uint32_t> &)srcVreg, tmpVreg, (Reg::RegTensor<uint32_t> &)srcVreg, zeroVreg);
         } else {
             // b64->b32
-            MicroAPI::DataCopy<uint32_t, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>((MicroAPI::RegTensor<uint32_t>&)srcVreg,
+            Reg::DataCopy<uint32_t, Reg::DataCopyMode::DATA_BLOCK_COPY>((Reg::RegTensor<uint32_t>&)srcVreg,
                 (__ubuf__ uint32_t *&)src + i * repeatParams.srcRepStride * elePerBlk, repeatParams.srcBlkStride, b64Preg);
         }
-        MicroAPI::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, b64Preg);
+        Reg::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, b64Preg);
         if constexpr (sizeof(DST_TYPE) == sizeof(int64_t)) {
             // b32->b64
-            MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_STORE>();
-            MicroAPI::DataCopy<uint32_t, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+            Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_STORE>();
+            Reg::DataCopy<uint32_t, Reg::DataCopyMode::DATA_BLOCK_COPY>(
                 (__ubuf__ uint32_t *&)dst + i * repeatParams.dstRepStride * elePerBlk,
-                (MicroAPI::RegTensor<uint32_t> &)dstVreg, repeatParams.dstBlkStride, b64Preg);
+                (Reg::RegTensor<uint32_t> &)dstVreg, repeatParams.dstBlkStride, b64Preg);
         } else {
             // b64->b32
-            MicroAPI::DeInterleave(
-                (MicroAPI::RegTensor<uint32_t> &)dstVreg, tmpVreg, (MicroAPI::RegTensor<uint32_t> &)dstVreg, zeroVreg);
-            MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_STORE>();
-            MicroAPI::DataCopy<uint32_t, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+            Reg::DeInterleave(
+                (Reg::RegTensor<uint32_t> &)dstVreg, tmpVreg, (Reg::RegTensor<uint32_t> &)dstVreg, zeroVreg);
+            Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_STORE>();
+            Reg::DataCopy<uint32_t, Reg::DataCopyMode::DATA_BLOCK_COPY>(
                 (__ubuf__ uint32_t *&)dst + i * repeatParams.dstRepStride * elePerBlk,
-                (MicroAPI::RegTensor<uint32_t> &)dstVreg, repeatParams.dstBlkStride, b32Preg);
+                (Reg::RegTensor<uint32_t> &)dstVreg, repeatParams.dstBlkStride, b32Preg);
         }
     }
 }
 
 template <typename DST_TYPE, typename SRC_TYPE>
-__simd_callee__ inline void GenLoadL0(MicroAPI::RegTensor<SRC_TYPE> &srcVreg, __ubuf__ SRC_TYPE *&srcAddr,
-    MicroAPI::MaskReg &preg, const UnaryRepeatParams &repeatParams)
+__simd_callee__ inline void GenLoadL0(Reg::RegTensor<SRC_TYPE> &srcVreg, __ubuf__ SRC_TYPE *&srcAddr,
+    Reg::MaskReg &preg, const UnaryRepeatParams &repeatParams)
  
 {
-    MicroAPI::DataCopy<SRC_TYPE, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
+    Reg::DataCopy<SRC_TYPE, Reg::DataCopyMode::DATA_BLOCK_COPY, Reg::PostLiteral::POST_MODE_UPDATE>(
         srcVreg, srcAddr,
         static_cast<uint32_t>(repeatParams.srcBlkStride), static_cast<uint32_t>(repeatParams.srcRepStride), preg);
     if constexpr (SupportType<SRC_TYPE, int4b_t>() && sizeof(DST_TYPE) == 2) {
-        MicroAPI::UnPack<uint16_t, uint8_t>(
-            (MicroAPI::RegTensor<uint16_t> &)srcVreg, (MicroAPI::RegTensor<uint8_t> &)srcVreg);
-        MicroAPI::UnPack<uint32_t, uint16_t>(
-            (MicroAPI::RegTensor<uint32_t> &)srcVreg, (MicroAPI::RegTensor<uint16_t> &)srcVreg);
+        Reg::UnPack<uint16_t, uint8_t>(
+            (Reg::RegTensor<uint16_t> &)srcVreg, (Reg::RegTensor<uint8_t> &)srcVreg);
+        Reg::UnPack<uint32_t, uint16_t>(
+            (Reg::RegTensor<uint32_t> &)srcVreg, (Reg::RegTensor<uint16_t> &)srcVreg);
     } else if constexpr (sizeof(SRC_TYPE) == 1 && sizeof(DST_TYPE) == 2) {
         if constexpr (std::is_same_v<SRC_TYPE, int8_t>) {
-            MicroAPI::UnPack<int16_t, int8_t>((MicroAPI::RegTensor<int16_t> &)srcVreg, srcVreg);
+            Reg::UnPack<int16_t, int8_t>((Reg::RegTensor<int16_t> &)srcVreg, srcVreg);
         } else {
-            MicroAPI::UnPack<uint16_t, uint8_t>(
-                (MicroAPI::RegTensor<uint16_t> &)srcVreg, (MicroAPI::RegTensor<uint8_t> &)srcVreg);
+            Reg::UnPack<uint16_t, uint8_t>(
+                (Reg::RegTensor<uint16_t> &)srcVreg, (Reg::RegTensor<uint8_t> &)srcVreg);
         }
     } else if constexpr (sizeof(SRC_TYPE) == 2 && sizeof(DST_TYPE) == 4) {
         if constexpr (std::is_same_v<SRC_TYPE, int16_t>) {
-            MicroAPI::UnPack<int32_t, int16_t>((MicroAPI::RegTensor<int32_t> &)srcVreg, srcVreg);
+            Reg::UnPack<int32_t, int16_t>((Reg::RegTensor<int32_t> &)srcVreg, srcVreg);
         } else {
-            MicroAPI::UnPack<uint32_t, uint16_t>(
-                (MicroAPI::RegTensor<uint32_t> &)srcVreg, (MicroAPI::RegTensor<uint16_t> &)srcVreg);
+            Reg::UnPack<uint32_t, uint16_t>(
+                (Reg::RegTensor<uint32_t> &)srcVreg, (Reg::RegTensor<uint16_t> &)srcVreg);
         }
     } else if constexpr (sizeof(SRC_TYPE) == 1 && sizeof(DST_TYPE) == 4) {
         if constexpr (std::is_same_v<SRC_TYPE, int8_t>) {
-            MicroAPI::UnPack<int16_t, int8_t>((MicroAPI::RegTensor<int16_t> &)srcVreg, srcVreg);
-            MicroAPI::UnPack<int32_t, int16_t>(
-                (MicroAPI::RegTensor<int32_t> &)srcVreg, (MicroAPI::RegTensor<int16_t> &)srcVreg);
+            Reg::UnPack<int16_t, int8_t>((Reg::RegTensor<int16_t> &)srcVreg, srcVreg);
+            Reg::UnPack<int32_t, int16_t>(
+                (Reg::RegTensor<int32_t> &)srcVreg, (Reg::RegTensor<int16_t> &)srcVreg);
         } else {
-            MicroAPI::UnPack<uint16_t, uint8_t>(
-                (MicroAPI::RegTensor<uint16_t> &)srcVreg, (MicroAPI::RegTensor<uint8_t> &)srcVreg);
-            MicroAPI::UnPack<uint32_t, uint16_t>(
-                (MicroAPI::RegTensor<uint32_t> &)srcVreg, (MicroAPI::RegTensor<uint16_t> &)srcVreg);
+            Reg::UnPack<uint16_t, uint8_t>(
+                (Reg::RegTensor<uint16_t> &)srcVreg, (Reg::RegTensor<uint8_t> &)srcVreg);
+            Reg::UnPack<uint32_t, uint16_t>(
+                (Reg::RegTensor<uint32_t> &)srcVreg, (Reg::RegTensor<uint16_t> &)srcVreg);
         }
     }
 }
  
 template <typename DST_TYPE, typename SRC_TYPE>
-__simd_callee__ inline void GenStoreL0(__ubuf__ DST_TYPE *&dstAddr, MicroAPI::RegTensor<DST_TYPE> &dstVreg,
-    MicroAPI::MaskReg &preg, const UnaryRepeatParams &repeatParams)
+__simd_callee__ inline void GenStoreL0(__ubuf__ DST_TYPE *&dstAddr, Reg::RegTensor<DST_TYPE> &dstVreg,
+    Reg::MaskReg &preg, const UnaryRepeatParams &repeatParams)
 {
     if constexpr (SupportType<DST_TYPE, int4b_t>() && sizeof(SRC_TYPE) == 2) {
-        MicroAPI::Pack<uint16_t, uint32_t>(
-            (MicroAPI::RegTensor<uint16_t> &)dstVreg, (MicroAPI::RegTensor<uint32_t> &)dstVreg);
-        MicroAPI::Pack<uint8_t, uint16_t>(
-            (MicroAPI::RegTensor<uint8_t> &)dstVreg, (MicroAPI::RegTensor<uint16_t> &)dstVreg);
+        Reg::Pack<uint16_t, uint32_t>(
+            (Reg::RegTensor<uint16_t> &)dstVreg, (Reg::RegTensor<uint32_t> &)dstVreg);
+        Reg::Pack<uint8_t, uint16_t>(
+            (Reg::RegTensor<uint8_t> &)dstVreg, (Reg::RegTensor<uint16_t> &)dstVreg);
     } else if constexpr (sizeof(DST_TYPE) == 1 && sizeof(SRC_TYPE) == 2) {
-        MicroAPI::Pack<uint8_t, uint16_t>(
-            (MicroAPI::RegTensor<uint8_t> &)dstVreg, (MicroAPI::RegTensor<uint16_t> &)dstVreg);
+        Reg::Pack<uint8_t, uint16_t>(
+            (Reg::RegTensor<uint8_t> &)dstVreg, (Reg::RegTensor<uint16_t> &)dstVreg);
     } else if constexpr (sizeof(DST_TYPE) == 2 && sizeof(SRC_TYPE) == 4) {
-        MicroAPI::Pack<uint16_t, uint32_t>(
-            (MicroAPI::RegTensor<uint16_t> &)dstVreg, (MicroAPI::RegTensor<uint32_t> &)dstVreg);
+        Reg::Pack<uint16_t, uint32_t>(
+            (Reg::RegTensor<uint16_t> &)dstVreg, (Reg::RegTensor<uint32_t> &)dstVreg);
     } else if constexpr (sizeof(DST_TYPE) == 1 && sizeof(SRC_TYPE) == 4) {
-        MicroAPI::Pack<uint16_t, uint32_t>(
-            (MicroAPI::RegTensor<uint16_t> &)dstVreg, (MicroAPI::RegTensor<uint32_t> &)dstVreg);
-        MicroAPI::Pack<uint8_t, uint16_t>(
-            (MicroAPI::RegTensor<uint8_t> &)dstVreg, (MicroAPI::RegTensor<uint16_t> &)dstVreg);
+        Reg::Pack<uint16_t, uint32_t>(
+            (Reg::RegTensor<uint16_t> &)dstVreg, (Reg::RegTensor<uint32_t> &)dstVreg);
+        Reg::Pack<uint8_t, uint16_t>(
+            (Reg::RegTensor<uint8_t> &)dstVreg, (Reg::RegTensor<uint16_t> &)dstVreg);
     }
-    MicroAPI::DataCopy<DST_TYPE, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
+    Reg::DataCopy<DST_TYPE, Reg::DataCopyMode::DATA_BLOCK_COPY, Reg::PostLiteral::POST_MODE_UPDATE>(
         dstAddr, dstVreg,
         static_cast<uint32_t>(repeatParams.dstBlkStride), static_cast<uint32_t>(repeatParams.dstRepStride), preg);
 }
@@ -714,51 +714,51 @@ template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode>
 __simd_vf__ inline void CastIntrinsicsImplVF2(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const BasicAPIMaskStruct maskArrayStruct,
     uint8_t repeatTimes, const UnaryRepeatParams repeatParams)
 {
-    static constexpr MicroAPI::CastTrait castTrait = {
-        MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, roundMode};
-    MicroAPI::MaskReg ldPreg;
-    MicroAPI::MaskReg exPreg;
-    MicroAPI::MaskReg stPreg;
-    MicroAPI::MaskReg dumpPreg;
-    MicroAPI::RegTensor<SRC_TYPE> srcVreg;
-    MicroAPI::RegTensor<DST_TYPE> dstVreg;
+    static constexpr Reg::CastTrait castTrait = {
+        Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, roundMode};
+    Reg::MaskReg ldPreg;
+    Reg::MaskReg exPreg;
+    Reg::MaskReg stPreg;
+    Reg::MaskReg dumpPreg;
+    Reg::RegTensor<SRC_TYPE> srcVreg;
+    Reg::RegTensor<DST_TYPE> dstVreg;
     if constexpr (sizeof(DST_TYPE) == sizeof(SRC_TYPE)) {
-        ldPreg = MicroAPI::MoveMask<SRC_TYPE>();
+        ldPreg = Reg::MoveMask<SRC_TYPE>();
         exPreg = ldPreg;
         stPreg = ldPreg;
     } else if constexpr (sizeof(DST_TYPE) < sizeof(SRC_TYPE)) {
-        ldPreg = MicroAPI::MoveMask<SRC_TYPE>();
+        ldPreg = Reg::MoveMask<SRC_TYPE>();
         exPreg = ldPreg;
-        MicroAPI::MaskPack(stPreg, ldPreg);
+        Reg::MaskPack(stPreg, ldPreg);
         if constexpr ((SupportType<DST_TYPE, int4b_t>() && sizeof(SRC_TYPE) == 2) ||
                       (sizeof(DST_TYPE) == 1 && sizeof(SRC_TYPE) == 4)) {
-            MicroAPI::MaskPack(stPreg, stPreg);
+            Reg::MaskPack(stPreg, stPreg);
         }
     } else if constexpr (sizeof(DST_TYPE) > sizeof(SRC_TYPE)) {
-        stPreg = MicroAPI::MoveMask<DST_TYPE>();
+        stPreg = Reg::MoveMask<DST_TYPE>();
         exPreg = stPreg;
-        MicroAPI::MaskPack(ldPreg, stPreg);
+        Reg::MaskPack(ldPreg, stPreg);
         if constexpr ((SupportType<SRC_TYPE, int4b_t>() && sizeof(DST_TYPE) == 2) ||
                       (sizeof(SRC_TYPE) == 1 && sizeof(DST_TYPE) == 4)) {
-            MicroAPI::MaskPack(ldPreg, ldPreg);
+            Reg::MaskPack(ldPreg, ldPreg);
             if constexpr (SupportType<SRC_TYPE, int4b_t>() && sizeof(DST_TYPE) == 2) {
-                MicroAPI::MaskUnPack(stPreg, ldPreg);
-                MicroAPI::MaskUnPack(exPreg, stPreg);
-                MicroAPI::MaskInterleave<uint16_t>(stPreg, dumpPreg, stPreg, stPreg);
+                Reg::MaskUnPack(stPreg, ldPreg);
+                Reg::MaskUnPack(exPreg, stPreg);
+                Reg::MaskInterleave<uint16_t>(stPreg, dumpPreg, stPreg, stPreg);
             }
         }
     }
     for (uint16_t i = 0; i < repeatTimes; ++i) {
         GenLoadL0<DST_TYPE, SRC_TYPE>(srcVreg, src, ldPreg, repeatParams);
         if constexpr (std::is_same_v<SRC_TYPE, int32_t> && std::is_same_v<DST_TYPE, half>) {
-            MicroAPI::Cast<float, SRC_TYPE, castTrait>((MicroAPI::RegTensor<float> &)dstVreg, srcVreg, exPreg);
+            Reg::Cast<float, SRC_TYPE, castTrait>((Reg::RegTensor<float> &)dstVreg, srcVreg, exPreg);
             float deqValueTmp = static_cast<float>(g_deqValue);
-            MicroAPI::Muls((MicroAPI::RegTensor<float> &)dstVreg, (MicroAPI::RegTensor<float> &)dstVreg, deqValueTmp, exPreg);
-            MicroAPI::Cast<DST_TYPE, float, castTrait>(dstVreg, (MicroAPI::RegTensor<float> &)dstVreg, exPreg);
+            Reg::Muls((Reg::RegTensor<float> &)dstVreg, (Reg::RegTensor<float> &)dstVreg, deqValueTmp, exPreg);
+            Reg::Cast<DST_TYPE, float, castTrait>(dstVreg, (Reg::RegTensor<float> &)dstVreg, exPreg);
         } else if constexpr (std::is_same_v<SRC_TYPE, float> && std::is_same_v<DST_TYPE, float>) {
-            MicroAPI::Truncate<DST_TYPE, roundMode>(dstVreg, srcVreg, exPreg);
+            Reg::Truncate<DST_TYPE, roundMode>(dstVreg, srcVreg, exPreg);
         } else {
-            MicroAPI::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, exPreg);
+            Reg::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, exPreg);
         }
         GenStoreL0<DST_TYPE, SRC_TYPE>(dst, dstVreg, stPreg, repeatParams);
     }
@@ -768,22 +768,22 @@ template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode, bool isSetM
 __simd_vf__ inline void CastIntrinsicsImplCounterVF(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint64_t mask,
     __ubuf__ uint64_t *maskBuf, uint8_t repeatTimes, const UnaryRepeatParams repeatParams)
 {
-    static constexpr MicroAPI::CastTrait castTrait = {
-        MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, roundMode};
+    static constexpr Reg::CastTrait castTrait = {
+        Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, roundMode};
     uint32_t sreg = static_cast<uint32_t>(mask);
-    MicroAPI::MaskReg ldPreg;
-    MicroAPI::MaskReg exPreg;
-    MicroAPI::MaskReg stPreg;
-    MicroAPI::MaskReg dumpPreg;
-    MicroAPI::RegTensor<SRC_TYPE> srcVreg;
-    MicroAPI::RegTensor<DST_TYPE> dstVreg;
+    Reg::MaskReg ldPreg;
+    Reg::MaskReg exPreg;
+    Reg::MaskReg stPreg;
+    Reg::MaskReg dumpPreg;
+    Reg::RegTensor<SRC_TYPE> srcVreg;
+    Reg::RegTensor<DST_TYPE> dstVreg;
     uint32_t countSreg = static_cast<uint32_t>(mask);
     if constexpr (!isSetMask) {
         // get SPR.MASK in VF
-        MicroAPI::MaskReg sprLoadMaskReg = MicroAPI::MoveMask<uint16_t>();
-        MicroAPI::DataCopy<uint64_t, MicroAPI::MaskDist::DIST_PACK>(maskBuf, sprLoadMaskReg);
+        Reg::MaskReg sprLoadMaskReg = Reg::MoveMask<uint16_t>();
+        Reg::DataCopy<uint64_t, Reg::MaskDist::DIST_PACK>(maskBuf, sprLoadMaskReg);
         // insert membar(vec store operation) before load maskBuf[0](scalar load operation)
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::SCALAR_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::SCALAR_LOAD>();
         countSreg = static_cast<uint32_t>(maskBuf[0]);
     }
     uint16_t oneRepSize = GetVecLen() / sizeof(SRC_TYPE);
@@ -793,41 +793,41 @@ __simd_vf__ inline void CastIntrinsicsImplCounterVF(__ubuf__ DST_TYPE *dst, __ub
     uint16_t newRepeatTimes = CeilDivision(countSreg, oneRepSize);
     for (uint16_t i = 0; i < newRepeatTimes; ++i) {
         if constexpr (sizeof(DST_TYPE) == sizeof(SRC_TYPE)) {
-            ldPreg = MicroAPI::UpdateMask<SRC_TYPE>(countSreg);
+            ldPreg = Reg::UpdateMask<SRC_TYPE>(countSreg);
             exPreg = ldPreg;
             stPreg = ldPreg;
         } else if constexpr (sizeof(DST_TYPE) < sizeof(SRC_TYPE)) {
-            ldPreg = MicroAPI::UpdateMask<SRC_TYPE>(countSreg);
+            ldPreg = Reg::UpdateMask<SRC_TYPE>(countSreg);
             exPreg = ldPreg;
-            MicroAPI::MaskPack(stPreg, ldPreg);
+            Reg::MaskPack(stPreg, ldPreg);
             if constexpr ((SupportType<DST_TYPE, int4b_t>() && sizeof(SRC_TYPE) == 2) ||
                           (sizeof(DST_TYPE) == 1 && sizeof(SRC_TYPE) == 4)) {
-                MicroAPI::MaskPack(stPreg, stPreg);
+                Reg::MaskPack(stPreg, stPreg);
             }
         } else if constexpr (sizeof(DST_TYPE) > sizeof(SRC_TYPE)) {
-            stPreg = MicroAPI::UpdateMask<DST_TYPE>(countSreg);
+            stPreg = Reg::UpdateMask<DST_TYPE>(countSreg);
             exPreg = stPreg;
-            MicroAPI::MaskPack(ldPreg, stPreg);
+            Reg::MaskPack(ldPreg, stPreg);
             if constexpr ((SupportType<SRC_TYPE, int4b_t>() && sizeof(DST_TYPE) == 2) ||
                           (sizeof(SRC_TYPE) == 1 && sizeof(DST_TYPE) == 4)) {
-                MicroAPI::MaskPack(ldPreg, ldPreg);
+                Reg::MaskPack(ldPreg, ldPreg);
                 if constexpr (SupportType<SRC_TYPE, int4b_t>() && sizeof(DST_TYPE) == 2) {
-                    MicroAPI::MaskUnPack(stPreg, ldPreg);
-                    MicroAPI::MaskUnPack(exPreg, stPreg);
-                    MicroAPI::MaskInterleave<uint16_t>(stPreg, dumpPreg, stPreg, stPreg);
+                    Reg::MaskUnPack(stPreg, ldPreg);
+                    Reg::MaskUnPack(exPreg, stPreg);
+                    Reg::MaskInterleave<uint16_t>(stPreg, dumpPreg, stPreg, stPreg);
                 }
             }
         }
         GenLoadL0<DST_TYPE, SRC_TYPE>(srcVreg, src, ldPreg, repeatParams);
         if constexpr (std::is_same_v<SRC_TYPE, int32_t> && std::is_same_v<DST_TYPE, half>) {
-            MicroAPI::Cast<float, SRC_TYPE, castTrait>((MicroAPI::RegTensor<float> &)dstVreg, srcVreg, exPreg);
+            Reg::Cast<float, SRC_TYPE, castTrait>((Reg::RegTensor<float> &)dstVreg, srcVreg, exPreg);
             float deqValueTmp = static_cast<float>(g_deqValue);
-            MicroAPI::Muls((MicroAPI::RegTensor<float> &)dstVreg, (MicroAPI::RegTensor<float> &)dstVreg, deqValueTmp, exPreg);
-            MicroAPI::Cast<DST_TYPE, float, castTrait>(dstVreg, (MicroAPI::RegTensor<float> &)dstVreg, exPreg);
+            Reg::Muls((Reg::RegTensor<float> &)dstVreg, (Reg::RegTensor<float> &)dstVreg, deqValueTmp, exPreg);
+            Reg::Cast<DST_TYPE, float, castTrait>(dstVreg, (Reg::RegTensor<float> &)dstVreg, exPreg);
         } else if constexpr (std::is_same_v<SRC_TYPE, float> && std::is_same_v<DST_TYPE, float>) {
-            MicroAPI::Truncate<DST_TYPE, roundMode>(dstVreg, srcVreg, exPreg);
+            Reg::Truncate<DST_TYPE, roundMode>(dstVreg, srcVreg, exPreg);
         } else {
-            MicroAPI::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, exPreg);
+            Reg::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, exPreg);
         }
         GenStoreL0<DST_TYPE, SRC_TYPE>(dst, dstVreg, stPreg, repeatParams);
     }
@@ -837,55 +837,55 @@ template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode, bool isSetM
 __simd_vf__ inline void CastIntrinsicsB64ImplCounterVF(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint64_t mask,
     __ubuf__ uint64_t *maskBuf, uint8_t repeatTime, const UnaryRepeatParams repeatParams)
 {
-    static constexpr MicroAPI::CastTrait castTrait = {
-        MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, roundMode};
+    static constexpr Reg::CastTrait castTrait = {
+        Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, roundMode};
     constexpr uint8_t elePerBlk = GetDataBlockSizeInBytes() / sizeof(uint32_t);
     uint32_t countSreg = static_cast<uint32_t>(mask);
     if constexpr (!isSetMask) {
         // get SPR.MASK in VF
-        MicroAPI::MaskReg sprLoadMaskReg = MicroAPI::MoveMask<uint16_t>();
-        MicroAPI::DataCopy<uint64_t, MicroAPI::MaskDist::DIST_PACK>(maskBuf, sprLoadMaskReg);
+        Reg::MaskReg sprLoadMaskReg = Reg::MoveMask<uint16_t>();
+        Reg::DataCopy<uint64_t, Reg::MaskDist::DIST_PACK>(maskBuf, sprLoadMaskReg);
         // insert membar(vec store operation) before load maskBuf[0](scalar load operation)
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::SCALAR_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::SCALAR_LOAD>();
         countSreg = static_cast<uint32_t>(maskBuf[0]);
     }
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(uint64_t);
     uint16_t newRepeatTimes = CeilDivision(countSreg, oneRepSize);
-    MicroAPI::RegTensor<SRC_TYPE> srcVreg;
-    MicroAPI::RegTensor<DST_TYPE> dstVreg;
-    MicroAPI::RegTensor<uint32_t> zeroVreg, tmpVreg;
-    MicroAPI::MaskReg b32Preg, b64Preg, tmpPreg;
-    MicroAPI::MaskReg fullPreg = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::Duplicate(zeroVreg, 0, fullPreg);
+    Reg::RegTensor<SRC_TYPE> srcVreg;
+    Reg::RegTensor<DST_TYPE> dstVreg;
+    Reg::RegTensor<uint32_t> zeroVreg, tmpVreg;
+    Reg::MaskReg b32Preg, b64Preg, tmpPreg;
+    Reg::MaskReg fullPreg = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
+    Reg::Duplicate(zeroVreg, 0, fullPreg);
     for (uint16_t i = 0; i < newRepeatTimes; ++i) {
-        b32Preg = MicroAPI::UpdateMask<uint32_t>(countSreg);
-        MicroAPI::MaskInterleave<uint32_t>(b64Preg, tmpPreg, b32Preg, b32Preg);
+        b32Preg = Reg::UpdateMask<uint32_t>(countSreg);
+        Reg::MaskInterleave<uint32_t>(b64Preg, tmpPreg, b32Preg, b32Preg);
         if constexpr (sizeof(DST_TYPE) == sizeof(int64_t)) {
             // b32->b64
-            MicroAPI::DataCopy<uint32_t, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>((MicroAPI::RegTensor<uint32_t> &)srcVreg,
+            Reg::DataCopy<uint32_t, Reg::DataCopyMode::DATA_BLOCK_COPY>((Reg::RegTensor<uint32_t> &)srcVreg,
                 (__ubuf__ uint32_t *&)src + i * repeatParams.srcRepStride * elePerBlk, repeatParams.srcBlkStride, b32Preg);
-            MicroAPI::Interleave(
-                (MicroAPI::RegTensor<uint32_t> &)srcVreg, tmpVreg, (MicroAPI::RegTensor<uint32_t> &)srcVreg, zeroVreg);
+            Reg::Interleave(
+                (Reg::RegTensor<uint32_t> &)srcVreg, tmpVreg, (Reg::RegTensor<uint32_t> &)srcVreg, zeroVreg);
         } else {
             // b64->b32
-            MicroAPI::DataCopy<uint32_t, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>((MicroAPI::RegTensor<uint32_t>&)srcVreg,
+            Reg::DataCopy<uint32_t, Reg::DataCopyMode::DATA_BLOCK_COPY>((Reg::RegTensor<uint32_t>&)srcVreg,
                 (__ubuf__ uint32_t *&)src + i * repeatParams.srcRepStride * elePerBlk, repeatParams.srcBlkStride, b64Preg);
         }
-        MicroAPI::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, b64Preg);
+        Reg::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, b64Preg);
         if constexpr (sizeof(DST_TYPE) == sizeof(int64_t)) {
             // b32->b64
-            MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_STORE>();
-            MicroAPI::DataCopy<uint32_t, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+            Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_STORE>();
+            Reg::DataCopy<uint32_t, Reg::DataCopyMode::DATA_BLOCK_COPY>(
                 (__ubuf__ uint32_t *&)dst + i * repeatParams.dstRepStride * elePerBlk,
-                (MicroAPI::RegTensor<uint32_t> &)dstVreg, repeatParams.dstBlkStride, b64Preg);
+                (Reg::RegTensor<uint32_t> &)dstVreg, repeatParams.dstBlkStride, b64Preg);
         } else {
             // b64->b32
-            MicroAPI::DeInterleave(
-                (MicroAPI::RegTensor<uint32_t> &)dstVreg, tmpVreg, (MicroAPI::RegTensor<uint32_t> &)dstVreg, zeroVreg);
-            MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_STORE>();
-            MicroAPI::DataCopy<uint32_t, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+            Reg::DeInterleave(
+                (Reg::RegTensor<uint32_t> &)dstVreg, tmpVreg, (Reg::RegTensor<uint32_t> &)dstVreg, zeroVreg);
+            Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_STORE>();
+            Reg::DataCopy<uint32_t, Reg::DataCopyMode::DATA_BLOCK_COPY>(
                 (__ubuf__ uint32_t *&)dst + i * repeatParams.dstRepStride * elePerBlk,
-                (MicroAPI::RegTensor<uint32_t> &)dstVreg, repeatParams.dstBlkStride, b32Preg);
+                (Reg::RegTensor<uint32_t> &)dstVreg, repeatParams.dstBlkStride, b32Preg);
         }
     }
 }
@@ -1018,52 +1018,52 @@ template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode, bool isSetM
 __simd_vf__ inline void CastIntrinsicsB64ImplVF1(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint64_t mask,
     uint8_t repeatTime, const UnaryRepeatParams repeatParams)
 {
-    static constexpr MicroAPI::CastTrait castTrait = {
-        MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, roundMode};
+    static constexpr Reg::CastTrait castTrait = {
+        Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, roundMode};
     constexpr uint8_t elePerBlk = GetDataBlockSizeInBytes() / sizeof(uint32_t);
     uint32_t b32Sreg = static_cast<uint32_t>(mask);
     uint32_t b64Sreg = static_cast<uint32_t>(2 * mask);
-    MicroAPI::RegTensor<SRC_TYPE> srcVreg;
-    MicroAPI::RegTensor<DST_TYPE> dstVreg;
-    MicroAPI::RegTensor<uint32_t> zeroVreg, tmpVreg;
-    MicroAPI::MaskReg b32Preg;
-    MicroAPI::MaskReg b64Preg, tmpPreg;
+    Reg::RegTensor<SRC_TYPE> srcVreg;
+    Reg::RegTensor<DST_TYPE> dstVreg;
+    Reg::RegTensor<uint32_t> zeroVreg, tmpVreg;
+    Reg::MaskReg b32Preg;
+    Reg::MaskReg b64Preg, tmpPreg;
     if constexpr (isSetMask) {
-        b32Preg = MicroAPI::UpdateMask<uint32_t>(b32Sreg);
-        b64Preg = MicroAPI::UpdateMask<uint32_t>(b64Sreg);
+        b32Preg = Reg::UpdateMask<uint32_t>(b32Sreg);
+        b64Preg = Reg::UpdateMask<uint32_t>(b64Sreg);
     } else {
-        b32Preg = MicroAPI::MoveMask<uint32_t>();
-        MicroAPI::MaskInterleave<uint32_t>(b64Preg, tmpPreg, b32Preg, b32Preg);
+        b32Preg = Reg::MoveMask<uint32_t>();
+        Reg::MaskInterleave<uint32_t>(b64Preg, tmpPreg, b32Preg, b32Preg);
     }
-    MicroAPI::MaskReg fullPreg = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::Duplicate(zeroVreg, 0, fullPreg);
+    Reg::MaskReg fullPreg = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
+    Reg::Duplicate(zeroVreg, 0, fullPreg);
     for (uint16_t i = 0; i < repeatTime; ++i) {
         if constexpr (sizeof(DST_TYPE) == sizeof(int64_t)) {
             // b32 -> b64
-            MicroAPI::DataCopy<uint32_t, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>((MicroAPI::RegTensor<uint32_t> &)srcVreg,
+            Reg::DataCopy<uint32_t, Reg::DataCopyMode::DATA_BLOCK_COPY>((Reg::RegTensor<uint32_t> &)srcVreg,
                 (__ubuf__ uint32_t *&)src + i * repeatParams.srcRepStride * elePerBlk, repeatParams.srcBlkStride, b32Preg);
-            MicroAPI::Interleave(
-                (MicroAPI::RegTensor<uint32_t> &)srcVreg, tmpVreg, (MicroAPI::RegTensor<uint32_t> &)srcVreg, zeroVreg);
+            Reg::Interleave(
+                (Reg::RegTensor<uint32_t> &)srcVreg, tmpVreg, (Reg::RegTensor<uint32_t> &)srcVreg, zeroVreg);
         } else {
             // b64 -> b32
-            MicroAPI::DataCopy<uint32_t, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>((MicroAPI::RegTensor<uint32_t>&)srcVreg,
+            Reg::DataCopy<uint32_t, Reg::DataCopyMode::DATA_BLOCK_COPY>((Reg::RegTensor<uint32_t>&)srcVreg,
                 (__ubuf__ uint32_t *&)src + i * repeatParams.srcRepStride * elePerBlk, repeatParams.srcBlkStride, b64Preg);
         }
-        MicroAPI::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, b64Preg);
+        Reg::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, b64Preg);
         if constexpr (sizeof(DST_TYPE) == sizeof(int64_t)) {
             // b32 -> b64
-            MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_STORE>();
-            MicroAPI::DataCopy<uint32_t, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+            Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_STORE>();
+            Reg::DataCopy<uint32_t, Reg::DataCopyMode::DATA_BLOCK_COPY>(
                 (__ubuf__ uint32_t *&)dst + i * repeatParams.dstRepStride * elePerBlk,
-                (MicroAPI::RegTensor<uint32_t> &)dstVreg, repeatParams.dstBlkStride, b64Preg);
+                (Reg::RegTensor<uint32_t> &)dstVreg, repeatParams.dstBlkStride, b64Preg);
         } else {
             // b64 -> b32
-            MicroAPI::DeInterleave(
-                (MicroAPI::RegTensor<uint32_t> &)dstVreg, tmpVreg, (MicroAPI::RegTensor<uint32_t> &)dstVreg, zeroVreg);
-            MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_STORE>();
-            MicroAPI::DataCopy<uint32_t, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+            Reg::DeInterleave(
+                (Reg::RegTensor<uint32_t> &)dstVreg, tmpVreg, (Reg::RegTensor<uint32_t> &)dstVreg, zeroVreg);
+            Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_STORE>();
+            Reg::DataCopy<uint32_t, Reg::DataCopyMode::DATA_BLOCK_COPY>(
                 (__ubuf__ uint32_t *&)dst + i * repeatParams.dstRepStride * elePerBlk,
-                (MicroAPI::RegTensor<uint32_t> &)dstVreg, repeatParams.dstBlkStride, b32Preg);
+                (Reg::RegTensor<uint32_t> &)dstVreg, repeatParams.dstBlkStride, b32Preg);
         }
     }
 }
@@ -1072,64 +1072,64 @@ template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode, bool isSetM
 __simd_vf__ inline void CastIntrinsicsImplVF1(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint64_t mask,
     uint8_t repeatTimes, const UnaryRepeatParams repeatParams)
 {
-    static constexpr MicroAPI::CastTrait castTrait = {
-        MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, roundMode};
+    static constexpr Reg::CastTrait castTrait = {
+        Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, roundMode};
     uint32_t sreg = static_cast<uint32_t>(mask);
-    MicroAPI::MaskReg ldPreg;
-    MicroAPI::MaskReg exPreg;
-    MicroAPI::MaskReg stPreg;
-    MicroAPI::MaskReg dumpPreg;
-    MicroAPI::RegTensor<SRC_TYPE> srcVreg;
-    MicroAPI::RegTensor<DST_TYPE> dstVreg;
+    Reg::MaskReg ldPreg;
+    Reg::MaskReg exPreg;
+    Reg::MaskReg stPreg;
+    Reg::MaskReg dumpPreg;
+    Reg::RegTensor<SRC_TYPE> srcVreg;
+    Reg::RegTensor<DST_TYPE> dstVreg;
     if constexpr (sizeof(DST_TYPE) == sizeof(SRC_TYPE)) {
         if constexpr (isSetMask) {
-            ldPreg = MicroAPI::UpdateMask<SRC_TYPE>(sreg);
+            ldPreg = Reg::UpdateMask<SRC_TYPE>(sreg);
         } else {
-            ldPreg = MicroAPI::MoveMask<SRC_TYPE>();
+            ldPreg = Reg::MoveMask<SRC_TYPE>();
         }
         exPreg = ldPreg;
         stPreg = ldPreg;
     } else if constexpr (sizeof(DST_TYPE) < sizeof(SRC_TYPE)) {
         if constexpr (isSetMask) {
-            ldPreg = MicroAPI::UpdateMask<SRC_TYPE>(sreg);
+            ldPreg = Reg::UpdateMask<SRC_TYPE>(sreg);
         } else {
-            ldPreg = MicroAPI::MoveMask<SRC_TYPE>();
+            ldPreg = Reg::MoveMask<SRC_TYPE>();
         }
         exPreg = ldPreg;
-        MicroAPI::MaskPack(stPreg, ldPreg);
+        Reg::MaskPack(stPreg, ldPreg);
         if constexpr ((SupportType<DST_TYPE, int4b_t>() && sizeof(SRC_TYPE) == 2) ||
                       (sizeof(DST_TYPE) == 1 && sizeof(SRC_TYPE) == 4)) {
-            MicroAPI::MaskPack(stPreg, stPreg);
+            Reg::MaskPack(stPreg, stPreg);
         }
     } else if constexpr (sizeof(DST_TYPE) > sizeof(SRC_TYPE)) {
         if constexpr (isSetMask) {
-            stPreg = MicroAPI::UpdateMask<DST_TYPE>(sreg);
+            stPreg = Reg::UpdateMask<DST_TYPE>(sreg);
         } else {
-            stPreg = MicroAPI::MoveMask<DST_TYPE>();
+            stPreg = Reg::MoveMask<DST_TYPE>();
         }
         exPreg = stPreg;
-        MicroAPI::MaskPack(ldPreg, stPreg);
+        Reg::MaskPack(ldPreg, stPreg);
         if constexpr ((SupportType<SRC_TYPE, int4b_t>() && sizeof(DST_TYPE) == 2) ||
                       (sizeof(SRC_TYPE) == 1 && sizeof(DST_TYPE) == 4)) {
-            MicroAPI::MaskPack(ldPreg, ldPreg);
+            Reg::MaskPack(ldPreg, ldPreg);
             if constexpr (SupportType<SRC_TYPE, int4b_t>() && sizeof(DST_TYPE) == 2) {
-                MicroAPI::MaskUnPack(stPreg, ldPreg);
-                MicroAPI::MaskUnPack(exPreg, stPreg);
-                MicroAPI::MaskInterleave<uint16_t>(stPreg, dumpPreg, stPreg, stPreg);
+                Reg::MaskUnPack(stPreg, ldPreg);
+                Reg::MaskUnPack(exPreg, stPreg);
+                Reg::MaskInterleave<uint16_t>(stPreg, dumpPreg, stPreg, stPreg);
             }
         }
     }
     for (uint16_t i = 0; i < repeatTimes; ++i) {
         GenLoadL0<DST_TYPE, SRC_TYPE>(srcVreg, src, ldPreg, repeatParams);
         if constexpr (std::is_same_v<SRC_TYPE, int32_t> && std::is_same_v<DST_TYPE, half>) {
-            MicroAPI::Cast<float, SRC_TYPE, castTrait>((MicroAPI::RegTensor<float> &)dstVreg, srcVreg, exPreg);
+            Reg::Cast<float, SRC_TYPE, castTrait>((Reg::RegTensor<float> &)dstVreg, srcVreg, exPreg);
             float deqValueTmp = static_cast<float>(g_deqValue);
-            MicroAPI::Muls((MicroAPI::RegTensor<float> &)dstVreg, (MicroAPI::RegTensor<float> &)dstVreg, deqValueTmp, exPreg);
-            MicroAPI::Cast<DST_TYPE, float, castTrait>(dstVreg, (MicroAPI::RegTensor<float> &)dstVreg, exPreg);
+            Reg::Muls((Reg::RegTensor<float> &)dstVreg, (Reg::RegTensor<float> &)dstVreg, deqValueTmp, exPreg);
+            Reg::Cast<DST_TYPE, float, castTrait>(dstVreg, (Reg::RegTensor<float> &)dstVreg, exPreg);
         } else if constexpr (std::is_same_v<SRC_TYPE, float> && std::is_same_v<DST_TYPE, float>) {
-            MicroAPI::Truncate<DST_TYPE, roundMode>(dstVreg, srcVreg, exPreg);
+            Reg::Truncate<DST_TYPE, roundMode>(dstVreg, srcVreg, exPreg);
         } else {
-            MicroAPI::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, exPreg);
+            Reg::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, exPreg);
         }
         GenStoreL0<DST_TYPE, SRC_TYPE>(dst, dstVreg, stPreg, repeatParams);
     }
@@ -1365,14 +1365,14 @@ __simd_vf__ inline void TruncateImpl(__ubuf__ T *dst, __ubuf__ T *src, const uin
     constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
     const uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
     uint32_t sreg = static_cast<uint32_t>(calCount);
-    MicroAPI::RegTensor<T> vDstReg;
-    MicroAPI::RegTensor<T> vSrcReg;
-    MicroAPI::MaskReg mask;
+    Reg::RegTensor<T> vDstReg;
+    Reg::RegTensor<T> vSrcReg;
+    Reg::MaskReg mask;
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = MicroAPI::UpdateMask<T>(sreg);
-        MicroAPI::DataCopy(vSrcReg, src + i * sregLower);
-        MicroAPI::Truncate<T, roundMode>(vDstReg, vSrcReg, mask);
-        MicroAPI::DataCopy(dst + i * sregLower, vDstReg, mask);
+        mask = Reg::UpdateMask<T>(sreg);
+        Reg::DataCopy(vSrcReg, src + i * sregLower);
+        Reg::Truncate<T, roundMode>(vDstReg, vSrcReg, mask);
+        Reg::DataCopy(dst + i * sregLower, vDstReg, mask);
     }
 }
 

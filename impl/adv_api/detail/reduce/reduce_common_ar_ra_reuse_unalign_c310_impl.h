@@ -24,62 +24,62 @@
 
 namespace AscendC {
 
-template <class T, const MicroAPI::RegTrait &Trait, auto Binaryfunc>
+template <class T, const Reg::RegTrait &Trait, auto Binaryfunc>
 __simd_callee__ inline void ReduceRAReuseSourceUnAlignedFoldOne(__ubuf__ T *dstAddr, uint64_t src, uint16_t loopANum,
-    uint32_t dimA, uint16_t vlSize, uint32_t dtypeSize, MicroAPI::MaskReg maskMain, MicroAPI::MaskReg maskTail,
+    uint32_t dimA, uint16_t vlSize, uint32_t dtypeSize, Reg::MaskReg maskMain, Reg::MaskReg maskTail,
     uint32_t postUpdateStrideMain, uint32_t postUpdateStrideTail)
 {
     uint64_t newSrc;
-    MicroAPI::UnalignReg uSrc;
-    MicroAPI::UnalignReg uDst;
-    MicroAPI::RegTensor<T, Trait> vreg0;
-    MicroAPI::RegTensor<T, Trait> vreg1;
+    Reg::UnalignReg uSrc;
+    Reg::UnalignReg uDst;
+    Reg::RegTensor<T, Trait> vreg0;
+    Reg::RegTensor<T, Trait> vreg1;
     for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(loopANum - 1); loopA++) {
         newSrc = src + static_cast<uint64_t>(loopA * vlSize * dtypeSize);
         // L0
-        MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-        MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-        MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-        MicroAPI::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+        Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+        Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+        Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+        Reg::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), dimA);
         // L1
         Binaryfunc(vreg0, vreg0, vreg1, maskMain);
         StoreUnAlign((__ubuf__ T *&)dstAddr, vreg0, uDst, postUpdateStrideMain);
     }
     newSrc = src + static_cast<uint64_t>((loopANum - 1) * vlSize * dtypeSize);
     // L0
-    MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-    MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-    MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-    MicroAPI::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+    Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+    Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+    Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+    Reg::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), dimA);
     // L1
     Binaryfunc(vreg0, vreg0, vreg1, maskTail);
     StoreUnAlign((__ubuf__ T *&)dstAddr, vreg0, uDst, postUpdateStrideTail);
-    MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+    Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
 }
 
-template <class T, const MicroAPI::RegTrait &Trait, auto Binaryfunc>
+template <class T, const Reg::RegTrait &Trait, auto Binaryfunc>
 __simd_callee__ inline void ReduceRAReuseSourceUnAlignedFoldTwo(__ubuf__ T *dstAddr, uint64_t src, uint16_t loopANum,
-    uint32_t dimA, uint16_t vlSize, uint32_t dtypeSize, MicroAPI::MaskReg maskMain, MicroAPI::MaskReg maskTail,
+    uint32_t dimA, uint16_t vlSize, uint32_t dtypeSize, Reg::MaskReg maskMain, Reg::MaskReg maskTail,
     uint32_t postUpdateStrideMain, uint32_t postUpdateStrideTail)
 {
     uint64_t newSrc;
-    MicroAPI::UnalignReg uSrc;
-    MicroAPI::UnalignReg uDst;
-    MicroAPI::RegTensor<T, Trait> vreg0;
-    MicroAPI::RegTensor<T, Trait> vreg1;
-    MicroAPI::RegTensor<T, Trait> vreg2;
-    MicroAPI::RegTensor<T, Trait> vreg3;
+    Reg::UnalignReg uSrc;
+    Reg::UnalignReg uDst;
+    Reg::RegTensor<T, Trait> vreg0;
+    Reg::RegTensor<T, Trait> vreg1;
+    Reg::RegTensor<T, Trait> vreg2;
+    Reg::RegTensor<T, Trait> vreg3;
     for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(loopANum - 1); loopA++) {
         newSrc = src + static_cast<uint64_t>(loopA * vlSize * dtypeSize);
         // L0
-        MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-        MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-        MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-        MicroAPI::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-        MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-        MicroAPI::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-        MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-        MicroAPI::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+        Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+        Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+        Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+        Reg::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+        Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+        Reg::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+        Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+        Reg::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), dimA);
         // L1
         Binaryfunc(vreg0, vreg0, vreg2, maskMain);
         Binaryfunc(vreg1, vreg1, vreg3, maskMain);
@@ -89,23 +89,23 @@ __simd_callee__ inline void ReduceRAReuseSourceUnAlignedFoldTwo(__ubuf__ T *dstA
     }
     newSrc = src + static_cast<uint64_t>((loopANum - 1) * vlSize * dtypeSize);
     // L0
-    MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-    MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-    MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-    MicroAPI::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-    MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-    MicroAPI::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-    MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-    MicroAPI::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+    Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+    Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+    Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+    Reg::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+    Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+    Reg::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+    Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+    Reg::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), dimA);
     // L1
     Binaryfunc(vreg0, vreg0, vreg2, maskTail);
     Binaryfunc(vreg1, vreg1, vreg3, maskTail);
     // L2
     Binaryfunc(vreg0, vreg0, vreg1, maskTail);
     StoreUnAlign((__ubuf__ T *&)dstAddr, vreg0, uDst, postUpdateStrideTail);
-    MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+    Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
 }
-template <class T, const MicroAPI::RegTrait &Trait, auto Binaryfunc>
+template <class T, const Reg::RegTrait &Trait, auto Binaryfunc>
 __simd_vf__ inline void ReduceRAReuseSourceUnAlignedB64VF(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA,
     uint32_t dimR, uint32_t mainR, uint16_t folds, uint16_t avgFolds, uint16_t foldZero, uint16_t foldOne,
     uint16_t foldTwo, uint32_t postUpdateStrideTail)
@@ -122,49 +122,49 @@ __simd_vf__ inline void ReduceRAReuseSourceUnAlignedB64VF(__ubuf__ T *dstAddr, _
     uint32_t postUpdateStrideMain = vlSize;
     uint32_t tailA = postUpdateStrideTail;
 
-    MicroAPI::RegTensor<T, Trait> vregMain;
-    MicroAPI::RegTensor<T, Trait> vregTail;
-    MicroAPI::UnalignReg vUregMain;
-    MicroAPI::UnalignReg vUregTail;
-    MicroAPI::UnalignReg uDst;
-    MicroAPI::MaskReg maskMain = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL, Trait>();
-    MicroAPI::MaskReg maskTail = MicroAPI::UpdateMask<T, Trait>(tailA);
+    Reg::RegTensor<T, Trait> vregMain;
+    Reg::RegTensor<T, Trait> vregTail;
+    Reg::UnalignReg vUregMain;
+    Reg::UnalignReg vUregTail;
+    Reg::UnalignReg uDst;
+    Reg::MaskReg maskMain = Reg::CreateMask<T, Reg::MaskPattern::ALL, Trait>();
+    Reg::MaskReg maskTail = Reg::UpdateMask<T, Trait>(tailA);
 
     for (uint16_t i = 0; i < needInplaceAdd; i++) {
         for (uint16_t loopR = 0; loopR < static_cast<uint16_t>(tailR); loopR++) {
             uint64_t hoistMainAddr = (uint64_t)srcAddr + static_cast<uint64_t>(loopR * dimA * dtypeSize);
             uint64_t hoistTailAddr = hoistMainAddr + static_cast<uint64_t>(mainR * dimA * dtypeSize);
             uint64_t hoistMainReuseAddr = hoistMainAddr;
-            MicroAPI::LoadUnAlignPre(vUregMain, ((__ubuf__ T *&)hoistMainAddr));
-            MicroAPI::LoadUnAlignPre(vUregTail, ((__ubuf__ T *&)hoistTailAddr));
+            Reg::LoadUnAlignPre(vUregMain, ((__ubuf__ T *&)hoistMainAddr));
+            Reg::LoadUnAlignPre(vUregTail, ((__ubuf__ T *&)hoistTailAddr));
             for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(loopANum - 1); loopA++) {
-                MicroAPI::LoadUnAlign(vregMain, vUregMain, ((__ubuf__ T *&)hoistMainAddr),
+                Reg::LoadUnAlign(vregMain, vUregMain, ((__ubuf__ T *&)hoistMainAddr),
                     postUpdateStrideMain);
-                MicroAPI::LoadUnAlign(vregTail, vUregTail, ((__ubuf__ T *&)hoistTailAddr),
+                Reg::LoadUnAlign(vregTail, vUregTail, ((__ubuf__ T *&)hoistTailAddr),
                     postUpdateStrideMain);
                 Binaryfunc(vregMain, vregMain, vregTail, maskMain);
-                MicroAPI::StoreUnAlign(((__ubuf__ T *&)hoistMainReuseAddr), vregMain, uDst,
+                Reg::StoreUnAlign(((__ubuf__ T *&)hoistMainReuseAddr), vregMain, uDst,
                     postUpdateStrideMain);
             }
-            MicroAPI::LoadUnAlign(vregMain, vUregMain, ((__ubuf__ T *&)hoistMainAddr), postUpdateStrideTail);
-            MicroAPI::LoadUnAlign(vregTail, vUregTail, ((__ubuf__ T *&)hoistTailAddr), postUpdateStrideTail);
+            Reg::LoadUnAlign(vregMain, vUregMain, ((__ubuf__ T *&)hoistMainAddr), postUpdateStrideTail);
+            Reg::LoadUnAlign(vregTail, vUregTail, ((__ubuf__ T *&)hoistTailAddr), postUpdateStrideTail);
             Binaryfunc(vregMain, vregMain, vregTail, maskTail);
-            MicroAPI::StoreUnAlign(((__ubuf__ T *&)hoistMainReuseAddr), vregMain, uDst, postUpdateStrideTail);
-            MicroAPI::StoreUnAlignPost(((__ubuf__ T *&)hoistMainReuseAddr), uDst, 0);
+            Reg::StoreUnAlign(((__ubuf__ T *&)hoistMainReuseAddr), vregMain, uDst, postUpdateStrideTail);
+            Reg::StoreUnAlignPost(((__ubuf__ T *&)hoistMainReuseAddr), uDst, 0);
         }
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
     }
 
     // MainFolds need 8*2 register
-    MicroAPI::RegTensor<T, Trait> vreg0;
-    MicroAPI::RegTensor<T, Trait> vreg1;
-    MicroAPI::RegTensor<T, Trait> vreg2;
-    MicroAPI::RegTensor<T, Trait> vreg3;
-    MicroAPI::RegTensor<T, Trait> vreg4;
-    MicroAPI::RegTensor<T, Trait> vreg5;
-    MicroAPI::RegTensor<T, Trait> vreg6;
-    MicroAPI::RegTensor<T, Trait> vreg7;
-    MicroAPI::UnalignReg uSrc;
+    Reg::RegTensor<T, Trait> vreg0;
+    Reg::RegTensor<T, Trait> vreg1;
+    Reg::RegTensor<T, Trait> vreg2;
+    Reg::RegTensor<T, Trait> vreg3;
+    Reg::RegTensor<T, Trait> vreg4;
+    Reg::RegTensor<T, Trait> vreg5;
+    Reg::RegTensor<T, Trait> vreg6;
+    Reg::RegTensor<T, Trait> vreg7;
+    Reg::UnalignReg uSrc;
 
     // Process main folds
     uint16_t loopRNum = base;
@@ -182,22 +182,22 @@ __simd_vf__ inline void ReduceRAReuseSourceUnAlignedB64VF(__ubuf__ T *dstAddr, _
                 newSrc = src + static_cast<uint64_t>(loopA * vlSize * dtypeSize);
                 dst = newSrc;
                 // L0
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg4, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg5, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg6, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg7, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg4, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg5, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg6, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg7, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
                 // L1
                 Binaryfunc(vreg0, vreg0, vreg4, maskMain);
                 Binaryfunc(vreg1, vreg1, vreg5, maskMain);
@@ -212,22 +212,22 @@ __simd_vf__ inline void ReduceRAReuseSourceUnAlignedB64VF(__ubuf__ T *dstAddr, _
             }
             dst = newSrcTail;
             // L0
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg4, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg5, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg6, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg7, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg4, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg5, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg6, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg7, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
             // L1
             Binaryfunc(vreg0, vreg0, vreg4, maskTail);
             Binaryfunc(vreg1, vreg1, vreg5, maskTail);
@@ -239,9 +239,9 @@ __simd_vf__ inline void ReduceRAReuseSourceUnAlignedB64VF(__ubuf__ T *dstAddr, _
             // L3
             Binaryfunc(vreg0, vreg0, vreg1, maskTail);
             StoreUnAlign((__ubuf__ T *&)dst, vreg0, uDst, postUpdateStrideTail);
-            MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dst, uDst, 0);
+            Reg::StoreUnAlignPost((__ubuf__ T *&)dst, uDst, 0);
         }
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
     }
 
     // Process tail folds
@@ -259,18 +259,18 @@ __simd_vf__ inline void ReduceRAReuseSourceUnAlignedB64VF(__ubuf__ T *dstAddr, _
     // Reduce to 1
     for (uint16_t i = 0; i < foldZero; ++i) {
         for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(loopANum - 1); loopA++) {
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)srcAddr));
-            MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)srcAddr), postUpdateStrideMain);
-            MicroAPI::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg0, uDst, postUpdateStrideMain);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)srcAddr));
+            Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)srcAddr), postUpdateStrideMain);
+            Reg::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg0, uDst, postUpdateStrideMain);
         }
-        MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)srcAddr));
-        MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)srcAddr), postUpdateStrideTail);
-        MicroAPI::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg0, uDst, postUpdateStrideTail);
-        MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+        Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)srcAddr));
+        Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)srcAddr), postUpdateStrideTail);
+        Reg::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg0, uDst, postUpdateStrideTail);
+        Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
     }
 }
 
-template <class T, const MicroAPI::RegTrait &Trait, auto Binaryfunc>
+template <class T, const Reg::RegTrait &Trait, auto Binaryfunc>
 __aicore__ inline void ReduceRAReuseSourceUnAlignedB64(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA,
     uint32_t dimR)
 {
@@ -291,7 +291,7 @@ __aicore__ inline void ReduceRAReuseSourceUnAlignedB64(__ubuf__ T *dstAddr, __ub
         dimR, mainR, folds, avgFolds, foldZero, foldOne, foldTwo, postUpdateStrideTail);
 }
 
-template <class T, const MicroAPI::RegTrait &Trait, auto Binaryfunc>
+template <class T, const Reg::RegTrait &Trait, auto Binaryfunc>
 __simd_vf__ inline void ReduceRAReuseSourceUnAlignedVF(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA,
     uint32_t dimR, uint32_t mainR, uint16_t folds, uint16_t avgFolds, uint16_t foldZero, uint16_t foldOne,
     uint16_t foldTwo, uint16_t foldThree, uint32_t postUpdateStrideTail)
@@ -306,57 +306,57 @@ __simd_vf__ inline void ReduceRAReuseSourceUnAlignedVF(__ubuf__ T *dstAddr, __ub
     uint32_t postUpdateStrideMain = vlSize;
     uint32_t tailA = postUpdateStrideTail;
     
-    MicroAPI::RegTensor<T, Trait> vregMain;
-    MicroAPI::RegTensor<T, Trait> vregTail;
-    MicroAPI::UnalignReg vUregMain;
-    MicroAPI::UnalignReg vUregTail;
-    MicroAPI::UnalignReg uDst;
-    MicroAPI::MaskReg maskMain = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL, Trait>();
-    MicroAPI::MaskReg maskTail = MicroAPI::UpdateMask<T, Trait>(tailA);
+    Reg::RegTensor<T, Trait> vregMain;
+    Reg::RegTensor<T, Trait> vregTail;
+    Reg::UnalignReg vUregMain;
+    Reg::UnalignReg vUregTail;
+    Reg::UnalignReg uDst;
+    Reg::MaskReg maskMain = Reg::CreateMask<T, Reg::MaskPattern::ALL, Trait>();
+    Reg::MaskReg maskTail = Reg::UpdateMask<T, Trait>(tailA);
 
     for (uint16_t i = 0; i < needInplaceAdd; i++) {
         for (uint16_t loopR = 0; loopR < static_cast<uint16_t>(tailR); loopR++) {
             uint64_t hoistMainAddr = (uint64_t)srcAddr + static_cast<uint64_t>(loopR * dimA * dtypeSize);
             uint64_t hoistTailAddr = hoistMainAddr + static_cast<uint64_t>(mainR * dimA * dtypeSize);
             uint64_t hoistMainReuseAddr = hoistMainAddr;
-            MicroAPI::LoadUnAlignPre(vUregMain, ((__ubuf__ T *&)hoistMainAddr));
-            MicroAPI::LoadUnAlignPre(vUregTail, ((__ubuf__ T *&)hoistTailAddr));
+            Reg::LoadUnAlignPre(vUregMain, ((__ubuf__ T *&)hoistMainAddr));
+            Reg::LoadUnAlignPre(vUregTail, ((__ubuf__ T *&)hoistTailAddr));
             for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(loopANum - 1); loopA++) {
-                MicroAPI::LoadUnAlign(vregMain, vUregMain, ((__ubuf__ T *&)hoistMainAddr),
+                Reg::LoadUnAlign(vregMain, vUregMain, ((__ubuf__ T *&)hoistMainAddr),
                     postUpdateStrideMain);
-                MicroAPI::LoadUnAlign(vregTail, vUregTail, ((__ubuf__ T *&)hoistTailAddr),
+                Reg::LoadUnAlign(vregTail, vUregTail, ((__ubuf__ T *&)hoistTailAddr),
                     postUpdateStrideMain);
                 Binaryfunc(vregMain, vregMain, vregTail, maskMain);
-                MicroAPI::StoreUnAlign(((__ubuf__ T *&)hoistMainReuseAddr), vregMain, uDst,
+                Reg::StoreUnAlign(((__ubuf__ T *&)hoistMainReuseAddr), vregMain, uDst,
                     postUpdateStrideMain);
             }
-            MicroAPI::LoadUnAlign(vregMain, vUregMain, ((__ubuf__ T *&)hoistMainAddr), postUpdateStrideTail);
-            MicroAPI::LoadUnAlign(vregTail, vUregTail, ((__ubuf__ T *&)hoistTailAddr), postUpdateStrideTail);
+            Reg::LoadUnAlign(vregMain, vUregMain, ((__ubuf__ T *&)hoistMainAddr), postUpdateStrideTail);
+            Reg::LoadUnAlign(vregTail, vUregTail, ((__ubuf__ T *&)hoistTailAddr), postUpdateStrideTail);
             Binaryfunc(vregMain, vregMain, vregTail, maskTail);
-            MicroAPI::StoreUnAlign(((__ubuf__ T *&)hoistMainReuseAddr), vregMain, uDst, postUpdateStrideTail);
-            MicroAPI::StoreUnAlignPost(((__ubuf__ T *&)hoistMainReuseAddr), uDst, 0);
+            Reg::StoreUnAlign(((__ubuf__ T *&)hoistMainReuseAddr), vregMain, uDst, postUpdateStrideTail);
+            Reg::StoreUnAlignPost(((__ubuf__ T *&)hoistMainReuseAddr), uDst, 0);
         }
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
     }
 
     // MainFolds need 16 register
-    MicroAPI::RegTensor<T, Trait> vreg0;
-    MicroAPI::RegTensor<T, Trait> vreg1;
-    MicroAPI::RegTensor<T, Trait> vreg2;
-    MicroAPI::RegTensor<T, Trait> vreg3;
-    MicroAPI::RegTensor<T, Trait> vreg4;
-    MicroAPI::RegTensor<T, Trait> vreg5;
-    MicroAPI::RegTensor<T, Trait> vreg6;
-    MicroAPI::RegTensor<T, Trait> vreg7;
-    MicroAPI::RegTensor<T, Trait> vreg8;
-    MicroAPI::RegTensor<T, Trait> vreg9;
-    MicroAPI::RegTensor<T, Trait> vreg10;
-    MicroAPI::RegTensor<T, Trait> vreg11;
-    MicroAPI::RegTensor<T, Trait> vreg12;
-    MicroAPI::RegTensor<T, Trait> vreg13;
-    MicroAPI::RegTensor<T, Trait> vreg14;
-    MicroAPI::RegTensor<T, Trait> vreg15;
-    MicroAPI::UnalignReg uSrc;
+    Reg::RegTensor<T, Trait> vreg0;
+    Reg::RegTensor<T, Trait> vreg1;
+    Reg::RegTensor<T, Trait> vreg2;
+    Reg::RegTensor<T, Trait> vreg3;
+    Reg::RegTensor<T, Trait> vreg4;
+    Reg::RegTensor<T, Trait> vreg5;
+    Reg::RegTensor<T, Trait> vreg6;
+    Reg::RegTensor<T, Trait> vreg7;
+    Reg::RegTensor<T, Trait> vreg8;
+    Reg::RegTensor<T, Trait> vreg9;
+    Reg::RegTensor<T, Trait> vreg10;
+    Reg::RegTensor<T, Trait> vreg11;
+    Reg::RegTensor<T, Trait> vreg12;
+    Reg::RegTensor<T, Trait> vreg13;
+    Reg::RegTensor<T, Trait> vreg14;
+    Reg::RegTensor<T, Trait> vreg15;
+    Reg::UnalignReg uSrc;
 
     // Process main folds
     uint16_t loopRNum = base;
@@ -374,38 +374,38 @@ __simd_vf__ inline void ReduceRAReuseSourceUnAlignedVF(__ubuf__ T *dstAddr, __ub
                 newSrc = src + static_cast<uint64_t>(loopA * vlSize * dtypeSize);
                 dst = newSrc;
                 // L0
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg4, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg5, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg6, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg7, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg8, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg9, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg10, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg11, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg12, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg13, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg14, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg15, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg4, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg5, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg6, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg7, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg8, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg9, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg10, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg11, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg12, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg13, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg14, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg15, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
                 // L1
                 Binaryfunc(vreg0, vreg0, vreg8, maskMain);
                 Binaryfunc(vreg1, vreg1, vreg9, maskMain);
@@ -429,38 +429,38 @@ __simd_vf__ inline void ReduceRAReuseSourceUnAlignedVF(__ubuf__ T *dstAddr, __ub
             }
             dst = newSrcTail;
             // L0
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg4, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg5, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg6, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg7, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg8, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg9, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg10, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg11, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg12, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg13, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg14, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
-            MicroAPI::LoadUnAlign(vreg15, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg4, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg5, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg6, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg7, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg8, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg9, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg10, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg11, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg12, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg13, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg14, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrcTail));
+            Reg::LoadUnAlign(vreg15, uSrc, ((__ubuf__ T *&)newSrcTail), offsetR);
             // L1
             Binaryfunc(vreg0, vreg0, vreg8, maskTail);
             Binaryfunc(vreg1, vreg1, vreg9, maskTail);
@@ -481,9 +481,9 @@ __simd_vf__ inline void ReduceRAReuseSourceUnAlignedVF(__ubuf__ T *dstAddr, __ub
             // L4
             Binaryfunc(vreg0, vreg0, vreg1, maskTail);
             StoreUnAlign((__ubuf__ T *&)dst, vreg0, uDst, postUpdateStrideTail);
-            MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dst, uDst, 0);
+            Reg::StoreUnAlignPost((__ubuf__ T *&)dst, uDst, 0);
         }
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
     }
 
     // Process tail folds
@@ -502,22 +502,22 @@ __simd_vf__ inline void ReduceRAReuseSourceUnAlignedVF(__ubuf__ T *dstAddr, __ub
         for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(loopANum - 1); loopA++) {
             newSrc = src + static_cast<uint64_t>(loopA * vlSize * dtypeSize);
             // L0
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-            MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-            MicroAPI::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-            MicroAPI::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-            MicroAPI::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-            MicroAPI::LoadUnAlign(vreg4, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-            MicroAPI::LoadUnAlign(vreg5, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-            MicroAPI::LoadUnAlign(vreg6, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-            MicroAPI::LoadUnAlign(vreg7, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+            Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+            Reg::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+            Reg::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+            Reg::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+            Reg::LoadUnAlign(vreg4, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+            Reg::LoadUnAlign(vreg5, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+            Reg::LoadUnAlign(vreg6, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+            Reg::LoadUnAlign(vreg7, uSrc, ((__ubuf__ T *&)newSrc), dimA);
             // L1
             Binaryfunc(vreg0, vreg0, vreg4, maskMain);
             Binaryfunc(vreg1, vreg1, vreg5, maskMain);
@@ -532,22 +532,22 @@ __simd_vf__ inline void ReduceRAReuseSourceUnAlignedVF(__ubuf__ T *dstAddr, __ub
         }
         newSrc = src + static_cast<uint64_t>((loopANum - 1) * vlSize * dtypeSize);
         // L0
-        MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-        MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-        MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-        MicroAPI::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-        MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-        MicroAPI::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-        MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-        MicroAPI::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-        MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-        MicroAPI::LoadUnAlign(vreg4, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-        MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-        MicroAPI::LoadUnAlign(vreg5, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-        MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-        MicroAPI::LoadUnAlign(vreg6, uSrc, ((__ubuf__ T *&)newSrc), dimA);
-        MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-        MicroAPI::LoadUnAlign(vreg7, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+        Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+        Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+        Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+        Reg::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+        Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+        Reg::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+        Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+        Reg::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+        Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+        Reg::LoadUnAlign(vreg4, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+        Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+        Reg::LoadUnAlign(vreg5, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+        Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+        Reg::LoadUnAlign(vreg6, uSrc, ((__ubuf__ T *&)newSrc), dimA);
+        Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+        Reg::LoadUnAlign(vreg7, uSrc, ((__ubuf__ T *&)newSrc), dimA);
         // L1
         Binaryfunc(vreg0, vreg0, vreg4, maskTail);
         Binaryfunc(vreg1, vreg1, vreg5, maskTail);
@@ -559,24 +559,24 @@ __simd_vf__ inline void ReduceRAReuseSourceUnAlignedVF(__ubuf__ T *dstAddr, __ub
         // L3
         Binaryfunc(vreg0, vreg0, vreg1, maskTail);
         StoreUnAlign((__ubuf__ T *&)dstAddr, vreg0, uDst, postUpdateStrideTail);
-        MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+        Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
     }
 
     // Reduce to 1
     for (uint16_t i = 0; i < foldZero; ++i) {
         for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(loopANum - 1); loopA++) {
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)srcAddr));
-            MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)srcAddr), postUpdateStrideMain);
-            MicroAPI::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg0, uDst, postUpdateStrideMain);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)srcAddr));
+            Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)srcAddr), postUpdateStrideMain);
+            Reg::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg0, uDst, postUpdateStrideMain);
         }
-        MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)srcAddr));
-        MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)srcAddr), postUpdateStrideTail);
-        MicroAPI::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg0, uDst, postUpdateStrideTail);
-        MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+        Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)srcAddr));
+        Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)srcAddr), postUpdateStrideTail);
+        Reg::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg0, uDst, postUpdateStrideTail);
+        Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
     }
 }
 
-template <class T, const MicroAPI::RegTrait &Trait, auto Binaryfunc>
+template <class T, const Reg::RegTrait &Trait, auto Binaryfunc>
 __aicore__ inline void ReduceRAReuseSourceUnAligned(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA,
     uint32_t dimR)
 {
@@ -595,47 +595,47 @@ __aicore__ inline void ReduceRAReuseSourceUnAligned(__ubuf__ T *dstAddr, __ubuf_
         dimR, mainR, folds, avgFolds, foldZero, foldOne, foldTwo, foldThree, postUpdateStrideTail);
 }
 
-template <class T, class U, const MicroAPI::RegTrait &Trait, const MicroAPI::CastTrait &CastTraitUppper,
-    const MicroAPI::CastTrait &CastTraitLower, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc>
+template <class T, class U, const Reg::RegTrait &Trait, const Reg::CastTrait &CastTraitUppper,
+    const Reg::CastTrait &CastTraitLower, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc>
 __simd_callee__ inline void ReduceARCastfoldZeroUnAligned(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA,
-    uint32_t dimR, MicroAPI::MaskReg &fullMask)
+    uint32_t dimR, Reg::MaskReg &fullMask)
 {
-    MicroAPI::RegTensor<U, Trait> vreg0Cast;
-    MicroAPI::RegTensor<U, Trait> vreg1Cast;
-    MicroAPI::RegTensor<T, Trait> vreg0;
-    MicroAPI::RegTensor<T, Trait> vreg1;
-    MicroAPI::UnalignReg uSrc0;
-    MicroAPI::UnalignReg uSrc1;
-    MicroAPI::UnalignReg uDst;
+    Reg::RegTensor<U, Trait> vreg0Cast;
+    Reg::RegTensor<U, Trait> vreg1Cast;
+    Reg::RegTensor<T, Trait> vreg0;
+    Reg::RegTensor<T, Trait> vreg1;
+    Reg::UnalignReg uSrc0;
+    Reg::UnalignReg uSrc1;
+    Reg::UnalignReg uDst;
     for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
         uint64_t newSrc = (uint64_t)srcAddr + vlSize / 2 * sizeof(T);
-        MicroAPI::LoadUnAlignPre(uSrc0, ((__ubuf__ T *&)srcAddr));
-        MicroAPI::LoadUnAlignPre(uSrc1, ((__ubuf__ T *&)newSrc));
-        MicroAPI::LoadUnAlign(vreg0, uSrc0, ((__ubuf__ T *&)srcAddr), dimR);
-        MicroAPI::LoadUnAlign(vreg1, uSrc1, ((__ubuf__ T *&)newSrc), dimR);
+        Reg::LoadUnAlignPre(uSrc0, ((__ubuf__ T *&)srcAddr));
+        Reg::LoadUnAlignPre(uSrc1, ((__ubuf__ T *&)newSrc));
+        Reg::LoadUnAlign(vreg0, uSrc0, ((__ubuf__ T *&)srcAddr), dimR);
+        Reg::LoadUnAlign(vreg1, uSrc1, ((__ubuf__ T *&)newSrc), dimR);
         Binaryfunc(vreg0, vreg0, vreg1, fullMask);
         if constexpr (IsSameType<T, bfloat16_t>::value) {
-            MicroAPI::UnPack((MicroAPI::RegTensor<uint32_t, Trait> &)vreg0,
-                (MicroAPI::RegTensor<uint16_t, Trait> &)vreg0);
+            Reg::UnPack((Reg::RegTensor<uint32_t, Trait> &)vreg0,
+                (Reg::RegTensor<uint16_t, Trait> &)vreg0);
         } else {
-            MicroAPI::UnPack((MicroAPI::RegTensor<uint16_t, Trait> &)vreg0,
-                (MicroAPI::RegTensor<uint8_t, Trait> &)vreg0);
+            Reg::UnPack((Reg::RegTensor<uint16_t, Trait> &)vreg0,
+                (Reg::RegTensor<uint8_t, Trait> &)vreg0);
         }
         if constexpr (IsSameType<T, bfloat16_t>::value) {
-            MicroAPI::Cast<U, T, ReduceOpInternal::CastTraitBF16F32>(vreg0Cast, vreg0, fullMask);
+            Reg::Cast<U, T, ReduceOpInternal::CastTraitBF16F32>(vreg0Cast, vreg0, fullMask);
             Reducefunc(vreg1Cast, vreg0Cast, fullMask);
-            MicroAPI::Cast<T, U, ReduceOpInternal::CastTraitF32BF16>(vreg1, vreg1Cast, fullMask);
+            Reg::Cast<T, U, ReduceOpInternal::CastTraitF32BF16>(vreg1, vreg1Cast, fullMask);
         } else {
-            MicroAPI::Cast<U, T, ReduceOpInternal::CastTraitB8F16>(vreg0Cast, vreg0, fullMask);
+            Reg::Cast<U, T, ReduceOpInternal::CastTraitB8F16>(vreg0Cast, vreg0, fullMask);
             Reducefunc(vreg1Cast, vreg0Cast, fullMask);
-            MicroAPI::Cast<T, U, ReduceOpInternal::CastTraitF16B8>(vreg1, vreg1Cast, fullMask);
+            Reg::Cast<T, U, ReduceOpInternal::CastTraitF16B8>(vreg1, vreg1Cast, fullMask);
         }
         StoreUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
     }
-    MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+    Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
 }
 
-template <class T, const MicroAPI::RegTrait &Trait, auto Binaryfunc, auto Reducefunc>
+template <class T, const Reg::RegTrait &Trait, auto Binaryfunc, auto Reducefunc>
 __simd_vf__ inline void ReduceAROverVLReuseSourceUnAlignedB64VF(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA,
     uint32_t dimR, uint32_t mainR, uint32_t tailR, uint16_t base, uint16_t folds, uint16_t avgFolds, uint16_t foldZero, uint16_t foldOne,
     uint16_t foldTwo, uint32_t postUpdateStrideTail)
@@ -648,47 +648,47 @@ __simd_vf__ inline void ReduceAROverVLReuseSourceUnAlignedB64VF(__ubuf__ T *dstA
     uint32_t postUpdateStrideMain = vlSize;
     uint32_t tailA = postUpdateStrideTail;
     
-    MicroAPI::RegTensor<T, Trait> vregMain;
-    MicroAPI::RegTensor<T, Trait> vregTail;
-    MicroAPI::UnalignReg vUregMain;
-    MicroAPI::UnalignReg vUregTail;
-    MicroAPI::UnalignReg uDst;
-    MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL, Trait>();
-    MicroAPI::MaskReg maskTail = MicroAPI::UpdateMask<T, Trait>(tailA);
+    Reg::RegTensor<T, Trait> vregMain;
+    Reg::RegTensor<T, Trait> vregTail;
+    Reg::UnalignReg vUregMain;
+    Reg::UnalignReg vUregTail;
+    Reg::UnalignReg uDst;
+    Reg::MaskReg fullMask = Reg::CreateMask<T, Reg::MaskPattern::ALL, Trait>();
+    Reg::MaskReg maskTail = Reg::UpdateMask<T, Trait>(tailA);
     for (uint16_t i = 0; i < needInplaceAdd; i++) {
         for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
             uint64_t hoistMainAddr = (uint64_t)srcAddr + static_cast<uint64_t>(loopA * dimR * dtypeSize);
             uint64_t hoistTailAddr = hoistMainAddr + static_cast<uint64_t>(mainR * dtypeSize);
             uint64_t hoistMainReuseAddr = hoistMainAddr;
-            MicroAPI::LoadUnAlignPre(vUregMain, ((__ubuf__ T *&)hoistMainAddr));
-            MicroAPI::LoadUnAlignPre(vUregTail, ((__ubuf__ T *&)hoistTailAddr));
+            Reg::LoadUnAlignPre(vUregMain, ((__ubuf__ T *&)hoistMainAddr));
+            Reg::LoadUnAlignPre(vUregTail, ((__ubuf__ T *&)hoistTailAddr));
             for (uint16_t loopR = 0; loopR < static_cast<uint16_t>(inplaceRepeats - 1); loopR++) {
-                MicroAPI::LoadUnAlign(vregMain, vUregMain, ((__ubuf__ T *&)hoistMainAddr), vlSize);
-                MicroAPI::LoadUnAlign(vregTail, vUregTail, ((__ubuf__ T *&)hoistTailAddr), vlSize);
+                Reg::LoadUnAlign(vregMain, vUregMain, ((__ubuf__ T *&)hoistMainAddr), vlSize);
+                Reg::LoadUnAlign(vregTail, vUregTail, ((__ubuf__ T *&)hoistTailAddr), vlSize);
                 Binaryfunc(vregMain, vregMain, vregTail, fullMask);
-                MicroAPI::StoreUnAlign(((__ubuf__ T *&)hoistMainReuseAddr), vregMain, uDst,
+                Reg::StoreUnAlign(((__ubuf__ T *&)hoistMainReuseAddr), vregMain, uDst,
                     postUpdateStrideMain);
-                MicroAPI::StoreUnAlignPost(((__ubuf__ T *&)hoistMainReuseAddr), uDst, 0);
+                Reg::StoreUnAlignPost(((__ubuf__ T *&)hoistMainReuseAddr), uDst, 0);
             }
-            MicroAPI::LoadUnAlign(vregMain, vUregMain, ((__ubuf__ T *&)hoistMainAddr), vlSize);
-            MicroAPI::LoadUnAlign(vregTail, vUregTail, ((__ubuf__ T *&)hoistTailAddr), vlSize);
+            Reg::LoadUnAlign(vregMain, vUregMain, ((__ubuf__ T *&)hoistMainAddr), vlSize);
+            Reg::LoadUnAlign(vregTail, vUregTail, ((__ubuf__ T *&)hoistTailAddr), vlSize);
             Binaryfunc(vregMain, vregMain, vregTail, maskTail);
-            MicroAPI::StoreUnAlign(((__ubuf__ T *&)hoistMainReuseAddr), vregMain, uDst, postUpdateStrideTail);
-            MicroAPI::StoreUnAlignPost(((__ubuf__ T *&)hoistMainReuseAddr), uDst, 0);
+            Reg::StoreUnAlign(((__ubuf__ T *&)hoistMainReuseAddr), vregMain, uDst, postUpdateStrideTail);
+            Reg::StoreUnAlignPost(((__ubuf__ T *&)hoistMainReuseAddr), uDst, 0);
         }
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
     }
 
     // MainFolds need 16 register
-    MicroAPI::RegTensor<T, Trait> vreg0;
-    MicroAPI::RegTensor<T, Trait> vreg1;
-    MicroAPI::RegTensor<T, Trait> vreg2;
-    MicroAPI::RegTensor<T, Trait> vreg3;
-    MicroAPI::RegTensor<T, Trait> vreg4;
-    MicroAPI::RegTensor<T, Trait> vreg5;
-    MicroAPI::RegTensor<T, Trait> vreg6;
-    MicroAPI::RegTensor<T, Trait> vreg7;
-    MicroAPI::UnalignReg uSrc;
+    Reg::RegTensor<T, Trait> vreg0;
+    Reg::RegTensor<T, Trait> vreg1;
+    Reg::RegTensor<T, Trait> vreg2;
+    Reg::RegTensor<T, Trait> vreg3;
+    Reg::RegTensor<T, Trait> vreg4;
+    Reg::RegTensor<T, Trait> vreg5;
+    Reg::RegTensor<T, Trait> vreg6;
+    Reg::RegTensor<T, Trait> vreg7;
+    Reg::UnalignReg uSrc;
 
     // Process main folds
     uint16_t loopRNum = base;
@@ -705,22 +705,22 @@ __simd_vf__ inline void ReduceAROverVLReuseSourceUnAlignedB64VF(__ubuf__ T *dstA
             for (uint16_t loopR = 0; loopR < loopRNum; loopR++) {
                 newSrc = src + static_cast<uint64_t>(loopR * vlSize * dtypeSize);
                 // L0
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg4, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg5, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg6, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg7, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg4, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg5, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg6, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg7, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
                 // L1
                 Binaryfunc(vreg0, vreg0, vreg4, fullMask);
                 Binaryfunc(vreg1, vreg1, vreg5, fullMask);
@@ -733,9 +733,9 @@ __simd_vf__ inline void ReduceAROverVLReuseSourceUnAlignedB64VF(__ubuf__ T *dstA
                 Binaryfunc(vreg0, vreg0, vreg1, fullMask);
                 StoreUnAlign((__ubuf__ T *&)dst, vreg0, uDst, vlSize);
             }
-            MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dst, uDst, 0);
+            Reg::StoreUnAlignPost((__ubuf__ T *&)dst, uDst, 0);
         }
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
     }
 
     // Process tail folds
@@ -744,9 +744,9 @@ __simd_vf__ inline void ReduceAROverVLReuseSourceUnAlignedB64VF(__ubuf__ T *dstA
         for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
             newSrc = src + static_cast<uint64_t>(loopA * dimR * dtypeSize);
             // L0
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-            MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
-            MicroAPI::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+            Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+            Reg::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
             // L1
             Binaryfunc(vreg0, vreg0, vreg1, fullMask);
             if constexpr (IsSameType<T, bfloat16_t>::value) {
@@ -760,18 +760,18 @@ __simd_vf__ inline void ReduceAROverVLReuseSourceUnAlignedB64VF(__ubuf__ T *dstA
             }
             StoreUnAlign((__ubuf__ T *&)dstAddr, vreg2, uDst, 1);
         }
-        MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+        Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
     }
 
     for (uint16_t i = 0; i < foldTwo; i++) {
         for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
             newSrc = src + static_cast<uint64_t>(loopA * dimR * dtypeSize);
             // L0
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-            MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
-            MicroAPI::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
-            MicroAPI::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
-            MicroAPI::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+            Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+            Reg::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+            Reg::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+            Reg::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
             // L1
             Binaryfunc(vreg0, vreg0, vreg2, fullMask);
             Binaryfunc(vreg1, vreg1, vreg3, fullMask);
@@ -788,7 +788,7 @@ __simd_vf__ inline void ReduceAROverVLReuseSourceUnAlignedB64VF(__ubuf__ T *dstA
             }
             StoreUnAlign((__ubuf__ T *&)dstAddr, vreg2, uDst, 1);
         }
-        MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+        Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
     }
 
     // Reduce to 1
@@ -803,20 +803,20 @@ __simd_vf__ inline void ReduceAROverVLReuseSourceUnAlignedB64VF(__ubuf__ T *dstA
                 ReduceOpInternal::CastTraitF16B8, vlSize, Binaryfunc, Reducefunc>(dstAddr, srcAddr, dimA, dimR,
                 fullMask);
         } else {
-            MicroAPI::MaskReg mask = MicroAPI::UpdateMask<T, Trait>(sreg1);
+            Reg::MaskReg mask = Reg::UpdateMask<T, Trait>(sreg1);
             for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
                 newSrc = src + static_cast<uint64_t>(loopA * dimR * dtypeSize);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
                 Reducefunc(vreg1, vreg0, mask);
-                MicroAPI::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
+                Reg::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
             }
-            MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+            Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
         }
     }
 }
 
-template <class T, const MicroAPI::RegTrait &Trait, auto Binaryfunc, auto Reducefunc>
+template <class T, const Reg::RegTrait &Trait, auto Binaryfunc, auto Reducefunc>
 __aicore__ inline void ReduceAROverVLReuseSourceUnAlignedB64(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA,
     uint32_t dimR)
 {
@@ -835,7 +835,7 @@ __aicore__ inline void ReduceAROverVLReuseSourceUnAlignedB64(__ubuf__ T *dstAddr
         dimR, mainR, tailR, base, folds, avgFolds, foldZero, foldOne, foldTwo, postUpdateStrideTail);
 }
 
-template <class T, const MicroAPI::RegTrait &Trait, auto Binaryfunc, auto Reducefunc>
+template <class T, const Reg::RegTrait &Trait, auto Binaryfunc, auto Reducefunc>
 __simd_vf__ inline void ReduceAROverVLReuseSourceUnAlignedVF(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA,
     uint32_t dimR, uint32_t mainR, uint32_t tailR, uint16_t base, uint16_t folds, uint16_t avgFolds, uint16_t foldZero,
     uint16_t foldOne, uint16_t foldTwo, uint16_t foldThree, uint32_t postUpdateStrideTail)
@@ -848,55 +848,55 @@ __simd_vf__ inline void ReduceAROverVLReuseSourceUnAlignedVF(__ubuf__ T *dstAddr
     uint32_t postUpdateStrideMain = vlSize;
     uint32_t tailA = postUpdateStrideTail;
     
-    MicroAPI::RegTensor<T, Trait> vregMain;
-    MicroAPI::RegTensor<T, Trait> vregTail;
-    MicroAPI::UnalignReg vUregMain;
-    MicroAPI::UnalignReg vUregTail;
-    MicroAPI::UnalignReg uDst;
-    MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL, Trait>();
-    MicroAPI::MaskReg maskTail = MicroAPI::UpdateMask<T, Trait>(tailA);
+    Reg::RegTensor<T, Trait> vregMain;
+    Reg::RegTensor<T, Trait> vregTail;
+    Reg::UnalignReg vUregMain;
+    Reg::UnalignReg vUregTail;
+    Reg::UnalignReg uDst;
+    Reg::MaskReg fullMask = Reg::CreateMask<T, Reg::MaskPattern::ALL, Trait>();
+    Reg::MaskReg maskTail = Reg::UpdateMask<T, Trait>(tailA);
     for (uint16_t i = 0; i < needInplaceAdd; i++) {
         for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
             uint64_t hoistMainAddr = (uint64_t)srcAddr + static_cast<uint64_t>(loopA * dimR * dtypeSize);
             uint64_t hoistTailAddr = hoistMainAddr + static_cast<uint64_t>(mainR * dtypeSize);
             uint64_t hoistMainReuseAddr = hoistMainAddr;
-            MicroAPI::LoadUnAlignPre(vUregMain, ((__ubuf__ T *&)hoistMainAddr));
-            MicroAPI::LoadUnAlignPre(vUregTail, ((__ubuf__ T *&)hoistTailAddr));
+            Reg::LoadUnAlignPre(vUregMain, ((__ubuf__ T *&)hoistMainAddr));
+            Reg::LoadUnAlignPre(vUregTail, ((__ubuf__ T *&)hoistTailAddr));
             for (uint16_t loopR = 0; loopR < static_cast<uint16_t>(inplaceRepeats - 1); loopR++) {
-                MicroAPI::LoadUnAlign(vregMain, vUregMain, ((__ubuf__ T *&)hoistMainAddr), vlSize);
-                MicroAPI::LoadUnAlign(vregTail, vUregTail, ((__ubuf__ T *&)hoistTailAddr), vlSize);
+                Reg::LoadUnAlign(vregMain, vUregMain, ((__ubuf__ T *&)hoistMainAddr), vlSize);
+                Reg::LoadUnAlign(vregTail, vUregTail, ((__ubuf__ T *&)hoistTailAddr), vlSize);
                 Binaryfunc(vregMain, vregMain, vregTail, fullMask);
-                MicroAPI::StoreUnAlign(((__ubuf__ T *&)hoistMainReuseAddr), vregMain, uDst,
+                Reg::StoreUnAlign(((__ubuf__ T *&)hoistMainReuseAddr), vregMain, uDst,
                     postUpdateStrideMain);
-                MicroAPI::StoreUnAlignPost(((__ubuf__ T *&)hoistMainReuseAddr), uDst, 0);
+                Reg::StoreUnAlignPost(((__ubuf__ T *&)hoistMainReuseAddr), uDst, 0);
             }
-            MicroAPI::LoadUnAlign(vregMain, vUregMain, ((__ubuf__ T *&)hoistMainAddr), vlSize);
-            MicroAPI::LoadUnAlign(vregTail, vUregTail, ((__ubuf__ T *&)hoistTailAddr), vlSize);
+            Reg::LoadUnAlign(vregMain, vUregMain, ((__ubuf__ T *&)hoistMainAddr), vlSize);
+            Reg::LoadUnAlign(vregTail, vUregTail, ((__ubuf__ T *&)hoistTailAddr), vlSize);
             Binaryfunc(vregMain, vregMain, vregTail, maskTail);
-            MicroAPI::StoreUnAlign(((__ubuf__ T *&)hoistMainReuseAddr), vregMain, uDst, postUpdateStrideTail);
-            MicroAPI::StoreUnAlignPost(((__ubuf__ T *&)hoistMainReuseAddr), uDst, 0);
+            Reg::StoreUnAlign(((__ubuf__ T *&)hoistMainReuseAddr), vregMain, uDst, postUpdateStrideTail);
+            Reg::StoreUnAlignPost(((__ubuf__ T *&)hoistMainReuseAddr), uDst, 0);
         }
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
     }
 
     // MainFolds need 16 register
-    MicroAPI::RegTensor<T, Trait> vreg0;
-    MicroAPI::RegTensor<T, Trait> vreg1;
-    MicroAPI::RegTensor<T, Trait> vreg2;
-    MicroAPI::RegTensor<T, Trait> vreg3;
-    MicroAPI::RegTensor<T, Trait> vreg4;
-    MicroAPI::RegTensor<T, Trait> vreg5;
-    MicroAPI::RegTensor<T, Trait> vreg6;
-    MicroAPI::RegTensor<T, Trait> vreg7;
-    MicroAPI::RegTensor<T, Trait> vreg8;
-    MicroAPI::RegTensor<T, Trait> vreg9;
-    MicroAPI::RegTensor<T, Trait> vreg10;
-    MicroAPI::RegTensor<T, Trait> vreg11;
-    MicroAPI::RegTensor<T, Trait> vreg12;
-    MicroAPI::RegTensor<T, Trait> vreg13;
-    MicroAPI::RegTensor<T, Trait> vreg14;
-    MicroAPI::RegTensor<T, Trait> vreg15;
-    MicroAPI::UnalignReg uSrc;
+    Reg::RegTensor<T, Trait> vreg0;
+    Reg::RegTensor<T, Trait> vreg1;
+    Reg::RegTensor<T, Trait> vreg2;
+    Reg::RegTensor<T, Trait> vreg3;
+    Reg::RegTensor<T, Trait> vreg4;
+    Reg::RegTensor<T, Trait> vreg5;
+    Reg::RegTensor<T, Trait> vreg6;
+    Reg::RegTensor<T, Trait> vreg7;
+    Reg::RegTensor<T, Trait> vreg8;
+    Reg::RegTensor<T, Trait> vreg9;
+    Reg::RegTensor<T, Trait> vreg10;
+    Reg::RegTensor<T, Trait> vreg11;
+    Reg::RegTensor<T, Trait> vreg12;
+    Reg::RegTensor<T, Trait> vreg13;
+    Reg::RegTensor<T, Trait> vreg14;
+    Reg::RegTensor<T, Trait> vreg15;
+    Reg::UnalignReg uSrc;
 
     // Process main folds
     uint16_t loopRNum = base;
@@ -913,38 +913,38 @@ __simd_vf__ inline void ReduceAROverVLReuseSourceUnAlignedVF(__ubuf__ T *dstAddr
             for (uint16_t loopR = 0; loopR < loopRNum; loopR++) {
                 newSrc = src + static_cast<uint64_t>(loopR * vlSize * dtypeSize);
                 // L0
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg4, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg5, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg6, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg7, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg8, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg9, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg10, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg11, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg12, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg13, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg14, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg15, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg4, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg5, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg6, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg7, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg8, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg9, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg10, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg11, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg12, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg13, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg14, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg15, uSrc, ((__ubuf__ T *&)newSrc), offsetR);
                 // L1
                 Binaryfunc(vreg0, vreg0, vreg8, fullMask);
                 Binaryfunc(vreg1, vreg1, vreg9, fullMask);
@@ -966,9 +966,9 @@ __simd_vf__ inline void ReduceAROverVLReuseSourceUnAlignedVF(__ubuf__ T *dstAddr
                 Binaryfunc(vreg0, vreg0, vreg1, fullMask);
                 StoreUnAlign((__ubuf__ T *&)dst, vreg0, uDst, vlSize);
             }
-            MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dst, uDst, 0);
+            Reg::StoreUnAlignPost((__ubuf__ T *&)dst, uDst, 0);
         }
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
     }
 
     // Process tail folds
@@ -977,9 +977,9 @@ __simd_vf__ inline void ReduceAROverVLReuseSourceUnAlignedVF(__ubuf__ T *dstAddr
         for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
             newSrc = src + static_cast<uint64_t>(loopA * dimR * dtypeSize);
             // L0
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-            MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
-            MicroAPI::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+            Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+            Reg::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
             // L1
             Binaryfunc(vreg0, vreg0, vreg1, fullMask);
             if constexpr (IsSameType<T, bfloat16_t>::value) {
@@ -993,18 +993,18 @@ __simd_vf__ inline void ReduceAROverVLReuseSourceUnAlignedVF(__ubuf__ T *dstAddr
             }
             StoreUnAlign((__ubuf__ T *&)dstAddr, vreg2, uDst, 1);
         }
-        MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+        Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
     }
 
     for (uint16_t i = 0; i < foldTwo; i++) {
         for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
             newSrc = src + static_cast<uint64_t>(loopA * dimR * dtypeSize);
             // L0
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-            MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
-            MicroAPI::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
-            MicroAPI::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
-            MicroAPI::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+            Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+            Reg::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+            Reg::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+            Reg::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
             // L1
             Binaryfunc(vreg0, vreg0, vreg2, fullMask);
             Binaryfunc(vreg1, vreg1, vreg3, fullMask);
@@ -1021,22 +1021,22 @@ __simd_vf__ inline void ReduceAROverVLReuseSourceUnAlignedVF(__ubuf__ T *dstAddr
             }
             StoreUnAlign((__ubuf__ T *&)dstAddr, vreg2, uDst, 1);
         }
-        MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+        Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
     }
 
     for (uint16_t i = 0; i < foldThree; i++) {
         for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
             newSrc = src + static_cast<uint64_t>(loopA * dimR * dtypeSize);
             // L0
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-            MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
-            MicroAPI::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
-            MicroAPI::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
-            MicroAPI::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
-            MicroAPI::LoadUnAlign(vreg4, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
-            MicroAPI::LoadUnAlign(vreg5, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
-            MicroAPI::LoadUnAlign(vreg6, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
-            MicroAPI::LoadUnAlign(vreg7, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+            Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+            Reg::LoadUnAlign(vreg1, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+            Reg::LoadUnAlign(vreg2, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+            Reg::LoadUnAlign(vreg3, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+            Reg::LoadUnAlign(vreg4, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+            Reg::LoadUnAlign(vreg5, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+            Reg::LoadUnAlign(vreg6, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+            Reg::LoadUnAlign(vreg7, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
             // L1
             Binaryfunc(vreg0, vreg0, vreg4, fullMask);
             Binaryfunc(vreg1, vreg1, vreg5, fullMask);
@@ -1058,7 +1058,7 @@ __simd_vf__ inline void ReduceAROverVLReuseSourceUnAlignedVF(__ubuf__ T *dstAddr
             }
             StoreUnAlign((__ubuf__ T *&)dstAddr, vreg2, uDst, 1);
         }
-        MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+        Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
     }
 
     // Reduce to 1
@@ -1074,17 +1074,17 @@ __simd_vf__ inline void ReduceAROverVLReuseSourceUnAlignedVF(__ubuf__ T *dstAddr
         } else {
             for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
                 newSrc = src + static_cast<uint64_t>(loopA * dimR * dtypeSize);
-                MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
+                Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)newSrc), vlSize);
                 Reducefunc(vreg1, vreg0, fullMask);
-                MicroAPI::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
+                Reg::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
             }
-            MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+            Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
         }
     }
 }
 
-template <class T, const MicroAPI::RegTrait &Trait, auto Binaryfunc, auto Reducefunc>
+template <class T, const Reg::RegTrait &Trait, auto Binaryfunc, auto Reducefunc>
 __aicore__ inline void ReduceAROverVLReuseSourceUnAligned(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA,
     uint32_t dimR)
 {
@@ -1104,138 +1104,138 @@ __aicore__ inline void ReduceAROverVLReuseSourceUnAligned(__ubuf__ T *dstAddr, _
         mainR, tailR, base, folds, avgFolds, foldZero, foldOne, foldTwo, foldThree, postUpdateStrideTail);
 }
 
-template <class T, class U, const MicroAPI::RegTrait &Trait, const MicroAPI::CastTrait &CastTraitUppper,
-    const MicroAPI::CastTrait &CastTraitLower, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc>
+template <class T, class U, const Reg::RegTrait &Trait, const Reg::CastTrait &CastTraitUppper,
+    const Reg::CastTrait &CastTraitLower, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc>
 __simd_vf__ inline void CastReduceARUnAligned(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA, uint32_t dimR)
 {
     uint32_t dtypeSize = sizeof(T);
     if (dimR <= (vlSize / 2)) {
         if constexpr (SupportBytes<T, 2>()) {
-            MicroAPI::RegTensor<T, Trait> vreg0;
-            MicroAPI::RegTensor<T, Trait> vreg1;
-            MicroAPI::RegTensor<U, Trait> vreg0CastB32;
-            MicroAPI::RegTensor<U, Trait> vreg1CastB32;
-            MicroAPI::UnalignReg uSrc;
-            MicroAPI::UnalignReg uDst;
+            Reg::RegTensor<T, Trait> vreg0;
+            Reg::RegTensor<T, Trait> vreg1;
+            Reg::RegTensor<U, Trait> vreg0CastB32;
+            Reg::RegTensor<U, Trait> vreg1CastB32;
+            Reg::UnalignReg uSrc;
+            Reg::UnalignReg uDst;
             uint32_t sreg1 = dimR;
-            MicroAPI::MaskReg mask = MicroAPI::UpdateMask<U>(sreg1);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)srcAddr));
+            Reg::MaskReg mask = Reg::UpdateMask<U>(sreg1);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)srcAddr));
             for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
-                MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)srcAddr), dimR);
-                MicroAPI::UnPack((MicroAPI::RegTensor<uint32_t, Trait> &)vreg0,
-                    (MicroAPI::RegTensor<uint16_t, Trait> &)vreg0);
-                MicroAPI::Cast<U, T, CastTraitUppper>(vreg0CastB32, vreg0, mask);
+                Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)srcAddr), dimR);
+                Reg::UnPack((Reg::RegTensor<uint32_t, Trait> &)vreg0,
+                    (Reg::RegTensor<uint16_t, Trait> &)vreg0);
+                Reg::Cast<U, T, CastTraitUppper>(vreg0CastB32, vreg0, mask);
                 Reducefunc(vreg1CastB32, vreg0CastB32, mask);
-                MicroAPI::Cast<T, U, CastTraitLower>(vreg1, vreg1CastB32, mask);
+                Reg::Cast<T, U, CastTraitLower>(vreg1, vreg1CastB32, mask);
                 StoreUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
             }
-            MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+            Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
         } else if constexpr (SupportBytes<T, 1>()) {
-            MicroAPI::RegTensor<T, Trait> vreg0;
-            MicroAPI::RegTensor<T, Trait> vreg1;
-            MicroAPI::RegTensor<U, Trait> vreg0CastB16;
-            MicroAPI::RegTensor<U, Trait> vreg1CastB16;
-            MicroAPI::UnalignReg uSrc;
-            MicroAPI::UnalignReg uDst;
+            Reg::RegTensor<T, Trait> vreg0;
+            Reg::RegTensor<T, Trait> vreg1;
+            Reg::RegTensor<U, Trait> vreg0CastB16;
+            Reg::RegTensor<U, Trait> vreg1CastB16;
+            Reg::UnalignReg uSrc;
+            Reg::UnalignReg uDst;
             uint32_t sreg1 = dimR;
-            MicroAPI::MaskReg mask = MicroAPI::UpdateMask<U>(sreg1);
-            MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)srcAddr));
+            Reg::MaskReg mask = Reg::UpdateMask<U>(sreg1);
+            Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)srcAddr));
             for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
-                MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)srcAddr), dimR);
-                MicroAPI::UnPack((MicroAPI::RegTensor<uint16_t, Trait> &)vreg0,
-                    (MicroAPI::RegTensor<uint8_t, Trait> &)vreg0);
-                MicroAPI::Cast<U, T, CastTraitUppper>(vreg0CastB16, vreg0, mask);
+                Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)srcAddr), dimR);
+                Reg::UnPack((Reg::RegTensor<uint16_t, Trait> &)vreg0,
+                    (Reg::RegTensor<uint8_t, Trait> &)vreg0);
+                Reg::Cast<U, T, CastTraitUppper>(vreg0CastB16, vreg0, mask);
                 Reducefunc(vreg1CastB16, vreg0CastB16, mask);
-                MicroAPI::Cast<T, U, CastTraitLower>(vreg1, vreg1CastB16, mask);
+                Reg::Cast<T, U, CastTraitLower>(vreg1, vreg1CastB16, mask);
                 StoreUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
             }
-            MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+            Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
         }
     } else {
         if constexpr (SupportBytes<T, 2>()) {
-            MicroAPI::RegTensor<T, Trait> vreg0;
-            MicroAPI::RegTensor<T, Trait> vreg1;
-            MicroAPI::RegTensor<T, Trait> vreg2;
-            MicroAPI::RegTensor<U, Trait> vreg0CastB32;
-            MicroAPI::RegTensor<U, Trait> vreg1CastB32;
-            MicroAPI::UnalignReg uSrc0;
-            MicroAPI::UnalignReg uSrc1;
-            MicroAPI::UnalignReg uDst;
+            Reg::RegTensor<T, Trait> vreg0;
+            Reg::RegTensor<T, Trait> vreg1;
+            Reg::RegTensor<T, Trait> vreg2;
+            Reg::RegTensor<U, Trait> vreg0CastB32;
+            Reg::RegTensor<U, Trait> vreg1CastB32;
+            Reg::UnalignReg uSrc0;
+            Reg::UnalignReg uSrc1;
+            Reg::UnalignReg uDst;
             uint32_t sreg1 = dimR;
-            MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL, Trait>();
-            MicroAPI::MaskReg mask = MicroAPI::UpdateMask<U>(sreg1);
-            mask = MicroAPI::UpdateMask<U>(sreg1);
-            MicroAPI::MaskPack(mask, mask);
+            Reg::MaskReg fullMask = Reg::CreateMask<T, Reg::MaskPattern::ALL, Trait>();
+            Reg::MaskReg mask = Reg::UpdateMask<U>(sreg1);
+            mask = Reg::UpdateMask<U>(sreg1);
+            Reg::MaskPack(mask, mask);
             uint64_t newSrc = (uint64_t)srcAddr + vlSize / 2 * dtypeSize;
             for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
-                MicroAPI::LoadUnAlignPre(uSrc0, ((__ubuf__ T *&)srcAddr));
-                MicroAPI::LoadUnAlignPre(uSrc1, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg0, uSrc0, ((__ubuf__ T *&)srcAddr), dimR);
-                MicroAPI::LoadUnAlign(vreg1, uSrc1, ((__ubuf__ T *&)newSrc), dimR);
+                Reg::LoadUnAlignPre(uSrc0, ((__ubuf__ T *&)srcAddr));
+                Reg::LoadUnAlignPre(uSrc1, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg0, uSrc0, ((__ubuf__ T *&)srcAddr), dimR);
+                Reg::LoadUnAlign(vreg1, uSrc1, ((__ubuf__ T *&)newSrc), dimR);
                 Binaryfunc(vreg2, vreg0, vreg1, mask);
                 Select(vreg2, vreg2, vreg0, mask);
-                MicroAPI::UnPack((MicroAPI::RegTensor<uint32_t, Trait> &)vreg2,
-                    (MicroAPI::RegTensor<uint16_t, Trait> &)vreg2);
-                MicroAPI::Cast<U, T, CastTraitUppper>(vreg0CastB32, vreg2, fullMask);
+                Reg::UnPack((Reg::RegTensor<uint32_t, Trait> &)vreg2,
+                    (Reg::RegTensor<uint16_t, Trait> &)vreg2);
+                Reg::Cast<U, T, CastTraitUppper>(vreg0CastB32, vreg2, fullMask);
                 Reducefunc(vreg1CastB32, vreg0CastB32, fullMask);
-                MicroAPI::Cast<T, U, CastTraitLower>(vreg1, vreg1CastB32, fullMask);
+                Reg::Cast<T, U, CastTraitLower>(vreg1, vreg1CastB32, fullMask);
                 StoreUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
             }
-            MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+            Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
         } else if constexpr (SupportBytes<T, 1>()) {
-            MicroAPI::RegTensor<T, Trait> vreg0;
-            MicroAPI::RegTensor<T, Trait> vreg1;
-            MicroAPI::RegTensor<T, Trait> vreg2;
-            MicroAPI::RegTensor<U, Trait> vreg0CastB16;
-            MicroAPI::RegTensor<U, Trait> vreg1CastB16;
-            MicroAPI::UnalignReg uSrc0;
-            MicroAPI::UnalignReg uSrc1;
-            MicroAPI::UnalignReg uDst;
+            Reg::RegTensor<T, Trait> vreg0;
+            Reg::RegTensor<T, Trait> vreg1;
+            Reg::RegTensor<T, Trait> vreg2;
+            Reg::RegTensor<U, Trait> vreg0CastB16;
+            Reg::RegTensor<U, Trait> vreg1CastB16;
+            Reg::UnalignReg uSrc0;
+            Reg::UnalignReg uSrc1;
+            Reg::UnalignReg uDst;
             uint32_t sreg1 = dimR;
-            MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL, Trait>();
-            MicroAPI::MaskReg mask = MicroAPI::UpdateMask<U>(sreg1);
-            mask = MicroAPI::UpdateMask<U>(sreg1);
-            MicroAPI::MaskPack(mask, mask);
+            Reg::MaskReg fullMask = Reg::CreateMask<T, Reg::MaskPattern::ALL, Trait>();
+            Reg::MaskReg mask = Reg::UpdateMask<U>(sreg1);
+            mask = Reg::UpdateMask<U>(sreg1);
+            Reg::MaskPack(mask, mask);
             uint64_t newSrc = (uint64_t)srcAddr + vlSize / 2 * dtypeSize;
             for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
-                MicroAPI::LoadUnAlignPre(uSrc0, ((__ubuf__ T *&)srcAddr));
-                MicroAPI::LoadUnAlignPre(uSrc1, ((__ubuf__ T *&)newSrc));
-                MicroAPI::LoadUnAlign(vreg0, uSrc0, ((__ubuf__ T *&)srcAddr), dimR);
-                MicroAPI::LoadUnAlign(vreg1, uSrc1, ((__ubuf__ T *&)newSrc), dimR);
+                Reg::LoadUnAlignPre(uSrc0, ((__ubuf__ T *&)srcAddr));
+                Reg::LoadUnAlignPre(uSrc1, ((__ubuf__ T *&)newSrc));
+                Reg::LoadUnAlign(vreg0, uSrc0, ((__ubuf__ T *&)srcAddr), dimR);
+                Reg::LoadUnAlign(vreg1, uSrc1, ((__ubuf__ T *&)newSrc), dimR);
                 Binaryfunc(vreg2, vreg0, vreg1, mask);
                 Select(vreg2, vreg2, vreg0, mask);
-                MicroAPI::UnPack((MicroAPI::RegTensor<uint16_t, Trait> &)vreg2,
-                    (MicroAPI::RegTensor<uint8_t, Trait> &)vreg2);
-                MicroAPI::Cast<U, T, CastTraitUppper>(vreg0CastB16, vreg2, fullMask);
+                Reg::UnPack((Reg::RegTensor<uint16_t, Trait> &)vreg2,
+                    (Reg::RegTensor<uint8_t, Trait> &)vreg2);
+                Reg::Cast<U, T, CastTraitUppper>(vreg0CastB16, vreg2, fullMask);
                 Reducefunc(vreg1CastB16, vreg0CastB16, fullMask);
-                MicroAPI::Cast<T, U, CastTraitLower>(vreg1, vreg1CastB16, fullMask);
+                Reg::Cast<T, U, CastTraitLower>(vreg1, vreg1CastB16, fullMask);
                 StoreUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
             }
-            MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+            Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
         }
     }
 }
 
-template <class T, const MicroAPI::RegTrait &Trait, auto Binaryfunc, auto Reducefunc>
+template <class T, const Reg::RegTrait &Trait, auto Binaryfunc, auto Reducefunc>
 __simd_vf__ inline void ReduceARReuseSourceUnAlignedVF(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA,
     uint32_t dimR)
 {
-    MicroAPI::RegTensor<T, Trait> vreg0;
-    MicroAPI::RegTensor<T, Trait> vreg1;
-    MicroAPI::UnalignReg uSrc;
-    MicroAPI::UnalignReg uDst;
+    Reg::RegTensor<T, Trait> vreg0;
+    Reg::RegTensor<T, Trait> vreg1;
+    Reg::UnalignReg uSrc;
+    Reg::UnalignReg uDst;
     uint32_t sreg1 = dimR;
-    MicroAPI::MaskReg mask = MicroAPI::UpdateMask<T, Trait>(sreg1);
-    MicroAPI::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)srcAddr));
+    Reg::MaskReg mask = Reg::UpdateMask<T, Trait>(sreg1);
+    Reg::LoadUnAlignPre(uSrc, ((__ubuf__ T *&)srcAddr));
     for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
-        MicroAPI::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)srcAddr), dimR);
+        Reg::LoadUnAlign(vreg0, uSrc, ((__ubuf__ T *&)srcAddr), dimR);
         Reducefunc(vreg1, vreg0, mask);
         StoreUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
     }
-    MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+    Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
 }
 
-template <class T, const MicroAPI::RegTrait &Trait, auto Binaryfunc, auto Reducefunc>
+template <class T, const Reg::RegTrait &Trait, auto Binaryfunc, auto Reducefunc>
 __aicore__ inline void ReduceARReuseSourceUnAligned(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA,
     uint32_t dimR)
 {

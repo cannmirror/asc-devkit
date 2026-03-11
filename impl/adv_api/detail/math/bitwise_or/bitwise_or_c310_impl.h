@@ -44,11 +44,11 @@ __aicore__ inline void BitwiseOrImpl(const LocalTensor<T>& dst, const LocalTenso
 
     if constexpr (sizeof(T) == 8) {
         BitwiseTemplateImpl<
-            MicroAPI::Or<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>, T>(
+            Reg::Or<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T, Reg::RegTraitNumTwo>>, T>(
             dst, src0, src1, count);
     } else {
         BitwiseTemplateImpl<
-            MicroAPI::Or<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumOne>>, T>(
+            Reg::Or<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T, Reg::RegTraitNumOne>>, T>(
             dst, src0, src1, count);
     }
 }

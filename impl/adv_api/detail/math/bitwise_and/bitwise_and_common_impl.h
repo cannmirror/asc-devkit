@@ -46,11 +46,11 @@ __aicore__ inline void BitwiseAndImpl(const LocalTensor<T>& dst, const LocalTens
 
     if constexpr (sizeof(T) == 8) {
         BitwiseTemplateImpl<
-            MicroAPI::And<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>, T>(
+            Reg::And<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T, Reg::RegTraitNumTwo>>, T>(
             dst, src0, src1, count);
     } else {
         BitwiseTemplateImpl<
-            MicroAPI::And<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumOne>>, T>(
+            Reg::And<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T, Reg::RegTraitNumOne>>, T>(
             dst, src0, src1, count);
     }
 }

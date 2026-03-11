@@ -40,11 +40,11 @@ constexpr uint32_t indexRepElems = 64;
 constexpr uint32_t srcRepElems = 64;
 constexpr uint32_t srcRep128 = 128;
 constexpr uint32_t b64RepElems = 32;
-constexpr MicroAPI::CastTrait castTraitEven = { MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
-    MicroAPI::MaskMergeMode::ZEROING };
+constexpr Reg::CastTrait castTraitEven = { Reg::RegLayout::ZERO, Reg::SatMode::SAT,
+    Reg::MaskMergeMode::ZEROING };
 
-constexpr MicroAPI::CastTrait castTraitOdd = { MicroAPI::RegLayout::ONE, MicroAPI::SatMode::SAT,
-    MicroAPI::MaskMergeMode::ZEROING };
+constexpr Reg::CastTrait castTraitOdd = { Reg::RegLayout::ONE, Reg::SatMode::SAT,
+    Reg::MaskMergeMode::ZEROING };
 
 template <typename T>
 __aicore__ inline void ScatterImplB64(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ uint32_t *dstOffsetLocal,
@@ -52,24 +52,24 @@ __aicore__ inline void ScatterImplB64(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal
 {
     __VEC_SCOPE__
     {
-        MicroAPI::RegTensor<uint32_t> indexReg;
-        MicroAPI::RegTensor<uint32_t> oddIndexReg;
-        MicroAPI::RegTensor<uint32_t> tmpReg;
-        MicroAPI::RegTensor<uint32_t> indexU32Reg;
-        MicroAPI::RegTensor<uint32_t> srcReg;
+        Reg::RegTensor<uint32_t> indexReg;
+        Reg::RegTensor<uint32_t> oddIndexReg;
+        Reg::RegTensor<uint32_t> tmpReg;
+        Reg::RegTensor<uint32_t> indexU32Reg;
+        Reg::RegTensor<uint32_t> srcReg;
         uint32_t sregPlt = static_cast<uint32_t>(count * 2);
-        MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::H>();
-        MicroAPI::MaskReg preg;
+        Reg::MaskReg indexMask = Reg::CreateMask<uint32_t, Reg::MaskPattern::H>();
+        Reg::MaskReg preg;
         uint16_t repeatTime = CeilDivision(count, b64RepElems);
         for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
-            preg = MicroAPI::UpdateMask<uint32_t>(sregPlt);
-            MicroAPI::LoadAlign<uint32_t>(indexReg, dstOffsetLocal + i * b64RepElems);
-            MicroAPI::ShiftRights<uint32_t, int16_t>(indexReg, indexReg, b64ShiftVal, indexMask);
-            MicroAPI::Muls<uint32_t, uint32_t>(indexReg, indexReg, mulsScalar, indexMask);
-            MicroAPI::Adds<uint32_t, uint32_t>(oddIndexReg, indexReg, addsScalar, indexMask);
-            MicroAPI::Interleave(indexU32Reg, tmpReg, indexReg, oddIndexReg);
-            MicroAPI::LoadAlign<uint32_t>(srcReg, (__ubuf__ uint32_t *)srcLocal + i * srcRepElems);
-            MicroAPI::Scatter<uint32_t, uint32_t>((__ubuf__ uint32_t *)dstLocal + dstBaseOffset, srcReg,
+            preg = Reg::UpdateMask<uint32_t>(sregPlt);
+            Reg::LoadAlign<uint32_t>(indexReg, dstOffsetLocal + i * b64RepElems);
+            Reg::ShiftRights<uint32_t, int16_t>(indexReg, indexReg, b64ShiftVal, indexMask);
+            Reg::Muls<uint32_t, uint32_t>(indexReg, indexReg, mulsScalar, indexMask);
+            Reg::Adds<uint32_t, uint32_t>(oddIndexReg, indexReg, addsScalar, indexMask);
+            Reg::Interleave(indexU32Reg, tmpReg, indexReg, oddIndexReg);
+            Reg::LoadAlign<uint32_t>(srcReg, (__ubuf__ uint32_t *)srcLocal + i * srcRepElems);
+            Reg::Scatter<uint32_t, uint32_t>((__ubuf__ uint32_t *)dstLocal + dstBaseOffset, srcReg,
                 indexU32Reg, preg);
         }
     }
@@ -82,35 +82,35 @@ __aicore__ inline void ScatterImplB64(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal
 {
     __VEC_SCOPE__
     {
-        MicroAPI::RegTensor<uint32_t> indexReg;
-        MicroAPI::RegTensor<uint32_t> oddIndexReg;
-        MicroAPI::RegTensor<uint32_t> tmpReg;
-        MicroAPI::RegTensor<uint32_t> indexU32Reg;
-        MicroAPI::RegTensor<uint32_t> srcReg;
-        MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::H>();
+        Reg::RegTensor<uint32_t> indexReg;
+        Reg::RegTensor<uint32_t> oddIndexReg;
+        Reg::RegTensor<uint32_t> tmpReg;
+        Reg::RegTensor<uint32_t> indexU32Reg;
+        Reg::RegTensor<uint32_t> srcReg;
+        Reg::MaskReg indexMask = Reg::CreateMask<uint32_t, Reg::MaskPattern::H>();
         uint32_t evenMask = static_cast<uint32_t>(mask * 2);
-        MicroAPI::MaskReg srcMask;
+        Reg::MaskReg srcMask;
         if constexpr (isNormalMode) {
             if constexpr (isMaskBitMode) {
-                srcMask = MicroAPI::MoveMask<uint32_t>();
-                MicroAPI::MaskPack(srcMask, srcMask);
-                MicroAPI::MaskUnPack(srcMask, srcMask);
-                MicroAPI::MaskUnPack(srcMask, srcMask);
+                srcMask = Reg::MoveMask<uint32_t>();
+                Reg::MaskPack(srcMask, srcMask);
+                Reg::MaskUnPack(srcMask, srcMask);
+                Reg::MaskUnPack(srcMask, srcMask);
             } else {
-                srcMask = MicroAPI::UpdateMask<uint32_t>(evenMask);
+                srcMask = Reg::UpdateMask<uint32_t>(evenMask);
             }
         }
         for (uint16_t i = 0; i < (uint16_t)repeatTime; i++) {
             if constexpr (!isNormalMode) {
-                srcMask = MicroAPI::UpdateMask<uint32_t>(evenMask);
+                srcMask = Reg::UpdateMask<uint32_t>(evenMask);
             }
-            MicroAPI::LoadAlign<uint32_t>(indexReg, dstOffsetLocal + i * b64RepElems);
-            MicroAPI::ShiftRights<uint32_t, int16_t>(indexReg, indexReg, b64ShiftVal, indexMask);
-            MicroAPI::Muls<uint32_t, uint32_t>(indexReg, indexReg, mulsScalar, indexMask);
-            MicroAPI::Adds<uint32_t, uint32_t>(oddIndexReg, indexReg, addsScalar, indexMask);
-            MicroAPI::Interleave(indexU32Reg, tmpReg, indexReg, oddIndexReg);
-            MicroAPI::LoadAlign<uint32_t>(srcReg, (__ubuf__ uint32_t *)srcLocal + i * srcRepStride * b32BlkElems);
-            MicroAPI::Scatter<uint32_t, uint32_t>((__ubuf__ uint32_t *)dstLocal + dstBaseOffset, srcReg,
+            Reg::LoadAlign<uint32_t>(indexReg, dstOffsetLocal + i * b64RepElems);
+            Reg::ShiftRights<uint32_t, int16_t>(indexReg, indexReg, b64ShiftVal, indexMask);
+            Reg::Muls<uint32_t, uint32_t>(indexReg, indexReg, mulsScalar, indexMask);
+            Reg::Adds<uint32_t, uint32_t>(oddIndexReg, indexReg, addsScalar, indexMask);
+            Reg::Interleave(indexU32Reg, tmpReg, indexReg, oddIndexReg);
+            Reg::LoadAlign<uint32_t>(srcReg, (__ubuf__ uint32_t *)srcLocal + i * srcRepStride * b32BlkElems);
+            Reg::Scatter<uint32_t, uint32_t>((__ubuf__ uint32_t *)dstLocal + dstBaseOffset, srcReg,
                 indexU32Reg, srcMask);
         }
     }
@@ -122,29 +122,29 @@ __aicore__ inline void ScatterImplB16(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal
 {
     __VEC_SCOPE__
     {
-        MicroAPI::RegTensor<T> srcReg;
-        MicroAPI::RegTensor<uint32_t> indexReg;
-        MicroAPI::RegTensor<uint16_t> indexU16;
-        MicroAPI::RegTensor<uint32_t> indexRegSec;
-        MicroAPI::RegTensor<uint16_t> lowerU16Reg;
-        MicroAPI::RegTensor<uint16_t> highU16Reg;
-        MicroAPI::MaskReg preg;
+        Reg::RegTensor<T> srcReg;
+        Reg::RegTensor<uint32_t> indexReg;
+        Reg::RegTensor<uint16_t> indexU16;
+        Reg::RegTensor<uint32_t> indexRegSec;
+        Reg::RegTensor<uint16_t> lowerU16Reg;
+        Reg::RegTensor<uint16_t> highU16Reg;
+        Reg::MaskReg preg;
         uint32_t sregPlt = static_cast<uint32_t>(count);
-        MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint8_t>();
-        MicroAPI::MaskReg selectMask = MicroAPI::CreateMask<uint16_t, MicroAPI::MaskPattern::H>();
+        Reg::MaskReg indexMask = Reg::CreateMask<uint8_t>();
+        Reg::MaskReg selectMask = Reg::CreateMask<uint16_t, Reg::MaskPattern::H>();
         uint16_t repeatTime = CeilDivision(count, srcRep128);
         for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
-            preg = MicroAPI::UpdateMask<T>(sregPlt);
-            MicroAPI::LoadAlign<uint32_t>(indexReg, dstOffsetLocal + 2 * i * indexRepElems);
-            MicroAPI::LoadAlign<uint32_t>(indexRegSec, dstOffsetLocal + (2 * i + 1) * indexRepElems);
-            MicroAPI::ShiftRights<uint32_t, int16_t>(indexReg, indexReg, b16ShiftVal, indexMask);
-            MicroAPI::ShiftRights<uint32_t, int16_t>(indexRegSec, indexRegSec, b16ShiftVal, indexMask);
-            MicroAPI::Cast<uint16_t, uint32_t, castTraitEven>(lowerU16Reg, indexReg, indexMask);
-            MicroAPI::Cast<uint16_t, uint32_t, castTraitOdd>(highU16Reg, indexRegSec, indexMask);
-            MicroAPI::DeInterleave(lowerU16Reg, highU16Reg, lowerU16Reg, highU16Reg);
-            MicroAPI::Select(indexU16, lowerU16Reg, highU16Reg, selectMask);
-            MicroAPI::LoadAlign<T>(srcReg, srcLocal + i * srcRep128);
-            MicroAPI::Scatter<T, uint16_t>(dstLocal + dstBaseOffset, srcReg, indexU16, preg);
+            preg = Reg::UpdateMask<T>(sregPlt);
+            Reg::LoadAlign<uint32_t>(indexReg, dstOffsetLocal + 2 * i * indexRepElems);
+            Reg::LoadAlign<uint32_t>(indexRegSec, dstOffsetLocal + (2 * i + 1) * indexRepElems);
+            Reg::ShiftRights<uint32_t, int16_t>(indexReg, indexReg, b16ShiftVal, indexMask);
+            Reg::ShiftRights<uint32_t, int16_t>(indexRegSec, indexRegSec, b16ShiftVal, indexMask);
+            Reg::Cast<uint16_t, uint32_t, castTraitEven>(lowerU16Reg, indexReg, indexMask);
+            Reg::Cast<uint16_t, uint32_t, castTraitOdd>(highU16Reg, indexRegSec, indexMask);
+            Reg::DeInterleave(lowerU16Reg, highU16Reg, lowerU16Reg, highU16Reg);
+            Reg::Select(indexU16, lowerU16Reg, highU16Reg, selectMask);
+            Reg::LoadAlign<T>(srcReg, srcLocal + i * srcRep128);
+            Reg::Scatter<T, uint16_t>(dstLocal + dstBaseOffset, srcReg, indexU16, preg);
         }
     }
 }
@@ -156,39 +156,39 @@ __aicore__ inline void ScatterImplB16(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal
 {
     __VEC_SCOPE__
     {
-        MicroAPI::RegTensor<uint32_t> indexReg;
-        MicroAPI::RegTensor<uint32_t> indexRegSec;
-        MicroAPI::RegTensor<uint16_t> indexU16;
-        MicroAPI::RegTensor<uint16_t> lowerU16;
-        MicroAPI::RegTensor<uint16_t> highU16;
-        MicroAPI::RegTensor<T> srcReg;
-        MicroAPI::MaskReg selectMask = MicroAPI::CreateMask<uint16_t, MicroAPI::MaskPattern::H>();
-        MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint8_t>();
-        MicroAPI::MaskReg b16SrcMask;
+        Reg::RegTensor<uint32_t> indexReg;
+        Reg::RegTensor<uint32_t> indexRegSec;
+        Reg::RegTensor<uint16_t> indexU16;
+        Reg::RegTensor<uint16_t> lowerU16;
+        Reg::RegTensor<uint16_t> highU16;
+        Reg::RegTensor<T> srcReg;
+        Reg::MaskReg selectMask = Reg::CreateMask<uint16_t, Reg::MaskPattern::H>();
+        Reg::MaskReg indexMask = Reg::CreateMask<uint8_t>();
+        Reg::MaskReg b16SrcMask;
         uint32_t maskV = static_cast<uint32_t>(mask);
         if constexpr (isNormalMode) {
             if constexpr (isMaskBitMode) {
-                b16SrcMask = MicroAPI::MoveMask<T>();
-                MicroAPI::MaskPack(b16SrcMask, b16SrcMask);
-                MicroAPI::MaskUnPack(b16SrcMask, b16SrcMask);
+                b16SrcMask = Reg::MoveMask<T>();
+                Reg::MaskPack(b16SrcMask, b16SrcMask);
+                Reg::MaskUnPack(b16SrcMask, b16SrcMask);
             } else {
-                b16SrcMask = MicroAPI::UpdateMask<T>(maskV);
+                b16SrcMask = Reg::UpdateMask<T>(maskV);
             }
         }
         for (uint16_t i = 0; i < (uint16_t)repeatTime; i++) {
             if constexpr (!isNormalMode) {
-                b16SrcMask = MicroAPI::UpdateMask<T>(maskV);
+                b16SrcMask = Reg::UpdateMask<T>(maskV);
             }
-            MicroAPI::LoadAlign<uint32_t>(indexReg, dstOffsetLocal + 2 * i * indexRepElems);
-            MicroAPI::LoadAlign<uint32_t>(indexRegSec, dstOffsetLocal + (2 * i + 1) * indexRepElems);
-            MicroAPI::ShiftRights<uint32_t, int16_t>(indexReg, indexReg, b16ShiftVal, indexMask);
-            MicroAPI::ShiftRights<uint32_t, int16_t>(indexRegSec, indexRegSec, b16ShiftVal, indexMask);
-            MicroAPI::Cast<uint16_t, uint32_t, castTraitEven>(lowerU16, indexReg, indexMask);
-            MicroAPI::Cast<uint16_t, uint32_t, castTraitOdd>(highU16, indexRegSec, indexMask);
-            MicroAPI::DeInterleave(lowerU16, highU16, lowerU16, highU16);
-            MicroAPI::Select(indexU16, lowerU16, highU16, selectMask);
-            MicroAPI::LoadAlign<T>(srcReg, srcLocal + i * srcRepStride * b16BlkElems);
-            MicroAPI::Scatter<T, uint16_t>(dstLocal + dstBaseOffset, srcReg, indexU16, b16SrcMask);
+            Reg::LoadAlign<uint32_t>(indexReg, dstOffsetLocal + 2 * i * indexRepElems);
+            Reg::LoadAlign<uint32_t>(indexRegSec, dstOffsetLocal + (2 * i + 1) * indexRepElems);
+            Reg::ShiftRights<uint32_t, int16_t>(indexReg, indexReg, b16ShiftVal, indexMask);
+            Reg::ShiftRights<uint32_t, int16_t>(indexRegSec, indexRegSec, b16ShiftVal, indexMask);
+            Reg::Cast<uint16_t, uint32_t, castTraitEven>(lowerU16, indexReg, indexMask);
+            Reg::Cast<uint16_t, uint32_t, castTraitOdd>(highU16, indexRegSec, indexMask);
+            Reg::DeInterleave(lowerU16, highU16, lowerU16, highU16);
+            Reg::Select(indexU16, lowerU16, highU16, selectMask);
+            Reg::LoadAlign<T>(srcReg, srcLocal + i * srcRepStride * b16BlkElems);
+            Reg::Scatter<T, uint16_t>(dstLocal + dstBaseOffset, srcReg, indexU16, b16SrcMask);
         }
     }
 }
@@ -199,19 +199,19 @@ __aicore__ inline void ScatterImplB32(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal
 {
     __VEC_SCOPE__
     {
-        MicroAPI::RegTensor<uint32_t> indexReg;
-        MicroAPI::RegTensor<T> srcReg;
+        Reg::RegTensor<uint32_t> indexReg;
+        Reg::RegTensor<T> srcReg;
         uint32_t sregPlt = static_cast<uint32_t>(count);
-        MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint8_t>();
-        MicroAPI::MaskReg preg;
+        Reg::MaskReg indexMask = Reg::CreateMask<uint8_t>();
+        Reg::MaskReg preg;
         uint16_t repeatTime = CeilDivision(count, srcRepElems);
 
         for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
-            preg = MicroAPI::UpdateMask<T>(sregPlt);
-            MicroAPI::LoadAlign<uint32_t>(indexReg, dstOffsetLocal + i * srcRepElems);
-            MicroAPI::ShiftRights<uint32_t, int16_t>(indexReg, indexReg, b32ShiftVal, indexMask);
-            MicroAPI::LoadAlign<T>(srcReg, srcLocal + i * srcRepElems);
-            MicroAPI::Scatter<T, uint32_t>(dstLocal + dstBaseOffset, srcReg, indexReg, preg);
+            preg = Reg::UpdateMask<T>(sregPlt);
+            Reg::LoadAlign<uint32_t>(indexReg, dstOffsetLocal + i * srcRepElems);
+            Reg::ShiftRights<uint32_t, int16_t>(indexReg, indexReg, b32ShiftVal, indexMask);
+            Reg::LoadAlign<T>(srcReg, srcLocal + i * srcRepElems);
+            Reg::Scatter<T, uint32_t>(dstLocal + dstBaseOffset, srcReg, indexReg, preg);
         }
     }
 }
@@ -223,28 +223,28 @@ __aicore__ inline void ScatterImplB32(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal
 {
     __VEC_SCOPE__
     {
-        MicroAPI::RegTensor<uint32_t> indexReg;
+        Reg::RegTensor<uint32_t> indexReg;
         uint32_t maskV = static_cast<uint32_t>(mask);
-        MicroAPI::RegTensor<T> srcReg;
-        MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint8_t>();
-        MicroAPI::MaskReg b32SrcMask;
+        Reg::RegTensor<T> srcReg;
+        Reg::MaskReg indexMask = Reg::CreateMask<uint8_t>();
+        Reg::MaskReg b32SrcMask;
         if constexpr (isNormalMode) {
             if constexpr (isMaskBitMode) {
-                b32SrcMask = MicroAPI::MoveMask<T>();
-                MicroAPI::MaskPack(b32SrcMask, b32SrcMask);
-                MicroAPI::MaskUnPack(b32SrcMask, b32SrcMask);
+                b32SrcMask = Reg::MoveMask<T>();
+                Reg::MaskPack(b32SrcMask, b32SrcMask);
+                Reg::MaskUnPack(b32SrcMask, b32SrcMask);
             } else {
-                b32SrcMask = MicroAPI::UpdateMask<T>(maskV);
+                b32SrcMask = Reg::UpdateMask<T>(maskV);
             }
         }
         for (uint16_t i = 0; i < (uint16_t)repeatTime; i++) {
             if constexpr (!isNormalMode) {
-                b32SrcMask = MicroAPI::UpdateMask<T>(maskV);
+                b32SrcMask = Reg::UpdateMask<T>(maskV);
             }
-            MicroAPI::LoadAlign<uint32_t>(indexReg, dstOffsetLocal + i * srcRepElems);
-            MicroAPI::ShiftRights<uint32_t, int16_t>(indexReg, indexReg, b32ShiftVal, indexMask);
-            MicroAPI::LoadAlign<T>(srcReg, srcLocal + i * srcRepStride * b32BlkElems);
-            MicroAPI::Scatter<T, uint32_t>(dstLocal + dstBaseOffset, srcReg, indexReg, b32SrcMask);
+            Reg::LoadAlign<uint32_t>(indexReg, dstOffsetLocal + i * srcRepElems);
+            Reg::ShiftRights<uint32_t, int16_t>(indexReg, indexReg, b32ShiftVal, indexMask);
+            Reg::LoadAlign<T>(srcReg, srcLocal + i * srcRepStride * b32BlkElems);
+            Reg::Scatter<T, uint32_t>(dstLocal + dstBaseOffset, srcReg, indexReg, b32SrcMask);
         }
     }
 }
@@ -255,30 +255,30 @@ __aicore__ inline void ScatterImplB8(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal,
 {
     __VEC_SCOPE__
     {
-        MicroAPI::RegTensor<uint32_t> indexReg;
-        MicroAPI::RegTensor<uint32_t> indexRegSec;
-        MicroAPI::RegTensor<uint16_t> indexU16;
-        MicroAPI::RegTensor<uint16_t> lowerU16;
-        MicroAPI::RegTensor<uint16_t> highU16;
-        MicroAPI::MaskReg selectMask = MicroAPI::CreateMask<uint16_t, MicroAPI::MaskPattern::H>();
-        MicroAPI::RegTensor<T> tmpReg;
-        MicroAPI::RegTensor<T> srcReg;
+        Reg::RegTensor<uint32_t> indexReg;
+        Reg::RegTensor<uint32_t> indexRegSec;
+        Reg::RegTensor<uint16_t> indexU16;
+        Reg::RegTensor<uint16_t> lowerU16;
+        Reg::RegTensor<uint16_t> highU16;
+        Reg::MaskReg selectMask = Reg::CreateMask<uint16_t, Reg::MaskPattern::H>();
+        Reg::RegTensor<T> tmpReg;
+        Reg::RegTensor<T> srcReg;
         uint32_t sregPlt = static_cast<uint32_t>(count);
-        MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint32_t>();
-        MicroAPI::MaskReg preg;
+        Reg::MaskReg indexMask = Reg::CreateMask<uint32_t>();
+        Reg::MaskReg preg;
         uint16_t repeatTime = CeilDivision(count, srcRep128);
 
         for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
-            preg = MicroAPI::UpdateMask<uint16_t>(sregPlt);
-            MicroAPI::LoadAlign<uint32_t>(indexReg, dstOffsetLocal + 2 * i * indexRepElems);
-            MicroAPI::LoadAlign<uint32_t>(indexRegSec, dstOffsetLocal + (2 * i + 1) * indexRepElems);
-            MicroAPI::Cast<uint16_t, uint32_t, castTraitEven>(lowerU16, indexReg, indexMask);
-            MicroAPI::Cast<uint16_t, uint32_t, castTraitOdd>(highU16, indexRegSec, indexMask);
-            MicroAPI::DeInterleave(lowerU16, highU16, lowerU16, highU16);
-            MicroAPI::Select(indexU16, lowerU16, highU16, selectMask);
-            MicroAPI::LoadAlign<T>(srcReg, srcLocal + i * srcRep128);
-            MicroAPI::Interleave(srcReg, tmpReg, srcReg, tmpReg);
-            MicroAPI::Scatter<T, uint16_t>(dstLocal + dstBaseOffset, srcReg, indexU16, preg);
+            preg = Reg::UpdateMask<uint16_t>(sregPlt);
+            Reg::LoadAlign<uint32_t>(indexReg, dstOffsetLocal + 2 * i * indexRepElems);
+            Reg::LoadAlign<uint32_t>(indexRegSec, dstOffsetLocal + (2 * i + 1) * indexRepElems);
+            Reg::Cast<uint16_t, uint32_t, castTraitEven>(lowerU16, indexReg, indexMask);
+            Reg::Cast<uint16_t, uint32_t, castTraitOdd>(highU16, indexRegSec, indexMask);
+            Reg::DeInterleave(lowerU16, highU16, lowerU16, highU16);
+            Reg::Select(indexU16, lowerU16, highU16, selectMask);
+            Reg::LoadAlign<T>(srcReg, srcLocal + i * srcRep128);
+            Reg::Interleave(srcReg, tmpReg, srcReg, tmpReg);
+            Reg::Scatter<T, uint16_t>(dstLocal + dstBaseOffset, srcReg, indexU16, preg);
         }
     }
 }
@@ -290,42 +290,42 @@ __aicore__ inline void ScatterImplB8(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal,
 {
     __VEC_SCOPE__
     {
-        MicroAPI::RegTensor<uint32_t> indexRegSec;
-        MicroAPI::RegTensor<uint32_t> indexReg;
-        MicroAPI::RegTensor<uint16_t> highU16;
-        MicroAPI::RegTensor<uint16_t> lowerU16;
-        MicroAPI::RegTensor<uint16_t> indexU16;
-        MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint8_t>();
-        MicroAPI::MaskReg selectMask = MicroAPI::CreateMask<uint16_t, MicroAPI::MaskPattern::H>();
-        MicroAPI::RegTensor<T> tmpReg;
-        MicroAPI::RegTensor<T> srcReg;
-        MicroAPI::MaskReg srcPreg;
+        Reg::RegTensor<uint32_t> indexRegSec;
+        Reg::RegTensor<uint32_t> indexReg;
+        Reg::RegTensor<uint16_t> highU16;
+        Reg::RegTensor<uint16_t> lowerU16;
+        Reg::RegTensor<uint16_t> indexU16;
+        Reg::MaskReg indexMask = Reg::CreateMask<uint8_t>();
+        Reg::MaskReg selectMask = Reg::CreateMask<uint16_t, Reg::MaskPattern::H>();
+        Reg::RegTensor<T> tmpReg;
+        Reg::RegTensor<T> srcReg;
+        Reg::MaskReg srcPreg;
         uint32_t srcMask = static_cast<uint32_t>(mask);
         if constexpr (isNormalMode) {
             if constexpr (isMaskBitMode) {
-                MicroAPI::MaskReg scatterMask = MicroAPI::MoveMask<uint16_t>();
-                MicroAPI::MaskPack(scatterMask, scatterMask);
-                MicroAPI::MaskUnPack(srcPreg, scatterMask);
+                Reg::MaskReg scatterMask = Reg::MoveMask<uint16_t>();
+                Reg::MaskPack(scatterMask, scatterMask);
+                Reg::MaskUnPack(srcPreg, scatterMask);
             } else {
                 if (srcMask > srcRep128) {
                     srcMask = srcRep128;
                 }
-                srcPreg = MicroAPI::UpdateMask<uint16_t>(srcMask);
+                srcPreg = Reg::UpdateMask<uint16_t>(srcMask);
             }
         }
         for (uint16_t i = 0; i < (uint16_t)repeatTime; i++) {
             if constexpr (!isNormalMode) {
-                srcPreg = MicroAPI::UpdateMask<uint16_t>(srcMask);
+                srcPreg = Reg::UpdateMask<uint16_t>(srcMask);
             }
-            MicroAPI::LoadAlign<uint32_t>(indexReg, dstOffsetLocal + 2 * i * indexRepElems);
-            MicroAPI::LoadAlign<uint32_t>(indexRegSec, dstOffsetLocal + (2 * i + 1) * indexRepElems);
-            MicroAPI::Cast<uint16_t, uint32_t, castTraitEven>(lowerU16, indexReg, indexMask);
-            MicroAPI::Cast<uint16_t, uint32_t, castTraitOdd>(highU16, indexRegSec, indexMask);
-            MicroAPI::DeInterleave(lowerU16, highU16, lowerU16, highU16);
-            MicroAPI::Select(indexU16, lowerU16, highU16, selectMask);
-            MicroAPI::LoadAlign<T>(srcReg, srcLocal + i * srcRepStride * b8BlkElems);
-            MicroAPI::Interleave(srcReg, tmpReg, srcReg, tmpReg);
-            MicroAPI::Scatter<T, uint16_t>(dstLocal + dstBaseOffset, srcReg, indexU16, srcPreg);
+            Reg::LoadAlign<uint32_t>(indexReg, dstOffsetLocal + 2 * i * indexRepElems);
+            Reg::LoadAlign<uint32_t>(indexRegSec, dstOffsetLocal + (2 * i + 1) * indexRepElems);
+            Reg::Cast<uint16_t, uint32_t, castTraitEven>(lowerU16, indexReg, indexMask);
+            Reg::Cast<uint16_t, uint32_t, castTraitOdd>(highU16, indexRegSec, indexMask);
+            Reg::DeInterleave(lowerU16, highU16, lowerU16, highU16);
+            Reg::Select(indexU16, lowerU16, highU16, selectMask);
+            Reg::LoadAlign<T>(srcReg, srcLocal + i * srcRepStride * b8BlkElems);
+            Reg::Interleave(srcReg, tmpReg, srcReg, tmpReg);
+            Reg::Scatter<T, uint16_t>(dstLocal + dstBaseOffset, srcReg, indexU16, srcPreg);
         }
     }
 }

@@ -73,20 +73,20 @@ private:
 
             __VEC_SCOPE__ 
             {
-                MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg0;
-                MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg1;
-                MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vDstReg0;
+                Reg::RegTensor<T, Reg::RegTraitNumTwo> vSrcReg0;
+                Reg::RegTensor<T, Reg::RegTraitNumTwo> vSrcReg1;
+                Reg::RegTensor<T, Reg::RegTraitNumTwo> vDstReg0;
 
                 uint32_t sreg = static_cast<uint32_t>(dataSize);
                 for (uint16_t i = 0; i < repeatTimes; i++) {
-                    MicroAPI::MaskReg maskReg = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
+                    Reg::MaskReg maskReg = Reg::UpdateMask<T, Reg::RegTraitNumTwo>(sreg);
                     DataCopy(vSrcReg0, src0 + i * oneRepSize * 2);
                     DataCopy(vSrcReg1, src1 + i * oneRepSize * 2);
                     #ifdef vF
                     #if vF == 0
-                        MicroAPI::Div(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
+                        Reg::Div(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
                     #elif vF == 1:
-                        MicroAPI::MulAddDst(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
+                        Reg::MulAddDst(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
                     #endif
                     #endif
                     DataCopy(dst + i * oneRepSize * 2, vDstReg0, maskReg);
@@ -98,9 +98,9 @@ private:
             #if vF == 0
                 Div(dstLocal, src0Local, src1Local, dataSize);
             #elif vF == 1:
-                MicroAPI::MulAddDst(dstLocal, src0Local, src1Local, dataSize);
+                Reg::MulAddDst(dstLocal, src0Local, src1Local, dataSize);
             #elif vF == 2:
-                    MicroAPI::FusedAbsSub(dstLocal, src0Local, src1Local, dataSize);s
+                    Reg::FusedAbsSub(dstLocal, src0Local, src1Local, dataSize);s
             #endif
             #endif
         // Mirco Trait1
@@ -115,22 +115,22 @@ private:
 
             __VEC_SCOPE__ 
             {
-                MicroAPI::RegTensor<T, MicroAPI::RegTraitNumOne> vSrcReg0;
-                MicroAPI::RegTensor<T, MicroAPI::RegTraitNumOne> vSrcReg1;
-                MicroAPI::RegTensor<T, MicroAPI::RegTraitNumOne> vDstReg0;
+                Reg::RegTensor<T, Reg::RegTraitNumOne> vSrcReg0;
+                Reg::RegTensor<T, Reg::RegTraitNumOne> vSrcReg1;
+                Reg::RegTensor<T, Reg::RegTraitNumOne> vDstReg0;
 
                 uint32_t sreg = static_cast<uint32_t>(dataSize * 2);
                 for (uint16_t i = 0; i < repeatTimes; i++) {
-                    MicroAPI::MaskReg maskReg = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
+                    Reg::MaskReg maskReg = Reg::UpdateMask<T, Reg::RegTraitNumTwo>(sreg);
                     DataCopy(vSrcReg0, src0 + i * oneRepSize);
                     DataCopy(vSrcReg1, src1 + i * oneRepSize);
                     #ifdef vF
                     #if vF == 0
-                        MicroAPI::Div(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
+                        Reg::Div(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
                     #elif vF == 1:
-                        MicroAPI::MulAddDst(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
+                        Reg::MulAddDst(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
                     #elif vF == 2:
-                        MicroAPI::FusedAbsSub(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
+                        Reg::FusedAbsSub(vDstReg0, vSrcReg0, vSrcReg1, maskReg);
                     #endif
                     #endif
                     DataCopy(dst + i * oneRepSize, vDstReg0, maskReg);

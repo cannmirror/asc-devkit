@@ -53,10 +53,10 @@ private:
         __ubuf__ IndexT* indexPtr = (__ubuf__ IndexT*)indexLocal.GetPhyAddr();
         __ubuf__ DstT* dstPtr = (__ubuf__ DstT*)dstLocal.GetPhyAddr();
 
-        using MicroAPI::RegTensor;
-        using MicroAPI::MaskReg;
-        using MicroAPI::CreateMask;
-        using MicroAPI::UpdateMask;
+        using Reg::RegTensor;
+        using Reg::MaskReg;
+        using Reg::CreateMask;
+        using Reg::UpdateMask;
 
         __VEC_SCOPE__
         {
@@ -68,17 +68,17 @@ private:
             uint16_t repeatTimes = CeilDivision(m_elementCount, repeatElm);
             for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
                 if constexpr (sizeof(SrcT) == 8) {
-                    preg = CreateMask<uint8_t, MicroAPI::MaskPattern::ALL>();  // notice in gatherb instruction regarded as B32 format
+                    preg = CreateMask<uint8_t, Reg::MaskPattern::ALL>();  // notice in gatherb instruction regarded as B32 format
                 } else {
                     preg = UpdateMask<SrcT>(sreg);
                 }
-                MicroAPI::DataCopy(vIndexReg, indexPtr + i * repeatElm);
+                Reg::DataCopy(vIndexReg, indexPtr + i * repeatElm);
 
                 DataCopyGatherB(vDstReg, srcPtr, vIndexReg, preg);
                 if constexpr (sizeof(SrcT) == 8) {
-                    MicroAPI::DataCopy<SrcT, MicroAPI::StoreDist::DIST_NORM_B32>(dstPtr + i * repeatElm, vDstReg, preg);
+                    Reg::DataCopy<SrcT, Reg::StoreDist::DIST_NORM_B32>(dstPtr + i * repeatElm, vDstReg, preg);
                 } else {
-                    MicroAPI::DataCopy(dstPtr + i * repeatElm, vDstReg, preg);
+                    Reg::DataCopy(dstPtr + i * repeatElm, vDstReg, preg);
                 }
             }
         }

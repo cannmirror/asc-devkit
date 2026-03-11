@@ -27,8 +27,8 @@
 namespace AscendC {
 namespace Internal {
 constexpr int32_t oneRegSize = GetVecLen() / sizeof(float);
-constexpr MicroAPI::CastTrait float2HalfCastTrait = {
-    MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait float2HalfCastTrait = {
+    Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
 struct LayerNormInternalPara {
     uint32_t hRepeatTimes;
@@ -57,185 +57,185 @@ __aicore__ inline void GetLayerNormInternalPara(LayerNormInternalPara& para, con
 }
 
 template <typename T>
-__simd_callee__ inline void CopyInFloatData(MicroAPI::RegTensor<float>& reg, __ubuf__ T* ub,
-    MicroAPI::MaskReg& hFloatAllMask)
+__simd_callee__ inline void CopyInFloatData(Reg::RegTensor<float>& reg, __ubuf__ T* ub,
+    Reg::MaskReg& hFloatAllMask)
 {
     if constexpr (SupportType<T, half>()) {
-        MicroAPI::RegTensor<T> oriInputH;
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_US_B16>(oriInputH, ub);
-        MicroAPI::Cast<float, T, layoutZMrgZ>(reg, oriInputH, hFloatAllMask);
+        Reg::RegTensor<T> oriInputH;
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_US_B16>(oriInputH, ub);
+        Reg::Cast<float, T, layoutZMrgZ>(reg, oriInputH, hFloatAllMask);
     } else {
-        MicroAPI::LoadAlign(reg, ub);
+        Reg::LoadAlign(reg, ub);
     }
 }
 }
 
 template <typename T>
-__simd_callee__ inline void CalcHMean(MicroAPI::RegTensor<float>& outputMean, __ubuf__ T* inputX,
+__simd_callee__ inline void CalcHMean(Reg::RegTensor<float>& outputMean, __ubuf__ T* inputX,
     Internal::LayerNormInternalPara& para)
 {
-    MicroAPI::RegTensor<float> hDim;
-    MicroAPI::Duplicate(hDim, para.hDim);
-    MicroAPI::RegTensor<float> sumResultH;
-    MicroAPI::Duplicate(sumResultH, 0);
-    MicroAPI::MaskReg hFloatAllMask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
+    Reg::RegTensor<float> hDim;
+    Reg::Duplicate(hDim, para.hDim);
+    Reg::RegTensor<float> sumResultH;
+    Reg::Duplicate(sumResultH, 0);
+    Reg::MaskReg hFloatAllMask = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
     uint32_t hTailSizeForMask = static_cast<uint32_t>(para.hTailSize);
-    MicroAPI::MaskReg hTailFloatMask = MicroAPI::UpdateMask<float>(hTailSizeForMask);
+    Reg::MaskReg hTailFloatMask = Reg::UpdateMask<float>(hTailSizeForMask);
 
     for (uint32_t repeat = 0; repeat < para.hRepeatCtrl; ++repeat) {
         // Copy first block to sumResultH.
         Internal::CopyInFloatData(sumResultH, inputX, hFloatAllMask);
         // Calc x/H in first block
-        MicroAPI::Div(sumResultH, sumResultH, hDim, hFloatAllMask);
+        Reg::Div(sumResultH, sumResultH, hDim, hFloatAllMask);
 
         for (uint32_t i = 1; i < para.hRepeatTimes; ++i) {
-            MicroAPI::RegTensor<float> inputMeanTempReg;
+            Reg::RegTensor<float> inputMeanTempReg;
             // Copy new block to inputMeanTempReg.
             Internal::CopyInFloatData(inputMeanTempReg, inputX + i * Internal::oneRegSize, hFloatAllMask);
             // Calc x/H in new block
-            MicroAPI::Div(inputMeanTempReg, inputMeanTempReg, hDim, hFloatAllMask);
+            Reg::Div(inputMeanTempReg, inputMeanTempReg, hDim, hFloatAllMask);
             // Accumulate new data onto sumResultH
-            MicroAPI::Add(sumResultH, sumResultH, inputMeanTempReg, hFloatAllMask);
+            Reg::Add(sumResultH, sumResultH, inputMeanTempReg, hFloatAllMask);
         }
     }
 
     for (uint32_t tail = 0; tail < para.hTailCtrl; ++tail) {
-        MicroAPI::RegTensor<float> inputMeanTempReg;
+        Reg::RegTensor<float> inputMeanTempReg;
         // Copy tail block to inputMeanTempReg.
         Internal::CopyInFloatData(inputMeanTempReg, inputX + para.hTailOffset, hTailFloatMask);
 
         // Calc x/H in tail block
-        MicroAPI::Div(inputMeanTempReg, inputMeanTempReg, hDim, hTailFloatMask);
+        Reg::Div(inputMeanTempReg, inputMeanTempReg, hDim, hTailFloatMask);
         // Accumulate tail data onto sumResultH
-        MicroAPI::Add(sumResultH, sumResultH, inputMeanTempReg, hFloatAllMask);
+        Reg::Add(sumResultH, sumResultH, inputMeanTempReg, hFloatAllMask);
     }
-    MicroAPI::ReduceSum(outputMean, sumResultH, hFloatAllMask);
+    Reg::ReduceSum(outputMean, sumResultH, hFloatAllMask);
 }
 
 template <typename T>
-__simd_callee__ inline void CalcHVariance(MicroAPI::RegTensor<float>& outputVariance, MicroAPI::RegTensor<float>& meanReg,
+__simd_callee__ inline void CalcHVariance(Reg::RegTensor<float>& outputVariance, Reg::RegTensor<float>& meanReg,
     __ubuf__ T* inputX, Internal::LayerNormInternalPara& para)
 {
-    MicroAPI::RegTensor<float> sumVarianceResultH;
-    MicroAPI::Duplicate(sumVarianceResultH, 0);
-    MicroAPI::RegTensor<float> hDim;
-    MicroAPI::Duplicate(hDim, para.hDim);
+    Reg::RegTensor<float> sumVarianceResultH;
+    Reg::Duplicate(sumVarianceResultH, 0);
+    Reg::RegTensor<float> hDim;
+    Reg::Duplicate(hDim, para.hDim);
 
     uint32_t hTailSizeForMask = static_cast<uint32_t>(para.hTailSize);
-    MicroAPI::MaskReg hTailFloatMask = MicroAPI::UpdateMask<float>(hTailSizeForMask);
-    MicroAPI::MaskReg hFloatAllMask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
+    Reg::MaskReg hTailFloatMask = Reg::UpdateMask<float>(hTailSizeForMask);
+    Reg::MaskReg hFloatAllMask = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
 
     for (uint32_t repeat = 0; repeat < para.hRepeatCtrl; ++repeat) {
         // Copy first block to sumVarianceResultH.
         Internal::CopyInFloatData(sumVarianceResultH, inputX, hFloatAllMask);
 
         // Calc x - mean in first block
-        MicroAPI::Sub(sumVarianceResultH, sumVarianceResultH, meanReg, hFloatAllMask);
+        Reg::Sub(sumVarianceResultH, sumVarianceResultH, meanReg, hFloatAllMask);
         // Calc (x - mean)^2 in first block
-        MicroAPI::Mul(sumVarianceResultH, sumVarianceResultH, sumVarianceResultH, hFloatAllMask);
+        Reg::Mul(sumVarianceResultH, sumVarianceResultH, sumVarianceResultH, hFloatAllMask);
         // Calc (x - mean)^2 / H in first block
-        MicroAPI::Div(sumVarianceResultH, sumVarianceResultH, hDim, hFloatAllMask);
+        Reg::Div(sumVarianceResultH, sumVarianceResultH, hDim, hFloatAllMask);
 
         for (uint32_t i = 1; i < para.hRepeatTimes; ++i) {
-            MicroAPI::RegTensor<float> inputVarianceReg;
+            Reg::RegTensor<float> inputVarianceReg;
             // Copy new block to inputVarianceReg.
             Internal::CopyInFloatData(inputVarianceReg, inputX + i * Internal::oneRegSize, hFloatAllMask);
 
             // Calc x - mean in new block
-            MicroAPI::Sub(inputVarianceReg, inputVarianceReg, meanReg, hFloatAllMask);
+            Reg::Sub(inputVarianceReg, inputVarianceReg, meanReg, hFloatAllMask);
             // Calc (x - mean)^2 in new block
-            MicroAPI::Mul(inputVarianceReg, inputVarianceReg, inputVarianceReg, hFloatAllMask);
+            Reg::Mul(inputVarianceReg, inputVarianceReg, inputVarianceReg, hFloatAllMask);
             // Calc (x - mean)^2 / H in new block
-            MicroAPI::Div(inputVarianceReg, inputVarianceReg, hDim, hFloatAllMask);
+            Reg::Div(inputVarianceReg, inputVarianceReg, hDim, hFloatAllMask);
             // Accumulate new data onto sumVarianceResultH
-            MicroAPI::Add(sumVarianceResultH, sumVarianceResultH, inputVarianceReg, hFloatAllMask);
+            Reg::Add(sumVarianceResultH, sumVarianceResultH, inputVarianceReg, hFloatAllMask);
         }
     }
 
     for (uint32_t tail = 0; tail < para.hTailCtrl; ++tail) {
-        MicroAPI::RegTensor<float> inputVarianceReg;
+        Reg::RegTensor<float> inputVarianceReg;
         // Copy tail block to inputVarianceReg.
         Internal::CopyInFloatData(inputVarianceReg, inputX + para.hTailOffset, hTailFloatMask);
 
         // Calc x - mean in tail block
-        MicroAPI::Sub(inputVarianceReg, inputVarianceReg, meanReg, hTailFloatMask);
+        Reg::Sub(inputVarianceReg, inputVarianceReg, meanReg, hTailFloatMask);
         // Calc (x - mean)^2 in tail block
-        MicroAPI::Mul(inputVarianceReg, inputVarianceReg, inputVarianceReg, hTailFloatMask);
+        Reg::Mul(inputVarianceReg, inputVarianceReg, inputVarianceReg, hTailFloatMask);
         // Calc (x - mean)^2 / H in tail block
-        MicroAPI::Div(inputVarianceReg, inputVarianceReg, hDim, hTailFloatMask);
+        Reg::Div(inputVarianceReg, inputVarianceReg, hDim, hTailFloatMask);
         // Accumulate new data onto sumVarianceResultH
-        MicroAPI::Add(sumVarianceResultH, sumVarianceResultH, inputVarianceReg, hFloatAllMask);
+        Reg::Add(sumVarianceResultH, sumVarianceResultH, inputVarianceReg, hFloatAllMask);
     }
-    MicroAPI::ReduceSum(outputVariance, sumVarianceResultH, hFloatAllMask);
+    Reg::ReduceSum(outputVariance, sumVarianceResultH, hFloatAllMask);
 }
 
 template <typename T>
-__simd_callee__ inline void CalcHSingleBlockOutPut(__ubuf__ T* output, MicroAPI::RegTensor<float>& meanReg,
-    MicroAPI::RegTensor<float>& varianceReg, __ubuf__ T* inputX, __ubuf__ T* gamma, __ubuf__ T* beta,
-    MicroAPI::RegTensor<float>& sdReg, MicroAPI::MaskReg& hFloatMask)
+__simd_callee__ inline void CalcHSingleBlockOutPut(__ubuf__ T* output, Reg::RegTensor<float>& meanReg,
+    Reg::RegTensor<float>& varianceReg, __ubuf__ T* inputX, __ubuf__ T* gamma, __ubuf__ T* beta,
+    Reg::RegTensor<float>& sdReg, Reg::MaskReg& hFloatMask)
 {
-    MicroAPI::RegTensor<float> resultH;
+    Reg::RegTensor<float> resultH;
 
     if constexpr (SupportType<T, half>()) {
-        MicroAPI::RegTensor<T> oriInputH;
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_US_B16>(oriInputH, inputX);
-        MicroAPI::Cast<float, T, layoutZMrgZ>(resultH, oriInputH, hFloatMask);
+        Reg::RegTensor<T> oriInputH;
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_US_B16>(oriInputH, inputX);
+        Reg::Cast<float, T, layoutZMrgZ>(resultH, oriInputH, hFloatMask);
 
         // Calc x - mean in first block.
-        MicroAPI::Sub(resultH, resultH, meanReg, hFloatMask);
+        Reg::Sub(resultH, resultH, meanReg, hFloatMask);
         // Calc (x - mean) / sdReg in first block.
-        MicroAPI::Div(resultH, resultH, sdReg, hFloatMask);
+        Reg::Div(resultH, resultH, sdReg, hFloatMask);
 
-        MicroAPI::RegTensor<T> oriGammaH;
-        MicroAPI::RegTensor<float> gammaReg;
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_US_B16>(oriGammaH, gamma);
-        MicroAPI::Cast<float, T, layoutZMrgZ>(gammaReg, oriGammaH, hFloatMask);
+        Reg::RegTensor<T> oriGammaH;
+        Reg::RegTensor<float> gammaReg;
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_US_B16>(oriGammaH, gamma);
+        Reg::Cast<float, T, layoutZMrgZ>(gammaReg, oriGammaH, hFloatMask);
         // Calc (x - mean) / sdReg * gamma in first block.
-        MicroAPI::Mul(resultH, resultH, gammaReg, hFloatMask);
+        Reg::Mul(resultH, resultH, gammaReg, hFloatMask);
 
-        MicroAPI::RegTensor<T> oriBetaH;
-        MicroAPI::RegTensor<float> betaReg;
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_US_B16>(oriBetaH, beta);
-        MicroAPI::Cast<float, T, layoutZMrgZ>(betaReg, oriBetaH, hFloatMask);
+        Reg::RegTensor<T> oriBetaH;
+        Reg::RegTensor<float> betaReg;
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_US_B16>(oriBetaH, beta);
+        Reg::Cast<float, T, layoutZMrgZ>(betaReg, oriBetaH, hFloatMask);
         // Calc (x - mean) * sdReg * gamma + in first block.
-        MicroAPI::Add(resultH, resultH, betaReg, hFloatMask);
+        Reg::Add(resultH, resultH, betaReg, hFloatMask);
 
-        MicroAPI::RegTensor<T> oriOutputH;
-        MicroAPI::Cast<T, float, Internal::float2HalfCastTrait>(oriOutputH, resultH, hFloatMask);
-        MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_PACK_B32>(output, oriOutputH, hFloatMask);
+        Reg::RegTensor<T> oriOutputH;
+        Reg::Cast<T, float, Internal::float2HalfCastTrait>(oriOutputH, resultH, hFloatMask);
+        Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B32>(output, oriOutputH, hFloatMask);
     } else {
-        MicroAPI::LoadAlign(resultH, inputX);
+        Reg::LoadAlign(resultH, inputX);
         // Calc x - mean in first block.
-        MicroAPI::Sub(resultH, resultH, meanReg, hFloatMask);
+        Reg::Sub(resultH, resultH, meanReg, hFloatMask);
         // Calc (x - mean) / sdReg in first block.
-        MicroAPI::Div(resultH, resultH, sdReg, hFloatMask);
+        Reg::Div(resultH, resultH, sdReg, hFloatMask);
 
-        MicroAPI::RegTensor<float> gammaReg;
-        MicroAPI::LoadAlign(gammaReg, gamma);
+        Reg::RegTensor<float> gammaReg;
+        Reg::LoadAlign(gammaReg, gamma);
         // Calc (x - mean) * sdReg * gamma in first block.
-        MicroAPI::Mul(resultH, resultH, gammaReg, hFloatMask);
+        Reg::Mul(resultH, resultH, gammaReg, hFloatMask);
 
-        MicroAPI::RegTensor<float> betaReg;
-        MicroAPI::LoadAlign(betaReg, beta);
+        Reg::RegTensor<float> betaReg;
+        Reg::LoadAlign(betaReg, beta);
         // Calc (x - mean) * sdReg * gamma + in first block.
-        MicroAPI::Add(resultH, resultH, betaReg, hFloatMask);
+        Reg::Add(resultH, resultH, betaReg, hFloatMask);
 
-        MicroAPI::StoreAlign(output, resultH, hFloatMask);
+        Reg::StoreAlign(output, resultH, hFloatMask);
     }
 }
 
 template <typename T>
-__simd_callee__ inline void CalcHOutPut(__ubuf__ T* output, MicroAPI::RegTensor<float>& meanReg,
-    MicroAPI::RegTensor<float>& varianceReg, __ubuf__ T* inputX, __ubuf__ T* gamma,
+__simd_callee__ inline void CalcHOutPut(__ubuf__ T* output, Reg::RegTensor<float>& meanReg,
+    Reg::RegTensor<float>& varianceReg, __ubuf__ T* inputX, __ubuf__ T* gamma,
     __ubuf__ T* beta, const T epsilon, Internal::LayerNormInternalPara& para)
 {
-    MicroAPI::MaskReg hFloatAllMask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::RegTensor<float> sdReg;    // The standard deviation.
+    Reg::MaskReg hFloatAllMask = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
+    Reg::RegTensor<float> sdReg;    // The standard deviation.
 
     // Calc variance + epsilon.
-    MicroAPI::Adds(sdReg, varianceReg, epsilon, hFloatAllMask);
+    Reg::Adds(sdReg, varianceReg, epsilon, hFloatAllMask);
     // Calc (variance + epsilon)^(1/2).
-    MicroAPI::Sqrt(sdReg, sdReg, hFloatAllMask);
+    Reg::Sqrt(sdReg, sdReg, hFloatAllMask);
 
     for (uint32_t i = 0; i < para.hRepeatTimes; ++i) {
         CalcHSingleBlockOutPut(output + i * Internal::oneRegSize, meanReg, varianceReg,
@@ -245,7 +245,7 @@ __simd_callee__ inline void CalcHOutPut(__ubuf__ T* output, MicroAPI::RegTensor<
 
     for (uint32_t tail = 0; tail < para.hTailCtrl; ++tail) {
         uint32_t hTailSizeForMask = static_cast<uint32_t>(para.hTailSize);
-        MicroAPI::MaskReg hTailFloatMask = MicroAPI::UpdateMask<float>(hTailSizeForMask);
+        Reg::MaskReg hTailFloatMask = Reg::UpdateMask<float>(hTailSizeForMask);
         CalcHSingleBlockOutPut(output + para.hTailOffset, meanReg, varianceReg, inputX + para.hTailOffset,
             gamma + para.hTailOffset, beta + para.hTailOffset, sdReg, hTailFloatMask);
     }
@@ -256,9 +256,9 @@ __simd_vf__ inline void LayerNormImplVf(__ubuf__ T* output, __ubuf__ T* outputMe
     __ubuf__ T* outputVariance, __ubuf__ T* inputX, __ubuf__ T* gamma,
     __ubuf__ T* beta, const T epsilon, Internal::LayerNormInternalPara para, LayerNormTiling tiling)
 {
-    MicroAPI::MaskReg floatLowestMask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::VL1>();
-    MicroAPI::MaskReg srcLowestMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::VL1>();
-    MicroAPI::MaskReg hFloatAllMask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
+    Reg::MaskReg floatLowestMask = Reg::CreateMask<float, Reg::MaskPattern::VL1>();
+    Reg::MaskReg srcLowestMask = Reg::CreateMask<T, Reg::MaskPattern::VL1>();
+    Reg::MaskReg hFloatAllMask = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
 
     uint32_t bLength = tiling.bLength;
     uint32_t sLength = tiling.sLength;
@@ -267,33 +267,33 @@ __simd_vf__ inline void LayerNormImplVf(__ubuf__ T* output, __ubuf__ T* outputMe
 
     for (uint32_t bIdx = 0; bIdx < bLength; ++bIdx) {
         for (uint32_t sIdx = 0; sIdx < sLength; ++sIdx) {
-            MicroAPI::RegTensor<float> outputMeanReg;
+            Reg::RegTensor<float> outputMeanReg;
             CalcHMean(outputMeanReg, inputX + bIdx * bTotalLength + sIdx * hLength, para);
-            MicroAPI::RegTensor<float> meanRegForNextCalc;
-            MicroAPI::Duplicate(meanRegForNextCalc, outputMeanReg, hFloatAllMask);
+            Reg::RegTensor<float> meanRegForNextCalc;
+            Reg::Duplicate(meanRegForNextCalc, outputMeanReg, hFloatAllMask);
 
             if constexpr (SupportType<T, half>()) {
-                MicroAPI::RegTensor<T> oriTypeOutputMean;
-                MicroAPI::Cast<T, float, Internal::float2HalfCastTrait>(oriTypeOutputMean, outputMeanReg, floatLowestMask);
-                MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B16>(
+                Reg::RegTensor<T> oriTypeOutputMean;
+                Reg::Cast<T, float, Internal::float2HalfCastTrait>(oriTypeOutputMean, outputMeanReg, floatLowestMask);
+                Reg::StoreAlign<T, Reg::StoreDist::DIST_FIRST_ELEMENT_B16>(
                     outputMean + bIdx * sLength + sIdx, oriTypeOutputMean, srcLowestMask);
             } else {
-                MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>(
+                Reg::StoreAlign<T, Reg::StoreDist::DIST_FIRST_ELEMENT_B32>(
                     outputMean + bIdx * sLength + sIdx, outputMeanReg, floatLowestMask);
             }
 
-            MicroAPI::RegTensor<float> outputVarianceReg;
+            Reg::RegTensor<float> outputVarianceReg;
             CalcHVariance(outputVarianceReg, meanRegForNextCalc, inputX + bIdx * bTotalLength + sIdx * hLength, para);
-            MicroAPI::RegTensor<float> varianceRegNextCalc;
-            MicroAPI::Duplicate(varianceRegNextCalc, outputVarianceReg, hFloatAllMask);
+            Reg::RegTensor<float> varianceRegNextCalc;
+            Reg::Duplicate(varianceRegNextCalc, outputVarianceReg, hFloatAllMask);
 
             if constexpr (SupportType<T, half>()) {
-                MicroAPI::RegTensor<T> oriTypeOutputVariance;
-                MicroAPI::Cast<T, float, Internal::float2HalfCastTrait>(oriTypeOutputVariance, outputVarianceReg, floatLowestMask);
-                MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B16>(
+                Reg::RegTensor<T> oriTypeOutputVariance;
+                Reg::Cast<T, float, Internal::float2HalfCastTrait>(oriTypeOutputVariance, outputVarianceReg, floatLowestMask);
+                Reg::StoreAlign<T, Reg::StoreDist::DIST_FIRST_ELEMENT_B16>(
                     outputVariance + bIdx * sLength + sIdx, oriTypeOutputVariance, srcLowestMask);
             } else {
-                MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>(
+                Reg::StoreAlign<T, Reg::StoreDist::DIST_FIRST_ELEMENT_B32>(
                     outputVariance + bIdx * sLength + sIdx, outputVarianceReg, floatLowestMask);
             }
 

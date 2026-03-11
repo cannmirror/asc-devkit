@@ -35,18 +35,18 @@ __simd_vf__ inline void ClampCompute(__ubuf__ T* dstUb, __ubuf__ T* srcUb,
     const T scalar, uint32_t calCount, const uint16_t repeatTimes)
 {
     constexpr uint32_t repeatElm = GetVecLen() / sizeof(T);
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::RegTensor<T> dstReg;
-    MicroAPI::MaskReg maskReg;
+    Reg::RegTensor<T> srcReg;
+    Reg::RegTensor<T> dstReg;
+    Reg::MaskReg maskReg;
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        maskReg = MicroAPI::UpdateMask<T>(calCount);
-        MicroAPI::LoadAlign<T>(srcReg, srcUb + i * repeatElm);
+        maskReg = Reg::UpdateMask<T>(calCount);
+        Reg::LoadAlign<T>(srcReg, srcUb + i * repeatElm);
         if constexpr (selMode == CLAMPMODE::CLAMP_MAX) {
-            MicroAPI::Mins(dstReg, srcReg, scalar, maskReg);
+            Reg::Mins(dstReg, srcReg, scalar, maskReg);
         } else {
-            MicroAPI::Maxs(dstReg, srcReg, scalar, maskReg);
+            Reg::Maxs(dstReg, srcReg, scalar, maskReg);
         }
-        MicroAPI::StoreAlign<T>(dstUb + i * repeatElm, dstReg, maskReg);
+        Reg::StoreAlign<T>(dstUb + i * repeatElm, dstReg, maskReg);
     }
 }
 /* **************************************************************************************************
@@ -114,43 +114,43 @@ struct ClampConfig {
 };
 constexpr ClampConfig DEFAULT_CLAMP_CONFIG = { false };
 
-template <typename T, typename RegT, const MicroAPI::RegTrait& Trait = MicroAPI::RegTraitNumOne>
+template <typename T, typename RegT, const Reg::RegTrait& Trait = Reg::RegTraitNumOne>
 __simd_vf__ inline void ClampImplTensorScalarVF(__ubuf__ T* dst, __ubuf__ T* src, __ubuf__ T* min, const T max, uint16_t repeatTime, 
     uint32_t count, uint32_t oneRepElm)
 {
     RegT dstVreg;
     RegT srcVreg;
     RegT minVreg;
-    MicroAPI::MaskReg mask;
+    Reg::MaskReg mask;
     for (uint16_t i = 0; i < repeatTime; ++i) {
-        mask = MicroAPI::UpdateMask<T, Trait>(count);
-        MicroAPI::LoadAlign(srcVreg, src + i * oneRepElm);
-        MicroAPI::LoadAlign(minVreg, min + i * oneRepElm);
-        MicroAPI::Max(dstVreg, srcVreg, minVreg, mask);
-        MicroAPI::Mins(dstVreg, dstVreg, max, mask);
-        MicroAPI::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
+        mask = Reg::UpdateMask<T, Trait>(count);
+        Reg::LoadAlign(srcVreg, src + i * oneRepElm);
+        Reg::LoadAlign(minVreg, min + i * oneRepElm);
+        Reg::Max(dstVreg, srcVreg, minVreg, mask);
+        Reg::Mins(dstVreg, dstVreg, max, mask);
+        Reg::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
     }
 }
 
-template <typename T, typename RegT, const MicroAPI::RegTrait& Trait = MicroAPI::RegTraitNumOne>
+template <typename T, typename RegT, const Reg::RegTrait& Trait = Reg::RegTraitNumOne>
 __simd_vf__ inline void ClampImplScalarTensorVF(__ubuf__ T* dst, __ubuf__ T* src, const T min, __ubuf__ T* max, uint16_t repeatTime, 
     uint32_t count, uint32_t oneRepElm)
 {
     RegT dstVreg;
     RegT srcVreg;
     RegT maxVreg;
-    MicroAPI::MaskReg mask;
+    Reg::MaskReg mask;
     for (uint16_t i = 0; i < repeatTime; ++i) {
-        mask = MicroAPI::UpdateMask<T, Trait>(count);
-        MicroAPI::LoadAlign(srcVreg, src + i * oneRepElm);
-        MicroAPI::LoadAlign(maxVreg, max + i * oneRepElm);
-        MicroAPI::Maxs(dstVreg, srcVreg, min, mask);
-        MicroAPI::Min(dstVreg, dstVreg, maxVreg, mask);
-        MicroAPI::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
+        mask = Reg::UpdateMask<T, Trait>(count);
+        Reg::LoadAlign(srcVreg, src + i * oneRepElm);
+        Reg::LoadAlign(maxVreg, max + i * oneRepElm);
+        Reg::Maxs(dstVreg, srcVreg, min, mask);
+        Reg::Min(dstVreg, dstVreg, maxVreg, mask);
+        Reg::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
     }
 }
 
-template <typename T, typename RegT, const MicroAPI::RegTrait& Trait = MicroAPI::RegTraitNumOne>
+template <typename T, typename RegT, const Reg::RegTrait& Trait = Reg::RegTraitNumOne>
 __simd_vf__ inline void ClampImplBothTensorVF(__ubuf__ T* dst, __ubuf__ T* src, __ubuf__ T* min, __ubuf__ T* max, uint16_t repeatTime, 
     uint32_t count, uint32_t oneRepElm)
 {
@@ -158,31 +158,31 @@ __simd_vf__ inline void ClampImplBothTensorVF(__ubuf__ T* dst, __ubuf__ T* src, 
     RegT srcVreg;
     RegT minVreg;
     RegT maxVreg;
-    MicroAPI::MaskReg mask;
+    Reg::MaskReg mask;
     for (uint16_t i = 0; i < repeatTime; ++i) {
-        mask = MicroAPI::UpdateMask<T, Trait>(count);
-        MicroAPI::LoadAlign(srcVreg, src + i * oneRepElm);
-        MicroAPI::LoadAlign(minVreg, min + i * oneRepElm);
-        MicroAPI::LoadAlign(maxVreg, max + i * oneRepElm);
-        MicroAPI::Max(dstVreg, srcVreg, minVreg, mask);
-        MicroAPI::Min(dstVreg, dstVreg, maxVreg, mask);
-        MicroAPI::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
+        mask = Reg::UpdateMask<T, Trait>(count);
+        Reg::LoadAlign(srcVreg, src + i * oneRepElm);
+        Reg::LoadAlign(minVreg, min + i * oneRepElm);
+        Reg::LoadAlign(maxVreg, max + i * oneRepElm);
+        Reg::Max(dstVreg, srcVreg, minVreg, mask);
+        Reg::Min(dstVreg, dstVreg, maxVreg, mask);
+        Reg::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
     }
 }
 
-template <typename T, typename RegT, const MicroAPI::RegTrait& Trait = MicroAPI::RegTraitNumOne>
+template <typename T, typename RegT, const Reg::RegTrait& Trait = Reg::RegTraitNumOne>
 __simd_vf__ inline void ClampImplBothScalarVF(__ubuf__ T* dst, __ubuf__ T* src, const T min, const T max, uint16_t repeatTime, 
     uint32_t count, uint32_t oneRepElm)
 {
     RegT dstVreg;
     RegT srcVreg;
-    MicroAPI::MaskReg mask;
+    Reg::MaskReg mask;
     for (uint16_t i = 0; i < repeatTime; ++i) {
-        mask = MicroAPI::UpdateMask<T, Trait>(count);
-        MicroAPI::LoadAlign(srcVreg, src + i * oneRepElm);
-        MicroAPI::Maxs(dstVreg, srcVreg, min, mask);
-        MicroAPI::Mins(dstVreg, dstVreg, max, mask);
-        MicroAPI::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
+        mask = Reg::UpdateMask<T, Trait>(count);
+        Reg::LoadAlign(srcVreg, src + i * oneRepElm);
+        Reg::Maxs(dstVreg, srcVreg, min, mask);
+        Reg::Mins(dstVreg, dstVreg, max, mask);
+        Reg::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
     }
 }
 
@@ -206,13 +206,13 @@ __aicore__ inline void ClampImpl(const LocalTensor<T>& dst, const LocalTensor<T>
         if constexpr (sizeof(T) == 8) {
             constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T) * CLAMP_B64_REPEAT_STRIDE);
             uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-            using RegT = MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>;
-            ClampImplBothTensorVF<T, RegT, MicroAPI::RegTraitNumTwo>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
+            using RegT = Reg::RegTensor<T, Reg::RegTraitNumTwo>;
+            ClampImplBothTensorVF<T, RegT, Reg::RegTraitNumTwo>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
                 (__ubuf__ T*)min.GetPhyAddr(), (__ubuf__ T*)max.GetPhyAddr(), repeatTime, count, oneRepElm);
         } else {
             constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
             uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-            using RegT = MicroAPI::RegTensor<T>;
+            using RegT = Reg::RegTensor<T>;
             ClampImplBothTensorVF<T, RegT>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
                 (__ubuf__ T*)min.GetPhyAddr(), (__ubuf__ T*)max.GetPhyAddr(), repeatTime, count, oneRepElm);
         }
@@ -224,13 +224,13 @@ __aicore__ inline void ClampImpl(const LocalTensor<T>& dst, const LocalTensor<T>
         if constexpr (sizeof(T) == 8) {
             constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T) * CLAMP_B64_REPEAT_STRIDE);
             uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-            using RegT = MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>;
-            ClampImplTensorScalarVF<T, RegT, MicroAPI::RegTraitNumTwo>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
+            using RegT = Reg::RegTensor<T, Reg::RegTraitNumTwo>;
+            ClampImplTensorScalarVF<T, RegT, Reg::RegTraitNumTwo>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
                 (__ubuf__ T*)min.GetPhyAddr(), max, repeatTime, count, oneRepElm);
         } else {
             constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
             uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-            using RegT = MicroAPI::RegTensor<T>;
+            using RegT = Reg::RegTensor<T>;
             ClampImplTensorScalarVF<T, RegT>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
                 (__ubuf__ T*)min.GetPhyAddr(), max, repeatTime, count, oneRepElm);;
         }
@@ -242,13 +242,13 @@ __aicore__ inline void ClampImpl(const LocalTensor<T>& dst, const LocalTensor<T>
         if constexpr (sizeof(T) == 8) {
             constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T) * CLAMP_B64_REPEAT_STRIDE);
             uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-            using RegT = MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>;
-            ClampImplScalarTensorVF<T, RegT, MicroAPI::RegTraitNumTwo>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
+            using RegT = Reg::RegTensor<T, Reg::RegTraitNumTwo>;
+            ClampImplScalarTensorVF<T, RegT, Reg::RegTraitNumTwo>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
                 min, (__ubuf__ T*)max.GetPhyAddr(), repeatTime, count, oneRepElm);
         } else {
             constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
             uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-            using RegT = MicroAPI::RegTensor<T>;
+            using RegT = Reg::RegTensor<T>;
             ClampImplScalarTensorVF<T, RegT>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
                 min, (__ubuf__ T*)max.GetPhyAddr(), repeatTime, count, oneRepElm);
         }
@@ -258,13 +258,13 @@ __aicore__ inline void ClampImpl(const LocalTensor<T>& dst, const LocalTensor<T>
         if constexpr (sizeof(T) == 8) {
             constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T) * CLAMP_B64_REPEAT_STRIDE);
             uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-            using RegT = MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>;
-            ClampImplBothScalarVF<T, RegT, MicroAPI::RegTraitNumTwo>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
+            using RegT = Reg::RegTensor<T, Reg::RegTraitNumTwo>;
+            ClampImplBothScalarVF<T, RegT, Reg::RegTraitNumTwo>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
                 min, max, repeatTime, count, oneRepElm);
         } else {
             constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
             uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-            using RegT = MicroAPI::RegTensor<T>;
+            using RegT = Reg::RegTensor<T>;
             ClampImplBothScalarVF<T, RegT>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
                 min, max, repeatTime, count, oneRepElm);
         }

@@ -37,37 +37,37 @@ constexpr float ASINH_ZERO = 0;
 template <typename T>
 __simd_vf__ inline void AsinhImplVF(__ubuf__ T* dst, __ubuf__ T* src, uint32_t calCount, uint16_t repeatTimes)
 {
-    MicroAPI::RegTensor<T> srcVreg;
-    MicroAPI::RegTensor<T> dstVreg;
-    MicroAPI::RegTensor<float> tmpReg1;
-    MicroAPI::RegTensor<float> tmpReg2;
-    MicroAPI::MaskReg mask;
-    MicroAPI::MaskReg signMaskReg;
+    Reg::RegTensor<T> srcVreg;
+    Reg::RegTensor<T> dstVreg;
+    Reg::RegTensor<float> tmpReg1;
+    Reg::RegTensor<float> tmpReg2;
+    Reg::MaskReg mask;
+    Reg::MaskReg signMaskReg;
     constexpr int32_t oneRepElm = static_cast<int32_t>(GetVecLen() / sizeof(float));
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = MicroAPI::UpdateMask<float>(calCount);
+        mask = Reg::UpdateMask<float>(calCount);
         if constexpr (sizeof(T) == sizeof(half)) {
-            MicroAPI::LoadAlign<half, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcVreg, src + i * oneRepElm);
-            MicroAPI::Cast<float, half, castTraitB16ToB32>((MicroAPI::RegTensor<float>&)srcVreg, srcVreg, mask);
+            Reg::LoadAlign<half, Reg::LoadDist::DIST_UNPACK_B16>(srcVreg, src + i * oneRepElm);
+            Reg::Cast<float, half, castTraitB16ToB32>((Reg::RegTensor<float>&)srcVreg, srcVreg, mask);
         } else {
-            MicroAPI::LoadAlign(srcVreg, src + i * oneRepElm);
+            Reg::LoadAlign(srcVreg, src + i * oneRepElm);
         }
-        MicroAPI::CompareScalar<float, CMPMODE::LT>(
-            signMaskReg, (MicroAPI::RegTensor<float>&)srcVreg, ASINH_ZERO, mask);
-        MicroAPI::Abs(tmpReg1, (MicroAPI::RegTensor<float>&)srcVreg, mask);
-        MicroAPI::Mul(tmpReg2, (MicroAPI::RegTensor<float>&)srcVreg, (MicroAPI::RegTensor<float>&)srcVreg, mask);
-        MicroAPI::Adds(tmpReg2, tmpReg2, ASINH_ONE, mask);
-        MicroAPI::Sqrt(tmpReg2, tmpReg2, mask);
-        MicroAPI::Add(tmpReg1, tmpReg1, tmpReg2, mask);
-        MicroAPI::Ln(tmpReg1, tmpReg1, mask);
-        MicroAPI::Muls((MicroAPI::RegTensor<float>&)dstVreg, tmpReg1, ASINH_NEG_ONE, signMaskReg);
-        MicroAPI::Or((MicroAPI::RegTensor<uint32_t>&)dstVreg, (MicroAPI::RegTensor<uint32_t>&)dstVreg,
-            (MicroAPI::RegTensor<uint32_t>&)tmpReg1, mask);
+        Reg::CompareScalar<float, CMPMODE::LT>(
+            signMaskReg, (Reg::RegTensor<float>&)srcVreg, ASINH_ZERO, mask);
+        Reg::Abs(tmpReg1, (Reg::RegTensor<float>&)srcVreg, mask);
+        Reg::Mul(tmpReg2, (Reg::RegTensor<float>&)srcVreg, (Reg::RegTensor<float>&)srcVreg, mask);
+        Reg::Adds(tmpReg2, tmpReg2, ASINH_ONE, mask);
+        Reg::Sqrt(tmpReg2, tmpReg2, mask);
+        Reg::Add(tmpReg1, tmpReg1, tmpReg2, mask);
+        Reg::Ln(tmpReg1, tmpReg1, mask);
+        Reg::Muls((Reg::RegTensor<float>&)dstVreg, tmpReg1, ASINH_NEG_ONE, signMaskReg);
+        Reg::Or((Reg::RegTensor<uint32_t>&)dstVreg, (Reg::RegTensor<uint32_t>&)dstVreg,
+            (Reg::RegTensor<uint32_t>&)tmpReg1, mask);
         if constexpr (sizeof(T) == sizeof(half)) {
-            MicroAPI::Cast<half, float, castTraitB32ToB16>(dstVreg, (MicroAPI::RegTensor<float>&)dstVreg, mask);
-            MicroAPI::StoreAlign<half, MicroAPI::StoreDist::DIST_PACK_B32>(dst + i * oneRepElm, dstVreg, mask);
+            Reg::Cast<half, float, castTraitB32ToB16>(dstVreg, (Reg::RegTensor<float>&)dstVreg, mask);
+            Reg::StoreAlign<half, Reg::StoreDist::DIST_PACK_B32>(dst + i * oneRepElm, dstVreg, mask);
         } else {
-            MicroAPI::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
+            Reg::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
         }
     }
 }

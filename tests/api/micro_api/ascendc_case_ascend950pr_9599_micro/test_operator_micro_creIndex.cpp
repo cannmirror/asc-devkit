@@ -55,20 +55,20 @@ private:
  
         __VEC_SCOPE__
         {
-            MicroAPI::RegTensor<T> vIndexReg;
-            MicroAPI::RegTensor<T> vDstReg;
-            MicroAPI::RegTensor<T> vSrcReg;
+            Reg::RegTensor<T> vIndexReg;
+            Reg::RegTensor<T> vDstReg;
+            Reg::RegTensor<T> vSrcReg;
             uint32_t sreg = static_cast<uint32_t>(mElementCount);
-            MicroAPI::MaskReg preg;
+            Reg::MaskReg preg;
             uint32_t repeatElm = VECTOR_REG_WIDTH / sizeof(T);
             uint16_t repeatTimes = CeilDivision(mElementCount, repeatElm);
             T scalar = 1;
             for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTimes); ++i) {
-                preg = MicroAPI::UpdateMask<half>(sreg);
-                MicroAPI::DataCopy(vIndexReg, indexPtr + i * repeatElm);
-                MicroAPI::Arange(vDstReg, scalar);
+                preg = Reg::UpdateMask<half>(sreg);
+                Reg::DataCopy(vIndexReg, indexPtr + i * repeatElm);
+                Reg::Arange(vDstReg, scalar);
  
-                MicroAPI::DataCopy(dstPtr + i * repeatElm, vDstReg, preg);
+                Reg::DataCopy(dstPtr + i * repeatElm, vDstReg, preg);
             }
         }
        

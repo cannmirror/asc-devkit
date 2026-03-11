@@ -29,14 +29,14 @@ __simd_vf__ inline void CeilCompute(__ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32
     const uint16_t repeatTimes)
 {
     constexpr uint32_t repeatElm = GetVecLen() / sizeof(T);
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::RegTensor<T> dstReg;
-    MicroAPI::MaskReg maskReg;
+    Reg::RegTensor<T> srcReg;
+    Reg::RegTensor<T> dstReg;
+    Reg::MaskReg maskReg;
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        maskReg = MicroAPI::UpdateMask<T>(calCount);
-        MicroAPI::LoadAlign<T>(srcReg, srcUb + i * repeatElm);
-        MicroAPI::Truncate<T, RoundMode::CAST_CEIL>(dstReg, srcReg, maskReg);
-        MicroAPI::StoreAlign<T>(dstUb + i * repeatElm, dstReg, maskReg);
+        maskReg = Reg::UpdateMask<T>(calCount);
+        Reg::LoadAlign<T>(srcReg, srcUb + i * repeatElm);
+        Reg::Truncate<T, RoundMode::CAST_CEIL>(dstReg, srcReg, maskReg);
+        Reg::StoreAlign<T>(dstUb + i * repeatElm, dstReg, maskReg);
     }
 }
 

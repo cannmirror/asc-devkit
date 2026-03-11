@@ -25,31 +25,31 @@
 namespace AscendC {
 namespace ERFC {
 
-constexpr MicroAPI::CastTrait castTraitF162F32 = {
-    MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
-constexpr MicroAPI::CastTrait castTraitF322F16 = {
-    MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait castTraitF162F32 = {
+    Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN, Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait castTraitF322F16 = {
+    Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
-__simd_callee__ inline void MulAdds(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg1,
-    MicroAPI::RegTensor<float>& srcReg2, const float scalarValue, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void MulAdds(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg1,
+    Reg::RegTensor<float>& srcReg2, const float scalarValue, Reg::MaskReg& mask)
 {
     // dst = src1 * src2 + scalarValue
-    MicroAPI::RegTensor<float> tmpReg;
-    MicroAPI::Mul(tmpReg, srcReg1, srcReg2, mask);
-    MicroAPI::Adds(dstReg, tmpReg, scalarValue, mask);
+    Reg::RegTensor<float> tmpReg;
+    Reg::Mul(tmpReg, srcReg1, srcReg2, mask);
+    Reg::Adds(dstReg, tmpReg, scalarValue, mask);
 }
     
 // compute Erfc with xa = |x| + fp32_min
-__simd_callee__ inline void ErfcPreCompute(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg mask)
+__simd_callee__ inline void ErfcPreCompute(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, Reg::MaskReg mask)
 {
     constexpr float SCALAR_ERFC_FP32_MIN = 2.168404344971009e-19; // 2^-62
-    MicroAPI::RegTensor<float> tmpReg;
-    MicroAPI::Abs(tmpReg, srcReg, mask);
-    MicroAPI::Adds(dstReg, tmpReg, SCALAR_ERFC_FP32_MIN, mask);
+    Reg::RegTensor<float> tmpReg;
+    Reg::Abs(tmpReg, srcReg, mask);
+    Reg::Adds(dstReg, tmpReg, SCALAR_ERFC_FP32_MIN, mask);
 }
 
 // compute Erfc R(z) = ((((((((z*r0 + r1)*z + r2)*z + r3)*z + r4)*z + r5)*z + r6)*z + r7)*z + r8)
-__simd_callee__ inline void ErfcComputeR(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg mask)
+__simd_callee__ inline void ErfcComputeR(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, Reg::MaskReg mask)
 {
     // Specific value used for approximate calculation.
     constexpr float R0 = 0.1735313680e-7;
@@ -62,8 +62,8 @@ __simd_callee__ inline void ErfcComputeR(MicroAPI::RegTensor<float>& dstReg, Mic
     constexpr float R7 = 0.4212761755e2;
     constexpr float R8 = 0.4380524149e2;
 
-    MicroAPI::RegTensor<float> rReg;
-    MicroAPI::Duplicate(rReg, R0, mask);
+    Reg::RegTensor<float> rReg;
+    Reg::Duplicate(rReg, R0, mask);
     MulAdds(dstReg, srcReg, rReg, R1, mask);
     MulAdds(dstReg, dstReg, srcReg, R2, mask);
     MulAdds(dstReg, dstReg, srcReg, R3, mask);
@@ -75,7 +75,7 @@ __simd_callee__ inline void ErfcComputeR(MicroAPI::RegTensor<float>& dstReg, Mic
 }
 
 // compute Erfc S(z) = (((((z + s1)*z + s2)*z + s3)*z + s4)*z + s5)
-__simd_callee__ inline void ErfcComputeS(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg mask)
+__simd_callee__ inline void ErfcComputeS(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, Reg::MaskReg mask)
 {
     // Specific value used for approximate calculation.
     constexpr float S1 = 0.9349684299e1;
@@ -84,69 +84,69 @@ __simd_callee__ inline void ErfcComputeS(MicroAPI::RegTensor<float>& dstReg, Mic
     constexpr float S4 = 0.9155653738e2;
     constexpr float S5 = 0.4380524152e2;
 
-    MicroAPI::Adds(dstReg, srcReg, S1, mask);
+    Reg::Adds(dstReg, srcReg, S1, mask);
     MulAdds(dstReg, dstReg, srcReg, S2, mask);
     MulAdds(dstReg, dstReg, srcReg, S3, mask);
     MulAdds(dstReg, dstReg, srcReg, S4, mask);
     MulAdds(dstReg, dstReg, srcReg, S5, mask);
 }
 
-__simd_callee__ inline void ErfcClip(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg mask)
+__simd_callee__ inline void ErfcClip(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, Reg::MaskReg mask)
 {
     constexpr float ERFC_BOUNDARY_MAX = 10.0f;
-    MicroAPI::Mins(dstReg, srcReg, ERFC_BOUNDARY_MAX, mask);
-    MicroAPI::Maxs(dstReg, dstReg, -ERFC_BOUNDARY_MAX, mask);
+    Reg::Mins(dstReg, srcReg, ERFC_BOUNDARY_MAX, mask);
+    Reg::Maxs(dstReg, dstReg, -ERFC_BOUNDARY_MAX, mask);
 }
 
 // Compute Erfc: exp(-xa^2) * (R(z) / S(z)) * xb + (1 - xb)
-__simd_callee__ inline void ErfcPublicSteps(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg mask)
+__simd_callee__ inline void ErfcPublicSteps(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, Reg::MaskReg mask)
 {
     constexpr float MIN_BOUNDARY = 10.0f;
     // Compute xa = |x| + min_pf32, exp(-xa^2)
-    MicroAPI::RegTensor<float> xaReg, xbReg, zReg, rzReg, szReg;
-    MicroAPI::RegTensor<float> oneReg, tmpReg;
+    Reg::RegTensor<float> xaReg, xbReg, zReg, rzReg, szReg;
+    Reg::RegTensor<float> oneReg, tmpReg;
     ErfcPreCompute(xaReg, srcReg, mask);
-    MicroAPI::Mul(tmpReg, xaReg, xaReg, mask);
-    MicroAPI::Neg(tmpReg, tmpReg, mask);
-    MicroAPI::Exp(dstReg, tmpReg, mask);
+    Reg::Mul(tmpReg, xaReg, xaReg, mask);
+    Reg::Neg(tmpReg, tmpReg, mask);
+    Reg::Exp(dstReg, tmpReg, mask);
     // Compute z = min(xa, 10), xb = x / xa, exp(-xa^2) * xb
-    MicroAPI::Mins(zReg, xaReg, MIN_BOUNDARY, mask);
-    MicroAPI::Div(xbReg, srcReg, xaReg, mask);
-    MicroAPI::Mul(dstReg, dstReg, xbReg, mask);
+    Reg::Mins(zReg, xaReg, MIN_BOUNDARY, mask);
+    Reg::Div(xbReg, srcReg, xaReg, mask);
+    Reg::Mul(dstReg, dstReg, xbReg, mask);
     // Compute exp(-xa^2) * xb * (R(z) / S(z)) 
     ErfcComputeR(rzReg, zReg, mask);
     ErfcComputeS(szReg, zReg, mask);
-    MicroAPI::Mul(dstReg, dstReg, rzReg, mask);
-    MicroAPI::Div(dstReg, dstReg, szReg, mask);
+    Reg::Mul(dstReg, dstReg, rzReg, mask);
+    Reg::Div(dstReg, dstReg, szReg, mask);
 
-    MicroAPI::Duplicate(oneReg, 1.0f, mask);
-    MicroAPI::Sub(tmpReg, oneReg, xbReg, mask);
-    MicroAPI::Add(dstReg, dstReg, tmpReg, mask);
+    Reg::Duplicate(oneReg, 1.0f, mask);
+    Reg::Sub(tmpReg, oneReg, xbReg, mask);
+    Reg::Add(dstReg, dstReg, tmpReg, mask);
 }
 
 template<typename T>
 __simd_vf__ inline void ErfcCoreImpl(__ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32_t calCount, uint16_t repeatTimes)
 {
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::RegTensor<float> castReg;
-    MicroAPI::RegTensor<float> tmpReg;
-    MicroAPI::RegTensor<float> dstReg;
+    Reg::RegTensor<T> srcReg;
+    Reg::RegTensor<float> castReg;
+    Reg::RegTensor<float> tmpReg;
+    Reg::RegTensor<float> dstReg;
 
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        MicroAPI::MaskReg mask = MicroAPI::UpdateMask<float>(calCount);
+        Reg::MaskReg mask = Reg::UpdateMask<float>(calCount);
         if constexpr (sizeof(T) == sizeof(half)) {
-            MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
-            MicroAPI::Cast<float, T, castTraitF162F32>(castReg, srcReg, mask);
+            Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
+            Reg::Cast<float, T, castTraitF162F32>(castReg, srcReg, mask);
         } else {
-            MicroAPI::LoadAlign(castReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
+            Reg::LoadAlign(castReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
         }
         ErfcClip(tmpReg, castReg, mask);
         ErfcPublicSteps(dstReg, tmpReg, mask);
         if constexpr (sizeof(T) == sizeof(half)) {
-            MicroAPI::Cast<T, float, castTraitF322F16>(srcReg, dstReg, mask);
-            MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_PACK_B32>(dstUb + i * B32_DATA_NUM_PER_REPEAT, srcReg, mask);
+            Reg::Cast<T, float, castTraitF322F16>(srcReg, dstReg, mask);
+            Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B32>(dstUb + i * B32_DATA_NUM_PER_REPEAT, srcReg, mask);
         } else {
-            MicroAPI::StoreAlign(dstUb + i * B32_DATA_NUM_PER_REPEAT, dstReg, mask);
+            Reg::StoreAlign(dstUb + i * B32_DATA_NUM_PER_REPEAT, dstReg, mask);
         }
     }
 }

@@ -142,7 +142,7 @@ REGISTER_GATHER_MASK_B16(int16_t, s16)
                         hoist_let_var1 = ((uint64_t)src1) + ((uint64_t)sreg1);                                         \
                         vldus(vreg2, ureg1, ((__ubuf__ uint8_t *&)hoist_let_var1), 0, POST_UPDATE);                    \
                         vsts(vreg2, ((__ubuf__ uint8_t *)tempBuf), 0, NORM_B32, preg4);                                \
-                        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();            \
+                        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();            \
                         plds(preg1, ((__ubuf__ uint32_t *)tempBuf), 0, US);                                            \
                         punpack(preg3, preg1, LOWER);                                                                  \
                         pmov(preg2, preg3, preg0);                                                                     \
@@ -212,7 +212,7 @@ __aicore__ inline void GatherMaskCal(__ubuf__ T* dst, __ubuf__ T* src0, const ui
                 vector_bool preg3 = pge_b32(PAT_VL8);                                                                  \
                 vdup(vreg2, pattern[src1Pattern], preg3, MODE_ZEROING);                                                \
                 vsts(vreg2, ((__ubuf__ uint32_t *)tempBuf), 0, NORM_B32, preg3);                                       \
-                MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();                    \
+                Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();                    \
                 plds(preg1, ((__ubuf__ uint32_t *)tempBuf), 0, US);                                                    \
                 sprclr(SPR_AR);                                                                                        \
                 uint64_t hoist_let_var0 = ((uint64_t)dst);                                                             \
@@ -245,7 +245,7 @@ __aicore__ inline void GatherMaskCal(__ubuf__ T* dst, __ubuf__ T* src0, const ui
                 vector_bool preg2;                                                                                     \
                 vdup(vreg0, pattern[src1Pattern], preg0, MODE_ZEROING);                                                \
                 vsts(vreg0, ((__ubuf__ uint32_t *)tempBuf), 0, NORM_B32, preg0);                                       \
-                MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();                    \
+                Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();                    \
                 plds(preg2, ((__ubuf__ uint32_t *)tempBuf), 0, US);                                                    \
                 sprclr(SPR_AR);                                                                                        \
                 uint64_t hoist_let_var0 = ((uint64_t)dst);                                                             \
@@ -290,7 +290,7 @@ REGISTER_GATHER_MASK_SOLID_B16(int16_t, s16)
                 vector_bool preg4;                                                                                     \
                 vdup(vreg0, pattern[src1Pattern], preg0, MODE_ZEROING);                                                \
                 vsts(vreg0, ((__ubuf__ uint32_t *)tempBuf), 0, NORM_B32, preg0);                                       \
-                MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();                    \
+                Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();                    \
                 plds(preg2, ((__ubuf__ uint32_t *)tempBuf), 0, US);                                                    \
                 punpack(preg3, preg2, LOWER);                                                                          \
                 sprclr(SPR_AR);                                                                                        \
@@ -325,7 +325,7 @@ REGISTER_GATHER_MASK_SOLID_B16(int16_t, s16)
                 vector_bool preg3;                                                                                     \
                 vdup(vreg0, pattern[src1Pattern], preg0, MODE_ZEROING);                                                \
                 vsts(vreg0, ((__ubuf__ uint32_t *)tempBuf), 0, NORM_B32, preg0);                                       \
-                MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();                    \
+                Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();                    \
                 plds(preg2, ((__ubuf__ uint32_t *)tempBuf), 0, US);                                                    \
                 punpack(preg3, preg2, LOWER);                                                                          \
                 sprclr(SPR_AR);                                                                                        \

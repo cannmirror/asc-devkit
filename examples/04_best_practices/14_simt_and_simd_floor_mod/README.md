@@ -72,19 +72,19 @@
   floor_mod_simd负责float场景的计算。
   ```cpp
   for (uint16_t j = 0; j < loopTimes; j++) {
-        preg = AscendC::MicroAPI::UpdateMask<T>(sregMask);
-        AscendC::MicroAPI::DataCopy<T, AscendC::MicroAPI::LoadDist::DIST_NORM>(fmodResValue, fmodResAddr + VL_T * j);
-        AscendC::MicroAPI::Compare<T, AscendC::CMPMODE::NE>(negValue, fmodResValue, zeroValue, preg);
+        preg = AscendC::Reg::UpdateMask<T>(sregMask);
+        AscendC::Reg::DataCopy<T, AscendC::Reg::LoadDist::DIST_NORM>(fmodResValue, fmodResAddr + VL_T * j);
+        AscendC::Reg::Compare<T, AscendC::CMPMODE::NE>(negValue, fmodResValue, zeroValue, preg);
 
-        AscendC::MicroAPI::And(fmodSignValue, (AscendC::MicroAPI::RegTensor<uint32_t>&)fmodResValue, signValue, preg);
-        AscendC::MicroAPI::DataCopy<T, AscendC::MicroAPI::LoadDist::DIST_NORM>(inputX2Value, otherAddr + VL_T * j);
-        AscendC::MicroAPI::Add(addValue, fmodResValue, inputX2Value, preg);
-        AscendC::MicroAPI::And(inputX2signValue, (AscendC::MicroAPI::RegTensor<uint32_t>&)inputX2Value, signValue, preg);
-        AscendC::MicroAPI::Compare<uint32_t, AscendC::CMPMODE::NE>(signNegValue, fmodSignValue, inputX2signValue, preg);
+        AscendC::Reg::And(fmodSignValue, (AscendC::Reg::RegTensor<uint32_t>&)fmodResValue, signValue, preg);
+        AscendC::Reg::DataCopy<T, AscendC::Reg::LoadDist::DIST_NORM>(inputX2Value, otherAddr + VL_T * j);
+        AscendC::Reg::Add(addValue, fmodResValue, inputX2Value, preg);
+        AscendC::Reg::And(inputX2signValue, (AscendC::Reg::RegTensor<uint32_t>&)inputX2Value, signValue, preg);
+        AscendC::Reg::Compare<uint32_t, AscendC::CMPMODE::NE>(signNegValue, fmodSignValue, inputX2signValue, preg);
 
-        AscendC::MicroAPI::MaskAnd(resMaskValue, signNegValue, negValue, preg);
-        AscendC::MicroAPI::Select(resValue, addValue, fmodResValue, resMaskValue);
-        AscendC::MicroAPI::DataCopy<T, AscendC::MicroAPI::StoreDist::DIST_NORM>(dstAddr + VL_T * j, resValue, preg);
+        AscendC::Reg::MaskAnd(resMaskValue, signNegValue, negValue, preg);
+        AscendC::Reg::Select(resValue, addValue, fmodResValue, resMaskValue);
+        AscendC::Reg::DataCopy<T, AscendC::Reg::StoreDist::DIST_NORM>(dstAddr + VL_T * j, resValue, preg);
     }
   ```
 

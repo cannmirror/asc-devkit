@@ -61,17 +61,17 @@ private:
         __ubuf__ SrcT* src1Ptr = (__ubuf__ SrcT*)src1Local.GetPhyAddr();
         __VEC_SCOPE__
         {
-            MicroAPI::RegTensor<SrcT> vSrcReg1;
-            MicroAPI::RegTensor<DstT> vDstReg1;
+            Reg::RegTensor<SrcT> vSrcReg1;
+            Reg::RegTensor<DstT> vDstReg1;
             uint32_t sreg = static_cast<uint32_t>(mask);
-            MicroAPI::MaskReg maskReg;
-            maskReg = MicroAPI::UpdateMask<DstT>(sreg);
+            Reg::MaskReg maskReg;
+            maskReg = Reg::UpdateMask<DstT>(sreg);
             for (uint16_t i = 0; i < static_cast<uint16_t>(rep); i++) {
                 DataCopy(vSrcReg1, src1Ptr + i * oneRepSize);
                 if constexpr (mD == 0) {
                     Pack(vDstReg1, vSrcReg1);
                 } else if constexpr (mD == 1) {
-                    MicroAPI::UnPack(vDstReg1, vSrcReg1);
+                    Reg::UnPack(vDstReg1, vSrcReg1);
                 }
                 DataCopy(dst1Ptr + i * oneRepSize, vDstReg1, maskReg);
             }

@@ -43,7 +43,7 @@ __aicore__ inline void LogicalOrImpl(const LocalTensor<T>& dst, const LocalTenso
         return;
     }
     CHECK_FUNC_HIGHLEVEL_API(LogicalOr, (T, U, config.isReuseSource), (dst, src0, src1, count));
-    auto constexpr func = MicroAPI::MaskOr;
+    auto constexpr func = Reg::MaskOr;
     LogicalTemplateImpl<func, T, U>(dst, src0, src1, count);
 }
 

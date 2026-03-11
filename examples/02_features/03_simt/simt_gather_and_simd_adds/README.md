@@ -63,12 +63,12 @@
   gather_output[threadIdx.x] = input[gather_idx];
   ```
 
-  simd_adds负责将Local Memory中数据做加1操作。使用MicroAPI::LoadAlign将数据从Local Memory搬运到寄存器上，调用MicroAPI::Adds完成加1运算并输出到目标寄存器，最后调用MicroAPI::StoreAlign将数据从寄存器搬运到Local Memory。重复上述操作即可完成1024个数据的加1运算。
+  simd_adds负责将Local Memory中数据做加1操作。使用Reg::LoadAlign将数据从Local Memory搬运到寄存器上，调用Reg::Adds完成加1运算并输出到目标寄存器，最后调用Reg::StoreAlign将数据从寄存器搬运到Local Memory。重复上述操作即可完成1024个数据的加1运算。
   ```
   for (uint16_t i = 0; i < repeat_times; i++) {
-      AscendC::MicroAPI::LoadAlign(src_reg0, input + i * one_repeat_size);
-      AscendC::MicroAPI::Adds(dst_reg0, src_reg0, ADDS_ADDEND, mask_reg);
-      AscendC::MicroAPI::StoreAlign(output + i * one_repeat_size, dst_reg0, mask_reg);
+      AscendC::Reg::LoadAlign(src_reg0, input + i * one_repeat_size);
+      AscendC::Reg::Adds(dst_reg0, src_reg0, ADDS_ADDEND, mask_reg);
+      AscendC::Reg::StoreAlign(output + i * one_repeat_size, dst_reg0, mask_reg);
   }
   ```
 

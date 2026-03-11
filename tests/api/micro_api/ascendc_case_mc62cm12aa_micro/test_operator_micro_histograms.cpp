@@ -14,7 +14,7 @@
 using namespace std;
 using namespace AscendC;
  
-template<typename T, typename U, MicroAPI::HistogramsBinType mode, MicroAPI::HistogramsType type>
+template<typename T, typename U, Reg::HistogramsBinType mode, Reg::HistogramsType type>
 class KernelHistograms {
 public:
     __aicore__ inline KernelHistograms()
@@ -58,12 +58,12 @@ private:
         __ubuf__ T* srcPtr = (__ubuf__ T*)srcLocal.GetPhyAddr();
         __VEC_SCOPE__
         {
-            MicroAPI::RegTensor<T> vSrcReg;
-            MicroAPI::RegTensor<U> vDstReg;
+            Reg::RegTensor<T> vSrcReg;
+            Reg::RegTensor<U> vDstReg;
             uint32_t sreg = (uint32_t)mask;
-            MicroAPI::MaskReg maskReg;
-            maskReg = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::Histograms<T, U, mode, type>(vDstReg, vSrcReg, maskReg);
+            Reg::MaskReg maskReg;
+            maskReg = Reg::UpdateMask<T>(sreg);
+            Reg::Histograms<T, U, mode, type>(vDstReg, vSrcReg, maskReg);
         }
         outQueue.EnQue<U>(dstLocal);
         inQueue.FreeTensor(srcLocal);
@@ -91,7 +91,7 @@ struct MicroHistogramsParams {
     void (*CallFunc)();
 };
  
-template<typename T, typename U, MicroAPI::HistogramsBinType mode, MicroAPI::HistogramsType type>
+template<typename T, typename U, Reg::HistogramsBinType mode, Reg::HistogramsType type>
 void RunCase() {
     int src_byte_size = sizeof(T);
     int dst_byte_size = sizeof(U);
@@ -113,10 +113,10 @@ protected:
 };
  
 INSTANTIATE_TEST_CASE_P(MicroCmpTestCase, MicroHistogramsTestsuite,
-    ::testing::Values(MicroHistogramsParams { RunCase<uint8_t, uint16_t, MicroAPI::HistogramsBinType::BIN0, MicroAPI::HistogramsType::FREQUENCY>},
-                      MicroHistogramsParams { RunCase<uint8_t, uint16_t, MicroAPI::HistogramsBinType::BIN1, MicroAPI::HistogramsType::FREQUENCY>},
-                      MicroHistogramsParams { RunCase<uint8_t, uint16_t, MicroAPI::HistogramsBinType::BIN0, MicroAPI::HistogramsType::ACCUMULATE>},
-                      MicroHistogramsParams { RunCase<uint8_t, uint16_t, MicroAPI::HistogramsBinType::BIN1, MicroAPI::HistogramsType::ACCUMULATE>}
+    ::testing::Values(MicroHistogramsParams { RunCase<uint8_t, uint16_t, Reg::HistogramsBinType::BIN0, Reg::HistogramsType::FREQUENCY>},
+                      MicroHistogramsParams { RunCase<uint8_t, uint16_t, Reg::HistogramsBinType::BIN1, Reg::HistogramsType::FREQUENCY>},
+                      MicroHistogramsParams { RunCase<uint8_t, uint16_t, Reg::HistogramsBinType::BIN0, Reg::HistogramsType::ACCUMULATE>},
+                      MicroHistogramsParams { RunCase<uint8_t, uint16_t, Reg::HistogramsBinType::BIN1, Reg::HistogramsType::ACCUMULATE>}
                       ));
  
 TEST_P(MicroHistogramsTestsuite, MicroHistogramsTestCase)

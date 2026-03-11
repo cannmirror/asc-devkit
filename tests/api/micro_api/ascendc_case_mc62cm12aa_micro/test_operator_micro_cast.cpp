@@ -12,15 +12,15 @@
 #include "kernel_operator.h"
 
 using namespace AscendC;
-using MicroAPI::RegTensor;
-using MicroAPI::MaskReg;
-using MicroAPI::CreateMask;
-using MicroAPI::UpdateMask;
-using MicroAPI::Cast;
-using MicroAPI::MaskMergeMode;
-using MicroAPI::RegLayout;
-using MicroAPI::SatMode;
-using MicroAPI::Truncate;
+using Reg::RegTensor;
+using Reg::MaskReg;
+using Reg::CreateMask;
+using Reg::UpdateMask;
+using Reg::Cast;
+using Reg::MaskMergeMode;
+using Reg::RegLayout;
+using Reg::SatMode;
+using Reg::Truncate;
 
 template <typename SRC_T, typename DST_T, int32_t MD, MaskMergeMode MzMd, RegLayout RegLayoutMd,
     SatMode SatMd, RoundMode RoundMd>
@@ -47,7 +47,7 @@ public:
         Compute();
         CopyOut();
     }
-    static constexpr MicroAPI::CastTrait castTrait = {RegLayoutMd, SatMd, MzMd, RoundMd};
+    static constexpr Reg::CastTrait castTrait = {RegLayoutMd, SatMd, MzMd, RoundMd};
 private:
     __aicore__ inline void CopyIn()
     {
@@ -90,7 +90,7 @@ private:
 
 
             for (uint16_t i = 0; i < (uint16_t)rep; i++) {
-                MicroAPI::DataCopy(vSrcReg, srcPtr + i * src_rep_size);
+                Reg::DataCopy(vSrcReg, srcPtr + i * src_rep_size);
 
                 if constexpr (MD == 4) {
                     if constexpr (std::is_same<SRC_T, int32_t>::value && std::is_same<DST_T, int32_t>::value) {

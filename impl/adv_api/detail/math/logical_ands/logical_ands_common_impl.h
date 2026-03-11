@@ -44,7 +44,7 @@ __aicore__ inline void LogicalAndsImpl(const LocalTensor<T>& dst, const U& src0,
         return;
     }
     CHECK_FUNC_HIGHLEVEL_API(LogicalAnds, (T, U, S, config.isReuseSource), (dst, src0, src1, count));
-    auto constexpr func = MicroAPI::MaskAnd;
+    auto constexpr func = Reg::MaskAnd;
     LogicalTemplateScalarImpl<func, T, U, S, config.scalarTensorIndex>(dst, src0, src1, count);
 }
 

@@ -80,10 +80,10 @@ private:
         __ubuf__ T* src0Ptr = (__ubuf__ T*)src0Local.GetPhyAddr();
         __ubuf__ Scr1T* src1Ptr = (__ubuf__ Scr1T*)src1Local.GetPhyAddr();
         T scalar = 1;
-        static constexpr MicroAPI::SqrtSpecificMode sqrtMode = {MicroAPI::MaskMergeMode::ZEROING, true};
+        static constexpr Reg::SqrtSpecificMode sqrtMode = {Reg::MaskMergeMode::ZEROING, true};
         __VEC_SCOPE__
         {
-            using MicroAPI::RegTensor;
+            using Reg::RegTensor;
             RegTensor<T> vSrcReg0;
             RegTensor<Scr1T> vSrcReg1;
             RegTensor<T> vDstReg0;
@@ -91,36 +91,36 @@ private:
             vector_bool carryOut;
             vector_bool cmpReg;
             uint32_t sreg = static_cast<uint32_t>(mask);
-            MicroAPI::MaskReg maskReg;
-            maskReg = MicroAPI::UpdateMask<T>(sreg);
+            Reg::MaskReg maskReg;
+            maskReg = Reg::UpdateMask<T>(sreg);
             for (uint16_t i = 0; i < static_cast<uint16_t>(rep); i++) {
-                MicroAPI::DataCopy(vSrcReg0, src0Ptr + i * oneRepSize);
-                MicroAPI::DataCopy(vSrcReg1, src1Ptr + i * oneRepSize);
+                Reg::DataCopy(vSrcReg0, src0Ptr + i * oneRepSize);
+                Reg::DataCopy(vSrcReg1, src1Ptr + i * oneRepSize);
                 if constexpr (mD == 0) {
-                    MicroAPI::Abs(vDstReg1, vSrcReg0, maskReg);
+                    Reg::Abs(vDstReg1, vSrcReg0, maskReg);
                 } else if constexpr (mD == 1) {
-                    MicroAPI::Relu(vDstReg1, vSrcReg0, maskReg);
+                    Reg::Relu(vDstReg1, vSrcReg0, maskReg);
                 } else if constexpr (mD == 2) {
-                    MicroAPI::Exp(vDstReg1, vSrcReg0, maskReg);
+                    Reg::Exp(vDstReg1, vSrcReg0, maskReg);
                 } else if constexpr (mD == 3) {
-                    MicroAPI::Sqrt(vDstReg1, vSrcReg0, maskReg);
+                    Reg::Sqrt(vDstReg1, vSrcReg0, maskReg);
                     if constexpr (std::is_same<T, float>::value) {
-                        MicroAPI::Sqrt<T, &sqrtMode>(vDstReg1, vSrcReg0, maskReg);
+                        Reg::Sqrt<T, &sqrtMode>(vDstReg1, vSrcReg0, maskReg);
                     }
                 } else if constexpr (mD == 5) {
-                    MicroAPI::Log(vDstReg1, vSrcReg0, maskReg);
+                    Reg::Log(vDstReg1, vSrcReg0, maskReg);
                 } else if constexpr (mD == 6) {
-                    MicroAPI::Neg(vDstReg1, vSrcReg0, maskReg);
+                    Reg::Neg(vDstReg1, vSrcReg0, maskReg);
                 } else if constexpr (mD == 7) {
-                    MicroAPI::Not(vDstReg1, vSrcReg0, maskReg);
+                    Reg::Not(vDstReg1, vSrcReg0, maskReg);
                     Not(vDstReg1, vSrcReg0, maskReg);
                 } else if constexpr (mD == 8) {
-                    MicroAPI::Log2(vDstReg1, vSrcReg0, maskReg);
+                    Reg::Log2(vDstReg1, vSrcReg0, maskReg);
                 } else if constexpr (mD == 9) {
-                    MicroAPI::Log10(vDstReg1, vSrcReg0, maskReg);
+                    Reg::Log10(vDstReg1, vSrcReg0, maskReg);
                 } else if constexpr (mD == 10) {
-                    MicroAPI::Copy(vDstReg1, vSrcReg0, maskReg);
-                    MicroAPI::Copy(vDstReg1, vSrcReg0);
+                    Reg::Copy(vDstReg1, vSrcReg0, maskReg);
+                    Reg::Copy(vDstReg1, vSrcReg0);
                 }
                 DataCopy(dstPtr + i * oneRepSize, vDstReg1, maskReg);
             }

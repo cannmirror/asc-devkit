@@ -40,12 +40,12 @@ __simd_vf__ inline void DequantPerchannelVFImpl(__ubuf__ half* dstUb, __ubuf__ i
     uint32_t oneBlockNum = ONE_BLK_SIZE / sizeof(dstT);
     uint32_t dstInner = CeilDivision(N, oneBlockNum) * oneBlockNum;
 
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<int32_t> s32vreg;
-    MicroAPI::RegTensor<float> f32vreg;
-    MicroAPI::RegTensor<half> b16vreg;
-    MicroAPI::RegTensor<float> scaleB32Vreg0;
-    MicroAPI::RegTensor<float> scaleB32Vreg1;
+    Reg::MaskReg preg;
+    Reg::RegTensor<int32_t> s32vreg;
+    Reg::RegTensor<float> f32vreg;
+    Reg::RegTensor<half> b16vreg;
+    Reg::RegTensor<float> scaleB32Vreg0;
+    Reg::RegTensor<float> scaleB32Vreg1;
 
     uint32_t sregLower = ASCENDC_DEQUANT_B32_VF_LEN;
     uint16_t repeat = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
@@ -53,17 +53,17 @@ __simd_vf__ inline void DequantPerchannelVFImpl(__ubuf__ half* dstUb, __ubuf__ i
     for (uint16_t i = 0; i < static_cast<uint16_t>(rowNum); ++i) {
         uint32_t sreg = calCount;
         for (uint16_t j = 0; j < repeat; ++j) {
-            preg = MicroAPI::UpdateMask<uint32_t>(sreg);
-            MicroAPI::LoadAlign<int32_t, MicroAPI::LoadDist::DIST_NORM>(s32vreg, srcUb + i * N + j * sregLower);
-            MicroAPI::Cast<float, int32_t, MrgZRndA>(f32vreg, s32vreg, preg);
+            preg = Reg::UpdateMask<uint32_t>(sreg);
+            Reg::LoadAlign<int32_t, Reg::LoadDist::DIST_NORM>(s32vreg, srcUb + i * N + j * sregLower);
+            Reg::Cast<float, int32_t, MrgZRndA>(f32vreg, s32vreg, preg);
 
-            MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_DINTLV_B32>(scaleB32Vreg0, scaleB32Vreg1,
+            Reg::LoadAlign<float, Reg::LoadDist::DIST_DINTLV_B32>(scaleB32Vreg0, scaleB32Vreg1,
                 scaleUb + 2 * j * sregLower); // only half of uint64_t is used
 
-            MicroAPI::Mul(f32vreg, f32vreg, scaleB32Vreg0, preg);
+            Reg::Mul(f32vreg, f32vreg, scaleB32Vreg0, preg);
 
-            MicroAPI::Cast<dstT, float, LayoutZMrgZRndRSatS>(b16vreg, f32vreg, preg);
-            MicroAPI::StoreAlign<dstT, MicroAPI::StoreDist::DIST_PACK_B32>(dstUb + i * dstInner + j * sregLower, b16vreg,
+            Reg::Cast<dstT, float, LayoutZMrgZRndRSatS>(b16vreg, f32vreg, preg);
+            Reg::StoreAlign<dstT, Reg::StoreDist::DIST_PACK_B32>(dstUb + i * dstInner + j * sregLower, b16vreg,
                 preg);
         }
     }
@@ -92,12 +92,12 @@ __simd_vf__ inline void DequantPerchannelVFImpl(__ubuf__ dstT* dstUb, __ubuf__ i
     uint32_t oneBlockNum = ONE_BLK_SIZE / sizeof(dstT);
     uint32_t dstInner = CeilDivision(N, oneBlockNum) * oneBlockNum;
 
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<int32_t> s32vreg;
-    MicroAPI::RegTensor<float> f32vreg;
-    MicroAPI::RegTensor<dstT> b16vreg;
-    MicroAPI::RegTensor<scaleT> scaleVreg;
-    MicroAPI::RegTensor<float> scaleB32Vreg;
+    Reg::MaskReg preg;
+    Reg::RegTensor<int32_t> s32vreg;
+    Reg::RegTensor<float> f32vreg;
+    Reg::RegTensor<dstT> b16vreg;
+    Reg::RegTensor<scaleT> scaleVreg;
+    Reg::RegTensor<float> scaleB32Vreg;
 
     uint32_t sregLower = ASCENDC_DEQUANT_B32_VF_LEN;
     uint16_t repeat = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
@@ -105,26 +105,26 @@ __simd_vf__ inline void DequantPerchannelVFImpl(__ubuf__ dstT* dstUb, __ubuf__ i
     for (uint16_t i = 0; i < static_cast<uint16_t>(rowNum); ++i) {
         uint32_t sreg = calCount;
         for (uint16_t j = 0; j < repeat; ++j) {
-            preg = MicroAPI::UpdateMask<uint32_t>(sreg);
-            MicroAPI::LoadAlign<int32_t, MicroAPI::LoadDist::DIST_NORM>(s32vreg, srcUb + i * N + j * sregLower);
+            preg = Reg::UpdateMask<uint32_t>(sreg);
+            Reg::LoadAlign<int32_t, Reg::LoadDist::DIST_NORM>(s32vreg, srcUb + i * N + j * sregLower);
 
-            MicroAPI::Cast<float, int32_t, MrgZRndA>(f32vreg, s32vreg, preg);
+            Reg::Cast<float, int32_t, MrgZRndA>(f32vreg, s32vreg, preg);
             if constexpr (SupportType<scaleT, bfloat16_t>()) {
-                MicroAPI::LoadAlign<bfloat16_t, MicroAPI::LoadDist::DIST_UNPACK_B16>(scaleVreg,
+                Reg::LoadAlign<bfloat16_t, Reg::LoadDist::DIST_UNPACK_B16>(scaleVreg,
                     scaleUb + j * sregLower);
-                MicroAPI::Cast<float, bfloat16_t, layoutZMrgZ>(scaleB32Vreg, scaleVreg, preg); // bf16->fp32
+                Reg::Cast<float, bfloat16_t, layoutZMrgZ>(scaleB32Vreg, scaleVreg, preg); // bf16->fp32
             } else {
-                MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_NORM>(scaleB32Vreg, scaleUb + j * sregLower);
+                Reg::LoadAlign<float, Reg::LoadDist::DIST_NORM>(scaleB32Vreg, scaleUb + j * sregLower);
             }
 
-            MicroAPI::Mul(f32vreg, f32vreg, scaleB32Vreg, preg);
+            Reg::Mul(f32vreg, f32vreg, scaleB32Vreg, preg);
 
             if constexpr (SupportType<dstT, bfloat16_t, half>()) {
-                MicroAPI::Cast<dstT, float, LayoutZMrgZRndRSatS>(b16vreg, f32vreg, preg);
-                MicroAPI::StoreAlign<dstT, MicroAPI::StoreDist::DIST_PACK_B32>(dstUb + i * dstInner + j * sregLower, b16vreg,
+                Reg::Cast<dstT, float, LayoutZMrgZRndRSatS>(b16vreg, f32vreg, preg);
+                Reg::StoreAlign<dstT, Reg::StoreDist::DIST_PACK_B32>(dstUb + i * dstInner + j * sregLower, b16vreg,
                     preg);
             } else { // out is fp32
-                MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_NORM_B32>(dstUb + i * dstInner + j * sregLower,
+                Reg::StoreAlign<float, Reg::StoreDist::DIST_NORM_B32>(dstUb + i * dstInner + j * sregLower,
                     f32vreg, preg);
             }
         }
@@ -155,10 +155,10 @@ __simd_vf__ inline void DequantPertensorVFImpl(__ubuf__ dstT* dstUb, __ubuf__ in
     uint32_t oneBlockNum = ONE_BLK_SIZE / sizeof(dstT);
     uint32_t dstInner = CeilDivision(N, oneBlockNum) * oneBlockNum;
 
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<int32_t> s32vreg;
-    MicroAPI::RegTensor<float> f32vreg;
-    MicroAPI::RegTensor<bfloat16_t> b16vreg;
+    Reg::MaskReg preg;
+    Reg::RegTensor<int32_t> s32vreg;
+    Reg::RegTensor<float> f32vreg;
+    Reg::RegTensor<bfloat16_t> b16vreg;
 
     uint32_t sregLower = ASCENDC_DEQUANT_B32_VF_LEN;
     uint16_t repeat = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
@@ -166,21 +166,21 @@ __simd_vf__ inline void DequantPertensorVFImpl(__ubuf__ dstT* dstUb, __ubuf__ in
     for (uint16_t i = 0; i < static_cast<uint16_t>(rowNum); ++i) {
         uint32_t sreg = calCount;
         for (uint16_t j = 0; j < repeat; ++j) {
-            preg = MicroAPI::UpdateMask<uint32_t>(sreg);
-            MicroAPI::LoadAlign<int32_t, MicroAPI::LoadDist::DIST_NORM>(s32vreg, srcUb + i * N + j * sregLower);
-            MicroAPI::Cast<float, int32_t, MrgZRndA>(f32vreg, s32vreg, preg);
+            preg = Reg::UpdateMask<uint32_t>(sreg);
+            Reg::LoadAlign<int32_t, Reg::LoadDist::DIST_NORM>(s32vreg, srcUb + i * N + j * sregLower);
+            Reg::Cast<float, int32_t, MrgZRndA>(f32vreg, s32vreg, preg);
             if constexpr (SupportType<scaleT, bfloat16_t>()) {
-                MicroAPI::Muls(f32vreg, f32vreg, ToFloat(deqScale), preg);
+                Reg::Muls(f32vreg, f32vreg, ToFloat(deqScale), preg);
             } else {
-                MicroAPI::Muls(f32vreg, f32vreg, deqScale, preg);
+                Reg::Muls(f32vreg, f32vreg, deqScale, preg);
             }
 
             if constexpr (SupportType<dstT, bfloat16_t>()) {
-                MicroAPI::Cast<bfloat16_t, float, LayoutZMrgZRndRSatS>(b16vreg, f32vreg, preg);
-                MicroAPI::StoreAlign<bfloat16_t, MicroAPI::StoreDist::DIST_PACK_B32>(dstUb + i * dstInner + j * sregLower,
+                Reg::Cast<bfloat16_t, float, LayoutZMrgZRndRSatS>(b16vreg, f32vreg, preg);
+                Reg::StoreAlign<bfloat16_t, Reg::StoreDist::DIST_PACK_B32>(dstUb + i * dstInner + j * sregLower,
                     b16vreg, preg);
             } else { // out is fp32
-                MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_NORM_B32>(dstUb + i * dstInner + j * sregLower,
+                Reg::StoreAlign<float, Reg::StoreDist::DIST_NORM_B32>(dstUb + i * dstInner + j * sregLower,
                     f32vreg, preg);
             }
         }
@@ -199,25 +199,25 @@ __aicore__ inline void DequantPertensorImpl(const LocalTensor<dstT>& dstTensor, 
 }
 
 template <typename scaleT>
-__simd_callee__ inline void LoadPerTokenScale(__ubuf__ scaleT* addr, MicroAPI::RegTensor<scaleT>& vreg)
+__simd_callee__ inline void LoadPerTokenScale(__ubuf__ scaleT* addr, Reg::RegTensor<scaleT>& vreg)
 {
     if constexpr (SupportType<scaleT, half, bfloat16_t>()) {
-        MicroAPI::LoadAlign<scaleT, MicroAPI::LoadDist::DIST_BRC_B16>(vreg, addr);
+        Reg::LoadAlign<scaleT, Reg::LoadDist::DIST_BRC_B16>(vreg, addr);
     } else {
-        MicroAPI::LoadAlign<scaleT, MicroAPI::LoadDist::DIST_BRC_B32>(vreg, addr);
+        Reg::LoadAlign<scaleT, Reg::LoadDist::DIST_BRC_B32>(vreg, addr);
     }
 }
 
 template <typename dstT>
-__simd_callee__ inline void StoreRes(__ubuf__ dstT* dstAddr, MicroAPI::RegTensor<float>& vreg,
-                                MicroAPI::MaskReg& preg)
+__simd_callee__ inline void StoreRes(__ubuf__ dstT* dstAddr, Reg::RegTensor<float>& vreg,
+                                Reg::MaskReg& preg)
 {
     if constexpr (SupportType<dstT, half, bfloat16_t>()) {
-        MicroAPI::RegTensor<dstT> tempVreg;
-        MicroAPI::Cast<dstT, float, LayoutZMrgZRndRSatS>(tempVreg, vreg, preg);
-        MicroAPI::StoreAlign<dstT, MicroAPI::StoreDist::DIST_PACK_B32>(dstAddr, tempVreg, preg);
+        Reg::RegTensor<dstT> tempVreg;
+        Reg::Cast<dstT, float, LayoutZMrgZRndRSatS>(tempVreg, vreg, preg);
+        Reg::StoreAlign<dstT, Reg::StoreDist::DIST_PACK_B32>(dstAddr, tempVreg, preg);
     } else {
-        MicroAPI::StoreAlign<dstT, MicroAPI::StoreDist::DIST_NORM_B32>(dstAddr, vreg, preg);
+        Reg::StoreAlign<dstT, Reg::StoreDist::DIST_NORM_B32>(dstAddr, vreg, preg);
     }
 }
 
@@ -229,23 +229,23 @@ __simd_vf__ inline void DeQuantPerTokenForS32VF(__ubuf__ dstT* dstUb, __ubuf__ s
     uint32_t vecLen = ASCENDC_QUANT_B32_VF_LEN;
     uint16_t repeat = static_cast<uint16_t>(CeilDivision(para.n, vecLen));
 
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<int32_t> srcVreg;
-    MicroAPI::RegTensor<float> f32Vreg;
-    MicroAPI::RegTensor<scaleT> scaleVreg;
-    MicroAPI::RegTensor<float> scaleF32Vreg;
+    Reg::MaskReg preg;
+    Reg::RegTensor<int32_t> srcVreg;
+    Reg::RegTensor<float> f32Vreg;
+    Reg::RegTensor<scaleT> scaleVreg;
+    Reg::RegTensor<float> scaleF32Vreg;
     for (uint16_t i = 0; i < static_cast<uint16_t>(rowNum); ++i) {
         LoadPerTokenScale<scaleT>(scaleUb + i, scaleVreg);
         uint32_t sreg = para.n;
         for (uint16_t j = 0; j < repeat; ++j) {
-            preg = MicroAPI::UpdateMask<uint32_t>(sreg);
-            MicroAPI::LoadAlign<int32_t, MicroAPI::LoadDist::DIST_NORM>(srcVreg, srcUb + i * para.n + j * vecLen);
-            MicroAPI::Cast<float, int32_t, MrgZRndA>(f32Vreg, srcVreg, preg);
+            preg = Reg::UpdateMask<uint32_t>(sreg);
+            Reg::LoadAlign<int32_t, Reg::LoadDist::DIST_NORM>(srcVreg, srcUb + i * para.n + j * vecLen);
+            Reg::Cast<float, int32_t, MrgZRndA>(f32Vreg, srcVreg, preg);
             if constexpr (SupportType<scaleT, half, bfloat16_t>()) {
-                MicroAPI::Cast<float, scaleT, layoutZMrgZ>(scaleF32Vreg, scaleVreg, preg);
-                MicroAPI::Mul<float, MicroAPI::MaskMergeMode::ZEROING>(f32Vreg, f32Vreg, scaleF32Vreg, preg);
+                Reg::Cast<float, scaleT, layoutZMrgZ>(scaleF32Vreg, scaleVreg, preg);
+                Reg::Mul<float, Reg::MaskMergeMode::ZEROING>(f32Vreg, f32Vreg, scaleF32Vreg, preg);
             } else {
-                MicroAPI::Mul<float, MicroAPI::MaskMergeMode::ZEROING>(f32Vreg, f32Vreg, scaleVreg, preg);
+                Reg::Mul<float, Reg::MaskMergeMode::ZEROING>(f32Vreg, f32Vreg, scaleVreg, preg);
             }
             StoreRes<dstT>(dstUb + i * para.n + j * vecLen, f32Vreg, preg);
         }
@@ -271,22 +271,22 @@ __simd_vf__ inline void DeQuantPerTokenForF32VF(__ubuf__ dstT* dstUb, __ubuf__ s
     uint32_t vecLen = ASCENDC_QUANT_B32_VF_LEN;
     uint16_t repeat = static_cast<uint16_t>(CeilDivision(para.n, vecLen));
 
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<float> srcVreg;
-    MicroAPI::RegTensor<float> f32Vreg;
-    MicroAPI::RegTensor<scaleT> scaleVreg;
-    MicroAPI::RegTensor<float> scaleF32Vreg;
+    Reg::MaskReg preg;
+    Reg::RegTensor<float> srcVreg;
+    Reg::RegTensor<float> f32Vreg;
+    Reg::RegTensor<scaleT> scaleVreg;
+    Reg::RegTensor<float> scaleF32Vreg;
     for (uint16_t i = 0; i < static_cast<uint16_t>(rowNum); ++i) {
         LoadPerTokenScale<scaleT>(scaleUb + i, scaleVreg);
         uint32_t sreg = para.n;
         for (uint16_t j = 0; j < repeat; ++j) {
-            preg = MicroAPI::UpdateMask<uint32_t>(sreg);
-            MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_NORM>(srcVreg, srcUb + i * para.n + j * vecLen);
+            preg = Reg::UpdateMask<uint32_t>(sreg);
+            Reg::LoadAlign<float, Reg::LoadDist::DIST_NORM>(srcVreg, srcUb + i * para.n + j * vecLen);
             if constexpr (SupportType<scaleT, half, bfloat16_t>()) {
-                MicroAPI::Cast<float, scaleT, layoutZMrgZ>(scaleF32Vreg, scaleVreg, preg);
-                MicroAPI::Mul<float, MicroAPI::MaskMergeMode::ZEROING>(f32Vreg, srcVreg, scaleF32Vreg, preg);
+                Reg::Cast<float, scaleT, layoutZMrgZ>(scaleF32Vreg, scaleVreg, preg);
+                Reg::Mul<float, Reg::MaskMergeMode::ZEROING>(f32Vreg, srcVreg, scaleF32Vreg, preg);
             } else {
-                MicroAPI::Mul<float, MicroAPI::MaskMergeMode::ZEROING>(f32Vreg, srcVreg, scaleVreg, preg);
+                Reg::Mul<float, Reg::MaskMergeMode::ZEROING>(f32Vreg, srcVreg, scaleVreg, preg);
             }
             StoreRes<dstT>(dstUb + i * para.n + j * vecLen, f32Vreg, preg);
         }
@@ -306,28 +306,28 @@ __aicore__ inline void DeQuantPerTokenForF32(const LocalTensor<dstT>& dstTensor,
 
 template <typename T>
 __simd_callee__ inline void GetPerGroupScale(__ubuf__ T* scaleUb, const int32_t start, const AscendDeQuantParam& para,
-                                        const AscendDeQuantConfig& config, MicroAPI::RegTensor<T>& scaleReg)
+                                        const AscendDeQuantConfig& config, Reg::RegTensor<T>& scaleReg)
 {
     // use vgather to get perGroup scale/offset
     uint32_t groupSize = para.groupSize;
     if constexpr (SupportType<T, half, bfloat16_t>()) {
-        MicroAPI::MaskReg preg = MicroAPI::CreateMask<uint16_t, MicroAPI::MaskPattern::ALL>();
-        MicroAPI::RegTensor<int16_t> vci_vreg;
-        MicroAPI::RegTensor<uint16_t> index_vreg;
-        MicroAPI::RegTensor<uint16_t> gsize_vreg;
-        MicroAPI::Duplicate(gsize_vreg, static_cast<uint16_t>(groupSize));
-        MicroAPI::Arange(vci_vreg, static_cast<int16_t>(start));
-        MicroAPI::Div(index_vreg, (MicroAPI::RegTensor<uint16_t> &)vci_vreg, gsize_vreg, preg);
-        MicroAPI::Gather(scaleReg, scaleUb, index_vreg, preg);
+        Reg::MaskReg preg = Reg::CreateMask<uint16_t, Reg::MaskPattern::ALL>();
+        Reg::RegTensor<int16_t> vci_vreg;
+        Reg::RegTensor<uint16_t> index_vreg;
+        Reg::RegTensor<uint16_t> gsize_vreg;
+        Reg::Duplicate(gsize_vreg, static_cast<uint16_t>(groupSize));
+        Reg::Arange(vci_vreg, static_cast<int16_t>(start));
+        Reg::Div(index_vreg, (Reg::RegTensor<uint16_t> &)vci_vreg, gsize_vreg, preg);
+        Reg::Gather(scaleReg, scaleUb, index_vreg, preg);
     } else {
-        MicroAPI::MaskReg preg = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
-        MicroAPI::RegTensor<int32_t> vci_vreg;
-        MicroAPI::RegTensor<uint32_t> index_vreg;
-        MicroAPI::RegTensor<uint32_t> gsize_vreg;
-        MicroAPI::Duplicate(gsize_vreg, static_cast<uint32_t>(groupSize));
-        MicroAPI::Arange(vci_vreg, static_cast<int32_t>(start));
-        MicroAPI::Div(index_vreg, (MicroAPI::RegTensor<uint32_t> &)vci_vreg, gsize_vreg, preg);
-        MicroAPI::Gather(scaleReg, scaleUb, index_vreg, preg);
+        Reg::MaskReg preg = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
+        Reg::RegTensor<int32_t> vci_vreg;
+        Reg::RegTensor<uint32_t> index_vreg;
+        Reg::RegTensor<uint32_t> gsize_vreg;
+        Reg::Duplicate(gsize_vreg, static_cast<uint32_t>(groupSize));
+        Reg::Arange(vci_vreg, static_cast<int32_t>(start));
+        Reg::Div(index_vreg, (Reg::RegTensor<uint32_t> &)vci_vreg, gsize_vreg, preg);
+        Reg::Gather(scaleReg, scaleUb, index_vreg, preg);
     }
 }
 
@@ -341,36 +341,36 @@ __simd_vf__ inline void DeQuantPerGroupForColS32VF(__ubuf__ dstT* dstUb, __ubuf_
     uint32_t sreg = para.n;
     uint16_t scaleK = static_cast<uint16_t>(CeilDivision(para.n, para.groupSize));
 
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<int32_t> srcVreg;
-    MicroAPI::RegTensor<float> f32Vreg;
-    MicroAPI::RegTensor<scaleT> oriScaleVreg;
-    MicroAPI::RegTensor<scaleT> tempVreg;
-    MicroAPI::RegTensor<int32_t> offsetVreg;
-    MicroAPI::RegTensor<scaleT> scaleVreg;
-    MicroAPI::RegTensor<float> scaleF32Vreg;
-    MicroAPI::RegTensor<scaleT> zeroVreg;
+    Reg::MaskReg preg;
+    Reg::RegTensor<int32_t> srcVreg;
+    Reg::RegTensor<float> f32Vreg;
+    Reg::RegTensor<scaleT> oriScaleVreg;
+    Reg::RegTensor<scaleT> tempVreg;
+    Reg::RegTensor<int32_t> offsetVreg;
+    Reg::RegTensor<scaleT> scaleVreg;
+    Reg::RegTensor<float> scaleF32Vreg;
+    Reg::RegTensor<scaleT> zeroVreg;
     if constexpr (SupportType<scaleT, half, bfloat16_t>()) {
-        MicroAPI::MaskReg b16FullPreg = MicroAPI::CreateMask<uint16_t, MicroAPI::MaskPattern::ALL>();
-        MicroAPI::Duplicate(zeroVreg, static_cast<scaleT>(0), b16FullPreg);
+        Reg::MaskReg b16FullPreg = Reg::CreateMask<uint16_t, Reg::MaskPattern::ALL>();
+        Reg::Duplicate(zeroVreg, static_cast<scaleT>(0), b16FullPreg);
     } else {
-        MicroAPI::MaskReg b32FullPreg = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
-        MicroAPI::Duplicate(zeroVreg, static_cast<scaleT>(0), b32FullPreg);
+        Reg::MaskReg b32FullPreg = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
+        Reg::Duplicate(zeroVreg, static_cast<scaleT>(0), b32FullPreg);
     }
     for (uint16_t i = 0; i < static_cast<uint16_t>(rowNum); ++i) {
         sreg = para.n;
         for (uint16_t j = 0; j < repeat; ++j) {
-            preg = MicroAPI::UpdateMask<uint32_t>(sreg);
+            preg = Reg::UpdateMask<uint32_t>(sreg);
             if constexpr (SupportType<scaleT, half, bfloat16_t>()) {
                 GetPerGroupScale<scaleT>(scaleUb + i * scaleK, j * vecLen, para, config, oriScaleVreg);
-                MicroAPI::Interleave(scaleVreg, tempVreg, oriScaleVreg, zeroVreg);
-                MicroAPI::Cast<float, scaleT, layoutZMrgZ>(scaleF32Vreg, scaleVreg, preg);
+                Reg::Interleave(scaleVreg, tempVreg, oriScaleVreg, zeroVreg);
+                Reg::Cast<float, scaleT, layoutZMrgZ>(scaleF32Vreg, scaleVreg, preg);
             } else {
                 GetPerGroupScale<scaleT>(scaleUb + i * scaleK, j * vecLen, para, config, scaleF32Vreg);
             }
-            MicroAPI::LoadAlign<int32_t, MicroAPI::LoadDist::DIST_NORM>(srcVreg, srcUb + i * para.n + j * vecLen);
-            MicroAPI::Cast<float, int32_t, MrgZRndA>(f32Vreg, srcVreg, preg);
-            MicroAPI::Mul<float, MicroAPI::MaskMergeMode::ZEROING>(f32Vreg, f32Vreg, scaleF32Vreg, preg);
+            Reg::LoadAlign<int32_t, Reg::LoadDist::DIST_NORM>(srcVreg, srcUb + i * para.n + j * vecLen);
+            Reg::Cast<float, int32_t, MrgZRndA>(f32Vreg, srcVreg, preg);
+            Reg::Mul<float, Reg::MaskMergeMode::ZEROING>(f32Vreg, f32Vreg, scaleF32Vreg, preg);
             StoreRes<dstT>(dstUb + i * para.n + j * vecLen, f32Vreg, preg);
         }
     }
@@ -396,36 +396,36 @@ __simd_vf__ inline void DeQuantPerGroupForColF32VF(__ubuf__ dstT* dstUb, __ubuf_
     uint16_t repeat = static_cast<uint16_t>(CeilDivision(para.n, vecLen));
     uint16_t scaleK = static_cast<uint16_t>(CeilDivision(para.n, para.groupSize));
 
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<float> srcVreg;
-    MicroAPI::RegTensor<float> f32Vreg;
-    MicroAPI::RegTensor<scaleT> oriScaleVreg;
-    MicroAPI::RegTensor<scaleT> tempVreg;
-    MicroAPI::RegTensor<float> offsetVreg;
-    MicroAPI::RegTensor<scaleT> scaleVreg;
-    MicroAPI::RegTensor<float> scaleF32Vreg;
-    MicroAPI::RegTensor<dstT> dstVreg;
-    MicroAPI::RegTensor<scaleT> zeroVreg;
+    Reg::MaskReg preg;
+    Reg::RegTensor<float> srcVreg;
+    Reg::RegTensor<float> f32Vreg;
+    Reg::RegTensor<scaleT> oriScaleVreg;
+    Reg::RegTensor<scaleT> tempVreg;
+    Reg::RegTensor<float> offsetVreg;
+    Reg::RegTensor<scaleT> scaleVreg;
+    Reg::RegTensor<float> scaleF32Vreg;
+    Reg::RegTensor<dstT> dstVreg;
+    Reg::RegTensor<scaleT> zeroVreg;
     if constexpr (SupportType<scaleT, half, bfloat16_t>()) {
-        MicroAPI::MaskReg b16FullPreg = MicroAPI::CreateMask<uint16_t, MicroAPI::MaskPattern::ALL>();
-        MicroAPI::Duplicate(zeroVreg, static_cast<scaleT>(0), b16FullPreg);
+        Reg::MaskReg b16FullPreg = Reg::CreateMask<uint16_t, Reg::MaskPattern::ALL>();
+        Reg::Duplicate(zeroVreg, static_cast<scaleT>(0), b16FullPreg);
     } else {
-        MicroAPI::MaskReg b32FullPreg = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
-        MicroAPI::Duplicate(zeroVreg, static_cast<scaleT>(0), b32FullPreg);
+        Reg::MaskReg b32FullPreg = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
+        Reg::Duplicate(zeroVreg, static_cast<scaleT>(0), b32FullPreg);
     }
     for (uint16_t i = 0; i < static_cast<uint16_t>(rowNum); ++i) {
         uint32_t sreg = para.n;
         for (uint16_t j = 0; j < repeat; ++j) {
-            preg = MicroAPI::UpdateMask<uint32_t>(sreg);
+            preg = Reg::UpdateMask<uint32_t>(sreg);
             if constexpr (SupportType<scaleT, half, bfloat16_t>()) {
                 GetPerGroupScale<scaleT>(scaleUb + i * scaleK, j * vecLen, para, config, oriScaleVreg);
-                MicroAPI::Interleave(scaleVreg, tempVreg, oriScaleVreg, zeroVreg);
-                MicroAPI::Cast<float, scaleT, layoutZMrgZ>(scaleF32Vreg, scaleVreg, preg);
+                Reg::Interleave(scaleVreg, tempVreg, oriScaleVreg, zeroVreg);
+                Reg::Cast<float, scaleT, layoutZMrgZ>(scaleF32Vreg, scaleVreg, preg);
             } else {
                 GetPerGroupScale<scaleT>(scaleUb + i * scaleK, j * vecLen, para, config, scaleF32Vreg);
             }
-            MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_NORM>(srcVreg, srcUb + i * para.n + j * vecLen);
-            MicroAPI::Mul<float, MicroAPI::MaskMergeMode::ZEROING>(f32Vreg, srcVreg, scaleF32Vreg, preg);
+            Reg::LoadAlign<float, Reg::LoadDist::DIST_NORM>(srcVreg, srcUb + i * para.n + j * vecLen);
+            Reg::Mul<float, Reg::MaskMergeMode::ZEROING>(f32Vreg, srcVreg, scaleF32Vreg, preg);
             StoreRes<dstT>(dstUb + i * para.n + j * vecLen, f32Vreg, preg);
         }
     }
@@ -447,28 +447,28 @@ __simd_callee__ inline void DeQuantPerGroupForRowTailBlock(__ubuf__ dstT* dstUb,
                                                       __ubuf__ scaleT* scaleUb, uint16_t repeat,
                                                       uint16_t tailRow, uint32_t n, uint32_t vecLen)
 {
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<scaleT> scaleVreg;
-    MicroAPI::RegTensor<float> f32ScaleVreg;
-    MicroAPI::RegTensor<srcT> srcVreg;
-    MicroAPI::RegTensor<float> f32Vreg;
-    MicroAPI::MaskReg b32FullPreg = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
+    Reg::MaskReg preg;
+    Reg::RegTensor<scaleT> scaleVreg;
+    Reg::RegTensor<float> f32ScaleVreg;
+    Reg::RegTensor<srcT> srcVreg;
+    Reg::RegTensor<float> f32Vreg;
+    Reg::MaskReg b32FullPreg = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
     for (uint16_t i = 0; i < tailRow; ++i) {
         uint32_t sreg = n;
         for (uint16_t j = 0; j < repeat; ++j) {
             if constexpr (SupportType<scaleT, half, bfloat16_t>()) {
-                MicroAPI::LoadAlign<scaleT, MicroAPI::LoadDist::DIST_UNPACK_B16>(scaleVreg, scaleUb + j * vecLen);
-                MicroAPI::Cast<float, scaleT, layoutZMrgZ>(f32ScaleVreg, scaleVreg, b32FullPreg);
+                Reg::LoadAlign<scaleT, Reg::LoadDist::DIST_UNPACK_B16>(scaleVreg, scaleUb + j * vecLen);
+                Reg::Cast<float, scaleT, layoutZMrgZ>(f32ScaleVreg, scaleVreg, b32FullPreg);
             } else {
-                MicroAPI::LoadAlign<scaleT, MicroAPI::LoadDist::DIST_NORM>(f32ScaleVreg, scaleUb + j * vecLen);
+                Reg::LoadAlign<scaleT, Reg::LoadDist::DIST_NORM>(f32ScaleVreg, scaleUb + j * vecLen);
             }
-            preg = MicroAPI::UpdateMask<uint32_t>(sreg);
-            MicroAPI::LoadAlign<srcT, MicroAPI::LoadDist::DIST_NORM>(srcVreg, srcUb + i * n + j * vecLen);
+            preg = Reg::UpdateMask<uint32_t>(sreg);
+            Reg::LoadAlign<srcT, Reg::LoadDist::DIST_NORM>(srcVreg, srcUb + i * n + j * vecLen);
             if constexpr (SupportType<srcT, int32_t>()) {
-                MicroAPI::Cast<float, int32_t, MrgZRndA>(f32Vreg, srcVreg, preg);
-                MicroAPI::Mul<float, MicroAPI::MaskMergeMode::ZEROING>(f32Vreg, f32Vreg, f32ScaleVreg, preg);
+                Reg::Cast<float, int32_t, MrgZRndA>(f32Vreg, srcVreg, preg);
+                Reg::Mul<float, Reg::MaskMergeMode::ZEROING>(f32Vreg, f32Vreg, f32ScaleVreg, preg);
             } else {
-                MicroAPI::Mul<float, MicroAPI::MaskMergeMode::ZEROING>(f32Vreg, srcVreg, f32ScaleVreg, preg);
+                Reg::Mul<float, Reg::MaskMergeMode::ZEROING>(f32Vreg, srcVreg, f32ScaleVreg, preg);
             }
             StoreRes<dstT>(dstUb + i * n + j * vecLen, f32Vreg, preg);
         }
@@ -483,31 +483,31 @@ __simd_vf__ inline void DeQuantPerGroupForRowVF(__ubuf__ dstT* dstUb, __ubuf__ s
         uint32_t vecLen = ASCENDC_QUANT_B32_VF_LEN;
     uint16_t repeat = static_cast<uint16_t>(CeilDivision(para.n, vecLen));
 
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<scaleT> scaleVreg;
-    MicroAPI::RegTensor<float> f32ScaleVreg;
-    MicroAPI::RegTensor<srcT> srcVreg;
-    MicroAPI::RegTensor<float> f32Vreg;
-    MicroAPI::MaskReg b32FullPreg = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
+    Reg::MaskReg preg;
+    Reg::RegTensor<scaleT> scaleVreg;
+    Reg::RegTensor<float> f32ScaleVreg;
+    Reg::RegTensor<srcT> srcVreg;
+    Reg::RegTensor<float> f32Vreg;
+    Reg::MaskReg b32FullPreg = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
     for (uint16_t i = 0; i < mainRowGroup; ++i) {
         for (uint16_t j = 0; j < static_cast<uint16_t>(para.groupSize); ++j) {
             uint32_t sreg = para.n;
             for (uint16_t k = 0; k < repeat; ++k) {
                 if constexpr (SupportType<scaleT, half, bfloat16_t>()) {
-                    MicroAPI::LoadAlign<scaleT, MicroAPI::LoadDist::DIST_UNPACK_B16>(scaleVreg, scaleUb + i * para.n + k * vecLen);
-                    MicroAPI::Cast<float, scaleT, layoutZMrgZ>(f32ScaleVreg, scaleVreg, b32FullPreg);
+                    Reg::LoadAlign<scaleT, Reg::LoadDist::DIST_UNPACK_B16>(scaleVreg, scaleUb + i * para.n + k * vecLen);
+                    Reg::Cast<float, scaleT, layoutZMrgZ>(f32ScaleVreg, scaleVreg, b32FullPreg);
                 } else {
-                    MicroAPI::LoadAlign<scaleT, MicroAPI::LoadDist::DIST_NORM>(
+                    Reg::LoadAlign<scaleT, Reg::LoadDist::DIST_NORM>(
                         f32ScaleVreg, scaleUb + i * para.n + k * vecLen);
                 }
-                preg = MicroAPI::UpdateMask<uint32_t>(sreg);
-                MicroAPI::LoadAlign<srcT, MicroAPI::LoadDist::DIST_NORM>(
+                preg = Reg::UpdateMask<uint32_t>(sreg);
+                Reg::LoadAlign<srcT, Reg::LoadDist::DIST_NORM>(
                     srcVreg, srcUb + (i * para.groupSize + j) * para.n + k * vecLen);
                 if constexpr (SupportType<srcT, int32_t>()) {
-                    MicroAPI::Cast<float, int32_t, MrgZRndA>(f32Vreg, srcVreg, preg);
-                    MicroAPI::Mul<float, MicroAPI::MaskMergeMode::ZEROING>(f32Vreg, f32Vreg, f32ScaleVreg, preg);
+                    Reg::Cast<float, int32_t, MrgZRndA>(f32Vreg, srcVreg, preg);
+                    Reg::Mul<float, Reg::MaskMergeMode::ZEROING>(f32Vreg, f32Vreg, f32ScaleVreg, preg);
                 } else {
-                    MicroAPI::Mul<float, MicroAPI::MaskMergeMode::ZEROING>(f32Vreg, srcVreg, f32ScaleVreg, preg);
+                    Reg::Mul<float, Reg::MaskMergeMode::ZEROING>(f32Vreg, srcVreg, f32ScaleVreg, preg);
                 }
                 StoreRes<dstT>(dstUb + (i * para.groupSize + j) * para.n + k * vecLen, f32Vreg, preg);
             }
