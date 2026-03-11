@@ -9,3 +9,4 @@
 |  目录名称                                                   |  功能描述                                              |
 | ------------------------------------------------------------ | ---------------------------------------------------- |
 | [00_tensor_api_matmul](./00_tensor_api_matmul) | 本样例展示了使用Tensor_API 基于Layout和Tensor构造分形完成Mmad样例的编译流程，并展示了多样化的调用形式,支持main函数和kernel函数在同一个cpp文件中实现 |
+| [03_tensor_api_matmul_multicore](./03_tensor_api_matmul_multicore) | 本样例展示了使用Tensor_API 基于Layout和Tensor构造分形完成多核场景Matmul样例的编译流程，并展示了多样化的调用形式,支持main函数和kernel函数在同一个cpp文件中实现 |
