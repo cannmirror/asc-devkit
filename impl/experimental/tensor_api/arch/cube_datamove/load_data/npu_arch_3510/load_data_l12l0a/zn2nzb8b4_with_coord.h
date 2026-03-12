@@ -65,9 +65,7 @@ private:
             auto sliceDst = dst(MakeCoord(x, y));
             loadCbufToCaS4.template LoadData<trait>(sliceDst, src, mStartPosition, kStartPosition / KHALF, 
                                                     mStep, kStep / KHALF, srcStride * KHALF, dstStride * KHALF);
-            x += mStep * FRACTAL_FIXED;
-            y += (x / Row) * (C0_SIZE * KHALF / sizeof(DstType));
-            x %= Row;
+            y += C0_SIZE * KHALF;
             mStartPosition += M_STEP_MIN_VAL_B4;
         }
     }
@@ -90,9 +88,7 @@ private:
         for (uint16_t idx = 0; idx < mLoop; ++idx) {
             auto sliceDst = dst(MakeCoord(x, y));
             loadCbufToCa.template LoadData<trait>(sliceDst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
-            x += mStep * FRACTAL_FIXED;
-            y += (x / Row) * (C0_SIZE / sizeof(DstType));
-            x %= Row;
+            y += C0_SIZE;
             mStartPosition += M_STEP_MIN_VAL_B8;
         }
     }
@@ -106,6 +102,8 @@ private:
         auto srcLayout = src.Layout();
         uint16_t mStartPosition = Std::get<1>(coord) / FRACTAL_FIXED;
         uint16_t kStartPosition = Std::get<0>(coord) * sizeof(typename U::elementType) / C0_SIZE;
+        auto m1 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) *
+                GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout) / FRACTAL_FIXED;
         auto mStep = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) *
                 GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout) / FRACTAL_FIXED;
         auto kStep = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) *
@@ -116,9 +114,21 @@ private:
         auto dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout) / STRIDE_UNIT;
         constexpr bool isFp4Type = std::is_same<T, fp4x2_e2m1_t>::value || std::is_same<T, fp4x2_e1m2_t>::value;
         if constexpr (isFp4Type) {
-            LoadDataImplB4<trait, T, U>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            constexpr int KHALF = 2;
+            if ((m1 & 1) == 0) {
+                LoadCbufToCaS4Base loadCbufToCaS4;
+                loadCbufToCaS4.template LoadData<trait>(dst, src, mStartPosition, kStartPosition / KHALF, 
+                                                    mStep, kStep / KHALF, srcStride * KHALF, dstStride * KHALF);
+            } else {
+                LoadDataImplB4<trait, T, U>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            }
         } else {
-            LoadDataImplB8<trait, T, U>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            if ((m1 & 1) == 0) {
+                LoadCbufToCaBase loadCbufToCa;
+                loadCbufToCa.template LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            } else {
+                LoadDataImplB8<trait, T, U>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            }
         }
     }
 };

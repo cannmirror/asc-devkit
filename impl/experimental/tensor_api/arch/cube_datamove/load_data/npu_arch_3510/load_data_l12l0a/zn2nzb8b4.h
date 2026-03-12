@@ -55,19 +55,16 @@ private:
         constexpr int SHIFT_M_STEP_B4 = 2;
         constexpr int M_STEP_MIN_VAL_B4 = 4;
         uint16_t mLoop = mStep >> SHIFT_M_STEP_B4;
-        uint16_t dstAddrStride = mStep * FRACTAL_FIXED * C0_SIZE;
+        uint16_t dstAddrStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) *
+                GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout) * C0_SIZE;
         mStep = M_STEP_MIN_VAL_B4;
-        int x = 0, y = 0;
-        int Row = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout) *
-                  GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
         LoadCbufToCaS4Base loadCbufToCaS4;
+        auto iter = dst.Data();
         for (uint16_t idx = 0; idx < mLoop; ++idx) {
-            auto sliceDst = dst(MakeCoord(x, y));
+            auto sliceDst = MakeTensor(iter, dst.Layout());
             loadCbufToCaS4.template LoadData<trait>(sliceDst, src, mStartPosition, kStartPosition / KHALF, 
                                                     mStep, kStep / KHALF, srcStride * KHALF, dstStride * KHALF);
-            x += mStep * FRACTAL_FIXED;
-            y += (x / Row) * (C0_SIZE * KHALF / sizeof(DstType));
-            x %= Row;
+            iter = iter + dstAddrStride;
             mStartPosition += M_STEP_MIN_VAL_B4;
         }
     }
@@ -81,18 +78,15 @@ private:
         constexpr int SHIFT_M_STEP_B8 = 1;
         constexpr int M_STEP_MIN_VAL_B8 = 2;
         uint16_t mLoop = mStep >> SHIFT_M_STEP_B8;
-        uint16_t dstAddrStride = mStep * FRACTAL_FIXED * C0_SIZE;
+        uint16_t dstAddrStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) *
+                GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout) * C0_SIZE;
         mStep = M_STEP_MIN_VAL_B8;
-        int x = 0, y = 0;
-        int Row = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout) *
-                    GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
         LoadCbufToCaBase loadCbufToCa;
+        auto iter = dst.Data();
         for (uint16_t idx = 0; idx < mLoop; ++idx) {
-            auto sliceDst = dst(MakeCoord(x, y));
+            auto sliceDst = MakeTensor(iter, dst.Layout());
             loadCbufToCa.template LoadData<trait>(sliceDst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
-            x += mStep * FRACTAL_FIXED;
-            y += (x / Row) * (C0_SIZE / sizeof(DstType));
-            x %= Row;
+            iter = iter + dstAddrStride;
             mStartPosition += M_STEP_MIN_VAL_B8;
         }
     }
@@ -106,19 +100,35 @@ private:
         auto srcLayout = src.Layout();
         uint16_t mStartPosition = 0;
         uint16_t kStartPosition = 0;
-        auto mStep = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) *
-                GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout) / FRACTAL_FIXED;
-        auto kStep = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) *
-                GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout) / C0_SIZE;
+        auto m1 = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) *
+                  GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout) -
+                  GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) *
+                  GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout);
+        auto mStep = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout) *
+                GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout) / FRACTAL_FIXED;
+        auto kStep = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) *
+                GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout) / C0_SIZE;
         // Zn -> Nz
         uint32_t STRIDE_UNIT = FRACTAL_FIXED * (C0_SIZE / sizeof(DstType));
         auto srcStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout) / STRIDE_UNIT;
         auto dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout) / STRIDE_UNIT;
         constexpr bool isFp4Type = std::is_same<T, fp4x2_e2m1_t>::value || std::is_same<T, fp4x2_e1m2_t>::value;
         if constexpr (isFp4Type) {
-            LoadDataImplB4<trait, T, U>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            constexpr int KHALF = 2;
+            if (m1 < FRACTAL_FIXED) {
+                LoadCbufToCaS4Base loadCbufToCaS4;
+                loadCbufToCaS4.template LoadData<trait>(dst, src, mStartPosition, kStartPosition / KHALF, 
+                                                    mStep, kStep / KHALF, srcStride * KHALF, dstStride * KHALF);
+            } else {
+                LoadDataImplB4<trait, T, U>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            }
         } else {
-            LoadDataImplB8<trait, T, U>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            if (m1 < FRACTAL_FIXED) {
+                LoadCbufToCaBase loadCbufToCa;
+                loadCbufToCa.template LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            } else {
+                LoadDataImplB8<trait, T, U>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            }
         }
     }
 };

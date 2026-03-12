@@ -29,12 +29,12 @@ public:
         LoadDataImpl<TraitHolder<trait, false>::traitTransposed, T, U, Coord>(dst, src, coord);
     }
 
-private:  
+private:
     template<const LoadDataTrait& trait, bool transpose>
     struct TraitHolder {
         static constexpr LoadDataTrait traitTransposed = LoadDataTrait(trait, transpose);
     };
-    
+
     template <const LoadDataTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {

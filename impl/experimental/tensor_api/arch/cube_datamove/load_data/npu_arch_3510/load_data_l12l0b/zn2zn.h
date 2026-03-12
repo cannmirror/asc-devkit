@@ -29,7 +29,7 @@ public:
         LoadDataImpl<TraitHolder<trait, false>::traitTransposed, T, U>(dst, src);
     }
 
-private:  
+private:
     template<const LoadDataTrait& trait, bool transpose>
     struct TraitHolder {
         static constexpr LoadDataTrait traitTransposed = LoadDataTrait(trait, transpose);

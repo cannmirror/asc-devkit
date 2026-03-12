@@ -30,33 +30,11 @@ public:
         LoadDataImpl<TraitHolder<trait, false>::traitTransposed, T, U>(dst, src);
     }
 
-private:
+private:    
     template<const LoadDataTrait& trait, bool transpose>
     struct TraitHolder {
         static constexpr LoadDataTrait traitTransposed = LoadDataTrait(trait, transpose);
     };
-    
-    template<typename T>
-    __aicore__ inline constexpr void CheckNZTemplate()
-    {
-        using type = typename T::elementType;
-        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>,
-            "LoadDataFourDim3510L12L0A Layout->Shape->Row->ZeroDim is not Std::Int<16> type!");
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<C0_SIZE / sizeof(type)>>,
-            "LoadDataFourDim3510L12L0A Layout->Shape->Column->ZeroDim is not Std::Int<C0Size/Type> type!"); 
-
-        using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideRow1 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 1>::type;
-        using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<C0_SIZE / sizeof(type)>>,
-            "LoadDataFourDim3510L12L0A Layout->Stride->Row-ZeroDim is not Std::Int<C0Size/Type> type!");
-        static_assert(Std::is_same_v<StrideRow1, Std::Int<FRACTAL_FIXED * C0_SIZE / sizeof(type)>>,
-            "LoadDataFourDim3510L12L0A Layout->Stride->Row-ZeroDim is not Std::Int<16*C0Size/Type> type!");
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>,
-            "LoadDataFourDim3510L12L0A Layout->Stride->Column->ZeroDim is not Std::Int<1> type!");
-    }
 
     template <const LoadDataTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
