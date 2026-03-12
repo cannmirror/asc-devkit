@@ -16,6 +16,8 @@
 #define IMPL_EXPERIMENTAL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_3510_MMAD_NORMAL_H
 
 #include "impl/experimental/tensor_api/arch/cube_compute/mmad/npu_arch_3510/instruction.h"
+#include "impl/experimental/tensor_api/arch/utils/check_format.h"
+#include "impl/experimental/tensor_api/arch/utils/check_data_type_3510.h"
 
 namespace AscendC {
 namespace Te {
@@ -84,22 +86,10 @@ private:
         using dstDataType = typename T::elementType;
         using fmDataType = typename U::elementType;
         using filterDataType = typename S::elementType;
-        CheckL0CNZTemplate<T>();
-        CheckNZTemplate<U>();
-        CheckZNTemplate<S>();
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
-        static_assert(Std::is_one_of_v<Std::tuple<dstDataType, fmDataType, filterDataType>,
-            Std::tuple<__cc__ int32_t, __ca__ int8_t, __cb__ int8_t>, 
-            Std::tuple<__cc__ float, __ca__ half, __cb__ half>, 
-            Std::tuple<__cc__ float, __ca__ float, __cb__ float>,
-            Std::tuple<__cc__ float, __ca__ bfloat16_t, __cb__ bfloat16_t>, 
-            Std::tuple<__cc__ float, __ca__ fp8_e4m3fn_t, __cb__ fp8_e4m3fn_t>, 
-            Std::tuple<__cc__ float, __ca__ fp8_e4m3fn_t, __cb__ fp8_e5m2_t>, 
-            Std::tuple<__cc__ float, __ca__ fp8_e5m2_t, __cb__ fp8_e4m3fn_t>, 
-            Std::tuple<__cc__ float, __ca__ fp8_e5m2_t, __cb__ fp8_e5m2_t>, 
-            Std::tuple<__cc__ float, __ca__ hifloat8_t, __cb__ hifloat8_t>>, 
-            "The data type is not supported.");
-#endif
+        CheckFormat::CheckL0CNZTemplate<T>();
+        CheckFormat::CheckNZTemplate<U>();
+        CheckFormat::CheckZNTemplate<S>();
+        CheckDataTypeFor3510::CheckMmadDataType<Hardware::L0C, dstDataType, fmDataType, filterDataType, dstDataType>();
     }
 
     template <const MmadTrait& trait, typename T, typename U, typename S, typename Params>

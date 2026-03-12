@@ -16,6 +16,8 @@
 #define IMPL_EXPERIMENTAL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_3510_DATA_COPY_GM2L1_ND2ND_H
 
 #include "impl/experimental/tensor_api/utils/utils_impl.h"
+#include "impl/experimental/tensor_api/arch/utils/check_format.h"
+#include "impl/experimental/tensor_api/arch/utils/check_data_type_3510.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/instruction.h"
 
 namespace AscendC {
@@ -29,36 +31,15 @@ public:
     }
 
 private:
-    template <typename T>
-    __aicore__ inline constexpr void CheckNDTemplate()
-    {
-        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<1>>, "Layout->Shape->Row->ZeroDim, is not Std::Int<1> type!");
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<1>>, "Layout->Shape->Column->ZeroDim, is not Std::Int<1> type!");
-
-        using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        using StrideColumn1 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 1>::type;
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<0>>, "Layout->Stride->Row->ZeroDim, is not Std::Int<0> type!");
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<0>>, "Layout->Stride->Column->ZeroDim, is not Std::Int<0> type!");
-        static_assert(Std::is_same_v<StrideColumn1, Std::Int<1>>, "Layout->Stride->Column->OneDim, is not Std::Int<1> type!");
-    }
-
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
         using srcType = typename U::elementType;
         using dstType = typename T::elementType;
 
-        CheckNDTemplate<T>();
-        CheckNDTemplate<U>();
-
-#if defined(__NPU_ARCH__ ) && __NPU_ARCH__ == 3510
-        static_assert(Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__cbuf__ bfloat16_t, __gm__ bfloat16_t>, 
-            Std::tuple<__cbuf__ half, __gm__ half>, Std::tuple<__cbuf__ float, __gm__ float>, 
-            Std::tuple<__cbuf__ int32_t, __gm__ int32_t>>, "The data type is not supported.");
-#endif
+        CheckFormat::CheckNDTemplate<T>();
+        CheckFormat::CheckNDTemplate<U>();
+        CheckDataTypeFor3510::CheckGm2L1AlignV2NDDataType<dstType, srcType>();
     }
 
     template <const DataCopyTrait& trait, typename T, typename U>

@@ -17,6 +17,7 @@
 
 #include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/fixpipe_utils.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/instruction.h"
+#include "impl/experimental/tensor_api/arch/utils/check_format.h"
 
 namespace AscendC {
 namespace Te {
@@ -34,9 +35,8 @@ private:
     template <const FixpipeTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
-        FormatCheckUtils3510 formatCheckInst;
-        formatCheckInst.CheckNZTemplate<T>();
-        formatCheckInst.CheckL0CNZTemplate<U>();
+        CheckFormat::CheckNZTemplate<T>();
+        CheckFormat::CheckL0CNZTemplate<U>();
     }
 
     template <typename V>
@@ -160,9 +160,8 @@ private:
     template <const FixpipeTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
-        FormatCheckUtils3510 formatCheckInst;
-        formatCheckInst.CheckNZTemplate<T>();
-        formatCheckInst.CheckL0CNZTemplate<U>();
+        CheckFormat::CheckNZTemplate<T>();
+        CheckFormat::CheckL0CNZTemplate<U>();
     }
 
     template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V>

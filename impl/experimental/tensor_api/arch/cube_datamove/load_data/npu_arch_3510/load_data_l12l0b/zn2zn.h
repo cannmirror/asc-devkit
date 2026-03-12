@@ -16,6 +16,8 @@
 #define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_NPU_ARCH_3510_LOAD_DATA_L12L0B_ZN2ZN_H
 
 #include "impl/experimental/tensor_api/arch/cube_datamove/load_data/npu_arch_3510/instruction.h"
+#include "impl/experimental/tensor_api/arch/utils/check_format.h"
+#include "impl/experimental/tensor_api/arch/utils/check_data_type_3510.h"
 
 namespace AscendC {
 namespace Te {
@@ -33,42 +35,14 @@ private:
         static constexpr LoadDataTrait traitTransposed = LoadDataTrait(trait, transpose);
     };
 
-    template<typename T>
-    __aicore__ inline constexpr void CheckZNTemplate()
-    {
-        using type = typename T::elementType;
-        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<FRACTAL_FIXED>>,
-            "LoadDataFourDim3510L12L0B Layout->Shape->Column->ZeroDim is not Std::Int<16> type!");
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<C0_SIZE / sizeof(type)>>,
-            "LoadDataFourDim3510L12L0B Layout->Shape->Row->ZeroDim is not Std::Int<C0Size/Type> type!"); 
-
-        using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<C0_SIZE / sizeof(type)>>,
-            "LoadDataFourDim3510L12L0B Layout->Stride->Column-ZeroDim is not Std::Int<C0Size/Type> type!");
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<1>>,
-            "LoadDataFourDim3510L12L0B Layout->Stride->Row->ZeroDim is not Std::Int<1> type!");
-    }
-
     template <const LoadDataTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
         using srcType = typename U::elementType;
         using dstType = typename T::elementType;
-        CheckZNTemplate<T>();
-        CheckZNTemplate<U>();
-#if defined(__NPU_ARCH__ ) && __NPU_ARCH__ == 3510
-        static_assert(Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__cb__ half, __cbuf__ half>, 
-            Std::tuple<__cb__ int16_t, __cbuf__ int16_t>, Std::tuple<__cb__ uint16_t, __cbuf__ uint16_t>,
-            Std::tuple<__cb__ bfloat16_t, __cbuf__ bfloat16_t>, Std::tuple<__cb__ uint32_t, __cbuf__ uint32_t>, 
-            Std::tuple<__cb__ int32_t, __cbuf__ int32_t>, Std::tuple<__cb__ float, __cbuf__ float>, 
-            Std::tuple<__cb__ uint8_t, __cbuf__ uint8_t>, Std::tuple<__cb__ int8_t, __cbuf__ int8_t>, 
-            Std::tuple<__cb__ fp8_e4m3fn_t, __cbuf__ fp8_e4m3fn_t>, Std::tuple<__cb__ fp8_e5m2_t, __cbuf__ fp8_e5m2_t>, 
-            Std::tuple<__cb__ fp4x2_e2m1_t, __cbuf__ fp4x2_e2m1_t>, Std::tuple<__cb__ fp4x2_e1m2_t, __cbuf__ fp4x2_e1m2_t>,
-            Std::tuple<__cb__ hifloat8_t, __cbuf__ hifloat8_t>>, "The data type is not supported.");
-#endif
+        CheckFormat::CheckZNTemplate<T>();
+        CheckFormat::CheckZNTemplate<U>();
+        CheckDataTypeFor3510::CheckL12L0BDataType<dstType, srcType>();
     }
 
     template <const LoadDataTrait& trait, typename T, typename U>

@@ -16,6 +16,8 @@
 #define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_NPU_ARCH_3510_LOAD_DATA_L12L0A_NZ2NZ_H
 
 #include "impl/experimental/tensor_api/arch/cube_datamove/load_data/npu_arch_3510/instruction.h"
+#include "impl/experimental/tensor_api/arch/utils/check_format.h"
+#include "impl/experimental/tensor_api/arch/utils/check_data_type_3510.h"
 
 namespace AscendC {
 namespace Te {
@@ -61,18 +63,9 @@ private:
     {
         using srcType = typename U::elementType;
         using dstType = typename T::elementType;
-        CheckNZTemplate<T>();
-        CheckNZTemplate<U>();
-#if defined(__NPU_ARCH__ ) && __NPU_ARCH__ == 3510
-        static_assert(Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__ca__ half, __cbuf__ half>, 
-            Std::tuple<__ca__ int16_t, __cbuf__ int16_t>, Std::tuple<__ca__ uint16_t, __cbuf__ uint16_t>,
-            Std::tuple<__ca__ bfloat16_t, __cbuf__ bfloat16_t>, Std::tuple<__ca__ uint32_t, __cbuf__ uint32_t>, 
-            Std::tuple<__ca__ int32_t, __cbuf__ int32_t>, Std::tuple<__ca__ float, __cbuf__ float>, 
-            Std::tuple<__ca__ uint8_t, __cbuf__ uint8_t>, Std::tuple<__ca__ int8_t, __cbuf__ int8_t>, 
-            Std::tuple<__ca__ fp8_e4m3fn_t, __cbuf__ fp8_e4m3fn_t>, Std::tuple<__ca__ fp8_e5m2_t, __cbuf__ fp8_e5m2_t>, 
-            Std::tuple<__ca__ fp4x2_e2m1_t, __cbuf__ fp4x2_e2m1_t>, Std::tuple<__ca__ fp4x2_e1m2_t, __cbuf__ fp4x2_e1m2_t>,
-            Std::tuple<__ca__ hifloat8_t, __cbuf__ hifloat8_t>>, "The data type is not supported.");
-#endif
+        CheckFormat::CheckNZTemplate<T>();
+        CheckFormat::CheckNZTemplate<U>();
+        CheckDataTypeFor3510::CheckL12L0ADataType<dstType, srcType>();
     }
 
     template <const LoadDataTrait& trait, typename T, typename U>

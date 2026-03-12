@@ -17,6 +17,8 @@
 
 #include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/fixpipe_utils.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/instruction.h"
+#include "impl/experimental/tensor_api/arch/utils/check_format.h"
+#include "impl/experimental/tensor_api/arch/utils/check_data_type_3510.h"
 
 namespace AscendC {
 namespace Te {
@@ -32,20 +34,10 @@ private:
     template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
-        using srcType = typename U::elementType;
-        using dstType = typename T::elementType;
+        CheckFormat::CheckNZTemplate<T>();
+        CheckFormat::CheckL0CNZTemplate<U>();
+        CheckDataTypeFor3510::CheckFixPipeDataType<quantPre, T, U>();
 
-        FormatCheckUtils3510 formatCheck;
-        formatCheck.CheckNZTemplate<T>();
-        formatCheck.CheckL0CNZTemplate<U>();
-#if defined(__NPU_ARCH__ ) && __NPU_ARCH__ == 3510
-        static_assert((quantPre == QuantMode_t::NoQuant && Std::is_one_of_v<Std::tuple<dstType, srcType>,
-            Std::tuple<__ubuf__ float, __cc__ float>, Std::tuple<__ubuf__ int32_t, __cc__ int32_t>>) ||
-            (quantPre == QuantMode_t::F322F16 && Std::is_one_of_v<Std::tuple<dstType, srcType>,
-            Std::tuple<__ubuf__ half, __cc__ float>>) || (quantPre == QuantMode_t::F322BF16 &&
-            Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__ubuf__ bfloat16_t, __cc__ float>>),
-            "The data type is not supported.");
-#endif
     }
 
     template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename Coord>

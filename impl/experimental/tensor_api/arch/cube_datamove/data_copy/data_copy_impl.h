@@ -15,7 +15,9 @@
 #ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_DATA_COPY_IMPL_H
 #define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_DATA_COPY_IMPL_H
 
-#include "impl/experimental/tensor_api/arch/arch_utils.h"
+#include "impl/experimental/tensor_api/arch/utils/arch_utils.h"
+#include "impl/experimental/tensor_api/arch/utils/check_format.h"
+#include "impl/experimental/tensor_api/arch/utils/check_data_type_3510.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/data_copy_routing.h"
 
 namespace AscendC {

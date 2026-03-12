@@ -17,7 +17,9 @@
 
 #include "impl/experimental/tensor_api/tensor/pointer_impl.h"
 #include "impl/experimental/tensor_api/tensor/local_tensor_impl.h"
-#include "impl/experimental/tensor_api/arch/arch_utils.h"
+#include "impl/experimental/tensor_api/arch/utils/arch_utils.h"
+#include "impl/experimental/tensor_api/arch/utils/check_format.h"
+#include "impl/experimental/tensor_api/arch/utils/check_data_type_2201.h"
 
 namespace AscendC {
 namespace Te {
@@ -29,70 +31,18 @@ public:
         return;
     }
 
-    template<typename T>
-    __aicore__ inline constexpr void CheckNZTemplate()
-    {
-        using type = typename T::elementType;
-        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>,
-            "LoadDataFourDim2201L12L0B Layout->Shape->Row->ZeroDim is not Std::Int<16> type!");
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<C0_SIZE / sizeof(type)>>,
-            "LoadDataFourDim2201L12L0B Layout->Shape->Column->ZeroDim is not Std::Int<C0Size/Type> type!"); 
-
-        using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideRow1 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 1>::type;
-        using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<C0_SIZE / sizeof(type)>>,
-            "LoadDataFourDim2201L12L0B Layout->Stride->Row-ZeroDim is not Std::Int<C0Size/Type> type!");
-        static_assert(Std::is_same_v<StrideRow1, Std::Int<FRACTAL_FIXED * C0_SIZE / sizeof(type)>>,
-            "LoadDataFourDim2201L12L0B Layout->Stride->Row-ZeroDim is not Std::Int<16*C0Size/Type> type!");
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>,
-            "LoadDataFourDim2201L12L0B Layout->Stride->Column->ZeroDim is not Std::Int<1> type!");
-    }
-    
-    template<typename T>
-    __aicore__ inline constexpr void CheckZNTemplate()
-    {
-        using type = typename T::elementType;
-        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<FRACTAL_FIXED>>,
-            "LoadDataFourDim2201L12L0B Layout->Shape->Column->ZeroDim is not Std::Int<16> type!");
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<C0_SIZE / sizeof(type)>>,
-            "LoadDataFourDim2201L12L0B Layout->Shape->Row->ZeroDim is not Std::Int<C0Size/Type> type!"); 
-
-        using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        using StrideColumn1 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 1>::type;
-
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<1>>,
-            "LoadDataFourDim2201L12L0B Layout->Stride->Row->ZeroDim is not Std::Int<1> type!");
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<C0_SIZE / sizeof(type)>>,
-            "LoadDataFourDim2201L12L0B Layout->Stride->Column-ZeroDim is not Std::Int<C0Size/Type> type!");
-        static_assert(Std::is_same_v<StrideColumn1, Std::Int<FRACTAL_FIXED * C0_SIZE / sizeof(type)>>,
-            "LoadDataFourDim2201L12L0B Layout->Stride->Column-ZeroDim is not Std::Int<16*C0Size/Type> type!");
-    }
-
     template <const LoadDataTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
         using srcType = typename U::elementType;
         using dstType = typename T::elementType;
         if constexpr (trait.transposed) {
-            CheckNZTemplate<U>();
+            CheckFormat::CheckNZTemplate<U>();
         } else {
-            CheckZNTemplate<U>();
+            CheckFormat::CheckZNTemplate<U>();
         }
-        CheckZNTemplate<T>();
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
-        static_assert(Std::is_one_of_v<Std::tuple<dstType, srcType>, 
-            Std::tuple<__cb__ bfloat16_t, __cbuf__ bfloat16_t>, Std::tuple<__cb__ half, __cbuf__ half>, 
-            Std::tuple<__cb__ float, __cbuf__ float>, Std::tuple<__cb__ int16_t, __cbuf__ int16_t>, 
-            Std::tuple<__cb__ int32_t, __cbuf__ int32_t>, Std::tuple<__cb__ int8_t, __cbuf__ int8_t>,
-            Std::tuple<__cb__ uint16_t, __cbuf__ uint16_t>, Std::tuple<__cb__ uint32_t, __cbuf__ uint32_t>, 
-            Std::tuple<__cb__ uint8_t, __cbuf__ uint8_t>>, "The data type is not supported.");
-#endif
+        CheckFormat::CheckZNTemplate<T>();
+        CheckDataTypeFor2201::CheckL12L0BDataType<dstType, srcType>();
     }
 
     template<typename T>

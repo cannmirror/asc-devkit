@@ -15,6 +15,8 @@
 #ifndef IMPL_EXPERIMENTAL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_3510_DATA_COPY_L12FB_BASE_H
 #define IMPL_EXPERIMENTAL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_3510_DATA_COPY_L12FB_BASE_H
 
+#include "impl/experimental/tensor_api/arch/utils/check_format.h"
+#include "impl/experimental/tensor_api/arch/utils/check_data_type_3510.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_l12fb/instruction.h"
 
 namespace AscendC {
@@ -28,64 +30,21 @@ public:
     }
 
 private:
-    template <typename T>
-    __aicore__ inline constexpr void CheckNDTemplate()
-    {
-        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<1>>, "CopyCbufToFB Layout->Shape->Row->ZeroDim, is not Std::Int<1> type!");
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<1>>, "CopyCbufToFB Layout->Shape->Column->ZeroDim, is not Std::Int<1> type!");
-
-        using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        using StrideColumn1 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 1>::type;
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<0>>, "CopyCbufToFB Layout->Stride->Row->ZeroDim, is not Std::Int<0> type!");
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<0>>, "CopyCbufToFB Layout->Stride->Column->ZeroDim, is not Std::Int<0> type!");
-        static_assert(Std::is_same_v<StrideColumn1, Std::Int<1>>, "CopyCbufToFB Layout->Stride->Column->OneDim, is not Std::Int<1> type!");
-    }
-
-    template <typename T>
-    __aicore__ inline constexpr void CheckNDFp8Template()
-    {
-        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<2>>, "CopyCbufToFB Layout->Shape->Row->ZeroDim, is not Std::Int<2> type!");
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<1>>, "CopyCbufToFB Layout->Shape->Column->ZeroDim, is not Std::Int<1> type!");
-
-        using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        using StrideColumn1 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 1>::type;
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<1>>, "CopyCbufToFB Layout->Stride->Row->ZeroDim, is not Std::Int<1> type!");
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<0>>, "CopyCbufToFB Layout->Stride->Column->ZeroDim, is not Std::Int<0> type!");
-        static_assert(Std::is_same_v<StrideColumn1, Std::Int<MX_SCALE_K0>>, "CopyCbufToFB Layout->Stride->Column->OneDim, is not Std::Int<MX_SCALE_K0> type!");
-    }
-    
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
         using srcType = typename U::elementType;
         using dstType = typename T::elementType;
 
-#if defined(__NPU_ARCH__ ) && __NPU_ARCH__ == 3510
-        static_assert(Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__fbuf__ bool, __cbuf__ bool>, 
-            Std::tuple<__fbuf__ int8_t, __cbuf__ int8_t>, Std::tuple<__fbuf__ uint8_t, __cbuf__ uint8_t>, 
-            Std::tuple<__fbuf__ hifloat8_t, __cbuf__ hifloat8_t>, Std::tuple<__fbuf__ fp8_e5m2_t, __cbuf__ fp8_e5m2_t>, 
-            Std::tuple<__fbuf__ fp8_e4m3fn_t, __cbuf__ fp8_e4m3fn_t>, Std::tuple<__fbuf__ fp8_e8m0_t, __cbuf__ fp8_e8m0_t>, 
-            Std::tuple<__fbuf__ int16_t, __cbuf__ int16_t>, Std::tuple<__fbuf__ uint16_t, __cbuf__ uint16_t>, 
-            Std::tuple<__fbuf__ half, __cbuf__ half>, Std::tuple<__fbuf__ float, __cbuf__ float>, 
-            Std::tuple<__fbuf__ bfloat16_t, __cbuf__ bfloat16_t>, Std::tuple<__fbuf__ int32_t, __cbuf__ int32_t>, 
-            Std::tuple<__fbuf__ uint32_t, __cbuf__ uint32_t>, Std::tuple<__fbuf__ int64_t, __cbuf__ int64_t>, 
-            Std::tuple<__fbuf__ uint64_t, __cbuf__ uint64_t>, Std::tuple<__fbuf__ double, __cbuf__ double>>, 
-            "The data type is not supported.");
-#endif
+        CheckDataTypeFor3510::CheckL12FbDataType<dstType, srcType>();
 
         constexpr bool isFp8 = Std::is_same_v<dstType, __fbuf__ fp8_e8m0_t> && Std::is_same_v<srcType, __cbuf__ fp8_e8m0_t>;
         if constexpr (isFp8) {
-            CheckNDFp8Template<T>();
-            CheckNDFp8Template<U>();
+            CheckFormat::CheckNDFp8Template<T>();
+            CheckFormat::CheckNDFp8Template<U>();
         } else {
-            CheckNDTemplate<T>();
-            CheckNDTemplate<U>();
+            CheckFormat::CheckNDTemplate<T>();
+            CheckFormat::CheckNDTemplate<U>();
         }
     }
 
