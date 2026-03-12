@@ -167,6 +167,8 @@ __aicore__ inline void asc_dump_l1buf(__cbuf__ T* input, uint32_t desc, uint32_t
     ASCENDC_ASSERT((false), "asc_dump_l1buf is not supported in cpu mode.");
 }
 } // namespace __asc_aicore
+
+using namespace __asc_aicore;
 #endif
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_AICORE_DUMP_IMPL__)

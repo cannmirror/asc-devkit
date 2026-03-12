@@ -93,6 +93,8 @@ __aicore__ inline void asc_time_stamp(uint32_t desc_id) {
     ASCENDC_ASSERT((false), "asc_time_stamp is not supported in cpu mode.");
 }
 } // namespace __asc_aicore
+
+using namespace __asc_aicore;
 #endif
 #endif
 
