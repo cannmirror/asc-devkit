@@ -16,8 +16,7 @@
 #define IMPL_EXPERIMENTAL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_3510_MMAD_MX_H
 
 #include "impl/experimental/tensor_api/arch/cube_compute/mmad/npu_arch_3510/instruction.h"
-#include "impl/experimental/tensor_api/arch/utils/check_format.h"
-#include "impl/experimental/tensor_api/arch/utils/check_data_type_3510.h"
+#include "impl/experimental/tensor_api/arch/utils/utils.h"
 
 namespace AscendC {
 namespace Te {
@@ -34,13 +33,10 @@ private:
     template <const MmadTrait& trait, typename T, typename U, typename S>
     __aicore__ inline constexpr void CheckTemplate()
     {
-        using dstDataType = typename T::elementType;
-        using fmDataType = typename U::elementType;
-        using filterDataType = typename S::elementType;
         CheckFormat::CheckL0CNZTemplate<T>();
         CheckFormat::CheckNZTemplate<U>();
         CheckFormat::CheckZNTemplate<S>();
-        CheckDataTypeFor3510::CheckMxMmadDataType<Hardware::L0C, dstDataType, fmDataType, filterDataType, dstDataType>();
+        CheckDataTypeFor3510::CheckMxMmadDataType<T, U, S, T>();
     }
 
     template <const MmadTrait& trait, typename T, typename U, typename S, typename Params>

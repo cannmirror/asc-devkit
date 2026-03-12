@@ -15,8 +15,7 @@
 #ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_2201_FIXPIPE_L0C2GM_H
 #define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_2201_FIXPIPE_L0C2GM_H
 
-#include "impl/experimental/tensor_api/arch/utils/check_format.h"
-#include "impl/experimental/tensor_api/arch/utils/check_data_type_2201.h"
+#include "impl/experimental/tensor_api/arch/utils/utils.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_2201/fixpipe_base.h"
 
 namespace AscendC {
@@ -34,12 +33,9 @@ private:
     template <const FixpipeTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
-        using srcType = typename U::elementType;
-        using dstType = typename T::elementType;
-
         CheckFormat::CheckL0CNZTemplate<T>();
         CheckFormat::CheckL0CNZTemplate<U>();
-        CheckDataTypeFor2201::CheckL0c2GmDataType<dstType, srcType>();
+        CheckDataTypeFor2201::CheckL0c2GmDataType<T, U>();
     }
 
     template <const FixpipeTrait& trait, typename T, typename U>
@@ -80,12 +76,9 @@ private:
     template <const FixpipeTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
-        using srcType = typename U::elementType;
-        using dstType = typename T::elementType;
-
         CheckFormat::CheckNDTemplate<T>();
         CheckFormat::CheckL0CNZTemplate<U>();
-        CheckDataTypeFor2201::CheckL0c2GmDataType<dstType, srcType>();
+        CheckDataTypeFor2201::CheckL0c2GmDataType<T, U>();
     }
 
     template <const FixpipeTrait& trait, typename T, typename U>

@@ -16,8 +16,7 @@
 #define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_NPU_ARCH_3510_LOAD_DATA_L12L0A_NZ2NZ_H
 
 #include "impl/experimental/tensor_api/arch/cube_datamove/load_data/npu_arch_3510/instruction.h"
-#include "impl/experimental/tensor_api/arch/utils/check_format.h"
-#include "impl/experimental/tensor_api/arch/utils/check_data_type_3510.h"
+#include "impl/experimental/tensor_api/arch/utils/utils.h"
 
 namespace AscendC {
 namespace Te {
@@ -39,11 +38,9 @@ private:
     template <const LoadDataTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
-        using srcType = typename U::elementType;
-        using dstType = typename T::elementType;
         CheckFormat::CheckNZTemplate<T>();
         CheckFormat::CheckNZTemplate<U>();
-        CheckDataTypeFor3510::CheckL12L0ADataType<dstType, srcType>();
+        CheckDataTypeFor3510::CheckL12L0ADataType<T, U>();
     }
 
     template <const LoadDataTrait& trait, typename T, typename U>

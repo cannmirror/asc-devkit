@@ -17,8 +17,7 @@
 
 #include "impl/experimental/tensor_api/tensor/pointer_impl.h"
 #include "impl/experimental/tensor_api/tensor/local_tensor_impl.h"
-#include "impl/experimental/tensor_api/arch/utils/check_format.h"
-#include "impl/experimental/tensor_api/arch/utils/check_data_type_2201.h"
+#include "impl/experimental/tensor_api/arch/utils/utils.h"
 
 namespace AscendC {
 namespace Te {
@@ -64,11 +63,9 @@ private:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
-        using srcType = typename U::elementType;
-        using dstType = typename T::elementType;
         CheckFormat::CheckNZTemplate<T>();
         CheckFormat::CheckNZTemplate<U>();
-        CheckDataTypeFor2201::CheckGm2L1DataType<dstType, srcType>();
+        CheckDataTypeFor2201::CheckGm2L1DataType<T, U>();
     }
 
     template <const DataCopyTrait& trait, typename T, typename U>
@@ -107,12 +104,9 @@ private:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
-        using srcType = typename U::elementType;
-        using dstType = typename T::elementType;
-
         CheckFormat::CheckNDTemplate<T>();
         CheckFormat::CheckNDTemplate<U>();
-        CheckDataTypeFor2201::CheckGm2L1NDDataType<dstType, srcType>();
+        CheckDataTypeFor2201::CheckGm2L1DataType<T, U>();
     }
 
     template <const DataCopyTrait& trait, typename T, typename U>
@@ -152,12 +146,9 @@ private:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
-        using srcType = typename U::elementType;
-        using dstType = typename T::elementType;
-        
         CheckFormat::CheckNDTemplate<U>();
         CheckFormat::CheckNZTemplate<T>();
-        CheckDataTypeFor2201::CheckGm2L1DataType<dstType, srcType>();
+        CheckDataTypeFor2201::CheckGm2L1DataType<T, U>();
     }
 
     template <const DataCopyTrait& trait, typename T, typename U>
@@ -227,12 +218,9 @@ private:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
-        using srcType = typename U::elementType;
-        using dstType = typename T::elementType;
-
         CheckFormat::CheckDNTemplate<U>();
         CheckFormat::CheckZNTemplate<T>();
-        CheckDataTypeFor2201::CheckGm2L1DataType<dstType, srcType>();
+        CheckDataTypeFor2201::CheckGm2L1DataType<T, U>();
     }
 
     template <const DataCopyTrait& trait, typename T, typename U>

@@ -11,20 +11,25 @@
  * \file check_data_type_2201.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_ARCH_UTILS_CHECK_DATA_TYPE_2201_H
-#define IMPL_TENSOR_API_ARCH_ARCH_UTILS_CHECK_DATA_TYPE_2201_H
+#ifndef IMPL_TENSOR_API_ARCH_UTILS_CHECK_DATA_TYPE_2201_H
+#define IMPL_TENSOR_API_ARCH_UTILS_CHECK_DATA_TYPE_2201_H
 
 namespace AscendC {
 namespace Te {
 
 class CheckDataTypeFor2201 {
 public:
-    template <Hardware biasPos, typename dstDataType, typename fmDataType, typename filterDataType,
-              typename biasDataType>
+    template <typename T, typename U, typename S, typename V>
     __aicore__ inline static constexpr void CheckMmadDataType(bool isMx)
     {
+        using dstDataType = typename T::elementType;
+        using fmDataType = typename U::elementType;
+        using filterDataType = typename S::elementType;
+        using biasDataType = typename V::elementType;
+        constexpr auto biasPos = GetHardPos<V>();
+
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
-                if constexpr (biasPos == Hardware::BIAS) {
+        if constexpr (biasPos == Hardware::BIAS) {
             static_assert(
                 Std::is_one_of_v<Std::tuple<biasDataType, dstDataType, fmDataType, filterDataType>,
                                  Std::tuple<__biasbuf__ int32_t, __cc__ int32_t, __ca__ int8_t, __cb__ int8_t>,
@@ -41,12 +46,14 @@ public:
                           "The data type is not supported.");
         }
 #endif
-
     }
 
-    template <typename dstDataType, typename srcDataType>
+    template <typename T, typename U>
     __aicore__ inline static constexpr void CheckGm2L1DataType()
     {
+        using srcDataType = typename U::elementType;
+        using dstDataType = typename T::elementType;
+
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         static_assert(
             Std::is_one_of_v<Std::tuple<dstDataType, srcDataType>, Std::tuple<__cbuf__ bfloat16_t, __gm__ bfloat16_t>,
@@ -59,39 +66,49 @@ public:
 #endif
     }
 
-    template <typename dstDataType, typename srcDataType>
+    template <typename T, typename U>
     __aicore__ inline static constexpr void CheckGm2L1NDDataType()
     {
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
-        static_assert(Std::is_one_of_v<Std::tuple<dstDataType, srcDataType>, Std::tuple<__cbuf__ bfloat16_t, __gm__ bfloat16_t>,
-                                       Std::tuple<__cbuf__ half, __gm__ half>, Std::tuple<__cbuf__ float, __gm__ float>,
-                                       Std::tuple<__cbuf__ int32_t, __gm__ int32_t>>,
-                      "The data type is not supported.");
-#endif
-    }
+        using srcType = typename U::elementType;
+        using dstType = typename T::elementType;
 
-    template <typename dstType, typename srcType>
-    __aicore__ inline static constexpr void CheckL12BtDataType()
-    {
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         static_assert(
             Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__cbuf__ bfloat16_t, __gm__ bfloat16_t>,
+                             Std::tuple<__cbuf__ half, __gm__ half>, Std::tuple<__cbuf__ float, __gm__ float>,
+                             Std::tuple<__cbuf__ int32_t, __gm__ int32_t>>,
+            "The data type is not supported.");
+#endif
+    }
+
+    template <typename T, typename U>
+    __aicore__ inline static constexpr void CheckL12BtDataType()
+    {
+        using dstDataType = typename T::elementType;
+        using srcDataType = typename U::elementType;
+
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
+        static_assert(
+            Std::is_one_of_v<Std::tuple<dstDataType, srcDataType>, Std::tuple<__cbuf__ bfloat16_t, __gm__ bfloat16_t>,
                              Std::tuple<__cbuf__ half, __gm__ half>, Std::tuple<__cbuf__ float, __gm__ float>,
                              Std::tuple<__cbuf__ int16_t, __gm__ int16_t>, Std::tuple<__cbuf__ int32_t, __gm__ int32_t>,
                              Std::tuple<__cbuf__ int8_t, __gm__ int8_t>, Std::tuple<__cbuf__ uint16_t, __gm__ uint16_t>,
                              Std::tuple<__cbuf__ uint32_t, __gm__ uint32_t>,
                              Std::tuple<__cbuf__ uint8_t, __gm__ uint8_t>>,
-                      "The data type is not supported.");
+            "The data type is not supported.");
 #endif
     }
 
-    template <typename dstType, typename srcType>
+    template <typename T, typename U>
     __aicore__ inline static constexpr void CheckL12FbDataType()
     {
+        using srcDataType = typename U::elementType;
+        using dstDataType = typename T::elementType;
+
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         static_assert(
             Std::is_one_of_v<
-                Std::tuple<dstType, srcType>, Std::tuple<__fbuf__ bfloat16_t, __cbuf__ bfloat16_t>,
+                Std::tuple<dstDataType, srcDataType>, Std::tuple<__fbuf__ bfloat16_t, __cbuf__ bfloat16_t>,
                 Std::tuple<__fbuf__ half, __cbuf__ half>, Std::tuple<__fbuf__ float, __cbuf__ float>,
                 Std::tuple<__fbuf__ int16_t, __cbuf__ int16_t>, Std::tuple<__fbuf__ int32_t, __cbuf__ int32_t>,
                 Std::tuple<__fbuf__ int8_t, __cbuf__ int8_t>, Std::tuple<__fbuf__ uint16_t, __cbuf__ uint16_t>,
@@ -102,17 +119,22 @@ public:
 #endif
     }
 
-    template <typename srcDataType>
+    template <typename U>
     __aicore__ inline static constexpr void CheckFixPipeDataType()
     {
+        using srcDataType = typename U::elementType;
+
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         static_assert(Std::is_one_of_v<srcDataType, __cbuf__ uint64_t>, "The source data type is not supported.");
 #endif
     }
 
-    template <typename dstDataType, typename srcDataType>
+    template <typename T, typename U>
     __aicore__ inline static constexpr void CheckL0c2GmDataType()
     {
+        using srcDataType = typename U::elementType;
+        using dstDataType = typename T::elementType;
+
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         static_assert(Std::is_one_of_v<Std::tuple<dstDataType, srcDataType>, Std::tuple<__gm__ float, __cc__ float>,
                                        Std::tuple<__gm__ int32_t, __cc__ int32_t>>,
@@ -120,9 +142,12 @@ public:
 #endif
     }
 
-    template <typename dstDataType, typename srcDataType>
+    template <typename T, typename U>
     __aicore__ inline static constexpr void CheckL12L0ADataType()
     {
+        using srcDataType = typename U::elementType;
+        using dstDataType = typename T::elementType;
+
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         static_assert(
             Std::is_one_of_v<Std::tuple<dstDataType, srcDataType>, Std::tuple<__ca__ bfloat16_t, __cbuf__ bfloat16_t>,
@@ -135,16 +160,21 @@ public:
 #endif
     }
 
-    template <typename dstDataType, typename srcDataType>
+    template <typename T, typename U>
     __aicore__ inline static constexpr void CheckL12L0BDataType()
     {
-        #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
-        static_assert(Std::is_one_of_v<Std::tuple<dstDataType, srcDataType>, 
-            Std::tuple<__cb__ bfloat16_t, __cbuf__ bfloat16_t>, Std::tuple<__cb__ half, __cbuf__ half>, 
-            Std::tuple<__cb__ float, __cbuf__ float>, Std::tuple<__cb__ int16_t, __cbuf__ int16_t>, 
-            Std::tuple<__cb__ int32_t, __cbuf__ int32_t>, Std::tuple<__cb__ int8_t, __cbuf__ int8_t>,
-            Std::tuple<__cb__ uint16_t, __cbuf__ uint16_t>, Std::tuple<__cb__ uint32_t, __cbuf__ uint32_t>, 
-            Std::tuple<__cb__ uint8_t, __cbuf__ uint8_t>>, "The data type is not supported.");
+        using srcDataType = typename U::elementType;
+        using dstDataType = typename T::elementType;
+
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
+        static_assert(
+            Std::is_one_of_v<Std::tuple<dstDataType, srcDataType>, Std::tuple<__cb__ bfloat16_t, __cbuf__ bfloat16_t>,
+                             Std::tuple<__cb__ half, __cbuf__ half>, Std::tuple<__cb__ float, __cbuf__ float>,
+                             Std::tuple<__cb__ int16_t, __cbuf__ int16_t>, Std::tuple<__cb__ int32_t, __cbuf__ int32_t>,
+                             Std::tuple<__cb__ int8_t, __cbuf__ int8_t>, Std::tuple<__cb__ uint16_t, __cbuf__ uint16_t>,
+                             Std::tuple<__cb__ uint32_t, __cbuf__ uint32_t>,
+                             Std::tuple<__cb__ uint8_t, __cbuf__ uint8_t>>,
+            "The data type is not supported.");
 #endif
     }
 };
@@ -152,4 +182,4 @@ public:
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ARCH_ARCH_UTILS_CHECK_DATA_TYPE_2201_H
+#endif // IMPL_TENSOR_API_ARCH_UTILS_CHECK_DATA_TYPE_2201_H

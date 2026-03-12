@@ -17,8 +17,7 @@
 
 #include "impl/experimental/tensor_api/tensor/pointer_impl.h"
 #include "impl/experimental/tensor_api/tensor/local_tensor_impl.h"
-#include "impl/experimental/tensor_api/arch/utils/check_format.h"
-#include "impl/experimental/tensor_api/arch/utils/check_data_type_2201.h"
+#include "impl/experimental/tensor_api/arch/utils/utils.h"
 
 namespace AscendC {
 namespace Te {
@@ -33,16 +32,13 @@ public:
     template <const LoadDataTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
-        using srcType = typename U::elementType;
-        using dstType = typename T::elementType;
-
         if constexpr (!trait.transposed) {
             CheckFormat::CheckNZTemplate<U>();
         } else {
             CheckFormat::CheckZNTemplate<U>();
         }
         CheckFormat::CheckZZTemplate<T>();
-        CheckDataTypeFor2201::CheckL12L0ADataType<dstType, srcType>();
+        CheckDataTypeFor2201::CheckL12L0ADataType<T, U>();
     }
 
     template<typename T>

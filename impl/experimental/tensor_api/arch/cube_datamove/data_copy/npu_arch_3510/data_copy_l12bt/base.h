@@ -15,8 +15,7 @@
 #ifndef IMPL_EXPERIMENTAL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_3510_DATA_COPY_L12BT_BASE_H
 #define IMPL_EXPERIMENTAL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_3510_DATA_COPY_L12BT_BASE_H
 
-#include "impl/experimental/tensor_api/arch/utils/check_format.h"
-#include "impl/experimental/tensor_api/arch/utils/check_data_type_3510.h"
+#include "impl/experimental/tensor_api/arch/utils/utils.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_l12bt/instruction.h"
 
 namespace AscendC {
@@ -33,12 +32,9 @@ private:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
-        using srcType = typename U::elementType;
-        using dstType = typename T::elementType;
-
         CheckFormat::CheckNDTemplate<T>();
         CheckFormat::CheckNDTemplate<U>();
-        CheckDataTypeFor3510::CheckL12BtDataType<dstType, srcType>();
+        CheckDataTypeFor3510::CheckL12BtDataType<T, U>();
     }
 
     template <const DataCopyTrait& trait, typename T, typename U>

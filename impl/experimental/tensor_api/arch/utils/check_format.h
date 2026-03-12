@@ -11,8 +11,8 @@
  * \file check_format.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_ARCH_UTILS_CHECK_FORMAT_H
-#define IMPL_TENSOR_API_ARCH_ARCH_UTILS_CHECK_FORMAT_H
+#ifndef IMPL_TENSOR_API_ARCH_UTILS_CHECK_FORMAT_H
+#define IMPL_TENSOR_API_ARCH_UTILS_CHECK_FORMAT_H
 
 #include "impl/experimental/tensor_api/tensor/pointer_impl.h"
 #include "impl/experimental/tensor_api/tensor/local_tensor_impl.h"
@@ -30,15 +30,15 @@ public:
         using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
         using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<C0_SIZE / sizeof(dataType)>>,
-                      "Layout->Shape->Column->ZeroDim must be aligned to 32/sizeof(dataType)!");
+                      "Layout->Shape->Column->ZeroDim must be 32/sizeof(dataType)!");
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>,
-                      "Layout->Shape->Row->ZeroDim must be aligned to 16!");
+                      "Layout->Shape->Row->ZeroDim must be 16!");
 
         using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
         using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>, "Layout->Stride->Column-ZeroDim must be 1!");
         static_assert(Std::is_same_v<StrideRow0, Std::Int<C0_SIZE / sizeof(dataType)>>,
-                      "Layout->Stride->Row->ZeroDim must be aligned to 32/sizeof(dataType)!");
+                      "Layout->Stride->Row->ZeroDim must be 32/sizeof(dataType)!");
     }
 
     template <typename T>
@@ -49,14 +49,14 @@ public:
         using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
         constexpr auto c0Size = is_b4_type<dataType> ? C0_SIZE * 2 : C0_SIZE / sizeof(dataType);
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<FRACTAL_FIXED>>,
-                      "Filter Layout->Shape->Column->ZeroDim must be aligned to 16!");
+                      "Filter Layout->Shape->Column->ZeroDim must be 16!");
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<c0Size>>,
-                      "Filter Layout->Shape->Row->ZeroDim must be aligned to (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType))!");
+                      "Filter Layout->Shape->Row->ZeroDim must be (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType))!");
 
         using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
         using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<c0Size>>,
-                      "Filter Layout->Stride->Column-ZeroDim must be aligned to (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType))!");
+                      "Filter Layout->Stride->Column-ZeroDim must be (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType))!");
         static_assert(Std::is_same_v<StrideRow0, Std::Int<1>>,
                       "Filter Layout->Stride->Row->ZeroDim must be 1!");
     }
@@ -69,20 +69,20 @@ public:
         using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
         constexpr auto c0Size = is_b4_type<type> ? C0_SIZE * 2 : C0_SIZE / sizeof(type);
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>,
-                      "Layout->Shape->Row->ZeroDim must be aligned to 16!");
+                      "Layout->Shape->Row->ZeroDim must be 16!");
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<c0Size>>,
-                      "Layout->Shape->Column->ZeroDim must be aligned to (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType))!");
+                      "Layout->Shape->Column->ZeroDim must be (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType))!");
 
         using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
         using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
         using StrideRow1 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 1>::type;
         static_assert(Std::is_same_v<StrideRow0, Std::Int<c0Size>>,
-                      "Layout->Stride->Row->ZeroDim must be aligned to (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType))!");
+                      "Layout->Stride->Row->ZeroDim must be (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType))!");
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>,
                       "Layout->Stride->Column->ZeroDim must be 1!");
         static_assert(
             Std::is_same_v<StrideRow1, Std::Int<c0Size * FRACTAL_FIXED>>,
-            "Layout->Stride->Column->ZeroDimmust be aligned to (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType) * 16)!");
+            "Layout->Stride->Column->ZeroDimmust be (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType) * 16)!");
     }
 
     template <typename T>
@@ -126,14 +126,14 @@ public:
         using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
         using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>,
-                      "Layout->Shape->Row->ZeroDim must be aligned to 16!");
+                      "Layout->Shape->Row->ZeroDim must be 16!");
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<FRACTAL_FIXED>>,
-                      "Layout->Shape->Column->ZeroDim must be aligned to 16!");
+                      "Layout->Shape->Column->ZeroDim must be 16!");
 
         using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
         using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
         static_assert(Std::is_same_v<StrideRow0, Std::Int<FRACTAL_FIXED>>,
-                      "Layout->Stride->Row->ZeroDim must be aligned to 16!");
+                      "Layout->Stride->Row->ZeroDim must be 16!");
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>, "Layout->Stride->Column->ZeroDim must be 1!");
     }
 
@@ -157,4 +157,4 @@ public:
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ARCH_ARCH_UTILS_CHECK_FORMAT_H
+#endif // IMPL_TENSOR_API_ARCH_UTILS_CHECK_FORMAT_H

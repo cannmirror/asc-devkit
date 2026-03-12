@@ -11,8 +11,8 @@
  * \file arch_utils.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_ARCH_UTILS_H
-#define IMPL_TENSOR_API_ARCH_ARCH_UTILS_H
+#ifndef IMPL_TENSOR_API_ARCH_UTILS_ARCH_UTILS_H
+#define IMPL_TENSOR_API_ARCH_UTILS_ARCH_UTILS_H
 
 #include "impl/experimental/tensor_api/tensor/pointer_impl.h"
 #include "impl/experimental/tensor_api/tensor/local_tensor_impl.h"
@@ -344,4 +344,4 @@ __aicore__ inline constexpr auto GetHardPos()
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ARCH_ARCH_UTILS_H
+#endif // IMPL_TENSOR_API_ARCH_UTILS_ARCH_UTILS_H

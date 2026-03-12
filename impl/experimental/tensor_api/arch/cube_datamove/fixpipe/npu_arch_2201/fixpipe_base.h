@@ -18,9 +18,7 @@
 #include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/fixpipe_utils.h"
 #include "impl/experimental/tensor_api/tensor/pointer_impl.h"
 #include "impl/experimental/tensor_api/tensor/local_tensor_impl.h"
-#include "impl/experimental/tensor_api/arch/utils/arch_utils.h"
-#include "impl/experimental/tensor_api/arch/utils/check_format.h"
-#include "impl/experimental/tensor_api/arch/utils/check_data_type_2201.h"
+#include "impl/experimental/tensor_api/arch/utils/utils.h"
 #include "impl/experimental/tensor_api/tensor/layout_method.h"
 
 namespace AscendC {
@@ -115,9 +113,8 @@ private:
     template <typename T>
     __aicore__ inline constexpr void CheckTemplate()
     {
-        using srcType = typename T::elementType;
         CheckFormat::CheckNDTemplate<T>();
-        CheckDataTypeFor2201::CheckFixPipeDataType<srcType>();
+        CheckDataTypeFor2201::CheckFixPipeDataType<T>();
         constexpr Hardware srcTPos = GetHardPos<T>();
         static_assert(srcTPos == Hardware::L1, "The hardware of quant must be L1");
     }

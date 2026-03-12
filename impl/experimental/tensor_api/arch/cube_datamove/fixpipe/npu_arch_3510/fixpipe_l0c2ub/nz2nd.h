@@ -17,8 +17,7 @@
 
 #include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/fixpipe_utils.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/instruction.h"
-#include "impl/experimental/tensor_api/arch/utils/check_format.h"
-#include "impl/experimental/tensor_api/arch/utils/check_data_type_3510.h"
+#include "impl/experimental/tensor_api/arch/utils/utils.h"
 
 namespace AscendC {
 namespace Te {
@@ -37,7 +36,7 @@ private:
     {
         CheckFormat::CheckNDTemplate<T>();
         CheckFormat::CheckL0CNZTemplate<U>();
-        CheckDataTypeFor3510::CheckFixPipeDataType<quantPre, T, U>();
+        CheckDataTypeFor3510::CheckL0C2UbDataType<quantPre, T, U>();
 
     }
 

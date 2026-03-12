@@ -11,18 +11,23 @@
  * \file check_data_type_3510.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_ARCH_UTILS_CHECK_DATA_TYPE_3510_H
-#define IMPL_TENSOR_API_ARCH_ARCH_UTILS_CHECK_DATA_TYPE_3510_H
+#ifndef IMPL_TENSOR_API_ARCH_UTILS_CHECK_DATA_TYPE_3510_H
+#define IMPL_TENSOR_API_ARCH_UTILS_CHECK_DATA_TYPE_3510_H
 
 namespace AscendC {
 namespace Te {
 
 class CheckDataTypeFor3510 {
 public:
-    template <Hardware biasPos, typename dstDataType, typename fmDataType, typename filterDataType,
-              typename biasDataType>
+    template <typename T, typename U, typename S, typename V>
     __aicore__ inline static constexpr void CheckMxMmadDataType()
     {
+        using dstDataType = typename T::elementType;
+        using biasDataType = typename V::elementType;
+        using fmDataType = typename U::elementType;
+        using filterDataType = typename S::elementType;
+        constexpr auto biasPos = GetHardPos<V>();
+
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
         if constexpr (biasPos == Hardware::BIAS) {
             static_assert(
@@ -51,10 +56,16 @@ public:
         }
 #endif
     }
-    template <Hardware biasPos, typename dstDataType, typename fmDataType, typename filterDataType,
-              typename biasDataType>
+
+    template <typename T, typename U, typename S, typename V>
     __aicore__ inline static constexpr void CheckMmadDataType()
     {
+        using dstDataType = typename T::elementType;
+        using fmDataType = typename U::elementType;
+        using filterDataType = typename S::elementType;
+        using biasDataType = typename V::elementType;
+        constexpr auto biasPos = GetHardPos<V>();
+
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
         if constexpr (biasPos == Hardware::BIAS) {
             static_assert(
@@ -86,12 +97,15 @@ public:
 #endif
     }
 
-    template <typename dstType, typename srcType>
+    template <typename T, typename U>
     __aicore__ inline static constexpr void CheckGm2L1DataType()
     {
+        using dstDataType = typename T::elementType;
+        using srcDataType = typename U::elementType;
+
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
         static_assert(
-            Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__cbuf__ bfloat16_t, __gm__ bfloat16_t>,
+            Std::is_one_of_v<Std::tuple<dstDataType, srcDataType>, Std::tuple<__cbuf__ bfloat16_t, __gm__ bfloat16_t>,
                              Std::tuple<__cbuf__ half, __gm__ half>, Std::tuple<__cbuf__ float, __gm__ float>,
                              Std::tuple<__cbuf__ int16_t, __gm__ int16_t>, Std::tuple<__cbuf__ int32_t, __gm__ int32_t>,
                              Std::tuple<__cbuf__ int8_t, __gm__ int8_t>, Std::tuple<__cbuf__ uint16_t, __gm__ uint16_t>,
@@ -101,9 +115,12 @@ public:
 #endif
     }
 
-    template <typename dstDataType, typename srcDataType>
+    template <typename T, typename U>
     __aicore__ inline static constexpr void CheckGm2L1Fp4DataType()
     {
+        using srcDataType = typename U::elementType;
+        using dstDataType = typename T::elementType;
+
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
         static_assert(
             Std::is_one_of_v<Std::tuple<dstDataType, srcDataType>, Std::tuple<__cbuf__ bfloat16_t, __gm__ bfloat16_t>,
@@ -121,9 +138,12 @@ public:
 #endif
     }
 
-    template <typename dstDataType, typename srcDataType>
+    template <typename T, typename U>
     __aicore__ inline static constexpr void CheckGm2L1AlignV2NDDataType()
     {
+        using srcDataType = typename U::elementType;
+        using dstDataType = typename T::elementType;
+
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
         static_assert(
             Std::is_one_of_v<Std::tuple<dstDataType, srcDataType>, Std::tuple<__cbuf__ bfloat16_t, __gm__ bfloat16_t>,
@@ -133,9 +153,12 @@ public:
 #endif
     }
 
-    template <typename dstDataType, typename srcDataType>
+    template <typename T, typename U>
     __aicore__ inline static constexpr void CheckL12BtDataType()
     {
+        using srcDataType = typename U::elementType;
+        using dstDataType = typename T::elementType;
+
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
         static_assert(
             Std::is_one_of_v<Std::tuple<dstDataType, srcDataType>, Std::tuple<__biasbuf__ float, __cbuf__ bfloat16_t>,
@@ -146,9 +169,12 @@ public:
 #endif
     }
 
-    template <typename dstDataType, typename srcDataType>
+    template <typename T, typename U>
     __aicore__ inline static constexpr void CheckL12FbDataType()
     {
+        using srcDataType = typename U::elementType;
+        using dstDataType = typename T::elementType;
+
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
         static_assert(
             Std::is_one_of_v<
@@ -168,23 +194,47 @@ public:
     }
 
     template <QuantMode_t quantPre, typename T, typename U>
-    __aicore__ inline static constexpr void CheckFixPipeDataType()
+    __aicore__ inline static constexpr void CheckL0C2GmDataType()
     {
         using srcType = typename U::elementType;
         using dstType = typename T::elementType;
-#if defined(__NPU_ARCH__ ) && __NPU_ARCH__ == 3510
-        static_assert((quantPre == QuantMode_t::NoQuant && Std::is_one_of_v<Std::tuple<dstType, srcType>,
-            Std::tuple<__gm__ float, __cc__ float>, Std::tuple<__gm__ int32_t, __cc__ int32_t>>) ||
-            (quantPre == QuantMode_t::F322F16 && Std::is_one_of_v<Std::tuple<dstType, srcType>,
-            Std::tuple<__gm__ half, __cc__ float>>) || (quantPre == QuantMode_t::F322BF16 &&
-            Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__gm__ bfloat16_t, __cc__ float>>),
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
+        static_assert(
+            (quantPre == QuantMode_t::NoQuant
+             && Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__gm__ float, __cc__ float>,
+                                 Std::tuple<__gm__ int32_t, __cc__ int32_t>>)
+                || (quantPre == QuantMode_t::F322F16
+                    && Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__gm__ half, __cc__ float>>)
+                || (quantPre == QuantMode_t::F322BF16
+                    && Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__gm__ bfloat16_t, __cc__ float>>),
             "The data type is not supported.");
 #endif
     }
 
-    template <typename dstDataType, typename srcDataType>
+    template <QuantMode_t quantPre, typename T, typename U>
+    __aicore__ inline static constexpr void CheckL0C2UbDataType()
+    {
+        using srcType = typename U::elementType;
+        using dstType = typename T::elementType;
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
+        static_assert(
+            (quantPre == QuantMode_t::NoQuant
+             && Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__ubuf__ float, __cc__ float>,
+                                 Std::tuple<__ubuf__ int32_t, __cc__ int32_t>>)
+                || (quantPre == QuantMode_t::F322F16
+                    && Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__ubuf__ half, __cc__ float>>)
+                || (quantPre == QuantMode_t::F322BF16
+                    && Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__ubuf__ bfloat16_t, __cc__ float>>),
+            "The data type is not supported.");
+#endif
+    }
+
+    template <typename T, typename U>
     __aicore__ inline static constexpr void CheckL12L0ADataType()
     {
+        using srcDataType = typename U::elementType;
+        using dstDataType = typename T::elementType;
+
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
         static_assert(
             Std::is_one_of_v<
@@ -202,9 +252,12 @@ public:
 #endif
     }
 
-    template <typename dstDataType, typename srcDataType>
+    template <typename T, typename U>
     __aicore__ inline static constexpr void CheckL12L0BDataType()
     {
+        using srcDataType = typename U::elementType;
+        using dstDataType = typename T::elementType;
+
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
         static_assert(
             Std::is_one_of_v<
@@ -226,4 +279,4 @@ public:
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ARCH_ARCH_UTILS_CHECK_DATA_TYPE_3510_H
+#endif // IMPL_TENSOR_API_ARCH_UTILS_CHECK_DATA_TYPE_3510_H
