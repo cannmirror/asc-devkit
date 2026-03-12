@@ -1,7 +1,7 @@
 # UB bank冲突优化样例
 ## 概述
 UB bank冲突优化样例。
-## 支持的AI处理器
+## 支持的产品
 - Ascend 950PR/Ascend 950DT
 ## 目录结构介绍
 ```

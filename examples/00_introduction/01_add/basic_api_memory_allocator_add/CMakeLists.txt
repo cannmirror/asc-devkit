@@ -27,4 +27,5 @@ add_executable(add
 # ======================================================================================
 target_compile_options(add PRIVATE
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
+    # $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3510>
 )
