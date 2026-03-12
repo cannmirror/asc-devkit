@@ -41,7 +41,7 @@ namespace AscendC {
  * @param [in] calCount: amount of data to be calculated
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Digamma(LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+__aicore__ inline void Digamma(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
     LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
     // Only for AI Vector Core.
@@ -61,7 +61,7 @@ __aicore__ inline void Digamma(LocalTensor<T>& dstTensor, const LocalTensor<T>& 
  * @param [in] calCount: amount of data to be calculated
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Digamma(LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
+__aicore__ inline void Digamma(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
