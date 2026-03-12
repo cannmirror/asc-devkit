@@ -343,7 +343,7 @@ BINARY_SCALAR_OP_LEVEL2_IMPL(AddsImpl, Adds, float)
  * Muls                                                                                             *
  * **************************************************************************************************/
 // Muls::Level 0
-namespace MicroAPIMuls {
+namespace RegMuls {
 template <typename T, typename U>
 __aicore__ inline void Muls(U &dstReg, U &srcReg, T scalarValue, Reg::MaskReg &mask)
 {
@@ -354,13 +354,13 @@ __aicore__ inline void Muls(U &dstReg, U &srcReg, T scalarValue, Reg::MaskReg &m
         Reg::Muls(dstReg, srcReg, scalarValue, mask);
     }
 }
-} // namespace MicroAPIMuls
+} // namespace RegMuls
 template <typename T, bool isSetMask = true>
 __aicore__ inline void MulsImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue, const uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, float, int16_t, int32_t>()), "Muls not support current datatype!");
-    constexpr auto func = MicroAPIMuls::Muls<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegMuls::Muls<T, Reg::RegTensor<T>>;
     Internal::VecBinaryScalarLevel0Template<func, isSetMask, true>(dst, src, scalarValue, mask, 0, repeatTime,
         repeatParams);
 }
@@ -370,7 +370,7 @@ __aicore__ inline void MulsImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue,
     const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, float, int16_t, int32_t>()), "Muls not support current datatype!");
-    constexpr auto func = MicroAPIMuls::Muls<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegMuls::Muls<T, Reg::RegTensor<T>>;
     Internal::VecBinaryScalarLevel0Template<func, isSetMask, false>(dst, src, scalarValue, nullptr, mask, repeatTime,
         repeatParams);
 }

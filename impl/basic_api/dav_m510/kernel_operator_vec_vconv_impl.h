@@ -1761,7 +1761,7 @@ __aicore__ inline void CastDeqImpl(
     AscendCUtils::FreeTemporaryBuffer(tempBuf);
 }
 
-namespace MicroAPIAddReluCast {
+namespace RegAddReluCast {
 template <typename T1, typename T2, typename RegT, typename RegU>
 __aicore__ inline void AddReluCast(RegT &dstReg, RegU &src0Reg, RegU &src1Reg, Reg::MaskReg &mask)
 {
@@ -1783,7 +1783,7 @@ __aicore__ inline void AddReluCast(RegT &dstReg, RegU &src0Reg, RegU &src1Reg, R
             (Reg::RegTensor<uint8_t> &)dstReg, (Reg::RegTensor<uint16_t> &)dstReg);
     }
 }
-}  // namespace MicroAPIAddReluCast
+}  // namespace RegAddReluCast
 
 template <typename T1, typename T2> constexpr __aicore__ inline void CheckAddReluCastSupportType()
 {
@@ -1797,7 +1797,7 @@ __aicore__ inline void AddReluCastImpl(__ubuf__ T1 *dst, __ubuf__ T2 *src0, __ub
     uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
     CheckAddReluCastSupportType<T1, T2>();
-    constexpr auto func = MicroAPIAddReluCast::AddReluCast<T1, T2, Reg::RegTensor<T1>, Reg::RegTensor<T2>>;
+    constexpr auto func = RegAddReluCast::AddReluCast<T1, T2, Reg::RegTensor<T1>, Reg::RegTensor<T2>>;
     Internal::VecBinaryImplTemplate<func, isSetMask, false>(dst, src0, src1, nullptr, mask, repeatTime, repeatParams);
 }
 
@@ -1807,7 +1807,7 @@ __aicore__ inline void AddReluCastImpl(__ubuf__ T1 *dst, __ubuf__ T2 *src0, __ub
     uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
     CheckAddReluCastSupportType<T1, T2>();
-    constexpr auto func = MicroAPIAddReluCast::AddReluCast<T1, T2, Reg::RegTensor<T1>, Reg::RegTensor<T2>>;
+    constexpr auto func = RegAddReluCast::AddReluCast<T1, T2, Reg::RegTensor<T1>, Reg::RegTensor<T2>>;
     Internal::VecBinaryImplTemplate<func, isSetMask, true>(dst, src0, src1, mask, 0, repeatTime, repeatParams);
 }
 
@@ -1875,7 +1875,7 @@ __aicore__ inline void AddReluCastImpl(__ubuf__ T1 *dst, __ubuf__ T2 *src0, __ub
     }
 }
 
-namespace MicroAPISubReluCast {
+namespace RegSubReluCast {
 template <typename T1, typename T2, typename RegT, typename RegU>
 __aicore__ inline void SubReluCast(RegT &dstReg, RegU &src0Reg, RegU &src1Reg, Reg::MaskReg &mask)
 {
@@ -1895,7 +1895,7 @@ __aicore__ inline void SubReluCast(RegT &dstReg, RegU &src0Reg, RegU &src1Reg, R
         Reg::Pack((Reg::RegTensor<uint8_t> &)dstReg, (Reg::RegTensor<uint16_t> &)dstReg);
     }
 }
-}  // namespace MicroAPISubReluCast
+}  // namespace RegSubReluCast
 
 template <typename T1, typename T2>
 constexpr __aicore__ inline void CheckSubReluCastSupportType()
@@ -1911,7 +1911,7 @@ __aicore__ inline void SubReluCastImpl(__ubuf__ T1 *dst, __ubuf__ T2 *src0, __ub
     uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
     CheckSubReluCastSupportType<T1, T2>();
-    constexpr auto func = MicroAPISubReluCast::SubReluCast<T1, T2, Reg::RegTensor<T1>, Reg::RegTensor<T2>>;
+    constexpr auto func = RegSubReluCast::SubReluCast<T1, T2, Reg::RegTensor<T1>, Reg::RegTensor<T2>>;
     Internal::VecBinaryImplTemplate<func, isSetMask, false>(dst, src0, src1, nullptr, mask, repeatTime, repeatParams);
 }
 
@@ -1921,7 +1921,7 @@ __aicore__ inline void SubReluCastImpl(__ubuf__ T1 *dst, __ubuf__ T2 *src0, __ub
     uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
     CheckSubReluCastSupportType<T1, T2>();
-    constexpr auto func = MicroAPISubReluCast::SubReluCast<T1, T2, Reg::RegTensor<T1>, Reg::RegTensor<T2>>;
+    constexpr auto func = RegSubReluCast::SubReluCast<T1, T2, Reg::RegTensor<T1>, Reg::RegTensor<T2>>;
     Internal::VecBinaryImplTemplate<func, isSetMask, true>(dst, src0, src1, mask, 0, repeatTime, repeatParams);
 }
 

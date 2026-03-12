@@ -171,14 +171,14 @@
     __simd_vf__ inline void NotVF(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint32_t count, 
      uint32_t oneRepeatSize, uint16_t repeatTimes)
     {
-        AscendC::MicroAPI::RegTensor<T> srcReg;
-        AscendC::MicroAPI::RegTensor<T> dstReg;
-        AscendC::MicroAPI::MaskReg mask;
+        AscendC::Reg::RegTensor<T> srcReg;
+        AscendC::Reg::RegTensor<T> dstReg;
+        AscendC::Reg::MaskReg mask;
         for (uint16_t i = 0; i < repeatTimes; i++) {
-            mask = AscendC::MicroAPI::UpdateMask<T>(count);
-            AscendC::MicroAPI::LoadAlign(srcReg, srcAddr + i * oneRepeatSize);
-            AscendC::MicroAPI::Not(dstReg, srcReg, mask);
-            AscendC::MicroAPI::StoreAlign(dstAddr + i * oneRepeatSize, dstReg, mask);
+            mask = AscendC::Reg::UpdateMask<T>(count);
+            AscendC::Reg::LoadAlign(srcReg, srcAddr + i * oneRepeatSize);
+            AscendC::Reg::Not(dstReg, srcReg, mask);
+            AscendC::Reg::StoreAlign(dstAddr + i * oneRepeatSize, dstReg, mask);
         }
     }
     ```
@@ -189,16 +189,16 @@
     template <typename T>
     __simd_vf__ inline void NotVF(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint32_t count, uint32_t oneRepeatSize, uint16_t repeatTimes)
     {
-        AscendC::MicroAPI::RegTensor<T> srcReg;
-        AscendC::MicroAPI::MaskReg src = AscendC::MicroAPI::CreateMask<T, AscendC::MicroAPI::MaskPattern::ALLF>();
-        AscendC::MicroAPI::MaskReg dst;
-        AscendC::MicroAPI::MaskReg mask;
+        AscendC::Reg::RegTensor<T> srcReg;
+        AscendC::Reg::MaskReg src = AscendC::Reg::CreateMask<T, AscendC::Reg::MaskPattern::ALLF>();
+        AscendC::Reg::MaskReg dst;
+        AscendC::Reg::MaskReg mask;
         for (uint16_t i = 0; i < repeatTimes; ++i) {
-            mask = AscendC::MicroAPI::UpdateMask<T>(count);
-            AscendC::MicroAPI::LoadAlign(srcReg, srcAddr + i * oneRepeatSize);
-            AscendC::MicroAPI::Not(dst, src, mask);
-            AscendC::MicroAPI::Adds(srcReg, srcReg, 0, dst);
-            AscendC::MicroAPI::StoreAlign(dstAddr + i * oneRepeatSize, srcReg, mask);
+            mask = AscendC::Reg::UpdateMask<T>(count);
+            AscendC::Reg::LoadAlign(srcReg, srcAddr + i * oneRepeatSize);
+            AscendC::Reg::Not(dst, src, mask);
+            AscendC::Reg::Adds(srcReg, srcReg, 0, dst);
+            AscendC::Reg::StoreAlign(dstAddr + i * oneRepeatSize, srcReg, mask);
         }
     }
     ```

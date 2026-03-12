@@ -249,7 +249,7 @@ __aicore__ inline void AddsImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue,
  * Muls                                             *
  * ************************************************************************************************* */
 // Muls::Level 0
-namespace MicroAPIMuls {
+namespace RegMuls {
 template <typename T, typename RegT>
 __simd_callee__ inline void Muls(RegT &dstReg, RegT &srcReg, T scalarValue, Reg::MaskReg &mask)
 {
@@ -260,13 +260,13 @@ __simd_callee__ inline void Muls(RegT &dstReg, RegT &srcReg, T scalarValue, Reg:
         Reg::Muls(dstReg, srcReg, scalarValue, mask);
     }
 }
-} // namespace MicroAPIMuls
+} // namespace RegMuls
 template <typename T, bool isSetMask = true>
 __aicore__ inline void MulsImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue, const uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, bfloat16_t, float, int16_t, int32_t>()), "Muls not support current datatype!");
-    constexpr auto func = MicroAPIMuls::Muls<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegMuls::Muls<T, Reg::RegTensor<T>>;
     Internal::VecBinaryScalarLevel0Template<func, isSetMask, true>(dst, src, scalarValue, mask, 0, repeatTime,
         repeatParams);
 }
@@ -276,7 +276,7 @@ __aicore__ inline void MulsImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue,
     const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, bfloat16_t, float, int16_t, int32_t>()), "Muls not support current datatype!");
-    constexpr auto func = MicroAPIMuls::Muls<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegMuls::Muls<T, Reg::RegTensor<T>>;
     Internal::VecBinaryScalarLevel0Template<func, isSetMask, false>(dst, src, scalarValue, nullptr, mask, repeatTime,
         repeatParams);
 }
@@ -289,10 +289,10 @@ __aicore__ inline void MulsImpl(__ubuf__ T *dst, __ubuf__ T *src, const T scalar
         (SupportType<T, half, bfloat16_t, float, int16_t, int32_t, int64_t, uint64_t, complex32, complex64>()),
         "Muls not support current datatype!");
     if constexpr (SupportBytes<T, 8>() || SupportType<T, complex32>()) {
-        constexpr auto func = MicroAPIMuls::Muls<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>>;
+        constexpr auto func = RegMuls::Muls<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>>;
         Internal::VecBinaryScalarLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
     } else {
-        constexpr auto func = MicroAPIMuls::Muls<T, Reg::RegTensor<T>>;
+        constexpr auto func = RegMuls::Muls<T, Reg::RegTensor<T>>;
         Internal::VecBinaryScalarLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
     }
 }
@@ -460,7 +460,7 @@ __aicore__ inline void ShiftRightImpl(__ubuf__ T *dst, __ubuf__ T *src, const T 
 /* **************************************************************************************************
  * LeakyRelu                                             *
  * ************************************************************************************************* */
-namespace MicroAPILeakyRelu {
+namespace RegLeakyRelu {
 template <typename T, typename RegT>
 __simd_callee__ inline void LeakyRelu(RegT &dstReg, RegT &srcReg, T scalarValue, Reg::MaskReg &mask)
 {
@@ -474,7 +474,7 @@ __aicore__ inline void LeakyReluImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarV
     uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, float>()), "LeakyRelu not support current datatype!");
-    constexpr auto func = MicroAPILeakyRelu::LeakyRelu<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegLeakyRelu::LeakyRelu<T, Reg::RegTensor<T>>;
     Internal::VecBinaryScalarLevel0Template<func, isSetMask, true>(dst, src, scalarValue, mask, 0, repeatTime,
         repeatParams);
 }
@@ -484,7 +484,7 @@ __aicore__ inline void LeakyReluImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarV
     uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, float>()), "LeakyRelu not support current datatype!");
-    constexpr auto func = MicroAPILeakyRelu::LeakyRelu<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegLeakyRelu::LeakyRelu<T, Reg::RegTensor<T>>;
     Internal::VecBinaryScalarLevel0Template<func, isSetMask, false>(dst, src, scalarValue, nullptr, mask, repeatTime,
         repeatParams);
 }
@@ -494,7 +494,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void LeakyReluImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue, const int32_t &calCount)
 {
     static_assert((SupportType<T, half, float>()), "LeakyRelu not support current datatype!");
-    constexpr auto func = MicroAPILeakyRelu::LeakyRelu<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegLeakyRelu::LeakyRelu<T, Reg::RegTensor<T>>;
     Internal::VecBinaryScalarLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
 }
 
@@ -502,20 +502,20 @@ __aicore__ inline void LeakyReluImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarV
  * Subs: LocalTensor - Scalar                                             *
  * ************************************************************************************************* */
 // Subs::Level 0
-namespace MicroAPISubs {
+namespace RegSubs {
 template <typename T, typename RegT>
 __simd_callee__ inline void Subs(RegT &dstReg, RegT &srcReg, T scalarValue, Reg::MaskReg &mask)
 {
     Reg::Duplicate(dstReg, scalarValue, mask);
     Reg::Sub(dstReg, srcReg, dstReg, mask);
 }
-} // namespace MicroAPISubs
+} // namespace RegSubs
 template <typename T, bool isSetMask = true>
 __aicore__ inline void SubsImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue, const uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, bfloat16_t, float, int16_t, int32_t>()), "Subs not support current datatype!");
-    constexpr auto func = MicroAPISubs::Subs<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegSubs::Subs<T, Reg::RegTensor<T>>;
     Internal::VecBinaryScalarLevel0Template<func, isSetMask, true>(dst, src, scalarValue, mask, 0, repeatTime,
         repeatParams);
 }
@@ -525,7 +525,7 @@ __aicore__ inline void SubsImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue,
     const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, bfloat16_t, float, int16_t, int32_t>()), "Subs not support current datatype!");
-    constexpr auto func = MicroAPISubs::Subs<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegSubs::Subs<T, Reg::RegTensor<T>>;
     Internal::VecBinaryScalarLevel0Template<func, isSetMask, false>(dst, src, scalarValue, nullptr, mask, repeatTime,
         repeatParams);
 }
@@ -538,10 +538,10 @@ __aicore__ inline void SubsImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue,
         (SupportType<T, half, bfloat16_t, float, int16_t, int32_t, int64_t, uint64_t, complex32, complex64>()),
         "Subs not support current datatype!");
     if constexpr (SupportBytes<T, 8>() || SupportType<T, complex32>()) {
-        constexpr auto func = MicroAPISubs::Subs<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>>;
+        constexpr auto func = RegSubs::Subs<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>>;
         Internal::VecBinaryScalarLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
     } else {
-        constexpr auto func = MicroAPISubs::Subs<T, Reg::RegTensor<T>>;
+        constexpr auto func = RegSubs::Subs<T, Reg::RegTensor<T>>;
         Internal::VecBinaryScalarLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
     }
 }
@@ -550,21 +550,21 @@ __aicore__ inline void SubsImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue,
  * Subs: Scalar - LocalTensor                                             *
  * ************************************************************************************************* */
 // Subs::Level 0
-namespace MicroAPISubs {
+namespace RegSubs {
 template <typename T, typename RegT>
 __simd_callee__ inline void Subs2(RegT &dstReg, RegT &srcReg, T scalarValue, Reg::MaskReg &mask)
 {
     Reg::Duplicate(dstReg, scalarValue, mask);
     Reg::Sub(dstReg, dstReg, srcReg, mask);
 }
-} // namespace MicroAPISubs
+} // namespace RegSubs
 
 template <typename T, bool isSetMask = true>
 __aicore__ inline void SubsImpl(__ubuf__ T *dst, T scalarValue, __ubuf__ T *src, const uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, bfloat16_t, float, int16_t, int32_t>()), "Subs not support current datatype!");
-    constexpr auto func = MicroAPISubs::Subs2<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegSubs::Subs2<T, Reg::RegTensor<T>>;
     Internal::VecBinaryScalarLevel0Template<func, isSetMask, true>(dst, src, scalarValue, mask, 0, repeatTime,
         repeatParams);
 }
@@ -574,7 +574,7 @@ __aicore__ inline void SubsImpl(__ubuf__ T *dst, T scalarValue, __ubuf__ T *src,
     const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, bfloat16_t, float, int16_t, int32_t>()), "Subs not support current datatype!");
-    constexpr auto func = MicroAPISubs::Subs2<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegSubs::Subs2<T, Reg::RegTensor<T>>;
     Internal::VecBinaryScalarLevel0Template<func, isSetMask, false>(dst, src, scalarValue, nullptr, mask, repeatTime,
         repeatParams);
 }
@@ -587,10 +587,10 @@ __aicore__ inline void SubsImpl(__ubuf__ T *dst, T scalarValue, __ubuf__ T *src,
         (SupportType<T, half, bfloat16_t, float, int16_t, int32_t, int64_t, uint64_t, complex32, complex64>()),
         "Subs not support current datatype!");
     if constexpr (SupportBytes<T, 8>() || SupportType<T, complex32>()) {
-        constexpr auto func = MicroAPISubs::Subs2<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>>;
+        constexpr auto func = RegSubs::Subs2<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>>;
         Internal::VecBinaryScalarLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
     } else {
-        constexpr auto func = MicroAPISubs::Subs2<T, Reg::RegTensor<T>>;
+        constexpr auto func = RegSubs::Subs2<T, Reg::RegTensor<T>>;
         Internal::VecBinaryScalarLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
     }
 }
@@ -598,21 +598,21 @@ __aicore__ inline void SubsImpl(__ubuf__ T *dst, T scalarValue, __ubuf__ T *src,
 /* **************************************************************************************************
  * Divs                                             *
  * ************************************************************************************************* */
-namespace MicroAPIDivs {
+namespace RegDivs {
 template <typename T, typename RegT>
 __simd_callee__ inline void Divs(RegT &dstReg, RegT &srcReg, T scalarValue, Reg::MaskReg &mask)
 {
     Reg::Duplicate(dstReg, scalarValue, mask);
     Reg::Div(dstReg, srcReg, dstReg, mask);
 }
-} // namespace MicroAPIDivs
+} // namespace RegDivs
 // Divs::Level 0
 template <typename T, bool isSetMask = true>
 __aicore__ inline void DivsImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue, const uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, float>()), "Divs not support current datatype!");
-    constexpr auto func = MicroAPIDivs::Divs<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegDivs::Divs<T, Reg::RegTensor<T>>;
     Internal::VecBinaryScalarLevel0Template<func, isSetMask, true>(dst, src, scalarValue, mask, 0, repeatTime,
         repeatParams);
 }
@@ -622,7 +622,7 @@ __aicore__ inline void DivsImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue,
     const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, float>()), "Divs not support current datatype!");
-    constexpr auto func = MicroAPIDivs::Divs<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegDivs::Divs<T, Reg::RegTensor<T>>;
     Internal::VecBinaryScalarLevel0Template<func, isSetMask, false>(dst, src, scalarValue, nullptr, mask, repeatTime,
         repeatParams);
 }
@@ -634,10 +634,10 @@ __aicore__ inline void DivsImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue,
     static_assert((SupportType<T, half, float, int64_t, uint64_t, complex32, complex64>()),
         "Divs not support current datatype!");
     if constexpr (SupportBytes<T, 8>() || SupportType<T, complex32>()) {
-        constexpr auto func = MicroAPIDivs::Divs<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>>;
+        constexpr auto func = RegDivs::Divs<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>>;
         Internal::VecBinaryScalarLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
     } else {
-        constexpr auto func = MicroAPIDivs::Divs<T, Reg::RegTensor<T>>;
+        constexpr auto func = RegDivs::Divs<T, Reg::RegTensor<T>>;
         Internal::VecBinaryScalarLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
     }
 }
@@ -645,21 +645,21 @@ __aicore__ inline void DivsImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue,
 /* **************************************************************************************************
  * Divs   Scalar / LocalTensor                                         *
  * ************************************************************************************************* */
-namespace MicroAPIDivs {
+namespace RegDivs {
 template <typename T, typename RegT>
 __simd_callee__ inline void Divs2(RegT &dstReg, RegT &srcReg, T scalarValue, Reg::MaskReg &mask)
 {
     Reg::Duplicate(dstReg, scalarValue, mask);
     Reg::Div(dstReg, dstReg, srcReg, mask);
 }
-} // namespace MicroAPIDivs
+} // namespace RegDivs
 // Div::Level 0
 template <typename T, bool isSetMask = true>
 __aicore__ inline void DivsImpl(__ubuf__ T *dst, T scalarValue, __ubuf__ T *src, const uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, float>()), "Divs not support current datatype!");
-    constexpr auto func = MicroAPIDivs::Divs2<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegDivs::Divs2<T, Reg::RegTensor<T>>;
     Internal::VecBinaryScalarLevel0Template<func, isSetMask, true>(dst, src, scalarValue, mask, 0, repeatTime,
         repeatParams);
 }
@@ -669,7 +669,7 @@ __aicore__ inline void DivsImpl(__ubuf__ T *dst, T scalarValue, __ubuf__ T *src,
     const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, float>()), "Divs not support current datatype!");
-    constexpr auto func = MicroAPIDivs::Divs2<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegDivs::Divs2<T, Reg::RegTensor<T>>;
     Internal::VecBinaryScalarLevel0Template<func, isSetMask, false>(dst, src, scalarValue, nullptr, mask, repeatTime,
         repeatParams);
 }
@@ -681,10 +681,10 @@ __aicore__ inline void DivsImpl(__ubuf__ T *dst, T scalarValue, __ubuf__ T *src,
     static_assert((SupportType<T, half, float, int64_t, uint64_t, complex32, complex64>()),
         "Divs not support current datatype!");
     if constexpr (SupportBytes<T, 8>() || SupportType<T, complex32>()) {
-        constexpr auto func = MicroAPIDivs::Divs2<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>>;
+        constexpr auto func = RegDivs::Divs2<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>>;
         Internal::VecBinaryScalarLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
     } else {
-        constexpr auto func = MicroAPIDivs::Divs2<T, Reg::RegTensor<T>>;
+        constexpr auto func = RegDivs::Divs2<T, Reg::RegTensor<T>>;
         Internal::VecBinaryScalarLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
     }
 }
@@ -692,21 +692,21 @@ __aicore__ inline void DivsImpl(__ubuf__ T *dst, T scalarValue, __ubuf__ T *src,
 /* **************************************************************************************************
  * Ands                                             *
  * ************************************************************************************************* */
-namespace MicroAPIAnds {
+namespace RegAnds {
 template <typename T, typename RegT>
 __simd_callee__ inline void Ands(RegT &dstReg, RegT &srcReg, T scalarValue, Reg::MaskReg &mask)
 {
     Reg::Duplicate(dstReg, scalarValue, mask);
     Reg::And(dstReg, dstReg, srcReg, mask);
 }
-} // namespace MicroAPIAnds
+} // namespace RegAnds
 // Ands::Level 0
 template <typename T, bool isSetMask = true>
 __aicore__ inline void AndsImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue, const uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, int16_t, uint16_t>()), "Ands not support current datatype!");
-    constexpr auto func = MicroAPIAnds::Ands<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegAnds::Ands<T, Reg::RegTensor<T>>;
     Internal::VecBinaryScalarLevel0Template<func, isSetMask, true>(dst, src, scalarValue, mask, 0, repeatTime,
         repeatParams);
 }
@@ -716,7 +716,7 @@ __aicore__ inline void AndsImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue,
     const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, int16_t, uint16_t>()), "Ands not support current datatype!");
-    constexpr auto func = MicroAPIAnds::Ands<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegAnds::Ands<T, Reg::RegTensor<T>>;
     Internal::VecBinaryScalarLevel0Template<func, isSetMask, false>(dst, src, scalarValue, nullptr, mask, repeatTime,
         repeatParams);
 }
@@ -727,10 +727,10 @@ __aicore__ inline void AndsImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue,
 {
     static_assert((SupportType<T, int16_t, uint16_t, int64_t, uint64_t>()), "Ands not support current datatype!");
     if constexpr (SupportBytes<T, 8>()) {
-        constexpr auto func = MicroAPIAnds::Ands<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>>;
+        constexpr auto func = RegAnds::Ands<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>>;
         Internal::VecBinaryScalarLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
     } else {
-        constexpr auto func = MicroAPIAnds::Ands<T, Reg::RegTensor<T>>;
+        constexpr auto func = RegAnds::Ands<T, Reg::RegTensor<T>>;
         Internal::VecBinaryScalarLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
     }
 }
@@ -738,21 +738,21 @@ __aicore__ inline void AndsImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue,
 /* **************************************************************************************************
  * Ors                                             *
  * ************************************************************************************************* */
-namespace MicroAPIOrs {
+namespace RegOrs {
 template <typename T, typename RegT>
 __simd_callee__ inline void Ors(RegT &dstReg, RegT &srcReg, T scalarValue, Reg::MaskReg &mask)
 {
     Reg::Duplicate(dstReg, scalarValue, mask);
     Reg::Or(dstReg, dstReg, srcReg, mask);
 }
-} // namespace MicroAPIOrs
+} // namespace RegOrs
 // Ors::Level 0
 template <typename T, bool isSetMask = true>
 __aicore__ inline void OrsImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue, const uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, int16_t, uint16_t>()), "Ors not support current datatype!");
-    constexpr auto func = MicroAPIOrs::Ors<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegOrs::Ors<T, Reg::RegTensor<T>>;
     Internal::VecBinaryScalarLevel0Template<func, isSetMask, true>(dst, src, scalarValue, mask, 0, repeatTime,
         repeatParams);
 }
@@ -762,7 +762,7 @@ __aicore__ inline void OrsImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue, 
     const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, int16_t, uint16_t>()), "Ors not support current datatype!");
-    constexpr auto func = MicroAPIOrs::Ors<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegOrs::Ors<T, Reg::RegTensor<T>>;
     Internal::VecBinaryScalarLevel0Template<func, isSetMask, false>(dst, src, scalarValue, nullptr, mask, repeatTime,
         repeatParams);
 }
@@ -773,10 +773,10 @@ __aicore__ inline void OrsImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue, 
 {
     static_assert((SupportType<T, int16_t, uint16_t, int64_t, uint64_t>()), "Ors not support current datatype!");
     if constexpr (SupportBytes<T, 8>()) {
-        constexpr auto func = MicroAPIOrs::Ors<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>>;
+        constexpr auto func = RegOrs::Ors<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>>;
         Internal::VecBinaryScalarLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
     } else {
-        constexpr auto func = MicroAPIOrs::Ors<T, Reg::RegTensor<T>>;
+        constexpr auto func = RegOrs::Ors<T, Reg::RegTensor<T>>;
         Internal::VecBinaryScalarLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
     }
 }

@@ -138,14 +138,14 @@ __simd_callee__ inline void ShiftLefts(S& dstReg, S& srcReg, U scalarValue, Mask
 template<typename T, typename U>
 __simd_vf__ inline void ShiftLeftsVF(__ubuf__ T* dstAddr, __ubuf__ T* src0Addr, U scalarValue, uint32_t count, uint32_t oneRepeatSize, uint16_t repeatTimes)
 {
-    AscendC::MicroAPI::RegTensor<T> srcReg;
-    AscendC::MicroAPI::RegTensor<T> dstReg;
-    AscendC::MicroAPI::MaskReg mask;
+    AscendC::Reg::RegTensor<T> srcReg;
+    AscendC::Reg::RegTensor<T> dstReg;
+    AscendC::Reg::MaskReg mask;
     for (uint16_t i = 0; i < repeatTimes; i++) {
-        AscendC::MicroAPI::LoadAlign(srcReg, src0Addr + i * oneRepeatSize);
-        mask = AscendC::MicroAPI::UpdateMask<T>(count);
-        AscendC::MicroAPI::ShiftLefts(dstReg, srcReg, scalarValue, mask);
-        AscendC::MicroAPI::StoreAlign(dstAddr + i * oneRepeatSize, dstReg, mask);
+        AscendC::Reg::LoadAlign(srcReg, src0Addr + i * oneRepeatSize);
+        mask = AscendC::Reg::UpdateMask<T>(count);
+        AscendC::Reg::ShiftLefts(dstReg, srcReg, scalarValue, mask);
+        AscendC::Reg::StoreAlign(dstAddr + i * oneRepeatSize, dstReg, mask);
     }
 }
 ```

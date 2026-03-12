@@ -342,7 +342,7 @@ __aicore__ inline void AbsImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t 
     Internal::VecUnaryLevel0Template<func, isSetMask, false>(dst, src, nullptr, mask, repeatTime, repeatParams);
 }
 
-namespace MicroAPIReciprocal {
+namespace RegReciprocal {
 template <typename T, typename RegT, bool precisionMode = false>
 __aicore__ inline void Reciprocal(RegT &dstReg, RegT &srcReg, Reg::MaskReg &mask)
 {
@@ -355,17 +355,17 @@ __aicore__ inline void Reciprocal(RegT &dstReg, RegT &srcReg, Reg::MaskReg &mask
         Reg::Div<T, &mode>(dstReg, dstReg, srcReg, mask);
     }
 }
-} // namespace MicroAPIReciprocal
+} // namespace RegReciprocal
 template <typename T, bool isSetMask = true, const ReciprocalConfig& config>
 __aicore__ inline void ReciprocalImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, float>()), "current data type is not supported on current device!");
     if constexpr (config.algo == ReciprocalAlgo::INTRINSIC || config.algo == ReciprocalAlgo::PRECISION_1ULP_FTZ_TRUE) {
-        constexpr auto func = MicroAPIReciprocal::Reciprocal<T, Reg::RegTensor<T>>;
+        constexpr auto func = RegReciprocal::Reciprocal<T, Reg::RegTensor<T>>;
         Internal::VecUnaryLevel0Template<func, isSetMask, true>(dst, src, mask, 0, repeatTime, repeatParams);
     } else if constexpr (config.algo == ReciprocalAlgo::PRECISION_1ULP_FTZ_FALSE) {
-        constexpr auto func = MicroAPIReciprocal::Reciprocal<T, Reg::RegTensor<T>, true>;
+        constexpr auto func = RegReciprocal::Reciprocal<T, Reg::RegTensor<T>, true>;
         Internal::VecUnaryLevel0Template<func, isSetMask, true>(dst, src, mask, 0, repeatTime, repeatParams);
     }
 }
@@ -376,10 +376,10 @@ __aicore__ inline void ReciprocalImpl(__ubuf__ T *dst, __ubuf__ T *src, const ui
 {
     static_assert((SupportType<T, half, float>()), "current data type is not supported on current device!");
     if constexpr (config.algo == ReciprocalAlgo::INTRINSIC || config.algo == ReciprocalAlgo::PRECISION_1ULP_FTZ_TRUE) {
-        constexpr auto func = MicroAPIReciprocal::Reciprocal<T, Reg::RegTensor<T>>;
+        constexpr auto func = RegReciprocal::Reciprocal<T, Reg::RegTensor<T>>;
         Internal::VecUnaryLevel0Template<func, isSetMask, false>(dst, src, nullptr, mask, repeatTime, repeatParams);
     } else if constexpr (config.algo == ReciprocalAlgo::PRECISION_1ULP_FTZ_FALSE) {
-        constexpr auto func = MicroAPIReciprocal::Reciprocal<T, Reg::RegTensor<T>, true>;
+        constexpr auto func = RegReciprocal::Reciprocal<T, Reg::RegTensor<T>, true>;
         Internal::VecUnaryLevel0Template<func, isSetMask, false>(dst, src, nullptr, mask, repeatTime, repeatParams);
     }
 }
@@ -430,7 +430,7 @@ __aicore__ inline void SqrtImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t
     }
 }
 
-namespace MicroAPIRsqrt {
+namespace RegRsqrt {
 template <typename T, typename RegT, bool precisionMode = false> __aicore__ inline void Rsqrt(RegT &dstReg, RegT &srcReg, Reg::MaskReg &mask)
 {
     Reg::MaskReg cmpMask;
@@ -458,18 +458,18 @@ template <typename T, typename RegT, bool precisionMode = false> __aicore__ inli
         }
     }
 }
-} // namespace MicroAPIRsqrt
+} // namespace RegRsqrt
 template <typename T, bool isSetMask = true, const RsqrtConfig& config>
 __aicore__ inline void RsqrtImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t mask[], const uint8_t repeatTime,
     const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, float>()), "current data type is not supported on current device!");
     if constexpr (config.algo == RsqrtAlgo::INTRINSIC || config.algo == RsqrtAlgo::PRECISION_1ULP_FTZ_TRUE) {
-        constexpr auto func = MicroAPIRsqrt::Rsqrt<T, Reg::RegTensor<T>>;
+        constexpr auto func = RegRsqrt::Rsqrt<T, Reg::RegTensor<T>>;
         Internal::VecUnaryLevel0Template<func, isSetMask, true>(dst, src, mask, 0, repeatTime, repeatParams);
     } else if constexpr (config.algo == RsqrtAlgo::FAST_INVERSE || config.algo == RsqrtAlgo::PRECISION_0ULP_FTZ_FALSE || 
                         config.algo == RsqrtAlgo::PRECISION_1ULP_FTZ_FALSE) {
-        constexpr auto func = MicroAPIRsqrt::Rsqrt<T, Reg::RegTensor<T>, true>;
+        constexpr auto func = RegRsqrt::Rsqrt<T, Reg::RegTensor<T>, true>;
         Internal::VecUnaryLevel0Template<func, isSetMask, true>(dst, src, mask, 0, repeatTime, repeatParams);
     }
 }
@@ -480,11 +480,11 @@ __aicore__ inline void RsqrtImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_
 {
     static_assert((SupportType<T, half, float>()), "current data type is not supported on current device!");
     if constexpr (config.algo == RsqrtAlgo::INTRINSIC || config.algo == RsqrtAlgo::PRECISION_1ULP_FTZ_TRUE) {
-        constexpr auto func = MicroAPIRsqrt::Rsqrt<T, Reg::RegTensor<T>>;
+        constexpr auto func = RegRsqrt::Rsqrt<T, Reg::RegTensor<T>>;
         Internal::VecUnaryLevel0Template<func, isSetMask, false>(dst, src, nullptr, mask, repeatTime, repeatParams);
     } else if constexpr (config.algo == RsqrtAlgo::FAST_INVERSE || config.algo == RsqrtAlgo::PRECISION_0ULP_FTZ_FALSE || 
                         config.algo == RsqrtAlgo::PRECISION_1ULP_FTZ_FALSE) {
-        constexpr auto func = MicroAPIRsqrt::Rsqrt<T, Reg::RegTensor<T>, true>;
+        constexpr auto func = RegRsqrt::Rsqrt<T, Reg::RegTensor<T>, true>;
         Internal::VecUnaryLevel0Template<func, isSetMask, false>(dst, src, nullptr, mask, repeatTime, repeatParams);
     }
 }
@@ -599,10 +599,10 @@ template <typename T, const ReciprocalConfig& config> __aicore__ inline void Rec
 
     if constexpr (SupportType<T, half, float>()) {
         if constexpr (config.algo == ReciprocalAlgo::INTRINSIC || config.algo == ReciprocalAlgo::PRECISION_1ULP_FTZ_TRUE) {
-            constexpr auto func = MicroAPIReciprocal::Reciprocal<T, Reg::RegTensor<T>>;
+            constexpr auto func = RegReciprocal::Reciprocal<T, Reg::RegTensor<T>>;
             Internal::VecUnaryLevel2ImplTemplate<func, T>(dst, src, count);
         } else if constexpr (config.algo == ReciprocalAlgo::PRECISION_1ULP_FTZ_FALSE) {
-            constexpr auto func = MicroAPIReciprocal::Reciprocal<T, Reg::RegTensor<T>, true>;
+            constexpr auto func = RegReciprocal::Reciprocal<T, Reg::RegTensor<T>, true>;
             Internal::VecUnaryLevel2ImplTemplate<func, T>(dst, src, count);
         }
     } else {
@@ -635,7 +635,7 @@ template <typename T>
 __aicore__ inline void RsqrtPrecisionModeImpl(__ubuf__ T *dst, __ubuf__ T *src, const int32_t &count)
 {
     if constexpr (IsSameType<T, half>::value) {
-        constexpr auto func = MicroAPIRsqrt::Rsqrt<T, Reg::RegTensor<T>, true>;
+        constexpr auto func = RegRsqrt::Rsqrt<T, Reg::RegTensor<T>, true>;
         Internal::VecUnaryLevel2ImplTemplate<func, T>(dst, src, count);
     } else {
         Internal::VecUnaryLevel2ImplFloat<T>(dst, src, count);
@@ -646,7 +646,7 @@ template <typename T, const RsqrtConfig& config> __aicore__ inline void RsqrtImp
 {
     static_assert((SupportType<T, half, float>()), "current data type is not supported on current device!");
     if constexpr (config.algo == RsqrtAlgo::INTRINSIC || config.algo == RsqrtAlgo::PRECISION_1ULP_FTZ_TRUE) {
-        constexpr auto func = MicroAPIRsqrt::Rsqrt<T, Reg::RegTensor<T>>;
+        constexpr auto func = RegRsqrt::Rsqrt<T, Reg::RegTensor<T>>;
         Internal::VecUnaryLevel2ImplTemplate<func, T>(dst, src, count);
     } else {
         RsqrtPrecisionModeImpl(dst, src, count);

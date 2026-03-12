@@ -16,7 +16,7 @@ find_package(ASC REQUIRED)
 project(kernel_samples LANGUAGES ASC CXX)
 
 add_executable(demo
-    micro_api_add_custom.asc
+    reg_compute_add_custom.asc
 )
 
 target_link_libraries(demo PRIVATE

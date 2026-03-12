@@ -35,7 +35,7 @@ constexpr Reg::CastTrait MulCastTrait = { Reg::RegLayout::ZERO, Reg::SatMode::SA
     Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT };
 }
 
-namespace MicroAPIMulCast {
+namespace RegMulCast {
 template <typename T, typename U, typename RegT, typename RegU>
 __aicore__ inline void MulCast(RegT &dstReg, RegU &src0Reg, RegU &src1Reg, Reg::MaskReg &mask)
 {
@@ -44,14 +44,14 @@ __aicore__ inline void MulCast(RegT &dstReg, RegU &src0Reg, RegU &src1Reg, Reg::
     Reg::Pack<uint8_t, uint16_t, Reg::HighLowPart::LOWEST>((Reg::RegTensor<uint8_t> &)dstReg,
         (Reg::RegTensor<uint16_t> &)dstReg);
 }
-} // namespace MicroAPIMulCast
+} // namespace RegMulCast
 
 template <typename T, typename U, bool isSetMask = true>
 __aicore__ inline void MulCastImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ U *src1, uint64_t mask,
     const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
     CheckMulCastSupportType<T, U>();
-    constexpr auto func = MicroAPIMulCast::MulCast<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
+    constexpr auto func = RegMulCast::MulCast<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
     Internal::VecBinaryImplTemplate<func, isSetMask, false>(dst, src0, src1, nullptr, mask, repeatTime, repeatParams);
 }
 
@@ -60,7 +60,7 @@ __aicore__ inline void MulCastImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ U
     const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
     CheckMulCastSupportType<T, U>();
-    constexpr auto func = MicroAPIMulCast::MulCast<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
+    constexpr auto func = RegMulCast::MulCast<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
     Internal::VecBinaryImplTemplate<func, isSetMask, true>(dst, src0, src1, mask, 0, repeatTime, repeatParams);
 }
 

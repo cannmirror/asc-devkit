@@ -162,17 +162,17 @@ __simd_callee__ inline void UnPack(S& dstReg, V& srcReg)
 template<typename T, typename U, int32_t mode>
 __simd_vf__ inline void UnPackVF(__ubuf__ T* dstAddr, __ubuf__ U* srcAddr, uint32_t oneDstRepSize, uint16_t repeatTimes, uint32_t oneSrcRepSize)
 {
-    AscendC::MicroAPI::RegTensor<U> srcReg;
-    AscendC::MicroAPI::RegTensor<T> dstReg;
-    AscendC::MicroAPI::MaskReg mask = AscendC::MicroAPI::CreateMask<T, AscendC::MicroAPI::MaskPattern::ALL>();
+    AscendC::Reg::RegTensor<U> srcReg;
+    AscendC::Reg::RegTensor<T> dstReg;
+    AscendC::Reg::MaskReg mask = AscendC::Reg::CreateMask<T, AscendC::Reg::MaskPattern::ALL>();
     for (uint16_t i = 0; i < repeatTimes; i++) {
-        AscendC::MicroAPI::LoadAlign(srcReg, srcAddr + i * oneSrcRepSize);
+        AscendC::Reg::LoadAlign(srcReg, srcAddr + i * oneSrcRepSize);
         if constexpr (mode == 0) {
-            AscendC::MicroAPI::UnPack<T, U, AscendC::MicroAPI::HighLowPart::LOWEST>(dstReg, srcReg);
+            AscendC::Reg::UnPack<T, U, AscendC::Reg::HighLowPart::LOWEST>(dstReg, srcReg);
         } else if constexpr (mode == 1) {
-            AscendC::MicroAPI::UnPack<T, U, AscendC::MicroAPI::HighLowPart::HIGHEST>(dstReg, srcReg);
+            AscendC::Reg::UnPack<T, U, AscendC::Reg::HighLowPart::HIGHEST>(dstReg, srcReg);
         }
-        AscendC::MicroAPI::StoreAlign(dstAddr + i * oneDstRepSize, dstReg, mask);
+        AscendC::Reg::StoreAlign(dstAddr + i * oneDstRepSize, dstReg, mask);
     }
 }
 ```

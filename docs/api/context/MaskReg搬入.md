@@ -271,23 +271,23 @@ __simd_callee__ inline void MaskGenWithRegTensor(MaskReg& dst, U& srcReg);
 template <typename T>
 __simd_vf__ inline void LoadAlignVF(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint32_t count, uint32_t oneRepeatSize, uint16_t repeatTimes)
 {
-    AscendC::MicroAPI::MaskReg mask;;
+    AscendC::Reg::MaskReg mask;;
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = AscendC::MicroAPI::UpdateMask<T>(count);
-        AscendC::MicroAPI::AddrReg offset = AscendC::MicroAPI::CreateAddrReg<T>(i, oneRepeatSize);
-        AscendC::MicroAPI::LoadAlign(mask, srcAddr, offset);
-        AscendC::MicroAPI::StoreAlign(dstAddr, mask, offset);
+        mask = AscendC::Reg::UpdateMask<T>(count);
+        AscendC::Reg::AddrReg offset = AscendC::Reg::CreateAddrReg<T>(i, oneRepeatSize);
+        AscendC::Reg::LoadAlign(mask, srcAddr, offset);
+        AscendC::Reg::StoreAlign(dstAddr, mask, offset);
     }
 }
 
 template <typename T, int16_t offset>
 __simd_vf__ inline void MaskGenWithRegTensorVF(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr)
 {
-    AscendC::MicroAPI::RegTensor<T> srcReg;
-    AscendC::MicroAPI::MaskReg mask = AscendC::MicroAPI::CreateMask<T>();
-    AscendC::MicroAPI::LoadAlign(srcReg, srcAddr);
-    AscendC::MicroAPI::MaskGenWithRegTensor<T, offset>(mask, srcReg);
-    AscendC::MicroAPI::StoreAlign(dstAddr, mask);
+    AscendC::Reg::RegTensor<T> srcReg;
+    AscendC::Reg::MaskReg mask = AscendC::Reg::CreateMask<T>();
+    AscendC::Reg::LoadAlign(srcReg, srcAddr);
+    AscendC::Reg::MaskGenWithRegTensor<T, offset>(mask, srcReg);
+    AscendC::Reg::StoreAlign(dstAddr, mask);
 }
 ```
 

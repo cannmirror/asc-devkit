@@ -61,7 +61,7 @@ __aicore__ inline void VecAxpyLevel2ImplTemplate(__ubuf__ T *dst, __ubuf__ U *sr
 
 /*
  * T: data type
- * func: MicroAPI input/output function
+ * func: Reg input/output function
  * isSetMask: basic api whether to set mask
  * isNormalMode: true: NormalMode, false: CounterMode
  * isMaskBitMode: true: mask bit mode, false: mask count mode
@@ -150,7 +150,7 @@ __aicore__ inline void VecAxpyImplTemplate(__ubuf__ T *dst, __ubuf__ U *src, U s
 }
 } // namespace Internal
 
-namespace MicroAPIAxpy {
+namespace RegAxpy {
 namespace CastParam {
 constexpr Reg::CastTrait half2floatTrait = { Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN,
     Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN };
@@ -176,7 +176,7 @@ __aicore__ inline void Axpy(RegT &dstReg, RegU &srcReg, U scalarValue, Reg::Mask
         Reg::Add(dstReg, cvtReg, dstReg, mask);
     }
 }
-} // namespace MicroAPIAxpy
+} // namespace RegAxpy
 
 // Axpy::Level 0
 template <typename T, typename U, bool isSetMask = true>
@@ -186,7 +186,7 @@ __aicore__ inline void AxpyImpl(__ubuf__ T *dst, __ubuf__ U *src, const U &scala
     static_assert(SupportType<Tuple<T, U>, Tuple<half, half>, Tuple<float, float>, Tuple<bfloat16_t, bfloat16_t>,
         Tuple<float, half>>(),
         "current data type is not supported on current device!");
-    constexpr auto func = MicroAPIAxpy::Axpy<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
+    constexpr auto func = RegAxpy::Axpy<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
     Internal::VecAxpyImplTemplate<func, isSetMask, true>(dst, src, scalarValue, mask, 0, repeatTime, repeatParams);
 }
 
@@ -197,7 +197,7 @@ __aicore__ inline void AxpyImpl(__ubuf__ T *dst, __ubuf__ U *src, const U &scala
     static_assert(SupportType<Tuple<T, U>, Tuple<half, half>, Tuple<float, float>, Tuple<bfloat16_t, bfloat16_t>,
         Tuple<float, half>>(),
         "current data type is not supported on current device!");
-    constexpr auto func = MicroAPIAxpy::Axpy<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
+    constexpr auto func = RegAxpy::Axpy<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
     Internal::VecAxpyImplTemplate<func, isSetMask, false>(dst, src, scalarValue, nullptr, mask, repeatTime,
         repeatParams);
 }
@@ -210,11 +210,11 @@ __aicore__ inline void AxpyImpl(__ubuf__ T *dst, __ubuf__ U *src, const U &scala
         Tuple<float, half>, Tuple<uint64_t, uint64_t>, Tuple<int64_t, int64_t>>(),
         "current data type is not supported on current device!");
     if constexpr (SupportBytes<T, 8>()) {
-        constexpr auto func = MicroAPIAxpy::Axpy<T, U, Reg::RegTensor<T, Reg::RegTraitNumTwo>,
+        constexpr auto func = RegAxpy::Axpy<T, U, Reg::RegTensor<T, Reg::RegTraitNumTwo>,
             Reg::RegTensor<U, Reg::RegTraitNumTwo>>;
         Internal::VecAxpyLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
     } else {
-        constexpr auto func = MicroAPIAxpy::Axpy<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
+        constexpr auto func = RegAxpy::Axpy<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
         Internal::VecAxpyLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
     }
 }

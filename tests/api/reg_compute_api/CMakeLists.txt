@@ -7,7 +7,7 @@
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
-project(ascendc_micro_api_tests)
+project(ascendc_reg_compute_tests)
 cmake_minimum_required(VERSION 3.16.0)
 set(CMAKE_CXX_STANDARD 17)
 find_package(tikicpulib REQUIRED)
@@ -27,25 +27,25 @@ set(ASCENDC_TEST_HEADER_FILES
     ${ASCENDC_DIR}/impl/basic_api/reg_compute
 )
 
-# # ================ micro_api kernel ut ================
+# # ================ reg_compute_api kernel ut ================
 # ascend950pr_9599 micro test cases
 file(GLOB ASCENDC_TEST_ascend950pr_9599_MICRO_CASE_SRC_FILES
-    ascendc_case_ascend950pr_9599_micro/*.cpp
+    ascendc_case_ascend950pr_9599_reg_compute/*.cpp
 )
 
 # mc62cm12aa micro test cases
 file(GLOB ASCENDC_TEST_mc62cm12aa_MICRO_CASE_SRC_FILES
-    ascendc_case_mc62cm12aa_micro/*.cpp
+    ascendc_case_mc62cm12aa_reg_compute/*.cpp
 )
 
 foreach(product_type ${MICRO_PRODUCT_TYPE_LIST})
-    add_executable(ascendc_ut_micro_api_${product_type}
+    add_executable(ascendc_ut_reg_compute_${product_type}
         ${ASCENDC_DIR}/tests/main_global.cpp
         ../common/k3_pvwrap.cpp
         ${ASCENDC_TEST_${product_type}_MICRO_CASE_SRC_FILES}
     )
 
-    target_compile_definitions(ascendc_ut_micro_api_${product_type} PRIVATE
+    target_compile_definitions(ascendc_ut_reg_compute_${product_type} PRIVATE
         UT_TEST
         ASCENDC_OOM=1
         ASCENDC_DUMP=0
@@ -53,17 +53,17 @@ foreach(product_type ${MICRO_PRODUCT_TYPE_LIST})
         $<$<STREQUAL:${product_type},mc62cm12aa>:__NPU_ARCH__=5102>
     )
 
-    target_include_directories(ascendc_ut_micro_api_${product_type} PRIVATE
+    target_include_directories(ascendc_ut_reg_compute_${product_type} PRIVATE
         ${ASCENDC_TEST_HEADER_FILES}
         ${ASCEND_CANN_PACKAGE_PATH}/include/base/
         ${ASCEND_CANN_PACKAGE_PATH}/include/metadef/
     )
 
-    target_compile_options(ascendc_ut_micro_api_${product_type} PRIVATE
+    target_compile_options(ascendc_ut_reg_compute_${product_type} PRIVATE
         -fno-access-control
     )
 
-    target_link_libraries(ascendc_ut_micro_api_${product_type} PRIVATE
+    target_link_libraries(ascendc_ut_reg_compute_${product_type} PRIVATE
         $<BUILD_INTERFACE:intf_llt_pub_basic>
         $<$<STREQUAL:${product_type},ascend950pr_9599>:tikicpulib::ascend950pr_9599>
         $<$<STREQUAL:${product_type},mc62cm12aa>:tikicpulib::mc62cm12aa>
@@ -76,7 +76,7 @@ foreach(product_type ${MICRO_PRODUCT_TYPE_LIST})
     )
 
     run_llt_test(
-        TARGET ascendc_ut_micro_api_${product_type}
+        TARGET ascendc_ut_reg_compute_${product_type}
         TASK_NUM 1
     )
 endforeach()

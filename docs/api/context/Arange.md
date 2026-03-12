@@ -109,12 +109,12 @@ __simd_callee__ inline void Arange(S& dstReg, U scalarValue);
 template<typename T>
 __simd_vf__ inline void ArangeVF(__ubuf__ T* dstAddr, T scalarValue, uint32_t oneRepeatSize, uint16_t repeatTimes)
 {
-    AscendC::MicroAPI::RegTensor<T> dstReg;
-    AscendC::MicroAPI::MaskReg mask;
-    mask = AscendC::MicroAPI::CreateMask<T>();
+    AscendC::Reg::RegTensor<T> dstReg;
+    AscendC::Reg::MaskReg mask;
+    mask = AscendC::Reg::CreateMask<T>();
     for (uint16_t i = 0; i < repeatTimes; i++) {
-        AscendC::MicroAPI::Arange(dstReg, scalarValue);
-        AscendC::MicroAPI::StoreAlign(dstAddr + i * oneRepeatSize, dstReg, mask);
+        AscendC::Reg::Arange(dstReg, scalarValue);
+        AscendC::Reg::StoreAlign(dstAddr + i * oneRepeatSize, dstReg, mask);
     }
 }
 ```

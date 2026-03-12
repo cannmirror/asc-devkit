@@ -112,12 +112,12 @@ __simd_callee__ inline void Unsqueeze(U& dstReg, MaskReg& mask)
 template<typename T>
 __simd_vf__ inline void UnsqueezeVF(__ubuf__ T* dstAddr, uint32_t oneRepeatSize, uint16_t repeatTimes)
 {
-    AscendC::MicroAPI::RegTensor<T> dstReg;
-    AscendC::MicroAPI::MaskReg mask;
-    mask = AscendC::MicroAPI::CreateMask<T>();
+    AscendC::Reg::RegTensor<T> dstReg;
+    AscendC::Reg::MaskReg mask;
+    mask = AscendC::Reg::CreateMask<T>();
     for (uint16_t i = 0; i < repeatTimes; i++) {
-        AscendC::MicroAPI::Unsqueeze(dstReg, mask);
-        AscendC::MicroAPI::StoreAlign(dstAddr + i * oneRepeatSize, dstReg, mask);
+        AscendC::Reg::Unsqueeze(dstReg, mask);
+        AscendC::Reg::StoreAlign(dstAddr + i * oneRepeatSize, dstReg, mask);
     }
 }
 ```

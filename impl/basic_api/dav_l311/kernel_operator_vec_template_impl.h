@@ -101,7 +101,7 @@ enum class BinaryFuncMode {
 };
 /*
  * T: data type
- * func: MicroAPI input/output function
+ * func: Reg input/output function
  * isSetMask: basic api whether to set mask
  * isNormalMode: true: NormalMode, false: CounterMode
  * isMaskBitMode: true: mask bit mode, false: mask count mode

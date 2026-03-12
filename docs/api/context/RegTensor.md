@@ -79,30 +79,30 @@ Ascend 950PR/Ascend 950DT（VL=256B）
 -   示例一
 
     ```
-    AscendC::MicroAPI::RegTensor<uint32_t> reg;
-    AscendC::MicroAPI::MaskReg mask = AscendC::MicroAPI::CreateMask<uint32_t>();
-    AscendC::MicroAPI::LoadAlign(reg, src, 0);
-    AscendC::MicroAPI::Adds(reg, reg, 1);
-    AscendC::MicroAPI::StoreAlign(dst, reg, 0, mask);
+    AscendC::Reg::RegTensor<uint32_t> reg;
+    AscendC::Reg::MaskReg mask = AscendC::Reg::CreateMask<uint32_t>();
+    AscendC::Reg::LoadAlign(reg, src, 0);
+    AscendC::Reg::Adds(reg, reg, 1);
+    AscendC::Reg::StoreAlign(dst, reg, 0, mask);
     ```
 
 -   示例二
 
     ```
     // 针对B64,可以传入RegTraitNumTwo
-    template<typename T, const AscendC::MicroAPI::RegTrait& Trait = AscendC::MicroAPI::RegTraitNumOne>
+    template<typename T, const AscendC::Reg::RegTrait& Trait = AscendC::Reg::RegTraitNumOne>
     __simd_vf__ inline void AddVF(__ubuf__ T* dstAddr, __ubuf__ T* src0Addr, __ubuf__ T* src1Addr, uint32_t count, uint32_t oneRepeatSize, uint16_t repeatTimes)
     {
-        AscendC::MicroAPI::RegTensor<T,Trait> srcReg0;
-        AscendC::MicroAPI::RegTensor<T,Trait> srcReg1;
-        AscendC::MicroAPI::RegTensor<T,Trait> dstReg;
-        AscendC::MicroAPI::MaskReg mask;
+        AscendC::Reg::RegTensor<T,Trait> srcReg0;
+        AscendC::Reg::RegTensor<T,Trait> srcReg1;
+        AscendC::Reg::RegTensor<T,Trait> dstReg;
+        AscendC::Reg::MaskReg mask;
         for (uint16_t i = 0; i < repeatTimes; i++) {
-            mask = AscendC::MicroAPI::UpdateMask<T,Trait>(count);
-            AscendC::MicroAPI::LoadAlign(srcReg0, src0Addr + i * oneRepeatSize);
-            AscendC::MicroAPI::LoadAlign(srcReg1, src1Addr + i * oneRepeatSize);
-            AscendC::MicroAPI::Add(dstReg, srcReg0, srcReg1, mask);
-            AscendC::MicroAPI::StoreAlign(dstAddr + i * oneRepeatSize, dstReg, mask);
+            mask = AscendC::Reg::UpdateMask<T,Trait>(count);
+            AscendC::Reg::LoadAlign(srcReg0, src0Addr + i * oneRepeatSize);
+            AscendC::Reg::LoadAlign(srcReg1, src1Addr + i * oneRepeatSize);
+            AscendC::Reg::Add(dstReg, srcReg0, srcReg1, mask);
+            AscendC::Reg::StoreAlign(dstAddr + i * oneRepeatSize, dstReg, mask);
         }
     }
     ```

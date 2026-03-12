@@ -215,14 +215,14 @@ __aicore__ inline void OrImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src
  * AddRelu                                             *
  * ************************************************************************************************* */
 // AddRelu::Level 0
-namespace MicroAPIAddRelu {
+namespace RegAddRelu {
 template <typename T, typename RegT>
 __aicore__ inline void AddRelu(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, Reg::MaskReg &mask)
 {
     Reg::Add(dstReg, srcReg0, srcReg1, mask);
     Reg::Maxs(dstReg, dstReg, (T)0, mask);
 }
-} // namespace MicroAPIAddRelu
+} // namespace RegAddRelu
 
 template <typename T, bool isSetMask = true>
 __aicore__ inline void AddReluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask[],
@@ -230,7 +230,7 @@ __aicore__ inline void AddReluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T
 {
     static_assert(SupportType<T, half, float, int16_t>(), "Failed to check dtype in AddRelu, current api support "
         "dtype combination is src and dst both: half / float / int16_t.");
-    constexpr auto func = MicroAPIAddRelu::AddRelu<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegAddRelu::AddRelu<T, Reg::RegTensor<T>>;
     Internal::VecBinaryImplTemplate<func, isSetMask, true>(dst, src0, src1, mask, 0, repeatTime, repeatParams);
 }
 
@@ -240,7 +240,7 @@ __aicore__ inline void AddReluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T
 {
     static_assert(SupportType<T, half, float, int16_t>(), "Failed to check dtype in AddRelu, current api support "
         "dtype combination is src and dst both: half / float / int16_t.");
-    constexpr auto func = MicroAPIAddRelu::AddRelu<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegAddRelu::AddRelu<T, Reg::RegTensor<T>>;
     Internal::VecBinaryImplTemplate<func, isSetMask, false>(dst, src0, src1, nullptr, mask, repeatTime, repeatParams);
 }
 
@@ -276,21 +276,21 @@ __aicore__ inline void FusedMulAddImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf
  * FusedMulAddRelu                                             *
  * ************************************************************************************************* */
 // FusedMulAddRelu::Level 0
-namespace MicroAPIFusedMulAddRelu {
+namespace RegFusedMulAddRelu {
 template <typename T, typename RegT>
 __aicore__ inline void FusedMulAddRelu(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, Reg::MaskReg &mask)
 {
     Reg::FusedMulDstAdd(dstReg, srcReg0, srcReg1, mask);
     Reg::Maxs(dstReg, dstReg, (T)0, mask);
 }
-} // namespace MicroAPIFusedMulAddRelu
+} // namespace RegFusedMulAddRelu
 template <typename T, bool isSetMask = true>
 __aicore__ inline void FusedMulAddReluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask[],
     const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
     static_assert(SupportType<T, half, float>(), "Failed to check dtype in FusedMulAddRelu, current api support dtype "
         "combination is src and dst both: half / float.");
-    constexpr auto func = MicroAPIFusedMulAddRelu::FusedMulAddRelu<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegFusedMulAddRelu::FusedMulAddRelu<T, Reg::RegTensor<T>>;
     Internal::VecBinaryImplTemplate<func, isSetMask, true, Internal::BinaryFuncMode::DST_SRC_INPUT>(dst, src0, src1,
         mask, 0, repeatTime, repeatParams);
 }
@@ -301,7 +301,7 @@ __aicore__ inline void FusedMulAddReluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __
 {
     static_assert(SupportType<T, half, float>(), "Failed to check dtype in FusedMulAddRelu, current api support dtype "
         "combination is src and dst both: half / float.");
-    constexpr auto func = MicroAPIFusedMulAddRelu::FusedMulAddRelu<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegFusedMulAddRelu::FusedMulAddRelu<T, Reg::RegTensor<T>>;
     Internal::VecBinaryImplTemplate<func, isSetMask, false, Internal::BinaryFuncMode::DST_SRC_INPUT>(dst, src0, src1,
         nullptr, mask, repeatTime, repeatParams);
 }
@@ -309,7 +309,7 @@ __aicore__ inline void FusedMulAddReluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __
  * MulAddDst                                             *
  * ************************************************************************************************* */
 // MulAddDst::Level 0
-namespace MicroAPIMulAddDst {
+namespace RegMulAddDst {
 template <typename T, typename U, typename RegT, typename RegU>
 __aicore__ inline void MulAddDst(RegT &dstReg, RegU &srcReg0, RegU &srcReg1, Reg::MaskReg &mask)
 {
@@ -328,7 +328,7 @@ __aicore__ inline void MulAddDst(RegT &dstReg, RegU &srcReg0, RegU &srcReg1, Reg
         Reg::MulAddDst(dstReg, castReg1, castReg2, mask);
     }
 }
-} // namespace MicroAPIMulAddDst
+} // namespace RegMulAddDst
 
 template <typename T, typename U, bool isSetMask = true>
 __aicore__ inline void MulAddDstImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ U *src1, const uint64_t mask[],
@@ -337,7 +337,7 @@ __aicore__ inline void MulAddDstImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__
     static_assert(SupportType<Tuple<T, U>, Tuple<half, half>, Tuple<float, float>, Tuple<float, half>>(), "Failed to "
         "check dtype in MulAddDst, current api support dtype combination is src: half, dst: half / float; src: float, "
         "dst: float.");
-    constexpr auto func = MicroAPIMulAddDst::MulAddDst<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
+    constexpr auto func = RegMulAddDst::MulAddDst<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
     Internal::VecBinaryImplTemplate<func, isSetMask, true, Internal::BinaryFuncMode::DST_SRC_INPUT>(dst, src0, src1,
         mask, 0, repeatTime, repeatParams);
 }
@@ -349,7 +349,7 @@ __aicore__ inline void MulAddDstImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__
     static_assert(SupportType<Tuple<T, U>, Tuple<half, half>, Tuple<float, float>, Tuple<float, half>>(), "Failed to "
         "check dtype in MulAddDst, current api support dtype combination is src: half, dst: half / float; src: float, "
         "dst: float.");
-    constexpr auto func = MicroAPIMulAddDst::MulAddDst<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
+    constexpr auto func = RegMulAddDst::MulAddDst<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
     Internal::VecBinaryImplTemplate<func, isSetMask, false, Internal::BinaryFuncMode::DST_SRC_INPUT>(dst, src0, src1,
         nullptr, mask, repeatTime, repeatParams);
 }
@@ -358,14 +358,14 @@ __aicore__ inline void MulAddDstImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__
  * SubRelu                                             *
  * ************************************************************************************************* */
 // SubRelu::Level 0
-namespace MicroAPISubRelu {
+namespace RegSubRelu {
 template <typename T, typename RegT>
 __aicore__ inline void SubRelu(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, Reg::MaskReg &mask)
 {
     Reg::Sub(dstReg, srcReg0, srcReg1, mask);
     Reg::Maxs(dstReg, dstReg, (T)0, mask);
 }
-} // namespace MicroAPISubRelu
+} // namespace RegSubRelu
 
 // SubRelu::Level 0
 template <typename T, bool isSetMask = true>
@@ -374,7 +374,7 @@ __aicore__ inline void SubReluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T
 {
     static_assert(SupportType<T, half, float, int16_t>(), "Failed to check dtype in SubRelu, current api support dtype "
         "combination is src and dst both: half / float / int16_t.");
-    constexpr auto func = MicroAPISubRelu::SubRelu<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegSubRelu::SubRelu<T, Reg::RegTensor<T>>;
     Internal::VecBinaryImplTemplate<func, isSetMask, true>(dst, src0, src1, mask, 0, repeatTime, repeatParams);
 }
 
@@ -384,14 +384,14 @@ __aicore__ inline void SubReluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T
 {
     static_assert(SupportType<T, half, float, int16_t>(), "Failed to check dtype in SubRelu, current api support dtype "
         "combination is src and dst both: half / float / int16_t.");
-    constexpr auto func = MicroAPISubRelu::SubRelu<T, Reg::RegTensor<T>>;
+    constexpr auto func = RegSubRelu::SubRelu<T, Reg::RegTensor<T>>;
     Internal::VecBinaryImplTemplate<func, isSetMask, false>(dst, src0, src1, nullptr, mask, repeatTime, repeatParams);
 }
 
 /* **************************************************************************************************
  * AddDeqRelu                                             *
  * ************************************************************************************************* */
-namespace MicroAPIAddDeqRelu {
+namespace RegAddDeqRelu {
 template <typename T, typename RegT, typename RegU>
 __aicore__ inline void AddDeqRelu(RegU &dstReg, RegT &srcReg0, RegT &srcReg1, Reg::MaskReg &mask)
 {
@@ -407,13 +407,13 @@ __aicore__ inline void AddDeqRelu(RegU &dstReg, RegT &srcReg0, RegT &srcReg1, Re
     Reg::Pack<uint16_t, uint32_t, Reg::HighLowPart::LOWEST>((Reg::RegTensor<uint16_t> &)dstReg,
         (Reg::RegTensor<uint32_t> &)dstReg);
 }
-} // namespace MicroAPIAddDeqRelu
+} // namespace RegAddDeqRelu
 template <bool isSetMask = true>
 __aicore__ inline void AddDeqReluImpl(__ubuf__ half *dst, __ubuf__ int32_t *src0, __ubuf__ int32_t *src1,
     const uint64_t mask[], const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
     constexpr auto func =
-        MicroAPIAddDeqRelu::AddDeqRelu<float, Reg::RegTensor<int32_t>, Reg::RegTensor<half>>;
+        RegAddDeqRelu::AddDeqRelu<float, Reg::RegTensor<int32_t>, Reg::RegTensor<half>>;
     Internal::VecBinaryImplTemplate<func, isSetMask, true>(dst, src0, src1, mask, 0, repeatTime, repeatParams);
 }
 
@@ -422,7 +422,7 @@ __aicore__ inline void AddDeqReluImpl(__ubuf__ half *dst, __ubuf__ int32_t *src0
     const uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
     constexpr auto func =
-        MicroAPIAddDeqRelu::AddDeqRelu<float, Reg::RegTensor<int32_t>, Reg::RegTensor<half>>;
+        RegAddDeqRelu::AddDeqRelu<float, Reg::RegTensor<int32_t>, Reg::RegTensor<half>>;
     Internal::VecBinaryImplTemplate<func, isSetMask, false>(dst, src0, src1, nullptr, mask, repeatTime, repeatParams);
 }
 } // namespace AscendC
