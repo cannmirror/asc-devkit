@@ -72,6 +72,16 @@ struct LayoutDispatcher<LayoutFormat::NZ, T> {
     }
 };
 
+template <>
+struct LayoutDispatcher<LayoutFormat::NZ, Std::ignore_t> {
+    __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
+        return LayoutConstructor(Std::Int<FRACTAL_FIXED>{},  CeilDivision(row, FRACTAL_FIXED), 
+                                Std::Int<C0_SIZE / sizeof(uint16_t)>{},  CeilDivision(column, (C0_SIZE / sizeof(uint16_t))), 
+                                Std::Int<C0_SIZE / sizeof(uint16_t)>{},  Std::Int<C0_SIZE / sizeof(uint16_t) * FRACTAL_FIXED>{},
+                                Std::Int<1>{},  C0_SIZE / sizeof(uint16_t) * CeilAlign(row, FRACTAL_FIXED)); 
+    }
+};
+
 template <typename T>
 struct LayoutDispatcher<LayoutFormat::ZN, T> {
     __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {

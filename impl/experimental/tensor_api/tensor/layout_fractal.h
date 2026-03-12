@@ -17,106 +17,107 @@
 
 #include "impl/experimental/tensor_api/utils/utils_impl.h"
 #include "impl/experimental/tensor_api/tensor/layout_dispatch.h"
+#include "impl/experimental/tensor_api/tensor/layout_static_fractal.h"
 
 namespace AscendC {
 namespace Te {
-
-// NZ
-template <typename T, size_t row, size_t column>
-using NZShapeFormat = Shape<Shape<Std::Int<FRACTAL_FIXED>, Std::Int<row / FRACTAL_FIXED>>,
-    Shape<Std::Int<C0_SIZE / sizeof(T)>, Std::Int<column / (C0_SIZE / sizeof(T))>>>;
-
-template <typename T, size_t row, size_t column>
-using NZStrideFormat = Stride<Stride<Std::Int<C0_SIZE / sizeof(T)>, Std::Int<C0_SIZE / sizeof(T) * FRACTAL_FIXED>>,
-    Stride<Std::Int<1>, Std::Int<C0_SIZE / sizeof(T) * row>>>;
-
-// ND
-template <typename T, size_t row, size_t column>
-using NDShapeFormat = Shape<Shape<Std::Int<1>, Std::Int<row>>, Shape<Std::Int<1>, Std::Int<column>>>;
-
-template <typename T, size_t row, size_t column>
-using NDStrideFormat = Stride<Stride<Std::Int<0>, Std::Int<column>>, Stride<Std::Int<0>, Std::Int<1>>>;
-
-// DN
-template <typename T, size_t row, size_t column>
-using DNShapeFormat = Shape<Shape<Std::Int<1>, Std::Int<row>>, Shape<Std::Int<1>, Std::Int<column>>>;
-
-template <typename T, size_t row, size_t column>
-using DNStrideFormat = Stride<Stride<Std::Int<0>, Std::Int<1>>, Stride<Std::Int<0>, Std::Int<row>>>;
-
-// ZN
-template <typename T, size_t  row, size_t  column>
-using ZNShapeFormat = Shape<Shape<Std::Int<C0_SIZE / sizeof(T)>, Std::Int<row / (C0_SIZE / sizeof(T))>>,
-    Shape<Std::Int<FRACTAL_FIXED>, Std::Int<column / FRACTAL_FIXED>>>;
-template <typename T, size_t  row, size_t  column>
-using ZNStrideFormat = Stride<Stride<Std::Int<1>, Std::Int<C0_SIZE / sizeof(T) * column>>,
-    Stride<Std::Int<C0_SIZE / sizeof(T)>, Std::Int<C0_SIZE / sizeof(T) * FRACTAL_FIXED>>>;
-
-// ZZ
-template <typename T, size_t row, size_t column>
-using ZZShapeFormat = Shape<Shape<Std::Int<FRACTAL_FIXED>, Std::Int<row / FRACTAL_FIXED>>,
-    Shape<Std::Int<C0_SIZE / sizeof(T)>, Std::Int<column / (C0_SIZE / sizeof(T))>>>;
-template <typename T, size_t row, size_t column>
-using ZZStrideFormat = Stride<Stride<Std::Int<C0_SIZE / sizeof(T)>, Std::Int<FRACTAL_FIXED * column>>,
-    Stride<Std::Int<1>, Std::Int<C0_SIZE / sizeof(T) * FRACTAL_FIXED>>>;
-
-template <typename T>
-__aicore__ inline decltype(auto) MakeNzLayout(size_t row, size_t column) {
-    return LayoutDispatcher<LayoutFormat::NZ, T>::apply(row, column);
+template <typename T, typename U, typename S>
+__aicore__ inline decltype(auto) MakeNzLayout(U row, S column) {
+    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
+        return NZFormatLayout<T, row, column>{};
+    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
+        return LayoutDispatcher<LayoutFormat::NZ, T>::apply(row, column);
+    }
 }
 
-template <>
-__aicore__ inline decltype(auto) MakeNzLayout<Std::ignore_t>(size_t row, size_t column) {
-    return MakeNzLayout<uint16_t>(row, column);
+template <typename U, typename S>
+__aicore__ inline decltype(auto) MakeL0CLayout(U row, S column) {
+    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
+        return L0CFormatLayout<row, column>{};
+    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
+        return LayoutDispatcher<LayoutFormat::NZ, uint16_t>::apply(row, column);
+    }
 }
 
-__aicore__ inline decltype(auto) MakeL0CLayout(size_t row, size_t column) {
-    return MakeNzLayout<uint16_t>(row, column);
+template <typename T, typename U, typename S>
+__aicore__ inline decltype(auto) MakeNDLayout(U row, S column) {
+    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
+        return NDFormatLayout<T, row, column>{};
+    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
+        return LayoutDispatcher<LayoutFormat::ND, T>::apply(row, column);
+    }
 }
 
-template <typename T>
-__aicore__ inline decltype(auto) MakeNDLayout(size_t row, size_t column) {
-    return LayoutDispatcher<LayoutFormat::ND, T>::apply(row, column);
+template <typename T, typename U, typename S>
+__aicore__ inline decltype(auto) MakeDNLayout(U row, S column) {
+    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
+        return DNFormatLayout<T, row, column>{};
+    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
+        return LayoutDispatcher<LayoutFormat::DN, T>::apply(row, column);
+    }
 }
 
-template <typename T>
-__aicore__ inline decltype(auto) MakeDNLayout(size_t row, size_t column) {
-    return LayoutDispatcher<LayoutFormat::DN, T>::apply(row, column);
+template <typename T, typename U, typename S>
+__aicore__ inline decltype(auto) MakeZnLayout(U row, S column) {
+    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
+        return ZNFormatLayout<T, row, column>{};
+    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
+        return LayoutDispatcher<LayoutFormat::ZN, T>::apply(row, column);
+    }
 }
 
-template <typename T>
-__aicore__ inline decltype(auto) MakeZnLayout(size_t row, size_t column) {
-    return LayoutDispatcher<LayoutFormat::ZN, T>::apply(row, column);
+template <typename T, typename U, typename S>
+__aicore__ inline decltype(auto) MakeZzLayout(U row, S column) {
+    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
+        return ZZFormatLayout<T, row, column>{};
+    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
+        return LayoutDispatcher<LayoutFormat::ZZ, T>::apply(row, column);
+    }
 }
 
-template <typename T>
-__aicore__ inline decltype(auto) MakeZzLayout(size_t row, size_t column) {
-    return LayoutDispatcher<LayoutFormat::ZZ, T>::apply(row, column);
+template <typename T, typename U, typename S>
+__aicore__ inline decltype(auto) MakeNnLayout(U row, S column) {
+    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
+        return NNFormatLayout<T, row, column>{};
+    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
+        return LayoutDispatcher<LayoutFormat::NN, T>::apply(row, column);
+    }
 }
 
-template <typename T>
-__aicore__ inline decltype(auto) MakeNnLayout(size_t row, size_t column) {
-    return LayoutDispatcher<LayoutFormat::NN, T>::apply(row, column);
+template <typename T, typename U, typename S>
+__aicore__ inline decltype(auto) MakeScaleANDLayout(U row, S column) { // 不转置(m, scaleK)
+    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
+        return ScaleANDFormatLayout<T, row, column>{};
+    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
+        return LayoutDispatcher<LayoutFormat::ND, Std::ignore_t>::apply(row, column); // (m, scaleK)
+    }
 }
 
-template <typename T>
-__aicore__ inline decltype(auto) MakeScaleANDLayout(size_t row, size_t column) { // 不转置(m, scaleK)
-    return LayoutDispatcher<LayoutFormat::ND, Std::ignore_t>::apply(row, column); // (m, scaleK)
+template <typename T, typename U, typename S>
+__aicore__ inline decltype(auto) MakeScaleADNLayout(U row, S column) { // 转置(m, scaleK)
+    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
+        return ScaleADNFormatLayout<T, row, column>{};
+    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
+        return LayoutDispatcher<LayoutFormat::DN, T>::apply(row, column); // 转置(m, scaleK)
+    }
 }
 
-template <typename T>
-__aicore__ inline decltype(auto) MakeScaleADNLayout(size_t row, size_t column) { // 转置(m, scaleK)
-    return LayoutDispatcher<LayoutFormat::DN, T>::apply(row, column); // 转置(m, scaleK)
+template <typename T, typename U, typename S>
+__aicore__ inline decltype(auto) MakeScaleBNDLayout(U row, S column) { // 不转置(scaleK, n)
+    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
+        return ScaleBNDFormatLayout<T, row, column>{};
+    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
+        return LayoutDispatcher<LayoutFormat::ND, T>::apply(row, column); // (scaleK, n)
+    }
 }
 
-template <typename T>
-__aicore__ inline decltype(auto) MakeScaleBNDLayout(size_t row, size_t column) { // 不转置(scaleK, n)
-    return LayoutDispatcher<LayoutFormat::ND, T>::apply(row, column); // (scaleK, n)
-}
-
-template <typename T>
-__aicore__ inline decltype(auto) MakeScaleBDNLayout(size_t row, size_t column) { // 转置(scaleK, n)
-    return LayoutDispatcher<LayoutFormat::DN, Std::ignore_t>::apply(row, column); // (scaleK, n)
+template <typename T, typename U, typename S>
+__aicore__ inline decltype(auto) MakeScaleBDNLayout(U row, S column) { // 转置(scaleK, n)
+    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
+        return ScaleBDNFormatLayout<T, row, column>{};
+    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
+        return LayoutDispatcher<LayoutFormat::DN, Std::ignore_t>::apply(row, column); // (scaleK, n)
+    }
 }
 
 } // namespace Te
