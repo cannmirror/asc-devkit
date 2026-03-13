@@ -50,8 +50,8 @@ __aicore__ inline constexpr QuantMode2201 GetQuantMode2201()
 
 class Format2201RegistorIgnore {
 public:
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename S>
-    __aicore__ inline void Run(const T& dst, const U& src, const S& quant) {}
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename S, typename Params>
+    __aicore__ inline void Run(const T& dst, const U& src, const S& quant, const Params& params) {}
 };
 
 template <Format2201 dstFormat, Format2201 srcFormat, QuantMode2201 quantMode>
@@ -91,20 +91,20 @@ struct Format2201Registor<Format2201::ND, Format2201::NZ, QuantMode2201::Vector>
 
 class FixpipeQuantFourDim2201L0C2GM {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename S>
-    __aicore__ inline void Run(const T& dst, const U& src, const S& quant)
+    template <const FixpipeTrait& trait, typename T, typename U, typename S, typename Params>
+    __aicore__ inline void Run(const T& dst, const U& src, const S& quant, const Params& params)
     {
-        Execute<trait>(dst, src, quant);
+        Execute<trait>(dst, src, quant, params);
     }
 
 private:
-    template <const FixpipeTrait& trait, typename T, typename U, typename S>
-    __aicore__ inline void Execute(const T& dst, const U& src, const S& quant)
+    template <const FixpipeTrait& trait, typename T, typename U, typename S, typename Params>
+    __aicore__ inline void Execute(const T& dst, const U& src, const S& quant, const Params& params)
     {
         constexpr auto quantPre = GetFixpipe2201QuantPre<trait, T, U, S>();
         using FixpipeQuantCoordL0C2GM =
             typename Format2201Registor<GetDataFormat2201<T>(), GetDataFormat2201<U>(), GetQuantMode2201<quantPre>()>::type;
-        FixpipeQuantCoordL0C2GM{}.template Run<trait, quantPre, T, U, S>(dst, src, quant);
+        FixpipeQuantCoordL0C2GM{}.template Run<trait, quantPre, T, U, S>(dst, src, quant, params);
     }
 };
 }  // namespace Te

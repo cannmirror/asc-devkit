@@ -32,16 +32,16 @@ struct CopyL0C2Out {
     template <typename Tp, const Tp& traits, typename... Args>
     __aicore__ inline static void Copy(const Args& ...args)
     {
-        Fixpipe<traits, Args...>(args...);
+        Fixpipe<traits>(args...);
     }
 };
 
 
  struct CopyL0C2OutWith { 
      template <typename Tp, const Tp& traits, typename... Args> 
-     __aicore__ inline static void Copy(const Args& ...args, uint8_t unitFlag) 
+     __aicore__ inline static void Copy(const Args& ...args) 
      { 
-         // custom function Fixpipe<traits, Args...>(args..., unitFlag) 
+         // custom function Fixpipe<traits, Args...>(args...); 
      } 
  }; 
  
@@ -55,11 +55,11 @@ struct CopyL0C2Out {
  
      template <const TraitType& trait = defaultTrait, typename... Args> 
      __aicore__ inline void CopyUnpack(const Args& ...args) const { 
-       CopyL0C2OutWith::Copy<TraitType, trait, Args...>(args..., unitFlag); 
+       CopyL0C2OutWith::Copy<TraitType, trait, Args...>(args..., params); 
      } 
  
  
-     uint8_t unitFlag = 0; 
+     FixpipeParams params; 
  };
 
 template <typename Traits>

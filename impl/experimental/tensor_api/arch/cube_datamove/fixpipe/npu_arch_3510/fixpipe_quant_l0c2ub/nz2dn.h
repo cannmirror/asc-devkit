@@ -24,11 +24,11 @@ namespace Te {
 
 class Fixpipe2UbNZ2DNSimpleQuant3510 {
 public:
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Coord& coord)
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V, typename Params>
+    __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Params& params)
     {
         SetRegisterImpl<trait, T, U>(dst, src, quant);
-        DataCopyImpl<trait, quantPre, T, U>(dst, src);
+        DataCopyImpl<trait, quantPre, T, U, Params>(dst, src, params);
     }
 
 private:
@@ -50,8 +50,8 @@ private:
         setRegisterInst.SetRegister<V>(quant, dnNum, dstDNMatrixStride, srcNZMatrixStride, srcNZC0Stride);
     }
 
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U>
-    __aicore__ inline void DataCopyImpl(const T& dst, const U& src)
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename Params>
+    __aicore__ inline void DataCopyImpl(const T& dst, const U& src, const Params& params)
     {
         CheckTemplate<trait, T, U>();
         auto dstLayout = dst.Layout();
@@ -66,7 +66,7 @@ private:
         uint8_t dualDstCtl = trait.dualDstCtl;
 
         bool reluEn = trait.enableRelu;
-        uint8_t unitFlag = trait.unitFlag;
+        uint8_t unitFlag = params.unitFlag;
         bool subBlockId = false;
         bool nz2ndEn = false;
         bool nz2dnEn = true;
@@ -85,8 +85,8 @@ public:
     }
 
 private:
-    template <const FixpipeTrait& trait, typename T, typename U, bool isTail>
-    __aicore__ inline auto GenParams(const T& dst, const U& src)
+    template <const FixpipeTrait& trait, typename T, typename U, bool isTail, typename Params>
+    __aicore__ inline auto GenParams(const T& dst, const U& src, const Params& params)
     {
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
@@ -107,20 +107,20 @@ private:
         uint8_t dualDstCtl = trait.dualDstCtl;
 
         bool reluEn = trait.enableRelu;
-        uint8_t unitFlag = trait.unitFlag;
+        uint8_t unitFlag = params.unitFlag;
         bool subBlockId = false;
         bool nz2ndEn = false;
         bool nz2dnEn = true;
-        auto params = Std::make_tuple(
+        auto fixpipeParams = Std::make_tuple(
             nSize, mSize, srcStride, dstStride, dualDstCtl, reluEn, unitFlag, subBlockId, nz2ndEn, nz2dnEn);
-        return params;
+        return fixpipeParams;
     }
 
     template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V>
     __aicore__ inline void FixpipeNZ2DNVectorCompute(const T& dst, const U& src, const V& quant, uint32_t nIterNum,
-        uint32_t calNSize, uint32_t tailNSize)
+        uint32_t calNSize, uint32_t tailNSize, const FixpipeParams& params)
     {
-        auto mainLoopParam = GenParams<trait, T, U, false>(dst, src);
+        auto mainLoopParam = GenParams<trait, T, U, false, FixpipeParams>(dst, src, params);
         CopyMatrixCcToUbBase3510 copyInst;
         CopyDeqTensorToFbuf3510 copyDeqTensorInst;
         for (uint16_t i = 0; i < nIterNum; ++i) {
@@ -132,7 +132,7 @@ private:
                 mainLoopParam, tuple_sequence<decltype(mainLoopParam)>{});
         }
         if (tailNSize) {
-            auto tailParam = GenParams<trait, T, U, true>(dst, src);
+            auto tailParam = GenParams<trait, T, U, true, FixpipeParams>(dst, src, params);
             copyDeqTensorInst.CopyDeqTensorToFbufImpl(quant, tailNSize, nIterNum);
             InsertSync();
             auto srcCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, nIterNum * CBURST_NUM_3510));
@@ -152,11 +152,11 @@ private:
 
 class Fixpipe2UbNZ2DNVectorQuant3510 : public Fixpipe2UbNZ2DNVectorBase3510 {
 public:
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Coord& coord)
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V, typename Params>
+    __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Params& params)
     {
         SetRegisterImpl<trait, T, U>(dst, src);
-        DataCopyImpl<trait, quantPre, T, U, V>(dst, src, quant);
+        DataCopyImpl<trait, quantPre, T, U, V, Params>(dst, src, quant, params);
     }
 
 private:
@@ -167,8 +167,8 @@ private:
         CheckFormat::CheckL0CNZTemplate<U>();
     }
 
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V>
-    __aicore__ inline void DataCopyImpl(const T& dst, const U& src, const V& quant)
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V, typename Params>
+    __aicore__ inline void DataCopyImpl(const T& dst, const U& src, const V& quant, const Params& params)
     {
         CheckTemplate<trait, T, U>();
         auto dstLayout = dst.Layout();
@@ -187,7 +187,7 @@ private:
             tailNSize = nSize % MAIN_LOOP_N_SIZE_3510;
             calNSize = MAIN_LOOP_N_SIZE_3510;
         }
-        FixpipeNZ2DNVectorEntrance<trait, quantPre, T, U, V>(dst, src, quant, nIterNum, calNSize, tailNSize);
+        FixpipeNZ2DNVectorEntrance<trait, quantPre, T, U, V>(dst, src, quant, nIterNum, calNSize, tailNSize, params);
     }
 
     template <const FixpipeTrait& trait, typename T, typename U>

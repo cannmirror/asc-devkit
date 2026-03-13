@@ -23,12 +23,12 @@ namespace Te {
 
 class FixpipeNZ2ND2201SimpleQuant : public Copy2201MatrixCcToGmBase, public SetRegister2201Base {
 public:
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename S>
-    __aicore__ inline void Run(const T& dst, const U& src, const S& quant)
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename S, typename Params>
+    __aicore__ inline void Run(const T& dst, const U& src, const S& quant, const Params& inParams)
     {
         auto registerParams = GenRegisterParams<trait, T, U>(dst, src);
         SetRegister<S, decltype(registerParams)>(quant, registerParams);
-        auto params = GenFixpipeQuantParams<trait, T, U>(dst, src);
+        auto params = GenFixpipeQuantParams<trait, T, U>(dst, src, inParams);
 
         DataCopy<trait, quantPre, T, U, decltype(params)>(dst, src, params);
     }
@@ -52,8 +52,8 @@ private:
         return params;
     }
 
-    template <const FixpipeTrait& trait, typename T, typename U>
-    __aicore__ inline auto GenFixpipeQuantParams(const T& dst, const U& src)
+    template <const FixpipeTrait& trait, typename T, typename U, typename Params>
+    __aicore__ inline auto GenFixpipeQuantParams(const T& dst, const U& src, const Params& inParams)
     {
         CheckTemplate<trait, T, U>();
         auto dstLayout = dst.Layout();
@@ -66,7 +66,7 @@ private:
         uint32_t dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
 
         bool reluEn = false;
-        uint8_t unitFlag = 0;
+        uint8_t unitFlag = inParams.unitFlag;
         bool isChannelSplit = false;
         bool nz2ndEn = true;
         auto params = Std::make_tuple(nSize, mSize, srcStride, dstStride, reluEn, unitFlag, isChannelSplit, nz2ndEn);
@@ -146,8 +146,8 @@ private:
 
 class FixpipeNZ2ND2201VectorQuant : public FixpipeNZ2ND2201VectorBase, public SetRegister2201Base {
 public:
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename S>
-    __aicore__ inline void Run(const T& dst, const U& src, const S& quant)
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename S, typename Params>
+    __aicore__ inline void Run(const T& dst, const U& src, const S& quant, const Params& inParams)
     {
         auto registerParams = GenRegisterParams<trait, T, U>(dst, src);
         SetRegister<decltype(registerParams)>(registerParams);

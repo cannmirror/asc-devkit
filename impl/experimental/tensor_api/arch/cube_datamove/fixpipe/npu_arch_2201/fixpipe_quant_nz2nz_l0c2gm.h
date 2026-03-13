@@ -23,12 +23,12 @@ namespace Te {
 
 class FixpipeNZ2NZ2201SimpleQuant : public Copy2201MatrixCcToGmBase, public SetRegister2201Base {
 public:
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename S>
-    __aicore__ inline void Run(const T& dst, const U& src, const S& quant)
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename S, typename Params>
+    __aicore__ inline void Run(const T& dst, const U& src, const S& quant, const Params& params)
     {
         auto nzParams = GenRegisterParams<trait, T, U>(dst, src);
         SetRegister<S, decltype(nzParams)>(quant, nzParams);
-        auto copyParams = GenFixpipeQuantParams<trait, T, U>(dst, src);
+        auto copyParams = GenFixpipeQuantParams<trait, T, U, Params>(dst, src, params);
 
         DataCopy<trait, quantPre, T, U, decltype(copyParams)>(dst, src, copyParams);
     }
@@ -48,8 +48,8 @@ private:
         return params;
     }
 
-    template <const FixpipeTrait& trait, typename T, typename U>
-    __aicore__ inline auto GenFixpipeQuantParams(const T& dst, const U& src)
+    template <const FixpipeTrait& trait, typename T, typename U, typename Params>
+    __aicore__ inline auto GenFixpipeQuantParams(const T& dst, const U& src, const Params& params)
     {
         CheckTemplate<trait, T, U>();
         using dstType = typename T::elementType;
@@ -63,11 +63,11 @@ private:
         uint32_t dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout) * sizeof(dstType) / C0_SIZE;
 
         bool reluEn = false;
-        uint8_t unitFlag = 0;
+        uint8_t unitFlag = params.unitFlag;
         bool isChannelSplit = false;
         bool nz2ndEn = false;
-        auto params = Std::make_tuple(nSize, mSize, srcStride, dstStride, reluEn, unitFlag, isChannelSplit, nz2ndEn);
-        return params;
+        auto fixpipeParams = Std::make_tuple(nSize, mSize, srcStride, dstStride, reluEn, unitFlag, isChannelSplit, nz2ndEn);
+        return fixpipeParams;
     }
 };
 
@@ -144,8 +144,8 @@ private:
 
 class FixpipeNZ2NZ2201VectorQuant : public FixpipeNZ2NZ2201VectorBase {
 public:
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename S>
-    __aicore__ inline void Run(const T& dst, const U& src, const S& quant)
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename S, typename Params>
+    __aicore__ inline void Run(const T& dst, const U& src, const S& quant, const Params& inParams)
     {
         auto params = GenParams<trait, T, U>(dst, src);
         FixpipeNZ2NZVectorEntrance<trait, quantPre, T, U, S, decltype(params)>(dst, src, quant, params);

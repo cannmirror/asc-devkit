@@ -77,19 +77,19 @@ struct FormatRegistorFixpipe2Ub3510<Format3510::DN, Format3510::NZ, QuantMode351
 
 class FixpipeQuantFourDimL0C2UB3510 {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename V, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Coord& coord) {
-        Execute<trait>(dst, src, quant, coord);
+    template <const FixpipeTrait& trait, typename T, typename U, typename V, typename Params>
+    __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Params& params) {
+        Execute<trait>(dst, src, quant, params);
     }
 
 private:
-    template <const FixpipeTrait& trait, typename T, typename U, typename V, typename Coord>
-    __aicore__ inline void Execute(const T& dst, const U& src, const V& quant, const Coord& coord)
+    template <const FixpipeTrait& trait, typename T, typename U, typename V, typename Params>
+    __aicore__ inline void Execute(const T& dst, const U& src, const V& quant, const Params& params)
     {
         constexpr auto quantPre = GetFixpipeQuantPre<trait, T, U, V>();
         using FixpipeQuantL0C2UB =
             typename FormatRegistorFixpipe2Ub3510<GetDataFormat<T>(), GetDataFormat<U>(), GetQuantMode<quantPre>()>::type;
-        FixpipeQuantL0C2UB{}.template Run<trait, quantPre, T, U, V, Coord>(dst, src, quant, coord);
+        FixpipeQuantL0C2UB{}.template Run<trait, quantPre, T, U, V, Params>(dst, src, quant, params);
     }
 };
 }  // namespace Te

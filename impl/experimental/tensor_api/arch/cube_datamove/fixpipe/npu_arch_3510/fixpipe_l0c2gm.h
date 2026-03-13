@@ -24,24 +24,24 @@ namespace Te {
 
 class FixpipeFourDimL0C2GM3510 {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U>
-    __aicore__ inline void Run(const T& dst, const U& src) {
-        Execute<trait>(dst, src);
+    template <const FixpipeTrait& trait, typename T, typename U, typename Params>
+    __aicore__ inline void Run(const T& dst, const U& src, const Params& params) {
+        Execute<trait>(dst, src, params);
     }
 
 private:
-    template <const FixpipeTrait& trait, typename T, typename U>
-    __aicore__ inline void Execute(const T& dst, const U& src) {
+    template <const FixpipeTrait& trait, typename T, typename U, typename Params>
+    __aicore__ inline void Execute(const T& dst, const U& src, const Params& params) {
         constexpr auto quantPre = GetFixpipeQuantPre<trait, T, U>();
         if constexpr (IsL0cNZFormat<U>::value && IsNZFormat<T>::value) {
             Fixpipe2GmNz2NzBase3510 nz2NzStrategy;
-            nz2NzStrategy.Run<trait, quantPre, T, U>(dst, src);
+            nz2NzStrategy.Run<trait, quantPre, T, U, Params>(dst, src, params);
         } else if constexpr (IsL0cNZFormat<U>::value && IsNDFormat<T>::value) {
             Fixpipe2GmNz2NdBase3510 nz2NdStrategy;
-            nz2NdStrategy.Run<trait, quantPre, T, U>(dst, src);
+            nz2NdStrategy.Run<trait, quantPre, T, U, Params>(dst, src, params);
         } else if constexpr (IsL0cNZFormat<U>::value && IsDNFormat<T>::value) {
             Fixpipe2GmNz2DnBase3510 nz2DnStrategy;
-            nz2DnStrategy.Run<trait, quantPre, T, U>(dst, src);
+            nz2DnStrategy.Run<trait, quantPre, T, U, Params>(dst, src, params);
         }
     }
 };

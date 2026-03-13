@@ -72,21 +72,26 @@ struct FixpipeTrait {
         RoundMode roundModeIn,
         bool enableReluIn,
         bool enableChannelSplitIn,
-        uint8_t unitFlagIn,
         uint8_t dualDstCtlIn
     ) :
         roundMode(roundModeIn),
         enableRelu(enableReluIn),
         enableChannelSplit(enableChannelSplitIn),
-        unitFlag(unitFlagIn),
         dualDstCtl(dualDstCtlIn)
     {}
 
     RoundMode roundMode = RoundMode::DEFAULT;
     bool enableRelu = false;
     bool enableChannelSplit = false;
-    uint8_t unitFlag = false;
     uint8_t dualDstCtl = false;
+};
+
+struct FixpipeParams {
+   uint8_t unitFlag = 0;
+   __aicore__ FixpipeParams() {};
+
+   __aicore__ constexpr FixpipeParams(uint8_t unitFlagIn) : 
+      unitFlag(unitFlagIn) {};
 };
 
 struct LoadDataTrait {

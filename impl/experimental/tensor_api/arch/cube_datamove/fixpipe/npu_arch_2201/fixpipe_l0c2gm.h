@@ -23,9 +23,9 @@ namespace Te {
 
 class FixpipetNz2Nz2201Base : public Copy2201MatrixCcToGmBase {
 public:
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U>
-    __aicore__ inline void Run(const T& dst, const U& src) {
-        auto params = GenFixpipeParams<trait, T, U>(dst, src); 
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename Params>
+    __aicore__ inline void Run(const T& dst, const U& src, const Params& inParams) {
+        auto params = GenFixpipeParams<trait, T, U, Params>(dst, src, inParams);
         DataCopy<trait, quantPre, T, U, decltype(params)>(dst, src, params);
     }
 
@@ -38,8 +38,8 @@ private:
         CheckDataTypeFor2201::CheckL0c2GmDataType<T, U>();
     }
 
-    template <const FixpipeTrait& trait, typename T, typename U>
-    __aicore__ inline auto GenFixpipeParams(const T& dst, const U& src)
+    template <const FixpipeTrait& trait, typename T, typename U, typename Params>
+    __aicore__ inline auto GenFixpipeParams(const T& dst, const U& src, const Params& inParams)
     {
         CheckTemplate<trait, T, U>();
         using dstType = typename T::elementType;
@@ -53,7 +53,7 @@ private:
         uint32_t dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout) * sizeof(dstType) / C0_SIZE;
 
         bool reluEn = false;
-        uint8_t unitFlag = 0;
+        uint8_t unitFlag = inParams.unitFlag;
         bool isChannelSplit = false;
         bool nz2ndEn = false;
         auto params = Std::make_tuple(nSize, mSize, srcStride, dstStride, reluEn, unitFlag, isChannelSplit, nz2ndEn);
@@ -63,11 +63,11 @@ private:
 
 class FixpipetNz2Nd2201Base : public Copy2201MatrixCcToGmBase, public SetRegister2201Base {
 public:
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U>
-    __aicore__ inline void Run(const T& dst, const U& src) {
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename Params>
+    __aicore__ inline void Run(const T& dst, const U& src, const Params& inParams) {
         auto ndParams = GenRegisterParams<trait, T, U>(dst, src);
         SetRegister<decltype(ndParams)>(ndParams);
-        auto params = GenFixpipeParams<trait, T, U>(dst, src);
+        auto params = GenFixpipeParams<trait, T, U, Params>(dst, src, inParams);
 
         DataCopy<trait, quantPre, T, U, decltype(params)>(dst, src, params);
     }
@@ -91,8 +91,8 @@ private:
         return params;
     }
     
-    template <const FixpipeTrait& trait, typename T, typename U>
-    __aicore__ inline auto GenFixpipeParams(const T& dst, const U& src)
+    template <const FixpipeTrait& trait, typename T, typename U, typename Params>
+    __aicore__ inline auto GenFixpipeParams(const T& dst, const U& src, const Params& inParams)
     {
         CheckTemplate<trait, T, U>();
         auto dstLayout = dst.Layout();
@@ -105,7 +105,7 @@ private:
         uint32_t dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
 
         bool reluEn = false;
-        uint8_t unitFlag = 0;
+        uint8_t unitFlag = inParams.unitFlag;
         bool isChannelSplit = false;
         bool nz2ndEn = true;
         auto params = Std::make_tuple(nSize, mSize, srcStride, dstStride, reluEn, unitFlag, isChannelSplit, nz2ndEn);
@@ -115,19 +115,19 @@ private:
 
 class FixpipeFourDim2201L0C2GM : public FixpipetNz2Nz2201Base, public FixpipetNz2Nd2201Base {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U>
-    __aicore__ inline void Run(const T& dst, const U& src) {
-        Execute<trait>(dst, src);
+    template <const FixpipeTrait& trait, typename T, typename U, typename Params>
+    __aicore__ inline void Run(const T& dst, const U& src, const Params& params) {
+        Execute<trait>(dst, src, params);
     }
 
 private:
-    template <const FixpipeTrait& trait, typename T, typename U>
-    __aicore__ inline void Execute(const T& dst, const U& src) {
+    template <const FixpipeTrait& trait, typename T, typename U, typename Params>
+    __aicore__ inline void Execute(const T& dst, const U& src, const Params& params) {
         constexpr auto quantPre = GetFixpipe2201QuantPre<trait, T, U>();
         if constexpr (IsL0cNZFormat<U>::value && IsL0cNZFormat<T>::value) {
-            FixpipetNz2Nz2201Base::Run<trait, quantPre, T, U>(dst, src);
+            FixpipetNz2Nz2201Base::Run<trait, quantPre, T, U>(dst, src, params);
         } else if constexpr (IsL0cNZFormat<U>::value && IsNDFormat<T>::value) {
-            FixpipetNz2Nd2201Base::Run<trait, quantPre, T, U>(dst, src);
+            FixpipetNz2Nd2201Base::Run<trait, quantPre, T, U>(dst, src, params);
         }
     }
 };

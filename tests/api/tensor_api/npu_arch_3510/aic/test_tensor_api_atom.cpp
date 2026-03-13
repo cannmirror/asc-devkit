@@ -46,6 +46,11 @@ TEST_F(Tensor_Api_Atom, CopyL0C2UBOperation)
 
     Copy(CopyAtom<CopyTraits<CopyL0C2UB, FixpipeTraitDefault>>{}, ubDst, l0cSrc, coord);
 
+    FixpipeParams params;
+    Copy(CopyAtom<CopyTraits<CopyL0C2UB, FixpipeTraitDefault>>{}, ubDst, l0cSrc, params);
+
+    Copy(CopyAtom<CopyTraits<CopyL0C2UB, FixpipeTraitDefault>>{}, ubDst, l0cSrc, coord, params);
+
     EXPECT_EQ(dst[0], 0);
 }
 
