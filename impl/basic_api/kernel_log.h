@@ -381,7 +381,7 @@ __host_aicore__ static __attribute__ ((noinline)) void AssertFail(const __gm__ c
 #define ASCENDC_NPU_DEBUG_ASSERT_IMPL(expr) NPU_ASSERT_MSG(expr)
 #endif
 
-#ifdef ASCENDC_DUMP
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
 #define VA_ARGS_IS_EMPTY(...) (sizeof(#__VA_ARGS__) == 1)
 #define ASCENDC_DEBUG_ASSERT_IMPL(expr, ...)       \
     do {                                           \

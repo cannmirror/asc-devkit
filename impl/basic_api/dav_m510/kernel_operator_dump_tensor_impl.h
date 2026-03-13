@@ -71,6 +71,16 @@ constexpr __aicore__ inline uint32_t GetDataType()
 __aicore__ inline void DumpShapeImpl(const ShapeInfo &shapeInfo)
 {
 }
+
+template <typename T>
+__aicore__ void DumpTensorGM2GMImpl(const GlobalTensor<T>& src, uint32_t desc, uint32_t size)
+{
+}
+
+template <typename T>
+__aicore__ void DumpTensorLocal2GMImpl(const LocalTensor<T>& src, uint32_t desc, uint32_t size)
+{
+}
 }  // namespace AscendC
 #endif
 #if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_DUMP_TENSOR_IMPL_H)

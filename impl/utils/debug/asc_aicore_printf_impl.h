@@ -192,8 +192,19 @@ __aicore__ inline void printf_impl(__gm__ const char* fmt, Args&&... args)
 } // namespace __asc_aicore
 #else
 namespace __asc_aicore {
+enum class DumpType : uint8_t {
+    DUMP_DEFAULT = 0,
+    DUMP_SCALAR,
+};
+
 template <class... Args>
 __aicore__ inline void printf_impl(__gm__ const char* fmt, Args&&... args) {}
+
+template <class... Args>
+__aicore__ inline void scalar_printf_impl(DumpType debugType, __gm__ const char* fmt, Args&&... args) {}
+
+__aicore__ inline void enable_asc_diagnostics() {}
+
 } // namespace __asc_aicore
 
 using namespace __asc_aicore;

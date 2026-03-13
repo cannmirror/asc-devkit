@@ -781,7 +781,7 @@ def generate_args_declare_code(mode: CodeMode, func_params: Tuple[FuncParam, ...
     buff = io.StringIO()
     buff.write('struct {\n')
     if dump_type != "":
-        buff.write(r'''#if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON
+        buff.write(r'''#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0) || defined ASCENDC_TIME_STAMP_ON
         void* __ascendc_dump;
 #endif
 ''')
@@ -980,7 +980,7 @@ template<>
     dump_factor = 108 if is_c310_mode() else 75
 
     if dump_info["dump_type"] != "":
-        buff.write(f'''#if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON
+        buff.write(f'''#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0) || defined ASCENDC_TIME_STAMP_ON
     constexpr uint32_t __ascendc_one_core_dump_size = {str(dump_info["dump_size"])};
     AllocAscendMemDevice(&(__ascendc_args.__ascendc_dump), __ascendc_one_core_dump_size * {str(dump_factor)});
 #endif
@@ -1041,7 +1041,7 @@ template<>
 ''')
 
     if dump_info["dump_type"] != "":
-        buff.write('#if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON\n')
+        buff.write('#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0) || defined ASCENDC_TIME_STAMP_ON\n')
         if "printf" in dump_info["dump_type"] or "timestamp" in dump_info["dump_type"]:
             buff.write(f'    Adx::AdumpPrintWorkSpace(__ascendc_args.__ascendc_dump, \
 __ascendc_one_core_dump_size * {dump_factor}, {stream_name}, __ascendc_name);\n')
@@ -1855,7 +1855,7 @@ def generate_extra_param(func_group: FuncSignGroupWithModeBase,
     extra_param = "\n"
     if not RUN_MODE == "cpu":
         if func_group.dump_info["dump_type"] != "":
-            extra_param += "#if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON\n"
+            extra_param += "#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0) || defined ASCENDC_TIME_STAMP_ON\n"
             if len(new_func_sign.func_params) == 0:
                 extra_param += "GM_ADDR dumpAddr\n"
             else:
@@ -1868,7 +1868,7 @@ def _generate_sub_source(func_group: FuncSignGroupWithModeBase, is_mix: bool, pa
     source = ""
     if not RUN_MODE == "cpu":
         if func_group.dump_info["dump_type"] != "":
-            source += "#if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON\n"
+            source += "#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0) || defined ASCENDC_TIME_STAMP_ON\n"
             if func_group.dump_info["dump_type"] == "assert":
                 if is_mix:
                     source += "    AscendC::StoreArgsOfInitDump(true, dumpAddr);\n"
@@ -1894,7 +1894,7 @@ def _generate_sub_source(func_group: FuncSignGroupWithModeBase, is_mix: bool, pa
 (AscendC::TimeStampId::TIME_STAMP_WRAP_FFTS_ADDR));\n"
             source += "#endif\n"
         if "printf" in func_group.dump_info["dump_type"]:
-            source += "#ifdef ASCENDC_DUMP\n"
+            source += "#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)\n"
             source += "    uint64_t __ascendc_tStamp = 0;\n"
             source += "    uint64_t __ascendc_version = 0;\n"
             source += "     __gm__ char* __ascendc_versionStr = nullptr;\n"
@@ -2008,7 +2008,7 @@ def generate_kernel_auto_gen_func_impl(func_group: FuncSignGroupWithModeBase,
     else:
         source += f"    {add_origin_suffix(func_sign.func_name)}({param_names_str});\n"
     if not RUN_MODE == "cpu":
-        source += ("#if defined(ASCENDC_DUMP) && defined(ASCENDC_DEBUG)\n"
+        source += ("#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0) && defined(ASCENDC_DEBUG)\n"
                 "    AscendC::WriteBackOverflow(overflow_status);\n#endif\n")
     source += '#if defined(__DAV_C310__)\n'
     source += '    pipe_barrier(PIPE_ALL);\n'

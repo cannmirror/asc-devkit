@@ -14,22 +14,4 @@ import re
 
 def get_dump_info_by_source(data: str):
     dump_info = {"dump_type" : "", "dump_size" : 1048576}
-
-    match_printf = re.search(r"__enable_feature_for_compile_printf = 1", data)
-    match_assert = re.search(r"__enable_feature_for_compile_assert = 1;", data)
-    if match_printf and match_assert:
-        dump_info["dump_type"] = "printf,assert"
-    elif match_printf:
-        dump_info["dump_type"] = "printf"
-    elif match_assert:
-        dump_info["dump_type"] = "assert"
-
-    match = re.search(r"__enable_feature_for_compile_printfBufSize = \s*([0-9]{1,})", data)
-    if match:
-        dump_info["dump_size"] = int(match.group(1))
-    else:
-        match = re.search(r"__enable_feature_for_compile_assertBufSize = \s*([0-9]{1,})", data)
-        if match:
-            dump_info["dump_size"] = int(match.group(1))
-
     return dump_info
