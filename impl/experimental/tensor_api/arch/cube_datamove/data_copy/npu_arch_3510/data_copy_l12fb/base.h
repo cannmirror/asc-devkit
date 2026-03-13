@@ -16,15 +16,15 @@
 #define IMPL_EXPERIMENTAL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_3510_DATA_COPY_L12FB_BASE_H
 
 #include "impl/experimental/tensor_api/arch/utils/utils.h"
-#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_l12fb/instruction.h"
+#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/instruction.h"
 
 namespace AscendC {
 namespace Te {
 
 class CopyL12FBBase {
 public:
-    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
+    template <const DataCopyTrait& trait, typename T, typename U>
+    __aicore__ inline void Run(const T& dst, const U& src) {
         DataCopyImpl<trait, T, U>(dst, src);
     }
 
@@ -36,14 +36,9 @@ private:
 
         using srcType = typename U::elementType; 
         using dstType = typename T::elementType;
-        constexpr bool isFp8 = Std::is_same_v<dstType, __fbuf__ fp8_e8m0_t> && Std::is_same_v<srcType, __cbuf__ fp8_e8m0_t>;
-        if constexpr (isFp8) {
-            CheckFormat::CheckNDFp8Template<T>();
-            CheckFormat::CheckNDFp8Template<U>();
-        } else {
-            CheckFormat::CheckNDTemplate<T>();
-            CheckFormat::CheckNDTemplate<U>();
-        }
+
+        CheckFormat::CheckNDTemplate<T>();
+        CheckFormat::CheckNDTemplate<U>();
     }
 
     template <const DataCopyTrait& trait, typename T, typename U>
@@ -57,6 +52,7 @@ private:
 
         uint16_t srcCol = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
         uint16_t srcRow = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
+        uint16_t dstCol = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
         uint16_t dstRow = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
 
         using srcType = typename U::elementType;

@@ -28,18 +28,19 @@ class DataCopyFourDim3510L12FB {
 public:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline void Run(const T& dst, const U& src) {
-        Execute<trait>(dst, src, ZeroCoord2DType{});
+        Execute<trait>(dst, src);
     }
     template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
-        Execute<trait>(dst, src, coord);
+        auto dstTensor = dst(coord, dst.Layout().Shape());
+        Execute<trait>(dstTensor, src, coord);
     }
 
 private:
-    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Execute(const T& dst, const U& src, const Coord& coord) {
+    template <const DataCopyTrait& trait, typename T, typename U>
+    __aicore__ inline void Execute(const T& dst, const U& src) {
         CopyL12FBBase fpStrategy;
-        fpStrategy.Run<trait, T, U, Coord>(dst, src, coord);
+        fpStrategy.Run<trait, T, U>(dst, src);
     }
 };
 

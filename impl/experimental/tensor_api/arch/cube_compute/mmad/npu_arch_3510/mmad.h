@@ -32,26 +32,14 @@ public:
 private:
     template <const MmadTrait& trait, typename T, typename U, typename S, typename Params>
     __aicore__ inline void Execute(const T& dst, const U& fm, const S& filter, const Params& params) {
-        using dstType = typename T::elementType;
-        using fmType = typename U::elementType;
-        using filterType = typename S::elementType;
-
+  
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            constexpr bool isMx = Std::is_one_of_v<Std::tuple<dstType, fmType, filterType>,
-                Std::tuple<__cc__ float, __ca__ fp4x2_e2m1_t, __cb__ fp4x2_e2m1_t>,
-                Std::tuple<__cc__ float, __ca__ fp4x2_e2m1_t, __cb__ fp4x2_e1m2_t>,
-                Std::tuple<__cc__ float, __ca__ fp4x2_e1m2_t, __cb__ fp4x2_e2m1_t>,
-                Std::tuple<__cc__ float, __ca__ fp4x2_e1m2_t, __cb__ fp4x2_e1m2_t>,
-                Std::tuple<__cc__ float, __ca__ fp8_e4m3fn_t, __cb__ fp8_e4m3fn_t>,
-                Std::tuple<__cc__ float, __ca__ fp8_e4m3fn_t, __cb__ fp8_e5m2_t>,
-                Std::tuple<__cc__ float, __ca__ fp8_e5m2_t, __cb__ fp8_e4m3fn_t>,
-                Std::tuple<__cc__ float, __ca__ fp8_e5m2_t, __cb__ fp8_e5m2_t>>;
-            if constexpr (isMx) {
-                MmadMx mxStrategy;
-                mxStrategy.Run<trait, T, U, S, Params>(dst, fm, filter, params);
-            } else {
+            if constexpr (trait.mmadType == MmadTrait::MmadType::NORMAL) {
                 MmadNormal normalStrategy;
                 normalStrategy.Run<trait, T, U, S, Params>(dst, fm, filter, params);
+            } else if constexpr (trait.mmadType == MmadTrait::MmadType::MX) {
+                MmadMx mxStrategy;
+                mxStrategy.Run<trait, T, U, S, Params>(dst, fm, filter, params);
             }
         }
 

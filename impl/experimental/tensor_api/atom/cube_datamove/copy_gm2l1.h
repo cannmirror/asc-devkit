@@ -42,6 +42,9 @@ struct CopyTraits<CopyGM2L1, Traits> : public CopyTraits<CopyGM2L1, Traits, Copy
 template <>
 struct CopyTraits<CopyGM2L1> : public CopyTraits<CopyGM2L1, DataCopyTraitDefault> {};
 
+using CopyL12BT = CopyGM2L1;
+using CopyL12FB = CopyGM2L1;
+
 }
 }
 

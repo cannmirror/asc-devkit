@@ -47,12 +47,8 @@ private:
         auto fmLayout = fm.Layout();
         auto dstLayout = dst.Layout();
 
-        uint16_t m = GetEleFromLayout<decltype(fmLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(fmLayout) * FRACTAL_FIXED;
-        uint16_t k = GetEleFromLayout<decltype(fmLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(fmLayout) * C0_SIZE / sizeof(fmType);
-        uint16_t n = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) * FRACTAL_FIXED;
-
         MmadMxInstr mmadMxInstr;
-        mmadMxInstr.Mmad(dst, fm, filter, m, k, n, params.unitFlag, trait.disableGemv, trait.cmatrixSource, 
+        mmadMxInstr.Mmad(dst, fm, filter, params.m, params.k, params.n, params.unitFlag, trait.disableGemv, trait.cmatrixSource, 
             params.cmatrixInitVal);
     }
 };

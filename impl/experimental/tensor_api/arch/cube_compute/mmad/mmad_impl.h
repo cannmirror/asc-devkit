@@ -23,9 +23,9 @@ namespace Te {
 
 constexpr MmadTrait DEFAULT_MMAD_TRAIT;
 
-constexpr MmadParams defaultMmadParams = {0, true};
+constexpr MmadParams defaultMmadParams = {0, 0, 0, 0, true};
 
-constexpr MmadParams defaultMmadWithBiasParams = {0, false};
+constexpr MmadParams defaultMmadWithBiasParams = {0, 0, 0, 0, false};
 
 template <typename T, typename U, typename S>
 static constexpr bool VerifyingMmadTemplate = (IsTileTensorV<T> && IsTileTensorV<U> 

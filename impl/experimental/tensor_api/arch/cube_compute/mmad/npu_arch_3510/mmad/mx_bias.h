@@ -49,16 +49,13 @@ private:
         auto fmLayout = fm.Layout();
         auto dstLayout = dst.Layout();
 
-        uint16_t m = GetEleFromLayout<decltype(fmLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(fmLayout) * FRACTAL_FIXED;
-        uint16_t k = GetEleFromLayout<decltype(fmLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(fmLayout) * C0_SIZE / sizeof(fmType);
-        uint16_t n = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) * FRACTAL_FIXED;
         bool cmatrixSource = false;
         if (biasPos == Hardware::BIAS) {
             cmatrixSource = true;
         }
         MmadMxBiasInstr mmadMxBiasInstr;
-        mmadMxBiasInstr.Mmad(dst, fm, filter, bias, m, k, n, params.unitFlag, trait.disableGemv, cmatrixSource, 
-            params.cmatrixInitVal);
+        mmadMxBiasInstr.Mmad(dst, fm, filter, bias, params.m, params.k, params.n, params.unitFlag, trait.disableGemv, cmatrixSource, 
+            false);
     }
 };
 
