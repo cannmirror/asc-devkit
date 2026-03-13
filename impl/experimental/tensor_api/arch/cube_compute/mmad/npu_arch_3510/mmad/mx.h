@@ -16,7 +16,6 @@
 #define IMPL_EXPERIMENTAL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_3510_MMAD_MX_H
 
 #include "impl/experimental/tensor_api/arch/cube_compute/mmad/npu_arch_3510/instruction.h"
-#include "impl/experimental/tensor_api/arch/utils/utils.h"
 
 namespace AscendC {
 namespace Te {

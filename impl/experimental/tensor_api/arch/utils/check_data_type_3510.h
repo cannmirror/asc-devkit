@@ -14,6 +14,8 @@
 #ifndef IMPL_TENSOR_API_ARCH_UTILS_CHECK_DATA_TYPE_3510_H
 #define IMPL_TENSOR_API_ARCH_UTILS_CHECK_DATA_TYPE_3510_H
 
+#include "impl/experimental/tensor_api/utils/utils_impl.h"
+
 namespace AscendC {
 namespace Te {
 

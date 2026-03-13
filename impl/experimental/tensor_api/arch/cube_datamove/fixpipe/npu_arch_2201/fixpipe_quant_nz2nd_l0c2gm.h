@@ -15,7 +15,7 @@
 #ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_2201_FIXPIPE_QUANT_NZ2ND_L0C2GM_H
 #define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_2201_FIXPIPE_QUANT_NZ2ND_L0C2GM_H
 
-#include "impl/experimental/tensor_api/arch/utils/utils.h"
+#include "impl/experimental/tensor_api/arch/utils/arch_utils.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_2201/fixpipe_base.h"
 
 namespace AscendC {

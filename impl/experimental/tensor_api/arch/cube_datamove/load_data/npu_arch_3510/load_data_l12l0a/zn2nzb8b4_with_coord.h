@@ -16,7 +16,6 @@
 #define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_NPU_ARCH_3510_LOAD_DATA_L12L0A_ZN2NZB8B4_WITH_COORD_H
 
 #include "impl/experimental/tensor_api/arch/cube_datamove/load_data/npu_arch_3510/instruction.h"
-#include "impl/experimental/tensor_api/arch/utils/utils.h"
 
 namespace AscendC {
 namespace Te {

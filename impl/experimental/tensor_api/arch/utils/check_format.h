@@ -14,9 +14,10 @@
 #ifndef IMPL_TENSOR_API_ARCH_UTILS_CHECK_FORMAT_H
 #define IMPL_TENSOR_API_ARCH_UTILS_CHECK_FORMAT_H
 
+#include "impl/experimental/tensor_api/utils/utils_impl.h"
 #include "impl/experimental/tensor_api/tensor/pointer_impl.h"
 #include "impl/experimental/tensor_api/tensor/local_tensor_impl.h"
-#include "impl/experimental/tensor_api/arch/utils/arch_utils.h"
+#include "impl/experimental/tensor_api/arch/utils/is_format.h"
 
 namespace AscendC {
 namespace Te {

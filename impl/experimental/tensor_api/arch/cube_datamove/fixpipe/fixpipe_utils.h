@@ -15,6 +15,8 @@
 #ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_FIXPIPE_UTILS_H
 #define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_FIXPIPE_UTILS_H
 
+#include "impl/experimental/tensor_api/arch/utils/arch_utils.h"
+
 namespace AscendC {
 namespace Te{
 

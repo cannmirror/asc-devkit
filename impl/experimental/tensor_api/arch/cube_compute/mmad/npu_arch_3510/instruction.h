@@ -15,7 +15,7 @@
 #ifndef IMPL_EXPERIMENTAL_TENSOR_API_ARCH_COMPUTE_MMAD_NPU_ARCH_3510_INSTRUCTION_H
 #define IMPL_EXPERIMENTAL_TENSOR_API_ARCH_COMPUTE_MMAD_NPU_ARCH_3510_INSTRUCTION_H
 
-#include "include/experimental/tensor_api/utils/utils.h"
+#include "impl/experimental/tensor_api/arch/utils/arch_utils.h"
 #include "impl/experimental/tensor_api/tensor/pointer_impl.h"
 #include "impl/experimental/tensor_api/tensor/local_tensor_impl.h"
 

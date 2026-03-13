@@ -17,7 +17,7 @@
 
 #include "impl/experimental/tensor_api/tensor/pointer_impl.h"
 #include "impl/experimental/tensor_api/tensor/local_tensor_impl.h"
-#include "impl/experimental/tensor_api/arch/utils/utils.h"
+#include "impl/experimental/tensor_api/arch/utils/arch_utils.h"
 
 namespace AscendC {
 namespace Te {
@@ -282,7 +282,7 @@ class DataCopyFourDim2201GM2L1 : public CopyGmToCbufMultiND2NZBase, public CopyG
 public:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline void Run(const T& dst, const U& src) {
-        Execute<trait>(dst, src, ZeroCoord2DType{});
+        Execute<trait>(dst, src, EmptyCoord<2>{});
     }
     template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
