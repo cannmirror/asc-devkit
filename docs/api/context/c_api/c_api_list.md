@@ -355,7 +355,7 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_reduce_min_datablock](reg/reg_vector/asc_reduce_min_datablock.md) | 根据mask将每个DataBlock(32B)中的最小值，依次保存在dst中的最低位。 |
 | [asc_shiftleft](reg/reg_vector/asc_shiftleft.md) | 根据掩码mask对输入数据src0，按照src1对应元素进行左移操作，完成后将结果写入dst中。 |
 | [asc_shiftright](reg/reg_vector/asc_shiftright.md) | 根据掩码mask对输入数据src0，按照src1对应元素进行右移操作，完成后将结果写入dst中。 |
-| [asc_squeeze](reg/reg_vector/asc_squeeze.md) | 将src中被mask选择的有效元素依次复制到dst，有效元素从低到高连续排列。 |
+| [asc_squeeze](reg/reg_vector/asc_squeeze.md) | 将src中被mask选择的有效元素依次复制到dst，有效元素在dst上连续排列。 |
 | [asc_uint162uint32](reg/reg_vector/asc_uint162uint32.md) | 将uint16_t数据类型的矢量逐元素转换为uint32_t类型。 |
 | [asc_uint162uint8](reg/reg_vector/asc_uint162uint8.md) | 将uint16_t数据类型的矢量逐元素转换为uint8_t类型。 |
 | [asc_uint322int16](reg/reg_vector/asc_uint322int16.md) | 将uint32_t数据类型的矢量逐元素转换为int16_t类型。 |
