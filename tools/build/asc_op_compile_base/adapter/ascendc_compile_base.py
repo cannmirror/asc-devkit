@@ -151,13 +151,50 @@ def link_relocatable_meta_file(bin_file_path, meta_file_path, compile_log_path=N
 
 
 def link_sk_norm_combine(sk_bin_file, norm_bin_file, sk_bind_dst_file, compile_log_path=None):
-    link_cmd = ["ar", "crs", sk_bin_file, norm_bin_file]
-    CommonUtility.run_cmd_inner(link_cmd, CompileStage.LINKRELOCATE, compile_log_path)
-    link_cmd = [CCECInfo.get_exe("ld.lld"), "-r", "-o", sk_bin_file, "--whole-archive", sk_bin_file, sk_bind_dst_file]
-    CommonUtility.run_cmd_inner(link_cmd, CompileStage.LINKRELOCATE, compile_log_path)
-    link_cmd = [CCECInfo.get_exe("ld.lld"), "-m", "aicorelinux", "-Ttext=0", sk_bin_file, "-static",
-        "-o", sk_bin_file, "-q"]
-    CommonUtility.run_cmd_inner(link_cmd, CompileStage.LINKRELOCATE, compile_log_path)
+    # Step 1: 解压 sk_bin_file (它是由 ar crs 打包的 .o 文件)
+    # 创建临时目录用于解压
+    temp_extract_dir = os.path.join(os.path.dirname(sk_bin_file), "temp_extract_" + str(os.getpid()))
+    os.makedirs(temp_extract_dir, exist_ok=True)
+
+    try:
+        # 解压 sk_bin_file 到临时目录
+        CommonUtility.print_compile_log("", f"Extracting sk_bin_file: {sk_bin_file} to {temp_extract_dir}",
+            AscendCLogLevel.LOG_DEBUG)
+        extract_cmd = ["ar", "x", sk_bin_file]
+        CommonUtility.dump_compile_log(extract_cmd, CompileStage.LINKRELOCATE, compile_log_path)
+        result = subprocess.run(extract_cmd, cwd=temp_extract_dir, capture_output=True, text=True)
+        if result.returncode != 0:
+            raise Exception(f"Failed to extract sk_bin_file: {result.stderr}")
+
+        # 列出解压出的所有 .o 文件
+        extracted_objs = [os.path.join(temp_extract_dir, f) for f in os.listdir(temp_extract_dir) if f.endswith('.o')]
+        CommonUtility.print_compile_log("", f"Extracted object files: {[os.path.basename(f) for f in extracted_objs]}",
+            AscendCLogLevel.LOG_DEBUG)
+
+        # Step 2: 将解压的 .o 文件、norm_bin_file 和 sk_bind_dst_file 合并
+        merged_obj = os.path.join(temp_extract_dir, "merged_sk_norm_bind.o")
+        link_cmd = [CCECInfo.get_exe("ld.lld"), "-r", "-o", merged_obj]
+        link_cmd.extend(extracted_objs)
+        link_cmd.extend([norm_bin_file, sk_bind_dst_file])
+        CommonUtility.dump_compile_log(link_cmd, CompileStage.LINKRELOCATE, compile_log_path)
+        result = subprocess.run(link_cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            raise Exception(f"Failed to link merged objects: {result.stderr}")
+
+        # Step 3: 自连接 merged_obj 生成最终的 sk_bin_file
+        link_cmd = [CCECInfo.get_exe("ld.lld"), "-m", "aicorelinux", "-Ttext=0", merged_obj,
+            "-static", "-o", sk_bin_file, "-q"]
+        CommonUtility.dump_compile_log(link_cmd, CompileStage.LINKRELOCATE, compile_log_path)
+        result = subprocess.run(link_cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            raise Exception(f"Failed to self-link: {result.stderr}")
+
+        CommonUtility.print_compile_log("", f"Successfully created final sk_bin_file: {sk_bin_file}",
+            AscendCLogLevel.LOG_INFO)
+
+    finally:
+        CommonUtility.print_compile_log("", "Successfully sk combine link",
+            AscendCLogLevel.LOG_INFO)
 
 
 def _get_max_parallel_num():

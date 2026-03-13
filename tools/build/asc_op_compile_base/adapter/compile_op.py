@@ -1360,7 +1360,6 @@ def compile_op_common_part(cce_file: str, origin_func_name: str, op_info: OpInfo
                                                 distinct_tag, kernel_meta_dir)
         handle_compile_options(compile_info_origin, compile_option_tuple_origin, tiling_info, workspace_idx)
         compile_kernel_and_meta(compile_info_origin, op_info, compile_option_tuple_origin, tiling_info)
-        link_kernel_obj(compile_info_origin, op_info, tiling_info)
 
         # compile_sk_bind
         sk_bind_dst_file = compile_sk_bind(compile_info, compile_info_origin, compile_option_tuple, kernel_meta_dir)

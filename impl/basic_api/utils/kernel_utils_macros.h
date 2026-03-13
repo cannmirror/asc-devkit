@@ -346,7 +346,7 @@ struct FuncMetaSknlMap {
     SknlMapInfo sknlMeta;
 };
 
-template <auto GF, uint64_t cap, auto SK0 = 0xffffffffffffffff, auto SK1 = 0xffffffffffffffff, auto SK2 = 0xffffffffffffffff, auto SK3 = 0xffffffffffffffff>
+template <auto GF, uint64_t cap, auto SK0, auto SK1 = SK0, auto SK2 = SK0, auto SK3 = SK0>
 struct SknlKernelMap {
     static constexpr SknlMapInfo value = {cap, (void*)GF, {(void*)SK0, (void*)SK1, (void*)SK2, (void*)SK3}};
 };
