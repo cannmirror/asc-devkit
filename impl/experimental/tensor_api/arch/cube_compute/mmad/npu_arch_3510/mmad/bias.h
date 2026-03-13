@@ -37,7 +37,7 @@ private:
         CheckFormat::CheckNZTemplate<U>();
         CheckFormat::CheckZNTemplate<S>();
         CheckFormat::CheckNDTemplate<V>();        
-        CheckDataTypeFor3510::CheckMmadDataType<T, U, S, V>();
+        CheckDataTypeFor3510::CheckMmadBiasDataType<T, U, S, V>();
     }
 
     template <const MmadTrait& trait, typename T, typename U, typename S, typename V, typename Params>

@@ -36,7 +36,7 @@ private:
         CheckFormat::CheckL0CNZTemplate<T>();
         CheckFormat::CheckNZTemplate<U>();
         CheckFormat::CheckZNTemplate<S>();
-        CheckDataTypeFor3510::CheckMxMmadDataType<T, U, S, T>();
+        CheckDataTypeFor3510::CheckMxMmadDataType<T, U, S>();
     }
 
     template <const MmadTrait& trait, typename T, typename U, typename S, typename Params>

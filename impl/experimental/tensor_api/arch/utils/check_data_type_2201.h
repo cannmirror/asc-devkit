@@ -19,32 +19,40 @@ namespace Te {
 
 class CheckDataTypeFor2201 {
 public:
-    template <typename T, typename U, typename S, typename V>
-    __aicore__ inline static constexpr void CheckMmadDataType(bool isMx)
+    template <typename T, typename U, typename S>
+    __aicore__ inline static constexpr void CheckMmadDataType()
     {
         using dstDataType = typename T::elementType;
         using fmDataType = typename U::elementType;
         using filterDataType = typename S::elementType;
+
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
+        static_assert(Std::is_one_of_v<Std::tuple<dstDataType, fmDataType, filterDataType>,
+                                       Std::tuple<__cc__ int32_t, __ca__ int8_t, __cb__ int8_t>,
+                                       Std::tuple<__cc__ float, __ca__ half, __cb__ half>,
+                                       Std::tuple<__cc__ float, __ca__ bfloat16_t, __cb__ bfloat16_t>,
+                                       Std::tuple<__cc__ float, __ca__ float, __cb__ float>>,
+                      "The data type is not supported.");
+#endif
+    }
+
+    template <typename T, typename U, typename S, typename V>
+    __aicore__ inline static constexpr void CheckMmadBiasDataType()
+    {
+        using fmDataType = typename U::elementType;
+        using filterDataType = typename S::elementType;
         using biasDataType = typename V::elementType;
+        using dstDataType = typename T::elementType;
         constexpr auto biasPos = GetHardPos<V>();
 
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
-        if constexpr (biasPos == Hardware::BIAS) {
-            static_assert(
-                Std::is_one_of_v<Std::tuple<biasDataType, dstDataType, fmDataType, filterDataType>,
-                                 Std::tuple<__biasbuf__ int32_t, __cc__ int32_t, __ca__ int8_t, __cb__ int8_t>,
-                                 Std::tuple<__biasbuf__ float, __cc__ float, __ca__ half, __cb__ half>,
-                                 Std::tuple<__biasbuf__ float, __cc__ float, __ca__ bfloat16_t, __cb__ bfloat16_t>,
-                                 Std::tuple<__biasbuf__ float, __cc__ float, __ca__ float, __cb__ float>>,
-                "The data type is not supported.");
-        } else if constexpr (biasPos == Hardware::L0C) {
-            static_assert(Std::is_one_of_v<Std::tuple<biasDataType, dstDataType, fmDataType, filterDataType>,
-                                           Std::tuple<__cc__ int32_t, __cc__ int32_t, __ca__ int8_t, __cb__ int8_t>,
-                                           Std::tuple<__cc__ float, __cc__ float, __ca__ half, __cb__ half>,
-                                           Std::tuple<__cc__ float, __cc__ float, __ca__ bfloat16_t, __cb__ bfloat16_t>,
-                                           Std::tuple<__cc__ float, __cc__ float, __ca__ float, __cb__ float>>,
-                          "The data type is not supported.");
-        }
+        static_assert(
+            Std::is_one_of_v<Std::tuple<biasDataType, dstDataType, fmDataType, filterDataType>,
+                             Std::tuple<__biasbuf__ int32_t, __cc__ int32_t, __ca__ int8_t, __cb__ int8_t>,
+                             Std::tuple<__biasbuf__ float, __cc__ float, __ca__ half, __cb__ half>,
+                             Std::tuple<__biasbuf__ float, __cc__ float, __ca__ bfloat16_t, __cb__ bfloat16_t>,
+                             Std::tuple<__biasbuf__ float, __cc__ float, __ca__ float, __cb__ float>>,
+            "The data type is not supported.");
 #endif
     }
 
@@ -73,11 +81,10 @@ public:
         using dstType = typename T::elementType;
 
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
-        static_assert(
-            Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__cbuf__ bfloat16_t, __gm__ bfloat16_t>,
-                             Std::tuple<__cbuf__ half, __gm__ half>, Std::tuple<__cbuf__ float, __gm__ float>,
-                             Std::tuple<__cbuf__ int32_t, __gm__ int32_t>>,
-            "The data type is not supported.");
+        static_assert(Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__cbuf__ bfloat16_t, __gm__ bfloat16_t>,
+                                       Std::tuple<__cbuf__ half, __gm__ half>, Std::tuple<__cbuf__ float, __gm__ float>,
+                                       Std::tuple<__cbuf__ int32_t, __gm__ int32_t>>,
+                      "The data type is not supported.");
 #endif
     }
 
