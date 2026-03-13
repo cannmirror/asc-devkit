@@ -58,8 +58,7 @@ private:
         auto iter = dst.Data();
         for (uint16_t idx = 0; idx < nLoop; ++idx) {
             auto sliceDst = MakeTensor(iter, dst.Layout());
-            loadCbufToCbS4.template LoadData<trait>(sliceDst, src, mStartPosition, kStartPosition / KHALF, 
-                                                    mStep, kStep / KHALF, srcStride * KHALF, dstStride * KHALF);
+            loadCbufToCbS4.template LoadData<trait>(sliceDst, src, mStartPosition, kStartPosition, mStep, kStep / KHALF, srcStride, dstStride);
             iter = iter + dstAddrStride;
             mStartPosition += M_STEP_MIN_VAL_B4;
         }
@@ -105,16 +104,18 @@ private:
         auto kStep = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout) *
                 GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout) * sizeof(DstType) / C0_SIZE;
         // Nz -> Zn
-        uint32_t STRIDE_UNIT = FRACTAL_FIXED * (C0_SIZE / sizeof(DstType));
+        constexpr bool isFp4Type = Std::is_one_of_v<
+                Std::tuple<typename T::elementType, typename U::elementType>,
+                Std::tuple<__cb__ fp4x2_e2m1_t, __cbuf__ fp4x2_e2m1_t>,
+                Std::tuple<__cb__ fp4x2_e1m2_t, __cbuf__ fp4x2_e1m2_t>>;
+        constexpr int KHALF = 2;
+        uint32_t STRIDE_UNIT = isFp4Type ? FRACTAL_FIXED * (C0_SIZE / sizeof(DstType) * KHALF) : FRACTAL_FIXED * (C0_SIZE / sizeof(DstType));
         auto srcStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / STRIDE_UNIT;
         auto dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout) / STRIDE_UNIT;
-        constexpr bool isFp4Type = std::is_same<T, fp4x2_e2m1_t>::value || std::is_same<T, fp4x2_e1m2_t>::value;
         if constexpr (isFp4Type) {
-            constexpr int KHALF = 2;
             if (n1 < FRACTAL_FIXED) {
                 LoadCbufToCbS4Base loadCbufToCbS4;
-                loadCbufToCbS4.template LoadData<trait>(dst, src, mStartPosition, kStartPosition / KHALF, 
-                                                        mStep, kStep / KHALF, srcStride * KHALF, dstStride * KHALF);
+                loadCbufToCbS4.template LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep / KHALF, srcStride, dstStride);
             } else {
                 LoadDataImplB4<trait, T, U>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             }
