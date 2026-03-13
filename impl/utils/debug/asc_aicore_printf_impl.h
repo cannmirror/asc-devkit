@@ -15,6 +15,7 @@
 #ifndef IMPL_UTILS_DEBUG_ASC_AICORE_PRINTF_IMPL_H
 #define IMPL_UTILS_DEBUG_ASC_AICORE_PRINTF_IMPL_H
 
+#ifndef ASCENDC_CPU_DEBUG
 #include "impl/utils/debug/asc_debug_utils.h"
 
 #if __NPU_ARCH__ == 2002
@@ -189,6 +190,14 @@ __aicore__ inline void printf_impl(__gm__ const char* fmt, Args&&... args)
     set_ctrl(ctrlValue);
 }
 } // namespace __asc_aicore
+#else
+namespace __asc_aicore {
+template <class... Args>
+__aicore__ inline void printf_impl(__gm__ const char* fmt, Args&&... args) {}
+} // namespace __asc_aicore
+
+using namespace __asc_aicore;
+#endif
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_AICORE_PRINTF_IMPL__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

@@ -15,6 +15,9 @@
 #ifndef IMPL_UTILS_DEBUG_ASC_DEBUG_UTILS_H
 #define IMPL_UTILS_DEBUG_ASC_DEBUG_UTILS_H
 
+inline __gm__ uint8_t* __gm__ g_sysPrintFifoSpace = nullptr;
+
+#ifndef ASCENDC_CPU_DEBUG
 #include <type_traits>
 
 #include "impl/utils/sys_macros.h"
@@ -29,7 +32,6 @@
 #include "impl/utils/debug/npu_arch_3510/asc_debug_utils_impl.h"
 #endif
 
-inline __gm__ uint8_t* __gm__ g_sysPrintFifoSpace = nullptr;
 namespace __asc_aicore {
 __aicore__ inline void enable_asc_diagnostics()
 {
@@ -248,6 +250,7 @@ __aicore__ constexpr inline DumpTensorDataType get_dump_datatype()
 }
 
 } // namespace __asc_aicore
+#endif
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_DEBUG_UTILS__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
