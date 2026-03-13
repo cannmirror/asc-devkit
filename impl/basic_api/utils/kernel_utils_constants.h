@@ -600,7 +600,7 @@ using fp8_e8m0_t = uint8_t;
 #elif !defined(ASCENDC_CPU_DEBUG)
 using fp8_e8m0_t = float8_e8m0_t;
 #endif
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+
 using mx_fp8_e5m2_t = struct {};
 using mx_fp8_e4m3_t = struct {};
 using mx_fp8_e8m0_t = struct {};
@@ -621,7 +621,6 @@ template <> struct GetDstType<mx_fp8_e4m3_t> {
 template <> struct GetDstType<mx_fp8_e8m0_t> {
     using Type = fp8_e8m0_t;
 };
-#endif
 
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
 struct BasicAPIMaskStruct {
