@@ -851,7 +851,7 @@ struct AddCustomTilingData {{
         has_aic = True
         has_aiv = True
         dump_assert = True
-        generate_code = generate_host_stub_head_code(has_mix, has_aic, has_aiv, dump_assert)
+        generate_code = generate_host_stub_head_code(has_mix, has_aic, has_aiv, dump_assert, False)
         self.assertIn("g_kernel_handle", generate_code)
         self.assertIn("g_kernel_handle_aiv", generate_code)
         self.assertIn("g_kernel_handle_aic", generate_code)

@@ -35,10 +35,18 @@ using ::printf;
 template <typename... Args>
 inline auto PRINTF(Args&&... args) -> decltype(printf(std::forward<Args>(args)...))
 {
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
+#ifdef ASCENDC_DUMP
+    return printf(std::forward<Args>(args)...);
+#else
+    return 0;
+#endif
+#else
 #if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
     return printf(std::forward<Args>(args)...);
 #else
     return 0;
+#endif
 #endif
 }
 #else
@@ -48,16 +56,28 @@ inline auto PRINTF(Args&&... args) -> decltype(printf(std::forward<Args>(args)..
 template <class... Args>
 __aicore__ inline void PRINTF(const __gm__ char* fmt, Args&&... args)
 {
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
+#ifdef ASCENDC_DUMP
+    __asc_simt_vf::simt_printf_impl(__asc_simt_vf::DumpType::DUMP_SIMT_PRINTF, fmt, args...);
+#endif
+#else
 #if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
     __asc_simt_vf::simt_printf_impl(__asc_simt_vf::DumpType::DUMP_SIMT_PRINTF, fmt, args...);
+#endif
 #endif
 }
 
 template <class... Args>
 __aicore__ inline void printf(const __gm__ char* fmt, Args&&... args)
 {
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
+#ifdef ASCENDC_DUMP
+    __asc_simt_vf::simt_printf_impl(__asc_simt_vf::DumpType::DUMP_SIMT_PRINTF, fmt, args...);
+#endif
+#else
 #if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
     __asc_simt_vf::simt_printf_impl(__asc_simt_vf::DumpType::DUMP_SIMT_PRINTF, fmt, args...);
+#endif
 #endif
 }
 
