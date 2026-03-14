@@ -188,6 +188,7 @@ def split_sub_kernel_objs(dst_file: str, tiling_info, compile_info):
 
 def add_sub_super_kernel_info(js, static_shape_flag, compile_info):
     if global_var_storage.get_variable("ascendc_enable_super_kernel") is True:
+        js["sub_operator_op_type"] = compile_info.op_type
         js["sub_operator_params"] = global_var_storage.get_variable("ascendc_sub_super_kernel_params")
         js["sub_operator_kernel_type"] = global_var_storage.get_variable("ascendc_sub_super_kernel_type")
         js["sub_operator_kernel_name"] = global_var_storage.get_variable("ascendc_sub_super_kernel_fun_names")

@@ -142,6 +142,8 @@ def _json_except_info(compile_info: CompileInfo):
             sub_dfx_info["func_name"] = sub_operater_infos["kernelName"]
             sub_dfx_info["split_mode"] = sub_operater_infos.get("split_mode")
             sub_dfx_info["blockNum"] = sub_operater_infos["blockDim"]
+            sub_dfx_info["sub_operator_op_type"] = \
+                sub_operater_infos.get('sub_operator_op_type', '')
             sub_dfx_info["sub_operator_kernel_type"] = sub_operater_infos["sub_operator_kernel_type"]
             sub_dfx_info["sub_operator_early_start_set_flag"] = \
             sub_operater_infos['sub_operator_early_start_set_flag']
