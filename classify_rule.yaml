@@ -43,6 +43,7 @@ asc-devkit:
       - impl/experimental/tensor_api/utils/**
       - impl/experimental/tensor_api/tensor/layout_static_fractal.h
       - impl/experimental/tensor_api/tensor/layout_size.h
+      - impl/experimental/tensor_api/tensor/tuple_fractal.h
   llt:
     ut_check: true
     st_check: false

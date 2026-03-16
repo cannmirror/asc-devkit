@@ -56,6 +56,8 @@ constexpr uint32_t CURRENT_ARCH_VERSION = GetArchVersion{}();
 
 enum class LayoutFormat : uint8_t { NZ, ZN, ZZ, DN, ND, NN};
 
+enum class TupleFormat : uint8_t { Shape, Stride, Coord};
+
 template <typename TupleType>
 using tuple_sequence = Std::make_index_sequence<Std::tuple_size_v<Std::remove_cvref_t<TupleType>>>;
 

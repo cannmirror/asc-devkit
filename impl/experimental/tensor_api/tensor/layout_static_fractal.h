@@ -21,9 +21,47 @@
 namespace AscendC {
 namespace Te {
 // coord
+// NZ
 template <typename T, size_t row, size_t column>
-using CoordFormat = Std::tuple<Std::tuple<Std::Int<0>, Std::Int<row>>,
-                    Std::tuple<Std::Int<0>, Std::Int<column>>>;
+using NZCoordFormat = Shape<Shape<Std::Int<0>, Std::Int<row / FRACTAL_FIXED>>,
+    Shape<Std::Int<0>, Std::Int<column / (C0_SIZE / sizeof(T))>>>;
+
+// ZN
+template <typename T, size_t  row, size_t  column>
+using ZNCoordFormat = Shape<Shape<Std::Int<0>, Std::Int<row / (C0_SIZE / sizeof(T))>>,
+    Shape<Std::Int<0>, Std::Int<column / FRACTAL_FIXED>>>;
+
+//  ScaleND
+template <typename T, size_t row, size_t column>
+using ScaleNDCoordFormat = Shape<Shape<Std::Int<0>, Std::Int<row/2>>, 
+                                    Shape<Std::Int<0>, Std::Int<column>>>;
+//  ScaleDN
+template <typename T, size_t row, size_t column>
+using ScaleDNCoordFormat = Shape<Shape<Std::Int<0>, Std::Int<row>>, 
+                                    Shape<Std::Int<0>, Std::Int<column/MX_SCALE_K0>>>;
+
+// ScaleNN
+template <typename T, size_t row, size_t column>
+using ScaleNNCoordFormat = Shape<Shape<Std::Int<0>, Std::Int<row/MX_SCALE_K0>>, 
+                                    Shape<Std::Int<0>, Std::Int<column/FRACTAL_FIXED>>>;
+
+// ND
+template <typename T, size_t row, size_t column>
+using NDCoordFormat = Shape<Shape<Std::Int<0>, Std::Int<row>>, Shape<Std::Int<0>, Std::Int<column>>>;
+
+// DN
+template <typename T, size_t row, size_t column>
+using DNCoordFormat = Shape<Shape<Std::Int<0>, Std::Int<row>>, Shape<Std::Int<0>, Std::Int<column>>>;
+
+// ZZ
+template <typename T, size_t row, size_t column>
+using ZZCoordFormat = Shape<Shape<Std::Int<0>, Std::Int<row / FRACTAL_FIXED>>,
+    Shape<Std::Int<0>, Std::Int<column / (C0_SIZE / sizeof(T))>>>;
+
+// scaleZZ
+template <typename T, size_t row, size_t column>
+using ScaleZZCoordFormat = Shape<Shape<Std::Int<0>, Std::Int<row/FRACTAL_FIXED>>, 
+                                    Shape<Std::Int<0>, Std::Int<column/MX_SCALE_K0>>>;
 
 // NZ
 template <typename T, size_t row, size_t column>
