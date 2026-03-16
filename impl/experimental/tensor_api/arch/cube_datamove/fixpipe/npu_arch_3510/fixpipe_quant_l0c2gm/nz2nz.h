@@ -41,7 +41,7 @@ private:
     __aicore__ inline void SetRegisterImpl(const V& quant)
     {
         SetRegisterBase3510 setRegisterInst;
-        setRegisterInst.SetRegister<V>(quant);
+        setRegisterInst.SetRegister(quant);
     }
 
     template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename Params>

@@ -45,7 +45,7 @@ private:
         uint32_t dstDNMatrixStride = 0;
         uint32_t srcNZC0Stride = 1;
         SetRegisterBase3510 setRegisterInst;
-        setRegisterInst.SetRegister<V>(quant, dnNum, dstDNMatrixStride, srcNZMatrixStride, srcNZC0Stride);
+        setRegisterInst.SetRegister(quant, dnNum, dstDNMatrixStride, srcNZMatrixStride, srcNZC0Stride);
     }
 
     template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename Params>

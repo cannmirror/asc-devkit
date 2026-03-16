@@ -40,7 +40,9 @@ public:
             CopyGmToCbufAlignV2((__cbuf__ half*)(dst.Data().Get()), (__gm__ half*)(src.Data().Get()), params...);
         } else if constexpr (sizeof(srcType) == sizeof(float)) {
             CopyGmToCbufAlignV2((__cbuf__ float*)(dst.Data().Get()), (__gm__ float*)(src.Data().Get()), params...);
-        }
+        } else if constexpr (sizeof(srcType) == sizeof(uint64_t)) {
+             CopyGmToCbufAlignV2((__cbuf__ uint32_t*)(dst.Data().Get()), (__gm__ uint32_t*)(src.Data().Get()), params...);
+        } 
     }
 
 private:
