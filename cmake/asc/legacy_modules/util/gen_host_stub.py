@@ -13,9 +13,8 @@
 import io
 
 
-def generate_host_stub_set_exception_dump_source() -> str:
+def generate_host_stub_set_exception_dump_source(is_c310: bool) -> str:
     exception_dump_source = r'''
-#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
 static void ascendc_set_exception_dump_info(uint32_t dumpSize)
 {
     uint32_t atomicIndex = 0U;
@@ -46,10 +45,14 @@ static void ascendc_set_exception_dump_info(uint32_t dumpSize)
 }
 #endif
 '''
+    if is_c310:
+        exception_dump_source = "#ifdef ASCENDC_DUMP\n" + exception_dump_source
+    else:
+        exception_dump_source = "#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)\n" + exception_dump_source
     return exception_dump_source
 
 
-def generate_host_stub_head_code(has_mix: bool, has_aic: bool, has_aiv: bool, dump_assert: bool) -> str:
+def generate_host_stub_head_code(has_mix: bool, has_aic: bool, has_aiv: bool, dump_assert: bool, is_c310: bool) -> str:
     """Generate host_stub.cpp head code."""
 
     type_nums = 0
@@ -67,9 +70,32 @@ def generate_host_stub_head_code(has_mix: bool, has_aic: bool, has_aiv: bool, du
 #include <dlfcn.h>
 #include <securec.h>
 ''')
+    if is_c310:
+        buff.write('\n')
+
+        buff.write(r'''#ifndef ASCENDC_DUMP
+#define ASCENDC_DUMP 1
+#endif
+
+#if defined(ASCENDC_DUMP) && (ASCENDC_DUMP == 0)
+    #undef ASCENDC_DUMP
+#endif
+    ''')
 
     if dump_assert:
-        buff.write(r'''
+        if is_c310:
+            buff.write(r'''
+#ifdef ASCENDC_DUMP
+#define ASCENDC_EXCEPTION_DUMP_HEAD 2U
+
+typedef struct rtArgsSizeInfo {
+    void *infoAddr;
+    uint32_t atomicIndex;
+} rtArgsSizeInfo_t;
+#endif
+''')
+        else:
+            buff.write(r'''
 #if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
 #define ASCENDC_EXCEPTION_DUMP_HEAD 2U
 
@@ -79,6 +105,7 @@ typedef struct rtArgsSizeInfo {
 } rtArgsSizeInfo_t;
 #endif
 ''')
+
     buff.write('\n')
     buff.write('''static char ascendcErrMsg[1024] = {0};
 ''')
@@ -283,6 +310,6 @@ void __register_kernels(void)
 ''')
 
     if dump_assert:
-        buff.write(generate_host_stub_set_exception_dump_source())
+        buff.write(generate_host_stub_set_exception_dump_source(is_c310))
 
     return buff.getvalue()
