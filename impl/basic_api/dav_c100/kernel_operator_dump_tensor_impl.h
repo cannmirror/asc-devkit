@@ -54,7 +54,7 @@ __aicore__ void DumpTensorGM2GMImpl(const GlobalTensor<T>& src, uint32_t desc, u
 template <class... Args>
 __aicore__ inline void PrintfImpl(DumpType printType, __gm__ const char* fmt, Args&&... args)
 {
-#ifdef ASCENDC_DUMP
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
     ASCENDC_REPORT_NOT_SUPPORT(false, "Dump scalar");
 #endif
 }
