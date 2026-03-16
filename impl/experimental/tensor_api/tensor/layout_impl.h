@@ -26,12 +26,39 @@ namespace Te {
 template <typename T>
 struct LocalTensor;
 
-template <typename Coord, typename LayoutType, typename ShapeType>
-__aicore__ inline decltype(auto) MakeTileLayout(const Coord& coord, const LayoutType& layout, const ShapeType& tileShape) 
+template <typename Coord, typename LayoutType, typename TileShape>
+__aicore__ inline decltype(auto) MakeTileLayout(const Coord& coord, const LayoutType& layout, const TileShape& tileShape) 
 {
-    static_assert(nesting_depth_v<ShapeType> == LayoutType::depth, "tile shape depth is not equal layout.shape");
-    static_assert(Std::tuple_size_v<ShapeType> == LayoutType::rank, "tile shape rank is not equal layout.shape");
-    return MakeLayout(tileShape, layout.Stride());
+    static_assert(Std::is_tuple_v<TileShape>);
+
+    using OriginShape = Std::remove_cvref_t<decltype(layout.Shape())>;
+    if constexpr (nesting_depth_v<TileShape> == nesting_depth_v<OriginShape>
+                  && Std::tuple_size_v<TileShape> == Std::tuple_size_v<OriginShape>) {
+        return MakeLayout(tileShape, layout.Stride());
+    } else {
+        static_assert(Std::tuple_size_v<TileShape> == TWO_DIM_DATA);
+
+        const uint32_t rows = Std::get<0>(tileShape);
+        const uint32_t cols = Std::get<1>(tileShape);
+
+        const auto& innerRow = Std::get<0>(Std::get<0>(layout.Shape()));
+        const auto& innerCol = Std::get<0>(Std::get<1>(layout.Shape()));
+
+        using InnerRowType = Std::remove_cvref_t<decltype(innerRow)>;
+        using InnerColType = Std::remove_cvref_t<decltype(innerCol)>;
+
+        if constexpr (IsIntegralConstantV<InnerRowType> && IsIntegralConstantV<InnerColType>) {
+            return MakeLayout(
+                MakeShape(MakeShape(Std::Int<InnerRowType::value>{}, CeilDivision(rows, InnerRowType::value)),
+                          MakeShape(Std::Int<InnerColType::value>{}, CeilDivision(cols, InnerColType::value))),
+                layout.Stride());
+        } else {
+            return MakeLayout(
+                MakeShape(MakeShape(innerRow, CeilDivision(rows, innerRow)),
+                          MakeShape(innerCol, CeilDivision(cols, innerCol))),
+                layout.Stride());
+        }
+    }
 }
 
 template <typename Coord, typename LayoutType, typename TensorType>
