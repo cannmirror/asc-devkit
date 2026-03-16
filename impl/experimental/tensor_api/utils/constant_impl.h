@@ -66,10 +66,15 @@ __aicore__ inline constexpr auto GetHardPos()
 }
 
 template <typename T, typename U>
-__aicore__ inline constexpr auto max(const T src0, const U src1)
+__aicore__ inline constexpr auto max(const T& src0, const U& src1)
 {
-    static_assert(Std::is_same_v<T, U> || Std::is_integral_v<T>, "Only support compare with same type");
     return (src0 > src1) ? src0 : src1;
+}
+
+template <typename T, typename U>
+__aicore__ inline constexpr auto Min(const T& src0, const U& src1)
+{
+    return (src0 < src1) ? src0 : src1;
 }
 
 template <typename ElementType, typename DataType>

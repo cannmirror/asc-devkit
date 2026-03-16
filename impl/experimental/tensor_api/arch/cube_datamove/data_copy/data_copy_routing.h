@@ -20,16 +20,16 @@
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_2201/data_copy_l12fb.h"
 
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_gm2l1.h"
-#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_l12bt_normal.h"
-#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_l12fb_normal.h"
+#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_l12bt.h"
+#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_l12fb.h"
 
 namespace AscendC {
 namespace Te {
 
 class DataCopyIgnore {
 public:
-    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {}
+    template <const DataCopyTrait& trait, typename ...Args>
+    __aicore__ inline void Run(const Args&... args) {}
 };
 
 template <Hardware dstTPos, Hardware srcTpos, uint32_t Version, size_t dimension>

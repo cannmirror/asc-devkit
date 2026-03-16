@@ -52,8 +52,8 @@ private:
 
 class CopyGmToCbufNZBase : public CopyGmToCbufBase {
 public:
-    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
+    template <const DataCopyTrait& trait, typename T, typename U>
+    __aicore__ inline void Run(const T& dst, const U& src) {
 
         auto params = GenDataCopyParams<trait, T, U>(dst, src);
         CopyGmToCbufBase::DataCopy<trait, T, U, decltype(params)>(dst, src, params);
@@ -94,8 +94,8 @@ private:
 
 class CopyGmToCbufNDBase : public CopyGmToCbufBase {
 public:
-    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
+    template <const DataCopyTrait& trait, typename T, typename U>
+    __aicore__ inline void Run(const T& dst, const U& src) {
         auto params = GenDataCopyParams<trait, T, U>(dst, src);
         CopyGmToCbufBase::DataCopy<trait, T, U, decltype(params)>(dst, src, params);
     }
@@ -136,8 +136,8 @@ private:
 
 class CopyGmToCbufMultiND2NZBase {
 public:
-    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
+    template <const DataCopyTrait& trait, typename T, typename U>
+    __aicore__ inline void Run(const T& dst, const U& src) {
         auto params = GenDataCopyParams<trait, T, U>(dst, src);
         DataCopyImpl<trait, T, U, decltype(params)>(dst, src, params, tuple_sequence<decltype(params)>{});
     }
@@ -208,8 +208,8 @@ private:
 
 class CopyGmToCbufMultiDN2ZNBase {
 public:
-    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
+    template <const DataCopyTrait& trait, typename T, typename U>
+    __aicore__ inline void Run(const T& dst, const U& src) {
         auto params = GenDataCopyParams<trait, T, U>(dst, src);
         DataCopyImpl<trait, T, U, decltype(params)>(dst, src, params, tuple_sequence<decltype(params)>{});
     }
@@ -282,24 +282,20 @@ class DataCopyFourDim2201GM2L1 : public CopyGmToCbufMultiND2NZBase, public CopyG
 public:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline void Run(const T& dst, const U& src) {
-        Execute<trait>(dst, src, EmptyCoord<2>{});
-    }
-    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
-        Execute<trait>(dst, src, coord);
+        Execute<trait>(dst, src);
     }
 
 private:
-    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Execute(const T& dst, const U& src, const Coord& coord) {
+    template <const DataCopyTrait& trait, typename T, typename U>
+    __aicore__ inline void Execute(const T& dst, const U& src) {
         if constexpr (IsNZFormat<U>::value && IsNZFormat<T>::value) {
-            CopyGmToCbufNZBase::Run<trait, T, U, Coord>(dst, src, coord);
+            CopyGmToCbufNZBase::Run<trait, T, U>(dst, src);
         } else if constexpr (IsNDFormat<U>::value && IsNZFormat<T>::value) {
-            CopyGmToCbufMultiND2NZBase::Run<trait, T, U, Coord>(dst, src, coord);
+            CopyGmToCbufMultiND2NZBase::Run<trait, T, U>(dst, src);
         } else if constexpr (IsDNFormat<U>::value && IsZNFormat<T>::value) {
-            CopyGmToCbufMultiDN2ZNBase::Run<trait, T, U, Coord>(dst, src, coord);
+            CopyGmToCbufMultiDN2ZNBase::Run<trait, T, U>(dst, src);
         } else if constexpr (IsNDFormat<U>::value && IsNDFormat<T>::value) {
-            CopyGmToCbufNDBase::Run<trait, T, U, Coord>(dst, src, coord);
+            CopyGmToCbufNDBase::Run<trait, T, U>(dst, src);
         }
     }
 };

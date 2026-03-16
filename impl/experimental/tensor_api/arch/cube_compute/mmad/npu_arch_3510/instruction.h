@@ -12,8 +12,8 @@
  * \file instruction.h
  * \brief
  */
-#ifndef IMPL_EXPERIMENTAL_TENSOR_API_ARCH_COMPUTE_MMAD_NPU_ARCH_3510_INSTRUCTION_H
-#define IMPL_EXPERIMENTAL_TENSOR_API_ARCH_COMPUTE_MMAD_NPU_ARCH_3510_INSTRUCTION_H
+#ifndef IMPL_TENSOR_API_ARCH_COMPUTE_MMAD_NPU_ARCH_3510_INSTRUCTION_H
+#define IMPL_TENSOR_API_ARCH_COMPUTE_MMAD_NPU_ARCH_3510_INSTRUCTION_H
 
 #include "impl/experimental/tensor_api/arch/utils/arch_utils.h"
 #include "impl/experimental/tensor_api/tensor/pointer_impl.h"

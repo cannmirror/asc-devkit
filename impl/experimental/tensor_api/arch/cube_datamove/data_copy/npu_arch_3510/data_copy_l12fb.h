@@ -9,18 +9,18 @@
 */
 
 /*!
- * \file base.h
+ * \file data_copy_l12fb.h
  * \brief
  */
-#ifndef IMPL_EXPERIMENTAL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_3510_DATA_COPY_L12BT_BASE_H
-#define IMPL_EXPERIMENTAL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_3510_DATA_COPY_L12BT_BASE_H
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_3510_DATA_COPY_L12FB_H
+#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_3510_DATA_COPY_L12FB_H
 
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/instruction.h"
 
 namespace AscendC {
 namespace Te {
 
-class CopyL12BTBase {
+class DataCopyFourDim3510L12FB {
 public:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline void Run(const T& dst, const U& src) {
@@ -31,15 +31,20 @@ private:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
+        CheckDataTypeFor3510::CheckL12FbDataType<T, U>();
         CheckFormat::CheckNDTemplate<T>();
         CheckFormat::CheckNDTemplate<U>();
-        CheckDataTypeFor3510::CheckL12BtDataType<T, U>();
     }
 
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline auto DataCopyImpl(const T& dst, const U& src)
     {
         CheckTemplate<trait, T, U>();
+
+        using srcType = typename U::elementType;
+        using dstType = typename T::elementType;
+
+        constexpr uint32_t C2PIPE2GM_UNIT = C0_SIZE * 2;
 
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
@@ -49,25 +54,17 @@ private:
         uint16_t dstCol = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
         uint16_t dstRow = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
 
-        using srcType = typename U::elementType;
-        using dstType = typename T::elementType;
-
-        bool convControl = false;
-
-        if (Std::is_same_v<srcType, half> && Std::is_same_v<dstType, float>) {
-            convControl = true;
-        }
         uint16_t blockCount = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
-        uint16_t blockLen = (srcCol * sizeof(dstType) + C0_SIZE - 1) / C0_SIZE;
-        uint16_t srcStride = (srcRow - srcCol) * sizeof(srcType) / C0_SIZE;
-        uint16_t dstStride = (dstRow - srcCol) * sizeof(dstType) / C0_SIZE;
+        uint16_t blockLen = CeilDivision(srcCol * sizeof(srcType), C2PIPE2GM_UNIT);
+        uint16_t srcStride = CeilDivision(srcRow * sizeof(srcType), C0_SIZE);
+        uint16_t dstStride = CeilDivision(dstRow * sizeof(dstType), C2PIPE2GM_UNIT);
 
-        CopyL12BTInstr copyInstr;
-        copyInstr.DataCopy(dst, src, convControl, blockCount, blockLen, srcStride, dstStride);
+        CopyL12FBInstr copyInstr;
+        copyInstr.DataCopy(dst, src, blockCount, blockLen, srcStride, dstStride);
     }
 };
 
 } // namespace Te
 } // namespace AscendC
 
-#endif
+#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_3510_DATA_COPY_GM2L1_H

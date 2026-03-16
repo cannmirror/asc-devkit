@@ -23,9 +23,7 @@ namespace Te {
 constexpr DataCopyTrait DEFAULT_DATA_COPY_TRAIT;
 
 template <typename T, typename U>
-constexpr bool VerifyingDataCopyTemplate =
-    ((IsTileTensorV<U> && IsTileTensorV<T>) ||
-    (IsTileTensorV<U> && IsTileTensorV<T>));
+constexpr bool VerifyingDataCopyTemplate = (IsTileTensorV<T> && IsTileTensorV<U>);
 
 template <typename T, typename U, typename Coord>
 constexpr bool VerifyingDataCopyTemplateWithCoord = Std::is_tuple_v<Coord> && VerifyingDataCopyTemplate<T, U>;
@@ -45,11 +43,8 @@ template <const DataCopyTrait& trait = DEFAULT_DATA_COPY_TRAIT, typename T, type
 __aicore__ inline typename Std::enable_if<VerifyingDataCopyTemplateWithCoord<T, U, Coord>, void>::type
 DataCopy(const T& dst, const U& src, const Coord& coord)
 {
-    constexpr Hardware dstTPos = GetHardPos<T>();
-    constexpr Hardware srcTPos = GetHardPos<U>();
-    using Tensor2Tensor = typename
-        DataCopyTensor2Tensor<dstTPos, srcTPos, CURRENT_ARCH_VERSION, FOUR_DIM_DATA>::type;
-    Tensor2Tensor{}.template Run<trait, T, U, Coord>(dst, src, coord);
+    auto sliceTensor = src(coord, dst);
+    DataCopy<trait, T, decltype(sliceTensor)>(dst, sliceTensor);
 }
 
 } // namespace Te

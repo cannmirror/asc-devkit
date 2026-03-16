@@ -32,11 +32,6 @@ public:
         Execute<trait>(dst, src);
     }
 
-    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
-        Execute<trait>(dst, src, coord);
-    }
-
 private:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline void Execute(const T& dst, const U& src) {
@@ -62,24 +57,6 @@ private:
             // assert error
             static_assert(Std::is_same_v<T, U>, "The data format is not supported.");
         }
-    }
-
-    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Execute(const T& dst, const U& src, const Coord& coord) {
-        uint32_t rowSize =
-            Std::min(GetEleFromLayout<decltype(dst.Layout()), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dst.Layout())
-                         * GetEleFromLayout<decltype(dst.Layout()), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dst.Layout()),
-                     GetEleFromLayout<decltype(src.Layout()), AttrInfo::SHAPE, AttrInfo::ROW, 0>(src.Layout())
-                             * GetEleFromLayout<decltype(src.Layout()), AttrInfo::SHAPE, AttrInfo::ROW, 1>(src.Layout())
-                         - Std::get<0>(coord));
-        uint32_t colSize = Std::min(
-            GetEleFromLayout<decltype(dst.Layout()), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dst.Layout())
-                * GetEleFromLayout<decltype(dst.Layout()), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dst.Layout()),
-            GetEleFromLayout<decltype(src.Layout()), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(src.Layout())
-                    * GetEleFromLayout<decltype(src.Layout()), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(src.Layout())
-                - Std::get<1>(coord));
-        auto sliceTensor = src(coord, MakeShape(rowSize, colSize));
-        Execute<trait>(dst, sliceTensor);
     }
 };
 

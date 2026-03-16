@@ -63,45 +63,16 @@ template <const FixpipeTrait& trait = DEFAULT_FIXPIPE_TRAIT, typename T, typenam
 __aicore__ inline typename Std::enable_if<VerifyingFixpipeTemplateWithCoord<T, U, Coord>, void>::type
 Fixpipe(const T& dst, const U& src, const Coord& coord, const FixpipeParams& params = FixpipeParams{})
 {
-    constexpr Hardware dstPos = GetHardPos<T>();
-    constexpr Hardware srcPos = GetHardPos<U>();
-    constexpr Hardware quantPos = Hardware::MAX;
-
-    using Tensor2Tensor = typename FixpipeTensor2Tensor<dstPos, srcPos, quantPos,
-        CURRENT_ARCH_VERSION, FOUR_DIM_DATA>::type;
-
-    auto dstLayout = dst.Layout();
-    auto shape =
-        MakeShape(GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout)
-                          * GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout)
-                      - Std::get<0>(coord),
-                  GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout)
-                          * GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout)
-                      - Std::get<1>(coord));
-    auto sliceTensor = dst(coord, shape);
-    Tensor2Tensor{}.template Run<trait>(sliceTensor, src, params);
+    auto sliceTensor = dst(coord, src);
+    Fixpipe<trait>(sliceTensor, src, params);
 }
 
 template <const FixpipeTrait& trait = DEFAULT_FIXPIPE_TRAIT, typename T, typename U, typename S, typename Coord>
 __aicore__ inline typename Std::enable_if<VerifyingFixpipeQuantTemplateWithCoord<T, U, S, Coord>, void>::type
 Fixpipe(const T& dst, const U& src, const S& quant, const Coord& coord, const FixpipeParams& params = FixpipeParams{})
 {
-    constexpr Hardware dstPos = GetHardPos<T>();
-    constexpr Hardware srcPos = GetHardPos<U>();
-    constexpr Hardware quantPos = Hardware::L1;
-
-    auto dstLayout = dst.Layout();
-    auto shape =
-        MakeShape(GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout)
-                          * GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout)
-                      - Std::get<0>(coord),
-                  GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout)
-                          * GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout)
-                      - Std::get<1>(coord));
-    auto sliceTensor = dst(coord, shape);
-    using Tensor2Tensor =
-        typename FixpipeTensor2Tensor<dstPos, srcPos, quantPos, CURRENT_ARCH_VERSION, FOUR_DIM_DATA>::type;
-    Tensor2Tensor{}.template Run<trait>(sliceTensor, src, quant, params);
+    auto sliceTensor = dst(coord, src);
+    Fixpipe<trait>(sliceTensor, src, quant, params);
 }
 
 } // namespace Te

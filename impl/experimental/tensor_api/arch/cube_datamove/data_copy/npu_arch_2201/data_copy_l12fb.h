@@ -24,8 +24,8 @@ namespace Te {
 
 class CopyCbufToFB2201 {
 public:
-    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
+    template <const DataCopyTrait& trait, typename T, typename U>
+    __aicore__ inline void Run(const T& dst, const U& src) {
         auto params = GenDataCopyParams<trait, T, U>(dst, src);
         DataCopyImpl<trait, T, U, decltype(params)>(dst, src, params, tuple_sequence<decltype(params)>{});
     }

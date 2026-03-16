@@ -67,7 +67,7 @@ private:
     template <typename T>
     __aicore__ inline decltype(auto) TileSrcTensor(const T& src, uint16_t calNSize, uint16_t nIterIndex) {
         auto coord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, nIterIndex * MAIN_LOOP_N_SIZE_3510));
-        auto shape = MakeShape(1, calNSize);
+        auto shape = MakeShape(MakeShape(Std::Int<1>{}, 1), MakeShape(Std::Int<1>{}, calNSize));
         return src(coord, shape);
     }
 };
