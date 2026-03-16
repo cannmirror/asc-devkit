@@ -32,39 +32,39 @@ public:
     __aicore__ inline void Run(const Args&... args) {}
 };
 
-template <Hardware dstTPos, Hardware srcTpos, uint32_t Version, size_t dimension>
+template <Hardware dstTPos, Hardware srcTpos, uint32_t Version>
 struct DataCopyTensor2Tensor {
     using type = DataCopyIgnore;
 };
 
 template <>
-struct DataCopyTensor2Tensor<Hardware::L1, Hardware::GM, ArchVersion::V2201, FOUR_DIM_DATA> {
-    using type = DataCopyFourDim2201GM2L1;
+struct DataCopyTensor2Tensor<Hardware::L1, Hardware::GM, ArchVersion::V2201> {
+    using type = DataCopyGM2L12201;
 };
 
 template <>
-struct DataCopyTensor2Tensor<Hardware::BIAS, Hardware::L1, ArchVersion::V2201, FOUR_DIM_DATA> {
+struct DataCopyTensor2Tensor<Hardware::BIAS, Hardware::L1, ArchVersion::V2201> {
     using type = CopyCbufToBT2201;
 };
 
 template <>
-struct DataCopyTensor2Tensor<Hardware::FIXBUF, Hardware::L1, ArchVersion::V2201, FOUR_DIM_DATA> {
+struct DataCopyTensor2Tensor<Hardware::FIXBUF, Hardware::L1, ArchVersion::V2201> {
     using type = CopyCbufToFB2201;
 };
 
 template <>
-struct DataCopyTensor2Tensor<Hardware::L1, Hardware::GM, ArchVersion::V3510, FOUR_DIM_DATA> {
-    using type = DataCopyFourDim3510GM2L1;
+struct DataCopyTensor2Tensor<Hardware::L1, Hardware::GM, ArchVersion::V3510> {
+    using type = DataCopyGM2L13510;
 };
 
 template <>
-struct DataCopyTensor2Tensor<Hardware::BIAS, Hardware::L1, ArchVersion::V3510, FOUR_DIM_DATA> {
-    using type = DataCopyFourDim3510L12BT;
+struct DataCopyTensor2Tensor<Hardware::BIAS, Hardware::L1, ArchVersion::V3510> {
+    using type = DataCopyL12BT3510;
 };
 
 template <>
-struct DataCopyTensor2Tensor<Hardware::FIXBUF, Hardware::L1, ArchVersion::V3510, FOUR_DIM_DATA> {
-    using type = DataCopyFourDim3510L12FB;
+struct DataCopyTensor2Tensor<Hardware::FIXBUF, Hardware::L1, ArchVersion::V3510> {
+    using type = DataCopyL12FB3510;
 };
 } // namespace Te
 } // namespace AscendC

@@ -85,7 +85,7 @@ private:
     }
 };
 
-class MmadWithBiasFourDim2201 : public MmadWithBiasCore2201, public MmadWithBiasGenParams2201
+class MmadWithBias2201 : public MmadWithBiasCore2201, public MmadWithBiasGenParams2201
 {
 public:
     template <const MmadTrait& trait, typename ...Args>

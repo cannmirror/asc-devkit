@@ -25,14 +25,14 @@ namespace Te {
 class MmadInstr {
 public:
     template <typename T, typename U, typename S, typename... Params>
-    __aicore__ inline void Mmad(const T& dst, const U& fm, const S& filter, const Params& ...params)
+    __aicore__ inline static void Mmad(const T& dst, const U& fm, const S& filter, const Params& ...params)
     {
         // MTE2
         MmadImpl(dst.Data().Get(), fm.Data().Get(), filter.Data().Get(), params...);
     }
 private:
     template <typename T, typename U, typename S>
-    __aicore__ inline void MmadImpl(__cc__ T* dst, __ca__ U* fm, __cb__ S* filter, uint16_t m, uint16_t k, uint16_t n,
+    __aicore__ inline static void MmadImpl(__cc__ T* dst, __ca__ U* fm, __cb__ S* filter, uint16_t m, uint16_t k, uint16_t n,
         uint8_t unitFlag, bool disableGemv, bool cmatrixSource, bool cmatrixInitVal) {
         if ASCEND_IS_AIV {
             return;
@@ -46,7 +46,7 @@ private:
 class MmadBiasInstr {
 public:
     template <typename T, typename U, typename S, typename V, typename... Params>
-    __aicore__ inline void Mmad(const T& dst, const U& fm, const S& filter, const V& bias, const Params& ...params)
+    __aicore__ inline static void Mmad(const T& dst, const U& fm, const S& filter, const V& bias, const Params& ...params)
     {
         // MTE2
         MmadImpl(dst.Data().Get(), fm.Data().Get(), filter.Data().Get(), 
@@ -54,7 +54,7 @@ public:
     }
 private:
     template <typename T, typename U, typename S>
-    __aicore__ inline void MmadImpl(__cc__ T* dst, __ca__ U* fm, __cb__ S* filter, uint64_t bias, uint16_t m, uint16_t k, uint16_t n,
+    __aicore__ inline static void MmadImpl(__cc__ T* dst, __ca__ U* fm, __cb__ S* filter, uint64_t bias, uint16_t m, uint16_t k, uint16_t n,
         int8_t unitFlag, bool disableGemv, bool cmatrixSource, bool cmatrixInitVal) {
         if ASCEND_IS_AIV {
             return;
@@ -70,14 +70,14 @@ private:
 class MmadMxInstr {
 public:
     template <typename T, typename U, typename S, typename... Params>
-    __aicore__ inline void Mmad(const T& dst, const U& fm, const S& filter, const Params& ...params)
+    __aicore__ inline static void Mmad(const T& dst, const U& fm, const S& filter, const Params& ...params)
     {
         // MTE2
         MmadImpl(dst.Data().Get(), fm.Data().Get(), filter.Data().Get(), params...);
     }
 private:
     template <typename T, typename U, typename S>
-    __aicore__ inline void MmadImpl(__cc__ T* dst, __ca__ U* fm, __cb__ S* filter, uint16_t m, uint16_t k, uint16_t n,
+    __aicore__ inline static void MmadImpl(__cc__ T* dst, __ca__ U* fm, __cb__ S* filter, uint16_t m, uint16_t k, uint16_t n,
         uint8_t unitFlag, bool disableGemv, bool cmatrixSource, bool cmatrixInitVal) {
         if ASCEND_IS_AIV {
             return;
@@ -91,7 +91,7 @@ private:
 class MmadMxBiasInstr {
 public:
     template <typename T, typename U, typename S, typename V, typename... Params>
-    __aicore__ inline void Mmad(const T& dst, const U& fm, const S& filter, const V& bias, const Params& ...params)
+    __aicore__ inline static void Mmad(const T& dst, const U& fm, const S& filter, const V& bias, const Params& ...params)
     {
         // MTE2
         MmadImpl(dst.Data().Get(), fm.Data().Get(), filter.Data().Get(), 
@@ -99,7 +99,7 @@ public:
     }
 private:
     template <typename T, typename U, typename S>
-    __aicore__ inline void MmadImpl(__cc__ T* dst, __ca__ U* fm, __cb__ S* filter, uint64_t bias, uint16_t m, uint16_t k, uint16_t n,
+    __aicore__ inline static void MmadImpl(__cc__ T* dst, __ca__ U* fm, __cb__ S* filter, uint64_t bias, uint16_t m, uint16_t k, uint16_t n,
         int8_t unitFlag, bool disableGemv, bool cmatrixSource, bool cmatrixInitVal) {
         if ASCEND_IS_AIV {
             return;

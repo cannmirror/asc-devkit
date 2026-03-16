@@ -38,12 +38,11 @@ template <const MmadTrait& trait = DEFAULT_MMAD_TRAIT, typename T, typename U, t
 __aicore__ inline typename Std::enable_if<VerifyingMmadTemplate<T, U, S>, void>::type 
 Mmad(const T& dst, const U& fm, const S& filter, const Params& params)
 {
-   static_assert(Std::is_one_of_v<Params, MmadParams>, "The type of params is not supported;");
    constexpr Hardware dstPos = GetHardPos<T>();
    constexpr Hardware fmPos = GetHardPos<U>();
    constexpr Hardware filterPos = GetHardPos<S>();
    using Tensor2Tensor = typename MmadTensor2Tensor<dstPos, fmPos, filterPos, Hardware::MAX, 
-      CURRENT_ARCH_VERSION, FOUR_DIM_DATA>::type;
+      CURRENT_ARCH_VERSION>::type;
    Tensor2Tensor{}.template Run<trait>(dst, fm, filter, params);
 }
 
@@ -51,13 +50,12 @@ template <const MmadTrait& trait = DEFAULT_MMAD_TRAIT, typename T, typename U, t
 __aicore__ inline typename Std::enable_if<VerifyingMmadWithBiasTemplate<T, U, S, V>, void>::type 
 Mmad(const T& dst, const U& fm, const S& filter, const V& bias, const Params& params)
 {
-   static_assert(Std::is_one_of_v<Params, MmadParams>, "The type of params is not supported;");
    constexpr Hardware dstPos = GetHardPos<T>();
    constexpr Hardware fmPos = GetHardPos<U>();
    constexpr Hardware filterPos = GetHardPos<S>();
    constexpr Hardware biasPos = GetHardPos<V>();
    using Tensor2Tensor = typename MmadTensor2Tensor<dstPos, fmPos, filterPos, biasPos, 
-      CURRENT_ARCH_VERSION, FOUR_DIM_DATA>::type;
+      CURRENT_ARCH_VERSION>::type;
    Tensor2Tensor{}.template Run<trait>(dst, fm, filter, bias, params);
 }
 } // namespace Te

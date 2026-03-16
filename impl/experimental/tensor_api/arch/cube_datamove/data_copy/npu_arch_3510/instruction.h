@@ -32,7 +32,7 @@ __aicore__ inline void SetMTE2NzPara(const T& para) {
 class CopyGmToCbufAlignV2Base {
 public:
     template <typename T, typename U, typename... Params>
-    __aicore__ inline void DataCopy(const T& dst, const U& src, const Params& ...params) {
+    __aicore__ inline static void DataCopy(const T& dst, const U& src, const Params& ...params) {
         using srcType = typename U::elementType;
         if constexpr(sizeof(srcType) == sizeof(int8_t)) {
             CopyGmToCbufAlignV2((__cbuf__ uint8_t*)(dst.Data().Get()), (__gm__ uint8_t*)(src.Data().Get()), params...);
@@ -45,7 +45,7 @@ public:
 
 private:
     template <typename T>
-    __aicore__ inline void CopyGmToCbufAlignV2(__cbuf__ T* dst, __gm__ T* src, uint32_t blockCount, uint32_t blockLen, 
+    __aicore__ inline static void CopyGmToCbufAlignV2(__cbuf__ T* dst, __gm__ T* src, uint32_t blockCount, uint32_t blockLen, 
         uint8_t leftPaddingCnt, uint8_t rightPaddingCnt, uint8_t cacheMode, int64_t srcStride, int64_t dstStride) {
         if ASCEND_IS_AIV {
             return;
@@ -61,7 +61,7 @@ private:
 class CopyGmToCbufMultiNd2nzInstr {
 public:
     template <typename T, typename U, typename... Params>
-    __aicore__ inline void DataCopy(const T& dst, const U& src, const Params& ...params) {
+    __aicore__ inline static void DataCopy(const T& dst, const U& src, const Params& ...params) {
         using srcType = typename U::elementType;
         if constexpr(sizeof(srcType) == sizeof(int8_t)) {
             CopyGmToCbufMultiNd2nz((__cbuf__ uint8_t*)(dst.Data().Get()), (__gm__ uint8_t*)(src.Data().Get()), params...);
@@ -74,7 +74,7 @@ public:
 
 private:
     template <typename T>
-    __aicore__ inline void CopyGmToCbufMultiNd2nz(__cbuf__ T* dst, __gm__ T* src, uint16_t ndNum, uint16_t loop2DstStride,
+    __aicore__ inline static void CopyGmToCbufMultiNd2nz(__cbuf__ T* dst, __gm__ T* src, uint16_t ndNum, uint16_t loop2DstStride,
         uint16_t loop3DstStride, uint16_t loop4DstStride, uint64_t loop1SrcStride, uint8_t cacheMode, uint16_t nValue,
         uint32_t dValue, uint64_t loop4SrcStride, bool enableSmallC0)
     {
@@ -95,7 +95,7 @@ private:
 class CopyGmToCbufMultiDn2nzInstr {
 public:
     template <typename T, typename U, typename... Params>
-    __aicore__ inline void DataCopy(const T& dst, const U& src, const Params& ...params) {
+    __aicore__ inline static void DataCopy(const T& dst, const U& src, const Params& ...params) {
         using srcType = typename U::elementType;
         if constexpr(sizeof(srcType) == sizeof(int8_t)) {
             CopyGmToCbufMultiDn2nz((__cbuf__ uint8_t*)(dst.Data().Get()), (__gm__ uint8_t*)(src.Data().Get()), params...);
@@ -108,7 +108,7 @@ public:
 
 private:
     template <typename T>
-    __aicore__ inline void CopyGmToCbufMultiDn2nz(__cbuf__ T* dst, __gm__ T* src, uint16_t dnNum, uint16_t loop2DstStride, 
+    __aicore__ inline static void CopyGmToCbufMultiDn2nz(__cbuf__ T* dst, __gm__ T* src, uint16_t dnNum, uint16_t loop2DstStride, 
         uint16_t loop3DstStride, uint16_t loop4DstStride, uint64_t loop1SrcStride, uint8_t cacheMode, uint16_t nValue, 
         uint32_t dValue, uint64_t loop4SrcStride, bool enableSmallC0)
     {
@@ -130,13 +130,13 @@ private:
 class CopyL12BTInstr {
 public:
     template <typename T, typename U, typename... Params>
-    __aicore__ inline void DataCopy(const T& dst, const U& src, const Params& ...params) {
+    __aicore__ inline static void DataCopy(const T& dst, const U& src, const Params& ...params) {
         CopyL12BT(reinterpret_cast<uint64_t>(dst.Data().Get()), src.Data().Get(), params...);
     }
 
 private:
     template <typename T>
-    __aicore__ inline void CopyL12BT(uint64_t dst, __cbuf__ T* src, bool convControl, uint16_t blockCount, uint16_t blockLen,
+    __aicore__ inline static void CopyL12BT(uint64_t dst, __cbuf__ T* src, bool convControl, uint16_t blockCount, uint16_t blockLen,
         uint16_t srcStride, uint16_t dstStride)
     {
         if ASCEND_IS_AIV {
@@ -153,13 +153,13 @@ class CopyL12FBInstr {
 public:
 
     template <typename T, typename U, typename... Params>
-    __aicore__ inline void DataCopy(const T& dst, const U& src, const Params& ...params) {
+    __aicore__ inline static void DataCopy(const T& dst, const U& src, const Params& ...params) {
         CopyL12FB(reinterpret_cast<uint64_t>(dst.Data().Get()), src.Data().Get(), params...);
     }
 
 private:
     template <typename T>
-    __aicore__ inline void CopyL12FB(uint64_t dst, __cbuf__ T* src, uint16_t blockCount, uint16_t blockLen,
+    __aicore__ inline static void CopyL12FB(uint64_t dst, __cbuf__ T* src, uint16_t blockCount, uint16_t blockLen,
         uint16_t srcStride, uint16_t dstStride)
     {
         if ASCEND_IS_AIV {

@@ -277,7 +277,7 @@ private:
     }
 };
 
-class DataCopyFourDim2201GM2L1 : public CopyGmToCbufMultiND2NZBase, public CopyGmToCbufMultiDN2ZNBase,
+class DataCopyGM2L12201 : public CopyGmToCbufMultiND2NZBase, public CopyGmToCbufMultiDN2ZNBase,
     public CopyGmToCbufNZBase, public CopyGmToCbufNDBase {
 public:
     template <const DataCopyTrait& trait, typename T, typename U>

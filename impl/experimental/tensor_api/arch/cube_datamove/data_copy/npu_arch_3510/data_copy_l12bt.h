@@ -20,16 +20,16 @@
 namespace AscendC {
 namespace Te {
 
-class DataCopyFourDim3510L12BT {
+class DataCopyL12BT3510 {
 public:
     template <const DataCopyTrait& trait, typename T, typename U>
-    __aicore__ inline void Run(const T& dst, const U& src) {
+    __aicore__ inline static void Run(const T& dst, const U& src) {
         DataCopyImpl<trait, T, U>(dst, src);
     }
 
 private:
     template <const DataCopyTrait& trait, typename T, typename U>
-    __aicore__ inline constexpr void CheckTemplate()
+    __aicore__ inline static constexpr void CheckTemplate()
     {
         CheckDataTypeFor3510::CheckL12BtDataType<T, U>();
         CheckFormat::CheckNDTemplate<T>();
@@ -37,7 +37,7 @@ private:
     }
 
     template <const DataCopyTrait& trait, typename T, typename U>
-    __aicore__ inline auto DataCopyImpl(const T& dst, const U& src)
+    __aicore__ inline static auto DataCopyImpl(const T& dst, const U& src)
     {
         CheckTemplate<trait, T, U>();
 

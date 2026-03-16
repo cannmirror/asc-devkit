@@ -31,44 +31,44 @@ public:
     __aicore__ inline void Run(const Args&... args) {}
 };
 
-template<Hardware dstPos, Hardware fmPos, Hardware filterPos, Hardware biasPos, uint32_t Version, size_t dimension>
+template<Hardware dstPos, Hardware fmPos, Hardware filterPos, Hardware biasPos, uint32_t Version>
 struct MmadTensor2Tensor
 {
     using type = MmadIgnore;
 };
 
 template<>
-struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::MAX, ArchVersion::V2201, FOUR_DIM_DATA>
+struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::MAX, ArchVersion::V2201>
 {
-    using type = MmadFourDim2201;
+    using type = Mmad2201;
 };
 
 template<>
-struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::L0C, ArchVersion::V2201, FOUR_DIM_DATA>
+struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::L0C, ArchVersion::V2201>
 {
-    using type = MmadWithBiasFourDim2201;
+    using type = MmadWithBias2201;
 };
 
 template<>
-struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::BIAS, ArchVersion::V2201, FOUR_DIM_DATA>
+struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::BIAS, ArchVersion::V2201>
 {
-    using type = MmadWithBiasFourDim2201;
+    using type = MmadWithBias2201;
 };
 
 template<>
-struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::MAX, ArchVersion::V3510, FOUR_DIM_DATA>
+struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::MAX, ArchVersion::V3510>
 {
     using type = Mmad3510;
 };
 
 template<>
-struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::L0C, ArchVersion::V3510, FOUR_DIM_DATA>
+struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::L0C, ArchVersion::V3510>
 {
     using type = MmadWithBias3510;
 };
 
 template<>
-struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::BIAS, ArchVersion::V3510, FOUR_DIM_DATA>
+struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::BIAS, ArchVersion::V3510>
 {
     using type = MmadWithBias3510;
 };

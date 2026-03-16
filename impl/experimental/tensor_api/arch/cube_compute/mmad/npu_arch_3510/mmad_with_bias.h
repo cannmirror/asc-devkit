@@ -15,33 +15,78 @@
 #ifndef IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_3510_MMAD_WITH_BIAS_H
 #define IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_3510_MMAD_WITH_BIAS_H
 
-#include "impl/experimental/tensor_api/arch/cube_compute/mmad/npu_arch_3510/mmad/bias.h"
-#include "impl/experimental/tensor_api/arch/cube_compute/mmad/npu_arch_3510/mmad/mx_bias.h"
+#include "impl/experimental/tensor_api/arch/cube_compute/mmad/npu_arch_3510/instruction.h"
 
 namespace AscendC {
 namespace Te {
 
-class MmadWithBias3510{
+class MmadWithBias {
+public:
+    template <const MmadTrait& trait, typename T, typename U, typename S, typename V, typename Params>    
+    __aicore__ inline static void Run(const T& dst, const U& fm, const S& filter, const V& bias, const Params& params) 
+    {
+        MmadImpl<trait, T, U, S, V>(dst, fm, filter, bias, params);
+    }
+
+private:
+    template <const MmadTrait& trait, typename T, typename U, typename S, typename V>
+    __aicore__ inline static constexpr void CheckTemplateForNormal()
+    {
+        CheckFormat::CheckL0CNZTemplate<T>();
+        CheckFormat::CheckNZTemplate<U>();
+        CheckFormat::CheckZNTemplate<S>();
+        CheckFormat::CheckNDTemplate<V>();
+        CheckDataTypeFor3510::CheckMmadBiasDataType<T, U, S, V>();
+    }
+
+    template <const MmadTrait& trait, typename T, typename U, typename S, typename V>
+    __aicore__ inline static constexpr void CheckTemplateForMx()
+    {
+        CheckFormat::CheckL0CNZTemplate<T>();
+        CheckFormat::CheckNZTemplate<U>();
+        CheckFormat::CheckZNTemplate<S>();
+        CheckFormat::CheckNDTemplate<V>();        
+        CheckDataTypeFor3510::CheckMxMmadBiasDataType<T, U, S, V>();
+    }
+
+    template <const MmadTrait& trait, typename T, typename U, typename S, typename V, typename Params>
+    __aicore__ inline static void MmadImpl(const T& dst, const U& fm, const S& filter, const V& bias, const Params& params)
+    {
+        if constexpr (trait.mmadType == MmadType::NORMAL) {
+            CheckTemplateForNormal<trait, T, U, S, V>();
+        } else if constexpr (trait.mmadType == MmadType::MX) {
+            CheckTemplateForMx<trait, T, U, S, V>();
+        }
+
+        constexpr auto biasPos = GetHardPos<V>();
+        bool cmatrixSource = false;
+        if (biasPos == Hardware::BIAS) {
+            cmatrixSource = true;
+        }
+
+        if constexpr (trait.mmadType == MmadType::NORMAL) {
+            MmadBiasInstr::Mmad(dst, fm, filter, bias, params.m, params.k, params.n, params.unitFlag, trait.disableGemv, cmatrixSource, 
+                                false);
+        } else if constexpr (trait.mmadType == MmadType::MX) {
+            MmadMxBiasInstr::Mmad(dst, fm, filter, bias, params.m, params.k, params.n, params.unitFlag, trait.disableGemv, cmatrixSource, 
+                                 false);
+        }
+
+    }
+};
+
+class MmadWithBias3510 {
 public:
     template <const MmadTrait& trait, typename T, typename U, typename S, typename V, typename Params>
     __aicore__ inline void Run(const T& dst, const U& fm, const S& filter, const V& bias, const Params& params) 
-    {   
+    {
         Execute<trait, T, U, S, V, Params>(dst, fm, filter, bias, params);
     }
 
 private:
     template <const MmadTrait& trait, typename T, typename U, typename S, typename V, typename Params>
     __aicore__ inline void Execute(const T& dst, const U& fm, const S& filter, const V& bias, const Params& params) {
-
-        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            if constexpr (trait.mmadType == MmadTrait::MmadType::NORMAL) {
-                MmadBias biasStrategy;
-                biasStrategy.Run<trait, T, U, S, V>(dst, fm, filter, bias, params);
-            } else if constexpr (trait.mmadType == MmadTrait::MmadType::MX) {
-                MmadMxBias mxBiasStrategy;
-                mxBiasStrategy.Run<trait, T, U, S, V>(dst, fm, filter, bias, params);
-            }
-        }
+        MmadWithBias::Run<trait, T, U, S, V>(dst, fm, filter, bias, params);
     }
 };
 

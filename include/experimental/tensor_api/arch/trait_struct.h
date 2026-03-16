@@ -20,23 +20,19 @@
 namespace AscendC {
 namespace Te {
 
+enum class MmadType { NORMAL = 0, MX = 1 };
+
 struct MmadTrait {
     int32_t fmOffset = 0;
     bool kDirectionAlign = false;
     bool cmatrixSource = false;
     bool disableGemv = false;
-
-    enum class MmadType {
-        NORMAL = 0,
-        MX = 1,
-    };
-
     MmadType mmadType = MmadType::NORMAL; 
 
     __aicore__ constexpr MmadTrait () {};
 
     __aicore__ constexpr MmadTrait (int32_t fmOffsetIn, bool kDirectionAlignIn, bool cmatrixSourceIn,
-            bool disableGemvIn, MmadType mmadTypeIn = MmadType::NORMAL) 
+            bool disableGemvIn, MmadType mmadTypeIn) 
         {
             fmOffset = fmOffsetIn;
             kDirectionAlign = kDirectionAlignIn;
@@ -49,9 +45,9 @@ struct MmadTrait {
 struct MmadParams {
     uint8_t unitFlag;
     bool cmatrixInitVal;
-    uint16_t m;
-    uint16_t n;
-    uint16_t k;
+    uint16_t m = 0;
+    uint16_t n = 0;
+    uint16_t k = 0;
 
     __aicore__ MmadParams() {};
 

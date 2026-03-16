@@ -29,7 +29,7 @@ struct MmadTraits<MadOp, MadTraits, MadOpWith, MadTraitsWith>
 
     template <const TraitType& trait = defaultTrait, typename... Args>
     __aicore__ inline void MmadUnpack(const Args& ...args) const {
-    MadOp::template Mad<TraitType, trait, Args...>(args...);
+        MadOp::template Mad<TraitType, trait, Args...>(args...);
     }
 
     template <typename... Args>

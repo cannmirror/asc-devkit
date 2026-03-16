@@ -77,7 +77,7 @@ private:
     }
 };
 
-class MmadFourDim2201 : public MmadCore2201, public MmadGenParams2201
+class Mmad2201 : public MmadCore2201, public MmadGenParams2201
 {
 public:
     template <const MmadTrait& trait, typename ...Args>

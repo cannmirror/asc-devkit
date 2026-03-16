@@ -23,13 +23,13 @@ namespace Te {
 class CopyGmToCbufMultiNd2znBase {
 public:
     template <const DataCopyTrait& trait, typename T, typename U>
-    __aicore__ inline void Run(const T& dst, const U& src) {
+    __aicore__ inline static void Run(const T& dst, const U& src) {
         DataCopyImpl<trait>(dst, src);
     }
 
 private:
     template <const DataCopyTrait& trait, typename T, typename U>
-    __aicore__ inline constexpr void CheckTemplate()
+    __aicore__ inline static constexpr void CheckTemplate()
     {
         CheckFormat::CheckNDTemplate<U>();
         CheckFormat::CheckZNTemplate<T>();
@@ -37,7 +37,7 @@ private:
     }
 
     template <const DataCopyTrait& trait, typename T, typename U>
-    __aicore__ inline void DataCopyImpl(const T& dst, const U& src)
+    __aicore__ inline static void DataCopyImpl(const T& dst, const U& src)
     {
         CheckTemplate<trait, T, U>();
 
@@ -66,8 +66,8 @@ private:
         uint16_t loop4DstStride = static_cast<uint16_t>(dstNzMatrixStride * sizeof(type) / C0_SIZE);
 
         uint8_t cacheMode = GetCacheModeFromTensor(src.Data().Get());
-        CopyGmToCbufMultiNd2nzInstr copyGmToCbufMultiNd2nz;
-        copyGmToCbufMultiNd2nz.DataCopy(dst, src, ndNum, loop2DstStride, loop3DstStride, loop4DstStride,
+
+        CopyGmToCbufMultiNd2nzInstr::DataCopy(dst, src, ndNum, loop2DstStride, loop3DstStride, loop4DstStride,
                                          loop1SrcStride, cacheMode, nValue, dValue, loop4SrcStride, false);
     }
 };

@@ -23,13 +23,13 @@ namespace Te {
 class CopyGmToCbufAlignV2NDBase {
 public:
     template <const DataCopyTrait& trait, typename T, typename U>
-    __aicore__ inline void Run(const T& dst, const U& src) {
+    __aicore__ inline static void Run(const T& dst, const U& src) {
         DataCopyImpl<trait, T, U>(dst, src);
     }
 
 private:
     template <const DataCopyTrait& trait, typename T, typename U>
-    __aicore__ inline constexpr void CheckTemplate()
+    __aicore__ inline static constexpr void CheckTemplate()
     {
         CheckFormat::CheckNDTemplate<T>();
         CheckFormat::CheckNDTemplate<U>();
@@ -37,7 +37,7 @@ private:
     }
 
     template <const DataCopyTrait& trait, typename T, typename U>
-    __aicore__ inline void DataCopyImpl(const T& dst, const U& src)
+    __aicore__ inline static void DataCopyImpl(const T& dst, const U& src)
     {
         CheckTemplate<trait, T, U>();
 
@@ -60,8 +60,7 @@ private:
         auto srcStride = srcStrideRows * sizeof(type);
         auto dstStride = dstStrideRows * sizeof(type);
 
-        CopyGmToCbufAlignV2Base copyGmToCbufAlignV2;
-        copyGmToCbufAlignV2.DataCopy(dst, src, blockCount, blockLen, leftPaddingCnt, rightPaddingCnt, cacheMode, srcStride, dstStride);
+        CopyGmToCbufAlignV2Base::DataCopy(dst, src, blockCount, blockLen, leftPaddingCnt, rightPaddingCnt, cacheMode, srcStride, dstStride);
     }
 };
 

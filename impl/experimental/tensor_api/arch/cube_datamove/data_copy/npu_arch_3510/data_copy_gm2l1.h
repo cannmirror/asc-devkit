@@ -25,7 +25,7 @@
 namespace AscendC {
 namespace Te {
 
-class DataCopyFourDim3510GM2L1 {
+class DataCopyGM2L13510 {
 public:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline void Run(const T& dst, const U& src) {
@@ -36,23 +36,17 @@ private:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline void Execute(const T& dst, const U& src) {
         if constexpr (IsNDFormat<U>::value && IsNDFormat<T>::value) {
-            CopyGmToCbufAlignV2NDBase nd2ndStrategy;
-            nd2ndStrategy.Run<trait, T, U>(dst, src);
+            CopyGmToCbufAlignV2NDBase::Run<trait, T, U>(dst, src);
         } else if constexpr (IsNDFormat<U>::value && IsNZFormat<T>::value) {
-            CopyGmToCbufMultiNd2nzBase nd2nzStrategy;
-            nd2nzStrategy.Run<trait, T, U>(dst, src);
+            CopyGmToCbufMultiNd2nzBase::Run<trait, T, U>(dst, src);
         } else if constexpr (IsNDFormat<U>::value && IsZNFormat<T>::value) {
-            CopyGmToCbufMultiNd2znBase nd2znStrategy;
-            nd2znStrategy.Run<trait, T, U>(dst, src);
+            CopyGmToCbufMultiNd2znBase::Run<trait, T, U>(dst, src);
         } else if constexpr (IsDNFormat<U>::value && IsNZFormat<T>::value) {
-            CopyGmToCbufMultiDn2nzBase dn2nzStrategy;
-            dn2nzStrategy.Run<trait, T, U>(dst, src);
+            CopyGmToCbufMultiDn2nzBase::Run<trait, T, U>(dst, src);
         } else if constexpr (IsDNFormat<U>::value && IsZNFormat<T>::value) {
-            CopyGmToCbufMultiDn2ZnBase dn2znStrategy;
-            dn2znStrategy.Run<trait, T, U>(dst, src);
+            CopyGmToCbufMultiDn2ZnBase::Run<trait, T, U>(dst, src);
         } else if constexpr (IsNZFormat<U>::value && IsNZFormat<T>::value) {
-            CopyGmToCbufAlignV2NZBase nz2nzStrategy;
-            nz2nzStrategy.Run<trait, T, U>(dst, src);
+            CopyGmToCbufAlignV2NZBase::Run<trait, T, U>(dst, src);
         } else {
             // assert error
             static_assert(Std::is_same_v<T, U>, "The data format is not supported.");
