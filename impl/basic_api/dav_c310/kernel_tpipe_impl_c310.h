@@ -33,6 +33,10 @@
 #include "kernel_tensor_base.h"
 #include "kernel_tensor_impl.h"
 #include "kernel_tpipe.h"
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TPIPE_H__
+#endif
 #include "kernel_tpipe_base.h"
 #include "kernel_utils.h"
 #include "kernel_utils_base.h"

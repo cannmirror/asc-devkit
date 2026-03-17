@@ -23,6 +23,10 @@
 #include "kernel_macros.h"
 #include "kfc_comm.h"
 #include "kernel_tpipe.h"
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TPIPE_H__
+#endif
 
 namespace AscendC {
 class KfcCommClient {
