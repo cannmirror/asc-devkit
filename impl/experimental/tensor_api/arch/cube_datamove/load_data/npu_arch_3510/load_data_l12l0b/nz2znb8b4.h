@@ -51,15 +51,11 @@ private:
         constexpr const int SHIFT_M_STEP_B4 = 2;
         constexpr const int M_STEP_MIN_VAL_B4 = 4;
         uint16_t nLoop = mStep >> SHIFT_M_STEP_B4;
-        uint16_t dstAddrStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) *
-                GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout) * C0_SIZE;
         mStep = M_STEP_MIN_VAL_B4;
         LoadCbufToCbS4Base loadCbufToCbS4;
-        auto iter = dst.Data();
         for (uint16_t idx = 0; idx < nLoop; ++idx) {
-            auto sliceDst = MakeTensor(iter, dst.Layout());
+            auto sliceDst = dst(MakeCoord(MakeCoord(0, idx), MakeCoord(0, 0)));
             loadCbufToCbS4.template LoadData<trait>(sliceDst, src, mStartPosition, kStartPosition, mStep, kStep / KHALF, srcStride, dstStride);
-            iter = iter + dstAddrStride;
             mStartPosition += M_STEP_MIN_VAL_B4;
         }
     }
@@ -73,15 +69,11 @@ private:
         constexpr const int SHIFT_M_STEP_B8 = 1;
         constexpr const int M_STEP_MIN_VAL_B8 = 2;
         uint16_t nLoop = mStep >> SHIFT_M_STEP_B8;
-        uint16_t dstAddrStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) *
-                GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout) * C0_SIZE;
         mStep = M_STEP_MIN_VAL_B8;
         LoadCbufToCbBase loadCbufToCb;
-        auto iter = dst.Data();
         for (uint16_t idx = 0; idx < nLoop; ++idx) {
-            auto sliceDst = MakeTensor(iter, dst.Layout());
+            auto sliceDst = dst(MakeCoord(MakeCoord(0, idx), MakeCoord(0, 0)));
             loadCbufToCb.template LoadData<trait>(sliceDst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
-            iter = iter + dstAddrStride;
             mStartPosition += M_STEP_MIN_VAL_B8;
         }
     }
@@ -102,7 +94,7 @@ private:
         auto mStep = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) *
                 GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout) / FRACTAL_FIXED;
         auto kStep = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout) *
-                GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout) * sizeof(DstType) / C0_SIZE;
+                GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout) / C0_SIZE;
         // Nz -> Zn
         constexpr bool isFp4Type = Std::is_one_of_v<
                 Std::tuple<typename T::elementType, typename U::elementType>,
