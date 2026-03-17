@@ -382,10 +382,6 @@ __aicore__ inline void GatherWrapper(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint3
         main = vlTile2;
         tail = size[2] - sizeI[2] * main;
     }
-    constexpr uint32_t U16_MAX = 65536;
-    ASCENDC_ASSERT((sizeI[2] <= U16_MAX), { KERNEL_LOG(KERNEL_ERROR, "shape should less than uint16 max"); });
-    ASCENDC_ASSERT((sizeI[1] <= U16_MAX), { KERNEL_LOG(KERNEL_ERROR, "shape should less than uint16 max"); });
-    ASCENDC_ASSERT((sizeI[0] <= U16_MAX), { KERNEL_LOG(KERNEL_ERROR, "shape should less than uint16 max"); });
     LocalTensor<T> indexUb;
     PopStackBuffer<T, TPosition::LCM>(indexUb);
     if constexpr (sizeof(T) == sizeof(uint32_t)) {
@@ -469,11 +465,6 @@ __aicore__ inline void GatherWrapperForFourDim(__ubuf__ T *dstUb, __ubuf__ T *sr
         main = vlTile3;
         tail = size[3] - sizeI[3] * main;
     }
-    constexpr uint32_t U16_MAX = 65536;
-    ASCENDC_ASSERT((sizeI[3] <= U16_MAX), { KERNEL_LOG(KERNEL_ERROR, "shape should less than uint16 max"); });
-    ASCENDC_ASSERT((sizeI[2] <= U16_MAX), { KERNEL_LOG(KERNEL_ERROR, "shape should less than uint16 max"); });
-    ASCENDC_ASSERT((sizeI[1] <= U16_MAX), { KERNEL_LOG(KERNEL_ERROR, "shape should less than uint16 max"); });
-    ASCENDC_ASSERT((sizeI[0] <= U16_MAX), { KERNEL_LOG(KERNEL_ERROR, "shape should less than uint16 max"); });
     LocalTensor<T> indexUb;
     PopStackBuffer<T, TPosition::LCM>(indexUb);
     if constexpr (sizeof(T) == sizeof(uint32_t)) {
