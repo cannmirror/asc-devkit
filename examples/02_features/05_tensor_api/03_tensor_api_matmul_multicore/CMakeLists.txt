@@ -18,6 +18,10 @@ add_executable(demo
     tensor_api_matmul_multicore.asc
 )
 
+include_directories(
+    /usr/local/Ascend/cann/x86_64-linux/asc/
+)
+
 target_link_libraries(demo PRIVATE
     tiling_api
     register
