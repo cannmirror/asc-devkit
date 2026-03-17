@@ -19,9 +19,8 @@
 namespace AscendC {
 namespace Std {
 template <typename T, typename U>
-ASCENDC_HOST_AICORE inline T max(const T src0, const U src1)
+ASCENDC_HOST_AICORE inline decltype(auto) max(const T src0, const U src1)
 {
-    static_assert(Std::is_same<T, U>::value, "Only support compare with same type!");
     return (src0 > src1) ? src0 : src1;
 }
 

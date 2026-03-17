@@ -53,14 +53,6 @@ __aicore__ inline constexpr auto TransformApply(T0&& t0, T1&& t1, F&& f, G&& g)
     }
 }
 
-__aicore__ inline int32_t CeilDivision(int32_t num1, int32_t num2)
-{
-    if (num2 == 0) {
-        return 0;
-    }
-    return (num1 + num2 - 1) / num2;
-}
-
 struct MultipliesUnaryLeftFold {
     template <typename... T>
     __aicore__ inline constexpr auto operator()(T&&... t) const {

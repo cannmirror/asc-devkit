@@ -15,6 +15,7 @@
 #ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_2201_DATA_COPY_L12FB_H
 #define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_2201_DATA_COPY_L12FB_H
 
+#include "impl/utils/std/cmath/ceil_division.h"
 #include "impl/experimental/tensor_api/tensor/pointer_impl.h"
 #include "impl/experimental/tensor_api/tensor/local_tensor_impl.h"
 #include "impl/experimental/tensor_api/arch/utils/arch_utils.h"
@@ -56,9 +57,9 @@ private:
         using dstType = typename T::elementType;
 
         uint16_t blockCount = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
-        uint16_t blockLen = CeilDivision(dstCol * sizeof(srcType), C2PIPE2GM_UNIT);
-        uint16_t srcStride = CeilDivision(srcRow * sizeof(srcType), C0_SIZE);
-        uint16_t dstStride = CeilDivision(dstRow * sizeof(dstType), C2PIPE2GM_UNIT);
+        uint16_t blockLen = Std::ceil_division(dstCol * sizeof(srcType), C2PIPE2GM_UNIT);
+        uint16_t srcStride = Std::ceil_division(srcRow * sizeof(srcType), C0_SIZE);
+        uint16_t dstStride = Std::ceil_division(dstRow * sizeof(dstType), C2PIPE2GM_UNIT);
 
         return Std::make_tuple(blockCount, blockLen, srcStride, dstStride);
     }

@@ -15,6 +15,7 @@
 #ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_2201_FIXPIPE_BASE_H
 #define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_2201_FIXPIPE_BASE_H
 
+#include "impl/utils/std/cmath/ceil_division.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/fixpipe_utils.h"
 #include "impl/experimental/tensor_api/tensor/pointer_impl.h"
 #include "impl/experimental/tensor_api/tensor/local_tensor_impl.h"
@@ -128,9 +129,9 @@ private:
         auto layout = src.Layout();
         uint16_t colLength = GetEleFromLayout<decltype(layout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(layout);
         uint16_t rowStride = GetEleFromLayout<decltype(layout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(layout);
-        uint16_t blockCount = CeilDivision(calNSize, colLength);
-        uint16_t blockLen = CeilDivision(colLength * sizeof(srcType), fbufBurstLenUnit);
-        uint16_t srcStride = CeilDivision(rowStride * sizeof(srcType), C0_SIZE);
+        uint16_t blockCount = Std::ceil_division(calNSize, colLength);
+        uint16_t blockLen = Std::ceil_division(colLength * sizeof(srcType), fbufBurstLenUnit);
+        uint16_t srcStride = Std::ceil_division(rowStride * sizeof(srcType), C0_SIZE);
         uint16_t dstStride = blockLen;
         uint32_t deqValueOffset = MAIN_LOOP_N_SIZE_2201 / colLength * rowStride * nIterIndex;
 

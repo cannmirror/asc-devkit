@@ -21,8 +21,8 @@
 
 namespace AscendC {
 namespace Std {
-template <typename T, typename U> ASCENDC_HOST_AICORE inline T min(const T src0, const U src1);
-template <typename T, typename U> ASCENDC_HOST_AICORE inline T max(const T src0, const U src1);
+template <typename T, typename U> ASCENDC_HOST_AICORE inline decltype(auto) min(const T src0, const U src1);
+template <typename T, typename U> ASCENDC_HOST_AICORE inline decltype(auto) max(const T src0, const U src1);
 }
 }
 
