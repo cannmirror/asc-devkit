@@ -45,7 +45,7 @@ function(npu_op_kernel_options target_name OP_TYPE)
   endif()
   execute_process(COMMAND ${ASCEND_PYTHON_EXECUTABLE} ${ASCENDC_CMAKE_SCRIPTS_PATH}/util/ascendc_gen_options.py
                           ${auto_gen_path}/${CUSTOM_COMPILE_OPTIONS} ${OP_TYPE} ${OP_COMPILE_COMPUTE_UNIT}
-                          ${OP_COMPILE_OPTIONS}
+                          "${OP_COMPILE_OPTIONS}"
                   RESULT_VARIABLE EXEC_RESULT
                   OUTPUT_VARIABLE EXEC_INFO
                   ERROR_VARIABLE  EXEC_ERROR)

@@ -95,6 +95,35 @@ def gen_compile_options(compile_options_file: str, op_type: str, \
         write_options_to_file(opc_config_file, input_param_file, op_type, compute_unit, "@")
 
 
+def parse_options(args):
+    result = []
+    current = ''
+    in_quotes = False
+    quote_char = None
+
+    for arg in args:
+        for ch in arg:
+            if ch in ['"', "'"]:
+                if in_quotes and ch == quote_char:
+                    in_quotes = False
+                    quote_char = None
+                else:
+                    in_quotes = True
+                    quote_char = ch
+            if ch == ';' and not in_quotes:
+                result.append(current)
+                current = ''
+            else:
+                current += ch
+        if not in_quotes:
+            result.append(current)
+            current = ''
+        else:
+            pass
+    if current:
+        result.append(current)
+    return result
+
 if __name__ == '__main__':
     if len(sys.argv) < 4:
         raise RuntimeError('arguments must greater than 4')
@@ -111,4 +140,7 @@ if __name__ == '__main__':
             comp_options.append(sys.argv[i + 3])
     if compute_soc != "":
         compute_soc = compute_soc[0:-1]
-    gen_compile_options(sys.argv[1], sys.argv[2], compute_soc, comp_options)
+    final_options = []
+    for opt in comp_options:
+        final_options.extend(parse_options([opt]))
+    gen_compile_options(sys.argv[1], sys.argv[2], compute_soc, final_options)
