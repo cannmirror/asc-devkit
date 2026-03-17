@@ -9,20 +9,20 @@
 */
 
 /*!
- * \file fixpipe_l0c2ub.h
+ * \file fixpipe_l0c2out.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2UB_H
-#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2UB_H
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2OUT_H
+#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2OUT_H
 
-#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_l0c2ub/nz2nz.h"
-#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_l0c2ub/nz2nd.h"
-#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_l0c2ub/nz2dn.h"
+#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_l0c2out/nz2nz.h"
+#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_l0c2out/nz2nd.h"
+#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_l0c2out/nz2dn.h"
 
 namespace AscendC {
 namespace Te {
 
-class FixpipeFourDimL0C2UB3510 {
+class FixpipeL0C2Out3510 {
 public:
     template <const FixpipeTrait& trait, typename T, typename U, typename Params>
     __aicore__ inline void Run(const T& dst, const U& src, const Params& params) {
@@ -34,18 +34,19 @@ private:
     __aicore__ inline void Execute(const T& dst, const U& src, const Params& params) {
         constexpr auto quantPre = GetFixpipeQuantPre<trait, T, U>();
         if constexpr (IsL0cNZFormat<U>::value && IsNZFormat<T>::value) {
-            Fixpipe2UbNz2NzBase3510 nz2NzStrategy;
+            Fixpipe2OutNz2NzBase3510 nz2NzStrategy;
             nz2NzStrategy.Run<trait, quantPre, T, U, Params>(dst, src, params);
         } else if constexpr (IsL0cNZFormat<U>::value && IsNDFormat<T>::value) {
-            Fixpipe2UbNz2NdBase3510 nz2NdStrategy;
+            Fixpipe2OutNz2NdBase3510 nz2NdStrategy;
             nz2NdStrategy.Run<trait, quantPre, T, U, Params>(dst, src, params);
         } else if constexpr (IsL0cNZFormat<U>::value && IsDNFormat<T>::value) {
-            Fixpipe2UbNz2DnBase3510 nz2DnStrategy;
+            Fixpipe2OutNz2DnBase3510 nz2DnStrategy;
             nz2DnStrategy.Run<trait, quantPre, T, U, Params>(dst, src, params);
         }
     }
 };
+
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2UB_H
+#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2OUT_H

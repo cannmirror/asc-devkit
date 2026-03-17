@@ -9,22 +9,21 @@
 */
 
 /*!
- * \file nz2nd.h
+ * \file nz2nz.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2UB_NZ2ND_H
-#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2UB_NZ2ND_H
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2OUT_NZ2NZ_H
+#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2OUT_NZ2NZ_H
 
 #include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/instruction.h"
 
 namespace AscendC {
 namespace Te {
 
-class Fixpipe2UbNz2NdBase3510 {
+class Fixpipe2OutNz2NzBase3510 {
 public:
     template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename Params>
     __aicore__ inline void Run(const T& dst, const U& src, const Params& params) {
-        SetRegisterImpl<trait, T, U>(dst, src);
         DataCopyImpl<trait, quantPre, T, U, Params>(dst, src, params);
     }
 
@@ -32,22 +31,15 @@ private:
     template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
-        CheckFormat::CheckNDTemplate<T>();
+        CheckFormat::CheckNZTemplate<T>();
         CheckFormat::CheckL0CNZTemplate<U>();
-        CheckDataTypeFor3510::CheckL0C2UbDataType<quantPre, T, U>();
-
+        if constexpr (GetHardPos<T>() == Hardware::GM) {
+            CheckDataTypeFor3510::CheckL0C2GmDataType<quantPre, T, U>();
+        } else {
+            CheckDataTypeFor3510::CheckL0C2UbDataType<quantPre, T, U>();
+        }
     }
 
-    template <const FixpipeTrait& trait, typename T, typename U>
-    __aicore__ inline void SetRegisterImpl(const T& dst, const U& src)
-    {
-        uint32_t ndNum = 1;
-        uint32_t srcNdStride = 0;
-        uint32_t dstNdStride = 0;
-        SetRegisterBase3510 setRegisterInst;
-        setRegisterInst.SetRegister(ndNum, dstNdStride, srcNdStride);
-    }
-    
     template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename Params>
     __aicore__ inline void DataCopyImpl(const T& dst, const U& src, const Params& params)
     {
@@ -62,23 +54,31 @@ private:
             * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout),
             GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout) *
             GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout));
-        uint32_t srcStride =
+        uint32_t srcStride = 
             GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / FRACTAL_FIXED;
-        uint32_t dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
-        uint8_t dualDstCtl = trait.dualDstCtl;
+        uint32_t dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout);
 
         bool reluEn = trait.enableRelu;
         uint8_t unitFlag = params.unitFlag;
-        bool subBlockId = false;
-        bool nz2ndEn = true;
+        bool nz2ndEn = false;
         bool nz2dnEn = false;
-        CopyMatrixCcToUbBase3510 copyInst;
-        copyInst.DataCopy<trait, quantPre, T, U>(dst, src, nSize, mSize, srcStride, dstStride, dualDstCtl,
-            reluEn, unitFlag, subBlockId, nz2ndEn, nz2dnEn);
+        if constexpr (GetHardPos<T>() == Hardware::GM) {
+            uint8_t cacheMode = GetCacheModeFromTensor(dst.Data().Get());
+            bool isChannelSplit = trait.enableChannelSplit;
+            CopyMatrixCcToGmBase3510 copyInst;
+            copyInst.DataCopy<trait, quantPre, T, U>(dst, src,
+                nSize, mSize, srcStride, dstStride, cacheMode, reluEn, unitFlag, isChannelSplit, nz2ndEn, nz2dnEn);
+        } else {
+            uint8_t dualDstCtl = trait.dualDstCtl;
+            bool subBlockId = false;
+            CopyMatrixCcToUbBase3510 copyInst;
+            copyInst.DataCopy<trait, quantPre, T, U>(dst, src,
+                nSize, mSize, srcStride, dstStride, dualDstCtl, reluEn, unitFlag, subBlockId, nz2ndEn, nz2dnEn);
+        }
     }
 };
 
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2UB_NZ2ND_H
+#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2OUT_NZ2NZ_H

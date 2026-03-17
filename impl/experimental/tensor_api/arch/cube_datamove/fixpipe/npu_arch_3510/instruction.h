@@ -45,6 +45,7 @@ private:
         }
     }
 };
+
 class CopyMatrixCcToUbBase3510 {
 public:
 template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename... Params>

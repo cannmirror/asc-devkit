@@ -18,10 +18,8 @@
 #include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_2201/fixpipe_l0c2gm.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_2201/fixpipe_quant_l0c2gm.h"
 
-#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_l0c2gm.h"
-#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_l0c2ub.h"
-#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_quant_l0c2gm.h"
-#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_quant_l0c2ub.h"
+#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_l0c2out.h"
+#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_quant_l0c2out.h"
 
 namespace AscendC {
 namespace Te {
@@ -49,23 +47,23 @@ struct FixpipeTensor2Tensor<Hardware::GM, Hardware::L0C, Hardware::L1, ArchVersi
 
 template <>
 struct FixpipeTensor2Tensor<Hardware::GM, Hardware::L0C, Hardware::MAX, ArchVersion::V3510, FOUR_DIM_DATA> {
-    using type = FixpipeFourDimL0C2GM3510;
+    using type = FixpipeL0C2Out3510;
 };
 
 template <>
 struct FixpipeTensor2Tensor<Hardware::GM, Hardware::L0C, Hardware::L1, ArchVersion::V3510, FOUR_DIM_DATA> {
-    using type = FixpipeQuantFourDimL0C2GM3510;
+    using type = FixpipeQuantL0C2Out3510;
 };
 
 // L0C to UB routing for V3510
 template <>
 struct FixpipeTensor2Tensor<Hardware::UB, Hardware::L0C, Hardware::MAX, ArchVersion::V3510, FOUR_DIM_DATA> {
-    using type = FixpipeFourDimL0C2UB3510;
+    using type = FixpipeL0C2Out3510;
 };
 
 template <>
 struct FixpipeTensor2Tensor<Hardware::UB, Hardware::L0C, Hardware::L1, ArchVersion::V3510, FOUR_DIM_DATA> {
-    using type = FixpipeQuantFourDimL0C2UB3510;
+    using type = FixpipeQuantL0C2Out3510;
 };
 
 } // namespace Te
