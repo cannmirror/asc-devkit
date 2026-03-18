@@ -1,8 +1,8 @@
 
-# DataCopy数据切片算子样例
+# DataCopy数据切片搬运样例
 
 ## 概述
-本样例通过Ascend C编程语言实现了DataCopy数据切片算子，支持数据的切片搬运，提取多维Tensor数据的子集进行搬运。使用<<<>>>内核调用符来完成算子核函数在NPU侧运行验证的基础流程，给出了对应的端到端实现。
+本样例通过Ascend C编程语言实现了DataCopy数据切片搬运，提取多维Tensor数据的子集进行Global Memory与Unified Buffer通路之间的搬运。
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
@@ -22,25 +22,25 @@
 
 ## 算子描述
 - 算子功能：  
-  实现了slice_data_movement算子，支持数据的切片搬运，提取多维Tensor数据的子集进行搬运。
+  实现了slice_data_movement算子，支持数据的切片搬运，提取二维的源操作数Tensor[3, 87]数据的子集（提取4个数据段：[0, 16:40], [0, 47:71], [2, 16:40]， [2, 47:71]，共96个float32数据）并连续搬运到二维的目的操作数Tensor[2, 48]。
 
 - 算子规格：  
  
   <table>  
   <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="5" align="center">Slice</td></tr>
   <tr><td rowspan="2" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">切片参数</td></tr>  
-  <tr><td align="center">x</td><td align="center">[3, 87]</td><td align="center">float32</td><td align="center">ND</td><td align="center">[[0, 16:40], [0, 47:71]], [[2, 16:40][2, 47:71]]</tr>  
+  <tr><td align="center">x</td><td align="center">[3, 87]</td><td align="center">float32</td><td align="center">ND</td><td align="center">[[0, 16:40], [0, 47:71]], [[2, 16:40]，[2, 47:71]]</tr>  
   <tr><td rowspan="1" align="center">算子输出</td><td align="center">y</td><td align="center">[2, 48]</td><td align="center">float32</td><td align="center">ND</td><td align="center">\</td></tr>  
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">kernel_slice</td></tr>  
   </table>
 
 - 算子实现：  
   - Kernel实现   
-    计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先按切片参数搬运进片上存储，得到最终结果，再搬出到外部存储上。   
+    计算逻辑是：输入数据需要先按切片参数从Global Memory搬运到Unified Buffer，再搬出到外部Global Memory上。
+    
+    接口详细描述参考Ascend C API DataCopy切片数据搬运。
 
-    slice_data_movement算子的实现流程分为3个基本任务：CopyIn，CopyOut。CopyIn任务负责将Global Memory上的输入xGm，按切片参数搬运至Local Memory。CopyOut任务负责将输出数据从outLocal搬运至Global Memory上的输出Tensor outGm中。
-
-  - 调用实现  
+  - 调用实现
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行  

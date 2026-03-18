@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例基于DataCopy实现数据搬运，支持在数据搬运过程中进行scalar量化和Relu激活等操作。
+本样例在卷积场景下，基于DataCopy实现数据随路量化激活搬运，支持在数据搬运过程中通过Scalar量化将int32_t类型转换为half类型，并完成L0C Buffer到Global Memory通路NZ到ND格式转换，同时支持Relu激活。
 
 ## 支持的产品
 
@@ -22,25 +22,36 @@
 ```
 
 ## 算子描述
-
 - 算子功能：  
+  支持在数据搬运过程中进行Scalar量化和Relu激活操作，同时支持L0C Buffer到Global Memory通路NZ到ND格式的转换。
 
-  支持在数据搬运过程中进行量化和Relu激活等操作，同时支持Local Memory到Global Memory通路NZ到ND格式的转换。
 - 算子规格：  
   <table>
-  <tr><td rowspan="3" align="center">算子输入</td></tr>
+  <tr><td rowspan="4" align="center">算子输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">x</td><td align="center">4 * 4 * 32</td><td align="center">half</td><td align="center">NZ</td></tr>
+  <tr><td align="center">x</td><td align="center">[1, 1, 4, 4, 32]</td><td align="center">int8_t</td><td align="center">NC1HWC0</td></tr>
+  <tr><td align="center">y</td><td align="center">[1, 2, 2, 128, 32]</td><td align="center">int8_t</td><td align="center">FRACTAL_Z</td></tr>
   <tr><td rowspan="2" align="center">算子输出</td></tr>
-  <tr><td align="center">z</td><td align="center">8 * 9 * 16</td><td align="center">half</td><td align="center">ND</td></tr>
+  <tr><td align="center">z</td><td align="center">[1, 8, 3, 3, 16]</td><td align="center">half</td><td align="center">NC1HWC0</td></tr>
 
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">KernelFixpipeCustom</td></tr>
   </table>
 
-
 - 算子实现：  
   - Kernel实现   
-    Mmad左矩阵和右矩阵的数据类型为int8_t，结果矩阵的数据类型为int32_t。量化模式DEQF16，scalar量化参数为0.5，将Mmad计算出的结果由int32_t量化成half并搬出。
+    - 调用Mmad接口，将卷积场景下的int8_t类型的输入Tensor[1, 1, 4, 4, 32]与卷积核Tensor[1, 2, 2, 128, 32]做矩阵乘法，得到int32_t类型的结果矩阵[1, 8, 3, 3, 16]。
+    - 配置DataCopyCO12DstParams参数用于DataCopy随路量化激活搬运，设置量化模式DEQF16，并使用SetFixpipePreQuant接口设置scalar量化参数（本样例为0.5），将Mmad计算出的L0C Buffer上的结果由int32_t量化成half，完成NZ到ND的格式转换，并完成Relu激活后搬出到Global Memory。
+    - Scalar量化支持的量化模式如下：
+
+      | 量化模式 | 描述 |
+      | :--- | :--- |
+      | F322F16 | float量化成half |
+      | F322BF16 | float量化成bfloat16_t |
+      | DEQF16 | int32_t量化成half |
+      | QF322B8_PRE | float量化成int8_t/uint8_t |
+      | REQ8 | int32_t量化成int8_t/uint8_t |
+    
+    - 接口详细描述参考Ascend C API DataCopy随路量化激活搬运。
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
