@@ -170,7 +170,7 @@ __aicore__ inline void asc_dump_l1buf(__cbuf__ T* input, uint32_t desc, uint32_t
 
 using namespace __asc_aicore;
 #endif
- 	 
+
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_AICORE_DUMP_IMPL__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_AICORE_DUMP_IMPL__
