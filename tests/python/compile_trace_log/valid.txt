@@ -7,7 +7,7 @@ Preset CMake variables:
   ASCEND_PYTHON_EXECUTABLE:STRING="python3"
   CMAKE_BUILD_TYPE:STRING="Release"
   CMAKE_CROSS_PLATFORM_COMPILER:PATH="/usr/bin/aarch64-linux-gnu-g++"
-  CMAKE_INSTALL_PREFIX:PATH="/home/h00953398/tikcpp_smoke/external_tik2_demo/acl_invocation/aclnn_online_model/custom_op/build_out"
+  CMAKE_INSTALL_PREFIX:PATH="tikcpp_smoke/external_tik2_demo/acl_invocation/aclnn_online_model/custom_op/build_out"
   ENABLE_BINARY_PACKAGE:BOOL="True"
   ENABLE_CROSS_COMPILE:BOOL="False"
   ENABLE_SOURCE_PACKAGE:BOOL="True"
@@ -30,7 +30,7 @@ Preset CMake variables:
 -- Opbuild generating sources - done
 -- Configuring done (33.9s)
 -- Generating done (0.0s)
--- Build files have been written to: /home/h00953398/tikcpp_smoke/external_tik2_demo/acl_invocation/aclnn_online_model/custom_op/build_out
+-- Build files have been written to: tikcpp_smoke/external_tik2_demo/acl_invocation/aclnn_online_model/custom_op/build_out
 [  5%] Generating tbe/op_info_cfg/ai_core/ascend910b/aic-ascend910b-ops-info.json
 [ 10%] Building CXX object op_host/CMakeFiles/cust_optiling.dir/add_custom_template.cpp.o
 [ 15%] Building CXX object op_host/CMakeFiles/cust_optiling.dir/add_custom.cpp.o
