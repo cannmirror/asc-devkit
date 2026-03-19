@@ -95,7 +95,7 @@ struct CheckArrangement {
     static constexpr StrideRow1Type StrideRow1{};
     static constexpr StrideColumn0Type StrideColumn0{};
     static constexpr StrideColumn1Type StrideColumn1{};
-    static constexpr auto c0Size = C0_SIZE<type> / sizeof(type);
+    static constexpr auto c0Ele = C0_ELEMENT<type>;
 };
 
 __aicore__ inline constexpr bool CheckPairs() {
@@ -120,8 +120,8 @@ private:
 
     __aicore__ inline static constexpr bool IsFractalZZFormatNormal() {
         constexpr bool isShapeRight = CheckEvenPairs(Std::Int<FRACTAL_FIXED>{}, arg.ShapeRow0, 
-                                      Std::Int<arg.c0Size>{}, arg.ShapeColumn0);
-        constexpr bool isStrideRight = CheckEvenPairs(Std::Int<arg.c0Size>{}, arg.StrideRow0,
+                                      Std::Int<arg.c0Ele>{}, arg.ShapeColumn0);
+        constexpr bool isStrideRight = CheckEvenPairs(Std::Int<arg.c0Ele>{}, arg.StrideRow0,
                                       Std::Int<1>{}, arg.StrideColumn0);
         return (isShapeRight && isStrideRight);
     }
@@ -167,10 +167,10 @@ private:
     static constexpr CheckArrangement<T> arg{};
 
     __aicore__ inline static constexpr bool IsFractalZNFormat() {
-        constexpr bool isShapeRight = CheckEvenPairs(Std::Int<arg.c0Size>{}, arg.ShapeRow0,
+        constexpr bool isShapeRight = CheckEvenPairs(Std::Int<arg.c0Ele>{}, arg.ShapeRow0,
                Std::Int<FRACTAL_FIXED>{}, arg.ShapeColumn0);
         constexpr bool isStrideRight = CheckEvenPairs(Std::Int<1>{}, arg.StrideRow0,
-               Std::Int<arg.c0Size>{}, arg.StrideColumn0);
+               Std::Int<arg.c0Ele>{}, arg.StrideColumn0);
         return (isShapeRight && isStrideRight);
     }
 public:
@@ -184,8 +184,8 @@ private:
 
     __aicore__ inline static constexpr bool IsFractalNZFormat() {
         constexpr bool isShapeRight = CheckEvenPairs(Std::Int<FRACTAL_FIXED>{}, arg.ShapeRow0,
-               Std::Int<arg.c0Size>{}, arg.ShapeColumn0);
-        constexpr bool isStrideRight = CheckEvenPairs(Std::Int<arg.c0Size>{}, arg.StrideRow0,
+               Std::Int<arg.c0Ele>{}, arg.ShapeColumn0);
+        constexpr bool isStrideRight = CheckEvenPairs(Std::Int<arg.c0Ele>{}, arg.StrideRow0,
                Std::Int<1>{}, arg.StrideColumn0);
         return (isShapeRight && isStrideRight);
     }

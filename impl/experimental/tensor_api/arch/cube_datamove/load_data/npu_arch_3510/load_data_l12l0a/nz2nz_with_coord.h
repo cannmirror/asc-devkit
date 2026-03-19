@@ -50,12 +50,12 @@ private:
         auto srcLayout = src.Layout();
 
         uint16_t mStartPosition = Std::get<0>(coord) / FRACTAL_FIXED;
-        uint16_t kStartPosition = Std::get<1>(coord) * sizeof(typename U::elementType) / C0_SIZE<>;
+        uint16_t kStartPosition = Std::get<1>(coord) / C0_ELEMENT<typename U::elementType>;
         auto mStep = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
         auto kStep = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
         // Nz -> Nz
         constexpr uint32_t KHALF = 2;
-        constexpr uint32_t STRIDE_UNIT = C0_SIZE<DstType> / sizeof(DstType) * FRACTAL_FIXED;
+        constexpr uint32_t STRIDE_UNIT = C0_ELEMENT<DstType> * FRACTAL_FIXED;
         auto srcStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / STRIDE_UNIT;
         auto dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout) / STRIDE_UNIT;
         if constexpr (is_b4_type<DstType>) {

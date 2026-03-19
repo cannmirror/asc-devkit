@@ -98,6 +98,9 @@ __aicore__ inline constexpr size_t GetC0Size() {
 template<typename T = Std::ignore_t>
 constexpr size_t C0_SIZE = GetC0Size<T>();
 
+template<typename T>
+constexpr size_t C0_ELEMENT = C0_SIZE<T> / sizeof(T);
+
 template <size_t N, typename = Std::make_index_sequence<N>>
 struct EmptyGenerator;
 
