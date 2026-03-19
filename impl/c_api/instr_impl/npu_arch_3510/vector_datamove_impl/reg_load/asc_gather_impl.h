@@ -100,6 +100,15 @@ __simd_callee__ inline void asc_gather_impl(vector_fp8_e4m3fn_t& dst, __ubuf__  
     }
 }
 
+__simd_callee__ inline void asc_gather_impl(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src,
+    vector_uint16_t index, vector_bool mask)
+{
+    if ASC_IS_AIV {
+        __ubuf__ float8_e5m2_t* src_tmp = reinterpret_cast<__ubuf__ float8_e5m2_t*>(src);
+        vgather2(reinterpret_cast<vector_fp8_e5m2_t&>(dst), src_tmp, index, mask);
+    }
+}
+
 __simd_callee__ inline void asc_gather_impl(vector_fp8_e5m2_t& dst, __ubuf__  fp8_e5m2_t* src,
     vector_uint16_t index, vector_bool mask)
 {
@@ -188,6 +197,14 @@ __simd_callee__ inline void asc_gather_impl(vector_fp8_e4m3fn_t& dst, vector_fp8
 {
     if ASC_IS_AIV {
         vselr(dst, src, index);
+    }
+}
+
+__simd_callee__ inline void asc_gather_impl(vector_hifloat8_t& dst, vector_hifloat8_t src,
+    vector_uint8_t index)
+{
+    if ASC_IS_AIV {
+        vselr(reinterpret_cast<vector_uint8_t&>(dst), *reinterpret_cast<vector_uint8_t*>(&src), index);
     }
 }
 

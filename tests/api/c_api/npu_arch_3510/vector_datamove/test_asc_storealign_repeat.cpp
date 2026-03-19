@@ -18,6 +18,7 @@ TEST_VECTOR_DATAMOVE_STOREALIGN_REPEAT_INSTR(Vsstb, asc_storealign, vsstb, int32
 TEST_VECTOR_DATAMOVE_STOREALIGN_REPEAT_INSTR(Vsstb, asc_storealign, vsstb, uint32_t, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_REPEAT_INSTR(Vsstb, asc_storealign, vsstb, bfloat16_t, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_REPEAT_INSTR(Vsstb, asc_storealign, vsstb, fp8_e4m3fn_t, 0);
+TEST_VECTOR_DATAMOVE_STOREALIGN_REPEAT_INSTR_HIF8(Vsstb, asc_storealign, vsstb, hifloat8_t, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_REPEAT_INSTR(Vsstb, asc_storealign, vsstb, fp8_e5m2_t, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_REPEAT_INSTR(Vsstb, asc_storealign, vsstb, fp8_e8m0_t, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_REPEAT_INSTR(Vsstb, asc_storealign, vsstb, half, 0);
@@ -31,6 +32,7 @@ TEST_VECTOR_DATAMOVE_STOREALIGN_REPEAT_POST_INSTR(VsstbPost, asc_storealign_post
 TEST_VECTOR_DATAMOVE_STOREALIGN_REPEAT_POST_INSTR(VsstbPost, asc_storealign_postupdate, vsstb, uint32_t, 1);
 TEST_VECTOR_DATAMOVE_STOREALIGN_REPEAT_POST_INSTR(VsstbPost, asc_storealign_postupdate, vsstb, bfloat16_t, 1);
 TEST_VECTOR_DATAMOVE_STOREALIGN_REPEAT_POST_INSTR(VsstbPost, asc_storealign_postupdate, vsstb, fp8_e4m3fn_t, 1);
+TEST_VECTOR_DATAMOVE_STOREALIGN_REPEAT_POST_INSTR_HIF8(VsstbPost, asc_storealign_postupdate, vsstb, hifloat8_t, 1);
 TEST_VECTOR_DATAMOVE_STOREALIGN_REPEAT_POST_INSTR(VsstbPost, asc_storealign_postupdate, vsstb, fp8_e5m2_t, 1);
 TEST_VECTOR_DATAMOVE_STOREALIGN_REPEAT_POST_INSTR(VsstbPost, asc_storealign_postupdate, vsstb, fp8_e8m0_t, 1);
 TEST_VECTOR_DATAMOVE_STOREALIGN_REPEAT_POST_INSTR(VsstbPost, asc_storealign_postupdate, vsstb, half, 1);

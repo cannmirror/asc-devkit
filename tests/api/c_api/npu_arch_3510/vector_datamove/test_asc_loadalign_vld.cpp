@@ -38,6 +38,33 @@ TEST_F(TestVectorDatamove##class_name##dst_type##dst_type##src_type##CApi, c_api
                                                                                                 \
     c_api_name(dst, src, offset);                                                               \
     GlobalMockObject::verify();                                                                 \
+}
+
+#define TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR_HIF8(class_name, c_api_name, cce_name, dst_type, src_type)   \
+                                                                                                \
+class TestVectorDatamove##class_name##dst_type##dst_type##src_type##CApi : public testing::Test {         \
+protected:                                                                                      \
+    void SetUp() {}                                                                             \
+    void TearDown() {}                                                                          \
+};                                                                                              \
+                                                                                                \
+namespace {                                                                                     \
+void c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub(vector_uint8_t &dst,                    \
+    __ubuf__ uint8_t *src, iter_reg offset, Literal load_dist) {}                              \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorDatamove##class_name##dst_type##dst_type##src_type##CApi, c_api_name##_##dst_type##_##src_type##_Succ)   \
+{                                                                                               \
+    dst_type dst;                                                                              \
+    __ubuf__ src_type *src;                                                                     \
+    iter_reg offset;                                                                             \
+                                                                                                \
+    MOCKER_CPP(cce_name, void(vector_uint8_t &, __ubuf__ uint8_t *, iter_reg, Literal))       \
+        .times(1)                                                                               \
+        .will(invoke(c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub));                \
+                                                                                                \
+    c_api_name(dst, src, offset);                                                               \
+    GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 
 
@@ -69,6 +96,34 @@ TEST_F(TestVectorDatamove##class_name##dst_type##dst_type##src_type##CApi, c_api
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 
+#define TEST_VECTOR_DATAMOVE_LOADALIGN_DEINTLV_INSTR_HIF8(class_name, c_api_name, cce_name, dst_type, src_type)   \
+                                                                                                \
+class TestVectorDatamove##class_name##dst_type##dst_type##src_type##CApi : public testing::Test {         \
+protected:                                                                                      \
+    void SetUp() {}                                                                             \
+    void TearDown() {}                                                                          \
+};                                                                                              \
+                                                                                                \
+namespace {                                                                                     \
+void c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub(vector_uint8_t &dst0, vector_uint8_t &dst1,   \
+    __ubuf__ uint8_t *src, iter_reg offset, Literal load_dist) {}                                   \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorDatamove##class_name##dst_type##dst_type##src_type##CApi, c_api_name##_##dst_type##_##src_type##_Succ)   \
+{                                                                                               \
+    dst_type dst0;                                                                              \
+    dst_type dst1;                                                                              \
+    __ubuf__ src_type *src;                                                                     \
+    iter_reg offset;                                                                             \
+                                                                                                \
+    MOCKER_CPP(cce_name, void(vector_uint8_t &, vector_uint8_t &, __ubuf__ uint8_t *, iter_reg, Literal))       \
+        .times(1)                                                                               \
+        .will(invoke(c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub));                \
+                                                                                                \
+    c_api_name(dst0, dst1, src, offset);                                                        \
+    GlobalMockObject::verify();                                                                 \
+}                                                                                               \
+
 
 
 // vld norm (fp4x2_e2m1/fp4x2_e1m2/u8/s8/f8_e4m3/fp8_e5m2/fp8_e8m0/u16/s16/bf16/half/u32/s32/float/u64/s64)
@@ -77,6 +132,7 @@ TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldNorm, asc_loadalign, vld, vecto
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldNorm, asc_loadalign, vld, vector_uint8_t, uint8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldNorm, asc_loadalign, vld, vector_int8_t, int8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldNorm, asc_loadalign, vld, vector_fp8_e4m3fn_t, fp8_e4m3fn_t);
+TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR_HIF8(LoadAlignVldNorm, asc_loadalign, vld, vector_hifloat8_t, hifloat8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldNorm, asc_loadalign, vld, vector_fp8_e5m2_t, fp8_e5m2_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldNorm, asc_loadalign, vld, vector_fp8_e8m0_t, fp8_e8m0_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldNorm, asc_loadalign, vld, vector_uint16_t, uint16_t);
@@ -94,6 +150,7 @@ TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldBrcB8, asc_loadalign_brc, vld, 
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldBrcB8, asc_loadalign_brc, vld, vector_uint8_t, uint8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldBrcB8, asc_loadalign_brc, vld, vector_int8_t, int8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldBrcB8, asc_loadalign_brc, vld, vector_fp8_e4m3fn_t, fp8_e4m3fn_t);
+TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR_HIF8(LoadAlignVldBrcB8, asc_loadalign_brc, vld, vector_hifloat8_t, hifloat8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldBrcB8, asc_loadalign_brc, vld, vector_fp8_e5m2_t, fp8_e5m2_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldBrcB8, asc_loadalign_brc, vld, vector_fp8_e8m0_t, fp8_e8m0_t);
 
@@ -113,6 +170,7 @@ TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldUpSample, asc_loadalign_upsampl
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldUpSample, asc_loadalign_upsample, vld, vector_uint8_t, uint8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldUpSample, asc_loadalign_upsample, vld, vector_int8_t, int8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldUpSample, asc_loadalign_upsample, vld, vector_fp8_e4m3fn_t, fp8_e4m3fn_t);
+TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR_HIF8(LoadAlignVldUpSample, asc_loadalign_upsample, vld, vector_hifloat8_t, hifloat8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldUpSample, asc_loadalign_upsample, vld, vector_fp8_e5m2_t, fp8_e5m2_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldUpSample, asc_loadalign_upsample, vld, vector_fp8_e8m0_t, fp8_e8m0_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldUpSample, asc_loadalign_upsample, vld, vector_uint16_t, uint16_t);
@@ -126,6 +184,7 @@ TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldDownSample, asc_loadalign_downs
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldDownSample, asc_loadalign_downsample, vld, vector_uint8_t, uint8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldDownSample, asc_loadalign_downsample, vld, vector_int8_t, int8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldDownSample, asc_loadalign_downsample, vld, vector_fp8_e4m3fn_t, fp8_e4m3fn_t);
+TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR_HIF8(LoadAlignVldDownSample, asc_loadalign_downsample, vld, vector_hifloat8_t, hifloat8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldDownSample, asc_loadalign_downsample, vld, vector_fp8_e5m2_t, fp8_e5m2_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldDownSample, asc_loadalign_downsample, vld, vector_fp8_e8m0_t, fp8_e8m0_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldDownSample, asc_loadalign_downsample, vld, vector_uint16_t, uint16_t);
@@ -139,6 +198,7 @@ TEST_VECTOR_DATAMOVE_LOADALIGN_DEINTLV_INSTR(LoadAlignVldDintlv, asc_loadalign_d
 TEST_VECTOR_DATAMOVE_LOADALIGN_DEINTLV_INSTR(LoadAlignVldDintlv, asc_loadalign_deintlv, vld, vector_uint8_t, uint8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_DEINTLV_INSTR(LoadAlignVldDintlv, asc_loadalign_deintlv, vld, vector_int8_t, int8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_DEINTLV_INSTR(LoadAlignVldDintlv, asc_loadalign_deintlv, vld, vector_fp8_e4m3fn_t, fp8_e4m3fn_t);
+TEST_VECTOR_DATAMOVE_LOADALIGN_DEINTLV_INSTR_HIF8(LoadAlignVldDintlv, asc_loadalign_deintlv, vld, vector_hifloat8_t, hifloat8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_DEINTLV_INSTR(LoadAlignVldDintlv, asc_loadalign_deintlv, vld, vector_fp8_e5m2_t, fp8_e5m2_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_DEINTLV_INSTR(LoadAlignVldDintlv, asc_loadalign_deintlv, vld, vector_fp8_e8m0_t, fp8_e8m0_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_DEINTLV_INSTR(LoadAlignVldDintlv, asc_loadalign_deintlv, vld, vector_uint16_t, uint16_t);
@@ -155,6 +215,7 @@ TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldUnpack, asc_loadalign_unpack, v
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldUnpack, asc_loadalign_unpack, vld, vector_uint8_t, uint8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldUnpack, asc_loadalign_unpack, vld, vector_int8_t, int8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldUnpack, asc_loadalign_unpack, vld, vector_fp8_e4m3fn_t, fp8_e4m3fn_t);
+TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR_HIF8(LoadAlignVldUnpack, asc_loadalign_unpack, vld, vector_hifloat8_t, hifloat8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldUnpack, asc_loadalign_unpack, vld, vector_fp8_e5m2_t, fp8_e5m2_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldUnpack, asc_loadalign_unpack, vld, vector_fp8_e8m0_t, fp8_e8m0_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldUnpack, asc_loadalign_unpack, vld, vector_uint16_t, uint16_t);
@@ -171,6 +232,7 @@ TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldUnpackV2, asc_loadalign_unpack_
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldUnpackV2, asc_loadalign_unpack_v2, vld, vector_uint8_t, uint8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldUnpackV2, asc_loadalign_unpack_v2, vld, vector_int8_t, int8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldUnpackV2, asc_loadalign_unpack_v2, vld, vector_fp8_e4m3fn_t, fp8_e4m3fn_t);
+TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR_HIF8(LoadAlignVldUnpackV2, asc_loadalign_unpack_v2, vld, vector_hifloat8_t, hifloat8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldUnpackV2, asc_loadalign_unpack_v2, vld, vector_fp8_e5m2_t, fp8_e5m2_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldUnpackV2, asc_loadalign_unpack_v2, vld, vector_fp8_e8m0_t, fp8_e8m0_t);
 
@@ -180,6 +242,7 @@ TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldBrcV2, asc_loadalign_brc_v2, vl
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldBrcV2, asc_loadalign_brc_v2, vld, vector_uint8_t, uint8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldBrcV2, asc_loadalign_brc_v2, vld, vector_int8_t, int8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldBrcV2, asc_loadalign_brc_v2, vld, vector_fp8_e4m3fn_t, fp8_e4m3fn_t);
+TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR_HIF8(LoadAlignVldBrcV2, asc_loadalign_brc_v2, vld, vector_hifloat8_t, hifloat8_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldBrcV2, asc_loadalign_brc_v2, vld, vector_fp8_e5m2_t, fp8_e5m2_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldBrcV2, asc_loadalign_brc_v2, vld, vector_fp8_e8m0_t, fp8_e8m0_t);
 TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR(LoadAlignVldBrcV2, asc_loadalign_brc_v2, vld, vector_uint16_t, uint16_t);

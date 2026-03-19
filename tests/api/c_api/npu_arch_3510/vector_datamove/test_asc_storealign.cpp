@@ -20,6 +20,7 @@ TEST_VECTOR_DATAMOVE_STOREALIGN_INSTR(Vsts, asc_storealign, vsts, half, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INSTR(Vsts, asc_storealign, vsts, float, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INSTR(Vsts, asc_storealign, vsts, bfloat16_t, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INSTR(Vsts, asc_storealign, vsts, fp8_e4m3fn_t, 0);
+TEST_VECTOR_DATAMOVE_STOREALIGN_INSTR_HIF8(Vsts, asc_storealign, vsts, hifloat8_t, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INSTR(Vsts, asc_storealign, vsts, fp8_e5m2_t, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INSTR(Vsts, asc_storealign, vsts, fp8_e8m0_t, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INSTR(Vsts, asc_storealign, vsts, fp4x2_e2m1_t, 0);
@@ -34,6 +35,7 @@ TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_INSTR(Vsts_1st, asc_storealign_1st, vsts, 
 TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_INSTR(Vsts_1st, asc_storealign_1st, vsts, float, 1);
 TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_INSTR(Vsts_1st, asc_storealign_1st, vsts, bfloat16_t, 1);
 TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_INSTR(Vsts_1st, asc_storealign_1st, vsts, fp8_e4m3fn_t, 1);
+TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_INSTR_HIF8(Vsts_1st, asc_storealign_1st, vsts, hifloat8_t, 1);
 TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_INSTR(Vsts_1st, asc_storealign_1st, vsts, fp8_e5m2_t, 1);
 TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_INSTR(Vsts_1st, asc_storealign_1st, vsts, fp8_e8m0_t, 1);
 TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_INSTR(Vsts_1st, asc_storealign_1st, vsts, fp4x2_e2m1_t, 1);
@@ -59,6 +61,7 @@ TEST_VECTOR_DATAMOVE_STOREALIGN_INTLV_INSTR(Vsts_intlv, asc_storealign_intlv, vs
 TEST_VECTOR_DATAMOVE_STOREALIGN_INTLV_INSTR(Vsts_intlv, asc_storealign_intlv, vsts, half, 4);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INTLV_INSTR(Vsts_intlv, asc_storealign_intlv, vsts, bfloat16_t, 4);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INTLV_INSTR(Vsts_intlv, asc_storealign_intlv, vsts, fp8_e4m3fn_t, 4);
+TEST_VECTOR_DATAMOVE_STOREALIGN_INTLV_INSTR_HIF8(Vsts_intlv, asc_storealign_intlv, vsts, hifloat8_t, 4);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INTLV_INSTR(Vsts_intlv, asc_storealign_intlv, vsts, fp8_e5m2_t, 4);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INTLV_INSTR(Vsts_intlv, asc_storealign_intlv, vsts, fp8_e8m0_t, 4);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INTLV_INSTR(Vsts_intlv, asc_storealign_intlv, vsts, fp4x2_e2m1_t, 4);
@@ -73,6 +76,7 @@ TEST_VECTOR_DATAMOVE_STOREALIGN_OFFSET_INSTR(Vsts_offset, asc_storealign, vsts, 
 TEST_VECTOR_DATAMOVE_STOREALIGN_OFFSET_INSTR(Vsts_offset, asc_storealign, vsts, float, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_OFFSET_INSTR(Vsts_offset, asc_storealign, vsts, bfloat16_t, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_OFFSET_INSTR(Vsts_offset, asc_storealign, vsts, fp8_e4m3fn_t, 0);
+TEST_VECTOR_DATAMOVE_STOREALIGN_OFFSET_INSTR_HIF8(Vsts_offset, asc_storealign, vsts, hifloat8_t, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_OFFSET_INSTR(Vsts_offset, asc_storealign, vsts, fp8_e5m2_t, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_OFFSET_INSTR(Vsts_offset, asc_storealign, vsts, fp8_e8m0_t, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_OFFSET_INSTR(Vsts_offset, asc_storealign, vsts, fp4x2_e2m1_t, 0);
@@ -87,6 +91,7 @@ TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_OFFSET_INSTR(Vsts_1st_offset, asc_storeali
 TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_OFFSET_INSTR(Vsts_1st_offset, asc_storealign_1st, vsts, float, 1);
 TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_OFFSET_INSTR(Vsts_1st_offset, asc_storealign_1st, vsts, bfloat16_t, 1);
 TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_OFFSET_INSTR(Vsts_1st_offset, asc_storealign_1st, vsts, fp8_e4m3fn_t, 1);
+TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_OFFSET_INSTR_HIF8(Vsts_1st_offset, asc_storealign_1st, vsts, hifloat8_t, 1);
 TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_OFFSET_INSTR(Vsts_1st_offset, asc_storealign_1st, vsts, fp8_e5m2_t, 1);
 TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_OFFSET_INSTR(Vsts_1st_offset, asc_storealign_1st, vsts, fp8_e8m0_t, 1);
 TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_OFFSET_INSTR(Vsts_1st_offset, asc_storealign_1st, vsts, fp4x2_e2m1_t, 1);
@@ -112,6 +117,7 @@ TEST_VECTOR_DATAMOVE_STOREALIGN_OFFSET_INTLV_INSTR(Vsts_intlv_offset, asc_storea
 TEST_VECTOR_DATAMOVE_STOREALIGN_OFFSET_INTLV_INSTR(Vsts_intlv_offset, asc_storealign_intlv, vsts, half, 4);
 TEST_VECTOR_DATAMOVE_STOREALIGN_OFFSET_INTLV_INSTR(Vsts_intlv_offset, asc_storealign_intlv, vsts, bfloat16_t, 4);
 TEST_VECTOR_DATAMOVE_STOREALIGN_OFFSET_INTLV_INSTR(Vsts_intlv_offset, asc_storealign_intlv, vsts, fp8_e4m3fn_t, 4);
+TEST_VECTOR_DATAMOVE_STOREALIGN_OFFSET_INTLV_INSTR_HIF8(Vsts_intlv_offset, asc_storealign_intlv, vsts, hifloat8_t, 4);
 TEST_VECTOR_DATAMOVE_STOREALIGN_OFFSET_INTLV_INSTR(Vsts_intlv_offset, asc_storealign_intlv, vsts, fp8_e5m2_t, 4);
 TEST_VECTOR_DATAMOVE_STOREALIGN_OFFSET_INTLV_INSTR(Vsts_intlv_offset, asc_storealign_intlv, vsts, fp8_e8m0_t, 4);
 TEST_VECTOR_DATAMOVE_STOREALIGN_OFFSET_INTLV_INSTR(Vsts_intlv_offset, asc_storealign_intlv, vsts, fp4x2_e2m1_t, 4);
@@ -156,6 +162,7 @@ TEST_VECTOR_DATAMOVE_STOREALIGN_INSTR_1(Vst, asc_storealign, vst, half, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INSTR_1(Vst, asc_storealign, vst, float, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INSTR_1(Vst, asc_storealign, vst, bfloat16_t, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INSTR_1(Vst, asc_storealign, vst, fp8_e4m3fn_t, 0);
+TEST_VECTOR_DATAMOVE_STOREALIGN_INSTR_1_HIF8(Vst, asc_storealign, vst, hifloat8_t, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INSTR_1(Vst, asc_storealign, vst, fp8_e5m2_t, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INSTR_1(Vst, asc_storealign, vst, fp8_e8m0_t, 0);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INSTR_1(Vst, asc_storealign, vst, fp4x2_e2m1_t, 0);
@@ -170,6 +177,7 @@ TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_INSTR_1(Vst_1st, asc_storealign_1st, vst, 
 TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_INSTR_1(Vst_1st, asc_storealign_1st, vst, float, 1);
 TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_INSTR_1(Vst_1st, asc_storealign_1st, vst, bfloat16_t, 1);
 TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_INSTR_1(Vst_1st, asc_storealign_1st, vst, fp8_e4m3fn_t, 1);
+TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_INSTR_1_HIF8(Vst_1st, asc_storealign_1st, vst, hifloat8_t, 1);
 TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_INSTR_1(Vst_1st, asc_storealign_1st, vst, fp8_e5m2_t, 1);
 TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_INSTR_1(Vst_1st, asc_storealign_1st, vst, fp8_e8m0_t, 1);
 TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_INSTR_1(Vst_1st, asc_storealign_1st, vst, fp4x2_e2m1_t, 1);
@@ -195,6 +203,7 @@ TEST_VECTOR_DATAMOVE_STOREALIGN_INTLV_INSTR_1(Vst_intlv, asc_storealign_intlv, v
 TEST_VECTOR_DATAMOVE_STOREALIGN_INTLV_INSTR_1(Vst_intlv, asc_storealign_intlv, vst, half, 4);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INTLV_INSTR_1(Vst_intlv, asc_storealign_intlv, vst, bfloat16_t, 4);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INTLV_INSTR_1(Vst_intlv, asc_storealign_intlv, vst, fp8_e4m3fn_t, 4);
+TEST_VECTOR_DATAMOVE_STOREALIGN_INTLV_INSTR_1_HIF8(Vst_intlv, asc_storealign_intlv, vst, hifloat8_t, 4);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INTLV_INSTR_1(Vst_intlv, asc_storealign_intlv, vst, fp8_e5m2_t, 4);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INTLV_INSTR_1(Vst_intlv, asc_storealign_intlv, vst, fp8_e8m0_t, 4);
 TEST_VECTOR_DATAMOVE_STOREALIGN_INTLV_INSTR_1(Vst_intlv, asc_storealign_intlv, vst, fp4x2_e2m1_t, 4);

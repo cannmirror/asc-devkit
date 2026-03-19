@@ -41,10 +41,39 @@ TEST_F(TestVectorCompute##class_name####data_type##CApi, c_api_name##_##data_typ
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 
+#define TEST_VECTOR_COMPUTE_SELECT_INSTR_HIF8(class_name, c_api_name, cce_name, data_type)           \
+                                                                                                \
+class TestVectorCompute##class_name####data_type##CApi : public testing::Test {                 \
+protected:                                                                                      \
+    void SetUp() {}                                                                             \
+    void TearDown() {}                                                                          \
+};                                                                                              \
+                                                                                                \
+namespace {                                                                                     \
+void cce_name##_##data_type##_Stub(vector_uint8_t& dst, vector_uint8_t src0, vector_uint8_t src1,              \
+    vector_bool mask) {}                                                                        \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorCompute##class_name####data_type##CApi, c_api_name##_##data_type##_Succ)       \
+{                                                                                               \
+    data_type dst;                                                                              \
+    data_type src0;                                                                             \
+    data_type src1;                                                                             \
+    vector_bool mask;                                                                           \
+                                                                                                \
+    MOCKER_CPP(cce_name, void(vector_uint8_t&, vector_uint8_t, vector_uint8_t, vector_bool))                   \
+        .times(1)                                                                               \
+        .will(invoke(cce_name##_##data_type##_Stub));                                           \
+                                                                                                \
+    c_api_name(dst, src0, src1, mask);                                                          \
+    GlobalMockObject::verify();                                                                 \
+}                                                                                               \
+
 TEST_VECTOR_COMPUTE_SELECT_INSTR(Psel, asc_select, psel, vector_bool);
 TEST_VECTOR_COMPUTE_SELECT_INSTR(Vsel, asc_select, vsel, vector_uint8_t);
 TEST_VECTOR_COMPUTE_SELECT_INSTR(Vsel, asc_select, vsel, vector_int8_t);
 TEST_VECTOR_COMPUTE_SELECT_INSTR(Vsel, asc_select, vsel, vector_fp8_e4m3fn_t);
+TEST_VECTOR_COMPUTE_SELECT_INSTR_HIF8(Vsel, asc_select, vsel, vector_hifloat8_t);
 TEST_VECTOR_COMPUTE_SELECT_INSTR(Vsel, asc_select, vsel, vector_fp8_e5m2_t);
 TEST_VECTOR_COMPUTE_SELECT_INSTR(Vsel, asc_select, vsel, vector_uint16_t);
 TEST_VECTOR_COMPUTE_SELECT_INSTR(Vsel, asc_select, vsel, vector_int16_t);

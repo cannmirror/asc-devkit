@@ -34,6 +34,7 @@ store_unalign或store_unalign_postupdate接口执行时，会将主块搬出至U
     __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp8_e8m0_t* dst, vector_store_align src, int32_t offset)
     __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp8_e5m2_t* dst, vector_store_align src, int32_t offset)
     __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp8_e4m3fn_t* dst, vector_store_align src, int32_t offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ hifloat8_t* dst, vector_store_align src, int32_t offset)
     __simd_callee__ inline void asc_storeunalign_post(__ubuf__ int16_t* dst, vector_store_align src, int32_t offset)
     __simd_callee__ inline void asc_storeunalign_post(__ubuf__ uint16_t* dst, vector_store_align src, int32_t offset)
     __simd_callee__ inline void asc_storeunalign_post(__ubuf__ half* dst, vector_store_align src, int32_t offset)

@@ -752,6 +752,11 @@ __simd_callee__ inline void asc_select(vector_fp8_e4m3fn_t& dst, vector_fp8_e4m3
     asc_select_impl(dst, src0, src1, mask);
 }
 
+__simd_callee__ inline void asc_select(vector_hifloat8_t& dst, vector_hifloat8_t src0, vector_hifloat8_t src1, vector_bool mask)
+{
+    asc_select_impl(dst, src0, src1, mask);
+}
+
 __simd_callee__ inline void asc_select(vector_fp8_e5m2_t& dst, vector_fp8_e5m2_t src0, vector_fp8_e5m2_t src1, vector_bool mask)
 {
     asc_select_impl(dst, src0, src1, mask);
@@ -1833,6 +1838,11 @@ __simd_callee__ inline void asc_intlv(vector_fp8_e5m2_t& dst0, vector_fp8_e5m2_t
 }
 
 __simd_callee__ inline void asc_intlv(vector_fp8_e4m3fn_t& dst0, vector_fp8_e4m3fn_t& dst1, vector_fp8_e4m3fn_t src0, vector_fp8_e4m3fn_t src1)
+{
+    asc_intlv_impl(dst0, dst1, src0, src1);
+}
+
+__simd_callee__ inline void asc_intlv(vector_hifloat8_t& dst0, vector_hifloat8_t& dst1, vector_hifloat8_t src0, vector_hifloat8_t src1)
 {
     asc_intlv_impl(dst0, dst1, src0, src1);
 }
@@ -4540,6 +4550,11 @@ __simd_callee__ inline void asc_deintlv(vector_uint8_t& dst0, vector_uint8_t& ds
 }
 
 __simd_callee__ inline void asc_deintlv(vector_fp8_e4m3fn_t& dst0, vector_fp8_e4m3fn_t& dst1, vector_fp8_e4m3fn_t src0, vector_fp8_e4m3fn_t src1)
+{
+    asc_deintlv_impl(dst0, dst1, src0, src1);
+}
+
+__simd_callee__ inline void asc_deintlv(vector_hifloat8_t& dst0, vector_hifloat8_t& dst1, vector_hifloat8_t src0, vector_hifloat8_t src1)
 {
     asc_deintlv_impl(dst0, dst1, src0, src1);
 }

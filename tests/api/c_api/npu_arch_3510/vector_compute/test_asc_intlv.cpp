@@ -40,6 +40,33 @@ TEST_F(TestVectorComputeIntlv##data_type##CApi, c_api_asc_intlv_##data_type##_Su
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 
+#define TEST_VECTOR_COMPUTE_INTLV_HIF8(data_type)            \
+                                                                                                \
+class TestVectorComputeIntlv##data_type##CApi : public testing::Test {                 \
+protected:                                                                                      \
+    void SetUp() {}                                                                             \
+    void TearDown() {}                                                                          \
+};                                                                                              \
+                                                                                                \
+namespace {                                                                                     \
+void vintlv##_##data_type##_Stub(vector_uint8_t& dst0, vector_uint8_t& dst1, vector_uint8_t src0, vector_uint8_t src1) {}                                                          \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorComputeIntlv##data_type##CApi, c_api_asc_intlv_##data_type##_Succ)       \
+{                                                                                               \
+    data_type dst0;                                                                              \
+    data_type dst1;                                                                           \
+    data_type src0;                                                                              \
+    data_type src1;                                                                           \
+                                                                                                \
+    MOCKER_CPP(vintlv, void(vector_uint8_t&, vector_uint8_t&, vector_uint8_t, vector_uint8_t))                     \
+        .times(1)                                                                               \
+        .will(invoke(vintlv##_##data_type##_Stub));                                           \
+                                                                                                \
+    asc_intlv(dst0, dst1, src0, src1);                                                                \
+    GlobalMockObject::verify();                                                                 \
+}                                                                                               \
+
 TEST_VECTOR_COMPUTE_INTLV(vector_uint8_t);
 TEST_VECTOR_COMPUTE_INTLV(vector_int8_t);
 TEST_VECTOR_COMPUTE_INTLV(vector_uint16_t);
@@ -52,6 +79,7 @@ TEST_VECTOR_COMPUTE_INTLV(vector_fp8_e4m3fn_t);
 TEST_VECTOR_COMPUTE_INTLV(vector_fp8_e5m2_t);
 TEST_VECTOR_COMPUTE_INTLV(vector_fp8_e8m0_t);
 TEST_VECTOR_COMPUTE_INTLV(vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_INTLV_HIF8(vector_hifloat8_t);
 
 class TestVectorComputePintlv : public testing::Test { 
 protected:
