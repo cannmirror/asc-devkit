@@ -33,50 +33,50 @@ public:
     __aicore__ inline void Run(const T& dst, const U& src) {}
 };
 
-template <Hardware dstPos, Hardware srcPos, uint32_t Version, size_t dimension>
+template <Hardware dstPos, Hardware srcPos, uint32_t Version>
 struct LoadDataTensor2Tensor {
     using type = LoadDataIgnore;
 };
 
-template <Hardware dstPos, Hardware srcPos, uint32_t Version, size_t dimension>
+template <Hardware dstPos, Hardware srcPos, uint32_t Version>
 struct LoadDataTensor2TensorNoCoord {
     using type = LoadDataIgnore;
 };
 
 template <>
-struct LoadDataTensor2Tensor<Hardware::L0A, Hardware::L1, ArchVersion::V2201, FOUR_DIM_DATA>
+struct LoadDataTensor2Tensor<Hardware::L0A, Hardware::L1, ArchVersion::V2201>
 {
-    using type = LoadDataFourDim2201L12L0A;
+    using type = LoadDataL12L0A2201;
 };
 
 template <>
-struct LoadDataTensor2Tensor<Hardware::L0B, Hardware::L1, ArchVersion::V2201, FOUR_DIM_DATA>
+struct LoadDataTensor2Tensor<Hardware::L0B, Hardware::L1, ArchVersion::V2201>
 {
-    using type = LoadDataFourDim2201L12L0B;
+    using type = LoadDataL12L0B2201;
 };
 
 template <>
-struct LoadDataTensor2TensorNoCoord<Hardware::L0A, Hardware::L1, ArchVersion::V3510, FOUR_DIM_DATA>
+struct LoadDataTensor2TensorNoCoord<Hardware::L0A, Hardware::L1, ArchVersion::V3510>
 {
-    using type = LoadDataFourDim3510L12L0A;
+    using type = LoadDataL12L0A3510;
 };
 
 template <>
-struct LoadDataTensor2TensorNoCoord<Hardware::L0B, Hardware::L1, ArchVersion::V3510, FOUR_DIM_DATA>
+struct LoadDataTensor2TensorNoCoord<Hardware::L0B, Hardware::L1, ArchVersion::V3510>
 {
-    using type = LoadDataFourDim3510L12L0B;
+    using type = LoadDataL12L0B3510;
 };
 
 template <>
-struct LoadDataTensor2Tensor<Hardware::L0A, Hardware::L1, ArchVersion::V3510, FOUR_DIM_DATA>
+struct LoadDataTensor2Tensor<Hardware::L0A, Hardware::L1, ArchVersion::V3510>
 {
-    using type = LoadDataFourDim3510L12L0AWithCoord;
+    using type = LoadDataL12L0AWithCoord3510;
 };
 
 template <>
-struct LoadDataTensor2Tensor<Hardware::L0B, Hardware::L1, ArchVersion::V3510, FOUR_DIM_DATA>
+struct LoadDataTensor2Tensor<Hardware::L0B, Hardware::L1, ArchVersion::V3510>
 {
-    using type = LoadDataFourDim3510L12L0BWithCoord;
+    using type = LoadDataL12L0BWithCoord3510;
 };
 } // namespace Te
 } // namespace AscendC

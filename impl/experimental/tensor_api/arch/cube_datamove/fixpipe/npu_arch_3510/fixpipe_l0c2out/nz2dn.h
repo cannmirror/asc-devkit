@@ -20,17 +20,17 @@
 namespace AscendC {
 namespace Te {
 
-class Fixpipe2OutNz2DnBase3510 {
+class Fixpipe2OutNz2Dn3510 {
 public:
     template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename Params>
-    __aicore__ inline void Run(const T& dst, const U& src, const Params& params) {
+    __aicore__ inline static void Run(const T& dst, const U& src, const Params& params) {
         SetRegisterImpl<trait, T, U>(dst, src);
         DataCopyImpl<trait, quantPre, T, U, Params>(dst, src, params);
     }
 
 private:
     template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U>
-    __aicore__ inline constexpr void CheckTemplate()
+    __aicore__ inline static constexpr void CheckTemplate()
     {
         CheckFormat::CheckDNTemplate<T>();
         CheckFormat::CheckL0CNZTemplate<U>();
@@ -42,18 +42,17 @@ private:
     }
 
     template <const FixpipeTrait& trait, typename T, typename U>
-    __aicore__ inline void SetRegisterImpl(const T& dst, const U& src)
+    __aicore__ inline static void SetRegisterImpl(const T& dst, const U& src)
     {
         uint32_t dnNum = 1;
         uint32_t srcNzMatrixStride = 0;
         uint32_t dstDnMatrixStride = 0;
         uint32_t srcNzC0Stride = 1;
-        SetRegisterBase3510 setRegisterInst;
-        setRegisterInst.SetRegister(dnNum, dstDnMatrixStride, srcNzMatrixStride, srcNzC0Stride);
+        SetRegister3510::SetRegister(dnNum, dstDnMatrixStride, srcNzMatrixStride, srcNzC0Stride);
     }
 
     template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename Params>
-    __aicore__ inline void DataCopyImpl(const T& dst, const U& src, const Params& params)
+    __aicore__ inline static void DataCopyImpl(const T& dst, const U& src, const Params& params)
     {
         CheckTemplate<trait, quantPre, T, U>();
         auto dstLayout = dst.Layout();
@@ -77,15 +76,15 @@ private:
         if constexpr (GetHardPos<T>() == Hardware::GM) {
             uint8_t cacheMode = GetCacheModeFromTensor(dst.Data().Get());
             bool isChannelSplit = trait.enableChannelSplit;
-            CopyMatrixCcToGmBase3510 copyInst;
-            copyInst.DataCopy<trait, quantPre, T, U>(dst, src,
-                nSize, mSize, srcStride, dstStride, cacheMode, reluEn, unitFlag, isChannelSplit, nz2ndEn, nz2dnEn);
+            CopyMatrixCcToGm3510::DataCopy<trait, quantPre, T, U>(dst, src, nSize, mSize, srcStride, dstStride,
+                                                                  cacheMode, reluEn, unitFlag, isChannelSplit, nz2ndEn,
+                                                                  nz2dnEn);
         } else {
             uint8_t dualDstCtl = trait.dualDstCtl;
             bool subBlockId = false;
-            CopyMatrixCcToUbBase3510 copyInst;
-            copyInst.DataCopy<trait, quantPre, T, U>(dst, src,
-                nSize, mSize, srcStride, dstStride, dualDstCtl, reluEn, unitFlag, subBlockId, nz2ndEn, nz2dnEn);
+            CopyMatrixCcToUb3510::DataCopy<trait, quantPre, T, U>(dst, src, nSize, mSize, srcStride, dstStride,
+                                                                      dualDstCtl, reluEn, unitFlag, subBlockId, nz2ndEn,
+                                                                      nz2dnEn);
         }
     }
 };

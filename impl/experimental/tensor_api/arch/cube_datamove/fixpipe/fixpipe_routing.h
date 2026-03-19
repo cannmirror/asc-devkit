@@ -30,39 +30,39 @@ public:
     __aicore__ inline void Run(const Args&... args) {}
 };
 
-template <Hardware dstPos, Hardware srcpos, Hardware quantpos, uint32_t Version, size_t dimension>
+template <Hardware dstPos, Hardware srcpos, Hardware quantpos, uint32_t Version>
 struct FixpipeTensor2Tensor {
     using type = FixpipeIgnore;
 };
 
 template <>
-struct FixpipeTensor2Tensor<Hardware::GM, Hardware::L0C, Hardware::MAX, ArchVersion::V2201, FOUR_DIM_DATA> {
-    using type = FixpipeFourDim2201L0C2GM;
+struct FixpipeTensor2Tensor<Hardware::GM, Hardware::L0C, Hardware::MAX, ArchVersion::V2201> {
+    using type = FixpipeL0C2GM2201;
 };
 
 template <>
-struct FixpipeTensor2Tensor<Hardware::GM, Hardware::L0C, Hardware::L1, ArchVersion::V2201, FOUR_DIM_DATA> {
-    using type = FixpipeQuantFourDim2201L0C2GM;
+struct FixpipeTensor2Tensor<Hardware::GM, Hardware::L0C, Hardware::L1, ArchVersion::V2201> {
+    using type = FixpipeQuantL0C2GM2201;
 };
 
 template <>
-struct FixpipeTensor2Tensor<Hardware::GM, Hardware::L0C, Hardware::MAX, ArchVersion::V3510, FOUR_DIM_DATA> {
+struct FixpipeTensor2Tensor<Hardware::GM, Hardware::L0C, Hardware::MAX, ArchVersion::V3510> {
     using type = FixpipeL0C2Out3510;
 };
 
 template <>
-struct FixpipeTensor2Tensor<Hardware::GM, Hardware::L0C, Hardware::L1, ArchVersion::V3510, FOUR_DIM_DATA> {
+struct FixpipeTensor2Tensor<Hardware::GM, Hardware::L0C, Hardware::L1, ArchVersion::V3510> {
     using type = FixpipeQuantL0C2Out3510;
 };
 
 // L0C to UB routing for V3510
 template <>
-struct FixpipeTensor2Tensor<Hardware::UB, Hardware::L0C, Hardware::MAX, ArchVersion::V3510, FOUR_DIM_DATA> {
+struct FixpipeTensor2Tensor<Hardware::UB, Hardware::L0C, Hardware::MAX, ArchVersion::V3510> {
     using type = FixpipeL0C2Out3510;
 };
 
 template <>
-struct FixpipeTensor2Tensor<Hardware::UB, Hardware::L0C, Hardware::L1, ArchVersion::V3510, FOUR_DIM_DATA> {
+struct FixpipeTensor2Tensor<Hardware::UB, Hardware::L0C, Hardware::L1, ArchVersion::V3510> {
     using type = FixpipeQuantL0C2Out3510;
 };
 

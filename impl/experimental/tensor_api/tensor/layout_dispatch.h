@@ -15,7 +15,6 @@
 #ifndef IMPL_TENSOR_API_TENSOR_LAYOUT_DISPATCH_H
 #define IMPL_TENSOR_API_TENSOR_LAYOUT_DISPATCH_H
 
-#include "impl/utils/std/cmath/ceil_division.h"
 #include "impl/experimental/tensor_api/utils/utils_impl.h"
 
 namespace AscendC {

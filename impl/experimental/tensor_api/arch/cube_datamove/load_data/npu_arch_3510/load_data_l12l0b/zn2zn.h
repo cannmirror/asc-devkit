@@ -19,11 +19,11 @@
 
 namespace AscendC {
 namespace Te {
-class LoadDataFourDim3510L12L0BZN2ZN {
+class LoadDataL12L0BZN2ZN3510 {
 
 public:
     template <const LoadDataTrait& trait, typename T, typename U>
-    __aicore__ inline void Run(const T& dst, const U& src) {
+    __aicore__ inline static void Run(const T& dst, const U& src) {
         LoadDataImpl<TraitHolder<trait, false>::traitTransposed, T, U>(dst, src);
     }
 
@@ -34,7 +34,7 @@ private:
     };
 
     template <const LoadDataTrait& trait, typename T, typename U>
-    __aicore__ inline constexpr void CheckTemplate()
+    __aicore__ inline static constexpr void CheckTemplate()
     {
         CheckFormat::CheckZNTemplate<T>();
         CheckFormat::CheckZNTemplate<U>();
@@ -42,7 +42,7 @@ private:
     }
 
     template <const LoadDataTrait& trait, typename T, typename U>
-    __aicore__ inline void LoadDataImpl(const T& dst, const U& src)
+    __aicore__ inline static void LoadDataImpl(const T& dst, const U& src)
     {
         CheckTemplate<trait, T, U>();
         using DstType = typename T::elementType;
@@ -62,12 +62,10 @@ private:
         auto srcStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout) / STRIDE_UNIT;
         auto dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout) / STRIDE_UNIT;
         if constexpr (isFp4Type) {
-            LoadCbufToCbS4Base loadCbufToCbS4;
-            loadCbufToCbS4.template LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            LoadCbufToCbS43510::template LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
         }
         else {
-            LoadCbufToCbBase loadCbufToCb;
-            loadCbufToCb.template LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            LoadCbufToCb3510::template LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
         }
     }
 };

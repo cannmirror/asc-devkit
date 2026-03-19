@@ -16,7 +16,5 @@
 #define include_TENSOR_API_ARCH_ARCH_H
 
 #include "include/experimental/tensor_api/arch/trait_struct.h"
-#include "include/experimental/tensor_api/arch/cube_datamove/load_data.h"
-#include "include/experimental/tensor_api/arch/cube_datamove/fixpipe.h"
 
 #endif // include_TENSOR_API_ARCH_ARCH_H

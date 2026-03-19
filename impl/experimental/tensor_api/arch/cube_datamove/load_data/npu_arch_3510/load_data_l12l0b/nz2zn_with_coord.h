@@ -19,11 +19,11 @@
 
 namespace AscendC {
 namespace Te {
-class LoadDataFourDim3510L12L0BNZ2ZNWithCoord {
+class LoadDataL12L0BNZ2ZNWithCoord3510 {
 
 public:
     template <const LoadDataTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
+    __aicore__ inline static void Run(const T& dst, const U& src, const Coord& coord) {
         LoadDataImpl<TraitHolder<trait, true>::traitTransposed, T, U, Coord>(dst, src, coord);
     }
 
@@ -34,7 +34,7 @@ private:
     };
 
     template <const LoadDataTrait& trait, typename T, typename U>
-    __aicore__ inline constexpr void CheckTemplate()
+    __aicore__ inline static constexpr void CheckTemplate()
     {
         CheckFormat::CheckZNTemplate<T>();
         CheckFormat::CheckNZTemplate<U>();
@@ -42,7 +42,7 @@ private:
     }
 
     template <const LoadDataTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void LoadDataImpl(const T& dst, const U& src, const Coord& coord)
+    __aicore__ inline static void LoadDataImpl(const T& dst, const U& src, const Coord& coord)
     {
         CheckTemplate<trait, T, U>();
         using DstType = typename T::elementType;
@@ -58,8 +58,7 @@ private:
         uint32_t STRIDE_UNIT = FRACTAL_FIXED * (C0_SIZE / sizeof(DstType));
         auto srcStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / STRIDE_UNIT;
         auto dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout) / STRIDE_UNIT;
-        LoadCbufToCbBase loadCbufToCb;
-        loadCbufToCb.template LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+        LoadCbufToCb3510::template LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
     }
 };
 } // namespace Te

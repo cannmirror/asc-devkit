@@ -34,14 +34,11 @@ private:
     __aicore__ inline void Execute(const T& dst, const U& src, const Params& params) {
         constexpr auto quantPre = GetFixpipeQuantPre<trait, T, U>();
         if constexpr (IsL0cNZFormat<U>::value && IsNZFormat<T>::value) {
-            Fixpipe2OutNz2NzBase3510 nz2NzStrategy;
-            nz2NzStrategy.Run<trait, quantPre, T, U, Params>(dst, src, params);
+            Fixpipe2OutNz2Nz3510::Run<trait, quantPre, T, U, Params>(dst, src, params);
         } else if constexpr (IsL0cNZFormat<U>::value && IsNDFormat<T>::value) {
-            Fixpipe2OutNz2NdBase3510 nz2NdStrategy;
-            nz2NdStrategy.Run<trait, quantPre, T, U, Params>(dst, src, params);
+            Fixpipe2OutNz2Nd3510::Run<trait, quantPre, T, U, Params>(dst, src, params);
         } else if constexpr (IsL0cNZFormat<U>::value && IsDNFormat<T>::value) {
-            Fixpipe2OutNz2DnBase3510 nz2DnStrategy;
-            nz2DnStrategy.Run<trait, quantPre, T, U, Params>(dst, src, params);
+            Fixpipe2OutNz2Dn3510::Run<trait, quantPre, T, U, Params>(dst, src, params);
         }
     }
 };

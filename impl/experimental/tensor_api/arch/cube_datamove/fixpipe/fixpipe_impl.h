@@ -42,8 +42,7 @@ Fixpipe(const T& dst, const U& src, const FixpipeParams& params = FixpipeParams{
     constexpr Hardware dstPos = GetHardPos<T>();
     constexpr Hardware srcPos = GetHardPos<U>();
     constexpr Hardware quantPos = Hardware::MAX;
-    using Tensor2Tensor = typename FixpipeTensor2Tensor<dstPos, srcPos, quantPos,
-        CURRENT_ARCH_VERSION, FOUR_DIM_DATA>::type;
+    using Tensor2Tensor = typename FixpipeTensor2Tensor<dstPos, srcPos, quantPos, CURRENT_ARCH_VERSION>::type;
     Tensor2Tensor{}.template Run<trait>(dst, src, params);
 }
 
@@ -54,8 +53,7 @@ Fixpipe(const T& dst, const U& src, const S& quant, const FixpipeParams& params 
     constexpr Hardware dstPos = GetHardPos<T>();
     constexpr Hardware srcPos = GetHardPos<U>();
     constexpr Hardware quantPos = Hardware::L1;
-    using Tensor2Tensor = typename FixpipeTensor2Tensor<dstPos, srcPos, quantPos,
-        CURRENT_ARCH_VERSION, FOUR_DIM_DATA>::type;
+    using Tensor2Tensor = typename FixpipeTensor2Tensor<dstPos, srcPos, quantPos, CURRENT_ARCH_VERSION>::type;
     Tensor2Tensor{}.template Run<trait>(dst, src, quant, params);
 }
 

@@ -21,7 +21,7 @@
 namespace AscendC {
 namespace Te {
 
-class FixpipetNz2Nz2201Base : public Copy2201MatrixCcToGmBase {
+class FixpipetNz2Nz2201 : public CopyMatrixCcToGm2201 {
 public:
     template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename Params>
     __aicore__ inline void Run(const T& dst, const U& src, const Params& inParams) {
@@ -61,7 +61,7 @@ private:
     }
 };
 
-class FixpipetNz2Nd2201Base : public Copy2201MatrixCcToGmBase, public SetRegister2201Base {
+class FixpipetNz2Nd2201 : public CopyMatrixCcToGm2201, public SetRegister2201 {
 public:
     template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename Params>
     __aicore__ inline void Run(const T& dst, const U& src, const Params& inParams) {
@@ -113,7 +113,7 @@ private:
     }
 };
 
-class FixpipeFourDim2201L0C2GM : public FixpipetNz2Nz2201Base, public FixpipetNz2Nd2201Base {
+class FixpipeL0C2GM2201 : public FixpipetNz2Nz2201, public FixpipetNz2Nd2201 {
 public:
     template <const FixpipeTrait& trait, typename T, typename U, typename Params>
     __aicore__ inline void Run(const T& dst, const U& src, const Params& params) {
@@ -125,9 +125,9 @@ private:
     __aicore__ inline void Execute(const T& dst, const U& src, const Params& params) {
         constexpr auto quantPre = GetFixpipe2201QuantPre<trait, T, U>();
         if constexpr (IsL0cNZFormat<U>::value && IsL0cNZFormat<T>::value) {
-            FixpipetNz2Nz2201Base::Run<trait, quantPre, T, U>(dst, src, params);
+            FixpipetNz2Nz2201::Run<trait, quantPre, T, U>(dst, src, params);
         } else if constexpr (IsL0cNZFormat<U>::value && IsNDFormat<T>::value) {
-            FixpipetNz2Nd2201Base::Run<trait, quantPre, T, U>(dst, src, params);
+            FixpipetNz2Nd2201::Run<trait, quantPre, T, U>(dst, src, params);
         }
     }
 };

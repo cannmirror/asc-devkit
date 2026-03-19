@@ -22,7 +22,7 @@
 namespace AscendC {
 namespace Te {
 
-class LoadDataFourDim2201L12L0BBase {
+class LoadDataL12L0BBase2201 {
 public:
     template <const LoadDataTrait& trait, typename T, typename U, class Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
@@ -94,7 +94,7 @@ public:
     }
 };
 
-class LoadDataFourDim2201L12L0BNZ2ZNB8 : public LoadDataFourDim2201L12L0BBase {
+class LoadDataL12L0BNZ2ZNB82201 : public LoadDataL12L0BBase2201 {
 public:
     template <const LoadDataTrait& trait, typename T, typename U, class Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
@@ -164,7 +164,7 @@ private:
     }
 };
 
-class LoadDataFourDim2201L12L0BNZ2ZN : public LoadDataFourDim2201L12L0BBase {
+class LoadDataL12L0BNZ2ZN2201 : public LoadDataL12L0BBase2201 {
 public:
     template <const LoadDataTrait& trait, typename T, typename U, class Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
@@ -210,7 +210,7 @@ private:
     }
 };
 
-class LoadDataFourDim2201L12L0BZN2ZN : public LoadDataFourDim2201L12L0BBase {
+class LoadDataL12L0BZN2ZN2201 : public LoadDataL12L0BBase2201 {
 public:
     template <const LoadDataTrait& trait, typename T, typename U, class Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
@@ -284,18 +284,18 @@ private:
     }
 };
 
-class LoadDataFourDim2201L12L0B : public LoadDataFourDim2201L12L0BNZ2ZNB8, public LoadDataFourDim2201L12L0BNZ2ZN,
-    public LoadDataFourDim2201L12L0BZN2ZN {
+class LoadDataL12L0B2201 : public LoadDataL12L0BNZ2ZNB82201, public LoadDataL12L0BNZ2ZN2201,
+    public LoadDataL12L0BZN2ZN2201 {
 public:
     template <const LoadDataTrait& trait, typename T, typename U, class Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
         using type = typename U::elementType;
         if constexpr (IsNZFormat<U>::value && IsZNFormat<T>::value && (sizeof(type) == 1)) {
-            LoadDataFourDim2201L12L0BNZ2ZNB8::Run<trait, T, U, Coord>(dst, src, coord);
+            LoadDataL12L0BNZ2ZNB82201::Run<trait, T, U, Coord>(dst, src, coord);
         } else if constexpr (IsNZFormat<U>::value && IsZNFormat<T>::value) {
-            LoadDataFourDim2201L12L0BNZ2ZN::Run<trait, T, U, Coord>(dst, src, coord);
+            LoadDataL12L0BNZ2ZN2201::Run<trait, T, U, Coord>(dst, src, coord);
         } else if constexpr (IsZNFormat<U>::value && IsZNFormat<T>::value) {
-            LoadDataFourDim2201L12L0BZN2ZN::Run<trait, T, U, Coord>(dst, src, coord);
+            LoadDataL12L0BZN2ZN2201::Run<trait, T, U, Coord>(dst, src, coord);
         }
     }
 };

@@ -21,17 +21,17 @@
 
 namespace AscendC {
 namespace Te {
-class LoadCbufToCaBase {
+class LoadCbufToCa3510 {
 public:
     template <const LoadDataTrait& trait, typename T, typename U, typename... Params>
-    __aicore__ inline void LoadData(const T& dst, const U& src, const Params& ...params)
+    __aicore__ inline static void LoadData(const T& dst, const U& src, const Params& ...params)
     {
         LoadCbufToCa<trait.transposed>(dst.Data().Get(), src.Data().Get(), params...);
     }
 
 private:
     template <bool transpose, typename T>
-    __aicore__ inline void LoadCbufToCa(__ca__ T* dst, __cbuf__ T* src, uint16_t mStartPosition,
+    __aicore__ inline static void LoadCbufToCa(__ca__ T* dst, __cbuf__ T* src, uint16_t mStartPosition,
         uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride)
     {
         if ASCEND_IS_AIV {
@@ -43,17 +43,17 @@ private:
     }
 };
 
-class LoadCbufToCaS4Base {
+class LoadCbufToCaS43510 {
 public:
     template <const LoadDataTrait& trait, typename T, typename U, typename... Params>
-    __aicore__ inline void LoadData(const T& dst, const U& src, const Params& ...params)
+    __aicore__ inline static void LoadData(const T& dst, const U& src, const Params& ...params)
     {
         LoadCbufToCa<trait.transposed>(dst.Data().Get(), src.Data().Get(), params...);
     }
 
 private:
     template <bool transpose, typename T>
-    __aicore__ inline void LoadCbufToCa(__ca__ T* dst, __cbuf__ T* src, uint16_t mStartPosition,
+    __aicore__ inline static void LoadCbufToCa(__ca__ T* dst, __cbuf__ T* src, uint16_t mStartPosition,
         uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride)
     {
         if ASCEND_IS_AIV {
@@ -65,17 +65,17 @@ private:
     }
 };
 
-class LoadCbufToCbBase {
+class LoadCbufToCb3510 {
 public:
     template <const LoadDataTrait& trait, typename T, typename U, typename... Params>
-    __aicore__ inline void LoadData(const T& dst, const U& src, const Params& ...params)
+    __aicore__ inline static void LoadData(const T& dst, const U& src, const Params& ...params)
     {
         LoadCbufToCb<trait.transposed>(dst.Data().Get(), src.Data().Get(), params...);
     }
 
 private:
     template <bool transpose, typename T>
-    __aicore__ inline void LoadCbufToCb(__cb__ T* dst, __cbuf__ T* src, uint16_t mStartPosition,
+    __aicore__ inline static void LoadCbufToCb(__cb__ T* dst, __cbuf__ T* src, uint16_t mStartPosition,
         uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride)
     {
         if ASCEND_IS_AIV {
@@ -87,17 +87,17 @@ private:
     }
 };
 
-class LoadCbufToCbS4Base {
+class LoadCbufToCbS43510 {
 public:
     template <const LoadDataTrait& trait, typename T, typename U, typename... Params>
-    __aicore__ inline void LoadData(const T& dst, const U& src, const Params& ...params)
+    __aicore__ inline static void LoadData(const T& dst, const U& src, const Params& ...params)
     {
         LoadCbufToCb<trait.transposed>(dst.Data().Get(), src.Data().Get(), params...);
     }
 
 private:
     template <bool transpose, typename T>
-    __aicore__ inline void LoadCbufToCb(__cb__ T* dst, __cbuf__ T* src, uint16_t mStartPosition,
+    __aicore__ inline static void LoadCbufToCb(__cb__ T* dst, __cbuf__ T* src, uint16_t mStartPosition,
         uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride)
     {
         if ASCEND_IS_AIV {

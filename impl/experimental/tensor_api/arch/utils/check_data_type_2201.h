@@ -48,13 +48,21 @@ public:
         constexpr auto biasPos = GetHardPos<V>();
 
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
-        static_assert(
-            Std::is_one_of_v<Std::tuple<biasDataType, dstDataType, fmDataType, filterDataType>,
-                             Std::tuple<__biasbuf__ int32_t, __cc__ int32_t, __ca__ int8_t, __cb__ int8_t>,
-                             Std::tuple<__biasbuf__ float, __cc__ float, __ca__ half, __cb__ half>,
-                             Std::tuple<__biasbuf__ float, __cc__ float, __ca__ bfloat16_t, __cb__ bfloat16_t>,
-                             Std::tuple<__biasbuf__ float, __cc__ float, __ca__ float, __cb__ float>>,
-            "The data type is not supported.");
+        if constexpr (biasPos == Hardware::BIAS) {
+            static_assert(Std::is_one_of_v<Std::tuple<biasDataType, dstDataType, fmDataType, filterDataType>,
+                                           Std::tuple<__biasbuf__ int32_t, __cc__ int32_t, __ca__ int8_t, __cb__ int8_t>,
+                                           Std::tuple<__biasbuf__ float, __cc__ float, __ca__ half, __cb__ half>,
+                                           Std::tuple<__biasbuf__ float, __cc__ float, __ca__ bfloat16_t, __cb__ bfloat16_t>,
+                                           Std::tuple<__biasbuf__ float, __cc__ float, __ca__ float, __cb__ float>>,
+                          "The data type is not supported.");
+        } else if constexpr (biasPos == Hardware::L0C) {
+            static_assert(Std::is_one_of_v<Std::tuple<biasDataType, dstDataType, fmDataType, filterDataType>,
+                                           Std::tuple<__cc__ int32_t, __cc__ int32_t, __ca__ int8_t, __cb__ int8_t>,
+                                           Std::tuple<__cc__ float, __cc__ float, __ca__ half, __cb__ half>,
+                                           Std::tuple<__cc__ float, __cc__ float, __ca__ bfloat16_t, __cb__ bfloat16_t>,
+                                           Std::tuple<__cc__ float, __cc__ float, __ca__ float, __cb__ float>>,
+                          "The data type is not supported.");
+        }
 #endif
     }
 
