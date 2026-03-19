@@ -109,7 +109,7 @@ __aicore__ inline constexpr bool CheckPairs(const T& left, const U& right, Args 
 
 template <typename... Args>
 __aicore__ inline constexpr bool CheckEvenPairs(Args... args) {
-    static_assert((sizeof...(args) % 2) == 0, "parameters number must be an number.");
+    static_assert((sizeof...(args) % 2) == 0, "parameters number must be an even number.");
     return CheckPairs(args...);
 }
 
@@ -273,7 +273,7 @@ public:
 
 template <typename T>
 struct IsScaleANDFormat { // shape = ((1, row),(1,col)) stride = ((0, col),(0, 1))
-    static constexpr bool value = IsNDFormat<T>::normalValue;
+    static constexpr bool value = IsNDFormat<T>::value;
 };
 
 template <typename T>
@@ -288,7 +288,7 @@ struct IsScaleBNDFormat { // shape = ((2, row/2),(1,col)) stride = ((1, 2*col),(
 
 template <typename T>
 struct IsScaleBDNFormat { // shape = ((1, row),(1,col)) stride = ((0, 1),(0, row))
-    static constexpr bool value = IsDNFormat<T>::normalValue;
+    static constexpr bool value = IsDNFormat<T>::value;
 };
 
 } // namespace Te
