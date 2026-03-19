@@ -1421,7 +1421,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float cbrtf(float x)
     }
 
     // In order for Newtonian iteration method to converge quickly, we need to reduce x to a certain range(0.125, 8).
-    // Depending on the computer's float number storage structure， we can adjust the exponential part of x.
+    // Depending on the computer's float number storage structure, we can adjust the exponential part of x.
     // the adjustment factor(k) ensures the exponent of x' is in (-3, 3)
     int32_t exponent = exp_bits - 127;
     int32_t k;

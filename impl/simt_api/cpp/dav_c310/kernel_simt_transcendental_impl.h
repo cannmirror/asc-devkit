@@ -199,7 +199,7 @@ __aicore__ inline float SinPoly(float x)
  * Computes the cosine of an angle using trigonometric identities and polynomial approximations.
  * Handles angles in the full range by reducing them to [-pi/2, pi/2] and applying identities.
  *
- * @param x ：The input angle in radians.
+ * @param x The input angle in radians.
  * @return The cosine of the input angle.
  * Special cases:
  *    if x is NaN, return NaN;
@@ -1300,7 +1300,7 @@ __aicore__ inline T CbrtImpl(T x)
     }
 
     // In order for Newtonian iteration method to converge quickly, we need to reduce x to a certain range(0.125, 8).
-    // Depending on the computer's float number storage structure， we can adjust the exponential part of x.
+    // Depending on the computer's float number storage structure, we can adjust the exponential part of x.
     // the adjustment factor(k) ensures the exponent of x' is in (-3, 3)
     int32_t exponent = expBits - 127;
     int32_t k;

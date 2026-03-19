@@ -189,7 +189,7 @@ msprof op simulator ./demo
 
 当前目录下会生成OPPROF_前缀的文件夹，目录结构如下：
 ```bash
-OPPROF_2025xxxx_XXXXXX
+OPPROF_xxxxxxxx_XXXXXX
 ├── dump                                    # 原始性能数据，无需关注
 └── simulation                              # 仿真性能数据分析结果
     ├── core0.veccore0                      # 算子block级子核
