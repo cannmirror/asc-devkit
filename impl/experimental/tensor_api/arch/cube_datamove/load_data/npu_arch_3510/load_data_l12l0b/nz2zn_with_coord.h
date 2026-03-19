@@ -49,13 +49,13 @@ private:
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
         auto mStartPosition = Std::get<0>(coord) / FRACTAL_FIXED;
-        auto kStartPosition = Std::get<1>(coord) * sizeof(DstType) / C0_SIZE;
+        auto kStartPosition = Std::get<1>(coord) * sizeof(DstType) / C0_SIZE<>;
         auto mStep = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) *
                 GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout) / FRACTAL_FIXED;
         auto kStep = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) *
-                GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout) * sizeof(DstType) / C0_SIZE;
+                GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout) * sizeof(DstType) / C0_SIZE<>;
         // Nz -> Zn
-        uint32_t STRIDE_UNIT = FRACTAL_FIXED * (C0_SIZE / sizeof(DstType));
+        uint32_t STRIDE_UNIT = FRACTAL_FIXED * (C0_SIZE<> / sizeof(DstType));
         auto srcStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / STRIDE_UNIT;
         auto dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout) / STRIDE_UNIT;
         LoadCbufToCb3510::template LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);

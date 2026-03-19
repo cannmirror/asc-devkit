@@ -44,7 +44,7 @@ private:
         using srcType = typename U::elementType;
         using dstType = typename T::elementType;
 
-        constexpr uint32_t C2PIPE2GM_UNIT = C0_SIZE * 2;
+        constexpr uint32_t C2PIPE2GM_UNIT = C0_SIZE<> * 2;
 
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
@@ -56,7 +56,7 @@ private:
 
         uint16_t blockCount = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
         uint16_t blockLen = Std::ceil_division(srcCol * sizeof(srcType), C2PIPE2GM_UNIT);
-        uint16_t srcStride = Std::ceil_division(srcRow * sizeof(srcType), C0_SIZE);
+        uint16_t srcStride = Std::ceil_division(srcRow * sizeof(srcType), C0_SIZE<>);
         uint16_t dstStride = Std::ceil_division(dstRow * sizeof(dstType), C2PIPE2GM_UNIT);
 
         CopyL12FBInstr copyInstr;

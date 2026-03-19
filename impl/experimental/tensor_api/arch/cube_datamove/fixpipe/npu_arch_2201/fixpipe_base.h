@@ -130,7 +130,7 @@ private:
         uint16_t rowStride = GetEleFromLayout<decltype(layout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(layout);
         uint16_t blockCount = Std::ceil_division(calNSize, colLength);
         uint16_t blockLen = Std::ceil_division(colLength * sizeof(srcType), fbufBurstLenUnit);
-        uint16_t srcStride = Std::ceil_division(rowStride * sizeof(srcType), C0_SIZE);
+        uint16_t srcStride = Std::ceil_division(rowStride * sizeof(srcType), C0_SIZE<>);
         uint16_t dstStride = blockLen;
         uint32_t deqValueOffset = MAIN_LOOP_N_SIZE_2201 / colLength * rowStride * nIterIndex;
 

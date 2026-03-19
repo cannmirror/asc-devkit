@@ -71,7 +71,7 @@ struct TupleDispatcher;
 template <typename T>
 struct TupleDispatcher<LayoutFormat::NZ, TupleFormat::Shape, T> {
     __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
-        constexpr auto c0Size = is_b4_type<T> ? C0_SIZE * 2 : C0_SIZE / sizeof(T);
+        constexpr auto c0Size = C0_SIZE<T> / sizeof(T);
         return GetTuple(Std::Int<FRACTAL_FIXED>{},  Std::ceil_division(row, FRACTAL_FIXED), 
                                 Std::Int<c0Size / sizeof(T)>{},  Std::ceil_division(column, (c0Size / sizeof(T)))); 
     }
@@ -81,14 +81,14 @@ template <>
 struct TupleDispatcher<LayoutFormat::NZ, TupleFormat::Shape, Std::ignore_t> {
     __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
         return GetTuple(Std::Int<FRACTAL_FIXED>{},  Std::ceil_division(row, FRACTAL_FIXED), 
-                                Std::Int<C0_SIZE / sizeof(uint16_t)>{},  Std::ceil_division(column, (C0_SIZE / sizeof(uint16_t)))); 
+                                Std::Int<C0_SIZE<> / sizeof(uint16_t)>{},  Std::ceil_division(column, (C0_SIZE<> / sizeof(uint16_t)))); 
     }
 };
 
 template <typename T>
 struct TupleDispatcher<LayoutFormat::ZN, TupleFormat::Shape, T> {
     __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
-        return GetTuple(Std::Int<C0_SIZE / sizeof(T)>{},  Std::ceil_division(row, (C0_SIZE / sizeof(T))),
+        return GetTuple(Std::Int<C0_SIZE<> / sizeof(T)>{},  Std::ceil_division(row, (C0_SIZE<> / sizeof(T))),
                                 Std::Int<FRACTAL_FIXED>{},  Std::ceil_division(column, FRACTAL_FIXED));
     }
 };
@@ -125,7 +125,7 @@ template <typename T>
 struct TupleDispatcher<LayoutFormat::ZZ, TupleFormat::Shape, T> {
     __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
         return GetTuple(Std::Int<FRACTAL_FIXED>{}, Std::ceil_division(row, FRACTAL_FIXED),
-                                    Std::Int<C0_SIZE / sizeof(T)>{}, Std::ceil_division(column, (C0_SIZE / sizeof(T))));
+                                    Std::Int<C0_SIZE<> / sizeof(T)>{}, Std::ceil_division(column, (C0_SIZE<> / sizeof(T))));
     }
 };
 
@@ -149,7 +149,7 @@ struct TupleDispatcher<LayoutFormat::NN, TupleFormat::Shape, fp8_e8m0_t> {
 template <typename T>
 struct TupleDispatcher<LayoutFormat::NZ, TupleFormat::Stride, T> {
     __aicore__ inline static decltype(auto) apply(size_t stride0, size_t stride1) {
-        constexpr auto c0Size = is_b4_type<T> ? C0_SIZE * 2 : C0_SIZE / sizeof(T);
+        constexpr auto c0Size = C0_SIZE<T> / sizeof(T);
         return GetTuple(Std::Int<c0Size / sizeof(T)>{},  stride0, Std::Int<1>{},  stride1); 
     }
 };
@@ -157,14 +157,14 @@ struct TupleDispatcher<LayoutFormat::NZ, TupleFormat::Stride, T> {
 template <>
 struct TupleDispatcher<LayoutFormat::NZ, TupleFormat::Stride, Std::ignore_t> {
     __aicore__ inline static decltype(auto) apply(size_t stride0, size_t stride1) {
-        return GetTuple(Std::Int<C0_SIZE / sizeof(uint16_t)>{},  stride0, Std::Int<1>{},  stride1); 
+        return GetTuple(Std::Int<C0_SIZE<> / sizeof(uint16_t)>{},  stride0, Std::Int<1>{},  stride1); 
     }
 };
 
 template <typename T>
 struct TupleDispatcher<LayoutFormat::ZN, TupleFormat::Stride, T> {
     __aicore__ inline static decltype(auto) apply(size_t stride0, size_t stride1) {
-        return GetTuple(Std::Int<1>{},  stride0, Std::Int<C0_SIZE / sizeof(T)>{},  stride1);
+        return GetTuple(Std::Int<1>{},  stride0, Std::Int<C0_SIZE<> / sizeof(T)>{},  stride1);
     }
 };
 
@@ -199,7 +199,7 @@ struct TupleDispatcher<LayoutFormat::ND, TupleFormat::Stride, fp8_e8m0_t> {
 template <typename T>
 struct TupleDispatcher<LayoutFormat::ZZ, TupleFormat::Stride, T> {
     __aicore__ inline static decltype(auto) apply(size_t stride0, size_t stride1) {
-        return GetTuple(Std::Int<C0_SIZE / sizeof(T)>{}, stride0, Std::Int<1>{}, stride1);
+        return GetTuple(Std::Int<C0_SIZE<> / sizeof(T)>{}, stride0, Std::Int<1>{}, stride1);
     }
 };
 
@@ -221,7 +221,7 @@ struct TupleDispatcher<LayoutFormat::NN, TupleFormat::Stride, fp8_e8m0_t> {
 template <typename T>
 struct TupleDispatcher<LayoutFormat::NZ, TupleFormat::Coord, T> {
     __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
-        constexpr auto c0Size = is_b4_type<T> ? C0_SIZE * 2 : C0_SIZE / sizeof(T);
+        constexpr auto c0Size = C0_SIZE<T> / sizeof(T);
         return GetTuple(Std::Int<0>{},  Std::ceil_division(row, FRACTAL_FIXED), 
                                 Std::Int<0>{},  Std::ceil_division(column, (c0Size / sizeof(T)))); 
     }
@@ -231,14 +231,14 @@ template <>
 struct TupleDispatcher<LayoutFormat::NZ, TupleFormat::Coord, Std::ignore_t> {
     __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
         return GetTuple(Std::Int<0>{},  Std::ceil_division(row, FRACTAL_FIXED), 
-                                Std::Int<0>{},  Std::ceil_division(column, (C0_SIZE / sizeof(uint16_t)))); 
+                                Std::Int<0>{},  Std::ceil_division(column, (C0_SIZE<> / sizeof(uint16_t)))); 
     }
 };
 
 template <typename T>
 struct TupleDispatcher<LayoutFormat::ZN, TupleFormat::Coord, T> {
     __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
-        return GetTuple(Std::Int<0>{},  Std::ceil_division(row, (C0_SIZE / sizeof(T))),
+        return GetTuple(Std::Int<0>{},  Std::ceil_division(row, (C0_SIZE<> / sizeof(T))),
                                 Std::Int<0>{},  Std::ceil_division(column, FRACTAL_FIXED));
     }
 };
@@ -275,7 +275,7 @@ template <typename T>
 struct TupleDispatcher<LayoutFormat::ZZ, TupleFormat::Coord, T> {
     __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
         return GetTuple(Std::Int<0>{}, Std::ceil_division(row, FRACTAL_FIXED),
-                                    Std::Int<0>{}, Std::ceil_division(column, (C0_SIZE / sizeof(T))));
+                                    Std::Int<0>{}, Std::ceil_division(column, (C0_SIZE<> / sizeof(T))));
     }
 };
 
@@ -302,7 +302,7 @@ struct LayoutDispatcher;
 template <typename T>
 struct LayoutDispatcher<LayoutFormat::NZ, T> {
     __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
-        constexpr auto c0Size = is_b4_type<T> ? C0_SIZE * 2 : C0_SIZE / sizeof(T);
+        constexpr auto c0Size = C0_SIZE<T> / sizeof(T);
         return LayoutConstructor(Std::Int<FRACTAL_FIXED>{}, Std::ceil_division(row, FRACTAL_FIXED), Std::Int<c0Size>{},
                                  Std::ceil_division(column, (c0Size)), Std::Int<c0Size>{}, Std::Int<c0Size * FRACTAL_FIXED>{},
                                  Std::Int<1>{}, c0Size * CeilAlign(row, FRACTAL_FIXED));
@@ -313,16 +313,16 @@ template <>
 struct LayoutDispatcher<LayoutFormat::NZ, Std::ignore_t> {
     __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
         return LayoutConstructor(Std::Int<FRACTAL_FIXED>{},  Std::ceil_division(row, FRACTAL_FIXED), 
-                                Std::Int<C0_SIZE / sizeof(uint16_t)>{},  Std::ceil_division(column, (C0_SIZE / sizeof(uint16_t))), 
-                                Std::Int<C0_SIZE / sizeof(uint16_t)>{},  Std::Int<C0_SIZE / sizeof(uint16_t) * FRACTAL_FIXED>{},
-                                Std::Int<1>{},  C0_SIZE / sizeof(uint16_t) * CeilAlign(row, FRACTAL_FIXED)); 
+                                Std::Int<C0_SIZE<> / sizeof(uint16_t)>{},  Std::ceil_division(column, (C0_SIZE<> / sizeof(uint16_t))), 
+                                Std::Int<C0_SIZE<> / sizeof(uint16_t)>{},  Std::Int<C0_SIZE<> / sizeof(uint16_t) * FRACTAL_FIXED>{},
+                                Std::Int<1>{},  C0_SIZE<> / sizeof(uint16_t) * CeilAlign(row, FRACTAL_FIXED)); 
     }
 };
 
 template <typename T>
 struct LayoutDispatcher<LayoutFormat::ZN, T> {
     __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
-        constexpr auto c0Size = is_b4_type<T> ? C0_SIZE * 2 : C0_SIZE / sizeof(T);
+        constexpr auto c0Size = C0_SIZE<T> / sizeof(T);
         return LayoutConstructor(Std::Int<c0Size>{},  Std::ceil_division(row, (c0Size)),
                                 Std::Int<FRACTAL_FIXED>{},  Std::ceil_division(column, FRACTAL_FIXED),
                                 Std::Int<1>{},  c0Size * CeilAlign(column, FRACTAL_FIXED),
@@ -366,9 +366,9 @@ template <typename T>
 struct LayoutDispatcher<LayoutFormat::ZZ, T> {
     __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
         return LayoutConstructor(Std::Int<FRACTAL_FIXED>{}, Std::ceil_division(row, FRACTAL_FIXED),
-                                    Std::Int<C0_SIZE / sizeof(T)>{}, Std::ceil_division(column, (C0_SIZE / sizeof(T))),
-                                    Std::Int<C0_SIZE / sizeof(T)>{}, FRACTAL_FIXED * CeilAlign(column, (C0_SIZE / sizeof(T))),
-                                    Std::Int<1>{}, Std::Int<C0_SIZE / sizeof(T) * FRACTAL_FIXED>{});
+                                    Std::Int<C0_SIZE<> / sizeof(T)>{}, Std::ceil_division(column, (C0_SIZE<> / sizeof(T))),
+                                    Std::Int<C0_SIZE<> / sizeof(T)>{}, FRACTAL_FIXED * CeilAlign(column, (C0_SIZE<> / sizeof(T))),
+                                    Std::Int<1>{}, Std::Int<C0_SIZE<> / sizeof(T) * FRACTAL_FIXED>{});
     }
 };
 
@@ -378,7 +378,7 @@ struct LayoutDispatcher<LayoutFormat::ZZ, fp8_e8m0_t> {
         return LayoutConstructor(Std::Int<FRACTAL_FIXED>{}, Std::ceil_division(row, FRACTAL_FIXED),
                                     Std::Int<MX_SCALE_K0>{}, column / MX_SCALE_K0,
                                     Std::Int<MX_SCALE_K0>{}, column * FRACTAL_FIXED,
-                                    Std::Int<1>{}, Std::Int<C0_SIZE>{});
+                                    Std::Int<1>{}, Std::Int<C0_SIZE<>>{});
     }
 };
 
@@ -387,7 +387,7 @@ struct LayoutDispatcher<LayoutFormat::NN, fp8_e8m0_t> {
     __aicore__ inline static decltype(auto) apply(size_t row, size_t column) { // (scaleK, n)
         return LayoutConstructor(Std::Int<MX_SCALE_K0>{}, row / MX_SCALE_K0,
                                     Std::Int<FRACTAL_FIXED>{}, Std::ceil_division(column, FRACTAL_FIXED),
-                                    Std::Int<1>{}, Std::Int<C0_SIZE>{},
+                                    Std::Int<1>{}, Std::Int<C0_SIZE<>>{},
                                     Std::Int<MX_SCALE_K0>{}, row * FRACTAL_FIXED);
     }
 };

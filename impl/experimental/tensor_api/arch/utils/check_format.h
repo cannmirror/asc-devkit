@@ -30,7 +30,7 @@ public:
         using dataType = typename T::elementType;
         using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
         using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<C0_SIZE / sizeof(dataType)>>,
+        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<C0_SIZE<> / sizeof(dataType)>>,
                       "Layout->Shape->Column->ZeroDim must be 32/sizeof(dataType)!");
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>,
                       "Layout->Shape->Row->ZeroDim must be 16!");
@@ -38,7 +38,7 @@ public:
         using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
         using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>, "Layout->Stride->Column-ZeroDim must be 1!");
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<C0_SIZE / sizeof(dataType)>>,
+        static_assert(Std::is_same_v<StrideRow0, Std::Int<C0_SIZE<> / sizeof(dataType)>>,
                       "Layout->Stride->Row->ZeroDim must be 32/sizeof(dataType)!");
     }
 
@@ -48,7 +48,7 @@ public:
         using dataType = typename T::elementType;
         using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
         using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        constexpr auto c0Size = is_b4_type<dataType> ? C0_SIZE * 2 : C0_SIZE / sizeof(dataType);
+        constexpr auto c0Size = C0_SIZE<dataType> / sizeof(dataType);
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<FRACTAL_FIXED>>,
                       "Filter Layout->Shape->Column->ZeroDim must be 16!");
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<c0Size>>,
@@ -68,7 +68,7 @@ public:
         using type = typename T::elementType;
         using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
         using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        constexpr auto c0Size = is_b4_type<type> ? C0_SIZE * 2 : C0_SIZE / sizeof(type);
+        constexpr auto c0Size = C0_SIZE<type> / sizeof(type);
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>,
                       "Layout->Shape->Row->ZeroDim must be 16!");
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<c0Size>>,

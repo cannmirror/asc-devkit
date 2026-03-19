@@ -168,7 +168,7 @@ void SimND2Nz(const T& dst, const U& src)
 
     auto srcRowStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
 
-    uint32_t c0Elements = C0_SIZE / sizeof(srcType);
+    uint32_t c0Elements = C0_SIZE<> / sizeof(srcType);
     uint32_t M0 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout);
     uint32_t N0 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout);
     uint32_t M1 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
@@ -216,11 +216,11 @@ void SimulateNd2nzDataCopy(T* dst, T* src, uint16_t ndNum, uint64_t loop1SrcStri
                            uint16_t loop4DstStride, bool enableSmallC0)
 {
     constexpr uint32_t typeSize = sizeof(T);
-    uint32_t c0Elements = C0_SIZE / typeSize; // Number of elements in one C0 block
+    uint32_t c0Elements = C0_SIZE<> / typeSize; // Number of elements in one C0 block
     if (enableSmallC0) {
         for (int h = 0; h < ndNum; h++) {
             const uint8_t* srcNdAddr = reinterpret_cast<const uint8_t*>(src) + h * loop4SrcStride;
-            uint8_t* dstNdAddr = reinterpret_cast<uint8_t*>(dst) + h * loop4DstStride * C0_SIZE;
+            uint8_t* dstNdAddr = reinterpret_cast<uint8_t*>(dst) + h * loop4DstStride * C0_SIZE<>;
 
             uint16_t nCeil = (nValue + 3) / 4;
             for (int j = 0; j < nCeil; j++) {
@@ -241,14 +241,14 @@ void SimulateNd2nzDataCopy(T* dst, T* src, uint16_t ndNum, uint64_t loop1SrcStri
         uint32_t blockNum = (dValue + c0Elements - 1) / c0Elements;
         for (int h = 0; h < ndNum; h++) {
             const uint8_t* srcNdAddr = reinterpret_cast<const uint8_t*>(src) + h * loop4SrcStride;
-            uint8_t* dstNdAddr = reinterpret_cast<uint8_t*>(dst) + h * loop4DstStride * C0_SIZE;
+            uint8_t* dstNdAddr = reinterpret_cast<uint8_t*>(dst) + h * loop4DstStride * C0_SIZE<>;
             for (int i = 0; i < blockNum; i++) {
-                const uint8_t* srcBlockAddr = srcNdAddr + i * C0_SIZE;
-                uint8_t* dstBlockAddr = dstNdAddr + i * loop3DstStride * C0_SIZE;
+                const uint8_t* srcBlockAddr = srcNdAddr + i * C0_SIZE<>;
+                uint8_t* dstBlockAddr = dstNdAddr + i * loop3DstStride * C0_SIZE<>;
 
                 for (int j = 0; j < nValue; j++) {
                     const uint8_t* srcNAddr = srcBlockAddr + j * loop1SrcStride;
-                    uint8_t* dstNAddr = dstBlockAddr + j * loop2DstStride * C0_SIZE;
+                    uint8_t* dstNAddr = dstBlockAddr + j * loop2DstStride * C0_SIZE<>;
                     for (int k = 0; k < c0Elements; k++) {
                         uint32_t srcEleIndex = i * c0Elements + k;
                         uint8_t* dstEleAddr = dstNAddr + k * typeSize;

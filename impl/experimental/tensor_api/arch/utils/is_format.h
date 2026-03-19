@@ -95,7 +95,7 @@ struct CheckArrangement {
     static constexpr StrideRow1Type StrideRow1{};
     static constexpr StrideColumn0Type StrideColumn0{};
     static constexpr StrideColumn1Type StrideColumn1{};
-    static constexpr auto c0Size = is_b4_type<type> ? C0_SIZE * 2 : C0_SIZE / sizeof(type);
+    static constexpr auto c0Size = C0_SIZE<type> / sizeof(type);
 };
 
 __aicore__ inline constexpr bool CheckPairs() {

@@ -42,7 +42,7 @@ private:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline auto GenDataCopyParams(const T& dst, const U& src)
     {
-        constexpr uint32_t C2PIPE2GM_UNIT = C0_SIZE * 4;
+        constexpr uint32_t C2PIPE2GM_UNIT = C0_SIZE<> * 4;
         CheckTemplate<trait, T, U>();
 
         auto dstLayout = dst.Layout();
@@ -57,7 +57,7 @@ private:
 
         uint16_t blockCount = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
         uint16_t blockLen = Std::ceil_division(dstCol * sizeof(srcType), C2PIPE2GM_UNIT);
-        uint16_t srcStride = Std::ceil_division(srcRow * sizeof(srcType), C0_SIZE);
+        uint16_t srcStride = Std::ceil_division(srcRow * sizeof(srcType), C0_SIZE<>);
         uint16_t dstStride = Std::ceil_division(dstRow * sizeof(dstType), C2PIPE2GM_UNIT);
 
         return Std::make_tuple(blockCount, blockLen, srcStride, dstStride);

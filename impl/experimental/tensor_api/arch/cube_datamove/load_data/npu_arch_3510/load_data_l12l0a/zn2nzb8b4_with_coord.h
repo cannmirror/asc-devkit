@@ -85,7 +85,7 @@ private:
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
         uint16_t mStartPosition = Std::get<1>(coord) / FRACTAL_FIXED;
-        uint16_t kStartPosition = Std::get<0>(coord) * sizeof(typename U::elementType) / C0_SIZE;
+        uint16_t kStartPosition = Std::get<0>(coord) * sizeof(typename U::elementType) / C0_SIZE<>;
         auto m1 = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) *
                   GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout) -
                   GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) *
@@ -93,17 +93,13 @@ private:
         auto mStep = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout) *
                 GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout) / FRACTAL_FIXED - mStartPosition;
         auto kStep = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) *
-                GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout) / C0_SIZE - kStartPosition;
+                GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout) / C0_SIZE<> - kStartPosition;
         // Zn -> Nz
-        constexpr bool isFp4Type = Std::is_one_of_v<
-                Std::tuple<typename T::elementType, typename U::elementType>,
-                Std::tuple<__ca__ fp4x2_e2m1_t, __cbuf__ fp4x2_e2m1_t>,
-                Std::tuple<__ca__ fp4x2_e1m2_t, __cbuf__ fp4x2_e1m2_t>>;
-        constexpr int KHALF = 2;
-        uint32_t STRIDE_UNIT = isFp4Type ? FRACTAL_FIXED * (C0_SIZE / sizeof(DstType) * KHALF) : FRACTAL_FIXED * (C0_SIZE / sizeof(DstType));
+        constexpr uint32_t KHALF = 2;
+        constexpr uint32_t STRIDE_UNIT = C0_SIZE<DstType> / sizeof(DstType) * FRACTAL_FIXED;
         auto srcStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout) / STRIDE_UNIT;
         auto dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout) / STRIDE_UNIT;
-        if constexpr (isFp4Type) {
+        if constexpr (is_b4_type<DstType>) {
             if (m1 < FRACTAL_FIXED) {
                 LoadCbufToCaS43510::template LoadData<trait>(dst, src, mStartPosition, kStartPosition / KHALF, mStep, kStep / KHALF, srcStride, dstStride);
             } else {

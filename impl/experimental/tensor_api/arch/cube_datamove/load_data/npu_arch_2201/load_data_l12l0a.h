@@ -94,11 +94,11 @@ private:
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
         auto dstRow = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) * FRACTAL_FIXED;
-        auto dstCol = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) * C0_SIZE / sizeof(DstType);
+        auto dstCol = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) * C0_SIZE<> / sizeof(DstType);
         auto srcRow = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) * FRACTAL_FIXED;
-        auto srcCol = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout) * C0_SIZE / sizeof(DstType);
+        auto srcCol = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout) * C0_SIZE<> / sizeof(DstType);
         auto indexRow = Std::get<1>(coord) * FRACTAL_FIXED;
-        auto indexCol = Std::get<1>(coord) * C0_SIZE / sizeof(DstType);
+        auto indexCol = Std::get<1>(coord) * C0_SIZE<> / sizeof(DstType);
         // NZ
         auto config = srcRow | SHIFT_LEFT_16;
         auto params = Std::make_tuple(dstRow, dstCol, srcRow, srcCol, indexRow, indexCol, config);
@@ -147,11 +147,11 @@ private:
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
         auto dstRow = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) * FRACTAL_FIXED;
-        auto dstCol = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) * C0_SIZE / sizeof(DstType);
+        auto dstCol = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) * C0_SIZE<> / sizeof(DstType);
         // ZN
-        auto srcRow = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) * C0_SIZE / sizeof(DstType);
+        auto srcRow = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) * C0_SIZE<> / sizeof(DstType);
         auto srcCol = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout) * FRACTAL_FIXED;
-        auto indexRow = Std::get<1>(coord) * C0_SIZE / sizeof(DstType);
+        auto indexRow = Std::get<1>(coord) * C0_SIZE<> / sizeof(DstType);
         auto indexCol = Std::get<1>(coord) * FRACTAL_FIXED;
         constexpr const uint32_t SHIFT_BLOCK_LEN = 4;
         constexpr const uint32_t SHIFT_BLOCK_BYTE = 5;
@@ -217,10 +217,10 @@ private:
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
         auto dstRow = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) * FRACTAL_FIXED;
-        auto dstCol = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) * C0_SIZE / sizeof(DstType);
-        auto srcRow = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) * C0_SIZE / sizeof(DstType);
+        auto dstCol = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) * C0_SIZE<> / sizeof(DstType);
+        auto srcRow = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) * C0_SIZE<> / sizeof(DstType);
         auto srcCol = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout) * FRACTAL_FIXED;
-        auto indexRow = Std::get<1>(coord) * C0_SIZE / sizeof(DstType);
+        auto indexRow = Std::get<1>(coord) * C0_SIZE<> / sizeof(DstType);
         auto indexCol = Std::get<1>(coord) * FRACTAL_FIXED;
         auto config = srcCol | SHIFT_LEFT_16;
         auto params = Std::make_tuple(dstRow, dstCol, srcRow, srcCol, indexRow, indexCol, config);

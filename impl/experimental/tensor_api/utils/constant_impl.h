@@ -28,7 +28,6 @@ namespace AscendC {
 namespace Te {
 constexpr size_t TWO_DIM_DATA = 2;
 constexpr size_t FOUR_DIM_DATA = 4;
-constexpr size_t C0_SIZE = 32;
 constexpr size_t FRACTAL_FIXED = 16;
 constexpr size_t DISABLE_COORD = 0;
 constexpr size_t ENABLE_COORD = 1;
@@ -85,6 +84,19 @@ inline constexpr bool is_one_of_attr_v = Std::is_one_of_v<ElementType, __gm__ Da
 
 template <typename DataType>
 inline constexpr bool is_b4_type = is_one_of_attr_v<DataType, fp4x2_e1m2_t> || is_one_of_attr_v<DataType, fp4x2_e2m1_t>;
+
+template<typename T = Std::ignore_t>
+__aicore__ inline constexpr size_t GetC0Size() {
+    constexpr size_t c0Size = 32;
+    if constexpr (is_b4_type<T>) {
+        return c0Size * 2;
+    } else {
+        return c0Size;
+    }
+}
+
+template<typename T = Std::ignore_t>
+constexpr size_t C0_SIZE = GetC0Size<T>();
 
 template <size_t N, typename = Std::make_index_sequence<N>>
 struct EmptyGenerator;
