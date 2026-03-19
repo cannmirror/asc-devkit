@@ -54,14 +54,14 @@ public:
         if constexpr (biasPos == Hardware::BIAS) {
             static_assert(
                 Std::is_one_of_v<Std::tuple<biasDataType, dstDataType, fmDataType, filterDataType>,
-                                 Std::tuple<float, __cc__ float, __ca__ fp4x2_e2m1_t, __cb__ fp4x2_e2m1_t>,
-                                 Std::tuple<float, __cc__ float, __ca__ fp4x2_e2m1_t, __cb__ fp4x2_e1m2_t>,
-                                 Std::tuple<float, __cc__ float, __ca__ fp4x2_e1m2_t, __cb__ fp4x2_e2m1_t>,
-                                 Std::tuple<float, __cc__ float, __ca__ fp4x2_e1m2_t, __cb__ fp4x2_e1m2_t>,
-                                 Std::tuple<float, __cc__ float, __ca__ fp8_e4m3fn_t, __cb__ fp8_e4m3fn_t>,
-                                 Std::tuple<float, __cc__ float, __ca__ fp8_e4m3fn_t, __cb__ fp8_e5m2_t>,
-                                 Std::tuple<float, __cc__ float, __ca__ fp8_e5m2_t, __cb__ fp8_e4m3fn_t>,
-                                 Std::tuple<float, __cc__ float, __ca__ fp8_e5m2_t, __cb__ fp8_e5m2_t>>,
+                                 Std::tuple<__biasbuf__ float, __cc__ float, __ca__ fp4x2_e2m1_t, __cb__ fp4x2_e2m1_t>,
+                                 Std::tuple<__biasbuf__ float, __cc__ float, __ca__ fp4x2_e2m1_t, __cb__ fp4x2_e1m2_t>,
+                                 Std::tuple<__biasbuf__ float, __cc__ float, __ca__ fp4x2_e1m2_t, __cb__ fp4x2_e2m1_t>,
+                                 Std::tuple<__biasbuf__ float, __cc__ float, __ca__ fp4x2_e1m2_t, __cb__ fp4x2_e1m2_t>,
+                                 Std::tuple<__biasbuf__ float, __cc__ float, __ca__ fp8_e4m3fn_t, __cb__ fp8_e4m3fn_t>,
+                                 Std::tuple<__biasbuf__ float, __cc__ float, __ca__ fp8_e4m3fn_t, __cb__ fp8_e5m2_t>,
+                                 Std::tuple<__biasbuf__ float, __cc__ float, __ca__ fp8_e5m2_t, __cb__ fp8_e4m3fn_t>,
+                                 Std::tuple<__biasbuf__ float, __cc__ float, __ca__ fp8_e5m2_t, __cb__ fp8_e5m2_t>>,
                 "The data type is not supported for BIAS position.");
         } else if constexpr (biasPos == Hardware::L0C) {
             static_assert(
@@ -114,15 +114,15 @@ public:
         if constexpr (biasPos == Hardware::BIAS) {
             static_assert(
                 Std::is_one_of_v<Std::tuple<biasDataType, dstDataType, fmDataType, filterDataType>,
-                                 Std::tuple<int32_t, __cc__ int32_t, __ca__ int8_t, __cb__ int8_t>,
-                                 Std::tuple<float, __cc__ float, __ca__ half, __cb__ half>,
-                                 Std::tuple<float, __cc__ float, __ca__ float, __cb__ float>,
-                                 Std::tuple<float, __cc__ float, __ca__ bfloat16_t, __cb__ bfloat16_t>,
-                                 Std::tuple<float, __cc__ float, __ca__ fp8_e4m3fn_t, __cb__ fp8_e4m3fn_t>,
-                                 Std::tuple<float, __cc__ float, __ca__ fp8_e4m3fn_t, __cb__ fp8_e5m2_t>,
-                                 Std::tuple<float, __cc__ float, __ca__ fp8_e5m2_t, __cb__ fp8_e4m3fn_t>,
-                                 Std::tuple<float, __cc__ float, __ca__ fp8_e5m2_t, __cb__ fp8_e5m2_t>,
-                                 Std::tuple<float, __cc__ float, __ca__ hifloat8_t, __cb__ hifloat8_t>>,
+                                 Std::tuple<__biasbuf__ int32_t, __cc__ int32_t, __ca__ int8_t, __cb__ int8_t>,
+                                 Std::tuple<__biasbuf__ float, __cc__ float, __ca__ half, __cb__ half>,
+                                 Std::tuple<__biasbuf__ float, __cc__ float, __ca__ float, __cb__ float>,
+                                 Std::tuple<__biasbuf__ float, __cc__ float, __ca__ bfloat16_t, __cb__ bfloat16_t>,
+                                 Std::tuple<__biasbuf__ float, __cc__ float, __ca__ fp8_e4m3fn_t, __cb__ fp8_e4m3fn_t>,
+                                 Std::tuple<__biasbuf__ float, __cc__ float, __ca__ fp8_e4m3fn_t, __cb__ fp8_e5m2_t>,
+                                 Std::tuple<__biasbuf__ float, __cc__ float, __ca__ fp8_e5m2_t, __cb__ fp8_e4m3fn_t>,
+                                 Std::tuple<__biasbuf__ float, __cc__ float, __ca__ fp8_e5m2_t, __cb__ fp8_e5m2_t>,
+                                 Std::tuple<__biasbuf__ float, __cc__ float, __ca__ hifloat8_t, __cb__ hifloat8_t>>,
                 "The data type is not supported for BIAS position.");
         } else if constexpr (biasPos == Hardware::L0C) {
             static_assert(
@@ -206,10 +206,10 @@ public:
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
         static_assert(
             Std::is_one_of_v<Std::tuple<dstDataType, srcDataType>, 
-                             Std::tuple<float, __cbuf__ bfloat16_t>,
-                             Std::tuple<float, __cbuf__ half>,
-                             Std::tuple<float, __cbuf__ float>,
-                             Std::tuple<int32_t, __cbuf__ int32_t>>,
+                             Std::tuple<__biasbuf__ float, __cbuf__ bfloat16_t>,
+                             Std::tuple<__biasbuf__ float, __cbuf__ half>,
+                             Std::tuple<__biasbuf__ float, __cbuf__ float>,
+                             Std::tuple<__biasbuf__ int32_t, __cbuf__ int32_t>>,
             "The data type is not supported.");        
 #endif
     }

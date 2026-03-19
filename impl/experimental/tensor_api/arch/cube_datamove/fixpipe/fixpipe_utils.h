@@ -60,7 +60,7 @@ public:
         auto dstAddr = reinterpret_cast<__fbuf__ uint64_t*>(AllocTempBuf(calNSize));
         auto dst = MakeTensor(MakeFixbufmemPtr(dstAddr), src.Layout());
         auto tileSrc = TileSrcTensor(src, calNSize, nIterIndex);
-        DataCopy(dst, tileSrc);
+        DataCopyL12FB3510::Run<DEFAULT_DATA_COPY_TRAIT>(dst, tileSrc);
         SetFpc(dstAddr);
     }
 private:
