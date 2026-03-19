@@ -45,15 +45,16 @@ __aicore__ inline void LoadData2DL12L0ACal(__ca__ T* dst, __cbuf__ T* src, const
             load_cbuf_to_ca_s4((__ca__ void *)dst, (__cbuf__ void *)src, loadDataParam.startIndex,
                 loadDataParam.repeatTimes, loadDataParam.srcStride, loadDataParam.dstGap, loadDataParam.sid, 0, inc);
     } else {
+        using U = typename Conditional<SupportType<T, uint16_t, int16_t>(), half, T>::type;
         if (loadDataParam.ifTranspose) {
-            load_cbuf_to_ca(dst, src, loadDataParam.startIndex, loadDataParam.repeatTimes, loadDataParam.srcStride,
-                loadDataParam.dstGap, loadDataParam.sid, 1, inc);
+            load_cbuf_to_ca((__ca__ U*)dst, (__cbuf__ U*)src, loadDataParam.startIndex, loadDataParam.repeatTimes,
+                loadDataParam.srcStride, loadDataParam.dstGap, loadDataParam.sid, 1, inc);
         } else {
-            load_cbuf_to_ca(dst, src, loadDataParam.startIndex, loadDataParam.repeatTimes, loadDataParam.srcStride,
-                loadDataParam.dstGap, loadDataParam.sid, 0, inc);
+            load_cbuf_to_ca((__ca__ U*)dst, (__cbuf__ U*)src, loadDataParam.startIndex, loadDataParam.repeatTimes,
+                loadDataParam.srcStride, loadDataParam.dstGap, loadDataParam.sid, 0, inc);
         }
     }
-    
+
 #endif
 }
 
@@ -68,15 +69,16 @@ __aicore__ inline void LoadData2DL12L0BCal(__cb__ T* dst, __cbuf__ T* src, const
             load_cbuf_to_cb_s4((__cb__ void *)dst, (__cbuf__ void *)src, loadDataParam.startIndex,
                 loadDataParam.repeatTimes, loadDataParam.srcStride, loadDataParam.dstGap, loadDataParam.sid, 0, inc);
     } else {
+        using U = typename Conditional<SupportType<T, uint16_t, int16_t>(), half, T>::type;
         if (loadDataParam.ifTranspose) {
-            load_cbuf_to_cb(dst, src, loadDataParam.startIndex, loadDataParam.repeatTimes, loadDataParam.srcStride,
-                loadDataParam.dstGap, loadDataParam.sid, 1, inc);
+            load_cbuf_to_cb((__cb__ U*)dst, (__cbuf__ U*)src, loadDataParam.startIndex, loadDataParam.repeatTimes,
+                loadDataParam.srcStride, loadDataParam.dstGap, loadDataParam.sid, 1, inc);
         } else {
-            load_cbuf_to_cb(dst, src, loadDataParam.startIndex, loadDataParam.repeatTimes, loadDataParam.srcStride,
-                loadDataParam.dstGap, loadDataParam.sid, 0, inc);
+            load_cbuf_to_cb((__cb__ U*)dst, (__cbuf__ U*)src, loadDataParam.startIndex, loadDataParam.repeatTimes,
+                loadDataParam.srcStride, loadDataParam.dstGap, loadDataParam.sid, 0, inc);
         }
     }
-    
+
 #endif
 }
 
@@ -87,8 +89,9 @@ __aicore__ inline void LoadData2DGM2L0ACal(__ca__ T* dst, __gm__ T* src, const L
     ASCENDC_REPORT_NOT_SUPPORT(false, "LoadData from GM to A2");
 #else
     CheckLoadData2DType<T>();
-    load_gm_to_ca(dst, src, loadDataParam.startIndex, loadDataParam.repeatTimes, loadDataParam.srcStride,
-        loadDataParam.dstGap, loadDataParam.sid, (addr_cal_mode_t)0);
+    using U = typename Conditional<SupportType<T, uint16_t, int16_t>(), half, T>::type;
+    load_gm_to_ca((__ca__ U*)dst, (__gm__ U*)src, loadDataParam.startIndex, loadDataParam.repeatTimes,
+        loadDataParam.srcStride, loadDataParam.dstGap, loadDataParam.sid, (addr_cal_mode_t)0);
 #endif
 }
 
@@ -99,8 +102,9 @@ __aicore__ inline void LoadData2DGM2L0BCal(__cb__ T* dst, __gm__ T* src, const L
     ASCENDC_REPORT_NOT_SUPPORT(false, "LoadData from GM to B2");
 #else
     CheckLoadData2DType<T>();
-    load_gm_to_cb(dst, src, loadDataParam.startIndex, loadDataParam.repeatTimes, loadDataParam.srcStride,
-        loadDataParam.dstGap, loadDataParam.sid, (addr_cal_mode_t)0);
+    using U = typename Conditional<SupportType<T, uint16_t, int16_t>(), half, T>::type;
+    load_gm_to_cb((__cb__ U*)dst, (__gm__ U*)src, loadDataParam.startIndex, loadDataParam.repeatTimes,
+        loadDataParam.srcStride, loadDataParam.dstGap, loadDataParam.sid, (addr_cal_mode_t)0);
 #endif
 }
 
@@ -111,12 +115,13 @@ __aicore__ inline void LoadData2DGM2L1Cal(__cbuf__ T* dst, __gm__ T* src, const 
     ASCENDC_REPORT_NOT_SUPPORT(false, "LoadData from GM to A1 / B1");
 #else
     CheckLoadData2DType<T>();
+    using U = typename Conditional<SupportType<T, uint16_t, int16_t>(), half, T>::type;
     if (loadDataParam.addrMode == 0) {
-        load_gm_to_cbuf(dst, src, loadDataParam.startIndex, loadDataParam.repeatTimes, loadDataParam.srcStride,
-            loadDataParam.dstGap, loadDataParam.sid, inc);
+        load_gm_to_cbuf((__cbuf__ U*)dst, (__gm__ U*)src, loadDataParam.startIndex, loadDataParam.repeatTimes,
+            loadDataParam.srcStride, loadDataParam.dstGap, loadDataParam.sid, inc);
     } else {
-        load_gm_to_cbuf(dst, src, loadDataParam.startIndex, loadDataParam.repeatTimes, loadDataParam.srcStride,
-            loadDataParam.dstGap, loadDataParam.sid, dec);
+        load_gm_to_cbuf((__cbuf__ U*)dst, (__gm__ U*)src, loadDataParam.startIndex, loadDataParam.repeatTimes,
+            loadDataParam.srcStride, loadDataParam.dstGap, loadDataParam.sid, dec);
     }
 #endif
 }
@@ -252,7 +257,7 @@ __aicore__ inline void LoadData3DV2L12L0ACal(__ca__ T* dst, __cbuf__ T* src,
             loadDataParams.mStartPt, loadDataParams.strideW, loadDataParams.strideH, loadDataParams.filterW,
             loadDataParams.filterH, loadDataParams.dilationFilterW, loadDataParams.dilationFilterH,
             loadDataParams.enTranspose, loadDataParams.channelSize);
-    }   
+    }
 #endif
 }
 
@@ -273,7 +278,7 @@ __aicore__ inline void LoadData3DV2L12L0BCal(__cb__ T* dst, __cbuf__ T* src,
                 loadDataParams.mStartPt, loadDataParams.strideW, loadDataParams.strideH, loadDataParams.filterW,
                 loadDataParams.filterH, loadDataParams.dilationFilterW, loadDataParams.dilationFilterH,
                 loadDataParams.enTranspose, loadDataParams.channelSize);
-    }    
+    }
 #endif
 }
 
@@ -387,12 +392,12 @@ __aicore__ inline void MmadCal(__cc__ T* c, __ca__ U* a, __cb__ S* b, const Mmad
         "Dst: half, src0: half, src1: half; Dst: float, src0: half, src1: half"
         "Dst: int32_t, src0: int4b_t, src1: int4b_t");});
     if constexpr ((IsSameType<U, int4b_t>::value) && (IsSameType<S, int4b_t>::value)) {
-        ASCENDC_ASSERT(mmadParams.k % 2 == 0, 
+        ASCENDC_ASSERT(mmadParams.k % 2 == 0,
                         {KERNEL_LOG(KERNEL_ERROR, "When src0 and src1 are int4b_t, k must be even number.");});
         mad_s4(c, a, b, mmadParams.m,mmadParams.k, mmadParams.n, cmatrixInitVal);
     } else {
         mad(c, a, b, mmadParams.m, mmadParams.k, mmadParams.n, cmatrixInitVal);
-    } 
+    }
 #endif
 }
 
@@ -417,7 +422,7 @@ __aicore__ inline void LoadDataWithSparseCal(const LocalTensor<T> &dst, const Lo
     ASCENDC_REPORT_NOT_SUPPORT(false, "LoadDataWithSparse");
 }
 
-template <typename T = int8_t, typename std::enable_if<IsSameType<PrimT<T>, int8_t>::value, bool>::type = true> 
+template <typename T = int8_t, typename std::enable_if<IsSameType<PrimT<T>, int8_t>::value, bool>::type = true>
 __aicore__ inline void LoadUnzipIndexCal(const GlobalTensor<T> &src, uint32_t numOfIndexTabEntry)
 {
 #if ASCENDC_CPU_DEBUG
