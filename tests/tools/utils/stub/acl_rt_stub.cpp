@@ -140,3 +140,8 @@ aclError aclrtLaunchKernelWithHostArgs(aclrtFuncHandle funcHandle, uint32_t numB
 {
     return 0;
 }
+
+aclError aclmdlRICaptureThreadExchangeMode(aclmdlRICaptureMode *mode)
+{
+    return 0;
+}
