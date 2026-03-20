@@ -448,6 +448,7 @@ public:
     template <typename T>
     __aicore__ inline void ReadSpmBuffer(const LocalTensor<T>& readBuffer, const int32_t readSize,
         int32_t readOffset = 0);
+    __aicore__ inline void DestroyWithoutPipeAll();
     __aicore__ inline void Destroy();
     __aicore__ inline void Reset();
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
