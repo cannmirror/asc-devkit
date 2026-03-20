@@ -348,8 +348,8 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_not](reg/reg_vector/asc_not.md) | 执行矢量非运算。 |
 | [asc_pack](reg/reg_vector/asc_pack.md) | 将源操作数中的元素选取低8位（b16）、低16位（b32）、低32位（b64）写入目的操作数的低半部分或高半部分。 |
 | [asc_pair_reduce_sum](reg/reg_vector/asc_pair_reduce_sum.md) | 相邻两个（奇偶）元素求和，结果写入dst。 |
-| [asc_reduce_add](reg/reg_vector/asc_reduce_add.md) | 归约求和功能，用于将src中的所有参与计算的元素求和，得到的结果保存在dst中。 |
-| [asc_reduce_add_datablock](reg/reg_vector/asc_reduce_add_datablock.md) | 归约求和功能，用于将src每个DataBlock(32B)中参与计算的元素求和，得到的结果依次保存在dst中。 |
+| [asc_reduce_sum](reg/reg_vector/asc_reduce_sum.md) | 归约求和功能，用于将src中的所有参与计算的元素求和，得到的结果保存在dst中。 |
+| [asc_reduce_sum_datablock](reg/reg_vector/asc_reduce_sum_datablock.md) | 归约求和功能，用于将src每个DataBlock(32B)中参与计算的元素求和，得到的结果依次保存在dst中。 |
 | [asc_reduce_max](reg/reg_vector/asc_reduce_max.md) | 根据mask对源操作数src进行归约最大值操作，将结果写入目的操作数dst。 |
 | [asc_reduce_min](reg/reg_vector/asc_reduce_min.md) | 根据mask对源操作数src进行归约最小值操作，将结果写入目的操作数dst。 |
 | [asc_reduce_min_datablock](reg/reg_vector/asc_reduce_min_datablock.md) | 根据mask将每个DataBlock(32B)中的最小值，依次保存在dst中的最低位。 |
