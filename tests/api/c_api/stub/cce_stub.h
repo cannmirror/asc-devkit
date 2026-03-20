@@ -72,6 +72,7 @@ inline void vstur(vector_align& alignData, vector_f8e8m0 src, __ubuf__ fp8_e8m0_
 inline void vstur(vector_align& alignData, vector_f4e2m1x2 src, __ubuf__ fp4x2_e2m1_t* base, Literal post) {}
 inline void vstur(vector_align& alignData, vector_f4e1m2x2 src, __ubuf__ fp4x2_e1m2_t* base, Literal post) {}
 
+inline void nd_dma_dci() {}
 
 #if defined(__DAV_CUBE__)
     inline int32_t g_coreType = 1;

@@ -35,6 +35,8 @@ __aicore__ inline int64_t asc_get_system_cycle();
 
 __aicore__ inline void asc_set_ctrl(uint64_t config);
 
+__aicore__ inline int64_t asc_get_ffts_base_addr();
+
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
 
 __aicore__ inline int64_t asc_get_core_id();
@@ -55,9 +57,13 @@ __aicore__ inline void asc_get_arch_ver(uint32_t& coreVersion);
 
 __aicore__ inline int64_t asc_get_ar_spr();
 
-__aicore__ inline int64_t asc_get_ffts_base_addr();
-
 __aicore__ inline void asc_set_ffts_base_addr(uint64_t config);
+
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
+
+__aicore__ inline int64_t asc_get_vf_len();
+
+__aicore__ inline uint64_t asc_get_phy_buf_addr(uint64_t offset);
 
 #endif
 

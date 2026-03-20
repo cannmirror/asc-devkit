@@ -17,6 +17,9 @@
 #include "instr_impl/npu_arch_3510/sys_var_impl/asc_get_block_num_impl.h"
 #include "instr_impl/npu_arch_3510/sys_var_impl/asc_get_system_cycle_impl.h"
 #include "instr_impl/npu_arch_3510/sys_var_impl/asc_get_ctrl_impl.h"
+#include "instr_impl/npu_arch_3510/sys_var_impl/asc_get_ffts_base_addr_impl.h"
+#include "instr_impl/npu_arch_3510/sys_var_impl/asc_get_phy_buf_addr_impl.h"
+#include "instr_impl/npu_arch_3510/sys_var_impl/asc_get_vf_len_impl.h"
 
 __aicore__ inline int64_t asc_get_ar_spr()
 {
@@ -47,4 +50,20 @@ __aicore__ inline int64_t asc_get_ctrl()
 {
     return asc_get_ctrl_impl();
 }
+
+__aicore__ inline int64_t asc_get_vf_len()
+{
+    return asc_get_vf_len_impl();
+}
+
+__aicore__ inline int64_t asc_get_ffts_base_addr()
+{
+    return asc_get_ffts_base_addr_impl();
+}
+
+__aicore__ inline uint64_t asc_get_phy_buf_addr(uint64_t offset)
+{
+    return asc_get_phy_buf_addr_impl(offset);
+}
+
 #endif

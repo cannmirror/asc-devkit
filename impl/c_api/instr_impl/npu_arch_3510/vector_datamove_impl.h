@@ -41,6 +41,9 @@
 #include "instr_impl/npu_arch_3510/vector_datamove_impl/asc_scatter_impl.h"
 #include "instr_impl/npu_arch_3510/vector_datamove_impl/asc_copy_gm2ub_align_impl.h"
 #include "instr_impl/npu_arch_3510/vector_datamove_impl/asc_copy_ub2gm_align_impl.h"
+#include "instr_impl/npu_arch_3510/vector_datamove_impl/asc_copy_ub2l1_impl.h"
+#include "instr_impl/npu_arch_3510/vector_datamove_impl/asc_copy_ub2ub_impl.h"
+#include "instr_impl/npu_arch_3510/vector_datamove_impl/asc_ndim_copy_dci_impl.h"
 
 // ==========偏移固定传入0，由用户自行更新目的操作数的地址=========
 // ==========asc_storealign(u8/s8/half/u16/s16/float/u32/s32/bf16/e4m3/e5m2/e8m0/e1m2/e2m1)=========
@@ -1428,7 +1431,7 @@ __simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  uint32_t*& dst
 {
     asc_storeunalign_postupdate_impl(dst, src0, src1);
 }
-    
+
 __simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  int64_t*& dst, vector_store_align& src0,
     vector_int64_t src1)
 {
@@ -6172,6 +6175,38 @@ __simd_callee__ inline void asc_storealign_postupdate(__ubuf__ uint8_t *&dst, ve
 __simd_callee__ inline void asc_storealign_pack_postupdate(__ubuf__ uint8_t *&dst, vector_bool src, int32_t  offset)
 {
     asc_storealign_pack_postupdate_impl(dst, src, offset);
+}
+
+//=============asc_ndim_copy_dci===============
+__aicore__ inline void asc_ndim_copy_dci() {
+    asc_ndim_copy_dci_impl();
+}
+
+//=============asc_copy_ub2l1===============
+__aicore__ inline void asc_copy_ub2l1(__cbuf__ void* dst, __ubuf__ void* src, uint32_t size) {
+    asc_copy_ub2l1_impl(dst, src, size);
+}
+
+__aicore__ inline void asc_copy_ub2l1(__cbuf__ void* dst, __ubuf__ void* src,
+            uint16_t burst_num, uint16_t burst_len, uint16_t src_gap, uint16_t dst_gap) {
+    asc_copy_ub2l1_impl(dst, src, burst_num, burst_len, src_gap, dst_gap);
+}
+
+__aicore__ inline void asc_copy_ub2l1_sync(__cbuf__ void* dst, __ubuf__ void* src, uint32_t size) {
+    asc_copy_ub2l1_sync_impl(dst, src, size);
+}
+//=============asc_copy_ub2ub===============
+__aicore__ inline void asc_copy_ub2ub(__ubuf__ void* dst, __ubuf__ void* src, uint32_t size) {
+    asc_copy_ub2ub_impl(dst, src, size);
+}
+
+__aicore__ inline void asc_copy_ub2ub(__ubuf__ void* dst, __ubuf__ void* src,
+                                      uint16_t burst_num, uint16_t burst_len, uint16_t src_gap, uint16_t dst_gap) {
+    asc_copy_ub2ub_impl(dst, src, burst_num, burst_len, src_gap, dst_gap);
+}
+
+__aicore__ inline void asc_copy_ub2ub_sync(__ubuf__ void* dst, __ubuf__ void* src, uint32_t size) {
+    asc_copy_ub2ub_sync_impl(dst, src, size);
 }
 
 #endif
