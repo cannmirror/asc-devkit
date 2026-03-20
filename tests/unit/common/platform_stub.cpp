@@ -17,6 +17,7 @@ static const char *g_core_num_aiv = "1";
 static const char *g_core_num_cub = "1";
 static const char *g_core_type_list = "AICore,CubeCore,VectorCore";
 static const char *g_chip_version = "Ascend310B";
+static const char *g_npu_arch = "3002";
 static uint32_t g_core_num = 1;
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 static const char *g_core_num_aic = "24";
@@ -24,6 +25,7 @@ static const char *g_core_num_aiv = "48";
 static const char *g_core_num_cub = "24";
 static const char *g_core_type_list = "CubeCore,VectorCore";
 static const char *g_chip_version = "Ascend910B";
+static const char *g_npu_arch = "2201";
 static uint32_t g_core_num = 48;
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 static const char *g_core_num_aic = "10";
@@ -31,6 +33,7 @@ static const char *g_core_num_aiv = "8";
 static const char *g_core_num_cub = "10";
 static const char *g_core_type_list = "AICore,VectorCore";
 static const char *g_chip_version = "Ascend310P";
+static const char *g_npu_arch = "2202";
 static uint32_t g_core_num = 10;
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 static const char *g_core_num_aic = "24";
@@ -38,6 +41,7 @@ static const char *g_core_num_aiv = "48";
 static const char *g_core_num_cub = "24";
 static const char *g_core_type_list = "AICore,VectorCore";
 static const char *g_chip_version = "Ascend910_95";
+static const char *g_npu_arch = "3510";
 static uint32_t g_core_num = 48;
 #else
 static const char *g_core_num_aic = "32";
@@ -45,6 +49,7 @@ static const char *g_core_num_aiv = "0";
 static const char *g_core_num_cub = "32";
 static const char *g_core_type_list = "AICore";
 static const char *g_chip_version = "Ascend910";
+static const char *g_npu_arch = "1001";
 static uint32_t g_core_num = 32;
 #endif
 
@@ -135,6 +140,8 @@ bool PlatFormInfos::GetPlatformRes(const std::string &label, const std::string &
         val = g_core_num_aiv;
     } else if (key.compare("Short_SoC_version") == 0) {
         val = g_chip_version;
+    } else if (key.compare("NpuArch") == 0) {
+        val = g_npu_arch;
     } else {
         val = "0";
         return false;

@@ -40,6 +40,7 @@
 namespace fe {
 class PlatFormInfos;
 }
+enum class NpuArch : uint32_t;
 
 namespace platform_ascendc {
 enum class CoreMemType {
@@ -136,12 +137,14 @@ public:
      * @return Enum SocVersion
      */
     SocVersion GetSocVersion(void) const;
+    NpuArch GetCurNpuArch(void) const;
 
 private:
     fe::PlatFormInfos *platformInfo_;
     fe::PlatFormInfos* GetPlatFormInfo(void) const;
     uint32_t reservedMemSize_ = 0;
 };
+
 class PlatformAscendCManager {
 public:
     static PlatformAscendC* GetInstance()

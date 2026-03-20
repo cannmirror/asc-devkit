@@ -18,6 +18,7 @@
 #include "adv_api/matmul/matmul_tilingdata.h"
 #include "platform_ascendc.h"
 #include "platform/platform_info.h"
+#include "platform/soc_spec.h"
 #include "utils/context/context_builder.h"
 #include "utils/context/context_builder_impl.h"
 
@@ -118,6 +119,7 @@ extern void platfrom_stub_set_num_cub(const char *num);
 extern void platfrom_stub_set_ctl(const char *num);
 extern void platfrom_stub_set_chip_version(const char *num);
 extern void platfrom_stub_set_num(uint32_t num);
+extern void platfrom_stub_set_npuarch(const char *num);
 TEST_F(TestTiling, TestPlatformAscendC)
 {
     fe::PlatFormInfos platform_info;
@@ -166,19 +168,19 @@ TEST_F(TestTiling, TestPlatformAscendC)
     EXPECT_EQ(plat.CalcTschBlockDim(40, 20, 40), 20);
     // invalid case, return 0
     EXPECT_EQ(plat.CalcTschBlockDim(41, 20, 40), 0);
-
+    EXPECT_EQ(plat.GetCurNpuArch(), NpuArch::DAV_2201);
     EXPECT_EQ(plat.GetLibApiWorkSpaceSize(), 16 * 1024 * 1024);
     EXPECT_EQ(plat.GetResCubeGroupWorkSpaceSize(), 1 * 1024 * 1024);
     EXPECT_EQ(plat.GetResGroupBarrierWorkSpaceSize(), 1 * 1024 * 1024);
     platfrom_stub_set_chip_version("Ascend910");
+    platfrom_stub_set_npuarch("1001");
     EXPECT_EQ(plat.GetLibApiWorkSpaceSize(), 2 * 1024 * 1024);
     EXPECT_EQ(plat.GetResCubeGroupWorkSpaceSize(), static_cast<uint32_t>(-1));
     EXPECT_EQ(plat.GetResGroupBarrierWorkSpaceSize(), static_cast<uint32_t>(-1));
     EXPECT_EQ(plat.GetSocVersion(), platform_ascendc::SocVersion::ASCEND910);
     EXPECT_EQ(plat.GetCoreNumVector(), 0);
     platfrom_stub_set_chip_version("Ascend910_95");
-    EXPECT_EQ(plat.GetLibApiWorkSpaceSize(), 16 * 1024 * 1024);
-    platfrom_stub_set_chip_version("Ascend910_55");
+    platfrom_stub_set_npuarch("3510");
     EXPECT_EQ(plat.GetLibApiWorkSpaceSize(), 16 * 1024 * 1024);
     MOCKER_CPP(&fe::PlatFormInfos::GetPlatformResWithLock,
         bool(fe::PlatFormInfos::*)(const std::string &, const std::string &, std::string &))
@@ -553,6 +555,42 @@ TEST_F(TestTiling, TestGetSocVersion)
     platform_ascendc::SocVersion ret = plat.GetSocVersion();
     EXPECT_EQ(ret, platform_ascendc::SocVersion::RESERVED_VERSION);
 }
+
+TEST_F(TestTiling, TestGetNpuArchFailed)
+{
+    fe::PlatFormInfos platform_info;
+    auto plat = platform_ascendc::PlatformAscendC(&platform_info);
+
+    MOCKER_CPP(&fe::PlatFormInfos::GetPlatformResWithLock,
+        bool(fe::PlatFormInfos::*)(const std::string &, const std::string &, std::string &))
+        .stubs()
+        .will(returnValue(false));
+
+    auto ret = plat.GetCurNpuArch();
+    EXPECT_EQ(ret, NpuArch::DAV_RESV);
+}
+
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
+TEST_F(TestTiling, TestGetNpuArchInvalidValue)
+{
+    fe::PlatFormInfos platform_info;
+    auto plat = platform_ascendc::PlatformAscendC(&platform_info);
+
+    platfrom_stub_set_npuarch("ABC");
+    EXPECT_EQ(plat.GetCurNpuArch(), NpuArch::DAV_RESV);
+    platfrom_stub_set_npuarch("2201");
+}
+
+TEST_F(TestTiling, TestGetNpuArchNeg)
+{
+    fe::PlatFormInfos platform_info;
+    auto plat = platform_ascendc::PlatformAscendC(&platform_info);
+    platfrom_stub_set_npuarch("-2");
+    EXPECT_EQ(plat.GetCurNpuArch(), NpuArch::DAV_RESV);
+    platfrom_stub_set_npuarch("2201");
+}
+#endif
+
 
 TEST_F(TestTiling, TestCoreNum)
 {
