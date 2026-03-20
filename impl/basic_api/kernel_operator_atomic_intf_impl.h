@@ -21,12 +21,8 @@
 #define ASCENDC_MODULE_OPERATOR_ATOMIC_INTERFACE_IMPL_H
 #include "kernel_tensor.h"
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3510))
-#if (__NPU_ARCH__ == 5102)
-    #include "dav_m510/kernel_operator_atomic_impl.h"
-#else 
-    #include "dav_c310/kernel_operator_atomic_impl.h"
-#endif
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
+#include "dav_c310/kernel_operator_atomic_impl.h"
 
 namespace AscendC {
 template <typename T>
