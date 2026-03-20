@@ -26,8 +26,7 @@
 #include "kernel_tensor.h"
 
 namespace AscendC {
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || \
-    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+
 namespace BroadcastInternal {
 constexpr uint32_t U16_MAX = 65536;
 
@@ -113,7 +112,6 @@ __aicore__ inline void ShapeCheck(uint32_t *tillingShape, const uint32_t *shape,
     }
 }
 }
-#endif
 
 constexpr uint32_t ONE_VOR_BLOCK_DIM = 8;
 constexpr uint32_t ELEMENT_NUM_FOR_UINT16 = 16;

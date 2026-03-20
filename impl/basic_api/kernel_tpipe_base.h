@@ -32,7 +32,7 @@ struct TBufHandleAux<1> {
     using T = TBufHandle;
 };
 constexpr TEventID INVALID_TEVENTID = (static_cast<TEventID>(-1));
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+
 constexpr uint8_t INVALID_STATIC_ENQUE_HEAD = 0xff;
 constexpr int32_t MIN_BUFFER_BLOCK_SIZE = 32 * 1024;
 constexpr uint8_t TSCM_BUFID_MAX = 20;
@@ -90,7 +90,6 @@ template <const TQueConfig &config> struct BufInfoAux<true, config> {
     };
     using type = BufAux;
 };
-#endif
 
 // begin base define of tpipe
 struct TEventPool {
@@ -251,7 +250,6 @@ __aicore__ inline void TPipeBase::AuxShareBufStart(uint32_t mode, uint32_t* shar
 #endif
 }
 
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 namespace Impl {
 namespace Detail {
 template <typename IMPL, typename A, typename B, typename L0cT, class C, const auto &MM_CFG, typename>
@@ -291,7 +289,7 @@ private:
     template <TPosition bufPos> friend class TBuf;
     static constexpr bool isTbufPool = true;
 };
-#endif
+
 }  // namespace AscendC
 #endif  // ASCENDC_MODULE_TPIPE_BASE_H
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TPIPE_BASE_H__)

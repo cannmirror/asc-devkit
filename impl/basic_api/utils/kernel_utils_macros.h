@@ -21,10 +21,9 @@
 #define ASCENDC_MODULE_UTILS_MACROS_H
 #define USE_ISA_INS 1
 #define GM_ADDR __gm__ uint8_t*
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)) || defined(__ASC_NPU_HOST__)
+
 #define UB_ADDR __ubuf__ uint8_t*
 #define SSBUF_ADDR __ssbuf__ uint32_t*
-#endif
 
 #ifndef likely
 #define likely(x) __builtin_expect(!!(x), 1)
@@ -482,7 +481,6 @@ extern uint64_t g_tilingKey;
 #define TILING_KEY_LIST(...) (TILING_KEY_LIST_INOUT(__VA_ARGS__))
 #endif
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)) || defined(__ASC_NPU_HOST__)
 namespace impl_mode {
 #ifdef SUPPORT_OUT_OF_BOUND_INDEX_
 const uint64_t SUPPORT_OUT_OF_BOUND_INDEX = 1;
@@ -510,7 +508,6 @@ const uint64_t KEEP_FP16 = 0;
 }
 
 #define IMPL_MODE_IS(x) constexpr((impl_mode::x) == 1)
-#endif
 
 #if defined(ASCENDC_OOM) && ASCENDC_OOM == 1
 constexpr bool g_gm_overflow_check = true;

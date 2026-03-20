@@ -32,8 +32,8 @@ struct QuantParams {
     uint64_t deqScalar;
 };
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 struct Nz2NdParams {
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
     __aicore__ Nz2NdParams() {}
 
     __aicore__ Nz2NdParams(const uint16_t ndNumIn, const uint16_t srcNdStrideIn, const uint32_t dstNdStrideIn)
@@ -46,9 +46,7 @@ struct Nz2NdParams {
     uint16_t ndNum = 1; // loop3Size
     uint16_t srcNdStride = 0; // loop3SrcStride
     uint32_t dstNdStride = 0; // loop3DstStride
-};
 #else
-struct Nz2NdParams {
     __aicore__ Nz2NdParams()
     {
         nz2ndEn = false;
@@ -73,10 +71,9 @@ struct Nz2NdParams {
     uint16_t srcNdStride = 0;
     uint16_t dstNdStride = 0;
     uint16_t originalNSize = 0;
-};
 #endif
+};
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
 struct Nz2DnParams {
     __aicore__ Nz2DnParams() {}
 
@@ -94,7 +91,6 @@ struct Nz2DnParams {
     uint32_t dstDnMatrixStride = 0; // loop3DstStride
     uint16_t srcNzC0Stride = 0; // loop0SrcStride
 };
-#endif
 
 template <typename T = int32_t>
 struct FixpipeParams {

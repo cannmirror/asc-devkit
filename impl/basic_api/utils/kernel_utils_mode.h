@@ -141,7 +141,6 @@ enum class DeqScale : uint8_t {
     VDEQ16,
 };
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003)) || defined(__ASC_NPU_HOST__)
 enum class BinaryScalarOp : uint8_t {
     ADDS = 0,
     MULS,
@@ -152,7 +151,6 @@ enum class BinaryScalarOp : uint8_t {
     ANDS,
     ORS,
 };
-#endif
 
 enum class ReduceMode : uint8_t {
     REDUCE_MAX = 0,
@@ -196,8 +194,6 @@ enum class DeQuantMode : uint8_t {
     DEQUANT_WITH_MULTI_ROW,         // {1, m * n, n} != {m, n, n}
 };
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || \
-    (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)) || defined(__ASC_NPU_HOST__)
 enum class SpecialPurposeReg {
     AR = 0,
 };
@@ -208,7 +204,6 @@ struct SyncAllConfig {
 };
 
 constexpr SyncAllConfig DEFAULT_SYNC_ALL_CONFIG = {PIPE_ALL, PIPE_ALL};
-#endif
 
 } // namespace AscendC
 #endif // ASCENDC_MODULE_UTILS_MODE_H

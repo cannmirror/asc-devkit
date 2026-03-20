@@ -23,7 +23,6 @@
 #define IMPL_QUANTIZATION_ANTIQUANTIZE_ANTIQUANTIZE_COMMON_H
 
 namespace AscendC {
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 enum class AntiQuantizePolicy : int32_t {
     PER_TENSOR,
     PER_CHANNEL,
@@ -42,7 +41,6 @@ struct AntiQuantizeParams {
     uint32_t n;
     uint32_t groupSize = 0;
 };
-#endif
 } // namespace AscendC
 #endif // IMPL_QUANTIZATION_ANTIQUANTIZE_ANTIQUANTIZE_COMMON_H
 
