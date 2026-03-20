@@ -56,6 +56,11 @@ asc-devkit:
       - impl/c_api/instr_impl/npu_arch_2201/debug_impl/printf_impl.h
       - impl/c_api/instr_impl/npu_arch_2201/debug_impl.h
       - impl/basic_api/common_types.h
+      - impl/adv_api/detail/hccl/common/hccl_inner_def.h
+      - impl/adv_api/detail/hccl/common/hccl_base.h
+      - impl/adv_api/detail/hccl/impl/platform_v310/hccl_ccu_v0_def.h
+      - impl/adv_api/detail/hccl/impl/platform_v310/hccl_ccu_v0.h
+      - impl/adv_api/detail/hccl/impl/hccl_impl.h
   llt:
     ut_check: true
     st_check: false

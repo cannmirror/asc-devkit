@@ -93,9 +93,6 @@ public:
     template <bool sync = true>
     __aicore__ inline void Finalize() {}
 
-    __aicore__ inline bool
-    SetReduceDataTypeAbility(HcclReduceOp op, HcclDataType dstDataType, HcclDataType srcDataType) { return true; }
-
     public:
     __aicore__ inline GM_ADDR GetWindowsInAddr(uint32_t rankId) { return nullptr; }
 

@@ -82,9 +82,6 @@ public:
 
     __aicore__ inline uint32_t GetRankDim() { return hcclContext_->rankNum; }
 
-    __aicore__ inline bool
-    SetReduceDataTypeAbility(HcclReduceOp op, HcclDataType dstDataType, HcclDataType srcDataType);
-
 private:
     __aicore__ inline void InitWorkingFlag();
 
@@ -126,15 +123,12 @@ private:
     HcclHandle curHandleId_ = INVALID_HANDLE_ID;
 
     uint8_t workingFlag_ = false;
-    bool needResetDataType_ = false;
     bool isInited_ = false;
-    __gm__ uint64_t *finishCntGM_; // 软同步使�?
+    __gm__ uint64_t *finishCntGM_; // For soft sync
     uint64_t finishNum_;
     uint64_t finishNumTemp_;
 
-    CCUConfig ccuConfig_;
     CCUMsg ccuMsg_;
-    ReduceDataTypeAbility ccuDataType_;
 
     uint64_t ccOpTilingDataTable_[static_cast<uint32_t>(HcclCMDType::HCCL_CMD_ALL)] = {0UL};
     HcclTilingVersion curVersion_ = HcclTilingVersion::INVALID_TILING_VERSION;

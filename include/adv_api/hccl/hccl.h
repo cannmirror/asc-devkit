@@ -30,7 +30,7 @@ static constexpr HcclServerConfig DEFAULT_CFG = {CoreType::DEFAULT, 0};
 /*!
  * @class Hccl
  * @brief This class mainly provides a series of collection communication primitive interfaces (hence Prepare),
- *        benchmarking against Huawei's collection communication C++ interface, including AllReduce„ÄÅAllGather„Ä?
+ *        benchmarking against Huawei's collection communication C++ interface, including AllReduce,AllGather,
  *        ReduceScatter and so on.
  *        The typical usage of this class is as follows:
  *          1) Create Hccl object and initialize it.
@@ -398,18 +398,6 @@ public:
      *       2) All cores will invoke GetRankDim if you do not specify workBlockIdx;
      */
     __aicore__ inline uint32_t GetRankDim();
-
-    /*!
-    * @class Hccl
-    * @brief Set the DataType for input and output.
-    * @param [in] op: The type of the reduce.
-    * @param [in] dstDataType: The type of output data for the communication.
-    * @param [in] srcDataType: The type of input data for the communication.
-    * @return The setting returns true if successful, otherwise it returns false.
-    */
-    [[deprecated("It is obsoleted and use Tiling Api instead.")]]
-    __aicore__ inline bool SetReduceDataTypeAbility(HcclReduceOp op,
-        HcclDataType dstDataType, HcclDataType srcDataType);
 
     __aicore__ inline uint16_t GetQueueNum();
 

@@ -290,24 +290,18 @@ template<const auto &config>
 __aicore__ inline void
 HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::InitCcuParam(const HcclHandle handleId)
 {
-    if (needResetDataType_) {
-        handleParamGM_[handleId].dataType = ccuDataType_.srcDataType;
-        handleParamGM_[handleId].dstDataType = ccuDataType_.dstDataType;
-        handleParamGM_[handleId].op = ccuDataType_.op;
-    } else  {
-        uint64_t ccTiling = 0;
-        if (curVersion_ == HcclTilingVersion::NEW_TILING_VERSION) {
-            ccTiling = ccOpTilingDataTable_[static_cast<uint32_t>(handleParamGM_[handleId].commType.prepareType)];
-        } else if (curVersion_ == HcclTilingVersion::ONLINE_COMPILATION_TILING_VERSION) {
-            ccTiling = ccOpTilingDataTable_[static_cast<uint32_t>(handleParamGM_[handleId].commType.prepareType)] +
-                       tilingBaseAddr_;
-        }
-        if (ccTiling != 0) {
-            __gm__ Mc2CcTilingInner *tilingPtr = reinterpret_cast<__gm__ Mc2CcTilingInner *>(ccTiling);
-            handleParamGM_[handleId].dataType = static_cast<HcclDataType>(tilingPtr->srcDataType);
-            handleParamGM_[handleId].dstDataType = static_cast<HcclDataType>(tilingPtr->dstDataType);
-            handleParamGM_[handleId].op = static_cast<HcclReduceOp>(tilingPtr->reduceType);
-        }
+    uint64_t ccTiling = 0;
+    if (curVersion_ == HcclTilingVersion::NEW_TILING_VERSION) {
+        ccTiling = ccOpTilingDataTable_[static_cast<uint32_t>(handleParamGM_[handleId].commType.prepareType)];
+    } else if (curVersion_ == HcclTilingVersion::ONLINE_COMPILATION_TILING_VERSION) {
+        ccTiling = ccOpTilingDataTable_[static_cast<uint32_t>(handleParamGM_[handleId].commType.prepareType)] +
+                    tilingBaseAddr_;
+    }
+    if (ccTiling != 0) {
+        __gm__ Mc2CcTilingInner *tilingPtr = reinterpret_cast<__gm__ Mc2CcTilingInner *>(ccTiling);
+        handleParamGM_[handleId].dataType = static_cast<HcclDataType>(tilingPtr->srcDataType);
+        handleParamGM_[handleId].dstDataType = static_cast<HcclDataType>(tilingPtr->dstDataType);
+        handleParamGM_[handleId].op = static_cast<HcclReduceOp>(tilingPtr->reduceType);
     }
 
     ccuParam_.rankNum = hcclContext_->rankNum;
@@ -492,7 +486,7 @@ __aicore__ inline int32_t HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>
     while(true) {
         uint64_t waitCke = ReadHBMData(waitCKEAddr);
         if (waitCke != 0) {
-            if (workingFlag_) { // 0�?
+            if (workingFlag_) {
                 finishNumTemp_++;
 
                 WriteHBMData(finishCntGM_, finishNumTemp_);
@@ -500,7 +494,7 @@ __aicore__ inline int32_t HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>
             }
             break;
         }
-        if (!workingFlag_) { // �?�?
+        if (!workingFlag_) {
             uint64_t finshCnt = ReadHBMData(finishCntGM_);
             if (finshCnt > finishNum_) {
                 break;
@@ -516,10 +510,10 @@ __aicore__ inline int32_t HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>
     globalCurWaitId_ %= CCU_MAX_MSG_NUM;
 
     // 补发消息
-    // 场景1�?同一个handleId需要补发消�?
+    // 场景1:同一个handleId需要补发
     if (handleCommitCnt_[handleId] < handleNeedCommitCnt_[handleId]) {
         CommitMsg(handleId);
-    } else { // 场景2�?下一个handleId需要补发消�?
+    } else { // 场景2:下一个handleId需要补发
         uint32_t nextHandleId = handleId + 1;
         if (nextHandleId < curHandleId_ && (handleCommitCnt_[nextHandleId] < handleNeedCommitCnt_[nextHandleId])) {
             CommitMsg(nextHandleId);
@@ -555,25 +549,5 @@ __aicore__ inline void HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::F
     }
 }
 
-template<const auto &config>
-__aicore__ inline bool
-HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::SetReduceDataTypeAbility(HcclReduceOp op,
-    HcclDataType dstDataType, HcclDataType srcDataType)
-{
-    ASCENDC_HCCL_API_ASSERT(op != HcclReduceOp::HCCL_REDUCE_RESERVED, { return false; },
-        "Set Reduce DataType Ability Failed, HcclReduceOp is invalid, reduceOpType = %u.",
-        static_cast<uint32_t>(op));
-    ASCENDC_HCCL_API_ASSERT(dstDataType != HcclDataType::HCCL_DATA_TYPE_RESERVED, { return false; },
-        "Set Reduce DataType Ability Failed, Hccl OutputDataType is invalid, DataType = %u.",
-        static_cast<uint32_t>(dstDataType));
-    ASCENDC_HCCL_API_ASSERT(srcDataType != HcclDataType::HCCL_DATA_TYPE_RESERVED, { return false; },
-        "Set Reduce DataType Ability Failed, Hccl InputDataType is invalid, DataType = %u.",
-        static_cast<uint32_t>(srcDataType));
-    ccuDataType_.op = op;
-    ccuDataType_.dstDataType = dstDataType;
-    ccuDataType_.srcDataType = srcDataType;
-    needResetDataType_ = true;
-    return true;
-}
 }
 #endif

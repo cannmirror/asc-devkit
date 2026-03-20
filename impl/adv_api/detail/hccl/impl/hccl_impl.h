@@ -207,12 +207,6 @@ __aicore__ inline uint16_t Hccl<serverType, config>::GetQueueNum()
     return impl_.GetQueueNum();
 }
 
-template <HcclServerType serverType, const auto &config>
-__aicore__ inline bool Hccl<serverType, config>::SetReduceDataTypeAbility(HcclReduceOp op,
-    HcclDataType dstDataType, HcclDataType srcDataType)
-{
-    return impl_.SetReduceDataTypeAbility(op, dstDataType, srcDataType);
-}
 }  // namespace AscendC
 
 #endif  // IMPL_HCCL_HCCL_IMPL_H
