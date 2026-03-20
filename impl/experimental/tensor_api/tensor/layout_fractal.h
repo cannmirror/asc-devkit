@@ -120,6 +120,19 @@ __aicore__ inline decltype(auto) MakeScaleBDNLayout(U row, S column) { // 转置
     }
 }
 
+template <typename T, typename U, size_t... Is>
+__aicore__ inline decltype(auto) MakeFractalShape(T originShape, U innerShape, Std::index_sequence<Is...>) {
+    auto outerShape = Std::make_tuple(Std::ceil_division(Std::get<Is>(originShape), Std::get<Is>(innerShape))...);
+    return MakeShape(MakeShape(Std::get<Is>(innerShape), Std::get<Is>(outerShape))...);
+}
+
+template <typename T, typename U>
+__aicore__ inline decltype(auto) MakeFractalShape(T originShape, U innerShape) {
+    static_assert(Std::tuple_size_v<T> == Std::tuple_size_v<U>, "OriginShape and InnerShape must match");
+    return MakeFractalShape(originShape, innerShape, Std::make_index_sequence<Std::tuple_size_v<U>>{});
+}
+
+
 } // namespace Te
 } // namespace AscendC
 
