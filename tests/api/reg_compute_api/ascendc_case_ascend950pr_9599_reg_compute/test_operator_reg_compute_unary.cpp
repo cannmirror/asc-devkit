@@ -107,6 +107,8 @@ private:
                     if constexpr (std::is_same<T, float>::value) {
                         Reg::Sqrt<T, &sqrtMode>(vDstReg1, vSrcReg0, maskReg);
                     }
+                } else if constexpr (mD == 4) {
+                    Reg::Ln(vDstReg1, vSrcReg0, maskReg);
                 } else if constexpr (mD == 5) {
                     Reg::Log(vDstReg1, vSrcReg0, maskReg);
                 } else if constexpr (mD == 6) {
@@ -195,6 +197,8 @@ INSTANTIATE_TEST_CASE_P(MicroUnaryTestCase, MicroUnaryTestsuite,
                     MicroUnaryParams { MicroUnaryRunCase<float, 2> },
                     MicroUnaryParams { MicroUnaryRunCase<half, 3> },
                     MicroUnaryParams { MicroUnaryRunCase<float, 3> },
+                    MicroUnaryParams { MicroUnaryRunCase<half, 4> },
+                    MicroUnaryParams { MicroUnaryRunCase<float, 4> },
                     MicroUnaryParams { MicroUnaryRunCase<half, 5> },
                     MicroUnaryParams { MicroUnaryRunCase<float, 5> },
                     MicroUnaryParams { MicroUnaryRunCase<int8_t, 6> },
