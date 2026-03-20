@@ -437,7 +437,7 @@ def get_tiling_key_struct_size_map(tiling_key_struct_size_map, name_part, compil
 def gen_tiling_struct_and_dfx_section_head():
     source = f"#undef __global__\n"
     source += f"#define __global__ inline\n"
-    source += "#include \"kernel_utils.h\"\n"
+    source += "#include \"kernel_common.h\"\n"
     source += "#undef __global__\n"
     source += "#if ASCENDC_CPU_DEBUG\n"
     source += "#define __global__\n"
