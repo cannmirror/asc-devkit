@@ -74,7 +74,6 @@ public:
         }
     }
 
-private:
     template <typename T>
     __aicore__ inline static void CopyGmToCbufMultiNd2nz(__cbuf__ T* dst, __gm__ T* src, uint16_t ndNum, uint16_t loop2DstStride,
         uint16_t loop3DstStride, uint16_t loop4DstStride, uint64_t loop1SrcStride, uint8_t cacheMode, uint16_t nValue,
@@ -108,7 +107,6 @@ public:
         }
     }
 
-private:
     template <typename T>
     __aicore__ inline static void CopyGmToCbufMultiDn2nz(__cbuf__ T* dst, __gm__ T* src, uint16_t dnNum, uint16_t loop2DstStride, 
         uint16_t loop3DstStride, uint16_t loop4DstStride, uint64_t loop1SrcStride, uint8_t cacheMode, uint16_t nValue, 

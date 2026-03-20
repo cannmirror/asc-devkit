@@ -20,7 +20,7 @@
 namespace AscendC {
 namespace Te {
 
-class CopyGmToCbufMultiNd2nzBase {
+class CopyGmToCbufMultiND2Nz {
 public:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline static void Run(const T& dst, const U& src) {

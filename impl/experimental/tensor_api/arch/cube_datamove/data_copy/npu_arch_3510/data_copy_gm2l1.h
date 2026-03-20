@@ -21,6 +21,8 @@
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_gm2l1/nd2nz.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_gm2l1/nd2zn.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_gm2l1/nz2nz.h"
+#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_gm2l1/nd2zz.h"
+#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_gm2l1/dn2zz.h"
 
 namespace AscendC {
 namespace Te {
@@ -36,17 +38,21 @@ private:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline void Execute(const T& dst, const U& src) {
         if constexpr (IsNDFormat<U>::value && IsNDFormat<T>::value) {
-            CopyGmToCbufAlignV2NDBase::Run<trait, T, U>(dst, src);
+            CopyGmToCbufAlignV2ND::Run<trait, T, U>(dst, src);
         } else if constexpr (IsNDFormat<U>::value && IsNZFormat<T>::value) {
-            CopyGmToCbufMultiNd2nzBase::Run<trait, T, U>(dst, src);
+            CopyGmToCbufMultiND2Nz::Run<trait, T, U>(dst, src);
         } else if constexpr (IsNDFormat<U>::value && IsZNFormat<T>::value) {
-            CopyGmToCbufMultiNd2znBase::Run<trait, T, U>(dst, src);
+            CopyGmToCbufMultiND2Zn::Run<trait, T, U>(dst, src);
         } else if constexpr (IsDNFormat<U>::value && IsNZFormat<T>::value) {
-            CopyGmToCbufMultiDn2nzBase::Run<trait, T, U>(dst, src);
+            CopyGmToCbufMultiDN2Nz::Run<trait, T, U>(dst, src);
         } else if constexpr (IsDNFormat<U>::value && IsZNFormat<T>::value) {
-            CopyGmToCbufMultiDn2ZnBase::Run<trait, T, U>(dst, src);
+            CopyGmToCbufMultiDN2Zn::Run<trait, T, U>(dst, src);
         } else if constexpr (IsNZFormat<U>::value && IsNZFormat<T>::value) {
-            CopyGmToCbufAlignV2NZBase::Run<trait, T, U>(dst, src);
+            CopyGmToCbufAlignV2NZ::Run<trait, T, U>(dst, src);
+        } else if constexpr (IsScaleANDFormat<U>::value && IsZZFormat<T>::value) {
+            CopyGmToCbufScaleAND2Zz::Run<trait, T, U>(dst, src);
+        } else if constexpr (IsScaleADNFormat<U>::value && IsZZFormat<T>::value) {
+            CopyGmToCbufScaleADN2Zz::Run<trait, T, U>(dst, src);
         } else {
             // assert error
             static_assert(Std::is_same_v<T, U>, "The data format is not supported.");
