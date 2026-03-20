@@ -238,6 +238,7 @@ private:
     }
 public:
     static constexpr bool value = IsFractalNDFormat();
+    static constexpr bool normalValue = IsFractalNDFormatNormal();
 };
 
 template <typename T>
@@ -269,11 +270,12 @@ private:
     }
 public:
     static constexpr bool value = IsFractalDNFormat();
+    static constexpr bool normalValue = IsFractalDNFormatNormal();
 };
 
 template <typename T>
 struct IsScaleANDFormat { // shape = ((1, row),(1,col)) stride = ((0, col),(0, 1))
-    static constexpr bool value = IsNDFormat<T>::value;
+    static constexpr bool value = IsNDFormat<T>::normalValue;
 };
 
 template <typename T>
@@ -288,7 +290,7 @@ struct IsScaleBNDFormat { // shape = ((2, row/2),(1,col)) stride = ((1, 2*col),(
 
 template <typename T>
 struct IsScaleBDNFormat { // shape = ((1, row),(1,col)) stride = ((0, 1),(0, row))
-    static constexpr bool value = IsDNFormat<T>::value;
+    static constexpr bool value = IsDNFormat<T>::normalValue;
 };
 
 } // namespace Te
