@@ -206,6 +206,10 @@
 #include "instr_impl/npu_arch_3510/vector_compute_impl/asc_xor_impl.h"
 #include "instr_impl/npu_arch_3510/vector_compute_impl/asc_prelu_impl.h"
 #include "instr_impl/npu_arch_3510/vector_compute_impl/asc_clear_ar_spr_impl.h"
+#include "instr_impl/npu_arch_3510/vector_compute_impl/asc_bitsort_impl.h"
+#include "instr_impl/npu_arch_3510/vector_compute_impl/asc_mrgsort4_impl.h"
+#include "instr_impl/npu_arch_3510/vector_compute_impl/asc_transpose_impl.h"
+#include "instr_impl/npu_arch_3510/vector_compute_impl/asc_transto5hd_impl.h"
 
 // ==========asc_create_iter_reg(b8/b16/b32)=========
 __simd_callee__ inline iter_reg asc_create_iter_reg_b32(uint32_t offset)
@@ -5085,4 +5089,131 @@ __simd_callee__ inline void asc_clear_ar_spr()
 {
     asc_clear_ar_spr_impl();
 }
+
+// ==========asc_bitsort(half/float)==========
+__aicore__ inline void asc_bitsort(__ubuf__ half* dst, __ubuf__ half* src0, __ubuf__ uint32_t* src1,
+                                   uint8_t repeat, uint8_t dst_block_stride, uint8_t src0_block_stride,
+                                   uint8_t src1_block_stride, uint8_t dst_repeat_stride, uint8_t src0_repeat_stride,
+                                   uint8_t src1_repeat_stride, bool repeat_stride_mode, bool stride_size_mode)
+{
+    asc_bitsort_impl(dst, src0, src1, repeat, dst_block_stride, src0_block_stride, src1_block_stride, dst_repeat_stride,
+                     src0_repeat_stride, src1_repeat_stride, repeat_stride_mode, stride_size_mode);
+}
+
+__aicore__ inline void asc_bitsort_sync(__ubuf__ half* dst, __ubuf__ half* src0, __ubuf__ uint32_t* src1,
+                                        uint8_t repeat, uint8_t dst_block_stride, uint8_t src0_block_stride,
+                                        uint8_t src1_block_stride, uint8_t dst_repeat_stride, uint8_t src0_repeat_stride,
+                                        uint8_t src1_repeat_stride, bool repeat_stride_mode, bool stride_size_mode)
+{
+    asc_bitsort_sync_impl(dst, src0, src1, repeat, dst_block_stride, src0_block_stride, src1_block_stride, dst_repeat_stride,
+                          src0_repeat_stride, src1_repeat_stride, repeat_stride_mode, stride_size_mode);
+}
+
+__aicore__ inline void asc_bitsort(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ uint32_t* src1,
+                                   uint8_t repeat, uint8_t dst_block_stride, uint8_t src0_block_stride,
+                                   uint8_t src1_block_stride, uint8_t dst_repeat_stride, uint8_t src0_repeat_stride,
+                                   uint8_t src1_repeat_stride, bool repeat_stride_mode, bool stride_size_mode)
+{
+    asc_bitsort_impl(dst, src0, src1, repeat, dst_block_stride, src0_block_stride, src1_block_stride, dst_repeat_stride,
+                     src0_repeat_stride, src1_repeat_stride, repeat_stride_mode, stride_size_mode);
+}
+
+__aicore__ inline void asc_bitsort_sync(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ uint32_t* src1,
+                                        uint8_t repeat, uint8_t dst_block_stride, uint8_t src0_block_stride,
+                                        uint8_t src1_block_stride, uint8_t dst_repeat_stride, uint8_t src0_repeat_stride,
+                                        uint8_t src1_repeat_stride, bool repeat_stride_mode, bool stride_size_mode)
+{
+    asc_bitsort_sync_impl(dst, src0, src1, repeat, dst_block_stride, src0_block_stride, src1_block_stride, dst_repeat_stride,
+                          src0_repeat_stride, src1_repeat_stride, repeat_stride_mode, stride_size_mode);
+}
+
+// ==========asc_mrgsort4(half/float)==========
+__aicore__ inline void asc_mrgsort4(__ubuf__ half* dst, __ubuf__ half* src, uint8_t repeat,
+                                    uint16_t region_proposal_li0, uint16_t region_proposal_li1,
+                                    uint16_t region_proposal_li2, uint16_t region_proposal_li3, bool is_all_stored,
+                                    uint8_t mask_signal)
+{
+    asc_mrgsort4_impl(dst, src, repeat, region_proposal_li0, region_proposal_li1, region_proposal_li2,
+                      region_proposal_li3, is_all_stored, mask_signal);
+}
+
+__aicore__ inline void asc_mrgsort4_sync(__ubuf__ half* dst, __ubuf__ half* src, uint8_t repeat,
+                                         uint16_t region_proposal_li0, uint16_t region_proposal_li1,
+                                         uint16_t region_proposal_li2, uint16_t region_proposal_li3, bool is_all_stored,
+                                         uint8_t mask_signal)
+{
+    asc_mrgsort4_sync_impl(dst, src, repeat, region_proposal_li0, region_proposal_li1, region_proposal_li2,
+                           region_proposal_li3, is_all_stored, mask_signal);
+}
+
+__aicore__ inline void asc_mrgsort4(__ubuf__ float* dst, __ubuf__ float* src, uint8_t repeat,
+                                    uint16_t region_proposal_li0, uint16_t region_proposal_li1,
+                                    uint16_t region_proposal_li2, uint16_t region_proposal_li3, bool is_all_stored,
+                                    uint8_t mask_signal)
+{
+    asc_mrgsort4_impl(dst, src, repeat, region_proposal_li0, region_proposal_li1, region_proposal_li2,
+                      region_proposal_li3, is_all_stored, mask_signal);
+}
+
+__aicore__ inline void asc_mrgsort4_sync(__ubuf__ float* dst, __ubuf__ float* src, uint8_t repeat,
+                                         uint16_t region_proposal_li0, uint16_t region_proposal_li1,
+                                         uint16_t region_proposal_li2, uint16_t region_proposal_li3, bool is_all_stored,
+                                         uint8_t mask_signal)
+{
+    asc_mrgsort4_sync_impl(dst, src, repeat, region_proposal_li0, region_proposal_li1, region_proposal_li2,
+                           region_proposal_li3, is_all_stored, mask_signal);
+}
+
+// ==========asc_transpose(int16_t/uint16_t)==========
+__aicore__ inline void asc_transpose(__ubuf__ int16_t* dst, __ubuf__ int16_t* src)
+{
+    asc_transpose_impl(dst, src);
+}
+
+__aicore__ inline void asc_transpose_sync(__ubuf__ int16_t* dst, __ubuf__ int16_t* src)
+{
+    asc_transpose_sync_impl(dst, src);
+}
+
+__aicore__ inline void asc_transpose(__ubuf__ uint16_t* dst, __ubuf__ uint16_t* src)
+{
+    asc_transpose_impl(dst, src);
+}
+
+__aicore__ inline void asc_transpose_sync(__ubuf__ uint16_t* dst, __ubuf__ uint16_t* src)
+{
+    asc_transpose_sync_impl(dst, src);
+}
+
+// ==========asc_transto5hd==========
+__aicore__ inline void asc_transto5hd_b8(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride, bool dst_high_half, bool src_high_half)
+{
+    asc_transto5hd_b8_impl(dst, src, repeat, dst_stride, src_stride, dst_high_half, src_high_half);
+}
+
+__aicore__ inline void asc_transto5hd_b8_sync(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride, bool dst_high_half, bool src_high_half)
+{
+    asc_transto5hd_b8_sync_impl(dst, src, repeat, dst_stride, src_stride, dst_high_half, src_high_half);
+}
+
+__aicore__ inline void asc_transto5hd_b16(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride)
+{
+    asc_transto5hd_b16_impl(dst, src, repeat, dst_stride, src_stride);
+}
+
+__aicore__ inline void asc_transto5hd_b16_sync(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride)
+{
+    asc_transto5hd_b16_sync_impl(dst, src, repeat, dst_stride, src_stride);
+}
+
+__aicore__ inline void asc_transto5hd_b32(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride)
+{
+    asc_transto5hd_b32_impl(dst, src, repeat, dst_stride, src_stride);
+}
+
+__aicore__ inline void asc_transto5hd_b32_sync(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride)
+{
+    asc_transto5hd_b32_sync_impl(dst, src, repeat, dst_stride, src_stride);
+}
+
 #endif

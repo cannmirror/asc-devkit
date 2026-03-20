@@ -32,6 +32,30 @@ void vsts(vector_f8e8m0 src0, vector_f8e8m0 src1, __ubuf__ fp8_e8m0_t* base, int
 void vsts(vector_f4e2m1x2 src0, vector_f4e2m1x2 src1, __ubuf__ fp4x2_e2m1_t* base, int32_t offset, Literal dist, vector_bool mask, Literal mode);
 void vsts(vector_f4e1m2x2 src0, vector_f4e1m2x2 src1, __ubuf__ fp4x2_e1m2_t* base, int32_t offset, Literal dist, vector_bool mask, Literal mode);
 
+inline void vmrgsort4(__ubuf__ half* dst, __ubuf__ half* src, uint8_t repeat, uint16_t regionProposalLi0,
+                      uint16_t regionProposalLi1, uint16_t regionProposalLi2, uint16_t regionProposalLi3, bool isAllStored,
+                      uint8_t maskSignal) {}
+
+inline void vmrgsort4(__ubuf__ float* dst, __ubuf__ float* src, uint8_t repeat, uint16_t regionProposalLi0,
+                      uint16_t regionProposalLi1, uint16_t regionProposalLi2, uint16_t regionProposalLi3, bool isAllStored,
+                      uint8_t maskSignal) {}
+
+inline void vbs(__ubuf__ half* dst, __ubuf__ half* src0, __ubuf__ uint32_t* src1, uint8_t repeat,
+                uint8_t dstBlockStride, uint8_t src0BlockStride, uint8_t src1BlockStride, uint8_t dstRepeatStride,
+                uint8_t src0RepeatStride, uint8_t src1RepeatStride, bool repeatStrideMode, bool strideSizeMode) {}
+
+inline void vbs(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ uint32_t* src1, uint8_t repeat,
+                uint8_t dstBlockStride, uint8_t src0BlockStride, uint8_t src1BlockStride, uint8_t dstRepeatStride,
+                uint8_t src0RepeatStride, uint8_t src1RepeatStride, bool repeatStrideMode, bool strideSizeMode) {}
+
+inline void get_buf(pipe_t pipe, uint64_t buf_id, bool mode) {}
+
+inline void create_ca_matrix_h(__ca__ bfloat16_t* dst, int64_t repeat, half value) {}
+inline void create_ca_matrix_ui(__ca__ bfloat16_t* dst, int64_t repeat, uint32_t value) {}
+
+inline void create_cb_matrix_h(__cb__ bfloat16_t* dst, int64_t repeat, half value) {}
+inline void create_cb_matrix_ui(__cb__ bfloat16_t* dst, int64_t repeat, uint32_t value) {}
+
 inline void vgather2_bc(vector_s16& dst, __ubuf__ int16_t* src, vector_u32 index, vector_bool mask) {}
 inline void vgather2_bc(vector_u16& dst, __ubuf__ uint16_t* src, vector_u32 index, vector_bool mask) {}
 inline void vgather2_bc(vector_f16& dst, __ubuf__ half* src, vector_u32 index, vector_bool mask) {}
