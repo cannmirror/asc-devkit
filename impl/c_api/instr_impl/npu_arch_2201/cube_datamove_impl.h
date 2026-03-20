@@ -737,6 +737,26 @@ __aicore__ inline void asc_fill_l0a_sync(__ca__ bfloat16_t* dst, bfloat16_t valu
     asc_fill_l0a_sync_impl(dst, value, config);
 }
 
+__aicore__ inline void asc_fill_l0a(__ca__ bfloat16_t* dst, half value, const asc_fill_value_config& config)
+{
+    asc_fill_l0a_impl(dst, value, config);
+}
+
+__aicore__ inline void asc_fill_l0a_sync(__ca__ bfloat16_t* dst, half value, const asc_fill_value_config& config)
+{
+    asc_fill_l0a_sync_impl(dst, value, config);
+}
+
+__aicore__ inline void asc_fill_l0a(__ca__ bfloat16_t* dst, uint32_t value, const asc_fill_value_config& config)
+{
+    asc_fill_l0a_impl(dst, value, config);
+}
+
+__aicore__ inline void asc_fill_l0a_sync(__ca__ bfloat16_t* dst, uint32_t value, const asc_fill_value_config& config)
+{
+    asc_fill_l0a_sync_impl(dst, value, config);
+}
+
 // ==========asc_fill_l0b(half/float/int16_t/int32_t/uint16_t/uint32_t/bfloat16_t)==========
 __aicore__ inline void asc_fill_l0b(__cb__ half* dst, half value, const asc_fill_value_config& config)
 {
@@ -867,6 +887,26 @@ __aicore__ inline void asc_fill_l0b(__cb__ bfloat16_t* dst, bfloat16_t value, co
 
 __aicore__ inline void asc_fill_l0b_sync(__cb__ bfloat16_t* dst, bfloat16_t value,
                                                const asc_fill_value_config& config)
+{
+    asc_fill_l0b_sync_impl(dst, value, config);
+}
+
+__aicore__ inline void asc_fill_l0b(__cb__ bfloat16_t* dst, half value, const asc_fill_value_config& config)
+{
+    asc_fill_l0b_impl(dst, value, config);
+}
+
+__aicore__ inline void asc_fill_l0b_sync(__cb__ bfloat16_t* dst, half value, const asc_fill_value_config& config)
+{
+    asc_fill_l0b_sync_impl(dst, value, config);
+}
+
+__aicore__ inline void asc_fill_l0b(__cb__ bfloat16_t* dst, uint32_t value, const asc_fill_value_config& config)
+{
+    asc_fill_l0b_impl(dst, value, config);
+}
+
+__aicore__ inline void asc_fill_l0b_sync(__cb__ bfloat16_t* dst, uint32_t value, const asc_fill_value_config& config)
 {
     asc_fill_l0b_sync_impl(dst, value, config);
 }

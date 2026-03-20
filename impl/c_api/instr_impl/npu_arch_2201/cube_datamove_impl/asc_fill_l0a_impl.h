@@ -214,6 +214,34 @@ __aicore__ inline void asc_fill_l0a_sync_impl(__ca__ bfloat16_t* dst, bfloat16_t
     asc_sync_post_process();
 }
 
+// asc_fill_l0a bfloat16_t-half
+__aicore__ inline void asc_fill_l0a_impl(__ca__ bfloat16_t* dst, half value, const asc_fill_value_config& config)
+{
+    if ASC_IS_AIC {
+        create_ca_matrix_h(dst, config.config, value);
+    }
+}
+
+__aicore__ inline void asc_fill_l0a_sync_impl(__ca__ bfloat16_t* dst, half value, const asc_fill_value_config& config)
+{
+    asc_fill_l0a_impl(dst, value, config);
+    asc_sync_post_process();
+}
+
+// asc_fill_l0a bfloat16_t-uint32_t
+__aicore__ inline void asc_fill_l0a_impl(__ca__ bfloat16_t* dst, uint32_t value, const asc_fill_value_config& config)
+{
+    if ASC_IS_AIC {
+        create_ca_matrix_ui(dst, config.config, value);
+    }
+}
+
+__aicore__ inline void asc_fill_l0a_sync_impl(__ca__ bfloat16_t* dst, uint32_t value, const asc_fill_value_config& config)
+{
+    asc_fill_l0a_impl(dst, value, config);
+    asc_sync_post_process();
+}
+
 #endif
 
 #if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
