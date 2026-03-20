@@ -12,6 +12,12 @@
  * \file swish.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SWISH_H__
+#endif
+
 #ifndef LIB_SWISH_SWISH_H
 #define LIB_SWISH_SWISH_H
 
@@ -46,3 +52,8 @@ __aicore__ inline __inout_pipe__(V) void Swish(
 }
 }  // namespace AscendC
 #endif  // LIB_SWISH_SWISH_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SWISH_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SWISH_H__
+#endif

@@ -20,6 +20,12 @@
             +0.29639384698e
  * Q(x) = ((((x^2+0.31212858877e2)x^2+0.39856963806e3)x^2+0.30231248150e4)x^2+0.13243365831e5)x^2+0.26267224157e5
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ERF_H__
+#endif
+
 #ifndef LIB_MATH_ERF_H
 #define LIB_MATH_ERF_H
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
@@ -194,3 +200,8 @@ __aicore__ inline void Erf(const LocalTensor<T>& dstTensor, const LocalTensor<T>
 }  // namespace AscendC
 #endif
 #endif  // LIB_MATH_ERF_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ERF_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ERF_H__
+#endif

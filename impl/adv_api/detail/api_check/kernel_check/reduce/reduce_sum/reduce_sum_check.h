@@ -13,6 +13,12 @@
  * \file reduce_sum_check.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/api_check/kernel_check/reduce/reduce_sum/reduce_sum_check.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_SUM_CHECK_H__
+#endif
+
 #ifndef IMPL_API_CHECK_KERNEL_CHECK_REDUCE_REDUCE_SUM_REDUCE_SUM_CHECK_H_
 #define IMPL_API_CHECK_KERNEL_CHECK_REDUCE_REDUCE_SUM_REDUCE_SUM_CHECK_H_
 
@@ -33,6 +39,11 @@ __aicore__ inline void CheckFuncReduceSum(__gm__ const char *apiName, const Loca
     checkFun.VerifyingParameters(dstTensor, srcTensor, sharedTmpBuffer, srcShape, srcInnerPad, padLast);
 }
 } // namespace HighLevelApiCheck
-} // AscendC
+} // namespace AscendC
 #endif // IMPL_API_CHECK_KERNEL_CHECK_REDUCE_REDUCE_SUM_REDUCE_SUM_CHECK_H_
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_SUM_CHECK_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_SUM_CHECK_H__
+#endif
  

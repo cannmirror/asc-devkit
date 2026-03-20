@@ -21,6 +21,7 @@ __simd_callee__ inline void asc_store(__ubuf__  fp4x2_e1m2_t* dst, vector_fp4x2_
 __simd_callee__ inline void asc_store(__ubuf__  fp8_e8m0_t* dst, vector_fp8_e8m0_t src)
 __simd_callee__ inline void asc_store(__ubuf__  fp8_e5m2_t* dst, vector_fp8_e5m2_t src)
 __simd_callee__ inline void asc_store(__ubuf__  fp8_e4m3fn_t* dst, vector_fp8_e4m3fn_t src)
+__simd_callee__ inline void asc_store(__ubuf__  hifloat8_t* dst, vector_hifloat8_t src)
 __simd_callee__ inline void asc_store(__ubuf__  int16_t* dst, vector_int16_t src)
 __simd_callee__ inline void asc_store(__ubuf__  uint16_t* dst, vector_uint16_t src)
 __simd_callee__ inline void asc_store(__ubuf__  half* dst, vector_half src)
@@ -43,6 +44,7 @@ __simd_callee__ inline void asc_store(__ubuf__  bfloat16_t* dst, vector_bfloat16
 __simd_callee__ inline void asc_store(__ubuf__  fp8_e8m0_t* dst, vector_fp8_e8m0_t src, uint32_t count)
 __simd_callee__ inline void asc_store(__ubuf__  fp8_e5m2_t* dst, vector_fp8_e5m2_t src, uint32_t count)
 __simd_callee__ inline void asc_store(__ubuf__  fp8_e4m3fn_t* dst, vector_fp8_e4m3fn_t src, uint32_t count)
+__simd_callee__ inline void asc_store(__ubuf__  hifloat8_t* dst, vector_hifloat8_t src, uint32_t count)
 __simd_callee__ inline void asc_store(__ubuf__  fp4x2_e2m1_t* dst, vector_fp4x2_e2m1_t src, uint32_t count)
 __simd_callee__ inline void asc_store(__ubuf__  fp4x2_e1m2_t* dst, vector_fp4x2_e1m2_t src, uint32_t count)
 ```

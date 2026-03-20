@@ -69,7 +69,8 @@ class CompileInfo:
         self.max_tiling_size: int = 0
         self.tiling_and_dfx_utils_file: str = ""  # used when tling struct is not register
         self.tiling_and_dfx_utils_bin_path: str = ""
-
+        self.global_kernel_symbols: list = []
+        self.global_kernel_attribute: str = ""
 
     def __str__(self):
         return ",".join("{}={}".format(key, getattr(self, key)) for key in self.__dict__.keys())
@@ -408,7 +409,7 @@ class CommonUtility:
             res: True means soc version support workspace offset way
         """
         short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
-        if short_soc_version in ["Ascend950", "MC62CM12A"]:
+        if short_soc_version in ["Ascend950", "MC62CM12A", "MC32DM11A"]:
             return True
         return False
 
@@ -499,7 +500,7 @@ class CommonUtility:
             res: True means m510
         """
         short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
-        if short_soc_version in ["MC62CM12A"]:
+        if short_soc_version in ["MC62CM12A", "MC32DM11A"]:
             return True
         return False
 
@@ -665,11 +666,11 @@ format(str(stage), output))
         hex_num_str_list = list(map(reverser_hex_str, hex_num[::-1]))
         hex_num_str = ''.join(hex_num_str_list)
         return hex_num_str
-    
+
     @staticmethod
     def get_dump_core_num():
-        if CommonUtility.is_c310():	 
-            return 108 
+        if CommonUtility.is_c310():
+            return 108
         return 75
 
 

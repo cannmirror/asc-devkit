@@ -282,7 +282,7 @@ __aicore__ inline void LoadToB1(Intf *self, bool cachePosB1, uint64_t kbIdx, con
         return;
     }
     // The condition that needs to be loaded into BL1 is that the calculated BL0 block is the first block of data on BL1, and the entire BL1 size is loaded at one time
-    // At this time, BL1 needs to be loaded if one of the following conditions is metï¼š
+    // At this time, BL1 needs to be loaded if one of the following conditions is metï¼?
     // 1.There is no db on BL1, and more than one buffer is needed in the K direction, which needs to be loaded every time; BL1 has db, and the number of buffers in the K direction is less than or equal to 2
     // 2.singleShapeK / stepKb > 2, priority is given to looping in the k direction, and data on BL1 cannot be reused
     // 3.When order_M, AL1 resides on L1, and BL1 data is not reused

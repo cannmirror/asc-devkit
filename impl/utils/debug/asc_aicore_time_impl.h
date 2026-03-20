@@ -1,5 +1,5 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
+* Copyright (c) 2026 Huawei Technologies Co., Ltd.
 * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 * CANN Open Software License Agreement Version 2.0 (the "License").
 * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -15,15 +15,10 @@
 #ifndef IMPL_UTILS_DEBUG_ASC_AICORE_TIME_IMPL_H
 #define IMPL_UTILS_DEBUG_ASC_AICORE_TIME_IMPL_H
 
-#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
-#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_AICORE_TIME_IMPL__
-#warning "asc_aicore_time_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future."
-#endif
-
+#if __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510
+#ifndef ASCENDC_CPU_DEBUG
 #include "impl/utils/debug/asc_debug_utils.h"
 
-#if __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510
 namespace __asc_aicore {
 __aicore__ inline void asc_time_stamp_impl(uint32_t desc_id)
 {
@@ -56,18 +51,24 @@ __aicore__ inline void asc_time_stamp_impl(uint32_t desc_id)
 
 __aicore__ inline void asc_time_stamp(uint32_t desc_id)
 {
+#if defined(ASCENDC_TIME_STAMP_ON)
     enable_asc_diagnostics();
     asc_time_stamp_impl(desc_id);
+#endif
 }
 
 __aicore__ inline void asc_prof_start()
 {
+#if __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510
     bisheng::cce::metrics_prof_start();
+#endif
 }
 
 __aicore__ inline void asc_prof_stop()
 {
+#if __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510
     bisheng::cce::metrics_prof_stop();
+#endif
 }
 
 #if __NPU_ARCH__ == 3510
@@ -84,6 +85,17 @@ __aicore__ inline void asc_mark_stamp()
 }
 #endif
 } // namespace __asc_aicore
+#else
+#include "kernel_log.h"
+
+namespace __asc_aicore {
+__aicore__ inline void asc_time_stamp(uint32_t desc_id) {
+    ASCENDC_ASSERT((false), "asc_time_stamp is not supported in cpu mode.");
+}
+} // namespace __asc_aicore
+
+using namespace __asc_aicore;
+#endif
 #endif
 
 #ifdef ASCENDC_TRACE_ON
@@ -92,9 +104,9 @@ constexpr uint32_t ASC_PROF_STOP_EVENT = 0xc0000000;
 
 __aicore__ inline void prof_mark_event(void)
 {
-    if (g_coreType == AIV) {
+    if (g_coreType == AscendC::AIV) {
         __asm__ volatile("NOP_BAR.V");
-    } else if (g_coreType == AIC) {
+    } else if (g_coreType == AscendC::AIC) {
         __asm__ volatile("NOP_BAR.M");
         __asm__ volatile("NOP_BAR.MTE1");
     } else {

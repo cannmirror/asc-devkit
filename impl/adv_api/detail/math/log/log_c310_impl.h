@@ -12,6 +12,12 @@
  * \file log_c310_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/math/log/log_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/log.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_LOG_LOG_C310_IMPL_H__
+#endif
 #ifndef IMPL_MATH_LOG_LOG_C310_IMPL_H
 #define IMPL_MATH_LOG_LOG_C310_IMPL_H
 #include "kernel_tensor.h"
@@ -27,15 +33,15 @@ template <typename T> __simd_vf__ inline void LogImpl(__ubuf__ T *dst, __ubuf__ 
         "current data type is not supported on current device!");
     constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(T));
     uint16_t repeatTimes = CeilDivision(calCount, sregLower);
-    MicroAPI::RegTensor<T> vreg0;
-    MicroAPI::RegTensor<T> vreg1;
+    Reg::RegTensor<T> vreg0;
+    Reg::RegTensor<T> vreg1;
     uint32_t sreg = calCount;
-    MicroAPI::MaskReg preg;
+    Reg::MaskReg preg;
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        preg = MicroAPI::UpdateMask<T>(sreg);
-        MicroAPI::LoadAlign(vreg0, src + i * sregLower);
-        MicroAPI::Log(vreg1, vreg0, preg);
-        MicroAPI::StoreAlign(dst + i * sregLower, vreg1, preg);
+        preg = Reg::UpdateMask<T>(sreg);
+        Reg::LoadAlign(vreg0, src + i * sregLower);
+        Reg::Log(vreg1, vreg0, preg);
+        Reg::StoreAlign(dst + i * sregLower, vreg1, preg);
     }
 }
 
@@ -46,39 +52,44 @@ __simd_vf__ inline void LogXImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint32_
         "current data type is not supported on current device!");
     constexpr uint32_t sregLower = (uint32_t)(GetVecLen() / sizeof(float));
     uint16_t repeatTimes = CeilDivision(calCount, sregLower);
-    static constexpr MicroAPI::CastTrait castTraitB16ToB32 = {
-        MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
-    static constexpr MicroAPI::CastTrait castTraitB32ToB16 = {
-        MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+    static constexpr Reg::CastTrait castTraitB16ToB32 = {
+        Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN, Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+    static constexpr Reg::CastTrait castTraitB32ToB16 = {
+        Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
     if constexpr (std::is_same_v<T, float>) {
-        MicroAPI::RegTensor<float> vreg0;
-        MicroAPI::RegTensor<float> vreg1;
+        Reg::RegTensor<float> vreg0;
+        Reg::RegTensor<float> vreg1;
         uint32_t sreg = calCount;
-        MicroAPI::MaskReg mask;
+        Reg::MaskReg mask;
         for (uint16_t i = 0; i < repeatTimes; ++i) {
-            mask = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::LoadAlign(vreg0, src + i * sregLower);
-            MicroAPI::Log(vreg1, vreg0, mask);
-            MicroAPI::Muls(vreg1, vreg1, LnXRec, mask);
-            MicroAPI::StoreAlign(dst + i * sregLower, vreg1, mask);
+            mask = Reg::UpdateMask<T>(sreg);
+            Reg::LoadAlign(vreg0, src + i * sregLower);
+            Reg::Log(vreg1, vreg0, mask);
+            Reg::Muls(vreg1, vreg1, LnXRec, mask);
+            Reg::StoreAlign(dst + i * sregLower, vreg1, mask);
         }
     } else if constexpr (std::is_same_v<T, half>) {
-        MicroAPI::RegTensor<T> vreg0;
-        MicroAPI::RegTensor<T> dst0;
-        MicroAPI::RegTensor<T> dst1;
-        MicroAPI::RegTensor<float> vreg1;
+        Reg::RegTensor<T> vreg0;
+        Reg::RegTensor<T> dst0;
+        Reg::RegTensor<T> dst1;
+        Reg::RegTensor<float> vreg1;
         uint32_t sreg = calCount;
-        MicroAPI::MaskReg mask;
+        Reg::MaskReg mask;
         for (uint16_t i = 0; i < repeatTimes; ++i) {
-            mask = MicroAPI::UpdateMask<float>(sreg);
-            MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(vreg0, src + i * sregLower);
-            MicroAPI::Cast<float, half, castTraitB16ToB32>(vreg1, vreg0, mask);
-            MicroAPI::Log(vreg1, vreg1, mask);
-            MicroAPI::Muls(vreg1, vreg1, LnXRec, mask);
-            MicroAPI::Cast<half, float, castTraitB32ToB16>(dst0, vreg1, mask);
-            MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_PACK_B32>(dst + i * sregLower, dst0, mask);
+            mask = Reg::UpdateMask<float>(sreg);
+            Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(vreg0, src + i * sregLower);
+            Reg::Cast<float, half, castTraitB16ToB32>(vreg1, vreg0, mask);
+            Reg::Log(vreg1, vreg1, mask);
+            Reg::Muls(vreg1, vreg1, LnXRec, mask);
+            Reg::Cast<half, float, castTraitB32ToB16>(dst0, vreg1, mask);
+            Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B32>(dst + i * sregLower, dst0, mask);
         }
     }
 }
 } // namespace AscendC
 #endif // IMPL_MATH_LOG_LOG_C310_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_LOG_LOG_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_LOG_LOG_C310_IMPL_H__
+#endif

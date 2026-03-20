@@ -172,6 +172,8 @@ __simd_callee__ inline void asc_select(vector_int8_t& dst, vector_int8_t src0, v
 
 __simd_callee__ inline void asc_select(vector_fp8_e4m3fn_t& dst, vector_fp8_e4m3fn_t src0, vector_fp8_e4m3fn_t src1, vector_bool mask);
 
+__simd_callee__ inline void asc_select(vector_hifloat8_t& dst, vector_hifloat8_t src0, vector_hifloat8_t src1, vector_bool mask);
+
 __simd_callee__ inline void asc_select(vector_fp8_e5m2_t& dst, vector_fp8_e5m2_t src0, vector_fp8_e5m2_t src1, vector_bool mask);
 
 __simd_callee__ inline void asc_select(vector_uint16_t& dst, vector_uint16_t src0, vector_uint16_t src1, vector_bool mask);
@@ -486,6 +488,8 @@ __simd_callee__ inline void asc_intlv(vector_fp8_e8m0_t& dst0, vector_fp8_e8m0_t
 __simd_callee__ inline void asc_intlv(vector_fp8_e5m2_t& dst0, vector_fp8_e5m2_t& dst1, vector_fp8_e5m2_t src0, vector_fp8_e5m2_t src1);
 
 __simd_callee__ inline void asc_intlv(vector_fp8_e4m3fn_t& dst0, vector_fp8_e4m3fn_t& dst1, vector_fp8_e4m3fn_t src0, vector_fp8_e4m3fn_t src1);
+
+__simd_callee__ inline void asc_intlv(vector_hifloat8_t& dst0, vector_hifloat8_t& dst1, vector_hifloat8_t src0, vector_hifloat8_t src1);
 
 __simd_callee__ inline void asc_intlv(vector_bfloat16_t& dst0, vector_bfloat16_t& dst1, vector_bfloat16_t src0, vector_bfloat16_t src1);
 
@@ -926,22 +930,22 @@ __simd_callee__ inline void asc_max(vector_half& dst, vector_half src0, vector_h
 
 __simd_callee__ inline void asc_max(vector_bfloat16_t& dst, vector_bfloat16_t src0, vector_bfloat16_t src1, vector_bool mask);
 
-//================asc_mins=================
-__simd_callee__ inline void asc_mins(vector_int32_t& dst, vector_int32_t src, int32_t value, vector_bool mask);
+//================asc_min_scalar=================
+__simd_callee__ inline void asc_min_scalar(vector_int32_t& dst, vector_int32_t src, int32_t value, vector_bool mask);
 
-__simd_callee__ inline void asc_mins(vector_uint32_t& dst, vector_uint32_t src, uint32_t value, vector_bool mask);
+__simd_callee__ inline void asc_min_scalar(vector_uint32_t& dst, vector_uint32_t src, uint32_t value, vector_bool mask);
 
-__simd_callee__ inline void asc_mins(vector_int16_t& dst, vector_int16_t src, int16_t value, vector_bool mask);
+__simd_callee__ inline void asc_min_scalar(vector_int16_t& dst, vector_int16_t src, int16_t value, vector_bool mask);
 
-__simd_callee__ inline void asc_mins(vector_uint16_t& dst, vector_uint16_t src, uint16_t value, vector_bool mask);
+__simd_callee__ inline void asc_min_scalar(vector_uint16_t& dst, vector_uint16_t src, uint16_t value, vector_bool mask);
 
-__simd_callee__ inline void asc_mins(vector_int8_t& dst, vector_int8_t src, int8_t value, vector_bool mask);
+__simd_callee__ inline void asc_min_scalar(vector_int8_t& dst, vector_int8_t src, int8_t value, vector_bool mask);
 
-__simd_callee__ inline void asc_mins(vector_uint8_t& dst, vector_uint8_t src, uint8_t value, vector_bool mask);
+__simd_callee__ inline void asc_min_scalar(vector_uint8_t& dst, vector_uint8_t src, uint8_t value, vector_bool mask);
 
-__simd_callee__ inline void asc_mins(vector_float& dst, vector_float src, float value, vector_bool mask);
+__simd_callee__ inline void asc_min_scalar(vector_float& dst, vector_float src, float value, vector_bool mask);
 
-__simd_callee__ inline void asc_mins(vector_half& dst, vector_f16 src, half value, vector_bool mask);
+__simd_callee__ inline void asc_min_scalar(vector_half& dst, vector_f16 src, half value, vector_bool mask);
 
 //==================asc_reduce_max_datablock====================
 __simd_callee__ inline void asc_reduce_max_datablock(vector_half& dst, vector_half src, vector_bool mask);
@@ -1088,6 +1092,8 @@ __simd_callee__ inline void asc_deintlv(vector_int8_t& dst0, vector_int8_t& dst1
 __simd_callee__ inline void asc_deintlv(vector_uint8_t& dst0, vector_uint8_t& dst1, vector_uint8_t src0, vector_uint8_t src1);
 
 __simd_callee__ inline void asc_deintlv(vector_fp8_e4m3fn_t& dst0, vector_fp8_e4m3fn_t& dst1, vector_fp8_e4m3fn_t src0, vector_fp8_e4m3fn_t src1);
+
+__simd_callee__ inline void asc_deintlv(vector_hifloat8_t& dst0, vector_hifloat8_t& dst1, vector_hifloat8_t src0, vector_hifloat8_t src1);
 
 __simd_callee__ inline void asc_deintlv(vector_fp8_e5m2_t& dst0, vector_fp8_e5m2_t& dst1, vector_fp8_e5m2_t src0, vector_fp8_e5m2_t src1);
 

@@ -28,8 +28,8 @@
     <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="6" align="center">BatchMatmulCustom</td></tr>
     </tr>
     <tr><td rowspan="4" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">isTrans</td><td align="center">layout</td></tr>
-    <tr><td align="center">a</td><td align="center">M * K</td><td align="center">float16</td><td align="center">ND</td><td align="center">false</td><td align="center">BSNGD</td></tr>
-    <tr><td align="center">b</td><td align="center">K * N</td><td align="center">float16</td><td align="center">ND</td><td align="center">true</td><td align="center">BSNGD</td></tr>
+    <tr><td align="center">a</td><td align="center">M * K</td><td align="center">float16</td><td align="center">ND</td><td align="center">true</td><td align="center">BSNGD</td></tr>
+    <tr><td align="center">b</td><td align="center">K * N</td><td align="center">float16</td><td align="center">ND</td><td align="center">false</td><td align="center">BSNGD</td></tr>
     <tr><td align="center">bias</td><td align="center">1 * N</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td><td align="center">-</td></tr>
     </tr>
     </tr>
@@ -53,7 +53,7 @@
           ```
           constexpr MatmulConfigMode configMode = MatmulConfigMode::CONFIG_NORM;
           constexpr MatmulBatchParams batchParams = {
-            true, BatchMode::BATCH_LESS_THAN_L1, false /* isNBatch， batchMode， isBiasBatch */
+            true, BatchMode::BATCH_LESS_THAN_L1, false /* isNBatch, batchMode, isBiasBatch */
           };
           constexpr MatmulConfig CFG_MM = GetMMConfig<configMode>(batchParams);
           AscendC::Matmul<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, CFG_PARTIAL> matmulObj;

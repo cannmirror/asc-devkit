@@ -40,6 +40,33 @@ TEST_F(TestVectorComputeVDIntlv##data_type##CApi, c_api_asc_vdintlv_##data_type#
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 
+#define TEST_VECTOR_COMPUTE_VDINTLV_HIF8(data_type)            \
+                                                                                                \
+class TestVectorComputeVDIntlv##data_type##CApi : public testing::Test {                 \
+protected:                                                                                      \
+    void SetUp() {}                                                                             \
+    void TearDown() {}                                                                          \
+};                                                                                              \
+                                                                                                \
+namespace {                                                                                     \
+void vdintlv##_##data_type##_Stub(vector_uint8_t& dst0, vector_uint8_t& dst1, vector_uint8_t src0, vector_uint8_t src1) {}                                                          \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorComputeVDIntlv##data_type##CApi, c_api_asc_vdintlv_##data_type##_Succ)       \
+{                                                                                               \
+    data_type dst0;                                                                              \
+    data_type dst1;                                                                           \
+    data_type src0;                                                                              \
+    data_type src1;                                                                           \
+                                                                                                \
+    MOCKER_CPP(vdintlv, void(vector_uint8_t&, vector_uint8_t&, vector_uint8_t, vector_uint8_t))                     \
+        .times(1)                                                                               \
+        .will(invoke(vdintlv##_##data_type##_Stub));                                           \
+                                                                                                \
+    asc_deintlv(dst0, dst1, src0, src1);                                                                \
+    GlobalMockObject::verify();                                                                 \
+}                                                                                               \
+
 TEST_VECTOR_COMPUTE_VDINTLV(vector_int32_t);
 TEST_VECTOR_COMPUTE_VDINTLV(vector_uint32_t);
 TEST_VECTOR_COMPUTE_VDINTLV(vector_int16_t);
@@ -52,6 +79,7 @@ TEST_VECTOR_COMPUTE_VDINTLV(vector_f8e8m0);
 TEST_VECTOR_COMPUTE_VDINTLV(vector_bfloat16_t);
 TEST_VECTOR_COMPUTE_VDINTLV(vector_float);
 TEST_VECTOR_COMPUTE_VDINTLV(vector_half);
+TEST_VECTOR_COMPUTE_VDINTLV_HIF8(vector_hifloat8_t);
 
 class TestVectorComputePdintlv : public testing::Test { 
 protected:

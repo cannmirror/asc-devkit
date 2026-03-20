@@ -22,7 +22,7 @@
 
 - 算子规格： 
 
-  本样例默认执行的算子shape为：M = 1024, N = 4096, K = 1024。
+  本样例默认执行的算子shape为：M = 64, N = 7680, K = 64。
   <table>
   <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="5" align="center">Matmul</td></tr>
   </tr>
@@ -46,12 +46,18 @@
       - 创建Matmul对象。  
         创建Matmul对象时，自定义MatmulConfig参数，将其中的isEnableChannelSplit参数设置为true，使能矩阵乘输出的Channel拆分功能，获得自定义的使用Norm模板的Matmul对象。
         ```
-        constexpr static MatmulConfigMode configMode = MatmulConfigMode::CONFIG_NORM;
-        constexpr static MatmulFuncParams funcParamsChannelSplit{
-            false, false, false, false, 0, IterateOrder::ORDER_M, ScheduleType::INNER_PRODUCT,
-            true, false, false, false, true/*isEnableChannelSplit*/
-        };
-        constexpr static MatmulConfig CFG_NORM = GetMMConfig<configMode>(funcParamsChannelSplit);
+        __aicore__ inline constexpr MatmulConfig GetCustomNORMCFG()
+        {
+            auto mmCfg = CFG_NORM;
+            mmCfg.isEnableChannelSplit = true;
+            return mmCfg;
+        }
+        constexpr static MatmulConfig CUSTOM_CFG_NORM = GetCustomNORMCFG();
+        AscendC::Matmul<AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, AType>,
+                        AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, BType>,
+                        AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::NZ, CType>,
+                        AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, BiasType>, CUSTOM_CFG_NORM>
+            matmulObj;
         ```
       - 初始化操作。
       - 完成矩阵乘操作。

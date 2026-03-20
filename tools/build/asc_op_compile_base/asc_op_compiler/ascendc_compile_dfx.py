@@ -103,18 +103,23 @@ class DFXSectionGenerator:
         self.gen_dfx_struct_flag: bool = False
         self.is_support: bool = False
         self.param_placeholder_num = 0
+        self.is_support = self.is_support_dfx(op_info)
+
+    @staticmethod
+    def is_support_dfx(op_info: OpInfo) -> bool:
         # only support david and ascend910B and ascend310p dex section now
-        if self.is_support_dfx():
-            self.is_support = True
+        arch_support = CommonUtility.is_v200() or CommonUtility.is_v220() \
+                or CommonUtility.is_c310() or CommonUtility.is_v300()
+        option_support = True
         # dfx do not support, because of custom framework is too old or enable super kernel
         if op_info.param_type_list is None or op_info.mc2_ctx is None or \
             global_var_storage.get_variable("ascendc_enable_super_kernel") is True:
-            self.is_support = False
+            option_support = False
+        return arch_support and option_support
 
 
-    def is_support_dfx(self) -> bool:
-        return CommonUtility.is_v200() or CommonUtility.is_v220() \
-                or CommonUtility.is_c310() or CommonUtility.is_v300()
+    def update_is_support(self, op_info: OpInfo):
+        self.is_support = self.is_support_dfx(op_info)
 
 
     def insert_param(self, parameter: DFXArgInfo):

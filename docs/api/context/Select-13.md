@@ -85,17 +85,17 @@ __simd_callee__ inline void Select(MaskReg& dst, MaskReg& src0, MaskReg& src1, M
 template <typename T>
 __simd_vf__ inline void SelectVF(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint32_t count, uint32_t oneRepeatSize, uint16_t repeatTimes)
 {
-    AscendC::MicroAPI::RegTensor<T> srcReg;
-    AscendC::MicroAPI::MaskReg maskFull = AscendC::MicroAPI::CreateMask<T, AscendC::MicroAPI::MaskPattern::ALL>();
-    AscendC::MicroAPI::MaskReg maskNone = AscendC::MicroAPI::CreateMask<T, AscendC::MicroAPI::MaskPattern::ALLF>();
-    AscendC::MicroAPI::MaskReg newMask;
-    AscendC::MicroAPI::MaskReg mask;
-    AscendC::MicroAPI::Select(newMask, maskFull, maskNone, maskFull);
+    AscendC::Reg::RegTensor<T> srcReg;
+    AscendC::Reg::MaskReg maskFull = AscendC::Reg::CreateMask<T, AscendC::Reg::MaskPattern::ALL>();
+    AscendC::Reg::MaskReg maskNone = AscendC::Reg::CreateMask<T, AscendC::Reg::MaskPattern::ALLF>();
+    AscendC::Reg::MaskReg newMask;
+    AscendC::Reg::MaskReg mask;
+    AscendC::Reg::Select(newMask, maskFull, maskNone, maskFull);
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = AscendC::MicroAPI::UpdateMask<T>(count);
-        AscendC::MicroAPI::LoadAlign(srcReg, srcAddr + i * oneRepeatSize);
-        AscendC::MicroAPI::Adds(srcReg, srcReg, 0, newMask);
-        AscendC::MicroAPI::StoreAlign(dstAddr + i * oneRepeatSize, srcReg, mask);
+        mask = AscendC::Reg::UpdateMask<T>(count);
+        AscendC::Reg::LoadAlign(srcReg, srcAddr + i * oneRepeatSize);
+        AscendC::Reg::Adds(srcReg, srcReg, 0, newMask);
+        AscendC::Reg::StoreAlign(dstAddr + i * oneRepeatSize, srcReg, mask);
     }
 }
 ```

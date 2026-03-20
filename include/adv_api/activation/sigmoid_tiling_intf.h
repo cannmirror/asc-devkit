@@ -12,6 +12,12 @@
  * \file sigmoid_tiling_intf.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIGMOID_TILING_INTF_H__
+#endif
+
 #ifndef TILING_MATH_SIGMOID_TILING_INTF_H
 #define TILING_MATH_SIGMOID_TILING_INTF_H
 
@@ -22,3 +28,8 @@ namespace AscendC {
 using LibSigmoidTilingInterface = SigmoidTilingDeprecatedHeader;
 } // namespace AscendC
 #endif // TILING_MATH_SIGMOID_TILING_INTF_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIGMOID_TILING_INTF_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIGMOID_TILING_INTF_H__
+#endif

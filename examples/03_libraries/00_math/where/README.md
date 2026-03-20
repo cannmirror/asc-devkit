@@ -22,7 +22,7 @@
 ## 算子描述
 
 - 算子功能：  
-  根据指定的条件，从两个源操作数中选择元素，生成目标操作数。两个源操作数均可以是LocalTensor或标量,
+  根据指定的条件，从两个源操作数中选择元素，生成目标操作数。两个源操作数均可以是LocalTensor或标量。
   
   计算公式如下：  
   $$dst_i = \begin{cases}
@@ -46,7 +46,7 @@
   </table>
 
 - 算子实现：  
-  本样例中实现的是固定shape为输入src0[32], src1[32], condition[32]，输出dst[32]的where_custom算子。
+  本样例中实现的是固定shape为输入src0[32]，src1[32]，condition[32]，输出dst[32]的where_custom算子。
 
   - Kernel实现
 

@@ -7,7 +7,13 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
- 
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/reduce/reduce_prod/reduce_prod_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_PROD_REDUCE_PROD_C310_IMPL_H__
+#endif
+
 #ifndef IMPL_REDUCE_REDUCE_PROD_REDUCE_PROD_C310_IMPL_H_
 #define IMPL_REDUCE_REDUCE_PROD_REDUCE_PROD_C310_IMPL_H_
 
@@ -26,74 +32,74 @@
 namespace AscendC {
 namespace Internal {
 template <typename T>
-__aicore__ inline void ReduceProd(MicroAPI::RegTensor<T>& dst, MicroAPI::RegTensor<T> src, MicroAPI::MaskReg mask)
+__aicore__ inline void ReduceProd(Reg::RegTensor<T>& dst, Reg::RegTensor<T> src, Reg::MaskReg mask)
 {
-    MicroAPI::RegTensor<T> tempOne;
+    Reg::RegTensor<T> tempOne;
     // mask invalid data in src to one
-    MicroAPI::Duplicate(tempOne, 1);
-    MicroAPI::Select(src, src, tempOne, mask);
+    Reg::Duplicate(tempOne, 1);
+    Reg::Select(src, src, tempOne, mask);
 
     if constexpr(sizeof(T) == 1) {
         // fold to 128
-        MicroAPI::DeInterleave(dst, src, src, tempOne);
-        MicroAPI::Mul(src, dst, src, mask);
+        Reg::DeInterleave(dst, src, src, tempOne);
+        Reg::Mul(src, dst, src, mask);
     }
     if constexpr(sizeof(T) <= 2) {
         // fold to 64
-        MicroAPI::DeInterleave(dst, src, src, tempOne);
-        MicroAPI::Mul(src, dst, src, mask);
+        Reg::DeInterleave(dst, src, src, tempOne);
+        Reg::Mul(src, dst, src, mask);
     }
     // fold from 64 to 2
-    MicroAPI::DeInterleave(dst, src, src, tempOne);
-    MicroAPI::Mul(src, dst, src, mask);
-    MicroAPI::DeInterleave(dst, src, src, tempOne);
-    MicroAPI::Mul(src, dst, src, mask);
-    MicroAPI::DeInterleave(dst, src, src, tempOne);
-    MicroAPI::Mul(src, dst, src, mask);
-    MicroAPI::DeInterleave(dst, src, src, tempOne);
-    MicroAPI::Mul(src, dst, src, mask);
-    MicroAPI::DeInterleave(dst, src, src, tempOne);
-    MicroAPI::Mul(src, dst, src, mask);
+    Reg::DeInterleave(dst, src, src, tempOne);
+    Reg::Mul(src, dst, src, mask);
+    Reg::DeInterleave(dst, src, src, tempOne);
+    Reg::Mul(src, dst, src, mask);
+    Reg::DeInterleave(dst, src, src, tempOne);
+    Reg::Mul(src, dst, src, mask);
+    Reg::DeInterleave(dst, src, src, tempOne);
+    Reg::Mul(src, dst, src, mask);
+    Reg::DeInterleave(dst, src, src, tempOne);
+    Reg::Mul(src, dst, src, mask);
     // fold to 1
-    MicroAPI::DeInterleave(dst, src, src, tempOne);
-    MicroAPI::Mul(dst, dst, src, mask);
+    Reg::DeInterleave(dst, src, src, tempOne);
+    Reg::Mul(dst, dst, src, mask);
 }
 
-template <class T, const MicroAPI::RegTrait &Trait, const uint16_t vlSize>
+template <class T, const Reg::RegTrait &Trait, const uint16_t vlSize>
 __simd_vf__ inline void ReduceProdARLessThanVLVF(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA,
     uint32_t dimR, const uint16_t repeatTime)
 {
-    MicroAPI::RegTensor<T, Trait> vreg0;
-    MicroAPI::RegTensor<T, Trait> vreg1;
-    MicroAPI::UnalignReg uDst;
-    MicroAPI::RegTensor<T> tempOne;
+    Reg::RegTensor<T, Trait> vreg0;
+    Reg::RegTensor<T, Trait> vreg1;
+    Reg::UnalignReg uDst;
+    Reg::RegTensor<T> tempOne;
     // mask invalid data in src to one
-    MicroAPI::Duplicate(tempOne, 1);
+    Reg::Duplicate(tempOne, 1);
     uint32_t sreg1 = dimR;
-    MicroAPI::MaskReg mask = MicroAPI::UpdateMask<T, Trait>(sreg1);
+    Reg::MaskReg mask = Reg::UpdateMask<T, Trait>(sreg1);
     for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
-        MicroAPI::LoadAlign(vreg0, srcAddr + loopA * dimR);
-        MicroAPI::Select(vreg0, vreg0, tempOne, mask);
+        Reg::LoadAlign(vreg0, srcAddr + loopA * dimR);
+        Reg::Select(vreg0, vreg0, tempOne, mask);
         if constexpr(sizeof(T) == 1) {
             // fold to 128
-            MicroAPI::DeInterleave(vreg1, vreg0, vreg0, tempOne);
-            MicroAPI::Mul(vreg0, vreg1, vreg0, mask);
+            Reg::DeInterleave(vreg1, vreg0, vreg0, tempOne);
+            Reg::Mul(vreg0, vreg1, vreg0, mask);
         }
         if constexpr(sizeof(T) <= 2) {
             // fold to 64
-            MicroAPI::DeInterleave(vreg1, vreg0, vreg0, tempOne);
-            MicroAPI::Mul(vreg0, vreg1, vreg0, mask);
+            Reg::DeInterleave(vreg1, vreg0, vreg0, tempOne);
+            Reg::Mul(vreg0, vreg1, vreg0, mask);
         }
         for (uint16_t i = 0; i < repeatTime; ++i) {
-            MicroAPI::DeInterleave(vreg1, vreg0, vreg0, tempOne);
-            MicroAPI::Mul(vreg0, vreg1, vreg0, mask);
+            Reg::DeInterleave(vreg1, vreg0, vreg0, tempOne);
+            Reg::Mul(vreg0, vreg1, vreg0, mask);
         }
         // fold to 1
-        MicroAPI::DeInterleave(vreg1, vreg0, vreg0, tempOne);
-        MicroAPI::Mul(vreg1, vreg1, vreg0, mask);
-        MicroAPI::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
+        Reg::DeInterleave(vreg1, vreg0, vreg0, tempOne);
+        Reg::Mul(vreg1, vreg1, vreg0, mask);
+        Reg::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
     }
-    MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+    Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
 }
 
 template <class T, bool isReuseSource = false>
@@ -106,11 +112,11 @@ __aicore__ inline void ReduceProdARImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr
     } else if (dimR <= vlSize) {
         uint16_t repeatTime = FindClosestPowerOfTwo(dimR);
         repeatTime = (1 << repeatTime) < dimR ? repeatTime : repeatTime - 1;
-        ReduceProdARLessThanVLVF<T, MicroAPI::RegTraitNumOne, vlSize>
+        ReduceProdARLessThanVLVF<T, Reg::RegTraitNumOne, vlSize>
             (dstAddr, srcAddr, dimA, dimR, repeatTime);
     } else {
-        ReduceAROverVLImpl<T, MicroAPI::RegTraitNumOne, vlSize,
-            MicroAPI::Mul<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>,
+        ReduceAROverVLImpl<T, Reg::RegTraitNumOne, vlSize,
+            Reg::Mul<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>,
             ReduceProd<T>, isReuseSource>(dstAddr, srcAddr, tmpAddr, dimA, dimR);
     }
 }
@@ -136,11 +142,16 @@ __aicore__ inline void ReduceProdImpl(const LocalTensor<T>& dst, const LocalTens
     if constexpr (std::is_same_v<pattern, Pattern::Reduce::AR>) {
         ReduceProdARImpl<T, isReuseSource>(dstAddr, srcAddr, tmpAddr, srcShape[0], srcShape[1]);
     } else {
-        ReduceRAImpl<T, MicroAPI::RegTraitNumOne,
-            MicroAPI::Mul<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>,
+        ReduceRAImpl<T, Reg::RegTraitNumOne,
+            Reg::Mul<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>,
             isReuseSource>(dstAddr, srcAddr, tmpAddr, srcShape[1], srcShape[0]);
     }
 }
 } // namespace Internal
 } // namespace AscendC
 #endif // IMPL_REDUCE_REDUCE_PROD_REDUCE_PROD_C310_IMPL_H_
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_PROD_REDUCE_PROD_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_PROD_REDUCE_PROD_C310_IMPL_H__
+#endif

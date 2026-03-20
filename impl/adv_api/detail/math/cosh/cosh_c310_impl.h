@@ -12,9 +12,14 @@
  * \file cosh_c310_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/math/cosh/cosh_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/cosh.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_COSH_COSH_C310_IMPL_H__
+#endif
 #ifndef IMPL_MATH_COSH_COSH_C310_IMPL_H
 #define IMPL_MATH_COSH_COSH_C310_IMPL_H
-
 #include "kernel_tensor.h"
 #include "kernel_basic_intf.h"
 #include "../../common/check.h"
@@ -30,32 +35,32 @@ __simd_vf__ inline void CoshCompute(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint32
     constexpr float scalarNegLnTwo = -0.6931472;
     constexpr float scalarBrc = 0.25;
     constexpr uint32_t vlSize = static_cast<uint32_t>(GetVecLen() / sizeof(float));
-    MicroAPI::MaskReg coshMask;
-    MicroAPI::RegTensor<float> brcReg;
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::RegTensor<float> castReg;
-    MicroAPI::RegTensor<float> computeReg0;
-    MicroAPI::RegTensor<float> computeReg1;
-    MicroAPI::RegTensor<float> resReg;
-    MicroAPI::RegTensor<T> dstReg;
-    MicroAPI::Duplicate(brcReg, scalarBrc);
+    Reg::MaskReg coshMask;
+    Reg::RegTensor<float> brcReg;
+    Reg::RegTensor<T> srcReg;
+    Reg::RegTensor<float> castReg;
+    Reg::RegTensor<float> computeReg0;
+    Reg::RegTensor<float> computeReg1;
+    Reg::RegTensor<float> resReg;
+    Reg::RegTensor<T> dstReg;
+    Reg::Duplicate(brcReg, scalarBrc);
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        coshMask = MicroAPI::UpdateMask<float>(calCount);
+        coshMask = Reg::UpdateMask<float>(calCount);
         if constexpr (SupportBytes<T, 2>()) {
-            MicroAPI::LoadAlign<half, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * vlSize);
-            MicroAPI::Cast<float, half, castTraitB16ToB32>(castReg, srcReg, coshMask);
+            Reg::LoadAlign<half, Reg::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * vlSize);
+            Reg::Cast<float, half, castTraitB16ToB32>(castReg, srcReg, coshMask);
         } else {
-            MicroAPI::LoadAlign(castReg, srcUb + i * vlSize);
+            Reg::LoadAlign(castReg, srcUb + i * vlSize);
         }
-        MicroAPI::Adds(castReg, castReg, scalarNegLnTwo, coshMask);
-        MicroAPI::Exp(computeReg0, castReg, coshMask);
-        MicroAPI::Div(computeReg1, brcReg, computeReg0, coshMask);
-        MicroAPI::Add(resReg, computeReg0, computeReg1, coshMask);
+        Reg::Adds(castReg, castReg, scalarNegLnTwo, coshMask);
+        Reg::Exp(computeReg0, castReg, coshMask);
+        Reg::Div(computeReg1, brcReg, computeReg0, coshMask);
+        Reg::Add(resReg, computeReg0, computeReg1, coshMask);
         if constexpr (SupportBytes<T, 2>()) {
-            MicroAPI::Cast<half, float, castTraitB32ToB16>(dstReg, resReg, coshMask);
-            MicroAPI::StoreAlign<half, MicroAPI::StoreDist::DIST_PACK_B32>(dstUb + i * vlSize, dstReg, coshMask);
+            Reg::Cast<half, float, castTraitB32ToB16>(dstReg, resReg, coshMask);
+            Reg::StoreAlign<half, Reg::StoreDist::DIST_PACK_B32>(dstUb + i * vlSize, dstReg, coshMask);
         } else {
-            MicroAPI::StoreAlign(dstUb + i * vlSize, resReg, coshMask);
+            Reg::StoreAlign(dstUb + i * vlSize, resReg, coshMask);
         }
     }
 }
@@ -98,3 +103,8 @@ __aicore__ inline void CoshImpl(const LocalTensor<T>& dstTensor, const LocalTens
 } // namespace AscendC
 
 #endif // IMPL_MATH_COSH_COSH_C310_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_COSH_COSH_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_COSH_COSH_C310_IMPL_H__
+#endif

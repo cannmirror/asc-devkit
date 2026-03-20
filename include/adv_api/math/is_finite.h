@@ -13,6 +13,12 @@
  * \brief
  */
 
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_IS_FINITE_H__
+#endif
+
 #ifndef LIB_MATH_IS_FINITE_H
 #define LIB_MATH_IS_FINITE_H
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
@@ -41,3 +47,8 @@ __aicore__ inline void IsFinite(const LocalTensor<U>& dst, const LocalTensor<T>&
 }  // namespace AscendC
 #endif
 #endif  // LIB_MATH_IS_FINITE_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_IS_FINITE_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_IS_FINITE_H__
+#endif

@@ -12,6 +12,12 @@
  * \file logsoftmax.h
  * \brief LogSoftMax api of AscendC
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LOGSOFTMAX_H__
+#endif
+
 #ifndef LIB_SOFTMAX_LOGSOFTMAX_H
 #define LIB_SOFTMAX_LOGSOFTMAX_H
 
@@ -56,3 +62,8 @@ __aicore__ inline void LogSoftMax(const LocalTensor<T>& dst, const LocalTensor<T
 #pragma end_pipe
 #endif
 #endif // LIB_SOFTMAX_LOGSOFTMAX_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LOGSOFTMAX_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LOGSOFTMAX_H__
+#endif

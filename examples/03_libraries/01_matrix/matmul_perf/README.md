@@ -58,9 +58,9 @@
 
           AscendC::Matmul<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, CFG_NORM> matmulObj;
           ```
-        - 使能纯Cube模式实现，在定义Matmul对象的代码中，设置ASCEND_CUBE_ONLY宏，且必须在#include "lib/matmul_intf.h"之前设置。
+        - 使能纯Cube模式实现，在定义Matmul对象的代码中，设置ASCENDC_CUBE_ONLY宏，且必须在#include "lib/matmul_intf.h"之前设置。
           ```
-          #define ASCNEND_CUBE_ONLY // 设置ASCEND_CUBE_ONLY宏
+          #define ASCENDC_CUBE_ONLY // 设置ASCENDC_CUBE_ONLY宏
           #include "lib/matmul_intf.h"
 
           using A_TYPE = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, AType>;
@@ -72,7 +72,7 @@
           ```
         - 使能MDL模板实现，使用默认的MDL模板CFG_MDL创建Matmul对象。
           ```
-          #define ASCNEND_CUBE_ONLY // 设置ASCEND_CUBE_ONLY宏
+          #define ASCENDC_CUBE_ONLY // 设置ASCENDC_CUBE_ONLY宏
           #include "lib/matmul_intf.h"
 
           using A_TYPE = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, AType>;
@@ -84,7 +84,7 @@
           ```
         - 使能UnitFlag功能实现，自定义MatmulConfig参数，将其中的enUnitFlag参数设置为true，使能UnitFlag功能。
           ```
-          #define ASCNEND_CUBE_ONLY // 设置ASCEND_CUBE_ONLY宏
+          #define ASCENDC_CUBE_ONLY // 设置ASCENDC_CUBE_ONLY宏
           #include "lib/matmul_intf.h"
 
           __aicore__ inline constexpr MatmulConfig GetUnitFlagCfg()

@@ -109,5 +109,7 @@ CPU Debug介绍
   cmake .. -Dsoc_version=${soc_version}; make -j
   python3 ../scripts/gen_data.py
   gdb --args ./add
+  run                # 让程序在gdb模式正常执行直到结束
+  quit               # 退出gdb模式
   python3 ../scripts/verify_result.py output.bin golden.bin
   ```

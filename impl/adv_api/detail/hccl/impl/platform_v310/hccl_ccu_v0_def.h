@@ -128,7 +128,7 @@ private:
     uint8_t workingFlag_ = false;
     bool needResetDataType_ = false;
     bool isInited_ = false;
-    __gm__ uint64_t *finishCntGM_; // 软同步使用
+    __gm__ uint64_t *finishCntGM_; // 软同步使�?
     uint64_t finishNum_;
     uint64_t finishNumTemp_;
 

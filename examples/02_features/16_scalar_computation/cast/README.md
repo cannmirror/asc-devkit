@@ -30,13 +30,13 @@
 - 算子规格：  
   <table>
   <tr><td rowspan="2" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">x</td><td align="center">1024</td><td align="center">bfloat16_t</td><td align="center">ND</td><td align="center"></td></tr>
+  <tr><td align="center">x</td><td align="center">1024</td><td align="center">bfloat16_t</td><td align="center">ND</td></tr>
   <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">1024</td><td align="center">float</td><td align="center">ND</td></tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">kernel_cast</td></tr>  
   </table>
 
 - 算子实现：  
-  本样例中实现的是固定shape为256的Cast算子。
+  本样例中实现的是固定shape为1024的Cast算子。
 
   - Kernel实现  
     Cast算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm存储在srcLocal中，Compute任务负责将srcLocal中第0个元素转换为float类型标量，并将该标量Duplicate到dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。

@@ -14,6 +14,12 @@
  *        techniques for performing computations and storing tensors at lower bitwidths than floating point precision.
  * Mathematical formulas: Quantize(x, scale, offset) = (x* scale) + offset
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZE_H__
+#endif
+
 #ifndef LIB_QUANTIZATION_QUANTIZE_H
 #define LIB_QUANTIZATION_QUANTIZE_H
 
@@ -77,3 +83,8 @@ __aicore__ inline void Quantize(const LocalTensor<DstT>& dstTensor, const LocalT
 }  // namespace AscendC
 #endif  // defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
 #endif  // LIB_QUANTIZATION_QUANTIZE_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZE_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZE_H__
+#endif

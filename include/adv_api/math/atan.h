@@ -16,8 +16,14 @@
  * when x < 0, Atan(x) = atan(-x)
  * when x belongs to (0, tan(pi/8)), Atan(x) = atan(x)
  * when x belongs to (tan(pi/8), tan(pi/4)), Atan(x) = pi/8 + atan((x- tan(pi/8)) / (1+ x*tan(pi/8)))
- * when x belongs to (tan(pi/4), +âˆž), Atan(x) = pi/4 + atan((x-1)/(x+1))
+ * when x belongs to (tan(pi/4), +âˆ?, Atan(x) = pi/4 + atan((x-1)/(x+1))
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ATAN_H__
+#endif
+
 #ifndef LIB_MATH_ATAN_H
 #define LIB_MATH_ATAN_H
 
@@ -199,3 +205,8 @@ __aicore__ inline void Atan(const LocalTensor<T>& dstTensor, const LocalTensor<T
 
 #endif
 #endif  // LIB_MATH_ATAN_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ATAN_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ATAN_H__
+#endif

@@ -845,11 +845,6 @@ Idx Name                              Size     VMA              Type
                         mock_fdopen.side_effect = Exception("error")
                         self.assertRaises(Exception, gen_super_kernel_file, super_operator)
 
-    def test_gen_super_dump_code(self):
-        super_kernel_file = ""
-        super_kernel_file += gen_super_dump_code(True, 1048576, 123)
-        self.assertNotEqual(super_kernel_file, "")
-
     def test_ascendc_super_kernel_plus_multi_ops(self):
         with mock.patch("adapter.super_kernel.super_kernel_compile"), \
             mock.patch.object(SubOperatorInfos, 'extract_sub_bin_file_of_mix_kernel'):
@@ -2359,6 +2354,206 @@ dcci((__gm__ uint64_t*)0, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE
                 unique_lst = gen_super_kernel_link_obj_sequence(compile_info, tmp.compile_info["sub_operator"], \
                     SuperKernelLinkMode.PerCubeHerVecWithSuper, 1)
                 self.assertEqual(unique_lst, ['', 'aic.bin', 'aiv.bin', 'dynamic.bin', './kernel_meta/dynamic.b_split1.o', './kernel_meta/dynamic.b_split2.o', './kernel_meta/dynamic.b_split3.o'])
+
+
+    def test_dcci_options_by_dynamic_op_type(self):
+        """Test DCCI options are set correctly based on dynamic operator type"""
+        compile_log_path = "./tmp/"
+
+        # Test case 1: op_type in dcci-before-kernel-start list
+        op_options1 = {
+            'split-mode': 4,
+            'dcci-before-kernel-start': 'Add,MatMul'
+        }
+        json_data1 = {
+            "kernelName": "op1",
+            "split_mode": 4,
+            "blockDim": 1,
+            "sub_operator_params": [],
+            "sub_operator_kernel_type": "KERNEL_TYPE_AIV_ONLY",
+            "sub_operator_kernel_name": {"AiCore": {"func_name": "test_func", "obj_files": "test.o"}},
+            "sub_operator_early_start_set_flag": False,
+            "sub_operator_early_start_wait_flag": False,
+            "sub_operator_call_dcci_before_kernel_start": False,
+            "sub_operator_call_dcci_after_kernel_end": False,
+            "sub_operator_call_dcci_disable_on_kernel": False,
+            "sub_operator_op_type": "Add",
+            "debugOptions": ""
+        }
+        with mock.patch('builtins.open', new_callable=mock.mock_open, read_data='{}'):
+            with mock.patch('json.load', return_value=json_data1):
+                sub_op1 = SubOperatorInfos(0, {"bin_path": "./op1.o", "json_path": "op1.json",
+                    "kernel_name": "op1"}, 100, op_options1, compile_log_path)
+                sub_op1.sub_op_task_type = SubOperatorType.DYNAMIC_OP
+                self.assertEqual(sub_op1.dcci_before_kernel_start_op_list, ['Add', 'MatMul'])
+                sub_op1.init_of_sub_operator_info()
+                self.assertTrue(sub_op1.call_dcci_before_kernel_start)
+
+        # Test case 2: op_type in dcci-after-kernel-end list
+        op_options2 = {
+            'split-mode': 4,
+            'dcci-after-kernel-end': 'Conv,MatMul'
+        }
+        json_data2 = {
+            "kernelName": "op2",
+            "split_mode": 4,
+            "blockDim": 1,
+            "sub_operator_params": [],
+            "sub_operator_kernel_type": "KERNEL_TYPE_AIV_ONLY",
+            "sub_operator_kernel_name": {"AiCore": {"func_name": "test_func", "obj_files": "test.o"}},
+            "sub_operator_early_start_set_flag": False,
+            "sub_operator_early_start_wait_flag": False,
+            "sub_operator_call_dcci_before_kernel_start": False,
+            "sub_operator_call_dcci_after_kernel_end": False,
+            "sub_operator_call_dcci_disable_on_kernel": False,
+            "sub_operator_op_type": "MatMul",
+            "debugOptions": ""
+        }
+        with mock.patch('builtins.open', new_callable=mock.mock_open, read_data='{}'):
+            with mock.patch('json.load', return_value=json_data2):
+                sub_op2 = SubOperatorInfos(0, {"bin_path": "./op2.o", "json_path": "op2.json",
+                    "kernel_name": "op2"}, 100, op_options2, compile_log_path)
+                sub_op2.sub_op_task_type = SubOperatorType.DYNAMIC_OP
+                self.assertEqual(sub_op2.dcci_after_kernel_end_op_list, ['Conv', 'MatMul'])
+                sub_op2.init_of_sub_operator_info()
+                self.assertTrue(sub_op2.call_dcci_after_kernel_end)
+
+        # Test case 3: op_type in dcci-disable-on-kernel list
+        op_options3 = {
+            'split-mode': 4,
+            'dcci-disable-on-kernel': 'Transpose,Softmax'
+        }
+        json_data3 = {
+            "kernelName": "op3",
+            "split_mode": 4,
+            "blockDim": 1,
+            "sub_operator_params": [],
+            "sub_operator_kernel_type": "KERNEL_TYPE_AIV_ONLY",
+            "sub_operator_kernel_name": {"AiCore": {"func_name": "test_func", "obj_files": "test.o"}},
+            "sub_operator_early_start_set_flag": False,
+            "sub_operator_early_start_wait_flag": False,
+            "sub_operator_call_dcci_before_kernel_start": False,
+            "sub_operator_call_dcci_after_kernel_end": False,
+            "sub_operator_call_dcci_disable_on_kernel": False,
+            "sub_operator_op_type": "Softmax",
+            "debugOptions": ""
+        }
+        with mock.patch('builtins.open', new_callable=mock.mock_open, read_data='{}'):
+            with mock.patch('json.load', return_value=json_data3):
+                sub_op3 = SubOperatorInfos(0, {"bin_path": "./op3.o", "json_path": "op3.json",
+                    "kernel_name": "op3"}, 100, op_options3, compile_log_path)
+                sub_op3.sub_op_task_type = SubOperatorType.DYNAMIC_OP
+                self.assertEqual(sub_op3.dcci_disable_on_kernel_op_list, ['Transpose', 'Softmax'])
+                sub_op3.init_of_sub_operator_info()
+                self.assertTrue(sub_op3.call_dcci_disable_on_kernel)
+
+        # Test case 4: op_type not in any list
+        op_options4 = {
+            'split-mode': 4,
+            'dcci-before-kernel-start': 'Add,MatMul',
+            'dcci-after-kernel-end': 'Conv,MatMul',
+            'dcci-disable-on-kernel': 'Transpose,Softmax'
+        }
+        json_data4 = {
+            "kernelName": "op4",
+            "split_mode": 4,
+            "blockDim": 1,
+            "sub_operator_params": [],
+            "sub_operator_kernel_type": "KERNEL_TYPE_AIV_ONLY",
+            "sub_operator_kernel_name": {"AiCore": {"func_name": "test_func", "obj_files": "test.o"}},
+            "sub_operator_early_start_set_flag": False,
+            "sub_operator_early_start_wait_flag": False,
+            "sub_operator_call_dcci_before_kernel_start": False,
+            "sub_operator_call_dcci_after_kernel_end": False,
+            "sub_operator_call_dcci_disable_on_kernel": False,
+            "sub_operator_op_type": "UnknownOp",
+            "debugOptions": ""
+        }
+        with mock.patch('builtins.open', new_callable=mock.mock_open, read_data='{}'):
+            with mock.patch('json.load', return_value=json_data4):
+                sub_op4 = SubOperatorInfos(0, {"bin_path": "./op4.o", "json_path": "op4.json",
+                    "kernel_name": "op4"}, 100, op_options4, compile_log_path)
+                sub_op4.sub_op_task_type = SubOperatorType.DYNAMIC_OP
+                sub_op4.init_of_sub_operator_info()
+                self.assertFalse(sub_op4.call_dcci_before_kernel_start)
+                self.assertFalse(sub_op4.call_dcci_after_kernel_end)
+                self.assertFalse(sub_op4.call_dcci_disable_on_kernel)
+
+        # Test case 5: op_type in multiple lists (disable takes precedence)
+        op_options5 = {
+            'split-mode': 4,
+            'dcci-before-kernel-start': 'Add',
+            'dcci-disable-on-kernel': 'Add'
+        }
+        json_data5 = {
+            "kernelName": "op5",
+            "split_mode": 4,
+            "blockDim": 1,
+            "sub_operator_params": [],
+            "sub_operator_kernel_type": "KERNEL_TYPE_AIV_ONLY",
+            "sub_operator_kernel_name": {"AiCore": {"func_name": "test_func", "obj_files": "test.o"}},
+            "sub_operator_early_start_set_flag": False,
+            "sub_operator_early_start_wait_flag": False,
+            "sub_operator_call_dcci_before_kernel_start": False,
+            "sub_operator_call_dcci_after_kernel_end": False,
+            "sub_operator_call_dcci_disable_on_kernel": False,
+            "sub_operator_op_type": "Add",
+            "debugOptions": ""
+        }
+        with mock.patch('builtins.open', new_callable=mock.mock_open, read_data='{}'):
+            with mock.patch('json.load', return_value=json_data5):
+                sub_op5 = SubOperatorInfos(0, {"bin_path": "./op5.o", "json_path": "op5.json",
+                    "kernel_name": "op5"}, 100, op_options5, compile_log_path)
+                sub_op5.sub_op_task_type = SubOperatorType.DYNAMIC_OP
+                sub_op5.init_of_sub_operator_info()
+                self.assertFalse(sub_op5.call_dcci_before_kernel_start)
+                self.assertTrue(sub_op5.call_dcci_disable_on_kernel)
+                # Verify DCCI call blocks respect disable flag
+                dcci_before_block = sub_op5.gen_dcci_before_kernel_start_call_block()
+                self.assertEqual(dcci_before_block, "")
+
+
+    def test_dcci_options_parsing_empty_lists(self):
+        """Test DCCI options parsing with empty or invalid input"""
+        compile_log_path = "./tmp/"
+
+        # Test case 1: Empty string
+        op_options1 = {
+            'split-mode': 4,
+            'dcci-before-kernel-start': '',
+            'dcci-after-kernel-end': '',
+            'dcci-disable-on-kernel': ''
+        }
+        with mock.patch('builtins.open', new_callable=mock.mock_open, read_data='{}') as mock_open:
+            with mock.patch('json.load', return_value=op_json):
+                sub_op1 = SubOperatorInfos(0, {"bin_path": "./op1.o", "json_path": "op1.json",
+                    "kernel_name": "op1"}, 100, op_options1, compile_log_path)
+                self.assertEqual(sub_op1.dcci_before_kernel_start_op_list, [])
+                self.assertEqual(sub_op1.dcci_after_kernel_end_op_list, [])
+                self.assertEqual(sub_op1.dcci_disable_on_kernel_op_list, [])
+
+        # Test case 2: Whitespace and empty elements
+        op_options2 = {
+            'split-mode': 4,
+            'dcci-before-kernel-start': 'Add, , MatMul,',
+        }
+        with mock.patch('builtins.open', new_callable=mock.mock_open, read_data='{}') as mock_open:
+            with mock.patch('json.load', return_value=op_json):
+                sub_op2 = SubOperatorInfos(0, {"bin_path": "./op2.o", "json_path": "op2.json",
+                    "kernel_name": "op2"}, 100, op_options2, compile_log_path)
+                self.assertEqual(sub_op2.dcci_before_kernel_start_op_list, ['Add', 'MatMul'])
+
+        # Test case 3: Option not present (default to empty list)
+        op_options3 = {
+            'split-mode': 4,
+        }
+        with mock.patch('builtins.open', new_callable=mock.mock_open, read_data='{}') as mock_open:
+            with mock.patch('json.load', return_value=op_json):
+                sub_op3 = SubOperatorInfos(0, {"bin_path": "./op3.o", "json_path": "op3.json",
+                    "kernel_name": "op3"}, 100, op_options3, compile_log_path)
+                self.assertEqual(sub_op3.dcci_before_kernel_start_op_list, [])
+                self.assertEqual(sub_op3.dcci_after_kernel_end_op_list, [])
+                self.assertEqual(sub_op3.dcci_disable_on_kernel_op_list, [])
 
 
 if __name__ == "__main__":

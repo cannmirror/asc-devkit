@@ -130,7 +130,7 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::InitInner(GM_ADDR contex
     }
     KERNEL_LOG(KERNEL_INFO, "ApiClient InitInner msgAddr:0x%llx, workSpaceSize:0x%llx", msgAddr, hcclContext_->workSpaceSize);
 
-#ifndef __CCE_KT_TEST__
+#ifndef ASCENDC_CPU_DEBUG
     ASCENDC_ASSERT((reinterpret_cast<uintptr_t>(hcclContext_->xnOffset) % ALIGN_64_BYTE == 0),
         { KERNEL_LOG(KERNEL_ERROR, "xnAddr is not 64-byte aligned!"); });
 #endif
@@ -161,8 +161,7 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::InitInner(GM_ADDR contex
 
     isInited_ = true;
     KERNEL_LOG(KERNEL_INFO, "ApiClient InitInner rankId:%d, rankNum:%d, xnAddr:0x%llx, ckeAddr:0x%llx, ccuMsgExt:0x%llx",
-                    hcclContext_->rankId, hcclContext_->rankNum, hcclContext_->xnOffset, hcclContext_->ckeOffset,
-                    reinterpret_cast<uint64_t>(ccuParam_.ccuMsgExt));
+                    hcclContext_->rankId, hcclContext_->rankNum, hcclContext_->xnOffset, hcclContext_->ckeOffset, reinterpret_cast<uint64_t>(ccuParam_.ccuMsgExt));
 }
 
 template<const auto &config>
@@ -451,8 +450,10 @@ __aicore__ inline void HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::C
     ASCENDC_HCCL_API_ASSERT(isInited_, { return; },
     "Call Commit failed, please ensure Hccl::Init func has been called successfully already!");
 
-    ASCENDC_HCCL_API_ASSERT(handleId > INVALID_HANDLE_ID && handleId < HCCL_MAX_HANDLE_ID, { return; },
-        "Call Commit failed, handleId is[%d], expected in range of [0, %d).", handleId, HCCL_MAX_HANDLE_ID);
+    if (unlikely(handleId >= HCCL_MAX_HANDLE_ID || handleId <= INVALID_HANDLE_ID)) {
+        KERNEL_LOG(KERNEL_ERROR,  "Call Commit failed, handleId[%u] is invalid.", handleId);
+        return;
+    }
 
     handleNeedCommitCnt_[handleId]++;
     if (msgQueueIsAvailable_[globalCurResId_] == false) {
@@ -470,8 +471,6 @@ __aicore__ inline int32_t HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>
         "Call Wait failed, please ensure Hccl::Init func has been called successfully already!");
     ASCENDC_HCCL_API_ASSERT(handleCommitCnt_[handleId] > 0, { return HCCL_FAILED; },
         "Call Wait failed,  commitCnt [%u] is invalid.", handleCommitCnt_[handleId]);
-    ASCENDC_HCCL_API_ASSERT(handleId >INVALID_HANDLE_ID && handleId < HCCL_MAX_HANDLE_ID, { return HCCL_FAILED; },
-        "Call Wait failed,  chandleId is[%d], expected in range of [0, %d).", handleId, HCCL_MAX_HANDLE_ID);
     ASCENDC_HCCL_API_ASSERT(handleId < curHandleId_, { return HCCL_FAILED; },
         "Call Wait failed,  handleId = %u is invalid please call Preapre Interface before Wait.", handleId);
 
@@ -489,11 +488,11 @@ __aicore__ inline int32_t HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>
     reqId %= CCU_MAX_MSG_NUM;
     GM_ADDR waitCKEAddr = GetWaitCkeAddr(reqId);
 
-#ifndef __CCE_KT_TEST__ 
+#ifndef ASCENDC_CPU_DEBUG 
     while(true) {
         uint64_t waitCke = ReadHBMData(waitCKEAddr);
         if (waitCke != 0) {
-            if (workingFlag_) { // 0核
+            if (workingFlag_) { // 0�?
                 finishNumTemp_++;
 
                 WriteHBMData(finishCntGM_, finishNumTemp_);
@@ -501,7 +500,7 @@ __aicore__ inline int32_t HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>
             }
             break;
         }
-        if (!workingFlag_) { // 非0核
+        if (!workingFlag_) { // �?�?
             uint64_t finshCnt = ReadHBMData(finishCntGM_);
             if (finshCnt > finishNum_) {
                 break;
@@ -517,10 +516,10 @@ __aicore__ inline int32_t HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>
     globalCurWaitId_ %= CCU_MAX_MSG_NUM;
 
     // 补发消息
-    // 场景1： 同一个handleId需要补发消息
+    // 场景1�?同一个handleId需要补发消�?
     if (handleCommitCnt_[handleId] < handleNeedCommitCnt_[handleId]) {
         CommitMsg(handleId);
-    } else { // 场景2： 下一个handleId需要补发消息
+    } else { // 场景2�?下一个handleId需要补发消�?
         uint32_t nextHandleId = handleId + 1;
         if (nextHandleId < curHandleId_ && (handleCommitCnt_[nextHandleId] < handleNeedCommitCnt_[nextHandleId])) {
             CommitMsg(nextHandleId);

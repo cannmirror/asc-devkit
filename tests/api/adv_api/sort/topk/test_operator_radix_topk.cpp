@@ -24,8 +24,8 @@ public:
         printf("outter_shape: %u, inner_shape: %u, k: %u\n", outter, inner, kGm);
 
         k = kGm;
-        k_pad = AscendC::MicroAPI::RadixSelectTopK::GetKPad<T>(k);
-        kpad_index = AscendC::MicroAPI::RadixSelectTopK::GetKPad<int32_t>(k);
+        k_pad = AscendC::Reg::RadixSelectTopK::GetKPad<T>(k);
+        kpad_index = AscendC::Reg::RadixSelectTopK::GetKPad<int32_t>(k);
         isLargest = isLargestGm;
         topKInfo.outter = outter;
         topKInfo.inner = inner;

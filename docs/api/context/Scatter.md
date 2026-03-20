@@ -272,14 +272,14 @@ __simd_callee__ inline void Scatter(__ubuf__ T* baseAddr, S& srcReg, V& index, M
 template<typename T, typename U>
  __simd_vf__ inline void ScatterVF(__ubuf__ T* dstAddr, __ubuf__ T* src0Addr, __ubuf__ U* src1Addr, uint32_t count, uint32_t oneRepeatSize, uint16_t repeatTimes)
 {
-    AscendC::MicroAPI::RegTensor<T> srcReg0;
-    AscendC::MicroAPI::RegTensor<U> srcReg1;
-    AscendC::MicroAPI::MaskReg mask;
+    AscendC::Reg::RegTensor<T> srcReg0;
+    AscendC::Reg::RegTensor<U> srcReg1;
+    AscendC::Reg::MaskReg mask;
     for (uint16_t i = 0; i < repeatTimes; i++) {
-        mask = AscendC::MicroAPI::UpdateMask<T>(count);
-        AscendC::MicroAPI::LoadAlign(srcReg0, src0Addr + i * oneRepeatSize);
-        AscendC::MicroAPI::LoadAlign(srcReg1, src1Addr + i * oneRepeatSize);
-        AscendC::MicroAPI::Scatter(dstAddr, srcReg0, srcReg1, mask);
+        mask = AscendC::Reg::UpdateMask<T>(count);
+        AscendC::Reg::LoadAlign(srcReg0, src0Addr + i * oneRepeatSize);
+        AscendC::Reg::LoadAlign(srcReg1, src1Addr + i * oneRepeatSize);
+        AscendC::Reg::Scatter(dstAddr, srcReg0, srcReg1, mask);
     }
 }
 ```

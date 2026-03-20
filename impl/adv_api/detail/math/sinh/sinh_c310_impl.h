@@ -12,6 +12,12 @@
  * \file sinh_c310_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/math/sinh/sinh_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/sinh.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_SINH_SINH_C310_IMPL_H__
+#endif
 #ifndef IMPL_MATH_SINH_SINH_C310_IMPL_H
 #define IMPL_MATH_SINH_SINH_C310_IMPL_H
 #include "kernel_basic_intf.h"
@@ -28,36 +34,36 @@ __simd_vf__ inline void SinhCompute(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint32
     constexpr float scalarNegLnTwo = -0.6931472;
     constexpr float scalarBrc = 0.25;
     constexpr uint32_t vlSize = static_cast<uint32_t>(GetVecLen() / sizeof(float));
-    static constexpr MicroAPI::CastTrait sinhCastTraitUpper = { MicroAPI::RegLayout::ZERO,
-        MicroAPI::SatMode::UNKNOWN, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN };
-    static constexpr MicroAPI::CastTrait sinhCastTraitLower = { MicroAPI::RegLayout::ZERO,
-        MicroAPI::SatMode::NO_SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT };
-    MicroAPI::MaskReg sinhMask;
-    MicroAPI::RegTensor<float> dupReg;
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::RegTensor<float> castUpperReg;
-    MicroAPI::RegTensor<float> computeReg0;
-    MicroAPI::RegTensor<float> computeReg1;
-    MicroAPI::RegTensor<float> resReg;
-    MicroAPI::RegTensor<T> dstReg;
-    MicroAPI::Duplicate(dupReg, scalarBrc);
+    static constexpr Reg::CastTrait sinhCastTraitUpper = { Reg::RegLayout::ZERO,
+        Reg::SatMode::UNKNOWN, Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN };
+    static constexpr Reg::CastTrait sinhCastTraitLower = { Reg::RegLayout::ZERO,
+        Reg::SatMode::NO_SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT };
+    Reg::MaskReg sinhMask;
+    Reg::RegTensor<float> dupReg;
+    Reg::RegTensor<T> srcReg;
+    Reg::RegTensor<float> castUpperReg;
+    Reg::RegTensor<float> computeReg0;
+    Reg::RegTensor<float> computeReg1;
+    Reg::RegTensor<float> resReg;
+    Reg::RegTensor<T> dstReg;
+    Reg::Duplicate(dupReg, scalarBrc);
     for (uint16_t i = 0; i < repeatTimes; i++) {
-        sinhMask = MicroAPI::UpdateMask<float>(calCount);
+        sinhMask = Reg::UpdateMask<float>(calCount);
         if constexpr (SupportBytes<T, 2>()) {
-            MicroAPI::LoadAlign<half, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * vlSize);
-            MicroAPI::Cast<float, half, sinhCastTraitUpper>(castUpperReg, srcReg, sinhMask);
+            Reg::LoadAlign<half, Reg::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * vlSize);
+            Reg::Cast<float, half, sinhCastTraitUpper>(castUpperReg, srcReg, sinhMask);
         } else {
-            MicroAPI::LoadAlign(castUpperReg, srcUb + i * vlSize);
+            Reg::LoadAlign(castUpperReg, srcUb + i * vlSize);
         }
-        MicroAPI::Adds(castUpperReg, castUpperReg, scalarNegLnTwo, sinhMask);
-        MicroAPI::Exp(computeReg0, castUpperReg, sinhMask);
-        MicroAPI::Div(computeReg1, dupReg, computeReg0, sinhMask);
-        MicroAPI::Sub(resReg, computeReg0, computeReg1, sinhMask);
+        Reg::Adds(castUpperReg, castUpperReg, scalarNegLnTwo, sinhMask);
+        Reg::Exp(computeReg0, castUpperReg, sinhMask);
+        Reg::Div(computeReg1, dupReg, computeReg0, sinhMask);
+        Reg::Sub(resReg, computeReg0, computeReg1, sinhMask);
         if constexpr (SupportBytes<T, 2>()) {
-            MicroAPI::Cast<half, float, sinhCastTraitLower>(dstReg, resReg, sinhMask);
-            MicroAPI::StoreAlign<half, MicroAPI::StoreDist::DIST_PACK_B32>(dstUb + i * vlSize, dstReg, sinhMask);
+            Reg::Cast<half, float, sinhCastTraitLower>(dstReg, resReg, sinhMask);
+            Reg::StoreAlign<half, Reg::StoreDist::DIST_PACK_B32>(dstUb + i * vlSize, dstReg, sinhMask);
         } else {
-            MicroAPI::StoreAlign(dstUb + i * vlSize, resReg, sinhMask);
+            Reg::StoreAlign(dstUb + i * vlSize, resReg, sinhMask);
         }
     }
 }
@@ -100,3 +106,8 @@ __aicore__ inline void SinhImpl(const LocalTensor<T>& dstTensor, const LocalTens
 } // namespace AscendC
 
 #endif // IMPL_MATH_SINH_SINH_C310_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_SINH_SINH_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_SINH_SINH_C310_IMPL_H__
+#endif

@@ -23,10 +23,12 @@
 #endif
 
 namespace __asc_simt_vf {
+#ifndef ASCENDC_CPU_DEBUG
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint64_t clock(void)
 {
     return static_cast<uint64_t>(__cce_simt_get_CLOCK64());
 }
+#endif
 } // namespace __asc_simt_vf
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_TIME_SIMT_IMPL__)

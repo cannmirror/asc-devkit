@@ -13,11 +13,11 @@
 ```
 ├── matmul_column_major
 │   └── scripts
-│       ├── gen_data.py         // 输入数据和真值数据生成脚本文件
-│       └── verify_result.py    // 真值对比文件
-│   ├── CMakeLists.txt          // 编译工程文件
-│   ├── data_utils.h            // 数据读入写出函数
-│   └── matmul.asc              // Ascend C算子实现 & 调用样例
+│       ├── gen_data.py             // 输入数据和真值数据生成脚本文件
+│       └── verify_result.py        // 真值对比文件
+│   ├── CMakeLists.txt              // 编译工程文件
+│   ├── data_utils.h                // 数据读入写出函数
+│   └── matmul_column_major.asc     // Ascend C算子实现 & 调用样例
 ```
 
 ## 算子描述
@@ -39,7 +39,7 @@
     </tr>
     <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">M * N</td><td align="center">float</td><td align="center">COLUMN_MAJOR</td><td align="center">-</td></tr>
     </tr>
-    <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">matmul_column_major</td></tr>
+    <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">matmulColumnMajorCustom</td></tr>
     </table>
 
 - 算子实现： 

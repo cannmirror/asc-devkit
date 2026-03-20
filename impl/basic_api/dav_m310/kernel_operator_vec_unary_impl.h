@@ -12,6 +12,11 @@
  * \file kernel_operator_vec_unary_impl.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/dav_m310/kernel_operator_vec_unary_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_tpipe.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_UNARY_IMPL_H__
+#endif
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_UNARY_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_UNARY_IMPL_H
 #include "kernel_utils.h"
@@ -465,3 +470,7 @@ UNARY_VEC_COUNTER_T32(ReluImpl, vrelu, float, vector_f32);
 UNARY_VEC_COUNTER_T32(ReluImpl, vrelu, int32_t, vector_s32);
 }
 #endif // ASCENDC_MODULE_OPERATOR_VEC_UNARY_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_UNARY_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_UNARY_IMPL_H__
+#endif

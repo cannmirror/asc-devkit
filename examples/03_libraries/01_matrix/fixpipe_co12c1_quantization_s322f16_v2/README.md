@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例介绍如何使用组合API Fixpipe或基础API DataCopy将矩阵乘的结果从L0C搬出到L1，并支持随路quant, relu能力组合，与unitflag能力组合，输入int8_t类型数据，输出由int32_t类型量化为half类型。
+本样例介绍如何使用组合API Fixpipe或基础API DataCopy将矩阵乘的结果从L0C搬出到L1，并支持随路quant, relu能力组合，与unitFlag能力组合，输入int8_t类型数据，输出由int32_t类型量化为half类型。
 
 ## 支持的产品
 
@@ -25,7 +25,7 @@
 
 - 算子功能：  
 
-  本样例中实现的是[M, N, K]固定为[128, 128, 256]的Matmul乘算子，对应的数学表达式为：
+  本样例中实现的是[M, N, K]固定为[128, 256, 128]的Matmul乘算子，对应的数学表达式为：
   ```
   C = A * B
   ```
@@ -41,14 +41,15 @@
   <tr><td align="center">B</td><td align="center">(128, 256)</td><td align="center">int8_t</td><td align="center">ND</td></tr>
   </tr>
   </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">C</td><td align="center">(128, 128)</td><td align="center">half</td><td align="center">NZ</td></tr>
+  <tr><td rowspan="1" align="center">算子输出</td><td align="center">C</td><td align="center">(128, 256)</td><td align="center">half</td><td align="center">NZ</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">fixpipe_co12c1_quantization_s322f16_v2</td></tr> 
   </table>
 此用例支持配置使用AscendC提供的组合AIP Fixpipe或基础API DataCopy，用户可以通过配置USEDATACOPY=true使能基础API DataCopy实现矩阵搬出，与此同时此样例支持FIXPIPE指令多种随路能力组合：<br>
 配置PREQUANTMODE=1设置为scalar量化模式，即整个C矩阵对应一个量化参数；<br>
 配置PREQUANTMODE=2设置为tensor/vector量化模式，即C矩阵的每一列对应一个量化参数；<br>
 配置PRERELUMODE=1设置C矩阵随路使能normrelu能力;<br>
 配置ENUNITFLAG=true设置开启MMAD指令与FIXPIPE指令并行能力；<br>
-注意MMAD与FIXPIPE需同时使能unitfalg, 当使能unitFlag时，L0C上的LocalTensor不能用[TQue](https://www.hiascend.com/document/detail/zh/canncommercial/850/API/ascendcopapi/atlasascendc_api_07_0137.html)获取，需要改用[TBuf](https://www.hiascend.com/document/detail/zh/canncommercial/850/API/ascendcopapi/atlasascendc_api_07_0161.html)。
+注意MMAD与FIXPIPE需同时使能unitFlag, 当使能unitFlag时，L0C上的LocalTensor不能用[TQue](https://www.hiascend.com/document/detail/zh/canncommercial/850/API/ascendcopapi/atlasascendc_api_07_0137.html)获取，需要改用[TBuf](https://www.hiascend.com/document/detail/zh/canncommercial/850/API/ascendcopapi/atlasascendc_api_07_0161.html)。
 
 ## 编译运行
 

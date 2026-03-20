@@ -12,6 +12,12 @@
  * \file pad.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_PAD_H__
+#endif
+
 #ifndef LIB_PAD_PAD_H
 #define LIB_PAD_PAD_H
 
@@ -112,3 +118,8 @@ __aicore__ inline void UnPad(
 } // namespace AscendC
 #endif
 #endif // LIB_PAD_PAD_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_PAD_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_PAD_H__
+#endif

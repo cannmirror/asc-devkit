@@ -12,6 +12,11 @@
  * \file kernel_operator_vec_unary_impl.h
  * \brief AscendC l300 support vector unary api.
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/dav_l300/kernel_operator_vec_unary_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_vec_intf.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_UNARY_IMPL_H__
+#endif
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_UNARY_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_UNARY_IMPL_H
 #include "kernel_utils.h"
@@ -26,14 +31,14 @@ __simd_vf__ inline void VecUnaryLevel2VFImpl(__ubuf__ T *dst, __ubuf__ T *src, c
     RegType srcReg;
     RegType dstReg;
     uint32_t sreg = static_cast<uint32_t>(count);
-    MicroAPI::MaskReg mask;
+    Reg::MaskReg mask;
     constexpr uint32_t repeatStride = static_cast<uint32_t>(GetVecLen() / sizeof(T) * RegType::trait.REG_NUM);
     uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(sreg, repeatStride));
     for (uint16_t i = 0; i < repeatTime; ++i) {
-        mask = MicroAPI::UpdateMask<T, RegType::trait>(sreg);
-        MicroAPI::DataCopy(srcReg, src + i * repeatStride);
+        mask = Reg::UpdateMask<T, RegType::trait>(sreg);
+        Reg::DataCopy(srcReg, src + i * repeatStride);
         func(dstReg, srcReg, mask);
-        MicroAPI::DataCopy(dst + i * repeatStride, dstReg, mask);
+        Reg::DataCopy(dst + i * repeatStride, dstReg, mask);
     }
 }
 
@@ -41,9 +46,9 @@ template <auto func, typename T>
 __aicore__ inline void VecUnaryLevel2ImplTemplate(__ubuf__ T *dst, __ubuf__ T *src, const uint32_t count)
 {
     if constexpr (SupportBytes<T, 8>()) {
-        VecUnaryLevel2VFImpl<func, T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>(dst, src, count);
+        VecUnaryLevel2VFImpl<func, T, Reg::RegTensor<T, Reg::RegTraitNumTwo>>(dst, src, count);
     } else {
-        VecUnaryLevel2VFImpl<func, T, MicroAPI::RegTensor<T>>(dst, src, count);
+        VecUnaryLevel2VFImpl<func, T, Reg::RegTensor<T>>(dst, src, count);
     }
 }
 
@@ -55,7 +60,7 @@ __simd_vf__ inline void VecUnaryLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T *src, c
     uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
     uint16_t newRepeatTimes = 0;
     newRepeatTimes = VecMicroGetRepeatTimes<T, isNormalMode>(count, repeatTimes);
-    MicroAPI::MaskReg maskReg;
+    Reg::MaskReg maskReg;
     if constexpr (isNormalMode) {
         maskReg = VecMicroGetMaskReg<T, isSetMask, isNormalMode, isMaskBitMode>(maskBuf, count);
     }
@@ -64,13 +69,13 @@ __simd_vf__ inline void VecUnaryLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T *src, c
         if constexpr (!isNormalMode) {
             maskReg = VecMicroGetMaskReg<T, isSetMask, isNormalMode, isMaskBitMode>(maskBuf, count);
         }
-        MicroAPI::RegTensor<T> dstVreg;
-        MicroAPI::RegTensor<T> srcVreg;
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
-        MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(srcVreg,
+        Reg::RegTensor<T> dstVreg;
+        Reg::RegTensor<T> srcVreg;
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
+        Reg::DataCopy<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(srcVreg,
             src + index * repeatParams.srcRepStride * ElePerBlkT, repeatParams.srcBlkStride, maskReg);
         func(dstVreg, srcVreg, maskReg);
-        MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+        Reg::DataCopy<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(
             dst + index * repeatParams.dstRepStride * ElePerBlkT, dstVreg, repeatParams.dstBlkStride, maskReg);
     }
 }
@@ -235,7 +240,7 @@ __aicore__ inline void AbsImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t 
 {
     static_assert((SupportType<T, half, int16_t, float, int32_t>()),
         "current data type is not supported on current device!");
-    constexpr auto func = MicroAPI::Abs<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    constexpr auto func = Reg::Abs<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>;
     Internal::VecUnaryLevel0Template<func, isSetMask, true>(dst, src, mask, 0, repeatTime, repeatParams);
 }
 
@@ -245,7 +250,7 @@ __aicore__ inline void AbsImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t 
 {
     static_assert((SupportType<T, half, int16_t, float, int32_t>()),
         "current data type is not supported on current device!");
-    constexpr auto func = MicroAPI::Abs<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    constexpr auto func = Reg::Abs<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>;
     Internal::VecUnaryLevel0Template<func, isSetMask, false>(dst, src, nullptr, mask, repeatTime, repeatParams);
 }
 
@@ -266,7 +271,7 @@ __aicore__ inline void ReluImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t
     const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, float, int32_t>()), "current data type is not supported on current device!");
-    constexpr auto func = MicroAPI::Relu<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    constexpr auto func = Reg::Relu<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>;
     Internal::VecUnaryLevel0Template<func, isSetMask, true>(dst, src, mask, 0, repeatTime, repeatParams);
 }
 
@@ -275,7 +280,7 @@ __aicore__ inline void ReluImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t
     const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, float, int32_t>()), "current data type is not supported on current device!");
-    constexpr auto func = MicroAPI::Relu<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    constexpr auto func = Reg::Relu<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>;
     Internal::VecUnaryLevel0Template<func, isSetMask, false>(dst, src, nullptr, mask, repeatTime, repeatParams);
 }
 
@@ -295,7 +300,7 @@ __aicore__ inline void ExpImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t 
     const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, float>()), "current data type is not supported on current device!");
-    constexpr auto func = MicroAPI::Exp<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    constexpr auto func = Reg::Exp<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>;
     Internal::VecUnaryLevel0Template<func, isSetMask, true>(dst, src, mask, 0, repeatTimes, repeatParams);
 }
 // normal mode
@@ -304,7 +309,7 @@ __aicore__ inline void ExpImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t 
     const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, float>()), "current data type is not supported on current device!");
-    constexpr auto func = MicroAPI::Exp<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    constexpr auto func = Reg::Exp<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>;
     Internal::VecUnaryLevel0Template<func, isSetMask, false>(dst, src, nullptr, mask, repeatTimes, repeatParams);
 }
 
@@ -322,7 +327,7 @@ __aicore__ inline void SqrtImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t
     const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, float>()), "current data type is not supported on current device!");
-    constexpr auto func = MicroAPI::Sqrt<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    constexpr auto func = Reg::Sqrt<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>;
     Internal::VecUnaryLevel0Template<func, isSetMask, true>(dst, src, mask, 0, repeatTime, repeatParams);
 }
 
@@ -331,7 +336,7 @@ __aicore__ inline void SqrtImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t
     const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, float>()), "current data type is not supported on current device!");
-    constexpr auto func = MicroAPI::Sqrt<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    constexpr auto func = Reg::Sqrt<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>;
     Internal::VecUnaryLevel0Template<func, isSetMask, false>(dst, src, nullptr, mask, repeatTime, repeatParams);
 }
 
@@ -383,7 +388,7 @@ __aicore__ inline void LnImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t m
     const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, float>()), "current data type is not supported on current device!");
-    constexpr auto func = MicroAPI::Ln<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    constexpr auto func = Reg::Ln<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>;
     Internal::VecUnaryLevel0Template<func, isSetMask, true>(dst, src, mask, 0, repeatTime, repeatParams);
 }
 
@@ -392,7 +397,7 @@ __aicore__ inline void LnImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t m
     const UnaryRepeatParams &repeatParams)
 {
     static_assert((SupportType<T, half, float>()), "current data type is not supported on current device!");
-    constexpr auto func = MicroAPI::Ln<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    constexpr auto func = Reg::Ln<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>;
     Internal::VecUnaryLevel0Template<func, isSetMask, false>(dst, src, nullptr, mask, repeatTime, repeatParams);
 }
 
@@ -400,7 +405,7 @@ __aicore__ inline void LnImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t m
 template <typename T> __aicore__ inline void LnImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint32_t count)
 {
     static_assert((SupportType<T, half, float>()), "current data type is not supported on current device!");
-    constexpr auto func = MicroAPI::Ln<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    constexpr auto func = Reg::Ln<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>;
     Internal::VecUnaryLevel2ImplTemplate<func, T>(dst, src, count);
 }
 
@@ -439,3 +444,7 @@ UNARY_VEC_COUNTER_IMPL(NotImpl, Not, int32_t);
 
 }
 #endif // ASCENDC_MODULE_OPERATOR_VEC_UNARY_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_UNARY_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_UNARY_IMPL_H__
+#endif

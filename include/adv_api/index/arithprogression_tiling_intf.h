@@ -12,6 +12,12 @@
  * \file arithprogression_tiling_intf.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ARITHPROGRESSION_TILING_INTF_H__
+#endif
+
 #ifndef LIB_TILING_ARITHPROGRESSION_TILING_INTF_H
 #define LIB_TILING_ARITHPROGRESSION_TILING_INTF_H
 #include "arithprogression/arithprogression_tiling.h"
@@ -23,3 +29,8 @@ using LibArithProgressionTilingInterface = ArithProgressionTilingDeprecatedHeade
 } // namespace AscendC
  
 #endif // LIB_TILING_ARITHPROGRESSION_TILING_INTF_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ARITHPROGRESSION_TILING_INTF_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ARITHPROGRESSION_TILING_INTF_H__
+#endif

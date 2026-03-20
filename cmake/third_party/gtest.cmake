@@ -65,6 +65,9 @@ if(gtest_FOUND AND NOT FORCE_REBUILD_CANN_3RD)
     message("gtest found in ${GTEST_INSTALL_PATH}, and not force rebuild cann third_party")
 else()
     set(REQ_URL "https://gitcode.com/cann-src-third-party/googletest/releases/download/v1.14.0/googletest-1.14.0.tar.gz")
+    set(GTEST_NAME "gtest")
+    set(GTEST_LOCAL_TAR_SRC "${CANN_3RD_LIB_PATH}/googletest")  # 解压后的源码目录
+    set(GTEST_LOCAL_TAR "${CANN_3RD_LIB_PATH}/googletest-1.14.0.tar.gz")  # 本地 tar.gz 包路径
 
     set (gtest_CXXFLAGS "-D_GLIBCXX_USE_CXX11_ABI=0 -O2 -D_FORTIFY_SOURCE=2 -fPIC -fstack-protector-all -Wl,-z,relro,-z,now,-z,noexecstack")
     set (gtest_CFLAGS   "-D_GLIBCXX_USE_CXX11_ABI=0 -O2 -D_FORTIFY_SOURCE=2 -fPIC -fstack-protector-all -Wl,-z,relro,-z,now,-z,noexecstack")
@@ -81,7 +84,34 @@ else()
         -DBUILD_TESTING=OFF
         -DBUILD_SHARED_LIBS=OFF
     )
-    if(EXISTS ${GTEST_LOCAL_SRC})
+    if (EXISTS "${GTEST_LOCAL_TAR}")
+        message(STATUS "Found local gtest tar.gz: ${GTEST_LOCAL_TAR}, extracting...")
+        
+        # 创建目标目录（如果不存在）
+        file(MAKE_DIRECTORY "${GTEST_LOCAL_TAR_SRC}")
+        
+        # 解压本地的 tar.gz 包
+        execute_process(
+            COMMAND tar xzf "${GTEST_LOCAL_TAR}" -C "${GTEST_LOCAL_TAR_SRC}" --strip-components=1
+            RESULT_VARIABLE EXTRACT_RESULT
+            ERROR_VARIABLE EXTRACT_ERROR
+        )
+        
+        if(NOT EXTRACT_RESULT EQUAL 0)
+            message(FATAL_ERROR "Failed to extract local gtest tar.gz: ${EXTRACT_ERROR}")
+        endif()
+        
+        message(STATUS "Local gtest tar.gz extracted successfully to ${GTEST_LOCAL_TAR_SRC}")
+        
+        # 解压后使用本地源码
+        ExternalProject_Add(third_party_gtest
+            SOURCE_DIR ${GTEST_LOCAL_TAR_SRC}
+            CONFIGURE_COMMAND ${CMAKE_COMMAND} ${GTEST_OPTS} <SOURCE_DIR>
+            BUILD_COMMAND $(MAKE)
+            INSTALL_COMMAND $(MAKE) install
+            EXCLUDE_FROM_ALL TRUE
+        )
+    elseif(EXISTS ${GTEST_LOCAL_SRC})
         message("Found local gtest source: ${GTEST_LOCAL_SRC}")
         ExternalProject_Add(third_party_gtest
             SOURCE_DIR ${GTEST_LOCAL_SRC}

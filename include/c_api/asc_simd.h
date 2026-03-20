@@ -18,7 +18,6 @@
 #define INCLUDE_C_API_ASC_SIMD_H
 
 #include "instr_impl/npu_arch_2201/utils_impl/utils_impl.h"
-#include "instr_impl/npu_arch_2201/utils_impl/debug_utils.h"
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
 
@@ -32,9 +31,6 @@
 #include "c_api/sys_var/sys_var.h"
 #include "c_api/vector_compute/vector_compute.h"
 #include "c_api/vector_datamove/vector_datamove.h"
-#include "c_api/utils/debug/asc_dump.h"
-#include "c_api/utils/debug/asc_printf.h"
-#include "c_api/utils/debug/asc_assert.h"
 
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 #include "c_api/atomic/atomic.h"

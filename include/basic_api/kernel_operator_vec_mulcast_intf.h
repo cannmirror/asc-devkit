@@ -12,6 +12,11 @@
  * \file kernel_operator_vec_mulcast_intf.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_MULCAST_INTF_H__
+#endif
+
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_MULCAST_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_VEC_MULCAST_INTERFACE_H
 
@@ -43,3 +48,8 @@ __aicore__ inline void MulCast(const LocalTensor<T> &dst, const LocalTensor<U> &
 
 #include "../../impl/basic_api/kernel_operator_vec_mulcast_intf_impl.h"
 #endif // ASCENDC_MODULE_OPERATOR_VEC_MULCAST_INTERFACE_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_MULCAST_INTF_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_MULCAST_INTF_H__
+#endif

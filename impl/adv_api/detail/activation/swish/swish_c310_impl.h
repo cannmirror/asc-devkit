@@ -12,6 +12,11 @@
  * \file swish_c310_impl.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/activation/swish/swish_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/swish.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SWISH_C310_IMPL_H__
+#endif
 #ifndef IMPL_MATH_SWISH_SWISH_C310_IMPL_H
 #define IMPL_MATH_SWISH_SWISH_C310_IMPL_H
 #include "kernel_tensor.h"
@@ -26,18 +31,18 @@ __simd_vf__ inline void SwishComputeVF(__ubuf__ T* dst, __ubuf__ T* src, uint32_
     const uint16_t repeatTimes)
 {
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
-    MicroAPI::RegTensor<T> srcVreg;
-    MicroAPI::RegTensor<T> vreg0;
-    MicroAPI::RegTensor<T> dstVreg;
-    MicroAPI::MaskReg mask;
+    Reg::RegTensor<T> srcVreg;
+    Reg::RegTensor<T> vreg0;
+    Reg::RegTensor<T> dstVreg;
+    Reg::MaskReg mask;
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = MicroAPI::UpdateMask<T>(count);
-        MicroAPI::LoadAlign(srcVreg, src + i * oneRepElm);
-        MicroAPI::Muls(vreg0, srcVreg, scalarValue, mask);
-        MicroAPI::Exp(vreg0, vreg0, mask);
-        MicroAPI::Adds(vreg0, vreg0, 1.0f, mask);
-        MicroAPI::Div(dstVreg, srcVreg, vreg0, mask);
-        MicroAPI::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
+        mask = Reg::UpdateMask<T>(count);
+        Reg::LoadAlign(srcVreg, src + i * oneRepElm);
+        Reg::Muls(vreg0, srcVreg, scalarValue, mask);
+        Reg::Exp(vreg0, vreg0, mask);
+        Reg::Adds(vreg0, vreg0, 1.0f, mask);
+        Reg::Div(dstVreg, srcVreg, vreg0, mask);
+        Reg::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
     } 
 }
 } // namespace Internal
@@ -65,3 +70,7 @@ __aicore__ inline void SwishCompute(const LocalTensor<T>& dstLocal, const LocalT
 
 }   // namespace AscendC
 #endif  // IMPL_MATH_SWISH_SWISH_C310_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SWISH_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SWISH_C310_IMPL_H__
+#endif

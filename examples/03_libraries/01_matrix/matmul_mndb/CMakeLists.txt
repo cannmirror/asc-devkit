@@ -35,5 +35,5 @@ target_link_libraries(demo PRIVATE
 # ======================================================================================
 target_compile_options(demo PRIVATE
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
-    # $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2002>
+    # $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3510>
 )

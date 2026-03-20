@@ -12,6 +12,12 @@
  * \file groupnorm_c310_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/normalization/groupnorm/groupnorm_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_GROUPNORM_GROUPNORM_C310_IMPL_H__
+#endif
 #ifndef IMPL_NORMALIZATION_GROUPNORM_GROUPNORM_C310_IMPL_H
 #define IMPL_NORMALIZATION_GROUPNORM_GROUPNORM_C310_IMPL_H
 
@@ -26,10 +32,10 @@
 
 namespace AscendC {
 namespace GroupNormInternal {
-constexpr MicroAPI::CastTrait layoutZMrgZ = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN,
-                                             MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
-constexpr MicroAPI::CastTrait LayoutZMrgZRndRSatNS = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT,
-                                                      MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait layoutZMrgZ = {Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN,
+                                             Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait LayoutZMrgZRndRSatNS = {Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT,
+                                                      Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
 enum class ShapeScope {
     ONE = 1,  // less than 256B
@@ -38,28 +44,28 @@ enum class ShapeScope {
 };
 
 template <typename T>
-__simd_callee__ inline void LoadDataWithT(__ubuf__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& mask,
+__simd_callee__ inline void LoadDataWithT(__ubuf__ T* src, Reg::RegTensor<float>& dstReg, Reg::MaskReg& mask,
                                           uint16_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
-        MicroAPI::RegTensor<T> srcOrigin;
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcOrigin, src + offset);
-        MicroAPI::Cast<float, T, layoutZMrgZ>(dstReg, srcOrigin, mask);
+        Reg::RegTensor<T> srcOrigin;
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(srcOrigin, src + offset);
+        Reg::Cast<float, T, layoutZMrgZ>(dstReg, srcOrigin, mask);
     } else {
-        MicroAPI::LoadAlign(dstReg, src + offset);
+        Reg::LoadAlign(dstReg, src + offset);
     }
 }
 
 template <typename T>
-__simd_callee__ inline void SaveDataWithT(__ubuf__ T* dst, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask,
+__simd_callee__ inline void SaveDataWithT(__ubuf__ T* dst, Reg::RegTensor<float>& srcReg, Reg::MaskReg& mask,
                                           uint16_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
-        MicroAPI::RegTensor<T> regT;
-        MicroAPI::Cast<T, float, LayoutZMrgZRndRSatNS>(regT, srcReg, mask);
-        MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_PACK_B32>(dst + offset, regT, mask);
+        Reg::RegTensor<T> regT;
+        Reg::Cast<T, float, LayoutZMrgZRndRSatNS>(regT, srcReg, mask);
+        Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B32>(dst + offset, regT, mask);
     } else {
-        MicroAPI::StoreAlign(dst + offset, srcReg, mask);
+        Reg::StoreAlign(dst + offset, srcReg, mask);
     }
 }
 
@@ -68,18 +74,18 @@ __simd_callee__ inline void ReduceSumOrMean(__ubuf__ T* dstLocal, __ubuf__ U* sr
                                             float factor = 0)
 {
     constexpr uint16_t srcRepOffset = GetVecLen() / sizeof(T);
-    MicroAPI::MaskReg mask;
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::RegTensor<T> dstReg;
-    MicroAPI::UnalignReg ureg;
+    Reg::MaskReg mask;
+    Reg::RegTensor<T> srcReg;
+    Reg::RegTensor<T> dstReg;
+    Reg::UnalignReg ureg;
     for (uint16_t i = 0; i < repeat; ++i) {
-        mask = MicroAPI::UpdateMask<T>(count);
+        mask = Reg::UpdateMask<T>(count);
         LoadDataWithT(srcLocal, srcReg, mask, srcRepOffset * i);
-        MicroAPI::ReduceSum(dstReg, srcReg, mask);
+        Reg::ReduceSum(dstReg, srcReg, mask);
         if constexpr (IsMean) {
             Muls(dstReg, dstReg, factor, mask);
         }
-        MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>(dstLocal + i, dstReg, mask);
+        Reg::StoreAlign<float, Reg::StoreDist::DIST_FIRST_ELEMENT_B32>(dstLocal + i, dstReg, mask);
     }
 }
 
@@ -93,15 +99,15 @@ __simd_callee__ inline void ReduceMeanCount(__ubuf__ T* dstLocal, __ubuf__ U* sr
     } else if constexpr (Scope == ShapeScope::TWO) {
         uint16_t count2 = static_cast<uint16_t>(CeilDivision(count, oneRepSize));
         ReduceSumOrMean(workLocal, srcLocal, count, count2);
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
         ReduceSumOrMean<true>(dstLocal, workLocal, count2, 1, factor);
     } else {
         uint16_t count2 = static_cast<uint16_t>(CeilDivision(count, oneRepSize));
         uint16_t count3 = CeilDivision(count2, oneRepSize);
         ReduceSumOrMean(workLocal, srcLocal, count, count2);
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
         ReduceSumOrMean(workLocal, workLocal, count2, count3);
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
         ReduceSumOrMean<true>(dstLocal, workLocal, count3, 1, factor);
     }
 }
@@ -113,36 +119,36 @@ __simd_callee__ inline void CalcVariance(__ubuf__ float* outputVarianceTmp, __ub
                                          uint16_t hw, uint16_t hwAlignSize, uint16_t hwRepeat, float factor)
 {
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(float);
-    MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<float>();
+    Reg::MaskReg fullMask = Reg::CreateMask<float>();
 
-    MicroAPI::RegTensor<float> meanReg;
-    MicroAPI::RegTensor<float> srcReg;
-    MicroAPI::RegTensor<float> dstReg;
+    Reg::RegTensor<float> meanReg;
+    Reg::RegTensor<float> srcReg;
+    Reg::RegTensor<float> dstReg;
 
     __ubuf__ T* curInputX = inputX + dhwAlignSize * index;
-    MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_BRC_B32>(meanReg, outputMeanTmp + index);
+    Reg::LoadAlign<float, Reg::LoadDist::DIST_BRC_B32>(meanReg, outputMeanTmp + index);
     for (uint16_t di = 0; di < d; di++) {
         if constexpr (IsHwSizeAlignOneRepeat) {
             for (uint16_t j = 0; j < hwRepeat; j++) {
                 LoadDataWithT(curInputX, srcReg, fullMask, di * hwAlignSize + j * oneRepSize);
                 Sub(dstReg, srcReg, meanReg, fullMask);
                 Mul(dstReg, dstReg, dstReg, fullMask);
-                MicroAPI::StoreAlign(tmpLocal + di * hwAlignSize + j * oneRepSize, dstReg, fullMask);
+                Reg::StoreAlign(tmpLocal + di * hwAlignSize + j * oneRepSize, dstReg, fullMask);
             }
         } else {
             uint32_t hwCount = hw;
             uint32_t hwAlignCount = hwAlignSize;
             for (uint16_t j = 0; j < hwRepeat; j++) {
-                MicroAPI::MaskReg hwMask = MicroAPI::UpdateMask<float>(hwCount);
-                MicroAPI::MaskReg hwAlignMask = MicroAPI::UpdateMask<float>(hwAlignCount);
+                Reg::MaskReg hwMask = Reg::UpdateMask<float>(hwCount);
+                Reg::MaskReg hwAlignMask = Reg::UpdateMask<float>(hwAlignCount);
                 LoadDataWithT(curInputX, srcReg, hwMask, di * hwAlignSize + j * oneRepSize);
                 Sub(dstReg, srcReg, meanReg, hwMask);
                 Mul(dstReg, dstReg, dstReg, hwMask);
-                MicroAPI::StoreAlign(tmpLocal + di * hwAlignSize + j * oneRepSize, dstReg, hwAlignMask);
+                Reg::StoreAlign(tmpLocal + di * hwAlignSize + j * oneRepSize, dstReg, hwAlignMask);
             }
         }
     }
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
     ReduceMeanCount<Scope>(outputVarianceTmp + index, tmpLocal, tmpVarLocal, dhwAlignSize, factor);
 }
 
@@ -153,24 +159,24 @@ __simd_callee__ inline void CalcTmpOutput(__ubuf__ float* outputTmp, __ubuf__ fl
                                           float epsilon)
 {
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(float);
-    MicroAPI::RegTensor<float> meanReg;
-    MicroAPI::RegTensor<float> varReg;
-    MicroAPI::RegTensor<float> tmpReg;
-    MicroAPI::RegTensor<float> dstReg;
+    Reg::RegTensor<float> meanReg;
+    Reg::RegTensor<float> varReg;
+    Reg::RegTensor<float> tmpReg;
+    Reg::RegTensor<float> dstReg;
     uint32_t count = meanVarSize;
     for (uint16_t index = 0; index < ngRepeat; index++) {
-        MicroAPI::MaskReg mask = MicroAPI::UpdateMask<float>(count);
-        MicroAPI::LoadAlign(varReg, outputVarianceTmp + index * oneRepSize);
+        Reg::MaskReg mask = Reg::UpdateMask<float>(count);
+        Reg::LoadAlign(varReg, outputVarianceTmp + index * oneRepSize);
         if constexpr (IsSameType<T, half>::value) {
             SaveDataWithT(outputVariance, varReg, mask, index * oneRepSize);
-            MicroAPI::LoadAlign(meanReg, outputMeanTmp + index * oneRepSize);
+            Reg::LoadAlign(meanReg, outputMeanTmp + index * oneRepSize);
             SaveDataWithT(outputMean, meanReg, mask, index * oneRepSize);
         }
         Adds(varReg, varReg, epsilon, mask);
         Sqrt(varReg, varReg, mask);
         Duplicate(tmpReg, 1.0f, mask);
         Div(dstReg, tmpReg, varReg, mask);
-        MicroAPI::StoreAlign(outputTmp + index * oneRepSize, dstReg, mask);
+        Reg::StoreAlign(outputTmp + index * oneRepSize, dstReg, mask);
     }
 }
 
@@ -180,34 +186,34 @@ __simd_callee__ inline void CalcOutput(__ubuf__ T* output, __ubuf__ T* inputX, _
                                        uint16_t g, uint16_t d, uint16_t hwAlignSize, uint16_t hwRepeat)
 {
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(float);
-    MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<float>();
+    Reg::MaskReg fullMask = Reg::CreateMask<float>();
 
-    MicroAPI::RegTensor<float> meanReg;
-    MicroAPI::RegTensor<float> tmpReg;
-    MicroAPI::RegTensor<float> srcReg;
-    MicroAPI::RegTensor<float> dstReg;
-    MicroAPI::RegTensor<float> betaReg;
-    MicroAPI::RegTensor<float> gammaReg;
+    Reg::RegTensor<float> meanReg;
+    Reg::RegTensor<float> tmpReg;
+    Reg::RegTensor<float> srcReg;
+    Reg::RegTensor<float> dstReg;
+    Reg::RegTensor<float> betaReg;
+    Reg::RegTensor<float> gammaReg;
     for (uint16_t ni = 0; ni < n; ni++) {
         for (uint16_t gi = 0; gi < g; gi++) {
             uint16_t ngi = ni * g + gi;
-            MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_BRC_B32>(meanReg, outputMeanTmp + ngi);
-            MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_BRC_B32>(tmpReg, outputTmp + ngi);
+            Reg::LoadAlign<float, Reg::LoadDist::DIST_BRC_B32>(meanReg, outputMeanTmp + ngi);
+            Reg::LoadAlign<float, Reg::LoadDist::DIST_BRC_B32>(tmpReg, outputTmp + ngi);
             for (uint16_t di = 0; di < d; di++) {
                 if constexpr (IsSameType<T, half>::value) {
-                    MicroAPI::RegTensor<T> betaOri;
-                    MicroAPI::RegTensor<T> gammaOri;
-                    MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_BRC_B16>(betaOri, beta + gi * d + di);
-                    MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_BRC_B16>(gammaOri, gamma + gi * d + di);
+                    Reg::RegTensor<T> betaOri;
+                    Reg::RegTensor<T> gammaOri;
+                    Reg::LoadAlign<T, Reg::LoadDist::DIST_BRC_B16>(betaOri, beta + gi * d + di);
+                    Reg::LoadAlign<T, Reg::LoadDist::DIST_BRC_B16>(gammaOri, gamma + gi * d + di);
                     Cast<float, T, layoutZMrgZ>(betaReg, betaOri, fullMask);
                     Cast<float, T, layoutZMrgZ>(gammaReg, gammaOri, fullMask);
                 } else {
-                    MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_BRC_B32>(betaReg, beta + gi * d + di);
-                    MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_BRC_B32>(gammaReg, gamma + gi * d + di);
+                    Reg::LoadAlign<float, Reg::LoadDist::DIST_BRC_B32>(betaReg, beta + gi * d + di);
+                    Reg::LoadAlign<float, Reg::LoadDist::DIST_BRC_B32>(gammaReg, gamma + gi * d + di);
                 }
                 uint32_t count = hwAlignSize;
                 for (uint16_t j = 0; j < hwRepeat; j++) {
-                    MicroAPI::MaskReg mask = MicroAPI::UpdateMask<float>(count);
+                    Reg::MaskReg mask = Reg::UpdateMask<float>(count);
                     LoadDataWithT(inputX, srcReg, fullMask, ngi * hwAlignSize * d + di * hwAlignSize + j * oneRepSize);
                     Sub(dstReg, srcReg, meanReg, mask);
                     Mul(dstReg, dstReg, tmpReg, mask);
@@ -244,18 +250,18 @@ __simd_vf__ inline void GroupNormRegbaseImpl(__ubuf__ T* output, __ubuf__ T* out
     for (uint16_t index = 0; index < meanVarSize; index++) {
         ReduceMeanCount<Scope>(outputMeanTmp + index, inputX + dhwAlignSize * index, tmpLocal, dhwAlignSize, factor);
     }
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     for (uint16_t index = 0; index < meanVarSize; index++) {
         CalcVariance<Scope, IsHwSizeAlignOneRepeat>(outputVarianceTmp, inputX, outputMeanTmp, tmpVarLocal, tmpLocal,
                                                     index, dhwAlignSize, d, hw, hwAlignSize, hwRepeat, factor);
     }
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     // outputTmp = (inputX - mean) / np.sqrt(var + eps)
     CalcTmpOutput(outputTmp, outputVarianceTmp, outputVariance, outputMeanTmp, outputMean, ngRepeat, meanVarSize,
                   epsilon);
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     // result = outputTmp * gamma + beta
     CalcOutput(output, inputX, outputMeanTmp, outputTmp, gamma, beta, n, g, d, hwAlignSize, hwRepeat);
@@ -332,3 +338,8 @@ __aicore__ inline void GroupNormImpl(const LocalTensor<T>& output, const LocalTe
 }
 }  // namespace AscendC
 #endif  // IMPL_NORMALIZATION_GROUPNORM_GROUPNORM_C310_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_GROUPNORM_GROUPNORM_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_GROUPNORM_GROUPNORM_C310_IMPL_H__
+#endif

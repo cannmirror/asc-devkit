@@ -64,6 +64,7 @@ enum class DPLATFORM {
   KIRINX90,
   KIRIN9030,
   MC62CM12A,
+  MC32DM11A,
   DEFAULT_CURRENT
 };
 
@@ -191,6 +192,9 @@ constexpr const char* Hi3519AV200 = "Hi3519AV200";
 constexpr const char* HI19__DC = "Hi19__DC";
 constexpr const char* HI19__MDC = "Hi19__MDC";
 constexpr const char* HI19__VEC = "Hi19__VEC";
+constexpr const char* MC32DM11AA = "MC32DM11AA";
+constexpr const char* MC32DM11AB = "MC32DM11AB";
+constexpr const char* MC32DM11AC = "MC32DM11AC";
 
 constexpr const char* DEVICE_CORE_NUM = "Device_core_num";
 constexpr const char* CORE_NUM = "CORE_NUM";
@@ -614,7 +618,7 @@ class CceConfBase {
       Ascend950DT_95A2, Ascend950DT_9591, Ascend950DT_9592, Ascend950DT_9595, Ascend950DT_9596, Ascend950DT_9581,
       Ascend950DT_9582, Ascend950DT_9583, Ascend950DT_9584, Ascend950DT_9585, Ascend950DT_9586, Ascend950DT_9587,
       Ascend950DT_9588, Ascend950DT_9571, Ascend950DT_9572, Ascend950DT_9573, Ascend950DT_9574, Ascend950DT_9575,
-      Ascend950DT_9576, Ascend950DT_9577, Ascend950DT_9578
+      Ascend950DT_9576, Ascend950DT_9577, Ascend950DT_9578, MC32DM11AA, MC32DM11AB, MC32DM11AC,
     };
   enum platformconf::TIK_VERSION current_tik_version_ = platformconf::TIK_VERSION::TIK_1_0;
   const std::map<const std::string, platformconf::TIK_VERSION> kStringToTikVersion = {

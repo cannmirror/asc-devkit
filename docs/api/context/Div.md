@@ -198,7 +198,6 @@ struct DivConfig {
 -   操作数地址重叠约束请参考[通用地址重叠约束](通用说明和约束.md#section668772811100)。
 
 -   使用整个tensor参与计算接口符号重载时，运算量为目的LocalTensor的总长度。
--   注意除零错误。
 
 -   针对Ascend 950PR/Ascend 950DT，uint64\_t/int64\_t/complex32/complex64数据类型仅支持tensor前n个数据计算接口和整个tensor参与计算的运算符重载。
 

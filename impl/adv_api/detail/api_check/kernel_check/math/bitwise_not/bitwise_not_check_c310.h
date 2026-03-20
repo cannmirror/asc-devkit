@@ -12,9 +12,14 @@
  * \file bitwise_not_check_c310.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/api_check/kernel_check/math/bitwise_not/bitwise_not_check_c310.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/bitwise_not.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BITWISE_NOT_CHECK_C310_H__
+#endif
 
-#ifndef IMPL_API_CHECK_KERNEL_CHECK_MATH_BITWISE_NOT_CHECK_C310_H
-#define IMPL_API_CHECK_KERNEL_CHECK_MATH_BITWISE_NOT_CHECK_C310_H
+#ifndef IMPL_API_CHECK_KERNEL_CHECK_MATH_BITWISE_NOT_BITWISE_NOT_CHECK_C310_H_
+#define IMPL_API_CHECK_KERNEL_CHECK_MATH_BITWISE_NOT_BITWISE_NOT_CHECK_C310_H_
 #include "../../basic_check/datatype_check.h"
 #include "../../basic_check/calcount_check.h"
 #include "../../basic_check/reuse_source_check.h"
@@ -51,4 +56,9 @@ public:
 };
 } // namespace HighLevelApiCheck
 } // namespace AscendC
-#endif /* IMPL_API_CHECK_KERNEL_CHECK_MATH_BITWISE_NOT_CHECK_C310_H */
+#endif // IMPL_API_CHECK_KERNEL_CHECK_MATH_BITWISE_NOT_BITWISE_NOT_CHECK_C310_H_
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BITWISE_NOT_CHECK_C310_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BITWISE_NOT_CHECK_C310_H__
+#endif

@@ -44,6 +44,34 @@ TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 
+#define TEST_VECTOR_DATAMOVE_STOREUNALIGN_INSTR_0_HIF8(class_name, c_api_name, cce_name, data_type)  \
+                                                                                                \
+class TestVectorDataMove##class_name##_##data_type##_CApi : public testing::Test {              \
+protected:                                                                                      \
+    void SetUp() {}                                                                             \
+    void TearDown() {}                                                                          \
+};                                                                                              \
+                                                                                                \
+namespace {                                                                                     \
+void cce_name##_##data_type##_Stub(vector_store_align& src0, uint32_t offset, vector_uint8_t src1,  \
+    __ubuf__ uint8_t *&dst, Literal dist) {}                                                  \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_type##_Succ)    \
+{                                                                                               \
+    __ubuf__ data_type *dst = reinterpret_cast<__ubuf__ data_type *>(0);                        \
+    vector_store_align src0;                                                                    \
+    vector_##data_type src1;                                                                    \
+    uint32_t count;                                                                             \
+                                                                                                \
+    MOCKER_CPP(cce_name, void(vector_store_align&, uint32_t, vector_uint8_t, __ubuf__ uint8_t *&, Literal)) \
+        .times(1)                                                                               \
+        .will(invoke(cce_name##_##data_type##_Stub));                                           \
+                                                                                                \
+    c_api_name(dst, src0, src1, count);                                                         \
+    GlobalMockObject::verify();                                                                 \
+}                                                                                               \
+
 #define TEST_VECTOR_DATAMOVE_STOREUNALIGN_INSTR_1(class_name, c_api_name, cce_name, data_type)  \
                                                                                                 \
 class TestVectorDataMove##class_name##_##data_type##_CApi : public testing::Test {              \
@@ -72,6 +100,34 @@ TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 
+#define TEST_VECTOR_DATAMOVE_STOREUNALIGN_INSTR_1_HIF8(class_name, c_api_name, cce_name, data_type)  \
+                                                                                                \
+class TestVectorDataMove##class_name##_##data_type##_CApi : public testing::Test {              \
+protected:                                                                                      \
+    void SetUp() {}                                                                             \
+    void TearDown() {}                                                                          \
+};                                                                                              \
+                                                                                                \
+namespace {                                                                                     \
+void cce_name##_##data_type##_Stub(vector_store_align& src0, iter_reg& offset, vector_uint8_t src1, \
+    __ubuf__ uint8_t *dst, int dist) {}                                                       \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_type##_Succ)    \
+{                                                                                               \
+    __ubuf__ data_type *dst = reinterpret_cast<__ubuf__ data_type *>(0);                        \
+    vector_store_align src0;                                                                    \
+    vector_##data_type src1;                                                                    \
+    iter_reg count;                                                                             \
+                                                                                                \
+    MOCKER_CPP(cce_name, void(vector_store_align&, iter_reg&, vector_uint8_t, __ubuf__ uint8_t *, int))   \
+        .times(1)                                                                               \
+        .will(invoke(cce_name##_##data_type##_Stub));                                           \
+                                                                                                \
+    c_api_name(dst, src0, src1, count);                                                         \
+    GlobalMockObject::verify();                                                                 \
+}                                                                                               \
+
 #define TEST_VECTOR_DATAMOVE_STOREUNALIGN_INSTR_2(class_name, c_api_name, cce_name, data_type)            \
                                                                                                 \
 class TestVectorDataMove##class_name##_##data_type##_CApi : public testing::Test {                 \
@@ -93,6 +149,34 @@ TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_
     uint32_t count;                                                                             \
                                                                                                 \
     MOCKER_CPP(cce_name, void(vector_store_align&, uint32_t, vector_##data_type, __ubuf__ data_type *))                     \
+        .times(1)                                                                               \
+        .will(invoke(cce_name##_##data_type##_Stub0));                                           \
+                                                                                                \
+    c_api_name(dst, src0, src1, count);                                                                \
+    GlobalMockObject::verify();                                                                 \
+}                                                                                               \
+
+#define TEST_VECTOR_DATAMOVE_STOREUNALIGN_INSTR_2_HIF8(class_name, c_api_name, cce_name, data_type)            \
+                                                                                                \
+class TestVectorDataMove##class_name##_##data_type##_CApi : public testing::Test {                 \
+protected:                                                                                      \
+    void SetUp() {}                                                                             \
+    void TearDown() {}                                                                          \
+};                                                                                              \
+                                                                                                \
+namespace {                                                                                     \
+void cce_name##_##data_type##_Stub0(vector_store_align& src0, uint32_t offset, vector_uint8_t src1,          \
+    __ubuf__ uint8_t *dst) {}                                                          \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_type##_Succ)       \
+{                                                                                               \
+    __ubuf__ data_type *dst = reinterpret_cast<__ubuf__ data_type *>(0);               \
+    vector_store_align src0;                                                                             \
+    vector_##data_type src1;                                                                             \
+    uint32_t count;                                                                             \
+                                                                                                \
+    MOCKER_CPP(cce_name, void(vector_store_align&, uint32_t, vector_uint8_t, __ubuf__ uint8_t *))                     \
         .times(1)                                                                               \
         .will(invoke(cce_name##_##data_type##_Stub0));                                           \
                                                                                                 \

@@ -16,21 +16,17 @@
 #ifndef IMPL_UTILS_DEBUG_ASC_AICORE_ASSERT_IMPL_H
 #define IMPL_UTILS_DEBUG_ASC_AICORE_ASSERT_IMPL_H
 
-#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
-#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_AICORE_ASSERT_IMPL__
-#warning "asc_aicore_assert_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "asc_assert.h" and use public functions or variables defined in interface header files."
-#endif
-
+#ifndef ASCENDC_CPU_DEBUG
 #include "impl/utils/debug/asc_aicore_printf_impl.h"
 
 namespace __asc_aicore {
 inline __aicore__ void __assert_fail(const __gm__ char* __assertion, const __gm__ char* __file, unsigned int __line,
     const __gm__ char* __function) {
-    printf("[ASSERT] %s:%u:%s Assertion '%s' \n", __file, __line, __function, __assertion);
+    printf_impl("[ASSERT] %s:%u:%s Assertion '%s' \n", __file, __line, __function, __assertion);
     trap();
 }
 } // namespace __asc_aicore
+#endif
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_AICORE_ASSERT_IMPL__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

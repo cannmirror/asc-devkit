@@ -7,6 +7,12 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/dav_m510/kernel_operator_data_copy_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_tensor.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_DATA_COPY_IMPL_H__
+#endif
+
 #ifndef ASCENDC_MODULE_OPERATOR_DATA_COPY_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_DATA_COPY_IMPL_H
 #include "kernel_operator_vec_duplicate_impl.h"
@@ -687,23 +693,23 @@ __aicore__ inline void VecCopyLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T *src, con
     uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArray, maskCount, maskBuf);
     uint16_t newRepeatTimes = 0;
     newRepeatTimes = VecMicroGetRepeatTimes<T, isNormalMode>(count, repeatTime);
-    MicroAPI::MaskReg maskReg;
+    Reg::MaskReg maskReg;
     constexpr uint8_t ElePerBlkT = GetDataBlockSizeInBytes() / sizeof(T);
     if constexpr (isNormalMode) {
         maskReg = VecMicroGetMaskReg<T, isSetMask, isNormalMode, isMaskBitMode>(maskBuf, count);
         for (uint16_t index = 0; index < newRepeatTimes; ++index) {
-            MicroAPI::RegTensor<T> srcVreg;
+            Reg::RegTensor<T> srcVreg;
 #ifndef NO_OVERLAP_IN_MULTI_REPEAT
-            MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+            Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 #endif
-            MicroAPI::LoadAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(srcVreg,
+            Reg::LoadAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(srcVreg,
                 src + index * repeatParams.srcRepeatSize * ElePerBlkT, repeatParams.srcStride, maskReg);
-            MicroAPI::StoreAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+            Reg::StoreAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(
                 dst + index * repeatParams.dstRepeatSize * ElePerBlkT, srcVreg, repeatParams.dstStride, maskReg);
         }
     } else {
-        MicroAPI::RegTensor<T> srcReg;
-        MicroAPI::MaskReg maskReg;
+        Reg::RegTensor<T> srcReg;
+        Reg::MaskReg maskReg;
         uint32_t oneRepeatBlock = (count * sizeof(T) + GetDataBlockSizeInBytes() - 1) / GetDataBlockSizeInBytes();
         uint32_t oneBlockElm = GetVecLen() / sizeof(T) / DEFAULT_BLK_NUM;
         uint32_t innerRepeatTimes = (oneRepeatBlock + DEFAULT_BLK_NUM - 1) / DEFAULT_BLK_NUM;
@@ -715,13 +721,13 @@ __aicore__ inline void VecCopyLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T *src, con
         for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
             sreg = static_cast<uint32_t>(count);
             for (uint16_t j = 0; j <= static_cast<uint16_t>(innerRepeatTimes); ++j) {
-                maskReg = MicroAPI::UpdateMask<T>(sreg);
+                maskReg = Reg::UpdateMask<T>(sreg);
 #ifndef NO_OVERLAP_IN_MULTI_REPEAT
-                MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+                Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 #endif
-                MicroAPI::LoadAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
+                Reg::LoadAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY, Reg::PostLiteral::POST_MODE_UPDATE>(
                     srcReg, src, repeatParams.srcStride, srcRepeatStride, maskReg);
-                MicroAPI::StoreAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
+                Reg::StoreAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY, Reg::PostLiteral::POST_MODE_UPDATE>(
                     dst, srcReg, repeatParams.dstStride, dstRepeatStride, maskReg);
             }
             src = srcTmp + repeatParams.srcRepeatSize * oneBlockElm;
@@ -791,12 +797,12 @@ __aicore__ inline void CopyImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint32_t
         uint16_t repeatTime = CeilDivision(calCount, repeatElm);
         __VEC_SCOPE__
         {
-            MicroAPI::RegTensor<T> vreg;
-            MicroAPI::MaskReg preg;
+            Reg::RegTensor<T> vreg;
+            Reg::MaskReg preg;
             for (uint16_t i = 0; i < repeatTime; ++i) {
-                preg = MicroAPI::UpdateMask<T>(sreg);
-                MicroAPI::LoadAlign(vreg, src + i * repeatElm);
-                MicroAPI::StoreAlign(dst + i * repeatElm, vreg, preg);
+                preg = Reg::UpdateMask<T>(sreg);
+                Reg::LoadAlign(vreg, src + i * repeatElm);
+                Reg::StoreAlign(dst + i * repeatElm, vreg, preg);
             }
         }
     } else if constexpr (sizeof(T) == B64_BYTE_SIZE) {
@@ -805,12 +811,12 @@ __aicore__ inline void CopyImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint32_t
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(sreg, oneRepSize));
         __VEC_SCOPE__
         {
-            MicroAPI::MaskReg preg;
-            MicroAPI::RegTensor<uint32_t> srcReg;
+            Reg::MaskReg preg;
+            Reg::RegTensor<uint32_t> srcReg;
             for (uint16_t i = 0; i < repeatTime; ++i) {
-                preg = MicroAPI::UpdateMask<uint32_t>(sreg);
-                MicroAPI::LoadAlign(srcReg, (__ubuf__ uint32_t *)src + i * oneRepSize);
-                MicroAPI::StoreAlign((__ubuf__ uint32_t *)dst + i * oneRepSize, srcReg, preg);
+                preg = Reg::UpdateMask<uint32_t>(sreg);
+                Reg::LoadAlign(srcReg, (__ubuf__ uint32_t *)src + i * oneRepSize);
+                Reg::StoreAlign((__ubuf__ uint32_t *)dst + i * oneRepSize, srcReg, preg);
             }
         }
     }
@@ -1240,3 +1246,7 @@ __aicore__ inline void DataCopyWithNDDMAB64Impl(__ubuf__ T *dst, __gm__ T *src, 
 }
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_DATA_COPY_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_DATA_COPY_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_DATA_COPY_IMPL_H__
+#endif

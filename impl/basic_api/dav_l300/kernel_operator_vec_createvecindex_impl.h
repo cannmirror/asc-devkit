@@ -12,6 +12,12 @@
  * \file kernel_operator_vec_createvecindex_impl.h
  * \brief AscendC l300 support vector create vector index api.
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/dav_l300/kernel_operator_vec_createvecindex_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_tensor.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_CREATEVECINDEX_IMPL_H__
+#endif
+
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_CREATEVECINDEX_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_CREATEVECINDEX_IMPL_H
 #include "kernel_tensor.h"
@@ -43,20 +49,20 @@ __simd_vf__ inline void VecCreateVecIndexLevel0VFImpl(__ubuf__ T *dst, const T f
     constexpr uint16_t sreg = GetVecLen() / sizeof(T);
     uint32_t count = VecMicroGetCount<true, isNormalMode, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
     uint16_t newRepeatTimes = VecMicroGetRepeatTimes<T, isNormalMode>(count, repeatTime);
-    MicroAPI::MaskReg maskReg;
+    Reg::MaskReg maskReg;
     if constexpr (isNormalMode) {
         maskReg = VecMicroGetMaskReg<T, true, isNormalMode, isMaskBitMode>(maskBuf, count);
     }
     constexpr uint8_t ElePerBlkT = GetDataBlockSizeInBytes() / sizeof(T);
-    MicroAPI::RegTensor<T> dstVreg;
-    MicroAPI::Arange(dstVreg, firstValue);
+    Reg::RegTensor<T> dstVreg;
+    Reg::Arange(dstVreg, firstValue);
     for (uint16_t index = 0; index < newRepeatTimes; ++index) {
         if constexpr (!isNormalMode) {
             maskReg = VecMicroGetMaskReg<T, true, isNormalMode, isMaskBitMode>(maskBuf, count);
         }
-        MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+        Reg::DataCopy<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(
             dst + index * dstRepStride * ElePerBlkT, dstVreg, dstBlkStride, maskReg);
-        MicroAPI::Adds(dstVreg, dstVreg, static_cast<int32_t>(sreg), maskReg);
+        Reg::Adds(dstVreg, dstVreg, static_cast<int32_t>(sreg), maskReg);
     }
 }
 
@@ -137,3 +143,7 @@ __aicore__ inline void CreateVecIndexCalc(LocalTensor<T> dstLocal, const T first
 
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_VEC_CREATEVECINDEX_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_CREATEVECINDEX_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_CREATEVECINDEX_IMPL_H__
+#endif

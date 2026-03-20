@@ -12,6 +12,12 @@
  * \file ascend_antiquant.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASCEND_ANTIQUANT_H__
+#endif
+
 #ifndef LIB_QUANTIZATION_ASCEND_ANTIQUANT_H
 #define LIB_QUANTIZATION_ASCEND_ANTIQUANT_H
 #include "kernel_tensor.h"
@@ -190,3 +196,8 @@ __aicore__ inline void AscendAntiQuant(const LocalTensor<dstT>& dstTensor, const
 #pragma end_pipe
 } // namespace AscendC
 #endif // LIB_QUANTIZATION_ASCEND_ANTIQUANT_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASCEND_ANTIQUANT_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASCEND_ANTIQUANT_H__
+#endif

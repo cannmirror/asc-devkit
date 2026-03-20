@@ -7,6 +7,12 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/dav_c310/kernel_operator_scm_data_copy_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_operator_intf.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_SCM_DATA_COPY_IMPL_H__
+#endif
+
 #ifndef ASCENDC_MODULE_OPERATOR_SCM_DATA_COPY_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_SCM_DATA_COPY_IMPL_H
 #if KFC_C310_SSBUF == 1
@@ -110,4 +116,8 @@ __aicore__ inline void ScmDataCopyND2NZMsg(__cbuf__ void* dst, __gm__ void* src,
     GetKfcClient()->PostMessage<false>(msg);
 }
 } // namespace AscendC
+#endif
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_SCM_DATA_COPY_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_SCM_DATA_COPY_IMPL_H__
 #endif

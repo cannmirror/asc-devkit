@@ -12,6 +12,12 @@
  * \file dropout_tiling_intf.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DROPOUT_TILING_INTF_H__
+#endif
+
 #ifndef API_TILING_DROPOUT_TILING_INTF_H
 #define API_TILING_DROPOUT_TILING_INTF_H
 #include "dropout/dropout_tiling.h"
@@ -22,3 +28,8 @@ namespace AscendC {
 using LibTilingDropoutTilingInterface = UsingDeprecatedHeader;
 } // namespace AscendC
 #endif // API_TILING_DROPOUT_TILING_INTF_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DROPOUT_TILING_INTF_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DROPOUT_TILING_INTF_H__
+#endif

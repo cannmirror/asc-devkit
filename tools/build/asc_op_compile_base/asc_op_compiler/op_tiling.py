@@ -261,6 +261,8 @@ def do_op_tiling(optype, compile_info, inputs, outputs, compile_info_hash=None, 
             lib_optiling_builtin.TbeLoadSoAndSaveToRegistry(builtin_optiling_lib_path2_str.encode('utf_8'))
         elif os.path.exists(builtin_optiling_open_path):
             so_files = glob.glob(os.path.join(builtin_optiling_open_path, "*.so"))
+            # make libophost_legacy.so loading lastly
+            so_files.sort(key=lambda x: os.path.basename(x) == "libophost_legacy.so")
             for so_path in so_files:
                 if "libophost_legacy.so" in so_path:
                     lib_optiling_builtin = ctypes.CDLL(so_path)

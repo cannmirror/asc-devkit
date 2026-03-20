@@ -12,8 +12,14 @@
  * \file selectwithbytesmaskcheck_common.h
  * \brief
  */
-#ifndef IMPL_API_CHECK_KERNEL_CHECK_SELECT_SELECTWITHBYTESMASK_SELECTWITHBYTESMASK_CHECK_COMMON_H_
-#define IMPL_API_CHECK_KERNEL_CHECK_SELECT_SELECTWITHBYTESMASK_SELECTWITHBYTESMASK_CHECK_COMMON_H_
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/api_check/kernel_check/select/selectwithbytesmask/selectwithbytesmaskcheck_common.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/select/selectwithbytesmask.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SELECTWITHBYTESMASKCHECK_COMMON_H__
+#endif
+
+#ifndef IMPL_API_CHECK_KERNEL_CHECK_SELECT_SELECTWITHBYTESMAKS_SELECTWITHBYTESMAKS_CHECK_COMMON_H_
+#define IMPL_API_CHECK_KERNEL_CHECK_SELECT_SELECTWITHBYTESMAKS_SELECTWITHBYTESMAKS_CHECK_COMMON_H_
 
 #include "../../basic_check/datatype_check.h"
 #include "../../basic_check/single_tensor_check.h"
@@ -100,5 +106,10 @@ public:
 
 }
 }
-#endif // IMPL_API_CHECK_KERNEL_CHECK_SELECT_SELECTWITHBYTESMASK_SELECTWITHBYTESMASK_CHECK_COMMON_H_
+#endif // IMPL_API_CHECK_KERNEL_CHECK_SELECT_SELECTWITHBYTESMAKS_SELECTWITHBYTESMAKS_CHECK_COMMON_H_
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SELECTWITHBYTESMASKCHECK_COMMON_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SELECTWITHBYTESMASKCHECK_COMMON_H__
+#endif
  

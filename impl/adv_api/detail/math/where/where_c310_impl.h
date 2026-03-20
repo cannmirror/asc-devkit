@@ -12,6 +12,12 @@
  * \file where_c310_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/math/where/where_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/where.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_WHERE_WHERE_C310_IMPL_H__
+#endif
 #ifndef IMPL_MATH_WHERE_WHERE_C310_IMPL_H
 #define IMPL_MATH_WHERE_WHERE_C310_IMPL_H
 #include "kernel_basic_intf.h"
@@ -40,42 +46,42 @@ template <> struct ExtractDataTypeBySize<sizeof(uint64_t)> {
     using T = uint32_t;
 };
 }
-template <bool src0Val, bool src1Val, typename T, typename V, const MicroAPI::RegTrait& regTrait = MicroAPI::RegTraitNumOne>
+template <bool src0Val, bool src1Val, typename T, typename V, const Reg::RegTrait& regTrait = Reg::RegTraitNumOne>
 __simd_vf__ inline void WhereCompute(__ubuf__ T* dstUb, __ubuf__ T* src0Ub,
     __ubuf__ T* src1Ub, const T src0, const T src1, __ubuf__ V* conditionUb,
     uint32_t count, const uint16_t repeatTime)
 {
     constexpr uint32_t repeatElm = regTrait.REG_NUM * GetVecLen() / sizeof(T);
-    MicroAPI::RegTensor<T, regTrait> src0Reg, src1Reg, dstReg;
-    MicroAPI::RegTensor<uint8_t> selReg;
-    MicroAPI::MaskReg maskReg, selMask;
-    MicroAPI::MaskReg maskFull = MicroAPI::CreateMask<uint8_t>();
+    Reg::RegTensor<T, regTrait> src0Reg, src1Reg, dstReg;
+    Reg::RegTensor<uint8_t> selReg;
+    Reg::MaskReg maskReg, selMask;
+    Reg::MaskReg maskFull = Reg::CreateMask<uint8_t>();
 
     if constexpr (src0Val) {
-        MicroAPI::Duplicate(src0Reg, src0);
+        Reg::Duplicate(src0Reg, src0);
     }
     if constexpr (src1Val) {
-        MicroAPI::Duplicate(src1Reg, src1);
+        Reg::Duplicate(src1Reg, src1);
     }
     for (uint16_t i = 0; i < repeatTime; ++i) {
-        maskReg = MicroAPI::UpdateMask<T, regTrait>(count);
-        MicroAPI::LoadAlign(selReg, (__ubuf__ uint8_t*)conditionUb + i * repeatElm);
-        MicroAPI::CompareScalar<uint8_t, CMPMODE::NE>(selMask, selReg, static_cast<uint8_t>(0), maskFull);
+        maskReg = Reg::UpdateMask<T, regTrait>(count);
+        Reg::LoadAlign(selReg, (__ubuf__ uint8_t*)conditionUb + i * repeatElm);
+        Reg::CompareScalar<uint8_t, CMPMODE::NE>(selMask, selReg, static_cast<uint8_t>(0), maskFull);
         if constexpr (sizeof(T) == 2) {
-            MicroAPI::MaskUnPack(selMask, selMask);
+            Reg::MaskUnPack(selMask, selMask);
         } else if constexpr (sizeof(T) == 4 || sizeof(T) == 8) {
-            MicroAPI::MaskUnPack(selMask, selMask);
-            MicroAPI::MaskUnPack(selMask, selMask);
+            Reg::MaskUnPack(selMask, selMask);
+            Reg::MaskUnPack(selMask, selMask);
         }
 
         if constexpr (!src0Val) {
-            MicroAPI::LoadAlign(src0Reg, src0Ub + i * repeatElm);
+            Reg::LoadAlign(src0Reg, src0Ub + i * repeatElm);
         }
         if constexpr (!src1Val) {
-            MicroAPI::LoadAlign(src1Reg, src1Ub + i * repeatElm);
+            Reg::LoadAlign(src1Reg, src1Ub + i * repeatElm);
         }
-        MicroAPI::Select(dstReg, src0Reg, src1Reg, selMask);
-        MicroAPI::StoreAlign(dstUb + i * repeatElm, dstReg, maskReg);
+        Reg::Select(dstReg, src0Reg, src1Reg, selMask);
+        Reg::StoreAlign(dstUb + i * repeatElm, dstReg, maskReg);
     }
 }
 
@@ -99,7 +105,7 @@ __aicore__ inline void WhereImpl(const LocalTensor<T>& dst, const U& src0, const
             WhereCompute<false, false, WhereType, V>((__ubuf__ WhereType*)dst.GetPhyAddr(),
             (__ubuf__ WhereType*)src0.GetPhyAddr(), (__ubuf__ WhereType*)src1.GetPhyAddr(), 0, 0, conditionUb, count, repeatTime);
         } else {
-            WhereCompute<false, false, uint64_t, V, MicroAPI::RegTraitNumTwo>((__ubuf__ uint64_t*)dst.GetPhyAddr(),
+            WhereCompute<false, false, uint64_t, V, Reg::RegTraitNumTwo>((__ubuf__ uint64_t*)dst.GetPhyAddr(),
             (__ubuf__ uint64_t*)src0.GetPhyAddr(), (__ubuf__ uint64_t*)src1.GetPhyAddr(), 0, 0, conditionUb, count, repeatTime);
         }
     } else if constexpr (TypeUtils::IsLocalTensorType<U>() && TypeUtils::IsInnerDefaultType<S>()) {
@@ -109,7 +115,7 @@ __aicore__ inline void WhereImpl(const LocalTensor<T>& dst, const U& src0, const
             WhereCompute<false, true, WhereType, V>((__ubuf__ WhereType*)dst.GetPhyAddr(),
             (__ubuf__ WhereType*)src0.GetPhyAddr(), nullptr, 0, (WhereType&)src1, conditionUb, count, repeatTime);
         } else {
-            WhereCompute<false, true, uint64_t, V, MicroAPI::RegTraitNumTwo>((__ubuf__ uint64_t*)dst.GetPhyAddr(),
+            WhereCompute<false, true, uint64_t, V, Reg::RegTraitNumTwo>((__ubuf__ uint64_t*)dst.GetPhyAddr(),
             (__ubuf__ uint64_t*)src0.GetPhyAddr(), nullptr, 0, (uint64_t&)src1, conditionUb, count, repeatTime);
         }
     } else if constexpr (TypeUtils::IsLocalTensorType<S>() && TypeUtils::IsInnerDefaultType<U>()) {
@@ -119,7 +125,7 @@ __aicore__ inline void WhereImpl(const LocalTensor<T>& dst, const U& src0, const
             WhereCompute<true, false, WhereType, V>((__ubuf__ WhereType*)dst.GetPhyAddr(),
             nullptr, (__ubuf__ WhereType*)src1.GetPhyAddr(), (WhereType&)src0, 0, conditionUb, count, repeatTime);
         } else {
-            WhereCompute<true, false, uint64_t, V, MicroAPI::RegTraitNumTwo>((__ubuf__ uint64_t*)dst.GetPhyAddr(),
+            WhereCompute<true, false, uint64_t, V, Reg::RegTraitNumTwo>((__ubuf__ uint64_t*)dst.GetPhyAddr(),
             nullptr, (__ubuf__ uint64_t*)src1.GetPhyAddr(), (uint64_t&)src0, 0, conditionUb, count, repeatTime);
         }
     } else {
@@ -129,10 +135,15 @@ __aicore__ inline void WhereImpl(const LocalTensor<T>& dst, const U& src0, const
             WhereCompute<true, true, WhereType, V>((__ubuf__ WhereType*)dst.GetPhyAddr(),
             nullptr, nullptr, (WhereType&)src0, (WhereType&)src1, conditionUb, count, repeatTime);
         } else {
-            WhereCompute<true, true, uint64_t, V, MicroAPI::RegTraitNumTwo>((__ubuf__ uint64_t*)dst.GetPhyAddr(),
+            WhereCompute<true, true, uint64_t, V, Reg::RegTraitNumTwo>((__ubuf__ uint64_t*)dst.GetPhyAddr(),
             nullptr, nullptr, (uint64_t&)src0, (uint64_t&)src1, conditionUb, count, repeatTime);
         }
     }
 }
 } // namespace AscendC
 #endif // IMPL_MATH_WHERE_WHERE_C310_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_WHERE_WHERE_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_WHERE_WHERE_C310_IMPL_H__
+#endif

@@ -12,6 +12,12 @@
  * \file kernel_operator_vec_template_impl.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/dav_l311/kernel_operator_vec_template_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_vec_intf.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_TEMPLATE_IMPL_H__
+#endif
+
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_TEMPLATE_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_TEMPLATE_IMPL_H
 
@@ -45,10 +51,10 @@ __simd_callee__ inline uint32_t VecMicroGetCount(const uint64_t maskArray[], con
     uint32_t count = 0;
     if constexpr (!isSetMask) {
         // get SPR.MASK in VF
-        MicroAPI::MaskReg sprLoadMaskReg = MicroAPI::MoveMask<uint16_t>();
-        MicroAPI::DataCopy<uint64_t, MicroAPI::MaskDist::DIST_PACK>(maskBuf, sprLoadMaskReg);
+        Reg::MaskReg sprLoadMaskReg = Reg::MoveMask<uint16_t>();
+        Reg::DataCopy<uint64_t, Reg::MaskDist::DIST_PACK>(maskBuf, sprLoadMaskReg);
         // insert membar(vec store operation) before load maskBuf[0](scalar load operation)
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::SCALAR_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::SCALAR_LOAD>();
         count = static_cast<uint32_t>(maskBuf[0]);
     } else if constexpr (isMaskBitMode) {
         count = static_cast<uint32_t>(maskArray[0]);
@@ -68,23 +74,23 @@ __simd_callee__ inline uint16_t VecMicroGetRepeatTimes(uint32_t count, const uin
 }
 
 template <typename T, bool isSetMask = true, bool isNormalMode = true, bool isMaskBitMode = true>
-__simd_callee__ inline MicroAPI::MaskReg VecMicroGetMaskReg(__ubuf__ uint64_t *maskBuf, uint32_t &count)
+__simd_callee__ inline Reg::MaskReg VecMicroGetMaskReg(__ubuf__ uint64_t *maskBuf, uint32_t &count)
 {
-    MicroAPI::MaskReg maskReg;
+    Reg::MaskReg maskReg;
     if constexpr (isNormalMode && !isMaskBitMode && !isSetMask) {
         if constexpr (SupportBytes<T, 2, 4>()) {
-            maskReg = MicroAPI::MoveMask<T>();
+            maskReg = Reg::MoveMask<T>();
         } else {
             ASCENDC_ASSERT(false, "unsupported dtype on current device!");
         }
     } else if constexpr (isNormalMode && isMaskBitMode) {
         if constexpr (SupportBytes<T, 1>()) {
-            MicroAPI::DataCopy(maskReg, (__ubuf__ uint32_t *)maskBuf);
+            Reg::DataCopy(maskReg, (__ubuf__ uint32_t *)maskBuf);
         } else {
-            maskReg = MicroAPI::MoveMask<T>();
+            maskReg = Reg::MoveMask<T>();
         }
     } else {
-        maskReg = MicroAPI::UpdateMask<T>(count);
+        maskReg = Reg::UpdateMask<T>(count);
     }
     return maskReg;
 }
@@ -95,7 +101,7 @@ enum class BinaryFuncMode {
 };
 /*
  * T: data type
- * func: MicroAPI input/output function
+ * func: Reg input/output function
  * isSetMask: basic api whether to set mask
  * isNormalMode: true: NormalMode, false: CounterMode
  * isMaskBitMode: true: mask bit mode, false: mask count mode
@@ -111,17 +117,17 @@ __aicore__ inline void VecBinaryVFImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf
     constexpr bool TUCompare = sizeof(T) > sizeof(U);
     using TT = typename Conditional<TUCompare, T, U>::type;
     newRepeatTimes = VecMicroGetRepeatTimes<TT, isNormalMode>(count, repeatTime);
-    MicroAPI::MaskReg maskReg;
-    MicroAPI::MaskReg maskRegDst;
-    MicroAPI::MaskReg maskRegSrc;
+    Reg::MaskReg maskReg;
+    Reg::MaskReg maskRegDst;
+    Reg::MaskReg maskRegSrc;
     if constexpr (isNormalMode) {
         maskReg = VecMicroGetMaskReg<TT, isSetMask, isNormalMode, isMaskBitMode>(maskBuf, count);
         maskRegSrc = maskReg;
         maskRegDst = maskReg;
         if constexpr (sizeof(U) == 2 * sizeof(T)) {
-            MicroAPI::MaskPack(maskRegDst, maskReg);
+            Reg::MaskPack(maskRegDst, maskReg);
         } else if constexpr (sizeof(T) == 2 * sizeof(U)) {
-            MicroAPI::MaskPack(maskRegSrc, maskReg);
+            Reg::MaskPack(maskRegSrc, maskReg);
         }
     }
     constexpr uint8_t ElePerBlkT = GetDataBlockSizeInBytes() / sizeof(T);
@@ -132,24 +138,24 @@ __aicore__ inline void VecBinaryVFImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf
             maskRegSrc = maskReg;
             maskRegDst = maskReg;
             if constexpr (sizeof(U) == 2 * sizeof(T)) {
-                MicroAPI::MaskPack(maskRegDst, maskReg);
+                Reg::MaskPack(maskRegDst, maskReg);
             } else if constexpr (sizeof(T) == 2 * sizeof(U)) {
-                MicroAPI::MaskPack(maskRegSrc, maskReg);
+                Reg::MaskPack(maskRegSrc, maskReg);
             }
         }
-        MicroAPI::RegTensor<T> dstVreg;
-        MicroAPI::RegTensor<U> srcVreg0, srcVreg1;
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
-        MicroAPI::DataCopy<U, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(srcVreg0,
+        Reg::RegTensor<T> dstVreg;
+        Reg::RegTensor<U> srcVreg0, srcVreg1;
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
+        Reg::DataCopy<U, Reg::DataCopyMode::DATA_BLOCK_COPY>(srcVreg0,
             src0 + index * repeatParams.src0RepStride * ElePerBlkU, repeatParams.src0BlkStride, maskRegSrc);
-        MicroAPI::DataCopy<U, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(srcVreg1,
+        Reg::DataCopy<U, Reg::DataCopyMode::DATA_BLOCK_COPY>(srcVreg1,
             src1 + index * repeatParams.src1RepStride * ElePerBlkU, repeatParams.src1BlkStride, maskRegSrc);
         if constexpr (funcMode == BinaryFuncMode::DST_SRC_INPUT) {
-            MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(dstVreg,
+            Reg::DataCopy<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(dstVreg,
                 dst + index * repeatParams.dstRepStride * ElePerBlkT, repeatParams.dstBlkStride, maskRegDst);
         }
         func(dstVreg, srcVreg0, srcVreg1, maskReg);
-        MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+        Reg::DataCopy<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(
             dst + index * repeatParams.dstRepStride * ElePerBlkT, dstVreg, repeatParams.dstBlkStride, maskRegDst);
     }
 }
@@ -208,3 +214,7 @@ __aicore__ inline void VecBinaryImplTemplate(__ubuf__ T *dst, __ubuf__ U *src0, 
 } // namespace Internal
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_VEC_TEMPLATE_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_TEMPLATE_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_TEMPLATE_IMPL_H__
+#endif

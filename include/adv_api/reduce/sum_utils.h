@@ -12,6 +12,12 @@
  * \file sum_utils.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SUM_UTILS_H__
+#endif
+
 #ifndef LIB_REDUCE_SUM_UTILS_H
 #define LIB_REDUCE_SUM_UTILS_H
 
@@ -26,3 +32,8 @@ struct SumParams {
 
 }; // namespace AscendC
 #endif // LIB_REDUCE_SUM_UTILS_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SUM_UTILS_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SUM_UTILS_H__
+#endif

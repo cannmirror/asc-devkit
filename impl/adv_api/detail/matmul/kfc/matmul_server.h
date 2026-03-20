@@ -12,6 +12,12 @@
  * \file matmul_server.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/matmul/kfc/matmul_server.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul_client.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_KFC_MATMUL_SERVER_H__
+#endif
+
 #ifndef IMPL_MATMUL_KFC_MATMUL_SERVER_H
 #define IMPL_MATMUL_KFC_MATMUL_SERVER_H
 
@@ -215,11 +221,9 @@ public:
 #if defined(USE_WORKSPACE)
         if constexpr (!ToMatmulConfig(MM_CFG).enableInit) {
             if (mul.GetSubBlockIdx() == 0 && msgAux.msg0.setOrgShape) {
-                mul.SetOrgShape(msgAux.msg0.orgM, msgAux.msg0.orgN, msgAux.msg0.orgKa,
-                    msgAux.msg0.orgKb, msgAux.msg0.orgKc);
+                mul.SetOrgShape(msgAux.msg0.orgM, msgAux.msg0.orgN, msgAux.msg0.orgKa, msgAux.msg0.orgKb, msgAux.msg0.orgKc);
             } else if (mul.GetSubBlockIdx() == 1 && msgAux.msg1.setOrgShape) {
-                mul.SetOrgShape(msgAux.msg1.orgM, msgAux.msg1.orgN, msgAux.msg1.orgKa,
-                    msgAux.msg1.orgKb, msgAux.msg1.orgKc);
+                mul.SetOrgShape(msgAux.msg1.orgM, msgAux.msg1.orgN, msgAux.msg1.orgKa, msgAux.msg1.orgKb, msgAux.msg1.orgKc);
             }
         }
 #endif
@@ -235,8 +239,7 @@ public:
             if constexpr (ToMatmulConfig(MM_CFG).enableQuantVector) {
                 SetQuantVector(body);
             }
-            if constexpr (((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_BATCH) != 0) ||
-                ((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_N_BATCH) != 0)) {
+            if constexpr (((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_BATCH) != 0) || ((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_N_BATCH) != 0)) {
                 if constexpr (A_TYPE::layout != LayoutMode::NONE) {
                     SetBatchNum(body);
                 }
@@ -281,8 +284,7 @@ public:
     __aicore__ inline bool IterateBatch(MSG_POS KfcMsg* msg);
     __aicore__ inline void StartIterateNBatch(MsgTmpPos MatmulConfigParams* body, uint32_t &cntIterator);
     __aicore__ inline bool IterateNBatch(MSG_POS KfcMsg* msg);
-    __aicore__ inline void GetOffsetSize(MsgTmpPos MatmulConfigParams* body, KFC_Enum funID, uint32_t sync,
-        uint64_t &offsetSize, uint32_t &enSequentialWrite, bool hasSetWorkspace = false);
+    __aicore__ inline void GetOffsetSize(MsgTmpPos MatmulConfigParams* body, KFC_Enum funID, uint32_t sync, uint64_t &offsetSize, uint32_t &enSequentialWrite, bool hasSetWorkspace = false);
     __aicore__ inline bool StartIterate(MsgTmpPos MatmulConfigParams* body, KFC_Enum funID, uint32_t sync, uint32_t &cntIterator);
     __aicore__ inline bool Iterate(MSG_POS KfcMsg* msg, KFC_Enum funID);
 #if defined(__ASCENDC_ENABLE_SUPER_KERNEL__)
@@ -318,8 +320,7 @@ public:
 
         GlobalTensor<DstT> cGlobal;
         cGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ DstT*>(msg->body.cAddr), size);
-        mul.IterateAll(cGlobal, msg->body.enAtomic, msg->body.enSequentialWrite,
-            msg->body.waitIterateAll, msg->body.iterateFakeMsg);
+        mul.IterateAll(cGlobal, msg->body.enAtomic, msg->body.enSequentialWrite, msg->body.waitIterateAll, msg->body.iterateFakeMsg);
 
         uint16_t eventID0 = static_cast<uint16_t>(this->devEvtID * 2 + 0);
         uint16_t eventID1 = static_cast<uint16_t>(this->devEvtID * 2 + 1);
@@ -416,8 +417,7 @@ public:
     {
         if constexpr (((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_ALL) != 0) ||
             ((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_NORMAL) != 0)) {
-            if ((static_cast<uint16_t>(funID) & static_cast<uint16_t>(KFC_Enum::MMFUN_MASK)) ==
-                static_cast<uint16_t>(KFC_Enum::MMFUN_MASK)) {
+            if ((static_cast<uint16_t>(funID) & static_cast<uint16_t>(KFC_Enum::MMFUN_MASK)) == static_cast<uint16_t>(KFC_Enum::MMFUN_MASK)) {
                 if constexpr (ToMatmulConfig(MM_CFG).intraBlockPartSum) {
 #if defined(USE_WORKSPACE)
                     return IterateIntraBlockPartSum(msg, funID);
@@ -427,8 +427,7 @@ public:
                 }
             }
         }
-        if constexpr (((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_BATCH) != 0) &&
-                    (A_TYPE::layout != LayoutMode::NONE)) {
+        if constexpr (((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_BATCH) != 0) && (A_TYPE::layout != LayoutMode::NONE)) {
             if (funID == KFC_Enum::MMFUN_ITERATE_BATCH_ALL) {
                 return IterateBatch(msg);
             }
@@ -535,4 +534,8 @@ private:
 #endif
 };
 } // namespace AscendC
+#endif
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_KFC_MATMUL_SERVER_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_KFC_MATMUL_SERVER_H__
 #endif // __MATMUL_SERVER_H__

@@ -7,12 +7,18 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/dav_c310/kernel_operator_vec_reduce_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_tensor.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_REDUCE_IMPL_H__
+#endif
+
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_REDUCE_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_REDUCE_IMPL_H
 
 #include "kernel_operator_vec_template_impl.h"
 #include "kernel_pop_stack_buffer.h"
-#include "micro_api/kernel_micro_intf.h"
+#include "reg_compute/kernel_reg_compute_intf.h"
 
 namespace AscendC {
 
@@ -20,38 +26,38 @@ __BLOCK_LOCAL__ __inline__ float accValFloat;
 __BLOCK_LOCAL__ __inline__ half accValHalf;
 
 template <bool isBitMask, typename T>
-__simd_callee__ inline void GenPredicate(MicroAPI::MaskReg &preg, uint32_t maskReg)
+__simd_callee__ inline void GenPredicate(Reg::MaskReg &preg, uint32_t maskReg)
 {
     if constexpr (isBitMask) {
-        preg = MicroAPI::MoveMask<T>();
+        preg = Reg::MoveMask<T>();
     } else {
-        preg = MicroAPI::UpdateMask<T>(maskReg);
+        preg = Reg::UpdateMask<T>(maskReg);
     }
 }
 
 template <bool isSetMask, bool isBitMask, bool isCounterMode, typename T>
-__simd_callee__ inline void ReduceCommonCall(MicroAPI::MaskReg& mask, uint16_t& newRepeatTimes, uint32_t& countSreg,
+__simd_callee__ inline void ReduceCommonCall(Reg::MaskReg& mask, uint16_t& newRepeatTimes, uint32_t& countSreg,
                                         uint32_t maskReg, __ubuf__ uint64_t* maskBuf)
 {
     if constexpr (isCounterMode) {
         if constexpr (!isSetMask) {
             // get SPR.MASK in VF
-            MicroAPI::MaskReg sprLoadMaskReg = MicroAPI::MoveMask<uint16_t>();
-            MicroAPI::StoreAlign<uint64_t, MicroAPI::MaskDist::DIST_PACK>(maskBuf, sprLoadMaskReg);
+            Reg::MaskReg sprLoadMaskReg = Reg::MoveMask<uint16_t>();
+            Reg::StoreAlign<uint64_t, Reg::MaskDist::DIST_PACK>(maskBuf, sprLoadMaskReg);
             // insert membar(vec store operation) before load maskBuf[0](scalar load operation)
-            MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::SCALAR_LOAD>();
+            Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::SCALAR_LOAD>();
             countSreg = static_cast<uint32_t>(maskBuf[0]);
         }
         constexpr uint16_t oneRepSize = GetVecLen() / sizeof(T);
         newRepeatTimes = CeilDivision(countSreg, oneRepSize);
     } else {
         if constexpr (isBitMask) {  // mask[]
-            mask = MicroAPI::MoveMask<T>();
+            mask = Reg::MoveMask<T>();
         } else {  // mask
             if constexpr (!isSetMask) {
-                mask = MicroAPI::MoveMask<T>();
+                mask = Reg::MoveMask<T>();
             } else {
-                mask = MicroAPI::UpdateMask<T>(maskReg);
+                mask = Reg::UpdateMask<T>(maskReg);
             }
         }
     }
@@ -61,21 +67,21 @@ template <bool isSetMask, bool isBitMask, bool isCounterMode, auto func, typenam
 __simd_vf__ inline void ReduceAlignCall(__ubuf__ T *dst, __ubuf__ T *src, int32_t repeat, uint32_t dstRepOffset,
     uint32_t srcBlkStride, uint32_t srcRepStride, uint32_t maskReg, __ubuf__ uint64_t *maskBuf)
 {
-    MicroAPI::MaskReg stMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::H>();
-    MicroAPI::MaskReg mask;
+    Reg::MaskReg stMask = Reg::CreateMask<T, Reg::MaskPattern::H>();
+    Reg::MaskReg mask;
     uint16_t newRepeatTimes = static_cast<uint16_t>(repeat);
     uint32_t countSreg = static_cast<uint32_t>(maskReg);
     ReduceCommonCall<isSetMask, isBitMask, isCounterMode, T>(mask, newRepeatTimes, countSreg, maskReg, maskBuf);
-    MicroAPI::RegTensor<T> srcVreg;
-    MicroAPI::RegTensor<T> dstVreg;
+    Reg::RegTensor<T> srcVreg;
+    Reg::RegTensor<T> dstVreg;
     for (uint16_t i = 0; i < newRepeatTimes; ++i) {
         if constexpr (isCounterMode) {
-            mask = MicroAPI::UpdateMask<T>(countSreg);
+            mask = Reg::UpdateMask<T>(countSreg);
         }
-        MicroAPI::LoadAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
+        Reg::LoadAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY, Reg::PostLiteral::POST_MODE_UPDATE>(
             srcVreg, src, srcBlkStride, srcRepStride, mask);
         func(dstVreg, srcVreg, mask);
-        MicroAPI::StoreAlign(dst + i * dstRepOffset, dstVreg, stMask);
+        Reg::StoreAlign(dst + i * dstRepOffset, dstVreg, stMask);
     }
 }
 
@@ -83,27 +89,27 @@ template <bool isSetMask, bool isBitMask, bool isCounterMode, bool withStride, a
 __simd_vf__ inline void ReduceUnalignCall(__ubuf__ U *dst, __ubuf__ T *src, int32_t repeat, uint32_t oneRepOffset,
     uint32_t dstRepOffsetPost, uint32_t srcBlkStride, uint32_t srcRepStride, uint32_t maskReg, __ubuf__ uint64_t *maskBuf)
 {
-    MicroAPI::MaskReg mask;
+    Reg::MaskReg mask;
     uint16_t newRepeatTimes = static_cast<uint16_t>(repeat);
     uint32_t countSreg = static_cast<uint32_t>(maskReg);
     ReduceCommonCall<isSetMask, isBitMask, isCounterMode, T>(mask, newRepeatTimes, countSreg, maskReg, maskBuf);
-    MicroAPI::RegTensor<T> srcVreg;
-    MicroAPI::RegTensor<U> dstVreg;
-    MicroAPI::UnalignReg ureg;
+    Reg::RegTensor<T> srcVreg;
+    Reg::RegTensor<U> dstVreg;
+    Reg::UnalignReg ureg;
     for (uint16_t i = 0; i < newRepeatTimes; ++i) {
         if constexpr (isCounterMode) {
-            mask = MicroAPI::UpdateMask<T>(countSreg);
+            mask = Reg::UpdateMask<T>(countSreg);
         }
-        MicroAPI::LoadAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
+        Reg::LoadAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY, Reg::PostLiteral::POST_MODE_UPDATE>(
             srcVreg, src, srcBlkStride, srcRepStride, mask);
         func(dstVreg, srcVreg, mask);
-        MicroAPI::StoreUnAlign(dst, dstVreg, ureg, oneRepOffset);
+        Reg::StoreUnAlign(dst, dstVreg, ureg, oneRepOffset);
         if constexpr (withStride) {
-            MicroAPI::StoreUnAlignPost(dst, ureg, dstRepOffsetPost);
+            Reg::StoreUnAlignPost(dst, ureg, dstRepOffsetPost);
         }
     }
     if constexpr (!withStride) {
-        MicroAPI::StoreUnAlignPost(dst, ureg, dstRepOffsetPost);
+        Reg::StoreUnAlignPost(dst, ureg, dstRepOffsetPost);
     }
 }
 
@@ -112,41 +118,41 @@ __simd_vf__ inline void WholeReduceUnalignCall(__ubuf__ U *dst, __ubuf__ T *src,
     uint32_t dstRepOffsetPost, uint32_t srcBlkStride, uint32_t srcRepStride, uint32_t maskReg,
     __ubuf__ uint64_t *maskBuf, const ReduceOrder order)
 {
-    MicroAPI::MaskReg mask;
+    Reg::MaskReg mask;
     uint16_t newRepeatTimes = static_cast<uint16_t>(repeat);
     uint32_t countSreg = static_cast<uint32_t>(maskReg);
     ReduceCommonCall<isSetMask, isBitMask, isCounterMode, T>(mask, newRepeatTimes, countSreg, maskReg, maskBuf);
-    MicroAPI::RegTensor<T> srcVreg;
-    MicroAPI::RegTensor<U> dstVreg;
-    MicroAPI::RegTensor<U> tmpVreg1;
-    MicroAPI::RegTensor<U> tmpVreg2;
-    MicroAPI::RegTensor<U> tmpVreg3;
-    MicroAPI::RegTensor<U> tmpVreg4;
-    MicroAPI::UnalignReg ureg;
+    Reg::RegTensor<T> srcVreg;
+    Reg::RegTensor<U> dstVreg;
+    Reg::RegTensor<U> tmpVreg1;
+    Reg::RegTensor<U> tmpVreg2;
+    Reg::RegTensor<U> tmpVreg3;
+    Reg::RegTensor<U> tmpVreg4;
+    Reg::UnalignReg ureg;
     for (uint16_t i = 0; i < newRepeatTimes; ++i) {
         if constexpr (isCounterMode) {
-            mask = MicroAPI::UpdateMask<T>(countSreg);
+            mask = Reg::UpdateMask<T>(countSreg);
         }
-        MicroAPI::LoadAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
+        Reg::LoadAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY, Reg::PostLiteral::POST_MODE_UPDATE>(
             srcVreg, src, srcBlkStride, srcRepStride, mask);
         if (order == ReduceOrder::ORDER_VALUE_INDEX || order == ReduceOrder::ORDER_ONLY_VALUE) {
             func(dstVreg, srcVreg, mask);
         } else {
             func(tmpVreg1, srcVreg, mask);
-            MicroAPI::Duplicate(tmpVreg2, static_cast<T>(0), mask);
-            MicroAPI::DeInterleave(tmpVreg3, tmpVreg4, tmpVreg1, tmpVreg2);
-            MicroAPI::Interleave(dstVreg, tmpVreg1, tmpVreg4, tmpVreg3);
+            Reg::Duplicate(tmpVreg2, static_cast<T>(0), mask);
+            Reg::DeInterleave(tmpVreg3, tmpVreg4, tmpVreg1, tmpVreg2);
+            Reg::Interleave(dstVreg, tmpVreg1, tmpVreg4, tmpVreg3);
             if (sizeof(T) == 2 && order == ReduceOrder::ORDER_ONLY_INDEX) {
-                MicroAPI::Interleave(dstVreg, tmpVreg1, dstVreg, tmpVreg2);
+                Reg::Interleave(dstVreg, tmpVreg1, dstVreg, tmpVreg2);
             }
         }
-        MicroAPI::StoreUnAlign(dst, dstVreg, ureg, oneRepOffset);
+        Reg::StoreUnAlign(dst, dstVreg, ureg, oneRepOffset);
         if constexpr (withStride) {
-            MicroAPI::StoreUnAlignPost(dst, ureg, dstRepOffsetPost);
+            Reg::StoreUnAlignPost(dst, ureg, dstRepOffsetPost);
         }
     }
     if constexpr (!withStride) {
-        MicroAPI::StoreUnAlignPost(dst, ureg, dstRepOffsetPost);
+        Reg::StoreUnAlignPost(dst, ureg, dstRepOffsetPost);
     }
 }
 
@@ -276,7 +282,7 @@ __aicore__ inline void PairReduceSumImpl(__ubuf__ T *dst, __ubuf__ T *src, const
     static_assert((SupportType<T, half, float>()), "PairReduceSum current data type is not supported!");
     constexpr uint32_t oneRepOffset = (ONE_REPEAT_BYTE_SIZE / sizeof(T)) / HALF_FACTOR;
     uint32_t maskReg = static_cast<uint32_t>(mask);
-    PairReduceTemplate<isSetMask, false, MicroAPI::PairReduceSum<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>>(
+    PairReduceTemplate<isSetMask, false, Reg::PairReduceSum<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>>(
         dst, src, repeat, dstRepStride, oneRepOffset, srcBlkStride, srcRepStride, maskReg);
 }
 
@@ -289,7 +295,7 @@ __aicore__ inline void PairReduceSumImpl(__ubuf__ T *dst, __ubuf__ T *src, const
     if constexpr (isSetMask) {
         SetVectorMask<T>(mask[1], mask[0]);
     }
-    PairReduceTemplate<isSetMask, true, MicroAPI::PairReduceSum<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>>(
+    PairReduceTemplate<isSetMask, true, Reg::PairReduceSum<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>>(
         dst, src, repeat, dstRepStride, oneRepOffset, srcBlkStride, srcRepStride, mask[0]);
 }
 
@@ -302,7 +308,7 @@ __aicore__ inline void BlockReduceSumImpl(__ubuf__ T *dst, __ubuf__ T *src, cons
     if constexpr (isSetMask) {
         SetVectorMask<T>(mask[1], mask[0]);
     }
-    ReduceTemplate<isSetMask, true, MicroAPI::ReduceSumWithDataBlock<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>>(
+    ReduceTemplate<isSetMask, true, Reg::ReduceSumWithDataBlock<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>>(
         dst, src, repeat, dstRepStride, DEFAULT_BLK_NUM, srcBlkStride, srcRepStride, mask[0]);
 }
 
@@ -313,7 +319,7 @@ __aicore__ inline void BlockReduceSumImpl(__ubuf__ T *dst, __ubuf__ T *src, cons
     static_assert((SupportType<T, half, float>()), "BlockReduceSum not support current datatype!");
     uint32_t maskReg = static_cast<uint32_t>(mask);
     ReduceTemplate<isSetMask, false,
-        MicroAPI::ReduceSumWithDataBlock<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>>(
+        Reg::ReduceSumWithDataBlock<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>>(
         dst, src, repeat, dstRepStride, DEFAULT_BLK_NUM, srcBlkStride, srcRepStride, maskReg);
 }
 
@@ -325,7 +331,7 @@ __aicore__ inline void BlockReduceMaxImpl(__ubuf__ T *dst, __ubuf__ T *src, cons
     if constexpr (isSetMask) {
         SetVectorMask<T>(mask[1], mask[0]);
     }
-    ReduceTemplate<isSetMask, true, MicroAPI::ReduceMaxWithDataBlock<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>>(
+    ReduceTemplate<isSetMask, true, Reg::ReduceMaxWithDataBlock<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>>(
         dst, src, repeat, dstRepStride, DEFAULT_BLK_NUM, srcBlkStride, srcRepStride, mask[0]);
 }
 
@@ -336,7 +342,7 @@ __aicore__ inline void BlockReduceMaxImpl(__ubuf__ T *dst, __ubuf__ T *src, cons
     static_assert((SupportType<T, half, float>()), "BlockReduceMax current data type is not supported!");
     uint32_t maskReg = static_cast<uint32_t>(mask);
     ReduceTemplate<isSetMask, false,
-        MicroAPI::ReduceMaxWithDataBlock<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>>(
+        Reg::ReduceMaxWithDataBlock<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>>(
         dst, src, repeat, dstRepStride, DEFAULT_BLK_NUM, srcBlkStride, srcRepStride, maskReg);
 }
 
@@ -348,7 +354,7 @@ __aicore__ inline void BlockReduceMinImpl(__ubuf__ T *dst, __ubuf__ T *src, cons
     if constexpr (isSetMask) {
         SetVectorMask<T>(mask[1], mask[0]);
     }
-    ReduceTemplate<isSetMask, true, MicroAPI::ReduceMinWithDataBlock<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>>(
+    ReduceTemplate<isSetMask, true, Reg::ReduceMinWithDataBlock<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>>(
         dst, src, repeat, dstRepStride, DEFAULT_BLK_NUM, srcBlkStride, srcRepStride, mask[0]);
 }
 
@@ -359,7 +365,7 @@ __aicore__ inline void BlockReduceMinImpl(__ubuf__ T *dst, __ubuf__ T *src, cons
     static_assert((SupportType<T, half, float>()), "BlockReduceMin not support current datatype!");
     uint32_t maskReg = static_cast<uint32_t>(mask);
     ReduceTemplate<isSetMask, false,
-        MicroAPI::ReduceMinWithDataBlock<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>>(
+        Reg::ReduceMinWithDataBlock<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>>(
         dst, src, repeat, dstRepStride, DEFAULT_BLK_NUM, srcBlkStride, srcRepStride, maskReg);
 }
 
@@ -374,7 +380,7 @@ __aicore__ inline void RepeatReduceSumImpl(__ubuf__ U *dstLocal, __ubuf__ T *src
         (SupportType<U, int32_t, uint32_t, half, float>()), "RepeatReduceSum current data type is not supported!");
     uint32_t maskReg = static_cast<uint32_t>(elemsInOneRepeat);
     ReduceTemplate<isSetMask, false,
-        MicroAPI::ReduceSum<U, T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<U>, MicroAPI::RegTensor<T>>,
+        Reg::ReduceSum<U, T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<U>, Reg::RegTensor<T>>,
         T,
         U>(dstLocal, srcLocal, repeat, dstRepStride, 1, srcBlkStride, srcRepStride, maskReg);
 }
@@ -414,7 +420,7 @@ __aicore__ inline void WholeReduceMaxImpl(__ubuf__ T *dstLocal, __ubuf__ T *srcL
     if constexpr (sizeof(T) == 2) {
         popBuffer.SetValue(4, mask[1]);
     }
-    ReduceTemplate<isSetMask, true, MicroAPI::ReduceMax<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>>(
+    ReduceTemplate<isSetMask, true, Reg::ReduceMax<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>>(
         dstLocal, srcLocal, repeat, dstRepStride, oneRepOffset, srcBlkStride, srcRepStride, mask[0], order);
 }
 
@@ -449,7 +455,7 @@ __aicore__ inline void WholeReduceMaxImpl(__ubuf__ T *dstLocal, __ubuf__ T *srcL
     popBuffer.SetValue(2, (static_cast<uint64_t>(srcRepStride) << 32) | srcBlkStride);
     popBuffer.SetValue(3, static_cast<uint64_t>(mask));
 
-    ReduceTemplate<isSetMask, false, MicroAPI::ReduceMax<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>>(
+    ReduceTemplate<isSetMask, false, Reg::ReduceMax<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>>(
         dstLocal, srcLocal, repeat, dstRepStride, oneRepOffset, srcBlkStride, srcRepStride, maskReg, order);
 }
 
@@ -488,7 +494,7 @@ __aicore__ inline void WholeReduceMinImpl(__ubuf__ T *dstLocal, __ubuf__ T *srcL
         popBuffer.SetValue(4, mask[1]);
     }
 
-    ReduceTemplate<isSetMask, true, MicroAPI::ReduceMin<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>>(
+    ReduceTemplate<isSetMask, true, Reg::ReduceMin<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>>(
         dstLocal, srcLocal, repeat, dstRepStride, oneRepOffset, srcBlkStride, srcRepStride, mask[0], order);
 }
 
@@ -522,7 +528,7 @@ __aicore__ inline void WholeReduceMinImpl(__ubuf__ T *dstLocal, __ubuf__ T *srcL
     popBuffer.SetValue(2, (static_cast<uint64_t>(srcRepStride) << 32) | srcBlkStride);
     popBuffer.SetValue(3, static_cast<uint64_t>(mask));
 
-    ReduceTemplate<isSetMask, false, MicroAPI::ReduceMin<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>>(
+    ReduceTemplate<isSetMask, false, Reg::ReduceMin<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>>(
         dstLocal, srcLocal, repeat, dstRepStride, oneRepOffset, srcBlkStride, srcRepStride, maskReg, order);
 }
 
@@ -538,7 +544,7 @@ __aicore__ inline void WholeReduceSumImpl(__ubuf__ U *dstLocal, __ubuf__ T *srcL
         SetVectorMask<T>(mask[1], mask[0]);
     }
     ReduceTemplate<isSetMask, true,
-        MicroAPI::ReduceSum<U, T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<U>, MicroAPI::RegTensor<T>>,
+        Reg::ReduceSum<U, T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<U>, Reg::RegTensor<T>>,
         T,
         U>(dstLocal, srcLocal, repeat, dstRepStride, 1, srcBlkStride, srcRepStride, mask[0]);
 }
@@ -553,7 +559,7 @@ __aicore__ inline void WholeReduceSumImpl(__ubuf__ U *dstLocal, __ubuf__ T *srcL
         (SupportType<U, int32_t, uint32_t, half, float>()), "WholeReduceSum current data type is not supported!");
     uint32_t maskReg = static_cast<uint32_t>(mask);
     ReduceTemplate<isSetMask, false,
-        MicroAPI::ReduceSum<U, T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<U>, MicroAPI::RegTensor<T>>,
+        Reg::ReduceSum<U, T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<U>, Reg::RegTensor<T>>,
         T,
         U>(dstLocal, srcLocal, repeat, dstRepStride, 1, srcBlkStride, srcRepStride, maskReg);
 }
@@ -564,17 +570,17 @@ __simd_callee__ inline void ReduceSumCount(
     __ubuf__ T *dstLocal, __ubuf__ T *srcLocal, uint32_t count, int32_t repeat, const int32_t srcRepStride)
 {
     uint32_t srcRepOffset = srcRepStride * GetDataBlockSizeInBytes() / sizeof(T);
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<T> srcVreg;
-    MicroAPI::RegTensor<T> dstVreg;
-    MicroAPI::UnalignReg ureg;
+    Reg::MaskReg preg;
+    Reg::RegTensor<T> srcVreg;
+    Reg::RegTensor<T> dstVreg;
+    Reg::UnalignReg ureg;
     for (uint16_t i = 0; i < static_cast<uint16_t>(repeat); ++i) {
-        preg = MicroAPI::UpdateMask<T>(count);
-        MicroAPI::LoadAlign<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(srcVreg, srcLocal, srcRepOffset);
-        MicroAPI::ReduceSum(dstVreg, srcVreg, preg);
-        MicroAPI::StoreUnAlign(dstLocal, dstVreg, ureg, 1);
+        preg = Reg::UpdateMask<T>(count);
+        Reg::LoadAlign<T, Reg::PostLiteral::POST_MODE_UPDATE>(srcVreg, srcLocal, srcRepOffset);
+        Reg::ReduceSum(dstVreg, srcVreg, preg);
+        Reg::StoreUnAlign(dstLocal, dstVreg, ureg, 1);
     }
-    MicroAPI::StoreUnAlignPost(dstLocal, ureg, 0);
+    Reg::StoreUnAlignPost(dstLocal, ureg, 0);
 }
 
 template <typename T, bool isBitMask>
@@ -582,17 +588,17 @@ __simd_callee__ inline void ReduceSumMask(
     __ubuf__ T *dstLocal, __ubuf__ T *srcLocal, uint32_t mask, int32_t repeat, const int32_t srcRepStride)
 {
     uint32_t srcRepOffset = srcRepStride * GetDataBlockSizeInBytes() / sizeof(T);
-    MicroAPI::MaskReg preg;
+    Reg::MaskReg preg;
     GenPredicate<isBitMask, T>(preg, mask);
-    MicroAPI::RegTensor<T> srcVreg;
-    MicroAPI::RegTensor<T> dstVreg;
-    MicroAPI::UnalignReg ureg;
+    Reg::RegTensor<T> srcVreg;
+    Reg::RegTensor<T> dstVreg;
+    Reg::UnalignReg ureg;
     for (uint16_t i = 0; i < static_cast<uint16_t>(repeat); ++i) {
-        MicroAPI::LoadAlign<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(srcVreg, srcLocal, srcRepOffset);
-        MicroAPI::ReduceSum(dstVreg, srcVreg, preg);
-        MicroAPI::StoreUnAlign(dstLocal, dstVreg, ureg, 1);
+        Reg::LoadAlign<T, Reg::PostLiteral::POST_MODE_UPDATE>(srcVreg, srcLocal, srcRepOffset);
+        Reg::ReduceSum(dstVreg, srcVreg, preg);
+        Reg::StoreUnAlign(dstLocal, dstVreg, ureg, 1);
     }
-    MicroAPI::StoreUnAlignPost(dstLocal, ureg, 0);
+    Reg::StoreUnAlignPost(dstLocal, ureg, 0);
 }
 
 template <typename T, int shapeScope>
@@ -605,15 +611,15 @@ __simd_vf__ inline void ReduceSumCounterMode(
     } else if constexpr (shapeScope == 2) {
         uint32_t count2 = CeilDivision(count, oneRepSize);
         ReduceSumCount(workLocal, srcLocal, count, count2, srcRepStride);
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
         ReduceSumCount(dstLocal, workLocal, count2, 1, 8);
     } else {
         uint32_t count2 = CeilDivision(count, oneRepSize);
         uint32_t count3 = CeilDivision(count2, oneRepSize);
         ReduceSumCount(workLocal, srcLocal, count, count2, srcRepStride);
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
         ReduceSumCount(workLocal, workLocal, count2, count3, 8);
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
         ReduceSumCount(dstLocal, workLocal, count3, 1, 8);
     }
 }
@@ -627,14 +633,14 @@ __simd_vf__ inline void ReduceSumNormalMode(
         ReduceSumMask<T, isBitMask>(dstLocal, srcLocal, mask, 1, srcRepStride);
     } else if constexpr (shapeScope == 2) {
         ReduceSumMask<T, isBitMask>(workLocal, srcLocal, mask, repeat, srcRepStride);
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
         ReduceSumCount(dstLocal, workLocal, repeat, 1, 8);
     } else {
         uint32_t count = CeilDivision(repeat, oneRepSize);
         ReduceSumMask<T, isBitMask>(workLocal, srcLocal, mask, repeat, srcRepStride);
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
         ReduceSumCount(workLocal, workLocal, repeat, count, 8);
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
         ReduceSumCount(dstLocal, workLocal, count, 1, 8);
     }
 }
@@ -700,23 +706,23 @@ __simd_vf__ inline void ReduceB64SumImpl(__ubuf__ T *dstLocal, __ubuf__ T *srcLo
     constexpr uint32_t oneRepSize = 2 * GetVecLen() / sizeof(T);
     uint16_t repeatTime = CeilDivision(count, oneRepSize);
     uint32_t sreg = count;
-    MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vregDup;
-    MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vregTmp;
-    MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vreg0;
-    MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vreg1;
-    MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL, MicroAPI::RegTraitNumTwo>();
-    MicroAPI::MaskReg mask;
-    MicroAPI::Duplicate(vregDup, T(0), fullMask);
+    Reg::RegTensor<T, Reg::RegTraitNumTwo> vregDup;
+    Reg::RegTensor<T, Reg::RegTraitNumTwo> vregTmp;
+    Reg::RegTensor<T, Reg::RegTraitNumTwo> vreg0;
+    Reg::RegTensor<T, Reg::RegTraitNumTwo> vreg1;
+    Reg::MaskReg fullMask = Reg::CreateMask<T, Reg::MaskPattern::ALL, Reg::RegTraitNumTwo>();
+    Reg::MaskReg mask;
+    Reg::Duplicate(vregDup, T(0), fullMask);
 
     for (uint16_t i = 0; i < repeatTime; ++i) {
-        mask = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
-        MicroAPI::LoadAlign(vreg0, srcLocal + i * oneRepSize);
-        MicroAPI::Add(vregTmp, vregDup, vreg0, mask);
-        MicroAPI::Select(vregDup, vregTmp, vregDup, mask);
+        mask = Reg::UpdateMask<T, Reg::RegTraitNumTwo>(sreg);
+        Reg::LoadAlign(vreg0, srcLocal + i * oneRepSize);
+        Reg::Add(vregTmp, vregDup, vreg0, mask);
+        Reg::Select(vregDup, vregTmp, vregDup, mask);
     }
-    MicroAPI::ReduceSum(vreg1, vregDup, fullMask);
-    MicroAPI::MaskReg maskFirstVal = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::VL1, MicroAPI::RegTraitNumTwo>();
-    MicroAPI::StoreAlign(dstLocal, vreg1, maskFirstVal);
+    Reg::ReduceSum(vreg1, vregDup, fullMask);
+    Reg::MaskReg maskFirstVal = Reg::CreateMask<T, Reg::MaskPattern::VL1, Reg::RegTraitNumTwo>();
+    Reg::StoreAlign(dstLocal, vreg1, maskFirstVal);
 }
 
 template <typename T>
@@ -801,29 +807,29 @@ __simd_vf__ inline void ReduceNoIndexTemplate(__ubuf__ T *dstLocal, __ubuf__ T *
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(T);
     uint16_t repeat = CeilDivision(count, oneRepSize);
     uint32_t srcRepOffset = srcRepStride * GetDataBlockSizeInBytes() / sizeof(T);
-    MicroAPI::MaskReg preg;
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::RegTensor<T> srcVreg, dstVreg, tmpVreg;
-    MicroAPI::UnalignReg ureg;
-    MicroAPI::Duplicate(dstVreg, initValue);
+    Reg::MaskReg preg;
+    Reg::MaskReg pregFull = Reg::CreateMask<T, Reg::MaskPattern::ALL>();
+    Reg::RegTensor<T> srcVreg, dstVreg, tmpVreg;
+    Reg::UnalignReg ureg;
+    Reg::Duplicate(dstVreg, initValue);
     for (uint16_t i = 0; i < repeat; ++i) {
-        preg = MicroAPI::UpdateMask<T>(count);
-        MicroAPI::LoadAlign<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(srcVreg, srcLocal, srcRepOffset);
+        preg = Reg::UpdateMask<T>(count);
+        Reg::LoadAlign<T, Reg::PostLiteral::POST_MODE_UPDATE>(srcVreg, srcLocal, srcRepOffset);
         if constexpr (mode == ReduceMode::REDUCE_MAX) {
-            MicroAPI::Max(tmpVreg, dstVreg, srcVreg, preg);
+            Reg::Max(tmpVreg, dstVreg, srcVreg, preg);
         } else {
-            MicroAPI::Min(tmpVreg, dstVreg, srcVreg, preg);
+            Reg::Min(tmpVreg, dstVreg, srcVreg, preg);
         }
         // merge new masked tmpVreg to dstVreg, keep non-masked old value in dstVreg
-        MicroAPI::Select(dstVreg, tmpVreg, dstVreg, preg);
+        Reg::Select(dstVreg, tmpVreg, dstVreg, preg);
     }
     if constexpr (mode == ReduceMode::REDUCE_MAX) {
-        MicroAPI::ReduceMax(dstVreg, dstVreg, pregFull);
+        Reg::ReduceMax(dstVreg, dstVreg, pregFull);
     } else {
-        MicroAPI::ReduceMin(dstVreg, dstVreg, pregFull);
+        Reg::ReduceMin(dstVreg, dstVreg, pregFull);
     }
-    MicroAPI::StoreUnAlign(dstLocal, dstVreg, ureg, 1);
-    MicroAPI::StoreUnAlignPost(dstLocal, ureg, 0);
+    Reg::StoreUnAlign(dstLocal, dstVreg, ureg, 1);
+    Reg::StoreUnAlignPost(dstLocal, ureg, 0);
 }
 
 template <ReduceMode mode, typename T>
@@ -832,56 +838,56 @@ __simd_vf__ inline void ReduceB64NoIndexTemplate(
 {
     constexpr uint16_t oneRepSize = 2 * GetVecLen() / sizeof(T);
     uint16_t repeat = CeilDivision(count, oneRepSize);
-    MicroAPI::MaskReg preg;
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL, MicroAPI::RegTraitNumTwo>();
-    MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> b64SrcVreg, b64DstVreg, b64TmpVreg;
-    MicroAPI::UnalignReg ureg;
-    MicroAPI::Duplicate(b64DstVreg, initValue, pregFull);
+    Reg::MaskReg preg;
+    Reg::MaskReg pregFull = Reg::CreateMask<T, Reg::MaskPattern::ALL, Reg::RegTraitNumTwo>();
+    Reg::RegTensor<T, Reg::RegTraitNumTwo> b64SrcVreg, b64DstVreg, b64TmpVreg;
+    Reg::UnalignReg ureg;
+    Reg::Duplicate(b64DstVreg, initValue, pregFull);
     for (uint16_t i = 0; i < repeat; ++i) {
-        preg = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(count);
-        MicroAPI::LoadAlign(b64SrcVreg, srcLocal + i * oneRepSize);
+        preg = Reg::UpdateMask<T, Reg::RegTraitNumTwo>(count);
+        Reg::LoadAlign(b64SrcVreg, srcLocal + i * oneRepSize);
         if constexpr (mode == ReduceMode::REDUCE_MAX) {
-            MicroAPI::Max(b64TmpVreg, b64DstVreg, b64SrcVreg, preg);
+            Reg::Max(b64TmpVreg, b64DstVreg, b64SrcVreg, preg);
         } else {
-            MicroAPI::Min(b64TmpVreg, b64DstVreg, b64SrcVreg, preg);
+            Reg::Min(b64TmpVreg, b64DstVreg, b64SrcVreg, preg);
         }
         // merge new masked b64TmpVreg to b64DstVreg, keep non-masked old value in b64DstVreg
-        MicroAPI::Select(b64DstVreg, b64TmpVreg, b64DstVreg, preg);
+        Reg::Select(b64DstVreg, b64TmpVreg, b64DstVreg, preg);
     }
     if constexpr (mode == ReduceMode::REDUCE_MAX) {
-        MicroAPI::ReduceMax(b64DstVreg, b64DstVreg, pregFull);
+        Reg::ReduceMax(b64DstVreg, b64DstVreg, pregFull);
     } else {
-        MicroAPI::ReduceMin(b64DstVreg, b64DstVreg, pregFull);
+        Reg::ReduceMin(b64DstVreg, b64DstVreg, pregFull);
     }
-    MicroAPI::StoreUnAlign(dstLocal, b64DstVreg, ureg, 1);
-    MicroAPI::StoreUnAlignPost(dstLocal, ureg, 0);
+    Reg::StoreUnAlign(dstLocal, b64DstVreg, ureg, 1);
+    Reg::StoreUnAlignPost(dstLocal, ureg, 0);
 }
 
 template <ReduceMode mode, bool isBitMask, typename T>
 __simd_vf__ inline void ReduceNoIndexTemplate(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ T *workLocal,
     uint32_t maskReg, const int32_t repeat, const int32_t srcRepStride, T initValue)
 {
-    MicroAPI::MaskReg preg;
+    Reg::MaskReg preg;
     GenPredicate<isBitMask, T>(preg, maskReg);
-    MicroAPI::RegTensor<T> srcVreg, dstVreg;
-    MicroAPI::UnalignReg ureg;
-    MicroAPI::Duplicate(dstVreg, initValue);
+    Reg::RegTensor<T> srcVreg, dstVreg;
+    Reg::UnalignReg ureg;
+    Reg::Duplicate(dstVreg, initValue);
     int32_t postUpdateStride = srcRepStride * GetDataBlockSizeInBytes() / sizeof(T);
     for (uint16_t i = 0; i < repeat; ++i) {
-        MicroAPI::LoadAlign<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(srcVreg, srcLocal, postUpdateStride);
+        Reg::LoadAlign<T, Reg::PostLiteral::POST_MODE_UPDATE>(srcVreg, srcLocal, postUpdateStride);
         if constexpr (mode == ReduceMode::REDUCE_MAX) {
-            MicroAPI::Max(dstVreg, dstVreg, srcVreg, preg);
+            Reg::Max(dstVreg, dstVreg, srcVreg, preg);
         } else {
-            MicroAPI::Min(dstVreg, dstVreg, srcVreg, preg);
+            Reg::Min(dstVreg, dstVreg, srcVreg, preg);
         }
     }
     if constexpr (mode == ReduceMode::REDUCE_MAX) {
-        MicroAPI::ReduceMax(dstVreg, dstVreg, preg);
+        Reg::ReduceMax(dstVreg, dstVreg, preg);
     } else {
-        MicroAPI::ReduceMin(dstVreg, dstVreg, preg);
+        Reg::ReduceMin(dstVreg, dstVreg, preg);
     }
-    MicroAPI::StoreUnAlign(dstLocal, dstVreg, ureg, 1);
-    MicroAPI::StoreUnAlignPost(dstLocal, ureg, 0);
+    Reg::StoreUnAlign(dstLocal, dstVreg, ureg, 1);
+    Reg::StoreUnAlignPost(dstLocal, ureg, 0);
 }
 
 template <ReduceMode mode, typename T, typename IndexT>
@@ -891,58 +897,58 @@ __simd_vf__ inline void ReduceIndexTemplate(__ubuf__ T *dstLocal, __ubuf__ T *sr
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(T);
     uint16_t repeat = CeilDivision(count, oneRepSize);
     uint32_t srcRepOffset = srcRepStride * GetDataBlockSizeInBytes() / sizeof(T);
-    MicroAPI::MaskReg preg, pregCond;
-    MicroAPI::MaskReg pregIndexFull = MicroAPI::CreateMask<IndexT, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::UnalignReg ureg;
-    MicroAPI::RegTensor<T> srcVreg, dstValueVreg, tmpValueVreg;
-    MicroAPI::RegTensor<IndexT> dstIndexVreg, subIndexVreg, tmpIndexVreg, maskIndexVreg;
-    MicroAPI::Duplicate(subIndexVreg, (IndexT)1);
-    MicroAPI::Duplicate(maskIndexVreg, (IndexT)0);
-    MicroAPI::Duplicate(dstValueVreg, initValue);
+    Reg::MaskReg preg, pregCond;
+    Reg::MaskReg pregIndexFull = Reg::CreateMask<IndexT, Reg::MaskPattern::ALL>();
+    Reg::MaskReg pregFull = Reg::CreateMask<T, Reg::MaskPattern::ALL>();
+    Reg::UnalignReg ureg;
+    Reg::RegTensor<T> srcVreg, dstValueVreg, tmpValueVreg;
+    Reg::RegTensor<IndexT> dstIndexVreg, subIndexVreg, tmpIndexVreg, maskIndexVreg;
+    Reg::Duplicate(subIndexVreg, (IndexT)1);
+    Reg::Duplicate(maskIndexVreg, (IndexT)0);
+    Reg::Duplicate(dstValueVreg, initValue);
     if constexpr (AscendC::Std::is_same<IndexT, uint16_t>::value) {
-        MicroAPI::Arange((MicroAPI::RegTensor<int16_t> &)tmpIndexVreg, 1);
+        Reg::Arange((Reg::RegTensor<int16_t> &)tmpIndexVreg, 1);
     } else {
-        MicroAPI::Arange((MicroAPI::RegTensor<int32_t> &)tmpIndexVreg, 1);
+        Reg::Arange((Reg::RegTensor<int32_t> &)tmpIndexVreg, 1);
     }
     dstIndexVreg = tmpIndexVreg;
     // step1: from [count] to [oneRepSize] value index pair
     for (uint16_t i = 0; i < repeat; ++i) {
-        preg = MicroAPI::UpdateMask<T>(count);
-        MicroAPI::LoadAlign<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(srcVreg, srcLocal, srcRepOffset);
+        preg = Reg::UpdateMask<T>(count);
+        Reg::LoadAlign<T, Reg::PostLiteral::POST_MODE_UPDATE>(srcVreg, srcLocal, srcRepOffset);
         if constexpr (mode == ReduceMode::REDUCE_MAX) {
-            MicroAPI::Max(tmpValueVreg, dstValueVreg, srcVreg, preg);
+            Reg::Max(tmpValueVreg, dstValueVreg, srcVreg, preg);
         } else {
-            MicroAPI::Min(tmpValueVreg, dstValueVreg, srcVreg, preg);
+            Reg::Min(tmpValueVreg, dstValueVreg, srcVreg, preg);
         }
         // merge old non-masked masked dstValueVreg to tmpValue, keep masked new value in tmpValue
         // now tmpValueVreg is this round new value, dstValueVreg is previous round value
-        MicroAPI::Select(tmpValueVreg, tmpValueVreg, dstValueVreg, preg);
+        Reg::Select(tmpValueVreg, tmpValueVreg, dstValueVreg, preg);
         // if previous round and this round value is change, update index
-        MicroAPI::Compare<T, CMPMODE::NE>(pregCond, dstValueVreg, tmpValueVreg, pregFull);
-        MicroAPI::Select(dstIndexVreg, tmpIndexVreg, dstIndexVreg, pregCond);
+        Reg::Compare<T, CMPMODE::NE>(pregCond, dstValueVreg, tmpValueVreg, pregFull);
+        Reg::Select(dstIndexVreg, tmpIndexVreg, dstIndexVreg, pregCond);
         // make next round index
-        MicroAPI::Adds(tmpIndexVreg, tmpIndexVreg, (IndexT)oneRepSize, pregFull);
+        Reg::Adds(tmpIndexVreg, tmpIndexVreg, (IndexT)oneRepSize, pregFull);
         // update value
         dstValueVreg = tmpValueVreg;
     }
     // step2: from [oneRepSize] to [1] value index and store it to ub
     if constexpr (mode == ReduceMode::REDUCE_MAX) {
-        MicroAPI::ReduceMax(tmpValueVreg, dstValueVreg, pregFull);
+        Reg::ReduceMax(tmpValueVreg, dstValueVreg, pregFull);
     } else {
-        MicroAPI::ReduceMin(tmpValueVreg, dstValueVreg, pregFull);
+        Reg::ReduceMin(tmpValueVreg, dstValueVreg, pregFull);
     }
-    MicroAPI::StoreUnAlign(dstLocal, tmpValueVreg, ureg, 1);  // store value
+    Reg::StoreUnAlign(dstLocal, tmpValueVreg, ureg, 1);  // store value
     // get dst value mask and squeeze dst index
-    MicroAPI::Duplicate(tmpValueVreg, tmpValueVreg, pregFull);
-    MicroAPI::Compare<T, CMPMODE::EQ>(pregCond, dstValueVreg, tmpValueVreg, pregFull);
-    MicroAPI::GatherMask<IndexT, MicroAPI::GatherMaskMode::NO_STORE_REG>(tmpIndexVreg, dstIndexVreg, pregCond);
+    Reg::Duplicate(tmpValueVreg, tmpValueVreg, pregFull);
+    Reg::Compare<T, CMPMODE::EQ>(pregCond, dstValueVreg, tmpValueVreg, pregFull);
+    Reg::GatherMask<IndexT, Reg::GatherMaskMode::NO_STORE_REG>(tmpIndexVreg, dstIndexVreg, pregCond);
     // cal preg for how much index has the same max or min value
-    MicroAPI::Compare<IndexT, CMPMODE::NE>(pregCond, tmpIndexVreg, maskIndexVreg, pregIndexFull);
-    MicroAPI::ReduceMin(tmpIndexVreg, tmpIndexVreg, pregCond);
-    MicroAPI::Sub(tmpIndexVreg, tmpIndexVreg, subIndexVreg, pregIndexFull);
-    MicroAPI::StoreUnAlign((__ubuf__ IndexT *&)dstLocal, tmpIndexVreg, ureg, 1);
-    MicroAPI::StoreUnAlignPost(dstLocal, ureg, 0);
+    Reg::Compare<IndexT, CMPMODE::NE>(pregCond, tmpIndexVreg, maskIndexVreg, pregIndexFull);
+    Reg::ReduceMin(tmpIndexVreg, tmpIndexVreg, pregCond);
+    Reg::Sub(tmpIndexVreg, tmpIndexVreg, subIndexVreg, pregIndexFull);
+    Reg::StoreUnAlign((__ubuf__ IndexT *&)dstLocal, tmpIndexVreg, ureg, 1);
+    Reg::StoreUnAlignPost(dstLocal, ureg, 0);
 }
 
 template <ReduceMode mode, typename T, typename IndexT>
@@ -951,115 +957,115 @@ __simd_vf__ inline void ReduceB64IndexTemplate(
 {
     constexpr uint16_t oneRepSize = 2 * GetVecLen() / sizeof(T);
     uint16_t repeat = CeilDivision(count, oneRepSize);
-    MicroAPI::MaskReg preg, pregCond;
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL, MicroAPI::RegTraitNumTwo>();
-    MicroAPI::MaskReg pregIndexFull = MicroAPI::CreateMask<IndexT, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> b64SrcVreg, b64DstValueVreg, b64TmpValueVreg;
-    MicroAPI::RegTensor<IndexT> dstIndexVreg, tmpIndexVreg, maskIndexVreg, subIndexVreg;
-    MicroAPI::UnalignReg ureg;
-    MicroAPI::Duplicate(b64DstValueVreg, initValue, pregFull);
-    MicroAPI::Duplicate(maskIndexVreg, (IndexT)0);
-    MicroAPI::Duplicate(subIndexVreg, (IndexT)1);
+    Reg::MaskReg preg, pregCond;
+    Reg::MaskReg pregFull = Reg::CreateMask<T, Reg::MaskPattern::ALL, Reg::RegTraitNumTwo>();
+    Reg::MaskReg pregIndexFull = Reg::CreateMask<IndexT, Reg::MaskPattern::ALL>();
+    Reg::RegTensor<T, Reg::RegTraitNumTwo> b64SrcVreg, b64DstValueVreg, b64TmpValueVreg;
+    Reg::RegTensor<IndexT> dstIndexVreg, tmpIndexVreg, maskIndexVreg, subIndexVreg;
+    Reg::UnalignReg ureg;
+    Reg::Duplicate(b64DstValueVreg, initValue, pregFull);
+    Reg::Duplicate(maskIndexVreg, (IndexT)0);
+    Reg::Duplicate(subIndexVreg, (IndexT)1);
     // b64 type, index is uint32_t
-    MicroAPI::Arange((MicroAPI::RegTensor<int32_t> &)tmpIndexVreg, 1);
+    Reg::Arange((Reg::RegTensor<int32_t> &)tmpIndexVreg, 1);
     dstIndexVreg = tmpIndexVreg;
     // step1: from [count] to [oneRepSize] value index pair
     for (uint16_t i = 0; i < repeat; ++i) {
-        preg = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(count);
-        MicroAPI::LoadAlign(b64SrcVreg, srcLocal + i * oneRepSize);
+        preg = Reg::UpdateMask<T, Reg::RegTraitNumTwo>(count);
+        Reg::LoadAlign(b64SrcVreg, srcLocal + i * oneRepSize);
         if constexpr (mode == ReduceMode::REDUCE_MAX) {
-            MicroAPI::Max(b64TmpValueVreg, b64DstValueVreg, b64SrcVreg, preg);
+            Reg::Max(b64TmpValueVreg, b64DstValueVreg, b64SrcVreg, preg);
         } else {
-            MicroAPI::Min(b64TmpValueVreg, b64DstValueVreg, b64SrcVreg, preg);
+            Reg::Min(b64TmpValueVreg, b64DstValueVreg, b64SrcVreg, preg);
         }
         // merge old non-masked masked b64DstValueVreg to tmpValue, keep masked new value in tmpValue
         // now b64TmpValueVreg is this round new value, b64DstValueVreg is previous round value
-        MicroAPI::Select(b64TmpValueVreg, b64TmpValueVreg, b64DstValueVreg, preg);
+        Reg::Select(b64TmpValueVreg, b64TmpValueVreg, b64DstValueVreg, preg);
         // if previous round and this round value is change, update index
-        MicroAPI::Compare<T, CMPMODE::NE>(pregCond, b64DstValueVreg, b64TmpValueVreg, pregFull);
-        MicroAPI::Select(dstIndexVreg, tmpIndexVreg, dstIndexVreg, pregCond);
+        Reg::Compare<T, CMPMODE::NE>(pregCond, b64DstValueVreg, b64TmpValueVreg, pregFull);
+        Reg::Select(dstIndexVreg, tmpIndexVreg, dstIndexVreg, pregCond);
         // make next round index
-        MicroAPI::Adds(tmpIndexVreg, tmpIndexVreg, (IndexT)oneRepSize, pregIndexFull);
+        Reg::Adds(tmpIndexVreg, tmpIndexVreg, (IndexT)oneRepSize, pregIndexFull);
         // update value
         b64DstValueVreg = b64TmpValueVreg;
     }
     // step2: from [oneRepSize] to [1] value index and store it to ub
     if constexpr (mode == ReduceMode::REDUCE_MAX) {
-        MicroAPI::ReduceMax(b64TmpValueVreg, b64DstValueVreg, pregFull);
+        Reg::ReduceMax(b64TmpValueVreg, b64DstValueVreg, pregFull);
     } else {
-        MicroAPI::ReduceMin(b64TmpValueVreg, b64DstValueVreg, pregFull);
+        Reg::ReduceMin(b64TmpValueVreg, b64DstValueVreg, pregFull);
     }
-    MicroAPI::StoreUnAlign(dstLocal, b64TmpValueVreg, ureg, 1);  // store value
+    Reg::StoreUnAlign(dstLocal, b64TmpValueVreg, ureg, 1);  // store value
     // get dst value mask and squeeze dst index
-    MicroAPI::Duplicate(b64TmpValueVreg, b64TmpValueVreg, pregFull);
-    MicroAPI::Compare<T, CMPMODE::EQ>(pregCond, b64DstValueVreg, b64TmpValueVreg, pregFull);
+    Reg::Duplicate(b64TmpValueVreg, b64TmpValueVreg, pregFull);
+    Reg::Compare<T, CMPMODE::EQ>(pregCond, b64DstValueVreg, b64TmpValueVreg, pregFull);
     // gather mask index
-    MicroAPI::GatherMask<IndexT, MicroAPI::GatherMaskMode::NO_STORE_REG>(tmpIndexVreg, dstIndexVreg, pregCond);
+    Reg::GatherMask<IndexT, Reg::GatherMaskMode::NO_STORE_REG>(tmpIndexVreg, dstIndexVreg, pregCond);
     // cal preg for how much index has the same max or min value
-    MicroAPI::Compare<IndexT, CMPMODE::NE>(pregCond, tmpIndexVreg, maskIndexVreg, pregIndexFull);
-    MicroAPI::ReduceMin(tmpIndexVreg, tmpIndexVreg, pregCond);
-    MicroAPI::Sub(tmpIndexVreg, tmpIndexVreg, subIndexVreg, pregIndexFull);
-    MicroAPI::StoreUnAlign((__ubuf__ IndexT *&)dstLocal, tmpIndexVreg, ureg, 1);
+    Reg::Compare<IndexT, CMPMODE::NE>(pregCond, tmpIndexVreg, maskIndexVreg, pregIndexFull);
+    Reg::ReduceMin(tmpIndexVreg, tmpIndexVreg, pregCond);
+    Reg::Sub(tmpIndexVreg, tmpIndexVreg, subIndexVreg, pregIndexFull);
+    Reg::StoreUnAlign((__ubuf__ IndexT *&)dstLocal, tmpIndexVreg, ureg, 1);
     // for b64 type, pad 0 to b64 bytes, which is 4 bytes
-    MicroAPI::StoreUnAlign((__ubuf__ IndexT *&)dstLocal, maskIndexVreg, ureg, 1);
-    MicroAPI::StoreUnAlignPost(dstLocal, ureg, 0);
+    Reg::StoreUnAlign((__ubuf__ IndexT *&)dstLocal, maskIndexVreg, ureg, 1);
+    Reg::StoreUnAlignPost(dstLocal, ureg, 0);
 }
 
 template <ReduceMode mode, bool isBitMask, typename T, typename IndexT>
 __simd_vf__ inline void ReduceIndexTemplate(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ T *workLocal,
     uint32_t maskReg, const int32_t repeat, const int32_t srcRepStride, T initValue)
 {
-    MicroAPI::MaskReg preg, pregCond;
+    Reg::MaskReg preg, pregCond;
     GenPredicate<isBitMask, T>(preg, maskReg);
-    MicroAPI::MaskReg pregIndexFull = MicroAPI::CreateMask<IndexT, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::RegTensor<T> srcVreg, dstValueVreg, tmpValueVreg;
-    MicroAPI::RegTensor<IndexT> dstIndexVreg, tmpIndexVreg, maskIndexVreg, subIndexVreg;
-    MicroAPI::UnalignReg ureg;
-    MicroAPI::Duplicate(dstValueVreg, initValue);
-    MicroAPI::Duplicate(maskIndexVreg, (IndexT)0);
-    MicroAPI::Duplicate(subIndexVreg, (IndexT)1);
+    Reg::MaskReg pregIndexFull = Reg::CreateMask<IndexT, Reg::MaskPattern::ALL>();
+    Reg::RegTensor<T> srcVreg, dstValueVreg, tmpValueVreg;
+    Reg::RegTensor<IndexT> dstIndexVreg, tmpIndexVreg, maskIndexVreg, subIndexVreg;
+    Reg::UnalignReg ureg;
+    Reg::Duplicate(dstValueVreg, initValue);
+    Reg::Duplicate(maskIndexVreg, (IndexT)0);
+    Reg::Duplicate(subIndexVreg, (IndexT)1);
     if constexpr (AscendC::Std::is_same<IndexT, uint16_t>::value) {
-        MicroAPI::Arange((MicroAPI::RegTensor<int16_t> &)tmpIndexVreg, 1);
+        Reg::Arange((Reg::RegTensor<int16_t> &)tmpIndexVreg, 1);
     } else {
-        MicroAPI::Arange((MicroAPI::RegTensor<int32_t> &)tmpIndexVreg, 1);
+        Reg::Arange((Reg::RegTensor<int32_t> &)tmpIndexVreg, 1);
     }
     dstIndexVreg = tmpIndexVreg;
     int32_t postUpdateStride = srcRepStride * GetDataBlockSizeInBytes() / sizeof(T);
     // step1: from [count] to [oneRepSize] value index pair
     for (uint16_t i = 0; i < repeat; ++i) {
-        MicroAPI::LoadAlign<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(srcVreg, srcLocal, postUpdateStride);
+        Reg::LoadAlign<T, Reg::PostLiteral::POST_MODE_UPDATE>(srcVreg, srcLocal, postUpdateStride);
         if constexpr (mode == ReduceMode::REDUCE_MAX) {
-            MicroAPI::Max(tmpValueVreg, dstValueVreg, srcVreg, preg);
+            Reg::Max(tmpValueVreg, dstValueVreg, srcVreg, preg);
         } else {
-            MicroAPI::Min(tmpValueVreg, dstValueVreg, srcVreg, preg);
+            Reg::Min(tmpValueVreg, dstValueVreg, srcVreg, preg);
         }
         // now tmpValueVreg is this round new value, dstValueVreg is previous round value
         // if previous round and this round value is change, update index
-        MicroAPI::Compare<T, CMPMODE::NE>(pregCond, dstValueVreg, tmpValueVreg, preg);
-        MicroAPI::Select(dstIndexVreg, tmpIndexVreg, dstIndexVreg, pregCond);
+        Reg::Compare<T, CMPMODE::NE>(pregCond, dstValueVreg, tmpValueVreg, preg);
+        Reg::Select(dstIndexVreg, tmpIndexVreg, dstIndexVreg, pregCond);
         // make next round index
-        MicroAPI::Adds(tmpIndexVreg, tmpIndexVreg, (IndexT)postUpdateStride, preg);
+        Reg::Adds(tmpIndexVreg, tmpIndexVreg, (IndexT)postUpdateStride, preg);
         // update value
         dstValueVreg = tmpValueVreg;
     }
     // step2: from [oneRepSize] to [1] value index and store it to ub
     if constexpr (mode == ReduceMode::REDUCE_MAX) {
-        MicroAPI::ReduceMax(tmpValueVreg, dstValueVreg, preg);
+        Reg::ReduceMax(tmpValueVreg, dstValueVreg, preg);
     } else {
-        MicroAPI::ReduceMin(tmpValueVreg, dstValueVreg, preg);
+        Reg::ReduceMin(tmpValueVreg, dstValueVreg, preg);
     }
-    MicroAPI::StoreUnAlign(dstLocal, tmpValueVreg, ureg, 1);  // store value
+    Reg::StoreUnAlign(dstLocal, tmpValueVreg, ureg, 1);  // store value
     // get dst value mask and squeeze dst index
-    MicroAPI::Duplicate(tmpValueVreg, tmpValueVreg, preg);
-    MicroAPI::Compare<T, CMPMODE::EQ>(pregCond, dstValueVreg, tmpValueVreg, preg);
+    Reg::Duplicate(tmpValueVreg, tmpValueVreg, preg);
+    Reg::Compare<T, CMPMODE::EQ>(pregCond, dstValueVreg, tmpValueVreg, preg);
     // gather mask index
-    MicroAPI::GatherMask<IndexT, MicroAPI::GatherMaskMode::NO_STORE_REG>(tmpIndexVreg, dstIndexVreg, pregCond);
+    Reg::GatherMask<IndexT, Reg::GatherMaskMode::NO_STORE_REG>(tmpIndexVreg, dstIndexVreg, pregCond);
     // cal preg for how much index has the same max or min value
-    MicroAPI::Compare<IndexT, CMPMODE::NE>(pregCond, tmpIndexVreg, maskIndexVreg, pregIndexFull);
-    MicroAPI::ReduceMin(tmpIndexVreg, tmpIndexVreg, pregCond);
-    MicroAPI::Sub(tmpIndexVreg, tmpIndexVreg, subIndexVreg, pregIndexFull);
-    MicroAPI::StoreUnAlign((__ubuf__ IndexT *&)dstLocal, tmpIndexVreg, ureg, 1);
-    MicroAPI::StoreUnAlignPost(dstLocal, ureg, 0);
+    Reg::Compare<IndexT, CMPMODE::NE>(pregCond, tmpIndexVreg, maskIndexVreg, pregIndexFull);
+    Reg::ReduceMin(tmpIndexVreg, tmpIndexVreg, pregCond);
+    Reg::Sub(tmpIndexVreg, tmpIndexVreg, subIndexVreg, pregIndexFull);
+    Reg::StoreUnAlign((__ubuf__ IndexT *&)dstLocal, tmpIndexVreg, ureg, 1);
+    Reg::StoreUnAlignPost(dstLocal, ureg, 0);
 }
 
 template <typename T>
@@ -1392,14 +1398,14 @@ __aicore__ inline void IterateSrc(__ubuf__ T* src, uint32_t repeat, uint32_t src
 template <typename T>
 __simd_vf__ inline void GetReduceMaxMinCountImplVF(__ubuf__ uint64_t* popBufferAddress)
 {
-    MicroAPI::UnalignReg uReg;
+    Reg::UnalignReg uReg;
     // read the mask from special purpose registers
-    MicroAPI::MaskReg mask = MicroAPI::MoveMask<half>();
-    // ÂØπ‰∫éB16Á±ªÂûãÔºå‰ºöËØªÂèñÂÆåÊï¥ÁöÑ128bit {MASK1, MASK0}Êï∞ÊçÆÔºåÂπ∂Â∞ÜÊØèbitÂ§çÂà∂‰∏∫2bitÔºåÂÜôÂÖ•ÂáΩÊï∞ËøîÂõûÂÄºMaskReg
-    MicroAPI::MaskReg packedMask;
-    MicroAPI::MaskPack(packedMask, mask);
+    Reg::MaskReg mask = Reg::MoveMask<half>();
+    // ∂‘”⁄B16¿‡–Õ£¨ª·∂¡»°ÕÍ’˚µƒ128bit {MASK1, MASK0} ˝æ›£¨≤¢Ω´√øbit∏¥÷∆Œ™2bit£¨–¥»Î∫Ø ˝∑µªÿ÷µMaskReg
+    Reg::MaskReg packedMask;
+    Reg::MaskPack(packedMask, mask);
     // write the maskreg to UB
-    MicroAPI::StoreAlign<uint64_t>(popBufferAddress, packedMask);
+    Reg::StoreAlign<uint64_t>(popBufferAddress, packedMask);
 }
 
 template <typename T>
@@ -1465,3 +1471,7 @@ __aicore__ inline T GetAccValImpl()
 }
 }  // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_VEC_REDUCE_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_REDUCE_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_REDUCE_IMPL_H__
+#endif

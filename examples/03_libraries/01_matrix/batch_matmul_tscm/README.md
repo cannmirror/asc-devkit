@@ -30,9 +30,8 @@
   <tr><td rowspan="4" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
   <tr><td align="center">a</td><td align="center">M * K * BatchNum</td><td align="center">float16</td><td align="center">NZ</td></tr>
   <tr><td align="center">b</td><td align="center">K * N * BatchNum</td><td align="center">float16</td><td align="center">ND</td></tr>
-  <tr><td align="center">bias</td><td align="center">N</td><td align="center">float</td><td align="center">ND</td></tr>
   </tr>
-  </tr>
+  <tr>
   <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">M * N * BatchNum</td><td align="center">float</td><td align="center">ND</td></tr>
   </tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">batch_matmul_tscm_custom</td></tr>
@@ -55,14 +54,18 @@
           using B_TYPE = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half, true, LayoutMode::NORMAL>;
           using C_TYPE = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float, false, LayoutMode::NORMAL>;
           using BIAS_TYPE = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float>;
+          constexpr MatmulConfigMode configMode = MatmulConfigMode::CONFIG_NORM;
+          constexpr MatmulBatchParams batchParams = {false, BatchMode::BATCH_LESS_THAN_L1, false};
+          constexpr MatmulConfig CFG_MM = GetMMConfig<configMode>(batchParams);
+          AscendC::Matmul<A_TYPE， B_TYPE，C_TYPE， BIAS_TYPE， CFG_MM> matmulObj;
           ```
-      - 初始化操作。
-      - 自定义左矩阵A从GM到L1的搬运，设置左矩阵A、右矩阵B、Bias，其中左矩阵A为TSCM输入。
+      - 多batch矩阵A从GM到L1的搬运，矩阵A为TSCM输入, 矩阵B和bias（如果有）从GM搬入。
           ```
+          uint32_t BatchNum = 3;
           AscendC::TSCM<AscendC::TPosition::GM, 1> scm;
-          pipe->InitBuffer(scm, 1, tiling.M * tiling.Ka * sizeof(AType));
+          pipe->InitBuffer(scm, 1, BatchNum * tiling.M * tiling.Ka * sizeof(AType));
           auto scmTensor = scm.AllocTensor<AType>();
-          DataCopy(scmTensor, aGlobal, tiling.M * tiling.Ka);
+          DataCopy(scmTensor, aGlobal, BatchNum * tiling.M * tiling.Ka);
           scm.EnQue(scmTensor);
           AscendC::LocalTensor<AType> scmLocal = scm.DeQue<AType>();
 
@@ -74,7 +77,7 @@
           ```
       - 完成多batch矩阵乘操作。
           ```
-          matmulObj.IterateBatch(cGlobal, batchA, batchB, false);
+          matmulObj.IterateBatch(cGlobal, BatchNum, BatchNum, false);
           ```
       - 结束矩阵乘操作。
 
@@ -92,6 +95,7 @@
               matmul_tiling::DataType::DT_FLOAT);
           cubeTiling.SetBiasType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND,
               matmul_tiling::DataType::DT_FLOAT);
+          cubeTiling.SetBatchNum(BatchNum);
           ```
       - 调用SetALayout、SetBLayout、SetCLayout、SetBatchNum设置A/B/C的Layout轴信息和最大BatchNum数。
       - 调用GetTiling接口，获取Tiling信息。

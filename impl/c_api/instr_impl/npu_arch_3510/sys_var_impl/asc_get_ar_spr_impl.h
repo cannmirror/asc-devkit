@@ -25,9 +25,9 @@
 
 #include "instr_impl/npu_arch_3510/utils_impl.h"
 
-__simd_callee__ inline int64_t asc_get_ar_spr_impl()
+__aicore__ inline int64_t asc_get_ar_spr_impl()
 {
-    return bisheng::cce::get_ar();
+    return get_ar();
 }
 
 #endif

@@ -12,6 +12,12 @@
  * \file kernel_operator_sign_intf.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_SIGN_INTF_H__
+#endif
+
 #ifndef LIB_MATH_OPERATOR_SIGN_INF_H
 #define LIB_MATH_OPERATOR_SIGN_INF_H
 #include "sign.h"
@@ -21,3 +27,8 @@ namespace AscendC {
 using LibSignInterface = SignDeprecatedHeader;
 }  // namespace AscendC
 #endif  // LIB_MATH_OPERATOR_SIGN_INF_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_SIGN_INTF_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_SIGN_INTF_H__
+#endif

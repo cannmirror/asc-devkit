@@ -12,6 +12,12 @@
  * \file unpad_check.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/api_check/kernel_check/pad/pad/unpad_check.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_UNPAD_CHECK_H__
+#endif
+
 #ifndef IMPL_API_CHECK_KERNEL_CHECK_PAD_PAD_UNPAD_CHECK_H_
 #define IMPL_API_CHECK_KERNEL_CHECK_PAD_PAD_UNPAD_CHECK_H_
 
@@ -38,3 +44,8 @@ __aicore__ inline void CheckFuncUnPad(__gm__ const char *apiName, const LocalTen
 }
 }
 #endif // IMPL_API_CHECK_KERNEL_CHECK_PAD_PAD_UNPAD_CHECK_H_
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_UNPAD_CHECK_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_UNPAD_CHECK_H__
+#endif

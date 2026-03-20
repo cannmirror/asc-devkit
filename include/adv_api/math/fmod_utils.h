@@ -12,6 +12,12 @@
  * \file fmod_utils.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_FMOD_UTILS_H__
+#endif
+
 #ifndef LIB_MATH_FMOD_UTILS_H
 #define LIB_MATH_FMOD_UTILS_H
 
@@ -32,3 +38,8 @@ struct FmodConfig {
 constexpr FmodConfig DEFAULT_FMOD_CONFIG = { FmodAlgo::NORMAL, FMOD_ITERATION_NUM_MAX };
 }; // namespace AscendC
 #endif // LIB_MATH_FMOD_UTILS_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_FMOD_UTILS_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_FMOD_UTILS_H__
+#endif

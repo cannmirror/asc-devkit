@@ -115,6 +115,9 @@ const std::unordered_map<std::string, std::vector<platformconf::DPLATFORM>> soc_
       {MC62CM12AA, {platformconf::DPLATFORM::MC62CM12A}},
       {KirinX90, {platformconf::DPLATFORM::KIRINX90}},
       {Kirin9030, {platformconf::DPLATFORM::KIRIN9030}},
+      {MC32DM11AA, {platformconf::DPLATFORM::MC32DM11A}},
+      {MC32DM11AB, {platformconf::DPLATFORM::MC32DM11A}},
+      {MC32DM11AC, {platformconf::DPLATFORM::MC32DM11A}},
       };
 }
 }

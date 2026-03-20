@@ -38,7 +38,7 @@
   </tr>
   </tr>
   <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td>
-  <td align="center">(30720, 1024)</td><td align="center">float16</td><td align="center">ND</td><td align="center">-</td></tr>
+  <td align="center">(30720, 1024)</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td></tr>
   </tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">matmul_l2cache_custom</td></tr>
   </table>

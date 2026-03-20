@@ -12,8 +12,14 @@
  * \file sincos_check.h
  * \brief
  */
-#ifndef IMPL_API_CHECK_KERNEL_CHECK_MATH_SINCOS_SINCOS_CHECK_H
-#define IMPL_API_CHECK_KERNEL_CHECK_MATH_SINCOS_SINCOS_CHECK_H
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/api_check/kernel_check/math/sincos/sincos_check.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/sincos.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SINCOS_CHECK_H__
+#endif
+
+#ifndef IMPL_API_CHECK_KERNEL_CHECK_MATH_SINCOS_SINCOS_CHECK_H_
+#define IMPL_API_CHECK_KERNEL_CHECK_MATH_SINCOS_SINCOS_CHECK_H_
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 #include "sincos_check_common.h"
@@ -33,4 +39,9 @@ __aicore__ inline void CheckFuncSinCos(__gm__ const char* name, const LocalTenso
 
 }
 }
-#endif // IMPL_API_CHECK_KERNEL_CHECK_MATH_SINCOS_SINCOS_CHECK_H
+#endif // IMPL_API_CHECK_KERNEL_CHECK_MATH_SINCOS_SINCOS_CHECK_H_
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SINCOS_CHECK_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SINCOS_CHECK_H__
+#endif

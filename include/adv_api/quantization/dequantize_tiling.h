@@ -12,6 +12,12 @@
  * \file dequantize_tiling.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEQUANTIZE_TILING_H__
+#endif
+
 #ifndef LIB_QUANTIZATION_DEQUANTIZE_TILING_H
 #define LIB_QUANTIZATION_DEQUANTIZE_TILING_H
 #include <cstdint>
@@ -41,3 +47,8 @@ void GetDequantizeMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSi
 void GetDequantizeTmpBufferFactorSize(const ge::Shape& srcShape, uint32_t& maxLiveNodeCnt, uint32_t& extraBuf);
 } // namespace AscendC
 #endif // LIB_QUANTIZATION_DEQUANTIZE_TILING_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEQUANTIZE_TILING_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEQUANTIZE_TILING_H__
+#endif

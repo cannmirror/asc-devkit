@@ -15,12 +15,6 @@
 #ifndef IMPL_UTILS_DEBUG_NPU_ARCH_2201_ASC_TYPE_CONVERSION_UTILS_H
 #define IMPL_UTILS_DEBUG_NPU_ARCH_2201_ASC_TYPE_CONVERSION_UTILS_H
 
-#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
-#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_TYPE_CONVERSION_UTILS__
-#warning "asc_type_conversion_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future."
-#endif
-
 #include "impl/utils/sys_macros.h"
 namespace __asc_aicore {
 

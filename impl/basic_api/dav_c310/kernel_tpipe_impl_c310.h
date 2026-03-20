@@ -12,6 +12,11 @@
  * \file kernel_tpipe_impl_c310.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/dav_c310/kernel_tpipe_impl_c310.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_tpipe.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TPIPE_IMPL_C310_H__
+#endif
 #ifndef ASCENDC_MODULE_TPIPE_IMPL_C310_H
 #define ASCENDC_MODULE_TPIPE_IMPL_C310_H
 
@@ -28,6 +33,10 @@
 #include "kernel_tensor_base.h"
 #include "kernel_tensor_impl.h"
 #include "kernel_tpipe.h"
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TPIPE_H__
+#endif
 #include "kernel_tpipe_base.h"
 #include "kernel_utils.h"
 #include "kernel_utils_base.h"
@@ -979,3 +988,7 @@ template <class T> __aicore__ inline bool TPipe::TscmInitBuffer(T& que, uint8_t 
 }
 }
 #endif // ASCENDC_MODULE_TPIPE_IMPL_C310_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TPIPE_IMPL_C310_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TPIPE_IMPL_C310_H__
+#endif

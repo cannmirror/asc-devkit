@@ -12,6 +12,12 @@
  * \file erf_tiling_intf.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ERF_TILING_INTF_H__
+#endif
+
 #ifndef LIB_MATH_ERF_TILING_INTF_H
 #define LIB_MATH_ERF_TILING_INTF_H
 #include "erf_tiling.h"
@@ -22,3 +28,8 @@ typedef void ErfTilingDeprecatedHeader;
 using LibErfTilingInterface = ErfTilingDeprecatedHeader;
 } // namespace AscendC
 #endif // LIB_MATH_ERF_TILING_INTF_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ERF_TILING_INTF_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ERF_TILING_INTF_H__
+#endif

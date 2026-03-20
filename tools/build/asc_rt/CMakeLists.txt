@@ -22,7 +22,9 @@ else()
   target_include_directories(ascend_runtime_base PRIVATE
     ${TOP_DIR}/runtime/include/external
     ${TOP_DIR}/runtime/include/external/acl
-    ${TOP_DIR}/ace/npuruntime/inc/
+    ${TOP_DIR}/runtime/pkg_inc
+ 	${TOP_DIR}/runtime/pkg_inc/runtime
+ 	${TOP_DIR}/runtime/pkg_inc/profiling
     ${TOP_DIR}/metadef/inc
     ${TOP_DIR}/metadef/inc/external/
     ${TOP_DIR}/abl/msprof/inc

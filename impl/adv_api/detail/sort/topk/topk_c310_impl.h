@@ -12,6 +12,13 @@
  * \file topk_c310_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/sort/topk/topk_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/sort/topk.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SORT_TOPK_TOPK_C310_IMPL_H__
+#endif
+
 #ifndef IMPL_SORT_TOPK_TOPK_C310_IMPL_H
 #define IMPL_SORT_TOPK_TOPK_C310_IMPL_H
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
@@ -163,7 +170,7 @@ __aicore__ inline void TopKNSmallCompute(const LocalTensor<T> &dstValueLocal, co
     TopKNSmallGetTopKValue(dstValueLocal, dstIndexLocal, tmpLocal, k, tilling, topKInfo);
 }
 
-namespace MicroAPI {
+namespace Reg {
 namespace RadixSelectTopK {
 
 constexpr uint32_t LOAD_NUMS_PER_ROUND = 256;
@@ -328,29 +335,29 @@ __ubuf__ uint64_t* tmpLocal)
     if (offsets >= 32) {
         for (uint16_t i = 0; i < repeatTimes; ++i) {
             RegTensor<uint32_t> input, output;
-            MicroAPI::LoadAlign(input, srcU32 + srcOffset + i * loadCount);
+            Reg::LoadAlign(input, srcU32 + srcOffset + i * loadCount);
             GatherMask(output, input, highMask);
             ShiftRights(output, output, highOffsets, halfMask);
 
-            MicroAPI::StoreAlign(tmpU32 + realCount * i, output, halfMask);
+            Reg::StoreAlign(tmpU32 + realCount * i, output, halfMask);
         }
     } else {
         for (uint16_t i = 0; i < repeatTimes; ++i) {
             RegTensor<uint32_t> input, output;
-            MicroAPI::LoadAlign(input, srcU32 + srcOffset + i * loadCount);
+            Reg::LoadAlign(input, srcU32 + srcOffset + i * loadCount);
             GatherMask(output, input, lowMask);
             ShiftRights(output, output, offsets, halfMask);
 
-            MicroAPI::StoreAlign(tmpU32 + realCount * i, output, halfMask);
+            Reg::StoreAlign(tmpU32 + realCount * i, output, halfMask);
         }
     }
 
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
     RegTensor<uint32_t> work0, work1, work2, work3;
-    MicroAPI::LoadAlign(work0, tmpU32);
-    MicroAPI::LoadAlign(work1, tmpU32 + loadCount);
-    MicroAPI::LoadAlign(work2, tmpU32 + loadCount * 2);
-    MicroAPI::LoadAlign(work3, tmpU32 + loadCount * 3);
+    Reg::LoadAlign(work0, tmpU32);
+    Reg::LoadAlign(work1, tmpU32 + loadCount);
+    Reg::LoadAlign(work2, tmpU32 + loadCount * 2);
+    Reg::LoadAlign(work3, tmpU32 + loadCount * 3);
 
     GetLowestByte(colWorkBits, work0, work1, work2, work3);  
 }
@@ -378,7 +385,7 @@ __simd_callee__ inline void CompareHighBytesBeforePos(MaskReg& filterMask, __ubu
     int16_t reverseMaskOffset = 32 - maskOffsets;
     for (uint16_t i = 0; i < repeatTimes; ++i) {
         RegTensor<uint32_t> input, highOut, tHighOut, lowOut;
-        MicroAPI::LoadAlign(input, srcU32 + srcOffset + i * loadCount);
+        Reg::LoadAlign(input, srcU32 + srcOffset + i * loadCount);
 
         GatherMask(highOut, input, highMask);
 
@@ -393,19 +400,19 @@ __simd_callee__ inline void CompareHighBytesBeforePos(MaskReg& filterMask, __ubu
             ShiftRights(highOut, highOut, maskOffsets, halfMask);
         }
 
-        MicroAPI::StoreAlign(tmpU32 + realCount * i, highOut, halfMask);
-        MicroAPI::StoreAlign(tmpU32 + realCount * (i + repeatTimes), lowOut, halfMask);
+        Reg::StoreAlign(tmpU32 + realCount * i, highOut, halfMask);
+        Reg::StoreAlign(tmpU32 + realCount * (i + repeatTimes), lowOut, halfMask);
     }
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
     RegTensor<uint32_t> highPart0, highPart1, highPart2, highPart3, lowPart0, lowPart1, lowPart2, lowPart3;
-    MicroAPI::LoadAlign(highPart0, tmpU32);
-    MicroAPI::LoadAlign(highPart1, tmpU32 + loadCount);
-    MicroAPI::LoadAlign(highPart2, tmpU32 + loadCount * 2);
-    MicroAPI::LoadAlign(highPart3, tmpU32 + loadCount * 3);
-    MicroAPI::LoadAlign(lowPart0, tmpU32 + loadCount * 4);
-    MicroAPI::LoadAlign(lowPart1, tmpU32 + loadCount * 5);
-    MicroAPI::LoadAlign(lowPart2, tmpU32 + loadCount * 6);
-    MicroAPI::LoadAlign(lowPart3, tmpU32 + loadCount * 7);
+    Reg::LoadAlign(highPart0, tmpU32);
+    Reg::LoadAlign(highPart1, tmpU32 + loadCount);
+    Reg::LoadAlign(highPart2, tmpU32 + loadCount * 2);
+    Reg::LoadAlign(highPart3, tmpU32 + loadCount * 3);
+    Reg::LoadAlign(lowPart0, tmpU32 + loadCount * 4);
+    Reg::LoadAlign(lowPart1, tmpU32 + loadCount * 5);
+    Reg::LoadAlign(lowPart2, tmpU32 + loadCount * 6);
+    Reg::LoadAlign(lowPart3, tmpU32 + loadCount * 7);
 
     MaskReg highMask0, highMask1, highMask2, highMask3;
     MaskReg lowMask0, lowMask1, lowMask2, lowMask3;
@@ -448,10 +455,10 @@ __simd_callee__ inline void FilterDataAndGivenByteFromOri(
     int16_t maskOffsets = static_cast<int16_t>(byteNum * 8);
 
     RegTensor<uint32_t> input0, input1, input2, input3;
-    MicroAPI::LoadAlign(input0, src + srcOffset);
-    MicroAPI::LoadAlign(input1, src + srcOffset + eleCountPerVL);
-    MicroAPI::LoadAlign(input2, src + srcOffset + eleCountPerVL * 2);
-    MicroAPI::LoadAlign(input3, src + srcOffset + eleCountPerVL * 3);
+    Reg::LoadAlign(input0, src + srcOffset);
+    Reg::LoadAlign(input1, src + srcOffset + eleCountPerVL);
+    Reg::LoadAlign(input2, src + srcOffset + eleCountPerVL * 2);
+    Reg::LoadAlign(input3, src + srcOffset + eleCountPerVL * 3);
 
     RegTensor<uint32_t> tmpU32ByteReg0, tmpU32ByteReg1, tmpU32ByteReg2, tmpU32ByteReg3;
     ShiftRights(tmpU32ByteReg0, input0, byteOffsets, fullMask);
@@ -489,8 +496,8 @@ __simd_callee__ inline void FilterDataAndGivenByteFromOri(
     MaskReg fullMask = CreateMask<uint16_t>();
 
     RegTensor<uint16_t> input0, input1;
-    MicroAPI::LoadAlign(input0, src + srcOffset);
-    MicroAPI::LoadAlign(input1, src + srcOffset + eleCountPerVL);
+    Reg::LoadAlign(input0, src + srcOffset);
+    Reg::LoadAlign(input1, src + srcOffset + eleCountPerVL);
 
     RegTensor<uint16_t> tmpBShift0, tmpBShift1;
     ShiftRights(tmpBShift0, input0, byteOffsets, fullMask);
@@ -515,7 +522,7 @@ __simd_callee__ inline void FilterDataAndGivenByteFromOri(
     MaskReg& filterMask, RegTensor<uint8_t>& colWorkBits, __ubuf__ uint8_t *src, MaskReg& maskReg,
     uint8_t value, uint16_t byteNum, int32_t srcOffset, __ubuf__ uint8_t* tmpLocal)
 {
-    MicroAPI::LoadAlign(colWorkBits, src + srcOffset);
+    Reg::LoadAlign(colWorkBits, src + srcOffset);
     MaskReg fullMask = CreateMask<uint8_t>();
     MaskAnd(filterMask, maskReg, fullMask, maskReg);
 }
@@ -550,8 +557,8 @@ __simd_vf__ inline void GenerateAccumulateData(
         Histograms<uint8_t, uint16_t, HistogramsBinType::BIN1, HistogramsType::ACCUMULATE>(acumHistHigh, colWorkBits, filterMask);
     }
 
-    MicroAPI::StoreAlign((__ubuf__ uint16_t *&)hist, acumHistLow, b16FullMask);
-    MicroAPI::StoreAlign((__ubuf__ uint16_t *&)hist + GetVecLen() / sizeof(uint16_t), acumHistHigh, b16FullMask);
+    Reg::StoreAlign((__ubuf__ uint16_t *&)hist, acumHistLow, b16FullMask);
+    Reg::StoreAlign((__ubuf__ uint16_t *&)hist + GetVecLen() / sizeof(uint16_t), acumHistHigh, b16FullMask);
 }
 
 __simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint64_t *src, __ubuf__ uint64_t *dst, const uint64_t value, uint32_t count)
@@ -583,7 +590,7 @@ __simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint64_t *src, __ubu
         MaskReg maskReg = UpdateMask<uint32_t>(firstCount);
 
         RegTensor<uint32_t> in32Data;
-        MicroAPI::LoadAlign(in32Data, u32Src + i * eleCountPerVL);
+        Reg::LoadAlign(in32Data, u32Src + i * eleCountPerVL);
 
         RegTensor<uint32_t> highPart, lowPart;
         GatherMask(lowPart, in32Data, lowMask);
@@ -604,14 +611,14 @@ __simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint64_t *src, __ubu
 
         RegTensor<uint32_t> out32Data;
         GatherMask<uint32_t, GatherMaskMode::STORE_REG>(out32Data, in32Data, cmpResMask0);
-        MicroAPI::StoreUnAlign<uint32_t>(u32Dst, out32Data, unalignReg);
+        Reg::StoreUnAlign<uint32_t>(u32Dst, out32Data, unalignReg);
     }
 
     for (uint16_t i = 0; i < repeatTimes; ++i) {
         MaskReg maskReg = UpdateMask<uint32_t>(secondCount);
 
         RegTensor<uint32_t> in32Data;
-        MicroAPI::LoadAlign(in32Data, u32Src + i * eleCountPerVL);
+        Reg::LoadAlign(in32Data, u32Src + i * eleCountPerVL);
 
         RegTensor<uint32_t> highPart, lowPart;
         GatherMask(lowPart, in32Data, lowMask);
@@ -630,10 +637,10 @@ __simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint64_t *src, __ubu
 
         RegTensor<uint32_t> out32Data;
         GatherMask<uint32_t, GatherMaskMode::STORE_REG>(out32Data, in32Data, cmpResMask0);
-        MicroAPI::StoreUnAlign<uint32_t>(u32Dst, out32Data, unalignReg);
+        Reg::StoreUnAlign<uint32_t>(u32Dst, out32Data, unalignReg);
     }
 
-    MicroAPI::StoreUnAlignPost(u32Dst, unalignReg);
+    Reg::StoreUnAlignPost(u32Dst, unalignReg);
     ClearSpr<SpecialPurposeReg::AR>();
 }
 
@@ -651,31 +658,31 @@ __simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint32_t *src, __ubu
         MaskReg maskReg = UpdateMask<uint32_t>(firstCount);
 
         RegTensor<uint32_t> in32Data;
-        MicroAPI::LoadAlign(in32Data, src + i * eleCountPerVL);
+        Reg::LoadAlign(in32Data, src + i * eleCountPerVL);
 
         MaskReg out32Mask;
         CompareScalar<uint32_t, CMPMODE::GT>(out32Mask, in32Data, value, maskReg);
 
         RegTensor<uint32_t> out32Data;
         GatherMask<uint32_t, GatherMaskMode::STORE_REG>(out32Data, in32Data, out32Mask);
-        MicroAPI::StoreUnAlign(dst, out32Data, unalignReg);
+        Reg::StoreUnAlign(dst, out32Data, unalignReg);
     }
 
     for (uint16_t i = 0; i < repeatTimes; ++i) {
         MaskReg maskReg = UpdateMask<uint32_t>(secondCount);
 
         RegTensor<uint32_t> in32Data;
-        MicroAPI::LoadAlign(in32Data, src + i * eleCountPerVL);
+        Reg::LoadAlign(in32Data, src + i * eleCountPerVL);
 
         MaskReg out32Mask;
         CompareScalar<uint32_t, CMPMODE::EQ>(out32Mask, in32Data, value, maskReg);
 
         RegTensor<uint32_t> out32Data;
         GatherMask<uint32_t, GatherMaskMode::STORE_REG>(out32Data, in32Data, out32Mask);
-        MicroAPI::StoreUnAlign(dst, out32Data, unalignReg);
+        Reg::StoreUnAlign(dst, out32Data, unalignReg);
     }
 
-    MicroAPI::StoreUnAlignPost(dst, unalignReg);
+    Reg::StoreUnAlignPost(dst, unalignReg);
     ClearSpr<SpecialPurposeReg::AR>(); 
 }
 
@@ -693,31 +700,31 @@ __simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint16_t *src, __ubu
         MaskReg maskReg = UpdateMask<uint16_t>(firstCount);
 
         RegTensor<uint16_t> in32Data;
-        MicroAPI::LoadAlign(in32Data, src + i * eleCountPerVL);
+        Reg::LoadAlign(in32Data, src + i * eleCountPerVL);
 
         MaskReg out32Mask;
         CompareScalar<uint16_t, CMPMODE::GT>(out32Mask, in32Data, value, maskReg);
 
         RegTensor<uint16_t> out32Data;
         GatherMask<uint16_t, GatherMaskMode::STORE_REG>(out32Data, in32Data, out32Mask);
-        MicroAPI::StoreUnAlign(dst, out32Data, unalignReg0);
+        Reg::StoreUnAlign(dst, out32Data, unalignReg0);
     }
 
     for (uint16_t i = 0; i < repeatTimes; ++i) {
         MaskReg maskReg = UpdateMask<uint16_t>(secondCount);
 
         RegTensor<uint16_t> in32Data;
-        MicroAPI::LoadAlign(in32Data, src + i * eleCountPerVL);
+        Reg::LoadAlign(in32Data, src + i * eleCountPerVL);
 
         MaskReg out32Mask;
         CompareScalar<uint16_t, CMPMODE::EQ>(out32Mask, in32Data, value, maskReg);
 
         RegTensor<uint16_t> out32Data;
         GatherMask<uint16_t, GatherMaskMode::STORE_REG>(out32Data, in32Data, out32Mask);
-        MicroAPI::StoreUnAlign(dst, out32Data, unalignReg0);
+        Reg::StoreUnAlign(dst, out32Data, unalignReg0);
     }
 
-    MicroAPI::StoreUnAlignPost(dst, unalignReg0);
+    Reg::StoreUnAlignPost(dst, unalignReg0);
     ClearSpr<SpecialPurposeReg::AR>();
 }
 
@@ -734,30 +741,30 @@ __simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint8_t *src, __ubuf
     for (uint16_t i = 0; i < repeatTimes; ++i) {
         MaskReg fullMask = UpdateMask<uint8_t>(firstCount);
         RegTensor<uint8_t> in8Data;
-        MicroAPI::LoadAlign(in8Data, src + i * eleCountPerVL);
+        Reg::LoadAlign(in8Data, src + i * eleCountPerVL);
 
         MaskReg out8Mask;
         CompareScalar<uint8_t, CMPMODE::GT>(out8Mask, in8Data, value, fullMask);
 
         RegTensor<uint8_t> out8Data;
         GatherMask<uint8_t, GatherMaskMode::STORE_REG>(out8Data, in8Data, out8Mask);
-        MicroAPI::StoreUnAlign(dst, out8Data, unalignReg);
+        Reg::StoreUnAlign(dst, out8Data, unalignReg);
     }
 
     for (uint16_t i = 0; i < repeatTimes; ++i) {
         MaskReg fullMask = UpdateMask<uint8_t>(secondCount);
         RegTensor<uint8_t> in8Data;
-        MicroAPI::LoadAlign(in8Data, src + i * eleCountPerVL);
+        Reg::LoadAlign(in8Data, src + i * eleCountPerVL);
 
         MaskReg out8Mask;
         CompareScalar<uint8_t, CMPMODE::EQ>(out8Mask, in8Data, value, fullMask);
 
         RegTensor<uint8_t> out8Data;
         GatherMask<uint8_t, GatherMaskMode::STORE_REG>(out8Data, in8Data, out8Mask);
-        MicroAPI::StoreUnAlign(dst, out8Data, unalignReg);
+        Reg::StoreUnAlign(dst, out8Data, unalignReg);
     }
 
-    MicroAPI::StoreUnAlignPost(dst, unalignReg);
+    Reg::StoreUnAlignPost(dst, unalignReg);
     ClearSpr<SpecialPurposeReg::AR>();
 }
 
@@ -794,7 +801,7 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint64_t *src, __ub
         MaskDeInterleave<uint32_t>(indexMask, tmpMask, maskReg, zeroMask);
 
         RegTensor<uint32_t> in32Data;
-        MicroAPI::LoadAlign(in32Data, u32Src + i * eleCountPerVL);
+        Reg::LoadAlign(in32Data, u32Src + i * eleCountPerVL);
 
         RegTensor<uint32_t> highPart, lowPart;
         GatherMask(lowPart, in32Data, lowMask);
@@ -811,11 +818,11 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint64_t *src, __ub
         MaskAnd(cmpMask, cmpMask, indexMask, indexMask);
 
         RegTensor<int32_t> index;
-        MicroAPI::LoadAlign(index, inputIndex + i * numsPerRound);
+        Reg::LoadAlign(index, inputIndex + i * numsPerRound);
 
         RegTensor<int32_t> outIndex;
         GatherMask<int32_t, GatherMaskMode::STORE_REG>(outIndex, index, cmpMask);
-        MicroAPI::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex, unalignReg);
+        Reg::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex, unalignReg);
     }
 
     for (uint16_t i = 0; i < repeatTimes; ++i) {
@@ -824,7 +831,7 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint64_t *src, __ub
         MaskDeInterleave<uint32_t>(indexMask, tmpMask, maskReg, zeroMask);
 
         RegTensor<uint32_t> in32Data;
-        MicroAPI::LoadAlign(in32Data, u32Src + i * eleCountPerVL);
+        Reg::LoadAlign(in32Data, u32Src + i * eleCountPerVL);
 
         RegTensor<uint32_t> highPart, lowPart;
         GatherMask(lowPart, in32Data, lowMask);
@@ -839,14 +846,14 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint64_t *src, __ub
         MaskAnd(cmpMask, cmpMask, indexMask, indexMask);
 
         RegTensor<int32_t> index;
-        MicroAPI::LoadAlign(index, inputIndex + i * numsPerRound);
+        Reg::LoadAlign(index, inputIndex + i * numsPerRound);
 
         RegTensor<int32_t> outIndex;
         GatherMask<int32_t, GatherMaskMode::STORE_REG>(outIndex, index, cmpMask);
-        MicroAPI::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex, unalignReg);
+        Reg::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex, unalignReg);
     }
 
-    MicroAPI::StoreUnAlignPost(dstIndex, unalignReg);
+    Reg::StoreUnAlignPost(dstIndex, unalignReg);
     ClearSpr<SpecialPurposeReg::AR>();
 }
 
@@ -863,36 +870,36 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint32_t *src, __ub
     for (uint16_t i = 0; i < repeatTimes; ++i) {
         MaskReg maskReg = UpdateMask<int32_t>(firstCount);
         RegTensor<uint32_t> in32Data;
-        MicroAPI::LoadAlign(in32Data, src + i * eleCountPerVL);
+        Reg::LoadAlign(in32Data, src + i * eleCountPerVL);
 
         MaskReg out32Mask;
         CompareScalar<uint32_t, CMPMODE::GT>(out32Mask, in32Data, value, maskReg);
 
         RegTensor<int32_t> index;
-        MicroAPI::LoadAlign(index, inputIndex + i * eleCountPerVL);
+        Reg::LoadAlign(index, inputIndex + i * eleCountPerVL);
 
         RegTensor<int32_t> outIndex;
         GatherMask<int32_t, GatherMaskMode::STORE_REG>(outIndex, index, out32Mask);
-        MicroAPI::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex, unalignReg);
+        Reg::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex, unalignReg);
     }
 
     for (uint16_t i = 0; i < repeatTimes; ++i) {
         MaskReg maskReg = UpdateMask<int32_t>(secondCount);
         RegTensor<uint32_t> in32Data;
-        MicroAPI::LoadAlign(in32Data, src + i * eleCountPerVL);
+        Reg::LoadAlign(in32Data, src + i * eleCountPerVL);
 
         MaskReg out32Mask;
         CompareScalar<uint32_t, CMPMODE::EQ>(out32Mask, in32Data, value, maskReg);
 
         RegTensor<int32_t> index;
-        MicroAPI::LoadAlign(index, inputIndex + i * eleCountPerVL);
+        Reg::LoadAlign(index, inputIndex + i * eleCountPerVL);
 
         RegTensor<int32_t> outIndex;
         GatherMask<int32_t, GatherMaskMode::STORE_REG>(outIndex, index, out32Mask);
-        MicroAPI::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex, unalignReg);
+        Reg::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex, unalignReg);
     }
 
-    MicroAPI::StoreUnAlignPost(dstIndex, unalignReg);
+    Reg::StoreUnAlignPost(dstIndex, unalignReg);
     ClearSpr<SpecialPurposeReg::AR>();
 }
 
@@ -911,7 +918,7 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint16_t *src, __ub
     for (uint16_t i = 0; i < dataRepeatTimes; ++i) {
         MaskReg maskReg = UpdateMask<uint16_t>(firstCount);
         RegTensor<uint16_t> in16Data;
-        MicroAPI::LoadAlign(in16Data, src + i * u16EleCountPerVL);
+        Reg::LoadAlign(in16Data, src + i * u16EleCountPerVL);
 
         MaskReg out16Mask;
         CompareScalar<uint16_t, CMPMODE::GT>(out16Mask, in16Data, value, maskReg);
@@ -921,20 +928,20 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint16_t *src, __ub
         MaskInterleave<uint16_t>(out32Mask0, out32Mask1, out16Mask, zero16Mask);
 
         RegTensor<int32_t> index0, index1;
-        MicroAPI::LoadAlign(index0, inputIndex + i * u16EleCountPerVL);
-        MicroAPI::LoadAlign(index1, inputIndex + i * u16EleCountPerVL + u32EleCountPerVL);
+        Reg::LoadAlign(index0, inputIndex + i * u16EleCountPerVL);
+        Reg::LoadAlign(index1, inputIndex + i * u16EleCountPerVL + u32EleCountPerVL);
 
         RegTensor<int32_t> outIndex0, outIndex1;
         GatherMask<int32_t, GatherMaskMode::STORE_REG>(outIndex0, index0, out32Mask0);
-        MicroAPI::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex0, unalignReg1);
+        Reg::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex0, unalignReg1);
         GatherMask<int32_t, GatherMaskMode::STORE_REG>(outIndex1, index1, out32Mask1);
-        MicroAPI::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex1, unalignReg1);
+        Reg::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex1, unalignReg1);
     }
 
     for (uint16_t i = 0; i < dataRepeatTimes; ++i) {
         MaskReg maskReg = UpdateMask<uint16_t>(secondCount);
         RegTensor<uint16_t> in16Data;
-        MicroAPI::LoadAlign(in16Data, src + i * u16EleCountPerVL);
+        Reg::LoadAlign(in16Data, src + i * u16EleCountPerVL);
 
         MaskReg out16Mask;
         CompareScalar<uint16_t, CMPMODE::EQ>(out16Mask, in16Data, value, maskReg);
@@ -944,17 +951,17 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint16_t *src, __ub
         MaskInterleave<uint16_t>(out32Mask0, out32Mask1, out16Mask, zero16Mask);
 
         RegTensor<int32_t> index0, index1;
-        MicroAPI::LoadAlign(index0, inputIndex + i * u16EleCountPerVL );
-        MicroAPI::LoadAlign(index1, inputIndex + i * u16EleCountPerVL + u32EleCountPerVL);
+        Reg::LoadAlign(index0, inputIndex + i * u16EleCountPerVL );
+        Reg::LoadAlign(index1, inputIndex + i * u16EleCountPerVL + u32EleCountPerVL);
 
         RegTensor<int32_t> outIndex0, outIndex1;
         GatherMask<int32_t, GatherMaskMode::STORE_REG>(outIndex0, index0, out32Mask0);
-        MicroAPI::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex0, unalignReg1);
+        Reg::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex0, unalignReg1);
         GatherMask<int32_t, GatherMaskMode::STORE_REG>(outIndex1, index1, out32Mask1);
-        MicroAPI::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex1, unalignReg1);
+        Reg::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex1, unalignReg1);
     }
 
-    MicroAPI::StoreUnAlignPost(dstIndex, unalignReg1);
+    Reg::StoreUnAlignPost(dstIndex, unalignReg1);
     ClearSpr<SpecialPurposeReg::AR>();
 }
 
@@ -974,7 +981,7 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint8_t *src, __ubu
     for (uint16_t i = 0; i < dataRepeatTimes; ++i) {
         MaskReg maskReg = UpdateMask<uint8_t>(firstCount);
         RegTensor<uint8_t> in8Data;
-        MicroAPI::LoadAlign(in8Data, src + i * u8EleCountPerVL);
+        Reg::LoadAlign(in8Data, src + i * u8EleCountPerVL);
 
         MaskReg out8Mask;
         CompareScalar<uint8_t, CMPMODE::GT>(out8Mask, in8Data, value, maskReg);
@@ -989,26 +996,26 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint8_t *src, __ubu
         MaskInterleave<uint16_t>(out32Mask2, out32Mask3, out16Mask1, zero16Mask);
 
         RegTensor<int32_t> index0, index1, index2, index3;
-        MicroAPI::LoadAlign(index0, inputIndex + i * GetVecLen());
-        MicroAPI::LoadAlign(index1, inputIndex + i * GetVecLen() + u32EleCountPerVL);
-        MicroAPI::LoadAlign(index2, inputIndex + i * GetVecLen() + u32EleCountPerVL * 2);
-        MicroAPI::LoadAlign(index3, inputIndex + i * GetVecLen() + u32EleCountPerVL * 3);
+        Reg::LoadAlign(index0, inputIndex + i * GetVecLen());
+        Reg::LoadAlign(index1, inputIndex + i * GetVecLen() + u32EleCountPerVL);
+        Reg::LoadAlign(index2, inputIndex + i * GetVecLen() + u32EleCountPerVL * 2);
+        Reg::LoadAlign(index3, inputIndex + i * GetVecLen() + u32EleCountPerVL * 3);
 
         RegTensor<int32_t> outIndex0, outIndex1, outIndex2, outIndex3;
         GatherMask<int32_t, GatherMaskMode::STORE_REG>(outIndex0, index0, out32Mask0);
-        MicroAPI::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex0, unalignReg);
+        Reg::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex0, unalignReg);
         GatherMask<int32_t, GatherMaskMode::STORE_REG>(outIndex1, index1, out32Mask1);
-        MicroAPI::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex1, unalignReg);
+        Reg::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex1, unalignReg);
         GatherMask<int32_t, GatherMaskMode::STORE_REG>(outIndex2, index2, out32Mask2);
-        MicroAPI::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex2, unalignReg);
+        Reg::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex2, unalignReg);
         GatherMask<int32_t, GatherMaskMode::STORE_REG>(outIndex3, index3, out32Mask3);
-        MicroAPI::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex3, unalignReg);
+        Reg::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex3, unalignReg);
     }
 
     for (uint16_t i = 0; i < dataRepeatTimes; ++i) {
         MaskReg maskReg = UpdateMask<uint8_t>(secondCount);
         RegTensor<uint8_t> in8Data;
-        MicroAPI::LoadAlign(in8Data, src + i * u8EleCountPerVL);
+        Reg::LoadAlign(in8Data, src + i * u8EleCountPerVL);
 
         MaskReg out8Mask;
         CompareScalar<uint8_t, CMPMODE::EQ>(out8Mask, in8Data, value, maskReg);
@@ -1023,23 +1030,23 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint8_t *src, __ubu
         MaskInterleave<uint16_t>(out32Mask2, out32Mask3, out16Mask1, zero16Mask);
 
         RegTensor<int32_t> index0, index1, index2, index3;
-        MicroAPI::LoadAlign(index0, inputIndex + i * GetVecLen());
-        MicroAPI::LoadAlign(index1, inputIndex + i * GetVecLen() + u32EleCountPerVL);
-        MicroAPI::LoadAlign(index2, inputIndex + i * GetVecLen() + u32EleCountPerVL * 2);
-        MicroAPI::LoadAlign(index3, inputIndex + i * GetVecLen() + u32EleCountPerVL * 3);
+        Reg::LoadAlign(index0, inputIndex + i * GetVecLen());
+        Reg::LoadAlign(index1, inputIndex + i * GetVecLen() + u32EleCountPerVL);
+        Reg::LoadAlign(index2, inputIndex + i * GetVecLen() + u32EleCountPerVL * 2);
+        Reg::LoadAlign(index3, inputIndex + i * GetVecLen() + u32EleCountPerVL * 3);
 
         RegTensor<int32_t> outIndex0, outIndex1, outIndex2, outIndex3;
         GatherMask<int32_t, GatherMaskMode::STORE_REG>(outIndex0, index0, out32Mask0);
-        MicroAPI::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex0, unalignReg);
+        Reg::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex0, unalignReg);
         GatherMask<int32_t, GatherMaskMode::STORE_REG>(outIndex1, index1, out32Mask1);
-        MicroAPI::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex1, unalignReg);
+        Reg::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex1, unalignReg);
         GatherMask<int32_t, GatherMaskMode::STORE_REG>(outIndex2, index2, out32Mask2);
-        MicroAPI::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex2, unalignReg);
+        Reg::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex2, unalignReg);
         GatherMask<int32_t, GatherMaskMode::STORE_REG>(outIndex3, index3, out32Mask3);
-        MicroAPI::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex3, unalignReg);
+        Reg::StoreUnAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(dstIndex, outIndex3, unalignReg);
     }
 
-    MicroAPI::StoreUnAlignPost(dstIndex, unalignReg);
+    Reg::StoreUnAlignPost(dstIndex, unalignReg);
     ClearSpr<SpecialPurposeReg::AR>();
 }
 
@@ -1065,15 +1072,15 @@ __simd_vf__ inline void SaveData(__ubuf__ T *dst, __ubuf__ int32_t *dstIndex, __
     for (uint16_t i = 0; i < dataRepeatTimes; ++i) {
         MaskReg maskReg = UpdateMask<T>(dCount);
         RegTensor<T> reg;
-        MicroAPI::LoadAlign<T, PostLiteral::POST_MODE_UPDATE>(reg, (__ubuf__ T *&)src, dataCountPerTime);
-        MicroAPI::StoreAlign<T, PostLiteral::POST_MODE_UPDATE>((__ubuf__ T *&)dst, reg, dataCountPerTime, maskReg);
+        Reg::LoadAlign<T, PostLiteral::POST_MODE_UPDATE>(reg, (__ubuf__ T *&)src, dataCountPerTime);
+        Reg::StoreAlign<T, PostLiteral::POST_MODE_UPDATE>((__ubuf__ T *&)dst, reg, dataCountPerTime, maskReg);
     }
 
     for (uint16_t i = 0; i < indexRepeatTimes; ++i) {
         MaskReg maskReg = UpdateMask<int32_t>(iCount);
         RegTensor<int32_t> reg;
-        MicroAPI::LoadAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(reg, (__ubuf__ int32_t *&)srcIndex, indexCountPerTime);
-        MicroAPI::StoreAlign<int32_t, PostLiteral::POST_MODE_UPDATE>((__ubuf__ int32_t *&)dstIndex, reg, indexCountPerTime, maskReg);
+        Reg::LoadAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(reg, (__ubuf__ int32_t *&)srcIndex, indexCountPerTime);
+        Reg::StoreAlign<int32_t, PostLiteral::POST_MODE_UPDATE>((__ubuf__ int32_t *&)dstIndex, reg, indexCountPerTime, maskReg);
     }
 }
 
@@ -1094,18 +1101,18 @@ __simd_vf__ inline void SaveDataUnAlignVF(__ubuf__ T *dst, __ubuf__ int32_t *dst
             UnalignReg ureg;
             RegTensor<T> reg;
             auto dstUBT = dst + j * k + i * kPad;
-            MicroAPI::LoadAlign(reg, src + j * kPad + i  * kPad);
-            MicroAPI::StoreUnAlign((__ubuf__ T *&)dstUBT, reg, ureg, k);
-            MicroAPI::StoreUnAlignPost(dstUBT, ureg, 0);
+            Reg::LoadAlign(reg, src + j * kPad + i  * kPad);
+            Reg::StoreUnAlign((__ubuf__ T *&)dstUBT, reg, ureg, k);
+            Reg::StoreUnAlignPost(dstUBT, ureg, 0);
         }
 
         for (uint16_t i = 0; i < indexMainRepeatTime; i++) {
             UnalignReg ureg;
             RegTensor<int32_t> reg;
             auto dstUBT = dstIndex + j * k + i * kIndexPad;
-            MicroAPI::LoadAlign(reg, srcIndex + j * kIndexPad + i  * kIndexPad);
-            MicroAPI::StoreUnAlign((__ubuf__ int32_t *&)dstUBT, reg, ureg, k);
-            MicroAPI::StoreUnAlignPost(dstUBT, ureg, 0);
+            Reg::LoadAlign(reg, srcIndex + j * kIndexPad + i  * kIndexPad);
+            Reg::StoreUnAlign((__ubuf__ int32_t *&)dstUBT, reg, ureg, k);
+            Reg::StoreUnAlignPost(dstUBT, ureg, 0);
         }
     }
 }
@@ -1307,7 +1314,7 @@ __aicore__ inline void TopKNSmall(const LocalTensor<T> &dstValueLocal, const Loc
 }
 
 }  // namespace RadixSelectTopK
-}  // namespace MicroAPI
+}  // namespace Reg
 
 template <typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false>
 __aicore__ inline void TopKNormal(const LocalTensor<T> &dstValueLocal, const LocalTensor<int32_t> &dstIndexLocal,
@@ -1364,3 +1371,8 @@ __aicore__ inline void TopKNSmall(const LocalTensor<T> &dstValueLocal, const Loc
 }  // namespace AscendC
 
 #endif  // IMPL_SORT_TOPK_TOPK_C310_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SORT_TOPK_TOPK_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SORT_TOPK_TOPK_C310_IMPL_H__
+#endif

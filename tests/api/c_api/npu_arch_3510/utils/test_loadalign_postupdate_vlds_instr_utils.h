@@ -43,6 +43,33 @@ TEST_F(TestVectorDatamove##class_name##dst_type##src_type##CApi, c_api_name##_##
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 
+#define TEST_VECTOR_DATAMOVE_LOADALIGN_POSTUPDATE_INSTR_HIF8(class_name, c_api_name, cce_name, dst_type, src_type)   \
+                                                                                                \
+class TestVectorDatamove##class_name##dst_type##src_type##CApi : public testing::Test {         \
+protected:                                                                                      \
+    void SetUp() {}                                                                             \
+    void TearDown() {}                                                                          \
+};                                                                                              \
+                                                                                                \
+namespace {                                                                                     \
+void c_api_name##_##dst_type##_##src_type##_Stub(vector_uint8_t &dst, __ubuf__ uint8_t *&src,        \
+    int32_t offset, int load_dist, int post) {}                                                 \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorDatamove##class_name##dst_type##src_type##CApi, c_api_name##_##dst_type##_##src_type##_Succ)   \
+{                                                                                               \
+    dst_type dst;                                                                               \
+    __ubuf__ src_type *src;                                                                     \
+    int32_t offset;                                                                             \
+                                                                                                \
+    MOCKER_CPP(cce_name, void(vector_uint8_t &, __ubuf__ uint8_t *&, int32_t, int, int))             \
+        .times(1)                                                                               \
+        .will(invoke(c_api_name##_##dst_type##_##src_type##_Stub));                             \
+                                                                                                \
+    c_api_name(dst, src, offset);                                                               \
+    GlobalMockObject::verify();                                                                 \
+}                                                                                               \
+
 #define TEST_VECTOR_DATAMOVE_LOADALIGN_POSTUPDATE_DEINTLV_INSTR(class_name, c_api_name, cce_name, dst_type, src_type)   \
                                                                                                 \
 class TestVectorDatamove##class_name##dst_type##dst_type##src_type##CApi : public testing::Test {         \
@@ -64,6 +91,34 @@ TEST_F(TestVectorDatamove##class_name##dst_type##dst_type##src_type##CApi, c_api
     int32_t offset;                                                                             \
                                                                                                 \
     MOCKER_CPP(cce_name, void(dst_type &, dst_type &, __ubuf__ src_type *&, int32_t, int, int)) \
+        .times(1)                                                                               \
+        .will(invoke(c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub));                \
+                                                                                                \
+    c_api_name(dst0, dst1, src, offset);                                                        \
+    GlobalMockObject::verify();                                                                 \
+}                                                                                               \
+
+#define TEST_VECTOR_DATAMOVE_LOADALIGN_POSTUPDATE_DEINTLV_INSTR_HIF8(class_name, c_api_name, cce_name, dst_type, src_type)   \
+                                                                                                \
+class TestVectorDatamove##class_name##dst_type##dst_type##src_type##CApi : public testing::Test {         \
+protected:                                                                                      \
+    void SetUp() {}                                                                             \
+    void TearDown() {}                                                                          \
+};                                                                                              \
+                                                                                                \
+namespace {                                                                                     \
+void c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub(vector_uint8_t &dst0, vector_uint8_t &dst1,   \
+    __ubuf__ uint8_t *&src, int32_t offset, int load_dist, int post) {}                        \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorDatamove##class_name##dst_type##dst_type##src_type##CApi, c_api_name##_##dst_type##_##src_type##_Succ)   \
+{                                                                                               \
+    dst_type dst0;                                                                              \
+    dst_type dst1;                                                                              \
+    __ubuf__ src_type *src;                                                                     \
+    int32_t offset;                                                                             \
+                                                                                                \
+    MOCKER_CPP(cce_name, void(vector_uint8_t &, vector_uint8_t &, __ubuf__ uint8_t *&, int32_t, int, int)) \
         .times(1)                                                                               \
         .will(invoke(c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub));                \
                                                                                                 \

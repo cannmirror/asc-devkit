@@ -12,6 +12,12 @@
  * \file layernormgrad_c310_utils.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/normalization/layernormgrad/regbase/c310/layernormgrad_c310_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORMGRAD_REGBASE_C310_LAYERNORMGRAD_C310_UTILS_H__
+#endif
 #ifndef IMPL_NORMALIZATION_LAYERNORMGRAD_REGBASE_C310_LAYERNORMGRAD_C310_UTILS_H_
 #define IMPL_NORMALIZATION_LAYERNORMGRAD_REGBASE_C310_LAYERNORMGRAD_C310_UTILS_H_
 
@@ -26,54 +32,54 @@ namespace Internal {
 
 namespace LayernormGrad {
 
-constexpr MicroAPI::CastTrait castTraitHalfToFloat = {
-    MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
-constexpr MicroAPI::CastTrait castTraitFloatToHalf = {
-    MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait castTraitHalfToFloat = {
+    Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN, Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait castTraitFloatToHalf = {
+    Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
 // load a float register from float or half UB
 template <typename T>
 __simd_callee__ inline void LoadDataWithT(
-    __ubuf__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& dstPreg, uint32_t offset)
+    __ubuf__ T* src, Reg::RegTensor<float>& dstReg, Reg::MaskReg& dstPreg, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
-        MicroAPI::RegTensor<T> srcTmpReg;
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcTmpReg, src + offset);
+        Reg::RegTensor<T> srcTmpReg;
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(srcTmpReg, src + offset);
         Cast<float, T, castTraitHalfToFloat>(dstReg, srcTmpReg, dstPreg);
     } else { // this branch: only support float
-        MicroAPI::LoadAlign(dstReg, src + offset);
+        Reg::LoadAlign(dstReg, src + offset);
     }
 }
 
 // fill a float register from float or half UB
 template <typename T>
 __simd_callee__ inline void FillDataWithT(
-    __ubuf__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& dstPreg, uint32_t offset)
+    __ubuf__ T* src, Reg::RegTensor<float>& dstReg, Reg::MaskReg& dstPreg, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
-        MicroAPI::RegTensor<T> srcTmpReg;
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_BRC_B16>(srcTmpReg, src + offset);
+        Reg::RegTensor<T> srcTmpReg;
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_BRC_B16>(srcTmpReg, src + offset);
         Cast<float, T, castTraitHalfToFloat>(dstReg, srcTmpReg, dstPreg);
     } else { // this branch: only support float
-        MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_BRC_B32>(dstReg, src + offset);
+        Reg::LoadAlign<float, Reg::LoadDist::DIST_BRC_B32>(dstReg, src + offset);
     }
 }
 
 // store data from float register to float or half UB
 template <typename T>
 __simd_callee__ inline void StoreDataWithT(
-    __ubuf__ T* dst, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& srcPreg, uint32_t offset)
+    __ubuf__ T* dst, Reg::RegTensor<float>& srcReg, Reg::MaskReg& srcPreg, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
-        MicroAPI::RegTensor<T> dstTmpReg;
+        Reg::RegTensor<T> dstTmpReg;
         // cast back to half
-        MicroAPI::Cast<T, float, castTraitFloatToHalf>(dstTmpReg, srcReg, srcPreg);
-        MicroAPI::Pack<uint16_t, uint32_t, MicroAPI::HighLowPart::LOWEST>(
-            (MicroAPI::RegTensor<uint16_t>&)dstTmpReg, (MicroAPI::RegTensor<uint32_t>&)dstTmpReg);
-        MicroAPI::MaskPack(srcPreg, srcPreg);
-        MicroAPI::StoreAlign(dst + offset, dstTmpReg, srcPreg);
+        Reg::Cast<T, float, castTraitFloatToHalf>(dstTmpReg, srcReg, srcPreg);
+        Reg::Pack<uint16_t, uint32_t, Reg::HighLowPart::LOWEST>(
+            (Reg::RegTensor<uint16_t>&)dstTmpReg, (Reg::RegTensor<uint32_t>&)dstTmpReg);
+        Reg::MaskPack(srcPreg, srcPreg);
+        Reg::StoreAlign(dst + offset, dstTmpReg, srcPreg);
     } else { // this branch: only support float
-        MicroAPI::StoreAlign(dst + offset, srcReg, srcPreg);
+        Reg::StoreAlign(dst + offset, srcReg, srcPreg);
     }
 }
 } // namespace LayernormGrad
@@ -101,3 +107,8 @@ struct LayerNormGradParams {
 
 } // namespace AscendC
 #endif // IMPL_NORMALIZATION_LAYERNORMGRAD_REGBASE_C310_LAYERNORMGRAD_C310_UTILS_H_
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORMGRAD_REGBASE_C310_LAYERNORMGRAD_C310_UTILS_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORMGRAD_REGBASE_C310_LAYERNORMGRAD_C310_UTILS_H__
+#endif

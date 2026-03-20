@@ -12,6 +12,12 @@
  * \file sign.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIGN_H__
+#endif
+
 #ifndef LIB_MATH_SIGN_H
 #define LIB_MATH_SIGN_H
 #include <type_traits>
@@ -109,3 +115,8 @@ __aicore__ inline void Sign(const LocalTensor<T>& dstTensor, const LocalTensor<T
 #endif
 
 #endif  // LIB_MATH_SIGN_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIGN_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIGN_H__
+#endif

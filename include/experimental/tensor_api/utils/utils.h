@@ -16,12 +16,6 @@
 #define INCLUDE_TENSOR_API_UTILS_UTILS_H
 
 #include "include/experimental/tensor_api/arch/trait_struct.h"
+#include "include/utils/common_types.h"
 
-namespace AscendC {
-namespace Te {
-
-enum class Hardware : uint8_t { GM, UB, L1, L0A, L0B, L0C, BIAS, FIXBUF, MAX };
-
-} // namespace Te
-} // namespace AscendC
 #endif // INCLUDE_TENSOR_API_UTILS_UTILS_H

@@ -148,14 +148,14 @@ __simd_callee__ inline void MulsCast(T3& dstReg, T4& srcReg, T2 scalarValue, Mas
 template<typename T>
 __simd_vf__ inline void MulsCastVF(__ubuf__ half* dstAddr, __ubuf__ float* srcAddr, float scalarValue, uint32_t count, uint32_t srcRepeatSize, uint32_t dstRepeatSize, uint16_t repeatTimes)
 {
-    AscendC::MicroAPI::RegTensor<float> srcReg0;
-    AscendC::MicroAPI::RegTensor<half> dstReg0;
-    AscendC::MicroAPI::MaskReg mask;
+    AscendC::Reg::RegTensor<float> srcReg0;
+    AscendC::Reg::RegTensor<half> dstReg0;
+    AscendC::Reg::MaskReg mask;
     for (uint16_t i = 0; i < repeatTimes; i++) {
-        mask = AscendC::MicroAPI::UpdateMask<float>(count);
-        AscendC::MicroAPI::LoadAlign(srcReg0, srcAddr + i * srcRepeatSize);
-        AscendC::MicroAPI::MulsCast<half, float, float, AscendC::MicroAPI::RegLayout::ZERO>(dstReg0, srcReg0, scalarValue, mask);
-        AscendC::MicroAPI::StoreAlign(dstAddr + i * dstRepeatSize, dstReg0, mask);
+        mask = AscendC::Reg::UpdateMask<float>(count);
+        AscendC::Reg::LoadAlign(srcReg0, srcAddr + i * srcRepeatSize);
+        AscendC::Reg::MulsCast<half, float, float, AscendC::Reg::RegLayout::ZERO>(dstReg0, srcReg0, scalarValue, mask);
+        AscendC::Reg::StoreAlign(dstAddr + i * dstRepeatSize, dstReg0, mask);
     }
 }
 ```

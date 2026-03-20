@@ -12,7 +12,11 @@
 * \file mx_matmul_utils.h
 * \brief
 */
-
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/matmul/utils/mx_matmul_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_UTILS_MX_MATMUL_UTILS_H__
+#endif
 #ifndef IMPL_MATMUL_UTILS_MX_MATMUL_UTILS_H
 #define IMPL_MATMUL_UTILS_MX_MATMUL_UTILS_H
 
@@ -318,3 +322,7 @@ constexpr bool IsMxDisableUnitFlag = (EnUnitFlag(MM_CFG) && HasScalePosition<ATy
     !BType::isTrans || IsStaticPaddingEnable(MM_CFG)) && SupportMXFP8<typename AType::T>);
 } // namespace AscendC
 #endif // _MATMUL_UTILS_H_
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_UTILS_MX_MATMUL_UTILS_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_UTILS_MX_MATMUL_UTILS_H__
+#endif

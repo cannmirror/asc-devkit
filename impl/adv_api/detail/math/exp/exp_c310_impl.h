@@ -12,6 +12,12 @@
 * \file exp_c310_impl.h
 * \brief
 */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/math/exp/exp_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/exp.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_EXP_EXP_C310_IMPL_H__
+#endif
 #ifndef IMPL_MATH_EXP_EXP_C310_IMPL_H
 #define IMPL_MATH_EXP_EXP_C310_IMPL_H
 #include "kernel_basic_intf.h"
@@ -20,12 +26,12 @@
 
 namespace AscendC {
 namespace ExpAPI {
-constexpr MicroAPI::CastTrait castTraitF162F32 = {
-    MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
-constexpr MicroAPI::CastTrait castTraitS162F32 = {
-    MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
-constexpr MicroAPI::CastTrait castTraitF322F16 = {
-    MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait castTraitF162F32 = {
+    Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN, Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait castTraitS162F32 = {
+    Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait castTraitF322F16 = {
+    Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 template<typename T, uint8_t taylorExpandLevel>
 __simd_vf__ inline void ExpCompute(__ubuf__ T* dst, __ubuf__ T* src, uint32_t calCount, uint16_t repeatTimes,
     __ubuf__ float* taylorExpandTmpBuffer)
@@ -33,62 +39,62 @@ __simd_vf__ inline void ExpCompute(__ubuf__ T* dst, __ubuf__ T* src, uint32_t ca
     constexpr float dupConstant = 2.0f;
     constexpr uint32_t floatInf = F32_INF;
     constexpr uint32_t floatNInf = F32_NEG_INF;
-    MicroAPI::MaskReg mask, cmpInfMask, cmpNInfMask;
-    MicroAPI::RegTensor<T> dstVreg, tempSrcVreg;
-    MicroAPI::RegTensor<float> srcVreg, tempDstVreg;
-    MicroAPI::RegTensor<float> intVreg, expIntVreg;
-    MicroAPI::RegTensor<float> decimalVreg, expDecimalVreg;
-    MicroAPI::RegTensor<float> powVreg, denominatorVreg;
-    MicroAPI::RegTensor<float> factorialReg, tmpReg;
-    MicroAPI::RegTensor<int16_t> iterVreg;
-    MicroAPI::RegTensor<float> vReg0, vReg1;
+    Reg::MaskReg mask, cmpInfMask, cmpNInfMask;
+    Reg::RegTensor<T> dstVreg, tempSrcVreg;
+    Reg::RegTensor<float> srcVreg, tempDstVreg;
+    Reg::RegTensor<float> intVreg, expIntVreg;
+    Reg::RegTensor<float> decimalVreg, expDecimalVreg;
+    Reg::RegTensor<float> powVreg, denominatorVreg;
+    Reg::RegTensor<float> factorialReg, tmpReg;
+    Reg::RegTensor<int16_t> iterVreg;
+    Reg::RegTensor<float> vReg0, vReg1;
 
-    MicroAPI::Duplicate(vReg0, 0.0f);
-    MicroAPI::Duplicate((MicroAPI::RegTensor<uint32_t>&)vReg1, floatInf);
-    mask = MicroAPI::CreateMask<float>();
-    MicroAPI::Duplicate<float>(tmpReg, 1.0f);
-    MicroAPI::Arange<float>(factorialReg, dupConstant);
-    MicroAPI::Div(factorialReg, tmpReg, factorialReg, mask);
-    MicroAPI::StoreAlign(taylorExpandTmpBuffer, factorialReg, mask);
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::Duplicate(vReg0, 0.0f);
+    Reg::Duplicate((Reg::RegTensor<uint32_t>&)vReg1, floatInf);
+    mask = Reg::CreateMask<float>();
+    Reg::Duplicate<float>(tmpReg, 1.0f);
+    Reg::Arange<float>(factorialReg, dupConstant);
+    Reg::Div(factorialReg, tmpReg, factorialReg, mask);
+    Reg::StoreAlign(taylorExpandTmpBuffer, factorialReg, mask);
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
     constexpr uint32_t oneRepSize = GetVecLen() / sizeof(float);
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = MicroAPI::UpdateMask<float>(calCount);
+        mask = Reg::UpdateMask<float>(calCount);
         if constexpr (IsSameType<T, half>::value) {
-            MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(tempSrcVreg, src + i * oneRepSize);
-            MicroAPI::Cast<float, T, castTraitF162F32>(srcVreg, tempSrcVreg, mask);
+            Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(tempSrcVreg, src + i * oneRepSize);
+            Reg::Cast<float, T, castTraitF162F32>(srcVreg, tempSrcVreg, mask);
         } else {
-            MicroAPI::LoadAlign(srcVreg, src + i * oneRepSize);
+            Reg::LoadAlign(srcVreg, src + i * oneRepSize);
         }
-        MicroAPI::CompareScalar<uint32_t, CMPMODE::EQ>(cmpInfMask, (MicroAPI::RegTensor<uint32_t>&)srcVreg, floatInf, mask);
-        MicroAPI::CompareScalar<uint32_t, CMPMODE::EQ>(cmpNInfMask, (MicroAPI::RegTensor<uint32_t>&)srcVreg, floatNInf, mask);
+        Reg::CompareScalar<uint32_t, CMPMODE::EQ>(cmpInfMask, (Reg::RegTensor<uint32_t>&)srcVreg, floatInf, mask);
+        Reg::CompareScalar<uint32_t, CMPMODE::EQ>(cmpNInfMask, (Reg::RegTensor<uint32_t>&)srcVreg, floatNInf, mask);
         // intX = floor(x)
-        MicroAPI::Truncate<float, RoundMode::CAST_FLOOR>(intVreg, srcVreg, mask);
+        Reg::Truncate<float, RoundMode::CAST_FLOOR>(intVreg, srcVreg, mask);
         // decimalX = x - intX
-        MicroAPI::Sub(decimalVreg, srcVreg, intVreg, mask);
+        Reg::Sub(decimalVreg, srcVreg, intVreg, mask);
         // expIntX = exp(intX)
-        MicroAPI::Exp(expIntVreg, intVreg, mask);
+        Reg::Exp(expIntVreg, intVreg, mask);
         // expDecimalX = sum((decimalX ^ n) / n!) n is taylorExpandLevel
-        MicroAPI::Adds(expDecimalVreg, decimalVreg, 1.0f, mask);
+        Reg::Adds(expDecimalVreg, decimalVreg, 1.0f, mask);
         if constexpr (taylorExpandLevel > 1) {
             powVreg = decimalVreg;
             constexpr uint16_t vloopEnd = taylorExpandLevel - 1;
             for (uint16_t j = 0; j < vloopEnd; ++j) {
-                MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_BRC_B32>(denominatorVreg, taylorExpandTmpBuffer + j);
-                MicroAPI::Mul(powVreg, powVreg, decimalVreg, mask);
-                MicroAPI::Mul(powVreg, powVreg, denominatorVreg, mask);
-                MicroAPI::Add(expDecimalVreg, expDecimalVreg, powVreg, mask);
+                Reg::LoadAlign<float, Reg::LoadDist::DIST_BRC_B32>(denominatorVreg, taylorExpandTmpBuffer + j);
+                Reg::Mul(powVreg, powVreg, decimalVreg, mask);
+                Reg::Mul(powVreg, powVreg, denominatorVreg, mask);
+                Reg::Add(expDecimalVreg, expDecimalVreg, powVreg, mask);
             }
         }
         // exp(x) = expIntX * expDecimalX
-        MicroAPI::Mul(tempDstVreg, expIntVreg, expDecimalVreg, mask);
-        MicroAPI::Select(tempDstVreg, vReg0, tempDstVreg, cmpNInfMask);
-        MicroAPI::Select(tempDstVreg, vReg1, tempDstVreg, cmpInfMask);
+        Reg::Mul(tempDstVreg, expIntVreg, expDecimalVreg, mask);
+        Reg::Select(tempDstVreg, vReg0, tempDstVreg, cmpNInfMask);
+        Reg::Select(tempDstVreg, vReg1, tempDstVreg, cmpInfMask);
         if constexpr (IsSameType<T, half>::value) {
-            MicroAPI::Cast<T, float, castTraitF322F16>(dstVreg, tempDstVreg, mask);
-            MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_PACK_B32>(dst + i * oneRepSize, dstVreg, mask);
+            Reg::Cast<T, float, castTraitF322F16>(dstVreg, tempDstVreg, mask);
+            Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B32>(dst + i * oneRepSize, dstVreg, mask);
         } else {
-            MicroAPI::StoreAlign(dst + i * oneRepSize, tempDstVreg, mask);
+            Reg::StoreAlign(dst + i * oneRepSize, tempDstVreg, mask);
         }
     }
 }
@@ -137,3 +143,7 @@ __aicore__ inline void ExpImpl(const LocalTensor<T>& dstLocal, const LocalTensor
 } // namespace AscendC
 #endif // IMPL_MATH_EXP_EXP_C310_IMPL_H
 
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_EXP_EXP_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_EXP_EXP_C310_IMPL_H__
+#endif

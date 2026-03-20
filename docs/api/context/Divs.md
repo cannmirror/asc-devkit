@@ -190,7 +190,6 @@ constexpr BinaryConfig DEFAULT_BINARY_CONFIG = {1};</pre>
     -   源操作数为LocalTensor单点元素的场景，不支持和目的操作数地址重叠。
 
 -   操作数地址对齐要求请参见[通用地址对齐约束](通用说明和约束.md#section796754519912)。
--   注意除零错误。
 
 -   针对Ascend 950PR/Ascend 950DT，uint64\_t/int64\_t/complex32/complex64数据类型仅支持Tensor前n个数据计算接口。
 -   左操作数及右操作数中，必须有一个为矢量；当前不支持左右操作数同时为标量。

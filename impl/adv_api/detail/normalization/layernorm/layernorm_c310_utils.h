@@ -12,6 +12,12 @@
  * \file layernorm_c310_utils.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/normalization/layernorm/layernorm_c310_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORM_LAYERNORM_C310_UTILS_H__
+#endif
 #ifndef IMPL_NORMALIZATION_LAYERNORM_C310_UTILS_H
 #define IMPL_NORMALIZATION_LAYERNORM_C310_UTILS_H
 
@@ -27,33 +33,33 @@ constexpr uint32_t LAYERNORM_B32_VF_LEN = GetVecLen() / sizeof(uint32_t);
 } // namespace Internal
 
 template <typename T>
-__simd_callee__ inline void LoadDataWithT(__ubuf__ T* src0, __ubuf__ T* src1, MicroAPI::RegTensor<float>& dstReg0,
-    MicroAPI::RegTensor<float>& dstReg1, MicroAPI::MaskReg& dst0Preg, MicroAPI::MaskReg& dst1Preg, uint32_t src0Offset,
+__simd_callee__ inline void LoadDataWithT(__ubuf__ T* src0, __ubuf__ T* src1, Reg::RegTensor<float>& dstReg0,
+    Reg::RegTensor<float>& dstReg1, Reg::MaskReg& dst0Preg, Reg::MaskReg& dst1Preg, uint32_t src0Offset,
     uint32_t src1Offset)
 {
     if constexpr (IsSameType<T, half>::value || IsSameType<T, bfloat16_t>::value) {
-        MicroAPI::RegTensor<T> src0Origin;
-        MicroAPI::RegTensor<T> src1Origin;
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(src0Origin, src0 + src0Offset);
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(src1Origin, src1 + src1Offset);
+        Reg::RegTensor<T> src0Origin;
+        Reg::RegTensor<T> src1Origin;
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(src0Origin, src0 + src0Offset);
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(src1Origin, src1 + src1Offset);
         Cast<float, T, layoutZMrgZ>(dstReg0, src0Origin, dst0Preg);
         Cast<float, T, layoutZMrgZ>(dstReg1, src1Origin, dst1Preg);
     } else { // this branch: only support float
-        MicroAPI::LoadAlign(dstReg0, src0 + src0Offset);
-        MicroAPI::LoadAlign(dstReg1, src1 + src1Offset);
+        Reg::LoadAlign(dstReg0, src0 + src0Offset);
+        Reg::LoadAlign(dstReg1, src1 + src1Offset);
     }
 }
 
 template <typename T>
 __simd_callee__ inline void LoadDataWithT(
-    __ubuf__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& dstPreg, uint32_t srcOffset)
+    __ubuf__ T* src, Reg::RegTensor<float>& dstReg, Reg::MaskReg& dstPreg, uint32_t srcOffset)
 {
     if constexpr (IsSameType<T, half>::value || IsSameType<T, bfloat16_t>::value) {
-        MicroAPI::RegTensor<T> srcOrigin;
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcOrigin, src + srcOffset);
+        Reg::RegTensor<T> srcOrigin;
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(srcOrigin, src + srcOffset);
         Cast<float, T, layoutZMrgZ>(dstReg, srcOrigin, dstPreg);
     } else { // this branch: only support float
-        MicroAPI::LoadAlign(dstReg, src + srcOffset);
+        Reg::LoadAlign(dstReg, src + srcOffset);
     }
 }
 
@@ -73,24 +79,24 @@ __aicore__ inline uint16_t CalculateHalfAddRepeatTimes(uint32_t halfAddTimes)
 // Helper function for the first loop in ComputeMeanUseY
 template <typename T>
 __simd_callee__ inline void ComputeMeanLoop1(__ubuf__ T* const srcUb, __ubuf__ T* const workUbYOrigin,
-    MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, const uint32_t aLength, const uint32_t rLengthWithPadding,
+    Reg::MaskReg& pregFull, Reg::MaskReg& pregOne, const uint32_t aLength, const uint32_t rLengthWithPadding,
     const uint32_t rHeadLength, const uint32_t m, const uint16_t repeatTimes1, const float k2Rec,
-    const uint16_t sregLower, MicroAPI::RegTensor<float>& src0Reg0, MicroAPI::RegTensor<float>& src1Reg0,
-    MicroAPI::RegTensor<float>& src0Reg1, MicroAPI::RegTensor<float>& src1Reg1, MicroAPI::RegTensor<float>& dstReg0,
-    MicroAPI::RegTensor<float>& dstReg1, MicroAPI::RegTensor<float>& dstReg)
+    const uint16_t sregLower, Reg::RegTensor<float>& src0Reg0, Reg::RegTensor<float>& src1Reg0,
+    Reg::RegTensor<float>& src0Reg1, Reg::RegTensor<float>& src1Reg1, Reg::RegTensor<float>& dstReg0,
+    Reg::RegTensor<float>& dstReg1, Reg::RegTensor<float>& dstReg)
 {
     for (uint16_t j = 0; j < static_cast<uint16_t>(aLength); j++) {
         uint32_t mTmp = m;
         __ubuf__ float* workUbOrigin = (__ubuf__ float*)(workUbYOrigin + j * rLengthWithPadding);
         // tail block add to main block
         for (uint16_t i = 0; i < repeatTimes1; i++) {
-            MicroAPI::MaskReg preg = MicroAPI::UpdateMask<float>(mTmp);
+            Reg::MaskReg preg = Reg::UpdateMask<float>(mTmp);
             LoadDataWithT<T>(srcUb, srcUb, src0Reg0, src1Reg0, pregFull, preg,
                 j * rLengthWithPadding + (2 * i) * sregLower,
                 j * rLengthWithPadding + rHeadLength + (2 * i) * sregLower);
             Muls(dstReg0, src1Reg0, k2Rec, preg);
             Axpy(dstReg0, src0Reg0, k2Rec, pregFull);
-            preg = MicroAPI::UpdateMask<float>(mTmp);
+            preg = Reg::UpdateMask<float>(mTmp);
             LoadDataWithT<T>(srcUb, srcUb, src0Reg1, src1Reg1, pregFull, preg,
                 j * rLengthWithPadding + (2 * i + 1) * sregLower,
                 j * rLengthWithPadding + rHeadLength + (2 * i + 1) * sregLower);
@@ -98,7 +104,7 @@ __simd_callee__ inline void ComputeMeanLoop1(__ubuf__ T* const srcUb, __ubuf__ T
             Axpy(dstReg1, src0Reg1, k2Rec, pregFull);
             Add(dstReg, dstReg0, dstReg1, pregFull);
             ReduceSum(dstReg, dstReg, pregFull);
-            MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>((workUbOrigin + i), dstReg, pregOne);
+            Reg::StoreAlign<float, Reg::StoreDist::DIST_FIRST_ELEMENT_B32>((workUbOrigin + i), dstReg, pregOne);
         }
     }
 }
@@ -106,11 +112,11 @@ __simd_callee__ inline void ComputeMeanLoop1(__ubuf__ T* const srcUb, __ubuf__ T
 // Helper function for the second loop in ComputeMeanUseY
 template <typename T>
 __simd_callee__ inline void ComputeMeanLoop2(__ubuf__ T* const srcUb, __ubuf__ T* const workUbYOrigin,
-    MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, MicroAPI::MaskReg& preg2, const uint32_t aLength,
+    Reg::MaskReg& pregFull, Reg::MaskReg& pregOne, Reg::MaskReg& preg2, const uint32_t aLength,
     const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const uint16_t repeatTimes1,
-    const uint16_t repeatTimes2, const float k2Rec, const uint16_t sregLower, MicroAPI::RegTensor<float>& src0Reg0,
-    MicroAPI::RegTensor<float>& src1Reg0, MicroAPI::RegTensor<float>& src0Reg1, MicroAPI::RegTensor<float>& dstReg0,
-    MicroAPI::RegTensor<float>& dstReg1, MicroAPI::RegTensor<float>& dstReg)
+    const uint16_t repeatTimes2, const float k2Rec, const uint16_t sregLower, Reg::RegTensor<float>& src0Reg0,
+    Reg::RegTensor<float>& src1Reg0, Reg::RegTensor<float>& src0Reg1, Reg::RegTensor<float>& dstReg0,
+    Reg::RegTensor<float>& dstReg1, Reg::RegTensor<float>& dstReg)
 {
     for (uint16_t j = 0; j < static_cast<uint16_t>(aLength); j++) {
         __ubuf__ float* workUbOrigin = (__ubuf__ float*)(workUbYOrigin + j * rLengthWithPadding);
@@ -127,7 +133,7 @@ __simd_callee__ inline void ComputeMeanLoop2(__ubuf__ T* const srcUb, __ubuf__ T
 
             Add(dstReg, dstReg0, dstReg1, pregFull);
             ReduceSum(dstReg, dstReg, pregFull);
-            MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>(
+            Reg::StoreAlign<float, Reg::StoreDist::DIST_FIRST_ELEMENT_B32>(
                 (workUbOrigin + repeatTimes1 + i), dstReg, pregOne);
         }
     }
@@ -136,11 +142,11 @@ __simd_callee__ inline void ComputeMeanLoop2(__ubuf__ T* const srcUb, __ubuf__ T
 // Helper function for the third loop in ComputeMeanUseY
 template <typename T>
 __simd_callee__ inline void ComputeMeanLoop3(__ubuf__ T* const srcUb, __ubuf__ T* const workUbYOrigin,
-    MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, const uint32_t aLength, const uint32_t rLengthWithPadding,
+    Reg::MaskReg& pregFull, Reg::MaskReg& pregOne, const uint32_t aLength, const uint32_t rLengthWithPadding,
     const uint16_t repeatTimes1, const uint16_t repeatTimes2, const uint16_t repeatTimes3, const uint32_t mVL,
-    const float k2Rec, const uint16_t sregLower, MicroAPI::RegTensor<float>& src0Reg0,
-    MicroAPI::RegTensor<float>& src0Reg1, MicroAPI::RegTensor<float>& dstReg0, MicroAPI::RegTensor<float>& dstReg1,
-    MicroAPI::RegTensor<float>& dstReg)
+    const float k2Rec, const uint16_t sregLower, Reg::RegTensor<float>& src0Reg0,
+    Reg::RegTensor<float>& src0Reg1, Reg::RegTensor<float>& dstReg0, Reg::RegTensor<float>& dstReg1,
+    Reg::RegTensor<float>& dstReg)
 {
     for (uint16_t j = 0; j < static_cast<uint16_t>(aLength); j++) {
         __ubuf__ float* workUbOrigin = (__ubuf__ float*)(workUbYOrigin + j * rLengthWithPadding);
@@ -152,7 +158,7 @@ __simd_callee__ inline void ComputeMeanLoop3(__ubuf__ T* const srcUb, __ubuf__ T
             Muls(dstReg1, src0Reg1, k2Rec, pregFull);
             Add(dstReg, dstReg0, dstReg1, pregFull);
             ReduceSum(dstReg, dstReg, pregFull);
-            MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>(
+            Reg::StoreAlign<float, Reg::StoreDist::DIST_FIRST_ELEMENT_B32>(
                 (workUbOrigin + repeatTimes1 + repeatTimes2 + i), dstReg, pregOne);
         }
     }
@@ -160,18 +166,18 @@ __simd_callee__ inline void ComputeMeanLoop3(__ubuf__ T* const srcUb, __ubuf__ T
 
 template <typename T>
 __simd_callee__ inline void ComputeMeanUseY(__ubuf__ T* const srcUb, __ubuf__ T* const workUbYOrigin,
-    MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, MicroAPI::MaskReg& pregLastCount, MicroAPI::MaskReg& preg2,
+    Reg::MaskReg& pregFull, Reg::MaskReg& pregOne, Reg::MaskReg& pregLastCount, Reg::MaskReg& preg2,
     const uint32_t aLength, const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const uint32_t m,
     const uint16_t repeatTimes1, const uint16_t repeatTimes2, const uint16_t repeatTimes3, const uint32_t mVL,
     const float k2Rec, const uint16_t sregLower)
 {
-    MicroAPI::RegTensor<float> src0Reg0;
-    MicroAPI::RegTensor<float> src1Reg0;
-    MicroAPI::RegTensor<float> src0Reg1;
-    MicroAPI::RegTensor<float> src1Reg1;
-    MicroAPI::RegTensor<float> dstReg0;
-    MicroAPI::RegTensor<float> dstReg1;
-    MicroAPI::RegTensor<float> dstReg;
+    Reg::RegTensor<float> src0Reg0;
+    Reg::RegTensor<float> src1Reg0;
+    Reg::RegTensor<float> src0Reg1;
+    Reg::RegTensor<float> src1Reg1;
+    Reg::RegTensor<float> dstReg0;
+    Reg::RegTensor<float> dstReg1;
+    Reg::RegTensor<float> dstReg;
 
     ComputeMeanLoop1<T>(srcUb, workUbYOrigin, pregFull, pregOne, aLength, rLengthWithPadding, rHeadLength, m,
         repeatTimes1, k2Rec, sregLower, src0Reg0, src1Reg0, src0Reg1, src1Reg1, dstReg0, dstReg1, dstReg);
@@ -184,20 +190,20 @@ __simd_callee__ inline void ComputeMeanUseY(__ubuf__ T* const srcUb, __ubuf__ T*
 // Helper function for the first loop in ComputeVarianceUseY
 template <typename T>
 __simd_callee__ inline void ComputeVarianceLoop1(__ubuf__ T* const srcUb, __ubuf__ T* const workUbYOrigin,
-    __ubuf__ float* const meanUb, MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, const uint32_t aLength,
+    __ubuf__ float* const meanUb, Reg::MaskReg& pregFull, Reg::MaskReg& pregOne, const uint32_t aLength,
     const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const uint32_t m, const uint16_t repeatTimes1,
-    const float k2Rec, const uint16_t sregLower, MicroAPI::RegTensor<float>& meanReg,
-    MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& src0Reg0, MicroAPI::RegTensor<float>& src1Reg0,
-    MicroAPI::RegTensor<float>& src0Reg1, MicroAPI::RegTensor<float>& src1Reg1, MicroAPI::RegTensor<float>& dstReg0,
-    MicroAPI::RegTensor<float>& dstReg1)
+    const float k2Rec, const uint16_t sregLower, Reg::RegTensor<float>& meanReg,
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& src0Reg0, Reg::RegTensor<float>& src1Reg0,
+    Reg::RegTensor<float>& src0Reg1, Reg::RegTensor<float>& src1Reg1, Reg::RegTensor<float>& dstReg0,
+    Reg::RegTensor<float>& dstReg1)
 {
     for (uint16_t j = 0; j < static_cast<uint16_t>(aLength); j++) {
         uint32_t mTmp = m;
         __ubuf__ float* workUbOrigin = (__ubuf__ float*)(workUbYOrigin + j * rLengthWithPadding);
-        MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_BRC_B32>(meanReg, meanUb + j);
+        Reg::LoadAlign<float, Reg::LoadDist::DIST_BRC_B32>(meanReg, meanUb + j);
         // tail block add to main block
         for (uint16_t i = 0; i < repeatTimes1; i++) {
-            MicroAPI::MaskReg preg = MicroAPI::UpdateMask<float>(mTmp);
+            Reg::MaskReg preg = Reg::UpdateMask<float>(mTmp);
             LoadDataWithT<T>(srcUb, srcUb, src0Reg0, src1Reg0, pregFull, preg,
                 j * rLengthWithPadding + (2 * i) * sregLower,
                 j * rLengthWithPadding + rHeadLength + (2 * i) * sregLower);
@@ -210,7 +216,7 @@ __simd_callee__ inline void ComputeVarianceLoop1(__ubuf__ T* const srcUb, __ubuf
             Muls(dstReg0, src1Reg0, k2Rec, pregFull);
             Axpy(dstReg0, src0Reg0, k2Rec, pregFull);
 
-            preg = MicroAPI::UpdateMask<float>(mTmp);
+            preg = Reg::UpdateMask<float>(mTmp);
             LoadDataWithT<T>(srcUb, srcUb, src0Reg1, src1Reg1, pregFull, preg,
                 j * rLengthWithPadding + (2 * i + 1) * sregLower,
                 j * rLengthWithPadding + rHeadLength + (2 * i + 1) * sregLower);
@@ -225,7 +231,7 @@ __simd_callee__ inline void ComputeVarianceLoop1(__ubuf__ T* const srcUb, __ubuf
 
             Add(dstReg, dstReg0, dstReg1, pregFull);
             ReduceSum(dstReg, dstReg, pregFull);
-            MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>((workUbOrigin + i), dstReg, pregOne);
+            Reg::StoreAlign<float, Reg::StoreDist::DIST_FIRST_ELEMENT_B32>((workUbOrigin + i), dstReg, pregOne);
         }
     }
 }
@@ -233,16 +239,16 @@ __simd_callee__ inline void ComputeVarianceLoop1(__ubuf__ T* const srcUb, __ubuf
 // Helper function for the second loop in ComputeVarianceUseY
 template <typename T>
 __simd_callee__ inline void ComputeVarianceLoop2(__ubuf__ T* const srcUb, __ubuf__ T* const workUbYOrigin,
-    __ubuf__ float* const meanUb, MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne,
-    MicroAPI::MaskReg& preg2, const uint32_t aLength, const uint32_t rLengthWithPadding, const uint32_t rHeadLength,
+    __ubuf__ float* const meanUb, Reg::MaskReg& pregFull, Reg::MaskReg& pregOne,
+    Reg::MaskReg& preg2, const uint32_t aLength, const uint32_t rLengthWithPadding, const uint32_t rHeadLength,
     const uint16_t repeatTimes1, const uint16_t repeatTimes2, const float k2Rec, const uint16_t sregLower,
-    MicroAPI::RegTensor<float>& meanReg, MicroAPI::RegTensor<float>& src0Reg0, MicroAPI::RegTensor<float>& src1Reg0,
-    MicroAPI::RegTensor<float>& src0Reg1, MicroAPI::RegTensor<float>& dstReg0, MicroAPI::RegTensor<float>& dstReg1,
-    MicroAPI::RegTensor<float>& dstReg)
+    Reg::RegTensor<float>& meanReg, Reg::RegTensor<float>& src0Reg0, Reg::RegTensor<float>& src1Reg0,
+    Reg::RegTensor<float>& src0Reg1, Reg::RegTensor<float>& dstReg0, Reg::RegTensor<float>& dstReg1,
+    Reg::RegTensor<float>& dstReg)
 {
     for (uint16_t j = 0; j < static_cast<uint16_t>(aLength); j++) {
         __ubuf__ float* workUbOrigin = (__ubuf__ float*)(workUbYOrigin + j * rLengthWithPadding);
-        MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_BRC_B32>(meanReg, meanUb + j);
+        Reg::LoadAlign<float, Reg::LoadDist::DIST_BRC_B32>(meanReg, meanUb + j);
         for (uint16_t i = 0; i < repeatTimes2; i++) {
             LoadDataWithT<T>(srcUb, srcUb, src0Reg0, src1Reg0, pregFull, preg2,
                 j * rLengthWithPadding + repeatTimes1 * 2 * sregLower,
@@ -267,7 +273,7 @@ __simd_callee__ inline void ComputeVarianceLoop2(__ubuf__ T* const srcUb, __ubuf
 
             Add(dstReg, dstReg0, dstReg1, pregFull);
             ReduceSum(dstReg, dstReg, pregFull);
-            MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>(
+            Reg::StoreAlign<float, Reg::StoreDist::DIST_FIRST_ELEMENT_B32>(
                 (workUbOrigin + repeatTimes1 + i), dstReg, pregOne);
         }
     }
@@ -276,15 +282,15 @@ __simd_callee__ inline void ComputeVarianceLoop2(__ubuf__ T* const srcUb, __ubuf
 // Helper function for the third loop in ComputeVarianceUseY
 template <typename T>
 __simd_callee__ inline void ComputeVarianceLoop3(__ubuf__ T* const srcUb, __ubuf__ T* const workUbYOrigin,
-    __ubuf__ float* const meanUb, MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, const uint32_t aLength,
+    __ubuf__ float* const meanUb, Reg::MaskReg& pregFull, Reg::MaskReg& pregOne, const uint32_t aLength,
     const uint32_t rLengthWithPadding, const uint16_t repeatTimes1, const uint16_t repeatTimes2,
     const uint16_t repeatTimes3, const uint32_t mVL, const float k2Rec, const uint16_t sregLower,
-    MicroAPI::RegTensor<float>& meanReg, MicroAPI::RegTensor<float>& src0Reg0, MicroAPI::RegTensor<float>& src0Reg1,
-    MicroAPI::RegTensor<float>& dstReg0, MicroAPI::RegTensor<float>& dstReg1, MicroAPI::RegTensor<float>& dstReg)
+    Reg::RegTensor<float>& meanReg, Reg::RegTensor<float>& src0Reg0, Reg::RegTensor<float>& src0Reg1,
+    Reg::RegTensor<float>& dstReg0, Reg::RegTensor<float>& dstReg1, Reg::RegTensor<float>& dstReg)
 {
     for (uint16_t j = 0; j < static_cast<uint16_t>(aLength); j++) {
         __ubuf__ float* workUbOrigin = (__ubuf__ float*)(workUbYOrigin + j * rLengthWithPadding);
-        MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_BRC_B32>(meanReg, meanUb + j);
+        Reg::LoadAlign<float, Reg::LoadDist::DIST_BRC_B32>(meanReg, meanUb + j);
         // Processes the remaining data of the entire block.
         for (uint16_t i = 0; i < repeatTimes3; i++) {
             LoadDataWithT<T>(srcUb, src0Reg0, pregFull, j * rLengthWithPadding + mVL + (2 * i) * sregLower);
@@ -300,7 +306,7 @@ __simd_callee__ inline void ComputeVarianceLoop3(__ubuf__ T* const srcUb, __ubuf
             Add(dstReg, dstReg0, dstReg1, pregFull);
 
             ReduceSum(dstReg, dstReg, pregFull);
-            MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>(
+            Reg::StoreAlign<float, Reg::StoreDist::DIST_FIRST_ELEMENT_B32>(
                 (workUbOrigin + repeatTimes1 + repeatTimes2 + i), dstReg, pregOne);
         }
     }
@@ -308,20 +314,20 @@ __simd_callee__ inline void ComputeVarianceLoop3(__ubuf__ T* const srcUb, __ubuf
 
 template <typename T>
 __simd_callee__ inline void ComputeVarianceUseY(__ubuf__ T* const srcUb, __ubuf__ T* const workUbYOrigin,
-    __ubuf__ float* const meanUb, MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne,
-    MicroAPI::MaskReg& pregLastCount, MicroAPI::MaskReg& preg2, const uint32_t aLength,
+    __ubuf__ float* const meanUb, Reg::MaskReg& pregFull, Reg::MaskReg& pregOne,
+    Reg::MaskReg& pregLastCount, Reg::MaskReg& preg2, const uint32_t aLength,
     const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const uint32_t m, const uint16_t repeatTimes1,
     const uint16_t repeatTimes2, const uint16_t repeatTimes3, const uint32_t mVL, const float k2Rec,
     const uint16_t sregLower)
 {
-    MicroAPI::RegTensor<float> meanReg;
-    MicroAPI::RegTensor<float> dstReg;
-    MicroAPI::RegTensor<float> src0Reg0;
-    MicroAPI::RegTensor<float> src1Reg0;
-    MicroAPI::RegTensor<float> src0Reg1;
-    MicroAPI::RegTensor<float> src1Reg1;
-    MicroAPI::RegTensor<float> dstReg0;
-    MicroAPI::RegTensor<float> dstReg1;
+    Reg::RegTensor<float> meanReg;
+    Reg::RegTensor<float> dstReg;
+    Reg::RegTensor<float> src0Reg0;
+    Reg::RegTensor<float> src1Reg0;
+    Reg::RegTensor<float> src0Reg1;
+    Reg::RegTensor<float> src1Reg1;
+    Reg::RegTensor<float> dstReg0;
+    Reg::RegTensor<float> dstReg1;
 
     ComputeVarianceLoop1<T>(srcUb, workUbYOrigin, meanUb, pregFull, pregOne, aLength, rLengthWithPadding, rHeadLength,
         m, repeatTimes1, k2Rec, sregLower, meanReg, dstReg, src0Reg0, src1Reg0, src0Reg1, src1Reg1, dstReg0, dstReg1);
@@ -335,30 +341,30 @@ __simd_callee__ inline void ComputeVarianceUseY(__ubuf__ T* const srcUb, __ubuf_
 // Helper: reduce temporary work buffer into a scalar per row and store to dstUb
 template <typename T, uint16_t HalfAddTimes>
 __simd_callee__ inline void ReduceWorkBufferAndStore(__ubuf__ T* const workUbYOrigin, __ubuf__ float* const dstUb,
-    MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, MicroAPI::MaskReg& pregLastCount, const uint32_t aLength,
+    Reg::MaskReg& pregFull, Reg::MaskReg& pregOne, Reg::MaskReg& pregLastCount, const uint32_t aLength,
     const uint32_t rLengthWithPadding, const uint16_t halfAddRepeatTimes, const uint32_t lastCount, const float k2RRec,
     const uint16_t sregLower, const uint16_t dynamicHalfAddTimes = 0)
 {
-    MicroAPI::RegTensor<float> v0, v1, v2, v3;
-    MicroAPI::RegTensor<float> s0, s1;
-    MicroAPI::RegTensor<float> tmp, outReg;
+    Reg::RegTensor<float> v0, v1, v2, v3;
+    Reg::RegTensor<float> s0, s1;
+    Reg::RegTensor<float> tmp, outReg;
 
     for (uint16_t j = 0; j < static_cast<uint16_t>(aLength); ++j) {
         __ubuf__ float* workUb = (__ubuf__ float*)(workUbYOrigin + j * rLengthWithPadding);
 
         if constexpr (HalfAddTimes == 1) {
-            MicroAPI::LoadAlign(v0, workUb);
+            Reg::LoadAlign(v0, workUb);
             ReduceSum(tmp, v0, pregLastCount);
         } else if constexpr (HalfAddTimes == 2) {
-            MicroAPI::LoadAlign(v0, workUb);
-            MicroAPI::LoadAlign(v1, workUb + sregLower);
+            Reg::LoadAlign(v0, workUb);
+            Reg::LoadAlign(v1, workUb + sregLower);
             Add(v0, v0, v1, pregFull);
             ReduceSum(tmp, v0, pregLastCount);
         } else if constexpr (HalfAddTimes == 4) {
-            MicroAPI::LoadAlign(v0, workUb);
-            MicroAPI::LoadAlign(v1, workUb + sregLower * 1);
-            MicroAPI::LoadAlign(v2, workUb + sregLower * 2);
-            MicroAPI::LoadAlign(v3, workUb + sregLower * 3);
+            Reg::LoadAlign(v0, workUb);
+            Reg::LoadAlign(v1, workUb + sregLower * 1);
+            Reg::LoadAlign(v2, workUb + sregLower * 2);
+            Reg::LoadAlign(v3, workUb + sregLower * 3);
             Add(v0, v0, v2, pregFull);
             Add(v1, v1, v3, pregFull);
             Add(v0, v0, v1, pregFull);
@@ -368,21 +374,26 @@ __simd_callee__ inline void ReduceWorkBufferAndStore(__ubuf__ T* const workUbYOr
             for (uint16_t k = 0; k < halfAddRepeatTimes; ++k) {
                 cur = cur / Internal::kLayernormFoldNum; // Fold
                 for (uint16_t i = 0; i < cur; ++i) {
-                    MicroAPI::LoadAlign(s0, workUb + i * sregLower);
-                    MicroAPI::LoadAlign(s1, workUb + (cur + i) * sregLower);
+                    Reg::LoadAlign(s0, workUb + i * sregLower);
+                    Reg::LoadAlign(s1, workUb + (cur + i) * sregLower);
                     Add(tmp, s0, s1, pregFull);
-                    MicroAPI::StoreAlign(workUb + i * sregLower, tmp, pregFull);
+                    Reg::StoreAlign(workUb + i * sregLower, tmp, pregFull);
                 }
-                MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+                Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
             }
-            MicroAPI::LoadAlign(s0, workUb);
+            Reg::LoadAlign(s0, workUb);
             ReduceSum(tmp, s0, pregLastCount);
         }
 
         Muls(outReg, tmp, k2RRec, pregOne);
-        MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>((dstUb + j), outReg, pregOne);
+        Reg::StoreAlign<float, Reg::StoreDist::DIST_FIRST_ELEMENT_B32>((dstUb + j), outReg, pregOne);
     }
 }
 
 } // namespace AscendC
 #endif // IMPL_NORMALIZATION_LAYERNORM_C310_UTILS_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORM_LAYERNORM_C310_UTILS_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORM_LAYERNORM_C310_UTILS_H__
+#endif

@@ -12,8 +12,15 @@
  * \file selectwithbytesmaskcheck.h
  * \brief
  */
-#ifndef IMPL_API_CHECK_KERNEL_CHECK_SELECT_SELECTWITHBYTESMASK_SELECTWITHBYTESMASK_CHECK_H_
-#define IMPL_API_CHECK_KERNEL_CHECK_SELECT_SELECTWITHBYTESMASK_SELECTWITHBYTESMASK_CHECK_H_
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/api_check/kernel_check/select/selectwithbytesmask/selectwithbytesmaskcheck.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SELECTWITHBYTESMASKCHECK_H__
+#endif
+
+#ifndef IMPL_API_CHECK_KERNEL_CHECK_SELECT_SELECTWITHBYTESMAKS_SELECTWITHBYTESMAKS_CHECK_H_
+#define IMPL_API_CHECK_KERNEL_CHECK_SELECT_SELECTWITHBYTESMAKS_SELECTWITHBYTESMAKS_CHECK_H_
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #include "selectwithbytesmaskcheck_common.h"
@@ -35,4 +42,10 @@ __aicore__ inline void CheckFuncSelectWithBytesMask(__gm__ const char *apiName, 
 
 }
 }
-#endif // IMPL_API_CHECK_KERNEL_CHECK_SELECT_SELECTWITHBYTESMASK_SELECTWITHBYTESMASK_CHECK_H_
+
+#endif // IMPL_API_CHECK_KERNEL_CHECK_SELECT_SELECTWITHBYTESMAKS_SELECTWITHBYTESMAKS_CHECK_H_
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SELECTWITHBYTESMASKCHECK_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SELECTWITHBYTESMASKCHECK_H__
+#endif

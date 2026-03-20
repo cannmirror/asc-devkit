@@ -12,6 +12,13 @@
  * \file sigmoid_c310_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/activation/sigmoid/sigmoid_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/sigmoid.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIGMOID_C310_IMPL_H__
+#endif
+
 #ifndef IMPL_ACTIVATION_SIGMOID_C310_IMPL_H
 #define IMPL_ACTIVATION_SIGMOID_C310_IMPL_H
 
@@ -28,31 +35,31 @@ template<typename T>
 __simd_vf__ inline void SigmoidImplVF(__ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32_t count, const uint16_t repeatTimes)
 {
     uint32_t sreg = count;
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::RegTensor<float> castReg;
-    MicroAPI::RegTensor<float> tmpReg;
-    MicroAPI::RegTensor<float> dstReg;
+    Reg::MaskReg preg;
+    Reg::RegTensor<T> srcReg;
+    Reg::RegTensor<float> castReg;
+    Reg::RegTensor<float> tmpReg;
+    Reg::RegTensor<float> dstReg;
 
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        preg = MicroAPI::UpdateMask<float>(sreg);
+        preg = Reg::UpdateMask<float>(sreg);
         if constexpr (sizeof(T) == sizeof(half)) {
-            MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
-            MicroAPI::Cast<float, T, castTraitB16ToB32>(castReg, srcReg, preg);
+            Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
+            Reg::Cast<float, T, castTraitB16ToB32>(castReg, srcReg, preg);
         } else {
-            MicroAPI::LoadAlign(castReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
+            Reg::LoadAlign(castReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
         }
-        MicroAPI::Muls(tmpReg, castReg, -1.0f, preg);
-        MicroAPI::Exp(tmpReg, tmpReg, preg);
+        Reg::Muls(tmpReg, castReg, -1.0f, preg);
+        Reg::Exp(tmpReg, tmpReg, preg);
 
-        MicroAPI::Adds(tmpReg, tmpReg, 1.0f, preg);
-        MicroAPI::Duplicate(dstReg, 1.0f, preg);
-        MicroAPI::Div(dstReg, dstReg, tmpReg, preg);
+        Reg::Adds(tmpReg, tmpReg, 1.0f, preg);
+        Reg::Duplicate(dstReg, 1.0f, preg);
+        Reg::Div(dstReg, dstReg, tmpReg, preg);
         if constexpr (sizeof(T) == sizeof(half)) {
-            MicroAPI::Cast<T, float, castTraitB32ToB16>(srcReg, dstReg, preg);
-            MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_PACK_B32>(dstUb + i * B32_DATA_NUM_PER_REPEAT, srcReg, preg);
+            Reg::Cast<T, float, castTraitB32ToB16>(srcReg, dstReg, preg);
+            Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B32>(dstUb + i * B32_DATA_NUM_PER_REPEAT, srcReg, preg);
         } else {
-            MicroAPI::StoreAlign(dstUb + i * B32_DATA_NUM_PER_REPEAT, dstReg, preg);
+            Reg::StoreAlign(dstUb + i * B32_DATA_NUM_PER_REPEAT, dstReg, preg);
         }
     }
 }
@@ -87,3 +94,8 @@ __aicore__ inline void SigmoidImpl(const LocalTensor<T>& dstTensor, const LocalT
 } // namespace AscendC
 
 #endif // IMPL_ACTIVATION_SIGMOID_C310_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIGMOID_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIGMOID_C310_IMPL_H__
+#endif

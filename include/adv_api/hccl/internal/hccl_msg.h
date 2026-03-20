@@ -12,6 +12,12 @@
  * \file hccl_msg.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HCCL_MSG_H__
+#endif
+
 #ifndef IMPL_HCCL_HCCL_MSG_H
 #define IMPL_HCCL_HCCL_MSG_H
 
@@ -175,11 +181,11 @@ struct HcclMsgArea {
 
 constexpr uint32_t DECOUPLED_CTX_VER = 2U;
 struct CommKfcParamDesc {
-    uint64_t version : 4;    // 版本号，解耦context方案是2，否则是1
+    uint64_t version : 4;    // 版本号，解耦context方案�?，否则是1
     uint64_t itemNum : 4;    // ctx数量
     uint64_t hasFfts : 1;    // 910下是否是ffts融合算子
     uint64_t tilingOff : 7;  // tilingdata指针所在的参数索引
-    uint64_t isDyn : 48;     // 输入参数是否是动态输入
+    uint64_t isDyn : 48;     // 输入参数是否是动态输�?
 };
 
 struct CommKfcApiContext {
@@ -199,3 +205,8 @@ struct CommKfcContext {
 }
 
 #endif  // IMPL_HCCL_HCCL_MSG_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HCCL_MSG_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HCCL_MSG_H__
+#endif

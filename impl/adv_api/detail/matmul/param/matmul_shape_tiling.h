@@ -13,6 +13,12 @@
  * \brief matmul variable manager
  */
 
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/matmul/param/matmul_shape_tiling.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_PARAM_MATMUL_SHAPE_TILING_H__
+#endif
+
 #ifndef IMPL_MATMUL_PARAM_MATMUL_SHAPE_TILING_H
 #define IMPL_MATMUL_PARAM_MATMUL_SHAPE_TILING_H
 
@@ -270,9 +276,9 @@ private:
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
         if constexpr (DoMatmulMDL(MM_CFG)) {
             int32_t mxTypePara = tiling_.GetMxTypePara();
-            // 0x101 is scaleFactorKa, scaleFactorKb min val
-            ASCENDC_ASSERT((mxTypePara >= 0x101), {
-            KERNEL_LOG(KERNEL_ERROR, "mxTypePara value should be greater than or equal to 0x101, current is %d, ",
+            // 0x01010101 is scaleFactorM, scaleFactorN, scaleFactorKa, scaleFactorKb min val
+            ASCENDC_ASSERT((mxTypePara >= 0x01010101), {
+            KERNEL_LOG(KERNEL_ERROR, "mxTypePara value should be greater than or equal to 0x01010101, current is %d, ",
                     mxTypePara);
             });
         }
@@ -478,3 +484,8 @@ private:
 }  // namespace Impl
 }  // namespace AscendC
 #endif // IMPL_MATMUL_PARAM_MATMUL_SHAPE_TILING_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_PARAM_MATMUL_SHAPE_TILING_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_PARAM_MATMUL_SHAPE_TILING_H__
+#endif

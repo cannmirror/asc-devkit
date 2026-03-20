@@ -13,6 +13,11 @@
  * \brief
  */
 
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/math/fma/fma_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/fma.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_FMA_FMA_COMMON_IMPL_H__
+#endif
 #ifndef IMPL_MATH_FMA_FMA_COMMON_IMPL_H
 #define IMPL_MATH_FMA_FMA_COMMON_IMPL_H
 #include "kernel_tensor.h"
@@ -34,17 +39,17 @@ __simd_vf__ inline void FmaImplVF(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T*
     uint32_t count, uint16_t repeatTimes)
 {
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
-    MicroAPI::RegTensor<T> srcVreg0;
-    MicroAPI::RegTensor<T> srcVreg1;
-    MicroAPI::RegTensor<T> srcVreg2;
-    MicroAPI::MaskReg mask;
+    Reg::RegTensor<T> srcVreg0;
+    Reg::RegTensor<T> srcVreg1;
+    Reg::RegTensor<T> srcVreg2;
+    Reg::MaskReg mask;
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = MicroAPI::UpdateMask<T>(count);
-        MicroAPI::LoadAlign(srcVreg0, src0 + i * oneRepElm);
-        MicroAPI::LoadAlign(srcVreg1, src1 + i * oneRepElm);
-        MicroAPI::LoadAlign(srcVreg2, src2 + i * oneRepElm);
-        MicroAPI::FusedMulDstAdd(srcVreg0, srcVreg1, srcVreg2, mask);
-        MicroAPI::StoreAlign(dst + i * oneRepElm, srcVreg0, mask);
+        mask = Reg::UpdateMask<T>(count);
+        Reg::LoadAlign(srcVreg0, src0 + i * oneRepElm);
+        Reg::LoadAlign(srcVreg1, src1 + i * oneRepElm);
+        Reg::LoadAlign(srcVreg2, src2 + i * oneRepElm);
+        Reg::FusedMulDstAdd(srcVreg0, srcVreg1, srcVreg2, mask);
+        Reg::StoreAlign(dst + i * oneRepElm, srcVreg0, mask);
     }
 }
 
@@ -80,3 +85,8 @@ __aicore__ inline void FmaImpl(const LocalTensor<T>& dst, const LocalTensor<T>& 
 }
 } // namespace AscendC
 #endif // IMPL_MATH_FMA_FMA_COMMON_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_FMA_FMA_COMMON_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_FMA_FMA_COMMON_IMPL_H__
+#endif

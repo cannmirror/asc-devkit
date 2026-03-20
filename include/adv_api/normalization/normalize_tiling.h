@@ -12,6 +12,12 @@
  * \file normalize_tiling.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZE_TILING_H__
+#endif
+
 #ifndef LIB_NORMALIZATION_NORMALIZE_TILING_H
 #define LIB_NORMALIZATION_NORMALIZE_TILING_H
 #include "graph/tensor.h"
@@ -33,3 +39,8 @@ void GetNormalizeMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSiz
     const bool isReuseSource, const bool isComputeRstd, const bool isOnlyOutput, uint32_t& maxValue, uint32_t& minValue);
 }
 #endif // LIB_NORMALIZATION_NORMALIZE_TILING_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZE_TILING_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZE_TILING_H__
+#endif

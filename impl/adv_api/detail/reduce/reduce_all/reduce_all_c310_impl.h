@@ -8,6 +8,12 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/reduce/reduce_all/reduce_all_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_ALL_REDUCE_ALL_C310_IMPL_H__
+#endif
+
 #ifndef IMPL_REDUCE_REDUCE_ALL_REDUCE_ALL_C310_IMPL_H_
 #define IMPL_REDUCE_REDUCE_ALL_REDUCE_ALL_C310_IMPL_H_
 
@@ -33,14 +39,14 @@ __aicore__ inline void ReduceAllARImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr,
     using CastType = typename ReduceOpInternal::template ExtractReduceCastType<T>::CastT;
 
     if (dimR <= vlSize) {
-        ReduceARReuseSourceLessThanVL<T, MicroAPI::RegTraitNumOne, vlSize,
-            MicroAPI::Min<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>,
-            MicroAPI::ReduceMin<CastType, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<CastType>>>(
+        ReduceARReuseSourceLessThanVL<T, Reg::RegTraitNumOne, vlSize,
+            Reg::Min<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>,
+            Reg::ReduceMin<CastType, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<CastType>>>(
                 dstAddr, srcAddr, dimA, dimR);
     } else {
-        ReduceAROverVLImpl<T, MicroAPI::RegTraitNumOne, vlSize,
-            MicroAPI::Min<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>,
-            MicroAPI::ReduceMin<CastType, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<CastType>>,
+        ReduceAROverVLImpl<T, Reg::RegTraitNumOne, vlSize,
+            Reg::Min<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>,
+            Reg::ReduceMin<CastType, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<CastType>>,
             isReuseSource>(dstAddr, srcAddr, tmpAddr, dimA, dimR);
     }
 }
@@ -66,11 +72,16 @@ __aicore__ inline void ReduceAllImpl(const LocalTensor<T>& dst, const LocalTenso
     if constexpr (std::is_same_v<pattern, Pattern::Reduce::AR>) {
         ReduceAllARImpl<T, isReuseSource>(dstAddr, srcAddr, tmpAddr, srcShape[0], srcShape[1]);
     } else {
-        ReduceRAImpl<T, MicroAPI::RegTraitNumOne,
-            MicroAPI::Min<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>, isReuseSource>(
+        ReduceRAImpl<T, Reg::RegTraitNumOne,
+            Reg::Min<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>, isReuseSource>(
             dstAddr, srcAddr, tmpAddr, srcShape[1], srcShape[0]);
     }
 }
 } // namespace Internal
 } // namespace AscendC
 #endif // IMPL_REDUCE_REDUCE_All_REDUCE_All_C310_IMPL_H_
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_ALL_REDUCE_ALL_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_ALL_REDUCE_ALL_C310_IMPL_H__
+#endif

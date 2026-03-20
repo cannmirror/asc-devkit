@@ -12,86 +12,23 @@
  * \file kernel_prof_trace_intf.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_PROF_TRACE_INTF_H__
+#endif
 #ifndef ASCENDC_MODULE_KERNEL_PROF_TRACE_INTERFACE_H
 #define ASCENDC_MODULE_KERNEL_PROF_TRACE_INTERFACE_H
 
-#include <cstdint>
-#include "kernel_macros.h"
-
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
 #include "stub_def.h"
+#include "stub_fun.h"
 #endif
+
+#include <cstdint>
+#include "kernel_macros.h"
+#include "utils/debug/asc_time.h"
 
 namespace AscendC {
-#ifdef ASCENDC_TRACE_ON
-enum class TraceId : uint32_t {
-    KFC_CLIENT_POST_MSG = 0x7001,
-    KFC_CLIENT_REV_MSG_GM = 0x7002,
-    KFC_CLIENT_REV_MSG_UB = 0x7003,
-    KFC_SERVER_RUN = 0x7101,
-    KFC_SERVER_REV_MSG = 0x7102,
-    KFC_SERVER_PROCESS_MSG = 0x7103,
-    MatMul_PROCESS_MSG = 0x8001,
-    MatMul_CALC,
-    Conv = 0x8101,
-    DropOut = 0x8201,
-    SoftMax = 0x8301,
-    SoftmaxGrad,
-    SoftmaxFlash,
-    SoftmaxFlashV2,
-    LogSoftMax,
-    SoftmaxFlashV3,
-    LayerNorm = 0x8401,
-    LayerNormGrad,
-    LayerNormGradBeta,
-    Pad = 0x8501,
-    UnPad,
-    BroadCast = 0x8601,
-};
-
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
-__aicore__ inline void TRACE_START(TraceId apid)
-{}
-__aicore__ inline void TRACE_STOP(TraceId apid)
-{}
-
-template<pipe_t pipe, uint16_t index>
-__aicore__ inline void MarkStamp();
-#elif defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || \
-      (__NPU_ARCH__ == 3113)) || (__NPU_ARCH__ == 3510)
-    #define TRACE_START(apid)                                          \
-    do {                                                           \
-        uint32_t v = (::AscendC::PROF_START_EVENT | static_cast<uint32_t>(apid));                               \
-        __asm__ __volatile__("");                                  \
-        asm volatile("MOV COND, %0\n" : "+l"(v));                  \
-        __asm__ __volatile__("");                                  \
-    } while (0)
-
-#define TRACE_STOP(apid)                                          \
-    do {                                                          \
-        uint32_t v = (::AscendC::PROF_STOP_EVENT | static_cast<uint32_t>(apid));                              \
-        __asm__ __volatile__("");                                 \
-        asm volatile("MOV COND, %0\n" : "+l"(v));                 \
-        __asm__ __volatile__("");                                 \
-    } while (0)
-#else
-#define TRACE_START(apid)                                          \
-    do {                                                           \
-        set_lpcnt(::AscendC::PROF_START_EVENT | static_cast<uint32_t>(apid)); \
-        ::AscendC::ProfMarkEvent();                                           \
-    } while (0)
-
-#define TRACE_STOP(apid)                                          \
-    do {                                                          \
-        set_lpcnt(::AscendC::PROF_STOP_EVENT | static_cast<uint32_t>(apid)); \
-        ::AscendC::ProfMarkEvent();                                          \
-    } while (0)
-#endif
-#else
-
-#define TRACE_START(apid)
-#define TRACE_STOP(apid)
-#endif
 __aicore__ inline void MetricsProfStart();
 
 __aicore__ inline void MetricsProfStop();
@@ -99,3 +36,7 @@ __aicore__ inline void MetricsProfStop();
 
 #include "../../impl/basic_api/kernel_prof_trace_intf_impl.h"
 #endif // ASCENDC_MODULE_KERNEL_PROF_TRACE_INTERFACE_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_PROF_TRACE_INTF_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_PROF_TRACE_INTF_H__
+#endif

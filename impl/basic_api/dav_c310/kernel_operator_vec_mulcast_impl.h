@@ -12,11 +12,17 @@
  * \file kernel_operator_vec_mulcast_impl.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/dav_c310/kernel_operator_vec_mulcast_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_tensor.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_MULCAST_IMPL_H__
+#endif
+
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_MULCAST_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_MULCAST_IMPL_H
 #include "kernel_utils.h"
 #include "kernel_operator_vec_template_impl.h"
-#include "micro_api/kernel_micro_intf.h"
+#include "reg_compute/kernel_reg_compute_intf.h"
 
 namespace AscendC {
 template <typename T, typename U> constexpr __aicore__ inline void CheckMulCastSupportType()
@@ -25,27 +31,27 @@ template <typename T, typename U> constexpr __aicore__ inline void CheckMulCastS
         "MulCast, current api support dtype combination is src: half, dst: int8_t, uint8_t.");
 }
 namespace CastParam {
-constexpr MicroAPI::CastTrait MulCastTrait = { MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
-    MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT };
+constexpr Reg::CastTrait MulCastTrait = { Reg::RegLayout::ZERO, Reg::SatMode::SAT,
+    Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT };
 }
 
-namespace MicroAPIMulCast {
+namespace RegMulCast {
 template <typename T, typename U, typename RegT, typename RegU>
-__aicore__ inline void MulCast(RegT &dstReg, RegU &src0Reg, RegU &src1Reg, MicroAPI::MaskReg &mask)
+__aicore__ inline void MulCast(RegT &dstReg, RegU &src0Reg, RegU &src1Reg, Reg::MaskReg &mask)
 {
-    MicroAPI::Mul<U>(src0Reg, src0Reg, src1Reg, mask);
-    MicroAPI::Cast<T, U, CastParam::MulCastTrait>(dstReg, src0Reg, mask);
-    MicroAPI::Pack<uint8_t, uint16_t, MicroAPI::HighLowPart::LOWEST>((MicroAPI::RegTensor<uint8_t> &)dstReg,
-        (MicroAPI::RegTensor<uint16_t> &)dstReg);
+    Reg::Mul<U>(src0Reg, src0Reg, src1Reg, mask);
+    Reg::Cast<T, U, CastParam::MulCastTrait>(dstReg, src0Reg, mask);
+    Reg::Pack<uint8_t, uint16_t, Reg::HighLowPart::LOWEST>((Reg::RegTensor<uint8_t> &)dstReg,
+        (Reg::RegTensor<uint16_t> &)dstReg);
 }
-} // namespace MicroAPIMulCast
+} // namespace RegMulCast
 
 template <typename T, typename U, bool isSetMask = true>
 __aicore__ inline void MulCastImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ U *src1, uint64_t mask,
     const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
     CheckMulCastSupportType<T, U>();
-    constexpr auto func = MicroAPIMulCast::MulCast<T, U, MicroAPI::RegTensor<T>, MicroAPI::RegTensor<U>>;
+    constexpr auto func = RegMulCast::MulCast<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
     Internal::VecBinaryImplTemplate<func, isSetMask, false>(dst, src0, src1, nullptr, mask, repeatTime, repeatParams);
 }
 
@@ -54,7 +60,7 @@ __aicore__ inline void MulCastImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ U
     const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
     CheckMulCastSupportType<T, U>();
-    constexpr auto func = MicroAPIMulCast::MulCast<T, U, MicroAPI::RegTensor<T>, MicroAPI::RegTensor<U>>;
+    constexpr auto func = RegMulCast::MulCast<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
     Internal::VecBinaryImplTemplate<func, isSetMask, true>(dst, src0, src1, mask, 0, repeatTime, repeatParams);
 }
 
@@ -69,34 +75,34 @@ __simd_vf__ inline void MulCastImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ 
     if constexpr (sizeof(U) == 8) {
         const uint32_t sregLower = static_cast<uint32_t>(B64_DATA_NUM_PER_REPEAT * 2);
         const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
-        MicroAPI::RegTensor<T> vDstReg0;
-        MicroAPI::RegTensor<U, MicroAPI::RegTraitNumTwo> vDstReg1;
-        MicroAPI::RegTensor<U, MicroAPI::RegTraitNumTwo> vSrcReg0;
-        MicroAPI::RegTensor<U, MicroAPI::RegTraitNumTwo> vSrcReg1;
-        MicroAPI::MaskReg mask;
+        Reg::RegTensor<T> vDstReg0;
+        Reg::RegTensor<U, Reg::RegTraitNumTwo> vDstReg1;
+        Reg::RegTensor<U, Reg::RegTraitNumTwo> vSrcReg0;
+        Reg::RegTensor<U, Reg::RegTraitNumTwo> vSrcReg1;
+        Reg::MaskReg mask;
         for (uint16_t i = 0; i < repeatTime; ++i) {
-            mask = MicroAPI::UpdateMask<U, MicroAPI::RegTraitNumTwo>(sreg);
-            MicroAPI::LoadAlign(vSrcReg0, src0 + i * sregLower);
-            MicroAPI::LoadAlign(vSrcReg1, src1 + i * sregLower);
-            MicroAPI::Mul(vDstReg1, vSrcReg0, vSrcReg1, mask);
-            MicroAPI::Cast<T, U, CastParam::MulCastTrait>(vDstReg0, vDstReg1, mask);
-            MicroAPI::StoreAlign(dst + i * sregLower, vDstReg0, mask);
+            mask = Reg::UpdateMask<U, Reg::RegTraitNumTwo>(sreg);
+            Reg::LoadAlign(vSrcReg0, src0 + i * sregLower);
+            Reg::LoadAlign(vSrcReg1, src1 + i * sregLower);
+            Reg::Mul(vDstReg1, vSrcReg0, vSrcReg1, mask);
+            Reg::Cast<T, U, CastParam::MulCastTrait>(vDstReg0, vDstReg1, mask);
+            Reg::StoreAlign(dst + i * sregLower, vDstReg0, mask);
         }
     } else {
         const uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(U));
         const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
-        MicroAPI::RegTensor<T> dst0Reg;
-        MicroAPI::RegTensor<U> dst1Reg;
-        MicroAPI::RegTensor<U> src0Reg;
-        MicroAPI::RegTensor<U> src1Reg;
-        MicroAPI::MaskReg preg;
+        Reg::RegTensor<T> dst0Reg;
+        Reg::RegTensor<U> dst1Reg;
+        Reg::RegTensor<U> src0Reg;
+        Reg::RegTensor<U> src1Reg;
+        Reg::MaskReg preg;
         for (uint16_t i = 0; i < repeatTime; ++i) {
-            preg = MicroAPI::UpdateMask<U>(calCount);
-            MicroAPI::LoadAlign<U>(src0Reg, src0 + i * sregLower);
-            MicroAPI::LoadAlign<U>(src1Reg, src1 + i * sregLower);
-            MicroAPI::Mul<U>(dst1Reg, src0Reg, src1Reg, preg);
-            MicroAPI::Cast<T, U, CastParam::MulCastTrait>(dst0Reg, dst1Reg, preg);
-            MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_PACK_B16>(dst + i * sregLower, dst0Reg, preg);
+            preg = Reg::UpdateMask<U>(calCount);
+            Reg::LoadAlign<U>(src0Reg, src0 + i * sregLower);
+            Reg::LoadAlign<U>(src1Reg, src1 + i * sregLower);
+            Reg::Mul<U>(dst1Reg, src0Reg, src1Reg, preg);
+            Reg::Cast<T, U, CastParam::MulCastTrait>(dst0Reg, dst1Reg, preg);
+            Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B16>(dst + i * sregLower, dst0Reg, preg);
         }
     }
 }
@@ -135,3 +141,7 @@ __aicore__ inline void MulCastCalc(const LocalTensor<T> &dstLocal, const LocalTe
 }
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_VEC_MULCAST_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_MULCAST_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_MULCAST_IMPL_H__
+#endif

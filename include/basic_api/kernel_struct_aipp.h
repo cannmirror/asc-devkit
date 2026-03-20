@@ -12,6 +12,11 @@
  * \file kernel_struct_aipp.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_STRUCT_AIPP_H__
+#endif
+
 #ifndef ASCENDC_MODULE_STRUCT_AIPP_H
 #define ASCENDC_MODULE_STRUCT_AIPP_H
 
@@ -99,3 +104,8 @@ template <typename T> struct AippParams {
 #endif // (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 3002)
 } // namespace AscendC
 #endif // ASCENDC_MODULE_STRUCT_AIPP_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_STRUCT_AIPP_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_STRUCT_AIPP_H__
+#endif

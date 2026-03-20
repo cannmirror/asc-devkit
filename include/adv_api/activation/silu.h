@@ -12,6 +12,12 @@
  * \file silu.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SILU_H__
+#endif
+
 #ifndef LIB_SILU_SILU_H
 #define LIB_SILU_SILU_H
 
@@ -46,3 +52,8 @@ __aicore__ inline __inout_pipe__(V) void Silu(
 
 }  // namespace AscendC
 #endif // LIB_SILU_SILU_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SILU_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SILU_H__
+#endif

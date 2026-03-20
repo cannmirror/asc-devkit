@@ -12,6 +12,13 @@
  * \file mean_c310_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/reduce/mean/mean_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/mean.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_MEAN_MEAN_C310_IMPL_H__
+#endif
+
 #ifndef IMPL_REDUCE_MEAN_C310_IMPL_H
 #define IMPL_REDUCE_MEAN_C310_IMPL_H
 
@@ -35,14 +42,14 @@ struct GetConvType<half, float> {
 
 template <typename T, typename ConvType>
 __simd_callee__ inline void LoadSrcData(
-    MicroAPI::RegTensor<ConvType>& srcReg, __ubuf__ T* src, uint16_t index, uint32_t offset, MicroAPI::MaskReg& mask)
+    Reg::RegTensor<ConvType>& srcReg, __ubuf__ T* src, uint16_t index, uint32_t offset, Reg::MaskReg& mask)
 {
-    MicroAPI::RegTensor<T> srcTmpReg;
+    Reg::RegTensor<T> srcTmpReg;
     if constexpr (std::is_same<T, half>::value && std::is_same<ConvType, float>::value) {
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcTmpReg, src + index * offset);
-        MicroAPI::Cast<float, T, castTraitB16ToB32>(srcReg, srcTmpReg, mask);
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(srcTmpReg, src + index * offset);
+        Reg::Cast<float, T, castTraitB16ToB32>(srcReg, srcTmpReg, mask);
     } else {
-        MicroAPI::LoadAlign(srcReg, src + index * offset);
+        Reg::LoadAlign(srcReg, src + index * offset);
     }
 }
 
@@ -52,27 +59,27 @@ __simd_vf__ inline void MeanForOneRepeatTime(
 {
     uint32_t count;
     ConvType scalarValue = static_cast<ConvType>(1.0f / meanParams.n);
-    MicroAPI::MaskReg mask;
-    MicroAPI::UnalignReg uregOut;
-    MicroAPI::RegTensor<ConvType> srcTmpReg, dstTmpReg;
-    MicroAPI::RegTensor<T> dstReg;
+    Reg::MaskReg mask;
+    Reg::UnalignReg uregOut;
+    Reg::RegTensor<ConvType> srcTmpReg, dstTmpReg;
+    Reg::RegTensor<T> dstReg;
 
     for (int i = 0; i < meanParams.outter; i++) {
         count = calCount;
-        mask = MicroAPI::UpdateMask<ConvType>(count);
+        mask = Reg::UpdateMask<ConvType>(count);
         LoadSrcData(srcTmpReg, srcUb, i, offset, mask);
-        MicroAPI::ReduceSum(dstTmpReg, srcTmpReg, mask);
-        MicroAPI::Muls(dstTmpReg, dstTmpReg, scalarValue, mask);
+        Reg::ReduceSum(dstTmpReg, srcTmpReg, mask);
+        Reg::Muls(dstTmpReg, dstTmpReg, scalarValue, mask);
         if constexpr (sizeof(T) == sizeof(half) && sizeof(ConvType) == sizeof(float)) {
-            MicroAPI::Cast<T, float, castTraitB32ToB16>(dstReg, dstTmpReg, mask);
-            MicroAPI::Pack<uint16_t, uint32_t, MicroAPI::HighLowPart::LOWEST>(
-                (MicroAPI::RegTensor<uint16_t>&)dstReg, (MicroAPI::RegTensor<uint32_t>&)dstReg);
+            Reg::Cast<T, float, castTraitB32ToB16>(dstReg, dstTmpReg, mask);
+            Reg::Pack<uint16_t, uint32_t, Reg::HighLowPart::LOWEST>(
+                (Reg::RegTensor<uint16_t>&)dstReg, (Reg::RegTensor<uint32_t>&)dstReg);
         } else {
             dstReg = dstTmpReg;
         }
-        MicroAPI::StoreUnAlign<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dstUb, dstReg, uregOut, 1);
+        Reg::StoreUnAlign<T, Reg::PostLiteral::POST_MODE_UPDATE>(dstUb, dstReg, uregOut, 1);
     }
-    MicroAPI::StoreUnAlignPost(dstUb, uregOut, 0);
+    Reg::StoreUnAlignPost(dstUb, uregOut, 0);
 }
 
 template <typename T, typename ConvType, bool isFirstRepeat>
@@ -80,27 +87,27 @@ __simd_vf__ inline void ReduceSumNextN(__ubuf__ ConvType* dstUb, __ubuf__ T* src
     uint32_t calCount, uint32_t repeatTimes, uint32_t offset)
 {
     uint32_t count;
-    MicroAPI::MaskReg mask;
-    MicroAPI::UnalignReg uregIn;
-    MicroAPI::RegTensor<ConvType> srcReg, dstReg;
+    Reg::MaskReg mask;
+    Reg::UnalignReg uregIn;
+    Reg::RegTensor<ConvType> srcReg, dstReg;
     constexpr int32_t eleCountPerVL = GetVecLen() / sizeof(ConvType);
 
     for (uint16_t i = 0; i < meanParams.outter; i++) {
         count = calCount;
         auto dstTmpUb = dstUb + i * offset;
         for (uint16_t j = 0; j < repeatTimes; j++) {
-            mask = MicroAPI::UpdateMask<ConvType>(count);
+            mask = Reg::UpdateMask<ConvType>(count);
             if constexpr (isFirstRepeat) {
                 LoadSrcData(srcReg, srcUb + i * meanParams.inner, j, eleCountPerVL, mask);
             } else {
                 LoadSrcData(srcReg, srcUb + i * offset, j, eleCountPerVL, mask);
             }
-            MicroAPI::ReduceSum(dstReg, srcReg, mask);
-            MicroAPI::StoreUnAlign<ConvType, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dstTmpUb, dstReg, uregIn, 1);
+            Reg::ReduceSum(dstReg, srcReg, mask);
+            Reg::StoreUnAlign<ConvType, Reg::PostLiteral::POST_MODE_UPDATE>(dstTmpUb, dstReg, uregIn, 1);
         }
-        MicroAPI::StoreUnAlignPost(dstTmpUb, uregIn, 0);
+        Reg::StoreUnAlignPost(dstTmpUb, uregIn, 0);
     }
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 }
 } // namespace Internal
 
@@ -177,3 +184,8 @@ __aicore__ inline void MeanImpl(const LocalTensor<T>& dstTensor, const LocalTens
 } // namespace AscendC
 
 #endif // IMPL_REDUCE_MEAN_C310_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_MEAN_MEAN_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_MEAN_MEAN_C310_IMPL_H__
+#endif

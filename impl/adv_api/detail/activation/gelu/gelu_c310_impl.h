@@ -12,6 +12,13 @@
  * \file gelu_c310_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/activation/gelu/gelu_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/gelu.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GELU_C310_IMPL_H__
+#endif
+
 #ifndef IMPL_ACTIVATION_GELU_GELU_IMPL_C310_H
 #define IMPL_ACTIVATION_GELU_GELU_IMPL_C310_H
 
@@ -29,87 +36,87 @@ __simd_vf__ inline void GeluImplVF(__ubuf__ T* dst, __ubuf__ T* src, uint32_t co
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
     constexpr float coefficientsA = 0.044715;
     constexpr float coefficientsB = 1.5957691216057308;
-    MicroAPI::RegTensor<T> srcVreg;
-    MicroAPI::RegTensor<T> dstVreg;
-    MicroAPI::RegTensor<T> tmpReg0;
-    MicroAPI::RegTensor<T> tmpReg1;
-    MicroAPI::RegTensor<T> tmpReg2;
-    MicroAPI::RegTensor<T> tmpReg3;
-    MicroAPI::MaskReg mask;
+    Reg::RegTensor<T> srcVreg;
+    Reg::RegTensor<T> dstVreg;
+    Reg::RegTensor<T> tmpReg0;
+    Reg::RegTensor<T> tmpReg1;
+    Reg::RegTensor<T> tmpReg2;
+    Reg::RegTensor<T> tmpReg3;
+    Reg::MaskReg mask;
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = MicroAPI::UpdateMask<T>(count);
+        mask = Reg::UpdateMask<T>(count);
         if constexpr (highPrecision) {
-            MicroAPI::LoadAlign<half, MicroAPI::LoadDist::DIST_UNPACK_B16>(
-                (MicroAPI::RegTensor<half>&)srcVreg, (__ubuf__ half*)src + i * oneRepElm);
-            MicroAPI::Cast<float, half, castTraitB16ToB32>(srcVreg, (MicroAPI::RegTensor<half>&)srcVreg, mask);
+            Reg::LoadAlign<half, Reg::LoadDist::DIST_UNPACK_B16>(
+                (Reg::RegTensor<half>&)srcVreg, (__ubuf__ half*)src + i * oneRepElm);
+            Reg::Cast<float, half, castTraitB16ToB32>(srcVreg, (Reg::RegTensor<half>&)srcVreg, mask);
         } else {
-            MicroAPI::LoadAlign(srcVreg, src + i * oneRepElm);
+            Reg::LoadAlign(srcVreg, src + i * oneRepElm);
         }
         // y = (input_x + 0.044715 * input_x ^ 3) * 1.5957691
-        MicroAPI::Mul(tmpReg0, srcVreg, srcVreg, mask);
-        MicroAPI::Mul(tmpReg0, tmpReg0, srcVreg, mask);
-        MicroAPI::Muls(tmpReg0, tmpReg0, coefficientsA, mask);
-        MicroAPI::Add(tmpReg0, tmpReg0, srcVreg, mask);
-        MicroAPI::Muls(tmpReg0, tmpReg0, coefficientsB, mask);
+        Reg::Mul(tmpReg0, srcVreg, srcVreg, mask);
+        Reg::Mul(tmpReg0, tmpReg0, srcVreg, mask);
+        Reg::Muls(tmpReg0, tmpReg0, coefficientsA, mask);
+        Reg::Add(tmpReg0, tmpReg0, srcVreg, mask);
+        Reg::Muls(tmpReg0, tmpReg0, coefficientsB, mask);
         // exp(min(y, 0))
-        MicroAPI::Mins(tmpReg1, tmpReg0, 0.0f, mask);
-        MicroAPI::Exp(tmpReg1, tmpReg1, mask);
+        Reg::Mins(tmpReg1, tmpReg0, 0.0f, mask);
+        Reg::Exp(tmpReg1, tmpReg1, mask);
         // x / (exp^(-abs(y)) + 1)
-        MicroAPI::Abs(tmpReg2, tmpReg0, mask);
-        MicroAPI::Muls(tmpReg2, tmpReg2, -1.0f, mask);
-        MicroAPI::Exp(tmpReg3, tmpReg2, mask);
-        MicroAPI::Adds(tmpReg3, tmpReg3, 1.0f, mask);
-        MicroAPI::Div(tmpReg3, srcVreg, tmpReg3, mask);
+        Reg::Abs(tmpReg2, tmpReg0, mask);
+        Reg::Muls(tmpReg2, tmpReg2, -1.0f, mask);
+        Reg::Exp(tmpReg3, tmpReg2, mask);
+        Reg::Adds(tmpReg3, tmpReg3, 1.0f, mask);
+        Reg::Div(tmpReg3, srcVreg, tmpReg3, mask);
         // x / (exp^(-abs(y)) + 1) * exp(min(y, 0))
-        MicroAPI::Mul(dstVreg, tmpReg1, tmpReg3, mask);
+        Reg::Mul(dstVreg, tmpReg1, tmpReg3, mask);
         if constexpr (highPrecision) {
-            MicroAPI::Cast<half, float, castTraitB32ToB16>((MicroAPI::RegTensor<half>&)dstVreg, dstVreg, mask);
-            MicroAPI::StoreAlign<half, MicroAPI::StoreDist::DIST_PACK_B32>(
-                (__ubuf__ half*)dst + i * oneRepElm, (MicroAPI::RegTensor<half>&)dstVreg, mask);
+            Reg::Cast<half, float, castTraitB32ToB16>((Reg::RegTensor<half>&)dstVreg, dstVreg, mask);
+            Reg::StoreAlign<half, Reg::StoreDist::DIST_PACK_B32>(
+                (__ubuf__ half*)dst + i * oneRepElm, (Reg::RegTensor<half>&)dstVreg, mask);
         } else {
-            MicroAPI::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
+            Reg::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
         }
     }
 }
 
 template <typename T>
-__simd_callee__ inline void FastGeluCoreAlg(MicroAPI::RegTensor<T>& dstVreg, 
-    MicroAPI::RegTensor<T>& srcVreg, MicroAPI::MaskReg& mask, MicroAPI::RegTensor<T>& stackVreg)
+__simd_callee__ inline void FastGeluCoreAlg(Reg::RegTensor<T>& dstVreg, 
+    Reg::RegTensor<T>& srcVreg, Reg::MaskReg& mask, Reg::RegTensor<T>& stackVreg)
 {
     constexpr float coefficients = -1.702f;
     constexpr float oneFloatScalar = 1.0f;
-    MicroAPI::Muls(stackVreg, srcVreg, coefficients, mask);
-    MicroAPI::Exp(stackVreg, stackVreg, mask);
-    MicroAPI::Adds(stackVreg, stackVreg, oneFloatScalar, mask);
-    MicroAPI::Div(dstVreg, srcVreg, stackVreg, mask);
+    Reg::Muls(stackVreg, srcVreg, coefficients, mask);
+    Reg::Exp(stackVreg, stackVreg, mask);
+    Reg::Adds(stackVreg, stackVreg, oneFloatScalar, mask);
+    Reg::Div(dstVreg, srcVreg, stackVreg, mask);
 }
 
 template <typename T = half>
 __simd_vf__ inline void FastGeluHighPrecisionAlgVF(__ubuf__ T* dst, __ubuf__ T* src,
     const uint32_t dataSize)
 {
-    MicroAPI::RegTensor<T> srcVreg;
-    MicroAPI::RegTensor<float> srcVregFloat;
-    MicroAPI::RegTensor<T> dstVreg;
-    MicroAPI::RegTensor<float> dstVregFloat;
+    Reg::RegTensor<T> srcVreg;
+    Reg::RegTensor<float> srcVregFloat;
+    Reg::RegTensor<T> dstVreg;
+    Reg::RegTensor<float> dstVregFloat;
 
     constexpr uint32_t stackSize = GetVecLen() / sizeof(float);
     uint32_t sreg = dataSize;
 
-    MicroAPI::RegTensor<float> stackVregFloat;
+    Reg::RegTensor<float> stackVregFloat;
     
-    MicroAPI::MaskReg mask;
+    Reg::MaskReg mask;
 
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(dataSize, stackSize));
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = MicroAPI::UpdateMask<float>(sreg);
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcVreg, src + i * stackSize);
-        MicroAPI::Cast<float, half, castTraitB16ToB32>(srcVregFloat, srcVreg, mask);
+        mask = Reg::UpdateMask<float>(sreg);
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(srcVreg, src + i * stackSize);
+        Reg::Cast<float, half, castTraitB16ToB32>(srcVregFloat, srcVreg, mask);
 
         FastGeluCoreAlg<float>(dstVregFloat, srcVregFloat, mask, stackVregFloat);
 
-        MicroAPI::Cast<half, float, castTraitB32ToB16>(dstVreg, dstVregFloat, mask);
-        MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_PACK_B32>(dst + i * stackSize, dstVreg, mask);
+        Reg::Cast<half, float, castTraitB32ToB16>(dstVreg, dstVregFloat, mask);
+        Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B32>(dst + i * stackSize, dstVreg, mask);
     }
 }
 
@@ -127,18 +134,18 @@ template <typename T>
 __simd_vf__ inline void FastGeluAlgVF(__ubuf__ T* dst, __ubuf__ T* src,
     const uint32_t dataSize)
 {
-    MicroAPI::RegTensor<T> srcVreg;
-    MicroAPI::RegTensor<T> dstVreg;
+    Reg::RegTensor<T> srcVreg;
+    Reg::RegTensor<T> dstVreg;
     constexpr uint32_t stackSize = GetVecLen() / sizeof(T);
     uint32_t sreg = dataSize;
-    MicroAPI::RegTensor<T> stackVreg;
-    MicroAPI::MaskReg mask;
+    Reg::RegTensor<T> stackVreg;
+    Reg::MaskReg mask;
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(dataSize, stackSize));
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = MicroAPI::UpdateMask<T>(sreg);
-        MicroAPI::LoadAlign<T>(srcVreg, src + i * stackSize);
+        mask = Reg::UpdateMask<T>(sreg);
+        Reg::LoadAlign<T>(srcVreg, src + i * stackSize);
         FastGeluCoreAlg<T>(dstVreg, srcVreg, mask, stackVreg);
-        MicroAPI::StoreAlign<T>(dst + i * stackSize, dstVreg, mask);
+        Reg::StoreAlign<T>(dst + i * stackSize, dstVreg, mask);
     }
 }
 
@@ -153,9 +160,9 @@ __aicore__ inline void FastGeluAlg(const LocalTensor<T>& dstLocal, const LocalTe
 }
 
 template <typename T>
-__simd_callee__ inline void FastGeluV2CoreAlg(MicroAPI::RegTensor<T>& dstVreg, 
-    MicroAPI::RegTensor<T>& srcVreg, MicroAPI::MaskReg& mask, MicroAPI::RegTensor<T>& stackVregA,
-    MicroAPI::RegTensor<T>& stackVregB, MicroAPI::RegTensor<T>& stackVregC)
+__simd_callee__ inline void FastGeluV2CoreAlg(Reg::RegTensor<T>& dstVreg, 
+    Reg::RegTensor<T>& srcVreg, Reg::MaskReg& mask, Reg::RegTensor<T>& stackVregA,
+    Reg::RegTensor<T>& stackVregB, Reg::RegTensor<T>& stackVregC)
 {
     constexpr float coefficients = 0.000000000001;
     constexpr float coefficientsHalf = 0.5;
@@ -164,54 +171,54 @@ __simd_callee__ inline void FastGeluV2CoreAlg(MicroAPI::RegTensor<T>& dstVreg,
     constexpr float coefficientsBInv = 1.769;
     constexpr float coefficientsC = 0.7071;
     constexpr float coefficientsD = 0.5;
-    MicroAPI::Muls(stackVregA, srcVreg, coefficientsC, mask);
-    MicroAPI::Abs(stackVregA, stackVregA, mask);
-    MicroAPI::Mins(stackVregA, stackVregA, coefficientsBInv, mask);
-    MicroAPI::Adds(stackVregA, stackVregA, coefficientsB, mask);
-    MicroAPI::Mul(stackVregA, stackVregA, stackVregA, mask);
-    MicroAPI::Muls(stackVregA, stackVregA, coefficientsA, mask);
-    MicroAPI::Adds(stackVregA, stackVregA, coefficientsD, mask);
+    Reg::Muls(stackVregA, srcVreg, coefficientsC, mask);
+    Reg::Abs(stackVregA, stackVregA, mask);
+    Reg::Mins(stackVregA, stackVregA, coefficientsBInv, mask);
+    Reg::Adds(stackVregA, stackVregA, coefficientsB, mask);
+    Reg::Mul(stackVregA, stackVregA, stackVregA, mask);
+    Reg::Muls(stackVregA, stackVregA, coefficientsA, mask);
+    Reg::Adds(stackVregA, stackVregA, coefficientsD, mask);
 
-    MicroAPI::Adds(stackVregB, srcVreg, coefficients, mask);
-    MicroAPI::Abs(stackVregC, stackVregB, mask);
-    MicroAPI::Div(stackVregB, stackVregB, stackVregC, mask);
+    Reg::Adds(stackVregB, srcVreg, coefficients, mask);
+    Reg::Abs(stackVregC, stackVregB, mask);
+    Reg::Div(stackVregB, stackVregB, stackVregC, mask);
 
-    MicroAPI::Mul(stackVregA, stackVregA, stackVregB, mask);
-    MicroAPI::Adds(stackVregA, stackVregA, coefficientsHalf, mask);
+    Reg::Mul(stackVregA, stackVregA, stackVregB, mask);
+    Reg::Adds(stackVregA, stackVregA, coefficientsHalf, mask);
 
-    MicroAPI::Mul(dstVreg, srcVreg, stackVregA, mask);
+    Reg::Mul(dstVreg, srcVreg, stackVregA, mask);
 }
 
 template <typename T = half>
 __simd_vf__ inline void FastGeluV2HighPrecisionAlgVF(__ubuf__ T* dst, __ubuf__ T* src,
     const uint32_t dataSize)
 {
-    MicroAPI::RegTensor<T> srcVreg;
-    MicroAPI::RegTensor<float> srcVregFloat;
-    MicroAPI::RegTensor<T> dstVreg;
-    MicroAPI::RegTensor<float> dstVregFloat;
+    Reg::RegTensor<T> srcVreg;
+    Reg::RegTensor<float> srcVregFloat;
+    Reg::RegTensor<T> dstVreg;
+    Reg::RegTensor<float> dstVregFloat;
 
     constexpr uint32_t stackSize = GetVecLen() / sizeof(float);
     uint32_t sreg = dataSize;
 
-    MicroAPI::RegTensor<float> stackVregFloat;
+    Reg::RegTensor<float> stackVregFloat;
     
-    MicroAPI::MaskReg mask;
+    Reg::MaskReg mask;
 
-    MicroAPI::RegTensor<float> stackVregA;
-    MicroAPI::RegTensor<float> stackVregB;
-    MicroAPI::RegTensor<float> stackVregC;
+    Reg::RegTensor<float> stackVregA;
+    Reg::RegTensor<float> stackVregB;
+    Reg::RegTensor<float> stackVregC;
 
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(dataSize, stackSize));
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = MicroAPI::UpdateMask<float>(sreg);
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcVreg, src + i * stackSize);
-        MicroAPI::Cast<float, half, castTraitB16ToB32>(srcVregFloat, srcVreg, mask);
+        mask = Reg::UpdateMask<float>(sreg);
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(srcVreg, src + i * stackSize);
+        Reg::Cast<float, half, castTraitB16ToB32>(srcVregFloat, srcVreg, mask);
 
         FastGeluV2CoreAlg<float>(dstVregFloat, srcVregFloat, mask, stackVregA, stackVregB, stackVregC);
 
-        MicroAPI::Cast<half, float, castTraitB32ToB16>(dstVreg, dstVregFloat, mask);
-        MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_PACK_B32>(dst + i * stackSize, dstVreg, mask);
+        Reg::Cast<half, float, castTraitB32ToB16>(dstVreg, dstVregFloat, mask);
+        Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B32>(dst + i * stackSize, dstVreg, mask);
     }
 }
 
@@ -229,21 +236,21 @@ template <typename T>
 __simd_vf__ inline void FastGeluV2AlgVF(__ubuf__ T* dst, __ubuf__ T* src,
     const uint32_t dataSize)
 {
-    MicroAPI::RegTensor<T> srcVreg;
-    MicroAPI::RegTensor<T> dstVreg;
+    Reg::RegTensor<T> srcVreg;
+    Reg::RegTensor<T> dstVreg;
     constexpr uint32_t stackSize = GetVecLen() / sizeof(T);
     uint32_t sreg = dataSize;
 
-    MicroAPI::RegTensor<T> stackVregA;
-    MicroAPI::RegTensor<T> stackVregB;
-    MicroAPI::RegTensor<T> stackVregC;
-    MicroAPI::MaskReg mask;
+    Reg::RegTensor<T> stackVregA;
+    Reg::RegTensor<T> stackVregB;
+    Reg::RegTensor<T> stackVregC;
+    Reg::MaskReg mask;
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(dataSize, stackSize));
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = MicroAPI::UpdateMask<T>(sreg);
-        MicroAPI::LoadAlign<T>(srcVreg, src + i * stackSize);
+        mask = Reg::UpdateMask<T>(sreg);
+        Reg::LoadAlign<T>(srcVreg, src + i * stackSize);
         FastGeluV2CoreAlg<T>(dstVreg, srcVreg, mask, stackVregA, stackVregB, stackVregC);
-        MicroAPI::StoreAlign<T>(dst + i * stackSize, dstVreg, mask);
+        Reg::StoreAlign<T>(dst + i * stackSize, dstVreg, mask);
     }
 }
 
@@ -350,3 +357,8 @@ __aicore__ inline void FasterGeluV2Impl(const LocalTensor<T>& dstLocal, const Lo
 #pragma end_pipe
 } // namespace AscendC
 #endif // IMPL_ACTIVATION_GELU_GELU_IMPL_C310_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GELU_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GELU_C310_IMPL_H__
+#endif

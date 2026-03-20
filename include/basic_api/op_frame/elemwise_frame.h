@@ -12,6 +12,11 @@
  * \file elemwise_frame.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ELEMWISE_FRAME_H__
+#endif
+
 #ifndef ASCENDC_KERNEL_FRAME_H
 #define ASCENDC_KERNEL_FRAME_H
 #include "kernel_operator.h"
@@ -146,3 +151,8 @@ template <class Op> __aicore__ inline bool ElemwiseFrame<Op>::CopyOut(int32_t pr
 } // namespace AscendC
 
 #endif // ASCENDC_KERNEL_FRAME_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ELEMWISE_FRAME_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ELEMWISE_FRAME_H__
+#endif

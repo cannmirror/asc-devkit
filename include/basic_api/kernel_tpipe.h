@@ -12,6 +12,11 @@
  * \file kernel_tpipe.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TPIPE_H__
+#endif
+
 #ifndef ASCENDC_KERNEL_QUEUE_H
 #define ASCENDC_KERNEL_QUEUE_H
 
@@ -490,3 +495,8 @@ using TSCM = TQueBind<pos, TPosition::TSCM, depth, mask>;
 
 #include "../../impl/basic_api/kernel_tpipe_impl.h"
 #endif // ASCENDC_KERNEL_QUEUE_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TPIPE_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TPIPE_H__
+#endif

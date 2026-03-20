@@ -12,6 +12,13 @@
  * \file geglu_c310_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/activation/geglu/geglu_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/geglu.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GEGLU_C310_IMPL_H__
+#endif
+
 #ifndef IMPL_ACTIVATION_GEGLU_GEGLU_IMPL_C310_H
 #define IMPL_ACTIVATION_GEGLU_GEGLU_IMPL_C310_H
 
@@ -28,40 +35,40 @@ template <typename T>
 __simd_vf__ inline void GeGLUImplVF(
     __ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, uint32_t count, const uint16_t repeatTimes)
 {
-    MicroAPI::RegTensor<half> srcOrigin0;
-    MicroAPI::RegTensor<half> srcOrigin1;
-    MicroAPI::RegTensor<float> srcVreg0;
-    MicroAPI::RegTensor<float> srcVreg1;
-    MicroAPI::RegTensor<float> tmpReg0;
-    MicroAPI::RegTensor<float> tmpReg1;
-    MicroAPI::RegTensor<float> dstVreg;
-    MicroAPI::MaskReg mask;
+    Reg::RegTensor<half> srcOrigin0;
+    Reg::RegTensor<half> srcOrigin1;
+    Reg::RegTensor<float> srcVreg0;
+    Reg::RegTensor<float> srcVreg1;
+    Reg::RegTensor<float> tmpReg0;
+    Reg::RegTensor<float> tmpReg1;
+    Reg::RegTensor<float> dstVreg;
+    Reg::MaskReg mask;
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(float));
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = MicroAPI::UpdateMask<float>(count);
+        mask = Reg::UpdateMask<float>(count);
         if constexpr (sizeof(T) == sizeof(half)) {
-            MicroAPI::LoadAlign<half, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcOrigin0, src0 + i * oneRepElm);
-            MicroAPI::Cast<float, half, castTraitB16ToB32>(srcVreg0, srcOrigin0, mask);
-            MicroAPI::LoadAlign<half, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcOrigin1, src1 + i * oneRepElm);
-            MicroAPI::Cast<float, half, castTraitB16ToB32>(srcVreg1, srcOrigin1, mask);
+            Reg::LoadAlign<half, Reg::LoadDist::DIST_UNPACK_B16>(srcOrigin0, src0 + i * oneRepElm);
+            Reg::Cast<float, half, castTraitB16ToB32>(srcVreg0, srcOrigin0, mask);
+            Reg::LoadAlign<half, Reg::LoadDist::DIST_UNPACK_B16>(srcOrigin1, src1 + i * oneRepElm);
+            Reg::Cast<float, half, castTraitB16ToB32>(srcVreg1, srcOrigin1, mask);
         } else {
-            MicroAPI::LoadAlign(srcVreg0, src0 + i * oneRepElm);
-            MicroAPI::LoadAlign(srcVreg1, src1 + i * oneRepElm);
+            Reg::LoadAlign(srcVreg0, src0 + i * oneRepElm);
+            Reg::LoadAlign(srcVreg1, src1 + i * oneRepElm);
         }
-        MicroAPI::Mul(tmpReg0, srcVreg1, srcVreg1, mask);
-        MicroAPI::Adds(tmpReg0, tmpReg0, gegluConstantA, mask);
-        MicroAPI::Mul(tmpReg0, tmpReg0, srcVreg1, mask);
-        MicroAPI::Muls(tmpReg0, tmpReg0, gegluConstantB, mask);
-        MicroAPI::Exp(tmpReg1, tmpReg0, mask);
-        MicroAPI::Adds(tmpReg1, tmpReg1, 1.0f, mask);
-        MicroAPI::Div(tmpReg1, srcVreg1, tmpReg1, mask);
-        MicroAPI::Mul(dstVreg, srcVreg0, tmpReg1, mask);
+        Reg::Mul(tmpReg0, srcVreg1, srcVreg1, mask);
+        Reg::Adds(tmpReg0, tmpReg0, gegluConstantA, mask);
+        Reg::Mul(tmpReg0, tmpReg0, srcVreg1, mask);
+        Reg::Muls(tmpReg0, tmpReg0, gegluConstantB, mask);
+        Reg::Exp(tmpReg1, tmpReg0, mask);
+        Reg::Adds(tmpReg1, tmpReg1, 1.0f, mask);
+        Reg::Div(tmpReg1, srcVreg1, tmpReg1, mask);
+        Reg::Mul(dstVreg, srcVreg0, tmpReg1, mask);
         if constexpr (sizeof(T) == sizeof(half)) {
-            MicroAPI::Cast<half, float, castTraitB32ToB16>((MicroAPI::RegTensor<half>&)dstVreg, dstVreg, mask);
-            MicroAPI::StoreAlign<half, MicroAPI::StoreDist::DIST_PACK_B32>(
-                dst + i * oneRepElm, (MicroAPI::RegTensor<half>&)dstVreg, mask);
+            Reg::Cast<half, float, castTraitB32ToB16>((Reg::RegTensor<half>&)dstVreg, dstVreg, mask);
+            Reg::StoreAlign<half, Reg::StoreDist::DIST_PACK_B32>(
+                dst + i * oneRepElm, (Reg::RegTensor<half>&)dstVreg, mask);
         } else {
-            MicroAPI::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
+            Reg::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
         }
     }
 }
@@ -100,3 +107,8 @@ __aicore__ inline void GeGLUImpl(const LocalTensor<T>& dstTensor, const LocalTen
 
 } // namespace AscendC
 #endif // IMPL_ACTIVATION_GEGLU_GEGLU_IMPL_C310_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GEGLU_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GEGLU_C310_IMPL_H__
+#endif

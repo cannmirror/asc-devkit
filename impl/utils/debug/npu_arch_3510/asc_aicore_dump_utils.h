@@ -15,18 +15,17 @@
 #ifndef IMPL_UTILS_DEBUG_NPU_ARCH_3510_ASC_AICORE_DUMP_UTILS_H
 #define IMPL_UTILS_DEBUG_NPU_ARCH_3510_ASC_AICORE_DUMP_UTILS_H
 
-#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
-#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_AICORE_DUMP_UTILS__
-#warning "asc_aicore_dump_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future."
-#endif
-
 #include "impl/utils/debug/asc_debug_utils.h"
+#include "impl/utils/sys_macros.h"
+
 namespace __asc_aicore {
 
 template<typename T>
 __aicore__ inline void mem_copy_cbuf_to_gm_impl(__gm__ T* dst, __cc__ T* src, const uint32_t& dumpSize)
 {
+    if ASCEND_IS_NOT_AIC {
+        return;
+    }
     constexpr int32_t blockCube = 16;
     constexpr int32_t defaultOneBlockSize = 256;
     constexpr int32_t srcBurstLenSizeEle = 16;
@@ -39,7 +38,7 @@ __aicore__ inline void mem_copy_cbuf_to_gm_impl(__gm__ T* dst, __cc__ T* src, co
     uint16_t m = (burstLen * ASC_ONE_DATABLOCK_SIZE / b32ByteSize) / blockCube;
     bool nz2ndEn = true;
 
-    bisheng::cce::copy_matrix_cc_to_gm((__gm__ float*)dst, (__cc__ float*)src, 0, n, m, m * blockCube, m, 0, 0, 0,
+    copy_matrix_cc_to_gm((__gm__ float*)dst, (__cc__ float*)src, 0, n, m, m * blockCube, m, 0, 0, 0,
         static_cast<uint64_t>(QuantMode_t::NoQuant), static_cast<uint8_t>(false), false, false, static_cast<uint64_t>(QuantMode_post::NoConv),
         0, false, false, 0, false, false, true, false, false, false);
 }
@@ -63,7 +62,7 @@ __aicore__ inline void mem_copy_ub_to_gm_impl(__gm__ T* dst, __ubuf__ T* src, co
     uint32_t srcStride1 = srcStride * byte_32_align + burstLen;
     srcStride1 = div_ceil(srcStride1, byte_32_align) * byte_32_align;
     uint64_t dstStride1 = dstStride * unitOfBytes + burstLen;
-    bisheng::cce::copy_ubuf_to_gm_align_v2((__gm__ void*)dst, (__ubuf__ void*)src, 0, blockCount, burstLen, 0, dstStride1, srcStride1);
+    copy_ubuf_to_gm_align_v2((__gm__ void*)dst, (__ubuf__ void*)src, 0, blockCount, burstLen, 0, dstStride1, srcStride1);
 #endif
 }
 

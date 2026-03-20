@@ -7,21 +7,27 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/dav_c310/kernel_operator_vec_binary_continuous_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_vec_intf.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_BINARY_CONTINUOUS_IMPL_H__
+#endif
+
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_BINARY_CONTINUOUS_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_BINARY_CONTINUOUS_IMPL_H
 #include "kernel_utils.h"
 #include "kernel_operator_common_impl.h"
 #include "kernel_operator_sys_var_intf.h"
-#include "micro_api/kernel_micro_intf.h"
+#include "reg_compute/kernel_reg_compute_intf.h"
 
 namespace AscendC {
 namespace CastParam {
-constexpr MicroAPI::CastTrait s322floatCastTrait = {MicroAPI::RegLayout::UNKNOWN, MicroAPI::SatMode::SAT,
-                                                    MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
-constexpr MicroAPI::CastTrait float2halfCastTrait = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
-                                                     MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
-constexpr MicroAPI::CastTrait mulAddDstTrait = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN,
-    MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait s322floatCastTrait = {Reg::RegLayout::UNKNOWN, Reg::SatMode::SAT,
+                                                    Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait float2halfCastTrait = {Reg::RegLayout::ZERO, Reg::SatMode::SAT,
+                                                     Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait mulAddDstTrait = {Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN,
+    Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
 }
 
 template <typename T, typename RegType, auto func>
@@ -32,15 +38,15 @@ __simd_vf__ inline void BinaryContinuousImplTemplate(__ubuf__ T* dst, __ubuf__ T
     RegType src1Reg;
     RegType dstReg;
     uint32_t sreg = static_cast<uint32_t>(calCount);
-    MicroAPI::MaskReg mask;
+    Reg::MaskReg mask;
     constexpr uint32_t repeatStride = static_cast<uint32_t>(GetVecLen() / sizeof(T) * RegType::trait.REG_NUM);
     uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, repeatStride));
     for (uint16_t i = 0; i < repeatTime; ++i) {
-        mask = MicroAPI::UpdateMask<T, RegType::trait>(sreg);
-        MicroAPI::LoadAlign(src0Reg, src0 + i * repeatStride);
-        MicroAPI::LoadAlign(src1Reg, src1 + i * repeatStride);
+        mask = Reg::UpdateMask<T, RegType::trait>(sreg);
+        Reg::LoadAlign(src0Reg, src0 + i * repeatStride);
+        Reg::LoadAlign(src1Reg, src1 + i * repeatStride);
         func(dstReg, src0Reg, src1Reg, mask);
-        MicroAPI::StoreAlign(dst + i * repeatStride, dstReg, mask);
+        Reg::StoreAlign(dst + i * repeatStride, dstReg, mask);
     }
 }
 
@@ -52,15 +58,15 @@ __simd_vf__ inline void BinaryContinuousImplTemplate(__ubuf__ T* dst, __ubuf__ T
     RegTypeU src1Reg;
     RegTypeT dstReg;
     uint32_t sreg = static_cast<uint32_t>(calCount);
-    MicroAPI::MaskReg mask;
+    Reg::MaskReg mask;
     constexpr uint32_t repeatStride = static_cast<uint32_t>(GetVecLen() / sizeof(T) * RegTypeT::trait.REG_NUM);
     uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, repeatStride));
     for (uint16_t i = 0; i < repeatTime; ++i) {
-        mask = MicroAPI::UpdateMask<T, RegTypeT::trait>(sreg);
-        MicroAPI::LoadAlign(src0Reg, src0 + i * repeatStride);
-        MicroAPI::LoadAlign(src1Reg, src1 + i * repeatStride);
+        mask = Reg::UpdateMask<T, RegTypeT::trait>(sreg);
+        Reg::LoadAlign(src0Reg, src0 + i * repeatStride);
+        Reg::LoadAlign(src1Reg, src1 + i * repeatStride);
         func(dstReg, src0Reg, src1Reg, mask);
-        MicroAPI::StoreAlign(dst + i * repeatStride, dstReg, mask);
+        Reg::StoreAlign(dst + i * repeatStride, dstReg, mask);
     }
 }
 
@@ -71,13 +77,13 @@ __aicore__ inline void AddImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* sr
         uint32_t, int32_t, float, int64_t, uint64_t, complex32, complex64>()),
         "current data type is not supported on current device!");
     if constexpr (SupportBytes<T, 8>() || SupportType<T, complex32>()) {
-        BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>,
-            MicroAPI::Add<T, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>>(dst, src0, src1, calCount);
+        BinaryContinuousImplTemplate<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>,
+            Reg::Add<T, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T, Reg::RegTraitNumTwo>>>(dst, src0, src1, calCount);
     } else {
-        BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T>,
-            MicroAPI::Add<T, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T>>>(dst, src0, src1, calCount);
+        BinaryContinuousImplTemplate<T, Reg::RegTensor<T>,
+            Reg::Add<T, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T>>>(dst, src0, src1, calCount);
     }
 }
 
@@ -88,13 +94,13 @@ __aicore__ inline void SubImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* sr
         uint32_t, int32_t, float, int64_t, uint64_t, complex32, complex64>()),
         "current data type is not supported on current device!");
     if constexpr (SupportBytes<T, 8>() || SupportType<T, complex32>()) {
-        BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>,
-            MicroAPI::Sub<T, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>>(dst, src0, src1, calCount);
+        BinaryContinuousImplTemplate<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>,
+            Reg::Sub<T, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T, Reg::RegTraitNumTwo>>>(dst, src0, src1, calCount);
     } else {
-        BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T>,
-            MicroAPI::Sub<T, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T>>>(dst, src0, src1, calCount);
+        BinaryContinuousImplTemplate<T, Reg::RegTensor<T>,
+            Reg::Sub<T, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T>>>(dst, src0, src1, calCount);
     }
 }
 
@@ -108,13 +114,13 @@ __aicore__ inline void MulImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* sr
         int64_t, uint64_t, complex32, complex64>()),
         "current data type is not supported on current device!");
     if constexpr (SupportBytes<T, 8>() || SupportType<T, complex32>()) {
-        BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>,
-            MicroAPI::Mul<T, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>>(dst, src0, src1, calCount);
+        BinaryContinuousImplTemplate<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>,
+            Reg::Mul<T, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T, Reg::RegTraitNumTwo>>>(dst, src0, src1, calCount);
     } else {
-        BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T>,
-            MicroAPI::Mul<T, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T>>>(dst, src0, src1, calCount);
+        BinaryContinuousImplTemplate<T, Reg::RegTensor<T>,
+            Reg::Mul<T, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T>>>(dst, src0, src1, calCount);
     }
 }
 
@@ -130,40 +136,40 @@ __aicore__ inline void DivImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* sr
         "current data type is not supported on current device!");
     if constexpr (config.algo == DivAlgo::INTRINSIC || config.algo == DivAlgo::PRECISION_1ULP_FTZ_TRUE) {
         if constexpr (SupportBytes<T, 8>() || SupportType<T, complex32>()) {
-            BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>,
-                MicroAPI::Div<T, MicroAPI::MaskMergeMode::ZEROING,
-                MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>>(dst, src0, src1, calCount);
+            BinaryContinuousImplTemplate<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>,
+                Reg::Div<T, Reg::MaskMergeMode::ZEROING,
+                Reg::RegTensor<T, Reg::RegTraitNumTwo>>>(dst, src0, src1, calCount);
         } else {
-            BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T>,
-                MicroAPI::Div<T, MicroAPI::MaskMergeMode::ZEROING,
-                MicroAPI::RegTensor<T>>>(dst, src0, src1, calCount);
+            BinaryContinuousImplTemplate<T, Reg::RegTensor<T>,
+                Reg::Div<T, Reg::MaskMergeMode::ZEROING,
+                Reg::RegTensor<T>>>(dst, src0, src1, calCount);
         }
     } else if constexpr (config.algo == DivAlgo::DIFF_COMPENSATION || config.algo == DivAlgo::PRECISION_0ULP_FTZ_TRUE) {
-        static constexpr MicroAPI::DivSpecificMode mode = { MicroAPI::MaskMergeMode::ZEROING, true, DivAlgo::PRECISION_0ULP_FTZ_TRUE };
+        static constexpr Reg::DivSpecificMode mode = { Reg::MaskMergeMode::ZEROING, true, DivAlgo::PRECISION_0ULP_FTZ_TRUE };
         if constexpr (SupportBytes<T, 8>()) {
-            constexpr auto func = MicroAPI::Div<T, &mode, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>;
-            BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>, func>(dst, src0, src1, calCount);
+            constexpr auto func = Reg::Div<T, &mode, Reg::RegTensor<T, Reg::RegTraitNumTwo>>;
+            BinaryContinuousImplTemplate<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>, func>(dst, src0, src1, calCount);
         } else {
-            constexpr auto func = MicroAPI::Div<T, &mode, MicroAPI::RegTensor<T>>;
-            BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T>, func>(dst, src0, src1, calCount);
+            constexpr auto func = Reg::Div<T, &mode, Reg::RegTensor<T>>;
+            BinaryContinuousImplTemplate<T, Reg::RegTensor<T>, func>(dst, src0, src1, calCount);
         }
     } else if constexpr (config.algo == DivAlgo::PRECISION_0ULP_FTZ_FALSE) {
-        static constexpr MicroAPI::DivSpecificMode mode = { MicroAPI::MaskMergeMode::ZEROING, false, DivAlgo::PRECISION_0ULP_FTZ_FALSE };
+        static constexpr Reg::DivSpecificMode mode = { Reg::MaskMergeMode::ZEROING, false, DivAlgo::PRECISION_0ULP_FTZ_FALSE };
         if constexpr (SupportBytes<T, 8>()) {
-            constexpr auto func = MicroAPI::Div<T, &mode, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>;
-            BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>, func>(dst, src0, src1, calCount);
+            constexpr auto func = Reg::Div<T, &mode, Reg::RegTensor<T, Reg::RegTraitNumTwo>>;
+            BinaryContinuousImplTemplate<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>, func>(dst, src0, src1, calCount);
         } else {
-            constexpr auto func = MicroAPI::Div<T, &mode, MicroAPI::RegTensor<T>>;
-            BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T>, func>(dst, src0, src1, calCount);
+            constexpr auto func = Reg::Div<T, &mode, Reg::RegTensor<T>>;
+            BinaryContinuousImplTemplate<T, Reg::RegTensor<T>, func>(dst, src0, src1, calCount);
         }
     } else if constexpr (config.algo == DivAlgo::PRECISION_1ULP_FTZ_FALSE) {
-        static constexpr MicroAPI::DivSpecificMode mode = { MicroAPI::MaskMergeMode::ZEROING, false, DivAlgo::PRECISION_1ULP_FTZ_FALSE };
+        static constexpr Reg::DivSpecificMode mode = { Reg::MaskMergeMode::ZEROING, false, DivAlgo::PRECISION_1ULP_FTZ_FALSE };
         if constexpr (SupportBytes<T, 8>()) {
-            constexpr auto func = MicroAPI::Div<T, &mode, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>;
-            BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>, func>(dst, src0, src1, calCount);
+            constexpr auto func = Reg::Div<T, &mode, Reg::RegTensor<T, Reg::RegTraitNumTwo>>;
+            BinaryContinuousImplTemplate<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>, func>(dst, src0, src1, calCount);
         } else {
-            constexpr auto func = MicroAPI::Div<T, &mode, MicroAPI::RegTensor<T>>;
-            BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T>, func>(dst, src0, src1, calCount);
+            constexpr auto func = Reg::Div<T, &mode, Reg::RegTensor<T>>;
+            BinaryContinuousImplTemplate<T, Reg::RegTensor<T>, func>(dst, src0, src1, calCount);
         }
     }
 }
@@ -178,12 +184,12 @@ __aicore__ inline void MaxImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* sr
     static_assert((SupportType<T, uint8_t, int8_t, half, uint16_t, int16_t, bfloat16_t, uint32_t, int32_t,
         float, int64_t, uint64_t>()), "current data type is not supported on current device!");
     if constexpr (SupportBytes<T, 8>()) {
-        BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>,
-            MicroAPI::Max<T, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>>(dst, src0, src1, calCount);
+        BinaryContinuousImplTemplate<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>,
+            Reg::Max<T, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T, Reg::RegTraitNumTwo>>>(dst, src0, src1, calCount);
     } else {
-        BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T>,
-            MicroAPI::Max<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>>(dst, src0, src1, calCount);
+        BinaryContinuousImplTemplate<T, Reg::RegTensor<T>,
+            Reg::Max<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>>(dst, src0, src1, calCount);
     }
 }
 
@@ -197,12 +203,12 @@ __aicore__ inline void MinImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* sr
     static_assert((SupportType<T, uint8_t, int8_t, half, uint16_t, int16_t, bfloat16_t, uint32_t, int32_t,
         float, int64_t, uint64_t>()), "current data type is not supported on current device!");
     if constexpr (SupportBytes<T, 8>()) {
-        BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>,
-            MicroAPI::Min<T, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>>(dst, src0, src1, calCount);
+        BinaryContinuousImplTemplate<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>,
+            Reg::Min<T, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T, Reg::RegTraitNumTwo>>>(dst, src0, src1, calCount);
     } else {
-        BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T>,
-            MicroAPI::Min<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>>(dst, src0, src1, calCount);
+        BinaryContinuousImplTemplate<T, Reg::RegTensor<T>,
+            Reg::Min<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>>(dst, src0, src1, calCount);
     }
 }
 
@@ -216,13 +222,13 @@ __aicore__ inline void AndImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* sr
     static_assert((SupportType<T, uint8_t, int8_t, int16_t, uint16_t, uint32_t, int32_t, int64_t, uint64_t>()),
         "current data type is not supported on current device!");
     if constexpr (SupportBytes<T, 8>()) {
-        BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>,
-            MicroAPI::And<T, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>>(dst, src0, src1, calCount);
+        BinaryContinuousImplTemplate<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>,
+            Reg::And<T, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T, Reg::RegTraitNumTwo>>>(dst, src0, src1, calCount);
     } else {
-        BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T>,
-            MicroAPI::And<T, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T>>>(dst, src0, src1, calCount);
+        BinaryContinuousImplTemplate<T, Reg::RegTensor<T>,
+            Reg::And<T, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T>>>(dst, src0, src1, calCount);
     }
 }
 
@@ -237,12 +243,12 @@ __aicore__ inline void OrImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src
     static_assert((SupportType<T, uint8_t, int8_t, int16_t, uint16_t, uint32_t, int32_t, int64_t, uint64_t>()),
         "current data type is not supported on current device!");
     if constexpr (SupportBytes<T, 8>()) {
-        BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>,
-            MicroAPI::Or<T, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>>(dst, src0, src1, calCount);
+        BinaryContinuousImplTemplate<T, Reg::RegTensor<T, Reg::RegTraitNumTwo>,
+            Reg::Or<T, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T, Reg::RegTraitNumTwo>>>(dst, src0, src1, calCount);
     } else {
-        BinaryContinuousImplTemplate<T, MicroAPI::RegTensor<T>,
-            MicroAPI::Or<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>>(dst, src0, src1, calCount);
+        BinaryContinuousImplTemplate<T, Reg::RegTensor<T>,
+            Reg::Or<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>>(dst, src0, src1, calCount);
     }
 }
 
@@ -258,32 +264,32 @@ __simd_vf__ inline void AddReluImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ 
     if constexpr (sizeof(T) == 8) {
         constexpr uint32_t sregLower = static_cast<uint32_t>(B64_DATA_NUM_PER_REPEAT * 2);
         const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
-        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vDstReg;
-        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg0;
-        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg1;
-        MicroAPI::MaskReg mask;
+        Reg::RegTensor<T, Reg::RegTraitNumTwo> vDstReg;
+        Reg::RegTensor<T, Reg::RegTraitNumTwo> vSrcReg0;
+        Reg::RegTensor<T, Reg::RegTraitNumTwo> vSrcReg1;
+        Reg::MaskReg mask;
         for (uint16_t i = 0; i < repeatTime; ++i) {
-            mask = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
-            MicroAPI::LoadAlign(vSrcReg0, src0 + i * sregLower);
-            MicroAPI::LoadAlign(vSrcReg1, src1 + i * sregLower);
-            MicroAPI::Add(vDstReg, vSrcReg0, vSrcReg1, mask);
-            MicroAPI::Maxs(vDstReg, vDstReg, scalarValue, mask);
-            MicroAPI::StoreAlign(dst + i * sregLower, vDstReg, mask);
+            mask = Reg::UpdateMask<T, Reg::RegTraitNumTwo>(sreg);
+            Reg::LoadAlign(vSrcReg0, src0 + i * sregLower);
+            Reg::LoadAlign(vSrcReg1, src1 + i * sregLower);
+            Reg::Add(vDstReg, vSrcReg0, vSrcReg1, mask);
+            Reg::Maxs(vDstReg, vDstReg, scalarValue, mask);
+            Reg::StoreAlign(dst + i * sregLower, vDstReg, mask);
         }
     } else {
         constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(T));
         const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
-        MicroAPI::RegTensor<T> dstReg;
-        MicroAPI::RegTensor<T> src0Reg;
-        MicroAPI::RegTensor<T> src1Reg;
-        MicroAPI::MaskReg preg;
+        Reg::RegTensor<T> dstReg;
+        Reg::RegTensor<T> src0Reg;
+        Reg::RegTensor<T> src1Reg;
+        Reg::MaskReg preg;
         for (uint16_t i = 0; i < repeatTime; ++i) {
-            preg = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::LoadAlign<T>(src0Reg, src0 + i * sregLower);
-            MicroAPI::LoadAlign<T>(src1Reg, src1 + i * sregLower);
-            MicroAPI::Add<T>(dstReg, src0Reg, src1Reg, preg);
-            MicroAPI::Maxs<T>(dstReg, dstReg, scalarValue, preg);
-            MicroAPI::StoreAlign<T>(dst + i * sregLower, dstReg, preg);
+            preg = Reg::UpdateMask<T>(sreg);
+            Reg::LoadAlign<T>(src0Reg, src0 + i * sregLower);
+            Reg::LoadAlign<T>(src1Reg, src1 + i * sregLower);
+            Reg::Add<T>(dstReg, src0Reg, src1Reg, preg);
+            Reg::Maxs<T>(dstReg, dstReg, scalarValue, preg);
+            Reg::StoreAlign<T>(dst + i * sregLower, dstReg, preg);
         }
     }
 }
@@ -302,15 +308,15 @@ __aicore__ inline void ShiftLeftImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__
         "src1: int16_t; src0: uint16_t, src1: int16_t; "
         "src0: int8_t, src1: int8_t; src0: uint8_t, src1: int8_t.");
     if constexpr (SupportBytes<T, 8>()) {
-        BinaryContinuousImplTemplate<T, U, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>,
-            MicroAPI::RegTensor<U, MicroAPI::RegTraitNumTwo>,
-            MicroAPI::ShiftLeft<T, U, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>, MicroAPI::RegTensor<U, MicroAPI::RegTraitNumTwo>>>(
+        BinaryContinuousImplTemplate<T, U, Reg::RegTensor<T, Reg::RegTraitNumTwo>,
+            Reg::RegTensor<U, Reg::RegTraitNumTwo>,
+            Reg::ShiftLeft<T, U, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T, Reg::RegTraitNumTwo>, Reg::RegTensor<U, Reg::RegTraitNumTwo>>>(
             dst, src0, src1, calCount);
     } else {
-        BinaryContinuousImplTemplate<T, U, MicroAPI::RegTensor<T>, MicroAPI::RegTensor<U>,
-            MicroAPI::ShiftLeft<T, U, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>,
-            MicroAPI::RegTensor<U>>>(dst, src0, src1, calCount);
+        BinaryContinuousImplTemplate<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>,
+            Reg::ShiftLeft<T, U, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>,
+            Reg::RegTensor<U>>>(dst, src0, src1, calCount);
     }
 }
 
@@ -329,15 +335,15 @@ __aicore__ inline void ShiftRightImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf_
         "src1: int16_t; src0: uint16_t, src1: int16_t; "
         "src0: int8_t, src1: int8_t; src0: uint8_t, src1: int8_t.");
     if constexpr (SupportBytes<T, 8>()) {
-        BinaryContinuousImplTemplate<T, U, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>,
-            MicroAPI::RegTensor<U, MicroAPI::RegTraitNumTwo>,
-            MicroAPI::ShiftRight<T, U, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>, MicroAPI::RegTensor<U, MicroAPI::RegTraitNumTwo>>>(
+        BinaryContinuousImplTemplate<T, U, Reg::RegTensor<T, Reg::RegTraitNumTwo>,
+            Reg::RegTensor<U, Reg::RegTraitNumTwo>,
+            Reg::ShiftRight<T, U, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T, Reg::RegTraitNumTwo>, Reg::RegTensor<U, Reg::RegTraitNumTwo>>>(
             dst, src0, src1, calCount);
     } else {
-        BinaryContinuousImplTemplate<T, U, MicroAPI::RegTensor<T>, MicroAPI::RegTensor<U>,
-            MicroAPI::ShiftRight<T, U, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>,
-            MicroAPI::RegTensor<U>>>(dst, src0, src1, calCount);
+        BinaryContinuousImplTemplate<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>,
+            Reg::ShiftRight<T, U, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>,
+            Reg::RegTensor<U>>>(dst, src0, src1, calCount);
     }
 }
 
@@ -353,34 +359,34 @@ __simd_vf__ inline void FusedMulAddImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubu
     if constexpr (sizeof(T) == 8) {
         constexpr uint32_t sregLower = static_cast<uint32_t>(B64_DATA_NUM_PER_REPEAT * 2);
         const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
-        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vDstReg0;
-        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vDstReg1;
-        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg0;
-        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg1;
-        MicroAPI::MaskReg mask;
+        Reg::RegTensor<T, Reg::RegTraitNumTwo> vDstReg0;
+        Reg::RegTensor<T, Reg::RegTraitNumTwo> vDstReg1;
+        Reg::RegTensor<T, Reg::RegTraitNumTwo> vSrcReg0;
+        Reg::RegTensor<T, Reg::RegTraitNumTwo> vSrcReg1;
+        Reg::MaskReg mask;
         for (uint16_t i = 0; i < repeatTime; ++i) {
-            mask = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
-            MicroAPI::LoadAlign(vSrcReg0, src0 + i * sregLower);
-            MicroAPI::LoadAlign(vSrcReg1, src1 + i * sregLower);
-            MicroAPI::LoadAlign(vDstReg0, dst + i * sregLower);
-            MicroAPI::Mul(vDstReg1, vSrcReg0, vDstReg0, mask);
-            MicroAPI::Add(vDstReg0, vDstReg1, vSrcReg1, mask);
-            MicroAPI::StoreAlign(dst + i * sregLower, vDstReg0, mask);
+            mask = Reg::UpdateMask<T, Reg::RegTraitNumTwo>(sreg);
+            Reg::LoadAlign(vSrcReg0, src0 + i * sregLower);
+            Reg::LoadAlign(vSrcReg1, src1 + i * sregLower);
+            Reg::LoadAlign(vDstReg0, dst + i * sregLower);
+            Reg::Mul(vDstReg1, vSrcReg0, vDstReg0, mask);
+            Reg::Add(vDstReg0, vDstReg1, vSrcReg1, mask);
+            Reg::StoreAlign(dst + i * sregLower, vDstReg0, mask);
         }
     } else {
         constexpr uint32_t repeatStride = static_cast<uint32_t>(GetVecLen() / sizeof(T));
         const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, repeatStride));
-        MicroAPI::RegTensor<T> src0Reg;
-        MicroAPI::RegTensor<T> src1Reg;
-        MicroAPI::RegTensor<T> dstReg;
-        MicroAPI::MaskReg mask;
+        Reg::RegTensor<T> src0Reg;
+        Reg::RegTensor<T> src1Reg;
+        Reg::RegTensor<T> dstReg;
+        Reg::MaskReg mask;
         for (uint16_t i = 0; i < repeatTime; ++i) {
-            mask = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::LoadAlign(src0Reg, src0 + i * repeatStride);
-            MicroAPI::LoadAlign(src1Reg, src1 + i * repeatStride);
-            MicroAPI::LoadAlign(dstReg, dst + i * repeatStride);
-            MicroAPI::FusedMulDstAdd(dstReg, src0Reg, src1Reg, mask);
-            MicroAPI::StoreAlign(dst + i * repeatStride, dstReg, mask);
+            mask = Reg::UpdateMask<T>(sreg);
+            Reg::LoadAlign(src0Reg, src0 + i * repeatStride);
+            Reg::LoadAlign(src1Reg, src1 + i * repeatStride);
+            Reg::LoadAlign(dstReg, dst + i * repeatStride);
+            Reg::FusedMulDstAdd(dstReg, src0Reg, src1Reg, mask);
+            Reg::StoreAlign(dst + i * repeatStride, dstReg, mask);
         }
     }
 }
@@ -399,36 +405,36 @@ __simd_vf__ inline void FusedMulAddReluImpl(__ubuf__ T* dst, __ubuf__ T* src0, _
     if constexpr (sizeof(T) == 8) {
         constexpr uint32_t sregLower = static_cast<uint32_t>(B64_DATA_NUM_PER_REPEAT * 2);
         const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
-        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vDstReg0;
-        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vDstReg1;
-        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg0;
-        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg1;
-        MicroAPI::MaskReg mask;
+        Reg::RegTensor<T, Reg::RegTraitNumTwo> vDstReg0;
+        Reg::RegTensor<T, Reg::RegTraitNumTwo> vDstReg1;
+        Reg::RegTensor<T, Reg::RegTraitNumTwo> vSrcReg0;
+        Reg::RegTensor<T, Reg::RegTraitNumTwo> vSrcReg1;
+        Reg::MaskReg mask;
         for (uint16_t i = 0; i < repeatTime; ++i) {
-            mask = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
-            MicroAPI::LoadAlign(vSrcReg0, src0 + i * sregLower);
-            MicroAPI::LoadAlign(vSrcReg1, src1 + i * sregLower);
-            MicroAPI::LoadAlign(vDstReg0, dst + i * sregLower);
-            MicroAPI::Mul(vDstReg1, vSrcReg0, vDstReg0, mask);
-            MicroAPI::Add(vDstReg0, vDstReg1, vSrcReg1, mask);
-            MicroAPI::Maxs(vDstReg0, vDstReg0, scalarValue, mask);
-            MicroAPI::StoreAlign(dst + i * sregLower, vDstReg0, mask);
+            mask = Reg::UpdateMask<T, Reg::RegTraitNumTwo>(sreg);
+            Reg::LoadAlign(vSrcReg0, src0 + i * sregLower);
+            Reg::LoadAlign(vSrcReg1, src1 + i * sregLower);
+            Reg::LoadAlign(vDstReg0, dst + i * sregLower);
+            Reg::Mul(vDstReg1, vSrcReg0, vDstReg0, mask);
+            Reg::Add(vDstReg0, vDstReg1, vSrcReg1, mask);
+            Reg::Maxs(vDstReg0, vDstReg0, scalarValue, mask);
+            Reg::StoreAlign(dst + i * sregLower, vDstReg0, mask);
         }
     } else {
         const uint32_t repeatStride = static_cast<uint32_t>(GetVecLen() / sizeof(T));
         const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, repeatStride));
-        MicroAPI::RegTensor<T> src0Reg;
-        MicroAPI::RegTensor<T> src1Reg;
-        MicroAPI::RegTensor<T> dstReg;
-        MicroAPI::MaskReg mask;
+        Reg::RegTensor<T> src0Reg;
+        Reg::RegTensor<T> src1Reg;
+        Reg::RegTensor<T> dstReg;
+        Reg::MaskReg mask;
         for (uint16_t i = 0; i < repeatTime; ++i) {
-            mask = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::LoadAlign(src0Reg, src0 + i * repeatStride);
-            MicroAPI::LoadAlign(src1Reg, src1 + i * repeatStride);
-            MicroAPI::LoadAlign(dstReg, dst + i * repeatStride);
-            MicroAPI::FusedMulDstAdd(dstReg, src0Reg, src1Reg, mask);
-            MicroAPI::Maxs(dstReg, dstReg, scalarValue, mask);
-            MicroAPI::StoreAlign(dst + i * repeatStride, dstReg, mask);
+            mask = Reg::UpdateMask<T>(sreg);
+            Reg::LoadAlign(src0Reg, src0 + i * repeatStride);
+            Reg::LoadAlign(src1Reg, src1 + i * repeatStride);
+            Reg::LoadAlign(dstReg, dst + i * repeatStride);
+            Reg::FusedMulDstAdd(dstReg, src0Reg, src1Reg, mask);
+            Reg::Maxs(dstReg, dstReg, scalarValue, mask);
+            Reg::StoreAlign(dst + i * repeatStride, dstReg, mask);
         }
     }
 }
@@ -447,31 +453,31 @@ __simd_vf__ inline void MulAddDstImpl(__ubuf__ T* dst, __ubuf__ U* src0, __ubuf_
     if constexpr (sizeof(T) == 8) {
         constexpr uint32_t sregLower = static_cast<uint32_t>(B64_DATA_NUM_PER_REPEAT * 2);
         const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
-        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vDstReg0;
-        MicroAPI::RegTensor<U, MicroAPI::RegTraitNumTwo> vSrcReg0;
-        MicroAPI::RegTensor<U, MicroAPI::RegTraitNumTwo> vSrcReg1;
-        MicroAPI::MaskReg mask;
+        Reg::RegTensor<T, Reg::RegTraitNumTwo> vDstReg0;
+        Reg::RegTensor<U, Reg::RegTraitNumTwo> vSrcReg0;
+        Reg::RegTensor<U, Reg::RegTraitNumTwo> vSrcReg1;
+        Reg::MaskReg mask;
         for (uint16_t i = 0; i < repeatTime; ++i) {
-            mask = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
-            MicroAPI::LoadAlign(vSrcReg0, src0 + i * sregLower);
-            MicroAPI::LoadAlign(vSrcReg1, src1 + i * sregLower);
-            MicroAPI::LoadAlign(vDstReg0, dst + i * sregLower);
-            MicroAPI::MulAddDst(vDstReg0, vSrcReg0, vSrcReg1, mask);
-            MicroAPI::StoreAlign(dst + i * sregLower, vDstReg0, mask);
+            mask = Reg::UpdateMask<T, Reg::RegTraitNumTwo>(sreg);
+            Reg::LoadAlign(vSrcReg0, src0 + i * sregLower);
+            Reg::LoadAlign(vSrcReg1, src1 + i * sregLower);
+            Reg::LoadAlign(vDstReg0, dst + i * sregLower);
+            Reg::MulAddDst(vDstReg0, vSrcReg0, vSrcReg1, mask);
+            Reg::StoreAlign(dst + i * sregLower, vDstReg0, mask);
         }
     } else {
         constexpr uint16_t numPerRep = GetVecLen() / sizeof(T);
         const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, numPerRep));
-        MicroAPI::RegTensor<U> src0Reg, src1Reg;
-        MicroAPI::RegTensor<T> dstReg;
-        MicroAPI::MaskReg mask;
+        Reg::RegTensor<U> src0Reg, src1Reg;
+        Reg::RegTensor<T> dstReg;
+        Reg::MaskReg mask;
         for (uint16_t i = 0; i < repeatTime; ++i) {
-            mask = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::LoadAlign(src0Reg, src0 + i * numPerRep);
-            MicroAPI::LoadAlign(src1Reg, src1 + i * numPerRep);
-            MicroAPI::LoadAlign(dstReg, dst + i * numPerRep);
-            MicroAPI::MulAddDst(dstReg, src0Reg, src1Reg, mask);
-            MicroAPI::StoreAlign(dst + i * numPerRep, dstReg, mask);
+            mask = Reg::UpdateMask<T>(sreg);
+            Reg::LoadAlign(src0Reg, src0 + i * numPerRep);
+            Reg::LoadAlign(src1Reg, src1 + i * numPerRep);
+            Reg::LoadAlign(dstReg, dst + i * numPerRep);
+            Reg::MulAddDst(dstReg, src0Reg, src1Reg, mask);
+            Reg::StoreAlign(dst + i * numPerRep, dstReg, mask);
         }
     }
 }
@@ -482,18 +488,18 @@ __simd_vf__ inline void MulAddDstImpl(__ubuf__ float* dst, __ubuf__ half* src0, 
     uint32_t sregB32 = static_cast<uint32_t>(calCount);     // updated when float calculation
     constexpr uint16_t numPerRep = GetVecLen() / sizeof(float);     // each repeat 64 half->float to calculate
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, numPerRep));
-    MicroAPI::RegTensor<half> src0Reg, src1Reg;
-    MicroAPI::RegTensor<float> dstReg, castReg1, castReg2;
-    MicroAPI::MaskReg maskB32;                              // updated when float calculation
+    Reg::RegTensor<half> src0Reg, src1Reg;
+    Reg::RegTensor<float> dstReg, castReg1, castReg2;
+    Reg::MaskReg maskB32;                              // updated when float calculation
     for (uint16_t i = 0; i < repeatTime; ++i) {
-        maskB32 = MicroAPI::UpdateMask<float>(sregB32);
-        MicroAPI::LoadAlign<half, MicroAPI::LoadDist::DIST_UNPACK_B16>(src0Reg, src0 + i * numPerRep); // 64 half
-        MicroAPI::LoadAlign<half, MicroAPI::LoadDist::DIST_UNPACK_B16>(src1Reg, src1 + i * numPerRep); // 64 half
-        MicroAPI::Cast<float, half, CastParam::mulAddDstTrait>(castReg1, src0Reg, maskB32);           // 64 float
-        MicroAPI::Cast<float, half, CastParam::mulAddDstTrait>(castReg2, src1Reg, maskB32);           // 64 float
-        MicroAPI::LoadAlign(dstReg, dst + i * numPerRep);
-        MicroAPI::MulAddDst(dstReg, castReg1, castReg2, maskB32);
-        MicroAPI::StoreAlign(dst + i * numPerRep, dstReg, maskB32);
+        maskB32 = Reg::UpdateMask<float>(sregB32);
+        Reg::LoadAlign<half, Reg::LoadDist::DIST_UNPACK_B16>(src0Reg, src0 + i * numPerRep); // 64 half
+        Reg::LoadAlign<half, Reg::LoadDist::DIST_UNPACK_B16>(src1Reg, src1 + i * numPerRep); // 64 half
+        Reg::Cast<float, half, CastParam::mulAddDstTrait>(castReg1, src0Reg, maskB32);           // 64 float
+        Reg::Cast<float, half, CastParam::mulAddDstTrait>(castReg2, src1Reg, maskB32);           // 64 float
+        Reg::LoadAlign(dstReg, dst + i * numPerRep);
+        Reg::MulAddDst(dstReg, castReg1, castReg2, maskB32);
+        Reg::StoreAlign(dst + i * numPerRep, dstReg, maskB32);
     }
 }
 
@@ -511,30 +517,30 @@ __simd_vf__ inline void SubReluImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ 
     if constexpr (sizeof(T) == 8) {
         constexpr uint32_t sregLower = static_cast<uint32_t>(B64_DATA_NUM_PER_REPEAT * 2);
         const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
-        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vDstReg;
-        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg0;
-        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg1;
-        MicroAPI::MaskReg mask;
+        Reg::RegTensor<T, Reg::RegTraitNumTwo> vDstReg;
+        Reg::RegTensor<T, Reg::RegTraitNumTwo> vSrcReg0;
+        Reg::RegTensor<T, Reg::RegTraitNumTwo> vSrcReg1;
+        Reg::MaskReg mask;
         for (uint16_t i = 0; i < repeatTime; ++i) {
-            mask = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
-            MicroAPI::LoadAlign(vSrcReg0, src0 + i * sregLower);
-            MicroAPI::LoadAlign(vSrcReg1, src1 + i * sregLower);
-            MicroAPI::Sub(vDstReg, vSrcReg0, vSrcReg1, mask);
-            MicroAPI::Maxs(vDstReg, vDstReg, scalarValue, mask);
-            MicroAPI::StoreAlign(dst + i * sregLower, vDstReg, mask);
+            mask = Reg::UpdateMask<T, Reg::RegTraitNumTwo>(sreg);
+            Reg::LoadAlign(vSrcReg0, src0 + i * sregLower);
+            Reg::LoadAlign(vSrcReg1, src1 + i * sregLower);
+            Reg::Sub(vDstReg, vSrcReg0, vSrcReg1, mask);
+            Reg::Maxs(vDstReg, vDstReg, scalarValue, mask);
+            Reg::StoreAlign(dst + i * sregLower, vDstReg, mask);
         }
     } else {
         constexpr uint16_t numPerRep = GetVecLen() / sizeof(T);
         const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, numPerRep));
-        MicroAPI::RegTensor<T> dstReg, src0Reg, src1Reg;
-        MicroAPI::MaskReg mask;
+        Reg::RegTensor<T> dstReg, src0Reg, src1Reg;
+        Reg::MaskReg mask;
         for (uint16_t i = 0; i < repeatTime; ++i) {
-            mask = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::LoadAlign(src0Reg, src0 + i * numPerRep);
-            MicroAPI::LoadAlign(src1Reg, src1 + i * numPerRep);
-            MicroAPI::Sub(dstReg, src0Reg, src1Reg, mask);
-            MicroAPI::Maxs(dstReg, dstReg, scalarValue, mask);
-            MicroAPI::StoreAlign(dst + i * numPerRep, dstReg, mask);
+            mask = Reg::UpdateMask<T>(sreg);
+            Reg::LoadAlign(src0Reg, src0 + i * numPerRep);
+            Reg::LoadAlign(src1Reg, src1 + i * numPerRep);
+            Reg::Sub(dstReg, src0Reg, src1Reg, mask);
+            Reg::Maxs(dstReg, dstReg, scalarValue, mask);
+            Reg::StoreAlign(dst + i * numPerRep, dstReg, mask);
         }
     }
 }
@@ -549,24 +555,24 @@ __simd_vf__ inline void AddDeqReluImpl(__ubuf__ half *dst, __ubuf__ int32_t *src
     const float scalarValue = 0.;
     constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(int32_t));
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
-    MicroAPI::RegTensor<half> dstReg;
-    MicroAPI::RegTensor<float> tmpReg;
-    MicroAPI::RegTensor<int32_t> src0Reg;
-    MicroAPI::RegTensor<int32_t> src1Reg;
+    Reg::RegTensor<half> dstReg;
+    Reg::RegTensor<float> tmpReg;
+    Reg::RegTensor<int32_t> src0Reg;
+    Reg::RegTensor<int32_t> src1Reg;
     uint32_t sreg = static_cast<uint32_t>(calCount);
-    MicroAPI::MaskReg preg;
+    Reg::MaskReg preg;
     for (uint16_t i = 0; i < repeatTime; ++i) {
-        preg = MicroAPI::UpdateMask<int32_t>(sreg);
-        MicroAPI::LoadAlign<int32_t>(src0Reg, src0 + i * sregLower);
-        MicroAPI::LoadAlign<int32_t>(src1Reg, src1 + i * sregLower);
-        MicroAPI::Add<int32_t>(src0Reg, src0Reg, src1Reg, preg);
-        MicroAPI::Cast<float, int32_t, CastParam::s322floatCastTrait>(tmpReg, src0Reg, preg);
-        MicroAPI::Muls<float>(tmpReg, tmpReg, static_cast<float>(DEQ_SHIFT_RIGHT_17_BIT), preg);
-        MicroAPI::Muls<float>(tmpReg, tmpReg, static_cast<float>(Internal::g_deqValue), preg);
-        MicroAPI::Muls<float>(tmpReg, tmpReg, static_cast<float>(DEQ_SHIFT_LEFT_17_BIT), preg);
-        MicroAPI::Maxs<float>(tmpReg, tmpReg, scalarValue, preg);
-        MicroAPI::Cast<half, float, CastParam::float2halfCastTrait>(dstReg, tmpReg, preg);
-        MicroAPI::StoreAlign<half, MicroAPI::StoreDist::DIST_PACK_B32>(dst + i * sregLower, dstReg, preg);
+        preg = Reg::UpdateMask<int32_t>(sreg);
+        Reg::LoadAlign<int32_t>(src0Reg, src0 + i * sregLower);
+        Reg::LoadAlign<int32_t>(src1Reg, src1 + i * sregLower);
+        Reg::Add<int32_t>(src0Reg, src0Reg, src1Reg, preg);
+        Reg::Cast<float, int32_t, CastParam::s322floatCastTrait>(tmpReg, src0Reg, preg);
+        Reg::Muls<float>(tmpReg, tmpReg, static_cast<float>(DEQ_SHIFT_RIGHT_17_BIT), preg);
+        Reg::Muls<float>(tmpReg, tmpReg, static_cast<float>(Internal::g_deqValue), preg);
+        Reg::Muls<float>(tmpReg, tmpReg, static_cast<float>(DEQ_SHIFT_LEFT_17_BIT), preg);
+        Reg::Maxs<float>(tmpReg, tmpReg, scalarValue, preg);
+        Reg::Cast<half, float, CastParam::float2halfCastTrait>(dstReg, tmpReg, preg);
+        Reg::StoreAlign<half, Reg::StoreDist::DIST_PACK_B32>(dst + i * sregLower, dstReg, preg);
     }
 }
 
@@ -582,16 +588,16 @@ __simd_vf__ inline void PreluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T 
     constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(T));
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
     uint32_t sreg = static_cast<uint32_t>(calCount);
-    MicroAPI::RegTensor<T> vDstReg0;
-    MicroAPI::RegTensor<T> vSrcReg0;
-    MicroAPI::RegTensor<T> vSrcReg1;
-    MicroAPI::MaskReg mask;
+    Reg::RegTensor<T> vDstReg0;
+    Reg::RegTensor<T> vSrcReg0;
+    Reg::RegTensor<T> vSrcReg1;
+    Reg::MaskReg mask;
     for (uint16_t i = 0; i < repeatTime; ++i) {
-        mask = MicroAPI::UpdateMask<T>(sreg);
-        MicroAPI::LoadAlign(vSrcReg0, src0 + i * sregLower);
-        MicroAPI::LoadAlign(vSrcReg1, src1 + i * sregLower);
-        MicroAPI::Prelu(vDstReg0, vSrcReg0, vSrcReg1, mask);
-        MicroAPI::StoreAlign(dst + i * sregLower, vDstReg0, mask);
+        mask = Reg::UpdateMask<T>(sreg);
+        Reg::LoadAlign(vSrcReg0, src0 + i * sregLower);
+        Reg::LoadAlign(vSrcReg1, src1 + i * sregLower);
+        Reg::Prelu(vDstReg0, vSrcReg0, vSrcReg1, mask);
+        Reg::StoreAlign(dst + i * sregLower, vDstReg0, mask);
     }
 }
 
@@ -608,18 +614,18 @@ __simd_vf__ inline void MullImpl(
     constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(T));
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
     uint32_t sreg = static_cast<uint32_t>(calCount);
-    MicroAPI::RegTensor<T> vDstReg0;
-    MicroAPI::RegTensor<T> vDstReg1;
-    MicroAPI::RegTensor<T> vSrcReg0;
-    MicroAPI::RegTensor<T> vSrcReg1;
-    MicroAPI::MaskReg mask;
+    Reg::RegTensor<T> vDstReg0;
+    Reg::RegTensor<T> vDstReg1;
+    Reg::RegTensor<T> vSrcReg0;
+    Reg::RegTensor<T> vSrcReg1;
+    Reg::MaskReg mask;
     for (uint16_t i = 0; i < repeatTime; ++i) {
-        mask = MicroAPI::UpdateMask<T>(sreg);
-        MicroAPI::LoadAlign(vSrcReg0, src0 + i * sregLower);
-        MicroAPI::LoadAlign(vSrcReg1, src1 + i * sregLower);
-        MicroAPI::Mull(vDstReg0, vDstReg1, vSrcReg0, vSrcReg1, mask);
-        MicroAPI::StoreAlign(dst0 + i * sregLower, vDstReg0, mask);
-        MicroAPI::StoreAlign(dst1 + i * sregLower, vDstReg1, mask);
+        mask = Reg::UpdateMask<T>(sreg);
+        Reg::LoadAlign(vSrcReg0, src0 + i * sregLower);
+        Reg::LoadAlign(vSrcReg1, src1 + i * sregLower);
+        Reg::Mull(vDstReg0, vDstReg1, vSrcReg0, vSrcReg1, mask);
+        Reg::StoreAlign(dst0 + i * sregLower, vDstReg0, mask);
+        Reg::StoreAlign(dst1 + i * sregLower, vDstReg1, mask);
     }
 }
 
@@ -636,16 +642,16 @@ __simd_vf__ inline void FusedAbsSubImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubu
     constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(T));
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
     uint32_t sreg = static_cast<uint32_t>(calCount);
-    MicroAPI::RegTensor<T> vDstReg0;
-    MicroAPI::RegTensor<T> vSrcReg0;
-    MicroAPI::RegTensor<T> vSrcReg1;
-    MicroAPI::MaskReg mask;
+    Reg::RegTensor<T> vDstReg0;
+    Reg::RegTensor<T> vSrcReg0;
+    Reg::RegTensor<T> vSrcReg1;
+    Reg::MaskReg mask;
     for (uint16_t i = 0; i < repeatTime; ++i) {
-        mask = MicroAPI::UpdateMask<T>(sreg);
-        MicroAPI::LoadAlign(vSrcReg0, src0 + i * sregLower);
-        MicroAPI::LoadAlign(vSrcReg1, src1 + i * sregLower);
-        MicroAPI::FusedAbsSub(vDstReg0, vSrcReg0, vSrcReg1, mask);
-        MicroAPI::StoreAlign(dst + i * sregLower, vDstReg0, mask);
+        mask = Reg::UpdateMask<T>(sreg);
+        Reg::LoadAlign(vSrcReg0, src0 + i * sregLower);
+        Reg::LoadAlign(vSrcReg1, src1 + i * sregLower);
+        Reg::FusedAbsSub(vDstReg0, vSrcReg0, vSrcReg1, mask);
+        Reg::StoreAlign(dst + i * sregLower, vDstReg0, mask);
     }
 }
 
@@ -661,28 +667,32 @@ __simd_vf__ inline void FusedExpSubImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubu
     constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(float));
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
     uint32_t sreg = static_cast<uint32_t>(calCount);
-    MicroAPI::RegTensor<T> vDstReg0;
-    MicroAPI::RegTensor<U> vSrcReg0;
-    MicroAPI::RegTensor<U> vSrcReg1;
-    MicroAPI::MaskReg mask;
+    Reg::RegTensor<T> vDstReg0;
+    Reg::RegTensor<U> vSrcReg0;
+    Reg::RegTensor<U> vSrcReg1;
+    Reg::MaskReg mask;
     if constexpr (IsSameType<U, half>::value) {
         for (uint16_t i = 0; i < repeatTime; ++i) {
-            mask = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::LoadAlign<U, MicroAPI::LoadDist::DIST_UNPACK_B16>(vSrcReg0, src0 + i * sregLower);
-            MicroAPI::LoadAlign<U, MicroAPI::LoadDist::DIST_UNPACK_B16>(vSrcReg1, src1 + i * sregLower);
-            MicroAPI::FusedExpSub(vDstReg0, vSrcReg0, vSrcReg1, mask);
-            MicroAPI::StoreAlign(dst + i * sregLower, vDstReg0, mask);
+            mask = Reg::UpdateMask<T>(sreg);
+            Reg::LoadAlign<U, Reg::LoadDist::DIST_UNPACK_B16>(vSrcReg0, src0 + i * sregLower);
+            Reg::LoadAlign<U, Reg::LoadDist::DIST_UNPACK_B16>(vSrcReg1, src1 + i * sregLower);
+            Reg::FusedExpSub(vDstReg0, vSrcReg0, vSrcReg1, mask);
+            Reg::StoreAlign(dst + i * sregLower, vDstReg0, mask);
         }
     } else if constexpr (IsSameType<U, float>::value) {
         for (uint16_t i = 0; i < repeatTime; ++i) {
-            mask = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::LoadAlign(vSrcReg0, src0 + i * sregLower);
-            MicroAPI::LoadAlign(vSrcReg1, src1 + i * sregLower);
-            MicroAPI::FusedExpSub(vDstReg0, vSrcReg0, vSrcReg1, mask);
-            MicroAPI::StoreAlign(dst + i * sregLower, vDstReg0, mask);
+            mask = Reg::UpdateMask<T>(sreg);
+            Reg::LoadAlign(vSrcReg0, src0 + i * sregLower);
+            Reg::LoadAlign(vSrcReg1, src1 + i * sregLower);
+            Reg::FusedExpSub(vDstReg0, vSrcReg0, vSrcReg1, mask);
+            Reg::StoreAlign(dst + i * sregLower, vDstReg0, mask);
         }
     }
 }
 
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_VEC_BINARY_CONTINUOUS_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_BINARY_CONTINUOUS_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_BINARY_CONTINUOUS_IMPL_H__
+#endif

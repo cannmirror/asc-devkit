@@ -243,9 +243,9 @@ int32_t AscendLaunchKernelWithHostArgs(void* funcHandle,
     if (currentSoc == SocVersion::ASCEND950 && ubufDynamicSize !=0) {
         constexpr uint32_t attrLen = 1;
         aclrtLaunchKernelAttrValue attrValue{};
-        attrValue.localMemorySize = ubufDynamicSize;
+        attrValue.dynUBufSize = ubufDynamicSize;
         aclrtLaunchKernelAttr attrList[attrLen] = {
-            {static_cast<aclrtLaunchKernelAttrId>(2)/* ACL_RT_LAUNCH_KERNEL_ATTR_LOCAL_MEMORY_SIZE */, attrValue},
+            {static_cast<aclrtLaunchKernelAttrId>(2)/* ACL_RT_LAUNCH_KERNEL_ATTR_DYN_UBUF_SIZE */, attrValue},
         };
         aclrtLaunchKernelCfg cfg = {attrList, attrLen};
         return aclrtLaunchKernelWithHostArgs(funcHandle, numBlocks, stream, &cfg, hostArgs, argsSize, nullptr, 0);

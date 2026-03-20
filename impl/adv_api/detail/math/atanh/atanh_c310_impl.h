@@ -12,6 +12,12 @@
  * \file atanh_c310_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/math/atanh/atanh_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/atanh.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ATANH_ATANH_C310_IMPL_H__
+#endif
 #ifndef IMPL_MATH_ATANH_ATANH_C310_IMPL_H
 #define IMPL_MATH_ATANH_ATANH_C310_IMPL_H
 #include "kernel_tensor.h"
@@ -30,34 +36,34 @@ constexpr float ATANH_MULS_CONSTANT = 0.5;
 template <typename T>
 __simd_vf__ inline void AtanhImplVF(__ubuf__ T* dst, __ubuf__ T* src, uint32_t calCount, uint16_t repeatTimes)
 {
-    MicroAPI::RegTensor<T> srcVreg;
-    MicroAPI::RegTensor<T> dstVreg;
-    MicroAPI::RegTensor<float> tmpReg1;
-    MicroAPI::RegTensor<float> tmpReg2;
-    MicroAPI::RegTensor<float> dupReg;
-    MicroAPI::MaskReg mask;
+    Reg::RegTensor<T> srcVreg;
+    Reg::RegTensor<T> dstVreg;
+    Reg::RegTensor<float> tmpReg1;
+    Reg::RegTensor<float> tmpReg2;
+    Reg::RegTensor<float> dupReg;
+    Reg::MaskReg mask;
     constexpr int32_t oneRepElm = static_cast<int32_t>(GetVecLen() / sizeof(float));
-    MicroAPI::Duplicate<float>(dupReg, ATANH_ONE);
+    Reg::Duplicate<float>(dupReg, ATANH_ONE);
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = MicroAPI::UpdateMask<float>(calCount);
+        mask = Reg::UpdateMask<float>(calCount);
         if constexpr (sizeof(T) == sizeof(half)) {
-            MicroAPI::LoadAlign<half, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcVreg, src + i * oneRepElm);
-            MicroAPI::Cast<float, half, castTraitB16ToB32>(
-                (MicroAPI::RegTensor<float>&)srcVreg, srcVreg, mask);
+            Reg::LoadAlign<half, Reg::LoadDist::DIST_UNPACK_B16>(srcVreg, src + i * oneRepElm);
+            Reg::Cast<float, half, castTraitB16ToB32>(
+                (Reg::RegTensor<float>&)srcVreg, srcVreg, mask);
         } else {
-            MicroAPI::LoadAlign(srcVreg, src + i * oneRepElm);
+            Reg::LoadAlign(srcVreg, src + i * oneRepElm);
         }
-        MicroAPI::Adds(tmpReg1, (MicroAPI::RegTensor<float>&)srcVreg, ATANH_ONE, mask);
-        MicroAPI::Sub(tmpReg2, dupReg, (MicroAPI::RegTensor<float>&)srcVreg, mask);
-        MicroAPI::Div(tmpReg1, tmpReg1, tmpReg2, mask);
-        MicroAPI::Ln(tmpReg1, tmpReg1, mask);
-        MicroAPI::Muls((MicroAPI::RegTensor<float>&)dstVreg, tmpReg1, ATANH_MULS_CONSTANT, mask);
+        Reg::Adds(tmpReg1, (Reg::RegTensor<float>&)srcVreg, ATANH_ONE, mask);
+        Reg::Sub(tmpReg2, dupReg, (Reg::RegTensor<float>&)srcVreg, mask);
+        Reg::Div(tmpReg1, tmpReg1, tmpReg2, mask);
+        Reg::Ln(tmpReg1, tmpReg1, mask);
+        Reg::Muls((Reg::RegTensor<float>&)dstVreg, tmpReg1, ATANH_MULS_CONSTANT, mask);
         if constexpr (sizeof(T) == sizeof(half)) {
-            MicroAPI::Cast<half, float, castTraitB32ToB16>(
-                dstVreg, (MicroAPI::RegTensor<float>&)dstVreg, mask);
-            MicroAPI::StoreAlign<half, MicroAPI::StoreDist::DIST_PACK_B32>(dst + i * oneRepElm, dstVreg, mask);
+            Reg::Cast<half, float, castTraitB32ToB16>(
+                dstVreg, (Reg::RegTensor<float>&)dstVreg, mask);
+            Reg::StoreAlign<half, Reg::StoreDist::DIST_PACK_B32>(dst + i * oneRepElm, dstVreg, mask);
         } else {
-            MicroAPI::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
+            Reg::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
         }
     }
 }
@@ -105,3 +111,8 @@ __aicore__ inline void AtanhImpl(const LocalTensor<T>& dstTensor, const LocalTen
 
 }   // namespace AscendC
 #endif  //IMPL_MATH_ATANH_ATANH_C310_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ATANH_ATANH_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ATANH_ATANH_C310_IMPL_H__
+#endif

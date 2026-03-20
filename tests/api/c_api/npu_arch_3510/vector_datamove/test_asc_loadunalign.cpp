@@ -39,6 +39,32 @@ TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 
+#define TEST_VECTOR_DATAMOVE_LOADUNALIGN_INSTR_HIF8(class_name, c_api_name, cce_name, data_type)            \
+                                                                                                \
+class TestVectorDataMove##class_name##_##data_type##_CApi : public testing::Test {                 \
+protected:                                                                                      \
+    void SetUp() {}                                                                             \
+    void TearDown() {}                                                                          \
+};                                                                                              \
+                                                                                                \
+namespace {                                                                                     \
+void cce_name##_##data_type##_Stub0(vector_uint8_t& dst, vector_load_align& src0, __ubuf__ uint8_t *src1) {}                                                          \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_type##_Succ)       \
+{                                                                                               \
+    __ubuf__ data_type *src1 = reinterpret_cast<__ubuf__ data_type *>(0);               \
+    vector_store_align src0;                                                                             \
+    vector_##data_type dst;                                                                             \
+                                                                                                \
+    MOCKER_CPP(cce_name, void(vector_uint8_t&, vector_store_align&, __ubuf__ uint8_t *))                     \
+        .times(1)                                                                               \
+        .will(invoke(cce_name##_##data_type##_Stub0));                                           \
+                                                                                                \
+    c_api_name(dst, src0, src1);                                                                \
+    GlobalMockObject::verify();                                                                 \
+}                                                                                               \
+
 TEST_VECTOR_DATAMOVE_LOADUNALIGN_INSTR(Vldus0, asc_loadunalign, vldus, int8_t);
 TEST_VECTOR_DATAMOVE_LOADUNALIGN_INSTR(Vldus0, asc_loadunalign, vldus, uint8_t);
 TEST_VECTOR_DATAMOVE_LOADUNALIGN_INSTR(Vldus0, asc_loadunalign, vldus, int16_t);
@@ -50,6 +76,7 @@ TEST_VECTOR_DATAMOVE_LOADUNALIGN_INSTR(Vldus0, asc_loadunalign, vldus, half);
 TEST_VECTOR_DATAMOVE_LOADUNALIGN_INSTR(Vldus0, asc_loadunalign, vldus, float);
 TEST_VECTOR_DATAMOVE_LOADUNALIGN_INSTR(Vldus0, asc_loadunalign, vldus, bfloat16_t);
 TEST_VECTOR_DATAMOVE_LOADUNALIGN_INSTR(Vldus0, asc_loadunalign, vldus, fp8_e4m3fn_t);
+TEST_VECTOR_DATAMOVE_LOADUNALIGN_INSTR_HIF8(Vldus0, asc_loadunalign, vldus, hifloat8_t);
 TEST_VECTOR_DATAMOVE_LOADUNALIGN_INSTR(Vldus0, asc_loadunalign, vldus, fp8_e5m2_t);
 TEST_VECTOR_DATAMOVE_LOADUNALIGN_INSTR(Vldus0, asc_loadunalign, vldus, fp8_e8m0_t);
 TEST_VECTOR_DATAMOVE_LOADUNALIGN_INSTR(Vldus0, asc_loadunalign, vldus, fp4x2_e2m1_t);

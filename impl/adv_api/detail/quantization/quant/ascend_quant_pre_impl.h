@@ -13,6 +13,12 @@
  * \brief
  */
 
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/quantization/quant/ascend_quant_pre_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/quantization/ascend_quant.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZATION_QUANT_ASCEND_QUANT_PRE_IMPL_H__
+#endif
+
 #ifndef IMPL_QUANTIZATION_QUANT_ASCEND_QUANT_PRE_IMPL_H
 #define IMPL_QUANTIZATION_QUANT_ASCEND_QUANT_PRE_IMPL_H
 #include "kernel_tensor.h"
@@ -461,3 +467,8 @@ __aicore__ inline void AscendQuantCalc(const LocalTensor<int8_t>& dstTensor, con
 #endif
 }
 #endif // IMPL_QUANTIZATION_QUANT_ASCEND_QUANT_PRE_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZATION_QUANT_ASCEND_QUANT_PRE_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZATION_QUANT_ASCEND_QUANT_PRE_IMPL_H__
+#endif

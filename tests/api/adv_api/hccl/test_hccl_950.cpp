@@ -384,12 +384,51 @@ TEST_F(HcclSuiteAIC, AllReduce_CcuAllReduceMeshMem2Mem1D)
     Hccl<HcclServerType::HCCL_SERVER_TYPE_CCU> hccl;
     hccl.Init(reinterpret_cast<GM_ADDR>(&hcclCombineOpParam));
     HcclHandle handleId = hccl.AllReduce(reinterpret_cast<__gm__ uint8_t*>(0x11),
-                                         reinterpret_cast<__gm__ uint8_t*>(0x11), 100,
+                                         reinterpret_cast<__gm__ uint8_t*>(0x11), 64,
                                          HcclDataType::HCCL_DATA_TYPE_INT8,
                                          HcclReduceOp::HCCL_REDUCE_SUM, 1);
     hccl.Commit(handleId);
     EXPECT_EQ(handleId, 0);
     EXPECT_EQ(hccl.Wait(handleId), HCCL_SUCCESS);
+}
+
+TEST_F(HcclSuiteAIC, AllReduce_CcuAllReduceMeshMem2Mem1D_Cout_not_dived)
+{
+    std::vector<uint8_t> workSpace(workSpaceSize + 1024 * 14);
+    HcclMsgArea* hcclMsgArea = GetHcclMsgArea(workSpace.data());
+    HcclCombineOpParam hcclCombineOpParam = GetHcclCombineOpParam(workSpace);
+    hcclCombineOpParam.opType[0] = static_cast<uint32_t>(HcclCMDType::HCCL_CMD_ALLREDUCE);
+    hcclCombineOpParam.algorithmType[0] = static_cast<uint8_t>(AlgorithmType::CcuAllReduceMeshMem2Mem1D);
+
+    Hccl<HcclServerType::HCCL_SERVER_TYPE_CCU> hccl;
+    hccl.Init(reinterpret_cast<GM_ADDR>(&hcclCombineOpParam));
+    HcclHandle handleId = hccl.AllReduce(reinterpret_cast<__gm__ uint8_t*>(0x11),
+                                         reinterpret_cast<__gm__ uint8_t*>(0x11), 9,
+                                         HcclDataType::HCCL_DATA_TYPE_INT8,
+                                         HcclReduceOp::HCCL_REDUCE_SUM, 1);
+    hccl.Commit(handleId);
+    EXPECT_EQ(handleId, 0);
+    EXPECT_EQ(hccl.Wait(handleId), HCCL_SUCCESS);
+}
+
+TEST_F(HcclSuiteAIC, AllReduce_CcuAllReduceMeshMem2Mem1D_Cout_zero)
+{
+    std::vector<uint8_t> workSpace(workSpaceSize + 1024 * 14);
+    HcclMsgArea* hcclMsgArea = GetHcclMsgArea(workSpace.data());
+    HcclCombineOpParam hcclCombineOpParam = GetHcclCombineOpParam(workSpace);
+    hcclCombineOpParam.opType[0] = static_cast<uint32_t>(HcclCMDType::HCCL_CMD_ALLREDUCE);
+    hcclCombineOpParam.algorithmType[0] = static_cast<uint8_t>(AlgorithmType::CcuAllReduceMeshMem2Mem1D);
+
+    Hccl<HcclServerType::HCCL_SERVER_TYPE_CCU> hccl;
+    hccl.Init(reinterpret_cast<GM_ADDR>(&hcclCombineOpParam));
+    HcclHandle handleId = hccl.AllReduce(reinterpret_cast<__gm__ uint8_t*>(0x11),
+                                         reinterpret_cast<__gm__ uint8_t*>(0x11), 0,
+                                         HcclDataType::HCCL_DATA_TYPE_INT8,
+                                         HcclReduceOp::HCCL_REDUCE_SUM, 0);
+
+    EXPECT_EQ(handleId, -1);
+    hccl.Commit(handleId);
+    EXPECT_EQ(hccl.Wait(handleId), HCCL_FAILED);
 }
 
 TEST_F(HcclSuiteAIC, ReduceScatter_CcuReduceScatterMeshMem2Mem1D)

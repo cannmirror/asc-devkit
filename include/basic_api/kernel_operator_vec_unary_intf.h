@@ -12,6 +12,11 @@
  * \file kernel_operator_vec_unary_intf.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_UNARY_INTF_H__
+#endif
+
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_UNARY_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_VEC_UNARY_INTERFACE_H
 
@@ -20,7 +25,7 @@
 #include "kernel_struct_unary.h"
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
-#include "micro_api/kernel_micro_utils.h"
+#include "reg_compute/kernel_reg_compute_utils.h"
 #endif
 
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
@@ -376,3 +381,8 @@ __aicore__ inline void Neg(const LocalTensor<T> &dst, const LocalTensor<T> &src,
 
 #include "../../impl/basic_api/kernel_operator_vec_unary_intf_impl.h"
 #endif // ASCENDC_MODULE_OPERATOR_VEC_UNARY_INTERFACE_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_UNARY_INTF_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_UNARY_INTF_H__
+#endif

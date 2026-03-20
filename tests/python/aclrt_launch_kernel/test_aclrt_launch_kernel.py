@@ -22,6 +22,17 @@ TOP_PATH = os.path.join(FILE_PATH, "../../../")
 FRAMEWORK_PATH = os.path.join(TOP_PATH, "cmake/asc/legacy_modules/util")
 sys.path.append(FRAMEWORK_PATH)
 
+STUB_CPP_LICENSE = """/**
+* Copyright (c) 2025 Huawei Technologies Co., Ltd.
+* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+* CANN Open Software License Agreement Version 2.0 (the "License").
+* Please refer to the License for details. You may not use this file except in compliance with the License.
+* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+* See LICENSE in the root of the software repository for the full text of the License.
+*/
+""" # to compare generated and stub code
+
 from extract_host_stub import *
 from update_host_stub import *
 from channel import v310_mode
@@ -31,6 +42,7 @@ class TestAclrtLaunchKernel(unittest.TestCase):
     def setUp(self):
         # operator before each testcase
         print(f"-------------------SetUp----------------")
+        self.maxDiff = None
 
     def tearDown(self):
         # operator after each testcase
@@ -201,7 +213,7 @@ struct   AddCustomTilingData
             ),
         )
 
-        dump_info ={'dump_type': 'printf','dump_size': 1048576}
+        dump_info ={'dump_type': '','dump_size': 1048576}
         mode = CodeMode.AIV
         base_key =0
 
@@ -236,14 +248,14 @@ struct AddCustomTilingData {{
         with open(os.path.join(TOP_PATH, "tests/python/aclrt_launch_kernel/stub_files/test_gen_host_stup_code.cpp"), 'r') as f:
             golden_code = f.read()
             f.close()
-        self.assertEqual(host_stub_code, golden_code)
+        self.assertEqual(STUB_CPP_LICENSE + host_stub_code, golden_code)
         
-        dump_info ={'dump_type': 'printf','dump_size': 1048576}
+        dump_info ={'dump_type': '','dump_size': 1048576}
         mode = CodeMode.MIX
         func_signs_list = [FuncSignGroupWithModeBase(file_path, func_signs, dump_info, mode, base_key)]
         host_stub_code = generate_host_stub_code(func_signs_list, type_definition)
 
-        dump_info ={'dump_type': 'assert','dump_size': 1048576}
+        dump_info ={'dump_type': '','dump_size': 1048576}
         mode = CodeMode.MIX_VECTOR_CORE
         func_signs_list = [FuncSignGroupWithModeBase(file_path, func_signs, dump_info, mode, base_key)]
         host_stub_code = generate_host_stub_code(func_signs_list, type_definition)
@@ -280,7 +292,7 @@ struct AddCustomTilingData {{
             ),
         )
 
-        dump_info ={'dump_type': 'printf','dump_size': 1048576}
+        dump_info ={'dump_type': '','dump_size': 1048576}
         mode = CodeMode.AIV
         base_key =0
 
@@ -308,7 +320,7 @@ struct AddCustomTilingData {{
             golden_code = f.read()
             f.close()
 
-        self.assertEqual(host_stub_code, golden_code)
+        self.assertEqual(STUB_CPP_LICENSE + host_stub_code, golden_code)
 
     @mock.patch('os.environ', {'ASCENDC_CCACHE_EXECUTABLE': '/usr/bin/ccache'})
     @mock.patch('extract_host_stub.get_mode_by_ofile')
@@ -599,7 +611,7 @@ struct AddCustomTilingData {{
                                 ),
                                 FuncSign('', '', (), '', (), ()),
                             ), 
-                            dump_info={'dump_type': 'assert', 'dump_size': 1048576},
+                            dump_info={'dump_type': '', 'dump_size': 1048576},
                             mode=CodeMode.KERNEL_TYPE_MIX_AIV_1_0,
                             base_key=0
                         ),
@@ -632,7 +644,7 @@ struct AddCustomTilingData {{
                                 ),
                                 FuncSign('', '', (), '', (), ()),
                             ), 
-                            dump_info={'dump_type': 'assert', 'dump_size': 1048576},
+                            dump_info={'dump_type': '', 'dump_size': 1048576},
                             mode=CodeMode.KERNEL_TYPE_AIV_ONLY,
                             base_key=0
                         ),
@@ -702,7 +714,7 @@ struct AddCustomTilingData {{
                     ),
                     FuncSign('', '', (), 'int a', (), ()),
                 ), 
-                dump_info={'dump_type': 'printf', 'dump_size': 1048576},
+                dump_info={'dump_type': '', 'dump_size': 1048576},
                 mode=CodeMode.KERNEL_TYPE_MIX_AIC_1_2,
                 base_key=1
             ),
@@ -737,7 +749,7 @@ struct AddCustomTilingData {{
                     ),
                     FuncSign('', '', (), 'int a', (), ()),
                 ), 
-                dump_info={'dump_type': 'printf', 'dump_size': 1048576},
+                dump_info={'dump_type': '', 'dump_size': 1048576},
                 mode=CodeMode.KERNEL_TYPE_AIV_ONLY,
                 base_key=1
             ),
@@ -783,7 +795,6 @@ struct AddCustomTilingData {{
         assert os.path.exists(cpp_path_assert_only)
         with open(cpp_path_assert_only, 'r', encoding='utf-8') as file:
             content = file.read()
-        assert 'StoreArgsOfInitDump' in content
         save_aic_aiv_config_cmake(func_groups, source_mapping, dst_dir, generate_definition)
         extract_host_stub.IS_V220_MODE = False
         generate_definition = False
@@ -840,7 +851,7 @@ struct AddCustomTilingData {{
         has_aic = True
         has_aiv = True
         dump_assert = True
-        generate_code = generate_host_stub_head_code(has_mix, has_aic, has_aiv, dump_assert)
+        generate_code = generate_host_stub_head_code(has_mix, has_aic, has_aiv, dump_assert, False)
         self.assertIn("g_kernel_handle", generate_code)
         self.assertIn("g_kernel_handle_aiv", generate_code)
         self.assertIn("g_kernel_handle_aic", generate_code)
@@ -1089,26 +1100,6 @@ inline uint32_t hello_world(uint32_t numBlocks, void* hold, void* stream)
         mode = CodeMode.AIV
         generate_code = generate_launch_kernel_code(mode, func_key, num_blocks, stream)
         self.assertIn("g_kernel_handle_aiv == nullptr", generate_code)
-
-    def test_get_dump_info_by_source(self):
-        data = f'''
-        extern "C" __attribute__((cce_kernel)) [aicore] void add_custom(__attribute__((cce_global)) uint8_t* x, __attribute__((cce_global)) uint8_t* y, __attribute__((cce_global)) uint8_t* z, __attribute__((cce_global)) uint8_t* workspace, __attribute__((cce_global)) uint8_t* tiling)
-        {{
-            auto __enable_feature_for_compile_default = KERNEL_TYPE_MIX_AIV_1_0;
-            GET_TILING_DATA(tilingData, tiling);
-            KernelAdd op;
-            op.Init(x, y, z, tilingData.totalLength, tilingData.tileNum);
-            op.Process();
-        }}'''
-        assert_info = "__enable_feature_for_compile_assert = 1; \n"
-        printf_info = "__enable_feature_for_compile_printf = 1 \n"
-        assert_buff = "__enable_feature_for_compile_assertBufSize = 4096 \n"
-        printf_buff = "__enable_feature_for_compile_printfBufSize = 4096 \n"
-        self.assertEqual(get_dump_info_by_source(assert_info + data), {"dump_type" : "assert", "dump_size" : 1048576})
-        self.assertEqual(get_dump_info_by_source(printf_info + data), {"dump_type" : "printf", "dump_size" : 1048576})
-        self.assertEqual(get_dump_info_by_source(assert_info + printf_info + data), {"dump_type" : "printf,assert", "dump_size" : 1048576})
-        self.assertEqual(get_dump_info_by_source(assert_info + printf_info + assert_buff + data), {"dump_type" : "printf,assert", "dump_size" : 4096})
-        self.assertEqual(get_dump_info_by_source(assert_info + printf_info + printf_buff + data), {"dump_type" : "printf,assert", "dump_size" : 4096})
 
     @mock.patch('extract_host_stub.get_code_channel')
     def test_get_mode_by_ofile(self, mock_channel):    

@@ -15,18 +15,12 @@
 #ifndef IMPL_UTILS_DEBUG_NPU_ARCH_3510_ASC_DEBUG_UTILS_H
 #define IMPL_UTILS_DEBUG_NPU_ARCH_3510_ASC_DEBUG_UTILS_H
 
-#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
-#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_DEBUG_UTILS_IMPL__
-#warning "asc_debug_utils_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future."
-#endif
-
 #include "impl/utils/sys_macros.h"
 namespace __asc_aicore {
 __aicore__ inline void asc_entire_dcci_impl(__gm__ uint64_t* ptr)
 {
-    bisheng::cce::dcci(ptr, bisheng::cce::cache_line_t::ENTIRE_DATA_CACHE,
-                       bisheng::cce::dcci_dst_t::CACHELINE_OUT);
+    dcci(ptr, cache_line_t::ENTIRE_DATA_CACHE,
+                       dcci_dst_t::CACHELINE_OUT);
 }
 
 __aicore__ inline uint64_t asc_debug_get_system_cycle_impl()
@@ -54,7 +48,7 @@ __aicore__ inline uint32_t asc_debug_get_core_idx_impl()
 __aicore__ inline uint64_t asc_debug_get_block_idx_impl()
 {
 #if defined(__DAV_VEC__)
-    return get_block_idx() * bisheng::cce::get_subblockdim() + bisheng::cce::get_subblockid();
+    return get_block_idx() * get_subblockdim() + get_subblockid();
 #else
     return get_block_idx();
 #endif

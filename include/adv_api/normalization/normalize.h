@@ -12,6 +12,12 @@
  * \file noramlize.h
  * \brief Given mean and variance, calculate rstd and output.
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZE_H__
+#endif
+
 #ifndef LIB_NORMALIZATION_NORMALIZE_H
 #define LIB_NORMALIZATION_NORMALIZE_H
 #include "include/adv_api/normalization/normalize_utils.h"
@@ -86,3 +92,8 @@ __aicore__ inline void Normalize(const LocalTensor<T>& output, const LocalTensor
 } // namespace AscendC
 #endif
 #endif // LIB_NORMALIZATION_NORMALIZE_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZE_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZE_H__
+#endif

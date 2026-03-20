@@ -12,6 +12,11 @@
  * \file kernel_operator_vec_duplicate_intf.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_DUPLICATE_INTF_H__
+#endif
+
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_DUPLICATE_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_VEC_DUPLICATE_INTERFACE_H
 
@@ -117,3 +122,8 @@ __aicore__ inline void DeInterleave(const LocalTensor<T>& dst0, const LocalTenso
 
 #include "../../impl/basic_api/kernel_operator_vec_duplicate_intf_impl.h"
 #endif // ASCENDC_MODULE_OPERATOR_VEC_DUPLICATE_INTERFACE_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_DUPLICATE_INTF_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_DUPLICATE_INTF_H__
+#endif

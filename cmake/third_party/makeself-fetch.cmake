@@ -10,9 +10,30 @@
 
 set(MAKESELF_NAME "makeself")
 set(MAKESELF_PATH "${CANN_3RD_LIB_PATH}/${MAKESELF_NAME}")
+set(MAKESELF_TAR_PATH "${CANN_3RD_LIB_PATH}/makeself-release-2.5.0-patch1.tar.gz")
 
-# 默认配置的makeself还是不存在则下载
-if (NOT EXISTS "${MAKESELF_PATH}/makeself-header.sh" OR NOT EXISTS "${MAKESELF_PATH}/makeself.sh")
+# 新增：检查本地 tar.gz 包是否存在
+if (EXISTS "${MAKESELF_TAR_PATH}")
+    message(STATUS "Found local tar.gz package: ${MAKESELF_TAR_PATH}, extracting...")
+    
+    # 创建目标目录（如果不存在）
+    file(MAKE_DIRECTORY "${MAKESELF_PATH}")
+    
+    # 解压本地的 tar.gz 包
+    execute_process(
+        COMMAND tar xzf "${MAKESELF_TAR_PATH}" -C "${MAKESELF_PATH}" --strip-components=1
+        RESULT_VARIABLE EXTRACT_RESULT
+        ERROR_VARIABLE EXTRACT_ERROR
+    )
+    
+    if(NOT EXTRACT_RESULT EQUAL 0)
+        message(FATAL_ERROR "Failed to extract local tar.gz: ${EXTRACT_ERROR}")
+    endif()
+    
+    message(STATUS "Local tar.gz extracted successfully to ${MAKESELF_PATH}")
+    
+# 如果本地包不存在，再检查解压后的目录是否存在
+elseif (NOT EXISTS "${MAKESELF_PATH}/makeself-header.sh" OR NOT EXISTS "${MAKESELF_PATH}/makeself.sh")
     set(MAKESELF_URL "https://gitcode.com/cann-src-third-party/makeself/releases/download/release-2.5.0-patch1.0/makeself-release-2.5.0-patch1.tar.gz")
     message(STATUS "Downloading ${MAKESELF_NAME} from ${MAKESELF_URL}")
 
@@ -24,15 +45,16 @@ if (NOT EXISTS "${MAKESELF_PATH}/makeself-header.sh" OR NOT EXISTS "${MAKESELF_P
         SOURCE_DIR "${MAKESELF_PATH}"  # 直接解压到此目录
     )
     FetchContent_MakeAvailable(${MAKESELF_NAME})
-    execute_process(
-        COMMAND chmod 700 "${CMAKE_BINARY_DIR}/makeself/makeself.sh"
-        COMMAND chmod 700 "${CMAKE_BINARY_DIR}/makeself/makeself-header.sh"
-        RESULT_VARIABLE CHMOD_RESULT
-        ERROR_VARIABLE CHMOD_ERROR
-    )
-    install(DIRECTORY ${CMAKE_BINARY_DIR}/makeself 
-            DESTINATION .)
-else()
-    install(DIRECTORY ${MAKESELF_PATH}
-            DESTINATION .)
 endif()
+
+# 设置执行权限（无论哪种方式获取，都需要执行）
+execute_process(
+    COMMAND chmod 700 "${MAKESELF_PATH}/makeself.sh"
+    COMMAND chmod 700 "${MAKESELF_PATH}/makeself-header.sh"
+    RESULT_VARIABLE CHMOD_RESULT
+    ERROR_VARIABLE CHMOD_ERROR
+)
+
+# 安装到目标位置
+install(DIRECTORY ${MAKESELF_PATH} 
+        DESTINATION .)

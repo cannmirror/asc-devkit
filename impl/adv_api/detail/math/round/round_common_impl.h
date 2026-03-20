@@ -12,6 +12,12 @@
  * \file round_common_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/math/round/round_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/round.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ROUND_ROUND_COMMON_IMPL_H__
+#endif
 #ifndef IMPL_MATH_ROUND_ROUND_COMMON_IMPL_H
 #define IMPL_MATH_ROUND_ROUND_COMMON_IMPL_H
 #include "kernel_basic_intf.h"
@@ -63,3 +69,8 @@ __aicore__ inline void RoundImpl(
 #endif
 
 #endif // IMPL_MATH_ROUND_ROUND_COMMON_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ROUND_ROUND_COMMON_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ROUND_ROUND_COMMON_IMPL_H__
+#endif

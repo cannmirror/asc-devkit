@@ -15,12 +15,6 @@
 #ifndef IMPL_UTILS_DEBUG_NPU_ARCH_2201_ASC_AICORE_PRINTF_UTILS_H
 #define IMPL_UTILS_DEBUG_NPU_ARCH_2201_ASC_AICORE_PRINTF_UTILS_H
 
-#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
-#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_AICORE_PRINTF_UTILS__
-#warning "asc_aicore_printf_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future."
-#endif
-
 #include "impl/utils/debug/asc_debug_utils.h"
 #include "impl/utils/debug/npu_arch_2201/asc_type_conversion_utils.h"
 namespace __asc_aicore {

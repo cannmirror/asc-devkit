@@ -12,6 +12,13 @@
  * \file silu_c310_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/activation/silu/silu_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/silu.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SILU_C310_IMPL_H__
+#endif
+
 #ifndef IMPL_MATH_SILU_SILU_C310_IMPL_H
 #define IMPL_MATH_SILU_SILU_C310_IMPL_H
 #include "kernel_basic_intf.h"
@@ -24,18 +31,18 @@ template<typename T>
 __simd_vf__ inline void SiluComputeVF(__ubuf__ T* dst, __ubuf__ T* src, uint32_t count, const uint16_t repeatTimes)
 {
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
-    MicroAPI::RegTensor<T> srcVreg;
-    MicroAPI::RegTensor<T> tmpReg0;
-    MicroAPI::RegTensor<T> dstVreg;
-    MicroAPI::MaskReg mask;
+    Reg::RegTensor<T> srcVreg;
+    Reg::RegTensor<T> tmpReg0;
+    Reg::RegTensor<T> dstVreg;
+    Reg::MaskReg mask;
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = MicroAPI::UpdateMask<T>(count);
-        MicroAPI::LoadAlign(srcVreg, src + i * oneRepElm);
-        MicroAPI::Muls(tmpReg0, srcVreg, -1.0f, mask);
-        MicroAPI::Exp(tmpReg0, tmpReg0, mask);
-        MicroAPI::Adds(tmpReg0, tmpReg0, 1.0f, mask);
-        MicroAPI::Div(dstVreg, srcVreg, tmpReg0, mask);
-        MicroAPI::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
+        mask = Reg::UpdateMask<T>(count);
+        Reg::LoadAlign(srcVreg, src + i * oneRepElm);
+        Reg::Muls(tmpReg0, srcVreg, -1.0f, mask);
+        Reg::Exp(tmpReg0, tmpReg0, mask);
+        Reg::Adds(tmpReg0, tmpReg0, 1.0f, mask);
+        Reg::Div(dstVreg, srcVreg, tmpReg0, mask);
+        Reg::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
     }   
 }
 } // namespace Internal
@@ -61,3 +68,8 @@ __aicore__ inline void SiluCompute(const LocalTensor<T>& dstLocal, const LocalTe
 }
 }   // namespace AscendC
 #endif  // IMPL_MATH_SILU_SILU_C310_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SILU_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SILU_C310_IMPL_H__
+#endif

@@ -10,3 +10,12 @@
 | [02_features](./02_features) | 基于Ascend C特性样例，介绍了Aclnn（ge入图）工程、LocalMemoryAllocator、Barrier单独内存申请分配等特性 |
 | [03_libraries](./03_libraries) | 基于Ascend C API类库的使用样例，通过<<<>>>直调的实现方式，介绍了数学库，激活函数等API类库 |
 | [04_best_practices](./04_best_practices) | 1. 基于Ascend C的性能优化实践，聚焦于关键算子与内存访问的调优，旨在提升在Ascend平台上的运行效率。 2. 针对不兼容的特性，提供兼容性样例 |
+
+## npu-arch编译选项说明
+
+开发者需根据实际的执行环境，修改具体样例目录下CMakeLists.txt文件中的--npu-arch编译选项，参考下表中的对应关系，修改为环境对应的npu-arch参数值。
+| 产品型号 |  npu-arch参数 |
+| ---- | ---- |
+| Ascend 950PR/Ascend 950DT | --npu-arch=dav-3510 |
+| Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 | --npu-arch=dav-2201 |
+| Atlas 推理系列产品AI Core | --npu-arch=dav-2002 |

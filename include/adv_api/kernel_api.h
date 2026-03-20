@@ -12,12 +12,19 @@
  * \file kernel_api.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_API_H__
+#endif
+
 #ifndef LIB_KERNEL_API_H
 #define LIB_KERNEL_API_H
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 #if (__NPU_ARCH__ != 5102)
 #include "hccl/hccl.h"
+#include "hcomm/hcomm.h"
 #endif
 #include "index/arithprogression.h"
 #include "activation/sigmoid.h"
@@ -185,6 +192,7 @@
 #include "normalization/layernormgradbeta.h"
 #include "pad/pad.h"
 #include "hccl/hccl.h"
+#include "hcomm/hcomm.h"
 #include "math/frac.h"
 #include "math/power.h"
 #include "math/log.h"
@@ -244,3 +252,8 @@
 #endif // __NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201
 
 #endif // LIB_KERNEL_API_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_API_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_API_H__
+#endif

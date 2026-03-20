@@ -12,6 +12,12 @@
  * \file cos_tiling_intf.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_COS_TILING_INTF_H__
+#endif
+
 #ifndef LIB_MATH_COS_TILING_INTF_H
 #define LIB_MATH_COS_TILING_INTF_H
 
@@ -22,3 +28,8 @@ typedef void CosTilingDeprecatedHeader;
 using LibCosTilingInterface = CosTilingDeprecatedHeader;
 }
 #endif // LIB_MATH_COS_TILING_INTF_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_COS_TILING_INTF_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_COS_TILING_INTF_H__
+#endif

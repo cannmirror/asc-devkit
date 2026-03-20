@@ -12,6 +12,12 @@
  * \file antiquantize.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ANTIQUANTIZE_H__
+#endif
+
 #ifndef LIB_QUANTIZATION_ANTIQUANTIZE_H
 #define LIB_QUANTIZATION_ANTIQUANTIZE_H
 #include "kernel_basic_intf.h"
@@ -36,7 +42,7 @@ namespace AscendC {
  * \param [in] srcTensor: Input src localTensor.
  * \param [in] scale: Input scale.
  * \param [in] offset: input offset.
- * \param [in] sharedTmpBufferï¼š extra temporary shared space used for intermediate values among calculation process,
+ * \param [in] sharedTmpBufferï¼?extra temporary shared space used for intermediate values among calculation process,
  *             whose required space size should refer to corresponding tiling API, which is defined at
  *             ascend_dequant_tiling.h. Generally, the more space you allocate, the better performance you will achieve,
  *             and the performance reaches peak when buffer size is maximum(calculated by tiling function). Moreover, it
@@ -78,3 +84,8 @@ __aicore__ inline void AntiQuantize(const LocalTensor<DstT>& dstTensor, const Lo
 #pragma end_pipe
 } // namespace AscendC
 #endif // LIB_QUANTIZATION_ANTIQUANTIZE_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ANTIQUANTIZE_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ANTIQUANTIZE_H__
+#endif

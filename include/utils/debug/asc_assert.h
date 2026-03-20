@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file asc_assert.h
@@ -20,22 +20,31 @@
 #define __UNDEF_ASCENDC_INCLUDE_COMPILER_INTERNAL_HEADERS_ASC_ASSERT_H__
 #endif
 
-#ifndef __SIMT_DEVICE_FUNCTIONS_DECL__
-#if defined(__NPU_COMPILER_INTERNAL_PURE_SIMT__)
-#define __SIMT_DEVICE_FUNCTIONS_DECL__ __aicore__
-#else
-#define __SIMT_DEVICE_FUNCTIONS_DECL__ __simt_callee__
-#endif
-#endif
-
+#include "impl/utils/sys_macros.h"
+#include "simt_api/device_types.h"
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 #include "impl/utils/debug/asc_assert_simt_impl.h"
 
 namespace __asc_simt_vf {
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void __trap();
 } // namespace __asc_simt_vf
+#endif
 
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
+#if (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510)
+#include "impl/utils/debug/asc_aicore_assert_impl.h"
+#endif
+#endif
+
+#if defined(__NPU_DEVICE__)
+#ifdef assert
+#undef assert
+#endif
+#define assert(expr) (static_cast<bool>(expr) ? void(0) : __assert_fail(#expr, __FILE__, __LINE__, ""))
+#else
 #ifndef assert
 #define assert(expr) (static_cast<bool>(expr) ? void(0) : __assert_fail(#expr, __FILE__, __LINE__, ""))
+#endif
 #endif
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_COMPILER_INTERNAL_HEADERS_ASC_ASSERT_H__)

@@ -33,7 +33,7 @@
   </tr>
   <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">16 * 16</td><td align="center">float</td><td align="center">ND</td></tr>
   </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">mmad_custom</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">mmad_with_sparse_custom</td></tr>
   </table>
 
 - 算子实现：

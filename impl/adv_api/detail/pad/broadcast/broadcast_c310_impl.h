@@ -12,6 +12,13 @@
  * \file broadcast_c310_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/pad/broadcast/broadcast_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/pad/broadcast.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_PAD_BROADCAST_BROADCAST_C310_IMPL_H__
+#endif
+
 #ifndef IMPL_PAD_BROADCAST_BROADCAST_C310_IMPL_H
 #define IMPL_PAD_BROADCAST_BROADCAST_C310_IMPL_H
 
@@ -22,24 +29,24 @@
 namespace AscendC {
 namespace BroadcastInternal {
 template <typename T>
-__simd_callee__ inline void E2bLoad(MicroAPI::RegTensor<T> &dstReg, __ubuf__ T *srcUb)
+__simd_callee__ inline void E2bLoad(Reg::RegTensor<T> &dstReg, __ubuf__ T *srcUb)
 {
     if constexpr (sizeof(T) == 2) {
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_E2B_B16>(dstReg, srcUb);
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_E2B_B16>(dstReg, srcUb);
     } else {
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_E2B_B32>(dstReg, srcUb);
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_E2B_B32>(dstReg, srcUb);
     }
 }
 
 template <typename T>
-__simd_callee__ inline void BrcLoad(MicroAPI::RegTensor<T> &dstReg, __ubuf__ T *srcUb)
+__simd_callee__ inline void BrcLoad(Reg::RegTensor<T> &dstReg, __ubuf__ T *srcUb)
 {
     if constexpr (sizeof(T) == 2) {
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_BRC_B16>(dstReg, srcUb);
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_BRC_B16>(dstReg, srcUb);
     } else if constexpr (sizeof(T) == 4) {
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_BRC_B32>(dstReg, srcUb);
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_BRC_B32>(dstReg, srcUb);
     } else {
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_BRC_B8>(dstReg, srcUb);
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_BRC_B8>(dstReg, srcUb);
     }
 }
 
@@ -50,44 +57,44 @@ __simd_vf__ inline void BrcDuplicate(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint3
     uint16_t repeatTimes = CeilDivision(dstSize, VF_LEN);
     uint32_t sreg = dstSize;
 
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<T> srcReg;
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<T> srcReg;
     BrcLoad<T>(srcReg, srcUb);
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        pregCnt = MicroAPI::UpdateMask<T>(sreg);
-        MicroAPI::StoreAlign(dstUb + i * VF_LEN, srcReg, pregCnt);
+        pregCnt = Reg::UpdateMask<T>(sreg);
+        Reg::StoreAlign(dstUb + i * VF_LEN, srcReg, pregCnt);
     }
 }
 
 template <typename T>
 __simd_vf__ inline void GenLastGatherIndex(__ubuf__ T *indexUb, uint32_t size1, uint32_t offset)
 {
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<T>();
-    MicroAPI::RegTensor<T> indexReg;
-    MicroAPI::RegTensor<T> tmpReg;
+    Reg::MaskReg pregFull = Reg::CreateMask<T>();
+    Reg::RegTensor<T> indexReg;
+    Reg::RegTensor<T> tmpReg;
 
-    MicroAPI::Duplicate(indexReg, (T)size1, pregFull);
-    MicroAPI::Arange(tmpReg, (T)offset);
-    MicroAPI::Div(indexReg, tmpReg, indexReg, pregFull);
+    Reg::Duplicate(indexReg, (T)size1, pregFull);
+    Reg::Arange(tmpReg, (T)offset);
+    Reg::Div(indexReg, tmpReg, indexReg, pregFull);
 
-    MicroAPI::StoreAlign(indexUb, indexReg, pregFull);
+    Reg::StoreAlign(indexUb, indexReg, pregFull);
 }
 
 template <typename T>
 __simd_vf__ inline void GenNlastGatherIndex(__ubuf__ T *indexUb, uint32_t size1, uint32_t offset)
 {
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<T>();
-    MicroAPI::RegTensor<T> indexReg;
-    MicroAPI::RegTensor<T> tmpReg;
-    MicroAPI::RegTensor<T> dstReg;
+    Reg::MaskReg pregFull = Reg::CreateMask<T>();
+    Reg::RegTensor<T> indexReg;
+    Reg::RegTensor<T> tmpReg;
+    Reg::RegTensor<T> dstReg;
 
-    MicroAPI::Duplicate(indexReg, (T)size1, pregFull);
-    MicroAPI::Arange(tmpReg, (T)offset);
-    MicroAPI::Div(dstReg, tmpReg, indexReg, pregFull);
-    MicroAPI::Mul(dstReg, indexReg, dstReg, pregFull);
-    MicroAPI::Sub(indexReg, tmpReg, dstReg, pregFull);
+    Reg::Duplicate(indexReg, (T)size1, pregFull);
+    Reg::Arange(tmpReg, (T)offset);
+    Reg::Div(dstReg, tmpReg, indexReg, pregFull);
+    Reg::Mul(dstReg, indexReg, dstReg, pregFull);
+    Reg::Sub(indexReg, tmpReg, dstReg, pregFull);
 
-    MicroAPI::StoreAlign(indexUb, indexReg, pregFull);
+    Reg::StoreAlign(indexUb, indexReg, pregFull);
 }
 
 template <typename T, typename IndexT>
@@ -97,30 +104,30 @@ __simd_vf__ inline void BrcLastGatherOne(
     constexpr uint32_t VF_LEN_HALF = GetVecLen() / 2 / sizeof(T);
     uint32_t main = size0 * size1;
 
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<IndexT>();
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::RegTensor<T> dummyReg;
-    MicroAPI::RegTensor<IndexT> srcReg1;
-    MicroAPI::RegTensor<IndexT> srcReg2;
-    MicroAPI::RegTensor<IndexT> indexReg1;
-    MicroAPI::RegTensor<IndexT> indexReg2;
+    Reg::MaskReg pregFull = Reg::CreateMask<IndexT>();
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<T> srcReg;
+    Reg::RegTensor<T> dummyReg;
+    Reg::RegTensor<IndexT> srcReg1;
+    Reg::RegTensor<IndexT> srcReg2;
+    Reg::RegTensor<IndexT> indexReg1;
+    Reg::RegTensor<IndexT> indexReg2;
 
-    MicroAPI::LoadAlign(indexReg1, indexUb);
+    Reg::LoadAlign(indexReg1, indexUb);
     if constexpr (sizeof(T) == sizeof(uint8_t)) {
-        MicroAPI::LoadAlign(indexReg2, indexUb + VF_LEN_HALF);
+        Reg::LoadAlign(indexReg2, indexUb + VF_LEN_HALF);
     }
     uint32_t sreg = main;
-    pregCnt = MicroAPI::UpdateMask<T>(sreg);
+    pregCnt = Reg::UpdateMask<T>(sreg);
     if constexpr (sizeof(T) == sizeof(uint8_t)) {
-        MicroAPI::Gather(srcReg1, srcUb, indexReg1, pregFull);
-        MicroAPI::Gather(srcReg2, srcUb, indexReg2, pregFull);
-        MicroAPI::DeInterleave(
-            srcReg, dummyReg, (MicroAPI::RegTensor<T> &)srcReg1, (MicroAPI::RegTensor<T> &)srcReg2);
+        Reg::Gather(srcReg1, srcUb, indexReg1, pregFull);
+        Reg::Gather(srcReg2, srcUb, indexReg2, pregFull);
+        Reg::DeInterleave(
+            srcReg, dummyReg, (Reg::RegTensor<T> &)srcReg1, (Reg::RegTensor<T> &)srcReg2);
     } else {
-        MicroAPI::Gather(srcReg, srcUb, indexReg1, pregCnt);
+        Reg::Gather(srcReg, srcUb, indexReg1, pregCnt);
     }
-    MicroAPI::StoreAlign(dstUb, srcReg, pregCnt);
+    Reg::StoreAlign(dstUb, srcReg, pregCnt);
 }
 
 template <typename T, typename IndexT>
@@ -136,49 +143,49 @@ __simd_vf__ inline void BrcLastGatherTwo(
     uint32_t offset = factor * repeatTimes;
     uint32_t tail = size0 * size1 - mainBlock;
 
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<IndexT>();
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::RegTensor<T> dummyReg;
-    MicroAPI::RegTensor<IndexT> indexReg1;
-    MicroAPI::RegTensor<IndexT> indexReg2;
-    MicroAPI::RegTensor<IndexT> factorReg;
-    MicroAPI::RegTensor<IndexT> srcReg1;
-    MicroAPI::RegTensor<IndexT> srcReg2;
-    MicroAPI::RegTensor<IndexT> dstReg;
-    MicroAPI::RegTensor<IndexT> tmpReg;
-    MicroAPI::UnalignReg ureg0;
+    Reg::MaskReg pregFull = Reg::CreateMask<IndexT>();
+    Reg::RegTensor<T> srcReg;
+    Reg::RegTensor<T> dummyReg;
+    Reg::RegTensor<IndexT> indexReg1;
+    Reg::RegTensor<IndexT> indexReg2;
+    Reg::RegTensor<IndexT> factorReg;
+    Reg::RegTensor<IndexT> srcReg1;
+    Reg::RegTensor<IndexT> srcReg2;
+    Reg::RegTensor<IndexT> dstReg;
+    Reg::RegTensor<IndexT> tmpReg;
+    Reg::UnalignReg ureg0;
 
-    MicroAPI::Duplicate(factorReg, (IndexT)factor, pregFull);
-    MicroAPI::LoadAlign(indexReg1, indexUb);
+    Reg::Duplicate(factorReg, (IndexT)factor, pregFull);
+    Reg::LoadAlign(indexReg1, indexUb);
     if constexpr (sizeof(T) == sizeof(uint8_t)) {
-        MicroAPI::LoadAlign(indexReg2, indexUb + VF_LEN_HALF);
+        Reg::LoadAlign(indexReg2, indexUb + VF_LEN_HALF);
     }
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        MicroAPI::Muls(tmpReg, factorReg, (IndexT)i, pregFull);
-        MicroAPI::Add(dstReg, tmpReg, indexReg1, pregFull);
+        Reg::Muls(tmpReg, factorReg, (IndexT)i, pregFull);
+        Reg::Add(dstReg, tmpReg, indexReg1, pregFull);
         if constexpr (sizeof(T) == sizeof(uint8_t)) {
-            MicroAPI::Gather(srcReg1, srcUb, dstReg, pregFull);
-            MicroAPI::Add(dstReg, tmpReg, indexReg2, pregFull);
-            MicroAPI::Gather(srcReg2, srcUb, dstReg, pregFull);
-            MicroAPI::DeInterleave(
-                srcReg, dummyReg, (MicroAPI::RegTensor<T> &)srcReg1, (MicroAPI::RegTensor<T> &)srcReg2);
+            Reg::Gather(srcReg1, srcUb, dstReg, pregFull);
+            Reg::Add(dstReg, tmpReg, indexReg2, pregFull);
+            Reg::Gather(srcReg2, srcUb, dstReg, pregFull);
+            Reg::DeInterleave(
+                srcReg, dummyReg, (Reg::RegTensor<T> &)srcReg1, (Reg::RegTensor<T> &)srcReg2);
         } else {
-            MicroAPI::Gather(srcReg, srcUb, dstReg, pregFull);
+            Reg::Gather(srcReg, srcUb, dstReg, pregFull);
         }
-        MicroAPI::StoreUnAlign(dstUb, srcReg, ureg0, main);
+        Reg::StoreUnAlign(dstUb, srcReg, ureg0, main);
     }
-    MicroAPI::Adds(dstReg, indexReg1, (IndexT)offset, pregFull);
+    Reg::Adds(dstReg, indexReg1, (IndexT)offset, pregFull);
     if constexpr (sizeof(T) == sizeof(uint8_t)) {
-        MicroAPI::Gather(srcReg1, srcUb, dstReg, pregFull);
-        MicroAPI::Adds(dstReg, indexReg2, (IndexT)offset, pregFull);
-        MicroAPI::Gather(srcReg2, srcUb, dstReg, pregFull);
-        MicroAPI::DeInterleave(
-            srcReg, dummyReg, (MicroAPI::RegTensor<T> &)srcReg1, (MicroAPI::RegTensor<T> &)srcReg2);
+        Reg::Gather(srcReg1, srcUb, dstReg, pregFull);
+        Reg::Adds(dstReg, indexReg2, (IndexT)offset, pregFull);
+        Reg::Gather(srcReg2, srcUb, dstReg, pregFull);
+        Reg::DeInterleave(
+            srcReg, dummyReg, (Reg::RegTensor<T> &)srcReg1, (Reg::RegTensor<T> &)srcReg2);
     } else {
-        MicroAPI::Gather(srcReg, srcUb, dstReg, pregFull);
+        Reg::Gather(srcReg, srcUb, dstReg, pregFull);
     }
-    MicroAPI::StoreUnAlign(dstUb, srcReg, ureg0, tail);
-    MicroAPI::StoreUnAlignPost(dstUb, ureg0, 0);
+    Reg::StoreUnAlign(dstUb, srcReg, ureg0, tail);
+    Reg::StoreUnAlignPost(dstUb, ureg0, 0);
 }
 
 template <typename T, typename IndexT>
@@ -188,29 +195,29 @@ __simd_vf__ inline void BrcNlastGatherOne(
     constexpr uint32_t VF_LEN_HALF = GetVecLen() / 2 / sizeof(T);
     uint32_t main = size0 * size1;
 
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<IndexT>();
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<IndexT> indexReg1;
-    MicroAPI::RegTensor<IndexT> indexReg2;
-    MicroAPI::RegTensor<IndexT> srcReg1;
-    MicroAPI::RegTensor<IndexT> srcReg2;
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::RegTensor<T> dummyReg;
-    MicroAPI::UnalignReg ureg0;
+    Reg::MaskReg pregFull = Reg::CreateMask<IndexT>();
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<IndexT> indexReg1;
+    Reg::RegTensor<IndexT> indexReg2;
+    Reg::RegTensor<IndexT> srcReg1;
+    Reg::RegTensor<IndexT> srcReg2;
+    Reg::RegTensor<T> srcReg;
+    Reg::RegTensor<T> dummyReg;
+    Reg::UnalignReg ureg0;
 
     uint32_t sreg = main;
-    pregCnt = MicroAPI::UpdateMask<T>(sreg);
-    MicroAPI::LoadAlign(indexReg1, indexUb);
+    pregCnt = Reg::UpdateMask<T>(sreg);
+    Reg::LoadAlign(indexReg1, indexUb);
     if constexpr (sizeof(T) == sizeof(uint8_t)) {
-        MicroAPI::LoadAlign(indexReg2, indexUb + VF_LEN_HALF);
-        MicroAPI::Gather(srcReg1, srcUb, indexReg1, pregFull);
-        MicroAPI::Gather(srcReg2, srcUb, indexReg2, pregFull);
-        MicroAPI::DeInterleave(
-            srcReg, dummyReg, (MicroAPI::RegTensor<T> &)srcReg1, (MicroAPI::RegTensor<T> &)srcReg2);
+        Reg::LoadAlign(indexReg2, indexUb + VF_LEN_HALF);
+        Reg::Gather(srcReg1, srcUb, indexReg1, pregFull);
+        Reg::Gather(srcReg2, srcUb, indexReg2, pregFull);
+        Reg::DeInterleave(
+            srcReg, dummyReg, (Reg::RegTensor<T> &)srcReg1, (Reg::RegTensor<T> &)srcReg2);
     } else {
-        MicroAPI::Gather(srcReg, srcUb, indexReg1, pregCnt);
+        Reg::Gather(srcReg, srcUb, indexReg1, pregCnt);
     }
-    MicroAPI::StoreAlign(dstUb, srcReg, pregCnt);
+    Reg::StoreAlign(dstUb, srcReg, pregCnt);
 }
 
 template <typename T, typename IndexT>
@@ -225,30 +232,30 @@ __simd_vf__ inline void BrcNlastGatherTwo(
     uint32_t mainBlock = main * repeatTimes;
     uint32_t tail = size0 * size1 - mainBlock;
 
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<IndexT>();
-    MicroAPI::RegTensor<IndexT> indexReg1;
-    MicroAPI::RegTensor<IndexT> indexReg2;
-    MicroAPI::RegTensor<IndexT> srcReg1;
-    MicroAPI::RegTensor<IndexT> srcReg2;
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::RegTensor<T> dummyReg;
-    MicroAPI::UnalignReg ureg0;
+    Reg::MaskReg pregFull = Reg::CreateMask<IndexT>();
+    Reg::RegTensor<IndexT> indexReg1;
+    Reg::RegTensor<IndexT> indexReg2;
+    Reg::RegTensor<IndexT> srcReg1;
+    Reg::RegTensor<IndexT> srcReg2;
+    Reg::RegTensor<T> srcReg;
+    Reg::RegTensor<T> dummyReg;
+    Reg::UnalignReg ureg0;
 
-    MicroAPI::LoadAlign(indexReg1, indexUb);
+    Reg::LoadAlign(indexReg1, indexUb);
     if constexpr (sizeof(T) == sizeof(uint8_t)) {
-        MicroAPI::LoadAlign(indexReg2, indexUb + VF_LEN_HALF);
-        MicroAPI::Gather(srcReg1, srcUb, indexReg1, pregFull);
-        MicroAPI::Gather(srcReg2, srcUb, indexReg2, pregFull);
-        MicroAPI::DeInterleave(
-            srcReg, dummyReg, (MicroAPI::RegTensor<T> &)srcReg1, (MicroAPI::RegTensor<T> &)srcReg2);
+        Reg::LoadAlign(indexReg2, indexUb + VF_LEN_HALF);
+        Reg::Gather(srcReg1, srcUb, indexReg1, pregFull);
+        Reg::Gather(srcReg2, srcUb, indexReg2, pregFull);
+        Reg::DeInterleave(
+            srcReg, dummyReg, (Reg::RegTensor<T> &)srcReg1, (Reg::RegTensor<T> &)srcReg2);
     } else {
-        MicroAPI::Gather(srcReg, srcUb, indexReg1, pregFull);
+        Reg::Gather(srcReg, srcUb, indexReg1, pregFull);
     }
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        MicroAPI::StoreUnAlign(dstUb, srcReg, ureg0, main);
+        Reg::StoreUnAlign(dstUb, srcReg, ureg0, main);
     }
-    MicroAPI::StoreUnAlign(dstUb, srcReg, ureg0, tail);
-    MicroAPI::StoreUnAlignPost(dstUb, ureg0, 0);
+    Reg::StoreUnAlign(dstUb, srcReg, ureg0, tail);
+    Reg::StoreUnAlignPost(dstUb, ureg0, 0);
 }
 
 template <typename T>
@@ -258,14 +265,14 @@ __simd_vf__ inline void BrcLastE2B(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_
     uint16_t factor = VF_LEN / size1;
     uint16_t repeatTimes = CeilDivision(size0, factor);
 
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<T> srcReg;
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<T> srcReg;
 
     uint32_t sreg = size0 * size1;
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        pregCnt = MicroAPI::UpdateMask<T>(sreg);
+        pregCnt = Reg::UpdateMask<T>(sreg);
         E2bLoad<T>(srcReg, srcUb + i * DEFAULT_BLK_NUM);
-        MicroAPI::StoreAlign(dstUb + i * VF_LEN, srcReg, pregCnt);
+        Reg::StoreAlign(dstUb + i * VF_LEN, srcReg, pregCnt);
     }
 }
 
@@ -278,15 +285,15 @@ __simd_vf__ inline void BrcLastE2BLargerThanVL(
     uint16_t repeatTimes = CeilDivision(size1, factor);
     uint32_t preg = size1 * size2;
     uint32_t sreg;
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<T> srcReg;
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<T> srcReg;
 
     for (uint16_t i = 0; i < size0; ++i) {
         sreg = preg;
         for (uint16_t j = 0; j < repeatTimes; ++j) {
-            pregCnt = MicroAPI::UpdateMask<T>(sreg);
+            pregCnt = Reg::UpdateMask<T>(sreg);
             E2bLoad<T>(srcReg, srcUb + j * DEFAULT_BLK_NUM + i * srcStride0);
-            MicroAPI::StoreAlign(dstUb + i * size1 * size2 + j * VF_LEN, srcReg, pregCnt);
+            Reg::StoreAlign(dstUb + i * size1 * size2 + j * VF_LEN, srcReg, pregCnt);
         }
     }
 }
@@ -298,13 +305,13 @@ __simd_vf__ inline void BrcLastE2BLessThanVL(
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     uint32_t preg = size1 * size2;
     uint32_t sreg;
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<T> srcReg;
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<T> srcReg;
     sreg = preg;
-    pregCnt = MicroAPI::UpdateMask<T>(sreg);
+    pregCnt = Reg::UpdateMask<T>(sreg);
     for (uint16_t i = 0; i < size0; ++i) {
         E2bLoad<T>(srcReg, srcUb + i * srcStride0);
-        MicroAPI::StoreAlign(dstUb + i * size1 * size2, srcReg, pregCnt);
+        Reg::StoreAlign(dstUb + i * size1 * size2, srcReg, pregCnt);
     }
 }
 
@@ -317,15 +324,15 @@ __simd_vf__ inline void BrcLastE2B(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_
     uint16_t repeatTimes = CeilDivision(size2, factor);
     uint32_t preg = size2 * size3;
     uint32_t sreg;
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<T> srcReg;
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<T> srcReg;
     for (uint16_t i = 0; i < size0; ++i) {
         for (uint16_t j = 0; j < size1; ++j) {
             sreg = preg;
             for (uint16_t k = 0; k < repeatTimes; ++k) {
-                pregCnt = MicroAPI::UpdateMask<T>(sreg);
+                pregCnt = Reg::UpdateMask<T>(sreg);
                 E2bLoad<T>(srcReg, srcUb + i * srcStride0 + j * srcStride1 + k * DEFAULT_BLK_NUM);
-                MicroAPI::StoreAlign(
+                Reg::StoreAlign(
                     dstUb + i * size1 * size2 * size3 + j * size2 * size3 + k * VF_LEN, srcReg, pregCnt);
             }
         }
@@ -339,16 +346,16 @@ __simd_vf__ inline void BrcNlastGatherBOne(
     constexpr uint32_t oneBlockElementNum = GetDataBlockSizeInBytes() / sizeof(T);
     uint32_t main = size0 * size1;
 
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<T>();
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::RegTensor<uint32_t> indexReg;
+    Reg::MaskReg pregFull = Reg::CreateMask<T>();
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<T> srcReg;
+    Reg::RegTensor<uint32_t> indexReg;
 
-    MicroAPI::LoadAlign(indexReg, indexUb);
-    MicroAPI::GatherB(srcReg, srcUb, indexReg, pregFull);
+    Reg::LoadAlign(indexReg, indexUb);
+    Reg::GatherB(srcReg, srcUb, indexReg, pregFull);
     uint32_t sreg = main;
-    pregCnt = MicroAPI::UpdateMask<T>(sreg);
-    MicroAPI::StoreAlign(dstUb, srcReg, pregCnt);
+    pregCnt = Reg::UpdateMask<T>(sreg);
+    Reg::StoreAlign(dstUb, srcReg, pregCnt);
 }
 
 template <typename T>
@@ -363,36 +370,36 @@ __simd_vf__ inline void BrcNlastGatherBTwo(
     uint32_t mainBlock = main * repeatTimes;
     uint32_t tail = size0 * size1 - mainBlock;
 
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<T>();
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::RegTensor<uint32_t> indexReg;
+    Reg::MaskReg pregFull = Reg::CreateMask<T>();
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<T> srcReg;
+    Reg::RegTensor<uint32_t> indexReg;
 
-    MicroAPI::LoadAlign(indexReg, indexUb);
-    MicroAPI::GatherB(srcReg, srcUb, indexReg, pregFull);
+    Reg::LoadAlign(indexReg, indexUb);
+    Reg::GatherB(srcReg, srcUb, indexReg, pregFull);
     uint32_t sreg = main;
-    pregCnt = MicroAPI::UpdateMask<T>(sreg);
+    pregCnt = Reg::UpdateMask<T>(sreg);
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        MicroAPI::StoreAlign(dstUb + i * main, srcReg, pregCnt);
+        Reg::StoreAlign(dstUb + i * main, srcReg, pregCnt);
     }
     sreg = tail;
-    pregCnt = MicroAPI::UpdateMask<T>(sreg);
-    MicroAPI::StoreAlign(dstUb + mainBlock, srcReg, pregCnt);
+    pregCnt = Reg::UpdateMask<T>(sreg);
+    Reg::StoreAlign(dstUb + mainBlock, srcReg, pregCnt);
 }
 
 template <typename T>
 __simd_vf__ inline void BrcLastLessThanVLAligned(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t srcStride0, uint16_t srcStride1)
 {
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<T> srcReg;
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<T> srcReg;
 
     uint32_t sreg = size2;
-    pregCnt = MicroAPI::UpdateMask<T>(sreg);
+    pregCnt = Reg::UpdateMask<T>(sreg);
     for (uint16_t i = 0; i < size1; ++i) {
         for (uint16_t j = 0; j < size0; ++j) {
             BrcLoad<T>(srcReg, srcUb + j * srcStride0 + i * srcStride1);
-            MicroAPI::StoreAlign(dstUb + j * size1 * size2 + i * size2, srcReg, pregCnt);
+            Reg::StoreAlign(dstUb + j * size1 * size2 + i * size2, srcReg, pregCnt);
         }
     }
 }
@@ -401,16 +408,16 @@ template <typename T>
 __simd_vf__ inline void BrcLastLessThanVLAligned(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t size3, uint16_t srcStride0, uint16_t srcStride1, uint16_t srcStride2)
 {
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<T> srcReg;
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<T> srcReg;
 
     uint32_t sreg = size3;
-    pregCnt = MicroAPI::UpdateMask<T>(sreg);
+    pregCnt = Reg::UpdateMask<T>(sreg);
     for (uint16_t i = 0; i < size0; ++i) {
         for (uint16_t j = 0; j < size2; ++j) {
             for (uint16_t k = 0; k < size1; ++k) {
                 BrcLoad<T>(srcReg, srcUb + i * srcStride0 + j * srcStride2 + k * srcStride1);
-                MicroAPI::StoreAlign(
+                Reg::StoreAlign(
                     dstUb + i * size1 * size2 * size3 + k * size2 * size3 + j * size3, srcReg, pregCnt);
             }
         }
@@ -421,16 +428,16 @@ template <typename T>
 __simd_vf__ inline void BrcNlastLessThanVLAligned(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t size3, uint16_t srcStride0, uint16_t srcStride1, uint16_t srcStride2)
 {
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<T> srcReg;
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<T> srcReg;
 
     uint32_t sreg = size3;
-    pregCnt = MicroAPI::UpdateMask<T>(sreg);
+    pregCnt = Reg::UpdateMask<T>(sreg);
     for (uint16_t i = 0; i < size1; ++i) {
         for (uint16_t j = 0; j < size0; ++j) {
             for (uint16_t k = 0; k < size2; ++k) {
-                MicroAPI::LoadAlign(srcReg, srcUb + i * srcStride1 + j * srcStride0 + k * srcStride2);
-                MicroAPI::StoreAlign(
+                Reg::LoadAlign(srcReg, srcUb + i * srcStride1 + j * srcStride0 + k * srcStride2);
+                Reg::StoreAlign(
                     dstUb + j * size1 * size2 * size3 + i * size2 * size3 + k * size3, srcReg, pregCnt);
             }
         }
@@ -441,109 +448,109 @@ template <typename T>
 __simd_vf__ inline void BrcLastLessThanVLUnaligned(
     __ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0, uint16_t size1)
 {
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::UnalignReg ureg0;
+    Reg::RegTensor<T> srcReg;
+    Reg::UnalignReg ureg0;
 
     for (uint16_t i = 0; i < size0; ++i) {
         BrcLoad<T>(srcReg, srcUb + i);
-        MicroAPI::StoreUnAlign(dstUb, srcReg, ureg0, size1);
+        Reg::StoreUnAlign(dstUb, srcReg, ureg0, size1);
     }
-    MicroAPI::StoreUnAlignPost(dstUb, ureg0, 0);
+    Reg::StoreUnAlignPost(dstUb, ureg0, 0);
 }
 
 template <typename T>
 __simd_vf__ inline void BrcLastLessThanVLUnaligned(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t srcStride0, uint16_t srcStride1)
 {
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::UnalignReg ureg0;
+    Reg::RegTensor<T> srcReg;
+    Reg::UnalignReg ureg0;
 
     for (uint16_t i = 0; i < size0; ++i) {
         for (uint16_t j = 0; j < size1; ++j) {
             BrcLoad<T>(srcReg, srcUb + j * srcStride1 + i * srcStride0);
-            MicroAPI::StoreUnAlign(dstUb, srcReg, ureg0, size2);
+            Reg::StoreUnAlign(dstUb, srcReg, ureg0, size2);
         }
     }
-    MicroAPI::StoreUnAlignPost(dstUb, ureg0, 0);
+    Reg::StoreUnAlignPost(dstUb, ureg0, 0);
 }
 
 template <typename T>
 __simd_vf__ inline void BrcLastLessThanVLUnaligned(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t size3, uint16_t srcStride0, uint16_t srcStride1, uint16_t srcStride2)
 {
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::UnalignReg ureg0;
+    Reg::RegTensor<T> srcReg;
+    Reg::UnalignReg ureg0;
 
     for (uint16_t i = 0; i < size0; ++i) {
         for (uint16_t j = 0; j < size1; ++j) {
             for (uint16_t k = 0; k < size2; ++k) {
                 BrcLoad<T>(srcReg, srcUb + i * srcStride0 + j * srcStride1 + k * srcStride2);
-                MicroAPI::StoreUnAlign(dstUb, srcReg, ureg0, size3);
+                Reg::StoreUnAlign(dstUb, srcReg, ureg0, size3);
             }
         }
     }
-    MicroAPI::StoreUnAlignPost(dstUb, ureg0, 0);
+    Reg::StoreUnAlignPost(dstUb, ureg0, 0);
 }
 
 template <typename T>
 __simd_vf__ inline void BrcNlastLessThanVLUnaligned(
     __ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0, uint16_t size1)
 {
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::UnalignReg ureg0;
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<T> srcReg;
+    Reg::UnalignReg ureg0;
 
     uint32_t sreg = size1;
-    pregCnt = MicroAPI::UpdateMask<T>(sreg);
-    MicroAPI::LoadAlign(srcReg, srcUb);
+    pregCnt = Reg::UpdateMask<T>(sreg);
+    Reg::LoadAlign(srcReg, srcUb);
     for (uint16_t i = 0; i < size0; ++i) {
-        MicroAPI::StoreUnAlign(dstUb, srcReg, ureg0, size1);
+        Reg::StoreUnAlign(dstUb, srcReg, ureg0, size1);
     }
-    MicroAPI::StoreUnAlignPost(dstUb, ureg0, 0);
+    Reg::StoreUnAlignPost(dstUb, ureg0, 0);
 }
 
 template <typename T>
 __simd_vf__ inline void BrcNlastLessThanVLUnaligned(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t srcStride0, uint16_t srcStride1)
 {
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::UnalignReg ureg0, ureg1;
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<T> srcReg;
+    Reg::UnalignReg ureg0, ureg1;
 
     uint32_t sreg = size2;
-    pregCnt = MicroAPI::UpdateMask<T>(sreg);
+    pregCnt = Reg::UpdateMask<T>(sreg);
     for (uint16_t i = 0; i < size0; ++i) {
         for (uint16_t j = 0; j < size1; ++j) {
             auto srcUbT = srcUb + i * srcStride0 + j * srcStride1;
-            MicroAPI::LoadUnAlignPre(ureg0, srcUbT);
-            MicroAPI::LoadUnAlign(srcReg, ureg0, srcUbT, size2);
-            MicroAPI::StoreUnAlign(dstUb, srcReg, ureg1, size2);
+            Reg::LoadUnAlignPre(ureg0, srcUbT);
+            Reg::LoadUnAlign(srcReg, ureg0, srcUbT, size2);
+            Reg::StoreUnAlign(dstUb, srcReg, ureg1, size2);
         }
     }
-    MicroAPI::StoreUnAlignPost(dstUb, ureg1, 0);
+    Reg::StoreUnAlignPost(dstUb, ureg1, 0);
 }
 
 template <typename T>
 __simd_vf__ inline void BrcNlastLessThanVLUnaligned(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t size3, uint16_t srcStride0, uint16_t srcStride1, uint16_t srcStride2)
 {
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::UnalignReg ureg0, ureg1;
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<T> srcReg;
+    Reg::UnalignReg ureg0, ureg1;
 
     uint32_t sreg = size3;
-    pregCnt = MicroAPI::UpdateMask<T>(sreg);
+    pregCnt = Reg::UpdateMask<T>(sreg);
     for (uint16_t i = 0; i < size0; ++i) {
         for (uint16_t j = 0; j < size1; ++j) {
             for (uint16_t k = 0; k < size2; ++k) {
                 __ubuf__ T *srcUbTmp = srcUb + i * srcStride0 + j * srcStride1 + k * srcStride2;
-                MicroAPI::LoadUnAlignPre(ureg0, srcUbTmp);
-                MicroAPI::LoadUnAlign(srcReg, ureg0, srcUbTmp, size3);
-                MicroAPI::StoreUnAlign(dstUb, srcReg, ureg1, size3);
+                Reg::LoadUnAlignPre(ureg0, srcUbTmp);
+                Reg::LoadUnAlign(srcReg, ureg0, srcUbTmp, size3);
+                Reg::StoreUnAlign(dstUb, srcReg, ureg1, size3);
             }
         }
     }
-    MicroAPI::StoreUnAlignPost(dstUb, ureg1, 0);
+    Reg::StoreUnAlignPost(dstUb, ureg1, 0);
 }
 
 template <typename T>
@@ -553,16 +560,16 @@ __simd_vf__ inline void BrcLastLargerThanVLAligned(
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     uint16_t factor = CeilDivision(size1, VF_LEN);
 
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<T>();
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<T> srcReg;
+    Reg::MaskReg pregFull = Reg::CreateMask<T>();
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<T> srcReg;
 
     for (uint16_t i = 0; i < size0; ++i) {
         BrcLoad<T>(srcReg, srcUb + i);
         uint32_t sreg = size1;
         for (uint16_t j = 0; j < factor; ++j) {
-            pregCnt = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::StoreAlign(dstUb + i * size1 + j * VF_LEN, srcReg, pregCnt);
+            pregCnt = Reg::UpdateMask<T>(sreg);
+            Reg::StoreAlign(dstUb + i * size1 + j * VF_LEN, srcReg, pregCnt);
         }
     }
 }
@@ -574,17 +581,17 @@ __simd_vf__ inline void BrcLastLargerThanVLAligned(__ubuf__ T *dstUb, __ubuf__ T
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     uint16_t factor = CeilDivision(size2, VF_LEN);
 
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<T>();
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<T> srcReg;
+    Reg::MaskReg pregFull = Reg::CreateMask<T>();
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<T> srcReg;
 
     for (uint16_t i = 0; i < size1; ++i) {
         for (uint16_t j = 0; j < size0; ++j) {
             BrcLoad<T>(srcReg, srcUb + i * srcStride1 + j * srcStride0);
             uint32_t sreg = size2;
             for (uint16_t k = 0; k < factor; ++k) {
-                pregCnt = MicroAPI::UpdateMask<T>(sreg);
-                MicroAPI::StoreAlign(dstUb + j * size1 * size2 + i * size2 + k * VF_LEN, srcReg, pregCnt);
+                pregCnt = Reg::UpdateMask<T>(sreg);
+                Reg::StoreAlign(dstUb + j * size1 * size2 + i * size2 + k * VF_LEN, srcReg, pregCnt);
             }
         }
     }
@@ -597,17 +604,17 @@ __simd_vf__ inline void BrcLastLargerThanVLAligned(__ubuf__ T *dstUb, __ubuf__ T
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     uint16_t factor = CeilDivision(size3, VF_LEN);
 
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<T>();
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<T> srcReg;
+    Reg::MaskReg pregFull = Reg::CreateMask<T>();
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<T> srcReg;
     for (uint16_t i = 0; i < size0; ++i) {
         for (uint16_t j = 0; j < size2; ++j) {
             uint32_t sreg = size3;
             for (uint16_t k = 0; k < factor; ++k) {
-                pregCnt = MicroAPI::UpdateMask<T>(sreg);
+                pregCnt = Reg::UpdateMask<T>(sreg);
                 for (uint16_t t = 0; t < size1; ++t) {
                     BrcLoad<T>(srcReg, srcUb + i * srcStride0 + j * srcStride2 + t * srcStride1);
-                    MicroAPI::StoreAlign(
+                    Reg::StoreAlign(
                         dstUb + i * size1 * size2 * size3 + t * size2 * size3 + j * size3 + k * VF_LEN,
                         srcReg,
                         pregCnt);
@@ -624,16 +631,16 @@ __simd_vf__ inline void BrcNlastLargerThanVLAlignedWithBlock(
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     uint16_t factor = CeilDivision(size1, VF_LEN);
 
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<T>();
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<T> srcReg;
+    Reg::MaskReg pregFull = Reg::CreateMask<T>();
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<T> srcReg;
 
     for (uint16_t i = 0; i < size0; ++i) {
         uint32_t sreg = size1;
         for (uint16_t j = 0; j < factor; ++j) {
-            pregCnt = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::LoadAlign(srcReg, srcUb + j * VF_LEN);
-            MicroAPI::StoreAlign(dstUb + i * size1 + j * VF_LEN, srcReg, pregCnt);
+            pregCnt = Reg::UpdateMask<T>(sreg);
+            Reg::LoadAlign(srcReg, srcUb + j * VF_LEN);
+            Reg::StoreAlign(dstUb + i * size1 + j * VF_LEN, srcReg, pregCnt);
         }
     }
 }
@@ -646,17 +653,17 @@ __simd_vf__ inline void BrcNlastLargerThanVLAlignedWithBlock(__ubuf__ T *dstUb, 
     uint16_t factor = CeilDivision(size2, VF_LEN);
     uint16_t jStride = srcStride1 == 0 ? 0 : VF_LEN;
 
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<T>();
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<T> srcReg;
+    Reg::MaskReg pregFull = Reg::CreateMask<T>();
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<T> srcReg;
 
     for (uint16_t i = 0; i < size0; ++i) {
         uint32_t sreg = size2;
         for (uint16_t j = 0; j < factor; ++j) {
-            pregCnt = MicroAPI::UpdateMask<T>(sreg);
+            pregCnt = Reg::UpdateMask<T>(sreg);
             for (uint16_t k = 0; k < size1; ++k) {
-                MicroAPI::LoadAlign(srcReg, srcUb + k * srcStride1 + i * srcStride0 + j * VF_LEN);
-                MicroAPI::StoreAlign(dstUb + i * size1 * size2 + k * size2 + j * VF_LEN, srcReg, pregCnt);
+                Reg::LoadAlign(srcReg, srcUb + k * srcStride1 + i * srcStride0 + j * VF_LEN);
+                Reg::StoreAlign(dstUb + i * size1 * size2 + k * size2 + j * VF_LEN, srcReg, pregCnt);
             }
         }
     }
@@ -670,18 +677,18 @@ __simd_vf__ inline void BrcNlastLargerThanVLAlignedWithBlock(__ubuf__ T *dstUb, 
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     uint16_t factor = CeilDivision(size3, VF_LEN);
 
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<T>();
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::RegTensor<T> srcReg;
+    Reg::MaskReg pregFull = Reg::CreateMask<T>();
+    Reg::MaskReg pregCnt;
+    Reg::RegTensor<T> srcReg;
     for (uint16_t i = 0; i < size1; ++i) {
         uint32_t sreg = size3;
         for (uint16_t j = 0; j < factor; ++j) {
-            pregCnt = MicroAPI::UpdateMask<T>(sreg);
+            pregCnt = Reg::UpdateMask<T>(sreg);
             for (uint16_t k = 0; k < size0; ++k) {
                 for (uint16_t t = 0; t < size2; ++t) {
-                    MicroAPI::LoadAlign(srcReg, srcUb + j * VF_LEN +
+                    Reg::LoadAlign(srcReg, srcUb + j * VF_LEN +
                         i * srcStride1 + k * srcStride0 + t * srcStride2);
-                    MicroAPI::StoreAlign(dstUb + k * size1 * size2 * size3 +
+                    Reg::StoreAlign(dstUb + k * size1 * size2 * size3 +
                         i * size2 * size3 + t * size3 + j * VF_LEN, srcReg, pregCnt);
                 }
             }
@@ -696,13 +703,13 @@ __simd_vf__ inline void BrcNlastLargerThanVLAlignedWithVL(
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     uint16_t factor = CeilDivision(size1, VF_LEN);
 
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<T>();
-    MicroAPI::RegTensor<T> srcReg;
+    Reg::MaskReg pregFull = Reg::CreateMask<T>();
+    Reg::RegTensor<T> srcReg;
 
     for (uint16_t i = 0; i < factor; ++i) {
-        MicroAPI::LoadAlign(srcReg, srcUb + i * VF_LEN);
+        Reg::LoadAlign(srcReg, srcUb + i * VF_LEN);
         for (uint16_t j = 0; j < size0; ++j) {
-            MicroAPI::StoreAlign(dstUb + i * VF_LEN + j * size1, srcReg, pregFull);
+            Reg::StoreAlign(dstUb + i * VF_LEN + j * size1, srcReg, pregFull);
         }
     }
 }
@@ -714,14 +721,14 @@ __simd_vf__ inline void BrcNlastLargerThanVLAlignedWithVL(__ubuf__ T *dstUb, __u
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     uint16_t factor = CeilDivision(size2, VF_LEN);
 
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<T>();
-    MicroAPI::RegTensor<T> srcReg;
+    Reg::MaskReg pregFull = Reg::CreateMask<T>();
+    Reg::RegTensor<T> srcReg;
 
     for (uint16_t i = 0; i < size0; ++i) {
         for (uint16_t j = 0; j < factor; ++j) {
             for (uint16_t k = 0; k < size1; ++k) {
-                MicroAPI::LoadAlign(srcReg, srcUb + i * srcStride0 + j * VF_LEN + k * srcStride1);
-                MicroAPI::StoreAlign(dstUb + j * VF_LEN + k * size2 + i * size1 * size2, srcReg, pregFull);
+                Reg::LoadAlign(srcReg, srcUb + i * srcStride0 + j * VF_LEN + k * srcStride1);
+                Reg::StoreAlign(dstUb + j * VF_LEN + k * size2 + i * size1 * size2, srcReg, pregFull);
             }
         }
     }
@@ -734,16 +741,16 @@ __simd_vf__ inline void BrcNlastLargerThanVLAlignedWithVL(__ubuf__ T *dstUb, __u
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     uint16_t factor = CeilDivision(size3, VF_LEN);
 
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<T>();
-    MicroAPI::RegTensor<T> srcReg;
+    Reg::MaskReg pregFull = Reg::CreateMask<T>();
+    Reg::RegTensor<T> srcReg;
 
     for (uint16_t i = 0; i < size1; ++i) {
         for (uint16_t j = 0; j < factor; ++j) {
             for (uint16_t k = 0; k < size0; ++k) {
                 for (uint16_t t = 0; t < size2; ++t) {
-                    MicroAPI::LoadAlign(srcReg, srcUb + i * srcStride1 +
+                    Reg::LoadAlign(srcReg, srcUb + i * srcStride1 +
                         j * VF_LEN + k * srcStride0 + t * srcStride2);
-                    MicroAPI::StoreAlign(dstUb + j * VF_LEN + t * size3 +
+                    Reg::StoreAlign(dstUb + j * VF_LEN + t * size3 +
                         i * size2 * size3 + k * size1 * size2 * size3, srcReg, pregFull);
                 }
             }
@@ -759,17 +766,17 @@ __simd_vf__ inline void BrcLastLargerThanVLUnaligned(
     uint16_t factor = size1 / VF_LEN;
     uint32_t size1tail = size1 - factor * VF_LEN;
 
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::UnalignReg ureg0;
+    Reg::RegTensor<T> srcReg;
+    Reg::UnalignReg ureg0;
 
     for (uint16_t i = 0; i < size0; ++i) {
         BrcLoad<T>(srcReg, srcUb + i);
         for (uint16_t j = 0; j < factor; ++j) {
-            MicroAPI::StoreUnAlign(dstUb, srcReg, ureg0, VF_LEN);
+            Reg::StoreUnAlign(dstUb, srcReg, ureg0, VF_LEN);
         }
-        MicroAPI::StoreUnAlign(dstUb, srcReg, ureg0, size1tail);
+        Reg::StoreUnAlign(dstUb, srcReg, ureg0, size1tail);
     }
-    MicroAPI::StoreUnAlignPost(dstUb, ureg0, 0);
+    Reg::StoreUnAlignPost(dstUb, ureg0, 0);
 }
 
 template <typename T>
@@ -780,19 +787,19 @@ __simd_vf__ inline void BrcLastLargerThanVLUnaligned(__ubuf__ T *dstUb, __ubuf__
     uint16_t factor = size2 / VF_LEN;
     uint32_t size2tail = size2 - factor * VF_LEN;
 
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::UnalignReg ureg0;
+    Reg::RegTensor<T> srcReg;
+    Reg::UnalignReg ureg0;
 
     for (uint16_t i = 0; i < size0; ++i) {
         for (uint16_t j = 0; j < size1; ++j) {
             BrcLoad<T>(srcReg, srcUb + j * srcStride1 + i * srcStride0);
             for (uint16_t k = 0; k < factor; ++k) {
-                MicroAPI::StoreUnAlign(dstUb, srcReg, ureg0, VF_LEN);
+                Reg::StoreUnAlign(dstUb, srcReg, ureg0, VF_LEN);
             }
-            MicroAPI::StoreUnAlign(dstUb, srcReg, ureg0, size2tail);
+            Reg::StoreUnAlign(dstUb, srcReg, ureg0, size2tail);
         }
     }
-    MicroAPI::StoreUnAlignPost(dstUb, ureg0, 0);
+    Reg::StoreUnAlignPost(dstUb, ureg0, 0);
 }
 
 template <typename T>
@@ -803,21 +810,21 @@ __simd_vf__ inline void BrcLastLargerThanVLUnaligned(__ubuf__ T *dstUb, __ubuf__
     uint16_t factor = size3 / VF_LEN;
     uint32_t size3tail = size3 - factor * VF_LEN;
 
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::UnalignReg ureg0;
+    Reg::RegTensor<T> srcReg;
+    Reg::UnalignReg ureg0;
 
     for (uint16_t i = 0; i < size0; ++i) {
         for (uint16_t j = 0; j < size1; ++j) {
             for (uint16_t k = 0; k < size2; ++k) {
                 BrcLoad<T>(srcReg, srcUb + i * srcStride0 + j * srcStride1 + k * srcStride2);
                 for (uint16_t t = 0; t < factor; ++t) {
-                    MicroAPI::StoreUnAlign(dstUb, srcReg, ureg0, VF_LEN);
+                    Reg::StoreUnAlign(dstUb, srcReg, ureg0, VF_LEN);
                 }
-                MicroAPI::StoreUnAlign(dstUb, srcReg, ureg0, size3tail);
+                Reg::StoreUnAlign(dstUb, srcReg, ureg0, size3tail);
             }
         }
     }
-    MicroAPI::StoreUnAlignPost(dstUb, ureg0, 0);
+    Reg::StoreUnAlignPost(dstUb, ureg0, 0);
 }
 
 template <typename T>
@@ -828,20 +835,20 @@ __simd_vf__ inline void BrcNlastLargerThanVLUnaligned(
     uint16_t factor = size1 / VF_LEN;
     uint32_t size1tail = size1 - factor * VF_LEN;
 
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::RegTensor<T> tmpReg;
-    MicroAPI::UnalignReg ureg0;
+    Reg::RegTensor<T> srcReg;
+    Reg::RegTensor<T> tmpReg;
+    Reg::UnalignReg ureg0;
 
     uint32_t sreg = size1tail;
-    MicroAPI::LoadAlign(tmpReg, srcUb + factor * VF_LEN);
+    Reg::LoadAlign(tmpReg, srcUb + factor * VF_LEN);
     for (uint16_t i = 0; i < size0; ++i) {
         for (uint16_t j = 0; j < factor; ++j) {
-            MicroAPI::LoadAlign(srcReg, srcUb + j * VF_LEN);
-            MicroAPI::StoreUnAlign(dstUb, srcReg, ureg0, VF_LEN);
+            Reg::LoadAlign(srcReg, srcUb + j * VF_LEN);
+            Reg::StoreUnAlign(dstUb, srcReg, ureg0, VF_LEN);
         }
-        MicroAPI::StoreUnAlign(dstUb, tmpReg, ureg0, size1tail);
+        Reg::StoreUnAlign(dstUb, tmpReg, ureg0, size1tail);
     }
-    MicroAPI::StoreUnAlignPost(dstUb, ureg0, 0);
+    Reg::StoreUnAlignPost(dstUb, ureg0, 0);
 }
 
 template <typename T>
@@ -852,23 +859,23 @@ __simd_vf__ inline void BrcNlastLargerThanVLUnaligned(__ubuf__ T *dstUb, __ubuf_
     uint16_t factor = size2 / VF_LEN;
     uint32_t size2tail = size2 - factor * VF_LEN;
 
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::UnalignReg ureg0, ureg1;
+    Reg::RegTensor<T> srcReg;
+    Reg::UnalignReg ureg0, ureg1;
 
     uint32_t sreg = size2tail;
     for (uint16_t i = 0; i < size0; ++i) {
         for (uint16_t j = 0; j < size1; ++j) {
             __ubuf__ T *tmpSrcUb = srcUb + i * srcStride0 + j * srcStride1;
-            MicroAPI::LoadUnAlignPre(ureg0, tmpSrcUb);
+            Reg::LoadUnAlignPre(ureg0, tmpSrcUb);
             for (uint16_t k = 0; k < factor; ++k) {
-                MicroAPI::LoadUnAlign(srcReg, ureg0, tmpSrcUb, VF_LEN);
-                MicroAPI::StoreUnAlign(dstUb, srcReg, ureg1, VF_LEN);
+                Reg::LoadUnAlign(srcReg, ureg0, tmpSrcUb, VF_LEN);
+                Reg::StoreUnAlign(dstUb, srcReg, ureg1, VF_LEN);
             }
-            MicroAPI::LoadUnAlign(srcReg, ureg0, tmpSrcUb, sreg);
-            MicroAPI::StoreUnAlign(dstUb, srcReg, ureg1, sreg);
+            Reg::LoadUnAlign(srcReg, ureg0, tmpSrcUb, sreg);
+            Reg::StoreUnAlign(dstUb, srcReg, ureg1, sreg);
         }
     }
-    MicroAPI::StoreUnAlignPost(dstUb, ureg1, 0);
+    Reg::StoreUnAlignPost(dstUb, ureg1, 0);
 }
 
 template <typename T>
@@ -879,25 +886,25 @@ __simd_vf__ inline void BrcNlastLargerThanVLUnaligned(__ubuf__ T *dstUb, __ubuf_
     uint16_t factor = size3 / VF_LEN;
     uint32_t size3tail = size3 - factor * VF_LEN;
 
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::UnalignReg ureg0, ureg1;
+    Reg::RegTensor<T> srcReg;
+    Reg::UnalignReg ureg0, ureg1;
 
     uint32_t sreg = size3tail;
     for (uint16_t i = 0; i < size0; ++i) {
         for (uint16_t j = 0; j < size1; ++j) {
             for (uint16_t k = 0; k < size2; ++k) {
                 __ubuf__ T *tmpSrcUb = srcUb + i * srcStride0 + j * srcStride1 + k * srcStride2;
-                MicroAPI::LoadUnAlignPre(ureg0, tmpSrcUb);
+                Reg::LoadUnAlignPre(ureg0, tmpSrcUb);
                 for (uint16_t t = 0; t < factor; ++t) {
-                    MicroAPI::LoadUnAlign(srcReg, ureg0, tmpSrcUb, VF_LEN);
-                    MicroAPI::StoreUnAlign(dstUb, srcReg, ureg1, VF_LEN);
+                    Reg::LoadUnAlign(srcReg, ureg0, tmpSrcUb, VF_LEN);
+                    Reg::StoreUnAlign(dstUb, srcReg, ureg1, VF_LEN);
                 }
-                MicroAPI::LoadUnAlign(srcReg, ureg0, tmpSrcUb, sreg);
-                MicroAPI::StoreUnAlign(dstUb, srcReg, ureg1, sreg);
+                Reg::LoadUnAlign(srcReg, ureg0, tmpSrcUb, sreg);
+                Reg::StoreUnAlign(dstUb, srcReg, ureg1, sreg);
             }
         }
     }
-    MicroAPI::StoreUnAlignPost(dstUb, ureg1, 0);
+    Reg::StoreUnAlignPost(dstUb, ureg1, 0);
 }
 
 template <typename T, int32_t constRank = -1>
@@ -1413,4 +1420,9 @@ __aicore__ inline void BrcLastWrapperForMoreDimDynamicShape(__ubuf__ T *dstUb, _
 }
 }  // namespace BroadcastInternal
 }  // namespace AscendC
+#endif
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_PAD_BROADCAST_BROADCAST_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_PAD_BROADCAST_BROADCAST_C310_IMPL_H__
 #endif

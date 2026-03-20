@@ -7,6 +7,11 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/normalization/rmsnorm/rmsnorm_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_RMSNORM_RMSNORM_COMMON_IMPL_H__
+#endif
 
 #ifndef IMPL_NORMALIZATION_RMSNORM_RMSNORM_COMMON_IMPL_H
 #define IMPL_NORMALIZATION_RMSNORM_RMSNORM_COMMON_IMPL_H
@@ -226,7 +231,7 @@ __aicore__ inline void RmsNormCompute(const LocalTensor<T>& dst, const LocalTens
     // step 2: ∑x²
     RmsNormReduceSum<isBasicBlock>(
         params.reducedAddr, params.tmpAddr, params.curBsLength, tiling.hLength, tiling.originalHLength);
-    // step 3: rms = 1/n*∑
+    // step 3: rms = 1/n*�?
     SetVectorMask<T>(0, params.curBsLength);
     Muls<float, false>(
         params.reducedAddr, params.reducedAddr, tiling.reciprocalOfHLength, MASK_PLACEHOLDER, 1, unaryParams);
@@ -301,3 +306,7 @@ __aicore__ inline void RmsNormImpl(const LocalTensor<T>& dstLocal, const LocalTe
 } // namespace AscendC
 #endif
 #endif // IMPL_NORMALIZATION_RMSNORM_RMSNORM_COMMON_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_RMSNORM_RMSNORM_COMMON_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_RMSNORM_RMSNORM_COMMON_IMPL_H__
+#endif

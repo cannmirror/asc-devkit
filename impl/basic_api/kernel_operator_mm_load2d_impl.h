@@ -12,6 +12,11 @@
  * \file kernel_operator_mm_load2d_impl.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/kernel_operator_mm_load2d_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_operator_mm_intf.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_MM_LOAD2D_IMPL_H__
+#endif
 #ifndef ASCENDC_MODULE_OPERATOR_MM_LOAD2D_H
 #define ASCENDC_MODULE_OPERATOR_MM_LOAD2D_H
 #include "kernel_struct_mm.h"
@@ -304,3 +309,7 @@ __aicore__ inline __inout_pipe__(MTE2) void LoadDataImpl(const LocalTensor<T>& d
 }
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_MM_LOAD2D_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_MM_LOAD2D_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_MM_LOAD2D_IMPL_H__
+#endif

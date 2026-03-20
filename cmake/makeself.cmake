@@ -68,18 +68,6 @@ configure_file(
     COPYONLY
 )
 
-set(OUT_PUT_VERSION
-    ${STAGING_DIR}/version.info
-)
-set(OUT_PUT_VERSION_DIR
-    ${STAGING_DIR}/asc-devkit
-)
-configure_file(
-    ${OUT_PUT_VERSION}
-    ${OUT_PUT_VERSION_DIR}
-    COPYONLY
-)
-
 set(OUT_PUT_SCENE
     ${CPACK_CMAKE_BINARY_DIR}/scene.info
 )

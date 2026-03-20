@@ -46,7 +46,7 @@
   </table>
 
 - 算子实现：  
-  本样例中实现的是固定shape(inputX[8, 64]、inputMean[8]、inputVariance[8]、gamma[64], beta[64], outputRstd[8]、output[8, 64])的normalize算子。
+  本样例中实现的是固定shape(inputX[8, 64]、inputMean[8]、inputVariance[8]、gamma[64]、beta[64]、outputRstd[8]、output[8, 64])的normalize算子。
 
   - Kernel实现
 

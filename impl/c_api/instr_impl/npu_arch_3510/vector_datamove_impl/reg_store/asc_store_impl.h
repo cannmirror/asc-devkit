@@ -3,7 +3,7 @@
 * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 * CANN Open Software License Agreement Version 2.0 (the "License").
 * Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXpostSS OR IMPLIED,
+* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
@@ -127,6 +127,16 @@ __simd_callee__ inline void asc_store_impl(__ubuf__ fp8_e4m3fn_t* dst, vector_fp
     if ASC_IS_AIV {
         vector_store_align ureg;
         constexpr uint32_t count = CCE_VF_VEC_LEN / sizeof(fp8_e4m3fn_t);
+        asc_storeunalign_impl(dst, ureg, src, count);
+        asc_storeunalign_post_impl(dst, ureg, 0);
+    }
+}
+
+__simd_callee__ inline void asc_store_impl(__ubuf__ hifloat8_t* dst, vector_hifloat8_t src)
+{
+    if ASC_IS_AIV {
+        vector_store_align ureg;
+        constexpr uint32_t count = CCE_VF_VEC_LEN / sizeof(hifloat8_t);
         asc_storeunalign_impl(dst, ureg, src, count);
         asc_storeunalign_post_impl(dst, ureg, 0);
     }
@@ -264,6 +274,15 @@ __simd_callee__ inline void asc_store_impl(__ubuf__ bfloat16_t* dst, vector_bflo
 }
 
 __simd_callee__ inline void asc_store_impl(__ubuf__ fp8_e4m3fn_t* dst, vector_fp8_e4m3fn_t src, uint32_t count)
+{
+    if ASC_IS_AIV {
+        vector_store_align ureg;
+        asc_storeunalign_impl(dst, ureg, src, count);
+        asc_storeunalign_post_impl(dst, ureg, 0);
+    }
+}
+
+__simd_callee__ inline void asc_store_impl(__ubuf__ hifloat8_t* dst, vector_hifloat8_t src, uint32_t count)
 {
     if ASC_IS_AIV {
         vector_store_align ureg;

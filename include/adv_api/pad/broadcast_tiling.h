@@ -12,6 +12,12 @@
  * \file broadcast_tiling.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BROADCAST_TILING_H__
+#endif
+
 #ifndef LIB_PAD_BROADCAST_TILING_H
 #define LIB_PAD_BROADCAST_TILING_H
 
@@ -33,3 +39,8 @@ void GetBroadCastMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcP
     const ge::Shape& dstShape, uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue);
 }  // namespace AscendC
 #endif // LIB_PAD_BROADCAST_TILING_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BROADCAST_TILING_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BROADCAST_TILING_H__
+#endif

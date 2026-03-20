@@ -113,7 +113,7 @@ private:
 
 TEST_F(TestKLoopMDLMx, k_loop_mdl_mx_all) {
     // coreNum, M, N, K, singleCoreM, singleCoreN, singleCoreK, baseM, baseN, baseK, depthA1, depthB1, stepM, stepN, stepKa, stepKb, isBias, iterateOrder, mxTypePara
-    TilingParamsMx tilingParamsMx = {1, 64, 48, 256, 64, 48, 256, 32, 48, 96, 2, 4, 1, 2, 1, 3, 1, 1, 257};
+    TilingParamsMx tilingParamsMx = {1, 64, 48, 256, 64, 48, 256, 32, 48, 96, 2, 4, 1, 2, 1, 3, 1, 1, 16843009};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
 

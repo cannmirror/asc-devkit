@@ -12,6 +12,11 @@
  * \file kernel_operator_dump_tensor_impl.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/dav_m300/kernel_operator_dump_tensor_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_tpipe.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_DUMP_TENSOR_IMPL_H__
+#endif
 #ifndef ASCENDC_MODULE_OPERATOR_DUMP_TENSOR_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_DUMP_TENSOR_IMPL_H
 
@@ -379,7 +384,7 @@ __aicore__ inline void DumpTensorGM2GMEntityImpl(const GlobalTensor<T>& src, uin
     LocalTensor<T> tmp;
     uint64_t gmBackAddr = dumpWorkspaceStart + DUMP_UINTSIZE * (GetDumpBlockIdx() + 1) - ONE_DUMP_BACKUP_SIZE;
 
-    // 1、alloc 1k UB 2、 backup static GM addr 3、loop copy 4、recover
+    // 1.alloc 1k UB 2.backup static GM addr 3.loop copy 4.recover
     PipeBarrier<PIPE_ALL>();
     // BACKUP
     InitTmpTensor(tmp, static_cast<uint8_t>(TPosition::A1));
@@ -578,7 +583,7 @@ __aicore__ inline void UpdateBlockInfo(uint32_t tlvSize)
 template <class... Args>
 __aicore__ inline void PrintfEntityImpl(DumpType printType, __gm__ const char* fmt, Args&&... args)
 {
-#ifdef ASCENDC_DUMP
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
     uint8_t blockIdx = GetDumpBlockIdx();
     if (blockIdx >= DUMP_CORE_COUNT) {
         return;
@@ -642,14 +647,14 @@ __aicore__ inline void DumpTimeStampImpl(uint32_t descId)
 
 __aicore__ inline void AscendCTimeStamp(uint32_t descId, uint64_t pcPtr = 0)
 {
-#ifdef ASCENDC_TIME_STAMP_ON  // 打点开关宏
+#ifdef ASCENDC_TIME_STAMP_ON
     DumpTimeStampImpl(descId);
 #endif
 }
 
 __aicore__ inline void InitDump(bool mixFlag, uint32_t gmLen)
 {
-#if defined(ASCENDC_DUMP) || defined(ASCENDC_ACC_DUMP) || defined(ASCENDC_TIME_STAMP_ON)
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0) || defined(ASCENDC_ACC_DUMP) || defined(ASCENDC_TIME_STAMP_ON)
     g_dumpWorkspaceReserved = GetSysWorkSpacePtr();
     InitDumpImpl(mixFlag, gmLen);
 #else
@@ -658,7 +663,7 @@ __aicore__ inline void InitDump(bool mixFlag, uint32_t gmLen)
 }
 __aicore__ inline void InitDump(bool mixFlag, GM_ADDR dumpStartAddr, uint32_t gmLen)
 {
-#if defined(ASCENDC_DUMP) || defined(ASCENDC_ACC_DUMP) || defined(ASCENDC_TIME_STAMP_ON)
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0) || defined(ASCENDC_ACC_DUMP) || defined(ASCENDC_TIME_STAMP_ON)
     g_dumpWorkspaceReserved = dumpStartAddr + DUMP_WORKSPACE_SIZE;
     InitDumpImpl(mixFlag, gmLen);
 #else
@@ -666,4 +671,8 @@ __aicore__ inline void InitDump(bool mixFlag, GM_ADDR dumpStartAddr, uint32_t gm
 #endif
 }
 }  // namespace AscendC
+#endif
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_DUMP_TENSOR_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_DUMP_TENSOR_IMPL_H__
 #endif

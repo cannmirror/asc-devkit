@@ -131,14 +131,14 @@ template<typename T>
 __simd_vf__ inline void MoveVF(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint32_t count, 
  uint32_t oneRepeatSize, uint16_t repeatTimes)
 {
-    AscendC::MicroAPI::RegTensor<T> srcReg;
-    AscendC::MicroAPI::RegTensor<T> dstReg;
-    AscendC::MicroAPI::MaskReg mask;
-    mask = AscendC::MicroAPI::UpdateMask<T>(count);
+    AscendC::Reg::RegTensor<T> srcReg;
+    AscendC::Reg::RegTensor<T> dstReg;
+    AscendC::Reg::MaskReg mask;
+    mask = AscendC::Reg::UpdateMask<T>(count);
     for (uint16_t i = 0; i < repeatTimes; i++) {
-        AscendC::MicroAPI::LoadAlign(srcReg, srcAddr + i * oneRepeatSize);
-        AscendC::MicroAPI::Move(dstReg, srcReg, mask);
-        AscendC::MicroAPI::StoreAlign(dstAddr + i * oneRepeatSize, dstReg, mask);
+        AscendC::Reg::LoadAlign(srcReg, srcAddr + i * oneRepeatSize);
+        AscendC::Reg::Move(dstReg, srcReg, mask);
+        AscendC::Reg::StoreAlign(dstAddr + i * oneRepeatSize, dstReg, mask);
     }
 }
 ```

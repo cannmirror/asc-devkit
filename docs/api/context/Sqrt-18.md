@@ -140,20 +140,20 @@ template<typename T>
 __simd_vf__ inline void SqrtVF(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint32_t count, 
  uint32_t oneRepeatSize, uint16_t repeatTimes)
 {
-    AscendC::MicroAPI::RegTensor<T> srcReg;
-    AscendC::MicroAPI::RegTensor<T> dstReg;
-    AscendC::MicroAPI::MaskReg mask;   
+    AscendC::Reg::RegTensor<T> srcReg;
+    AscendC::Reg::RegTensor<T> dstReg;
+    AscendC::Reg::MaskReg mask;   
     // 高精度模式
-    // static constexpr AscendC::MicroAPI::SqrtSpecificMode mode = {MaskMergeMode::ZEROING, true};
+    // static constexpr AscendC::Reg::SqrtSpecificMode mode = {MaskMergeMode::ZEROING, true};
     // Subnormal模式
-    // static constexpr AscendC::MicroAPI::SqrtSpecificMode mode = {MaskMergeMode::ZEROING, true, SqrtAlgo::PRECISION_0ULP_FTZ_FALSE};
+    // static constexpr AscendC::Reg::SqrtSpecificMode mode = {MaskMergeMode::ZEROING, true, SqrtAlgo::PRECISION_0ULP_FTZ_FALSE};
     for (uint16_t i = 0; i < repeatTimes; i++) {
-        mask = AscendC::MicroAPI::UpdateMask<T>(count);
-        AscendC::MicroAPI::LoadAlign(srcReg, srcAddr + i * oneRepeatSize);
-        AscendC::MicroAPI::Sqrt(dstReg, srcReg, mask);
+        mask = AscendC::Reg::UpdateMask<T>(count);
+        AscendC::Reg::LoadAlign(srcReg, srcAddr + i * oneRepeatSize);
+        AscendC::Reg::Sqrt(dstReg, srcReg, mask);
         // 高精度模式/Subnormal模式
-        // AscendC::MicroAPI::Sqrt<T, &mode>(dstReg, srcReg, mask);
-        AscendC::MicroAPI::StoreAlign(dstAddr + i * oneRepeatSize, dstReg, mask);
+        // AscendC::Reg::Sqrt<T, &mode>(dstReg, srcReg, mask);
+        AscendC::Reg::StoreAlign(dstAddr + i * oneRepeatSize, dstReg, mask);
     }
 }
 ```

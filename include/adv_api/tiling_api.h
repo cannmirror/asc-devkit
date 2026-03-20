@@ -12,6 +12,12 @@
  * \file tiling_api.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TILING_API_H__
+#endif
+
 #ifndef LIB_TILING_API_H
 #define LIB_TILING_API_H
 #include "matmul/matmul_tiling.h"
@@ -105,3 +111,8 @@
 #include "hccl/hccl_tiling.h"
 #include "conv/conv3d/conv3d_tiling.h"
 #endif // LIB_TILING_API_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TILING_API_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TILING_API_H__
+#endif

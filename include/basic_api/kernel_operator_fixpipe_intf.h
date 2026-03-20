@@ -12,6 +12,10 @@
  * \file kernel_operator_fixpipe_intf.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_FIXPIPE_INTF_H__
+#endif
 #ifndef ASCENDC_MODULE_OPERATOR_FIXPIPE_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_FIXPIPE_INTERFACE_H
 
@@ -159,3 +163,7 @@ __aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>&
 
 #include "../../impl/basic_api/kernel_operator_fixpipe_intf_impl.h"
 #endif // ASCENDC_MODULE_OPERATOR_FIXPIPE_INTERFACE_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_FIXPIPE_INTF_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_FIXPIPE_INTF_H__
+#endif

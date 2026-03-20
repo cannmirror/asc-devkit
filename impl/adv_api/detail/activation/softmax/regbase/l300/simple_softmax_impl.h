@@ -12,6 +12,13 @@
  * \file simple_softmax_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/activation/softmax/regbase/l300/simple_softmax_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/simplesoftmax.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIMPLE_SOFTMAX_IMPL_H__
+#endif
+
 #ifndef IMPL_ACTIVATION_SOFTMAX_L300_SIMPLE_SOFTMAX_IMPL_H
 #define IMPL_ACTIVATION_SOFTMAX_L300_SIMPLE_SOFTMAX_IMPL_H
 
@@ -24,43 +31,43 @@ __simd_vf__ inline void SimpleSoftMaxGenericNZImpl(__ubuf__ T1* dstUb, __ubuf__ 
     __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, const uint16_t mRepeatTimes,
     const uint16_t kRepeatTimes, const uint16_t outNum, const uint16_t dataBlock)
 {
-    MicroAPI::MaskReg maskCnt;
-    MicroAPI::MaskReg maskFull = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::RegTensor<float> srcVreg;
-    MicroAPI::RegTensor<float> maxVreg;
-    MicroAPI::RegTensor<float> sumVreg;
-    MicroAPI::RegTensor<float> tmpVreg;
-    MicroAPI::RegTensor<float> dstVreg;
-    MicroAPI::RegTensor<float> maxVreg1;
-    MicroAPI::RegTensor<float> maxVreg2;
-    MicroAPI::RegTensor<float> sumVreg1;
-    MicroAPI::RegTensor<float> sumVreg2;
+    Reg::MaskReg maskCnt;
+    Reg::MaskReg maskFull = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
+    Reg::RegTensor<float> srcVreg;
+    Reg::RegTensor<float> maxVreg;
+    Reg::RegTensor<float> sumVreg;
+    Reg::RegTensor<float> tmpVreg;
+    Reg::RegTensor<float> dstVreg;
+    Reg::RegTensor<float> maxVreg1;
+    Reg::RegTensor<float> maxVreg2;
+    Reg::RegTensor<float> sumVreg1;
+    Reg::RegTensor<float> sumVreg2;
 
     for (uint16_t j = 0; j < kRepeatTimes; ++j) {
         uint32_t sreg = outNum;
         for (uint16_t i = 0; i < mRepeatTimes; ++i) {
-            maskCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
+            maskCnt = Reg::UpdateMask<uint32_t>(sreg);
             LoadIfNeedCast<T2>(maxVreg, maxUb + i * FLOAT_REPEAT_SIZE, maskFull);
             LoadIfNeedCast<T2>(sumVreg, sumUb + i * FLOAT_REPEAT_SIZE, maskFull);
             if constexpr (SupportType<T2, float>()) {
-                MicroAPI::Interleave(maxVreg1, maxVreg2, maxVreg, maxVreg);
-                MicroAPI::Interleave(sumVreg1, sumVreg2, sumVreg, sumVreg);
+                Reg::Interleave(maxVreg1, maxVreg2, maxVreg, maxVreg);
+                Reg::Interleave(sumVreg1, sumVreg2, sumVreg, sumVreg);
                 LoadIfNeedCast<T1>(srcVreg, srcUb + 2 * i * FLOAT_REPEAT_SIZE + j * dataBlock, maskFull);
-                MicroAPI::Sub(dstVreg, srcVreg, maxVreg1, maskCnt);
-                MicroAPI::Exp(tmpVreg, dstVreg, maskCnt);
-                MicroAPI::Div(dstVreg, tmpVreg, sumVreg1, maskCnt);
+                Reg::Sub(dstVreg, srcVreg, maxVreg1, maskCnt);
+                Reg::Exp(tmpVreg, dstVreg, maskCnt);
+                Reg::Div(dstVreg, tmpVreg, sumVreg1, maskCnt);
                 StoreIfNeedCast<T1>(dstUb + 2 * i * FLOAT_REPEAT_SIZE + j * dataBlock, dstVreg, maskCnt);
-                maskCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
+                maskCnt = Reg::UpdateMask<uint32_t>(sreg);
                 LoadIfNeedCast<T1>(srcVreg, srcUb + (2 * i + 1) * FLOAT_REPEAT_SIZE + j * dataBlock, maskFull);
-                MicroAPI::Sub(dstVreg, srcVreg, maxVreg2, maskCnt);
-                MicroAPI::Exp(tmpVreg, dstVreg, maskCnt);
-                MicroAPI::Div(dstVreg, tmpVreg, sumVreg2, maskCnt);
+                Reg::Sub(dstVreg, srcVreg, maxVreg2, maskCnt);
+                Reg::Exp(tmpVreg, dstVreg, maskCnt);
+                Reg::Div(dstVreg, tmpVreg, sumVreg2, maskCnt);
                 StoreIfNeedCast<T1>(dstUb + (2 * i + 1) * FLOAT_REPEAT_SIZE + j * dataBlock, dstVreg, maskCnt);
             } else {
                 LoadIfNeedCast<T1>(srcVreg, srcUb + i * FLOAT_REPEAT_SIZE + j * dataBlock, maskFull);
-                MicroAPI::Sub(dstVreg, srcVreg, maxVreg, maskCnt);
-                MicroAPI::Exp(tmpVreg, dstVreg, maskCnt);
-                MicroAPI::Div(dstVreg, tmpVreg, sumVreg, maskCnt);
+                Reg::Sub(dstVreg, srcVreg, maxVreg, maskCnt);
+                Reg::Exp(tmpVreg, dstVreg, maskCnt);
+                Reg::Div(dstVreg, tmpVreg, sumVreg, maskCnt);
                 StoreIfNeedCast<T1>(dstUb + i * FLOAT_REPEAT_SIZE + j * dataBlock, dstVreg, maskCnt);
             }
         }
@@ -72,23 +79,23 @@ __simd_vf__ inline void SimpleSoftMaxGenericNDImpl(__ubuf__ T1* dstUb, __ubuf__ 
     __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, const uint16_t srcM, const uint16_t srcK,
     const uint16_t repeatTimes, const uint16_t blockStride)
 {
-    MicroAPI::MaskReg maskFull = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::RegTensor<float> srcVreg;
-    MicroAPI::RegTensor<float> maxVreg;
-    MicroAPI::RegTensor<float> sumVreg;
-    MicroAPI::RegTensor<float> tmpVreg;
-    MicroAPI::RegTensor<float> dstVreg;
+    Reg::MaskReg maskFull = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
+    Reg::RegTensor<float> srcVreg;
+    Reg::RegTensor<float> maxVreg;
+    Reg::RegTensor<float> sumVreg;
+    Reg::RegTensor<float> tmpVreg;
+    Reg::RegTensor<float> dstVreg;
 
     for (uint16_t i = 0; i < srcM; ++i) {
         LoadIfNeedCast<T2>(maxVreg, maxUb + i * blockStride, maskFull);
         LoadIfNeedCast<T2>(sumVreg, sumUb + i * blockStride, maskFull);
-        MicroAPI::Duplicate(maxVreg, maxVreg, maskFull);
-        MicroAPI::Duplicate(sumVreg, sumVreg, maskFull);
+        Reg::Duplicate(maxVreg, maxVreg, maskFull);
+        Reg::Duplicate(sumVreg, sumVreg, maskFull);
         for (uint16_t j = 0; j < repeatTimes; ++j) {
             LoadIfNeedCast<T1>(srcVreg, srcUb + i * srcK + j * FLOAT_REPEAT_SIZE, maskFull);
-            MicroAPI::Sub(dstVreg, srcVreg, maxVreg, maskFull);
-            MicroAPI::Exp(tmpVreg, dstVreg, maskFull);
-            MicroAPI::Div(dstVreg, tmpVreg, sumVreg, maskFull);
+            Reg::Sub(dstVreg, srcVreg, maxVreg, maskFull);
+            Reg::Exp(tmpVreg, dstVreg, maskFull);
+            Reg::Div(dstVreg, tmpVreg, sumVreg, maskFull);
             StoreIfNeedCast<T1>(dstUb + i * srcK + j * FLOAT_REPEAT_SIZE, dstVreg, maskFull);
         }
     }
@@ -99,26 +106,26 @@ __simd_vf__ inline void SimpleSoftMaxGenericNDWithTailImpl(__ubuf__ T1* dstUb, _
     __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, const uint16_t srcM, const uint16_t srcK,
     const uint16_t repeatTimes, const uint16_t blockStride)
 {
-    MicroAPI::MaskReg maskCnt;
-    MicroAPI::MaskReg maskFull = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::RegTensor<float> srcVreg;
-    MicroAPI::RegTensor<float> maxVreg;
-    MicroAPI::RegTensor<float> sumVreg;
-    MicroAPI::RegTensor<float> tmpVreg;
-    MicroAPI::RegTensor<float> dstVreg;
+    Reg::MaskReg maskCnt;
+    Reg::MaskReg maskFull = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
+    Reg::RegTensor<float> srcVreg;
+    Reg::RegTensor<float> maxVreg;
+    Reg::RegTensor<float> sumVreg;
+    Reg::RegTensor<float> tmpVreg;
+    Reg::RegTensor<float> dstVreg;
 
     for (uint16_t i = 0; i < srcM; ++i) {
         LoadIfNeedCast<T2>(maxVreg, maxUb + i * blockStride, maskFull);
         LoadIfNeedCast<T2>(sumVreg, sumUb + i * blockStride, maskFull);
-        MicroAPI::Duplicate(maxVreg, maxVreg, maskFull);
-        MicroAPI::Duplicate(sumVreg, sumVreg, maskFull);
+        Reg::Duplicate(maxVreg, maxVreg, maskFull);
+        Reg::Duplicate(sumVreg, sumVreg, maskFull);
         uint32_t sreg = srcK;
         for (uint16_t j = 0; j < repeatTimes; ++j) {
-            maskCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
+            maskCnt = Reg::UpdateMask<uint32_t>(sreg);
             LoadIfNeedCast<T1>(srcVreg, srcUb + i * srcK + j * FLOAT_REPEAT_SIZE, maskFull);
-            MicroAPI::Sub(dstVreg, srcVreg, maxVreg, maskCnt);
-            MicroAPI::Exp(tmpVreg, dstVreg, maskCnt);
-            MicroAPI::Div(dstVreg, tmpVreg, sumVreg, maskCnt);
+            Reg::Sub(dstVreg, srcVreg, maxVreg, maskCnt);
+            Reg::Exp(tmpVreg, dstVreg, maskCnt);
+            Reg::Div(dstVreg, tmpVreg, sumVreg, maskCnt);
             StoreIfNeedCast<T1>(dstUb + i * srcK + j * FLOAT_REPEAT_SIZE, dstVreg, maskCnt);
         }
     }
@@ -234,3 +241,8 @@ __aicore__ inline void SimpleSoftMaxBaseImpl(const LocalTensor<T1>& dst, const L
 
 }
 #endif // IMPL_ACTIVATION_SOFTMAX_L300_SIMPLE_SOFTMAX_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIMPLE_SOFTMAX_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIMPLE_SOFTMAX_IMPL_H__
+#endif

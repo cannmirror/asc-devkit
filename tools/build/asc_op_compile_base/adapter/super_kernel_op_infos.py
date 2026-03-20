@@ -558,7 +558,9 @@ f"ERROR: super kernel do not support self send/receive pair within 1 real stream
                         break
                     else:
                         CommonUtility().ascendc_raise_python_err(ERR_CODE, (\
-                        f"ERROR: super kernel do not support more than 2 real stream: oplist: {self.op_list} "))
+                        f"ERROR: super kernel do not support more than 2 real stream, use " \
+                        f"'options=\"stream-fusion=1\"' to enable operators fusion on multi-stream, " \
+                        f"oplist: {self.op_list} "))
                 if connect_set:
                     self.inner_event_id_set.update(connect_set)
             former_op = op
@@ -925,7 +927,7 @@ f"ERROR: super kernel do not support self send/receive pair within 1 real stream
         options.append("-I" + os.path.join(asc_path, "impl", "adv_api"))
         options.append("-I" + os.path.join(asc_path, "impl", "basic_api"))
         options.append("-I" + os.path.join(asc_path, "impl", "c_api"))
-        options.append("-I" + os.path.join(asc_path, "impl", "micro_api"))
+        options.append("-I" + os.path.join(asc_path, "impl", "basic_api", "reg_compute"))
         options.append("-I" + os.path.join(asc_path, "impl", "simt_api"))
         options.append("-I" + os.path.join(asc_path, "impl", "utils"))
         options.append("-I" + os.path.join(asc_path, "include"))
@@ -933,7 +935,7 @@ f"ERROR: super kernel do not support self send/receive pair within 1 real stream
         options.append("-I" + os.path.join(asc_path, "include", "basic_api"))
         options.append("-I" + os.path.join(asc_path, "include", "aicpu_api"))
         options.append("-I" + os.path.join(asc_path, "include", "c_api"))
-        options.append("-I" + os.path.join(asc_path, "include", "micro_api"))
+        options.append("-I" + os.path.join(asc_path, "include", "basic_api", "reg_compute"))
         options.append("-I" + os.path.join(asc_path, "include", "simt_api"))
         options.append("-I" + os.path.join(asc_path, "include", "utils"))
         options.append("-I" + os.path.join(asc_path, "..", "ascendc", "act"))

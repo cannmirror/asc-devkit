@@ -8,6 +8,11 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/select/selectwithbytesmask/selectwithbytesmask_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/select/selectwithbytesmask.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SELECT_SELECTWITHBYTESMASK_SELECTWITHBYTESMASK_C310_IMPL_H__
+#endif
 #ifndef LIB_SELECT_SELECT_WITH_BYTES_MASK_C310_IMPL_H
 #define LIB_SELECT_SELECT_WITH_BYTES_MASK_C310_IMPL_H
 #include "kernel_tensor.h"
@@ -16,21 +21,21 @@
 
 namespace AscendC {
 template <typename T, typename U, CMPMODE cmpMode>
-__simd_callee__ inline void RegTensorToMaskReg(MicroAPI::RegTensor<U> &vMaskReg0, MicroAPI::RegTensor<U> &vMaskReg1,
-    MicroAPI::MaskReg &localMask0, MicroAPI::MaskReg &maskReg0)
+__simd_callee__ inline void RegTensorToMaskReg(Reg::RegTensor<U> &vMaskReg0, Reg::RegTensor<U> &vMaskReg1,
+    Reg::MaskReg &localMask0, Reg::MaskReg &maskReg0)
 {
-    MicroAPI::MaskReg maskReg1;
-    MicroAPI::MaskReg localMask1;
+    Reg::MaskReg maskReg1;
+    Reg::MaskReg localMask1;
     if constexpr (sizeof(U) == 1) {
-        MicroAPI::CompareScalar<uint8_t, cmpMode>(localMask0, (MicroAPI::RegTensor<uint8_t> &)vMaskReg0,
+        Reg::CompareScalar<uint8_t, cmpMode>(localMask0, (Reg::RegTensor<uint8_t> &)vMaskReg0,
             static_cast<uint8_t>(0), maskReg0);
     } else if constexpr (sizeof(T) == 2 && sizeof(U) == 4) {
-        MicroAPI::MaskUnPack(maskReg1, maskReg0);
-        MicroAPI::CompareScalar<U, cmpMode>(localMask0, vMaskReg0, static_cast<U>(0), maskReg1);
-        MicroAPI::CompareScalar<U, cmpMode>(localMask1, vMaskReg1, static_cast<U>(0), maskReg1);
-        MicroAPI::MaskDeInterleave<T>(localMask0, localMask1, localMask0, localMask1);
+        Reg::MaskUnPack(maskReg1, maskReg0);
+        Reg::CompareScalar<U, cmpMode>(localMask0, vMaskReg0, static_cast<U>(0), maskReg1);
+        Reg::CompareScalar<U, cmpMode>(localMask1, vMaskReg1, static_cast<U>(0), maskReg1);
+        Reg::MaskDeInterleave<T>(localMask0, localMask1, localMask0, localMask1);
     } else {
-        MicroAPI::CompareScalar<U, cmpMode>(localMask0, vMaskReg0, static_cast<U>(0), maskReg0);
+        Reg::CompareScalar<U, cmpMode>(localMask0, vMaskReg0, static_cast<U>(0), maskReg0);
     }
 }
 
@@ -38,38 +43,38 @@ template <typename T, typename U, bool reverse = false>
 __simd_vf__ inline void SelectWithBytesMaskPerAxisImpl(__ubuf__ T *dstUb, __ubuf__ T *src0Ub, T src1,
     __ubuf__ U *maskUb, const uint32_t firstAxis, const uint32_t srcLastAxis, const uint32_t maskLastAxis)
 {
-    MicroAPI::RegTensor<T> vSrcReg0;
-    MicroAPI::RegTensor<T> vSrcReg1;
-    MicroAPI::RegTensor<T> vDstReg;
-    MicroAPI::RegTensor<U> vMaskReg0;
-    MicroAPI::RegTensor<U> vMaskReg1;
-    MicroAPI::MaskReg maskReg0;
-    MicroAPI::MaskReg localMask0;
-    MicroAPI::Duplicate(vSrcReg1, src1);
+    Reg::RegTensor<T> vSrcReg0;
+    Reg::RegTensor<T> vSrcReg1;
+    Reg::RegTensor<T> vDstReg;
+    Reg::RegTensor<U> vMaskReg0;
+    Reg::RegTensor<U> vMaskReg1;
+    Reg::MaskReg maskReg0;
+    Reg::MaskReg localMask0;
+    Reg::Duplicate(vSrcReg1, src1);
     uint32_t sreg;
     uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(T));
     uint16_t repeatTimes = static_cast<uint16_t>(DivCeil(srcLastAxis, sregLower));
     for (uint16_t loopH = 0; loopH < static_cast<uint16_t>(firstAxis); ++loopH) {
         sreg = srcLastAxis;
         for (uint16_t i = 0; i < repeatTimes; ++i) {
-            maskReg0 = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::LoadAlign<T>(vSrcReg0, src0Ub + loopH * srcLastAxis + i * sregLower);
+            maskReg0 = Reg::UpdateMask<T>(sreg);
+            Reg::LoadAlign<T>(vSrcReg0, src0Ub + loopH * srcLastAxis + i * sregLower);
             if constexpr (sizeof(T) == 2 && sizeof(U) == 1) {
-                MicroAPI::LoadAlign<uint8_t, MicroAPI::LoadDist::DIST_UNPACK_B8>(
-                    (MicroAPI::RegTensor<uint8_t> &)vMaskReg0,
+                Reg::LoadAlign<uint8_t, Reg::LoadDist::DIST_UNPACK_B8>(
+                    (Reg::RegTensor<uint8_t> &)vMaskReg0,
                     (__ubuf__ uint8_t *)maskUb + loopH * maskLastAxis + i * sregLower);
             } else if constexpr (sizeof(T) == 2 && sizeof(U) == 4) {
-                MicroAPI::LoadAlign<U>(vMaskReg0, maskUb + loopH * maskLastAxis + i * sregLower);
-                MicroAPI::LoadAlign<U>(vMaskReg1, maskUb + loopH * maskLastAxis + i * sregLower + sregLower / 2);
+                Reg::LoadAlign<U>(vMaskReg0, maskUb + loopH * maskLastAxis + i * sregLower);
+                Reg::LoadAlign<U>(vMaskReg1, maskUb + loopH * maskLastAxis + i * sregLower + sregLower / 2);
             } else if constexpr (sizeof(T) == 4 && sizeof(U) == 1) {
-                MicroAPI::LoadAlign<uint8_t, MicroAPI::LoadDist::DIST_UNPACK4_B8>(
-                    (MicroAPI::RegTensor<uint8_t> &)vMaskReg0,
+                Reg::LoadAlign<uint8_t, Reg::LoadDist::DIST_UNPACK4_B8>(
+                    (Reg::RegTensor<uint8_t> &)vMaskReg0,
                     (__ubuf__ uint8_t *)maskUb + loopH * maskLastAxis + i * sregLower);
             } else if constexpr (sizeof(T) == 4 && sizeof(U) == 2) {
-                MicroAPI::LoadAlign<U, MicroAPI::LoadDist::DIST_UNPACK_B16>(vMaskReg0,
+                Reg::LoadAlign<U, Reg::LoadDist::DIST_UNPACK_B16>(vMaskReg0,
                     maskUb + loopH * maskLastAxis + i * sregLower);
             } else if constexpr (sizeof(T) == sizeof(U)) {
-                MicroAPI::LoadAlign<U>(vMaskReg0, maskUb + loopH * maskLastAxis + i * sregLower);
+                Reg::LoadAlign<U>(vMaskReg0, maskUb + loopH * maskLastAxis + i * sregLower);
             }
 
             if constexpr (!reverse) {
@@ -78,8 +83,8 @@ __simd_vf__ inline void SelectWithBytesMaskPerAxisImpl(__ubuf__ T *dstUb, __ubuf
                 RegTensorToMaskReg<T, U, CMPMODE::NE>(vMaskReg0, vMaskReg1, localMask0, maskReg0);
             }
 
-            MicroAPI::Select(vDstReg, vSrcReg0, vSrcReg1, localMask0);
-            MicroAPI::StoreAlign<T>(dstUb + loopH * srcLastAxis + i * sregLower, vDstReg, maskReg0);
+            Reg::Select(vDstReg, vSrcReg0, vSrcReg1, localMask0);
+            Reg::StoreAlign<T>(dstUb + loopH * srcLastAxis + i * sregLower, vDstReg, maskReg0);
         }
     }
 }
@@ -158,3 +163,8 @@ __aicore__ inline void SelectWithBytesMask(const LocalTensor<T>& dst, T src0, co
 }
 } // namespace AscendC
 #endif // LIB_SELECT_SELECT_WITH_BYTES_MASK_C310_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SELECT_SELECTWITHBYTESMASK_SELECTWITHBYTESMASK_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SELECT_SELECTWITHBYTESMASK_SELECTWITHBYTESMASK_C310_IMPL_H__
+#endif

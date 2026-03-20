@@ -41,32 +41,33 @@ const static std::string LABEL_CORE_CNT_VEC = "vector_core_cnt";
 const static std::string LABEL_CORE_CNT_AICORE = "ai_core_cnt";
 const static std::string NPU_ARCH = "NpuArch";
 
+static const std::map<std::string, SocVersion> convertMap {
+    {"Ascend310P", SocVersion::ASCEND310P},
+    {"Ascend910", SocVersion::ASCEND910},
+    {"Ascend910B", SocVersion::ASCEND910B},
+    {"Ascend910_93", SocVersion::ASCEND910B},
+    {"Ascend310B", SocVersion::ASCEND310B},
+    {"Ascend950", SocVersion::ASCEND950},
+    {"AS31XM1", SocVersion::AS31XM1},
+    {"Ascend031", SocVersion::ASCEND031},
+    {"Ascend035", SocVersion::ASCEND035},
+    {"Ascend310", SocVersion::ASCEND310},
+    {"Ascend610", SocVersion::ASCEND610},
+    {"Ascend610Lite", SocVersion::ASCEND610Lite},
+    {"BS9SX1A", SocVersion::BS9SX1A},
+    {"BS9SX2A", SocVersion::BS9SX2A},
+    {"Hi3796CV300CS", SocVersion::HI3796CV300CS},
+    {"Hi3796CV300ES", SocVersion::HI3796CV300ES},
+    {"MC61AM21A", SocVersion::MC61AM21A},
+    {"MC62CM12A", SocVersion::MC62CM12A},
+    {"SD3403", SocVersion::SD3403},
+    {"KirinX90", SocVersion::KIRINX90},
+    {"Kirin9030", SocVersion::KIRIN9030},
+    {"MC32DM11A", SocVersion::MC32DM11A},
+};
 
 static inline SocVersion SocVersionStrMap(const char *socVersionStr)
 {
-    static std::map<std::string, SocVersion> convertMap = {
-        {"Ascend310P", SocVersion::ASCEND310P},
-        {"Ascend910", SocVersion::ASCEND910},
-        {"Ascend910B", SocVersion::ASCEND910B},
-        {"Ascend910_93", SocVersion::ASCEND910B},
-        {"Ascend310B", SocVersion::ASCEND310B},
-        {"Ascend950", SocVersion::ASCEND950},
-        {"AS31XM1", SocVersion::AS31XM1},
-        {"Ascend031", SocVersion::ASCEND031},
-        {"Ascend035", SocVersion::ASCEND035},
-        {"Ascend310", SocVersion::ASCEND310},
-        {"Ascend610", SocVersion::ASCEND610},
-        {"Ascend610Lite", SocVersion::ASCEND610Lite},
-        {"BS9SX1A", SocVersion::BS9SX1A},
-        {"BS9SX2A", SocVersion::BS9SX2A},
-        {"Hi3796CV300CS", SocVersion::HI3796CV300CS},
-        {"Hi3796CV300ES", SocVersion::HI3796CV300ES},
-        {"MC61AM21A", SocVersion::MC61AM21A},
-        {"MC62CM12A", SocVersion::MC62CM12A},
-        {"SD3403", SocVersion::SD3403},
-        {"KirinX90", SocVersion::KIRINX90},
-        {"Kirin9030", SocVersion::KIRIN9030}
-    };
     const auto &iter = convertMap.find(socVersionStr);
     if (iter != convertMap.end()) {
         return iter->second;
@@ -254,7 +255,7 @@ uint32_t PlatformAscendC::CalcTschNumBlocks(uint32_t sliceNum, uint32_t aicCoreN
     uint32_t numBlocks = (sliceNum + (ration - 1)) / ration;
     // in mix case: 910B1(ration = 2), numBlocks should not be greater than physical aic core num
     if ((ration == MIX_AIC_AIV_RATION_910B1) && (numBlocks > aicCoreNum)) {
-        PF_LOGE("CalcTschBlockDim failed, calc numBlocks %u should not be greater than aicCoreNum %u", numBlocks,
+        PF_LOGE("CalcTschNumBlocks failed, calc numBlocks %u should not be greater than aicCoreNum %u", numBlocks,
             aicCoreNum);
         return 0;
     }
@@ -372,7 +373,10 @@ const static std::map<std::string, std::string> convertMapInAicpu = {
     {"Ascend950DT_9578", "Ascend950"}, // ascend950_list
     {"MC62CM12AA", "MC62CM12A"},
     {"KirinX90", "KirinX90"},
-    {"Kirin9030", "Kirin9030"}
+    {"Kirin9030", "Kirin9030"},
+    {"MC32DM11AA", "MC32DM11A"},
+    {"MC32DM11AB", "MC32DM11A"},
+    {"MC32DM11AC", "MC32DM11A"},
 };
 
 const static std::map<std::string, std::string> AICPUshortVersionToNpuArchMap = {
@@ -383,7 +387,8 @@ const static std::map<std::string, std::string> AICPUshortVersionToNpuArchMap = 
     {"Ascend950", "3510"},
     {"MC62CM12A", "5102"},
     {"KirinX90", "3003"},
-    {"Kirin9030", "3113"}
+    {"Kirin9030", "3113"},
+    {"MC32DM11A", "5102"},
 };
 
 bool SwitchIntoShortSocVersion(const char *socVersionStr, std::string &shortSocVersion)

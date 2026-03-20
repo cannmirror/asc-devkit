@@ -161,7 +161,7 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CcuPrepareForAllReduceM2
     xnData_[2] = (uint64_t)commParam->recvBuf + offset; // ccu xn2
  
     uint64_t loopCount = CCU_LOOP_COUNT_M2M_RE;
-    uint64_t tmpCount = commParam->count / ccuParam_.rankNum;
+    uint64_t tmpCount = (commParam->count + ccuParam_.rankNum - 1) / ccuParam_.rankNum;
     uint64_t sliceCount = (ccuParam_.rankId == ccuParam_.rankNum - 1) ?
                      (commParam->count - (ccuParam_.rankNum - 1) * tmpCount) : tmpCount;
     uint64_t sliceSize = sliceCount * DATA_TYPE_MAP[commParam->dataType];
@@ -177,7 +177,12 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CcuPrepareForAllReduceM2
     uint64_t normalSliceCount = (commParam->count + ccuParam_.rankNum - 1) / ccuParam_.rankNum; // count/rankNum 向上取整
     uint64_t normalSliceSize = normalSliceCount * dataSize;
     uint64_t normalRankCount = commParam->count / normalSliceCount;
-    uint64_t lastSliceSize = (commParam->count * dataSize) - (normalRankCount * normalSliceSize);
+    uint64_t lastSliceSize = 0;
+    if (normalRankCount == ccuParam_.rankNum) {
+        lastSliceSize = (commParam->count * dataSize) - ((normalRankCount - 1) * normalSliceSize);
+    } else {
+        lastSliceSize = (commParam->count * dataSize) - (normalRankCount * normalSliceSize);
+    }
     KERNEL_LOG(KERNEL_INFO, "ApiClient CcuPrepareForAllReduceM2M normalSliceSize:%d, lastSliceSize:%d", normalSliceSize, lastSliceSize);
     
     xnData_[6] = normalSliceSize;

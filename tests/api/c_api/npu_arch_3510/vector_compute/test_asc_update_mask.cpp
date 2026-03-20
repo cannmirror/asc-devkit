@@ -20,11 +20,11 @@ protected:
 };
 
 namespace {
-vector_bool plt_b8_Stub(uint32_t& scalar, Literal mode) {}
+vector_bool plt_b8_Stub(uint32_t& scalar, Literal mode) { return vector_bool{}; }
 
-vector_bool plt_b16_Stub(uint32_t& scalar, Literal mode) {}
+vector_bool plt_b16_Stub(uint32_t& scalar, Literal mode) { return vector_bool{}; }
 
-vector_bool plt_b32_Stub(uint32_t& scalar, Literal mode) {}
+vector_bool plt_b32_Stub(uint32_t& scalar, Literal mode) { return vector_bool{}; }
 }
 
 TEST_F(TestVectorComputeUpdateMask, c_api_update_mask_b8_Succ)

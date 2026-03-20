@@ -24,7 +24,7 @@
 ## 算子描述
 
 - 算子功能：  
-  batchnorm单算子，BatchNorm是对于每一层的输入做规范化处理，使得每一层的分布尽可能的相同,基本思想是对于每个batch中的样本，对其输入的每个特征在batch的维度上进行归一化。具体来说，对于输入特征x，BatchNorm的计算过程可以表示为：  
+  batchnorm单算子，BatchNorm是对于每一层的输入做规范化处理，使得每一层的分布尽可能的相同，基本思想是对于每个batch中的样本，对其输入的每个特征在batch的维度上进行归一化。具体来说，对于输入特征x，BatchNorm的计算过程可以表示为：  
   对输入特征x，在batch维度上计算均值μ和方差σ：  
   $$
   \mu_i = \frac{1}{B} \sum_{j = 1}^{B} x_{j,i} \quad \delta_i^2 = \frac{1}{B} \sum_{j = 1}^{B} (x_{j,i} - \mu_i)^2
@@ -59,7 +59,7 @@
   </table>
 
 - 算子实现：  
-  本样例中实现的是固定shape(x[8, 8, 8], gamma[8], beta[8])的batchnorm算子。
+  本样例中实现的是固定shape(x[8, 8, 8]，gamma[8]，beta[8])的batchnorm算子。
 
   - Kernel实现
 

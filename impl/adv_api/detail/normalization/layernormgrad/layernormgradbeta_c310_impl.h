@@ -12,6 +12,12 @@
  * \file layernormgradbeta_c310_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/normalization/layernormgrad/layernormgradbeta_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORMGRAD_LAYERNORMGRADBETA_C310_IMPL_H__
+#endif
 #ifndef IMPL_NORMALIZATION_LAYERNORMGRAD_LAYERNORMGRADBETA_C310_IMPL_H
 #define IMPL_NORMALIZATION_LAYERNORMGRAD_LAYERNORMGRADBETA_C310_IMPL_H
 
@@ -22,41 +28,41 @@
 namespace AscendC {
 namespace LayerNormGradBetaAPI {
 
-constexpr MicroAPI::CastTrait castTraitF16F32 = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN,
-                                                 MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
-constexpr MicroAPI::CastTrait castTraitF32F16 = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
-                                                 MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait castTraitF16F32 = {Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN,
+                                                 Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait castTraitF32F16 = {Reg::RegLayout::ZERO, Reg::SatMode::SAT,
+                                                 Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
 template <typename T>
-__simd_callee__ inline void LoadSrcData(MicroAPI::RegTensor<float>& srcReg, __ubuf__ T* src0, uint16_t index,
-                                   MicroAPI::MaskReg& mask)
+__simd_callee__ inline void LoadSrcData(Reg::RegTensor<float>& srcReg, __ubuf__ T* src0, uint16_t index,
+                                   Reg::MaskReg& mask)
 {
-    MicroAPI::RegTensor<T> srcTmpReg;
+    Reg::RegTensor<T> srcTmpReg;
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(float);
     if constexpr (std::is_same<T, half>::value) {
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcTmpReg, src0 + index * eleCountPerVL);
-        MicroAPI::Cast<float, T, castTraitF16F32>(srcReg, srcTmpReg, mask);
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(srcTmpReg, src0 + index * eleCountPerVL);
+        Reg::Cast<float, T, castTraitF16F32>(srcReg, srcTmpReg, mask);
     } else {
-        MicroAPI::LoadAlign(srcReg, src0 + index * eleCountPerVL);
+        Reg::LoadAlign(srcReg, src0 + index * eleCountPerVL);
     }
 }
 
 template <typename T>
-__simd_callee__ inline void StoreDstData(__ubuf__ T* dst, MicroAPI::RegTensor<float>& dstReg, uint16_t index,
-                                    MicroAPI::MaskReg& mask)
+__simd_callee__ inline void StoreDstData(__ubuf__ T* dst, Reg::RegTensor<float>& dstReg, uint16_t index,
+                                    Reg::MaskReg& mask)
 {
-    MicroAPI::RegTensor<T> dstTmpReg;
-    MicroAPI::MaskReg tmpMask = mask;
+    Reg::RegTensor<T> dstTmpReg;
+    Reg::MaskReg tmpMask = mask;
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(float);
 
     if constexpr (std::is_same<T, half>::value) {
-        MicroAPI::Cast<T, float, castTraitF32F16>(dstTmpReg, dstReg, tmpMask);
-        MicroAPI::Pack<uint16_t, uint32_t, MicroAPI::HighLowPart::LOWEST>((MicroAPI::RegTensor<uint16_t>&)dstTmpReg,
-                                                                          (MicroAPI::RegTensor<uint32_t>&)dstTmpReg);
-        MicroAPI::MaskPack(tmpMask, tmpMask);
-        MicroAPI::StoreAlign(dst + index * eleCountPerVL, dstTmpReg, tmpMask);
+        Reg::Cast<T, float, castTraitF32F16>(dstTmpReg, dstReg, tmpMask);
+        Reg::Pack<uint16_t, uint32_t, Reg::HighLowPart::LOWEST>((Reg::RegTensor<uint16_t>&)dstTmpReg,
+                                                                          (Reg::RegTensor<uint32_t>&)dstTmpReg);
+        Reg::MaskPack(tmpMask, tmpMask);
+        Reg::StoreAlign(dst + index * eleCountPerVL, dstTmpReg, tmpMask);
     } else {
-        MicroAPI::StoreAlign(dst + index * eleCountPerVL, dstReg, tmpMask);
+        Reg::StoreAlign(dst + index * eleCountPerVL, dstReg, tmpMask);
     }
 }
 
@@ -64,26 +70,26 @@ template <typename T>
 __simd_vf__ inline void ReduceSumN(__ubuf__ T* outputPdGamma, __ubuf__ T* outputPdBeta, __ubuf__ T* resForGamma,
                                   __ubuf__ T* inputDy, const uint32_t bsLength, const uint32_t hLength)
 {
-    MicroAPI::MaskReg mask;
-    MicroAPI::RegTensor<float> inputDyReg, resForGammaReg;
-    MicroAPI::RegTensor<float> outputPdGammaReg, outputPdBetaReg;
-    MicroAPI::RegTensor<float> tmpReg;
+    Reg::MaskReg mask;
+    Reg::RegTensor<float> inputDyReg, resForGammaReg;
+    Reg::RegTensor<float> outputPdGammaReg, outputPdBetaReg;
+    Reg::RegTensor<float> tmpReg;
 
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(float);
     uint16_t repeatTimes = DivCeil(hLength, eleCountPerVL);
     uint32_t count = hLength;
 
     for (uint16_t i = 0; i < repeatTimes; i++) {
-        mask = MicroAPI::UpdateMask<float>(count);
-        MicroAPI::Duplicate(outputPdGammaReg, 0.0f, mask);
-        MicroAPI::Duplicate(outputPdBetaReg, 0.0f, mask);
+        mask = Reg::UpdateMask<float>(count);
+        Reg::Duplicate(outputPdGammaReg, 0.0f, mask);
+        Reg::Duplicate(outputPdBetaReg, 0.0f, mask);
         for (uint16_t j = 0; j < bsLength; j++) {
             LoadSrcData(inputDyReg, inputDy + j * hLength, i, mask);
             LoadSrcData(resForGammaReg, resForGamma + j * hLength, i, mask);
 
-            MicroAPI::Mul(tmpReg, inputDyReg, resForGammaReg, mask);
-            MicroAPI::Add(outputPdGammaReg, outputPdGammaReg, tmpReg, mask);
-            MicroAPI::Add(outputPdBetaReg, outputPdBetaReg, inputDyReg, mask);
+            Reg::Mul(tmpReg, inputDyReg, resForGammaReg, mask);
+            Reg::Add(outputPdGammaReg, outputPdGammaReg, tmpReg, mask);
+            Reg::Add(outputPdBetaReg, outputPdBetaReg, inputDyReg, mask);
         }
         StoreDstData(outputPdGamma, outputPdGammaReg, i, mask);
         StoreDstData(outputPdBeta, outputPdBetaReg, i, mask);
@@ -141,3 +147,8 @@ __aicore__ inline void LayerNormGradBetaImpl(const LocalTensor<T>& outputPdGamma
 }
 } // namespace AscendC
 #endif // IMPL_NORMALIZATION_LAYERNORMGRAD_LAYERNORMGRADBETA_C310_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORMGRAD_LAYERNORMGRADBETA_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORMGRAD_LAYERNORMGRADBETA_C310_IMPL_H__
+#endif

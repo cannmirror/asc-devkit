@@ -12,6 +12,12 @@
  * \file transdata_tiling.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TRANSDATA_TILING_H__
+#endif
+
 #ifndef LIB_TRANSPOSE_TRANSDATA_TILING_H
 #define LIB_TRANSPOSE_TRANSDATA_TILING_H
 #include <cstdint>
@@ -63,3 +69,8 @@ bool GetTransDataMaxMinTmpSize(const platform_ascendc::PlatformAscendC& platform
     uint32_t& minValue);
 } // AscendC
 #endif // LIB_TRANSPOSE_TRANSDATA_TILING_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TRANSDATA_TILING_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TRANSDATA_TILING_H__
+#endif

@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例基于Kernel直调算子工程，介绍了调用LayerNormGrad高阶API实现LayernormGradCustom单算子，本样例为固定shape，x[2, 32, 16], dy[2, 32, 16], variance[2, 32], mean[2, 32], gamma[16]，主要演示LayerNormGrad高阶API在Kernel直调工程中的调用。
+本样例基于Kernel直调算子工程，介绍了调用LayerNormGrad高阶API实现LayernormGradCustom单算子，主要演示LayerNormGrad高阶API在Kernel直调工程中的调用。
 
 ## 支持的产品
 
@@ -45,7 +45,7 @@
   </table>
 
 - 算子实现：  
-  本样例中实现的是固定shape(x[2, 32, 16], dy[2, 32, 16], variance[2, 32], mean[2, 32], gamma[16])的LayernormGradCustom算子。
+  本样例中实现的是固定shape(x[2, 32, 16]，dy[2, 32, 16]，variance[2, 32]，mean[2, 32]，gamma[16])的LayernormGradCustom算子。
 
   - Kernel实现
 

@@ -12,6 +12,12 @@
  * \file kernel_operator_dropout_mem_base.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/filter/dropout/dropout_membase_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/filter/dropout.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DROPOUT_MEMBASE_IMPL_H__
+#endif
+
 #ifndef IMPL_FILTER_DROPOUT_DROPOUT_MEMBASE_IMPL_H
 #define IMPL_FILTER_DROPOUT_DROPOUT_MEMBASE_IMPL_H
 
@@ -185,3 +191,8 @@ __aicore__ inline void DropOutByteMode(const LocalTensor<T>& dstLocal, const Loc
 }
 } // namespace AscendC
 #endif // IMPL_FILTER_DROPOUT_DROPOUT_MEMBASE_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DROPOUT_MEMBASE_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DROPOUT_MEMBASE_IMPL_H__
+#endif

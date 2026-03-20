@@ -12,6 +12,13 @@
  * \file softmax_grad_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/activation/softmax/regbase/l300/softmax_grad_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/softmaxgrad.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_GRAD_IMPL_H__
+#endif
+
 #ifndef IMPL_ACTIVATION_SOFTMAX_L300_SOFTMAX_GRAD_IMPL_H
 #define IMPL_ACTIVATION_SOFTMAX_L300_SOFTMAX_GRAD_IMPL_H
 
@@ -34,79 +41,79 @@ __simd_vf__ inline void SoftmaxGradGenericNZWithTailVFImpl(__ubuf__ T *dstUb, __
     uint16_t VcgFoldRepeat = (dataNumAfterVcg + HALF_REPEAT_SIZE - 1) / HALF_REPEAT_SIZE;
     uint16_t e2bRep = srcM / DEFAULT_BLK_NUM;
 
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::MaskReg pregOneBlk = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL8>();
-    MicroAPI::MaskReg pregkTail = MicroAPI::MoveMask<uint32_t>();
-    MicroAPI::RegTensor<float> srcVreg;
-    MicroAPI::RegTensor<float> gradVreg;
-    MicroAPI::RegTensor<float> sumVreg;
-    MicroAPI::RegTensor<float> tmpVreg;
-    MicroAPI::RegTensor<T> castReg;
+    Reg::MaskReg pregCnt;
+    Reg::MaskReg pregFull = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
+    Reg::MaskReg pregOneBlk = Reg::CreateMask<uint32_t, Reg::MaskPattern::VL8>();
+    Reg::MaskReg pregkTail = Reg::MoveMask<uint32_t>();
+    Reg::RegTensor<float> srcVreg;
+    Reg::RegTensor<float> gradVreg;
+    Reg::RegTensor<float> sumVreg;
+    Reg::RegTensor<float> tmpVreg;
+    Reg::RegTensor<T> castReg;
 
     for (uint16_t i = 0; i < mRepeatInner; ++i) {
         Duplicate(sumVreg, 0);
         for (uint16_t j = 0; j < kOuter; ++j) {
             LoadIfNeedCast<T>(srcVreg, srcUb + i * FLOAT_REPEAT_SIZE + j *dataPadInner, pregFull);
             LoadIfNeedCast<T>(gradVreg, gradUb + i * FLOAT_REPEAT_SIZE + j *dataPadInner, pregFull);
-            MicroAPI::Mul(tmpVreg, gradVreg, srcVreg, pregFull);
-            MicroAPI::Add(sumVreg, sumVreg, tmpVreg, pregFull);
+            Reg::Mul(tmpVreg, gradVreg, srcVreg, pregFull);
+            Reg::Add(sumVreg, sumVreg, tmpVreg, pregFull);
         }
         uint32_t tailOffset = i * FLOAT_REPEAT_SIZE + kOuter * dataPadInner;
         LoadIfNeedCast<T>(srcVreg, srcUb + tailOffset, pregFull);
         LoadIfNeedCast<T>(gradVreg, gradUb + tailOffset, pregFull);
-        MicroAPI::Mul(tmpVreg, gradVreg, srcVreg, pregkTail);
-        MicroAPI::Add(sumVreg, sumVreg, tmpVreg, pregFull);
-        MicroAPI::ReduceSumWithDataBlock(sumVreg, sumVreg, pregFull);
-        MicroAPI::DataCopy(workUb + i * DEFAULT_BLK_NUM, sumVreg, pregOneBlk);
+        Reg::Mul(tmpVreg, gradVreg, srcVreg, pregkTail);
+        Reg::Add(sumVreg, sumVreg, tmpVreg, pregFull);
+        Reg::ReduceSumWithDataBlock(sumVreg, sumVreg, pregFull);
+        Reg::DataCopy(workUb + i * DEFAULT_BLK_NUM, sumVreg, pregOneBlk);
     }
 
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     for (uint16_t i = 0; i < VcgFoldRepeat; i++) {
-        MicroAPI::DataCopy<float, MicroAPI::LoadDist::DIST_DINTLV_B32>(
+        Reg::DataCopy<float, Reg::LoadDist::DIST_DINTLV_B32>(
             sumVreg, tmpVreg, workUb + i * HALF_REPEAT_SIZE);
-        MicroAPI::Add(sumVreg, sumVreg, tmpVreg, pregFull);
+        Reg::Add(sumVreg, sumVreg, tmpVreg, pregFull);
         if constexpr (isFront) {
             StoreIfNeedCast<T>(workUbFront + i * FLOAT_REPEAT_SIZE, sumVreg, pregFull);
         } else {
-            MicroAPI::DataCopy<float, MicroAPI::StoreDist::DIST_INTLV_B32>(
+            Reg::DataCopy<float, Reg::StoreDist::DIST_INTLV_B32>(
                 workUb + i * HALF_REPEAT_SIZE, sumVreg, sumVreg, pregFull);
         }
     }
 
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     if constexpr (isFront) {
         uint32_t sreg = oriM * dtypeBlkStride;
         for (uint16_t i = 0; i < e2bRep; ++i) {
-            pregCnt = MicroAPI::UpdateMask<T>(sreg);
+            pregCnt = Reg::UpdateMask<T>(sreg);
             LoadE2B<T>(castReg, workUbFront + i * DEFAULT_BLK_NUM);
-            MicroAPI::DataCopy(dstUb + i * dtypeRepStride, castReg, pregCnt);
+            Reg::DataCopy(dstUb + i * dtypeRepStride, castReg, pregCnt);
         }
     } else {
         for (uint16_t j = 0; j < kOuter; ++j) {
             uint32_t sreg = oriM * B16_DATA_NUM_PER_BLOCK;
             for (uint16_t i = 0; i < mRepeatInner; ++i) {
-                pregCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
+                pregCnt = Reg::UpdateMask<uint32_t>(sreg);
                 LoadIfNeedCast<T>(srcVreg, srcUb + j * dataPadInner + i * FLOAT_REPEAT_SIZE, pregFull);
                 LoadIfNeedCast<T>(gradVreg, gradUb + j * dataPadInner + i * FLOAT_REPEAT_SIZE, pregFull);
                 LoadE2B<float>(sumVreg, workUb + i * DEFAULT_BLK_NUM);
-                MicroAPI::Sub(tmpVreg, gradVreg, sumVreg, pregCnt);
-                MicroAPI::Mul(tmpVreg, srcVreg, tmpVreg, pregCnt);
+                Reg::Sub(tmpVreg, gradVreg, sumVreg, pregCnt);
+                Reg::Mul(tmpVreg, srcVreg, tmpVreg, pregCnt);
                 StoreIfNeedCast<T>(dstUb + j * dataPadInner + i * FLOAT_REPEAT_SIZE, tmpVreg, pregCnt);
             }
         }
         uint32_t sreg = oriM * B16_DATA_NUM_PER_BLOCK;
         for (uint16_t i = 0; i < mRepeatInner; ++i) {
             uint32_t tailOffset = i * FLOAT_REPEAT_SIZE + kOuter * dataPadInner;
-            pregCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
-            MicroAPI::MaskAnd(pregOneBlk, pregCnt, pregkTail, pregFull);
+            pregCnt = Reg::UpdateMask<uint32_t>(sreg);
+            Reg::MaskAnd(pregOneBlk, pregCnt, pregkTail, pregFull);
             LoadIfNeedCast<T>(srcVreg, srcUb + tailOffset, pregFull);
             LoadIfNeedCast<T>(gradVreg, gradUb + tailOffset, pregFull);
             LoadE2B<float>(sumVreg, workUb + i * DEFAULT_BLK_NUM);
-            MicroAPI::Sub(tmpVreg, gradVreg, sumVreg, pregOneBlk);
-            MicroAPI::Mul(tmpVreg, srcVreg, tmpVreg, pregOneBlk);
+            Reg::Sub(tmpVreg, gradVreg, sumVreg, pregOneBlk);
+            Reg::Mul(tmpVreg, srcVreg, tmpVreg, pregOneBlk);
             StoreIfNeedCast<T>(dstUb + tailOffset, tmpVreg, pregOneBlk);
         }
     }
@@ -151,60 +158,60 @@ __simd_vf__ inline void SoftmaxGradGenericNZVFImpl(__ubuf__ T *dstUb, __ubuf__ T
     uint16_t VcgFoldRepeat = (dataNumAfterVcg + HALF_REPEAT_SIZE - 1) / HALF_REPEAT_SIZE;
     uint16_t e2bRep = tiling.srcM / DEFAULT_BLK_NUM;
 
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::MaskReg pregOneBlk = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL8>();
-    MicroAPI::RegTensor<float> srcVreg;
-    MicroAPI::RegTensor<float> gradVreg;
-    MicroAPI::RegTensor<float> sumVreg;
-    MicroAPI::RegTensor<float> tmpVreg;
-    MicroAPI::RegTensor<T> castReg;
+    Reg::MaskReg pregCnt;
+    Reg::MaskReg pregFull = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
+    Reg::MaskReg pregOneBlk = Reg::CreateMask<uint32_t, Reg::MaskPattern::VL8>();
+    Reg::RegTensor<float> srcVreg;
+    Reg::RegTensor<float> gradVreg;
+    Reg::RegTensor<float> sumVreg;
+    Reg::RegTensor<float> tmpVreg;
+    Reg::RegTensor<T> castReg;
 
     for (uint16_t i = 0; i < kRepeatInner; ++i) {
         Duplicate(sumVreg, 0);
         for (uint16_t j = 0; j < kOuter; ++j) {
             LoadIfNeedCast<T>(srcVreg, srcUb + i * FLOAT_REPEAT_SIZE + j * dataPadInner, pregFull);
             LoadIfNeedCast<T>(gradVreg, gradUb + i * FLOAT_REPEAT_SIZE + j * dataPadInner, pregFull);
-            MicroAPI::Mul(tmpVreg, gradVreg, srcVreg, pregFull);
-            MicroAPI::Add(sumVreg, sumVreg, tmpVreg, pregFull);
+            Reg::Mul(tmpVreg, gradVreg, srcVreg, pregFull);
+            Reg::Add(sumVreg, sumVreg, tmpVreg, pregFull);
         }
-        MicroAPI::ReduceSumWithDataBlock(sumVreg, sumVreg, pregFull);
-        MicroAPI::DataCopy(workUb + i * DEFAULT_BLK_NUM, sumVreg, pregOneBlk);
+        Reg::ReduceSumWithDataBlock(sumVreg, sumVreg, pregFull);
+        Reg::DataCopy(workUb + i * DEFAULT_BLK_NUM, sumVreg, pregOneBlk);
     }
 
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     for (uint16_t i = 0; i < VcgFoldRepeat; i++) {
-        MicroAPI::DataCopy<float, MicroAPI::LoadDist::DIST_DINTLV_B32>(
+        Reg::DataCopy<float, Reg::LoadDist::DIST_DINTLV_B32>(
             sumVreg, tmpVreg, workUb + i * HALF_REPEAT_SIZE);
-        MicroAPI::Add(sumVreg, sumVreg, tmpVreg, pregFull);
+        Reg::Add(sumVreg, sumVreg, tmpVreg, pregFull);
         if constexpr (isFront) {
             StoreIfNeedCast<T>(workUbFront + i * FLOAT_REPEAT_SIZE, sumVreg, pregFull);
         } else {
-            MicroAPI::DataCopy<float, MicroAPI::StoreDist::DIST_INTLV_B32>(
+            Reg::DataCopy<float, Reg::StoreDist::DIST_INTLV_B32>(
                 workUb + i * HALF_REPEAT_SIZE, sumVreg, sumVreg, pregFull);
         }
     }
 
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     if constexpr (isFront) {
         uint32_t sreg = oriM * dtypeBlkStride;
         for (uint16_t i = 0; i < e2bRep; ++i) {
-            pregCnt = MicroAPI::UpdateMask<T>(sreg);
+            pregCnt = Reg::UpdateMask<T>(sreg);
             LoadE2B<T>(castReg, workUbFront + i * DEFAULT_BLK_NUM);
-            MicroAPI::DataCopy(dstUb + i * dtypeRepStride, castReg, pregCnt);
+            Reg::DataCopy(dstUb + i * dtypeRepStride, castReg, pregCnt);
         }
     } else {
         for (uint16_t j = 0; j < kOuter; ++j) {
             uint32_t sreg = dataLenInner;
             for (uint16_t i = 0; i < kRepeatInner; ++i) {
-                pregCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
+                pregCnt = Reg::UpdateMask<uint32_t>(sreg);
                 LoadIfNeedCast<T>(srcVreg, srcUb + j * dataPadInner + i * FLOAT_REPEAT_SIZE, pregFull);
                 LoadIfNeedCast<T>(gradVreg, gradUb + j * dataPadInner + i * FLOAT_REPEAT_SIZE, pregFull);
                 LoadE2B<float>(sumVreg, workUb + i * DEFAULT_BLK_NUM);
-                MicroAPI::Sub(tmpVreg, gradVreg, sumVreg, pregCnt);
-                MicroAPI::Mul(tmpVreg, srcVreg, tmpVreg, pregCnt);
+                Reg::Sub(tmpVreg, gradVreg, sumVreg, pregCnt);
+                Reg::Mul(tmpVreg, srcVreg, tmpVreg, pregCnt);
                 StoreIfNeedCast<T>(dstUb + j * dataPadInner + i * FLOAT_REPEAT_SIZE, tmpVreg, pregCnt);
             }
         }
@@ -237,29 +244,29 @@ __simd_vf__ inline void SoftMaxGradGenericNDVFImpl(__ubuf__ T *dstUb, __ubuf__ T
     uint16_t oriK = originalSrcShape.k;
     uint16_t repeatTimes = (srcK + FLOAT_REPEAT_SIZE - 1) / FLOAT_REPEAT_SIZE;
 
-    MicroAPI::MaskReg pregCnt;
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::MaskReg pregOneBlk;
+    Reg::MaskReg pregCnt;
+    Reg::MaskReg pregFull = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
+    Reg::MaskReg pregOneBlk;
     if constexpr (IsSameType<T, half>::value) {
-        pregOneBlk = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL16>();
+        pregOneBlk = Reg::CreateMask<uint32_t, Reg::MaskPattern::VL16>();
     } else {
-        pregOneBlk = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL8>();
+        pregOneBlk = Reg::CreateMask<uint32_t, Reg::MaskPattern::VL8>();
     }
-    MicroAPI::RegTensor<float> srcVreg;
-    MicroAPI::RegTensor<float> gradVreg;
-    MicroAPI::RegTensor<float> sumVreg;
-    MicroAPI::RegTensor<float> tmpVreg;
+    Reg::RegTensor<float> srcVreg;
+    Reg::RegTensor<float> gradVreg;
+    Reg::RegTensor<float> sumVreg;
+    Reg::RegTensor<float> tmpVreg;
     for (uint16_t i = 0; i < srcM; ++i) {
         uint32_t sreg = oriK;
         Duplicate(sumVreg, 0);
         for (uint16_t j = 0; j < repeatTimes; ++j) {
-            pregCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
+            pregCnt = Reg::UpdateMask<uint32_t>(sreg);
             LoadIfNeedCast<T>(srcVreg, srcUb + i * srcK + j * FLOAT_REPEAT_SIZE, pregFull);
             LoadIfNeedCast<T>(gradVreg, gradUb + i * srcK + j * FLOAT_REPEAT_SIZE, pregFull);
-            MicroAPI::Mul(tmpVreg, gradVreg, srcVreg, pregCnt);
-            MicroAPI::Add(sumVreg, sumVreg, tmpVreg, pregFull);
+            Reg::Mul(tmpVreg, gradVreg, srcVreg, pregCnt);
+            Reg::Add(sumVreg, sumVreg, tmpVreg, pregFull);
         }
-        MicroAPI::ReduceSum(tmpVreg, sumVreg, pregFull);
+        Reg::ReduceSum(tmpVreg, sumVreg, pregFull);
         if constexpr (isFront) {
             Duplicate(tmpVreg, tmpVreg, pregOneBlk);
             StoreIfNeedCast<T>(dstUb + i * blockStride, tmpVreg, pregOneBlk);
@@ -267,11 +274,11 @@ __simd_vf__ inline void SoftMaxGradGenericNDVFImpl(__ubuf__ T *dstUb, __ubuf__ T
             Duplicate(sumVreg, tmpVreg, pregFull);
             sreg = oriK;
             for (uint16_t j = 0; j < repeatTimes; ++j) {
-                pregCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
+                pregCnt = Reg::UpdateMask<uint32_t>(sreg);
                 LoadIfNeedCast<T>(srcVreg, srcUb + i * srcK + j * FLOAT_REPEAT_SIZE, pregFull);
                 LoadIfNeedCast<T>(gradVreg, gradUb + i * srcK + j * FLOAT_REPEAT_SIZE, pregFull);
-                MicroAPI::Sub(tmpVreg, gradVreg, sumVreg, pregCnt);
-                MicroAPI::Mul(tmpVreg, srcVreg, tmpVreg, pregCnt);
+                Reg::Sub(tmpVreg, gradVreg, sumVreg, pregCnt);
+                Reg::Mul(tmpVreg, srcVreg, tmpVreg, pregCnt);
                 StoreIfNeedCast<T>(dstUb + i * srcK + j * FLOAT_REPEAT_SIZE, tmpVreg, pregCnt);
             }
         }
@@ -348,3 +355,7 @@ __aicore__ inline void SoftmaxGradFrontNDImpl(const LocalTensor<T> &dst, const L
 }
 }  // namespace AscendC
 #endif  // IMPL_ACTIVATION_SOFTMAX_L300_SOFTMAX_GRAD_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_GRAD_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_GRAD_IMPL_H__
+#endif

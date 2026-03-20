@@ -13,6 +13,12 @@
  * \brief
  */
 
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SORT_H__
+#endif
+
 #ifndef LIB_SORT_SORT_H
 #define LIB_SORT_SORT_H
 
@@ -65,7 +71,7 @@ template <typename T, typename U, bool isReuseSource = false, const SortConfig& 
 __aicore__ inline void Sort(LocalTensor<T>& dstTensor, LocalTensor<U>& dstIndexTensor, const LocalTensor<T>& srcTensor,
     const LocalTensor<U>& srcIndexTensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
-    MicroAPI::internal::SortImpl<T, U, isReuseSource, config>(
+    Reg::internal::SortImpl<T, U, isReuseSource, config>(
         dstTensor, dstIndexTensor, srcTensor, srcIndexTensor, sharedTmpBuffer, calCount);
 }
 
@@ -88,7 +94,7 @@ template <typename T, typename U, bool isReuseSource = false, const SortConfig& 
 __aicore__ inline void Sort(const LocalTensor<T>& dstTensor, const LocalTensor<U>& dstIndexTensor,
     const LocalTensor<T>& srcTensor, const LocalTensor<U>& srcIndexTensor, const uint32_t calCount)
 {
-    MicroAPI::internal::SortImpl<T, U, isReuseSource, config>(
+    Reg::internal::SortImpl<T, U, isReuseSource, config>(
         dstTensor, dstIndexTensor, srcTensor, srcIndexTensor, calCount);
 }
 
@@ -113,7 +119,7 @@ template <typename T, bool isReuseSource = false, const SortConfig& config = DEF
 __aicore__ inline void Sort(LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
-    MicroAPI::internal::SortImpl<T, isReuseSource, config>(dstTensor, srcTensor, sharedTmpBuffer, calCount);
+    Reg::internal::SortImpl<T, isReuseSource, config>(dstTensor, srcTensor, sharedTmpBuffer, calCount);
 }
 
 /* !
@@ -131,7 +137,7 @@ __aicore__ inline void Sort(LocalTensor<T>& dstTensor, const LocalTensor<T>& src
 template <typename T, bool isReuseSource = false, const SortConfig& config = DEFAULT_SORT_CONFIG>
 __aicore__ inline void Sort(LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
-    MicroAPI::internal::SortImpl<T, isReuseSource, config>(dstTensor, srcTensor, calCount);
+    Reg::internal::SortImpl<T, isReuseSource, config>(dstTensor, srcTensor, calCount);
 }
 
 /* !
@@ -156,7 +162,7 @@ template <typename T, bool isReuseSource = false, const SortConfig& config = DEF
 __aicore__ inline void Sort(LocalTensor<T>& dstTensor, LocalTensor<uint32_t>& dstIndexTensor,
     const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
-    MicroAPI::internal::SortImpl<T, isReuseSource, config>(
+    Reg::internal::SortImpl<T, isReuseSource, config>(
         dstTensor, dstIndexTensor, srcTensor, sharedTmpBuffer, calCount);
 }
 
@@ -177,10 +183,15 @@ template <typename T, bool isReuseSource = false, const SortConfig& config = DEF
 __aicore__ inline void Sort(LocalTensor<T>& dstTensor, LocalTensor<uint32_t>& dstIndexTensor,
     const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
-    MicroAPI::internal::SortImpl<T, isReuseSource, config>(dstTensor, dstIndexTensor, srcTensor, calCount);
+    Reg::internal::SortImpl<T, isReuseSource, config>(dstTensor, dstIndexTensor, srcTensor, calCount);
 }
 
 #pragma end_pipe
 } // namespace AscendC
 #endif
 #endif // LIB_SORT_SORT_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SORT_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SORT_H__
+#endif

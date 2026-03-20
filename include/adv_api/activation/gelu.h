@@ -12,6 +12,12 @@
  * \file gelu.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GELU_H__
+#endif
+
 #ifndef LIB_GELU_GELU_H
 #define LIB_GELU_GELU_H
 #include "kernel_tensor.h"
@@ -153,3 +159,8 @@ __aicore__ inline void FasterGeluV2(const LocalTensor<T>& dstLocal, const LocalT
 #pragma end_pipe
 } // namespace AscendC
 #endif // LIB_GELU_GELU_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GELU_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GELU_H__
+#endif

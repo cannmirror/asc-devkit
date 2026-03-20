@@ -46,6 +46,13 @@ __simd_callee__ inline void asc_select_impl(vector_fp8_e4m3fn_t& dst, vector_fp8
     }
 }
 
+__simd_callee__ inline void asc_select_impl(vector_hifloat8_t& dst, vector_hifloat8_t src0, vector_hifloat8_t src1, vector_bool mask)
+{
+    if ASC_IS_AIV {
+        vsel(reinterpret_cast<vector_uint8_t&>(dst), *reinterpret_cast<vector_uint8_t*>(&src0), *reinterpret_cast<vector_uint8_t*>(&src1), mask);
+    }
+}
+
 __simd_callee__ inline void asc_select_impl(vector_fp8_e5m2_t& dst, vector_fp8_e5m2_t src0, vector_fp8_e5m2_t src1, vector_bool mask)
 {
     if ASC_IS_AIV {

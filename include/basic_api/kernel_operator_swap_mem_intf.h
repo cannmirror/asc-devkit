@@ -12,6 +12,11 @@
  * \file kernel_operator_swap_mem_intf.h
  * \brief Interface for memory swap and workspace management
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_SWAP_MEM_INTF_H__
+#endif
+
 
 #ifndef ASCENDC_MODULE_SWAP_MEM_INTF_H
 #define ASCENDC_MODULE_SWAP_MEM_INTF_H
@@ -63,3 +68,8 @@ __aicore__ inline void SetSysWorkSpacePtr(__gm__ uint8_t* workspace)
 }
 #endif
 #endif // ASCENDC_KERNEL_SWAP_MEM_INTF_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_SWAP_MEM_INTF_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_SWAP_MEM_INTF_H__
+#endif

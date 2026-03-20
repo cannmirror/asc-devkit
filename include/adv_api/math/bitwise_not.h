@@ -13,6 +13,12 @@
  * \brief
  */
 
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BITWISE_NOT_H__
+#endif
+
 #ifndef LIB_MATH_BITWISE_NOT_H
 #define LIB_MATH_BITWISE_NOT_H
 
@@ -37,3 +43,8 @@ __aicore__ inline void BitwiseNot(const LocalTensor<T>& dst, const LocalTensor<T
 } // namespace AscendC
 #endif
 #endif // LIB_MATH_BITWISE_NOT_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BITWISE_NOT_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BITWISE_NOT_H__
+#endif

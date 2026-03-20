@@ -13,7 +13,7 @@
 #include "tests/api/c_api/stub/cce_stub.h"
 #include "include/c_api/asc_simd.h"
 
-#define TEST_VECTOR_DATAMOVE_LOAD_INSTR(class_name, c_api_name, cce_name0, cce_name1, data_type)            \
+#define TEST_VECTOR_DATAMOVE_LOAD_INSTR(class_name, c_api_name, cce_name0, cce_name1, data_type, cce_data_type)            \
                                                                                                 \
 class TestVectorDataMove##class_name##_##data_type##_CApi : public testing::Test {                 \
 protected:                                                                                      \
@@ -22,8 +22,8 @@ protected:                                                                      
 };                                                                                              \
                                                                                                 \
 namespace {                                                                                     \
-void cce_name1##_##data_type##_Stub1(vector_load_align& src0, __ubuf__ data_type *src1) {}                                                          \
-void cce_name0##_##data_type##_Stub0(vector_##data_type& dst, vector_load_align& src0, __ubuf__ data_type *src1) {}                                                          \
+void cce_name1##_##data_type##_Stub1(vector_load_align& src0, __ubuf__ cce_data_type *src1) {}                                                          \
+void cce_name0##_##data_type##_Stub0(vector_##cce_data_type& dst, vector_load_align& src0, __ubuf__ cce_data_type *src1) {}                                                          \
 }                                                                                               \
                                                                                                 \
 TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_type##_Succ)       \
@@ -31,11 +31,11 @@ TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_
     __ubuf__ data_type *src = reinterpret_cast<__ubuf__ data_type *>(0);               \
     vector_##data_type dst;                                                                             \
                                                                                                 \
-    MOCKER_CPP(cce_name1, void(vector_load_align&, __ubuf__ data_type *))                     \
+    MOCKER_CPP(cce_name1, void(vector_load_align&, __ubuf__ cce_data_type *))                     \
         .times(1)                                                                               \
         .will(invoke(cce_name1##_##data_type##_Stub1));                                           \
                                                                                                 \
-    MOCKER_CPP(cce_name0, void(vector_##data_type&, vector_store_align&, __ubuf__ data_type *))                     \
+    MOCKER_CPP(cce_name0, void(vector_##cce_data_type&, vector_store_align&, __ubuf__ cce_data_type *))                     \
         .times(1)                                                                               \
         .will(invoke(cce_name0##_##data_type##_Stub0));                                           \
                                                                                                 \
@@ -43,18 +43,19 @@ TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 
-TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, int8_t);
-TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, uint8_t);
-TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, int16_t);
-TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, uint16_t);
-TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, int32_t);
-TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, uint32_t);
-TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, int64_t);
-TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, half);
-TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, float);
-TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, bfloat16_t);
-TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, fp8_e4m3fn_t);
-TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, fp8_e5m2_t);
-TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, fp8_e8m0_t);
-TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, fp4x2_e2m1_t);
-TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, fp4x2_e1m2_t);
+TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, int8_t, int8_t);
+TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, uint8_t, uint8_t);
+TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, int16_t, int16_t);
+TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, uint16_t, uint16_t);
+TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, int32_t, int32_t);
+TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, uint32_t, uint32_t);
+TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, int64_t, int64_t);
+TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, half, half);
+TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, float, float);
+TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, bfloat16_t, bfloat16_t);
+TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, fp8_e4m3fn_t, fp8_e4m3fn_t);
+TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, hifloat8_t, uint8_t);
+TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, fp8_e5m2_t, fp8_e5m2_t);
+TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, fp8_e8m0_t, fp8_e8m0_t);
+TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, fp4x2_e2m1_t, fp4x2_e2m1_t);
+TEST_VECTOR_DATAMOVE_LOAD_INSTR(Vldasandvldus, asc_load, vldus, vldas, fp4x2_e1m2_t, fp4x2_e1m2_t);

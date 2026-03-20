@@ -12,6 +12,12 @@
  * \file clamp.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_CLAMP_H__
+#endif
+
 #ifndef LIB_MATH_CLAMP_H
 #define LIB_MATH_CLAMP_H
 #include "kernel_tensor.h"
@@ -136,3 +142,8 @@ __aicore__ inline void Clamp(const LocalTensor<T>& dst, const LocalTensor<T>& sr
 } // namespace AscendC
 #endif
 #endif // LIB_MATH_CLAMP_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_CLAMP_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_CLAMP_H__
+#endif

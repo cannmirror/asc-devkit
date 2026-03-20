@@ -27,21 +27,21 @@
   <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="6" align="center">BatchMatmulCustom</td></tr>
   </tr>
   <tr><td rowspan="4" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">isTrans</td><td align="center">layout</td></tr>
-  <tr><td align="center">a</td><td align="center">M * K</td><td align="center">float16</td><td align="center">ND</td><td align="center">false</td><td align="center">BSNGD</td></tr>
-  <tr><td align="center">b</td><td align="center">K * N</td><td align="center">float16</td><td align="center">ND</td><td align="center">true</td><td align="center">BSNGD</td></tr>
-  <tr><td align="center">bias</td><td align="center">N</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td><td align="center">-</td></tr>
+  <tr><td align="center">a</td><td align="center">[2, 32, 1, 3, 64]</td><td align="center">float16</td><td align="center">ND</td><td align="center">false</td><td align="center">BSNGD</td></tr>
+  <tr><td align="center">b</td><td align="center">[2, 256, 1, 3, 64]</td><td align="center">float16</td><td align="center">ND</td><td align="center">true</td><td align="center">BSNGD</td></tr>
+  <tr><td align="center">bias</td><td align="center">[2, 1, 1, 3, 256]</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td><td align="center">-</td></tr>
   </tr>
   </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">M * N</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td><td align="center">BSNGD</td></tr>
+  <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">[2, 32, 1, 3, 256]</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td><td align="center">BSNGD</td></tr>
   </tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="6" align="center">batch_matmul_custom</td></tr>
   </table>
 - 算子实现：  
   - Kernel实现
     - 一次完成batchNum个Matmul矩阵乘法的运算。单次MatMul的计算公式为：C = A * B + Bias。
-      - A、B为源操作数，A为左矩阵，形状为[M, K]；B为右矩阵，形状为[K, N]。
-      - C为目的操作数，存放矩阵乘结果的矩阵，形状为[M, N]。
-      - Bias为矩阵乘偏置，形状为[1, N]。对A*B结果矩阵的每一行都采用该bias进行偏置。
+      - A、B为源操作数，A为左矩阵，形状为[2, 32, 1, 3, 64]；B为右矩阵，形状为[2, 256, 1, 3, 64]。
+      - C为目的操作数，存放矩阵乘结果的矩阵，形状为[2, 32, 1, 3, 256]。
+      - Bias为矩阵乘偏置，形状为[2, 1, 1, 3, 256]。对A*B结果矩阵的每一行都采用该bias进行偏置。
     - 实现Matmul矩阵乘运算的具体步骤如下：
       - 创建Matmul对象。
       - 初始化操作。

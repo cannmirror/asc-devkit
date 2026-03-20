@@ -12,6 +12,11 @@
  * \file kernel_operator_vec_createvecindex_impl.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/dav_m510/kernel_operator_vec_createvecindex_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_tensor.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_CREATEVECINDEX_IMPL_H__
+#endif
 
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_CREATEVECINDEX_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_CREATEVECINDEX_IMPL_H
@@ -43,20 +48,20 @@ __aicore__ inline void VecCreateVecIndexLevel0VFImpl(__ubuf__ T *dst, const T fi
     constexpr uint32_t sreg = GetVecLen() / sizeof(T);
     uint32_t count = VecMicroGetCount<true, isNormalMode, isMaskBitMode>(maskArray, maskCount, maskBuf);
     uint16_t newRepeatTimes = VecMicroGetRepeatTimes<T, isNormalMode>(count, repeatTime);
-    MicroAPI::MaskReg maskReg;
+    Reg::MaskReg maskReg;
     if constexpr (isNormalMode) {
         maskReg = VecMicroGetMaskReg<T, true, isNormalMode, isMaskBitMode>(maskBuf, count);
     }
     constexpr uint8_t ElePerBlkT = GetDataBlockSizeInBytes() / sizeof(T);
-    MicroAPI::RegTensor<T> dstVreg;
-    MicroAPI::Arange(dstVreg, firstValue);
+    Reg::RegTensor<T> dstVreg;
+    Reg::Arange(dstVreg, firstValue);
     for (uint16_t index = 0; index < newRepeatTimes; ++index) {
         if constexpr (!isNormalMode) {
             maskReg = VecMicroGetMaskReg<T, true, isNormalMode, isMaskBitMode>(maskBuf, count);
         }
-        MicroAPI::StoreAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+        Reg::StoreAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(
             dst + index * dstRepStride * ElePerBlkT, dstVreg, dstBlkStride, maskReg);
-        MicroAPI::Adds(dstVreg, dstVreg, sreg, maskReg);
+        Reg::Adds(dstVreg, dstVreg, sreg, maskReg);
     }
 }
  
@@ -118,13 +123,13 @@ __aicore__ inline void CreateVecIndexCalc(LocalTensor<T> dstLocal, const T first
 
     __VEC_SCOPE__
     {
-        MicroAPI::RegTensor<T> vreg0;
-        MicroAPI::MaskReg preg;
-        MicroAPI::Arange(vreg0, firstValue);
+        Reg::RegTensor<T> vreg0;
+        Reg::MaskReg preg;
+        Reg::Arange(vreg0, firstValue);
         for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
-            preg = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::StoreAlign(dstLocalAddr + i * sregLower, vreg0, preg);
-            MicroAPI::Adds(vreg0, vreg0, sregLower, preg);
+            preg = Reg::UpdateMask<T>(sreg);
+            Reg::StoreAlign(dstLocalAddr + i * sregLower, vreg0, preg);
+            Reg::Adds(vreg0, vreg0, sregLower, preg);
         }
     }
 }
@@ -134,18 +139,22 @@ __aicore__ inline void CreateVecIndexCalc(LocalTensor<int64_t> dstLocal, const i
     __ubuf__ int64_t* dstLocalAddr = (__ubuf__ int64_t*)dstLocal.GetPhyAddr();
     __VEC_SCOPE__
     {
-        MicroAPI::RegTensor<int64_t, MicroAPI::RegTraitNumTwo> vreg0;
+        Reg::RegTensor<int64_t, Reg::RegTraitNumTwo> vreg0;
         uint32_t sreg = (uint32_t)calCount;
-        MicroAPI::MaskReg preg;
+        Reg::MaskReg preg;
         uint32_t sregLower = (uint32_t)64;
         uint16_t repeatTime = CeilDivision(calCount, 64);
         for (uint16_t i = 0; i < repeatTime; ++i) {
-            preg = MicroAPI::UpdateMask<int64_t, MicroAPI::RegTraitNumTwo>(sreg);
+            preg = Reg::UpdateMask<int64_t, Reg::RegTraitNumTwo>(sreg);
             int64_t offset = static_cast<int64_t>(firstValue + i * 64);
-            MicroAPI::Arange(vreg0, offset);
-            MicroAPI::StoreAlign(dstLocalAddr + i * sregLower, vreg0, preg);
+            Reg::Arange(vreg0, offset);
+            Reg::StoreAlign(dstLocalAddr + i * sregLower, vreg0, preg);
         }
     }
 }
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_VEC_CREATEVECINDEX_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_CREATEVECINDEX_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_CREATEVECINDEX_IMPL_H__
+#endif

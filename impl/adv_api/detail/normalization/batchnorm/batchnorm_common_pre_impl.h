@@ -12,6 +12,12 @@
  * \file batchnorm_common_pre_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/normalization/batchnorm/batchnorm_common_pre_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_BATCHNORM_BATCHNORM_COMMON_PRE_IMPL_H__
+#endif
 #ifndef IMPL_NORMALIZATION_BATCHNORM_BATCHNORM_COMMON_PRE_IMPL_H
 #define IMPL_NORMALIZATION_BATCHNORM_BATCHNORM_COMMON_PRE_IMPL_H
 #include "kernel_tensor.h"
@@ -315,11 +321,11 @@ __aicore__ inline void GetBatchNormOutputVarianceNorm(const LocalTensor<float>& 
             MASK_PLACEHOLDER, 1, binaryParams);
     }
     PipeBarrier<PIPE_V>();
-    // 2„ÄÅ(x-meanX)*(x-meanX)   shape:[b,s,h]
+    // 2„Ä?x-meanX)*(x-meanX)   shape:[b,s,h]
     SetVectorMask<float, MaskMode::COUNTER>(0, tiling.bshCurLength);
     Mul<float, false>(params.tempTensorB, params.tempTensorC, params.tempTensorC, MASK_PLACEHOLDER, 1, binaryParams);
     PipeBarrier<PIPE_V>();
-    // 3„ÄÅ(x-meanX)*(x-meanX) * (1/m)  shape:[b,s,h]
+    // 3„Ä?x-meanX)*(x-meanX) * (1/m)  shape:[b,s,h]
     Muls<float, false>(params.tempTensorA, params.tempTensorB, params.firstDimValueBack, MASK_PLACEHOLDER, 1,
         mulsUnaryParams);
     PipeBarrier<PIPE_V>();
@@ -409,3 +415,8 @@ __aicore__ inline void GetBatchNormOutputPre(const LocalTensor<float>& src, cons
 } // namespace BatchNormAPI
 } // namespace AscendC
 #endif // IMPL_NORMALIZATION_BATCHNORM_BATCHNORM_COMMON_PRE_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_BATCHNORM_BATCHNORM_COMMON_PRE_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_BATCHNORM_BATCHNORM_COMMON_PRE_IMPL_H__
+#endif

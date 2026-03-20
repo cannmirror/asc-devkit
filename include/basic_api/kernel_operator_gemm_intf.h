@@ -12,6 +12,11 @@
  * \file kernel_operator_gemm_intf.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_GEMM_INTF_H__
+#endif
+
 #ifndef ASCENDC_MODULE_OPERATOR_GEMM_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_GEMM_INTERFACE_H
 
@@ -62,3 +67,8 @@ __aicore__ inline __inout_pipe__(V) void Gemm(const LocalTensor<T>& dst, const L
 
 #include "../../impl/basic_api/kernel_operator_gemm_intf_impl.h"
 #endif // ASCENDC_MODULE_OPERATOR_GEMM_INTERFACE_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_GEMM_INTF_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_GEMM_INTF_H__
+#endif

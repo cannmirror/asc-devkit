@@ -12,6 +12,12 @@
  * \file topk.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TOPK_H__
+#endif
+
 #ifndef LIB_SORT_TOPK_H
 #define LIB_SORT_TOPK_H
 
@@ -96,12 +102,12 @@ __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTens
             "topk radix select algorithm.");
         static_assert((!isHasfinish), "Topk radix select algorithm cannot support to set finish flag.");
         if constexpr (topkMode == TopKMode::TOPK_NORMAL) {
-            MicroAPI::RadixSelectTopK::TopKNormal<T, isInitIndex, isHasfinish, isReuseSrc, config>(dstValueLocal,
+            Reg::RadixSelectTopK::TopKNormal<T, isInitIndex, isHasfinish, isReuseSrc, config>(dstValueLocal,
                 dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, tempBuffer, k, tilling, topKInfo, isLargest);
         }
 
         if constexpr (topkMode == TopKMode::TOPK_NSMALL) {
-            MicroAPI::RadixSelectTopK::TopKNSmall<T, isInitIndex, isHasfinish, isReuseSrc, config>(dstValueLocal,
+            Reg::RadixSelectTopK::TopKNSmall<T, isInitIndex, isHasfinish, isReuseSrc, config>(dstValueLocal,
                 dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, tempBuffer, k, tilling, topKInfo, isLargest);
         }
         return;
@@ -183,12 +189,12 @@ __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTens
             "topk radix select algorithm.");
         static_assert((!isHasfinish), "Topk radix select algorithm cannot support to set finish flag.");
         if constexpr (topkMode == TopKMode::TOPK_NORMAL) {
-            MicroAPI::RadixSelectTopK::TopKNormal<T, isInitIndex, isHasfinish, isReuseSrc, config>(dstValueLocal,
+            Reg::RadixSelectTopK::TopKNormal<T, isInitIndex, isHasfinish, isReuseSrc, config>(dstValueLocal,
                 dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, stackTensor, k, tilling, topKInfo, isLargest);
         }
 
         if constexpr (topkMode == TopKMode::TOPK_NSMALL) {
-            MicroAPI::RadixSelectTopK::TopKNSmall<T, isInitIndex, isHasfinish, isReuseSrc, config>(dstValueLocal,
+            Reg::RadixSelectTopK::TopKNSmall<T, isInitIndex, isHasfinish, isReuseSrc, config>(dstValueLocal,
                 dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, stackTensor, k, tilling, topKInfo, isLargest);
         }
         return;
@@ -317,3 +323,8 @@ __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTens
 #endif
 
 #endif  // LIB_SORT_TOPK_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TOPK_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TOPK_H__
+#endif

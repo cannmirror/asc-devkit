@@ -12,6 +12,13 @@
  * \file sum_c310_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/reduce/sum/sum_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/sum.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_SUM_SUM_C310_IMPL_H__
+#endif
+
 #ifndef IMPL_REDUCE_SUM_C310_IMPL_H
 #define IMPL_REDUCE_SUM_C310_IMPL_H
 
@@ -26,18 +33,18 @@ __simd_vf__ inline void SumForOneRepeatTime(
     __ubuf__ T* dstUb, __ubuf__ T* srcUb, const SumParams sumParams, uint32_t count, uint32_t offset)
 {
     uint32_t calCount;
-    MicroAPI::MaskReg mask;
-    MicroAPI::UnalignReg uregOut;
-    MicroAPI::RegTensor<T> srcReg, dstReg;
+    Reg::MaskReg mask;
+    Reg::UnalignReg uregOut;
+    Reg::RegTensor<T> srcReg, dstReg;
 
     for (int i = 0; i < sumParams.outter; i++) {
         calCount = count;
-        mask = MicroAPI::UpdateMask<T>(calCount);
-        MicroAPI::LoadAlign(srcReg, srcUb + i * offset);
-        MicroAPI::ReduceSum(dstReg, srcReg, mask);
-        MicroAPI::StoreUnAlign<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dstUb, dstReg, uregOut, 1);
+        mask = Reg::UpdateMask<T>(calCount);
+        Reg::LoadAlign(srcReg, srcUb + i * offset);
+        Reg::ReduceSum(dstReg, srcReg, mask);
+        Reg::StoreUnAlign<T, Reg::PostLiteral::POST_MODE_UPDATE>(dstUb, dstReg, uregOut, 1);
     }
-    MicroAPI::StoreUnAlignPost(dstUb, uregOut, 0);
+    Reg::StoreUnAlignPost(dstUb, uregOut, 0);
 }
 
 template <typename T, bool isFirstRepeat>
@@ -45,26 +52,26 @@ __simd_vf__ inline void ReduceSumNextN(__ubuf__ T* dstUb, __ubuf__ T* srcUb, con
     uint32_t calCount, uint32_t repeatTimes, uint32_t offset)
 {
     uint32_t count;
-    MicroAPI::MaskReg mask;
-    MicroAPI::UnalignReg uregIn;
-    MicroAPI::RegTensor<T> srcReg, dstReg;
+    Reg::MaskReg mask;
+    Reg::UnalignReg uregIn;
+    Reg::RegTensor<T> srcReg, dstReg;
     constexpr int32_t eleCountPerVL = GetVecLen() / sizeof(T);
     for (uint16_t i = 0; i < sumParams.outter; i++) {
         count = calCount;
         auto dstTmpUb = dstUb + i * offset;
         for (uint16_t j = 0; j < repeatTimes; j++) {
-            mask = MicroAPI::UpdateMask<T>(count);
+            mask = Reg::UpdateMask<T>(count);
             if constexpr (isFirstRepeat) {
-                MicroAPI::LoadAlign(srcReg, srcUb + i * sumParams.inner + j * eleCountPerVL);
+                Reg::LoadAlign(srcReg, srcUb + i * sumParams.inner + j * eleCountPerVL);
             } else {
-                MicroAPI::LoadAlign(srcReg, srcUb + i * offset + j * eleCountPerVL);
+                Reg::LoadAlign(srcReg, srcUb + i * offset + j * eleCountPerVL);
             }
-            MicroAPI::ReduceSum(dstReg, srcReg, mask);
-            MicroAPI::StoreUnAlign<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(dstTmpUb, dstReg, uregIn, 1);
+            Reg::ReduceSum(dstReg, srcReg, mask);
+            Reg::StoreUnAlign<T, Reg::PostLiteral::POST_MODE_UPDATE>(dstTmpUb, dstReg, uregIn, 1);
         }
-        MicroAPI::StoreUnAlignPost(dstTmpUb, uregIn, 0);
+        Reg::StoreUnAlignPost(dstTmpUb, uregIn, 0);
     }
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 }
 } // namespace SumInternal
 
@@ -135,3 +142,8 @@ __aicore__ inline void SumCompute(const LocalTensor<T>& dstTensor, const LocalTe
 } // namespace AscendC
 
 #endif // IMPL_REDUCE_SUM_C310_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_SUM_SUM_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_SUM_SUM_C310_IMPL_H__
+#endif

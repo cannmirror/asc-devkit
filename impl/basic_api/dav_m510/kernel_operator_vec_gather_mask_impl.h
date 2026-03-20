@@ -12,6 +12,11 @@
  * \file kernel_operator_vec_gather_mask_impl.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/dav_m510/kernel_operator_vec_gather_mask_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_vec_intf.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_GATHER_MASK_IMPL_H__
+#endif
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_GATHER_MASK_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_GATHER_MASK_IMPL_H
 #include "kernel_struct_gather.h"
@@ -30,15 +35,15 @@ __aicore__ inline void GatherMaskAllNormal(
     constexpr uint32_t ElePerVec = GetVecLen() / sizeof(T);
     __VEC_SCOPE__
     {
-        MicroAPI::RegTensor<T> srcReg;
-        MicroAPI::MaskReg loadMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL>();
-        MicroAPI::UnalignReg ureg;
+        Reg::RegTensor<T> srcReg;
+        Reg::MaskReg loadMask = Reg::CreateMask<T, Reg::MaskPattern::ALL>();
+        Reg::UnalignReg ureg;
         for (uint16_t i = 0; i < reducev2Params.repeatTimes; ++i) {
-            MicroAPI::LoadAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
+            Reg::LoadAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY, Reg::PostLiteral::POST_MODE_UPDATE>(
                 srcReg, src0, reducev2Params.src0BlockStride, reducev2Params.src0RepeatStride, loadMask);
-            MicroAPI::StoreUnAlign(dst, srcReg, ureg, ElePerVec);
+            Reg::StoreUnAlign(dst, srcReg, ureg, ElePerVec);
         }
-        MicroAPI::StoreUnAlignPost(dst, ureg, 0);
+        Reg::StoreUnAlignPost(dst, ureg, 0);
     }
     rsvdCnt = ElePerVec * reducev2Params.repeatTimes;
 }
@@ -53,30 +58,30 @@ __aicore__ inline void GatherMaskAllReduce(
     uint32_t maskValue = mask;
     __VEC_SCOPE__
     {
-        MicroAPI::RegTensor<T> srcReg;
-        MicroAPI::RegTensor<T> dstReg;
-        MicroAPI::MaskReg loadMask;
-        MicroAPI::UnalignReg ureg;
-        MicroAPI::ClearSpr<SpecialPurposeReg::AR>();
+        Reg::RegTensor<T> srcReg;
+        Reg::RegTensor<T> dstReg;
+        Reg::MaskReg loadMask;
+        Reg::UnalignReg ureg;
+        Reg::ClearSpr<SpecialPurposeReg::AR>();
         for (uint16_t i = 0; i < reducev2Params.repeatTimes; ++i) {
             maskValue = mask;
             for (uint16_t j = 0; j < innerRepeatTimes; ++j) {
-                loadMask = MicroAPI::UpdateMask<T>(maskValue);
-                MicroAPI::LoadAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(srcReg,
+                loadMask = Reg::UpdateMask<T>(maskValue);
+                Reg::LoadAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(srcReg,
                     src0 + i * reducev2Params.src0RepeatStride * ElePerBlkT +
                         j * 8 * reducev2Params.src0BlockStride * ElePerBlkT,
                     reducev2Params.src0BlockStride,
                     loadMask);
                 if constexpr (SupportType<T, bfloat16_t>()) {
-                    MicroAPI::GatherMask<uint16_t, MicroAPI::GatherMaskMode::STORE_REG>(
-                        (MicroAPI::RegTensor<uint16_t> &)dstReg, (MicroAPI::RegTensor<uint16_t> &)srcReg, loadMask);
+                    Reg::GatherMask<uint16_t, Reg::GatherMaskMode::STORE_REG>(
+                        (Reg::RegTensor<uint16_t> &)dstReg, (Reg::RegTensor<uint16_t> &)srcReg, loadMask);
                 } else {
-                    MicroAPI::GatherMask<T, MicroAPI::GatherMaskMode::STORE_REG>(dstReg, srcReg, loadMask);
+                    Reg::GatherMask<T, Reg::GatherMaskMode::STORE_REG>(dstReg, srcReg, loadMask);
                 }
-                MicroAPI::StoreUnAlign(dst, dstReg, ureg);
+                Reg::StoreUnAlign(dst, dstReg, ureg);
             }
         }
-        MicroAPI::StoreUnAlignPost(dst, ureg);
+        Reg::StoreUnAlignPost(dst, ureg);
     }
     rsvdCnt = GetSpr<SpecialPurposeReg::AR>() / sizeof(T);
 }
@@ -119,47 +124,47 @@ __aicore__ inline void GatherMaskSqueezeNormal(
     __ubuf__ uint8_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint8_t>(GetRuntimeUBSize(), 32);
     __VEC_SCOPE__
     {
-        MicroAPI::RegTensor<T> dstReg;
-        MicroAPI::RegTensor<T> srcReg;
-        MicroAPI::MaskReg loadMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL>();
-        MicroAPI::UnalignReg ureg;
-        MicroAPI::MaskReg patternMask;
-        MicroAPI::ClearSpr<SpecialPurposeReg::AR>();
+        Reg::RegTensor<T> dstReg;
+        Reg::RegTensor<T> srcReg;
+        Reg::MaskReg loadMask = Reg::CreateMask<T, Reg::MaskPattern::ALL>();
+        Reg::UnalignReg ureg;
+        Reg::MaskReg patternMask;
+        Reg::ClearSpr<SpecialPurposeReg::AR>();
         if constexpr (sizeof(T) != 1) {
-            patternMask = MicroAPI::MoveMask<T>();
+            patternMask = Reg::MoveMask<T>();
         } else {
-            MicroAPI::RegTensor<uint8_t> patternReg;
-            MicroAPI::MaskReg tmpMask = MicroAPI::CreateMask<uint8_t, MicroAPI::MaskPattern::VL32>();
+            Reg::RegTensor<uint8_t> patternReg;
+            Reg::MaskReg tmpMask = Reg::CreateMask<uint8_t, Reg::MaskPattern::VL32>();
             if constexpr (solidPattern == 1) {
-                MicroAPI::Duplicate(patternReg, 0x55);
+                Reg::Duplicate(patternReg, 0x55);
             } else if constexpr (solidPattern == 2) {
-                MicroAPI::Duplicate(patternReg, 0xaa);
+                Reg::Duplicate(patternReg, 0xaa);
             } else if constexpr (solidPattern == 3) {
-                MicroAPI::Duplicate(patternReg, 0x11);
+                Reg::Duplicate(patternReg, 0x11);
             } else if constexpr (solidPattern == 4) {
-                MicroAPI::Duplicate(patternReg, 0x22);
+                Reg::Duplicate(patternReg, 0x22);
             } else if constexpr (solidPattern == 5) {
-                MicroAPI::Duplicate(patternReg, 0x44);
+                Reg::Duplicate(patternReg, 0x44);
             } else if constexpr (solidPattern == 6) {
-                MicroAPI::Duplicate(patternReg, 0x88);
+                Reg::Duplicate(patternReg, 0x88);
             }
-            MicroAPI::StoreAlign(tempBuf, patternReg, tmpMask);
-            MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
-            MicroAPI::LoadAlign(patternMask, tempBuf);
+            Reg::StoreAlign(tempBuf, patternReg, tmpMask);
+            Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
+            Reg::LoadAlign(patternMask, tempBuf);
         }
-        MicroAPI::MaskAnd(patternMask, patternMask, loadMask, loadMask);
+        Reg::MaskAnd(patternMask, patternMask, loadMask, loadMask);
         for (uint16_t i = 0; i < reducev2Params.repeatTimes; ++i) {
-            MicroAPI::LoadAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
+            Reg::LoadAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY, Reg::PostLiteral::POST_MODE_UPDATE>(
                 srcReg, src0, reducev2Params.src0BlockStride, reducev2Params.src0RepeatStride, loadMask);
             if constexpr (SupportType<T, bfloat16_t>()) {
-                MicroAPI::GatherMask<uint16_t, MicroAPI::GatherMaskMode::STORE_REG>(
-                    (MicroAPI::RegTensor<uint16_t> &)dstReg, (MicroAPI::RegTensor<uint16_t> &)srcReg, patternMask);
+                Reg::GatherMask<uint16_t, Reg::GatherMaskMode::STORE_REG>(
+                    (Reg::RegTensor<uint16_t> &)dstReg, (Reg::RegTensor<uint16_t> &)srcReg, patternMask);
             } else {
-                MicroAPI::GatherMask<T, MicroAPI::GatherMaskMode::STORE_REG>(dstReg, srcReg, patternMask);
+                Reg::GatherMask<T, Reg::GatherMaskMode::STORE_REG>(dstReg, srcReg, patternMask);
             }
-            MicroAPI::StoreUnAlign(dst, dstReg, ureg);
+            Reg::StoreUnAlign(dst, dstReg, ureg);
         }
-        MicroAPI::StoreUnAlignPost(dst, ureg);
+        Reg::StoreUnAlignPost(dst, ureg);
     }
     rsvdCnt = GetSpr<SpecialPurposeReg::AR>() / sizeof(T);
     AscendCUtils::FreeTemporaryBuffer<uint8_t>(tempBuf);
@@ -207,55 +212,55 @@ __aicore__ inline void GatherMaskSqueezeReduce(
     uint32_t maskValue = mask;
     __VEC_SCOPE__
     {
-        MicroAPI::RegTensor<T> dstReg;
-        MicroAPI::RegTensor<T> srcReg;
-        MicroAPI::MaskReg loadMask;
-        MicroAPI::UnalignReg ureg;
-        MicroAPI::MaskReg patternMask;
-        MicroAPI::MaskReg executeMask;
-        MicroAPI::ClearSpr<SpecialPurposeReg::AR>();
+        Reg::RegTensor<T> dstReg;
+        Reg::RegTensor<T> srcReg;
+        Reg::MaskReg loadMask;
+        Reg::UnalignReg ureg;
+        Reg::MaskReg patternMask;
+        Reg::MaskReg executeMask;
+        Reg::ClearSpr<SpecialPurposeReg::AR>();
         if constexpr (sizeof(T) != 1) {
-            patternMask = MicroAPI::MoveMask<T>();
+            patternMask = Reg::MoveMask<T>();
         } else {
-            MicroAPI::RegTensor<uint8_t> reducePatternReg;
-            MicroAPI::MaskReg tmpMask = MicroAPI::CreateMask<uint8_t, MicroAPI::MaskPattern::VL32>();
+            Reg::RegTensor<uint8_t> reducePatternReg;
+            Reg::MaskReg tmpMask = Reg::CreateMask<uint8_t, Reg::MaskPattern::VL32>();
             if constexpr (solidPattern == 1) {
-                MicroAPI::Duplicate(reducePatternReg, 0x55);
+                Reg::Duplicate(reducePatternReg, 0x55);
             } else if constexpr (solidPattern == 2) {
-                MicroAPI::Duplicate(reducePatternReg, 0xaa);
+                Reg::Duplicate(reducePatternReg, 0xaa);
             } else if constexpr (solidPattern == 3) {
-                MicroAPI::Duplicate(reducePatternReg, 0x11);
+                Reg::Duplicate(reducePatternReg, 0x11);
             } else if constexpr (solidPattern == 4) {
-                MicroAPI::Duplicate(reducePatternReg, 0x22);
+                Reg::Duplicate(reducePatternReg, 0x22);
             } else if constexpr (solidPattern == 5) {
-                MicroAPI::Duplicate(reducePatternReg, 0x44);
+                Reg::Duplicate(reducePatternReg, 0x44);
             } else if constexpr (solidPattern == 6) {
-                MicroAPI::Duplicate(reducePatternReg, 0x88);
+                Reg::Duplicate(reducePatternReg, 0x88);
             }
-            MicroAPI::StoreAlign(tempBuf, reducePatternReg, tmpMask);
-            MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
-            MicroAPI::LoadAlign(patternMask, tempBuf);
+            Reg::StoreAlign(tempBuf, reducePatternReg, tmpMask);
+            Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
+            Reg::LoadAlign(patternMask, tempBuf);
         }
         for (uint16_t i = 0; i < reducev2Params.repeatTimes; ++i) {
             maskValue = mask;
             for (uint16_t j = 0; j < innerRepeatTimes; ++j) {
-                loadMask = MicroAPI::UpdateMask<T>(maskValue);
-                MicroAPI::LoadAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(srcReg,
+                loadMask = Reg::UpdateMask<T>(maskValue);
+                Reg::LoadAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(srcReg,
                     src0 + i * reducev2Params.src0RepeatStride * ElePerBlkT +
                         j * 8 * reducev2Params.src0BlockStride * ElePerBlkT,
                     reducev2Params.src0BlockStride,
                     loadMask);
-                MicroAPI::MaskAnd(executeMask, patternMask, loadMask, loadMask);
+                Reg::MaskAnd(executeMask, patternMask, loadMask, loadMask);
                 if constexpr (SupportType<T, bfloat16_t>()) {
-                    MicroAPI::GatherMask<uint16_t, MicroAPI::GatherMaskMode::STORE_REG>(
-                        (MicroAPI::RegTensor<uint16_t> &)dstReg, (MicroAPI::RegTensor<uint16_t> &)srcReg, executeMask);
+                    Reg::GatherMask<uint16_t, Reg::GatherMaskMode::STORE_REG>(
+                        (Reg::RegTensor<uint16_t> &)dstReg, (Reg::RegTensor<uint16_t> &)srcReg, executeMask);
                 } else {
-                    MicroAPI::GatherMask<T, MicroAPI::GatherMaskMode::STORE_REG>(dstReg, srcReg, executeMask);
+                    Reg::GatherMask<T, Reg::GatherMaskMode::STORE_REG>(dstReg, srcReg, executeMask);
                 }
-                MicroAPI::StoreUnAlign(dst, dstReg, ureg);
+                Reg::StoreUnAlign(dst, dstReg, ureg);
             }
         }
-        MicroAPI::StoreUnAlignPost(dst, ureg);
+        Reg::StoreUnAlignPost(dst, ureg);
     }
     rsvdCnt = GetSpr<SpecialPurposeReg::AR>() / sizeof(T);
     AscendCUtils::FreeTemporaryBuffer<uint8_t>(tempBuf);
@@ -318,42 +323,42 @@ __aicore__ inline void GatherMaskReduce(__ubuf__ T *dst, __ubuf__ T *src0, __ubu
     uint32_t maskValue = mask;
     __VEC_SCOPE__
     {
-        MicroAPI::RegTensor<T> dstReg;
-        MicroAPI::RegTensor<T> srcReg;
-        MicroAPI::MaskReg loadMask;
-        MicroAPI::MaskReg patternMask;
-        MicroAPI::UnalignReg ureg;
-        MicroAPI::UnalignReg maskUreg;
-        MicroAPI::RegTensor<U> patternReg;
-        MicroAPI::ClearSpr<SpecialPurposeReg::AR>();
+        Reg::RegTensor<T> dstReg;
+        Reg::RegTensor<T> srcReg;
+        Reg::MaskReg loadMask;
+        Reg::MaskReg patternMask;
+        Reg::UnalignReg ureg;
+        Reg::UnalignReg maskUreg;
+        Reg::RegTensor<U> patternReg;
+        Reg::ClearSpr<SpecialPurposeReg::AR>();
         for (uint16_t i = 0; i < reducev2Params.repeatTimes; ++i) {
             maskValue = mask;
             for (uint16_t j = 0; j < innerRepeatTimes; ++j) {
-                loadMask = MicroAPI::UpdateMask<T>(maskValue);
-                MicroAPI::LoadAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(srcReg,
+                loadMask = Reg::UpdateMask<T>(maskValue);
+                Reg::LoadAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(srcReg,
                     src0 + i * reducev2Params.src0RepeatStride * ElePerBlkT + j * 8 * reducev2Params.src0BlockStride * ElePerBlkT,
                     reducev2Params.src0BlockStride,
                     loadMask);
                 if constexpr (sizeof(T) == 1) { // 1bit in ub, 1bit in register
-                    MicroAPI::LoadAlign(patternMask, src1 + i * oneRepMaskOffset + j * ElePerBlkU);
+                    Reg::LoadAlign(patternMask, src1 + i * oneRepMaskOffset + j * ElePerBlkU);
                 } else if constexpr (sizeof(T) == 2) { // 1bit in ub, us to 2bit in register
-                    MicroAPI::LoadAlign<U, MicroAPI::MaskDist::DIST_US>(patternMask, src1 + i * oneRepMaskOffset + j * ElePerBlkU / sizeof(T));
+                    Reg::LoadAlign<U, Reg::MaskDist::DIST_US>(patternMask, src1 + i * oneRepMaskOffset + j * ElePerBlkU / sizeof(T));
                 } else if constexpr (sizeof(T) == 4) { // 1bit in ub, us to 4bit in register
-                    MicroAPI::LoadUnAlignPre(maskUreg, src1 + i * oneRepMaskOffset + j * ElePerBlkU / sizeof(T));
-                    MicroAPI::LoadUnAlign(patternReg, maskUreg, src1 + i * oneRepMaskOffset + j * ElePerBlkU / sizeof(T));
-                    MicroAPI::MaskGenWithRegTensor<U, 0>(patternMask, patternReg);
+                    Reg::LoadUnAlignPre(maskUreg, src1 + i * oneRepMaskOffset + j * ElePerBlkU / sizeof(T));
+                    Reg::LoadUnAlign(patternReg, maskUreg, src1 + i * oneRepMaskOffset + j * ElePerBlkU / sizeof(T));
+                    Reg::MaskGenWithRegTensor<U, 0>(patternMask, patternReg);
                 }
-                MicroAPI::MaskAnd(patternMask, patternMask, loadMask, loadMask);
+                Reg::MaskAnd(patternMask, patternMask, loadMask, loadMask);
                 if constexpr (SupportType<T, bfloat16_t>()) {
-                    MicroAPI::GatherMask<uint16_t, MicroAPI::GatherMaskMode::STORE_REG>(
-                        (MicroAPI::RegTensor<uint16_t> &)dstReg, (MicroAPI::RegTensor<uint16_t> &)srcReg, patternMask);
+                    Reg::GatherMask<uint16_t, Reg::GatherMaskMode::STORE_REG>(
+                        (Reg::RegTensor<uint16_t> &)dstReg, (Reg::RegTensor<uint16_t> &)srcReg, patternMask);
                 } else {
-                    MicroAPI::GatherMask<T, MicroAPI::GatherMaskMode::STORE_REG>(dstReg, srcReg, patternMask);
+                    Reg::GatherMask<T, Reg::GatherMaskMode::STORE_REG>(dstReg, srcReg, patternMask);
                 }
-                MicroAPI::StoreUnAlign(dst, dstReg, ureg);
+                Reg::StoreUnAlign(dst, dstReg, ureg);
             }
         }
-        MicroAPI::StoreUnAlignPost(dst, ureg);
+        Reg::StoreUnAlignPost(dst, ureg);
     }
     rsvdCnt = GetSpr<SpecialPurposeReg::AR>() / sizeof(T);
 }
@@ -380,36 +385,36 @@ __aicore__ inline void GatherMaskCal(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__
     uint32_t oneRepMaskOffset = reducev2Params.src1RepeatStride * GetDataBlockSizeInBytes() / sizeof(T);
     __VEC_SCOPE__
     {
-        MicroAPI::RegTensor<T> dstReg;
-        MicroAPI::RegTensor<T> srcReg;
-        MicroAPI::MaskReg loadMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL>();
-        MicroAPI::MaskReg patternMask;
-        MicroAPI::UnalignReg ureg;
-        MicroAPI::UnalignReg maskUreg;
-        MicroAPI::RegTensor<U> patternReg;
-        MicroAPI::ClearSpr<SpecialPurposeReg::AR>();
+        Reg::RegTensor<T> dstReg;
+        Reg::RegTensor<T> srcReg;
+        Reg::MaskReg loadMask = Reg::CreateMask<T, Reg::MaskPattern::ALL>();
+        Reg::MaskReg patternMask;
+        Reg::UnalignReg ureg;
+        Reg::UnalignReg maskUreg;
+        Reg::RegTensor<U> patternReg;
+        Reg::ClearSpr<SpecialPurposeReg::AR>();
         for (uint16_t i = 0; i < reducev2Params.repeatTimes; ++i) {
-            MicroAPI::LoadAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(srcReg,
+            Reg::LoadAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(srcReg,
                 src0 + i * reducev2Params.src0RepeatStride * ElePerBlk, reducev2Params.src0BlockStride, loadMask);
             if constexpr (sizeof(T) == 1) {
-                MicroAPI::LoadAlign(patternMask, src1 + i * oneRepMaskOffset);
+                Reg::LoadAlign(patternMask, src1 + i * oneRepMaskOffset);
             } else if constexpr (sizeof(T) == 2) {
-                MicroAPI::LoadAlign<U, MicroAPI::MaskDist::DIST_US>(patternMask, src1 + i * oneRepMaskOffset);
+                Reg::LoadAlign<U, Reg::MaskDist::DIST_US>(patternMask, src1 + i * oneRepMaskOffset);
             } else if constexpr (sizeof(T) == 4) {
-                MicroAPI::LoadUnAlignPre(maskUreg, src1 + i * oneRepMaskOffset);
-                MicroAPI::LoadUnAlign(patternReg, maskUreg, src1 + i * oneRepMaskOffset);
-                MicroAPI::MaskGenWithRegTensor<U, 0>(patternMask, patternReg);
+                Reg::LoadUnAlignPre(maskUreg, src1 + i * oneRepMaskOffset);
+                Reg::LoadUnAlign(patternReg, maskUreg, src1 + i * oneRepMaskOffset);
+                Reg::MaskGenWithRegTensor<U, 0>(patternMask, patternReg);
             }
-            MicroAPI::MaskAnd(patternMask, patternMask, loadMask, loadMask);
+            Reg::MaskAnd(patternMask, patternMask, loadMask, loadMask);
             if constexpr (SupportType<T, bfloat16_t>()) {
-                MicroAPI::GatherMask<uint16_t, MicroAPI::GatherMaskMode::STORE_REG>(
-                    (MicroAPI::RegTensor<uint16_t> &)dstReg, (MicroAPI::RegTensor<uint16_t> &)srcReg, patternMask);
+                Reg::GatherMask<uint16_t, Reg::GatherMaskMode::STORE_REG>(
+                    (Reg::RegTensor<uint16_t> &)dstReg, (Reg::RegTensor<uint16_t> &)srcReg, patternMask);
             } else {
-                MicroAPI::GatherMask<T, MicroAPI::GatherMaskMode::STORE_REG>(dstReg, srcReg, patternMask);
+                Reg::GatherMask<T, Reg::GatherMaskMode::STORE_REG>(dstReg, srcReg, patternMask);
             }
-            MicroAPI::StoreUnAlign(dst, dstReg, ureg);
+            Reg::StoreUnAlign(dst, dstReg, ureg);
         }
-        MicroAPI::StoreUnAlignPost(dst, ureg);
+        Reg::StoreUnAlignPost(dst, ureg);
     }
     rsvdCnt = GetSpr<SpecialPurposeReg::AR>() / sizeof(T);
 }
@@ -421,49 +426,49 @@ __aicore__ inline void ExtractVf(__ubuf__ T* dstValueLocal, __ubuf__ uint32_t* d
     uint16_t loopTimes = static_cast<uint16_t>(repeatTime / 2);
     uint16_t tail = repeatTime % 2;
     if constexpr (SupportType<T, float>()) {
-        MicroAPI::RegTensor<float> vreg0;
-        MicroAPI::RegTensor<float> vreg1;
-        MicroAPI::MaskReg preg = MicroAPI::CreateMask<float>();
+        Reg::RegTensor<float> vreg0;
+        Reg::RegTensor<float> vreg1;
+        Reg::MaskReg preg = Reg::CreateMask<float>();
         uint32_t repeatElm = VECTOR_REG_WIDTH / sizeof(float);
         for (uint16_t i = 0; i < loopTimes; ++i) {
-            MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_DINTLV_B32>(
+            Reg::LoadAlign<float, Reg::LoadDist::DIST_DINTLV_B32>(
                 vreg0, vreg1, sortedLocal + i * repeatElm * 2);
-            MicroAPI::StoreAlign(dstValueLocal + i * repeatElm, vreg0, preg);
-            MicroAPI::StoreAlign(dstIndexLocal + i * repeatElm, (MicroAPI::RegTensor<uint32_t> &)vreg1, preg);
+            Reg::StoreAlign(dstValueLocal + i * repeatElm, vreg0, preg);
+            Reg::StoreAlign(dstIndexLocal + i * repeatElm, (Reg::RegTensor<uint32_t> &)vreg1, preg);
         }
         for (uint16_t i = 0; i < tail; ++i) {
-            MicroAPI::LoadAlign(vreg0, sortedLocal + repeatTime / 2 * repeatElm * 2);
-            MicroAPI::LoadAlign(vreg1, sortedLocal + repeatTime / 2 * repeatElm * 2);
-            MicroAPI::DeInterleave(vreg0, vreg1, vreg0, vreg1);
-            preg = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::H>();
-            MicroAPI::StoreAlign(dstValueLocal + repeatTime / 2 * repeatElm, vreg0, preg);
-            MicroAPI::StoreAlign(
-                dstIndexLocal + repeatTime / 2 * repeatElm, (MicroAPI::RegTensor<uint32_t> &)vreg1, preg);
+            Reg::LoadAlign(vreg0, sortedLocal + repeatTime / 2 * repeatElm * 2);
+            Reg::LoadAlign(vreg1, sortedLocal + repeatTime / 2 * repeatElm * 2);
+            Reg::DeInterleave(vreg0, vreg1, vreg0, vreg1);
+            preg = Reg::CreateMask<float, Reg::MaskPattern::H>();
+            Reg::StoreAlign(dstValueLocal + repeatTime / 2 * repeatElm, vreg0, preg);
+            Reg::StoreAlign(
+                dstIndexLocal + repeatTime / 2 * repeatElm, (Reg::RegTensor<uint32_t> &)vreg1, preg);
         }
     } else if constexpr (SupportType<T, half>()) {
-        MicroAPI::RegTensor<float> vreg0;
-        MicroAPI::RegTensor<float> vreg1;
-        MicroAPI::RegTensor<half> vreg2;
-        MicroAPI::MaskReg indexPreg = MicroAPI::CreateMask<uint32_t>();
-        MicroAPI::MaskReg preg1 = MicroAPI::CreateMask<half, MicroAPI::MaskPattern::H>();
+        Reg::RegTensor<float> vreg0;
+        Reg::RegTensor<float> vreg1;
+        Reg::RegTensor<half> vreg2;
+        Reg::MaskReg indexPreg = Reg::CreateMask<uint32_t>();
+        Reg::MaskReg preg1 = Reg::CreateMask<half, Reg::MaskPattern::H>();
         uint32_t repeatElm = VECTOR_REG_WIDTH / sizeof(float);
         for (uint16_t i = 0; i < loopTimes; ++i) {
-            MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_DINTLV_B32>(
+            Reg::LoadAlign<float, Reg::LoadDist::DIST_DINTLV_B32>(
                 vreg0, vreg1, (__ubuf__ float *)sortedLocal + i * repeatElm * 2);
-            MicroAPI::Squeeze<half, MicroAPI::GatherMaskMode::NO_STORE_REG>(vreg2, (MicroAPI::RegTensor<half> &)vreg0, indexPreg);
-            MicroAPI::StoreAlign(dstValueLocal + i * repeatElm, vreg2, preg1);
-            MicroAPI::StoreAlign(dstIndexLocal + i * repeatElm, (MicroAPI::RegTensor<uint32_t> &)vreg1, indexPreg);
+            Reg::Squeeze<half, Reg::GatherMaskMode::NO_STORE_REG>(vreg2, (Reg::RegTensor<half> &)vreg0, indexPreg);
+            Reg::StoreAlign(dstValueLocal + i * repeatElm, vreg2, preg1);
+            Reg::StoreAlign(dstIndexLocal + i * repeatElm, (Reg::RegTensor<uint32_t> &)vreg1, indexPreg);
         }
         for (uint16_t i = 0; i < tail; ++i) {
-            MicroAPI::LoadAlign(vreg0, (__ubuf__ float *)sortedLocal + repeatTime / 2 * repeatElm * 2);
-            MicroAPI::LoadAlign(vreg1, (__ubuf__ float *)sortedLocal + repeatTime / 2 * repeatElm * 2);
-            MicroAPI::DeInterleave(vreg0, vreg1, vreg0, vreg1);
-            MicroAPI::Squeeze<half, MicroAPI::GatherMaskMode::NO_STORE_REG>(vreg2, (MicroAPI::RegTensor<half> &)vreg0, indexPreg);
-            MicroAPI::MaskReg preg2 = MicroAPI::CreateMask<half, MicroAPI::MaskPattern::Q>();
-            MicroAPI::StoreAlign(dstValueLocal + repeatTime / 2 * repeatElm, vreg2, preg2);
-            preg2 = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::H>();
-            MicroAPI::StoreAlign(
-                dstIndexLocal + repeatTime / 2 * repeatElm, (MicroAPI::RegTensor<uint32_t> &)vreg1, preg2);
+            Reg::LoadAlign(vreg0, (__ubuf__ float *)sortedLocal + repeatTime / 2 * repeatElm * 2);
+            Reg::LoadAlign(vreg1, (__ubuf__ float *)sortedLocal + repeatTime / 2 * repeatElm * 2);
+            Reg::DeInterleave(vreg0, vreg1, vreg0, vreg1);
+            Reg::Squeeze<half, Reg::GatherMaskMode::NO_STORE_REG>(vreg2, (Reg::RegTensor<half> &)vreg0, indexPreg);
+            Reg::MaskReg preg2 = Reg::CreateMask<half, Reg::MaskPattern::Q>();
+            Reg::StoreAlign(dstValueLocal + repeatTime / 2 * repeatElm, vreg2, preg2);
+            preg2 = Reg::CreateMask<uint32_t, Reg::MaskPattern::H>();
+            Reg::StoreAlign(
+                dstIndexLocal + repeatTime / 2 * repeatElm, (Reg::RegTensor<uint32_t> &)vreg1, preg2);
         }
     }
 }
@@ -477,3 +482,7 @@ __aicore__ inline void ExtractImpl(__ubuf__ T* dstValueLocal, __ubuf__ uint32_t*
 
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_VEC_GATHER_MASK_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_GATHER_MASK_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_GATHER_MASK_IMPL_H__
+#endif

@@ -12,6 +12,12 @@
  * \file welfordfinalize.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_WELFORDFINALIZE_H__
+#endif
+
 #ifndef LIB_NORMALIZATION_WELFORDFINALIZE_H
 #define LIB_NORMALIZATION_WELFORDFINALIZE_H
 #include "include/adv_api/normalization/welfordfinalize_utils.h"
@@ -214,3 +220,8 @@ __aicore__ inline void WelfordFinalize(const LocalTensor<float>& outputMean, con
 } // namespace AscendC
 #endif
 #endif // LIB_NORMALIZATION_WELFORDFINALIZE_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_WELFORDFINALIZE_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_WELFORDFINALIZE_H__
+#endif

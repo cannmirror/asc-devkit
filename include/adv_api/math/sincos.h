@@ -13,6 +13,12 @@
  * \brief
  */
 
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SINCOS_H__
+#endif
+
 #ifndef LIB_MATH_SINCOS_H
 #define LIB_MATH_SINCOS_H
 
@@ -56,3 +62,8 @@ __aicore__ inline void SinCos(const LocalTensor<T>& dst0, const LocalTensor<T>& 
 } // namespace AscendC
 #endif
 #endif // LIB_MATH_SINCOS_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SINCOS_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SINCOS_H__
+#endif

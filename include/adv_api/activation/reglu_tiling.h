@@ -12,6 +12,12 @@
  * \file reglu_tiling.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REGLU_TILING_H__
+#endif
+
 #ifndef LIB_REGLU_REGLU_TILING_H
 #define LIB_REGLU_REGLU_TILING_H
 #include <cstdint>
@@ -33,3 +39,8 @@ void GetReGluMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, c
     uint32_t& maxValue, uint32_t& minValue);
 } // namespace AscendC
 #endif // LIB_REGLU_REGLU_TILING_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REGLU_TILING_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REGLU_TILING_H__
+#endif

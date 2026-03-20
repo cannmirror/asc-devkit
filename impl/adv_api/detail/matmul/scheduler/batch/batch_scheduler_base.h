@@ -12,6 +12,12 @@
  * \file batch_scheduler_base.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/matmul/scheduler/batch/batch_scheduler_base.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_BATCH_BATCH_SCHEDULER_BASE_H__
+#endif
+
 #ifndef IMPL_MATMUL_SCHEDULER_BATCH_BATCH_SCHEDULER_BASE_H
 #define IMPL_MATMUL_SCHEDULER_BATCH_BATCH_SCHEDULER_BASE_H
 
@@ -213,8 +219,7 @@ public:
                 if (likely(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder() == static_cast<int>(IterateOrder::ORDER_M))) {
                     return MoveOnIterateOrderM();
                 } else {
-                    ASCENDC_ASSERT((MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder() ==
-                        static_cast<int>(IterateOrder::ORDER_N)), { KERNEL_LOG(KERNEL_ERROR, "iterateOrder is %d , which should be ORDER_N",
+                    ASCENDC_ASSERT((MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder() == static_cast<int>(IterateOrder::ORDER_N)), { KERNEL_LOG(KERNEL_ERROR, "iterateOrder is %d , which should be ORDER_N",
                         MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder());});
                     return MoveOnIterateOrderN();
                 }
@@ -230,8 +235,7 @@ public:
     // Init & Update SplitParams
     __aicore__ inline void InitSplitAParams(SplitParams& aL0Params)
     {
-        aL0Params.axisL0Len = IsStaticPaddingEnable(MM_CFG) ?
-            MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM() : MATMUL_MODULE(MLoop)->GetBaseShape();
+        aL0Params.axisL0Len = IsStaticPaddingEnable(MM_CFG) ? MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM() : MATMUL_MODULE(MLoop)->GetBaseShape();
         if constexpr ((A_TYPE::format == CubeFormat::VECTOR) || (A_TYPE::format == CubeFormat::SCALAR)) {
             aL0Params.axisL0Len = 1;
         } else if (!MatmulFeatureTrait<MM_CFG>::IsSupportDisableGemvMode() && aL0Params.axisL0Len == 1) {
@@ -239,18 +243,15 @@ public:
         }
 
         aL0Params.kAxisL1Offset = 0;
-        aL0Params.axisL1Offset = IsBasic(MM_CFG) ? 0 :
-            MATMUL_MODULE(MLoop)->GetOuterIdx() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM();
+        aL0Params.axisL1Offset = IsBasic(MM_CFG) ? 0 : MATMUL_MODULE(MLoop)->GetOuterIdx() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM();
     }
 
     __aicore__ inline void InitSplitBParams(SplitParams& bL0Params)
     {
-        bL0Params.axisL0Len = IsStaticPaddingEnable(MM_CFG) ?
-            MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN() : MATMUL_MODULE(NLoop)->GetBaseShape();
+        bL0Params.axisL0Len = IsStaticPaddingEnable(MM_CFG) ? MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN() : MATMUL_MODULE(NLoop)->GetBaseShape();
 
         bL0Params.kAxisL1Offset = 0;
-        bL0Params.axisL1Offset = IsBasic(MM_CFG) ? 0 :
-            MATMUL_MODULE(NLoop)->GetOuterIdx() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
+        bL0Params.axisL1Offset = IsBasic(MM_CFG) ? 0 : MATMUL_MODULE(NLoop)->GetOuterIdx() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
     }
 
     __aicore__ inline void UpdateSplitParams(SplitParams& aL0Params, SplitParams& bL0Params)
@@ -296,10 +297,8 @@ public:
         LocalTensor<TransAT> a2 = bufferPool.template GetBuffer<TPosition::A2, TransAT>();
         LocalTensor<TransBT> b2 = bufferPool.template GetBuffer<TPosition::B2, TransBT>();
         // split
-        MATMUL_MODULE(LoadToA2)->Load(a2, a1[ctx.offsetA], ctx.aL0Params.axisL1Len, ctx.aL0Params.kAxisL1Len,
-            ctx.aL0Params.axisL0Len, kL0Len, ctx.aL0Params.axisL1Offset, ctx.aL0Params.kAxisL1Offset, isATranspose);
-        MATMUL_MODULE(LoadToB2)->Load(b2, b1[ctx.offsetB], ctx.bL0Params.axisL1Len, ctx.bL0Params.kAxisL1Len,
-            ctx.bL0Params.axisL0Len, kL0Len, ctx.bL0Params.axisL1Offset, ctx.bL0Params.kAxisL1Offset, isBTranspose);
+        MATMUL_MODULE(LoadToA2)->Load(a2, a1[ctx.offsetA], ctx.aL0Params.axisL1Len, ctx.aL0Params.kAxisL1Len, ctx.aL0Params.axisL0Len, kL0Len, ctx.aL0Params.axisL1Offset, ctx.aL0Params.kAxisL1Offset, isATranspose);
+        MATMUL_MODULE(LoadToB2)->Load(b2, b1[ctx.offsetB], ctx.bL0Params.axisL1Len, ctx.bL0Params.kAxisL1Len, ctx.bL0Params.axisL0Len, kL0Len, ctx.bL0Params.axisL1Offset, ctx.bL0Params.kAxisL1Offset, isBTranspose);
         bufferPool.EnQue();
         bufferPool.DeQue();
 
@@ -574,3 +573,8 @@ private:
 }  // namespace Impl
 }  // namespace AscendC
 #endif // IMPL_MATMUL_SCHEDULER_BATCH_BATCH_SCHEDULER_BASE_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_BATCH_BATCH_SCHEDULER_BASE_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_BATCH_BATCH_SCHEDULER_BASE_H__
+#endif

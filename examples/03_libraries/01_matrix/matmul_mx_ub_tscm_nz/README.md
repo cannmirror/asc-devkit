@@ -27,19 +27,19 @@
 
 - 算子规格： 
 
-  本样例中，算子实现支持的shape为：M = 64, N = 128, K = 128。
+  本样例中，算子实现支持的shape为：M = 64，N = 128，K = 128，scaleK为K整除32的结果4。
   <table>
   <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="5" align="center">MatmulMxUbTscmNzCustom</td></tr>
   </tr>
   <tr><td rowspan="6" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">isTrans</td></tr>
-  <tr><td align="center">a</td><td align="center">-</td><td align="center">fp4x2_e1m2_t</td><td align="center">ND</td><td align="center">false</td></tr>
-  <tr><td align="center">scaleA</td><td align="center">-</td><td align="center">fp8_e8m0_t</td><td align="center">ND</td><td align="center">false</td></tr>
-  <tr><td align="center">b</td><td align="center">-</td><td align="center">fp4x2_e1m2_t</td><td align="center">ND</td><td align="center">false</td></tr>
-  <tr><td align="center">scaleB</td><td align="center">-</td><td align="center">fp8_e8m0_t</td><td align="center">ND</td><td align="center">true</td></tr>
-  <tr><td align="center">bias</td><td align="center">-</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td></tr>
+  <tr><td align="center">a</td><td align="center">M*K</td><td align="center">fp4x2_e1m2_t</td><td align="center">ND</td><td align="center">false</td></tr>
+  <tr><td align="center">scaleA</td><td align="center">M*scaleK</td><td align="center">fp8_e8m0_t</td><td align="center">ND</td><td align="center">false</td></tr>
+  <tr><td align="center">b</td><td align="center">K*N</td><td align="center">fp4x2_e1m2_t</td><td align="center">ND</td><td align="center">false</td></tr>
+  <tr><td align="center">scaleB</td><td align="center">scaleK*N</td><td align="center">fp8_e8m0_t</td><td align="center">ND</td><td align="center">true</td></tr>
+  <tr><td align="center">bias</td><td align="center">N</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td></tr>
   </tr>
   </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">-</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td></tr>
+  <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">M*N</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td></tr>
   </tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">matmul_mx_ub_tscm_nz_custom</td></tr>
   </table>

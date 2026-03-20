@@ -83,6 +83,10 @@ install_whl_package() {
     local _package_name="$2"
     local _pythonlocalpath="$3"
     log "INFO" "start install python module package ${_package_name}."
+    if ! command -v pip3 >/dev/null 2>&1; then
+        log "ERROR" "install ${_package_name} failed, pip3 is not installed."
+        exit 1
+    fi
     if [ -f "$_package_path" ]; then
         pip3 install --disable-pip-version-check --upgrade --no-deps --force-reinstall "${_package_path}" -t "${_pythonlocalpath}" 1> /dev/null
         local ret=$?

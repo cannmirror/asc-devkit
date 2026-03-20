@@ -199,17 +199,17 @@ __simd_callee__ inline void LocalMemBar()
 template<typename T>
 __simd_vf__ inline void AddVF(__ubuf__ T* dstAddr, __ubuf__ T* src0Addr, __ubuf__ T* src1Addr, uint32_t count, uint32_t oneRepeatSize, uint16_t repeatTimes)
 {
-    AscendC::MicroAPI::RegTensor<T> srcReg0;
-    AscendC::MicroAPI::RegTensor<T> srcReg1;
-    AscendC::MicroAPI::RegTensor<T> dstReg;
-    AscendC::MicroAPI::MaskReg mask;   
+    AscendC::Reg::RegTensor<T> srcReg0;
+    AscendC::Reg::RegTensor<T> srcReg1;
+    AscendC::Reg::RegTensor<T> dstReg;
+    AscendC::Reg::MaskReg mask;   
     for (uint16_t i = 0; i < repeatTimes; i++) {
-        mask = AscendC::MicroAPI::UpdateMask<T>(count);
-        AscendC::MicroAPI::LocalMemBar<AscendC::MicroAPI::MemType::VEC_STORE, AscendC::MicroAPI::MemType::VEC_LOAD>();
-        AscendC::MicroAPI::LoadAlign(srcReg0, src0Addr);
-        AscendC::MicroAPI::LoadAlign(srcReg1, src1Addr + i * oneRepeatSize);
-        AscendC::MicroAPI::Add(dstReg, srcReg0, srcReg1, mask);
-        AscendC::MicroAPI::StoreAlign(dstAddr, dstReg, mask);
+        mask = AscendC::Reg::UpdateMask<T>(count);
+        AscendC::Reg::LocalMemBar<AscendC::Reg::MemType::VEC_STORE, AscendC::Reg::MemType::VEC_LOAD>();
+        AscendC::Reg::LoadAlign(srcReg0, src0Addr);
+        AscendC::Reg::LoadAlign(srcReg1, src1Addr + i * oneRepeatSize);
+        AscendC::Reg::Add(dstReg, srcReg0, srcReg1, mask);
+        AscendC::Reg::StoreAlign(dstAddr, dstReg, mask);
     }
 }
 ```

@@ -13,6 +13,12 @@
  * \brief Defines a series of interface used to do elementwise math tanh calculation.
  * Formula:  Tanh(x) = (e^(2x)-1)/(e^(2x)+1)
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TANH_H__
+#endif
+
 #ifndef LIB_MATH_TANH_H
 #define LIB_MATH_TANH_H
 
@@ -193,3 +199,8 @@ __aicore__ inline void Tanh(const LocalTensor<T>& dstTensor, const LocalTensor<T
 #endif
 
 #endif // LIB_MATH_TANH_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TANH_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TANH_H__
+#endif

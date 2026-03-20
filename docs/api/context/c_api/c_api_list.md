@@ -7,7 +7,7 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 |-----------------------|-----------------------|
 | [asc_load3d_v2_config](struct/asc_load3d_v2_config.md) | Load3Dv2接口的repeat参数 |
 | [asc_store_atomic_config](struct/asc_store_atomic_config.md) | 原子操作使能位与原子操作类型的值 |
-| [asc_fill_value_config](struct/asc_fill_value_config.md) | fill_value的初始化参数结构体，包含[asc_fill_l0a_value](cube_datamove/asc_fill_l0a_value.md)/[asc_fill_l0b_value](cube_datamove/asc_fill_l0b_value.md)/[asc_fill_l1_value](cube_datamove/asc_fill_l1_value.md)接口需要配置的各种初始化参数。 |
+| [asc_fill_value_config](struct/asc_fill_value_config.md) | fill_value的初始化参数结构体，包含[asc_fill_l0a](cube_datamove/asc_fill_l0a.md)/[asc_fill_l0b](cube_datamove/asc_fill_l0b.md)/[asc_fill_l1](cube_datamove/asc_fill_l1.md)接口需要配置的各种初始化参数。 |
 
 ## 矢量计算
 
@@ -202,7 +202,7 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_sync_mte2](sync/asc_sync_mte2.md)| 等待PIPE_MTE2流水完成。 |
 | [asc_sync_data_barrier](sync/asc_sync_data_barrier.md) | 用于阻塞后续的指令执行，直到所有之前的内存访问指令（需要等待的内存位置可以通过参数控制）执行结束。 |
 | [asc_sync_block_arrive](sync/asc_sync_block_arrive.md) | 该指令用于发送同步信息数据到核间同步寄存器，设置同步点。 |
-| [asc_sync_block_wait](sync/asc_sync_block_wait.md) | 和[asc_sync_block_arrive](asc_sync_block_arrive.md)配合使用（通过flagID关联），用于等待所有同步对象到达flagID对应的同步点。 |
+| [asc_sync_block_wait](sync/asc_sync_block_wait.md) | 和[asc_sync_block_arrive](sync/asc_sync_block_arrive.md)配合使用（通过flagID关联），用于等待所有同步对象到达flagID对应的同步点。 |
 
 
 ## 系统变量
@@ -261,7 +261,10 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_set_atomic_min_int](simd_atomic/asc_set_atomic_min.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int32_t数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
 | [asc_set_atomic_min_int8](simd_atomic/asc_set_atomic_min.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int8_t数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
 | [asc_set_atomic_min_int16](simd_atomic/asc_set_atomic_min.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int16_t数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
-| [asc_set_store_atomic_config](simd_atomic/asc_set_store_atomic_config.md)| 设置原子操作使能位与原子操作类型的值。 |
+| [asc_set_store_atomic_config_v1](simd_atomic/asc_set_store_atomic_config_v1.md)| 设置原子操作使能位与原子操作类型的值，适用于Atlas A3 训练系列产品/Atlas A3 推理系列产品和Atlas A2 训练系列产品/Atlas A2 推理系列产品。 |
+<cann-filter npu_type="950">
+| [asc_set_store_atomic_config_v2](simd_atomic/asc_set_store_atomic_config_v2.md)| 设置原子操作使能位与原子操作类型的值，适用于Ascend 950PR/Ascend 950DT。 |
+</cann-filter>
 | [asc_get_store_atomic_config](simd_atomic/asc_get_store_atomic_config.md)| 获取原子操作使能位与原子操作类型的值。 |
 | [asc_set_atomic_none](simd_atomic/asc_set_atomic_none.md) | 清空原子操作的状态。 |
 
@@ -284,7 +287,7 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_get_mask_spr](reg/reg_load/asc_get_mask_spr.md) | 从特殊寄存器SPR{MASK1, MASK0}读取mask值并根据数据类型格式返回对应的mask数据，MASK0、MASK1均为64bit的寄存器。 |
 | [asc_load](reg/reg_load/asc_load.md) | reg计算数据搬运接口，支持从UB非32字节对齐的源地址src搬运至矢量数据寄存器，搬运量为VL。 |
 | [asc_loadunalign](reg/reg_load/asc_loadunalign.md) | reg计算数据搬运接口，适用于从UB非32B对齐的起始地址连续搬入矢量数据寄存器的场景。 |
-| [asc_loadunalign_pre](reg//reg_load/asc_loadunalign_pre.md) | 用于在进行非对齐数据搬入前的初始化，需配合[asc_loadunalign](./asc_loadunalign.md)接口使用。 |
+| [asc_loadunalign_pre](reg//reg_load/asc_loadunalign_pre.md) | 用于在进行非对齐数据搬入前的初始化，需配合[asc_loadunalign](reg/reg_load/asc_loadunalign.md)接口使用。 |
 | [asc_store](reg/reg_store/asc_store.md) | reg计算数据搬运接口，适用于从矢量数据寄存器搬出到UB的场景，不区分是否对齐，在追求极致性能时，应尽量避免使用该接口。 |
 | [asc_storeunalign](reg/reg_store/asc_storeunalign.md) | reg计算数据搬运接口，适用于从矢量数据寄存器连续非32B对齐的起始地址连续搬出到UB的场景。 |
 | [asc_storeunalign_postupdate](reg/reg_store/asc_storeunalign_postupdate.md) | reg计算数据搬运接口，适用于从矢量数据寄存器连续非32B对齐的起始地址连续搬出到UB的场景。 |
@@ -312,7 +315,7 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_frequency_histogram](reg/reg_vector/asc_frequency_histogram.md) | 对直方图数据进行频率统计。 |
 | [asc_ge](reg/reg_vector/asc_ge.md) | 对源操作数执行逐元素比较。对于src0 >= src1，若条件成立则目的操作数对应结果位为1，否则为0。 |
 | [asc_ge_scalar](reg/reg_vector/asc_ge_scalar.md) | 对源操作数与标量执行逐元素比较。对于src0 >= value，若条件成立则目的操作数对应结果位为1，否则为0。 |
-| [asc_half2bf16](reg/reg_vector/asc_half2bfloat16.md) | 将half数据类型的矢量逐元素转换为bfloat16_t类型。 |
+| [asc_half2bf16](reg/reg_vector/asc_half2bf16.md) | 将half数据类型的矢量逐元素转换为bfloat16_t类型。 |
 | [asc_half2hif8](reg/reg_vector/asc_half2hif8.md) | 将half数据类型的矢量逐元素转换为hifloat8_t类型。 |
 | [asc_half2int16](reg/reg_vector/asc_half2int16.md) | 将half数据类型的矢量逐元素转换为int16_t类型。 |
 | [asc_half2int32](reg/reg_vector/asc_half2int32.md) | 将half数据类型的矢量逐元素转换为int32_t类型。 |
@@ -338,7 +341,6 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_max](reg/reg_vector/asc_max.md) | 根据mask对源操作数src0、src1进行按元素求最大值操作，将结果写入目的操作数dst。 |
 | [asc_max_scalar](reg/reg_vector/asc_max_scalar.md) | 矢量src的逐个元素与标量value比较大小，接着按照对应的比特位将最大值存入dst中。 |
 | [asc_min](reg/reg_vector/asc_min.md) | 根据mask对源操作数src0、src1进行按元素求最小值操作，将结果写入目的操作数dst。 |
-| [asc_min_scalar](reg/reg_vector/asc_min_scalar.md) | 矢量src的逐个元素与标量value比较大小，接着按照对应的比特位将最小值存入dst中。 |
 | [asc_mull](reg/reg_vector/asc_mull.md) | 无符号整数乘法，将src0和src1对应元素相乘，结果写入dst。 |
 | [asc_ne](reg/reg_vector/asc_ne.md) | 对源操作数执行逐元素比较。对于src0 != src1，若条件成立则目的操作数对应结果位为1，否则为0。 |
 | [asc_neg](reg/reg_vector/asc_neg.md) | 根据mask对源操作数src进行取相反数操作，将结果写入目的操作数dst。 |
@@ -353,7 +355,7 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_reduce_min_datablock](reg/reg_vector/asc_reduce_min_datablock.md) | 根据mask将每个DataBlock(32B)中的最小值，依次保存在dst中的最低位。 |
 | [asc_shiftleft](reg/reg_vector/asc_shiftleft.md) | 根据掩码mask对输入数据src0，按照src1对应元素进行左移操作，完成后将结果写入dst中。 |
 | [asc_shiftright](reg/reg_vector/asc_shiftright.md) | 根据掩码mask对输入数据src0，按照src1对应元素进行右移操作，完成后将结果写入dst中。 |
-| [asc_squeeze](reg/reg_vector/asc_squeeze.md) | 将src中被mask选择的有效元素依次复制到dst，有效元素从低到高连续排列。 |
+| [asc_squeeze](reg/reg_vector/asc_squeeze.md) | 将src中被mask选择的有效元素依次复制到dst，有效元素在dst上连续排列。 |
 | [asc_uint162uint32](reg/reg_vector/asc_uint162uint32.md) | 将uint16_t数据类型的矢量逐元素转换为uint32_t类型。 |
 | [asc_uint162uint8](reg/reg_vector/asc_uint162uint8.md) | 将uint16_t数据类型的矢量逐元素转换为uint8_t类型。 |
 | [asc_uint322int16](reg/reg_vector/asc_uint322int16.md) | 将uint32_t数据类型的矢量逐元素转换为int16_t类型。 |

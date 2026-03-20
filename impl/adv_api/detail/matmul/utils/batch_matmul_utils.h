@@ -13,6 +13,12 @@
 * \brief
 */
 
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/matmul/utils/batch_matmul_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_UTILS_BATCH_MATMUL_UTILS_H__
+#endif
+
 #ifndef IMPL_MATMUL_UTILS_BATCH_MATMUL_UTILS_H
 #define IMPL_MATMUL_UTILS_BATCH_MATMUL_UTILS_H
 
@@ -121,4 +127,8 @@ __aicore__ inline uint64_t GetBatchCNum(uint32_t batchA, uint32_t batchB, uint32
     return batchC;
 }
 } // namespace AscendC
+#endif
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_UTILS_BATCH_MATMUL_UTILS_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_UTILS_BATCH_MATMUL_UTILS_H__
 #endif // IMPL_MATMUL_UTILS_BATCH_MATMUL_UTILS_H

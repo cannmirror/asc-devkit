@@ -7,6 +7,12 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TRANSDATA_H__
+#endif
+
 #ifndef LIB_TRANSPOSE_TRANSDATA_H
 #define LIB_TRANSPOSE_TRANSDATA_H
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
@@ -46,3 +52,8 @@ __aicore__ inline void TransData(const LocalTensor<T>& dstTensor, const LocalTen
 } // namespace AscendC
 #endif
 #endif // LIB_TRANSPOSE_TRANSDATA_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TRANSDATA_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TRANSDATA_H__
+#endif

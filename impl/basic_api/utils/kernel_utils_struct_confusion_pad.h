@@ -12,6 +12,11 @@
  * \file kernel_utils_struct_confusion_pad.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/utils/kernel_utils_struct_confusion_pad.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_operator_intf.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_UTILS_STRUCT_CONFUSION_PAD_H__
+#endif
 #ifndef ASCENDC_MODULE_UTILS_STRUCT_CONFUSION_PAD_H
 #define ASCENDC_MODULE_UTILS_STRUCT_CONFUSION_PAD_H
 #include "utils/kernel_utils_mode.h"
@@ -439,3 +444,7 @@ constexpr int32_t AIPP_OUTPUT_PADDING_MODE0_CHANNEL_NUM = 4;
 
 } // namespace AscendC
 #endif // ASCENDC_MODULE_UTILS_STRUCT_CONFUSION_PAD_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_UTILS_STRUCT_CONFUSION_PAD_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_UTILS_STRUCT_CONFUSION_PAD_H__
+#endif

@@ -12,6 +12,11 @@
  * \file kernel_operator_cube_group_handle_impl.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/dav_c220/core_mng/roc/kernel_operator_cube_group_handle_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_operator_intf.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_CUBE_GROUP_H__ANDLE_IMPL_H
+#endif
 #ifndef ASCENDC_MODULE_OPERATOR_CUBE_GROUP_HANDLE_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_CUBE_GROUP_HANDLE_IMPL_H
 #include "core_mng/roc/kernel_operator_cube_group_intf.h"
@@ -60,7 +65,7 @@ __aicore__ inline CubeResGroupHandle<T>::CubeResGroupHandle(
     aivPerAic = Ceil(aivSize, aicSize);
     int8_t aivInLastAic = aivSize - (aicSize - 1) * aivPerAic;
     ASCENDC_DEBUG_ASSERT((aivInLastAic > 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "AIV num in last AIC must be positive"));
-    // aic update configï¼ŒaivNumForAic in aiv need to be updated by AssignQueue
+    // aic update config£¬aivNumForAic in aiv need to be updated by AssignQueue
     aivNumForCurAic = (GetBlockIdxImpl() == blockStart / MIX_NUM + aicSize - 1) ? aivInLastAic : aivPerAic;
     aivWorkState = (static_cast<uint64_t>(1) << aivNumForCurAic) - 1;
 
@@ -445,4 +450,8 @@ __aicore__ inline CubeResGroupHandle<T> CreateCubeResGroup(
 }
 
 }  // namespace AscendC
+#endif
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_CUBE_GROUP_H__ANDLE_IMPL_H)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_CUBE_GROUP_H__ANDLE_IMPL_H
 #endif

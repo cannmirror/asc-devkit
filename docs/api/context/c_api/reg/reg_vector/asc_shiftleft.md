@@ -42,15 +42,15 @@ PIPE_V
 
 ## 约束说明
 
-- 数据类型为无符号类型：执行逻辑右移。逻辑右移会将二进制数整体向右移动指定的位数，最低位被丢弃，最高位用0填充。
-- 数据类型为有符号类型：执行算术右移。算术右移会将二进制数整体向右移动指定的位数，最低位被丢弃，最高位用原符号位填充。
+- 数据类型为无符号类型：执行逻辑左移。逻辑左移会将二进制数整体向左移动指定的位数，最低位被丢弃，最高位用0填充。
+- 数据类型为有符号类型：执行算术左移。算术左移会将二进制数整体向左移动指定的位数，最低位被丢弃，最高位用原符号位填充。
 
 ## 调用示例
 
 ```cpp
 vector_uint32_t dst;
 vector_uint32_t src0, src1;
-vector_bool mask = asc_create_mask_b16(PAT_ALL);
+vector_bool mask = asc_create_mask_b32(PAT_ALL);
 asc_loadalign(src0, src0_addr); // src0_addr是外部输入的UB内存空间地址。
 asc_loadalign(src1, src1_addr); // src1_addr是外部输入的UB内存空间地址。
 asc_shiftleft(dst, src0, src1, mask);

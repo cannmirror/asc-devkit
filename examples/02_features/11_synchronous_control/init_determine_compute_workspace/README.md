@@ -57,7 +57,7 @@
     </tr>
     <tr>
       <td align="center">核函数名</td>
-      <td colspan="4" align="center">init_determine_compute_workspace</td>
+      <td colspan="4" align="center">kernel_init_determine_compute_workspace</td>
     </tr>  
   </table>
 

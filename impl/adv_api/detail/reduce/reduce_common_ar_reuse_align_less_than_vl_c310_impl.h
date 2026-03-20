@@ -7,6 +7,13 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/reduce/reduce_common_ar_reuse_align_less_than_vl_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_COMMON_AR_REUSE_ALIGN_LESS_THAN_VL_C310_IMPL_H__
+#endif
+
 #ifndef IMPL_REDUCE_REDUCE_COMMON_AR_REUSE_ALIGN_LESS_THAN_VL_C310_IMPL_H
 #define IMPL_REDUCE_REDUCE_COMMON_AR_REUSE_ALIGN_LESS_THAN_VL_C310_IMPL_H
 
@@ -16,78 +23,78 @@
 #include "reduce_common_util_c310_impl.h"
 
 namespace AscendC {
-template <class T, class U, const MicroAPI::RegTrait &Trait, const MicroAPI::CastTrait &CastTraitUppper,
-    const MicroAPI::CastTrait &CastTraitLower, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc>
+template <class T, class U, const Reg::RegTrait &Trait, const Reg::CastTrait &CastTraitUppper,
+    const Reg::CastTrait &CastTraitLower, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc>
 __simd_vf__ inline void ReduceARCastLessThanVL(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA, uint32_t dimR)
 {
     if (dimR <= (vlSize / 2)) {
-        MicroAPI::RegTensor<T, Trait> vreg0;
-        MicroAPI::RegTensor<T, Trait> vreg1;
-        MicroAPI::RegTensor<U, Trait> vreg0CastUpper;
-        MicroAPI::RegTensor<U, Trait> vreg1CastUpper;
-        MicroAPI::UnalignReg uDst;
+        Reg::RegTensor<T, Trait> vreg0;
+        Reg::RegTensor<T, Trait> vreg1;
+        Reg::RegTensor<U, Trait> vreg0CastUpper;
+        Reg::RegTensor<U, Trait> vreg1CastUpper;
+        Reg::UnalignReg uDst;
         uint32_t sreg1 = dimR;
-        MicroAPI::MaskReg mask = MicroAPI::UpdateMask<U>(sreg1);
+        Reg::MaskReg mask = Reg::UpdateMask<U>(sreg1);
         for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
             if constexpr (IsSameType<T, bfloat16_t>::value) {
-                MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_US_B16>(vreg0, srcAddr + loopA * dimR);
+                Reg::LoadAlign<T, Reg::LoadDist::DIST_US_B16>(vreg0, srcAddr + loopA * dimR);
             } else {
-                MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_US_B8>(vreg0, srcAddr + loopA * dimR);
+                Reg::LoadAlign<T, Reg::LoadDist::DIST_US_B8>(vreg0, srcAddr + loopA * dimR);
             }
-            MicroAPI::Cast<U, T, CastTraitUppper>(vreg0CastUpper, vreg0, mask);
+            Reg::Cast<U, T, CastTraitUppper>(vreg0CastUpper, vreg0, mask);
             Reducefunc(vreg1CastUpper, vreg0CastUpper, mask);
-            MicroAPI::Cast<T, U, CastTraitLower>(vreg1, vreg1CastUpper, mask);
-            MicroAPI::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
+            Reg::Cast<T, U, CastTraitLower>(vreg1, vreg1CastUpper, mask);
+            Reg::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
         }
-        MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+        Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
     } else {
-        MicroAPI::RegTensor<T, Trait> vreg0;
-        MicroAPI::RegTensor<T, Trait> vreg1;
-        MicroAPI::RegTensor<T, Trait> vreg2;
-        MicroAPI::RegTensor<U, Trait> vreg0CastB32;
-        MicroAPI::RegTensor<U, Trait> vreg1CastB32;
-        MicroAPI::UnalignReg uDst;
+        Reg::RegTensor<T, Trait> vreg0;
+        Reg::RegTensor<T, Trait> vreg1;
+        Reg::RegTensor<T, Trait> vreg2;
+        Reg::RegTensor<U, Trait> vreg0CastB32;
+        Reg::RegTensor<U, Trait> vreg1CastB32;
+        Reg::UnalignReg uDst;
         uint32_t sreg1 = dimR;
-        MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL, Trait>();
-        MicroAPI::MaskReg mask = MicroAPI::UpdateMask<U>(sreg1);
-        mask = MicroAPI::UpdateMask<U>(sreg1);
-        MicroAPI::MaskPack(mask, mask);
+        Reg::MaskReg fullMask = Reg::CreateMask<T, Reg::MaskPattern::ALL, Trait>();
+        Reg::MaskReg mask = Reg::UpdateMask<U>(sreg1);
+        mask = Reg::UpdateMask<U>(sreg1);
+        Reg::MaskPack(mask, mask);
         for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
-            MicroAPI::LoadAlign(vreg0, srcAddr + loopA * dimR);
-            MicroAPI::LoadAlign(vreg1, srcAddr + vlSize / 2 + loopA * dimR);
+            Reg::LoadAlign(vreg0, srcAddr + loopA * dimR);
+            Reg::LoadAlign(vreg1, srcAddr + vlSize / 2 + loopA * dimR);
             Binaryfunc(vreg2, vreg0, vreg1, mask);
             Select(vreg2, vreg2, vreg0, mask);
             if constexpr (IsSameType<T, bfloat16_t>::value) {
-                MicroAPI::UnPack((MicroAPI::RegTensor<uint32_t, Trait> &)vreg2,
-                    (MicroAPI::RegTensor<uint16_t, Trait> &)vreg2);
+                Reg::UnPack((Reg::RegTensor<uint32_t, Trait> &)vreg2,
+                    (Reg::RegTensor<uint16_t, Trait> &)vreg2);
             } else {
-                MicroAPI::UnPack((MicroAPI::RegTensor<uint16_t, Trait> &)vreg2,
-                    (MicroAPI::RegTensor<uint8_t, Trait> &)vreg2);
+                Reg::UnPack((Reg::RegTensor<uint16_t, Trait> &)vreg2,
+                    (Reg::RegTensor<uint8_t, Trait> &)vreg2);
             }
-            MicroAPI::Cast<U, T, CastTraitUppper>(vreg0CastB32, vreg2, fullMask);
+            Reg::Cast<U, T, CastTraitUppper>(vreg0CastB32, vreg2, fullMask);
             Reducefunc(vreg1CastB32, vreg0CastB32, fullMask);
-            MicroAPI::Cast<T, U, CastTraitLower>(vreg1, vreg1CastB32, fullMask);
-            MicroAPI::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
+            Reg::Cast<T, U, CastTraitLower>(vreg1, vreg1CastB32, fullMask);
+            Reg::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
         }
-        MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+        Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
     }
 }
 
-template <class T, const MicroAPI::RegTrait &Trait, auto Reducefunc>
+template <class T, const Reg::RegTrait &Trait, auto Reducefunc>
 __simd_vf__ inline void ReduceARLessThanVL(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA,
     uint32_t dimR)
 {
-    MicroAPI::RegTensor<T, Trait> vreg0;
-    MicroAPI::RegTensor<T, Trait> vreg1;
-    MicroAPI::UnalignReg uDst;
+    Reg::RegTensor<T, Trait> vreg0;
+    Reg::RegTensor<T, Trait> vreg1;
+    Reg::UnalignReg uDst;
     uint32_t sreg1 = dimR;
-    MicroAPI::MaskReg mask = MicroAPI::UpdateMask<T, Trait>(sreg1);
+    Reg::MaskReg mask = Reg::UpdateMask<T, Trait>(sreg1);
     for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
-        MicroAPI::LoadAlign(vreg0, srcAddr + loopA * dimR);
+        Reg::LoadAlign(vreg0, srcAddr + loopA * dimR);
         Reducefunc(vreg1, vreg0, mask);
-        MicroAPI::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
+        Reg::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
     }
-    MicroAPI::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+    Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
 }
 
 enum class ReduceType {
@@ -97,53 +104,53 @@ enum class ReduceType {
     OTHERS,
 };
 
-template <class T, const MicroAPI::RegTrait &Trait, ReduceType reduceType>
+template <class T, const Reg::RegTrait &Trait, ReduceType reduceType>
 __simd_callee__ inline void GroupReduce(
-    MicroAPI::RegTensor<T, Trait>& dst, MicroAPI::RegTensor<T, Trait>& src, MicroAPI::MaskReg& mask)
+    Reg::RegTensor<T, Trait>& dst, Reg::RegTensor<T, Trait>& src, Reg::MaskReg& mask)
 {
     if constexpr (reduceType == ReduceType::IS_REDUCE_SUM) {
-        MicroAPI::ReduceSumWithDataBlock(dst, src, mask);
+        Reg::ReduceSumWithDataBlock(dst, src, mask);
     } else if constexpr (reduceType == ReduceType::IS_REDUCE_MAX) {
-        MicroAPI::ReduceMaxWithDataBlock(dst, src, mask);
+        Reg::ReduceMaxWithDataBlock(dst, src, mask);
     } else if constexpr (reduceType == ReduceType::IS_REDUCE_MIN) {
-        MicroAPI::ReduceMinWithDataBlock(dst, src, mask);
+        Reg::ReduceMinWithDataBlock(dst, src, mask);
     }
 }
 
-template <class T, const MicroAPI::RegTrait &Trait, const uint16_t vlSize, auto Binaryfunc,
+template <class T, const Reg::RegTrait &Trait, const uint16_t vlSize, auto Binaryfunc,
           auto GroupReduceType, bool NeedFoldR = true>
 __simd_vf__ inline void GroupReduceVf(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint16_t innerFoldNum,
                                       uint16_t fusedA, uint16_t strideA, uint32_t outerRepElement)
 {
     constexpr uint16_t blockDataLen = GetDataBlockSizeInBytes() / sizeof(T);
     constexpr uint16_t blockNumInVl = vlSize / blockDataLen;
-    MicroAPI::RegTensor<T, Trait> vreg0;
-    MicroAPI::RegTensor<T, Trait> vreg1;
-    MicroAPI::UnalignReg uDst;
-    MicroAPI::MaskReg mask;
+    Reg::RegTensor<T, Trait> vreg0;
+    Reg::RegTensor<T, Trait> vreg1;
+    Reg::UnalignReg uDst;
+    Reg::MaskReg mask;
     const uint16_t innerFoldBinaryNum = innerFoldNum - 1;
 
     for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(fusedA); ++loopA) {
-        mask = MicroAPI::UpdateMask<T, Trait>(outerRepElement);
+        mask = Reg::UpdateMask<T, Trait>(outerRepElement);
         if constexpr (NeedFoldR) {
             auto srcAddrFold = srcAddr + blockDataLen;
-            MicroAPI::LoadAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
+            Reg::LoadAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY, Reg::PostLiteral::POST_MODE_UPDATE>(
                 vreg0, srcAddr, innerFoldNum, strideA, mask);
             for (uint16_t loopR = 0; loopR < innerFoldBinaryNum; ++loopR) {
-                MicroAPI::LoadAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
+                Reg::LoadAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY, Reg::PostLiteral::POST_MODE_UPDATE>(
                     vreg1, srcAddrFold, innerFoldNum, 1, mask);
                 Binaryfunc(vreg0, vreg1, vreg0, mask);
             }
         } else {
-            MicroAPI::LoadAlign(vreg0, srcAddr + vlSize * loopA);
+            Reg::LoadAlign(vreg0, srcAddr + vlSize * loopA);
         }
         GroupReduce<T, Trait, GroupReduceType>(vreg1, vreg0, mask);
-        MicroAPI::StoreUnAlign((__ubuf__ T*&)dstAddr, vreg1, uDst, blockNumInVl);
+        Reg::StoreUnAlign((__ubuf__ T*&)dstAddr, vreg1, uDst, blockNumInVl);
     }
-    MicroAPI::StoreUnAlignPost((__ubuf__ T*&)dstAddr, uDst, blockNumInVl);
+    Reg::StoreUnAlignPost((__ubuf__ T*&)dstAddr, uDst, blockNumInVl);
 }
 
-template <class T, const MicroAPI::RegTrait &Trait, const uint16_t vlSize, auto Binaryfunc,
+template <class T, const Reg::RegTrait &Trait, const uint16_t vlSize, auto Binaryfunc,
           auto groupReduceType, bool NeedFoldR = true>
 __aicore__ inline void GroupReduceARLessThanVL(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint32_t dimA, uint32_t dimR)
 {
@@ -157,7 +164,7 @@ __aicore__ inline void GroupReduceARLessThanVL(__ubuf__ T* dstAddr, __ubuf__ T* 
         dstAddr, srcAddr, innerFoldNum, fusedA, strideA, outerRepElement);
 }
 
-template <class T, const MicroAPI::RegTrait &Trait, const uint16_t vlSize,
+template <class T, const Reg::RegTrait &Trait, const uint16_t vlSize,
           auto Binaryfunc, auto Reducefunc, ReduceType groupReduceType = ReduceType::OTHERS>
 __aicore__ inline void ReduceARReuseSourceLessThanVL(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA,
     uint32_t dimR)
@@ -184,3 +191,8 @@ __aicore__ inline void ReduceARReuseSourceLessThanVL(__ubuf__ T *dstAddr, __ubuf
 }
 } // namespace AscendC
 #endif // IMPL_REDUCE_REDUCE_COMMON_AR_REUSE_ALIGN_LESS_THAN_VL_C310_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_COMMON_AR_REUSE_ALIGN_LESS_THAN_VL_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_COMMON_AR_REUSE_ALIGN_LESS_THAN_VL_C310_IMPL_H__
+#endif

@@ -378,7 +378,7 @@ private:
 
 TEST_F(TestCopyCubeInMdlMx, Copy_Cube_In_IterateOrder_Tiling_M_Config_UNDEF) {
     // coreNum, M, N, K, singleCoreM, singleCoreN, singleCoreK, baseM, baseN, baseK, depthA1, depthB1, stepM, stepN, stepKa, stepKb, isBias, iterateOrder, MxTypePara
-    TilingParamsMx tilingParamsMx = {1, 465, 251, 192, 465, 251, 192, 256, 256, 192, 2, 1, 2, 1, 1, 1, 1, 0, 257};
+    TilingParamsMx tilingParamsMx = {1, 465, 251, 192, 465, 251, 192, 256, 256, 192, 2, 1, 2, 1, 1, 1, 1, 0, 16843009};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
     mm1.InitVar(tiling);
@@ -391,7 +391,7 @@ TEST_F(TestCopyCubeInMdlMx, Copy_Cube_In_IterateOrder_Tiling_M_Config_UNDEF) {
 
 TEST_F(TestCopyCubeInMdlMx, Copy_Cube_In_IterateOrder_Tiling_N_Config_UNDEF) {
     // coreNum, M, N, K, singleCoreM, singleCoreN, singleCoreK, baseM, baseN, baseK, depthA1, depthB1, stepM, stepN, stepKa, stepKb, isBias, iterateOrder, MxTypePara
-    TilingParamsMx tilingParamsMx = {1, 454, 30, 128, 454, 30, 128, 480, 32, 128, 1, 1, 1, 1, 1, 1, 1, 1, 257};
+    TilingParamsMx tilingParamsMx = {1, 454, 30, 128, 454, 30, 128, 480, 32, 128, 1, 1, 1, 1, 1, 1, 1, 1, 16843009};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
     mm1.InitVar(tiling);
@@ -405,7 +405,7 @@ TEST_F(TestCopyCubeInMdlMx, Copy_Cube_In_IterateOrder_Tiling_N_Config_UNDEF) {
 
 TEST_F(TestCopyCubeInMdlMx, Copy_Cube_In_IterateOrder_Tiling_UNDEF_Config_M) {
     // coreNum, M, N, K, singleCoreM, singleCoreN, singleCoreK, baseM, baseN, baseK, depthA1, depthB1, stepM, stepN, stepKa, stepKb, isBias, iterateOrder, MxTypePara
-    TilingParamsMx tilingParamsMx = {1, 365, 382, 320, 365, 382, 320, 256, 256, 256, 4, 4, 2, 2, 2, 2, 1, 2, 257};
+    TilingParamsMx tilingParamsMx = {1, 365, 382, 320, 365, 382, 320, 256, 256, 256, 4, 4, 2, 2, 2, 2, 1, 2, 16843009};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
     mm2.InitVar(tiling);
@@ -420,7 +420,7 @@ TEST_F(TestCopyCubeInMdlMx, Copy_Cube_In_IterateOrder_Tiling_UNDEF_Config_M) {
 
 TEST_F(TestCopyCubeInMdlMx, Copy_Cube_In_IterateOrder_Tiling_UNDEF_Config_N) {
     // coreNum, M, N, K, singleCoreM, singleCoreN, singleCoreK, baseM, baseN, baseK, depthA1, depthB1, stepM, stepN, stepKa, stepKb, isBias, iterateOrder, MxTypePara
-    TilingParamsMx tilingParamsMx = {1, 209, 386, 114, 209, 386, 114, 224, 256, 128, 1, 2, 1, 2, 1, 1, 1, 2, 257};
+    TilingParamsMx tilingParamsMx = {1, 209, 386, 114, 209, 386, 114, 224, 256, 128, 1, 2, 1, 2, 1, 1, 1, 2, 16843009};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
     mm3.InitVar(tiling);
@@ -434,7 +434,7 @@ TEST_F(TestCopyCubeInMdlMx, Copy_Cube_In_IterateOrder_Tiling_UNDEF_Config_N) {
 
 TEST_F(TestCopyCubeInMdlMx, Copy_Cube_In_FP8_CeilK_Is_Odd) {
     // coreNum, M, N, K, singleCoreM, singleCoreN, singleCoreK, baseM, baseN, baseK, depthA1, depthB1, stepM, stepN, stepKa, stepKb, isBias, iterateOrder, MxTypePara
-    TilingParamsMx tilingParamsMx = {1, 382, 2, 400, 382, 2, 400, 192, 32, 256, 4, 2, 2, 1, 2, 2, 0, 0, 257};
+    TilingParamsMx tilingParamsMx = {1, 382, 2, 400, 382, 2, 400, 192, 32, 256, 4, 2, 2, 1, 2, 2, 0, 0, 16843009};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
     mm4.InitVar(tiling);
@@ -448,7 +448,7 @@ TEST_F(TestCopyCubeInMdlMx, Copy_Cube_In_FP8_CeilK_Is_Odd) {
 
 TEST_F(TestCopyCubeInMdlMx, Copy_Cube_In_FP4_CeilK_Is_Odd) {
     // coreNum, M, N, K, singleCoreM, singleCoreN, singleCoreK, baseM, baseN, baseK, depthA1, depthB1, stepM, stepN, stepKa, stepKb, isBias, iterateOrder, MxTypePara
-    TilingParamsMx tilingParamsMx = {1, 356, 442, 466, 356, 442, 466, 128, 256, 256, 6, 4, 3, 2, 2, 2, 0, 0, 257};
+    TilingParamsMx tilingParamsMx = {1, 356, 442, 466, 356, 442, 466, 128, 256, 256, 6, 4, 3, 2, 2, 2, 0, 0, 16843009};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
     mm5.InitVar(tiling);
@@ -462,7 +462,7 @@ TEST_F(TestCopyCubeInMdlMx, Copy_Cube_In_FP4_CeilK_Is_Odd) {
 
 TEST_F(TestCopyCubeInMdlMx, Copy_Cube_In_FP8_NZ_CeilK_Is_Odd) {
     // coreNum, M, N, K, singleCoreM, singleCoreN, singleCoreK, baseM, baseN, baseK, depthA1, depthB1, stepM, stepN, stepKa, stepKb, isBias, iterateOrder, MxTypePara
-    TilingParamsMx tilingParamsMx = {1, 64, 64, 96, 64, 64, 96, 64, 64, 64, 2, 2, 1, 1, 2, 2, 0, 0, 257};
+    TilingParamsMx tilingParamsMx = {1, 64, 64, 96, 64, 64, 96, 64, 64, 64, 2, 2, 1, 1, 2, 2, 0, 0, 16843009};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
     mmFp8NZ.InitVar(tiling);
@@ -476,7 +476,7 @@ TEST_F(TestCopyCubeInMdlMx, Copy_Cube_In_FP8_NZ_CeilK_Is_Odd) {
 
 TEST_F(TestCopyCubeInMdlMx, Copy_Cube_In_FP4_NZ_CeilK_Is_Odd) {
     // coreNum, M, N, K, singleCoreM, singleCoreN, singleCoreK, baseM, baseN, baseK, depthA1, depthB1, stepM, stepN, stepKa, stepKb, isBias, iterateOrder, MxTypePara
-    TilingParamsMx tilingParamsMx = {1, 128, 256, 96, 128, 256, 96, 128, 256, 64, 2, 2, 1, 1, 2, 2, 0, 0, 257};
+    TilingParamsMx tilingParamsMx = {1, 128, 256, 96, 128, 256, 96, 128, 256, 64, 2, 2, 1, 1, 2, 2, 0, 0, 16843009};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
     mmFp4NZ.InitVar(tiling);

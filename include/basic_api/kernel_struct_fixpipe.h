@@ -12,6 +12,11 @@
  * \file kernel_struct_fixpipe.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_STRUCT_FIXPIPE_H__
+#endif
+
 #ifndef ASCENDC_MODULE_STRUCT_FIXPIPE_H
 #define ASCENDC_MODULE_STRUCT_FIXPIPE_H
 
@@ -181,6 +186,7 @@ struct FixpipeParamsC310 {
     ReluMode preReluMode = ReluMode::NO_RELU;
     ClipReluMode preClipReluMode = ClipReluMode::NOCLIP_RELU;
     uint64_t reluScalar;
+    uint64_t vectorRelu;
 #endif
     uint16_t nSize = 0;
     uint16_t mSize = 0;  // M-DirectionSize
@@ -204,3 +210,8 @@ using FixpipeParamsM310 = FixpipeParamsV220;
 } // namespace AscendC
 
 #endif // ASCENDC_MODULE_STRUCT_FIXPIPE_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_STRUCT_FIXPIPE_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_STRUCT_FIXPIPE_H__
+#endif

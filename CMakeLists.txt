@@ -52,20 +52,12 @@ endif()
 add_subdirectory(tools)
 add_subdirectory(cmake)
 
-set(ASC_DEVKIT_VERSION_FILE ${CMAKE_CURRENT_BINARY_DIR}/_CPack_Packages/makeself_staging/share/info/asc-devkit/version.info)
-add_custom_command(
-    OUTPUT ${ASC_DEVKIT_VERSION_FILE}
-    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/scripts/update_version_info/update_version_info.sh
-            ${CMAKE_CURRENT_SOURCE_DIR}/version.info
-            ${ASC_DEVKIT_VERSION_FILE}
-    DEPENDS
-        ${CMAKE_CURRENT_SOURCE_DIR}/version.info
-    VERBATIM
-)
-
-add_custom_target(generate_ASC_DEVKIT_VERSION_FILE ALL
-    DEPENDS ${ASC_DEVKIT_VERSION_FILE}
-)
+include(cmake/funcs.cmake)
+include(version.cmake)
+if(BUILD_OPEN_PROJECT)
+    check_pkg_build_deps("asc-devkit")
+endif()
+add_version_info_targets()
 
 if(ENABLE_TEST)
   add_subdirectory(tests)

@@ -8,6 +8,11 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/math/hypot/hypot_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/hypot.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_H__YPOT_HYPOT_COMMON_IMPL_H
+#endif
 #ifndef LIB_MATH_HYPOT_IMPL_H
 #define LIB_MATH_HYPOT_IMPL_H
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
@@ -32,86 +37,86 @@ constexpr uint32_t AND_OPERATOR = 0xfe000000;
 constexpr uint32_t ADD_OPERATOR = 0x7e800000;
 constexpr uint32_t OR_OPERATOR = 0x800000;
 
-constexpr MicroAPI::CastTrait HYPOT_CAST_TRAIT_RINT = { MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
-    MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT };
+constexpr Reg::CastTrait HYPOT_CAST_TRAIT_RINT = { Reg::RegLayout::ZERO, Reg::SatMode::SAT,
+    Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT };
 }
 
 template <typename T, typename U>
-__simd_callee__ inline void CompareScalar(MicroAPI::MaskReg &cmpMaskZero, MicroAPI::MaskReg &cmpMaskSrcInf,
-    MicroAPI::RegTensor<T> &vSrcTmpReg0, MicroAPI::RegTensor<T> &vSrcTmpReg1, MicroAPI::MaskReg &cmpMaskSrc0NAN,
-    MicroAPI::MaskReg &cmpMaskSrc1NAN, MicroAPI::RegTensor<T> &vRegOne, MicroAPI::RegTensor<T> &vSrcReg0,
-    MicroAPI::RegTensor<T> &vSrcReg1, const U INF, const U NEG_INF, MicroAPI::MaskReg maskReg)
+__simd_callee__ inline void CompareScalar(Reg::MaskReg &cmpMaskZero, Reg::MaskReg &cmpMaskSrcInf,
+    Reg::RegTensor<T> &vSrcTmpReg0, Reg::RegTensor<T> &vSrcTmpReg1, Reg::MaskReg &cmpMaskSrc0NAN,
+    Reg::MaskReg &cmpMaskSrc1NAN, Reg::RegTensor<T> &vRegOne, Reg::RegTensor<T> &vSrcReg0,
+    Reg::RegTensor<T> &vSrcReg1, const U INF, const U NEG_INF, Reg::MaskReg maskReg)
 {
-    MicroAPI::MaskReg cmpMaskSrc0INF;
-    MicroAPI::MaskReg cmpMaskSrc1INF;
-    MicroAPI::MaskReg cmpMaskSrc0NINF;
-    MicroAPI::MaskReg cmpMaskSrc1NINF;
-    MicroAPI::MaskReg cmpMaskSrc0Zero;
-    MicroAPI::MaskReg cmpMaskSrc1Zero;
-    MicroAPI::MaskReg cmpMaskSrc0Inf;
-    MicroAPI::MaskReg cmpMaskSrc1Inf;
+    Reg::MaskReg cmpMaskSrc0INF;
+    Reg::MaskReg cmpMaskSrc1INF;
+    Reg::MaskReg cmpMaskSrc0NINF;
+    Reg::MaskReg cmpMaskSrc1NINF;
+    Reg::MaskReg cmpMaskSrc0Zero;
+    Reg::MaskReg cmpMaskSrc1Zero;
+    Reg::MaskReg cmpMaskSrc0Inf;
+    Reg::MaskReg cmpMaskSrc1Inf;
 
-    MicroAPI::CompareScalar<U>(cmpMaskSrc0INF, (MicroAPI::RegTensor<U> &)vSrcReg0, INF, maskReg);
-    MicroAPI::CompareScalar<U>(cmpMaskSrc1INF, (MicroAPI::RegTensor<U> &)vSrcReg1, INF, maskReg);
-    MicroAPI::CompareScalar<U>(cmpMaskSrc0NINF, (MicroAPI::RegTensor<U> &)vSrcReg0, NEG_INF, maskReg);
-    MicroAPI::CompareScalar<U>(cmpMaskSrc1NINF, (MicroAPI::RegTensor<U> &)vSrcReg1, NEG_INF, maskReg);
-    MicroAPI::CompareScalar<U>(cmpMaskSrc0Zero, (MicroAPI::RegTensor<U> &)vSrcReg0, 0, maskReg);
-    MicroAPI::CompareScalar<U>(cmpMaskSrc1Zero, (MicroAPI::RegTensor<U> &)vSrcReg1, 0, maskReg);
+    Reg::CompareScalar<U>(cmpMaskSrc0INF, (Reg::RegTensor<U> &)vSrcReg0, INF, maskReg);
+    Reg::CompareScalar<U>(cmpMaskSrc1INF, (Reg::RegTensor<U> &)vSrcReg1, INF, maskReg);
+    Reg::CompareScalar<U>(cmpMaskSrc0NINF, (Reg::RegTensor<U> &)vSrcReg0, NEG_INF, maskReg);
+    Reg::CompareScalar<U>(cmpMaskSrc1NINF, (Reg::RegTensor<U> &)vSrcReg1, NEG_INF, maskReg);
+    Reg::CompareScalar<U>(cmpMaskSrc0Zero, (Reg::RegTensor<U> &)vSrcReg0, 0, maskReg);
+    Reg::CompareScalar<U>(cmpMaskSrc1Zero, (Reg::RegTensor<U> &)vSrcReg1, 0, maskReg);
 
-    MicroAPI::MaskAnd(cmpMaskZero, cmpMaskSrc0Zero, cmpMaskSrc1Zero, maskReg);
-    MicroAPI::MaskOr(cmpMaskSrc0Inf, cmpMaskSrc0INF, cmpMaskSrc0NINF, maskReg);
-    MicroAPI::MaskOr(cmpMaskSrc1Inf, cmpMaskSrc1INF, cmpMaskSrc1NINF, maskReg);
-    MicroAPI::MaskOr(cmpMaskSrcInf, cmpMaskSrc0Inf, cmpMaskSrc1Inf, maskReg);
-    MicroAPI::Select(vSrcTmpReg0, vRegOne, vSrcReg0, cmpMaskSrc0NAN);
-    MicroAPI::Select(vSrcTmpReg1, vRegOne, vSrcReg1, cmpMaskSrc1NAN);
-    MicroAPI::Select(vSrcTmpReg0, vRegOne, vSrcReg0, cmpMaskSrcInf);
-    MicroAPI::Select(vSrcTmpReg1, vRegOne, vSrcReg1, cmpMaskSrcInf);
+    Reg::MaskAnd(cmpMaskZero, cmpMaskSrc0Zero, cmpMaskSrc1Zero, maskReg);
+    Reg::MaskOr(cmpMaskSrc0Inf, cmpMaskSrc0INF, cmpMaskSrc0NINF, maskReg);
+    Reg::MaskOr(cmpMaskSrc1Inf, cmpMaskSrc1INF, cmpMaskSrc1NINF, maskReg);
+    Reg::MaskOr(cmpMaskSrcInf, cmpMaskSrc0Inf, cmpMaskSrc1Inf, maskReg);
+    Reg::Select(vSrcTmpReg0, vRegOne, vSrcReg0, cmpMaskSrc0NAN);
+    Reg::Select(vSrcTmpReg1, vRegOne, vSrcReg1, cmpMaskSrc1NAN);
+    Reg::Select(vSrcTmpReg0, vRegOne, vSrcReg0, cmpMaskSrcInf);
+    Reg::Select(vSrcTmpReg1, vRegOne, vSrcReg1, cmpMaskSrcInf);
 }
 
-__simd_callee__ inline void HypotCommonProcess(MicroAPI::RegTensor<float> &vSrcTmpReg0, MicroAPI::RegTensor<float> &vSrcTmpReg1,
-    MicroAPI::RegTensor<float> &vDstReg0, MicroAPI::MaskReg maskReg)
+__simd_callee__ inline void HypotCommonProcess(Reg::RegTensor<float> &vSrcTmpReg0, Reg::RegTensor<float> &vSrcTmpReg1,
+    Reg::RegTensor<float> &vDstReg0, Reg::MaskReg maskReg)
 {
-    MicroAPI::RegTensor<float> vTmpReg0, vTmpReg1, vTmpReg2, vTmpReg3;
-    MicroAPI::RegTensor<int32_t> vAndReg, vNegReg, vAddsReg, vOrReg, vMinReg, vMaxReg;
-    MicroAPI::RegTensor<int32_t> vConstReg0, vConstReg1;
-    MicroAPI::Abs(vSrcTmpReg0, vSrcTmpReg0, maskReg);
-    MicroAPI::Abs(vSrcTmpReg1, vSrcTmpReg1, maskReg);
-    MicroAPI::Min(vMinReg, (MicroAPI::RegTensor<int32_t>&)vSrcTmpReg0, (MicroAPI::RegTensor<int32_t>&)vSrcTmpReg1, maskReg);
-    MicroAPI::Max(vMaxReg, (MicroAPI::RegTensor<int32_t>&)vSrcTmpReg0, (MicroAPI::RegTensor<int32_t>&)vSrcTmpReg1, maskReg);
-    MicroAPI::Duplicate(vConstReg0, HypotInternal::AND_OPERATOR, maskReg);
-    MicroAPI::And(vAndReg, vMaxReg, vConstReg0, maskReg);
-    MicroAPI::Neg(vNegReg, vAndReg, maskReg);
-    MicroAPI::Adds(vAddsReg, vNegReg, HypotInternal::ADD_OPERATOR, maskReg);
-    MicroAPI::Mul(vTmpReg0, (MicroAPI::RegTensor<float>&)vMinReg, (MicroAPI::RegTensor<float>&)vAddsReg, maskReg);
-    MicroAPI::Mul(vTmpReg1, (MicroAPI::RegTensor<float>&)vMaxReg, (MicroAPI::RegTensor<float>&)vAddsReg, maskReg);
-    MicroAPI::Mul(vTmpReg2, vTmpReg0, vTmpReg0, maskReg);
-    MicroAPI::MulAddDst(vTmpReg2, vTmpReg1, vTmpReg1, maskReg);
-    MicroAPI::Sqrt(vTmpReg3, vTmpReg2, maskReg);
-    MicroAPI::Duplicate(vConstReg1, HypotInternal::OR_OPERATOR, maskReg);
-    MicroAPI::Or(vOrReg, vAndReg, vConstReg1, maskReg);
-    MicroAPI::Mul(vDstReg0, vTmpReg3, (MicroAPI::RegTensor<float>&)vOrReg, maskReg);
+    Reg::RegTensor<float> vTmpReg0, vTmpReg1, vTmpReg2, vTmpReg3;
+    Reg::RegTensor<int32_t> vAndReg, vNegReg, vAddsReg, vOrReg, vMinReg, vMaxReg;
+    Reg::RegTensor<int32_t> vConstReg0, vConstReg1;
+    Reg::Abs(vSrcTmpReg0, vSrcTmpReg0, maskReg);
+    Reg::Abs(vSrcTmpReg1, vSrcTmpReg1, maskReg);
+    Reg::Min(vMinReg, (Reg::RegTensor<int32_t>&)vSrcTmpReg0, (Reg::RegTensor<int32_t>&)vSrcTmpReg1, maskReg);
+    Reg::Max(vMaxReg, (Reg::RegTensor<int32_t>&)vSrcTmpReg0, (Reg::RegTensor<int32_t>&)vSrcTmpReg1, maskReg);
+    Reg::Duplicate(vConstReg0, HypotInternal::AND_OPERATOR, maskReg);
+    Reg::And(vAndReg, vMaxReg, vConstReg0, maskReg);
+    Reg::Neg(vNegReg, vAndReg, maskReg);
+    Reg::Adds(vAddsReg, vNegReg, HypotInternal::ADD_OPERATOR, maskReg);
+    Reg::Mul(vTmpReg0, (Reg::RegTensor<float>&)vMinReg, (Reg::RegTensor<float>&)vAddsReg, maskReg);
+    Reg::Mul(vTmpReg1, (Reg::RegTensor<float>&)vMaxReg, (Reg::RegTensor<float>&)vAddsReg, maskReg);
+    Reg::Mul(vTmpReg2, vTmpReg0, vTmpReg0, maskReg);
+    Reg::MulAddDst(vTmpReg2, vTmpReg1, vTmpReg1, maskReg);
+    Reg::Sqrt(vTmpReg3, vTmpReg2, maskReg);
+    Reg::Duplicate(vConstReg1, HypotInternal::OR_OPERATOR, maskReg);
+    Reg::Or(vOrReg, vAndReg, vConstReg1, maskReg);
+    Reg::Mul(vDstReg0, vTmpReg3, (Reg::RegTensor<float>&)vOrReg, maskReg);
 }
 
 template <typename T>
-__simd_callee__ inline void HypotCompute(MicroAPI::RegTensor<T> &vSrcTmpReg0, MicroAPI::RegTensor<T> &vSrcTmpReg1,
-    MicroAPI::RegTensor<T> &vDstReg0, MicroAPI::MaskReg maskReg)
+__simd_callee__ inline void HypotCompute(Reg::RegTensor<T> &vSrcTmpReg0, Reg::RegTensor<T> &vSrcTmpReg1,
+    Reg::RegTensor<T> &vDstReg0, Reg::MaskReg maskReg)
 {
     if constexpr (IsSameType<T, bfloat16_t>::value) {
-        MicroAPI::RegTensor<float> vDstF, vSrc0, vSrc1;
-        MicroAPI::Cast<float, bfloat16_t, HypotInternal::HYPOT_CAST_TRAIT_RINT>(vSrc0, vSrcTmpReg0, maskReg);
-        MicroAPI::Cast<float, bfloat16_t, HypotInternal::HYPOT_CAST_TRAIT_RINT>(vSrc1, vSrcTmpReg1, maskReg);
+        Reg::RegTensor<float> vDstF, vSrc0, vSrc1;
+        Reg::Cast<float, bfloat16_t, HypotInternal::HYPOT_CAST_TRAIT_RINT>(vSrc0, vSrcTmpReg0, maskReg);
+        Reg::Cast<float, bfloat16_t, HypotInternal::HYPOT_CAST_TRAIT_RINT>(vSrc1, vSrcTmpReg1, maskReg);
         
         HypotCommonProcess(vSrc0, vSrc1, vDstF, maskReg);
 
-        MicroAPI::Cast<bfloat16_t, float, HypotInternal::HYPOT_CAST_TRAIT_RINT>(vDstReg0, vDstF, maskReg);
+        Reg::Cast<bfloat16_t, float, HypotInternal::HYPOT_CAST_TRAIT_RINT>(vDstReg0, vDstF, maskReg);
     } else if constexpr (IsSameType<T, half>::value) {
-        MicroAPI::RegTensor<float> vDstF, vSrc0, vSrc1;
-        MicroAPI::Cast<float, half, HypotInternal::HYPOT_CAST_TRAIT_RINT>(vSrc0, vSrcTmpReg0, maskReg);
-        MicroAPI::Cast<float, half, HypotInternal::HYPOT_CAST_TRAIT_RINT>(vSrc1, vSrcTmpReg1, maskReg);
+        Reg::RegTensor<float> vDstF, vSrc0, vSrc1;
+        Reg::Cast<float, half, HypotInternal::HYPOT_CAST_TRAIT_RINT>(vSrc0, vSrcTmpReg0, maskReg);
+        Reg::Cast<float, half, HypotInternal::HYPOT_CAST_TRAIT_RINT>(vSrc1, vSrcTmpReg1, maskReg);
 
         HypotCommonProcess(vSrc0, vSrc1, vDstF, maskReg);
         
-        MicroAPI::Cast<half, float, HypotInternal::HYPOT_CAST_TRAIT_RINT>(vDstReg0, vDstF, maskReg);
+        Reg::Cast<half, float, HypotInternal::HYPOT_CAST_TRAIT_RINT>(vDstReg0, vDstF, maskReg);
     } else {
         HypotCommonProcess(vSrcTmpReg0, vSrcTmpReg1, vDstReg0, maskReg);
     }
@@ -121,20 +126,20 @@ template <typename T>
 __simd_vf__ inline void VfHypotImpl(__ubuf__ T *dstUb, __ubuf__ T *src0Ub, __ubuf__ T *src1Ub,
     const uint32_t calCount)
 {
-    MicroAPI::RegTensor<T> vSrcReg0;
-    MicroAPI::RegTensor<T> vSrcReg1;
-    MicroAPI::RegTensor<T> vDstReg0;
-    MicroAPI::RegTensor<T> vRegZero;
-    MicroAPI::RegTensor<T> vRegOne;
-    MicroAPI::RegTensor<T> vRegInf;
-    MicroAPI::RegTensor<T> vSrcTmpReg0;
-    MicroAPI::RegTensor<T> vSrcTmpReg1;
+    Reg::RegTensor<T> vSrcReg0;
+    Reg::RegTensor<T> vSrcReg1;
+    Reg::RegTensor<T> vDstReg0;
+    Reg::RegTensor<T> vRegZero;
+    Reg::RegTensor<T> vRegOne;
+    Reg::RegTensor<T> vRegInf;
+    Reg::RegTensor<T> vSrcTmpReg0;
+    Reg::RegTensor<T> vSrcTmpReg1;
 
-    MicroAPI::MaskReg maskReg;
-    MicroAPI::MaskReg cmpMaskZero;
-    MicroAPI::MaskReg cmpMaskSrcInf;
-    MicroAPI::MaskReg cmpMaskSrc0NAN;
-    MicroAPI::MaskReg cmpMaskSrc1NAN;
+    Reg::MaskReg maskReg;
+    Reg::MaskReg cmpMaskZero;
+    Reg::MaskReg cmpMaskSrcInf;
+    Reg::MaskReg cmpMaskSrc0NAN;
+    Reg::MaskReg cmpMaskSrc1NAN;
 
     uint32_t sreg = static_cast<uint32_t>(calCount);
     uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(T));
@@ -145,32 +150,32 @@ __simd_vf__ inline void VfHypotImpl(__ubuf__ T *dstUb, __ubuf__ T *src0Ub, __ubu
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
 
     if constexpr (IsSameType<T, float>::value) {
-        MicroAPI::Duplicate((MicroAPI::RegTensor<uint32_t> &)vRegInf, HypotInternal::INF);
-        MicroAPI::Duplicate((MicroAPI::RegTensor<uint32_t> &)vRegOne, 1.0f);
-        MicroAPI::Duplicate((MicroAPI::RegTensor<uint32_t> &)vRegZero, 0);
+        Reg::Duplicate((Reg::RegTensor<uint32_t> &)vRegInf, HypotInternal::INF);
+        Reg::Duplicate((Reg::RegTensor<uint32_t> &)vRegOne, 1.0f);
+        Reg::Duplicate((Reg::RegTensor<uint32_t> &)vRegZero, 0);
     } else if constexpr (IsSameType<T, half>::value) {
-        MicroAPI::Duplicate((MicroAPI::RegTensor<uint16_t> &)vRegInf, HypotInternal::HALF_INF);
-        MicroAPI::Duplicate((MicroAPI::RegTensor<uint16_t> &)vRegOne, 1.0f);
-        MicroAPI::Duplicate((MicroAPI::RegTensor<uint16_t> &)vRegZero, 0);
+        Reg::Duplicate((Reg::RegTensor<uint16_t> &)vRegInf, HypotInternal::HALF_INF);
+        Reg::Duplicate((Reg::RegTensor<uint16_t> &)vRegOne, 1.0f);
+        Reg::Duplicate((Reg::RegTensor<uint16_t> &)vRegZero, 0);
     } else if constexpr (IsSameType<T, bfloat16_t>::value) {
-        MicroAPI::Duplicate((MicroAPI::RegTensor<uint16_t> &)vRegInf, HypotInternal::B_HALF_INF);
-        MicroAPI::Duplicate((MicroAPI::RegTensor<uint16_t> &)vRegOne, HypotInternal::B_HALF_ONE);
-        MicroAPI::Duplicate((MicroAPI::RegTensor<uint16_t> &)vRegZero, 0);
+        Reg::Duplicate((Reg::RegTensor<uint16_t> &)vRegInf, HypotInternal::B_HALF_INF);
+        Reg::Duplicate((Reg::RegTensor<uint16_t> &)vRegOne, HypotInternal::B_HALF_ONE);
+        Reg::Duplicate((Reg::RegTensor<uint16_t> &)vRegZero, 0);
     }
 
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        maskReg = MicroAPI::UpdateMask<T>(sreg);
+        maskReg = Reg::UpdateMask<T>(sreg);
         if constexpr ((IsSameType<T, bfloat16_t>::value) || (IsSameType<T, half>::value)) {
-            MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(vSrcReg0, src0Ub + i * sregLower);
-            MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(vSrcReg1, src1Ub + i * sregLower);
-            MicroAPI::MaskUnPack(maskReg, maskReg);
+            Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(vSrcReg0, src0Ub + i * sregLower);
+            Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(vSrcReg1, src1Ub + i * sregLower);
+            Reg::MaskUnPack(maskReg, maskReg);
         } else {
-            MicroAPI::LoadAlign<T>(vSrcReg0, src0Ub + i * sregLower);
-            MicroAPI::LoadAlign<T>(vSrcReg1, src1Ub + i * sregLower);
+            Reg::LoadAlign<T>(vSrcReg0, src0Ub + i * sregLower);
+            Reg::LoadAlign<T>(vSrcReg1, src1Ub + i * sregLower);
         }
 
-        MicroAPI::Compare<T, CMPMODE::NE>(cmpMaskSrc0NAN, vSrcReg0, vSrcReg0, maskReg);
-        MicroAPI::Compare<T, CMPMODE::NE>(cmpMaskSrc1NAN, vSrcReg1, vSrcReg1, maskReg);
+        Reg::Compare<T, CMPMODE::NE>(cmpMaskSrc0NAN, vSrcReg0, vSrcReg0, maskReg);
+        Reg::Compare<T, CMPMODE::NE>(cmpMaskSrc1NAN, vSrcReg1, vSrcReg1, maskReg);
         if constexpr (IsSameType<T, float>::value) {
             CompareScalar<T, uint32_t>(cmpMaskZero, cmpMaskSrcInf, vSrcTmpReg0, vSrcTmpReg1, cmpMaskSrc0NAN,
                 cmpMaskSrc1NAN, vRegOne, vSrcReg0, vSrcReg1, HypotInternal::INF, HypotInternal::NEG_INF, maskReg);
@@ -186,14 +191,14 @@ __simd_vf__ inline void VfHypotImpl(__ubuf__ T *dstUb, __ubuf__ T *src0Ub, __ubu
 
         HypotCompute<T>(vSrcTmpReg0, vSrcTmpReg1, vDstReg0, maskReg);
 
-        MicroAPI::Select(vDstReg0, vRegZero, vDstReg0, cmpMaskZero);
-        MicroAPI::Select(vDstReg0, vSrcReg0, vDstReg0, cmpMaskSrc0NAN);
-        MicroAPI::Select(vDstReg0, vSrcReg1, vDstReg0, cmpMaskSrc1NAN);
-        MicroAPI::Select(vDstReg0, vRegInf, vDstReg0, cmpMaskSrcInf);
+        Reg::Select(vDstReg0, vRegZero, vDstReg0, cmpMaskZero);
+        Reg::Select(vDstReg0, vSrcReg0, vDstReg0, cmpMaskSrc0NAN);
+        Reg::Select(vDstReg0, vSrcReg1, vDstReg0, cmpMaskSrc1NAN);
+        Reg::Select(vDstReg0, vRegInf, vDstReg0, cmpMaskSrcInf);
         if constexpr ((IsSameType<T, bfloat16_t>::value) || (IsSameType<T, half>::value)) {
-            MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_PACK_B32>(dstUb + i * sregLower, vDstReg0, maskReg);
+            Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B32>(dstUb + i * sregLower, vDstReg0, maskReg);
         } else {
-            MicroAPI::StoreAlign<T>(dstUb + i * sregLower, vDstReg0, maskReg);
+            Reg::StoreAlign<T>(dstUb + i * sregLower, vDstReg0, maskReg);
         }
     }
 }
@@ -247,3 +252,8 @@ __aicore__ inline void HypotImpl(const LocalTensor<T>& dstTensor, const LocalTen
 } // namespace AscendC
 #endif
 #endif // IMPL_MATH_HYPOT_HYPOT_COMMON_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_H__YPOT_HYPOT_COMMON_IMPL_H)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_H__YPOT_HYPOT_COMMON_IMPL_H
+#endif

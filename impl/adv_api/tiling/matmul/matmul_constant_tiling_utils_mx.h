@@ -21,7 +21,7 @@
 namespace AscendC {
 namespace Impl {
 constexpr int32_t SCALE_K_SIZE = 32;
-constexpr int32_t MIN_MX_PARAM = 257;// scaleFactorKa = 1, scaleFactorKb = 1
+constexpr int32_t MIN_MX_PARAM = 0x01010101;// scaleFactorM/N/Ka/Kb = 0x01
 constexpr int32_t MX_L1_BUFFER_NUM = 4;// A/B/scaleA/scaleB buffer
 constexpr uint32_t SCALE_FACTOR_MAX_VALUE = 127;// scaleFactorKa/scaleFactorKb is 7 bit, max value is 127
 }

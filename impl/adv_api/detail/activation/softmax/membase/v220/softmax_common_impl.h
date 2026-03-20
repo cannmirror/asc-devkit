@@ -12,6 +12,13 @@
  * \file softmax_common_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/activation/softmax/membase/v220/softmax_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/softmax.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_COMMON_IMPL_H__
+#endif
+
 #ifndef IMPL_ACTIVATION_SOFTMAX_V220_SOFTMAX_COMMON_IMPL_H
 #define IMPL_ACTIVATION_SOFTMAX_V220_SOFTMAX_COMMON_IMPL_H
 
@@ -24,3 +31,7 @@ constexpr RoundMode FLOAT2HALF_ROUND_MODE = RoundMode::CAST_ROUND;
 
 };
 #endif // IMPL_ACTIVATION_SOFTMAX_V220_SOFTMAX_COMMON_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_COMMON_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_COMMON_IMPL_H__
+#endif

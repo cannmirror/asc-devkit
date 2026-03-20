@@ -11,7 +11,6 @@
 
 #include "kernel_operator.h"
 #include "add_custom_template_tiling.h"
-#include "kernel_operator_dump_tensor_intf_impl.h"
 #include "tiling_key_add_custom_template.h"
 constexpr int32_t BUFFER_NUM = 2;  // tensor num for each queue
 

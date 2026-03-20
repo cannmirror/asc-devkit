@@ -12,6 +12,12 @@
  * \file mmad_compute.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/matmul/stage/compute/mmad_compute.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COMPUTE_MMAD_COMPUTE_H__
+#endif
+
 #ifndef IMPL_MATMUL_STAGE_COMPUTE_MMAD_COMPUTE_H
 #define IMPL_MATMUL_STAGE_COMPUTE_MMAD_COMPUTE_H
 
@@ -80,3 +86,8 @@ private:
 }  // namespace AscendC
 
 #endif // IMPL_MATMUL_STAGE_COMPUTE_MMAD_COMPUTE_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COMPUTE_MMAD_COMPUTE_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COMPUTE_MMAD_COMPUTE_H__
+#endif

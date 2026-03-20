@@ -12,9 +12,14 @@
  * \file lgamma_common_utils.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/math/lgamma/lgamma_common_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/lgamma.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_LGAMMA_LGAMMA_COMMON_UTILS_H__
+#endif
 #ifndef IMPL_MATH_LGAMMA_LGAMMA_COMMON_UTILS_H
 #define IMPL_MATH_LGAMMA_LGAMMA_COMMON_UTILS_H
-
 #include "kernel_basic_intf.h"
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510 || \
@@ -122,10 +127,10 @@ struct LGammaParams {
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 namespace LgammaInternal {
-constexpr MicroAPI::CastTrait LGAMMA_CAST_TRAIT_F162F32 = {
-        MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
-constexpr MicroAPI::CastTrait LGAMMA_CAST_TRAIT_F322F16 = {
-        MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait LGAMMA_CAST_TRAIT_F162F32 = {
+        Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN, Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait LGAMMA_CAST_TRAIT_F322F16 = {
+        Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 constexpr uint32_t POW_70 = 0x1c800000;
 constexpr uint32_t NEG_POW_70 = 0x9c800000;
 constexpr uint32_t F023 = 0x3e6d3308;
@@ -265,28 +270,28 @@ __aicore__ inline constexpr MulAddsParams GetConstants8ToPow58()
     return params;
 }
 
-__simd_callee__ inline void LGammaCalcMulAdd(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& tmpReg,
-    MicroAPI::MaskReg mask, const MulAddsParams& params)
+__simd_callee__ inline void LGammaCalcMulAdd(Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& tmpReg,
+    Reg::MaskReg mask, const MulAddsParams& params)
 {
-    MicroAPI::Muls(resReg, tmpReg, params.r0, mask);
-    MicroAPI::Adds(resReg, resReg, params.r1, mask);
-    MicroAPI::Mul(resReg, resReg, tmpReg, mask);
-    MicroAPI::Adds(resReg, resReg, params.r2, mask);
-    MicroAPI::Mul(resReg, resReg, tmpReg, mask);
-    MicroAPI::Adds(resReg, resReg, params.r3, mask);
-    MicroAPI::Mul(resReg, resReg, tmpReg, mask);
-    MicroAPI::Adds(resReg, resReg, params.r4, mask);
+    Reg::Muls(resReg, tmpReg, params.r0, mask);
+    Reg::Adds(resReg, resReg, params.r1, mask);
+    Reg::Mul(resReg, resReg, tmpReg, mask);
+    Reg::Adds(resReg, resReg, params.r2, mask);
+    Reg::Mul(resReg, resReg, tmpReg, mask);
+    Reg::Adds(resReg, resReg, params.r3, mask);
+    Reg::Mul(resReg, resReg, tmpReg, mask);
+    Reg::Adds(resReg, resReg, params.r4, mask);
 }
 
 template <typename T>
-__simd_callee__ inline void LgammaLoadData(MicroAPI::RegTensor<float>& dstReg,
-    MicroAPI::RegTensor<T> srcReg, __ubuf__ T* srcUb, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void LgammaLoadData(Reg::RegTensor<float>& dstReg,
+    Reg::RegTensor<T> srcReg, __ubuf__ T* srcUb, Reg::MaskReg& mask)
 {
     if constexpr (IsSameType<T, half>::value) {
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb);
-        MicroAPI::Cast<float, T, LGAMMA_CAST_TRAIT_F162F32>(dstReg, srcReg, mask);
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb);
+        Reg::Cast<float, T, LGAMMA_CAST_TRAIT_F162F32>(dstReg, srcReg, mask);
     } else {
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_NORM>(dstReg, srcUb);
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_NORM>(dstReg, srcUb);
     }
 }
 }  // LgammaInternal
@@ -294,3 +299,8 @@ __simd_callee__ inline void LgammaLoadData(MicroAPI::RegTensor<float>& dstReg,
 }  // namespace AscendC
 #endif
 #endif  // IMPL_MATH_LGAMMA_LGAMMA_COMMON_UTILS_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_LGAMMA_LGAMMA_COMMON_UTILS_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_LGAMMA_LGAMMA_COMMON_UTILS_H__
+#endif

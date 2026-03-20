@@ -12,6 +12,12 @@
  * \file layernorm_c310_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/normalization/layernorm/layernorm_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORM_LAYERNORM_C310_IMPL_H__
+#endif
 #ifndef IMPL_NORMALIZATION_LAYERNORM_LAYERNORM_C310_IMPL_H
 #define IMPL_NORMALIZATION_LAYERNORM_LAYERNORM_C310_IMPL_H
 
@@ -30,22 +36,22 @@ __simd_vf__ inline void ComputeMeanVariance64VF(__ubuf__ float* const meanUb, __
     __ubuf__ T* const srcUb, const uint32_t aLength, const uint32_t rLengthWithPadding, const float k2Rec,
     const float k2RRec, const float rRecWithCorrection, const uint32_t count)
 {
-    MicroAPI::RegTensor<float> src0Reg;
-    MicroAPI::RegTensor<float> src1Reg;
-    MicroAPI::RegTensor<float> dstReg;
-    MicroAPI::RegTensor<float> meanReg;
-    MicroAPI::RegTensor<float> varianceReg;
+    Reg::RegTensor<float> src0Reg;
+    Reg::RegTensor<float> src1Reg;
+    Reg::RegTensor<float> dstReg;
+    Reg::RegTensor<float> meanReg;
+    Reg::RegTensor<float> varianceReg;
 
     uint32_t countTmp = count;
-    MicroAPI::MaskReg preg = MicroAPI::UpdateMask<float>(countTmp);
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::MaskReg pregOne = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::VL1>();
+    Reg::MaskReg preg = Reg::UpdateMask<float>(countTmp);
+    Reg::MaskReg pregFull = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
+    Reg::MaskReg pregOne = Reg::CreateMask<float, Reg::MaskPattern::VL1>();
     for (uint16_t i = 0; i < static_cast<uint16_t>(aLength); i++) {
         LoadDataWithT<T>(srcUb, src0Reg, preg, i * rLengthWithPadding);
         Muls(src1Reg, src0Reg, k2Rec, preg);
         ReduceSum(dstReg, src1Reg, preg);
         Muls(meanReg, dstReg, k2RRec, pregOne);
-        MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>((meanUb + i), meanReg, pregOne);
+        Reg::StoreAlign<float, Reg::StoreDist::DIST_FIRST_ELEMENT_B32>((meanUb + i), meanReg, pregOne);
         if constexpr (isOutputVariance) {
             Duplicate(meanReg, meanReg, pregFull);
             Sub(src0Reg, src0Reg, meanReg, pregFull);
@@ -57,7 +63,7 @@ __simd_vf__ inline void ComputeMeanVariance64VF(__ubuf__ float* const meanUb, __
             } else {
                 Muls(varianceReg, dstReg, k2RRec, pregOne);
             }
-            MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>((varianceUb + i), varianceReg, pregOne);
+            Reg::StoreAlign<float, Reg::StoreDist::DIST_FIRST_ELEMENT_B32>((varianceUb + i), varianceReg, pregOne);
         }
     }
 }
@@ -80,17 +86,17 @@ __simd_vf__ inline void ComputeMeanVariance128VF(__ubuf__ float* const meanUb,
     __ubuf__ float* const varianceUb, __ubuf__ T* const srcUb, const uint32_t aLength,
     const uint32_t rLengthWithPadding, const float k2Rec, const float k2RRec, const uint16_t sregLower, uint32_t count)
 {
-    MicroAPI::RegTensor<float> src0Reg;
-    MicroAPI::RegTensor<float> src1Reg;
-    MicroAPI::RegTensor<float> src0CalReg;
-    MicroAPI::RegTensor<float> src1CalReg;
-    MicroAPI::RegTensor<float> dstReg;
-    MicroAPI::RegTensor<float> meanReg;
-    MicroAPI::RegTensor<float> varianceReg;
+    Reg::RegTensor<float> src0Reg;
+    Reg::RegTensor<float> src1Reg;
+    Reg::RegTensor<float> src0CalReg;
+    Reg::RegTensor<float> src1CalReg;
+    Reg::RegTensor<float> dstReg;
+    Reg::RegTensor<float> meanReg;
+    Reg::RegTensor<float> varianceReg;
 
-    MicroAPI::MaskReg preg = MicroAPI::UpdateMask<float>(count);
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::MaskReg pregOne = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::VL1>();
+    Reg::MaskReg preg = Reg::UpdateMask<float>(count);
+    Reg::MaskReg pregFull = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
+    Reg::MaskReg pregOne = Reg::CreateMask<float, Reg::MaskPattern::VL1>();
     for (uint16_t i = 0; i < static_cast<uint16_t>(aLength); i++) {
         LoadDataWithT<T>(
             srcUb, srcUb, src0Reg, src1Reg, pregFull, preg, i * rLengthWithPadding, i * rLengthWithPadding + sregLower);
@@ -99,7 +105,7 @@ __simd_vf__ inline void ComputeMeanVariance128VF(__ubuf__ float* const meanUb,
         Add(dstReg, src0CalReg, src1CalReg, pregFull);
         ReduceSum(dstReg, dstReg, pregFull);
         Muls(meanReg, dstReg, k2RRec, pregOne);
-        MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>((meanUb + i), meanReg, pregOne);
+        Reg::StoreAlign<float, Reg::StoreDist::DIST_FIRST_ELEMENT_B32>((meanUb + i), meanReg, pregOne);
         if constexpr (isOutputVariance) {
             Duplicate(meanReg, meanReg, pregFull);
             Sub(src0CalReg, src0Reg, meanReg, pregFull);
@@ -114,7 +120,7 @@ __simd_vf__ inline void ComputeMeanVariance128VF(__ubuf__ float* const meanUb,
 
             ReduceSum(dstReg, dstReg, pregFull);
             Muls(varianceReg, dstReg, k2RRec, pregOne);
-            MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>((varianceUb + i), varianceReg, pregOne);
+            Reg::StoreAlign<float, Reg::StoreDist::DIST_FIRST_ELEMENT_B32>((varianceUb + i), varianceReg, pregOne);
         }
     }
 }
@@ -140,24 +146,24 @@ __simd_vf__ inline void ComputeMeanVarianceUseYVF(__ubuf__ T* const srcUb,
     const uint32_t mVL, const float k2Rec, const uint16_t halfAddRepeatTimes, const uint32_t lastCount,
     const float k2RRec, const uint16_t sregLower, const uint16_t dynamicHalfAddTimes)
 {
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::MaskReg pregOne = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::VL1>();
+    Reg::MaskReg pregFull = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
+    Reg::MaskReg pregOne = Reg::CreateMask<float, Reg::MaskPattern::VL1>();
     uint32_t lastCountTmp = lastCount;
-    MicroAPI::MaskReg pregLastCount = MicroAPI::UpdateMask<float>(lastCountTmp);
+    Reg::MaskReg pregLastCount = Reg::UpdateMask<float>(lastCountTmp);
     uint32_t count = count2;
-    MicroAPI::MaskReg preg2 = MicroAPI::UpdateMask<float>(count);
+    Reg::MaskReg preg2 = Reg::UpdateMask<float>(count);
 
     ComputeMeanUseY<T>(srcUb, workUbYOrigin, pregFull, pregOne, pregLastCount, preg2, aLength, rLengthWithPadding,
         rHeadLength, m, repeatTimes1, repeatTimes2, repeatTimes3, mVL, k2Rec, sregLower);
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
     ReduceWorkBufferAndStore<T, HalfAddTimes>(workUbYOrigin, meanUb, pregFull, pregOne, pregLastCount, aLength,
         rLengthWithPadding, halfAddRepeatTimes, lastCountTmp, k2RRec, sregLower,
         HalfAddTimes == 0 ? dynamicHalfAddTimes : 0);
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+    Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
     if constexpr (isOutputVariance) {
         ComputeVarianceUseY<T>(srcUb, workUbYOrigin, meanUb, pregFull, pregOne, pregLastCount, preg2, aLength,
             rLengthWithPadding, rHeadLength, m, repeatTimes1, repeatTimes2, repeatTimes3, mVL, k2Rec, sregLower);
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
         ReduceWorkBufferAndStore<T, HalfAddTimes>(workUbYOrigin, varianceUb, pregFull, pregOne, pregLastCount, aLength,
             rLengthWithPadding, halfAddRepeatTimes, lastCountTmp, k2RRec, sregLower,
             HalfAddTimes == 0 ? dynamicHalfAddTimes : 0);
@@ -309,3 +315,8 @@ __aicore__ inline void LayerNormImpl(const LocalTensor<T>& output, const LocalTe
 }
 } // namespace AscendC
 #endif // IMPL_NORMALIZATION_LAYERNORM_LAYERNORM_C310_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORM_LAYERNORM_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORM_LAYERNORM_C310_IMPL_H__
+#endif

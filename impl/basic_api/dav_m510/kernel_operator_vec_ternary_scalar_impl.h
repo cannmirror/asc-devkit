@@ -12,13 +12,19 @@
  * \file kernel_operator_vec_ternary_scalar_impl.h
  * \brief AscendC c310 support vaxpy level 0/2 api.
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/dav_m510/kernel_operator_vec_ternary_scalar_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_vec_intf.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_TERNARY_SCALAR_IMPL_H__
+#endif
+
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_TERNARY_SCALAR_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_TERNARY_SCALAR_IMPL_H
 #include "kernel_operator_common_impl.h"
 #include "kernel_utils.h"
 #include "kernel_operator_sys_var_intf.h"
 #include "kernel_operator_vec_template_impl.h"
-#include "micro_api/kernel_micro_intf.h"
+#include "reg_compute/kernel_reg_compute_intf.h"
 
 namespace AscendC {
 namespace Internal {
@@ -28,15 +34,15 @@ __aicore__ inline void VecAxpyLevel2VFImpl(__ubuf__ T *dst, __ubuf__ U *src, U s
     RegU srcReg;
     RegT dstReg;
     uint32_t count = static_cast<uint32_t>(calCount);
-    MicroAPI::MaskReg mask;
+    Reg::MaskReg mask;
     constexpr uint32_t repeatStride = static_cast<uint32_t>(GetVecLen() / sizeof(T) * RegT::trait.REG_NUM);
     uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, repeatStride));
     for (uint16_t i = 0; i < repeatTime; ++i) {
-        mask = MicroAPI::UpdateMask<T, RegT::trait>(count);
-        MicroAPI::LoadAlign(srcReg, src + i * repeatStride);
-        MicroAPI::LoadAlign(dstReg, dst + i * repeatStride);
+        mask = Reg::UpdateMask<T, RegT::trait>(count);
+        Reg::LoadAlign(srcReg, src + i * repeatStride);
+        Reg::LoadAlign(dstReg, dst + i * repeatStride);
         func(dstReg, srcReg, scalarValue, mask);
-        MicroAPI::StoreAlign(dst + i * repeatStride, dstReg, mask);
+        Reg::StoreAlign(dst + i * repeatStride, dstReg, mask);
     }
 }
 
@@ -45,17 +51,17 @@ __aicore__ inline void VecAxpyLevel2ImplTemplate(__ubuf__ T *dst, __ubuf__ U *sr
     const uint32_t calCount)
 {
     if constexpr (SupportBytes<T, 8>()) {
-        VF_CALL<VecAxpyLevel2VFImpl<func, T, U, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>,
-            MicroAPI::RegTensor<U, MicroAPI::RegTraitNumTwo>>>(dst, src, scalarValue, calCount);
+        VF_CALL<VecAxpyLevel2VFImpl<func, T, U, Reg::RegTensor<T, Reg::RegTraitNumTwo>,
+            Reg::RegTensor<U, Reg::RegTraitNumTwo>>>(dst, src, scalarValue, calCount);
     } else {
-        VF_CALL<VecAxpyLevel2VFImpl<func, T, U, MicroAPI::RegTensor<T>, MicroAPI::RegTensor<U>>>(dst, src, scalarValue,
+        VF_CALL<VecAxpyLevel2VFImpl<func, T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>>(dst, src, scalarValue,
             calCount);
     }
 }
 
 /*
  * T: data type
- * func: MicroAPI input/output function
+ * func: Reg input/output function
  * isSetMask: basic api whether to set mask
  * isNormalMode: true: NormalMode, false: CounterMode
  * isMaskBitMode: true: mask bit mode, false: mask count mode
@@ -70,17 +76,17 @@ __aicore__ inline void VecAxpyVFImpl(__ubuf__ T *dst, __ubuf__ U *src, U scalarV
     constexpr bool TUCompare = sizeof(T) > sizeof(U);
     using TT = typename Conditional<TUCompare, T, U>::type;
     newRepeatTimes = VecMicroGetRepeatTimes<TT, isNormalMode>(count, repeatTime);
-    MicroAPI::MaskReg maskReg;
-    MicroAPI::MaskReg maskRegDst;
-    MicroAPI::MaskReg maskRegSrc;
+    Reg::MaskReg maskReg;
+    Reg::MaskReg maskRegDst;
+    Reg::MaskReg maskRegSrc;
     if constexpr (isNormalMode) {
         maskReg = VecMicroGetMaskReg<TT, isSetMask, isNormalMode, isMaskBitMode>(maskBuf, count);
         maskRegSrc = maskReg;
         maskRegDst = maskReg;
         if constexpr (sizeof(U) == 2 * sizeof(T)) {
-            MicroAPI::MaskPack(maskRegDst, maskReg);
+            Reg::MaskPack(maskRegDst, maskReg);
         } else if constexpr (sizeof(T) == 2 * sizeof(U)) {
-            MicroAPI::MaskPack(maskRegSrc, maskReg);
+            Reg::MaskPack(maskRegSrc, maskReg);
         }
     }
     constexpr uint8_t ElePerBlkT = GetDataBlockSizeInBytes() / sizeof(T);
@@ -91,23 +97,23 @@ __aicore__ inline void VecAxpyVFImpl(__ubuf__ T *dst, __ubuf__ U *src, U scalarV
             maskRegSrc = maskReg;
             maskRegDst = maskReg;
             if constexpr (sizeof(U) == 2 * sizeof(T)) {
-                MicroAPI::MaskPack(maskRegDst, maskReg);
+                Reg::MaskPack(maskRegDst, maskReg);
             } else if constexpr (sizeof(T) == 2 * sizeof(U)) {
-                MicroAPI::MaskPack(maskRegSrc, maskReg);
+                Reg::MaskPack(maskRegSrc, maskReg);
             }
         }
-        MicroAPI::RegTensor<T> dstVreg;
-        MicroAPI::RegTensor<U> srcVreg;
+        Reg::RegTensor<T> dstVreg;
+        Reg::RegTensor<U> srcVreg;
 #ifndef NO_OVERLAP_IN_MULTI_REPEAT
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 #endif
-        MicroAPI::LoadAlign<U, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(srcVreg,
+        Reg::LoadAlign<U, Reg::DataCopyMode::DATA_BLOCK_COPY>(srcVreg,
             src + index * repeatParams.srcRepStride * ElePerBlkU, repeatParams.srcBlkStride, maskRegSrc);
 
-        MicroAPI::LoadAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(dstVreg,
+        Reg::LoadAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(dstVreg,
             dst + index * repeatParams.dstRepStride * ElePerBlkT, repeatParams.dstBlkStride, maskRegDst);
         func(dstVreg, srcVreg, scalarValue, maskReg);
-        MicroAPI::StoreAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+        Reg::StoreAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(
             dst + index * repeatParams.dstRepStride * ElePerBlkT, dstVreg, repeatParams.dstBlkStride, maskRegDst);
     }
 }
@@ -144,33 +150,33 @@ __aicore__ inline void VecAxpyImplTemplate(__ubuf__ T *dst, __ubuf__ U *src, U s
 }
 } // namespace Internal
 
-namespace MicroAPIAxpy {
+namespace RegAxpy {
 namespace CastParam {
-constexpr MicroAPI::CastTrait half2floatTrait = { MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN,
-    MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN };
+constexpr Reg::CastTrait half2floatTrait = { Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN,
+    Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN };
 }
 template <typename T, typename U, typename RegT, typename RegU>
-__aicore__ inline void Axpy(RegT &dstReg, RegU &srcReg, U scalarValue, MicroAPI::MaskReg &mask)
+__aicore__ inline void Axpy(RegT &dstReg, RegU &srcReg, U scalarValue, Reg::MaskReg &mask)
 {
     if constexpr (SupportType<Tuple<T, U>, Tuple<half, half>, Tuple<float, float>, Tuple<uint64_t, uint64_t>,
         Tuple<int64_t, int64_t>>()) {
-        MicroAPI::Axpy(dstReg, srcReg, scalarValue, mask);
+        Reg::Axpy(dstReg, srcReg, scalarValue, mask);
     } else if constexpr (SupportType<Tuple<T, U>, Tuple<bfloat16_t, bfloat16_t>>()) {
         RegT tmpReg;
-        MicroAPI::Duplicate(tmpReg, scalarValue, mask);
-        MicroAPI::Mul(tmpReg, srcReg, tmpReg, mask);
-        MicroAPI::Add(dstReg, tmpReg, dstReg, mask);
+        Reg::Duplicate(tmpReg, scalarValue, mask);
+        Reg::Mul(tmpReg, srcReg, tmpReg, mask);
+        Reg::Add(dstReg, tmpReg, dstReg, mask);
     } else if constexpr (SupportType<Tuple<T, U>, Tuple<float, half>>()) {
         RegU tmpReg;
         RegT cvtReg;
-        MicroAPI::UnPack<uint32_t, uint16_t, AscendC::MicroAPI::HighLowPart::LOWEST>(
-            (MicroAPI::RegTensor<uint32_t> &)tmpReg, (MicroAPI::RegTensor<uint16_t> &)srcReg);
-        MicroAPI::Cast<float, half, CastParam::half2floatTrait>(cvtReg, tmpReg, mask);
-        MicroAPI::Muls(cvtReg, cvtReg, static_cast<T>(scalarValue), mask);
-        MicroAPI::Add(dstReg, cvtReg, dstReg, mask);
+        Reg::UnPack<uint32_t, uint16_t, AscendC::Reg::HighLowPart::LOWEST>(
+            (Reg::RegTensor<uint32_t> &)tmpReg, (Reg::RegTensor<uint16_t> &)srcReg);
+        Reg::Cast<float, half, CastParam::half2floatTrait>(cvtReg, tmpReg, mask);
+        Reg::Muls(cvtReg, cvtReg, static_cast<T>(scalarValue), mask);
+        Reg::Add(dstReg, cvtReg, dstReg, mask);
     }
 }
-} // namespace MicroAPIAxpy
+} // namespace RegAxpy
 
 // Axpy::Level 0
 template <typename T, typename U, bool isSetMask = true>
@@ -180,7 +186,7 @@ __aicore__ inline void AxpyImpl(__ubuf__ T *dst, __ubuf__ U *src, const U &scala
     static_assert(SupportType<Tuple<T, U>, Tuple<half, half>, Tuple<float, float>, Tuple<bfloat16_t, bfloat16_t>,
         Tuple<float, half>>(),
         "current data type is not supported on current device!");
-    constexpr auto func = MicroAPIAxpy::Axpy<T, U, MicroAPI::RegTensor<T>, MicroAPI::RegTensor<U>>;
+    constexpr auto func = RegAxpy::Axpy<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
     Internal::VecAxpyImplTemplate<func, isSetMask, true>(dst, src, scalarValue, mask, 0, repeatTime, repeatParams);
 }
 
@@ -191,7 +197,7 @@ __aicore__ inline void AxpyImpl(__ubuf__ T *dst, __ubuf__ U *src, const U &scala
     static_assert(SupportType<Tuple<T, U>, Tuple<half, half>, Tuple<float, float>, Tuple<bfloat16_t, bfloat16_t>,
         Tuple<float, half>>(),
         "current data type is not supported on current device!");
-    constexpr auto func = MicroAPIAxpy::Axpy<T, U, MicroAPI::RegTensor<T>, MicroAPI::RegTensor<U>>;
+    constexpr auto func = RegAxpy::Axpy<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
     Internal::VecAxpyImplTemplate<func, isSetMask, false>(dst, src, scalarValue, nullptr, mask, repeatTime,
         repeatParams);
 }
@@ -204,13 +210,17 @@ __aicore__ inline void AxpyImpl(__ubuf__ T *dst, __ubuf__ U *src, const U &scala
         Tuple<float, half>, Tuple<uint64_t, uint64_t>, Tuple<int64_t, int64_t>>(),
         "current data type is not supported on current device!");
     if constexpr (SupportBytes<T, 8>()) {
-        constexpr auto func = MicroAPIAxpy::Axpy<T, U, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>,
-            MicroAPI::RegTensor<U, MicroAPI::RegTraitNumTwo>>;
+        constexpr auto func = RegAxpy::Axpy<T, U, Reg::RegTensor<T, Reg::RegTraitNumTwo>,
+            Reg::RegTensor<U, Reg::RegTraitNumTwo>>;
         Internal::VecAxpyLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
     } else {
-        constexpr auto func = MicroAPIAxpy::Axpy<T, U, MicroAPI::RegTensor<T>, MicroAPI::RegTensor<U>>;
+        constexpr auto func = RegAxpy::Axpy<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
         Internal::VecAxpyLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
     }
 }
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_VEC_TERNARY_SCALAR_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_TERNARY_SCALAR_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_TERNARY_SCALAR_IMPL_H__
+#endif

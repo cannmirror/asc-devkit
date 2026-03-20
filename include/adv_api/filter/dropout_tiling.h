@@ -12,6 +12,12 @@
  * \file dropout_tiling.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DROPOUT_TILING_H__
+#endif
+
 #ifndef TILING_DROPOUT_TILING_H
 #define TILING_DROPOUT_TILING_H
 #include <cstdint>
@@ -48,3 +54,8 @@ void GetDropOutMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize,
     uint32_t& maxValue, uint32_t& minValue);
 } // namespace AscendC
 #endif // TILING_DROPOUT_TILING_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DROPOUT_TILING_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DROPOUT_TILING_H__
+#endif

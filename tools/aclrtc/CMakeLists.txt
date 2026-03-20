@@ -24,7 +24,8 @@ if(BUILD_OPEN_PROJECT)
 else()
     target_include_directories(acl_rtc PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${TOP_DIR}/ace/npuruntime/acl/inc/external/acl/
+        ${TOP_DIR}/runtime/include/external
+ 	    ${TOP_DIR}/runtime/include/external/acl
         ${CCEC_PATH}/../include
     )
 endif()

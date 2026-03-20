@@ -37,7 +37,7 @@ def gen_golden_data():
                             constant_values=np.float16(0))
         golden = tf.nn.conv2d(fm_padding, weight.astype("float32"), (1, stride_h, stride_w, 1), "VALID",
                      dilations=[1, dilation_h, dilation_w, 1]).eval()
-    golden = golden.astype(np.float16)
+    golden = golden.astype(np.float32)
 
     fm_gm = np.zeros((c1, h, w, c0), dtype=np.float16)
     for a in range(c1):

@@ -13,6 +13,12 @@
 * \brief
 */
 
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/matmul/stage/copy_cube_in/copy_tile_to_cube/data_copy_wrapper_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_IN_COPY_TILE_TO_CUBE_DATA_COPY_WRAPPER_UTILS_H__
+#endif
+
 #ifndef IMPL_MATMUL_STAGE_COPY_CUBE_IN_COPY_TILE_TO_CUBE_DATA_COPY_WRAPPER_UTILS_H
 #define IMPL_MATMUL_STAGE_COPY_CUBE_IN_COPY_TILE_TO_CUBE_DATA_COPY_WRAPPER_UTILS_H
 
@@ -44,8 +50,7 @@ __aicore__ inline void NDPadZeroForWidth(LocalTensor<TransT>& dst, const int hei
         return;
     }
     uint64_t mask[2];
-    mask[0] = maskTail64bit + (maskTail64bit << FIRST_16BIT_OFFSET_MM_API) +
-              (maskTail64bit << SECOND_16BIT_OFFSET_MM_API) + (maskTail64bit << THIRD_16BIT_OFFSET_MM_API);
+    mask[0] = maskTail64bit + (maskTail64bit << FIRST_16BIT_OFFSET_MM_API) + (maskTail64bit << SECOND_16BIT_OFFSET_MM_API) + (maskTail64bit << THIRD_16BIT_OFFSET_MM_API);
     mask[1] = mask[0];
     int stride = calcWidth * (c0Size_ * sizeof(TransT) / DEFAULT_C0_SIZE);
     int32_t totalRep = CeilT<int32_t>(height, REPEAT_BLOCK_NUM_MM_API);
@@ -53,20 +58,17 @@ __aicore__ inline void NDPadZeroForWidth(LocalTensor<TransT>& dst, const int hei
         LocalTensor<int16_t> tmpTransTensor = dst.template ReinterpretCast<int16_t>();
         if (stride < EACH_BLOCK_BYTES_MM_API) {
             if (totalRep <= MAX_REPEAT_TIMES) {
-                Duplicate(tmpTransTensor[offset], (int16_t)0, mask, CeilT<int32_t>(height, REPEAT_BLOCK_NUM_MM_API),
-                          stride, REPEAT_BLOCK_NUM_MM_API * stride);
+                Duplicate(tmpTransTensor[offset], (int16_t)0, mask, CeilT<int32_t>(height, REPEAT_BLOCK_NUM_MM_API), stride, REPEAT_BLOCK_NUM_MM_API * stride);
             } else {
                 int32_t highBlock = totalRep / MAX_REPEAT_TIMES;
                 int32_t highTail = totalRep % MAX_REPEAT_TIMES;
                 int64_t dstOffset = calcWidth * BLOCK_CUBE * REPEAT_BLOCK_NUM_MM_API * MAX_REPEAT_TIMES;
                 for (int32_t idx = 0; idx < highBlock; ++idx) {
-                    Duplicate(tmpTransTensor[offset], (int16_t)0, mask, MAX_REPEAT_TIMES, stride,
-                              REPEAT_BLOCK_NUM_MM_API * stride);
+                    Duplicate(tmpTransTensor[offset], (int16_t)0, mask, MAX_REPEAT_TIMES, stride, REPEAT_BLOCK_NUM_MM_API * stride);
                     offset += dstOffset;
                 }
                 if (highTail) {
-                    Duplicate(tmpTransTensor[offset], (int16_t)0, mask, highTail, stride,
-                              REPEAT_BLOCK_NUM_MM_API * stride);
+                    Duplicate(tmpTransTensor[offset], (int16_t)0, mask, highTail, stride, REPEAT_BLOCK_NUM_MM_API * stride);
                 }
             }
         } else {
@@ -112,8 +114,7 @@ __aicore__ inline void NDPadZeros(LocalTensor<TransT>& dst, const int height, co
 }
 
 template <typename SrcT, typename TransT>
-__aicore__ inline void TransDataNDBMatrix(const LocalTensor<TransT>& dst, const LocalTensor<SrcT>& src, int height,
-                                          int width)
+__aicore__ inline void TransDataNDBMatrix(const LocalTensor<TransT>& dst, const LocalTensor<SrcT>& src, int height, int width)
 {
     constexpr int32_t c0Size_ = AuxGetC0Size<TransT>();
 
@@ -207,8 +208,7 @@ __aicore__ inline void TransDataNDBMatrix(const LocalTensor<TransT>& dst, const 
 }
 
 template <typename SrcT, typename TransT, bool IS_TRANS = false>
-__aicore__ inline void TransDataNZBMatrix(const LocalTensor<TransT>& dst, const LocalTensor<SrcT>& src, int height,
-                                          int width)
+__aicore__ inline void TransDataNZBMatrix(const LocalTensor<TransT>& dst, const LocalTensor<SrcT>& src, int height, int width)
 {
     constexpr int32_t c0Size_ = AuxGetC0Size<TransT>();
 
@@ -227,8 +227,7 @@ __aicore__ inline void TransDataNZBMatrix(const LocalTensor<TransT>& dst, const 
     int dstOffset = 0;
     int srcOffset = 0;
     for (int curN = 0; curN < iterN; curN++) {
-        params.dstRepStride =
-            (curN == iterN - 1 && tailWidth > 0 && tailWidth < c0Size_) ? tailWidth : params.dstRepStride;
+        params.dstRepStride = (curN == iterN - 1 && tailWidth > 0 && tailWidth < c0Size_) ? tailWidth : params.dstRepStride;
         int dstListOffset = 0;
         int srcListOffset = 0;
         for (int i = 0; i < TRANS_DATA_ARRAY_SIZE_MM_API; i++) {
@@ -307,9 +306,7 @@ __aicore__ inline void CopyNZ2NZImpl(const LocalTensor<TransT>& dst, const Globa
     CopyNZ2NZImplByLoadData(dst, src, row, col, height, width, gRow, kAlignToC0Size);
 #else
     ASCENDC_ASSERT((gRow >= height), {
-        KERNEL_LOG(KERNEL_ERROR,
-            "NZ2NZ height larger than origin matrix height, gRow is %d, which should be no less than height %d.",
-            gRow, height);
+        KERNEL_LOG(KERNEL_ERROR, "NZ2NZ height larger than origin matrix height, gRow is %d, which should be no less than height %d.", gRow, height);
     });
     constexpr int32_t c0Size_ = AuxGetC0Size<TransT>();
     int32_t alignedGRow = Ceil(gRow, BLOCK_CUBE) * BLOCK_CUBE;
@@ -546,3 +543,8 @@ __aicore__ inline int CopyNDBlock(const LocalTensor<SrcT>& transTensor, const Gl
 }  // namespace Impl
 }  // namespace AscendC
 #endif // IMPL_MATMUL_STAGE_COPY_CUBE_IN_COPY_TILE_TO_CUBE_DATA_COPY_WRAPPER_UTILS_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_IN_COPY_TILE_TO_CUBE_DATA_COPY_WRAPPER_UTILS_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_IN_COPY_TILE_TO_CUBE_DATA_COPY_WRAPPER_UTILS_H__
+#endif

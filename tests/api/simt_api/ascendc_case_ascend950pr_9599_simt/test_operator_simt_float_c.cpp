@@ -166,3 +166,160 @@ TEST_P(atanfTestSuite, atanfTestCaseFloat)
     VerifyFloatNumber1(y, yExpected);
 }
 // ================================ Test atanf end ==================================
+
+// ================================ Test logbf start ================================
+struct logbTestParam {
+    float x;
+    float yExpected;
+};
+ 
+class logbTestSuite : public ::testing::TestWithParam<logbTestParam> {
+public:
+    void SetUp() override {}
+    void TearDown() override {}
+};
+
+INSTANTIATE_TEST_CASE_P(logbTestCaseFloat, logbTestSuite, ::testing::Values(
+    logbTestParam {INFINITY, INFINITY},
+    logbTestParam {-INFINITY, INFINITY},
+    logbTestParam {NAN, NAN},
+    logbTestParam {0.0f, -INFINITY}
+));
+
+TEST_P(logbTestSuite, logbTestCaseFloat)
+{
+    const auto param = this->GetParam();
+    float x = param.x;
+    float yExpected = param.yExpected;
+    float y = logbf(x);
+    VerifyFloatNumber1(y, yExpected, 1e-5);
+}
+// ================================ Test logbf end ==================================
+
+// ================================ Test ynf start ================================
+struct ynTestParam {
+    int n;
+    float x;
+    float yExpected;
+};
+ 
+class ynTestSuite : public ::testing::TestWithParam<ynTestParam> {
+public:
+    void SetUp() override {}
+    void TearDown() override {}
+};
+
+INSTANTIATE_TEST_CASE_P(ynTestCaseFloat, ynTestSuite, ::testing::Values(
+    ynTestParam {-1, 1.0f, NAN},
+    ynTestParam {-1, 0.0f, NAN},
+    ynTestParam {1, 0.0f, -INFINITY},
+    ynTestParam {1, -1.0f, NAN},
+    ynTestParam {-1, INFINITY, NAN},
+    ynTestParam {1, INFINITY, 0.0f},
+    ynTestParam {1, NAN, NAN},
+    ynTestParam {0, 0.0f, -INFINITY},
+    ynTestParam {0, 1e-9f, -13.266645f},
+    ynTestParam {0, 1e-8f, -11.800774f},
+    ynTestParam {0, 1e-6f, -8.869032f},
+    ynTestParam {0, 8.0f, 0.22352149f},
+    ynTestParam {0, INFINITY, 0.0f},
+    ynTestParam {0, NAN, NAN},
+    ynTestParam {1, 0.0f, -INFINITY},
+    ynTestParam {1, 1e-9f, -6.366198e+08f},
+    ynTestParam {1, 1e-8f, -63661976.0f},
+    ynTestParam {1, 1e-6f, -636619.75f},
+    ynTestParam {1, 0.5f, -1.4714724f},
+    ynTestParam {1, 8.0f, -0.15806046f},
+    ynTestParam {1, INFINITY, 0.0f},
+    ynTestParam {1, NAN, NAN},
+    ynTestParam {8, 0.0f, -INFINITY},
+    ynTestParam {8, 1e-9f, -INFINITY},
+    ynTestParam {8, 1e-8f, -INFINITY},
+    ynTestParam {8, 1e-6f, -INFINITY},
+    ynTestParam {8, 4.0f, -11.471092f},
+    ynTestParam {8, 8.0f, -0.38766995f},
+    ynTestParam {8, 90.0f, 0.08422316f},
+    ynTestParam {8, INFINITY, 0.0f},
+    ynTestParam {8, NAN, NAN}
+));
+
+TEST_P(ynTestSuite, ynTestCaseFloat)
+{
+    const auto param = this->GetParam();
+    int n = param.n;
+    float x = param.x;
+    float yExpected = param.yExpected;
+    float y = ynf(n, x);
+    VerifyFloatNumber1(y, yExpected, 1e-5);
+}
+// ================================ Test ynf end ==================================
+
+// ================================ Test fmodf start ================================
+struct fmodTestParam {
+    float x;
+    float y;
+    float yExpected;
+};
+ 
+class fmodTestSuite : public ::testing::TestWithParam<fmodTestParam> {
+public:
+    void SetUp() override {}
+    void TearDown() override {}
+};
+
+INSTANTIATE_TEST_CASE_P(fmodTestCaseFloat, fmodTestSuite, ::testing::Values(
+    fmodTestParam {0.0f, 1.0f, 0.0f},
+    fmodTestParam {2.0f, INFINITY, 2.0f},
+    fmodTestParam {3.0f, -INFINITY, 3.0f},
+    fmodTestParam {INFINITY, 1.0f, NAN},
+    fmodTestParam {-INFINITY, 2.0f, NAN},
+    fmodTestParam {1.0f, 0.0f, NAN},
+    fmodTestParam {NAN, 1.0f, NAN},
+    fmodTestParam {1.0f, NAN, NAN}
+));
+
+TEST_P(fmodTestSuite, fmodTestCaseFloat)
+{
+    const auto param = this->GetParam();
+    float x = param.x;
+    float y = param.y;
+    float yExpected = param.yExpected;
+    float res = fmodf(x, y);
+    VerifyFloatNumber1(res, yExpected, 1e-5);
+}
+// ================================ Test fmodf end ==================================
+
+// ================================ Test remainderf start ================================
+struct remainderTestParam {
+    float x;
+    float y;
+    float yExpected;
+};
+ 
+class remainderTestSuite : public ::testing::TestWithParam<remainderTestParam> {
+public:
+    void SetUp() override {}
+    void TearDown() override {}
+};
+
+INSTANTIATE_TEST_CASE_P(remainderTestCaseFloat, remainderTestSuite, ::testing::Values(
+    remainderTestParam {0.0f, 0.0f, NAN},
+    remainderTestParam {1.0f, 0.0f, NAN},
+    remainderTestParam {INFINITY, 1.0f, NAN},
+    remainderTestParam {-INFINITY, 2.0f, NAN},
+    remainderTestParam {1.0f, INFINITY, 1.0f},
+    remainderTestParam {-2.0f, -INFINITY, -2.0f},
+    remainderTestParam {NAN, 1.0f, NAN},
+    remainderTestParam {1.0f, NAN, NAN}
+));
+
+TEST_P(remainderTestSuite, remainderTestCaseFloat)
+{
+    const auto param = this->GetParam();
+    float x = param.x;
+    float y = param.y;
+    float yExpected = param.yExpected;
+    float res = remainderf(x, y);
+    VerifyFloatNumber1(res, yExpected, 1e-5);
+}
+// ================================ Test remainderf end ==================================

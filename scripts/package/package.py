@@ -588,11 +588,13 @@ def main(pkg_name='', xml_file='', main_args=None):
     parse_option = make_parse_option(main_args)
 
     try:
-        xml_config = parse_xml_config(
+        ret, xml_config = parse_xml_config(
             pkg_xml_file, delivery_dir, parse_option, main_args
         )
     except ContainAsteriskError as ex:
         CommLog.cilog_error(f"Value contain '*' in {config_relative_path}. value is '{ex.value}'.")
+        return FAIL
+    if not ret:
         return FAIL
 
     if pkg_name in ['driver', 'firmware']:

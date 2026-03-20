@@ -12,6 +12,12 @@
  * \file ascend_quant_tiling_intf.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASCEND_QUANT_TILING_H__
+#endif
+
 #ifndef TILING_ASCEND_QUANT_ASCEND_QUANT_TILING_H
 #define TILING_ASCEND_QUANT_ASCEND_QUANT_TILING_H
 #include <cstdint>
@@ -41,3 +47,8 @@ void GetAscendQuantMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeS
 void GetAscendQuantTmpBufferFactorSize(uint32_t& maxLiveNodeCount, uint32_t& extraBuf);
 } // namespace AscendC
 #endif // TILING_ASCEND_QUANT_ASCEND_QUANT_TILING_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASCEND_QUANT_TILING_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASCEND_QUANT_TILING_H__
+#endif

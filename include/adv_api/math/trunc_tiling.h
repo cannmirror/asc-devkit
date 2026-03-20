@@ -12,6 +12,12 @@
  * \file trunc_tiling_intf.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TRUNC_TILING_H__
+#endif
+
 #ifndef LIB_MATH_TRUNC_TILING_H
 #define LIB_MATH_TRUNC_TILING_H
 
@@ -44,3 +50,8 @@ void GetTruncMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, c
 void GetTruncTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf);
 } // namespace AscendC
 #endif // LIB_MATH_TRUNC_TILING_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TRUNC_TILING_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TRUNC_TILING_H__
+#endif

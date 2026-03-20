@@ -8,10 +8,16 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-/* !
+/*!
  * \file host_apicheck.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/api_check/host_apicheck.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/tiling_api.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HOST_APICHECK_H__
+#endif
+
 #ifndef IMPL_HOST_APICHECK_H
 #define IMPL_HOST_APICHECK_H
 
@@ -67,6 +73,11 @@ inline void IsReuseSourceVerifyingParameters(const bool isReuseSource)
         TILING_LOG_WARNING("[%s] Current isReuseSource is true, which is not effective!", func);
     }
 }
-} // HighLevelApiCheck
-} // AscendC
+} // namespace HighLevelApiCheck
+} // namespace AscendC
 #endif // IMPL_HOST_APICHECK_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HOST_APICHECK_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HOST_APICHECK_H__
+#endif

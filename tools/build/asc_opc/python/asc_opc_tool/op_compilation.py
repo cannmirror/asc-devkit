@@ -454,7 +454,9 @@ class OpCompilation:
                            CompileParam.STATUS_CHECK: status_check,
                            CompileParam.ENABLE_VECTOR_CORE: enable_vector_core,
                            OpcOptions.IMPL_MODE: op.get(OpcOptions.IMPL_MODE, None),
-                           OpcOptions.JIT_COMPILE_MODE: op.get(OpcOptions.JIT_COMPILE_MODE, 0)}
+                           OpcOptions.JIT_COMPILE_MODE: op.get(OpcOptions.JIT_COMPILE_MODE, 0),
+                           CompileParam.EXTRA_SETTINGS: op.get(CompileParam.EXTRA_SETTINGS, None)
+                           }
                 deterministic = self.__opc_compile_args.get(OpcOptions.DETERMINISTIC)
                 if deterministic is None:
                     self.__single_op_compile(op, op_info, idx)

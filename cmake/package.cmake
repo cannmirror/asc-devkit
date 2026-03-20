@@ -78,8 +78,6 @@ set(CONF_FILES
 install(FILES ${CONF_FILES}
     DESTINATION asc-devkit/conf
 )
-#message(STATUS "LATEST_MANGER_FILES = ${LATEST_MANGER_FILES}")
-#message(STATUS "PACKAGE_FILES = ${PACKAGE_FILES}")
 install(FILES ${PACKAGE_FILES}
    DESTINATION asc-devkit/script
 )
@@ -89,11 +87,14 @@ install(FILES ${LATEST_MANGER_FILES}
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/scripts/package/latest_manager/scripts/
     DESTINATION latest_manager
 )
-install(FILES ${ASC_DEVKIT_VERSION_FILE}
-    DESTINATION .
+install(FILES ${CMAKE_BINARY_DIR}/version.asc-devkit.info
+    DESTINATION asc-devkit
+    RENAME version.info
 )
-# install(DIRECTORY ${CMAKE_BINARY_DIR}/packages/${ARCH}-linux/ascendc DESTINATION ascendc)
-# install(DIRECTORY ${CMAKE_BINARY_DIR}/packages/${ARCH}-linux/asc DESTINATION asc)
+install(FILES ${CMAKE_BINARY_DIR}/version.asc-devkit.info
+    DESTINATION .
+    RENAME version.info
+)
 # ============= CPack =============
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")

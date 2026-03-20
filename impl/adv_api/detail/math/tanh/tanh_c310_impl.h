@@ -12,6 +12,12 @@
  * \file tanh_c310_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/math/tanh/tanh_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/tanh.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_TANH_TANH_C310_IMPL_H__
+#endif
 #ifndef IMPL_MATH_TANH_TANH_C310_IMPL_H
 #define IMPL_MATH_TANH_TANH_C310_IMPL_H
 #include "kernel_basic_intf.h"
@@ -31,10 +37,10 @@ constexpr float FP32_ZERO_55 = 0.55;
 constexpr float FP32_MIN_EXP = -8.8;
 constexpr float FP32_MAX_EXP = 8.8;
 
-constexpr MicroAPI::CastTrait tanhCastTraitF162F32 = {
-    MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
-constexpr MicroAPI::CastTrait tanhCastTraitF322F16 = {
-    MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait tanhCastTraitF162F32 = {
+    Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN, Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait tanhCastTraitF322F16 = {
+    Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 }
 
 template <typename T>
@@ -42,33 +48,33 @@ __simd_vf__ inline void TanhIntrinsicImpl(__ubuf__ T *dstUb, __ubuf__ T *srcUb,
     const uint32_t calCount, const uint16_t repeatTimes)
 {
     uint32_t sreg = calCount;
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::RegTensor<float> castReg;
-    MicroAPI::RegTensor<float> tmpReg;
-    MicroAPI::RegTensor<float> dstReg;
+    Reg::MaskReg preg;
+    Reg::RegTensor<T> srcReg;
+    Reg::RegTensor<float> castReg;
+    Reg::RegTensor<float> tmpReg;
+    Reg::RegTensor<float> dstReg;
 
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        preg = MicroAPI::UpdateMask<float>(sreg);
+        preg = Reg::UpdateMask<float>(sreg);
         if constexpr (sizeof(T) == sizeof(half)) {
-            MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
-            MicroAPI::Cast<float, T, TanhInternal::tanhCastTraitF162F32>(castReg, srcReg, preg);
+            Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
+            Reg::Cast<float, T, TanhInternal::tanhCastTraitF162F32>(castReg, srcReg, preg);
         } else {
-            MicroAPI::LoadAlign(castReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
+            Reg::LoadAlign(castReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
         }
-        MicroAPI::Mins(castReg, castReg, TanhInternal::FP32_MAX_EXP, preg);
-        MicroAPI::Maxs(castReg, castReg, TanhInternal::FP32_MIN_EXP, preg);
-        MicroAPI::Muls(tmpReg, castReg, TanhInternal::FP32_TWO, preg);
-        MicroAPI::Exp(castReg, tmpReg, preg);
+        Reg::Mins(castReg, castReg, TanhInternal::FP32_MAX_EXP, preg);
+        Reg::Maxs(castReg, castReg, TanhInternal::FP32_MIN_EXP, preg);
+        Reg::Muls(tmpReg, castReg, TanhInternal::FP32_TWO, preg);
+        Reg::Exp(castReg, tmpReg, preg);
 
-        MicroAPI::Adds(dstReg, castReg, -1.0f, preg);
-        MicroAPI::Adds(tmpReg, castReg, 1.0f, preg);
-        MicroAPI::Div(dstReg, dstReg, tmpReg, preg);
+        Reg::Adds(dstReg, castReg, -1.0f, preg);
+        Reg::Adds(tmpReg, castReg, 1.0f, preg);
+        Reg::Div(dstReg, dstReg, tmpReg, preg);
         if constexpr (sizeof(T) == sizeof(half)) {
-            MicroAPI::Cast<T, float, TanhInternal::tanhCastTraitF322F16>(srcReg, dstReg, preg);
-            MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_PACK_B32>(dstUb + i * B32_DATA_NUM_PER_REPEAT, srcReg, preg);
+            Reg::Cast<T, float, TanhInternal::tanhCastTraitF322F16>(srcReg, dstReg, preg);
+            Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B32>(dstUb + i * B32_DATA_NUM_PER_REPEAT, srcReg, preg);
         } else {
-            MicroAPI::StoreAlign(dstUb + i * B32_DATA_NUM_PER_REPEAT, dstReg, preg);
+            Reg::StoreAlign(dstUb + i * B32_DATA_NUM_PER_REPEAT, dstReg, preg);
         }
     }
 }
@@ -78,47 +84,47 @@ __simd_vf__ inline void TanhCompensationImpl(__ubuf__ T *dstUb, __ubuf__ T *srcU
     const uint32_t calCount, const uint16_t repeatTimes)
 {
     uint32_t sreg = calCount;
-    MicroAPI::MaskReg preg, cmpMaskReg;
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::RegTensor<float> vregInput, vregInputAbs;
-    MicroAPI::RegTensor<float> vregInputSqr, vregInputMid;
-    MicroAPI::RegTensor<float> vregOutput;
-    MicroAPI::RegTensor<float> vregScalar1, vregScalar2;
+    Reg::MaskReg preg, cmpMaskReg;
+    Reg::RegTensor<T> srcReg;
+    Reg::RegTensor<float> vregInput, vregInputAbs;
+    Reg::RegTensor<float> vregInputSqr, vregInputMid;
+    Reg::RegTensor<float> vregOutput;
+    Reg::RegTensor<float> vregScalar1, vregScalar2;
 
-    MicroAPI::Duplicate(vregScalar1, TanhInternal::FP32_ZERO_133);
-    MicroAPI::Duplicate(vregScalar2, TanhInternal::FP32_ZERO_NEG_333);
+    Reg::Duplicate(vregScalar1, TanhInternal::FP32_ZERO_133);
+    Reg::Duplicate(vregScalar2, TanhInternal::FP32_ZERO_NEG_333);
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        preg = MicroAPI::UpdateMask<float>(sreg);
+        preg = Reg::UpdateMask<float>(sreg);
         if constexpr (sizeof(T) == sizeof(half)) {
-            MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
-            MicroAPI::Cast<float, T, TanhInternal::tanhCastTraitF162F32>(vregInput, srcReg, preg);
+            Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
+            Reg::Cast<float, T, TanhInternal::tanhCastTraitF162F32>(vregInput, srcReg, preg);
         } else {
-            MicroAPI::LoadAlign(vregInput, srcUb + i * B32_DATA_NUM_PER_REPEAT);
+            Reg::LoadAlign(vregInput, srcUb + i * B32_DATA_NUM_PER_REPEAT);
         }
-        MicroAPI::Mul(vregInputSqr, vregInput, vregInput, preg);
-        MicroAPI::Muls(vregOutput, vregInputSqr, TanhInternal::FP32_ZERO_015, preg);
-        MicroAPI::Adds(vregOutput, vregOutput, TanhInternal::FP32_ZERO_NEG_052, preg);
-        MicroAPI::FusedMulDstAdd(vregOutput, vregInputSqr, vregScalar1, preg);
-        MicroAPI::FusedMulDstAdd(vregOutput, vregInputSqr, vregScalar2, preg);
-        MicroAPI::Mul(vregOutput, vregOutput, vregInputSqr, preg);
-        MicroAPI::FusedMulDstAdd(vregOutput, vregInput, vregInput, preg);
+        Reg::Mul(vregInputSqr, vregInput, vregInput, preg);
+        Reg::Muls(vregOutput, vregInputSqr, TanhInternal::FP32_ZERO_015, preg);
+        Reg::Adds(vregOutput, vregOutput, TanhInternal::FP32_ZERO_NEG_052, preg);
+        Reg::FusedMulDstAdd(vregOutput, vregInputSqr, vregScalar1, preg);
+        Reg::FusedMulDstAdd(vregOutput, vregInputSqr, vregScalar2, preg);
+        Reg::Mul(vregOutput, vregOutput, vregInputSqr, preg);
+        Reg::FusedMulDstAdd(vregOutput, vregInput, vregInput, preg);
 
-        MicroAPI::Abs(vregInputAbs, vregInput, preg);
-        MicroAPI::Mins(vregInput, vregInput, TanhInternal::FP32_TWENTY, preg);
-        MicroAPI::Muls(vregInput, vregInput, TanhInternal::FP32_TWO, preg);
-        MicroAPI::Exp(vregInput, vregInput, preg);
-        MicroAPI::Adds(vregInputMid, vregInput, -1.0f, preg);
-        MicroAPI::Adds(vregInputSqr, vregInput, 1.0f, preg);
-        MicroAPI::Div(vregInputMid, vregInputMid, vregInputSqr, preg);
+        Reg::Abs(vregInputAbs, vregInput, preg);
+        Reg::Mins(vregInput, vregInput, TanhInternal::FP32_TWENTY, preg);
+        Reg::Muls(vregInput, vregInput, TanhInternal::FP32_TWO, preg);
+        Reg::Exp(vregInput, vregInput, preg);
+        Reg::Adds(vregInputMid, vregInput, -1.0f, preg);
+        Reg::Adds(vregInputSqr, vregInput, 1.0f, preg);
+        Reg::Div(vregInputMid, vregInputMid, vregInputSqr, preg);
 
-        MicroAPI::CompareScalar<float, CMPMODE::LT>(cmpMaskReg, vregInputAbs, TanhInternal::FP32_ZERO_55, preg);
-        MicroAPI::Select(vregOutput, vregOutput, vregInputMid, cmpMaskReg);
+        Reg::CompareScalar<float, CMPMODE::LT>(cmpMaskReg, vregInputAbs, TanhInternal::FP32_ZERO_55, preg);
+        Reg::Select(vregOutput, vregOutput, vregInputMid, cmpMaskReg);
 
         if constexpr (sizeof(T) == sizeof(half)) {
-            MicroAPI::Cast<T, float, TanhInternal::tanhCastTraitF322F16>(srcReg, vregOutput, preg);
-            MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_PACK_B32>(dstUb + i * B32_DATA_NUM_PER_REPEAT, srcReg, preg);
+            Reg::Cast<T, float, TanhInternal::tanhCastTraitF322F16>(srcReg, vregOutput, preg);
+            Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B32>(dstUb + i * B32_DATA_NUM_PER_REPEAT, srcReg, preg);
         } else {
-            MicroAPI::StoreAlign(dstUb + i * B32_DATA_NUM_PER_REPEAT, vregOutput, preg);
+            Reg::StoreAlign(dstUb + i * B32_DATA_NUM_PER_REPEAT, vregOutput, preg);
         }
     }
 }
@@ -161,3 +167,8 @@ __aicore__ inline void TanhImpl(const LocalTensor<T>& dstTensor, const LocalTens
 } // namespace AscendC
 
 #endif // IMPL_MATH_TANH_TANH_C310_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_TANH_TANH_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_TANH_TANH_C310_IMPL_H__
+#endif

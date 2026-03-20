@@ -12,12 +12,19 @@
  * \file kernel_event.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/kernel_event.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_tpipe.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_EVENT_H__
+#endif
+
 #ifndef ASCENDC_KERNEL_EVENT_IMPL_H
 #define ASCENDC_KERNEL_EVENT_IMPL_H
 
 #include "kernel_macros.h"
 #include "kernel_log.h"
 #include "common_types.h"
+#include "impl/utils/common_types.h"
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
 #include <cstdint>
 #include "stub_def.h"
@@ -26,7 +33,6 @@
 
 namespace AscendC {
 using QuePosition = TPosition;
-enum class Hardware : uint8_t { GM, UB, L1, L0A, L0B, L0C, BIAS, FIXBUF, MAX };
 
 enum class HardEvent : uint8_t {
     // src_dst
@@ -1129,3 +1135,7 @@ __aicore__ inline void WaitFlagImpl(const HardEvent event, int32_t eventID)
 }  // namespace AscendC
 
 #endif  // ASCENDC_KERNEL_EVENT_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_EVENT_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_EVENT_H__
+#endif

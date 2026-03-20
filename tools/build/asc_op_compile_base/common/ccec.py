@@ -172,6 +172,7 @@ def _build_aicore_compile_cmd(src_file, dst_file, name="", is_ffts_needed=False,
     from .buildcfg.buildcfg_mapping import enable_machine_outliner
     from .buildcfg.buildcfg_mapping import enable_vector_core
     from .buildcfg.buildcfg_mapping import enable_cce_remat_higher_weight
+    from .buildcfg.buildcfg_mapping import deterministic_level
     from . import cce_params
     cce_arch = get_soc_spec(COMPILER_ARCH)
     suffix_list = [cce_params.MIX_AIC_SUFFIX, cce_params.MIX_AIV_SUFFIX]

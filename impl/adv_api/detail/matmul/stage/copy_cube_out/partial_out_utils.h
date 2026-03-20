@@ -13,6 +13,12 @@
  * \brief
  */
 
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/matmul/stage/copy_cube_out/partial_out_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_OUT_PARTIAL_OUT_UTILS_H__
+#endif
+
 #ifndef IMPL_MATMUL_STAGE_COPY_CUBE_OUT_PARTIAL_OUTPUT_PARTIAL_OUT_UTILS_H
 #define IMPL_MATMUL_STAGE_COPY_CUBE_OUT_PARTIAL_OUTPUT_PARTIAL_OUT_UTILS_H
 
@@ -100,3 +106,8 @@ private:
 }  // namespace Impl
 }  // namespace AscendC
 #endif // IMPL_MATMUL_STAGE_COPY_CUBE_OUT_PARTIAL_OUTPUT_PARTIAL_OUT_UTILS_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_OUT_PARTIAL_OUT_UTILS_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_OUT_PARTIAL_OUT_UTILS_H__
+#endif

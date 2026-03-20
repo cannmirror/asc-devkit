@@ -69,6 +69,8 @@ class CompileInfo:
         self.max_tiling_size: int = 0
         self.tiling_and_dfx_utils_file: str = ""  # used when tling struct is not register
         self.tiling_and_dfx_utils_bin_path: str = ""
+        self.global_kernel_symbols: list = []
+        self.global_kernel_attribute: str = ""
 
 
     def __str__(self):
@@ -665,11 +667,11 @@ format(str(stage), output))
         hex_num_str_list = list(map(reverser_hex_str, hex_num[::-1]))
         hex_num_str = ''.join(hex_num_str_list)
         return hex_num_str
-    
+
     @staticmethod
     def get_dump_core_num():
-        if CommonUtility.is_c310():	 
-            return 108 
+        if CommonUtility.is_c310():
+            return 108
         return 75
 
 

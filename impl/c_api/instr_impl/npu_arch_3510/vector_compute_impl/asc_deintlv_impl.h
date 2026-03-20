@@ -74,6 +74,14 @@ __simd_callee__ inline void asc_deintlv_impl(vector_fp8_e4m3fn_t& dst0, vector_f
     }   
 }
 
+__simd_callee__ inline void asc_deintlv_impl(vector_hifloat8_t& dst0, vector_hifloat8_t& dst1, vector_hifloat8_t src0, vector_hifloat8_t src1)
+{
+    if ASC_IS_AIV {
+         vdintlv(reinterpret_cast<vector_uint8_t&>(dst0), reinterpret_cast<vector_uint8_t&>(dst1),
+            *reinterpret_cast<vector_uint8_t*>(&src0), *reinterpret_cast<vector_uint8_t*>(&src1));
+    }   
+}
+
 __simd_callee__ inline void asc_deintlv_impl(vector_fp8_e5m2_t& dst0, vector_fp8_e5m2_t& dst1, vector_fp8_e5m2_t src0, vector_fp8_e5m2_t src1)
 {
     if ASC_IS_AIV {

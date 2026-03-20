@@ -49,13 +49,18 @@
       - 创建Matmul对象。  
         创建Matmul对象时，自定义MatmulConfig参数，将其中的isPartialOutput参数设置为true，开启Partial Output功能，获得自定义的使用MDL模板的Matmul对象。
           ```
-          constexpr static MatmulConfigMode configMode = MatmulConfigMode::CONFIG_MDL;
-          constexpr static MatmulFuncParams funcParams = {
-            false, false, false, false, 0, IterateOrder::UNDEF, ScheduleType::INNER_PRODUCT, true, true,
-            true /* isPartialOutput */
-          };
-          constexpr static MatmulConfig CFG_PARTIAL = GetMMConfig<configMode>(funcParams);
-          AscendC::Matmul<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, CFG_PARTIAL> matmulObj;
+          __aicore__ inline constexpr MatmulConfig GetCustomMDLCFG()
+          {
+              auto mmCfg = CFG_MDL;
+              mmCfg.isPartialOutput = true;
+              return mmCfg;
+          }
+          constexpr static MatmulConfig CUSTOM_CFG_MDL = GetCustomMDLCFG();
+          AscendC::Matmul<AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, AType>,
+                    AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, BType>,
+                    AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, CType>,
+                    AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, BiasType>, CUSTOM_CFG_MDL>
+              matmulObj;
           ```
       - 初始化操作。
       - 设置左矩阵A、右矩阵B。

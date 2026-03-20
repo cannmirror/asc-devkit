@@ -12,6 +12,12 @@
  * \file selectwithbytesmask_tiling.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SELECTWITHBYTESMASK_TILING_H__
+#endif
+
 #ifndef LIB_SELECT_SELECT_WITH_BYTES_MASK_TILING_H
 #define LIB_SELECT_SELECT_WITH_BYTES_MASK_TILING_H
 #include <cstdint>
@@ -80,3 +86,8 @@ void GetSelectMaxMinTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Sha
     uint32_t& minValue);
 } // namespace AscendC
 #endif // LIB_SELECT_SELECT_WITH_BYTES_MASK_TILING_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SELECTWITHBYTESMASK_TILING_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SELECTWITHBYTESMASK_TILING_H__
+#endif

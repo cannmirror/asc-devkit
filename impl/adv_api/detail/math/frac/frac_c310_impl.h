@@ -12,48 +12,53 @@
  * \file frac_c310_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/math/frac/frac_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/frac.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_FRAC_FRAC_C310_IMPL_H__
+#endif
 #ifndef IMPL_MATH_FRAC_FRAC_C310_IMPL_H
 #define IMPL_MATH_FRAC_FRAC_C310_IMPL_H
-
 #include "kernel_tensor.h"
 #include "kernel_basic_intf.h"
 
 namespace AscendC {
 namespace FRAC {
 
-constexpr MicroAPI::CastTrait castTraitF162F32 = {
-    MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
-constexpr MicroAPI::CastTrait castTraitF322F16 = {
-    MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait castTraitF162F32 = {
+    Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN, Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait castTraitF322F16 = {
+    Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
-__simd_callee__ inline void FracCompute(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg mask)
+__simd_callee__ inline void FracCompute(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, Reg::MaskReg mask)
 {
-    MicroAPI::Truncate<float, RoundMode::CAST_TRUNC>(dstReg, srcReg, mask);
-    MicroAPI::Sub(dstReg, srcReg, dstReg, mask);
+    Reg::Truncate<float, RoundMode::CAST_TRUNC>(dstReg, srcReg, mask);
+    Reg::Sub(dstReg, srcReg, dstReg, mask);
 }
 
 template<typename T>
 __simd_vf__ inline void FracCoreImpl(__ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32_t calCount, uint16_t repeatTimes)
 {
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::RegTensor<float> castReg;
-    MicroAPI::RegTensor<float> tmpReg;
-    MicroAPI::RegTensor<float> dstReg;
+    Reg::RegTensor<T> srcReg;
+    Reg::RegTensor<float> castReg;
+    Reg::RegTensor<float> tmpReg;
+    Reg::RegTensor<float> dstReg;
 
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        MicroAPI::MaskReg mask = MicroAPI::UpdateMask<float>(calCount);
+        Reg::MaskReg mask = Reg::UpdateMask<float>(calCount);
         if constexpr (sizeof(T) == sizeof(half)) {
-            MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
-            MicroAPI::Cast<float, T, castTraitF162F32>(castReg, srcReg, mask);
+            Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
+            Reg::Cast<float, T, castTraitF162F32>(castReg, srcReg, mask);
         } else {
-            MicroAPI::LoadAlign(castReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
+            Reg::LoadAlign(castReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
         }
         FracCompute(dstReg, castReg, mask);
         if constexpr (sizeof(T) == sizeof(half)) {
-            MicroAPI::Cast<T, float, castTraitF322F16>(srcReg, dstReg, mask);
-            MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_PACK_B32>(dstUb + i * B32_DATA_NUM_PER_REPEAT, srcReg, mask);
+            Reg::Cast<T, float, castTraitF322F16>(srcReg, dstReg, mask);
+            Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B32>(dstUb + i * B32_DATA_NUM_PER_REPEAT, srcReg, mask);
         } else {
-            MicroAPI::StoreAlign(dstUb + i * B32_DATA_NUM_PER_REPEAT, dstReg, mask);
+            Reg::StoreAlign(dstUb + i * B32_DATA_NUM_PER_REPEAT, dstReg, mask);
         }
     }
 }
@@ -97,3 +102,8 @@ __aicore__ inline void FracImpl(const LocalTensor<T>& dstTensor, const LocalTens
 } // namespace AscendC
 
 #endif // IMPL_MATH_FRAC_FRAC_C310_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_FRAC_FRAC_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_FRAC_FRAC_C310_IMPL_H__
+#endif

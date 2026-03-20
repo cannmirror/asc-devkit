@@ -26,6 +26,7 @@ __simd_callee__ inline void asc_storeunalign(__ubuf__ half*& dst, vector_store_a
 __simd_callee__ inline void asc_storeunalign(__ubuf__ float*& dst, vector_store_align& src0, vector_float src1, uint32_t count)
 __simd_callee__ inline void asc_storeunalign(__ubuf__ bfloat16_t*& dst, vector_store_align& src0, vector_bfloat16_t src1, uint32_t count)
 __simd_callee__ inline void asc_storeunalign(__ubuf__ fp8_e4m3fn_t*& dst, vector_store_align& src0, vector_fp8_e4m3fn_t src1, uint32_t count)
+__simd_callee__ inline void asc_storeunalign(__ubuf__ hifloat8_t*& dst, vector_store_align& src0, vector_hifloat8_t src1, uint32_t count)
 __simd_callee__ inline void asc_storeunalign(__ubuf__ fp8_e5m2_t*& dst, vector_store_align& src0, vector_fp8_e5m2_t src1, uint32_t count)
 __simd_callee__ inline void asc_storeunalign(__ubuf__ fp8_e8m0_t*& dst, vector_store_align& src0, vector_fp8_e8m0_t src1, uint32_t count)
 __simd_callee__ inline void asc_storeunalign(__ubuf__ fp4x2_e2m1_t*& dst, vector_store_align& src0, vector_fp4x2_e2m1_t src1, uint32_t count)

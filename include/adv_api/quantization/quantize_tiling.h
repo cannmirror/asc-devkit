@@ -12,6 +12,12 @@
  * \file quantize_tiling.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZE_TILING_H__
+#endif
+
 #ifndef LIB_QUANTIZATION_QUANTIZE_TILING_H
 #define LIB_QUANTIZATION_QUANTIZE_TILING_H
 #include <cstdint>
@@ -40,3 +46,8 @@ void GetQuantizeMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize
 void GetQuantizeTmpBufferFactorSize(uint32_t& maxLiveNodeCount, uint32_t& extraBuf);
 } // namespace AscendC
 #endif // LIB_QUANTIZATION_QUANTIZE_TILING_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZE_TILING_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZE_TILING_H__
+#endif

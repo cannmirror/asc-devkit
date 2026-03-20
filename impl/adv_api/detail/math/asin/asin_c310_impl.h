@@ -12,6 +12,12 @@
  * \file asin_c310_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/math/asin/asin_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/asin.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ASIN_ASIN_C310_IMPL_H__
+#endif
 #ifndef IMPL_MATH_ASIN_ASIN_C310_IMPL_H
 #define IMPL_MATH_ASIN_ASIN_C310_IMPL_H
 #include "kernel_tensor.h"
@@ -21,83 +27,83 @@
 
 namespace AscendC {
 namespace Internal {
-constexpr MicroAPI::CastTrait ASIN_CAST_TRAIT_NONE = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
-    MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_NONE};
+constexpr Reg::CastTrait ASIN_CAST_TRAIT_NONE = {Reg::RegLayout::ZERO, Reg::SatMode::SAT,
+    Reg::MaskMergeMode::ZEROING, RoundMode::CAST_NONE};
 
-constexpr MicroAPI::CastTrait ASIN_CAST_TRAIT_FLOOR = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
-    MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_FLOOR};
+constexpr Reg::CastTrait ASIN_CAST_TRAIT_FLOOR = {Reg::RegLayout::ZERO, Reg::SatMode::SAT,
+    Reg::MaskMergeMode::ZEROING, RoundMode::CAST_FLOOR};
 
-constexpr MicroAPI::CastTrait ASIN_CAST_TRAIT_RINT = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
-    MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait ASIN_CAST_TRAIT_RINT = {Reg::RegLayout::ZERO, Reg::SatMode::SAT,
+    Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
-// Calculate Taylor Expansion according to (((k_nx^2 + k_n) * x^2 + k_(n-1)) * x^2 +k_(n-2) ……)*x^2 +k_0)*x.
+// Calculate Taylor Expansion according to (((k_nx^2 + k_n) * x^2 + k_(n-1)) * x^2 +k_(n-2) …�?*x^2 +k_0)*x.
 template <typename T, typename RegT>
-__simd_callee__ inline void AsinTaylorComputeInner(RegT& dstReg, RegT& srcReg, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void AsinTaylorComputeInner(RegT& dstReg, RegT& srcReg, Reg::MaskReg& mask)
 {
-    MicroAPI::Muls(dstReg, dstReg, static_cast<T>(kCOEF[ASIN_TAYLOR_EXPAND_COUNT]), mask);
-    MicroAPI::Adds(dstReg, dstReg, static_cast<T>(kCOEF[6]), mask);
-    MicroAPI::Mul(dstReg, dstReg, srcReg, mask);
-    MicroAPI::Adds(dstReg, dstReg, static_cast<T>(kCOEF[5]), mask);
-    MicroAPI::Mul(dstReg, dstReg, srcReg, mask);
-    MicroAPI::Adds(dstReg, dstReg, static_cast<T>(kCOEF[4]), mask);
-    MicroAPI::Mul(dstReg, dstReg, srcReg, mask);
-    MicroAPI::Adds(dstReg, dstReg, static_cast<T>(kCOEF[3]), mask);
-    MicroAPI::Mul(dstReg, dstReg, srcReg, mask);
-    MicroAPI::Adds(dstReg, dstReg, static_cast<T>(kCOEF[2]), mask);
-    MicroAPI::Mul(dstReg, dstReg, srcReg, mask);
-    MicroAPI::Adds(dstReg, dstReg, static_cast<T>(kCOEF[1]), mask);
-    MicroAPI::Mul(dstReg, dstReg, srcReg, mask);
-    MicroAPI::Adds(dstReg, dstReg, static_cast<T>(kCOEF[0]), mask);
+    Reg::Muls(dstReg, dstReg, static_cast<T>(kCOEF[ASIN_TAYLOR_EXPAND_COUNT]), mask);
+    Reg::Adds(dstReg, dstReg, static_cast<T>(kCOEF[6]), mask);
+    Reg::Mul(dstReg, dstReg, srcReg, mask);
+    Reg::Adds(dstReg, dstReg, static_cast<T>(kCOEF[5]), mask);
+    Reg::Mul(dstReg, dstReg, srcReg, mask);
+    Reg::Adds(dstReg, dstReg, static_cast<T>(kCOEF[4]), mask);
+    Reg::Mul(dstReg, dstReg, srcReg, mask);
+    Reg::Adds(dstReg, dstReg, static_cast<T>(kCOEF[3]), mask);
+    Reg::Mul(dstReg, dstReg, srcReg, mask);
+    Reg::Adds(dstReg, dstReg, static_cast<T>(kCOEF[2]), mask);
+    Reg::Mul(dstReg, dstReg, srcReg, mask);
+    Reg::Adds(dstReg, dstReg, static_cast<T>(kCOEF[1]), mask);
+    Reg::Mul(dstReg, dstReg, srcReg, mask);
+    Reg::Adds(dstReg, dstReg, static_cast<T>(kCOEF[0]), mask);
 }
 
 template <typename T, typename RegT>
-__simd_callee__ inline void AsinTaylorCompute(RegT& dstReg, RegT& srcReg, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void AsinTaylorCompute(RegT& dstReg, RegT& srcReg, Reg::MaskReg& mask)
 {
-    MicroAPI::RegTensor<T> tmpReg;
-    MicroAPI::Mul(dstReg, srcReg, srcReg, mask);
-    MicroAPI::Mul(tmpReg, srcReg, srcReg, mask);
+    Reg::RegTensor<T> tmpReg;
+    Reg::Mul(dstReg, srcReg, srcReg, mask);
+    Reg::Mul(tmpReg, srcReg, srcReg, mask);
     AsinTaylorComputeInner<T>(dstReg, tmpReg, mask);
-    MicroAPI::Mul(dstReg, dstReg, srcReg, mask);
+    Reg::Mul(dstReg, dstReg, srcReg, mask);
 }
 
 // Calculate Taylor Expansion of Asin based on its square value, and set the source to be sqrt(x).
 template <typename T, typename RegT>
-__simd_callee__ inline void AsinTaylorComputeBySquareValue(RegT& dstReg, RegT& srcReg, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void AsinTaylorComputeBySquareValue(RegT& dstReg, RegT& srcReg, Reg::MaskReg& mask)
 {
-    MicroAPI::Muls(dstReg, srcReg, static_cast<T>(NUM_ONE), mask);
+    Reg::Muls(dstReg, srcReg, static_cast<T>(NUM_ONE), mask);
     AsinTaylorComputeInner<T>(dstReg, srcReg, mask);
     // Update src to be sqrt(x).
-    MicroAPI::Sqrt(srcReg, srcReg, mask);
-    MicroAPI::Mul(dstReg, dstReg, srcReg, mask);
+    Reg::Sqrt(srcReg, srcReg, mask);
+    Reg::Mul(dstReg, dstReg, srcReg, mask);
 }
 
 template <typename T, typename RegT>
-__simd_callee__ inline void CalRes2(RegT& resReg, RegT& srcReg, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void CalRes2(RegT& resReg, RegT& srcReg, Reg::MaskReg& mask)
 {
-    MicroAPI::RegTensor<T> tmpReg;
-    MicroAPI::Mul(tmpReg, srcReg, srcReg, mask);
-    MicroAPI::Muls(tmpReg, tmpReg, NEG_ONE, mask);
-    MicroAPI::Adds(tmpReg, tmpReg, NUM_ONE, mask);
-    MicroAPI::Sqrt(tmpReg, tmpReg, mask);
+    Reg::RegTensor<T> tmpReg;
+    Reg::Mul(tmpReg, srcReg, srcReg, mask);
+    Reg::Muls(tmpReg, tmpReg, NEG_ONE, mask);
+    Reg::Adds(tmpReg, tmpReg, NUM_ONE, mask);
+    Reg::Sqrt(tmpReg, tmpReg, mask);
     AsinTaylorCompute<T>(resReg, tmpReg, mask);
-    MicroAPI::Muls(resReg, resReg, NEG_ONE, mask);
-    MicroAPI::Adds(resReg, resReg, HALF_PI, mask);
+    Reg::Muls(resReg, resReg, NEG_ONE, mask);
+    Reg::Adds(resReg, resReg, HALF_PI, mask);
 }
 
 template <typename T, typename RegT>
-__simd_callee__ inline void ProcessBranch(RegT& resReg1, RegT& resReg2, RegT& tmpReg, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void ProcessBranch(RegT& resReg1, RegT& resReg2, RegT& tmpReg, Reg::MaskReg& mask)
 {
-    MicroAPI::RegTensor<int32_t> s32Reg;
-    MicroAPI::Mins(tmpReg, tmpReg, BOUNDARY, mask);
-    MicroAPI::Adds(tmpReg, tmpReg, -BOUNDARY, mask);
-    MicroAPI::Cast<int32_t, T, ASIN_CAST_TRAIT_FLOOR>(s32Reg, tmpReg, mask);
-    MicroAPI::Cast<T, int32_t, ASIN_CAST_TRAIT_RINT>(tmpReg, s32Reg, mask);
-    MicroAPI::Muls(tmpReg, tmpReg, NEG_ONE, mask);
-    MicroAPI::Mul(resReg1, resReg1, tmpReg, mask);
-    MicroAPI::Muls(tmpReg, tmpReg, NEG_ONE, mask);
-    MicroAPI::Adds(tmpReg, tmpReg, NUM_ONE, mask);
-    MicroAPI::Mul(resReg2, resReg2, tmpReg, mask);
-    MicroAPI::Add(resReg1, resReg1, resReg2, mask);
+    Reg::RegTensor<int32_t> s32Reg;
+    Reg::Mins(tmpReg, tmpReg, BOUNDARY, mask);
+    Reg::Adds(tmpReg, tmpReg, -BOUNDARY, mask);
+    Reg::Cast<int32_t, T, ASIN_CAST_TRAIT_FLOOR>(s32Reg, tmpReg, mask);
+    Reg::Cast<T, int32_t, ASIN_CAST_TRAIT_RINT>(tmpReg, s32Reg, mask);
+    Reg::Muls(tmpReg, tmpReg, NEG_ONE, mask);
+    Reg::Mul(resReg1, resReg1, tmpReg, mask);
+    Reg::Muls(tmpReg, tmpReg, NEG_ONE, mask);
+    Reg::Adds(tmpReg, tmpReg, NUM_ONE, mask);
+    Reg::Mul(resReg2, resReg2, tmpReg, mask);
+    Reg::Add(resReg1, resReg1, resReg2, mask);
 }
 
 // Calculate the sign of given values.
@@ -105,19 +111,19 @@ __simd_callee__ inline void ProcessBranch(RegT& resReg1, RegT& resReg2, RegT& tm
 // FP16: sign(x) = 2^(15) * x /(2^(-15) + 2^(15) *|x|)
 // FP32: sign(x) = 2^(62) * x /(2^(-62) + 2^(62) *|x|)
 template <typename T, typename RegT>
-__simd_callee__ inline void GetSign(RegT& dstReg, RegT& srcReg, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void GetSign(RegT& dstReg, RegT& srcReg, Reg::MaskReg& mask)
 {
-    MicroAPI::RegTensor<T> denominatorReg;
+    Reg::RegTensor<T> denominatorReg;
     constexpr float FP16_MAX = 32768;                 // 2^15
     constexpr float FP16_MIN = 3.0517578125e-05;      // 2^-15
     constexpr float FP32_MAX = 4611686018427387904;   // 2^62
     constexpr float FP32_MIN = 2.168404344971009e-19; // 2^-62
     constexpr float kFpMax = sizeof(T) == sizeof(float) ? FP32_MAX : FP16_MAX;
     constexpr float kFpMin = sizeof(T) == sizeof(float) ? FP32_MIN : FP16_MIN;
-    MicroAPI::Muls(dstReg, srcReg, static_cast<T>(kFpMax), mask);
-    MicroAPI::Abs(denominatorReg, dstReg, mask);
-    MicroAPI::Adds(denominatorReg, denominatorReg, static_cast<T>(kFpMin), mask);
-    MicroAPI::Div(dstReg, dstReg, denominatorReg, mask);
+    Reg::Muls(dstReg, srcReg, static_cast<T>(kFpMax), mask);
+    Reg::Abs(denominatorReg, dstReg, mask);
+    Reg::Adds(denominatorReg, denominatorReg, static_cast<T>(kFpMin), mask);
+    Reg::Div(dstReg, dstReg, denominatorReg, mask);
 }
 
 // Compute asin values based on input types.
@@ -128,20 +134,20 @@ template <typename T, bool convertToAcos = false>
 __simd_vf__ inline void AsinComputeVFF32(__ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32_t calSize,
     uint16_t repeatTimes, uint16_t stride)
 {
-    MicroAPI::MaskReg mask;
-    MicroAPI::RegTensor<T> srcReg;
-    MicroAPI::RegTensor<T> dstReg;
-    MicroAPI::RegTensor<T> resReg1;
-    MicroAPI::RegTensor<T> resReg2;
-    MicroAPI::RegTensor<T> signReg;
-    MicroAPI::RegTensor<T> tmpReg;
+    Reg::MaskReg mask;
+    Reg::RegTensor<T> srcReg;
+    Reg::RegTensor<T> dstReg;
+    Reg::RegTensor<T> resReg1;
+    Reg::RegTensor<T> resReg2;
+    Reg::RegTensor<T> signReg;
+    Reg::RegTensor<T> tmpReg;
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = MicroAPI::UpdateMask<T>(calSize);
-        MicroAPI::LoadAlign(srcReg, srcUb + i * stride);
+        mask = Reg::UpdateMask<T>(calSize);
+        Reg::LoadAlign(srcReg, srcUb + i * stride);
         // Calculate res2 = PI*0.5 - taylor_compute(sqrt(1 - x^2)) -> resReg2.
         CalRes2<T>(resReg2, srcReg, mask);
         // Calculate res1 = taylor_compute(abs(x)) -> dst, abs(x) -> resReg1.
-        MicroAPI::Mul(tmpReg, srcReg, srcReg, mask);
+        Reg::Mul(tmpReg, srcReg, srcReg, mask);
         AsinTaylorComputeBySquareValue<T>(resReg1, tmpReg, mask);
         // As NPU are not good at scalar process like CPU for if-else statement, the solution here used for handling above
         // 3 scenarios is to calculate 0/1 choices combining the results on both options.
@@ -157,13 +163,13 @@ __simd_vf__ inline void AsinComputeVFF32(__ubuf__ T* dstUb, __ubuf__ T* srcUb, u
         // res = res1 * choice1 + res2 * choice2
         ProcessBranch<T>(resReg1, resReg2, tmpReg, mask);
         GetSign<T>(signReg, srcReg, mask);
-        MicroAPI::Mul(dstReg, resReg1, signReg, mask);
+        Reg::Mul(dstReg, resReg1, signReg, mask);
         if constexpr (convertToAcos) {
             // Compute acos values according to formula: arccos(x) = PI*0.5 - arcsin(x).
-            MicroAPI::Adds(dstReg, dstReg, static_cast<T>(-HALF_PI), mask);
-            MicroAPI::Muls(dstReg, dstReg, static_cast<T>(NEG_ONE), mask);
+            Reg::Adds(dstReg, dstReg, static_cast<T>(-HALF_PI), mask);
+            Reg::Muls(dstReg, dstReg, static_cast<T>(NEG_ONE), mask);
         }
-        MicroAPI::StoreAlign(dstUb + i * stride, dstReg, mask);
+        Reg::StoreAlign(dstUb + i * stride, dstReg, mask);
     }
 }
 
@@ -171,31 +177,31 @@ template <typename T, bool convertToAcos = false>
 __simd_vf__ inline void AsinComputeVFF16(__ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32_t calSize,
     uint16_t repeatTimes, uint16_t stride)
 {
-    MicroAPI::MaskReg mask;
-    MicroAPI::RegTensor<half> srcReg;
-    MicroAPI::RegTensor<half> dstReg;
-    MicroAPI::RegTensor<half> halfReg1;
-    MicroAPI::RegTensor<half> halfReg2;
-    MicroAPI::RegTensor<half> tmpReg;
-    MicroAPI::RegTensor<float> floatReg1;
-    MicroAPI::RegTensor<float> floatReg2;
-    MicroAPI::RegTensor<int8_t> s8Reg;
+    Reg::MaskReg mask;
+    Reg::RegTensor<half> srcReg;
+    Reg::RegTensor<half> dstReg;
+    Reg::RegTensor<half> halfReg1;
+    Reg::RegTensor<half> halfReg2;
+    Reg::RegTensor<half> tmpReg;
+    Reg::RegTensor<float> floatReg1;
+    Reg::RegTensor<float> floatReg2;
+    Reg::RegTensor<int8_t> s8Reg;
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = MicroAPI::UpdateMask<float>(calSize);
+        mask = Reg::UpdateMask<float>(calSize);
         // Cast src from half to float type for getting more precise results, but only computes by finishing
         // taylor expansion computation as it's the majority reason of precision loss.
-        MicroAPI::LoadAlign<half, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * stride);
-        MicroAPI::Cast<float, half, ASIN_CAST_TRAIT_NONE>(floatReg2, srcReg, mask);
+        Reg::LoadAlign<half, Reg::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * stride);
+        Reg::Cast<float, half, ASIN_CAST_TRAIT_NONE>(floatReg2, srcReg, mask);
         // Calculate res2 = PI*0.5 - taylor_compute(sqrt(1 - x^2)).
-        MicroAPI::Mul(floatReg2, floatReg2, floatReg2, mask);
-        MicroAPI::Muls(floatReg2, floatReg2, NEG_ONE, mask);
-        MicroAPI::Adds(floatReg2, floatReg2, NUM_ONE, mask);
+        Reg::Mul(floatReg2, floatReg2, floatReg2, mask);
+        Reg::Muls(floatReg2, floatReg2, NEG_ONE, mask);
+        Reg::Adds(floatReg2, floatReg2, NUM_ONE, mask);
         AsinTaylorComputeBySquareValue<half>(floatReg1, floatReg2, mask);
-        MicroAPI::Muls(floatReg1, floatReg1, NEG_ONE, mask);
-        MicroAPI::Adds(floatReg1, floatReg1, HALF_PI, mask);
+        Reg::Muls(floatReg1, floatReg1, NEG_ONE, mask);
+        Reg::Adds(floatReg1, floatReg1, HALF_PI, mask);
 
         // Calculate res1 = taylor_compute(abs(x)).
-        MicroAPI::Abs(halfReg2, srcReg, mask);
+        Reg::Abs(halfReg2, srcReg, mask);
         AsinTaylorCompute<half>(dstReg, halfReg2, mask);
 
         // As NPU are not good at scalar process like CPU for if-else statement, the solution here used for handling above
@@ -210,28 +216,28 @@ __simd_vf__ inline void AsinComputeVFF16(__ubuf__ T* dstUb, __ubuf__ T* srcUb, u
         // choice1 = -Floor(min(abs(x), BOUNDARY) - BOUNDARY).
         // choice2 = 1 - choice1
         // res = res1 * choice1 + res2 * choice2
-        MicroAPI::Mins(halfReg2, halfReg2, static_cast<half>(BOUNDARY), mask);
-        MicroAPI::Adds(halfReg2, halfReg2, static_cast<half>(-BOUNDARY), mask);
-        MicroAPI::Cast<int8_t, half, ASIN_CAST_TRAIT_FLOOR>(s8Reg, halfReg2, mask);
-        MicroAPI::Cast<half, int8_t, ASIN_CAST_TRAIT_NONE>(halfReg2, s8Reg, mask);
-        MicroAPI::Muls(halfReg2, halfReg2, static_cast<half>(NEG_ONE), mask);
-        MicroAPI::Mul(dstReg, dstReg, halfReg2, mask);
-        MicroAPI::Muls(halfReg2, halfReg2, static_cast<half>(NEG_ONE), mask);
-        MicroAPI::Adds(halfReg2, halfReg2, static_cast<half>(NUM_ONE), mask);
-        MicroAPI::Cast<float, half, ASIN_CAST_TRAIT_NONE>(floatReg2, halfReg2, mask);
-        MicroAPI::Mul(floatReg1, floatReg1, floatReg2, mask);
-        MicroAPI::Cast<float, half, ASIN_CAST_TRAIT_NONE>(floatReg2, dstReg, mask);
-        MicroAPI::Add(floatReg1, floatReg2, floatReg1, mask);
+        Reg::Mins(halfReg2, halfReg2, static_cast<half>(BOUNDARY), mask);
+        Reg::Adds(halfReg2, halfReg2, static_cast<half>(-BOUNDARY), mask);
+        Reg::Cast<int8_t, half, ASIN_CAST_TRAIT_FLOOR>(s8Reg, halfReg2, mask);
+        Reg::Cast<half, int8_t, ASIN_CAST_TRAIT_NONE>(halfReg2, s8Reg, mask);
+        Reg::Muls(halfReg2, halfReg2, static_cast<half>(NEG_ONE), mask);
+        Reg::Mul(dstReg, dstReg, halfReg2, mask);
+        Reg::Muls(halfReg2, halfReg2, static_cast<half>(NEG_ONE), mask);
+        Reg::Adds(halfReg2, halfReg2, static_cast<half>(NUM_ONE), mask);
+        Reg::Cast<float, half, ASIN_CAST_TRAIT_NONE>(floatReg2, halfReg2, mask);
+        Reg::Mul(floatReg1, floatReg1, floatReg2, mask);
+        Reg::Cast<float, half, ASIN_CAST_TRAIT_NONE>(floatReg2, dstReg, mask);
+        Reg::Add(floatReg1, floatReg2, floatReg1, mask);
         GetSign<half>(halfReg1, srcReg, mask);
-        MicroAPI::Cast<float, half, ASIN_CAST_TRAIT_NONE>(floatReg2, halfReg1, mask);
-        MicroAPI::Mul(floatReg1, floatReg1, floatReg2, mask);
+        Reg::Cast<float, half, ASIN_CAST_TRAIT_NONE>(floatReg2, halfReg1, mask);
+        Reg::Mul(floatReg1, floatReg1, floatReg2, mask);
         if constexpr (convertToAcos) {
             // Compute acos values according to formula: arccos(x) = PI*0.5 - arcsin(x).
-            MicroAPI::Adds(floatReg1, floatReg1, -HALF_PI, mask);
-            MicroAPI::Muls(floatReg1, floatReg1, NEG_ONE, mask);
+            Reg::Adds(floatReg1, floatReg1, -HALF_PI, mask);
+            Reg::Muls(floatReg1, floatReg1, NEG_ONE, mask);
         }
-        MicroAPI::Cast<half, float, ASIN_CAST_TRAIT_RINT>(dstReg, floatReg1, mask);
-        MicroAPI::StoreAlign<half, MicroAPI::StoreDist::DIST_PACK_B32>(dstUb + i * stride, dstReg, mask);
+        Reg::Cast<half, float, ASIN_CAST_TRAIT_RINT>(dstReg, floatReg1, mask);
+        Reg::StoreAlign<half, Reg::StoreDist::DIST_PACK_B32>(dstUb + i * stride, dstReg, mask);
     }
 }
 } // namespace Internal
@@ -283,3 +289,8 @@ __aicore__ inline void AsinImpl(const LocalTensor<T>& dstTensor, const LocalTens
 } // namespace AscendC
 
 #endif // IMPL_MATH_ASIN_ASIN_C310_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ASIN_ASIN_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ASIN_ASIN_C310_IMPL_H__
+#endif

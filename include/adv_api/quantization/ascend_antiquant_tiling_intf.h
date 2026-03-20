@@ -12,6 +12,12 @@
  * \file ascend_antiquant_tiling_intf.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASCEND_ANTIQUANT_TILING_INTF_H__
+#endif
+
 #ifndef LIB_QUANTIZATION_ASCEND_ANTIQUANT_TILING_INTF_H
 #define LIB_QUANTIZATION_ASCEND_ANTIQUANT_TILING_INTF_H
 #include "ascend_antiquant_tiling.h"
@@ -22,3 +28,8 @@ typedef void AscendAntiQuantDeprecatedHeader;
 using LibTilingAscendAntiQuantTilingInterface = AscendAntiQuantDeprecatedHeader;
 } // namespace AscendC
 #endif // LIB_QUANTIZATION_ASCEND_ANTIQUANT_TILING_INTF_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASCEND_ANTIQUANT_TILING_INTF_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASCEND_ANTIQUANT_TILING_INTF_H__
+#endif

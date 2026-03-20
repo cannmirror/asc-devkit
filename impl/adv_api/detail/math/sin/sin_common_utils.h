@@ -12,6 +12,12 @@
  * \file sin_common_utils.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/math/sin/sin_common_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/sin.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_SIN_SIN_COMMON_UTILS_H__
+#endif
 #ifndef IMPL_MATH_SIN_SIN_COMMON_UTILS_H
 #define IMPL_MATH_SIN_SIN_COMMON_UTILS_H
 #include "include/adv_api/math/sin_utils.h"
@@ -21,3 +27,8 @@ constexpr SinConfig defaultSinConfig = { SinAlgo::POLYNOMIAL_APPROXIMATION };
 }
 
 #endif // IMPL_MATH_SIN_SIN_COMMON_UTILS_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_SIN_SIN_COMMON_UTILS_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_SIN_SIN_COMMON_UTILS_H__
+#endif

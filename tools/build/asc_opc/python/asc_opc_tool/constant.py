@@ -206,6 +206,7 @@ class CompileParam:
     STATUS_CHECK = "status_check"
     PARAM_TYPE = "paramType"
     ENABLE_VECTOR_CORE = "enable_vector_core"
+    EXTRA_SETTINGS = "extra_settings"
 
 
 class SupportInfo:

@@ -12,6 +12,12 @@
  * \file arithprogression.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ARITHPROGRESSION_H__
+#endif
+
 #ifndef LIB_ARITHPROGRESSION_H
 #define LIB_ARITHPROGRESSION_H
 
@@ -44,3 +50,8 @@ __aicore__ inline __in_pipe__(S) __out_pipe__(V, S) void Arange(
 } // namespace AscendC
 
 #endif // LIB_ARITHPROGRESSION_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ARITHPROGRESSION_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ARITHPROGRESSION_H__
+#endif

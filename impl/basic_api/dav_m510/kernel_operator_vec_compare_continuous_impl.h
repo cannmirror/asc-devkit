@@ -12,6 +12,11 @@
  * \file kernel_operator_vec_compare_continuous_impl.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/dav_m510/kernel_operator_vec_compare_continuous_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_vec_intf.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_COMPARE_CONTINUOUS_IMPL_H__
+#endif
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_COMPARE_CONTINUOUS_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_COMPARE_CONTINUOUS_IMPL_H
 
@@ -29,38 +34,38 @@ __aicore__ inline void CompareLevel2(__ubuf__ U *dst, __ubuf__ T *src0, __ubuf__
         uint32_t repeatElm = GetVecLen() / sizeof(T);
         uint16_t repeatTime = CeilDivision(calCount, repeatElm);
         uint32_t sreg = calCount;
-        MicroAPI::MaskReg dstReg, mask;
-        MicroAPI::UnalignReg uReg;
+        Reg::MaskReg dstReg, mask;
+        Reg::UnalignReg uReg;
         if constexpr (sizeof(T) == 8) {
             repeatElm = repeatElm * 2;
             repeatTime = CeilDivision(calCount, repeatElm);
             __ubuf__ uint32_t *dstT = reinterpret_cast<__ubuf__ uint32_t*>(dst);
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> src0Reg, src1Reg;
+            Reg::RegTensor<T, Reg::RegTraitNumTwo> src0Reg, src1Reg;
             for (uint16_t i = 0; i < repeatTime; ++i) {
-                mask = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
-                MicroAPI::LoadAlign(src0Reg, src0 + i * repeatElm);
-                MicroAPI::LoadAlign(src1Reg, src1 + i * repeatElm);
-                MicroAPI::Compare<T, cmpMode>(dstReg, src0Reg, src1Reg, mask);
-                MicroAPI::StoreUnAlign(dstT, dstReg, uReg);
+                mask = Reg::UpdateMask<T, Reg::RegTraitNumTwo>(sreg);
+                Reg::LoadAlign(src0Reg, src0 + i * repeatElm);
+                Reg::LoadAlign(src1Reg, src1 + i * repeatElm);
+                Reg::Compare<T, cmpMode>(dstReg, src0Reg, src1Reg, mask);
+                Reg::StoreUnAlign(dstT, dstReg, uReg);
             }
-            MicroAPI::StoreUnAlignPost<uint32_t, MicroAPI::PostLiteral::POST_MODE_NORMAL>(dstT, uReg, 0);
+            Reg::StoreUnAlignPost<uint32_t, Reg::PostLiteral::POST_MODE_NORMAL>(dstT, uReg, 0);
         } else {
-            MicroAPI::RegTensor<T> src0Reg, src1Reg;
+            Reg::RegTensor<T> src0Reg, src1Reg;
             uint32_t offset = GetVecLen() / sizeof(T) / 8;
             __ubuf__ T *dstT = reinterpret_cast<__ubuf__ T*>(dst);
             for (uint16_t i = 0; i < repeatTime; ++i) {
-                mask = MicroAPI::UpdateMask<T>(sreg);
-                MicroAPI::LoadAlign(src0Reg, src0 + i * repeatElm);
-                MicroAPI::LoadAlign(src1Reg, src1 + i * repeatElm);
-                MicroAPI::Compare<T, cmpMode>(dstReg, src0Reg, src1Reg, mask);
+                mask = Reg::UpdateMask<T>(sreg);
+                Reg::LoadAlign(src0Reg, src0 + i * repeatElm);
+                Reg::LoadAlign(src1Reg, src1 + i * repeatElm);
+                Reg::Compare<T, cmpMode>(dstReg, src0Reg, src1Reg, mask);
                 if constexpr (sizeof(T) == 1) {
-                    MicroAPI::StoreAlign(dst + i * offset, dstReg);
+                    Reg::StoreAlign(dst + i * offset, dstReg);
                 } else {
-                    MicroAPI::StoreUnAlign(dstT, dstReg, uReg);
+                    Reg::StoreUnAlign(dstT, dstReg, uReg);
                 }
             }
             if constexpr (sizeof(T) > 1) {
-                MicroAPI::StoreUnAlignPost<T, MicroAPI::PostLiteral::POST_MODE_NORMAL>(dstT, uReg, 0);
+                Reg::StoreUnAlignPost<T, Reg::PostLiteral::POST_MODE_NORMAL>(dstT, uReg, 0);
             }
         }
     }
@@ -106,3 +111,7 @@ __aicore__ inline void VcmpvImpl(
 
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_VEC_COMPARE_CONTINUOUS_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_COMPARE_CONTINUOUS_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_COMPARE_CONTINUOUS_IMPL_H__
+#endif

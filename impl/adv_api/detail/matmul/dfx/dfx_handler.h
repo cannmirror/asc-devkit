@@ -13,6 +13,12 @@
  * \brief
  */
 
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/matmul/dfx/dfx_handler.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_DFX_DFX_H__ANDLER_H
+#endif
+
 #ifndef MATMUL_DFX_HANDLER_H
 #define MATMUL_DFX_HANDLER_H
 
@@ -42,3 +48,8 @@ struct DfxHandler {
 }  // namespace Impl
 }  // namespace AscendC
 #endif // _DFX_HANDLER_H_
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_DFX_DFX_H__ANDLER_H)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_DFX_DFX_H__ANDLER_H
+#endif

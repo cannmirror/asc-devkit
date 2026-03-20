@@ -12,6 +12,12 @@
  * \file kernel_operator_tanh_intf.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_TANH_INTF_H__
+#endif
+
 #ifndef LIB_MATH_KERNEL_OPERATOR_TANH_INTF_H
 #define LIB_MATH_KERNEL_OPERATOR_TANH_INTF_H
 #include "tanh.h"
@@ -21,3 +27,8 @@ namespace AscendC {
 using LibTanInterface = TanhDeprecatedHeader;
 } // namespace AscendC
 #endif // LIB_MATH_KERNEL_OPERATOR_TANH_INTF_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_TANH_INTF_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_TANH_INTF_H__
+#endif

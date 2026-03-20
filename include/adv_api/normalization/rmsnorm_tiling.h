@@ -7,6 +7,12 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_RMSNORM_TILING_H__
+#endif
+
 #ifndef LIB_NORMALIZATION_RMSNORM_TILING_H
 #define LIB_NORMALIZATION_RMSNORM_TILING_H
 #include "graph/tensor.h"
@@ -55,3 +61,8 @@ bool GetRmsNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcS
     const bool isBasicBlock = false);
 }
 #endif // LIB_NORMALIZATION_RMSNORM_TILING_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_RMSNORM_TILING_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_RMSNORM_TILING_H__
+#endif

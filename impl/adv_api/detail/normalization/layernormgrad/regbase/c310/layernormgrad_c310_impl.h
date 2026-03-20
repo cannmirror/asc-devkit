@@ -12,6 +12,12 @@
  * \file layernormgrad_c310_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/normalization/layernormgrad/regbase/c310/layernormgrad_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORMGRAD_REGBASE_C310_LAYERNORMGRAD_C310_IMPL_H__
+#endif
 #ifndef IMPL_NORMALIZATION_LAYERNORMGRAD_REGBASE_C310_LAYERNORMGRAD_C310_IMPL_H
 #define IMPL_NORMALIZATION_LAYERNORMGRAD_REGBASE_C310_LAYERNORMGRAD_C310_IMPL_H
 
@@ -29,25 +35,25 @@ constexpr uint32_t LAYERNORM_GRAD_B16_BYTE_SIZE = 2;
 namespace AscendC {
 
 template <typename T>
-__simd_callee__ inline void ComputePdVar(MicroAPI::RegTensor<float>& pdVarReg, MicroAPI::RegTensor<float>& inputVarianceReg,
-    MicroAPI::RegTensor<float>& inputMeanReg, MicroAPI::RegTensor<float>& inputGammaReg, __ubuf__ float* x1Tmp,
+__simd_callee__ inline void ComputePdVar(Reg::RegTensor<float>& pdVarReg, Reg::RegTensor<float>& inputVarianceReg,
+    Reg::RegTensor<float>& inputMeanReg, Reg::RegTensor<float>& inputGammaReg, __ubuf__ float* x1Tmp,
     __ubuf__ float* x2Tmp, __ubuf__ T* inputDy, __ubuf__ T* inputX, float epsilon,
-    LayerNormGradParams& param, MicroAPI::MaskReg& preg, MicroAPI::MaskReg& pregOne, uint32_t offset,
+    LayerNormGradParams& param, Reg::MaskReg& preg, Reg::MaskReg& pregOne, uint32_t offset,
     uint32_t tmpOffset)
 {
-    MicroAPI::RegTensor<float> inputDyReg, inputXReg;
+    Reg::RegTensor<float> inputDyReg, inputXReg;
     // load and convert to float if necessary
     Internal::LayernormGrad::LoadDataWithT<T>(inputDy, inputDyReg, preg, offset);
     Internal::LayernormGrad::LoadDataWithT<T>(inputX, inputXReg, preg, offset);
 
-    MicroAPI::RegTensor<float> x1Reg, x2Reg;
+    Reg::RegTensor<float> x1Reg, x2Reg;
     // 1. x1Tensor = inputDy * inputGamma
     Mul(x1Reg, inputDyReg, inputGammaReg, preg);
     // 2. x2Tensor = inputX - inputMean
     Sub(x2Reg, inputXReg, inputMeanReg, preg);
 
     // 3. pd_var = np.sum(((-0.5) * x1Tensor * x2Tensor * np.power((inputVariance + EPSILON), (-1.5))))
-    MicroAPI::RegTensor<float> tmpReg1, tmpReg2;
+    Reg::RegTensor<float> tmpReg1, tmpReg2;
     constexpr float multiplier = -0.5;
     // 3.1. inputVariance + EPSILON
     Adds(tmpReg1, inputVarianceReg, epsilon, pregOne);
@@ -77,13 +83,13 @@ __simd_callee__ inline void ComputePdVar(MicroAPI::RegTensor<float>& pdVarReg, M
 }
 
 template <typename T>
-__simd_callee__ inline void ComputePdMean(MicroAPI::RegTensor<float>& pdMeanReg, MicroAPI::RegTensor<float>& res2Reg,
-    MicroAPI::RegTensor<float>& inputVarianceReg, __ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp,
-    __ubuf__ T* resForGamma, float epsilon, LayerNormGradParams& param, MicroAPI::MaskReg& preg,
-    MicroAPI::MaskReg& pregOne, uint32_t offset, uint32_t tmpOffset)
+__simd_callee__ inline void ComputePdMean(Reg::RegTensor<float>& pdMeanReg, Reg::RegTensor<float>& res2Reg,
+    Reg::RegTensor<float>& inputVarianceReg, __ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp,
+    __ubuf__ T* resForGamma, float epsilon, LayerNormGradParams& param, Reg::MaskReg& preg,
+    Reg::MaskReg& pregOne, uint32_t offset, uint32_t tmpOffset)
 {
-    MicroAPI::RegTensor<float> tmpReg1, tmpReg2, x1Reg, x2Reg;
-    MicroAPI::RegTensor<float> resForGammaReg;
+    Reg::RegTensor<float> tmpReg1, tmpReg2, x1Reg, x2Reg;
+    Reg::RegTensor<float> resForGammaReg;
 
     // load and convert to float if necessary
     Internal::LayernormGrad::LoadDataWithT<float>(x1Tmp, x1Reg, preg, tmpOffset);
@@ -132,12 +138,12 @@ __simd_callee__ inline void ComputePdMean(MicroAPI::RegTensor<float>& pdMeanReg,
 }
 
 template <typename T>
-__simd_callee__ inline void ComputePdX(MicroAPI::RegTensor<float>& pdVarReg, MicroAPI::RegTensor<float>& pdMeanReg,
+__simd_callee__ inline void ComputePdX(Reg::RegTensor<float>& pdVarReg, Reg::RegTensor<float>& pdMeanReg,
     __ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp, __ubuf__ T* outputPdX, LayerNormGradParams& param,
-    MicroAPI::MaskReg& preg, MicroAPI::MaskReg& pregOne, uint32_t offset, uint32_t tmpOffset)
+    Reg::MaskReg& preg, Reg::MaskReg& pregOne, uint32_t offset, uint32_t tmpOffset)
 {
-    MicroAPI::RegTensor<float> tmpReg, x1Reg, x2Reg;
-    MicroAPI::RegTensor<float> outputPdXReg;
+    Reg::RegTensor<float> tmpReg, x1Reg, x2Reg;
+    Reg::RegTensor<float> outputPdXReg;
     // load x1 and x2 values
     Internal::LayernormGrad::LoadDataWithT<float>(x1Tmp, x1Reg, preg, tmpOffset);
     Internal::LayernormGrad::LoadDataWithT<float>(x2Tmp, x2Reg, preg, tmpOffset);
@@ -167,43 +173,43 @@ __simd_callee__ inline void ComputePdX(MicroAPI::RegTensor<float>& pdVarReg, Mic
 }
 
 template <typename T>
-__simd_callee__ inline void ComputePdVarLoop(MicroAPI::RegTensor<float>& pdVarReg,
-    MicroAPI::RegTensor<float>& inputVarianceReg, MicroAPI::RegTensor<float>& inputMeanReg,
+__simd_callee__ inline void ComputePdVarLoop(Reg::RegTensor<float>& pdVarReg,
+    Reg::RegTensor<float>& inputVarianceReg, Reg::RegTensor<float>& inputMeanReg,
     __ubuf__ T* inputGamma, __ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp,
     __ubuf__ T* inputDy, __ubuf__ T* inputX, float epsilon, LayerNormGradParams& param, uint16_t repeatTimes,
-    uint16_t oneRepeatTimes, uint32_t baseOffset, MicroAPI::MaskReg& pregOne)
+    uint16_t oneRepeatTimes, uint32_t baseOffset, Reg::MaskReg& pregOne)
 {
     uint32_t calCount = param.hLength;
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<float> inputGammaReg;
+    Reg::MaskReg preg;
+    Reg::RegTensor<float> inputGammaReg;
     // PdVar calculation, accumulatively reduce sum
     for (size_t i = 0; i < repeatTimes; ++i) {
-        preg = MicroAPI::UpdateMask<float>(calCount);
+        preg = Reg::UpdateMask<float>(calCount);
         Internal::LayernormGrad::LoadDataWithT<T>(inputGamma, inputGammaReg, preg, i * oneRepeatTimes);
         ComputePdVar<T>(pdVarReg, inputVarianceReg, inputMeanReg, inputGammaReg, x1Tmp, x2Tmp, inputDy, inputX, epsilon,
             param, preg, pregOne, i * oneRepeatTimes + baseOffset, i * oneRepeatTimes);
     }
     calCount = param.hLength;
-    preg = MicroAPI::UpdateMask<float>(calCount);
+    preg = Reg::UpdateMask<float>(calCount);
     ReduceSum(pdVarReg, pdVarReg, preg);
 }
 
 template <typename T>
-__simd_callee__ inline void ComputePdMeanLoop(MicroAPI::RegTensor<float>& pdMeanReg, MicroAPI::RegTensor<float>& res2Reg,
-    MicroAPI::RegTensor<float>& pdVarReg, MicroAPI::RegTensor<float>& inputVarianceReg, __ubuf__ float* x1Tmp,
+__simd_callee__ inline void ComputePdMeanLoop(Reg::RegTensor<float>& pdMeanReg, Reg::RegTensor<float>& res2Reg,
+    Reg::RegTensor<float>& pdVarReg, Reg::RegTensor<float>& inputVarianceReg, __ubuf__ float* x1Tmp,
     __ubuf__ float* x2Tmp, __ubuf__ T* resForGamma, float epsilon, LayerNormGradParams& param,
-    uint16_t repeatTimes, uint16_t oneRepeatTimes, uint32_t baseOffset, MicroAPI::MaskReg& pregOne)
+    uint16_t repeatTimes, uint16_t oneRepeatTimes, uint32_t baseOffset, Reg::MaskReg& pregOne)
 {
     uint32_t calCount = param.hLength;
-    MicroAPI::MaskReg preg;
+    Reg::MaskReg preg;
     // PdMean calculation, accumulatively reduce sum
     for (size_t i = 0; i < repeatTimes; ++i) {
-        preg = MicroAPI::UpdateMask<float>(calCount);
+        preg = Reg::UpdateMask<float>(calCount);
         ComputePdMean<T>(pdMeanReg, res2Reg, inputVarianceReg, x1Tmp, x2Tmp, resForGamma, epsilon, param, preg, pregOne,
             i * oneRepeatTimes + baseOffset, i * oneRepeatTimes);
     }
     calCount = param.hLength;
-    preg = MicroAPI::UpdateMask<float>(calCount);
+    preg = Reg::UpdateMask<float>(calCount);
     // np.sum(res1)
     ReduceSum(pdMeanReg, pdMeanReg, preg);
     // np.sum(((-2.0) * (x2Tensor)))
@@ -217,9 +223,9 @@ __simd_callee__ inline void ComputePdMeanLoop(MicroAPI::RegTensor<float>& pdMean
 }
 
 template <typename T>
-__simd_callee__ inline void ComputePdXLoop(MicroAPI::RegTensor<float>& pdVarReg, MicroAPI::RegTensor<float>& pdMeanReg,
+__simd_callee__ inline void ComputePdXLoop(Reg::RegTensor<float>& pdVarReg, Reg::RegTensor<float>& pdMeanReg,
     __ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp, __ubuf__ T* outputPdX, LayerNormGradParams& param,
-    uint16_t repeatTimes, uint16_t oneRepeatTimes, uint32_t baseOffset, MicroAPI::MaskReg& pregOne)
+    uint16_t repeatTimes, uint16_t oneRepeatTimes, uint32_t baseOffset, Reg::MaskReg& pregOne)
 {
     // pd_var*(2.0 / H)
     Muls(pdVarReg, pdVarReg, param.twoOverH, pregOne);
@@ -228,9 +234,9 @@ __simd_callee__ inline void ComputePdXLoop(MicroAPI::RegTensor<float>& pdVarReg,
 
     // PdX calculation
     uint32_t calCount = param.hLength;
-    MicroAPI::MaskReg preg;
+    Reg::MaskReg preg;
     for (size_t i = 0; i < repeatTimes; ++i) {
-        preg = MicroAPI::UpdateMask<float>(calCount);
+        preg = Reg::UpdateMask<float>(calCount);
         ComputePdX<T>(pdVarReg, pdMeanReg, x1Tmp, x2Tmp, outputPdX, param, preg, pregOne,
             i * oneRepeatTimes + baseOffset, i * oneRepeatTimes);
     }
@@ -241,20 +247,20 @@ __simd_vf__ inline void LayerNormGradVF(__ubuf__ float* x1Tmp, __ubuf__ float* x
     __ubuf__ T* inputX, __ubuf__ T* inputVariance, __ubuf__ T* inputMean, __ubuf__ T* inputGamma,
     __ubuf__ T* outputPdX, __ubuf__ T* resForGamma, float epsilon, LayerNormGradParams param)
 {
-    MicroAPI::MaskReg preg = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
-    MicroAPI::MaskReg pregOne = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::VL1>();
-    MicroAPI::RegTensor<float> inputVarianceReg, inputMeanReg;
-    MicroAPI::RegTensor<float> pdVarReg, pdMeanReg, res2Reg;
+    Reg::MaskReg preg = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
+    Reg::MaskReg pregFull = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
+    Reg::MaskReg pregOne = Reg::CreateMask<float, Reg::MaskPattern::VL1>();
+    Reg::RegTensor<float> inputVarianceReg, inputMeanReg;
+    Reg::RegTensor<float> pdVarReg, pdMeanReg, res2Reg;
 
     constexpr uint16_t oneRepeatTimes = (uint32_t)(GetVecLen() / sizeof(float));
     uint16_t repeatTimes = CeilDivision(param.hLength, oneRepeatTimes);
     uint32_t totalRepeatTimes = param.bLength * param.sLength;
 
     for (size_t j = 0; j < totalRepeatTimes; ++j) {
-        MicroAPI::Duplicate(pdVarReg, 0.0f, pregFull);
-        MicroAPI::Duplicate(pdMeanReg, 0.0f, pregFull);
-        MicroAPI::Duplicate(res2Reg, 0.0f, pregFull);
+        Reg::Duplicate(pdVarReg, 0.0f, pregFull);
+        Reg::Duplicate(pdMeanReg, 0.0f, pregFull);
+        Reg::Duplicate(res2Reg, 0.0f, pregFull);
 
         Internal::LayernormGrad::FillDataWithT<T>(inputVariance, inputVarianceReg, pregFull, j);
         Internal::LayernormGrad::FillDataWithT<T>(inputMean, inputMeanReg, pregFull, j);
@@ -264,12 +270,12 @@ __simd_vf__ inline void LayerNormGradVF(__ubuf__ float* x1Tmp, __ubuf__ float* x
         ComputePdVarLoop<T>(pdVarReg, inputVarianceReg, inputMeanReg, inputGamma, x1Tmp, x2Tmp, inputDy, inputX,
             epsilon, param, repeatTimes, oneRepeatTimes, baseOffset, pregOne);
 
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
         ComputePdMeanLoop<T>(pdMeanReg, res2Reg, pdVarReg, inputVarianceReg, x1Tmp, x2Tmp, resForGamma, epsilon, param,
             repeatTimes, oneRepeatTimes, baseOffset, pregOne);
 
-        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
         ComputePdXLoop<T>(
             pdVarReg, pdMeanReg, x1Tmp, x2Tmp, outputPdX, param, repeatTimes, oneRepeatTimes, baseOffset, pregOne);
@@ -337,3 +343,8 @@ __aicore__ inline void LayerNormGradImpl(const LocalTensor<T>& outputPdX, const 
 }
 } // namespace AscendC
 #endif // IMPL_NORMALIZATION_LAYER_NORMGRAD_REGBASE_C310_LAYERNORMGRAD_C310_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORMGRAD_REGBASE_C310_LAYERNORMGRAD_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORMGRAD_REGBASE_C310_LAYERNORMGRAD_C310_IMPL_H__
+#endif

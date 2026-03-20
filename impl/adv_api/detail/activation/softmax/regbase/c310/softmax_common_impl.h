@@ -12,6 +12,13 @@
  * \file softmax_common_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/activation/softmax/regbase/c310/softmax_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/softmax.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_COMMON_IMPL_H__
+#endif
+
 #ifndef IMPL_ACTIVATION_SOFTMAX_C310_SOFTMAX_COMMON_IMPL_H
 #define IMPL_ACTIVATION_SOFTMAX_C310_SOFTMAX_COMMON_IMPL_H
 
@@ -20,68 +27,73 @@
 namespace AscendC {
 template <typename T>
 __simd_callee__ inline void LoadIfNeedCast(
-    MicroAPI::RegTensor<float>& dstReg, __ubuf__ T* srcUb, MicroAPI::MaskReg& preg)
+    Reg::RegTensor<float>& dstReg, __ubuf__ T* srcUb, Reg::MaskReg& preg)
 {
     if constexpr (sizeof(T) == 2) {
-        MicroAPI::RegTensor<T> tmpReg;
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(tmpReg, srcUb);
-        MicroAPI::Cast<float, T, Internal::castTraitB16ToB32>(dstReg, tmpReg, preg);
+        Reg::RegTensor<T> tmpReg;
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(tmpReg, srcUb);
+        Reg::Cast<float, T, Internal::castTraitB16ToB32>(dstReg, tmpReg, preg);
     } else {
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_NORM>(dstReg, srcUb);
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_NORM>(dstReg, srcUb);
     }
 }
 
 template <typename T>
 __simd_callee__ inline void LoadIfNeedCastM1(
-    MicroAPI::RegTensor<float>& dstReg, __ubuf__ T* srcUb, MicroAPI::MaskReg& preg)
+    Reg::RegTensor<float>& dstReg, __ubuf__ T* srcUb, Reg::MaskReg& preg)
 {
     if constexpr (sizeof(T) == 2) {
-        MicroAPI::RegTensor<T> castVreg;
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_BRC_B16>(castVreg, srcUb);
-        MicroAPI::UnPack<uint32_t, uint16_t>(
-            (MicroAPI::RegTensor<uint32_t>&)castVreg, (MicroAPI::RegTensor<uint16_t>&)castVreg);
-        MicroAPI::Cast<float, T, Internal::castTraitB16ToB32>(dstReg, castVreg, preg);
+        Reg::RegTensor<T> castVreg;
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_BRC_B16>(castVreg, srcUb);
+        Reg::UnPack<uint32_t, uint16_t>(
+            (Reg::RegTensor<uint32_t>&)castVreg, (Reg::RegTensor<uint16_t>&)castVreg);
+        Reg::Cast<float, T, Internal::castTraitB16ToB32>(dstReg, castVreg, preg);
     } else {
-        MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_BRC_B32>(dstReg, srcUb);
+        Reg::LoadAlign<float, Reg::LoadDist::DIST_BRC_B32>(dstReg, srcUb);
     }
 }
 
 template <typename T>
 __simd_callee__ inline void StoreIfNeedCastM1(
-    __ubuf__ T* dstUb, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& preg)
+    __ubuf__ T* dstUb, Reg::RegTensor<float>& srcReg, Reg::MaskReg& preg)
 {
     if constexpr (sizeof(T) == 2) {
-        MicroAPI::RegTensor<T> castVreg;
-        MicroAPI::Cast<T, float, Internal::castTraitB32ToB16>(castVreg, srcReg, preg);
-        MicroAPI::Pack<uint16_t, uint32_t>(
-            (MicroAPI::RegTensor<uint16_t>&)castVreg, (MicroAPI::RegTensor<uint32_t>&)castVreg);
-        MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B16>(dstUb, castVreg, preg);
+        Reg::RegTensor<T> castVreg;
+        Reg::Cast<T, float, Internal::castTraitB32ToB16>(castVreg, srcReg, preg);
+        Reg::Pack<uint16_t, uint32_t>(
+            (Reg::RegTensor<uint16_t>&)castVreg, (Reg::RegTensor<uint32_t>&)castVreg);
+        Reg::StoreAlign<T, Reg::StoreDist::DIST_FIRST_ELEMENT_B16>(dstUb, castVreg, preg);
     } else {
-        MicroAPI::StoreAlign<float, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>(dstUb, srcReg, preg);
+        Reg::StoreAlign<float, Reg::StoreDist::DIST_FIRST_ELEMENT_B32>(dstUb, srcReg, preg);
     }
 }
 
 template <typename T>
 __simd_callee__ inline void StoreIfNeedCast(
-    __ubuf__ T* dstUb, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& preg)
+    __ubuf__ T* dstUb, Reg::RegTensor<float>& srcReg, Reg::MaskReg& preg)
 {
     if constexpr (sizeof(T) == 2) {
-        MicroAPI::RegTensor<T> tmpReg;
-        MicroAPI::Cast<T, float, Internal::castTraitB32ToB16>(tmpReg, srcReg, preg);
-        MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_PACK_B32>(dstUb, tmpReg, preg);
+        Reg::RegTensor<T> tmpReg;
+        Reg::Cast<T, float, Internal::castTraitB32ToB16>(tmpReg, srcReg, preg);
+        Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B32>(dstUb, tmpReg, preg);
     } else {
-        MicroAPI::StoreAlign<T, MicroAPI::StoreDist::DIST_NORM>(dstUb, srcReg, preg);
+        Reg::StoreAlign<T, Reg::StoreDist::DIST_NORM>(dstUb, srcReg, preg);
     }
 }
 
 template <typename T>
-__simd_callee__ inline void LoadE2B(MicroAPI::RegTensor<T>& dstReg, __ubuf__ T* srcUb)
+__simd_callee__ inline void LoadE2B(Reg::RegTensor<T>& dstReg, __ubuf__ T* srcUb)
 {
     if constexpr (sizeof(T) == 2) {
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_E2B_B16>(dstReg, srcUb);
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_E2B_B16>(dstReg, srcUb);
     } else {
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_E2B_B32>(dstReg, srcUb);
+        Reg::LoadAlign<T, Reg::LoadDist::DIST_E2B_B32>(dstReg, srcUb);
     }
 }
 } // namespace AscendC
 #endif // IMPL_ACTIVATION_SOFTMAX_C310_SOFTMAX_COMMON_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_COMMON_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_COMMON_IMPL_H__
+#endif

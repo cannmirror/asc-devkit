@@ -2,10 +2,11 @@
 
 ## 概述
 
-本样例演示基于静态Tensor编程模型的Add算子实现，该实现采用TQue内存管理机制实现数据搬运与计算任务的协同调度，特别适用于需要精细控制内存流水线的场景。
+本样例以Add算子为例，采用TQue内存管理机制实现数据搬运与计算任务的协同调度，特别适用于需要精细控制内存流水线的场景。
 
 ## 支持的产品
 
+- Ascend 950PR/Ascend 950DT
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品
 
@@ -14,7 +15,7 @@
 ```
 ├── basic_api_tque_add
 │   ├── CMakeLists.txt          // 编译工程文件
-│   └── add.asc                 // Ascend C算子实现,tque管理内存 & 调用样例
+│   └── add.asc                 // Ascend C算子实现，tque管理内存 & 调用样例
 ```
 
 ## 算子描述
@@ -47,7 +48,7 @@
     Add算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm和yGm搬运到Local Memory，分别存储在xLocal、yLocal，Compute任务负责对xLocal、yLocal执行加法操作，计算结果存储在zLocal中，CopyOut任务负责将输出数据从zLocal搬运至Global Memory上的输出Tensor zGm中。
 
       
-    使用tque管理内存，使用静态Tensor编程方法进行Add算子的编程。
+    使用tque管理内存进行Add算子的编程。
       
   - Tiling实现  
     TilingData参数设计，TilingData参数本质上是和并行数据切分相关的参数，其中basic_api_tque_add算子使用了2个tiling参数。

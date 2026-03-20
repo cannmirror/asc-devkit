@@ -7,6 +7,13 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/reduce/reduce_max/reduce_max_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_MAX_REDUCE_MAX_C310_IMPL_H__
+#endif
+
 #ifndef IMPL_REDUCE_REDUCE_MAX_REDUCE_MAX_C310_IMPL_H_
 #define IMPL_REDUCE_REDUCE_MAX_REDUCE_MAX_C310_IMPL_H_
 
@@ -28,18 +35,18 @@ __aicore__ inline void ReduceMaxARB64ReuseSourceCompute(__ubuf__ T *dstAddr, __u
     __ubuf__ T *tmpAddr, const uint32_t srcShape[])
 {
     if ((srcShape[1] * sizeof(T)) % 32 == 0) {
-        ReduceARImpl<T, MicroAPI::RegTraitNumTwo,
-            MicroAPI::Max<T, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>,
-            MicroAPI::ReduceMax<T, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>, isReuseSource>(
+        ReduceARImpl<T, Reg::RegTraitNumTwo,
+            Reg::Max<T, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T, Reg::RegTraitNumTwo>>,
+            Reg::ReduceMax<T, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T, Reg::RegTraitNumTwo>>, isReuseSource>(
                 dstAddr, srcAddr, tmpAddr, srcShape[0], srcShape[1]);
     } else {
-        ReduceARReuseSourceUnAligned<T, MicroAPI::RegTraitNumTwo,
-            MicroAPI::Max<T, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>,
-            MicroAPI::ReduceMax<T, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>>(
+        ReduceARReuseSourceUnAligned<T, Reg::RegTraitNumTwo,
+            Reg::Max<T, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T, Reg::RegTraitNumTwo>>,
+            Reg::ReduceMax<T, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T, Reg::RegTraitNumTwo>>>(
                 dstAddr, srcAddr, srcShape[0], srcShape[1]);
     }
 }
@@ -50,9 +57,9 @@ __aicore__ inline void ReduceMaxARReuseSourceCompute(__ubuf__ T *dstAddr, __ubuf
 {
     using castType = typename ReduceOpInternal::ExtractReduceCastType<T>::CastT;
     if ((srcShape[1] * sizeof(T)) % 32 == 0 || srcShape[1] == 1) {
-        ReduceARImpl<T, MicroAPI::RegTraitNumOne,
-            MicroAPI::Max<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>,
-            MicroAPI::ReduceMax<castType, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<castType>>,
+        ReduceARImpl<T, Reg::RegTraitNumOne,
+            Reg::Max<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>,
+            Reg::ReduceMax<castType, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<castType>>,
             isReuseSource, ReduceType::IS_REDUCE_MAX>(
                 dstAddr, srcAddr, tmpAddr, srcShape[0], srcShape[1]);
     } else {
@@ -62,15 +69,15 @@ __aicore__ inline void ReduceMaxARReuseSourceCompute(__ubuf__ T *dstAddr, __ubuf
             for (uint16_t i = 0; i < repeatTimes; ++i) {
                 uint32_t dimA =
                     ONE_STRIDE < srcShape[0] - ONE_STRIDE * i ? ONE_STRIDE : srcShape[0] - ONE_STRIDE * i;
-                ReduceARReuseSourceUnAligned<T, MicroAPI::RegTraitNumOne,
-                    MicroAPI::Max<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>,
-                    MicroAPI::ReduceMax<castType, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<castType>>>(
+                ReduceARReuseSourceUnAligned<T, Reg::RegTraitNumOne,
+                    Reg::Max<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>,
+                    Reg::ReduceMax<castType, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<castType>>>(
                         dstAddr + ONE_STRIDE * i, srcAddr + ONE_STRIDE * i * srcShape[1], dimA, srcShape[1]);
             }
         } else {
-            ReduceARReuseSourceUnAligned<T, MicroAPI::RegTraitNumOne,
-                MicroAPI::Max<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>,
-                MicroAPI::ReduceMax<castType, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<castType>>>(
+            ReduceARReuseSourceUnAligned<T, Reg::RegTraitNumOne,
+                Reg::Max<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>,
+                Reg::ReduceMax<castType, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<castType>>>(
                     dstAddr, srcAddr, srcShape[0], srcShape[1]);
         }
     }
@@ -81,14 +88,14 @@ __aicore__ inline void ReduceMaxRAB64ReuseSourceCompute(__ubuf__ T *dstAddr, __u
     __ubuf__ T *tmpAddr, const uint32_t srcShape[])
 {
     if ((srcShape[1] * sizeof(T)) % 32 == 0) {
-        ReduceRAB64ReuseSource<T, MicroAPI::RegTraitNumTwo,
-            MicroAPI::Max<T, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>, isReuseSource>(
+        ReduceRAB64ReuseSource<T, Reg::RegTraitNumTwo,
+            Reg::Max<T, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T, Reg::RegTraitNumTwo>>, isReuseSource>(
                 dstAddr, srcAddr, tmpAddr, srcShape[1], srcShape[0]);
     } else {
-        ReduceRAReuseSourceUnAlignedB64<T, MicroAPI::RegTraitNumTwo,
-            MicroAPI::Max<T, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>>(
+        ReduceRAReuseSourceUnAlignedB64<T, Reg::RegTraitNumTwo,
+            Reg::Max<T, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T, Reg::RegTraitNumTwo>>>(
                 dstAddr, srcAddr, srcShape[1], srcShape[0]);
     }
 }
@@ -98,14 +105,14 @@ __aicore__ inline void ReduceMaxRAReuseSourceCompute(__ubuf__ T *dstAddr, __ubuf
     __ubuf__ T *tmpAddr, const uint32_t srcShape[])
 {
     if ((srcShape[1] * sizeof(T)) % 32 == 0) {
-        ReduceRAImpl<T, MicroAPI::RegTraitNumOne,
-            MicroAPI::Max<T, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T>>, isReuseSource>(
+        ReduceRAImpl<T, Reg::RegTraitNumOne,
+            Reg::Max<T, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T>>, isReuseSource>(
                 dstAddr, srcAddr, tmpAddr, srcShape[1], srcShape[0]);
     } else {
-        ReduceRAReuseSourceUnAligned<T, MicroAPI::RegTraitNumOne,
-            MicroAPI::Max<T, MicroAPI::MaskMergeMode::ZEROING,
-            MicroAPI::RegTensor<T>>>(
+        ReduceRAReuseSourceUnAligned<T, Reg::RegTraitNumOne,
+            Reg::Max<T, Reg::MaskMergeMode::ZEROING,
+            Reg::RegTensor<T>>>(
                 dstAddr, srcAddr, srcShape[1], srcShape[0]);
     }
 }
@@ -146,3 +153,8 @@ __aicore__ inline void ReduceMaxImpl(const LocalTensor<T>& dst, const LocalTenso
 } // namespace Internal
 } // namespace AscendC
 #endif // IMPL_REDUCE_REDUCE_MAX_REDUCE_MAX_C310_IMPL_H_
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_MAX_REDUCE_MAX_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_MAX_REDUCE_MAX_C310_IMPL_H__
+#endif

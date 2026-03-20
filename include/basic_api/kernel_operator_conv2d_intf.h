@@ -12,6 +12,11 @@
  * \file kernel_operator_conv2d_intf.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_CONV2D_INTF_H__
+#endif
+
 #ifndef ASCENDC_MODULE_OPERATOR_CONV2D_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_CONV2D_INTERFACE_H
 
@@ -60,3 +65,8 @@ __aicore__ inline __in_pipe__(MTE2)__out_pipe__(MTE3) void Conv2D(const LocalTen
 
 #include "../../impl/basic_api/kernel_operator_conv2d_intf_impl.h"
 #endif // ASCENDC_MODULE_OPERATOR_CONV2D_INTERFACE_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_CONV2D_INTF_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_CONV2D_INTF_H__
+#endif

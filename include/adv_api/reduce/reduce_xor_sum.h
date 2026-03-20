@@ -12,6 +12,12 @@
  * \file reduce_xor_sum.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_XOR_SUM_H__
+#endif
+
 #ifndef LIB_REDUCE_REDUCE_XOR_SUM_H
 #define LIB_REDUCE_REDUCE_XOR_SUM_H
 
@@ -88,3 +94,8 @@ __aicore__ inline void ReduceXorSum(LocalTensor<T>& dstTensor, const LocalTensor
 #endif
 
 #endif  // LIB_REDUCE_XOR_SUM_REDUCE_XOR_SUM_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_XOR_SUM_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_XOR_SUM_H__
+#endif

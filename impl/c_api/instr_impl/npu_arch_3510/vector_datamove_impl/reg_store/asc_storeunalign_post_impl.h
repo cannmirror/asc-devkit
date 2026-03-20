@@ -88,6 +88,13 @@ __simd_callee__ inline void asc_storeunalign_post_impl(__ubuf__ bfloat16_t* dst,
     }
 }
 
+__simd_callee__ inline void asc_storeunalign_post_impl(__ubuf__ hifloat8_t* dst, vector_store_align src, int32_t offset)
+{
+    if ASC_IS_AIV {
+        vstas(src, reinterpret_cast<__ubuf__ uint8_t*>(dst), offset);
+    }
+}
+
 __simd_callee__ inline void asc_storeunalign_post_impl(__ubuf__ fp8_e4m3fn_t* dst, vector_store_align src, int32_t offset)
 {
     if ASC_IS_AIV {
@@ -195,6 +202,13 @@ __simd_callee__ inline void asc_storeunalign_post_impl(__ubuf__ bfloat16_t* dst,
 {
     if ASC_IS_AIV {
         vsta(src, dst, offset);
+    }
+}
+
+__simd_callee__ inline void asc_storeunalign_post_impl(__ubuf__ hifloat8_t* dst, vector_store_align src, iter_reg offset)
+{
+    if ASC_IS_AIV {
+        vsta(src, reinterpret_cast<__ubuf__ uint8_t*>(dst), offset);
     }
 }
 

@@ -12,6 +12,13 @@
  * \file ascend_quant_l300_impl.h
  * \brief
  */
+
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/adv_api/detail/quantization/quant/ascend_quant_per_group_l300_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/quantization/ascend_quant.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZATION_QUANT_ASCEND_QUANT_PER_GROUP_L300_IMPL_H__
+#endif
+
 #ifndef LIB_ASCEND_QUANT_ASCEND_QUANT_PER_GROUP_L300_IMPL_H
 #define LIB_ASCEND_QUANT_ASCEND_QUANT_PER_GROUP_L300_IMPL_H
 #include "kernel_tensor.h"
@@ -29,30 +36,30 @@ __simd_vf__ inline void QuantPerTokenForS8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
-    static constexpr MicroAPI::CastTrait castTrait = {
-        MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, config.roundMode};
+    static constexpr Reg::CastTrait castTrait = {
+        Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, config.roundMode};
 
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<scaleT> srcVreg;
-    MicroAPI::RegTensor<dstT> dstVreg;
-    MicroAPI::RegTensor<scaleT> scaleVreg;
-    MicroAPI::RegTensor<scaleT> offsetVreg;
-    MicroAPI::RegTensor<srcT> tempVreg;
+    Reg::MaskReg preg;
+    Reg::RegTensor<scaleT> srcVreg;
+    Reg::RegTensor<dstT> dstVreg;
+    Reg::RegTensor<scaleT> scaleVreg;
+    Reg::RegTensor<scaleT> offsetVreg;
+    Reg::RegTensor<srcT> tempVreg;
     for (uint16_t i = 0; i < rowNum; ++i) {
         GetPerTokenScaleAndOffset<scaleT, config>(scaleUb + i, offsetUb + i, scaleVreg, offsetVreg);
         uint32_t sreg = para.n;
         for (uint16_t j = 0; j < repeat; ++j) {
-            preg = MicroAPI::UpdateMask<scaleT>(sreg);
+            preg = Reg::UpdateMask<scaleT>(sreg);
             if constexpr (SupportType<srcT, half>() && SupportType<scaleT, float>()) {
-                MicroAPI::DataCopy<srcT, MicroAPI::LoadDist::DIST_UNPACK_B16>(
+                Reg::DataCopy<srcT, Reg::LoadDist::DIST_UNPACK_B16>(
                     tempVreg, srcUb + i * para.n + j * vecLen);
-                MicroAPI::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempVreg, preg);
+                Reg::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempVreg, preg);
             } else {
-                MicroAPI::DataCopy<srcT, MicroAPI::LoadDist::DIST_NORM>(srcVreg, srcUb + i * para.n + j * vecLen);
+                Reg::DataCopy<srcT, Reg::LoadDist::DIST_NORM>(srcVreg, srcUb + i * para.n + j * vecLen);
             }
-            MicroAPI::Mul<scaleT, MicroAPI::MaskMergeMode::ZEROING>(srcVreg, srcVreg, scaleVreg, preg);
+            Reg::Mul<scaleT, Reg::MaskMergeMode::ZEROING>(srcVreg, srcVreg, scaleVreg, preg);
             if constexpr (config.hasOffset) {
-                MicroAPI::Add<scaleT, MicroAPI::MaskMergeMode::ZEROING>(srcVreg, srcVreg, offsetVreg, preg);
+                Reg::Add<scaleT, Reg::MaskMergeMode::ZEROING>(srcVreg, srcVreg, offsetVreg, preg);
             }
             TransRegForS8<dstT, scaleT, castTrait>(srcVreg, dstVreg, preg);
             StoreRes<dstT, scaleT>(dstUb + i * para.n + j * vecLen, dstVreg, preg);
@@ -79,29 +86,29 @@ __simd_vf__ inline void QuantPerTokenForS8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
-    static constexpr MicroAPI::CastTrait castTrait = {
-        MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, config.roundMode};
+    static constexpr Reg::CastTrait castTrait = {
+        Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, config.roundMode};
 
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<scaleT> srcVreg;
-    MicroAPI::RegTensor<dstT> dstVreg;
-    MicroAPI::RegTensor<scaleT> scaleVreg;
-    MicroAPI::RegTensor<srcT> tempVreg;
+    Reg::MaskReg preg;
+    Reg::RegTensor<scaleT> srcVreg;
+    Reg::RegTensor<dstT> dstVreg;
+    Reg::RegTensor<scaleT> scaleVreg;
+    Reg::RegTensor<srcT> tempVreg;
     for (uint16_t i = 0; i < rowNum; ++i) {
         GetPerTokenScale<scaleT>(scaleUb + i, scaleVreg);
         uint32_t sreg = para.n;
         for (uint16_t j = 0; j < repeat; ++j) {
-            preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+            preg = Reg::UpdateMask<scaleT>(sreg);;
             if constexpr (SupportType<srcT, half>() && SupportType<scaleT, float>()) {
-                MicroAPI::DataCopy<srcT, MicroAPI::LoadDist::DIST_UNPACK_B16>(
+                Reg::DataCopy<srcT, Reg::LoadDist::DIST_UNPACK_B16>(
                     tempVreg, srcUb + i * para.n + j * vecLen);
-                MicroAPI::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempVreg, preg);
+                Reg::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempVreg, preg);
             } else {
-                MicroAPI::DataCopy<srcT, MicroAPI::LoadDist::DIST_NORM>(srcVreg, srcUb + i * para.n + j * vecLen);
+                Reg::DataCopy<srcT, Reg::LoadDist::DIST_NORM>(srcVreg, srcUb + i * para.n + j * vecLen);
             }
-            MicroAPI::Mul<scaleT, MicroAPI::MaskMergeMode::ZEROING>(srcVreg, srcVreg, scaleVreg, preg);
+            Reg::Mul<scaleT, Reg::MaskMergeMode::ZEROING>(srcVreg, srcVreg, scaleVreg, preg);
             if constexpr (config.hasOffset) {
-                MicroAPI::Adds<scaleT, scaleT, MicroAPI::MaskMergeMode::ZEROING>(
+                Reg::Adds<scaleT, scaleT, Reg::MaskMergeMode::ZEROING>(
                     srcVreg, srcVreg, static_cast<scaleT>(offset), preg);
             }
             TransRegForS8<dstT, scaleT, castTrait>(srcVreg, dstVreg, preg);
@@ -129,33 +136,33 @@ __simd_vf__ inline void QuantPerGroupForKColS8VF(__ubuf__ dstT* dstUb, __ubuf__ 
     uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
     uint16_t scaleK = CeilDivision(para.n, para.groupSize);
-    static constexpr MicroAPI::CastTrait castTrait = {
-        MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, config.roundMode};
+    static constexpr Reg::CastTrait castTrait = {
+        Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, config.roundMode};
 
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<scaleT> srcVreg;
-    MicroAPI::RegTensor<dstT> dstVreg;
-    MicroAPI::RegTensor<scaleT> scaleVreg;
-    MicroAPI::RegTensor<scaleT> offsetVreg;
-    MicroAPI::RegTensor<srcT> tempVreg;
+    Reg::MaskReg preg;
+    Reg::RegTensor<scaleT> srcVreg;
+    Reg::RegTensor<dstT> dstVreg;
+    Reg::RegTensor<scaleT> scaleVreg;
+    Reg::RegTensor<scaleT> offsetVreg;
+    Reg::RegTensor<srcT> tempVreg;
     for (uint16_t i = 0; i < rowNum; ++i) {
         uint32_t sreg = para.n;
         for (uint16_t j = 0; j < repeat; ++j) {
-            preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+            preg = Reg::UpdateMask<scaleT>(sreg);;
             GetPerGroupScale(scaleUb  + i * scaleK, j * vecLen, para, config, scaleVreg);
             if constexpr (config.hasOffset) {
                 GetPerGroupOffset(offsetUb + i * scaleK, j * vecLen, para, config, offsetVreg);
             }
             if constexpr (SupportType<srcT, half>() && SupportType<scaleT, float>()) {
-                MicroAPI::DataCopy<srcT, MicroAPI::LoadDist::DIST_UNPACK_B16>(
+                Reg::DataCopy<srcT, Reg::LoadDist::DIST_UNPACK_B16>(
                     tempVreg, srcUb + i * para.n + j * vecLen);
-                MicroAPI::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempVreg, preg);
+                Reg::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempVreg, preg);
             } else {
-                MicroAPI::DataCopy<srcT, MicroAPI::LoadDist::DIST_NORM>(srcVreg, srcUb + i * para.n + j * vecLen);
+                Reg::DataCopy<srcT, Reg::LoadDist::DIST_NORM>(srcVreg, srcUb + i * para.n + j * vecLen);
             }
-            MicroAPI::Mul<scaleT, MicroAPI::MaskMergeMode::ZEROING>(srcVreg, srcVreg, scaleVreg, preg);
+            Reg::Mul<scaleT, Reg::MaskMergeMode::ZEROING>(srcVreg, srcVreg, scaleVreg, preg);
             if constexpr (config.hasOffset) {
-                MicroAPI::Add<scaleT, MicroAPI::MaskMergeMode::ZEROING>(srcVreg, srcVreg, offsetVreg, preg);
+                Reg::Add<scaleT, Reg::MaskMergeMode::ZEROING>(srcVreg, srcVreg, offsetVreg, preg);
             }
             TransRegForS8<dstT, scaleT, castTrait>(srcVreg, dstVreg, preg);
             StoreRes<dstT, scaleT>(dstUb + i * para.n + j * vecLen, dstVreg, preg);
@@ -183,30 +190,30 @@ __simd_vf__ inline void QuantPerGroupForKColS8VF(__ubuf__ dstT* dstUb, __ubuf__ 
     uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
     uint16_t scaleK = CeilDivision(para.n, para.groupSize);
-    static constexpr MicroAPI::CastTrait castTrait = {
-        MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, config.roundMode};
+    static constexpr Reg::CastTrait castTrait = {
+        Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, config.roundMode};
 
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<scaleT> srcVreg;
-    MicroAPI::RegTensor<dstT> dstVreg;
-    MicroAPI::RegTensor<scaleT> scaleVreg;
-    MicroAPI::RegTensor<srcT> tempVreg;
+    Reg::MaskReg preg;
+    Reg::RegTensor<scaleT> srcVreg;
+    Reg::RegTensor<dstT> dstVreg;
+    Reg::RegTensor<scaleT> scaleVreg;
+    Reg::RegTensor<srcT> tempVreg;
     for (uint16_t i = 0; i < rowNum; ++i) {
         uint32_t sreg = para.n;
         for (uint16_t j = 0; j < repeat; ++j) {
-            preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+            preg = Reg::UpdateMask<scaleT>(sreg);;
             GetPerGroupScale(scaleUb  + i * scaleK, j * vecLen, para, config, scaleVreg);
             if constexpr (SupportType<srcT, half>() && SupportType<scaleT, float>()) {
-                MicroAPI::DataCopy<srcT, MicroAPI::LoadDist::DIST_UNPACK_B16>(
+                Reg::DataCopy<srcT, Reg::LoadDist::DIST_UNPACK_B16>(
                     tempVreg, srcUb + i * para.n + j * vecLen);
-                MicroAPI::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempVreg, preg);
+                Reg::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempVreg, preg);
             } else {
-                MicroAPI::DataCopy<srcT, MicroAPI::LoadDist::DIST_NORM>(
+                Reg::DataCopy<srcT, Reg::LoadDist::DIST_NORM>(
                     srcVreg, srcUb + i * para.n + j * vecLen);
             }
-            MicroAPI::Mul<scaleT, MicroAPI::MaskMergeMode::ZEROING>(srcVreg, srcVreg, scaleVreg, preg);
+            Reg::Mul<scaleT, Reg::MaskMergeMode::ZEROING>(srcVreg, srcVreg, scaleVreg, preg);
             if constexpr (config.hasOffset) {
-                MicroAPI::Adds<scaleT, scaleT, MicroAPI::MaskMergeMode::ZEROING>(
+                Reg::Adds<scaleT, scaleT, Reg::MaskMergeMode::ZEROING>(
                     srcVreg, srcVreg, static_cast<scaleT>(offset), preg);
             }
             TransRegForS8<dstT, scaleT, castTrait>(srcVreg, dstVreg, preg);
@@ -231,31 +238,31 @@ __simd_callee__ inline void QuantPerGroupForKRowS8TailBlock(__ubuf__ dstT* dstUb
                                                        __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb,
                                                        uint16_t repeat, uint16_t tailRow, uint32_t n, uint32_t vecLen)
 {
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<scaleT> offsetVreg;
-    MicroAPI::RegTensor<scaleT> scaleVreg;
-    MicroAPI::RegTensor<srcT> tempVreg;
-    MicroAPI::RegTensor<dstT> dstVreg;
-    MicroAPI::RegTensor<scaleT> srcVreg;
-    static constexpr MicroAPI::CastTrait castTrait = {
-        MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, config.roundMode};
+    Reg::MaskReg preg;
+    Reg::RegTensor<scaleT> offsetVreg;
+    Reg::RegTensor<scaleT> scaleVreg;
+    Reg::RegTensor<srcT> tempVreg;
+    Reg::RegTensor<dstT> dstVreg;
+    Reg::RegTensor<scaleT> srcVreg;
+    static constexpr Reg::CastTrait castTrait = {
+        Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, config.roundMode};
     for (uint16_t i = 0; i < tailRow; ++i) {
         uint32_t sreg = n;
         for (uint16_t j = 0; j < repeat; ++j) {
-            MicroAPI::DataCopy<scaleT, MicroAPI::LoadDist::DIST_NORM>(scaleVreg, scaleUb + j * vecLen);
+            Reg::DataCopy<scaleT, Reg::LoadDist::DIST_NORM>(scaleVreg, scaleUb + j * vecLen);
             if constexpr (config.hasOffset) {
-                MicroAPI::DataCopy<scaleT, MicroAPI::LoadDist::DIST_NORM>(offsetVreg, offsetUb + j * vecLen);
+                Reg::DataCopy<scaleT, Reg::LoadDist::DIST_NORM>(offsetVreg, offsetUb + j * vecLen);
             }
-            preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+            preg = Reg::UpdateMask<scaleT>(sreg);;
             if constexpr (SupportType<srcT, half>() && SupportType<scaleT, float>()) {
-                MicroAPI::DataCopy<srcT, MicroAPI::LoadDist::DIST_UNPACK_B16>(tempVreg, srcUb + i * n + j * vecLen);
-                MicroAPI::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempVreg, preg);
+                Reg::DataCopy<srcT, Reg::LoadDist::DIST_UNPACK_B16>(tempVreg, srcUb + i * n + j * vecLen);
+                Reg::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempVreg, preg);
             } else {
-                MicroAPI::DataCopy<srcT, MicroAPI::LoadDist::DIST_NORM>(srcVreg, srcUb + i * n + j * vecLen);
+                Reg::DataCopy<srcT, Reg::LoadDist::DIST_NORM>(srcVreg, srcUb + i * n + j * vecLen);
             }
-            MicroAPI::Mul<scaleT, MicroAPI::MaskMergeMode::ZEROING>(srcVreg, srcVreg, scaleVreg, preg);
+            Reg::Mul<scaleT, Reg::MaskMergeMode::ZEROING>(srcVreg, srcVreg, scaleVreg, preg);
             if constexpr (config.hasOffset) {
-                MicroAPI::Add<scaleT, MicroAPI::MaskMergeMode::ZEROING>(srcVreg, srcVreg, offsetVreg, preg);
+                Reg::Add<scaleT, Reg::MaskMergeMode::ZEROING>(srcVreg, srcVreg, offsetVreg, preg);
             }
             TransRegForS8<dstT, scaleT, castTrait>(srcVreg, dstVreg, preg);
             StoreRes<dstT, scaleT>(dstUb + i * n + j * vecLen, dstVreg, preg);
@@ -271,32 +278,32 @@ __simd_vf__ inline void QuantPerGroupForKRowS8VF(__ubuf__ dstT* dstUb, __ubuf__ 
     uint16_t mainRowGroup = rowNum / para.groupSize;
     uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
-    static constexpr MicroAPI::CastTrait castTrait = {
-        MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, config.roundMode};
+    static constexpr Reg::CastTrait castTrait = {
+        Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, config.roundMode};
 
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<scaleT> offsetVreg;
-    MicroAPI::RegTensor<scaleT> scaleVreg;
-    MicroAPI::RegTensor<srcT> tempVreg;
-    MicroAPI::RegTensor<dstT> dstVreg;
-    MicroAPI::RegTensor<scaleT> srcVreg;
+    Reg::MaskReg preg;
+    Reg::RegTensor<scaleT> offsetVreg;
+    Reg::RegTensor<scaleT> scaleVreg;
+    Reg::RegTensor<srcT> tempVreg;
+    Reg::RegTensor<dstT> dstVreg;
+    Reg::RegTensor<scaleT> srcVreg;
     for (uint16_t i = 0; i < mainRowGroup; ++i) {
         for (uint16_t j = 0; j < static_cast<uint16_t>(para.groupSize); ++j) {
             uint32_t sreg = para.n;
             for (uint16_t k = 0; k < repeat; ++k) {
                 LoadContinousScaleAndOffset<scaleT, config>(scaleUb + i * para.n + k * vecLen,
                     offsetUb + i * para.n + k * vecLen, scaleVreg, offsetVreg);
-                preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+                preg = Reg::UpdateMask<scaleT>(sreg);;
                 if constexpr (SupportType<srcT, half>() && SupportType<scaleT, float>()) {
-                    MicroAPI::DataCopy<srcT, MicroAPI::LoadDist::DIST_UNPACK_B16>(tempVreg,
+                    Reg::DataCopy<srcT, Reg::LoadDist::DIST_UNPACK_B16>(tempVreg,
                         srcUb + (i * para.groupSize + j) * para.n + k * vecLen);
-                    MicroAPI::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempVreg, preg);
+                    Reg::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempVreg, preg);
                 } else {
-                    MicroAPI::DataCopy<srcT, MicroAPI::LoadDist::DIST_NORM>(srcVreg, srcUb + (i * para.groupSize + j) * para.n + k * vecLen);
+                    Reg::DataCopy<srcT, Reg::LoadDist::DIST_NORM>(srcVreg, srcUb + (i * para.groupSize + j) * para.n + k * vecLen);
                 }
-                MicroAPI::Mul<scaleT, MicroAPI::MaskMergeMode::ZEROING>(srcVreg, srcVreg, scaleVreg, preg);
+                Reg::Mul<scaleT, Reg::MaskMergeMode::ZEROING>(srcVreg, srcVreg, scaleVreg, preg);
                 if constexpr (config.hasOffset) {
-                    MicroAPI::Add<scaleT, MicroAPI::MaskMergeMode::ZEROING>(srcVreg, srcVreg, offsetVreg, preg);
+                    Reg::Add<scaleT, Reg::MaskMergeMode::ZEROING>(srcVreg, srcVreg, offsetVreg, preg);
                 }
                 TransRegForS8<dstT, scaleT, castTrait>(srcVreg, dstVreg, preg);
                 StoreRes<dstT, scaleT>(dstUb + (i * para.groupSize + j) * para.n + k * vecLen, dstVreg, preg);
@@ -327,27 +334,27 @@ __simd_callee__ inline void QuantPerGroupForKRowS8TailBlock(__ubuf__ dstT* dstUb
                                                        __ubuf__ scaleT* scaleUb, const scaleT& offset,
                                                        uint16_t repeat, uint16_t tailRow, uint32_t n, uint32_t vecLen)
 {
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<scaleT> scaleVreg;
-    MicroAPI::RegTensor<srcT> tempVreg;
-    MicroAPI::RegTensor<dstT> dstVreg;
-    MicroAPI::RegTensor<scaleT> srcVreg;
-    static constexpr MicroAPI::CastTrait castTrait = {
-        MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, config.roundMode};
+    Reg::MaskReg preg;
+    Reg::RegTensor<scaleT> scaleVreg;
+    Reg::RegTensor<srcT> tempVreg;
+    Reg::RegTensor<dstT> dstVreg;
+    Reg::RegTensor<scaleT> srcVreg;
+    static constexpr Reg::CastTrait castTrait = {
+        Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, config.roundMode};
     for (uint16_t i = 0; i < tailRow; ++i) {
         uint32_t sreg = n;
         for (uint16_t j = 0; j < repeat; ++j) {
-            MicroAPI::DataCopy<scaleT, MicroAPI::LoadDist::DIST_NORM>(scaleVreg, scaleUb + j * vecLen);
-            preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+            Reg::DataCopy<scaleT, Reg::LoadDist::DIST_NORM>(scaleVreg, scaleUb + j * vecLen);
+            preg = Reg::UpdateMask<scaleT>(sreg);;
             if constexpr (SupportType<srcT, half>() && SupportType<scaleT, float>()) {
-                MicroAPI::DataCopy<srcT, MicroAPI::LoadDist::DIST_UNPACK_B16>(tempVreg, srcUb + i * n + j * vecLen);
-                MicroAPI::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempVreg, preg);
+                Reg::DataCopy<srcT, Reg::LoadDist::DIST_UNPACK_B16>(tempVreg, srcUb + i * n + j * vecLen);
+                Reg::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempVreg, preg);
             } else {
-                MicroAPI::DataCopy<srcT, MicroAPI::LoadDist::DIST_NORM>(srcVreg, srcUb + i * n + j * vecLen);
+                Reg::DataCopy<srcT, Reg::LoadDist::DIST_NORM>(srcVreg, srcUb + i * n + j * vecLen);
             }
-            MicroAPI::Mul<scaleT, MicroAPI::MaskMergeMode::ZEROING>(srcVreg, srcVreg, scaleVreg, preg);
+            Reg::Mul<scaleT, Reg::MaskMergeMode::ZEROING>(srcVreg, srcVreg, scaleVreg, preg);
             if constexpr (config.hasOffset) {
-                MicroAPI::Adds<scaleT, scaleT, MicroAPI::MaskMergeMode::ZEROING>(
+                Reg::Adds<scaleT, scaleT, Reg::MaskMergeMode::ZEROING>(
                     srcVreg, srcVreg, static_cast<scaleT>(offset), preg);
             }
             TransRegForS8<dstT, scaleT, castTrait>(srcVreg, dstVreg, preg);
@@ -364,31 +371,31 @@ __simd_vf__ inline void QuantPerGroupForKRowS8VF(__ubuf__ dstT* dstUb, __ubuf__ 
     uint16_t mainRowGroup = rowNum / para.groupSize;
     uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
-    static constexpr MicroAPI::CastTrait castTrait = {
-        MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, config.roundMode};
+    static constexpr Reg::CastTrait castTrait = {
+        Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, config.roundMode};
 
-    MicroAPI::MaskReg preg;
-    MicroAPI::RegTensor<scaleT> scaleVreg;
-    MicroAPI::RegTensor<srcT> tempVreg;
-    MicroAPI::RegTensor<dstT> dstVreg;
-    MicroAPI::RegTensor<scaleT> srcVreg;
+    Reg::MaskReg preg;
+    Reg::RegTensor<scaleT> scaleVreg;
+    Reg::RegTensor<srcT> tempVreg;
+    Reg::RegTensor<dstT> dstVreg;
+    Reg::RegTensor<scaleT> srcVreg;
     for (uint16_t i = 0; i < mainRowGroup; ++i) {
         for (uint16_t j = 0; j < static_cast<uint16_t>(para.groupSize); ++j) {
             uint32_t sreg = para.n;
             for (uint16_t k = 0; k < repeat; ++k) {
-                MicroAPI::DataCopy<scaleT, MicroAPI::LoadDist::DIST_NORM>(scaleVreg, scaleUb + i * para.n + k * vecLen);
-                preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+                Reg::DataCopy<scaleT, Reg::LoadDist::DIST_NORM>(scaleVreg, scaleUb + i * para.n + k * vecLen);
+                preg = Reg::UpdateMask<scaleT>(sreg);;
                 if constexpr (SupportType<srcT, half>() && SupportType<scaleT, float>()) {
-                    MicroAPI::DataCopy<srcT, MicroAPI::LoadDist::DIST_UNPACK_B16>(
+                    Reg::DataCopy<srcT, Reg::LoadDist::DIST_UNPACK_B16>(
                         tempVreg, srcUb + (i * para.groupSize + j) * para.n + k * vecLen);
-                    MicroAPI::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempVreg, preg);
+                    Reg::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempVreg, preg);
                 } else {
-                    MicroAPI::DataCopy<srcT, MicroAPI::LoadDist::DIST_NORM>(
+                    Reg::DataCopy<srcT, Reg::LoadDist::DIST_NORM>(
                         srcVreg, srcUb + (i * para.groupSize + j) * para.n + k * vecLen);
                 }
-                MicroAPI::Mul<scaleT, MicroAPI::MaskMergeMode::ZEROING>(srcVreg, srcVreg, scaleVreg, preg);
+                Reg::Mul<scaleT, Reg::MaskMergeMode::ZEROING>(srcVreg, srcVreg, scaleVreg, preg);
                 if constexpr (config.hasOffset) {
-                    MicroAPI::Adds<scaleT, scaleT, MicroAPI::MaskMergeMode::ZEROING>(
+                    Reg::Adds<scaleT, scaleT, Reg::MaskMergeMode::ZEROING>(
                         srcVreg, srcVreg, static_cast<scaleT>(offset), preg);
                 }
                 TransRegForS8<dstT, scaleT, castTrait>(srcVreg, dstVreg, preg);
@@ -583,3 +590,8 @@ __aicore__ inline void AscendQuantImpl(const LocalTensor<dstT>& dstTensor, const
 }
 }  //  namespace AscendC
 #endif  // LIB_ASCEND_QUANT_ASCEND_QUANT_PER_GROUP_L300_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZATION_QUANT_ASCEND_QUANT_PER_GROUP_L300_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZATION_QUANT_ASCEND_QUANT_PER_GROUP_L300_IMPL_H__
+#endif

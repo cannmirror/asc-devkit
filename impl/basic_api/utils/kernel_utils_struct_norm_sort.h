@@ -12,6 +12,11 @@
  * \file kernel_utils_struct_norm_sort.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/utils/kernel_utils_struct_norm_sort.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_tensor.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_UTILS_STRUCT_NORM_SORT_H__
+#endif
 #ifndef ASCENDC_MODULE_UTILS_STRUCT_NORM_SORT_H
 #define ASCENDC_MODULE_UTILS_STRUCT_NORM_SORT_H
 #include "utils/kernel_utils_mode.h"
@@ -236,3 +241,7 @@ template <typename T> constexpr __aicore__ inline half GetScalarBitcodeToHalf(T 
 }
 } // namespace AscendC
 #endif // ASCENDC_MODULE_UTILS_STRUCT_NORM_SORT_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_UTILS_STRUCT_NORM_SORT_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_UTILS_STRUCT_NORM_SORT_H__
+#endif

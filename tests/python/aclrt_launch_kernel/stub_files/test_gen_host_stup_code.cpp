@@ -1,3 +1,12 @@
+/**
+* Copyright (c) 2025 Huawei Technologies Co., Ltd.
+* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+* CANN Open Software License Agreement Version 2.0 (the "License").
+* Please refer to the License for details. You may not use this file except in compliance with the License.
+* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+* See LICENSE in the root of the software repository for the full text of the License.
+*/
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -8,14 +17,6 @@
 #include <stdint.h>
 #include <dlfcn.h>
 #include <securec.h>
-
-#ifndef ASCENDC_DUMP
-#define ASCENDC_DUMP 1
-#endif
-
-#if defined(ASCENDC_DUMP) && (ASCENDC_DUMP == 0)
-    #undef ASCENDC_DUMP
-#endif
 
 static char ascendcErrMsg[1024] = {0};
 
@@ -135,9 +136,6 @@ uint32_t launch_and_profiling_add_custom(uint64_t func_key, uint32_t numBlocks, 
 extern "C" uint32_t aclrtlaunch_add_custom(uint32_t numBlocks, void* stream, bool bool_1, bool bool_2, uint32_t uint32_1, A* tmpStruct, uint16_t uint16_1, void* x, void* y, void* z, AddCustomTilingData* tiling)
 {
     struct {
-    #if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON
-            void* __ascendc_dump;
-    #endif
         alignas(((alignof(bool) + 3) >> 2) << 2) bool bool_1;
         alignas(((alignof(bool) + 3) >> 2) << 2) bool bool_2;
         alignas(((alignof(uint32_t) + 3) >> 2) << 2) uint32_t uint32_1;
@@ -151,10 +149,6 @@ extern "C" uint32_t aclrtlaunch_add_custom(uint32_t numBlocks, void* stream, boo
     } __ascendc_args;
 
     uint32_t __ascendc_ret;
-#if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON
-    constexpr uint32_t __ascendc_one_core_dump_size = 1048576;
-    AllocAscendMemDevice(&(__ascendc_args.__ascendc_dump), __ascendc_one_core_dump_size * 75);
-#endif
     constexpr uint32_t __ascendc_overflow_status_size = 8;
     AllocAscendMemDevice(&(__ascendc_args.__ascendc_overflow), __ascendc_overflow_status_size);
     __ascendc_args.bool_1 = bool_1;
@@ -167,13 +161,8 @@ extern "C" uint32_t aclrtlaunch_add_custom(uint32_t numBlocks, void* stream, boo
     __ascendc_args.z = z;
     (void) memcpy_s(&__ascendc_args.tiling, sizeof(__ascendc_args.tiling), tiling, sizeof(__ascendc_args.tiling));
 
-    const char *__ascendc_name = "add_custom";
     __ascendc_ret = launch_and_profiling_add_custom(0, numBlocks, stream, (void **)&__ascendc_args, sizeof(__ascendc_args));
     KernelHandleGradUnregister::GetInstance();
-#if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON
-    Adx::AdumpPrintWorkSpace(__ascendc_args.__ascendc_dump, __ascendc_one_core_dump_size * 75, stream, __ascendc_name);
-    FreeAscendMemDevice(__ascendc_args.__ascendc_dump);
-#endif
     FreeAscendMemDevice(__ascendc_args.__ascendc_overflow);
     return __ascendc_ret;
 }

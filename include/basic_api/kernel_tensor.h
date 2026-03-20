@@ -12,6 +12,11 @@
  * \file kernel_tensor.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TENSOR_H__
+#endif
+
 #ifndef KERNEL_TENSOR_H
 #define KERNEL_TENSOR_H
 
@@ -294,3 +299,8 @@ private:
 
 #include "../../impl/basic_api/kernel_tensor_impl.h"
 #endif // KERNEL_TENSOR_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TENSOR_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TENSOR_H__
+#endif

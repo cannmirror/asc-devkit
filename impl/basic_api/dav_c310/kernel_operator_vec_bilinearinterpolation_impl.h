@@ -12,12 +12,17 @@
  * \file kernel_operator_vec_bilinearinterpolation_impl.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/dav_c310/kernel_operator_vec_bilinearinterpolation_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_tensor.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_BILINEARINTERPOLATION_IMPL_H__
+#endif
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_BILINEARINTERPOLATION_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_BILINEARINTERPOLATION_IMPL_H
 #include "kernel_utils.h"
 #include "kernel_operator_common_impl.h"
 #include "kernel_operator_vec_template_impl.h"
-#include "micro_api/kernel_micro_intf.h"
+#include "reg_compute/kernel_reg_compute_intf.h"
 
 namespace AscendC {
 namespace Internal {
@@ -27,28 +32,28 @@ __simd_vf__ inline void BilinearInterpolationRepeatModeLevel0VFImpl(__ubuf__ T* 
     uint16_t dstBlkStride, uint16_t vROffset, __ubuf__ uint64_t* maskBuf)
 {
     uint32_t count = VecMicroGetCount<true, true, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
-    MicroAPI::MaskReg maskFull = MicroAPI::CreateMask<T>();;
-    MicroAPI::MaskReg maskReg = VecMicroGetMaskReg<T, true, true, isMaskBitMode>(maskBuf, count);
-    MicroAPI::RegTensor<T> dstReg;
-    MicroAPI::RegTensor<T> srcReg0;
-    MicroAPI::RegTensor<T> srcReg1;
-    MicroAPI::RegTensor<T> tmpReg;
-    MicroAPI::RegTensor<uint32_t> indexReg;
+    Reg::MaskReg maskFull = Reg::CreateMask<T>();;
+    Reg::MaskReg maskReg = VecMicroGetMaskReg<T, true, true, isMaskBitMode>(maskBuf, count);
+    Reg::RegTensor<T> dstReg;
+    Reg::RegTensor<T> srcReg0;
+    Reg::RegTensor<T> srcReg1;
+    Reg::RegTensor<T> tmpReg;
+    Reg::RegTensor<uint32_t> indexReg;
 
     for (uint16_t i = 0; i < static_cast<uint16_t>(vRepeat); ++i) {
-        MicroAPI::Duplicate(dstReg, static_cast<T>(0), maskFull);
+        Reg::Duplicate(dstReg, static_cast<T>(0), maskFull);
         for (uint16_t j = 0; j < static_cast<uint16_t>(hRepeat); ++j) {
-            MicroAPI::LoadAlign(indexReg, src0Offset + i * hRepeat * DEFAULT_REPEAT_STRIDE +
+            Reg::LoadAlign(indexReg, src0Offset + i * hRepeat * DEFAULT_REPEAT_STRIDE +
                                 j * DEFAULT_REPEAT_STRIDE);
-            MicroAPI::GatherB(srcReg0, src0, indexReg, maskFull);
+            Reg::GatherB(srcReg0, src0, indexReg, maskFull);
             
-            MicroAPI::LoadAlign<T,  MicroAPI::LoadDist::DIST_E2B_B16>(srcReg1, src1 +
+            Reg::LoadAlign<T,  Reg::LoadDist::DIST_E2B_B16>(srcReg1, src1 +
                                 i * hRepeat * DEFAULT_BLK_NUM + j * DEFAULT_BLK_NUM);
 
-            MicroAPI::Mul(tmpReg, srcReg0, srcReg1, maskReg);
-            MicroAPI::Add(dstReg, tmpReg, dstReg, maskReg);
+            Reg::Mul(tmpReg, srcReg0, srcReg1, maskReg);
+            Reg::Add(dstReg, tmpReg, dstReg, maskReg);
         }
-        MicroAPI::StoreAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+        Reg::StoreAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(
             dst + i * vROffset, dstReg, dstBlkStride, maskReg);
     }
 }
@@ -59,26 +64,26 @@ __simd_vf__ inline void BilinearInterpolationNoRepeatModeLevel0VFImpl(__ubuf__ T
     uint16_t dstBlkStride, uint16_t vROffset, __ubuf__ uint64_t* maskBuf)
 {
     uint32_t count = VecMicroGetCount<true, true, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
-    MicroAPI::MaskReg maskFull = MicroAPI::CreateMask<T>();
-    MicroAPI::MaskReg maskReg = VecMicroGetMaskReg<T, true, true, isMaskBitMode>(maskBuf, count);
-    MicroAPI::RegTensor<T> dstReg;
-    MicroAPI::RegTensor<T> srcReg0;
-    MicroAPI::RegTensor<T> srcReg1;
-    MicroAPI::RegTensor<T> tmpReg;
-    MicroAPI::RegTensor<uint32_t> indexReg;
+    Reg::MaskReg maskFull = Reg::CreateMask<T>();
+    Reg::MaskReg maskReg = VecMicroGetMaskReg<T, true, true, isMaskBitMode>(maskBuf, count);
+    Reg::RegTensor<T> dstReg;
+    Reg::RegTensor<T> srcReg0;
+    Reg::RegTensor<T> srcReg1;
+    Reg::RegTensor<T> tmpReg;
+    Reg::RegTensor<uint32_t> indexReg;
 
     for (uint16_t i = 0; i < static_cast<uint16_t>(vRepeat); ++i) {
-        MicroAPI::Duplicate(dstReg, static_cast<T>(0), maskFull);
+        Reg::Duplicate(dstReg, static_cast<T>(0), maskFull);
         for (uint16_t j = 0; j < static_cast<uint16_t>(hRepeat); ++j) {
-            MicroAPI::LoadAlign(indexReg, src0Offset + i * hRepeat * DEFAULT_REPEAT_STRIDE +
+            Reg::LoadAlign(indexReg, src0Offset + i * hRepeat * DEFAULT_REPEAT_STRIDE +
                                 j * DEFAULT_REPEAT_STRIDE);
-            MicroAPI::GatherB(srcReg0, src0, indexReg, maskFull);
+            Reg::GatherB(srcReg0, src0, indexReg, maskFull);
             
-            MicroAPI::LoadAlign<T,  MicroAPI::LoadDist::DIST_BRC_B16>(srcReg1, src1 + i * hRepeat + j);
-            MicroAPI::Mul(tmpReg, srcReg0, srcReg1, maskReg);
-            MicroAPI::Add(dstReg, tmpReg, dstReg, maskReg);
+            Reg::LoadAlign<T,  Reg::LoadDist::DIST_BRC_B16>(srcReg1, src1 + i * hRepeat + j);
+            Reg::Mul(tmpReg, srcReg0, srcReg1, maskReg);
+            Reg::Add(dstReg, tmpReg, dstReg, maskReg);
         }
-        MicroAPI::StoreAlign<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+        Reg::StoreAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(
             dst + i * vROffset, dstReg, dstBlkStride, maskReg);
     }
 }
@@ -148,3 +153,7 @@ __aicore__ inline void BilinearInterpolationCalc(const LocalTensor<T> &dstLocal,
 }
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_VEC_BILINEARINTERPOLATION_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_BILINEARINTERPOLATION_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_BILINEARINTERPOLATION_IMPL_H__
+#endif
