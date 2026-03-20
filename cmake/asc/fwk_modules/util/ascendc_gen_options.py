@@ -30,48 +30,81 @@ def write_options_to_file(file_name: str, options_str: str, \
         raise (err)
 
 
-def gen_compile_options(compile_options_file: str, op_type: str, \
-    compute_unit: str, compile_options: list):
-    base_dir = os.path.dirname(compile_options_file)
-    opc_config_file = os.path.join(base_dir, "custom_opc_options.ini")
+def _handle_oom_option(opts, opc_debug_config):
+    if opts == "--oom":
+        opc_debug_config.append("oom")
+    else:
+        raise RuntimeError(f"Unknown oom option format {opts}")
+
+
+def _handle_input_param_file(opts):
+    """Handle input param file option."""
+    return "--input-param-file=" + opts.strip().split('=')[1]
+
+
+def _handle_tiling_key(opts):
+    keys = opts.strip().split('=')[1].split(',')
+    return ";".join([key for key in keys])
+
+
+def _handle_kernel_template_input(opts):
+    if "=" not in opts:
+        raise RuntimeError('Invalid --kernel-template-input option format!')
+    input_value = opts.split("=", 1)
+    if not input_value[1]:
+        raise RuntimeError('No value given for --kernel-template-input option!')
+    return input_value[1]
+
+
+def _parse_single_option(opts, opc_debug_config, opc_kernel_config):
+    if "oom" in opts:
+        _handle_oom_option(opts, opc_debug_config)
+        return "debug_config", None
+    elif "--save-temp-files" in opts:
+        opc_debug_config.append("dump_cce")
+        return "debug_config", None
+    elif "--input-param-file" in opts:
+        return "input_param", _handle_input_param_file(opts)
+    elif opts.startswith("--op_relocatable_kernel_binary"):
+        opc_debug_config.append(opts)
+        return "debug_config", None
+    elif opts.startswith("--op_super_kernel_options"):
+        opc_debug_config.append(opts)
+        return "debug_config", None
+    elif opts.startswith("--kernel-json-file"):
+        opc_kernel_config.append(opts)
+        return "kernel_config", None
+    elif "--tiling_key" in opts:
+        return "tiling_key", _handle_tiling_key(opts)
+    elif "--kernel-template-input" in opts:
+        return "template_input", _handle_kernel_template_input(opts)
+    else:
+        return "compile_opt", opts
+
+
+def _parse_compile_options(compile_options):
     compile_opt = []
     opc_debug_config = []
     opc_kernel_config = []
     opc_tiling_keys = ""
     input_param_file = ""
     opc_template_kernel_str = ""
+
     for opts in compile_options:
-        if "oom" in opts:
-            if opts == "--oom":
-                opc_debug_config.append("oom")
-            else:
-                raise RuntimeError(f"Unknown oom option format {opts}")
-        elif "--save-temp-files" in opts:
-            opc_debug_config.append("dump_cce")
-        elif "--input-param-file" in opts:
-            input_param_file = "--input-param-file=" + opts.strip().split('=')[1]
-        elif opts.startswith("--op_relocatable_kernel_binary"):
-            opc_debug_config.append(opts)
-        elif opts.startswith("--op_super_kernel_options"):
-            opc_debug_config.append(opts)
-        elif opts.startswith("--kernel-json-file"):
-            opc_kernel_config.append(opts)
-        elif "--tiling_key" in opts:
-            keys = opts.strip().split('=')[1].split(',')
-            keys_str = ";".join([key for key in keys])
-            opc_tiling_keys = keys_str
-        elif "--kernel-template-input" in opts:
-            if "=" not in opts:
-                raise RuntimeError('Invalid --kernel-template-input option format!')
-            input_value = opts.split("=", 1)
-            if not input_value[1]:
-                raise RuntimeError('No value given for --kernel-template-input option!')
-            opc_template_kernel_str = input_value[1]
-        else:
+        category, value = _parse_single_option(opts, opc_debug_config, opc_kernel_config)
+        if category == "compile_opt":
             compile_opt.append(opts)
-    if len(compile_opt) > 0:
-        options_str = ';'.join([opt for opt in compile_opt])
-        write_options_to_file(compile_options_file, options_str, op_type, compute_unit, ",")
+        elif category == "input_param":
+            input_param_file = value
+        elif category == "tiling_key":
+            opc_tiling_keys = value
+        elif category == "template_input":
+            opc_template_kernel_str = value
+
+    return compile_opt, opc_debug_config, opc_kernel_config, opc_tiling_keys, input_param_file, opc_template_kernel_str
+
+
+def _build_opc_config_str(opc_debug_config, opc_tiling_keys, opc_template_kernel_str, opc_kernel_config):
     opc_config_str = ""
     if opc_debug_config:
         opc_config_str = "--op_debug_config=" + ';'.join([opt for opt in opc_debug_config])
@@ -87,12 +120,41 @@ def gen_compile_options(compile_options_file: str, op_type: str, \
         if opc_config_str != "":
             opc_config_str += "@"
         opc_config_str += ' '.join(opc_kernel_config)
+    return opc_config_str
+
+
+def _write_compile_options(compile_options_file, compile_opt, op_type, compute_unit):
+    if len(compile_opt) > 0:
+        options_str = ';'.join([opt for opt in compile_opt])
+        write_options_to_file(compile_options_file, options_str, op_type, compute_unit, ",")
+
+
+def _write_opc_config(opc_config_file, opc_config_str, op_type, compute_unit):
     if opc_config_str != "":
         write_options_to_file(opc_config_file, opc_config_str, op_type, compute_unit, "@")
+
+
+def _write_input_param_file(opc_config_file, input_param_file, op_type, compute_unit):
     if input_param_file != "":
         if op_type == "ALL" or compute_unit == "":
             raise RuntimeError('--input-param-file must be used with a COMPUTE_UNIT, and OP_TYPE cannot be ALL.')
         write_options_to_file(opc_config_file, input_param_file, op_type, compute_unit, "@")
+
+
+def gen_compile_options(compile_options_file: str, op_type: str, \
+    compute_unit: str, compile_options: list):
+    base_dir = os.path.dirname(compile_options_file)
+    opc_config_file = os.path.join(base_dir, "custom_opc_options.ini")
+
+    compile_opt, opc_debug_config, opc_kernel_config, opc_tiling_keys, input_param_file, opc_template_kernel_str = \
+        _parse_compile_options(compile_options)
+
+    _write_compile_options(compile_options_file, compile_opt, op_type, compute_unit)
+
+    opc_config_str = _build_opc_config_str(opc_debug_config, opc_tiling_keys, opc_template_kernel_str, \
+        opc_kernel_config)
+    _write_opc_config(opc_config_file, opc_config_str, op_type, compute_unit)
+    _write_input_param_file(opc_config_file, input_param_file, op_type, compute_unit)
 
 
 def parse_options(args):

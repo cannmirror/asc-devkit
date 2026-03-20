@@ -1864,64 +1864,107 @@ def generate_extra_param(func_group: FuncSignGroupWithModeBase,
     return extra_param
 
 
+def _generate_dump_source(func_group: FuncSignGroupWithModeBase, is_mix: bool) -> str:
+    if not RUN_MODE == "cpu" and IS_C310_MODE and func_group.dump_info["dump_type"] != "":
+        source = "#if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON\n"
+        if func_group.dump_info["dump_type"] == "assert":
+            if is_mix:
+                source += "    AscendC::StoreArgsOfInitDump(true, dumpAddr);\n"
+            else:
+                source += "    AscendC::StoreArgsOfInitDump(false, dumpAddr);\n"
+        else:
+            if is_mix:
+                source += "    AscendC::InitDump(true, dumpAddr, ONE_CORE_DUMP_SIZE);\n"
+            else:
+                source += "    AscendC::InitDump(false, dumpAddr, ONE_CORE_DUMP_SIZE);\n"
+        source += "#ifdef ASCENDC_TIME_STAMP_ON\n"
+        source += "    AscendC::PrintTimeStamp(static_cast<uint32_t>\
+(AscendC::TimeStampId::TIME_STAMP_WRAP_INIT_DUMP));\n"
+        source += "#endif\n"
+        source += "#endif\n\n"
+        return source
+    return ""
+
+
+def _generate_ffts_source(is_mix: bool) -> str:
+    if is_mix and is_v220_mode():
+        source = "    icache_preload(1);\n"
+        source += "    if (ffts_addr != nullptr) {\n"
+        source += "        set_ffts_base_addr((uint64_t)ffts_addr);\n"
+        source += "    }\n"
+        source += "#ifdef ASCENDC_TIME_STAMP_ON\n"
+        source += "    AscendC::PrintTimeStamp(static_cast<uint32_t>\
+(AscendC::TimeStampId::TIME_STAMP_WRAP_FFTS_ADDR));\n"
+        source += "#endif\n"
+        return source
+    return ""
+
+
+def _generate_printf_source(func_group: FuncSignGroupWithModeBase) -> str:
+    if IS_C310_MODE and "printf" in func_group.dump_info["dump_type"]:
+        source = "#ifdef ASCENDC_DUMP\n"
+        source += "    uint64_t __ascendc_tStamp = 0;\n"
+        source += "    uint64_t __ascendc_version = 0;\n"
+        source += "    __gm__ char* __ascendc_versionStr = nullptr;\n"
+        source += "    GetCannVersion(__ascendc_versionStr, __ascendc_version, __ascendc_tStamp);\n"
+        source += "    if (__ascendc_tStamp == 0) {\n"
+        source += "        AscendC::printf(\"[WARNING]: CANN TimeStamp is invalid, \
+CANN TimeStamp is %u\\n\", __ascendc_tStamp);\n"
+        source += "    } else {\n"
+        source += "        AscendC::printf(\"CANN Version: %s, TimeStamp: %u\\n\", \
+(__gm__ const char*)(__ascendc_versionStr), __ascendc_tStamp);\n"
+        source += "    }\n"
+        source += "#endif\n"
+        return source
+    return ""
+
+
+def _generate_workspace_param_source(param_names: tuple) -> str:
+    if len(param_names) > 1:
+        return f"""#if defined(HAVE_TILING)
+    workspace_param = {param_names[-2]};
+#else
+    workspace_param = {param_names[-1]};
+#endif"""
+    else:
+        return f"    workspace_param = {param_names[-1]};"
+
+
+def _generate_workspace_usr_source(param_names: tuple) -> str:
+    if len(param_names) > 1:
+        return f"""#if defined(HAVE_TILING)
+    {param_names[-2]} = workspace_usr;
+#else
+    {param_names[-1]} = workspace_usr;
+#endif"""
+    else:
+        return f"    {param_names[-1]} = workspace_usr;"
+
+
+def _generate_matmul_clear_source(is_mix: bool) -> str:
+    if RUN_MODE != "cpu" and is_mix and is_v220_mode():
+        return f"""#if defined(REGIST_MATMUL_OBJ) || defined({MIX_CORE_MACRO})
+    if constexpr (g_coreType == AscendC::AIC) {{
+        matmul::clearWorkspace(workspace_param);
+#ifdef ASCENDC_TIME_STAMP_ON
+        AscendC::PrintTimeStamp(static_cast<uint32_t>(AscendC::TimeStampId::TIME_STAMP_WRAP_CLEAR_WK_SPAC));
+#endif
+    }}
+#endif"""
+    return ""
+
+
 def _generate_sub_source(func_group: FuncSignGroupWithModeBase, is_mix: bool, param_names):
     source = ""
-    if not RUN_MODE == "cpu":
-        if IS_C310_MODE and func_group.dump_info["dump_type"] != "":
-            source += "#if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON\n"
-            if func_group.dump_info["dump_type"] == "assert":
-                if is_mix:
-                    source += "    AscendC::StoreArgsOfInitDump(true, dumpAddr);\n"
-                else:
-                    source += "    AscendC::StoreArgsOfInitDump(false, dumpAddr);\n"
-            else:
-                if is_mix:
-                    source += "    AscendC::InitDump(true, dumpAddr, ONE_CORE_DUMP_SIZE);\n"
-                else:
-                    source += "    AscendC::InitDump(false, dumpAddr, ONE_CORE_DUMP_SIZE);\n"
-            source += "#ifdef ASCENDC_TIME_STAMP_ON\n"
-            source += "    AscendC::PrintTimeStamp(static_cast<uint32_t>\
-(AscendC::TimeStampId::TIME_STAMP_WRAP_INIT_DUMP));\n"
-            source += "#endif\n"
-            source += "#endif\n\n"
-        if is_mix and is_v220_mode():
-            source += "    icache_preload(1);\n"
-            source += "    if (ffts_addr != nullptr) {\n"
-            source += "        set_ffts_base_addr((uint64_t)ffts_addr);\n"
-            source += "    }\n"
-            source += "#ifdef ASCENDC_TIME_STAMP_ON\n"
-            source += "    AscendC::PrintTimeStamp(static_cast<uint32_t>\
-(AscendC::TimeStampId::TIME_STAMP_WRAP_FFTS_ADDR));\n"
-            source += "#endif\n"
-        if IS_C310_MODE and "printf" in func_group.dump_info["dump_type"]:
-            source += "#ifdef ASCENDC_DUMP\n"
-            source += "    uint64_t __ascendc_tStamp = 0;\n"
-            source += "    uint64_t __ascendc_version = 0;\n"
-            source += "     __gm__ char* __ascendc_versionStr = nullptr;\n"
-            source += "    GetCannVersion(__ascendc_versionStr, __ascendc_version, __ascendc_tStamp);\n"
-            source += "    if (__ascendc_tStamp == 0) {\n"
-            source += "        AscendC::printf(\"[WARNING]: CANN TimeStamp is invalid, \
-    CANN TimeStamp is %u\\n\", __ascendc_tStamp);\n"
-            source += "    } else {\n"
-            source += "        AscendC::printf(\"CANN Version: %s, TimeStamp: %u\\n\", \
-    (__gm__ const char*)(__ascendc_versionStr), __ascendc_tStamp);\n"
-            source += "    }\n"
-            source += "#endif\n"
-    # if it has no param, there should be no assignment of workspace or tiling
+    source += _generate_dump_source(func_group, is_mix)
+    source += _generate_ffts_source(is_mix)
+    source += _generate_printf_source(func_group)
+
     if len(param_names) > 0:
         source += "#if defined(HAVE_WORKSPACE)\n"
         source += "    GM_ADDR workspace_param;\n"
         source += "    GM_ADDR workspace_usr;\n"
-        # if there is only on param, there should be no tiling input
-        if len(param_names) > 1:
-            source += "#if defined(HAVE_TILING)\n"
-            source += f"    workspace_param = {param_names[-2]};\n"
-            source += "#else\n"
-            source += f"    workspace_param = {param_names[-1]};\n"
-            source += "#endif\n"
-        else:
-            source += f"    workspace_param = {param_names[-1]};\n"
-
+        source += _generate_workspace_param_source(param_names) + "\n"
 
         if is_mix:
             source += "    if (workspace_param == nullptr) {\n"
@@ -1931,44 +1974,26 @@ def _generate_sub_source(func_group: FuncSignGroupWithModeBase, is_mix: bool, pa
         source += "    AscendC::SetSysWorkspaceForce(workspace_param);\n"
         source += "    workspace_usr = AscendC::GetUserWorkspace(workspace_param);\n"
 
-        if RUN_MODE != "cpu" and is_mix and is_v220_mode():
-            source += f"#if defined(REGIST_MATMUL_OBJ) || defined({MIX_CORE_MACRO})\n"
-            source += "    if constexpr (g_coreType == AscendC::AIC) {\n"
-            source += "        matmul::clearWorkspace(workspace_param);\n"
-            source += "#ifdef ASCENDC_TIME_STAMP_ON\n"
-            source += "        AscendC::PrintTimeStamp(static_cast<uint32_t>\
-(AscendC::TimeStampId::TIME_STAMP_WRAP_CLEAR_WK_SPAC));\n"
-            source += "#endif\n"
-            source += "    }\n"
-            source += "#endif\n"
-
-        # if there is only on param, there should be no tiling input
-        if len(param_names) > 1:
-            source += "#if defined(HAVE_TILING)\n"
-            source += f"    {param_names[-2]} = workspace_usr;\n"
-            source += "#else\n"
-            source += f"    {param_names[-1]} = workspace_usr;\n"
-            source += "#endif\n"
-        else:
-            source += f"    {param_names[-1]} = workspace_usr;\n"
+        source += _generate_matmul_clear_source(is_mix) + "\n"
+        source += _generate_workspace_usr_source(param_names) + "\n"
 
         source += "#endif\n"
     return source
 
 
-def generate_kernel_auto_gen_func_impl(func_group: FuncSignGroupWithModeBase,
-                                       func_sign: FuncSign,
-                                       is_mix: bool,
-                                       template_id: int = 0,
-                                       generate_ktype_section: bool = False):
-    source = ""
-    new_func_params = func_sign.func_params
+def _get_auto_gen_func_name(func_sign: FuncSign, template_id: int) -> tuple:
     if func_sign.func_template_decl:
         auto_gen_func_name = f'{func_sign.func_name}_template_{template_id}'
         new_func_params = replace_func_params_with_specialization_typename(func_sign, template_id, 0)
     else:
         auto_gen_func_name = func_sign.func_name
+        new_func_params = func_sign.func_params
+    return auto_gen_func_name, new_func_params
 
+
+def _create_new_func_sign(func_sign: FuncSign, auto_gen_func_name: str,
+                          new_func_params: tuple, func_group: FuncSignGroupWithModeBase,
+                          is_mix: bool) -> FuncSign:
     new_func_sign = func_sign._replace(
         return_type='void',
         func_name=add_auto_gen_prefix_and_kernel_suffix(auto_gen_func_name),
@@ -1979,48 +2004,82 @@ def generate_kernel_auto_gen_func_impl(func_group: FuncSignGroupWithModeBase,
             new_func_sign = new_func_sign._replace(
                 func_params=(FuncParam(('GM_ADDR', 'ffts_addr')),) + new_func_sign.func_params,
             )
+    return new_func_sign
 
-    param_names = tuple(get_param_names_by_func_sign(func_sign))
 
-    extra_param = generate_extra_param(func_group, new_func_sign)
-
-    suffix_extra_param = ''
+def _get_suffix_extra_param(extra_param: str, func_params: tuple) -> str:
     if not RUN_MODE == "cpu":
         suffix_extra_param = ', GM_ADDR overflow_status'
-        if (extra_param == "\n") and (not new_func_sign.func_params):
+        if (extra_param == "\n") and (not func_params):
             suffix_extra_param = 'GM_ADDR overflow_status'
-
-    if (RUN_MODE == "cpu") and func_sign.func_template_decl:
-        source += "extern __global__ __aicore__ "
-    elif RUN_MODE == "cpu":
-        source += "extern \"C\" __global__ __aicore__ "
     else:
-        source += "extern \"C\" __global__ [aicore] "
+        suffix_extra_param = ''
+    return suffix_extra_param
+
+
+def _generate_func_decl(func_sign: FuncSign, new_func_sign: FuncSign,
+                        extra_param: str, suffix_extra_param: str) -> str:
+    if (RUN_MODE == "cpu") and func_sign.func_template_decl:
+        source = "extern __global__ __aicore__ "
+    elif RUN_MODE == "cpu":
+        source = "extern \"C\" __global__ __aicore__ "
+    else:
+        source = "extern \"C\" __global__ [aicore] "
     source += f"{func_sign_to_string(new_func_sign, extra_param, suffix_extra_param, True)} "
     source += "{\n"
+    return source
 
-    source += _generate_sub_source(func_group, is_mix, param_names)
 
+def _generate_origin_func_call(func_sign: FuncSign, param_names: tuple,
+                                template_id: int) -> str:
     param_names_str = ', '.join(param_names)
     if func_sign.func_template_decl:
-        source += f"    {add_origin_suffix(func_sign.func_name)}\
+        return f"    {add_origin_suffix(func_sign.func_name)}\
 <{func_sign.func_template_specialization_args[template_id]}>({param_names_str});\n"
     else:
-        source += f"    {add_origin_suffix(func_sign.func_name)}({param_names_str});\n"
-    if not RUN_MODE == "cpu":
-        if IS_C310_MODE:
-            source += ("#if defined(ASCENDC_DUMP) && defined(ASCENDC_DEBUG)\n"
+        return f"    {add_origin_suffix(func_sign.func_name)}({param_names_str});\n"
+
+
+def _generate_overflow_status_check() -> str:
+    if RUN_MODE == "cpu":
+        return ""
+    if IS_C310_MODE:
+        return ("#if defined(ASCENDC_DUMP) && defined(ASCENDC_DEBUG)\n"
                 "    AscendC::WriteBackOverflow(overflow_status);\n#endif\n")
-        else:
-            source += ("#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0) && defined(ASCENDC_DEBUG)\n"
-                    "    AscendC::WriteBackOverflow(overflow_status);\n#endif\n")
-    source += '#if defined(__DAV_C310__)\n'
-    source += '    pipe_barrier(PIPE_ALL);\n'
-    source += '    dsb(mem_dsb_t::DSB_ALL);\n'
-    source += '    dci();\n'
-    source += '#endif\n'
+    else:
+        return ("#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0) && defined(ASCENDC_DEBUG)\n"
+                "    AscendC::WriteBackOverflow(overflow_status);\n#endif\n")
+
+
+def _generate_barrier_sync() -> str:
+    return ('#if defined(__DAV_C310__)\n'
+            '    pipe_barrier(PIPE_ALL);\n'
+            '    dsb(mem_dsb_t::DSB_ALL);\n'
+            '    dci();\n'
+            '#endif\n')
+
+
+def generate_kernel_auto_gen_func_impl(func_group: FuncSignGroupWithModeBase,
+                                       func_sign: FuncSign,
+                                       is_mix: bool,
+                                       template_id: int = 0,
+                                       generate_ktype_section: bool = False):
+    source = ""
+    auto_gen_func_name, new_func_params = _get_auto_gen_func_name(func_sign, template_id)
+    new_func_sign = _create_new_func_sign(func_sign, auto_gen_func_name,
+                                          new_func_params, func_group, is_mix)
+
+    param_names = tuple(get_param_names_by_func_sign(func_sign))
+    extra_param = generate_extra_param(func_group, new_func_sign)
+    suffix_extra_param = _get_suffix_extra_param(extra_param, new_func_sign.func_params)
+
+    source += _generate_func_decl(func_sign, new_func_sign, extra_param, suffix_extra_param)
+    source += _generate_sub_source(func_group, is_mix, param_names)
+    source += _generate_origin_func_call(func_sign, param_names, template_id)
+    source += _generate_overflow_status_check()
+    source += _generate_barrier_sync()
     source += "}\n\n"
-    # for all specialized template methods, generate one kernel type section
+
     if (template_id == 0) and (generate_ktype_section or func_group.mode.value >= 5):
         source += gen_ktype_section(func_sign, func_group.base_key, func_group.mode, generate_ktype_section)
     return source

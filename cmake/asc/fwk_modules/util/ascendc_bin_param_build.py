@@ -528,16 +528,84 @@ def trans_soc_version(soc_ver: str):
     return opdesc_parser.SOC_TO_SHORT_SOC_MAP[low_soc_ver]
 
 
+def _extract_option_value(option_str):
+    first_index = option_str.find('=')
+    if first_index != -1:
+        return option_str[first_index + 1:]
+    return ""
+
+
+def _parse_soc_list(compute_unit_str):
+    compute_unit_list = compute_unit_str.split(';')
+    soc_lists = []
+    for soc_ver in compute_unit_list:
+        short_soc_ver = trans_soc_version(soc_ver)
+        soc_lists.append(short_soc_ver)
+    return soc_lists
+
+
+def _is_soc_match(compute_unit, target_soc):
+    if not compute_unit:
+        return True
+    soc_lists = _parse_soc_list(compute_unit)
+    return target_soc in soc_lists
+
+
+def _process_tiling_key_option(op_type, options, tiling_key_info):
+    if "--tiling_key" in options:
+        format_tiling_keys = get_tiling_keys(options.split('=')[1])
+        if format_tiling_keys:
+            tiling_key_info[op_type].update(format_tiling_keys)
+
+
+def _process_op_debug_config_option(op_type, options, op_debug_config):
+    if "--op_debug_config" in options:
+        debug_config = _extract_option_value(options)
+        format_debug_config = set(debug_config.split(';'))
+        for _config in format_debug_config:
+            op_debug_config[op_type].add(_config)
+
+
+def _process_kernel_json_file_option(op_type, options, kernel_json_file):
+    if "--kernel-json-file" in options:
+        json_file = _extract_option_value(options)
+        kernel_json_file[op_type] = json_file
+
+
+def _process_input_param_file_option(op_type, options, input_param_file):
+    if "--input-param-file" in options:
+        json_file = _extract_option_value(options)
+        input_param_file[op_type] = json_file
+
+
+def _process_kernel_template_input_option(op_type, options, kernel_template_input_info):
+    if "--kernel-template-input" in options:
+        kernel_template_input = _extract_option_value(options)
+        kernel_template_input_info[op_type] = kernel_template_input
+
+
+def _process_opc_options(op_type, opc_configs, soc, tiling_key_info, op_debug_config,
+                         kernel_json_file, input_param_file, kernel_template_input_info):
+    compute_unit = opc_configs[1]
+    if not _is_soc_match(compute_unit, soc):
+        return
+
+    for options in opc_configs[2:]:
+        _process_tiling_key_option(op_type, options, tiling_key_info)
+        _process_op_debug_config_option(op_type, options, op_debug_config)
+        _process_kernel_json_file_option(op_type, options, kernel_json_file)
+        _process_input_param_file_option(op_type, options, input_param_file)
+        _process_kernel_template_input_option(op_type, options, kernel_template_input_info)
+
+
 def parse_op_debug_config(opc_config_file: str, soc: str) -> Dict:
     tiling_key_info = defaultdict(set)
     op_debug_config = defaultdict(set)
     kernel_json_file = defaultdict(dict)
     input_param_file = defaultdict(dict)
     kernel_template_input_info = defaultdict(dict)
-    if not opc_config_file:
-        return tiling_key_info, op_debug_config, kernel_json_file, input_param_file, kernel_template_input_info
 
-    if not os.path.exists(opc_config_file):
+    if not opc_config_file or not os.path.exists(opc_config_file):
         return tiling_key_info, op_debug_config, kernel_json_file, input_param_file, kernel_template_input_info
 
     with open(opc_config_file, 'r') as file:
@@ -553,52 +621,8 @@ def parse_op_debug_config(opc_config_file: str, soc: str) -> Dict:
         if not op_type:
             continue
 
-        compute_unit = opc_configs[1]
-        if compute_unit:
-            compute_unit_list = compute_unit.split(';')
-            soc_lists = []
-            for soc_ver in compute_unit_list:
-                short_soc_ver = trans_soc_version(soc_ver)
-                soc_lists.append(short_soc_ver)
-            if soc not in soc_lists:
-                continue
-
-        for options in opc_configs[2:]:
-            if "--tiling_key" in options:
-                format_tiling_keys = get_tiling_keys(options.split('=')[1])
-                if format_tiling_keys:
-                    tiling_key_info[op_type].update(format_tiling_keys)
-            if "--op_debug_config" in options:
-                first_index = options.find('=')
-                if first_index != -1:
-                    debug_config = options[first_index + 1:]
-                else:
-                    debug_config = ""
-
-                format_debug_config = set(debug_config.split(';'))
-                for _config in format_debug_config:
-                    op_debug_config[op_type].add(_config)
-            if "--kernel-json-file" in options:
-                first_index = options.find('=')
-                if first_index != -1:
-                    json_file = options[first_index + 1:]
-                else:
-                    json_file = ""
-                kernel_json_file[op_type] = json_file
-            if "--input-param-file" in options:
-                first_index = options.find('=')
-                if first_index != -1:
-                    json_file = options[first_index + 1:]
-                else:
-                    json_file = ""
-                input_param_file[op_type] = json_file
-            if "--kernel-template-input" in options:
-                first_index = options.find('=')
-                if first_index != -1:
-                    kernel_template_input = options[first_index + 1:]
-                else:
-                    kernel_template_input = ""
-                kernel_template_input_info[op_type] = kernel_template_input
+        _process_opc_options(op_type, opc_configs, soc, tiling_key_info, op_debug_config,
+                           kernel_json_file, input_param_file, kernel_template_input_info)
 
     return tiling_key_info, op_debug_config, kernel_json_file, input_param_file, kernel_template_input_info
 

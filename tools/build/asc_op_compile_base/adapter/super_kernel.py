@@ -415,89 +415,116 @@ def gen_sync_and_event_code_for_two_stream(super_operator, pre_sub_operator, sub
     return sync_and_event_code
 
 
-def gen_2_real_stream_code_by_arch(super_operator, arch, super_kernel_params_str, exits_dynamic_op, sub_ops):
+def _gen_2_real_stream_dynamic_op_variables(super_operator):
+    code = "    uint64_t aiv_func_addr = 0;\n"
+    code += "    uint64_t aic_func_addr = 0;\n"
+    code += "    uint64_t dy_blockNum = 0;\n"
+    if super_operator.split_mode > 1:
+        for i in range(1, super_operator.split_mode):
+            code += f"    uint64_t aiv_func_addr_split{i} = 0;\n"
+            code += f"    uint64_t aic_func_addr_split{i} = 0;\n"
+    return code
+
+
+def _gen_2_real_stream_kernel_decl(super_operator, arch, super_kernel_params_str):
     super_kernel_file = f"__aicore__ inline __attribute__((always_inline)) void \
 auto_gen_{super_operator.kernel_name}_kernel_{arch}(void) {{\n"
     super_kernel_file += "    GM_ADDR *param_base = (GM_ADDR *)get_para_base();\n"
+    return super_kernel_file
+
+
+def _gen_2_real_stream_send_code(super_operator, sub_operator, arch):
+    code = ""
+    send_code = gen_2_real_stream_send_code(super_operator, sub_operator, arch)
+    if sub_operator.index == super_operator.info_base[-1].index and send_code != '':
+        CommonUtility().ascendc_raise_python_err(ERR_CODE, \
+            f"last op of super kernel must not have any send info, op:{sub_operator.kernel_name}, " \
+            f"event_list:{sub_operator.send_info}")
+    code += indent_code_func(send_code)
+
+    if len(sub_operator.send_event_list) != 0:
+        if sub_operator.index == super_operator.info_base[-1].index:
+            CommonUtility().ascendc_raise_python_err(ERR_CODE, \
+                f"last op of super kernel must not have any send event, op:{sub_operator.kernel_name}, " \
+                f"event_list:{sub_operator.send_event_list}")
+        code += indent_code_func(sub_operator.notify_block[arch])
+    return code
+
+
+def _gen_2_real_stream_sub_operator_call(super_operator, arch, sub_operator, pre_sub_operator, \
+    next_sub_operator, sub_index):
+    code = indent_code_func(f"//begin func call of sub operator {sub_operator.kernel_name}\n")
+    code += gen_switch_case_call_block_of_dynamic_op(super_operator, next_sub_operator, \
+                                                      sub_operator, pre_sub_operator)
+
+    if super_operator.preload_mode.value == SuperKernelPreLoadMode.PreLoadStepByStep.value:
+        code += indent_code_func(sub_operator.preload_call_block)
+    elif super_operator.preload_mode.value == SuperKernelPreLoadMode.PreLoadByAdanvanceStep.value:
+        if pre_sub_operator is None:
+            code += indent_code_func(sub_operator.preload_call_block)
+        if next_sub_operator is not None:
+            code += indent_code_func(next_sub_operator.preload_call_block)
+
+    if super_operator.datacache_mode.value == SuperKernelDataCacheMode.DataCacheLoadAdancanceStep.value:
+        if pre_sub_operator is None:
+            code += indent_code_func(sub_operator.data_cache_preload_call)
+        if next_sub_operator is not None:
+            code += indent_code_func(next_sub_operator.data_cache_preload_call)
+        code += "\n"
+
+    if pre_sub_operator is None and len(sub_operator.recv_event_list) != 0 and sub_operator.index == 0:
+        CommonUtility().ascendc_raise_python_err(ERR_CODE, \
+            f"first op of super kernel must not have any recv event, op:{sub_operator.kernel_name}, " \
+            f"event_list:{sub_operator.recv_event_list}")
+
+    code += gen_sync_and_event_code_for_two_stream(super_operator, pre_sub_operator, sub_operator, arch)
+
+    tmp_code, enable_syncall_flag = gen_feed_syncall_var_init_code(super_operator, sub_operator)
+    code += indent_code_func(tmp_code)
+    if super_operator.profiling_mode.value == SuperKernelProfilingMode.ProfilingEnable.value:
+        code += indent_code_func(f"RecordProfiling({sub_index}, 0x8, true);\n")
+
+    if enable_syncall_flag is False:
+        code += indent_code_func(sub_operator.kernel_call_block)
+    else:
+        code += indent_code_func(sub_operator.kernel_call_block_with_syncall)
+    code += indent_code_func(gen_op_end_debug_dcci_all(super_operator))
+    code += indent_code_func(gen_2_real_stream_op_end_debug_sync_all_by_arch(super_operator, arch))
+
+    if super_operator.profiling_mode.value == SuperKernelProfilingMode.ProfilingEnable.value:
+        code += indent_code_func(f"RecordProfiling({sub_index}, 0x8, false);\n")
+
+    if next_sub_operator is None:
+        code += _gen_2_real_stream_send_code(super_operator, sub_operator, arch)
+
+    return code
+
+
+def _gen_2_real_stream_sub_operator_calls(super_operator, arch, sub_ops):
+    code = ""
+    for pre_sub_operator, sub_operator, next_sub_operator in zip([None] + sub_ops[:-1], \
+                                                                   sub_ops, sub_ops[1:] + [None]):
+        sub_index = super_operator.info_base.index(sub_operator) + 1
+        code += _gen_2_real_stream_sub_operator_call(super_operator, arch, sub_operator, \
+                                                      pre_sub_operator, next_sub_operator, sub_index)
+    return code
+
+
+def _gen_2_real_stream_kernel_body(super_operator, arch, exits_dynamic_op, sub_ops):
+    super_kernel_file = ""
     if exits_dynamic_op is True:
-        super_kernel_file += "    uint64_t aiv_func_addr = 0;\n"
-        super_kernel_file += "    uint64_t aic_func_addr = 0;\n"
-        super_kernel_file += "    uint64_t dy_blockNum = 0;\n"
-        if super_operator.split_mode > 1:
-            for i in range(1, super_operator.split_mode):
-                super_kernel_file += f"    uint64_t aiv_func_addr_split{i} = 0;\n"
-                super_kernel_file += f"    uint64_t aic_func_addr_split{i} = 0;\n"
+        super_kernel_file += _gen_2_real_stream_dynamic_op_variables(super_operator)
 
     if super_operator.preload_mode.value == SuperKernelPreLoadMode.PreLoadByWhole.value:
         super_kernel_file += indent_code_func(f"AscendC::PreLoad(8);\n")
 
-    for pre_sub_operator, sub_operator, next_sub_operator in zip([None] + sub_ops[:-1], \
-            sub_ops, sub_ops[1:] + [None]):
-        super_kernel_file += indent_code_func(f"//begin func call of sub operator {sub_operator.kernel_name}\n")
+    super_kernel_file += _gen_2_real_stream_sub_operator_calls(super_operator, arch, sub_ops)
+    return super_kernel_file
 
-        #generate switch case func of dynamic
-        super_kernel_file += gen_switch_case_call_block_of_dynamic_op(super_operator, next_sub_operator, \
-                                                sub_operator, pre_sub_operator)    
 
-        # add preload of current func
-        if super_operator.preload_mode.value == SuperKernelPreLoadMode.PreLoadStepByStep.value:
-            super_kernel_file += indent_code_func(sub_operator.preload_call_block)
-
-        # add preload of next func, when n+1 preload instr；
-        if super_operator.preload_mode.value == SuperKernelPreLoadMode.PreloadByAdanvanceStep.value:
-            if pre_sub_operator is None:
-                super_kernel_file += indent_code_func(sub_operator.preload_call_block)
-            if next_sub_operator is not None:
-                super_kernel_file += indent_code_func(next_sub_operator.preload_call_block)
-
-        if super_operator.datacache_mode.value == SuperKernelDataCacheMode.DataCacheLoadAdancanceStep.value:
-            if pre_sub_operator is None:
-                super_kernel_file += indent_code_func(sub_operator.data_cache_preload_call)
-            if next_sub_operator is not None:
-                super_kernel_file += indent_code_func(next_sub_operator.data_cache_preload_call)
-            super_kernel_file += "\n"
-
-        if pre_sub_operator is None and len(sub_operator.recv_event_list) != 0 and sub_operator.index == 0:
-            CommonUtility().ascendc_raise_python_err(ERR_CODE, \
-f"first op of super kernel must not have any recv event, op:{sub_operator.kernel_name}, \
-event_list:{sub_operator.recv_event_list}")
-
-        super_kernel_file += \
-            gen_sync_and_event_code_for_two_stream(super_operator, pre_sub_operator, sub_operator, arch)
-
-        tmp_code, enable_syncall_flag = gen_feed_syncall_var_init_code(super_operator, sub_operator)
-        super_kernel_file += indent_code_func(tmp_code)
-        if super_operator.profiling_mode.value == SuperKernelProfilingMode.ProfilingEnable.value:
-            super_kernel_file += \
-                indent_code_func(f"RecordProfiling({super_operator.info_base.index(sub_operator) + 1}, 0x8, true);\n")
-        if enable_syncall_flag is False:
-            super_kernel_file += indent_code_func(sub_operator.kernel_call_block)
-        else:
-            super_kernel_file += indent_code_func(sub_operator.kernel_call_block_with_syncall)
-        super_kernel_file += indent_code_func(gen_op_end_debug_dcci_all(super_operator))
-        super_kernel_file += indent_code_func(gen_2_real_stream_op_end_debug_sync_all_by_arch(super_operator, arch))
-
-        if super_operator.profiling_mode.value == SuperKernelProfilingMode.ProfilingEnable.value:
-            super_kernel_file += \
-                indent_code_func(f"RecordProfiling({super_operator.info_base.index(sub_operator) + 1}, 0x8, false);\n")
-
-        if next_sub_operator is None:
-            # last sub operator of que but not last sub operator in op list
-            # allow send // lack : need check not last op dfx
-            # last op send inter-core sync but not last op
-            send_code = gen_2_real_stream_send_code(super_operator, sub_operator, arch)
-            if sub_operator.index == super_operator.info_base[-1].index and send_code != '':
-                CommonUtility().ascendc_raise_python_err(ERR_CODE, \
-f"last op of super kernel must not have any send info, op:{sub_operator.kernel_name}, \
-event_list:{sub_operator.send_info}")
-            super_kernel_file += indent_code_func(send_code)
-            if len(sub_operator.send_event_list) != 0:
-                if sub_operator.index == super_operator.info_base[-1].index:
-                    CommonUtility().ascendc_raise_python_err(ERR_CODE, \
-f"last op of super kernel must not have any send event, op:{sub_operator.kernel_name}, \
-event_list:{sub_operator.send_event_list}")
-                super_kernel_file += indent_code_func(sub_operator.notify_block[arch])
-        pre_sub_operator = sub_operator
+def gen_2_real_stream_code_by_arch(super_operator, arch, super_kernel_params_str, exits_dynamic_op, sub_ops):
+    super_kernel_file = _gen_2_real_stream_kernel_decl(super_operator, arch, super_kernel_params_str)
+    super_kernel_file += _gen_2_real_stream_kernel_body(super_operator, arch, exits_dynamic_op, sub_ops)
     super_kernel_file += f'}}\n\n'
     return super_kernel_file
 
