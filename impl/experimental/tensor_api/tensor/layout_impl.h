@@ -40,15 +40,8 @@ __aicore__ inline decltype(auto) MakeTileLayout(const Coord& coord, const Layout
 
         auto innerRow = Std::get<0>(GetShape<0>(layout));
         auto innerCol = Std::get<0>(GetShape<1>(layout));
-        auto srcRow = innerRow * Std::get<1>(GetShape<0>(layout));
-        auto srcCol = innerCol * Std::get<1>(GetShape<1>(layout));
-        
-        auto srcShape = MakeShape(srcRow, srcCol);
-        if (TupleSize(srcShape) > TupleSize(tileShape)) {
-            return MakeLayout(MakeFractalShape(tileShape, MakeShape(innerRow, innerCol)), layout.Stride()); 
-        } else {
-            return MakeLayout(MakeFractalShape(srcShape, MakeShape(innerRow, innerCol)), layout.Stride());
-        }
+    
+        return MakeLayout(MakeFractalShape(tileShape, MakeShape(innerRow, innerCol)), layout.Stride()); 
     } 
 }
 
@@ -67,14 +60,11 @@ template <typename Coord, typename LayoutType, typename TensorType>
     auto dstRow = Std::get<0>(Std::get<0>(tileTensor.Shape())) * Std::get<1>(Std::get<0>(tileTensor.Shape()));
     auto dstCol = Std::get<0>(Std::get<1>(tileTensor.Shape())) * Std::get<1>(Std::get<1>(tileTensor.Shape()));
 
-    auto srcShape = MakeShape(srcRow, srcCol);
-    auto dstShape = MakeShape(dstRow, dstCol);
+    auto realRow = Min(srcRow, dstRow);	 
+    auto realCol = Min(srcCol, dstCol);
 
-    if (TupleSize(srcShape) > TupleSize(dstShape)) {
-        return MakeLayout(MakeFractalShape(dstShape, MakeShape(innerRow, innerCol)), layout.Stride()); 
-    } else {
-        return MakeLayout(MakeFractalShape(srcShape, MakeShape(innerRow, innerCol)), layout.Stride());
-    }
+    return MakeLayout(MakeFractalShape(MakeShape(realRow, realCol), MakeShape(innerRow, innerCol)), layout.Stride()); 
+
 }
 
 } // namespace Te
