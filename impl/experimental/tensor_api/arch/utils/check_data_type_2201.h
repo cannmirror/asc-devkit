@@ -79,7 +79,7 @@ public:
                              Std::tuple<__cbuf__ int16_t, __gm__ int16_t>, Std::tuple<__cbuf__ int32_t, __gm__ int32_t>,
                              Std::tuple<__cbuf__ int8_t, __gm__ int8_t>, Std::tuple<__cbuf__ uint16_t, __gm__ uint16_t>,
                              Std::tuple<__cbuf__ uint32_t, __gm__ uint32_t>,
-                             Std::tuple<__cbuf__ uint8_t, __gm__ uint8_t>>,
+                             Std::tuple<__cbuf__ uint8_t, __gm__ uint8_t>, Std::tuple<__cbuf__ uint64_t, __gm__ uint64_t>>,
             "The data type is not supported.");
 #endif
     }
