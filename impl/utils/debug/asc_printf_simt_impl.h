@@ -439,9 +439,11 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void simt_printf_impl(DumpType print_type,
     uint32_t write_ptr = static_cast<uint32_t>(start_offset);
     write_ring_buf_tlv_head(block_ring_buf_info, write_ptr, tlv_len, args_num);
     write_ring_buf_tlv_data(block_ring_buf_info, write_ptr, args_num, fmt, args...);
+    __cce_scalar::dcci(reinterpret_cast<__gm__ uint8_t*>(block_ring_buf_info->ringBufAddr + start_offset), 1, 1);
 
     __threadfence();
     write_finish(block_ring_buf_info, start_offset, print_type);
+    __cce_scalar::dcci(reinterpret_cast<__gm__ uint8_t*>(block_ring_buf_info->ringBufAddr + start_offset), 0, 1);
     if (print_type == DumpType::DUMP_SIMT_ASSERT) {
         __sync_workitems();
     }
