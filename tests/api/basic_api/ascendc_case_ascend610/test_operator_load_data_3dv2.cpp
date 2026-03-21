@@ -46,7 +46,8 @@ void MainLoad3dv2(__gm__ uint8_t* __restrict__ dstGm, __gm__ uint8_t* __restrict
     LOCAL_TENSOR_REGISTER(dst_ub, DstT, CO2, 0, cSize)
 
     LoadData(src0_l1, input0Global, { 0, aSize / BYTE_PER_FRACTAL, 0, 0, 0, false, 0 });
-    LoadData(src1_l1, input1Global, { 0, bSize / BYTE_PER_FRACTAL, 0, 0, 0, false, 0 });
+    LoadData(src0_l1, input0Global, { 0, aSize / BYTE_PER_FRACTAL, 0, 0, 0, false, 0 });
+ 	LoadData(src1_l1, input1Global, { 0, bSize / BYTE_PER_FRACTAL, 0, 0, 0, false, 1 });
 
     uint8_t padList[PAD_SIZE] = {0, 0, 0, 0};
     LoadData(src0_l0a, src0_l1, { padList, 2, m / 2, channelSize, k, m, 0, 0, 1, 1, 1, 1, 1, 1, false, false, 0 });

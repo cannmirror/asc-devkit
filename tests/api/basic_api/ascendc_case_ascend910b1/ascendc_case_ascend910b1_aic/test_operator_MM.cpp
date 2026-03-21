@@ -34,11 +34,26 @@ void MainCpuMmadBiasDemo(__gm__ uint8_t* __restrict__ featureGm, __gm__ uint8_t*
     AscendC::AscendCUtils::SetOverflow(1);
     // weight: gm -> l0b
     LOCAL_TENSOR_REGISTER(weightLocal, AscendC::TensorTrait<Src1T>, B2, 0, weightDataSize)
+    // gm -> l0a
+ 	LOCAL_TENSOR_REGISTER(weightLocalL0A, AscendC::TensorTrait<Src1T>, A2, 0, weightDataSize)
+
     // load2d: gm -> l0b
     AscendC::LoadData2DParams loadDataParam;
     loadDataParam.repeatTimes = 8;
     loadDataParam.srcStride = 1;
     AscendC::LoadData(weightLocal, weightGlobal, loadDataParam);
+
+    AscendC::LoadData(weightLocalL0A, weightGlobal, loadDataParam);  // loadda2d: gm -> l0a
+
+    // gm -> l1
+    AscendC::LoadData2DParams loadDataParam1;
+    loadDataParam1.repeatTimes = 8;
+    loadDataParam1.srcStride = 1;
+    loadDataParam1.addrMode = 1;
+    LOCAL_TENSOR_REGISTER(weightLocalL1, AscendC::TensorTrait<Src1T>, A1, 0, weightDataSize)
+    AscendC::LoadData(weightLocalL1, weightGlobal, loadDataParam1);  // loadda2d: gm -> l1
+    loadDataParam1.addrMode = 0;
+    AscendC::LoadData(weightLocalL1, weightGlobal, loadDataParam1);
 
     // feature map: gm -> l1 -> l0a
     LOCAL_TENSOR_REGISTER(L1Local, AscendC::TensorTrait<Src0T>, A1, 0, featureDataSize)
