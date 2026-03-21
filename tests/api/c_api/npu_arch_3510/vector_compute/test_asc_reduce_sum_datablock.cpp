@@ -10,9 +10,9 @@
 
 #include "tests/api/c_api/npu_arch_3510/utils/test_unary_instr_utils.h"
 
-TEST_VECTOR_COMPUTE_UNARY_INSTR(Vcgadd, asc_reduce_add_datablock, vcgadd, vector_half);
-TEST_VECTOR_COMPUTE_UNARY_INSTR(Vcgadd, asc_reduce_add_datablock, vcgadd, vector_float);
-TEST_VECTOR_COMPUTE_UNARY_INSTR(Vcgadd, asc_reduce_add_datablock, vcgadd, vector_uint16_t);
-TEST_VECTOR_COMPUTE_UNARY_INSTR(Vcgadd, asc_reduce_add_datablock, vcgadd, vector_int16_t);
-TEST_VECTOR_COMPUTE_UNARY_INSTR(Vcgadd, asc_reduce_add_datablock, vcgadd, vector_uint32_t);
-TEST_VECTOR_COMPUTE_UNARY_INSTR(Vcgadd, asc_reduce_add_datablock, vcgadd, vector_int32_t);
+TEST_VECTOR_COMPUTE_UNARY_INSTR(Vcgadd, asc_reduce_sum_datablock, vcgadd, vector_half);
+TEST_VECTOR_COMPUTE_UNARY_INSTR(Vcgadd, asc_reduce_sum_datablock, vcgadd, vector_float);
+TEST_VECTOR_COMPUTE_UNARY_INSTR(Vcgadd, asc_reduce_sum_datablock, vcgadd, vector_uint16_t);
+TEST_VECTOR_COMPUTE_UNARY_INSTR(Vcgadd, asc_reduce_sum_datablock, vcgadd, vector_int16_t);
+TEST_VECTOR_COMPUTE_UNARY_INSTR(Vcgadd, asc_reduce_sum_datablock, vcgadd, vector_uint32_t);
+TEST_VECTOR_COMPUTE_UNARY_INSTR(Vcgadd, asc_reduce_sum_datablock, vcgadd, vector_int32_t);

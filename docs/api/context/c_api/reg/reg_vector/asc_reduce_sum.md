@@ -1,4 +1,4 @@
-# asc_reduce_add_datablock
+# asc_reduce_sum
 
 ## 产品支持情况
 
@@ -8,17 +8,17 @@
 
 ## 功能说明
 
-归约求和功能，用于将src每个DataBlock(32B)中参与计算的元素求和，得到的结果依次保存在dst中。
+归约求和功能，用于将src中的所有参与计算的元素求和，得到的结果保存在dst中。
 
 ## 函数原型
 
 ```cpp
-__simd_callee__ inline void asc_reduce_add_datablock(vector_half& dst, vector_half src, vector_bool mask)
-__simd_callee__ inline void asc_reduce_add_datablock(vector_float& dst, vector_float src, vector_bool mask)
-__simd_callee__ inline void asc_reduce_add_datablock(vector_uint16_t& dst, vector_uint16_t src, vector_bool mask)
-__simd_callee__ inline void asc_reduce_add_datablock(vector_int16_t& dst, vector_int16_t src, vector_bool mask)
-__simd_callee__ inline void asc_reduce_add_datablock(vector_uint32_t& dst, vector_uint32_t src, vector_bool mask)
-__simd_callee__ inline void asc_reduce_add_datablock(vector_int32_t& dst, vector_int32_t src, vector_bool mask)
+__simd_callee__ inline void asc_reduce_sum(vector_int32_t& dst, vector_int16_t src, vector_bool mask)
+__simd_callee__ inline void asc_reduce_sum(vector_int32_t& dst, vector_int32_t src, vector_bool mask)
+__simd_callee__ inline void asc_reduce_sum(vector_uint32_t& dst, vector_uint16_t src, vector_bool mask)
+__simd_callee__ inline void asc_reduce_sum(vector_uint32_t& dst, vector_uint32_t src, vector_bool mask)
+__simd_callee__ inline void asc_reduce_sum(vector_half& dst, vector_half src, vector_bool mask)
+__simd_callee__ inline void asc_reduce_sum(vector_float& dst, vector_float src, vector_bool mask)
 ```
 
 ## 参数说明
@@ -50,5 +50,5 @@ vector_half dst;
 vector_half src;
 vector_bool mask = asc_create_mask_b16(PAT_ALL);
 asc_loadalign(src, src_addr); // src_addr是外部输入的UB内存空间地址。
-asc_reduce_add_datablock(dst, src, mask);
+asc_reduce_sum(dst, src, mask);
 ```
