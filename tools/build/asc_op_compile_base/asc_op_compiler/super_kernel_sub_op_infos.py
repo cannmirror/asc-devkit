@@ -171,56 +171,60 @@ class SubOperatorInfos:
         return code
 
 
+    def _is_aic_kernel_type(self):
+        return self.kernel_type in [SuperKernelKernelType.KERNEL_TYPE_AIC_ONLY, \
+            SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_0]
+
+
+    def _gen_notify_block_for_core(self, inner_event_id_set, is_aic):
+        notify_block = "if ASCEND_IS_AIC {\n" if is_aic else "if ASCEND_IS_AIV {\n"
+        found = False
+        index = 0
+        for send_index in self.send_event_list:
+            if send_index not in inner_event_id_set:
+                CommonUtility.dump_compile_log(['###Notify:', self.kernel_name, self.send_event_list[index]], \
+                    CompileStage.SPLIT_SUB_OBJS, self.compile_log_path)
+                notify_block += f"    // kernel={self.kernel_name}, ev={self.send_event_list[index]}, \
+param_offset={self.notify_param_offset + index}\n"
+                notify_block += self.gen_profiling_for_notify(send_index, False)
+                notify_block += f"    NotifyFunc<{str(is_aic).lower()}>("
+                notify_block += f"param_base[{self.notify_param_offset + index}]);\n"
+                notify_block += self.gen_profiling_for_notify(send_index, True)
+                found = True
+            index += 1
+        notify_block += "}\n"
+        return notify_block, found
+
+
+    def _set_notify_block_single_stream(self, notify_block_aic, notify_block_aiv, found_aic, found_aiv):
+        if self._is_aic_kernel_type():
+            self.notify_block = notify_block_aic if found_aic else ''
+        else:
+            self.notify_block = notify_block_aiv if found_aiv else ''
+
+
+    def _set_notify_block_double_stream(self, notify_block_aic, notify_block_aiv, found_aic, found_aiv):
+        if self._is_aic_kernel_type():
+            self.notify_block['aic'] = notify_block_aic if found_aic else ''
+            self.notify_block['aiv'] = ''
+        else:
+            self.notify_block['aiv'] = notify_block_aiv if found_aiv else ''
+            self.notify_block['aic'] = ''
+            self.tmp_notify_block['aiv'] = ''
+            self.tmp_notify_block['aic'] = notify_block_aic if found_aic else '' 
+
+
     def gen_notify_from_outside(self, inner_event_id_set, enable_double_stream):
-        if len(self.send_event_list) != 0:
-            found_aic = False
-            found_aiv = False
-            notify_block_aic = "if ASCEND_IS_AIC {\n"
-            index = 0
-            for send_index in self.send_event_list:
-                if send_index not in inner_event_id_set:
-                    CommonUtility.dump_compile_log(['###Notify:', self.kernel_name, self.send_event_list[index]], \
-                        CompileStage.SPLIT_SUB_OBJS, self.compile_log_path)
-                    notify_block_aic += f"    // kernel={self.kernel_name}, ev={self.send_event_list[index]}, \
-param_offset={self.notify_param_offset + index}\n"
-                    notify_block_aic += self.gen_profiling_for_notify(send_index, False)
-                    notify_block_aic += f"    NotifyFunc<true>(param_base[{self.notify_param_offset + index}]);\n"
-                    notify_block_aic += self.gen_profiling_for_notify(send_index, True)
-                    found_aic = True
-                index += 1
-            notify_block_aic += "}\n"
+        if len(self.send_event_list) == 0:
+            return
 
-            notify_block_aiv = "if ASCEND_IS_AIV {\n"
-            index = 0
-            for send_index in self.send_event_list:
-                if send_index not in inner_event_id_set:
-                    CommonUtility.dump_compile_log(['###Notify:', self.kernel_name, self.send_event_list[index]], \
-                        CompileStage.SPLIT_SUB_OBJS, self.compile_log_path)
-                    notify_block_aiv += f"    // kernel={self.kernel_name}, ev={self.send_event_list[index]}, \
-param_offset={self.notify_param_offset + index}\n"
-                    notify_block_aiv += self.gen_profiling_for_notify(send_index, False)
-                    notify_block_aiv += f"    NotifyFunc<false>(param_base[{self.notify_param_offset + index}]);\n"
-                    notify_block_aiv += self.gen_profiling_for_notify(send_index, True)
-                    found_aiv = True
-                index += 1
-            notify_block_aiv += "}\n"
+        notify_block_aic, found_aic = self._gen_notify_block_for_core(inner_event_id_set, True)
+        notify_block_aiv, found_aiv = self._gen_notify_block_for_core(inner_event_id_set, False)
 
-            if self.kernel_type in [SuperKernelKernelType.KERNEL_TYPE_AIC_ONLY, \
-                    SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_0]:
-                if enable_double_stream:
-                    self.notify_block['aic'] = notify_block_aic if found_aic else ''
-                    self.notify_block['aiv'] = ''
-                else:
-                    self.notify_block = notify_block_aic if found_aic else ''
-            else:
-                if enable_double_stream:
-                    self.notify_block['aiv'] = notify_block_aiv if found_aiv else ''
-                    self.notify_block['aic'] = ''
-
-                    self.tmp_notify_block['aiv'] = ''
-                    self.tmp_notify_block['aic'] = notify_block_aic if found_aic else '' 
-                else:
-                    self.notify_block = notify_block_aiv if found_aiv else ''
+        if enable_double_stream:
+            self._set_notify_block_double_stream(notify_block_aic, notify_block_aiv, found_aic, found_aiv)
+        else:
+            self._set_notify_block_single_stream(notify_block_aic, notify_block_aiv, found_aic, found_aiv)
 
 
     def gen_wait_from_outside(self, inner_event_id_set, enable_double_stream):

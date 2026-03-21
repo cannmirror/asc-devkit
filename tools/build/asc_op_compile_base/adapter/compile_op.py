@@ -1668,6 +1668,123 @@ def _get_compile_cmd_and_section_content(compile_info: CompileInfo, arch: str, \
     return compile_cmd, section_content
 
 
+def _is_mix_aic_1x_kernel_type(kernel_type):
+    return kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1, KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2]
+
+
+def _is_hard_sync_or_mix_1x_kernel_type(kernel_type):
+    return kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIV_HARD_SYNC, KernelMetaType.KERNEL_TYPE_MIX_AIC_HARD_SYNC, \
+                          KernelMetaType.KERNEL_TYPE_MIX_AIV_1_0, KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0]
+
+
+def _is_single_core_kernel_type(kernel_type):
+    return kernel_type in [KernelMetaType.KERNEL_TYPE_AIV_ONLY, KernelMetaType.KERNEL_TYPE_AIC_ONLY]
+
+
+def _get_arch_and_code_type(kernel_type, chip_version):
+    if kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIC_HARD_SYNC, KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0]:
+        arch = f"dav-{chip_version}-cube"
+        code_type = CORE_TYPE_CUBE
+    else:
+        arch = f"dav-{chip_version}-vec"
+        code_type = CORE_TYPE_VEC
+    return arch, code_type
+
+
+def _compile_core(compile_info, arch, code_type, compile_option_tuple, tiling_info, tiling_key):
+    sub_compile_info = _get_sub_compile_info(compile_info, code_type)
+    compile_cmd, section_content = _get_compile_cmd_and_section_content(sub_compile_info, arch, \
+        compile_option_tuple, tiling_info, tiling_key)
+    if global_var_storage.get_variable("ascendc_sk_double_compile") is True:
+        compile_info.global_kernel_symbols.extend(sub_compile_info.global_kernel_symbols)
+    return sub_compile_info, compile_cmd, section_content
+
+
+def _finalize_and_write_sources(new_sources):
+    new_sources += global_var_storage.get_variable("ascendc_meta_info")
+    new_sources += "#endif\n"
+    return new_sources
+
+
+def _handle_mix_objs(compile_info, mix_objs, dst_file):
+    if compile_info.enable_final_super_kernel_compile is True:
+        compile_info.super_kernel_objs = mix_objs
+    else:
+        fatbin_objs(mix_objs, dst_file, compile_info.is_debug, compile_info.compile_log_path)
+
+
+def _compile_mix_aic_1x_kernel(compile_info, chip_version, compile_option_tuple, tiling_info, new_sources):
+    kernel_type = compile_info.tiling_key_kernel_type[str(tiling_info.tiling_key)]
+    cmds_list = []
+    dst_file = compile_info.dst_file
+
+    cube_compile_info, cube_compile_cmd, cube_section = _compile_core(compile_info,
+        f"dav-{chip_version}-cube", CORE_TYPE_CUBE, compile_option_tuple, tiling_info, tiling_info.tiling_key)
+    new_sources += cube_section
+    cmds_list.append(cube_compile_cmd)
+
+    vec_compile_info, vec_compile_cmd, vec_section = _compile_core(compile_info,
+        f"dav-{chip_version}-vec", CORE_TYPE_VEC, compile_option_tuple, tiling_info, tiling_info.tiling_key)
+    new_sources += vec_section
+    cmds_list.append(vec_compile_cmd)
+
+    new_sources = _finalize_and_write_sources(new_sources)
+    CommonUtility().ascendc_write_file(compile_info.gen_kernel_func_file, new_sources)
+
+    for cmd in cmds_list:
+        CommonUtility.run_cmd_inner(cmd, CompileStage.COMPILE, compile_info.compile_log_path)
+
+    mix_objs = [cube_compile_info.dst_file, vec_compile_info.dst_file]
+    _handle_mix_objs(compile_info, mix_objs, dst_file)
+
+    _gen_mix_sub_json(compile_info, tiling_info, CORE_TYPE_CUBE)
+    if kernel_type.value == 6:
+        tiling_info.task_ration = 1
+    task_ration_str = f"1:{tiling_info.task_ration}"
+    _gen_mix_json_from_seperate_json_for_kernel_type(compile_info.kernel_name, task_ration_str,
+        CORE_TYPE_CUBE, True)
+    set_soc_spec("AiCore")
+
+
+def _compile_hard_sync_or_mix_1x_kernel(compile_info, chip_version, compile_option_tuple, tiling_info, new_sources):
+    kernel_type = compile_info.tiling_key_kernel_type[str(tiling_info.tiling_key)]
+    arch, code_type = _get_arch_and_code_type(kernel_type, chip_version)
+
+    sub_compile_info, compile_cmd, section_content = _compile_core(compile_info, arch, \
+        code_type, compile_option_tuple, tiling_info, tiling_info.tiling_key)
+    new_sources += section_content
+    new_sources = _finalize_and_write_sources(new_sources)
+    CommonUtility().ascendc_write_file(compile_info.gen_kernel_func_file, new_sources)
+
+    CommonUtility.run_cmd_inner(compile_cmd, CompileStage.COMPILE, compile_info.compile_log_path)
+
+    _gen_mix_sub_json(sub_compile_info, tiling_info, code_type)
+    mix_objs = [sub_compile_info.dst_file]
+    _handle_mix_objs(compile_info, mix_objs, compile_info.dst_file)
+
+    task_ration_str = f"1:0" if code_type == CORE_TYPE_CUBE else f"0:1"
+    _gen_mix_json_from_seperate_json(compile_info.kernel_name, task_ration_str, code_type, True)
+    set_soc_spec("AiCore")
+
+
+def _compile_single_core_kernel(compile_info, chip_version, compile_option_tuple, tiling_info, new_sources):
+    kernel_type = compile_info.tiling_key_kernel_type[str(tiling_info.tiling_key)]
+    arch = f"dav-{chip_version}-cube" if kernel_type == KernelMetaType.KERNEL_TYPE_AIC_ONLY else \
+        f"dav-{chip_version}-vec"
+    sub_code_type = f"AIC" if kernel_type == KernelMetaType.KERNEL_TYPE_AIC_ONLY else f"AIV"
+    optional_core = f"AiCore" if kernel_type == KernelMetaType.KERNEL_TYPE_AIC_ONLY else f"VectorCore"
+    set_soc_spec(optional_core)
+
+    compile_cmd, section_content = _get_compile_cmd_and_section_content(compile_info,
+        arch, compile_option_tuple, tiling_info, tiling_info.tiling_key)
+    new_sources += section_content
+    new_sources = _finalize_and_write_sources(new_sources)
+    CommonUtility().ascendc_write_file(compile_info.gen_kernel_func_file, new_sources)
+
+    CommonUtility.run_cmd_inner(compile_cmd, CompileStage.COMPILE, compile_info.compile_log_path)
+    _gen_non_mix_sub_json(compile_info, tiling_info, sub_code_type)
+
+
 def _compile_ascendc_cce_v220_with_kernel_type_for_static(compile_info: CompileInfo, \
     compile_option_tuple, tiling_info: TilingInfo):
     """call cce-c to compile a AscendC.cce file, generate a binary file and a json file
@@ -1679,93 +1796,15 @@ def _compile_ascendc_cce_v220_with_kernel_type_for_static(compile_info: CompileI
     """
     sources = CommonUtility().ascendc_read_file(compile_info.gen_kernel_func_file)
     chip_version = CommonUtility.get_chip_version()
-
     new_sources = sources[:-1]
     kernel_type = compile_info.tiling_key_kernel_type[str(tiling_info.tiling_key)]
-    if kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1, KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2]:
-        cmds_list = []
-        dst_file = compile_info.dst_file
-        # build cube
-        cube_compile_info = _get_sub_compile_info(compile_info, CORE_TYPE_CUBE)
-        arch = f"dav-{chip_version}-cube"
-        compile_cmd, section_content = _get_compile_cmd_and_section_content(cube_compile_info, arch, \
-            compile_option_tuple, tiling_info, tiling_info.tiling_key)
-        if global_var_storage.get_variable("ascendc_sk_double_compile") is True:
-            compile_info.global_kernel_symbols.extend(cube_compile_info.global_kernel_symbols)
-        new_sources += section_content
-        cmds_list.append(compile_cmd)
-        vec_compile_info = _get_sub_compile_info(compile_info, CORE_TYPE_VEC)
-        arch = f"dav-{chip_version}-vec"
-        compile_cmd, section_content = _get_compile_cmd_and_section_content(vec_compile_info, arch, \
-            compile_option_tuple, tiling_info, tiling_info.tiling_key)
-        if global_var_storage.get_variable("ascendc_sk_double_compile") is True:
-            compile_info.global_kernel_symbols.extend(vec_compile_info.global_kernel_symbols)
-        new_sources += section_content
-        cmds_list.append(compile_cmd)
-        new_sources += global_var_storage.get_variable("ascendc_meta_info")
-        new_sources += "#endif\n"
-        # add dfx info section to sourse file
-        CommonUtility().ascendc_write_file(compile_info.gen_kernel_func_file, new_sources)
-        for cmd in cmds_list:
-            CommonUtility.run_cmd_inner(cmd, CompileStage.COMPILE, compile_info.compile_log_path)
-        # fatbin 2o->1o
-        mix_objs = [cube_compile_info.dst_file, vec_compile_info.dst_file]
-        if compile_info.enable_final_super_kernel_compile is True:
-            compile_info.super_kernel_objs = mix_objs
-        else:
-            fatbin_objs(mix_objs, dst_file, compile_info.is_debug, compile_info.compile_log_path)
-        _gen_mix_sub_json(compile_info, tiling_info, CORE_TYPE_CUBE)
-        if kernel_type.value == 6:
-            tiling_info.task_ration = 1
-        task_ration_str = f"1:{tiling_info.task_ration}"
-        _gen_mix_json_from_seperate_json_for_kernel_type(compile_info.kernel_name, task_ration_str, CORE_TYPE_CUBE, \
-            True)
-        set_soc_spec("AiCore")
-    elif kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIV_HARD_SYNC, KernelMetaType.KERNEL_TYPE_MIX_AIC_HARD_SYNC, \
-            KernelMetaType.KERNEL_TYPE_MIX_AIV_1_0, KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0]:
-        if kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIC_HARD_SYNC, KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0]:
-            arch = f"dav-{chip_version}-cube"
-            code_type = CORE_TYPE_CUBE
-        else:
-            arch = f"dav-{chip_version}-vec"
-            code_type = CORE_TYPE_VEC
-        sub_compile_info = _get_sub_compile_info(compile_info, code_type)
-        compile_cmd, section_content = _get_compile_cmd_and_section_content(sub_compile_info, arch, \
-            compile_option_tuple, tiling_info, tiling_info.tiling_key)
 
-        if global_var_storage.get_variable("ascendc_sk_double_compile") is True:
-            compile_info.global_kernel_symbols.extend(sub_compile_info.global_kernel_symbols)
-        new_sources += section_content
-        new_sources += global_var_storage.get_variable("ascendc_meta_info")
-        new_sources += "#endif\n"
-        # add dfx info section to sourse file
-        CommonUtility().ascendc_write_file(compile_info.gen_kernel_func_file, new_sources)
-        CommonUtility.run_cmd_inner(compile_cmd, CompileStage.COMPILE, compile_info.compile_log_path)
-        _gen_mix_sub_json(sub_compile_info, tiling_info, code_type)
-        mix_objs = [sub_compile_info.dst_file]
-        if compile_info.enable_final_super_kernel_compile is True:
-            compile_info.super_kernel_objs = mix_objs
-        else:
-            fatbin_objs(mix_objs, compile_info.dst_file, compile_info.is_debug, compile_info.compile_log_path)
-        task_ration_str = f"1:0" if code_type == CORE_TYPE_CUBE else f"0:1"
-        _gen_mix_json_from_seperate_json(compile_info.kernel_name, task_ration_str, code_type, \
-            True)
-        set_soc_spec("AiCore")
-    elif kernel_type in [KernelMetaType.KERNEL_TYPE_AIV_ONLY, KernelMetaType.KERNEL_TYPE_AIC_ONLY]:
-        arch = f"dav-{chip_version}-cube" if kernel_type == KernelMetaType.KERNEL_TYPE_AIC_ONLY \
-            else f"dav-{chip_version}-vec"
-        sub_code_type = f"AIC" if kernel_type == KernelMetaType.KERNEL_TYPE_AIC_ONLY else f"AIV"
-        optional_core = f"AiCore" if kernel_type == KernelMetaType.KERNEL_TYPE_AIC_ONLY else f"VectorCore"
-        set_soc_spec(optional_core)
-        compile_cmd, section_content = _get_compile_cmd_and_section_content(compile_info, \
-            arch, compile_option_tuple, tiling_info, tiling_info.tiling_key)
-        new_sources += section_content
-        new_sources += global_var_storage.get_variable("ascendc_meta_info")
-        new_sources += "#endif\n"
-        # add dfx info section to sourse file
-        CommonUtility().ascendc_write_file(compile_info.gen_kernel_func_file, new_sources)
-        CommonUtility.run_cmd_inner(compile_cmd, CompileStage.COMPILE, compile_info.compile_log_path)
-        _gen_non_mix_sub_json(compile_info, tiling_info, sub_code_type)
+    if _is_mix_aic_1x_kernel_type(kernel_type):
+        _compile_mix_aic_1x_kernel(compile_info, chip_version, compile_option_tuple, tiling_info, new_sources)
+    elif _is_hard_sync_or_mix_1x_kernel_type(kernel_type):
+        _compile_hard_sync_or_mix_1x_kernel(compile_info, chip_version, compile_option_tuple, tiling_info, new_sources)
+    elif _is_single_core_kernel_type(kernel_type):
+        _compile_single_core_kernel(compile_info, chip_version, compile_option_tuple, tiling_info, new_sources)
 
 
 def _compile_ascendc_cce_v220_with_kernel_type_for_dynamic(compile_info: CompileInfo, \
