@@ -241,6 +241,7 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CcuPrepareForOp(const Hc
             CcuPrepareForAllReduce(&handleParamGM_[handleId]);
         }
     } else if (handleParamGM_[handleId].commType.prepareType == HcclCMDType::HCCL_CMD_ALLTOALL) {
+        ccuUsedXnNum_ = 11;
         CcuPrepareForAllToAll(&handleParamGM_[handleId]);
     } else if (handleParamGM_[handleId].commType.prepareType == HcclCMDType::HCCL_CMD_ALLTOALLV) {
         FlushDataCache(&allToAllVParam_[handleId]);
