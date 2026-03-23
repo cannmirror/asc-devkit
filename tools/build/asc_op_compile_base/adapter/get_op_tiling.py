@@ -94,6 +94,7 @@ def load_op_host_tiling_lib():
         "/" + op_impl_path + f"/ai_core/tbe/op_host/"
     builtin_op_host_tiling_pattern = builtin_op_host_tiling_prefix + f"**/*.so"
     builtin_op_host_tiling_file_path = glob.glob(builtin_op_host_tiling_pattern, recursive=True)
+    builtin_op_host_tiling_file_path.sort(key=lambda x: os.path.basename(x) == "libophost_legacy.so")
     import platform
     archlinux = platform.machine()
     if 'x86' in archlinux:
