@@ -24,15 +24,10 @@ class LoadDataL12L0ANZ2NZWithCoord3510 {
 public:
     template <const LoadDataTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline static void Run(const T& dst, const U& src, const Coord& coord) {
-        LoadDataImpl<TraitHolder<trait, false>::traitTransposed, T, U, Coord>(dst, src, coord);
+        LoadDataImpl<TransTrait<trait, false>, T, U, Coord>(dst, src, coord);
     }
 
 private:
-    template<const LoadDataTrait& trait, bool transpose>
-    struct TraitHolder {
-        static constexpr LoadDataTrait traitTransposed = LoadDataTrait(trait, transpose);
-    };
-
     template <const LoadDataTrait& trait, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
@@ -59,9 +54,9 @@ private:
         auto srcStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / STRIDE_UNIT;
         auto dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout) / STRIDE_UNIT;
         if constexpr (is_b4_type<DstType>) {
-            LoadCbufToCaS43510::template LoadData<trait>(dst, src, mStartPosition, kStartPosition / KHALF, mStep, kStep, srcStride, dstStride);
+            LoadCbufToCaS43510::LoadData<trait>(dst, src, mStartPosition, kStartPosition / KHALF, mStep, kStep, srcStride, dstStride);
         } else {
-            LoadCbufToCa3510::template LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            LoadCbufToCa3510::LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
         }
     }
 };

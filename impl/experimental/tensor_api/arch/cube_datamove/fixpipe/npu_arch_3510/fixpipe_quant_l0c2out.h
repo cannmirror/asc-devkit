@@ -22,6 +22,12 @@
 namespace AscendC {
 namespace Te {
 
+class FormatRegistorIgnore3510 {
+public:
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename ...Args>
+    __aicore__ inline void Run(const Args&... args) {}
+};
+
 template <Format3510 dstFormat, Format3510 srcFormat, QuantMode3510 QuantMode3510>
 struct FormatRegistorFixpipe2Out3510 {
     using type = FormatRegistorIgnore3510;

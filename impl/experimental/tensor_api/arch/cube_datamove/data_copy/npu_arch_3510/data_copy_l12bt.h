@@ -61,9 +61,7 @@ private:
         uint16_t blockLen = Std::ceil_division(srcCol, C0_ELEMENT<dstType>);
         uint16_t srcStride = (srcRow - srcCol) / C0_ELEMENT<srcType>;
         uint16_t dstStride = (dstRow - srcCol) / C0_ELEMENT<dstType>;
-
-        CopyL12BTInstr copyInstr;
-        copyInstr.DataCopy(dst, src, convControl, blockCount, blockLen, srcStride, dstStride);
+        CopyL12BTInstr::DataCopy(dst, src, convControl, blockCount, blockLen, srcStride, dstStride);
     }
 };
 

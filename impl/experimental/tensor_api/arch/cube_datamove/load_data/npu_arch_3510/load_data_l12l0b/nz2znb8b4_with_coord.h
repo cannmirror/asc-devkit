@@ -24,15 +24,10 @@ class LoadDataL12L0BNZ2ZNB8B4WithCoord3510 {
 public:
     template <const LoadDataTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline static void Run(const T& dst, const U& src, const Coord& coord) {
-        LoadDataImpl<TraitHolder<trait, true>::traitTransposed, T, U, Coord>(dst, src, coord);
+        LoadDataImpl<TransTrait<trait, true>, T, U, Coord>(dst, src, coord);
     }
 
 private:
-    template<const LoadDataTrait& trait, bool transpose>
-    struct TraitHolder {
-        static constexpr LoadDataTrait traitTransposed = LoadDataTrait(trait, transpose);
-    };
-
     template <const LoadDataTrait& trait, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
@@ -54,7 +49,7 @@ private:
         mStep = M_STEP_MIN_VAL_B4;
         for (uint16_t idx = 0; idx < nLoop; ++idx) {
             auto sliceDst = dst(MakeCoord(MakeCoord(0, idx), MakeCoord(0, 0)));
-            LoadCbufToCbS43510::template LoadData<trait>(sliceDst, src, mStartPosition, kStartPosition / KHALF, 
+            LoadCbufToCbS43510::LoadData<trait>(sliceDst, src, mStartPosition, kStartPosition / KHALF, 
                                                     mStep, kStep / KHALF, srcStride, dstStride);
             mStartPosition += M_STEP_MIN_VAL_B4;
         }
@@ -72,7 +67,7 @@ private:
         mStep = M_STEP_MIN_VAL_B8;
         for (uint16_t idx = 0; idx < nLoop; ++idx) {
             auto sliceDst = dst(MakeCoord(MakeCoord(0, idx), MakeCoord(0, 0)));
-            LoadCbufToCb3510::template LoadData<trait>(sliceDst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            LoadCbufToCb3510::LoadData<trait>(sliceDst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             mStartPosition += M_STEP_MIN_VAL_B8;
         }
     }
@@ -101,13 +96,13 @@ private:
         auto dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout) / STRIDE_UNIT;
         if constexpr (is_b4_type<DstType>) {
             if (n1 < FRACTAL_FIXED) {
-                LoadCbufToCbS43510::template LoadData<trait>(dst, src, mStartPosition, kStartPosition / KHALF, mStep, kStep / KHALF, srcStride, dstStride);
+                LoadCbufToCbS43510::LoadData<trait>(dst, src, mStartPosition, kStartPosition / KHALF, mStep, kStep / KHALF, srcStride, dstStride);
             } else {
                 LoadDataImplB4<trait, T, U>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             }
         } else {
             if (n1 < FRACTAL_FIXED) {
-                LoadCbufToCb3510::template LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+                LoadCbufToCb3510::LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             } else {
                 LoadDataImplB8<trait, T, U>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             }

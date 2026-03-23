@@ -20,61 +20,49 @@
 namespace AscendC {
 namespace Te {
 
-enum class MmadType { NORMAL = 0, MX = 1 };
+enum class MmadType : uint8_t { NORMAL = 0, MX = 1};
 
 struct MmadTrait {
+    __aicore__ constexpr MmadTrait() {};
+
+    __aicore__ constexpr MmadTrait(int32_t fmOffsetIn, bool kDirectionAlignIn, bool cmatrixSourceIn,
+            bool disableGemvIn, MmadType mmadTypeIn) {
+        fmOffset = fmOffsetIn;
+        kDirectionAlign = kDirectionAlignIn;
+        cmatrixSource = cmatrixSourceIn;
+        disableGemv = disableGemvIn;
+        mmadType = mmadTypeIn;
+    };
+    
     int32_t fmOffset = 0;
     bool kDirectionAlign = false;
     bool cmatrixSource = false;
     bool disableGemv = false;
     MmadType mmadType = MmadType::NORMAL; 
-
-    __aicore__ constexpr MmadTrait () {};
-
-    __aicore__ constexpr MmadTrait (int32_t fmOffsetIn, bool kDirectionAlignIn, bool cmatrixSourceIn,
-            bool disableGemvIn, MmadType mmadTypeIn) 
-        {
-            fmOffset = fmOffsetIn;
-            kDirectionAlign = kDirectionAlignIn;
-            cmatrixSource = cmatrixSourceIn;
-            disableGemv = disableGemvIn;
-            mmadType = mmadTypeIn;
-        };
 };
 
 struct MmadParams {
-    uint8_t unitFlag;
-    bool cmatrixInitVal;
-    uint16_t m = 0;
-    uint16_t n = 0;
-    uint16_t k = 0;
-
-    __aicore__ MmadParams() {};
+    __aicore__ constexpr MmadParams() {};
 
     __aicore__ constexpr MmadParams(uint16_t mIn, uint16_t nIn, uint16_t kIn, uint8_t unitFlagIn, bool cmatrixInitValIn) : 
         m(mIn), n(nIn), k(kIn), unitFlag(unitFlagIn), cmatrixInitVal(cmatrixInitValIn){};
+    
+    uint16_t m = 0;
+    uint16_t n = 0;
+    uint16_t k = 0;
+    uint8_t unitFlag = 0;
+    bool cmatrixInitVal = false;
 };
 
 struct DataCopyTrait {};
 
-enum class RoundMode : uint8_t {
-    DEFAULT = 0,
-    HYBRID,
-};
+enum class RoundMode : uint8_t {DEFAULT = 0, HYBRID};
 
 struct FixpipeTrait {
     __aicore__ constexpr FixpipeTrait() {}
-    __aicore__ constexpr FixpipeTrait(
-        RoundMode roundModeIn,
-        bool enableReluIn,
-        bool enableChannelSplitIn,
-        uint8_t dualDstCtlIn
-    ) :
-        roundMode(roundModeIn),
-        enableRelu(enableReluIn),
-        enableChannelSplit(enableChannelSplitIn),
-        dualDstCtl(dualDstCtlIn)
-    {}
+
+    __aicore__ constexpr FixpipeTrait(RoundMode roundModeIn, bool enableReluIn, bool enableChannelSplitIn, uint8_t dualDstCtlIn) :
+        roundMode(roundModeIn), enableRelu(enableReluIn), enableChannelSplit(enableChannelSplitIn), dualDstCtl(dualDstCtlIn) {}
 
     RoundMode roundMode = RoundMode::DEFAULT;
     bool enableRelu = false;
@@ -83,19 +71,19 @@ struct FixpipeTrait {
 };
 
 struct FixpipeParams {
-   uint8_t unitFlag = 0;
-   __aicore__ FixpipeParams() {};
+   __aicore__ constexpr FixpipeParams() {};
 
-   __aicore__ constexpr FixpipeParams(uint8_t unitFlagIn) : 
-      unitFlag(unitFlagIn) {};
+   __aicore__ constexpr FixpipeParams(uint8_t unitFlagIn) : unitFlag(unitFlagIn) {};
+    
+    uint8_t unitFlag = 0;
 };
 
 struct LoadDataTrait {
     __aicore__ constexpr LoadDataTrait() {}
 
-    __aicore__ constexpr LoadDataTrait(const bool transposedIn) : transposed(transposedIn) {}
+    __aicore__ constexpr LoadDataTrait(bool transposedIn) : transposed(transposedIn) {}
 
-    __aicore__ constexpr LoadDataTrait(const LoadDataTrait& trait, const bool transposedIn) : transposed(transposedIn) {}
+    __aicore__ constexpr LoadDataTrait(const LoadDataTrait& trait, bool transposedIn) : transposed(transposedIn) {}
 
     bool transposed = false;
 };

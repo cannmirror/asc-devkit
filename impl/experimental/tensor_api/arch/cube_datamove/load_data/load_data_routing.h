@@ -26,11 +26,8 @@ namespace Te {
 
 class LoadDataIgnore {
 public:
-    template<const LoadDataTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {}
-
-    template<const LoadDataTrait& trait, typename T, typename U>
-    __aicore__ inline void Run(const T& dst, const U& src) {}
+    template <const LoadDataTrait& trait, typename ...Args>
+    __aicore__ inline void Run(const Args&... args) {}
 };
 
 template <Hardware dstPos, Hardware srcPos, uint32_t Version>

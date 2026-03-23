@@ -74,7 +74,7 @@ private:
         bool nz2ndEn = false;
         bool nz2dnEn = true;
         if constexpr (GetHardPos<T>() == Hardware::GM) {
-            uint8_t cacheMode = GetCacheModeFromTensor(dst.Data().Get());
+            uint8_t cacheMode = GetCacheModeFromTensor(dst);
             bool isChannelSplit = trait.enableChannelSplit;
             CopyMatrixCcToGm3510::DataCopy<trait, quantPre, T, U>(dst, src, nSize, mSize, srcStride, dstStride,
                                                                   cacheMode, reluEn, unitFlag, isChannelSplit, nz2ndEn,

@@ -61,7 +61,7 @@ private:
 
         uint16_t loop2DstStride = dstNzNStride;  // loop2_dst_stride = dst_nz_n_stride
         uint16_t loop3DstStride = dstNzC0Stride; // loop3_dst_stride = dst_nz_c0_Stride
-        uint8_t cacheMode = GetCacheModeFromTensor(src.Data().Get());
+        uint8_t cacheMode = GetCacheModeFromTensor(src);
         // fp8 scale use b16 for movement
         CopyGmToCbufMultiNd2nzInstr::CopyGmToCbufMultiNd2nz(
             (__cbuf__ half*)(dst.Data().Get()), (__gm__ half*)(src.Data().Get()), ndNum, loop2DstStride, loop3DstStride,

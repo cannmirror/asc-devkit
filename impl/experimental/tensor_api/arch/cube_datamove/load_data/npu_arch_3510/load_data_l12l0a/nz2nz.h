@@ -25,15 +25,10 @@ class LoadDataL12L0ANZ2NZ3510 {
 public:
     template <const LoadDataTrait& trait, typename T, typename U>
     __aicore__ inline static void Run(const T& dst, const U& src) {
-        LoadDataImpl<TraitHolder<trait, false>::traitTransposed, T, U>(dst, src);
+        LoadDataImpl<TransTrait<trait, false>, T, U>(dst, src);
     }
 
 private:    
-    template<const LoadDataTrait& trait, bool transpose>
-    struct TraitHolder {
-        static constexpr LoadDataTrait traitTransposed = LoadDataTrait(trait, transpose);
-    };
-
     template <const LoadDataTrait& trait, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
@@ -61,7 +56,7 @@ private:
         if constexpr (is_b4_type<DstType>) {
             LoadCbufToCaS43510::LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);    
         } else {
-            LoadCbufToCa3510::template LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            LoadCbufToCa3510::LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
         }
     }
 };

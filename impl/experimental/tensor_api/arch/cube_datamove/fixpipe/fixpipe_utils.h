@@ -195,14 +195,6 @@ __aicore__ inline constexpr QuantMode3510 GetQuantMode()
     return QuantMode3510::None;
 }
 
-class FormatRegistorIgnore3510 {
-public:
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Coord& coord) {}
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V>
-    __aicore__ inline void Run(const T& dst, const U& src, const V& quant) {}
-};
-
 } // namespace Te
 } // namespace AscendC
 

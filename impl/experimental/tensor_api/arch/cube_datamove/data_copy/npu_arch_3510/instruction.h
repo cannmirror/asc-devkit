@@ -151,7 +151,6 @@ private:
 
 class CopyL12FBInstr {
 public:
-
     template <typename T, typename U, typename... Params>
     __aicore__ inline static void DataCopy(const T& dst, const U& src, const Params& ...params) {
         CopyL12FB(reinterpret_cast<uint64_t>(dst.Data().Get()), src.Data().Get(), params...);

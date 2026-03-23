@@ -22,10 +22,13 @@
 namespace AscendC {
 namespace Te {
 
+template<const LoadDataTrait& trait, bool transpose> 
+constexpr LoadDataTrait TransTrait = LoadDataTrait(trait, transpose); 
+
 template <typename T>
-__aicore__ inline uint8_t GetCacheModeFromTensor(__gm__ T* src) {
+__aicore__ inline uint8_t GetCacheModeFromTensor(const T& tensor) {
     if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-        return static_cast<uint8_t>((reinterpret_cast<uint64_t>(src)) >> L2_CACHE_OFFSET);
+        return static_cast<uint8_t>((reinterpret_cast<uint64_t>(tensor.Data().Get())) >> L2_CACHE_OFFSET);
     } else {
         return 0;
     }

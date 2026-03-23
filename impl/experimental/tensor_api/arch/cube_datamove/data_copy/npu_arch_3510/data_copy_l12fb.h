@@ -59,8 +59,7 @@ private:
         uint16_t srcStride = Std::ceil_division(srcRow * sizeof(srcType), C0_SIZE<>);
         uint16_t dstStride = Std::ceil_division(dstRow * sizeof(dstType), C2PIPE2GM_UNIT);
 
-        CopyL12FBInstr copyInstr;
-        copyInstr.DataCopy(dst, src, blockCount, blockLen, srcStride, dstStride);
+        CopyL12FBInstr::DataCopy(dst, src, blockCount, blockLen, srcStride, dstStride);
     }
 };
 

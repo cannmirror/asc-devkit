@@ -52,7 +52,7 @@ private:
         auto srcStrideRows = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
 
         using type = typename U::elementType;
-        uint8_t cacheMode = GetCacheModeFromTensor(src.Data().Get());
+        uint8_t cacheMode = GetCacheModeFromTensor(src);
 
         using ShapeRow1 = typename GetFourDimType<U, AttrInfo::SHAPE, AttrInfo::ROW, 1>::type;
         // compact mode, dst_stride equals burst_len, padding cnt is zero
