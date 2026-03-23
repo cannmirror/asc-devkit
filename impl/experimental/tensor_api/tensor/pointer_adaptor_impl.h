@@ -36,12 +36,14 @@ struct IterAdaptor
 
     template <typename Index>
     __aicore__ inline constexpr reference operator[](const Index& i) const {
-        return ptr[i];
+        auto ic = IndexCorrect(i);
+        return ptr[ic];
     }
 
     template <typename Index>
     __aicore__ inline constexpr DerivedType operator+(const Index& i) const {
-        return {ptr + i};
+        auto ic = IndexCorrect(i);
+        return {ptr + ic};
     }
 
     __aicore__ inline constexpr iterator Get() const {
@@ -72,6 +74,15 @@ struct IterAdaptor
         return x.ptr >= y.ptr; 
     }
 private:
+    template <typename Index>
+    __aicore__ inline constexpr Index IndexCorrect(const Index& i) const {
+        if constexpr (is_b4_type<valueType>) {
+            return i >> 1;
+        } else {
+            return i;
+        }
+    }
+
     iterator ptr;
 };
 

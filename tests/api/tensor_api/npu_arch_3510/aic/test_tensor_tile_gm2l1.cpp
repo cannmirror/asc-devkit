@@ -259,7 +259,7 @@ void SimND2ND(const T& dst, const U& src)
     auto srcColStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout);
     auto dstRowStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
 
-    uint32_t c0Elements = C0_SIZE<> / sizeof(srcType);
+    uint32_t c0Elements = C0_SIZE<srcType> / sizeof(srcType);
     uint32_t M0 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout);
     uint32_t N0 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout);
     uint32_t M1 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
@@ -317,17 +317,12 @@ void SimND2Nz(const T& dst, const U& src)
 
     auto srcRowStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
 
-    uint32_t c0Elements = C0_SIZE<> / sizeof(srcType);
+    uint32_t c0Elements = C0_SIZE<srcType> / sizeof(srcType);
     uint32_t M0 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout);
     uint32_t N0 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout);
     uint32_t M1 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
     uint32_t N1 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
-    if constexpr (is_b4_type<srcType>) {
-        // move fp4 as b8, need to be divided by 2
-        N = N >> 1;
-        srcRowStride = srcRowStride >> 1;
-        N0 = N0 >> 1;
-    }
+
     for (uint32_t n1 = 0; n1 < N1; n1++) {
         for (uint32_t m1 = 0; m1 < M1; m1++) {
             for (uint32_t m0 = 0; m0 < M0; m0++) {
@@ -371,17 +366,12 @@ void SimDN2Zn(const T& dst, const U& src)
 
     auto srcColStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout);
 
-    uint32_t c0Elements = C0_SIZE<> / sizeof(srcType);
+    uint32_t c0Elements = C0_SIZE<srcType> / sizeof(srcType);
     uint32_t M0 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout);
     uint32_t N0 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout);
     uint32_t M1 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
     uint32_t N1 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
-    if constexpr (is_b4_type<srcType>) {
-        // move fp4 as b8, need to be divided by 2
-        M = M >> 1;
-        srcColStride = srcColStride >> 1;
-        M0 = M0 >> 1;
-    }
+
     for (uint32_t m1 = 0; m1 < M1; m1++) {
         for (uint32_t n1 = 0; n1 < N1; n1++) {
             for (uint32_t n0 = 0; n0 < N0; n0++) {
@@ -415,7 +405,7 @@ void SimDN2Nz(const T& dst, const U& src)
 
     auto srcColStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout);
 
-    uint32_t c0Elements = C0_SIZE<> / sizeof(srcType);
+    uint32_t c0Elements = C0_SIZE<srcType> / sizeof(srcType);
     uint32_t M0 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout);
     uint32_t N0 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout);
     uint32_t M1 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
@@ -453,7 +443,7 @@ void SimScaleAND2Zz(const T& dst, const U& src)
 
     auto srcRowStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
 
-    uint32_t c0Elements = C0_SIZE<> / sizeof(srcType);
+    uint32_t c0Elements = C0_SIZE<srcType> / sizeof(srcType);
     uint32_t M0 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout);
     uint32_t N0 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout);
     uint32_t M1 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
@@ -494,7 +484,7 @@ void SimScaleADN2Zz(const T& dst, const U& src)
 
     auto srcBColStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout);
 
-    uint32_t c0Elements = C0_SIZE<> / sizeof(srcType);
+    uint32_t c0Elements = C0_SIZE<srcType> / sizeof(srcType);
     uint32_t M0 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout);
     uint32_t N0 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout);
     uint32_t M1 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
@@ -535,11 +525,11 @@ void SimulateND2nzDataCopy(T* dst, T* src, uint64_t loop1SrcStride, uint16_t nVa
     uint16_t loop3DstStride = gGm2L1NzParaCaptures.back().loop3DstStride;
     uint16_t loop4DstStride = gGm2L1NzParaCaptures.back().loop4DstStride;
     constexpr uint32_t typeSize = sizeof(T);
-    uint32_t c0Elements = C0_SIZE<> / typeSize; // Number of elements in one C0 block
+    uint32_t c0Elements = C0_SIZE<T> / typeSize; // Number of elements in one C0 block
     if (enableSmallC0) {
         for (int h = 0; h < ndNum; h++) {
             const uint8_t* srcNDAddr = reinterpret_cast<const uint8_t*>(src) + h * loop4SrcStride;
-            uint8_t* dstNDAddr = reinterpret_cast<uint8_t*>(dst) + h * loop4DstStride * C0_SIZE<>;
+            uint8_t* dstNDAddr = reinterpret_cast<uint8_t*>(dst) + h * loop4DstStride * C0_SIZE<T>;
 
             uint16_t nCeil = (nValue + 3) / 4;
             for (int j = 0; j < nCeil; j++) {
@@ -560,14 +550,14 @@ void SimulateND2nzDataCopy(T* dst, T* src, uint64_t loop1SrcStride, uint16_t nVa
         uint32_t blockNum = (dValue + c0Elements - 1) / c0Elements;
         for (int h = 0; h < ndNum; h++) {
             const uint8_t* srcNDAddr = reinterpret_cast<const uint8_t*>(src) + h * loop4SrcStride;
-            uint8_t* dstNDAddr = reinterpret_cast<uint8_t*>(dst) + h * loop4DstStride * C0_SIZE<>;
+            uint8_t* dstNDAddr = reinterpret_cast<uint8_t*>(dst) + h * loop4DstStride * C0_SIZE<T>;
             for (int i = 0; i < blockNum; i++) {
-                const uint8_t* srcBlockAddr = srcNDAddr + i * C0_SIZE<>;
-                uint8_t* dstBlockAddr = dstNDAddr + i * loop3DstStride * C0_SIZE<>;
+                const uint8_t* srcBlockAddr = srcNDAddr + i * C0_SIZE<T>;
+                uint8_t* dstBlockAddr = dstNDAddr + i * loop3DstStride * C0_SIZE<T>;
 
                 for (int j = 0; j < nValue; j++) {
                     const uint8_t* srcNAddr = srcBlockAddr + j * loop1SrcStride;
-                    uint8_t* dstNAddr = dstBlockAddr + j * loop2DstStride * C0_SIZE<>;
+                    uint8_t* dstNAddr = dstBlockAddr + j * loop2DstStride * C0_SIZE<T>;
                     for (int k = 0; k < c0Elements; k++) {
                         uint32_t srcEleIndex = i * c0Elements + k;
                         uint8_t* dstEleAddr = dstNAddr + k * typeSize;
@@ -599,11 +589,11 @@ void SimulateDN2nzDataCopy(T* dst, T* src, uint64_t loop1SrcStride, uint16_t nVa
     uint16_t loop3DstStride = gGm2L1NzParaCaptures.back().loop3DstStride;
     uint16_t loop4DstStride = gGm2L1NzParaCaptures.back().loop4DstStride;
     constexpr uint32_t typeSize = sizeof(T);
-    uint32_t c0Elements = C0_SIZE<> / typeSize; // Number of elements in one C0 block
+    uint32_t c0Elements = C0_SIZE<T> / typeSize; // Number of elements in one C0 block
     if (enableSmallC0) {
         for (int h = 0; h < dnNum; h++) {
             const uint8_t* srcDNAddr = reinterpret_cast<const uint8_t*>(src) + h * loop4SrcStride;
-            uint8_t* dstDNAddr = reinterpret_cast<uint8_t*>(dst) + h * loop4DstStride * C0_SIZE<>;
+            uint8_t* dstDNAddr = reinterpret_cast<uint8_t*>(dst) + h * loop4DstStride * C0_SIZE<T>;
 
             uint16_t nCeil = (nValue + 3) / 4;
             for (int j = 0; j < nCeil; j++) {
@@ -624,14 +614,14 @@ void SimulateDN2nzDataCopy(T* dst, T* src, uint64_t loop1SrcStride, uint16_t nVa
         uint32_t blockNum = (dValue + c0Elements - 1) / c0Elements;
         for (int h = 0; h < dnNum; h++) {
             const uint8_t* srcDNAddr = reinterpret_cast<const uint8_t*>(src) + h * loop4SrcStride;
-            uint8_t* dstDNAddr = reinterpret_cast<uint8_t*>(dst) + h * loop4DstStride * C0_SIZE<>;
+            uint8_t* dstDNAddr = reinterpret_cast<uint8_t*>(dst) + h * loop4DstStride * C0_SIZE<T>;
             for (int i = 0; i < blockNum; i++) {
                 const uint8_t* srcBlockAddr = srcDNAddr + i * loop1SrcStride * c0Elements;
-                uint8_t* dstBlockAddr = dstDNAddr + i * loop3DstStride * C0_SIZE<>;
+                uint8_t* dstBlockAddr = dstDNAddr + i * loop3DstStride * C0_SIZE<T>;
 
                 for (int j = 0; j < nValue; j++) {
                     const uint8_t* srcNAddr = srcBlockAddr + j * typeSize;
-                    uint8_t* dstNAddr = dstBlockAddr + j * loop2DstStride * C0_SIZE<>;
+                    uint8_t* dstNAddr = dstBlockAddr + j * loop2DstStride * C0_SIZE<T>;
                     for (int k = 0; k < c0Elements; k++) {
                         uint32_t srcEleIndex = i * c0Elements + k;
                         uint8_t* dstEleAddr = dstNAddr + k * typeSize;
@@ -658,12 +648,12 @@ void SimulateAlignV2DataCopy(T* dst, T* src, uint32_t blockCount, uint32_t block
     bool isLPRPMode = (leftPaddingCnt > 0) || (rightPaddingCnt > 0);
     bool isCompactMode = (dstStride == blockLen);
     uint32_t totalBurstSize = blockLen + leftPaddingCnt * sizeof(T) + rightPaddingCnt * sizeof(T);
-    uint32_t padSize = (totalBurstSize % C0_SIZE<> == 0) ? 0 : (C0_SIZE<> - (totalBurstSize % C0_SIZE<>));
+    uint32_t padSize = (totalBurstSize % C0_SIZE<T> == 0) ? 0 : (C0_SIZE<T> - (totalBurstSize % C0_SIZE<T>));
     uint32_t padElem = padSize / sizeof(T);
     // compact mode, left and right pad cnt is zero, dstStride equals blockLen, can directly copy without padding
     if (isLPRPMode) {
         // In LPRP mode, dstStride should be aligned to C0 size
-        EXPECT_TRUE(dstStride % C0_SIZE<> == 0);
+        EXPECT_TRUE(dstStride % C0_SIZE<T> == 0);
         for (uint32_t blockId = 0; blockId < blockCount; blockId++) {
             uint8_t* srcBurst = reinterpret_cast<uint8_t*>(src) + blockId * srcStride;
             uint8_t* dstBurst = reinterpret_cast<uint8_t*>(dst) + blockId * dstStride;
@@ -696,7 +686,7 @@ void SimulateAlignV2DataCopy(T* dst, T* src, uint32_t blockCount, uint32_t block
         }
         // check tail padding
         uint32_t totalDataLen = blockCount * blockLen;
-        uint64_t aligndSize = ((totalDataLen + C0_SIZE<> - 1) / C0_SIZE<>)*C0_SIZE<>;
+        uint64_t aligndSize = ((totalDataLen + C0_SIZE<T> - 1) / C0_SIZE<T>)*C0_SIZE<T>;
         if (aligndSize > totalDataLen) {
             uint8_t* padStart = dstBase + totalDataLen;
             std::fill(padStart, padStart + (aligndSize - totalDataLen), 0); // Padding with zeros
