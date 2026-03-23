@@ -42,14 +42,13 @@ private:
     {
         using DstType = typename T::elementType;
         auto dstLayout = dst.Layout();
-        constexpr int KHALF = 2;
         constexpr int SHIFT_M_STEP_B4 = 2;
         constexpr int M_STEP_MIN_VAL_B4 = 4;
         uint16_t mLoop = mStep >> SHIFT_M_STEP_B4;
         mStep = M_STEP_MIN_VAL_B4;
         for (uint16_t idx = 0; idx < mLoop; ++idx) {
             auto sliceDst = dst(MakeCoord(MakeCoord(0, 0), MakeCoord(0, idx)));
- 	        LoadCbufToCaS43510::LoadData<trait>(sliceDst, src, mStartPosition, kStartPosition, mStep, kStep / KHALF, srcStride, dstStride);
+            LoadCbufToCaS43510::LoadData<trait>(sliceDst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             mStartPosition += M_STEP_MIN_VAL_B4;
         }
     }
@@ -87,15 +86,14 @@ private:
         auto mStep = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout) *
                 GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout) / FRACTAL_FIXED;
         auto kStep = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) *
-                GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout) / C0_SIZE<>;
+                GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout) / C0_ELEMENT<DstType>;
         // Zn -> Nz
-        constexpr uint32_t KHALF = 2;
         constexpr uint32_t STRIDE_UNIT = C0_ELEMENT<DstType> * FRACTAL_FIXED;
         auto srcStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout) / STRIDE_UNIT;
         auto dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout) / STRIDE_UNIT;
         if constexpr (is_b4_type<DstType>) {
             if (m1 < FRACTAL_FIXED) {
-                LoadCbufToCaS43510::LoadData<trait>(dst, src, mStartPosition, kStartPosition / KHALF, mStep, kStep / KHALF, srcStride, dstStride);
+                LoadCbufToCaS43510::LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             } else {
                 LoadDataImplB4<trait, T, U>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             }

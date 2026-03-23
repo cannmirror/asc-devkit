@@ -9,7 +9,7 @@
 */
 
 /*!
- * \file zn2nzb8b4_with_coord.h
+ * \file nz2znb8b4_with_coord.h
  * \brief
  */
 #ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_NPU_ARCH_3510_LOAD_DATA_L12L0B_NZ2ZNB8B4_WITH_COORD_H
@@ -42,15 +42,13 @@ private:
     {
         using DstType = typename T::elementType;
         auto dstLayout = dst.Layout();
-        constexpr const int KHALF = 2;
-        constexpr const int SHIFT_M_STEP_B4 = 2;
-        constexpr const int M_STEP_MIN_VAL_B4 = 4;
+        constexpr int SHIFT_M_STEP_B4 = 2;
+        constexpr int M_STEP_MIN_VAL_B4 = 4;
         uint16_t nLoop = mStep >> SHIFT_M_STEP_B4;
         mStep = M_STEP_MIN_VAL_B4;
         for (uint16_t idx = 0; idx < nLoop; ++idx) {
             auto sliceDst = dst(MakeCoord(MakeCoord(0, idx), MakeCoord(0, 0)));
-            LoadCbufToCbS43510::LoadData<trait>(sliceDst, src, mStartPosition, kStartPosition / KHALF, 
-                                                    mStep, kStep / KHALF, srcStride, dstStride);
+            LoadCbufToCbS43510::LoadData<trait>(sliceDst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             mStartPosition += M_STEP_MIN_VAL_B4;
         }
     }
@@ -88,15 +86,14 @@ private:
         auto mStep = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) *
                 GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout) / FRACTAL_FIXED - mStartPosition;
         auto kStep = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout) *
-                GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout) / C0_SIZE<> - kStartPosition;
+                GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout) / C0_ELEMENT<DstType> - kStartPosition;
         // Nz -> Zn
-        constexpr uint32_t KHALF = 2;
         constexpr uint32_t STRIDE_UNIT = C0_ELEMENT<DstType> * FRACTAL_FIXED;
         auto srcStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / STRIDE_UNIT;
         auto dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout) / STRIDE_UNIT;
         if constexpr (is_b4_type<DstType>) {
             if (n1 < FRACTAL_FIXED) {
-                LoadCbufToCbS43510::LoadData<trait>(dst, src, mStartPosition, kStartPosition / KHALF, mStep, kStep / KHALF, srcStride, dstStride);
+                LoadCbufToCbS43510::LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             } else {
                 LoadDataImplB4<trait, T, U>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             }
