@@ -22,33 +22,36 @@ namespace Te {
 
 class Fixpipe2OutNZ2NZSimpleQuant3510 {
 public:
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V, typename Params>
-    __aicore__ inline static void Run(const T& dst, const U& src, const V& quant, const Params& params)
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V, typename... Params>
+    __aicore__ inline static void Run(const T& dst, const U& src, const V& quant, const Params&... params)
     {
-        SetRegisterImpl<V>(quant);
-        DataCopyImpl<trait, quantPre, T, U>(dst, src, params);
+        SetRegisterImpl<trait, T, U, V>(dst, src, quant);
+        DataCopyImpl<trait, quantPre, T, U>(dst, src, params...);
     }
 
 private:
     template <const FixpipeTrait& trait, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
-        CheckFormat::CheckNZTemplate<T>();
+        CheckFormat::CheckFixpipeNZTemplate<T, trait.enableChannelSplit>();
         CheckFormat::CheckL0CNZTemplate<U>();
     }
 
-    template <typename V>
-    __aicore__ inline static void SetRegisterImpl(const V& quant)
+    template <const FixpipeTrait& trait, typename T, typename U, typename V>
+    __aicore__ inline static auto SetRegisterImpl(const T& dst, const U& src, const V& quant)
     {
-        SetRegister3510::SetRegister(quant);
+        uint32_t ndNum = 1;
+        uint32_t srcNDStride = 0;
+        uint32_t dstNDStride = 0;
+        SetRegister3510::SetRegister(quant, ndNum, dstNDStride, srcNDStride);
     }
 
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename Params>
-    __aicore__ inline static void DataCopyImpl(const T& dst, const U& src, const Params& params)
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U>
+    __aicore__ inline static void DataCopyImpl(const T& dst, const U& src, const FixpipeParams& params)
     {
         CheckTemplate<trait, T, U>();
-        auto srcLayout = src.Layout();
-        auto dstLayout = dst.Layout();
+        const auto& srcLayout = src.Layout();
+        const auto& dstLayout = dst.Layout();
         uint32_t mSize = Std::min(
             GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout) *
             GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout),
@@ -72,13 +75,14 @@ private:
         if constexpr (GetHardPos<T>() == Hardware::GM) {
             uint8_t cacheMode = GetCacheModeFromTensor(dst);
             bool isChannelSplit = trait.enableChannelSplit;
-            CopyMatrixCcToGm3510::DataCopy<trait, quantPre, T, U>(dst, src, nSize, mSize, srcStride, dstStride,
+            CopyMatrixCcToGm3510::DataCopy<quantPre, T, U>(dst, src, nSize, mSize, srcStride, dstStride,
                                                                   cacheMode, reluEn, unitFlag, isChannelSplit, nz2ndEn,
                                                                   nz2dnEn);
         } else {
+            static_assert(trait.dualDstCtl != DUAL_DST_SPLIT_N, "If split N when fixpipe, NZ is not supported");
             uint8_t dualDstCtl = trait.dualDstCtl;
             bool subBlockId = false;
-            CopyMatrixCcToUb3510::DataCopy<trait, quantPre, T, U>(dst, src, nSize, mSize, srcStride, dstStride,
+            CopyMatrixCcToUb3510::DataCopy<quantPre, T, U>(dst, src, nSize, mSize, srcStride, dstStride,
                                                                   dualDstCtl, reluEn, unitFlag, subBlockId, nz2ndEn,
                                                                   nz2dnEn);
         }
@@ -94,11 +98,11 @@ public:
     }
 
 private:
-    template <const FixpipeTrait& trait, typename T, typename U, bool isTail, typename Params>
-    __aicore__ inline static auto GenParams(const T& dst, const U& src, const Params& params)
+    template <const FixpipeTrait& trait, typename T, typename U, bool isTail>
+    __aicore__ inline static auto GenParams(const T& dst, const U& src, const FixpipeParams& params)
     {
-        auto dstLayout = dst.Layout();
-        auto srcLayout = src.Layout();
+        const auto& dstLayout = dst.Layout();
+        const auto& srcLayout = src.Layout();
         uint32_t nSize = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout) *
                          GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
         if constexpr (isTail) {
@@ -125,6 +129,7 @@ private:
                 nSize, mSize, srcStride, dstStride, cacheMode, reluEn, unitFlag, isChannelSplit, nz2ndEn, nz2dnEn);
             return fixpipeParams;
         } else {
+            static_assert(trait.dualDstCtl != DUAL_DST_SPLIT_N, "If split N when fixpipe, NZ is not supported");
             uint8_t dualDstCtl = trait.dualDstCtl;
             bool subBlockId = false;
             auto fixpipeParams = Std::make_tuple(
@@ -133,14 +138,13 @@ private:
         }
     }
 
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V>
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V, typename... Params>
     __aicore__ inline static void FixpipeNZ2NZVectorCompute(const T& dst, const U& src, const V& quant, uint32_t nIterNum,
-        uint32_t calNSize, uint32_t tailNSize, const FixpipeParams& params)
+        uint32_t calNSize, uint32_t tailNSize, const Params&... params)
     {
-        auto mainLoopParam = GenParams<trait, T, U, false, FixpipeParams>(dst, src, params);
-        CopyDeqTensorToFbuf3510 copyDeqTensorInst;
+        auto mainLoopParam = GenParams<trait, T, U, false>(dst, src, params...);
         for (uint16_t i = 0; i < nIterNum; ++i) {
-            copyDeqTensorInst.CopyDeqTensorToFbufImpl(quant, calNSize, i);
+            CopyDeqTensorToFbuf3510::CopyDeqTensorToFbufImpl(quant, calNSize, i);
             InsertSync();
             auto srcCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, i * CBURST_NUM_3510));
             auto dstCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, i * CBURST_NUM_3510));
@@ -148,8 +152,8 @@ private:
                 mainLoopParam, tuple_sequence<decltype(mainLoopParam)>{});
         }
         if (tailNSize) {
-            auto tailParam = GenParams<trait, T, U, true, FixpipeParams>(dst, src, params);
-            copyDeqTensorInst.CopyDeqTensorToFbufImpl(quant, tailNSize, nIterNum);
+            auto tailParam = GenParams<trait, T, U, true>(dst, src, params...);
+            CopyDeqTensorToFbuf3510::CopyDeqTensorToFbufImpl(quant, tailNSize, nIterNum);
             InsertSync();
             auto srcCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, nIterNum * CBURST_NUM_3510));
             auto dstCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, nIterNum * CBURST_NUM_3510));
@@ -162,35 +166,36 @@ private:
     __aicore__ inline static void DataCopyWrapper(const T& dst, const U& src, const V& tupleParams, Std::index_sequence<Is...>)
     {
         if constexpr (GetHardPos<T>() == Hardware::GM) {
-            CopyMatrixCcToGm3510::DataCopy<trait, quantPre>(dst, src, Std::get<Is>(tupleParams)...);
+            CopyMatrixCcToGm3510::DataCopy<quantPre>(dst, src, Std::get<Is>(tupleParams)...);
         } else {
-            CopyMatrixCcToUb3510::DataCopy<trait, quantPre>(dst, src, Std::get<Is>(tupleParams)...);
+            CopyMatrixCcToUb3510::DataCopy<quantPre>(dst, src, Std::get<Is>(tupleParams)...);
         }
     }
 };
 
 class Fixpipe2OutNZ2NZVectorQuant3510 : public Fixpipe2OutNZ2NZVector3510 {
 public:
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V, typename Params>
-    __aicore__ inline static void Run(const T& dst, const U& src, const V& quant, const Params& params)
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V, typename... Params>
+    __aicore__ inline static void Run(const T& dst, const U& src, const V& quant, const Params&... params)
     {
-        DataCopyImpl<trait, quantPre, T, U, V, Params>(dst, src, quant, params);
+        SetRegisterImpl<trait, T, U>(dst, src);
+        DataCopyImpl<trait, quantPre, T, U, V>(dst, src, quant, params...);
     }
 
 private:
     template <const FixpipeTrait& trait, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
-        CheckFormat::CheckNZTemplate<T>();
+        CheckFormat::CheckFixpipeNZTemplate<T, trait.enableChannelSplit>();
         CheckFormat::CheckL0CNZTemplate<U>();
     }
 
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V, typename Params>
-    __aicore__ inline static void DataCopyImpl(const T& dst, const U& src, const V& quant, const Params& params)
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V, typename... Params>
+    __aicore__ inline static void DataCopyImpl(const T& dst, const U& src, const V& quant, const Params&... params)
     {
         CheckTemplate<trait, T, U>();
-        auto dstLayout = dst.Layout();
-        auto srcLayout = src.Layout();
+        const auto& dstLayout = dst.Layout();
+        const auto& srcLayout = src.Layout();
         uint32_t nSize = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout) *
                          GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
         uint32_t srcStride =
@@ -205,7 +210,16 @@ private:
             tailNSize = nSize % MAIN_LOOP_N_SIZE_3510;
             calNSize = MAIN_LOOP_N_SIZE_3510;
         }
-        FixpipeNZ2NZVectorEntrance<trait, quantPre, T, U, V>(dst, src, quant, nIterNum, calNSize, tailNSize, params);
+        FixpipeNZ2NZVectorEntrance<trait, quantPre, T, U, V>(dst, src, quant, nIterNum, calNSize, tailNSize, params...);
+    }
+
+    template <const FixpipeTrait& trait, typename T, typename U>
+    __aicore__ inline static void SetRegisterImpl(const T& dst, const U& src)
+    {
+        uint32_t ndNum = 1;
+        uint32_t srcNDStride = 0;
+        uint32_t dstNDStride = 0;
+        SetRegister3510::SetRegister(ndNum, dstNDStride, srcNDStride);
     }
 };
 

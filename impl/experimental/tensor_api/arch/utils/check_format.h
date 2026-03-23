@@ -84,6 +84,36 @@ public:
             "Layout->Stride->Column->ZeroDimmust be (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType) * 16)!");
     }
 
+    template <typename T, bool enableChannelSplit>
+    __aicore__ inline static constexpr void CheckFixpipeNZTemplate()
+    {
+        using Dtype = typename T::elementType;
+
+        constexpr bool isB32 = Std::is_one_of_v<Dtype, __gm__ float, __gm__ int32_t>;
+        if constexpr (enableChannelSplit) {
+            static_assert(isB32, "When enable channel split, data type must be B32");
+        }
+
+        using type = typename Std::conditional<!isB32 || enableChannelSplit, Dtype, half>::type;
+        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
+        using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
+
+        using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
+        using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
+        using StrideRow1 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 1>::type;
+
+        static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>, "Layout->Shape->Row->ZeroDim must be 16!");
+        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<C0_ELEMENT<type>>>,
+                      "Layout->Shape->Column->ZeroDim must be (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType))!");
+
+        static_assert(Std::is_same_v<StrideRow0, Std::Int<C0_ELEMENT<type>>>,
+                      "Layout->Stride->Row->ZeroDim must be (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType))!");
+        static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>, "Layout->Stride->Column->ZeroDim must be 1!");
+        static_assert(
+            Std::is_same_v<StrideRow1, Std::Int<C0_ELEMENT<type> * FRACTAL_FIXED>>,
+            "Layout->Stride->Column->ZeroDimmust be (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType) * 16)!");
+    }
+
     template <typename T>
     __aicore__ inline static constexpr void CheckNDTemplate()
     {

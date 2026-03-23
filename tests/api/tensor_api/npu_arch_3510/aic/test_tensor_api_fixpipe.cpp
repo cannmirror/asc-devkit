@@ -84,8 +84,9 @@ public:
                 n_size_global = CeilAlign(n, FRACTAL_FIXED);
                 m_size_global =  CeilAlign(m, C0_SIZE<uint16_t> / sizeof(uint16_t));
             }
-            dst_stride_global = C0_SIZE<DstT> / sizeof(DstT) * CeilAlign(m, FRACTAL_FIXED);
-            src_stride_global = C0_SIZE<uint16_t> / sizeof(uint16_t) * CeilAlign(m, FRACTAL_FIXED) / FRACTAL_FIXED;
+            using CastT = std::conditional_t<sizeof(DstT) == 4, half, DstT>;
+            dst_stride_global = C0_SIZE<> / sizeof(CastT) * CeilAlign(m, FRACTAL_FIXED);
+            src_stride_global = C0_SIZE<> / sizeof(uint16_t) * CeilAlign(m, FRACTAL_FIXED) / FRACTAL_FIXED;
             NZ2ND_en_global = false;
             NZ2DN_en_global = false;
         } else {
@@ -148,7 +149,8 @@ private:
     {
         auto gmIterator = MakeGMmemPtr(gmC_);
         if constexpr (C_TYPE::format == CubeFormat::NZ) {
-            auto gmMatrixLayout = MakeNzLayout<DstT>(mLength_, nLength_);
+            using CastT = std::conditional_t<sizeof(DstT) == 4, half, DstT>;
+            auto gmMatrixLayout = MakeNzLayout<CastT>(mLength_, nLength_);
             auto gmTensor = MakeTensor(gmIterator, gmMatrixLayout);
             return gmTensor;
         } else if constexpr (C_TYPE::format == CubeFormat::DN) {

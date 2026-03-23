@@ -23,7 +23,7 @@ namespace Te {
 
 class CopyMatrixCcToGm3510 {
 public:
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename... Params>
+    template <QuantMode_t quantPre, typename T, typename U, typename... Params>
     __aicore__ inline static void DataCopy(const T& dst, const U& src, const Params& ...params)
     {
         CopyMatrixCcToGm<quantPre>(dst.Data().Get(), src.Data().Get(), params...);
@@ -48,7 +48,7 @@ private:
 
 class CopyMatrixCcToUb3510 {
 public:
-template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename... Params>
+template <QuantMode_t quantPre, typename T, typename U, typename... Params>
     __aicore__ inline static void DataCopy(const T& dst, const U& src, const Params& ...params)
     {
         CopyMatrixCcToUb<quantPre>(dst.Data().Get(), src.Data().Get(), params...);

@@ -55,7 +55,7 @@ __aicore__ inline void InsertSync()
 class CopyDeqTensorToFbuf3510 {
 public:
     template <typename T>
-    __aicore__ inline void CopyDeqTensorToFbufImpl(const T& src, uint16_t calNSize, uint16_t nIterIndex)
+    __aicore__ inline static void CopyDeqTensorToFbufImpl(const T& src, uint16_t calNSize, uint16_t nIterIndex)
     {
         auto dstAddr = reinterpret_cast<__fbuf__ uint64_t*>(AllocTempBuf(calNSize));
         auto dst = MakeTensor(MakeFixbufmemPtr(dstAddr), src.Layout());
@@ -65,9 +65,9 @@ public:
     }
 private:
     template <typename T>
-    __aicore__ inline decltype(auto) TileSrcTensor(const T& src, uint16_t calNSize, uint16_t nIterIndex) {
-        auto coord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, nIterIndex * MAIN_LOOP_N_SIZE_3510));
-        auto shape = MakeShape(MakeShape(Std::Int<1>{}, 1), MakeShape(Std::Int<1>{}, calNSize));
+    __aicore__ inline static decltype(auto) TileSrcTensor(const T& src, uint16_t calNSize, uint16_t nIterIndex) {
+        auto coord = MakeCoord(MakeCoord(Std::Int<0>{}, Std::Int<0>{}), MakeCoord(Std::Int<0>{}, nIterIndex * MAIN_LOOP_N_SIZE_3510));
+        auto shape = MakeShape(MakeShape(Std::Int<1>{}, Std::Int<1>{}), MakeShape(Std::Int<1>{}, calNSize));
         return src(coord, shape);
     }
 };
@@ -172,7 +172,7 @@ enum class QuantMode3510 : uint8_t { None, Scalar, Vector, Direct };
 template <typename T>
 __aicore__ inline constexpr Format3510 GetDataFormat()
 {
-    if constexpr (IsL0cNZFormat<T>::value) {
+    if constexpr (IsL0cNZFormat<T>::value || IsNZFormat<T>::value) {
         return Format3510::NZ;
     } else if constexpr (IsNDFormat<T>::value) {
         return Format3510::ND;

@@ -24,21 +24,21 @@ namespace Te {
 
 class FixpipeL0C2Out3510 {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename Params>
-    __aicore__ inline void Run(const T& dst, const U& src, const Params& params) {
-        Execute<trait>(dst, src, params);
+    template <const FixpipeTrait& trait, typename T, typename U, typename... Params>
+    __aicore__ inline static void Run(const T& dst, const U& src, const Params&... params) {
+        Execute<trait>(dst, src, params...);
     }
 
 private:
-    template <const FixpipeTrait& trait, typename T, typename U, typename Params>
-    __aicore__ inline void Execute(const T& dst, const U& src, const Params& params) {
+    template <const FixpipeTrait& trait, typename T, typename U, typename... Params>
+    __aicore__ inline static void Execute(const T& dst, const U& src, const Params&... params) {
         constexpr auto quantPre = GetFixpipeQuantPre<trait, T, U>();
-        if constexpr (IsL0cNZFormat<U>::value && IsNZFormat<T>::value) {
-            Fixpipe2OutNz2Nz3510::Run<trait, quantPre, T, U, Params>(dst, src, params);
+        if constexpr (IsL0cNZFormat<U>::value && (IsNZFormat<T>::value || IsL0cNZFormat<T>::value)) {
+            Fixpipe2OutNz2Nz3510::Run<trait, quantPre, T, U>(dst, src, params...);
         } else if constexpr (IsL0cNZFormat<U>::value && IsNDFormat<T>::value) {
-            Fixpipe2OutNz2Nd3510::Run<trait, quantPre, T, U, Params>(dst, src, params);
+            Fixpipe2OutNz2Nd3510::Run<trait, quantPre, T, U>(dst, src, params...);
         } else if constexpr (IsL0cNZFormat<U>::value && IsDNFormat<T>::value) {
-            Fixpipe2OutNz2Dn3510::Run<trait, quantPre, T, U, Params>(dst, src, params);
+            Fixpipe2OutNz2Dn3510::Run<trait, quantPre, T, U>(dst, src, params...);
         }
     }
 };

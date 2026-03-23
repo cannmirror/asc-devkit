@@ -22,16 +22,16 @@ namespace Te {
 
 class Fixpipe2OutNz2Nz3510 {
 public:
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename Params>
-    __aicore__ inline static void Run(const T& dst, const U& src, const Params& params) {
-        DataCopyImpl<trait, quantPre, T, U, Params>(dst, src, params);
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename... Params>
+    __aicore__ inline static void Run(const T& dst, const U& src, const Params&... params) {
+        DataCopyImpl<trait, quantPre, T, U>(dst, src, params...);
     }
 
 private:
     template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
-        CheckFormat::CheckNZTemplate<T>();
+        CheckFormat::CheckFixpipeNZTemplate<T, trait.enableChannelSplit>();
         CheckFormat::CheckL0CNZTemplate<U>();
         if constexpr (GetHardPos<T>() == Hardware::GM) {
             CheckDataTypeFor3510::CheckL0C2GmDataType<quantPre, T, U>();
@@ -40,12 +40,12 @@ private:
         }
     }
 
-    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename Params>
-    __aicore__ inline static void DataCopyImpl(const T& dst, const U& src, const Params& params)
+    template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U>
+    __aicore__ inline static void DataCopyImpl(const T& dst, const U& src, const FixpipeParams& params)
     {
         CheckTemplate<trait, quantPre, T, U>();
-        auto dstLayout = dst.Layout();
-        auto srcLayout = src.Layout();
+        const auto& dstLayout = dst.Layout();
+        const auto& srcLayout = src.Layout();
         uint32_t nSize = Std::min(GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout)
             * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout),
             GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout) *
@@ -65,13 +65,14 @@ private:
         if constexpr (GetHardPos<T>() == Hardware::GM) {
             uint8_t cacheMode = GetCacheModeFromTensor(dst);
             bool isChannelSplit = trait.enableChannelSplit;
-            CopyMatrixCcToGm3510::DataCopy<trait, quantPre, T, U>(dst, src, nSize, mSize, srcStride, dstStride,
+            CopyMatrixCcToGm3510::DataCopy<quantPre, T, U>(dst, src, nSize, mSize, srcStride, dstStride,
                                                                   cacheMode, reluEn, unitFlag, isChannelSplit, nz2ndEn,
                                                                   nz2dnEn);
         } else {
+            static_assert(trait.dualDstCtl != DUAL_DST_SPLIT_N, "If split N when fixpipe, NZ is not supported");
             uint8_t dualDstCtl = trait.dualDstCtl;
             bool subBlockId = false;
-            CopyMatrixCcToUb3510::DataCopy<trait, quantPre, T, U>(dst, src, nSize, mSize, srcStride, dstStride,
+            CopyMatrixCcToUb3510::DataCopy<quantPre, T, U>(dst, src, nSize, mSize, srcStride, dstStride,
                                                                       dualDstCtl, reluEn, unitFlag, subBlockId, nz2ndEn,
                                                                       nz2dnEn);
         }
