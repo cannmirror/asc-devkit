@@ -14,9 +14,8 @@
 */
 #ifndef IMPL_TENSOR_API_UTILS_MACRO_IMPL_H
 #define IMPL_TENSOR_API_UTILS_MACRO_IMPL_H
-
-#include "impl/utils/sys_constants.h"
-#include "impl/utils/sys_macros.h"
+#include "include/utils/base/sys_macros.h"
+#include "include/utils/base/sys_constants.h"
 
 #if !defined(ASCENDC_CPU_DEBUG)
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
