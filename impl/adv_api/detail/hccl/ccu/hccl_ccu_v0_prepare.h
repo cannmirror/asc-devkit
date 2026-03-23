@@ -52,6 +52,8 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CcuPrepareForAllToAll(__
     xnData_[4] = strideSize;
     xnData_[5] = 0;
     xnData_[6] = strideSize * ccuParam_.rankId;
+    uint64_t loopCount = 8;
+    CalcGoSize(sliceSizeAlltoall, loopCount, CCU_MEMSLICE_SIZE * 8, &xnData_[7]);
     return;
 }
  
