@@ -317,7 +317,7 @@ Used in conjunction with macro CHECK_MEMBER, calling method _has_member_MEMBER<T
 /*
 Define two auxiliary template classes, one member M is a variable, and the other member M is a constant;
 At the same time, a verification template function is defined. The function returns the corresponding template class based on whether the template parameter T has a constant and a member M with a value > 0.
-Used with macro DEFINE_STUCTï¼Œ
+Used with macro DEFINE_STUCTï¼?
 */
 #define DECLARE_DEFINE_STRUCT(T, M, U)                                                                               \
     namespace __AuxTiling {                                                                                          \

@@ -12,12 +12,6 @@
  * \file bmm_tiling.h
  * \brief
  */
-
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BMM_TILING_H
-#endif
-
 #ifndef LIB_MATMUL_BMM_TILING_H
 #define LIB_MATMUL_BMM_TILING_H
 
@@ -300,8 +294,3 @@ int32_t BatchMatmulGetTmpBufSizeV2(AscendC::tiling::TCubeTiling &tiling, matmul_
 };
 
 #endif // LIB_MATMUL_BMM_TILING_H
-
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BMM_TILING_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BMM_TILING_H
-#endif

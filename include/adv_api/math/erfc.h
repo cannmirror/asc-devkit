@@ -14,7 +14,7 @@
  * The Erfc function does not have an elementary function expression, and there is calculating by
  * function approximation.
  * The approximate calculation formula is as follows:
- * Erfc(x) = (-xa^2)*(R(z)/S(z))*(x/xa)+ï¼ˆ1-x/xa)
+ * Erfc(x) = (-xa^2)*(R(z)/S(z))*(x/xa)+ï¼?-x/xa)
  * xa = |x| + min_float
  * z = min(xa, 10)
  * min_float is the smallest value could be represented by float.
@@ -36,9 +36,9 @@
  * S5 = 0.4380524152e2
  */
 
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ERFC_H
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ERFC_H__
 #endif
 
 #ifndef LIB_MATH_ERFC_H
@@ -133,7 +133,7 @@ __aicore__ inline void Erfc(const LocalTensor<T>& dstTensor, const LocalTensor<T
 #endif
 #endif // LIB_MATH_ERFC_H
 
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ERFC_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ERFC_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ERFC_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ERFC_H__
 #endif

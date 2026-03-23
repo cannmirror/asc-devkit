@@ -12,12 +12,6 @@
  * \file constant_tiling.h
  * \brief
  */
-
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_CONSTANT_TILING_H
-#endif
-
 #ifndef LIB_MATMUL_CONSTANT_TILING_H
 #define LIB_MATMUL_CONSTANT_TILING_H
 
@@ -174,8 +168,3 @@ __aicore__ constexpr MatmulApiStaticTiling GetMatmulApiTiling(const MatmulConfig
 }
 } // namespace matmul
 #endif // LIB_MATMUL_CONSTANT_TILING_H
-
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_CONSTANT_TILING_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_CONSTANT_TILING_H
-#endif

@@ -12,12 +12,6 @@
  * \file cos_tiling.h
  * \brief
  */
-
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_COS_TILING_H
-#endif
-
 #ifndef LIB_MATH_COS_TILING_H
 #define LIB_MATH_COS_TILING_H
 #include <cstdint>
@@ -80,8 +74,3 @@ void GetCosTmpBufferFactorSize(
     const CosConfig& config, const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf);
 } // namespace AcsendC
 #endif // LIB_MATH_COS_TILING_H
-
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_COS_TILING_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_COS_TILING_H
-#endif

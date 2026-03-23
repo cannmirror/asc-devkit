@@ -12,12 +12,6 @@
  * \file sum_tiling_intf.h
  * \brief
  */
-
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SUM_TILING_INTF_H
-#endif
-
 #ifndef LIB_REDUCE_SUM_TILING_INTF_H
 #define LIB_REDUCE_SUM_TILING_INTF_H
 #include "sum_tiling.h"
@@ -25,9 +19,4 @@ namespace AscendC {
 [[deprecated(__FILE__ " is deprecated, please use sum_tiling.h instead!")]] typedef void SumTilingDeprecatedHeader;
 using LibSumTilingInterface = SumTilingDeprecatedHeader;
 }
-#endif
-
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SUM_TILING_INTF_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SUM_TILING_INTF_H
 #endif

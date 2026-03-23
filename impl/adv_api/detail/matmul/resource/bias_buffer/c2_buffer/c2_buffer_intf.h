@@ -12,10 +12,10 @@
 * \file c2_buffer_intf.h
 * \brief
 */
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
 #pragma message("impl/adv_api/detail/matmul/resource/bias_buffer/c2_buffer/c2_buffer_intf.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_RESOURCE_BIAS_BUFFER_C2_BUFFER_C2_BUFFER_INTF_H
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_RESOURCE_BIAS_BUFFER_C2_BUFFER_C2_BUFFER_INTF_H__
 #endif
 
 #ifndef IMPL_MATMUL_RESOURCE_BIAS_BUFFER_C2_BUFFER_C2_BUFFER_INTF_H
@@ -77,7 +77,7 @@ public:
 }  // namespace AscendC
 #endif // _C2_BUFFER_INTF_H_
 
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_RESOURCE_BIAS_BUFFER_C2_BUFFER_C2_BUFFER_INTF_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_RESOURCE_BIAS_BUFFER_C2_BUFFER_C2_BUFFER_INTF_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_RESOURCE_BIAS_BUFFER_C2_BUFFER_C2_BUFFER_INTF_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_RESOURCE_BIAS_BUFFER_C2_BUFFER_C2_BUFFER_INTF_H__
 #endif

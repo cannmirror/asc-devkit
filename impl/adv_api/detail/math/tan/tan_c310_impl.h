@@ -13,10 +13,10 @@
  * \brief
  */
 
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
 #pragma message("impl/adv_api/detail/math/tan/tan_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/tan.h\"\" and use public functions or variables defined in interface headers files.")
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_TAN_TAN_C310_IMPL_H
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_TAN_TAN_C310_IMPL_H__
 #endif
 #ifndef IMPL_MATH_TAN_TAN_C310_IMPL_H
 #define IMPL_MATH_TAN_TAN_C310_IMPL_H
@@ -58,9 +58,9 @@ __simd_callee__ inline void TanRound(Reg::RegTensor<float> &srcReg, Reg::RegTens
     Reg::RegTensor<float> &downReg2, Reg::MaskReg mask)
 {
     /*
-    k=round(x/π), x0=x-kπ, x0∈(-π/2, π/2)
+    k=round(x/π), x0=x-kπ, x0�?-π/2, π/2)
     π=π_0+π_1+π_2+π_3+π_4 achieve final precision compensation.
-    Final solution：
+    Final solution�?
     k = round(x * invpi)
     x -= k * pi_0
     x -= k * pi_1
@@ -239,7 +239,7 @@ __aicore__ inline void TanImpl(const LocalTensor<T>& dstTensor, const LocalTenso
 
 #endif // IMPL_MATH_TAN_TAN_C310_IMPL_H
 
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_TAN_TAN_C310_IMPL_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_TAN_TAN_C310_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_TAN_TAN_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_TAN_TAN_C310_IMPL_H__
 #endif

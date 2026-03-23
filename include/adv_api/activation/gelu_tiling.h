@@ -12,12 +12,6 @@
  * \file gelu_tiling.h
  * \brief
  */
-
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GELU_TILING_H
-#endif
-
 #ifndef TILING_GELU_TILING_H
 #define TILING_GELU_TILING_H
 #include <cstdint>
@@ -51,8 +45,3 @@ void GetGeluMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, ui
     uint32_t& minValue);
 } // namespace AscendC
 #endif // TILING_GELU_TILING_H
-
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GELU_TILING_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GELU_TILING_H
-#endif

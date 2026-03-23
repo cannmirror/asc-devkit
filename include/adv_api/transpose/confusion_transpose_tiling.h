@@ -12,12 +12,6 @@
  * \file confusion_transpose_tiling.h
  * \brief
  */
-
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_CONFUSION_TRANSPOSE_TILING_H
-#endif
-
 #ifndef LIB_TRANSPOSE_CONFUSION_TRANSPOSE_TILING_H
 #define LIB_TRANSPOSE_CONFUSION_TRANSPOSE_TILING_H
 #include "graph/tensor.h"
@@ -106,8 +100,3 @@ void GetConfusionTransposeOnlyTilingInfo(const ge::Shape& srcShape, const uint32
     const uint32_t typeSize, AscendC::tiling::ConfusionTransposeTiling& tiling);
 }
 #endif // LIB_TRANSPOSE_CONFUSION_TRANSPOSE_TILING_H
-
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_CONFUSION_TRANSPOSE_TILING_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_CONFUSION_TRANSPOSE_TILING_H
-#endif

@@ -13,9 +13,9 @@
  * \brief
  */
 
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HCCL_H
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HCCL_H__
 #endif
 
 #ifndef LIB_HCCL_HCCL_H
@@ -30,7 +30,7 @@ static constexpr HcclServerConfig DEFAULT_CFG = {CoreType::DEFAULT, 0};
 /*!
  * @class Hccl
  * @brief This class mainly provides a series of collection communication primitive interfaces (hence Prepare),
- *        benchmarking against Huawei's collection communication C++ interface, including AllReduce、AllGather、
+ *        benchmarking against Huawei's collection communication C++ interface, including AllReduce、AllGather�?
  *        ReduceScatter and so on.
  *        The typical usage of this class is as follows:
  *          1) Create Hccl object and initialize it.
@@ -421,7 +421,7 @@ private:
 #include "../../../impl/adv_api/detail/hccl/impl/hccl_impl.h"
 #endif  // LIB_HCCL_HCCL_H
 
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HCCL_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HCCL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HCCL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HCCL_H__
 #endif

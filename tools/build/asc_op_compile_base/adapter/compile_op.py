@@ -588,7 +588,7 @@ def gen_kernel_fun(compile_info: CompileInfo, func_name: str, opinfo: OpInfo, \
     source += "#undef __global__\n"
     source += "#define __global__ inline\n"
     source += f"#include \"{src_file}\"\n"
-    source += "#include \"kernel_utils.h\"\n"
+    source += "#include \"kernel_common.h\"\n"
 
     ascendc_dump_on = "-DASCENDC_DUMP=0" not in compile_options
     dump_info = compile_info.dump_info["dump_type"] != "" and ascendc_dump_on
