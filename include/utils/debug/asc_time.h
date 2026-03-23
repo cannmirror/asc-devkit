@@ -22,7 +22,7 @@
 
 #include "simt_api/device_types.h"
 
-#if (__NPU_ARCH__ == 3510)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 namespace __asc_simt_vf {
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint64_t clock(void);
 } // namespace __asc_simt_vf
@@ -30,6 +30,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint64_t clock(void);
 #include "impl/utils/debug/asc_time_simt_impl.h"
 #endif
 
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
 #if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510)
 #include "impl/utils/debug/asc_aicore_time_impl.h"
 #endif
@@ -52,6 +53,8 @@ __aicore__ inline void asc_mark_stamp();
 
 #define TRACE_START(...) TRACE_START_IMPL(__VA_ARGS__)
 #define TRACE_STOP(...) TRACE_STOP_IMPL(__VA_ARGS__)
+
+#endif
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_COMPILER_INTERNAL_HEADERS_ASC_TIME_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
