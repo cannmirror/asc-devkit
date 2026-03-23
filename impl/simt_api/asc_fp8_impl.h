@@ -21,6 +21,10 @@
 #warning "impl/simt_api/asc_fp8_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "simt_api/asc_fp8.h" and use public functions or variables defined in interface header files."
 #endif
 
+#if defined(__NPU_COMPILER_INTERNAL_PURE_SIMT__)
+#include "__clang_cce_simt_fp8.h"
+#endif
+
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline hifloat8x2_t __float22hif82_rna(const float2 x) {
     return __cvt_hifloat8x2_t<__internal_get_round<__RoundMode::CAST_ROUND>(), RoundingSaturation::RS_DISABLE_VALUE>(x);
 }

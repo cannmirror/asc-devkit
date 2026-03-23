@@ -231,6 +231,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float y1f(float x);
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float ynf(int n, float x);
 
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long int labs(long int x);
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long long int llabs(long long int x);
@@ -246,6 +247,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline long long int llmin(const long long int x,
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned long long int ullmin(const unsigned long long int x, const unsigned long long int y);
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned int umin(const unsigned int x, const unsigned int y);
+#endif
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float fdividef(float x, float y);
 

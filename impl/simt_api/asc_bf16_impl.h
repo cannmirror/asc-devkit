@@ -21,6 +21,10 @@
 #warning "impl/simt_api/asc_bf16_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "simt_api/asc_bf16.h" and use public functions or variables defined in interface header files."
 #endif
 
+#if defined(__NPU_COMPILER_INTERNAL_PURE_SIMT__)
+#include "__clang_cce_simt_bf16.h"
+#endif
+
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline bool __hisnan(bfloat16_t x)
 {
     return __isnan(x);
@@ -958,97 +962,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ bfloat16_t* address, 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ bfloat16x2_t* address, bfloat16x2_t val)
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(reinterpret_cast<__gm__ int32_t*>(address), reinterpret_cast<int32_t&>(val));
-}
-
-#else
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16_t asc_atomic_add(bfloat16_t *address, bfloat16_t val)
-{
-    atomicAdd(address, val);
-    return *address;
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16x2_t asc_atomic_add(bfloat16x2_t *address, bfloat16x2_t val)
-{
-    return atomicAdd(address, val);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16x2_t asc_atomic_sub(bfloat16x2_t *address, bfloat16x2_t val)
-{
-    return atomicSub(address, val);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16x2_t asc_atomic_exch(bfloat16x2_t *address, bfloat16x2_t val)
-{
-    return atomicExch(address, val);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16_t asc_atomic_max(bfloat16_t *address, bfloat16_t val)
-{
-    atomicMax(address, val);
-    return *address;
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16x2_t asc_atomic_max(bfloat16x2_t *address, bfloat16x2_t val)
-{
-    return atomicMax(address, val);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16_t asc_atomic_min(bfloat16_t *address, bfloat16_t val)
-{
-    atomicMin(address, val);
-    return *address;
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16x2_t asc_atomic_min(bfloat16x2_t *address, bfloat16x2_t val)
-{
-    return atomicMin(address, val);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16x2_t asc_atomic_cas(bfloat16x2_t *address, bfloat16x2_t compare, bfloat16x2_t val)
-{
-    return atomicCAS(address, compare, val);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16_t asc_ldcg(bfloat16_t* address)
-{
-    return __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>(address);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16x2_t asc_ldcg(bfloat16x2_t* address)
-{
-    int32_t t = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>(reinterpret_cast<int32_t*>(address));
-    return reinterpret_cast<bfloat16x2_t&>(t);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16_t asc_ldca(bfloat16_t* address)
-{
-    return __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(address);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16x2_t asc_ldca(bfloat16x2_t* address)
-{
-    int32_t t = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(reinterpret_cast<int32_t*>(address));
-    return reinterpret_cast<bfloat16x2_t&>(t);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stcg(bfloat16_t* address, bfloat16_t val)
-{
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>(address, val);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stcg(bfloat16x2_t* address, bfloat16x2_t val)
-{
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>(reinterpret_cast<int32_t*>(address), reinterpret_cast<int32_t&>(val));
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(bfloat16_t* address, bfloat16_t val)
-{
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(address, val);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(bfloat16x2_t* address, bfloat16x2_t val)
-{
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(reinterpret_cast<int32_t*>(address), reinterpret_cast<int32_t&>(val));
 }
 #endif
 

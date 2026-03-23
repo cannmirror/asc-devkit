@@ -21,6 +21,10 @@
 #warning "impl/simt_api/asc_fp16_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "simt_api/asc_fp16.h" and use public functions or variables defined in interface header files."
 #endif
 
+#if defined(__NPU_COMPILER_INTERNAL_PURE_SIMT__)
+#include "__clang_cce_simt_fp16.h"
+#endif
+
 constexpr uint32_t __INTERNAL_HALF_INF = 0x7C00;
 constexpr uint32_t __INTERNAL_HALF_NEG_INF = 0xFC00;
 
@@ -978,97 +982,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ half* address, half v
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ half2* address, half2 val)
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(reinterpret_cast<__gm__ int32_t*>(address), reinterpret_cast<int32_t&>(val));
-}
-
-#else
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_atomic_add(half *address, half val)
-{
-    atomicAdd(address, val);
-    return *address;
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_add(half2 *address, half2 val)
-{
-    return atomicAdd(address, val);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_sub(half2 *address, half2 val)
-{
-    return atomicSub(address, val);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_exch(half2 *address, half2 val)
-{
-    return atomicExch(address, val);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_atomic_max(half *address, half val)
-{
-    atomicMax(address, val);
-    return *address;
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_max(half2 *address, half2 val)
-{
-    return atomicMax(address, val);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_atomic_min(half *address, half val)
-{
-    atomicMin(address, val);
-    return *address;
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_min(half2 *address, half2 val)
-{
-    return atomicMin(address, val);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_cas(half2 *address, half2 compare, half2 val)
-{
-    return atomicCAS(address, compare, val);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_ldcg(half* address)
-{
-    return __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>(address);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_ldcg(half2* address)
-{
-    int32_t t = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>(reinterpret_cast<int32_t*>(address));
-    return reinterpret_cast<half2&>(t);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_ldca(half* address)
-{
-    return __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(address);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_ldca(half2* address)
-{
-    int32_t t = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(reinterpret_cast<int32_t*>(address));
-    return reinterpret_cast<half2&>(t);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stcg(half* address, half val)
-{
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>(address, val);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stcg(half2* address, half2 val)
-{
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>(reinterpret_cast<int32_t*>(address), reinterpret_cast<int32_t&>(val));
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(half* address, half val)
-{
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(address, val);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(half2* address, half2 val)
-{
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(reinterpret_cast<int32_t*>(address), reinterpret_cast<int32_t&>(val));
 }
 #endif
 

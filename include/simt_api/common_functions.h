@@ -17,8 +17,10 @@
 #endif
 
 #include "simt_api/device_types.h"
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
 #include "utils/debug/asc_printf.h"
 #include "utils/debug/asc_assert.h"
+#endif
 #include "utils/debug/asc_time.h"
 
 #ifndef SPLIT_CORE_VEC

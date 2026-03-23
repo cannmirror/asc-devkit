@@ -328,8 +328,8 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void __internal_cal_remquo(float &abs_x, f
 #define __INTERNAL_REMQUOF(x, y, quo)                                                                               \
     do {                                                                                                            \
         bool is_x_pos = (x) >= 0;                                                                                   \
-        float abs_x = abs(x);                                                                                       \
-        float abs_y = abs(y);                                                                                       \
+        float abs_x = fabsf(x);                                                                                       \
+        float abs_y = fabsf(y);                                                                                       \
         bool is_x_inf = abs_x > ASCRT_INF_F || isnan(x);                                                            \
         bool is_y_inf = abs_y > ASCRT_INF_F || isnan(y);                                                            \
         *(quo) = 0;                                                                                                 \
@@ -415,8 +415,8 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float __internal_set_res_mod_neg(float mod
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float fmodf(float x, float y)
 {
     bool is_x_pos = x > 0;
-    float abs_x = abs(x);
-    float abs_y = abs(y);
+    float abs_x = fabsf(x);
+    float abs_y = fabsf(y);
     bool is_x_nan = isnan(x);
     bool is_y_nan = isnan(y);
 
@@ -2918,6 +2918,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float ynf(int n, float x)
     return __internal_yn_case3(n, x);
 }
 
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long int labs(long int x)
 {
     return abs(x);
@@ -2957,6 +2958,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned int umin(const unsigned int x, co
 {
     return min(x, y);
 }
+#endif
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float fdividef(float x, float y)
 {
