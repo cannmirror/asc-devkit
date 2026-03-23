@@ -6,7 +6,7 @@
 
 ## 支持的产品
 
-- Atlas A5 训练系列产品/Atlas A5 推理系列产品
+- Ascend 950PR/Ascend 950DT
 
 ## 目录结构介绍
 
