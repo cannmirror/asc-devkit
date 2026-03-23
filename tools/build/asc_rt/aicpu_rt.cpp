@@ -34,6 +34,16 @@
         }                                                                                   \
     } while (0)
 
+#define CHECK_ACL_FREE(x, ptr)                                                              \
+    do {                                                                                    \
+        aclError __ret = x;                                                                 \
+        if (__ret != ACL_ERROR_NONE) {                                                      \
+            ASCENDLOGE("[Check]acl Error: %d.", __ret);                                     \
+            free(ptr);                                                                      \
+            return;                                                                         \
+        }                                                                                   \
+    } while (0)
+
 #define CHECK_ACL_ERR(x)                                                                    \
     do {                                                                                    \
         aclError __ret = x;                                                                 \
@@ -72,9 +82,9 @@ void AicpuDumpPrintBuffer(const void *dumpBuffer, const size_t bufSize)
     }
     memset_s(bufHost, bufSize, 0, bufSize);
     aclmdlRICaptureMode mode = ACL_MODEL_RI_CAPTURE_MODE_RELAXED; // support CAPTURE MODE GLOBAL on host, when using device printf
-    CHECK_ACL(aclmdlRICaptureThreadExchangeMode(&mode));
-    CHECK_ACL(aclrtMemcpy(bufHost, bufSize, dumpBuffer, bufSize, ACL_MEMCPY_DEVICE_TO_HOST));
-    CHECK_ACL(aclmdlRICaptureThreadExchangeMode(&mode));
+    CHECK_ACL_FREE(aclmdlRICaptureThreadExchangeMode(&mode), bufHost);
+    CHECK_ACL_FREE(aclrtMemcpy(bufHost, bufSize, dumpBuffer, bufSize, ACL_MEMCPY_DEVICE_TO_HOST), bufHost);
+    CHECK_ACL_FREE(aclmdlRICaptureThreadExchangeMode(&mode), bufHost);
     static thread_local size_t lastOffSet = 8;
     size_t curOffSet = *reinterpret_cast<size_t*>(bufHost);
     if (curOffSet > lastOffSet) {
