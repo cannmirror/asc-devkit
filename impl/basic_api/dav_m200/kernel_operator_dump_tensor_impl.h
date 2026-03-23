@@ -802,6 +802,11 @@ __aicore__ inline void PrintfImpl(DumpType printType, __gm__ const char* fmt, Ar
             PrintCommonHead(printType);
         }
 #endif
+#ifdef __DAV_VEC__
+        __asc_aicore::scalar_printf_impl(__asc_aicore::DumpType::DUMP_SCALAR, "[AIV Block %u/%u] ", GetBlockIdx(), GetBlockNum());
+#else
+        __asc_aicore::scalar_printf_impl(__asc_aicore::DumpType::DUMP_SCALAR, "[AIC Block %u/%u] ", GetBlockIdx(), GetBlockNum());
+#endif
         __asc_aicore::scalar_printf_impl(__asc_aicore::DumpType::DUMP_SCALAR, fmt, args...);
     } else {
         PrintfEntityImpl(printType, fmt, args...);
