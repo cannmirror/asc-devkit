@@ -92,7 +92,7 @@ __aicore__ inline MstxTensorDesc FromGm(const GlobalTensor<T>& dst) {
     return MstxTensorDesc{
         MSTX_TENSOR_AT_GM,
         reinterpret_cast<uint64_t>(dst.GetPhyAddr()),
-        dst.GetSize(),
+        0,
         sizebit
     };
 }
