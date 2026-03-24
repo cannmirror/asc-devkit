@@ -210,6 +210,7 @@
 #include "instr_impl/npu_arch_3510/vector_compute_impl/asc_mrgsort4_impl.h"
 #include "instr_impl/npu_arch_3510/vector_compute_impl/asc_transpose_impl.h"
 #include "instr_impl/npu_arch_3510/vector_compute_impl/asc_transto5hd_impl.h"
+#include "instr_impl/npu_arch_3510/vector_compute_impl/asc_set_va_reg_impl.h"
 
 // ==========asc_create_iter_reg(b8/b16/b32)=========
 __simd_callee__ inline iter_reg asc_create_iter_reg_b32(uint32_t offset)
@@ -5216,4 +5217,45 @@ __aicore__ inline void asc_transto5hd_b32_sync(ub_addr8_t dst, ub_addr8_t src, u
     asc_transto5hd_b32_sync_impl(dst, src, repeat, dst_stride, src_stride);
 }
 
+
+// ===================asc_set_va_reg=====================
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ int8_t** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ uint8_t** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ int16_t** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ uint16_t** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ half** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ int32_t** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ uint32_t** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ float** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
 #endif

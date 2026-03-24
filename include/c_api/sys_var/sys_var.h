@@ -73,6 +73,23 @@ __aicore__ inline void asc_set_l0c2gm_channel_para(uint64_t config);
 
 __aicore__ inline void asc_set_l3d_rpt_b(uint64_t config);
 
+__aicore__ inline void asc_set_ffts_base_addr(uint64_t config);
+
+__aicore__ inline void asc_set_gm2l1_nz_para(uint64_t config);
+
+__aicore__ inline void asc_set_l13d_padding(uint64_t config);
+
+__aicore__ inline void asc_set_l13d_padding(half config);
+
+__aicore__ inline void asc_set_l13d_padding(int16_t config);
+
+__aicore__ inline void asc_set_l13d_padding(uint16_t config);
+
+__aicore__ inline void asc_set_l12l0_padding_val(uint64_t config);
+
+__aicore__ inline void asc_set_l0c2gm_quant_post(uint64_t config);
+
+__aicore__ inline void asc_set_l0c2gm_relu_alpha(uint64_t config);
 
 #endif
 

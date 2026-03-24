@@ -64,7 +64,6 @@ __aicore__ inline void asc_ub_dcci_entire_atomic(__ubuf__ void* dst);
 __aicore__ inline int64_t asc_get_icache_preload_status();
 
 __aicore__ inline void asc_datacache_preload(__gm__ uint64_t* address, int64_t offset);
-
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
 
 __aicore__ inline void asc_dcci_single_ub(__gm__ void* dst);

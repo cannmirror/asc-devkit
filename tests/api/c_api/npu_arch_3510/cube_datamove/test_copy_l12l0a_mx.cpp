@@ -69,3 +69,8 @@ TEST_CUBE_DATAMOVE_COPY_L12L0A_MX(CopyL12L0AMX, asc_copy_l12l0a_mx, load_cbuf_to
 TEST_CUBE_DATAMOVE_COPY_L12L0A_MX(CopyL12L0AMX, asc_copy_l12l0a_mx, load_cbuf_to_ca_mx, fp4x2_e1m2_t);
 TEST_CUBE_DATAMOVE_COPY_L12L0A_MX(CopyL12L0AMX, asc_copy_l12l0a_mx, load_cbuf_to_ca_mx, fp8_e5m2_t);
 TEST_CUBE_DATAMOVE_COPY_L12L0A_MX(CopyL12L0AMX, asc_copy_l12l0a_mx, load_cbuf_to_ca_mx, fp8_e4m3fn_t);
+
+TEST_CUBE_DATAMOVE_COPY_L12L0A_MX(CopyL12L0BMX, asc_copy_l12l0b_mx, load_cbuf_to_cb_mx, fp4x2_e2m1_t);
+TEST_CUBE_DATAMOVE_COPY_L12L0A_MX(CopyL12L0BMX, asc_copy_l12l0b_mx, load_cbuf_to_cb_mx, fp4x2_e1m2_t);
+TEST_CUBE_DATAMOVE_COPY_L12L0A_MX(CopyL12L0BMX, asc_copy_l12l0b_mx, load_cbuf_to_cb_mx, fp8_e5m2_t);
+TEST_CUBE_DATAMOVE_COPY_L12L0A_MX(CopyL12L0BMX, asc_copy_l12l0b_mx, load_cbuf_to_cb_mx, fp8_e4m3fn_t);
