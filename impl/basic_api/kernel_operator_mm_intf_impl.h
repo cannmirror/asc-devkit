@@ -202,6 +202,22 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>&
     LoadDataImpl<T, defaultConfig>(dst, src, loadDataParams);
 }
 
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
+template <typename T, const IsResetLoad3dConfig &defaultConfig,
+    typename U, typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type>
+__aicore__ inline void LoadDataWithStride(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const LoadData3DParamsV2<U>& loadDataParams)
+{
+#if ASCENDC_CPU_DEBUG
+    CheckLoadData3dv2ChannelSize<T>(loadDataParams.channelSize);
+    CheckLoadData3dParams(loadDataParams.l1H, loadDataParams.l1W, loadDataParams.strideW, loadDataParams.strideH);
+    CheckLoadData3dv2MatrixParams<T>(loadDataParams.kExtension, loadDataParams.mExtension, loadDataParams.kStartPt,
+        loadDataParams.mStartPt);
+#endif
+    LoadDataWithStrideImpl<T, defaultConfig>(dst, src, loadDataParams);
+}
+#endif
+
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 template <TPosition Dst, TPosition Src, typename T>
 __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>& src,
@@ -497,6 +513,14 @@ __aicore__ inline void SetLoadDataRepeat(const LoadDataRepeatParam& repeatParams
     ASCENDC_CHECK_VALUE_RANGE(repeatParams.repeatMode, 0, 1, "repeatMode", "SetLoadDataRepeat");
     SetLoadDataRepeatImpl(repeatParams);
 }
+
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
+__aicore__ inline void SetLoadDataRepeatWithStride(const LoadDataRepeatParamWithStride& repeatParams)
+{
+    ASCENDC_CHECK_VALUE_RANGE(repeatParams.repeatMode, 0, 1, "repeatMode", "SetLoadDataRepeat");
+    SetLoadDataRepeatWithStrideImpl(repeatParams);
+}
+#endif
 
 /* **************************************************************************************************
  * LoadImageToLocal                                             *

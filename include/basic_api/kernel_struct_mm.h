@@ -493,6 +493,25 @@ struct LoadDataRepeatParam {
 };
 #endif // Turing versions
 
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
+struct LoadDataRepeatParamWithStride {
+    __aicore__ LoadDataRepeatParamWithStride() {}
+
+    __aicore__ LoadDataRepeatParamWithStride(const uint16_t repeatStrideIn, const uint8_t repeatTimeIn,
+        const uint8_t repeatModeIn,  const uint16_t dstStrideIn)
+        : repeatStride(repeatStrideIn),
+          repeatTime(repeatTimeIn),
+          repeatMode(repeatModeIn),
+          dstStride(dstStrideIn)
+    {}
+
+    uint16_t repeatStride = 0;
+    uint8_t repeatTime = 1;
+    uint8_t repeatMode = 0;
+    uint16_t dstStride = 0;
+};
+#endif
+
 struct LoadImageToLocalParams {
     __aicore__ LoadImageToLocalParams() {}
 
