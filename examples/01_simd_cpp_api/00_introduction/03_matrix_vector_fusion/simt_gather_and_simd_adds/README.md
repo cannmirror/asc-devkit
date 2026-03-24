@@ -1,4 +1,4 @@
-# SIMT与SIMD新同构编程实现gather & adds算子样例
+# SIMT与SIMD混合编程实现gather & adds算子样例
 
 ## 概述
 本样例以实现gather和adds功能的算子为例，展示了SIMT和SIMD混合编程的算子开发方式。算子中使用SIMT编程方式实现离散内存访问操作gather，使用SIMD编程方式实现连续内存访问操作adds。

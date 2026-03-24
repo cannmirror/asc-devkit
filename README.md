@@ -50,7 +50,7 @@ Ascend C提供三类接口，均可实现底层的完备编程能力：
 
 <img src="docs/figures/architecture.png" alt="架构图"  width="850px" height="580px">
 
-- **语言扩展层C API**：纯C接口，支持数组分配内存、基于指针的计算接口，提供与业界一致的C语言编程体验，并开放芯片完备编程能力。Atlas A2/A3支持SIMD的纯C接口；Ascend 950PR/Ascend 950DT将支持与业界类似的纯SIMT编程能力、SIMD/SIMT混合编程能力；
+- **语言扩展层C API**：纯C接口，支持数组分配内存、基于指针的计算接口，提供与业界一致的C语言编程体验，并开放芯片完备编程能力。Atlas A2/A3支持SIMD的纯C接口；Ascend 950PR/Ascend 950DT将支持与业界类似的SIMT编程能力、SIMD/SIMT混合编程能力；
 - **基础API**：单指令抽象的C++类库API，一般基于Tensor编程；逐步基于Layout完善Tensor编程能力；
 - **高阶API**：基于单核对常见算法进行抽象和封装，提供公共算法的实现；
 - **算子模板库**：基于模板提供算子的完整实现参考，简化Tiling开发，支持用户自定义扩展；
@@ -172,7 +172,7 @@ Ascend C提供三类接口，均可实现底层的完备编程能力：
 ## 📌后续规划
 
 - 基于Altas A2/A3发布语言扩展层纯C接口，提供基于数组分配内存能力，支持基于指针的计算接口，实现与业界类似的纯C编程体验；
-- Ascend 950PR/Ascend 950DT将支持纯SIMT编程、SIMD与SIMT混合编程，并通过Layout进一步强化Tensor编程能力；
+- Ascend 950PR/Ascend 950DT将支持SIMT编程、SIMD与SIMT混合编程，并通过Layout进一步强化Tensor编程能力；
 - 持续丰富语言扩展层C API(含SIMD、SIMT)和基础API的关键特性介绍，并基于融合编译与 <<<>>>调用完善样例；
 
 ## 📝相关信息
