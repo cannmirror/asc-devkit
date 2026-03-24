@@ -19,14 +19,13 @@
 #include <utility>
 #include <type_traits>
 #include "impl/experimental/tensor_api/utils/tensor_tile_macro.h"
+#include "impl/utils/common_types.h"
 #include "include/utils/std/tuple.h"
 #include "include/utils/std/type_traits.h"
 #include "include/utils/std/utility.h"
 #include "include/utils/std/algorithm.h"
 
 namespace AscendC{
-
-enum class Hardware : uint8_t { GM, UB, L1, L0A, L0B, L0C, BIAS, FIXBUF, MAX };
 
 namespace TileInternal{
 constexpr size_t TWO_DIM_DATA = 2;

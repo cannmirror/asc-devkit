@@ -56,7 +56,7 @@ file(GLOB ASCENDC_UT_NPU_ARCH_3510_AIV_CASE_SRC
 
 foreach(product_type ${ASCENDC_UT_PRODUCT_TYPE_LIST})
     add_executable(ascendc_ut_tensor_api_${product_type}
-        ${ASCENDC_DIR}/tests/main_global.cpp
+        ${ASCENDC_DIR}/tests/main.cpp
         ${ASCENDC_UT_COMMON_SRC}
         ${ASCENDC_UT_STRUCT_CASE_SRC}
         ${ASCENDC_UT_${product_type}_CASE_SRC}
