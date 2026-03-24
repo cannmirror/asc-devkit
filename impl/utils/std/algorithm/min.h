@@ -19,10 +19,11 @@
 namespace AscendC {
 namespace Std {
 template <typename T, typename U>
-ASCENDC_HOST_AICORE inline decltype(auto) min(const T src0, const U src1)
+ASCENDC_HOST_AICORE inline constexpr auto min(const T& src0, const U& src1)
 {
     return (src0 < src1) ? src0 : src1;
 }
+
 }
 }
 #endif

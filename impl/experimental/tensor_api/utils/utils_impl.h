@@ -19,5 +19,7 @@
 #include "impl/experimental/tensor_api/utils/constant_impl.h"
 #include "impl/experimental/tensor_api/utils/extra_impl.h"
 #include "impl/experimental/tensor_api/utils/macro_impl.h"
+#include "include/utils/std/algorithm.h"
+#include "include/utils/std/cmath.h"
 
 #endif // IMPL_TENSOR_API_UTILS_UTILS_IMPL_H

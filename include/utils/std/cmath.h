@@ -23,12 +23,16 @@ namespace AscendC {
 namespace Std {
 template <typename T> __aicore__ inline T sqrt(const T src);
 template <typename T> __aicore__ inline T abs(const T src);
-template <typename T, typename U> ASCENDC_HOST_AICORE inline constexpr decltype(auto) divide(T num1, U num2);
+template <typename T, typename U> ASCENDC_HOST_AICORE inline constexpr auto ceil_division(const T& num1, const U& num2);
+template <typename T, typename U> ASCENDC_HOST_AICORE inline constexpr auto ceil_align(const T& num1, const U& num2);
+template <typename T, typename U> ASCENDC_HOST_AICORE inline constexpr auto divide(const T& num1, const U& num2);
 }
 }
 
 #include "impl/utils/std/cmath/sqrt.h"
 #include "impl/utils/std/cmath/abs.h"
+#include "impl/utils/std/cmath/ceil_division.h"
+#include "impl/utils/std/cmath/ceil_align.h"
 #include "impl/utils/std/cmath/divide.h"
 
 #endif  // AICORE_UTILS_STD_CMATH_H

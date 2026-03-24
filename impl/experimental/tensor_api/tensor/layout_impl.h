@@ -60,8 +60,8 @@ template <typename Coord, typename LayoutType, typename TensorType>
     auto dstRow = Std::get<0>(Std::get<0>(tileTensor.Shape())) * Std::get<1>(Std::get<0>(tileTensor.Shape()));
     auto dstCol = Std::get<0>(Std::get<1>(tileTensor.Shape())) * Std::get<1>(Std::get<1>(tileTensor.Shape()));
 
-    auto realRow = Min(srcRow, dstRow);	 
-    auto realCol = Min(srcCol, dstCol);
+    auto realRow = Std::min(srcRow, dstRow);	 
+    auto realCol = Std::min(srcCol, dstCol);
 
     return MakeLayout(MakeFractalShape(MakeShape(realRow, realCol), MakeShape(innerRow, innerCol)), layout.Stride()); 
 

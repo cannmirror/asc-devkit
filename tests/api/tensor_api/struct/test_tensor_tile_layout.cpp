@@ -461,8 +461,8 @@ TEST_F(Tensor_Api_Layout, TestCapacity)
     auto shape1 = MakeShape(shape1Dim0, shape1Dim1);
     auto stride1 = MakeStride(stride1Dim0, stride1Dim1);
     auto layout1 = MakeLayout(shape1, stride1);
-    EXPECT_EQ(layout1.Capacity(), max(shape1Dim0 * stride1Dim0, shape1Dim1 * stride1Dim1));
-    EXPECT_EQ(GetCapacity(shape1, stride1), max(shape1Dim0 * stride1Dim0, shape1Dim1 * stride1Dim1));
+    EXPECT_EQ(layout1.Capacity(), AscendC::Std::max(shape1Dim0 * stride1Dim0, shape1Dim1 * stride1Dim1));
+    EXPECT_EQ(GetCapacity(shape1, stride1), AscendC::Std::max(shape1Dim0 * stride1Dim0, shape1Dim1 * stride1Dim1));
 
     // 三个维度，按维度乘积为{21, 20, 24}
     auto shape2Dim0 = 7;
@@ -475,9 +475,9 @@ TEST_F(Tensor_Api_Layout, TestCapacity)
     auto stride2 = MakeStride(stride2Dim0, stride2Dim1, stride2Dim2);
     auto layout2 = MakeLayout(shape2, stride2);
     EXPECT_EQ(layout2.Capacity(),
-              max(max(shape2Dim0 * stride2Dim0, shape2Dim1 * stride2Dim1), shape2Dim2 * stride2Dim2));
+              AscendC::Std::max(AscendC::Std::max(shape2Dim0 * stride2Dim0, shape2Dim1 * stride2Dim1), shape2Dim2 * stride2Dim2));
     EXPECT_EQ(GetCapacity(shape2, stride2),
-              max(max(shape2Dim0 * stride2Dim0, shape2Dim1 * stride2Dim1), shape2Dim2 * stride2Dim2));
+              AscendC::Std::max(AscendC::Std::max(shape2Dim0 * stride2Dim0, shape2Dim1 * stride2Dim1), shape2Dim2 * stride2Dim2));
 
     int shape3 = 7;
     int stride3 = 17;
@@ -496,10 +496,10 @@ TEST_F(Tensor_Api_Layout, TestCapacity)
     auto stride4 = MakeShape(MakeShape(stride4Dim00, stride4Dim01), MakeShape(stride4Dim10, stride4Dim11));
     auto layout4 = MakeLayout(shape4, stride4);
     EXPECT_EQ(layout4.Capacity(),
-              max(max(max(shape4Dim00 * stride4Dim00, shape4Dim01 * stride4Dim01), shape4Dim10 * stride4Dim10),
+              AscendC::Std::max(AscendC::Std::max(AscendC::Std::max(shape4Dim00 * stride4Dim00, shape4Dim01 * stride4Dim01), shape4Dim10 * stride4Dim10),
                   shape4Dim11 * stride4Dim11));
     EXPECT_EQ(GetCapacity(shape4, stride4),
-              max(max(max(shape4Dim00 * stride4Dim00, shape4Dim01 * stride4Dim01), shape4Dim10 * stride4Dim10),
+              AscendC::Std::max(AscendC::Std::max(AscendC::Std::max(shape4Dim00 * stride4Dim00, shape4Dim01 * stride4Dim01), shape4Dim10 * stride4Dim10),
                   shape4Dim11 * stride4Dim11));
 }
 
