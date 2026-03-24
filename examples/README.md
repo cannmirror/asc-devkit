@@ -5,11 +5,9 @@
 ## 算子开发样例
 |  目录名称                                                   |  功能描述                                              |
 | ------------------------------------------------------------ | ---------------------------------------------------- |
-| [00_introduction](./00_introduction) | 基于Ascend C的简单的示例，通过Ascend C编程语言实现了自定义算子，分别给出对应的<<<>>>直调实现 |
 | [01_simd_cpp_api](./01_simd_cpp_api) | 基于Ascend C的SIMD API样例，通过<<<>>>直调的实现方式，介绍了SIMD API的使用方法 |
-| [02_features](./02_features) | 基于Ascend C特性样例，介绍了Aclnn（ge入图）工程、LocalMemoryAllocator、Barrier单独内存申请分配等特性 |
 | [02_simd_c_api](./02_simd_c_api) | 基于Ascend C的C_API样例，通过C_API的实现方式，介绍了C_API的使用方法 |
-
+| [03_simt_api](./03_simt_api) | 基于Ascend C SIMT编程的算子样例，通过<<<>>>直调的实现方式，介绍了SIMT的使用方法 |
 ## npu-arch编译选项说明
 
 开发者需根据实际的执行环境，修改具体样例目录下CMakeLists.txt文件中的--npu-arch编译选项，参考下表中的对应关系，修改为环境对应的npu-arch参数值。
