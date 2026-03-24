@@ -20,6 +20,10 @@
 #ifndef ASCENDC_MODULE_TENSOR_IMPL_H
 #define ASCENDC_MODULE_TENSOR_IMPL_H
 #include "kernel_tensor.h"
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TENSOR_H__
+#endif
 #include "kernel_operator_symbol_override_impl.h"
 
 namespace AscendC {
