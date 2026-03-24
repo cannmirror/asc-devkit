@@ -158,14 +158,12 @@ struct DumpShapeMessageHead {
     uint32_t rsv = 0;      // reserved information
 };
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 // dump TLV for L1 to UB
 struct L12UBDumpCtrlMessage {
     volatile uint32_t enDumpFlag = 0;
     volatile uint32_t sig = 0;
     volatile uint32_t len = 0;
 };
-#endif
 
 struct ProposalIntriParams {
     __aicore__ ProposalIntriParams()

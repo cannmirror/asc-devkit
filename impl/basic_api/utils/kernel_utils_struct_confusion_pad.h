@@ -302,7 +302,6 @@ struct ConfusionTranspose0213Tiling {
     uint32_t mainOffset = 0;
 };
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
 struct ConfusionTranspose021Tiling {
     __aicore__ ConfusionTranspose021Tiling()
     {
@@ -359,7 +358,6 @@ struct ConfusionTranspose210Tiling {
     uint32_t dim1 = 0;
     uint32_t dim2 = 0;
 };
-#endif
 
 struct IntriInfo {
     uint32_t c0Count{ 0 };
@@ -411,10 +409,6 @@ struct UnPadParams {
     uint16_t rightPad = 0;
 };
 
-#if defined(__NPU_ARCH__) &&                                                   \
-    ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 2002) ||                       \
-     (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3003) ||                       \
-     (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 // aipp config offset
 constexpr int32_t AIPP_OFFSET_CSC_ENABLE = 63;
 constexpr int32_t AIPP_OFFSET_CH1 = 16;
@@ -440,7 +434,6 @@ constexpr int32_t AIPP_YUV400_OUTPUT_CHANNEL_NUM = 1;
 constexpr int32_t AIPP_YUV420_SRC0_CHANNEL_NUM = 1;
 constexpr int32_t AIPP_XRGB8888_OUTPUT_CHANNEL_NUM = 4;
 constexpr int32_t AIPP_OUTPUT_PADDING_MODE0_CHANNEL_NUM = 4;
-#endif // (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 3002)
 
 } // namespace AscendC
 #endif // ASCENDC_MODULE_UTILS_STRUCT_CONFUSION_PAD_H

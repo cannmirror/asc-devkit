@@ -94,12 +94,10 @@ constexpr uint32_t INT2_FOUR = 4;
 constexpr uint32_t INT2_BIT_NUM = 2;
 #endif
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 namespace ConstantsInternal {
 constexpr uint32_t ASCENDC_B4_TWO = 2;
 constexpr uint32_t ASCENDC_B4_BIT_NUM = 4;
 } // namespace ConstantsInternal
-#endif
 
 // AddDeqRelu param
 constexpr int32_t DEQ_SHIFT_LEFT_17_BIT = 131072;
@@ -305,13 +303,13 @@ const uint32_t MAX_REPEAT_FLOAT_SIZE = ONE_REPEAT_FLOAT_SIZE * MAX_REPEAT_TIMES;
 const uint32_t MAX_REPEAT_HALF_SIZE = ONE_REPEAT_HALF_SIZE * MAX_REPEAT_TIMES;
 const uint32_t ONE_BLK_HALF_NUM = ONE_BLK_SIZE / B16_BYTE_SIZE;
 const uint32_t ONE_BLK_FLOAT_NUM = ONE_BLK_SIZE / B32_BYTE_SIZE;
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+
 namespace ConstantsInternal {
 const uint32_t ONE_BLK_FP4_NUM = 64;
 const uint32_t ONE_BLK_B2_NUM = 128;
 const uint32_t ONE_BLK_B1_NUM = 256;
 } // namespace ConstantsInternal
-#endif
+
 const uint32_t BRCB_BROADCAST_NUMBER = 8;
 const uint32_t BRCB_MAX_REPEAT_SIZE = BRCB_BROADCAST_NUMBER * MAX_REPEAT_TIMES;
 const int32_t MIN_BLOCK_LEN = 1;
@@ -347,11 +345,9 @@ const uint64_t LOAD_FILTER_H = 24;
 const uint64_t LOAD_FILTER_W = 16;
 const uint64_t LOAD_STRIDE_H = 8;
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 namespace Internal {
 constexpr int32_t TSCM_CROSS_SYNC_ID_MAX = 11;
 }
-#endif
 
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
 // param check size
@@ -439,13 +435,11 @@ template <> inline std::string ScalarToString(half scalarValue)
 {
     return std::to_string(scalarValue.ToFloat());
 }
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) ||                      \
-      (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 template <> inline std::string ScalarToString(bfloat16_t scalarValue)
 {
     return std::to_string(scalarValue.ToFloat());
 }
-#endif
+
 template <typename T> uint64_t GetScalarBitcode(T scalarValue);
 // deq tensor ptr could not be passed by cce instructions, so pass ptr to model by this function
 void SetModelDeqTensor(void* deqTensor);
@@ -467,11 +461,11 @@ void SetModelScatterDst0Tensor(uint64_t dst0, const uint32_t length);
 
 #endif // ASCENDC_CPU_DEBUG
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 template <typename T> struct GetPadValueType {
     using Type = T;
 };
 
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 // To support FP8 datacopypad, pad type needs transfer to b8
 template <> struct GetPadValueType<fp8_e5m2_t> {
     using Type = uint8_t;
@@ -622,11 +616,9 @@ template <> struct GetDstType<mx_fp8_e8m0_t> {
     using Type = fp8_e8m0_t;
 };
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
 struct BasicAPIMaskStruct {
     uint64_t maskArray[MASK_ARRAY_SIZE] = { 0 };
 };
-#endif
 
 template <typename T>
 __aicore__ constexpr bool IsHalfByteDataType()
@@ -705,7 +697,6 @@ __aicore__ inline bool CheckCastOverlappingHigh(const uint64_t dstAddr, const ui
     return true;
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 __aicore__ inline constexpr uint8_t CalculatesShiftedBit(uint32_t bufferLen)
 {
     uint8_t pos = 0;
@@ -715,7 +706,6 @@ __aicore__ inline constexpr uint8_t CalculatesShiftedBit(uint32_t bufferLen)
     }
     return pos;
 }
-#endif
 
 #if defined(__ASCENDC_SUPERKERNEL_EARLY_START_V1) || defined(__ASCENDC_SUPERKERNEL_EARLY_START_V2)
 constexpr uint32_t ASCENDC_SUPER_KERNEL_EARLY_START_AIC_TO_AIC = 0b00;

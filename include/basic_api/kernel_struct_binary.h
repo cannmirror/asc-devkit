@@ -29,7 +29,6 @@
 #endif
 
 namespace AscendC {
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
 struct BinaryConfig {
     int8_t scalarTensorIndex = 1;
 };
@@ -37,7 +36,6 @@ struct BinaryConfig {
 constexpr BinaryConfig DEFAULT_BINARY_CONFIG = {1};
 
 struct BinaryDefaultType {};
-#endif
 
 struct BinaryRepeatParams {
     __aicore__ BinaryRepeatParams() {}
