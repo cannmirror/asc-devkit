@@ -8,6 +8,14 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
+
+#if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
+#warning                                                                                                               \
+    "impl/tensor_api/utils/constant_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+#define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
+#endif
+
 /*!
 * \file constant_impl.h
 * \brief
@@ -129,3 +137,8 @@ constexpr bool IsIntegralConstantV = IsIntegralConstant<T>::value;
 } // namespace AscendC
 
 #endif // IMPL_TENSOR_API_UTILS_CONSTANT_IMPL_H
+
+#if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
+#undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#undef UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
+#endif

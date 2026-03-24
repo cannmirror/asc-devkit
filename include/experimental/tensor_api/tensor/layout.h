@@ -8,6 +8,12 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
+
+#if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
+#define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_TENSOR_API_H
+#endif
+
 /*!
  * \file layout.h
  * \brief
@@ -125,3 +131,8 @@ __aicore__ inline decltype(auto) MakeTileLayout(const Layout& layout, const Tile
 } // namespace AscendC
 
 #endif // INCLUDE_TENSOR_API_TENSOR_LAYOUT_H
+
+#if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_TENSOR_API_H)
+#undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#undef UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_TENSOR_API_H
+#endif

@@ -8,6 +8,14 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
+
+#if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
+#warning                                                                                                               \
+    "impl/tensor_api/arch/cube_datamove/fixpipe/fixpipe_routing.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+#define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
+#endif
+
 /*!
  * \file fixpipe_routing.h
  * \brief
@@ -70,3 +78,8 @@ struct FixpipeTensor2Tensor<Hardware::UB, Hardware::L0C, Hardware::L1, ArchVersi
 } // namespace AscendC
 
 #endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_FIXPIPE_ROUTING_H
+
+#if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
+#undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#undef UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
+#endif
