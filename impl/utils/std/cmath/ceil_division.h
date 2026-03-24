@@ -24,8 +24,6 @@ ASCENDC_HOST_AICORE inline constexpr auto ceil_division(const T& num1, const U& 
     return (num1 + num2 - Int<1>{}) / num2;
 }
 
-
-
 }
 }
 #endif
