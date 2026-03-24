@@ -67,6 +67,7 @@ asc-devkit:
       - impl/c_api/instr_impl/npu_arch_3510/sync_impl/asc_get_buf_impl.h
       - impl/c_api/instr_impl/npu_arch_2201/sync_impl.h
       - impl/c_api/instr_impl/npu_arch_3510/sync_impl.h
+      - impl/basic_api/dav_c310/kernel_operator_determine_compute_sync_impl.h
   llt:
     ut_check: true
     st_check: false

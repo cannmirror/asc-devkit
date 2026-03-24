@@ -21,6 +21,10 @@
 #define ASCENDC_MODULE_OPERATOR_DETERMINE_COMPUTE_SYNC_IMPL_H
 
 #include "kernel_operator_data_copy_intf.h"
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_DATA_COPY_INTF_H__
+#endif
 #include "kernel_common.h"
 #include "kernel_event.h"
 #include "kernel_macros.h"
