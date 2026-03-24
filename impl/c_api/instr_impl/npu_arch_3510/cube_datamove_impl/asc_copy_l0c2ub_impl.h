@@ -30,7 +30,6 @@ __aicore__ inline void asc_copy_l0c2ub_impl(__ubuf__ bfloat16_t *dst_addr, __cc_
         copy_matrix_cc_to_ub(dst_addr, src_addr, 0, n_size, m_size, loop_dst_stride, loop_src_stride, dual_dst_ctl, sub_blockid, clip_relu_pre,
                     unit_flag_ctl, static_cast<QuantMode_t>(quant_pre), relu_pre, split_en, NZ2ND_en, static_cast<QuantMode_post>(quant_post), relu_post,
                     clip_relu_post, loop_enhance_en, eltwise_op, eltwise_antq_en, loop_enhance_merge_en, C0_pad_en, wino_post_en, broadcast_en, NZ2DN_en);
-
     }
 }
 
@@ -57,7 +56,6 @@ __aicore__ inline void asc_copy_l0c2ub_impl(__ubuf__ half *dst_addr, __cc__ floa
         copy_matrix_cc_to_ub(dst_addr, src_addr, 0, n_size, m_size, loop_dst_stride, loop_src_stride, dual_dst_ctl, sub_blockid, clip_relu_pre,
                     unit_flag_ctl, static_cast<QuantMode_t>(quant_pre), relu_pre, split_en, NZ2ND_en, static_cast<QuantMode_post>(quant_post), relu_post,
                     clip_relu_post, loop_enhance_en, eltwise_op, eltwise_antq_en, loop_enhance_merge_en, C0_pad_en, wino_post_en, broadcast_en, NZ2DN_en);
-
     }
 }
 
@@ -84,7 +82,6 @@ __aicore__ inline void asc_copy_l0c2ub_impl(__ubuf__ float8_e4m3_t *dst_addr, __
         copy_matrix_cc_to_ub(dst_addr, src_addr, 0, n_size, m_size, loop_dst_stride, loop_src_stride, dual_dst_ctl, sub_blockid, clip_relu_pre,
                     unit_flag_ctl, static_cast<QuantMode_t>(quant_pre), relu_pre, split_en, NZ2ND_en, static_cast<QuantMode_post>(quant_post), relu_post,
                     clip_relu_post, loop_enhance_en, eltwise_op, eltwise_antq_en, loop_enhance_merge_en, C0_pad_en, wino_post_en, broadcast_en, NZ2DN_en);
-
     }
 }
 
@@ -111,7 +108,6 @@ __aicore__ inline void asc_copy_l0c2ub_impl(__ubuf__ float8_e5m2_t *dst_addr, __
         copy_matrix_cc_to_ub(dst_addr, src_addr, 0, n_size, m_size, loop_dst_stride, loop_src_stride, dual_dst_ctl, sub_blockid, clip_relu_pre,
                     unit_flag_ctl, static_cast<QuantMode_t>(quant_pre), relu_pre, split_en, NZ2ND_en, static_cast<QuantMode_post>(quant_post), relu_post,
                     clip_relu_post, loop_enhance_en, eltwise_op, eltwise_antq_en, loop_enhance_merge_en, C0_pad_en, wino_post_en, broadcast_en, NZ2DN_en);
-
     }
 }
 
@@ -138,7 +134,6 @@ __aicore__ inline void asc_copy_l0c2ub_impl(__ubuf__ hifloat8_t *dst_addr, __cc_
         copy_matrix_cc_to_ub(dst_addr, src_addr, 0, n_size, m_size, loop_dst_stride, loop_src_stride, dual_dst_ctl, sub_blockid, clip_relu_pre,
                     unit_flag_ctl, static_cast<QuantMode_t>(quant_pre), relu_pre, split_en, NZ2ND_en, static_cast<QuantMode_post>(quant_post), relu_post,
                     clip_relu_post, loop_enhance_en, eltwise_op, eltwise_antq_en, loop_enhance_merge_en, C0_pad_en, wino_post_en, broadcast_en, NZ2DN_en);
-
     }
 }
 
@@ -165,7 +160,6 @@ __aicore__ inline void asc_copy_l0c2ub_impl(__ubuf__ int8_t *dst_addr, __cc__ fl
         copy_matrix_cc_to_ub(dst_addr, src_addr, 0, n_size, m_size, loop_dst_stride, loop_src_stride, dual_dst_ctl, sub_blockid, clip_relu_pre,
                     unit_flag_ctl, static_cast<QuantMode_t>(quant_pre), relu_pre, split_en, NZ2ND_en, static_cast<QuantMode_post>(quant_post), relu_post,
                     clip_relu_post, loop_enhance_en, eltwise_op, eltwise_antq_en, loop_enhance_merge_en, C0_pad_en, wino_post_en, broadcast_en, NZ2DN_en);
-
     }
 }
 
@@ -192,7 +186,6 @@ __aicore__ inline void asc_copy_l0c2ub_impl(__ubuf__ uint8_t *dst_addr, __cc__ f
         copy_matrix_cc_to_ub(dst_addr, src_addr, 0, n_size, m_size, loop_dst_stride, loop_src_stride, dual_dst_ctl, sub_blockid, clip_relu_pre,
                     unit_flag_ctl, static_cast<QuantMode_t>(quant_pre), relu_pre, split_en, NZ2ND_en, static_cast<QuantMode_post>(quant_post), relu_post,
                     clip_relu_post, loop_enhance_en, eltwise_op, eltwise_antq_en, loop_enhance_merge_en, C0_pad_en, wino_post_en, broadcast_en, NZ2DN_en);
-
     }
 }
 
@@ -219,7 +212,6 @@ __aicore__ inline void asc_copy_l0c2ub_impl(__ubuf__ float *dst_addr, __cc__ flo
         copy_matrix_cc_to_ub(dst_addr, src_addr, 0, n_size, m_size, loop_dst_stride, loop_src_stride, dual_dst_ctl, sub_blockid, clip_relu_pre,
                     unit_flag_ctl, static_cast<QuantMode_t>(quant_pre), relu_pre, split_en, NZ2ND_en, static_cast<QuantMode_post>(quant_post), relu_post,
                     clip_relu_post, loop_enhance_en, eltwise_op, eltwise_antq_en, loop_enhance_merge_en, C0_pad_en, wino_post_en, broadcast_en, NZ2DN_en);
-
     }
 }
 
@@ -246,7 +238,6 @@ __aicore__ inline void asc_copy_l0c2ub_impl(__ubuf__ bfloat16_t *dst_addr, __cc_
         copy_matrix_cc_to_ub(dst_addr, src_addr, 0, n_size, m_size, loop_dst_stride, loop_src_stride, dual_dst_ctl, sub_blockid, clip_relu_pre,
                     unit_flag_ctl, static_cast<QuantMode_t>(quant_pre), relu_pre, split_en, NZ2ND_en, static_cast<QuantMode_post>(quant_post), relu_post,
                     clip_relu_post, loop_enhance_en, eltwise_op, eltwise_antq_en, loop_enhance_merge_en, C0_pad_en, wino_post_en, broadcast_en, NZ2DN_en);
-
     }
 }
 
@@ -273,7 +264,6 @@ __aicore__ inline void asc_copy_l0c2ub_impl(__ubuf__ half *dst_addr, __cc__ int3
         copy_matrix_cc_to_ub(dst_addr, src_addr, 0, n_size, m_size, loop_dst_stride, loop_src_stride, dual_dst_ctl, sub_blockid, clip_relu_pre,
                     unit_flag_ctl, static_cast<QuantMode_t>(quant_pre), relu_pre, split_en, NZ2ND_en, static_cast<QuantMode_post>(quant_post), relu_post,
                     clip_relu_post, loop_enhance_en, eltwise_op, eltwise_antq_en, loop_enhance_merge_en, C0_pad_en, wino_post_en, broadcast_en, NZ2DN_en);
-
     }
 }
 
@@ -300,7 +290,6 @@ __aicore__ inline void asc_copy_l0c2ub_impl(__ubuf__ float8_e4m3_t *dst_addr, __
         copy_matrix_cc_to_ub(dst_addr, src_addr, 0, n_size, m_size, loop_dst_stride, loop_src_stride, dual_dst_ctl, sub_blockid, clip_relu_pre,
                     unit_flag_ctl, static_cast<QuantMode_t>(quant_pre), relu_pre, split_en, NZ2ND_en, static_cast<QuantMode_post>(quant_post), relu_post,
                     clip_relu_post, loop_enhance_en, eltwise_op, eltwise_antq_en, loop_enhance_merge_en, C0_pad_en, wino_post_en, broadcast_en, NZ2DN_en);
-
     }
 }
 
@@ -327,7 +316,6 @@ __aicore__ inline void asc_copy_l0c2ub_impl(__ubuf__ float8_e5m2_t *dst_addr, __
         copy_matrix_cc_to_ub(dst_addr, src_addr, 0, n_size, m_size, loop_dst_stride, loop_src_stride, dual_dst_ctl, sub_blockid, clip_relu_pre,
                     unit_flag_ctl, static_cast<QuantMode_t>(quant_pre), relu_pre, split_en, NZ2ND_en, static_cast<QuantMode_post>(quant_post), relu_post,
                     clip_relu_post, loop_enhance_en, eltwise_op, eltwise_antq_en, loop_enhance_merge_en, C0_pad_en, wino_post_en, broadcast_en, NZ2DN_en);
-
     }
 }
 
@@ -354,7 +342,6 @@ __aicore__ inline void asc_copy_l0c2ub_impl(__ubuf__ hifloat8_t *dst_addr, __cc_
         copy_matrix_cc_to_ub(dst_addr, src_addr, 0, n_size, m_size, loop_dst_stride, loop_src_stride, dual_dst_ctl, sub_blockid, clip_relu_pre,
                     unit_flag_ctl, static_cast<QuantMode_t>(quant_pre), relu_pre, split_en, NZ2ND_en, static_cast<QuantMode_post>(quant_post), relu_post,
                     clip_relu_post, loop_enhance_en, eltwise_op, eltwise_antq_en, loop_enhance_merge_en, C0_pad_en, wino_post_en, broadcast_en, NZ2DN_en);
-
     }
 }
 
@@ -381,7 +368,6 @@ __aicore__ inline void asc_copy_l0c2ub_impl(__ubuf__ int8_t *dst_addr, __cc__ in
         copy_matrix_cc_to_ub(dst_addr, src_addr, 0, n_size, m_size, loop_dst_stride, loop_src_stride, dual_dst_ctl, sub_blockid, clip_relu_pre,
                     unit_flag_ctl, static_cast<QuantMode_t>(quant_pre), relu_pre, split_en, NZ2ND_en, static_cast<QuantMode_post>(quant_post), relu_post,
                     clip_relu_post, loop_enhance_en, eltwise_op, eltwise_antq_en, loop_enhance_merge_en, C0_pad_en, wino_post_en, broadcast_en, NZ2DN_en);
-
     }
 }
 
@@ -408,7 +394,6 @@ __aicore__ inline void asc_copy_l0c2ub_impl(__ubuf__ uint8_t *dst_addr, __cc__ i
         copy_matrix_cc_to_ub(dst_addr, src_addr, 0, n_size, m_size, loop_dst_stride, loop_src_stride, dual_dst_ctl, sub_blockid, clip_relu_pre,
                     unit_flag_ctl, static_cast<QuantMode_t>(quant_pre), relu_pre, split_en, NZ2ND_en, static_cast<QuantMode_post>(quant_post), relu_post,
                     clip_relu_post, loop_enhance_en, eltwise_op, eltwise_antq_en, loop_enhance_merge_en, C0_pad_en, wino_post_en, broadcast_en, NZ2DN_en);
-
     }
 }
 
@@ -435,7 +420,6 @@ __aicore__ inline void asc_copy_l0c2ub_impl(__ubuf__ int32_t *dst_addr, __cc__ i
         copy_matrix_cc_to_ub(dst_addr, src_addr, 0, n_size, m_size, loop_dst_stride, loop_src_stride, dual_dst_ctl, sub_blockid, clip_relu_pre,
                     unit_flag_ctl, static_cast<QuantMode_t>(quant_pre), relu_pre, split_en, NZ2ND_en, static_cast<QuantMode_post>(quant_post), relu_post,
                     clip_relu_post, loop_enhance_en, eltwise_op, eltwise_antq_en, loop_enhance_merge_en, C0_pad_en, wino_post_en, broadcast_en, NZ2DN_en);
-
     }
 }
 
@@ -462,7 +446,6 @@ __aicore__ inline void asc_copy_l0c2ub_impl(__ubuf__ void *dst_addr, __cc__ floa
         copy_matrix_cc_to_ub_s4(dst_addr, src_addr, 0, n_size, m_size, loop_dst_stride, loop_src_stride, dual_dst_ctl, sub_blockid, clip_relu_pre,
                     unit_flag_ctl, static_cast<QuantMode_t>(quant_pre), relu_pre, split_en, NZ2ND_en, static_cast<QuantMode_post>(quant_post), relu_post,
                     clip_relu_post, loop_enhance_en, eltwise_op, eltwise_antq_en, loop_enhance_merge_en, C0_pad_en, wino_post_en, broadcast_en, NZ2DN_en);
-
     }
 }
 
@@ -489,7 +472,6 @@ __aicore__ inline void asc_copy_l0c2ub_impl(__ubuf__ void *dst_addr, __cc__ int3
         copy_matrix_cc_to_ub_s4(dst_addr, src_addr, 0, n_size, m_size, loop_dst_stride, loop_src_stride, dual_dst_ctl, sub_blockid, clip_relu_pre,
                     unit_flag_ctl, static_cast<QuantMode_t>(quant_pre), relu_pre, split_en, NZ2ND_en, static_cast<QuantMode_post>(quant_post), relu_post,
                     clip_relu_post, loop_enhance_en, eltwise_op, eltwise_antq_en, loop_enhance_merge_en, C0_pad_en, wino_post_en, broadcast_en, NZ2DN_en);
-
     }
 }
 
