@@ -13,14 +13,14 @@
  * \brief
  */
 
-#ifndef IMPL_UTILS_DEBUG_ASC_ASSERT_SIMT_IMPL_H
-#define IMPL_UTILS_DEBUG_ASC_ASSERT_SIMT_IMPL_H
-
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_ASSERT_SIMT_IMPL__
 #warning "impl/utils/debug/asc_assert_simt_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "utils/debug/asc_assert.h" and use public functions or variables defined in interface header files."
 #endif
+
+#ifndef IMPL_UTILS_DEBUG_ASC_ASSERT_SIMT_IMPL_H
+#define IMPL_UTILS_DEBUG_ASC_ASSERT_SIMT_IMPL_H
 
 #include "impl/utils/debug/asc_printf_simt_impl.h"
 
@@ -58,9 +58,9 @@ static __attribute__((noinline)) __SIMT_DEVICE_FUNCTIONS_DECL__ void __assert_fa
 #endif
 } // namespace __asc_simt_vf
 
+#endif // IMPL_UTILS_DEBUG_ASC_ASSERT_SIMT_IMPL_H
+
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_ASSERT_SIMT_IMPL__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_ASSERT_SIMT_IMPL__
-#endif
-
 #endif
