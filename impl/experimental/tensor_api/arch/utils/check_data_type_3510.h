@@ -23,6 +23,7 @@
 #define IMPL_TENSOR_API_ARCH_UTILS_CHECK_DATA_TYPE_3510_H
 
 #include "impl/experimental/tensor_api/utils/utils_impl.h"
+#include "impl/experimental/tensor_api/arch/utils/is_format.h"
 
 namespace AscendC {
 namespace Te {
@@ -156,14 +157,16 @@ public:
         using srcDataType = typename U::elementType;
 
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
-        static_assert(
-            Std::is_one_of_v<Std::tuple<dstDataType, srcDataType>, Std::tuple<__cbuf__ bfloat16_t, __gm__ bfloat16_t>,
-                             Std::tuple<__cbuf__ half, __gm__ half>, Std::tuple<__cbuf__ float, __gm__ float>,
-                             Std::tuple<__cbuf__ int16_t, __gm__ int16_t>, Std::tuple<__cbuf__ int32_t, __gm__ int32_t>,
-                             Std::tuple<__cbuf__ int8_t, __gm__ int8_t>, Std::tuple<__cbuf__ uint16_t, __gm__ uint16_t>,
-                             Std::tuple<__cbuf__ uint32_t, __gm__ uint32_t>,
-                             Std::tuple<__cbuf__ uint8_t, __gm__ uint8_t>, Std::tuple<__cbuf__ hifloat8_t, __gm__ hifloat8_t>>,
-            "The data type is not supported.");
+        static_assert(Std::is_one_of_v<
+                          Std::tuple<dstDataType, srcDataType>, Std::tuple<__cbuf__ half, __gm__ half>,
+                          Std::tuple<__cbuf__ bfloat16_t, __gm__ bfloat16_t>, Std::tuple<__cbuf__ float, __gm__ float>,
+                          Std::tuple<__cbuf__ int8_t, __gm__ int8_t>, Std::tuple<__cbuf__ uint8_t, __gm__ uint8_t>,
+                          Std::tuple<__cbuf__ int16_t, __gm__ int16_t>, Std::tuple<__cbuf__ uint16_t, __gm__ uint16_t>,
+                          Std::tuple<__cbuf__ int32_t, __gm__ int32_t>, Std::tuple<__cbuf__ uint32_t, __gm__ uint32_t>,
+                          Std::tuple<__cbuf__ fp8_e5m2_t, __gm__ fp8_e5m2_t>,
+                          Std::tuple<__cbuf__ fp8_e4m3fn_t, __gm__ fp8_e4m3fn_t>,
+                          Std::tuple<__cbuf__ hifloat8_t, __gm__ hifloat8_t>>,
+                      "The data type is not supported.");
 #endif
     }
 
@@ -174,22 +177,18 @@ public:
         using dstDataType = typename T::elementType;
 
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
-        static_assert(
-            Std::is_one_of_v<Std::tuple<dstDataType, srcDataType>, Std::tuple<__cbuf__ bfloat16_t, __gm__ bfloat16_t>,
-                             Std::tuple<__cbuf__ half, __gm__ half>, Std::tuple<__cbuf__ float, __gm__ float>,
-                             Std::tuple<__cbuf__ int16_t, __gm__ int16_t>, Std::tuple<__cbuf__ int32_t, __gm__ int32_t>,
-                             Std::tuple<__cbuf__ int8_t, __gm__ int8_t>, Std::tuple<__cbuf__ uint16_t, __gm__ uint16_t>,
-                             Std::tuple<__cbuf__ uint32_t, __gm__ uint32_t>,
-                             Std::tuple<__cbuf__ uint8_t, __gm__ uint8_t>,
-                             Std::tuple<__cbuf__ fp4x2_e1m2_t, __gm__ fp4x2_e1m2_t>,
-                             Std::tuple<__cbuf__ fp4x2_e2m1_t, __gm__ fp4x2_e2m1_t>,
-                             Std::tuple<__cbuf__ fp8_e5m2_t, __gm__ fp8_e5m2_t>,
-                             Std::tuple<__cbuf__ fp8_e4m3fn_t, __gm__ fp8_e4m3fn_t>,
-                             Std::tuple<__cbuf__ fp8_e5m2_t, __gm__ fp8_e4m3fn_t>,
-                             Std::tuple<__cbuf__ fp8_e4m3fn_t, __gm__ fp8_e5m2_t>,
-                             Std::tuple<__cbuf__ fp8_e8m0_t, __gm__ fp8_e8m0_t>,
-                             Std::tuple<__cbuf__ hifloat8_t, __gm__ hifloat8_t>>,
-            "The data type is not supported.");
+        static_assert(Std::is_one_of_v<
+                          Std::tuple<dstDataType, srcDataType>, Std::tuple<__cbuf__ half, __gm__ half>,
+                          Std::tuple<__cbuf__ bfloat16_t, __gm__ bfloat16_t>, Std::tuple<__cbuf__ float, __gm__ float>,
+                          Std::tuple<__cbuf__ int8_t, __gm__ int8_t>, Std::tuple<__cbuf__ uint8_t, __gm__ uint8_t>,
+                          Std::tuple<__cbuf__ int16_t, __gm__ int16_t>, Std::tuple<__cbuf__ uint16_t, __gm__ uint16_t>,
+                          Std::tuple<__cbuf__ int32_t, __gm__ int32_t>, Std::tuple<__cbuf__ uint32_t, __gm__ uint32_t>,
+                          Std::tuple<__cbuf__ fp4x2_e1m2_t, __gm__ fp4x2_e1m2_t>,
+                          Std::tuple<__cbuf__ fp4x2_e2m1_t, __gm__ fp4x2_e2m1_t>,
+                          Std::tuple<__cbuf__ fp8_e5m2_t, __gm__ fp8_e5m2_t>,
+                          Std::tuple<__cbuf__ fp8_e4m3fn_t, __gm__ fp8_e4m3fn_t>,
+                          Std::tuple<__cbuf__ hifloat8_t, __gm__ hifloat8_t>>,
+                      "The data type is not supported.");
 #endif
     }
 
@@ -213,15 +212,25 @@ public:
         using dstDataType = typename T::elementType;
 
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
-        static_assert(
-            Std::is_one_of_v<Std::tuple<dstDataType, srcDataType>, Std::tuple<__cbuf__ uint8_t, __gm__ uint8_t>,
-                             Std::tuple<__cbuf__ int8_t, __gm__ int8_t>,
-                             Std::tuple<__cbuf__ bfloat16_t, __gm__ bfloat16_t>, Std::tuple<__cbuf__ half, __gm__ half>,
-                             Std::tuple<__cbuf__ uint16_t, __gm__ uint16_t>, Std::tuple<__cbuf__ float, __gm__ float>,
-                             Std::tuple<__cbuf__ int32_t, __gm__ int32_t>,
-                             Std::tuple<__cbuf__ uint64_t, __gm__ uint64_t>>,
-            "The data type is not supported.");
+        static_assert(Std::is_one_of_v<
+                          Std::tuple<dstDataType, srcDataType>, Std::tuple<__cbuf__ half, __gm__ half>,
+                          Std::tuple<__cbuf__ bfloat16_t, __gm__ bfloat16_t>, Std::tuple<__cbuf__ float, __gm__ float>,
+                          Std::tuple<__cbuf__ int8_t, __gm__ int8_t>, Std::tuple<__cbuf__ uint8_t, __gm__ uint8_t>,
+                          Std::tuple<__cbuf__ int16_t, __gm__ int16_t>, Std::tuple<__cbuf__ uint16_t, __gm__ uint16_t>,
+                          Std::tuple<__cbuf__ int32_t, __gm__ int32_t>, Std::tuple<__cbuf__ uint32_t, __gm__ uint32_t>,
+                          Std::tuple<__cbuf__ int64_t, __gm__ int64_t>, Std::tuple<__cbuf__ uint64_t, __gm__ uint64_t>,
+                          Std::tuple<__cbuf__ fp8_e5m2_t, __gm__ fp8_e5m2_t>,
+                          Std::tuple<__cbuf__ fp8_e4m3fn_t, __gm__ fp8_e4m3fn_t>,
+                          Std::tuple<__cbuf__ hifloat8_t, __gm__ hifloat8_t>>,
+                      "The data type is not supported.");
 #endif
+    }
+
+    template <typename U>
+    __aicore__ inline static constexpr void CheckGm2L1ND2NDSrcOneDim()
+    {
+        using ShapeRow1 = typename GetFourDimType<U, AttrInfo::SHAPE, AttrInfo::ROW, 1>::type;
+        static_assert(Std::is_constant<1, ShapeRow1>::value, "The src only support 1D tensor");
     }
 
     template <typename T, typename U>

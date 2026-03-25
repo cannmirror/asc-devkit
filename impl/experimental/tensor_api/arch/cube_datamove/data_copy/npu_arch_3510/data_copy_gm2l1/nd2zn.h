@@ -53,14 +53,18 @@ private:
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
 
+        auto srcRowShape = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
+        auto srcColShape = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
+        auto srcRowStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
+        auto dstBRowStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
+
         uint16_t ndNum = 1;
-        uint16_t nValue = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
-        uint32_t dValue = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
+        uint16_t nValue = srcColShape;
+        uint32_t dValue = srcRowShape;
         uint64_t srcNdMatrixStride = 0;
 
-        auto srcRowStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
         uint64_t srcDValue = srcRowStride;
-        uint16_t dstNzC0Stride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout) / C0_ELEMENT<type>;
+        uint16_t dstNzC0Stride = dstBRowStride / C0_ELEMENT<type>;
         uint16_t dstNzNStride = 1;
         uint32_t dstNzMatrixStride = 0;
 
@@ -74,7 +78,7 @@ private:
 
         uint8_t cacheMode = GetCacheModeFromTensor(src);
 
-        CopyGmToCbufMultiNd2nzInstr::DataCopy(dst, src, ndNum, loop2DstStride, loop3DstStride, loop4DstStride,
+        CopyGmToCbufMultiDn2nzInstr::DataCopy(dst, src, ndNum, loop2DstStride, loop3DstStride, loop4DstStride,
                                          loop1SrcStride, cacheMode, nValue, dValue, loop4SrcStride, false);
     }
 };

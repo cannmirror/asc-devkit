@@ -87,6 +87,7 @@ template <typename T>
 struct CheckArrangement {
     using type = typename T::elementType;
     using ShapeRow0Type = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
+    using ShapeRow1Type = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 1>::type;
     using ShapeColumn0Type = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
     using StrideRow0Type = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
     using StrideRow1Type = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 1>::type;
@@ -98,6 +99,7 @@ struct CheckArrangement {
  	}
 
     static constexpr ShapeRow0Type ShapeRow0{};
+    static constexpr ShapeRow1Type ShapeRow1{};
     static constexpr ShapeColumn0Type ShapeColumn0{};
     static constexpr StrideRow0Type StrideRow0{};
     static constexpr StrideRow1Type StrideRow1{};
@@ -238,6 +240,10 @@ private:
         return (isShapeRight && isStrideRight);
     }
 
+    __aicore__ inline static constexpr bool IsFractalNDFormatOneDim() {
+        return CheckPairs(Std::Int<1>{}, arg.ShapeRow1);
+    }
+
     __aicore__ inline static constexpr bool IsFractalNDFormat() {
         using ResultType = Std::conditional_t<arg.IsScaleType(),
                            Std::bool_constant<IsFractalScaleNDFormat()>,
@@ -247,6 +253,7 @@ private:
 public:
     static constexpr bool value = IsFractalNDFormat();
     static constexpr bool normalValue = IsFractalNDFormatNormal();
+    static constexpr bool oneDimValue = IsFractalNDFormatOneDim();
 };
 
 template <typename T>

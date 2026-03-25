@@ -50,27 +50,18 @@ private:
     {
         CheckTemplate<trait, T, U>();
 
+        using type = typename U::elementType;
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
 
         auto srcShapeRows = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
         auto srcShapeColumns = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
-        auto dstShapeColumns = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
-        auto dstStrideRows = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
         auto srcStrideRows = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
 
-        using type = typename U::elementType;
-        uint8_t cacheMode = GetCacheModeFromTensor(src);
+        auto dstShapeColumns = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
+        auto dstStrideRows = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
 
-        using ShapeRow1 = typename GetFourDimType<U, AttrInfo::SHAPE, AttrInfo::ROW, 1>::type;
-        // compact mode, dst_stride equals burst_len, padding cnt is zero
-        // src and dst contiguous case, can directly copy without padding, only one row copy is needed
-        // the src is 1D tensor with only column shape, we can directly copy with burst len as column shape
-        if constexpr (Std::is_constant<1, ShapeRow1>::value) {
-            CopyGmToCbufAlignV2Base::DataCopy(dst, src, 1, srcShapeColumns * sizeof(type), 0, 0, cacheMode, 0,
-                                              srcShapeColumns * sizeof(type));
-            return;
-        }
+        uint8_t cacheMode = GetCacheModeFromTensor(src);
 
         // lprp mode, dst_stride % C0_SIZE should be 0
         // multi rows copy, dst non-contiguous case

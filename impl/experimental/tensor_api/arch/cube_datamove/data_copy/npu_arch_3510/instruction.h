@@ -53,10 +53,9 @@ public:
         } 
     }
 
-private:
     template <typename T>
     __aicore__ inline static void CopyGmToCbufAlignV2(__cbuf__ T* dst, __gm__ T* src, uint32_t blockCount, uint32_t blockLen, 
-        uint8_t leftPaddingCnt, uint8_t rightPaddingCnt, uint8_t cacheMode, int64_t srcStride, int64_t dstStride) {
+        uint8_t leftPaddingCnt, uint8_t rightPaddingCnt, uint8_t cacheMode, uint64_t srcStride, uint32_t dstStride) {
         if ASCEND_IS_AIV {
             return;
         }
