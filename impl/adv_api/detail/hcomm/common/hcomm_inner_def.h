@@ -263,6 +263,7 @@ typedef struct {
 
 constexpr int32_t HCOMM_FAILED = -1;
 constexpr int32_t HCOMM_SUCCESS = 0;
+constexpr uint32_t HCOMM_MEM_BLOCK_SIZE = 32;
 
 } // namespace AscendC
 #endif // IMPL_HCOMM_HCOMM_INNER_DEF_H

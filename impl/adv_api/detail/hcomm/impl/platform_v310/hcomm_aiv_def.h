@@ -28,7 +28,6 @@ constexpr uint32_t HCOMM_MAX_HANDLE_ID = 1024;
 constexpr uint32_t HCOMM_TMP_BUF_SIZE = 224;
 constexpr uint32_t ROCE_SQ_DOORBELL_TYPE = 2;
 constexpr uint32_t ROCE_INIT_SQ_DB_SGIT_IDX = 1;
-constexpr uint32_t HCOMM_MEM_BLOCK_SIZE = 32;
 
 enum class HCOMM_OP_TYPE : uint32_t {
     WRITE = 4U,

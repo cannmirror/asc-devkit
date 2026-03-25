@@ -46,8 +46,18 @@ __aicore__ inline uint64_t GetDbValue(uint32_t qpn)
 
 __aicore__ inline uint32_t HtoNL(uint32_t x)
 {
-    return ((((x) & 0xff000000) >> 24) | (((x) & 0x00ff0000) >> 8) | (((x) & 0x0000ff00) << 8)
-            | (((x) & 0x000000ff) << 24));
+    constexpr uint32_t byte0Mask = 0x000000ffU;
+    constexpr uint32_t byte1Mask = 0x0000ff00U;
+    constexpr uint32_t byte2Mask = 0x00ff0000U;
+    constexpr uint32_t byte3Mask = 0xff000000U;
+    
+    constexpr uint32_t byteShift = 8;
+    constexpr uint32_t wordShift = 24;
+    
+    return (((x & byte3Mask) >> wordShift) | 
+            ((x & byte2Mask) >> byteShift) | 
+            ((x & byte1Mask) << byteShift) | 
+            ((x & byte0Mask) << wordShift));
 }
 
 template <typename T>
