@@ -30,13 +30,13 @@
 #include "instr_impl/npu_arch_3510/vector_datamove_impl/asc_set_gm2ub_loop_size_impl.h"
 #include "instr_impl/npu_arch_3510/vector_datamove_impl/asc_set_gm2ub_loop1_stride_impl.h"
 #include "instr_impl/npu_arch_3510/vector_datamove_impl/asc_set_gm2ub_loop2_stride_impl.h"
-#include "instr_impl/npu_arch_3510/vector_datamove_impl/asc_set_gm2ub_pad_impl.h"
 #include "instr_impl/npu_arch_3510/vector_datamove_impl/asc_set_ndim_loop_stride_impl.h"
 #include "instr_impl/npu_arch_3510/vector_datamove_impl/reg_store/asc_storeunalign_post_impl.h"
 #include "instr_impl/npu_arch_3510/vector_datamove_impl/reg_store/asc_storeunalign_post_postupdate_impl.h"
 #include "instr_impl/npu_arch_3510/vector_datamove_impl/asc_ndim_copy_gm2ub_impl.h"
 #include "instr_impl/npu_arch_3510/vector_datamove_impl/asc_set_ndim_pad_count_impl.h"
 #include "instr_impl/npu_arch_3510/vector_datamove_impl/asc_set_ndim_pad_value_impl.h"
+#include "instr_impl/npu_arch_3510/vector_datamove_impl/asc_set_copy_pad_val_impl.h"
 #include "instr_impl/npu_arch_3510/vector_datamove_impl/reg_store/asc_store_impl.h"
 #include "instr_impl/npu_arch_3510/vector_datamove_impl/asc_scatter_impl.h"
 #include "instr_impl/npu_arch_3510/vector_datamove_impl/asc_copy_gm2ub_align_impl.h"
@@ -5173,11 +5173,6 @@ __aicore__ inline void asc_set_gm2ub_loop2_stride(uint64_t loop2_src_stride, uin
     asc_set_gm2ub_loop2_stride_impl(loop2_src_stride, loop2_dst_stride);
 }
 
-__aicore__ inline void asc_set_gm2ub_pad(uint32_t pad_val)
-{
-    asc_set_gm2ub_pad_impl(pad_val);
-}
-
 __aicore__ inline void asc_set_ndim_loop0_stride(uint64_t dst_stride, uint64_t src_stride)
 {
     asc_set_ndim_loop0_stride_impl(dst_stride, src_stride);
@@ -6207,6 +6202,82 @@ __aicore__ inline void asc_copy_ub2ub(__ubuf__ void* dst, __ubuf__ void* src,
 
 __aicore__ inline void asc_copy_ub2ub_sync(__ubuf__ void* dst, __ubuf__ void* src, uint32_t size) {
     asc_copy_ub2ub_sync_impl(dst, src, size);
+}
+
+//===========asc_set_copy_pad_val(int8/uint8/e2m1/e1m2/e8m0/e5m2/e4m3fn/int16/uint16/half/bfloat16/int32/uint32/float)===========
+__aicore__ inline void asc_set_copy_pad_val(int8_t pad_value)
+{
+    asc_set_copy_pad_val_impl(pad_value);
+}
+
+__aicore__ inline void asc_set_copy_pad_val(uint8_t pad_value)
+{
+    asc_set_copy_pad_val_impl(pad_value);
+}
+
+__aicore__ inline void asc_set_copy_pad_val(fp4x2_e2m1_t pad_value)
+{
+    asc_set_copy_pad_val_impl(pad_value);
+}
+
+__aicore__ inline void asc_set_copy_pad_val(fp4x2_e1m2_t pad_value)
+{
+    asc_set_copy_pad_val_impl(pad_value);
+}
+
+__aicore__ inline void asc_set_copy_pad_val(fp8_e8m0_t pad_value)
+{
+    asc_set_copy_pad_val_impl(pad_value);
+}
+
+__aicore__ inline void asc_set_copy_pad_val(fp8_e5m2_t pad_value)
+{
+    asc_set_copy_pad_val_impl(pad_value);
+}
+
+__aicore__ inline void asc_set_copy_pad_val(fp8_e4m3fn_t pad_value)
+{
+    asc_set_copy_pad_val_impl(pad_value);
+}
+
+__aicore__ inline void asc_set_copy_pad_val(hifloat8_t pad_value)
+{
+    asc_set_copy_pad_val_impl(pad_value);
+}
+
+__aicore__ inline void asc_set_copy_pad_val(int16_t pad_value)
+{
+    asc_set_copy_pad_val_impl(pad_value);
+}
+
+__aicore__ inline void asc_set_copy_pad_val(uint16_t pad_value)
+{
+    asc_set_copy_pad_val_impl(pad_value);
+}
+
+__aicore__ inline void asc_set_copy_pad_val(half pad_value)
+{
+    asc_set_copy_pad_val_impl(pad_value);
+}
+
+__aicore__ inline void asc_set_copy_pad_val(bfloat16_t pad_value)
+{
+    asc_set_copy_pad_val_impl(pad_value);
+}
+
+__aicore__ inline void asc_set_copy_pad_val(int32_t pad_value)
+{
+    asc_set_copy_pad_val_impl(pad_value);
+}
+
+__aicore__ inline void asc_set_copy_pad_val(uint32_t pad_value)
+{
+    asc_set_copy_pad_val_impl(pad_value);
+}
+
+__aicore__ inline void asc_set_copy_pad_val(float pad_value)
+{
+    asc_set_copy_pad_val_impl(pad_value);
 }
 
 #endif

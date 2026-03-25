@@ -20,6 +20,8 @@
 #include "instr_impl/npu_arch_3510/cube_datamove_impl/asc_copy_l12l0b_mx_impl.h"
 #include "instr_impl/npu_arch_3510/cube_datamove_impl/asc_set_l13d_rpt_impl.h"
 #include "instr_impl/npu_arch_3510/cube_datamove_impl/asc_set_l13d_fmatrix_impl.h"
+#include "instr_impl/npu_arch_3510/cube_datamove_impl/asc_set_l13d_fmatrix_b_impl.h"
+#include "instr_impl/npu_arch_3510/cube_datamove_impl/asc_set_l0c2gm_lrelu_alpha_impl.h"
 #include "instr_impl/npu_arch_3510/cube_datamove_impl/asc_set_l0c_copy_prequant_impl.h"
 #include "instr_impl/npu_arch_3510/cube_datamove_impl/asc_set_gm2l1_loop_size_impl.h"
 #include "instr_impl/npu_arch_3510/cube_datamove_impl/asc_set_gm2l1_loop1_stride_impl.h"
@@ -3283,4 +3285,20 @@ __aicore__ inline void asc_fill_l1_sync(__cbuf__ bfloat16_t* dst, uint32_t value
 {
     asc_fill_l1_sync_impl(dst, value, config);
 }
+
+__aicore__ inline void asc_set_l13d_fmatrix_b(asc_l13d_fmatrix_config& config)
+{
+    asc_set_l13d_fmatrix_b_impl(config);
+}
+
+__aicore__ inline void asc_set_l0c2gm_lrelu_alpha(half& config)
+{
+    asc_set_l0c2gm_lrelu_alpha_impl(config);
+}
+
+__aicore__ inline void asc_set_l0c2gm_lrelu_alpha(float& config)
+{
+    asc_set_l0c2gm_lrelu_alpha_impl(config);
+}
+
 #endif

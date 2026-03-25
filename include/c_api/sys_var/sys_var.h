@@ -27,6 +27,14 @@
 
 #endif
 
+__aicore__ inline int64_t asc_get_smmu_tag_version();
+
+__aicore__ inline int64_t asc_get_phy_stack_base();
+
+__aicore__ inline int64_t asc_get_status();
+
+__aicore__ inline int64_t asc_get_sys_virtual_base();
+
 __aicore__ inline int64_t asc_get_ctrl();
 
 __aicore__ inline int64_t asc_get_block_num();

@@ -32,6 +32,10 @@
 #include "sys_var_impl/get_program_counter_impl.h"
 #include "sys_var_impl/asc_get_ffts_base_addr_impl.h"
 #include "sys_var_impl/asc_set_ffts_base_addr_impl.h"
+#include "sys_var_impl/asc_get_smmu_tag_version_impl.h"
+#include "sys_var_impl/asc_get_phy_stack_base_impl.h"
+#include "sys_var_impl/asc_get_status_impl.h"
+#include "sys_var_impl/asc_get_sys_virtual_base_impl.h"
 
 __aicore__ inline int64_t asc_get_core_id()
 {
@@ -101,6 +105,26 @@ __aicore__ inline int64_t asc_get_ffts_base_addr()
 __aicore__ inline void asc_set_ffts_base_addr(uint64_t config)
 {
     asc_set_ffts_base_addr_impl(config);
+}
+
+__aicore__ inline int64_t asc_get_smmu_tag_version()
+{
+    return asc_get_smmu_tag_version_impl();
+}
+
+__aicore__ inline int64_t asc_get_phy_stack_base()
+{
+    return asc_get_phy_stack_base_impl();
+}
+
+__aicore__ inline int64_t asc_get_status()
+{
+    return asc_get_status_impl();
+}
+
+__aicore__ inline int64_t asc_get_sys_virtual_base()
+{
+    return asc_get_sys_virtual_base_impl();
 }
 
 #endif
