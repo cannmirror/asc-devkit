@@ -299,11 +299,10 @@ ContextBuilder &ContextBuilder::AddPlatformInfo(const char *customSocVersion)
             return *this;
         }
     }
-
+    
     static fe::PlatFormInfos platformInfoIns;
-    fe::PlatformInfoManager::GeInstance().InitRuntimePlatformInfos(std::string(socVersion));
-    fe::OptionalInfos optionalInfos;
-    fe::PlatformInfoManager::GeInstance().GetPlatformInfos(std::string(socVersion), platformInfoIns, optionalInfos);
+    fe::PlatformInfoManager::Instance().InitRuntimePlatformInfos(std::string(socVersion));
+    fe::PlatformInfoManager::Instance().GetRuntimePlatformInfosByDevice(0, platformInfoIns);
     std::string socVersionStr;
     const auto retCode = platformInfoIns.GetPlatformResWithLock(labelVersion, labelShortSocVersion, socVersionStr);
     if (!retCode) {

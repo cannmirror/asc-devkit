@@ -505,11 +505,29 @@ fe::PlatFormInfos* PlatformAscendCManager::PlatformAscendCInit(const char *custo
         socVersion = customSocVersion;
     }
 
-    fe::PlatformInfoManager::GeInstance().InitRuntimePlatformInfos(socVersion);
+    fe::PlatformInfoManager::Instance().InitRuntimePlatformInfos(socVersion);
     fe::OptionalInfos optionalInfos;
     static fe::PlatFormInfos gPlatformInfo;
-    fe::PlatformInfoManager::GeInstance().GetPlatformInfos(socVersion,
-        gPlatformInfo, optionalInfos);
+    int32_t deviceId = 0;
+    auto getDeviceId = [&deviceId]() -> bool {
+        void* handle = dlopen("libacl_rt.so", RTLD_LAZY);
+        if (!handle) return false;
+        using GetDeviceFunc = int(*)(int32_t*);
+        auto func = reinterpret_cast<GetDeviceFunc>(dlsym(handle, "aclrtGetDevice"));
+        if (!func) {
+            dlclose(handle);
+            return false;
+        }
+        int ret = func(&deviceId);
+        dlclose(handle);
+        return (ret == 0);
+    };
+    if (!getDeviceId()) {
+        PF_LOGE("Failed to get device id via aclrtGetDevice, use default deviceId=0");
+        deviceId = 0;
+    }
+
+    fe::PlatformInfoManager::Instance().GetRuntimePlatformInfosByDevice(deviceId, gPlatformInfo);
     std::string socVersionStr;
     const auto ret = gPlatformInfo.GetPlatformResWithLock(LABEL_VERSION, LABEL_SHORT_SOC_VERSION, socVersionStr);
     if (!ret) {

@@ -104,22 +104,14 @@ std::shared_ptr<KernelRunContextHolder> ContextBuilderImpl::BuildTilingContext()
         CXT_ASCENDC_LOGE("Build Context Error!");
         return nullptr;
     }
-    std::vector<std::unique_ptr<uint8_t[]>> tensorValueVec(inputNum_ + outputNum_);
+    std::vector<std::unique_ptr<uint8_t[]>> tensorValueVec(inputNum_);
     std::vector<std::unique_ptr<uint8_t[]>> tensorValueVecOut(outputNum_);
-    std::vector<gert::Tensor *> tensorVec(inputNum_ + outputNum_, nullptr);
+    std::vector<gert::Tensor *> tensorVec(inputNum_, nullptr);
     for (size_t i = 0; i < inputNum_; ++i) {
         auto iter = dependTensorsData_.find(static_cast<int32_t>(i));
         if (iter != dependTensorsData_.end()) {
             tensorValueVec[i] = std::move(iter->second);
             tensorVec[i] = reinterpret_cast<gert::Tensor *>(tensorValueVec[i].get());
-        }
-    }
-    for (size_t i = 0UL; i < outputNum_; ++i) {
-        auto iter = dependOutputTensorsData_.find(static_cast<int32_t>(i));
-        if (iter != dependTensorsData_.end()) {
-            int32_t key = iter->first;
-            tensorValueVec[inputNum_ + key] = std::move(iter->second);
-            tensorVec[inputNum_ + key] = reinterpret_cast<gert::Tensor *>(tensorValueVec[inputNum_ + key].get());
         }
     }
     for (size_t i = 0; i < outputNum_; ++i) {

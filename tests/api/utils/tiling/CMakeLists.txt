@@ -41,6 +41,7 @@ file(GLOB ASCENDC_TILING_SRC_FILES
     ${ASCENDC_DIR}/impl/utils/stub/*.cpp
     ${ASCENDC_DIR}/impl/utils/tiling/*.cpp
     ${ASCENDC_DIR}/impl/utils/tiling/platform/*.cpp
+    ${ASCENDC_DIR}/tests/tools/utils/stub/acl_rt_stub.cpp
 )
 
 foreach(product_type ${PRODUCT_TYPE_LIST})
@@ -103,6 +104,7 @@ foreach(product_type ${PRODUCT_TYPE_LIST})
         error_manager
         mmpa
         c_sec
+        platform
         -Wl,--as-needed
     )
 
