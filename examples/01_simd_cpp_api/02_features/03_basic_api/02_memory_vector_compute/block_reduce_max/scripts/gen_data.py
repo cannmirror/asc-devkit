@@ -15,8 +15,14 @@
 import os
 import numpy as np
 
-
 def get_range_by_dtype(input_type):
+    """
+    根据数据类型获取取值范围
+    Args:
+        input_type: numpy数据类型
+    Returns:
+        tuple: (最小值, 最大值)
+    """
     try:
         if input_type == np.float16 or input_type == np.float32 or input_type == np.float64:
             return np.finfo(input_type).min, np.finfo(input_type).max
@@ -27,8 +33,13 @@ def get_range_by_dtype(input_type):
 
 # 返回结果中索引index数据是按照dst的数据类型进行存储的，比如dst使用half类型时，
 # index按照half类型进行存储，如果按照half格式进行读取，index的值是不对的，因此index的读取需要使用reinterpret_cast方法转换到整数类型。
-# 若输入数据类型是half，需要使用reinterpret_cast<uint16_t*>，若输入是float，需要使用reinterpret_cast<uint32_t*>
+# 若输入数据类型是half，需要使用reinterpret_cast<uint16_t*>，若输入是float，需要使用的是reinterpret_cast<uint32_t*>
 def gen_golden_data_simple():
+    """
+    生成BlockReduceMax样例的测试数据和golden数据
+    输入：128个float16类型的随机数
+    输出：64个float16类型，每个datablock内所有元素的最大值
+    """
     input_type = np.dtype("float16")
     output_type = input_type
     max_index_type = np.uint16 #与half对应

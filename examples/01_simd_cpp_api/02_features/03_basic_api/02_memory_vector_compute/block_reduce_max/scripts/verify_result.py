@@ -22,23 +22,34 @@ ERROR_TOL = 1e-4
 
 
 def verify_result(output, golden):
+    """
+    验证BlockReduceMax样例结果与golden数据是否一致
+    Args:
+        output: 输出数据文件路径
+        golden: golden数据文件路径
+    Returns:
+        bool: 误差比例是否在容忍范围内
+    """
     output_type = np.float16
     output = np.fromfile(output, dtype=output_type).reshape(-1)
     golden = np.fromfile(golden, dtype=output_type).reshape(-1)
-    different_element_results = np.isclose(output,
-                                           golden,
-                                           rtol=RELATIVE_TOL,
-                                           atol=ABSOLUTE_TOL,
-                                           equal_nan=True)
+    different_element_results = np.isclose(
+        output, golden, rtol=RELATIVE_TOL, atol=ABSOLUTE_TOL, equal_nan=True
+    )
     different_element_indexes = np.where(different_element_results == False)[0]
     for index in range(len(different_element_indexes)):
         real_index = different_element_indexes[index]
         golden_data = golden[real_index]
         output_data = output[real_index]
         print(
-            "data index: %06d, expected: %-.9f, actual: %-.9f, rdiff: %-.6f" %
-            (real_index, golden_data, output_data,
-             abs(output_data - golden_data) / golden_data))
+            "data index: %06d, expected: %-.9f, actual: %-.9f, rdiff: %-.6f"
+            % (
+                real_index,
+                golden_data,
+                output_data,
+                abs(output_data - golden_data) / golden_data,
+            )
+        )
         if index == 100:
             break
     error_ratio = float(different_element_indexes.size) / golden.size
@@ -46,7 +57,7 @@ def verify_result(output, golden):
     return error_ratio <= ERROR_TOL
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         res = verify_result(sys.argv[1], sys.argv[2])
         if not res:

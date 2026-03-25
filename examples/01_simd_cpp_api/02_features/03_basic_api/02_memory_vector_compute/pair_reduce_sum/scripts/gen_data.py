@@ -16,6 +16,11 @@ import os
 import numpy as np
 
 def gen_golden_data_simple():
+    """
+    生成PairReduceSum样例的测试数据和golden数据
+    输入：128个float16类型的随机数
+    输出：64个float16类型，每两个相邻元素相加
+    """
     input_type = np.float16
     output_type = input_type
     block_length = 128
