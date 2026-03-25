@@ -86,6 +86,7 @@
   >   id：设备id，通过`npu-smi info -l`命令查出的NPU ID即为设备id
   >
   >   chip_id：芯片id，通过`npu-smi info -m`命令查出的Chip ID即为芯片id
+  >   - Ascend 950PR/Ascend 950DT
   >   - Atlas A3 训练系列产品 / Atlas A3 推理系列产品
   >
   >   基于同系列的AI处理器型号创建的算子工程，其基础功能（基于该工程进行算子开发、编译和部署）通用。
