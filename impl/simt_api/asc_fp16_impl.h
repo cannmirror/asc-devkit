@@ -990,6 +990,57 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ half2* address, half2
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(reinterpret_cast<__gm__ int32_t*>(address), reinterpret_cast<int32_t&>(val));
 }
+
+#else
+#ifndef ASCENDC_CPU_DEBUG
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_atomic_add(half *address, half val)
+{
+    __atomic_add(address, val);
+    return *address;
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_add(half2 *address, half2 val)
+{
+    return __atomic_add(address, val);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_sub(half2 *address, half2 val)
+{
+    return __atomic_sub(address, val);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_exch(half2 *address, half2 val)
+{
+    return __atomic_exch(address, val);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_atomic_max(half *address, half val)
+{
+    __atomic_max(address, val);
+    return *address;
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_max(half2 *address, half2 val)
+{
+    return __atomic_max(address, val);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_atomic_min(half *address, half val)
+{
+    __atomic_min(address, val);
+    return *address;
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_min(half2 *address, half2 val)
+{
+    return __atomic_min(address, val);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_cas(half2 *address, half2 compare, half2 val)
+{
+    return __atomic_cas(address, compare, val);
+}
+#endif
 #endif
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_shfl(half var, int32_t src_lane, int32_t width)

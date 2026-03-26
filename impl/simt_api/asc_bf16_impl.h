@@ -970,6 +970,57 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ bfloat16x2_t* address
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(reinterpret_cast<__gm__ int32_t*>(address), reinterpret_cast<int32_t&>(val));
 }
+
+#else
+#ifndef ASCENDC_CPU_DEBUG
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16_t asc_atomic_add(bfloat16_t *address, bfloat16_t val)
+{
+    __atomic_add(address, val);
+    return *address;
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16x2_t asc_atomic_add(bfloat16x2_t *address, bfloat16x2_t val)
+{
+    return __atomic_add(address, val);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16x2_t asc_atomic_sub(bfloat16x2_t *address, bfloat16x2_t val)
+{
+    return __atomic_sub(address, val);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16x2_t asc_atomic_exch(bfloat16x2_t *address, bfloat16x2_t val)
+{
+    return __atomic_exch(address, val);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16_t asc_atomic_max(bfloat16_t *address, bfloat16_t val)
+{
+    __atomic_max(address, val);
+    return *address;
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16x2_t asc_atomic_max(bfloat16x2_t *address, bfloat16x2_t val)
+{
+    return __atomic_max(address, val);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16_t asc_atomic_min(bfloat16_t *address, bfloat16_t val)
+{
+    __atomic_min(address, val);
+    return *address;
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16x2_t asc_atomic_min(bfloat16x2_t *address, bfloat16x2_t val)
+{
+    return __atomic_min(address, val);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16x2_t asc_atomic_cas(bfloat16x2_t *address, bfloat16x2_t compare, bfloat16x2_t val)
+{
+    return __atomic_cas(address, compare, val);
+}
+#endif
 #endif
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16x2_t make_bfloat162(bfloat16_t x, bfloat16_t y)
