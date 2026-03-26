@@ -16,7 +16,7 @@
  * and then calculating by function approximation.
  * k=round(x/π), x0=x-kπ, x0 belongs to [-π/2, π/2]
  * π=π_0+π_1+π_2+π_3 achieve final precision compensation.
- * Final solution�?
+ * Final solution�?
  *   k = round(x * invpi)
  *   x -= k * pi_0
  *   x -= k * pi_1
@@ -45,7 +45,7 @@
 #include "../../../impl/adv_api/detail/math/sin/sin_common_impl.h"
 #elif (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113))
 #include "sin_utils.h"
-#include "../../../impl/adv_api/detail/math/sin/sin_c310_impl.h"
+#include "../../../impl/adv_api/detail/math/sin/sin_3510_impl.h"
 #endif
 
 namespace AscendC {

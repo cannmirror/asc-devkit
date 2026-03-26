@@ -14,10 +14,10 @@
  * Formula: tan(x) = xP(x) / ((π/2 - x)(π/2 + x)Q(x))
  * The Tan function does not have an elementary function expression, first normalize x to (-π/2, π/2)
  * and then calculating by function approximation.
- * Final solution�?
+ * Final solution�?
  *  k=round(x/π), x0=x-kπ, x0 belongs to (-π/2, π/2)
  *  π=π_0+π_1+π_2+π_3+π_4 achieve final precision compensation.
- *  Final solution�?
+ *  Final solution�?
  *  k = round(x * invpi)
  *  x -= k * pi_0
  *  x -= k * pi_1
@@ -56,7 +56,7 @@
 #include "../../../impl/adv_api/detail/math/tan/tan_common_impl.h"
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || \
     __NPU_ARCH__ == 3113)
-#include "../../../impl/adv_api/detail/math/tan/tan_c310_impl.h"
+#include "../../../impl/adv_api/detail/math/tan/tan_3510_impl.h"
 #endif
 
 namespace AscendC {

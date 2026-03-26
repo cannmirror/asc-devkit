@@ -23,7 +23,7 @@
 
 #include "kernel_tensor.h"
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
-#include "../../../impl/adv_api/detail/normalization/layernormgrad/layernormgradbeta_c310_impl.h"
+#include "../../../impl/adv_api/detail/normalization/layernormgrad/layernormgradbeta_3510_impl.h"
 #else
 #include "../../../impl/adv_api/detail/normalization/layernormgrad/layernormgradbeta_common_impl.h"
 #endif

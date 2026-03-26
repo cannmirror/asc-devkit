@@ -24,7 +24,7 @@
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 #include "kernel_tensor.h"
-#include "../../../impl/adv_api/detail/math/where/where_c310_impl.h"
+#include "../../../impl/adv_api/detail/math/where/where_3510_impl.h"
 
 namespace AscendC {
 #pragma begin_pipe(V)

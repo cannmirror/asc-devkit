@@ -23,7 +23,7 @@
 #define LIB_MATH_BITWISE_XOR_H
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
-#include "../../../impl/adv_api/detail/math/bitwise_xor/bitwise_xor_c310_impl.h"
+#include "../../../impl/adv_api/detail/math/bitwise_xor/bitwise_xor_3510_impl.h"
 #include "kernel_tensor.h"
 namespace AscendC {
 #pragma begin_pipe(V)

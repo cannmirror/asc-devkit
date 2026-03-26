@@ -89,7 +89,7 @@ inline bool ShapeIsTensor(const ge::Shape& shape)
     return true;
 }
 
-inline uint32_t GetPowerMaxTmpSizeC310(const ge::Shape& srcShape1, const ge::Shape& srcShape2,
+inline uint32_t GetPowerMaxTmpSizeArch3510(const ge::Shape& srcShape1, const ge::Shape& srcShape2,
     const bool typeIsInt, const bool isReuseSource)
 {
     (void)(isReuseSource);
@@ -218,7 +218,7 @@ void GetPowerTmpBufferFactorSize(const NpuArch npuArch,
     }
 }
 
-void GetPowerTmpBufferFactorSizeC310(const bool typeIsInt, const uint32_t typeSize,
+void GetPowerTmpBufferFactorSizeArch3510(const bool typeIsInt, const uint32_t typeSize,
     uint32_t& maxLiveNodeCount, uint32_t& extraBuffer)
 {
     extraBuffer = 0u;
@@ -244,7 +244,7 @@ void GetPowerMaxMinTmpSize(const ge::Shape& srcShape1, const ge::Shape& srcShape
         return, "GetPowerMaxMinTmpSize is not supported on current device!");
     if (npuArch == NpuArch::DAV_3510 || npuArch == NpuArch::DAV_5102 ||
         npuArch == NpuArch::DAV_3003 || npuArch == NpuArch::DAV_3113) {
-        maxValue = GetPowerMaxTmpSizeC310(srcShape1, srcShape2, typeIsInt, isReuseSource);
+        maxValue = GetPowerMaxTmpSizeArch3510(srcShape1, srcShape2, typeIsInt, isReuseSource);
         minValue = maxValue;
     } else {
         maxValue = GetPowerMaxTmpSize(npuArch, srcShape1, srcShape2, typeIsInt, typeSize, isReuseSource);
@@ -265,7 +265,7 @@ void GetPowerTmpBufferFactorSize(const bool baseIsTensor, const bool expIsTensor
 
     if (npuArch == NpuArch::DAV_3510 || npuArch == NpuArch::DAV_5102 ||
         npuArch == NpuArch::DAV_3003 || npuArch == NpuArch::DAV_3113) {
-        GetPowerTmpBufferFactorSizeC310(typeIsInt, typeSize, maxLiveNodeCount, extraBuffer);
+        GetPowerTmpBufferFactorSizeArch3510(typeIsInt, typeSize, maxLiveNodeCount, extraBuffer);
     } else {
         GetPowerTmpBufferFactorSize(npuArch, baseIsTensor, expIsTensor, typeIsInt, typeSize,
             maxLiveNodeCount, extraBuffer);

@@ -23,7 +23,7 @@
 
 #include "kernel_tensor.h"
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
-#include "../../../impl/adv_api/detail/activation/swish/swish_c310_impl.h"
+#include "../../../impl/adv_api/detail/activation/swish/swish_3510_impl.h"
 #else
 #include "../../../impl/adv_api/detail/activation/swish/swish_common_impl.h"
 #endif

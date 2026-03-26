@@ -30,7 +30,7 @@
 #include "../../common/check.h"
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
-#include "../dequant/ascend_dequant_c310_impl.h"
+#include "../dequant/ascend_dequant_3510_impl.h"
 #endif
 
 namespace AscendC {

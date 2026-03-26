@@ -23,7 +23,7 @@
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
 #include "../../../impl/adv_api/detail/normalization/rmsnorm/rmsnorm_common_impl.h"
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
-#include "../../../impl/adv_api/detail/normalization/rmsnorm/rmsnorm_c310_impl.h"
+#include "../../../impl/adv_api/detail/normalization/rmsnorm/rmsnorm_3510_impl.h"
 #endif
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
     __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)

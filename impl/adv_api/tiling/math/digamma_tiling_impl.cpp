@@ -22,7 +22,7 @@ constexpr uint32_t DIGAMMA_ONE_REPEAT_BYTE_SIZE = 256;
 constexpr uint32_t DIGAMMA_HALF_CALC_FAC = 8U * 2U;
 constexpr uint32_t DIGAMMA_FLOAT_NOREUSE_CALC_PROC = 7U;
 constexpr uint32_t DIGAMMA_FLOAT_REUSE_CALC_PROC = 6U;
-constexpr uint32_t DIGAMMA_HALF_CALC_FAC_C310 = 4U;
+constexpr uint32_t DIGAMMA_HALF_CALC_FAC_Arch3510 = 4U;
 
 inline uint32_t GetMaxTmpSize(const uint32_t inputSize, const uint32_t typeSize, const bool isReuseSource)
 {
@@ -35,10 +35,10 @@ inline uint32_t GetMaxTmpSize(const uint32_t inputSize, const uint32_t typeSize,
     return calcPro * std::max(inputSize * typeSize, DIGAMMA_ONE_REPEAT_BYTE_SIZE);
 }
 
-inline uint32_t GetMaxTmpSizeC310(const uint32_t inputSize, const uint32_t typeSize)
+inline uint32_t GetMaxTmpSizeArch3510(const uint32_t inputSize, const uint32_t typeSize)
 {
     if (typeSize == 2U) {
-        return DIGAMMA_HALF_CALC_FAC_C310 * std::max(inputSize * typeSize, DIGAMMA_ONE_REPEAT_BYTE_SIZE);
+        return DIGAMMA_HALF_CALC_FAC_Arch3510 * std::max(inputSize * typeSize, DIGAMMA_ONE_REPEAT_BYTE_SIZE);
     }
     return 0;
 }
@@ -62,7 +62,7 @@ void GetDigammaTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNod
     if (npuArch == NpuArch::DAV_3510 ||
         npuArch == NpuArch::DAV_5102) {
             extraBuffer = uint32_t(0);
-        maxLiveNodeCount = (typeSize == sizeof(float)) ? 0 : DIGAMMA_HALF_CALC_FAC_C310;
+        maxLiveNodeCount = (typeSize == sizeof(float)) ? 0 : DIGAMMA_HALF_CALC_FAC_Arch3510;
     } else {
         extraBuffer = uint32_t(0);
         maxLiveNodeCount = (typeSize == sizeof(float)) ? DIGAMMA_FLOAT_NOREUSE_CALC_PROC : DIGAMMA_HALF_CALC_FAC;
@@ -80,7 +80,7 @@ void GetDigammaMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize,
     const auto npuArch = platform_ascendc::PlatformAscendCManager::GetInstance()->GetCurNpuArch();
     if (npuArch == NpuArch::DAV_3510 ||
         npuArch == NpuArch::DAV_5102) {
-        maxValue = GetMaxTmpSizeC310(inputSize, typeSize);
+        maxValue = GetMaxTmpSizeArch3510(inputSize, typeSize);
         minValue = maxValue;
         return;
     } 

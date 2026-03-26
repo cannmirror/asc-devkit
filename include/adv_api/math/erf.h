@@ -34,7 +34,7 @@
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || \
     __NPU_ARCH__ == 3113)
 #include "erf_utils.h"
-#include "../../../impl/adv_api/detail/math/erf/erf_c310_impl.h"
+#include "../../../impl/adv_api/detail/math/erf/erf_3510_impl.h"
 #else
 #include "../../../impl/adv_api/detail/math/erf/erf_common_impl.h"
 #endif

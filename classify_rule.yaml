@@ -84,6 +84,13 @@ asc-devkit:
       - impl/experimental/tensor_api/arch/cube_compute/mmad/mmad_routing.h
       - impl/experimental/tensor_api/arch/cube_datamove/fixpipe/fixpipe_routing.h
       - impl/experimental/tensor_api/algorithm/mad_impl.h
+      - impl/basic_api/dav_c310/kernel_operator_proposal_impl.h
+      - impl/basic_api/dav_c310/kfc/kfc_comm_server.h
+      - impl/adv_api/detail/reduce/reduce_mean/reduce_mean_3510_impl.h
+      - impl/basic_api/dav_m510/kfc/kfc_comm.h
+      - impl/basic_api/dav_m510/kfc/kfc_comm_client.h
+      - impl/basic_api/dav_m510/kfc/kfc_comm_server.h
+      - impl/basic_api/dav_c310/kfc/kfc_comm_client.h
 
   llt:
     ut_check: true

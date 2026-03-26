@@ -54,13 +54,13 @@ public:
             }
         }
 
-        msgRcvPos = (msgRcvPos + 1) & (MAX_MSG_COUNT_C310 - 1);
+        msgRcvPos = (msgRcvPos + 1) & (MAX_MSG_COUNT_Arch3510 - 1);
         return msg;
     }
 
     __aicore__ inline void RollBackMsg()
     {
-        msgRcvPos = (msgRcvPos - 1) & (MAX_MSG_COUNT_C310 - 1);
+        msgRcvPos = (msgRcvPos - 1) & (MAX_MSG_COUNT_Arch3510 - 1);
     }
 };
 

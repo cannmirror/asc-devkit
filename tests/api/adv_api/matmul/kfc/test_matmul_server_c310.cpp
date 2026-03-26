@@ -13,7 +13,7 @@
 #include <gtest/gtest.h>
 #include "kernel_operator.h"
 #include "impl/adv_api/detail/matmul/kfc/matmul_server_impl.h"
-#include "impl/adv_api/detail/matmul/kfc/matmul_server_impl_c310.h"
+#include "impl/adv_api/detail/matmul/kfc/matmul_server_impl_3510.h"
 #include "kfc_fake_modules.h"
 #include "../copy_cube_in/base_tiling_struct.h"
 

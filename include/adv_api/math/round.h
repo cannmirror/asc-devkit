@@ -24,13 +24,13 @@
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
 #include "../../../impl/adv_api/detail/math/round/round_common_impl.h"
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
-#include "../../../impl/adv_api/detail/math/round/round_c310_impl.h"
+#include "../../../impl/adv_api/detail/math/round/round_3510_impl.h"
 #endif
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 namespace AscendC {
 #pragma begin_pipe(V)
 /*!
- * \brief This function implements the “round half to even�?to break ties when a number is equidistant from two integers
+ * \brief This function implements the “round half to even�?to break ties when a number is equidistant from two integers
  * (e.g. round(2.5) is 2). For details about the interface description, see
  * https://pytorch.org/docs/stable/generated/torch.round.html.
  *

@@ -29,8 +29,8 @@
 #include "../../common/check.h"
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
-#include "../antiquant/ascend_antiquant_c310_impl.h"
-#include "antiquantize_c310_impl.h"
+#include "../antiquant/ascend_antiquant_3510_impl.h"
+#include "antiquantize_3510_impl.h"
 #endif
 
 namespace AscendC {

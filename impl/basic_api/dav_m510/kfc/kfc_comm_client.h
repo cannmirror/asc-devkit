@@ -64,7 +64,7 @@ public:
         auto msg = msgSendHead + msgSendPos;
         while (static_cast<bool>(KfcMsgGetState(msg->head))) {
         }
-        msgSendPos = (msgSendPos + 1) & (MAX_MSG_COUNT_C310 - 1);
+        msgSendPos = (msgSendPos + 1) & (MAX_MSG_COUNT_Arch3510 - 1);
         return msg;
     }
 };

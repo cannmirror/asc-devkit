@@ -32,7 +32,7 @@
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "pad_v220_impl.h"
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
-#include "pad_c310_impl.h"
+#include "pad_3510_impl.h"
 #endif
 
 namespace AscendC {

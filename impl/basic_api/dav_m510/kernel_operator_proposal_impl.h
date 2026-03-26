@@ -21,7 +21,7 @@
 #define ASCENDC_MODULE_OPERATOR_PROPOSAL_IMPL_H
  
 namespace AscendC {
-constexpr uint32_t singleSortElementCountC310 = 32;
+constexpr uint32_t singleSortElementCountArch3510 = 32;
 constexpr uint32_t regionProposalDataSize = 8;
 template <typename T>
 [[deprecated("NOTICE: MrgSort4 is not deprecated. Currently, MrgSort4 is an unsupported API on current device."
@@ -200,7 +200,7 @@ template <typename T>
 __aicore__ inline void DoFullSort(const LocalTensor<T> &dstLocal, const LocalTensor<T> &concatLocal,
     const LocalTensor<uint32_t> &indexLocal, LocalTensor<T> &tmpLocal, const int32_t repeatTime)
 {
-    uint32_t singleMergeElementCount = singleSortElementCountC310;
+    uint32_t singleMergeElementCount = singleSortElementCountArch3510;
     uint32_t loopTimes = GetFullSortInnerLoopTimes(repeatTime);
     uint16_t singleMergeTmpElementCount = singleMergeElementCount;
     uint32_t srcElementCount = repeatTime * singleMergeElementCount;

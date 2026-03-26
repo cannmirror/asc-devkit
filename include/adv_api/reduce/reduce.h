@@ -29,13 +29,13 @@
 #include "../../../impl/adv_api/detail/reduce/reduce_any/reduce_any_v220_impl.h"
 #include "../../../impl/adv_api/detail/reduce/reduce_all/reduce_all_v220_impl.h"
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
-#include "../../../impl/adv_api/detail/reduce/reduce_max/reduce_max_c310_impl.h"
-#include "../../../impl/adv_api/detail/reduce/reduce_min/reduce_min_c310_impl.h"
-#include "../../../impl/adv_api/detail/reduce/reduce_sum/reduce_sum_c310_impl.h"
-#include "../../../impl/adv_api/detail/reduce/reduce_mean/reduce_mean_c310_impl.h"
-#include "../../../impl/adv_api/detail/reduce/reduce_any/reduce_any_c310_impl.h"
-#include "../../../impl/adv_api/detail/reduce/reduce_all/reduce_all_c310_impl.h"
-#include "../../../impl/adv_api/detail/reduce/reduce_prod/reduce_prod_c310_impl.h"
+#include "../../../impl/adv_api/detail/reduce/reduce_max/reduce_max_3510_impl.h"
+#include "../../../impl/adv_api/detail/reduce/reduce_min/reduce_min_3510_impl.h"
+#include "../../../impl/adv_api/detail/reduce/reduce_sum/reduce_sum_3510_impl.h"
+#include "../../../impl/adv_api/detail/reduce/reduce_mean/reduce_mean_3510_impl.h"
+#include "../../../impl/adv_api/detail/reduce/reduce_any/reduce_any_3510_impl.h"
+#include "../../../impl/adv_api/detail/reduce/reduce_all/reduce_all_3510_impl.h"
+#include "../../../impl/adv_api/detail/reduce/reduce_prod/reduce_prod_3510_impl.h"
 #endif
 #if ASCENDC_CPU_DEBUG
 #include "kernel_log.h"

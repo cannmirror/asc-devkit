@@ -24,7 +24,7 @@
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 #include "kernel_tensor.h"
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
-#include "../../../impl/adv_api/detail/math/frac/frac_c310_impl.h"
+#include "../../../impl/adv_api/detail/math/frac/frac_3510_impl.h"
 #else
 #include "../../../impl/adv_api/detail/math/frac/frac_common_impl.h"
 #endif

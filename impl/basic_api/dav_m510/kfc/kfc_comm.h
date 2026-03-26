@@ -83,7 +83,7 @@ constexpr int32_t MIX_NUM = __MIX_CORE_AIC_RATION__;
 constexpr int32_t MIX_NUM = 2; // david 1:2
 #endif
 constexpr int MAX_MSG_MASK = 3;
-constexpr int MAX_MSG_COUNT_C310 = (1 << MAX_MSG_MASK);  // 2KB支持16个消息，每个消息大小128B，给两个v用，每个V可分得8个消息
+constexpr int MAX_MSG_COUNT_Arch3510 = (1 << MAX_MSG_MASK);  // 2KB支持16个消息，每个消息大小128B，给两个v用，每个V可分得8个消息
 constexpr int BIDIRECTION_NUM = 1;  // 单向    
 constexpr int MAX_MATMUL_OBJ = 4;
 constexpr uint64_t INC_PROCESS_CHECK = 14;
@@ -201,8 +201,8 @@ struct TilingInfo {
 };
 
 struct SsbufWorkspaceDesc {
-    KfcMsg kfcMsg[MIX_NUM * BIDIRECTION_NUM * MAX_MSG_COUNT_C310];
-    MsgMatmulL1Addr matmulL1AddrMsg[MIX_NUM * MAX_MSG_COUNT_C310];
+    KfcMsg kfcMsg[MIX_NUM * BIDIRECTION_NUM * MAX_MSG_COUNT_Arch3510];
+    MsgMatmulL1Addr matmulL1AddrMsg[MIX_NUM * MAX_MSG_COUNT_Arch3510];
     TilingInfo tilingInfo[MIX_NUM];
 };
 
@@ -226,7 +226,7 @@ __aicore__ inline MEM_ADDR GetMsgHead(int subblockID)
 #else
     auto ptr = reinterpret_cast<__ssbuf__ struct SsbufWorkspaceDesc *>(0);
 #endif
-    return reinterpret_cast<MEM_ADDR>(&ptr->kfcMsg[subblockID * BIDIRECTION_NUM * MAX_MSG_COUNT_C310]);
+    return reinterpret_cast<MEM_ADDR>(&ptr->kfcMsg[subblockID * BIDIRECTION_NUM * MAX_MSG_COUNT_Arch3510]);
 }
 
 __aicore__ inline MEM_ADDR GetMatmulL1AddrMsg(int subblockID, uint16_t instID)
@@ -242,7 +242,7 @@ __aicore__ inline MEM_ADDR GetMatmulL1AddrMsg(int subblockID, uint16_t instID)
 #else
     auto ptr = reinterpret_cast<__ssbuf__ struct SsbufWorkspaceDesc *>(0);
 #endif
-    return reinterpret_cast<MEM_ADDR>(&ptr->matmulL1AddrMsg[subblockID * MAX_MSG_COUNT_C310 + instID]);
+    return reinterpret_cast<MEM_ADDR>(&ptr->matmulL1AddrMsg[subblockID * MAX_MSG_COUNT_Arch3510 + instID]);
 }
 
 __aicore__ inline void ClearSSbufImpl()
@@ -253,11 +253,11 @@ __aicore__ inline void ClearSSbufImpl()
     auto ptr = reinterpret_cast<__ssbuf__ uint32_t *>(0);
 #endif
     constexpr uint32_t kfcSSbufSize =
-        MIX_NUM * BIDIRECTION_NUM * MAX_MSG_COUNT_C310 * sizeof(KfcMsg) / sizeof(uint32_t);
+        MIX_NUM * BIDIRECTION_NUM * MAX_MSG_COUNT_Arch3510 * sizeof(KfcMsg) / sizeof(uint32_t);
     constexpr uint32_t l1MsgSize = 16 * sizeof(MsgMatmulL1Addr) / sizeof(uint32_t);
     constexpr uint32_t tilingSize = sizeof(TilingInfo) / sizeof(uint32_t);
 #pragma unroll
-    for (int i = 0; i < MAX_MSG_COUNT_C310 * MIX_NUM; i++) {
+    for (int i = 0; i < MAX_MSG_COUNT_Arch3510 * MIX_NUM; i++) {
         *(ptr + i * sizeof(KfcMsg) / sizeof(uint32_t)) = 0;
         *(ptr + kfcSSbufSize + i * sizeof(MsgMatmulL1Addr) / sizeof(uint32_t)) = 0;
     }

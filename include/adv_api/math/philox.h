@@ -22,7 +22,7 @@
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 #include "kernel_tensor.h"
-#include "../../../impl/adv_api/detail/math/philox/philox_c310_impl.h"
+#include "../../../impl/adv_api/detail/math/philox/philox_3510_impl.h"
 
 namespace AscendC {
 

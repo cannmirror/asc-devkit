@@ -32,7 +32,7 @@
 #include "confusion_transpose_v220_impl.h"
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #include "confusion_transpose_v220_impl.h"
-#include "confusion_transpose_c310_impl.h"
+#include "confusion_transpose_3510_impl.h"
 #endif
 
 namespace AscendC {

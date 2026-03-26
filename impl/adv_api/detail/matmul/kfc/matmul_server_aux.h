@@ -26,7 +26,7 @@
 #include "matmul_server_impl_c220.h"
 #endif
 #if defined(USE_SSBUF)
-#include "matmul_server_impl_c310.h"
+#include "matmul_server_impl_3510.h"
 #endif
 
 namespace AscendC {

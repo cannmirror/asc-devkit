@@ -14,7 +14,7 @@
  * The Asin function does not have an elementary function expression, and there is calculating by
  * function approximation.
  * The approximate calculation formula is as follows:
- * when x belongs to (-2^(-0.5), 2^(-0.5)), Asin(x) = x +1/6*x^3 +3/40*x^5 +5!!/(6!!*7)*x^7  + â€?+13!!/(14!!*15)*x^15
+ * when x belongs to (-2^(-0.5), 2^(-0.5)), Asin(x) = x +1/6*x^3 +3/40*x^5 +5!!/(6!!*7)*x^7  + ï¿½?+13!!/(14!!*15)*x^15
  * when x x belongs to (-1, -2^(-0.5)), Asin(x) = arcsin(sqrt(1-x^2)) - PI*0.5
  * when x belongs to (2^(-0.5), 1), Asin(x) = PI*0.5 - arcsin(sqrt(1-x^2))
  */
@@ -34,7 +34,7 @@
 #include "../../../impl/adv_api/detail/math/asin/asin_common_impl.h"
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || \
     __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
-#include "../../../impl/adv_api/detail/math/asin/asin_c310_impl.h"
+#include "../../../impl/adv_api/detail/math/asin/asin_3510_impl.h"
 #endif
 
 namespace AscendC {

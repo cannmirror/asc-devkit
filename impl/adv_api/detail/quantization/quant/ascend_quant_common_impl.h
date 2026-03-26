@@ -38,8 +38,8 @@
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 1001
 #include "ascend_quant_v100_impl.h"
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
-#include "ascend_quant_c310_impl.h"
-#include "ascend_quant_per_group_c310_impl.h"
+#include "ascend_quant_3510_impl.h"
+#include "ascend_quant_per_group_3510_impl.h"
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #include "ascend_quant_l300_impl.h"
 #include "ascend_quant_per_group_l300_impl.h"
