@@ -2923,7 +2923,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float ynf(int n, float x)
     return __internal_yn_case3(n, x);
 }
 
-#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long int labs(long int x)
 {
     return abs(x);
@@ -2963,7 +2962,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned int umin(const unsigned int x, co
 {
     return min(x, y);
 }
-#endif
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float fdividef(float x, float y)
 {
