@@ -139,44 +139,43 @@ AscendCLogLevel.LOG_ERROR)
     @staticmethod
     def get_dump_info_from_i_file(content):
         dump_info = {"dump_type": "", "dump_size": 1048576}
-        if CommonUtility.is_c310():
-            actual_dump_size = 1048576 * CommonUtility.get_dump_core_num()
+        actual_dump_size = 1048576 * CommonUtility.get_dump_core_num()
 
-            match_printf = re.search(r"__enable_feature_for_compile_printf = 1", content)
-            match_assert = re.search(r"__enable_feature_for_compile_assert = 1;", content)
-            # recognizes whether this is simt_vf, and enable once exists simt_vf + printf
-            match_simtvf = bool(re.search(r"cce_simt_entry", content) and match_printf)
-            global_var_storage.set_variable("ascendc_recognize_simtvf", match_simtvf)
-            if match_printf and match_assert:
-                dump_info["dump_type"] = "printf,assert"
-            elif match_printf:
-                dump_info["dump_type"] = "printf"
-            elif match_assert:
-                dump_info["dump_type"] = "assert"
+        match_printf = re.search(r"__enable_feature_for_compile_printf = 1", content)
+        match_assert = re.search(r"__enable_feature_for_compile_assert = 1;", content)
+        # recognizes whether this is simt_vf, and enable once exists simt_vf + printf
+        match_simtvf = bool(re.search(r"cce_simt_entry", content) and match_printf)
+        global_var_storage.set_variable("ascendc_recognize_simtvf", match_simtvf)
+        if match_printf and match_assert:
+            dump_info["dump_type"] = "printf,assert"
+        elif match_printf:
+            dump_info["dump_type"] = "printf"
+        elif match_assert:
+            dump_info["dump_type"] = "assert"
 
-            if global_var_storage.get_variable("ascendc_time_stamp_compile_options"):
-                if dump_info["dump_type"] != "":
-                    dump_info["dump_type"] = dump_info["dump_type"] + ",timestamp"
-                else:
-                    dump_info["dump_type"] = "timestamp"
+        if global_var_storage.get_variable("ascendc_time_stamp_compile_options"):
+            if dump_info["dump_type"] != "":
+                dump_info["dump_type"] = dump_info["dump_type"] + ",timestamp"
             else:
-                match = re.search(r"__enable_feature_for_compile_printfBufSize = \s*([0-9]{1,})", content)
+                dump_info["dump_type"] = "timestamp"
+        else:
+            match = re.search(r"__enable_feature_for_compile_printfBufSize = \s*([0-9]{1,})", content)
+            if match:
+                dump_info["dump_size"] = int(match.group(1))
+            else:
+                match = re.search(r"__enable_feature_for_compile_assertBufSize = \s*([0-9]{1,})", content)
                 if match:
                     dump_info["dump_size"] = int(match.group(1))
-                else:
-                    match = re.search(r"__enable_feature_for_compile_assertBufSize = \s*([0-9]{1,})", content)
-                    if match:
-                        dump_info["dump_size"] = int(match.group(1))
 
-            actual_dump_size = CommonUtility.get_dump_core_num() * dump_info["dump_size"]
+        actual_dump_size = CommonUtility.get_dump_core_num() * dump_info["dump_size"]
 
-            simt_in_c310 = match_simtvf and (CommonUtility.is_c310())
-            if dump_info["dump_type"] != "" and simt_in_c310:
-                # david 72 vec + 36 cube + simt
-                actual_dump_size = 1048576 * CommonUtility.get_dump_core_num() + 72 * 2048 * 2048
-                dump_info["dump_size"] = 1048576 # reserved for ONE_CORE_DUMP_SIZE
+        simt_in_c310 = match_simtvf and (CommonUtility.is_c310())
+        if dump_info["dump_type"] != "" and simt_in_c310:
+            # david 72 vec + 36 cube + simt
+            actual_dump_size = 1048576 * CommonUtility.get_dump_core_num() + 72 * 2048 * 2048 
+            dump_info["dump_size"] = 1048576 # reserved for ONE_CORE_DUMP_SIZE
 
-            global_var_storage.set_variable("ascendc_required_dump_workspace_size", actual_dump_size)
+        global_var_storage.set_variable("ascendc_required_dump_workspace_size", actual_dump_size)
 
         return dump_info
 

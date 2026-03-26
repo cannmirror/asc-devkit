@@ -845,6 +845,11 @@ Idx Name                              Size     VMA              Type
                         mock_fdopen.side_effect = Exception("error")
                         self.assertRaises(Exception, gen_super_kernel_file, super_operator)
 
+    def test_gen_super_dump_code(self):
+        super_kernel_file = ""
+        super_kernel_file += gen_super_dump_code(True, 1048576, 123)
+        self.assertNotEqual(super_kernel_file, "")
+
     def test_ascendc_super_kernel_plus_multi_ops(self):
         with mock.patch("adapter.super_kernel.super_kernel_compile"), \
             mock.patch.object(SubOperatorInfos, 'extract_sub_bin_file_of_mix_kernel'):

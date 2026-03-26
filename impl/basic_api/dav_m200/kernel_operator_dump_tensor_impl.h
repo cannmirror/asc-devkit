@@ -705,7 +705,7 @@ __aicore__ inline void WriteTLHead(DumpType printType, uint64_t tmpAddr, __gm__ 
 template <class... Args>
 __aicore__ inline void PrintfEntityImpl(DumpType printType, __gm__ const char *fmt, Args&&... args)
 {
-#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
+#ifdef ASCENDC_DUMP
 #ifdef __ENABLE_VECTOR_CORE__
 #if defined(__DAV_M200_VEC__)
     uint32_t blockIdx = GetBlockIdxImpl() - get_data_main_base();
@@ -763,63 +763,31 @@ __aicore__ inline void PrintfEntityImpl(DumpType printType, __gm__ const char *f
 #endif
 }
 
-__aicore__ __gm__ inline BlockRingBufInfo* GetBlockRingBufInfo();
-__aicore__ __gm__ inline RingBufWriteInfo* GetRingBufWriteInfo(__gm__ BlockRingBufInfo* blockRingBufInfo);
-
 template <class... Args>
-__aicore__ inline void PrintCommonHead(DumpType printType)
-{
-    __gm__ BlockRingBufInfo* blockRingBufInfo = GetBlockRingBufInfo();
-    if (blockRingBufInfo == nullptr) {
-        return;
-    }
-    __gm__ RingBufWriteInfo* writeInfo = GetRingBufWriteInfo(blockRingBufInfo);
-    if (writeInfo == nullptr || writeInfo->packIdx != 0) {
-        return;
-    }
-
-    uint64_t __ascendc_tStamp = 0;
-    uint64_t __ascendc_version = 0;
-    __gm__ char* __ascendc_versionStr = nullptr;
-    GetCannVersion(__ascendc_versionStr, __ascendc_version, __ascendc_tStamp);
-    if (__ascendc_tStamp == 0) {
-        __asc_aicore::scalar_printf_impl(__asc_aicore::DumpType::DUMP_SCALAR, "[WARNING]: CANN TimeStamp is invalid, CANN TimeStamp is %u\n", __ascendc_tStamp);
-    } else {
-        __asc_aicore::scalar_printf_impl(__asc_aicore::DumpType::DUMP_SCALAR, "CANN Version: %s, TimeStamp: %u\n", (__gm__ const char*)(__ascendc_versionStr), __ascendc_tStamp);
-    }
-}
+__aicore__ inline void PrintfRingBufImpl(DumpType printType, __gm__ const char* fmt, Args&&... args);
 
 template <class... Args>
 __aicore__ inline void PrintfImpl(DumpType printType, __gm__ const char* fmt, Args&&... args)
 {
-    uint64_t ctrlValue = get_ctrl();
-    set_atomic_none();
     dcci((__gm__ uint64_t*)g_sysPrintFifoSpace, cache_line_t::ENTIRE_DATA_CACHE);
     if (g_sysPrintFifoSpace != nullptr) {
-        __asc_aicore::enable_asc_diagnostics();
-#if !defined(__NPU_DEVICE__)
-        if (printType != DumpType::DUMP_ASSERT) {
-            PrintCommonHead(printType);
-        }
-#endif
-#ifdef __DAV_VEC__
-        __asc_aicore::scalar_printf_impl(__asc_aicore::DumpType::DUMP_SCALAR, "[AIV Block %u/%u] ", GetBlockIdx(), GetBlockNum());
-#else
-        __asc_aicore::scalar_printf_impl(__asc_aicore::DumpType::DUMP_SCALAR, "[AIC Block %u/%u] ", GetBlockIdx(), GetBlockNum());
-#endif
-        __asc_aicore::scalar_printf_impl(__asc_aicore::DumpType::DUMP_SCALAR, fmt, args...);
+        PrintfRingBufImpl(printType, fmt, args...);
     } else {
+        uint64_t ctrlValue = get_ctrl();
+        set_atomic_none();
         PrintfEntityImpl(printType, fmt, args...);
+        set_ctrl(ctrlValue);
     }
-    set_ctrl(ctrlValue);
 }
 
 __aicore__ inline void EnablePrintf()
 {
-#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0) || defined(ASCENDC_TIME_STAMP_ON)
+#if defined(__ENABLE_ASCENDC_PRINTF__)
+#if defined(ASCENDC_DUMP) || defined(ASCENDC_TIME_STAMP_ON)
     static const struct BinaryMetaAscFeature __asc_feature_print__ __attribute__ ((used, section (".ascend.meta"))) =
     {4, 4, 1};
 #endif // defined(ASCENDC_DUMP) || defined(ASCENDC_TIME_STAMP_ON)
+#endif // __ENABLE_ASCENDC_PRINTF__
 }
 
 __aicore__ __gm__ inline RingBufReadInfo* GetRingBufReadInfo(__gm__ BlockRingBufInfo* blockRingBufInfo)
@@ -1093,6 +1061,12 @@ __aicore__ inline void WriteRingBufTlvData(__gm__ PrintTlvInfoHead* printTlv, __
     SetArgsData(paramAddr, 0, strParamOffset, args...);
 }
 
+template <class... Args>
+__aicore__ inline void PrintfRingBufImpl(DumpType printType, __gm__ const char* fmt, Args&&... args)
+{
+    __asc_aicore::printf_impl(fmt, args...);
+}
+
 template <typename T>
 __aicore__ inline Hardware CheckDumpTensorPosition(const LocalTensor<T>& src)
 {
@@ -1261,7 +1235,7 @@ __aicore__ inline void WriteRingBufTlvData(
 template <template <typename> class Tensor, typename T>
 __aicore__ inline void DumpTensorRingBufImpl(const Tensor<T>& src, uint32_t desc, uint32_t dumpSize)
 {
-#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
+#ifdef ASCENDC_DUMP
     EnablePrintf();
     if constexpr (GetTensorDataType<T>() == Internal::DumpTensorDataType::ACL_MAX) {
         ASCENDC_ASSERT((false),
@@ -1343,7 +1317,7 @@ __aicore__ inline void AscendCTimeStamp(uint32_t descId, uint64_t pcPtr = 0)
 }
 __aicore__ inline void InitDump(bool mixFlag, uint32_t gmLen)
 {
-#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0) || defined(ASCENDC_ACC_DUMP)
+#if defined(ASCENDC_DUMP) || defined(ASCENDC_ACC_DUMP)
     g_dumpWorkspaceReserved = GetSysWorkSpacePtr();
     InitDumpImpl(mixFlag, gmLen);
 #else
@@ -1352,7 +1326,7 @@ __aicore__ inline void InitDump(bool mixFlag, uint32_t gmLen)
 }
 __aicore__ inline void InitDump(bool mixFlag, GM_ADDR dumpStartAddr, uint32_t gmLen)
 {
-#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0) || defined(ASCENDC_ACC_DUMP)
+#if defined(ASCENDC_DUMP) || defined(ASCENDC_ACC_DUMP)
     g_dumpWorkspaceReserved = dumpStartAddr + DUMP_WORKSPACE_SIZE;
     InitDumpImpl(mixFlag, gmLen);
 #else

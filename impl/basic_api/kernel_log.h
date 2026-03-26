@@ -381,7 +381,6 @@ __host_aicore__ static __attribute__ ((noinline)) void AssertFail(const __gm__ c
 #define ASCENDC_NPU_DEBUG_ASSERT_IMPL(expr) NPU_ASSERT_MSG(expr)
 #endif
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 #ifdef ASCENDC_DUMP
 #define VA_ARGS_IS_EMPTY(...) (sizeof(#__VA_ARGS__) == 1)
 #define ASCENDC_DEBUG_ASSERT_IMPL(expr, ...)       \
@@ -430,60 +429,6 @@ __host_aicore__ static __attribute__ ((noinline)) void AssertFail(const __gm__ c
 #else
 #define ASCENDC_DEBUG_ASSERT_IMPL(...)
 #define ASCENDC_DEBUG_DEPRECATE_ASSERT_IMPL(...)
-#endif
-
-#else
-
-#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
-#define VA_ARGS_IS_EMPTY(...) (sizeof(#__VA_ARGS__) == 1)
-#define ASCENDC_DEBUG_ASSERT_IMPL(expr, ...)       \
-    do {                                           \
-        __gm__ const char* prompt = "";            \
-        if (!(expr)) {                             \
-            if (VA_ARGS_IS_EMPTY(__VA_ARGS__)) {   \
-                ASC_ASSERT_MSG__(prompt, expr, "\n");\
-            } else {                               \
-                ASC_ASSERT_MSG__(prompt, expr, __VA_ARGS__);\
-            }                                      \
-        }                                          \
-    } while (0)
-
-#ifdef ASCENDC_CPU_DEBUG
-#define ASCENDC_DEBUG_DEPRECATE_ASSERT_IMPL(expr, ...)                        \
-    do {                                                                      \
-        __gm__ const char* prompt = VA_ARGS_IS_EMPTY(__VA_ARGS__) ? "" :      \
-            "[deprecated] NOTICE:assert has been deprecated, "                \
-            "please use ascendc_assert instead! \n";                          \
-        if (!(expr)) {                                                        \
-            if (VA_ARGS_IS_EMPTY(__VA_ARGS__)) {                              \
-                ASC_ASSERT_MSG__(prompt,expr, "\n");                          \
-            } else {                                                          \
-                ASC_ASSERT_MSG__(prompt, expr, __VA_ARGS__);                  \
-            }                                                                 \
-        }                                                                     \
-    } while (0)
-#else
-#define ASCENDC_DEBUG_DEPRECATE_ASSERT_IMPL(expr, ...)                     \
-    do {                                                                   \
-       __gm__ const char* prompt = VA_ARGS_IS_EMPTY(__VA_ARGS__) ? "" :    \
-            "[deprecated] NOTICE:assert has been deprecated, "             \
-            "please use ascendc_assert instead! \n";                       \
-        if (!(expr)) {                                                     \
-            ENABLE_ASSERT();                                               \
-            ENABLE_ASSERT_DUMP_SIZE();                                     \
-            if (VA_ARGS_IS_EMPTY(__VA_ARGS__)) {                           \
-                ASC_ASSERT_MSG__(prompt, expr, "\n");                      \
-            } else {                                                       \
-                ASC_ASSERT_MSG__(prompt, expr, __VA_ARGS__);               \
-            }                                                              \
-        }                                                                  \
-    } while (0)
-#endif
-#else
-#define ASCENDC_DEBUG_ASSERT_IMPL(...)
-#define ASCENDC_DEBUG_DEPRECATE_ASSERT_IMPL(...)
-#endif
-
 #endif
 }
 

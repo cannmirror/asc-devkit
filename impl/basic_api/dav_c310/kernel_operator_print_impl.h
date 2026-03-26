@@ -242,19 +242,21 @@ __aicore__ inline void PrintfEntityImpl(DumpType printType, __gm__ const char* f
 }
 
 template <class... Args>
+__aicore__ inline void PrintfRingBufImpl(DumpType printType, __gm__ const char* fmt, Args&&... args);
+
+template <class... Args>
 __aicore__ inline void PrintfImpl(DumpType printType, __gm__ const char* fmt, Args&&... args)
 {
-    uint64_t ctrlValue = get_ctrl();
-    set_atomic_none();
     dcci((__gm__ uint64_t*)g_sysPrintFifoSpace, cache_line_t::ENTIRE_DATA_CACHE,
         dcci_dst_t::CACHELINE_OUT);
     if (g_sysPrintFifoSpace != nullptr) {
-        __asc_aicore::enable_asc_diagnostics();
-        __asc_aicore::scalar_printf_impl(__asc_aicore::DumpType::DUMP_SCALAR, fmt, args...);
+        PrintfRingBufImpl(printType, fmt, args...);
     } else {
+        uint64_t ctrlValue = get_ctrl();
+        set_atomic_none();
         PrintfEntityImpl(printType, fmt, args...);
+        set_ctrl(ctrlValue);
     }
-    set_ctrl(ctrlValue);
 }
 
 template <uint64_t timeoutCycle = 15 * 1000 * 1000> // 20ms * 15
@@ -475,6 +477,13 @@ __aicore__ inline void WriteRingBufTlvData(__gm__ PrintTlvInfoHead* printTlv, __
     uint32_t strParamOffset = printTlv->fmtOffset + strLen;
     SetParam(paramAddr, 0, strParamOffset, args...);
 }
+
+template <class... Args>
+__aicore__ inline void PrintfRingBufImpl(DumpType printType, __gm__ const char* fmt, Args&&... args)
+{
+    __asc_aicore::printf_impl(fmt, args...);
+}
+
 
 }  // namespace AscendC
 #endif
