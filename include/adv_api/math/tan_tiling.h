@@ -12,12 +12,6 @@
  * \file tan_tiling.h
  * \brief
  */
-
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TAN_TILING_H
-#endif
-
 #ifndef LIB_MATH_TAN_TILING_H
 #define LIB_MATH_TAN_TILING_H
 
@@ -51,8 +45,3 @@ void GetTanMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, con
 void GetTanTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf);
 }
 #endif // LIB_MATH_TAN_TILING_H
-
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TAN_TILING_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TAN_TILING_H
-#endif

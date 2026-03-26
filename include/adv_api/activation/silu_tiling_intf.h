@@ -12,12 +12,6 @@
  * \file silu_tiling_intf.h
  * \brief
  */
-
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SILU_TILING_INTF_H
-#endif
-
 #ifndef LIB_ACTIVATION_SILU_TILING_INTF_H
 #define LIB_ACTIVATION_SILU_TILING_INTF_H
 #include "silu_tiling.h"
@@ -26,9 +20,4 @@ namespace AscendC {
 typedef void SiluTilingDeprecatedHeader;
 using LibSiluTilingInterface = SiluTilingDeprecatedHeader;
 } // namespace AscendC
-#endif
-
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SILU_TILING_INTF_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SILU_TILING_INTF_H
 #endif

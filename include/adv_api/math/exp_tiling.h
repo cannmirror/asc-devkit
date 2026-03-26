@@ -12,12 +12,6 @@
  * \file exp_tiling.h
  * \brief
  */
-
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_EXP_TILING_H
-#endif
-
 #ifndef LIB_MATH_EXP_TILING_H
 #define LIB_MATH_EXP_TILING_H
 #include <cstdint>
@@ -49,8 +43,3 @@ bool GetExpMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, con
     uint32_t& maxValue, uint32_t& minValue);
 } // namespace AscendC
 #endif // LIB_MATH_EXP_TILING_H
-
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_EXP_TILING_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_EXP_TILING_H
-#endif

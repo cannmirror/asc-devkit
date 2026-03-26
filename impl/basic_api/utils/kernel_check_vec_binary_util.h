@@ -1,4 +1,4 @@
-ï»¿/**
+/**
 * Copyright (c) 2025 Huawei Technologies Co., Ltd.
 * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 * CANN Open Software License Agreement Version 2.0 (the "License").
@@ -13,10 +13,10 @@
  * \brief
  */
 
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
 #pragma message("impl/basic_api/utils/kernel_check_vec_binary_util.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_vec_intf.h\"\" and use public functions or variables defined in interface headers files.")
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_CHECK_VEC_BINARY_UTIL_H
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_CHECK_VEC_BINARY_UTIL_H__
 #endif
 #ifndef ASCENDC_CHECK_VEC_BINARY_UTIL_H
 #define ASCENDC_CHECK_VEC_BINARY_UTIL_H
@@ -58,7 +58,7 @@ struct VecBinaryApiParams {
         src1Pos = static_cast<uint8_t>(GetPhyType(static_cast<TPosition>(src1PosIn)));
     }
 
-    // å¤–éƒ¨å‚æ•°ä¿®æ”¹ï¼Œä¼ å…¥logic_posï¼Œä½†æ˜¯æ–°å¢å†…éƒ¨æ–°å¢log_pos,åŸæœ‰çš„posä¿ç•™ï¼Œåœ¨å†…éƒ¨è½¬æ¢
+    // Íâ²¿²ÎÊıĞŞ¸Ä£¬´«Èëlogic_pos£¬µ«ÊÇĞÂÔöÄÚ²¿ĞÂÔölog_pos,Ô­ÓĞµÄpos±£Áô£¬ÔÚÄÚ²¿×ª»»
     VecBinaryApiParams(uint64_t dstAddrIn, uint64_t src0AddrIn, uint64_t src1AddrIn, uint32_t dstDtypeBytesIn,
         uint32_t src0DtypeBytesIn, uint32_t src1DtypeBytesIn, uint64_t dstSizeIn, uint64_t src0SizeIn,
         uint64_t src1SizeIn, uint8_t dstPosIn, uint8_t src0PosIn, uint8_t src1PosIn, uint32_t count)
@@ -233,7 +233,7 @@ bool CheckFunVecBinaryScalarImpl(VecBinaryScalarApiParams& chkParams, const char
 } // namespace AscendC
 #endif
 #endif
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_CHECK_VEC_BINARY_UTIL_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_CHECK_VEC_BINARY_UTIL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_CHECK_VEC_BINARY_UTIL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_CHECK_VEC_BINARY_UTIL_H__
 #endif

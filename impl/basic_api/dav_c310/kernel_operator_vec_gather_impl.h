@@ -1,4 +1,4 @@
-ï»¿/**
+/**
 * Copyright (c) 2025 Huawei Technologies Co., Ltd.
 * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 * CANN Open Software License Agreement Version 2.0 (the "License").
@@ -11,10 +11,10 @@
  * \file kernel_operator_vec_gather_impl.h
  * \brief
  */
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
 #pragma message("impl/basic_api/dav_c310/kernel_operator_vec_gather_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_vec_intf.h\"\" and use public functions or variables defined in interface headers files.")
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_GATHER_IMPL_H
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_GATHER_IMPL_H__
 #endif
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_GATHER_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_GATHER_IMPL_H
@@ -53,7 +53,7 @@ __simd_vf__ inline void VfGatherApi0B16(__ubuf__ T *dst, __ubuf__ T *src, __ubuf
         ShiftRights(offsetReg0, offsetReg0, (int16_t)1, indexMask);
         ShiftRights(offsetReg1, offsetReg1, (int16_t)1, indexMask);
         // extract the lower 16-bit of uint32_t offset data into uint16_t index data:
-        // for offsetReg0ï¼Œpack every lower 16-bit into the lower half of the vregï¼š
+        // for offsetReg0£¬pack every lower 16-bit into the lower half of the vreg£º
         // 0x00FF00FE00FD... ->0xFFFEFD...000000...
         // for offsetReg1, pack every higher 16-bit into the higher half of the vreg:
         // 0x001100120013... -> 0x000000...111213...
@@ -62,7 +62,7 @@ __simd_vf__ inline void VfGatherApi0B16(__ubuf__ T *dst, __ubuf__ T *src, __ubuf
         Reg::Pack<uint16_t, uint32_t, Reg::HighLowPart::HIGHEST>((Reg::RegTensor<uint16_t> &)offsetReg1,
             offsetReg1);
         // Select the effective data in offsetReg0 and offsetReg1 and joint them into a complete uint16_t type
-        // indexRegï¼š0xFFFEFD...111213...
+        // indexReg£º0xFFFEFD...111213...
         Select(indexReg, (Reg::RegTensor<uint16_t> &)offsetReg0, (Reg::RegTensor<uint16_t> &)offsetReg1,
             selectMask);
         Reg::Gather(dstReg, (__ubuf__ uint16_t *)src + srcBaseIndex, indexReg, dstMask);
@@ -235,7 +235,7 @@ __simd_vf__ inline void VfGatherApi2B8(__ubuf__ T *dst, __ubuf__ T *src, __ubuf_
         Reg::LoadAlign(offsetReg0, srcOffsetLocal + (2 * i) * u32OffsetRepeatCount);
         Reg::LoadAlign(offsetReg1, srcOffsetLocal + (2 * i + 1) * u32OffsetRepeatCount);
         // extract the lower 16-bit of uint32_t offset data into uint16_t index data:
-        // for offsetReg0ï¼Œpack every lower 16-bit into the lower half of the vregï¼š
+        // for offsetReg0£¬pack every lower 16-bit into the lower half of the vreg£º
         // 0x00FF00FE00FD... -> 0xFFFEFD...000000...
         // for offsetReg1, pack every higher 16-bit into the higher half of the vreg:
         // 0x001100120013... -> 0x000000...111213...
@@ -251,7 +251,7 @@ __simd_vf__ inline void VfGatherApi2B8(__ubuf__ T *dst, __ubuf__ T *src, __ubuf_
         // remove the higher zeros of the uint16_t data gathered by the Micro Gather instr, and pack into continuous B8
         // data: 0x010203... -> 0x123...000... (only the lower 128 elements are effective)
         Reg::Pack((Reg::RegTensor<uint8_t> &)dstReg, dstReg);
-        // convert uint16_t type preg to B8 type pregï¼š0b010101... -> 0b111...000... (lower 128-bit effective)
+        // convert uint16_t type preg to B8 type preg£º0b010101... -> 0b111...000... (lower 128-bit effective)
         Reg::MaskPack(dstMask, dstMask);
         Reg::StoreAlign((__ubuf__ uint8_t *)dst + i * u8GatherRepeatCount, (Reg::RegTensor<uint8_t> &)dstReg, dstMask);
     }
@@ -288,7 +288,7 @@ __simd_vf__ inline void VfGatherApi2B16(__ubuf__ T *dst, __ubuf__ T *src, __ubuf
         ShiftRights(api2OffsetReg0, api2OffsetReg0, (int16_t)1, indexMask);
         ShiftRights(api2OffsetReg1, api2OffsetReg1, (int16_t)1, indexMask);
         // extract the lower 16-bit of uint32_t offset data into uint16_t index data:
-        // for api2OffsetReg0ï¼Œpack every lower 16-bit into the lower half of the vregï¼š
+        // for api2OffsetReg0£¬pack every lower 16-bit into the lower half of the vreg£º
         // 0x00FF00FE00FD... -> 0xFFFEFD...000000...
         // for api2OffsetReg1, pack every higher 16-bit into the higher half of the vreg:
         // 0x001100120013... -> 0x000000...111213...
@@ -297,7 +297,7 @@ __simd_vf__ inline void VfGatherApi2B16(__ubuf__ T *dst, __ubuf__ T *src, __ubuf
         Reg::Pack<uint16_t, uint32_t, Reg::HighLowPart::HIGHEST>((Reg::RegTensor<uint16_t> &)api2OffsetReg1,
             api2OffsetReg1);
         // Select the effective data in api2OffsetReg0 and api2OffsetReg1 and joint them into a complete uint16_t type
-        // indexRegï¼š0xFFFEFD...111213...
+        // indexReg£º0xFFFEFD...111213...
         Select(indexReg, (Reg::RegTensor<uint16_t> &)api2OffsetReg0, (Reg::RegTensor<uint16_t> &)api2OffsetReg1,
             selectMask);
         Reg::Gather(dstReg, (__ubuf__ uint16_t *)src + srcBaseIndex, indexReg, dstMask);
@@ -557,7 +557,7 @@ __aicore__ inline void GatherbImpl(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ ui
 }
 }
 #endif // ASCENDC_MODULE_OPERATOR_VEC_GATHER_IMPL_H
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_GATHER_IMPL_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_GATHER_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_GATHER_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_GATHER_IMPL_H__
 #endif

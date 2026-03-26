@@ -13,10 +13,10 @@
  * \brief
  */
 
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
 #pragma message("impl/adv_api/detail/math/atan/atan_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/atan.h\"\" and use public functions or variables defined in interface headers files.")
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ATAN_ATAN_COMMON_IMPL_H
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ATAN_ATAN_COMMON_IMPL_H__
 #endif
 #ifndef IMPL_MATH_ATAN_ATAN_COMMON_IMPL_H
 #define IMPL_MATH_ATAN_ATAN_COMMON_IMPL_H
@@ -118,7 +118,7 @@ __aicore__ inline void AtanTransform(const LocalTensor<float>& dstTensor, const 
 //  when x < 0, Atan(x) = atan(-x)
 //  when x belongs to (0, tan(pi/8)), Atan(x) = atan(x)
 //  when x belongs to (tan(pi/8), tan(pi/4)), Atan(x) = pi/8 + atan((x- tan(pi/8)) / (1+ x*tan(pi/8)))
-//  when x belongs to (tan(pi/4), +âˆž), Atan(x) = pi/4 + atan((x-1)/(x+1))
+//  when x belongs to (tan(pi/4), +âˆ?, Atan(x) = pi/4 + atan((x-1)/(x+1))
 __aicore__ inline void AtanFormulaImpl(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
     const LocalTensor<float>& tmpTensor, const uint32_t splitSize)
 {
@@ -155,7 +155,7 @@ __aicore__ inline void AtanFormulaImpl(const LocalTensor<float>& dstTensor, cons
     PipeBarrier<PIPE_V>();
     Min<float, false>(dstTensor, dstTensor, tmpTensor2, MASK_PLACEHOLDER, 1, binParams);
 
-    // x in (tan(pi/4), +âˆž), atan(x) = pi/4 + atan((x-1)/(x+1))
+    // x in (tan(pi/4), +âˆ?, atan(x) = pi/4 + atan((x-1)/(x+1))
     // calculate |(x-1)/(x+1)|, normalize x to (0, tan(pi/4))
     // find the minimum value between atan(|(x-1)/(x+1)|) calculate in (0, tan(pi/8)) and (tan(pi/8), tan(pi/4))
     Adds<float, false>(tmpTensor2, absTensor, static_cast<float>(1.0), MASK_PLACEHOLDER, 1, unaryParams);
@@ -279,7 +279,7 @@ __aicore__ inline void AtanImpl(const LocalTensor<T>& dstTensor, const LocalTens
 
 #endif  // IMPL_MATH_ATAN_ATAN_COMMON_IMPL_H
 
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ATAN_ATAN_COMMON_IMPL_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ATAN_ATAN_COMMON_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ATAN_ATAN_COMMON_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ATAN_ATAN_COMMON_IMPL_H__
 #endif

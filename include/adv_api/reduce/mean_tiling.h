@@ -12,12 +12,6 @@
  * \file mean_tiling.h
  * \brief
  */
-
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MEAN_TILING_H
-#endif
-
 #ifndef LIB_REDUCE_MEAN_TILING
 #define LIB_REDUCE_MEAN_TILING
 #include <cstdint>
@@ -50,8 +44,3 @@ void GetMeanTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCo
 
 }  // namespace AscendC
 #endif  // LIB_REDUCE_MEAN_TILING
-
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MEAN_TILING_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MEAN_TILING_H
-#endif

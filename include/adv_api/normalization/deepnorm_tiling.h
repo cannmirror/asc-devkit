@@ -7,12 +7,6 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
-
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEEPNORM_TILING_H
-#endif
-
 #ifndef LIB_NORMALIZATION_DEEPNORM_TILING_H
 #define LIB_NORMALIZATION_DEEPNORM_TILING_H
 #include "graph/tensor.h"
@@ -56,8 +50,3 @@ bool GetDeepNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrc
     const uint32_t typeSize, const bool isReuseSource, const bool isBasicBlock, AscendC::tiling::DeepNormTiling& tiling);
 }
 #endif // LIB_NORMALIZATION_DEEPNORM_TILING_H
-
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEEPNORM_TILING_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEEPNORM_TILING_H
-#endif

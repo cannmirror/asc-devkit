@@ -14,9 +14,9 @@
  */
 
 
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SWIGLU_H
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SWIGLU_H__
 #endif
 
 #ifndef LIB_MATH_SWIGLU_H
@@ -34,7 +34,7 @@ namespace AscendC {
 #pragma begin_pipe(V)
 /* !
  * \note support data type: half and float
- *  Function：
+ *  Function�?
     swish(x) = x / (1 + e^(-βx))
     x1 = 1 + e^(-βx)
  * \param [out] dstTensor, output LocalTensor
@@ -112,7 +112,7 @@ __aicore__ inline void SwiGLU(LocalTensor<T>& dstTensor, const LocalTensor<T>& s
 }
 #endif
 
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SWIGLU_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SWIGLU_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SWIGLU_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SWIGLU_H__
 #endif

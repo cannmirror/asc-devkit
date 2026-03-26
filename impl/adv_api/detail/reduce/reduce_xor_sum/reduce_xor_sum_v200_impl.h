@@ -13,10 +13,10 @@
  * \brief
  */
 
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
 #pragma message("impl/adv_api/detail/reduce/reduce_xor_sum/reduce_xor_sum_v200_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce_xor_sum.h\"\" and use public functions or variables defined in interface headers files.")
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_XOR_SUM_REDUCE_XOR_SUM_V200_IMPL_H
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_XOR_SUM_REDUCE_XOR_SUM_V200_IMPL_H__
 #endif
 
 #ifndef IMPL_REDUCE_REDUCE_XOR_SUM_REDUCE_XOR_SUM_V200_IMPL_H
@@ -46,7 +46,7 @@ __aicore__ inline void CastFloat2Int16(const LocalTensor<int16_t>& dst, const Lo
 } //  namespace AscendC
 #endif // IMPL_REDUCE_REDUCE_XOR_SUM_REDUCE_XOR_SUM_V200_IMPL_H
 
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_XOR_SUM_REDUCE_XOR_SUM_V200_IMPL_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_XOR_SUM_REDUCE_XOR_SUM_V200_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_XOR_SUM_REDUCE_XOR_SUM_V200_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_XOR_SUM_REDUCE_XOR_SUM_V200_IMPL_H__
 #endif

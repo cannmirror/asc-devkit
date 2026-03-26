@@ -12,12 +12,6 @@
  * \file log_tiling_intf.h
  * \brief
  */
-
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LOG_TILING_INTF_H
-#endif
-
 #ifndef LIB_MATH_LOG_TILING_INTF
 #define LIB_MATH_LOG_TILING_INTF
 
@@ -29,8 +23,3 @@ using LibLogTilingInterface = LogTilingDeprecatedHeader;
 } // namespace AscendC
 
 #endif // LIB_MATH_LOG_TILING_INTF
-
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LOG_TILING_INTF_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LOG_TILING_INTF_H
-#endif

@@ -230,21 +230,21 @@ struct Iterate {
         |   <---------singleShapeM------->        |
         |  <---L1A_ping--->  |  <---L1A_pong--->  |
         |_L0A1_|_L0A2_|_L0A3_|_L0A4_|_L0A5_|_L0A6_|
-        ↑  <--curStepM_-->    |                    ↑
-        curML0Idx_            ↑                  mIter_
+        �? <--curStepM_-->    |                    �?
+        curML0Idx_            �?                 mIter_
         curML1Idx_        next_curML1Idx
 
         |   <---------singleShapeN------->        |
         |  <---L1B_ping--->  |  <---L1B_pong--->  |
         |_L0B1_|_L0B2_|_L0B3_|_L0B4_|_L0B5_|_L0B6_|
-        ↑  <--curStepN_-->    |                    ↑
-        curNL0Idx_            ↑                   nIter_
+        �? <--curStepN_-->    |                    �?
+        curNL0Idx_            �?                  nIter_
         curNL1Idx_       next_curNL1Idx
 
         order_N represents the resident B loop A on L1, the order is L1A_ping * L1B_ping, L1A_pong * L1B_ping, L1A_ping * L1B_pong, L1A_pong *
-        L1B_pong L0 also has resident B, loop A order_N: L0A1*L0B1, L0A2*L0B1, L0A3*L0B1, L0A1*L0B2…………
-        L0A3*L0B3，L0A4*L0B1，L0A5*L0B1 …… L0A6*L0B6 order_M: L0A1*L0B1, L0A1*L0B2, L0A1*L0B3, L0A2*L0B1 …………
-        L0A3*L0B3，L0A1*L0B4，L0A1*L0B5 …… L0A6*L0B6
+        L1B_pong L0 also has resident B, loop A order_N: L0A1*L0B1, L0A2*L0B1, L0A3*L0B1, L0A1*L0B2………�?
+        L0A3*L0B3，L0A4*L0B1，L0A5*L0B1 …�?L0A6*L0B6 order_M: L0A1*L0B1, L0A1*L0B2, L0A1*L0B3, L0A2*L0B1 ………�?
+        L0A3*L0B3，L0A1*L0B4，L0A1*L0B5 …�?L0A6*L0B6
         */
         // Update idx, use three pointers L1, L1step, L0 to control the position and calculate offset, indicating which mL0 * baseN is calculated
         if (unlikely(self->ctx.isFirstIter_)) {

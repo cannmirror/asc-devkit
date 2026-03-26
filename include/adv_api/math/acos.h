@@ -15,14 +15,14 @@
  * The Asin function does not have an elementary function expression, and there is calculating by
  * function approximation.
  * The approximate calculation formula is as follows:
- * when x belongs to (-2^(-0.5), 2^(-0.5)), Asin(x) = x +1/6*x^3 +3/40*x^5 +5!!/(6!!*7)*x^7  + â€¦ +13!!/(14!!*15)*x^15
+ * when x belongs to (-2^(-0.5), 2^(-0.5)), Asin(x) = x +1/6*x^3 +3/40*x^5 +5!!/(6!!*7)*x^7  + â€?+13!!/(14!!*15)*x^15
  * when x x belongs to (-1, -2^(-0.5)), Asin(x) = arcsin(sqrt(1-x^2)) - PI*0.5
  * when x belongs to (2^(-0.5), 1), Asin(x) = PI*0.5 - arcsin(sqrt(1-x^2))
  */
 
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ACOS_H
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ACOS_H__
 #endif
 
 #ifndef LIB_MATH_ACOS_H
@@ -125,7 +125,7 @@ __aicore__ inline void Acos(const LocalTensor<T>& dstTensor, const LocalTensor<T
 #endif
 #endif // LIB_MATH_ACOS_H
 
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ACOS_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ACOS_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ACOS_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ACOS_H__
 #endif

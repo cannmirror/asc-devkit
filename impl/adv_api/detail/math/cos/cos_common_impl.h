@@ -13,10 +13,10 @@
  * \brief
  */
 
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
 #pragma message("impl/adv_api/detail/math/cos/cos_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/cos.h\"\" and use public functions or variables defined in interface headers files.")
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_COS_COS_COMMON_IMPL_H
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_COS_COS_COMMON_IMPL_H__
 #endif
 #ifndef IMPL_MATH_COS_COS_COMMON_IMPL_H
 #define IMPL_MATH_COS_COS_COMMON_IMPL_H
@@ -111,7 +111,7 @@ __aicore__ inline void CosRound(const LocalTensor<float>& inputX, const LocalTen
     /*
     k=round(x/π + 1/2), x0=x-kπ, x0 belongs to [-π, 0], (x0 + π/2) belongs to [-π/2, π/2]
     π=π_0+π_1+π_2+π_3+π_4 achieve final precision compensation.
-    Final solution：  
+    Final solution�? 
     k = round(x * invpi + 1/2)
     x -= k * pi_0
     x -= k * pi_1
@@ -318,7 +318,7 @@ __aicore__ inline void CosImpl(const LocalTensor<T>& dstTensor, const LocalTenso
 
 #endif  // IMPL_MATH_COS_COS_COMMON_IMPL_H
 
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_COS_COS_COMMON_IMPL_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_COS_COS_COMMON_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_COS_COS_COMMON_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_COS_COS_COMMON_IMPL_H__
 #endif

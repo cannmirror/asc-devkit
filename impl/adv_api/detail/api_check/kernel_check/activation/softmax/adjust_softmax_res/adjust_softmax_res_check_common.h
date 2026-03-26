@@ -12,10 +12,10 @@
  * \file adjust_softmax_res_check_common.h
  * \brief
  */
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
 #pragma message("impl/adv_api/detail/api_check/kernel_check/activation/softmax/adjust_softmax_res/adjust_softmax_res_check_common.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/softmax.h\"\" and use public functions or variables defined in interface headers files.")
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ADJUST_SOFTMAX_RES_CHECK_COMMON_H
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ADJUST_SOFTMAX_RES_CHECK_COMMON_H__
 #endif
 
 #ifndef IMPL_API_CHECK_KERNEL_CHECK_ACTIVATION_SOFTMAX_ADJUST_SOFTMAX_RES_ADJUST_SOFTMAX_RES_CHECK_COMMON_H_
@@ -92,7 +92,7 @@ public:
 }
 #endif // IMPL_API_CHECK_KERNEL_CHECK_ACTIVATION_SOFTMAX_ADJUST_SOFTMAX_RES_ADJUST_SOFTMAX_RES_CHECK_COMMON_H_
 
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ADJUST_SOFTMAX_RES_CHECK_COMMON_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ADJUST_SOFTMAX_RES_CHECK_COMMON_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ADJUST_SOFTMAX_RES_CHECK_COMMON_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ADJUST_SOFTMAX_RES_CHECK_COMMON_H__
 #endif

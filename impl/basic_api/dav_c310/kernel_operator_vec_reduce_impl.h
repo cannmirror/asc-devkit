@@ -1,4 +1,4 @@
-Ôªø/**
+/**
 * Copyright (c) 2025 Huawei Technologies Co., Ltd.
 * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 * CANN Open Software License Agreement Version 2.0 (the "License").
@@ -7,10 +7,10 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
 #pragma message("impl/basic_api/dav_c310/kernel_operator_vec_reduce_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_tensor.h\"\" and use public functions or variables defined in interface headers files.")
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_REDUCE_IMPL_H
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_REDUCE_IMPL_H__
 #endif
 
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_REDUCE_IMPL_H
@@ -1401,7 +1401,7 @@ __simd_vf__ inline void GetReduceMaxMinCountImplVF(__ubuf__ uint64_t* popBufferA
     Reg::UnalignReg uReg;
     // read the mask from special purpose registers
     Reg::MaskReg mask = Reg::MoveMask<half>();
-    // ÂØπ‰∫éB16Á±ªÂûãÔºå‰ºöËØªÂèñÂÆåÊï¥ÁöÑ128bit {MASK1, MASK0}Êï∞ÊçÆÔºåÂπ∂Â∞ÜÊØèbitÂ§çÂà∂‰∏∫2bitÔºåÂÜôÂÖ•ÂáΩÊï∞ËøîÂõûÂÄºMaskReg
+    // ∂‘”⁄B16¿‡–Õ£¨ª·∂¡»°ÕÍ’˚µƒ128bit {MASK1, MASK0} ˝æ›£¨≤¢Ω´√øbit∏¥÷∆Œ™2bit£¨–¥»Î∫Ø ˝∑µªÿ÷µMaskReg
     Reg::MaskReg packedMask;
     Reg::MaskPack(packedMask, mask);
     // write the maskreg to UB
@@ -1471,7 +1471,7 @@ __aicore__ inline T GetAccValImpl()
 }
 }  // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_VEC_REDUCE_IMPL_H
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_REDUCE_IMPL_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_REDUCE_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_REDUCE_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_REDUCE_IMPL_H__
 #endif

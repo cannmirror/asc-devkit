@@ -13,10 +13,10 @@
  * \brief
  */
 
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
 #pragma message("impl/adv_api/detail/math/asin/asin_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/asin.h\"\" and use public functions or variables defined in interface headers files.")
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ASIN_ASIN_C310_IMPL_H
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ASIN_ASIN_C310_IMPL_H__
 #endif
 #ifndef IMPL_MATH_ASIN_ASIN_C310_IMPL_H
 #define IMPL_MATH_ASIN_ASIN_C310_IMPL_H
@@ -36,7 +36,7 @@ constexpr Reg::CastTrait ASIN_CAST_TRAIT_FLOOR = {Reg::RegLayout::ZERO, Reg::Sat
 constexpr Reg::CastTrait ASIN_CAST_TRAIT_RINT = {Reg::RegLayout::ZERO, Reg::SatMode::SAT,
     Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
-// Calculate Taylor Expansion according to (((k_nx^2 + k_n) * x^2 + k_(n-1)) * x^2 +k_(n-2) ……)*x^2 +k_0)*x.
+// Calculate Taylor Expansion according to (((k_nx^2 + k_n) * x^2 + k_(n-1)) * x^2 +k_(n-2) …�?*x^2 +k_0)*x.
 template <typename T, typename RegT>
 __simd_callee__ inline void AsinTaylorComputeInner(RegT& dstReg, RegT& srcReg, Reg::MaskReg& mask)
 {
@@ -290,7 +290,7 @@ __aicore__ inline void AsinImpl(const LocalTensor<T>& dstTensor, const LocalTens
 
 #endif // IMPL_MATH_ASIN_ASIN_C310_IMPL_H
 
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ASIN_ASIN_C310_IMPL_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ASIN_ASIN_C310_IMPL_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ASIN_ASIN_C310_IMPL_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ASIN_ASIN_C310_IMPL_H__
 #endif

@@ -12,12 +12,6 @@
  * \file sum_tiling.h
  * \brief
  */
-
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SUM_TILING_H
-#endif
-
 #ifndef LIB_REDUCE_SUM_TILING_H
 #define LIB_REDUCE_SUM_TILING_H
 #include <cstdint>
@@ -35,9 +29,4 @@ namespace AscendC {
 void GetSumMaxMinTmpSize(
     const uint32_t n, const uint32_t typeSize, const bool isReuseSource, uint32_t &maxSize, uint32_t &minSize);
 }  // namespace AscendC
-#endif
-
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SUM_TILING_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SUM_TILING_H
 #endif

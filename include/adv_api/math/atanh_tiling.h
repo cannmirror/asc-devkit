@@ -7,12 +7,6 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
-
-#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
-#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ATANH_TILING_H
-#endif
-
 #ifndef LIB_MATH_ATANH_TILING_H
 #define LIB_MATH_ATANH_TILING_H
 #include <cstdint>
@@ -47,8 +41,3 @@ void GetAtanhMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, c
 void GetAtanhTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf);
 } // namespace AscendC
 #endif // LIB_MATH_ATANH_TILING_H
-
-#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ATANH_TILING_H)
-#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
-#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ATANH_TILING_H
-#endif
