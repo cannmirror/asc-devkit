@@ -144,6 +144,9 @@ __aicore__ inline bool IsMaskNorm()
 template <typename T, bool isSetMask = true>
 __aicore__ inline void CheckMaskArray(const uint64_t mask[], const __gm__ char* apiName)
 {
+    if ASCEND_IS_AIC {
+        return;   // AIC does not need to check mask
+    }
     ASCENDC_DEBUG_ASSERT((mask != nullptr), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check mask[] in %s, it is "
         "nullptr.\n", apiName));
     if constexpr(!isSetMask) {
@@ -164,6 +167,9 @@ __aicore__ inline void CheckMaskArray(const uint64_t mask[], const __gm__ char* 
 template <typename T, bool isSetMask = true>
 __aicore__ inline void CheckMaskValue(const uint64_t mask, const __gm__ char* apiName)
 {
+    if ASCEND_IS_AIC {
+        return;   // AIC does not need to check mask
+    }
     if constexpr(!isSetMask) {
         return;   // when isSetMask = false, use previous mask. Thus no need for check.
     }
