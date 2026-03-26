@@ -55,4 +55,5 @@
 | [matmul_leaky_relu_async](./matmul_leaky_relu_async)                                       | 本样例介绍MatmulLeakyRelu算子实现及核函数直调方法 |
 | [matmul_no_ibshareAB](./matmul_no_ibshareAB)                                               | 本样例介绍了调用Matmul高阶API实现不开启IBShare功能的单算子。IBShare的功能是复用L1 Buffer上相同的A矩阵或者B矩阵数据，减少数据搬运开销。本样例为A矩阵和B矩阵同时不复用场景 |
 | [matmul_ibshareB](./matmul_ibshareB)                                                       | 本样例介绍多个AIV的B矩阵GM地址相同场景下，实现共享L1 Buffer上B矩阵数据的Matmul矩阵乘法，计算公式为：C = A * B + Bias |
+| [matmul_ub2l1_kfc](./matmul_ub2l1_kfc) | 本样例通过Matmul高阶API注册KFC，基于DataCopy实现UB(Unified Buffer)到L1(L1 Buffer)的数据搬运 |
 | [basic_block_matmul](./basic_block_matmul)                                                 | 本样例实现无尾块且tiling的base块大小固定的场景下的Matmul矩阵乘法，计算公式为：C = A * B + Bias |

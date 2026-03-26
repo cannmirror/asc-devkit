@@ -15,7 +15,7 @@ find_package(ASC REQUIRED)
 project(kernel_samples LANGUAGES ASC CXX)
 
 add_executable(demo
-    data_copy_ub2l1_kfc.asc
+    matmul_ub2l1_kfc.asc
 )
 
 # ======================================================================================
