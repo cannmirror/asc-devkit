@@ -8,11 +8,6 @@
 
 | 目录名称                                                                                                                 | 功能描述                                                                        | 
 |----------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------| 
-| [abs_duplicate](./abs_duplicate/) | 本样例介绍无DataCopyPad的非对齐abs_duplicate算子实现，采用核函数<<<>>>调用，有效降低调度开销，实现高效的算子执行 |
-| [abs_gather_mask](./abs_gather_mask) | 本样例介绍无DataCopyPad的非对齐abs_gather_mask算子实现，采用核函数<<<>>>调用，有效降低调度开销，实现高效的算子执行 |
-| [abs_pad](./abs_pad/) | 本样例介绍基于基础API实现abs_pad样例，展示了通过Pad一次性清零处理冗余数据 |
-| [abs_unpad](./abs_unpad/) | 本样例介绍基于基础API实现abs_unpad样例，展示了通过UnPad去除冗余数据的方法 |
-| [reduce_min](./reduce_min/) | 本样例介绍无DataCopyPad的非对齐ReduceMin算子核函数直调方法，采用核函数<<<>>>调用，有效降低调度开销，实现高效的算子执行 |
 | [block_reduce_max](./block_reduce_max)                                                                               | 本样例基于BlockReduceMax实现最大值归约，可用于对每个datablock内所有元素求最大值                         |
 | [compare](./compare)                                                                                             | 本样例基于Compare逐元素比较两个tensor大小，如果比较后的结果为真，则输出结果的对应比特位为1，否则为0                                                                                                                    |
 | [compare_result_stored_in_a_register](./compare_result_stored_in_a_register)                                     | 本样例基于Compare（结果存入寄存器）接口进行比较操作，可用于逐元素比较两个tensor大小（比较后的结果为真，则输出结果的对应比特位为1，否则为0），并将计算结果存入寄存器中                                                                                   |
