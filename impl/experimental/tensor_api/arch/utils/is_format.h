@@ -89,6 +89,7 @@ struct CheckArrangement {
     using ShapeRow0Type = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
     using ShapeRow1Type = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 1>::type;
     using ShapeColumn0Type = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
+    using ShapeColumn1Type = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 1>::type;
     using StrideRow0Type = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
     using StrideRow1Type = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 1>::type;
     using StrideColumn0Type = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
@@ -101,6 +102,7 @@ struct CheckArrangement {
     static constexpr ShapeRow0Type ShapeRow0{};
     static constexpr ShapeRow1Type ShapeRow1{};
     static constexpr ShapeColumn0Type ShapeColumn0{};
+    static constexpr ShapeColumn1Type ShapeColumn1{};
     static constexpr StrideRow0Type StrideRow0{};
     static constexpr StrideRow1Type StrideRow1{};
     static constexpr StrideColumn0Type StrideColumn0{};
@@ -241,7 +243,8 @@ private:
     }
 
     __aicore__ inline static constexpr bool IsFractalNDFormatOneDim() {
-        return CheckPairs(Std::Int<1>{}, arg.ShapeRow1);
+        return IsFractalNDFormatNormal()
+               && (CheckPairs(Std::Int<1>{}, arg.ShapeColumn1) || CheckPairs(Std::Int<1>{}, arg.ShapeRow1));
     }
 
     __aicore__ inline static constexpr bool IsFractalNDFormat() {

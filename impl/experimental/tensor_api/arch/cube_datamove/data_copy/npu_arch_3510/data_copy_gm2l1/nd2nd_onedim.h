@@ -45,17 +45,17 @@ private:
 
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
-
-        auto srcShapeColumns = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
-
         using type = typename U::elementType;
+
+        auto srcShapeRows = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
+        auto srcShapeCols = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
+        uint32_t copyLen = srcShapeRows * srcShapeCols * sizeof(type);
+
         uint8_t cacheMode = GetCacheModeFromTensor(src);
 
         // compact mode, dst_stride equals burst_len, padding cnt is zero
         // src and dst contiguous case, can directly copy without padding, only one row copy is needed
-        // the src is 1D tensor with only column shape, we can directly copy with burst len as column shape
-        CopyGmToCbufAlignV2Base::DataCopy(dst, src, 1, srcShapeColumns * sizeof(type), 0, 0, cacheMode, 0,
-                                          srcShapeColumns * sizeof(type));
+        CopyGmToCbufAlignV2Base::DataCopy(dst, src, 1, copyLen, 0, 0, cacheMode, 0, copyLen);
         return;
     }
 };

@@ -42,7 +42,7 @@ private:
     {
         CheckFormat::CheckNZTemplate<T>();
         CheckFormat::CheckNZTemplate<U>();
-        CheckDataTypeFor3510::CheckGm2L1DataType<T, U>();
+        CheckDataTypeFor3510::CheckGm2L1AlignV2NDDataType<T, U>();
     }
 
     template <const DataCopyTrait& trait, typename T, typename U>

@@ -78,7 +78,7 @@ private:
         uint8_t leftPaddingCnt = 0;
         uint8_t rightPaddingCnt = padCount;
 
-        if ((srcShapeRows == 1)
+        if ((srcShapeRows == 1) || (srcShapeColumns == 1)
             || (srcStrideRows == srcShapeColumns && dstStrideRows == dstShapeColumns
                 && srcStrideRows == dstStrideRows)) {
             // compact mode

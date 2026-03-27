@@ -230,7 +230,9 @@ public:
     __aicore__ inline static constexpr void CheckGm2L1ND2NDSrcOneDim()
     {
         using ShapeRow1 = typename GetFourDimType<U, AttrInfo::SHAPE, AttrInfo::ROW, 1>::type;
-        static_assert(Std::is_constant<1, ShapeRow1>::value, "The src only support 1D tensor");
+        using ShapeCol1 = typename GetFourDimType<U, AttrInfo::SHAPE, AttrInfo::COLUMN, 1>::type;
+        static_assert(Std::is_constant<1, ShapeRow1>::value || Std::is_constant<1, ShapeCol1>::value,
+                      "The src only support 1D tensor");
     }
 
     template <typename T, typename U>

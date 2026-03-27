@@ -185,20 +185,48 @@ TEST_GM2L1(fp8_e4m3fn_t, ND2ND, MakeNDLayout<T>(17, 18), MakeNDLayout<T>(19, 32)
 TEST_GM2L1(fp8_e5m2_t, ND2ND, MakeNDLayout<T>(17, 18), MakeNDLayout<T>(19, 32))
 TEST_GM2L1(hifloat8_t, ND2ND, MakeNDLayout<T>(17, 18), MakeNDLayout<T>(19, 32))
 
+// continuous case
 TEST_GM2L1(uint8_t, ND2ND1Dim, MakeNDLayout<T>(1, 17), MakeNDLayout<T>(1, 19))
 TEST_GM2L1(uint8_t, ND2ND1Dim, MakeNDLayout<T>(1, 17), MakeNDLayout<T>(1, 40))
 TEST_GM2L1(half, ND2ND1Dim, MakeNDLayout<T>(1, 17), MakeNDLayout<T>(1, 19))
 TEST_GM2L1(half, ND2ND1Dim, MakeNDLayout<T>(1, 17), MakeNDLayout<T>(1, 40))
 TEST_GM2L1(float, ND2ND1Dim, MakeNDLayout<T>(1, 17), MakeNDLayout<T>(1, 19))
 TEST_GM2L1(float, ND2ND1Dim, MakeNDLayout<T>(1, 17), MakeNDLayout<T>(1, 40))
-TEST_GM2L1(float, ND2ND1DimInt,
-           LayoutConstructor(Std::Int<1>{}, Std::Int<1>(), Std::Int<1>{}, 17, Std::Int<0>{}, Std::Int<1>(),
-                             Std::Int<0>{}, Std::Int<1>{}),
-           MakeNDLayout<T>(1, 19))
-TEST_GM2L1(uint64_t, ND2ND1DimInt,
-           LayoutConstructor(Std::Int<1>{}, Std::Int<1>(), Std::Int<1>{}, 17, Std::Int<0>{}, Std::Int<1>(),
-                             Std::Int<0>{}, Std::Int<1>{}),
-           MakeNDLayout<T>(1, 19))
+TEST_GM2L1(uint64_t, ND2ND1Dim, MakeNDLayout<T>(1, 17), MakeNDLayout<T>(1, 19))
+TEST_GM2L1(uint64_t, ND2ND1Dim, MakeNDLayout<T>(1, 17), MakeNDLayout<T>(1, 40))
+
+TEST_GM2L1(uint8_t, ND2ND1Dim, MakeNDLayout<T>(10, 17), MakeNDLayout<T>(10, 17))
+TEST_GM2L1(uint8_t, ND2ND1Dim, MakeNDLayout<T>(10, 17), MakeNDLayout<T>(20, 17))
+TEST_GM2L1(half, ND2ND1Dim, MakeNDLayout<T>(10, 17), MakeNDLayout<T>(10, 17))
+TEST_GM2L1(half, ND2ND1Dim, MakeNDLayout<T>(10, 17), MakeNDLayout<T>(20, 17))
+TEST_GM2L1(float, ND2ND1Dim, MakeNDLayout<T>(10, 17), MakeNDLayout<T>(10, 17))
+TEST_GM2L1(float, ND2ND1Dim, MakeNDLayout<T>(10, 17), MakeNDLayout<T>(20, 17))
+TEST_GM2L1(uint64_t, ND2ND1Dim, MakeNDLayout<T>(10, 17), MakeNDLayout<T>(10, 17))
+TEST_GM2L1(uint64_t, ND2ND1Dim, MakeNDLayout<T>(10, 17), MakeNDLayout<T>(20, 17))
+
+TEST_GM2L1(half, ND2ND1DimInt, MakeNDLayout<T>(Std::Int<1>(), 17), MakeNDLayout<T>(1, 19))
+TEST_GM2L1(bfloat16_t, ND2ND1DimInt, MakeNDLayout<T>(Std::Int<1>(), 17), MakeNDLayout<T>(1, 19))
+TEST_GM2L1(float, ND2ND1DimInt, MakeNDLayout<T>(Std::Int<1>(), 17), MakeNDLayout<T>(1, 19))
+TEST_GM2L1(int8_t, ND2ND1DimInt, MakeNDLayout<T>(Std::Int<1>(), 17), MakeNDLayout<T>(1, 19))
+TEST_GM2L1(uint8_t, ND2ND1DimInt, MakeNDLayout<T>(Std::Int<1>(), 17), MakeNDLayout<T>(1, 19))
+TEST_GM2L1(int16_t, ND2ND1DimInt, MakeNDLayout<T>(Std::Int<1>(), 17), MakeNDLayout<T>(1, 19))
+TEST_GM2L1(uint16_t, ND2ND1DimInt, MakeNDLayout<T>(Std::Int<1>(), 17), MakeNDLayout<T>(1, 19))
+TEST_GM2L1(int32_t, ND2ND1DimInt, MakeNDLayout<T>(Std::Int<1>(), 17), MakeNDLayout<T>(1, 19))
+TEST_GM2L1(uint32_t, ND2ND1DimInt, MakeNDLayout<T>(Std::Int<1>(), 17), MakeNDLayout<T>(1, 19))
+TEST_GM2L1(int64_t, ND2ND1DimInt, MakeNDLayout<T>(Std::Int<1>(), 17), MakeNDLayout<T>(1, 19))
+TEST_GM2L1(uint64_t, ND2ND1DimInt, MakeNDLayout<T>(Std::Int<1>(), 17), MakeNDLayout<T>(1, 19))
+TEST_GM2L1(fp8_e4m3fn_t, ND2ND1DimInt, MakeNDLayout<T>(Std::Int<1>(), 17), MakeNDLayout<T>(1, 19))
+TEST_GM2L1(fp8_e5m2_t, ND2ND1DimInt, MakeNDLayout<T>(Std::Int<1>(), 17), MakeNDLayout<T>(1, 19))
+TEST_GM2L1(hifloat8_t, ND2ND1DimInt, MakeNDLayout<T>(Std::Int<1>(), 17), MakeNDLayout<T>(1, 19))
+
+TEST_GM2L1(uint8_t, ND2ND1DimInt, MakeNDLayout<T>(17, Std::Int<1>()), MakeNDLayout<T>(19, 1))
+TEST_GM2L1(uint8_t, ND2ND1DimInt, MakeNDLayout<T>(17, Std::Int<1>()), MakeNDLayout<T>(19, Std::Int<1>()))
+TEST_GM2L1(uint16_t, ND2ND1DimInt, MakeNDLayout<T>(17, Std::Int<1>()), MakeNDLayout<T>(19, 1))
+TEST_GM2L1(uint16_t, ND2ND1DimInt, MakeNDLayout<T>(17, Std::Int<1>()), MakeNDLayout<T>(19, Std::Int<1>()))
+TEST_GM2L1(float, ND2ND1DimInt, MakeNDLayout<T>(17, Std::Int<1>()), MakeNDLayout<T>(19, 1))
+TEST_GM2L1(float, ND2ND1DimInt, MakeNDLayout<T>(17, Std::Int<1>()), MakeNDLayout<T>(19, Std::Int<1>()))
+TEST_GM2L1(uint64_t, ND2ND1DimInt, MakeNDLayout<T>(17, Std::Int<1>()), MakeNDLayout<T>(19, 1))
+TEST_GM2L1(uint64_t, ND2ND1DimInt, MakeNDLayout<T>(17, Std::Int<1>()), MakeNDLayout<T>(19, Std::Int<1>()))
 
 // non continuous case, the dst col stride of ND layout needs to be aligned with C0_SIZE
 TEST_GM2L1_COORD(uint16_t, ND2ND, MakeNDLayout<T>(33, 40), MakeNDLayout<T>(19, 16), MakeCoord(10, 10))
@@ -358,10 +386,20 @@ TEST_GM2L1(int16_t, Nz2Nz, MakeNzLayout<T>(18, 9), MakeNzLayout<T>(19, 10))
 TEST_GM2L1(uint16_t, Nz2Nz, MakeNzLayout<T>(18, 9), MakeNzLayout<T>(19, 10))
 TEST_GM2L1(int32_t, Nz2Nz, MakeNzLayout<T>(18, 9), MakeNzLayout<T>(19, 10))
 TEST_GM2L1(uint32_t, Nz2Nz, MakeNzLayout<T>(18, 9), MakeNzLayout<T>(19, 10))
+TEST_GM2L1(int64_t, Nz2Nz, MakeNzLayout<T>(18, 9), MakeNzLayout<T>(19, 10))
+TEST_GM2L1(uint64_t, Nz2Nz, MakeNzLayout<T>(18, 9), MakeNzLayout<T>(19, 10))
 
+TEST_GM2L1(uint8_t, Nz2Nz, MakeNzLayout<T>(17, 18), MakeNzLayout<T>(38, 40))
+TEST_GM2L1(uint8_t, Nz2Nz, MakeNzLayout<T>(13, 18), MakeNzLayout<T>(14, 20))
+TEST_GM2L1(uint8_t, Nz2Nz, MakeNzLayout<T>(17, 18), MakeNzLayout<T>(19, 20))
 TEST_GM2L1(uint16_t, Nz2Nz, MakeNzLayout<T>(17, 18), MakeNzLayout<T>(38, 40))
 TEST_GM2L1(uint16_t, Nz2Nz, MakeNzLayout<T>(13, 18), MakeNzLayout<T>(14, 20))
 TEST_GM2L1(uint16_t, Nz2Nz, MakeNzLayout<T>(17, 18), MakeNzLayout<T>(19, 20))
+TEST_GM2L1(uint32_t, Nz2Nz, MakeNzLayout<T>(17, 18), MakeNzLayout<T>(38, 40))
+TEST_GM2L1(uint32_t, Nz2Nz, MakeNzLayout<T>(13, 18), MakeNzLayout<T>(14, 20))
+TEST_GM2L1(uint32_t, Nz2Nz, MakeNzLayout<T>(17, 18), MakeNzLayout<T>(19, 20))
+TEST_GM2L1(uint64_t, Nz2Nz, MakeNzLayout<T>(13, 18), MakeNzLayout<T>(14, 20))
+TEST_GM2L1(uint64_t, Nz2Nz, MakeNzLayout<T>(17, 18), MakeNzLayout<T>(19, 20))
 
 TEST_GM2L1_COORD(half, Nz2Nz, MakeNzLayout<T>(18, 17), MakeNzLayout<T>(39, 48), MakeCoord(0, 0))
 TEST_GM2L1_COORD(uint8_t, Nz2Nz, MakeNzLayout<T>(33, 25), MakeNzLayout<T>(19, 18), MakeCoord(0, 0))
@@ -370,6 +408,8 @@ TEST_GM2L1_COORD(uint16_t, Nz2Nz, MakeNzLayout<T>(33, 25), MakeNzLayout<T>(19, 1
 TEST_GM2L1_COORD(uint16_t, Nz2Nz, MakeNzLayout<T>(33, 25), MakeNzLayout<T>(19, 18), MakeCoord(10, 10))
 TEST_GM2L1_COORD(float, Nz2Nz, MakeNzLayout<T>(33, 25), MakeNzLayout<T>(19, 18), MakeCoord(0, 0))
 TEST_GM2L1_COORD(float, Nz2Nz, MakeNzLayout<T>(33, 25), MakeNzLayout<T>(19, 18), MakeCoord(10, 10))
+TEST_GM2L1_COORD(uint64_t, Nz2Nz, MakeNzLayout<T>(33, 25), MakeNzLayout<T>(19, 18), MakeCoord(0, 0))
+TEST_GM2L1_COORD(uint64_t, Nz2Nz, MakeNzLayout<T>(33, 25), MakeNzLayout<T>(19, 18), MakeCoord(10, 10))
 
 // ScaleA
 // scaleA col direction, col % 2 must be 0
@@ -597,12 +637,21 @@ void SimND2ND(const T& dst, const U& src)
     uint32_t M1 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
     uint32_t N1 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
 
-    if (M == M1 && N == N1 && srcRowStride == N && dstRowStride == N) {
-        N1 = M * N;
-        N = M * N;
-        M = 1;
-        M1 = 1;
+    if (M == 1 || N == 1 || (N == N1 && srcRowStride == N && dstRowStride == N1)) {
+        // if src is already in row major or column major format, treat it as M=1 or N=1 to simplify the copy
+        uint32_t dataLen = M * N;
+        uint32_t alignN = (dataLen + c0Elements - 1) / c0Elements * c0Elements;
+        for (uint32_t i = 0; i < alignN; i++) {
+            if (i < dataLen) {
+                dst.Data()[i] = src.Data()[i];
+            } else {
+                // padding with 0 if out of bound
+                dst.Data()[i] = static_cast<srcType>(0);
+            }
+        }
+        return;
     }
+
     N1 = (N1 + c0Elements - 1) / c0Elements * c0Elements; // align N1 to C0 boundary
 
     for (uint32_t m1 = 0; m1 < M1; m1++) {
