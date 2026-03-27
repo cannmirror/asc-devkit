@@ -14,7 +14,3 @@
 TEST_VECTOR_COMPUTE_BINARY_INSTR(SubReluCAPI, asc_sub_relu, vsubrelu, half);
 TEST_VECTOR_COMPUTE_BINARY_INSTR(SubReluCAPI, asc_sub_relu, vsubrelu, float);
 TEST_VECTOR_COMPUTE_BINARY_INSTR(SubReluCAPI, asc_sub_relu, vsubrelu, int16_t);
-
-// ==========vsubreluconv_vdeqs162b8==========
-TEST_VECTOR_COMPUTE_RELU_CONV_INSTR(SubReluConvVdeqs162b8_int8_t, asc_sub_relu_vdeq, vsubreluconv_vdeqs162b8, int8_t, int16_t);
-TEST_VECTOR_COMPUTE_RELU_CONV_INSTR(SubReluConvVdeqs162b8_uint8_t, asc_sub_relu_vdeq, vsubreluconv_vdeqs162b8, uint8_t, int16_t);

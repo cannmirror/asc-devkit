@@ -116,8 +116,14 @@ __aicore__ inline void load_gm_to_cbuf_stub(__cbuf__ DTYPE *dst, __gm__ DTYPE *s
 
 class TEST_COPY_GM_TO_L1 : public testing::Test {
 protected:
-    void SetUp() {}
-    void TearDown() {}
+    void SetUp()
+    {
+        g_coreType = C_API_AIC_TYPE;
+    }
+    void TearDown()
+    {
+        g_coreType = C_API_AIV_TYPE;
+    }
 };
 
 #define TEST_CUBE_DATAMOVE_COPY_GM2L1(dtype)  \

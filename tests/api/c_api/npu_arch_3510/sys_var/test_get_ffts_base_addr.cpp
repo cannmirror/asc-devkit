@@ -16,8 +16,14 @@
 
 class TestGetFftsBaseAddr : public testing::Test {
 protected:
-    void SetUp() {}
-    void TearDown() {}
+    void SetUp()
+    {
+        g_coreType = C_API_AIC_TYPE;
+    }
+    void TearDown()
+    {
+        g_coreType = C_API_AIV_TYPE;
+    }
 };
 
 namespace {   

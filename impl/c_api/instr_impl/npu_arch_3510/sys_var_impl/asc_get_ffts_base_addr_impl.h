@@ -22,7 +22,9 @@
 
 __aicore__ inline int64_t asc_get_ffts_base_addr_impl()
 {
-    return get_ffts_base_addr();
+    if ASC_IS_AIC {
+        return get_ffts_base_addr();
+    }
 }
 
 #endif
