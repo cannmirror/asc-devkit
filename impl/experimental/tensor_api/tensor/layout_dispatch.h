@@ -328,7 +328,8 @@ struct LayoutDispatcher;
 
 template <typename T>
 struct LayoutDispatcher<LayoutFormat::NZ, T> {
-    __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
+    template <typename U, typename S>
+    __aicore__ inline static decltype(auto) apply(U row, S column) {
         constexpr auto c0Ele = C0_ELEMENT<T>;
         return LayoutConstructor(Std::Int<FRACTAL_FIXED>{}, Std::ceil_division(row, FRACTAL_FIXED), Std::Int<c0Ele>{},
                                  Std::ceil_division(column, c0Ele), Std::Int<c0Ele>{}, Std::Int<c0Ele * FRACTAL_FIXED>{},
@@ -338,7 +339,8 @@ struct LayoutDispatcher<LayoutFormat::NZ, T> {
 
 template <>
 struct LayoutDispatcher<LayoutFormat::NZ, Std::ignore_t> {
-    __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
+    template <typename U, typename S>
+    __aicore__ inline static decltype(auto) apply(U row, S column) {
         constexpr auto c0Ele = C0_ELEMENT<uint16_t>;
         return LayoutConstructor(Std::Int<FRACTAL_FIXED>{},  Std::ceil_division(row, FRACTAL_FIXED), 
                                 Std::Int<c0Ele>{},  Std::ceil_division(column, c0Ele), 
