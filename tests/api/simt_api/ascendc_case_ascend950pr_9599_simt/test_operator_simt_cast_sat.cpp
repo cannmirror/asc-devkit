@@ -79,7 +79,7 @@ bfloat16_t __cvt_bfloat16_t(T x)
 #define __SIMT_DEVICE_FUNCTIONS_DECL__ 
 
 #undef ASCENDC_CPU_DEBUG
-#include "impl/simt_api/cpp/dav_c310/kernel_simt_cast_sat_impl.h"
+#include "impl/simt_api/cpp/dav_3510/kernel_simt_cast_sat_impl.h"
 
 class CastSatTestsuite : public testing::Test {
 protected:
