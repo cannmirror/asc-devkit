@@ -25,6 +25,7 @@ __aicore__ inline int64_t asc_get_ffts_base_addr_impl()
     if ASC_IS_AIC {
         return get_ffts_base_addr();
     }
+    return 0;
 }
 
 #endif
