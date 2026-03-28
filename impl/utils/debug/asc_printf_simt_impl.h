@@ -23,14 +23,7 @@
 #define IMPL_UTILS_DEBUG_ASC_PRINTF_SIMT_IMPL_H
 
 #include "impl/utils/sys_macros.h"
-
-#ifndef __SIMT_DEVICE_FUNCTIONS_DECL__
-#if defined(__NPU_COMPILER_INTERNAL_PURE_SIMT__)
-#define __SIMT_DEVICE_FUNCTIONS_DECL__ __aicore__
-#else
-#define __SIMT_DEVICE_FUNCTIONS_DECL__ __simt_callee__
-#endif
-#endif
+#include "simt_api/device_types.h"
 
 #ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
 #define __simt_gm__ __gm__
@@ -38,7 +31,7 @@
 #define __simt_gm__ 
 #endif
 
-inline __simt_gm__ uint8_t* __simt_gm__ g_sysSimtPrintFifoSpace = nullptr;
+inline __gm__ uint8_t* __simt_gm__ g_sysSimtPrintFifoSpace = nullptr;
 
 namespace AscendC {
 namespace Simt {
@@ -210,10 +203,14 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline __simt_gm__ RingBufWriteInfo* get_ring_buf
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void ring_buffer_wait(__simt_gm__ RingBufReadInfo* read_info, uint64_t end_offset)
 {
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
     volatile uint64_t tmp = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>(&read_info->bufOffset);
     while (end_offset >= tmp) {
         tmp = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>(&read_info->bufOffset);
     }
+#else
+    while (end_offset > *reinterpret_cast<volatile uint64_t*>(&read_info->bufOffset)) {}
+#endif
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint64_t check_and_wait_ring_buf_space(
@@ -222,7 +219,11 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint64_t check_and_wait_ring_buf_space(
     __simt_gm__ RingBufReadInfo* read_info = get_ring_buf_read_info(block_ring_buf_info);
     __simt_gm__ RingBufWriteInfo* write_info = get_ring_buf_write_info(block_ring_buf_info);
 
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
     uint64_t start_offset = atomicAdd(&write_info->bufOffset, tlv_len);
+#else
+    uint64_t start_offset = __atomic_add(&write_info->bufOffset, tlv_len);
+#endif
     uint64_t end_offset = start_offset + tlv_len;
     if (end_offset > read_info->bufOffset + block_ring_buf_info->ringBufLen) {
         ring_buffer_wait(read_info, end_offset - block_ring_buf_info->ringBufLen);
@@ -414,7 +415,11 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void write_finish(__simt_gm__ BlockRingBuf
     }
 
     __simt_gm__ RingBufWriteInfo* write_info = get_ring_buf_write_info(block_ring_buf_info);
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
     atomicAdd(&write_info->packIdx, 1);
+#else
+    __atomic_add(&write_info->packIdx, 1);
+#endif
 }
 #endif
 
@@ -440,11 +445,15 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void simt_printf_impl(DumpType print_type,
     uint32_t write_ptr = static_cast<uint32_t>(start_offset);
     write_ring_buf_tlv_head(block_ring_buf_info, write_ptr, tlv_len, args_num);
     write_ring_buf_tlv_data(block_ring_buf_info, write_ptr, args_num, fmt, args...);
-    __cce_scalar::dcci(reinterpret_cast<__gm__ uint8_t*>(block_ring_buf_info->ringBufAddr + start_offset), 1, 1);
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
+    __cce_scalar::dcci(reinterpret_cast<__simt_gm__ uint8_t*>(block_ring_buf_info->ringBufAddr + start_offset), 1, 1);
+#endif
 
     __threadfence();
     write_finish(block_ring_buf_info, start_offset, print_type);
-    __cce_scalar::dcci(reinterpret_cast<__gm__ uint8_t*>(block_ring_buf_info->ringBufAddr + start_offset), 0, 1);
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
+    __cce_scalar::dcci(reinterpret_cast<__simt_gm__ uint8_t*>(block_ring_buf_info->ringBufAddr + start_offset), 0, 1);
+#endif
     if (print_type == DumpType::DUMP_SIMT_ASSERT) {
         __sync_workitems();
     }
