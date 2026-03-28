@@ -391,6 +391,7 @@ TEST_F(TEST_ASCENDC_RUNTIME, AscendLaunchKernelWithHostArgs_950) {
 TEST_F(TEST_ASCENDC_RUNTIME, AscendCFunctionGetMetaInfoKtype) {
     void* funcHandle = nullptr;
     unsigned int kernelType = 5;
+    MOCKER(rtFunctionGetMetaInfo).stubs().will(returnValue(0));
     uint32_t ret = AscendCFunctionGetMetaInfoKtype(funcHandle, &kernelType);
     EXPECT_EQ(ret, 0);
 }
@@ -399,6 +400,7 @@ TEST_F(TEST_ASCENDC_RUNTIME, AscendCFunctionGetMetaInfoCoreRation) {
     void* funcHandle = nullptr;
     unsigned short aicRation;
     unsigned short aivRation;
+    MOCKER(rtFunctionGetMetaInfo).stubs().will(returnValue(0));
     uint32_t ret = AscendCFunctionGetMetaInfoCoreRation(funcHandle, &aicRation, &aivRation);
     EXPECT_EQ(ret, 0);
 }
