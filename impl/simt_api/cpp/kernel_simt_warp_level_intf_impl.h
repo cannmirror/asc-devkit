@@ -15,33 +15,33 @@
 
 namespace AscendC {
 namespace Simt {
-__aicore__ inline int32_t WarpAllSync(int32_t predicate)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t WarpAllSync(int32_t predicate)
 {
     return AllSyncImpl(predicate);
 }
 
-__aicore__ inline int32_t WarpAnySync(int32_t predicate)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t WarpAnySync(int32_t predicate)
 {
     return AnySyncImpl(predicate);
 }
 
-__aicore__ inline int32_t Uni(int32_t predicate)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t Uni(int32_t predicate)
 {
     return UniImpl(predicate);
 }
 
-__aicore__ inline uint32_t WarpBallotSync(int32_t predicate)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t WarpBallotSync(int32_t predicate)
 {
     return BallotSyncImpl(predicate);
 }
 
-__aicore__ inline uint32_t WarpActiveMask()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t WarpActiveMask()
 {
     return ActiveMaskImpl();
 }
 
 template <typename T>
-__aicore__ inline T WarpShflSync(T var, int32_t srcLane, int32_t width)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T WarpShflSync(T var, int32_t srcLane, int32_t width)
 {
     static_assert(SupportType<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>(),
         "Input type of var only supports int32_t, uint32_t, int64_t, uint64_t, half, half2, float.");
@@ -49,7 +49,7 @@ __aicore__ inline T WarpShflSync(T var, int32_t srcLane, int32_t width)
 }
 
 template <typename T>
-__aicore__ inline T WarpShflUpSync(T var, uint32_t delta, int32_t width)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T WarpShflUpSync(T var, uint32_t delta, int32_t width)
 {
     static_assert(SupportType<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>(),
         "Input type of var only supports int32_t, uint32_t, int64_t, uint64_t, half, half2, float.");
@@ -57,7 +57,7 @@ __aicore__ inline T WarpShflUpSync(T var, uint32_t delta, int32_t width)
 }
 
 template <typename T>
-__aicore__ inline T WarpShflDownSync(T var, uint32_t delta, int32_t width)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T WarpShflDownSync(T var, uint32_t delta, int32_t width)
 {
     static_assert(SupportType<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>(),
         "Input type of var only supports int32_t, uint32_t, int64_t, uint64_t, half, half2, float.");
@@ -65,7 +65,7 @@ __aicore__ inline T WarpShflDownSync(T var, uint32_t delta, int32_t width)
 }
 
 template <typename T>
-__aicore__ inline T WarpShflXorSync(T var, int32_t laneMask, int32_t width)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T WarpShflXorSync(T var, int32_t laneMask, int32_t width)
 {
     static_assert(SupportType<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>(),
         "Input type of var only supports int32_t, uint32_t, int64_t, uint64_t, half, half2, float.");
@@ -73,7 +73,7 @@ __aicore__ inline T WarpShflXorSync(T var, int32_t laneMask, int32_t width)
 }
 
 template <typename T>
-__aicore__ inline T WarpReduceAddSync(T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T WarpReduceAddSync(T val)
 {
     static_assert(SupportType<T, int32_t, uint32_t, half, float>(),
         "Input type of val only supports int32_t, uint32_t, half, float.");
@@ -81,7 +81,7 @@ __aicore__ inline T WarpReduceAddSync(T val)
 }
 
 template <typename T>
-__aicore__ inline T WarpReduceMaxSync(T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T WarpReduceMaxSync(T val)
 {
     static_assert(SupportType<T, int32_t, uint32_t, half, float>(),
         "Input type of val only supports int32_t, uint32_t, half, float.");
@@ -89,19 +89,19 @@ __aicore__ inline T WarpReduceMaxSync(T val)
 }
 
 template <typename T>
-__aicore__ inline T WarpReduceMinSync(T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T WarpReduceMinSync(T val)
 {
     static_assert(SupportType<T, int32_t, uint32_t, half, float>(),
         "Input type of val only supports int32_t, uint32_t, half, float.");
     return ReduceMinSyncImpl(val);
 }
 
-__aicore__ inline void ThreadBarrier()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void ThreadBarrier()
 {
     ThreadBarrierImpl();
 }
 
-__aicore__ inline void ThreadFence()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void ThreadFence()
 {
     ThreadFenceImpl();
 }

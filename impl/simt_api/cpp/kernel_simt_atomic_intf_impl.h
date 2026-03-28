@@ -18,154 +18,154 @@ namespace Simt {
 
 #ifndef ASCENDC_CPU_DEBUG
 template <typename T>
-__aicore__ inline T AtomicAdd(__ubuf__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicAdd(__ubuf__ T *address, T val)
 {
     return AtomicAddImpl(address, val);
 }
 #endif
 
 template <typename T>
-__aicore__ inline T AtomicAdd(__gm__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicAdd(__gm__ T *address, T val)
 {
     return AtomicAddImpl(address, val);
 }
 
 #ifndef ASCENDC_CPU_DEBUG
 template <typename T>
-__aicore__ inline T AtomicSub(__ubuf__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicSub(__ubuf__ T *address, T val)
 {
     return AtomicSubImpl(address, val);
 }
 #endif
 
 template <typename T>
-__aicore__ inline T AtomicSub(__gm__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicSub(__gm__ T *address, T val)
 {
     return AtomicSubImpl(address, val);
 }
 
 #ifndef ASCENDC_CPU_DEBUG
 template <typename T>
-__aicore__ inline T AtomicExch(__ubuf__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicExch(__ubuf__ T *address, T val)
 {
     return AtomicExchImpl(address, val);
 }
 #endif
 
 template <typename T>
-__aicore__ inline T AtomicExch(__gm__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicExch(__gm__ T *address, T val)
 {
     return AtomicExchImpl(address, val);
 }
 
 #ifndef ASCENDC_CPU_DEBUG
 template <typename T>
-__aicore__ inline T AtomicMax(__ubuf__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicMax(__ubuf__ T *address, T val)
 {
     return AtomicMaxImpl(address, val);
 }
 #endif
 
 template <typename T>
-__aicore__ inline T AtomicMax(__gm__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicMax(__gm__ T *address, T val)
 {
     return AtomicMaxImpl(address, val);
 }
 
 #ifndef ASCENDC_CPU_DEBUG
 template <typename T>
-__aicore__ inline T AtomicMin(__ubuf__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicMin(__ubuf__ T *address, T val)
 {
     return AtomicMinImpl(address, val);
 }
 #endif
 
 template <typename T>
-__aicore__ inline T AtomicMin(__gm__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicMin(__gm__ T *address, T val)
 {
     return AtomicMinImpl(address, val);
 }
 
 #ifndef ASCENDC_CPU_DEBUG
 template <typename T>
-__aicore__ inline T AtomicInc(__ubuf__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicInc(__ubuf__ T *address, T val)
 {
     return AtomicIncImpl(address, val);
 }
 #endif
 
 template <typename T>
-__aicore__ inline T AtomicInc(__gm__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicInc(__gm__ T *address, T val)
 {
     return AtomicIncImpl(address, val);
 }
 
 #ifndef ASCENDC_CPU_DEBUG
 template <typename T>
-__aicore__ inline T AtomicDec(__ubuf__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicDec(__ubuf__ T *address, T val)
 {
     return AtomicDecImpl(address, val);
 }
 #endif
 
 template <typename T>
-__aicore__ inline T AtomicDec(__gm__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicDec(__gm__ T *address, T val)
 {
     return AtomicDecImpl(address, val);
 }
 
 #ifndef ASCENDC_CPU_DEBUG
 template <typename T>
-__aicore__ inline T AtomicCas(__ubuf__ T *address, T compare, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicCas(__ubuf__ T *address, T compare, T val)
 {
     return AtomicCasImpl(address, compare, val);
 }
 #endif
 
 template <typename T>
-__aicore__ inline T AtomicCas(__gm__ T *address, T compare, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicCas(__gm__ T *address, T compare, T val)
 {
     return AtomicCasImpl(address, compare, val);
 }
 
 #ifndef ASCENDC_CPU_DEBUG
 template <typename T>
-__aicore__ inline T AtomicAnd(__ubuf__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicAnd(__ubuf__ T *address, T val)
 {
     return AtomicAndImpl(address, val);
 }
 #endif
 
 template <typename T>
-__aicore__ inline T AtomicAnd(__gm__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicAnd(__gm__ T *address, T val)
 {
     return AtomicAndImpl(address, val);
 }
 
 #ifndef ASCENDC_CPU_DEBUG
 template <typename T>
-__aicore__ inline T AtomicOr(__ubuf__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicOr(__ubuf__ T *address, T val)
 {
     return AtomicOrImpl(address, val);
 }
 #endif
 
 template <typename T>
-__aicore__ inline T AtomicOr(__gm__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicOr(__gm__ T *address, T val)
 {
     return AtomicOrImpl(address, val);
 }
 
 #ifndef ASCENDC_CPU_DEBUG
 template <typename T>
-__aicore__ inline T AtomicXor(__ubuf__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicXor(__ubuf__ T *address, T val)
 {
     return AtomicXorImpl(address, val);
 }
 #endif
 
 template <typename T>
-__aicore__ inline T AtomicXor(__gm__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicXor(__gm__ T *address, T val)
 {
     return AtomicXorImpl(address, val);
 }

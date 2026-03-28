@@ -11,16 +11,18 @@
 #ifndef ASCENDC_MODULE_SIMT_CMP_INTERFACE_H
 #define ASCENDC_MODULE_SIMT_CMP_INTERFACE_H
 
+#include "simt_api/device_types.h"
+
 namespace AscendC {
 namespace Simt {
 template <typename T>
-__aicore__ inline bool IsFinite(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bool IsFinite(T x);
 
 template <typename T>
-__aicore__ inline bool IsNan(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bool IsNan(T x);
 
 template <typename T>
-__aicore__ inline bool IsInf(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bool IsInf(T x);
 }  // namespace Simt
 }  // namespace AscendC
 

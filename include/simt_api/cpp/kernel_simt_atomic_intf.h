@@ -10,73 +10,76 @@
 
 #ifndef ASCENDC_MODULE_SIMT_ATOMIC_INTERFACE_H
 #define ASCENDC_MODULE_SIMT_ATOMIC_INTERFACE_H
+
+#include "simt_api/device_types.h"
+
 namespace AscendC {
 namespace Simt {
 template <typename T>
-__aicore__ inline T AtomicAdd(__ubuf__ T *address, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicAdd(__ubuf__ T *address, T val);
 
 template <typename T>
-__aicore__ inline T AtomicAdd(__gm__ T *address, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicAdd(__gm__ T *address, T val);
 
 template <typename T>
-__aicore__ inline T AtomicSub(__ubuf__ T *address, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicSub(__ubuf__ T *address, T val);
 
 template <typename T>
-__aicore__ inline T AtomicSub(__gm__ T *address, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicSub(__gm__ T *address, T val);
 
 template <typename T>
-__aicore__ inline T AtomicExch(__ubuf__ T *address, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicExch(__ubuf__ T *address, T val);
 
 template <typename T>
-__aicore__ inline T AtomicExch(__gm__ T *address, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicExch(__gm__ T *address, T val);
 
 template <typename T>
-__aicore__ inline T AtomicMax(__ubuf__ T *address, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicMax(__ubuf__ T *address, T val);
 
 template <typename T>
-__aicore__ inline T AtomicMax(__gm__ T *address, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicMax(__gm__ T *address, T val);
 
 template <typename T>
-__aicore__ inline T AtomicMin(__ubuf__ T *address, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicMin(__ubuf__ T *address, T val);
 
 template <typename T>
-__aicore__ inline T AtomicMin(__gm__ T *address, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicMin(__gm__ T *address, T val);
 
 template <typename T>
-__aicore__ inline T AtomicInc(__ubuf__ T *address, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicInc(__ubuf__ T *address, T val);
 
 template <typename T>
-__aicore__ inline T AtomicInc(__gm__ T *address, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicInc(__gm__ T *address, T val);
 
 template <typename T>
-__aicore__ inline T AtomicDec(__ubuf__ T *address, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicDec(__ubuf__ T *address, T val);
 
 template <typename T>
-__aicore__ inline T AtomicDec(__gm__ T *address, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicDec(__gm__ T *address, T val);
 
 template <typename T>
-__aicore__ inline T AtomicCas(__ubuf__ T *address, T compare, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicCas(__ubuf__ T *address, T compare, T val);
 
 template <typename T>
-__aicore__ inline T AtomicCas(__gm__ T *address, T compare, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicCas(__gm__ T *address, T compare, T val);
 
 template <typename T>
-__aicore__ inline T AtomicAnd(__ubuf__ T *address, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicAnd(__ubuf__ T *address, T val);
 
 template <typename T>
-__aicore__ inline T AtomicAnd(__gm__ T *address, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicAnd(__gm__ T *address, T val);
 
 template <typename T>
-__aicore__ inline T AtomicOr(__ubuf__ T *address, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicOr(__ubuf__ T *address, T val);
 
 template <typename T>
-__aicore__ inline T AtomicOr(__gm__ T *address, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicOr(__gm__ T *address, T val);
 
 template <typename T>
-__aicore__ inline T AtomicXor(__ubuf__ T *address, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicXor(__ubuf__ T *address, T val);
 
 template <typename T>
-__aicore__ inline T AtomicXor(__gm__ T *address, T val);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicXor(__gm__ T *address, T val);
 }  // namespace Simt
 }  // namespace AscendC
 

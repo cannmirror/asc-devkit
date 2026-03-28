@@ -17,33 +17,33 @@ namespace AscendC {
 
 namespace Simt {
 
-__aicore__ inline bool IsNanImpl(half x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bool IsNanImpl(half x)
 {
     uint16_t* intX = (uint16_t*)&x;
     return (*intX > ConstantsInternal::HALF_INF && *intX <= ConstantsInternal::HALF_MAX_NAN) ||
                 (*intX > ConstantsInternal::HALF_NEG_INF);
 }
 
-__aicore__ inline bool IsNanImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bool IsNanImpl(float x)
 {
     uint32_t* intX = (uint32_t*)&x;
     return (*intX > ConstantsInternal::INF && *intX <= ConstantsInternal::MAX_NAN) ||
                (*intX > ConstantsInternal::NEG_INF);
 }
 
-__aicore__ inline bool IsInfImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bool IsInfImpl(float x)
 {
     uint32_t* intX = (uint32_t*)&x;
     return (*intX == ConstantsInternal::INF) || (*intX == ConstantsInternal::NEG_INF);
 }
 
-__aicore__ inline bool IsInfImpl(half x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bool IsInfImpl(half x)
 {
     uint16_t* intX = (uint16_t*)&x;
     return (*intX == ConstantsInternal::HALF_INF) || (*intX == ConstantsInternal::HALF_NEG_INF);
 }
 
-__aicore__ inline bool IsInfImpl(bfloat16_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bool IsInfImpl(bfloat16_t x)
 {
     uint16_t* intX = (uint16_t*)&x;
     return (*intX == ConstantsInternal::B_HALF_INF || *intX == ConstantsInternal::B_HALF_NEG_INF) ;
@@ -52,24 +52,24 @@ __aicore__ inline bool IsInfImpl(bfloat16_t x)
 /**
  * This only check positiveFinite, when -inf use this need use Abs to protect
 */
-__aicore__ inline bool IsPositiveInfImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bool IsPositiveInfImpl(float x)
 {
     uint32_t* intX = (uint32_t*)&x;
     return *intX == ConstantsInternal::INF;
 }
 
-__aicore__ inline bool IsNegativeInfImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bool IsNegativeInfImpl(float x)
 {
     uint32_t* intX = (uint32_t*)&x;
     return *intX == ConstantsInternal::NEG_INF;
 }
 
-__aicore__ inline bool IsFiniteImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bool IsFiniteImpl(float x)
 {
     return !IsNanImpl(x) && !IsInfImpl(x);
 }
 
-__aicore__ inline bool IsFiniteImpl(half x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bool IsFiniteImpl(half x)
 {
     return !IsNanImpl(x) && !IsInfImpl(x);
 }

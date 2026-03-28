@@ -168,3 +168,23 @@ TEST_F(FloatComputeTestsuite, FloatComputeTestCaseFma)
     half z = 3.0;
     EXPECT_EQ(static_cast<half>(5.0), Simt::Fma(x, y, z));
 }
+
+TEST_F(FloatComputeTestsuite, FloatComputeTestCaseCover)
+{
+    int32_t x = 1;
+    int32_t y = 2;
+    int32_t z = Simt::Max(x, y);
+    EXPECT_EQ(z, y);
+    z = Simt::Min(x, y);
+    EXPECT_EQ(z, x);
+    float f_1 = 1.0f;
+    float f_2 = 2.0f;
+    float f_3 = Simt::Fdim(f_1, f_2);
+    f_3 = Simt::RemQuo(f_1, f_2, &z);
+    f_3 = Simt::Mod(f_1, f_2);
+    f_3 = Simt::Remainder(f_1, f_2);
+    f_3 = Simt::CopySign(f_1, f_2);
+    f_3 = Simt::NearbyInt(f_1);
+    f_3 = Simt::NextAfter(f_1, f_2);
+    f_3 = Simt::ScaLbn(f_1, z);
+}

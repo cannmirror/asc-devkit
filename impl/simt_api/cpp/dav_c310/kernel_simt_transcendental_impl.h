@@ -30,18 +30,18 @@ namespace Simt {
 
 #if defined(ASCENDC_CPU_DEBUG)
 template <typename T>
-__aicore__ inline T ExpImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T ExpImpl(T x)
 {
     return exp(x);
 }
 #else
 template <typename T>
-__aicore__ inline T ExpImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T ExpImpl(T x)
 {
     return __expf(x);
 }
 
-__aicore__ inline half2 ExpImpl(half2 x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 ExpImpl(half2 x)
 {
     return __exp(x);
 }
@@ -55,7 +55,7 @@ __aicore__ inline half2 ExpImpl(half2 x)
  * @param outputQuadrant Pointer to store the quadrant information.
  * @return The reduced angle in the range [0, pi/2).
  */
-__aicore__ inline float PayneHanekRadianReduction(float x, int *outputQuadrant)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float PayneHanekRadianReduction(float x, int *outputQuadrant)
 {
     // Step 1: Extract raw bits of the input angle
     uint32_t inputBits = reinterpret_cast<uint32_t &>(x);
@@ -129,7 +129,7 @@ __aicore__ inline float PayneHanekRadianReduction(float x, int *outputQuadrant)
  * @param quadrant Pointer to store the quadrant information.
  * @return The reduced angle in the range [0, pi/2).
  */
-__aicore__ inline float CodyWaiteRadianReduction(float x, int *quadrant)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float CodyWaiteRadianReduction(float x, int *quadrant)
 {
     float y = FmaImpl(x, 0.636619747f, 12582912.0f);    // 0.636619747f: 2/pi
     *quadrant = reinterpret_cast<int &>(y);
@@ -148,7 +148,7 @@ __aicore__ inline float CodyWaiteRadianReduction(float x, int *quadrant)
  * @param quadrant Pointer to store the quadrant information.
  * @return The reduced angle in the range [0, pi/2).
  */
-__aicore__ inline float TrigRadianReduction(float x, float threshold, int *quadrant)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float TrigRadianReduction(float x, float threshold, int *quadrant)
 {
     x = FmaImpl(x, 0.0f, x);
     if (AbsImpl(x) > threshold) {
@@ -166,7 +166,7 @@ __aicore__ inline float TrigRadianReduction(float x, float threshold, int *quadr
  * @param x The input angle in radians.
  * @return The cosine of the input angle.
  */
-__aicore__ inline float CosPoly(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float CosPoly(float x)
 {
     x = x * x;
     float y = FmaImpl(x, 2.44677067e-5f, -1.38877297e-3f); // 2.44677067e-5f: 1/8! -1.38877297e-3f: -1/6!
@@ -183,7 +183,7 @@ __aicore__ inline float CosPoly(float x)
  * @param x The input angle in radians.
  * @return The sine of the input angle.
  */
-__aicore__ inline float SinPoly(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float SinPoly(float x)
 {
     float y = x * x;
     float m = FmaImpl(x, y, 0.0f);
@@ -206,7 +206,7 @@ __aicore__ inline float SinPoly(float x)
  *    if x is inf, return NaN;
  */
 template <typename T>
-__aicore__ inline T CosImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T CosImpl(T x)
 {
     static_assert(SupportType<T, float>(), "Input type of input only supports float.");
 
@@ -242,7 +242,7 @@ __aicore__ inline T CosImpl(T x)
  *    if x is inf, return NaN;
  */
 template <typename T>
-__aicore__ inline T SinImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T SinImpl(T x)
 {
     static_assert(SupportType<T, float>(), "Input type of input only supports float.");
 
@@ -275,7 +275,7 @@ __aicore__ inline T SinImpl(T x)
  * @param c Reference to store the cosine of the input angle.
  */
 template <typename T>
-__aicore__ inline void SinCosImpl(T x, T &s, T &c)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void SinCosImpl(T x, T &s, T &c)
 {
     static_assert(SupportType<T, float>(), "Input type of input only supports float.");
  
@@ -306,7 +306,7 @@ __aicore__ inline void SinCosImpl(T x, T &s, T &c)
  * @param x The input angle in radians.
  * @return The tangent of the input angle.
  */
-__aicore__ inline float TanPoly(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float TanPoly(float x)
 {
     x = x * x;
     float y = FmaImpl(x, 4.38117981e-3f, 8.94600598e-5f);  // 4.38117981e-3f: 8.94600598e-5f:
@@ -326,7 +326,7 @@ __aicore__ inline float TanPoly(float x)
  * @return The tangent of the input angle.
  */
 template <typename T>
-__aicore__ inline T TanImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T TanImpl(T x)
 {
     static_assert(SupportType<T, float>(), "Input type of input only supports float.");
 
@@ -354,25 +354,25 @@ __aicore__ inline T TanImpl(T x)
 }
 
 #if defined(ASCENDC_CPU_DEBUG)
-__aicore__ inline float TanhImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float TanhImpl(float x)
 {
     return tanh(x);
 }
 #else
-__aicore__ inline float TanhImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float TanhImpl(float x)
 {
     return 1.0f - (2.0f / (ExpImpl(2.0f * x) + 1.0f));
 }
 #endif
 
 template <typename T>
-__aicore__ inline float TanPiImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float TanPiImpl(T x)
 {
     static_assert(SupportType<T, float>(), "Input type of input only supports float.");
     return TanImpl(x * ConstantsInternal::PI);
 }
 
-__aicore__ inline void TaylorExpand(float &dst, float &src, float &squareV, uint32_t expandLevel, float *factor)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void TaylorExpand(float &dst, float &src, float &squareV, uint32_t expandLevel, float *factor)
 {
     squareV = src * src;
     dst = src * src;
@@ -385,7 +385,7 @@ __aicore__ inline void TaylorExpand(float &dst, float &src, float &squareV, uint
     dst = dst * src;
 }
 
-__aicore__ inline void TaylorExpand(float &dst, float &src, float &squareV, uint32_t expandLevel)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void TaylorExpand(float &dst, float &src, float &squareV, uint32_t expandLevel)
 {
     float factor[] = {1,
                       -0.3333333333333333,
@@ -398,12 +398,12 @@ __aicore__ inline void TaylorExpand(float &dst, float &src, float &squareV, uint
 }
 
 #if defined(ASCENDC_CPU_DEBUG)
-__aicore__ inline float AtanImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float AtanImpl(float x)
 {
     return atan(x);
 }
 #else
-__aicore__ inline void AtanExpand(float &dst, float &src, float &tmp, float transFactor)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void AtanExpand(float &dst, float &src, float &tmp, float transFactor)
 {
     dst = src * transFactor;
     dst = dst + 1.0f;
@@ -412,7 +412,7 @@ __aicore__ inline void AtanExpand(float &dst, float &src, float &tmp, float tran
     dst = AbsImpl(dst);
 }
 
-__aicore__ inline void Sign(float &dst, float &src, float &denominator)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void Sign(float &dst, float &src, float &denominator)
 {
     dst = src * 4611686018427387904.0f; //4611686018427387904 : ATAN_FP32_MAX
     denominator = AbsImpl(dst);
@@ -420,7 +420,7 @@ __aicore__ inline void Sign(float &dst, float &src, float &denominator)
     dst = dst / denominator;
 }
 
-__aicore__ inline float AtanImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float AtanImpl(float x)
 {
     float clip = MinImpl(x, 10000.0f); // 10000 : MAX_INPUT_VALUE
     clip = MaxImpl(clip, -10000.0f); // -10000 : MIN_INPUT_VALUE
@@ -462,7 +462,7 @@ __aicore__ inline float AtanImpl(float x)
 #endif
 
 #if defined(ASCENDC_CPU_DEBUG)
-__aicore__ inline float Atan2Impl(float y, float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float Atan2Impl(float y, float x)
 {
     return atan2(y, x);
 }
@@ -476,7 +476,7 @@ PI/2            y > 0, x = 0
 -PI/2           y < 0, x = 0
 0               y = 0, x = 0
 */
-__aicore__ inline float Atan2Impl(float y, float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float Atan2Impl(float y, float x)
 {
     if (IsNanImpl(y)) {
         return y;
@@ -516,14 +516,14 @@ __aicore__ inline float Atan2Impl(float y, float x)
 
 #if defined(ASCENDC_CPU_DEBUG)
 template <typename T>
-__aicore__ inline T LogImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T LogImpl(T x)
 {
     return logf(x);
 }
 #else
 // f32/f16
 template <typename T>
-__aicore__ inline T LogImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T LogImpl(T x)
 {
     if (x > 0.0f && x < 1.17549435e-38f) { // 1.17549435e-38f: subnormal floating-point number boundary
         return __logf(ExpImpl(23.0f) * x) - 23.0f;
@@ -532,19 +532,19 @@ __aicore__ inline T LogImpl(T x)
     return __logf(x);
 }
 
-__aicore__ inline half2 LogImpl(half2 x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 LogImpl(half2 x)
 {
     return __log(x);
 }
 #endif
 
 #if defined(ASCENDC_CPU_DEBUG)
-__aicore__ inline float AtanhImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float AtanhImpl(float x)
 {
     return atanh(x);
 }
 #else
-__aicore__ inline float AtanhImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float AtanhImpl(float x)
 {
     return LogImpl((1.0f + x) / (1.0f - x)) / 2.0f;
 }
@@ -561,7 +561,7 @@ __aicore__ inline float AtanhImpl(float x)
  *    if x is -inf, return NaN;
  */
 template <typename T>
-__aicore__ inline T SqrtImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T SqrtImpl(T x)
 {
     static_assert(SupportType<T, float>(), "Input type of input only supports float.");
 #if defined(ASCENDC_CPU_DEBUG)
@@ -582,7 +582,7 @@ __aicore__ inline T SqrtImpl(T x)
  *    if x is -inf, return NaN;
  */
 template <typename T>
-__aicore__ inline T RsqrtImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T RsqrtImpl(T x)
 {
     static_assert(SupportType<T, float>(), "Input type of input only supports float.");
     return 1.0f / SqrtImpl(x);
@@ -602,7 +602,7 @@ __aicore__ inline T RsqrtImpl(T x)
  * *           use Cosh(x) = Cosh(-x) to solve exp(-89.14-Ln(2)) overflow
  * */
 template <typename T>
-__aicore__ inline T CoshImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T CoshImpl(T x)
 {
     static_assert(SupportType<T, float>(), "Input type of input only supports float.");
     float y = AbsImpl(x);
@@ -621,7 +621,7 @@ __aicore__ inline T CoshImpl(T x)
  *      if x is Inf, return NaN;
  */
 template <typename T>
-__aicore__ inline T CospiImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T CospiImpl(T x)
 {
     static_assert(SupportType<T, float>(), "Input type of input only supports float.");
     return CosImpl(x * ConstantsInternal::PI);
@@ -647,7 +647,7 @@ __aicore__ inline T CospiImpl(T x)
  *      if |x|>1, return NaN with invalid signal.
  */
 template <typename T>
-__aicore__ inline T AsinImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AsinImpl(T x)
 {
     static_assert(SupportType<T, float>(), "Input type of input only supports float.");
     if (AbsImpl(x) > 1) {
@@ -692,7 +692,7 @@ __aicore__ inline T AsinImpl(T x)
  *      if |x|>1, return NaN.
  */
 template <typename T>
-__aicore__ inline T AcosImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AcosImpl(T x)
 {
     static_assert(SupportType<T, float>(), "Input type of input only supports float.");
     return ConstantsInternal::PI_OF_2 - AsinImpl(x);
@@ -709,7 +709,7 @@ __aicore__ inline T AcosImpl(T x)
  *      if x<-1, return NaN.
  */
 template <typename T>
-__aicore__ inline T AcoshImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AcoshImpl(T x)
 {
     static_assert(SupportType<T, float>(), "Input type of input only supports float.");
     if (x < 1) {
@@ -728,7 +728,7 @@ __aicore__ inline T AcoshImpl(T x)
  *      if x is NaN, return NaN;
  */
 template <typename T>
-__aicore__ inline T SinhImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T SinhImpl(T x)
 {
     static_assert(SupportType<T, float>(), "Input type of input only supports float.");
     if (AbsImpl(x) > 0.1f) {
@@ -759,7 +759,7 @@ __aicore__ inline T SinhImpl(T x)
  *      if x is Inf, return NaN;
  */
 template <typename T>
-__aicore__ inline T SinpiImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T SinpiImpl(T x)
 {
     static_assert(SupportType<T, float>(), "Input type of input only supports float.");
     return SinImpl(x * ConstantsInternal::PI);
@@ -777,7 +777,7 @@ __aicore__ inline T SinpiImpl(T x)
  *      if inf, return inf.
  */
 template <typename T>
-__aicore__ inline T AsinhImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AsinhImpl(T x)
 {
     static_assert(SupportType<T, float>(), "Input type of input only supports float.");
     if (AbsImpl(x) > 0.1f) {
@@ -802,7 +802,7 @@ __aicore__ inline T AsinhImpl(T x)
 }
 
 template <typename T>
-__aicore__ inline void SinCospiImpl(T x, T &s, T &c)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void SinCospiImpl(T x, T &s, T &c)
 {
     static_assert(SupportType<T, float>(), "Input type of input only supports float.");
     return SinCosImpl(x * ConstantsInternal::PI, s, c);
@@ -819,7 +819,7 @@ __aicore__ inline void SinCospiImpl(T x, T &s, T &c)
  *      HypotImpl(x,y) is NAN if x or y is NAN.
  */
 template <typename T>
-__aicore__ inline T HypotImpl(T x, T y)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T HypotImpl(T x, T y)
 {
     static_assert(SupportType<T, float>(), "Input type of input only supports float.");
     float absX = AbsImpl(x);
@@ -854,7 +854,7 @@ __aicore__ inline T HypotImpl(T x, T y)
  *      RhypotImpl(x,y) is NAN if x or y is NAN.
  */
 template <typename T>
-__aicore__ inline T RhypotImpl(T x, T y)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T RhypotImpl(T x, T y)
 {
     static_assert(SupportType<T, float>(), "Input type of input only supports float.");
     return 1.0f / HypotImpl(x, y);
@@ -873,7 +873,7 @@ __aicore__ inline T RhypotImpl(T x, T y)
  *      if x is -inf, return x itself, exp=0;
  */
 template <typename T1, typename T2>
-__aicore__ inline T1 FrexpImpl(T1 x, T2 &exp)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T1 FrexpImpl(T1 x, T2 &exp)
 {
     static_assert(SupportType<T1, float>(), "Input type of input(x) only supports float.");
     static_assert(SupportType<T2, int>(), "Input type of input(exp) only supports int.");
@@ -913,7 +913,7 @@ __aicore__ inline T1 FrexpImpl(T1 x, T2 &exp)
  *      if x is -inf, return x itself;
  */
 template <typename T1, typename T2>
-__aicore__ inline T1 LdexpImpl(T1 x, T2 exp)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T1 LdexpImpl(T1 x, T2 exp)
 {
     static_assert(SupportType<T1, float>(), "Input type of input only supports float.");
     static_assert(SupportType<T2, int>(), "Input type of input(exp) only supports int.");
@@ -960,7 +960,7 @@ __aicore__ inline T1 LdexpImpl(T1 x, T2 exp)
  *      If sqrt(a^2 + b^2 + c^2) overflows, return INF.
  */
 template <typename T>
-__aicore__ inline T Norm3dImpl(T a, T b, T c)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Norm3dImpl(T a, T b, T c)
 {
     static_assert(SupportType<T, float>(), "Input type only supports float.");
 
@@ -998,7 +998,7 @@ __aicore__ inline T Norm3dImpl(T a, T b, T c)
  *      If sqrt(a^2 + b^2 + c^2) overflows, return INF.
  */
 template <typename T>
-__aicore__ inline T Rnorm3dImpl(T a, T b, T c)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Rnorm3dImpl(T a, T b, T c)
 {
     static_assert(SupportType<T, float>(), "Input type only supports float.");
 
@@ -1022,7 +1022,7 @@ __aicore__ inline T Rnorm3dImpl(T a, T b, T c)
  *      If sqrt(a^2 + b^2 + c^2+ d^2) overflows, return INF.
  */
 template <typename T>
-__aicore__ inline T Norm4dImpl(T a, T b, T c, T d)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Norm4dImpl(T a, T b, T c, T d)
 {
     static_assert(SupportType<T, float>(), "Input type only supports float.");
 
@@ -1063,7 +1063,7 @@ __aicore__ inline T Norm4dImpl(T a, T b, T c, T d)
  *      If sqrt(a^2 + b^2 + c^2 + d^2) overflows,return 0.
  */
 template <typename T>
-__aicore__ inline T Rnorm4dImpl(T a, T b, T c, T d)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Rnorm4dImpl(T a, T b, T c, T d)
 {
     static_assert(SupportType<T, float>(), "Input type only supports float.");
 
@@ -1086,7 +1086,7 @@ __aicore__ inline T Rnorm4dImpl(T a, T b, T c, T d)
  *      If n is less than 1, return |a[0]|.
  */
 template <typename T1, typename T2>
-__aicore__ inline T2 NormImpl(T1 n, T2* a)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T2 NormImpl(T1 n, T2* a)
 {
     if (n <= 0) {
         return AbsImpl(a[0]);
@@ -1131,13 +1131,13 @@ __aicore__ inline T2 NormImpl(T1 n, T2* a)
  *      If n is less than 1, return 1/|a[0]|.
  */
 template <typename T1, typename T2>
-__aicore__ inline T2 RnormImpl(T1 n, T2* a)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T2 RnormImpl(T1 n, T2* a)
 {
     return 1.0f / NormImpl(n, a);
 }
 
 template <typename T>
-__aicore__ inline T PowImpl(T x, T y)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T PowImpl(T x, T y)
 {
     static_assert(SupportType<T, float>(), "Input type only supports float.");
 
@@ -1163,52 +1163,52 @@ __aicore__ inline T PowImpl(T x, T y)
 #endif
 }
 
-__aicore__ inline float Exp2Impl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float Exp2Impl(float x)
 {
     return PowImpl(2.0f, x);
 }
 
-__aicore__ inline float Exp10Impl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float Exp10Impl(float x)
 {
     return PowImpl(10.0f, x);
 }
 
-__aicore__ inline float Expm1Impl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float Expm1Impl(float x)
 {
     return ExpImpl(x) - 1.0f;
 }
 
 #if defined(ASCENDC_CPU_DEBUG)
-__aicore__ inline float Log2Impl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float Log2Impl(float x)
 {
     return log2(x);
 }
 #else
-__aicore__ inline float Log2Impl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float Log2Impl(float x)
 {
     return LogImpl(x) / LogImpl(2.0f);
 }
 #endif
 
 #if defined(ASCENDC_CPU_DEBUG)
-__aicore__ inline float Log10Impl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float Log10Impl(float x)
 {
     return log10(x);
 }
 #else
-__aicore__ inline float Log10Impl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float Log10Impl(float x)
 {
     return LogImpl(x) / LogImpl(10.0f);
 }
 #endif
 
-__aicore__ inline float Log1pImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float Log1pImpl(float x)
 {
     return LogImpl(1.0f + x);
 }
 
 #if defined(ASCENDC_CPU_DEBUG)
-__aicore__ inline float LogbImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float LogbImpl(float x)
 {
     if (x < 0) {
         x = -x;
@@ -1216,7 +1216,7 @@ __aicore__ inline float LogbImpl(float x)
     return floor(log2(x));
 }
 #else
-__aicore__ inline float LogbImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float LogbImpl(float x)
 {
     if (IsNanImpl(x)) {
         return x;
@@ -1253,7 +1253,7 @@ __aicore__ inline float LogbImpl(float x)
 #endif
 
 #if defined(ASCENDC_CPU_DEBUG)
-__aicore__ inline int ILogbImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int ILogbImpl(float x)
 {
     if (x < 0) {
         x = -x;
@@ -1265,7 +1265,7 @@ __aicore__ inline int ILogbImpl(float x)
     return static_cast<int>(LogbImpl(x));
 }
 #else
-__aicore__ inline int ILogbImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int ILogbImpl(float x)
 {
     if (x < 0) {
         x = -x;
@@ -1288,7 +1288,7 @@ __aicore__ inline int ILogbImpl(float x)
  *      if x is -Inf, return -Inf;
  */
 template <typename T>
-__aicore__ inline T CbrtImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T CbrtImpl(T x)
 {
     static_assert(SupportType<T, float>(), "Input value type only supports float.");
 
@@ -1344,7 +1344,7 @@ __aicore__ inline T CbrtImpl(T x)
  *      if x is -Inf, return 0;
  */
 template <typename T>
-__aicore__ inline T RcbrtImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T RcbrtImpl(T x)
 {
     static_assert(SupportType<T, float>(), "Input value type only supports float.");
 
@@ -1386,7 +1386,7 @@ __aicore__ inline T RcbrtImpl(T x)
 
 #if defined(ASCENDC_CPU_DEBUG)
 template <typename T>
-__aicore__ inline T ErfImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T ErfImpl(T x)
 {
     return erf(x);
 }
@@ -1402,7 +1402,7 @@ __aicore__ inline T ErfImpl(T x)
  *      if x is Nan, return Nan;
  */
 template <typename T>
-__aicore__ inline T ErfImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T ErfImpl(T x)
 {
     float absX = AbsImpl(x);
     float xSquared = x * x;
@@ -1454,7 +1454,7 @@ __aicore__ inline T ErfImpl(T x)
 
 #if defined(ASCENDC_CPU_DEBUG)
 template <typename T>
-__aicore__ inline T ErfcImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T ErfcImpl(T x)
 {
     return erfc(x);
 }
@@ -1469,7 +1469,7 @@ __aicore__ inline T ErfcImpl(T x)
  *      if x is Nan, return Nan;
  */
 template <typename T>
-__aicore__ inline T ErfcImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T ErfcImpl(T x)
 {
     float absX = AbsImpl(x);
     float term1 = absX + -4.0f;
@@ -1542,7 +1542,7 @@ __aicore__ inline T ErfcImpl(T x)
  *      if x is Nan, return Nan;
  */
 template <typename T>
-__aicore__ inline T ErfinvImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T ErfinvImpl(T x)
 {
     float oppositeX = -x;
     float temp1 = FmaImpl(x, oppositeX, 1.0f);
@@ -1586,7 +1586,7 @@ __aicore__ inline T ErfinvImpl(T x)
  *      if x is Nan, return Nan;
  */
 template <typename T>
-__aicore__ inline T ErfcinvImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T ErfcinvImpl(T x)
 {
     float oppositeX = -x;
     float term = 2.0f + oppositeX;
@@ -1636,7 +1636,7 @@ __aicore__ inline T ErfcinvImpl(T x)
  *      if x is Nan, return Nan;
  */
 template <typename T>
-__aicore__ inline T ErfcxImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T ErfcxImpl(T x)
 {
     if (x < -9.43f) {
         return ConstantsInternal::SIMT_FP32_INF;
@@ -1707,7 +1707,7 @@ __aicore__ inline T ErfcxImpl(T x)
     }
 }
 
-__aicore__ inline float ComputeSinpi(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float ComputeSinpi(float x)
 {
     float doubleX = x * 2;
 
@@ -1742,7 +1742,7 @@ __aicore__ inline float ComputeSinpi(float x)
     return y;
 }
 
-__aicore__ inline float ComputeLn(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float ComputeLn(float x)
 {
     float offset = 0;
     // sub-norm - > norm
@@ -1785,7 +1785,7 @@ __aicore__ inline float ComputeLn(float x)
  * @param x a value
  * @return x's gamma-value
  */
-__aicore__ inline float EulerGammaFunction(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float EulerGammaFunction(float x)
 {
     float frac = x - NearByIntImpl(x);
     //  1/gamma(x + 1)
@@ -1831,7 +1831,7 @@ __aicore__ inline float EulerGammaFunction(float x)
  * @param x a value
  * @return x's gamma-value
  */
-__aicore__ inline float StirlingAndEulerReflection(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float StirlingAndEulerReflection(float x)
 {
     float absX= AbsImpl(x);
     if (absX > 41.0999985f) {
@@ -1969,7 +1969,7 @@ __aicore__ inline float StirlingAndEulerReflection(float x)
  *      if x is -Inf, return nan;
  */
 template<typename T>
-__aicore__  inline T TgammaImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__  inline T TgammaImpl(T x)
 {
     if (x == 0.0f) {
         return 1.0f / x;
@@ -1997,7 +1997,7 @@ __aicore__  inline T TgammaImpl(T x)
  *      if x is -Inf, return Inf;
  */
 template<typename T>
-__aicore__  inline T LgammaImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__  inline T LgammaImpl(T x)
 {
     float absX = AbsImpl(x);
     float result = 0.0f;
@@ -2148,7 +2148,7 @@ __aicore__  inline T LgammaImpl(T x)
  *      if x is -Inf, return Inf;
  */
 template<typename T>
-__aicore__  inline T CylBesselI0Impl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__  inline T CylBesselI0Impl(T x)
 {
     float absX = AbsImpl(x);
     if (IsInfImpl(absX)) {
@@ -2194,7 +2194,7 @@ __aicore__  inline T CylBesselI0Impl(T x)
  *      if x is -Inf, return -Inf;
  */
 template<typename T>
-__aicore__  inline T CylBesselI1Impl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__  inline T CylBesselI1Impl(T x)
 {
     float absX = AbsImpl(x);
     if (IsInfImpl(absX)) {
@@ -2233,7 +2233,7 @@ __aicore__  inline T CylBesselI1Impl(T x)
 }
 
 template<typename T>
-__aicore__ inline T NormcdfImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T NormcdfImpl(T x)
 {
     if (AbsImpl(x) > 14.5f) {
         x = CopySignImpl(14.5f, x);

@@ -15,6 +15,7 @@
 #ifndef ASCENDC_MODULES_SIMT_COMMON_INTERFACE_H
 #define ASCENDC_MODULES_SIMT_COMMON_INTERFACE_H
 
+#include "simt_api/device_types.h"
 #include "simt_api/cpp/kernel_simt_utils.h"
 
 namespace AscendC {
@@ -25,17 +26,17 @@ enum class SatMode {
     SAT
 };
 
-__aicore__ inline int32_t GetWarpSize();
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetWarpSize();
 
 template <int32_t dim = 0>
-__aicore__ inline int32_t GetThreadNum();
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetThreadNum();
 
 template <int32_t dim = 0>
-__aicore__ inline int32_t GetThreadIdx();
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetThreadIdx();
 
-__aicore__ inline int32_t GetBlockIdx();
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetBlockIdx();
 
-__aicore__ inline int32_t GetBlockNum();
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetBlockNum();
 
 }  // namespace Simt
 }  // namespace AscendC

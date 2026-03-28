@@ -11,6 +11,8 @@
 #ifndef ASCENDC_MODULE_SIMT_TRANSCENDENTAL_INTERFACE_H
 #define ASCENDC_MODULE_SIMT_TRANSCENDENTAL_INTERFACE_H
 
+#include "simt_api/device_types.h"
+
 namespace AscendC {
 namespace Simt {
 
@@ -20,10 +22,10 @@ namespace Simt {
  * @return the tangent of the x.
  */
 template <typename T>
-__aicore__ inline T Tan(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Tan(T x);
 
 template <typename T>
-__aicore__ inline T Tanh(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Tanh(T x);
 
 /**
  * The trigonometric tangent of an angle*pi
@@ -31,16 +33,16 @@ __aicore__ inline T Tanh(T x);
  * @return the tangent of the x*PI.
  */
 template <typename T>
-__aicore__ inline T Tanpi(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Tanpi(T x);
 
 template <typename T>
-__aicore__ inline T Atan(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Atan(T x);
 
 template <typename T>
-__aicore__ inline T Atan2(T y, T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Atan2(T y, T x);
 
 template <typename T>
-__aicore__ inline T Atanh(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Atanh(T x);
 
 /**
  * The trigonometric cosine of an angle
@@ -48,10 +50,10 @@ __aicore__ inline T Atanh(T x);
  * @return the cosine of the x.
  */
 template <typename T>
-__aicore__ inline T Cos(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Cos(T x);
 
 template <typename T>
-__aicore__ inline T Cosh(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Cosh(T x);
 
 /**
  * The trigonometric cosine of an angle*pi
@@ -59,27 +61,16 @@ __aicore__ inline T Cosh(T x);
  * @return the cosine of the x*pi.
  */
 template <typename T>
-__aicore__ inline T Cospi(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Cospi(T x);
 
 template <typename T>
-__aicore__ inline T Asin(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Asin(T x);
 
 template <typename T>
-__aicore__ inline T Acos(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Acos(T x);
 
 template <typename T>
-__aicore__ inline T Acosh(T x);
-
-/**
- * The trigonometric sine of an angle
- * @param x an angle, in radians.
- * @return the sine of the x.
- */
-template <typename T>
-__aicore__ inline T Sin(T x);
-
-template <typename T>
-__aicore__ inline T Sinh(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Acosh(T x);
 
 /**
  * The trigonometric sine of an angle
@@ -87,10 +78,21 @@ __aicore__ inline T Sinh(T x);
  * @return the sine of the x.
  */
 template <typename T>
-__aicore__ inline T Sinpi(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Sin(T x);
 
 template <typename T>
-__aicore__ inline T Asinh(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Sinh(T x);
+
+/**
+ * The trigonometric sine of an angle
+ * @param x an angle, in radians.
+ * @return the sine of the x.
+ */
+template <typename T>
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Sinpi(T x);
+
+template <typename T>
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Asinh(T x);
 
 /**
  * The trigonometric sine,cosine of an angle
@@ -99,7 +101,7 @@ __aicore__ inline T Asinh(T x);
  *         c the cosine of the x.
  */
 template <typename T>
-__aicore__ inline void Sincos(T x, T &s, T &c);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void Sincos(T x, T &s, T &c);
 
 /**
  * The trigonometric sine,cosine of an angle*pi
@@ -108,19 +110,19 @@ __aicore__ inline void Sincos(T x, T &s, T &c);
  *         c the cosine of the x*pi.
  */
 template <typename T>
-__aicore__ inline void Sincospi(T x, T &s, T &c);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void Sincospi(T x, T &s, T &c);
 
 template <typename T>
-__aicore__ inline T Exp(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Exp(T x);
 
 template <typename T>
-__aicore__ inline T Exp2(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Exp2(T x);
 
 template <typename T>
-__aicore__ inline T Exp10(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Exp10(T x);
 
 template <typename T>
-__aicore__ inline T Expm1(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Expm1(T x);
 
 /**
  * The square root of x
@@ -129,7 +131,7 @@ __aicore__ inline T Expm1(T x);
  *          if x<0 return Nan
  */
 template <typename T>
-__aicore__ inline T Sqrt(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Sqrt(T x);
 
 /**
  * The reciprocal of the square root of x
@@ -138,7 +140,7 @@ __aicore__ inline T Sqrt(T x);
  *          if x<0 return Nan
  */
 template <typename T>
-__aicore__ inline T Rsqrt(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Rsqrt(T x);
 
 /**
  * The mantissa,exponent of x
@@ -147,7 +149,7 @@ __aicore__ inline T Rsqrt(T x);
  *         exp: the exponent of the x
  */
 template <typename T, typename U>
-__aicore__ inline T Frexp(T x, U &exp);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Frexp(T x, U &exp);
 
 /**
  * The value of x multiplied by 2 exp.
@@ -156,7 +158,7 @@ __aicore__ inline T Frexp(T x, U &exp);
  * @return  x * 2^exp
  */
 template <typename T, typename U>
-__aicore__ inline T Ldexp(T x, U exp);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Ldexp(T x, U exp);
 
 /**
  * The square root of (x^2+y^2)
@@ -165,7 +167,7 @@ __aicore__ inline T Ldexp(T x, U exp);
  * @return square root of (x^2+y^2)
  */
 template <typename T>
-__aicore__ inline T Hypot(T x, T y);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Hypot(T x, T y);
 
  /**
   * The reciprocal of square root of (x^2+y^2)
@@ -174,7 +176,7 @@ __aicore__ inline T Hypot(T x, T y);
   * @return The reciprocal of square root of (x^2+y^2)
   */
 template <typename T>
-__aicore__ inline T Rhypot(T x, T y);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Rhypot(T x, T y);
 
 /**
  * The square root of (a^2+b^2+c^2)
@@ -189,7 +191,7 @@ __aicore__ inline T Rhypot(T x, T y);
  *      If sqrt(a^2 + b^2 + c^2) overflows, return INF.
  */
 template <typename T>
-__aicore__ inline T Norm3d(T a, T b, T c);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Norm3d(T a, T b, T c);
 
 /**
  * The reciprocal of square root of (a^2+b^2+c^2)
@@ -204,7 +206,7 @@ __aicore__ inline T Norm3d(T a, T b, T c);
  *      If sqrt(a^2 + b^2 + c^2) overflows, return INF.
  */
 template <typename T>
-__aicore__ inline T Rnorm3d(T a, T b, T c);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Rnorm3d(T a, T b, T c);
 
 /**
  * The square root of (a^2+b^2+c^2+d^2)
@@ -220,7 +222,7 @@ __aicore__ inline T Rnorm3d(T a, T b, T c);
  *      If sqrt(a^2 + b^2 + c^2+ d^2) overflows, return INF.
  */
 template <typename T>
-__aicore__ inline T Norm4d(T a, T b, T c, T d);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Norm4d(T a, T b, T c, T d);
 
 /**
  * The reciprocal of square root of (a^2+b^2+c^2+d^2)
@@ -236,7 +238,7 @@ __aicore__ inline T Norm4d(T a, T b, T c, T d);
  *      If sqrt(a^2 + b^2 + c^2 + d^2) overflows,return 0.
  */
 template <typename T>
-__aicore__ inline T Rnorm4d(T a, T b, T c, T d);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Rnorm4d(T a, T b, T c, T d);
 
 /**
  * The square root of sum of squares of the first N elements in array a
@@ -251,7 +253,7 @@ __aicore__ inline T Rnorm4d(T a, T b, T c, T d);
  *      If n is less than 1, return |a[0]|.
  */
 template <typename T, typename U>
-__aicore__ inline U Norm(T n, U* a);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline U Norm(T n, U* a);
 
 /**
  * The reciprocal of square root of sum of squares of the first N elements in array a
@@ -266,28 +268,28 @@ __aicore__ inline U Norm(T n, U* a);
  *      If n is less than 1, return 1/|a[0]|.
  */
 template <typename T, typename U>
-__aicore__ inline U Rnorm(T n, U* a);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline U Rnorm(T n, U* a);
 
 template <typename T>
-__aicore__ inline T Log(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Log(T x);
 
 template <typename T>
-__aicore__ inline T Pow(T x, T y);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Pow(T x, T y);
 
 template <typename T>
-__aicore__ inline T Log2(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Log2(T x);
 
 template <typename T>
-__aicore__ inline T Log10(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Log10(T x);
 
 template <typename T>
-__aicore__ inline T Log1p(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Log1p(T x);
 
 template <typename T>
-__aicore__ inline T Logb(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Logb(T x);
 
 template <typename T>
-__aicore__ inline int Ilogb(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int Ilogb(T x);
 
 /**
  * calculates a cube root by input x.
@@ -300,7 +302,7 @@ __aicore__ inline int Ilogb(T x);
  *      if x is -Inf, return -Inf;
  */
 template <typename T>
-__aicore__ inline T Cbrt(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Cbrt(T x);
 
 /**
  * calculates reciprocal of the cube root by input x.
@@ -313,7 +315,7 @@ __aicore__ inline T Cbrt(T x);
  *      if x is -Inf, return 0;
  */
 template <typename T>
-__aicore__ inline T Rcbrt(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Rcbrt(T x);
 
 /**
  * Calculate the error function of the input x.
@@ -326,7 +328,7 @@ __aicore__ inline T Rcbrt(T x);
  *      if x is Nan, return Nan;
  */
 template <typename T>
-__aicore__ inline T Erf(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Erf(T x);
 
 /**
  * Calculate the complementary error function of the input x.
@@ -338,7 +340,7 @@ __aicore__ inline T Erf(T x);
  *      if x is Nan, return Nan;
  */
 template <typename T>
-__aicore__ inline T Erfc(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Erfc(T x);
 
 /**
  * Calculate the inverse error function of the input x.
@@ -352,7 +354,7 @@ __aicore__ inline T Erfc(T x);
  *      if x is Nan, return Nan;
  */
 template <typename T>
-__aicore__ inline T Erfinv(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Erfinv(T x);
 
 /**
  * Calculate the inverse complementary error function of the input x.
@@ -365,7 +367,7 @@ __aicore__ inline T Erfinv(T x);
  *      if x is Nan, return Nan;
  */
 template <typename T>
-__aicore__ inline T Erfcinv(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Erfcinv(T x);
 
 
 /**
@@ -378,7 +380,7 @@ __aicore__ inline T Erfcinv(T x);
  *      if x is Nan, return Nan;
  */
 template <typename T>
-__aicore__ inline T Erfcx(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Erfcx(T x);
 
 /**
  * Calculates gamma value by input x.
@@ -391,7 +393,7 @@ __aicore__ inline T Erfcx(T x);
  *      if x is -Inf, return Nan;
  */
 template<typename T>
-__aicore__ inline T Tgamma(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Tgamma(T x);
 
 /**
  * Calculates lgamma value by input x.
@@ -404,7 +406,7 @@ __aicore__ inline T Tgamma(T x);
  *      if x is -Inf, return Inf;
  */
 template<typename T>
-__aicore__ inline T Lgamma(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Lgamma(T x);
 
 /**
  * Calculates CylBesselI0 value by input x.
@@ -417,7 +419,7 @@ __aicore__ inline T Lgamma(T x);
  *      if x is -Inf, return Inf;
  */
 template<typename T>
-__aicore__ inline T CylBesselI0(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T CylBesselI0(T x);
 
 /**
  * Calculates CylBesselI1 value by input x.
@@ -430,7 +432,7 @@ __aicore__ inline T CylBesselI0(T x);
  *      if x is -Inf, return -Inf;
  */
 template<typename T>
-__aicore__ inline T CylBesselI1(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T CylBesselI1(T x);
 
 /**
  * Calculate the standard normal cumulative distribution function for input x.
@@ -442,7 +444,7 @@ __aicore__ inline T CylBesselI1(T x);
  *      if x is -Inf, return 0;
  */
 template<typename T>
-__aicore__ inline T Normcdf(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Normcdf(T x);
 
 }  // namespace Simt
 }  // namespace AscendC

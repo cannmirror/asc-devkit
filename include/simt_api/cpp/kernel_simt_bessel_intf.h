@@ -11,26 +11,28 @@
 #ifndef ASCENDC_MODULE_SIMT_BESSEL_INTERFACE_H
 #define ASCENDC_MODULE_SIMT_BESSEL_INTERFACE_H
 
+#include "simt_api/device_types.h"
+
 namespace AscendC {
 namespace Simt {
 
 template <typename T>
-__aicore__ inline T J0(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T J0(T x);
 
 template <typename T>
-__aicore__ inline T J1(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T J1(T x);
 
 template <typename T, typename U>
-__aicore__ inline U Jn(T n, U x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline U Jn(T n, U x);
 
 template <typename T>
-__aicore__ inline T Y0(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Y0(T x);
 
 template <typename T>
-__aicore__ inline T Y1(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Y1(T x);
 
 template <typename T, typename U>
-__aicore__ inline U Yn(T n, U x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline U Yn(T n, U x);
 
 }  // namespace Simt
 }  // namespace AscendC

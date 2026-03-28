@@ -11,16 +11,18 @@
 #ifndef ASCENDC_MODULE_SIMT_PRINT_INTERFACE_H
 #define ASCENDC_MODULE_SIMT_PRINT_INTERFACE_H
 
+#include "simt_api/device_types.h"
+
 namespace AscendC {
 namespace Simt {
 
 #ifndef ASCENDC_CPU_DEBUG
 #if !defined(__CHECK_FEATURE_AT_PRECOMPILE) || (defined(__CHECK_FEATURE_AT_PRECOMPILE) && defined(__NPU_DEVICE__))
 template <class... Args>
-__aicore__ inline void PRINTF(const __gm__ char* fmt, Args&&... args);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void PRINTF(const __gm__ char* fmt, Args&&... args);
 
 template <class... Args>
-__aicore__ inline void printf(const __gm__ char* fmt, Args&&... args);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void printf(const __gm__ char* fmt, Args&&... args);
 
 #endif
 #endif

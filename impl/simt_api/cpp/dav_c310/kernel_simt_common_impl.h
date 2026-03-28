@@ -25,13 +25,13 @@ typedef bfloat16_t bhalf;
 
 constexpr int32_t THREAD_GROUP_SIZE = 32;
 
-__aicore__ inline int32_t GetWarpSizeImpl()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetWarpSizeImpl()
 {
     return THREAD_GROUP_SIZE;
 }
 
 template <int32_t dim = 0>
-__aicore__ inline int32_t GetThreadNumImpl()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetThreadNumImpl()
 {
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     if constexpr (dim == 0) {
@@ -58,7 +58,7 @@ __aicore__ inline int32_t GetThreadNumImpl()
 }
 
 template <int32_t dim = 0>
-__aicore__ inline int32_t GetThreadIdxImpl()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetThreadIdxImpl()
 {
     static_assert((dim >= 0 && dim <= 2), "dim is out of range [0, 2]");
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
@@ -85,7 +85,7 @@ __aicore__ inline int32_t GetThreadIdxImpl()
     return 0;
 }
 
-__aicore__ inline int32_t GetBlockIdxImpl()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetBlockIdxImpl()
 {
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     return block_idx;
@@ -94,7 +94,7 @@ __aicore__ inline int32_t GetBlockIdxImpl()
 #endif
 }
 
-__aicore__ inline int32_t GetBlockNumImpl()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetBlockNumImpl()
 {
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     return block_num;
@@ -103,7 +103,7 @@ __aicore__ inline int32_t GetBlockNumImpl()
 #endif
 }
 
-__aicore__ inline uint32_t GetBf16U16(float f32, uint32_t u16, uint32_t u32, uint32_t bf16LastBit, RoundMode rnd)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t GetBf16U16(float f32, uint32_t u16, uint32_t u32, uint32_t bf16LastBit, RoundMode rnd)
 {
     uint32_t carryOutBit = 0x10000;
     uint32_t topU32 = (u32 & ConstantsInternal::HIGH_16_BIT) + carryOutBit;
@@ -144,7 +144,7 @@ __aicore__ inline uint32_t GetBf16U16(float f32, uint32_t u16, uint32_t u32, uin
     return u16;
 }
 
-__aicore__ inline bfloat16_t F32ToBf16(float f32, RoundMode rnd, bool satMode)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16_t F32ToBf16(float f32, RoundMode rnd, bool satMode)
 {
     if (IsNanImpl(f32)) {
         if (satMode) {
@@ -181,7 +181,7 @@ __aicore__ inline bfloat16_t F32ToBf16(float f32, RoundMode rnd, bool satMode)
     return bf16;
 }
 
-__aicore__ inline half F32Tof16(float f32, RoundMode rnd)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half F32Tof16(float f32, RoundMode rnd)
 {
     uint32_t *u32Ptr = (uint32_t *)&f32;
     uint32_t u32 = *u32Ptr;
@@ -241,7 +241,7 @@ __aicore__ inline half F32Tof16(float f32, RoundMode rnd)
 }
 
 #if defined(ASCENDC_CPU_DEBUG)
-__aicore__ inline half RoundInf(half x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half RoundInf(half x)
 {
     return x;
 }
@@ -262,7 +262,7 @@ namespace Simt {
 #if defined(ASCENDC_CPU_DEBUG)
 // Find the largest power of 2 that is less than x
 template <typename T>
-__aicore__ inline T FindNear2ndPow(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T FindNear2ndPow(T x)
 {
     if ((T)2 >= x) {
         return (T)1;
@@ -271,7 +271,7 @@ __aicore__ inline T FindNear2ndPow(T x)
     }
 }
 
-__aicore__ inline bfloat16_t FloorIntrinsicsImpl(bfloat16_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16_t FloorIntrinsicsImpl(bfloat16_t x)
 {
     if (IsInfImpl(x)) {
         return x;
@@ -324,19 +324,19 @@ __aicore__ inline bfloat16_t FloorIntrinsicsImpl(bfloat16_t x)
 }
 
 template <typename T>
-__aicore__ inline T FloorIntrinsicsImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T FloorIntrinsicsImpl(T x)
 {
     if constexpr (SupportType<T, int32_t, int64_t>()) {
         return x;
     }
 }
 
-__aicore__ inline float FloorIntrinsicsImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float FloorIntrinsicsImpl(float x)
 {
     return floor(x);
 }
 
-__aicore__ inline half FloorIntrinsicsImpl(half x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half FloorIntrinsicsImpl(half x)
 {
     if (IsInfImpl(x)) {
         return RoundInf(x);
@@ -345,7 +345,7 @@ __aicore__ inline half FloorIntrinsicsImpl(half x)
 }
 
 template <typename DstType, typename SrcType>
-__aicore__ inline DstType Floor_(SrcType x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline DstType Floor_(SrcType x)
 {
     if constexpr (SupportType<Tuple<DstType, SrcType>, Tuple<bfloat16_t, float>>()) {
         return F32ToBf16(x, RoundMode::CAST_FLOOR, false);
@@ -370,7 +370,7 @@ __aicore__ inline DstType Floor_(SrcType x)
 }
 #else
 template <typename T>
-__aicore__ inline T FloorIntrinsicsImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T FloorIntrinsicsImpl(T x)
 {
     if constexpr (SupportType<T, int32_t, int64_t>()) {
         return x;
@@ -380,7 +380,7 @@ __aicore__ inline T FloorIntrinsicsImpl(T x)
 }
 
 template <typename DstType, typename SrcType>
-__aicore__ inline DstType Floor_(SrcType x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline DstType Floor_(SrcType x)
 {
     if constexpr (SupportType<Tuple<DstType, SrcType>, Tuple<bfloat16_t, float>>()) {
         return F32ToBf16(x, RoundMode::CAST_FLOOR, false);
@@ -392,14 +392,14 @@ __aicore__ inline DstType Floor_(SrcType x)
     }
 }
 
-__aicore__ inline void Floor_(half2 &dst, float2 &src)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void Floor_(half2 &dst, float2 &src)
 {
     dst = __cvt_half2<ROUND::F, RoundingSaturation::RS_DISABLE_VALUE>(src);
 }
 #endif
 
 #if defined(ASCENDC_CPU_DEBUG)
-__aicore__ inline bfloat16_t RoundIntrinsicsImpl(bfloat16_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16_t RoundIntrinsicsImpl(bfloat16_t x)
 {
     if (IsInfImpl(x)) {
         return x;
@@ -418,12 +418,12 @@ __aicore__ inline bfloat16_t RoundIntrinsicsImpl(bfloat16_t x)
     }
 }
 
-__aicore__ inline float RoundIntrinsicsImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float RoundIntrinsicsImpl(float x)
 {
     return round(x);
 }
 
-__aicore__ inline half RoundIntrinsicsImpl(half x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half RoundIntrinsicsImpl(half x)
 {
     if (IsInfImpl(x)) {
         return RoundInf(x);
@@ -432,13 +432,13 @@ __aicore__ inline half RoundIntrinsicsImpl(half x)
 }
 
 template <typename DstType, typename SrcType>
-__aicore__ inline DstType RoundImpl(SrcType x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline DstType RoundImpl(SrcType x)
 {
     return (DstType)RoundIntrinsicsImpl(x);
 }
 #else
 template <typename T>
-__aicore__ inline T RoundIntrinsicsImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T RoundIntrinsicsImpl(T x)
 {
     if constexpr (SupportType<T, int32_t, int64_t>()) {
         return x;
@@ -448,7 +448,7 @@ __aicore__ inline T RoundIntrinsicsImpl(T x)
 }
 
 template <typename DstType, typename SrcType>
-__aicore__ inline DstType RoundImpl(SrcType x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline DstType RoundImpl(SrcType x)
 {
     SrcType res = RoundIntrinsicsImpl(x);
     return (DstType)(res);
@@ -456,7 +456,7 @@ __aicore__ inline DstType RoundImpl(SrcType x)
 #endif
 
 #if defined(ASCENDC_CPU_DEBUG)
-__aicore__ inline bfloat16_t RintIntrinsicsImpl(bfloat16_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16_t RintIntrinsicsImpl(bfloat16_t x)
 {
     if (IsInfImpl(x)) {
         return x;
@@ -482,12 +482,12 @@ __aicore__ inline bfloat16_t RintIntrinsicsImpl(bfloat16_t x)
     }
 }
 
-__aicore__ inline float RintIntrinsicsImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float RintIntrinsicsImpl(float x)
 {
     return rint(x);
 }
 
-__aicore__ inline half RintIntrinsicsImpl(half x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half RintIntrinsicsImpl(half x)
 {
     if (IsInfImpl(x)) {
         return RoundInf(x);
@@ -496,7 +496,7 @@ __aicore__ inline half RintIntrinsicsImpl(half x)
 }
 
 template <typename DstType, typename SrcType>
-__aicore__ inline DstType Rint_(SrcType x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline DstType Rint_(SrcType x)
 {
     if constexpr (SupportType<Tuple<DstType, SrcType>, Tuple<bfloat16_t, float>>()) {
 #if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
@@ -525,7 +525,7 @@ __aicore__ inline DstType Rint_(SrcType x)
 }
 #else
 template <typename T>
-__aicore__ inline T RintIntrinsicsImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T RintIntrinsicsImpl(T x)
 {
     if constexpr (SupportType<T, int32_t, int64_t>()) {
         return x;
@@ -535,7 +535,7 @@ __aicore__ inline T RintIntrinsicsImpl(T x)
 }
 
 template <typename DstType, typename SrcType>
-__aicore__ inline DstType Rint_(SrcType x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline DstType Rint_(SrcType x)
 {
     if constexpr (SupportType<Tuple<DstType, SrcType>, Tuple<bfloat16_t, float>>()) {
 #if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
@@ -550,14 +550,14 @@ __aicore__ inline DstType Rint_(SrcType x)
     }
 }
 
-__aicore__ inline void Rint_(half2 &dst, float2 &src)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void Rint_(half2 &dst, float2 &src)
 {
     dst = __cvt_half2<ROUND::R, RoundingSaturation::RS_DISABLE_VALUE>(src);
 }
 #endif
 
 #if defined(ASCENDC_CPU_DEBUG)
-__aicore__ inline bfloat16_t CeilIntrinsicsImpl(bfloat16_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16_t CeilIntrinsicsImpl(bfloat16_t x)
 {
     bfloat16_t floorX = FloorIntrinsicsImpl(x);
     if (floorX == x) {
@@ -567,19 +567,19 @@ __aicore__ inline bfloat16_t CeilIntrinsicsImpl(bfloat16_t x)
 }
 
 template <typename T>
-__aicore__ inline T CeilIntrinsicsImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T CeilIntrinsicsImpl(T x)
 {
     if constexpr (SupportType<T, int32_t, int64_t>()) {
         return x;
     }
 }
 
-__aicore__ inline float CeilIntrinsicsImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float CeilIntrinsicsImpl(float x)
 {
     return ceil(x);
 }
 
-__aicore__ inline half CeilIntrinsicsImpl(half x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half CeilIntrinsicsImpl(half x)
 {
     if (IsInfImpl(x)) {
         return RoundInf(x);
@@ -588,7 +588,7 @@ __aicore__ inline half CeilIntrinsicsImpl(half x)
 }
 
 template <typename DstType, typename SrcType>
-__aicore__ inline DstType Ceil_(SrcType x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline DstType Ceil_(SrcType x)
 {
     if constexpr (SupportType<Tuple<DstType, SrcType>, Tuple<bfloat16_t, float>>()) {
         return F32ToBf16(x, RoundMode::CAST_CEIL, false);
@@ -613,7 +613,7 @@ __aicore__ inline DstType Ceil_(SrcType x)
 }
 #else
 template <typename T>
-__aicore__ inline T CeilIntrinsicsImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T CeilIntrinsicsImpl(T x)
 {
     if constexpr (SupportType<T, int32_t, int64_t>()) {
         return x;
@@ -623,7 +623,7 @@ __aicore__ inline T CeilIntrinsicsImpl(T x)
 }
 
 template <typename DstType, typename SrcType>
-__aicore__ inline DstType Ceil_(SrcType x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline DstType Ceil_(SrcType x)
 {
     if constexpr (SupportType<Tuple<DstType, SrcType>, Tuple<bfloat16_t, float>>()) {
         return F32ToBf16(x, RoundMode::CAST_CEIL, false);
@@ -635,21 +635,21 @@ __aicore__ inline DstType Ceil_(SrcType x)
     }
 }
 
-__aicore__ inline void Ceil_(half2 &dst, float2 &src)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void Ceil_(half2 &dst, float2 &src)
 {
     dst = __cvt_half2<ROUND::C, RoundingSaturation::RS_DISABLE_VALUE>(src);
 }
 #endif
 
 #ifndef ASCENDC_CPU_DEBUG
-__aicore__ inline void Trunc_(half2 &dst, float2 &src)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void Trunc_(half2 &dst, float2 &src)
 {
     dst = __cvt_half2<ROUND::Z, RoundingSaturation::RS_DISABLE_VALUE>(src);
 }
 #endif
 
 template <typename DstType, typename SrcType>
-__aicore__ inline DstType Trunc_(SrcType x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline DstType Trunc_(SrcType x)
 {
     if constexpr (SupportType<Tuple<DstType, SrcType>, Tuple<bfloat16_t, float>>()) {
 #if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
@@ -684,13 +684,13 @@ __aicore__ inline DstType Trunc_(SrcType x)
 }
 
 #ifndef ASCENDC_CPU_DEBUG
-__aicore__ inline void CastNone_(half2 &dst, float2 &src)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void CastNone_(half2 &dst, float2 &src)
 {
 }
 #endif
 
 template <typename DstType, typename SrcType>
-__aicore__ inline DstType CastNone_(SrcType x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline DstType CastNone_(SrcType x)
 {
 #ifdef ASCENDC_CPU_DEBUG
     if constexpr (SupportType<Tuple<SrcType, DstType>, Tuple<half, float>>()) {

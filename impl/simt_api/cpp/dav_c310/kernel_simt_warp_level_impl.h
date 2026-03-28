@@ -37,7 +37,7 @@ constexpr int32_t MAX_OFFSET_START_POS = 8;
 constexpr int32_t LANE_MASK_START_POS = 16;
 #endif
 
-__aicore__ inline int32_t AllSyncImpl(int32_t predicate)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t AllSyncImpl(int32_t predicate)
 {
 #if defined(ASCENDC_CPU_DEBUG)
     uint32_t warpId = GetWarpId();
@@ -49,7 +49,7 @@ __aicore__ inline int32_t AllSyncImpl(int32_t predicate)
 #endif
 }
 
-__aicore__ inline int32_t AnySyncImpl(int32_t predicate)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t AnySyncImpl(int32_t predicate)
 {
 #if defined(ASCENDC_CPU_DEBUG)
     uint32_t warpId = GetWarpId();
@@ -61,7 +61,7 @@ __aicore__ inline int32_t AnySyncImpl(int32_t predicate)
 #endif
 }
 
-__aicore__ inline int32_t UniImpl(int32_t predicate)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t UniImpl(int32_t predicate)
 {
 #if defined(ASCENDC_CPU_DEBUG)
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "Uni CPU: not supported yet"); });
@@ -71,7 +71,7 @@ __aicore__ inline int32_t UniImpl(int32_t predicate)
 #endif
 }
 
-__aicore__ inline uint32_t BallotSyncImpl(int32_t predicate)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t BallotSyncImpl(int32_t predicate)
 {
 #if defined(ASCENDC_CPU_DEBUG)
     uint32_t warpId = GetWarpId();
@@ -89,7 +89,7 @@ __aicore__ inline uint32_t BallotSyncImpl(int32_t predicate)
 #endif
 }
 
-__aicore__ inline uint32_t ActiveMaskImpl()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t ActiveMaskImpl()
 {
 #if defined(ASCENDC_CPU_DEBUG)
     uint32_t warpId = GetWarpId();
@@ -105,7 +105,7 @@ __aicore__ inline uint32_t ActiveMaskImpl()
 }
 
 template <typename T>
-__aicore__ inline T ShflSyncImpl(T var, int32_t srcLane, int32_t width = warpSize)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflSyncImpl(T var, int32_t srcLane, int32_t width = warpSize)
 {
     static_assert(SupportType<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>(),
                  "Input type of var only supports int32_t, uint32_t, int64_t, uint64_t, half, half2, float.");
@@ -128,7 +128,7 @@ __aicore__ inline T ShflSyncImpl(T var, int32_t srcLane, int32_t width = warpSiz
 }
 
 template <typename T>
-__aicore__ inline T ShflUpSyncImpl(T var, uint32_t delta, int32_t width = warpSize)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflUpSyncImpl(T var, uint32_t delta, int32_t width = warpSize)
 {
     static_assert(SupportType<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>(),
               "Input type of var only supports int32_t, uint32_t, int64_t, uint64_t, half, half2, float.");
@@ -155,7 +155,7 @@ __aicore__ inline T ShflUpSyncImpl(T var, uint32_t delta, int32_t width = warpSi
 }
 
 template <typename T>
-__aicore__ inline T ShflDownSyncImpl(T var, uint32_t delta, int32_t width = warpSize)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflDownSyncImpl(T var, uint32_t delta, int32_t width = warpSize)
 {
     static_assert(SupportType<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>(),
               "Input type of var only supports int32_t, uint32_t, int64_t, uint64_t, half, half2, float.");
@@ -183,7 +183,7 @@ __aicore__ inline T ShflDownSyncImpl(T var, uint32_t delta, int32_t width = warp
 }
 
 template <typename T>
-__aicore__ inline T ShflXorSyncImpl(T var, int32_t laneMask, int32_t width = warpSize)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflXorSyncImpl(T var, int32_t laneMask, int32_t width = warpSize)
 {
     static_assert(SupportType<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>(),
               "Input type of var only supports int32_t, uint32_t, int64_t, uint64_t, half, half2, float.");
@@ -212,7 +212,7 @@ __aicore__ inline T ShflXorSyncImpl(T var, int32_t laneMask, int32_t width = war
 }
 
 template <typename T>
-__aicore__ inline T ReduceAddSyncImpl(T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T ReduceAddSyncImpl(T val)
 {
     static_assert(SupportType<T, int32_t, uint32_t, half, float>(),
               "Input type of val only supports int32_t, uint32_t, half, float.");
@@ -227,7 +227,7 @@ __aicore__ inline T ReduceAddSyncImpl(T val)
 }
 
 template <typename T>
-__aicore__ inline T ReduceMaxSyncImpl(T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T ReduceMaxSyncImpl(T val)
 {
     static_assert(SupportType<T, int32_t, uint32_t, half, float>(),
               "Input type of val only supports int32_t, uint32_t, half, float.");
@@ -242,7 +242,7 @@ __aicore__ inline T ReduceMaxSyncImpl(T val)
 }
 
 template <typename T>
-__aicore__ inline T ReduceMinSyncImpl(T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T ReduceMinSyncImpl(T val)
 {
     static_assert(SupportType<T, int32_t, uint32_t, half, float>(),
                   "Input type of val only supports int32_t, uint32_t, half, float.");
@@ -256,7 +256,7 @@ __aicore__ inline T ReduceMinSyncImpl(T val)
 #endif
 }
 
-__aicore__ inline void ThreadBarrierImpl()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void ThreadBarrierImpl()
 {
 #if defined(ASCENDC_CPU_DEBUG)
     Sync();
@@ -265,7 +265,7 @@ __aicore__ inline void ThreadBarrierImpl()
 #endif
 }
 
-__aicore__ inline void ThreadFenceImpl()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void ThreadFenceImpl()
 {
 #if defined(ASCENDC_CPU_DEBUG)
 #else

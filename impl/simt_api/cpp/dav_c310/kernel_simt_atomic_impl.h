@@ -41,13 +41,13 @@ T AtomicCasImpl(__gm__ T *address, T compare, T val)
 }
 #else
 template <typename T>
-__simt_callee__ __aicore__ inline T AtomicCasImpl(__ubuf__ T *address, T compare, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicCasImpl(__ubuf__ T *address, T compare, T val)
 {
     return bisheng::cce::simt::atomicCAS(address, compare, val);
 }
 
 template <typename T>
-__simt_callee__ __aicore__ inline T AtomicCasImpl(__gm__ T *address, T compare, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicCasImpl(__gm__ T *address, T compare, T val)
 {
     return bisheng::cce::simt::atomicCAS(address, compare, val);
 }
@@ -66,7 +66,7 @@ T AtomicAddImpl(__gm__ T *address, T val)
 }
 #else
 template <typename T>
-__simt_callee__ __aicore__ inline T AtomicAddImpl(__ubuf__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicAddImpl(__ubuf__ T *address, T val)
 {
     if constexpr (SupportType<Tuple<T>, Tuple<int32_t>, Tuple<uint32_t>, Tuple<float>>()) {
         return bisheng::cce::simt::atomicAdd(address, val);
@@ -77,7 +77,7 @@ __simt_callee__ __aicore__ inline T AtomicAddImpl(__ubuf__ T *address, T val)
 }
 
 template <typename T>
-__simt_callee__ __aicore__ inline T AtomicAddImpl(__gm__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicAddImpl(__gm__ T *address, T val)
 {
     if constexpr (SupportType<Tuple<T>, Tuple<int32_t>, Tuple<uint32_t>, Tuple<int64_t>, Tuple<uint64_t>, Tuple<float>,
                               Tuple<half2>, Tuple<bfloat16x2_t>>()) {
@@ -97,7 +97,7 @@ T AtomicSubImpl(__gm__ T *address, T val)
 }
 #else
 template <typename T>
-__simt_callee__ __aicore__ inline T AtomicSubImpl(__ubuf__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicSubImpl(__ubuf__ T *address, T val)
 {
     if constexpr (SupportType<Tuple<T>, Tuple<int32_t>, Tuple<uint32_t>, Tuple<float>>()) {
         return bisheng::cce::simt::atomicSub(address, val);
@@ -108,7 +108,7 @@ __simt_callee__ __aicore__ inline T AtomicSubImpl(__ubuf__ T *address, T val)
 }
 
 template <typename T>
-__simt_callee__ __aicore__ inline T AtomicSubImpl(__gm__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicSubImpl(__gm__ T *address, T val)
 {
     if constexpr (SupportType<Tuple<T>, Tuple<int32_t>, Tuple<uint32_t>, Tuple<int64_t>, Tuple<uint64_t>, Tuple<float>,
                               Tuple<half2>, Tuple<bfloat16x2_t>>()) {
@@ -133,13 +133,13 @@ T AtomicExchImpl(__gm__ T *address, T val)
 }
 #else
 template <typename T>
-__simt_callee__ __aicore__ inline T AtomicExchImpl(__ubuf__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicExchImpl(__ubuf__ T *address, T val)
 {
     return bisheng::cce::simt::atomicExch(address, val);
 }
 
 template <typename T>
-__simt_callee__ __aicore__ inline T AtomicExchImpl(__gm__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicExchImpl(__gm__ T *address, T val)
 {
     return bisheng::cce::simt::atomicExch(address, val);
 }
@@ -162,7 +162,7 @@ T AtomicMaxImpl(__gm__ T *address, T val)
 }
 #else
 template <typename T>
-__simt_callee__ __aicore__ inline T AtomicMaxImpl(__ubuf__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicMaxImpl(__ubuf__ T *address, T val)
 {
     if constexpr (SupportType<Tuple<T>, Tuple<int32_t>, Tuple<uint32_t>, Tuple<float>>()) {
         return bisheng::cce::simt::atomicMax(address, val);
@@ -173,7 +173,7 @@ __simt_callee__ __aicore__ inline T AtomicMaxImpl(__ubuf__ T *address, T val)
 }
 
 template <typename T>
-__simt_callee__ __aicore__ inline T AtomicMaxImpl(__gm__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicMaxImpl(__gm__ T *address, T val)
 {
     if constexpr (SupportType<Tuple<T>, Tuple<int32_t>, Tuple<uint32_t>, Tuple<int64_t>, Tuple<uint64_t>, Tuple<float>,
                               Tuple<half2>, Tuple<bfloat16x2_t>>()) {
@@ -202,7 +202,7 @@ T AtomicMinImpl(__gm__ T *address, T val)
 }
 #else
 template <typename T>
-__simt_callee__ __aicore__ inline T AtomicMinImpl(__ubuf__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicMinImpl(__ubuf__ T *address, T val)
 {
     if constexpr (SupportType<Tuple<T>, Tuple<int32_t>, Tuple<uint32_t>, Tuple<float>>()) {
         return bisheng::cce::simt::atomicMin(address, val);
@@ -213,7 +213,7 @@ __simt_callee__ __aicore__ inline T AtomicMinImpl(__ubuf__ T *address, T val)
 }
 
 template <typename T>
-__simt_callee__ __aicore__ inline T AtomicMinImpl(__gm__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicMinImpl(__gm__ T *address, T val)
 {
     if constexpr (SupportType<Tuple<T>, Tuple<int32_t>, Tuple<uint32_t>, Tuple<int64_t>, Tuple<uint64_t>, Tuple<float>,
                               Tuple<half2>, Tuple<bfloat16x2_t>>()) {
@@ -244,7 +244,7 @@ T AtomicIncImpl(__gm__ T *address, T val)
 }
 #else
 template <typename DstType, typename SrcType>
-__aicore__ inline DstType AtomicIncImpl_(SrcType *address, DstType val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline DstType AtomicIncImpl_(SrcType *address, DstType val)
 {
     DstType old = *address;
     DstType cmp;
@@ -262,7 +262,7 @@ __aicore__ inline DstType AtomicIncImpl_(SrcType *address, DstType val)
 }
 
 template <typename T>
-__aicore__ inline T AtomicIncImpl(__ubuf__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicIncImpl(__ubuf__ T *address, T val)
 {
     if constexpr (SupportType<Tuple<T>, Tuple<uint32_t>>()) {
         return bisheng::cce::simt::atomicInc(address, val);
@@ -272,7 +272,7 @@ __aicore__ inline T AtomicIncImpl(__ubuf__ T *address, T val)
 }
 
 template <typename T>
-__aicore__ inline T AtomicIncImpl(__gm__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicIncImpl(__gm__ T *address, T val)
 {
     if constexpr (SupportType<Tuple<T>, Tuple<uint32_t>, Tuple<uint64_t>>()) {
         return bisheng::cce::simt::atomicInc(address, val);
@@ -301,7 +301,7 @@ T AtomicDecImpl(__gm__ T *address, T val)
 }
 #else
 template <typename DstType, typename SrcType>
-__aicore__ inline DstType AtomicDecImpl_(SrcType *address, DstType val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline DstType AtomicDecImpl_(SrcType *address, DstType val)
 {
     DstType old = *address;
     DstType cmp;
@@ -319,7 +319,7 @@ __aicore__ inline DstType AtomicDecImpl_(SrcType *address, DstType val)
 }
 
 template <typename T>
-__aicore__ inline T AtomicDecImpl(__ubuf__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicDecImpl(__ubuf__ T *address, T val)
 {
     if constexpr (SupportType<Tuple<T>, Tuple<uint32_t>>()) {
         return bisheng::cce::simt::atomicDec(address, val);
@@ -329,7 +329,7 @@ __aicore__ inline T AtomicDecImpl(__ubuf__ T *address, T val)
 }
 
 template <typename T>
-__aicore__ inline T AtomicDecImpl(__gm__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicDecImpl(__gm__ T *address, T val)
 {
     if constexpr (SupportType<Tuple<T>, Tuple<uint32_t>, Tuple<uint64_t>>()) {
         return bisheng::cce::simt::atomicDec(address, val);
@@ -352,13 +352,13 @@ T AtomicAndImpl(__gm__ T *address, T val)
 }
 #else
 template <typename T>
-__aicore__ inline T AtomicAndImpl(__ubuf__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicAndImpl(__ubuf__ T *address, T val)
 {
     return bisheng::cce::simt::atomicAnd(address, val);
 }
 
 template <typename T>
-__aicore__ inline T AtomicAndImpl(__gm__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicAndImpl(__gm__ T *address, T val)
 {
     return bisheng::cce::simt::atomicAnd(address, val);
 }
@@ -377,13 +377,13 @@ T AtomicOrImpl(__gm__ T *address, T val)
 }
 #else
 template <typename T>
-__aicore__ inline T AtomicOrImpl(__ubuf__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicOrImpl(__ubuf__ T *address, T val)
 {
     return bisheng::cce::simt::atomicOr(address, val);
 }
 
 template <typename T>
-__aicore__ inline T AtomicOrImpl(__gm__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicOrImpl(__gm__ T *address, T val)
 {
     return bisheng::cce::simt::atomicOr(address, val);
 }
@@ -402,13 +402,13 @@ T AtomicXorImpl(__gm__ T *address, T val)
 }
 #else
 template <typename T>
-__aicore__ inline T AtomicXorImpl(__ubuf__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicXorImpl(__ubuf__ T *address, T val)
 {
     return bisheng::cce::simt::atomicXOr(address, val);
 }
 
 template <typename T>
-__aicore__ inline T AtomicXorImpl(__gm__ T *address, T val)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicXorImpl(__gm__ T *address, T val)
 {
     return bisheng::cce::simt::atomicXOr(address, val);
 }

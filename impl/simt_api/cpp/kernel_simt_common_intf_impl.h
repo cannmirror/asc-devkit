@@ -20,29 +20,29 @@
 namespace AscendC {
 namespace Simt {
 
-__aicore__ inline int32_t GetWarpSize()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetWarpSize()
 {
     return GetWarpSizeImpl();
 }
 
 template <int32_t dim>
-__aicore__ inline int32_t GetThreadNum()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetThreadNum()
 {
     return GetThreadNumImpl<dim>();
 }
 
 template <int32_t dim>
-__aicore__ inline int32_t GetThreadIdx()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetThreadIdx()
 {
     return GetThreadIdxImpl<dim>();
 }
 
-__aicore__ inline int32_t GetBlockIdx()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetBlockIdx()
 {
     return GetBlockIdxImpl();
 }
 
-__aicore__ inline int32_t GetBlockNum()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetBlockNum()
 {
     return GetBlockNumImpl();
 }

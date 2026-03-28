@@ -24,7 +24,7 @@ namespace Simt {
 
 #ifndef ASCENDC_CPU_DEBUG
 #define REG_ROUND_VEC(type, func_name, len)                \
-    __aicore__ inline void func_name(type &dst, type &src) \
+    __SIMT_DEVICE_FUNCTIONS_DECL__ inline void func_name(type &dst, type &src) \
     {                                                      \
         for (int i = 0; i < len; i++) {                    \
             dst[i] = bisheng::cce::simt::func_name(src[i]);\
@@ -32,7 +32,7 @@ namespace Simt {
     }
 
 #define REG_ROUND_VEC_(dst_type, src_type, d_type, s_type, func_name, len) \
-    __aicore__ inline void func_name##_(dst_type &dst, src_type &src)      \
+    __SIMT_DEVICE_FUNCTIONS_DECL__ inline void func_name##_(dst_type &dst, src_type &src)      \
     {                                                                      \
         for (int i = 0; i < len; i++) {                                    \
             dst[i] = func_name##_<d_type, s_type>(src[i]);                 \
@@ -57,20 +57,20 @@ namespace Simt {
     REG_ROUND_VEC_(dst_type##2, src_type##2, dst_type, src_type, func_name, 2)
 #else
 #define REG_ROUND_VEC_1(type, func_name)                   \
-    __aicore__ inline void func_name(type &dst, type &src) \
+    __SIMT_DEVICE_FUNCTIONS_DECL__ inline void func_name(type &dst, type &src) \
     {                                                      \
         dst.x = func_name(src.x);                          \
     }
 
 #define REG_ROUND_VEC_2(type, func_name)                   \
-    __aicore__ inline void func_name(type &dst, type &src) \
+    __SIMT_DEVICE_FUNCTIONS_DECL__ inline void func_name(type &dst, type &src) \
     {                                                      \
         dst.x = func_name(src.x);                          \
         dst.y = func_name(src.y);                          \
     }
 
 #define REG_ROUND_VEC_3(type, func_name)                   \
-    __aicore__ inline void func_name(type &dst, type &src) \
+    __SIMT_DEVICE_FUNCTIONS_DECL__ inline void func_name(type &dst, type &src) \
     {                                                      \
         dst.x = func_name(src.x);                          \
         dst.y = func_name(src.y);                          \
@@ -78,7 +78,7 @@ namespace Simt {
     }
 
 #define REG_ROUND_VEC_4(type, func_name)                   \
-    __aicore__ inline void func_name(type &dst, type &src) \
+    __SIMT_DEVICE_FUNCTIONS_DECL__ inline void func_name(type &dst, type &src) \
     {                                                      \
         dst.x = func_name(src.x);                          \
         dst.y = func_name(src.y);                          \
@@ -87,20 +87,20 @@ namespace Simt {
     }
 
 #define REG_ROUND_VEC_1_(dst_type, src_type, d_type, s_type, func_name) \
-    __aicore__ inline void func_name##_(dst_type &dst, src_type &src)   \
+    __SIMT_DEVICE_FUNCTIONS_DECL__ inline void func_name##_(dst_type &dst, src_type &src)   \
     {                                                                   \
         dst.x = func_name##_<d_type, s_type>(src.x);                    \
     }
 
 #define REG_ROUND_VEC_2_(dst_type, src_type, d_type, s_type, func_name) \
-    __aicore__ inline void func_name##_(dst_type &dst, src_type &src)   \
+    __SIMT_DEVICE_FUNCTIONS_DECL__ inline void func_name##_(dst_type &dst, src_type &src)   \
     {                                                                   \
         dst.x = func_name##_<d_type, s_type>(src.x);                    \
         dst.y = func_name##_<d_type, s_type>(src.y);                    \
     }
 
 #define REG_ROUND_VEC_3_(dst_type, src_type, d_type, s_type, func_name) \
-    __aicore__ inline void func_name##_(dst_type &dst, src_type &src)   \
+    __SIMT_DEVICE_FUNCTIONS_DECL__ inline void func_name##_(dst_type &dst, src_type &src)   \
     {                                                                   \
         dst.x = func_name##_<d_type, s_type>(src.x);                    \
         dst.y = func_name##_<d_type, s_type>(src.y);                    \
@@ -108,7 +108,7 @@ namespace Simt {
     }
 
 #define REG_ROUND_VEC_4_(dst_type, src_type, d_type, s_type, func_name) \
-    __aicore__ inline void func_name##_(dst_type &dst, src_type &src)   \
+    __SIMT_DEVICE_FUNCTIONS_DECL__ inline void func_name##_(dst_type &dst, src_type &src)   \
     {                                                                   \
         dst.x = func_name##_<d_type, s_type>(src.x);                    \
         dst.y = func_name##_<d_type, s_type>(src.y);                    \
@@ -135,13 +135,13 @@ namespace Simt {
 #endif
 
 #define REG_ROUND(type, func_name)                         \
-    __aicore__ inline void func_name(type &dst, type &src) \
+    __SIMT_DEVICE_FUNCTIONS_DECL__ inline void func_name(type &dst, type &src) \
     {                                                      \
         dst = bisheng::cce::simt::func_name(src);          \
     }
 
 #define REG_ROUND_(d_type, s_type, func_name)                     \
-    __aicore__ inline void func_name##_(d_type &dst, s_type &src) \
+    __SIMT_DEVICE_FUNCTIONS_DECL__ inline void func_name##_(d_type &dst, s_type &src) \
     {                                                             \
         dst = func_name##_<d_type, s_type>(src);                  \
     }
@@ -195,7 +195,7 @@ REG_CAST_VEC_(Trunc)
 REG_CAST_VEC_(CastNone)
 
 template <typename T, typename U, RoundMode roundMode>
-__aicore__ inline T CastFallback(U x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T CastFallback(U x)
 {
     T y;
     switch (roundMode) {
@@ -221,7 +221,7 @@ __aicore__ inline T CastFallback(U x)
 }
 
 template <typename T, typename U, RoundMode roundMode, SatMode satMode>
-__aicore__ inline T CastImpl(U x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T CastImpl(U x)
 {
 #if defined(ASCENDC_CPU_DEBUG)
     return CastFallback<T, U, roundMode>(x);
@@ -259,31 +259,31 @@ __aicore__ inline T CastImpl(U x)
 }
 
 template <typename T>
-__aicore__ inline T RoundImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T RoundImpl(T x)
 {
     return RoundIntrinsicsImpl(x);
 }
 
 template <typename T>
-__aicore__ inline T RintImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T RintImpl(T x)
 {
     return RintIntrinsicsImpl(x);
 }
 
 template <typename T>
- __aicore__ inline T FloorImpl(T x)
+ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T FloorImpl(T x)
 {
     return FloorIntrinsicsImpl(x);
 }
 
 template <typename T>
-__aicore__ inline T CeilImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T CeilImpl(T x)
 {
     return CeilIntrinsicsImpl(x);
 }
 
 template <typename T>
-__aicore__ inline T TruncImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T TruncImpl(T x)
 {
     if (x > (T)0) {
         return FloorImpl(x);

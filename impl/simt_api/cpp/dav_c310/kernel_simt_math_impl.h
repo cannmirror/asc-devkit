@@ -29,29 +29,29 @@ namespace Simt {
 
 #if defined(ASCENDC_CPU_DEBUG)
 template <typename T>
-__aicore__ inline T AbsImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AbsImpl(T x)
 {
     return abs(x);
 }
 
-__aicore__ inline int64_t AbsImpl(int64_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int64_t AbsImpl(int64_t x)
 {
     return llabs(x);
 }
 
-__aicore__ inline float AbsImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float AbsImpl(float x)
 {
     return fabs(x);
 }
 
-__aicore__ inline half AbsImpl(half x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half AbsImpl(half x)
 {
     half res = fabs(static_cast<float>(x));
     return res;
 }
 #else
 template <typename T>
-__aicore__ inline T AbsImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T AbsImpl(T x)
 {
     if constexpr (std::is_same_v<T, int32_t> || std::is_same_v<T, float> || std::is_same_v<T, int64_t>) {
         return abs(x);
@@ -65,7 +65,7 @@ __aicore__ inline T AbsImpl(T x)
 
 #ifdef ASCENDC_CPU_DEBUG
 template <typename T>
-__aicore__ inline T UMulHi(T dividend, T magic)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T UMulHi(T dividend, T magic)
 {
     static_assert(SupportType<T, uint32_t, uint64_t>(), "Input type T only supports uint32_t, uint64_t.");
 
@@ -99,7 +99,7 @@ __aicore__ inline T UMulHi(T dividend, T magic)
 #endif
 
 template <typename T>
-__aicore__ inline T UintDivImpl(T dividend, T magic, T shift)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T UintDivImpl(T dividend, T magic, T shift)
 {
     static_assert(SupportType<T, uint32_t, uint64_t>(), "Input type T only supports uint32_t, uint64_t.");
 #ifdef ASCENDC_CPU_DEBUG
@@ -127,7 +127,7 @@ __aicore__ inline T UintDivImpl(T dividend, T magic, T shift)
 
 #if defined(ASCENDC_CPU_DEBUG)
 template <typename T>
-__aicore__ inline T FmaImpl(T x, T y, T z)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T FmaImpl(T x, T y, T z)
 {
     if (IsNanImpl(z) || IsNanImpl(x) || IsNanImpl(y)) {
         return NAN;
@@ -135,7 +135,7 @@ __aicore__ inline T FmaImpl(T x, T y, T z)
     return ((double)x * (double)y) + (double)z;
 }
 
-__aicore__ inline half FmaImpl(half x, half y, half z)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half FmaImpl(half x, half y, half z)
 {
     if (IsNanImpl(z) || IsNanImpl(x) || IsNanImpl(y)) {
         return NAN;
@@ -143,7 +143,7 @@ __aicore__ inline half FmaImpl(half x, half y, half z)
     return (static_cast<float>(x) * static_cast<float>(y)) + static_cast<float>(z);
 }
 
-__aicore__ inline float FmaImpl(float x, float y, float z)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float FmaImpl(float x, float y, float z)
 {
     if (IsNanImpl(z) || IsNanImpl(x) || IsNanImpl(y)) {
         return NAN;
@@ -152,17 +152,17 @@ __aicore__ inline float FmaImpl(float x, float y, float z)
 }
 #else
 template <typename T>
-__aicore__ inline T FmaImpl(T x, T y, T z)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T FmaImpl(T x, T y, T z)
 {
     return x * y + z;
 }
 
-__aicore__ inline float FmaImpl(float x, float y, float z)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float FmaImpl(float x, float y, float z)
 {
     return bisheng::cce::simt::__fma(x, y, z);
 }
 
-__aicore__ inline half FmaImpl(half x, half y, half z)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half FmaImpl(half x, half y, half z)
 {
     return bisheng::cce::simt::__fma(x, y, z);
 }
@@ -170,13 +170,13 @@ __aicore__ inline half FmaImpl(half x, half y, half z)
 
 #if defined(ASCENDC_CPU_DEBUG)
 template <typename T>
-__aicore__ inline T MaxImpl(T x, T y)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T MaxImpl(T x, T y)
 {
     return std::max(x, y);
 }
 #else
 template <typename T>
-__aicore__ inline T MaxImpl(T x, T y)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T MaxImpl(T x, T y)
 {
     if constexpr (std::is_same_v<T, int8_t> || std::is_same_v<T, int16_t> || std::is_same_v<T, int32_t> ||
                   std::is_same_v<T, int64_t> || std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> ||
@@ -192,13 +192,13 @@ __aicore__ inline T MaxImpl(T x, T y)
 
 #if defined(ASCENDC_CPU_DEBUG)
 template <typename T>
-__aicore__ inline T MinImpl(T x, T y)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T MinImpl(T x, T y)
 {
     return std::min(x, y);
 }
 #else
 template <typename T>
-__aicore__ inline T MinImpl(T x, T y)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T MinImpl(T x, T y)
 {
     if constexpr (std::is_same_v<T, int8_t> || std::is_same_v<T, int16_t> || std::is_same_v<T, int32_t> ||
                   std::is_same_v<T, int64_t> || std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> ||
@@ -212,7 +212,7 @@ __aicore__ inline T MinImpl(T x, T y)
 }
 #endif
 
-__aicore__ inline float DimImpl(float x, float y)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float DimImpl(float x, float y)
 {
     if (IsNanImpl(x)) {
         return x;
@@ -223,7 +223,7 @@ __aicore__ inline float DimImpl(float x, float y)
 }
 
 #if defined(ASCENDC_CPU_DEBUG)
-__aicore__ inline float RemQuoImpl(float x, float y, int *quo)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float RemQuoImpl(float x, float y, int *quo)
 {
     *quo = 0;
     int32_t negE = -8;
@@ -244,17 +244,17 @@ __aicore__ inline float RemQuoImpl(float x, float y, int *quo)
     return remainder;
 }
 #else
-__aicore__ inline float SetNegX(float absX)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float SetNegX(float absX)
 {
     return -absX;
 }
 
-__aicore__ inline float SubSetResPos(float absX, float absY)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float SubSetResPos(float absX, float absY)
 {
     return (absX < absY) ? absX - absY : absY - absX;
 }
 
-__aicore__ inline void SetQuo(int32_t *quo, int32_t nSign)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void SetQuo(int32_t *quo, int32_t nSign)
 {
     int32_t negE = -8;
     int32_t maxS32 = 0xffffffff;
@@ -270,7 +270,7 @@ __aicore__ inline void SetQuo(int32_t *quo, int32_t nSign)
     }
 }
 
-__aicore__ inline float XLeY(float absX, float tmpVal, float absY, bool isXPos, uint32_t signFlag, float res,
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float XLeY(float absX, float tmpVal, float absY, bool isXPos, uint32_t signFlag, float res,
                              int32_t *quo, int32_t nSign)
 {
     float doubleX = absX + absX;
@@ -295,7 +295,7 @@ __aicore__ inline float XLeY(float absX, float tmpVal, float absY, bool isXPos, 
     return sign * SubSetResPos(absX, absY);
 }
 
-__aicore__ inline float RemQuoImpl(float x, float y, int *quo)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float RemQuoImpl(float x, float y, int *quo)
 {
     bool isXPos = x >= 0;
     float absX = AbsImpl(x);
@@ -379,19 +379,19 @@ __aicore__ inline float RemQuoImpl(float x, float y, int *quo)
 #endif
 
 #if defined(ASCENDC_CPU_DEBUG)
-__aicore__ inline float ModImpl(float x, float y)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float ModImpl(float x, float y)
 {
     return fmodf(x, y);
 }
 #else
-__aicore__ inline float SetResModNeg(float modRes)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float SetResModNeg(float modRes)
 {
     uint32_t *uModRes = (uint32_t *)(&modRes);
     *uModRes = (*uModRes) | ConstantsInternal::NEG_SIGN_BIT;
     return modRes;
 }
 
-__aicore__ inline float ModImpl(float x, float y)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float ModImpl(float x, float y)
 {
     bool isXPos = x > 0;
     float absX = AbsImpl(x);
@@ -449,24 +449,24 @@ __aicore__ inline float ModImpl(float x, float y)
 #endif
 
 #if defined(ASCENDC_CPU_DEBUG)
-__aicore__ inline float RemainderImpl(float x, float y)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float RemainderImpl(float x, float y)
 {
     return remainder(x, y);
 }
 #else
-__aicore__ inline float RemainderImpl(float x, float y)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float RemainderImpl(float x, float y)
 {
     int32_t quo = -1;
     return RemQuoImpl(x, y, &quo);
 }
 #endif
 
-__aicore__ inline float CopySignImpl(float x, float y)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float CopySignImpl(float x, float y)
 {
     return (y > 0) ? AbsImpl(x) : -AbsImpl(x);
 }
 
-__aicore__ inline float NearByIntImpl(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float NearByIntImpl(float x)
 {
     if (IsInfImpl(x) || IsNanImpl(x)) {
         return x;
@@ -474,7 +474,7 @@ __aicore__ inline float NearByIntImpl(float x)
     return RintImpl(x);
 }
 
-__aicore__ inline float NextAfterImpl(float x, float y)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float NextAfterImpl(float x, float y)
 {
     uint32_t *f = (uint32_t *)&x;
     if (x > 0) {
@@ -493,7 +493,7 @@ __aicore__ inline float NextAfterImpl(float x, float y)
     return x;
 }
 
-__aicore__ inline float ScaLbnImpl(float x, int n)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float ScaLbnImpl(float x, int n)
 {
     if (IsInfImpl(x) || IsNanImpl(x)) {
         return x;
@@ -538,13 +538,13 @@ __aicore__ inline float ScaLbnImpl(float x, int n)
 #endif
 }
 
-__aicore__ inline float ScaLbnImpl(float x, long int n)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float ScaLbnImpl(float x, long int n)
 {
     return ScaLbnImpl(x, static_cast<int>(n));
 }
 
 #if defined(ASCENDC_CPU_DEBUG)
-__aicore__ inline uint32_t BrevImpl(uint32_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t BrevImpl(uint32_t x)
 {
     uint32_t reversedX = 0;
     for (int i = 0; i < ConstantsInternal::FOUR_BYTE_LEN; ++i) {
@@ -555,7 +555,7 @@ __aicore__ inline uint32_t BrevImpl(uint32_t x)
     return reversedX;
 }
 
-__aicore__ inline uint64_t BrevImpl(uint64_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint64_t BrevImpl(uint64_t x)
 {
     uint64_t reversedX = 0;
     for (int i = 0; i < ConstantsInternal::EIGHT_BYTE_LEN; ++i) {
@@ -566,12 +566,12 @@ __aicore__ inline uint64_t BrevImpl(uint64_t x)
     return reversedX;
 }
 #else
-__aicore__ inline uint64_t BrevImpl(uint64_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint64_t BrevImpl(uint64_t x)
 {
     return bisheng::cce::simt::__brev(static_cast<unsigned long long>(x));
 }
 
-__aicore__ inline uint32_t BrevImpl(uint32_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t BrevImpl(uint32_t x)
 {
     return bisheng::cce::simt::__brev(x);
 }
@@ -579,7 +579,7 @@ __aicore__ inline uint32_t BrevImpl(uint32_t x)
 
 #if defined(ASCENDC_CPU_DEBUG)
 template <typename T>
-__aicore__ inline int32_t ClzIntrinsics(uint8_t bitLen, T x, T one)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t ClzIntrinsics(uint8_t bitLen, T x, T one)
 {
     int32_t count = 0;
     for (int i = 0; i < bitLen; i++) {
@@ -594,7 +594,7 @@ __aicore__ inline int32_t ClzIntrinsics(uint8_t bitLen, T x, T one)
 }
 
 template <typename T>
-__aicore__ inline int32_t ClzImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t ClzImpl(T x)
 {
     static_assert(SupportType<T, int32_t, int64_t, uint32_t, uint64_t>(),
                   "Input type of Clz function only supports int32_t, uint32_t, int64_t, uint64_t.");
@@ -609,29 +609,29 @@ __aicore__ inline int32_t ClzImpl(T x)
     }
 }
 #else
-__aicore__ inline int32_t ClzIntrinsics(uint32_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t ClzIntrinsics(uint32_t x)
 {
     return bisheng::cce::simt::__clz(static_cast<int32_t>(x));
 }
 
-__aicore__ inline int32_t ClzIntrinsics(int32_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t ClzIntrinsics(int32_t x)
 {
     return bisheng::cce::simt::__clz(x);
 }
 
-__aicore__ inline int32_t ClzIntrinsics(uint64_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t ClzIntrinsics(uint64_t x)
 {
     return bisheng::cce::simt::__clz(static_cast<long long>(x));
 }
 
-__aicore__ inline int32_t ClzIntrinsics(int64_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t ClzIntrinsics(int64_t x)
 {
     return bisheng::cce::simt::__clz(static_cast<long long>(x));
 }
 
 // count the leading zero bits
 template <typename T>
-__aicore__ inline int32_t ClzImpl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t ClzImpl(T x)
 {
     static_assert(SupportType<T, int32_t, int64_t, uint32_t, uint64_t>(),
                   "Input type of Clz function only supports int32_t, uint32_t, int64_t, uint64_t.");
@@ -641,7 +641,7 @@ __aicore__ inline int32_t ClzImpl(T x)
 
 #if defined(ASCENDC_CPU_DEBUG)
 template <typename T>
-__aicore__ inline int32_t PopcIntrinsics(uint8_t bitLen, T x, T one)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t PopcIntrinsics(uint8_t bitLen, T x, T one)
 {
     int32_t count = 0;
     for (int i = 0; i < bitLen; i++) {
@@ -652,29 +652,29 @@ __aicore__ inline int32_t PopcIntrinsics(uint8_t bitLen, T x, T one)
     return count;
 }
 
-__aicore__ inline int32_t PopcImpl(uint32_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t PopcImpl(uint32_t x)
 {
     return PopcIntrinsics(ConstantsInternal::FOUR_BYTE_LEN, x, ConstantsInternal::ONE_UINT32);
 }
 
-__aicore__ inline int32_t PopcImpl(uint64_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t PopcImpl(uint64_t x)
 {
     return PopcIntrinsics(ConstantsInternal::EIGHT_BYTE_LEN, x, ConstantsInternal::ONE_UINT64);
 }
 #else
-__aicore__ inline int32_t PopcImpl(uint32_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t PopcImpl(uint32_t x)
 {
     return bisheng::cce::simt::__popc(static_cast<unsigned int>(x));
 }
 
-__aicore__ inline int32_t PopcImpl(uint64_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t PopcImpl(uint64_t x)
 {
     return bisheng::cce::simt::__popc(static_cast<unsigned long long>(x));
 }
 #endif
 
 #if defined(ASCENDC_CPU_DEBUG)
-__aicore__ inline uint32_t BytePermImpl(uint32_t x, uint32_t y, uint32_t s)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t BytePermImpl(uint32_t x, uint32_t y, uint32_t s)
 {
     uint64_t tmp64 = (static_cast<uint64_t>(y) << ConstantsInternal::FOUR_BYTE_LEN) | x;
     uint8_t selector0 = (s & 0x7);
@@ -691,14 +691,14 @@ __aicore__ inline uint32_t BytePermImpl(uint32_t x, uint32_t y, uint32_t s)
                 (byte3 << ConstantsInternal::THREE_BYTE_LEN);
 }
 #else
-__aicore__ inline uint32_t BytePermImpl(uint32_t x, uint32_t y, uint32_t s)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t BytePermImpl(uint32_t x, uint32_t y, uint32_t s)
 {
     return bisheng::cce::simt::__byte_perm(x, y, s);
 }
 #endif
 
 #if defined(ASCENDC_CPU_DEBUG)
-__aicore__ inline int32_t FfsImpl(int32_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t FfsImpl(int32_t x)
 {
     if (x == 0) {
         return 0;
@@ -707,7 +707,7 @@ __aicore__ inline int32_t FfsImpl(int32_t x)
     return __builtin_ctz(lsb) + 1;
 }
 
-__aicore__ inline int32_t FfsImpl(int64_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t FfsImpl(int64_t x)
 {
     if (x == 0) {
         return 0;
@@ -716,12 +716,12 @@ __aicore__ inline int32_t FfsImpl(int64_t x)
     return __builtin_ctz(lsb) + 1;
 }
 #else
-__aicore__ inline int32_t FfsImpl(int32_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t FfsImpl(int32_t x)
 {
     return bisheng::cce::simt::__ffs(x);
 }
 
-__aicore__ inline int32_t FfsImpl(int64_t x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t FfsImpl(int64_t x)
 {
     return bisheng::cce::simt::__ffs(static_cast<long long>(x));
 }
@@ -729,7 +729,7 @@ __aicore__ inline int32_t FfsImpl(int64_t x)
 
 #if defined(ASCENDC_CPU_DEBUG)
 template <typename T>
-__aicore__ inline T MulHiImpl(T x, T y)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T MulHiImpl(T x, T y)
 {
     if constexpr (std::is_same_v<T, uint32_t>) {
         uint64_t src0 = static_cast<uint64_t>(x);
@@ -746,12 +746,12 @@ __aicore__ inline T MulHiImpl(T x, T y)
     }
 }
 #else
-__aicore__ inline uint32_t MulHiImpl(uint32_t x, uint32_t y)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t MulHiImpl(uint32_t x, uint32_t y)
 {
     return bisheng::cce::simt::__umulhi(x, y);
 }
 
-__aicore__ inline int32_t MulHiImpl(int32_t x, int32_t y)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t MulHiImpl(int32_t x, int32_t y)
 {
     return bisheng::cce::simt::__mulhi(x, y);
 }

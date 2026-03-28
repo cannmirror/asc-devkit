@@ -30,18 +30,18 @@ namespace AscendC {
 namespace Simt {
 
 template <typename T>
-__aicore__ inline T J0Impl(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T J0Impl(T x);
 
 template <typename T>
-__aicore__ inline T J1Impl(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T J1Impl(T x);
 
 template <typename T>
-__aicore__ inline T Y0Impl(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Y0Impl(T x);
 
 template <typename T>
-__aicore__ inline T Y1Impl(T x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Y1Impl(T x);
 
-__aicore__ inline float TrigRedSlowpathFFastMode(float a, int *quadrant)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float TrigRedSlowpathFFastMode(float a, int *quadrant)
 {
     uint64_t q, q2;
     q = (uint64_t)(a * ConstantsInternal::TWO_OVER_PI);
@@ -55,7 +55,7 @@ __aicore__ inline float TrigRedSlowpathFFastMode(float a, int *quadrant)
     return a;
 }
 
-__aicore__ inline float SinfPoly(float a, float s)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float SinfPoly(float a, float s)
 {
     float r = 2.86567956e-6f;
     r = FmaImpl(r, s, -1.98559923e-4f);
@@ -66,7 +66,7 @@ __aicore__ inline float SinfPoly(float a, float s)
     return r;
 }
 
-__aicore__ inline float CosfPoly(float s)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float CosfPoly(float s)
 {
     float r = 2.44677067e-5f;
     r = FmaImpl(r, s, -1.38877297e-3f);
@@ -76,7 +76,7 @@ __aicore__ inline float CosfPoly(float s)
     return r;
 }
 
-__aicore__ inline float SinCosfMinusPIOverFour(float a, int index)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float SinCosfMinusPIOverFour(float a, int index)
 {
     float r;
     int i;
@@ -103,7 +103,7 @@ __aicore__ inline float SinCosfMinusPIOverFour(float a, int index)
     }
 }
 
-__aicore__ inline float CalJ0XLarger8(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float CalJ0XLarger8(float x)
 {
     if (IsInfImpl(x)) {
         return 0.0f;
@@ -125,7 +125,7 @@ __aicore__ inline float CalJ0XLarger8(float x)
     return afterCoeff * preCoeff;
 }
 
-__aicore__ inline float CalJ1XLarger8(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float CalJ1XLarger8(float x)
 {
     if (IsInfImpl(x)) {
         return 0.0f;
@@ -147,7 +147,7 @@ __aicore__ inline float CalJ1XLarger8(float x)
     return afterCoeff * preCoeff;
 }
 
-__aicore__ inline float CalJ0XLess8(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float CalJ0XLess8(float x)
 {
     float d1 = x - 2.4048254f;
     d1 = d1 - 1.087059e-7f;
@@ -174,7 +174,7 @@ __aicore__ inline float CalJ0XLess8(float x)
     return res;  
 }
 
-__aicore__ inline float CalJ1XLess8(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float CalJ1XLess8(float x)
 {
     float d1 = x - 3.831706f;
     d1 = d1 + 7.685059e-8f;
@@ -199,7 +199,7 @@ __aicore__ inline float CalJ1XLess8(float x)
     return res;  
 }
 
-__aicore__ inline float JnYnAsymptoticBesselAmplitude(int n, float x, int index)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float JnYnAsymptoticBesselAmplitude(int n, float x, int index)
 {
     float s = 1.0f;
     float mu = 4 * n * n;
@@ -217,7 +217,7 @@ __aicore__ inline float JnYnAsymptoticBesselAmplitude(int n, float x, int index)
     return SqrtImpl(s * 2 / (ConstantsInternal::PI * x)); // 2:Constants in formulas    sqrt(2*s/(π*x))
 }
 
-__aicore__ inline float JnYnAsymptoticBesselPhaseMx(int n, float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float JnYnAsymptoticBesselPhaseMx(int n, float x)
 {
     float mu = 4 * n * n;
     float denom = 4 * x;
@@ -232,7 +232,7 @@ __aicore__ inline float JnYnAsymptoticBesselPhaseMx(int n, float x)
     return s;
 }
 
-__aicore__ inline float JnCase1(int n, float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float JnCase1(int n, float x)
 {
     float ampl = JnYnAsymptoticBesselAmplitude(n, x, 0);
     float phase = JnYnAsymptoticBesselPhaseMx(n, x);
@@ -245,7 +245,7 @@ __aicore__ inline float JnCase1(int n, float x)
     return sinPhase * ampl;
 }
 
-__aicore__ inline float JnCase2(int n, float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float JnCase2(int n, float x)
 {
     float prev = J0Impl(x);
     float current = J1Impl(x);
@@ -257,7 +257,7 @@ __aicore__ inline float JnCase2(int n, float x)
     return current;
 }
 
-__aicore__ inline float JnCase3(int n, float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float JnCase3(int n, float x)
 {
     float prefix = n * LogImpl(x / 2);
     for (int i = 2; i < n + 1; i++) {
@@ -276,7 +276,7 @@ __aicore__ inline float JnCase3(int n, float x)
     return prefix * res;
 }
 
-__aicore__ inline float JnCase4(int n, float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float JnCase4(int n, float x)
 {
     float maxValue = PowImpl(2.0f, 60.0f);
     int N = n + 30;
@@ -308,7 +308,7 @@ __aicore__ inline float JnCase4(int n, float x)
     return res * scale;
 }
 
-__aicore__ inline float J0XLess8(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float J0XLess8(float x)
 {
     float d1 = x - 2.4048254f;
     d1 = d1 - -1.087059e-7f;
@@ -336,7 +336,7 @@ __aicore__ inline float J0XLess8(float x)
     return res;
 }
 
-__aicore__ inline float CalY0XLessdot5(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float CalY0XLessdot5(float x)
 {        
     float part1 = 0.636619772367f * J0XLess8(x) * LogImpl(x);
     float part2 = FmaImpl(0.0007977247950890495f, x, -0.016524315326267768f);
@@ -347,7 +347,7 @@ __aicore__ inline float CalY0XLessdot5(float x)
     return part1 + part2;
 }
 
-__aicore__ inline float CalY0XPart1(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float CalY0XPart1(float x)
 {
     float d1 = x - 0.893576980f;
     d1 = d1 + 1.33579787e-8f;
@@ -369,7 +369,7 @@ __aicore__ inline float CalY0XPart1(float x)
     return res;
 }
 
-__aicore__ inline float CalY0XPart2(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float CalY0XPart2(float x)
 {
     float d3 = x - 7.08605099f;
     d3 = d3 - 7.30581178e-8f;
@@ -392,7 +392,7 @@ __aicore__ inline float CalY0XPart2(float x)
     return res;
 }
 
-__aicore__ inline float CalY0XLarger8(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float CalY0XLarger8(float x)
 {  
     if (IsInfImpl(x)) {
         return 0.0f;
@@ -414,7 +414,7 @@ __aicore__ inline float CalY0XLarger8(float x)
     return after_coeff * pre_coeff;
 }
 
-__aicore__ inline float CalY1XLess1dot2(float x, float minus_two_over_pi_mul_inv_x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float CalY1XLess1dot2(float x, float minus_two_over_pi_mul_inv_x)
 {        
     float part1 = 0.636619772367f * CalJ1XLess8(x) * LogImpl(x);
     float part2 = FmaImpl(0.0002798307076f, x, -0.0034028867918f);
@@ -427,7 +427,7 @@ __aicore__ inline float CalY1XLess1dot2(float x, float minus_two_over_pi_mul_inv
     return part1 + minus_two_over_pi_mul_inv_x + part2;
 }
 
-__aicore__ inline float CalY1XPart1(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float CalY1XPart1(float x)
 {
     float d1 = x - 2.19714141f;
     d1 = d1 + 8.28892723e-8f;
@@ -447,7 +447,7 @@ __aicore__ inline float CalY1XPart1(float x)
     return res;
 }
 
-__aicore__ inline float CalY1XPart2(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float CalY1XPart2(float x)
 { 
     float d2 = x - 5.42968082f;
     d2 = d2 - 2.16514351e-7f;
@@ -469,7 +469,7 @@ __aicore__ inline float CalY1XPart2(float x)
     return res;
 }
 
-__aicore__ inline float CalY1XLarger8(float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float CalY1XLarger8(float x)
 {
     if (IsInfImpl(x)) {
         return 0.0f;
@@ -491,14 +491,14 @@ __aicore__ inline float CalY1XLarger8(float x)
     return -after_coeff * pre_coeff;
 }
 
-__aicore__ inline float YnCase1(int n, float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float YnCase1(int n, float x)
 {
     float lgammaN = LgammaImpl(n);
     float gammaN = ExpImpl(lgammaN);
     return -gammaN / ConstantsInternal::PI * PowImpl(2 / x, (float)n); // 2:Constants in formulas -(n - 1)! * (2 / x)^n / π
 }
 
-__aicore__ inline float YnCase2(int n, float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float YnCase2(int n, float x)
 {
     float ampl = JnYnAsymptoticBesselAmplitude(n, x, 1); // 1: Calculate YnAsymptoticBesselAmplitude
     float phase = JnYnAsymptoticBesselPhaseMx(n, x);
@@ -511,7 +511,7 @@ __aicore__ inline float YnCase2(int n, float x)
     return sinCombined * ampl;
 }
 
-__aicore__ inline float YnCase3(int n, float x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float YnCase3(int n, float x)
 {
     float prev = Y0Impl(x);
     float current = Y1Impl(x);
@@ -542,7 +542,7 @@ __aicore__ inline float YnCase3(int n, float x)
 }
 
 template <typename T>
-__aicore__ inline T J0Impl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T J0Impl(T x)
 {
     static_assert(SupportType<T, float>(), "Input type only supports float.");
     if (IsNanImpl(x)) {
@@ -562,7 +562,7 @@ __aicore__ inline T J0Impl(T x)
 }
 
 template <typename T>
-__aicore__ inline T J1Impl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T J1Impl(T x)
 {
     static_assert(SupportType<T, float>(), "Input type only supports float.");
     if (IsNanImpl(x)) {
@@ -582,7 +582,7 @@ __aicore__ inline T J1Impl(T x)
 }
 
 template <typename T, typename U>
-__aicore__ inline U JnImpl(T n, U x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline U JnImpl(T n, U x)
 {
     static_assert(SupportType<T, int>(), "Input(n) type only supports int.");
     static_assert(SupportType<U, float>(), "Input(x) type only supports float.");
@@ -619,7 +619,7 @@ __aicore__ inline U JnImpl(T n, U x)
 }
 
 template <typename T>
-__aicore__ inline T Y0Impl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Y0Impl(T x)
 {
     static_assert(SupportType<T, float>(), "Input type only supports float.");
     if (x < 0 || IsNanImpl(x)) {
@@ -643,7 +643,7 @@ __aicore__ inline T Y0Impl(T x)
 }
 
 template <typename T>
-__aicore__ inline T Y1Impl(T x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline T Y1Impl(T x)
 {
     static_assert(SupportType<T, float>(), "Input type only supports float.");
     if (x < 0 || IsNanImpl(x)) {
@@ -674,7 +674,7 @@ __aicore__ inline T Y1Impl(T x)
 }
 
 template <typename T, typename U>
-__aicore__ inline U YnImpl(T n, U x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline U YnImpl(T n, U x)
 {
     static_assert(SupportType<T, int>(), "Input(n) type only supports int.");
     static_assert(SupportType<U, float>(), "Input(x) type only supports float.");
