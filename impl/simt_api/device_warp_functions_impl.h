@@ -12,14 +12,19 @@
  * \file device_warp_functions_impl.h
  * \brief
  */
-#ifndef IMPL_SIMT_API_DEVICE_WARP_FUNCTIONS_IMPL_H
-#define IMPL_SIMT_API_DEVICE_WARP_FUNCTIONS_IMPL_H
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEVICE_WARP_FUNCTIONS_IMPL__
 #warning "impl/simt_api/device_warp_functions_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "simt_api/device_warp_functions.h" and use public functions or variables defined in interface header files."
 #endif
+
+#ifndef IMPL_SIMT_API_DEVICE_WARP_FUNCTIONS_IMPL_H
+#define IMPL_SIMT_API_DEVICE_WARP_FUNCTIONS_IMPL_H
+
+#include "simt_api/device_types.h"
+
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 
 // clamp the max source lane, except up mode
 constexpr int32_t __INTERNAL_MAX_OFFSET_OF_MODE = 0x1f;
@@ -216,9 +221,10 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float asc_reduce_min(float val)
     return __reduce_min(val);
 }
 
+#endif
+#endif  // IMPL_SIMT_API_DEVICE_WARP_FUNCTIONS_IMPL_H
+
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEVICE_WARP_FUNCTIONS_IMPL__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEVICE_WARP_FUNCTIONS_IMPL__
 #endif
-
-#endif  // IMPL_SIMT_API_DEVICE_WARP_FUNCTIONS_IMPL_H

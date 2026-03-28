@@ -12,14 +12,19 @@
  * \file vector_functions_impl.h
  * \brief
  */
-#ifndef IMPL_SIMT_API_VECTOR_FUNCTIONS_IMPL_H
-#define IMPL_SIMT_API_VECTOR_FUNCTIONS_IMPL_H
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_VECTOR_FUNCTIONS_IMPL__
 #warning "impl/simt_api/vector_functions_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "simt_api/vector_functions.h" and use public functions or variables defined in interface header files."
 #endif
+
+#ifndef IMPL_SIMT_API_VECTOR_FUNCTIONS_IMPL_H
+#define IMPL_SIMT_API_VECTOR_FUNCTIONS_IMPL_H
+
+#include "simt_api/device_types.h"
+
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline short2 make_short2(short x, short y)
 {
@@ -323,9 +328,10 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint4 make_uint4(unsigned int x, unsigned 
     return tmp;
 }
 
+#endif
+#endif // IMPL_SIMT_API_VECTOR_FUNCTIONS_IMPL_H
+
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_VECTOR_FUNCTIONS_IMPL__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_VECTOR_FUNCTIONS_IMPL__
 #endif
-
-#endif // IMPL_SIMT_API_VECTOR_FUNCTIONS_IMPL_H

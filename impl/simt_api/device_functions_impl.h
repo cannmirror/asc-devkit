@@ -12,8 +12,6 @@
  * \file device_functions_impl.h
  * \brief
  */
-#ifndef IMPL_SIMT_API_DEVICE_FUNCTIONS_IMPL_H
-#define IMPL_SIMT_API_DEVICE_FUNCTIONS_IMPL_H
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
@@ -21,59 +19,17 @@
 #warning "impl/simt_api/device_functions_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "simt_api/device_functions.h" and use public functions or variables defined in interface header files."
 #endif
 
+#ifndef IMPL_SIMT_API_DEVICE_FUNCTIONS_IMPL_H
+#define IMPL_SIMT_API_DEVICE_FUNCTIONS_IMPL_H
+
+#include "simt_api/device_types.h"
+#include "impl/simt_api/internal_functions_impl.h"
+
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+
 #define ASCRT_Y_OFFSET       1   // 1 : offset of y
 #define ASCRT_Z_OFFSET       2   // 2 : offset of z
 #define ASCRT_W_OFFSET       3   // 3 : offset of w
-
-enum class __RoundMode {
-    CAST_RINT = 0,
-    CAST_FLOOR,
-    CAST_CEIL,
-    CAST_ROUND,
-    CAST_TRUNC,
-    CAST_ODD,
-    CAST_HYBRID,
-};
-
-#if !defined(__NPU_HOST__) && !defined(__ASC_NPU_HOST__)
-template <__RoundMode mode>
-__aicore__ inline constexpr ::ROUND __internal_get_round()
-{
-#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
-    if constexpr (mode == __RoundMode::CAST_RINT) {
-        return ::ROUND::CAST_RINT;
-    } else if constexpr (mode == __RoundMode::CAST_ROUND) {
-        return ::ROUND::CAST_ROUND;
-    } else if constexpr (mode == __RoundMode::CAST_FLOOR) {
-        return ::ROUND::CAST_FLOOR;
-    } else if constexpr (mode == __RoundMode::CAST_CEIL) {
-        return ::ROUND::CAST_CEIL;
-    } else if constexpr (mode == __RoundMode::CAST_TRUNC) {
-        return ::ROUND::CAST_TRUNC;
-    } else if constexpr (mode == __RoundMode::CAST_ODD) {
-        return ::ROUND::CAST_ODD;
-    } else {
-        return ::ROUND::CAST_HYBRID;
-    }
-#else
-    if constexpr (mode == __RoundMode::CAST_RINT) {
-        return ::ROUND::R;
-    } else if constexpr (mode == __RoundMode::CAST_ROUND) {
-        return ::ROUND::A;
-    } else if constexpr (mode == __RoundMode::CAST_FLOOR) {
-        return ::ROUND::F;
-    } else if constexpr (mode == __RoundMode::CAST_CEIL) {
-        return ::ROUND::C;
-    } else if constexpr (mode == __RoundMode::CAST_TRUNC) {
-        return ::ROUND::Z;
-    } else if constexpr (mode == __RoundMode::CAST_ODD) {
-        return ::ROUND::O;
-    } else {
-        return ::ROUND::H;
-    }
-#endif
-}
-#endif
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float __float2float_rn(const float x) {
     return __cvt_float<__internal_get_round<__RoundMode::CAST_RINT>(), RoundingSaturation::RS_DISABLE_VALUE>(x);
@@ -1820,10 +1776,10 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(float4* address, float4 val)
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(address, val);
 }
 #endif
+#endif
+#endif  // IMPL_SIMT_API_DEVICE_FUNCTIONS_IMPL_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEVICE_FUNCTIONS_IMPL__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEVICE_FUNCTIONS_IMPL__
 #endif
-
-#endif  // IMPL_SIMT_API_DEVICE_FUNCTIONS_IMPL_H

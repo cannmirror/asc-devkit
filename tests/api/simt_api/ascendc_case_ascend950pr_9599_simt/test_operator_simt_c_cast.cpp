@@ -13,6 +13,7 @@
 #include "kernel_operator.h"
 #include "simt_api/asc_bf16.h"
 #include "simt_api/asc_fp8.h"
+#include "impl/simt_api/internal_functions_impl.h"
 using namespace std;
 using namespace AscendC;
 using namespace AscendC::Simt;
@@ -231,6 +232,18 @@ TEST_F(TypeCastApiFloatTestsuite, TypeCastApiFloatTest)
     x1 = 1.0f;
     EXPECT_EQ(x1, 1.0f);
 }
+
+TEST_F(TypeCastApiFloatTestsuite, GetRoundTest)
+{
+    EXPECT_EQ(::ROUND::CAST_RINT, __internal_get_round<__RoundMode::CAST_RINT>());
+    EXPECT_EQ(::ROUND::CAST_ROUND, __internal_get_round<__RoundMode::CAST_ROUND>());
+    EXPECT_EQ(::ROUND::CAST_FLOOR, __internal_get_round<__RoundMode::CAST_FLOOR>());
+    EXPECT_EQ(::ROUND::CAST_CEIL, __internal_get_round<__RoundMode::CAST_CEIL>());
+    EXPECT_EQ(::ROUND::CAST_TRUNC, __internal_get_round<__RoundMode::CAST_TRUNC>());
+    EXPECT_EQ(::ROUND::CAST_ODD, __internal_get_round<__RoundMode::CAST_ODD>());
+    EXPECT_EQ(::ROUND::CAST_HYBRID, __internal_get_round<__RoundMode::CAST_HYBRID>());
+}
+
 // ================================ Test type cast(float) end ==================================
 
 // ================================ Test type cast(uint32) start ==================================

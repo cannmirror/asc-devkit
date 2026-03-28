@@ -12,14 +12,20 @@
  * \file asc_fp8_impl.h
  * \brief
  */
-#ifndef IMPL_SIMT_API_ASC_FP8_IMPL_H
-#define IMPL_SIMT_API_ASC_FP8_IMPL_H
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_FP8_IMPL__
 #warning "impl/simt_api/asc_fp8_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "simt_api/asc_fp8.h" and use public functions or variables defined in interface header files."
 #endif
+
+#ifndef IMPL_SIMT_API_ASC_FP8_IMPL_H
+#define IMPL_SIMT_API_ASC_FP8_IMPL_H
+
+#include "simt_api/device_types.h"
+#include "impl/simt_api/internal_functions_impl.h"
+
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline hifloat8x2_t __float22hif82_rna(const float2 x) {
     return __cvt_hifloat8x2_t<__internal_get_round<__RoundMode::CAST_ROUND>(), RoundingSaturation::RS_DISABLE_VALUE>(x);
@@ -93,9 +99,10 @@ __asc_cvt_float2_to_fp8x2(const float2 x, const __asc_saturation_t saturate,
     return res;
 }
 
+#endif
+#endif  // IMPL_SIMT_API_ASC_FP8_IMPL_H
+
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_FP8_IMPL__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_FP8_IMPL__
 #endif
-
-#endif  // IMPL_SIMT_API_ASC_FP8_IMPL_H
