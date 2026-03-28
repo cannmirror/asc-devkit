@@ -4,8 +4,7 @@
 
 | AI处理器类型 | 是否支持  |
 | :----------------------- | :------: |
-| <term>Atlas A3 训练系列产品/Atlas A3 推理系列产品</term> |    √     |
-| <term>Atlas A2 训练系列产品/Atlas A2 推理系列产品</term> |    √     |
+|<cann-filter npu_type = "950"> Ascend 950PR/Ascend 950DT | √</cann-filter> |
 
 ## 功能说明
 
@@ -23,7 +22,7 @@
     __aicore__ inline void asc_copy_l12fb(__fbuf__ void* dst, __cbuf__ void* src, uint16_t burst_num, uint16_t burst_len, uint16_t src_gap_size, uint16_t dst_gap_size)
     ```
 
-- 同步计算
+- 同步搬运
     ```c++
     __aicore__ inline void asc_copy_l12fb_sync(__fbuf__ void* dst, __cbuf__ void* src, uint32_t size)
     ```
@@ -46,13 +45,12 @@
 
 ## 流水类型
 
-PIPE_MTE1
+PIPE_FIX
 
 ## 约束说明
 
 - dst、src的起始地址需要32字节对齐。
-- 操作数地址重叠约束请参考[通用地址重叠约束](../general_instruction.md#通用地址重叠约束)。
-- 当采用前n个数据搬运接口时，搬运数据大小要求32字节对齐。
+- 操作数地址重叠约束请参考[通用地址重叠约束](../../general_instruction.md#通用地址重叠约束)。
 
 ## 调用示例
 

@@ -23,7 +23,7 @@
 
 ## 函数原型
 
-- 常规计算
+- 常规搬运
 
     ```cpp
     __aicore__ inline void asc_copy_l0c2gm(__gm__ half* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size, uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en)
@@ -37,7 +37,7 @@
     __aicore__ inline void asc_copy_l0c2gm(__gm__ int32_t* dst, __cc__ int32_t* src, uint16_t n_size, uint16_t m_size, uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en)
     ```
 
-- 同步计算
+- 同步搬运
 
     ```cpp
     __aicore__ inline void asc_copy_l0c2gm_sync(__gm__ half* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size, uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en)
@@ -63,7 +63,7 @@
 | src_stride | 输入 | 源NZ矩阵中相邻Z排布的起始地址偏移，取值范围为[0, 65535]，单位为16*sizeof(数据类型)。 |
 | unit_flag | 输入 | asc_mmad接口和本接口细粒度的并行，使能该功能后，硬件每计算完一个分形，计算结果就会被搬出，该功能不适用于在L0C Buffer累加的场景。 |
 | unit_flag_mode | 输入 | 与unit_flag参数相关，取值如下：<br>0：保留值；<br>2：使能unit_flag，硬件执行完指令之后，不会设置寄存器；<br>3：使能unit_flag，硬件执行完指令后，会将unit_flag关闭。 |
-| quant_pre |输入|量化参数。取值见[功能说明](./asc_copy_l0c2gm.md#功能说明)。|
+| quant_pre |输入|量化参数。取值见[功能说明](./asc_copy_l0c2gm_arch_2201.md#功能说明)。|
 | relu_pre | 输入 | 使能relu。 |
 | channel_split | 输入 | 是否使能通道拆分的功能，默认false，不使能该功能。仅在src和dst都为float时才能使能通道拆分，且不能同时使能channel_split和NZ2ND功能。 |
 | nz2nd_en | 输入 |使能nz2nd开关，false：不使能；true：使能 。 |
@@ -79,7 +79,7 @@ PIPE_MTE1
 ## 约束说明
 
 - dst、src的起始地址需要32字节对齐。
-- 操作数地址重叠约束请参考[通用地址重叠约束](../general_instruction.md#通用地址重叠约束)。
+- 操作数地址重叠约束请参考[通用地址重叠约束](../../general_instruction.md#通用地址重叠约束)。
 
 ## 调用示例
 

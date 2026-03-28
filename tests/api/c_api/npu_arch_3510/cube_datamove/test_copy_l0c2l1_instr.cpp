@@ -132,18 +132,14 @@ TEST_F(TestCubeDatamoveS4##class_name##_##dst_data_type##_##src_data_type, c_api
     uint64_t quant_post = 13; \
     uint8_t relu_post = 14; \
     bool clip_relu_post = true; \
-    bool loop_enhance_en = true; \
     uint8_t eltwise_op = 15; \
     bool eltwise_antq_en = true; \
-    bool loop_enhance_merge_en = true; \
     bool C0_pad_en = true; \
-    bool wino_post_en = false; \
     bool broadcast_en = false; \
     bool NZ2DN_en = false; \
     c_api_name(dst, src, n_size, m_size, loop_dst_stride, loop_src_stride, l2_cache_ctl, clip_relu_pre, \
         unit_flag_ctl, quant_pre, relu_pre, split_en, NZ2ND_en, quant_post, relu_post, clip_relu_post, \
-        loop_enhance_en, eltwise_op, eltwise_antq_en, loop_enhance_merge_en, C0_pad_en, wino_post_en, \
-        broadcast_en, NZ2DN_en); \
+        eltwise_op, eltwise_antq_en, C0_pad_en, broadcast_en, NZ2DN_en); \
     GlobalMockObject::verify(); \
 }
 
