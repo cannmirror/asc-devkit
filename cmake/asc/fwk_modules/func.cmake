@@ -559,7 +559,7 @@ endfunction()
 
 function(npu_op_code_gen)
   message(STATUS "Opbuild generating sources")
-  cmake_parse_arguments(OPBUILD "" "OUT_DIR;PROJECT_NAME;ACCESS_PREFIX;ENABLE_SOURCE;JOBS;PACKAGE" "SRC;COMPILE_OPTIONS;LINK_OPTIONS;OPTIONS" ${ARGN})
+  cmake_parse_arguments(OPBUILD "" "OUT_DIR;PROJECT_NAME;ACCESS_PREFIX;ENABLE_SOURCE;JOBS;PACKAGE;JOIN_OP_DEF" "SRC;COMPILE_OPTIONS;LINK_OPTIONS;OPTIONS" ${ARGN})
   if(NOT DEFINED OPBUILD_SRC)
     message(FATAL_ERROR "must provide src file for npu_op_code_gen")
   endif()
@@ -568,6 +568,12 @@ function(npu_op_code_gen)
   endif()
   if(NOT DEFINED OPBUILD_PACKAGE)
     message(FATAL_ERROR "must provide package name for npu_op_code_gen")
+  endif()
+  if(NOT DEFINED OPBUILD_JOIN_OP_DEF)
+    set(OPBUILD_JOIN_OP_DEF False)
+  elseif(NOT "${OPBUILD_JOIN_OP_DEF}" MATCHES "^(True|False)$")
+    message(WARNING "OPBUILD_JOIN_OP_DEF value '${OPBUILD_JOIN_OP_DEF}' is invalid, must be 'True' or 'False'. Setting to False.")
+    set(OPBUILD_JOIN_OP_DEF False)
   endif()
   set_property(GLOBAL PROPERTY _ASC_PKG_${OPBUILD_PACKAGE}_CODE_GEN_DIRS ${OPBUILD_OUT_DIR})
 
@@ -625,7 +631,11 @@ function(npu_op_code_gen)
 
   set(ENV{OPS_PRODUCT_NAME} "${ASCEND_COMPUTE_UNIT}")
 
-  set(RAW_COMPUTE_UNIT_ARG "--compute_unit=${ASCEND_COMPUTE_UNIT}")
+  if (${OPBUILD_JOIN_OP_DEF})
+    set(RAW_COMPUTE_UNIT_ARG "")
+  else()
+    set(RAW_COMPUTE_UNIT_ARG "--compute_unit=${ASCEND_COMPUTE_UNIT}")
+  endif()
   execute_process(COMMAND ${ASCEND_CANN_PACKAGE_PATH}/tools/opbuild/op_build
                           ${OPBUILD_OUT_DIR}/libascend_all_ops.so ${OPBUILD_OUT_DIR} "${RAW_COMPUTE_UNIT_ARG}"
                   RESULT_VARIABLE EXEC_RESULT
