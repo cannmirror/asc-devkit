@@ -1,8 +1,8 @@
-# MatmulLeakyRelu算子直调样例
+# Matmul和LeakyRelu融合样例
 
 ## 概述
 
-本样例基于Ascend C演示MatmulLeakyRelu算子的核函数直调实现。通过将矩阵乘加（Matmul）与LeakyRelu激活函数计算，实现计算步骤在硬件层面的高效协同执行，降低内存访问开销与计算延时。
+本样例采用高阶API实现Matmul与LeakyRelu激活函数融合计算，实现矩阵运算单元和向量运算单元的融合计算。
 
 ## 支持的产品
 
@@ -16,71 +16,52 @@
 ├── matmul_leakyrelu
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   ├── matmul_leakyrelu.asc    // Ascend C算子实现 & 调用样例
+│   ├── matmul_leakyrelu.asc    // Ascend C样例实现 & 调用样例
 │   └── scripts
 │       ├── gen_data.py         // 输入数据和真值数据生成脚本文件
 │       └── verify_result.py    // 真值对比文件
 ```
 
-## 算子描述
+## 样例描述
 
-- 算子功能：  
+- 样例功能：
 
-  算子使用了MatmulLeakyRelu高阶API，实现了快速的MatmulLeakyRelu矩阵乘法的运算操作。  
   MatmulLeakyRelu的计算公式为：
   ```
   C = A * B + Bias
   C = C > 0 ? C : C * 0.001
   ```
-  - A、B为源操作数，A为左矩阵，形状为\[M, K]；B为右矩阵，形状为\[K, N]。
-  - C为目的操作数，存放矩阵乘结果的矩阵，形状为\[M, N]。
-  - Bias为矩阵乘偏置，形状为\[N]。对A*B结果矩阵的每一行都采用该Bias进行偏置。
-- 算子规格：
+  样例参数M = 1024，K = 256，N = 640，样例规格如下表所示：
   <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">MatmulLeakyRelu</td></tr>
+  <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="4" align="center">MatmulLeakyRelu</td></tr>
   </tr>
-  <tr><td rowspan="4" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">a</td><td align="center">1024 * 256</td><td align="center">float16</td><td align="center">ND</td></tr>
-  <tr><td align="center">b</td><td align="center">256 * 640</td><td align="center">float16</td><td align="center">ND</td></tr>
-  <tr><td align="center">bias</td><td align="center">640</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td rowspan="4" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
+  <tr><td align="center">A</td><td align="center">[M, K]</td><td align="center">float16</td><td align="center">ND</td></tr>
+  <tr><td align="center">B</td><td align="center">[K, N]</td><td align="center">float16</td><td align="center">ND</td></tr>
+  <tr><td align="center">Bias</td><td align="center">[N]</td><td align="center">float</td><td align="center">ND</td></tr>
   </tr>
   </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">1024 * 640</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td rowspan="1" align="center">样例输出</td><td align="center">C</td><td align="center">[M, N]</td><td align="center">float</td><td align="center">ND</td></tr>
   </tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">matmul_leakyrelu_custom</td></tr>
   </table>
-- 算子实现：  
-  
-  本样例中实现的是[m, n, k]固定为[1024, 640, 256]的MatmulLeakyRelu算子。  
-  MatmulLeakyRelu算子的数学表达式为：
-    ```
-    C = A * B + Bias
-    C = C > 0 ? C : C * 0.001
-    ```
-    其中A的形状为[1024, 256]，B的形状为[256, 640]，C的形状为[1024, 640]，Bias的形状为[640]。
 
-  - Kernel实现  
-    初始化Tiling数据，从设备全局内存中读取预先生成的TCubeTiling结构体，包含关键参数。 
-    流程如下：   
-    - 初始化算子以及其参数。  
-    - 调用MatmulCompute计算matmul结果，并写进 reluOutLocal。  
-    - 调用LeakyReLU函数对 reluOutLocal 中的矩阵进行LeakyReLU激活运算。 
+- 样例实现：
 
-  - Tiling实现  
-    Ascend C提供一组Matmul Tiling API，方便用户获取kernel计算时所需的Tiling参数。只需要传入A/B/C矩阵等信息，调用API接口，即可获取到TCubeTiling结构体中的相关参数。  
-    获取Tiling参数的流程如下：  
-      - 创建一个Tiling对象。  
-      - 设置输入矩阵A、B、输出矩阵C、偏置Bias 的参数类型信息；设置M、N、K形状信息等。  
-      - 配置多核计算策略  
-      - 调用GetTiling接口，获取Tiling信息。  
+  - 实现流程
+    - 通过GenerateTiling实现host侧的Tiling计算
+    - 通过CalcGMOffset完成分核计算
+    - 通过Iterate接口完成矩阵乘计算
+    - 通过LeakyRelu实现激活函数计算
 
-  - 调用实现  
+  - 调用实现
+
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行
 
-在本样例根目录下执行如下步骤，编译并执行算子。
-- 配置环境变量  
+在本样例根目录下执行如下步骤，编译并执行样例。
+- 配置环境变量
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
     ```bash

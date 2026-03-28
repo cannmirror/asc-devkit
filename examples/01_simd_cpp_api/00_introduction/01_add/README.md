@@ -2,11 +2,11 @@
 
 ## 概述
 
-本样例介绍了基于Ascend C的Add自定义Vector算子的核函数直调方法，实现两个输入张量的逐元素相加，支持main函数和kernel函数在同一个cpp文件中实现。
+基于Ascend C的Add向量加法操作样例，介绍两种不同的内存和同步管理机制。
 
-## 算子开发样例
+## 样例列表
 
 |  目录名称                                                   |  功能描述                                              |
 | ------------------------------------------------------------ | ---------------------------------------------------- |
-| [basic_api_memory_allocator_add](./basic_api_memory_allocator_add) | 样例基于静态Tensor方式编程实现Add样例，展示了LocalMemAllocator进行线性内存分配 |
-| [basic_api_tque_add](./basic_api_tque_add) | 样例以Add算子为例，采用TQue内存管理机制实现数据搬运与计算任务的协同调度 |
+| [basic_api_memory_allocator_add](./basic_api_memory_allocator_add) | 基于静态Tensor编程实现 |
+| [basic_api_tque_add](./basic_api_tque_add) | 基于TQue和TPipe编程实现 |

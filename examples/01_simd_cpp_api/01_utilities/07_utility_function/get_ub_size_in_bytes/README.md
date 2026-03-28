@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例基于GetUBSizeInBytes获取UB的大小（单位为Byte），开发者可以根据UB大小计算循环次数等参数值。
+本样例介绍GetUBSizeInBytes接口使用方法，接口返回结果为编译时常量，表示用户最大可以使用的Unified Buffer大小（单位为Byte），例如：Ascend 950PR/Ascend 950DT场景，系统预留8KB，Unified Buffer总共为256KB，接口返回248KB，为用户能使用的上限。
 
 ## 支持的产品
 
@@ -17,37 +17,37 @@
 │   │   └── verify_result.py    // 验证输出数据和真值数据是否一致的验证脚本
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── get_ub_size_in_bytes_custom.asc      // Ascend C算子实现 & 调用样例
+│   └── get_ub_size_in_bytes.asc              // Ascend C样例实现 & 调用样例
 ```
 
-## 算子描述
+## 样例描述
 
-- 算子功能：  
-  根据UB大小以及输入数据总量来计算op.process()函数的循环次数。
-- 算子规格：  
-  <table>
-  <tr><td rowspan="3" align="center">算子输入</td></tr>
+- 样例功能：
+
+  样例基于Abs取绝对值运算进行功能说明，计算公式：
+  ```
+  z = Abs(x)
+  ```
+- 样例规格：
+  <table border="2" align="center">
+  <caption>表1：样例输入输出规格</caption>
+  <tr><td rowspan="3" align="center">样例输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">x</td><td align="center">16384</td><td align="center">half</td><td align="center">ND</td></tr>
-  <tr><td rowspan="2" align="center">算子输出</td></tr>
-  <tr><td align="center">z</td><td align="center">16384</td><td align="center">half</td><td align="center">ND</td></tr>
+  <tr><td align="center">x</td><td align="center">[16384]</td><td align="center">half</td><td align="center">ND</td></tr>
+  <tr><td rowspan="2" align="center">样例输出</td></tr>
+  <tr><td align="center">z</td><td align="center">[16384]</td><td align="center">half</td><td align="center">ND</td></tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">get_ub_size_in_bytes_custom</td></tr>
   </table>
-  </table>
 
-- 算子实现：  
-  - kernel实现  
+- 调用实现
 
-    本算子中Init中通过调用GetUBSizeInBytes获取UB的大小，从而计算出Process被调用的次数。Process的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm搬运至Local Memory，存储在xLocal中。Compute任务负责对xLocal求绝对值，结果存储在outLocal中。CopyOut任务负责将输出数据从outLocal搬运至Global Memory上的输出Tensor outGm中。
-
-  - 调用实现  
-    使用内核调用符<<<>>>调用核函数。
+  使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行
 
-在本样例根目录下执行如下步骤，编译并执行算子。
+在本样例根目录下执行如下步骤，编译并执行样例。
 
-- 配置环境变量  
+- 配置环境变量
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
 
