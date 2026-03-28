@@ -757,72 +757,22 @@ TEST_F(TestTiling, TestPlatformCustomSocVersion)
     EXPECT_EQ(nullptr, ret4);
 }
 
-TEST_F(TestTiling, TestPlatformAscendCInitWithAclRt)
+TEST_F(TestTiling, TestPlatformAscendCInitWithRuntimePlatformInfos)
 {
     const char* customSocVersion = "Ascend910B1";
-    {
-        MOCKER_CPP(&dlopen).reset();
-        MOCKER_CPP(&dlsym).reset();
-        MOCKER_CPP(&dlclose).reset();
-        MOCKER_CPP(&dlopen).stubs().will(returnValue((void*)nullptr));  
-        auto ret = platform_ascendc::PlatformAscendCManager::PlatformAscendCInit(customSocVersion);
-        EXPECT_NE(nullptr, ret);
-    }
     
-    {
-        MOCKER_CPP(&dlopen).reset();
-        MOCKER_CPP(&dlsym).reset();
-        MOCKER_CPP(&dlclose).reset();
-        void *handle;
-        int dummy = 0;
-        handle = &dummy;
-        MOCKER_CPP(&dlopen).stubs().will(returnValue(handle));
-        MOCKER_CPP(&dlsym).stubs().will(returnValue((void*)nullptr));
-        MOCKER_CPP(&dlclose).stubs().will(returnValue(0));
-        auto ret = platform_ascendc::PlatformAscendCManager::PlatformAscendCInit(customSocVersion);
-        EXPECT_NE(nullptr, ret);
-    }
+    MOCKER_CPP(&fe::PlatformInfoManager::InitRuntimePlatformInfos,
+        uint32_t(fe::PlatformInfoManager::*)(const std::string &))
+        .stubs()
+        .will(returnValue(0));
     
-    {
-        MOCKER_CPP(&dlopen).reset();
-        MOCKER_CPP(&dlsym).reset();
-        MOCKER_CPP(&dlclose).reset();
-        void *handle;
-        int dummy = 0;
-        handle = &dummy;
-        MOCKER_CPP(&dlopen).stubs().will(returnValue(handle));
-        
-        struct MockFunctions {
-            static int mockAclrtGetDeviceFail(int32_t* deviceId) {
-                return -1;
-            }
-        };
+    MOCKER_CPP(&fe::PlatformInfoManager::GetRuntimePlatformInfosByDevice,
+        uint32_t(fe::PlatformInfoManager::*)(const uint32_t&, fe::PlatFormInfos&, bool))
+        .stubs()
+        .will(returnValue(0));
     
-        MOCKER_CPP(&dlsym).stubs().will(returnValue((void*)&MockFunctions::mockAclrtGetDeviceFail));
-        MOCKER_CPP(&dlclose).stubs().will(returnValue(0));
-        auto ret = platform_ascendc::PlatformAscendCManager::PlatformAscendCInit(customSocVersion);
-        EXPECT_NE(nullptr, ret);
-    }
+    auto ret = platform_ascendc::PlatformAscendCManager::PlatformAscendCInit(customSocVersion);
+    EXPECT_NE(nullptr, ret);
     
-    {
-        MOCKER_CPP(&dlopen).reset();
-        MOCKER_CPP(&dlsym).reset();
-        MOCKER_CPP(&dlclose).reset();
-        void *handle;
-        int dummy = 0;
-        handle = &dummy;
-        MOCKER_CPP(&dlopen).stubs().will(returnValue(handle));
-        
-        struct MockFunctions {
-            static int mockAclrtGetDeviceSuccess(int32_t* deviceId) {
-                *deviceId = 1;
-                return 0;
-            }
-        };
-        
-        MOCKER_CPP(&dlsym).stubs().will(returnValue((void*)&MockFunctions::mockAclrtGetDeviceSuccess));
-        MOCKER_CPP(&dlclose).stubs().will(returnValue(0));
-        auto ret = platform_ascendc::PlatformAscendCManager::PlatformAscendCInit(customSocVersion);
-        EXPECT_NE(nullptr, ret);
-    }
+    GlobalMockObject::verify();
 }

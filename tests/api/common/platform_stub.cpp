@@ -351,13 +351,19 @@ void PlatFormInfos::GetLocalMemBw(const LocalMemType &mem_type, uint64_t &bw_siz
 class PlatformInfoManager{
 public:
     static PlatformInfoManager &GeInstance();
+    static PlatformInfoManager &Instance();
     uint32_t InitializePlatformInfo();
     uint32_t GetPlatformInfos(const std::string SoCVersion,
                             PlatFormInfos &platform_info,
                             OptionalInfos &opti_compilation_info);
     uint32_t InitRuntimePlatformInfos(const std::string &SoCVersion);
+    uint32_t GetRuntimePlatformInfosByDevice(const uint32_t &deviceId, PlatFormInfos &platform_info, bool flag = false);
 };
 uint32_t PlatformInfoManager::InitRuntimePlatformInfos(const std::string &soCVersion)
+{
+    return 0;
+}
+uint32_t PlatformInfoManager::GetRuntimePlatformInfosByDevice(const uint32_t &deviceId, PlatFormInfos &platform_info, bool flag)
 {
     return 0;
 }
@@ -367,6 +373,10 @@ uint32_t PlatformInfoManager::GetPlatformInfos(const std::string SoCVersion,
     return 0;
 }
 PlatformInfoManager& PlatformInfoManager::GeInstance() {
+  static PlatformInfoManager pf;
+  return pf;
+}
+PlatformInfoManager& PlatformInfoManager::Instance() {
   static PlatformInfoManager pf;
   return pf;
 }
