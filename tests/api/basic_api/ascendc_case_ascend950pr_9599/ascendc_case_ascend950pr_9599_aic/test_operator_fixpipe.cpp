@@ -198,7 +198,7 @@ struct FixpipeInputParams {
         LOCAL_TENSOR_REGISTER(                                                                                         \
             cbufWorkspace, uint64_t, C1, featureMapSize *fmTSize + weightSize * wTSize, deqSize)               \
         if (format == CO2Layout::ROW_MAJOR) {                                                                          \
-            FixpipeParamsC310<CO2Layout::ROW_MAJOR> fixpipeParams = {n, m, static_cast<uint16_t>(AlignUp(m, BLOCK_CUBE)), n}; \
+            FixpipeParamsArch3510<CO2Layout::ROW_MAJOR> fixpipeParams = {n, m, static_cast<uint16_t>(AlignUp(m, BLOCK_CUBE)), n}; \
             fixpipeParams.params = {1, 0, 0};                                                                          \
             fixpipeFunc(deqMode, static_cast<float>(0.5), reluEn, fixpipeParams);                                                \
             if (fixpipeParams.quantPre == QuantMode_t::VDEQF16 ||                                                      \
@@ -209,7 +209,7 @@ struct FixpipeInputParams {
                 Fixpipe<TensorTrait<dstT>, TensorTrait<l1outT>, CFG_ROW_MAJOR>(outputGm, dst_l0c, fixpipeParams);                             \
             }                                                                                                          \
         } else if (format == CO2Layout::COLUMN_MAJOR) {                                                                \
-            FixpipeParamsC310<CO2Layout::COLUMN_MAJOR> fixpipeParams = {n, m, static_cast<uint16_t>(AlignUp(m, BLOCK_CUBE)), m}; \
+            FixpipeParamsArch3510<CO2Layout::COLUMN_MAJOR> fixpipeParams = {n, m, static_cast<uint16_t>(AlignUp(m, BLOCK_CUBE)), m}; \
             fixpipeParams.params = { 1, 0, 0, 1 };                                                                     \
             fixpipeFunc(deqMode, static_cast<float>(0.5), reluEn, fixpipeParams);                                                \
             if (fixpipeParams.quantPre == QuantMode_t::VDEQF16 ||                                                      \
@@ -220,7 +220,7 @@ struct FixpipeInputParams {
                 Fixpipe<TensorTrait<dstT>, TensorTrait<l1outT>, CFG_COLUMN_MAJOR>(outputGm, dst_l0c, fixpipeParams);                          \
             }                                                                                                          \
         } else if (format == CO2Layout::NZ) {                                                                          \
-            FixpipeParamsC310<CO2Layout::NZ> fixpipeParams = {static_cast<uint16_t>(coutBlocks * BLOCK_CUBE), m, static_cast<uint16_t>(AlignUp(m, BLOCK_CUBE)), m * BLOCK_CUBE}; \
+            FixpipeParamsArch3510<CO2Layout::NZ> fixpipeParams = {static_cast<uint16_t>(coutBlocks * BLOCK_CUBE), m, static_cast<uint16_t>(AlignUp(m, BLOCK_CUBE)), m * BLOCK_CUBE}; \
             fixpipeFunc(deqMode, static_cast<float>(0.5), reluEn, fixpipeParams);                                                \
             if (fixpipeParams.quantPre == QuantMode_t::VDEQF16 ||                                                      \
                 fixpipeParams.quantPre == QuantMode_t::VQF322B8_PRE ||                                                 \

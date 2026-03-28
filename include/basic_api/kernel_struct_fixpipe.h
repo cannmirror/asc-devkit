@@ -171,10 +171,10 @@ struct TransformParams<CO2Layout::COLUMN_MAJOR> {
 };
 
 template <CO2Layout format = CO2Layout::ROW_MAJOR>
-struct FixpipeParamsC310 {
-    __aicore__ FixpipeParamsC310() {}
+struct FixpipeParamsArch3510 {
+    __aicore__ FixpipeParamsArch3510() {}
 
-    __aicore__ FixpipeParamsC310(const uint16_t nSizeIn, const uint16_t mSizeIn, const uint16_t srcStrideIn,
+    __aicore__ FixpipeParamsArch3510(const uint16_t nSizeIn, const uint16_t mSizeIn, const uint16_t srcStrideIn,
         const uint32_t dstStrideIn)
     {
         nSize = nSizeIn;
@@ -182,11 +182,9 @@ struct FixpipeParamsC310 {
         srcStride = srcStrideIn;
         dstStride = dstStrideIn;
     }
-#if (__NPU_ARCH__ == 5102)
     ReluMode preReluMode = ReluMode::NO_RELU;
     ClipReluMode preClipReluMode = ClipReluMode::NOCLIP_RELU;
     uint64_t reluScalar;
-#endif
     uint16_t nSize = 0;
     uint16_t mSize = 0;  // M-DirectionSize
     uint16_t srcStride = 0;
@@ -201,6 +199,15 @@ struct FixpipeParamsC310 {
     bool subBlockId = false;
     typename TransformParams<format>::PARAMS params;
     bool isChannelSplit = false;
+};
+
+template <CO2Layout format = CO2Layout::ROW_MAJOR>
+struct FixpipeParamsC310 : FixpipeParamsArch3510<format> {
+__aicore__ FixpipeParamsC310() : FixpipeParamsArch3510<format>() {}
+
+__aicore__ FixpipeParamsC310(const uint16_t nSizeIn, const uint16_t mSizeIn, 
+                            const uint16_t srcStrideIn, const uint32_t dstStrideIn)
+    : FixpipeParamsArch3510<format>(nSizeIn, mSizeIn, srcStrideIn, dstStrideIn) {}
 };
 #endif
 

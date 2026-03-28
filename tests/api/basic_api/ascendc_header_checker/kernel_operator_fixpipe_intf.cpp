@@ -177,37 +177,37 @@ extern "C" __global__ __aicore__ void KernelTestFixpipe12() {
 #endif
 
 #if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
-// __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src, const FixpipeParamsC310<config.format>& intriParams);
+// __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src, const FixpipeParamsArch3510<config.format>& intriParams);
 extern "C" __global__ __aicore__ void KernelTestFixpipe13() {
     AscendC::LocalTensor<float> dst;
     AscendC::LocalTensor<float> src;
-    AscendC::FixpipeParamsC310 intriParams;
+    AscendC::FixpipeParamsArch3510 intriParams;
     AscendC::Fixpipe(dst, src, intriParams);
 }
 
-// __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src, const LocalTensor<uint64_t>& cbufWorkspace, const FixpipeParamsC310<config.format>& intriParams);
+// __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src, const LocalTensor<uint64_t>& cbufWorkspace, const FixpipeParamsArch3510<config.format>& intriParams);
 extern "C" __global__ __aicore__ void KernelTestFixpipe14() {
     AscendC::LocalTensor<float> dst;
     AscendC::LocalTensor<float> src;
     AscendC::LocalTensor<uint64_t> cbufWorkspace;
-    AscendC::FixpipeParamsC310 intriParams;
+    AscendC::FixpipeParamsArch3510 intriParams;
     AscendC::Fixpipe(dst, src, cbufWorkspace, intriParams);
 }
 
-// __aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src, const FixpipeParamsC310<config.format>& intriParams);
+// __aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src, const FixpipeParamsArch3510<config.format>& intriParams);
 extern "C" __global__ __aicore__ void KernelTestFixpipe15() {
     AscendC::GlobalTensor<float> dst;
     AscendC::LocalTensor<float> src;
-    AscendC::FixpipeParamsC310 intriParams;
+    AscendC::FixpipeParamsArch3510 intriParams;
     AscendC::Fixpipe(dst, src, intriParams);
 }
 
-// __aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src, const LocalTensor<uint64_t>& cbufWorkspace, const FixpipeParamsC310<config.format>& intriParams);
+// __aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src, const LocalTensor<uint64_t>& cbufWorkspace, const FixpipeParamsArch3510<config.format>& intriParams);
 extern "C" __global__ __aicore__ void KernelTestFixpipe16() {
     AscendC::GlobalTensor<float> dst;
     AscendC::LocalTensor<float> src;
     AscendC::LocalTensor<uint64_t> cbufWorkspace;
-    AscendC::FixpipeParamsC310 intriParams;
+    AscendC::FixpipeParamsArch3510 intriParams;
     AscendC::Fixpipe(dst, src, cbufWorkspace, intriParams);
 }
 #endif

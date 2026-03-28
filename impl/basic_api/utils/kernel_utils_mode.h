@@ -48,7 +48,6 @@ FRACTAL_Z    -> NCHW            CHNT  -> NCH   [0,1*2,3*4,5]      -> [0,1,2*3]
 FRACTAL_Z_3D -> NCDHW           DCHNT -> NCDH  [0,1,2*3,4*5,6]    -> [0,1,2,3*4]
 FRACTAL_Z    -> ND              HCNT  -> HCN   [0:-4,-4,-3*-2,-1] -> [0:-2,-2,-1]
 */
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
 enum class ClipReluMode{
     NOCLIP_RELU = 0,
     CLIP_RELU = 1
@@ -60,7 +59,6 @@ enum class ReluMode{
     SCALAR_RELU = 2,
     VECTOR_RELU = 3
 };
-#endif
 
 union NotNumUnion {
     __simd_callee__ NotNumUnion() {}

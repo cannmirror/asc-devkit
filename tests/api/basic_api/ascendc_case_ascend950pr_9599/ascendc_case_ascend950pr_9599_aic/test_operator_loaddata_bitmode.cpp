@@ -209,7 +209,7 @@ public:
     {
         auto co1Local = qidCO1.DeQue<float>();
         if constexpr (CType::format == CubeFormat::ND) {
-            FixpipeParamsC310<CO2Layout::ROW_MAJOR> fixpipeParams(nLength, mLength, mLength, nLength);
+            FixpipeParamsArch3510<CO2Layout::ROW_MAJOR> fixpipeParams(nLength, mLength, mLength, nLength);
             fixpipeParams.params = { 1, 0, 0 };
             if (IsSameType<DstT, half>::value) {
                 fixpipeParams.quantPre = QuantMode_t::F322F16;
@@ -218,7 +218,7 @@ public:
             }
             Fixpipe(gm, co1Local, fixpipeParams);
         } else if constexpr (CType::format == CubeFormat::NZ) {
-            FixpipeParamsC310<CO2Layout::NZ> fixpipeParams(nLength, mLength, mLength, mLength * BLOCK_CUBE);
+            FixpipeParamsArch3510<CO2Layout::NZ> fixpipeParams(nLength, mLength, mLength, mLength * BLOCK_CUBE);
             if (IsSameType<DstT, half>::value) {
                 fixpipeParams.quantPre = QuantMode_t::F322F16;
             } else if (IsSameType<DstT, bfloat16_t>::value) {

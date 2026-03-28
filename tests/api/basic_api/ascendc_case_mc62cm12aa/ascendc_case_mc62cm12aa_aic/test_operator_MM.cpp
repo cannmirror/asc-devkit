@@ -96,7 +96,7 @@ void main_cpu_cmp_mmad_bias_demo(__gm__ uint8_t* __restrict__ feature_gm, __gm__
     uint16_t cburstNum = mmad_params.n / AscendC::BLOCK_CUBE;
     uint16_t burstLen = mmad_params.m * AscendC::BLOCK_CUBE * sizeof(l1out_T) / AscendC::ONE_BLK_SIZE;
     // in 950 l0c to ub nz
-    AscendC::FixpipeParamsC310<AscendC::CO2Layout::NZ> fixpipeParams(mmad_params.n, mmad_params.m, mmad_params.m, mmad_params.m * AscendC::BLOCK_CUBE);
+    AscendC::FixpipeParamsArch3510<AscendC::CO2Layout::NZ> fixpipeParams(mmad_params.n, mmad_params.m, mmad_params.m, mmad_params.m * AscendC::BLOCK_CUBE);
     fixpipeParams.reluEn = true;
     if (isBias == true) {
         fixpipeParams.reluEn = false;
@@ -109,7 +109,7 @@ void main_cpu_cmp_mmad_bias_demo(__gm__ uint8_t* __restrict__ feature_gm, __gm__
     AscendC::Fixpipe<dst_T, l1out_T, AscendC::CFG_NZ>(output_local_l1, l0c_out, fixpipeParams);
 
     // in 950 l0c to ub row_major
-    AscendC::FixpipeParamsC310<AscendC::CO2Layout::ROW_MAJOR> fixpipeParams2(mmad_params.n, mmad_params.m, mmad_params.m, mmad_params.n);
+    AscendC::FixpipeParamsArch3510<AscendC::CO2Layout::ROW_MAJOR> fixpipeParams2(mmad_params.n, mmad_params.m, mmad_params.m, mmad_params.n);
     fixpipeParams2.dualDstCtl = 0b01;
     fixpipeParams2.quantPre = GetQuantMode<dst_T, l1out_T>();
     if (fixpipeParams2.quantPre == QuantMode_t::NoQuant) {
