@@ -45,6 +45,7 @@ asc-devkit:
       - impl/c_api/instr_impl/npu_arch_2201/debug_impl/printf_impl.h
       - impl/c_api/instr_impl/npu_arch_2201/debug_impl.h
       - impl/basic_api/dav_c310/kernel_operator_determine_compute_sync_impl.h
+      - impl/c_api/instr_impl/npu_arch_3510/vector_compute_impl/asc_reduce_sum_datablock.h
   llt:
     ut_check: true
     st_check: false

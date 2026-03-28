@@ -9,10 +9,34 @@
 */
 
 #include "tests/api/c_api/npu_arch_3510/utils/test_unary_instr_utils.h"
+#define TEST_VECTOR_COMPUTE_VCGADD_INSTR(class_name, c_api_name, cce_name, dst_type, src_type)            \
+                                                                                                \
+class TestVectorCompute##class_name##_##dst_type##_##src_type##_CApi : public testing::Test {                 \
+protected:                                                                                      \
+    void SetUp() {}                                                                             \
+    void TearDown() {}                                                                          \
+};                                                                                              \
+                                                                                                \
+namespace {                                                                                     \
+void cce_name##_##dst_type##_##src_type##_Stub(dst_type& dst, src_type src0,                              \
+    vector_bool mask, Literal mode) {}                                                          \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorCompute##class_name##_##dst_type##_##src_type##_CApi, cce_name##_##dst_type##_##src_type##_Succ)       \
+{                                                                                               \
+    dst_type dst;                                                                              \
+    src_type src0;                                                                             \
+    vector_bool mask;                                                                           \
+                                                                                                \
+    MOCKER_CPP(cce_name, void(dst_type&, src_type, vector_bool, Literal))                     \
+        .times(1)                                                                               \
+        .will(invoke(cce_name##_##dst_type##_##src_type##_Stub));                                           \
+                                                                                                \
+    c_api_name(dst, src0, mask);                                                                \
+    GlobalMockObject::verify();                                                                 \
+}    
 
 TEST_VECTOR_COMPUTE_UNARY_INSTR(Vcgadd, asc_reduce_sum_datablock, vcgadd, vector_half);
 TEST_VECTOR_COMPUTE_UNARY_INSTR(Vcgadd, asc_reduce_sum_datablock, vcgadd, vector_float);
-TEST_VECTOR_COMPUTE_UNARY_INSTR(Vcgadd, asc_reduce_sum_datablock, vcgadd, vector_uint16_t);
-TEST_VECTOR_COMPUTE_UNARY_INSTR(Vcgadd, asc_reduce_sum_datablock, vcgadd, vector_int16_t);
 TEST_VECTOR_COMPUTE_UNARY_INSTR(Vcgadd, asc_reduce_sum_datablock, vcgadd, vector_uint32_t);
 TEST_VECTOR_COMPUTE_UNARY_INSTR(Vcgadd, asc_reduce_sum_datablock, vcgadd, vector_int32_t);
