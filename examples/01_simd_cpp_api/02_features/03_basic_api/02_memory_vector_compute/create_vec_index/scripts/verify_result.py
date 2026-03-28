@@ -23,8 +23,8 @@ error_tol = 1e-3
 
 
 def verify_result(output, golden):
-    output = np.fromfile(output, dtype=np.float16).reshape(-1)
-    golden = np.fromfile(golden, dtype=np.float16).reshape(-1)
+    output = np.fromfile(output, dtype=np.int16).reshape(-1)
+    golden = np.fromfile(golden, dtype=np.int16).reshape(-1)
     different_element_results = np.isclose(output,
                                            golden,
                                            rtol=relative_tol,

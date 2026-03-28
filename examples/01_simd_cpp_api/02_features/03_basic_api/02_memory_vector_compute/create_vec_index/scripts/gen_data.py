@@ -17,7 +17,7 @@ import numpy as np
 
 
 def gen_golden_data_simple():
-    golden = np.arange(32)
+    golden = np.arange(128).astype(np.int16)
 
     os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
