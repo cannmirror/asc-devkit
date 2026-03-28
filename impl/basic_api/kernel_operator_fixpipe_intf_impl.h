@@ -186,7 +186,7 @@ __aicore__ inline void Fixpipe(const GlobalTensor<T> &dst, const LocalTensor<U> 
 // L0C->L1/UB
 template <typename T, typename U, const FixpipeConfig& config>
 __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src,
-    const FixpipeParamsC310<config.format>& intriParams)
+    const FixpipeParamsArch3510<config.format>& intriParams)
 {
     using DstPrimType = PrimT<T>;
     using SrcPrimType = PrimT<U>;
@@ -206,7 +206,7 @@ __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& 
 // L0C->L1/UB deq tensor quant
 template <typename T, typename U, const FixpipeConfig& config>
 __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src,
-    const LocalTensor<uint64_t>& cbufWorkspace, const FixpipeParamsC310<config.format>& intriParams)
+    const LocalTensor<uint64_t>& cbufWorkspace, const FixpipeParamsArch3510<config.format>& intriParams)
 {
     using DstPrimType = PrimT<T>;
     using SrcPrimType = PrimT<U>;
@@ -227,7 +227,7 @@ __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& 
 // L0C->GM
 template <typename T, typename U, const FixpipeConfig& config>
 __aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src,
-    const FixpipeParamsC310<config.format>& intriParams)
+    const FixpipeParamsArch3510<config.format>& intriParams)
 {
     using DstPrimType = PrimT<T>;
     using SrcPrimType = PrimT<U>;
@@ -259,7 +259,7 @@ __aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>&
 // L0C->GM deq tensor quant
 template <typename T, typename U, const FixpipeConfig& config>
 __aicore__ inline void Fixpipe(const GlobalTensor<T> &dst, const LocalTensor<U> &src,
-    const LocalTensor<uint64_t> &cbufWorkspace, const FixpipeParamsC310<config.format> &intriParams)
+    const LocalTensor<uint64_t> &cbufWorkspace, const FixpipeParamsArch3510<config.format> &intriParams)
 {
     using DstPrimType = PrimT<T>;
     using SrcPrimType = PrimT<U>;

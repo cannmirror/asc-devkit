@@ -11,7 +11,7 @@
 </thead>
 <tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
 </td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p173073381243"><a name="p173073381243"></a><a name="p173073381243"></a>支持包含FixpipeParamsV220/FixpipeParamsC310参数的接口。</p>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p173073381243"><a name="p173073381243"></a><a name="p173073381243"></a>支持包含FixpipeParamsV220/FixpipeParamsArch3510参数的接口。</p>
 </td>
 </tr>
 <tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
@@ -87,47 +87,47 @@
         __aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src, const LocalTensor<S>& cbufWorkspace, const FixpipeParamsM300& intriParams)
         ```
 
--   传入FixpipeParamsC310
+-   传入FixpipeParamsArch3510
     -   通路CO1-\>L1 Buffer，不使能tensor量化功能
 
         ```
         template <typename T, typename U, const FixpipeConfig& config = CFG_ROW_MAJOR>
-        __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src, const FixpipeParamsC310<config.format>& intriParams)
+        __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src, const FixpipeParamsArch3510<config.format>& intriParams)
         ```
 
     -   通路CO1-\>L1 Buffer，使能tensor量化功能
 
         ```
         template <typename T, typename U, const FixpipeConfig& config = CFG_ROW_MAJOR>
-        __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src, const LocalTensor<uint64_t>& cbufWorkspace, const FixpipeParamsC310<config.format>& intriParams)
+        __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src, const LocalTensor<uint64_t>& cbufWorkspace, const FixpipeParamsArch3510<config.format>& intriParams)
         ```
 
     -   通路CO1-\>UB，不使能tensor量化功能：
 
         ```
         template <typename T, typename U, const FixpipeConfig& config = CFG_ROW_MAJOR>
-        __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src, const FixpipeParamsC310<config.format>& intriParams)
+        __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src, const FixpipeParamsArch3510<config.format>& intriParams)
         ```
 
     -   通路CO1-\>UB，使能tensor量化功能：
 
         ```
         template <typename T, typename U, const FixpipeConfig& config = CFG_ROW_MAJOR>
-        __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src, const LocalTensor<uint64_t>& cbufWorkspace, const FixpipeParamsC310<config.format>& intriParams)
+        __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src, const LocalTensor<uint64_t>& cbufWorkspace, const FixpipeParamsArch3510<config.format>& intriParams)
         ```
 
     -   通路CO1-\>GM，不使能tensor量化功能：
 
         ```
         template <typename T, typename U, const FixpipeConfig& config = CFG_ROW_MAJOR>
-        __aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src, const FixpipeParamsC310<config.format>& intriParams)
+        __aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src, const FixpipeParamsArch3510<config.format>& intriParams)
         ```
 
     -   通路CO1-\>GM，使能tensor量化功能：
 
         ```
         template <typename T, typename U, const FixpipeConfig& config = CFG_ROW_MAJOR>
-        __aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src, const LocalTensor<uint64_t>& cbufWorkspace, const FixpipeParamsC310<config.format>& intriParams)
+        __aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src, const LocalTensor<uint64_t>& cbufWorkspace, const FixpipeParamsArch3510<config.format>& intriParams)
         ```
 
 ## 参数说明<a name="section622mcpsimp"></a>
@@ -345,7 +345,7 @@ constexpr FixpipeConfig CFG_COLUMN_MAJOR = {CO2Layout::COLUMN_MAJOR};</pre>
 </tbody>
 </table>
 
-**表 4**  FixpipeParamsC310结构体参数说明
+**表 4**  FixpipeParamsArch3510结构体参数说明
 
 <a name="table134331412112119"></a>
 <table><thead align="left"><tr id="row174331512172117"><th class="cellrowborder" valign="top" width="14.19%" id="mcps1.2.4.1.1"><p id="p17433191210216"><a name="p17433191210216"></a><a name="p17433191210216"></a>参数名称</p>
@@ -1338,7 +1338,7 @@ M方向切分：
     uint16_t deqDataSize = AscendC::DivCeil(deq_size * sizeof(uint64_t), 128) * 128;
     float tmp = 0.5;
     uint64_t val = static_cast<uint64_t>(*reinterpret_cast<int32_t*>(&tmp));
-    AscendC::FixpipeParamsC310<AscendC::CO2Layout::COLUMN_MAJOR> fixpipeParams = {n, m, static_cast<uint16_t>(AscendC::AlignUp(m, AscendC::BLOCK_CUBE)), m};
+    AscendC::FixpipeParamsArch3510<AscendC::CO2Layout::COLUMN_MAJOR> fixpipeParams = {n, m, static_cast<uint16_t>(AscendC::AlignUp(m, AscendC::BLOCK_CUBE)), m};
     fixpipeParams.params = {1, 0, 0, 1};
     fixpipeParams.reluEn = 1;
     AscendC::Fixpipe<dst_T, l1out_T, AscendC::CFG_COLUMN_MAJOR>(output_gm, dst_l0c, fixpipeParams);
@@ -1355,7 +1355,7 @@ M方向切分：
     uint16_t deqDataSize = AscendC::DivCeil(deq_size * sizeof(uint64_t), 128) * 128;
     float tmp = 0.5;
     uint64_t val = static_cast<uint64_t>(*reinterpret_cast<int32_t*>(&tmp));
-    AscendC::FixpipeParamsC310<AscendC::CO2Layout::COLUMN_MAJOR> fixpipeParams = {n, m, static_cast<uint16_t>(AscendC::AlignUp(m, AscendC::BLOCK_CUBE)), m};
+    AscendC::FixpipeParamsArch3510<AscendC::CO2Layout::COLUMN_MAJOR> fixpipeParams = {n, m, static_cast<uint16_t>(AscendC::AlignUp(m, AscendC::BLOCK_CUBE)), m};
     fixpipeParams.params = {1, 0, 0, 1};
     fixpipeParams.reluEn = 1;
     fixpipeParams.quantPre = F322F16;

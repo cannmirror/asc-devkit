@@ -221,7 +221,7 @@ public:
     {
         auto co1Local = qidCO1.DeQue<L0cT>();
         if constexpr (CType::format == CubeFormat::ND) {
-            FixpipeParamsC310<CO2Layout::ROW_MAJOR> fixpipeParams(nLength, mLength, mLength, nLength);
+            FixpipeParamsArch3510<CO2Layout::ROW_MAJOR> fixpipeParams(nLength, mLength, mLength, nLength);
             fixpipeParams.params = { 1, 0, 0 };
             if (IsSameType<DstT, half>::value) {
                 fixpipeParams.quantPre = QuantMode_t::F322F16;
@@ -230,7 +230,7 @@ public:
             }
             Fixpipe<DstT, L0cT, CFG_ROW_MAJOR>(gm, co1Local, fixpipeParams);
         } else if constexpr (CType::format == CubeFormat::NZ) {
-            FixpipeParamsC310<CO2Layout::NZ> fixpipeParams(nLength, mLength, mLength, nLength * BLOCK_CUBE);
+            FixpipeParamsArch3510<CO2Layout::NZ> fixpipeParams(nLength, mLength, mLength, nLength * BLOCK_CUBE);
             if (IsSameType<DstT, half>::value) {
                 fixpipeParams.quantPre = QuantMode_t::F322F16;
             } else if (IsSameType<DstT, bfloat16_t>::value) {
@@ -718,7 +718,7 @@ public:
     {
         auto co1Local = qidCO1.DeQue<L0cT>();
         if constexpr (CType::format == CubeFormat::ND) {
-            FixpipeParamsC310<CO2Layout::ROW_MAJOR> fixpipeParams(nLength, mLength, mLength, nLength);
+            FixpipeParamsArch3510<CO2Layout::ROW_MAJOR> fixpipeParams(nLength, mLength, mLength, nLength);
             fixpipeParams.params = { 1, 0, 0 };
             if (IsSameType<DstT, half>::value) {
                 fixpipeParams.quantPre = QuantMode_t::F322F16;
@@ -727,7 +727,7 @@ public:
             }
             Fixpipe<DstT, L0cT, CFG_ROW_MAJOR>(gm, co1Local, fixpipeParams);
         } else if constexpr (CType::format == CubeFormat::NZ) {
-            FixpipeParamsC310<CO2Layout::NZ> fixpipeParams(nLength, mLength, mLength, nLength * BLOCK_CUBE);
+            FixpipeParamsArch3510<CO2Layout::NZ> fixpipeParams(nLength, mLength, mLength, nLength * BLOCK_CUBE);
             if (IsSameType<DstT, half>::value) {
                 fixpipeParams.quantPre = QuantMode_t::F322F16;
             } else if (IsSameType<DstT, bfloat16_t>::value) {
@@ -830,7 +830,7 @@ public:
         LocalTensor<DstT> resMatrix = qidA1_.template AllocTensor<DstT>();
         auto co1Local = qidCO1.DeQue<L0cT>();
         if constexpr (CType::format == CubeFormat::ND) {
-            FixpipeParamsC310<CO2Layout::ROW_MAJOR> fixpipeParams(nLength,
+            FixpipeParamsArch3510<CO2Layout::ROW_MAJOR> fixpipeParams(nLength,
                 mLength, mLength, nLength);
             fixpipeParams.params = { 1, 0, 0 };
             if (IsSameType<DstT, half>::value) {
@@ -840,7 +840,7 @@ public:
             }
             Fixpipe<DstT, L0cT, CFG_ROW_MAJOR>(resMatrix, co1Local, fixpipeParams);
         } else if constexpr (CType::format == CubeFormat::NZ) {
-            FixpipeParamsC310<CO2Layout::NZ> fixpipeParams(nLength,
+            FixpipeParamsArch3510<CO2Layout::NZ> fixpipeParams(nLength,
                 mLength, mLength, nLength * BLOCK_CUBE);
             if (IsSameType<DstT, half>::value) {
                 fixpipeParams.quantPre = QuantMode_t::F322F16;
