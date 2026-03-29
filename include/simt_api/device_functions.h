@@ -386,6 +386,44 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ float2* address, floa
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ float4* address, float4 val);
 #endif
 
+static __SIMT_DEVICE_FUNCTIONS_DECL__ int __mulhi(int x, int y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __umulhi(unsigned int x, unsigned int y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ long long __mul64hi(long long x, long long y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned long long __umul64hi(unsigned long long x, unsigned long long y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ long long __mul_i32toi64(int x, int y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned long long __mul_i32toi64(unsigned int x, unsigned int y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __brev(unsigned int x);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned long long __brev(unsigned long long x);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned long __brev(unsigned long x);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ int __clz(int x);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ int __clz(long long x);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ int __clz(long x);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ int __ffs(int x);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ int __ffs(long long x);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ int __ffs(long x);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ int __popc(unsigned int x);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ int __popc(unsigned long long x);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ int __popc(unsigned long x);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __byte_perm(unsigned int x, unsigned int y, unsigned int s);
+
 #include "impl/simt_api/device_functions_impl.h"
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEVICE_FUNCTIONS_H__)
