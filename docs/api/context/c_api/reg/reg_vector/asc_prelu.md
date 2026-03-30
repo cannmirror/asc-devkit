@@ -11,7 +11,7 @@
 源操作数src0大于0的情况下直接将src0写入目的操作数dst，否则将src0 * src1的结果写入dst。计算公式如下：
 
 $$
-dst = (src0 >= 0) ? src0 : src0 * src1
+dst = (src0 > 0) ? src0 : src0 * src1
 $$
 
 ## 函数原型
