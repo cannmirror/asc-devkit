@@ -529,7 +529,11 @@ MKNParasCombo MatmulTilingAlgorithm::GetParasCombo(const int32_t& index, const M
 {
     (void)(param);
     std::map<int32_t, MKNParasCombo> parasComboMap;
-    const int32_t mnMax = tilingIns_->bufferPool_.l0CSize / (C0_SIZE * C0_SIZE) / FP32_BYTES;
+    // Only for david nbuffer33, others not affected.
+    // Use actual l0c size can improve performance in david.
+    constexpr int32_t l0cSizeForNbuffer33 = 128 * 1024;
+    const int32_t l0CSize = (tilingIns_->scheduleType != ScheduleType::N_BUFFER_33) ? tilingIns_->bufferPool_.l0CSize : l0cSizeForNbuffer33;
+    const int32_t mnMax = l0CSize / (C0_SIZE * C0_SIZE) / FP32_BYTES;
     int32_t maxN = 64;
     // in V220/V300, consider bias table buffer limit
     if (tilingIns_->socVersion == platform_ascendc::SocVersion::ASCEND910B ||
