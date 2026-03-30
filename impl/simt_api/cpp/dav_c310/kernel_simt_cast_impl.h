@@ -27,7 +27,7 @@ namespace Simt {
     __SIMT_DEVICE_FUNCTIONS_DECL__ inline void func_name(type &dst, type &src) \
     {                                                      \
         for (int i = 0; i < len; i++) {                    \
-            dst[i] = bisheng::cce::simt::func_name(src[i]);\
+            dst[i] = func_name(src[i]);\
         }                                                  \
     }
 
@@ -137,7 +137,7 @@ namespace Simt {
 #define REG_ROUND(type, func_name)                         \
     __SIMT_DEVICE_FUNCTIONS_DECL__ inline void func_name(type &dst, type &src) \
     {                                                      \
-        dst = bisheng::cce::simt::func_name(src);          \
+        dst = func_name(src);          \
     }
 
 #define REG_ROUND_(d_type, s_type, func_name)                     \

@@ -15,30 +15,12 @@
 #include "stub_def.h"
 #include <cmath>
 
-namespace bisheng {
-namespace cce {
-namespace simt {
-
-int32_t get_block_idx()
+int32_t asc_get_block_idx()
 {
     return block_idx;
 }
 
-int32_t get_block_num()
-{
-    return block_num;
-}
-
-}
-}
-}
-
-int32_t asc_get_block_idx()
-{
-    return bisheng::cce::simt::get_block_idx();
-}
-
 int32_t asc_get_block_num()
 {
-    return bisheng::cce::simt::get_block_num();
+    return block_num;
 }

@@ -33,27 +33,13 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetWarpSizeImpl()
 template <int32_t dim = 0>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetThreadNumImpl()
 {
-#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     if constexpr (dim == 0) {
-        return g_threadDimX;
+        return blockDim.x;
+    } else if constexpr (dim == 1) {
+        return blockDim.y;
+    } else if constexpr (dim == 2) {
+        return blockDim.z;
     }
-    if constexpr (dim == 1) {
-        return g_threadDimY;
-    }
-    if constexpr (dim == 2) {
-        return g_threadDimZ;
-    }
-#else
-    if constexpr (dim == 0) {
-        return __cce_simt_get_BLOCK_DIM_X();
-    }
-    if constexpr (dim == 1) {
-        return __cce_simt_get_BLOCK_DIM_Y();
-    }
-    if constexpr (dim == 2) {
-        return __cce_simt_get_BLOCK_DIM_Z();
-    }
-#endif
     return 0;
 }
 
@@ -61,46 +47,24 @@ template <int32_t dim = 0>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetThreadIdxImpl()
 {
     static_assert((dim >= 0 && dim <= 2), "dim is out of range [0, 2]");
-#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     if constexpr (dim == 0) {
-        return g_threadIdxX;
+        return threadIdx.x;
+    } else if constexpr (dim == 1) {
+        return threadIdx.y;
+    } else if constexpr (dim == 2) {
+        return threadIdx.z;
     }
-    if constexpr (dim == 1) {
-        return g_threadIdxY;
-    }
-    if constexpr (dim == 2) {
-        return g_threadIdxZ;
-    }
-#else
-    if constexpr (dim == 0) {
-        return __cce_simt_get_TID_X();
-    }
-    if constexpr (dim == 1) {
-        return __cce_simt_get_TID_Y();
-    }
-    if constexpr (dim == 2) {
-        return __cce_simt_get_TID_Z();
-    }
-#endif
     return 0;
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetBlockIdxImpl()
 {
-#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
-    return block_idx;
-#else
-    return bisheng::cce::simt::get_block_idx();
-#endif
+    return blockIdx.x;
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetBlockNumImpl()
 {
-#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
-    return block_num;
-#else
-    return bisheng::cce::simt::get_block_num();
-#endif
+    return gridDim.x;
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t GetBf16U16(float f32, uint32_t u16, uint32_t u32, uint32_t bf16LastBit, RoundMode rnd)
@@ -375,7 +339,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T FloorIntrinsicsImpl(T x)
     if constexpr (SupportType<T, int32_t, int64_t>()) {
         return x;
     } else if constexpr (SupportType<T, half, float, bfloat16_t>()) {
-        return bisheng::cce::simt::__floorf(x);
+        return __floorf(x);
     }
 }
 
@@ -443,7 +407,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T RoundIntrinsicsImpl(T x)
     if constexpr (SupportType<T, int32_t, int64_t>()) {
         return x;
     } else if constexpr (SupportType<T, half, float, bfloat16_t, hifloat8_t>()) {
-        return bisheng::cce::simt::__roundf(x);
+        return __roundf(x);
     }
 }
 
@@ -530,7 +494,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T RintIntrinsicsImpl(T x)
     if constexpr (SupportType<T, int32_t, int64_t>()) {
         return x;
     } else if constexpr (SupportType<T, half, float, bfloat16_t>()) {
-        return bisheng::cce::simt::__rintf(x);
+        return __rintf(x);
     }
 }
 
@@ -618,7 +582,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T CeilIntrinsicsImpl(T x)
     if constexpr (SupportType<T, int32_t, int64_t>()) {
         return x;
     } else if constexpr (SupportType<T, half, float, bfloat16_t>()) {
-        return bisheng::cce::simt::__ceilf(x);
+        return __ceilf(x);
     }
 }
 
