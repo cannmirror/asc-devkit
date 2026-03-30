@@ -1,6 +1,6 @@
 # asc_store_atomic_config
 
-asc_store_atomic_config参数包含原子操作使能位与原子操作类型，用于[asc_set_store_atomic_config](../simd_atomic/asc_set_store_atomic_config.md)和[asc_get_store_atomic_config](../simd_atomic/asc_get_store_atomic_config.md)接口使用。
+asc_store_atomic_config参数包含原子操作使能位与原子操作类型，用于[asc_get_store_atomic_config](../simd_atomic/asc_get_store_atomic_config.md)接口使用。
 
 ## 结构体具体定义
 
