@@ -62,11 +62,11 @@ PIPE_V
 
 ```cpp
 vector_bool carry;
-vector_half dst;
-vector_half src0;
-vector_half src1;
-vector_bool carry_src = asc_create_mask_b16(PAT_ALLF);
-vector_bool mask = asc_create_mask_b16(PAT_ALL);
+vector_uint32_t dst;
+vector_uint32_t src0;
+vector_uint32_t src1;
+vector_bool carry_src = asc_create_mask_b32(PAT_ALLF);
+vector_bool mask = asc_create_mask_b32(PAT_ALL);
 asc_loadalign(src0, src0_addr); // src0_addr是外部输入的UB内存空间地址。
 asc_loadalign(src1, src1_addr); // src1_addr是外部输入的UB内存空间地址。
 // mask为源操作数掩码
