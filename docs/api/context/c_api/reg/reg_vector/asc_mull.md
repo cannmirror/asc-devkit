@@ -53,5 +53,5 @@ vector_int32_t src1;
 vector_bool mask = asc_create_mask_b32(PAT_ALL);
 asc_loadalign(src0, src0_addr); // src0_addr是外部输入的UB内存空间地址。
 asc_loadalign(src1, src1_addr); // src1_addr是外部输入的UB内存空间地址。
-asc_mull(dst0, dst1, src0, src1);
+asc_mull(dst0, dst1, src0, src1, mask);
 ```

@@ -8,12 +8,11 @@
 
 ## 功能说明
 
-将src中被mask选择的有效元素依次复制到dst，有效元素从低到高连续排列。dst中剩余位置元素置为0。
+将src中被mask选择的有效元素依次复制到dst，有效元素在dst上连续排列。dst中剩余位置元素置为0。
 
 ## 函数原型
 
   ```cpp
-  // 不存入AR特殊寄存器
   __simd_callee__ inline void asc_squeeze(vector_int8_t& dst, vector_int8_t src, vector_bool mask)
   __simd_callee__ inline void asc_squeeze(vector_uint8_t& dst, vector_uint8_t src, vector_bool mask)
   __simd_callee__ inline void asc_squeeze(vector_hifloat8_t& dst, vector_hifloat8_t src, vector_bool mask)
@@ -27,20 +26,6 @@
   __simd_callee__ inline void asc_squeeze(vector_int32_t& dst, vector_int32_t src, vector_bool mask)
   __simd_callee__ inline void asc_squeeze(vector_uint32_t& dst, vector_uint32_t src, vector_bool mask)
   __simd_callee__ inline void asc_squeeze(vector_float& dst, vector_float src, vector_bool mask)
-  // 存入AR特殊寄存器
-  __simd_callee__ inline void asc_squeeze_v2(vector_int8_t& dst, vector_int8_t src, vector_bool mask)
-  __simd_callee__ inline void asc_squeeze_v2(vector_uint8_t& dst, vector_uint8_t src, vector_bool mask)
-  __simd_callee__ inline void asc_squeeze_v2(vector_hifloat8_t& dst, vector_hifloat8_t src, vector_bool mask)
-  __simd_callee__ inline void asc_squeeze_v2(vector_fp8_e5m2_t& dst, vector_fp8_e5m2_t src, vector_bool mask)
-  __simd_callee__ inline void asc_squeeze_v2(vector_fp8_e4m3fn_t& dst, vector_fp8_e4m3fn_t src, vector_bool mask)
-  __simd_callee__ inline void asc_squeeze_v2(vector_fp8_e8m0_t& dst, vector_fp8_e8m0_t src, vector_bool mask)
-  __simd_callee__ inline void asc_squeeze_v2(vector_int16_t& dst, vector_int16_t src, vector_bool mask)
-  __simd_callee__ inline void asc_squeeze_v2(vector_uint16_t& dst, vector_uint16_t src, vector_bool mask)
-  __simd_callee__ inline void asc_squeeze_v2(vector_half& dst, vector_half src, vector_bool mask)
-  __simd_callee__ inline void asc_squeeze_v2(vector_bfloat16_t& dst, vector_bfloat16_t src, vector_bool mask)
-  __simd_callee__ inline void asc_squeeze_v2(vector_int32_t& dst, vector_int32_t src, vector_bool mask)
-  __simd_callee__ inline void asc_squeeze_v2(vector_uint32_t& dst, vector_uint32_t src, vector_bool mask)
-  __simd_callee__ inline void asc_squeeze_v2(vector_float& dst, vector_float src, vector_bool mask)
   ```
 
 ## 参数说明
@@ -71,10 +56,6 @@ PIPE_V
 vector_int8_t src;
 vector_bool mask = asc_create_mask_b8(PAT_ALL);
 asc_loadalign(src, src_addr); // src_addr是外部输入的UB内存空间地址。
-// 不存入AR特殊寄存器
 vector_int8_t dst;
 asc_squeeze(dst, src, mask);
-// 存入AR特殊寄存器
-vector_store_unalign dst_v2;
-asc_squeeze_v2(dst_v2, src, mask);
 ```
