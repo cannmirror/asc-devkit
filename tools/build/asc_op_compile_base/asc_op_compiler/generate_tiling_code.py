@@ -93,3 +93,28 @@ def generate_pointer_directly_assess_data(is_dynamic: bool = True, \
 
 """
     return code
+
+
+def generate_static_pointer_v1_constexpr():
+    """generate code to access data directly by pointer v1 constexpr"""
+    code = "// micro attribute for pointer assess data\n"
+    code += f"""
+#define __tiling_data_ptr__ const
+
+#define GET_TILING_DATA_PTR_WITH_STRUCT(tiling_struct, dst_ptr, tiling_ptr)                                                     \\
+    REGISTER_TILINGDATA_SIZE(tiling_struct, __COUNTER__);                                                                       \\
+    static constexpr tiling_struct __var__##dst_ptr;                                                                            \\
+    __tiling_data_ptr__ tiling_struct *dst_ptr = &__var__##dst_ptr;
+
+#define COPY_TILING_WITH_STRUCT(tiling_struct, src_ptr, dst_ptr)                                                                \\
+    const tiling_struct __ascendc_var##dst_ptr = *reinterpret_cast<const tiling_struct *>(src_ptr);                             \\
+    const tiling_struct *dst_ptr = &__ascendc_var##dst_ptr;
+
+#define COPY_TILING_WITH_ARRAY(arr_type, arr_count, src_ptr, dst_ptr)                                                           \\
+    const struct __ascendc_struct_type##dst_ptr {{arr_type __ascendc_var_arr##dst_ptr[arr_count];}} \
+__ascendc_var##dst_ptr = *(const struct __ascendc_struct_type##dst_ptr *)src_ptr;                                               \\
+    const arr_type (*dst_ptr)[arr_count] =                                                                                      \\
+                    (const arr_type(*)[arr_count])&__ascendc_var##dst_ptr.__ascendc_var_arr##dst_ptr;
+
+"""
+    return code
