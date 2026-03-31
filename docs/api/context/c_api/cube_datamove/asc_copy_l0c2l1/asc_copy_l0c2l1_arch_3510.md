@@ -84,7 +84,7 @@ __aicore__ inline void asc_copy_l0c2l1(__cbuf__ int32_t* dst, __cc__ int32_t* sr
 | eltwise_antq_cfg | 输入    | 按位使能元素的反量化操作。                                                                                                                    |
 | c0_pad_en        | 输入    | 使能为c0配置填充位，c0是通道循环的目标步长数。                                                                                                        |
 
-矢量数据寄存器的详细说明请参见[reg数据类型定义.md](../reg数据类型定义.md)。
+矢量数据寄存器的详细说明请参见[reg数据类型定义.md](../../reg/reg数据类型定义.md)。
 
 ## 返回值说明
 
