@@ -455,7 +455,6 @@ function(npu_op_package target_package_name)
       $<$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>:acl_rt>
       $<$<NOT:$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>>:ascendcl>
       exe_graph
-      opp_registry
       register
       graph
       graph_base
