@@ -22,8 +22,8 @@ protected:                                                                      
 };                                                                                              \
                                                                                                 \
 namespace {                                                                                     \
-void cce_name1##_##data_type##_Stub1(vector_load_align& src0, __ubuf__ cce_data_type *src1) {}                                                          \
-void cce_name0##_##data_type##_Stub0(vector_##cce_data_type& dst, vector_load_align& src0, __ubuf__ cce_data_type *src1) {}                                                          \
+void cce_name1##_##data_type##_Stub1(vector_load_unalign& src0, __ubuf__ cce_data_type *src1) {}                                                          \
+void cce_name0##_##data_type##_Stub0(vector_##cce_data_type& dst, vector_load_unalign& src0, __ubuf__ cce_data_type *src1) {}                                                          \
 }                                                                                               \
                                                                                                 \
 TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_type##_Succ)       \
@@ -31,11 +31,11 @@ TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_
     __ubuf__ data_type *src = reinterpret_cast<__ubuf__ data_type *>(0);               \
     vector_##data_type dst;                                                                             \
                                                                                                 \
-    MOCKER_CPP(cce_name1, void(vector_load_align&, __ubuf__ cce_data_type *))                     \
+    MOCKER_CPP(cce_name1, void(vector_load_unalign&, __ubuf__ cce_data_type *))                     \
         .times(1)                                                                               \
         .will(invoke(cce_name1##_##data_type##_Stub1));                                           \
                                                                                                 \
-    MOCKER_CPP(cce_name0, void(vector_##cce_data_type&, vector_store_align&, __ubuf__ cce_data_type *))                     \
+    MOCKER_CPP(cce_name0, void(vector_##cce_data_type&, vector_store_unalign&, __ubuf__ cce_data_type *))                     \
         .times(1)                                                                               \
         .will(invoke(cce_name0##_##data_type##_Stub0));                                           \
                                                                                                 \

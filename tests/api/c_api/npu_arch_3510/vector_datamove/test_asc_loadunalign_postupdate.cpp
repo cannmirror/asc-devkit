@@ -22,18 +22,18 @@ protected:                                                                      
 };                                                                                              \
                                                                                                 \
 namespace {                                                                                     \
-void cce_name##_##data_type##_Stub(vector_##data_type& dst, vector_load_align& src0,            \
+void cce_name##_##data_type##_Stub(vector_##data_type& dst, vector_load_unalign& src0,            \
     __ubuf__ data_type *&src1, uint32_t inc, Literal post) {}                                   \
 }                                                                                               \
                                                                                                 \
 TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_type##_Succ)    \
 {                                                                                               \
     __ubuf__ data_type *src1 = reinterpret_cast<__ubuf__ data_type *>(0);                       \
-    vector_load_align src0;                                                                     \
+    vector_load_unalign src0;                                                                     \
     vector_##data_type dst;                                                                     \
     uint32_t count;                                                                             \
                                                                                                 \
-    MOCKER_CPP(cce_name, void(vector_##data_type&, vector_load_align&, __ubuf__ data_type *&, uint32_t, Literal))   \
+    MOCKER_CPP(cce_name, void(vector_##data_type&, vector_load_unalign&, __ubuf__ data_type *&, uint32_t, Literal))   \
         .times(1)                                                                               \
         .will(invoke(cce_name##_##data_type##_Stub));                                           \
                                                                                                 \
@@ -50,18 +50,18 @@ protected:                                                                      
 };                                                                                              \
                                                                                                 \
 namespace {                                                                                     \
-void cce_name##_##data_type##_Stub(vector_uint8_t& dst, vector_load_align& src0,            \
+void cce_name##_##data_type##_Stub(vector_uint8_t& dst, vector_load_unalign& src0,            \
     __ubuf__ uint8_t *&src1, uint32_t inc, Literal post) {}                                   \
 }                                                                                               \
                                                                                                 \
 TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_type##_Succ)    \
 {                                                                                               \
     __ubuf__ data_type *src1 = reinterpret_cast<__ubuf__ data_type *>(0);                       \
-    vector_load_align src0;                                                                     \
+    vector_load_unalign src0;                                                                     \
     vector_##data_type dst;                                                                     \
     uint32_t count;                                                                             \
                                                                                                 \
-    MOCKER_CPP(cce_name, void(vector_uint8_t&, vector_load_align&, __ubuf__ uint8_t *&, uint32_t, Literal))   \
+    MOCKER_CPP(cce_name, void(vector_uint8_t&, vector_load_unalign&, __ubuf__ uint8_t *&, uint32_t, Literal))   \
         .times(1)                                                                               \
         .will(invoke(cce_name##_##data_type##_Stub));                                           \
                                                                                                 \
@@ -78,19 +78,19 @@ protected:                                                                      
 };                                                                                              \
                                                                                                 \
 namespace {                                                                                     \
-void cce_name##_##data_type##_Stub(vector_##data_type& dst, vector_load_align& src0,            \
+void cce_name##_##data_type##_Stub(vector_##data_type& dst, vector_load_unalign& src0,            \
      iter_reg& offset, __ubuf__ data_type *&src1, uint32_t post) {}                             \
 }                                                                                               \
                                                                                                 \
 TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_type##_Succ)    \
 {                                                                                               \
     __ubuf__ data_type *src1 = reinterpret_cast<__ubuf__ data_type *>(0);                       \
-    vector_load_align src0;                                                                     \
+    vector_load_unalign src0;                                                                     \
     vector_##data_type dst;                                                                     \
     uint32_t count;                                                                             \
     iter_reg offset;                                                                            \
                                                                                                 \
-    MOCKER_CPP(cce_name, void(vector_##data_type&, vector_load_align&, iter_reg&, __ubuf__ data_type *, uint32_t))   \
+    MOCKER_CPP(cce_name, void(vector_##data_type&, vector_load_unalign&, iter_reg&, __ubuf__ data_type *, uint32_t))   \
         .times(1)                                                                               \
         .will(invoke(cce_name##_##data_type##_Stub));                                           \
                                                                                                 \
@@ -107,19 +107,19 @@ protected:                                                                      
 };                                                                                              \
                                                                                                 \
 namespace {                                                                                     \
-void cce_name##_##data_type##_Stub(vector_uint8_t& dst, vector_load_align& src0,            \
+void cce_name##_##data_type##_Stub(vector_uint8_t& dst, vector_load_unalign& src0,            \
      iter_reg& offset, __ubuf__ uint8_t *&src1, uint32_t post) {}                             \
 }                                                                                               \
                                                                                                 \
 TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_type##_Succ)    \
 {                                                                                               \
     __ubuf__ data_type *src1 = reinterpret_cast<__ubuf__ data_type *>(0);                       \
-    vector_load_align src0;                                                                     \
+    vector_load_unalign src0;                                                                     \
     vector_##data_type dst;                                                                     \
     uint32_t count;                                                                             \
     iter_reg offset;                                                                            \
                                                                                                 \
-    MOCKER_CPP(cce_name, void(vector_uint8_t&, vector_load_align&, iter_reg&, __ubuf__ uint8_t *, uint32_t))   \
+    MOCKER_CPP(cce_name, void(vector_uint8_t&, vector_load_unalign&, iter_reg&, __ubuf__ uint8_t *, uint32_t))   \
         .times(1)                                                                               \
         .will(invoke(cce_name##_##data_type##_Stub));                                           \
                                                                                                 \
