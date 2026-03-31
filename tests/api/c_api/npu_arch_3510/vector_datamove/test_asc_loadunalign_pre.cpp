@@ -23,16 +23,16 @@ protected:                                                                      
                                                                                                 \
 namespace {                                                                                     \
                                                                                                 \
-void cce_name##_##data_type##_Stub(vector_load_align &dst, __ubuf__ data_type *src) {}          \
+void cce_name##_##data_type##_Stub(vector_load_unalign &dst, __ubuf__ data_type *src) {}          \
                                                                                                 \
 }                                                                                               \
                                                                                                 \
 TEST_F(TestVectorDatamove##class_name##data_type##CApi, c_api_name##_Succ)                      \
 {                                                                                               \
-    vector_load_align dst;                                                                      \
+    vector_load_unalign dst;                                                                      \
     __ubuf__ data_type *src;                                                                    \
                                                                                                 \
-    MOCKER_CPP(cce_name, void(vector_load_align &, __ubuf__ data_type *))                       \
+    MOCKER_CPP(cce_name, void(vector_load_unalign &, __ubuf__ data_type *))                       \
             .times(1)                                                                           \
             .will(invoke(cce_name##_##data_type##_Stub));                                       \
                                                                                                 \
@@ -50,16 +50,16 @@ protected:                                                                      
                                                                                                 \
 namespace {                                                                                     \
                                                                                                 \
-void cce_name##_##data_type##_Stub(vector_load_align &dst, __ubuf__ uint8_t *src) {}          \
+void cce_name##_##data_type##_Stub(vector_load_unalign &dst, __ubuf__ uint8_t *src) {}          \
                                                                                                 \
 }                                                                                               \
                                                                                                 \
 TEST_F(TestVectorDatamove##class_name##data_type##CApi, c_api_name##_Succ)                      \
 {                                                                                               \
-    vector_load_align dst;                                                                      \
+    vector_load_unalign dst;                                                                      \
     __ubuf__ data_type *src;                                                                    \
                                                                                                 \
-    MOCKER_CPP(cce_name, void(vector_load_align &, __ubuf__ uint8_t *))                       \
+    MOCKER_CPP(cce_name, void(vector_load_unalign &, __ubuf__ uint8_t *))                       \
             .times(1)                                                                           \
             .will(invoke(cce_name##_##data_type##_Stub));                                       \
                                                                                                 \
@@ -94,18 +94,18 @@ protected:                                                                      
                                                                                                 \
 namespace {                                                                                     \
                                                                                                 \
-void cce_name##_##data_type##_Stub(vector_load_align &dst, __ubuf__ data_type *src,             \
+void cce_name##_##data_type##_Stub(vector_load_unalign &dst, __ubuf__ data_type *src,             \
                                    iter_reg offset) {}                                          \
                                                                                                 \
 }                                                                                               \
                                                                                                 \
 TEST_F(TestVectorDatamove##class_name##data_type##CApi, c_api_name##_Succ)                      \
 {                                                                                               \
-    vector_load_align dst;                                                                      \
+    vector_load_unalign dst;                                                                      \
     __ubuf__ data_type *src;                                                                    \
     iter_reg offset;                                                                            \
                                                                                                 \
-    MOCKER_CPP(cce_name, void(vector_load_align &, __ubuf__ data_type *, iter_reg offset))      \
+    MOCKER_CPP(cce_name, void(vector_load_unalign &, __ubuf__ data_type *, iter_reg offset))      \
             .times(1)                                                                           \
             .will(invoke(cce_name##_##data_type##_Stub));                                       \
                                                                                                 \
@@ -123,18 +123,18 @@ protected:                                                                      
                                                                                                 \
 namespace {                                                                                     \
                                                                                                 \
-void cce_name##_##data_type##_Stub(vector_load_align &dst, __ubuf__ uint8_t *src,             \
+void cce_name##_##data_type##_Stub(vector_load_unalign &dst, __ubuf__ uint8_t *src,             \
                                    iter_reg offset) {}                                          \
                                                                                                 \
 }                                                                                               \
                                                                                                 \
 TEST_F(TestVectorDatamove##class_name##data_type##CApi, c_api_name##_Succ)                      \
 {                                                                                               \
-    vector_load_align dst;                                                                      \
+    vector_load_unalign dst;                                                                      \
     __ubuf__ data_type *src;                                                                    \
     iter_reg offset;                                                                            \
                                                                                                 \
-    MOCKER_CPP(cce_name, void(vector_load_align &, __ubuf__ uint8_t *, iter_reg offset))      \
+    MOCKER_CPP(cce_name, void(vector_load_unalign &, __ubuf__ uint8_t *, iter_reg offset))      \
             .times(1)                                                                           \
             .will(invoke(cce_name##_##data_type##_Stub));                                       \
                                                                                                 \

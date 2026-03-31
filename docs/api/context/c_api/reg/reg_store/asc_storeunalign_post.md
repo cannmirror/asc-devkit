@@ -27,42 +27,42 @@ store_unalign或store_unalign_postupdate接口执行时，会将主块搬出至U
 - 使用int32_t作为偏移量，配合[asc_storeunalign](./asc_storeunalign.md)接口
 
     ```cpp
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ int8_t* dst, vector_store_align src, int32_t offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ uint8_t* dst, vector_store_align src, int32_t offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp4x2_e2m1_t* dst, vector_store_align src, int32_t offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp4x2_e1m2_t* dst, vector_store_align src, int32_t offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp8_e8m0_t* dst, vector_store_align src, int32_t offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp8_e5m2_t* dst, vector_store_align src, int32_t offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp8_e4m3fn_t* dst, vector_store_align src, int32_t offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ hifloat8_t* dst, vector_store_align src, int32_t offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ int16_t* dst, vector_store_align src, int32_t offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ uint16_t* dst, vector_store_align src, int32_t offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ half* dst, vector_store_align src, int32_t offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ bfloat16_t* dst, vector_store_align src, int32_t offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ int32_t* dst, vector_store_align src, int32_t offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ uint32_t* dst, vector_store_align src, int32_t offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ float* dst, vector_store_align src, int32_t offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ int64_t* dst, vector_store_align src, int32_t offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ int8_t* dst, vector_store_unalign src, int32_t offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ uint8_t* dst, vector_store_unalign src, int32_t offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp4x2_e2m1_t* dst, vector_store_unalign src, int32_t offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp4x2_e1m2_t* dst, vector_store_unalign src, int32_t offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp8_e8m0_t* dst, vector_store_unalign src, int32_t offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp8_e5m2_t* dst, vector_store_unalign src, int32_t offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp8_e4m3fn_t* dst, vector_store_unalign src, int32_t offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ hifloat8_t* dst, vector_store_unalign src, int32_t offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ int16_t* dst, vector_store_unalign src, int32_t offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ uint16_t* dst, vector_store_unalign src, int32_t offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ half* dst, vector_store_unalign src, int32_t offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ bfloat16_t* dst, vector_store_unalign src, int32_t offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ int32_t* dst, vector_store_unalign src, int32_t offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ uint32_t* dst, vector_store_unalign src, int32_t offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ float* dst, vector_store_unalign src, int32_t offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ int64_t* dst, vector_store_unalign src, int32_t offset)
     ```
 
 - 使用iter_reg作为偏移量，配合[asc_storeunalign_postupdate](./asc_storeunalign_postupdate.md)使用iter_reg作为存储偏移量的接口
 
     ```cpp
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ int8_t* dst, vector_store_align src, iter_reg offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ uint8_t* dst, vector_store_align src, iter_reg offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp4x2_e2m1_t* dst, vector_store_align src, iter_reg offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp4x2_e1m2_t* dst, vector_store_align src, iter_reg offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp8_e8m0_t* dst, vector_store_align src, iter_reg offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp8_e5m2_t* dst, vector_store_align src, iter_reg offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp8_e4m3fn_t* dst, vector_store_align src, iter_reg offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ int16_t* dst, vector_store_align src, iter_reg offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ uint16_t* dst, vector_store_align src, iter_reg offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ half* dst, vector_store_align src, iter_reg offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ bfloat16_t* dst, vector_store_align src, iter_reg offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ int32_t* dst, vector_store_align src, iter_reg offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ uint32_t* dst, vector_store_align src, iter_reg offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ float* dst, vector_store_align src, iter_reg offset)
-    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ int64_t* dst, vector_store_align src, iter_reg offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ int8_t* dst, vector_store_unalign src, iter_reg offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ uint8_t* dst, vector_store_unalign src, iter_reg offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp4x2_e2m1_t* dst, vector_store_unalign src, iter_reg offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp4x2_e1m2_t* dst, vector_store_unalign src, iter_reg offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp8_e8m0_t* dst, vector_store_unalign src, iter_reg offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp8_e5m2_t* dst, vector_store_unalign src, iter_reg offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ fp8_e4m3fn_t* dst, vector_store_unalign src, iter_reg offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ int16_t* dst, vector_store_unalign src, iter_reg offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ uint16_t* dst, vector_store_unalign src, iter_reg offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ half* dst, vector_store_unalign src, iter_reg offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ bfloat16_t* dst, vector_store_unalign src, iter_reg offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ int32_t* dst, vector_store_unalign src, iter_reg offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ uint32_t* dst, vector_store_unalign src, iter_reg offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ float* dst, vector_store_unalign src, iter_reg offset)
+    __simd_callee__ inline void asc_storeunalign_post(__ubuf__ int64_t* dst, vector_store_unalign src, iter_reg offset)
     ```
 
 ## 参数说明
@@ -106,7 +106,7 @@ PIPE_V
     ```cpp
     // dst地址为8，非32B对齐，占用的地址为UB[8:520]。
     __ubuf__ uint32_t* dst = (__ubuf__ uint32_t*)asc_get_phy_buf_addr(8);
-    vector_store_align ureg;
+    vector_store_unalign ureg;
     vector_uint32_t src;
     uint32_t count = 64;
     uint32_t repeat = 2;
@@ -128,7 +128,7 @@ PIPE_V
     ```cpp
     // dst地址为8，非32B对齐。占用的地址为[8:520]。
     __ubuf__ uint32_t* dst = (__ubuf__ uint32_t*)asc_get_phy_buf_addr(8);
-    vector_store_align ureg;
+    vector_store_unalign ureg;
     vector_uint32_t src;
     iter_reg count = asc_create_iter_reg_b32(64);
     uint32_t repeat = 2;
