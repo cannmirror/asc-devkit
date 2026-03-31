@@ -220,6 +220,43 @@ void main_tensortrait_data_copy_kernel_fixpipe(__gm__ uint8_t* __restrict__ srcG
     DataCopy(dstGlobal, inputLocal, intriParams2);
 }
 
+template<typename T>
+void MainDataCopyL0C2GMCacheModeKernel(__gm__ uint8_t* __restrict__ srcGm, __gm__ uint8_t* __restrict__ dstGm, __gm__ int32_t dataSize)
+{
+    TPipe tpipe;
+    GlobalTensor<T> srcGlobal;
+    GlobalTensor<T> dstGlobal;
+
+    srcGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ T*>(srcGm), dataSize);
+    dstGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ T*>(dstGm), dataSize);
+
+    TBuf<TPosition::CO1> tbuf;
+    tpipe.InitBuffer(tbuf, dataSize * sizeof(T));
+    LocalTensor<T> inputLocal = tbuf.Get<T>();
+
+    DataCopyCO12DstParams intriParams(16, 16, 0, 0, QuantMode_t::VDEQF16, static_cast<uint8_t>(0), 0, 0);
+    DataCopy(dstGlobal, inputLocal, intriParams);
+}
+
+template<typename T>
+void MainDataCopyL0C2GMCacheModeWithDisableCacheKernel(__gm__ uint8_t* __restrict__ srcGm, __gm__ uint8_t* __restrict__ dstGm, __gm__ int32_t dataSize)
+{
+    TPipe tpipe;
+    GlobalTensor<T> srcGlobal;
+    GlobalTensor<T> dstGlobal;
+
+    srcGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ T*>(srcGm), dataSize);
+    dstGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ T*>(dstGm), dataSize);
+    dstGlobal.SetL2CacheHint(AscendC::CacheMode::CACHE_MODE_DISABLE);
+
+    TBuf<TPosition::CO1> tbuf;
+    tpipe.InitBuffer(tbuf, dataSize * sizeof(T));
+    LocalTensor<T> inputLocal = tbuf.Get<T>();
+
+    DataCopyCO12DstParams intriParams(16, 16, 0, 0, QuantMode_t::VDEQF16, static_cast<uint8_t>(0), 0, 0);
+    DataCopy(dstGlobal, inputLocal, intriParams);
+}
+
 INSTANTIATE_TEST_CASE_P(TEST_DATA_COPY_AIC, TestDataCopySuite,
     ::testing::Values(
     TestDataCopyParams { 64, 4, MainDataCopyKernel<int32_t> },
@@ -263,7 +300,9 @@ INSTANTIATE_TEST_CASE_P(TEST_DATA_COPY_AIC, TestDataCopySuite,
     TestDataCopyParams { 64, 1, main_tensortrait_data_copy_dn2nz_kernel<uint16_t> },
     TestDataCopyParams { 64, 1, main_tensortrait_data_copy_dn2nz_kernel<int32_t> },
     TestDataCopyParams { 64, 1, main_tensortrait_data_copy_dn2nz_kernel<uint32_t> },
-    TestDataCopyParams { 256, 1, main_tensortrait_data_copy_kernel_fixpipe<int8_t> }
+    TestDataCopyParams { 256, 1, main_tensortrait_data_copy_kernel_fixpipe<int8_t> },
+    TestDataCopyParams { 256, 4, MainDataCopyL0C2GMCacheModeKernel<float> },
+    TestDataCopyParams { 256, 4, MainDataCopyL0C2GMCacheModeWithDisableCacheKernel<float> }
     ));
 
 TEST_P(TestDataCopySuite, TestDataCopyPadCases)

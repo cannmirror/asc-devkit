@@ -1022,7 +1022,8 @@ __aicore__ inline void DataCopyL0C2L1Impl(__cbuf__ T* dst, __cc__ U* src, const 
 }
 
 template <typename T, typename U>
-__aicore__ inline void DataCopyL0C2GMImpl(__gm__ T* dst, __cc__ U* src, const DataCopyCO12DstParams& intriParams)
+__aicore__ inline void DataCopyL0C2GMImpl(__gm__ T* dst, __cc__ U* src, const DataCopyCO12DstParams& intriParams,
+                                          uint8_t cacheMode)
 {
     static_assert((SupportType<Tuple<U, T>, Tuple<float, float>, Tuple<float, half>, Tuple<float, bfloat16_t>,
         Tuple<float, int8_t>, Tuple<float, uint8_t>, Tuple<int32_t, int32_t>, Tuple<int32_t, int16_t>,
@@ -1036,7 +1037,7 @@ __aicore__ inline void DataCopyL0C2GMImpl(__gm__ T* dst, __cc__ U* src, const Da
             dstStride = dstStride * ONE_BLK_SIZE / sizeof(T);
         }
         return copy_matrix_cc_to_gm(dst, src, intriParams.sid, intriParams.nSize, intriParams.mSize,
-            dstStride, intriParams.srcStride, 0, 0, intriParams.unitFlag,
+            dstStride, intriParams.srcStride, cacheMode, 0, intriParams.unitFlag,
             static_cast<uint64_t>(intriParams.quantPre), intriParams.reluPre, intriParams.channelSplit,
             intriParams.nz2ndEn, 0, 0, false, false, 0, false, false, false, false, false, false);
     } else {
