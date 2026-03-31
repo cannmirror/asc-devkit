@@ -47,6 +47,7 @@ struct Mc2CcTilingInner {
     char algConfig[ALG_CONFIG_SIZE];
     uint32_t opType;
     uint32_t reduceType;
+    char reserved2[232];
 };
 } // namespace AscendC
 

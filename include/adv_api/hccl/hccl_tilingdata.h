@@ -52,8 +52,8 @@ END_TILING_DATA_DEF; // 64 bytes
 REGISTER_TILING_DATA_CLASS(Mc2InitTilingOpApi, Mc2InitTiling)
 
 BEGIN_TILING_DATA_DEF(Mc2CcTiling)
-TILING_DATA_FIELD_DEF_ARR(uint8_t, 280, reserved);
-END_TILING_DATA_DEF; // 280 bytes
+TILING_DATA_FIELD_DEF_ARR(uint8_t, 512, reserved);
+END_TILING_DATA_DEF; // 512 bytes
 REGISTER_TILING_DATA_CLASS(Mc2CcTilingOpApi, Mc2CcTiling)
 } // namespace optiling
 #endif
