@@ -76,6 +76,7 @@ PIPE_TYPE_V
 ## 调用示例
 
 ```cpp
+示例一：
 constexpr uint64_t total_length = 256;    // total_length指参与计算的数据长度
 __ubuf__ half src[total_length];
 __ubuf__ half dst[total_length];
@@ -118,9 +119,9 @@ __ubuf__ half* dst_list[16] = {
     (__ubuf__ half*)(dst + 15 * STEP)
 };
 const int32_t VA_REG_ARRAY_LEN = 8;
-uint8_t repeat = 16;
-uint16_t dst_stride = 16;
-uint16_t src_stride = 1;
+uint8_t repeat = 1;
+uint16_t dst_stride = 0;
+uint16_t src_stride = 0;
 
 // asc_set_va_reg接口要求前8个和后8个地址序列与地址寄存器分别关联
 asc_set_va_reg(VA0, dst_list);
@@ -129,4 +130,36 @@ asc_set_va_reg(VA2, src_list);
 asc_set_va_reg(VA3, src_list + VA_REG_ARRAY_LEN);
 
 asc_transto5hd_b16(VA0, VA2, repeat, dst_stride, src_stride);
+
+示例二：
+constexpr uint64_t total_length = 2 * 32 * 16 * 16;    // total_length指参与计算的数据长度
+__ubuf__ half src[total_length];
+__ubuf__ half dst[total_length];
+const uint32_t DST_STEP = 16;
+const uint32_t SRC_STEP = 16 * 16;
+const uint32_t OFFSET = 16 * 16 * 16;
+const int32_t VA_REG_ARRAY_LEN = 8;
+uint8_t repeat = 16;
+uint16_t dst_stride = 16;
+uint16_t src_stride = 1;
+
+// src_list和dst_list定义在循环外部
+__ubuf__ half* src_list[16];
+__ubuf__ half* dst_list[16];
+
+for (int j = 0; j < 4; ++j) {
+    // 在循环内更新地址列表
+    for (int i = 0; i < 16; ++i) {
+        src_list[i] = (__ubuf__ half*)(src + OFFSET * j + i * SRC_STEP);
+        dst_list[i] = (__ubuf__ half*)(dst + OFFSET * j + i * DST_STEP);
+    }
+    
+    // 每次循环都要设置寄存器并执行转换
+    asc_set_va_reg(VA0, dst_list);
+    asc_set_va_reg(VA1, dst_list + VA_REG_ARRAY_LEN);
+    asc_set_va_reg(VA2, src_list);
+    asc_set_va_reg(VA3, src_list + VA_REG_ARRAY_LEN);
+    
+    asc_transto5hd_b16(VA0, VA2, repeat, dst_stride, src_stride);
+}
 ```
