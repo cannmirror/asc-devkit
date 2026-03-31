@@ -243,7 +243,7 @@ if (blockIdxN < remainderN) {
 
 > ⚠️ **注意：dataCopyLen并非越大越好**
 > 
-> 在Case 3的基础上，如果进一步增大dataCopyLen（如从16384增至16512），端到端性能反而略有下降（271.5μs vs 270.76μs，+0.27%）。建议结合数据总量、UB空间、对齐要求综合考虑，确定最优的dataCopyLen值。
+> 在Case 3的基础上，如果进一步增大dataCopyLen（如从16384增至16512），端到端性能基本持平（271.5μs vs 270.76μs，+0.27%）。建议结合数据总量、UB空间、对齐要求综合考虑，确定最优的dataCopyLen值。
 
 ---
 
@@ -281,7 +281,6 @@ for (uint32_t loopIdx = 0; loopIdx < totalBlocks; loopIdx++) {
 
 **内存布局**：
 
-TODO： 待配图
 ```
 UB内存分配（双缓冲）：
 ┌──────────────┐
@@ -434,7 +433,7 @@ static constexpr uint32_t zAddrPongBC = zAddrPingBC + BANK_CONFLICT_DATA_COPY_LE
 优化后的UB Bank内存布局
 <img src="figure/UBBankConflictResolution.png" width="90%">
 
-由于vec指令一拍读取512B的数据（即同时读取8个block的数据），如上图xping、yping的起始地址正好错开了512B，有效消解了ub bank冲突。
+由于vec指令一拍读取256B的数据（即同时读取8个block的数据），如上图xping、yping的起始地址正好错开了256B，有效消解了ub bank冲突。
 
 **Bank Conflict详解**：
 - UB分为多个Bank Group，同时读写同一Bank Group会导致冲突
@@ -525,7 +524,7 @@ cmake -DCASE_TYPE=6 ..   # 编译 case 6（可替换为0-6）
 在本样例根目录下执行如下步骤，编译并执行算子：
 
 - **配置环境变量**  
-  请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
+  请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
     ```bash
     source /μsr/local/Ascend/cann/set_env.sh
