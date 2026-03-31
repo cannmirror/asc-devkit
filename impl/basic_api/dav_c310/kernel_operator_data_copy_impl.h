@@ -1268,7 +1268,8 @@ __aicore__ inline void DataCopyL0C2L1Impl(__cbuf__ T* dst, __cc__ U* src, const 
 }
 
 template <typename T, typename U>
-__aicore__ inline void DataCopyL0C2GMImpl(__gm__ T* dst, __cc__ U* src, const DataCopyCO12DstParams& intriParams)
+__aicore__ inline void DataCopyL0C2GMImpl(__gm__ T* dst, __cc__ U* src, const DataCopyCO12DstParams& intriParams,
+                                          uint8_t cacheMode)
 {
     if ASCEND_IS_AIC {
         static_assert(
@@ -1285,7 +1286,7 @@ __aicore__ inline void DataCopyL0C2GMImpl(__gm__ T* dst, __cc__ U* src, const Da
                 dstStride = dstStride * ONE_BLK_SIZE / sizeof(T);
             }
             return copy_matrix_cc_to_gm(dst, src, intriParams.sid, intriParams.nSize, intriParams.mSize, dstStride,
-                                        intriParams.srcStride, 0, 0, intriParams.unitFlag,
+                                        intriParams.srcStride, cacheMode, 0, intriParams.unitFlag,
                                         static_cast<uint64_t>(intriParams.quantPre), intriParams.reluPre,
                                         intriParams.channelSplit, intriParams.nz2ndEn, 0, 0, false, false, 0, false,
                                         false, false, false, false, false);

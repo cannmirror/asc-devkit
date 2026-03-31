@@ -1029,7 +1029,12 @@ __aicore__ inline void DataCopy(const GlobalTensor<T>& dst, const LocalTensor<U>
         "DataCopy from LocalTensor to GlobalTensor with DataCopyCO12DstParams");
     ASCENDC_REPORT_OVERFLOW_MEM((CheckDataCopyTensorSizeOverflow(dst, src, intriParams)));
     // l0c -> gm
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+    const uint8_t cacheMode = ExtractCacheMode(dst);
+    DataCopyL0C2GMImpl((__gm__ PrimT<T>*)dst.GetPhyAddr(), (__cc__ PrimT<U>*)src.GetPhyAddr(), intriParams, cacheMode);
+#else
     DataCopyL0C2GMImpl((__gm__ PrimT<T>*)dst.GetPhyAddr(), (__cc__ PrimT<U>*)src.GetPhyAddr(), intriParams);
+#endif
 }
 
 #if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201))
