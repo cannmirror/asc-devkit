@@ -22,7 +22,7 @@
 namespace __asc_aicore {
 inline __aicore__ void __assert_fail(const __gm__ char* __assertion, const __gm__ char* __file, unsigned int __line,
     const __gm__ char* __function) {
-    printf_impl("[ASSERT] %s:%u:%s Assertion '%s' \n", __file, __line, __function, __assertion);
+    printf_impl("[ASSERT] %s:%u: %s: Assertion `%s' failed.\n", __file, __line, __function, __assertion);
     trap();
 }
 } // namespace __asc_aicore
