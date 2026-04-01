@@ -156,6 +156,10 @@ struct LocalTensor<TensorAttribute<EngineType, LayoutType>> {
     __aicore__ inline constexpr auto Tile(const Layouts&... layouts) const {
         return MakeTensor(Data(), Layout().Tile(layouts...));
     }
+
+    __aicore__ inline constexpr void SetL2CacheHint(CacheMode mode) {
+        Engine().SetL2CacheHint(mode);
+    }
 };
 
 template <typename T>
@@ -177,16 +181,16 @@ struct HasDereference<T, void_t<decltype(*Std::declval<T&>())>> : Std::true_type
 template <typename T>
 struct MakeLocalTensor {
 template <typename Arg0, typename... Args>
-__aicore__ inline constexpr auto operator()(const Arg0& arg0, const Args&... args) const {
-    if constexpr (HasDereference<Arg0>::value) {
-    using Engine = ViewEngine<Arg0>;
-    if constexpr (sizeof...(Args) == 1 && (is_layout<Args>::value && ...)) {
-        return LocalTensor<TensorAttribute<Engine, Args...>>{Engine{arg0}, args...};
-    } else {
-        return LocalTensor<TensorAttribute<Engine, decltype(MakeLayout(args...))>>{Engine{arg0}, MakeLayout(args...)};
+    __aicore__ inline constexpr auto operator()(const Arg0& arg0, const Args&... args) const {
+        if constexpr (HasDereference<Arg0>::value) {
+            using Engine = ViewEngine<Arg0>;
+            if constexpr (sizeof...(Args) == 1 && (is_layout<Args>::value && ...)) {
+                return LocalTensor<TensorAttribute<Engine, Args...>>{Engine{arg0}, args...};
+            } else {
+                return LocalTensor<TensorAttribute<Engine, decltype(MakeLayout(args...))>>{Engine{arg0}, MakeLayout(args...)};
+            }
+        }
     }
-    }
-}
 };
 
 template <typename Iterator, typename... Args>
