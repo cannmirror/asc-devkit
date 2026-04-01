@@ -34,8 +34,8 @@ using vector_fp8_e8m0_t = vector_f8e8m0;
 using vector_int4x2_t = vector_s4x2;
 using vector_fp4x2_e2m1_t = vector_f4e2m1x2;
 using vector_fp4x2_e1m2_t = vector_f4e1m2x2;
-using vector_store_align = vector_align;
-using vector_load_align = vector_align;
+using vector_store_unalign = vector_align;
+using vector_load_unalign = vector_align;
 using iter_reg = vector_address;
 
 #if (defined(ASCENDC_CPU_DEBUG) && (ASCENDC_CPU_DEBUG == 1))
