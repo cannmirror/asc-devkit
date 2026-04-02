@@ -9,32 +9,32 @@
 */
 
 /* !
- * \file asc_mins_impl.h
+ * \file asc_min_scalar_impl.h
  * \brief
  */
 
 #if !defined(ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #warning                                                                                                               \
-"impl/c_api/instr_impl/npu_arch_3510/vector_compute_impl/asc_mins_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "c_api/asc_simd.h"" and use public functions or variables defined in interface headers files."
+"impl/c_api/instr_impl/npu_arch_3510/vector_compute_impl/asc_min_scalar_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "c_api/asc_simd.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
 
-#ifndef IMPL_C_API_INSTR_VECTOR_COMPUTE_IMPL_NPU_ARCH_3510_ASC_MINS_IMPL_H
-#define IMPL_C_API_INSTR_VECTOR_COMPUTE_IMPL_NPU_ARCH_3510_ASC_MINS_IMPL_H
+#ifndef IMPL_C_API_INSTR_VECTOR_COMPUTE_IMPL_NPU_ARCH_3510_ASC_MIN_SCALAR_IMPL_H
+#define IMPL_C_API_INSTR_VECTOR_COMPUTE_IMPL_NPU_ARCH_3510_ASC_MIN_SCALAR_IMPL_H
 
 #include "instr_impl/npu_arch_3510/utils_impl.h"
 
-//asc_mins int32_t
-__simd_callee__ inline void asc_mins_impl(vector_int32_t& dst, vector_int32_t src, int32_t value, vector_bool mask)
+//asc_min_scalar int32_t
+__simd_callee__ inline void asc_min_scalar_impl(vector_int32_t& dst, vector_int32_t src, int32_t value, vector_bool mask)
 {
     if ASC_IS_AIV{
         vmins(dst, src, value, mask, MODE_ZEROING);
     }
 }
 
-//asc_mins uint32_t
-__simd_callee__ inline void asc_mins_impl(vector_uint32_t& dst, vector_uint32_t src, uint32_t value, vector_bool mask)
+//asc_min_scalar uint32_t
+__simd_callee__ inline void asc_min_scalar_impl(vector_uint32_t& dst, vector_uint32_t src, uint32_t value, vector_bool mask)
 {
     if ASC_IS_AIV{
         vmins(dst, src, value, mask, MODE_ZEROING);
@@ -42,47 +42,47 @@ __simd_callee__ inline void asc_mins_impl(vector_uint32_t& dst, vector_uint32_t 
 }
 
 //asc_min6 int16_t
-__simd_callee__ inline void asc_mins_impl(vector_int16_t& dst, vector_int16_t src, int16_t value, vector_bool mask)
+__simd_callee__ inline void asc_min_scalar_impl(vector_int16_t& dst, vector_int16_t src, int16_t value, vector_bool mask)
 {
     if ASC_IS_AIV{
         vmins(dst, src, value, mask, MODE_ZEROING);
     }
 }
 
-//asc_mins uint16_t
-__simd_callee__ inline void asc_mins_impl(vector_uint16_t& dst, vector_uint16_t src, uint16_t value, vector_bool mask)
+//asc_min_scalar uint16_t
+__simd_callee__ inline void asc_min_scalar_impl(vector_uint16_t& dst, vector_uint16_t src, uint16_t value, vector_bool mask)
 {
     if ASC_IS_AIV{
         vmins(dst, src, value, mask, MODE_ZEROING);
     }
 }
 
-//asc_mins int8_t
-__simd_callee__ inline void asc_mins_impl(vector_int8_t& dst, vector_int8_t src, int8_t value, vector_bool mask)
+//asc_min_scalar int8_t
+__simd_callee__ inline void asc_min_scalar_impl(vector_int8_t& dst, vector_int8_t src, int8_t value, vector_bool mask)
 {
     if ASC_IS_AIV{
         vmins(dst, src, value, mask, MODE_ZEROING);
     }
 }
 
-//asc_mins uint8_t
-__simd_callee__ inline void asc_mins_impl(vector_uint8_t& dst, vector_uint8_t src, uint8_t value, vector_bool mask)
+//asc_min_scalar uint8_t
+__simd_callee__ inline void asc_min_scalar_impl(vector_uint8_t& dst, vector_uint8_t src, uint8_t value, vector_bool mask)
 {
     if ASC_IS_AIV{
         vmins(dst, src, value, mask, MODE_ZEROING);
     }
 }
 
-//asc_mins float
-__simd_callee__ inline void asc_mins_impl(vector_float& dst, vector_float src, float value, vector_bool mask)
+//asc_min_scalar float
+__simd_callee__ inline void asc_min_scalar_impl(vector_float& dst, vector_float src, float value, vector_bool mask)
 {
     if ASC_IS_AIV{
         vmins(dst, src, value, mask, MODE_ZEROING);
     }
 }
 
-//asc_mins half
-__simd_callee__ inline void asc_mins_impl(vector_half& dst, vector_half src, half value, vector_bool mask)
+//asc_min_scalar half
+__simd_callee__ inline void asc_min_scalar_impl(vector_half& dst, vector_half src, half value, vector_bool mask)
 {
     if ASC_IS_AIV{
         vmins(dst, src, value, mask, MODE_ZEROING);

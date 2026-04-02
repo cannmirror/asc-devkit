@@ -1,4 +1,4 @@
-# asc_mins
+# asc_min_scalar
 
 ## 产品支持情况
 
@@ -17,14 +17,14 @@ $$
 ## 函数原型
 
 ```cpp
-__simd_callee__ inline void asc_mins(vector_int32_t& dst, vector_int32_t src, int32_t value, vector_bool mask)
-__simd_callee__ inline void asc_mins(vector_uint32_t& dst, vector_uint32_t src, uint32_t value, vector_bool mask)
-__simd_callee__ inline void asc_mins(vector_int16_t& dst, vector_int16_t src, int16_t value, vector_bool mask)
-__simd_callee__ inline void asc_mins(vector_uint16_t& dst, vector_uint16_t src, uint16_t value, vector_bool mask)
-__simd_callee__ inline void asc_mins(vector_int8_t& dst, vector_int8_t src, int8_t value, vector_bool mask)
-__simd_callee__ inline void asc_mins(vector_uint8_t& dst, vector_uint8_t src, uint8_t value, vector_bool mask)
-__simd_callee__ inline void asc_mins(vector_float& dst, vector_float src, float value, vector_bool mask)
-__simd_callee__ inline void asc_mins(vector_half& dst, vector_half src, half value, vector_bool mask)
+__simd_callee__ inline void asc_min_scalar(vector_int32_t& dst, vector_int32_t src, int32_t value, vector_bool mask)
+__simd_callee__ inline void asc_min_scalar(vector_uint32_t& dst, vector_uint32_t src, uint32_t value, vector_bool mask)
+__simd_callee__ inline void asc_min_scalar(vector_int16_t& dst, vector_int16_t src, int16_t value, vector_bool mask)
+__simd_callee__ inline void asc_min_scalar(vector_uint16_t& dst, vector_uint16_t src, uint16_t value, vector_bool mask)
+__simd_callee__ inline void asc_min_scalar(vector_int8_t& dst, vector_int8_t src, int8_t value, vector_bool mask)
+__simd_callee__ inline void asc_min_scalar(vector_uint8_t& dst, vector_uint8_t src, uint8_t value, vector_bool mask)
+__simd_callee__ inline void asc_min_scalar(vector_float& dst, vector_float src, float value, vector_bool mask)
+__simd_callee__ inline void asc_min_scalar(vector_half& dst, vector_half src, half value, vector_bool mask)
 ```
 
 ## 参数说明
@@ -58,5 +58,5 @@ vector_half src;
 half value;
 vector_bool mask = asc_create_mask_b16(PAT_ALL);
 asc_loadalign(src, src_addr); // src_addr是外部输入的UB内存空间地址。
-asc_mins(dst, src, value, mask);
+asc_min_scalar(dst, src, value, mask);
 ```
