@@ -106,27 +106,27 @@ __aicore__ inline void CheckFixpipeQuantPreWithWorkspaceCommon(const QuantMode_t
 template <typename T, typename U>
 __aicore__ inline void CheckFixpipeQuantPreCommon(const QuantMode_t quantPre, const __gm__ char* apiName)
 {
-    if constexpr (IsSameType<U, float>::value && SupportType<T, int8_t, uint8_t>()) {
+    if constexpr (IsSameType<PrimT<U>, float>::value && SupportType<PrimT<T>, int8_t, uint8_t>()) {
         ASCENDC_DEBUG_ASSERT((quantPre == QuantMode_t::QF322B8_PRE ||
             quantPre == QuantMode_t::VQF322B8_PRE), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
             "Failed to check quantPre value in %s, when src is float and dst is int8_t / uint8_t, supported values "
             "are QF322B8_PRE and VQF322B8_PRE.\n", apiName));
-    } else if constexpr (IsSameType<U, float>::value && IsSameType<T, half>::value) {
+    } else if constexpr (IsSameType<PrimT<U>, float>::value && IsSameType<PrimT<T>, half>::value) {
         ASCENDC_DEBUG_ASSERT((quantPre == QuantMode_t::F322F16), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
             "Failed to check quantPre value in %s, when src is float and dst is half, supported value is F322F16.\n",
             apiName));
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
-    } else if constexpr (IsSameType<U, float>::value && IsSameType<T, bfloat16_t>::value) {
+    } else if constexpr (IsSameType<PrimT<U>, float>::value && IsSameType<PrimT<T>, bfloat16_t>::value) {
         ASCENDC_DEBUG_ASSERT((quantPre == QuantMode_t::F322BF16), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
             "Failed to check quantPre value in %s, when src is float and dst is bfloat16_t, supported value is "
             "F322BF16.\n", apiName));
 #endif
-    } else if constexpr (IsSameType<U, int32_t>::value && SupportType<T, int8_t, uint8_t>()) {
+    } else if constexpr (IsSameType<PrimT<U>, int32_t>::value && SupportType<PrimT<T>, int8_t, uint8_t>()) {
         ASCENDC_DEBUG_ASSERT((quantPre == QuantMode_t::REQ8 ||
             quantPre == QuantMode_t::VREQ8), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
             "Failed to check quantPre value in %s, when src is int32_t and dst is int8_t / uint8_t, supported values "
             "are REQ8 and VREQ8.\n", apiName));
-    } else if constexpr (IsSameType<U, int32_t>::value && IsSameType<T, half>::value) {
+    } else if constexpr (IsSameType<PrimT<U>, int32_t>::value && IsSameType<PrimT<T>, half>::value) {
         ASCENDC_DEBUG_ASSERT((quantPre == QuantMode_t::DEQF16 ||
             quantPre == QuantMode_t::VDEQF16), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
             "Failed to check quantPre value in %s, when src is int32_t and dst is half, supported values are DEQF16 "
@@ -142,9 +142,9 @@ __aicore__ inline void CheckFixpipeParamsV220Common(const FixpipeParamsV220& int
             intriParams.nSize % 8 == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check nSize value in %s, "
             "when isChannelSplit is true, its valid range is 1 ~ 4095 and must be divisible by 8, current value "
             "is %u.\n", apiName, intriParams.nSize));
-        ASCENDC_DEBUG_ASSERT((IsSameType<T, float>::value && IsSameType<U, float>::value),
+        ASCENDC_DEBUG_ASSERT((IsSameType<PrimT<T>, float>::value),
             KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check isChannelSplit value in %s, isChannelSplit can be "
-            "enabled only when src and dst are both float.\n", apiName));
+            "enabled only when dst are float.\n", apiName));
     } else if constexpr (config.format == CO2Layout::ROW_MAJOR) {
         CheckValueRange<uint16_t>(intriParams.nSize, 1, UINT12_MAX, "nSize", apiName);
     } else {
@@ -191,7 +191,7 @@ __aicore__ inline void CheckFixpipeTensor(const LocalTensor<T>& dst, const Local
     const uint32_t L0C_SRC_ALIGN = 16 * sizeof(float);
     CheckTensorAlignment(src, L0C_SRC_ALIGN, "src", apiName);
     CheckTensorAlignment(dst, ONE_BLK_SIZE, "dst", apiName);
-    CheckTensorPhyPosition<Hardware::L1, Hardware::UB>(dst, "dst", "L1 / UB", apiName);
+    CheckTensorPhyPosition<Hardware::L1, Hardware::UB>(dst, "dst", "A1", apiName);
 }
 
 template <typename T, typename U, const FixpipeConfig& config, typename S>

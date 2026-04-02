@@ -93,6 +93,39 @@ void FixpipeOpTest2(std::vector<TPosition>& tensorPos)
     delete[] data1;
 }
 
+void FixpipeChannelSplitDstTypeTest()
+{
+    int32_t dataSize = 128;
+    int32_t* data0 = new int32_t[128 * 1024];
+    int32_t* data1 = new int32_t[128 * 1024];
+
+    TBuffAddr addr0;
+    addr0.logicPos = static_cast<uint8_t>(TPosition::CO1);
+    addr0.bufferHandle = nullptr;
+    addr0.dataLen = 32 * 1024;
+    addr0.bufferAddr = 0;
+    addr0.absAddr = GetBaseAddrCpu(static_cast<int8_t>(TPosition::CO1));
+
+    LocalTensor<float> srcLocal(addr0);
+    GlobalTensor<half> dstGlobal;
+    dstGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ half*>(data1), dataSize);
+
+    FixpipeParamsV220 fixpipeParams;
+    fixpipeParams.nSize = 16;
+    fixpipeParams.mSize = 16;
+    fixpipeParams.srcStride = 16;
+    fixpipeParams.dstStride = 16;
+    fixpipeParams.ndNum = 1;
+    fixpipeParams.srcNdStride = 0;
+    fixpipeParams.dstNdStride = 0;
+    fixpipeParams.isChannelSplit = true;
+
+    Fixpipe<half, float>(dstGlobal, srcLocal, fixpipeParams);
+
+    delete[] data0;
+    delete[] data1;
+}
+
 /******************************** LoadData ********************************/
 template <typename T>
 using LodaData2dOpPtr = void(*)(const LocalTensor<T>& dstLocal,
@@ -325,7 +358,7 @@ INSTANTIATE_TEST_CASE_P(TEST_CUBE_OP, CubeOpTestsuite, ::testing::Values(
     CubeOpTestParams{FixpipeOpTest<half, float, Fixpipe<half, float>>, "Fixpipe", {TPosition::VECIN}, "src", "VECIN", "CO1" },
     CubeOpTestParams{FixpipeOpTest2<half, float, Fixpipe<half, float>>, "Fixpipe", {TPosition::VECIN, TPosition::VECIN}, "src", "VECIN", "CO1" },
     // Fixpipe的dst位置,与se确认为A1
-    CubeOpTestParams{FixpipeOpTest2<half, float, Fixpipe<half, float>>, "Fixpipe", {TPosition::CO2, TPosition::CO1}, "dst", "CO2", "L1 / UB" },
+    CubeOpTestParams{FixpipeOpTest2<half, float, Fixpipe<half, float>>, "Fixpipe", {TPosition::CO2, TPosition::CO1}, "dst", "CO2", "A1" },
     // LoadData
     CubeOpTestParams{LoadData2dOpTest<half, LoadData>, "LoadData", {TPosition::CO2, TPosition::CO1}, "src", "CO1", "A1 / B1 / GM" },
     CubeOpTestParams{LoadData2dOpTest<half, LoadData>, "LoadData", {TPosition::CO2, TPosition::A1}, "dst", "CO2", "A2 / B2" },
@@ -368,6 +401,33 @@ TEST_P(CubeOpTestsuite, CubeOpTestCase)
     resultFile.close();
     bool findRes = (resultString.find(goldenStr) != std::string::npos) || (resultString.find(goldenStr2) != std::string::npos);
     EXPECT_TRUE(findRes);
+    EXPECT_EQ(remove(fileName.c_str()), 0);
+    count++;
+}
+
+TEST_F(TensorScopeTest, FixpipeChannelSplitOnlySupportsFloatDst)
+{
+    static int32_t count = 0;
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    std::string fileName = "print_ut_aic_fixpipe_channel_split_" + std::to_string(getpid()) + "_" +
+        std::to_string(count) + ".txt";
+    freopen(fileName.c_str(), "w", stdout);
+
+    FixpipeChannelSplitDstTypeTest();
+
+    fclose(stdout);
+    freopen("/dev/tty", "w", stdout);
+    freopen("/dev/tty", "r", stdin);
+
+    std::ifstream resultFile(fileName, std::ios::in);
+    std::stringstream streambuffer;
+    streambuffer << resultFile.rdbuf();
+    std::string resultString(streambuffer.str());
+    std::string goldenStr =
+        "Failed to check isChannelSplit value in Fixpipe, isChannelSplit can be enabled only when dst are float.";
+    resultFile.close();
+
+    EXPECT_TRUE(resultString.find(goldenStr) != std::string::npos);
     EXPECT_EQ(remove(fileName.c_str()), 0);
     count++;
 }
