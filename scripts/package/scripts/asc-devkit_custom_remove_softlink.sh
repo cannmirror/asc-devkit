@@ -67,8 +67,6 @@ do_remove_stub_softlink() {
     if [ -d "$install_path/$latest_dir/tools/ascendc_tools" ]; then
         if [ -z "$(ls -A "$install_path/$latest_dir/tools/ascendc_tools")" ]; then
             rm -f "$install_path/$latest_dir/tools/ascendc_tools/"
-        else
-            rm -f "$install_path/$latest_dir/tools/ascendc_tools/ascendc_parse_dumpinfo.py"
         fi
     fi
 
