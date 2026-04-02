@@ -53,3 +53,40 @@ TEST_F(TestVectorComputeUpdateMask, c_api_update_mask_b32_Succ)
             .will(invoke(plt_b32_Stub));
     asc_update_mask_b32(scalar);
 }
+
+class TestVectorComputeUpdateMaskCube : public testing::Test {
+protected:
+    void SetUp() {
+        g_coreType = C_API_AIC_TYPE;
+    }
+    void TearDown() {
+        g_coreType = C_API_AIV_TYPE;
+    }
+};
+
+TEST_F(TestVectorComputeUpdateMaskCube, c_api_update_mask_b8_Succ)
+{
+    uint32_t scalar;
+    MOCKER_CPP(plt_b8, vector_bool(uint32_t&, Literal)) 
+            .times(0)
+            .will(invoke(plt_b8_Stub));
+    asc_update_mask_b8(scalar);
+}
+
+TEST_F(TestVectorComputeUpdateMaskCube, c_api_update_mask_b16_Succ)
+{
+    uint32_t scalar;
+    MOCKER_CPP(plt_b16, vector_bool(uint32_t&, Literal)) 
+            .times(0)
+            .will(invoke(plt_b16_Stub));
+    asc_update_mask_b16(scalar);
+}
+
+TEST_F(TestVectorComputeUpdateMaskCube, c_api_update_mask_b32_Succ)
+{
+    uint32_t scalar;
+    MOCKER_CPP(plt_b32, vector_bool(uint32_t&, Literal)) 
+            .times(0)
+            .will(invoke(plt_b32_Stub));
+    asc_update_mask_b32(scalar);
+}
