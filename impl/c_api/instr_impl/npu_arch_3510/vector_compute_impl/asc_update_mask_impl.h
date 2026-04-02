@@ -30,6 +30,7 @@ __simd_callee__ inline vector_bool asc_update_mask_b8_impl(uint32_t& value)
     if ASC_IS_AIV {
         return plt_b8(value, POST_UPDATE);
     }
+    return vector_bool{};
 }
 
 __simd_callee__ inline vector_bool asc_update_mask_b16_impl(uint32_t& value)
@@ -37,6 +38,7 @@ __simd_callee__ inline vector_bool asc_update_mask_b16_impl(uint32_t& value)
     if ASC_IS_AIV {
         return plt_b16(value, POST_UPDATE);
     }
+    return vector_bool{};
 }
 
 __simd_callee__ inline vector_bool asc_update_mask_b32_impl(uint32_t& value)
@@ -44,6 +46,7 @@ __simd_callee__ inline vector_bool asc_update_mask_b32_impl(uint32_t& value)
     if ASC_IS_AIV {
         return plt_b32(value, POST_UPDATE);
     }
+    return vector_bool{};
 }
 #endif
 
