@@ -219,6 +219,8 @@ public:
                           Std::tuple<__cbuf__ int16_t, __gm__ int16_t>, Std::tuple<__cbuf__ uint16_t, __gm__ uint16_t>,
                           Std::tuple<__cbuf__ int32_t, __gm__ int32_t>, Std::tuple<__cbuf__ uint32_t, __gm__ uint32_t>,
                           Std::tuple<__cbuf__ int64_t, __gm__ int64_t>, Std::tuple<__cbuf__ uint64_t, __gm__ uint64_t>,
+                          Std::tuple<__cbuf__ fp4x2_e1m2_t, __gm__ fp4x2_e1m2_t>,
+                          Std::tuple<__cbuf__ fp4x2_e2m1_t, __gm__ fp4x2_e2m1_t>,
                           Std::tuple<__cbuf__ fp8_e5m2_t, __gm__ fp8_e5m2_t>,
                           Std::tuple<__cbuf__ fp8_e4m3fn_t, __gm__ fp8_e4m3fn_t>,
                           Std::tuple<__cbuf__ hifloat8_t, __gm__ hifloat8_t>>,

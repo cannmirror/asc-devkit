@@ -50,7 +50,10 @@ private:
         auto srcShapeRows = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
         auto srcShapeCols = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
         uint32_t copyLen = srcShapeRows * srcShapeCols * sizeof(type);
-
+        if constexpr (is_b4_type<type>) {
+            // move fp4 as b8, need to be divided by 2
+            copyLen = copyLen >> 1;
+        }
         uint8_t cacheMode = GetCacheModeFromTensor(src);
 
         // compact mode, dst_stride equals burst_len, padding cnt is zero

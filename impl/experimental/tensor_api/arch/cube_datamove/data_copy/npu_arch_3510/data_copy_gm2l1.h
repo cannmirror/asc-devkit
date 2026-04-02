@@ -30,6 +30,7 @@
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_gm2l1/nd2nz.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_gm2l1/nd2zn.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_gm2l1/nz2nz.h"
+#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_gm2l1/zn2zn.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_gm2l1/nd2zz.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_gm2l1/dn2zz.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_gm2l1/zz2zz.h"
@@ -75,6 +76,9 @@ private:
         } else if constexpr (IsNZFormat<U>::value && IsNZFormat<T>::value) {
             // Nz2Nz
             CopyGmToCbufAlignV2NZ::Run<trait, T, U>(dst, src);
+        } else if constexpr (IsZNFormat<U>::value && IsZNFormat<T>::value) {
+            // Zn2Zn
+            CopyGmToCbufAlignV2ZN::Run<trait, T, U>(dst, src);
         } else if constexpr (CheckArrangement<U>::IsScaleType()) {
             // ScaleA/ScaleB
             ExecuteScaleDataCopy<trait, T, U>(dst, src);

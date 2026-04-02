@@ -16,6 +16,7 @@ DataCopyGM2L1提供数据搬运功能，该接口支持Global Memory到L1 Buffer
 - DN2NZ：DN格式到NZ格式的数据搬运
 - DN2ZN：DN格式到ZN格式的数据搬运
 - NZ2NZ：NZ格式到NZ格式的数据搬运
+- ZN2ZN：ZN格式到ZN格式的数据搬运
 - Scale相关格式转换：ScaleAND2ZZ、ScaleADN2ZZ、ZZ2ZZ、ScaleBND2NN、ScaleBDN2NN、NN2NN
 
 ### 不支持坐标偏移的接口
@@ -80,12 +81,13 @@ DataCopyGM2L1提供数据搬运功能，该接口支持Global Memory到L1 Buffer
 
 | 源操作数数据格式 | 目的操作数数据格式 | 源操作数/目的操作数数据类型 |
 | -- | -- | -- |
-| ND | ND | int8_t/uint8_t/hifloat8_t/fp8_e5m2_t/fp8_e4m3fn_t/int16_t/uint16_t/half/bfloat16_t/int32_t/uint32_t/float/int64_t/uint64_t |
+| ND | ND | fp4x2_e2m1_t/fp4x2_e1m2_t/int8_t/uint8_t/hifloat8_t/fp8_e5m2_t/fp8_e4m3fn_t/int16_t/uint16_t/half/bfloat16_t/int32_t/uint32_t/float/int64_t/uint64_t |
 | ND | NZ | fp4x2_e2m1_t/fp4x2_e1m2_t/int8_t/uint8_t/hifloat8_t/fp8_e5m2_t/fp8_e4m3fn_t/int16_t/uint16_t/half/bfloat16_t/int32_t/uint32_t/float |
 | ND | ZN | int8_t/uint8_t/hifloat8_t/fp8_e5m2_t/fp8_e4m3fn_t/int16_t/uint16_t/half/bfloat16_t/int32_t/uint32_t/float |
 | DN | NZ | int8_t/uint8_t/hifloat8_t/fp8_e5m2_t/fp8_e4m3fn_t/int16_t/uint16_t/half/bfloat16_t/int32_t/uint32_t/float |
 | DN | ZN | fp4x2_e2m1_t/fp4x2_e1m2_t/int8_t/uint8_t/hifloat8_t/fp8_e5m2_t/fp8_e4m3fn_t/int16_t/uint16_t/half/bfloat16_t/int32_t/uint32_t/float |
-| NZ | NZ | int8_t/uint8_t/hifloat8_t/fp8_e5m2_t/fp8_e4m3fn_t/int16_t/uint16_t/half/bfloat16_t/int32_t/uint32_t/float/int64_t/uint64_t |
+| NZ | NZ | fp4x2_e2m1_t/fp4x2_e1m2_t/int8_t/uint8_t/hifloat8_t/fp8_e5m2_t/fp8_e4m3fn_t/int16_t/uint16_t/half/bfloat16_t/int32_t/uint32_t/float/int64_t/uint64_t |
+| ZN | ZN | fp4x2_e2m1_t/fp4x2_e1m2_t/int8_t/uint8_t/hifloat8_t/fp8_e5m2_t/fp8_e4m3fn_t/int16_t/uint16_t/half/bfloat16_t/int32_t/uint32_t/float/int64_t/uint64_t |
 | ScaleAND | ZZ | fp8_e8m0_t |
 | ScaleADN | ZZ | fp8_e8m0_t |
 | ZZ | ZZ | fp8_e8m0_t |
@@ -107,10 +109,12 @@ DataCopyGM2L1提供数据搬运功能，该接口支持Global Memory到L1 Buffer
 - 性能约束：无约束。
 - 异常和边界值处理：无约束。
 - Tensor Layout相关约束：
-  - Shape、Stride只支持四维，针对不同的物理存储位置，四个维度的配置均有不同的约束，部分维度为固定值，不可配置。详见[层次化表达法](../Layout和层次化表述法.md)。
+  - Shape、Stride只支持四维，针对不同的数据格式和数据类型，四个维度的配置均有不同的约束，部分维度为固定值，不可配置。详见[层次化表达法](../Layout和层次化表述法.md)。
   - Shape、Stride具体维度的数据，仅支持基础整数类型和Std::Int类型。
   - 支持坐标偏移的接口中，coord需要满足对应源操作数分形的对齐要求。
-  - ND2ND场景只支持一维数据格式，Layout的Shape中的ShapeRow1或ShapeColumn1需要设置为Std::Int<1>{}。
+  - ND2ND场景：
+    - 一维数据格式的场景下，源操作数Shape中的ShapeRow1或ShapeColumn1需要设置为Std::Int<1>{}。
+    - 二维数据格式的场景下，当目的操作数列数大于源操作数列数时，目的操作数列步长需满足32字节对齐；当目的操作数列数等于源操作数列数时无此约束。使用支持坐标偏移的接口时，源操作数列数按偏移后计算。
 
 ## 调用示例
 
