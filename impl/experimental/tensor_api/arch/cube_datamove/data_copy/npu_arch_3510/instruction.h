@@ -177,6 +177,29 @@ private:
         }
     }
 };
+
+class CopyCbufToUbufInstr {
+public:
+    template <typename T, typename U, typename... Params>
+    __aicore__ inline static void DataCopy(const T& dst, const U& src, const Params&... params)
+    { CopyCbufToUbuf(dst.Data().Get(), src.Data().Get(), params...); }
+
+private:
+    template <typename T>
+    __aicore__ inline static void CopyCbufToUbuf(__ubuf__ T* dst, __cbuf__ T* src, const uint16_t blockCount,
+                                                 const uint16_t blockLen, const uint16_t srcStride,
+                                                 const uint16_t dstStride)
+    {
+        if ASCEND_IS_AIV {
+            return;
+        }
+
+        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
+            copy_cbuf_to_ubuf((__ubuf__ void*)dst, (__cbuf__ void*)src, 0, blockCount, blockLen, srcStride, dstStride);
+        }
+    }
+};
+
 } // namespace Te
 } // namespace AscendC
 

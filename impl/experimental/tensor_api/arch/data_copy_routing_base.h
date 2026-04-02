@@ -10,23 +10,38 @@
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #warning                                                                                                               \
-    "impl/tensor_api/atom/cube_datamove/cube_datamove_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+    "impl/tensor_api/arch/data_copy_routing_base.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
 
 /*!
-* \file cube_datamove_impl.h
-* \brief
-*/
-#ifndef IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_CUBE_DATAMOVE_IMPL_H
-#define IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_CUBE_DATAMOVE_IMPL_H
+ * \file data_copy_routing_base.h
+ * \brief
+ */
+#ifndef IMPL_TENSOR_API_ARCH_DATA_COPY_ROUTING_BASE_H
+#define IMPL_TENSOR_API_ARCH_DATA_COPY_ROUTING_BASE_H
 
-#include "impl/experimental/tensor_api/atom/cube_datamove/copy_datacopy.h"
-#include "impl/experimental/tensor_api/atom/cube_datamove/copy_l0c2out.h"
-#include "impl/experimental/tensor_api/atom/cube_datamove/copy_l12l0.h"
+#include "include/experimental/tensor_api/utils/utils.h"
 
-#endif // IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_CUBE_DATAMOVE_IMPL_H
+namespace AscendC {
+namespace Te {
+
+class DataCopyIgnore {
+public:
+    template <const DataCopyTrait& trait, typename ...Args>
+    __aicore__ inline void Run(const Args&... args) {}
+};
+
+template <Hardware dstTPos, Hardware srcTpos, uint32_t Version>
+struct DataCopyTensor2Tensor {
+    using type = DataCopyIgnore;
+};
+
+} // namespace Te
+} // namespace AscendC
+
+#endif // IMPL_TENSOR_API_ARCH_DATA_COPY_ROUTING_BASE_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

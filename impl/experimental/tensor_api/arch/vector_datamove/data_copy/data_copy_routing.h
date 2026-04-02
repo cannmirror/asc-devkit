@@ -8,56 +8,53 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
+
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #warning                                                                                                               \
-    "impl/tensor_api/arch/cube_datamove/data_copy/data_copy_routing.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+    "impl/tensor_api/arch/vector_datamove/data_copy/data_copy_routing.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
+
 
 /*!
  * \file data_copy_routing.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_DATA_COPY_ROUTING_H
-#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_DATA_COPY_ROUTING_H
+#ifndef IMPL_TENSOR_API_ARCH_VECTOR_DATAMOVE_DATA_COPY_DATA_COPY_ROUTING_H
+#define IMPL_TENSOR_API_ARCH_VECTOR_DATAMOVE_DATA_COPY_DATA_COPY_ROUTING_H
 
 #include "impl/experimental/tensor_api/arch/data_copy_routing_base.h"
 
-#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_gm2l1.h"
-#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_l12bt.h"
-#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_l12fb.h"
-#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_l12ub.h"
+#include "impl/experimental/tensor_api/arch/vector_datamove/data_copy/npu_arch_3510/data_copy_gm2ub.h"
+#include "impl/experimental/tensor_api/arch/vector_datamove/data_copy/npu_arch_3510/data_copy_ub2gm.h"
+
+#include "impl/experimental/tensor_api/arch/vector_datamove/data_copy/npu_arch_3510/data_copy_ub2l1.h"
+
 
 namespace AscendC {
 namespace Te {
 
-
 template <>
-struct DataCopyTensor2Tensor<Hardware::L1, Hardware::GM, ArchVersion::V3510> {
-    using type = DataCopyGM2L13510;
+struct DataCopyTensor2Tensor<Hardware::UB, Hardware::GM, ArchVersion::V3510> {
+    using type = DataCopyGM2UB3510;
 };
 
 template <>
-struct DataCopyTensor2Tensor<Hardware::BIAS, Hardware::L1, ArchVersion::V3510> {
-    using type = DataCopyL12BT3510;
+struct DataCopyTensor2Tensor<Hardware::GM, Hardware::UB, ArchVersion::V3510> {
+    using type = DataCopyUB2GM3510;
 };
 
 template <>
-struct DataCopyTensor2Tensor<Hardware::FIXBUF, Hardware::L1, ArchVersion::V3510> {
-    using type = DataCopyL12FB3510;
+struct DataCopyTensor2Tensor<Hardware::L1, Hardware::UB, ArchVersion::V3510> {
+    using type = DataCopyUB2L13510;
 };
 
-
-template <>
-struct DataCopyTensor2Tensor<Hardware::UB, Hardware::L1, ArchVersion::V3510> {
-    using type = DataCopyL12UB3510;
-};
 
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_DATA_COPY_ROUTING_H
+#endif // IMPL_TENSOR_API_ARCH_VECTOR_DATAMOVE_DATA_COPY_DATA_COPY_ROUTING_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

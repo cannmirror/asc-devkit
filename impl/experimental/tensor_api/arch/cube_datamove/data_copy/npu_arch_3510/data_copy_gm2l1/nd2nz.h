@@ -63,7 +63,7 @@ private:
             dValue = dValue >> 1;
             srcRowStride = srcRowStride >> 1;
         }
-
+        
         uint64_t srcNdMatrixStride = 0;
         uint64_t srcDValue = srcRowStride;
         uint16_t dstNzC0Stride = dstColumnStride / C0_ELEMENT<type>;

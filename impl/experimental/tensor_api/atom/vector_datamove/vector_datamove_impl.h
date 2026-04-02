@@ -10,23 +10,21 @@
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #warning                                                                                                               \
-    "impl/tensor_api/atom/cube_datamove/cube_datamove_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+    "impl/tensor_api/atom/vector_datamove/vector_datamove_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
 
 /*!
-* \file cube_datamove_impl.h
+* \file vector_datamove_impl.h
 * \brief
 */
-#ifndef IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_CUBE_DATAMOVE_IMPL_H
-#define IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_CUBE_DATAMOVE_IMPL_H
+#ifndef IMPL_TENSOR_API_ATOM_VECTOR_DATAMOVE_VECTOR_DATAMOVE_IMPL_H
+#define IMPL_TENSOR_API_ATOM_VECTOR_DATAMOVE_VECTOR_DATAMOVE_IMPL_H
 
-#include "impl/experimental/tensor_api/atom/cube_datamove/copy_datacopy.h"
-#include "impl/experimental/tensor_api/atom/cube_datamove/copy_l0c2out.h"
-#include "impl/experimental/tensor_api/atom/cube_datamove/copy_l12l0.h"
+#include "impl/experimental/tensor_api/atom/vector_datamove/copy_from_or_to_ub.h"
 
-#endif // IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_CUBE_DATAMOVE_IMPL_H
+#endif // IMPL_TENSOR_API_ATOM_VECTOR_DATAMOVE_VECTOR_DATAMOVE_IMPL_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

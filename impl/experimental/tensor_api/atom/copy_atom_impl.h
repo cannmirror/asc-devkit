@@ -23,6 +23,7 @@
 #define IMPL_TENSOR_API_ATOM_COPY_ATOM_IMPL_H
 
 #include "impl/experimental/tensor_api/atom/cube_datamove/cube_datamove_impl.h"
+#include "impl/experimental/tensor_api/atom/vector_datamove/vector_datamove_impl.h"
 
 namespace AscendC {
 namespace Te {
