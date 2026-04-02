@@ -18,23 +18,29 @@ Fixpipe能够在矩阵计算完成后对计算结果进行处理，并通过PIPE
 
 ## 函数原型
 
-```cpp
-// 通路L0C->GM/UB, 不使能量化的整块搬运功能
-template <const FixpipeTrait& trait = DEFAULT_FIXPIPE_TRAIT, typename T, typename U>
-__aicore__ inline void Fixpipe(const T& dst, const U& src, const FixpipeParams& params = FixpipeParams{})
+- 通路L0C->GM/UB, 不使能量化的不支持坐标偏移的接口
+  ```cpp
+  template <const FixpipeTrait& trait = DEFAULT_FIXPIPE_TRAIT, typename T, typename U>
+  __aicore__ inline void Fixpipe(const T& dst, const U& src, const FixpipeParams& params = FixpipeParams{})
+  ```
 
-// 通路L0C->GM/UB, 使能量化功能的整块搬运功能
-template <const FixpipeTrait& trait = DEFAULT_FIXPIPE_TRAIT, typename T, typename U, typename S>
-__aicore__ inline void Fixpipe(const T& dst, const U& src, const S& quant, const FixpipeParams& params = FixpipeParams{});
+- 通路L0C->GM/UB, 使能量化功能的不支持坐标偏移的接口
+  ```cpp
+  template <const FixpipeTrait& trait = DEFAULT_FIXPIPE_TRAIT, typename T, typename U, typename S>
+  __aicore__ inline void Fixpipe(const T& dst, const U& src, const S& quant, const FixpipeParams& params = FixpipeParams{})
+  ```
 
-// 通路L0C->GM/UB, 不使能量化功能的带坐标偏移的搬运功能
-template <const FixpipeTrait& trait = DEFAULT_FIXPIPE_TRAIT, typename T, typename U, typename Coord>
-__aicore__ inline void Fixpipe(const T& dst, const U& src, const Coord& coord, const FixpipeParams& params = FixpipeParams{});
+- 通路L0C->GM/UB, 不使能量化功能的支持坐标偏移的接口
+  ```cpp
+  template <const FixpipeTrait& trait = DEFAULT_FIXPIPE_TRAIT, typename T, typename U, typename Coord>
+  __aicore__ inline void Fixpipe(const T& dst, const U& src, const Coord& coord, const FixpipeParams& params = FixpipeParams{})
+  ```
 
-// 通路L0C->GM/UB, 使能量化功能的带坐标偏移的搬运功能
-template <const FixpipeTrait& trait = DEFAULT_FIXPIPE_TRAIT, typename T, typename U, typename S, typename Coord>
-__aicore__ inline void Fixpipe(const T& dst, const U& src, const S& quant, const Coord& coord, const FixpipeParams& params = FixpipeParams{});
-```
+- 通路L0C->GM/UB, 使能量化功能的支持坐标偏移的搬运接口
+  ```cpp
+  template <const FixpipeTrait& trait = DEFAULT_FIXPIPE_TRAIT, typename T, typename U, typename S, typename Coord>
+  __aicore__ inline void Fixpipe(const T& dst, const U& src, const S& quant, const Coord& coord, const FixpipeParams& params = FixpipeParams{})
+  ```
 
 ## 参数说明
 
@@ -42,11 +48,11 @@ __aicore__ inline void Fixpipe(const T& dst, const U& src, const S& quant, const
 
 | 参数名            | 描述                                                         |
 | ----------------- | ------------------------------------------------------------ |
+| FixpipeTrait | Fixpipe相关配置参数，类型为FixpipeTrait：<br/>struct FixpipeTrait {<br/>    &emsp;RoundMode roundMode = RoundMode::DEFAULT;<br/>    &emsp;bool enableRelu = false;<br/>    &emsp;bool enableChannelSplit = false;<br/>    &emsp;DualDstMode dualDstCtl = DualDstMode::DUAL_DST_DISABLE;<br/>};<br/>默认值为constexpr FixpipeTrait DEFAULT_FIXPIPE_TRAIT; |
 | T                 | 目的操作数的数据类型，通过MakeTensor构造的[GlobalTensor/LocalTensor类型](../struct/tensor/LocalTensor.md)，存储位置支持GM和UB，数据格式支持ND、DN和NZ。 |
 | U                 | 源操作数的数据类型，通过MakeTensor构造的LocalTensor类型，存储位置仅支持L0C，数据格式仅支持NZ。  |
 | S                 | 量化参数的数据类型，可以是Scalar或者是通过MakeTensor构造的LocalTensor类型，存储位置仅支持L1，数据格式仅支持ND。量化系数数据类型为uint64_t。 |
 | Coord             | 坐标偏移的数据类型，通过MakeCoord构造的[Coord类型](../struct/coord/Coord.md)。 |
-| FixpipeTrait | Fixpipe相关配置参数，类型为FixpipeTrait：<br/>struct FixpipeTrait {<br/>    &emsp;RoundMode roundMode = RoundMode::DEFAULT;<br/>    &emsp;bool enableRelu = false;<br/>    &emsp;bool enableChannelSplit = false;<br/>    &emsp;DualDstMode dualDstCtl = DualDstMode::DUAL_DST_DISABLE;<br/>};<br/>默认值为constexpr FixpipeTrait DEFAULT_FIXPIPE_TRAIT; |
 
 
 **表 2**  FixpipeTrait参数说明
@@ -112,7 +118,7 @@ __aicore__ inline void Fixpipe(const T& dst, const U& src, const S& quant, const
 -   异常和边界值处理：float量化成float场景，精度无法达到双万分之一，可以达到双千分之一。
 -   Tensor Layout相关约束：
     -   Shape、Stride只支持四维，针对不同的物理存储位置，四个维度的配置均有不同的约束，部分维度为固定值，不可配置。详见[层次化表达法](../Layout和层次化表述法.md)。
-    -   Shape、Stride具体维度的数据，仅支持基础整数类型和Std::Int类型。
+    -   Shape、Stride具体维度的数据，仅支持size_t和Std::Int类型。
     -   Fixpipe Vector量化场景要求quant参数数据格式是ND，存储位置是L1，地址要求32字节对齐。
 
 ## 流水类型
@@ -153,7 +159,7 @@ constexpr int32_t  L0C_MAX = 128*128;
 __cc__ SrcT l0CAddr[L0C_MAX];
 auto l0CPtr = MakeL0CmemPtr(l0CAddr);
 auto l0CTensor = MakeTensor(l0CPtr, l0CLayout);
-// 下面接口为3种调用方式的示例，L0C->UB通路类似，需将globalC替换为对应的UB上的Tensor，CopyL0C2GM改为CopyL0C2UB
+// 下面为接口3种调用方式的示例，L0C->UB通路类似，需将globalC替换为对应的UB上的Tensor，CopyL0C2GM改为CopyL0C2UB
 // 调用方式1
 Copy(CopyAtom<CopyTraits<CopyL0C2GM, FixpipeTraitDefault>>{}, globalC, l0CTensor);
 // 调用方式2
@@ -195,4 +201,4 @@ struct FixpipeTraitCustom {
 Copy(CopyAtom<CopyTraits<CopyL0C2GM, FixpipeTraitCustom>>{}, globalC, l0CTensor);
 ...
 ```
-完整样例请参考[TensorAPI样例代码](../../../../../examples/01_simd_cpp_api/02_features/05_tensor_api/matmul_quant_relu/tensor_api_matmul_quant_relu.asc)。
+完整样例请参考[TensorAPI样例代码](../../../../../examples/01_simd_cpp_api/02_features/05_tensor_api/matmul_quant_relu/matmul_quant_relu.asc)。
