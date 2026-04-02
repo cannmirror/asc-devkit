@@ -73,12 +73,11 @@ __aicore__ inline constexpr auto GetHardPos()
    return T::iterator::hardPos;
 }
 
-template <typename ElementType, typename DataType>
-inline constexpr bool is_one_of_attr_v = Std::is_one_of_v<ElementType, __gm__ DataType, __cbuf__ DataType, __ca__ DataType, 
-                                                        __cb__ DataType, __cc__ DataType, __ubuf__ DataType, DataType>;
+template <typename ElementType, typename... Args>
+inline constexpr bool is_one_of_attr_v = Std::is_one_of_v<ElementType, Args..., Std::unwrap_decay_t<Args>...>;
 
 template <typename DataType>
-inline constexpr bool is_b4_type = is_one_of_attr_v<DataType, fp4x2_e1m2_t> || is_one_of_attr_v<DataType, fp4x2_e2m1_t>;
+inline constexpr bool is_b4_type = is_one_of_attr_v<DataType, fp4x2_e1m2_t, fp4x2_e2m1_t>;
 
 template<typename T = Std::ignore_t>
 __aicore__ inline constexpr size_t GetC0Size() {

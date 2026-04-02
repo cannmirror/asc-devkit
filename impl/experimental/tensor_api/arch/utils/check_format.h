@@ -97,7 +97,7 @@ public:
     {
         using Dtype = typename T::elementType;
 
-        constexpr bool isB32 = Std::is_one_of_v<Dtype, __gm__ float, __gm__ int32_t>;
+        constexpr bool isB32 = is_one_of_attr_v<Dtype, float, int32_t>;
         if constexpr (enableChannelSplit) {
             static_assert(isB32, "When enable channel split, data type must be B32");
         }
