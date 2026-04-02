@@ -1,24 +1,24 @@
 /**
-* Copyright (c) 2026 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2026 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
-#warning                                                                                                               \
+#warning \
     "impl/tensor_api/tensor/layout_static_fractal.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
 
 /*!
-* \file layout_static_fractal.h
-* \brief
-*/
+ * \file layout_static_fractal.h
+ * \brief
+ */
 #ifndef IMPL_TENSOR_API_TENSOR_LAYOUT_STATIC_FRACTAL_H
 #define IMPL_TENSOR_API_TENSOR_LAYOUT_STATIC_FRACTAL_H
 
@@ -30,27 +30,28 @@ namespace Te {
 // coord
 // NZ
 template <typename T, size_t row, size_t column>
-using NZCoordFormat = Shape<Shape<Std::Int<0>, Std::Int<Std::ceil_division(row, FRACTAL_FIXED)>>,
+using NZCoordFormat = Shape<
+    Shape<Std::Int<0>, Std::Int<Std::ceil_division(row, FRACTAL_FIXED)>>,
     Shape<Std::Int<0>, Std::Int<Std::ceil_division(column, C0_ELEMENT<T>)>>>;
 
 // ZN
-template <typename T, size_t  row, size_t  column>
-using ZNCoordFormat = Shape<Shape<Std::Int<0>, Std::Int<Std::ceil_division(row, C0_ELEMENT<T>)>>,
+template <typename T, size_t row, size_t column>
+using ZNCoordFormat = Shape<
+    Shape<Std::Int<0>, Std::Int<Std::ceil_division(row, C0_ELEMENT<T>)>>,
     Shape<Std::Int<0>, Std::Int<Std::ceil_division(column, FRACTAL_FIXED)>>>;
 
 //  ScaleND
 template <typename T, size_t row, size_t column>
-using ScaleNDCoordFormat = Shape<Shape<Std::Int<0>, Std::Int<row/2>>, 
-                                    Shape<Std::Int<0>, Std::Int<column>>>;
+using ScaleNDCoordFormat = Shape<Shape<Std::Int<0>, Std::Int<row / 2>>, Shape<Std::Int<0>, Std::Int<column>>>;
 //  ScaleDN
 template <typename T, size_t row, size_t column>
-using ScaleDNCoordFormat = Shape<Shape<Std::Int<0>, Std::Int<row>>, 
-                                    Shape<Std::Int<0>, Std::Int<column/MX_SCALE_K0>>>;
+using ScaleDNCoordFormat = Shape<Shape<Std::Int<0>, Std::Int<row>>, Shape<Std::Int<0>, Std::Int<column / MX_SCALE_K0>>>;
 
 // ScaleNN
 template <typename T, size_t row, size_t column>
-using ScaleNNCoordFormat = Shape<Shape<Std::Int<0>, Std::Int<row/MX_SCALE_K0>>, 
-                                    Shape<Std::Int<0>, Std::Int<Std::ceil_division(column, FRACTAL_FIXED)>>>; 
+using ScaleNNCoordFormat = Shape<
+    Shape<Std::Int<0>, Std::Int<row / MX_SCALE_K0>>,
+    Shape<Std::Int<0>, Std::Int<Std::ceil_division(column, FRACTAL_FIXED)>>>;
 
 // ND
 template <typename T, size_t row, size_t column>
@@ -62,49 +63,53 @@ using DNCoordFormat = Shape<Shape<Std::Int<0>, Std::Int<row>>, Shape<Std::Int<0>
 
 // ZZ
 template <typename T, size_t row, size_t column>
-using ZZCoordFormat = Shape<Shape<Std::Int<0>, Std::Int<Std::ceil_division(row, FRACTAL_FIXED)>>, 
-    Shape<Std::Int<0>, Std::Int<Std::ceil_division(column, C0_ELEMENT<T>)>>>; 
+using ZZCoordFormat = Shape<
+    Shape<Std::Int<0>, Std::Int<Std::ceil_division(row, FRACTAL_FIXED)>>,
+    Shape<Std::Int<0>, Std::Int<Std::ceil_division(column, C0_ELEMENT<T>)>>>;
 
 // scaleZZ
 template <typename T, size_t row, size_t column>
-using ScaleZZCoordFormat = Shape<Shape<Std::Int<0>, Std::Int<Std::ceil_division(row, FRACTAL_FIXED)>>,  
-                                    Shape<Std::Int<0>, Std::Int<column/MX_SCALE_K0>>>;
+using ScaleZZCoordFormat = Shape<
+    Shape<Std::Int<0>, Std::Int<Std::ceil_division(row, FRACTAL_FIXED)>>,
+    Shape<Std::Int<0>, Std::Int<column / MX_SCALE_K0>>>;
 
 // NZ
 template <typename T, size_t row, size_t column>
-using NZShapeFormat = Shape<Shape<Std::Int<FRACTAL_FIXED>, Std::Int<Std::ceil_division(row, FRACTAL_FIXED)>>,
+using NZShapeFormat = Shape<
+    Shape<Std::Int<FRACTAL_FIXED>, Std::Int<Std::ceil_division(row, FRACTAL_FIXED)>>,
     Shape<Std::Int<C0_ELEMENT<T>>, Std::Int<Std::ceil_division(column, C0_ELEMENT<T>)>>>;
 
 template <typename T, size_t row, size_t column>
-using NZStrideFormat = Stride<Stride<Std::Int<C0_ELEMENT<T>>, Std::Int<C0_ELEMENT<T> * FRACTAL_FIXED>>,
+using NZStrideFormat = Stride<
+    Stride<Std::Int<C0_ELEMENT<T>>, Std::Int<C0_ELEMENT<T> * FRACTAL_FIXED>>,
     Stride<Std::Int<1>, Std::Int<C0_ELEMENT<T> * Std::ceil_align(row, FRACTAL_FIXED)>>>;
 
 //  ScaleND
 template <typename T, size_t row, size_t column>
-using ScaleNDShapeFormat = Shape<Shape<Std::Int<MX_SCALE_K0>, Std::Int<row/2>>, 
-                                    Shape<Std::Int<1>, Std::Int<column>>>;
+using ScaleNDShapeFormat = Shape<Shape<Std::Int<MX_SCALE_K0>, Std::Int<row / 2>>, Shape<Std::Int<1>, Std::Int<column>>>;
 
 template <typename T, size_t row, size_t column>
-using ScaleNDStrideFormat = Stride<Stride<Std::Int<1>, Std::Int<MX_SCALE_K0*column>>,
-                                    Stride<Std::Int<0>, Std::Int<MX_SCALE_K0>>>;
+using ScaleNDStrideFormat =
+    Stride<Stride<Std::Int<1>, Std::Int<MX_SCALE_K0 * column>>, Stride<Std::Int<0>, Std::Int<MX_SCALE_K0>>>;
 
 //  ScaleDN
 template <typename T, size_t row, size_t column>
-using ScaleDNShapeFormat = Shape<Shape<Std::Int<1>, Std::Int<row>>, 
-                                    Shape<Std::Int<MX_SCALE_K0>, Std::Int<column/MX_SCALE_K0>>>;
+using ScaleDNShapeFormat =
+    Shape<Shape<Std::Int<1>, Std::Int<row>>, Shape<Std::Int<MX_SCALE_K0>, Std::Int<column / MX_SCALE_K0>>>;
 
 template <typename T, size_t row, size_t column>
-using ScaleDNStrideFormat = Stride<Stride<Std::Int<0>, Std::Int<MX_SCALE_K0>>,
-                                    Stride<Std::Int<1>, Std::Int<row*MX_SCALE_K0>>>;
+using ScaleDNStrideFormat =
+    Stride<Stride<Std::Int<0>, Std::Int<MX_SCALE_K0>>, Stride<Std::Int<1>, Std::Int<row * MX_SCALE_K0>>>;
 
 // ScaleNN
 template <typename T, size_t row, size_t column>
-using ScaleNNShapeFormat = Shape<Shape<Std::Int<MX_SCALE_K0>, Std::Int<row/MX_SCALE_K0>>, 
-                                    Shape<Std::Int<FRACTAL_FIXED>, Std::Int<Std::ceil_division(column, FRACTAL_FIXED)>>>;
+using ScaleNNShapeFormat = Shape<
+    Shape<Std::Int<MX_SCALE_K0>, Std::Int<row / MX_SCALE_K0>>,
+    Shape<Std::Int<FRACTAL_FIXED>, Std::Int<Std::ceil_division(column, FRACTAL_FIXED)>>>;
 
 template <typename T, size_t row, size_t column>
-using ScaleNNStrideFormat = Stride<Stride<Std::Int<1>, Std::Int<C0_SIZE<>>>,
-                                    Stride<Std::Int<MX_SCALE_K0>, Std::Int<row*FRACTAL_FIXED>>>;
+using ScaleNNStrideFormat =
+    Stride<Stride<Std::Int<1>, Std::Int<C0_SIZE<>>>, Stride<Std::Int<MX_SCALE_K0>, Std::Int<row * FRACTAL_FIXED>>>;
 
 // ND
 template <typename T, size_t row, size_t column>
@@ -121,31 +126,36 @@ template <typename T, size_t row, size_t column>
 using DNStrideFormat = Stride<Stride<Std::Int<0>, Std::Int<1>>, Stride<Std::Int<0>, Std::Int<row>>>;
 
 // ZN
-template <typename T, size_t  row, size_t  column>
-using ZNShapeFormat = Shape<Shape<Std::Int<C0_ELEMENT<T>>, Std::Int<Std::ceil_division(row, C0_ELEMENT<T>)>>,
-    Shape<Std::Int<FRACTAL_FIXED>, Std::Int<Std::ceil_division(column, FRACTAL_FIXED)>>>; 
+template <typename T, size_t row, size_t column>
+using ZNShapeFormat = Shape<
+    Shape<Std::Int<C0_ELEMENT<T>>, Std::Int<Std::ceil_division(row, C0_ELEMENT<T>)>>,
+    Shape<Std::Int<FRACTAL_FIXED>, Std::Int<Std::ceil_division(column, FRACTAL_FIXED)>>>;
 
-template <typename T, size_t  row, size_t  column>
-using ZNStrideFormat = Stride<Stride<Std::Int<1>, Std::Int<C0_ELEMENT<T> * Std::ceil_align(column, FRACTAL_FIXED)>>,
+template <typename T, size_t row, size_t column>
+using ZNStrideFormat = Stride<
+    Stride<Std::Int<1>, Std::Int<C0_ELEMENT<T> * Std::ceil_align(column, FRACTAL_FIXED)>>,
     Stride<Std::Int<C0_ELEMENT<T>>, Std::Int<C0_ELEMENT<T> * FRACTAL_FIXED>>>;
 
 // ZZ
 template <typename T, size_t row, size_t column>
-using ZZShapeFormat = Shape<Shape<Std::Int<FRACTAL_FIXED>, Std::Int<Std::ceil_division(row, FRACTAL_FIXED)>>,
+using ZZShapeFormat = Shape<
+    Shape<Std::Int<FRACTAL_FIXED>, Std::Int<Std::ceil_division(row, FRACTAL_FIXED)>>,
     Shape<Std::Int<C0_ELEMENT<T>>, Std::Int<Std::ceil_division(column, C0_ELEMENT<T>)>>>;
 
 template <typename T, size_t row, size_t column>
-using ZZStrideFormat = Stride<Stride<Std::Int<C0_ELEMENT<T>>, Std::Int<FRACTAL_FIXED * Std::ceil_align(column, C0_ELEMENT<T>)>>,
+using ZZStrideFormat = Stride<
+    Stride<Std::Int<C0_ELEMENT<T>>, Std::Int<FRACTAL_FIXED * Std::ceil_align(column, C0_ELEMENT<T>)>>,
     Stride<Std::Int<1>, Std::Int<C0_ELEMENT<T> * FRACTAL_FIXED>>>;
 
 // scaleZZ
 template <typename T, size_t row, size_t column>
-using ScaleZZShapeFormat = Shape<Shape<Std::Int<FRACTAL_FIXED>, Std::Int<Std::ceil_division(row, FRACTAL_FIXED)>>, 
-                                    Shape<Std::Int<MX_SCALE_K0>, Std::Int<column/MX_SCALE_K0>>>;
+using ScaleZZShapeFormat = Shape<
+    Shape<Std::Int<FRACTAL_FIXED>, Std::Int<Std::ceil_division(row, FRACTAL_FIXED)>>,
+    Shape<Std::Int<MX_SCALE_K0>, Std::Int<column / MX_SCALE_K0>>>;
 
 template <typename T, size_t row, size_t column>
-using ScaleZZStrideFormat = Stride<Stride<Std::Int<MX_SCALE_K0>, Std::Int<FRACTAL_FIXED * column>>,
-                                    Stride<Std::Int<1>, Std::Int<C0_SIZE<>>>>;
+using ScaleZZStrideFormat =
+    Stride<Stride<Std::Int<MX_SCALE_K0>, Std::Int<FRACTAL_FIXED * column>>, Stride<Std::Int<1>, Std::Int<C0_SIZE<>>>>;
 
 template <typename T, size_t row, size_t column>
 using NDFormatLayout = Layout<NDShapeFormat<T, row, column>, NDStrideFormat<T, row, column>>;

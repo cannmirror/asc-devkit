@@ -46,11 +46,13 @@ private:
 
         auto srcRowShape = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
         uint32_t srcColShape = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
-        uint16_t srcBColStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout);
-        uint16_t dstBColStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout);
+        uint16_t srcBColStride =
+            GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout);
+        uint16_t dstBColStride =
+            GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout);
 
         uint16_t dnNum = 1;
-        uint16_t nValue = srcRowShape >> 1;  // use b16 for DN2NZ, so nValue = srcRowShape / 2
+        uint16_t nValue = srcRowShape >> 1; // use b16 for DN2NZ, so nValue = srcRowShape / 2
         uint16_t dValue = srcColShape;
         uint16_t dstNzNStride = 1;
 

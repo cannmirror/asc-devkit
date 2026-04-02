@@ -1,15 +1,15 @@
 /**
-* Copyright (c) 2026 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2026 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
-#warning                                                                                                               \
+#warning \
     "impl/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_quant_l0c2out/nz2dn.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
@@ -62,16 +62,14 @@ private:
         const auto& dstLayout = dst.Layout();
         uint32_t nSize = Std::min(
             GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout) *
-            GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout),
+                GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout),
             GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout) *
-            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout)
-        );
+                GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout));
         uint32_t mSize = Std::min(
             GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout) *
-            GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout),
+                GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout),
             GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout) *
-            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout)
-        );
+                GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout));
         uint32_t srcStride =
             GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / FRACTAL_FIXED;
         uint32_t dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout);
@@ -82,15 +80,15 @@ private:
         if constexpr (GetHardPos<T>() == Hardware::GM) {
             uint8_t cacheMode = GetCacheModeFromTensor(dst);
             bool isChannelSplit = trait.enableChannelSplit;
-            CopyMatrixCcToGm3510::DataCopy<quantPre, T, U>(dst, src, nSize, mSize, srcStride, dstStride,
-                                                                  cacheMode, reluEn, unitFlag, isChannelSplit, nz2ndEn,
-                                                                  nz2dnEn);
+            CopyMatrixCcToGm3510::DataCopy<quantPre, T, U>(
+                dst, src, nSize, mSize, srcStride, dstStride, cacheMode, reluEn, unitFlag, isChannelSplit, nz2ndEn,
+                nz2dnEn);
         } else {
             uint8_t dualDstCtl = trait.dualDstCtl;
             bool subBlockId = false;
-            CopyMatrixCcToUb3510::DataCopy<quantPre, T, U>(dst, src, nSize, mSize, srcStride, dstStride,
-                                                                  dualDstCtl, reluEn, unitFlag, subBlockId, nz2ndEn,
-                                                                  nz2dnEn);
+            CopyMatrixCcToUb3510::DataCopy<quantPre, T, U>(
+                dst, src, nSize, mSize, srcStride, dstStride, dualDstCtl, reluEn, unitFlag, subBlockId, nz2ndEn,
+                nz2dnEn);
         }
     }
 };
@@ -98,7 +96,8 @@ private:
 class Fixpipe2OutNZ2DNVector3510 {
 public:
     template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V, typename... Params>
-    __aicore__ inline static void FixpipeNZ2DNVectorEntrance(const T& dst, const U& src, const V& quant, const Params& ...params)
+    __aicore__ inline static void FixpipeNZ2DNVectorEntrance(
+        const T& dst, const U& src, const V& quant, const Params&... params)
     {
         FixpipeNZ2DNVectorCompute<trait, quantPre, T, U, V>(dst, src, quant, params...);
     }
@@ -143,8 +142,9 @@ private:
     }
 
     template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V, typename... Params>
-    __aicore__ inline static void FixpipeNZ2DNVectorCompute(const T& dst, const U& src, const V& quant, uint32_t nIterNum,
-        uint32_t calNSize, uint32_t tailNSize, const Params&... params)
+    __aicore__ inline static void FixpipeNZ2DNVectorCompute(
+        const T& dst, const U& src, const V& quant, uint32_t nIterNum, uint32_t calNSize, uint32_t tailNSize,
+        const Params&... params)
     {
         auto mainLoopParam = GenParams<trait, T, U, false>(dst, src, params...);
         for (uint16_t i = 0; i < nIterNum; ++i) {
@@ -152,8 +152,8 @@ private:
             InsertSync();
             auto srcCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, i * CBURST_NUM_3510));
             auto dstCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, i * MAIN_LOOP_N_SIZE_3510));
-            DataCopyWrapper<trait, quantPre>(dst(dstCoord), src(srcCoord),
-                mainLoopParam, tuple_sequence<decltype(mainLoopParam)>{});
+            DataCopyWrapper<trait, quantPre>(
+                dst(dstCoord), src(srcCoord), mainLoopParam, tuple_sequence<decltype(mainLoopParam)>{});
         }
         if (tailNSize) {
             auto tailParam = GenParams<trait, T, U, true>(dst, src, params...);
@@ -161,13 +161,14 @@ private:
             InsertSync();
             auto srcCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, nIterNum * CBURST_NUM_3510));
             auto dstCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, nIterNum * MAIN_LOOP_N_SIZE_3510));
-            DataCopyWrapper<trait, quantPre>(dst(dstCoord), src(srcCoord),
-                tailParam, tuple_sequence<decltype(tailParam)>{});
+            DataCopyWrapper<trait, quantPre>(
+                dst(dstCoord), src(srcCoord), tailParam, tuple_sequence<decltype(tailParam)>{});
         }
     }
 
     template <const FixpipeTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V, size_t... Is>
-    __aicore__ inline static void DataCopyWrapper(const T& dst, const U& src, const V& tupleParams, Std::index_sequence<Is...>)
+    __aicore__ inline static void DataCopyWrapper(
+        const T& dst, const U& src, const V& tupleParams, Std::index_sequence<Is...>)
     {
         if constexpr (GetHardPos<T>() == Hardware::GM) {
             CopyMatrixCcToGm3510::DataCopy<quantPre>(dst, src, Std::get<Is>(tupleParams)...);
@@ -227,10 +228,10 @@ private:
         SetRegister3510::SetRegister(dnNum, dstDNMatrixStride, srcNZMatrixStride, srcNZC0Stride);
     }
 };
-}  // namespace Te
-}  // namespace AscendC
+} // namespace Te
+} // namespace AscendC
 
-#endif  // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_QUANT_L0C2OUT_NZ2DN_H
+#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_QUANT_L0C2OUT_NZ2DN_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

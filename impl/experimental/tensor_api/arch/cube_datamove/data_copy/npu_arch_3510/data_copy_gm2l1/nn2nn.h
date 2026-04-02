@@ -63,9 +63,9 @@ private:
 
         uint8_t leftPaddingCnt = 0;
         uint8_t rightPaddingCnt = 0;
-        CopyGmToCbufAlignV2Base::CopyGmToCbufAlignV2((__cbuf__ half*)(dst.Data().Get()),
-                                                     (__gm__ half*)(src.Data().Get()), blockCount, blockLen,
-                                                     leftPaddingCnt, rightPaddingCnt, cacheMode, srcStride, dstStride);
+        CopyGmToCbufAlignV2Base::CopyGmToCbufAlignV2(
+            (__cbuf__ half*)(dst.Data().Get()), (__gm__ half*)(src.Data().Get()), blockCount, blockLen, leftPaddingCnt,
+            rightPaddingCnt, cacheMode, srcStride, dstStride);
     }
 };
 

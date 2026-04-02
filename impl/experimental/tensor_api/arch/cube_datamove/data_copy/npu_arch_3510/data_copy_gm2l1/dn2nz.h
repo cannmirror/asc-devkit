@@ -8,9 +8,8 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
-
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
-#warning                                                                                                               \
+#warning \
     "impl/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_gm2l1/dn2nz.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
@@ -80,8 +79,9 @@ private:
 
         uint8_t cacheMode = GetCacheModeFromTensor(src);
 
-        CopyGmToCbufMultiDn2nzInstr::DataCopy(dst, src, dnNum, loop2DstStride, loop3DstStride, loop4DstStride,
-                                              loop1SrcStride, cacheMode, nValue, dValue, loop4SrcStride, false);
+        CopyGmToCbufMultiDn2nzInstr::DataCopy(
+            dst, src, dnNum, loop2DstStride, loop3DstStride, loop4DstStride, loop1SrcStride, cacheMode, nValue, dValue,
+            loop4SrcStride, false);
     }
 };
 
