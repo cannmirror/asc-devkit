@@ -2,7 +2,7 @@
 # coding=utf-8
 
 # ----------------------------------------------------------------------------------------------------------
-# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+# Copyright (c) 2026 Huawei Technologies Co., Ltd.
 # This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 # CANN Open Software License Agreement Version 2.0 (the "License").
 # Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -13,7 +13,9 @@
 
 
 import os
+import argparse
 import numpy as np
+import sys
 
 
 def get_range_by_dtype(input_type):
@@ -25,21 +27,44 @@ def get_range_by_dtype(input_type):
     except ValueError:
         print(f"Unsupported data type:{input_type}")
         
-def gen_golden_data_simple():
+def gen_golden_data(scenario_num):
     input_type = np.float16
     output_type = input_type
-    mat_len = 16
-
-    min_val, max_val = get_range_by_dtype(input_type)
-    input_shape = [mat_len, mat_len]
-    output_shape = input_shape
-    input_x = np.random.uniform(min_val, max_val, input_shape).astype(input_type)
-    golden = input_x.T #普通转置
+    """
+    根据场景编号生成输入数据和Golden数据：
+    场景1：普通转置，对[16, 16]的二维矩阵进行转置
+    场景2：增强转置，[N,C,H,W]与[N,H,W,C]两个数据格式互相转换
+    """
+    
+    if scenario_num == 1:
+        # 场景1
+        mat_len = 16
+        min_val, max_val = get_range_by_dtype(input_type)
+        input_shape = [mat_len, mat_len]
+        input = np.random.uniform(min_val, max_val, input_shape).astype(input_type)
+        golden = input.T
+    elif scenario_num == 2:
+        # 场景2
+        n = 3
+        c = 3
+        h = 2
+        w = 8
+        min_val, max_val = get_range_by_dtype(input_type)
+        input_shape = [n, c, h, w]
+        input = np.random.uniform(min_val, max_val, input_shape).astype(input_type)
+        golden = np.transpose(input, (0, 2, 3, 1))
+    else:
+        print("Invalid scenario number: {}. Supported scenarios: 1 (common), 2 (enhanced)".format(scenario_num))
+        sys.exit(1)
+    
     os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
-    input_x.tofile("./input/input_x.bin")
+    input.tofile("./input/input_x.bin")
     golden.tofile("./output/golden.bin")
 
 
 if __name__ == "__main__":
-    gen_golden_data_simple()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-scenario_num', type=int, default=1, choices=range(1, 3))
+    args = parser.parse_args()
+    gen_golden_data(args.scenario_num)
