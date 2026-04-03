@@ -7,12 +7,13 @@
 # CANN Open Software License Agreement Version 2.0 (the "License").
 # Please refer to the License for details. You may not use this file except in compliance with the License.
 # THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-# INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+# INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
 
 import sys
+import argparse
 import numpy as np
 
 
@@ -21,15 +22,7 @@ ABSOLUTE_TOL = 1e-9
 ERROR_TOL = 1e-4
 
 
-def verify_result(output, golden):
-    """
-    验证BlockReduceMax样例结果与golden数据是否一致
-    Args:
-        output: 输出数据文件路径
-        golden: golden数据文件路径
-    Returns:
-        bool: 误差比例是否在容忍范围内
-    """
+def verify_result(scenarioNum, output, golden):
     output_type = np.float16
     output = np.fromfile(output, dtype=output_type).reshape(-1)
     golden = np.fromfile(golden, dtype=output_type).reshape(-1)
@@ -37,10 +30,12 @@ def verify_result(output, golden):
         output, golden, rtol=RELATIVE_TOL, atol=ABSOLUTE_TOL, equal_nan=True
     )
     different_element_indexes = np.where(different_element_results == False)[0]
+
     for index in range(len(different_element_indexes)):
         real_index = different_element_indexes[index]
         golden_data = golden[real_index]
         output_data = output[real_index]
+
         print(
             "data index: %06d, expected: %-.9f, actual: %-.9f, rdiff: %-.6f"
             % (
@@ -58,8 +53,13 @@ def verify_result(output, golden):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-scenarioNum', type=int, default=1, choices=range(1, 4))
+    parser.add_argument('output', type=str)
+    parser.add_argument('golden', type=str)
+    args = parser.parse_args()
     try:
-        res = verify_result(sys.argv[1], sys.argv[2])
+        res = verify_result(args.scenarioNum, args.output, args.golden)
         if not res:
             raise ValueError("[ERROR] result error")
         else:
