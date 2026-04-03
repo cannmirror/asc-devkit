@@ -95,33 +95,52 @@ TEST_F(TEST_ACL_RT_COMPILE, aclrtc_aclrtcGetCompileLog)
     EXPECT_EQ(result, ACL_ERROR_RTC_INVALID_INPUT);
 }
 
+TEST_F(TEST_ACL_RT_COMPILE, aclrtc_aclrtcAddNameExpr_nullptr)
+{
+    aclrtcProg prog = nullptr;
+    const char *nameExpr = "hello_world";
+    aclError result = aclrtcAddNameExpr(prog, nameExpr);
+    EXPECT_EQ(result, ACL_ERROR_RTC_INVALID_INPUT);
+}
+
 TEST_F(TEST_ACL_RT_COMPILE, aclrtc_aclrtcAddNameExpr)
 {
     asrtcAddNameExpressionFuncPtr originalPtr = asrtcAddNameExpressionPtr;
     auto mockFunc = [](asrtcProgram, const char* const) -> asrtcResult {
-        return ASRTC_ERROR_NOT_IMPLEMENTED;
+        return ASRTC_ERROR_NAME_EXPRESSION_NOT_VALID;
     };
     asrtcAddNameExpressionPtr = mockFunc;
 
-    aclrtcProg prog = nullptr;
+    alignas(void*) char fakeProgMem[64] = {0};
+    aclrtcProg prog = reinterpret_cast<aclrtcProg>(fakeProgMem);
     const char *nameExpr = "hello_world";
     aclError result = aclrtcAddNameExpr(prog, nameExpr);
-    EXPECT_EQ(result, ACL_ERROR_RTC_FAILURE);
+    EXPECT_EQ(result, ACL_ERROR_RTC_NAME_EXPR_NOT_VALID);
 }
 
-TEST_F(TEST_ACL_RT_COMPILE, aclrtc_aclrtcGetManglingName)
+TEST_F(TEST_ACL_RT_COMPILE, aclrtc_aclrtcGetLoweredName_nullptr)
+{
+    aclrtcProg prog = nullptr;
+    const char *nameExpr = "hello_world";
+    const char *loweredName = "hello_world";
+    aclError result = aclrtcGetLoweredName(prog, nameExpr, &loweredName);
+    EXPECT_EQ(result, ACL_ERROR_RTC_INVALID_INPUT);
+}
+
+TEST_F(TEST_ACL_RT_COMPILE, aclrtc_aclrtcGetLoweredName)
 {
     asrtcGetLoweredNameFuncPtr originalPtr = asrtcGetLoweredNamePtr;
     auto mockFunc = [](asrtcProgram, const char*, const char**) -> asrtcResult {
-        return ASRTC_ERROR_NOT_IMPLEMENTED;
+        return ASRTC_ERROR_NO_NAME_EXPRESSION_AFTER_COMPILATION;
     };
     asrtcGetLoweredNamePtr = mockFunc;
 
-    aclrtcProg prog = nullptr;
+    alignas(void*) char fakeProgMem[64] = {0};
+    aclrtcProg prog = reinterpret_cast<aclrtcProg>(fakeProgMem);
     const char *nameExpr = "hello_world";
-    const char *manglingName = "hello_world";
-    aclError result = aclrtcGetLoweredName(prog, nameExpr, &manglingName);
-    EXPECT_EQ(result, ACL_ERROR_RTC_FAILURE);
+    const char *loweredName = "hello_world";
+    aclError result = aclrtcGetLoweredName(prog, nameExpr, &loweredName);
+    EXPECT_EQ(result, ACL_ERROR_RTC_NO_NAME_EXPR_AFTER_COMPILATION);
 }
 
 TEST_F(TEST_ACL_RT_COMPILE, aclrtc_aclrtcCompileProg)

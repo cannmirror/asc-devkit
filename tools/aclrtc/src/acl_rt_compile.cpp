@@ -91,7 +91,9 @@ typedef enum {
     ASRTC_ERROR_LINK,
     ASRTC_ERROR_NOT_IMPLEMENTED,
     ASRTC_ERROR_INTERNAL_ERROR,
-    ASRTC_ERROR_IO
+    ASRTC_ERROR_IO,
+    ASRTC_ERROR_NAME_EXPRESSION_NOT_VALID,
+    ASRTC_ERROR_NO_NAME_EXPRESSION_AFTER_COMPILATION,
 } asrtcResult;
 
 // utils function
@@ -228,6 +230,8 @@ const std::unordered_map<asrtcResult, aclError> ccecRet2AclrtcRet = {
     {asrtcResult::ASRTC_ERROR_NOT_IMPLEMENTED, ACL_ERROR_RTC_FAILURE},
     {asrtcResult::ASRTC_ERROR_INTERNAL_ERROR, ACL_ERROR_RTC_FAILURE},
     {asrtcResult::ASRTC_ERROR_IO, ACL_ERROR_RTC_FAILURE},
+    {asrtcResult::ASRTC_ERROR_NAME_EXPRESSION_NOT_VALID, ACL_ERROR_RTC_NAME_EXPR_NOT_VALID},
+    {asrtcResult::ASRTC_ERROR_NO_NAME_EXPRESSION_AFTER_COMPILATION, ACL_ERROR_RTC_NO_NAME_EXPR_AFTER_COMPILATION},
 };
 
 aclError ErrorCodeProcess(asrtcResult result) {
@@ -236,18 +240,6 @@ aclError ErrorCodeProcess(asrtcResult result) {
         return it->second;
     }
     return ACL_ERROR_RTC_FAILURE;
-}
-
-__attribute__((unused))
-aclError aclrtcAddNameExpr(aclrtcProg prog, const char *nameExpr) {
-    AclrtcProgram ascProg(prog);
-    return ErrorCodeProcess(asrtcAddNameExpressionPtr(prog, nameExpr));
-}
-
-__attribute__((unused))
-aclError aclrtcGetLoweredName(aclrtcProg prog, const char *nameExpr, const char **manglingName) {
-    AclrtcProgram ascProg(prog);
-    return ErrorCodeProcess(asrtcGetLoweredNamePtr(prog, nameExpr, manglingName));
 }
 #if !defined(UT_TEST) && !defined(ST_TEST)
 }
@@ -313,6 +305,22 @@ aclError aclrtcCompileProg(aclrtcProg prog, int numOptions, const char **options
         optionsPlugin.emplace_back(options[i]);
     }
     return ErrorCodeProcess(asrtcCompileProgramPtr(ascProg->GetProgram(), optionsPlugin.size(), optionsPlugin.data()));
+}
+
+aclError aclrtcAddNameExpr(aclrtcProg prog, const char *const nameExpression) {
+    if (prog == nullptr || nameExpression == nullptr) {
+        return ACL_ERROR_RTC_INVALID_INPUT;
+    }
+    AclrtcProgram* ascProg = static_cast<AclrtcProgram*>(prog);
+    return ErrorCodeProcess(asrtcAddNameExpressionPtr(ascProg->GetProgram(), nameExpression));
+}
+
+aclError aclrtcGetLoweredName(aclrtcProg prog, const char *nameExpression, const char **loweredName) {
+    if (prog == nullptr || nameExpression == nullptr || loweredName == nullptr) {
+        return ACL_ERROR_RTC_INVALID_INPUT;
+    }
+    AclrtcProgram* ascProg = static_cast<AclrtcProgram*>(prog);
+    return ErrorCodeProcess(asrtcGetLoweredNamePtr(ascProg->GetProgram(), nameExpression, loweredName));
 }
 
 aclError aclrtcDestroyProg(aclrtcProg *prog) {
