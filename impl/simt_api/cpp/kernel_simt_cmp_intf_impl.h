@@ -18,21 +18,21 @@ namespace Simt {
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline bool IsFinite(T x)
 {
-    static_assert(SupportType<T, half, float>(), "Input type T only supports half, float.");
+    static_assert(SupportTypeSimtInternel<T, half, float>, "Input type T only supports half, float.");
     return IsFiniteImpl(x);
 }
 
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline bool IsNan(T x)
 {
-    static_assert(SupportType<T, half, float>(), "Input type T only supports half, float.");
+    static_assert(SupportTypeSimtInternel<T, half, float>, "Input type T only supports half, float.");
     return IsNanImpl(x);
 }
 
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline bool IsInf(T x)
 {
-    static_assert(SupportType<T, half, float>(), "Input type T only supports half, float.");
+    static_assert(SupportTypeSimtInternel<T, half, float>, "Input type T only supports half, float.");
     return IsInfImpl(x);
 }
 

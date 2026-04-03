@@ -107,7 +107,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t ActiveMaskImpl()
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflSyncImpl(T var, int32_t srcLane, int32_t width = warpSize)
 {
-    static_assert(SupportType<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>(),
+    static_assert(SupportTypeSimtInternel<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>,
                  "Input type of var only supports int32_t, uint32_t, int64_t, uint64_t, half, half2, float.");
 #if defined(ASCENDC_CPU_DEBUG)
     ASCENDC_ASSERT((width <= WARP_SIZE && width > 0 && WARP_SIZE % width == 0),
@@ -130,7 +130,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflSyncImpl(T var, int32_t srcLane, int
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflUpSyncImpl(T var, uint32_t delta, int32_t width = warpSize)
 {
-    static_assert(SupportType<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>(),
+    static_assert(SupportTypeSimtInternel<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>,
               "Input type of var only supports int32_t, uint32_t, int64_t, uint64_t, half, half2, float.");
 #if defined(ASCENDC_CPU_DEBUG)
     ASCENDC_ASSERT((width <= WARP_SIZE && width > 0 && WARP_SIZE % width == 0),
@@ -157,7 +157,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflUpSyncImpl(T var, uint32_t delta, in
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflDownSyncImpl(T var, uint32_t delta, int32_t width = warpSize)
 {
-    static_assert(SupportType<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>(),
+    static_assert(SupportTypeSimtInternel<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>,
               "Input type of var only supports int32_t, uint32_t, int64_t, uint64_t, half, half2, float.");
 #if defined(ASCENDC_CPU_DEBUG)
     ASCENDC_ASSERT((width <= WARP_SIZE && width > 0 && WARP_SIZE % width == 0),
@@ -185,7 +185,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflDownSyncImpl(T var, uint32_t delta, 
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflXorSyncImpl(T var, int32_t laneMask, int32_t width = warpSize)
 {
-    static_assert(SupportType<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>(),
+    static_assert(SupportTypeSimtInternel<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>,
               "Input type of var only supports int32_t, uint32_t, int64_t, uint64_t, half, half2, float.");
 #if defined(ASCENDC_CPU_DEBUG)
     ASCENDC_ASSERT((width <= WARP_SIZE && width > 0 && WARP_SIZE % width == 0),
@@ -214,7 +214,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflXorSyncImpl(T var, int32_t laneMask,
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ReduceAddSyncImpl(T val)
 {
-    static_assert(SupportType<T, int32_t, uint32_t, half, float>(),
+    static_assert(SupportTypeSimtInternel<T, int32_t, uint32_t, half, float>,
               "Input type of val only supports int32_t, uint32_t, half, float.");
 #if defined(ASCENDC_CPU_DEBUG)
     uint32_t warpId = GetWarpId();
@@ -229,7 +229,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ReduceAddSyncImpl(T val)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ReduceMaxSyncImpl(T val)
 {
-    static_assert(SupportType<T, int32_t, uint32_t, half, float>(),
+    static_assert(SupportTypeSimtInternel<T, int32_t, uint32_t, half, float>,
               "Input type of val only supports int32_t, uint32_t, half, float.");
 #if defined(ASCENDC_CPU_DEBUG)
     uint32_t warpId = GetWarpId();
@@ -244,7 +244,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ReduceMaxSyncImpl(T val)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ReduceMinSyncImpl(T val)
 {
-    static_assert(SupportType<T, int32_t, uint32_t, half, float>(),
+    static_assert(SupportTypeSimtInternel<T, int32_t, uint32_t, half, float>,
                   "Input type of val only supports int32_t, uint32_t, half, float.");
 #if defined(ASCENDC_CPU_DEBUG)
     uint32_t warpId = GetWarpId();

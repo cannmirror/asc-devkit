@@ -227,24 +227,24 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T CastImpl(U x)
     return CastFallback<T, U, roundMode>(x);
 #else
     if constexpr ((roundMode == RoundMode::CAST_EVEN || roundMode == RoundMode::CAST_ZERO) &&
-                  SupportType<Tuple<U, T>, Tuple<float, int>, Tuple<int, float>, Tuple<float, int64_t>,
-                              Tuple<int64_t, float>, Tuple<float, half>, Tuple<float, bfloat16_t>>()) {
+                  SupportTypeSimtInternel<Tuple<U, T>, Tuple<float, int>, Tuple<int, float>, Tuple<float, int64_t>,
+                              Tuple<int64_t, float>, Tuple<float, half>, Tuple<float, bfloat16_t>>) {
         return CastFallback<T, U, roundMode>(x);
     }
     if constexpr (roundMode == RoundMode::CAST_NONE &&
-                  SupportType<Tuple<U, T>, Tuple<half, float>, Tuple<bfloat16_t, float>>()) {
+                  SupportTypeSimtInternel<Tuple<U, T>, Tuple<half, float>, Tuple<bfloat16_t, float>>) {
         return CastFallback<T, U, roundMode>(x);
     }
     T y;
-    if constexpr (SupportType<Tuple<T, U>, Tuple<uint32_t, half>, Tuple<int32_t, half>, Tuple<uint32_t, float>,
+    if constexpr (SupportTypeSimtInternel<Tuple<T, U>, Tuple<uint32_t, half>, Tuple<int32_t, half>, Tuple<uint32_t, float>,
                               Tuple<int32_t, float>, Tuple<uint64_t, float>, Tuple<int64_t, float>,
-                              Tuple<uint32_t, bfloat16_t>, Tuple<int32_t, bfloat16_t>>()) {
+                              Tuple<uint32_t, bfloat16_t>, Tuple<int32_t, bfloat16_t>>) {
         y = CastSat<T, U, roundMode>(x);
-    } else if constexpr (SupportType<Tuple<T, U>, Tuple<half, uint32_t>, Tuple<float, uint32_t>,
+    } else if constexpr (SupportTypeSimtInternel<Tuple<T, U>, Tuple<half, uint32_t>, Tuple<float, uint32_t>,
                                      Tuple<bfloat16_t, uint32_t>, Tuple<half, int32_t>, Tuple<float, int32_t>,
                                      Tuple<bfloat16_t, int32_t>, Tuple<float, uint64_t>, Tuple<float, int64_t>,
                                      Tuple<float, half>, Tuple<bfloat16_t, half>, Tuple<half, float>,
-                                     Tuple<bfloat16_t, float>, Tuple<half, bfloat16_t>, Tuple<float, bfloat16_t>>()) {
+                                     Tuple<bfloat16_t, float>, Tuple<half, bfloat16_t>, Tuple<float, bfloat16_t>>) {
         switch (satMode) {
             case SatMode::SAT:
                 y = CastSat<T, U, roundMode>(x);

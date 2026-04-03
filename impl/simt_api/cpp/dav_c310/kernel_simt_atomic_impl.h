@@ -68,7 +68,7 @@ T AtomicAddImpl(__gm__ T *address, T val)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicAddImpl(__ubuf__ T *address, T val)
 {
-    if constexpr (SupportType<Tuple<T>, Tuple<int32_t>, Tuple<uint32_t>, Tuple<float>>()) {
+    if constexpr (SupportTypeSimtInternel<T, int32_t, uint32_t, float>) {
         return atomicAdd(address, val);
     } else {
         atomicAdd(address, val);
@@ -79,8 +79,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicAddImpl(__ubuf__ T *address, T val
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicAddImpl(__gm__ T *address, T val)
 {
-    if constexpr (SupportType<Tuple<T>, Tuple<int32_t>, Tuple<uint32_t>, Tuple<int64_t>, Tuple<uint64_t>, Tuple<float>,
-                              Tuple<half2>, Tuple<bfloat16x2_t>>()) {
+    if constexpr (SupportTypeSimtInternel<T, int32_t, uint32_t, int64_t, uint64_t, float, half2, bfloat16x2_t>) {
         return atomicAdd(address, val);
     } else {
         atomicAdd(address, val);
@@ -99,7 +98,7 @@ T AtomicSubImpl(__gm__ T *address, T val)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicSubImpl(__ubuf__ T *address, T val)
 {
-    if constexpr (SupportType<Tuple<T>, Tuple<int32_t>, Tuple<uint32_t>, Tuple<float>>()) {
+    if constexpr (SupportTypeSimtInternel<T, int32_t, uint32_t, float>) {
         return atomicSub(address, val);
     } else {
         atomicAdd(address, -val);
@@ -110,8 +109,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicSubImpl(__ubuf__ T *address, T val
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicSubImpl(__gm__ T *address, T val)
 {
-    if constexpr (SupportType<Tuple<T>, Tuple<int32_t>, Tuple<uint32_t>, Tuple<int64_t>, Tuple<uint64_t>, Tuple<float>,
-                              Tuple<half2>, Tuple<bfloat16x2_t>>()) {
+    if constexpr (SupportTypeSimtInternel<T, int32_t, uint32_t, int64_t, uint64_t, float, half2, bfloat16x2_t>) {
         return atomicSub(address, val);
     } else {
         atomicAdd(address, -val);
@@ -164,7 +162,7 @@ T AtomicMaxImpl(__gm__ T *address, T val)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicMaxImpl(__ubuf__ T *address, T val)
 {
-    if constexpr (SupportType<Tuple<T>, Tuple<int32_t>, Tuple<uint32_t>, Tuple<float>>()) {
+    if constexpr (SupportTypeSimtInternel<T, int32_t, uint32_t, float>) {
         return atomicMax(address, val);
     } else {
         atomicMax(address, val);
@@ -175,8 +173,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicMaxImpl(__ubuf__ T *address, T val
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicMaxImpl(__gm__ T *address, T val)
 {
-    if constexpr (SupportType<Tuple<T>, Tuple<int32_t>, Tuple<uint32_t>, Tuple<int64_t>, Tuple<uint64_t>, Tuple<float>,
-                              Tuple<half2>, Tuple<bfloat16x2_t>>()) {
+    if constexpr (SupportTypeSimtInternel<T, int32_t, uint32_t, int64_t, uint64_t, float, half2, bfloat16x2_t>) {
         return atomicMax(address, val);
     } else {
         atomicMax(address, val);
@@ -204,7 +201,7 @@ T AtomicMinImpl(__gm__ T *address, T val)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicMinImpl(__ubuf__ T *address, T val)
 {
-    if constexpr (SupportType<Tuple<T>, Tuple<int32_t>, Tuple<uint32_t>, Tuple<float>>()) {
+    if constexpr (SupportTypeSimtInternel<T, int32_t, uint32_t, float>) {
         return atomicMin(address, val);
     } else {
         atomicMin(address, val);
@@ -215,8 +212,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicMinImpl(__ubuf__ T *address, T val
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicMinImpl(__gm__ T *address, T val)
 {
-    if constexpr (SupportType<Tuple<T>, Tuple<int32_t>, Tuple<uint32_t>, Tuple<int64_t>, Tuple<uint64_t>, Tuple<float>,
-                              Tuple<half2>, Tuple<bfloat16x2_t>>()) {
+    if constexpr (SupportTypeSimtInternel<T, int32_t, uint32_t, int64_t, uint64_t, float, half2, bfloat16x2_t>) {
         return atomicMin(address, val);
     } else {
         atomicMin(address, val);
@@ -264,7 +260,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline DstType AtomicIncImpl_(SrcType *address, D
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicIncImpl(__ubuf__ T *address, T val)
 {
-    if constexpr (SupportType<Tuple<T>, Tuple<uint32_t>>()) {
+    if constexpr (SupportTypeSimtInternel<T, uint32_t>) {
         return atomicInc(address, val);
     } else {
         return AtomicIncImpl_<T, __ubuf__ T>(address, val);
@@ -274,7 +270,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicIncImpl(__ubuf__ T *address, T val
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicIncImpl(__gm__ T *address, T val)
 {
-    if constexpr (SupportType<Tuple<T>, Tuple<uint32_t>, Tuple<uint64_t>>()) {
+    if constexpr (SupportTypeSimtInternel<T, uint32_t, uint64_t>) {
         return atomicInc(address, val);
     } else {
         return AtomicIncImpl_<T, __gm__ T>(address, val);
@@ -321,7 +317,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline DstType AtomicDecImpl_(SrcType *address, D
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicDecImpl(__ubuf__ T *address, T val)
 {
-    if constexpr (SupportType<Tuple<T>, Tuple<uint32_t>>()) {
+    if constexpr (SupportTypeSimtInternel<T, uint32_t>) {
         return atomicDec(address, val);
     } else {
         return AtomicDecImpl_<T, __ubuf__ T>(address, val);
@@ -331,7 +327,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicDecImpl(__ubuf__ T *address, T val
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AtomicDecImpl(__gm__ T *address, T val)
 {
-    if constexpr (SupportType<Tuple<T>, Tuple<uint32_t>, Tuple<uint64_t>>()) {
+    if constexpr (SupportTypeSimtInternel<T, uint32_t, uint64_t>) {
         return atomicDec(address, val);
     } else {
         return AtomicDecImpl_<T, __gm__ T>(address, val);
