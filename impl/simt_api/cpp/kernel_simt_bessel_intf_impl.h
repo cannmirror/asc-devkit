@@ -19,44 +19,44 @@ namespace Simt {
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T J0(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type only supports float.");
     return J0Impl(x);
 }
 
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T J1(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type only supports float.");
     return J1Impl(x);
 }
 
 template <typename T, typename U>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline U Jn(T n, U x)
 {
-    static_assert(SupportType<T, int>(), "Input(n) type only supports int.");
-    static_assert(SupportType<U, float>(), "Input(x) type only supports float.");
+    static_assert(SupportTypeSimtInternel<T, int>, "Input(n) type only supports int.");
+    static_assert(SupportTypeSimtInternel<U, float>, "Input(x) type only supports float.");
     return JnImpl(n, x);
 }
 
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Y0(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type only supports float.");
     return Y0Impl(x);
 }
 
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Y1(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type only supports float.");
     return Y1Impl(x);
 }
 
 template <typename T, typename U>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline U Yn(T n, U x)
 {
-    static_assert(SupportType<T, int>(), "Input(n) type only supports int.");
-    static_assert(SupportType<U, float>(), "Input(x) type only supports float.");
+    static_assert(SupportTypeSimtInternel<T, int>, "Input(n) type only supports int.");
+    static_assert(SupportTypeSimtInternel<U, float>, "Input(x) type only supports float.");
     return YnImpl(n, x);
 }
 

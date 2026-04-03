@@ -23,12 +23,12 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Cast(U x)
 {
     if constexpr (roundMode == RoundMode::CAST_EVEN || roundMode == RoundMode::CAST_ZERO ||
                   roundMode == RoundMode::CAST_FLOOR || roundMode == RoundMode::CAST_CEIL) {
-        static_assert(SupportType<Tuple<U, T>, Tuple<float, int>, Tuple<int, float>, Tuple<float, int64_t>,
-                                  Tuple<int64_t, float>, Tuple<float, half>, Tuple<float, bfloat16_t>>(),
+        static_assert(SupportTypeSimtInternel<Tuple<U, T>, Tuple<float, int>, Tuple<int, float>, Tuple<float, int64_t>,
+                                  Tuple<int64_t, float>, Tuple<float, half>, Tuple<float, bfloat16_t>>,
                       "Input type (U, T) only supports"
                       "[(float, int), (int, float), (float, int64), (int64, float), (float, half), (float, bfloat16)]");
     } else if constexpr (roundMode == RoundMode::CAST_NONE) {
-        static_assert(SupportType<Tuple<U, T>, Tuple<half, float>, Tuple<bfloat16_t, float>>(),
+        static_assert(SupportTypeSimtInternel<Tuple<U, T>, Tuple<half, float>, Tuple<bfloat16_t, float>>,
                       "Input type (U, T) only supports [(half, float), (bfloat16, float)]");
     } else {
         static_assert(roundMode == RoundMode::CAST_EVEN || roundMode == RoundMode::CAST_ZERO ||
@@ -46,27 +46,27 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Cast(U x)
                   roundMode == RoundMode::CAST_CEIL || roundMode == RoundMode::CAST_ROUND ||
                   roundMode == RoundMode::CAST_TRUNC) {
         static_assert(
-            SupportType<Tuple<U, T>, Tuple<half, int>, Tuple<half, uint32_t>, Tuple<float, int>, Tuple<float, uint32_t>,
+            SupportTypeSimtInternel<Tuple<U, T>, Tuple<half, int>, Tuple<half, uint32_t>, Tuple<float, int>, Tuple<float, uint32_t>,
                         Tuple<float, int64_t>, Tuple<float, uint64_t>, Tuple<bfloat16_t, int>,
                         Tuple<bfloat16_t, uint32_t>, Tuple<int, half>, Tuple<int, float>, Tuple<int, bfloat16_t>,
                         Tuple<uint32_t, half>, Tuple<uint32_t, float>, Tuple<uint32_t, bfloat16_t>,
                         Tuple<int64_t, float>, Tuple<uint64_t, float>, Tuple<half, float>, Tuple<half, bfloat16_t>,
                         Tuple<float, half>, Tuple<float, bfloat16_t>, Tuple<bfloat16_t, half>,
-                        Tuple<bfloat16_t, float>>(),
+                        Tuple<bfloat16_t, float>>,
             "Input type (U, T) only supports"
             "[(half, int), (half, uint32), (float, int), (float, uint32), (float, int64), (float, uint64),"
             " (bfloat16, int), (bfloat16, uint32), (int, half), (int, float), (int, bfloat16), (uint32, half),"
             " (uint32, float), (uint32, bfloat16), (int64, float), (uint64, float), (half, float), (half, bfloat16),"
             " (float, half), (float, bfloat16), (bfloat16, half), (bfloat16, float)]");
     } else if constexpr (roundMode == RoundMode::CAST_ODD) {
-        static_assert(SupportType<Tuple<U, T>, Tuple<float, half>>(), "Input type (U, T) only supports (float, half)");
+        static_assert(SupportTypeSimtInternel<Tuple<U, T>, Tuple<float, half>>, "Input type (U, T) only supports (float, half)");
     } else if constexpr (roundMode == RoundMode::CAST_EVEN || roundMode == RoundMode::CAST_ZERO) {
-        static_assert(SupportType<Tuple<U, T>, Tuple<float, int>, Tuple<int, float>, Tuple<float, int64_t>,
-                                  Tuple<int64_t, float>, Tuple<float, half>, Tuple<float, bfloat16_t>>(),
+        static_assert(SupportTypeSimtInternel<Tuple<U, T>, Tuple<float, int>, Tuple<int, float>, Tuple<float, int64_t>,
+                                  Tuple<int64_t, float>, Tuple<float, half>, Tuple<float, bfloat16_t>>,
                       "Input type (U, T) only supports"
                       "[(float, int), (int, float), (float, int64), (int64, float), (float, half), (float, bfloat16)]");
     } else if constexpr (roundMode == RoundMode::CAST_NONE) {
-        static_assert(SupportType<Tuple<U, T>, Tuple<half, float>, Tuple<bfloat16_t, float>>(),
+        static_assert(SupportTypeSimtInternel<Tuple<U, T>, Tuple<half, float>, Tuple<bfloat16_t, float>>,
                       "Input type (U, T) only supports [(half, float), (bfloat16, float)]");
     } else {
         static_assert(roundMode == RoundMode::CAST_RINT || roundMode == RoundMode::CAST_FLOOR ||
@@ -83,35 +83,35 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Cast(U x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Round(T x)
 {
-    static_assert(SupportType<T, float, half, bfloat16_t>(), "Input type only supports float, half, bfloat16.");
+    static_assert(SupportTypeSimtInternel<T, float, half, bfloat16_t>, "Input type only supports float, half, bfloat16.");
     return RoundImpl(x);
 }
 
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Rint(T x)
 {
-    static_assert(SupportType<T, float, half, bfloat16_t>(), "Input type only supports float, half, bfloat16.");
+    static_assert(SupportTypeSimtInternel<T, float, half, bfloat16_t>, "Input type only supports float, half, bfloat16.");
     return RintImpl(x);
 }
 
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Floor(T x)
 {
-    static_assert(SupportType<T, float, half, bfloat16_t>(), "Input type only supports float, half, bfloat16.");
+    static_assert(SupportTypeSimtInternel<T, float, half, bfloat16_t>, "Input type only supports float, half, bfloat16.");
     return FloorImpl(x);
 }
 
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Ceil(T x)
 {
-    static_assert(SupportType<T, float, half, bfloat16_t>(), "Input type only supports float, half, bfloat16.");
+    static_assert(SupportTypeSimtInternel<T, float, half, bfloat16_t>, "Input type only supports float, half, bfloat16.");
     return CeilImpl(x);
 }
 
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Trunc(T x)
 {
-    static_assert(SupportType<T, float, half, bfloat16_t>(), "Input type only supports float, half, bfloat16.");
+    static_assert(SupportTypeSimtInternel<T, float, half, bfloat16_t>, "Input type only supports float, half, bfloat16.");
     return TruncImpl(x);
 }
 

@@ -544,7 +544,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float YnCase3(int n, float x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T J0Impl(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type only supports float.");
     if (IsNanImpl(x)) {
         return ConstantsInternal::SIMT_FP32_INF / ConstantsInternal::SIMT_FP32_INF;
     }
@@ -564,7 +564,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T J0Impl(T x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T J1Impl(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type only supports float.");
     if (IsNanImpl(x)) {
         return ConstantsInternal::SIMT_FP32_INF / ConstantsInternal::SIMT_FP32_INF;
     }
@@ -584,8 +584,8 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T J1Impl(T x)
 template <typename T, typename U>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline U JnImpl(T n, U x)
 {
-    static_assert(SupportType<T, int>(), "Input(n) type only supports int.");
-    static_assert(SupportType<U, float>(), "Input(x) type only supports float.");
+    static_assert(SupportTypeSimtInternel<T, int>, "Input(n) type only supports int.");
+    static_assert(SupportTypeSimtInternel<U, float>, "Input(x) type only supports float.");
     if (n == 0) {
         return J0Impl(x);
     }
@@ -621,7 +621,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline U JnImpl(T n, U x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Y0Impl(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type only supports float.");
     if (x < 0 || IsNanImpl(x)) {
         return ConstantsInternal::SIMT_FP32_INF / ConstantsInternal::SIMT_FP32_INF;
     }
@@ -645,7 +645,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Y0Impl(T x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Y1Impl(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type only supports float.");
     if (x < 0 || IsNanImpl(x)) {
         return ConstantsInternal::SIMT_FP32_INF / ConstantsInternal::SIMT_FP32_INF;
     }
@@ -676,8 +676,8 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Y1Impl(T x)
 template <typename T, typename U>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline U YnImpl(T n, U x)
 {
-    static_assert(SupportType<T, int>(), "Input(n) type only supports int.");
-    static_assert(SupportType<U, float>(), "Input(x) type only supports float.");
+    static_assert(SupportTypeSimtInternel<T, int>, "Input(n) type only supports int.");
+    static_assert(SupportTypeSimtInternel<U, float>, "Input(x) type only supports float.");
     if (x == 0) {
         return -ConstantsInternal::SIMT_FP32_INF;
     }
