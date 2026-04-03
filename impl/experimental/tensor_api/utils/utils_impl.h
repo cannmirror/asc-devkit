@@ -25,6 +25,7 @@
 #include "include/experimental/tensor_api/utils/utils.h"
 #include "impl/experimental/tensor_api/utils/constant_impl.h"
 #include "impl/experimental/tensor_api/utils/extra_impl.h"
+#include "impl/experimental/tensor_api/utils/map_impl.h"
 #include "impl/experimental/tensor_api/utils/macro_impl.h"
 #include "include/utils/std/algorithm.h"
 #include "include/utils/std/cmath.h"
