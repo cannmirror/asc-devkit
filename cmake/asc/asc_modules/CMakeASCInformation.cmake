@@ -47,7 +47,7 @@ endif()
 # CMAKE_ASC_COMPILER: bisheng
 if(NOT CMAKE_ASC_COMPILE_OBJECT)
     set(CMAKE_ASC_COMPILE_OBJECT "<CMAKE_ASC_COMPILER> <DEFINES> <INCLUDES> -fPIC ${debug_compile_options} \
-<FLAGS> -o <OBJECT> -c -x asc <SOURCE>")
+<FLAGS> -o <OBJECT> -c --asc-aicore-lang <SOURCE>")
 endif()
 
 # Create a static archive incrementally for large object file counts.
