@@ -16,19 +16,19 @@ Reg矢量计算数据搬运接口，适用于从UB搬入MaskReg。使能post mod
 - 普通搬运
 
     ```cpp
-    __simd_callee__ inline void asc_loadalign_postupdate(vector_bool& dst, __ubuf__ uint32_t* src, int32_t offset)
+    __simd_callee__ inline void asc_loadalign_postupdate(vector_bool& dst, __ubuf__ uint32_t*& src, int32_t offset)
     ```
 
 - 上采样搬运
 
     ```cpp
-    __simd_callee__ inline void asc_loadalign_upsample_postupdate(vector_bool& dst, __ubuf__ uint32_t* src, int32_t offset)
+    __simd_callee__ inline void asc_loadalign_upsample_postupdate(vector_bool& dst, __ubuf__ uint32_t*& src, int32_t offset)
     ```
 
 - 下采样搬运
 
     ```cpp
-    __simd_callee__ inline void asc_loadalign_downsample_postupdate(vector_bool& dst, __ubuf__ uint32_t* src, int32_t offset)
+    __simd_callee__ inline void asc_loadalign_downsample_postupdate(vector_bool& dst, __ubuf__ uint32_t*& src, int32_t offset)
     ```
 
 ### 参数说明
