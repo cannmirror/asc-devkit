@@ -5,17 +5,10 @@
 | 产品     | 是否支持 |
 | ----------- |:----:|
 |Ascend 950PR/Ascend 950DT|√|
-|Atlas A3 训练系列产品/Atlas A3 推理系列产品|√|
-|Atlas A2 训练系列产品/Atlas A2 推理系列产品|√|
-|Atlas 200I/500 A2 推理产品|x|
-|Atlas 推理系列产品AI Core|x|
-|Atlas 推理系列产品Vector Core|x|
-|Atlas 训练系列产品|x|
-|Atlas 200/300/500 推理产品|x|
 
 ## 功能说明
 
-ScaleBNDLayoutFormat用于定义ScaleBND格式的布局，ScaleBND格式是一种支持缩放和BND格式的布局。
+ScaleBNDLayoutFormat用于定义ScaleBND格式的布局，ScaleBND格式是一种支持缩放的布局。
 
 ## 结构体定义
 
@@ -35,22 +28,41 @@ struct ScaleBNDLayoutFormat {
 ## 参数说明
 
 | 参数名 | 输入/输出 | 描述 |
-|--------|------|------|
-| row | 输入 | 内层矩阵的行数，固定为1。 |
-| column | 输入 | 内层矩阵的列数，固定为1。 |
+|--------|-----------|------|
+| T | 输入 | 数据类型模板参数。<br>支持的数据类型为：fp8_e8m0_t。 |
+| row | 输入 | 矩阵的总行数。 |
+| column | 输入 | 矩阵的总列数。 |
+
+## 返回值
+
+- 输入为编译时常量时，返回ScaleBND格式的Layout类型。
+- 输入为整型变量时，返回ScaleBND格式的Layout对象。
+- 返回对齐后的Layout，对齐方式及对应位置的参数大小说明详见[Layout和层次化表述法](../../../Layout和层次化表述法.md)。
 
 ## 约束说明
 
-- T必须是有效的数据类型，如half、float、int32_t等。
-- ScaleBND格式不使用分块存储。
+- 参数row和column需为size_t类型或Int整型常量。
+- 对于T为fp8_e8m0_t时，row需为2的倍数。
 
 ## 调用示例
 
 ```cpp
 // 创建ScaleBND格式Layout
-using T = half;
-size_t mLength = 128;
-size_t nLength = 64;
+using namespace AscendC::Te;
 
-auto layout = AscendC::MakeScaleBNDLayout<T>(mLength, nLength);
+// 根据flag的值，选择ScaleBND格式或ScaleBDN格式的类型
+constexpr bool flag = true;
+using MyLayoutType = conditional_t<flag, ScaleBNDFormatLayout<fp8_e8m0_t>, ScaleBDNFormatLayout<fp8_e8m0_t>>;
+size_t scaleK = 128;
+size_t n = 128;
+auto layoutAL1 = MyLayoutType{}(scaleK, n);
+
+// 编译时常量
+using MyScaleBNDLayout = ScaleBNDLayoutFormat<fp8_e8m0_t>::type<Std::Int<64>, Std::Int<32>>;
+constexpr MyScaleBNDLayout staticLayout1;
+auto staticLayout2 = MyScaleBNDLayout{};
+
+// 运行时值
+ScaleBNDLayoutFormat<fp8_e8m0_t> scaleBNDFormat;
+auto layout = scaleBNDFormat(64, 32);
 ```

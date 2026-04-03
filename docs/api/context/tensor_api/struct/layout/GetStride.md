@@ -2,18 +2,9 @@
 
 ## 产品支持情况
 
-|产品|是否支持|
-|--|:-:|
+| 产品     | 是否支持 |
+| ----------- |:----:|
 |Ascend 950PR/Ascend 950DT|√|
-|Atlas A3 训练系列产品/Atlas A3 推理系列产品|√|
-|Atlas A2 训练系列产品/Atlas A2 推理系列产品|√|
-|Atlas 200I/500 A2 推理产品|x|
-|Atlas 推理系列产品AI Core|x|
-|Atlas 推理系列产品Vector Core|x|
-|Atlas 训练系列产品|x|
-|Atlas 200/300/500 推理产品|x|
-
-
 
 ## 功能说明
 
@@ -22,12 +13,25 @@
 ## 函数原型
 
 ```cpp
-__aicore__ inline decltype(auto) GetStride() const
+template <size_t... Is, typename ShapeType, typename StrideType>
+__aicore__ inline constexpr auto GetStride(const Layout<ShapeType, StrideType>& layout)
 ```
 
 ## 参数说明
 
-无
+表1 模板参数说明
+
+| 参数名 | 输入/输出 | 描述 |
+| -------- | ----------- | ------ |
+| Is... | 输入 | 可选。多级索引递归选取。 |
+| ShapeType | 输入 | Layout的shape类型。 |
+| StrideType | 输入 | Layout的stride类型。 |
+
+表2 参数说明
+
+| 参数名 | 输入/输出 | 描述 |
+| -------- | ----------- | ------ |
+| layout | 输入 | Layout对象。 |
 
 ## 返回值说明
 
@@ -35,9 +39,19 @@ __aicore__ inline decltype(auto) GetStride() const
 
 ## 约束说明
 
-无
+- layout必须是有效的Layout对象。
+- 索引Is...必须在有效范围内。
 
 ## 调用示例
 
-见[5.13.1.4-调用示例](../tensor/GetLayout.md)。
+```cpp
+using namespace AscendC::Te;
+
+auto layout = MakeNDLayout(128,128);
+// 无模板实参时 Is... 为空，等价于 layout.Stride() 得到整个stride元组
+auto strideTuple = GetStride(layout);
+
+// 带索引时等价于 layout.Stride<0>()，按递归取stride子结构或某一维
+auto stride0 = GetStride<0>(layout);
+```
 

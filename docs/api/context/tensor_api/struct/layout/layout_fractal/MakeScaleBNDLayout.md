@@ -1,4 +1,4 @@
-# MakeScaleADNLayout
+# MakeScaleBNDLayout
 
 ## 产品支持情况
 
@@ -10,12 +10,12 @@
 
 ```cpp
 template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeScaleADNLayout(U row, S column)
+__aicore__ inline decltype(auto) MakeScaleBNDLayout(U row, S column)
 ```
 
 ## 功能描述
 
-创建 ScaleADN 格式的 Layout 对象。ScaleADN 格式用于矩阵 A 的转置布局（m, scaleK），常用于矩阵乘法中 A 矩阵转置后的存储。
+创建 ScaleBND 格式的 Layout 对象。ScaleBND 格式用于矩阵 B 的非转置布局（scaleK, n），常用于矩阵乘法中 B 矩阵的存储。
 
 ## 参数说明
 
@@ -31,19 +31,19 @@ __aicore__ inline decltype(auto) MakeScaleADNLayout(U row, S column)
 
 | 参数名 | 输入/输出 | 描述 |
 |--------|-----------|------|
-| row | 输入 | 矩阵的行数（`m`）。 |
-| column | 输入 | 矩阵的列数（`scaleK`）。 |
+| row | 输入 | 矩阵的行数。 |
+| column | 输入 | 矩阵的列数。 |
 
 ## 返回值
 
-- 输入为编译时常量时，返回ScaleADNLayout格式的Layout类型。
-- 输入为整型变量时，返回ScaleADNLayout格式的Layout对象。
+- 输入为编译时常量时，返回ScaleBNDLayout格式的Layout类型。
+- 输入为整型变量时，返回ScaleBNDLayout格式的Layout对象。
 - 返回对齐后的Layout，对齐方式及对应位置的参数大小说明详见[Layout和层次化表述法](../../../Layout和层次化表述法.md)。
 
 ## 约束说明
 
 - 参数row和column需为size_t类型或Int整型常量。
-- 对于T为fp8_e8m0_t时，column需为2的倍数。
+- 对于T为fp8_e8m0_t时，row需为2的倍数。
 
 ## 使用示例
 
@@ -51,11 +51,10 @@ __aicore__ inline decltype(auto) MakeScaleADNLayout(U row, S column)
 using namespace AscendC::Te;
 
 // 使用编译时常量
-auto staticLayout = MakeScaleADNLayout<fp8_e8m0_t>(Std::Int<32>{}, Std::Int<64>{});
+auto staticLayout = MakeScaleBNDLayout<fp8_e8m0_t>(Std::Int<64>{}, Std::Int<32>{});
 
 // 使用运行时变量
-size_t m = 32;
 size_t scaleK = 64;
-auto layout2 = MakeScaleADNLayout<fp8_e8m0_t>(m, scaleK);
+size_t n = 32;
+auto layout2 = MakeScaleBNDLayout<fp8_e8m0_t>(scaleK, n);
 ```
-
