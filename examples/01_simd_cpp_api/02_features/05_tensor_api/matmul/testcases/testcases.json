@@ -1,0 +1,850 @@
+{
+    "testcases": [
+        {
+            "name": "32_32_16_int8_int8_int32_ND_ND_ND",
+            "shape": [
+                32,
+                32,
+                16
+            ],
+            "position": [
+                "GM",
+                "GM",
+                "GM",
+                "GM"
+            ],
+            "format": [
+                "ND",
+                "ND",
+                "ND",
+                "ND"
+            ],
+            "dtype": [
+                "int8_t",
+                "int8_t",
+                "int32_t",
+                "int32_t"
+            ],
+            "is_transpose": [
+                0,
+                0
+            ],
+            "is_bias": 0,
+            "single_shape": [
+                32,
+                32,
+                16
+            ],
+            "base_shape": [
+                32,
+                32,
+                32
+            ],
+            "step_num": [
+                1,
+                1,
+                1,
+                1
+            ]
+        },
+        {
+            "name": "512_512_32_int8_int8_int32_ND_ND_ND",
+            "shape": [
+                512,
+                512,
+                32
+            ],
+            "position": [
+                "GM",
+                "GM",
+                "GM",
+                "GM"
+            ],
+            "format": [
+                "ND",
+                "ND",
+                "ND",
+                "ND"
+            ],
+            "dtype": [
+                "int8_t",
+                "int8_t",
+                "int32_t",
+                "int32_t"
+            ],
+            "is_transpose": [
+                0,
+                0
+            ],
+            "is_bias": 0,
+            "single_shape": [
+                512,
+                512,
+                32
+            ],
+            "base_shape": [
+                128,
+                256,
+                32
+            ],
+            "step_num": [
+                4,
+                4,
+                1,
+                1
+            ]
+        },
+        {
+            "name": "32_64_96_half_half_float_ND_ND_ND",
+            "shape": [
+                32,
+                64,
+                96
+            ],
+            "position": [
+                "GM",
+                "GM",
+                "GM",
+                "GM"
+            ],
+            "format": [
+                "ND",
+                "ND",
+                "ND",
+                "ND"
+            ],
+            "dtype": [
+                "half",
+                "half",
+                "float",
+                "float"
+            ],
+            "is_transpose": [
+                0,
+                0
+            ],
+            "is_bias": 0,
+            "single_shape": [
+                32,
+                64,
+                96
+            ],
+            "base_shape": [
+                32,
+                64,
+                96
+            ],
+            "step_num": [
+                1,
+                1,
+                1,
+                1
+            ]
+        },
+        {
+            "name": "64_64_96_half_half_float_ND_ND_ND",
+            "shape": [
+                64,
+                64,
+                96
+            ],
+            "position": [
+                "GM",
+                "GM",
+                "GM",
+                "GM"
+            ],
+            "format": [
+                "ND",
+                "ND",
+                "ND",
+                "ND"
+            ],
+            "dtype": [
+                "half",
+                "half",
+                "float",
+                "float"
+            ],
+            "is_transpose": [
+                0,
+                0
+            ],
+            "is_bias": 0,
+            "single_shape": [
+                64,
+                64,
+                96
+            ],
+            "base_shape": [
+                64,
+                64,
+                96
+            ],
+            "step_num": [
+                1,
+                1,
+                1,
+                1
+            ]
+        },
+        {
+            "name": "128_64_128_int8_int8_int32_ND_ND_ND",
+            "shape": [
+                128,
+                64,
+                128
+            ],
+            "position": [
+                "GM",
+                "GM",
+                "GM",
+                "GM"
+            ],
+            "format": [
+                "ND",
+                "ND",
+                "ND",
+                "ND"
+            ],
+            "dtype": [
+                "int8_t",
+                "int8_t",
+                "int32_t",
+                "int32_t"
+            ],
+            "is_transpose": [
+                0,
+                0
+            ],
+            "is_bias": 0,
+            "single_shape": [
+                128,
+                64,
+                128
+            ],
+            "base_shape": [
+                128,
+                64,
+                128
+            ],
+            "step_num": [
+                1,
+                1,
+                1,
+                1
+            ]
+        },
+        {
+            "name": "128_64_128_float_float_float_ND_ND_ND",
+            "shape": [
+                128,
+                64,
+                128
+            ],
+            "position": [
+                "GM",
+                "GM",
+                "GM",
+                "GM"
+            ],
+            "format": [
+                "ND",
+                "ND",
+                "ND",
+                "ND"
+            ],
+            "dtype": [
+                "float",
+                "float",
+                "float",
+                "int32_t"
+            ],
+            "is_transpose": [
+                0,
+                0
+            ],
+            "is_bias": 0,
+            "single_shape": [
+                128,
+                64,
+                128
+            ],
+            "base_shape": [
+                128,
+                64,
+                64
+            ],
+            "step_num": [
+                1,
+                1,
+                2,
+                2
+            ]
+        },
+        {
+            "name": "63_66_48_half_half_float_ND_DN_ND",
+            "shape": [
+                63,
+                66,
+                48
+            ],
+            "position": [
+                "GM",
+                "GM",
+                "GM",
+                "GM"
+            ],
+            "format": [
+                "ND",
+                "DN",
+                "ND",
+                "ND"
+            ],
+            "dtype": [
+                "half",
+                "half",
+                "float",
+                "int32_t"
+            ],
+            "is_transpose": [
+                0,
+                1
+            ],
+            "is_bias": 0,
+            "single_shape": [
+                63,
+                66,
+                48
+            ],
+            "base_shape": [
+                64,
+                80,
+                48
+            ],
+            "step_num": [
+                1,
+                1,
+                1,
+                1
+            ]
+        },
+        {
+            "name": "68_97_93_half_half_float_DN_ND_ND",
+            "shape": [
+                68,
+                97,
+                93
+            ],
+            "position": [
+                "GM",
+                "GM",
+                "GM",
+                "GM"
+            ],
+            "format": [
+                "DN",
+                "ND",
+                "ND",
+                "ND"
+            ],
+            "dtype": [
+                "half",
+                "half",
+                "float",
+                "int32_t"
+            ],
+            "is_transpose": [
+                1,
+                0
+            ],
+            "is_bias": 0,
+            "single_shape": [
+                68,
+                97,
+                93
+            ],
+            "base_shape": [
+                80,
+                112,
+                96
+            ],
+            "step_num": [
+                1,
+                1,
+                1,
+                1
+            ]
+        },
+        {
+            "name": "75_79_201_half_half_float_ND_DN_ND",
+            "shape": [
+                75,
+                79,
+                201
+            ],
+            "position": [
+                "GM",
+                "GM",
+                "GM",
+                "GM"
+            ],
+            "format": [
+                "ND",
+                "DN",
+                "ND",
+                "ND"
+            ],
+            "dtype": [
+                "half",
+                "half",
+                "float",
+                "float"
+            ],
+            "is_transpose": [
+                0,
+                1
+            ],
+            "is_bias": 0,
+            "single_shape": [
+                75,
+                79,
+                201
+            ],
+            "base_shape": [
+                80,
+                80,
+                128
+            ],
+            "step_num": [
+                1,
+                1,
+                2,
+                2
+            ]
+        },
+        {
+            "name": "59_61_232_half_half_float_DN_ND_ND",
+            "shape": [
+                59,
+                61,
+                232
+            ],
+            "position": [
+                "GM",
+                "GM",
+                "GM",
+                "GM"
+            ],
+            "format": [
+                "DN",
+                "ND",
+                "ND",
+                "ND"
+            ],
+            "dtype": [
+                "half",
+                "half",
+                "float",
+                "float"
+            ],
+            "is_transpose": [
+                1,
+                0
+            ],
+            "is_bias": 0,
+            "single_shape": [
+                59,
+                61,
+                232
+            ],
+            "base_shape": [
+                64,
+                64,
+                240
+            ],
+            "step_num": [
+                1,
+                1,
+                1,
+                1
+            ]
+        },
+        {
+            "name": "97_83_231_int8_int8_int32_ND_DN_ND",
+            "shape": [
+                97,
+                83,
+                231
+            ],
+            "position": [
+                "GM",
+                "GM",
+                "GM",
+                "GM"
+            ],
+            "format": [
+                "ND",
+                "DN",
+                "ND",
+                "ND"
+            ],
+            "dtype": [
+                "int8_t",
+                "int8_t",
+                "int32_t",
+                "int32_t"
+            ],
+            "is_transpose": [
+                0,
+                1
+            ],
+            "is_bias": 0,
+            "single_shape": [
+                97,
+                83,
+                231
+            ],
+            "base_shape": [
+                112,
+                96,
+                256
+            ],
+            "step_num": [
+                1,
+                1,
+                1,
+                1
+            ]
+        },
+        {
+            "name": "71_82_188_int8_int8_int32_DN_ND_ND",
+            "shape": [
+                71,
+                82,
+                188
+            ],
+            "position": [
+                "GM",
+                "GM",
+                "GM",
+                "GM"
+            ],
+            "format": [
+                "DN",
+                "ND",
+                "ND",
+                "ND"
+            ],
+            "dtype": [
+                "int8_t",
+                "int8_t",
+                "int32_t",
+                "int32_t"
+            ],
+            "is_transpose": [
+                1,
+                0
+            ],
+            "is_bias": 0,
+            "single_shape": [
+                71,
+                82,
+                188
+            ],
+            "base_shape": [
+                80,
+                96,
+                192
+            ],
+            "step_num": [
+                1,
+                1,
+                1,
+                1
+            ]
+        },
+        {
+            "name": "63_98_112_int8_int8_int32_ND_DN_ND",
+            "shape": [
+                63,
+                98,
+                112
+            ],
+            "position": [
+                "GM",
+                "GM",
+                "GM",
+                "GM"
+            ],
+            "format": [
+                "ND",
+                "DN",
+                "ND",
+                "ND"
+            ],
+            "dtype": [
+                "int8_t",
+                "int8_t",
+                "int32_t",
+                "int32_t"
+            ],
+            "is_transpose": [
+                0,
+                1
+            ],
+            "is_bias": 0,
+            "single_shape": [
+                63,
+                98,
+                112
+            ],
+            "base_shape": [
+                64,
+                128,
+                128
+            ],
+            "step_num": [
+                1,
+                1,
+                1,
+                1
+            ]
+        },
+        {
+            "name": "106_60_125_int8_int8_int32_DN_ND_ND",
+            "shape": [
+                106,
+                60,
+                125
+            ],
+            "position": [
+                "GM",
+                "GM",
+                "GM",
+                "GM"
+            ],
+            "format": [
+                "DN",
+                "ND",
+                "ND",
+                "ND"
+            ],
+            "dtype": [
+                "int8_t",
+                "int8_t",
+                "int32_t",
+                "int32_t"
+            ],
+            "is_transpose": [
+                1,
+                0
+            ],
+            "is_bias": 0,
+            "single_shape": [
+                106,
+                60,
+                125
+            ],
+            "base_shape": [
+                112,
+                64,
+                128
+            ],
+            "step_num": [
+                1,
+                1,
+                1,
+                1
+            ]
+        },
+        {
+            "name": "68_69_70_float_float_float_ND_DN_ND",
+            "shape": [
+                68,
+                69,
+                70
+            ],
+            "position": [
+                "GM",
+                "GM",
+                "GM",
+                "GM"
+            ],
+            "format": [
+                "ND",
+                "DN",
+                "ND",
+                "ND"
+            ],
+            "dtype": [
+                "float",
+                "float",
+                "float",
+                "float"
+            ],
+            "is_transpose": [
+                0,
+                1
+            ],
+            "is_bias": 0,
+            "single_shape": [
+                68,
+                69,
+                70
+            ],
+            "base_shape": [
+                80,
+                80,
+                72
+            ],
+            "step_num": [
+                1,
+                1,
+                1,
+                1
+            ]
+        },
+        {
+            "name": "20_21_22_float_float_float_DN_ND_ND",
+            "shape": [
+                20,
+                21,
+                22
+            ],
+            "position": [
+                "GM",
+                "GM",
+                "GM",
+                "GM"
+            ],
+            "format": [
+                "DN",
+                "ND",
+                "ND",
+                "ND"
+            ],
+            "dtype": [
+                "float",
+                "float",
+                "float",
+                "float"
+            ],
+            "is_transpose": [
+                1,
+                0
+            ],
+            "is_bias": 0,
+            "single_shape": [
+                20,
+                21,
+                22
+            ],
+            "base_shape": [
+                32,
+                32,
+                24
+            ],
+            "step_num": [
+                1,
+                1,
+                1,
+                1
+            ]
+        },
+        {
+            "name": "49_63_119_float_float_float_ND_DN_ND",
+            "shape": [
+                49,
+                63,
+                119
+            ],
+            "position": [
+                "GM",
+                "GM",
+                "GM",
+                "GM"
+            ],
+            "format": [
+                "ND",
+                "DN",
+                "ND",
+                "ND"
+            ],
+            "dtype": [
+                "float",
+                "float",
+                "float",
+                "float"
+            ],
+            "is_transpose": [
+                0,
+                1
+            ],
+            "is_bias": 0,
+            "single_shape": [
+                49,
+                63,
+                119
+            ],
+            "base_shape": [
+                64,
+                64,
+                120
+            ],
+            "step_num": [
+                1,
+                1,
+                1,
+                1
+            ]
+        },
+        {
+            "name": "127_102_60_float_float_float_DN_ND_ND",
+            "shape": [
+                127,
+                102,
+                60
+            ],
+            "position": [
+                "GM",
+                "GM",
+                "GM",
+                "GM"
+            ],
+            "format": [
+                "DN",
+                "ND",
+                "ND",
+                "ND"
+            ],
+            "dtype": [
+                "float",
+                "float",
+                "float",
+                "float"
+            ],
+            "is_transpose": [
+                1,
+                0
+            ],
+            "is_bias": 0,
+            "single_shape": [
+                127,
+                102,
+                60
+            ],
+            "base_shape": [
+                128,
+                112,
+                64
+            ],
+            "step_num": [
+                1,
+                1,
+                1,
+                1
+            ]
+        }
+    ]
+}
