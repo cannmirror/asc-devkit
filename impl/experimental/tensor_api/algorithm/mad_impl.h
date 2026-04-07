@@ -28,15 +28,15 @@ namespace AscendC {
 namespace Te {
 
 template <typename Tp, const Tp& traits, typename T, typename... Params>
-__aicore__ inline void Mad(const MmadAtom<T>& atomMad, const Params& ...params)
+__aicore__ inline void Mad(const MmadAtom<T>& atomMmad, const Params& ...params)
 {
-    atomMad.template Call<traits>(params...);
+    atomMmad.template Call<traits>(params...);
 }
 
 template <typename T, typename... Params>
-__aicore__ inline void Mad(const MmadAtom<T>& atomMad, const Params& ...params)
+__aicore__ inline void Mad(const MmadAtom<T>& atomMmad, const Params& ...params)
 {
-    atomMad.Call(params...);
+    atomMmad.Call(params...);
 }
 
 template <typename... Args>

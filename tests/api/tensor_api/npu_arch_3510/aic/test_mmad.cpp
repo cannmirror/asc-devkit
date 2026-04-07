@@ -66,7 +66,7 @@ TEST_F(Tensor_Api_Mmad, MmadOperation##MOCK_FUNC##_##DST_TYPE##_##SRC_TYPE##_##M
     para.k = K;\
     para.unitFlag = 0;\
     para.cmatrixInitVal = true;\
-    Mmad(l0cTensor, l0aTensor, l0bTensor, para);\
+    Mad(MmadAtom<MmadTraits<MmadOperation, MmadTraitDefault>>{}, l0cTensor, l0aTensor, l0bTensor, para);\
     GlobalMockObject::verify();\
 }
 

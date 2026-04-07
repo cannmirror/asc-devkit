@@ -22,25 +22,27 @@
 #ifndef IMPL_TENSOR_API_ATOM_MAD_TRAITS_IMPL_H
 #define IMPL_TENSOR_API_ATOM_MAD_TRAITS_IMPL_H
 
+#include "impl/experimental/tensor_api/utils/utils_impl.h"
+
 namespace AscendC {
 namespace Te {
 
-template <typename MadOperation, typename... MadOpArgs>
+template <typename MmaOperation, typename... MmaOpArgs>
 struct MmadTraits{};
 
-template <typename MadOp, typename MadTraits, typename MadOpWith, typename MadTraitsWith>
-struct MmadTraits<MadOp, MadTraits, MadOpWith, MadTraitsWith>
+template <typename MmaOp, typename MmaTraits, typename MmaOpWith, typename MmaTraitsWith>
+struct MmadTraits<MmaOp, MmaTraits, MmaOpWith, MmaTraitsWith>
 {
-    using TraitType = typename MadTraits::TraitType;
-    static constexpr const TraitType defaultTrait = MadTraits::value;
+    using TraitType = typename MmaTraits::TraitType;
+    static constexpr const TraitType defaultTrait = MmaTraits::value;
 
     template <const TraitType& trait = defaultTrait, typename... Args>
     __aicore__ inline void MmadUnpack(const Args& ...args) const {
-        MadOp::template Mad<TraitType, trait, Args...>(args...);
+        MmaOp::template Mmad<TraitType, trait, Args...>(args...);
     }
 
     template <typename... Args>
-    __aicore__ inline constexpr MmadTraits<MadOpWith, MadTraitsWith>
+    __aicore__ inline constexpr MmadTraits<MmaOpWith, MmaTraitsWith>
     with(const Args& ...args) const
     {
         return {args...};

@@ -22,7 +22,8 @@
 #ifndef IMPL_TENSOR_API_DETAIL_ATOM_MAD_ATOM_IMPL_H
 #define IMPL_TENSOR_API_DETAIL_ATOM_MAD_ATOM_IMPL_H
 
-#include "impl/experimental/tensor_api/atom/cube_compute/cube_compute_impl.h"
+#include "impl/experimental/tensor_api/arch/compute/mmad/mmad.h"
+#include "impl/experimental/tensor_api/atom/mad_traits_impl.h"
 
 namespace AscendC {
 namespace Te {
@@ -30,24 +31,24 @@ namespace Te {
 template <typename... Args>
 struct MmadAtom;
 
-template <typename MadOperation>
-struct MmadAtom<MadOperation> : MmadAtom<MmadTraits<MadOperation>> {};
+template <typename MmaOperation>
+struct MmadAtom<MmaOperation> : MmadAtom<MmadTraits<MmaOperation>> {};
 
-template <typename MadOperation, typename... Args>
-struct MmadAtom<MmadTraits<MadOperation, Args...>> : MmadTraits<MadOperation, Args...>
+template <typename MmaOperation, typename... Args>
+struct MmadAtom<MmadTraits<MmaOperation, Args...>> : MmadTraits<MmaOperation, Args...>
 {
-    using MadTraitType = MmadTraits<MadOperation, Args...>;
-    using TraitType = typename MadTraitType::TraitType;
-    static constexpr const TraitType defaultTrait = MadTraitType::defaultTrait;
+    using MmaTraitType = MmadTraits<MmaOperation, Args...>;
+    using TraitType = typename MmaTraitType::TraitType;
+    static constexpr const TraitType defaultTrait = MmaTraitType::defaultTrait;
 
     template <const TraitType& traits = defaultTrait, typename... Params>
     __aicore__ inline void Call(const Params& ...params) const {
-        MadTraitType::template MmadUnpack<traits>(params...);
+        MmaTraitType::template MmadUnpack<traits>(params...);
     }
 
     template <typename... TraitsArgs>
     __aicore__ inline auto with(TraitsArgs&&... args) const {
-        auto traits = MadTraitType::with(static_cast<TraitsArgs&&>(args)...);
+        auto traits = MmaTraitType::with(static_cast<TraitsArgs&&>(args)...);
         return MmadAtom<decltype(traits)>{traits};
     }
 };
