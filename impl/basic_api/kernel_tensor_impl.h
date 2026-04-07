@@ -37,6 +37,20 @@ __aicore__ inline constexpr auto Prod(const Shape<Args...>& t) {
     return ProdImpl(t, Std::make_index_sequence<sizeof...(Args)>{});
 }
 
+template <Hardware pos>
+__aicore__ inline uint32_t GetDynamicMemStartPos() {
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510 && defined(__NPU_DEVICE__)
+    if constexpr (pos == Hardware::UB) {
+        extern __ubuf__ uint32_t dynamicStartUB[];
+        return (uint64_t)(&dynamicStartUB[0]);
+    } else {
+        return 0;
+    }
+#else
+    return 0;
+#endif
+}
+
 // CPU Impl
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
 inline uint8_t* GetBaseAddrCpu(int8_t logicPos);
@@ -1607,6 +1621,9 @@ __aicore__ inline LocalMemAllocator<hard>::LocalMemAllocator()
         KERNEL_LOG_INTERNAL(
             KERNEL_ERROR, "only one LocalMemAllocator can exist at the same hardware position at any given time."));
 #endif
+    if constexpr (hard == Hardware::UB) {
+        head_ = GetDynamicMemStartPos<hard>();
+    }
 }
 
 template <Hardware hard>
