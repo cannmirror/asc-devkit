@@ -26,6 +26,7 @@
 #include "impl/experimental/tensor_api/tensor/layout_method.h"
 #include "impl/experimental/tensor_api/tensor/coord_index.h"
 #include "impl/experimental/tensor_api/tensor/layout_fractal.h"
+#include "impl/experimental/tensor_api/tensor/frame_layout.h"
 
 namespace AscendC {
 namespace Te {

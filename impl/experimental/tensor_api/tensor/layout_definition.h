@@ -29,6 +29,37 @@
 namespace AscendC {
 namespace Te {
 
+struct ZnLayoutPattern{};
+
+struct ZzLayoutPattern{};
+
+struct NnLayoutPattern{};
+
+struct NzLayoutPattern{};
+
+struct L0CLayoutPattern{};
+
+struct NDLayoutPattern{};
+
+struct DNLayoutPattern{};
+
+struct ScaleANDLayoutPattern{};
+
+struct ScaleADNLayoutPattern{};
+
+struct ScaleBNDLayoutPattern{};
+
+struct ScaleBDNLayoutPattern{};
+
+struct DefaultPattern{};
+
+template <typename T = uint16_t, size_t C0 = 32>
+struct LayoutTrait {
+    using type = T;
+    static constexpr size_t C0_size = C0;
+    static constexpr auto C0_element = Std::Int<C0_size / sizeof(T)>{};
+};
+
 template <typename T, typename U, typename S>
 __aicore__ inline constexpr auto Crd2Idx(const T& coord, const U& shape, const S& stride);
 
@@ -45,9 +76,10 @@ using Tile = Std::tuple<Layouts...>;
 template <typename... Coords>
 using Coord = Std::tuple<Coords...>;
 
-template <typename T, typename U>
+template <typename T, typename U, typename LayoutPattern = DefaultPattern>
 struct Layout : private Std::tuple<T, U>
 {
+    using tag = LayoutPattern;
     static constexpr auto size = StaticLayoutSize<T, U>::size;
     static constexpr auto depth = nesting_depth_v<T>;
     static constexpr auto rank = Std::tuple_size_v<T>;
@@ -120,11 +152,11 @@ struct Layout : private Std::tuple<T, U>
 template <typename T>
 struct is_layout : Std::false_type {};
 
-template <typename T, typename U>
-struct is_layout<Layout<T, U>> : Std::true_type {};
+template <typename T, typename U, typename S>
+struct is_layout<Layout<T, U, S>> : Std::true_type {};
 
 template <typename T>
-constexpr bool is_layout_v = is_layout<T>::value;
+constexpr bool is_layout_v = is_layout<Std::remove_cvref_t<T>>::value;
 
 } // namespace Te
 } // namespace AscendC

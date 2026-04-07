@@ -169,7 +169,7 @@ template <typename Engine, typename Layout>
 struct IsTileTensor<LocalTensor<TensorAttribute<Engine,Layout>>> : Std::true_type {};
 
 template <typename T>
-constexpr bool IsTileTensorV = IsTileTensor<T>::value;
+constexpr bool IsTileTensorV = IsTileTensor<Std::remove_cvref_t<T>>::value;
 
 // make_tensor.h
 template <typename T, typename = void>

@@ -89,6 +89,7 @@ asc-devkit:
       - impl/experimental/tensor_api/arch/vector_datamove/data_copy/data_copy_routing.h
       - impl/experimental/tensor_api/arch/data_copy_routing_base.h
       - impl/experimental/tensor_api/atom/vector_datamove/vector_datamove_impl.h
+      - impl/experimental/tensor_api/tensor/get_pattern.h
       - impl/basic_api/dav_c310/kernel_operator_proposal_impl.h
       - impl/basic_api/dav_c310/kfc/kfc_comm_server.h
       - impl/adv_api/detail/reduce/reduce_mean/reduce_mean_3510_impl.h

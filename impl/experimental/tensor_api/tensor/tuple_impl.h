@@ -162,7 +162,7 @@ __aicore__ inline constexpr auto SelectTuple(Tuple&& t)
 template<size_t index, size_t I, size_t... Is, typename Tuple>
 __aicore__ inline constexpr decltype(auto) GetValue(const Tuple& t)
 {
-    auto tupleEle = Std::get<index>(t);
+    decltype(auto) tupleEle = Std::get<index>(t);
     if constexpr(sizeof...(Is) == 0) {
         return Std::get<I>(tupleEle);
     } else {
