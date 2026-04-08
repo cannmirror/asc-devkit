@@ -25,6 +25,9 @@
 #include "impl/experimental/tensor_api/atom/cube_datamove/cube_datamove_impl.h"
 #include "impl/experimental/tensor_api/atom/vector_datamove/vector_datamove_impl.h"
 
+#include "impl/experimental/tensor_api/arch/datamove/l1_to_bt/copy.h"
+#include "impl/experimental/tensor_api/arch/datamove/l1_to_fb/copy.h"
+
 namespace AscendC {
 namespace Te {
 

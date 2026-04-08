@@ -23,6 +23,7 @@
 #define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_FIXPIPE_UTILS_H
 
 #include "impl/experimental/tensor_api/arch/utils/arch_utils.h"
+#include "impl/experimental/tensor_api/arch/datamove/l1_to_fb/copy.h"
 
 namespace AscendC {
 namespace Te{
@@ -67,7 +68,7 @@ public:
         auto dstAddr = reinterpret_cast<__fbuf__ uint64_t*>(AllocTempBuf(calNSize));
         auto dst = MakeTensor(MakeFixbufmemPtr(dstAddr), src.Layout());
         auto tileSrc = TileSrcTensor(src, calNSize, nIterIndex);
-        DataCopyL12FB3510::Run<DEFAULT_DATA_COPY_TRAIT>(dst, tileSrc);
+        DataCopyL12FB3510::Run<DEFAULT_COPY_L1_FB_TRAIT>(dst, tileSrc);
         SetFpc(dstAddr);
     }
 private:

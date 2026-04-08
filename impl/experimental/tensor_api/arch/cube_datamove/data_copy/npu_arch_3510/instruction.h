@@ -134,50 +134,6 @@ public:
     }
 };
 
-class CopyL12BTInstr {
-public:
-    template <typename T, typename U, typename... Params>
-    __aicore__ inline static void DataCopy(const T& dst, const U& src, const Params& ...params) {
-        CopyL12BT(reinterpret_cast<uint64_t>(dst.Data().Get()), src.Data().Get(), params...);
-    }
-
-private:
-    template <typename T>
-    __aicore__ inline static void CopyL12BT(uint64_t dst, __cbuf__ T* src, bool convControl, uint16_t blockCount, uint16_t blockLen,
-        uint16_t srcStride, uint16_t dstStride)
-    {
-        if ASCEND_IS_AIV {
-            return;
-        }
-
-        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            copy_cbuf_to_bt(dst, src, convControl, blockCount, blockLen, srcStride, dstStride);
-        }
-    }
-};
-
-class CopyL12FBInstr {
-public:
-    template <typename T, typename U, typename... Params>
-    __aicore__ inline static void DataCopy(const T& dst, const U& src, const Params& ...params) {
-        CopyL12FB(reinterpret_cast<uint64_t>(dst.Data().Get()), src.Data().Get(), params...);
-    }
-
-private:
-    template <typename T>
-    __aicore__ inline static void CopyL12FB(uint64_t dst, __cbuf__ T* src, uint16_t blockCount, uint16_t blockLen,
-        uint16_t srcStride, uint16_t dstStride)
-    {
-        if ASCEND_IS_AIV {
-            return;
-        }
-
-        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            copy_cbuf_to_fbuf((__fbuf__ void*)dst, (__cbuf__ void*)src, blockCount, blockLen, srcStride, dstStride);
-        }
-    }
-};
-
 class CopyCbufToUbufInstr {
 public:
     template <typename T, typename U, typename... Params>
@@ -203,7 +159,7 @@ private:
 } // namespace Te
 } // namespace AscendC
 
-#endif
+#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_3510_INSTRUCTION_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

@@ -204,7 +204,7 @@ __aicore__ inline void tensor2tensor_run_stub(const T& dst, const U& src, const 
             .times(1) \
             .will(invoke(&copy_cbuf_to_bt_stub<DTYPE, SRC_SIZE1, SRC_SIZE2, DST_SIZE1, DST_SIZE2>)); \
         CREATE_TENSOR(DTYPE, SRC_SIZE1, SRC_SIZE2, DST_SIZE1, DST_SIZE2, cbuf, L1, ND, biasbuf, Bias, ND) \
-        DataCopy<DEFAULT_DATA_COPY_TRAIT>(dstTensor, srcTensor); \
+        Copy(CopyAtom<CopyTraits<CopyL12BT, CopyL12BTTraitDefault>>{}, dstTensor, srcTensor);\
         GlobalMockObject::verify(); \
     }
 
@@ -220,7 +220,7 @@ DATA_COPY_TEST_L12BIAS_ND2ND(int32_t, 1, 64, 1, 64)
             .times(1) \
             .will(invoke(&copy_cbuf_to_bt_two_type_stub<SRC_DTYPE, DST_DTYPE, SRC_SIZE1, SRC_SIZE2, DST_SIZE1, DST_SIZE2>)); \
         CREATE_TENSOR_TWO_TYPE(SRC_DTYPE, SRC_SIZE1, SRC_SIZE2, DST_DTYPE, DST_SIZE1, DST_SIZE2, cbuf, L1, ND, biasbuf, Bias, ND) \
-        DataCopy<DEFAULT_DATA_COPY_TRAIT>(dstTensor, srcTensor); \
+        Copy(CopyAtom<CopyTraits<CopyL12BT, CopyL12BTTraitDefault>>{}, dstTensor, srcTensor);\
         GlobalMockObject::verify(); \
     }
 
@@ -237,7 +237,7 @@ DATA_COPY_TEST_L12BIAS_TWO_TYPE_ND2ND(half, 1, 64, float, 1, 64)
             .times(1) \
             .will(invoke(&copy_cbuf_to_fbuf_stub<DTYPE, SRC_SIZE1, SRC_SIZE2, DST_SIZE1, DST_SIZE2>)); \
         CREATE_TENSOR(DTYPE, SRC_SIZE1, SRC_SIZE2, DST_SIZE1, DST_SIZE2, cbuf, L1, ND, fbuf, Fixbuf, ND) \
-        DataCopy<DEFAULT_DATA_COPY_TRAIT>(dstTensor, srcTensor); \
+        Copy(CopyAtom<CopyTraits<CopyL12FB, CopyL12FBTraitDefault>>{}, dstTensor, srcTensor);\
         GlobalMockObject::verify(); \
     }
 

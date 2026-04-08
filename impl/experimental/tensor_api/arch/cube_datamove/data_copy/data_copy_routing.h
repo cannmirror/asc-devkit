@@ -25,8 +25,6 @@
 #include "impl/experimental/tensor_api/arch/data_copy_routing_base.h"
 
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_gm2l1.h"
-#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_l12bt.h"
-#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_l12fb.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_l12ub.h"
 
 namespace AscendC {
@@ -37,17 +35,6 @@ template <>
 struct DataCopyTensor2Tensor<Hardware::L1, Hardware::GM, ArchVersion::V3510> {
     using type = DataCopyGM2L13510;
 };
-
-template <>
-struct DataCopyTensor2Tensor<Hardware::BIAS, Hardware::L1, ArchVersion::V3510> {
-    using type = DataCopyL12BT3510;
-};
-
-template <>
-struct DataCopyTensor2Tensor<Hardware::FIXBUF, Hardware::L1, ArchVersion::V3510> {
-    using type = DataCopyL12FB3510;
-};
-
 
 template <>
 struct DataCopyTensor2Tensor<Hardware::UB, Hardware::L1, ArchVersion::V3510> {
