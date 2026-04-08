@@ -31,6 +31,7 @@ __simd_callee__ inline void asc_storeunalign_post_postupdate(__ubuf__  int8_t*& 
 __simd_callee__ inline void asc_storeunalign_post_postupdate(__ubuf__  uint8_t*& dst, vector_store_unalign src, int32_t offset)
 __simd_callee__ inline void asc_storeunalign_post_postupdate(__ubuf__  fp4x2_e2m1_t*& dst, vector_store_unalign src, int32_t offset)
 __simd_callee__ inline void asc_storeunalign_post_postupdate(__ubuf__  fp4x2_e1m2_t*& dst, vector_store_unalign src, int32_t offset)
+__simd_callee__ inline void asc_storeunalign_post_postupdate(__ubuf__  int4b_t*& dst, vector_store_unalign src, int32_t offset)
 __simd_callee__ inline void asc_storeunalign_post_postupdate(__ubuf__  fp8_e8m0_t*& dst, vector_store_unalign src, int32_t offset)
 __simd_callee__ inline void asc_storeunalign_post_postupdate(__ubuf__  fp8_e5m2_t*& dst, vector_store_unalign src, int32_t offset)
 __simd_callee__ inline void asc_storeunalign_post_postupdate(__ubuf__  fp8_e4m3fn_t*& dst, vector_store_unalign src, int32_t offset)
