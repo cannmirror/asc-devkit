@@ -199,7 +199,7 @@ __global__ void add_custom(float* x, float* y, float* z, uint64_t total_length)
     **图 2**  调用步骤<a name="zh-cn_topic_0000001565030288_fig1034911325594"></a>  
     ![](../../../figures/调用步骤-1.png "调用步骤-1")
 
-    如下示例中的acl API使用方法请参考《应用开发指南 \(C&C++\)》中的“acl API参考”章节。
+    如下示例中的acl API使用方法请参考《应用开发指南 \(C&C++\)》中的“Runtime API参考 > Stream管理”章节。
 
     ```
     std::vector<float> add(std::vector<float>& x, std::vector<float>& y)
