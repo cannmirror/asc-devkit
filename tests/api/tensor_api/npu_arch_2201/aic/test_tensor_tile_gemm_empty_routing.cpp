@@ -257,11 +257,11 @@ __aicore__ inline void E2eKernel(GM_ADDR aGM, GM_ADDR bGM, GM_ADDR cGM, GM_ADDR 
     auto gmB = reinterpret_cast<__gm__ B_T *>(bGM);
     auto gmC = reinterpret_cast<__gm__ C_T *>(cGM);
 
-    bisheng::cce::set_atomic_none();
+    set_atomic_none();
     E2eCase<A_TYPE, B_TYPE, L0CType, C_TYPE, BIAS_TYPE, HAS_BIAS> ins;
     ins.Init(m, n, k, hasBias, gmA, gmB, gmC);
     ins.IterateAll();
-    bisheng::cce::set_atomic_none();
+    set_atomic_none();
 }
 
 #define KERNEL_TENSOR_TILE_GEMM_E2E_EMPTY_ROUTING(coreNum, M, N, K, A_Format, B_Format, C_Format, BIAS_Format, A_DType, B_DType, C_DType, BIAS_DType, HAS_BIAS) \

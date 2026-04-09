@@ -62,7 +62,7 @@ __aicore__ inline void mem_copy_ub_to_gm_impl(__gm__ T* dst, __ubuf__ T* src, co
     uint32_t srcStride1 = srcStride * byte_32_align + burstLen;
     srcStride1 = div_ceil(srcStride1, byte_32_align) * byte_32_align;
     uint64_t dstStride1 = dstStride * unitOfBytes + burstLen;
-    bisheng::cce::copy_ubuf_to_gm_align_v2((__gm__ void*)dst, (__ubuf__ void*)src, 0, blockCount, burstLen, 0, dstStride1, srcStride1);
+    copy_ubuf_to_gm_align_v2((__gm__ void*)dst, (__ubuf__ void*)src, 0, blockCount, burstLen, 0, dstStride1, srcStride1);
 #endif
 }
 

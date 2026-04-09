@@ -75,13 +75,13 @@ __aicore__ inline void asc_prof_stop()
 template<pipe_t pipe>
 __aicore__ inline void asc_mark_stamp(uint16_t idx)
 {
-    bisheng::cce::mark_stamp<pipe>(idx);
+    mark_stamp<pipe>(idx);
 }
 
 template<pipe_t pipe, uint16_t idx>
 __aicore__ inline void asc_mark_stamp()
 {
-    bisheng::cce::mark_stamp<pipe>(idx);
+    mark_stamp<pipe>(idx);
 }
 #endif
 } // namespace __asc_aicore

@@ -27,7 +27,7 @@ int64_t get_ar_Stub() {
 
 TEST_F(TestSysVarGetArSpr, c_api_get_ar_spr_Succ)
 {
-    MOCKER_CPP(bisheng::cce::get_ar, int64_t()) 
+    MOCKER_CPP(get_ar, int64_t()) 
             .times(1)
             .will(invoke(get_ar_Stub));
     int64_t ret = asc_get_ar_spr();

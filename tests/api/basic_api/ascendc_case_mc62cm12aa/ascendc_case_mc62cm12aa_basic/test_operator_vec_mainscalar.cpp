@@ -67,11 +67,11 @@ private:
         LocalTensor<T> srcLocalY = inQueueY.DeQue<T>();
         U Zero = 0;
         if constexpr (IsSameType<T, int64_t>::value || IsSameType<T, float>::value) {
-            Zero = bisheng::cce::sqrt(Zero);
+            Zero = AscendC::Std::sqrt(Zero);
         }
         if constexpr (IsSameType<T, int64_t>::value || IsSameType<T, int32_t>::value || IsSameType<T, int16_t>::value ||
                       IsSameType<T, int8_t>::value || IsSameType<T, float>::value) {
-            Zero = bisheng::cce::abs(Zero);
+            Zero = AscendC::Std::abs(Zero);
         }
         Duplicate(dstLocalX, Zero, dstDataSize);
         Duplicate(dstLocalY, Zero, dstDataSize);

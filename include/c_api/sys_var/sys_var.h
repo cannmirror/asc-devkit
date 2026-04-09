@@ -53,7 +53,7 @@ __aicore__ inline int64_t asc_get_program_counter();
 
 __aicore__ inline void asc_get_arch_ver(uint32_t& coreVersion);
 
-__simd_callee__ inline int64_t asc_get_ar_spr();
+__aicore__ inline int64_t asc_get_ar_spr();
 
 __aicore__ inline int64_t asc_get_ffts_base_addr();
 

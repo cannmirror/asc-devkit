@@ -29,11 +29,7 @@ __aicore__ inline T sqrt(const T src)
 {
     static_assert(is_one_of<T, float, int64_t>(), 
                 "current data type is not supported on current device!");
-#ifndef ASCENDC_CPU_DEBUG
-    return bisheng::cce::sqrt(src);
-#else
     return ::sqrt(src);
-#endif
 }
 }
 }

@@ -28,11 +28,7 @@ __aicore__ inline T abs(const T src)
 {
     static_assert(is_one_of<T, int8_t, int16_t, int32_t, float, int64_t>(), 
                 "current data type is not supported on current device!");
-#ifndef ASCENDC_CPU_DEBUG
-    return bisheng::cce::abs(src);
-#else
     return ::abs(src);
-#endif
 }
 }
 }

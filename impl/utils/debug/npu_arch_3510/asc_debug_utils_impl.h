@@ -19,8 +19,8 @@
 namespace __asc_aicore {
 __aicore__ inline void asc_entire_dcci_impl(__gm__ uint64_t* ptr)
 {
-    bisheng::cce::dcci(ptr, bisheng::cce::cache_line_t::ENTIRE_DATA_CACHE,
-                       bisheng::cce::dcci_dst_t::CACHELINE_OUT);
+    dcci(ptr, cache_line_t::ENTIRE_DATA_CACHE,
+                       dcci_dst_t::CACHELINE_OUT);
 }
 
 __aicore__ inline uint64_t asc_debug_get_system_cycle_impl()
@@ -48,7 +48,7 @@ __aicore__ inline uint32_t asc_debug_get_core_idx_impl()
 __aicore__ inline uint64_t asc_debug_get_block_idx_impl()
 {
 #if defined(__DAV_VEC__)
-    return get_block_idx() * bisheng::cce::get_subblockdim() + bisheng::cce::get_subblockid();
+    return get_block_idx() * get_subblockdim() + get_subblockid();
 #else
     return get_block_idx();
 #endif
