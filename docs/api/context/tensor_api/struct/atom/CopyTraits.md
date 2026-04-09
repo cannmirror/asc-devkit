@@ -35,6 +35,9 @@ struct CopyTraits {
 ## 调用示例
 
 ```cpp
-// 创建CopyTraits
-auto copyTraits = AscendC::MakeCopyTraits<CopyOperation>(arg1, arg2, arg3);
+using namespace AscendC::Te;
+// 以CopyGM2L1操作类型为例，创建CopyTraits
+using copyTraits = CopyTraits<CopyGM2L1, DataCopyTraitDefault>;
+// 使用copyTraits声明CopyAtom对象，调用Copy接口实现CopyGM2L1，其中l1ATensor是位于L1上的目的操作数，globalA是位于GM上的源操作数。
+Copy(CopyAtom<copyTraits>{}, l1ATensor, globalA);
 ```

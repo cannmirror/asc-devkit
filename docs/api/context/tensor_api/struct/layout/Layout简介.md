@@ -34,41 +34,6 @@ Layout包含两个核心组成部分：
 ## 需要包含的头文件<a name="zh-cn_topic_0000002213064918_section78885814919"></a>
 
 ```
-#include "kernel_operator_layout.h"
+#include "include/experimental/tensor_api/tensor.h"
 ```
-
-## 原型定义<a name="section10580930144614"></a>
-
-```
-template <typename ShapeType, typename StrideType>
-struct Layout : private Std::tuple<ShapeType, StrideType> {
-    __aicore__ inline constexpr Layout(const ShapeType& shape  = {}, const StrideType& stride = {}) : Std::tuple<ShapeType, StrideType>(shape, stride) {}
-
-    __aicore__ inline constexpr decltype(auto) layout() {}
-    __aicore__ inline constexpr decltype(auto) layout() const {}
-    
-    template <size_t... I>
-    __aicore__ inline constexpr decltype(auto) Shape() {}
-    template <size_t... I>
-    __aicore__ inline constexpr decltype(auto) Shape() const {}
-
-    template <size_t... I>
-    __aicore__ inline constexpr decltype(auto) Stride() {}
-    template <size_t... I>
-    __aicore__ inline constexpr decltype(auto) Stride() const {}
-    
-    template <typename CoordType>
-    __aicore__ inline constexpr auto operator()(const CoordType& coord) const {}
-}
-```
-
-## 模板参数<a name="section116801320102618"></a>
-
-**表 3**  模板参数说明
-
-<a name="table13588175515344"></a>
-| 参数名 | 描述 |
-|--------|------|
-| ShapeType | [`Std::tuple`](../../../容器函数.md)结构类型，用于定义数据的逻辑形状，例如二维矩阵的行数和列数或多维张量的各维度大小。 |
-| StrideType | [`Std::tuple`](../../../容器函数.md)结构类型，用于定义各维度在内存中的步长，即同维度相邻元素在内存中的间隔，间隔的单位为元素，与Shape的维度信息一一对应。 |
-
+详细定义介绍请参考[Layout](Layout.md)。

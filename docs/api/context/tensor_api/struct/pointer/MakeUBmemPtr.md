@@ -39,7 +39,7 @@ __aicore__ inline auto MakeUBmemPtr(const U& byteOffset)
 
 ## 返回值说明
 
-返回UB内存指针对象，类型为 `HardwareMemPtr<Hardware::UB, Iterator>`。
+返回UB内存指针对象，类型为`HardwareMemPtr<Hardware::UB, Iterator>`。
 
 ## 约束说明
 

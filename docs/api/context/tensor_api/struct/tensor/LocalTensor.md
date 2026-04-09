@@ -2,7 +2,7 @@
 
 ## 功能说明
 
-LocalTensor用于存放AI Core中Local Memory（内部存储）的数据，它包含[ViewEngine]()（数据指针）和[Layout](../layout/Layout.md)（布局信息），支持多维数据的存储和访问。
+LocalTensor用于存放AI Core中Local Memory（内部存储）的数据，它包含[ViewEngine](../pointer/ViewEngine.md)（数据指针）和[Layout](../layout/Layout.md)（布局信息），支持多维数据的存储和访问。
 
 ## 结构体定义
 

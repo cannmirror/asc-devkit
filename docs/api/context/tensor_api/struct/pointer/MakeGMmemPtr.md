@@ -29,11 +29,11 @@ __aicore__ inline constexpr auto MakeGMmemPtr(Iterator iter)
 
 | 参数名 | 输入/输出 | 描述 |
 |--------|-----------|------|
-| iter | 输入 | 指针，指向GM的起始地址，类型为 `__gm__ T*`。 |
+| iter | 输入 | 指针，指向GM的起始地址，类型为`__gm__ T*`。 |
 
 ## 返回值说明
 
-返回GM内存指针对象，类型为 `HardwareMemPtr<Hardware::GM, Iterator>`。
+返回GM内存指针对象，类型为`HardwareMemPtr<Hardware::GM, Iterator>`。
 
 ## 约束说明
 

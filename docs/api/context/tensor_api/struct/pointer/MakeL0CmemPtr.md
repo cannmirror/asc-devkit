@@ -40,7 +40,7 @@ __aicore__ inline auto MakeL0CmemPtr(const U& byteOffset)
 
 ## 返回值说明
 
-返回L0C内存指针对象，类型为 `HardwareMemPtr<Hardware::L0C, Iterator>`。
+返回L0C内存指针对象，类型为`HardwareMemPtr<Hardware::L0C, Iterator>`。
 
 ## 约束说明
 

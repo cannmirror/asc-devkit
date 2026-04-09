@@ -14,13 +14,13 @@
 
 | 操作类型 | 说明 |
 |---------|------|
-| CopyGM2L1 | GM到L1 Buffer |
+| CopyGM2L1 | Global Memory到L1 Buffer |
 | CopyL12L0A | L1 Buffer到L0A Buffer |
 | CopyL12L0B | L1 Buffer到L0B Buffer|
 | CopyL12BT |  L1 Buffer到BiasTable Buffer|
-| CopyL12FB |  L1 Buffer到Fixpipe Buff|
-| CopyL0C2GM | L0C Buffer搬出到GM |
-| CopyL0C2UB | L0C Buffer搬出到UB |
+| CopyL12FB |  L1 Buffer到Fixpipe Buffer |
+| CopyL0C2GM | L0C Buffer搬出到Global Memory |
+| CopyL0C2UB | L0C Buffer搬出到Unified Buffer |
 
 
 ## 函数原型
@@ -37,7 +37,7 @@ __aicore__ inline void Copy(const CopyAtom<T>& atomCopy, const Params& ...params
 
 | 参数名 | 输入/输出 | 描述 |
 |--------|-----------|------|
-| atomCopy | 输入 | CopyAtom对象，封装了具体的复制操作和traits配置。 |
+| atomCopy | 输入 | [CopyAtom](../struct/atom/CopyAtom.md)对象，封装了具体的复制操作和traits配置。 |
 | params | 输入 | 复制操作的参数，可变参数。通常包括：<br>- 目的张量（dst tensor）<br>- 源张量（src tensor）<br>- 可选：坐标偏移（Coord） |
 
 ## 返回值说明
@@ -53,6 +53,7 @@ __aicore__ inline void Copy(const CopyAtom<T>& atomCopy, const Params& ...params
 ## 调用示例
 
 ```cpp
+using namespace AscendC::Te;
 // 以CopyL0C2GM为例
 // 调用方式1
 Copy(CopyAtom<CopyTraits<CopyL0C2GM, FixpipeTraitDefault>>{}, globalC, l0CTensor);
@@ -67,7 +68,7 @@ atomCopyL0C2GM.Call(globalC, l0CTensor);
 
 - [CopyAtom](../struct/atom/CopyAtom.md)
 - [CopyTraits](../struct/atom/CopyTraits.md)
-- [DataCopyFromL1](DataCopyFromL1.md)
 - [DataCopyGM2L1](DataCopyGM2L1.md)
+- [DataCopyFromL1](DataCopyFromL1.md)
 - [LoadData](LoadData.md)
 - [Fixpipe](Fixpipe.md)

@@ -34,17 +34,15 @@ DataCopyFromL1提供数据搬运功能，支持L1 Buffer到BiasTable Buffer和Fi
 - 不支持坐标偏移的接口
 
     ```cpp
-        template <const DataCopyTrait& trait = DEFAULT_DATA_COPY_TRAIT, typename T, typename U>
-        __aicore__ inline typename Std::enable_if<VerifyingDataCopyTemplate<T, U>, void>::type
-        DataCopy(const T& dst, const U& src)
+    template <const DataCopyTrait& trait = DEFAULT_DATA_COPY_TRAIT, typename T, typename U>
+    __aicore__ inline void DataCopy(const T& dst, const U& src)
     ```
 
 - 支持坐标偏移的接口
 
     ```cpp
-        template <const DataCopyTrait& trait = DEFAULT_DATA_COPY_TRAIT, typename T, typename U, typename Coord>
-        __aicore__ inline typename Std::enable_if<VerifyingDataCopyTemplateWithCoord<T, U, Coord>, void>::type
-        DataCopy(const T& dst, const U& src, const Coord& coord)
+    template <const DataCopyTrait& trait = DEFAULT_DATA_COPY_TRAIT, typename T, typename U, typename Coord>
+    __aicore__ inline void DataCopy(const T& dst, const U& src, const Coord& coord)
     ```
 
 
@@ -55,8 +53,8 @@ DataCopyFromL1提供数据搬运功能，支持L1 Buffer到BiasTable Buffer和Fi
 |参数名|描述|
 |--|--|
 |DataCopyTrait|预留参数，保持默认值即可。|
-|T|目的操作数的数据类型，通过MakeTensor构造的[LocalTensor类型](../struct/tensor/LocalTensor.md)，逻辑存储位置支持BIAS和FIXBUF，数据格式支持ND。|
-|U|源操作数的数据类型，通过MakeTensor构造的[LocalTensor类型](../struct/tensor/LocalTensor.md)，逻辑存储位置支持L1，数据格式支持ND。|
+|T|目的操作数的数据类型，通过MakeTensor构造的[LocalTensor类型](../struct/tensor/LocalTensor.md)，逻辑存储位置支持BiasTable Buffer和Fixpipe Buffer，数据格式支持ND。|
+|U|源操作数的数据类型，通过MakeTensor构造的[LocalTensor类型](../struct/tensor/LocalTensor.md)，逻辑存储位置支持L1 Buffer，数据格式支持ND。|
 |Coord|坐标偏移的数据类型，通过MakeCoord构造的[Coord类型](../struct/coord/Coord.md)。| 
 
 
@@ -70,10 +68,7 @@ DataCopyFromL1提供数据搬运功能，支持L1 Buffer到BiasTable Buffer和Fi
 
 ## 返回值说明
 
-VerifyingDataCopyTemplate/VerifyingDataCopyTemplateWithCoord表达式为DataCopy模板参数校验表达式，执行效果如下：
-
-- 校验表达式成立，表明输入参数符合DataCopy接口入参数据类型约束，DataCopy函数表达式返回值为void。
-- 校验表达式不成立，表明输入参数不符合DataCopy接口入参数据类型约束。上述四个模板参数表达式均不通过时，DataCopy函数声明失效，继而会导致编译错误。
+无
 
 ## 约束说明  
 - 地址重叠约束：无约束。
@@ -84,19 +79,22 @@ VerifyingDataCopyTemplate/VerifyingDataCopyTemplateWithCoord表达式为DataCopy
 - 异常和边界值处理：无约束。 
 - Tensor Layout相关约束：
     - Shape、Stride只支持四维，针对不同的存储位置，四个维度的配置均有不同的约束，部分维度为固定值，不可配置。详见[层次化表达法](../Layout和层次化表述法.md)。
-    - Shape、Stride具体维度的数据，仅支持基础整数类型和Std::Int类型。
+    - Shape、Stride具体维度的数据，仅支持基础size_t和Std::Int类型。
     - 支持坐标偏移的接口中，coord需要满足地址对齐要求。
 
+## 流水类型
+
+PIPE_MTE1(L1 Buffer -> BiasTable Buffer)或PIPE_FIX(L1 Buffer -> Fixpipe Buffer)
 
 ## 数据通路说明
 
-**表 3**  L1 Buffer -\> BiasTable Buffer数据通路说明
+**表 3**  L1 Buffer -> BiasTable Buffer数据通路说明
 
 |项目|内容|
 |--|--|
 |模板参数T|数据类型为LocalTensor|
 |模板参数U|数据类型为LocalTensor|
-|目的操作数Hardware要求|逻辑存储位置BIAS|
+|目的操作数Hardware要求|逻辑存储位置BiasTable Buffer|
 |源操作数Hardware要求|逻辑存储位置L1|
 |目的操作数的数据类型|half、bfloat16_t、float、int32_t|
 |源操作数的数据类型|float、int32_t|
@@ -107,13 +105,13 @@ VerifyingDataCopyTemplate/VerifyingDataCopyTemplateWithCoord表达式为DataCopy
 |搬运数据量要求|每次最多搬运4KB数据|
 
 
-**表 4**  L1 Buffer -\> Fixpipe Buffer数据通路说明
+**表 4**  L1 Buffer -> Fixpipe Buffer数据通路说明
 
 |项目|内容|
 |--|--|
 |模板参数T|数据类型为LocalTensor|
 |模板参数U|数据类型为LocalTensor|
-|目的操作数Hardware要求|逻辑存储位置FIXBUF|
+|目的操作数Hardware要求|逻辑存储位置Fixpipe Buffer|
 |源操作数Hardware要求|逻辑存储位置L1|
 |目的操作数的数据类型|uint64_t、LocalTensor|
 |源操作数的数据类型|uint64_t、LocalTensor|
@@ -210,7 +208,6 @@ VerifyingDataCopyTemplate/VerifyingDataCopyTemplateWithCoord表达式为DataCopy
     // 创建BT上tensor
     auto biasTensor = MakeTensor(biasPtr, btLayout);
 
-    
     auto atomCopyGM2L1 = MakeCopy(CopyGM2L1{}, DataCopyTraitDefault{});
     // GM->L1的数据搬运，内部调用DataCopy
     atomCopyGM2L1.Call(l1ATensor, globalA);
@@ -220,17 +217,16 @@ VerifyingDataCopyTemplate/VerifyingDataCopyTemplateWithCoord表达式为DataCopy
 
     set_flag(PIPE_MTE2, PIPE_MTE1, EVENT_ID0);
     wait_flag(PIPE_MTE2, PIPE_MTE1, EVENT_ID0);
-    
 
-    auto atmoCopyL12L0 = MakeCopy(CopyL12L0{}, LoadDataTraitDefault{});
+    auto atomCopyL12L0 = MakeCopy(CopyL12L0{}, LoadDataTraitDefault{});
     // L1->L0A的数据搬运，内部调用DataCopy
-    atmoCopyL12L0.Call(l0ATensor, l1ATensor);
+    atomCopyL12L0.Call(l0ATensor, l1ATensor);
     // L1->L0B的数据搬运，内部调用DataCopy
-    atmoCopyL12L0.Call(l0BTensor, l1BTensor);
+    atomCopyL12L0.Call(l0BTensor, l1BTensor);
 
-    auto atmoCopyL12BT = MakeCopy(CopyL12BT{}, LoadDataTraitDefault{});
+    auto atomCopyL12BT = MakeCopy(CopyL12BT{}, LoadDataTraitDefault{});
     // L1->BT的数据搬运，内部调用DataCopy
-    atmoCopyL12BT.Call(biasTensor, l1BiasTensor);
+    atomCopyL12BT.Call(biasTensor, l1BiasTensor);
     
     set_flag(PIPE_MTE1, PIPE_M, EVENT_ID0);
     wait_flag(PIPE_MTE1, PIPE_M, EVENT_ID0);
@@ -251,4 +247,4 @@ VerifyingDataCopyTemplate/VerifyingDataCopyTemplateWithCoord表达式为DataCopy
     atomCopyL0C2GM.Call(globalC, l0CTensor, l1QuantTensor);
 ...
 ```
-完整样例请参考[TensorAPI样例代码](../../../../../examples/01_simd_cpp_api/02_features/05_tensor_api)。
+完整样例请参考[TensorAPI样例代码](../../../../../examples/01_simd_cpp_api/02_features/05_tensor_api/matmul_quant_relu/matmul_quant_relu.asc)。

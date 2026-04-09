@@ -34,8 +34,8 @@ struct CopyAtom {
 
 ```cpp
 // 创建CopyAtom
-auto copyAtom = AscendC::MakeCopy(arg1, arg2, arg3);
+auto copyAtom = AscendC::Te::MakeCopy(arg1, arg2, arg3);
 
 // 执行复制操作
-AscendC::Copy(copyAtom, dst, src);
+AscendC::Te::Copy(copyAtom, dst, src);
 ```

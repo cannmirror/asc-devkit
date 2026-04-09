@@ -34,12 +34,12 @@ __aicore__ inline auto MakeBiasmemPtr(const U& byteOffset)
 
 | 参数名 | 输入/输出 | 描述 |
 |--------|-----------|------|
-| iter | 输入 | 指针，指向BiasTable Buffer的起始地址，类型为 `__biasbuf__ T*`。 |
+| iter | 输入 | 指针，指向BiasTable Buffer的起始地址，类型为`__biasbuf__ T*`。 |
 | byteOffset | 输入 | BiasTable Buffer内存起始地址的字节偏移量。 |
 
 ## 返回值说明
 
-返回BiasTable Buffer内存指针对象，类型为 `HardwareMemPtr<Hardware::BIAS, Iterator>`。
+返回BiasTable Buffer内存指针对象，类型为`HardwareMemPtr<Hardware::BIAS, Iterator>`。
 
 ## 约束说明
 

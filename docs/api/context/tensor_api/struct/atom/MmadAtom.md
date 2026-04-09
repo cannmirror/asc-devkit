@@ -34,8 +34,8 @@ struct MmadAtom {
 
 ```cpp
 // 创建MmadAtom
-auto mmadAtom = AscendC::MakeMad(arg1, arg2, arg3);
+auto mmadAtom = AscendC::Te::MakeMad(arg1, arg2, arg3);
 
 // 执行矩阵乘加操作
-AscendC::Mad(mmadAtom, dst, src0, src1);
+AscendC::Te::Mad(mmadAtom, dst, src0, src1);
 ```
