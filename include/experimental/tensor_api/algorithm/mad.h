@@ -21,19 +21,19 @@
 #ifndef INCLUDE_TENSOR_API_ALGORITHM_MAD_H
 #define INCLUDE_TENSOR_API_ALGORITHM_MAD_H
 
-#include "impl/experimental/tensor_api/algorithm/mad_impl.h"
+#include "impl/experimental/tensor_api/algorithm/mmad_impl.h"
 
 namespace AscendC {
 namespace Te {
 
 template <typename Tp, const Tp& traits, typename T, typename... Params>
-__aicore__ inline void Mad(const MmadAtom<T>& atomMad, const Params& ...params);
+__aicore__ inline void Mmad(const MmadAtom<T>& atomMad, const Params& ...params);
 
 template <typename T, typename... Params>
-__aicore__ inline void Mad(const MmadAtom<T>& atomMad, const Params& ...params);
+__aicore__ inline void Mmad(const MmadAtom<T>& atomMad, const Params& ...params);
 
 template <typename... Args>
-__aicore__ inline auto MakeMad(const Args& ...traits);
+__aicore__ inline auto MakeMmad(const Args& ...traits);
 
 }
 }

@@ -31,7 +31,6 @@ asc-devkit:
       - impl/basic_api/kernel_macros.h
       - impl/basic_api/kernel_prof_trace*.h
       - impl/utils/**/*.h
-      - impl/experimental/tensor_api/utils/*.h
       - impl/c_api/instr_impl/npu_arch_2201/utils_impl/**/*.h
       - impl/c_api/instr_impl/npu_arch_3510/utils_impl/**/*.h
       - impl/c_api/instr_impl/npu_arch_3510/vector_compute_impl/asc_reduce_sum_datablock.h
@@ -68,30 +67,6 @@ asc-devkit:
       - impl/c_api/instr_impl/npu_arch_2201/sync_impl.h
       - impl/c_api/instr_impl/npu_arch_3510/sync_impl.h
       - impl/basic_api/dav_c310/kernel_operator_determine_compute_sync_impl.h
-      - impl/experimental/tensor_api/algorithm/gemm_impl.h
-      - impl/experimental/tensor_api/atom/cube_datamove/cube_datamove_impl.h
-      - impl/experimental/tensor_api/atom/cube_compute/cube_compute_impl.h
-      - impl/experimental/tensor_api/arch/utils/is_format.h
-      - impl/experimental/tensor_api/tensor/tuple_fractal.h
-      - impl/experimental/tensor_api/tensor/layout_size.h
-      - impl/experimental/tensor_api/tensor/layout_static_fractal.h
-      - impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_gm2l1/nd2zz.h
-      - impl/experimental/tensor_api/atom/mad_traits_impl.h
-      - impl/experimental/tensor_api/atom/cube_compute/mmad.h
-      - impl/experimental/tensor_api/arch/cube_datamove/data_copy/data_copy_routing.h
-      - impl/experimental/tensor_api/atom/mad_atom_impl.h
-      - impl/experimental/tensor_api/arch/datamove/load_data/load_data_routing.h
-      - impl/experimental/tensor_api/arch/cube_compute/mmad/mmad_routing.h
-      - impl/experimental/tensor_api/arch/cube_datamove/fixpipe/fixpipe_routing.h
-      - impl/experimental/tensor_api/algorithm/mad_impl.h
-      - impl/experimental/tensor_api/atom/vector_datamove/copy_from_or_to_ub.h
-      - impl/experimental/tensor_api/atom/cube_datamove/copy_datacopy.h
-      - impl/experimental/tensor_api/arch/vector_datamove/data_copy/data_copy_routing.h
-      - impl/experimental/tensor_api/arch/data_copy_routing_base.h
-      - impl/experimental/tensor_api/atom/vector_datamove/vector_datamove_impl.h
-      - impl/experimental/tensor_api/tensor/get_pattern.h
-      - impl/experimental/tensor_api/arch/datamove/l1_to_fb/routing.h
-      - impl/experimental/tensor_api/arch/datamove/l1_to_bt/routing.h
       - impl/basic_api/dav_c310/kernel_operator_proposal_impl.h
       - impl/basic_api/dav_c310/kfc/kfc_comm_server.h
       - impl/adv_api/detail/reduce/reduce_mean/reduce_mean_3510_impl.h
@@ -112,6 +87,7 @@ asc-devkit:
       - impl/basic_api/dav_3510/core_mng/roc/kernel_operator_cube_group_info.h
       - impl/basic_api/kernel_operator_list_tensor_intf_impl.h
       - impl/basic_api/dav_3510/kernel_operator_determine_compute_sync_impl.h
+      - impl/experimental/tensor_api/arch/datamove/l1_to_l0/routing.h
 
   llt:
     ut_check: true

@@ -10,7 +10,7 @@
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #warning                                                                                                               \
-    "impl/tensor_api/arch/datamove/load_data/npu_arch_3510/instruction.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+    "impl/tensor_api/arch/datamove/l1_to_l0/npu_arch_3510/instruction.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
@@ -19,8 +19,8 @@
  * \file instruction.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_DATAMOVE_LOAD_DATA_NPU_ARCH_3510_INSTRUCTION_H
-#define IMPL_TENSOR_API_ARCH_DATAMOVE_LOAD_DATA_NPU_ARCH_3510_INSTRUCTION_H
+#ifndef IMPL_TENSOR_API_ARCH_DATAMOVE_L1_TO_L0_NPU_ARCH_3510_INSTRUCTION_H
+#define IMPL_TENSOR_API_ARCH_DATAMOVE_L1_TO_L0_NPU_ARCH_3510_INSTRUCTION_H
 
 #include "impl/experimental/tensor_api/tensor/pointer_impl.h"
 #include "impl/experimental/tensor_api/tensor/local_tensor_impl.h"
@@ -118,7 +118,7 @@ private:
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ARCH_DATAMOVE_LOAD_DATA_NPU_ARCH_3510_INSTRUCTION_H
+#endif // IMPL_TENSOR_API_ARCH_DATAMOVE_L1_TO_L0_NPU_ARCH_3510_INSTRUCTION_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

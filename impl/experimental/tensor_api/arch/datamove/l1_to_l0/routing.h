@@ -10,21 +10,21 @@
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #warning                                                                                                               \
-    "impl/tensor_api/arch/cube_datamove/load_data/load_data_routing.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+    "impl/tensor_api/arch/cube_datamove/l1_to_l0/routing.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
 
 /*!
- * \file load_data_routing.h
+ * \file routing.h
  * \brief
  */
 
-#ifndef IMPL_TENSOR_API_ARCH_DATAMOVE_LOAD_DATA_LOAD_DATA_ROUTING_H
-#define IMPL_TENSOR_API_ARCH_DATAMOVE_LOAD_DATA_LOAD_DATA_ROUTING_H
+#ifndef IMPL_TENSOR_API_ARCH_DATAMOVE_L1_TO_L0_ROUTING_H
+#define IMPL_TENSOR_API_ARCH_DATAMOVE_L1_TO_L0_ROUTING_H
 
-#include "impl/experimental/tensor_api/arch/datamove/load_data/npu_arch_3510/load_data_l12l0a.h"
-#include "impl/experimental/tensor_api/arch/datamove/load_data/npu_arch_3510/load_data_l12l0b.h"
+#include "impl/experimental/tensor_api/arch/datamove/l1_to_l0/npu_arch_3510/l12l0a.h"
+#include "impl/experimental/tensor_api/arch/datamove/l1_to_l0/npu_arch_3510/l12l0b.h"
 
 namespace AscendC {
 namespace Te {
@@ -70,7 +70,7 @@ struct LoadDataTensor2Tensor<Hardware::L0B, Hardware::L1, ArchVersion::V3510>
 };
 } // namespace Te
 } // namespace AscendC
-#endif // IMPL_TENSOR_API_ARCH_DATAMOVE_LOAD_DATA_LOAD_DATA_ROUTING_H
+#endif // IMPL_TENSOR_API_ARCH_DATAMOVE_L1_TO_L0_ROUTING_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

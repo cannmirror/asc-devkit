@@ -10,37 +10,37 @@
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #warning                                                                                                               \
-    "impl/tensor_api/arch/datamove/load_data/npu_arch_3510/load_data_l12l0a/zn2nz_with_coord.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+    "impl/tensor_api/arch/datamove/l1_to_l0/npu_arch_3510/l12l0b/zn2zn_with_coord.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
 
 /*!
- * \file zn2nz_with_coord.h
+ * \file zn2zn_with_coord.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_DATAMOVE_LOAD_DATA_NPU_ARCH_3510_LOAD_DATA_L12L0A_ZN2NZ_WITH_COORD_H
-#define IMPL_TENSOR_API_ARCH_DATAMOVE_LOAD_DATA_NPU_ARCH_3510_LOAD_DATA_L12L0A_ZN2NZ_WITH_COORD_H
+#ifndef IMPL_TENSOR_API_ARCH_DATAMOVE_L1_TO_L0_NPU_ARCH_3510_L12L0B_ZN2ZN_WITH_COORD_H
+#define IMPL_TENSOR_API_ARCH_DATAMOVE_L1_TO_L0_NPU_ARCH_3510_L12L0B_ZN2ZN_WITH_COORD_H
 
-#include "impl/experimental/tensor_api/arch/datamove/load_data/npu_arch_3510/instruction.h"
+#include "impl/experimental/tensor_api/arch/datamove/l1_to_l0/npu_arch_3510/instruction.h"
 
 namespace AscendC {
 namespace Te {
-class LoadDataL12L0AZN2NZWithCoord3510 {
+class LoadDataL12L0BZN2ZNWithCoord3510 {
 
 public:
     template <const LoadDataTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline static void Run(const T& dst, const U& src, const Coord& coord) {
-        LoadDataImpl<TransTrait<trait, true>, T, U, Coord>(dst, src, coord);
+        LoadDataImpl<TransTrait<trait, false>, T, U, Coord>(dst, src, coord);
     }
 
 private:
     template <const LoadDataTrait& trait, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
-        CheckFormat::CheckNZTemplate<T>();
+        CheckFormat::CheckZNTemplate<T>();
         CheckFormat::CheckZNTemplate<U>();
-        CheckDataTypeFor3510::CheckL12L0ADataType<T, U>();
+        CheckDataTypeFor3510::CheckL12L0BDataType<T, U>();
     }
 
     template <const LoadDataTrait& trait, typename T, typename U, typename Coord>
@@ -52,21 +52,24 @@ private:
         auto srcLayout = src.Layout();
         uint16_t mStartPosition = Std::get<1>(coord) / FRACTAL_FIXED;
         uint16_t kStartPosition = Std::get<0>(coord) / C0_ELEMENT<typename U::elementType>;
-        auto mStep = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout) *
-                GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout) / FRACTAL_FIXED - mStartPosition;
-        auto kStep = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) *
-                GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout) / C0_ELEMENT<DstType>;
-        // Zn -> Nz
+        auto mStep = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
+        auto kStep = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
+        // Zn -> Zn
         uint32_t STRIDE_UNIT = C0_ELEMENT<DstType> * FRACTAL_FIXED;
         auto srcStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout) / STRIDE_UNIT;
-        auto dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout) / STRIDE_UNIT;
-        LoadCbufToCa3510::LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+        auto dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout) / STRIDE_UNIT;
+        if constexpr (is_b4_type<DstType>) {
+            LoadCbufToCbS43510::LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);   
+        }
+        else {
+            LoadCbufToCb3510::LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+        }
     }
 };
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ARCH_DATAMOVE_LOAD_DATA_NPU_ARCH_3510_LOAD_DATA_L12L0A_ZN2NZ_WITH_COORD_H
+#endif // IMPL_TENSOR_API_ARCH_DATAMOVE_L1_TO_L0_NPU_ARCH_3510_L12L0B_ZN2ZN_WITH_COORD_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

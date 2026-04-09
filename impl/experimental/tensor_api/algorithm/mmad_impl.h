@@ -10,13 +10,13 @@
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #warning                                                                                                               \
-    "impl/tensor_api/algorithm/mad_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+    "impl/tensor_api/algorithm/mmad_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
 
 /*!
-* \file mad_impl.h
+* \file mmad_impl.h
 * \brief
 */
 #ifndef IMPL_TENSOR_API_ALGORITHM_MAD_IMPL_H
@@ -28,19 +28,19 @@ namespace AscendC {
 namespace Te {
 
 template <typename Tp, const Tp& traits, typename T, typename... Params>
-__aicore__ inline void Mad(const MmadAtom<T>& atomMmad, const Params& ...params)
+__aicore__ inline void Mmad(const MmadAtom<T>& atomMmad, const Params& ...params)
 {
     atomMmad.template Call<traits>(params...);
 }
 
 template <typename T, typename... Params>
-__aicore__ inline void Mad(const MmadAtom<T>& atomMmad, const Params& ...params)
+__aicore__ inline void Mmad(const MmadAtom<T>& atomMmad, const Params& ...params)
 {
     atomMmad.Call(params...);
 }
 
 template <typename... Args>
-__aicore__ inline auto MakeMad(const Args& ...traits) {
+__aicore__ inline auto MakeMmad(const Args& ...traits) {
     return MmadAtom<MmadTraits<Args...>>{};
 }
 

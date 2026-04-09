@@ -77,17 +77,17 @@ TEST_F(Tensor_Api_Mmad_With_Bias, MmadOperationWithBiasOnBias##MOCK_FUNC##_##DST
     para.k = K;\
     para.unitFlag = 0;\
     para.cmatrixInitVal = false;\
-    Mad(MmadAtom<MmadTraits<MmadOperation, MmadTraitDefault>>{}, l0cTensor, l0aTensor, l0bTensor, biasTensor, para);\
+    Mmad(MmadAtom<MmadTraits<MmadOperation, MmadTraitDefault>>{}, l0cTensor, l0aTensor, l0bTensor, biasTensor, para);\
     GlobalMockObject::verify();\
 }
 
 #define MMAD_WITH_BIAS_ON_BIAS_TEST(D, S, T, M, N, K, KA, CS)    MMAD_WITH_BIAS_ON_BIAS_TEST_BASE(D, S, T, M, N, K, KA, CS, mad)
 #define MMAD_MX_WITH_BIAS_ON_BIAS_TEST(D, S, T, M, N, K, KA, CS)     MMAD_WITH_BIAS_ON_BIAS_TEST_BASE(D, S, T, M, N, K, KA, CS, mad_mx)
 
-MMAD_WITH_BIAS_ON_BIAS_TEST(float, float, float, 16, 16, 16, 0, 0);
-MMAD_WITH_BIAS_ON_BIAS_TEST(float, bfloat16_t, float, 16, 16, 16, 0, 0);
-MMAD_WITH_BIAS_ON_BIAS_TEST(float, half, float, 16, 16, 16, 0, 0);
-MMAD_WITH_BIAS_ON_BIAS_TEST(int32_t, int8_t, int32_t, 32, 32, 32, 0, 0);
+MMAD_WITH_BIAS_ON_BIAS_TEST(float, float, float, 16, 16, 16, true, 0);
+MMAD_WITH_BIAS_ON_BIAS_TEST(float, bfloat16_t, float, 16, 16, 16, true, 0);
+MMAD_WITH_BIAS_ON_BIAS_TEST(float, half, float, 16, 16, 16, true, 0);
+MMAD_WITH_BIAS_ON_BIAS_TEST(int32_t, int8_t, int32_t, 32, 32, 32, true, 0);
 
 
 // MMAD_MX_WITH_BIAS_ON_BIAS_TEST(float, fp4x2_e2m1_t, float, 32, 32, 32, 0, 0);
@@ -147,17 +147,17 @@ TEST_F(Tensor_Api_Mmad_With_Bias, MmadOperationWithBiasOnL0C##MOCK_FUNC##_##DST_
     para.k = K;\
     para.unitFlag = 0;\
     para.cmatrixInitVal = false;\
-    Mad(MmadAtom<MmadTraits<MmadOperation, MmadTraitDefault>>{}, l0cTensor, l0aTensor, l0bTensor, biasTensor, para);\
+    Mmad(MmadAtom<MmadTraits<MmadOperation, MmadTraitDefault>>{}, l0cTensor, l0aTensor, l0bTensor, biasTensor, para);\
     GlobalMockObject::verify();\
 }
 
 #define MMAD_WITH_BIAS_ON_L0C_TEST(D, S, T, M, N, K, KA, CS)        MMAD_WITH_BIAS_ON_L0C_TEST_BASE(D, S, T, M, N, K, KA, CS, mad)
 #define MMAD_MX_WITH_BIAS_ON_L0C_TEST(D, S, T, M, N, K, KA, CS)     MMAD_WITH_BIAS_ON_L0C_TEST_BASE(D, S, T, M, N, K, KA, CS, mad_mx)
 
-MMAD_WITH_BIAS_ON_L0C_TEST(float, float, float, 16, 16, 16, 0, 0);
-MMAD_WITH_BIAS_ON_L0C_TEST(float, bfloat16_t, float, 16, 16, 16, 0, 0);
-MMAD_WITH_BIAS_ON_L0C_TEST(float, half, float, 16, 16, 16, 0, 0);
-MMAD_WITH_BIAS_ON_L0C_TEST(int32_t, int8_t, int32_t, 32, 32, 32, 0, 0);
+MMAD_WITH_BIAS_ON_L0C_TEST(float, float, float, 16, 16, 16, true, 0);
+MMAD_WITH_BIAS_ON_L0C_TEST(float, bfloat16_t, float, 16, 16, 16, true, 0);
+MMAD_WITH_BIAS_ON_L0C_TEST(float, half, float, 16, 16, 16, true, 0);
+MMAD_WITH_BIAS_ON_L0C_TEST(int32_t, int8_t, int32_t, 32, 32, 32, true, 0);
 
 // MMAD_MX_WITH_BIAS_ON_L0C_TEST(float, fp4x2_e2m1_t, float, 32, 32, 32, 0, 0);
 // MMAD_MX_WITH_BIAS_ON_L0C_TEST(float, fp4x2_e1m2_t, float, 32, 32, 32, 0, 0);

@@ -22,7 +22,7 @@
 #ifndef IMPL_TENSOR_API_ATOM_COPY_ATOM_IMPL_H
 #define IMPL_TENSOR_API_ATOM_COPY_ATOM_IMPL_H
 
-#include "impl/experimental/tensor_api/arch/datamove/load_data/copy_l12l0.h"
+#include "impl/experimental/tensor_api/arch/datamove/l1_to_l0/copy.h"
 #include "impl/experimental/tensor_api/atom/cube_datamove/cube_datamove_impl.h"
 #include "impl/experimental/tensor_api/atom/vector_datamove/vector_datamove_impl.h"
 
