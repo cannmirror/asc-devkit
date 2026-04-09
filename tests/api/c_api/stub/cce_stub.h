@@ -32,9 +32,6 @@ void vsts(vector_f8e8m0 src0, vector_f8e8m0 src1, __ubuf__ fp8_e8m0_t* base, int
 void vsts(vector_f4e2m1x2 src0, vector_f4e2m1x2 src1, __ubuf__ fp4x2_e2m1_t* base, int32_t offset, Literal dist, vector_bool mask, Literal mode);
 void vsts(vector_f4e1m2x2 src0, vector_f4e1m2x2 src1, __ubuf__ fp4x2_e1m2_t* base, int32_t offset, Literal dist, vector_bool mask, Literal mode);
 
-void vcgadd(vector_u32 & dst, vector_u16 src, vector_bool pg, int32_t mode);
-void vcgadd(vector_s32 & dst, vector_s16 src, vector_bool pg, int32_t mode);
-
 #if defined(__DAV_CUBE__)
     inline int32_t g_coreType = 1;
 #else
