@@ -5,13 +5,6 @@
 | 产品     | 是否支持 |
 | ----------- |:----:|
 |Ascend 950PR/Ascend 950DT|√|
-|Atlas A3 训练系列产品/Atlas A3 推理系列产品|√|
-|Atlas A2 训练系列产品/Atlas A2 推理系列产品|√|
-|Atlas 200I/500 A2 推理产品|x|
-|Atlas 推理系列产品AI Core|x|
-|Atlas 推理系列产品Vector Core|x|
-|Atlas 训练系列产品|x|
-|Atlas 200/300/500 推理产品|x|
 
 
 ## 功能说明
@@ -43,6 +36,9 @@ struct CopyTraits {
 ## 调用示例
 
 ```cpp
-// 创建CopyTraits
-auto copyTraits = AscendC::MakeCopyTraits<CopyOperation>(arg1, arg2, arg3);
+using namespace AscendC::Te;
+// 以CopyGM2L1操作类型为例，创建CopyTraits
+using copyTraits = CopyTraits<CopyGM2L1, DataCopyTraitDefault>;
+// 使用copyTraits声明CopyAtom对象，调用Copy接口实现CopyGM2L1，其中l1ATensor是位于L1上的目的操作数，globalA是位于GM上的源操作数。
+Copy(CopyAtom<copyTraits>{}, l1ATensor, globalA);
 ```

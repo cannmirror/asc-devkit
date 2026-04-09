@@ -7,14 +7,14 @@ Layout用于定义张量的布局，包含Shape和Stride信息，描述张量在
 ## 结构体定义
 
   ```cpp
-  template <typename ShapeType, typename StrideType>
-  struct Layout : private Std::tuple<ShapeType, StrideType>
+  template <typename T, typename U>
+  struct Layout : private Std::tuple<T, U>
   {
-    static constexpr auto size  = StaticLayoutSize<ShapeType, StrideType>::size;
-    static constexpr auto depth = nesting_depth_v<ShapeType>;
-    static constexpr auto rank  = Std::tuple_size_v<ShapeType>;
+    static constexpr auto size  = StaticLayoutSize<T, U>::size;
+    static constexpr auto depth = nesting_depth_v<T>;
+    static constexpr auto rank  = Std::tuple_size_v<T>;
 
-    __aicore__ inline constexpr Layout(const ShapeType& shape = {}, const StrideType& stride = {});
+    __aicore__ inline constexpr Layout(const T& shape = {}, const U& stride = {});
 
     __aicore__ inline constexpr decltype(auto) Capacity() const;
 
@@ -31,8 +31,8 @@ Layout用于定义张量的布局，包含Shape和Stride信息，描述张量在
     template <size_t... I>
     __aicore__ inline constexpr decltype(auto) Stride() const;
 
-    template <typename CoordType>
-    __aicore__ inline constexpr auto operator()(const CoordType& coord) const;
+    template <typename S>
+    __aicore__ inline constexpr auto operator()(const S& coord) const;
 
     template <size_t... I>
     __aicore__ inline constexpr decltype(auto) Rank() const;
@@ -42,16 +42,16 @@ Layout用于定义张量的布局，包含Shape和Stride信息，描述张量在
     };
   ```
 
-## 字段说明
+## 模板参数
 
-| 字段名 | 类型 | 描述 |
-| -------- | ------ | ------ |
-| shape | ShapeType | Layout的形状。 |
-| stride | StrideType | Layout的步长。 |
+| 参数名 | 描述 |
+| -------- | ------ |
+| T | [Std::tuple](../../../容器函数.md)结构类型，用于定义数据的逻辑形状，例如二维矩阵的行数和列数或多维张量的各维度大小。 |
+| U | [Std::tuple](../../../容器函数.md)结构类型，用于定义各维度在内存中的步长，即同维度相邻元素在内存中的间隔，间隔的单位为元素，与Shape的维度信息一一对应。 |
 
 ## 成员函数说明
 
-### Layout(ShapeType& shape, StrideType& stride)
+### Layout(const T& shape, const U& stride)
 
 - 功能说明
 
@@ -60,12 +60,12 @@ Layout用于定义张量的布局，包含Shape和Stride信息，描述张量在
 - 函数原型
 
   ```cpp
-  __aicore__ inline constexpr Layout(const ShapeType& shape = {}, const StrideType& stride = {});
+  __aicore__ inline constexpr Layout(const T& shape = {}, const U& stride = {});
   ```
 
 - 参数说明
 
-  `shape`：布局形状信息。  
+  `shape`：布局形状信息。
   `stride`：布局步长信息。
 
 - 返回值说明
@@ -145,7 +145,7 @@ Layout用于定义张量的布局，包含Shape和Stride信息，描述张量在
 
   返回当前Layout对象的引用或const引用。
 
-### operator()(const CoordType& coord)
+### operator()(const S& coord)
 
 - 功能说明
 
@@ -154,8 +154,8 @@ Layout用于定义张量的布局，包含Shape和Stride信息，描述张量在
 - 函数原型
 
   ```cpp
-  template <typename CoordType>
-  __aicore__ inline constexpr auto operator()(const CoordType& coord) const;
+  template <typename S>
+  __aicore__ inline constexpr auto operator()(const S& coord) const;
   ```
 
 - 参数说明
@@ -211,7 +211,7 @@ Layout用于定义张量的布局，包含Shape和Stride信息，描述张量在
 - 定义原型
 
   ```cpp
-  static constexpr auto size = StaticLayoutSize<ShapeType, StrideType>::size;
+  static constexpr auto size = StaticLayoutSize<T, U>::size;
   ```
 
 ### depth
@@ -223,7 +223,7 @@ Layout用于定义张量的布局，包含Shape和Stride信息，描述张量在
 - 定义原型
 
   ```cpp
-  static constexpr auto depth = nesting_depth_v<ShapeType>;
+  static constexpr auto depth = nesting_depth_v<T>;
   ```
 
 ### rank
@@ -235,6 +235,6 @@ Layout用于定义张量的布局，包含Shape和Stride信息，描述张量在
 - 定义原型
 
   ```cpp
-  static constexpr auto rank = Std::tuple_size_v<ShapeType>;
+  static constexpr auto rank = Std::tuple_size_v<T>;
   ```
   

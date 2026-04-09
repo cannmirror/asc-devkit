@@ -8,7 +8,7 @@
 
 ## 功能说明
 
-执行矩阵乘加（C += A \* B 或 C = A \* B + Bias）操作。支持 `MmadOperation` 操作，用于执行基本计算。
+执行矩阵乘加（C += A * B或C = A * B + Bias）操作。支持`MmadOperation`操作，用于执行基本计算。
 
 ## 函数原型
 
@@ -24,8 +24,8 @@ __aicore__ inline void Mad(const MmadAtom<T>& atomMmad, const Params& ...params)
 
 | 参数名 | 输入/输出 | 描述 |
 |--------|-----------|------|
-| atomMmad | 输入 | MmadAtom 对象，封装了具体的矩阵乘加操作和 traits 配置。 |
-| params | 输入 | 矩阵乘加操作的参数，可变参数。通常包括：<br>- 目的张量 C（L0C）<br>- 源张量 B（L0B，右矩阵）<br>- 源张量 A（L0A，左矩阵）<br>- 参数（如 defaultMmadParams）<br>- 可选：偏置张量（Bias） |
+| atomMmad | 输入 | [MmadAtom](../struct/atom/MmadAtom.md) 对象，封装了具体的矩阵乘加操作和traits配置。 |
+| params | 输入 | 矩阵乘加操作的参数，可变参数。通常包括：<br>- 目的张量C（计算结果矩阵，位于L0C）<br>- 源张量A（左矩阵，位于L0A）<br>- 源张量B（右矩阵，位于L0B）<br>- 参数（如defaultMmadParams）<br>- 可选：源张量Bias(偏置张量，位于L0C或者BiasTable Buffer) |
 
 ## 返回值说明
 
@@ -40,21 +40,23 @@ __aicore__ inline void Mad(const MmadAtom<T>& atomMmad, const Params& ...params)
 ## 调用示例
 
 ```cpp
-// 下面接口为3种调用方式的示例
+using namespace AscendC::Te;
+// 下面为接口3种调用方式的示例
 // 调用方式1
-Mad(MmadAtom<MmadTraits<MmadOperation, MmadTraitDefault>>{}, L0CTensor, L0ATensor, L0BTensor, para);
+Mad(MmadAtom<MmadTraits<MmadOperation, MmadTraitDefault>>{}, l0CTensor, l0ATensor, l0BTensor, para);
 // 调用方式2
-MmadAtom<MmadTraits<MmadOperation, MmadTraitDefault>>{}.Call(L0CTensor, L0ATensor, L0BTensor, para);
+MmadAtom<MmadTraits<MmadOperation, MmadTraitDefault>>{}.Call(l0CTensor, l0ATensor, l0BTensor, para);
 // 调用方式3
 auto atomMmad = MakeMmad(MmadOperation{}, MmadTraitDefault{});
-atomMmad.Call(L0CTensor, L0ATensor, L0BTensor, para);
+atomMmad.Call(l0CTensor, l0ATensor, l0BTensor, para);
 
 // 带Bias的调用方式
-Mad(MmadAtom<MmadTraits<MmadOperation, MmadTraitDefault>>{}, L0CTensor, L0ATensor, L0BTensor, biasTensor, para);
+Mad(MmadAtom<MmadTraits<MmadOperation, MmadTraitDefault>>{}, l0CTensor, l0ATensor, l0BTensor, biasTensor, para);
 
 ```
 
 ## 相关参考
 
 - [MmadAtom](../struct/atom/MmadAtom.md)
+- [MmadTraits](../struct/atom/MmadTraits.md)
 - [Mmad](./Mmad.md)

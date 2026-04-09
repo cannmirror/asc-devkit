@@ -19,7 +19,7 @@ __aicore__ inline decltype(auto) MakeZzLayout(U row, S column)
 
 ## 参数说明
 
-`表1` 模板参数说明
+**表 1** 模板参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 |--------|-----------|------|
@@ -27,7 +27,7 @@ __aicore__ inline decltype(auto) MakeZzLayout(U row, S column)
 | U | 输入 | 行数类型，size_t或Int整型常量。 |
 | S | 输入 | 列数类型，size_t或Int整型常量。 |
 
-`表2` 参数说明
+**表 2** 参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 |--------|-----------|------|

@@ -5,13 +5,6 @@
 | 产品     | 是否支持 |
 | ----------- |:----:|
 |Ascend 950PR/Ascend 950DT|√|
-|Atlas A3 训练系列产品/Atlas A3 推理系列产品|√|
-|Atlas A2 训练系列产品/Atlas A2 推理系列产品|√|
-|Atlas 200I/500 A2 推理产品|x|
-|Atlas 推理系列产品AI Core|x|
-|Atlas 推理系列产品Vector Core|x|
-|Atlas 训练系列产品|x|
-|Atlas 200/300/500 推理产品|x|
 
 
 ## 功能说明
@@ -42,8 +35,8 @@ struct CopyAtom {
 
 ```cpp
 // 创建CopyAtom
-auto copyAtom = AscendC::MakeCopy(arg1, arg2, arg3);
+auto copyAtom = AscendC::Te::MakeCopy(arg1, arg2, arg3);
 
 // 执行复制操作
-AscendC::Copy(copyAtom, dst, src);
+AscendC::Te::Copy(copyAtom, dst, src);
 ```

@@ -19,7 +19,7 @@ __aicore__ inline constexpr auto GetStride(const Layout<ShapeType, StrideType>& 
 
 ## 参数说明
 
-表1 模板参数说明
+**表 1** 模板参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | -------- | ----------- | ------ |
@@ -27,7 +27,7 @@ __aicore__ inline constexpr auto GetStride(const Layout<ShapeType, StrideType>& 
 | ShapeType | 输入 | Layout的shape类型。 |
 | StrideType | 输入 | Layout的stride类型。 |
 
-表2 参数说明
+**表 2** 参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | -------- | ----------- | ------ |
@@ -48,10 +48,10 @@ __aicore__ inline constexpr auto GetStride(const Layout<ShapeType, StrideType>& 
 using namespace AscendC::Te;
 
 auto layout = MakeNDLayout(128,128);
-// 无模板实参时 Is... 为空，等价于 layout.Stride() 得到整个stride元组
+// 无模板实参时Is... 为空，等价于layout.Stride() 得到整个stride元组
 auto strideTuple = GetStride(layout);
 
-// 带索引时等价于 layout.Stride<0>()，按递归取stride子结构或某一维
+// 带索引时等价于layout.Stride<0>()，按递归取stride子结构或某一维
 auto stride0 = GetStride<0>(layout);
 ```
 

@@ -19,21 +19,21 @@ __aicore__ inline constexpr auto MakeGMmemPtr(Iterator iter)
 
 ## 参数说明
 
-`表1` 模板参数说明
+**表 1** 模板参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 |--------|-----------|------|
 | Iterator | 输入 | 迭代器或指针类型。 |
 
-`表2` 参数说明
+**表 2** 参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 |--------|-----------|------|
-| iter | 输入 | 指针，指向GM的起始地址，类型为 `__gm__ T*`。 |
+| iter | 输入 | 指针，指向GM的起始地址，类型为`__gm__ T*`。 |
 
 ## 返回值说明
 
-返回GM内存指针对象，类型为 `HardwareMemPtr<Hardware::GM, Iterator>`。
+返回GM内存指针对象，类型为`HardwareMemPtr<Hardware::GM, Iterator>`。
 
 ## 约束说明
 
@@ -44,7 +44,7 @@ iter必须是有效的迭代器类型。
 ```cpp
 using namespace AscendC::Te;
 
-// 示例 1： 使用指针创建
+// 示例1： 使用指针创建
 constexpr uint32_t TILE_LENGTH = 128;
 __gm__ float data[TILE_LENGTH];
 auto ptr = MakeGMmemPtr(data);

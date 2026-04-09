@@ -20,20 +20,9 @@ template <typename T> struct is_layout
 
 **表 1**  模板参数说明
 
-
-<table><thead align="left"><tr id="zh-cn_topic_0000002078486173_zh-cn_topic_0000001576727153_zh-cn_topic_0000001389787297_row6223476444"><th class="cellrowborder" valign="top" width="20.34%" id="mcps1.2.3.1.1"><p id="p1085176175119">参数名</p>
-</th>
-<th class="cellrowborder" valign="top" width="79.66%" id="mcps1.2.3.1.2"><p id="p148519610515">描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row1392614743211"><td class="cellrowborder" valign="top" width="20.34%" headers="mcps1.2.3.1.1 "><p id="p17843141016336">T</p>
-</td>
-<td class="cellrowborder" valign="top" width="79.66%" headers="mcps1.2.3.1.2 "><p id="p1192718714328">根据输入的数据类型，判断是否为Layout数据结构。</p>
-</td>
-</tr>
-</tbody>
-</table>
+| 参数名 | 描述 |
+|--------|------|
+| T | 根据输入的数据类型，判断是否为Layout数据结构。 |
 
 ## 返回值说明
 

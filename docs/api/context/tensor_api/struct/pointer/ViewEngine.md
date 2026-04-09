@@ -16,7 +16,7 @@ LocalTensor<TensorAttribute<ViewEngine<Iterator>, LayoutType>>
 
 ## 函数原型
 
-  `ViewEngine` 定义如下：
+  `ViewEngine`定义如下：
 
   ```cpp
   template <typename Iterator>
@@ -73,7 +73,7 @@ LocalTensor<TensorAttribute<ViewEngine<Iterator>, LayoutType>>
 
 - 返回值说明
 
-- 返回构造时保存的 `storage`，即当前视图的起始指针/迭代器。
+- 返回构造时保存的`storage`，即当前视图的起始指针/迭代器。
 
 ## 约束说明
 

@@ -5,13 +5,6 @@
 | 产品     | 是否支持 |
 | ----------- |:----:|
 |Ascend 950PR/Ascend 950DT|√|
-|Atlas A3 训练系列产品/Atlas A3 推理系列产品|√|
-|Atlas A2 训练系列产品/Atlas A2 推理系列产品|√|
-|Atlas 200I/500 A2 推理产品|x|
-|Atlas 推理系列产品AI Core|x|
-|Atlas 推理系列产品Vector Core|x|
-|Atlas 训练系列产品|x|
-|Atlas 200/300/500 推理产品|x|
 
 ## 功能说明
 
@@ -21,7 +14,7 @@
 
 ```cpp
 template <typename... Ts>
-__aicore____ inline constexpr Tile<Ts...> MakeTile(const Ts&... t)
+__aicore__ inline constexpr Tile<Ts...> MakeTile(const Ts&... t)
 ```
 
 ## 参数说明
@@ -39,16 +32,24 @@ __aicore____ inline constexpr Tile<Ts...> MakeTile(const Ts&... t)
 - 参数数量必须与对应的Shape维度数量一致。
 - 各参数必须为正整数。
 - 分块大小不能超过对应Shape维度的大小。
-- 支持的数据类型包括：size_t、int等整数类型。
+- 支持的数据类型包括：size_t、int等整数类型或者Std::Int类型。
 
 ## 调用示例
 
 ```cpp
-// 创建一个3维张量的分块
-auto tile = AscendC::MakeTile(2, 5, 3);
+// 使用整数类型创建一个3维张量的分块
+auto tile = AscendC::Te::MakeTile(2, 5, 3);
 
 // 获取各维度的分块大小
-auto tile0 = AscendC::Std::get<0>(tile.value); // tile0 = 2
-auto tile1 = AscendC::Std::get<1>(tile.value); // tile1 = 5
-auto tile2 = AscendC::Std::get<2>(tile.value); // tile2 = 3
+auto tile0 = AscendC::Std::get<0>(tile); // tile0 = 2
+auto tile1 = AscendC::Std::get<1>(tile); // tile1 = 5
+auto tile2 = AscendC::Std::get<2>(tile); // tile2 = 3
+
+// 使用Std::Int创建一个3维张量的分块
+auto tileInt = AscendC::Te::MakeTile(AscendC::Std::Int<2>{}, AscendC::Std::Int<5>{}, AscendC::Std::Int<3>{});
+
+// 获取各维度的分块大小
+auto tileInt0 = AscendC::Std::get<0>(tileInt); // tileInt0 = 2
+auto tileInt1 = AscendC::Std::get<1>(tileInt); // tileInt1 = 5
+auto tileInt2 = AscendC::Std::get<2>(tileInt); // tileInt2 = 3
 ```

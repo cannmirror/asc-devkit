@@ -5,13 +5,6 @@
 | 产品     | 是否支持 |
 | ----------- |:----:|
 |Ascend 950PR/Ascend 950DT|√|
-|Atlas A3 训练系列产品/Atlas A3 推理系列产品|√|
-|Atlas A2 训练系列产品/Atlas A2 推理系列产品|√|
-|Atlas 200I/500 A2 推理产品|x|
-|Atlas 推理系列产品AI Core|x|
-|Atlas 推理系列产品Vector Core|x|
-|Atlas 训练系列产品|x|
-|Atlas 200/300/500 推理产品|x|
 
 ## 功能说明
 
@@ -42,6 +35,9 @@ struct MmadTraits {
 ## 调用示例
 
 ```cpp
+using namespace AscendC::Te;
 // 创建MmadTraits
-auto mmadTraits = AscendC::MakeMmadTraits<MmadOperation>(arg1, arg2, arg3);
+using mmadTraits = MmadTraits<MmadOperation, MmadTraitDefault>;
+// 使用mmadTraits声明MmadAtom对象，调用Mad接口实现MmadOperation，其中l0CTensor是位于L0C上的计算结果矩阵，l0ATensor是位于L0A上的左矩阵，l0BTensor是位于L0B上的右矩阵，para是Mad计算运行时参数。
+Mad(MmadAtom<mmadTraits>{}, l0CTensor, l0ATensor, l0BTensor, para);
 ```

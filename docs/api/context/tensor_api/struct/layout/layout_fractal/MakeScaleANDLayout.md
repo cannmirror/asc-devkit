@@ -15,19 +15,19 @@ __aicore__ inline decltype(auto) MakeScaleANDLayout(U row, S column)
 
 ## 功能描述
 
-创建 ScaleAND 格式的 Layout 对象。ScaleAND 格式用于矩阵 A 的非转置布局（m, scaleK）。
+创建ScaleAND格式的Layout对象。ScaleAND格式用于矩阵A的非转置布局（m, scaleK）。
 
 ## 参数说明
 
-`表1` 模板参数说明
+**表 1** 模板参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 |--------|-----------|------|
-| T | 输入 | 数据类型，支持数据类型为 `fp8_e8m0_t`。 |
+| T | 输入 | 数据类型，支持数据类型为`fp8_e8m0_t`。 |
 | U | 输入 | 行参数类型，可以是编译时常量或运行时变量。 |
 | S | 输入 | 列参数类型，可以是编译时常量或运行时变量。 |
 
-`表2` 参数说明
+**表 2** 参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 |--------|-----------|------|
@@ -57,5 +57,3 @@ size_t m = 32;
 size_t scaleK = 64;
 auto layout2 = MakeScaleANDLayout<fp8_e8m0_t>(m, scaleK);
 ```
-
-

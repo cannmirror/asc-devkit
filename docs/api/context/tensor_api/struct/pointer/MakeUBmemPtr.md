@@ -22,7 +22,7 @@ __aicore__ inline auto MakeUBmemPtr(const U& byteOffset)
 
 ## 参数说明
 
-`表1` 模板参数说明
+**表 1** 模板参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 |--------|-----------|------|
@@ -30,7 +30,7 @@ __aicore__ inline auto MakeUBmemPtr(const U& byteOffset)
 | T | 输入 | 元素类型。 |
 | U | 输入 | 字节偏移量类型。 |
 
-`表2` 参数说明
+**表 2** 参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 |--------|-----------|------|
@@ -39,7 +39,7 @@ __aicore__ inline auto MakeUBmemPtr(const U& byteOffset)
 
 ## 返回值说明
 
-返回UB内存指针对象，类型为 `HardwareMemPtr<Hardware::UB, Iterator>`。
+返回UB内存指针对象，类型为`HardwareMemPtr<Hardware::UB, Iterator>`。
 
 ## 约束说明
 
@@ -51,12 +51,12 @@ __aicore__ inline auto MakeUBmemPtr(const U& byteOffset)
 ```cpp
 using namespace AscendC::Te;
 
-// 示例 1： 使用指针创建
+// 示例1： 使用指针创建
 constexpr uint32_t TILE_LENGTH = 4;
 __ubuf__ float data[TILE_LENGTH];
 auto ptr = MakeUBmemPtr(data);
 
-// 示例 2： 使用地址字节偏移创建
+// 示例2： 使用地址字节偏移创建
 uint32_t byteOffset = 128;
 auto ptr = MakeUBmemPtr<float>(byteOffset);
 ```

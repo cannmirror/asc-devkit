@@ -5,13 +5,6 @@
 | 产品     | 是否支持 |
 | ----------- |:----:|
 |Ascend 950PR/Ascend 950DT|√|
-|Atlas A3 训练系列产品/Atlas A3 推理系列产品|√|
-|Atlas A2 训练系列产品/Atlas A2 推理系列产品|√|
-|Atlas 200I/500 A2 推理产品|x|
-|Atlas 推理系列产品AI Core|x|
-|Atlas 推理系列产品Vector Core|x|
-|Atlas 训练系列产品|x|
-|Atlas 200/300/500 推理产品|x|
 
 ## 功能说明
 
@@ -39,7 +32,7 @@ __aicore__ inline constexpr Coord<Ts...> MakeCoord(const Ts&... t)
 - 参数数量必须与对应的Shape维度数量一致。
 - 各参数必须为非负整数。
 - 坐标值必须在对应Shape维度的有效范围内。
-- 支持的数据类型包括：size_t、int等整数类型。
+- 支持的数据类型包括：size_t、int等整数类型或者Std::Int类型。
 
 ## 理论性能说明
 
@@ -47,11 +40,19 @@ __aicore__ inline constexpr Coord<Ts...> MakeCoord(const Ts&... t)
 ## 调用示例
 
 ```cpp
-// 创建一个3维张量的坐标
-auto coord = AscendC::MakeCoord(5, 10, 15);
+// 使用整数类型创建一个3维张量的坐标
+auto coord = AscendC::Te::MakeCoord(5, 10, 15);
 
 // 获取各维度的坐标
-auto coord0 = AscendC::Std::get<0>(coord.value); // coord0 = 5
-auto coord1 = AscendC::Std::get<1>(coord.value); // coord1 = 10
-auto coord2 = AscendC::Std::get<2>(coord.value); // coord2 = 15
+auto coord0 = AscendC::Std::get<0>(coord); // coord0 = 5
+auto coord1 = AscendC::Std::get<1>(coord); // coord1 = 10
+auto coord2 = AscendC::Std::get<2>(coord); // coord2 = 15
+
+// 使用Std::Int类型创建一个3维张量的坐标
+auto coordInt = AscendC::Te::MakeCoord(AscendC::Std::Int<5>{}, AscendC::Std::Int<10>{}, AscendC::Std::Int<15>{});
+
+// 获取各维度的坐标
+auto coordInt0 = AscendC::Std::get<0>(coordInt); // coordInt0 = 5
+auto coordInt1 = AscendC::Std::get<1>(coordInt); // coordInt1 = 10
+auto coordInt2 = AscendC::Std::get<2>(coordInt); // coordInt2 = 15
 ```

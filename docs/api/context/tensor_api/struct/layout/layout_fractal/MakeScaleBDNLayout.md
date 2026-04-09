@@ -15,11 +15,11 @@ __aicore__ inline decltype(auto) MakeScaleBDNLayout(U row, S column)
 
 ## 功能描述
 
-创建 ScaleBDN 格式的 Layout 对象。ScaleBDN 格式用于矩阵 B 的转置布局（scaleK, n），常用于矩阵乘法中 B 矩阵转置后的存储。
+创建ScaleBDN格式的Layout对象。ScaleBDN格式用于矩阵B的转置布局（scaleK, n），常用于矩阵乘法中B矩阵转置后的存储。
 
 ## 参数说明
 
-`表1` 模板参数说明
+**表 1** 模板参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 |--------|-----------|------|
@@ -27,7 +27,7 @@ __aicore__ inline decltype(auto) MakeScaleBDNLayout(U row, S column)
 | U | 输入 | 行参数类型，可以是编译时常量或运行时变量。 |
 | S | 输入 | 列参数类型，可以是编译时常量或运行时变量。 |
 
-`表2` 参数说明
+**表 2** 参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 |--------|-----------|------|
