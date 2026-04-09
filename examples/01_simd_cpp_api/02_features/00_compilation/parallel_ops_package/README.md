@@ -108,10 +108,10 @@ parallel_ops_package
   cmake -S . -B build
   cmake --build build -j
   # add_custom 包
-  ./add_custom/custom_opp_*.run
+  ./build/add_custom/custom_opp_*.run
 
   # leaky_relu_custom 包
-  ./leaky_relu_custom/custom_opp_*.run
+  ./build/leaky_relu_custom/custom_opp_*.run
   ```
 
   执行结果如下，说明执行成功。
