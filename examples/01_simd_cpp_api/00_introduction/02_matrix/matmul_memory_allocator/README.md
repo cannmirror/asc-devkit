@@ -57,6 +57,11 @@
     <tr><td align="left">4</td><td align="left">Compute</td><td align="left">完成矩阵乘加计算</td><td align="left">矩阵乘结果为NZ格式</td></tr>
     <tr><td align="left">5</td><td align="left">CopyOut</td><td align="left">将L0C中的计算结果搬运到GM</td><td align="left">NZ->ND格式转换</td></tr>
     </table>
+  - 约束条件
+
+    1. baseM/baseK/baseN满足16对齐
+    2. baseM/baseK/baseN能被singleCoreM/singleCoreK/singleCoreN整除
+    3. singleCoreM/singleCoreK/singleCoreN能被M/K/N整除，不支持非整切场景
 
   - 调用实现
 
