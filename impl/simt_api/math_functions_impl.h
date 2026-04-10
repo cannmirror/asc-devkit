@@ -2791,7 +2791,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float __internal_yn_case3(int n, float x)
     float value = 0.0f;
     float inv = 0.0f;
     int k = 1;
-    for (; k + 2 < n; k += 3) {
+    for (; k + 2 < n; k += 3) { // 2: ensure the last unrolled iteration (k+2) does not exceed n
         mult = k * inv_x;
         value = mult * current - prev;
         prev = current;
@@ -2802,7 +2802,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float __internal_yn_case3(int n, float x)
         prev = current;
         current = value;
 
-        mult = (k + 2) * inv_x;
+        mult = (k + 2) * inv_x; // 2: offset for the third unrolled iteration
         value = mult * current - prev;
         prev = current;
         current = value;
