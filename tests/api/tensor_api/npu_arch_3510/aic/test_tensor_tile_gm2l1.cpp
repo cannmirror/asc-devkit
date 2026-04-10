@@ -97,11 +97,15 @@ protected:
         MOCKER_GM_TO_L1(float);
         MOCKER_GM_TO_L1(uint32_t);
         MOCKER(set_mte2_nz_para, void (*)(uint64_t)).stubs().will(invoke(CaptureSetMTE2NzPara));
+
+        tmpCoreType = g_coreType;
+        g_coreType = AscendC::AIC_TYPE;
     }
 
     virtual void TearDown()
     {
         GlobalMockObject::verify();
+        g_coreType = tmpCoreType;
     }
 
 private:
@@ -122,6 +126,8 @@ private:
     __gm__ uint8_t src0Gm[GmSize] = {0};
     __cbuf__ uint8_t l1ABuf[L1Size] = {0};
     __cbuf__ uint8_t l1ABufGolden[L1Size] = {0};
+
+    int32_t tmpCoreType{0};
 };
 
 #define EXPECT_GM2L1_EQ()                                                                                              \

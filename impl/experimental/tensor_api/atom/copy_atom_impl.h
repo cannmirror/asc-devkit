@@ -35,6 +35,7 @@
 
 #include "impl/experimental/tensor_api/arch/datamove/l1_to_bt/copy.h"
 #include "impl/experimental/tensor_api/arch/datamove/l1_to_fb/copy.h"
+#include "impl/experimental/tensor_api/arch/datamove/gm_to_l1/copy.h"
 
 namespace AscendC {
 namespace Te {

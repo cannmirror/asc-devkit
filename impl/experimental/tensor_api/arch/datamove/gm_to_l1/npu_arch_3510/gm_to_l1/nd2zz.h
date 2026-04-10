@@ -8,19 +8,26 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
+#if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
+#warning                                                                                                               \
+    "impl/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/gm_to_l1/nd2zz.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+#define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
+#endif
+
 /*!
- * \file dn2nn.h
+ * \file nd2zz.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_3510_DATA_COPY_GM2L1_DN2NN_H
-#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_3510_DATA_COPY_GM2L1_DN2NN_H
+#ifndef IMPL_TENSOR_API_ARCH_DATAMOVE_GM_TO_L1_NPU_ARCH_3510_GM_TO_L1_ND2ZZ_H
+#define IMPL_TENSOR_API_ARCH_DATAMOVE_GM_TO_L1_NPU_ARCH_3510_GM_TO_L1_ND2ZZ_H
 
-#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/instruction.h"
+#include "impl/experimental/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/instruction.h"
 
 namespace AscendC {
 namespace Te {
 
-class CopyGmToCbufScaleBDN2Nn {
+class CopyGmToCbufScaleAND2Zz {
 public:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline static void Run(const T& dst, const U& src)
@@ -46,18 +53,18 @@ private:
 
         auto srcRowShape = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
         uint32_t srcColShape = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
-        uint16_t srcBColStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout);
-        uint16_t dstBColStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout);
+        auto srcRowStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
+        uint16_t dstBRowStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
 
         uint16_t dnNum = 1;
-        uint16_t nValue = srcRowShape >> 1;  // use b16 for DN2NZ, so nValue = srcRowShape / 2
-        uint16_t dValue = srcColShape;
+        uint16_t nValue = srcColShape >> 1; // use b16 for DN2NZ, so nValue = srcColShape / 2
+        uint16_t dValue = srcRowShape;
         uint16_t dstNzNStride = 1;
 
-        uint64_t loop1SrcStride = srcBColStride * sizeof(type);
+        uint64_t loop1SrcStride = srcRowStride * sizeof(type);
 
         uint16_t loop2DstStride = dstNzNStride;                             // loop2_dst_stride = dst_nz_n_stride
-        uint16_t loop3DstStride = dstBColStride * sizeof(type) / C0_SIZE<>; // loop3_dst_stride = dst_nz_c0_Stride
+        uint16_t loop3DstStride = dstBRowStride * sizeof(type) / C0_SIZE<>; // loop3_dst_stride = dst_nz_c0_Stride
         uint16_t loop4DstStride = 0;
         uint8_t cacheMode = GetCacheModeFromTensor(src);
         // fp8 scale use b16 for movement
@@ -70,4 +77,9 @@ private:
 } // namespace Te
 } // namespace AscendC
 
+#endif
+
+#if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
+#undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#undef UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif

@@ -94,6 +94,8 @@ asc-devkit:
       - impl/experimental/tensor_api/arch/datamove/ub_to_l1/routing.h
       - impl/experimental/tensor_api/arch/datamove/ub_to_gm/routing.h
       - impl/experimental/tensor_api/arch/datamove/l0c_to_out/routing.h
+      - impl/experimental/tensor_api/arch/datamove/gm_to_l1/routing.h
+      - impl/experimental/tensor_api/atom/cube_datamove/copy_datacopy.h
       - impl/experimental/tensor_api/arch/cube_datamove/data_copy/data_copy_routing.h
 
   llt:

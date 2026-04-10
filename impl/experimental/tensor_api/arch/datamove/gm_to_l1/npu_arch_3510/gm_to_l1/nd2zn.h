@@ -8,27 +8,26 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
-
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #warning                                                                                                               \
-    "impl/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_gm2l1/dn2zz.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+    "impl/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/gm_to_l1/nd2zn.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
 
 /*!
- * \file dn2zz.h
+ * \file nd2zn.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_3510_DATA_COPY_GM2L1_DN2ZZ_H
-#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_3510_DATA_COPY_GM2L1_DN2ZZ_H
+#ifndef IMPL_TENSOR_API_ARCH_DATAMOVE_GM_TO_L1_NPU_ARCH_3510_GM_TO_L1_ND2ZN_H
+#define IMPL_TENSOR_API_ARCH_DATAMOVE_GM_TO_L1_NPU_ARCH_3510_GM_TO_L1_ND2ZN_H
 
-#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/instruction.h"
+#include "impl/experimental/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/instruction.h"
 
 namespace AscendC {
 namespace Te {
 
-class CopyGmToCbufScaleADN2Zz {
+class CopyGmToCbufMultiND2Zn {
 public:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline static void Run(const T& dst, const U& src)
@@ -40,7 +39,9 @@ private:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
-        CheckDataTypeFor3510::CheckGm2L1ScaleDataType<T, U>();
+        CheckFormat::CheckNDTemplate<U>();
+        CheckFormat::CheckZNTemplate<T>();
+        CheckDataTypeFor3510::CheckGm2L1DataType<T, U>();
     }
 
     template <const DataCopyTrait& trait, typename T, typename U>
@@ -53,27 +54,32 @@ private:
         auto srcLayout = src.Layout();
 
         auto srcRowShape = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
-        uint32_t srcColShape = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
-        uint16_t dstBRowStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
-        auto srcColStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout);
+        auto srcColShape = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
+        auto srcRowStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
+        auto dstBRowStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
 
         uint16_t ndNum = 1;
         uint16_t nValue = srcColShape;
         uint32_t dValue = srcRowShape;
         uint64_t srcNdMatrixStride = 0;
-        uint16_t dstNzC0Stride = dstBRowStride * sizeof(type) / C0_SIZE<>;
-        uint16_t dstNzNStride = 1;
 
-        uint64_t loop1SrcStride = srcColStride * sizeof(type);
+        uint64_t srcDValue = srcRowStride;
+        uint16_t dstNzC0Stride = dstBRowStride / C0_ELEMENT<type>;
+        uint16_t dstNzNStride = 1;
+        uint32_t dstNzMatrixStride = 0;
+
+        uint64_t loop1SrcStride = srcDValue * sizeof(type);
         uint64_t loop4SrcStride = srcNdMatrixStride * sizeof(type);
 
         uint16_t loop2DstStride = dstNzNStride;  // loop2_dst_stride = dst_nz_n_stride
         uint16_t loop3DstStride = dstNzC0Stride; // loop3_dst_stride = dst_nz_c0_Stride
+        // loop4_dst_stride: dst_nz_matrix_stride * size_of_dst_type / C0_size
+        uint16_t loop4DstStride = static_cast<uint16_t>(dstNzMatrixStride / C0_ELEMENT<type>);
+
         uint8_t cacheMode = GetCacheModeFromTensor(src);
-        // fp8 scale use b16 for movement
-        CopyGmToCbufMultiNd2nzInstr::CopyGmToCbufMultiNd2nz(
-            (__cbuf__ half*)(dst.Data().Get()), (__gm__ half*)(src.Data().Get()), ndNum, loop2DstStride, loop3DstStride,
-            0, loop1SrcStride, cacheMode, nValue, dValue, loop4SrcStride, false);
+
+        CopyGmToCbufMultiDn2nzInstr::DataCopy(dst, src, ndNum, loop2DstStride, loop3DstStride, loop4DstStride,
+                                              loop1SrcStride, cacheMode, nValue, dValue, loop4SrcStride, false);
     }
 };
 
