@@ -23,7 +23,7 @@ ERROR_TOL = 1e-4
 
 
 def verify_result(scenarioNum, output, golden):
-    output_type = np.float16
+    output_type = np.float16 if scenarioNum in (1, 2) else np.float32
     output = np.fromfile(output, dtype=output_type).reshape(-1)
     golden = np.fromfile(golden, dtype=output_type).reshape(-1)
     different_element_results = np.isclose(
@@ -42,7 +42,7 @@ def verify_result(scenarioNum, output, golden):
                 real_index,
                 golden_data,
                 output_data,
-                abs(output_data - golden_data) / golden_data,
+                abs(output_data - golden_data) / golden_data if golden_data != 0 else 0,
             )
         )
         if index == 100:

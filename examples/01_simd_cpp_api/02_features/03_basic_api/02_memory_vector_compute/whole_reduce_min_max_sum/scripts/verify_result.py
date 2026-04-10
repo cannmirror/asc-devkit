@@ -21,11 +21,17 @@ import numpy as np
 RELATIVE_TOL = 1e-3
 ABSOLUTE_TOL = 1e-5
 ERROR_TOL = 1e-3
+RELATIVE_TOL_F32 = 1e-5
+ABSOLUTE_TOL_F32 = 1e-8
 
 
 def verify_result(scenarioNum, output, golden):
-    output = np.fromfile(output, dtype=np.float16).reshape(-1)
-    golden = np.fromfile(golden, dtype=np.float16).reshape(-1)
+    if scenarioNum in (3, 4, 7):
+        output = np.fromfile(output, dtype=np.float32).reshape(-1)
+        golden = np.fromfile(golden, dtype=np.float32).reshape(-1)
+    else:
+        output = np.fromfile(output, dtype=np.float16).reshape(-1)
+        golden = np.fromfile(golden, dtype=np.float16).reshape(-1)
 
     if scenarioNum == 5 or scenarioNum == 6:
         val_out = float(output[0])
@@ -43,10 +49,13 @@ def verify_result(scenarioNum, output, golden):
                 print("idx mismatch: output=%d, golden=%d" % (idx_out, idx_gold))
             return False
 
+    rtol = RELATIVE_TOL_F32 if scenarioNum in (3, 4, 7) else RELATIVE_TOL
+    atol = ABSOLUTE_TOL_F32 if scenarioNum in (3, 4, 7) else ABSOLUTE_TOL
+
     different_element_results = np.isclose(output,
                                            golden,
-                                           rtol=RELATIVE_TOL,
-                                           atol=ABSOLUTE_TOL,
+                                           rtol=rtol,
+                                           atol=atol,
                                            equal_nan=True)
     different_element_indexes = np.where(different_element_results == False)[0]
     for index in range(len(different_element_indexes)):

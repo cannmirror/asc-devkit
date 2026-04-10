@@ -22,28 +22,30 @@ np.random.seed(9)
 def gen_golden_data(scenarioNum=1):
     """
     根据场景编号生成输入数据和Golden数据
-    场景1：WholeReduceMax，输入[1, 1024]，输出[1, 16]，每个repeat内求最大值及索引
-    场景2：WholeReduceMin，输入[1, 1024]，输出[1, 16]，每个repeat内求最小值及索引
-    场景3：WholeReduceSum，输入[1, 2048]，输出[1, 16]，每个repeat内求和
-    场景4：RepeatReduceSum，输入[1, 2048]，输出[1, 16]，累加模式求和
+    场景1：WholeReduceMax，输入half类型[1, 1024]，输出[1, 8]，每个repeat内求最大值（不返回索引）
+    场景2：WholeReduceMin，输入half类型[1, 1024]，输出[1, 16]，每个repeat内求最小值及索引
+    场景3：WholeReduceSum，输入float类型[1, 2048]，输出[1, 32]，每个repeat内求和
+    场景4：RepeatReduceSum，输入float类型[1, 2048]，输出[1, 32]，累加模式求和
     场景5：WholeReduceMax + GetReduceRepeatMaxMinSpr，输入[1, 1024]，输出[1, 16]，求全局最大值及索引
     场景6：WholeReduceMin + GetReduceRepeatMaxMinSpr，输入[1, 1024]，输出[1, 16]，求全局最小值及索引
-    场景7：WholeReduceSum非对齐场景， 输入[13, 123]，输出[1, 13]，对每行非对齐数据求和
+    场景7：WholeReduceSum非对齐场景，输入float类型[13, 57]，输出[1, 13]，对每行非对齐数据求和
     """
     input_type = np.dtype("float16")
     output_type = input_type
     one_repeat_items = 256 // input_type.itemsize
 
+    if scenarioNum == 3 or scenarioNum == 4 or scenarioNum == 7:
+        input_type = np.dtype("float32")
+        output_type = input_type
+        one_repeat_items = 256 // input_type.itemsize
+
     if scenarioNum == 1:
         block_length = 1024
         repeat = block_length // one_repeat_items
         input_x = np.random.uniform(-1, 1, [block_length]).astype(input_type)
-        golden = np.zeros(2 * repeat).astype(output_type)
+        golden = np.zeros(repeat).astype(output_type)
         for i in range(repeat):
-            golden[2 * i] = np.max(input_x[i * one_repeat_items:(i + 1) * one_repeat_items])
-            max_index = np.argmax(input_x[i * one_repeat_items:(i + 1) * one_repeat_items])
-            max_index = np.uint16(max_index)
-            golden[2 * i + 1] = max_index.view(np.float16)
+            golden[i] = np.max(input_x[i * one_repeat_items:(i + 1) * one_repeat_items])
     elif scenarioNum == 2:
         block_length = 1024
         repeat = block_length // one_repeat_items
@@ -86,7 +88,7 @@ def gen_golden_data(scenarioNum=1):
         golden[1] = idx.view(np.float16)
     elif scenarioNum == 7:
         src_row = 13
-        src_col = 123
+        src_col = 57
         input_x = np.random.uniform(1, 10, [src_row, src_col]).astype(input_type)
         golden = np.zeros(src_row).astype(output_type)
         for i in range(src_row):

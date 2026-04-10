@@ -13,25 +13,63 @@
 
 
 import os
+import argparse
 import numpy as np
+np.random.seed(9)
 
 
-def gen_golden_data_simple():
-    input_x = np.random.uniform(1, 10, [128]).astype(np.float32)
-    input_y = np.random.uniform(0, 0, [128]).astype(np.uint32)
+def gen_golden_data(scenarioNum=1):
+    """
+    根据场景编号生成输入数据和Golden数据
+    场景1：128个元素，4条队列合并为1条，输出[1, 256]
+    场景2：96个元素，3条队列合并为1条，输出[1, 192]
+    场景3：1024个元素，32条队列多轮合并为1条，输出[1, 2048]
+    """
+    if scenarioNum == 1:
+        total_elements = 128
+    elif scenarioNum == 2:
+        total_elements = 96
+    elif scenarioNum == 3:
+        total_elements = 1024
+    else:
+        raise ValueError(f"Unsupported scenarioNum: {scenarioNum}")
 
-    golden = np.zeros(256).astype(np.float32)
-    sorted_indices = np.argsort(input_x)[::-1]
-    sorted_arr = input_x[sorted_indices]
-    for i in range(len(input_x)):
-        golden[2*i] = sorted_arr[i]
+    input_x = np.random.uniform(1, 100, [total_elements]).astype(np.float32)
+    input_y = np.zeros(total_elements, dtype=np.uint32)
 
     os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
     input_x.tofile("./input/input_x.bin")
     input_y.tofile("./input/input_y.bin")
+
+    if scenarioNum == 1:
+        # 场景1：128个元素全局降序排序，(score, index)交替存储
+        sorted_indices = np.argsort(input_x)[::-1]
+        sorted_arr = input_x[sorted_indices]
+        golden = np.zeros(total_elements * 2, dtype=np.float32)
+        for i in range(total_elements):
+            golden[2 * i] = sorted_arr[i]
+    elif scenarioNum == 3:
+        # 场景3：1024个元素全局降序排序，(score, index)交替存储
+        sorted_indices = np.argsort(input_x)[::-1]
+        sorted_arr = input_x[sorted_indices]
+        golden = np.zeros(total_elements * 2, dtype=np.float32)
+        for i in range(total_elements):
+            golden[2 * i] = sorted_arr[i]
+    else:
+        # 场景2：全局降序排序，(score, index)交替存储
+        sorted_indices = np.argsort(input_x)[::-1]
+        sorted_arr = input_x[sorted_indices]
+        golden = np.zeros(total_elements * 2, dtype=np.float32)
+        for i in range(total_elements):
+            golden[2 * i] = sorted_arr[i]
+
     golden.tofile("./output/golden.bin")
 
 
 if __name__ == "__main__":
-    gen_golden_data_simple()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-scenarioNum", type=int, default=1, choices=range(1, 4),
+                        help="scenario number (1-3)")
+    args = parser.parse_args()
+    gen_golden_data(args.scenarioNum)

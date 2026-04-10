@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例基于[ProposalConcat](../../../../../../docs/api/context/ProposalConcat.md)、[RpSort16](../../../../../../docs/api/context/RpSort16.md)、[MrgSort4](../../../../../../docs/api/context/MrgSort4.md)和[ProposalExtract](../../../../../../docs/api/context/ProposalExtract.md)四个接口实现完整排序流水线。首先通过ProposalConcat将连续score值合入Region Proposal格式，再经RpSort16对每组16个Region Proposal按score域降序排列，然后通过MrgSort4将4组已排序的Region Proposal合并为1组，最后通过ProposalExtract从合并后的Region Proposal中提取score域，得到全局降序排列的连续score值。
+本样例基于ProposalConcat、RpSort16、MrgSort4和ProposalExtract四个接口实现完整排序流水线。首先通过ProposalConcat将连续score值合入Region Proposal格式，再经RpSort16对每组16个Region Proposal按score域降序排列，然后通过MrgSort4将4组已排序的Region Proposal合并为1组，最后通过ProposalExtract从合并后的Region Proposal中提取score域，得到全局降序排列的连续score值。
 
 ## 支持的产品
 
@@ -27,7 +27,7 @@
 
 - 样例规格：
 
-<table border="2" align="center">
+<table border="2">
 <caption>表1：Region Proposal排序样例规格</caption>
 <tr><td rowspan="2" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
 <tr><td align="center">x</td><td align="center">[1, 64]</td><td align="center">half</td><td align="center">ND</td></tr>
