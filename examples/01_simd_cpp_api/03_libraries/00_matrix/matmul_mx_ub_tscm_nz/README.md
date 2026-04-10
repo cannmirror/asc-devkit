@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例介绍了在Mx数据格式下，A、B矩阵内存逻辑位置使用VECOUT，scaleA、scaleB矩阵内存逻辑位置使用TSCM，4个输入矩阵都是NZ格式的带有量化系数的矩阵乘法，即MxMatmul计算场景。
+在MXFP4/MXFP8数据格式，使用用户自定义TSCM、VECOUT的输入的MxMatmul样例。
 
 ## 支持的产品
 
@@ -16,113 +16,101 @@
 │       └── verify_result.py    // 真值对比文件
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── matmul_mx_ub_tscm_nz.asc              // Ascend C算子实现 & 调用样例
+│   └── matmul_mx_ub_tscm_nz.asc              // Ascend C样例实现 & 调用样例
 ```
 
-## 算子描述
+## 样例描述
 
-- 算子功能： 
+- 样例功能： 
 
-  MatmulMxUbTscmNzCustom算子调用Matmul API计算时，A、B矩阵内存逻辑位置使用VECOUT，scaleA、scaleB矩阵内存逻辑位置使用TSCM，4个输入矩阵都是NZ格式。左量化系数矩阵与左矩阵乘积，右量化系数矩阵与右矩阵乘积，对两个乘积的结果做矩阵乘法。
+  MatmulMxUbTscmNzCustom样例调用Matmul API计算时，A、B矩阵内存逻辑位置使用VECOUT，scaleA、scaleB矩阵内存逻辑位置使用TSCM，4个输入矩阵都是NZ格式。左量化系数矩阵与左矩阵乘积，右量化系数矩阵与右矩阵乘积，对两个乘积的结果做矩阵乘法。
 
-- 算子规格： 
+- 样例规格： 
 
-  本样例中，算子实现支持的shape为：M = 64，N = 128，K = 128，scaleK为K整除32的结果4。
+  本样例中：M = 64，N = 128，K = 128，scaleK = 4。其中scaleK为K整除32的结果4。
   <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="5" align="center">MatmulMxUbTscmNzCustom</td></tr>
+  <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="5" align="center">MatmulMxUbTscmNzCustom</td></tr>
   </tr>
-  <tr><td rowspan="6" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">isTrans</td></tr>
-  <tr><td align="center">a</td><td align="center">M*K</td><td align="center">fp4x2_e1m2_t</td><td align="center">ND</td><td align="center">false</td></tr>
-  <tr><td align="center">scaleA</td><td align="center">M*scaleK</td><td align="center">fp8_e8m0_t</td><td align="center">ND</td><td align="center">false</td></tr>
-  <tr><td align="center">b</td><td align="center">K*N</td><td align="center">fp4x2_e1m2_t</td><td align="center">ND</td><td align="center">false</td></tr>
-  <tr><td align="center">scaleB</td><td align="center">scaleK*N</td><td align="center">fp8_e8m0_t</td><td align="center">ND</td><td align="center">true</td></tr>
-  <tr><td align="center">bias</td><td align="center">N</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td></tr>
+  <tr><td rowspan="6" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">isTrans</td></tr>
+  <tr><td align="center">a</td><td align="center">[M, K]</td><td align="center">fp4x2_e1m2_t</td><td align="center">NZ</td><td align="center">false</td></tr>
+  <tr><td align="center">scaleA</td><td align="center">[M, scaleK]</td><td align="center">fp8_e8m0_t</td><td align="center">NZ</td><td align="center">false</td></tr>
+  <tr><td align="center">b</td><td align="center">[K, N]</td><td align="center">fp4x2_e1m2_t</td><td align="center">NZ</td><td align="center">false</td></tr>
+  <tr><td align="center">scaleB</td><td align="center">[scaleK, N]</td><td align="center">fp8_e8m0_t</td><td align="center">NZ</td><td align="center">true</td></tr>
+  <tr><td align="center">bias</td><td align="center">[1, N]</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td></tr>
   </tr>
   </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">M*N</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td></tr>
+  <tr><td rowspan="1" align="center">样例输出</td><td align="center">c</td><td align="center">[M, N]</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td></tr>
   </tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">matmul_mx_ub_tscm_nz_custom</td></tr>
   </table>
-- 算子实现： 
-  - Kernel实现
-    - 计算逻辑：C = (scaleA ⊗ A) * (scaleB ⊗ B) + Bias。“⊗”表示广播乘法。
-      - A、B为源操作数，A为左矩阵，形状为[M, K]，数据类型为fp4x2_e1m2_t；scaleA为左量化系数矩阵，形状为[M, Ceil(K/64), 2]，数据类型为fp8_e8m0_t；B为右矩阵，形状为[K, N]，数据类型为fp4x2_e1m2_t；scaleB为右量化系数矩阵，形状为[N, Ceil(K/64), 2]，数据类型为fp8_e8m0_t。
-      - C为目的操作数，存放矩阵乘结果的矩阵，形状为[M, N]。
-      - Bias为矩阵乘偏置，形状为[1, N]。对(scaleA ⊗ A) * (scaleB ⊗ B)结果矩阵的每一行都采用该bias进行偏置。
-    - 具体步骤：
-      - 创建Matmul对象：使用MatmulTypeWithScale使能scaleA、scaleB，左右矩阵的内存逻辑设置为VECOUT，左右量化系数矩阵的内存逻辑设置为TSCM，输入矩阵数据的物理排布格式均为NZ，并设置scaleB的SCALE_ISTRANS参数为true。
-          ```
-          using aType = AscendC::MatmulTypeWithScale<AscendC::TPosition::VECOUT, AscendC::TPosition::TSCM, CubeFormat::NZ, fp4x2_e1m2_t, false, AscendC::TPosition::GM, CubeFormat::NZ, false, AscendC::TPosition::GM>;
-          using bType = AscendC::MatmulTypeWithScale<AscendC::TPosition::VECOUT, AscendC::TPosition::TSCM, CubeFormat::NZ, fp4x2_e1m2_t, false, AscendC::TPosition::GM, CubeFormat::NZ, true, AscendC::TPosition::GM>;
-          using cType = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float>;
-          using biasType = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float>;
-          // 定义matmul对象时， 传入MatmulWithScalePolicy表明使能MxMatmul模板策略
-          AscendC::Matmul<aType, bType, cType, biasType, CFG_MDL, AscendC::MatmulCallBackFunc<nullptr, nullptr, nullptr>, AscendC::Impl::Detail::MatmulWithScalePolicy> matmulObj;
-          ```
-      - 初始化操作。
-      - 设置左矩阵A与左量化系数矩阵scaleA、右矩阵B与右量化系数矩阵scaleB、Bias。
-          ```
-          // SetTensorA
-          pipe->InitBuffer(leftMatrixQue, 1, tiling.singleCoreM * tiling.singleCoreK);
-          bufferLeft = leftMatrixQue.AllocTensor<fp4x2_e1m2_t>();
-          DataCopy(bufferLeft, aGlobal, tiling.singleCoreM * tiling.singleCoreK);
-          AscendC::PipeBarrier<PIPE_ALL>();
-          matmulObj.SetTensorA(bufferLeft, isTransA);
-          
-          // SetTensorB
-          pipe->InitBuffer(rightMatrixQue, 1, tiling.singleCoreK * tiling.singleCoreN);
-          bufferRight = rightMatrixQue.AllocTensor<fp4x2_e1m2_t>();
-          DataCopy(bufferRight, bGlobal, tiling.singleCoreK * tiling.singleCoreN);
-          AscendC::PipeBarrier<PIPE_ALL>();
-          matmulObj.SetTensorB(bufferRight, isTransB);
-          
-          // SetTensorScaleA
-          pipe->InitBuffer(qidMxA1, 1, alignSingleCoreM * alignSingleCoreK / 32);
-          bufferLeftScale = qidMxA1.AllocTensor<fp8_e8m0_t>();
-          DataCopy(bufferLeftScale, asGlobal, tiling.singleCoreM * tiling.singleCoreK / 32);
-          AscendC::PipeBarrier<PIPE_ALL>();
-          matmulObj.SetTensorScaleA(bufferLeftScale, isTransScaleA);
+- 样例实现： 
+  - Kernel关键步骤
+    - 创建Matmul对象：使用MatmulTypeWithScale使能scaleA、scaleB，左右矩阵的内存逻辑设置为VECOUT，左右量化系数矩阵的内存逻辑设置为TSCM，输入矩阵数据的物理排布格式均为NZ，并设置scaleB的SCALE_ISTRANS参数为true。
+      ```cpp
+      using aType = AscendC::MatmulTypeWithScale<AscendC::TPosition::VECOUT, AscendC::TPosition::TSCM, CubeFormat::NZ, fp4x2_e1m2_t, false, AscendC::TPosition::GM, CubeFormat::NZ, false, AscendC::TPosition::GM>;
+      using bType = AscendC::MatmulTypeWithScale<AscendC::TPosition::VECOUT, AscendC::TPosition::TSCM, CubeFormat::NZ, fp4x2_e1m2_t, false, AscendC::TPosition::GM, CubeFormat::NZ, true, AscendC::TPosition::GM>;
+      using cType = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float>;
+      using biasType = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float>;
+      // 定义matmul对象时， 传入MatmulWithScalePolicy表明使能MxMatmul模板策略
+      AscendC::Matmul<aType, bType, cType, biasType, CFG_MDL, AscendC::MatmulCallBackFunc<nullptr, nullptr, nullptr>, AscendC::Impl::Detail::MatmulWithScalePolicy> matmulObj;
+      ```
+    - 设置左矩阵A与左量化系数矩阵scaleA、右矩阵B与右量化系数矩阵scaleB、Bias。
+      ```cpp
+      // SetTensorA
+      pipe->InitBuffer(leftMatrixQue, 1, tiling.singleCoreM * tiling.singleCoreK);
+      bufferLeft = leftMatrixQue.AllocTensor<fp4x2_e1m2_t>();
+      DataCopy(bufferLeft, aGlobal, tiling.singleCoreM * tiling.singleCoreK);
+      AscendC::PipeBarrier<PIPE_ALL>();
+      matmulObj.SetTensorA(bufferLeft, isTransA);
+      
+      // SetTensorB
+      pipe->InitBuffer(rightMatrixQue, 1, tiling.singleCoreK * tiling.singleCoreN);
+      bufferRight = rightMatrixQue.AllocTensor<fp4x2_e1m2_t>();
+      DataCopy(bufferRight, bGlobal, tiling.singleCoreK * tiling.singleCoreN);
+      AscendC::PipeBarrier<PIPE_ALL>();
+      matmulObj.SetTensorB(bufferRight, isTransB);
+      
+      // SetTensorScaleA
+      pipe->InitBuffer(qidMxA1, 1, alignSingleCoreM * alignSingleCoreK / 32);
+      bufferLeftScale = qidMxA1.AllocTensor<fp8_e8m0_t>();
+      DataCopy(bufferLeftScale, asGlobal, tiling.singleCoreM * tiling.singleCoreK / 32);
+      AscendC::PipeBarrier<PIPE_ALL>();
+      matmulObj.SetTensorScaleA(bufferLeftScale, isTransScaleA);
 
-          // SetTensorScaleB
-          pipe->InitBuffer(qidMxB1, 1, alignSingleCoreN * alignSingleCoreK / 32);
-          bufferRightScale = qidMxB1.AllocTensor<fp8_e8m0_t>();
-          DataCopy(bufferRightScale, bsGlobal, tiling.singleCoreK * tiling.singleCoreN / 32);
-          AscendC::PipeBarrier<PIPE_ALL>();
-          matmulObj.SetTensorScaleB(bufferRightScale, isTransScaleB);
+      // SetTensorScaleB
+      pipe->InitBuffer(qidMxB1, 1, alignSingleCoreN * alignSingleCoreK / 32);
+      bufferRightScale = qidMxB1.AllocTensor<fp8_e8m0_t>();
+      DataCopy(bufferRightScale, bsGlobal, tiling.singleCoreK * tiling.singleCoreN / 32);
+      AscendC::PipeBarrier<PIPE_ALL>();
+      matmulObj.SetTensorScaleB(bufferRightScale, isTransScaleB);
 
-          if (tiling.isBias) {
-              matmulObj.SetBias(biasGlobal);
-          }
-          ```
-      - 完成矩阵乘操作。
-      - 结束矩阵乘操作。
+      if (tiling.isBias) {
+          matmulObj.SetBias(biasGlobal);
+      }
+      ```
 
-  - Tiling实现
-      - Ascend C提供一组Matmul Tiling API，方便用户获取Matmul kernel计算时所需的Tiling参数。需要传入A/B/C/scaleA/scaleB矩阵等信息，调用API接口，即可获取到TCubeTiling结构体中的相关参数。
-      - 获取Tiling参数的流程如下：
-        - 创建一个Tiling对象：使用SetMadType使能Mx特性，使用SetScaleAType设置scaleA的信息、使用SetScaleBType设置scaleB的信息。
-          ```
-          cubeTiling.SetAType(matmul_tiling::TPosition::VECOUT, matmul_tiling::CubeFormat::NZ,
-              matmul_tiling::DataType::DT_FLOAT8_E5M2, isAtrans);
-          cubeTiling.SetBType(matmul_tiling::TPosition::VECOUT, matmul_tiling::CubeFormat::NZ,
-              matmul_tiling::DataType::DT_FLOAT8_E5M2, isBtrans);
-          cubeTiling.SetCType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND,
-              matmul_tiling::DataType::DT_FLOAT);
-          cubeTiling.SetBiasType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND,
-              matmul_tiling::DataType::DT_FLOAT);
-          cubeTiling.SetScaleAType(matmul_tiling::TPosition::TSCM, matmul_tiling::CubeFormat::NZ, isScaleATrans);
-          cubeTiling.SetScaleBType(matmul_tiling::TPosition::TSCM, matmul_tiling::CubeFormat::NZ, isScaleBTrans);
-          cubeTiling.SetMadType(matmul_tiling::MatrixMadType::MXMODE);
-          ```
-        - 设置A、B、C、Bias、scaleA、scaleB的参数类型信息；M、N、Ka、Kb形状信息等。
-        - 调用GetTiling接口，获取Tiling信息。
+  - Tiling关键步骤
+    - 创建一个Tiling对象：使用SetMadType使能Mx特性，使用SetScaleAType设置scaleA的信息、使用SetScaleBType设置scaleB的信息。
+      ```cpp
+      cubeTiling.SetAType(matmul_tiling::TPosition::VECOUT, matmul_tiling::CubeFormat::NZ,
+          matmul_tiling::DataType::DT_FLOAT8_E5M2, isAtrans);
+      cubeTiling.SetBType(matmul_tiling::TPosition::VECOUT, matmul_tiling::CubeFormat::NZ,
+          matmul_tiling::DataType::DT_FLOAT8_E5M2, isBtrans);
+      cubeTiling.SetCType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND,
+          matmul_tiling::DataType::DT_FLOAT);
+      cubeTiling.SetBiasType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND,
+          matmul_tiling::DataType::DT_FLOAT);
+      cubeTiling.SetScaleAType(matmul_tiling::TPosition::TSCM, matmul_tiling::CubeFormat::NZ, isScaleATrans);
+      cubeTiling.SetScaleBType(matmul_tiling::TPosition::TSCM, matmul_tiling::CubeFormat::NZ, isScaleBTrans);
+      cubeTiling.SetMadType(matmul_tiling::MatrixMadType::MXMODE);
+      ```
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行
 
-在本样例根目录下执行如下步骤，编译并执行算子。
+在本样例根目录下执行如下步骤，编译并执行样例。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包

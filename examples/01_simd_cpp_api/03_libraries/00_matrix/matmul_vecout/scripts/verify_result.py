@@ -40,8 +40,6 @@ def verify_result(output, golden):
             abs(output_data - golden_data) / golden_data))
         if index == 100:
             break
-    print("golden_data : ", golden)
-    print("output : ", output)
     error_ratio = float(different_element_indexes.size) / golden.size
     print("error ratio: %.4f, tolerance: %.4f" % (error_ratio, ERROR_TOL))
     return error_ratio <= ERROR_TOL

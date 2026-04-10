@@ -27,6 +27,11 @@ target_link_libraries(demo PRIVATE
     dl
 )
 
+target_compile_definitions(demo PRIVATE
+    ENABLE_IBSHARE_AB=${ENABLE_IBSHARE_AB}
+)
+message(STATUS "[INFO] ENABLE_IBSHARE_AB is ${ENABLE_IBSHARE_AB}")
+
 # ======================================================================================
 # NPU 编译选项配置
 #
@@ -36,4 +41,5 @@ target_link_libraries(demo PRIVATE
 target_compile_options(demo PRIVATE
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
     #$<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2002>
+    # $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3510>
 )

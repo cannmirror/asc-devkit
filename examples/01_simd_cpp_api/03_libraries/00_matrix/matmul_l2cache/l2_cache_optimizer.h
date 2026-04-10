@@ -11,7 +11,6 @@
 
 /*!
  * \file l2_cache_optimizer.h
- * \brief
  */
 
 #ifndef MATMUL_L2CACHE_L2_CACHE_OPTIMIZER_H

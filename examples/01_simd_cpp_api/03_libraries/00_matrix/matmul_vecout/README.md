@@ -1,8 +1,11 @@
-# 输入矩阵为VECOUT的Matmul算子直调样例
+# 输入矩阵为VECOUT的Matmul样例直调样例
+
 ## 概述
-本样例介绍了Matmul API中数据来源为VECOUT的矩阵乘实现方式。在本样例中，A矩阵输入的逻辑位置为VECOUT，B矩阵输入的逻辑位置为GM，使用Matmul API完成矩阵乘计算。
+使用用户自定义VECOUT的输入的Matmul样例，开发者可以自主管理Unified Buffer以高效利用硬件资源。
+
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT
+
 ## 目录结构介绍
 ```
 ├── matmul_vecout
@@ -11,47 +14,59 @@
 │       └── verify_result.py    // 真值对比文件
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── matmul_vecout.asc              // Ascend C算子实现 & 调用样例
+│   └── matmul_vecout.asc       // Ascend C样例实现 & 调用样例
 ```
-## 算子描述
-- 算子功能： 
 
-  本样例中实现的是Matmul算子，Matmul算子的数学表达式为：
-  $$
-  C = A * B + Bias
-  $$
-  其中A的形状为[M, K], B的形状为[K, N], C的形状为[M, N], Bias的形状为[1, N]。
+## 样例描述
+- 样例功能： 
 
-- 算子规格： 
+  Matmul样例调用Matmul API对输入的A、B矩阵做矩阵乘和加bias偏置的计算。其中A矩阵的输入位置为VECOUT。
 
-  本样例默认执行的算子shape为：M = 31, N = 31, K = 31。
+- 样例规格： 
+
+  本样例中：M = 31, N = 31, K = 31。
   <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">Matmul</td></tr>
+  <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="4" align="center">Matmul</td></tr>
   </tr>
-  <tr><td rowspan="4" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">a</td><td align="center">M * K</td><td align="center">float16</td><td align="center">ND</td></tr>
-  <tr><td align="center">b</td><td align="center">K * N</td><td align="center">float16</td><td align="center">ND</td></tr>
-  <tr><td align="center">bias</td><td align="center">N</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td rowspan="4" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
+  <tr><td align="center">a</td><td align="center">[M, K]</td><td align="center">float16</td><td align="center">ND</td></tr>
+  <tr><td align="center">b</td><td align="center">[K, N]</td><td align="center">float16</td><td align="center">ND</td></tr>
+  <tr><td align="center">bias</td><td align="center">[1, N]</td><td align="center">float</td><td align="center">ND</td></tr>
   </tr>
   </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">M * N</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td rowspan="1" align="center">样例输出</td><td align="center">c</td><td align="center">[M, N]</td><td align="center">float</td><td align="center">ND</td></tr>
   </tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">matmul_vecout_custom</td></tr>
   </table>
 
-- 算子实现： 
- 
-  - Kernel实现  
-    关键步骤：  
-    1、使用Matmul API，关键配置如下：1）A矩阵MatmulType的POSITION为TPosition::VECOUT，B矩阵MatmulType的POSITION为TPosition::GM。  
-    2、使用DataCopyPad接口将A矩阵输入搬运到相应VECOUT位置，且尾轴需要32B对齐（填充数据值无要求）。  
-    3、使用IterateAll接口进行计算，输出到相应位置。
+- 样例实现： 
+  - Kernel关键步骤  
+    - 创建Matmul对象。其中左矩阵A的MatmulType中，POSITION为VECOUT。
+      ```cpp
+      AscendC::MatmulType<AscendC::TPosition::VECOUT, CubeFormat::ND, AType>
+      ```
+    - 自定义左矩阵A从GM到VECOUT的搬运，设置左矩阵A为VECOUT输入。
+      ```cpp
+      AscendC::LocalTensor<AType> vecinTensor = vecin.AllocTensor<AType>();
+      // A矩阵搬入参数
+      DataCopyPad(vecinTensor, aGlobal, {blockCount, blockLen, srcStride, dstStride, 0}, {false, 0, 0, 0});
+      vecin.EnQue(vecinTensor);
+      AscendC::LocalTensor<AType> vecinLocal = vecin.DeQue<AType>();
+
+      AscendC::LocalTensor<AType> vecoutTensor = vecout.AllocTensor<AType>();
+      DataCopy(vecoutTensor, vecinLocal, singleSize); // 为方便直接拷贝整个大小
+      vecout.EnQue(vecoutTensor);
+      AscendC::LocalTensor<AType> vecoutLocal = vecout.DeQue<AType>();
+      vecin.FreeTensor(vecinLocal);
+
+      matmulObj.SetTensorA(vecoutLocal, isTransA);
+      ```
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行
-在本样例根目录下执行如下步骤，编译并执行算子。
+在本样例根目录下执行如下步骤，编译并执行样例。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
