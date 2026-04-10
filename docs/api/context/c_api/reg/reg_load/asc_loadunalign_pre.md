@@ -34,6 +34,7 @@ __simd_callee__ inline void asc_loadunalign_pre(vector_load_unalign& dst, __ubuf
 __simd_callee__ inline void asc_loadunalign_pre(vector_load_unalign& dst, __ubuf__ uint32_t* src)
 __simd_callee__ inline void asc_loadunalign_pre(vector_load_unalign& dst, __ubuf__ float* src)
 __simd_callee__ inline void asc_loadunalign_pre(vector_load_unalign& dst, __ubuf__ int64_t* src)
+__simd_callee__ inline void asc_loadunalign_pre(vector_load_unalign& dst, __ubuf__ int4b_t* src)
 // 带iter_reg入参
 __simd_callee__ inline void asc_loadunalign_pre(vector_load_unalign& dst, __ubuf__ int8_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadunalign_pre(vector_load_unalign& dst, __ubuf__ uint8_t* src, iter_reg offset)
@@ -51,6 +52,7 @@ __simd_callee__ inline void asc_loadunalign_pre(vector_load_unalign& dst, __ubuf
 __simd_callee__ inline void asc_loadunalign_pre(vector_load_unalign& dst, __ubuf__ uint32_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadunalign_pre(vector_load_unalign& dst, __ubuf__ float* src, iter_reg offset)
 __simd_callee__ inline void asc_loadunalign_pre(vector_load_unalign& dst, __ubuf__ int64_t* src, iter_reg offset)
+__simd_callee__ inline void asc_loadunalign_pre(vector_load_unalign& dst, __ubuf__ int4b_t* src, iter_reg offset)
 ```
 
 ## 参数说明

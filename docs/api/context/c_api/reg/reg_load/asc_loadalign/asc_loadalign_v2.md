@@ -40,6 +40,7 @@ __simd_callee__ inline void asc_loadalign(vector_int32_t& dst, __ubuf__ int32_t*
 __simd_callee__ inline void asc_loadalign(vector_int64_t& dst, __ubuf__ int64_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign(vector_uint64_t& dst, __ubuf__ uint64_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign(vector_float& dst, __ubuf__ float* src, iter_reg offset)
+__simd_callee__ inline void asc_loadalign(vector_int4x2_t& dst, __ubuf__ int4b_t* src, iter_reg offset)
 // BRC搬入模式
 __simd_callee__ inline void asc_loadalign_brc(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_brc(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src, iter_reg offset)
@@ -56,6 +57,7 @@ __simd_callee__ inline void asc_loadalign_brc(vector_half& dst, __ubuf__ half* s
 __simd_callee__ inline void asc_loadalign_brc(vector_uint32_t& dst, __ubuf__ uint32_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_brc(vector_int32_t& dst, __ubuf__ int32_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_brc(vector_float& dst, __ubuf__ float* src, iter_reg offset)
+__simd_callee__ inline void asc_loadalign_brc(vector_int4x2_t& dst, __ubuf__ int4b_t* src, iter_reg offset)
 // UP2X搬入模式
 __simd_callee__ inline void asc_loadalign_upsample(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_upsample(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src, iter_reg offset)
@@ -69,6 +71,7 @@ __simd_callee__ inline void asc_loadalign_upsample(vector_uint16_t& dst, __ubuf_
 __simd_callee__ inline void asc_loadalign_upsample(vector_int16_t& dst, __ubuf__ int16_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_upsample(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_upsample(vector_half& dst, __ubuf__ half* src, iter_reg offset)
+__simd_callee__ inline void asc_loadalign_upsample(vector_int4x2_t& dst, __ubuf__ int4b_t* src, iter_reg offset)
 // DOWN2X搬入模式
 __simd_callee__ inline void asc_loadalign_downsample(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_downsample(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src, iter_reg offset)
@@ -82,6 +85,7 @@ __simd_callee__ inline void asc_loadalign_downsample(vector_uint16_t& dst, __ubu
 __simd_callee__ inline void asc_loadalign_downsample(vector_int16_t& dst, __ubuf__ int16_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_downsample(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_downsample(vector_half& dst, __ubuf__ half* src, iter_reg offset)
+__simd_callee__ inline void asc_loadalign_downsample(vector_int4x2_t& dst, __ubuf__ int4b_t* src, iter_reg offset)
 // DEINTLV搬入模式
 __simd_callee__ inline void asc_loadalign_deintlv(vector_fp4x2_e1m2_t& dst0, vector_fp4x2_e1m2_t& dst1, __ubuf__ fp4x2_e1m2_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_deintlv(vector_fp4x2_e2m1_t& dst0, vector_fp4x2_e2m1_t& dst1, __ubuf__ fp4x2_e2m1_t* src, iter_reg offset)
@@ -98,6 +102,7 @@ __simd_callee__ inline void asc_loadalign_deintlv(vector_half& dst0, vector_half
 __simd_callee__ inline void asc_loadalign_deintlv(vector_uint32_t& dst0, vector_uint32_t& dst1, __ubuf__ uint32_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_deintlv(vector_int32_t& dst0, vector_int32_t& dst1, __ubuf__ int32_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_deintlv(vector_float& dst0, vector_float& dst1, __ubuf__ float* src, iter_reg offset)
+__simd_callee__ inline void asc_loadalign_deintlv(vector_int4x2_t& dst0, vector_int4x2_t& dst1, __ubuf__ int4b_t* src, iter_reg offset)
 // UNPACK搬入模式
 __simd_callee__ inline void asc_loadalign_unpack(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_unpack(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src, iter_reg offset)
@@ -114,6 +119,7 @@ __simd_callee__ inline void asc_loadalign_unpack(vector_bfloat16_t& dst, __ubuf_
 __simd_callee__ inline void asc_loadalign_unpack(vector_uint32_t& dst, __ubuf__ uint32_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_unpack(vector_int32_t& dst, __ubuf__ int32_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_unpack(vector_float& dst, __ubuf__ float* src, iter_reg offset)
+__simd_callee__ inline void asc_loadalign_unpack(vector_int4x2_t& dst, __ubuf__ int4b_t* src, iter_reg offset)
 // UNPACKV2搬入模式
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src, iter_reg offset)
@@ -123,6 +129,7 @@ __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp8_e4m3fn_t& dst, __
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src, iter_reg offset)
+__simd_callee__ inline void asc_loadalign_unpack_v2(vector_int4x2_t& dst, __ubuf__ int4b_t* src, iter_reg offset)
 // BRCV2搬入模式
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src, iter_reg offset)
@@ -139,6 +146,7 @@ __simd_callee__ inline void asc_loadalign_brc_v2(vector_half& dst, __ubuf__ half
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_uint32_t& dst, __ubuf__ uint32_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_int32_t& dst, __ubuf__ int32_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_float& dst, __ubuf__ float* src, iter_reg offset)
+__simd_callee__ inline void asc_loadalign_brc_v2(vector_int4x2_t& dst, __ubuf__ int4b_t* src, iter_reg offset)
 /// BRCV3搬入模式
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_uint16_t& dst, __ubuf__ uint16_t* src, iter_reg offset)
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_int16_t& dst, __ubuf__ int16_t* src, iter_reg offset)

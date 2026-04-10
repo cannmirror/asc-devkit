@@ -31,6 +31,7 @@ __simd_callee__ inline void asc_loadunalign(vector_fp8_e8m0_t& dst, vector_load_
 __simd_callee__ inline void asc_loadunalign(vector_fp4x2_e2m1_t& dst, vector_load_unalign& src0, __ubuf__ fp4x2_e2m1_t *src1)
 __simd_callee__ inline void asc_loadunalign(vector_fp4x2_e1m2_t& dst, vector_load_unalign& src0, __ubuf__ fp4x2_e1m2_t *src1)
 __simd_callee__ inline void asc_loadunalign(vector_hifloat8_t& dst, vector_load_unalign& src0, __ubuf__ hifloat8_t *src1)
+__simd_callee__ inline void asc_loadunalign(vector_int4x2_t& dst, vector_load_unalign& src0, __ubuf__ int4b_t *src1)
 ```
 
 ## 参数说明

@@ -69,6 +69,34 @@ TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 
+#define TEST_VECTOR_DATAMOVE_LOADUNALIGN_INSTR_INT4(class_name, c_api_name, cce_name, data_type)     \
+                                                                                                \
+class TestVectorDataMove##class_name##_##data_type##_CApi : public testing::Test {              \
+protected:                                                                                      \
+    void SetUp() {}                                                                             \
+    void TearDown() {}                                                                          \
+};                                                                                              \
+                                                                                                \
+namespace {                                                                                     \
+void cce_name##_##data_type##_Stub(vector_fp4x2_e1m2_t& dst, vector_load_unalign& src0,            \
+    __ubuf__ float4_e1m2x2_t *&src1, uint32_t inc, Literal post) {}                                   \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_type##_Succ)    \
+{                                                                                               \
+    __ubuf__ data_type *src1 = reinterpret_cast<__ubuf__ data_type *>(0);                       \
+    vector_load_unalign src0;                                                                     \
+    vector_int4x2_t dst;                                                                     \
+    uint32_t count;                                                                             \
+                                                                                                \
+    MOCKER_CPP(cce_name, void(vector_fp4x2_e1m2_t&, vector_load_unalign&, __ubuf__ float4_e1m2x2_t *&, uint32_t, Literal))   \
+        .times(1)                                                                               \
+        .will(invoke(cce_name##_##data_type##_Stub));                                           \
+                                                                                                \
+    c_api_name(dst, src0, src1, count);                                                         \
+    GlobalMockObject::verify();                                                                 \
+}                                                                                               \
+
 #define TEST_VECTOR_DATAMOVE_LOADUNALIGN_VLDU_INSTR(class_name, c_api_name, cce_name, data_type)\
                                                                                                 \
 class TestVectorDataMove##class_name##_##data_type##_CApi : public testing::Test {              \
@@ -127,6 +155,35 @@ TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 
+#define TEST_VECTOR_DATAMOVE_LOADUNALIGN_VLDU_INSTR_INT4(class_name, c_api_name, cce_name, data_type)\
+                                                                                                \
+class TestVectorDataMove##class_name##_##data_type##_CApi : public testing::Test {              \
+protected:                                                                                      \
+    void SetUp() {}                                                                             \
+    void TearDown() {}                                                                          \
+};                                                                                              \
+                                                                                                \
+namespace {                                                                                     \
+void cce_name##_##data_type##_Stub(vector_fp4x2_e1m2_t& dst, vector_load_unalign& src0,            \
+     iter_reg& offset, __ubuf__ float4_e1m2x2_t *&src1, uint32_t post) {}                             \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_type##_Succ)    \
+{                                                                                               \
+    __ubuf__ data_type *src1 = reinterpret_cast<__ubuf__ data_type *>(0);                       \
+    vector_load_unalign src0;                                                                     \
+    vector_int4x2_t dst;                                                                     \
+    uint32_t count;                                                                             \
+    iter_reg offset;                                                                            \
+                                                                                                \
+    MOCKER_CPP(cce_name, void(vector_fp4x2_e1m2_t&, vector_load_unalign&, iter_reg&, __ubuf__ float4_e1m2x2_t *, uint32_t))   \
+        .times(1)                                                                               \
+        .will(invoke(cce_name##_##data_type##_Stub));                                           \
+                                                                                                \
+    c_api_name(dst, src0, src1, offset, count);                                                 \
+    GlobalMockObject::verify();                                                                 \
+}                                                                                               \
+
 // ==========asc_loadunalign_postupdate(u8/s8/half/u16/s16/float/u32/s32/s64/bf16/e4m3/e5m2/e2m1/e1m2)=========
 TEST_VECTOR_DATAMOVE_LOADUNALIGN_INSTR(LOADUALIGN, asc_loadunalign_postupdate, vldus, int8_t);
 TEST_VECTOR_DATAMOVE_LOADUNALIGN_INSTR(LOADUALIGN, asc_loadunalign_postupdate, vldus, uint8_t);
@@ -143,6 +200,7 @@ TEST_VECTOR_DATAMOVE_LOADUNALIGN_INSTR_HIF8(LOADUALIGN, asc_loadunalign_postupda
 TEST_VECTOR_DATAMOVE_LOADUNALIGN_INSTR(LOADUALIGN, asc_loadunalign_postupdate, vldus, fp4x2_e2m1_t);
 TEST_VECTOR_DATAMOVE_LOADUNALIGN_INSTR(LOADUALIGN, asc_loadunalign_postupdate, vldus, fp4x2_e1m2_t);
 TEST_VECTOR_DATAMOVE_LOADUNALIGN_INSTR(LOADUALIGN, asc_loadunalign_postupdate, vldus, fp8_e8m0_t);
+TEST_VECTOR_DATAMOVE_LOADUNALIGN_INSTR_INT4(LOADUALIGN, asc_loadunalign_postupdate, vldus, int4b_t);
 TEST_VECTOR_DATAMOVE_LOADUNALIGN_VLDU_INSTR(LOADUALIGNVLDU, asc_loadunalign_postupdate, vldu, int8_t);
 TEST_VECTOR_DATAMOVE_LOADUNALIGN_VLDU_INSTR(LOADUALIGNVLDU, asc_loadunalign_postupdate, vldu, uint8_t);
 TEST_VECTOR_DATAMOVE_LOADUNALIGN_VLDU_INSTR(LOADUALIGNVLDU, asc_loadunalign_postupdate, vldu, int16_t);
@@ -158,3 +216,4 @@ TEST_VECTOR_DATAMOVE_LOADUNALIGN_VLDU_INSTR(LOADUALIGNVLDU, asc_loadunalign_post
 TEST_VECTOR_DATAMOVE_LOADUNALIGN_VLDU_INSTR(LOADUALIGNVLDU, asc_loadunalign_postupdate, vldu, fp4x2_e2m1_t);
 TEST_VECTOR_DATAMOVE_LOADUNALIGN_VLDU_INSTR(LOADUALIGNVLDU, asc_loadunalign_postupdate, vldu, fp4x2_e1m2_t);
 TEST_VECTOR_DATAMOVE_LOADUNALIGN_VLDU_INSTR(LOADUALIGNVLDU, asc_loadunalign_postupdate, vldu, fp8_e8m0_t);
+TEST_VECTOR_DATAMOVE_LOADUNALIGN_VLDU_INSTR_INT4(LOADUALIGNVLDU, asc_loadunalign_postupdate, vldu, int4b_t);

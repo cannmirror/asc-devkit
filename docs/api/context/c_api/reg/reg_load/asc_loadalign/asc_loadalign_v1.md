@@ -41,6 +41,7 @@ __simd_callee__ inline void asc_loadalign(vector_uint32_t& dst, __ubuf__ uint32_
 __simd_callee__ inline void asc_loadalign(vector_float& dst, __ubuf__ float* src)
 __simd_callee__ inline void asc_loadalign(vector_int64_t& dst, __ubuf__ int64_t* src)
 __simd_callee__ inline void asc_loadalign(vector_uint64_t& dst, __ubuf__ uint64_t* src)
+__simd_callee__ inline void asc_loadalign(vector_int4x2_t& dst, __ubuf__ int4b_t* src)
 // BRC搬入模式
 __simd_callee__ inline void asc_loadalign_brc(vector_int8_t& dst, __ubuf__ int8_t* src)
 __simd_callee__ inline void asc_loadalign_brc(vector_uint8_t& dst, __ubuf__ uint8_t* src)
@@ -57,6 +58,7 @@ __simd_callee__ inline void asc_loadalign_brc(vector_bfloat16_t& dst, __ubuf__ b
 __simd_callee__ inline void asc_loadalign_brc(vector_int32_t& dst, __ubuf__ int32_t* src)
 __simd_callee__ inline void asc_loadalign_brc(vector_uint32_t& dst, __ubuf__ uint32_t* src)
 __simd_callee__ inline void asc_loadalign_brc(vector_float& dst, __ubuf__ float* src)
+__simd_callee__ inline void asc_loadalign_brc(vector_int4x2_t& dst, __ubuf__ int4b_t* src)
 // UP2X搬入模式
 __simd_callee__ inline void asc_loadalign_upsample(vector_int8_t& dst, __ubuf__ int8_t* src)
 __simd_callee__ inline void asc_loadalign_upsample(vector_uint8_t& dst, __ubuf__ uint8_t* src)
@@ -70,6 +72,7 @@ __simd_callee__ inline void asc_loadalign_upsample(vector_int16_t& dst, __ubuf__
 __simd_callee__ inline void asc_loadalign_upsample(vector_uint16_t& dst, __ubuf__ uint16_t* src)
 __simd_callee__ inline void asc_loadalign_upsample(vector_half& dst, __ubuf__ half* src)
 __simd_callee__ inline void asc_loadalign_upsample(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src)
+__simd_callee__ inline void asc_loadalign_upsample(vector_int4x2_t& dst, __ubuf__ int4b_t* src)
 // DOWN2X搬入模式
 __simd_callee__ inline void asc_loadalign_downsample(vector_int8_t& dst, __ubuf__ int8_t* src)
 __simd_callee__ inline void asc_loadalign_downsample(vector_uint8_t& dst, __ubuf__ uint8_t* src)
@@ -83,6 +86,7 @@ __simd_callee__ inline void asc_loadalign_downsample(vector_int16_t& dst, __ubuf
 __simd_callee__ inline void asc_loadalign_downsample(vector_uint16_t& dst, __ubuf__ uint16_t* src)
 __simd_callee__ inline void asc_loadalign_downsample(vector_half& dst, __ubuf__ half* src)
 __simd_callee__ inline void asc_loadalign_downsample(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src)
+__simd_callee__ inline void asc_loadalign_downsample(vector_int4x2_t& dst, __ubuf__ int4b_t* src)
 // UNPACK搬入模式
 __simd_callee__ inline void asc_loadalign_unpack(vector_int8_t& dst, __ubuf__ int8_t* src)
 __simd_callee__ inline void asc_loadalign_unpack(vector_uint8_t& dst, __ubuf__ uint8_t* src)
@@ -99,6 +103,7 @@ __simd_callee__ inline void asc_loadalign_unpack(vector_bfloat16_t& dst, __ubuf_
 __simd_callee__ inline void asc_loadalign_unpack(vector_int32_t& dst, __ubuf__ int32_t* src)
 __simd_callee__ inline void asc_loadalign_unpack(vector_uint32_t& dst, __ubuf__ uint32_t* src)
 __simd_callee__ inline void asc_loadalign_unpack(vector_float& dst, __ubuf__ float* src)
+__simd_callee__ inline void asc_loadalign_unpack(vector_int4x2_t& dst, __ubuf__ int4b_t* src)
 // UNPACKV2搬入模式
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_int8_t& dst, __ubuf__ int8_t* src)
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_uint8_t& dst, __ubuf__ uint8_t* src)
@@ -108,6 +113,7 @@ __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp8_e8m0_t& dst, __ub
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src)
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src)
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src)
+__simd_callee__ inline void asc_loadalign_unpack_v2(vector_int4x2_t& dst, __ubuf__ int4b_t* src)
 // BRCV2搬入模式
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_int8_t& dst, __ubuf__ int8_t* src)
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_uint8_t& dst, __ubuf__ uint8_t* src)
@@ -124,6 +130,7 @@ __simd_callee__ inline void asc_loadalign_brc_v2(vector_bfloat16_t& dst, __ubuf_
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_int32_t& dst, __ubuf__ int32_t* src)
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_uint32_t& dst, __ubuf__ uint32_t* src)
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_float& dst, __ubuf__ float* src)
+__simd_callee__ inline void asc_loadalign_brc_v2(vector_int4x2_t& dst, __ubuf__ int4b_t* src)
 // BRCV3搬入模式
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_int16_t& dst, __ubuf__ int16_t* src)
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_uint16_t& dst, __ubuf__ uint16_t* src)
@@ -148,6 +155,7 @@ __simd_callee__ inline void asc_loadalign_deintlv(vector_bfloat16_t& dst0, vecto
 __simd_callee__ inline void asc_loadalign_deintlv(vector_int32_t& dst0, vector_int32_t& dst1, __ubuf__ int32_t* src)
 __simd_callee__ inline void asc_loadalign_deintlv(vector_uint32_t& dst0, vector_uint32_t& dst1, __ubuf__ uint32_t* src)
 __simd_callee__ inline void asc_loadalign_deintlv(vector_float& dst0, vector_float& dst1, __ubuf__ float* src)
+__simd_callee__ inline void asc_loadalign_deintlv(vector_int4x2_t& dst0, vector_int4x2_t& dst1, __ubuf__ int4b_t* src)
 ```
 
 ## 参数说明

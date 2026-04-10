@@ -55,6 +55,7 @@ TEST_VECTOR_COMPUTE_LOADALIGNV2(vector_fp4x2_e1m2_t, fp4x2_e1m2_t, vector_fp4x2_
 TEST_VECTOR_COMPUTE_LOADALIGNV2(vector_fp4x2_e2m1_t, fp4x2_e2m1_t, vector_fp4x2_e2m1_t, fp4x2_e2m1_t);
 TEST_VECTOR_COMPUTE_LOADALIGNV2(vector_half, half, vector_half, half);
 TEST_VECTOR_COMPUTE_LOADALIGNV2(vector_float, float, vector_float, float);
+TEST_VECTOR_COMPUTE_LOADALIGNV2(vector_int4x2_t, int4b_t, vector_fp4x2_e1m2_t, float4_e1m2x2_t);
 
 
 #define TEST_VECTOR_COMPUTE_LOADALIGN_POSTUPDATEV2(dst_type, src_type, cce_dst_type, cce_src_type)            \
@@ -99,3 +100,4 @@ TEST_VECTOR_COMPUTE_LOADALIGN_POSTUPDATEV2(vector_fp4x2_e1m2_t, fp4x2_e1m2_t, ve
 TEST_VECTOR_COMPUTE_LOADALIGN_POSTUPDATEV2(vector_fp4x2_e2m1_t, fp4x2_e2m1_t, vector_fp4x2_e2m1_t, fp4x2_e2m1_t);
 TEST_VECTOR_COMPUTE_LOADALIGN_POSTUPDATEV2(vector_half, half, vector_half, half);
 TEST_VECTOR_COMPUTE_LOADALIGN_POSTUPDATEV2(vector_float, float, vector_float, float);
+TEST_VECTOR_COMPUTE_LOADALIGN_POSTUPDATEV2(vector_int4x2_t, int4b_t, vector_fp4x2_e1m2_t, float4_e1m2x2_t);
