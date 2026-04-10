@@ -22,7 +22,37 @@
 #ifndef IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_GM2L1_H
 #define IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_GM2L1_H
 
-#include "impl/experimental/tensor_api/atom/copy_datacopy_traits_impl.h"
+#include "impl/experimental/tensor_api/utils/utils_impl.h"
+
+#include "impl/experimental/tensor_api/arch/data_copy_impl.h"
+#include "impl/experimental/tensor_api/atom/copy_traits_impl.h"
+
+namespace AscendC {
+namespace Te {
+
+struct DataCopyTraitDefault {
+    using TraitType = DataCopyTrait;
+    static constexpr const TraitType value = DEFAULT_DATA_COPY_TRAIT;
+};
+
+struct DataCopyOp {
+    template <typename Tp, const Tp& traits, typename... Args>
+    __aicore__ inline static void Copy(const Args& ...args)
+    {
+        DataCopy<traits, Args...>(args...);
+    }
+};
+
+template <typename Traits>
+struct CopyTraits<DataCopyOp, Traits> : public CopyTraits<DataCopyOp, Traits, DataCopyOp, DataCopyTraitDefault> {};
+
+template <>
+struct CopyTraits<DataCopyOp> : public CopyTraits<DataCopyOp, DataCopyTraitDefault> {};
+
+using CopyGM2L1 = DataCopyOp;
+
+}
+}
 
 #endif // IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_GM2L1_H
 

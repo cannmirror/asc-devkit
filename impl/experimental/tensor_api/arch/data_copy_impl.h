@@ -25,7 +25,7 @@
 #define IMPL_TENSOR_API_ARCH_DATA_COPY_IMPL_H
 
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/data_copy_routing.h"
-#include "impl/experimental/tensor_api/arch/vector_datamove/data_copy/data_copy_routing.h"
+
 
 namespace AscendC {
 namespace Te {

@@ -33,23 +33,23 @@ TEST_F(Tensor_Api_Atom, CopyL0C2UBOperation)
     auto l0cSrc = MakeTensor(MakeL0CmemPtr(src), MakeL0CLayout(32, 32));
     auto ubDst = MakeTensor(MakeUBmemPtr(dst), MakeNDLayout<float>(32, 32));
 
-    auto atomCopy = MakeCopy(CopyL0C2UB{}, FixpipeTraitDefault{});
+    auto atomCopy = MakeCopy(CopyL0C2UB{}, CopyL0C2UBTraitDefault{});
     atomCopy.Call(ubDst, l0cSrc);
 
     atomCopy.Call(ubDst, l0cSrc, coord);
 
-    CopyAtom<CopyTraits<CopyL0C2UB, FixpipeTraitDefault>>{}.Call(ubDst, l0cSrc);
+    CopyAtom<CopyTraits<CopyL0C2UB, CopyL0C2UBTraitDefault>>{}.Call(ubDst, l0cSrc);
 
-    CopyAtom<CopyTraits<CopyL0C2UB, FixpipeTraitDefault>>{}.Call(ubDst, l0cSrc, coord);
+    CopyAtom<CopyTraits<CopyL0C2UB, CopyL0C2UBTraitDefault>>{}.Call(ubDst, l0cSrc, coord);
 
-    Copy(CopyAtom<CopyTraits<CopyL0C2UB, FixpipeTraitDefault>>{}, ubDst, l0cSrc);
+    Copy(CopyAtom<CopyTraits<CopyL0C2UB, CopyL0C2UBTraitDefault>>{}, ubDst, l0cSrc);
 
-    Copy(CopyAtom<CopyTraits<CopyL0C2UB, FixpipeTraitDefault>>{}, ubDst, l0cSrc, coord);
+    Copy(CopyAtom<CopyTraits<CopyL0C2UB, CopyL0C2UBTraitDefault>>{}, ubDst, l0cSrc, coord);
 
     FixpipeParams params;
-    Copy(CopyAtom<CopyTraits<CopyL0C2UB, FixpipeTraitDefault>>{}, ubDst, l0cSrc, params);
+    Copy(CopyAtom<CopyTraits<CopyL0C2UB, CopyL0C2UBTraitDefault>>{}, ubDst, l0cSrc, params);
 
-    Copy(CopyAtom<CopyTraits<CopyL0C2UB, FixpipeTraitDefault>>{}, ubDst, l0cSrc, coord, params);
+    Copy(CopyAtom<CopyTraits<CopyL0C2UB, CopyL0C2UBTraitDefault>>{}, ubDst, l0cSrc, coord, params);
 
     EXPECT_EQ(dst[0], 0);
 }
@@ -73,13 +73,13 @@ TEST_F(Tensor_Api_Atom, CopyL0C2UBWithOperation)
 
     atomCopy.with(23).Call(ubDst, l0cSrc, coord);
 
-    CopyAtom<CopyTraits<CopyL0C2UB>>{}.with(34).Call(ubDst, l0cSrc);
+    CopyAtom<CopyTraits<CopyL0C2UB, CopyL0C2UBTraitDefault>>{}.with(34).Call(ubDst, l0cSrc);
 
-    CopyAtom<CopyTraits<CopyL0C2UB>>{}.with(45).Call(ubDst, l0cSrc, coord);
+    CopyAtom<CopyTraits<CopyL0C2UB, CopyL0C2UBTraitDefault>>{}.with(45).Call(ubDst, l0cSrc, coord);
 
-    Copy(CopyAtom<CopyTraits<CopyL0C2UB>>{}.with(56), ubDst, l0cSrc);
+    Copy(CopyAtom<CopyTraits<CopyL0C2UB, CopyL0C2UBTraitDefault>>{}.with(56), ubDst, l0cSrc);
 
-    Copy(CopyAtom<CopyTraits<CopyL0C2UB>>{}.with(67), ubDst, l0cSrc, coord);
+    Copy(CopyAtom<CopyTraits<CopyL0C2UB, CopyL0C2UBTraitDefault>>{}.with(67), ubDst, l0cSrc, coord);
 
     EXPECT_EQ(dst[0], 0);
 }
@@ -96,10 +96,12 @@ TEST_F(Tensor_Api_Atom, CopyL12UBND2ND)
     __cbuf__ type src[m * n] = {0};
     __ubuf__ type dst[m * n] = {0};
 
+    auto coord = MakeCoord(Int<0>{}, Int<0>{});
+
     auto l1Tensor = MakeTensor(MakeL1memPtr(src), MakeNDLayout<type>(m, n));
     auto ubTensor = MakeTensor(MakeUBmemPtr(dst), MakeNDLayout<type>(m, n));
 
-    Copy(CopyAtom<CopyTraits<CopyL12UB, DataCopyTraitDefault>>{}, ubTensor, l1Tensor);
+    Copy(CopyAtom<CopyTraits<CopyL12UB, CopyL12UBTraitDefault>>{}, ubTensor, l1Tensor, coord);
 
     EXPECT_EQ(dst[0], 0);
 }
@@ -116,10 +118,12 @@ TEST_F(Tensor_Api_Atom, CopyL12UBDN2DN)
     __cbuf__ type src[m * n] = {0};
     __ubuf__ type dst[m * n] = {0};
 
+    auto coord = MakeCoord(Int<0>{}, Int<0>{});
+
     auto l1Tensor = MakeTensor(MakeL1memPtr(src), MakeDNLayout<type>(m, n));
     auto ubTensor = MakeTensor(MakeUBmemPtr(dst), MakeDNLayout<type>(m, n));
 
-    Copy(CopyAtom<CopyTraits<CopyL12UB, DataCopyTraitDefault>>{}, ubTensor, l1Tensor);
+    Copy(CopyAtom<CopyTraits<CopyL12UB, CopyL12UBTraitDefault>>{}, ubTensor, l1Tensor, coord);
 
     EXPECT_EQ(dst[0], 0);
 }
@@ -136,10 +140,12 @@ TEST_F(Tensor_Api_Atom, CopyL12UBNZ2NZ)
     __cbuf__ type src[m * n] = {0};
     __ubuf__ type dst[m * n] = {0};
 
+    auto coord = MakeCoord(Int<0>{}, Int<0>{});
+
     auto l1Tensor = MakeTensor(MakeL1memPtr(src), MakeNzLayout<type>(m, n));
     auto ubTensor = MakeTensor(MakeUBmemPtr(dst), MakeNzLayout<type>(m, n));
 
-    Copy(CopyAtom<CopyTraits<CopyL12UB, DataCopyTraitDefault>>{}, ubTensor, l1Tensor);
+    Copy(CopyAtom<CopyTraits<CopyL12UB, CopyL12UBTraitDefault>>{}, ubTensor, l1Tensor, coord);
 
     EXPECT_EQ(dst[0], 0);
 }
@@ -157,10 +163,12 @@ TEST_F(Tensor_Api_Atom, CopyGM2UBND2ND)
     __gm__ type src[m * n] = {0};
     __ubuf__ type dst[m * n] = {0};
 
+    auto coord = MakeCoord(Int<0>{}, Int<0>{});
+
     auto gmTensor = MakeTensor(MakeGMmemPtr(src), MakeNDLayout<type>(m, n));
     auto ubTensor = MakeTensor(MakeUBmemPtr(dst), MakeNDLayout<type>(m, n));
 
-    Copy(CopyAtom<CopyTraits<CopyGM2UB, DataCopyTraitDefault>>{}, ubTensor, gmTensor);
+    Copy(CopyAtom<CopyTraits<CopyGM2UB, CopyGM2UBTraitDefault>>{}, ubTensor, gmTensor, coord);
 
     EXPECT_EQ(dst[0], 0);
 }
@@ -177,10 +185,12 @@ TEST_F(Tensor_Api_Atom, CopyGM2UBDN2DN)
     __gm__ type src[m * n] = {0};
     __ubuf__ type dst[m * n] = {0};
 
+    auto coord = MakeCoord(Int<0>{}, Int<0>{});
+
     auto gmTensor = MakeTensor(MakeGMmemPtr(src), MakeDNLayout<type>(m, n));
     auto ubTensor = MakeTensor(MakeUBmemPtr(dst), MakeDNLayout<type>(m, n));
 
-    Copy(CopyAtom<CopyTraits<CopyGM2UB, DataCopyTraitDefault>>{}, ubTensor, gmTensor);
+    Copy(CopyAtom<CopyTraits<CopyGM2UB, CopyGM2UBTraitDefault>>{}, ubTensor, gmTensor, coord);
 
     EXPECT_EQ(dst[0], 0);
 }
@@ -197,10 +207,12 @@ TEST_F(Tensor_Api_Atom, CopyGM2UBNZ2NZ)
     __gm__ type src[m * n] = {0};
     __ubuf__ type dst[m * n] = {0};
 
+    auto coord = MakeCoord(Int<0>{}, Int<0>{});
+
     auto gmTensor = MakeTensor(MakeGMmemPtr(src), MakeNzLayout<type>(m, n));
     auto ubTensor = MakeTensor(MakeUBmemPtr(dst), MakeNzLayout<type>(m, n));
 
-    Copy(CopyAtom<CopyTraits<CopyGM2UB, DataCopyTraitDefault>>{}, ubTensor, gmTensor);
+    Copy(CopyAtom<CopyTraits<CopyGM2UB, CopyGM2UBTraitDefault>>{}, ubTensor, gmTensor, coord);
 
     EXPECT_EQ(dst[0], 0);
 }
@@ -217,10 +229,12 @@ TEST_F(Tensor_Api_Atom, CopyUB2L1ND2ND)
     __ubuf__ type src[m * n] = {0};
     __cbuf__ type dst[m * n] = {0};
 
+    auto coord = MakeCoord(Int<0>{}, Int<0>{});
+
     auto ubTensor = MakeTensor(MakeUBmemPtr(src), MakeNDLayout<type>(m, n));
     auto l1Tensor = MakeTensor(MakeL1memPtr(dst), MakeNDLayout<type>(m, n));
 
-    Copy(CopyAtom<CopyTraits<CopyUB2L1, DataCopyTraitDefault>>{}, l1Tensor, ubTensor);
+    Copy(CopyAtom<CopyTraits<CopyUB2L1, CopyUB2L1TraitDefault>>{}, l1Tensor, ubTensor, coord);
 
     EXPECT_EQ(dst[0], 0);
 }
@@ -237,10 +251,12 @@ TEST_F(Tensor_Api_Atom, CopyUB2L1DN2DN)
     __ubuf__ type src[m * n] = {0};
     __cbuf__ type dst[m * n] = {0};
 
+    auto coord = MakeCoord(Int<0>{}, Int<0>{});
+
     auto ubTensor = MakeTensor(MakeUBmemPtr(src), MakeDNLayout<type>(m, n));
     auto l1Tensor = MakeTensor(MakeL1memPtr(dst), MakeDNLayout<type>(m, n));
 
-    Copy(CopyAtom<CopyTraits<CopyUB2L1, DataCopyTraitDefault>>{}, l1Tensor, ubTensor);
+    Copy(CopyAtom<CopyTraits<CopyUB2L1, CopyUB2L1TraitDefault>>{}, l1Tensor, ubTensor, coord);
 
     EXPECT_EQ(dst[0], 0);
 }
@@ -257,10 +273,12 @@ TEST_F(Tensor_Api_Atom, CopyUB2L1NZ2NZ)
     __ubuf__ type src[m * n] = {0};
     __cbuf__ type dst[m * n] = {0};
 
+    auto coord = MakeCoord(Int<0>{}, Int<0>{});
+
     auto ubTensor = MakeTensor(MakeUBmemPtr(src), MakeNzLayout<type>(m, n));
     auto l1Tensor = MakeTensor(MakeL1memPtr(dst), MakeNzLayout<type>(m, n));
 
-    Copy(CopyAtom<CopyTraits<CopyUB2L1, DataCopyTraitDefault>>{}, l1Tensor, ubTensor);
+    Copy(CopyAtom<CopyTraits<CopyUB2L1, CopyUB2L1TraitDefault>>{}, l1Tensor, ubTensor, coord);
 
     EXPECT_EQ(dst[0], 0);
 }
@@ -277,10 +295,12 @@ TEST_F(Tensor_Api_Atom, CopyUB2GMND2ND)
     __ubuf__ type src[m * n] = {0};
     __gm__ type dst[m * n] = {0};
 
+    auto coord = MakeCoord(Int<0>{}, Int<0>{});
+
     auto ubTensor = MakeTensor(MakeUBmemPtr(src), MakeNDLayout<type>(m, n));
     auto gmTensor = MakeTensor(MakeGMmemPtr(dst), MakeNDLayout<type>(m, n));
 
-    Copy(CopyAtom<CopyTraits<CopyUB2GM, DataCopyTraitDefault>>{}, gmTensor, ubTensor);
+    Copy(CopyAtom<CopyTraits<CopyUB2GM, CopyUB2GMTraitDefault>>{}, gmTensor, ubTensor, coord);
 
     EXPECT_EQ(dst[0], 0);
 }
@@ -297,10 +317,12 @@ TEST_F(Tensor_Api_Atom, CopyUB2GMDN2DN)
     __ubuf__ type src[m * n] = {0};
     __gm__ type dst[m * n] = {0};
 
+    auto coord = MakeCoord(Int<0>{}, Int<0>{});
+
     auto ubTensor = MakeTensor(MakeUBmemPtr(src), MakeDNLayout<type>(m, n));
     auto gmTensor = MakeTensor(MakeGMmemPtr(dst), MakeDNLayout<type>(m, n));
 
-    Copy(CopyAtom<CopyTraits<CopyUB2GM, DataCopyTraitDefault>>{}, gmTensor, ubTensor);
+    Copy(CopyAtom<CopyTraits<CopyUB2GM, CopyUB2GMTraitDefault>>{}, gmTensor, ubTensor, coord);
 
     EXPECT_EQ(dst[0], 0);
 }
@@ -317,10 +339,12 @@ TEST_F(Tensor_Api_Atom, CopyUB2GMNZ2NZ)
     __ubuf__ type src[m * n] = {0};
     __gm__ type dst[m * n] = {0};
 
+    auto coord = MakeCoord(Int<0>{}, Int<0>{});
+
     auto ubTensor = MakeTensor(MakeUBmemPtr(src), MakeNzLayout<type>(m, n));
     auto gmTensor = MakeTensor(MakeGMmemPtr(dst), MakeNzLayout<type>(m, n));
 
-    Copy(CopyAtom<CopyTraits<CopyUB2GM, DataCopyTraitDefault>>{}, gmTensor, ubTensor);
+    Copy(CopyAtom<CopyTraits<CopyUB2GM, CopyUB2GMTraitDefault>>{}, gmTensor, ubTensor, coord);
 
     EXPECT_EQ(dst[0], 0);
 }

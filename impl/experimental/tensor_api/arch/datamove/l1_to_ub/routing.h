@@ -9,46 +9,43 @@
 */
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
-#warning                                                                                                               \
-    "impl/tensor_api/arch/cube_datamove/data_copy/data_copy_routing.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+#warning "impl/tensor_api/arch/datamove/l1_to_ub/routing.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
 
 /*!
- * \file data_copy_routing.h
+ * \file routing.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_DATA_COPY_ROUTING_H
-#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_DATA_COPY_ROUTING_H
+#ifndef IMPL_TENSOR_API_ARCH_DATAMOVE_L1_TO_UB_ROUTING_H
+#define IMPL_TENSOR_API_ARCH_DATAMOVE_L1_TO_UB_ROUTING_H
 
-#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_gm2l1.h"
+#include "impl/experimental/tensor_api/arch/datamove/l1_to_ub/npu_arch_3510/data_copy.h"
 
 namespace AscendC {
 namespace Te {
 
-
-class DataCopyIgnore {
+class CopyL12UBIgnore {
 public:
-    template <const DataCopyTrait& trait, typename ...Args>
-    __aicore__ inline void Run(const Args&... args) {}
+    template <const CopyL12UBTrait& trait, typename ...Args>
+    __aicore__ inline static void Run(const Args&... args) {}
 };
 
 template <Hardware dstTPos, Hardware srcTpos, uint32_t Version>
-struct DataCopyTensor2Tensor {
-    using type = DataCopyIgnore;
+struct CopyL12UBTensor2Tensor {
+    using type = CopyL12UBIgnore;
 };
 
 template <>
-struct DataCopyTensor2Tensor<Hardware::L1, Hardware::GM, ArchVersion::V3510> {
-    using type = DataCopyGM2L13510;
+struct CopyL12UBTensor2Tensor<Hardware::UB, Hardware::L1, ArchVersion::V3510> {
+    using type = DataCopyL12UB3510;
 };
-
 
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_DATA_COPY_ROUTING_H
+#endif // IMPL_TENSOR_API_ARCH_DATAMOVE_L1_TO_UB_ROUTING_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

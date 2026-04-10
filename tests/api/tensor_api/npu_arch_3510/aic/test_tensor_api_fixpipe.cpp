@@ -108,10 +108,10 @@ public:
         if constexpr (QUANT_MODE == QuantMode_t::NoQuant || QUANT_MODE == QuantMode_t::F322F16) {
             if constexpr (HAS_COORD) {
                 gm_addr_global = gmTensor(MakeCoord(base, base), gmTensor.Layout().Shape()).Data().Get();
-                Fixpipe<DEFAULT_FIXPIPE_TRAIT>(gmTensor, l0cTensor, MakeCoord(base, base));
+                Copy(CopyAtom<CopyTraits<CopyL0C2GM, CopyL0C2GMTraitDefault>>{}, gmTensor, l0cTensor, MakeCoord(base, base));
             } else {
                 gm_addr_global = gmC_;
-                Fixpipe<DEFAULT_FIXPIPE_TRAIT>(gmTensor, l0cTensor);
+                Copy(CopyAtom<CopyTraits<CopyL0C2GM, CopyL0C2GMTraitDefault>>{}, gmTensor, l0cTensor);
             }
         } else if constexpr (IS_TENSOR) {
             auto qIterator = MakeL1memPtr(qAddr);
@@ -119,19 +119,19 @@ public:
             auto qTensor = MakeTensor(qIterator, qMatrixLayout);
             if constexpr (HAS_COORD) {
                 gm_addr_global = gmTensor(MakeCoord(base, base), gmTensor.Layout().Shape()).Data().Get();
-                Fixpipe<DEFAULT_FIXPIPE_TRAIT>(gmTensor, l0cTensor, qTensor, MakeCoord(base, base));
+                Copy(CopyAtom<CopyTraits<CopyL0C2GM, CopyL0C2GMTraitDefault>>{}, gmTensor, l0cTensor, qTensor, MakeCoord(base, base));
             } else {
                 gm_addr_global = gmC_;
-                Fixpipe<DEFAULT_FIXPIPE_TRAIT>(gmTensor, l0cTensor, qTensor);
+                Copy(CopyAtom<CopyTraits<CopyL0C2GM, CopyL0C2GMTraitDefault>>{}, gmTensor, l0cTensor, qTensor);
             }
         } else {
             uint64_t quant = 1;
             if constexpr (HAS_COORD) {
                 gm_addr_global = gmTensor(MakeCoord(base, base), gmTensor.Layout().Shape()).Data().Get();
-                Fixpipe<DEFAULT_FIXPIPE_TRAIT>(gmTensor, l0cTensor, quant, MakeCoord(base, base));
+                Copy(CopyAtom<CopyTraits<CopyL0C2GM, CopyL0C2GMTraitDefault>>{}, gmTensor, l0cTensor, quant, MakeCoord(base, base));
             } else {
                 gm_addr_global = gmC_;
-                Fixpipe<DEFAULT_FIXPIPE_TRAIT>(gmTensor, l0cTensor, quant);
+                Copy(CopyAtom<CopyTraits<CopyL0C2GM, CopyL0C2GMTraitDefault>>{}, gmTensor, l0cTensor, quant);
             }
         }
     }
