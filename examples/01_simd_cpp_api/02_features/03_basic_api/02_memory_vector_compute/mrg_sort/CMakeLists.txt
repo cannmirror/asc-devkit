@@ -19,7 +19,7 @@ if(DEFINED NPU_ARCH)
     set(CMAKE_ASC_ARCHITECTURES ${NPU_ARCH} CACHE STRING "Alias of NPU_ARCH")
 endif()
 
-find_package(ASC REQUIRED HINTS $ENV{ASCEND_INSTALL_PATH}/compiler/tikcpp/ascendc_kernel_cmake)
+find_package(ASC REQUIRED)
 
 project(kernel_samples LANGUAGES ASC CXX)
 
