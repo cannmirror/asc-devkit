@@ -14,7 +14,7 @@
 - Case 6: 多核均匀切分 + 双缓冲 + L2Cache bypass + 避免Bank Conflict
 
 ## 支持的产品
-
+- Ascend 950PR/Ascend 950DT
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品
 
@@ -46,6 +46,10 @@ $$
   - y：输入，形状为[8192, 8192]，数据类型为half；
   - z：输出，形状为[8192, 8192]，数据类型为half；
 
+## 样例实现
+
+### 性能指标说明
+
 **表1 AI Core 性能指标字段说明表**
 | 字段名 | 字段含义 |
 |:---:|:---|
@@ -60,8 +64,6 @@ $$
 | aiv_mte3_time(μs) | mte3类型指令（UB->GM搬运类指令）耗时，单位μs。 |
 | aiv_mte3_ratio | mte3类型指令（UB->GM搬运类指令）的cycle数在total cycle数中的占用比。 |
 
-## 样例实现
-
 ### Case 0: 单核标量版本（基准程序）
 
 **实现方式**：参考 `KernelAdd::ProcessScalar()` 函数实现
@@ -71,16 +73,16 @@ $$
 **关键代码**：
 ```cpp
 for (uint32_t i = 0; i < curLen; i++) {
-    float xVal = (float)xLocal.GetValue(i);
-    float yVal = (float)yLocal.GetValue(i);
-    zLocal.SetValue(i, (half)(xVal + yVal));
-}
+      float xVal = (float)xLocal.GetValue(i);
+      float yVal = (float)yLocal.GetValue(i);
+      zLocal.SetValue(i, (half)(xVal + yVal));
+    }
 ```
 
-**配置**：
+**样例配置**：
 - 单核标量运算
 - `dataCopyLen = 4096` 为每次搬运的数据量元素个数
-- 单次搬运的数据量为 8192 Byte，单次scalar处理的数据量为4 Byte
+- 单次搬运的数据量为 4096 * 2B = 8192 Byte，单次scalar处理的数据量为 4 Byte
 
 **性能数据**：
 
@@ -92,7 +94,7 @@ for (uint32_t i = 0; i < curLen; i++) {
 - 端到端耗时：**1239734.12μs**（约1.24秒）
 - 标量指令耗时：1233756.661μs，占比 **99.5%**
 - 向量指令耗时：0.015μs，占比接近0%
-- 性能瓶颈：标量运算串行执行，无法利用硬件并行能力。该场景仅作为Add运算性能对比样例，在实际业务场景中不建议用户使用Scalar运算
+- 性能瓶颈：标量运算串行执行，无法利用硬件并行能力，该场景仅作为Add运算性能对比样例，在实际业务场景中不建议用户使用Scalar运算
 
 **原理说明**：
 - 标量运算每次只能处理1个数据元素，需要逐元素循环
@@ -109,14 +111,14 @@ for (uint32_t i = 0; i < curLen; i++) {
 
 **实现方式**：参考 `KernelAdd::ProcessSingle()` 函数实现
 
-将标量运算转换为向量运算，使用`AscendC::Add`向量指令替代标量循环，大幅提升计算效率。。
+将标量运算转换为向量运算，使用`AscendC::Add`向量指令替代标量循环，大幅提升计算效率
 
 **关键代码**：
 ```cpp
 AscendC::Add(zLocal, xLocal, yLocal, curLen);
 ```
 
-**配置**：
+**样例配置**：
 - 单核运算
 - `dataCopyLen = 4096` 为每次搬运的数据量元素个数
 - 单次搬运操作`DataCopy`的数据量为 8192 Byte
@@ -130,13 +132,13 @@ AscendC::Add(zLocal, xLocal, yLocal, curLen);
 | 6906.26 | 6905.68 | 761.649 | 0.11 | 337.964 | 0.049 | 6007.112 | 0.87 | 2705.84 | 0.392 |
 
 **优化效果分析**：
-- 端到端性能：6906.26μs，相比Case 0提升 **179.6倍**
+- 端到端性能：6906.26μs，相比Case 0提升 **99.5%**
 - 标量指令耗时：从1233756.66μs降至337.964μs，减少 **99.97%**
 - 向量指令耗时：761.649μs，占比11.1%
-- 数据搬运耗时：6007.112μs，占比87%，成为新瓶颈
+- 数据搬运耗时：6007.112μs，占比87%，搬运流水串行提升
 
 **原理说明**：
-- 向量指令单次可处理多个数据元素（本例中单次处理4096个half元素）
+- 向量指令单次可处理多个数据元素（本例中单次处理 4096*2 个half元素）
 - 向量单元的并行计算能力远超标量单元
 - 但数据搬运成为瓶颈，说明计算速度已经快于数据供给，单核时数据搬运的请求量不足，导致带宽未用满
 
@@ -159,10 +161,10 @@ AscendC::Add(zLocal, xLocal, yLocal, curLen);
 
 开启多核并行计算，将8192×8192的矩阵切分到多个AIV Core上并行处理，采用均匀切分策略。
 
-**配置**：
+**样例配置**：
 - 行方向切分6份，列方向切分8份，将数据均匀切分至48个核运算
-- `dataCopyLen = 4096` 为每次切分的数据量元素个数
-- 单次搬运操作`DataCopy`的数据量为 8192 Byte
+- `dataCopyLen = 4096` 为每次搬运的数据量元素个数
+- 单次搬运操作`DataCopy`的数据量为 4096 * 2B = 8192 Byte
 - 单次`Add`处理两个输入`Tensor`，处理的总数据量为 16384 Byte
 
 **关键代码**：
@@ -182,14 +184,14 @@ if (blockIdxN < remainderN) {
 | 312.22 | 306.29 | 15.897 | 0.052 | 8.446 | 0.028 | 223.329 | 0.729 | 54.891 | 0.179 |
 
 **优化效果分析**：
-- 端到端任务耗时为312.22μs，相比Case 1提升 **22.1倍**
+- 端到端任务耗时为312.22μs，相比Case 1提升 **95.5%**
 - 数据搬运MTE2耗时为223.329μs，占比72.9%
 
 **原理说明**：
-- 48个AI Core并行处理，理论上可获得48倍加速
+- 48个AIV Core并行处理，理论上可获得48倍加速
 - 实际加速比22.1倍，低于理论值的原因：
   - 数据搬运仍是瓶颈（mte2占比72.9%）
-- 均匀切分确保各核负载均衡，避免长尾效应
+- 均匀切分确保各核负载均衡，避免出现部分核空闲、部分核繁忙的负载不均问题
 
 **性能优化建议**：
 > 💡 **充分利用多核并行，采用均匀切分策略**
@@ -210,7 +212,7 @@ if (blockIdxN < remainderN) {
 
 为了充分利用带宽资源，增大搬运指令的数据量。
 
-**配置**：
+**样例配置**：
 - 行方向切分6份，列方向切分8份，将数据均匀切分至48个核运算
 - `dataCopyLen = 16384` 为每次切分的数据量元素个数（4倍于Case2）
 - 单次搬运操作`DataCopy`的数据量为 32678 Byte
@@ -272,7 +274,7 @@ for (uint32_t loopIdx = 0; loopIdx < totalBlocks; loopIdx++) {
 }
 ```
 
-**配置**：
+**样例配置**：
 - 行方向切分6份，列方向切分8份，将数据均匀切分至48个核运算
 - `dataCopyLen = 16384` 为每次切分的数据量元素个数
 - 单次搬运操作`DataCopy`的数据量为 32678 Byte
@@ -313,16 +315,14 @@ UB内存分配（双缓冲）：
 **优化效果分析**：
 - 端到端性能：265.96μs，相比Case 3提升 **1.8%**
 - MTE2耗时从188.331μs增至251.088μs（+33.3%），MTE3耗时从54.936μs增至95.478μs（+73.8%），此时从串行的纯读带宽变成混合读写带宽，因此耗时增加，用户应需更多地关注端到端耗时的减少
-- 由于开启了双缓冲，在流水中搬运和计算并行执行，隐藏了部分延迟
+- 由于开启了双缓冲，在流水中搬运和计算并行执行，隐藏数据搬运时间并降低Vector指令的等待时间
 
 **原理说明**：
 - **Ping-Pong机制**：
   - Ping缓冲区进行计算时，Pong缓冲区进行数据搬运
-  - 交替执行，实现计算与搬运的流水线并行
-- **事件同步**：
-  - 使用两个Event ID分别管理Ping和Pong的同步
-  - 确保"上一块写完"才能"下一块读入"
-- **空间翻倍**：需要2倍空间存储Ping和Pong数据
+  - 交替执行，实现计算与搬运的流水线并行，如下图所示
+
+    <img src="figure/DoubleBuffer.png" width="50%">
 
 **性能优化建议**：
 > 💡 **使用双缓冲实现搬运与计算并行**
@@ -340,7 +340,7 @@ UB内存分配（双缓冲）：
 
 **实现方式**：参考 `KernelAdd::ProcessDoubleBufferL2Bypass()` 函数实现（内部调用 `ProcessDoubleBuffer()`，区别在于 `Init` 时设置 `enableL2Bypass=true`）
 
-在双缓冲基础上，对于只需要载入一次的数据量可以设置L2 Cache bypass，直接从HBM载入到AICORE内部。
+在双缓冲基础上，对于只需要载入一次的数据量可以设置L2 Cache bypass，直接从GM载入UB。
 
 **关键代码**：
 ```cpp
@@ -352,7 +352,7 @@ if (enableL2Bypass) {
 // ProcessDoubleBufferL2Bypass内部调用ProcessDoubleBuffer
 ```
 
-**配置**：
+**样例配置**：
 - 行方向切分6份，列方向切分8份，将数据均匀切分至48个核运算
 - `dataCopyLen = 16384` 为每次切分的数据量元素个数
 - 单次搬运操作`DataCopy`的数据量为 32678 Byte
@@ -416,7 +416,7 @@ static constexpr uint32_t zAddrPingBC = MAX_DATA_COPY_LEN * sizeof(half) * 4;
 static constexpr uint32_t zAddrPongBC = zAddrPingBC + BANK_CONFLICT_DATA_COPY_LEN * sizeof(half);
 ```
 
-**配置**：
+**样例配置**：
 - 行方向切分6份，列方向切分8份，将数据均匀切分至48个核运算
 - `dataCopyLen = 16256` 为每次切分的数据量元素个数
 - 单次搬运操作`DataCopy`的数据量为 32512 Byte
@@ -477,15 +477,58 @@ static constexpr uint32_t zAddrPongBC = zAddrPingBC + BANK_CONFLICT_DATA_COPY_LE
 
 ## 性能对比总结
 
-| Case | 优化策略 | 核数 | dataCopyLen | Task Duration(μs) | 相对Case 0 |
-|:---:|:---|:---:|:---:|:---:|:---:|
-| 0 | 单核标量（基准） | 1 | 4096 | 1239734.12 | 1x |
-| 1 | 单核向量 | 1 | 4096 | 6906.26 | 179.6x |
-| 2 | 多核均匀切分 | 48 | 4096 | 312.22 | 3971x |
-| 3 | 增大搬运粒度 | 48 | 16384 | 270.76 | 4581x |
-| 4 | 双缓冲 | 48 | 16384 | 265.96 | 4661x |
-| 5 | L2 Cache bypass | 48 | 16384 | 187.1 | 6626x |
-| 6 | Bank Conflict优化 | 48 | 16256 | 183 | 6774x |
+下表为本样例在Atlas A2训练系列产品上运行的性能数据对比：
+
+| Case | 优化策略 | 核数 | dataCopyLen | Task Duration(μs) | aiv_vec_time(μs) | 理论vector耗时(μs) | 读带宽(TB/S) | 读写混合带宽(TB/S) | 端到端耗时相对Case 0 |
+|:---:|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| 0 | 单核标量（基准） | 1 | 4096 | 1239734.12 | NA | 283.405 | 0.0456 | NA | 1x |
+| 1 | 单核向量 | 1 | 4096 | 6906.26 | 761.649 | 283.405 | 0.0447 | NA | 179.6x |
+| 2 | 多核均匀切分 | 48 | 4096 | 312.22 | 15.897 | 5.904 | 1.2020 | NA | 3971x |
+| 3 | 增大搬运粒度 | 48 | 16384 | 270.76 | 12.853 | 5.904 | 1.4253 | NA | 4581x |
+| 4 | 双缓冲 | 48 | 16384 | 265.96 | 12.853 | 5.904 | NA | 1.604 | 4661x |
+| 5 | L2 Cache bypass | 48 | 16384 | 187.1 | 12.853 | 5.904 | NA | 2.353 | 6626x |
+| 6 | Bank Conflict优化 | 48 | 16256 | 183 | 7.012 | 5.904 | NA | 2.372 | 6774x |
+
+表中的“理论vector耗时”表示在当前核数配置下，仅考虑Vector计算本身时的理论执行时间。本样例的性能数据在Atlas A2训练系列产品上运行，该处理器每cycle处理128个half数据，主频为1.85GHz。理论vector耗时的计算公式为
+$$
+T_{\text{theory}} = \frac{M \times N}{128 \times 1.85 \times 10^9 \times \text{核数}}
+$$
+
+例如，48 核场景下：
+$$
+T_{\text{theory}} = \frac{8192 \times 8192}{128 \times 1.85 \times 10^9 \times 48} = \frac{67108864}{1.13664 \times 10^{13}} \approx 5.904 \times 10^{-6} \text{ s} = 5.904 \text{ μs}
+$$
+
+可以看到 Case 6 的 aiv_vec_time 为 7.012 μs，已经很接近 48 核场景下的理论耗时。
+
+Case 0-3 未开启双缓冲，数据搬运串行执行，使用读带宽衡量性能。从 Case 4 开始开启双缓冲，此时 mte2 利用率较高，读写行为并行发生，因此读写混合带宽按总读写数据量除以 $T_{mte2}$ 进行估算。其中，读带宽的计算公式为：
+$$
+BW_{read} = \frac{D_{read}}{T_{mte2}}
+$$
+
+读写混合带宽的计算公式为：
+$$
+BW_{rw} = \frac{D_{read} + D_{write}}{T_{mte2}}
+$$
+
+式中：
+- $D_{read} = M \times N \times sizeof(half) \times 2$ 为总读数据量（x和y两个输入矩阵）
+- $D_{write} = M \times N \times sizeof(half)$ 为总写数据量（z输出矩阵）
+- $T_{mte2}$ 为 aiv_mte2_time（GM→UB搬运耗时，μs）
+- 开启双缓冲后，mte2 与 mte3 流水并行；从本样例数据看，Case 4-6 的 mte2 利用率分别为 96.1%、93.2%、95.2%，因此这里采用 $T_{mte2}$ 作为主路径时间进行估算
+
+以 Case 3 为例（$M=N=8192$，$T_{mte2}=188.331\mu s$）：
+$$
+BW_{read} = \frac{8192 \times 8192 \times 2 \times 2}{188.331 \times 10^{-6}} = \frac{268435456}{188.331 \times 10^{-6}} \approx 1.425 \times 10^{9} \text{ B/s} \approx 1.425 \text{ TB/s}
+$$
+
+以 Case 6 为例（$T_{mte2}=169.776\mu s$）：
+$$
+BW_{rw} = \frac{8192 \times 8192 \times (2+1) \times 2}{169.776 \times 10^{-6}} = \frac{402653184}{169.776 \times 10^{-6}} \approx 2.372 \times 10^{12} \text{ B/s} \approx 2.372 \text{ TB/s}
+$$
+
+之所以读写混合带宽会高于 1.8 TB/s，是因为这里统计的不是纯读带宽，而是“读 + 写”的混合带宽。开启双缓冲后，读写流水是并行的；同时，z 写数据时会命中 L2 Cache，而 L2 的带宽很高，所以写的带宽较高。因此，在以 mte2 作为读写混合时间来估算时，分子统计了读写总数据量，最终得到的混合带宽会高于 1.8 TB/s。
+
 
 **优化要点总结**：
 
@@ -516,8 +559,8 @@ cmake -DCASE_TYPE=6 ..   # 编译 case 6（可替换为0-6）
 - `2`: 多核均匀切分 (dataCopyLen=4096)
 - `3`: 多核均匀切分 (dataCopyLen=16384)
 - `4`: 双缓冲优化
-- `5`: 双缓冲+L2Cache bypass
-- `6`: 双缓冲+L2Cache bypass+避免Bank Conflict
+- `5`: 双缓冲 + L2Cache bypass
+- `6`: 双缓冲 + L2Cache bypass + 避免Bank Conflict
 
 ### 编译执行
 
@@ -527,7 +570,7 @@ cmake -DCASE_TYPE=6 ..   # 编译 case 6（可替换为0-6）
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
     ```bash
-    source /μsr/local/Ascend/cann/set_env.sh
+    source /usr/local/Ascend/cann/set_env.sh
     ```
 
   - 默认路径，非root用户安装CANN软件包
@@ -543,7 +586,7 @@ cmake -DCASE_TYPE=6 ..   # 编译 case 6（可替换为0-6）
 - **样例执行**
   ```bash 
   mkdir -p build && cd build;   # 创建并进入build目录
-  cmake -DCASE_TYPE=6 ..;make -j;  # 编译指定case（默认为0，可替换为0-6）
+  cmake -DNPU_ARCH=2201 -DCASE_TYPE=6 ..;make -j;  # 编译指定case（NPU_ARCH: 2201=A3, 3510=A5；CASE_TYPE: 0-6）
   python3 ../scripts/gen_data.py   # 生成测试输入数据
   ./demo                           # 执行（使用编译时指定的case）
   python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
@@ -551,6 +594,7 @@ cmake -DCASE_TYPE=6 ..   # 编译 case 6（可替换为0-6）
   
   执行结果如下，说明精度对比成功。
   ```bash
+  error ratio: 0.0000, tolerance:0.0001
   test pass!
   ```
 
@@ -562,8 +606,20 @@ cmake -DCASE_TYPE=6 ..   # 编译 case 6（可替换为0-6）
 msprof ./demo   # 分析性能
 ```
 
-查看性能分析结果：
+当前目录下会生成PROF_前缀的文件夹，`mindstudio_profiler_output`目录保存Host和各个Device的性能数据汇总，性能数据分析推荐查看该目录下文件
+
 ```bash
+PROF_xxxx_XXXXXX
+├── device_{id}
+└── host
+└── mindstudio_profiler_log
+└── mindstudio_profiler_output    # 保存Host和各个Device的性能数据汇总
+    ├── msprof_*.json
+    ├── xx_*.csv
+    └── README.txt
+```
+查看具体的性能分析结果：
+```
 # 查看Task Duration 以及各项数据
-cat ./prof_*/mindstudio_profiler_output/op_summary_*.csv
+cat ./PROF_*/mindstudio_profiler_output/op_summary_*.csv
 ```
