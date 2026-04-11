@@ -23,7 +23,6 @@
 #define IMPL_TENSOR_API_ATOM_COPY_ATOM_IMPL_H
 
 #include "impl/experimental/tensor_api/arch/datamove/l1_to_l0/copy.h"
-#include "impl/experimental/tensor_api/atom/cube_datamove/copy_datacopy.h"
 
 #include "impl/experimental/tensor_api/atom/datamove/copy_l0c2out.h"
 #include "impl/experimental/tensor_api/atom/datamove/copy_l12ub.h"

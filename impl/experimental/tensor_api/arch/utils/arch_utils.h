@@ -32,15 +32,6 @@ namespace Te {
 template<const LoadDataTrait& trait, bool transpose> 
 constexpr LoadDataTrait TransTrait = LoadDataTrait(trait, transpose); 
 
-template <typename T>
-__aicore__ inline uint8_t GetCacheModeFromTensor(const T& tensor) {
-    if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-        return static_cast<uint8_t>((reinterpret_cast<uint64_t>(tensor.Data().Get())) >> L2_CACHE_OFFSET);
-    } else {
-        return 0;
-    }
-}
-
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
 #define SCALAR_QUANT_MODE QuantMode_t::DEQF16, QuantMode_t::QF322B8_PRE, QuantMode_t::REQ8,\
     QuantMode_t::QS322BF16_PRE, QuantMode_t::QF322F16_PRE, QuantMode_t::QF322BF16_PRE, QuantMode_t::QF322FP8_PRE,\

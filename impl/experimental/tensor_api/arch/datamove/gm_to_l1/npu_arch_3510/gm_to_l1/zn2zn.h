@@ -63,7 +63,7 @@ private:
 
         uint8_t leftPaddingCnt = 0;
         uint8_t rightPaddingCnt = 0;
-        uint8_t cacheMode = GetCacheModeFromTensor(src);
+        uint8_t cacheMode = src.Engine().GetCacheMode();
 
         auto blockCount = bigFractalSize;
         auto blockLen = smallFractalSize * C0_SIZE<>;

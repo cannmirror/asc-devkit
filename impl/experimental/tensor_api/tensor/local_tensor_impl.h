@@ -158,7 +158,7 @@ struct LocalTensor<TensorAttribute<EngineType, LayoutType>> {
     }
 
     __aicore__ inline constexpr void SetL2CacheHint(CacheMode mode) {
-        Engine().SetL2CacheHint(mode);
+        Engine().SetCacheMode(mode);
     }
 };
 

@@ -28,6 +28,8 @@
 namespace AscendC {
 namespace Te {
 
+constexpr DataCopyTrait DEFAULT_DATA_COPY_TRAIT;
+
 struct CopyGM2L1TraitDefault {
     using TraitType = DataCopyTrait;
     static constexpr const TraitType value = DEFAULT_DATA_COPY_TRAIT;

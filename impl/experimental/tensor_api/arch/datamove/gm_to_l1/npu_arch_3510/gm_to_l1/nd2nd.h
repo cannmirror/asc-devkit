@@ -60,7 +60,7 @@ private:
         auto dstShapeColumns = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
         auto dstStrideRows = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
 
-        uint8_t cacheMode = GetCacheModeFromTensor(src);
+        uint8_t cacheMode = src.Engine().GetCacheMode();
 
         // normal mode, dst_stride % C0_SIZE should be 0
         // compact mode, blockLen equals dstStride

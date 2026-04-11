@@ -29,11 +29,15 @@ TEST_F(Tensor_Api_Tensor_3510, SetL2CacheHint)
     auto tensor = MakeTensor(ptr, MakeShape(AscendC::Std::Int<2>{}, AscendC::Std::Int<2>{}, AscendC::Std::Int<2>{}),
                              MakeStride(AscendC::Std::Int<4>{}, AscendC::Std::Int<2>{}, AscendC::Std::Int<1>{}));
 
-    EXPECT_EQ(tensor.Data().Get(), data);
-
     tensor.SetL2CacheHint(CacheMode::CACHE_MODE_DISABLE);
-    EXPECT_NE(tensor.Data().Get(), data);
-
+    EXPECT_EQ(tensor.Engine().GetCacheMode(), static_cast<uint8_t>(CacheMode::CACHE_MODE_DISABLE));
+    
     tensor.SetL2CacheHint(CacheMode::CACHE_MODE_NORMAL);
-    EXPECT_EQ(tensor.Data().Get(), data);
+    EXPECT_EQ(tensor.Engine().GetCacheMode(), static_cast<uint8_t>(CacheMode::CACHE_MODE_NORMAL));
+
+    tensor.SetL2CacheHint(CacheMode::CACHE_MODE_LAST);
+    EXPECT_EQ(tensor.Engine().GetCacheMode(), static_cast<uint8_t>(CacheMode::CACHE_MODE_LAST));
+
+    tensor.SetL2CacheHint(CacheMode::CACHE_MODE_PERSISTENT);
+    EXPECT_EQ(tensor.Engine().GetCacheMode(), static_cast<uint8_t>(CacheMode::CACHE_MODE_PERSISTENT));
 }

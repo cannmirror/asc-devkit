@@ -149,7 +149,7 @@ private:
         auto gmA = MakeTensor(MakeGMmemPtr(reinterpret_cast<T*>(src0Gm)), gmALayout);                                  \
         auto l1ATensor = MakeTensor(MakeL1memPtr(reinterpret_cast<T*>(l1ABuf)), l1ALayout);                            \
         auto l1ATensorGolden = MakeTensor(MakeL1memPtr(reinterpret_cast<T*>(l1ABufGolden)), l1ALayout);                \
-        auto atomCopy = MakeCopy(CopyGM2L1{}, DataCopyTraitDefault{});                                                 \
+        auto atomCopy = MakeCopy(CopyGM2L1{}, CopyGM2L1TraitDefault{});                                                 \
         InitializeData<T>();                                                                                           \
         atomCopy.Call(l1ATensor, gmA);                                                                                 \
         DataCopyGm2L1Sim(l1ATensorGolden, gmA);                                                                        \
@@ -162,7 +162,7 @@ private:
         auto gmA = MakeTensor(MakeGMmemPtr(reinterpret_cast<T*>(src0Gm)), gmALayout);                                  \
         auto l1ATensor = MakeTensor(MakeL1memPtr(reinterpret_cast<T*>(l1ABuf)), l1ALayout);                            \
         auto l1ATensorGolden = MakeTensor(MakeL1memPtr(reinterpret_cast<T*>(l1ABufGolden)), l1ALayout);                \
-        auto atomCopy = MakeCopy(CopyGM2L1{}, DataCopyTraitDefault{});                                                 \
+        auto atomCopy = MakeCopy(CopyGM2L1{}, CopyGM2L1TraitDefault{});                                                 \
         InitializeData<T>();                                                                                           \
         auto coord = makeCoord;                                                                                        \
         atomCopy.Call(l1ATensor, gmA, coord);                                                                          \

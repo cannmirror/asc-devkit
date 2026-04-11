@@ -49,7 +49,7 @@ private:
         const auto& dstLayout = dst.Layout();
         const auto& srcLayout = src.Layout();
 
-        uint8_t cacheMode = GetCacheModeFromTensor(src);
+        uint8_t cacheMode = src.Engine().GetCacheMode();
 
         uint32_t C0_ELEMENT_SRC =
             GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout);

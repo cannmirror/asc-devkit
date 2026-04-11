@@ -34,18 +34,18 @@ TEST_F(Tensor_Api_Atom, CopyGM2L1Operation)
     auto gmSrc = MakeTensor(MakeGMmemPtr(src), MakeNDLayout<float>(11, 12));
     auto l1Dst = MakeTensor(MakeL1memPtr(dst), MakeNzLayout<float>(11, 12));
 
-    auto atomCopy = MakeCopy(CopyGM2L1{}, DataCopyTraitDefault{});
+    auto atomCopy = MakeCopy(CopyGM2L1{}, CopyGM2L1TraitDefault{});
     atomCopy.Call(l1Dst, gmSrc);
 
     atomCopy.Call(l1Dst, gmSrc, coord);
 
-    CopyAtom<CopyTraits<CopyGM2L1, DataCopyTraitDefault>>{}.Call(l1Dst, gmSrc);
+    CopyAtom<CopyTraits<CopyGM2L1, CopyGM2L1TraitDefault>>{}.Call(l1Dst, gmSrc);
 
-    CopyAtom<CopyTraits<CopyGM2L1, DataCopyTraitDefault>>{}.Call(l1Dst, gmSrc, coord);
+    CopyAtom<CopyTraits<CopyGM2L1, CopyGM2L1TraitDefault>>{}.Call(l1Dst, gmSrc, coord);
 
-    Copy(CopyAtom<CopyTraits<CopyGM2L1, DataCopyTraitDefault>>{}, l1Dst, gmSrc);
+    Copy(CopyAtom<CopyTraits<CopyGM2L1, CopyGM2L1TraitDefault>>{}, l1Dst, gmSrc);
 
-    Copy(CopyAtom<CopyTraits<CopyGM2L1, DataCopyTraitDefault>>{}, l1Dst, gmSrc, coord);
+    Copy(CopyAtom<CopyTraits<CopyGM2L1, CopyGM2L1TraitDefault>>{}, l1Dst, gmSrc, coord);
 
     EXPECT_EQ(dst[0], 0);
 }

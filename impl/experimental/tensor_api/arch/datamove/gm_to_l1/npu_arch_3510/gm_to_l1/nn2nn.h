@@ -59,7 +59,7 @@ private:
 
         auto dstStrideColB = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout);
 
-        uint8_t cacheMode = GetCacheModeFromTensor(src);
+        uint8_t cacheMode = src.Engine().GetCacheMode();
 
         // lprp mode, dst_stride % C0_SIZE should be 0
         // multi rows copy, dst non-contiguous case

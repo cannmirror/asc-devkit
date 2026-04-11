@@ -49,7 +49,7 @@ private:
         const auto& dstLayout = dst.Layout();
         const auto& srcLayout = src.Layout();
 
-        uint8_t cacheMode = GetCacheModeFromTensor(src);
+        uint8_t cacheMode = src.Engine().GetCacheMode();
         constexpr uint8_t leftPaddingCnt = 0;
         constexpr uint8_t rightPaddingCnt = 0;
 

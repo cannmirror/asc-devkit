@@ -61,7 +61,7 @@ private:
             // move fp4 as b8, need to be divided by 2
             copyLen = copyLen >> 1;
         }
-        uint8_t cacheMode = GetCacheModeFromTensor(src);
+        uint8_t cacheMode = src.Engine().GetCacheMode();
 
         // compact mode, dst_stride equals burst_len, padding cnt is zero
         // src and dst contiguous case, can directly copy without padding, only one row copy is needed
