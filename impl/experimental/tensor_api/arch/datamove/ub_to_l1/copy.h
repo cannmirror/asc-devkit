@@ -34,12 +34,15 @@ struct CopyUB2L1TraitDefault {
     static constexpr const TraitType value = DEFAULT_COPY_UB_TO_L1_TRAIT;
 };
 
+
 struct CopyUB2L1 {
 public:
     template <typename Tp, const Tp& traits, typename... Args>
     __aicore__ inline static void Copy(const Args& ...args)
     { 
-        DataCopyImpl<traits, Args...>(args...); 
+        if ASCEND_IS_AIV {
+            DataCopyImpl<traits, Args...>(args...); 
+        }
     }
 
 private:

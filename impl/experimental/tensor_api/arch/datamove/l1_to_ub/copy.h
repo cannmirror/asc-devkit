@@ -41,7 +41,9 @@ public:
     template <typename Tp, const Tp& traits, typename... Args>
     __aicore__ inline static void Copy(const Args& ...args)
     {
-        DataCopyImpl<traits, Args...>(args...);
+        if ASCEND_IS_AIC {
+            DataCopyImpl<traits, Args...>(args...);
+        }
     }
 
 private:
