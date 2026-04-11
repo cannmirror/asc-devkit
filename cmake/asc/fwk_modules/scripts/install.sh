@@ -66,7 +66,6 @@ resolve_so_paths() {
     local so_path=""
     local arch_search_dir=""
     local arch_dir=""
-    local has_arch_dir=0
 
     # Return value is a newline-separated so path list (echo per line).
     case "${so_name}" in
@@ -79,8 +78,7 @@ resolve_so_paths() {
         "${opapi_so_name}")
             # op_api uses fixed lib path and does not participate in arch-subdir traversal.
             so_path="${sourcedir}/${vendordir}/op_api/lib/${so_name}"
-            [ -f "${so_path}" ] || return 1
-            echo "${so_path}"
+            [ -f "${so_path}" ] && echo "${so_path}"
             return 0
             ;;
         *)
@@ -88,7 +86,7 @@ resolve_so_paths() {
             ;;
     esac
 
-    [ -d "${search_dir}" ] || return 1
+    [ -d "${search_dir}" ] || return 0
 
     # Only validate linux/<arch>/ directories recognized by map_arch() whitelist.
     for arch_search_dir in "${search_dir}"/*; do
@@ -96,17 +94,12 @@ resolve_so_paths() {
         arch_dir="${arch_search_dir##*/}"
         map_arch "${arch_dir}" >/dev/null 2>&1 || continue
 
-        has_arch_dir=1
         so_path=$(find "${arch_search_dir}" -type f -name "${so_name}" -print -quit 2>/dev/null)
-        [ -n "${so_path}" ] || {
-            log "[ERROR] Failed to find shared library '${so_name}' in package path '${arch_search_dir}'."
-            return 1
-        }
+        [ -n "${so_path}" ] || continue
         echo "${so_path}"
     done
 
-    # Strict mode: if no whitelist arch dir exists, fail directly.
-    [ "${has_arch_dir}" -eq 1 ] || return 1
+    # If no whitelist arch dir exists or target so is absent, return empty.
     return 0
 }
 
@@ -244,9 +237,16 @@ validate_so_list() {
     # mode=dlopen: ASCEND_HOME_PATH branch; mode=compat: arch+glibc branch.
     for so_name in "${opmaster_so_name}" "${opsproto_so_name}" "${opapi_so_name}"; do
         so_paths=$(resolve_so_paths "${so_name}")
-        if [ $? -ne 0 ] || [ -z "${so_paths}" ]; then
-            log "[ERROR] Failed to find shared library '${so_name}' in package path."
+        if [ $? -ne 0 ]; then
+            log "[ERROR] Failed to resolve shared library '${so_name}' path."
             return 1
+        fi
+        if [ -z "${so_paths}" ]; then
+            if [ "${so_name}" = "${opmaster_so_name}" ]; then
+                log "[ERROR] Required shared library '${so_name}' was not found in package path."
+                return 1
+            fi
+            continue
         fi
         # Read newline-separated so paths produced by resolve_so_paths().
         while IFS= read -r so_path; do
