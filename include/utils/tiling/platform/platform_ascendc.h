@@ -64,6 +64,7 @@ enum class SocVersion {
     ASCEND310B,    // Ascend310B1, Ascend310B2, Ascend310B3, Ascend310B4
     ASCEND950,  // ASCEND950, __DAV_C310__
     ASCEND910_55,  // ASCEND910_55, __DAV_310R6__
+    ASCEND910_95 = ASCEND950,  // Deprecated, temporarily reserved
     AS31XM1,
     ASCEND031,
     ASCEND035,
