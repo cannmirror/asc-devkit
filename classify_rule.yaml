@@ -97,7 +97,8 @@ asc-devkit:
       - impl/experimental/tensor_api/arch/datamove/gm_to_l1/routing.h
       - impl/experimental/tensor_api/atom/cube_datamove/copy_datacopy.h
       - impl/experimental/tensor_api/arch/cube_datamove/data_copy/data_copy_routing.h
-
+      - impl/experimental/tensor_api/tensor/layout_struct.h
+      
   llt:
     ut_check: true
     st_check: false

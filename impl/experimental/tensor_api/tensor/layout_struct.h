@@ -24,16 +24,12 @@
 
 #include "impl/experimental/tensor_api/utils/utils_impl.h"
 #include "impl/experimental/tensor_api/tensor/layout_fractal.h"
-#include "impl/experimental/tensor_api/tensor/layout_static_fractal.h"
 
 namespace AscendC {
 namespace Te {
 
 template <typename T>
 struct NzLayoutFormat {
-    template <size_t row, size_t column>
-    using type = NZFormatLayout<T, row, column>;
-
     template <typename U, typename S>
     __aicore__ inline decltype(auto) operator()(U row, S column) {
         return MakeNzLayout<T, U, S>(row, column);
@@ -42,9 +38,6 @@ struct NzLayoutFormat {
 
 template <typename T>
 struct ZnLayoutFormat {
-    template <size_t row, size_t column>
-    using type = ZNFormatLayout<T, row, column>;
-
     template <typename U, typename S>
     __aicore__ inline decltype(auto) operator()(U row, S column) {
         return MakeZnLayout<T, U, S>(row, column);
@@ -53,9 +46,6 @@ struct ZnLayoutFormat {
 
 template <typename T>
 struct L0CLayoutFormat {
-    template <size_t row, size_t column>
-    using type = L0CFormatLayout<row, column>;
-
     template <typename U, typename S>
     __aicore__ inline decltype(auto) operator()(U row, S column) {
         return MakeL0CLayout<U, S>(row, column);
@@ -64,9 +54,6 @@ struct L0CLayoutFormat {
 
 template <typename T>
 struct DNLayoutFormat {
-    template <size_t row, size_t column>
-    using type = DNFormatLayout<T, row, column>;
-
     template <typename U, typename S>
     __aicore__ inline decltype(auto) operator()(U row, S column) {
         return MakeDNLayout<T, U, S>(row, column);
@@ -75,9 +62,6 @@ struct DNLayoutFormat {
 
 template <typename T>
 struct NDLayoutFormat {
-    template <size_t row, size_t column>
-    using type = NDFormatLayout<T, row, column>;
-
     template <typename U, typename S>
     __aicore__ inline decltype(auto) operator()(U row, S column) {
         return MakeNDLayout<T, U, S>(row, column);
@@ -86,9 +70,6 @@ struct NDLayoutFormat {
 
 template <typename T>
 struct ZzLayoutFormat {
-    template <size_t row, size_t column>
-    using type = ZZFormatLayout<T, row, column>;
-
     template <typename U, typename S>
     __aicore__ inline decltype(auto) operator()(U row, S column) {
         return MakeZzLayout<T, U, S>(row, column);
@@ -97,9 +78,6 @@ struct ZzLayoutFormat {
 
 template <typename T>
 struct NnLayoutFormat {
-    template <size_t row, size_t column>
-    using type = NNFormatLayout<T, row, column>;
-
     template <typename U, typename S>
     __aicore__ inline decltype(auto) operator()(U row, S column) {
         return MakeNnLayout<T, U, S>(row, column);
@@ -108,9 +86,6 @@ struct NnLayoutFormat {
 
 template <typename T>
 struct ScaleANDLayoutFormat {
-    template <size_t row, size_t column>
-    using type = ScaleANDFormatLayout<T, row, column>;
-
     template <typename U, typename S>
     __aicore__ inline decltype(auto) operator()(U row, S column) {
         return MakeScaleANDLayout<T, U, S>(row, column);
@@ -119,9 +94,6 @@ struct ScaleANDLayoutFormat {
 
 template <typename T>
 struct ScaleADNLayoutFormat {
-    template <size_t row, size_t column>
-    using type = ScaleADNFormatLayout<T, row, column>;
-
     template <typename U, typename S>
     __aicore__ inline decltype(auto) operator()(U row, S column) {
         return MakeScaleADNLayout<T, U, S>(row, column);
@@ -130,9 +102,6 @@ struct ScaleADNLayoutFormat {
 
 template <typename T>
 struct ScaleBNDLayoutFormat {
-    template <size_t row, size_t column>
-    using type = ScaleBNDFormatLayout<T, row, column>;
-
     template <typename U, typename S>
     __aicore__ inline decltype(auto) operator()(U row, S column) {
         return MakeScaleBNDLayout<T, U, S>(row, column);
@@ -141,9 +110,6 @@ struct ScaleBNDLayoutFormat {
 
 template <typename T>
 struct ScaleBDNLayoutFormat {
-    template <size_t row, size_t column>
-    using type = ScaleBDNFormatLayout<T, row, column>;
-
     template <typename U, typename S>
     __aicore__ inline decltype(auto) operator()(U row, S column) {
         return MakeScaleBDNLayout<T, U, S>(row, column);

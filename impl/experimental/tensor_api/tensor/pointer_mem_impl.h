@@ -23,7 +23,6 @@
 #define IMPL_TENSOR_API_TENSOR_POINTER_MEM_IMPL_H
 
 #include "impl/experimental/tensor_api/tensor/pointer_adaptor_impl.h"
-
 namespace AscendC {
 namespace Te {
 
@@ -47,7 +46,7 @@ template <Hardware hardPos, typename Pointer>
 constexpr bool IsHardwareMemV = IsHardwareMem<hardPos, Pointer>::value;
 
 template <Hardware hardPos, typename Iterator>
-__aicore__ inline constexpr auto MakeMemPtr(Iterator iter) 
+__aicore__ inline constexpr auto MakeMemPtrImpl(Iterator iter) 
 {
     if constexpr (IsHardwareMem<hardPos, Iterator>::value) {
         return iter;
@@ -55,7 +54,6 @@ __aicore__ inline constexpr auto MakeMemPtr(Iterator iter)
         return HardwareMemPtr<hardPos, Iterator>{iter};
     }
 }
-
 } // namespace Te
 } // namespace AscendC
 

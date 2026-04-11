@@ -155,6 +155,38 @@ TEST_F(Tensor_Api_Tensor, IteratorMakeMemPtrOperation)
     EXPECT_EQ(MakeFixbufmemPtr(fixbufPtr), fixbufPtr);
 }
 
+TEST_F(Tensor_Api_Tensor, IteratorMakeMemPatternPtrOperation)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t TILE_LENGTH = 128;
+    __gm__ float gmData[TILE_LENGTH] = {0};
+    __ubuf__ float ubData[TILE_LENGTH] = {0};
+    __cbuf__ float l1Data[TILE_LENGTH] = {0};
+    __ca__ float l0aData[TILE_LENGTH] = {0};
+    __cb__ float l0bData[TILE_LENGTH] = {0};
+    __cc__ float l0cData[TILE_LENGTH] = {0};
+    __biasbuf__ float biasData[TILE_LENGTH] = {0};
+    __fbuf__ float fixbufData[TILE_LENGTH] = {0};
+
+    auto gmPtr = MakeMemPtr<GMMemPtr, EmptyTrait>(gmData);
+    auto ubPtr = MakeMemPtr<UBMemPtr, EmptyTrait>(ubData);
+    auto l1Ptr = MakeMemPtr<L1MemPtr, EmptyTrait>(l1Data);
+    auto l0aPtr = MakeMemPtr<L0AMemPtr, EmptyTrait>(l0aData);
+    auto l0bPtr = MakeMemPtr<L0BMemPtr, EmptyTrait>(l0bData);
+    auto l0cPtr = MakeMemPtr<L0CMemPtr, EmptyTrait>(l0cData);
+    auto biasPtr = MakeMemPtr<BiasMemPtr, EmptyTrait>(biasData);
+    auto fixbufPtr = MakeMemPtr<FixbufMemPtr, EmptyTrait>(fixbufData);
+    EXPECT_EQ(gmPtr.Get(), gmData);
+    EXPECT_EQ(ubPtr.Get(), ubData);
+    EXPECT_EQ(l1Ptr.Get(), l1Data);
+    EXPECT_EQ(l0aPtr.Get(), l0aData);
+    EXPECT_EQ(l0bPtr.Get(), l0bData);
+    EXPECT_EQ(l0cPtr.Get(), l0cData);
+    EXPECT_EQ(biasPtr.Get(), biasData);
+    EXPECT_EQ(fixbufPtr.Get(), fixbufData);
+}
+
 TEST_F(Tensor_Api_Tensor, IteratorGetOperation)
 {
     using namespace AscendC::Te;

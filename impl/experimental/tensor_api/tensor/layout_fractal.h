@@ -24,107 +24,63 @@
 
 #include "impl/experimental/tensor_api/utils/utils_impl.h"
 #include "impl/experimental/tensor_api/tensor/layout_dispatch.h"
-#include "impl/experimental/tensor_api/tensor/layout_static_fractal.h"
 
 namespace AscendC {
 namespace Te {
+
 template <typename T, typename U, typename S>
 __aicore__ inline decltype(auto) MakeNzLayout(U row, S column) {
-    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
-        return NZFormatLayout<T, row, column>{};
-    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
-        return LayoutDispatcher<LayoutFormat::NZ, T>::apply(row, column);
-    }
+    return LayoutDispatcher<LayoutFormat::NZ, T>::apply(row, column);
 }
 
 template <typename U, typename S>
 __aicore__ inline decltype(auto) MakeL0CLayout(U row, S column) {
-    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
-        return L0CFormatLayout<row, column>{};
-    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
-        return LayoutDispatcher<LayoutFormat::NZ, uint16_t>::apply(row, column);
-    }
+    return LayoutDispatcher<LayoutFormat::NZ, uint16_t>::apply(row, column);
 }
 
 template <typename T, typename U, typename S>
 __aicore__ inline decltype(auto) MakeNDLayout(U row, S column) {
-    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
-        return NDFormatLayout<T, row, column>{};
-    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
-        return LayoutDispatcher<LayoutFormat::ND, T>::apply(row, column);
-    }
+    return LayoutDispatcher<LayoutFormat::ND, T>::apply(row, column);
 }
 
 template <typename T, typename U, typename S>
 __aicore__ inline decltype(auto) MakeDNLayout(U row, S column) {
-    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
-        return DNFormatLayout<T, row, column>{};
-    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
-        return LayoutDispatcher<LayoutFormat::DN, T>::apply(row, column);
-    }
+    return LayoutDispatcher<LayoutFormat::DN, T>::apply(row, column);
 }
 
 template <typename T, typename U, typename S>
 __aicore__ inline decltype(auto) MakeZnLayout(U row, S column) {
-    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
-        return ZNFormatLayout<T, row, column>{};
-    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
-        return LayoutDispatcher<LayoutFormat::ZN, T>::apply(row, column);
-    }
+    return LayoutDispatcher<LayoutFormat::ZN, T>::apply(row, column);
 }
 
 template <typename T, typename U, typename S>
 __aicore__ inline decltype(auto) MakeZzLayout(U row, S column) {
-    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
-        return ZZFormatLayout<T, row, column>{};
-    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
-        return LayoutDispatcher<LayoutFormat::ZZ, T>::apply(row, column);
-    }
+    return LayoutDispatcher<LayoutFormat::ZZ, T>::apply(row, column);
 }
 
 template <typename T, typename U, typename S>
 __aicore__ inline decltype(auto) MakeNnLayout(U row, S column) {
-    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
-        return NNFormatLayout<T, row, column>{};
-    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
-        return LayoutDispatcher<LayoutFormat::NN, T>::apply(row, column);
-    }
+    return LayoutDispatcher<LayoutFormat::NN, T>::apply(row, column);
 }
 
 template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeScaleANDLayout(U row, S column) { // 不转置(m, scaleK)
-    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
-        return ScaleANDFormatLayout<T, row, column>{};
-    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
-        return LayoutDispatcher<LayoutFormat::ND, Std::ignore_t>::apply(row, column); // (m, scaleK)
-    }
+__aicore__ inline decltype(auto) MakeScaleANDLayout(U row, S column) {
+    return LayoutDispatcher<LayoutFormat::ND, Std::ignore_t>::apply(row, column);
 }
 
 template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeScaleADNLayout(U row, S column) { // 转置(m, scaleK)
-    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
-        return ScaleADNFormatLayout<T, row, column>{};
-    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
-        return LayoutDispatcher<LayoutFormat::DN, T>::apply(row, column); // 转置(m, scaleK)
-    }
+__aicore__ inline decltype(auto) MakeScaleADNLayout(U row, S column) {
+    return LayoutDispatcher<LayoutFormat::DN, T>::apply(row, column);
 }
 
 template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeScaleBNDLayout(U row, S column) { // 不转置(scaleK, n)
-    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
-        return ScaleBNDFormatLayout<T, row, column>{};
-    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
-        return LayoutDispatcher<LayoutFormat::ND, T>::apply(row, column); // (scaleK, n)
-    }
+__aicore__ inline decltype(auto) MakeScaleBNDLayout(U row, S column) {
+    return LayoutDispatcher<LayoutFormat::ND, T>::apply(row, column);
 }
 
 template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeScaleBDNLayout(U row, S column) { // 转置(scaleK, n)
-    if constexpr(IsIntegralConstantV<U> && IsIntegralConstantV<S>) {
-        return ScaleBDNFormatLayout<T, row, column>{};
-    } else if(Std::is_integral_v<U> && Std::is_integral_v<S>){
-        return LayoutDispatcher<LayoutFormat::DN, Std::ignore_t>::apply(row, column); // (scaleK, n)
-    }
+__aicore__ inline decltype(auto) MakeScaleBDNLayout(U row, S column) {
+    return LayoutDispatcher<LayoutFormat::DN, Std::ignore_t>::apply(row, column);
 }
 
 template <typename T, typename U, size_t... Is>
@@ -138,7 +94,6 @@ __aicore__ inline decltype(auto) MakeFractalShape(T originShape, U innerShape) {
     static_assert(Std::tuple_size_v<T> == Std::tuple_size_v<U>, "OriginShape and InnerShape must match");
     return MakeFractalShape(originShape, innerShape, Std::make_index_sequence<Std::tuple_size_v<U>>{});
 }
-
 
 } // namespace Te
 } // namespace AscendC
