@@ -12,6 +12,7 @@
 
 import sys
 import numpy as np
+import argparse
 
 
 RELATIVE_TOL = 1e-6
@@ -19,8 +20,11 @@ ABSOLUTE_TOL = 1e-9
 ERROR_TOL = 1e-4
 
 
-def verify_result(output, golden):
-    output_type = np.float16
+def verify_result(scenarioNum, output, golden):
+    if scenarioNum in (1, 2):
+        output_type = np.float16
+    else:
+        output_type = np.int8
     output = np.fromfile(output, dtype=output_type).reshape(-1)
     golden = np.fromfile(golden, dtype=output_type).reshape(-1)
     different_element_results = np.isclose(output,
@@ -44,8 +48,13 @@ def verify_result(output, golden):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-scenarioNum', type=int, default=1, choices=range(1, 7))
+    parser.add_argument('output', type=str)
+    parser.add_argument('golden', type=str)
+    args = parser.parse_args()
     try:
-        res = verify_result(sys.argv[1], sys.argv[2])
+        res = verify_result(args.scenarioNum, args.output, args.golden)
         if not res:
             raise ValueError("[ERROR] result error")
         else:
