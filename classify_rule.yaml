@@ -87,7 +87,8 @@ asc-devkit:
       - impl/basic_api/dav_3510/core_mng/roc/kernel_operator_cube_group_info.h
       - impl/basic_api/kernel_operator_list_tensor_intf_impl.h
       - impl/basic_api/dav_3510/kernel_operator_determine_compute_sync_impl.h
-      - impl/tensor_api/arch/datamove/l1_to_l0/routing.h
+      - impl/tensor_api/arch/datamove/l1_to_l0a/routing.h
+      - impl/tensor_api/arch/datamove/l1_to_l0b/routing.h
       - impl/tensor_api/atom/datamove/*.h
       - impl/tensor_api/arch/datamove/gm_to_ub/routing.h
       - impl/tensor_api/arch/datamove/l1_to_ub/routing.h

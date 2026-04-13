@@ -22,7 +22,8 @@
 #ifndef IMPL_TENSOR_API_ATOM_COPY_ATOM_IMPL_H
 #define IMPL_TENSOR_API_ATOM_COPY_ATOM_IMPL_H
 
-#include "impl/tensor_api/arch/datamove/l1_to_l0/copy.h"
+#include "impl/tensor_api/arch/datamove/l1_to_l0a/copy.h"
+#include "impl/tensor_api/arch/datamove/l1_to_l0b/copy.h"
 
 #include "impl/tensor_api/atom/datamove/copy_l0c2out.h"
 #include "impl/tensor_api/atom/datamove/copy_l12ub.h"

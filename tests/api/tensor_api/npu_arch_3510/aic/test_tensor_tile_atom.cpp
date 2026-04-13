@@ -69,30 +69,30 @@ TEST_F(Tensor_Api_Atom, CopyL12L0Operation)
     auto dstL0A = MakeTensor(MakeL0AmemPtr(l0aDst), MakeLayout(shape, stride));
     auto dstL0B = MakeTensor(MakeL0BmemPtr(l0bDst), MakeLayout(shape, stride));
 
-    auto atomCopy = MakeCopy(CopyL12L0{}, LoadDataTraitDefault{});
-    atomCopy.Call(dstL0A, srcL1);
+    auto atomCopyA = MakeCopy(CopyL12L0A{}, CopyL12L0ATraitDefault{});
+    atomCopyA.Call(dstL0A, srcL1);
 
-    atomCopy.Call(dstL0A, srcL1, coord);
+    atomCopyA.Call(dstL0A, srcL1, coord);
 
-    CopyAtom<CopyTraits<CopyL12L0, LoadDataTraitDefault>>{}.Call(dstL0A, srcL1);
+    CopyAtom<CopyTraits<CopyL12L0A, CopyL12L0ATraitDefault>>{}.Call(dstL0A, srcL1);
 
-    CopyAtom<CopyTraits<CopyL12L0, LoadDataTraitDefault>>{}.Call(dstL0A, srcL1, coord);
+    CopyAtom<CopyTraits<CopyL12L0A, CopyL12L0ATraitDefault>>{}.Call(dstL0A, srcL1, coord);
 
-    Copy(CopyAtom<CopyTraits<CopyL12L0, LoadDataTraitDefault>>{}, dstL0A, srcL1);
+    Copy(CopyAtom<CopyTraits<CopyL12L0A, CopyL12L0ATraitDefault>>{}, dstL0A, srcL1);
 
-    Copy(CopyAtom<CopyTraits<CopyL12L0, LoadDataTraitDefault>>{}, dstL0A, srcL1, coord);
+    Copy(CopyAtom<CopyTraits<CopyL12L0A, CopyL12L0ATraitDefault>>{}, dstL0A, srcL1, coord);
 
+    auto atomCopyB = MakeCopy(CopyL12L0B{}, CopyL12L0BTraitDefault{});
+    atomCopyB.Call(dstL0B, srcL1);
+    atomCopyB.Call(dstL0B, srcL1, coord);
 
-    atomCopy.Call(dstL0B, srcL1);
-    atomCopy.Call(dstL0B, srcL1, coord);
+    CopyAtom<CopyTraits<CopyL12L0B, CopyL12L0BTraitDefault>>{}.Call(dstL0B, srcL1);
 
-    CopyAtom<CopyTraits<CopyL12L0, LoadDataTraitDefault>>{}.Call(dstL0B, srcL1);
+    CopyAtom<CopyTraits<CopyL12L0B, CopyL12L0BTraitDefault>>{}.Call(dstL0B, srcL1, coord);
 
-    CopyAtom<CopyTraits<CopyL12L0, LoadDataTraitDefault>>{}.Call(dstL0B, srcL1, coord);
+    Copy(CopyAtom<CopyTraits<CopyL12L0B, CopyL12L0BTraitDefault>>{}, dstL0B, srcL1);
 
-    Copy(CopyAtom<CopyTraits<CopyL12L0, LoadDataTraitDefault>>{}, dstL0B, srcL1);
-
-    Copy(CopyAtom<CopyTraits<CopyL12L0, LoadDataTraitDefault>>{}, dstL0B, srcL1, coord);
+    Copy(CopyAtom<CopyTraits<CopyL12L0B, CopyL12L0BTraitDefault>>{}, dstL0B, srcL1, coord);
 
     EXPECT_EQ(l0aDst[0], 0);
     EXPECT_EQ(l0bDst[0], 0);
