@@ -1,22 +1,5 @@
 # Build:
-#   docker buildx build --network host -t ascendc:ubuntu24.04 .
-#
-# Run (standalone, without devcontainer):
-#   docker run -it --runtime=runc --privileged \
-#     --net=host --pid=host --ipc=host \
-#     --cap-add=SYS_PTRACE \
-#     -e ASCEND_VISIBLE_DEVICES=all \
-#     --device=/dev/davinci_manager \
-#     --device=/dev/devmm_svm \
-#     --device=/dev/hisi_hdc \
-#     -v /usr/local/Ascend/driver:/usr/local/Ascend/driver:ro \
-#     -v /usr/local/Ascend/add-ons:/usr/local/Ascend/add-ons:ro \
-#     -v /usr/local/dcmi:/usr/local/dcmi:ro \
-#     -v /usr/local/bin/npu-smi:/usr/local/bin/npu-smi:ro \
-#     -v /etc/ascend_install.info:/etc/ascend_install.info:ro \
-#     -v /var/log/npu:/var/log/npu \
-#     -v /usr/slog:/usr/slog \
-#     ascendc:ubuntu24.04
+#   docker buildx build --network host -t ascendc:ubuntu24.04 .devcontainer/
 #
 # Mirror sources (override with --build-arg):
 #   APT_MIRROR:   mirrors.huaweicloud.com (default) | mirrors.tuna.tsinghua.edu.cn | mirrors.ustc.edu.cn
@@ -139,6 +122,10 @@ echo "██╔══██║╚════██║██║     ██╔═
 echo "██║  ██║███████║╚██████╗███████╗██║ ╚████║██████╔╝╚██████╗"\n\
 echo "╚═╝  ╚═╝╚══════╝ ╚═════╝╚══════╝╚═╝  ╚═══╝╚═════╝  ╚═════╝"\n\
 echo "\\033[0m"\n' >> /root/.zshrc
+
+# Ascend driver environment
+RUN printf '\n[ -f /usr/local/Ascend/driver/bin/setenv.bash ] && source /usr/local/Ascend/driver/bin/setenv.bash\n' \
+    >> /root/.zshrc
 
 RUN rm -rf /tmp/*
 
