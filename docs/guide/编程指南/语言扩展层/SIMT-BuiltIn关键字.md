@@ -181,7 +181,7 @@
 <p id="p15651952584"><a name="p15651952584"></a><a name="p15651952584"></a></p>
 <p id="p1956519517584"><a name="p1956519517584"></a><a name="p1956519517584"></a></p>
 </td>
-<td class="cellrowborder" valign="top" width="28.51%"><p id="p185244442322"><a name="p185244442322"></a><a name="p185244442322"></a>uint8</p>
+<td class="cellrowborder" valign="top" width="28.51%"><p id="p185244442322"><a name="p185244442322"></a><a name="p185244442322"></a>uint8_t</p>
 </td>
 <td class="cellrowborder" valign="top" width="25.4%"><p id="p11524164410326"><a name="p11524164410326"></a><a name="p11524164410326"></a>unsigned char</p>
 </td>
@@ -190,7 +190,7 @@
 <td class="cellrowborder" valign="top" width="26.369999999999997%"><p id="p116931358105018"><a name="p116931358105018"></a><a name="p116931358105018"></a>[0, 255]</p>
 </td>
 </tr>
-<tr id="row9524104414329"><td class="cellrowborder" valign="top"><p id="p55245445324"><a name="p55245445324"></a><a name="p55245445324"></a>int8</p>
+<tr id="row9524104414329"><td class="cellrowborder" valign="top"><p id="p55245445324"><a name="p55245445324"></a><a name="p55245445324"></a>int8_t</p>
 </td>
 <td class="cellrowborder" valign="top"><p id="p175249445326"><a name="p175249445326"></a><a name="p175249445326"></a>signed char</p>
 </td>
@@ -199,7 +199,7 @@
 <td class="cellrowborder" valign="top"><p id="p869335805010"><a name="p869335805010"></a><a name="p869335805010"></a>[-128, 127]</p>
 </td>
 </tr>
-<tr id="row13524124415322"><td class="cellrowborder" valign="top"><p id="p652444413320"><a name="p652444413320"></a><a name="p652444413320"></a>uint16</p>
+<tr id="row13524124415322"><td class="cellrowborder" valign="top"><p id="p652444413320"><a name="p652444413320"></a><a name="p652444413320"></a>uint16_t</p>
 </td>
 <td class="cellrowborder" valign="top"><p id="p1952420443327"><a name="p1952420443327"></a><a name="p1952420443327"></a>unsigned short</p>
 </td>
@@ -208,7 +208,7 @@
 <td class="cellrowborder" valign="top"><p id="p18693115812504"><a name="p18693115812504"></a><a name="p18693115812504"></a>[0, 65535]</p>
 </td>
 </tr>
-<tr id="row205248445323"><td class="cellrowborder" valign="top"><p id="p1252474415325"><a name="p1252474415325"></a><a name="p1252474415325"></a>int16</p>
+<tr id="row205248445323"><td class="cellrowborder" valign="top"><p id="p1252474415325"><a name="p1252474415325"></a><a name="p1252474415325"></a>int16_t</p>
 </td>
 <td class="cellrowborder" valign="top"><p id="p652414445323"><a name="p652414445323"></a><a name="p652414445323"></a>signed short</p>
 </td>
@@ -217,7 +217,7 @@
 <td class="cellrowborder" valign="top"><p id="p9693458175016"><a name="p9693458175016"></a><a name="p9693458175016"></a>[-32768, 32767]</p>
 </td>
 </tr>
-<tr id="row1252464413322"><td class="cellrowborder" valign="top"><p id="p11524134417324"><a name="p11524134417324"></a><a name="p11524134417324"></a>uint32</p>
+<tr id="row1252464413322"><td class="cellrowborder" valign="top"><p id="p11524134417324"><a name="p11524134417324"></a><a name="p11524134417324"></a>uint32_t</p>
 </td>
 <td class="cellrowborder" valign="top"><p id="p15524114453219"><a name="p15524114453219"></a><a name="p15524114453219"></a>unsigned int</p>
 </td>
@@ -226,7 +226,7 @@
 <td class="cellrowborder" valign="top"><p id="p1469311586502"><a name="p1469311586502"></a><a name="p1469311586502"></a>[0, 4294967295]</p>
 </td>
 </tr>
-<tr id="row15524244123211"><td class="cellrowborder" valign="top"><p id="p19524244153211"><a name="p19524244153211"></a><a name="p19524244153211"></a>int32</p>
+<tr id="row15524244123211"><td class="cellrowborder" valign="top"><p id="p19524244153211"><a name="p19524244153211"></a><a name="p19524244153211"></a>int32_t</p>
 </td>
 <td class="cellrowborder" valign="top"><p id="p2052414446324"><a name="p2052414446324"></a><a name="p2052414446324"></a>signed int</p>
 </td>
@@ -235,7 +235,7 @@
 <td class="cellrowborder" valign="top"><p id="p469325845018"><a name="p469325845018"></a><a name="p469325845018"></a>[-2147483648, 2147483647]</p>
 </td>
 </tr>
-<tr id="row35241144113212"><td class="cellrowborder" valign="top"><p id="p145241244153216"><a name="p145241244153216"></a><a name="p145241244153216"></a>uint64</p>
+<tr id="row35241144113212"><td class="cellrowborder" valign="top"><p id="p145241244153216"><a name="p145241244153216"></a><a name="p145241244153216"></a>uint64_t</p>
 </td>
 <td class="cellrowborder" valign="top"><p id="p752418446324"><a name="p752418446324"></a><a name="p752418446324"></a>unsigned long</p>
 </td>
@@ -244,7 +244,7 @@
 <td class="cellrowborder" valign="top"><p id="p1968436163610"><a name="p1968436163610"></a><a name="p1968436163610"></a>[0,18446744073709551615]</p>
 </td>
 </tr>
-<tr id="row552424418327"><td class="cellrowborder" valign="top"><p id="p4524174418327"><a name="p4524174418327"></a><a name="p4524174418327"></a>int64</p>
+<tr id="row552424418327"><td class="cellrowborder" valign="top"><p id="p4524174418327"><a name="p4524174418327"></a><a name="p4524174418327"></a>int64_t</p>
 </td>
 <td class="cellrowborder" valign="top"><p id="p5524134420322"><a name="p5524134420322"></a><a name="p5524134420322"></a>signed long</p>
 </td>
@@ -255,7 +255,7 @@
 </tr>
 <tr id="row12524194413212"><td class="cellrowborder" rowspan="6" valign="top" width="7.5200000000000005%"><p id="p451813217594"><a name="p451813217594"></a><a name="p451813217594"></a>浮点型</p>
 </td>
-<td class="cellrowborder" valign="top" width="28.51%"><p id="p1652414420324"><a name="p1652414420324"></a><a name="p1652414420324"></a>float8_e4m3</p>
+<td class="cellrowborder" valign="top" width="28.51%"><p id="p1652414420324"><a name="p1652414420324"></a><a name="p1652414420324"></a>float8_e4m3_t</p>
 </td>
 <td class="cellrowborder" valign="top" width="25.4%"><p id="p15524194412324"><a name="p15524194412324"></a><a name="p15524194412324"></a>符号位宽1，指数位宽4，尾数位宽3</p>
 </td>
@@ -264,7 +264,7 @@
 <td class="cellrowborder" valign="top" width="26.369999999999997%"><p id="p1969311582506"><a name="p1969311582506"></a><a name="p1969311582506"></a>[2<sup id="sup134721452234"><a name="sup134721452234"></a><a name="sup134721452234"></a>6</sup> - 2<sup id="sup947215518239"><a name="sup947215518239"></a><a name="sup947215518239"></a>9</sup>, 2<sup id="sup34721351236"><a name="sup34721351236"></a><a name="sup34721351236"></a>9</sup> - 2<sup id="sup1347285142319"><a name="sup1347285142319"></a><a name="sup1347285142319"></a>6</sup>]</p>
 </td>
 </tr>
-<tr id="row9524144163216"><td class="cellrowborder" valign="top"><p id="p135241844113216"><a name="p135241844113216"></a><a name="p135241844113216"></a>float8_e5m2</p>
+<tr id="row9524144163216"><td class="cellrowborder" valign="top"><p id="p135241844113216"><a name="p135241844113216"></a><a name="p135241844113216"></a>float8_e5m2_t</p>
 </td>
 <td class="cellrowborder" valign="top"><p id="p85241344173217"><a name="p85241344173217"></a><a name="p85241344173217"></a>符号位宽1，指数位宽5，尾数位宽2</p>
 </td>
@@ -273,7 +273,7 @@
 <td class="cellrowborder" valign="top"><p id="p469310585508"><a name="p469310585508"></a><a name="p469310585508"></a>[2<sup id="sup647115572316"><a name="sup647115572316"></a><a name="sup647115572316"></a>13</sup> - 2<sup id="sup04713516232"><a name="sup04713516232"></a><a name="sup04713516232"></a>16</sup>, 2<sup id="sup124711755231"><a name="sup124711755231"></a><a name="sup124711755231"></a>16</sup> - 2<sup id="sup1547111522311"><a name="sup1547111522311"></a><a name="sup1547111522311"></a>13</sup>]</p>
 </td>
 </tr>
-<tr id="row9524644153216"><td class="cellrowborder" valign="top"><p id="p552454412325"><a name="p552454412325"></a><a name="p552454412325"></a>hifloat8</p>
+<tr id="row9524644153216"><td class="cellrowborder" valign="top"><p id="p552454412325"><a name="p552454412325"></a><a name="p552454412325"></a>hifloat8_t</p>
 </td>
 <td class="cellrowborder" valign="top"><p id="p6959161523517"><a name="p6959161523517"></a><a name="p6959161523517"></a>符号位宽1，点域位宽2，指数与尾数位宽由点域编码决定</p>
 </td>
@@ -291,7 +291,7 @@
 <td class="cellrowborder" valign="top"><p id="p7693105855012"><a name="p7693105855012"></a><a name="p7693105855012"></a>[2<sup id="sup1347211532312"><a name="sup1347211532312"></a><a name="sup1347211532312"></a>5</sup> - 2<sup id="sup147210517238"><a name="sup147210517238"></a><a name="sup147210517238"></a>16</sup>, 2<sup id="sup1147235192313"><a name="sup1147235192313"></a><a name="sup1147235192313"></a>16</sup> - 2<sup id="sup147214582314"><a name="sup147214582314"></a><a name="sup147214582314"></a>5</sup>]</p>
 </td>
 </tr>
-<tr id="row5525154443219"><td class="cellrowborder" valign="top"><p id="p13525164463215"><a name="p13525164463215"></a><a name="p13525164463215"></a>bfloat16</p>
+<tr id="row5525154443219"><td class="cellrowborder" valign="top"><p id="p13525164463215"><a name="p13525164463215"></a><a name="p13525164463215"></a>bfloat16_t</p>
 </td>
 <td class="cellrowborder" valign="top"><p id="p45253449322"><a name="p45253449322"></a><a name="p45253449322"></a>符号位宽1，指数位宽8，尾数位宽7</p>
 </td>
@@ -326,97 +326,97 @@
 </tr>
 <tr id="row179955509177"><td class="cellrowborder" valign="top" width="41.005899410059%"><p id="p138795466233"><a name="p138795466233"></a><a name="p138795466233"></a><span>unsigned char</span></p>
 </td>
-<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p19951050111714"><a name="p19951050111714"></a><a name="p19951050111714"></a>ucharx2</p>
+<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p19951050111714"><a name="p19951050111714"></a><a name="p19951050111714"></a>uchar2</p>
 </td>
-<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p79951450161718"><a name="p79951450161718"></a><a name="p79951450161718"></a>ucharx3</p>
+<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p79951450161718"><a name="p79951450161718"></a><a name="p79951450161718"></a>uchar3</p>
 </td>
-<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p1599515506173"><a name="p1599515506173"></a><a name="p1599515506173"></a>ucharx4</p>
+<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p1599515506173"><a name="p1599515506173"></a><a name="p1599515506173"></a>uchar4</p>
 </td>
 </tr>
 <tr id="row6995150121717"><td class="cellrowborder" valign="top" width="41.005899410059%"><p id="p520813615266"><a name="p520813615266"></a><a name="p520813615266"></a><span>signed char</span></p>
 </td>
-<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p1399595019178"><a name="p1399595019178"></a><a name="p1399595019178"></a>charx2</p>
+<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p1399595019178"><a name="p1399595019178"></a><a name="p1399595019178"></a>char2</p>
 </td>
-<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p10995175031711"><a name="p10995175031711"></a><a name="p10995175031711"></a>charx3</p>
+<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p10995175031711"><a name="p10995175031711"></a><a name="p10995175031711"></a>char3</p>
 </td>
-<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p129951450181712"><a name="p129951450181712"></a><a name="p129951450181712"></a>charx4</p>
+<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p129951450181712"><a name="p129951450181712"></a><a name="p129951450181712"></a>char4</p>
 </td>
 </tr>
 <tr id="row6996105019176"><td class="cellrowborder" valign="top" width="41.005899410059%"><p id="p138791246152313"><a name="p138791246152313"></a><a name="p138791246152313"></a>unsigned short (16bit)</p>
 </td>
-<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p17995650141719"><a name="p17995650141719"></a><a name="p17995650141719"></a>ushortx2</p>
+<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p17995650141719"><a name="p17995650141719"></a><a name="p17995650141719"></a>ushort2</p>
 </td>
-<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p2099585051712"><a name="p2099585051712"></a><a name="p2099585051712"></a>ushortx3</p>
+<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p2099585051712"><a name="p2099585051712"></a><a name="p2099585051712"></a>ushort3</p>
 </td>
-<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p99965500173"><a name="p99965500173"></a><a name="p99965500173"></a>ushortx4</p>
+<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p99965500173"><a name="p99965500173"></a><a name="p99965500173"></a>ushort4</p>
 </td>
 </tr>
 <tr id="row8996185012174"><td class="cellrowborder" valign="top" width="41.005899410059%"><p id="p187913467238"><a name="p187913467238"></a><a name="p187913467238"></a><span>signed short (16bit)</span></p>
 </td>
-<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p209968502179"><a name="p209968502179"></a><a name="p209968502179"></a>shortx2</p>
+<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p209968502179"><a name="p209968502179"></a><a name="p209968502179"></a>short2</p>
 </td>
-<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p79962050161711"><a name="p79962050161711"></a><a name="p79962050161711"></a>shortx3</p>
+<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p79962050161711"><a name="p79962050161711"></a><a name="p79962050161711"></a>short3</p>
 </td>
-<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p399611500176"><a name="p399611500176"></a><a name="p399611500176"></a>shortx4</p>
+<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p399611500176"><a name="p399611500176"></a><a name="p399611500176"></a>short4</p>
 </td>
 </tr>
 <tr id="row0996250181714"><td class="cellrowborder" valign="top" width="41.005899410059%"><p id="p1387914611236"><a name="p1387914611236"></a><a name="p1387914611236"></a><span>unsigned int</span></p>
 </td>
-<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p1899655081717"><a name="p1899655081717"></a><a name="p1899655081717"></a>uintx2</p>
+<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p1899655081717"><a name="p1899655081717"></a><a name="p1899655081717"></a>uint2</p>
 </td>
-<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p89968504179"><a name="p89968504179"></a><a name="p89968504179"></a>uintx3</p>
+<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p89968504179"><a name="p89968504179"></a><a name="p89968504179"></a>uint3</p>
 </td>
-<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p19996105017176"><a name="p19996105017176"></a><a name="p19996105017176"></a>uintx4</p>
+<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p19996105017176"><a name="p19996105017176"></a><a name="p19996105017176"></a>uint4</p>
 </td>
 </tr>
 <tr id="row189961750201712"><td class="cellrowborder" valign="top" width="41.005899410059%"><p id="p18879184616231"><a name="p18879184616231"></a><a name="p18879184616231"></a><span>signed int</span></p>
 </td>
-<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p799613501179"><a name="p799613501179"></a><a name="p799613501179"></a>intx2</p>
+<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p799613501179"><a name="p799613501179"></a><a name="p799613501179"></a>int2</p>
 </td>
-<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p1699665012173"><a name="p1699665012173"></a><a name="p1699665012173"></a>intx3</p>
+<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p1699665012173"><a name="p1699665012173"></a><a name="p1699665012173"></a>int3</p>
 </td>
-<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p109961750131712"><a name="p109961750131712"></a><a name="p109961750131712"></a>intx4</p>
+<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p109961750131712"><a name="p109961750131712"></a><a name="p109961750131712"></a>int4</p>
 </td>
 </tr>
 <tr id="row10996850111715"><td class="cellrowborder" valign="top" width="41.005899410059%"><p id="p4879124614237"><a name="p4879124614237"></a><a name="p4879124614237"></a>无符号的长整型 (64bit)</p>
 </td>
-<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p13996115016176"><a name="p13996115016176"></a><a name="p13996115016176"></a>ulonglongx2</p>
+<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p13996115016176"><a name="p13996115016176"></a><a name="p13996115016176"></a>ulonglong2</p>
 </td>
-<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p1099611503174"><a name="p1099611503174"></a><a name="p1099611503174"></a>ulonglongx3</p>
+<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p1099611503174"><a name="p1099611503174"></a><a name="p1099611503174"></a>ulonglong3</p>
 </td>
-<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p179961450121719"><a name="p179961450121719"></a><a name="p179961450121719"></a>ulonglongx4</p>
+<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p179961450121719"><a name="p179961450121719"></a><a name="p179961450121719"></a>ulonglong4</p>
 </td>
 </tr>
 <tr id="row399685017170"><td class="cellrowborder" valign="top" width="41.005899410059%"><p id="p4879164612319"><a name="p4879164612319"></a><a name="p4879164612319"></a>有符号的长整型 (64bit)</p>
 </td>
-<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p499645021715"><a name="p499645021715"></a><a name="p499645021715"></a>longlongx2</p>
+<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p499645021715"><a name="p499645021715"></a><a name="p499645021715"></a>longlong2</p>
 </td>
-<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p189969503173"><a name="p189969503173"></a><a name="p189969503173"></a>longlongx3</p>
+<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p189969503173"><a name="p189969503173"></a><a name="p189969503173"></a>longlong3</p>
 </td>
-<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p1996165041719"><a name="p1996165041719"></a><a name="p1996165041719"></a>longlongx4</p>
+<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p1996165041719"><a name="p1996165041719"></a><a name="p1996165041719"></a>longlong4</p>
 </td>
 </tr>
 <tr id="row10996750131719"><td class="cellrowborder" valign="top" width="41.005899410059%"><p id="p1387994611236"><a name="p1387994611236"></a><a name="p1387994611236"></a>无符号的长整型 (32bit)</p>
 </td>
-<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p799675061716"><a name="p799675061716"></a><a name="p799675061716"></a>ulongx2</p>
+<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p799675061716"><a name="p799675061716"></a><a name="p799675061716"></a>ulong2</p>
 </td>
-<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p1599695041716"><a name="p1599695041716"></a><a name="p1599695041716"></a>ulongx3</p>
+<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p1599695041716"><a name="p1599695041716"></a><a name="p1599695041716"></a>ulong3</p>
 </td>
-<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p159961350201718"><a name="p159961350201718"></a><a name="p159961350201718"></a>ulongx4</p>
+<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p159961350201718"><a name="p159961350201718"></a><a name="p159961350201718"></a>ulong4</p>
 </td>
 </tr>
 <tr id="row179961650101720"><td class="cellrowborder" valign="top" width="41.005899410059%"><p id="p18879946162314"><a name="p18879946162314"></a><a name="p18879946162314"></a>有符号的长整型 (32bit)</p>
 </td>
-<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p11996145013170"><a name="p11996145013170"></a><a name="p11996145013170"></a>longx2</p>
+<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p11996145013170"><a name="p11996145013170"></a><a name="p11996145013170"></a>long2</p>
 </td>
-<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p599619508171"><a name="p599619508171"></a><a name="p599619508171"></a>longx3</p>
+<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p599619508171"><a name="p599619508171"></a><a name="p599619508171"></a>long3</p>
 </td>
-<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p2996125016171"><a name="p2996125016171"></a><a name="p2996125016171"></a>longx4</p>
+<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p2996125016171"><a name="p2996125016171"></a><a name="p2996125016171"></a>long4</p>
 </td>
 </tr>
 <tr id="row189971750141710"><td class="cellrowborder" valign="top" width="41.005899410059%"><p id="p4879124615236"><a name="p4879124615236"></a><a name="p4879124615236"></a>浮点型，1符号位，2指数位，1尾数位</p>
 </td>
-<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p1899619506175"><a name="p1899619506175"></a><a name="p1899619506175"></a>float4_e2m1x2</p>
+<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p1899619506175"><a name="p1899619506175"></a><a name="p1899619506175"></a>float4_e2m1x2_t</p>
 </td>
 <td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p13997165017174"><a name="p13997165017174"></a><a name="p13997165017174"></a>-</p>
 </td>
@@ -425,7 +425,7 @@
 </tr>
 <tr id="row4997135021712"><td class="cellrowborder" valign="top" width="41.005899410059%"><p id="p8879446142315"><a name="p8879446142315"></a><a name="p8879446142315"></a>浮点型，1符号位，1指数位，2尾数位</p>
 </td>
-<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p1499795013177"><a name="p1499795013177"></a><a name="p1499795013177"></a>float4_e1m2x2</p>
+<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p1499795013177"><a name="p1499795013177"></a><a name="p1499795013177"></a>float4_e1m2x2_t</p>
 </td>
 <td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p10997105017177"><a name="p10997105017177"></a><a name="p10997105017177"></a>-</p>
 </td>
@@ -434,7 +434,7 @@
 </tr>
 <tr id="row12997115001717"><td class="cellrowborder" valign="top" width="41.005899410059%"><p id="p9879194642317"><a name="p9879194642317"></a><a name="p9879194642317"></a>浮点型，1符号位，4指数位，3尾数位</p>
 </td>
-<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p19997185071717"><a name="p19997185071717"></a><a name="p19997185071717"></a>float8_e4m3x2</p>
+<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p19997185071717"><a name="p19997185071717"></a><a name="p19997185071717"></a>float8_e4m3x2_t</p>
 </td>
 <td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p399795001718"><a name="p399795001718"></a><a name="p399795001718"></a>-</p>
 </td>
@@ -443,7 +443,7 @@
 </tr>
 <tr id="row1899710509175"><td class="cellrowborder" valign="top" width="41.005899410059%"><p id="p1087914618237"><a name="p1087914618237"></a><a name="p1087914618237"></a>浮点型，1符号位，5指数位，2尾数位</p>
 </td>
-<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p199710500179"><a name="p199710500179"></a><a name="p199710500179"></a>float8_e5m2x2</p>
+<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p199710500179"><a name="p199710500179"></a><a name="p199710500179"></a>float8_e5m2x2_t</p>
 </td>
 <td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p149976503172"><a name="p149976503172"></a><a name="p149976503172"></a>-</p>
 </td>
@@ -452,7 +452,7 @@
 </tr>
 <tr id="row18997650181714"><td class="cellrowborder" valign="top" width="41.005899410059%"><p id="p1787974652320"><a name="p1787974652320"></a><a name="p1787974652320"></a>浮点型 hif8</p>
 </td>
-<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p599755041713"><a name="p599755041713"></a><a name="p599755041713"></a>hifloat8x2</p>
+<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p599755041713"><a name="p599755041713"></a><a name="p599755041713"></a>hifloat8x2_t</p>
 </td>
 <td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p12997135017175"><a name="p12997135017175"></a><a name="p12997135017175"></a>-</p>
 </td>
@@ -461,7 +461,7 @@
 </tr>
 <tr id="row99975505178"><td class="cellrowborder" valign="top" width="41.005899410059%"><p id="p1187994610232"><a name="p1187994610232"></a><a name="p1187994610232"></a>浮点型，1符号位，5指数位，10尾数位</p>
 </td>
-<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p2997115021715"><a name="p2997115021715"></a><a name="p2997115021715"></a>halfx2</p>
+<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p2997115021715"><a name="p2997115021715"></a><a name="p2997115021715"></a>half2</p>
 </td>
 <td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p3997165010177"><a name="p3997165010177"></a><a name="p3997165010177"></a>-</p>
 </td>
@@ -470,7 +470,7 @@
 </tr>
 <tr id="row699865011170"><td class="cellrowborder" valign="top" width="41.005899410059%"><p id="p1687944642312"><a name="p1687944642312"></a><a name="p1687944642312"></a>浮点型，1符号位，8指数位，7尾数位</p>
 </td>
-<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p179971350151716"><a name="p179971350151716"></a><a name="p179971350151716"></a>bfloat16x2</p>
+<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p179971350151716"><a name="p179971350151716"></a><a name="p179971350151716"></a>bfloat16x2_t</p>
 </td>
 <td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p199971150151719"><a name="p199971150151719"></a><a name="p199971150151719"></a>-</p>
 </td>
@@ -479,11 +479,11 @@
 </tr>
 <tr id="row999818508170"><td class="cellrowborder" valign="top" width="41.005899410059%"><p id="p128791246192315"><a name="p128791246192315"></a><a name="p128791246192315"></a>浮点型，1符号位，8指数位，23尾数位</p>
 </td>
-<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p1499815509170"><a name="p1499815509170"></a><a name="p1499815509170"></a>floatx2</p>
+<td class="cellrowborder" valign="top" width="21.11788821117888%"><p id="p1499815509170"><a name="p1499815509170"></a><a name="p1499815509170"></a>float2</p>
 </td>
-<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p6998650191715"><a name="p6998650191715"></a><a name="p6998650191715"></a>floatx3</p>
+<td class="cellrowborder" valign="top" width="18.838116188381164%"><p id="p6998650191715"><a name="p6998650191715"></a><a name="p6998650191715"></a>float3</p>
 </td>
-<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p69984505172"><a name="p69984505172"></a><a name="p69984505172"></a>floatx4</p>
+<td class="cellrowborder" valign="top" width="19.038096190380962%"><p id="p69984505172"><a name="p69984505172"></a><a name="p69984505172"></a>float4</p>
 </td>
 </tr>
 </tbody>
@@ -499,106 +499,105 @@
 <td class="cellrowborder" valign="top" width="19.66%"><p id="p1085201418248"><a name="p1085201418248"></a><a name="p1085201418248"></a>地址对齐（字节）</p>
 </td>
 </tr>
-<tr id="row1285161422412"><td class="cellrowborder" valign="top" width="60.39%"><p id="p198651472418"><a name="p198651472418"></a><a name="p198651472418"></a>charx2, ucharx2</p>
+<tr id="row1285161422412"><td class="cellrowborder" valign="top" width="60.39%"><p id="p198651472418"><a name="p198651472418"></a><a name="p198651472418"></a>char2, uchar2</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.950000000000003%"><p id="p178641420249"><a name="p178641420249"></a><a name="p178641420249"></a>2</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.66%"><p id="p11861714172410"><a name="p11861714172410"></a><a name="p11861714172410"></a>2</p>
 </td>
 </tr>
-<tr id="row486414142412"><td class="cellrowborder" valign="top" width="60.39%"><p id="p1861214172413"><a name="p1861214172413"></a><a name="p1861214172413"></a>charx3, ucharx3， charx4, ucharx4</p>
+<tr id="row486414142412"><td class="cellrowborder" valign="top" width="60.39%"><p id="p1861214172413"><a name="p1861214172413"></a><a name="p1861214172413"></a>char3, uchar3， char4, uchar4</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.950000000000003%"><p id="p186141413240"><a name="p186141413240"></a><a name="p186141413240"></a>4</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.66%"><p id="p886914182410"><a name="p886914182410"></a><a name="p886914182410"></a>4</p>
 </td>
 </tr>
-<tr id="row586171442413"><td class="cellrowborder" valign="top" width="60.39%"><p id="p208612148244"><a name="p208612148244"></a><a name="p208612148244"></a>shortx2, ushortx2</p>
+<tr id="row586171442413"><td class="cellrowborder" valign="top" width="60.39%"><p id="p208612148244"><a name="p208612148244"></a><a name="p208612148244"></a>short2, ushort2</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.950000000000003%"><p id="p586161416241"><a name="p586161416241"></a><a name="p586161416241"></a>4</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.66%"><p id="p486131492417"><a name="p486131492417"></a><a name="p486131492417"></a>4</p>
 </td>
 </tr>
-<tr id="row1486314192410"><td class="cellrowborder" valign="top" width="60.39%"><p id="p2861914152411"><a name="p2861914152411"></a><a name="p2861914152411"></a>shortx3, ushortx3，shortx4, ushortx4</p>
+<tr id="row1486314192410"><td class="cellrowborder" valign="top" width="60.39%"><p id="p2861914152411"><a name="p2861914152411"></a><a name="p2861914152411"></a>short3, ushort3，short4, ushort4</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.950000000000003%"><p id="p208681472412"><a name="p208681472412"></a><a name="p208681472412"></a>8</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.66%"><p id="p16861514172417"><a name="p16861514172417"></a><a name="p16861514172417"></a>8</p>
 </td>
 </tr>
-<tr id="row1086114182419"><td class="cellrowborder" valign="top" width="60.39%"><p id="p148671419247"><a name="p148671419247"></a><a name="p148671419247"></a>intx2, uintx2</p>
+<tr id="row1086114182419"><td class="cellrowborder" valign="top" width="60.39%"><p id="p148671419247"><a name="p148671419247"></a><a name="p148671419247"></a>int2, uint2</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.950000000000003%"><p id="p27064244135"><a name="p27064244135"></a><a name="p27064244135"></a>8</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.66%"><p id="p686171402415"><a name="p686171402415"></a><a name="p686171402415"></a>8</p>
 </td>
 </tr>
-<tr id="row68613143247"><td class="cellrowborder" valign="top" width="60.39%"><p id="p88719147244"><a name="p88719147244"></a><a name="p88719147244"></a>intx3, uintx3， intx4, uintx4</p>
+<tr id="row68613143247"><td class="cellrowborder" valign="top" width="60.39%"><p id="p88719147244"><a name="p88719147244"></a><a name="p88719147244"></a>int3, uint3， int4, uint4</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.950000000000003%"><p id="p148714143245"><a name="p148714143245"></a><a name="p148714143245"></a>16</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.66%"><p id="p08712148242"><a name="p08712148242"></a><a name="p08712148242"></a>16</p>
 </td>
 </tr>
-<tr id="row58781462412"><td class="cellrowborder" valign="top" width="60.39%"><p id="p108718147247"><a name="p108718147247"></a><a name="p108718147247"></a>longx2，ulongx2</p>
+<tr id="row58781462412"><td class="cellrowborder" valign="top" width="60.39%"><p id="p108718147247"><a name="p108718147247"></a><a name="p108718147247"></a>long2，ulong2</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.950000000000003%"><p id="p98714144244"><a name="p98714144244"></a><a name="p98714144244"></a>8</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.66%"><p id="p1987151482412"><a name="p1987151482412"></a><a name="p1987151482412"></a>8</p>
 </td>
 </tr>
-<tr id="row205761327101413"><td class="cellrowborder" valign="top" width="60.39%"><p id="p16576627191411"><a name="p16576627191411"></a><a name="p16576627191411"></a>longx3，ulongx3，longx4，ulongx4</p>
+<tr id="row205761327101413"><td class="cellrowborder" valign="top" width="60.39%"><p id="p16576627191411"><a name="p16576627191411"></a><a name="p16576627191411"></a>long3，ulong3，long4，ulong4</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.950000000000003%"><p id="p65761527131413"><a name="p65761527131413"></a><a name="p65761527131413"></a>16</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.66%"><p id="p115762275146"><a name="p115762275146"></a><a name="p115762275146"></a>16</p>
 </td>
 </tr>
-<tr id="row310145571416"><td class="cellrowborder" valign="top" width="60.39%"><p id="p41075571416"><a name="p41075571416"></a><a name="p41075571416"></a>longlongx2，ulonglongx2</p>
+<tr id="row310145571416"><td class="cellrowborder" valign="top" width="60.39%"><p id="p41075571416"><a name="p41075571416"></a><a name="p41075571416"></a>longlong2，ulonglong2</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.950000000000003%"><p id="p1410455181416"><a name="p1410455181416"></a><a name="p1410455181416"></a>16</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.66%"><p id="p310125591414"><a name="p310125591414"></a><a name="p310125591414"></a>16</p>
 </td>
 </tr>
-<tr id="row161011553147"><td class="cellrowborder" valign="top" width="60.39%"><p id="p98731422420"><a name="p98731422420"></a><a name="p98731422420"></a>longlongx3，ulonglongx3，longlongx4，ulonglongx4</p>
+<tr id="row161011553147"><td class="cellrowborder" valign="top" width="60.39%"><p id="p98731422420"><a name="p98731422420"></a><a name="p98731422420"></a>longlong3，ulonglong3，longlong4，ulonglong4</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.950000000000003%"><p id="p410105581413"><a name="p410105581413"></a><a name="p410105581413"></a>32</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.66%"><p id="p0101255191412"><a name="p0101255191412"></a><a name="p0101255191412"></a>32</p>
 </td>
 </tr>
-<tr id="row787191412417"><td class="cellrowborder" valign="top" width="60.39%"><p id="p489914122418"><a name="p489914122418"></a><a name="p489914122418"></a>floatx2</p>
+<tr id="row787191412417"><td class="cellrowborder" valign="top" width="60.39%"><p id="p489914122418"><a name="p489914122418"></a><a name="p489914122418"></a>float2</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.950000000000003%"><p id="p146121260161"><a name="p146121260161"></a><a name="p146121260161"></a>8</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.66%"><p id="p787714102416"><a name="p787714102416"></a><a name="p787714102416"></a>8</p>
 </td>
 </tr>
-<tr id="row138710146247"><td class="cellrowborder" valign="top" width="60.39%"><p id="p1687714172410"><a name="p1687714172410"></a><a name="p1687714172410"></a>floatx3，floatx4</p>
+<tr id="row138710146247"><td class="cellrowborder" valign="top" width="60.39%"><p id="p1687714172410"><a name="p1687714172410"></a><a name="p1687714172410"></a>float3，float4</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.950000000000003%"><p id="p5879143243"><a name="p5879143243"></a><a name="p5879143243"></a>16</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.66%"><p id="p1887141442410"><a name="p1887141442410"></a><a name="p1887141442410"></a>16</p>
 </td>
 </tr>
-<tr id="row148761462413"><td class="cellrowborder" valign="top" width="60.39%"><p id="p118713146248"><a name="p118713146248"></a><a name="p118713146248"></a>float4_e2m1x2， float4_e1m2x2</p>
+<tr id="row148761462413"><td class="cellrowborder" valign="top" width="60.39%"><p id="p118713146248"><a name="p118713146248"></a><a name="p118713146248"></a>float4_e2m1x2_t， float4_e1m2x2_t</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.950000000000003%"><p id="p208715145248"><a name="p208715145248"></a><a name="p208715145248"></a>1</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.66%"><p id="p108711142246"><a name="p108711142246"></a><a name="p108711142246"></a>1</p>
 </td>
 </tr>
-<tr id="row488141452411"><td class="cellrowborder" valign="top" width="60.39%"><p id="p15882142245"><a name="p15882142245"></a><a name="p15882142245"></a>float8_e4m3x2，float8_e5m2x2、</p>
-<p id="p288101422414"><a name="p288101422414"></a><a name="p288101422414"></a>hifloat8x2</p>
+<tr id="row488141452411"><td class="cellrowborder" valign="top" width="60.39%"><p id="p15882142245"><a name="p15882142245"></a><a name="p15882142245"></a>float8_e4m3x2_t，float8_e5m2x2_t，hifloat8x2_t</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.950000000000003%"><p id="p19881214142414"><a name="p19881214142414"></a><a name="p19881214142414"></a>2</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.66%"><p id="p888514142418"><a name="p888514142418"></a><a name="p888514142418"></a>2</p>
 </td>
 </tr>
-<tr id="row288314162415"><td class="cellrowborder" valign="top" width="60.39%"><p id="p58801442416"><a name="p58801442416"></a><a name="p58801442416"></a>halfx2，bfloat16x2</p>
+<tr id="row288314162415"><td class="cellrowborder" valign="top" width="60.39%"><p id="p58801442416"><a name="p58801442416"></a><a name="p58801442416"></a>half2，bfloat16x2_t</p>
 </td>
 <td class="cellrowborder" valign="top" width="19.950000000000003%"><p id="p78851482412"><a name="p78851482412"></a><a name="p78851482412"></a>4</p>
 </td>

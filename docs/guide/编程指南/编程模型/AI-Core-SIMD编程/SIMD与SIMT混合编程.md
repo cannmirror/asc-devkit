@@ -2,7 +2,7 @@
 
 ## 抽象硬件架构<a name="section3163536195018"></a>
 
-AI Core上SIMD（Single Instruction Multiple Data，单指令多数据）与SIMT（Single Instruction Multiple Thread，单指令多线程）混合编程当前仅支持Ascend 950PR/Ascend 950DT。该架构通过统一的计算资源和内存层级，实现向量级并行与线程级并行的高效协同。
+AI Core上SIMD（Single Instruction Multiple Data，单指令多数据）与SIMT（Single Instruction Multiple Thread，单指令多线程）混合编程，结合了SIMD多数据并行计算能力与SIMT离散访存的优势，实现向量级并行与线程级并行的高效协同。当前仅支持Ascend 950PR/Ascend 950DT。
 
 整个执行过程以Vector Function（VF）为基本调度单位，VF为一个基本函数块。SIMD与SIMT混合编程支持在同一算子中灵活切换SIMD与SIMT执行方式，两种不同类型的VF可以快速切换，每个VF代表一个独立的计算任务片段，通常对应算子中的一段可并行处理的逻辑，从而在性能、能效与开发效率之间取得更优平衡。在SIMD与SIMT混合编程中：
 
@@ -16,7 +16,7 @@ AI Core上SIMD（Single Instruction Multiple Data，单指令多数据）与SIMT
 如[图1](SIMD与SIMT混合编程.md#fig17744131364413)所示，SIMD和SIMT的内部执行流程为：
 
 -   Scalar计算单元将VF发射到Vector Function Queue中。
--   SIMD与SIMT混合编程的工作模式以VF为粒度进行切换，执行上下文（UB Data Cache）在VF切换时会被保留。
+-   SIMD与SIMT混合编程的工作模式以VF为粒度进行切换，SIMT工作模式下的Data Cache（DCache）数据在VF切换时会被保留。
 -   SIMD和SIMT之间的VF串序执行，同一时刻，一个AIV核仅能执行SIMD或SIMT任务。
 -   VF执行完成后，结果数据被写回Unified Buffer或Global Memory。
 
@@ -69,19 +69,85 @@ SIMD与SIMT编程存在以下差异：
 
 ## 内存层级<a name="section1676401713532"></a>
 
-SIMT内存层次结构包含：
+在SIMD与SIMT混合编程场景，可以访问多种内存空间，下表汇总了常见内存类型的作用域及其生命周期。
+<a name="table193141614125513"></a>
+<table><thead align="left"><tr id="row431461485515"><th class="cellrowborder" valign="top" width="14.018598140185981%" id="mcps1.1.5.1.1"><p id="p12314161495516"><a name="p12314161495516"></a><a name="p12314161495516"></a>内存类型</p>
+</th>
+<th class="cellrowborder" valign="top" width="30.23888376162383762%" id="mcps1.1.5.1.2"><p id="p16314171435516"><a name="p16314171435516"></a><a name="p16314171435516"></a>线程作用域</p>
+</th>
+<th class="cellrowborder" valign="top" width="17.928207179282072%" id="mcps1.1.5.1.3"><p id="p203141214165520"><a name="p203141214165520"></a><a name="p203141214165520"></a>生命周期</p>
+</th>
+<th class="cellrowborder" valign="top" width="17.514818518148186%" id="mcps1.1.5.1.4"><p id="p17401742185918"><a name="p17401742185918"></a><a name="p17401742185918"></a>物理位置</p>
+</th>
+<th class="cellrowborder" valign="top" width="51.814818518148186%" id="mcps1.1.5.1.4"><p id="p17401742185918"><a name="p17401742185918"></a><a name="p17401742185918"></a>特点</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="row831491414559"><td class="cellrowborder" valign="top" width="14.018598140185981%" headers="mcps1.1.5.1.1 "><p id="p1780259331"><a name="p1780259331"></a><a name="p1780259331"></a>全局内存</p>
+</td>
+<td class="cellrowborder" valign="top" width="30.23888376162383762%" headers="mcps1.1.5.1.2 "><p id="p123149149558"><a name="p123149149558"></a><a name="p123149149558"></a>所有核的核函数</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.928207179282072%" headers="mcps1.1.5.1.3 "><p id="p2314614185513"><a name="p2314614185513"></a><a name="p2314614185513"></a>应用程序</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.514818518148186%" headers="mcps1.1.5.1.4 "><p id="p999075216140"><a name="p999075216140"></a><a name="p999075216140"></a>Device</p>
+</td>
+<td class="cellrowborder" valign="top" width="51.814818518148186%" headers="mcps1.1.5.1.4 "><p id="p999075216141"><a name="p999075216140"></a><a name="p999075216140"></a>大容量，低带宽</p>
+</td>
+</tr>
+<tr id="row6314181413550"><td class="cellrowborder" valign="top" width="14.018598140185981%" headers="mcps1.1.5.1.1 "><p id="p1437313147519"><a name="p1437313147519"></a><a name="p1437313147519"></a>共享内存</p>
+</td>
+<td class="cellrowborder" valign="top" width="30.23888376162383762%" headers="mcps1.1.5.1.2 "><p id="p731481435515"><a name="p731481435515"></a><a name="p731481435515"></a>单核核函数</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.928207179282072%" headers="mcps1.1.5.1.3 "><p id="p5314151445515"><a name="p5314151445515"></a><a name="p5314151445515"></a>核函数</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.514818518148186%" headers="mcps1.1.5.1.4 "><p id="p7740204211595"><a name="p7740204211595"></a><a name="p7740204211595"></a>Vector Core</p>
+</td>
+<td class="cellrowborder" valign="top" width="51.814818518148186%" headers="mcps1.1.5.1.4 "><p id="p999075216141"><a name="p999075216140"></a><a name="p999075216140"></a>小容量，高带宽</p>
+</td>
+</tr>
+<tr id="row1242419814517"><td  class="cellrowborder" valign="top" width="14.018598140185981%" headers="mcps1.1.5.1.1 "><p id="p12690146153"><a name="p12690146153"></a><a name="p12690146153"></a>SIMT 寄存器</p>
+</td>
+<td class="cellrowborder" valign="top" width="30.23888376162383762%" headers="mcps1.1.5.1.2 "><p id="p7690561553"><a name="p7690561553"></a><a name="p7690561553"></a>Thread</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.928207179282072%" headers="mcps1.1.5.1.3 "><p id="p16690961515"><a name="p16690961515"></a><a name="p16690961515"></a>SIMT VF函数</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.514818518148186%" headers="mcps1.1.5.1.4 "><p id="p36901661456"><a name="p36901661456"></a><a name="p36901661456"></a>Device</p>
+</td>
+<td class="cellrowborder" valign="top" width="51.814818518148186%" headers="mcps1.1.5.1.4 "><p id="p999075216141"><a name="p999075216140"></a><a name="p999075216140"></a>极小容量，极高带宽</p>
+</td>
+</tr>
+<tr id="row311525417103"><td  class="cellrowborder" valign="top" width="14.018598140185981%" headers="mcps1.1.5.1.1 "><p id="p12690146153"><a name="p12690146153"></a><a name="p12690146153"></a>SIMD 寄存器</p>
+</td>
+<td  class="cellrowborder" valign="top" width="30.23888376162383762%" headers="mcps1.1.5.1.2 "><p id="p19664352141016"><a name="p19664352141016"></a><a name="p19664352141016"></a>Register File</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.928207179282072%" headers="mcps1.1.5.1.3 "><p id="p166643525102"><a name="p166643525102"></a><a name="p166643525102"></a>SIMD VF函数</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.514818518148186%" headers="mcps1.1.5.1.4 "><p id="p1666415522108"><a name="p1666415522108"></a><a name="p1666415522108"></a>Vector Core</p>
+</td>
+<td class="cellrowborder" valign="top" width="51.814818518148186%" headers="mcps1.1.5.1.4 "><p id="p999075216141"><a name="p999075216140"></a><a name="p999075216140"></a>极小容量，极高带宽</p>
+</td>
+</tr>
+</tbody>
+</table>
 
--   每个线程独立的寄存器和栈，用于存储局部变量。可用寄存器数量与线程块中线程数有关，具体支持情况请见[表5](../../语言扩展层/SIMT-BuiltIn关键字.md#table1715318510594)。线程块内所有线程共享本地内存Unified Buffer。该内存区域由线程块内所有线程共同访问，且其生命周期和线程块一致。
--   所有线程均可通过Data Cache访问全局内存，即Global Memory。
+- 全局内存即Global Memory，存储空间大，带宽低，生命周期与整个应用程序一致，通常用于存储输入输出数据；
+- 共享内存是每个AIV核拥有的独立Unified Buffer（UB），生命周期和AIV核函数一致，常作为全局内存的缓存；
+- 最靠近Vector计算单元的是寄存器，SIMT和SIMD模式各自拥有一块私有寄存器内存。
 
-SIMD内存层次结构包含：
-
--   SIMD的Register File（简称RF）中的多种Reg，Reg的类型请见Reg数据类型定义。
--   RF中所有Reg共享本地内存，即Unified Buffer。
--   所有核共享全局内存，即Global Memory。
+整体内存架构如下图所示：
 
 **图 2** SIMD与SIMT混合编程内存模型示意图<a name="fig237411381089"></a>  
 ![](../../../figures/SIMD与SIMT混合编程内存模型示意图.png "SIMD与SIMT混合编程内存模型示意图")
+
+在SIMT工作模式下，各个内存的工作流程如下：
+-   每个线程独立的寄存器和栈，用于存储局部变量。可用寄存器数量与线程块中线程数有关，具体支持情况请见[表5](../../语言扩展层/SIMT-BuiltIn关键字.md#table1715318510594)。
+-   线程块内所有线程共享本地内存Unified Buffer（UB），该内存区域由线程块内所有线程共同访问，且其生命周期和线程块一致。
+-   所有线程均可通过Data Cache（DCache）访问全局内存（GM），Data Cache是从UB上单独划分出来的一个缓存空间，内存大小可配置范围为32KB到128KB，具体配置方法详见下文[UB内存分配](#section3725125414229)。
+
+在SIMD工作模式下，各个内存的工作流程如下：
+-   SIMD的Register File（简称RF）包含多种类型的Reg矢量计算寄存器，用于SIMD VF函数内部存储计算数据，Reg的类型请见[Reg数据类型定义](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/RegTensor.md)。
+-   单核内所有VF Reg寄存器共享内存资源UB。
+-   在SIMD模式下，不支持直接从全局内存加载数据到Reg矢量计算寄存器，需先将数据从全局内存GM搬运至UB，再通过显式的Load/Store指令，从UB加载到Reg矢量计算寄存器中执行计算操作。
 
 ## UB内存分配<a name="section3725125414229"></a>
 
@@ -105,13 +171,12 @@ UB（即Unified Buffer）内存空间总大小为256KB，参考[图3](#fig184031
         extern __ubuf__ char dynamicBuf[];
         ```
 
-    由于上述两种方法申请动态内存时均从静态内存结束位置之后开始分配，如果同时使用可能会导致地址空间重叠，从而引发未定义行为，因此只能选择其中一种方法进行申请。
+    由于上述三种方法申请动态内存时均从静态内存结束位置之后开始分配，如果同时使用可能会导致地址空间重叠，从而引发未定义行为，因此只能选择其中一种方法进行申请。
 
 3.  预留空间：编译器和Ascend C预留空间，大小固定为8KB。
 4.  Data Cache：SIMT专有的Data Cache空间，内存大小必须大于或等于32KB。
 
 >[!NOTE]说明 
->**动态内存的动态数组分配方式目前开发中，将在后续版本中支持，请关注后续版本。**
 >-   DataCache =  UB总大小（256KB） –  静态内存 – 动态内存 – 预留空间\(8KB）
 >-   若DataCache小于32KB，会出现校验报错。
 >-   在SIMD与SIMT混合编程的场景下，算子内部不能使用全部的Unified Buffer空间，除了预留8KB空间外，还需至少为SIMT预留32KB的Data Cache空间。
