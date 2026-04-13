@@ -10,7 +10,7 @@
 #include <gtest/gtest.h>
 #include "tensor_api/stub/cce_stub.h"
 #include <mockcpp/mockcpp.hpp>
-#include "include/experimental/tensor_api/tensor.h"
+#include "include/tensor_api/tensor.h"
 
 class Tensor_Api_Mmad : public testing::Test {
 protected:

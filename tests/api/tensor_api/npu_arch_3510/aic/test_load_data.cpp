@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "tensor_api/stub/cce_stub.h"
-#include "include/experimental/tensor_api/tensor.h"
+#include "include/tensor_api/tensor.h"
 #include <mockcpp/mockcpp.hpp>
 
 class TEST_TENSOR_API_LOAD_DATA : public testing::Test {

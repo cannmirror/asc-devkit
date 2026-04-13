@@ -9,7 +9,7 @@
 */
 #include <gtest/gtest.h>
 #include "tensor_api/stub/cce_stub.h"
-#include "include/experimental/tensor_api/tensor.h"
+#include "include/tensor_api/tensor.h"
 #include <mockcpp/mockcpp.hpp>
 
 #define GM_ADDR __gm__ uint8_t*

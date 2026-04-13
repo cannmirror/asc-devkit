@@ -16,7 +16,7 @@
 #include <cxxabi.h>
 #include "mockcpp/mockcpp.hpp"
 #include "tensor_api/stub/cce_stub.h"
-#include "include/experimental/tensor_api/tensor.h"
+#include "include/tensor_api/tensor.h"
 
 using namespace AscendC::Te;
 using namespace AscendC;

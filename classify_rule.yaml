@@ -87,17 +87,25 @@ asc-devkit:
       - impl/basic_api/dav_3510/core_mng/roc/kernel_operator_cube_group_info.h
       - impl/basic_api/kernel_operator_list_tensor_intf_impl.h
       - impl/basic_api/dav_3510/kernel_operator_determine_compute_sync_impl.h
-      - impl/experimental/tensor_api/arch/datamove/l1_to_l0/routing.h
-      - impl/experimental/tensor_api/atom/datamove/*.h
-      - impl/experimental/tensor_api/arch/datamove/gm_to_ub/routing.h
-      - impl/experimental/tensor_api/arch/datamove/l1_to_ub/routing.h
-      - impl/experimental/tensor_api/arch/datamove/ub_to_l1/routing.h
-      - impl/experimental/tensor_api/arch/datamove/ub_to_gm/routing.h
-      - impl/experimental/tensor_api/arch/datamove/l0c_to_out/routing.h
-      - impl/experimental/tensor_api/arch/datamove/gm_to_l1/routing.h
-      - impl/experimental/tensor_api/atom/cube_datamove/copy_datacopy.h
-      - impl/experimental/tensor_api/arch/cube_datamove/data_copy/data_copy_routing.h
-      - impl/experimental/tensor_api/tensor/layout_struct.h
+      - impl/tensor_api/arch/datamove/l1_to_l0/routing.h
+      - impl/tensor_api/atom/datamove/*.h
+      - impl/tensor_api/arch/datamove/gm_to_ub/routing.h
+      - impl/tensor_api/arch/datamove/l1_to_ub/routing.h
+      - impl/tensor_api/arch/datamove/ub_to_l1/routing.h
+      - impl/tensor_api/arch/datamove/ub_to_gm/routing.h
+      - impl/tensor_api/arch/datamove/l0c_to_out/routing.h
+      - impl/tensor_api/arch/datamove/gm_to_l1/routing.h
+      - impl/tensor_api/atom/cube_datamove/copy_datacopy.h
+      - impl/tensor_api/arch/cube_datamove/data_copy/data_copy_routing.h
+      - impl/tensor_api/tensor/layout_struct.h
+      - impl/tensor_api/utils/constant_impl.h
+      - impl/tensor_api/utils/utils_impl.h
+      - impl/tensor_api/utils/extra_impl.h
+      - impl/tensor_api/tensor/layout_size.h
+      - impl/tensor_api/utils/map_impl.h
+      - impl/tensor_api/arch/datamove/l1_to_fb/routing.h
+      - impl/tensor_api/arch/utils/is_format.h
+      - impl/tensor_api/arch/datamove/l1_to_bt/routing.h
       
   llt:
     ut_check: true
