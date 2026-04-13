@@ -19,36 +19,6 @@ using namespace AscendC::Simt;
 
 #define THREAD_DIM 128
 
-template <typename T>
-class KernelFloatCompute {
-    public:
-        __aicore__ KernelFloatCompute() {}
-        __aicore__ inline void Process(__gm__ T* out, __gm__ T* src0, __gm__ T* src1, __gm__ T* src2, const int mode);
-};
-
-template <typename T>
-__simt_vf__ LAUNCH_BOUND(1024) inline __aicore__  void KernelFloatComputeCompute(__gm__ T* dst, __gm__ T* src0, __gm__ T* src1, __gm__ T* src2, const int mode)
-{
-    int quo;
-    int32_t s32n;
-    int64_t n;
-    src0[0] = NAN;
-    src1[0] = NAN;
-    src0[2] = INFINITY;
-    src1[3] = INFINITY;
-    for(int idx=GetThreadIdx<0>()+block_idx*GetThreadNum<0>();idx < 128; idx+=block_num*GetThreadNum<0>()) {
-        switch (mode) {
-            default:
-                break;
-        }
-    }
-}
-
-template <typename T>
-__aicore__ inline void KernelFloatCompute<T>::Process(__gm__ T* dst, __gm__ T* src0, __gm__ T* src1, __gm__ T* src2, const int mode)
-{
-    AscendC::Simt::VF_CALL<KernelFloatComputeCompute<T>>(Dim3(THREAD_DIM, 1, 1), dst, src0, src1, src2, mode);
-}
 
 struct FloatComputeParams1 {
     int32_t mode;
@@ -59,30 +29,6 @@ protected:
     void SetUp() {}
     void TearDown() {}
 };
-
-INSTANTIATE_TEST_CASE_P(FloatComputeTestCase1, FloatComputeTestsuite1,
-    ::testing::Values(FloatComputeParams1 {6},
-    FloatComputeParams1 {7},
-    FloatComputeParams1 {8},
-    FloatComputeParams1 {9},
-    FloatComputeParams1 {10},
-    FloatComputeParams1 {18}
-                      ));
-
-TEST_P(FloatComputeTestsuite1, FloatComputeTestCase1)
-{
-    auto param = GetParam();
-    int32_t mode = param.mode;
-    int fpByteSize = 4;
-    int shapeSize = 128;
-
-    uint8_t dstGm[shapeSize * fpByteSize] = {0};
-    uint8_t src0Gm[shapeSize * fpByteSize] = {0};
-    uint8_t src1Gm[shapeSize * fpByteSize] = {0};
-    uint8_t src2Gm[shapeSize * fpByteSize] = {0};
-    KernelFloatCompute<float> op;
-    op.Process((__gm__ float*)dstGm, (__gm__ float*)src0Gm, (__gm__ float*)src1Gm, (__gm__ float*)src2Gm, mode);
-}
 
 TEST_F(FloatComputeTestsuite1, FloatComputeTestCase_absfloat)
 {

@@ -9,18 +9,65 @@
 */
 
 #include "simt_compiler_stub.h"
-#include "kernel_process_lock.h"
-#include "kernel_utils.h"
+#include "basic_api/kernel_common.h"
+#include "basic_api/kernel_operator_utils_intf.h"
 #include "kernel_simt_cpu.h"
 #include "stub_def.h"
 #include <cmath>
+int64_t block_idx = 0;
+int64_t block_num = 8;
+
+
+uint32_t g_threadDimX = 1024;
+uint32_t g_threadDimY = 1;
+
+thread_local uint32_t g_threadIdxX = 1;
+thread_local uint32_t g_threadIdxY = 1;
+thread_local uint32_t g_threadIdxZ = 1;
 
 int32_t asc_get_block_idx()
 {
-    return block_idx;
+    return 0;
 }
 
 int32_t asc_get_block_num()
 {
-    return block_num;
+    return 8;
+}
+
+int64_t clz(uint64_t x)
+{
+    int32_t count = 0;
+    uint64_t one = 1;
+    uint8_t bitLen = 64;
+    for (int i = 0; i < bitLen; i++) {
+        uint64_t tmp = one << (bitLen - 1 - i);
+        if (((tmp & x) >> (bitLen - 1 - i)) == 0) {
+            count += 1;
+        } else {
+            break;
+        }
+    }
+    return count;
+}
+int64_t bcnt1(uint64_t x)
+{
+    return 0;
+}
+namespace AscendC {
+namespace check {
+bool CheckFunVecBinaryScalarImplForMaskArray(VecBinaryScalarApiParams &chkParams,
+                                             const uint64_t mask[],
+                                             const char *intriName) { return true; }
+bool CheckFunVecBinaryScalarImpl(VecBinaryScalarApiParams &chkParams, const uint64_t mask, const char *intriName) {
+    return true;
+}
+bool CheckFunVecBinaryScalarImpl(VecBinaryScalarApiParams &chkParams, const char *intriName) { return true; }
+}
+}
+
+uint64_t atomicAdd(uint64_t *addr, uint64_t val) {
+    uint64_t ret = *addr;
+    *addr += val;
+    return ret;
 }
