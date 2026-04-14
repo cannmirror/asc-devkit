@@ -826,8 +826,16 @@ __aicore__ inline void SetLoadDataRepeatCal(const LoadDataRepeatParam repeatPara
     constexpr uint32_t repeatModeShiftBit = 24;
     rptConfig |= uint64_t(repeatParams.repeatMode) << repeatModeShiftBit;
 
+     Internal::g_rptConfig = rptConfig;
+}
+
+template <typename T>
+__aicore__ inline void SetLoadDataRepeatStride(const LoadData3DParamsV2<T>& loadDataParams) {
+    uint16_t dstStride = loadDataParams.enTranspose ?
+        CeilDivision(loadDataParams.kExtension, BLOCK_CUBE) : CeilDivision(loadDataParams.mExtension, BLOCK_CUBE);
+    uint64_t rptConfig = Internal::g_rptConfig;
     constexpr uint32_t dstStrideShiftBit = 32;
-    rptConfig |= uint64_t(repeatParams.dstStride) << dstStrideShiftBit;
+    rptConfig |= uint64_t(dstStride) << dstStrideShiftBit;
     set_l3d_rpt(rptConfig);
 }
 
@@ -851,6 +859,7 @@ __aicore__ inline void LoadData3DV2L12L0ACal(__ca__ T* dst, __cbuf__ T* src,
         "LoadData 3dv2 only support uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
          half, bfloat16_t, uint16_t, int16_t, float, int32_t, uint32_t on current device!");
     if ASCEND_IS_AIC {
+        SetLoadDataRepeatStride(loadDataParams);
         img2colv2_cbuf_to_ca(dst, src, loadDataParams.kExtension, loadDataParams.mExtension, loadDataParams.kStartPt,
             loadDataParams.mStartPt, loadDataParams.strideW, loadDataParams.strideH, loadDataParams.filterW,
             loadDataParams.filterH, loadDataParams.dilationFilterW, loadDataParams.dilationFilterH,
@@ -868,6 +877,7 @@ __aicore__ inline void LoadData3DV2L12L0BCal(__cb__ T* dst, __cbuf__ T* src,
         "LoadData 3dv2 only support uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
          half, bfloat16_t, uint16_t, int16_t, float, int32_t, uint32_t on current device!");
     if ASCEND_IS_AIC {
+        SetLoadDataRepeatStride(loadDataParams);
         img2colv2_cbuf_to_cb(dst, src, loadDataParams.kExtension, loadDataParams.mExtension, loadDataParams.kStartPt,
             loadDataParams.mStartPt, loadDataParams.strideW, loadDataParams.strideH, loadDataParams.filterW,
             loadDataParams.filterH, loadDataParams.dilationFilterW, loadDataParams.dilationFilterH,
@@ -880,6 +890,7 @@ __aicore__ inline void LoadData3DV2L12L0ACal(__ca__ half* dst, __cbuf__ half* sr
     const LoadData3DParamsV2<bfloat16_t>& loadDataParams)
 {
     if ASCEND_IS_AIC {
+        SetLoadDataRepeatStride(loadDataParams);
         img2colv2_cbuf_to_ca(dst, src, loadDataParams.kExtension, loadDataParams.mExtension, loadDataParams.kStartPt,
             loadDataParams.mStartPt, loadDataParams.strideW, loadDataParams.strideH, loadDataParams.filterW,
             loadDataParams.filterH, loadDataParams.dilationFilterW, loadDataParams.dilationFilterH,
@@ -892,6 +903,7 @@ __aicore__ inline void LoadData3DV2L12L0BCal(__cb__ half* dst, __cbuf__ half* sr
     const LoadData3DParamsV2<bfloat16_t>& loadDataParams)
 {
     if ASCEND_IS_AIC {
+        SetLoadDataRepeatStride(loadDataParams);
         img2colv2_cbuf_to_cb(dst, src, loadDataParams.kExtension, loadDataParams.mExtension, loadDataParams.kStartPt,
             loadDataParams.mStartPt, loadDataParams.strideW, loadDataParams.strideH, loadDataParams.filterW,
             loadDataParams.filterH, loadDataParams.dilationFilterW, loadDataParams.dilationFilterH,
