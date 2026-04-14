@@ -803,6 +803,20 @@ __aicore__ inline void Load3DSetPaddingCal(const T padValue)
     set_padding(paddingValue);
 }
 
+__aicore__ inline void SetLoadDataRepeatWithStrideCal(const LoadDataRepeatParamWithStride repeatParams)
+{
+    uint64_t rptConfig = 0;
+    constexpr uint32_t repeatTimeShiftBit = 16;
+    rptConfig |= uint64_t(repeatParams.repeatStride);
+    rptConfig |= uint64_t(repeatParams.repeatTime) << repeatTimeShiftBit;
+    constexpr uint32_t repeatModeShiftBit = 24;
+    rptConfig |= uint64_t(repeatParams.repeatMode) << repeatModeShiftBit;
+
+    constexpr uint32_t dstStrideShiftBit = 32;
+    rptConfig |= uint64_t(repeatParams.dstStride) << dstStrideShiftBit;
+    set_l3d_rpt(rptConfig);
+}
+
 __aicore__ inline void SetLoadDataRepeatCal(const LoadDataRepeatParam repeatParams)
 {
     uint64_t rptConfig = 0;
@@ -888,6 +902,72 @@ __aicore__ inline void LoadData3DV2L12L0BCal(__cb__ half* dst, __cbuf__ half* sr
 
 template <typename T>
 __aicore__ inline void LoadData3DV2L12UBCal(__ubuf__ T* dst, __cbuf__ T* src,
+    const LoadData3DParamsV2<T>& loadDataParams)
+{
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "LoadData3DV2L12UB is not supported on current device"); });
+}
+
+
+template <typename T>
+__aicore__ inline void LoadData3DV2L12L0AWithStrideCal(__ca__ T* dst, __cbuf__ T* src,
+    const LoadData3DParamsV2<T>& loadDataParams)
+{
+    static_assert(SupportType<T, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, half, bfloat16_t, uint16_t,
+                int16_t, float, int32_t, uint32_t>(),
+        "LoadData 3dv2 only support uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
+         half, bfloat16_t, uint16_t, int16_t, float, int32_t, uint32_t on current device!");
+    if ASCEND_IS_AIC {
+        img2colv2_cbuf_to_ca(dst, src, loadDataParams.kExtension, loadDataParams.mExtension, loadDataParams.kStartPt,
+            loadDataParams.mStartPt, loadDataParams.strideW, loadDataParams.strideH, loadDataParams.filterW,
+            loadDataParams.filterH, loadDataParams.dilationFilterW, loadDataParams.dilationFilterH,
+            loadDataParams.filterSizeW, loadDataParams.filterSizeH, loadDataParams.enTranspose,
+            loadDataParams.fMatrixCtrl, loadDataParams.channelSize);
+    }
+}
+
+template <typename T>
+__aicore__ inline void LoadData3DV2L12L0BWithStrideCal(__cb__ T* dst, __cbuf__ T* src,
+    const LoadData3DParamsV2<T>& loadDataParams)
+{
+    static_assert(SupportType<T, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, half, bfloat16_t, uint16_t,
+                int16_t, float, int32_t, uint32_t>(),
+        "LoadData 3dv2 only support uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
+         half, bfloat16_t, uint16_t, int16_t, float, int32_t, uint32_t on current device!");
+    if ASCEND_IS_AIC {
+        img2colv2_cbuf_to_cb(dst, src, loadDataParams.kExtension, loadDataParams.mExtension, loadDataParams.kStartPt,
+            loadDataParams.mStartPt, loadDataParams.strideW, loadDataParams.strideH, loadDataParams.filterW,
+            loadDataParams.filterH, loadDataParams.dilationFilterW, loadDataParams.dilationFilterH,
+            loadDataParams.filterSizeW, loadDataParams.filterSizeH, loadDataParams.enTranspose,
+            loadDataParams.fMatrixCtrl, loadDataParams.channelSize);
+    }
+}
+
+__aicore__ inline void LoadData3DV2L12L0AWithStrideCal(__ca__ half* dst, __cbuf__ half* src,
+    const LoadData3DParamsV2<bfloat16_t>& loadDataParams)
+{
+    if ASCEND_IS_AIC {
+        img2colv2_cbuf_to_ca(dst, src, loadDataParams.kExtension, loadDataParams.mExtension, loadDataParams.kStartPt,
+            loadDataParams.mStartPt, loadDataParams.strideW, loadDataParams.strideH, loadDataParams.filterW,
+            loadDataParams.filterH, loadDataParams.dilationFilterW, loadDataParams.dilationFilterH,
+            loadDataParams.filterSizeW, loadDataParams.filterSizeH, loadDataParams.enTranspose,
+            loadDataParams.fMatrixCtrl, loadDataParams.channelSize);
+    }
+}
+
+__aicore__ inline void LoadData3DV2L12L0BWithStrideCal(__cb__ half* dst, __cbuf__ half* src,
+    const LoadData3DParamsV2<bfloat16_t>& loadDataParams)
+{
+    if ASCEND_IS_AIC {
+        img2colv2_cbuf_to_cb(dst, src, loadDataParams.kExtension, loadDataParams.mExtension, loadDataParams.kStartPt,
+            loadDataParams.mStartPt, loadDataParams.strideW, loadDataParams.strideH, loadDataParams.filterW,
+            loadDataParams.filterH, loadDataParams.dilationFilterW, loadDataParams.dilationFilterH,
+            loadDataParams.filterSizeW, loadDataParams.filterSizeH, loadDataParams.enTranspose,
+            loadDataParams.fMatrixCtrl, loadDataParams.channelSize);
+    }
+}
+
+template <typename T>
+__aicore__ inline void LoadData3DV2L12UBWithStrideCal(__ubuf__ T* dst, __cbuf__ T* src,
     const LoadData3DParamsV2<T>& loadDataParams)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "LoadData3DV2L12UB is not supported on current device"); });

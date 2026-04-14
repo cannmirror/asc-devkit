@@ -237,6 +237,62 @@ __aicore__ inline void LoadData(const LocalTensor<bfloat16_t>& dst, const LocalT
 }
 #endif
 
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
+template <typename T, const IsResetLoad3dConfig &defaultConfig = IS_RESER_LOAD3D_DEFAULT_CONFIG,
+    typename U = PrimT<T>, typename std::enable_if<IsSameType<PrimT<T>, U>::value, bool>::type = true>
+__aicore__ inline void LoadDataWithStrideImpl(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const LoadData3DParamsV2<U>& loadDataParams)
+{
+    ASCENDC_ASSERT(CheckFuncLoadData3dv2(dst, src, loadDataParams, "LoadDataWithStride with LoadData3DParamsV2"), {
+        ASCENDC_REPORT_CHECK_ERROR("LoadDataWithStride with LoadData3DParamsV2", KernelFuncType::NONE_MODE);
+    });
+    if constexpr (defaultConfig.isSetFMatrix) {
+        Load3DSetFMatrixCal(loadDataParams.l1H, loadDataParams.l1W, loadDataParams.padList);
+    }
+    if constexpr (defaultConfig.isSetPadding) {
+        Load3DSetPaddingCal(loadDataParams.padValue);
+    }
+
+    const Hardware dstScope = GetPhyType((TPosition)dst.GetPosition());
+    ASCENDC_ASSERT(loadDataParams.kExtension * sizeof(T) % ONE_BLK_SIZE == 0, {
+        KERNEL_LOG(KERNEL_ERROR, "kExtension * sizeof(T) must be a multiple of 32");});
+    ASCENDC_ASSERT(loadDataParams.mExtension % 16 == 0, {
+        KERNEL_LOG(KERNEL_ERROR, "mExtension should be a multiple of 16");});
+    ASCENDC_ASSERT(loadDataParams.kStartPt * sizeof(T) % ONE_BLK_SIZE == 0, {
+        KERNEL_LOG(KERNEL_ERROR, "kStartPt * sizeof(T) must be a multiple of 32");});
+    ASCENDC_ASSERT(loadDataParams.mStartPt % 16 == 0, {
+        KERNEL_LOG(KERNEL_ERROR, "mStartPt should be a multiple of 16");});
+
+    CheckTensorPos<T>(src, Hardware::L1, "src", "A1 / B1", "LoadDataWithStride with LoadData3DParamsV2");
+    if (dstScope == Hardware::L0A) {
+        CheckTensorAlign<T>(dst, VALUE_512, "dst", "LoadDataWithStride with LoadData3DParamsV2");
+        LoadData3DV2L12L0AWithStrideCal((__ca__ PrimT<T>*)dst.GetPhyAddr(),
+                            (__cbuf__ PrimT<T>*)src.GetPhyAddr(), loadDataParams);
+    } else if (dstScope == Hardware::L0B) {
+        CheckTensorAlign<T>(dst, VALUE_512, "dst", "LoadDataWithStride with LoadData3DParamsV2");
+        LoadData3DV2L12L0BWithStrideCal((__cb__ PrimT<T>*)dst.GetPhyAddr(),
+                            (__cbuf__ PrimT<T>*)src.GetPhyAddr(), loadDataParams);
+    } else if (dstScope == Hardware::UB) {
+        CheckTensorAlign<T>(dst, ONE_BLK_SIZE, "dst", "LoadDataWithStride with LoadData3DParamsV2");
+        LoadData3DV2L12UBWithStrideCal((__ubuf__ PrimT<T>*)dst.GetPhyAddr(),
+                            (__cbuf__ PrimT<T>*)src.GetPhyAddr(), loadDataParams);
+    } else {
+        ASCENDC_CHECK_TPOSITION((false), "dst", "A2 / B2 / UB", "LoadDataWithStride with LoadData3DParamsV2",
+            ConstDefiner::Instance().logicNameMap.at(static_cast<uint8_t>(dst.GetPosition())));
+    }
+}
+
+// cce compiler process load3d bfloat16_t using B8, so use the half dtype instead
+template <const IsResetLoad3dConfig& defaultConfig>
+[[deprecated("NOTICE: LoadDataWithStride<IsResetLoad3dConfig> has been deprecated and will be removed in the next version."
+            " Please do not use it!")]]
+__aicore__ inline void LoadDataWithStride(const LocalTensor<bfloat16_t>& dst, const LocalTensor<bfloat16_t>& src,
+    const LoadData3DParamsV2<bfloat16_t>& loadDataParams)
+{
+    LoadDataWithStrideImpl<bfloat16_t, defaultConfig>(dst, src, loadDataParams);
+}
+#endif
+
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
 template <typename T, typename U>
 __aicore__ inline __inout_pipe__(MTE2) void LoadDataImpl(const LocalTensor<T>& dst, const GlobalTensor<U>& src,
@@ -654,6 +710,13 @@ __aicore__ inline void SetLoadDataRepeatImpl(const LoadDataRepeatParam& repeatPa
 {
     SetLoadDataRepeatCal(repeatParams);
 }
+
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
+__aicore__ inline void SetLoadDataRepeatWithStrideImpl(const LoadDataRepeatParamWithStride& repeatParams)
+{
+    SetLoadDataRepeatWithStrideCal(repeatParams);
+}
+#endif
 
 /* **************************************************************************************************
  * LoadDataUnzipImpl                                             *
