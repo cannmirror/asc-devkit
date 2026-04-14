@@ -724,21 +724,21 @@ __aicore__ inline void TransFixpipeParamsV220ToFixpipeParamsArch3510(
     }
 }
 
-template <typename T, const FixpipeConfig &config>
-__aicore__ inline void FixpipeL0C2L1Impl(__cbuf__ T *dst, __cc__ T *src, const FixpipeParamsV220 &intriParams)
+template <typename DstT, typename SrcT, const FixpipeConfig& config>
+__aicore__ inline void FixpipeL0C2L1Impl(__cbuf__ DstT* dst, __cc__ SrcT* src, const FixpipeParamsV220 &intriParams)
 {
     FixpipeParamsArch3510<config.format> params;
     TransFixpipeParamsV220ToFixpipeParamsArch3510(intriParams, params);
-    FixpipeL0C2L1Impl<T, config>(dst, src, params);
+    FixpipeL0C2L1Impl<DstT, SrcT, config>(dst, src, params);
 }
 
-template <typename T, const FixpipeConfig &config>
+template <typename DstT, typename SrcT, const FixpipeConfig& config>
 __aicore__ inline void FixpipeL0C2L1Impl(
-    __cbuf__ T *dst, __cc__ T *src, __cbuf__ uint64_t *cbufWorkspace, const FixpipeParamsV220 &intriParams)
+    __cbuf__ DstT* dst, __cc__ SrcT* src, __cbuf__ uint64_t *cbufWorkspace, const FixpipeParamsV220 &intriParams)
 {
     FixpipeParamsArch3510<config.format> params;
     TransFixpipeParamsV220ToFixpipeParamsArch3510(intriParams, params);
-    FixpipeL0C2L1Impl<T, config>(dst, src, cbufWorkspace, params);
+    FixpipeL0C2L1Impl<DstT, SrcT, config>(dst, src, cbufWorkspace, params);
 }
 
 template <typename DstT, typename SrcT, const FixpipeConfig& config>
