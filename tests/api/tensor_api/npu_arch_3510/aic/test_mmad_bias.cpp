@@ -77,7 +77,7 @@ TEST_F(Tensor_Api_Mmad_With_Bias, MmadOperationWithBiasOnBias##MOCK_FUNC##_##DST
     para.k = K;\
     para.unitFlag = 0;\
     para.cmatrixInitVal = false;\
-    Mmad(MmadAtom<MmadTraits<MmadOperation, MmadTraitDefault>>{}, l0cTensor, l0aTensor, l0bTensor, biasTensor, para);\
+    Mmad(MmadAtom<MmadTraits<MmadOperation, MmadTraitDefault>>{}.with(para), l0cTensor, l0aTensor, l0bTensor, biasTensor);\
     GlobalMockObject::verify();\
 }
 
@@ -147,7 +147,7 @@ TEST_F(Tensor_Api_Mmad_With_Bias, MmadOperationWithBiasOnL0C##MOCK_FUNC##_##DST_
     para.k = K;\
     para.unitFlag = 0;\
     para.cmatrixInitVal = false;\
-    Mmad(MmadAtom<MmadTraits<MmadOperation, MmadTraitDefault>>{}, l0cTensor, l0aTensor, l0bTensor, biasTensor, para);\
+    Mmad(MmadAtom<MmadTraits<MmadOperation, MmadTraitDefault>>{}.with(para), l0cTensor, l0aTensor, l0bTensor, biasTensor);\
     GlobalMockObject::verify();\
 }
 

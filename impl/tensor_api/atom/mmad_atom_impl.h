@@ -22,7 +22,7 @@
 #ifndef IMPL_TENSOR_API_DETAIL_ATOM_MAD_ATOM_IMPL_H
 #define IMPL_TENSOR_API_DETAIL_ATOM_MAD_ATOM_IMPL_H
 
-#include "impl/tensor_api/arch/compute/mmad/mmad.h"
+#include "impl/tensor_api/atom/compute/mmad.h"
 #include "impl/tensor_api/atom/mmad_traits_impl.h"
 
 namespace AscendC {

@@ -21,7 +21,6 @@
 #ifndef IMPL_TENSOR_API_ARCH_COMPUTE_MMAD_MMAD_H
 #define IMPL_TENSOR_API_ARCH_COMPUTE_MMAD_MMAD_H
 
-#include "impl/tensor_api/atom/mmad_traits_impl.h"
 #include "impl/tensor_api/arch/compute/mmad/mmad_routing.h"
 
 namespace AscendC {
@@ -70,12 +69,6 @@ private:
         Tensor2Tensor::template Run<trait>(dst, fm, filter, bias, params);
     }
 };
-
-template <typename MadTraits>
-struct MmadTraits<MmadOperation, MadTraits> : public MmadTraits<MmadOperation, MadTraits, MmadOperation, MmadTraitDefault> {};
-
-template <>
-struct MmadTraits<MmadOperation> : public MmadTraits<MmadOperation, MmadTraitDefault> {};
 
 }
 }
