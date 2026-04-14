@@ -39,7 +39,7 @@ def generate_template_config_code(filepaths: List[str]) -> str:
     disable_kernel_check_option = "--cce-disable-kernel-global-attr-check"
     src_file_pattern = r'#\s*\d+\s*"([^"]+)"'
     template_kernel_func_pattern = (r'template<([^<>]*(?:<[^<>]*>)*[^<>]*)>\s*__attribute__\(\(cce_kernel\)\)'
-                                r'\s*\[aicore\]\s*(.+?)\s*\{')
+                                r'\s*(?:\[aicore\]|__attribute__\(\(cce_aicore\)\))\s*(.+?)\s*\{')
     for path in filepaths:
         try:
             with open(path, encoding='utf-8') as file:

@@ -14,7 +14,11 @@ import re
 from host_stub_util import CodeMode
 
 FUNC_SIGNATURE = re.compile(
-    r'(?:template\s*<\s*([^>]+?)\s*>\s*\n?\s*)?__attribute__\(\(cce_kernel\)\)\s*\[aicore\]\s*(.+?)\s*\{', re.DOTALL
+    r'(?:template\s*<\s*([^>]+?)\s*>\s*\n?\s*)?'
+    r'__attribute__\(\(cce_kernel\)\)\s*'
+    r'(?:\[aicore\]|__attribute__\(\(cce_aicore\)\))\s*'
+    r'(.+?)\s*\{',
+    re.DOTALL,
 )
 FUNC_PARAMS = re.compile(r'\((.+)\)', re.DOTALL)
 
