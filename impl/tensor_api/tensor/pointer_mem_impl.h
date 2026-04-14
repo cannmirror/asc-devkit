@@ -32,6 +32,12 @@ struct HardwareMemPtr : IterAdaptor<Pointer, HardwareMemPtr<hPos, Pointer>> {
     static constexpr const Hardware hardPos = hPos;
 };
 
+template <typename PtrPattern, typename Pointer>
+struct HardwareMemPtrV2 : IterAdaptor<Pointer, HardwareMemPtrV2<PtrPattern, Pointer>> {
+    using IterAdaptor<Pointer, HardwareMemPtrV2<PtrPattern, Pointer>>::IterAdaptor;
+    using ptrPattern = PtrPattern;
+};
+
 // is hardware mem
 template <Hardware hardPos, typename Pointer, typename = void>
 struct IsHardwareMem : Std::false_type {};

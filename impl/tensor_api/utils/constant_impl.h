@@ -64,6 +64,18 @@ enum class LayoutFormat : uint8_t { NZ, ZN, ZZ, DN, ND, NN};
 
 enum class TupleFormat : uint8_t { Shape, Stride, Coord};
 
+namespace Location {
+    struct EmptyTrait {};
+    struct GM {};
+    struct UB {};
+    struct L1 {};
+    struct L0A {};
+    struct L0B {};
+    struct L0C {};
+    struct Bias {};
+    struct Fixbuf {};
+}
+
 template <typename TupleType>
 using tuple_sequence = Std::make_index_sequence<Std::tuple_size_v<Std::remove_cvref_t<TupleType>>>;
 

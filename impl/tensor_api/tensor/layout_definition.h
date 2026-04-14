@@ -50,7 +50,7 @@ struct DefaultInfo {};
 template <typename T, typename U, typename Info = DefaultInfo>
 struct Layout : private Std::tuple<T, U>
 {
-    using tag = Info;
+public:
     static constexpr auto size = StaticLayoutSize<T, U>::size;
     static constexpr auto depth = nesting_depth_v<T>;
     static constexpr auto rank = Std::tuple_size_v<T>;
@@ -118,7 +118,38 @@ struct Layout : private Std::tuple<T, U>
     {
         return TupleSize<I...>(Shape());
     }
+private:
+    using tag = Info;
 };
+
+template <typename T>
+struct GetLayoutInfo {
+    static_assert(!Std::is_same_v<T, T>, "GetLayoutTrait/GetLayoutPattern requires LayoutType");
+};
+
+template <typename T, typename U, typename LayoutPattern, typename TraitType>
+struct GetLayoutInfo<Layout<T, U, Std::tuple<LayoutPattern, TraitType>>> {
+    using type = Std::tuple<LayoutPattern, TraitType>;
+};
+
+template <typename T>
+using GetLayoutInfoT = typename GetLayoutInfo<T>::type;
+
+template <typename T>
+struct GetPattern {
+    using type = typename Std::tuple_element<0, GetLayoutInfoT<T>>::type;
+};
+
+template <typename T>
+struct GetTraitType {
+    using type = typename Std::tuple_element<1, GetLayoutInfoT<T>>::type;
+};
+
+template <typename T>
+using GetLayoutTrait = typename GetTraitType<Std::remove_cvref_t<T>>::type;
+
+template <typename T>
+using GetLayoutPattern = typename GetPattern<Std::remove_cvref_t<T>>::type;
 
 template <typename T>
 struct is_layout : Std::false_type {};

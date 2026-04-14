@@ -15,38 +15,26 @@
 #ifndef IMPL_TENSOR_API_TENSOR_POINTER_PATTERN_H
 #define IMPL_TENSOR_API_TENSOR_POINTER_PATTERN_H
 
-#include "impl/tensor_api/utils/map_impl.h"
+#include "impl/tensor_api/tensor/pointer_mem_impl.h"
 #include "impl/tensor_api/tensor/pointer_pattern_impl.h"
 
 namespace AscendC {
 namespace Te {
-    
-struct EmptyTrait {};
-struct GMMemPtr {};
-struct UBMemPtr {};
-struct L1MemPtr {};
-struct L0AMemPtr {};
-struct L0BMemPtr {};
-struct L0CMemPtr {};
-struct BiasMemPtr {};
-struct FixbufMemPtr {};
 
-using PtrMemSet = TupleMap<
-    Std::tuple<GMMemPtr, MakeGMMemPtr>,
-    Std::tuple<UBMemPtr, MakeUBMemPtr>,
-    Std::tuple<L1MemPtr, MakeL1MemPtr>,
-    Std::tuple<L0AMemPtr, MakeL0AMemPtr>,
-    Std::tuple<L0BMemPtr, MakeL0BMemPtr>,
-    Std::tuple<L0CMemPtr, MakeL0CMemPtr>,
-    Std::tuple<BiasMemPtr, MakeBiasMemPtr>,
-    Std::tuple<FixbufMemPtr, MakeFixbufMemPtr>>;
-
-template <typename PtrPattern, typename TraitType, typename... Args>
+template <typename HardWare, typename TraitType, typename... Args>
 __aicore__ inline constexpr auto MakeMemPtr(Args... args)
 {
-    using GetPtrMakeFun = typename PtrMemSet::template Get<PtrPattern>;
-    static_assert(!Std::is_same_v<GetPtrMakeFun, EmptyValue>, "Unsupported pointer pattern.");
-    return GetPtrMakeFun::template Make<TraitType>(args...);
+    using Arg = typename Std::tuple_element<0, Std::tuple<Args...>>::type;
+    static_assert(!IsMemPtrIterator<Arg>::value, "MakeMemPtr expects a byteOffset. ");
+    return MakeLocationMemPtr<HardWare, TraitType>(args...);
+}
+
+template <typename HardWare, typename... Args>
+__aicore__ inline constexpr auto MakeMemPtr(Args... args)
+{
+    using Arg = typename Std::tuple_element<0, Std::tuple<Args...>>::type;
+    static_assert(IsMemPtrIterator<Arg>::value, "MakeMemPtr<HardWare>(arg) expects an iterator/pointer");
+    return MakeHardwareMemPtr<HardWare>(args...);
 }
 
 } // namespace Te

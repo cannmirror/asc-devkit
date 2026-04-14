@@ -20,61 +20,66 @@
 namespace AscendC {
 namespace Te {
 
-struct MakeGMMemPtr {
-    template <typename TraitType, typename Iterator>
-    __aicore__ inline static auto Make(Iterator iter) {
-        return HardwareMemPtr<Hardware::GM, Iterator>{iter};
-    }
+template <typename T, typename = void>
+struct IsMemPtrIterator : Std::false_type {};
+
+template <typename T>
+struct IsMemPtrIterator<T, void_t<decltype(*Std::declval<T&>())>> : Std::true_type {};
+
+template <typename PtrPattern, typename Iterator>
+__aicore__ inline auto MakeHardwareMemPtr(Iterator iter)
+{
+    return HardwareMemPtrV2<PtrPattern, Iterator>{iter};
+}
+
+template <typename PtrPattern, typename T>
+struct LocationMemPtrType {
+    static_assert(!Std::is_same_v<PtrPattern, PtrPattern>,
+        "MakeLocationMemPtr/MakeMemPtr byteOffset overload does not support this Location.");
 };
 
-struct MakeUBMemPtr {
-    template <typename TraitType, typename Iterator>
-    __aicore__ inline static auto Make(Iterator iter) {
-        return HardwareMemPtr<Hardware::UB, Iterator>{iter};
-    }
+template <typename T>
+struct LocationMemPtrType<Location::UB, T> {
+    using type = __ubuf__ T*;
 };
 
-struct MakeL1MemPtr {
-    template <typename TraitType, typename Iterator>
-    __aicore__ inline static auto Make(Iterator iter) {
-        return HardwareMemPtr<Hardware::L1, Iterator>{iter};
-    }
+template <typename T>
+struct LocationMemPtrType<Location::L1, T> {
+    using type = __cbuf__ T*;
 };
 
-struct MakeL0AMemPtr {
-    template <typename TraitType, typename Iterator>
-    __aicore__ inline static auto Make(Iterator iter) {
-        return HardwareMemPtr<Hardware::L0A, Iterator>{iter};
-    }
+template <typename T>
+struct LocationMemPtrType<Location::L0A, T> {
+    using type = __ca__ T*;
 };
 
-struct MakeL0BMemPtr {
-    template <typename TraitType, typename Iterator>
-    __aicore__ inline static auto Make(Iterator iter) {
-        return HardwareMemPtr<Hardware::L0B, Iterator>{iter};
-    }
+template <typename T>
+struct LocationMemPtrType<Location::L0B, T> {
+    using type = __cb__ T*;
 };
 
-struct MakeL0CMemPtr {
-    template <typename TraitType, typename Iterator>
-    __aicore__ inline static auto Make(Iterator iter) {
-        return HardwareMemPtr<Hardware::L0C, Iterator>{iter};
-    }
+template <typename T>
+struct LocationMemPtrType<Location::L0C, T> {
+    using type = __cc__ T*;
 };
 
-struct MakeBiasMemPtr {
-    template <typename TraitType, typename Iterator>
-    __aicore__ inline static auto Make(Iterator iter) {
-        return HardwareMemPtr<Hardware::BIAS, Iterator>{iter};
-    }
+template <typename T>
+struct LocationMemPtrType<Location::Bias, T> {
+    using type = __biasbuf__ T*;
 };
 
-struct MakeFixbufMemPtr {
-    template <typename TraitType, typename Iterator>
-    __aicore__ inline static auto Make(Iterator iter) {
-        return HardwareMemPtr<Hardware::FIXBUF, Iterator>{iter};
-    }
+template <typename T>
+struct LocationMemPtrType<Location::Fixbuf, T> {
+    using type = __fbuf__ T*;
 };
+
+template <typename PtrPattern, typename TraitType, typename Arg>
+__aicore__ inline auto MakeLocationMemPtr(const Arg& arg)
+{
+    using T = typename TraitType::type;
+    using Pointer = typename LocationMemPtrType<PtrPattern, T>::type;
+    return MakeHardwareMemPtr<PtrPattern>(reinterpret_cast<Pointer>(get_imm(0) + arg));
+}
 
 } // namespace Te
 } // namespace AscendC
