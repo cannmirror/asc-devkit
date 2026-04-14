@@ -13,6 +13,21 @@ cmake_minimum_required(VERSION 3.16.0)
 project(custom_op_prj)
 find_package(ASC REQUIRED)
 
+# Enable ccache for compilation caching. OFF by default.
+# Usage: cmake -DENABLE_CCACHE=ON ..
+option(ENABLE_CCACHE "Enable ccache compiler launcher" OFF)
+if(ENABLE_CCACHE)
+    find_program(CCACHE_PROGRAM ccache)
+    if(CCACHE_PROGRAM)
+        message(STATUS "[ccache] Enabled: ${CCACHE_PROGRAM}")
+        set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+        set(CMAKE_C_COMPILER_LAUNCHER   "${CCACHE_PROGRAM}")
+    else()
+        message(WARNING "[ccache] ENABLE_CCACHE=ON but ccache not found. Fallback to normal build. Install with: apt install ccache")
+        set(ENABLE_CCACHE OFF CACHE BOOL "Reset: ccache not found" FORCE)
+    endif()
+endif()
+
 set(ASCEND_COMPUTE_UNIT ascend910b ascend910_93 ascend950)
 set(package_name customize)
 
