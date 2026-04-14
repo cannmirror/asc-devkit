@@ -22,14 +22,7 @@
 #ifndef IMPL_TENSOR_API_UTILS_CONSTANT_IMPL_H
 #define IMPL_TENSOR_API_UTILS_CONSTANT_IMPL_H
 
-#include <cstdint>
-#include <utility>
-#include <type_traits>
-#include "impl/tensor_api/utils/macro_impl.h"
-#include "include/utils/std/tuple.h"
-#include "include/utils/std/type_traits.h"
-#include "include/utils/std/utility.h"
-#include "include/utils/std/algorithm.h"
+#include "impl/tensor_api/utils/extra_impl.h"
 
 namespace AscendC {
 namespace Te {
@@ -85,8 +78,33 @@ __aicore__ inline constexpr auto GetHardPos()
    return T::iterator::hardPos;
 }
 
-template <typename... Args>
-inline constexpr bool is_one_of_attr_v = Std::is_one_of_v<Std::unwrap_decay_t<Args>...>;
+template <typename T>
+using locationAttr = Std::tuple<__gm__ T*, __cbuf__ T*, __ca__ T*, __cb__ T*, __cc__ T*, __ubuf__ T*, __fbuf__ T*, __ssbuf__ T*, __biasbuf__ T*>;
+
+template <typename A, typename ProcessedTuple>
+struct AllElementsSameAsA;
+
+template <typename A, typename First, typename... Rest>
+struct AllElementsSameAsA<A, Std::tuple<First, Rest...>> {
+    static constexpr bool value = Std::is_same_v<A, typename IterEle<First>::type> || AllElementsSameAsA<A, Std::tuple<Rest...>>::value;
+};
+
+template <typename A>
+struct AllElementsSameAsA<A, Std::tuple<>> { static constexpr bool value = false; };
+
+template <typename A, typename... BList>
+struct CheckAllSame;
+
+template <typename A, typename B, typename... RestB>
+struct CheckAllSame<A, B, RestB...> {
+    static constexpr bool value =  Std::is_same_v<A, B> || AllElementsSameAsA<A, locationAttr<B>>::value || CheckAllSame<A, RestB...>::value;
+};
+
+template <typename A>
+struct CheckAllSame<A> { static constexpr bool value = false; };
+
+template <typename A, typename... BList>
+constexpr bool is_one_of_attr_v = CheckAllSame<A, BList...>::value;
 
 template <typename DataType>
 inline constexpr bool is_b4_type = is_one_of_attr_v<DataType, fp4x2_e1m2_t, fp4x2_e2m1_t>;

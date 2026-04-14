@@ -22,7 +22,15 @@
 #ifndef IMPL_TENSOR_API_UTILS_EXTRA_IMPL_H
 #define IMPL_TENSOR_API_UTILS_EXTRA_IMPL_H
 
-#include "impl/tensor_api/utils/constant_impl.h"
+#include <cstdint>
+#include <utility>
+#include <type_traits>
+#include "impl/tensor_api/utils/macro_impl.h"
+#include "include/utils/std/tuple.h"
+#include "include/utils/std/type_traits.h"
+#include "include/utils/std/utility.h"
+#include "include/utils/std/algorithm.h"
+#include "include/utils/std/cmath.h"
 
 namespace AscendC {
 namespace Te {
