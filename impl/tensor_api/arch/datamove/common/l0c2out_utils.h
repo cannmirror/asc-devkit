@@ -10,7 +10,7 @@
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #warning                                                                                                               \
-    "impl/tensor_api/arch/datamove/l0c_to_out/utils.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+    "impl/tensor_api/arch/datamove/common/l0c2out_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
@@ -19,11 +19,11 @@
  * \file utils.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_DATAMOVE_UTILS_H
-#define IMPL_TENSOR_API_ARCH_DATAMOVE_UTILS_H
+#ifndef IMPL_TENSOR_API_ARCH_DATAMOVE_COMMON_L0C2OUT_UTILS_H
+#define IMPL_TENSOR_API_ARCH_DATAMOVE_COMMON_L0C2OUT_UTILS_H
 
-#include "impl/tensor_api/arch/utils/arch_utils.h"
-#include "impl/tensor_api/arch/datamove/l1_to_fb/copy.h"
+#include "impl/tensor_api/utils/utils_impl.h"
+#include "impl/tensor_api/arch/datamove/common/instruction.h"
 
 namespace AscendC {
 namespace Te {
@@ -31,60 +31,24 @@ namespace Te {
 constexpr uint32_t MAIN_LOOP_N_SIZE_3510 = 512;
 constexpr uint32_t CBURST_NUM_3510 = MAIN_LOOP_N_SIZE_3510 / BLOCK_CUBE;
 
+constexpr FixpipeParams DEFAULT_FIXPIPE_PARAMS = FixpipeParams{};
 
-enum class Format3510 : uint8_t { None, NZ, ND, DN };
-enum class QuantMode3510 : uint8_t { None, Scalar, Vector, Direct };
+constexpr FixpipeTrait DEFAULT_FIXPIPE_TRAIT = FixpipeTrait{};
 
-template <typename T>
-__aicore__ inline auto AllocTempBuf(const T& calNSize)
-{
-    uint64_t deqTensorTempBuf = 0;
-    if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510 || CURRENT_ARCH_VERSION == ArchVersion::V2201) {
-        deqTensorTempBuf = reinterpret_cast<uint64_t>(get_imm(0));
-    }
-    return deqTensorTempBuf;
-}
-
-template <typename T>
-__aicore__ inline void SetFpc(const T& deqTensorTempBuf)
-{
-    if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510 || CURRENT_ARCH_VERSION == ArchVersion::V2201) {
-        uint64_t deqTensorAddr = (reinterpret_cast<uint64_t>(deqTensorTempBuf) >> static_cast<uint64_t>(7)) << 8;
-        set_fpc(deqTensorAddr);
-    }
-}
-
-__aicore__ inline void InsertSync()
-{
-    if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510 || CURRENT_ARCH_VERSION == ArchVersion::V2201) {
-        pipe_barrier(PIPE_FIX);
-    }
-}
-
-class CopyDeqTensorToFbuf3510 {
-public:
-    template <typename T>
-    __aicore__ inline static void CopyDeqTensorToFbufImpl(const T& src, uint16_t calNSize, uint16_t nIterIndex)
-    {
-        auto dstAddr = reinterpret_cast<__fbuf__ uint64_t*>(AllocTempBuf(calNSize));
-        auto dst = MakeTensor(MakeFixbufmemPtr(dstAddr), src.Layout());
-        auto tileSrc = TileSrcTensor(src, calNSize, nIterIndex);
-        DataCopyL12FB3510::Run<DEFAULT_COPY_L1_FB_TRAIT>(dst, tileSrc);
-        SetFpc(dstAddr);
-    }
-
-private:
-    template <typename T>
-    __aicore__ inline static decltype(auto) TileSrcTensor(const T& src, uint16_t calNSize, uint16_t nIterIndex)
-    {
-        auto coord = MakeCoord(MakeCoord(Std::Int<0>{}, Std::Int<0>{}),
-                               MakeCoord(Std::Int<0>{}, nIterIndex * MAIN_LOOP_N_SIZE_3510));
-        auto shape = MakeShape(MakeShape(Std::Int<1>{}, Std::Int<1>{}), MakeShape(Std::Int<1>{}, calNSize));
-        return src(coord, shape);
-    }
+struct FixpipeTraitDefault {
+    using TraitType = FixpipeTrait;
+    static constexpr const TraitType value = DEFAULT_FIXPIPE_TRAIT;
 };
 
-template <const FixpipeTrait& trait, typename dstType, typename srcType>
+using CopyL0C2GMTrait = FixpipeTrait;
+using CopyL0C2GMTraitDefault = FixpipeTraitDefault;
+constexpr auto DEFAULT_COPY_L0C2GM_TRAIT = DEFAULT_FIXPIPE_TRAIT;
+
+using CopyL0C2UBTrait = FixpipeTrait;
+using CopyL0C2UBTraitDefault = FixpipeTraitDefault;
+constexpr auto DEFAULT_COPY_L0C2UB_TRAIT = DEFAULT_FIXPIPE_TRAIT;
+
+template <RoundMode roundMode, typename dstType, typename srcType>
 __aicore__ inline constexpr QuantMode_t GetFixpipeVectorQuantPre()
 {
     if constexpr (is_one_of_attr_v<srcType, int32_t> && is_one_of_attr_v<dstType, half>) {
@@ -96,7 +60,7 @@ __aicore__ inline constexpr QuantMode_t GetFixpipeVectorQuantPre()
     } else if constexpr (is_one_of_attr_v<srcType, float> && is_one_of_attr_v<dstType, fp8_e4m3fn_t>) {
         return QuantMode_t::VQF322FP8_PRE;
     } else if constexpr (is_one_of_attr_v<srcType, float> && is_one_of_attr_v<dstType, hifloat8_t>) {
-        if constexpr (trait.roundMode == RoundMode::HYBRID) {
+        if constexpr (roundMode == RoundMode::HYBRID) {
             return QuantMode_t::VQF322HIF8_PRE_HYBRID;
         } else {
             return QuantMode_t::VQF322HIF8_PRE;
@@ -112,7 +76,7 @@ __aicore__ inline constexpr QuantMode_t GetFixpipeVectorQuantPre()
     }
 }
 
-template <const FixpipeTrait& trait, typename dstType, typename srcType>
+template <RoundMode roundMode, typename dstType, typename srcType>
 __aicore__ inline constexpr QuantMode_t GetFixpipeScalarQuantPre()
 {
     if constexpr (is_one_of_attr_v<srcType, int32_t> && is_one_of_attr_v<dstType, half>) {
@@ -124,7 +88,7 @@ __aicore__ inline constexpr QuantMode_t GetFixpipeScalarQuantPre()
     } else if constexpr (is_one_of_attr_v<srcType, float> && is_one_of_attr_v<dstType, fp8_e4m3fn_t>) {
         return QuantMode_t::QF322FP8_PRE;
     } else if constexpr (is_one_of_attr_v<srcType, float> && is_one_of_attr_v<dstType, hifloat8_t>) {
-        if constexpr (trait.roundMode == RoundMode::HYBRID) {
+        if constexpr (roundMode == RoundMode::HYBRID) {
             return QuantMode_t::QF322HIF8_PRE_HYBRID;
         } else {
             return QuantMode_t::QF322HIF8_PRE;
@@ -140,7 +104,7 @@ __aicore__ inline constexpr QuantMode_t GetFixpipeScalarQuantPre()
     }
 }
 
-template <const FixpipeTrait& trait, typename dstType, typename srcType>
+template <RoundMode roundMode, typename dstType, typename srcType>
 __aicore__ inline constexpr QuantMode_t GetFixpipeCastQuantPre()
 {
     if constexpr (is_one_of_attr_v<srcType, float> && is_one_of_attr_v<dstType, half>) {
@@ -152,7 +116,7 @@ __aicore__ inline constexpr QuantMode_t GetFixpipeCastQuantPre()
     }
 }
 
-template <const FixpipeTrait& trait, typename T, typename U, typename S = void>
+template <RoundMode roundMode, typename T, typename U, typename S = void>
 __aicore__ inline constexpr QuantMode_t GetFixpipeQuantPre()
 {
     using srcType = typename U::elementType;
@@ -160,49 +124,81 @@ __aicore__ inline constexpr QuantMode_t GetFixpipeQuantPre()
     constexpr bool isTensor = IsTileTensorV<S>;
     constexpr bool isScalar = Std::is_same_v<S, uint64_t>;
 
-    if constexpr (trait.roundMode == RoundMode::HYBRID) {
+    if constexpr (roundMode == RoundMode::HYBRID) {
         static_assert((is_one_of_attr_v<srcType, float> && is_one_of_attr_v<dstType, hifloat8_t>),
                       "Only when L0CType is float and output Type is hifloat8_t support RoundMode::HYBRID in Fixpipe");
     }
     if constexpr (isTensor) {
-        return GetFixpipeVectorQuantPre<trait, dstType, srcType>();
+        return GetFixpipeVectorQuantPre<roundMode, dstType, srcType>();
     } else if constexpr (isScalar) {
-        return GetFixpipeScalarQuantPre<trait, dstType, srcType>();
+        return GetFixpipeScalarQuantPre<roundMode, dstType, srcType>();
     } else {
-        return GetFixpipeCastQuantPre<trait, dstType, srcType>();
+        return GetFixpipeCastQuantPre<roundMode, dstType, srcType>();
     }
 }
 
-template <typename T>
-__aicore__ inline constexpr Format3510 GetDataFormat()
+template <typename LayoutType>
+__aicore__ inline static uint32_t GetColumnTotalSize(const LayoutType& layout)
 {
-    if constexpr (IsL0cNZFormat<T>::value || IsNZFormat<T>::value) {
-        return Format3510::NZ;
-    } else if constexpr (IsNDFormat<T>::value) {
-        return Format3510::ND;
+    return GetEleFromLayout<LayoutType, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(layout)
+           * GetEleFromLayout<LayoutType, AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(layout);
+}
+
+template <typename LayoutType>
+__aicore__ inline static uint32_t GetRowTotalSize(const LayoutType& layout)
+{
+    return GetEleFromLayout<LayoutType, AttrInfo::SHAPE, AttrInfo::ROW, 0>(layout)
+           * GetEleFromLayout<LayoutType, AttrInfo::SHAPE, AttrInfo::ROW, 1>(layout);
+}
+
+template <size_t index, typename LayoutType>
+__aicore__ inline static uint32_t GetColumnStride(const LayoutType& layout)
+{ return GetEleFromLayout<LayoutType, AttrInfo::STRIDE, AttrInfo::COLUMN, index>(layout); }
+
+template <size_t index, typename LayoutType>
+__aicore__ inline static uint32_t GetRowStride(const LayoutType& layout)
+{ return GetEleFromLayout<LayoutType, AttrInfo::STRIDE, AttrInfo::ROW, index>(layout); }
+
+template <typename T, typename U>
+__aicore__ inline static void SetRegisterImpl(const T& /*dst*/, const U& /*src*/)
+{
+    if constexpr (IsNDFormat<T>::value) {
+        constexpr uint32_t ndNum = 1;
+        constexpr uint32_t srcNdStride = 0;
+        constexpr uint32_t dstNdStride = 0;
+        SetRegister3510::SetRegister(ndNum, dstNdStride, srcNdStride);
     } else if constexpr (IsDNFormat<T>::value) {
-        return Format3510::DN;
+        // 寄存器 constexpr 常量配置
+        constexpr uint32_t dnNum = 1;
+        constexpr uint32_t dstDnMatrixStride = 0;
+        constexpr uint32_t srcNzMatrixStride = 0;
+        constexpr uint32_t srcNzC0Stride = 1;
+        SetRegister3510::SetRegister(dnNum, dstDnMatrixStride, srcNzMatrixStride, srcNzC0Stride);
     }
-    return Format3510::None;
 }
 
-template <const QuantMode_t quantPre>
-__aicore__ inline constexpr QuantMode3510 GetQuantMode()
+template <typename T, typename U>
+__aicore__ inline static void SetRegisterImpl(const T& /*dst*/, const U& /*src*/, uint64_t quant)
 {
-    if constexpr (IsVectorQuantMode<quantPre>()) {
-        return QuantMode3510::Vector;
-    } else if constexpr (IsScalarQuantMode<quantPre>()) {
-        return QuantMode3510::Scalar;
-    } else if constexpr (IsDirectQuantMode<quantPre>()) {
-        return QuantMode3510::Direct;
+    if constexpr (IsNDFormat<T>::value) {
+        constexpr uint32_t ndNum = 1;
+        constexpr uint32_t srcNdStride = 0;
+        constexpr uint32_t dstNdStride = 0;
+        SetRegister3510::SetRegister(quant, ndNum, dstNdStride, srcNdStride);
+    } else if constexpr (IsDNFormat<T>::value) {
+        // 寄存器 constexpr 常量配置
+        constexpr uint32_t dnNum = 1;
+        constexpr uint32_t dstDnMatrixStride = 0;
+        constexpr uint32_t srcNzMatrixStride = 0;
+        constexpr uint32_t srcNzC0Stride = 1;
+        SetRegister3510::SetRegister(quant, dnNum, dstDnMatrixStride, srcNzMatrixStride, srcNzC0Stride);
     }
-    return QuantMode3510::None;
 }
 
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ARCH_DATAMOVE_UTILS_H
+#endif // IMPL_TENSOR_API_ARCH_DATAMOVE_COMMON_L0C2OUT_UTILS_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

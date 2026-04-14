@@ -108,14 +108,13 @@ TEST_F(Tensor_Api_Atom, CopyL0C2GMOperation)
     __cc__ float src[TILE_LENGTH] = {0};
     __gm__ float dst[TILE_LENGTH] = {0};
 
-    auto coord = MakeCoord(Int<20>{}, Int<30>{});
-    auto shape = MakeShape(MakeShape(Int<11>{}, Int<12>{}), MakeShape(Int<13>{}, Int<14>{}));
-    auto stride = MakeStride(MakeStride(Int<15>{}, Int<16>{}), MakeStride(Int<17>{}, Int<18>{}));
+    auto coord = MakeCoord(Int<0>{}, Int<0>{});
+    constexpr uint32_t m = 64;
+    constexpr uint32_t n = 32;
+    auto l0cSrc = MakeTensor(MakeL0CmemPtr(src), MakeL0CLayout(m, n));
+    auto gmDst = MakeTensor(MakeGMmemPtr(dst), MakeNDLayout<float>(m, n));
 
-    auto l0cSrc = MakeTensor(MakeL0CmemPtr(src), MakeLayout(shape, stride));
-    auto gmDst = MakeTensor(MakeGMmemPtr(dst), MakeLayout(shape, stride));
-
-    auto atomCopy = MakeCopy(CopyL0C2GM{}, FixpipeTraitDefault{});
+    auto atomCopy = MakeCopy(CopyL0C2GM{}, CopyL0C2GMTraitDefault{});
     atomCopy.Call(gmDst, l0cSrc);
 
     atomCopy.Call(gmDst, l0cSrc, coord);
@@ -147,12 +146,11 @@ TEST_F(Tensor_Api_Atom, CopyL0C2GMWithOperation)
     __cc__ float src[TILE_LENGTH] = {0};
     __gm__ float dst[TILE_LENGTH] = {0};
 
-    auto coord = MakeCoord(Int<20>{}, Int<30>{});
-    auto shape = MakeShape(MakeShape(Int<11>{}, Int<12>{}), MakeShape(Int<13>{}, Int<14>{}));
-    auto stride = MakeStride(MakeStride(Int<15>{}, Int<16>{}), MakeStride(Int<17>{}, Int<18>{}));
-
-    auto l0cSrc = MakeTensor(MakeL0CmemPtr(src), MakeLayout(shape, stride));
-    auto gmDst = MakeTensor(MakeGMmemPtr(dst), MakeLayout(shape, stride));
+    auto coord = MakeCoord(Int<0>{}, Int<0>{});
+    constexpr uint32_t m = 32;
+    constexpr uint32_t n = 64;
+    auto l0cSrc = MakeTensor(MakeL0CmemPtr(src), MakeL0CLayout(m, n));
+    auto gmDst = MakeTensor(MakeGMmemPtr(dst), MakeNDLayout<float>(m, n));
 
     auto atomCopy = MakeCopy(CopyL0C2GM{});
     atomCopy.with(12).Call(gmDst, l0cSrc);

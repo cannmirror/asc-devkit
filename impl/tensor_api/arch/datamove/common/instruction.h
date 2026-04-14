@@ -1,0 +1,151 @@
+/**
+ * Copyright (c) 2026 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
+#if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
+#warning                                                                                                               \
+    "impl/tensor_api/arch/datamove/common/instruction.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+#define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
+#endif
+
+/*!
+ * \file instruction.h
+ * \brief
+ */
+#ifndef IMPL_TENSOR_API_ARCH_DATAMOVE_COMMON_INSTRUCTION_H
+#define IMPL_TENSOR_API_ARCH_DATAMOVE_COMMON_INSTRUCTION_H
+
+#include "impl/tensor_api/arch/datamove/common/l0c2out_utils.h"
+
+namespace AscendC {
+namespace Te {
+
+class SetRegister3510 {
+public:
+    // 带量化前置 + nd版本
+    __aicore__ inline static void SetRegister(uint64_t quant, uint32_t ndNum, uint32_t dstNDStride,
+                                              uint32_t srcNDStride)
+    {
+        SetQuantPre(quant);
+        SetLoop3Para(ndNum, dstNDStride, srcNDStride);
+    }
+
+    // 带量化前置 + dn版本
+    __aicore__ inline static void SetRegister(uint64_t quant, uint32_t dnNum, uint32_t dstDNStride,
+                                              uint32_t srcNZMatrixStride, uint32_t srcNZC0Stride)
+    {
+        SetQuantPre(quant);
+        SetLoop3Para(dnNum, dstDNStride, srcNZMatrixStride);
+        SetChannelPara(srcNZC0Stride);
+    }
+
+    // 不带量化前置 + nd版本
+    __aicore__ inline static void SetRegister(uint32_t ndNum, uint32_t dstNDStride, uint32_t srcNDStride)
+    { SetLoop3Para(ndNum, dstNDStride, srcNDStride); }
+
+    // 不带量化前置 + dn版本
+    __aicore__ inline static void SetRegister(uint32_t dnNum, uint32_t dstDNStride, uint32_t srcNZMatrixStride,
+                                              uint32_t srcNZC0Stride)
+    {
+        SetLoop3Para(dnNum, dstDNStride, srcNZMatrixStride);
+        SetChannelPara(srcNZC0Stride);
+    }
+
+private:
+    // 位域定义，消除魔法数字
+    static constexpr uint32_t SHIFT_LOOP3_DST_STRIDE = 32;
+    static constexpr uint32_t SHIFT_LOOP3_SRC_MATRIX = 16;
+    static constexpr uint32_t SHIFT_CHANNEL_C0_STRIDE = 48;
+
+    __aicore__ inline static void SetQuantPre(uint64_t quant)
+    {
+        if ASCEND_IS_AIV {
+            return;
+        }
+        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
+            set_quant_pre(quant);
+        }
+    }
+
+    __aicore__ inline static void SetLoop3Para(uint32_t num, uint32_t dstStride, uint32_t srcStride)
+    {
+        if ASCEND_IS_AIV {
+            return;
+        }
+        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
+            uint64_t loop3Para = 0;
+            loop3Para |= static_cast<uint64_t>(dstStride) << SHIFT_LOOP3_DST_STRIDE;
+            loop3Para |= static_cast<uint64_t>(srcStride) << SHIFT_LOOP3_SRC_MATRIX;
+            loop3Para |= static_cast<uint64_t>(num);
+            set_loop3_para(loop3Para);
+        }
+    }
+
+    __aicore__ inline static void SetChannelPara(uint32_t srcNZC0Stride)
+    {
+        if ASCEND_IS_AIV {
+            return;
+        }
+        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
+            uint64_t channelPara = 0;
+            channelPara |= static_cast<uint64_t>(srcNZC0Stride) << SHIFT_CHANNEL_C0_STRIDE;
+            set_channel_para(channelPara);
+        }
+    }
+
+    // 禁止拷贝与构造
+    SetRegister3510() = default;
+    SetRegister3510(const SetRegister3510&) = delete;
+    SetRegister3510& operator=(const SetRegister3510&) = delete;
+};
+
+__aicore__ inline auto AllocFbTempBuf(const uint16_t& /* calNSize */)
+{
+    if ASCEND_IS_AIV {
+        return 0UL;
+    }
+    uint64_t deqTensorTempBuf = 0;
+    if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
+        deqTensorTempBuf = reinterpret_cast<uint64_t>(get_imm(0));
+    }
+    return deqTensorTempBuf;
+}
+
+template <typename T>
+__aicore__ inline void SetFpc(const __fbuf__ T* deqTensorTempBuf)
+{
+    if ASCEND_IS_AIV {
+        return;
+    }
+    if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
+        uint64_t deqTensorAddr = (reinterpret_cast<uint64_t>(deqTensorTempBuf) >> 7) << 8;
+        set_fpc(deqTensorAddr);
+    }
+}
+
+__aicore__ inline void InsertSync()
+{
+    if ASCEND_IS_AIV {
+        return;
+    }
+    if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
+        pipe_barrier(PIPE_FIX);
+    }
+}
+
+} // namespace Te
+} // namespace AscendC
+
+#endif // IMPL_TENSOR_API_ARCH_DATAMOVE_COMMON_INSTRUCTION_H
+
+#if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
+#undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#undef UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
+#endif

@@ -10,47 +10,47 @@
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #warning                                                                                                               \
-    "impl/tensor_api/atom/datamove/copy_l0c2out.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+    "impl/tensor_api/atom/datamove/copy_l0c2ub.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
 
 /*!
- * \file copy_l0c2out.h
+ * \file copy_l0c2ub.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_L0C2OUT_H
-#define IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_L0C2OUT_H
+#ifndef IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_L0C2UB_H
+#define IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_L0C2UB_H
 
 #include "impl/tensor_api/utils/utils_impl.h"
-#include "impl/tensor_api/arch/datamove/l0c_to_out/copy.h"
+#include "impl/tensor_api/arch/datamove/l0c_to_ub/copy.h"
 #include "impl/tensor_api/atom/copy_traits_impl.h"
 
 namespace AscendC {
 namespace Te {
 
 template <typename TraitStruct>
-struct CopyTraits<CopyL0C2OutWith, TraitStruct> {
+struct CopyTraits<CopyL0C2UBWith, TraitStruct> {
     using TraitType = typename TraitStruct::TraitType;
     static constexpr const TraitType defaultTrait = TraitStruct::value;
 
     template <const TraitType& trait = defaultTrait, typename... Args>
     __aicore__ inline void CopyUnpack(const Args&... args) const
-    { CopyL0C2OutWith::Copy<TraitType, trait, Args...>(args..., params); }
+    { CopyL0C2UBWith::Copy<TraitType, trait, Args...>(args..., params); }
     FixpipeParams params;
 };
 
 template <typename Traits>
-struct CopyTraits<CopyL0C2Out, Traits> : public CopyTraits<CopyL0C2Out, Traits, CopyL0C2OutWith, FixpipeTraitDefault> {
+struct CopyTraits<CopyL0C2UB, Traits> : public CopyTraits<CopyL0C2UB, Traits, CopyL0C2UBWith, FixpipeTraitDefault> {
 };
 
 template <>
-struct CopyTraits<CopyL0C2Out> : public CopyTraits<CopyL0C2Out, FixpipeTraitDefault> {};
+struct CopyTraits<CopyL0C2UB> : public CopyTraits<CopyL0C2UB, FixpipeTraitDefault> {};
 
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_L0C2OUT_H
+#endif // IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_L0C2UB_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

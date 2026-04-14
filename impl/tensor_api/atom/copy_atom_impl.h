@@ -25,7 +25,8 @@
 #include "impl/tensor_api/arch/datamove/l1_to_l0a/copy.h"
 #include "impl/tensor_api/arch/datamove/l1_to_l0b/copy.h"
 
-#include "impl/tensor_api/atom/datamove/copy_l0c2out.h"
+#include "impl/tensor_api/atom/datamove/copy_l0c2gm.h"
+#include "impl/tensor_api/atom/datamove/copy_l0c2ub.h"
 #include "impl/tensor_api/atom/datamove/copy_l12ub.h"
 
 // Vector data move
