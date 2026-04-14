@@ -38,8 +38,8 @@ private:
     template <const LoadDataTrait& trait, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
-        CheckFormat::CheckZNTemplate<T>();
-        CheckFormat::CheckNZTemplate<U>();
+        CheckLayoutPattern<U>();
+        CheckLayoutPattern<T>();
         CheckDataTypeFor3510::CheckL12L0BDataType<T, U>();
     }
 
