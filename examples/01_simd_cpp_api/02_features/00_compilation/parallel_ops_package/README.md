@@ -6,6 +6,8 @@
 - `add_custom`（AddCustom）
 - `leaky_relu_custom`（LeakyReluCustom）
 
+其中 `add_custom` 采用扁平目录组织（host/kernel/tiling 源码位于同一层级），`leaky_relu_custom` 保持分层目录结构。
+
 每个子工程会分别完成自定义算子的编译、打包，并生成独立的 `custom_opp_*.run` 安装包。
 
 ## 支持的产品
@@ -27,20 +29,9 @@ parallel_ops_package
 ├── README.md
 ├── add_custom
 │   ├── CMakeLists.txt
-│   ├── framework
-│   │   ├── CMakeLists.txt
-│   │   └── tf_plugin
-│   │       ├── CMakeLists.txt
-│   │       └── tensorflow_add_custom_plugin.cc
-│   ├── op_host
-│   │   ├── CMakeLists.txt
-│   │   └── add_custom
-│   │       └── add_custom_host.cpp
-│   └── op_kernel
-│       ├── CMakeLists.txt
-│       └── add_custom
-│           ├── add_custom_kernel.cpp
-│           └── add_custom_tiling.h
+│   ├── add_custom_host.cpp
+│   ├── add_custom_kernel.cpp
+│   └── add_custom_tiling.h
 └── leaky_relu_custom
     ├── CMakeLists.txt
     ├── framework
@@ -61,19 +52,19 @@ parallel_ops_package
 
 ## 样例描述
 
-`parallel_ops_package` 与 `custom_op` 使用相同的 Add/LeakyRelu 样例描述，本文不重复维护，请参考：
+`parallel_ops_package` 与 `custom_op` 使用相同的 Add/LeakyRelu 样例描述，请参考：
 
 - [custom_op/README.md 的“样例描述”章节](../custom_op/README.md#样例描述)
 
 ## 样例规格描述
 
-`parallel_ops_package` 与 `custom_op` 使用相同的 Add/LeakyRelu 规格，本文不重复维护规格表，请参考：
+`parallel_ops_package` 与 `custom_op` 使用相同的 Add/LeakyRelu 规格描述，请参考：
 
 - [custom_op/README.md 的“样例规格描述”章节](../custom_op/README.md#样例规格描述)
 
 ## 代码实现介绍
 
-`parallel_ops_package` 的算子实现与 `custom_op` 保持一致，本文不重复维护实现细节，请参考：
+`parallel_ops_package` 的 Add/LeakyRelu 代码实现可参考 `custom_op` 文档说明。
 
 - [custom_op/README.md 的“代码实现介绍”章节](../custom_op/README.md#代码实现介绍)
 

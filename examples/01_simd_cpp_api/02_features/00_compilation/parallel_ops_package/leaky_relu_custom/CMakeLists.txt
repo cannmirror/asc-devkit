@@ -14,10 +14,9 @@ project(opp)
 
 find_package(ASC REQUIRED)
 set(package_name ${vendor_name})
-set(package_type ${PACKAGE_TYPE})
 
 npu_op_package(${package_name}
-    TYPE ${package_type}
+    TYPE RUN
     CONFIG
         INSTALL_PATH ${CMAKE_INSTALL_PREFIX}
 )

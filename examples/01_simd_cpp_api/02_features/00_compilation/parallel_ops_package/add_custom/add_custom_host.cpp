@@ -8,9 +8,9 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-
-#include "../../op_kernel/add_custom/add_custom_tiling.h"
+#include "add_custom_tiling.h"
 #include "register/op_def_registry.h"
+#include "tiling/tiling_api.h"
 
 namespace optiling {
 const uint32_t NUM_BLOCKS = 8;
@@ -22,28 +22,10 @@ static ge::graphStatus TilingFunc(gert::TilingContext *context)
     context->SetBlockDim(NUM_BLOCKS);
     tiling->totalLength = totalLength;
     tiling->tileNum = TILE_NUM;
-    size_t *currentWorkspace = context->GetWorkspaceSizes(1);
-    currentWorkspace[0] = 0;
     return ge::GRAPH_SUCCESS;
 }
 } // namespace optiling
 
-namespace ge {
-static graphStatus InferShape(gert::InferShapeContext *context)
-{
-    const gert::Shape *x1_shape = context->GetInputShape(0);
-    gert::Shape *y_shape = context->GetOutputShape(0);
-    *y_shape = *x1_shape;
-    return GRAPH_SUCCESS;
-}
-
-static graphStatus InferDataType(gert::InferDataTypeContext *context)
-{
-    const auto inputDataType = context->GetInputDataType(0);
-    context->SetOutputDataType(0, inputDataType);
-    return ge::GRAPH_SUCCESS;
-}
-} // namespace ge
 
 namespace ops {
 class AddCustom : public OpDef {
@@ -63,10 +45,9 @@ public:
             .DataType({ge::DT_FLOAT16})
             .Format({ge::FORMAT_ND});
 
-        this->SetInferShape(ge::InferShape).SetInferDataType(ge::InferDataType);
         this->AICore()
             .SetTiling(optiling::TilingFunc)
-            // at least one soc version must be configured.
+            .AddConfig("ascend910")
             .AddConfig("ascend310p")
             .AddConfig("ascend310b")
             .AddConfig("ascend910b")

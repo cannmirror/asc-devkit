@@ -13,36 +13,37 @@ cmake_minimum_required(VERSION 3.16.0)
 project(parallel_ops_package_proj)
 include(ExternalProject)
 
-set(ASCEND_COMPUTE_UNIT ascend910b ascend910_93 ascend950)
-set(PACKAGE_TYPE "RUN")
 set(INSTALL_TARGET "package")
 
-ExternalProject_Add(add_custom 
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/add_custom 
-    CMAKE_CACHE_ARGS
-        -DASCEND_COMPUTE_UNIT:STRING=${ASCEND_COMPUTE_UNIT}
-    CMAKE_ARGS
-        -Dvendor_name=add_custom 
-        -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/add_custom 
-        -DPACKAGE_TYPE=${PACKAGE_TYPE} 
-    BUILD_COMMAND 
-        ${CMAKE_COMMAND} --build <BINARY_DIR> --target binary 
-    COMMAND 
-        ${CMAKE_COMMAND} --build <BINARY_DIR> --target ${INSTALL_TARGET} 
-    INSTALL_COMMAND "" 
+set(ADD_CUSTOM_ASCEND_COMPUTE_UNIT ascend910 ascend310p ascend310b ascend910b ascend950)
+set(LEAKY_RELU_ASCEND_COMPUTE_UNIT ascend910b)
+
+function(add_parallel_vendor_project target_name source_dir vendor_name compute_units)
+    ExternalProject_Add(${target_name}
+        SOURCE_DIR ${source_dir}
+        CMAKE_CACHE_ARGS
+            -DASCEND_COMPUTE_UNIT:STRING=${compute_units}
+        CMAKE_ARGS
+            -Dvendor_name=${vendor_name}
+            -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/${target_name}
+        BUILD_COMMAND
+            ${CMAKE_COMMAND} --build <BINARY_DIR> --target binary
+        COMMAND
+            ${CMAKE_COMMAND} --build <BINARY_DIR> --target ${INSTALL_TARGET}
+        INSTALL_COMMAND ""
+    )
+endfunction()
+
+add_parallel_vendor_project(
+    add_custom
+    ${CMAKE_CURRENT_SOURCE_DIR}/add_custom
+    add_custom
+    "${ADD_CUSTOM_ASCEND_COMPUTE_UNIT}"
 )
 
-ExternalProject_Add(leaky_relu_custom 
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/leaky_relu_custom
-    CMAKE_CACHE_ARGS
-        -DASCEND_COMPUTE_UNIT:STRING=${ASCEND_COMPUTE_UNIT}
-    CMAKE_ARGS
-        -Dvendor_name=leaky_relu_custom 
-        -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/leaky_relu_custom
-        -DPACKAGE_TYPE=${PACKAGE_TYPE} 
-    BUILD_COMMAND 
-        ${CMAKE_COMMAND} --build <BINARY_DIR> --target binary 
-    COMMAND 
-        ${CMAKE_COMMAND} --build <BINARY_DIR> --target ${INSTALL_TARGET} 
-    INSTALL_COMMAND "" 
+add_parallel_vendor_project(
+    leaky_relu_custom
+    ${CMAKE_CURRENT_SOURCE_DIR}/leaky_relu_custom
+    leaky_relu_custom
+    "${LEAKY_RELU_ASCEND_COMPUTE_UNIT}"
 )

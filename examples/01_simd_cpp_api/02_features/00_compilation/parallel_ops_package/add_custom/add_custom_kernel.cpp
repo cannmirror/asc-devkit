@@ -8,7 +8,6 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-
 #include "kernel_operator.h"
 #include "add_custom_tiling.h"
 constexpr int32_t BUFFER_NUM = 2; // tensor num for each queue
@@ -16,9 +15,9 @@ constexpr int32_t BUFFER_NUM = 2; // tensor num for each queue
 class KernelAdd {
 public:
     __aicore__ inline KernelAdd() {}
-    __aicore__ inline void Init(GM_ADDR x, GM_ADDR y, GM_ADDR z, uint32_t totalLength, uint32_t tileNum, AscendC::TPipe* pipeIn)
+    __aicore__ inline void Init(GM_ADDR x, GM_ADDR y, GM_ADDR z, uint32_t totalLength, uint32_t tileNum, 
+        AscendC::TPipe* pipeIn)
     {
-        ascendc_assert(tileNum != 0, "tileNum can not be zero.\n");
         this->pipe = pipeIn;
         this->blockLength = totalLength / AscendC::GetBlockNum();
         this->tileNum = tileNum;

@@ -8,7 +8,6 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-
 #ifndef ADD_CUSTOM_TILING_H
 #define ADD_CUSTOM_TILING_H
 #include <cstdint>
