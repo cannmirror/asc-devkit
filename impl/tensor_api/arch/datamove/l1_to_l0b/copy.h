@@ -22,9 +22,6 @@
 #ifndef IMPL_TENSOR_API_ARCH_DATAMOVE_L1_TO_L0B_COPY_H
 #define IMPL_TENSOR_API_ARCH_DATAMOVE_L1_TO_L0B_COPY_H
 
-#include "impl/tensor_api/utils/utils_impl.h"
-
-#include "impl/tensor_api/atom/copy_traits_impl.h"
 #include "impl/tensor_api/arch/datamove/l1_to_l0b/routing.h"
 
 namespace AscendC {
@@ -66,12 +63,6 @@ private:
         Tensor2Tensor::template Run<trait, T, U, Coord>(dst, src, coord);
     }
 };
-
-template <typename Traits>
-struct CopyTraits<CopyL12L0B, Traits> : public CopyTraits<CopyL12L0B, Traits, CopyL12L0B, CopyL12L0BTraitDefault> {};
-
-template <>
-struct CopyTraits<CopyL12L0B> : public CopyTraits<CopyL12L0B, CopyL12L0BTraitDefault> {};
 
 }
 }

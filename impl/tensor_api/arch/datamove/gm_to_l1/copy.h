@@ -22,7 +22,6 @@
 #ifndef IMPL_TENSOR_API_ARCH_DATAMOVE_GM_TO_L1_COPY_H
 #define IMPL_TENSOR_API_ARCH_DATAMOVE_GM_TO_L1_COPY_H
 
-#include "impl/tensor_api/atom/copy_traits_impl.h"
 #include "impl/tensor_api/arch/datamove/gm_to_l1/routing.h"
 
 namespace AscendC {
@@ -63,11 +62,6 @@ private:
     }
 };
 
-template <typename Traits>
-struct CopyTraits<CopyGM2L1, Traits> : public CopyTraits<CopyGM2L1, Traits, CopyGM2L1, CopyGM2L1TraitDefault> {};
-
-template <>
-struct CopyTraits<CopyGM2L1> : public CopyTraits<CopyGM2L1, CopyGM2L1TraitDefault> {};
 } // namespace Te
 } // namespace AscendC
 

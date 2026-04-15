@@ -22,21 +22,21 @@
 #ifndef IMPL_TENSOR_API_ATOM_COPY_ATOM_IMPL_H
 #define IMPL_TENSOR_API_ATOM_COPY_ATOM_IMPL_H
 
-#include "impl/tensor_api/arch/datamove/l1_to_l0a/copy.h"
-#include "impl/tensor_api/arch/datamove/l1_to_l0b/copy.h"
+#include "impl/tensor_api/atom/datamove/copy_gm2l1.h"
 
 #include "impl/tensor_api/atom/datamove/copy_l0c2gm.h"
 #include "impl/tensor_api/atom/datamove/copy_l0c2ub.h"
 #include "impl/tensor_api/atom/datamove/copy_l12ub.h"
 
-// Vector data move
 #include "impl/tensor_api/atom/datamove/copy_gm2ub.h"
 #include "impl/tensor_api/atom/datamove/copy_ub2gm.h"
 #include "impl/tensor_api/atom/datamove/copy_ub2l1.h"
 
-#include "impl/tensor_api/arch/datamove/l1_to_bt/copy.h"
-#include "impl/tensor_api/arch/datamove/l1_to_fb/copy.h"
-#include "impl/tensor_api/arch/datamove/gm_to_l1/copy.h"
+#include "impl/tensor_api/atom/datamove/copy_l12bt.h"
+#include "impl/tensor_api/atom/datamove/copy_l12fb.h"
+
+#include "impl/tensor_api/atom/datamove/copy_l12l0a.h"
+#include "impl/tensor_api/atom/datamove/copy_l12l0b.h"
 
 namespace AscendC {
 namespace Te {

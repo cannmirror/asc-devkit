@@ -21,7 +21,6 @@
 #ifndef IMPL_TENSOR_API_ARCH_DATAMOVE_L1_TO_BT_COPY_H
 #define IMPL_TENSOR_API_ARCH_DATAMOVE_L1_TO_BT_COPY_H
 
-#include "impl/tensor_api/atom/copy_traits_impl.h"
 #include "impl/tensor_api/arch/datamove/l1_to_bt/routing.h"
 
 namespace AscendC {
@@ -62,11 +61,6 @@ private:
     }
 };
 
-template <typename Traits>
-struct CopyTraits<CopyL12BT, Traits> : public CopyTraits<CopyL12BT, Traits, CopyL12BT, CopyL12BTTraitDefault> {};
-
-template <>
-struct CopyTraits<CopyL12BT> : public CopyTraits<CopyL12BT, CopyL12BTTraitDefault> {};
 }
 }
 
