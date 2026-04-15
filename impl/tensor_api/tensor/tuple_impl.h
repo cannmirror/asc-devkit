@@ -60,6 +60,29 @@ __aicore__ inline constexpr auto TransformApply(T0&& t0, T1&& t1, F&& f, G&& g)
     }
 }
 
+template <typename T, typename U, typename F>
+__aicore__ inline constexpr auto TransformTupleApply(const T& t, const U& u, const F& f);
+
+template <typename T, typename U, typename F, size_t... Is>
+__aicore__ inline constexpr auto TransformTupleApplyImpl(const T& t, const U& u, const F& f, Std::index_sequence<Is...>)
+{
+    return Std::make_tuple(TransformTupleApply(Std::get<Is>(t), Std::get<Is>(u), f)...);
+}
+
+template <typename T, typename U, typename F>
+__aicore__ inline constexpr auto TransformTupleApply(const T& t, const U& u, const F& f)
+{
+    if constexpr (Std::is_tuple_v<Std::remove_cvref_t<T>>) {
+        static_assert(Std::tuple_size_v<T> == Std::tuple_size_v<U>,
+            "Two tuple needs to be the same tuple size");
+        return TransformTupleApplyImpl(
+            t, u, f, Std::make_index_sequence<Std::tuple_size_v<Std::remove_cvref_t<T>>>{});
+    } else {
+        static_assert(!Std::is_tuple_v<Std::remove_cvref_t<U>>, "Two tuple needs to be the same tuple size");
+        return f(t, u);
+    }
+}
+
 struct MultipliesUnaryLeftFold {
     template <typename... T>
     __aicore__ inline constexpr auto operator()(T&&... t) const {

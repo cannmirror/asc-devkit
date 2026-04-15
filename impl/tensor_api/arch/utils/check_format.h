@@ -212,10 +212,10 @@ struct CheckScaleBDNLayoutPattern {
 };
 
 using LayoutPatternCheckSet = TupleMap<
-    Std::tuple<ZnLayoutPtn, CheckZnLayoutPattern>,
-    Std::tuple<ZzLayoutPtn, CheckZzLayoutPattern>,
-    Std::tuple<NnLayoutPtn, CheckNnLayoutPattern>,
-    Std::tuple<NzLayoutPtn, CheckNzLayoutPattern>,
+    Std::tuple<ZNLayoutPtn, CheckZnLayoutPattern>,
+    Std::tuple<ZZLayoutPtn, CheckZzLayoutPattern>,
+    Std::tuple<NNLayoutPtn, CheckNnLayoutPattern>,
+    Std::tuple<NZLayoutPtn, CheckNzLayoutPattern>,
     Std::tuple<NDLayoutPtn, CheckNDLayoutPattern>,
     Std::tuple<DNLayoutPtn, CheckDNLayoutPattern>,
     Std::tuple<ScaleANDLayoutPtn, CheckScaleANDLayoutPattern>,

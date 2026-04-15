@@ -105,12 +105,16 @@ struct LocalTensor<TensorAttribute<EngineType, LayoutType>> {
 
     template <typename Coord>
     __aicore__ inline constexpr decltype(auto) operator()(const Coord& coord) {
-        return operator()(coord, EmptyShape<LayoutType::depth>{});
+        auto iter = Data() + Layout()(coord);
+ 	    auto coordLayout = MakeCoordLayout(coord, Layout());
+ 	    return MakeTensor(iter, coordLayout);
     }
 
     template <typename Coord>
     __aicore__ inline constexpr decltype(auto) operator()(const Coord& coord) const {
-        return operator()(coord, EmptyShape<LayoutType::depth>{});
+        auto iter = Data() + Layout()(coord);
+ 	    auto coordLayout = MakeCoordLayout(coord, Layout());
+ 	    return MakeTensor(iter, coordLayout);
     }
 
     template <typename Coord0, typename Coord1, typename... Coords>
@@ -134,6 +138,22 @@ struct LocalTensor<TensorAttribute<EngineType, LayoutType>> {
  	__aicore__ inline constexpr decltype(auto) operator()(const Coord& coord, const InfoType& info) const {
  	    auto iter = Data() + Layout()(coord);
  	    auto tileLayout = MakeTileLayout(coord, Layout(), info);
+ 	    return MakeTensor(iter, tileLayout);
+ 	}
+
+    template <typename Coord, typename Info>
+ 	__aicore__ inline constexpr decltype(auto) Slice(const Coord& coord, const Info& info) {
+        auto iter = Data() + Layout()(coord);
+ 	    auto coordLayout = MakeCoordLayout(coord, Layout());
+ 	    auto tileLayout = MakeSliceLayout(coordLayout, info);
+ 	    return MakeTensor(iter, tileLayout);
+ 	}
+
+    template <typename Coord, typename Info>
+ 	__aicore__ inline constexpr decltype(auto) Slice(const Coord& coord, const Info& info) const{
+        auto iter = Data() + Layout()(coord);
+ 	    auto coordLayout = MakeCoordLayout(coord, Layout());
+ 	    auto tileLayout = MakeSliceLayout(coordLayout, info);
  	    return MakeTensor(iter, tileLayout);
  	}
 
@@ -199,6 +219,11 @@ __aicore__ inline constexpr auto MakeTensor(const Iterator& iter, const Args&...
     static_assert(HasDereference<Iterator>::value, "Expected iterator iter in MakeLocalTensor(iter, args...)");
     static_assert(!(HasDereference<Args>::value && ...), "Expected layout args... in MakeLocalTensor(iter, args...)");
     return MakeLocalTensor<Iterator>{}(iter, args...);
+}
+
+template <typename Tensor, typename Coord, typename Info>
+__aicore__ inline constexpr decltype(auto) Slice(Tensor&& tensor, const Coord& coord, const Info& info) {
+    return static_cast<Tensor&&>(tensor).Slice(coord, info);
 }
 
 } // namespace Te

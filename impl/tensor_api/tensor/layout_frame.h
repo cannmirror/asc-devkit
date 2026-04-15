@@ -29,17 +29,16 @@ namespace AscendC {
 namespace Te {
 
 using LayoutFormatSet = TupleMap<
-    Std::tuple<NzLayoutPtn, MakeNzFrameLayout>,
+    Std::tuple<NZLayoutPtn, MakeNzFrameLayout>,
     Std::tuple<NDLayoutPtn, MakeNDFrameLayout>,
     Std::tuple<DNLayoutPtn, MakeDNFrameLayout>,
-    Std::tuple<NnLayoutPtn, MakeNnFrameLayout>,
-    Std::tuple<ZzLayoutPtn, MakeZzFrameLayout>,
-    Std::tuple<ZnLayoutPtn, MakeZnFrameLayout>,
+    Std::tuple<NNLayoutPtn, MakeNnFrameLayout>,
+    Std::tuple<ZZLayoutPtn, MakeZzFrameLayout>,
+    Std::tuple<ZNLayoutPtn, MakeZnFrameLayout>,
     Std::tuple<ScaleANDLayoutPtn, MakeScaleANDFrameLayout>,
     Std::tuple<ScaleADNLayoutPtn, MakeScaleADNFrameLayout>,
     Std::tuple<ScaleBNDLayoutPtn, MakeScaleBNDFrameLayout>,
-    Std::tuple<ScaleBDNLayoutPtn, MakeScaleBDNFrameLayout>,
-    Std::tuple<ScaleZzLayoutPtn, MakeScaleZzFrameLayout>>;
+    Std::tuple<ScaleBDNLayoutPtn, MakeScaleBDNFrameLayout>>;
 
 template <typename T = uint16_t, size_t C0 = 32 / sizeof(T)>
 struct LayoutTraitDefault {

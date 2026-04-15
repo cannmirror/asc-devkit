@@ -52,7 +52,6 @@ constexpr uint32_t CURRENT_ARCH_VERSION = GetArchVersion{}();
 enum class LayoutFormat : uint8_t { NZ, ZN, ZZ, DN, ND, NN};
 
 namespace Location {
-    struct EmptyTrait {};
     struct GM {};
     struct UB {};
     struct L1 {};
