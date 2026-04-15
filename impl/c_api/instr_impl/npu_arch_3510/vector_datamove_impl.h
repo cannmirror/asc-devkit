@@ -5447,21 +5447,6 @@ __aicore__ inline void asc_set_ndim_pad_value(uint8_t pad_value)
     return asc_set_ndim_pad_value_impl(pad_value);
 }
 
-__aicore__ inline void asc_set_ndim_pad_value(fp8_e8m0_t pad_value)
-{
-    return asc_set_ndim_pad_value_impl(pad_value);
-}
-
-__aicore__ inline void asc_set_ndim_pad_value(fp8_e5m2_t pad_value)
-{
-    return asc_set_ndim_pad_value_impl(pad_value);
-}
-
-__aicore__ inline void asc_set_ndim_pad_value(fp8_e4m3fn_t pad_value)
-{
-    return asc_set_ndim_pad_value_impl(pad_value);
-}
-
 __aicore__ inline void asc_set_ndim_pad_value(int16_t pad_value)
 {
     return asc_set_ndim_pad_value_impl(pad_value);
