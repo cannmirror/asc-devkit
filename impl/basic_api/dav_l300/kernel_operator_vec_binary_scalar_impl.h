@@ -497,15 +497,34 @@ BINARY_SCALAR_OP_LEVEL2_IMPL(MinsImpl, Mins, float)
 /* **************************************************************************************************
  * LeakyRelu                                                                                        *
  * **************************************************************************************************/
+namespace RegLeakyRelu {
+template <typename T, typename RegT>
+__simd_callee__ inline void LeakyRelu(RegT &dstReg, RegT &srcReg, T scalarValue, Reg::MaskReg &mask)
+{
+    vlrelu(dstReg, srcReg, scalarValue, mask, MODE_ZEROING);
+}
+}
+
 // LeakyRelu::Level 0
-// bit-by-bit mode
-BINARY_SCALAR_OP_LEVEL0_BIT_BY_BIT_MODE_IMPL_NOT_SUPPORT(LeakyReluImpl)
-BINARY_SCALAR_OP_LEVEL0_BIT_BY_BIT_MODE_IMPL(LeakyReluImpl, LeakyRelu, half)
-BINARY_SCALAR_OP_LEVEL0_BIT_BY_BIT_MODE_IMPL(LeakyReluImpl, LeakyRelu, float)
-// continuous mode
-BINARY_SCALAR_OP_LEVEL0_CONTINUOUS_MODE_IMPL_NOT_SUPPORT(LeakyReluImpl)
-BINARY_SCALAR_OP_LEVEL0_CONTINUOUS_MODE_IMPL(LeakyReluImpl, LeakyRelu, half)
-BINARY_SCALAR_OP_LEVEL0_CONTINUOUS_MODE_IMPL(LeakyReluImpl, LeakyRelu, float)
+template <typename T, bool isSetMask = true>
+__aicore__ inline void LeakyReluImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue, const uint64_t mask[],
+    uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
+{
+    static_assert((SupportType<T, half, float>()), "LeakyRelu not support current datatype!");
+    constexpr auto func = RegLeakyRelu::LeakyRelu<T, Reg::RegTensor<T>>;
+    Internal::VecBinaryScalarLevel0Template<func, isSetMask, true>(dst, src, scalarValue, mask, 0, repeatTime,
+        repeatParams);
+}
+
+template <typename T, bool isSetMask = true>
+__aicore__ inline void LeakyReluImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue, const uint64_t mask,
+    uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
+{
+    static_assert((SupportType<T, half, float>()), "LeakyRelu not support current datatype!");
+    constexpr auto func = RegLeakyRelu::LeakyRelu<T, Reg::RegTensor<T>>;
+    Internal::VecBinaryScalarLevel0Template<func, isSetMask, false>(dst, src, scalarValue, nullptr, mask, repeatTime,
+        repeatParams);
+}
 
 // LeakyRelu::Level 2
 BINARY_SCALAR_OP_LEVEL2_IMPL_NOT_SUPPORT(LeakyReluImpl)

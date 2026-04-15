@@ -24,208 +24,193 @@
 #include "kernel_struct_unary.h"
 
 namespace AscendC {
-template <typename T>
-__aicore__ inline void AxpyIntrinsicsImpl(__ubuf__ T* dst, __ubuf__ T* src, T scalarValue,
-                                          uint64_t mask[2], const uint8_t repeatTime,
-                                          const UnaryRepeatParams& repeatParams)
+namespace Internal {
+template <auto func, typename T, typename U, typename RegT, typename RegU>
+__simd_vf__ inline void VecAxpyLevel2VFImpl(__ubuf__ T *dst, __ubuf__ U *src, U scalarValue, const uint32_t calCount)
 {
-    __VEC_SCOPE__
-    {
-        MaskReg preg = MovePredicate<T>();
-        RegTensor<T> vreg0;
-        RegTensor<T> vreg1;
-        uint32_t srcBlkStride = static_cast<uint32_t>(repeatParams.srcBlkStride);
-        uint32_t dstBlkStride = static_cast<uint32_t>(repeatParams.dstBlkStride);
-        uint32_t srcRepStride = static_cast<uint32_t>(repeatParams.srcRepStride);
-        uint32_t dstRepStride = static_cast<uint32_t>(repeatParams.dstRepStride);
-        for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
-            DataCopy<T, PostLiteral::POST_MODE_UPDATE>(vreg0, src, srcBlkStride, srcRepStride, preg);
-            DataCopy(vreg1, dst, dstBlkStride, 0, preg);
-            Axpy(vreg1, vreg0, scalarValue, preg);
-            DataCopy<T, PostLiteral::POST_MODE_UPDATE>(dst, vreg1, dstBlkStride, dstRepStride, preg);
-        }
+    RegU srcReg;
+    RegT dstReg;
+    uint32_t count = static_cast<uint32_t>(calCount);
+    Reg::MaskReg mask;
+    constexpr uint32_t repeatStride = static_cast<uint32_t>(GetVecLen() / sizeof(T) * RegT::trait.REG_NUM);
+    uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, repeatStride));
+    for (uint16_t i = 0; i < repeatTime; ++i) {
+        mask = Reg::UpdateMask<T, RegT::trait>(count);
+        Reg::LoadAlign(srcReg, src + i * repeatStride);
+        Reg::LoadAlign(dstReg, dst + i * repeatStride);
+        func(dstReg, srcReg, scalarValue, mask);
+        Reg::StoreAlign(dst + i * repeatStride, dstReg, mask);
     }
 }
 
-template <typename T>
-__aicore__ inline void AxpyIntrinsicsImpl(__ubuf__ T* dst, __ubuf__ T* src, T scalarValue,
-                                          uint64_t mask, const uint8_t repeatTime,
-                                          const UnaryRepeatParams& repeatParams)
+template <auto func, typename T, typename U>
+__aicore__ inline void VecAxpyLevel2ImplTemplate(__ubuf__ T *dst, __ubuf__ U *src, U scalarValue,
+    const uint32_t calCount)
 {
-    __VEC_SCOPE__
-    {
-        MaskReg preg;
-        uint32_t sreg = (uint32_t)mask;
-        preg = CreatePredicate<T>(sreg);
-        RegTensor<T> vreg0;
-        RegTensor<T> vreg1;
-        uint32_t srcBlkStride = static_cast<uint32_t>(repeatParams.srcBlkStride);
-        uint32_t dstBlkStride = static_cast<uint32_t>(repeatParams.dstBlkStride);
-        uint32_t srcRepStride = static_cast<uint32_t>(repeatParams.srcRepStride);
-        uint32_t dstRepStride = static_cast<uint32_t>(repeatParams.dstRepStride);
-        for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
-            DataCopy<T, PostLiteral::POST_MODE_UPDATE>(vreg0, src, srcBlkStride, srcRepStride, preg);
-            DataCopy(vreg1, dst, dstBlkStride, 0, preg);
-            Axpy(vreg1, vreg0, scalarValue, preg);
-            DataCopy<T, PostLiteral::POST_MODE_UPDATE>(dst, vreg1, dstBlkStride, dstRepStride, preg);
-        }
+    if constexpr (SupportBytes<T, 8>()) {
+        VecAxpyLevel2VFImpl<func, T, U, Reg::RegTensor<T, Reg::RegTraitNumTwo>,
+            Reg::RegTensor<U, Reg::RegTraitNumTwo>>(dst, src, scalarValue, calCount);
+    } else {
+        VecAxpyLevel2VFImpl<func, T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>(dst, src, scalarValue,
+            calCount);
     }
 }
 
-template <typename T>
-__aicore__ inline void AxpyIntrinsicsImpl(__ubuf__ T* dst, __ubuf__ T* src, T scalarValue,
-                                          const int32_t& count)
+/*
+ * T: data type
+ * func: Reg input/output function
+ * isSetMask: basic api whether to set mask
+ * isNormalMode: true: NormalMode, false: CounterMode
+ * isMaskBitMode: true: mask bit mode, false: mask count mode
+ */
+template <auto func, bool isSetMask, bool isMaskBitMode, bool isNormalMode, typename T, typename U>
+__simd_vf__ inline void VecAxpyVFImpl(__ubuf__ T *dst, __ubuf__ U *src, U scalarValue, const BasicAPIMaskStruct maskArrayStruct,
+    const uint64_t maskCount, const uint8_t repeatTime, const UnaryRepeatParams repeatParams,
+    __ubuf__ uint64_t *maskBuf)
 {
-    __VEC_SCOPE__
-    {
-        RegTensor<T> vreg0, vreg1;
-        MaskReg preg;
-        uint32_t sreg = (uint32_t)count;
-        constexpr uint32_t sregLower = (uint32_t)(VECTOR_REG_WIDTH / sizeof(T));
-        uint16_t repeatTime = CeilDivision(count, sregLower);
-        for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
-            preg = CreatePredicate<T>(sreg);
-            DataCopy(vreg0, src, i * sregLower);
-            DataCopy(vreg1, dst, i * sregLower);
-            Axpy(vreg1, vreg0, scalarValue, preg);
-            DataCopy(dst, vreg1, i * sregLower, preg);
+    uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
+    uint16_t newRepeatTimes = 0;
+    constexpr bool TUCompare = sizeof(T) > sizeof(U);
+    using TT = typename Conditional<TUCompare, T, U>::type;
+    newRepeatTimes = VecMicroGetRepeatTimes<TT, isNormalMode>(count, repeatTime);
+    Reg::MaskReg maskReg;
+    Reg::MaskReg maskRegDst;
+    Reg::MaskReg maskRegSrc;
+    if constexpr (isNormalMode) {
+        maskReg = VecMicroGetMaskReg<TT, isSetMask, isNormalMode, isMaskBitMode>(maskBuf, count);
+        maskRegSrc = maskReg;
+        maskRegDst = maskReg;
+        if constexpr (sizeof(U) == 2 * sizeof(T)) {
+            Reg::MaskPack(maskRegDst, maskReg);
+        } else if constexpr (sizeof(T) == 2 * sizeof(U)) {
+            Reg::MaskPack(maskRegSrc, maskReg);
         }
+    }
+    constexpr uint8_t ElePerBlkT = GetDataBlockSizeInBytes() / sizeof(T);
+    constexpr uint8_t ElePerBlkU = GetDataBlockSizeInBytes() / sizeof(U);
+    for (uint16_t index = 0; index < newRepeatTimes; ++index) {
+        if constexpr (!isNormalMode) {
+            maskReg = VecMicroGetMaskReg<TT, isSetMask, isNormalMode, isMaskBitMode>(maskBuf, count);
+            maskRegSrc = maskReg;
+            maskRegDst = maskReg;
+            if constexpr (sizeof(U) == 2 * sizeof(T)) {
+                Reg::MaskPack(maskRegDst, maskReg);
+            } else if constexpr (sizeof(T) == 2 * sizeof(U)) {
+                Reg::MaskPack(maskRegSrc, maskReg);
+            }
+        }
+        Reg::RegTensor<T> dstVreg;
+        Reg::RegTensor<U> srcVreg;
+#ifndef NO_OVERLAP_IN_MULTI_REPEAT
+        Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
+#endif
+        Reg::LoadAlign<U, Reg::DataCopyMode::DATA_BLOCK_COPY>(srcVreg,
+            src + index * repeatParams.srcRepStride * ElePerBlkU, repeatParams.srcBlkStride, maskRegSrc);
+
+        Reg::LoadAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(dstVreg,
+            dst + index * repeatParams.dstRepStride * ElePerBlkT, repeatParams.dstBlkStride, maskRegDst);
+        func(dstVreg, srcVreg, scalarValue, maskReg);
+        Reg::StoreAlign<T, Reg::DataCopyMode::DATA_BLOCK_COPY>(
+            dst + index * repeatParams.dstRepStride * ElePerBlkT, dstVreg, repeatParams.dstBlkStride, maskRegDst);
     }
 }
 
-__aicore__ inline void AxpyFmixImpl(__ubuf__ float* dst, __ubuf__ half* src, half scalarValue,
-                                    uint64_t mask[2], const uint8_t repeatTime,
-                                    const UnaryRepeatParams& repeatParams)
+template <auto func, bool isSetMask, bool isMaskBitMode, typename T, typename U>
+__aicore__ inline void VecAxpyImplTemplate(__ubuf__ T *dst, __ubuf__ U *src, U scalarValue, const uint64_t maskArray[],
+    const uint64_t maskCount, const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
-    __VEC_SCOPE__
-    {
-        MaskReg preg = MovePredicate<float>();
-        RegTensor<half> src_vreg;
-        RegTensor<half> tmp_vreg;
-        RegTensor<half> zero_vreg;
-        RegTensor<float> cvt_vreg;
-        RegTensor<float> dst_vreg;
-        MaskReg full_preg;
-        uint32_t full_sreg = FULL_MASK_LEN;
-        full_preg = CreatePredicate<half>(full_sreg);
-        Duplicate(zero_vreg, (half)0, full_preg);
-        uint32_t srcBlkStride = static_cast<uint32_t>(repeatParams.srcBlkStride);
-        uint32_t dstBlkStride = static_cast<uint32_t>(repeatParams.dstBlkStride);
-        uint32_t srcRepStride = static_cast<uint32_t>(repeatParams.srcRepStride);
-        uint32_t dstRepStride = static_cast<uint32_t>(repeatParams.dstRepStride);
-        for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
-            DataCopy<half, PostLiteral::POST_MODE_UPDATE>(src_vreg, src, srcBlkStride, srcRepStride, preg);
-            Interleave(src_vreg, tmp_vreg, src_vreg, zero_vreg);
-            Cast<float, half, Mode::ZEROING, PartMode::EVEN>(cvt_vreg, src_vreg, preg);
-            DataCopy(dst_vreg, dst, dstBlkStride, 0, preg);
-            Axpy(dst_vreg, cvt_vreg, (float)scalarValue, preg);
-            DataCopy<float, PostLiteral::POST_MODE_UPDATE>(dst, dst_vreg, dstBlkStride, dstRepStride, preg);
-        }
+    constexpr bool TUCompare = sizeof(T) > sizeof(U);
+    using TT = typename Conditional<TUCompare, T, U>::type;
+    BasicAPIMaskStruct maskArrayStruct;
+    if constexpr (isMaskBitMode) {
+        ASCENDC_ASSERT(maskCount == 0, "maskCount must be 0 when isMaskBitMode is true.");
+        maskArrayStruct = *(reinterpret_cast<const BasicAPIMaskStruct*>(maskArray));
+    } else {
+        ASCENDC_ASSERT(maskArray == nullptr, "maskArray must be nullptr when isMaskBitMode is false.");
     }
-}
+    __ubuf__ uint64_t *maskBuf = nullptr;
 
-__aicore__ inline void AxpyFmixImpl(__ubuf__ float* dst, __ubuf__ half* src, half scalarValue,
-                                    uint64_t mask, const uint8_t repeatTime,
-                                    const UnaryRepeatParams& repeatParams)
-{
-    __VEC_SCOPE__
-    {
-        MaskReg preg;
-        uint32_t sreg = (uint32_t)mask;
-        preg = CreatePredicate<float>(sreg);
-        RegTensor<half> src_vreg;
-        RegTensor<half> tmp_vreg;
-        RegTensor<half> zero_vreg;
-        RegTensor<float> cvt_vreg;
-        RegTensor<float> dst_vreg;
-        MaskReg full_preg;
-        uint32_t full_sreg = FULL_MASK_LEN;
-        full_preg = CreatePredicate<half>(full_sreg);
-        Duplicate(zero_vreg, (half)0, full_preg);
-        uint32_t srcBlkStride = static_cast<uint32_t>(repeatParams.srcBlkStride);
-        uint32_t dstBlkStride = static_cast<uint32_t>(repeatParams.dstBlkStride);
-        uint32_t srcRepStride = static_cast<uint32_t>(repeatParams.srcRepStride);
-        uint32_t dstRepStride = static_cast<uint32_t>(repeatParams.dstRepStride);
-        for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
-            DataCopy<half, PostLiteral::POST_MODE_UPDATE>(src_vreg, src, srcBlkStride, srcRepStride, preg);
-            Interleave(src_vreg, tmp_vreg, src_vreg, zero_vreg);
-            Cast<float, half, Mode::ZEROING, PartMode::EVEN>(cvt_vreg, src_vreg, preg);
-            DataCopy(dst_vreg, dst, dstBlkStride, 0, preg);
-            Axpy(dst_vreg, cvt_vreg, (float)scalarValue, preg);
-            DataCopy<float, PostLiteral::POST_MODE_UPDATE>(dst, dst_vreg, dstBlkStride, dstRepStride, preg);
+    if (Internal::IsCounterMode()) {
+        if constexpr (!isSetMask) {
+            maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 2); // maskReg 256bit PK-> 128bit
         }
+        VecAxpyVFImpl<func, isSetMask, isMaskBitMode, false, T, U>(dst, src, scalarValue, maskArrayStruct, maskCount,
+            repeatTime, repeatParams, maskBuf);
+        if constexpr (!isSetMask) {
+            AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);
+        }
+    } else {
+        if constexpr (isMaskBitMode && isSetMask) {
+            SetVectorMask<TT>(maskArray[1], maskArray[0]); // set mask to SPR.MASK, movp in VF
+        }
+        VecAxpyVFImpl<func, isSetMask, isMaskBitMode, true, T, U>(dst, src, scalarValue, maskArrayStruct, maskCount,
+            repeatTime, repeatParams, maskBuf);
     }
 }
+} // namespace Internal
 
-__aicore__ inline void AxpyFmixImpl(__ubuf__ float* dst, __ubuf__ half* src, half scalarValue,
-                                    const int32_t& count)
+namespace RegAxpy {
+namespace CastParam {
+constexpr Reg::CastTrait half2floatTrait = { Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN,
+    Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN };
+}
+template <typename T, typename U, typename RegT, typename RegU>
+__simd_callee__ inline void Axpy(RegT &dstReg, RegU &srcReg, U scalarValue, Reg::MaskReg &mask)
 {
-    __VEC_SCOPE__ {
-        RegTensor<half> src_vreg;
-        RegTensor<half> tmp_vreg;
-        RegTensor<half> zero_vreg;
-        RegTensor<float> cvt_vreg;
-        RegTensor<float> dst_vreg;
-        MaskReg preg;
-        MaskReg full_preg;
-        uint32_t full_sreg = FULL_MASK_LEN;
-        full_preg = CreatePredicate<half>(full_sreg);
-        Duplicate(zero_vreg, (half)0, full_preg);
-        uint32_t sreg = (uint32_t)count;
-        uint16_t repeatTime = CeilDivision(count, B32_DATA_NUM_PER_REPEAT);
-        for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
-            preg = CreatePredicate<float>(sreg);
-            DataCopy(src_vreg, src, i * B32_DATA_NUM_PER_REPEAT);
-            Interleave(src_vreg, tmp_vreg, src_vreg, zero_vreg);
-            Cast<float, half, Mode::ZEROING, PartMode::EVEN>(cvt_vreg, src_vreg, preg);
-            DataCopy(dst_vreg, dst, i * B32_DATA_NUM_PER_REPEAT);
-            Axpy(dst_vreg, cvt_vreg, (float)scalarValue, preg);
-            DataCopy(dst, dst_vreg, i * B32_DATA_NUM_PER_REPEAT, preg);
-        }
+    if constexpr (SupportType<Tuple<T, U>, Tuple<half, half>, Tuple<float, float>, Tuple<uint64_t, uint64_t>,
+        Tuple<int64_t, int64_t>>()) {
+        Reg::Axpy(dstReg, srcReg, scalarValue, mask);
+    } else if constexpr (SupportType<Tuple<T, U>, Tuple<float, half>>()) {
+        RegU tmpReg;
+        RegT cvtReg;
+        Reg::UnPack<uint32_t, uint16_t, AscendC::Reg::HighLowPart::LOWEST>(
+            (Reg::RegTensor<uint32_t> &)tmpReg, (Reg::RegTensor<uint16_t> &)srcReg);
+        Reg::Cast<float, half, CastParam::half2floatTrait>(cvtReg, tmpReg, mask);
+        Reg::Muls(cvtReg, cvtReg, static_cast<T>(scalarValue), mask);
+        Reg::Add(dstReg, cvtReg, dstReg, mask);
     }
 }
+} // namespace RegAxpy
 
 // Axpy::Level 0
 template <typename T, typename U, bool isSetMask = true>
-__aicore__ inline void AxpyImpl(__ubuf__ T* dst, __ubuf__ U* src, const U& scalarValue,
-                                uint64_t mask[2], const uint8_t repeatTime,
-                                const UnaryRepeatParams& repeatParams)
+__aicore__ inline void AxpyImpl(__ubuf__ T *dst, __ubuf__ U *src, const U &scalarValue, uint64_t mask[],
+    const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
-    if constexpr (isSetMask) {
-        SetVectorMask<T>(mask[1], mask[0]);
-    }
-    if constexpr ((sizeof(T) == sizeof(U)) && (std::is_same_v<T, half> || std::is_same_v<T, float>)) {
-        return AxpyIntrinsicsImpl(dst, src, scalarValue, mask, repeatTime, repeatParams);
-    } else if constexpr (std::is_same_v<T, float> && std::is_same_v<U, half>) {
-        return AxpyFmixImpl(dst, src, scalarValue, mask, repeatTime, repeatParams);
-    }
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current data type is not supported!"); });
+    static_assert(SupportType<Tuple<T, U>, Tuple<half, half>, Tuple<float, float>,
+        Tuple<float, half>>(),
+        "current data type is not supported on current device!");
+    constexpr auto func = RegAxpy::Axpy<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
+    Internal::VecAxpyImplTemplate<func, isSetMask, true>(dst, src, scalarValue, mask, 0, repeatTime, repeatParams);
 }
 
 template <typename T, typename U, bool isSetMask = true>
-__aicore__ inline void AxpyImpl(__ubuf__ T* dst, __ubuf__ U* src, const U& scalarValue,
-                                uint64_t mask, const uint8_t repeatTime,
-                                const UnaryRepeatParams& repeatParams)
+__aicore__ inline void AxpyImpl(__ubuf__ T *dst, __ubuf__ U *src, const U &scalarValue, uint64_t mask,
+    const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
-    if constexpr ((sizeof(T) == sizeof(U)) && (std::is_same_v<T, half> || std::is_same_v<T, float>)) {
-        return AxpyIntrinsicsImpl(dst, src, scalarValue, mask, repeatTime, repeatParams);
-    } else if constexpr (std::is_same_v<T, float> && std::is_same_v<U, half>) {
-        return AxpyFmixImpl(dst, src, scalarValue, mask, repeatTime, repeatParams);
-    }
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current data type is not supported!"); });
+    static_assert(SupportType<Tuple<T, U>, Tuple<half, half>, Tuple<float, float>,
+        Tuple<float, half>>(),
+        "current data type is not supported on current device!");
+    constexpr auto func = RegAxpy::Axpy<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
+    Internal::VecAxpyImplTemplate<func, isSetMask, false>(dst, src, scalarValue, nullptr, mask, repeatTime,
+        repeatParams);
 }
 
 // Axpy::Level 2
 template <typename T, typename U>
-__aicore__ inline void AxpyImpl(__ubuf__ T* dst, __ubuf__ U* src, const U& scalarValue,
-                                const int32_t& count)
+__aicore__ inline void AxpyImpl(__ubuf__ T *dst, __ubuf__ U *src, const U &scalarValue, const int32_t &calCount)
 {
-    if constexpr ((sizeof(T) == sizeof(U)) && (std::is_same_v<T, half> || std::is_same_v<T, float>)) {
-        return AxpyIntrinsicsImpl(dst, src, scalarValue, count);
-    } else if constexpr (std::is_same_v<T, float> && std::is_same_v<U, half>) {
-        return AxpyFmixImpl(dst, src, scalarValue, count);
+    static_assert(SupportType<Tuple<T, U>, Tuple<half, half>, Tuple<float, float>,
+        Tuple<float, half>, Tuple<uint64_t, uint64_t>, Tuple<int64_t, int64_t>>(),
+        "current data type is not supported on current device!");
+    if constexpr (SupportBytes<T, 8>()) {
+        constexpr auto func = RegAxpy::Axpy<T, U, Reg::RegTensor<T, Reg::RegTraitNumTwo>,
+            Reg::RegTensor<U, Reg::RegTraitNumTwo>>;
+        Internal::VecAxpyLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
+    } else {
+        constexpr auto func = RegAxpy::Axpy<T, U, Reg::RegTensor<T>, Reg::RegTensor<U>>;
+        Internal::VecAxpyLevel2ImplTemplate<func, T>(dst, src, scalarValue, calCount);
     }
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current data type is not supported!"); });
 }
 }  // namespace AscendC
 #endif  // ASCENDC_MODULE_OPERATOR_VEC_TERNARY_SCALAR_IMPL_H

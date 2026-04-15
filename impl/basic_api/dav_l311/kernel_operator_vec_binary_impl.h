@@ -145,18 +145,26 @@ __aicore__ inline void AndImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *sr
  * Or                                                                                               *
  * **************************************************************************************************/
 // Or::Level 0
-BINARY_OP_IMPL_NOT_SUPPORT(OrImpl)
-BINARY_OP_IMPL(OrImpl, Or, int16_t)
-BINARY_OP_IMPL(OrImpl, Or, uint16_t)
-BINARY_OP_IMPL(OrImpl, Or, int32_t)
-BINARY_OP_IMPL(OrImpl, Or, uint32_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL_NOT_SUPPORT(OrImpl)
-BINARY_OP_CONTINUOUS_MASK_IMPL(OrImpl, Or, int8_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(OrImpl, Or, uint8_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(OrImpl, Or, int16_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(OrImpl, Or, uint16_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(OrImpl, Or, int32_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(OrImpl, Or, uint32_t)
+template <typename T, bool isSetMask = true>
+__aicore__ inline void OrImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask[],
+    const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+{
+    static_assert((SupportType<T, int16_t, uint16_t, uint32_t, int32_t>()),
+        "current data type is not supported on current device!");
+    constexpr auto func = Reg::Or<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, true>(dst, src0, src1, mask, 0, repeatTime, repeatParams);
+}
+
+template <typename T, bool isSetMask = true>
+__aicore__ inline void OrImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask,
+    const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+{
+    static_assert((SupportType<T, int16_t, uint16_t, uint32_t, int32_t>()),
+        "current data type is not supported on current device!");
+    constexpr auto func = Reg::Or<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, false>(dst, src0, src1, nullptr, mask, repeatTime, repeatParams);
+}
+
 template <typename T, bool isSetMask = true>
 __aicore__ inline void AddImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask[],
     const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
