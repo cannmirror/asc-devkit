@@ -21,6 +21,7 @@
 #define MSTX_TENSOR_INFO_H
 #include "kernel_tensor.h"
 #include "kernel_struct_unary.h"
+#include "kernel_struct_binary.h"
 #include "kernel_struct_brcb.h"
 #include "kernel_struct_gather.h"
 
