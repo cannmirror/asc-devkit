@@ -32,41 +32,6 @@ __aicore__ inline void asc_set_ndim_pad_value_impl(uint8_t pad_value)
     }
 }
 
-__aicore__ inline void asc_set_ndim_pad_value_impl(fp4x2_e2m1_t pad_value)
-{
-    if ASC_IS_AIV {
-        return set_pad_val_nddma(*reinterpret_cast<uint8_t*>(&pad_value));
-    }
-}
-
-__aicore__ inline void asc_set_ndim_pad_value_impl(fp4x2_e1m2_t pad_value)
-{
-    if ASC_IS_AIV {
-        return set_pad_val_nddma(*reinterpret_cast<uint8_t*>(&pad_value));
-    }
-}
-
-__aicore__ inline void asc_set_ndim_pad_value_impl(fp8_e8m0_t pad_value)
-{
-    if ASC_IS_AIV {
-        return set_pad_val_nddma(*reinterpret_cast<uint8_t*>(&pad_value));
-    }
-}
-
-__aicore__ inline void asc_set_ndim_pad_value_impl(fp8_e5m2_t pad_value)
-{
-    if ASC_IS_AIV {
-        return set_pad_val_nddma(*reinterpret_cast<uint8_t*>(&pad_value));
-    }
-}
-
-__aicore__ inline void asc_set_ndim_pad_value_impl(fp8_e4m3fn_t pad_value)
-{
-    if ASC_IS_AIV {
-        return set_pad_val_nddma(*reinterpret_cast<uint8_t*>(&pad_value));
-    }
-}
-
 __aicore__ inline void asc_set_ndim_pad_value_impl(int16_t pad_value)
 {
     if ASC_IS_AIV {

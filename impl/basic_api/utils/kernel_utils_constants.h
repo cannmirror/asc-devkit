@@ -21,6 +21,7 @@
 #define ASCENDC_MODULE_UTILS_CONSTANTS_H
 #include "utils/kernel_utils_ceil_oom_que.h"
 #include "utils/kernel_utils_dump_constants.h"
+#include "impl/utils/common_types.h"
 
 namespace AscendC {
 const int32_t DEFAULT_BLK_NUM = 8;
@@ -576,7 +577,7 @@ struct IntegerSubType {
     }
 };
 
-using int4b_t = IntegerSubType<INT4_BIT_NUM, true>;
+using int4b_t = integer_sub_type<INT4_BIT_NUM, true>;
 
 #if (__NPU_ARCH__ == 5102)
 using int2b_t = IntegerSubType<INT2_BIT_NUM, true>;
