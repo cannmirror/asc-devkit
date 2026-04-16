@@ -8,6 +8,9 @@
 
     // Explicitly list each davinci compute device and the three control devices.
     "runArgs": [
+        "--ipc=host",
+        "--net=host",
+        "--privileged",
         "--device=/dev/davinci0",
         "--device=/dev/davinci1",
         "--device=/dev/davinci2",

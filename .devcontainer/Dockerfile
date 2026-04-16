@@ -44,7 +44,7 @@ RUN arch="$(dpkg --print-architecture)" && \
     fi && \
     apt update && \
     apt install -y --no-install-recommends \
-      tzdata lsb-release curl wget gnupg2 openssl ca-certificates openssh-client \
+      tzdata lsb-release curl wget gnupg2 openssl ca-certificates openssh-client pciutils \
       build-essential cmake ninja-build ccache pkg-config autoconf automake libtool gperf \
       gdb gdbserver git git-lfs lcov vim htop tree zsh \
     && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \

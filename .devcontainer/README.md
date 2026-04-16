@@ -1,22 +1,29 @@
 # Dev Container
 
-Ubuntu 24.04 development environment for AscendC NPU kernel development.
+[![Docker Version](https://img.shields.io/badge/docker-%3E%3D23.0.0-blue.svg)](https://docs.docker.com/)
+[![Docker Buildx](https://img.shields.io/badge/docker%20buildx-required-orange.svg)](https://docs.docker.com/reference/cli/docker/buildx/)
 
-## Prerequisites
+[中文版](./README.md) | [English](./README_en.md)
 
-| Requirement | With NPU | Without NPU |
-|-------------|----------|-------------|
-| Docker ≥ 23.0.0 | required | required |
-| docker buildx | required | required |
-| Ascend driver on host (`/usr/local/Ascend/driver`) | required | not needed |
-| NPU device nodes (`/dev/davinciN`, etc.) | required | not needed |
+基于Ubuntu 24.04的AscendC NPU算子开发容器化环境。
 
-Check your Docker version:
+## 前置条件
+
+| 依赖项 | 有NPU | 无NPU |
+| -------- | :--------: | :--------: |
+| Docker ≥ 23.0.0 | 必需 | 必需 |
+| docker buildx | 必需 | 必需 |
+| 宿主机Ascend驱动（`/usr/local/Ascend/driver`） | 必需 | 不需要 |
+| NPU设备节点（`/dev/davinciN`等） | 必需 | 不需要 |
+
+检查Docker版本：
+
 ```bash
 docker --version
 ```
 
-Install buildx if missing:
+如未安装`buildx`，执行以下命令安装：
+
 ```bash
 mkdir -p /usr/local/lib/docker/cli-plugins
 ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
@@ -25,66 +32,72 @@ curl -fsSL "https://github.com/docker/buildx/releases/latest/download/buildx-lin
 chmod +x /usr/local/lib/docker/cli-plugins/docker-buildx
 ```
 
-> The Ascend **driver** directory (`/usr/local/Ascend/driver`) is mounted read-only into the container. The **CANN toolkit and ops packages** should be installed inside the container after startup — not on the host. Installing CANN on the host risks overwriting a shared environment.
+> [!WARNING] 注意
+> 宿主机的Ascend驱动目录（`/usr/local/Ascend/driver`）以**只读**方式挂载到容器中。**CANN toolkit和ops包**须在容器启动后在容器内安装，切勿在宿主机上安装，否则会覆盖宿主机的共享环境。
 
-## Build the Image
+## 构建镜像
 
-> **Build time:** approximately 5 minutes on a typical connection. The dominant cost is downloading the conda environment and PyTorch. Subsequent rebuilds hit the Docker layer cache and complete in seconds if only non-package layers changed.
+> [!TIP] 提示
+> **构建耗时**：在正常网络环境下约需5分钟，主要时间用于下载conda环境和PyTorch。后续重新构建时，若仅修改了非软件包相关的层，Docker层缓存会命中，仅需数秒即可完成。
 
 ```bash
 docker buildx build --network host -t ascendc:ubuntu24.04 .devcontainer/
 ```
 
-## Quick Start (Human Users)
+## 快速开始（人类用户）
 
-> If you are an AI agent, skip to [Quick Start (AI Agent)](#quick-start-ai-agent).
+> [!NOTE] 说明
+> 如您是AI Agent，请跳至[快速开始（AI Agent）](#快速开始ai-agent)。
 
-### With NPU
+### 有NPU
 
-Install the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension, then:
+安装 [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) 扩展，然后执行：
 
-```
+```text
 Ctrl+Shift+P → Dev Containers: Reopen in Container
 ```
 
-### Without NPU
+### 无NPU
 
-Copy `devcontainer.json` to a local override and remove all NPU-specific entries:
+将`devcontainer.json`复制为本地覆盖文件，并移除所有NPU相关配置项。
 
-**In `runArgs`**, remove all `--device` lines (davinci0-7, davinci_manager, devmm_svm, hisi_hdc). If you have no other args, set:
+**在`runArgs`中**，删除所有NPU相关行：包括三个设备访问标志（`--ipc=host`、`--net=host`、`--privileged`）以及所有`--device`行（`davinci0-7`、`davinci_manager`、`devmm_svm`、`hisi_hdc`），将其设置为：
+
 ```jsonc
 "runArgs": []
 ```
 
-**In `mounts`**, remove the driver and device-related bind mounts:
-```
+**在`mounts`中**，删除驱动和设备相关的绑定挂载：
+
+```text
 source=/usr/local/Ascend/driver,...
 source=/usr/local/dcmi,...
 source=/usr/local/bin/npu-smi,...
 source=/etc/ascend_install.info,...
 ```
 
-Keep the ccache volume and any data directories you've added. Then reopen in container as normal.
+保留`ccache`卷以及您自行添加的数据目录挂载，然后按正常流程在容器中重新打开项目。
 
-## Quick Start (AI Agent)
+## 快速开始（AI Agent）
 
-Agents (e.g. Claude Code, CI runners) can run the container directly without VS Code.
+AI Agent（如Claude Code、CI Runner）可不依赖VS Code，直接运行容器。
 
-**Before running the container, confirm the following with the user:**
+**在运行容器前，请向用户确认以下信息：**
 
-1. **Repository path** — where is the project checked out on the host? (default: current directory `$PWD`)
-2. **Data directories** — are there any additional data directories to mount (e.g. datasets, model weights)?
-3. **NPU availability** — does the host have Ascend NPUs? (determines which variant to use below)
+1. **仓库路径** — 项目在宿主机上的检出路径是什么？（默认：当前目录`$PWD`）
+2. **数据目录** — 是否有其他需要挂载的数据目录（如数据集、模型权重）？
+3. **NPU可用性** — 宿主机是否有昇腾NPU？（决定下方使用哪种启动方式）
 
-Then **show the user the exact `docker run` command** you are about to execute and wait for confirmation before proceeding.
+确认后，**将即将执行的`docker run`命令完整展示给用户**，待用户确认后再执行。
 
-> Some steps require user action: CANN toolkit and ops packages must be installed inside the container
-> after startup. Ask the user to provide the CANN package paths or installer commands.
+> [!IMPORTANT] 重要
+> 部分步骤需要用户介入：容器启动后，须在容器内手动安装CANN toolkit和ops包。请向用户询问CANN包的路径或安装命令。
 
-### With NPU
+### 有NPU
 
 ```bash
 docker run -itd --name ascendc_container \
+  --ipc=host --net=host --privileged \
   --device=/dev/davinci0 \
   --device=/dev/davinci1 \
   --device=/dev/davinci2 \
@@ -103,35 +116,36 @@ docker run -itd --name ascendc_container \
   ascendc:ubuntu24.04
 ```
 
-If the user has fewer than 8 NPUs, remove the corresponding `--device=/dev/davinciN` lines (use `ls /dev/davinci*` to check the number).
+若宿主机NPU数量不足8张，删除对应的`--device=/dev/davinciN`行（可执行`ls /dev/davinci*`查看实际设备数量）。
 
-If the user needs to mount data directories, append each as `-v /host/path:/container/path`.
+若用户需要挂载数据目录，以`-v /host/path:/container/path`的形式逐条追加。
 
-### Without NPU
+### 无NPU
 
 ```bash
 docker run -itd --name ascendc_container ascendc:ubuntu24.04
 ```
 
-If the user needs to mount data directories, append each as `-v /host/path:/container/path`.
+若用户需要挂载数据目录，以`-v /host/path:/container/path`的形式逐条追加。
 
-> After starting the container, install CANN toolkit and ops packages manually, or automate via a setup script.
+> [!NOTE] 说明
+> 容器启动后，请手动安装CANN toolkit和ops包。
 
-## Python Environments
+## Python环境
 
-One conda environment is pre-installed:
+容器内预置了以下conda环境：
 
-| Environment | Python | PyTorch |
-|-------------|--------|---------|
+| 环境名 | Python | PyTorch |
+| :--------: | :--------: | :---------: |
 | `py312` | 3.12 | 2.7.1 |
 
-Default active environment is `py312`.
+默认激活环境为`py312`。
 
-## Configuration
+## 配置说明
 
-### Mirror Sources
+### 镜像源
 
-To override mirror sources at build time:
+构建时可通过构建参数覆盖默认镜像源：
 
 ```bash
 docker buildx build --network host \
@@ -141,26 +155,26 @@ docker buildx build --network host \
   -t ascendc:ubuntu24.04 .devcontainer/
 ```
 
-Available mirrors:
+可用镜像源：
 
-| Build arg | Default | Tsinghua | USTC | Huawei |
-|-----------|---------|----------|------|--------|
+| 构建参数 | 默认 | 清华大学镜像 | 中科大镜像 | 华为云镜像 |
+| :----------: | ------ | ---------- | -------- | -------- |
 | `APT_MIRROR` | `mirrors.huaweicloud.com` | `mirrors.tuna.tsinghua.edu.cn` | `mirrors.ustc.edu.cn` | `mirrors.huaweicloud.com` |
 | `CONDA_MIRROR` | `mirrors.tuna.tsinghua.edu.cn/anaconda` | `mirrors.tuna.tsinghua.edu.cn/anaconda` | `mirrors.ustc.edu.cn/anaconda` | — |
 | `PYPI_MIRROR` | `repo.huaweicloud.com/repository/pypi/simple` | `pypi.tuna.tsinghua.edu.cn/simple` | `pypi.mirrors.ustc.edu.cn/simple` | `repo.huaweicloud.com/repository/pypi/simple` |
 
-### Data Directory
+### 挂载目录
 
-The data directory varies per developer. Add your own in `devcontainer.json`:
+挂载目录因开发者而异，可在`devcontainer.json`中自行添加：
 
 ```jsonc
 // mounts
 "source=/your/data,target=/your/data,type=bind"
 ```
 
-### NPU Device Selection
+### NPU设备选择
 
-Device nodes are passed explicitly with `--device=/dev/davinciN`. If the host has fewer than 8 NPUs, remove the corresponding lines. For example, for a 4-NPU host:
+设备节点通过`--device=/dev/davinciN`显式传入。若宿主机NPU数量不足8张，删除对应行。以4张NPU的宿主机为例：
 
 ```bash
 --device=/dev/davinci0 \
