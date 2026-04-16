@@ -63,7 +63,7 @@ private:
     }
 
     template <const CopyL0C2GMTrait& trait = DEFAULT_COPY_L0C2GM_TRAIT, typename T, typename U, typename S>
-    __aicore__ inline static typename Std::enable_if<IsTileTensorV<S>, void>::type
+    __aicore__ inline static typename Std::enable_if<IsAttrTensorV<S>, void>::type
     DataCopyImpl(const T& dst, const U& src, const S& quant, const FixpipeParams& params = DEFAULT_FIXPIPE_PARAMS)
     {
         constexpr Hardware dstPos = GetHardPos<T>();
@@ -82,7 +82,7 @@ private:
 
     template <const CopyL0C2GMTrait& trait = DEFAULT_COPY_L0C2GM_TRAIT, typename T, typename U, typename S,
               typename Coord>
-    __aicore__ inline static typename Std::enable_if<(Std::is_same_v<S, uint64_t> || IsTileTensorV<S>) && Std::is_tuple_v<Coord>,
+    __aicore__ inline static typename Std::enable_if<(Std::is_same_v<S, uint64_t> || IsAttrTensorV<S>) && Std::is_tuple_v<Coord>,
                                             void>::type
     DataCopyImpl(const T& dst, const U& src, const S& quant, const Coord& coord,
                  const FixpipeParams& params = DEFAULT_FIXPIPE_PARAMS)

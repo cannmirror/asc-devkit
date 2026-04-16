@@ -38,6 +38,19 @@ struct HardwareMemPtrV2 : IterAdaptor<Pointer, HardwareMemPtrV2<PtrPattern, Poin
     using ptrPattern = PtrPattern;
 };
 
+template <typename T>
+struct GetPtrPatternInfo {
+    static_assert(!Std::is_same_v<T, T>, "GetPtrPattern requires HardwareMemPtrV2");
+};
+
+template <typename PtrPattern, typename Pointer>
+struct GetPtrPatternInfo<HardwareMemPtrV2<PtrPattern, Pointer>> {
+    using type = PtrPattern;
+};
+
+template <typename T>
+using GetPtrPattern = typename GetPtrPatternInfo<Std::remove_cvref_t<T>>::type;
+
 // is hardware mem
 template <Hardware hardPos, typename Pointer, typename = void>
 struct IsHardwareMem : Std::false_type {};

@@ -144,16 +144,14 @@ struct LocalTensor<TensorAttribute<EngineType, LayoutType>> {
     template <typename Coord, typename Info>
  	__aicore__ inline constexpr decltype(auto) Slice(const Coord& coord, const Info& info) {
         auto iter = Data() + Layout()(coord);
- 	    auto coordLayout = MakeCoordLayout(coord, Layout());
- 	    auto tileLayout = MakeSliceLayout(coordLayout, info);
+ 	    auto tileLayout = MakeSliceLayout(coord, Layout(), info);
  	    return MakeTensor(iter, tileLayout);
  	}
 
     template <typename Coord, typename Info>
  	__aicore__ inline constexpr decltype(auto) Slice(const Coord& coord, const Info& info) const{
         auto iter = Data() + Layout()(coord);
- 	    auto coordLayout = MakeCoordLayout(coord, Layout());
- 	    auto tileLayout = MakeSliceLayout(coordLayout, info);
+ 	    auto tileLayout = MakeSliceLayout(coord, Layout(), info);
  	    return MakeTensor(iter, tileLayout);
  	}
 
@@ -183,13 +181,13 @@ struct LocalTensor<TensorAttribute<EngineType, LayoutType>> {
 };
 
 template <typename T>
-struct IsTileTensor : Std::false_type {};
+struct IsAttrTensor : Std::false_type {};
 
 template <typename Engine, typename Layout>
-struct IsTileTensor<LocalTensor<TensorAttribute<Engine,Layout>>> : Std::true_type {};
+struct IsAttrTensor<LocalTensor<TensorAttribute<Engine,Layout>>> : Std::true_type {};
 
 template <typename T>
-constexpr bool IsTileTensorV = IsTileTensor<Std::remove_cvref_t<T>>::value;
+constexpr bool IsAttrTensorV = IsAttrTensor<Std::remove_cvref_t<T>>::value;
 
 // make_tensor.h
 template <typename T, typename = void>
@@ -204,7 +202,7 @@ template <typename Arg0, typename... Args>
     __aicore__ inline constexpr auto operator()(const Arg0& arg0, const Args&... args) const {
         if constexpr (HasDereference<Arg0>::value) {
             using Engine = ViewEngine<Arg0>;
-            if constexpr (sizeof...(Args) == 1 && (is_layout<Args>::value && ...)) {
+            if constexpr (sizeof...(Args) == 1 && (IsLayoutV<Args> && ...)) {
                 return LocalTensor<TensorAttribute<Engine, Args...>>{Engine{arg0}, args...};
             } else {
                 return LocalTensor<TensorAttribute<Engine, decltype(MakeLayout(args...))>>{Engine{arg0}, MakeLayout(args...)};

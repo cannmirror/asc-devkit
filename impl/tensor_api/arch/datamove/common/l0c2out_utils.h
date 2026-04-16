@@ -121,7 +121,7 @@ __aicore__ inline constexpr QuantMode_t GetFixpipeQuantPre()
 {
     using srcType = typename U::elementType;
     using dstType = typename T::elementType;
-    constexpr bool isTensor = IsTileTensorV<S>;
+    constexpr bool isTensor = IsAttrTensorV<S>;
     constexpr bool isScalar = Std::is_same_v<S, uint64_t>;
 
     if constexpr (roundMode == RoundMode::HYBRID) {

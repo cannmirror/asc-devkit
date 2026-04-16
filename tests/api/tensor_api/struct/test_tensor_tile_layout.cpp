@@ -137,15 +137,15 @@ TEST_F(Tensor_Api_Layout, IsLayoutOperation)
 
     Layout<Shape<int, int, int>, Stride<int, int, int>> layoutInit(shape, stride);
 
-    EXPECT_EQ(is_layout<decltype(shape)>::value, false);
-    EXPECT_EQ(is_layout<decltype(stride)>::value, false);
-    EXPECT_EQ(is_layout<decltype(layoutMake)>::value, true);
-    EXPECT_EQ(is_layout<decltype(layoutInit)>::value, true);
+    EXPECT_EQ(IsLayout<decltype(shape)>::value, false);
+    EXPECT_EQ(IsLayout<decltype(stride)>::value, false);
+    EXPECT_EQ(IsLayout<decltype(layoutMake)>::value, true);
+    EXPECT_EQ(IsLayout<decltype(layoutInit)>::value, true);
 
-    EXPECT_EQ(is_layout_v<decltype(shape)>, false);
-    EXPECT_EQ(is_layout_v<decltype(stride)>, false);
-    EXPECT_EQ(is_layout_v<decltype(layoutMake)>, true);
-    EXPECT_EQ(is_layout_v<decltype(layoutInit)>, true);
+    EXPECT_EQ(IsLayoutV<decltype(shape)>, false);
+    EXPECT_EQ(IsLayoutV<decltype(stride)>, false);
+    EXPECT_EQ(IsLayoutV<decltype(layoutMake)>, true);
+    EXPECT_EQ(IsLayoutV<decltype(layoutInit)>, true);
 }
 
 TEST_F(Tensor_Api_Layout, MakeLayoutByShapeOperation)

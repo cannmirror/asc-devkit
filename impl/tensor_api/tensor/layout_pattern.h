@@ -40,6 +40,13 @@ struct ScaleBNDLayoutPtn {};
 struct ScaleBDNLayoutPtn {};
 struct DefaultPtn {};
 
+template <typename LayoutPattern, typename TraitType, typename ShapeType, typename StrideType>
+__aicore__ inline constexpr auto MakePatternLayout(const ShapeType& shape, const StrideType& stride)
+{
+    using LayoutT = Layout<ShapeType, StrideType, Std::tuple<LayoutPattern, TraitType>>;
+    return LayoutT(shape, stride);
+} 
+
 struct MakeNzFrameLayout {
     template <typename TraitType, typename T, typename U>
     __aicore__ inline static auto Make(T row, U column) {
