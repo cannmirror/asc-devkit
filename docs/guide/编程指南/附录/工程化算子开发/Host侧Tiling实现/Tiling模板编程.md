@@ -43,6 +43,32 @@
     );
     ```
 
+    当不同模板参数组合需要使用不同的Tiling结构体时，可以在对应的ASCENDC_TPL_ARGS_SEL中增加ASCENDC_TPL_TILING_STRUCT_SEL接口。例如：
+
+    ```
+    ASCENDC_TPL_SEL(
+        ASCENDC_TPL_ARGS_SEL(
+        ASCENDC_TPL_KERNEL_TYPE_SEL(ASCENDC_TPL_AIV_ONLY),
+        ASCENDC_TPL_DATATYPE_SEL(D_T_X, C_DT_FLOAT16),
+        ASCENDC_TPL_DATATYPE_SEL(D_T_Y, C_DT_FLOAT16),
+        ASCENDC_TPL_DATATYPE_SEL(D_T_Z, C_DT_FLOAT16),
+        ASCENDC_TPL_UINT_SEL(TILE_NUM, ASCENDC_TPL_UI_LIST, 1, 8),
+        ASCENDC_TPL_BOOL_SEL(IS_SPLIT, 0),
+        ASCENDC_TPL_TILING_STRUCT_SEL(SplitTilingData)
+        ),
+        ASCENDC_TPL_ARGS_SEL(
+        ASCENDC_TPL_KERNEL_TYPE_SEL(ASCENDC_TPL_AIV_ONLY),
+        ASCENDC_TPL_DATATYPE_SEL(D_T_X, C_DT_FLOAT16),
+        ASCENDC_TPL_DATATYPE_SEL(D_T_Y, C_DT_FLOAT16),
+        ASCENDC_TPL_DATATYPE_SEL(D_T_Z, C_DT_FLOAT16),
+        ASCENDC_TPL_UINT_SEL(TILE_NUM, ASCENDC_TPL_UI_LIST, 1, 8),
+        ASCENDC_TPL_BOOL_SEL(IS_SPLIT, 1)
+        ),
+    );
+    ```
+
+    上述接口仅用于为当前模板参数组合指定Tiling结构体，不作为kernel的模板参数传入，也不参与ASCENDC_TPL_SEL_PARAM或GET_TPL_TILING_KEY的参数顺序。未配置ASCENDC_TPL_TILING_STRUCT_SEL的模板参数组合，将使用REGISTER_TILING_DEFAULT注册的默认Tiling结构体；使用该接口时，必须提供默认Tiling结构体。kernel侧可通过GET_TILING_DATA_WITH_STRUCT(TilingStructName, tiling_data, tiling)读取指定结构体对应的tiling数据。
+
 2.  host侧调用ASCENDC\_TPL\_SEL\_PARAM接口自动生成并配置TilingKey。
 
     -   host实现文件中包含[步骤1](#li1949014102516)中定义模板参数和模板参数组合的头文件。
@@ -106,4 +132,3 @@
 
 >[!NOTE]说明 
 >Tiling模板编程场景下，编译时，可以通过[--kernel-template-input](../算子包编译/算子工程编译.md#li1399162982719)编译选项配置仅编译指定的模板参数组合相关的Kernel代码，用于加速编译过程。
-
