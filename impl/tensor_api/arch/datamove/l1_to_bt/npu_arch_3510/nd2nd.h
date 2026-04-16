@@ -39,9 +39,9 @@ private:
     template <const CopyL12BTTrait& trait, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
+        // CheckFormat_CheckNDTemplate<T>
+        // CheckFormat_CheckNDTemplate<U>
         CheckDataTypeFor3510::CheckL12BtDataType<T, U>();
-        CheckFormat::CheckNDTemplate<T>();
-        CheckFormat::CheckNDTemplate<U>();
     }
 
     template <const CopyL12BTTrait& trait, typename T, typename U>

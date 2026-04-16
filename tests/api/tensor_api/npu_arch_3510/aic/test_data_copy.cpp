@@ -170,11 +170,11 @@ __aicore__ inline void tensor2tensor_run_stub(const T& dst, const U& src, const 
     __##SRC_PREFIX##__ DTYPE srcData[SRC_SIZE1 * SRC_SIZE2 * sizeof(DTYPE)]; \
     __##DST_PREFIX##__ DTYPE dstData[DST_SIZE1 * DST_SIZE2 * sizeof(DTYPE)]; \
     \
-    auto srcIterator = Make##SRC_LOCATION##memPtr(srcData); \
+    auto srcIterator = MakeMemPtr<Location::SRC_LOCATION>(srcData); \
     auto srcLayout = Make##SRC_LAYOUT##Layout<DTYPE>(SRC_SIZE1, SRC_SIZE2); \
     auto srcTensor = MakeTensor(srcIterator, srcLayout); \
     \
-    auto dstIterator = Make##DST_LOCATION##memPtr(dstData); \
+    auto dstIterator = MakeMemPtr<Location::DST_LOCATION>(dstData); \
     auto dstLayout = Make##DST_LAYOUT##Layout<DTYPE>(DST_SIZE1, DST_SIZE2); \
     auto dstTensor = MakeTensor(dstIterator, dstLayout);
 
@@ -185,11 +185,11 @@ __aicore__ inline void tensor2tensor_run_stub(const T& dst, const U& src, const 
     __##SRC_PREFIX##__ SRC_DTYPE srcData[SRC_SIZE1 * SRC_SIZE2 * sizeof(SRC_DTYPE)]; \
     __##DST_PREFIX##__ DST_DTYPE dstData[DST_SIZE1 * DST_SIZE2 * sizeof(DST_DTYPE)]; \
     \
-    auto srcIterator = Make##SRC_LOCATION##memPtr(srcData); \
+    auto srcIterator = MakeMemPtr<Location::SRC_LOCATION>(srcData); \
     auto srcLayout = Make##SRC_LAYOUT##Layout<SRC_DTYPE>(SRC_SIZE1, SRC_SIZE2); \
     auto srcTensor = MakeTensor(srcIterator, srcLayout); \
     \
-    auto dstIterator = Make##DST_LOCATION##memPtr(dstData); \
+    auto dstIterator = MakeMemPtr<Location::DST_LOCATION>(dstData); \
     auto dstLayout = Make##DST_LAYOUT##Layout<DST_DTYPE>(DST_SIZE1, DST_SIZE2); \
     auto dstTensor = MakeTensor(dstIterator, dstLayout);
 
@@ -203,7 +203,7 @@ __aicore__ inline void tensor2tensor_run_stub(const T& dst, const U& src, const 
         MOCKER_CPP(copy_cbuf_to_bt, void(uint64_t, __cbuf__ DTYPE*, uint16_t, uint16_t, uint16_t, uint16_t, uint16_t)) \
             .times(1) \
             .will(invoke(&copy_cbuf_to_bt_stub<DTYPE, SRC_SIZE1, SRC_SIZE2, DST_SIZE1, DST_SIZE2>)); \
-        CREATE_TENSOR(DTYPE, SRC_SIZE1, SRC_SIZE2, DST_SIZE1, DST_SIZE2, cbuf, L1, ND, biasbuf, Bias, ND) \
+        CREATE_TENSOR(DTYPE, SRC_SIZE1, SRC_SIZE2, DST_SIZE1, DST_SIZE2, cbuf, L1, ND, biasbuf, BIAS, ND) \
         Copy(CopyAtom<CopyTraits<CopyL12BT, CopyL12BTTraitDefault>>{}, dstTensor, srcTensor);\
         GlobalMockObject::verify(); \
     }
@@ -219,7 +219,7 @@ DATA_COPY_TEST_L12BIAS_ND2ND(int32_t, 1, 64, 1, 64)
         MOCKER_CPP(copy_cbuf_to_bt, void(uint64_t, __cbuf__ SRC_DTYPE*, uint16_t, uint16_t, uint16_t, uint16_t, uint16_t)) \
             .times(1) \
             .will(invoke(&copy_cbuf_to_bt_two_type_stub<SRC_DTYPE, DST_DTYPE, SRC_SIZE1, SRC_SIZE2, DST_SIZE1, DST_SIZE2>)); \
-        CREATE_TENSOR_TWO_TYPE(SRC_DTYPE, SRC_SIZE1, SRC_SIZE2, DST_DTYPE, DST_SIZE1, DST_SIZE2, cbuf, L1, ND, biasbuf, Bias, ND) \
+        CREATE_TENSOR_TWO_TYPE(SRC_DTYPE, SRC_SIZE1, SRC_SIZE2, DST_DTYPE, DST_SIZE1, DST_SIZE2, cbuf, L1, ND, biasbuf, BIAS, ND) \
         Copy(CopyAtom<CopyTraits<CopyL12BT, CopyL12BTTraitDefault>>{}, dstTensor, srcTensor);\
         GlobalMockObject::verify(); \
     }
@@ -236,7 +236,7 @@ DATA_COPY_TEST_L12BIAS_TWO_TYPE_ND2ND(half, 1, 64, float, 1, 64)
         MOCKER_CPP(copy_cbuf_to_fbuf, void(__fbuf__ void*, __cbuf__ void*, uint16_t, uint16_t, uint16_t, uint16_t)) \
             .times(1) \
             .will(invoke(&copy_cbuf_to_fbuf_stub<DTYPE, SRC_SIZE1, SRC_SIZE2, DST_SIZE1, DST_SIZE2>)); \
-        CREATE_TENSOR(DTYPE, SRC_SIZE1, SRC_SIZE2, DST_SIZE1, DST_SIZE2, cbuf, L1, ND, fbuf, Fixbuf, ND) \
+        CREATE_TENSOR(DTYPE, SRC_SIZE1, SRC_SIZE2, DST_SIZE1, DST_SIZE2, cbuf, L1, ND, fbuf, FIXBUF, ND) \
         Copy(CopyAtom<CopyTraits<CopyL12FB, CopyL12FBTraitDefault>>{}, dstTensor, srcTensor);\
         GlobalMockObject::verify(); \
     }
