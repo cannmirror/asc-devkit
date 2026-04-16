@@ -56,8 +56,8 @@ struct MakeNzFrameLayout {
 struct MakeNDFrameLayout {
     template <typename TraitType, typename T, typename U>
     __aicore__ inline static auto Make(T row, U column) {
-        auto shape = MakeShape(MakeShape(Std::Int<1>{}, row), MakeShape(Std::Int<1>{}, column));
-        auto stride = MakeStride(MakeStride(Std::Int<0>{}, column), MakeStride(Std::Int<0>{}, Std::Int<1>{}));
+        auto shape = MakeShape(row, column);
+        auto stride = MakeStride(column, Std::Int<1>{});
         using LayoutT = Layout<decltype(shape), decltype(stride), Std::tuple<NDLayoutPtn, TraitType>>;
         return LayoutT(shape, stride);
     }
@@ -79,8 +79,8 @@ struct MakeZnFrameLayout {
 struct MakeDNFrameLayout {
     template <typename TraitType, typename T, typename U>
     __aicore__ inline static auto Make(T row, U column) {
-        auto shape = MakeShape(MakeShape(Std::Int<1>{}, row), MakeShape(Std::Int<1>{}, column));
-        auto stride = MakeStride(MakeStride(Std::Int<0>{}, Std::Int<1>{}), MakeStride(Std::Int<0>{}, row));
+        auto shape = MakeShape(row, column);
+        auto stride = MakeStride(Std::Int<1>{}, row);
         using LayoutT = Layout<decltype(shape), decltype(stride), Std::tuple<DNLayoutPtn, TraitType>>;
         return LayoutT(shape, stride);
     }

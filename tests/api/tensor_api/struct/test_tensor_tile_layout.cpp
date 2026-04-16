@@ -1073,10 +1073,10 @@ TEST_F(Tensor_Api_Layout, TestMakeFrameLayout)
     using namespace AscendC::Te;
 
     auto RowMajorLayout = MakeFrameLayout<NDLayoutPtn, LayoutTraitDefault<>>(128, 256);
-    EXPECT_EQ(AscendC::Std::get<1>(RowMajorLayout.Shape<0>()), 128);
-    EXPECT_EQ(AscendC::Std::get<1>(RowMajorLayout.Shape<1>()), 256);
-    EXPECT_EQ(AscendC::Std::get<1>(RowMajorLayout.Stride<0>()), 256);
-    EXPECT_EQ(AscendC::Std::get<1>(RowMajorLayout.Stride<1>()), 1);
+    EXPECT_EQ(AscendC::Std::get<0>(RowMajorLayout.Shape()), 128);
+    EXPECT_EQ(AscendC::Std::get<1>(RowMajorLayout.Shape()), 256);
+    EXPECT_EQ(AscendC::Std::get<0>(RowMajorLayout.Stride()), 256);
+    EXPECT_EQ(AscendC::Std::get<1>(RowMajorLayout.Stride()), 1);
 
     auto nzLayout = MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<float>>(128, 256);
     auto nzShape0 = nzLayout.Shape<0>();
