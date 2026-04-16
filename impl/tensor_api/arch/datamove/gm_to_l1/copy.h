@@ -27,11 +27,11 @@
 namespace AscendC {
 namespace Te {
 
-constexpr DataCopyTrait DEFAULT_DATA_COPY_TRAIT;
+constexpr CopyGM2L1Trait DEFAULT_COPY_GM_TO_L1_TRAIT;
 
 struct CopyGM2L1TraitDefault {
-    using TraitType = DataCopyTrait;
-    static constexpr const TraitType value = DEFAULT_DATA_COPY_TRAIT;
+    using TraitType = CopyGM2L1Trait;
+    static constexpr const TraitType value = DEFAULT_COPY_GM_TO_L1_TRAIT;
 };
 
 struct CopyGM2L1 {
@@ -45,7 +45,7 @@ public:
     }
 
 private:
-    template <const DataCopyTrait& trait = DEFAULT_DATA_COPY_TRAIT, typename T, typename U>
+    template <const CopyGM2L1Trait& trait = DEFAULT_COPY_GM_TO_L1_TRAIT, typename T, typename U>
     __aicore__ inline static void DataCopyImpl(const T& dst, const U& src)
     {
         constexpr Hardware dstTPos = GetHardPos<T>();
@@ -54,7 +54,7 @@ private:
         Tensor2Tensor::template Run<trait, T, U>(dst, src);
     }
 
-    template <const DataCopyTrait& trait = DEFAULT_DATA_COPY_TRAIT, typename T, typename U, typename Coord>
+    template <const CopyGM2L1Trait& trait = DEFAULT_COPY_GM_TO_L1_TRAIT, typename T, typename U, typename Coord>
     __aicore__ inline static void DataCopyImpl(const T& dst, const U& src, const Coord& coord)
     {
         auto sliceTensor = src(coord, dst);

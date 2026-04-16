@@ -29,6 +29,8 @@
 namespace AscendC {
 namespace Te {
 
+struct CopyGM2L1Trait {};
+
 template <typename T>
 __aicore__ inline void SetMTE2NzPara(const T& para)
 {

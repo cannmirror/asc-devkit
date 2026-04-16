@@ -30,26 +30,26 @@
 #include "impl/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/gm_to_l1/nd2zn.h"
 #include "impl/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/gm_to_l1/nz2nz.h"
 #include "impl/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/gm_to_l1/zn2zn.h"
-#include "impl/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/gm_to_l1/nd2zz.h"
-#include "impl/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/gm_to_l1/dn2zz.h"
-#include "impl/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/gm_to_l1/zz2zz.h"
-#include "impl/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/gm_to_l1/nd2nn.h"
-#include "impl/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/gm_to_l1/dn2nn.h"
-#include "impl/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/gm_to_l1/nn2nn.h"
+#include "impl/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/gm_to_l1/scalea_nd2zz.h"
+#include "impl/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/gm_to_l1/scalea_dn2zz.h"
+#include "impl/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/gm_to_l1/scalea_zz2zz.h"
+#include "impl/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/gm_to_l1/scaleb_nd2nn.h"
+#include "impl/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/gm_to_l1/scaleb_dn2nn.h"
+#include "impl/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/gm_to_l1/scaleb_nn2nn.h"
 
 namespace AscendC {
 namespace Te {
 
 class DataCopyGM2L13510 {
 public:
-    template <const DataCopyTrait& trait, typename T, typename U>
+    template <const CopyGM2L1Trait& trait, typename T, typename U>
     __aicore__ inline static void Run(const T& dst, const U& src)
     {
         Execute<trait>(dst, src);
     }
 
 private:
-    template <const DataCopyTrait& trait, typename T, typename U>
+    template <const CopyGM2L1Trait& trait, typename T, typename U>
     __aicore__ inline static void Execute(const T& dst, const U& src)
     {
         if constexpr (IsNDFormat<U>::value && IsNDFormat<T>::value) {
@@ -87,7 +87,7 @@ private:
         }
     }
 
-    template <const DataCopyTrait& trait, typename T, typename U>
+    template <const CopyGM2L1Trait& trait, typename T, typename U>
     __aicore__ inline static void ExecuteScaleDataCopy(const T& dst, const U& src)
     {
         if constexpr (IsScaleANDFormat<U>::value && IsZZFormat<T>::value) {

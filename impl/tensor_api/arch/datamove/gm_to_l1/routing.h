@@ -29,7 +29,7 @@ namespace Te {
 
 class CopyGM2L1Ignore {
 public:
-    template <const DataCopyTrait& trait, typename... Args>
+    template <const CopyGM2L1Trait& trait, typename... Args>
     __aicore__ inline static void Run(const Args&... args)
     {}
 };

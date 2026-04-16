@@ -10,39 +10,39 @@
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #warning                                                                                                               \
-    "impl/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/gm_to_l1/nn2nn.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+    "impl/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/gm_to_l1/scalea_zz2zz.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
 
 /*!
- * \file nn2nn.h
+ * \file scalea_zz2zz.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_DATAMOVE_GM_TO_L1_NPU_ARCH_3510_GM_TO_L1_NN2NN_H
-#define IMPL_TENSOR_API_ARCH_DATAMOVE_GM_TO_L1_NPU_ARCH_3510_GM_TO_L1_NN2NN_H
+#ifndef IMPL_TENSOR_API_ARCH_DATAMOVE_GM_TO_L1_NPU_ARCH_3510_GM_TO_L1_SCALEA_ZZ2ZZ_H
+#define IMPL_TENSOR_API_ARCH_DATAMOVE_GM_TO_L1_NPU_ARCH_3510_GM_TO_L1_SCALEA_ZZ2ZZ_H
 
 #include "impl/tensor_api/arch/datamove/gm_to_l1/npu_arch_3510/instruction.h"
 
 namespace AscendC {
 namespace Te {
 
-class CopyGmToCbufScaleBNn2Nn {
+class CopyGmToCbufScaleAZz2Zz {
 public:
-    template <const DataCopyTrait& trait, typename T, typename U>
+    template <const CopyGM2L1Trait& trait, typename T, typename U>
     __aicore__ inline static void Run(const T& dst, const U& src)
     {
         DataCopyImpl<trait>(dst, src);
     }
 
 private:
-    template <const DataCopyTrait& trait, typename T, typename U>
+    template <const CopyGM2L1Trait& trait, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
         CheckDataTypeFor3510::CheckGm2L1ScaleDataType<T, U>();
     }
 
-    template <const DataCopyTrait& trait, typename T, typename U>
+    template <const CopyGM2L1Trait& trait, typename T, typename U>
     __aicore__ inline static void DataCopyImpl(const T& dst, const U& src)
     {
         CheckTemplate<trait, T, U>();
@@ -51,22 +51,24 @@ private:
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
 
-        auto srcShapeColB = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
-        auto srcShapeColS = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout);
-        auto srcShapeRowB = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
-        auto srcStrideColB = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout);
-        auto srcStrideColS = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 0>(srcLayout);
+        auto srcShapeRowsB = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
+        auto srcShapeRowsS = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout);
+        auto srcShapeColumns = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
+        auto srcStrideRowsB = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
+        auto srcStrideRowsS = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 0>(srcLayout);
 
-        auto dstStrideColB = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout);
+        auto dstShapeColumns = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
+        auto dstStrideRows = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
 
         uint8_t cacheMode = src.Engine().GetCacheMode();
 
         // lprp mode, dst_stride % C0_SIZE should be 0
         // multi rows copy, dst non-contiguous case
-        uint32_t blockCount = srcShapeColB;
-        uint32_t blockLen = srcShapeRowB * sizeof(type) * srcShapeColS * srcStrideColS;
-        uint64_t srcStride = srcStrideColB * sizeof(type);
-        uint32_t dstStride = dstStrideColB * sizeof(type);
+
+        uint32_t blockCount = srcShapeRowsB;
+        uint32_t blockLen = srcShapeColumns * sizeof(type) * srcShapeRowsS * srcStrideRowsS;
+        uint64_t srcStride = srcStrideRowsB * sizeof(type);
+        uint32_t dstStride = dstStrideRows * sizeof(type);
 
         uint8_t leftPaddingCnt = 0;
         uint8_t rightPaddingCnt = 0;

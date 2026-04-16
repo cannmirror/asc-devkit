@@ -29,14 +29,14 @@ namespace Te {
 
 class CopyGmToCbufAlignV2ND {
 public:
-    template <const DataCopyTrait& trait, typename T, typename U>
+    template <const CopyGM2L1Trait& trait, typename T, typename U>
     __aicore__ inline static void Run(const T& dst, const U& src)
     {
         DataCopyImpl<trait, T, U>(dst, src);
     }
 
 private:
-    template <const DataCopyTrait& trait, typename T, typename U>
+    template <const CopyGM2L1Trait& trait, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
         CheckFormat::CheckNDTemplate<T>();
@@ -44,7 +44,7 @@ private:
         CheckDataTypeFor3510::CheckGm2L1AlignV2NDDataType<T, U>();
     }
 
-    template <const DataCopyTrait& trait, typename T, typename U>
+    template <const CopyGM2L1Trait& trait, typename T, typename U>
     __aicore__ inline static void DataCopyImpl(const T& dst, const U& src)
     {
         CheckTemplate<trait, T, U>();
