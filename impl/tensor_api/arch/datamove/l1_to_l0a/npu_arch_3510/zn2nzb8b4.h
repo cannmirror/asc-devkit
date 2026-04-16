@@ -29,13 +29,13 @@ namespace Te {
 class LoadDataL12L0AZN2NZB8B43510 {
 
 public:
-    template <const LoadDataTrait& trait, typename T, typename U>
+    template <const CopyL12L0ATrait& trait, typename T, typename U>
     __aicore__ inline static void Run(const T& dst, const U& src) {
         LoadDataImpl<TransTrait<trait, true>, T, U>(dst, src);
     }
 
 private:
-    template <const LoadDataTrait& trait, typename T, typename U>
+    template <const CopyL12L0ATrait& trait, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
         CheckLayoutPattern<U>();
@@ -43,7 +43,7 @@ private:
         CheckDataTypeFor3510::CheckL12L0ADataType<T, U>();
     }
 
-        template <const LoadDataTrait& trait, typename T, typename U>
+        template <const CopyL12L0ATrait& trait, typename T, typename U>
     __aicore__ inline static void LoadDataImplB4(const T& dst, const U& src, uint16_t mStartPosition,
         uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride)
     {
@@ -60,7 +60,7 @@ private:
         }
     }
 
-    template <const LoadDataTrait& trait, typename T, typename U>
+    template <const CopyL12L0ATrait& trait, typename T, typename U>
     __aicore__ inline static void LoadDataImplB8(const T& dst, const U& src, uint16_t mStartPosition,
         uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride)
     {
@@ -77,7 +77,7 @@ private:
         }
     }
 
-    template <const LoadDataTrait& trait, typename T, typename U>
+    template <const CopyL12L0ATrait& trait, typename T, typename U>
     __aicore__ inline static void LoadDataImpl(const T& dst, const U& src)
     {
         CheckTemplate<trait, T, U>();

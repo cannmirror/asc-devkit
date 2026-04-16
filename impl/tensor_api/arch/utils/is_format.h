@@ -48,7 +48,53 @@ struct GetTypeFromFourDimTrait<
     using StrideColumnsOneDim = typename Std::tuple_element<1, Stride2>::type;
 };
 
+template <typename T>
+struct GetTypeFromNDimTrait;
+
+template <typename hPos, typename Pointer, 
+          typename ShapeRows, typename ShapeCols, 
+          typename StrideRows, typename StrideCols, 
+          typename LayoutPattern>
+struct GetTypeFromNDimTrait<
+    LocalTensor<TensorAttribute<ViewEngine<HardwareMemPtrV2<hPos, Pointer>>,
+        Layout<Shape<ShapeRows, ShapeCols>, Stride<StrideRows, StrideCols>, LayoutPattern>>>> {
+    template <size_t Dim>
+    using ShapeRowDim = typename Std::tuple_element<Dim, ShapeRows>::type;
+    
+    template <size_t Dim>
+    using ShapeColDim = typename Std::tuple_element<Dim, ShapeCols>::type;
+    
+    template <size_t Dim>
+    using StrideRowDim = typename Std::tuple_element<Dim, StrideRows>::type;
+    
+    template <size_t Dim>
+    using StrideColDim = typename Std::tuple_element<Dim, StrideCols>::type;
+};
+
 enum class AttrInfo : uint8_t {SHAPE, STRIDE, ROW, COLUMN};
+
+template <typename T, AttrInfo info1, AttrInfo info2, size_t dim>
+struct GetNDimType;
+
+template <typename T, size_t dim>
+struct GetNDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, dim> {
+    using type = Std::remove_cvref_t<typename GetTypeFromNDimTrait<T>::template ShapeRowDim<dim>>;
+};
+
+template <typename T, size_t dim>
+struct GetNDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, dim> {
+    using type = Std::remove_cvref_t<typename GetTypeFromNDimTrait<T>::template ShapeColDim<dim>>;
+};
+
+template <typename T, size_t dim>
+struct GetNDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, dim> {
+    using type = Std::remove_cvref_t<typename GetTypeFromNDimTrait<T>::template StrideRowDim<dim>>;
+};
+
+template <typename T, size_t dim>
+struct GetNDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, dim> {
+    using type = Std::remove_cvref_t<typename GetTypeFromNDimTrait<T>::template StrideColDim<dim>>;
+};
 
 template <typename T, AttrInfo info1, AttrInfo info2, size_t dim> 
 struct GetFourDimType;

@@ -49,6 +49,15 @@ struct GetArchVersion {
 
 constexpr uint32_t CURRENT_ARCH_VERSION = GetArchVersion{}();
 
+namespace CopyMode {
+    struct NORMAL {};
+    struct NORMAL_COORD {};
+    struct TRANS {};
+    struct TRANS_COORD {};
+    struct TRANS_B8B4 {};
+    struct TRANS_B8B4_COORD {};
+};
+
 enum class LayoutFormat : uint8_t { NZ, ZN, ZZ, DN, ND, NN};
 
 namespace Location {

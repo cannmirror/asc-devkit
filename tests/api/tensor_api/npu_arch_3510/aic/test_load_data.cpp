@@ -42,12 +42,12 @@ void load_cbuf_to_cb_stub(__cb__ T* dst, __cbuf__ T* src,
 TEST_F(TEST_TENSOR_API_LOAD_DATA, TestLoadData_##TYPE##M##N##SRC_FORMAT##DST_FORMAT##SRC_POS##DST_POS##SRC_TAG##DST_TAG##TRANSPOSE##COORD_I##COORD_J) { \
     using namespace AscendC::Te; \
     __##DST_TAG##__ TYPE dst[M * N] = {0}; \
-    auto dstIterator = Make##DST_POS##memPtr(dst); \
+    auto dstIterator = MakeMemPtr<Location::DST_POS>(dst); \
     auto dstMatrixLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(DST_FORMAT), LayoutTraitDefault<TYPE>>(M, N); \
     auto dstTensor = MakeTensor(dstIterator, dstMatrixLayout); \
  \
     __##SRC_TAG##__ TYPE src[M * N] = {0}; \
-    auto srcIterator = Make##SRC_POS##memPtr(src); \
+    auto srcIterator = MakeMemPtr<Location::SRC_POS>(src); \
     auto srcMatrixLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(SRC_FORMAT), LayoutTraitDefault<TYPE>>(M, N); \
     auto srcTensor = MakeTensor(srcIterator, srcMatrixLayout); \
  \
@@ -67,12 +67,12 @@ TEST_F(TEST_TENSOR_API_LOAD_DATA, TestLoadData_##TYPE##M##N##SRC_FORMAT##DST_FOR
 TEST_F(TEST_TENSOR_API_LOAD_DATA, TestLoadData_##TYPE##M##N##SRC_FORMAT##DST_FORMAT##SRC_POS##DST_POS##SRC_TAG##DST_TAG##TRANSPOSE##COORD_I##COORD_J) { \
     using namespace AscendC::Te; \
     __##DST_TAG##__ TYPE dst[M * N]; \
-    auto dstIterator = Make##DST_POS##memPtr(dst); \
+    auto dstIterator = MakeMemPtr<Location::DST_POS>(dst); \
     auto dstMatrixLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(DST_FORMAT), LayoutTraitFP4<TYPE>>(M, N); \
     auto dstTensor = MakeTensor(dstIterator, dstMatrixLayout); \
  \
     __##SRC_TAG##__ TYPE src[M * N]; \
-    auto srcIterator = Make##SRC_POS##memPtr(src); \
+    auto srcIterator = MakeMemPtr<Location::SRC_POS>(src); \
     auto srcMatrixLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(SRC_FORMAT), LayoutTraitFP4<TYPE>>(M, N); \
     auto srcTensor = MakeTensor(srcIterator, srcMatrixLayout); \
  \

@@ -27,12 +27,24 @@
 namespace AscendC {
 namespace Te {
 
-constexpr LoadDataTrait DEFAULT_COPY_L1_TO_L0A_TRAIT;
+constexpr CopyL12L0ATrait DEFAULT_COPY_L1_TO_L0A_TRAIT;
 
 struct CopyL12L0ATraitDefault {
-    using TraitType = LoadDataTrait;
+    using TraitType = CopyL12L0ATrait;
     static constexpr const TraitType value = DEFAULT_COPY_L1_TO_L0A_TRAIT;
 };
+
+using CopyL12L0AModeSet = TupleMap<
+    Std::tuple<Std::tuple<Std::Int<1>, Std::Int<0>>, CopyMode::NORMAL>,
+    Std::tuple<Std::tuple<Std::Int<1>, Std::Int<1>>, CopyMode::NORMAL>,
+    Std::tuple<Std::tuple<Std::Int<0>, Std::Int<0>>, CopyMode::TRANS>,
+    Std::tuple<Std::tuple<Std::Int<0>, Std::Int<1>>, CopyMode::TRANS_B8B4>>;
+
+using CopyL12L0AModeCoordSet = TupleMap<
+    Std::tuple<Std::tuple<Std::Int<1>, Std::Int<0>>, CopyMode::NORMAL_COORD>,
+    Std::tuple<Std::tuple<Std::Int<1>, Std::Int<1>>, CopyMode::NORMAL_COORD>,
+    Std::tuple<Std::tuple<Std::Int<0>, Std::Int<0>>, CopyMode::TRANS_COORD>,
+    Std::tuple<Std::tuple<Std::Int<0>, Std::Int<1>>, CopyMode::TRANS_B8B4_COORD>>;
 
 struct CopyL12L0A {
 public:
@@ -45,21 +57,37 @@ public:
     }
 
 private:
-    template<const LoadDataTrait& trait = DEFAULT_COPY_L1_TO_L0A_TRAIT, typename T, typename U>
+    template<const CopyL12L0ATrait& trait = DEFAULT_COPY_L1_TO_L0A_TRAIT, typename T, typename U>
     __aicore__ inline static void LoadData(const T& dst, const U& src)
     {
-        constexpr Hardware dstPos = GetHardPos<T>();
-        constexpr Hardware srcPos = GetHardPos<U>();
-        using Tensor2Tensor = typename CopyL12L0ATensor2TensorNoCoord<dstPos, srcPos, CURRENT_ARCH_VERSION>::type;
+        using dstPos = typename T::iterator::ptrPattern;
+        using srcPos = typename U::iterator::ptrPattern;
+        using DstLayout = typename T::layoutType;
+        using SrcLayout = typename U::layoutType;
+        using DstPattern = GetLayoutPattern<DstLayout>;
+        using SrcPattern = GetLayoutPattern<SrcLayout>;
+        constexpr auto isB8B4Type = sizeof(typename T::elementType) == 1;
+        constexpr auto noTrans = Std::is_same_v<DstPattern, SrcPattern>;
+        using CopyL12L0AMode = typename CopyL12L0AModeSet::template Get<Std::tuple<Std::Int<noTrans>, Std::Int<isB8B4Type>>>;
+        static_assert(!Std::is_same_v<CopyL12L0AMode, EmptyValue>, "Unsupported CopyMode.");
+        using Tensor2Tensor = typename CopyL12L0ATensor2Tensor<dstPos, srcPos, CURRENT_ARCH_VERSION, SrcPattern, DstPattern, CopyL12L0AMode>::type;
         Tensor2Tensor::template Run<trait, T, U>(dst, src);
     }
 
-    template<const LoadDataTrait& trait = DEFAULT_COPY_L1_TO_L0A_TRAIT, typename T, typename U, class Coord>
+    template<const CopyL12L0ATrait& trait = DEFAULT_COPY_L1_TO_L0A_TRAIT, typename T, typename U, class Coord>
     __aicore__ inline static void LoadData(const T& dst, const U& src, const Coord& coord)
     {
-        constexpr Hardware dstPos = GetHardPos<T>();
-        constexpr Hardware srcPos = GetHardPos<U>();
-        using Tensor2Tensor = typename CopyL12L0ATensor2Tensor<dstPos, srcPos, CURRENT_ARCH_VERSION>::type;
+        using dstPos = typename T::iterator::ptrPattern;
+        using srcPos = typename U::iterator::ptrPattern;
+        using DstLayout = typename T::layoutType;
+        using SrcLayout = typename U::layoutType;
+        using DstPattern = GetLayoutPattern<DstLayout>;
+        using SrcPattern = GetLayoutPattern<SrcLayout>;
+        constexpr auto isB8B4Type = sizeof(typename T::elementType) == 1;
+        constexpr auto noTrans = Std::is_same_v<DstPattern, SrcPattern>;
+        using CopyL12L0AMode = typename CopyL12L0AModeCoordSet::template Get<Std::tuple<Std::Int<noTrans>, Std::Int<isB8B4Type>>>;
+        static_assert(!Std::is_same_v<CopyL12L0AMode, EmptyValue>, "Unsupported CopyMode.");
+        using Tensor2Tensor = typename CopyL12L0ATensor2Tensor<dstPos, srcPos, CURRENT_ARCH_VERSION, SrcPattern, DstPattern, CopyL12L0AMode>::type;
         Tensor2Tensor::template Run<trait, T, U, Coord>(dst, src, coord);
     }
 };

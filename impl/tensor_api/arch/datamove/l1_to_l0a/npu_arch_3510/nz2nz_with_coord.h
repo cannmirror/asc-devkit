@@ -29,13 +29,13 @@ namespace Te {
 class LoadDataL12L0ANZ2NZWithCoord3510 {
 
 public:
-    template <const LoadDataTrait& trait, typename T, typename U, typename Coord>
+    template <const CopyL12L0ATrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline static void Run(const T& dst, const U& src, const Coord& coord) {
         LoadDataImpl<TransTrait<trait, false>, T, U, Coord>(dst, src, coord);
     }
 
 private:
-    template <const LoadDataTrait& trait, typename T, typename U>
+    template <const CopyL12L0ATrait& trait, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
         CheckLayoutPattern<U>();
@@ -43,7 +43,7 @@ private:
         CheckDataTypeFor3510::CheckL12L0ADataType<T, U>();
     }
 
-    template <const LoadDataTrait& trait, typename T, typename U, typename Coord>
+    template <const CopyL12L0ATrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline static void LoadDataImpl(const T& dst, const U& src, const Coord& coord)
     {
         CheckTemplate<trait, T, U>();

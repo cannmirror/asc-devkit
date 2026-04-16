@@ -65,9 +65,9 @@ TEST_F(Tensor_Api_Atom, CopyL12L0Operation)
     auto shape = MakeShape(MakeShape(Int<11>{}, Int<12>{}), MakeShape(Int<13>{}, Int<14>{}));
     auto stride = MakeStride(MakeStride(Int<15>{}, Int<16>{}), MakeStride(Int<17>{}, Int<18>{}));
 
-    auto srcL1 = MakeTensor(MakeL1memPtr(l1Src), MakeLayout(shape, stride));
-    auto dstL0A = MakeTensor(MakeL0AmemPtr(l0aDst), MakeLayout(shape, stride));
-    auto dstL0B = MakeTensor(MakeL0BmemPtr(l0bDst), MakeLayout(shape, stride));
+    auto srcL1 = MakeTensor(MakeMemPtr<Location::L1>(l1Src), MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<>>(11, 12));
+    auto dstL0A = MakeTensor(MakeMemPtr<Location::L0A>(l0aDst), MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<>>(11, 12));
+    auto dstL0B = MakeTensor(MakeMemPtr<Location::L0B>(l0bDst), MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<>>(11, 12));
 
     auto atomCopyA = MakeCopy(CopyL12L0A{}, CopyL12L0ATraitDefault{});
     atomCopyA.Call(dstL0A, srcL1);

@@ -28,9 +28,12 @@
 
 namespace AscendC {
 namespace Te {
+
+using CopyL12L0ATrait = LoadDataTrait;
+
 class LoadCbufToCa3510 {
 public:
-    template <const LoadDataTrait& trait, typename T, typename U, typename... Params>
+    template <const CopyL12L0ATrait& trait, typename T, typename U, typename... Params>
     __aicore__ inline static void LoadData(const T& dst, const U& src, const Params& ...params)
     {
         LoadCbufToCa<trait.transposed>(dst.Data().Get(), src.Data().Get(), params...);
@@ -52,7 +55,7 @@ private:
 
 class LoadCbufToCaS43510 {
 public:
-    template <const LoadDataTrait& trait, typename T, typename U, typename... Params>
+    template <const CopyL12L0ATrait& trait, typename T, typename U, typename... Params>
     __aicore__ inline static void LoadData(const T& dst, const U& src, const Params& ...params)
     {
         LoadCbufToCa<trait.transposed>(dst.Data().Get(), src.Data().Get(), params...);
