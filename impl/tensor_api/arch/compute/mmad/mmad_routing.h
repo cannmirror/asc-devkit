@@ -34,26 +34,26 @@ public:
     __aicore__ inline static void Run(const Args&... args) {}
 };
 
-template<Hardware dstPos, Hardware fmPos, Hardware filterPos, Hardware biasPos, uint32_t Version>
+template<typename dstPos, typename fmPos, typename filterPos, typename biasPos, uint32_t Version>
 struct MmadTensor2Tensor
 {
     using type = MmadIgnore;
 };
 
 template<>
-struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::MAX, ArchVersion::V3510>
+struct MmadTensor2Tensor<Location::L0C, Location::L0A, Location::L0B, Location::INVALID, ArchVersion::V3510>
 {
     using type = Mmad3510;
 };
 
 template<>
-struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::L0C, ArchVersion::V3510>
+struct MmadTensor2Tensor<Location::L0C, Location::L0A, Location::L0B, Location::L0C, ArchVersion::V3510>
 {
     using type = MmadWithBias3510;
 };
 
 template<>
-struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::BIAS, ArchVersion::V3510>
+struct MmadTensor2Tensor<Location::L0C, Location::L0A, Location::L0B, Location::BIAS, ArchVersion::V3510>
 {
     using type = MmadWithBias3510;
 };

@@ -44,10 +44,10 @@ TEST_F(Tensor_Api_Mad_Atom, Mmadperation)
     auto biasShape = MakeShape(MakeShape(Int<1>{}, Int<12>{}), MakeShape(Int<1>{}, Int<14>{}));
     auto biasStride = MakeStride(MakeStride(Int<0>{}, Int<16>{}), MakeStride(Int<0>{}, Int<1>{}));
 
-    auto L0ATensor = MakeTensor(MakeL0AmemPtr(L0ABuffer), MakeLayout(fmShape, fmStride));
-    auto L0BTensor = MakeTensor(MakeL0BmemPtr(L0BBuffer), MakeLayout(filterShape, filterStride));
-    auto L0CTensor = MakeTensor(MakeL0CmemPtr(L0CBuffer), MakeLayout(dstShape, dstStride));
-    auto BiasTensor = MakeTensor(MakeBiasmemPtr(BiasBuffer), MakeLayout(biasShape, biasStride));
+    auto L0ATensor = MakeTensor(MakeMemPtr<Location::L0A>(L0ABuffer), MakeLayout(fmShape, fmStride));
+    auto L0BTensor = MakeTensor(MakeMemPtr<Location::L0B>(L0BBuffer), MakeLayout(filterShape, filterStride));
+    auto L0CTensor = MakeTensor(MakeMemPtr<Location::L0C>(L0CBuffer), MakeLayout(dstShape, dstStride));
+    auto BiasTensor = MakeTensor(MakeMemPtr<Location::BIAS>(BiasBuffer), MakeLayout(biasShape, biasStride));
 
     auto atomMad = MakeMmad(MmadOperation{}, MmadTraitDefault{});
     atomMad.Call(L0CTensor, L0BTensor, L0ATensor, defaultMmadParams);

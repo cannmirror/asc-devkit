@@ -52,14 +52,15 @@ constexpr uint32_t CURRENT_ARCH_VERSION = GetArchVersion{}();
 enum class LayoutFormat : uint8_t { NZ, ZN, ZZ, DN, ND, NN};
 
 namespace Location {
+    struct INVALID {};
     struct GM {};
     struct UB {};
     struct L1 {};
     struct L0A {};
     struct L0B {};
     struct L0C {};
-    struct Bias {};
-    struct Fixbuf {};
+    struct BIAS {};
+    struct FIXBUF {};
 }
 
 template <typename TupleType>

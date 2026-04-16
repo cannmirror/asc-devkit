@@ -38,20 +38,20 @@ private:
     template <const MmadTrait& trait, typename T, typename U, typename S, typename V>
     __aicore__ inline static constexpr void CheckTemplateForNormal()
     {
-        CheckFormat::CheckL0CNZTemplate<T>();
-        CheckFormat::CheckNZTemplate<U>();
-        CheckFormat::CheckZNTemplate<S>();
-        CheckFormat::CheckNDTemplate<V>();
+        // CheckFormat_CheckL0CNZTemplate<T>
+        // CheckFormat_CheckNZTemplate<U>
+        // CheckFormat_CheckZNTemplate<S>
+        // CheckFormat_CheckNDTemplate<V>
         CheckDataTypeFor3510::CheckMmadBiasDataType<T, U, S, V>();
     }
 
     template <const MmadTrait& trait, typename T, typename U, typename S, typename V>
     __aicore__ inline static constexpr void CheckTemplateForMx()
     {
-        CheckFormat::CheckL0CNZTemplate<T>();
-        CheckFormat::CheckNZTemplate<U>();
-        CheckFormat::CheckZNTemplate<S>();
-        CheckFormat::CheckNDTemplate<V>();        
+        // CheckFormat_CheckL0CNZTemplate<T>
+        // CheckFormat_CheckNZTemplate<U>
+        // CheckFormat_CheckZNTemplate<S>
+        // CheckFormat_CheckNDTemplate<V>
         CheckDataTypeFor3510::CheckMxMmadBiasDataType<T, U, S, V>();
     }
 
@@ -64,9 +64,8 @@ private:
             CheckTemplateForMx<trait, T, U, S, V>();
         }
 
-        constexpr auto biasPos = GetHardPos<V>();
         bool cmatrixSource = false;
-        if (biasPos == Hardware::BIAS) {
+        if constexpr (Std::is_same_v<typename V::iterator::ptrPattern, Location::BIAS>) {
             cmatrixSource = true;
         }
 

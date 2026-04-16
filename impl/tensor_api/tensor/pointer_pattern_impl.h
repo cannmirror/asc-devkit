@@ -72,12 +72,12 @@ struct LocationMemPtrType<Location::L0C, T> {
 };
 
 template <typename T>
-struct LocationMemPtrType<Location::Bias, T> {
+struct LocationMemPtrType<Location::BIAS, T> {
     using type = __biasbuf__ T*;
 };
 
 template <typename T>
-struct LocationMemPtrType<Location::Fixbuf, T> {
+struct LocationMemPtrType<Location::FIXBUF, T> {
     using type = __fbuf__ T*;
 };
 

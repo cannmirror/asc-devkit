@@ -47,13 +47,13 @@ TEST_F(Tensor_Api_Mmad, MmadOperation##MOCK_FUNC##_##DST_TYPE##_##SRC_TYPE##_##M
 {\
     using namespace AscendC::Te;\
     auto a2Addr = reinterpret_cast<__ca__ SRC_TYPE*>(A2##DST_TYPE##_##SRC_TYPE);\
-    auto l0aTensor = MakeTensor(MakeL0AmemPtr(a2Addr), MakeNzLayout<SRC_TYPE>(M, K));\
+    auto l0aTensor = MakeTensor(MakeMemPtr<Location::L0A>(a2Addr), MakeNzLayout<SRC_TYPE>(M, K));\
 \
     auto b2Addr = reinterpret_cast<__cb__ SRC_TYPE*>(B2##DST_TYPE##_##SRC_TYPE);\
-    auto l0bTensor = MakeTensor(MakeL0BmemPtr(b2Addr), MakeZnLayout<SRC_TYPE>(K, N));\
+    auto l0bTensor = MakeTensor(MakeMemPtr<Location::L0B>(b2Addr), MakeZnLayout<SRC_TYPE>(K, N));\
 \
     auto c2Addr = reinterpret_cast<__cc__ DST_TYPE*>(C2##DST_TYPE##_##SRC_TYPE);\
-    auto l0cTensor = MakeTensor(MakeL0CmemPtr(c2Addr), MakeNzLayout<AscendC::Std::ignore_t>(M, N));\
+    auto l0cTensor = MakeTensor(MakeMemPtr<Location::L0C>(c2Addr), MakeNzLayout<AscendC::Std::ignore_t>(M, N));\
 \
     MOCKER_CPP(MOCK_FUNC, void(__cc__ DST_TYPE *, __ca__ SRC_TYPE *,\
                 __cb__ SRC_TYPE *, uint16_t, uint16_t, uint16_t, uint8_t,\
