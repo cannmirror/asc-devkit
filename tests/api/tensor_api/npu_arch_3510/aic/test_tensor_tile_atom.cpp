@@ -30,9 +30,10 @@ TEST_F(Tensor_Api_Atom, CopyGM2L1Operation)
     __cbuf__ float dst[TILE_LENGTH] = {0};
 
     auto coord = MakeCoord(Int<20>{}, Int<30>{});
-
-    auto gmSrc = MakeTensor(MakeGMmemPtr(src), MakeNDLayout<float>(11, 12));
-    auto l1Dst = MakeTensor(MakeL1memPtr(dst), MakeNzLayout<float>(11, 12));
+    auto srcLayout = MakeFrameLayout<NDExtLayoutPtn, LayoutTraitDefault<float>>(11, 12);
+    auto dstLayout = MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<float>>(11, 12);
+    auto gmSrc = MakeTensor(MakeMemPtr<Location::GM>(src), srcLayout);
+    auto l1Dst = MakeTensor(MakeMemPtr<Location::L1>(dst), dstLayout);
 
     auto atomCopy = MakeCopy(CopyGM2L1{}, CopyGM2L1TraitDefault{});
     atomCopy.Call(l1Dst, gmSrc);

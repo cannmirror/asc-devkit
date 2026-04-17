@@ -39,8 +39,8 @@ private:
     template <const CopyGM2L1Trait& trait, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
-        // CheckLayoutPattern<U>
-        // CheckLayoutPattern<T>
+        CheckLayoutPattern<U>();
+        CheckLayoutPattern<T>();
         CheckDataTypeFor3510::CheckGm2L1Fp4DataType<T, U>();
     }
 
