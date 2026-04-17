@@ -402,7 +402,6 @@ private:
         int32_t blockOffset = blockLen * blockCount;
         for (int32_t i = 0; i < baseHeight; ++i) {
             DataCopy(gm[dstOffset], trans[srcOffset], {1, static_cast<uint16_t>(blockLen), 0, 0});
-            PipeBarrier<PIPE_MTE3>();
             dstOffset += offset;
             srcOffset += blockOffset;
         }
