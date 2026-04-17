@@ -32,6 +32,8 @@ using LayoutFormatSet = TupleMap<
     Std::tuple<NZLayoutPtn, MakeNzFrameLayout>,
     Std::tuple<NDLayoutPtn, MakeNDFrameLayout>,
     Std::tuple<DNLayoutPtn, MakeDNFrameLayout>,
+    Std::tuple<NDExtLayoutPtn, MakeNDExtFrameLayout>,
+    Std::tuple<DNExtLayoutPtn, MakeDNExtFrameLayout>,
     Std::tuple<NNLayoutPtn, MakeNnFrameLayout>,
     Std::tuple<ZZLayoutPtn, MakeZzFrameLayout>,
     Std::tuple<ZNLayoutPtn, MakeZnFrameLayout>,
