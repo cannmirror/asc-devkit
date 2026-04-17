@@ -48,8 +48,8 @@ private:
     template <const CopyUB2GMTrait& trait = DEFAULT_COPY_UB_TO_GM_TRAIT, typename T, typename U>
     __aicore__ inline static void DataCopyImpl(const T& dst, const U& src)
     {
-        constexpr Hardware dstTPos = GetHardPos<T>();
-        constexpr Hardware srcTPos = GetHardPos<U>();
+        using dstTPos = GetMemLocation<T>;
+        using srcTPos = GetMemLocation<U>;
         using Tensor2Tensor = typename CopyUB2GMTensor2Tensor<dstTPos, srcTPos, CURRENT_ARCH_VERSION>::type;
         Tensor2Tensor::template Run<trait, T, U>(dst, src);
     }
@@ -71,3 +71,4 @@ private:
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #undef UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
+

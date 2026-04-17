@@ -224,6 +224,13 @@ __aicore__ inline constexpr decltype(auto) Slice(Tensor&& tensor, const Coord& c
     return static_cast<Tensor&&>(tensor).Slice(coord, info);
 }
 
+template <typename T, typename TargetLayoutPtn>
+__aicore__ inline constexpr bool IsMatchLayoutPattern() {
+    using Layout = typename Std::conditional_t<IsLayoutV<T>, T, typename T::layoutType>::type;
+    using LayoutPattern = GetLayoutPattern<Layout>;
+    return Std::is_same_v<LayoutPattern, TargetLayoutPtn>;
+}
+
 } // namespace Te
 } // namespace AscendC
 

@@ -32,42 +32,42 @@ namespace Te {
 
 template <typename Iterator>
 __aicore__ inline constexpr auto MakeGMmemPtr(Iterator iter) {
-    return MakeMemPtrImpl<Hardware::GM, Iterator>(iter);
+    return MakeMemPtrImpl<Location::GM, Iterator>(iter);
 }
 
 template <typename Iterator>
 __aicore__ inline constexpr auto MakeUBmemPtr(Iterator iter) {
-    return MakeMemPtrImpl<Hardware::UB, Iterator>(iter);
+    return MakeMemPtrImpl<Location::UB, Iterator>(iter);
 }
 
 template <typename Iterator>
 __aicore__ inline constexpr auto MakeL1memPtr(Iterator iter) {
-    return MakeMemPtrImpl<Hardware::L1, Iterator>(iter);
+    return MakeMemPtrImpl<Location::L1, Iterator>(iter);
 }
 
 template <typename Iterator>
 __aicore__ inline constexpr auto MakeL0AmemPtr(Iterator iter) {
-    return MakeMemPtrImpl<Hardware::L0A, Iterator>(iter);
+    return MakeMemPtrImpl<Location::L0A, Iterator>(iter);
 }
 
 template <typename Iterator>
 __aicore__ inline constexpr auto MakeL0BmemPtr(Iterator iter) {
-    return MakeMemPtrImpl<Hardware::L0B, Iterator>(iter);
+    return MakeMemPtrImpl<Location::L0B, Iterator>(iter);
 }
 
 template <typename Iterator>
 __aicore__ inline constexpr auto MakeL0CmemPtr(Iterator iter) {
-    return MakeMemPtrImpl<Hardware::L0C, Iterator>(iter);
+    return MakeMemPtrImpl<Location::L0C, Iterator>(iter);
 }
 
 template <typename Iterator>
 __aicore__ inline constexpr auto MakeBiasmemPtr(Iterator iter) {
-    return MakeMemPtrImpl<Hardware::BIAS, Iterator>(iter);
+    return MakeMemPtrImpl<Location::BIAS, Iterator>(iter);
 }
 
 template <typename Iterator>
 __aicore__ inline constexpr auto MakeFixbufmemPtr(Iterator iter) {
-    return MakeMemPtrImpl<Hardware::FIXBUF, Iterator>(iter);
+    return MakeMemPtrImpl<Location::FIXBUF, Iterator>(iter);
 }
 
 template <typename T, typename U>

@@ -26,51 +26,36 @@
 namespace AscendC {
 namespace Te {
 
-template <Hardware hPos, typename Pointer>
-struct HardwareMemPtr : IterAdaptor<Pointer, HardwareMemPtr<hPos, Pointer>> {
-    using IterAdaptor<Pointer, HardwareMemPtr<hPos, Pointer>>::IterAdaptor;
-    static constexpr const Hardware hardPos = hPos;
-};
-
 template <typename PtrPattern, typename Pointer>
-struct HardwareMemPtrV2 : IterAdaptor<Pointer, HardwareMemPtrV2<PtrPattern, Pointer>> {
-    using IterAdaptor<Pointer, HardwareMemPtrV2<PtrPattern, Pointer>>::IterAdaptor;
+struct HardwareMemPtr : IterAdaptor<Pointer, HardwareMemPtr<PtrPattern, Pointer>> {
+    using IterAdaptor<Pointer, HardwareMemPtr<PtrPattern, Pointer>>::IterAdaptor;
     using ptrPattern = PtrPattern;
 };
 
 template <typename T>
-struct GetPtrPatternInfo {
-    static_assert(!Std::is_same_v<T, T>, "GetPtrPattern requires HardwareMemPtrV2");
-};
-
-template <typename PtrPattern, typename Pointer>
-struct GetPtrPatternInfo<HardwareMemPtrV2<PtrPattern, Pointer>> {
-    using type = PtrPattern;
-};
-
-template <typename T>
-using GetPtrPattern = typename GetPtrPatternInfo<Std::remove_cvref_t<T>>::type;
+using GetMemLocation = typename T::iterator::ptrPattern;
 
 // is hardware mem
-template <Hardware hardPos, typename Pointer, typename = void>
+template <typename PtrPattern, typename Pointer, typename = void>
 struct IsHardwareMem : Std::false_type {};
 
-template <Hardware hardPos, typename Pointer>
-struct IsHardwareMem<hardPos, HardwareMemPtr<hardPos, Pointer>> : Std::true_type {};
+template <typename PtrPattern, typename Pointer>
+struct IsHardwareMem<PtrPattern, HardwareMemPtr<PtrPattern, Pointer>> : Std::true_type {};
 
-template <Hardware hardPos, typename Pointer>
-struct IsHardwareMem<hardPos, Pointer, void_t<typename Pointer::iterator>> : IsHardwareMem<hardPos, typename Pointer::iterator> {};
+template <typename PtrPattern, typename Pointer>
+struct IsHardwareMem<PtrPattern, Pointer, void_t<typename Pointer::iterator>>
+    : IsHardwareMem<PtrPattern, typename Pointer::iterator> {};
 
-template <Hardware hardPos, typename Pointer>
-constexpr bool IsHardwareMemV = IsHardwareMem<hardPos, Pointer>::value;
+template <typename PtrPattern, typename Pointer>
+constexpr bool IsHardwareMemV = IsHardwareMem<PtrPattern, Pointer>::value;
 
-template <Hardware hardPos, typename Iterator>
+template <typename PtrPattern, typename Iterator>
 __aicore__ inline constexpr auto MakeMemPtrImpl(Iterator iter) 
 {
-    if constexpr (IsHardwareMem<hardPos, Iterator>::value) {
+    if constexpr (IsHardwareMem<PtrPattern, Iterator>::value) {
         return iter;
     } else {
-        return HardwareMemPtr<hardPos, Iterator>{iter};
+        return HardwareMemPtr<PtrPattern, Iterator>{iter};
     }
 }
 } // namespace Te

@@ -143,11 +143,11 @@ __aicore__ inline void copy_cbuf_to_fbuf_stub(__fbuf__ void* dst, __cbuf__ void*
     EXPECT_EQ(dstStride, TestCeilDivision(DST_SIZE2 * sizeof(DTYPE), TEST_C2PIPE2GM_UNIT));
 }
 
-template<typename T, typename DTYPE, int SIZE1, int SIZE2, AscendC::Hardware LOCATION, CubeLayout LAYOUT>
+template<typename T, typename DTYPE, int SIZE1, int SIZE2, typename LOCATION, CubeLayout LAYOUT>
 __aicore__ inline void check_tensor_success(const T& tensor) {
     using namespace AscendC::Te;
-    AscendC::Hardware pos = GetHardPos<T>();
-    EXPECT_EQ(pos, LOCATION);
+    using hardwarePos = GetMemLocation<T>;
+    EXPECT_TRUE((std::is_same_v<hardwarePos, LOCATION>));
 }
 
 template<typename Coord>
@@ -157,7 +157,7 @@ __aicore__ inline void check_coord_success (const Coord& coord) {
 
 // tensor2tensor run method
 template<typename T, typename U, typename Coord, typename DTYPE, int SRC_SIZE1, int SRC_SIZE2, int DST_SIZE1, \
-                    int DST_SIZE2, AscendC::Hardware SRC_LOCATION, CubeLayout SRC_LAYOUT, AscendC::Hardware DST_LOCATION, CubeLayout DST_LAYOUT>
+                    int DST_SIZE2, typename SRC_LOCATION, CubeLayout SRC_LAYOUT, typename DST_LOCATION, CubeLayout DST_LAYOUT>
 __aicore__ inline void tensor2tensor_run_stub(const T& dst, const U& src, const Coord& coord) {
     check_tensor_success<U, DTYPE, SRC_SIZE1, SRC_SIZE2, SRC_LOCATION, SRC_LAYOUT>(src);
     check_tensor_success<T, DTYPE, DST_SIZE1, DST_SIZE2, DST_LOCATION, DST_LAYOUT>(dst);

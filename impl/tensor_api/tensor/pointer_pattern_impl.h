@@ -37,7 +37,7 @@ struct IsMemPtrIterator<T, void_t<decltype(*Std::declval<T&>())>> : Std::true_ty
 template <typename PtrPattern, typename Iterator>
 __aicore__ inline auto MakeHardwareMemPtr(Iterator iter)
 {
-    return HardwareMemPtrV2<PtrPattern, Iterator>{iter};
+    return HardwareMemPtr<PtrPattern, Iterator>{iter};
 }
 
 template <typename PtrPattern, typename T>

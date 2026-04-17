@@ -35,23 +35,23 @@ public:
     {}
 };
 
-template <Hardware dstTPos, Hardware srcTpos, uint32_t Version>
+template <typename dstTPos, typename srcTpos, uint32_t Version>
 struct CopyL0C2UBTensor2Tensor {
     using type = CopyL0C2UBIgnore;
 };
 
 template <>
-struct CopyL0C2UBTensor2Tensor<Hardware::UB, Hardware::L0C, ArchVersion::V3510> {
+struct CopyL0C2UBTensor2Tensor<Location::UB, Location::L0C, ArchVersion::V3510> {
     using type = DataCopyL0C2UB3510;
 };
 
-template <Hardware dstTPos, Hardware srcTpos, uint32_t Version>
+template <typename dstTPos, typename srcTpos, uint32_t Version>
 struct CopyL0C2UBVectorQuantTensor2Tensor {
     using type = CopyL0C2UBIgnore;
 };
 
 template <>
-struct CopyL0C2UBVectorQuantTensor2Tensor<Hardware::UB, Hardware::L0C, ArchVersion::V3510> {
+struct CopyL0C2UBVectorQuantTensor2Tensor<Location::UB, Location::L0C, ArchVersion::V3510> {
     using type = DataCopyL0C2UBVectorQuant3510;
 };
 

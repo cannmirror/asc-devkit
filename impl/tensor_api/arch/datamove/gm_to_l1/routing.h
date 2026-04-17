@@ -34,13 +34,13 @@ public:
     {}
 };
 
-template <Hardware dstTPos, Hardware srcTpos, uint32_t Version>
+template <typename dstTPos, typename srcTpos, uint32_t Version>
 struct CopyGM2L1Tensor2Tensor {
     using type = CopyGM2L1Ignore;
 };
 
 template <>
-struct CopyGM2L1Tensor2Tensor<Hardware::L1, Hardware::GM, ArchVersion::V3510> {
+struct CopyGM2L1Tensor2Tensor<Location::L1, Location::GM, ArchVersion::V3510> {
     using type = DataCopyGM2L13510;
 };
 
@@ -53,3 +53,4 @@ struct CopyGM2L1Tensor2Tensor<Hardware::L1, Hardware::GM, ArchVersion::V3510> {
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #undef UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
+

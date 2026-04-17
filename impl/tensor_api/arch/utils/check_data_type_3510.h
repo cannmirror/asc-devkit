@@ -58,9 +58,9 @@ public:
         using biasDataType = typename V::elementType;
         using fmDataType = typename U::elementType;
         using filterDataType = typename S::elementType;
-        constexpr auto biasPos = GetHardPos<V>();
+        using biasPos = GetMemLocation<V>;
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
-        if constexpr (biasPos == Hardware::BIAS) {
+        if constexpr (Std::is_same_v<biasPos, Location::BIAS>) {
             static_assert(
                 Std::is_one_of_v<Std::tuple<biasDataType, dstDataType, fmDataType, filterDataType>,
                                  Std::tuple<__biasbuf__ float, __cc__ float, __ca__ fp4x2_e2m1_t, __cb__ fp4x2_e2m1_t>,
@@ -72,7 +72,7 @@ public:
                                  Std::tuple<__biasbuf__ float, __cc__ float, __ca__ fp8_e5m2_t, __cb__ fp8_e4m3fn_t>,
                                  Std::tuple<__biasbuf__ float, __cc__ float, __ca__ fp8_e5m2_t, __cb__ fp8_e5m2_t>>,
                 "The data type is not supported for BIAS position.");
-        } else if constexpr (biasPos == Hardware::L0C) {
+        } else if constexpr (Std::is_same_v<biasPos, Location::L0C>) {
             static_assert(
                 Std::is_one_of_v<Std::tuple<biasDataType, dstDataType, fmDataType, filterDataType>,
                                  Std::tuple<__cc__ float, __cc__ float, __ca__ fp4x2_e2m1_t, __cb__ fp4x2_e2m1_t>,

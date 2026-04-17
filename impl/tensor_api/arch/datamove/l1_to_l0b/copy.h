@@ -60,8 +60,8 @@ private:
     template<const CopyL12L0BTrait& trait = DEFAULT_COPY_L1_TO_L0B_TRAIT, typename T, typename U>
     __aicore__ inline static void LoadData(const T& dst, const U& src)
     {
-        using dstPos = typename T::iterator::ptrPattern;
-        using srcPos = typename U::iterator::ptrPattern;
+        using dstPos = GetMemLocation<T>;
+        using srcPos = GetMemLocation<U>;
         using DstLayout = typename T::layoutType;
         using SrcLayout = typename U::layoutType;
         using DstPattern = GetLayoutPattern<DstLayout>;
@@ -77,8 +77,8 @@ private:
     template<const CopyL12L0BTrait& trait = DEFAULT_COPY_L1_TO_L0B_TRAIT, typename T, typename U, class Coord>
     __aicore__ inline static void LoadData(const T& dst, const U& src, const Coord& coord)
     {
-        using dstPos = typename T::iterator::ptrPattern;
-        using srcPos = typename U::iterator::ptrPattern;
+        using dstPos = GetMemLocation<T>;
+        using srcPos = GetMemLocation<U>;
         using DstLayout = typename T::layoutType;
         using SrcLayout = typename U::layoutType;
         using DstPattern = GetLayoutPattern<DstLayout>;

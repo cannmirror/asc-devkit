@@ -32,10 +32,10 @@ namespace Te {
 template <typename T>
 struct GetTypeFromFourDimTrait;
 
-template <Hardware hPos, typename Pointer, typename Shape1, typename Shape2, typename Stride1, typename Stride2,
+template <typename PtrPattern, typename Pointer, typename Shape1, typename Shape2, typename Stride1, typename Stride2,
     typename LayoutPattern>
 struct GetTypeFromFourDimTrait<
-    LocalTensor<TensorAttribute<ViewEngine<HardwareMemPtr<hPos, Pointer>>,
+    LocalTensor<TensorAttribute<ViewEngine<HardwareMemPtr<PtrPattern, Pointer>>,
         Layout<Shape<Shape1, Shape2>, Stride<Stride1, Stride2>, LayoutPattern>>>> {
     using ShapeRowsZeroDim = typename Std::tuple_element<0, Shape1>::type;
     using ShapeRowsOneDim = typename Std::tuple_element<1, Shape1>::type;
@@ -73,7 +73,7 @@ template <typename hPos, typename Pointer,
           typename StrideRows, typename StrideCols, 
           typename LayoutPattern>
 struct GetTypeFromNDimTrait<
-    LocalTensor<TensorAttribute<ViewEngine<HardwareMemPtrV2<hPos, Pointer>>,
+    LocalTensor<TensorAttribute<ViewEngine<HardwareMemPtr<hPos, Pointer>>,
         Layout<Shape<ShapeRows, ShapeCols>, Stride<StrideRows, StrideCols>, LayoutPattern>>>> {
     // 统一转换为 tuple 类型
     using ShapeRowTuple = typename ToTuple<ShapeRows>::type;

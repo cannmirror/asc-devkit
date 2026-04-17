@@ -75,12 +75,6 @@ namespace Location {
 template <typename TupleType>
 using tuple_sequence = Std::make_index_sequence<Std::tuple_size_v<Std::remove_cvref_t<TupleType>>>;
 
-template<typename T>
-__aicore__ inline constexpr auto GetHardPos()
-{
-   return T::iterator::hardPos;
-}
-
 template <typename T>
 struct locationAttr {
     using gmAttr =          __gm__      T*;

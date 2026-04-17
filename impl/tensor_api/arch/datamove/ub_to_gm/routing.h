@@ -32,13 +32,13 @@ public:
     __aicore__ inline static void Run(const Args&... args) {}
 };
 
-template <Hardware dstTPos, Hardware srcTpos, uint32_t Version>
+template <typename dstTPos, typename srcTpos, uint32_t Version>
 struct CopyUB2GMTensor2Tensor {
     using type = CopyUB2GMIgnore;
 };
 
 template <>
-struct CopyUB2GMTensor2Tensor<Hardware::GM, Hardware::UB, ArchVersion::V3510> {
+struct CopyUB2GMTensor2Tensor<Location::GM, Location::UB, ArchVersion::V3510> {
     using type = DataCopyUB2GM3510;
 };
 
