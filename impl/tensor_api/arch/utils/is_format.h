@@ -48,6 +48,23 @@ struct GetTypeFromFourDimTrait<
     using StrideColumnsOneDim = typename Std::tuple_element<1, Stride2>::type;
 };
 
+// 辅助模板：将类型统一转换为 tuple
+template <typename T, bool IsTuple>
+struct ToTupleImpl;
+
+template <typename T>
+struct ToTupleImpl<T, true> {
+    using type = T;
+};
+
+template <typename T>
+struct ToTupleImpl<T, false> {
+    using type = Std::tuple<T>;
+};
+
+template <typename T>
+using ToTuple = ToTupleImpl<T, Std::is_tuple_v<T>>;
+
 template <typename T>
 struct GetTypeFromNDimTrait;
 
@@ -58,17 +75,24 @@ template <typename hPos, typename Pointer,
 struct GetTypeFromNDimTrait<
     LocalTensor<TensorAttribute<ViewEngine<HardwareMemPtrV2<hPos, Pointer>>,
         Layout<Shape<ShapeRows, ShapeCols>, Stride<StrideRows, StrideCols>, LayoutPattern>>>> {
+    // 统一转换为 tuple 类型
+    using ShapeRowTuple = typename ToTuple<ShapeRows>::type;
+    using ShapeColTuple = typename ToTuple<ShapeCols>::type;
+    using StrideRowTuple = typename ToTuple<StrideRows>::type;
+    using StrideColTuple = typename ToTuple<StrideCols>::type;
+    
+    // 获取类型
     template <size_t Dim>
-    using ShapeRowDim = typename Std::tuple_element<Dim, ShapeRows>::type;
+    using ShapeRowDim = typename Std::tuple_element<Dim, ShapeRowTuple>::type;
     
     template <size_t Dim>
-    using ShapeColDim = typename Std::tuple_element<Dim, ShapeCols>::type;
+    using ShapeColDim = typename Std::tuple_element<Dim, ShapeColTuple>::type;
     
     template <size_t Dim>
-    using StrideRowDim = typename Std::tuple_element<Dim, StrideRows>::type;
+    using StrideRowDim = typename Std::tuple_element<Dim, StrideRowTuple>::type;
     
     template <size_t Dim>
-    using StrideColDim = typename Std::tuple_element<Dim, StrideCols>::type;
+    using StrideColDim = typename Std::tuple_element<Dim, StrideColTuple>::type;
 };
 
 enum class AttrInfo : uint8_t {SHAPE, STRIDE, ROW, COLUMN};

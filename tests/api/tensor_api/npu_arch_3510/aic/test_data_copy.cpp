@@ -164,6 +164,8 @@ __aicore__ inline void tensor2tensor_run_stub(const T& dst, const U& src, const 
     check_coord_success<Coord>(coord);
 }
 
+#define MAKE_LAYOUT_TYPE(fmt) fmt##LayoutPtn
+
 // create tensor
 #define CREATE_TENSOR(DTYPE, SRC_SIZE1, SRC_SIZE2, DST_SIZE1, DST_SIZE2, SRC_PREFIX, SRC_LOCATION, SRC_LAYOUT, DST_PREFIX, DST_LOCATION, DST_LAYOUT) \
     using namespace AscendC::Te; \
@@ -171,11 +173,11 @@ __aicore__ inline void tensor2tensor_run_stub(const T& dst, const U& src, const 
     __##DST_PREFIX##__ DTYPE dstData[DST_SIZE1 * DST_SIZE2 * sizeof(DTYPE)]; \
     \
     auto srcIterator = MakeMemPtr<Location::SRC_LOCATION>(srcData); \
-    auto srcLayout = Make##SRC_LAYOUT##Layout<DTYPE>(SRC_SIZE1, SRC_SIZE2); \
+    auto srcLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(SRC_LAYOUT), LayoutTraitDefault<DTYPE>>(SRC_SIZE1, SRC_SIZE2); \
     auto srcTensor = MakeTensor(srcIterator, srcLayout); \
     \
     auto dstIterator = MakeMemPtr<Location::DST_LOCATION>(dstData); \
-    auto dstLayout = Make##DST_LAYOUT##Layout<DTYPE>(DST_SIZE1, DST_SIZE2); \
+    auto dstLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(DST_LAYOUT), LayoutTraitDefault<DTYPE>>(DST_SIZE1, DST_SIZE2); \
     auto dstTensor = MakeTensor(dstIterator, dstLayout);
 
 
@@ -186,11 +188,11 @@ __aicore__ inline void tensor2tensor_run_stub(const T& dst, const U& src, const 
     __##DST_PREFIX##__ DST_DTYPE dstData[DST_SIZE1 * DST_SIZE2 * sizeof(DST_DTYPE)]; \
     \
     auto srcIterator = MakeMemPtr<Location::SRC_LOCATION>(srcData); \
-    auto srcLayout = Make##SRC_LAYOUT##Layout<SRC_DTYPE>(SRC_SIZE1, SRC_SIZE2); \
+    auto srcLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(SRC_LAYOUT), LayoutTraitDefault<SRC_DTYPE>>(SRC_SIZE1, SRC_SIZE2); \
     auto srcTensor = MakeTensor(srcIterator, srcLayout); \
     \
     auto dstIterator = MakeMemPtr<Location::DST_LOCATION>(dstData); \
-    auto dstLayout = Make##DST_LAYOUT##Layout<DST_DTYPE>(DST_SIZE1, DST_SIZE2); \
+    auto dstLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(DST_LAYOUT), LayoutTraitDefault<DST_DTYPE>>(DST_SIZE1, DST_SIZE2); \
     auto dstTensor = MakeTensor(dstIterator, dstLayout);
 
 // ==================== Test case ====================

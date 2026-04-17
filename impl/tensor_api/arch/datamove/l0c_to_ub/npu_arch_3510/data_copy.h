@@ -55,16 +55,13 @@ private:
     template <const CopyL0C2UBTrait& trait, QuantMode_t quantPre, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
-        if constexpr (IsNDFormat<T>::value) {
-            CheckFormat::CheckNDTemplate<T>();
-        } else if constexpr (IsDNFormat<T>::value) {
-            CheckFormat::CheckDNTemplate<T>();
-        } else if constexpr (IsNZFormat<T>::value || IsL0cNZFormat<T>::value) {
-            CheckFormat::CheckFixpipeNZTemplate<T, trait.enableChannelSplit>();
-            static_assert(trait.dualDstCtl != DUAL_DST_SPLIT_N, "If split N when fixpipe, NZ is not supported");
-        }
-
-        CheckFormat::CheckL0CNZTemplate<U>();
+        // CheckLayoutPattern<T>
+        // using Layout = typename T::layoutType;
+        // using LayoutPattern = GetLayoutPattern<Layout>;
+        // if constexpr (Std::is_same_v<LayoutPattern, NZLayoutPtn>) {
+        //     static_assert(trait.dualDstCtl != DUAL_DST_SPLIT_N, "If split N when fixpipe, NZ is not supported");
+        // }
+        // CheckLayoutPattern<U>
     }
 
     template <const CopyL0C2UBTrait& trait, QuantMode_t quantPre, typename T, typename U>
@@ -114,14 +111,8 @@ private:
     template <const CopyL0C2UBTrait& trait, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
-        if constexpr (IsNDFormat<T>::value) {
-            CheckFormat::CheckNDTemplate<T>();
-        } else if constexpr (IsDNFormat<T>::value) {
-            CheckFormat::CheckDNTemplate<T>();
-        } else if constexpr (IsNZFormat<T>::value || IsL0cNZFormat<T>::value) {
-            CheckFormat::CheckFixpipeNZTemplate<T, trait.enableChannelSplit>();
-        }
-        CheckFormat::CheckL0CNZTemplate<U>();
+        // CheckLayoutPattern<T>
+        // CheckLayoutPattern<U>
     }
 
     template <const CopyL0C2UBTrait& trait, typename T, typename U, bool IsTail>

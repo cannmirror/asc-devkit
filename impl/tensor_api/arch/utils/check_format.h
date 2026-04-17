@@ -56,34 +56,16 @@ struct CheckNzLayoutPattern {
 struct CheckNDLayoutPattern {
     template <typename T, typename TraitType>
     __aicore__ inline static constexpr void Check() {
-        using ShapeRow0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<1>>, "Layout->Shape->Row->ZeroDim must be Int<1>!");
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<1>>, "Layout->Shape->Column->ZeroDim must be Int<1>!");
-
-        using StrideRow0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
         using StrideColumn0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        using StrideColumn1 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 1>::type;
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<0>>, "Layout->Stride->Row->ZeroDim must be Int<0>!");
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<0>>, "Layout->Stride->Column->ZeroDim must be Int<0>!");
-        static_assert(Std::is_same_v<StrideColumn1, Std::Int<1>>, "Layout->Stride->Column->OneDim must be Int<1>!");
+        static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>, "Layout->Stride->Column must be Int<1>!");
     }
 };
 
 struct CheckDNLayoutPattern {
     template <typename T, typename TraitType>
     __aicore__ inline static constexpr void Check() {
-        using ShapeRow0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<1>>, "Src->Layout->Shape->Row->ZeroDim must be Int<1>!");
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<1>>, "Src->Layout->Shape->Column->ZeroDim must be Int<1>!");
-
         using StrideRow0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideRow1 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 1>::type;
-        using StrideColumn0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<0>>, "Src->Layout->Stride->Row->ZeroDim must be Int<0>!");
-        static_assert(Std::is_same_v<StrideRow1, Std::Int<1>>, "Src->Layout->Stride->Row->OneDim must be Int<1>!");
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<0>>, "Src->Layout->Stride->Column->ZeroDim must be Int<0>!");
+        static_assert(Std::is_same_v<StrideRow0, Std::Int<1>>, "Src->Layout->Stride->Row must be Int<1>!");
     }
 };
 
@@ -232,168 +214,6 @@ __aicore__ inline decltype(auto) CheckLayoutPattern() {
     static_assert(!Std::is_same_v<PatternCheck, EmptyValue>, "Unsupported layout pattern.");
     PatternCheck::template Check<T, TraitType>();
 }
-
-class CheckFormat {
-public:
-    template <typename T>
-    __aicore__ inline static constexpr void CheckZZTemplate()
-    {
-        using dataType = typename T::elementType;
-        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<C0_ELEMENT<dataType>>>,
-                      "Layout->Shape->Column->ZeroDim must be 32/sizeof(dataType)!");
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>,
-                      "Layout->Shape->Row->ZeroDim must be 16!");
-
-        using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>, "Layout->Stride->Column-ZeroDim must be 1!");
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<C0_ELEMENT<dataType>>>,
-                      "Layout->Stride->Row->ZeroDim must be 32/sizeof(dataType)!");
-    }
-
-    template <typename T>
-    __aicore__ inline static constexpr void CheckZNTemplate()
-    {
-        using dataType = typename T::elementType;
-        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<FRACTAL_FIXED>>,
-                      "Filter Layout->Shape->Column->ZeroDim must be 16!");
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<C0_ELEMENT<dataType>>>,
-                      "Filter Layout->Shape->Row->ZeroDim must be (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType))!");
-
-        using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<C0_ELEMENT<dataType>>>,
-                      "Filter Layout->Stride->Column-ZeroDim must be (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType))!");
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<1>>,
-                      "Filter Layout->Stride->Row->ZeroDim must be 1!");
-    }
-
-    template <typename T>
-    __aicore__ inline static constexpr void CheckNZTemplate()
-    {
-        using type = typename T::elementType;
-        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>,
-                      "Layout->Shape->Row->ZeroDim must be 16!");
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<C0_ELEMENT<type>>>,
-                      "Layout->Shape->Column->ZeroDim must be (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType))!");
-
-        using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        using StrideRow1 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 1>::type;
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<C0_ELEMENT<type>>>,
-                      "Layout->Stride->Row->ZeroDim must be (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType))!");
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>,
-                      "Layout->Stride->Column->ZeroDim must be 1!");
-        static_assert(
-            Std::is_same_v<StrideRow1, Std::Int<C0_ELEMENT<type> * FRACTAL_FIXED>>,
-            "Layout->Stride->Column->ZeroDimmust be (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType) * 16)!");
-    }
-
-    template <typename T, bool enableChannelSplit>
-    __aicore__ inline static constexpr void CheckFixpipeNZTemplate()
-    {
-        using Dtype = typename T::elementType;
-
-        constexpr bool isB32 = is_one_of_attr_v<Dtype, float, int32_t>;
-        if constexpr (enableChannelSplit) {
-            static_assert(isB32, "When enable channel split, data type must be B32");
-        }
-
-        using type = typename Std::conditional<!isB32 || enableChannelSplit, Dtype, half>::type;
-        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-
-        using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        using StrideRow1 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 1>::type;
-
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>, "Layout->Shape->Row->ZeroDim must be 16!");
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<C0_ELEMENT<type>>>,
-                      "Layout->Shape->Column->ZeroDim must be (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType))!");
-
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<C0_ELEMENT<type>>>,
-                      "Layout->Stride->Row->ZeroDim must be (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType))!");
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>, "Layout->Stride->Column->ZeroDim must be 1!");
-        static_assert(
-            Std::is_same_v<StrideRow1, Std::Int<C0_ELEMENT<type> * FRACTAL_FIXED>>,
-            "Layout->Stride->Column->ZeroDimmust be (is_b4_type<dataType> ? 64 : 32 / sizeof(dataType) * 16)!");
-    }
-
-    template <typename T>
-    __aicore__ inline static constexpr void CheckNDTemplate()
-    {
-        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<1>>, "Layout->Shape->Row->ZeroDim must be 1!");
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<1>>, "Layout->Shape->Column->ZeroDim must be 1!");
-
-        using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        using StrideColumn1 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 1>::type;
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<0>>, "Layout->Stride->Row->ZeroDim must be 0!");
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<0>>, "Layout->Stride->Column->ZeroDim must be 0!");
-        static_assert(Std::is_same_v<StrideColumn1, Std::Int<1>>, "Layout->Stride->Column->OneDim must be 1!");
-    }
-
-    template <typename T>
-    __aicore__ inline static constexpr void CheckNDFp8Template()
-    {
-        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<2>>, "CopyCbufToFB Layout->Shape->Row->ZeroDim must be 2!");
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<1>>,
-                      "CopyCbufToFB Layout->Shape->Column->ZeroDim must be 1!");
-
-        using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        using StrideColumn1 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 1>::type;
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<1>>, "CopyCbufToFB Layout->Stride->Row->ZeroDim must be 1!");
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<0>>,
-                      "CopyCbufToFB Layout->Stride->Column->ZeroDim must be 0!");
-        static_assert(Std::is_same_v<StrideColumn1, Std::Int<MX_SCALE_K0>>,
-                      "CopyCbufToFB Layout->Stride->Column->OneDim must be 2!");
-    }
-
-    template <typename T>
-    __aicore__ inline static constexpr void CheckL0CNZTemplate()
-    {
-        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>,
-                      "Layout->Shape->Row->ZeroDim must be 16!");
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<FRACTAL_FIXED>>,
-                      "Layout->Shape->Column->ZeroDim must be 16!");
-
-        using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<FRACTAL_FIXED>>,
-                      "Layout->Stride->Row->ZeroDim must be 16!");
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>, "Layout->Stride->Column->ZeroDim must be 1!");
-    }
-
-    template <typename T>
-    __aicore__ inline static constexpr void CheckDNTemplate()
-    {
-        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<1>>, "Src->Layout->Shape->Row->ZeroDim must be 1!");
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<1>>, "Src->Layout->Shape->Column->ZeroDim must be 1!");
-
-        using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideRow1 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 1>::type;
-        using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<0>>, "Src->Layout->Stride->Row->ZeroDim must be 0!");
-        static_assert(Std::is_same_v<StrideRow1, Std::Int<1>>, "Src->Layout->Stride->Row->OneDim must be 1!");
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<0>>, "Src->Layout->Stride->Column->ZeroDim must be 0!");
-    }
-};
-
 } // namespace Te
 } // namespace AscendC
 

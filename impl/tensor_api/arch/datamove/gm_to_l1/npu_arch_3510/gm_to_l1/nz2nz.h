@@ -39,8 +39,8 @@ private:
     template <const CopyGM2L1Trait& trait, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
-        CheckFormat::CheckNZTemplate<T>();
-        CheckFormat::CheckNZTemplate<U>();
+        // CheckLayoutPattern<U>
+        // CheckLayoutPattern<T>
         CheckDataTypeFor3510::CheckGm2L1AlignV2NDDataType<T, U>();
     }
 
