@@ -478,8 +478,9 @@ template <typename T>
 __aicore__ inline void AddReluImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const int32_t& count)
 {
     if ASCEND_IS_AIV {
-        ASCENDC_ASSERT((SupportType<T, int16_t, half, float>()), {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in "
-            "AddRelu, current api support dtype combination is src and dst both: int16_t / half / float.");});
+        ASCENDC_DEBUG_ASSERT((SupportType<T, int16_t, half, float>()), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
+            "Failed to check dtype in AddRelu, current api support dtype combination is src and dst both: int16_t / "
+            "half / float."));
         set_mask_count();
         set_vector_mask(0, count);
         vaddrelu((__ubuf__ T*)dst, (__ubuf__ T*)src0, (__ubuf__ T*)src1, 1,
@@ -813,9 +814,9 @@ template <typename T, typename U>
 __aicore__ inline void MulAddDstImpl(__ubuf__ T* dst, __ubuf__ U* src0, __ubuf__ U* src1, const int32_t& count)
 {
     if ASCEND_IS_AIV {
-        ASCENDC_ASSERT((SupportType<Tuple<T, U>, Tuple<half, half>, Tuple<float, float>, Tuple<float, half>>()),
-            {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in MulAddDst, current api support dtype combination is "
-            "src: half, dst: half / float; src: float, dst: float.");});
+        ASCENDC_DEBUG_ASSERT((SupportType<Tuple<T, U>, Tuple<half, half>, Tuple<float, float>,
+            Tuple<float, half>>()), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check dtype in MulAddDst, current api "
+            "support dtype combination is src: half, dst: half / float; src: float, dst: float."));
         set_mask_count();
         set_vector_mask(0, count);
         if constexpr (sizeof(T) == sizeof(U)) {
@@ -871,8 +872,8 @@ template <typename T>
 __aicore__ inline void FusedMulAddReluImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const int32_t& count)
 {
     if ASCEND_IS_AIV {
-        ASCENDC_ASSERT((SupportType<T, half, float>()), {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in "
-            "FusedMulAddRelu, current api support dtype combination is src and dst both: half / float.");});
+        ASCENDC_DEBUG_ASSERT((SupportType<T, half, float>()), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check dtype "
+            "in FusedMulAddRelu, current api support dtype combination is src and dst both: half / float."));
         set_mask_count();
         set_vector_mask(0, count);
         vmaddrelu(dst, src0, src1, 1, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE,
@@ -900,8 +901,9 @@ template <typename T>
 __aicore__ inline void SubReluImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const int32_t& count)
 {
     if ASCEND_IS_AIV {
-        ASCENDC_ASSERT((SupportType<T, int16_t, half, float>()), {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in "
-            "SubRelu, current api support dtype combination is src and dst both: int16_t / half / float.");});
+        ASCENDC_DEBUG_ASSERT((SupportType<T, int16_t, half, float>()), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
+            "Failed to check dtype in SubRelu, current api support dtype combination is src and dst both: int16_t / "
+            "half / float."));
         set_mask_count();
         set_vector_mask(0, count);
         vsubrelu(dst, src0, src1, 1, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE,
