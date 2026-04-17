@@ -1,107 +1,73 @@
 CompileFlags:
   Add:
-    # C++17 标准
     - "-std=c++17"
-
-    # 使用 GCC 的 libstdc++
     - "-stdlib=libstdc++"
 
-    # 定义 NPU 架构宏（用于条件编译，选择 2201 作为默认）
+    # 定义 NPU 架构宏（用于条件编译）
+    # 可选值: 2201(Atlas A2/A3 系列), 3510(Ascend 950PR/Ascend 950DT)
     - "-D__NPU_ARCH__=2201"
 
-    # 注入GCC标准库路径(自行替换对应版本与路径)
-    - "-isystem"
-    - "/usr/include/c++/9"
-    - "-isystem"
-    - "/usr/include/x86_64-linux-gnu/c++/9"
-    - "-isystem"
-    - "/usr/lib/gcc/x86_64-linux-gnu/9/include"
-
     # 注入AscendC头文件路径(自行替换cann包路径)
+    # asc/ 根目录必须在列表中：CANN 头文件内部大量使用 #include "impl/..." 相对路径
     - "-isystem"
-    - "/usr/local/Ascend/cann-9.0.0/x86_64-linux/asc/include"
+    - "/usr/local/Ascend/cann/asc"
     - "-isystem"
-    - "/usr/local/Ascend/cann-9.0.0/x86_64-linux/asc/include/adv_api/matmul"
+    - "/usr/local/Ascend/cann/asc/include"
     - "-isystem"
-    - "/usr/local/Ascend/cann-9.0.0/x86_64-linux/asc/include/aicpu_api"
+    - "/usr/local/Ascend/cann/asc/include/adv_api/matmul"
     - "-isystem"
-    - "/usr/local/Ascend/cann-9.0.0/x86_64-linux/asc/include/basic_api"
+    - "/usr/local/Ascend/cann/asc/include/aicpu_api"
     - "-isystem"
-    - "/usr/local/Ascend/cann-9.0.0/x86_64-linux/asc/include/c_api"
+    - "/usr/local/Ascend/cann/asc/include/basic_api"
     - "-isystem"
-    - "/usr/local/Ascend/cann-9.0.0/x86_64-linux/asc/include/interface"
+    - "/usr/local/Ascend/cann/asc/include/c_api"
     - "-isystem"
-    - "/usr/local/Ascend/cann-9.0.0/x86_64-linux/asc/include/simt_api"
+    - "/usr/local/Ascend/cann/asc/include/interface"
     - "-isystem"
-    - "/usr/local/Ascend/cann-9.0.0/x86_64-linux/asc/include/tiling"
+    - "/usr/local/Ascend/cann/asc/include/simt_api"
     - "-isystem"
-    - "/usr/local/Ascend/cann-9.0.0/x86_64-linux/asc/include/utils"
+    - "/usr/local/Ascend/cann/asc/include/tiling"
+    - "-isystem"
+    - "/usr/local/Ascend/cann/asc/include/utils"
+    - "-isystem"
+    - "/usr/local/Ascend/cann/asc/include/utils/debug"
 
     - "-isystem"
-    - "/usr/local/Ascend/cann-9.0.0/x86_64-linux/asc/impl"
+    - "/usr/local/Ascend/cann/asc/impl"
     - "-isystem"
-    - "/usr/local/Ascend/cann-9.0.0/x86_64-linux/asc/impl/adv_api"
+    - "/usr/local/Ascend/cann/asc/impl/adv_api"
     - "-isystem"
-    - "/usr/local/Ascend/cann-9.0.0/x86_64-linux/asc/impl/basic_api"
+    - "/usr/local/Ascend/cann/asc/impl/basic_api"
     - "-isystem"
-    - "/usr/local/Ascend/cann-9.0.0/x86_64-linux/asc/impl/c_api"
+    - "/usr/local/Ascend/cann/asc/impl/c_api"
     - "-isystem"
-    - "/usr/local/Ascend/cann-9.0.0/x86_64-linux/asc/impl/simt_api"
+    - "/usr/local/Ascend/cann/asc/impl/simt_api"
     - "-isystem"
-    - "/usr/local/Ascend/cann-9.0.0/x86_64-linux/asc/impl/utils"
+    - "/usr/local/Ascend/cann/asc/impl/utils"
+    - "-isystem"
+    - "/usr/local/Ascend/cann/include"
 
+    # CPU 调试模式的 stub 定义（half, bfloat16_t, threadIdx 等类型均在此处）
+    # CANN 头文件在 ASCENDC_CPU_DEBUG=1 时会 #include "stub_def.h"，须确保可达
     - "-isystem"
-    - "/usr/local/Ascend/cann-9.0.0/x86_64-linux/include"
+    - "/usr/local/Ascend/cann/tools/cpudebug/lib/include"
 
-    # 启用 CPU 调试模式，会自动加载 kernel_macros.h 中的定义
+    # 高级 API（lib/matmul_intf.h, kernel_tiling/ 等）和 host 侧 tiling API
+    - "-isystem"
+    - "/usr/local/Ascend/cann/include/ascendc/highlevel_api"
+    - "-isystem"
+    - "/usr/local/Ascend/cann/include/ascendc/host_api"
+
+    # 启用 CPU 调试模式（仅供 IDE 诊断），使 CANN 头文件走 CPU 仿真分支
     - "-DASCENDC_CPU_DEBUG=1"
 
-    # 定义 Ascend C 特殊关键字（防止 clangd 报错）
-    # 这些关键字在真实的 Ascend C 编译器中是内建的
-    # 函数属性 - 使用 GNU 属性语法
-    - "-D__aicore__=__attribute__((annotate(\"aicore\")))"
-    - "-D__host_aicore__=__attribute__((annotate(\"host_aicore\")))"
-    - "-D__global__=__attribute__((annotate(\"global\")))"
-    - "-D__host__=__attribute__((annotate(\"host\")))"
-    - "-D__device__=__attribute__((annotate(\"device\")))"
-
-    # 内存空间限定符 - 定义为空（类型限定符不能使用属性语法）
-    - "-D__gm__="
-    - "-D__simt_vf__="
-    - "-D__vector__="
-    - "-D__cube__="
+    # stub_def.h 未覆盖的关键字，须手动定义
+    - "-D__device__="
     - "-D__launch_bounds__(x)="
-    - "-D__ubuf__="
-    - "-D__BLOCK_LOCAL__="
-    - "-D__WORKGROUP_LOCAL__="
-    - "-D__VEC_SCOPE__="
-    - "-D__cbuf__="
-    - "-D__ubuf__="
-    - "-D__cc__="
-    - "-D__ca__="
-    - "-D__cb__="
-    - "-D__fbuf__="
-    - "-D__sync_noalias__="
-    - "-D__sync_alias__="
-    - "-D__check_sync_alias__="
-    - "-D__sync_out__="
-    - "-D__sync_in__="
-    - "-D__inout_pipe__(...)="
-    - "-D__in_pipe__(...)="
-    - "-D__out_pipe__(...)="
-    - "-D__ssbuf__="
-    - "-D__simt_callee__="
-    - "-D__simt_vf__="
-    - "-D__simd_callee__="
-    - "-D__simd_vf__="
-    - "-D__no_simd_vf_fusion__="
-    - "-D__disable_kernel_type_autoinfer__="
-    - "-DGM_ADDR=uint8_t*"
 
-    # Ascend C 高级宏（通常在 kernel_macros.h 中定义）
-    - "-DASCENDC_HOST=__attribute__((annotate(\"host\")))"
-    - "-DASCENDC_AICORE=__attribute__((annotate(\"aicore\")))"
-    - "-DASCENDC_HOST_AICORE=__attribute__((annotate(\"host_aicore\")))"
+    # .aicpu未 #include "stub_def.h"，需手动添加
+    - "-D__global__="
+    - "-D__aicpu__="
 
     # 抑制未知属性和其他不相关的警告
     - "-Wno-unknown-attributes"
@@ -110,24 +76,24 @@ CompileFlags:
     - "-Wno-nested-anon-types"
 
 Diagnostics:
-  # 抑制一些可能不相关的警告
   UnusedIncludes: None
   MissingIncludes: None
   Suppress:
-    - "unused-includes"
-    - "pp_file_not_found"
-    - "unknown-warning-option"
-    - "macro-redefined"
-    - "drv_no_cuda_installation"  # 不需要 CUDA
-    - "redefinition"  # 避免 operator new 等重定义错误
+    - "pp_file_not_found"       # 构建生成的头文件（*_op_resource.h, aclnn_*.h 等）
+    - "unknown-warning-option"  # 自定义 -Wno-* 可能不被 clangd 内置 clang 识别
+    - "macro-redefined"         # CANN 头文件内部重复定义 __BLOCK_LOCAL__ 等
 ---
 If:
-  PathMatch: ".*\\.asc$"
+  PathMatch: ".*\\.(asc|aicpu)$"
 CompileFlags:
+  # .asc/.aicpu 常缺少可用编译数据库，使用本文件内 flags 以稳定解析 AscendC 语法
+  CompilationDatabase: None
   Add:
     - "-x"
     - "c++"
 
+# .asc/.aicpu 文件使用 <<<blocks, tiling, stream>>> kernel launch 语法，
+# clangd 无法解析，会产生级联误报，以下 suppress 项均为此兜底
 Diagnostics:
   Suppress:
     - "attributes_not_allowed"
@@ -138,3 +104,4 @@ Diagnostics:
     - "invalid_token_after_toplevel_declarator"
     - "missing_type_specifier"
     - "typename_nested_not_found"
+    - "redefinition"            # 限制在 AscendC 文件内，减少来自 CANN 头文件的重复定义诊断干扰

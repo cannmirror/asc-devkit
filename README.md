@@ -109,31 +109,31 @@ Ascend C提供三类接口，均可实现底层的完备编程能力：
 
   ```json
   {
-    "clangd.path": "/usr/bin/clangd-15",
+    "clangd.path": "/usr/bin/clangd",
     "clangd.arguments": [
         "--background-index=0",
         "--clang-tidy=0"
     ],
-    "files.associations": {
-        "*.asc": "cpp"
-    }
+    "C_Cpp.intelliSenseEngine": "disabled"
   }
   ```
 
-- 在项目根目录下配置 `.clangd`（示例）完整 `.clangd`文件在本目录下给出.
+- 在项目根目录下配置 `.clangd`（示例）完整 `.clangd`文件在本目录下给出，其中涉及 CANN 头文件目录需自行替换实际安装位置，`.clangd`中默认为`/usr/local/Ascend`.
 
   ```yaml
   CompileFlags:
     Add:
       - "-std=c++17"
-      - "-DASCENDC_CPU_DEBUG=1"
+      - "-stdlib=libstdc++"
       - "-D__NPU_ARCH__=2201"
+      - "-DASCENDC_CPU_DEBUG=1"
       ...
 
   ---
   If:
-    PathMatch: ".*\\.asc$"
+    PathMatch: ".*\\.(asc|aicpu)$"
   CompileFlags:
+    CompilationDatabase: None
     Add:
       - "-x"
       - "c++"
@@ -147,6 +147,7 @@ Ascend C提供三类接口，均可实现底层的完备编程能力：
       - "invalid_token_after_toplevel_declarator"
       - "missing_type_specifier"
       - "typename_nested_not_found"
+      - "redefinition"
   ```
 
 - 重启clangd（VSCode: Command Palette -> "Clangd: Restart language server"）

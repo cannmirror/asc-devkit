@@ -39,7 +39,8 @@
                 "eamodio.gitlens",
                 "ms-python.python",
                 "ms-vscode.cpptools",
-                "ms-vscode.cmake-tools"
+                "ms-vscode.cmake-tools",
+                "llvm-vs-code-extensions.vscode-clangd"
             ],
             "settings": {
                 "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
