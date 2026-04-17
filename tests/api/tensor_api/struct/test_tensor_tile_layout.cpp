@@ -321,6 +321,29 @@ TEST_F(Tensor_Api_Layout, GetOperationInt)
     EXPECT_EQ(AscendC::Std::get<0>(nestedGet11Stride), 400);
 }
 
+TEST_F(Tensor_Api_Layout, TupleGetOperation)
+{
+    using namespace AscendC::Te;
+
+    const auto shape = MakeShape(10, 20, 30);
+    const auto nestedShape = MakeShape(MakeShape(1, 2), MakeShape(3, 4));
+
+    auto getAll = Get(shape);
+    EXPECT_EQ(AscendC::Std::get<0>(getAll), 10);
+    EXPECT_EQ(AscendC::Std::get<1>(getAll), 20);
+    EXPECT_EQ(AscendC::Std::get<2>(getAll), 30);
+
+    auto get1 = Get<1>(shape);
+    EXPECT_EQ(get1, 20);
+
+    auto nestedGet0 = Get<0>(nestedShape);
+    EXPECT_EQ(AscendC::Std::get<0>(nestedGet0), 1);
+    EXPECT_EQ(AscendC::Std::get<1>(nestedGet0), 2);
+
+    auto nestedGet10 = Get<1, 0>(nestedShape);
+    EXPECT_EQ(nestedGet10, 3);
+}
+
 TEST_F(Tensor_Api_Layout, SelectOperation)
 {
     using namespace AscendC::Te;

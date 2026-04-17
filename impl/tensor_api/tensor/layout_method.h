@@ -174,28 +174,6 @@ __aicore__ inline constexpr auto GetStride(LayoutType& layout)
     return layout.template Stride<Is...>();
 }
 
-template <typename T>
-__aicore__ inline constexpr decltype(auto) GetEleImpl(T&& t)
-{
-    static_assert(Std::is_tuple_v<T>, "Shape or Stride is not Tuple");
-    if constexpr (Std::tuple_size_v<T> == 1 && !Std::is_tuple_v<decltype(Std::get<0>(t))>) {
-        return Std::get<0>(static_cast<T&&>(t));
-    } else {
-        return static_cast<T&&>(t);
-    }
-}
-
-template <size_t... Is, typename Tuple,
-    typename = Std::enable_if_t<Std::is_tuple_v<Tuple>>>
-__aicore__ inline constexpr decltype(auto) Get(Tuple&& t)
-{
-    if constexpr (sizeof...(Is) == 0) {
-        return GetEleImpl(GetTuple(static_cast<Tuple&&>(t)));
-    } else {
-        return GetEleImpl(GetTuple<Is...>(static_cast<Tuple&&>(t)));
-    }
-}
-
 struct CoshapeSum {
     template <typename... Args>
     __aicore__ inline constexpr auto operator()(const Args&... args) const {
