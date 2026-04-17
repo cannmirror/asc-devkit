@@ -32,12 +32,12 @@ class CopyL12FBInstr {
 public:
     template <typename T, typename U, typename... Params>
     __aicore__ inline static void DataCopy(const T& dst, const U& src, const Params& ...params) {
-        CopyL12FB(reinterpret_cast<uint64_t>(dst.Data().Get()), src.Data().Get(), params...);
+        CopyL12FB(dst.Data().Get(), src.Data().Get(), params...);
     }
 
 private:
     template <typename T>
-    __aicore__ inline static void CopyL12FB(uint64_t dst, __cbuf__ T* src, uint16_t blockCount, uint16_t blockLen,
+    __aicore__ inline static void CopyL12FB(__fbuf__ T* dst, __cbuf__ T* src, uint16_t blockCount, uint16_t blockLen,
         uint16_t srcStride, uint16_t dstStride)
     {
         if ASCEND_IS_AIV {
@@ -45,7 +45,7 @@ private:
         }
 
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            copy_cbuf_to_fbuf((__fbuf__ void*)dst, (__cbuf__ void*)src, blockCount, blockLen, srcStride, dstStride);
+            asc_copy_l12fb(dst, src, blockCount, blockLen, srcStride, dstStride);
         }
     }
 };

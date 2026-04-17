@@ -34,7 +34,7 @@ public:
                                               uint32_t srcNDStride)
     {
         SetQuantPre(quant);
-        SetLoop3Para(ndNum, dstNDStride, srcNDStride);
+        SetLoop3Para<uint64_t>(ndNum, dstNDStride, srcNDStride);
     }
 
     // 带量化前置 + dn版本
@@ -42,20 +42,20 @@ public:
                                               uint32_t srcNZMatrixStride, uint32_t srcNZC0Stride)
     {
         SetQuantPre(quant);
-        SetLoop3Para(dnNum, dstDNStride, srcNZMatrixStride);
-        SetChannelPara(srcNZC0Stride);
+        SetLoop3Para<uint64_t>(dnNum, dstDNStride, srcNZMatrixStride);
+        SetChannelPara<uint64_t>(srcNZC0Stride);
     }
 
     // 不带量化前置 + nd版本
     __aicore__ inline static void SetRegister(uint32_t ndNum, uint32_t dstNDStride, uint32_t srcNDStride)
-    { SetLoop3Para(ndNum, dstNDStride, srcNDStride); }
+    { SetLoop3Para<uint64_t>(ndNum, dstNDStride, srcNDStride); }
 
     // 不带量化前置 + dn版本
     __aicore__ inline static void SetRegister(uint32_t dnNum, uint32_t dstDNStride, uint32_t srcNZMatrixStride,
                                               uint32_t srcNZC0Stride)
     {
-        SetLoop3Para(dnNum, dstDNStride, srcNZMatrixStride);
-        SetChannelPara(srcNZC0Stride);
+        SetLoop3Para<uint64_t>(dnNum, dstDNStride, srcNZMatrixStride);
+        SetChannelPara<uint64_t>(srcNZC0Stride);
     }
 
 private:
@@ -70,33 +70,28 @@ private:
             return;
         }
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            set_quant_pre(quant);
+            asc_set_l0c_copy_prequant(quant);
         }
     }
 
+    template <typename T>
     __aicore__ inline static void SetLoop3Para(uint32_t num, uint32_t dstStride, uint32_t srcStride)
     {
-        if ASCEND_IS_AIV {
-            return;
-        }
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            uint64_t loop3Para = 0;
-            loop3Para |= static_cast<uint64_t>(dstStride) << SHIFT_LOOP3_DST_STRIDE;
-            loop3Para |= static_cast<uint64_t>(srcStride) << SHIFT_LOOP3_SRC_MATRIX;
-            loop3Para |= static_cast<uint64_t>(num);
-            set_loop3_para(loop3Para);
+            asc_set_l0c2gm_nz2nd(static_cast<T>(num), static_cast<T>(srcStride), static_cast<T>(dstStride));
         }
     }
 
+    template <typename T>
     __aicore__ inline static void SetChannelPara(uint32_t srcNZC0Stride)
     {
         if ASCEND_IS_AIV {
             return;
         }
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            uint64_t channelPara = 0;
-            channelPara |= static_cast<uint64_t>(srcNZC0Stride) << SHIFT_CHANNEL_C0_STRIDE;
-            set_channel_para(channelPara);
+            T channelPara = 0;
+            channelPara |= static_cast<T>(srcNZC0Stride) << SHIFT_CHANNEL_C0_STRIDE;
+            asc_set_l0c2gm_channel_para(channelPara);
         }
     }
 
@@ -113,7 +108,7 @@ __aicore__ inline auto AllocFbTempBuf(const uint16_t& /* calNSize */)
     }
     uint64_t deqTensorTempBuf = 0;
     if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-        deqTensorTempBuf = reinterpret_cast<uint64_t>(get_imm(0));
+        deqTensorTempBuf = reinterpret_cast<uint64_t>(asc_get_phy_buf_addr(0));
     }
     return deqTensorTempBuf;
 }
@@ -126,7 +121,7 @@ __aicore__ inline void SetFpc(const __fbuf__ T* deqTensorTempBuf)
     }
     if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
         uint64_t deqTensorAddr = (reinterpret_cast<uint64_t>(deqTensorTempBuf) >> 7) << 8;
-        set_fpc(deqTensorAddr);
+        asc_set_l0c_copy_prequant(deqTensorAddr);
     }
 }
 
@@ -136,7 +131,7 @@ __aicore__ inline void InsertSync()
         return;
     }
     if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-        pipe_barrier(PIPE_FIX);
+        asc_sync_pipe(PIPE_FIX);
     }
 }
 

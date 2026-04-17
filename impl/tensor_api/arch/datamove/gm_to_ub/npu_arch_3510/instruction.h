@@ -61,7 +61,7 @@ private:
         }
 
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            copy_gm_to_ubuf_align_v2(dst, src, 0, blockCount, blockLen, leftPaddingCount, rightPaddingCount, isPad,
+            asc_copy_gm2ub_align(dst, src, blockCount, blockLen, leftPaddingCount, rightPaddingCount, isPad,
                                      cacheMode, srcStride, dstStride);
         }
     }

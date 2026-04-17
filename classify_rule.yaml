@@ -105,6 +105,7 @@ asc-devkit:
       - impl/tensor_api/utils/extra_impl.h
       - impl/tensor_api/tensor/layout_size.h
       - impl/tensor_api/utils/map_impl.h
+      - impl/tensor_api/utils/macro_impl.h
       - impl/tensor_api/arch/datamove/l1_to_fb/routing.h
       - impl/tensor_api/arch/utils/is_format.h
       - impl/tensor_api/arch/datamove/l1_to_bt/routing.h

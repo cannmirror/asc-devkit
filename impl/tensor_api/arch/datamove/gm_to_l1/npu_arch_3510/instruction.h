@@ -35,7 +35,7 @@ template <typename T>
 __aicore__ inline void SetMTE2NzPara(const T& para)
 {
     if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-        set_mte2_nz_para(para);
+        asc_set_gm2l1_nz_para(para);
     }
 }
 
@@ -67,7 +67,7 @@ public:
         }
 
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            copy_gm_to_cbuf_align_v2(dst, src, 0, blockCount, blockLen, leftPaddingCnt, rightPaddingCnt, true,
+            asc_copy_gm2l1_align(dst, src, blockCount, blockLen, leftPaddingCnt, rightPaddingCnt, true,
                                      cacheMode, srcStride, dstStride);
         }
     }
@@ -104,7 +104,7 @@ public:
             mte2NzPara |= static_cast<uint64_t>(loop2DstStride) << 16;         // MTE2_NZ_PARA[31:16]
             mte2NzPara |= static_cast<uint64_t>(ndNum);                        // MTE2_NZ_PARA[15:0]
             SetMTE2NzPara(mte2NzPara); // CCE: store parameters for ND2NZ DMA instructions
-            copy_gm_to_cbuf_multi_nd2nz(dst, src, 0, loop1SrcStride, cacheMode, nValue, dValue, loop4SrcStride,
+            asc_copy_gm2l1_nd2nz(dst, src, loop1SrcStride, cacheMode, nValue, dValue, loop4SrcStride,
                                         enableSmallC0);
         }
     }
@@ -142,7 +142,7 @@ public:
             mte2NzPara |= static_cast<uint64_t>(loop2DstStride) << 16;         // MTE2_NZ_PARA[31:16]
             mte2NzPara |= static_cast<uint64_t>(dnNum);                        // MTE2_NZ_PARA[15:0]
             SetMTE2NzPara(mte2NzPara); // CCE: store parameters for DN2NZ DMA instructions
-            copy_gm_to_cbuf_multi_dn2nz(dst, src, 0, loop1SrcStride, cacheMode, nValue, dValue, loop4SrcStride,
+            asc_copy_gm2l1_dn2nz(dst, src, loop1SrcStride, cacheMode, nValue, dValue, loop4SrcStride,
                                         enableSmallC0);
         }
     }

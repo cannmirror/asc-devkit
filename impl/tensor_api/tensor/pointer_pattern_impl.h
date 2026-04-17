@@ -86,7 +86,7 @@ __aicore__ inline auto MakeLocationMemPtr(const Arg& arg)
 {
     using T = typename TraitType::type;
     using Pointer = typename LocationMemPtrType<PtrPattern, T>::type;
-    return MakeHardwareMemPtr<PtrPattern>(reinterpret_cast<Pointer>(get_imm(0) + arg));
+    return MakeHardwareMemPtr<PtrPattern>(reinterpret_cast<Pointer>(asc_get_phy_buf_addr(0) + arg));
 }
 
 } // namespace Te

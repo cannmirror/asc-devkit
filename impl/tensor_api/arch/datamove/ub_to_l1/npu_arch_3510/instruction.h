@@ -45,7 +45,7 @@ public:
         }
 
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            copy_ubuf_to_cbuf((__cbuf__ void*)dst, (__ubuf__ void*)src, 0, blockCount, blockLen, srcStride, dstStride);
+            asc_copy_ub2l1(dst, src, blockCount, blockLen, srcStride, dstStride);
         }
     }
 };

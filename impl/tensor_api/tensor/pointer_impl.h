@@ -72,37 +72,37 @@ __aicore__ inline constexpr auto MakeFixbufmemPtr(Iterator iter) {
 
 template <typename T, typename U>
 __aicore__ inline auto MakeUBmemPtr(const U& byteOffset) {
-    return MakeUBmemPtr(reinterpret_cast<__ubuf__ T*>(get_imm(0) + byteOffset));
+    return MakeUBmemPtr(reinterpret_cast<__ubuf__ T*>(asc_get_phy_buf_addr(0) + byteOffset));
 }
 
 template <typename T, typename U>
 __aicore__ inline auto MakeL1memPtr(const U& byteOffset) {
-    return MakeL1memPtr(reinterpret_cast<__cbuf__ T*>(get_imm(0) + byteOffset));
+    return MakeL1memPtr(reinterpret_cast<__cbuf__ T*>(asc_get_phy_buf_addr(0) + byteOffset));
 }
 
 template <typename T, typename U>
 __aicore__ inline auto MakeL0AmemPtr(const U& byteOffset) {
-    return MakeL0AmemPtr(reinterpret_cast<__ca__ T*>(get_imm(0) + byteOffset));
+    return MakeL0AmemPtr(reinterpret_cast<__ca__ T*>(asc_get_phy_buf_addr(0) + byteOffset));
 }
 
 template <typename T, typename U>
 __aicore__ inline auto MakeL0BmemPtr(const U& byteOffset) {
-    return MakeL0BmemPtr(reinterpret_cast<__cb__ T*>(get_imm(0) + byteOffset));
+    return MakeL0BmemPtr(reinterpret_cast<__cb__ T*>(asc_get_phy_buf_addr(0) + byteOffset));
 }
 
 template <typename T, typename U>
 __aicore__ inline auto MakeL0CmemPtr(const U& byteOffset) {
-    return MakeL0CmemPtr(reinterpret_cast<__cc__ T*>(get_imm(0) + byteOffset));
+    return MakeL0CmemPtr(reinterpret_cast<__cc__ T*>(asc_get_phy_buf_addr(0) + byteOffset));
 }
 
 template <typename T, typename U>
 __aicore__ inline auto MakeBiasmemPtr(const U& byteOffset) {
-    return MakeBiasmemPtr(reinterpret_cast<__biasbuf__ T*>(get_imm(0) + byteOffset));
+    return MakeBiasmemPtr(reinterpret_cast<__biasbuf__ T*>(asc_get_phy_buf_addr(0) + byteOffset));
 }
 
 template <typename T, typename U>
 __aicore__ inline auto MakeFixbufmemPtr(const U& byteOffset) {
-    return MakeFixbufmemPtr(reinterpret_cast<__fbuf__ T*>(get_imm(0) + byteOffset));
+    return MakeFixbufmemPtr(reinterpret_cast<__fbuf__ T*>(asc_get_phy_buf_addr(0) + byteOffset));
 }
 
 } // namespace Te

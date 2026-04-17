@@ -38,10 +38,10 @@ public:
             return;
         }
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            copy_matrix_cc_to_gm(dst.Data().Get(), src.Data().Get(), 0, nSize, mSize, dstStride, srcStride, cacheMode,
-                                 0, unitFlag, static_cast<uint64_t>(quantPre), reluEn, isChannelSplit, nz2ndEn,
-                                 static_cast<uint64_t>(QuantMode_post::NoConv), 0, false, false, 0, false, false, false,
-                                 false, false, nz2dnEn);
+            asc_copy_l0c2gm(dst.Data().Get(), src.Data().Get(), static_cast<uint16_t>(nSize), static_cast<uint16_t>(mSize),
+                            dstStride, static_cast<uint16_t>(srcStride), cacheMode, 0, unitFlag, static_cast<uint64_t>(quantPre),
+                            static_cast<uint8_t>(reluEn), isChannelSplit, nz2ndEn, static_cast<uint64_t>(QuantMode_post::NoConv),
+                            0, false, 0, false, false, false, nz2dnEn);
         }
     }
 };

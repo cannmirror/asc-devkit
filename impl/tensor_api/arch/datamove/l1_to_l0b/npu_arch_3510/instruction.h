@@ -48,7 +48,11 @@ private:
             return;
         }
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            load_cbuf_to_cb(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride, transpose);
+            if constexpr (transpose) {
+                asc_copy_l12l0b_transpose(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            } else {
+                asc_copy_l12l0b(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            }
         }
     }
 };
@@ -70,7 +74,11 @@ private:
             return;
         }
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            load_cbuf_to_cb_s4(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride, transpose);
+            if constexpr (transpose) {
+                asc_copy_l12l0b_transpose(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            } else {
+                asc_copy_l12l0b(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            }
         }
     }
 };
