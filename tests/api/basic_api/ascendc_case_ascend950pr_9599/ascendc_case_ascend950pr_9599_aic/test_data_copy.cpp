@@ -190,6 +190,38 @@ void main_tensortrait_data_copy_dn2nz_kernel(__gm__ uint8_t* __restrict__ srcGm,
 }
 
 template<typename T>
+void MainDataCopyL12BTKernel(__gm__ uint8_t* __restrict__ srcGm, __gm__ uint8_t* __restrict__ dstGm,
+                             __gm__ int32_t dataSize)
+{
+    TPipe tpipe;
+    TBuf<TPosition::C1> tbufL1;
+    tpipe.InitBuffer(tbufL1, dataSize * sizeof(T));
+    LocalTensor<T> l1Local = tbufL1.Get<T>();
+
+    TBuf<TPosition::C2> tbufC2;
+    tpipe.InitBuffer(tbufC2, dataSize * sizeof(T));
+    LocalTensor<T> biasLocal = tbufC2.Get<T>();
+
+    DataCopy(biasLocal, l1Local, dataSize);
+}
+
+template<typename T>
+void MainDataCopyL12FBKernel(__gm__ uint8_t* __restrict__ srcGm, __gm__ uint8_t* __restrict__ dstGm,
+                             __gm__ int32_t dataSize)
+{
+    TPipe tpipe;
+    TBuf<TPosition::C1> tbufL1;
+    tpipe.InitBuffer(tbufL1, dataSize * sizeof(T));
+    LocalTensor<T> l1Local = tbufL1.Get<T>();
+
+    TBuf<TPosition::C2PIPE2GM> tbufFB;
+    tpipe.InitBuffer(tbufFB, dataSize * sizeof(T));
+    LocalTensor<T> fbLocal = tbufFB.Get<T>();
+
+    DataCopy(fbLocal, l1Local, dataSize);
+}
+
+template<typename T>
 void main_tensortrait_data_copy_kernel_fixpipe(__gm__ uint8_t* __restrict__ srcGm, __gm__ uint8_t* __restrict__ dstGm, __gm__ int32_t dataSize)
 {
     TPipe tpipe;
@@ -302,7 +334,15 @@ INSTANTIATE_TEST_CASE_P(TEST_DATA_COPY_AIC, TestDataCopySuite,
     TestDataCopyParams { 64, 1, main_tensortrait_data_copy_dn2nz_kernel<uint32_t> },
     TestDataCopyParams { 256, 1, main_tensortrait_data_copy_kernel_fixpipe<int8_t> },
     TestDataCopyParams { 256, 4, MainDataCopyL0C2GMCacheModeKernel<float> },
-    TestDataCopyParams { 256, 4, MainDataCopyL0C2GMCacheModeWithDisableCacheKernel<float> }
+    TestDataCopyParams { 256, 4, MainDataCopyL0C2GMCacheModeWithDisableCacheKernel<float> },
+    TestDataCopyParams { 64, 4, MainDataCopyL12BTKernel<float> },
+    TestDataCopyParams { 64, 4, MainDataCopyL12BTKernel<int32_t> },
+    TestDataCopyParams { 64, 2, MainDataCopyL12BTKernel<half> },
+    TestDataCopyParams { 64, 2, MainDataCopyL12BTKernel<bfloat16_t> },
+    TestDataCopyParams { 64, 4, MainDataCopyL12FBKernel<float> },
+    TestDataCopyParams { 64, 4, MainDataCopyL12FBKernel<int32_t> },
+    TestDataCopyParams { 64, 2, MainDataCopyL12FBKernel<half> },
+    TestDataCopyParams { 128, 1, MainDataCopyL12FBKernel<int8_t> }
     ));
 
 TEST_P(TestDataCopySuite, TestDataCopyPadCases)

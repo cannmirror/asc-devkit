@@ -384,13 +384,21 @@ __aicore__ inline void DataCopy(const LocalTensor<T> &dst, const LocalTensor<T> 
             // l1 -> ub
             DataCopyL12UBIntf(dst, src, repeatParams);
         } else if (dstHWPos == Hardware::BIAS) {
+#if (__NPU_ARCH__ == 3510)
+            CheckTensorAlign<T>(dst, 32, "dst", "DataCopy from C1 to C2");            // 32B align
+#else
             CheckTensorAlign<T>(dst, 64, "dst", "DataCopy from C1 to C2");            // 64B align
+#endif
             CheckTensorAlign<T>(src, ONE_BLK_SIZE, "src", "DataCopy from C1 to C2");  // 32B align
             DataCopyL12BTImpl((uint64_t)dst.GetPhyAddr(), (__cbuf__ PrimType*)src.GetPhyAddr(), static_cast<uint16_t>(0),
                             repeatParams);
 #if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3510)|| (__NPU_ARCH__ == 5102)
         } else if (dstHWPos == Hardware::FIXBUF) {
+#if (__NPU_ARCH__ == 3510)
+            CheckTensorAlign<T>(dst, 64, "dst", "DataCopy from A1 / B1 / C1 to C2PIPE2GM");             // 64B align
+#else
             CheckTensorAlign<T>(dst, 128, "dst", "DataCopy from A1 / B1 / C1 to C2PIPE2GM");            // 128B align
+#endif
             CheckTensorAlign<T>(src, ONE_BLK_SIZE, "src", "DataCopy from A1 / B1 / C1 to C2PIPE2GM");   // 32B align
             DataCopyL12FBImpl((__fbuf__ PrimType*)dst.GetPhyAddr(), (__cbuf__ PrimType*)src.GetPhyAddr(),
                             repeatParams);
@@ -807,9 +815,17 @@ __aicore__ inline void DataCopy(const LocalTensor<T> &dst, const LocalTensor<T> 
         if (dstHWPos == Hardware::UB) {
             repeatParams.blockLen = count / AscendCUtils::GetC0Count(sizeof(PrimType));
         } else if (dstHWPos == Hardware::BIAS) {
+#if (__NPU_ARCH__ == 3510)
+            repeatParams.blockLen = count / (32 / sizeof(PrimType));   // BT blockLen is in unit of 32B
+#else
             repeatParams.blockLen = count / (64 / sizeof(PrimType));   // BT blockLen is in unit of 64B
+#endif
         } else if (dstHWPos == Hardware::FIXBUF) {
+#if (__NPU_ARCH__ == 3510)
+            repeatParams.blockLen = count / (64 / sizeof(PrimType));   // FB blockLen is in unit of 64B
+#else
             repeatParams.blockLen = count / (128 / sizeof(PrimType));  // FB blockLen is in unit of 128B
+#endif
         }
     }
 #endif
