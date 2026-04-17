@@ -69,8 +69,8 @@ private:
         constexpr auto isB8B4Type = sizeof(typename T::elementType) == 1;
         constexpr auto noTrans = Std::is_same_v<DstPattern, SrcPattern>;
         using CopyL12L0BMode = typename CopyL12L0BModeSet::template Get<Std::tuple<Std::Int<noTrans>, Std::Int<isB8B4Type>>>;
-        static_assert(!Std::is_same_v<CopyL12L0BMode, EmptyValue>, "Unsupported CopyMode.");
-        using Tensor2Tensor = typename CopyL12L0BTensor2Tensor<dstPos, srcPos, CURRENT_ARCH_VERSION, SrcPattern, DstPattern, CopyL12L0BMode>::type;
+        static_assert(!Std::is_same_v<CopyL12L0BMode, EmptyValue>, "Unsupported CopyL12L0BMode.");
+        using Tensor2Tensor = typename CopyL12L0BTensor2Tensor<dstPos, srcPos, CURRENT_ARCH_VERSION, DstPattern, SrcPattern, CopyL12L0BMode>::type;
         Tensor2Tensor::template Run<trait, T, U>(dst, src);
     }
 
@@ -86,8 +86,8 @@ private:
         constexpr auto isB8B4Type = sizeof(typename T::elementType) == 1;
         constexpr auto noTrans = Std::is_same_v<DstPattern, SrcPattern>;
         using CopyL12L0BMode = typename CopyL12L0BModeCoordSet::template Get<Std::tuple<Std::Int<noTrans>, Std::Int<isB8B4Type>>>;
-        static_assert(!Std::is_same_v<CopyL12L0BMode, EmptyValue>, "Unsupported CopyMode.");
-        using Tensor2Tensor = typename CopyL12L0BTensor2Tensor<dstPos, srcPos, CURRENT_ARCH_VERSION, SrcPattern, DstPattern, CopyL12L0BMode>::type;
+        static_assert(!Std::is_same_v<CopyL12L0BMode, EmptyValue>, "Unsupported CopyL12L0BCoordMode.");
+        using Tensor2Tensor = typename CopyL12L0BTensor2Tensor<dstPos, srcPos, CURRENT_ARCH_VERSION, DstPattern, SrcPattern, CopyL12L0BMode>::type;
         Tensor2Tensor::template Run<trait, T, U, Coord>(dst, src, coord);
     }
 };

@@ -36,7 +36,9 @@ namespace Te {
 class CopyL12L0BIgnore {
 public:
     template <const CopyL12L0BTrait& trait, typename ...Args>
-    __aicore__ inline void static Run(const Args&... args) {}
+    __aicore__ inline void static Run(const Args&... args) {
+        static_assert("No Match CopyL12L0B Run!");
+    }
 };
 
 template <typename dstPos, typename srcPos, uint32_t Version, typename DstLayoutPattern, typename SrcLayoutPattern, typename CopyMode>
@@ -57,25 +59,25 @@ struct CopyL12L0BTensor2Tensor<Location::L0B, Location::L1, ArchVersion::V3510, 
 };
 
 template <>
-struct CopyL12L0BTensor2Tensor<Location::L0B, Location::L1, ArchVersion::V3510, NZLayoutPtn, ZNLayoutPtn, CopyMode::TRANS>
+struct CopyL12L0BTensor2Tensor<Location::L0B, Location::L1, ArchVersion::V3510, ZNLayoutPtn, NZLayoutPtn, CopyMode::TRANS>
 {
     using type = LoadDataL12L0BNZ2ZN3510;
 };
 
 template <>
-struct CopyL12L0BTensor2Tensor<Location::L0B, Location::L1, ArchVersion::V3510, NZLayoutPtn, ZNLayoutPtn, CopyMode::TRANS_COORD>
+struct CopyL12L0BTensor2Tensor<Location::L0B, Location::L1, ArchVersion::V3510, ZNLayoutPtn, NZLayoutPtn, CopyMode::TRANS_COORD>
 {
     using type = LoadDataL12L0BNZ2ZNWithCoord3510;
 };
 
 template <>
-struct CopyL12L0BTensor2Tensor<Location::L0B, Location::L1, ArchVersion::V3510, NZLayoutPtn, ZNLayoutPtn, CopyMode::TRANS_B8B4>
+struct CopyL12L0BTensor2Tensor<Location::L0B, Location::L1, ArchVersion::V3510, ZNLayoutPtn, NZLayoutPtn, CopyMode::TRANS_B8B4>
 {
     using type = LoadDataL12L0BNZ2ZNB8B43510;
 };
 
 template <>
-struct CopyL12L0BTensor2Tensor<Location::L0B, Location::L1, ArchVersion::V3510, NZLayoutPtn, ZNLayoutPtn, CopyMode::TRANS_B8B4_COORD>
+struct CopyL12L0BTensor2Tensor<Location::L0B, Location::L1, ArchVersion::V3510, ZNLayoutPtn, NZLayoutPtn, CopyMode::TRANS_B8B4_COORD>
 {
     using type = LoadDataL12L0BNZ2ZNB8B4WithCoord3510;
 };
