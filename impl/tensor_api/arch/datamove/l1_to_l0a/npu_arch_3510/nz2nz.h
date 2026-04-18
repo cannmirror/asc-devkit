@@ -38,9 +38,8 @@ private:
     template <const CopyL12L0ATrait& trait, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
-        CheckLayoutPattern<U>();
-        CheckLayoutPattern<T>();
         CheckDataTypeFor3510::CheckL12L0ADataType<T, U>();
+        CheckLayoutPattern<T, U>();
     }
 
     template <const CopyL12L0ATrait& trait, typename T, typename U>

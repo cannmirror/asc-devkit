@@ -242,7 +242,7 @@ using LayoutPatternCheckSet = TupleMap<
     Std::tuple<ScaleBDNLayoutPtn, CheckScaleBDNLayoutPattern>>;
 
 template <typename T>
-__aicore__ inline decltype(auto) CheckLayoutPattern() {
+__aicore__ inline void CheckOneLayoutPattern() {
     using Layout = typename T::layoutType;
     using LayoutPattern = GetLayoutPattern<Layout>;
     using TraitType = GetLayoutTrait<Layout>;
@@ -250,6 +250,12 @@ __aicore__ inline decltype(auto) CheckLayoutPattern() {
     static_assert(!Std::is_same_v<PatternCheck, EmptyValue>, "Unsupported layout pattern.");
     PatternCheck::template Check<T, TraitType>();
 }
+
+template <typename... Args>
+__aicore__ inline void CheckLayoutPattern() {
+    (CheckOneLayoutPattern<Args>(), ...);
+}
+
 } // namespace Te
 } // namespace AscendC
 

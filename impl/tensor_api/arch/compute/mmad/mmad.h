@@ -51,9 +51,9 @@ private:
     template <const MmadTrait& trait = DEFAULT_MMAD_TRAIT, typename T, typename U, typename S, typename Params>
     __aicore__ inline static void MmadImpl(const T& dst, const U& fm, const S& filter, const Params& params)
     {
-        using dstPos = typename T::iterator::ptrPattern;
-        using fmPos = typename U::iterator::ptrPattern;
-        using filterPos = typename S::iterator::ptrPattern;
+        using dstPos = GetMemLocation<T>;
+        using fmPos = GetMemLocation<U>;
+        using filterPos = GetMemLocation<S>;
         using Tensor2Tensor = typename MmadTensor2Tensor<dstPos, fmPos, filterPos, Location::INVALID, CURRENT_ARCH_VERSION>::type;
         Tensor2Tensor::template Run<trait>(dst, fm, filter, params);
     }
@@ -61,10 +61,10 @@ private:
     template <const MmadTrait& trait = DEFAULT_MMAD_TRAIT, typename T, typename U, typename S, typename V, typename Params>
     __aicore__ inline static void MmadImpl(const T& dst, const U& fm, const S& filter, const V& bias, const Params& params)
     {
-        using dstPos = typename T::iterator::ptrPattern;
-        using fmPos = typename U::iterator::ptrPattern;
-        using filterPos = typename S::iterator::ptrPattern;
-        using biasPos = typename V::iterator::ptrPattern;
+        using dstPos = GetMemLocation<T>;
+        using fmPos = GetMemLocation<U>;
+        using filterPos = GetMemLocation<S>;
+        using biasPos = GetMemLocation<V>;
         using Tensor2Tensor = typename MmadTensor2Tensor<dstPos, fmPos, filterPos, biasPos, CURRENT_ARCH_VERSION>::type;
         Tensor2Tensor::template Run<trait>(dst, fm, filter, bias, params);
     }
