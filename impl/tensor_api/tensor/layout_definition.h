@@ -118,6 +118,18 @@ public:
     {
         return TupleSize<I...>(Shape());
     }
+
+    template <size_t... I>
+    __aicore__ inline constexpr decltype(auto) Get()
+    {
+        return Te::Get<I...>(static_cast<Std::tuple<T, U>&>(*this));
+    }
+
+    template <size_t... I>
+    __aicore__ inline constexpr decltype(auto) Get() const
+    {
+        return Te::Get<I...>(static_cast<const Std::tuple<T, U>&>(*this));
+    }
 private:
     using tag = Info;
 };

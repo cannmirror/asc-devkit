@@ -71,35 +71,15 @@ using IsDirectQuantMode = Std::is_one_of_value<QuantMode_t, quantPre, TILE_OP_IN
 
 template <typename T, AttrInfo info1, AttrInfo info2, size_t dim>
 __aicore__ inline constexpr decltype(auto) GetEleFromLayout(const T& layout) {
-    auto shapeRow = Std::get<0>(layout.Shape());
-    auto shapeCol = Std::get<1>(layout.Shape());
-    auto strideRow = Std::get<0>(layout.Stride());
-    auto strideCol = Std::get<1>(layout.Stride());
-    if constexpr (info1 == AttrInfo::SHAPE && info2 == AttrInfo::ROW) {
-        if constexpr (Std::is_tuple_v<decltype(shapeRow)>) {
-            return Std::get<dim>(shapeRow);
-        } else {
-            return shapeRow;
-        }
-    } else if constexpr (info1 == AttrInfo::SHAPE && info2 == AttrInfo::COLUMN) {
-        if constexpr (Std::is_tuple_v<decltype(shapeCol)>) {
-            return Std::get<dim>(shapeCol);
-        } else {
-            return shapeCol;
-        }
-    } else if constexpr (info1 == AttrInfo::STRIDE && info2 == AttrInfo::ROW) {
-        if constexpr (Std::is_tuple_v<decltype(strideRow)>) {
-            return Std::get<dim>(strideRow);
-        } else {
-            return strideRow;
-        }
-    } else if constexpr (info1 == AttrInfo::STRIDE && info2 == AttrInfo::COLUMN) {
-        if constexpr (Std::is_tuple_v<decltype(strideCol)>) {
-            return Std::get<dim>(strideCol);
-        } else {
-            return strideCol;
-        }
-    }        
+    
+    constexpr size_t shapeOrStride = (info1 == AttrInfo::SHAPE ? 0 : 1);
+    constexpr size_t rowOrColumn = (info2 == AttrInfo::ROW ? 0 : 1);
+
+    if constexpr (layout.depth == 2) {
+        return layout.template Get<shapeOrStride, rowOrColumn>();
+    } else {
+        return layout.template Get<shapeOrStride, rowOrColumn, dim>();
+    }
 }
 
 template <typename LayoutType>
