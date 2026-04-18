@@ -59,10 +59,10 @@ public:
         nLength_ = n;
         qAddr = reinterpret_cast<__cbuf__ uint64_t*>(0);
         l0cAddr = reinterpret_cast<__cc__ L0cT*>(0);
-        constexpr uint32_t base = 16;
+        constexpr uint32_t base = 0;
         quant_pre_global = static_cast<uint64_t>(QUANT_MODE);
-        auto l0cIterator = MakeL0CmemPtr(l0cAddr);
-        auto l0cMatrixLayout = MakeL0CLayout(mLength_, nLength_);
+        auto l0cIterator = MakeMemPtr<Location::L0C>(l0cAddr);
+        auto l0cMatrixLayout = MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<L0cT, 16>>(mLength_, nLength_);
         auto l0cTensor = MakeTensor(l0cIterator, l0cMatrixLayout);
         if constexpr (C_TYPE::format == CubeFormat::ND) {
             if constexpr (HAS_COORD) {
@@ -107,19 +107,21 @@ public:
 
         if constexpr (QUANT_MODE == QuantMode_t::NoQuant || QUANT_MODE == QuantMode_t::F322F16) {
             if constexpr (HAS_COORD) {
-                gm_addr_global = gmTensor(MakeCoord(base, base), gmTensor.Layout().Shape()).Data().Get();
-                Copy(CopyAtom<CopyTraits<CopyL0C2GM, CopyL0C2GMTraitDefault>>{}, gmTensor, l0cTensor, MakeCoord(base, base));
+                auto gmTensorTile = Slice(gmTensor, MakeCoord(base, base), MakeShape(m - base, n - base));
+                gm_addr_global = gmTensorTile.Data().Get();
+                Copy(CopyAtom<CopyTraits<CopyL0C2GM, CopyL0C2GMTraitDefault>>{}, gmTensorTile, l0cTensor);
             } else {
                 gm_addr_global = gmC_;
                 Copy(CopyAtom<CopyTraits<CopyL0C2GM, CopyL0C2GMTraitDefault>>{}, gmTensor, l0cTensor);
             }
         } else if constexpr (IS_TENSOR) {
-            auto qIterator = MakeL1memPtr(qAddr);
-            auto qMatrixLayout = MakeNDLayout<uint64_t>(1, nLength_);
+            auto qIterator = MakeMemPtr<Location::L1>(qAddr);
+            auto qMatrixLayout = MakeFrameLayout<NDExtLayoutPtn>(1, nLength_);
             auto qTensor = MakeTensor(qIterator, qMatrixLayout);
             if constexpr (HAS_COORD) {
-                gm_addr_global = gmTensor(MakeCoord(base, base), gmTensor.Layout().Shape()).Data().Get();
-                Copy(CopyAtom<CopyTraits<CopyL0C2GM, CopyL0C2GMTraitDefault>>{}, gmTensor, l0cTensor, qTensor, MakeCoord(base, base));
+                auto gmTensorTile = Slice(gmTensor, MakeCoord(base, base), MakeShape(m - base, n - base));
+                gm_addr_global = gmTensorTile.Data().Get();
+                Copy(CopyAtom<CopyTraits<CopyL0C2GM, CopyL0C2GMTraitDefault>>{}, gmTensorTile, l0cTensor, qTensor);
             } else {
                 gm_addr_global = gmC_;
                 Copy(CopyAtom<CopyTraits<CopyL0C2GM, CopyL0C2GMTraitDefault>>{}, gmTensor, l0cTensor, qTensor);
@@ -127,8 +129,9 @@ public:
         } else {
             uint64_t quant = 1;
             if constexpr (HAS_COORD) {
-                gm_addr_global = gmTensor(MakeCoord(base, base), gmTensor.Layout().Shape()).Data().Get();
-                Copy(CopyAtom<CopyTraits<CopyL0C2GM, CopyL0C2GMTraitDefault>>{}, gmTensor, l0cTensor, quant, MakeCoord(base, base));
+                auto gmTensorTile = Slice(gmTensor, MakeCoord(base, base), MakeShape(m - base, n - base));
+                gm_addr_global = gmTensorTile.Data().Get();
+                Copy(CopyAtom<CopyTraits<CopyL0C2GM, CopyL0C2GMTraitDefault>>{}, gmTensorTile, l0cTensor, quant);
             } else {
                 gm_addr_global = gmC_;
                 Copy(CopyAtom<CopyTraits<CopyL0C2GM, CopyL0C2GMTraitDefault>>{}, gmTensor, l0cTensor, quant);
@@ -147,18 +150,18 @@ private:
 
     __aicore__ inline constexpr auto MakeGMTensor()
     {
-        auto gmIterator = MakeGMmemPtr(gmC_);
+        auto gmIterator = MakeMemPtr<Location::GM>(gmC_);
         if constexpr (C_TYPE::format == CubeFormat::NZ) {
             using CastT = std::conditional_t<sizeof(DstT) == 4, half, DstT>;
-            auto gmMatrixLayout = MakeNzLayout<CastT>(mLength_, nLength_);
+            auto gmMatrixLayout = MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<CastT>>(mLength_, nLength_);
             auto gmTensor = MakeTensor(gmIterator, gmMatrixLayout);
             return gmTensor;
         } else if constexpr (C_TYPE::format == CubeFormat::DN) {
-            auto gmMatrixLayout = MakeDNLayout<DstT>(mLength_, nLength_);
+            auto gmMatrixLayout = MakeFrameLayout<DNExtLayoutPtn>(mLength_, nLength_);
             auto gmTensor = MakeTensor(gmIterator, gmMatrixLayout);
             return gmTensor;
         } else {
-            auto gmMatrixLayout = MakeNDLayout<DstT>(mLength_, nLength_);
+            auto gmMatrixLayout = MakeFrameLayout<NDExtLayoutPtn>(mLength_, nLength_);
             auto gmTensor = MakeTensor(gmIterator, gmMatrixLayout);
             return gmTensor;
         }

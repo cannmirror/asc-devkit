@@ -28,7 +28,7 @@
 namespace AscendC {
 namespace Te {
 
-using CopyUB2L1Trait = DataCopyTrait;
+struct CopyUB2L1Trait {};
 
 class DataCopyUB2L13510 {
 public:
@@ -42,62 +42,46 @@ private:
     {
         using SRC_TYPE = typename U::elementType;
         using DST_TYPE = typename T::elementType;
-        static_assert(sizeof(SRC_TYPE) == sizeof(DST_TYPE),
-                      "Source and destination element types must have the same size.");
+
         const auto& dstLayout = dst.Layout();
         const auto& srcLayout = src.Layout();
-        if constexpr (IsNZFormat<U>::value && IsNZFormat<T>::value) {
-            uint16_t blockCount =
-                GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
 
+        uint16_t blockCount = 0;
+        uint32_t blockLen = 0;
+        int64_t srcStride = 0;
+        int64_t dstStride = 0;
+
+        if constexpr (IsNDExtLayout<U>() && IsNDExtLayout<T>()) {
+            blockCount = GetTotalRowShape(srcLayout);
             // Next three parameters are in unit of 32B
-            uint32_t blockLen = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout)
-                                * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
+            blockLen = Std::ceil_division(GetTotalColumnShape(srcLayout), C0_ELEMENT<SRC_TYPE>);
 
-            int64_t srcStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout)
-                                    / C0_ELEMENT<SRC_TYPE>
-                                - blockLen;
-            int64_t dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout)
-                                    / C0_ELEMENT<DST_TYPE>
-                                - blockLen;
+            srcStride = Std::ceil_division(GetRowStride<1>(srcLayout) - GetTotalColumnShape(srcLayout), C0_ELEMENT<SRC_TYPE>);
+            dstStride = Std::ceil_division(GetRowStride<1>(dstLayout) - GetTotalColumnShape(srcLayout), C0_ELEMENT<DST_TYPE>);
 
-            CopyUbufToCbufInstr::DataCopy(dst, src, blockCount, blockLen, srcStride, dstStride);
-        } else if constexpr (IsNDFormat<U>::value && IsNDFormat<T>::value) {
-            uint16_t blockCount = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
+        } else if constexpr (IsDNExtLayout<U>() && IsDNExtLayout<T>()) {
+            blockCount = GetTotalColumnShape(srcLayout);
             // Next three parameters are in unit of 32B
-            uint32_t blockLen = Std::ceil_division(
-                GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout),
-                C0_ELEMENT<SRC_TYPE>);
+            blockLen = Std::ceil_division(GetTotalRowShape(srcLayout), C0_ELEMENT<SRC_TYPE>);
 
-            int64_t srcStride = Std::ceil_division(
-                (GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout)
-                 - GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout)),
-                C0_ELEMENT<SRC_TYPE>);
-            int64_t dstStride = Std::ceil_division(
-                (GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout)
-                 - GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout)),
-                C0_ELEMENT<DST_TYPE>);
+            srcStride = Std::ceil_division((GetColumnStride<1>(srcLayout) - GetTotalRowShape(srcLayout)), C0_ELEMENT<SRC_TYPE>);
+            dstStride = Std::ceil_division((GetColumnStride<1>(dstLayout) - GetTotalRowShape(srcLayout)), C0_ELEMENT<DST_TYPE>);
 
-            CopyUbufToCbufInstr::DataCopy(dst, src, blockCount, blockLen, srcStride, dstStride);
-        } else if constexpr (IsDNFormat<U>::value && IsDNFormat<T>::value) {
-            uint16_t blockCount =
-                GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
+        } else if constexpr (IsNZLayout<U>() && IsNZLayout<T>()) {
+            blockCount = GetColumnShape<1>(srcLayout);
             // Next three parameters are in unit of 32B
-            uint32_t blockLen =
-                Std::ceil_division(GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout),
-                                   C0_ELEMENT<SRC_TYPE>);
+            // note: C0_Byte_Size == 32B
+            blockLen = GetTotalRowShape(srcLayout);
 
-            int64_t srcStride = Std::ceil_division(
-                (GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout)
-                 - GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout)),
-                C0_ELEMENT<SRC_TYPE>);
-            int64_t dstStride = Std::ceil_division(
-                (GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout)
-                 - GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout)),
-                C0_ELEMENT<DST_TYPE>);
+            srcStride = GetColumnStride<1>(srcLayout) / C0_ELEMENT<SRC_TYPE> - blockLen;
+            dstStride = GetColumnStride<1>(dstLayout) / C0_ELEMENT<DST_TYPE> - blockLen;
 
-            CopyUbufToCbufInstr::DataCopy(dst, src, blockCount, blockLen, srcStride, dstStride);
+        } else {
+            static_assert((IsNDExtLayout<U>() && IsNDExtLayout<T>()) || (IsDNExtLayout<U>() && IsDNExtLayout<T>())
+                              || (IsNZLayout<U>() && IsNZLayout<T>()),
+                          "Unsupported layout type combination for DataCopyL12UB3510");
         }
+        CopyUbufToCbufInstr::DataCopy(dst, src, blockCount, blockLen, srcStride, dstStride);
         // ND和DN场景，需要保证UB和L1上申请的空间和tensor的stride满足32字节对齐，否则CopyUbufToCbuf会有问题，无法正确加载数据，导致数据错误
     }
 };

@@ -30,18 +30,14 @@
 namespace AscendC {
 namespace Te {
 
-struct CopyL0C2GM {
-public:
-    template <typename Tp, const Tp& trait, typename... Args>
-    __aicore__ inline static void Copy(const Args&... args)
-    {
-        if ASCEND_IS_AIV {
-            return;
-        }
-        DataCopyImpl<trait>(args...);
-    }
+constexpr CopyL0C2GMTrait DEFAULT_COPY_L0C2GM_TRAIT = CopyL0C2GMTrait{};
+struct CopyL0C2GMTraitDefault {
+    using TraitType = CopyL0C2GMTrait;
+    static constexpr const TraitType value = DEFAULT_COPY_L0C2GM_TRAIT;
+};
 
-private:
+struct CopyL0C2GMBase {
+public:
     template <const CopyL0C2GMTrait& trait = DEFAULT_COPY_L0C2GM_TRAIT, typename T, typename U>
     __aicore__ inline static void DataCopyImpl(const T& dst, const U& src,
                                                const FixpipeParams& params = DEFAULT_FIXPIPE_PARAMS)
@@ -76,27 +72,43 @@ private:
     __aicore__ inline static typename Std::enable_if<Std::is_tuple_v<Coord>, void>::type
     DataCopyImpl(const T& dst, const U& src, const Coord& coord, const FixpipeParams& params = DEFAULT_FIXPIPE_PARAMS)
     {
-        auto sliceTensor = dst(coord, src);
+        auto sliceTensor = dst.Slice(coord, src.Layout());
         DataCopyImpl<trait>(sliceTensor, src, params);
     }
 
     template <const CopyL0C2GMTrait& trait = DEFAULT_COPY_L0C2GM_TRAIT, typename T, typename U, typename S,
               typename Coord>
-    __aicore__ inline static typename Std::enable_if<(Std::is_same_v<S, uint64_t> || IsAttrTensorV<S>) && Std::is_tuple_v<Coord>,
-                                            void>::type
-    DataCopyImpl(const T& dst, const U& src, const S& quant, const Coord& coord,
-                 const FixpipeParams& params = DEFAULT_FIXPIPE_PARAMS)
+    __aicore__ inline static
+        typename Std::enable_if<(Std::is_same_v<S, uint64_t> || IsAttrTensorV<S>) && Std::is_tuple_v<Coord>, void>::type
+        DataCopyImpl(const T& dst, const U& src, const S& quant, const Coord& coord,
+                     const FixpipeParams& params = DEFAULT_FIXPIPE_PARAMS)
     {
-        auto sliceTensor = dst(coord, src);
+        auto sliceTensor = dst.Slice(coord, src.Layout());
         DataCopyImpl<trait>(sliceTensor, src, quant, params);
     }
 };
 
-struct CopyL0C2GMWith {
-    template <typename Tp, const Tp& traits, typename... Args>
+struct CopyL0C2GM : public CopyL0C2GMBase {
+public:
+    template <typename Tp, const Tp& trait, typename... Args>
     __aicore__ inline static void Copy(const Args&... args)
     {
-        // custom function Fixpipe<traits, Args...>(args...);
+        if ASCEND_IS_AIV {
+            return;
+        }
+        DataCopyImpl<trait>(args...);
+    }
+};
+
+struct CopyL0C2GMWith : public CopyL0C2GMBase {
+public:
+    template <typename Tp, const Tp& trait, typename... Args>
+    __aicore__ inline static void Copy(const Args&... args)
+    {
+        if ASCEND_IS_AIV {
+            return;
+        }
+        DataCopyImpl<trait>(args...);
     }
 };
 

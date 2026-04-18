@@ -33,23 +33,8 @@ constexpr uint32_t CBURST_NUM_3510 = MAIN_LOOP_N_SIZE_3510 / BLOCK_CUBE;
 
 constexpr FixpipeParams DEFAULT_FIXPIPE_PARAMS = FixpipeParams{};
 
-constexpr FixpipeTrait DEFAULT_FIXPIPE_TRAIT = FixpipeTrait{};
-
-struct FixpipeTraitDefault {
-    using TraitType = FixpipeTrait;
-    static constexpr const TraitType value = DEFAULT_FIXPIPE_TRAIT;
-};
-
-using CopyL0C2GMTrait = FixpipeTrait;
-using CopyL0C2GMTraitDefault = FixpipeTraitDefault;
-constexpr auto DEFAULT_COPY_L0C2GM_TRAIT = DEFAULT_FIXPIPE_TRAIT;
-
-using CopyL0C2UBTrait = FixpipeTrait;
-using CopyL0C2UBTraitDefault = FixpipeTraitDefault;
-constexpr auto DEFAULT_COPY_L0C2UB_TRAIT = DEFAULT_FIXPIPE_TRAIT;
-
 template <RoundMode roundMode, typename dstType, typename srcType>
-__aicore__ inline constexpr QuantMode_t GetFixpipeVectorQuantPre()
+__aicore__ inline constexpr QuantMode_t GetVectorQuantMode()
 {
     if constexpr (is_one_of_attr_v<srcType, int32_t> && is_one_of_attr_v<dstType, half>) {
         return QuantMode_t::VDEQF16;
@@ -77,7 +62,7 @@ __aicore__ inline constexpr QuantMode_t GetFixpipeVectorQuantPre()
 }
 
 template <RoundMode roundMode, typename dstType, typename srcType>
-__aicore__ inline constexpr QuantMode_t GetFixpipeScalarQuantPre()
+__aicore__ inline constexpr QuantMode_t GetScalarQuantMode()
 {
     if constexpr (is_one_of_attr_v<srcType, int32_t> && is_one_of_attr_v<dstType, half>) {
         return QuantMode_t::DEQF16;
@@ -105,7 +90,7 @@ __aicore__ inline constexpr QuantMode_t GetFixpipeScalarQuantPre()
 }
 
 template <RoundMode roundMode, typename dstType, typename srcType>
-__aicore__ inline constexpr QuantMode_t GetFixpipeCastQuantPre()
+__aicore__ inline constexpr QuantMode_t GetCastQuantMode()
 {
     if constexpr (is_one_of_attr_v<srcType, float> && is_one_of_attr_v<dstType, half>) {
         return QuantMode_t::F322F16;
@@ -117,7 +102,7 @@ __aicore__ inline constexpr QuantMode_t GetFixpipeCastQuantPre()
 }
 
 template <RoundMode roundMode, typename T, typename U, typename S = void>
-__aicore__ inline constexpr QuantMode_t GetFixpipeQuantPre()
+__aicore__ inline constexpr QuantMode_t GetQuantMode()
 {
     using srcType = typename U::elementType;
     using dstType = typename T::elementType;
@@ -129,69 +114,45 @@ __aicore__ inline constexpr QuantMode_t GetFixpipeQuantPre()
                       "Only when L0CType is float and output Type is hifloat8_t support RoundMode::HYBRID in Fixpipe");
     }
     if constexpr (isTensor) {
-        return GetFixpipeVectorQuantPre<roundMode, dstType, srcType>();
+        return GetVectorQuantMode<roundMode, dstType, srcType>();
     } else if constexpr (isScalar) {
-        return GetFixpipeScalarQuantPre<roundMode, dstType, srcType>();
+        return GetScalarQuantMode<roundMode, dstType, srcType>();
     } else {
-        return GetFixpipeCastQuantPre<roundMode, dstType, srcType>();
+        return GetCastQuantMode<roundMode, dstType, srcType>();
     }
 }
-
-template <typename LayoutType>
-__aicore__ inline static uint32_t GetColumnTotalSize(const LayoutType& layout)
-{
-    return GetEleFromLayout<LayoutType, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(layout)
-           * GetEleFromLayout<LayoutType, AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(layout);
-}
-
-template <typename LayoutType>
-__aicore__ inline static uint32_t GetRowTotalSize(const LayoutType& layout)
-{
-    return GetEleFromLayout<LayoutType, AttrInfo::SHAPE, AttrInfo::ROW, 0>(layout)
-           * GetEleFromLayout<LayoutType, AttrInfo::SHAPE, AttrInfo::ROW, 1>(layout);
-}
-
-template <size_t index, typename LayoutType>
-__aicore__ inline static uint32_t GetColumnStride(const LayoutType& layout)
-{ return GetEleFromLayout<LayoutType, AttrInfo::STRIDE, AttrInfo::COLUMN, index>(layout); }
-
-template <size_t index, typename LayoutType>
-__aicore__ inline static uint32_t GetRowStride(const LayoutType& layout)
-{ return GetEleFromLayout<LayoutType, AttrInfo::STRIDE, AttrInfo::ROW, index>(layout); }
 
 template <typename T, typename U>
 __aicore__ inline static void SetRegisterImpl(const T& /*dst*/, const U& /*src*/)
 {
-    if constexpr (IsNDFormat<T>::value) {
+    if constexpr (IsNDExtLayout<T>()) {
         constexpr uint32_t ndNum = 1;
         constexpr uint32_t srcNdStride = 0;
         constexpr uint32_t dstNdStride = 0;
-        SetRegister3510::SetRegister(ndNum, dstNdStride, srcNdStride);
-    } else if constexpr (IsDNFormat<T>::value) {
-        // 寄存器 constexpr 常量配置
+        SetRegisterInstr::SetRegister(ndNum, dstNdStride, srcNdStride);
+    } else if constexpr (IsDNExtLayout<T>()) {
         constexpr uint32_t dnNum = 1;
         constexpr uint32_t dstDnMatrixStride = 0;
         constexpr uint32_t srcNzMatrixStride = 0;
         constexpr uint32_t srcNzC0Stride = 1;
-        SetRegister3510::SetRegister(dnNum, dstDnMatrixStride, srcNzMatrixStride, srcNzC0Stride);
+        SetRegisterInstr::SetRegister(dnNum, dstDnMatrixStride, srcNzMatrixStride, srcNzC0Stride);
     }
 }
 
 template <typename T, typename U>
 __aicore__ inline static void SetRegisterImpl(const T& /*dst*/, const U& /*src*/, uint64_t quant)
 {
-    if constexpr (IsNDFormat<T>::value) {
+    if constexpr (IsNDExtLayout<T>()) {
         constexpr uint32_t ndNum = 1;
         constexpr uint32_t srcNdStride = 0;
         constexpr uint32_t dstNdStride = 0;
-        SetRegister3510::SetRegister(quant, ndNum, dstNdStride, srcNdStride);
-    } else if constexpr (IsDNFormat<T>::value) {
-        // 寄存器 constexpr 常量配置
+        SetRegisterInstr::SetRegister(quant, ndNum, dstNdStride, srcNdStride);
+    } else if constexpr (IsDNExtLayout<T>()) {
         constexpr uint32_t dnNum = 1;
         constexpr uint32_t dstDnMatrixStride = 0;
         constexpr uint32_t srcNzMatrixStride = 0;
         constexpr uint32_t srcNzC0Stride = 1;
-        SetRegister3510::SetRegister(quant, dnNum, dstDnMatrixStride, srcNzMatrixStride, srcNzC0Stride);
+        SetRegisterInstr::SetRegister(quant, dnNum, dstDnMatrixStride, srcNzMatrixStride, srcNzC0Stride);
     }
 }
 

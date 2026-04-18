@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2026 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2026 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #warning "impl/tensor_api/arch/datamove/gm_to_ub/copy.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
@@ -15,9 +15,9 @@
 #endif
 
 /*!
-* \file copy.h
-* \brief
-*/
+ * \file copy.h
+ * \brief
+ */
 #ifndef IMPL_TENSOR_API_ARCH_DATAMOVE_GM_TO_UB_COPY_H
 #define IMPL_TENSOR_API_ARCH_DATAMOVE_GM_TO_UB_COPY_H
 
@@ -28,8 +28,7 @@
 namespace AscendC {
 namespace Te {
 
-
-constexpr CopyGM2UBTrait DEFAULT_COPY_GM_TO_UB_TRAIT;
+constexpr CopyGM2UBTrait DEFAULT_COPY_GM_TO_UB_TRAIT = CopyGM2UBTrait{};
 
 struct CopyGM2UBTraitDefault {
     using TraitType = CopyGM2UBTrait;
@@ -39,7 +38,7 @@ struct CopyGM2UBTraitDefault {
 struct CopyGM2UB {
 public:
     template <typename Tp, const Tp& traits, typename... Args>
-    __aicore__ inline static void Copy(const Args& ...args)
+    __aicore__ inline static void Copy(const Args&... args)
     {
         if ASCEND_IS_AIV {
             DataCopyImpl<traits, Args...>(args...);
@@ -59,7 +58,7 @@ private:
     template <const CopyGM2UBTrait& trait = DEFAULT_COPY_GM_TO_UB_TRAIT, typename T, typename U, typename Coord>
     __aicore__ inline static void DataCopyImpl(const T& dst, const U& src, const Coord& coord)
     {
-        auto sliceTensor = src(coord, dst);
+        auto sliceTensor = src.Slice(coord, dst.Layout());
         DataCopyImpl<trait, T, decltype(sliceTensor)>(dst, sliceTensor);
     }
 };

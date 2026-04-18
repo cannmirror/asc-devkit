@@ -28,7 +28,7 @@
 namespace AscendC {
 namespace Te {
 
-using CopyUB2GMTrait = DataCopyTrait;
+struct CopyUB2GMTrait {};
 
 class DataCopyUB2GM3510 {
 public:
@@ -42,90 +42,56 @@ private:
     {
         using SRC_TYPE = typename U::elementType;
         using DST_TYPE = typename T::elementType;
-        static_assert(sizeof(SRC_TYPE) == sizeof(DST_TYPE),
-                      "Source and destination element types must have the same size.");
-        constexpr uint32_t ALIGN_BYTES = 32;
 
         const auto& dstLayout = dst.Layout();
         const auto& srcLayout = src.Layout();
 
         uint8_t cacheMode = src.Engine().GetCacheMode();
 
-        uint32_t C0_ELEMENT_SRC =
-            GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout);
-        uint32_t C0_ELEMENT_DST =
-            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout);
+        uint16_t blockCount = 0;
+        uint32_t blockLen = 0;
+        int64_t srcStride = 0;
+        int64_t dstStride = 0;
 
-        if constexpr (IsNDFormat<U>::value && IsNDFormat<T>::value) {
-            uint16_t blockCount = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
+        if constexpr (IsNDExtLayout<U>() && IsNDExtLayout<T>()) {
+            blockCount = GetTotalRowShape(srcLayout);
+            // Next three parameters are in unit of 1B
+            blockLen = GetTotalColumnShape(srcLayout) * sizeof(SRC_TYPE);
 
-            uint32_t blockLen = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout)
-                                * sizeof(SRC_TYPE);
+            srcStride = GetRowStride<1>(srcLayout) * sizeof(SRC_TYPE);
+            dstStride = GetRowStride<1>(dstLayout) * sizeof(DST_TYPE);
 
-            int64_t srcStride =
-                GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout) * sizeof(SRC_TYPE);
-            int64_t dstStride =
-                GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout) * sizeof(DST_TYPE);
+        } else if constexpr (IsDNExtLayout<U>() && IsDNExtLayout<T>()) {
+            blockCount = GetTotalColumnShape(srcLayout);
+            // Next three parameters are in unit of 1B
+            blockLen = GetTotalRowShape(srcLayout) * sizeof(SRC_TYPE);
 
-            if constexpr (is_b4_type<SRC_TYPE>) {
-                // move fp4 as b8, need to be divided by 2
-                blockLen = blockLen >> 1;
-                srcStride = srcStride >> 1;
-            }
+            srcStride = GetColumnStride<1>(srcLayout) * sizeof(SRC_TYPE);
+            dstStride = GetColumnStride<1>(dstLayout) * sizeof(DST_TYPE);
 
-            if constexpr (is_b4_type<DST_TYPE>) {
-                dstStride = dstStride >> 1;
-            }
+        } else if constexpr (IsNZLayout<U>() && IsNZLayout<T>()) { // NZ format
+            blockCount = GetColumnShape<1>(srcLayout);
+            // Next three parameters are in unit of 1B
+            blockLen = GetTotalRowShape(srcLayout) * GetColumnShape<0>(srcLayout) * sizeof(SRC_TYPE);
 
-            CopyUbufToGmAlignV2Instr::DataCopy(dst, src, blockCount, blockLen, srcStride, dstStride, cacheMode);
-        } else if constexpr (IsDNFormat<U>::value && IsDNFormat<T>::value) {
-            uint16_t blockCount =
-                GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
-
-            uint32_t blockLen =
-                GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) * sizeof(SRC_TYPE);
-
-            int64_t srcStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout)
-                                * sizeof(SRC_TYPE);
-            int64_t dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout)
-                                * sizeof(DST_TYPE);
-
-            if constexpr (is_b4_type<SRC_TYPE>) {
-                // move fp4 as b8, need to be divided by 2
-                blockLen = blockLen >> 1;
-                srcStride = srcStride >> 1;
-            }
-
-            if constexpr (is_b4_type<DST_TYPE>) {
-                dstStride = dstStride >> 1;
-            }
-
-            CopyUbufToGmAlignV2Instr::DataCopy(dst, src, blockCount, blockLen, srcStride, dstStride, cacheMode);
-        } else { // NZ format
-            uint16_t blockCount =
-                GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
-
-            uint32_t row = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout)
-                           * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
-
-            uint32_t blockLen = row * C0_ELEMENT_SRC * sizeof(SRC_TYPE);
-            int64_t srcStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout)
-                                * sizeof(SRC_TYPE);
-            int64_t dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout)
-                                * sizeof(DST_TYPE);
-
-            if constexpr (is_b4_type<SRC_TYPE>) {
-                // move fp4 as b8, need to be divided by 2
-                blockLen = blockLen >> 1;
-                srcStride = srcStride >> 1;
-            }
-
-            if constexpr (is_b4_type<DST_TYPE>) {
-                dstStride = dstStride >> 1;
-            }
-
-            CopyUbufToGmAlignV2Instr::DataCopy(dst, src, blockCount, blockLen, srcStride, dstStride, cacheMode);
+            srcStride = GetColumnStride<1>(srcLayout) * sizeof(SRC_TYPE);
+            dstStride = GetColumnStride<1>(dstLayout) * sizeof(DST_TYPE);
+        } else {
+            static_assert((IsNDExtLayout<U>() && IsNDExtLayout<T>()) || (IsDNExtLayout<U>() && IsDNExtLayout<T>())
+                              || (IsNZLayout<U>() && IsNZLayout<T>()),
+                          "Unsupported layout type combination for DataCopyUB2GM3510");
         }
+        if constexpr (is_b4_type<SRC_TYPE>) {
+            // move fp4 as b8, need to be divided by 2
+            blockLen = blockLen >> 1;
+            srcStride = srcStride >> 1;
+        }
+
+        if constexpr (is_b4_type<DST_TYPE>) {
+            dstStride = dstStride >> 1;
+        }
+
+        CopyUbufToGmAlignV2Instr::DataCopy(dst, src, blockCount, blockLen, srcStride, dstStride, cacheMode);
         // ND和DN场景，需要保证UB上申请的空间和tensor的stride满足32字节对齐，否则CopyUbufToGmAlignV2会有问题，无法正确加载数据，导致数据错误
     }
 };

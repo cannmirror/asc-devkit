@@ -41,11 +41,11 @@ struct CopyTraits<CopyL0C2UBWith, TraitStruct> {
 };
 
 template <typename Traits>
-struct CopyTraits<CopyL0C2UB, Traits> : public CopyTraits<CopyL0C2UB, Traits, CopyL0C2UBWith, FixpipeTraitDefault> {
+struct CopyTraits<CopyL0C2UB, Traits> : public CopyTraits<CopyL0C2UB, Traits, CopyL0C2UBWith, CopyL0C2UBTraitDefault> {
 };
 
 template <>
-struct CopyTraits<CopyL0C2UB> : public CopyTraits<CopyL0C2UB, FixpipeTraitDefault> {};
+struct CopyTraits<CopyL0C2UB> : public CopyTraits<CopyL0C2UB, CopyL0C2UBTraitDefault> {};
 
 } // namespace Te
 } // namespace AscendC

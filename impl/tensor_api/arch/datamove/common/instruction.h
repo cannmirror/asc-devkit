@@ -27,9 +27,8 @@
 namespace AscendC {
 namespace Te {
 
-class SetRegister3510 {
+class SetRegisterInstr {
 public:
-    // 带量化前置 + nd版本
     __aicore__ inline static void SetRegister(uint64_t quant, uint32_t ndNum, uint32_t dstNDStride,
                                               uint32_t srcNDStride)
     {
@@ -37,7 +36,6 @@ public:
         SetLoop3Para<uint64_t>(ndNum, dstNDStride, srcNDStride);
     }
 
-    // 带量化前置 + dn版本
     __aicore__ inline static void SetRegister(uint64_t quant, uint32_t dnNum, uint32_t dstDNStride,
                                               uint32_t srcNZMatrixStride, uint32_t srcNZC0Stride)
     {
@@ -46,11 +44,9 @@ public:
         SetChannelPara<uint64_t>(srcNZC0Stride);
     }
 
-    // 不带量化前置 + nd版本
     __aicore__ inline static void SetRegister(uint32_t ndNum, uint32_t dstNDStride, uint32_t srcNDStride)
     { SetLoop3Para<uint64_t>(ndNum, dstNDStride, srcNDStride); }
 
-    // 不带量化前置 + dn版本
     __aicore__ inline static void SetRegister(uint32_t dnNum, uint32_t dstDNStride, uint32_t srcNZMatrixStride,
                                               uint32_t srcNZC0Stride)
     {
@@ -59,7 +55,6 @@ public:
     }
 
 private:
-    // 位域定义，消除魔法数字
     static constexpr uint32_t SHIFT_LOOP3_DST_STRIDE = 32;
     static constexpr uint32_t SHIFT_LOOP3_SRC_MATRIX = 16;
     static constexpr uint32_t SHIFT_CHANNEL_C0_STRIDE = 48;
@@ -94,11 +89,6 @@ private:
             asc_set_l0c2gm_channel_para(channelPara);
         }
     }
-
-    // 禁止拷贝与构造
-    SetRegister3510() = default;
-    SetRegister3510(const SetRegister3510&) = delete;
-    SetRegister3510& operator=(const SetRegister3510&) = delete;
 };
 
 __aicore__ inline auto AllocFbTempBuf(const uint16_t& /* calNSize */)

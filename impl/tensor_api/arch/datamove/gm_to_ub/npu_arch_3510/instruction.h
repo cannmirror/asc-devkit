@@ -46,6 +46,9 @@ public:
         } else if constexpr (sizeof(srcType) == 8) {
             CopyGmToUbufAlignV2((__ubuf__ uint32_t*)(dst.Data().Get()), (__gm__ uint32_t*)(src.Data().Get()),
                                 params...);
+        } else {
+            static_assert(sizeof(srcType) == 1 || sizeof(srcType) == 2 || sizeof(srcType) == 4 || sizeof(srcType) == 8,
+                          "Unsupported data type size for CopyGmToUbufAlignV2");
         }
     }
 

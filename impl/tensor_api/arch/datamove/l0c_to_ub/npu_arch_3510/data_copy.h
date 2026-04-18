@@ -30,12 +30,27 @@
 namespace AscendC {
 namespace Te {
 
+struct CopyL0C2UBTrait {
+    __aicore__ constexpr CopyL0C2UBTrait() {}
+
+    __aicore__ constexpr CopyL0C2UBTrait(RoundMode roundModeIn, bool enableReluIn, bool enableChannelSplitIn,
+                                         DualDstMode dualDstCtlIn) :
+        roundMode(roundModeIn), enableRelu(enableReluIn), enableChannelSplit(enableChannelSplitIn),
+        dualDstCtl(dualDstCtlIn)
+    {}
+
+    RoundMode roundMode = RoundMode::DEFAULT;
+    bool enableRelu = false;
+    bool enableChannelSplit = false;
+    DualDstMode dualDstCtl = DUAL_DST_DISABLE;
+};
+
 class DataCopyL0C2UB3510 {
 public:
     template <const CopyL0C2UBTrait& trait, typename T, typename U>
     __aicore__ inline static void Run(const T& dst, const U& src, const FixpipeParams& params)
     {
-        constexpr QuantMode_t quantPre = GetFixpipeQuantPre<trait.roundMode, T, U>();
+        constexpr QuantMode_t quantPre = GetQuantMode<trait.roundMode, T, U>();
         CheckTemplate<trait, quantPre, T, U>();
         CheckDataTypeFor3510::CheckL0C2UbDataType<quantPre, T, U>();
         SetRegisterImpl<T, U>(dst, src);
@@ -45,7 +60,7 @@ public:
     template <const CopyL0C2UBTrait& trait, typename T, typename U>
     __aicore__ inline static void Run(const T& dst, const U& src, uint64_t quant, const FixpipeParams& params)
     {
-        constexpr QuantMode_t quantPre = GetFixpipeQuantPre<trait.roundMode, T, U, uint64_t>();
+        constexpr QuantMode_t quantPre = GetQuantMode<trait.roundMode, T, U, uint64_t>();
         CheckTemplate<trait, quantPre, T, U>();
         SetRegisterImpl<T, U>(dst, src, quant);
         DataCopyImpl<trait, quantPre, T, U>(dst, src, params);
@@ -70,12 +85,12 @@ private:
         const auto& dstLayout = dst.Layout();
         const auto& srcLayout = src.Layout();
 
-        uint32_t nSize = Std::min(GetColumnTotalSize(srcLayout), GetColumnTotalSize(dstLayout));
-        uint32_t mSize = Std::min(GetRowTotalSize(srcLayout), GetRowTotalSize(dstLayout));
+        uint32_t nSize = Std::min(GetTotalColumnShape(srcLayout), GetTotalColumnShape(dstLayout));
+        uint32_t mSize = Std::min(GetTotalRowShape(srcLayout), GetTotalRowShape(dstLayout));
         uint32_t srcStride = GetColumnStride<1>(srcLayout) / FRACTAL_FIXED;
         uint32_t dstStride = 0;
 
-        if constexpr (IsNDFormat<T>::value) {
+        if constexpr (IsNDExtLayout<T>()) {
             dstStride = GetRowStride<1>(dstLayout);
         } else {
             dstStride = GetColumnStride<1>(dstLayout);
@@ -83,16 +98,16 @@ private:
 
         bool reluEn = trait.enableRelu;
         uint8_t unitFlag = params.unitFlag;
-        bool nz2ndEn = IsNDFormat<T>::value;
-        bool nz2dnEn = IsDNFormat<T>::value;
+        bool nz2ndEn = IsNDExtLayout<T>();
+        bool nz2dnEn = IsDNExtLayout<T>();
 
         uint8_t cacheMode = dst.Engine().GetCacheMode();
         bool isChannelSplit = trait.enableChannelSplit;
 
         uint8_t dualDstCtl = trait.dualDstCtl;
         bool subBlockId = false;
-        CopyMatrixCcToUb3510::DataCopy<quantPre, T, U>(dst, src, nSize, mSize, srcStride, dstStride, dualDstCtl, reluEn,
-                                                       unitFlag, subBlockId, isChannelSplit, nz2ndEn, nz2dnEn);
+        CopyMatrixCcToUbInstr::DataCopy<quantPre, T, U>(dst, src, nSize, mSize, srcStride, dstStride, dualDstCtl,
+                                                        reluEn, unitFlag, subBlockId, isChannelSplit, nz2ndEn, nz2dnEn);
     }
 };
 
@@ -101,7 +116,7 @@ public:
     template <const CopyL0C2UBTrait& trait, typename T, typename U, typename V>
     __aicore__ inline static void Run(const T& dst, const U& src, const V& quant, const FixpipeParams& params)
     {
-        constexpr QuantMode_t quantPre = GetFixpipeQuantPre<trait.roundMode, T, U, V>();
+        constexpr QuantMode_t quantPre = GetQuantMode<trait.roundMode, T, U, V>();
         CheckTemplate<trait, T, U>();
         SetRegisterImpl<T, U>(dst, src);
         DataCopyImpl<trait, quantPre, T, U, V>(dst, src, quant, params);
@@ -121,7 +136,7 @@ private:
         const auto& dstLayout = dst.Layout();
         const auto& srcLayout = src.Layout();
 
-        uint32_t nSize = GetColumnTotalSize(srcLayout);
+        uint32_t nSize = GetTotalColumnShape(srcLayout);
         if constexpr (IsTail) {
             nSize %= MAIN_LOOP_N_SIZE_3510;
         } else {
@@ -130,10 +145,10 @@ private:
             }
         }
 
-        const uint32_t mSize = GetRowTotalSize(srcLayout);
+        const uint32_t mSize = GetTotalRowShape(srcLayout);
         const uint32_t srcStride = GetColumnStride<1>(srcLayout) / FRACTAL_FIXED;
         uint32_t dstStride = 0;
-        if constexpr (IsNDFormat<T>::value) {
+        if constexpr (IsNDExtLayout<T>()) {
             dstStride = GetRowStride<1>(dstLayout);
         } else {
             dstStride = GetColumnStride<1>(dstLayout);
@@ -142,8 +157,8 @@ private:
         const bool reluEn = trait.enableRelu;
         const uint8_t unitFlag = params.unitFlag;
 
-        constexpr bool nz2ndEn = IsNDFormat<T>::value;
-        constexpr bool nz2dnEn = IsDNFormat<T>::value;
+        constexpr bool nz2ndEn = IsNDExtLayout<T>();
+        constexpr bool nz2dnEn = IsDNExtLayout<T>();
 
         const bool channelSplit = trait.enableChannelSplit;
         bool subBlockId = false;
@@ -157,11 +172,10 @@ private:
     __aicore__ inline static void CopyL12Fb(const T& src, uint16_t calNSize, uint16_t nIterIndex)
     {
         auto dstAddr = reinterpret_cast<__fbuf__ uint64_t*>(AllocFbTempBuf(calNSize));
-        auto dst = MakeTensor(MakeFixbufmemPtr(dstAddr), src.Layout());
-        auto coord = MakeCoord(MakeCoord(Std::Int<0>{}, Std::Int<0>{}),
-                               MakeCoord(Std::Int<0>{}, nIterIndex * MAIN_LOOP_N_SIZE_3510));
-        auto shape = MakeShape(MakeShape(Std::Int<1>{}, Std::Int<1>{}), MakeShape(Std::Int<1>{}, calNSize));
-        auto tileSrc = src(coord, shape);
+        auto dst = MakeTensor(MakeMemPtr<Location::FIXBUF>(dstAddr), src.Layout());
+        auto coord = MakeCoord(Std::Int<0>{}, nIterIndex * MAIN_LOOP_N_SIZE_3510);
+        auto shape = MakeShape(Std::Int<1>{}, calNSize);
+        auto tileSrc = src.Slice(coord, shape);
         DataCopyL12FB3510::Run<DEFAULT_COPY_L1_FB_TRAIT>(dst, tileSrc);
         SetFpc(dstAddr);
     }
@@ -169,7 +183,7 @@ private:
     template <QuantMode_t quantPre, typename T, typename U, typename ParamTuple, size_t... Is>
     __aicore__ inline static void DataCopyWrapper(const T& dst, const U& src, const ParamTuple& paramTuple,
                                                   Std::index_sequence<Is...>)
-    { CopyMatrixCcToUb3510::DataCopy<quantPre>(dst, src, Std::get<Is>(paramTuple)...); }
+    { CopyMatrixCcToUbInstr::DataCopy<quantPre>(dst, src, Std::get<Is>(paramTuple)...); }
 
     template <const CopyL0C2UBTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V>
     __aicore__ inline static void ExecuteDataCopy(const T& dst, const U& src, const V& quant, uint16_t nIterNum,
@@ -205,7 +219,7 @@ private:
     template <const CopyL0C2UBTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V>
     __aicore__ inline static void DataCopyImpl(const T& dst, const U& src, const V& quant, const FixpipeParams& params)
     {
-        uint32_t nSize = GetColumnTotalSize(src.Layout());
+        uint32_t nSize = GetTotalColumnShape(src.Layout());
         uint16_t nIterNum = 1;
         uint32_t calNSize = nSize;
         uint32_t tailNSize = 0;
