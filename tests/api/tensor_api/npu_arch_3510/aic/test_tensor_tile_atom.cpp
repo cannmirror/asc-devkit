@@ -68,7 +68,7 @@ TEST_F(Tensor_Api_Atom, CopyL12L0Operation)
 
     auto srcL1 = MakeTensor(MakeMemPtr<Location::L1>(l1Src), MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<>>(11, 12));
     auto dstL0A = MakeTensor(MakeMemPtr<Location::L0A>(l0aDst), MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<>>(11, 12));
-    auto dstL0B = MakeTensor(MakeMemPtr<Location::L0B>(l0bDst), MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<>>(11, 12));
+    auto dstL0B = MakeTensor(MakeMemPtr<Location::L0B>(l0bDst), MakeFrameLayout<ZNLayoutPtn, LayoutTraitDefault<>>(11, 12));
 
     auto atomCopyA = MakeCopy(CopyL12L0A{}, CopyL12L0ATraitDefault{});
     atomCopyA.Call(dstL0A, srcL1);

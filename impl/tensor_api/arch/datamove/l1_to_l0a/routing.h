@@ -37,7 +37,7 @@ class CopyL12L0AIgnore {
 public:
     template <const CopyL12L0ATrait& trait, typename ...Args>
     __aicore__ inline void static Run(const Args&... args) {
-        static_assert("No Match CopyL12L0A Run!");
+        static_assert(Std::is_same_v<Args..., void>, "The data format is not supported in CopyL12L0A.");
     }
 };
 
