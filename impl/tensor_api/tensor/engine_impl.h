@@ -41,7 +41,9 @@ struct ViewEngine
     __aicore__ inline constexpr iterator& Begin() {
         return storage;
     }
+
     __aicore__ inline constexpr ViewEngine(iterator storage = {}) : storage(storage) {}
+    __aicore__ inline constexpr ViewEngine(iterator storage, CacheMode mode) : storage(storage), mode(mode) {}
 
     __aicore__ inline constexpr uint8_t GetCacheMode() const {
         return static_cast<uint8_t>(mode);
@@ -50,6 +52,13 @@ struct ViewEngine
     __aicore__ inline constexpr void SetCacheMode(CacheMode mode) {
         this->mode = mode;
     }
+
+    template <typename Index>
+    __aicore__ inline constexpr ViewEngine operator+(const Index& i) const {
+        auto iter = Begin() + i;
+        return {iter, mode};
+    }
+
 private:
     iterator storage;
     CacheMode mode = CacheMode::CACHE_MODE_NORMAL;
