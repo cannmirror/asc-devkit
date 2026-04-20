@@ -76,9 +76,6 @@
 
 使用内存空间限定符\_\_ubuf\_\_来表示动、静态内存，静态内存的大小在编译期是确定的，动态内存的大小在核函数执行时确定。
 
->[!CAUTION]注意 
->当前版本暂未支持动、静态内存，请关注后续版本。
-
 -   静态内存通过数组分配：
 
     ```
@@ -1056,4 +1053,3 @@ add_custom<<<block_num, thread_num_per_block, dyn_ubuf_size, stream>>>(x, y, z, 
         ```
         __simt_vf__ __launch_bounds__(512) inline void add(__gm__ uint8_t* x, __gm__ uint8_t* y, __gm__ uint8_t* z)
         ```
-
