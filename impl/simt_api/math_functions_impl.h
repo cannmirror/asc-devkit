@@ -1334,13 +1334,12 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float rnorm4df(float a, float b, float c, 
             return m;                                                                         \
         }                                                                                     \
         float sum = 0.0f;                                                                     \
-        float inv_m = 1.0f / m;                                                               \
         if ((n) > 3) {                                                                        \
             for (int i = 0; i < end; i += 4) {                                                \
-                float n0 = (a)[i] * inv_m;                                                    \
-                float n1 = (a)[i+1] * inv_m;                                                  \
-                float n2 = (a)[i+2] * inv_m;                                                  \
-                float n3 = (a)[i+3] * inv_m;                                                  \
+                float n0 = (a)[i] / m;                                                        \
+                float n1 = (a)[i+1] / m;                                                      \
+                float n2 = (a)[i+2] / m;                                                      \
+                float n3 = (a)[i+3] / m;                                                      \
                 sum = fmaf(n0, n0, sum);                                                      \
                 sum = fmaf(n1, n1, sum);                                                      \
                 sum = fmaf(n2, n2, sum);                                                      \
@@ -1349,7 +1348,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float rnorm4df(float a, float b, float c, 
         }                                                                                     \
         if (remainder != 0) {                                                                 \
             for (int i = end; i < n; i++) {                                                   \
-                float ni = (a)[i] * inv_m;                                                    \
+                float ni = (a)[i] / m;                                                        \
                 sum = fmaf(ni, ni, sum);                                                      \
             }                                                                                 \
         }                                                                                     \
