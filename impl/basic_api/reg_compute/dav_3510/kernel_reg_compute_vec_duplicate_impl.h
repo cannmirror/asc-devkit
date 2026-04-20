@@ -95,9 +95,7 @@ __simd_callee__ inline void DuplicateImpl(S& dstReg, U scalarValue)
             DuplicateB64Impl(traitTwoDstReg, scalarValue);
             B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         } else if constexpr (CheckRegTrait<S, RegTraitNumTwo>()) {
-            S dstTemp;
-            DuplicateB64Impl(dstTemp, scalarValue);
-            dstReg = dstTemp;
+            DuplicateB64Impl(dstReg, scalarValue);
         }
     }
 }
@@ -182,9 +180,7 @@ __simd_callee__ inline void DuplicateImpl(S& dstReg, U scalarValue, MaskReg& mas
                 B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
             }
         } else if constexpr (CheckRegTrait<S, RegTraitNumTwo>()) {
-            S dstTemp;
-            DuplicateB64Impl<mode>(dstTemp, scalarValue, mask);
-            dstReg = dstTemp;
+            DuplicateB64Impl<mode>(dstReg, scalarValue, mask);
         }
     }
 }
@@ -261,13 +257,14 @@ __simd_callee__ inline void DuplicateImpl(U& dstReg, U& srcReg, MaskReg& mask)
             MaskPack(maskTrait2, mask);
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg;
+            if constexpr (mode == MaskMergeMode::MERGING) {
+                B64TraitOneToTraitTwo(traitTwoDstReg, dstReg);
+            }
             B64TraitOneToTraitTwo(traitTwoSrcReg, srcReg);
             DuplicateB64Impl<pos, mode>(traitTwoDstReg, traitTwoSrcReg, maskTrait2);
             B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         } else if constexpr (CheckRegTrait<U, RegTraitNumTwo>()) {
-            U dstTemp;
-            DuplicateB64Impl<pos, mode>(dstTemp, srcReg, mask);
-            dstReg = dstTemp;
+            DuplicateB64Impl<pos, mode>(dstReg, srcReg, mask);
         }
     }
 }
@@ -348,4 +345,3 @@ __simd_callee__ inline void DeInterleaveImpl(U& dstReg0, U& dstReg1, U& srcReg0,
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_VEC_DUPLICATE_IMPL__
 #endif
-
