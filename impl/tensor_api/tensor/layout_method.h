@@ -247,6 +247,11 @@ __aicore__ inline constexpr auto Capacity(const LayoutType& layout)
     return layout.Capacity();
 }
 
+template <typename Tensor, typename Coord, typename Info>
+__aicore__ inline constexpr decltype(auto) Slice(Tensor&& tensor, const Coord& coord, const Info& info) {
+    return static_cast<Tensor&&>(tensor).Slice(coord, info);
+}
+
 } // namespace Te
 } // namespace AscendC
 

@@ -75,7 +75,7 @@ __aicore__ inline constexpr decltype(auto) GetEleFromLayout(const T& layout) {
     constexpr size_t shapeOrStride = (info1 == AttrInfo::SHAPE ? 0 : 1);
     constexpr size_t rowOrColumn = (info2 == AttrInfo::ROW ? 0 : 1);
 
-    if constexpr (layout.depth == 2) {
+    if constexpr (T::depth == 2) {
         return layout.template Get<shapeOrStride, rowOrColumn>();
     } else {
         return layout.template Get<shapeOrStride, rowOrColumn, dim>();

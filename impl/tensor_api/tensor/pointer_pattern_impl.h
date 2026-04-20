@@ -40,53 +40,11 @@ __aicore__ inline auto MakeHardwareMemPtr(Iterator iter)
     return HardwareMemPtr<PtrPattern, Iterator>{iter};
 }
 
-template <typename PtrPattern, typename T>
-struct LocationMemPtrType {
-    static_assert(!Std::is_same_v<PtrPattern, PtrPattern>,
-        "MakeLocationMemPtr/MakeMemPtr byteOffset overload does not support this Location.");
-};
-
-template <typename T>
-struct LocationMemPtrType<Location::UB, T> {
-    using type = __ubuf__ T*;
-};
-
-template <typename T>
-struct LocationMemPtrType<Location::L1, T> {
-    using type = __cbuf__ T*;
-};
-
-template <typename T>
-struct LocationMemPtrType<Location::L0A, T> {
-    using type = __ca__ T*;
-};
-
-template <typename T>
-struct LocationMemPtrType<Location::L0B, T> {
-    using type = __cb__ T*;
-};
-
-template <typename T>
-struct LocationMemPtrType<Location::L0C, T> {
-    using type = __cc__ T*;
-};
-
-template <typename T>
-struct LocationMemPtrType<Location::BIAS, T> {
-    using type = __biasbuf__ T*;
-};
-
-template <typename T>
-struct LocationMemPtrType<Location::FIXBUF, T> {
-    using type = __fbuf__ T*;
-};
-
 template <typename PtrPattern, typename TraitType, typename Arg>
 __aicore__ inline auto MakeLocationMemPtr(const Arg& arg)
 {
-    using T = typename TraitType::type;
-    using Pointer = typename LocationMemPtrType<PtrPattern, T>::type;
-    return MakeHardwareMemPtr<PtrPattern>(reinterpret_cast<Pointer>(asc_get_phy_buf_addr(0) + arg));
+    using pointer = typename locationAttr<typename TraitType::type>::locationMap::template Get<PtrPattern>;
+    return MakeHardwareMemPtr<PtrPattern>(reinterpret_cast<pointer>(asc_get_phy_buf_addr(0) + arg));
 }
 
 } // namespace Te

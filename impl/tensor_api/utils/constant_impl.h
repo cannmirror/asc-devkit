@@ -23,6 +23,7 @@
 #define IMPL_TENSOR_API_UTILS_CONSTANT_IMPL_H
 
 #include "impl/tensor_api/utils/extra_impl.h"
+#include "impl/tensor_api/utils/map_impl.h"
 
 namespace AscendC {
 namespace Te {
@@ -87,7 +88,11 @@ struct locationAttr {
     using ssbufAttr =       __ssbuf__   T*;
     using biasbufAttr =     __biasbuf__ T*;
 
-    using type = Std::tuple<gmAttr, cbufAttr, caAttr, cbAttr, ccAttr, ubufAttr, fbufAttr, ssbufAttr, biasbufAttr>;    
+    using type = Std::tuple<gmAttr, cbufAttr, caAttr, cbAttr, ccAttr, ubufAttr, fbufAttr, ssbufAttr, biasbufAttr>;
+
+    using locationMap = TupleMap<Std::tuple<Location::GM, gmAttr>, Std::tuple<Location::L1, cbufAttr>, Std::tuple<Location::L0A, caAttr>,
+    Std::tuple<Location::L0B, cbAttr>, Std::tuple<Location::L0C, ccAttr>, Std::tuple<Location::UB, ubufAttr>, 
+    Std::tuple<Location::BIAS, biasbufAttr>, Std::tuple<Location::FIXBUF, fbufAttr>>;
 };
 
 template <typename A, typename ProcessedTuple>

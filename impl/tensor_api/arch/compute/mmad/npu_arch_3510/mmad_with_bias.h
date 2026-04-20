@@ -60,7 +60,7 @@ private:
         }
 
         bool cmatrixSource = false;
-        if constexpr (Std::is_same_v<typename V::iterator::ptrPattern, Location::BIAS>) {
+        if constexpr (Std::is_same_v<GetMemLocation<V>, Location::BIAS>) {
             cmatrixSource = true;
         }
 

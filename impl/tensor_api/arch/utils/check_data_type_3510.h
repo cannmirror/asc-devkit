@@ -117,7 +117,7 @@ public:
         using fmDataType = typename U::elementType;
         using filterDataType = typename S::elementType;
         using biasDataType = typename V::elementType;
-        using biasPos = typename V::iterator::ptrPattern;
+        using biasPos = GetMemLocation<V>;
 
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
         if constexpr (Std::is_same_v<biasPos, Location::BIAS>) {
