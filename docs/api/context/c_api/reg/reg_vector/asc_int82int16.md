@@ -10,12 +10,14 @@
 
 将int8类型数据转换为int16类型。
 
+由于源操作数与目的操作数类型位宽比为1:2，读取数据时需要将一个VL大小的数据分为两部分，根据不同接口选取索引0或者索引1。
+
 ## 函数原型
 
 ```cpp
-// 数据写入索引为偶数的位置
+// 数据读取索引为偶数的位置
 __simd_callee__ inline void asc_int82int16(vector_int16_t& dst, vector_int8_t src, vector_bool mask)
-// 数据写入索引为奇数的位置
+// 数据读取索引为奇数的位置
 __simd_callee__ inline void asc_int82int16_v2(vector_int16_t& dst, vector_int8_t src, vector_bool mask)
 ```
 

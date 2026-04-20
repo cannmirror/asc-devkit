@@ -10,18 +10,18 @@
 
 将fp4x2_e2m1_t类型转化为bfloat16_t类型。
 
-由于源操作数与目的操作数类型位宽比为1:4，写入数据时需要将一个VL大小的数据分为四部分，根据不同接口选取索引0、索引1、索引2或者索引3。
+由于源操作数与目的操作数类型位宽比为1:4，读取数据时需要将一个VL大小的数据分为四部分，根据不同接口选取索引0、索引1、索引2或者索引3。
 
 ## 函数原型
 
 ```cpp
-// 写入索引0的位置
+// 读取索引0的位置
 __simd_callee__ inline void asc_e2m1x22bfloat16(vector_bfloat16_t& dst, vector_fp4x2_e2m1_t src, vector_bool mask)
-// 写入索引1的位置
+// 读取索引1的位置
 __simd_callee__ inline void asc_e2m1x22bfloat16_v2(vector_bfloat16_t& dst, vector_fp4x2_e2m1_t src, vector_bool mask)
-// 写入索引2的位置
+// 读取索引2的位置
 __simd_callee__ inline void asc_e2m1x22bfloat16_v3(vector_bfloat16_t& dst, vector_fp4x2_e2m1_t src, vector_bool mask)
-// 写入索引3的位置
+// 读取索引3的位置
 __simd_callee__ inline void asc_e2m1x22bfloat16_v4(vector_bfloat16_t& dst, vector_fp4x2_e2m1_t src, vector_bool mask)
 ```
 

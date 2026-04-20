@@ -13,13 +13,13 @@
 ## 函数原型
 
 ```cpp
-// 数据写入索引为0的位置
+// 数据读取索引为0的位置
 __simd_callee__ inline void asc_int4x22half(vector_half& dst, vector_int4x2_t src, vector_bool mask)
-// 数据写入索引为1的位置
+// 数据读取索引为1的位置
 __simd_callee__ inline void asc_int4x22half_v2(vector_half& dst, vector_int4x2_t src, vector_bool mask)
-// 数据写入索引为2的位置
+// 数据读取索引为2的位置
 __simd_callee__ inline void asc_int4x22half_v3(vector_half& dst, vector_int4x2_t src, vector_bool mask)
-// 数据写入索引为3的位置
+// 数据读取索引为3的位置
 __simd_callee__ inline void asc_int4x22half_v4(vector_half& dst, vector_int4x2_t src, vector_bool mask)
 ```
 

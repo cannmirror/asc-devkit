@@ -11,36 +11,29 @@
 将uint32_t类型数据转换为uint8_t类型。
 
 根据输入数据的大小分为非饱和模式和饱和模式。
+- 非饱和模式：结果被截断至目标格式的数据宽度，且保留最低有效位（LSB）。
+- 饱和模式： 结果被限制在目标格式的可表示范围内。
 
-- 非饱和模式：
-  - 输入数据超过输出类型最值时，返回输出类型的对应符号inf值。
-  - 输入数据为+/-inf时, 返回+/-inf。
-  - 输入数据为nan时，返回nan。
-- 饱和模式：
-  - 输入数据超过输出类型最值时，返回输出类型的对应最值。
-  - 输入数据为+/-inf时, 返回输出类型的对应最值。
-  - 输入数据为nan时，返回0。
-
-  由于源操作数与目的操作数类型位宽比为4:1，写入数据时需要将一个VL大小的数据分为四部分，根据不同接口选取索引0、索引1、索引2或者索引3。
+由于源操作数与目的操作数类型位宽比为4:1，写入数据时需要将一个VL大小的数据分为四部分，根据不同接口选取索引0、索引1、索引2或者索引3。
 
 ## 函数原型
 
 ```cpp
-// 非饱和模式，选取索引0的位置
+// 非饱和模式，数据写入索引0的位置
 __simd_callee__ inline void asc_uint322uint8(vector_uint8_t& dst, vector_uint32_t src, vector_bool mask)
-// 饱和模式，选取索引0的位置
+// 饱和模式，数据写入索引0的位置
 __simd_callee__ inline void asc_uint322uint8_sat(vector_uint8_t& dst, vector_uint32_t src, vector_bool mask)
-// 非饱和模式，选取索引1的位置
+// 非饱和模式，数据写入索引1的位置
 __simd_callee__ inline void asc_uint322uint8_v2(vector_uint8_t& dst, vector_uint32_t src, vector_bool mask)
-// 饱和模式，选取索引1的位置
+// 饱和模式，数据写入索引1的位置
 __simd_callee__ inline void asc_uint322uint8_sat_v2(vector_uint8_t& dst, vector_uint32_t src, vector_bool mask)
-// 非饱和模式，选取索引2的位置
+// 非饱和模式，数据写入索引2的位置
 __simd_callee__ inline void asc_uint322uint8_v3(vector_uint8_t& dst, vector_uint32_t src, vector_bool mask)
-// 饱和模式，选取索引2的位置
+// 饱和模式，数据写入索引2的位置
 __simd_callee__ inline void asc_uint322uint8_sat_v3(vector_uint8_t& dst, vector_uint32_t src, vector_bool mask)
-// 非饱和模式，选取索引3的位置
+// 非饱和模式，数据写入索引3的位置
 __simd_callee__ inline void asc_uint322uint8_v4(vector_uint8_t& dst, vector_uint32_t src, vector_bool mask)
-// 饱和模式，选取索引3的位置
+// 饱和模式，数据写入索引3的位置
 __simd_callee__ inline void asc_uint322uint8_sat_v4(vector_uint8_t& dst, vector_uint32_t src, vector_bool mask)
 ```
 
