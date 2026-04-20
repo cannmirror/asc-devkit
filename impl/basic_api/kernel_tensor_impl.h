@@ -39,7 +39,8 @@ __aicore__ inline constexpr auto Prod(const Shape<Args...>& t) {
 
 template <Hardware pos>
 __aicore__ inline uint32_t GetDynamicMemStartPos() {
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
+// dynamic array is not supported in cpu mode
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510 && !defined(ASCENDC_CPU_DEBUG)
     if constexpr (pos == Hardware::UB) {
         extern __ubuf__ uint32_t dynamicStartUB[];
         return (uint64_t)(&dynamicStartUB[0]);
