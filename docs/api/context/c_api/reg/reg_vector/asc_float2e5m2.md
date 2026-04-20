@@ -11,11 +11,11 @@
 将float类型数据转换为fp8_e5m2类型。
 
 - 非饱和模式：
-  - 输入数据超过输出类型最值时，结果被截断为目标格式的数据宽度，例如输入half值为257，输出int8_t值为1。
+  - 输入数据超过输出类型最值时，结果被截断为目标格式的数据宽度。
   - 输入数据为+/-inf时，返回输出类型的最值。
   - 输入数据为nan时，返回0。
 - 饱和模式：
-  - 输入数据超过输出类型最值时，返回输出类型的对应最值，例如输入half值为257，输出int8_t值为127。
+  - 输入数据超过输出类型最值时，返回输出类型的对应最值。
   - 输入数据为+/-inf时，返回输出类型的最值。
   - 输入数据为nan时，返回0。
 
@@ -69,5 +69,5 @@ vector_f8e5m2 dst;
 vector_float src;
 vector_bool mask = asc_create_mask_b32(PAT_ALL);
 asc_loadalign(src, src_addr); // src_addr是外部输入的UB内存空间地址。
-asc_float2e5m2_rd(dst, src, mask);
+asc_float2e5m2_rn(dst, src, mask);
 ```

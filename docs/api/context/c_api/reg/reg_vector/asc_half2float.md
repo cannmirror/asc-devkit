@@ -13,9 +13,9 @@
 ## 函数原型
 
 ```cpp
-// 数据写入索引为偶数的位置
+// 数据读取索引为偶数的位置
 __simd_callee__ inline void asc_half2float(vector_float& dst, vector_half src, vector_bool mask)
-// 数据写入索引为奇数的位置
+// 数据读取索引为奇数的位置
 __simd_callee__ inline void asc_half2float_v2(vector_float& dst, vector_half src, vector_bool mask)
 ```
 

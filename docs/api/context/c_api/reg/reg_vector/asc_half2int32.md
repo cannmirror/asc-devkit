@@ -74,6 +74,6 @@ PIPE_V
 vector_int32_t dst;
 vector_half src;
 vector_bool mask;
-asc_half2int32_rd(dst, src, mask);    // RINT舍入模式，将src的上半部分转换成vector_int32_t类型并写入dst
-asc_half2int32_rd_v2(dst, src, mask);    // RINT舍入模式，将src的下半部分转换成vector_int32_t类型并写入dst
+asc_half2int32_rd(dst, src, mask);    // FLOOR舍入模式，将src的上半部分转换成vector_int32_t类型并写入dst
+asc_half2int32_rd_v2(dst, src, mask);    // FLOOR舍入模式，将src的下半部分转换成vector_int32_t类型并写入dst
 ```
