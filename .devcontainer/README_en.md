@@ -5,9 +5,9 @@
 
 [中文版](./README.md) | [English](./README_en.md)
 
-Ubuntu 24.04 development environment for AscendC NPU kernel development.
+Ubuntu 24.04 containerized development environment for AscendC NPU kernel development.
 
-## Prerequisites
+## 📋 Prerequisites
 
 | Requirement | With NPU | Without NPU |
 | ------------- | :----------: | :-------------: |
@@ -16,13 +16,26 @@ Ubuntu 24.04 development environment for AscendC NPU kernel development.
 | Ascend driver on host (`/usr/local/Ascend/driver`) | required | not needed |
 | NPU device nodes (`/dev/davinciN`, etc.) | required | not needed |
 
-Check your Docker version:
+> [!IMPORTANT]
+> The host's Ascend driver directory (`/usr/local/Ascend/driver`) is mounted into the container as **read-only**. The **CANN toolkit and ops packages** should be installed inside the container after startup, not on the host — installing on the host tends to pollute the host environment and cause confusing environment variable exports.
+
+### Check Docker and buildx
+
+Confirm Docker is installed with version ≥ 23.0.0:
 
 ```bash
 docker --version
 ```
 
-Install `buildx` if missing:
+If the command is missing or the version is too low, follow the [Docker official installation guide](https://docs.docker.com/engine/install/) to install or upgrade.
+
+> [!TIP]
+> It is recommended to add the current user to the `docker` group to avoid needing `sudo` every time:
+> ```bash
+> sudo usermod -aG docker $USER && newgrp docker
+> ```
+
+Image building depends on the `docker buildx` plugin. Run `docker buildx version` to check; if the command is not found, install it:
 
 ```bash
 mkdir -p /usr/local/lib/docker/cli-plugins
@@ -32,36 +45,49 @@ curl -fsSL "https://github.com/docker/buildx/releases/latest/download/buildx-lin
 chmod +x /usr/local/lib/docker/cli-plugins/docker-buildx
 ```
 
-> [!WARNING]
-> The Ascend driver directory (`/usr/local/Ascend/driver`) is mounted read-only into the container. The **CANN toolkit and ops packages** should be installed inside the container after startup — not on the host. Installing CANN on the host risks overwriting a shared environment.
-
-## Build the Image
-
-> [!TIP]
-> **Build time:** approximately 5 minutes on a typical connection. The dominant cost is downloading the conda environment and PyTorch. Subsequent rebuilds hit the Docker layer cache and complete in seconds if only non-package layers changed.
-
-```bash
-docker buildx build --network host -t ascendc:ubuntu24.04 .devcontainer/
-```
-
-## Quick Start (Human Users)
+## 🧑‍💻 Quick Start (Human Users)
 
 > [!NOTE]
-> If you are an AI agent, skip to [Quick Start (AI Agent)](#quick-start-ai-agent).
+> If you are an AI Agent, skip to [Quick Start (AI Agent)](#quick-start-ai-agent).
+>
+> The following steps assume you are developing with VS Code on a **Linux host** (the Ascend driver only supports Linux).
 
-### With NPU
+### Step 1: Install VS Code
 
-Install the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension, then:
+Download and install the version for your platform from the [Visual Studio Code](https://code.visualstudio.com/) website.
 
-```text
-Ctrl+Shift+P → Dev Containers: Reopen in Container
+### Step 2: Install the Dev Containers extension
+
+In VS Code, press `Ctrl+Shift+X` to open the Extensions view, then search for and install the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension.
+
+### Step 3: Clone the repository
+
+```bash
+git clone https://gitcode.com/cann/asc-devkit.git
+cd asc-devkit
 ```
 
-### Without NPU
+### Step 4: Prepare based on NPU availability
 
-Copy `devcontainer.json` to a local override and remove all NPU-specific entries:
+#### 4.1 With NPU: verify driver and device nodes
 
-**In `runArgs`**, remove all NPU-related entries: the three access flags (`--ipc=host`, `--net=host`, `--privileged`) and all `--device` lines (`davinci0-7`, `davinci_manager`, `devmm_svm`, `hisi_hdc`), and set it to:
+On the host, run:
+
+```bash
+npu-smi info                        # check NPU status
+ls /dev/davinci*                    # confirm device nodes
+ls /usr/local/Ascend/driver         # confirm driver directory
+```
+
+If any command fails or returns no output, the Ascend driver is not ready. Refer to the [CANN Software Installation Guide - Install on Physical Machine](https://www.hiascend.com/document/redirect/CannCommunityInstWizard).
+
+If the host has fewer than 8 NPUs, edit `.devcontainer/devcontainer.json` and remove the extra `--device=/dev/davinciN` lines (run `ls /dev/davinci*` to check the actual device count).
+
+#### 4.2 Without NPU: adjust devcontainer.json
+
+Machines without NPU must first remove device and driver mount configurations.
+
+**In `runArgs`**, remove all NPU-related entries: the device access flags (`--ipc=host`, `--net=host`, `--privileged`) and `--device` lines (`davinci0-7`, `davinci_manager`, `devmm_svm`, `hisi_hdc`), and set it to:
 
 ```jsonc
 "runArgs": []
@@ -76,23 +102,48 @@ source=/usr/local/bin/npu-smi,...
 source=/etc/ascend_install.info,...
 ```
 
-Keep the `ccache` volume and any data directories you've added. Then reopen in container as normal.
+Keep the `ccache` volume and any data directories you added yourself.
 
-## Quick Start (AI Agent)
+### Step 5: Open the project in the container
 
-Agents (e.g. Claude Code, CI runners) can run the container directly without VS Code.
+Open this project directory in VS Code, press `Ctrl+Shift+P`, and run:
+
+```text
+Dev Containers: Reopen in Container
+```
+
+The Dev Containers extension will automatically build the image and start the container. The first build takes about 5 minutes (mostly downloading the conda environment and PyTorch); subsequent opens hit the Docker layer cache and complete in seconds.
+
+### Step 6: Install CANN inside the container
+
+After the container starts, in the container terminal refer to the [📥 Download and Install CANN Packages](../docs/quick_start.md#cann-install) section to download and install the toolkit and ops packages.
+
+### Step 7: Verify environment
+
+In the container terminal, refer to the [✅ Environment Verification](../docs/quick_start.md#cann-verify) section to confirm NPU device and CANN package status, then follow [⚙️ Environment Variable Configuration](../docs/quick_start.md#cann-env-setup) to load the environment variables. You can then begin kernel development.
+
+## 🤖 Quick Start (AI Agent)<a name="quick-start-ai-agent"></a>
+
+AI Agents (such as Claude Code, CI runners) can run the container directly without VS Code.
 
 **Before running the container, confirm the following with the user:**
 
-1. **Repository path** — where is the project checked out on the host? (default: current directory `$PWD`)
-2. **Data directories** — are there any additional data directories to mount (e.g. datasets, model weights)?
-3. **NPU availability** — does the host have Ascend NPUs? (determines which variant to use below)
+1. **Repository path** — where is the project checked out on the host? (default: current directory `$PWD`).
+2. **Data directories** — are there other data directories to mount (e.g. datasets, model weights)?
+3. **NPU availability** — does the host have Ascend NPUs? (determines which variant to use below).
 
-Then **show the user the exact `docker run` command** you are about to execute and wait for confirmation before proceeding.
+After confirmation, **show the user the exact `docker run` command** you are about to execute and wait for user confirmation before proceeding.
 
-> [!IMPORTANT]
-> Some steps require user action: CANN toolkit and ops packages must be installed inside the container
-> after startup. Ask the user to provide the CANN package paths or installer commands.
+For Docker and buildx checks and installation, see [Check Docker and buildx](#check-docker-and-buildx).
+
+### Build the image
+
+```bash
+docker buildx build --network host -t ascendc:ubuntu24.04 .devcontainer/
+```
+
+> [!TIP]
+> The first build takes about 5 minutes (mostly downloading the conda environment and PyTorch). For subsequent rebuilds, if only non-package layers are changed, the Docker layer cache will be hit and the build completes in seconds.
 
 ### With NPU
 
@@ -117,9 +168,7 @@ docker run -itd --name ascendc_container \
   ascendc:ubuntu24.04
 ```
 
-If the user has fewer than 8 NPUs, remove the corresponding `--device=/dev/davinciN` lines (use `ls /dev/davinci*` to check the number).
-
-If the user needs to mount data directories, append each as `-v /host/path:/container/path`.
+If the host has fewer than 8 NPUs, remove the corresponding `--device=/dev/davinciN` lines (run `ls /dev/davinci*` to check the actual device count).
 
 ### Without NPU
 
@@ -127,14 +176,14 @@ If the user needs to mount data directories, append each as `-v /host/path:/cont
 docker run -itd --name ascendc_container ascendc:ubuntu24.04
 ```
 
-If the user needs to mount data directories, append each as `-v /host/path:/container/path`.
+> [!IMPORTANT]
+>
+> - If the user needs to mount data directories, append each as `-v /host/path:/container/path`.
+> - After the container starts, CANN toolkit and ops packages must be installed manually inside the container. Ask the user for the CANN package paths or installer commands, or refer to the [📥 Download and Install CANN Packages](../docs/quick_start.md#cann-install) section.
 
-> [!NOTE]
-> After starting the container, install CANN toolkit and ops packages manually.
+## 🐍 Python Environment
 
-## Python Environments
-
-One conda environment is pre-installed:
+The container comes with the following conda environment pre-installed:
 
 | Environment | Python | PyTorch |
 | :--------: | :--------: | :---------: |
@@ -142,11 +191,11 @@ One conda environment is pre-installed:
 
 Default active environment is `py312`.
 
-## Configuration
+## ⚙️ Configuration
 
 ### Mirror Sources
 
-To override mirror sources at build time:
+Default mirror sources can be overridden at build time via build arguments:
 
 ```bash
 docker buildx build --network host \
@@ -164,9 +213,9 @@ Available mirrors:
 | `CONDA_MIRROR` | `mirrors.tuna.tsinghua.edu.cn/anaconda` | `mirrors.tuna.tsinghua.edu.cn/anaconda` | `mirrors.ustc.edu.cn/anaconda` | — |
 | `PYPI_MIRROR` | `repo.huaweicloud.com/repository/pypi/simple` | `pypi.tuna.tsinghua.edu.cn/simple` | `pypi.mirrors.ustc.edu.cn/simple` | `repo.huaweicloud.com/repository/pypi/simple` |
 
-### Data Directory
+### Mount Directories
 
-The data directory varies per developer. Add your own in `devcontainer.json`:
+Mount directories vary by developer; add your own in `devcontainer.json`:
 
 ```jsonc
 // mounts
