@@ -376,6 +376,104 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16x2_t make_bfloat162(bfloat16_t x, 
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16_t __ushort_as_bfloat16(const unsigned short int x);
 
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __heq(bfloat16_t x, bfloat16_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hne(bfloat16_t x, bfloat16_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hle(bfloat16_t x, bfloat16_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hge(bfloat16_t x, bfloat16_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hlt(bfloat16_t x, bfloat16_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hgt(bfloat16_t x, bfloat16_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hequ(bfloat16_t x, bfloat16_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hneu(bfloat16_t x, bfloat16_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hleu(bfloat16_t x, bfloat16_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hgeu(bfloat16_t x, bfloat16_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hltu(bfloat16_t x, bfloat16_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hgtu(bfloat16_t x, bfloat16_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hbeqx2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hbnex2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hblex2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hbgex2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hbltx2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hbgtx2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hbequx2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hbneux2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hbleux2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hbgeux2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hbltux2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bool __hbgtux2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bfloat16x2_t __heqx2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bfloat16x2_t __hnex2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bfloat16x2_t __hlex2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bfloat16x2_t __hgex2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bfloat16x2_t __hltx2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bfloat16x2_t __hgtx2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bfloat16x2_t __hequx2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bfloat16x2_t __hneux2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bfloat16x2_t __hleux2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bfloat16x2_t __hgeux2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bfloat16x2_t __hltux2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bfloat16x2_t __hgtux2(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __heqx2_mask(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __hnex2_mask(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __hlex2_mask(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __hgex2_mask(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __hltx2_mask(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __hgtx2_mask(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __hequx2_mask(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __hneux2_mask(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __hleux2_mask(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __hgeux2_mask(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __hltux2_mask(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __hgtux2_mask(bfloat16x2_t x, bfloat16x2_t y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ bfloat16x2_t __isnanx2(bfloat16x2_t x);
+
 #include "impl/simt_api/asc_bf16_impl.h"
 
 #endif
