@@ -9,7 +9,8 @@
             -   [HelloWorld](入门教程/快速入门/基于SIMD编程/HelloWorld.md)
             -   [Add自定义算子开发](入门教程/快速入门/基于SIMD编程/Add自定义算子开发.md)
 
-        -   [基于SIMT编程](入门教程/快速入门/基于SIMT编程/Add自定义算子开发.md)
+        -   [基于SIMT编程](入门教程/快速入门/基于SIMT编程/HelloWorld.md)
+            -   [HelloWorld](入门教程/快速入门/基于SIMT编程/HelloWorld.md)
             -   [Add自定义算子开发](入门教程/快速入门/基于SIMT编程/Add自定义算子开发.md)
 
 -   [编程指南](编程指南/本文档组织结构.md)
