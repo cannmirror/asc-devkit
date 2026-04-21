@@ -31,6 +31,6 @@ add_custom_target(${OPC_WHL_NAME} ALL
 
 if(BUILD_OPEN_PROJECT)
   install(FILES ${OPC_BASE}/asc_opc
-    DESTINATION ${INSTALL_LIBRARY_DIR}/bin
+    DESTINATION ${INSTALL_LIBRARY_DIR}/bin COMPONENT asc-devkit
   )
 endif()

@@ -62,8 +62,8 @@ function(ascendc_library target_name target_type)
 
     include(GNUInstallDirs)
     install(TARGETS ${target_name}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT asc-devkit
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT asc-devkit
     )
 endfunction()
 

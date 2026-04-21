@@ -8,16 +8,6 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
-if(CUSTOM_ASCEND_CANN_PACKAGE_PATH)
-    set(ASCEND_CANN_PACKAGE_PATH ${CUSTOM_ASCEND_CANN_PACKAGE_PATH})
-elseif(DEFINED ENV{ASCEND_HOME_PATH})
-    set(ASCEND_CANN_PACKAGE_PATH $ENV{ASCEND_HOME_PATH})
-elseif(DEFINED ENV{ASCEND_OPP_PATH})
-    get_filename_component(ASCEND_CANN_PACKAGE_PATH "$ENV{ASCEND_OPP_PATH}/.." ABSOLUTE)
-else()
-    set(ASCEND_CANN_PACKAGE_PATH "/usr/local/Ascend/cann")
-endif()
-
 if (NOT EXISTS "${ASCEND_CANN_PACKAGE_PATH}")
     message(FATAL_ERROR "${ASCEND_CANN_PACKAGE_PATH} does not exist, please install the cann package and set environment variables.")
 endif()

@@ -57,4 +57,4 @@ execute_process(
 
 # 安装到目标位置
 install(DIRECTORY ${MAKESELF_PATH} 
-        DESTINATION .)
+        DESTINATION . COMPONENT asc-devkit)

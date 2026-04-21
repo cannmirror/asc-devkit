@@ -7,7 +7,7 @@
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
-cmake_minimum_required(VERSION 3.16.0)
+cmake_minimum_required(VERSION 3.16.0) 
 project(ascendc_tiling_api)
 
 add_library(tiling_api_headers INTERFACE)
@@ -243,10 +243,10 @@ else()
 endif()
 
 install(TARGETS tiling_api ARCHIVE DESTINATION ${ASCENDC_API_ADV_INSTALL_DIR}
-                                   OPTIONAL)
+                                   ${INSTALL_OPTIONAL} COMPONENT asc-devkit)
 
 install(TARGETS tiling_api
-        ARCHIVE DESTINATION ${ASCENDC_API_ADV_MULT_INSTALL_DIR} OPTIONAL)
+        ARCHIVE DESTINATION ${ASCENDC_API_ADV_MULT_INSTALL_DIR} ${INSTALL_OPTIONAL} COMPONENT asc-devkit)
 
 configure_file(${ASCENDC_ADV_API_CMAKE_DIR}/tiling_headers.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/tiling_headers.cmake @ONLY)

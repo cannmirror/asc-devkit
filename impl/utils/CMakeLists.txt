@@ -12,18 +12,18 @@
 install(
   DIRECTORY std debug
   DESTINATION ${INSTALL_LIBRARY_DIR}/asc/impl/utils
-  OPTIONAL FILES_MATCHING
+  ${INSTALL_OPTIONAL} COMPONENT asc-devkit FILES_MATCHING
   PATTERN "*.h"
   PATTERN "CMakeLists.txt" EXCLUDE)
 
 install(
   DIRECTORY ${ASCENDC_INCLUDE_DIR}/utils/
-  DESTINATION ${INSTALL_LIBRARY_DIR}/asc/include/utils/ OPTIONAL
+  DESTINATION ${INSTALL_LIBRARY_DIR}/asc/include/utils/ ${INSTALL_OPTIONAL} COMPONENT asc-devkit
   PATTERN "utils/stub" EXCLUDE
 )
 
 install(FILES common_types.h sys_constants.h sys_macros.h
-    DESTINATION ${INSTALL_LIBRARY_DIR}/asc/impl/utils
+    DESTINATION ${INSTALL_LIBRARY_DIR}/asc/impl/utils ${INSTALL_OPTIONAL} COMPONENT asc-devkit
 )
 
 file(MAKE_DIRECTORY "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/tiling/platform")

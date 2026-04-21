@@ -94,5 +94,5 @@ set(VERSION_FILES
 )
 
 install(FILES ${VERSION_FILES}
-    DESTINATION asc-devkit
+    DESTINATION asc-devkit COMPONENT asc-devkit
 )

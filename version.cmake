@@ -8,14 +8,14 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # -----------------------------------------------------------------------------------------------------------
 
-set_package(asc-devkit VERSION "9.0.0")
+set_cann_package(asc-devkit VERSION "9.0.0")
 
-set_build_dependencies(runtime "CUR_MAJOR_MINOR_VER")
-set_build_dependencies(metadef "CUR_MAJOR_MINOR_VER")
+set_cann_build_dependencies(runtime "CUR_MAJOR_MINOR_VER")
+set_cann_build_dependencies(metadef "CUR_MAJOR_MINOR_VER")
 
-set_run_dependencies(runtime "CUR_MAJOR_MINOR_VER")
-set_run_dependencies(ge-executor "CUR_MAJOR_MINOR_VER")
-set_run_dependencies(metadef "CUR_MAJOR_MINOR_VER")
-set_run_dependencies(opbase "CUR_MAJOR_MINOR_VER")
-set_run_dependencies(bisheng-compiler "CUR_MAJOR_MINOR_VER")
-set_run_dependencies(tbe-tik "CUR_MAJOR_MINOR_VER")
+set_cann_run_dependencies(runtime "CUR_MAJOR_MINOR_VER")
+set_cann_run_dependencies(ge-executor "CUR_MAJOR_MINOR_VER")
+set_cann_run_dependencies(metadef "CUR_MAJOR_MINOR_VER")
+set_cann_run_dependencies(opbase "CUR_MAJOR_MINOR_VER")
+set_cann_run_dependencies(bisheng-compiler "CUR_MAJOR_MINOR_VER")
+set_cann_run_dependencies(tbe-tik "CUR_MAJOR_MINOR_VER")
