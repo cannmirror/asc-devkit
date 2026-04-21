@@ -17,5 +17,6 @@
 | [matmul_s4_950](./matmul_s4_950) | 新架构下Cube计算单元删除int4b_t数据类型。用户可以在算子侧通过MIX模式再Vector Core进行int4b_t到int8_t的Cast转换，再通过UB搬运到L1后进行Mmad计算。 |
 | [pattern_transformation](./pattern_transformation) | 新架构下基础的mmad样例，从L1 Buffer->L0A Buffer的通路不需要做Nz2Zz分型转换。 |
 | [scatter](./scatter) | 本样例介绍兼容Scatter算子实现及核函数直调方法。 |
+| [scatter_950](./scatter_950) | 本样例基于Scatter指令实现数据离散，可根据输入张量和目的地址偏移张量，将输入张量分散到结果张量中。                                                                                              |
 | [set_loaddata_boundary_910B](./set_loaddata_boundary_910B) | 本样例使用SetLoadDataBoundary接口设置L1 Buffer的边界值。 |
 | [set_loaddata_boundary_950](./set_loaddata_boundary_950) | 新架构硬件删除了L1 Buffer的边界值设定相关寄存器，不再支持SetLoadDataBoundary接口。该接口用于设置Load3x时L时Buffer的边界值。如果指令在处理源操作数时，源操作数在L1 Buffer上的地址超出设置的边界，则会从L1 Buffer的起始地址开始夺取。设置为0表示无边界，可使用整个L1 Buffer。 |
