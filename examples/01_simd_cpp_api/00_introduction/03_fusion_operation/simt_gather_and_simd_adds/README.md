@@ -6,6 +6,10 @@
 
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT
+
+## 支持的CANN软件版本
+- \>= CANN 9.0.0-beta.2
+
 ## 目录结构
 ```
 ├── simt_gather_and_simd_adds

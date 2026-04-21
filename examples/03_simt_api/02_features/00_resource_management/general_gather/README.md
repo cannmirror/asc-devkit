@@ -7,6 +7,9 @@
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT
 
+## 支持的CANN软件版本
+- \>= CANN 9.0.0
+
 ## 目录结构
 ```text
 ├── general_gather
