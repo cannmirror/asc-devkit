@@ -54,11 +54,11 @@ private:
         using type = typename U::elementType;
 
         auto smallFractalSize =
-            GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout)
-            * GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
-        auto bigFractalSize = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
-        auto srcStrideSize = GetElement<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
-        auto dstStrideSize = GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
+            GetElement<AttrInfo::Shape, AttrInfo::Column, 0>(srcLayout)
+            * GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(srcLayout);
+        auto bigFractalSize = GetElement<AttrInfo::Shape, AttrInfo::Row, 1>(srcLayout);
+        auto srcStrideSize = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(srcLayout);
+        auto dstStrideSize = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(dstLayout);
 
         uint8_t leftPaddingCnt = 0;
         uint8_t rightPaddingCnt = 0;

@@ -52,14 +52,14 @@ private:
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
 
-        auto srcShapeRowsB = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
-        auto srcShapeRowsS = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout);
-        auto srcShapeColumns = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
-        auto srcStrideRowsB = GetElement<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
-        auto srcStrideRowsS = GetElement<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 0>(srcLayout);
+        auto srcShapeRowsB = GetElement<AttrInfo::Shape, AttrInfo::Row, 1>(srcLayout);
+        auto srcShapeRowsS = GetElement<AttrInfo::Shape, AttrInfo::Row, 0>(srcLayout);
+        auto srcShapeColumns = GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(srcLayout);
+        auto srcStrideRowsB = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(srcLayout);
+        auto srcStrideRowsS = GetElement<AttrInfo::Stride, AttrInfo::Row, 0>(srcLayout);
 
-        auto dstShapeColumns = GetElement<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
-        auto dstStrideRows = GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
+        auto dstShapeColumns = GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(dstLayout);
+        auto dstStrideRows = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(dstLayout);
 
         uint8_t cacheMode = src.Engine().GetCacheMode();
 

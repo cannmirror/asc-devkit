@@ -52,10 +52,10 @@ private:
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
 
-        auto srcRowShape = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
-        uint32_t srcColShape = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
-        uint16_t dstBRowStride = GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
-        auto srcColStride = GetElement<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout);
+        auto srcRowShape = GetElement<AttrInfo::Shape, AttrInfo::Row, 1>(srcLayout);
+        uint32_t srcColShape = GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(srcLayout);
+        uint16_t dstBRowStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(dstLayout);
+        auto srcColStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(srcLayout);
 
         uint16_t ndNum = 1;
         uint16_t nValue = srcColShape;

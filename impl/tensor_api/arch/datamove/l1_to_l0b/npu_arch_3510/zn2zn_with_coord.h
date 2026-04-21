@@ -51,12 +51,12 @@ private:
         auto srcLayout = src.Layout();
         uint16_t mStartPosition = Std::get<1>(coord) / FRACTAL_FIXED;
         uint16_t kStartPosition = Std::get<0>(coord) / C0_ELEMENT<typename U::elementType>;
-        auto mStep = GetElement<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
-        auto kStep = GetElement<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
+        auto mStep = GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(dstLayout);
+        auto kStep = GetElement<AttrInfo::Shape, AttrInfo::Row, 1>(dstLayout);
         // Zn -> Zn
         uint32_t STRIDE_UNIT = C0_ELEMENT<DstType> * FRACTAL_FIXED;
-        auto srcStride = GetElement<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout) / STRIDE_UNIT;
-        auto dstStride = GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout) / STRIDE_UNIT;
+        auto srcStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(srcLayout) / STRIDE_UNIT;
+        auto dstStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(dstLayout) / STRIDE_UNIT;
         if constexpr (IsB4Type<DstType>) {
             LoadCbufToCbS43510::LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);   
         }

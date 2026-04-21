@@ -43,7 +43,7 @@ struct nesting_depth<Std::tuple<Args...>> {
 };
 
 template <typename T>
-constexpr size_t nesting_depth_v = nesting_depth<T>::value;
+constexpr size_t NestingDepthV = nesting_depth<Std::remove_cvref_t<T>>::value;
 
 template <size_t Dim, typename T, typename U>
 struct IsStaticLayout {
@@ -59,7 +59,7 @@ private:
 
     __aicore__ inline static constexpr auto TestStaticLayout()
     {
-        if constexpr (nesting_depth_v<T> == Dim && 
+        if constexpr (NestingDepthV<T> == Dim && 
             !(include_dynamic_type<T>::value || include_dynamic_type<U>::value)) {
             return true;
         }

@@ -51,14 +51,14 @@ private:
         auto srcLayout = src.Layout();
         auto mStartPosition = 0;
         auto kStartPosition = 0;
-        auto mStep = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) *
-                GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout) / FRACTAL_FIXED;
-        auto kStep = GetElement<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) *
-                GetElement<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout) / C0_ELEMENT<DstType>;
+        auto mStep = GetElement<AttrInfo::Shape, AttrInfo::Row, 1>(srcLayout) *
+                GetElement<AttrInfo::Shape, AttrInfo::Row, 0>(srcLayout) / FRACTAL_FIXED;
+        auto kStep = GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(dstLayout) *
+                GetElement<AttrInfo::Shape, AttrInfo::Column, 0>(dstLayout) / C0_ELEMENT<DstType>;
         // Nz -> Zn
         uint32_t STRIDE_UNIT = C0_ELEMENT<DstType> * FRACTAL_FIXED;
-        auto srcStride = GetElement<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / STRIDE_UNIT;
-        auto dstStride = GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout) / STRIDE_UNIT;
+        auto srcStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(srcLayout) / STRIDE_UNIT;
+        auto dstStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(dstLayout) / STRIDE_UNIT;
         LoadCbufToCb3510::LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
     }
 };

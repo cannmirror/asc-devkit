@@ -52,12 +52,12 @@ private:
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
 
-        auto srcRowShape = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
-        uint32_t srcColShape = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
+        auto srcRowShape = GetElement<AttrInfo::Shape, AttrInfo::Row, 1>(srcLayout);
+        uint32_t srcColShape = GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(srcLayout);
         uint16_t srcBColStride =
-            GetElement<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout);
+            GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(srcLayout);
         uint16_t dstBColStride =
-            GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout);
+            GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(dstLayout);
 
         uint16_t dnNum = 1;
         uint16_t nValue = srcRowShape >> 1; // use b16 for DN2NZ, so nValue = srcRowShape / 2

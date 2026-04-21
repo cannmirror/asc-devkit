@@ -56,25 +56,25 @@ private:
             // Next three parameters are in unit of 32B
             blockLen = Std::ceil_division(GetTotalColumnShape(srcLayout), C0_ELEMENT<SRC_TYPE>);
 
-            srcStride = Std::ceil_division(GetElement<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout) - GetTotalColumnShape(srcLayout), C0_ELEMENT<SRC_TYPE>);
-            dstStride = Std::ceil_division(GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout) - GetTotalColumnShape(srcLayout), C0_ELEMENT<DST_TYPE>);
+            srcStride = Std::ceil_division(GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(srcLayout) - GetTotalColumnShape(srcLayout), C0_ELEMENT<SRC_TYPE>);
+            dstStride = Std::ceil_division(GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(dstLayout) - GetTotalColumnShape(srcLayout), C0_ELEMENT<DST_TYPE>);
 
         } else if constexpr (IsDNExtLayout<U>() && IsDNExtLayout<T>()) {
             blockCount = GetTotalColumnShape(srcLayout);
             // Next three parameters are in unit of 32B
             blockLen = Std::ceil_division(GetTotalRowShape(srcLayout), C0_ELEMENT<SRC_TYPE>);
 
-            srcStride = Std::ceil_division((GetElement<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) - GetTotalRowShape(srcLayout)), C0_ELEMENT<SRC_TYPE>);
-            dstStride = Std::ceil_division((GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout) - GetTotalRowShape(srcLayout)), C0_ELEMENT<DST_TYPE>);
+            srcStride = Std::ceil_division((GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(srcLayout) - GetTotalRowShape(srcLayout)), C0_ELEMENT<SRC_TYPE>);
+            dstStride = Std::ceil_division((GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(dstLayout) - GetTotalRowShape(srcLayout)), C0_ELEMENT<DST_TYPE>);
 
         } else if constexpr (IsNZLayout<U>() && IsNZLayout<T>()) {
-            blockCount = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
+            blockCount = GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(srcLayout);
             // Next three parameters are in unit of 32B
             // note: C0_Byte_Size == 32B
             blockLen = GetTotalRowShape(srcLayout);
 
-            srcStride = GetElement<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / C0_ELEMENT<SRC_TYPE> - blockLen;
-            dstStride = GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout) / C0_ELEMENT<DST_TYPE> - blockLen;
+            srcStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(srcLayout) / C0_ELEMENT<SRC_TYPE> - blockLen;
+            dstStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(dstLayout) / C0_ELEMENT<DST_TYPE> - blockLen;
 
         } else {
             static_assert((IsNDExtLayout<U>() && IsNDExtLayout<T>()) || (IsDNExtLayout<U>() && IsDNExtLayout<T>())

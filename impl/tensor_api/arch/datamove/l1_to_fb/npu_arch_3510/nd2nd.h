@@ -56,12 +56,12 @@ private:
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
 
-        uint16_t srcCol = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
-        uint16_t srcRow = GetElement<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
-        uint16_t dstCol = GetElement<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
-        uint16_t dstRow = GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
+        uint16_t srcCol = GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(srcLayout);
+        uint16_t srcRow = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(srcLayout);
+        uint16_t dstCol = GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(dstLayout);
+        uint16_t dstRow = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(dstLayout);
 
-        uint16_t blockCount = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
+        uint16_t blockCount = GetElement<AttrInfo::Shape, AttrInfo::Row, 1>(srcLayout);
         uint16_t blockLen = Std::ceil_division(srcCol * sizeof(srcType), C2PIPE2GM_UNIT);
         uint16_t srcStride = Std::ceil_division(srcRow * sizeof(srcType), C0_SIZE<>);
         uint16_t dstStride = Std::ceil_division(dstRow * sizeof(dstType), C2PIPE2GM_UNIT);

@@ -85,18 +85,18 @@ private:
         auto srcLayout = src.Layout();
         auto mStartPosition = Std::get<0>(coord) / FRACTAL_FIXED;
         auto kStartPosition = Std::get<1>(coord) / C0_ELEMENT<DstType>;
-        auto n1 = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout) *
-                  GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout) -
-                  GetElement<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) *
-                  GetElement<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout) - Std::get<1>(coord);
-        auto mStep = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) *
-                GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout) / FRACTAL_FIXED - mStartPosition;
-        auto kStep = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout) *
-                GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout) / C0_ELEMENT<DstType> - kStartPosition;
+        auto n1 = GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(srcLayout) *
+                  GetElement<AttrInfo::Shape, AttrInfo::Column, 0>(srcLayout) -
+                  GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(dstLayout) *
+                  GetElement<AttrInfo::Shape, AttrInfo::Column, 0>(dstLayout) - Std::get<1>(coord);
+        auto mStep = GetElement<AttrInfo::Shape, AttrInfo::Row, 1>(srcLayout) *
+                GetElement<AttrInfo::Shape, AttrInfo::Row, 0>(srcLayout) / FRACTAL_FIXED - mStartPosition;
+        auto kStep = GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(srcLayout) *
+                GetElement<AttrInfo::Shape, AttrInfo::Column, 0>(srcLayout) / C0_ELEMENT<DstType> - kStartPosition;
         // Nz -> Zn
         constexpr uint32_t STRIDE_UNIT = C0_ELEMENT<DstType> * FRACTAL_FIXED;
-        auto srcStride = GetElement<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / STRIDE_UNIT;
-        auto dstStride = GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout) / STRIDE_UNIT;
+        auto srcStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(srcLayout) / STRIDE_UNIT;
+        auto dstStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(dstLayout) / STRIDE_UNIT;
         if constexpr (IsB4Type<DstType>) {
             if (n1 < FRACTAL_FIXED) {
                 LoadCbufToCbS43510::LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);

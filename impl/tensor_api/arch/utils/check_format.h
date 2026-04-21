@@ -33,16 +33,16 @@ struct CheckNzLayoutPattern {
     template <typename T, typename TraitType>
     __aicore__ inline static constexpr void Check() {
         constexpr auto C0_ELEMENT = TraitType::C0_ELEMENT;
-        using ShapeRow0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
+        using ShapeRow0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Row, 0>::type;
+        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>,
                       "Layout->Shape->Row->ZeroDim must be Int<16>!");
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<C0_ELEMENT>>,
                       "Layout->Shape->Column->ZeroDim is differnt from C0_ELEMENT!");
 
-        using StrideRow0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        using StrideRow1 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 1>::type;
+        using StrideRow0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Row, 0>::type;
+        using StrideColumn0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 0>::type;
+        using StrideRow1 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Row, 1>::type;
         static_assert(Std::is_same_v<StrideRow0, Std::Int<C0_ELEMENT>>,
                       "Layout->Stride->Row->ZeroDim is differnt from C0_ELEMENT!");
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>,
@@ -56,7 +56,7 @@ struct CheckNzLayoutPattern {
 struct CheckNDLayoutPattern {
     template <typename T, typename TraitType>
     __aicore__ inline static constexpr void Check() {
-        using StrideColumn0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
+        using StrideColumn0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>, "Layout->Stride->Column must be Int<1>!");
     }
 };
@@ -64,7 +64,7 @@ struct CheckNDLayoutPattern {
 struct CheckDNLayoutPattern {
     template <typename T, typename TraitType>
     __aicore__ inline static constexpr void Check() {
-        using StrideRow0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
+        using StrideRow0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Row, 0>::type;
         static_assert(Std::is_same_v<StrideRow0, Std::Int<1>>, "Src->Layout->Stride->Row must be Int<1>!");
     }
 };
@@ -72,14 +72,14 @@ struct CheckDNLayoutPattern {
 struct CheckNDExtLayoutPattern {
     template <typename T, typename TraitType>
     __aicore__ inline static constexpr void Check() {
-        using ShapeRow0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
+        using ShapeRow0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Row, 0>::type;
+        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<1>>, "Layout->Shape->Row->ZeroDim must be 1!");
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<1>>, "Layout->Shape->Column->ZeroDim must be 1!");
 
-        using StrideRow0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        using StrideColumn1 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 1>::type;
+        using StrideRow0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Row, 0>::type;
+        using StrideColumn0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 0>::type;
+        using StrideColumn1 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 1>::type;
         static_assert(Std::is_same_v<StrideRow0, Std::Int<0>>, "Layout->Stride->Row->ZeroDim must be 0!");
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<0>>, "Layout->Stride->Column->ZeroDim must be 0!");
         static_assert(Std::is_same_v<StrideColumn1, Std::Int<1>>, "Layout->Stride->Column->OneDim must be 1!");
@@ -89,14 +89,14 @@ struct CheckNDExtLayoutPattern {
 struct CheckDNExtLayoutPattern {
     template <typename T, typename TraitType>
     __aicore__ inline static constexpr void Check() {
-        using ShapeRow0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
+        using ShapeRow0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Row, 0>::type;
+        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<1>>, "Src->Layout->Shape->Row->ZeroDim must be 1!");
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<1>>, "Src->Layout->Shape->Column->ZeroDim must be 1!");
 
-        using StrideRow0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideRow1 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 1>::type;
-        using StrideColumn0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
+        using StrideRow0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Row, 0>::type;
+        using StrideRow1 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Row, 1>::type;
+        using StrideColumn0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<StrideRow0, Std::Int<0>>, "Src->Layout->Stride->Row->ZeroDim must be 0!");
         static_assert(Std::is_same_v<StrideRow1, Std::Int<1>>, "Src->Layout->Stride->Row->OneDim must be 1!");
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<0>>, "Src->Layout->Stride->Column->ZeroDim must be 0!");
@@ -106,14 +106,14 @@ struct CheckDNExtLayoutPattern {
 struct CheckNnLayoutPattern {
     template <typename T, typename TraitType>
     __aicore__ inline static constexpr void Check() {
-        using ShapeRow0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
+        using ShapeRow0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Row, 0>::type;
+        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<2>>, "Src->Layout->Shape->Row->ZeroDim must be Int<2>!");
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<16>>, "Src->Layout->Shape->Column->ZeroDim must be Int<16>!");
 
-        using StrideRow0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideRow1 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 1>::type;
-        using StrideColumn0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
+        using StrideRow0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Row, 0>::type;
+        using StrideRow1 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Row, 1>::type;
+        using StrideColumn0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<StrideRow0, Std::Int<1>>, "Src->Layout->Stride->Row->ZeroDim must be Int<1>!");
         static_assert(Std::is_same_v<StrideRow1, Std::Int<32>>, "Src->Layout->Stride->Row->OneDim must be Int<32>!");
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<2>>, "Src->Layout->Stride->Column->ZeroDim must be Int<2>!");
@@ -124,15 +124,15 @@ struct CheckZzLayoutPattern {
     template <typename T, typename TraitType>
     __aicore__ inline static constexpr void Check() {
         constexpr auto C0_ELEMENT = TraitType::C0_ELEMENT;
-        using ShapeRow0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
+        using ShapeRow0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Row, 0>::type;
+        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<C0_ELEMENT>>,
                       "Layout->Shape->Column->ZeroDim must is differnt from C0_ELEMENT!");
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>,
                       "Layout->Shape->Row->ZeroDim must be Int<16>!");
 
-        using StrideRow0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
+        using StrideRow0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Row, 0>::type;
+        using StrideColumn0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>, "Layout->Stride->Column-ZeroDim must be Int<1>!");
         static_assert(Std::is_same_v<StrideRow0, Std::Int<C0_ELEMENT>>,
                       "Layout->Stride->Row->ZeroDim is differnt from C0_ELEMENT!");
@@ -143,15 +143,15 @@ struct CheckZnLayoutPattern {
     template <typename T, typename TraitType>
     __aicore__ inline static constexpr void Check() {
         constexpr auto C0_ELEMENT = TraitType::C0_ELEMENT;
-        using ShapeRow0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
+        using ShapeRow0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Row, 0>::type;
+        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<FRACTAL_FIXED>>,
                       "Layout->Shape->Column->ZeroDim must be Int<16>!");
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<C0_ELEMENT>>,
                       "Layout->Shape->Row->ZeroDim is differnt from C0_ELEMENT!");
 
-        using StrideRow0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
+        using StrideRow0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Row, 0>::type;
+        using StrideColumn0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<C0_ELEMENT>>,
                       "Layout->Stride->Column-ZeroDim is differnt from C0_ELEMENT!");
         static_assert(Std::is_same_v<StrideRow0, Std::Int<1>>,
@@ -162,14 +162,14 @@ struct CheckZnLayoutPattern {
 struct CheckScaleANDLayoutPattern {
     template <typename T, typename TraitType>
     __aicore__ inline static constexpr void Check() {
-        using ShapeRow0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
+        using ShapeRow0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Row, 0>::type;
+        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<1>>, "Layout->Shape->Row->ZeroDim must be Int<1>!");
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<1>>, "Layout->Shape->Column->ZeroDim must be Int<1>!");
 
-        using StrideRow0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        using StrideColumn1 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 1>::type;
+        using StrideRow0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Row, 0>::type;
+        using StrideColumn0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 0>::type;
+        using StrideColumn1 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 1>::type;
         static_assert(Std::is_same_v<StrideRow0, Std::Int<0>>, "Layout->Stride->Row->ZeroDim must be Int<0>!");
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<0>>, "Layout->Stride->Column-ZeroDim must be Int<0>!");
         static_assert(Std::is_same_v<StrideColumn1, Std::Int<1>>, "Layout->Stride->Column-OneDim must be Int<1>!");
@@ -179,14 +179,14 @@ struct CheckScaleANDLayoutPattern {
 struct CheckScaleADNLayoutPattern {
     template <typename T, typename TraitType>
     __aicore__ inline static constexpr void Check() {
-        using ShapeRow0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
+        using ShapeRow0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Row, 0>::type;
+        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<1>>, "Layout->Shape->Row->ZeroDim must be Int<1>!");
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<2>>, "Layout->Shape->Column->ZeroDim must be Int<2>!");
 
-        using StrideRow0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideRow1 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 1>::type;
-        using StrideColumn0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
+        using StrideRow0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Row, 0>::type;
+        using StrideRow1 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Row, 1>::type;
+        using StrideColumn0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<StrideRow0, Std::Int<0>>, "Layout->Stride->Row->ZeroDim must be Int<0>!");
         static_assert(Std::is_same_v<StrideRow1, Std::Int<2>>, "Layout->Stride->Row->OneDim must be Int<2>!");
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>, "Layout->Stride->Column-OneDim must be Int<1>!");
@@ -196,14 +196,14 @@ struct CheckScaleADNLayoutPattern {
 struct CheckScaleBNDLayoutPattern {
     template <typename T, typename TraitType>
     __aicore__ inline static constexpr void Check() {
-        using ShapeRow0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
+        using ShapeRow0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Row, 0>::type;
+        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<2>>, "Layout->Shape->Row->ZeroDim must be Int<2>!");
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<1>>, "Layout->Shape->Column->ZeroDim must be Int<1>!");
 
-        using StrideRow0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        using StrideColumn1 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 1>::type;
+        using StrideRow0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Row, 0>::type;
+        using StrideColumn0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 0>::type;
+        using StrideColumn1 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 1>::type;
         static_assert(Std::is_same_v<StrideRow0, Std::Int<1>>, "Layout->Stride->Row->ZeroDim must be Int<1>!");
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<0>>, "Layout->Stride->Column-ZeroDim must be Int<0>!");
         static_assert(Std::is_same_v<StrideColumn1, Std::Int<2>>, "Layout->Stride->Column-OneDim must be Int<2>!");
@@ -213,14 +213,14 @@ struct CheckScaleBNDLayoutPattern {
 struct CheckScaleBDNLayoutPattern {
     template <typename T, typename TraitType>
     __aicore__ inline static constexpr void Check() {
-        using ShapeRow0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
+        using ShapeRow0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Row, 0>::type;
+        using ShapeColumn0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<1>>, "Layout->Shape->Row->ZeroDim must be Int<1>!");
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<1>>, "Layout->Shape->Column->ZeroDim must be Int<1>!");
 
-        using StrideRow0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideRow1 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 1>::type;
-        using StrideColumn0 = typename GetNDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
+        using StrideRow0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Row, 0>::type;
+        using StrideRow1 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Row, 1>::type;
+        using StrideColumn0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<StrideRow0, Std::Int<0>>, "Layout->Stride->Row->ZeroDim must be Int<0>!");
         static_assert(Std::is_same_v<StrideRow1, Std::Int<1>>, "Layout->Stride->Row->OneDim must be Int<1>!");
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<0>>, "Layout->Stride->Column-OneDim must be Int<0>!");

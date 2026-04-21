@@ -86,13 +86,13 @@ private:
 
         uint32_t nSize = Std::min(GetTotalColumnShape(srcLayout), GetTotalColumnShape(dstLayout));
         uint32_t mSize = Std::min(GetTotalRowShape(srcLayout), GetTotalRowShape(dstLayout));
-        uint32_t srcStride = GetElement<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / FRACTAL_FIXED;
+        uint32_t srcStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(srcLayout) / FRACTAL_FIXED;
         uint32_t dstStride = 0;
 
         if constexpr (IsNDExtLayout<T>()) {
-            dstStride = GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
+            dstStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(dstLayout);
         } else {
-            dstStride = GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout);
+            dstStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(dstLayout);
         }
 
         bool reluEn = trait.enableRelu;
@@ -144,12 +144,12 @@ private:
         }
 
         const uint32_t mSize = GetTotalRowShape(srcLayout);
-        const uint32_t srcStride = GetElement<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / FRACTAL_FIXED;
+        const uint32_t srcStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(srcLayout) / FRACTAL_FIXED;
         uint32_t dstStride = 0;
         if constexpr (IsNDExtLayout<T>()) {
-            dstStride = GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
+            dstStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(dstLayout);
         } else {
-            dstStride = GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout);
+            dstStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(dstLayout);
         }
 
         const bool reluEn = trait.enableRelu;

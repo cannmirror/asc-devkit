@@ -53,7 +53,7 @@ __aicore__ inline decltype(auto) MakeCoordLayout(const Coord& coord, const Layou
     using ShapeType = Std::remove_cvref_t<decltype(layout.Shape())>;
     using CoordType = Std::remove_cvref_t<Coord>;
     static_assert(IsLayoutV<LayoutType> && Std::is_tuple_v<CoordType>, "LayoutType must be Layout");
-    static_assert(nesting_depth_v<ShapeType> == nesting_depth_v<CoordType> && 
+    static_assert(NestingDepthV<ShapeType> == NestingDepthV<CoordType> && 
         Std::tuple_size_v<ShapeType> == Std::tuple_size_v<CoordType>, 
         "Shape and coord must have same tuple structure");
     auto coordShape = TransformTupleApply(layout.Shape(), coord, DiffOp{});
@@ -67,9 +67,9 @@ __aicore__ inline decltype(auto) MakeSliceLayout(const Coord& coord, const Layou
 {
     static_assert(IsLayoutV<LayoutType>, "LayoutType must be Layout");
     static_assert(Std::is_tuple_v<SliceShape>,"SliceShape must be a tuple");
-    static_assert(nesting_depth_v<SliceShape> == TWO_DIM_DATA, "Only Support Two Dim SliceShape");
+    static_assert(NestingDepthV<SliceShape> == TWO_DIM_DATA, "Only Support Two Dim SliceShape");
     using OriginShape = Std::remove_cvref_t<decltype(layout.Shape())>;
-    if constexpr (nesting_depth_v<SliceShape> == nesting_depth_v<OriginShape>	 
+    if constexpr (NestingDepthV<SliceShape> == NestingDepthV<OriginShape>	 
         && Std::tuple_size_v<SliceShape> == Std::tuple_size_v<OriginShape>) {
         auto srcRow = Std::get<0>(layout.Shape()) - Std::get<0>(coord);
         auto srcCol = Std::get<1>(layout.Shape()) - Std::get<1>(coord);
@@ -79,7 +79,7 @@ __aicore__ inline decltype(auto) MakeSliceLayout(const Coord& coord, const Layou
         using PatternType = GetLayoutPattern<LayoutType>;
         return MakePatternLayout<PatternType, TraitType>(MakeShape(realRow, realCol), layout.Stride());	 
     } else {
-        static_assert(nesting_depth_v<OriginShape> == FOUR_DIM_DATA, "Only Support Four Dim Layout");
+        static_assert(NestingDepthV<OriginShape> == FOUR_DIM_DATA, "Only Support Four Dim Layout");
         auto innerRow = Std::get<0>(GetShape<0>(layout));
         auto innerCol = Std::get<0>(GetShape<1>(layout));
 
