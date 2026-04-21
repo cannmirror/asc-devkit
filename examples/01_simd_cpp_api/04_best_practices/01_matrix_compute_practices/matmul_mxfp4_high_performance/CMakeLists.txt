@@ -11,30 +11,32 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-set(CMAKE_ASC_RUN_MODE "npu" CACHE STRING "Run mode: npu, cpu, sim")
-set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "NPU architecture: dav-2201, dav-3510")
+set(CMAKE_ASC_RUN_MODE "npu" CACHE STRING "Run mode: npu, sim")
+set(CMAKE_ASC_ARCHITECTURES "dav-3510" CACHE STRING "NPU architecture: dav-3510")
 
-find_package(ASC REQUIRED HINTS $ENV{ASCEND_INSTALL_PATH}/compiler/tikcpp/ascendc_kernel_cmake)
+if(NOT CMAKE_ASC_ARCHITECTURES STREQUAL "dav-3510")
+    message(FATAL_ERROR "matmul_mxfp4_high_performance only supports CMAKE_ASC_ARCHITECTURES=dav-3510")
+endif()
+
+find_package(ASC REQUIRED)
 
 project(kernel_samples LANGUAGES ASC CXX)
 
-set(SCENARIO 0 CACHE STRING "Case type to compile (0-6)")
+set(SCENARIO_NUM 2 CACHE STRING "Scenario number to compile (1-2)")
 
 add_executable(demo
-    add.asc
+    matmul_mx.asc
 )
 
-if(CMAKE_ASC_ARCHITECTURES STREQUAL "dav-2201")
-    set(NPU_ARCH_ID 2201)
-elseif(CMAKE_ASC_ARCHITECTURES STREQUAL "dav-3510")
-    set(NPU_ARCH_ID 3510)
-else()
-    message(FATAL_ERROR "Unsupported CMAKE_ASC_ARCHITECTURES=${CMAKE_ASC_ARCHITECTURES}, only dav-2201 and dav-3510 are supported")
-endif()
-
 target_compile_definitions(demo PRIVATE
-    SCENARIO=${SCENARIO}
-    NPU_ARCH=${NPU_ARCH_ID}
+    SCENARIO_NUM=${SCENARIO_NUM}
+    NPU_ARCH_DAV_3510
+)
+
+target_link_libraries(demo PRIVATE
+    tiling_api
+    register
+    platform
 )
 
 target_compile_options(demo PRIVATE
