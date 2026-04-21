@@ -246,6 +246,7 @@ data_type_map = {
     'DT_COMPLEX32': 4,
     'DT_FLOAT8_E5M2': 1,
     'DT_FLOAT8_E4M3FN': 1,
+    "DT_FLOAT8_E8M0": 1,
     'DT_FLOAT4_E2M1': (2 << 16) + 1,
     'DT_FLOAT4_E1M2': (2 << 16) + 1
 }
