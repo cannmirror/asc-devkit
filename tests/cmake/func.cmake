@@ -16,6 +16,12 @@ function(run_llt_test)
         return()
     endif()
 
+    if(LLT_ENV_FILE)
+        set(ENV_PREFIX . ${LLT_ENV_FILE} && )
+    else()
+        set(ENV_PREFIX "")
+    endif()
+
     if (ENABLE_ASAN)
         execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_MAJOR)
         string(REGEX MATCHALL "[0-9]+" GCC_MAJOR ${GCC_MAJOR})
@@ -28,13 +34,13 @@ function(run_llt_test)
         set(ASAN_OPTIONS_ "ASAN_OPTIONS=detect_leaks=0:halt_on_error=0")
         add_custom_command(
             TARGET ${LLT_TARGET} POST_BUILD
-            COMMAND export LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH} && ${LD_PRELOAD_} && ulimit -s 32768 && ${ASAN_OPTIONS_} $<TARGET_FILE:${LLT_TARGET}>
+            COMMAND ${ENV_PREFIX} export LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH} && ${LD_PRELOAD_} && ulimit -s 32768 && ${ASAN_OPTIONS_} $<TARGET_FILE:${LLT_TARGET}>
             COMMENT "Run ${LLT_TARGET} with asan"
         )
     else()
         add_custom_command(
             TARGET ${LLT_TARGET} POST_BUILD
-            COMMAND export LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH} && $<TARGET_FILE:${LLT_TARGET}>
+            COMMAND ${ENV_PREFIX} export LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH} && $<TARGET_FILE:${LLT_TARGET}>
             COMMENT "Run ${LLT_TARGET}"
         )
     endif()

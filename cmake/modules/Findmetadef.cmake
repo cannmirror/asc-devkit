@@ -62,6 +62,15 @@ find_library(OPP_REGISTRY_LIB_DIR
 )
 
 if(OPP_REGISTRY_LIB_DIR)
+  message(STATUS "=======> ${OPP_REGISTRY_LIB_DIR}..............")
+  if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
+      set(ASCEND_CANN_PACKAGE_LINUX_PATH $ENV{ASCEND_HOME_PATH}/x86_64-linux)
+  elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|arm")
+      set(ASCEND_CANN_PACKAGE_LINUX_PATH $ENV{ASCEND_HOME_PATH}/aarch64-linux)
+  else ()
+      message(FATAL_ERROR "Unknown architecture: ${CMAKE_SYSTEM_PROCESSOR}")
+  endif()
+  set(OPP_REGISTRY_LIB_DIR ${ASCEND_CANN_PACKAGE_LINUX_PATH}/lib64/libopp_registry.so)
   get_filename_component(OPP_REGISTRY_LIB_DIR ${OPP_REGISTRY_LIB_DIR} REALPATH)
   add_library(opp_registry SHARED IMPORTED)
   set_target_properties(opp_registry PROPERTIES

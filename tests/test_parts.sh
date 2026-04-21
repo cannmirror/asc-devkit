@@ -72,6 +72,7 @@ basic_test_two_targets=(
 basic_test_three_targets=(
     ascendc_ut_aclrtc
     ascendc_ut_asc_compile_base
+    ascendc_ut_asc_tikcpp_utest_opbuild
     ascendc_ut_asc_runtime
     ascendc_ut_elf_tool
     ascendc_ut_pack_kernel

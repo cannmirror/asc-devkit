@@ -196,3 +196,89 @@ run_llt_test(
     TARGET ascendc_ut_asc_compile_base
     TASK_NUM 1
 )
+
+
+# ###################################opbuild ut#################################
+add_library(ops_utest SHARED ${ASCENDC_DIR}/tests/tools/utils/opbuild/test_ops.cpp)
+
+target_include_directories(ops_utest PRIVATE
+    ${ASCEND_CANN_PACKAGE_PATH}/include
+    ${ASCENDC_TEST_HEADER_FILES}
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base/
+    ${ASCEND_CANN_PACKAGE_PATH}/include/base/
+    ${ASCENDC_DIR}/tools/build/opbuild/common/
+    ${ASCEND_CANN_PACKAGE_PATH}/tools/msopgen/template/custom_operator_sample/DSL/Onnx/metadef/inc
+    mmpa_headers
+    slog_headers
+)
+
+target_link_directories(ops_utest PRIVATE
+    ${ASCEND_DEP_LIB_DIR}
+)
+
+target_link_libraries(ops_utest PRIVATE
+    -Wl,--no-as-needed
+    c_sec graph graph_base register
+    -Wl,--as-needed
+)
+
+add_custom_target(utest_env
+    COMMAND echo "export OPS_DSO_FILE_PATH=$<TARGET_FILE:ops_utest>" > ${ASCENDC_DIR}/build/tests/tools/utils/opbuild_env.sh
+    COMMAND echo "export OPS_SRC_FILE_PATH=${ASCENDC_DIR}/tests/tools/utils/opbuild" >> ${ASCENDC_DIR}/build/tests/tools/utils/opbuild_env.sh
+)
+
+add_executable(ascendc_ut_asc_tikcpp_utest_opbuild
+    ${ASCENDC_DIR}/tests/main.cpp
+    ${ASCENDC_DIR}/tests/tools/utils/opbuild/test_opbuild.cpp
+    ${ASCENDC_DIR}/tools/build/opbuild/op_build.cpp
+    ${ASCENDC_DIR}/tools/build/opbuild/op_build_params.cpp
+    ${ASCENDC_DIR}/tools/build/opbuild/op_generator.cpp
+    ${ASCENDC_DIR}/tools/build/opbuild/op_generator_factory.cpp
+    ${ASCENDC_DIR}/tools/build/opbuild/op_cfg_generator.cpp
+    ${ASCENDC_DIR}/tools/build/opbuild/op_cpu_cfg_generator.cpp
+    ${ASCENDC_DIR}/tools/build/opbuild/op_proto_generator.cpp
+    ${ASCENDC_DIR}/tools/build/opbuild/op_aclnn_generator.cpp
+    ${ASCENDC_DIR}/tools/build/opbuild/op_custom_registry_generator.cpp
+    ${ASCENDC_DIR}/tools/build/opbuild/op_aclnn_fallback_generator.cpp
+)
+
+add_dependencies(ascendc_ut_asc_tikcpp_utest_opbuild ops_utest utest_env)
+
+target_compile_definitions(ascendc_ut_asc_tikcpp_utest_opbuild PRIVATE
+    UT_TEST
+)
+
+target_compile_options(ascendc_ut_asc_tikcpp_utest_opbuild PRIVATE
+    -g
+    -Werror
+    -Wno-unused-function
+)
+
+target_include_directories(ascendc_ut_asc_tikcpp_utest_opbuild PRIVATE
+    ${ASCENDC_DIR}/tools/build/opbuild
+    ${ASCENDC_DIR}/tools/build/opbuild/common/
+    ${ASCENDC_TEST_HEADER_FILES}
+    ${ASCEND_CANN_PACKAGE_PATH}/include/base/
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base/
+    ${ASCEND_CANN_PACKAGE_PATH}/include
+    mmpa_headers
+    slog_headers
+    ${ASCEND_CANN_PACKAGE_PATH}/tools/msopgen/template/custom_operator_sample/DSL/Onnx/metadef/inc
+)
+
+target_link_directories(ascendc_ut_asc_tikcpp_utest_opbuild PRIVATE
+    ${ASCEND_DEP_LIB_DIR}
+)
+
+target_link_libraries(ascendc_ut_asc_tikcpp_utest_opbuild PRIVATE
+    $<BUILD_INTERFACE:intf_llt_pub_basic>
+    -Wl,--no-as-needed
+    c_sec graph graph_base register dl
+    -Wl,--as-needed
+)
+
+run_llt_test(
+    TARGET ascendc_ut_asc_tikcpp_utest_opbuild
+    ENV_FILE ${ASCENDC_DIR}/build/tests/tools/utils/opbuild_env.sh
+    TASK_NUM 1
+)

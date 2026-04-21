@@ -89,6 +89,9 @@ do_remove_stub_softlink() {
     if [ -z "$(ls -A "$install_path/$latest_dir/compiler")" ]; then
         rm -r "$install_path/$latest_dir/compiler/"
     fi
+    if [ -d "$install_path/$latest_dir/tools/opbuild" ]; then 
+        rm -f "$install_path/$latest_dir/tools/opbuild" 
+    fi
     
     if [ -d "$arch_linux_path/pkg_inc/asc/hccl" ]; then
         rm -rf "$arch_linux_path/pkg_inc/asc"
