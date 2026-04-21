@@ -22,7 +22,7 @@
 | [load_data_with_transpose_b16](./load_data_with_transpose_b16)                             | 本样例介绍基础API LoadDataWithTranspose b16数据类型下的使用 |
 | [load_data_with_transpose_b32](./load_data_with_transpose_b32)                             | 本样例介绍基础API LoadDataWithTranspose b32数据类型下的使用 |
 | [batch_mmad](./batch_mmad)                                                                 | 本样例介绍在输入为float数据类型并且左、右矩阵均不转置的场景下，带batch的矩阵乘法，其中从GM-->L1、L0C-->GM、L0C-->L1这三条通路分别采用了DataCopy ND2NZ和Fixpipe批量搬运数据，从L1-->L0A/L0B以及Mmad执行矩阵乘这两个步骤则是循环batch次，每次循环内只处理一对左、右矩阵 |
-| [mmad](./mmad)                                                                             | 本样例介绍基于基础API Mmad实现矩阵乘 |
+| [mmad](./mmad)                                                                             | 本样例介绍了输入为ND格式，B4 / B8 / B16 / B32输入数据类型（具体以int4_t / int8_t / half / float为例），四种输入数据类型下的矩阵乘法，说明如何通过Mmad指令实现矩阵乘法计算（C = A x B + Bias） |
 | [mmad_load3dv2](./mmad_load3dv2)                                                           | 本样例介绍LoadData3DV2指令将A、B矩阵从L1搬运到L0A/L0B的过程，其中 A 和 B 分别表示矩阵乘法的左右输入矩阵。LoadData3DV2指令参数配置及执行指令前后各个矩阵数据排布变化，均配合示意图进行了说明 |
 | [mmad_s8_f16_f32_with_A_B_transpose_option](./mmad_s8_f16_f32_with_A_B_transpose_option)                                                           | 本样例介绍了在 int8_t / half / float 三种数据类型下，以及左、右矩阵均不转置 / 左矩阵不转置、右矩阵转置 / 左矩阵转置、右矩阵不转置 / 左、右矩阵均转置 共 12 种矩阵乘法场景中，相关指令的使用方法，其中 A 和 B 分别表示矩阵乘法的左右输入矩阵。|
 | [mmad_unitflag](./mmad_unitflag)                                                                             | 本样例介绍是否使能unitFlag对于Mmad指令执行矩阵乘法性能的影响。 |

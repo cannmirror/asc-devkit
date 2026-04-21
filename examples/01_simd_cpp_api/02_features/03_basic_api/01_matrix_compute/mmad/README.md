@@ -1,6 +1,6 @@
 # Mmad样例
 ## 概述
-本样例介绍基于基础API实现矩阵乘Mmad样例。
+本样例介绍了输入为ND格式，B4 / B8 / B16 / B32输入数据类型（具体以int4_t / int8_t / half / float为例），四种输入数据类型下的矩阵乘法，说明如何通过Mmad指令实现矩阵乘法计算（C = A x B + Bias）。
 
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT
@@ -10,6 +10,7 @@
 ## 目录结构介绍
 ```
 ├── mmad
+│   ├── img                         // 本文中的插图文件
 │   ├── scripts
 │   │   ├── gen_data.py             // 输入数据和真值数据生成脚本
 │   │   └── verify_result.py        // 验证输出数据和真值数据是否一致的验证脚本
@@ -18,35 +19,174 @@
 │   └── mmad.asc                    // Ascend C算子实现 & 调用样例
 ```
 
-## 算子描述
-- 算子功能：  
-  本样例中实现的是[m, n, k]固定为[32, 32, 32]的Matmul算子，并使用Ascend C基础Api实现。对应的数学表达式为：
-  ```
-  C = A * B
-  ```
-- 算子规格：
-  <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">Add</td></tr>
-  </tr>
-  <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">x</td><td align="center">32 * 32</td><td align="center">half</td><td align="center">ND</td></tr>
-  <tr><td align="center">y</td><td align="center">32 * 32</td><td align="center">half</td><td align="center">ND</td></tr>
-  </tr>
-  </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">32 * 32</td><td align="center">float</td><td align="center">ND</td></tr>
-  </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">mmad_custom</td></tr>
-  </table>
-- 算子实现：  
-  Mmad算子的数学表达式为：
-  ```
-  C = A * B
-  ```
-  计算逻辑是：Ascend C提供的矩阵乘计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储并进行分形转换，然后使用计算接口完成两个输入参数矩阵乘运算，得到最终结果，再搬出到外部存储上。  
+## 样例描述
+一次完整的矩阵乘法涉及的数据搬运过程包括：GM-->L1、L1-->L0A/L0B、L1-->BT（BiasTable Buffer）、L0C-->GM，其中不同存储单元的数据排布格式，如下表1所示：  
 
-  Mmad算子的实现流程分为基本任务：CopyIn，SplitA，SplitB，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入inputGM搬运到Local Memory A1/B1中，搬运过程中进行ND至NZ分形转换。SplitA/SplitB分别将数据进一步搬运至接口所要求Local Memory A2/B2，Compute任务负责对数据进行矩阵乘运算，计算结果存储在Local Memory CO1中。CopyOut任务负责将输出数据从CO1搬运至Global Memory上的输出outputGm中，同时完成NZ到ND的分形转换。
-  - 调用实现  
-    使用内核调用符<<<>>>调用核函数。
+<table border="2" align="center">
+<caption>表1：不同存储单元的数据排布格式</caption>
+  <tr>
+    <td >存储单元</td>
+    <td>数据排布格式</td>
+  </tr>
+  <tr>
+    <td>GM</td>
+    <td>输入A、B矩阵和输出C矩阵为ND排列。</td>
+  </tr>
+  <tr>
+    <td>L1</td>
+    <td>A、B矩阵为Nz排列。</td>
+  </tr>
+  <tr>
+    <td>L0A</td>
+    <td>Ascend 950PR/Ascend 950DT产品，A矩阵为Nz排列；<br>Atlas A3 训练系列产品/Atlas A3 推理系列产品和Atlas A2 训练系列产品/Atlas A2 推理系列产品，A矩阵为Zz排列。</td>
+  </tr>
+  <tr>
+    <td>L0B</td>
+    <td>B矩阵为Zn排列。</td>
+  </tr>
+  <tr>
+    <td>BT（BiasTable Buffer）</td>
+    <td>Bias是shape为[N]的一维Tensor。</td>
+  </tr>
+  <tr>
+    <td>L0C</td>
+    <td>C矩阵为Nz排列。</td>
+  </tr>
+</table>
+
+通常的矩阵乘法计算公式：C = A × B + Bias，其中A、B、Bias、C矩阵的需要满足的shape分别为[M,K]、[K,N]、[N]和[M,N]。Bias的数据类型与C矩阵数据类型的对应关系，如表2所示：
+<table border="2" align="center">
+<caption>表 2：L0C 与输入 Bias 的数据类型对应关系</caption>
+  <tr>
+    <td>Bias在GM/L1上的数据类型</td>
+    <td>Bias在BT（BiasTable Buffer）上的数据类型</td>
+    <td>矩阵计算输出到L0C上的数据类型</td>
+  </tr>
+  <tr>
+    <td>int32_t</td>
+    <td>int32_t</td>
+    <td>int32_t</td>
+  </tr>
+  <tr>
+    <td>bfloat16</td>
+    <td rowspan="3">float</td>
+    <td rowspan="3">float</td>
+  </tr>
+  <tr>
+    <td>half</td>
+  </tr>
+    <tr>
+    <td>float</td>
+  </tr>
+</table>
+
+程序中scenarioNum参数不同取值对应的场景，如下表3所示：
+
+<table border="2" align="center">
+<caption>表3：scenarioNum不同取值的含义</caption>
+  <tr>
+    <td >scenarioNum</td>
+    <td>输入数据类型</td>
+    <td>输出数据类型</td>
+    <td>A矩阵</td>
+    <td>B矩阵</td>
+    <td>Bias</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>int4b_t</td>
+    <td>int32_t</td>
+    <td>不转置</td>
+    <td>转置</td>
+    <td>不启用Bias，C矩阵的初始值为0</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>int8_t</td>
+    <td>int32_t</td>
+    <td>不转置</td>
+    <td>不转置</td>
+    <td>带Bias且不传入biasTensor，C矩阵的初始值来源于C2</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td>bfloat16</td>
+    <td>bfloat16</td>
+    <td>不转置</td>
+    <td>转置</td>
+    <td>不带Bias，C矩阵累加来源于CO1初始值</td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td>float</td>
+    <td>float</td>
+    <td>转置</td>
+    <td>转置</td>
+    <td>带Bias且传入biasTensor的场景。</td>
+  </tr>
+</table>
+
+### 场景详细说明
+  本样例通过编译参数 `SCENARIO_NUM` 选择不同的输出场景，所有场景基于相同的矩阵乘规格：[M, N, K] = [30, 40, 70]，核函数名为 `mmad_custom`。
+
+**场景1 int4b_t输入，int32_t输出，C矩阵初始值为0**
+
+- 输入：A不转置 [30, 70] int4b_t类型，ND格式；B转置 [40, 70] int4b_t类型，ND格式；不带Bias
+- 输出：C [30, 40] int32_t类型，ND格式
+- 实现：使用`Mmad`实现矩阵乘法运算，通过参数：`mmadParams.cmatrixInitVal = true`，设置C矩阵初始值为0
+- 说明：该场景仅支持Atlas A3 训练系列产品/Atlas A3 推理系列产品/Atlas A2 训练系列产品/Atlas A2 推理系列产品，且不支持使用传入biasTensor的方式加Bias（场景4）。
+
+**场景2 int8_t输入，int32_t输出，C矩阵初始值来源于C2**
+- 输入：A不转置 [30, 70] int8_t类型，ND格式；B不转置 [70, 40] int8_t类型，ND格式；Bias [40] int32_t类型
+- 输出：C [30, 40] int32_t类型，ND格式
+- 实现：使用`Mmad`实现矩阵乘法运算，不传入biasTensor通过参数：`mmadParams.cmatrixInitVal = false、mmadParams.cmatrixSource = true`，设置C矩阵初始值来源于C2
+- 说明：int8_t类型输入，B矩阵不转置场景下，N轴向2 * 16对齐，填充了全部是无效数据的32 * 16的分形。如下图1所示，如果设置`mmadParams.n = N`，就会导致读入编号为3、7的分形，同时又没能将包含有效数据的编号为9、10的分形读入。因此需要设置：`mmadParams.n = CeilAlign(N, BLOCK_CUBE * fractalNum)`，此时会读入全部分型，虽然矩阵计算结果中包含了无效数据参与计算的结果，但是在Fixpipe指令搬出数据时通过设置`fixpipeParams.nSize = N`来保证无效数据参与计算的结果不会被搬出。
+<p align="center">
+  <img src="img/mmad_s8_L0B_转置.png" width="700">
+</p>
+<p align="center">
+图1：int8_t类型，B不转置，N轴实际对齐要求与Mmad指令默认不一致
+</p>
+
+**场景3 bfloat16输入，float输出，A不转置，B转置，C矩阵初始值来源于CO1**
+- 输入：A不转置 [30, 70] bfloat16类型，ND格式；B转置 [40, 70] bfloat16类型，ND格式；不带Bias，C矩阵初始值来源于CO1
+- 输出：C [30, 40] float类型，ND格式
+- 实现：使用`Mmad`实现矩阵乘法运算，通过参数：`mmadParams.cmatrixInitVal = false、mmadParams.cmatrixSource = false`，设置C矩阵初始值来源于CO1
+- 说明：该场景进行两次Mmad计算，第一次计算结果存储在CO1，作为下一次计算的C矩阵初始值，最终累加两次Mmad计算结果。
+
+**场景4 float输入，float输出，A转置，B转置，传入biasTensor，kDirectionAlign值设为true**
+- 输入：A转置 [70, 30] float类型，ND格式；B转置 [40, 70] float类型，ND格式；Bias [40] float类型
+- 输出：C [30, 40] float类型，ND格式
+- 实现：使用`Mmad`实现矩阵乘法运算，传入biasTensor，该场景下`mmadParams.cmatrixSource`参数无效
+- 说明：float类型输入，A矩阵转置场景下，需要使用`mmadParams.kDirectionAlign`来解决K轴实际向`CeilAlign(K, 8*2)`对齐，与Mmad指令默认要求对齐到`CeilAlign(K, 8)`不一的问题。该场景下该参数设置为真，K轴对齐到`CeilAlign(K, 16)`，矩阵计算单元从L0A读取数据会跳过填充的无效数据，其余场景下该参数默认为flase，K轴仍向`CeilAlign(K, 8)`对齐，如下图2所示：
+<p align="center">
+  <img src="img/mmad_f32_L0A_转置.png" width="1100">
+</p>
+<p align="center">
+图2：float类型，A转置，K轴实际对齐与Mmad指令默认要求不一致
+</p>
+
+### 矩阵乘法（Mmad）
+
+下面将介绍如何配置
+[Mmad](https://www.hiascend.com/document/detail/zh/canncommercial/850/API/ascendcopapi/atlasascendc_api_07_0249.html)指令的MmadParams结构体的成员，各个成员变量的具体含义这里不再赘述。
+
+需要注意的是当Mmad指令执行时，矩阵计算单元会从L0A/L0B连续读入多个分形参与矩阵乘计算，读入分形的数量根据MmadParams结构体的成员变量m、n、k的取值以及Mmad指令对L0A/L0B上A矩阵和B矩阵各个轴的对齐要求来计算的。以输入为b16类型为例：Mmad指令是按照A矩阵分形为[16,16]、B矩阵分形为[16,16]来连续读入分形的，也就是说矩阵计算单元从L0A/L0B连续读入的分形总数目分别为：2x5=10、5x3=15，写入到L0C的分形总数为2x3=6。如下图所示，图3表示Atlas A3 训练系列产品/Atlas A3 推理系列产品和Atlas A2 训练系列产品/Atlas A2 推理系列产品，图4表示Ascend 950PR/Ascend 950DT，两者在L0A上的数据排布不一致，前者为Zz，后者则是Nz。
+<p align="center">
+  <img src="img/mmad_f16_A3.png" width="900">
+</p>
+<p align="center">
+图3：bfloat16类型，L0A上Zz排布，Mmad数据排布示意图
+</p>
+<p align="center">
+  <img src="img/mmad_f16_A5.png" width="900">
+</p>
+<p align="center">
+图4：bfloat16类型，L0A上Nz排布，Mmad数据排布示意图
+</p>
+
+Mmad计算中包含了补齐的无效数据，需要配合Fixpipe指令在L0C搬出到GM过程中，排除参数Mmad计算过程中填充的无效数据。
+
 
 ## 编译运行
 在本样例根目录下执行如下步骤，编译并执行算子。
@@ -69,12 +209,33 @@
   
 - 样例执行
   ```bash
+  SCENARIO=1
   mkdir -p build && cd build;      # 创建并进入build目录
-  cmake ..;make -j;                # 编译工程
-  python3 ../scripts/gen_data.py   # 生成测试输入数据
+  cmake .. -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=$SCENARIO;make -j;    # 编译工程，默认npu模式
+  python3 ../scripts/gen_data.py -scenarioNum=$SCENARIO   # 生成测试输入数据
   ./demo                           # 执行编译生成的可执行程序，执行样例
-  python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
+  python3 ../scripts/verify_result.py -scenarioNum=$SCENARIO output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
   ```
+
+  使用NPU仿真 模式时，添加`-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
+  
+  示例如：
+  ```bash
+  cmake .. -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=$SCENARIO;make -j; # NPU仿真模式
+  ```
+
+  > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
+
+- 编译选项说明
+
+  | 参数 | 说明 | 可选值 | 默认值 |
+  |------|------|--------|--------|
+  | CMAKE_ASC_RUN_MODE | 运行模式 | npu、sim | npu |
+  | CMAKE_ASC_ARCHITECTURES | NPU硬件架构 | dav-2201、dav-3510 | dav-2201 |
+  | SCENARIO_NUM | 场景编号 | 1-4 | 1 |
+
+- 执行结果
+
   执行结果如下，说明精度对比成功。
   ```bash
   test pass!
