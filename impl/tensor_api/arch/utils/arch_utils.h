@@ -85,7 +85,7 @@ __aicore__ inline constexpr decltype(auto) GetElement(const T& layout) {
 template <typename LayoutType>
 __aicore__ inline static constexpr uint32_t GetTotalColumnShape(const LayoutType& layout)
 {
-    if constexpr (IsNDLayout<LayoutType>() || IsDNLayout<LayoutType>()) {
+    if constexpr (LayoutType::depth == 2) {
         return Get<1>(layout.Shape());
     } else {
         return Get<1, 0>(layout.Shape()) * Get<1, 1>(layout.Shape());
@@ -95,7 +95,7 @@ __aicore__ inline static constexpr uint32_t GetTotalColumnShape(const LayoutType
 template <typename LayoutType>
 __aicore__ inline static constexpr uint32_t GetTotalRowShape(const LayoutType& layout)
 {
-    if constexpr (IsNDLayout<LayoutType>() || IsDNLayout<LayoutType>()) {
+    if constexpr (LayoutType::depth == 2) {
         return Get<0>(layout.Shape());
     } else {
         return Get<0, 0>(layout.Shape()) * Get<0, 1>(layout.Shape());

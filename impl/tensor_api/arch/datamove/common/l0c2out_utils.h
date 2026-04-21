@@ -125,12 +125,12 @@ __aicore__ inline constexpr QuantMode_t GetQuantMode()
 template <typename T, typename U>
 __aicore__ inline static void SetRegisterImpl(const T& /*dst*/, const U& /*src*/)
 {
-    if constexpr (IsNDExtLayout<T>()) {
+    if constexpr (IsSatisfiedPtnFormatV<T, NDExtLayoutPtn>) {
         constexpr uint32_t ndNum = 1;
         constexpr uint32_t srcNdStride = 0;
         constexpr uint32_t dstNdStride = 0;
         SetRegisterInstr::SetRegister(ndNum, dstNdStride, srcNdStride);
-    } else if constexpr (IsDNExtLayout<T>()) {
+    } else if constexpr (IsSatisfiedPtnFormatV<T, DNExtLayoutPtn>) {
         constexpr uint32_t dnNum = 1;
         constexpr uint32_t dstDnMatrixStride = 0;
         constexpr uint32_t srcNzMatrixStride = 0;
@@ -142,12 +142,12 @@ __aicore__ inline static void SetRegisterImpl(const T& /*dst*/, const U& /*src*/
 template <typename T, typename U>
 __aicore__ inline static void SetRegisterImpl(const T& /*dst*/, const U& /*src*/, uint64_t quant)
 {
-    if constexpr (IsNDExtLayout<T>()) {
+    if constexpr (IsSatisfiedPtnFormatV<T, NDExtLayoutPtn>) {
         constexpr uint32_t ndNum = 1;
         constexpr uint32_t srcNdStride = 0;
         constexpr uint32_t dstNdStride = 0;
         SetRegisterInstr::SetRegister(quant, ndNum, dstNdStride, srcNdStride);
-    } else if constexpr (IsDNExtLayout<T>()) {
+    } else if constexpr (IsSatisfiedPtnFormatV<T, DNExtLayoutPtn>) {
         constexpr uint32_t dnNum = 1;
         constexpr uint32_t dstDnMatrixStride = 0;
         constexpr uint32_t srcNzMatrixStride = 0;

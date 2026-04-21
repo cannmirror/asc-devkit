@@ -55,29 +55,30 @@ private:
         int64_t srcStride = 0;
         int64_t dstStride = 0;
 
-        if constexpr (IsNDExtLayout<U>() && IsNDExtLayout<T>()) {
+        if constexpr (IsSatisfiedPtnFormatV<U, NDExtLayoutPtn> && IsSatisfiedPtnFormatV<T, NDExtLayoutPtn>) {
             blockCount = GetTotalRowShape(srcLayout);
             blockLen = GetTotalColumnShape(srcLayout) * sizeof(SRC_TYPE);
 
             srcStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(srcLayout) * sizeof(SRC_TYPE);
             dstStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(dstLayout) * sizeof(DST_TYPE);
 
-        } else if constexpr (IsDNExtLayout<U>() && IsDNExtLayout<T>()) {
+        } else if constexpr (IsSatisfiedPtnFormatV<U, DNExtLayoutPtn> && IsSatisfiedPtnFormatV<T, DNExtLayoutPtn>) {
             blockCount = GetTotalColumnShape(srcLayout);
             blockLen = GetTotalRowShape(srcLayout) * sizeof(SRC_TYPE);
 
             srcStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(srcLayout) * sizeof(SRC_TYPE);
             dstStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(dstLayout) * sizeof(DST_TYPE);
 
-        } else if constexpr (IsNZLayout<U>() && IsNZLayout<T>()) { // NZ format
+        } else if constexpr (IsSatisfiedPtnFormatV<U, NZLayoutPtn> && IsSatisfiedPtnFormatV<T, NZLayoutPtn>) { // NZ format
             blockCount = GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(srcLayout);
             blockLen = GetTotalRowShape(srcLayout) * GetElement<AttrInfo::Shape, AttrInfo::Column, 0>(srcLayout) * sizeof(SRC_TYPE);
 
             srcStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(srcLayout) * sizeof(SRC_TYPE);
             dstStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(dstLayout) * sizeof(DST_TYPE);
         } else {
-            static_assert((IsNDExtLayout<U>() && IsNDExtLayout<T>()) || (IsDNExtLayout<U>() && IsDNExtLayout<T>())
-                              || (IsNZLayout<U>() && IsNZLayout<T>()),
+            static_assert((IsSatisfiedPtnFormatV<U, NDExtLayoutPtn> && IsSatisfiedPtnFormatV<T, NDExtLayoutPtn>) || 
+                          (IsSatisfiedPtnFormatV<U, DNExtLayoutPtn> && IsSatisfiedPtnFormatV<T, DNExtLayoutPtn>) || 
+                          (IsSatisfiedPtnFormatV<U, NZLayoutPtn> && IsSatisfiedPtnFormatV<T, NZLayoutPtn>),
                           "Unsupported layout type combination for DataCopyGM2UB3510");
         }
 

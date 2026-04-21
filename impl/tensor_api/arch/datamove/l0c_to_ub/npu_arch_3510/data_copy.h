@@ -89,7 +89,7 @@ private:
         uint32_t srcStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(srcLayout) / FRACTAL_FIXED;
         uint32_t dstStride = 0;
 
-        if constexpr (IsNDExtLayout<T>()) {
+        if constexpr (IsSatisfiedPtnFormatV<T, NDExtLayoutPtn>) {
             dstStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(dstLayout);
         } else {
             dstStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(dstLayout);
@@ -97,8 +97,8 @@ private:
 
         bool reluEn = trait.enableRelu;
         uint8_t unitFlag = params.unitFlag;
-        bool nz2ndEn = IsNDExtLayout<T>();
-        bool nz2dnEn = IsDNExtLayout<T>();
+        bool nz2ndEn = IsSatisfiedPtnFormatV<T, NDExtLayoutPtn>;
+        bool nz2dnEn = IsSatisfiedPtnFormatV<T, DNExtLayoutPtn>;
 
         uint8_t cacheMode = dst.Engine().GetCacheMode();
         bool isChannelSplit = trait.enableChannelSplit;
@@ -146,7 +146,7 @@ private:
         const uint32_t mSize = GetTotalRowShape(srcLayout);
         const uint32_t srcStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(srcLayout) / FRACTAL_FIXED;
         uint32_t dstStride = 0;
-        if constexpr (IsNDExtLayout<T>()) {
+        if constexpr (IsSatisfiedPtnFormatV<T, NDExtLayoutPtn>) {
             dstStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(dstLayout);
         } else {
             dstStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(dstLayout);
@@ -155,8 +155,8 @@ private:
         const bool reluEn = trait.enableRelu;
         const uint8_t unitFlag = params.unitFlag;
 
-        constexpr bool nz2ndEn = IsNDExtLayout<T>();
-        constexpr bool nz2dnEn = IsDNExtLayout<T>();
+        constexpr bool nz2ndEn = IsSatisfiedPtnFormatV<T, NDExtLayoutPtn>;
+        constexpr bool nz2dnEn = IsSatisfiedPtnFormatV<T, DNExtLayoutPtn>;
 
         const bool channelSplit = trait.enableChannelSplit;
         bool subBlockId = false;
