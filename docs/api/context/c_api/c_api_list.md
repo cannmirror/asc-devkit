@@ -208,7 +208,7 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 |   API名称   |   说明   |
 |----------|-----------|
 | <cann-filter npu_type = "950"> [asc_release_buf](sync/asc_release_buf.md)| 释放缓存。</cann-filter> |
-| <cann-filter npu_type = "950"> [asc_get_buf](sync/asc_get_buf.md)| AI Core内部异步流水线同步的指令。</cann-filter> |
+| <cann-filter npu_type = "950"> [asc_lock](sync/asc_lock.md)| 用于AI Core内部异步流水线同步的接口。</cann-filter> |
 | [asc_sync_notify](sync/asc_sync_notify.md)| 设置同步标志。 |
 | [asc_sync_wait](sync/asc_sync_wait.md)| 等待同步标志。 |
 | [asc_sync_pipe](sync/asc_sync_pipe.md)| 等待指定流水线操作完成。 |

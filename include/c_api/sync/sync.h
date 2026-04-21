@@ -63,7 +63,12 @@ __aicore__ inline void asc_sync();
 
 #define asc_release_buf(pipe, buf_id, mode) rls_buf((pipe), (buf_id), (mode))
 
-#define asc_get_buf(pipe, buf_id, mode) asc_get_buf_impl((pipe), (buf_id), (mode))
+enum ascMutexExecuteMode {
+    ASC_LOCK_BLOCK = 0,    // Block the execution of the pipeline indicated by pipe (Default).
+    ASC_LOCK_NON_BLOCK = 1 // Won't block execution of the pipeline.
+};
+
+#define asc_lock(pipe, mutex_id, ...) asc_lock_impl((pipe), (mutex_id), (ASC_LOCK_BLOCK, ##__VA_ARGS__))
 
 #endif
 
