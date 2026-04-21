@@ -22,7 +22,7 @@
 ## 样例描述
 
 - 样例功能：  
-  样例基于矩阵乘计算为背景，演示asc_dump系列接口（含asc_dump_gm、asc_dump_ubuf、asc_dump_cbuf和asc_dump_l1buf）在NPU侧样例核函数中的使用方法，通过调用上述接口实现不同物理位置上的张量数据可视化。
+  样例基于矩阵乘计算为背景，演示asc_dump系列接口（含asc_dump_gm、asc_dump_cbuf和asc_dump_l1buf等）在NPU侧样例核函数中的使用方法，通过调用上述接口实现不同物理位置上的张量数据可视化。
 
   此外，该系列接口兼容AscendC::DumpTensor接口。但后续开发中，建议优先使用asc_dump系列接口；若需Dump指定偏移位置的数据，由于asc_dump系列暂不支持该能力，可继续使用DumpAccChkPoint接口。
 
