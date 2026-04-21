@@ -39,8 +39,7 @@ private:
     template <const CopyGM2L1Trait& trait, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
-        CheckLayoutPattern<U>();
-        CheckLayoutPattern<T>();
+        CheckLayoutPattern<U, T>();
         CheckDataTypeFor3510::CheckGm2L1DataType<T, U>();
     }
 
@@ -53,11 +52,11 @@ private:
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
 
-        uint16_t srcRowShape = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
-        uint32_t srcColShape = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
-        auto srcColStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout);
+        uint16_t srcRowShape = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
+        uint32_t srcColShape = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
+        auto srcColStride = GetElement<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout);
         uint16_t dstBColStride =
-            GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout);
+            GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout);
 
         uint16_t dnNum = 1;
         uint16_t nValue = srcRowShape;

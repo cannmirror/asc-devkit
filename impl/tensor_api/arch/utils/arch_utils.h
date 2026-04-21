@@ -69,11 +69,11 @@ using IsVectorQuantMode = Std::is_one_of_value<QuantMode_t, quantPre, TILE_OP_IN
 template <QuantMode_t quantPre>
 using IsDirectQuantMode = Std::is_one_of_value<QuantMode_t, quantPre, TILE_OP_INTERNAL_DIRECT_QUANT_MODE>;
 
-template <typename T, AttrInfo info1, AttrInfo info2, size_t dim>
-__aicore__ inline constexpr decltype(auto) GetEleFromLayout(const T& layout) {
+template <typename T, typename info1, typename info2, size_t dim>
+__aicore__ inline constexpr decltype(auto) GetElement(const T& layout) {
     
-    constexpr size_t shapeOrStride = (info1 == AttrInfo::SHAPE ? 0 : 1);
-    constexpr size_t rowOrColumn = (info2 == AttrInfo::ROW ? 0 : 1);
+    constexpr size_t shapeOrStride = (Std::is_same_v<info1, AttrInfo::SHAPE> ? 0 : 1);
+    constexpr size_t rowOrColumn = (Std::is_same_v<info2, AttrInfo::ROW> ? 0 : 1);
 
     if constexpr (T::depth == 2) {
         return layout.template Get<shapeOrStride, rowOrColumn>();
@@ -101,51 +101,6 @@ __aicore__ inline static constexpr uint32_t GetTotalRowShape(const LayoutType& l
         return Get<0, 0>(layout.Shape()) * Get<0, 1>(layout.Shape());
     }
 }
-
-template <size_t index = 1, typename LayoutType>
-__aicore__ inline static constexpr uint32_t GetColumnStride(const LayoutType& layout)
-{
-    if constexpr (IsNDLayout<LayoutType>() || IsDNLayout<LayoutType>()) {
-        return Get<1>(layout.Stride());
-    } else {
-        static_assert(index < 2, "For non-ND/DN layout, only index 0 and 1 are valid for GetColumnStride");
-        return Get<1, index>(layout.Stride());
-    }
-}
-
-template <size_t index = 0, typename LayoutType>
-__aicore__ inline static constexpr uint32_t GetRowStride(const LayoutType& layout)
-{
-    if constexpr (IsNDLayout<LayoutType>() || IsDNLayout<LayoutType>()) {
-        return Get<0>(layout.Stride());
-    } else {
-        static_assert(index < 2, "For non-ND/DN layout, only index 0 and 1 are valid for GetRowStride");
-        return Get<0, index>(layout.Stride());
-    }
-}
-
-template <size_t index = 1, typename LayoutType>
-__aicore__ inline static constexpr uint32_t GetColumnShape(const LayoutType& layout)
-{
-    if constexpr (IsNDLayout<LayoutType>() || IsDNLayout<LayoutType>()) {
-        return Get<1>(layout.Shape());
-    } else {
-        static_assert(index < 2, "For non-ND/DN layout, only index 0 and 1 are valid for GetColumnShape");
-        return Get<1, index>(layout.Shape());
-    }
-}
-
-template <size_t index = 0, typename LayoutType>
-__aicore__ inline static constexpr uint32_t GetRowShape(const LayoutType& layout)
-{
-    if constexpr (IsNDLayout<LayoutType>() || IsDNLayout<LayoutType>()) {
-        return Get<0>(layout.Shape());
-    } else {
-        static_assert(index < 2, "For non-ND/DN layout, only index 0 and 1 are valid for GetRowShape");
-        return Get<0, index>(layout.Shape());
-    }
-}
-
 } // namespace Te
 } // namespace AscendC
 

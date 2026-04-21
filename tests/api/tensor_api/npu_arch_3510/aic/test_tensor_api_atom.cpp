@@ -42,20 +42,12 @@ TEST_F(Tensor_Api_Atom, CopyL0C2GMOperation)
     auto atomCopy = MakeCopy(CopyL0C2GM{}, CopyL0C2GMTraitDefault{});
     atomCopy.Call(gmDst, l0cSrc);
 
-    atomCopy.Call(gmDst, l0cSrc, coord);
-
     CopyAtom<CopyTraits<CopyL0C2GM>>{}.Call(gmDst, l0cSrc);
 
-    CopyAtom<CopyTraits<CopyL0C2GM, CopyL0C2GMTraitDefault>>{}.Call(gmDst, l0cSrc, coord);
-
     Copy(CopyAtom<CopyTraits<CopyL0C2GM>>{}, gmDst, l0cSrc);
-
-    Copy(CopyAtom<CopyTraits<CopyL0C2GM, CopyL0C2GMTraitDefault>>{}, gmDst, l0cSrc, coord);
     
     FixpipeParams params;
     Copy(CopyAtom<CopyTraits<CopyL0C2GM>>{}, gmDst, l0cSrc, params);
-
-    Copy(CopyAtom<CopyTraits<CopyL0C2GM, CopyL0C2GMTraitDefault>>{}, gmDst, l0cSrc, coord, params);
 
     EXPECT_EQ(dst[0], 0);
 }
@@ -80,15 +72,9 @@ TEST_F(Tensor_Api_Atom, CopyL0C2GMWithOperation)
     auto atomCopy = MakeCopy(CopyL0C2GM{});
     atomCopy.with(FixpipeParams{}).Call(gmDst, l0cSrc);
 
-    atomCopy.with(FixpipeParams{}).Call(gmDst, l0cSrc, coord);
-
     CopyAtom<CopyTraits<CopyL0C2GM>>{}.with(FixpipeParams{}).Call(gmDst, l0cSrc);
 
-    CopyAtom<CopyTraits<CopyL0C2GM>>{}.with(FixpipeParams{}).Call(gmDst, l0cSrc, coord);
-
     Copy(CopyAtom<CopyTraits<CopyL0C2GM, CopyL0C2GMTraitDefault>>{}.with(FixpipeParams{}), gmDst, l0cSrc);
-
-    Copy(CopyAtom<CopyTraits<CopyL0C2GM, CopyL0C2GMTraitDefault>>{}.with(FixpipeParams{}), gmDst, l0cSrc, coord);
 
     EXPECT_EQ(dst[0], 0);
 }

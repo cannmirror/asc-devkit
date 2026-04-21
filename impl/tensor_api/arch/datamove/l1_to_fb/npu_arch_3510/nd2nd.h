@@ -40,8 +40,7 @@ private:
     __aicore__ inline static constexpr void CheckTemplate()
     {
         CheckDataTypeFor3510::CheckL12FbDataType<T, U>();
-        // CheckLayoutPattern<T>
-        // CheckLayoutPattern<U>
+        CheckLayoutPattern<U, T>();
     }
 
     template <const CopyL12FBTrait& trait, typename T, typename U>
@@ -57,12 +56,12 @@ private:
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
 
-        uint16_t srcCol = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
-        uint16_t srcRow = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
-        uint16_t dstCol = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
-        uint16_t dstRow = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
+        uint16_t srcCol = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
+        uint16_t srcRow = GetElement<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
+        uint16_t dstCol = GetElement<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
+        uint16_t dstRow = GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
 
-        uint16_t blockCount = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
+        uint16_t blockCount = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
         uint16_t blockLen = Std::ceil_division(srcCol * sizeof(srcType), C2PIPE2GM_UNIT);
         uint16_t srcStride = Std::ceil_division(srcRow * sizeof(srcType), C0_SIZE<>);
         uint16_t dstStride = Std::ceil_division(dstRow * sizeof(dstType), C2PIPE2GM_UNIT);

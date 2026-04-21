@@ -43,8 +43,8 @@ private:
         using SRC_TYPE = typename U::elementType;
         using DST_TYPE = typename T::elementType;
 
-        const auto& dstLayout = dst.Layout();
-        const auto& srcLayout = src.Layout();
+        auto dstLayout = dst.Layout();
+        auto srcLayout = src.Layout();
 
         uint8_t cacheMode = src.Engine().GetCacheMode();
 
@@ -58,24 +58,24 @@ private:
             // Next three parameters are in unit of 1B
             blockLen = GetTotalColumnShape(srcLayout) * sizeof(SRC_TYPE);
 
-            srcStride = GetRowStride<1>(srcLayout) * sizeof(SRC_TYPE);
-            dstStride = GetRowStride<1>(dstLayout) * sizeof(DST_TYPE);
+            srcStride = GetElement<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout) * sizeof(SRC_TYPE);
+            dstStride = GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout) * sizeof(DST_TYPE);
 
         } else if constexpr (IsDNExtLayout<U>() && IsDNExtLayout<T>()) {
             blockCount = GetTotalColumnShape(srcLayout);
             // Next three parameters are in unit of 1B
             blockLen = GetTotalRowShape(srcLayout) * sizeof(SRC_TYPE);
 
-            srcStride = GetColumnStride<1>(srcLayout) * sizeof(SRC_TYPE);
-            dstStride = GetColumnStride<1>(dstLayout) * sizeof(DST_TYPE);
+            srcStride = GetElement<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) * sizeof(SRC_TYPE);
+            dstStride = GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout) * sizeof(DST_TYPE);
 
         } else if constexpr (IsNZLayout<U>() && IsNZLayout<T>()) { // NZ format
-            blockCount = GetColumnShape<1>(srcLayout);
+            blockCount = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
             // Next three parameters are in unit of 1B
-            blockLen = GetTotalRowShape(srcLayout) * GetColumnShape<0>(srcLayout) * sizeof(SRC_TYPE);
+            blockLen = GetTotalRowShape(srcLayout) * GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout) * sizeof(SRC_TYPE);
 
-            srcStride = GetColumnStride<1>(srcLayout) * sizeof(SRC_TYPE);
-            dstStride = GetColumnStride<1>(dstLayout) * sizeof(DST_TYPE);
+            srcStride = GetElement<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) * sizeof(SRC_TYPE);
+            dstStride = GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout) * sizeof(DST_TYPE);
         } else {
             static_assert((IsNDExtLayout<U>() && IsNDExtLayout<T>()) || (IsDNExtLayout<U>() && IsDNExtLayout<T>())
                               || (IsNZLayout<U>() && IsNZLayout<T>()),
