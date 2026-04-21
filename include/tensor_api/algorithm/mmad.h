@@ -15,16 +15,30 @@
 #endif
 
 /*!
-* \file atom.h
+* \file mmad.h
 * \brief
 */
-#ifndef INCLUDE_TENSOR_API_ATOM_ATOM_H
-#define INCLUDE_TENSOR_API_ATOM_ATOM_H
+#ifndef INCLUDE_TENSOR_API_ALGORITHM_MMAD_H
+#define INCLUDE_TENSOR_API_ALGORITHM_MMAD_H
 
-#include "include/tensor_api/atom/cube_datamove/copy_atom.h"
-#include "include/tensor_api/atom/cube_compute/mmad_atom.h"
+#include "impl/tensor_api/algorithm/mmad_impl.h"
 
-#endif // INCLUDE_TENSOR_API_ATOM_ATOM_H
+namespace AscendC {
+namespace Te {
+
+template <typename Tp, const Tp& traits, typename T, typename... Params>
+__aicore__ inline void Mmad(const MmadAtom<T>& atomMad, const Params& ...params);
+
+template <typename T, typename... Params>
+__aicore__ inline void Mmad(const MmadAtom<T>& atomMad, const Params& ...params);
+
+template <typename... Args>
+__aicore__ inline auto MakeMmad(const Args& ...traits);
+
+}
+}
+
+#endif // INCLUDE_TENSOR_API_ALGORITHM_MMAD_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_TENSOR_API_H)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

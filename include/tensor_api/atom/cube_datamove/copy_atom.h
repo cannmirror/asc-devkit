@@ -15,16 +15,33 @@
 #endif
 
 /*!
-* \file atom.h
+* \file copy_atom.h
 * \brief
 */
-#ifndef INCLUDE_TENSOR_API_ATOM_ATOM_H
-#define INCLUDE_TENSOR_API_ATOM_ATOM_H
+#ifndef INCLUDE_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_ATOM_H
+#define INCLUDE_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_ATOM_H
 
-#include "include/tensor_api/atom/cube_datamove/copy_atom.h"
-#include "include/tensor_api/atom/cube_compute/mmad_atom.h"
+#include "impl/tensor_api/atom/copy_atom_impl.h"
 
-#endif // INCLUDE_TENSOR_API_ATOM_ATOM_H
+namespace AscendC {
+namespace Te {
+
+template <typename CopyOperation, typename... CopyOpArgs>
+struct CopyTraits;
+
+template <typename... Args>
+struct CopyAtom;
+
+template <typename CopyOperation>
+struct CopyAtom<CopyOperation>;
+
+template <typename... Args>
+struct CopyAtom<CopyTraits<Args...>>;
+
+} // namespace Te
+} // namespace AscendC
+
+#endif // INCLUDE_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_ATOM_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_TENSOR_API_H)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

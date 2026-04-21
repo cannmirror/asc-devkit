@@ -45,8 +45,46 @@ __aicore__ inline constexpr auto MakeLayout(const T& shape, const U& stride);
 template <typename T>
 __aicore__ inline constexpr auto MakeLayout(const T& shape);
 
- template <typename T, typename Shape, typename Stride> 
- __aicore__ inline constexpr auto Crd2Idx(const T& coord, const Shape& shape, const Stride& stride);
+template <typename T, typename Shape, typename Stride> 
+__aicore__ inline constexpr auto Crd2Idx(const T& coord, const Shape& shape, const Stride& stride);
+
+template <size_t I, typename Tuple, typename Enable>
+__aicore__ inline constexpr auto Get(Tuple&& t);
+
+template <size_t I0, size_t I1, size_t... Is, typename Tuple, typename Enable>
+__aicore__ inline constexpr auto Get(Tuple&& t);
+
+template <typename Tuple, typename Enable>
+__aicore__ inline constexpr auto Get(Tuple&& t);
+
+template <size_t... Is, typename LayoutType, typename Enable>
+__aicore__ inline constexpr auto Cosize(const LayoutType& layout);
+
+template <size_t... Is, typename LayoutType, typename Enable>
+__aicore__ inline constexpr auto Rank(const LayoutType& layout);
+
+template <size_t... Is, typename LayoutType, typename Enable>
+__aicore__ inline constexpr auto Select(const LayoutType& layout);
+
+template <size_t... Is, typename LayoutType, typename Enable>
+__aicore__ inline constexpr auto Get(const LayoutType& layout);
+
+template <size_t... Is, typename LayoutType, typename Enable>
+__aicore__ inline constexpr auto Size(const LayoutType& layout);
+
+template <size_t... Is, typename LayoutType, typename Enable>
+__aicore__ inline constexpr auto Capacity(const LayoutType& layout);
+
+template <typename Tensor, typename Coord, typename Info>
+__aicore__ inline constexpr decltype(auto) Slice(Tensor&& tensor, const Coord& coord, const Info& info);
+
+template <typename LayoutPattern, typename TraitType,
+    Std::enable_if_t<!IsIntegralConstantV<TraitType>, int> Enable, typename... Args>
+__aicore__ inline decltype(auto) MakeFrameLayout(const Args&... args);
+
+template <typename LayoutPattern, typename IntType,
+    Std::enable_if_t<IsIntegralConstantV<IntType>, int> Enable, typename... Args>
+__aicore__ inline decltype(auto) MakeFrameLayout(const Args&... args);
 
 } // namespace Te
 } // namespace AscendC

@@ -21,7 +21,8 @@
 #ifndef INCLUDE_TENSOR_API_TENSOR_H
 #define INCLUDE_TENSOR_API_TENSOR_H
 
-#include "include/tensor_api/algorithm/algorithm.h"
+#include "include/tensor_api/algorithm/copy.h"
+#include "include/tensor_api/algorithm/mmad.h"
 #include "include/tensor_api/arch/arch.h"
 #include "include/tensor_api/atom/atom.h"
 #include "include/tensor_api/tensor/layout.h"

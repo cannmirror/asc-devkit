@@ -15,16 +15,22 @@
 #endif
 
 /*!
-* \file atom.h
+* \file mmad_op.h
 * \brief
 */
-#ifndef INCLUDE_TENSOR_API_ATOM_ATOM_H
-#define INCLUDE_TENSOR_API_ATOM_ATOM_H
+#ifndef INCLUDE_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_OP_H
+#define INCLUDE_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_OP_H
 
-#include "include/tensor_api/atom/cube_datamove/copy_atom.h"
-#include "include/tensor_api/atom/cube_compute/mmad_atom.h"
+namespace AscendC {
+namespace Te {
 
-#endif // INCLUDE_TENSOR_API_ATOM_ATOM_H
+struct MmadTraitDefault;
+struct MmadOperation;
+
+} // namespace Te
+} // namespace AscendC
+
+#endif // INCLUDE_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_OP_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_TENSOR_API_H)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

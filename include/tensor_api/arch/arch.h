@@ -20,6 +20,9 @@
 #ifndef include_TENSOR_API_ARCH_ARCH_H
 #define include_TENSOR_API_ARCH_ARCH_H
 
+#include "include/tensor_api/arch/cube_compute/mmad_op.h"
+#include "include/tensor_api/arch/cube_datamove/copy_op.h"
+
 #endif // include_TENSOR_API_ARCH_ARCH_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_TENSOR_API_H)

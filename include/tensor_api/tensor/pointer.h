@@ -23,6 +23,17 @@
 
 #include "impl/tensor_api/tensor/pointer_pattern.h"
 
+namespace AscendC {
+namespace Te {
+template <typename HardWare, typename TraitOrType, typename... Args>
+__aicore__ inline constexpr auto MakeMemPtr(Args... args);
+
+template <typename HardWare, typename... Args>
+__aicore__ inline constexpr auto MakeMemPtr(Args... args);
+
+} // namespace Te
+} // namespace AscendC
+
 #endif // INCLUDE_TENSOR_API_TENSOR_POINTER_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_TENSOR_API_H)
