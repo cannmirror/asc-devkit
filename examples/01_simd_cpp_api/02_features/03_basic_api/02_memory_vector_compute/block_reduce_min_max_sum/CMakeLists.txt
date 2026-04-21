@@ -31,14 +31,6 @@ add_executable(demo
     block_reduce_min_max_sum.asc
 )
 
-target_link_libraries(demo PRIVATE
-    tiling_api
-    register
-    platform
-    m
-    dl
-)
-
 target_compile_options(demo PRIVATE
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>
 )
