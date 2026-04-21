@@ -52,13 +52,6 @@ private:
         using Tensor2Tensor = typename CopyL12BTTensor2Tensor<dstTPos, srcTPos, CURRENT_ARCH_VERSION>::type;
         Tensor2Tensor::template Run<trait, T, U>(dst, src);
     }
-
-    template <const CopyL12BTTrait& trait = DEFAULT_COPY_L1_BT_TRAIT, typename T, typename U, typename Coord>
-    __aicore__ inline static void DataCopyImpl(const T& dst, const U& src, const Coord& coord)
-    {
-        auto sliceTensor = src(coord, dst);
-        DataCopyImpl<trait, T, decltype(sliceTensor)>(dst, sliceTensor);
-    }
 };
 
 }

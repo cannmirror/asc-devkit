@@ -53,13 +53,6 @@ private:
         using Tensor2Tensor = typename CopyUB2GMTensor2Tensor<dstTPos, srcTPos, CURRENT_ARCH_VERSION>::type;
         Tensor2Tensor::template Run<trait, T, U>(dst, src);
     }
-
-    template <const CopyUB2GMTrait& trait = DEFAULT_COPY_UB_TO_GM_TRAIT, typename T, typename U, typename Coord>
-    __aicore__ inline static void DataCopyImpl(const T& dst, const U& src, const Coord& coord)
-    {
-        auto sliceTensor = dst.Slice(coord, src.Layout());
-        DataCopyImpl<trait, decltype(sliceTensor), U>(sliceTensor, src);
-    }
 };
 
 } // namespace Te

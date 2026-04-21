@@ -118,15 +118,15 @@ template <typename A>
 struct CheckAllSame<A> { static constexpr bool value = false; };
 
 template <typename A, typename... BList>
-constexpr bool is_one_of_attr_v = CheckAllSame<A, BList...>::value;
+constexpr bool IsOneOfAttrV = CheckAllSame<A, BList...>::value;
 
 template <typename DataType>
-inline constexpr bool is_b4_type = is_one_of_attr_v<DataType, fp4x2_e1m2_t, fp4x2_e2m1_t>;
+inline constexpr bool IsB4Type = IsOneOfAttrV<DataType, fp4x2_e1m2_t, fp4x2_e2m1_t>;
 
 template<typename T = Std::ignore_t>
 __aicore__ inline constexpr size_t GetC0Size() {
     constexpr size_t c0Size = 32;
-    if constexpr (is_b4_type<T>) {
+    if constexpr (IsB4Type<T>) {
         return c0Size * 2;
     } else {
         return c0Size;

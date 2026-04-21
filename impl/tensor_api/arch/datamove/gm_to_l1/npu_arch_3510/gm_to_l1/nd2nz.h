@@ -57,7 +57,7 @@ private:
         uint32_t dValue = GetElement<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
         auto srcRowStride = GetElement<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
         auto dstColumnStride = GetElement<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout);
-        if constexpr (is_b4_type<type>) {
+        if constexpr (IsB4Type<type>) {
             // move fp4 as b8, need to be divided by 2
             dValue = dValue >> 1;
             srcRowStride = srcRowStride >> 1;

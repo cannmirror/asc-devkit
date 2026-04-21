@@ -48,39 +48,6 @@ __aicore__ inline constexpr auto MakeLayout(const T& shape);
  template <typename T, typename Shape, typename Stride> 
  __aicore__ inline constexpr auto Crd2Idx(const T& coord, const Shape& shape, const Stride& stride);
 
-// make_fractal.h
-template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeNzLayout(U row, S column);
-
-template <typename U, typename S>
-__aicore__ inline decltype(auto) MakeL0CLayout(U row, S column);
-
-template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeDNLayout(U row, S column);
-
-template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeNDLayout(U row, S column);
-
-template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeZnLayout(U row, S column);
-
-template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeZzLayout(U row, S column);
-
-template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeNnLayout(U row, S column);
-
-template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeScaleANDLayout(U row, S column);
-
-template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeScaleADNLayout(U row, S column);
-
-template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeScaleBNDLayout(U row, S column);
-
-template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeScaleBDNLayout(U row, S column);
 } // namespace Te
 } // namespace AscendC
 

@@ -60,12 +60,12 @@ private:
         using dstType = typename T::elementType;
 
         bool convControl = false;
-        if (is_one_of_attr_v<srcType, half> && is_one_of_attr_v<dstType, float>) {
+        if (IsOneOfAttrV<srcType, half> && IsOneOfAttrV<dstType, float>) {
             convControl = true;
         }
 
         uint16_t blockLen = Std::ceil_division(srcCol, C0_ELEMENT<dstType>);
-        if constexpr (is_one_of_attr_v<srcType, float, int32_t>) {
+        if constexpr (IsOneOfAttrV<srcType, float, int32_t>) {
             blockLen = Std::ceil_align(blockLen, 2);
         }
 

@@ -23,65 +23,9 @@
 #define IMPL_TENSOR_API_TENSOR_LAYOUT_FRACTAL_H
 
 #include "impl/tensor_api/utils/utils_impl.h"
-#include "impl/tensor_api/tensor/layout_dispatch.h"
 
 namespace AscendC {
 namespace Te {
-
-template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeNzLayout(U row, S column) {
-    return LayoutDispatcher<LayoutFormat::NZ, T>::apply(row, column);
-}
-
-template <typename U, typename S>
-__aicore__ inline decltype(auto) MakeL0CLayout(U row, S column) {
-    return LayoutDispatcher<LayoutFormat::NZ, uint16_t>::apply(row, column);
-}
-
-template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeNDLayout(U row, S column) {
-    return LayoutDispatcher<LayoutFormat::ND, T>::apply(row, column);
-}
-
-template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeDNLayout(U row, S column) {
-    return LayoutDispatcher<LayoutFormat::DN, T>::apply(row, column);
-}
-
-template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeZnLayout(U row, S column) {
-    return LayoutDispatcher<LayoutFormat::ZN, T>::apply(row, column);
-}
-
-template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeZzLayout(U row, S column) {
-    return LayoutDispatcher<LayoutFormat::ZZ, T>::apply(row, column);
-}
-
-template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeNnLayout(U row, S column) {
-    return LayoutDispatcher<LayoutFormat::NN, T>::apply(row, column);
-}
-
-template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeScaleANDLayout(U row, S column) {
-    return LayoutDispatcher<LayoutFormat::ND, Std::ignore_t>::apply(row, column);
-}
-
-template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeScaleADNLayout(U row, S column) {
-    return LayoutDispatcher<LayoutFormat::DN, T>::apply(row, column);
-}
-
-template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeScaleBNDLayout(U row, S column) {
-    return LayoutDispatcher<LayoutFormat::ND, T>::apply(row, column);
-}
-
-template <typename T, typename U, typename S>
-__aicore__ inline decltype(auto) MakeScaleBDNLayout(U row, S column) {
-    return LayoutDispatcher<LayoutFormat::DN, Std::ignore_t>::apply(row, column);
-}
 
 template <typename T, typename U, size_t... Is>
 __aicore__ inline decltype(auto) MakeFractalShape(T originShape, U innerShape, Std::index_sequence<Is...>) {

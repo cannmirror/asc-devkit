@@ -38,15 +38,9 @@ TEST_F(Tensor_Api_Atom, CopyGM2L1Operation)
     auto atomCopy = MakeCopy(CopyGM2L1{}, CopyGM2L1TraitDefault{});
     atomCopy.Call(l1Dst, gmSrc);
 
-    atomCopy.Call(l1Dst, gmSrc, coord);
-
     CopyAtom<CopyTraits<CopyGM2L1, CopyGM2L1TraitDefault>>{}.Call(l1Dst, gmSrc);
 
-    CopyAtom<CopyTraits<CopyGM2L1, CopyGM2L1TraitDefault>>{}.Call(l1Dst, gmSrc, coord);
-
     Copy(CopyAtom<CopyTraits<CopyGM2L1, CopyGM2L1TraitDefault>>{}, l1Dst, gmSrc);
-
-    Copy(CopyAtom<CopyTraits<CopyGM2L1, CopyGM2L1TraitDefault>>{}, l1Dst, gmSrc, coord);
 
     EXPECT_EQ(dst[0], 0);
 }
@@ -73,27 +67,21 @@ TEST_F(Tensor_Api_Atom, CopyL12L0Operation)
     auto atomCopyA = MakeCopy(CopyL12L0A{}, CopyL12L0ATraitDefault{});
     atomCopyA.Call(dstL0A, srcL1);
 
-    atomCopyA.Call(dstL0A, srcL1, coord);
 
     CopyAtom<CopyTraits<CopyL12L0A, CopyL12L0ATraitDefault>>{}.Call(dstL0A, srcL1);
 
-    CopyAtom<CopyTraits<CopyL12L0A, CopyL12L0ATraitDefault>>{}.Call(dstL0A, srcL1, coord);
 
     Copy(CopyAtom<CopyTraits<CopyL12L0A, CopyL12L0ATraitDefault>>{}, dstL0A, srcL1);
 
-    Copy(CopyAtom<CopyTraits<CopyL12L0A, CopyL12L0ATraitDefault>>{}, dstL0A, srcL1, coord);
 
     auto atomCopyB = MakeCopy(CopyL12L0B{}, CopyL12L0BTraitDefault{});
     atomCopyB.Call(dstL0B, srcL1);
-    atomCopyB.Call(dstL0B, srcL1, coord);
 
     CopyAtom<CopyTraits<CopyL12L0B, CopyL12L0BTraitDefault>>{}.Call(dstL0B, srcL1);
 
-    CopyAtom<CopyTraits<CopyL12L0B, CopyL12L0BTraitDefault>>{}.Call(dstL0B, srcL1, coord);
 
     Copy(CopyAtom<CopyTraits<CopyL12L0B, CopyL12L0BTraitDefault>>{}, dstL0B, srcL1);
 
-    Copy(CopyAtom<CopyTraits<CopyL12L0B, CopyL12L0BTraitDefault>>{}, dstL0B, srcL1, coord);
 
     EXPECT_EQ(l0aDst[0], 0);
     EXPECT_EQ(l0bDst[0], 0);

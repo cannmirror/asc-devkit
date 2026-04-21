@@ -91,7 +91,7 @@ struct IterAdaptor
 private:
     template <typename Index>
     __aicore__ inline constexpr Index IndexCorrect(const Index& i) const {
-        if constexpr (is_b4_type<valueType>) {
+        if constexpr (IsB4Type<valueType>) {
             return i >> 1;
         } else {
             return i;

@@ -54,13 +54,6 @@ private:
         using Tensor2Tensor = typename CopyUB2L1Tensor2Tensor<dstTPos, srcTPos, CURRENT_ARCH_VERSION>::type;
         Tensor2Tensor::template Run<trait, T, U>(dst, src);
     }
-
-    template <const CopyUB2L1Trait& trait = DEFAULT_COPY_UB_TO_L1_TRAIT, typename T, typename U, typename Coord>
-    __aicore__ inline static void DataCopyImpl(const T& dst, const U& src, const Coord& coord)
-    {
-        auto sliceTensor = src.Slice(coord, dst.Layout());
-        DataCopyImpl<trait, T, decltype(sliceTensor)>(dst, sliceTensor);
-    }
 };
 
 }

@@ -24,7 +24,8 @@
 
 #include "impl/tensor_api/utils/utils_impl.h"
 #include "impl/tensor_api/tensor/layout_impl.h"
-#include "impl/tensor_api/tensor/pointer_impl.h"
+#include "impl/tensor_api/tensor/engine_impl.h"
+#include "impl/tensor_api/tensor/pointer_pattern.h"
 
 namespace AscendC {
 namespace Te {
@@ -124,20 +125,6 @@ struct LocalTensor<TensorAttribute<EngineType, LayoutType>> {
     __aicore__ inline constexpr decltype(auto) operator()(const Coord0& c0, const Coord1& c1, const Coords&... cs) const {
         return operator()(MakeCoord(c0,c1,cs...));
     }
-
-	template <typename Coord, typename InfoType>
- 	__aicore__ inline constexpr decltype(auto) operator()(const Coord& coord, const InfoType& info) {
- 	    auto sliceEngine = Engine() + Layout()(coord);
- 	    auto coordLayout = MakeTileLayout(coord, Layout(), info);
- 	    return TensorType<decltype(sliceEngine), decltype(coordLayout)>{sliceEngine, coordLayout};
- 	}
- 	 
- 	template <typename Coord, typename InfoType>
- 	__aicore__ inline constexpr decltype(auto) operator()(const Coord& coord, const InfoType& info) const {
- 	    auto sliceEngine = Engine() + Layout()(coord);
- 	    auto coordLayout = MakeTileLayout(coord, Layout(), info);
- 	    return TensorType<decltype(sliceEngine), decltype(coordLayout)>{sliceEngine, coordLayout};
- 	}
 
     template <typename Coord, typename Info>
   	__aicore__ inline constexpr decltype(auto) Slice(const Coord& coord, const Info& info) {

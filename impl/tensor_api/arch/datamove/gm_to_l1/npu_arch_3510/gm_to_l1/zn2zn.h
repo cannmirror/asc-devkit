@@ -68,7 +68,7 @@ private:
         auto blockLen = smallFractalSize * C0_SIZE<>;
         auto srcStride = srcStrideSize * sizeof(type);
         auto dstStride = dstStrideSize * sizeof(type);
-        if constexpr (is_b4_type<type>) {
+        if constexpr (IsB4Type<type>) {
             // move fp4 as b8, need to be divided by 2
             srcStride = srcStride >> 1;
             dstStride = dstStride >> 1;

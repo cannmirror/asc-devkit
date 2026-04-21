@@ -55,10 +55,9 @@ TEST_F(TEST_TENSOR_API_LOAD_DATA, TestLoadData_##TYPE##M##N##SRC_FORMAT##DST_FOR
     constexpr int M_STEP = (sizeof(TYPE) == 1 && TRANSPOSE) ? 2 : 1; \
     constexpr int K_STEP = (sizeof(TYPE) == 4 && TRANSPOSE) ? 2 : 1; \
     MOCKER_CPP(load_cbuf_to_##DST_TAG, void(__##DST_TAG##__ TYPE*, __cbuf__ TYPE*, uint16_t, uint16_t, uint8_t, uint8_t, int16_t, uint16_t, bool)) \
-        .times(2) \
+        .times(1) \
         .will(invoke(&load_cbuf_to_##DST_TAG##_stub<TRANSPOSE, TYPE, M_STEP, K_STEP>)); \
     Copy(CopyAtom<CopyTraits<CopyL12##DST_POS, CopyL12##DST_POS##TraitDefault>>{}, dstTensor, srcTensor); \
-    Copy(CopyAtom<CopyTraits<CopyL12##DST_POS, CopyL12##DST_POS##TraitDefault>>{}, dstTensor, srcTensor, coord); \
  \
     mockcpp::GlobalMockObject::verify(); \
 }
@@ -78,7 +77,6 @@ TEST_F(TEST_TENSOR_API_LOAD_DATA, TestLoadData_##TYPE##M##N##SRC_FORMAT##DST_FOR
  \
     auto coord = MakeCoord(AscendC::Std::Int<COORD_I>{}, AscendC::Std::Int<COORD_J>{}); \
     Copy(CopyAtom<CopyTraits<CopyL12##DST_POS, CopyL12##DST_POS##TraitDefault>>{}, dstTensor, srcTensor); \
-    Copy(CopyAtom<CopyTraits<CopyL12##DST_POS, CopyL12##DST_POS##TraitDefault>>{}, dstTensor, srcTensor, coord); \
  \
     mockcpp::GlobalMockObject::verify(); \
 }

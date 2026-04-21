@@ -73,23 +73,6 @@ private:
         using Tensor2Tensor = typename CopyL12L0BTensor2Tensor<dstPos, srcPos, CURRENT_ARCH_VERSION, DstPattern, SrcPattern, CopyL12L0BMode>::type;
         Tensor2Tensor::template Run<trait, T, U>(dst, src);
     }
-
-    template<const CopyL12L0BTrait& trait = DEFAULT_COPY_L1_TO_L0B_TRAIT, typename T, typename U, class Coord>
-    __aicore__ inline static void LoadData(const T& dst, const U& src, const Coord& coord)
-    {
-        using dstPos = GetMemLocation<T>;
-        using srcPos = GetMemLocation<U>;
-        using DstLayout = typename T::layoutType;
-        using SrcLayout = typename U::layoutType;
-        using DstPattern = GetLayoutPattern<DstLayout>;
-        using SrcPattern = GetLayoutPattern<SrcLayout>;
-        constexpr auto isB8B4Type = sizeof(typename T::elementType) == 1;
-        constexpr auto noTrans = Std::is_same_v<DstPattern, SrcPattern>;
-        using CopyL12L0BMode = typename CopyL12L0BModeCoordSet::template Get<Std::tuple<Std::Int<noTrans>, Std::Int<isB8B4Type>>>;
-        static_assert(!Std::is_same_v<CopyL12L0BMode, EmptyValue>, "Unsupported CopyL12L0BCoordMode.");
-        using Tensor2Tensor = typename CopyL12L0BTensor2Tensor<dstPos, srcPos, CURRENT_ARCH_VERSION, DstPattern, SrcPattern, CopyL12L0BMode>::type;
-        Tensor2Tensor::template Run<trait, T, U, Coord>(dst, src, coord);
-    }
 };
 
 }

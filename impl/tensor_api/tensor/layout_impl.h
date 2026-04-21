@@ -31,49 +31,6 @@
 namespace AscendC {
 namespace Te {
 
-template <typename T>
-struct LocalTensor;
-
-template <typename Coord, typename LayoutType, typename TileShape>
-__aicore__ inline decltype(auto) MakeTileLayout(const Coord& coord, const LayoutType& layout, const TileShape& tileShape) 
-{
-    using OriginShape = Std::remove_cvref_t<decltype(layout.Shape())>;
-    if constexpr (nesting_depth_v<TileShape> == nesting_depth_v<OriginShape>	 
-            && Std::tuple_size_v<TileShape> == Std::tuple_size_v<OriginShape>) {	 
-        return MakeLayout(tileShape, layout.Stride());	 
-    } else {
-        static_assert(Std::is_tuple_v<TileShape>,"TileShape must be a tuple");
-        static_assert(nesting_depth_v<TileShape> == TWO_DIM_DATA, "Only Support Two Dim TileShape");
-        static_assert(nesting_depth_v<OriginShape> == FOUR_DIM_DATA, "Only Support Four Dim Layout");
-
-        auto innerRow = Std::get<0>(GetShape<0>(layout));
-        auto innerCol = Std::get<0>(GetShape<1>(layout));
-    
-        return MakeLayout(MakeFractalShape(tileShape, MakeShape(innerRow, innerCol)), layout.Stride()); 
-    } 
-}
-
-template <typename Coord, typename LayoutType, typename TensorType>
- __aicore__ inline decltype(auto) MakeTileLayout(const Coord& coord, const LayoutType& layout, const LocalTensor<TensorType>& tileTensor) 
-{
-    using TensorLayoutType = typename LocalTensor<TensorType>::layoutType;
-    static_assert(TensorLayoutType::rank == LayoutType::rank, "Tensor Rank must be equal to Layout rank");
-
-    auto innerRow = Std::get<0>(Std::get<0>(layout.Shape()));
-    auto innerCol = Std::get<0>(Std::get<1>(layout.Shape()));
-
-    auto srcRow = innerRow * Std::get<1>(Std::get<0>(layout.Shape())) - Std::get<0>(coord);
-    auto srcCol = innerCol * Std::get<1>(Std::get<1>(layout.Shape())) - Std::get<1>(coord);
-
-    auto dstRow = Std::get<0>(Std::get<0>(tileTensor.Shape())) * Std::get<1>(Std::get<0>(tileTensor.Shape()));
-    auto dstCol = Std::get<0>(Std::get<1>(tileTensor.Shape())) * Std::get<1>(Std::get<1>(tileTensor.Shape()));
-
-    auto realRow = Std::min(srcRow, dstRow);	 
-    auto realCol = Std::min(srcCol, dstCol);
-
-    return MakeLayout(MakeFractalShape(MakeShape(realRow, realCol), MakeShape(innerRow, innerCol)), layout.Stride());
-}
-
 struct MinOp {
     template <typename T, typename U>
     __aicore__ inline constexpr auto operator()(const T& src, const U& dst) const

@@ -23,7 +23,7 @@
 #define IMPL_TENSOR_API_ARCH_UTILS_IS_FORMAT_H
 
 #include "impl/tensor_api/utils/utils_impl.h"
-#include "impl/tensor_api/tensor/pointer_impl.h"
+#include "impl/tensor_api/tensor/pointer_pattern.h"
 #include "impl/tensor_api/tensor/local_tensor_impl.h"
 
 namespace AscendC {

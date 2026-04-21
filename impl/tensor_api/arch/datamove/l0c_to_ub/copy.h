@@ -67,25 +67,6 @@ public:
         using Tensor2Tensor = typename CopyL0C2UBVectorQuantTensor2Tensor<dstPos, srcPos, CURRENT_ARCH_VERSION>::type;
         Tensor2Tensor{}.template Run<trait>(dst, src, quant, params);
     }
-
-    template <const CopyL0C2UBTrait& trait = DEFAULT_COPY_L0C2UB_TRAIT, typename T, typename U, typename Coord>
-    __aicore__ inline static typename Std::enable_if<Std::is_tuple_v<Coord>, void>::type
-    DataCopyImpl(const T& dst, const U& src, const Coord& coord, const FixpipeParams& params = DEFAULT_FIXPIPE_PARAMS)
-    {
-        auto sliceTensor = dst.Slice(coord, src.Layout());
-        DataCopyImpl<trait>(sliceTensor, src, params);
-    }
-
-    template <const CopyL0C2UBTrait& trait = DEFAULT_COPY_L0C2UB_TRAIT, typename T, typename U, typename S,
-              typename Coord>
-    __aicore__ inline static
-        typename Std::enable_if<(Std::is_same_v<S, uint64_t> || IsAttrTensorV<S>) && Std::is_tuple_v<Coord>, void>::type
-        DataCopyImpl(const T& dst, const U& src, const S& quant, const Coord& coord,
-                     const FixpipeParams& params = DEFAULT_FIXPIPE_PARAMS)
-    {
-        auto sliceTensor = dst.Slice(coord, src.Layout());
-        DataCopyImpl<trait>(sliceTensor, src, quant, params);
-    }
 };
 
 struct CopyL0C2UB : public CopyL0C2UBBase {

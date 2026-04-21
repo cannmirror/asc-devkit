@@ -92,6 +92,13 @@ asc-devkit:
       - impl/basic_api/dav_3510/kernel_operator_determine_compute_sync_impl.h
       - impl/tensor_api/arch/datamove/l1_to_l0a/routing.h
       - impl/tensor_api/arch/datamove/l1_to_l0b/routing.h
+      - impl/tensor_api/arch/datamove/l1_to_l0a/npu_arch_3510/nz2nz_with_coord.h
+      - impl/tensor_api/arch/datamove/l1_to_l0a/npu_arch_3510/zn2nz_with_coord.h
+      - impl/tensor_api/arch/datamove/l1_to_l0a/npu_arch_3510/zn2nzb8b4_with_coord.h
+      - impl/tensor_api/arch/datamove/l1_to_l0b/npu_arch_3510/nz2zn_with_coord.h
+      - impl/tensor_api/arch/datamove/l1_to_l0b/npu_arch_3510/nz2znb8b4_with_coord.h
+      - impl/tensor_api/arch/datamove/l1_to_l0b/npu_arch_3510/zn2zn_with_coord.h
+      - impl/tensor_api/tensor/pointer_mem_impl.h
       - impl/tensor_api/atom/datamove/*.h
       - impl/tensor_api/arch/datamove/gm_to_ub/routing.h
       - impl/tensor_api/arch/datamove/l1_to_ub/routing.h
