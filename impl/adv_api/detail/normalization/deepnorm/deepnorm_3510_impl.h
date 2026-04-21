@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file deepnorm_common_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/normalization/deepnorm/deepnorm_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/normalization/deepnorm/deepnorm_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_DEEPNORM_DEEPNORM_C310_IMPL_H__
 #endif
@@ -60,11 +61,10 @@ __aicore__ inline void GetDeepnormPara(DeepnormPara& para, DeepNormTiling& tilin
         para.hTailCtrl = 0;
     }
 }
-}
+} // namespace Internal
 
 template <typename T>
-__simd_callee__ inline void CopyInFloat(Reg::RegTensor<float>& reg, __ubuf__ T* ub,
-    Reg::MaskReg& hFloatAllMask)
+__simd_callee__ inline void CopyInFloat(Reg::RegTensor<float>& reg, __ubuf__ T* ub, Reg::MaskReg& hFloatAllMask)
 {
     if constexpr (IsSameType<T, half>::value) {
         Reg::RegTensor<T> oriInputH;
@@ -76,8 +76,9 @@ __simd_callee__ inline void CopyInFloat(Reg::RegTensor<float>& reg, __ubuf__ T* 
 }
 
 template <typename T>
-__simd_callee__ inline void CalcHMean(Reg::RegTensor<float>& outputMean, __ubuf__ T* inputX, __ubuf__ T* gxLocal,
-    const float alpha, Internal::DeepnormPara para)
+__simd_callee__ inline void CalcHMean(
+    Reg::RegTensor<float>& outputMean, __ubuf__ T* inputX, __ubuf__ T* gxLocal, const float alpha,
+    Internal::DeepnormPara para)
 {
     Reg::RegTensor<float> hDim, gxReg;
     Reg::Duplicate(hDim, para.hDim);
@@ -112,8 +113,9 @@ __simd_callee__ inline void CalcHMean(Reg::RegTensor<float>& outputMean, __ubuf_
 }
 
 template <typename T>
-__simd_callee__ inline void CalcHVariance(Reg::RegTensor<float>& outputVariance, Reg::RegTensor<float>& meanReg,
-    __ubuf__ T* inputX, __ubuf__ T* gxLocal, const float alpha, Internal::DeepnormPara para)
+__simd_callee__ inline void CalcHVariance(
+    Reg::RegTensor<float>& outputVariance, Reg::RegTensor<float>& meanReg, __ubuf__ T* inputX, __ubuf__ T* gxLocal,
+    const float alpha, Internal::DeepnormPara para)
 {
     Reg::RegTensor<float> sumVarianceResultH, gxReg;
     Reg::RegTensor<float> hDim;
@@ -157,9 +159,10 @@ __simd_callee__ inline void CalcHVariance(Reg::RegTensor<float>& outputVariance,
 }
 
 template <typename T>
-__simd_callee__ inline void CalcHSingleBlockOutPut(__ubuf__ T* output, Reg::RegTensor<float>& meanReg,
-    Reg::RegTensor<float>& varianceReg, __ubuf__ T* inputX, __ubuf__ T* gxLocal, const float alpha, __ubuf__ T* gamma, __ubuf__ T* beta,
-    Reg::RegTensor<float>& sdReg, Reg::MaskReg& hFloatMask)
+__simd_callee__ inline void CalcHSingleBlockOutPut(
+    __ubuf__ T* output, Reg::RegTensor<float>& meanReg, Reg::RegTensor<float>& varianceReg, __ubuf__ T* inputX,
+    __ubuf__ T* gxLocal, const float alpha, __ubuf__ T* gamma, __ubuf__ T* beta, Reg::RegTensor<float>& sdReg,
+    Reg::MaskReg& hFloatMask)
 {
     Reg::RegTensor<float> resultH, gxReg;
     if constexpr (SupportType<T, half>()) {
@@ -209,33 +212,36 @@ __simd_callee__ inline void CalcHSingleBlockOutPut(__ubuf__ T* output, Reg::RegT
 }
 
 template <typename T>
-__simd_callee__ inline void CalcHOutPut(__ubuf__ T* output, Reg::RegTensor<float>& meanReg,
-    Reg::RegTensor<float>& varianceReg, __ubuf__ T* inputX, __ubuf__ T* gxLocal, const float alpha, __ubuf__ T* gamma,
-    __ubuf__ T* beta, const T epsilon, Internal::DeepnormPara para)
+__simd_callee__ inline void CalcHOutPut(
+    __ubuf__ T* output, Reg::RegTensor<float>& meanReg, Reg::RegTensor<float>& varianceReg, __ubuf__ T* inputX,
+    __ubuf__ T* gxLocal, const float alpha, __ubuf__ T* gamma, __ubuf__ T* beta, const T epsilon,
+    Internal::DeepnormPara para)
 {
     Reg::MaskReg hFloatAllMask = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
-    Reg::RegTensor<float> sdReg;    // The standard deviation.
+    Reg::RegTensor<float> sdReg; // The standard deviation.
     // Calc variance + epsilon.
     Reg::Adds(sdReg, varianceReg, epsilon, hFloatAllMask);
     // Calc (variance + epsilon)^(1/2).
     Reg::Sqrt(sdReg, sdReg, hFloatAllMask);
     for (uint16_t i = 0; i < para.hRepeatTimes; ++i) {
-        CalcHSingleBlockOutPut(output + i * oneRepSize, meanReg, varianceReg,
-            inputX + i * oneRepSize, gxLocal + i * oneRepSize, alpha, gamma + i * oneRepSize, beta + i * oneRepSize,
-            sdReg, hFloatAllMask);
+        CalcHSingleBlockOutPut(
+            output + i * oneRepSize, meanReg, varianceReg, inputX + i * oneRepSize, gxLocal + i * oneRepSize, alpha,
+            gamma + i * oneRepSize, beta + i * oneRepSize, sdReg, hFloatAllMask);
     }
     for (uint16_t tail = 0; tail < para.hTailCtrl; ++tail) {
         uint32_t hTailSizeForMask = static_cast<uint32_t>(para.hTailSize);
         Reg::MaskReg hTailFloatMask = Reg::UpdateMask<float>(hTailSizeForMask);
-        CalcHSingleBlockOutPut(output + para.hTailOffset, meanReg, varianceReg, inputX + para.hTailOffset, gxLocal + para.hTailOffset, alpha,
-            gamma + para.hTailOffset, beta + para.hTailOffset, sdReg, hTailFloatMask);
+        CalcHSingleBlockOutPut(
+            output + para.hTailOffset, meanReg, varianceReg, inputX + para.hTailOffset, gxLocal + para.hTailOffset,
+            alpha, gamma + para.hTailOffset, beta + para.hTailOffset, sdReg, hTailFloatMask);
     }
 }
 
 template <typename T>
-__simd_vf__ inline void DeepNormImplVfHalf(__ubuf__ T* output, __ubuf__ T* outputMean,
-    __ubuf__ T* outputVariance, __ubuf__ T* inputX, __ubuf__ T* gxLocal, __ubuf__ T* gamma,
-    __ubuf__ T* beta, const T epsilon, Internal::DeepnormPara para, DeepNormTiling tiling, const float alpha)
+__simd_vf__ inline void DeepNormImplVfHalf(
+    __ubuf__ T* output, __ubuf__ T* outputMean, __ubuf__ T* outputVariance, __ubuf__ T* inputX, __ubuf__ T* gxLocal,
+    __ubuf__ T* gamma, __ubuf__ T* beta, const T epsilon, Internal::DeepnormPara para, DeepNormTiling tiling,
+    const float alpha)
 {
     Reg::MaskReg floatLowestMask = Reg::CreateMask<float, Reg::MaskPattern::VL1>();
     Reg::MaskReg srcLowestMask = Reg::CreateMask<T, Reg::MaskPattern::VL1>();
@@ -258,7 +264,8 @@ __simd_vf__ inline void DeepNormImplVfHalf(__ubuf__ T* output, __ubuf__ T* outpu
                 outputMean + bsIdx, outputMeanReg, floatLowestMask);
         }
         Reg::RegTensor<float> outputVarianceReg;
-        CalcHVariance(outputVarianceReg, meanRegForNextCalc, inputX + bsIdx * hLength, gxLocal + bsIdx * hLength, alpha, para);
+        CalcHVariance(
+            outputVarianceReg, meanRegForNextCalc, inputX + bsIdx * hLength, gxLocal + bsIdx * hLength, alpha, para);
         Reg::RegTensor<float> varianceRegNextCalc;
         Reg::Duplicate(varianceRegNextCalc, outputVarianceReg, hFloatAllMask);
         if constexpr (SupportType<T, half>()) {
@@ -270,77 +277,87 @@ __simd_vf__ inline void DeepNormImplVfHalf(__ubuf__ T* output, __ubuf__ T* outpu
             Reg::StoreAlign<T, Reg::StoreDist::DIST_FIRST_ELEMENT_B32>(
                 outputVariance + bsIdx, outputVarianceReg, floatLowestMask);
         }
-        CalcHOutPut(output + bsIdx * hLength, meanRegForNextCalc, varianceRegNextCalc,
-            inputX + bsIdx * hLength, gxLocal + bsIdx * hLength, alpha, gamma, beta, epsilon, para);
+        CalcHOutPut(
+            output + bsIdx * hLength, meanRegForNextCalc, varianceRegNextCalc, inputX + bsIdx * hLength,
+            gxLocal + bsIdx * hLength, alpha, gamma, beta, epsilon, para);
     }
 }
 
 template <typename T, bool isBasicBlock = false>
 __aicore__ inline bool IsDeepNormParamValid(DeepNormTiling& tiling)
 {
-    ASCENDC_ASSERT((IsSameType<T, half>::value || IsSameType<T, float>::value),
-        {KERNEL_LOG(KERNEL_ERROR, "DeepNorm only support data type: float/half");});
-    ASCENDC_ASSERT(tiling.oneTmpSize > 0,
-        {KERNEL_LOG(KERNEL_ERROR, "In DeepNorm, each tmpsize in sharedTmpBuffer must > 0!");});
-    const bool hDivBy64 = (tiling.hLength % 64 == 0) &&
-        (tiling.originalHLength % 64 == 0);
+    ASCENDC_ASSERT((IsSameType<T, half>::value || IsSameType<T, float>::value), {
+        KERNEL_LOG(KERNEL_ERROR, "DeepNorm only support data type: float/half");
+    });
+    ASCENDC_ASSERT(
+        tiling.oneTmpSize > 0, { KERNEL_LOG(KERNEL_ERROR, "In DeepNorm, each tmpsize in sharedTmpBuffer must > 0!"); });
+    const bool hDivBy64 = (tiling.hLength % 64 == 0) && (tiling.originalHLength % 64 == 0);
     const bool bsDivBy8 = ((tiling.bLength * tiling.sLength) % 8 == 0);
     if constexpr (isBasicBlock) {
-        ASCENDC_ASSERT(hDivBy64 && bsDivBy8,
-            {KERNEL_LOG(KERNEL_ERROR, "In DeepNorm, when isBasicBlock is true, input must have hLength %% 64 = 0, " \
-                "originalHLength %% 64 = 0 and (bLength * sLength) %% 8 = 0 !");});
+        ASCENDC_ASSERT(hDivBy64 && bsDivBy8, {
+            KERNEL_LOG(
+                KERNEL_ERROR, "In DeepNorm, when isBasicBlock is true, input must have hLength %% 64 = 0, "
+                              "originalHLength %% 64 = 0 and (bLength * sLength) %% 8 = 0 !");
+        });
     }
     return true;
 }
 
 template <typename T>
-__aicore__ inline void DeepNormImplHalf(__ubuf__ T* output, __ubuf__ T* outputMean,
-    __ubuf__ T* outputVariance, __ubuf__ T* inputX, __ubuf__ T* gxLocal, __ubuf__ T* gamma, 
-    __ubuf__ T* beta, const T epsilon, Internal::DeepnormPara& para, DeepNormTiling& tiling, const T alpha)
+__aicore__ inline void DeepNormImplHalf(
+    __ubuf__ T* output, __ubuf__ T* outputMean, __ubuf__ T* outputVariance, __ubuf__ T* inputX, __ubuf__ T* gxLocal,
+    __ubuf__ T* gamma, __ubuf__ T* beta, const T epsilon, Internal::DeepnormPara& para, DeepNormTiling& tiling,
+    const T alpha)
 {
-    if(IsSameType<T, float>::value) {
-        DeepNormImplVfHalf<T>(output, outputMean, outputVariance, inputX, gxLocal, gamma,
-            beta, epsilon, para, tiling, alpha);
+    if (IsSameType<T, float>::value) {
+        DeepNormImplVfHalf<T>(
+            output, outputMean, outputVariance, inputX, gxLocal, gamma, beta, epsilon, para, tiling, alpha);
     } else {
         float alp = alpha;
-        DeepNormImplVfHalf<T>(output, outputMean, outputVariance, inputX, gxLocal, gamma,
-            beta, epsilon, para, tiling, alp);
+        DeepNormImplVfHalf<T>(
+            output, outputMean, outputVariance, inputX, gxLocal, gamma, beta, epsilon, para, tiling, alp);
     }
 }
 
 template <typename T, bool isReuseSrc, bool isBasicBlock>
-__aicore__ inline void DeepNormImpl(const LocalTensor<T>& dstLocal, const LocalTensor<T>& meanLocal,
-    const LocalTensor<T>& rstdLocal, const LocalTensor<T>& srcLocal, const LocalTensor<T>& gxLocal,
-    const LocalTensor<T>& betaLocal, const LocalTensor<T>& gammaLocal, const LocalTensor<uint8_t>& sharedTmpBuffer,
-    const T alpha, const T epsilon, DeepNormTiling& tiling)
+__aicore__ inline void DeepNormImpl(
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& meanLocal, const LocalTensor<T>& rstdLocal,
+    const LocalTensor<T>& srcLocal, const LocalTensor<T>& gxLocal, const LocalTensor<T>& betaLocal,
+    const LocalTensor<T>& gammaLocal, const LocalTensor<uint8_t>& sharedTmpBuffer, const T alpha, const T epsilon,
+    DeepNormTiling& tiling)
 {
     static_assert(SupportType<T, half, float>(), "template parameter (T) is not half or float");
     if constexpr (isReuseSrc) {
         static_assert(SupportType<T, float>(), "isReuseSrc is only supported for float on current device!");
     }
-    CHECK_FUNC_HIGHLEVEL_API(DeepNorm, (T, isReuseSrc, isBasicBlock), (dstLocal, meanLocal, rstdLocal, srcLocal, gxLocal, betaLocal, gammaLocal,
-        sharedTmpBuffer, alpha, epsilon, tiling));
+    CHECK_FUNC_HIGHLEVEL_API(
+        DeepNorm, (T, isReuseSrc, isBasicBlock),
+        (dstLocal, meanLocal, rstdLocal, srcLocal, gxLocal, betaLocal, gammaLocal, sharedTmpBuffer, alpha, epsilon,
+         tiling));
     if (!DeepNormAPI::IsDeepNormParamValid<T, isBasicBlock>(tiling)) {
         return;
     }
     ASCENDC_ASSERT((sharedTmpBuffer.GetSize() > 0), { KERNEL_LOG(KERNEL_ERROR, "sharedTmpBuffer size must > 0!"); });
     Internal::DeepnormPara para;
     Internal::GetDeepnormPara(para, tiling);
-    DeepNormImplHalf<T>((__ubuf__ T*)dstLocal.GetPhyAddr(), (__ubuf__ T*)meanLocal.GetPhyAddr(), (__ubuf__ T*)rstdLocal.GetPhyAddr(), 
-        (__ubuf__ T*)srcLocal.GetPhyAddr(), (__ubuf__ T*)gxLocal.GetPhyAddr(), (__ubuf__ T*)gammaLocal.GetPhyAddr(), (__ubuf__ T*)betaLocal.GetPhyAddr(), epsilon, para, tiling, alpha);   
+    DeepNormImplHalf<T>(
+        (__ubuf__ T*)dstLocal.GetPhyAddr(), (__ubuf__ T*)meanLocal.GetPhyAddr(), (__ubuf__ T*)rstdLocal.GetPhyAddr(),
+        (__ubuf__ T*)srcLocal.GetPhyAddr(), (__ubuf__ T*)gxLocal.GetPhyAddr(), (__ubuf__ T*)gammaLocal.GetPhyAddr(),
+        (__ubuf__ T*)betaLocal.GetPhyAddr(), epsilon, para, tiling, alpha);
 }
 
 template <typename T, bool isReuseSrc, bool isBasicBlock>
-__aicore__ inline void DeepNormImpl(const LocalTensor<T>& dstLocal, const LocalTensor<T>& meanLocal,
-    const LocalTensor<T>& rstdLocal, const LocalTensor<T>& srcLocal, const LocalTensor<T>& gxLocal,
-    const LocalTensor<T>& betaLocal, const LocalTensor<T>& gammaLocal, const T alpha, const T epsilon,
-    DeepNormTiling& tiling)
+__aicore__ inline void DeepNormImpl(
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& meanLocal, const LocalTensor<T>& rstdLocal,
+    const LocalTensor<T>& srcLocal, const LocalTensor<T>& gxLocal, const LocalTensor<T>& betaLocal,
+    const LocalTensor<T>& gammaLocal, const T alpha, const T epsilon, DeepNormTiling& tiling)
 {
     LocalTensor<uint8_t> sharedTmpBuffer;
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);
     ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
-    DeepNormImpl<T, isReuseSrc, isBasicBlock>(dstLocal, meanLocal, rstdLocal, srcLocal, gxLocal, betaLocal,
-        gammaLocal, sharedTmpBuffer, alpha, epsilon, tiling);
+    DeepNormImpl<T, isReuseSrc, isBasicBlock>(
+        dstLocal, meanLocal, rstdLocal, srcLocal, gxLocal, betaLocal, gammaLocal, sharedTmpBuffer, alpha, epsilon,
+        tiling);
 }
 
 } // namespace DeepNormAPI

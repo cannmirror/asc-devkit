@@ -1,15 +1,16 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/erf/erf_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/erf.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/erf/erf_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/erf.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ERF_ERF_COMMON_IMPL_H__
 #endif
@@ -34,8 +35,8 @@ __aicore__ inline constexpr RoundMode GetErfCastType()
 }
 
 // Clip x to [-3.92, 3.92]
-__aicore__ inline void ErfClip(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const LocalTensor<float>& tmpBuffer)
+__aicore__ inline void ErfClip(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const LocalTensor<float>& tmpBuffer)
 {
     constexpr float ERF_BOUNDARY_MAX = 3.92;
     UnaryRepeatParams unaryParams;
@@ -48,8 +49,8 @@ __aicore__ inline void ErfClip(const LocalTensor<float>& dst, const LocalTensor<
 
 // P(x) = (((((0.053443748819x^2+0.75517016694e1)x^2+0.10162808918e3)x^2
 //          +0.13938061484e4)x^2+0.50637915060e4)x^2+0.29639384698e5)x
-__aicore__ inline void ErfComputeP(const LocalTensor<float>& tmpBuffer, const LocalTensor<float>& src,
-    const uint32_t calSize)
+__aicore__ inline void ErfComputeP(
+    const LocalTensor<float>& tmpBuffer, const LocalTensor<float>& src, const uint32_t calSize)
 {
     constexpr float SCALAR_P0 = 0.29639384698e5;
     constexpr float SCALAR_P1 = 0.50637915060e4;
@@ -103,8 +104,8 @@ __aicore__ inline void ErfComputeP(const LocalTensor<float>& tmpBuffer, const Lo
 }
 
 // Q(x) = ((((x^2+0.31212858877e2)x^2+0.39856963806e3)x^2+0.30231248150e4)x^2+0.13243365831e5)x^2+0.26267224157e5
-__aicore__ inline void ErfComputeQ(const LocalTensor<float>& tmpBuffer, const LocalTensor<float>& src,
-    const uint32_t calSize)
+__aicore__ inline void ErfComputeQ(
+    const LocalTensor<float>& tmpBuffer, const LocalTensor<float>& src, const uint32_t calSize)
 {
     constexpr float SCALAR_Q0 = 0.26267224157e5;
     constexpr float SCALAR_Q1 = 0.13243365831e5;
@@ -147,8 +148,8 @@ __aicore__ inline void ErfComputeQ(const LocalTensor<float>& tmpBuffer, const Lo
 }
 
 template <typename T>
-__aicore__ inline void ErfCompute(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& tmpBuffer,
-    const uint32_t calSize)
+__aicore__ inline void ErfCompute(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& tmpBuffer, const uint32_t calSize)
 {
     BinaryRepeatParams binaryParams;
     UnaryRepeatParams unaryParams;
@@ -168,8 +169,9 @@ __aicore__ inline void ErfCompute(const LocalTensor<T>& dst, const LocalTensor<T
 }
 
 template <>
-__aicore__ inline void ErfCompute<half>(const LocalTensor<half>& dst, const LocalTensor<half>& src,
-    const LocalTensor<half>& tmpBuffer, const uint32_t calSize)
+__aicore__ inline void ErfCompute<half>(
+    const LocalTensor<half>& dst, const LocalTensor<half>& src, const LocalTensor<half>& tmpBuffer,
+    const uint32_t calSize)
 {
     BinaryRepeatParams binaryParams;
     UnaryRepeatParams unaryParams;
@@ -180,8 +182,9 @@ __aicore__ inline void ErfCompute<half>(const LocalTensor<half>& dst, const Loca
     LocalTensor<float> tmpBuffer4 = tmpBuffer3[calSize];
 
     // Cast src from half to float type for getting more precise results.
-    Cast<float, half, false>(tmpBuffer4, src, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
-        { 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE / 2 });
+    Cast<float, half, false>(
+        tmpBuffer4, src, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE / 2});
     PipeBarrier<PIPE_V>();
 
     // x = Clip(x), (x) = P(x) / Q(x)
@@ -195,14 +198,15 @@ __aicore__ inline void ErfCompute<half>(const LocalTensor<half>& dst, const Loca
 
     constexpr RoundMode castType = GetErfCastType();
 
-    Cast<half, float, false>(dst, tmpBuffer1, castType, MASK_PLACEHOLDER, 1,
-        { 1, 1, DEFAULT_REPEAT_STRIDE / 2, DEFAULT_REPEAT_STRIDE });
+    Cast<half, float, false>(
+        dst, tmpBuffer1, castType, MASK_PLACEHOLDER, 1, {1, 1, DEFAULT_REPEAT_STRIDE / 2, DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void ErfImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void ErfImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -248,7 +252,8 @@ __aicore__ inline void ErfImpl(const LocalTensor<T>& dstTensor, const LocalTenso
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void ErfImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
+__aicore__ inline void ErfImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
     if ASCEND_IS_AIC {
         return;

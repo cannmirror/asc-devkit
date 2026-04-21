@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file batchnorm_check_c310.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/normalization/batchnorm/batchnorm_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/normalization/batchnorm/batchnorm_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_BATCHNORM_BATCHNORM_C310_IMPL_H__
 #endif
@@ -72,8 +73,8 @@ __simd_callee__ inline void SaveDataWithT(
 }
 
 template <typename T>
-__simd_callee__ inline void ComputeOutputMean(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, uint32_t oriBLength,
-    uint32_t featureLength, float firstDimValueBack)
+__simd_callee__ inline void ComputeOutputMean(
+    __ubuf__ T* dstLocal, __ubuf__ T* srcLocal, uint32_t oriBLength, uint32_t featureLength, float firstDimValueBack)
 {
     Reg::RegTensor<float> srcReg;
     Reg::RegTensor<float> dstReg;
@@ -109,8 +110,9 @@ __simd_callee__ inline void ComputeOutputMean(__ubuf__ T* dstLocal, __ubuf__ T* 
 }
 
 template <typename T>
-__simd_callee__ inline void ComputeFloatMean(__ubuf__ float* dstLocal, __ubuf__ T* srcLocal, uint32_t oriBLength,
-    uint32_t featureLength, float firstDimValueBack)
+__simd_callee__ inline void ComputeFloatMean(
+    __ubuf__ float* dstLocal, __ubuf__ T* srcLocal, uint32_t oriBLength, uint32_t featureLength,
+    float firstDimValueBack)
 {
     Reg::RegTensor<float> srcReg;
     Reg::RegTensor<float> dstReg;
@@ -146,8 +148,9 @@ __simd_callee__ inline void ComputeFloatMean(__ubuf__ float* dstLocal, __ubuf__ 
 }
 
 template <typename T>
-__simd_callee__ inline void ComputeOutputVariance(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal,
-    __ubuf__ float* meanLocal, uint32_t oriBLength, uint32_t featureLength, float firstDimValueBack)
+__simd_callee__ inline void ComputeOutputVariance(
+    __ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __ubuf__ float* meanLocal, uint32_t oriBLength, uint32_t featureLength,
+    float firstDimValueBack)
 {
     Reg::RegTensor<float> srcReg;
     Reg::RegTensor<float> dstReg;
@@ -196,8 +199,9 @@ __simd_callee__ inline void ComputeOutputVariance(__ubuf__ T* dstLocal, __ubuf__
 }
 
 template <typename T>
-__simd_callee__ inline void ComputeFloatVariance(__ubuf__ float* dstLocal, __ubuf__ T* srcLocal,
-    __ubuf__ float* meanLocal, uint32_t oriBLength, uint32_t featureLength, float firstDimValueBack)
+__simd_callee__ inline void ComputeFloatVariance(
+    __ubuf__ float* dstLocal, __ubuf__ T* srcLocal, __ubuf__ float* meanLocal, uint32_t oriBLength,
+    uint32_t featureLength, float firstDimValueBack)
 {
     Reg::RegTensor<float> srcReg;
     Reg::RegTensor<float> dstReg;
@@ -246,9 +250,9 @@ __simd_callee__ inline void ComputeFloatVariance(__ubuf__ float* dstLocal, __ubu
 }
 
 template <typename T>
-__simd_callee__ inline void ComputeY(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __ubuf__ float* tmpMeanLocal,
-    __ubuf__ float* tmpVarLocal, __ubuf__ T* gammaLocal,  __ubuf__ T* betaLocal, uint32_t oriBLength,
-    uint32_t featureLength, const float epsilon)
+__simd_callee__ inline void ComputeY(
+    __ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __ubuf__ float* tmpMeanLocal, __ubuf__ float* tmpVarLocal,
+    __ubuf__ T* gammaLocal, __ubuf__ T* betaLocal, uint32_t oriBLength, uint32_t featureLength, const float epsilon)
 {
     constexpr float rsqrtExponent = -0.5;
     Reg::RegTensor<float> srcReg;
@@ -311,9 +315,9 @@ __simd_callee__ inline void ComputeY(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal,
 }
 
 template <typename T, bool isReuseSource = false, bool isBasicBlock = false>
-__simd_vf__ inline void BatchNormImplVF(__ubuf__ T* output, __ubuf__ T* outputMean,
-    __ubuf__ T* outputVariance, __ubuf__ T* inputX, __ubuf__ T* gamm, __ubuf__ T* beta,
-    __ubuf__ float* tmpMeanLocal, __ubuf__ float* tmpVarLocal, const float epsilon,
+__simd_vf__ inline void BatchNormImplVF(
+    __ubuf__ T* output, __ubuf__ T* outputMean, __ubuf__ T* outputVariance, __ubuf__ T* inputX, __ubuf__ T* gamm,
+    __ubuf__ T* beta, __ubuf__ float* tmpMeanLocal, __ubuf__ float* tmpVarLocal, const float epsilon,
     const BatchNormTiling tiling, uint32_t oriBLength, uint32_t featureLength, float firstDimValueBack)
 {
     ComputeOutputMean(outputMean, inputX, oriBLength, featureLength, firstDimValueBack);
@@ -326,45 +330,53 @@ __simd_vf__ inline void BatchNormImplVF(__ubuf__ T* output, __ubuf__ T* outputMe
 }
 
 template <typename T, bool isReuseSource = false, bool isBasicBlock = false>
-__aicore__ inline void BatchNormImpl(const LocalTensor<T>& output, const LocalTensor<T>& outputMean,
-    const LocalTensor<T>& outputVariance, const LocalTensor<T>& inputX,const LocalTensor<T>& gamm,
-    const LocalTensor<T>& beta, const LocalTensor<uint8_t>& sharedTmpBuffer, const T epsilon, BatchNormTiling& tiling)
+__aicore__ inline void BatchNormImpl(
+    const LocalTensor<T>& output, const LocalTensor<T>& outputMean, const LocalTensor<T>& outputVariance,
+    const LocalTensor<T>& inputX, const LocalTensor<T>& gamm, const LocalTensor<T>& beta,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const T epsilon, BatchNormTiling& tiling)
 {
-    CHECK_FUNC_HIGHLEVEL_API(BatchNorm, (T, isReuseSource, isBasicBlock), (output, outputMean, outputVariance, inputX,
-        gamm, beta, sharedTmpBuffer, epsilon, tiling));
+    CHECK_FUNC_HIGHLEVEL_API(
+        BatchNorm, (T, isReuseSource, isBasicBlock),
+        (output, outputMean, outputVariance, inputX, gamm, beta, sharedTmpBuffer, epsilon, tiling));
     static_assert(SupportType<T, half, float>(), "current data type is not supported on current device!");
     uint32_t oriBLength = tiling.originalBLength;
     uint32_t featureLength = tiling.meanVarSize;
     float firstDimValueBack = tiling.firstDimValueBack;
     if constexpr (isBasicBlock) {
-        ASCENDC_ASSERT((oriBLength % 8 == 0),
-            {KERNEL_LOG(KERNEL_ERROR, "BatchNorm buffer size error: oriBLength is %u not a multiple of 8", oriBLength);});
-        ASCENDC_ASSERT((featureLength % 64 == 0 && featureLength <= 2048),
-            {KERNEL_LOG(KERNEL_ERROR, "BatchNorm buffer size error: current sLength * hLength is %u not a multiple of 64"
-            "AND <= 2048.", featureLength);});
+        ASCENDC_ASSERT((oriBLength % 8 == 0), {
+            KERNEL_LOG(KERNEL_ERROR, "BatchNorm buffer size error: oriBLength is %u not a multiple of 8", oriBLength);
+        });
+        ASCENDC_ASSERT((featureLength % 64 == 0 && featureLength <= 2048), {
+            KERNEL_LOG(
+                KERNEL_ERROR,
+                "BatchNorm buffer size error: current sLength * hLength is %u not a multiple of 64"
+                "AND <= 2048.",
+                featureLength);
+        });
     }
     float epsilonFloat = static_cast<float>(epsilon);
     LocalTensor<float> tmpLocal = sharedTmpBuffer.ReinterpretCast<float>();
     LocalTensor<float> tmpMeanLocal = tmpLocal;
 
     LocalTensor<float> tmpVarLocal = tmpLocal[featureLength];
-    BatchNormImplVF<T, isReuseSource, isBasicBlock>((__ubuf__ T*)output.GetPhyAddr(),
-        (__ubuf__ T*)outputMean.GetPhyAddr(), (__ubuf__ T*)outputVariance.GetPhyAddr(),
-        (__ubuf__ T*)inputX.GetPhyAddr(), (__ubuf__ T*)gamm.GetPhyAddr(), (__ubuf__ T*)beta.GetPhyAddr(),
-        (__ubuf__ float*)tmpMeanLocal.GetPhyAddr(), (__ubuf__ float*)tmpVarLocal.GetPhyAddr(), epsilonFloat, tiling,
-        oriBLength, featureLength, firstDimValueBack);
+    BatchNormImplVF<T, isReuseSource, isBasicBlock>(
+        (__ubuf__ T*)output.GetPhyAddr(), (__ubuf__ T*)outputMean.GetPhyAddr(),
+        (__ubuf__ T*)outputVariance.GetPhyAddr(), (__ubuf__ T*)inputX.GetPhyAddr(), (__ubuf__ T*)gamm.GetPhyAddr(),
+        (__ubuf__ T*)beta.GetPhyAddr(), (__ubuf__ float*)tmpMeanLocal.GetPhyAddr(),
+        (__ubuf__ float*)tmpVarLocal.GetPhyAddr(), epsilonFloat, tiling, oriBLength, featureLength, firstDimValueBack);
 }
 
 template <typename T, bool isReuseSource = false, bool isBasicBlock = false>
-__aicore__ inline void BatchNormImpl(const LocalTensor<T>& output, const LocalTensor<T>& outputMean,
-    const LocalTensor<T>& outputVariance, const LocalTensor<T>& inputX, const LocalTensor<T>& gamm,
-    const LocalTensor<T>& beta, const T epsilon, BatchNormTiling& tiling)
+__aicore__ inline void BatchNormImpl(
+    const LocalTensor<T>& output, const LocalTensor<T>& outputMean, const LocalTensor<T>& outputVariance,
+    const LocalTensor<T>& inputX, const LocalTensor<T>& gamm, const LocalTensor<T>& beta, const T epsilon,
+    BatchNormTiling& tiling)
 {
     LocalTensor<uint8_t> sharedTmpBuffer;
     bool ret = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);
-    ASCENDC_ASSERT((ret), { KERNEL_LOG(KERNEL_ERROR, "BatchNorm failed to apply for tmp buffer!");});
-    BatchNormImpl<T, isReuseSource, isBasicBlock>(output, outputMean, outputVariance, inputX, gamm, beta,
-        sharedTmpBuffer, epsilon, tiling);
+    ASCENDC_ASSERT((ret), { KERNEL_LOG(KERNEL_ERROR, "BatchNorm failed to apply for tmp buffer!"); });
+    BatchNormImpl<T, isReuseSource, isBasicBlock>(
+        output, outputMean, outputVariance, inputX, gamm, beta, sharedTmpBuffer, epsilon, tiling);
 }
 } // namespace BatchNormAPI
 } // namespace AscendC

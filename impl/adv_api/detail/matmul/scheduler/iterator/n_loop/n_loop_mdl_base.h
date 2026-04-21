@@ -1,19 +1,20 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file n_loop_mdl_base.h
  * \brief n_loop base class for mdl and mdl_outer_product
  */
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/scheduler/iterator/n_loop/n_loop_mdl_base.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/scheduler/iterator/n_loop/n_loop_mdl_base.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_ITERATOR_N_LOOP_N_LOOP_MDL_BASE_H__
 #endif
@@ -32,36 +33,31 @@ namespace Detail {
     NLoopMDLBase is only for internal usage, does not support extension or customized specialization!
 */
 template <typename IMPL, class A_TYPE, const auto& MM_CFG>
-class NLoopMDLBase
-{
+class NLoopMDLBase {
     MATMUL_USE_MODULE(MatmulShapeTiling);
+
 public:
     __aicore__ inline NLoopMDLBase() = default;
     __aicore__ inline ~NLoopMDLBase() = default;
 
-    __aicore__ inline void Init(int32_t singleShape)
-    {
-        SetSingleShape(singleShape);
-    }
+    __aicore__ inline void Init(int32_t singleShape) { SetSingleShape(singleShape); }
 
     __aicore__ inline void SetSingleShape(int32_t singleShape)
     {
-        if constexpr (ToMatmulConfig(MM_CFG).singleCoreN != 0 && ToMatmulConfig(MM_CFG).basicN != 0 &&
+        if constexpr (
+            ToMatmulConfig(MM_CFG).singleCoreN != 0 && ToMatmulConfig(MM_CFG).basicN != 0 &&
             !ToMatmulConfig(MM_CFG).enableSetTail) {
             SetSingleShapeFromCFG();
         } else {
             SetSingleShapeFromTiling(singleShape);
         }
         ASCENDC_ASSERT((totalIter_ > 0), {
-            KERNEL_LOG(KERNEL_ERROR, "invalid singleCoreN, totalIter_ is %d , which should be larger than 0",
-                totalIter_);
+            KERNEL_LOG(
+                KERNEL_ERROR, "invalid singleCoreN, totalIter_ is %d , which should be larger than 0", totalIter_);
         });
     }
 
-    __aicore__ inline uint32_t GetTotalIter() const
-    {
-        return totalIter_;
-    }
+    __aicore__ inline uint32_t GetTotalIter() const { return totalIter_; }
 
     __aicore__ inline bool OuterNext()
     {
@@ -90,35 +86,20 @@ public:
         }
     }
 
-    __aicore__ inline bool IsLastOuterIter() const
-    {
-        return outerIndex_ + 1 >= outerIter_;
-    }
+    __aicore__ inline bool IsLastOuterIter() const { return outerIndex_ + 1 >= outerIter_; }
 
-    __aicore__ inline uint32_t GetOuterIdx() const
-    {
-        return outerIndex_;
-    }
+    __aicore__ inline uint32_t GetOuterIdx() const { return outerIndex_; }
 
-    __aicore__ inline uint32_t GetOuterIter() const
-    {
-        return outerIter_;
-    }
+    __aicore__ inline uint32_t GetOuterIter() const { return outerIter_; }
 
-    __aicore__ inline int32_t GetTileShape() const
-    {
-        return tileShape_;
-    }
+    __aicore__ inline int32_t GetTileShape() const { return tileShape_; }
 
     __aicore__ inline int32_t GetTileShapeOf(int32_t outerIdx) const
     {
         return (outerIdx + 1 >= outerIter_) ? tailTileShape_ : mainTileShape_;
     }
 
-    __aicore__ inline int32_t GetTileBlockShape() const
-    {
-        return tileBlockShape_;
-    }
+    __aicore__ inline int32_t GetTileBlockShape() const { return tileBlockShape_; }
 
     __aicore__ inline bool InnerNext()
     {
@@ -137,58 +118,42 @@ public:
         UpdateInnerParams();
     }
 
-    __aicore__ inline bool InnerEnd()
-    {
-        return innerIndex_ >= innerStartIdx_ + innerIter_;
-    }
+    __aicore__ inline bool InnerEnd() { return innerIndex_ >= innerStartIdx_ + innerIter_; }
 
-    __aicore__ inline uint32_t GetInnerIdx() const
-    {
-        return innerIndex_;
-    }
+    __aicore__ inline uint32_t GetInnerIdx() const { return innerIndex_; }
 
-    __aicore__ inline uint32_t GetInnerIter() const
-    {
-        return innerIter_;
-    }
+    __aicore__ inline uint32_t GetInnerIter() const { return innerIter_; }
 
-    __aicore__ inline int32_t GetBaseShape() const
-    {
-        return baseShape_;
-    }
+    __aicore__ inline int32_t GetBaseShape() const { return baseShape_; }
 
-    __aicore__ inline int32_t GetBaseBlockShape() const
-    {
-        return baseBlockShape_;
-    }
+    __aicore__ inline int32_t GetBaseBlockShape() const { return baseBlockShape_; }
 
     __aicore__ inline void UpdateInnerParams()
     {
         if constexpr (IsBasicN(MM_CFG)) {
             baseShape_ = tailBaseShape_;
         } else {
-            baseShape_ = (innerIndex_ + 1 == totalIter_) ? tailBaseShape_ : MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
+            baseShape_ = (innerIndex_ + 1 == totalIter_) ? tailBaseShape_ :
+                                                           MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
         }
         baseBlockShape_ = Ceil(baseShape_, BLOCK_CUBE);
     }
 
-    __aicore__ inline bool IsBNL1FullLoad() const
-    {
-        return isB1NFullLoad_;
-    }
+    __aicore__ inline bool IsBNL1FullLoad() const { return isB1NFullLoad_; }
 
 private:
     __aicore__ inline void SetSingleShapeFromCFG()
     {
         totalIter_ = GetNIter(MM_CFG);
-        outerIter_ = Ceil(static_cast<uint32_t>(ToMatmulConfig(MM_CFG).singleCoreN),
-                            static_cast<uint32_t>(ToMatmulConfig(MM_CFG).basicN * ToMatmulConfig(MM_CFG).stepN));
+        outerIter_ = Ceil(
+            static_cast<uint32_t>(ToMatmulConfig(MM_CFG).singleCoreN),
+            static_cast<uint32_t>(ToMatmulConfig(MM_CFG).basicN * ToMatmulConfig(MM_CFG).stepN));
         tailBaseShape_ = ToMatmulConfig(MM_CFG).singleCoreN % ToMatmulConfig(MM_CFG).basicN;
         if (tailBaseShape_ == 0) {
             tailBaseShape_ = ToMatmulConfig(MM_CFG).basicN;
         }
         mainTileShape_ = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN() *
-                        MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN();
+                         MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN();
         tailTileShape_ = ToMatmulConfig(MM_CFG).singleCoreN % mainTileShape_;
         if (tailTileShape_ == 0) {
             tailTileShape_ = mainTileShape_;
@@ -225,7 +190,8 @@ protected:
         } else {
             innerStartIdx_ = outerIndex_ * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN();
             innerIter_ = (totalIter_ - innerStartIdx_) > MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN() ?
-                MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN() : (totalIter_ - innerStartIdx_);
+                             MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN() :
+                             (totalIter_ - innerStartIdx_);
             tileShape_ = (outerIndex_ + 1 >= outerIter_) ? tailTileShape_ : mainTileShape_;
         }
         tileBlockShape_ = Ceil(tileShape_, BLOCK_CUBE);
@@ -250,9 +216,9 @@ protected:
     bool isB1NFullLoad_;
 };
 
-}  // namespace Detail
-}  // namespace Impl
-}  // namespace AscendC
+} // namespace Detail
+} // namespace Impl
+} // namespace AscendC
 #endif // _N_LOOP_MDL_BASE_H_
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_ITERATOR_N_LOOP_N_LOOP_MDL_BASE_H__)

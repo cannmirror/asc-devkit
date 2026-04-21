@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file copy_cube_out_datacopy_wrapper.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/stage/copy_cube_out/copy_cube_out_datacopy_wrapper.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/stage/copy_cube_out/copy_cube_out_datacopy_wrapper.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_OUT_COPY_CUBE_OUT_DATACOPY_WRAPPER_H__
 #endif
@@ -40,13 +41,12 @@ constexpr uint32_t MAX_REPEAT_STRIDE = 255;
 constexpr int32_t PATTERN_SIZE = 8;
 constexpr int32_t PATTERN_OFFSET = 2;
 /*
-* CopyCubeOutWrapper is considered entirely experimental.
-* We retain the freedom to make incompatible changes, but do not guarantee the stability.
-* CopyCubeOutWrapper is only for internal usage, does not support extension or customized specialization!
-*/
+ * CopyCubeOutWrapper is considered entirely experimental.
+ * We retain the freedom to make incompatible changes, but do not guarantee the stability.
+ * CopyCubeOutWrapper is only for internal usage, does not support extension or customized specialization!
+ */
 template <typename IMPL, class A_TYPE, class B_TYPE, class C_TYPE, const auto& MM_CFG>
-class CopyCubeOutWrapper
-{
+class CopyCubeOutWrapper {
     using SrcT = typename A_TYPE::T;
     using DstT = typename C_TYPE::T;
 
@@ -65,8 +65,8 @@ public:
     }
 
     // if target is not aligned, must copy the unalign data to trans UB
-    __aicore__ inline bool IsNeedPadUnalignedToTrans(const int32_t baseWidth, const uint32_t dimN,
-        const bool isComputeLineByLine, const bool isTargetAligned)
+    __aicore__ inline bool IsNeedPadUnalignedToTrans(
+        const int32_t baseWidth, const uint32_t dimN, const bool isComputeLineByLine, const bool isTargetAligned)
     {
         if constexpr (IsSameType<SrcT, int8_t>::value) {
             bool isOdd = false;
@@ -75,8 +75,9 @@ public:
                     isOdd = true;
                 }
             }
-            bool isSingleCore = (MATMUL_MODULE(MatmulShapeInfo)->GetOrgM() <= MATMUL_MODULE(MatmulShapeInfo)->
-                GetSingleCoreM()) && (dimN <= MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN());
+            bool isSingleCore =
+                (MATMUL_MODULE(MatmulShapeInfo)->GetOrgM() <= MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreM()) &&
+                (dimN <= MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN());
             bool isMultiCoreNeedPad = !isSingleCore && !isComputeLineByLine;
             return (!isTargetAligned && (isSingleCore || isMultiCoreNeedPad) && !isOdd);
         } else {
@@ -86,8 +87,9 @@ public:
 
     // copy the unalign data to trans UB
     template <bool enSequentialWrite>
-    __aicore__ inline void PadUnalignedToTrans(const LocalTensor<DstT>& trans, const GlobalTensor<DstT>& gm,
-        int32_t dstOffset, bool isComputeLineByLine, int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth)
+    __aicore__ inline void PadUnalignedToTrans(
+        const LocalTensor<DstT>& trans, const GlobalTensor<DstT>& gm, int32_t dstOffset, bool isComputeLineByLine,
+        int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth)
     {
         int32_t alignedSize;
         if constexpr (IsSameType<DstT, int8_t>::value || IsSameType<DstT, uint8_t>::value) {
@@ -107,11 +109,13 @@ public:
             if constexpr (enSequentialWrite) {
                 PadUnalignedToTransByLine(trans[transTailOffset], gm[gmTailOffset], baseUseN, baseUseN, baseHeight);
             } else {
-                PadUnalignedToTransByLine(trans[transTailOffset], gm[gmTailOffset], baseUseN,
-                    MATMUL_MODULE(MatmulShapeInfo)->GetOrgN(), baseHeight);
+                PadUnalignedToTransByLine(
+                    trans[transTailOffset], gm[gmTailOffset], baseUseN, MATMUL_MODULE(MatmulShapeInfo)->GetOrgN(),
+                    baseHeight);
             }
         } else {
-            PadUnalignedToTransWithStride(trans[transTailOffset], gm[gmTailOffset], baseHeight, baseWidth, baseBlockWidth);
+            PadUnalignedToTransWithStride(
+                trans[transTailOffset], gm[gmTailOffset], baseHeight, baseWidth, baseBlockWidth);
         }
 
         // if copy gm to ub, must add the set/wait flag to wait the UB has be written;
@@ -121,12 +125,14 @@ public:
     }
 
     // trans nz buffer to nd buffer
-    __aicore__ inline auto TransNZ2NDByVec(const LocalTensor<DstT>& trans, const LocalTensor<DstT>& localBuf,
-        int32_t blockHigh, int32_t blockWidth, int32_t baseHeight, int32_t baseWidth, int32_t baseBlockWidth)
+    __aicore__ inline auto TransNZ2NDByVec(
+        const LocalTensor<DstT>& trans, const LocalTensor<DstT>& localBuf, int32_t blockHigh, int32_t blockWidth,
+        int32_t baseHeight, int32_t baseWidth, int32_t baseBlockWidth)
     {
         CopyOutEnQue();
         ASCENDC_ASSERT(((blockWidth * GetBlockCount() * sizeof(DstT) / ONE_BLK_SIZE) <= MAX_REPEAT_TIMES), {
-            KERNEL_LOG(KERNEL_ERROR, "blockWidth is %d, blockCount is %d, repeat time exceed max time %d", blockWidth,
+            KERNEL_LOG(
+                KERNEL_ERROR, "blockWidth is %d, blockCount is %d, repeat time exceed max time %d", blockWidth,
                 GetBlockCount(), MAX_REPEAT_TIMES);
         });
         if constexpr (IsSameType<DstT, int8_t>::value || IsSameType<DstT, uint8_t>::value) {
@@ -139,24 +145,27 @@ public:
 
     // copy trans buffer to gm
     template <bool enSequentialWrite>
-    __aicore__ inline void CopyTrans2GM(const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& trans,
-        int32_t curRow, int32_t curCol, int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth,
-        int32_t dstOffset, int32_t offset, int32_t dstStride, bool isComputeLineByLine, bool isTargetAligned)
+    __aicore__ inline void CopyTrans2GM(
+        const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& trans, int32_t curRow, int32_t curCol,
+        int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth, int32_t dstOffset,
+        int32_t offset, int32_t dstStride, bool isComputeLineByLine, bool isTargetAligned)
     {
         int32_t blockLen = baseBlockWidth * (GetBlockCount() * sizeof(DstT) / ONE_BLK_SIZE);
         if constexpr (IsSameType<DstT, int8_t>::value || IsSameType<DstT, uint8_t>::value) {
             blockLen = Ceil(blockLen, TWO_TIMES);
         }
         if (!isComputeLineByLine) {
-            DataCopy(gm[dstOffset], trans, { static_cast<uint16_t>(baseHeight), static_cast<uint16_t>(blockLen), 0,
-                static_cast<uint16_t>(dstStride) });
+            DataCopy(
+                gm[dstOffset], trans,
+                {static_cast<uint16_t>(baseHeight), static_cast<uint16_t>(blockLen), 0,
+                 static_cast<uint16_t>(dstStride)});
             return;
         }
         if constexpr (IsSameType<SrcT, int8_t>::value) {
             if constexpr (!enSequentialWrite) {
                 dstOffset = curRow * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM() *
-                    MATMUL_MODULE(MatmulShapeInfo)->GetOrgN() + curCol *
-                    MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
+                                MATMUL_MODULE(MatmulShapeInfo)->GetOrgN() +
+                            curCol * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
                 offset = MATMUL_MODULE(MatmulShapeInfo)->GetOrgN();
             }
             int32_t newBlockCount;
@@ -168,78 +177,91 @@ public:
             if (isTargetAligned) {
                 CopyTrans2GMByVecByLineAlign(gm[dstOffset], trans, baseHeight, blockLen, newBlockCount, offset);
             } else if (blockLen == 1) {
-                CopyTrans2GMByVecByLineUnalignOneBlock(gm[dstOffset], trans, baseHeight, baseWidth, blockLen, newBlockCount, offset);
+                CopyTrans2GMByVecByLineUnalignOneBlock(
+                    gm[dstOffset], trans, baseHeight, baseWidth, blockLen, newBlockCount, offset);
             } else {
                 if constexpr (IsSameType<DstT, int8_t>::value || IsSameType<DstT, uint8_t>::value) {
-                    CopyTrans2GMByVecByLineUnalign<true>(gm[dstOffset], trans, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth, blockLen, newBlockCount, offset);
+                    CopyTrans2GMByVecByLineUnalign<true>(
+                        gm[dstOffset], trans, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth, blockLen,
+                        newBlockCount, offset);
                 } else {
-                    CopyTrans2GMByVecByLineUnalign<false>(gm[dstOffset], trans, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth, blockLen, newBlockCount, offset);
+                    CopyTrans2GMByVecByLineUnalign<false>(
+                        gm[dstOffset], trans, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth, blockLen,
+                        newBlockCount, offset);
                 }
             }
         } else {
-            CopyTrans2GMByVecByLineAlign(gm[dstOffset], trans, baseHeight, blockLen, ONE_BLK_SIZE / sizeof(DstT), offset);
+            CopyTrans2GMByVecByLineAlign(
+                gm[dstOffset], trans, baseHeight, blockLen, ONE_BLK_SIZE / sizeof(DstT), offset);
         }
     }
 
     // if baseWidth is unaligned, then copy the tail data
-    __aicore__ inline void CopyLocal2GMNZ2NDOnTheFlyTail(const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& localBuf,
-        int32_t baseHeight, int32_t baseWidth, int32_t iterIdx, int32_t calcWidth, const event_t& eventIDMte3ToMte2)
+    __aicore__ inline void CopyLocal2GMNZ2NDOnTheFlyTail(
+        const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& localBuf, int32_t baseHeight, int32_t baseWidth,
+        int32_t iterIdx, int32_t calcWidth, const event_t& eventIDMte3ToMte2)
     {
         LocalTensor<DstT> trans = MATMUL_MODULE(LocalWorkspace)->GetNZ2NDWorkspace().template ReinterpretCast<DstT>();
         trans.SetSize(GetBlockCount());
-        int32_t srcTailOffset = iterIdx * GetBlockCount() + calcWidth * GetBlockCount() * CeilAlign(baseHeight, GetBlockCount());
+        int32_t srcTailOffset =
+            iterIdx * GetBlockCount() + calcWidth * GetBlockCount() * CeilAlign(baseHeight, GetBlockCount());
         if (baseWidth * sizeof(DstT) > ONE_BLK_SIZE) {
             CopyLocal2GMNZ2NDRegMov(gm, localBuf, trans, baseHeight, baseWidth, iterIdx, calcWidth, srcTailOffset);
         } else {
             if (iterIdx > 0) {
                 WaitFlag<HardEvent::MTE3_MTE2>(eventIDMte3ToMte2);
             }
-            if constexpr (IsSameType<typename A_TYPE::T, half>::value &&
-                IsSameType<typename B_TYPE::T, int8_t>::value) {
+            if constexpr (
+                IsSameType<typename A_TYPE::T, half>::value && IsSameType<typename B_TYPE::T, int8_t>::value) {
                 event_t eventID = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_MTE2));
                 SetFlag<HardEvent::V_MTE2>(eventID);
                 WaitFlag<HardEvent::V_MTE2>(eventID);
             }
-            DataCopy(trans, gm[baseWidth], { 1, 1, 0, 0 });
+            DataCopy(trans, gm[baseWidth], {1, 1, 0, 0});
             event_t eventIDMte2ToMte3 = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::MTE2_MTE3));
             SetFlag<HardEvent::MTE2_MTE3>(eventIDMte2ToMte3);
             WaitFlag<HardEvent::MTE2_MTE3>(eventIDMte2ToMte3);
-            DataCopy(gm, localBuf[srcTailOffset], { 1, 1, 0, 0 });
+            DataCopy(gm, localBuf[srcTailOffset], {1, 1, 0, 0});
             PipeBarrier<PIPE_MTE3>();
-            DataCopy(gm[baseWidth], trans, { 1, 1, 0, 0 });
-            if (iterIdx <  baseHeight - 1) {
+            DataCopy(gm[baseWidth], trans, {1, 1, 0, 0});
+            if (iterIdx < baseHeight - 1) {
                 SetFlag<HardEvent::MTE3_MTE2>(eventIDMte3ToMte2);
             }
         }
     }
 
 private:
-    __aicore__ inline void PadUnalignedToTransByLine(const LocalTensor<DstT>& trans, const GlobalTensor<DstT>& gm,
-        int32_t transStride, int32_t gmStride, int32_t baseHeight)
+    __aicore__ inline void PadUnalignedToTransByLine(
+        const LocalTensor<DstT>& trans, const GlobalTensor<DstT>& gm, int32_t transStride, int32_t gmStride,
+        int32_t baseHeight)
     {
         // copy gm to trans one line by one line
         int32_t dstOffset = 0;
         int32_t srcOffset = 0;
         int32_t blockLen = GetBlockCount() * sizeof(DstT) / ONE_BLK_SIZE;
         for (int32_t i = 0; i < baseHeight; ++i) {
-            DataCopy(trans[dstOffset], gm[srcOffset], { static_cast<uint16_t>(1),
-                static_cast<uint16_t>(blockLen), 0, 0 });
+            DataCopy(
+                trans[dstOffset], gm[srcOffset], {static_cast<uint16_t>(1), static_cast<uint16_t>(blockLen), 0, 0});
             dstOffset += transStride;
             srcOffset += gmStride;
         }
     }
 
-    __aicore__ inline void PadUnalignedToTransWithStride(const LocalTensor<DstT>& trans, const GlobalTensor<DstT>& gm, int32_t baseHeight,
-        int32_t baseWidth, int32_t baseBlockWidth)
+    __aicore__ inline void PadUnalignedToTransWithStride(
+        const LocalTensor<DstT>& trans, const GlobalTensor<DstT>& gm, int32_t baseHeight, int32_t baseWidth,
+        int32_t baseBlockWidth)
     {
         // copy gm to trans with stride
-        DataCopy(trans, gm, { static_cast<uint16_t>(baseHeight), static_cast<uint16_t>(1),
-            static_cast<uint16_t>(MATMUL_MODULE(MatmulShapeInfo)->GetOrgN() / GetBlockCount() - 1),
-            static_cast<uint16_t>(baseWidth / GetBlockCount()) });
+        DataCopy(
+            trans, gm,
+            {static_cast<uint16_t>(baseHeight), static_cast<uint16_t>(1),
+             static_cast<uint16_t>(MATMUL_MODULE(MatmulShapeInfo)->GetOrgN() / GetBlockCount() - 1),
+             static_cast<uint16_t>(baseWidth / GetBlockCount())});
     }
 
-    __aicore__ inline void TransNZ2NDByVecDstB8(const LocalTensor<DstT>& trans, const LocalTensor<DstT>& localBuf,
-        int32_t blockHigh, int32_t blockWidth, int32_t baseHeight, int32_t baseWidth, int32_t baseBlockWidth)
+    __aicore__ inline void TransNZ2NDByVecDstB8(
+        const LocalTensor<DstT>& trans, const LocalTensor<DstT>& localBuf, int32_t blockHigh, int32_t blockWidth,
+        int32_t baseHeight, int32_t baseWidth, int32_t baseBlockWidth)
     {
         struct UnaryRepeatParams intriParams;
         intriParams.dstBlkStride = Ceil(baseWidth, ONE_BLK_SIZE);
@@ -293,8 +315,9 @@ private:
         }
     }
 
-    __aicore__ inline void TransNZ2NDByVecDstNotB8(const LocalTensor<DstT>& trans, const LocalTensor<DstT>& localBuf,
-        int32_t blockHigh, int32_t blockWidth, int32_t baseHeight, int32_t baseWidth, int32_t baseBlockWidth)
+    __aicore__ inline void TransNZ2NDByVecDstNotB8(
+        const LocalTensor<DstT>& trans, const LocalTensor<DstT>& localBuf, int32_t blockHigh, int32_t blockWidth,
+        int32_t baseHeight, int32_t baseWidth, int32_t baseBlockWidth)
     {
         struct UnaryRepeatParams intriParams;
         intriParams.srcBlkStride = 1;
@@ -313,7 +336,7 @@ private:
             intriParams.srcRepStride = GetBlockCount() * sizeof(DstT) / ONE_BLK_SIZE;
             highBlocks = (blockHigh * GetBlockCount()) / MAX_REPEAT_TIMES;
             highTail = (blockHigh * GetBlockCount()) % MAX_REPEAT_TIMES;
-            mask[0] = static_cast<uint64_t>((1<< GetBlockCount()) - 1);
+            mask[0] = static_cast<uint64_t>((1 << GetBlockCount()) - 1);
             mask[1] = 0;
         } else {
             intriParams.dstBlkStride = blockWidth;
@@ -336,25 +359,29 @@ private:
                 // if the baseWidth is not aligned, set the mask value;
                 if (i == (blockWidth - 1) && (baseWidth % GetBlockCount() != 0)) {
                     uint64_t maskTail = (1 << (baseWidth % GetBlockCount())) - 1;
-                    mask[0] = maskTail + (maskTail << SHIFT_16_BIT) + (maskTail << SHIFT_32_BIT) + (maskTail << SHIFT_48_BIT);
+                    mask[0] =
+                        maskTail + (maskTail << SHIFT_16_BIT) + (maskTail << SHIFT_32_BIT) + (maskTail << SHIFT_48_BIT);
                     mask[1] = mask[0];
                     SetVectorMask<DstT>(mask[1], mask[0]);
                 }
             }
             int32_t dstMulsOffset = dstOffset;
             for (int32_t j = 0; j < highBlocks; ++j) {
-                Muls<DstT, false>(trans[dstMulsOffset], localBuf[srcOffset], (DstT)1.0, mask, MAX_REPEAT_TIMES, intriParams);
+                Muls<DstT, false>(
+                    trans[dstMulsOffset], localBuf[srcOffset], (DstT)1.0, mask, MAX_REPEAT_TIMES, intriParams);
                 srcOffset += srcStride;
                 dstMulsOffset += dstStride;
             }
             if (highTail) {
                 if (isBeyondMaxStride) {
                     for (int32_t j = 0; j < highTail; j++) {
-                        Muls<DstT, false>(trans[dstMulsOffset + j * dstOffsetStride],
-                            localBuf[srcOffset + j * srcOffsetStride], (DstT)1.0, mask, 1, intriParams);
+                        Muls<DstT, false>(
+                            trans[dstMulsOffset + j * dstOffsetStride], localBuf[srcOffset + j * srcOffsetStride],
+                            (DstT)1.0, mask, 1, intriParams);
                     }
                 } else {
-                    Muls<DstT, false>(trans[dstMulsOffset], localBuf[srcOffset], (DstT)1.0, mask, highTail, intriParams);
+                    Muls<DstT, false>(
+                        trans[dstMulsOffset], localBuf[srcOffset], (DstT)1.0, mask, highTail, intriParams);
                 }
                 if constexpr (sizeof(DstT) == B32_BYTE_SIZE) {
                     srcOffset += highTail * GetBlockCount();
@@ -366,32 +393,33 @@ private:
         }
     }
 
-    __aicore__ inline void CopyTrans2GMByVecByLineAlign(const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& trans, int32_t baseHeight,
-        int32_t blockLen, int32_t blockCount, int32_t offset)
+    __aicore__ inline void CopyTrans2GMByVecByLineAlign(
+        const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& trans, int32_t baseHeight, int32_t blockLen,
+        int32_t blockCount, int32_t offset)
     {
         int32_t dstOffset = 0;
         int32_t srcOffset = 0;
         int32_t blockOffset = blockLen * blockCount;
         for (int32_t i = 0; i < baseHeight; ++i) {
-            DataCopy(gm[dstOffset], trans[srcOffset],
-                { 1, static_cast<uint16_t>(blockLen), 0, 0 });
-            PipeBarrier<PIPE_MTE3>();
+            DataCopy(gm[dstOffset], trans[srcOffset], {1, static_cast<uint16_t>(blockLen), 0, 0});
             dstOffset += offset;
             srcOffset += blockOffset;
         }
     }
 
-    __aicore__ inline void CopyTrans2GMByVecByLineUnalignOneBlock(const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& trans,
-        int32_t baseHeight, int32_t baseWidth, int32_t blockLen, int32_t blockCount, int32_t offset)
+    __aicore__ inline void CopyTrans2GMByVecByLineUnalignOneBlock(
+        const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& trans, int32_t baseHeight, int32_t baseWidth,
+        int32_t blockLen, int32_t blockCount, int32_t offset)
     {
         CopyTrans2GMEnQue();
         int32_t padLen = (ONE_BLK_SIZE - baseWidth * sizeof(DstT)) / sizeof(DstT);
         SetAtomicAdd<int16_t>();
         int32_t dstOffset = 0;
         for (int32_t i = 0; i < baseHeight; ++i) {
-            LocalTensor<DstT> transAligin = MATMUL_MODULE(LocalWorkspace)->template
-                GetWorkspaceWithOffset<ToMatmulConfig(MM_CFG).enableUBReuse>(0)
-                .template ReinterpretCast<DstT>();
+            LocalTensor<DstT> transAligin =
+                MATMUL_MODULE(LocalWorkspace)
+                    ->template GetWorkspaceWithOffset<ToMatmulConfig(MM_CFG).enableUBReuse>(0)
+                    .template ReinterpretCast<DstT>();
             int32_t transIndex = i * blockLen * blockCount;
             for (int32_t j = 0; j < baseWidth; ++j) {
                 transAligin.SetValue(j, trans.GetValue(transIndex + j));
@@ -399,7 +427,7 @@ private:
             for (int32_t j = baseWidth; j < blockCount; ++j) {
                 transAligin.SetValue(j, 0);
             }
-            DataCopy(gm[dstOffset], transAligin, { 1, 1, 0, 0 });
+            DataCopy(gm[dstOffset], transAligin, {1, 1, 0, 0});
             dstOffset += offset;
             CopyLocal2GMNZ2NDDeQue();
         }
@@ -407,18 +435,22 @@ private:
     }
 
     template <bool isDstB8>
-    __aicore__ inline auto CopyTrans2GMByVecByLineUnalign(const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& trans,
-        int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth, int32_t blockLen,
-        int32_t blockCount, int32_t offset) -> enable_if_t<isDstB8, void>
+    __aicore__ inline auto CopyTrans2GMByVecByLineUnalign(
+        const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& trans, int32_t baseHeight, int32_t baseWidth,
+        int32_t baseBlockHeight, int32_t baseBlockWidth, int32_t blockLen, int32_t blockCount, int32_t offset)
+        -> enable_if_t<isDstB8, void>
     {
-        LocalTensor<uint16_t> transAligin = MATMUL_MODULE(LocalWorkspace)->template
-            GetWorkspaceWithOffset<ToMatmulConfig(MM_CFG).enableUBReuse>(0).template ReinterpretCast<uint16_t>();
+        LocalTensor<uint16_t> transAligin =
+            MATMUL_MODULE(LocalWorkspace)
+                ->template GetWorkspaceWithOffset<ToMatmulConfig(MM_CFG).enableUBReuse>(0)
+                .template ReinterpretCast<uint16_t>();
         int32_t remainLen = (baseWidth % blockCount) / TWO_TIMES;
         CopyTrans2GMEnQue();
         LocalTensor<uint16_t> src1Pattern;
-        src1Pattern = MATMUL_MODULE(LocalWorkspace)->template GetWorkspaceWithOffset<
-            ToMatmulConfig(MM_CFG).enableUBReuse>(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetTransLength()
-            / TWO_TIMES).template ReinterpretCast<uint16_t>();
+        src1Pattern = MATMUL_MODULE(LocalWorkspace)
+                          ->template GetWorkspaceWithOffset<ToMatmulConfig(MM_CFG).enableUBReuse>(
+                              MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetTransLength() / TWO_TIMES)
+                          .template ReinterpretCast<uint16_t>();
         LocalTensor<uint16_t> tmpSrc = trans.template ReinterpretCast<uint16_t>();
         src1Pattern.SetSize(PATTERN_SIZE);
         src1Pattern.SetValue(0, 0xFFFF << remainLen);
@@ -432,15 +464,16 @@ private:
         int32_t srcOffset = 0;
         int32_t blockOffset = blockLen * blockCount;
         for (int32_t i = 0; i < baseHeight; ++i) {
-            DataCopy(gm[dstOffset], trans[srcOffset], { 1, static_cast<uint16_t>(blockLen - 1), 0, 0 });
+            DataCopy(gm[dstOffset], trans[srcOffset], {1, static_cast<uint16_t>(blockLen - 1), 0, 0});
             if (baseWidth % TWO_TIMES == 0) {
                 CopyOutEnQue();
                 GatherMaskParams gatherMaskParams(1, 1, PATTERN_SIZE, PATTERN_SIZE);
                 uint64_t rsvdCnt = 0;
-                GatherMask<uint16_t>(transAligin, tmpSrc[((i + 1) * blockLen - PATTERN_OFFSET) * BLOCK_CUBE],
-                    src1Pattern, false, 0, gatherMaskParams, rsvdCnt);
+                GatherMask<uint16_t>(
+                    transAligin, tmpSrc[((i + 1) * blockLen - PATTERN_OFFSET) * BLOCK_CUBE], src1Pattern, false, 0,
+                    gatherMaskParams, rsvdCnt);
                 LocalTensor<DstT> tmpTrans = transAligin.template ReinterpretCast<DstT>();
-                DataCopy(gm[dstOffset + gmOffset + remainLen * DOUBLE_SPACE], tmpTrans, { 1, 1, 0, 0 });
+                DataCopy(gm[dstOffset + gmOffset + remainLen * DOUBLE_SPACE], tmpTrans, {1, 1, 0, 0});
             } else {
                 CopyLocal2GMNZ2NDDeQue();
                 LocalTensor<DstT> tmpTrans = transAligin.template ReinterpretCast<DstT>();
@@ -448,7 +481,7 @@ private:
                     tmpTrans.SetValue(j, trans[srcOffset + gmOffset + originalRemain].GetValue(j));
                 }
                 CopyLocal2GMNZ2NDEnQue();
-                DataCopy(gm[dstOffset + gmOffset + originalRemain], tmpTrans, { 1, 1, 0, 0 });
+                DataCopy(gm[dstOffset + gmOffset + originalRemain], tmpTrans, {1, 1, 0, 0});
             }
             PipeBarrier<PIPE_MTE3>();
             dstOffset += offset;
@@ -457,18 +490,21 @@ private:
     }
 
     template <bool isDstB8>
-    __aicore__ inline auto CopyTrans2GMByVecByLineUnalign(const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& trans,
-        int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth, int32_t blockLen,
-        int32_t blockCount, int32_t offset) -> enable_if_t<!isDstB8, void>
+    __aicore__ inline auto CopyTrans2GMByVecByLineUnalign(
+        const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& trans, int32_t baseHeight, int32_t baseWidth,
+        int32_t baseBlockHeight, int32_t baseBlockWidth, int32_t blockLen, int32_t blockCount, int32_t offset)
+        -> enable_if_t<!isDstB8, void>
     {
-        LocalTensor<DstT> transAligin = MATMUL_MODULE(LocalWorkspace)->template
-            GetWorkspaceWithOffset<ToMatmulConfig(MM_CFG).enableUBReuse>(0).template ReinterpretCast<DstT>();
+        LocalTensor<DstT> transAligin = MATMUL_MODULE(LocalWorkspace)
+                                            ->template GetWorkspaceWithOffset<ToMatmulConfig(MM_CFG).enableUBReuse>(0)
+                                            .template ReinterpretCast<DstT>();
         int32_t remainLen = baseWidth % blockCount;
         CopyTrans2GMEnQue();
         LocalTensor<uint16_t> src1Pattern;
-        src1Pattern = MATMUL_MODULE(LocalWorkspace)->template
-            GetWorkspaceWithOffset<ToMatmulConfig(MM_CFG).enableUBReuse>(
-            MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetTransLength() / TWO_TIMES).template ReinterpretCast<uint16_t>();
+        src1Pattern = MATMUL_MODULE(LocalWorkspace)
+                          ->template GetWorkspaceWithOffset<ToMatmulConfig(MM_CFG).enableUBReuse>(
+                              MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetTransLength() / TWO_TIMES)
+                          .template ReinterpretCast<uint16_t>();
         src1Pattern.SetSize(PATTERN_SIZE);
         src1Pattern.SetValue(0, 0xFFFF << remainLen);
         src1Pattern.SetValue(1, (1 << remainLen) - 1);
@@ -480,36 +516,35 @@ private:
         int32_t srcOffset = 0;
         int32_t blockOffset = blockLen * blockCount;
         for (int32_t i = 0; i < baseHeight; ++i) {
-            DataCopy(gm[dstOffset], trans[srcOffset], { 1, static_cast<uint16_t>(blockLen - 1), 0, 0 });
+            DataCopy(gm[dstOffset], trans[srcOffset], {1, static_cast<uint16_t>(blockLen - 1), 0, 0});
             GatherMaskParams gatherMaskParams(1, 1, PATTERN_SIZE, PATTERN_SIZE);
             uint64_t rsvdCnt = 0;
             CopyOutEnQue();
-            GatherMask<DstT>(transAligin, trans[srcOffset + gmOffset],
-                src1Pattern, false, 0, gatherMaskParams, rsvdCnt);
-            DataCopy(gm[dstOffset + gmOffset + remainLen], transAligin, { 1, 1, 0, 0 });
+            GatherMask<DstT>(
+                transAligin, trans[srcOffset + gmOffset], src1Pattern, false, 0, gatherMaskParams, rsvdCnt);
+            DataCopy(gm[dstOffset + gmOffset + remainLen], transAligin, {1, 1, 0, 0});
             PipeBarrier<PIPE_MTE3>();
             dstOffset += offset;
             srcOffset += blockOffset;
         }
     }
 
-    __aicore__ inline void CopyLocal2GMNZ2NDRegMov(const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& localBuf,
-        LocalTensor<DstT>& trans, int32_t baseHeight, int32_t baseWidth, int32_t iterIdx, int32_t calcWidth,
-        int32_t srcTailOffset)
+    __aicore__ inline void CopyLocal2GMNZ2NDRegMov(
+        const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& localBuf, LocalTensor<DstT>& trans, int32_t baseHeight,
+        int32_t baseWidth, int32_t iterIdx, int32_t calcWidth, int32_t srcTailOffset)
     {
         int32_t dstTailOffset = calcWidth * GetBlockCount();
         int32_t basicOffset = 0;
         if constexpr (sizeof(DstT) == B32_BYTE_SIZE) {
-            DataCopy(gm[dstTailOffset], localBuf[srcTailOffset], { 1, 1, 0, 0 });
+            DataCopy(gm[dstTailOffset], localBuf[srcTailOffset], {1, 1, 0, 0});
             basicOffset = ONE_BLK_SIZE / sizeof(DstT);
         }
 
         // reg_mov
-        srcTailOffset = srcTailOffset + basicOffset -
-            GetBlockCount() * CeilAlign(baseHeight, GetBlockCount()) + baseWidth % GetBlockCount();
+        srcTailOffset = srcTailOffset + basicOffset - GetBlockCount() * CeilAlign(baseHeight, GetBlockCount()) +
+                        baseWidth % GetBlockCount();
         dstTailOffset = dstTailOffset + basicOffset + baseWidth % GetBlockCount() - GetBlockCount();
-        if constexpr (IsSameType<typename A_TYPE::T, half>::value &&
-            IsSameType<typename B_TYPE::T, int8_t>::value) {
+        if constexpr (IsSameType<typename A_TYPE::T, half>::value && IsSameType<typename B_TYPE::T, int8_t>::value) {
             event_t eventID = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_S));
             SetFlag<HardEvent::V_S>(eventID);
             WaitFlag<HardEvent::V_S>(eventID);
@@ -519,7 +554,8 @@ private:
             DstT scalar = localBuf.GetValue(srcTailOffset + k);
             trans.SetValue(j, scalar);
         }
-        srcTailOffset = iterIdx * GetBlockCount() + calcWidth * GetBlockCount() * CeilAlign(baseHeight, GetBlockCount());
+        srcTailOffset =
+            iterIdx * GetBlockCount() + calcWidth * GetBlockCount() * CeilAlign(baseHeight, GetBlockCount());
         for (int32_t k = 0; k < baseWidth % GetBlockCount(); j++, k++) {
             DstT scalar = localBuf.GetValue(srcTailOffset + k);
             trans.SetValue(j, scalar);
@@ -527,18 +563,18 @@ private:
 
         CopyLocal2GMNZ2NDEnQue();
         // copy the tail from ub to gm
-        DataCopy(gm[dstTailOffset], trans, { 1, 1, 0, 0 });
-        if constexpr (IsSameType<typename A_TYPE::T, half>::value &&
-            IsSameType<typename B_TYPE::T, int8_t>::value) {
+        DataCopy(gm[dstTailOffset], trans, {1, 1, 0, 0});
+        if constexpr (IsSameType<typename A_TYPE::T, half>::value && IsSameType<typename B_TYPE::T, int8_t>::value) {
             CopyLocal2GMNZ2NDDeQue();
         }
     }
 };
-}  // namespace Detail
-}  // namespace Impl
-}  // namespace AscendC
+} // namespace Detail
+} // namespace Impl
+} // namespace AscendC
 #endif
-#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_OUT_COPY_CUBE_OUT_DATACOPY_WRAPPER_H__)
+#if defined( \
+    __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_OUT_COPY_CUBE_OUT_DATACOPY_WRAPPER_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_OUT_COPY_CUBE_OUT_DATACOPY_WRAPPER_H__
 #endif // IMPL_MATMUL_STAGE_COPY_CUBE_OUT_COPY_CUBE_OUT_DATACOPY_WRAPPER_H

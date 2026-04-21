@@ -1,32 +1,32 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
- 
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
 /*!
  * \file copy_cube_in_mdl_mx.h
  * \brief
  */
- 
- 
+
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/stage/copy_cube_in/base/copy_cube_in_mdl_mx.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/stage/copy_cube_in/base/copy_cube_in_mdl_mx.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_IN_BASE_COPY_CUBE_IN_MDL_MX_H__
 #endif
 
 #ifndef IMPL_MATMUL_MODULES_STAGE_COPY_CUBE_IN_COPY_CUBE_IN_MDL_MX_H
 #define IMPL_MATMUL_MODULES_STAGE_COPY_CUBE_IN_COPY_CUBE_IN_MDL_MX_H
- 
+
 #include "../copy_tile_to_cube/copy_tile_to_cube.h"
 #include "copy_cube_in_intf.h"
 #include "copy_cube_in_base.h"
- 
+
 namespace AscendC {
 namespace Impl {
 namespace Detail {
@@ -36,10 +36,11 @@ namespace Detail {
     CopyCubeIn is only for internal usage, does not support extension or customized specialization!
 */
 template <typename IMPL, class INPUT_TYPE, const auto& MM_CFG>
-class CopyCubeIn<IMPL, INPUT_TYPE, MM_CFG, enable_if_t<
-!MatmulFeatureTrait<MM_CFG>::IsNeedUB() && GetCopyCubeInType<INPUT_TYPE, MM_CFG>() == CopyCubeInType::MX_MDL>>
-: public CopyCubeInBase<IMPL, MM_CFG, INPUT_TYPE>
-{
+class CopyCubeIn<
+    IMPL, INPUT_TYPE, MM_CFG,
+    enable_if_t<
+        !MatmulFeatureTrait<MM_CFG>::IsNeedUB() && GetCopyCubeInType<INPUT_TYPE, MM_CFG>() == CopyCubeInType::MX_MDL>>
+    : public CopyCubeInBase<IMPL, MM_CFG, INPUT_TYPE> {
     MATMUL_USE_MODULE_ON(CubeInBuffer, INPUT_TYPE::TAG);
     MATMUL_USE_MODULE_ON(CopyCubeInParams, INPUT_TYPE::TAG);
     MATMUL_USE_MODULE_ON(DataCopyUtils, INPUT_TYPE::TAG);
@@ -47,19 +48,20 @@ class CopyCubeIn<IMPL, INPUT_TYPE, MM_CFG, enable_if_t<
     MATMUL_USE_MODULE(MatmulShapeTiling);
     using SrcT = fp8_e8m0_t;
     using TransT = typename INPUT_TYPE::TRANS_T;
- 
+
 public:
     using BASE_MODULE = AscendC::Impl::Detail::CopyCubeInBase<IMPL, MM_CFG, INPUT_TYPE>;
     __aicore__ inline CopyCubeIn() = default;
     __aicore__ inline ~CopyCubeIn() = default;
- 
+
     __aicore__ inline void Init()
     {
-        MATMUL_MODULE(CubeInBuffer)->Init(
-            MATMUL_MODULE(CopyCubeInParams)->GetBufferSize(), MATMUL_MODULE(CopyCubeInParams)->GetDepth()
-             * MATMUL_MODULE(CopyCubeInParams)->GetScaleFactor());
-    }  
- 
+        MATMUL_MODULE(CubeInBuffer)
+            ->Init(
+                MATMUL_MODULE(CopyCubeInParams)->GetBufferSize(),
+                MATMUL_MODULE(CopyCubeInParams)->GetDepth() * MATMUL_MODULE(CopyCubeInParams)->GetScaleFactor());
+    }
+
     template <typename ScheduleContext = int>
     __aicore__ inline LocalTensor<TransT> LoadData(
         int32_t curRow, int32_t curCol, int32_t tileHeight, int32_t tileWidth, const ScheduleContext& context = {})
@@ -82,15 +84,15 @@ public:
     {
         if constexpr (INPUT_TYPE::TAG == InputTypeTag::scaleA) {
             return curCol % (MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKa() *
-            MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorKa());
+                             MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorKa());
         } else {
             return curRow % (MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKb() *
-            MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorKb());
+                             MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorKb());
         }
     }
 
-    __aicore__ inline void ClearLoadData(const LocalTensor<TransT>& tensor = LocalTensor<TransT>{},
-        int32_t curRow = 0, int32_t curCol = 0)
+    __aicore__ inline void ClearLoadData(
+        const LocalTensor<TransT>& tensor = LocalTensor<TransT>{}, int32_t curRow = 0, int32_t curCol = 0)
     {
         auto bufferPos = MATMUL_MODULE(CopyCubeInParams)->GetBufferPos();
         MATMUL_MODULE(CubeInBuffer)->FreeTensor(bufferPos);
@@ -101,8 +103,9 @@ public:
         int32_t curRow, int32_t curCol, int32_t tileHeight, int32_t tileWidth, const ScheduleContext& context = {})
     {
         if constexpr (PhyPosIsL1(INPUT_TYPE::pos) || INPUT_TYPE::layout != LayoutMode::NONE) {
-            ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR,
-                "Matching error. MDL AsyncLoadData doesn't support BMM && Src L1"); });
+            ASCENDC_ASSERT((false), {
+                KERNEL_LOG(KERNEL_ERROR, "Matching error. MDL AsyncLoadData doesn't support BMM && Src L1");
+            });
         }
 
         LocalTensor<TransT> l1;
@@ -119,14 +122,11 @@ public:
         }
     }
 
-    __aicore__ inline void AwaitLoadData()
-    {
-        MATMUL_MODULE(CubeInBuffer)->DeQue();
-    }
+    __aicore__ inline void AwaitLoadData() { MATMUL_MODULE(CubeInBuffer)->DeQue(); }
 };
-}  // namespace Detail
-}  // namespace Impl
-}  // namespace AscendC
+} // namespace Detail
+} // namespace Impl
+} // namespace AscendC
 #endif // IMPL_MATMUL_MODULES_STAGE_COPY_CUBE_IN_COPY_CUBE_IN_MDL_MX_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_IN_BASE_COPY_CUBE_IN_MDL_MX_H__)

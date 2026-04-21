@@ -19,7 +19,6 @@
 
 ## 算子描述
 - 算子功能：  
-
   本样例中实现的是[m, n, k]固定为[32, 32, 32]的Matmul乘算子，对应的数学表达式为：
   ```
   C = A * B
@@ -41,7 +40,7 @@
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">fixpipe_co12c1_quantization_s322f16</td></tr>
   </table>
 - 算子实现：  
-  - Kernel实现
+  - Kernel实现  
     计算逻辑是：Ascend C提供的矩阵乘计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储并进行分形转换，然后使用计算接口完成两个输入参数矩阵乘运算，得到最终结果，再搬出到外部存储上。  
 
     Matmul算子的实现流程分为基本任务：CopyIn，SplitA，SplitB，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入inputGM搬运到Local Memory A1/B1中，搬运过程中进行ND至NZ分形转换。SplitA/SplitB分别将数据进一步搬运至接口所要求Local Memory A2/B2，Compute任务负责对数据进行矩阵乘运算，计算结果存储在Local Memory CO1中。CopyOut任务负责将输出数据从CO1搬运至Local Memory C1，使能量化将int32_t类型数据转换为half类型，通过Fixpipe接口完成。再将输出数据从C1搬运至Global Memory，通过DataCopy接口完成。输出数据的搬运过程中不进行NZ到ND的格式转换，最终输出到Global Memory的数据为NZ格式。

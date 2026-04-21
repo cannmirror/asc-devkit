@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file load_to_l0b_load3dv2.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/stage/split/load_to_l0b/load_to_l0b_loadInstr.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/stage/split/load_to_l0b/load_to_l0b_loadInstr.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_SPLIT_LOAD_TO_L0B_LOAD_TO_L0B_LOADINSTR_H__
 #endif
@@ -29,17 +30,18 @@ namespace Impl {
 namespace Detail {
 constexpr uint8_t SPARSE_NUM_RATE = 2;
 template <typename IMPL, class INPUT_TYPE, const auto& MM_CFG>
-class LoadToL0B<IMPL, INPUT_TYPE, MM_CFG,
-    enable_if_t<!(DoMatmulBasicBlock(MM_CFG) || DoMatmulSpecialBasicBlock(MM_CFG)) &&
-                (MatmulFeatureTrait<MM_CFG>::IsSupportLoad3dV2()) &&
-                !(MatmulFeatureTrait<MM_CFG>::IsSupportLoad2dV2())>>
-{
+class LoadToL0B<
+    IMPL, INPUT_TYPE, MM_CFG,
+    enable_if_t<
+        !(DoMatmulBasicBlock(MM_CFG) || DoMatmulSpecialBasicBlock(MM_CFG)) &&
+        (MatmulFeatureTrait<MM_CFG>::IsSupportLoad3dV2()) && !(MatmulFeatureTrait<MM_CFG>::IsSupportLoad2dV2())>> {
     using B_T = typename INPUT_TYPE::T;
     using TransT = typename INPUT_TYPE::TRANS_T;
     using AuxDtype = decltype(GetAuxDataType<INPUT_TYPE>());
+
 public:
-    __aicore__ inline LoadToL0B() {};
-    __aicore__ inline ~LoadToL0B() {};
+    __aicore__ inline LoadToL0B(){};
+    __aicore__ inline ~LoadToL0B(){};
 
     __aicore__ inline void Prepare(bool isBTranspose, uint16_t bL1K) const
     {
@@ -48,13 +50,14 @@ public:
         }
     }
 
-    __aicore__ inline void Load(const LocalTensor<TransT> &l0B, const LocalTensor<TransT> &l1B,
-     uint16_t bL1N, uint16_t bL1K, uint16_t madN, uint16_t madK, uint16_t bL1NOffset, uint16_t bL1KOffset,
-     bool isBTranspose, const LocalTensor<AuxDtype> &l1BAuxMatrix = {}, uint16_t bAuxL1K = 0,
-     uint16_t bAuxL1KOffset = 0) const
+    __aicore__ inline void Load(
+        const LocalTensor<TransT>& l0B, const LocalTensor<TransT>& l1B, uint16_t bL1N, uint16_t bL1K, uint16_t madN,
+        uint16_t madK, uint16_t bL1NOffset, uint16_t bL1KOffset, bool isBTranspose,
+        const LocalTensor<AuxDtype>& l1BAuxMatrix = {}, uint16_t bAuxL1K = 0, uint16_t bAuxL1KOffset = 0) const
     {
-        if constexpr (MatmulFeatureTrait<MM_CFG>::IsNeedUB() && IsSameType<TransT, int8_t>::value &&
-                      IsSameType<B_T, int8_t>::value) {
+        if constexpr (
+            MatmulFeatureTrait<MM_CFG>::IsNeedUB() && IsSameType<TransT, int8_t>::value &&
+            IsSameType<B_T, int8_t>::value) {
             isBTranspose = true;
         }
         if (isBTranspose) {
@@ -70,8 +73,9 @@ private:
 
     __aicore__ inline void SetFmatrix(bool isBTranspose, uint16_t bL1K) const
     {
-        if constexpr (MatmulFeatureTrait<MM_CFG>::IsNeedUB() && IsSameType<TransT, int8_t>::value &&
-                      IsSameType<B_T, int8_t>::value) {
+        if constexpr (
+            MatmulFeatureTrait<MM_CFG>::IsNeedUB() && IsSameType<TransT, int8_t>::value &&
+            IsSameType<B_T, int8_t>::value) {
             return; // transpose is true, MTE1 is load2d
         }
         if (!isBTranspose) {
@@ -84,8 +88,9 @@ private:
         }
     }
 
-    __aicore__ inline void TransLoadDataToL0(const LocalTensor<TransT> &l0B, const LocalTensor<TransT> &l1B,
-     uint16_t bL1N, uint16_t madN, uint16_t madK, uint16_t bL1NOffset, uint16_t bL1KOffset, const LocalTensor<AuxDtype> &l1BAuxMatrix = {}) const
+    __aicore__ inline void TransLoadDataToL0(
+        const LocalTensor<TransT>& l0B, const LocalTensor<TransT>& l1B, uint16_t bL1N, uint16_t madN, uint16_t madK,
+        uint16_t bL1NOffset, uint16_t bL1KOffset, const LocalTensor<AuxDtype>& l1BAuxMatrix = {}) const
     {
         // SET LOAD2D parameters , loop axis: K or M, or 1
         if constexpr (HasSparseIndex<INPUT_TYPE>()) {
@@ -130,7 +135,8 @@ private:
         uint64_t l0bOffset = 0;
         for (uint64_t i = 0; i < l0bLoop; i++) {
             if constexpr (HasSparseIndex<INPUT_TYPE>()) {
-                LoadDataWithSparse(l0B[l0bOffset], l1B[l1bOffset], l1BAuxMatrix[l1bOffset >> INDEX_SHIFT], loadDataParams);
+                LoadDataWithSparse(
+                    l0B[l0bOffset], l1B[l1bOffset], l1BAuxMatrix[l1bOffset >> INDEX_SHIFT], loadDataParams);
             } else {
                 LoadData(l0B[l0bOffset], l1B[l1bOffset], loadDataParams);
             }
@@ -139,9 +145,9 @@ private:
         }
     }
 
-    __aicore__ inline void LoadDataToL0(const LocalTensor<TransT> &l0B, const LocalTensor<TransT> &l1B,
-     uint16_t bL1N, uint16_t bL1K, uint16_t madN, uint16_t madK, uint16_t bL1NOffset, uint16_t bL1KOffset,
-     bool isBTranspose) const
+    __aicore__ inline void LoadDataToL0(
+        const LocalTensor<TransT>& l0B, const LocalTensor<TransT>& l1B, uint16_t bL1N, uint16_t bL1K, uint16_t madN,
+        uint16_t madK, uint16_t bL1NOffset, uint16_t bL1KOffset, bool isBTranspose) const
     {
         if constexpr (GetLoadL0bInstrType<TransT, MM_CFG>() == LoadL0bInstrType::LOAD2DTRANSPOSE) {
             // use load2d transpose for L1_2_L0B
@@ -154,7 +160,8 @@ private:
             uint64_t l0bOffset = 0;
 
             // startIndex, repeatTimes, srcStride, dstGap, dstFracGap, addrMode
-            LoadData2dTransposeParams loadData2dTransposeParams{0, static_cast<uint8_t>(l0bRepeat), l0bSrcstride, 1, 0, inc};
+            LoadData2dTransposeParams loadData2dTransposeParams{0,  static_cast<uint8_t>(l0bRepeat), l0bSrcstride, 1, 0,
+                                                                inc};
 
 #if !(defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3113))
             if constexpr (IsSameType<TransT, int4b_t>::value) {
@@ -182,7 +189,7 @@ private:
             LoadData3DParamsV2Pro loadData3DV2;
             loadData3DV2.channelSize = cAlign;
             loadData3DV2.extConfig = ((uint64_t)bL1KOffset << M_POS_BIT) | ((uint64_t)bL1NOffset << K_POS_BIT) |
-                                ((uint64_t)mAlign << M_STEP_BIT) | (uint64_t)kAlign;
+                                     ((uint64_t)mAlign << M_STEP_BIT) | (uint64_t)kAlign;
             if constexpr (MatmulFeatureTrait<MM_CFG>::IsSupportFmatrixB()) {
                 loadData3DV2.fMatrixCtrl = true;
             }
@@ -191,9 +198,9 @@ private:
     }
 };
 
-}  // namespace Detail
-}  // namespace Impl
-}  // namespace AscendC
+} // namespace Detail
+} // namespace Impl
+} // namespace AscendC
 #endif
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_SPLIT_LOAD_TO_L0B_LOAD_TO_L0B_LOADINSTR_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

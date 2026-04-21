@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file digamma_common_basic_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/digamma/digamma_common_basic_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/digamma.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/digamma/digamma_common_basic_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/digamma.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_DIGAMMA_DIGAMMA_COMMON_BASIC_IMPL_H__
 #endif
@@ -46,8 +47,8 @@ constexpr float posCalcConst[] = {2.10927960927960927961e-2, 7.57575757575757575
                                   3.96825396825396825397e-3, 8.33333333333333333333e-3, 8.33333333333333333333e-2};
 constexpr float tmp1CalcConst[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
 constexpr float tmp1HalfCalcConst[] = {1.0, 2.0};
-constexpr float picotCalcConst[] = {0.00326538085938f, 0.0242919921875f, 0.053466796875f,
-                                    0.133377909660f, 0.333332300186f};
+constexpr float picotCalcConst[] = {
+    0.00326538085938f, 0.0242919921875f, 0.053466796875f, 0.133377909660f, 0.333332300186f};
 } // namespace
 
 struct DigammaParams {
@@ -68,92 +69,90 @@ struct DigammaParams {
 };
 #pragma begin_pipe(V)
 // Calculate the mask based on cmpMode, will use tmpScalar
-__aicore__ inline void DigammaGenCompareMask(const LocalTensor<uint8_t> &mask, const LocalTensor<float> &src,
-                                             DigammaParams &params, const float scalar, CMPMODE cmpMode)
+__aicore__ inline void DigammaGenCompareMask(
+    const LocalTensor<uint8_t>& mask, const LocalTensor<float>& src, DigammaParams& params, const float scalar,
+    CMPMODE cmpMode)
 {
     Duplicate<float, false>(params.tmpScalar, scalar, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
     PipeBarrier<PIPE_V>();
 
     uint8_t repeat = DivCeil(params.splitSize * sizeof(float), ONE_REPEAT_BYTE_SIZE);
-    Compare<float, uint8_t, false>(mask, src, params.tmpScalar, cmpMode,
-                                   MASK_PLACEHOLDER, repeat, params.binaryParams);
+    Compare<float, uint8_t, false>(mask, src, params.tmpScalar, cmpMode, MASK_PLACEHOLDER, repeat, params.binaryParams);
     PipeBarrier<PIPE_V>();
 }
 
 // get negative integer mask
-__aicore__ inline void DigammaGenNegIntMask(const LocalTensor<uint8_t> &mask, const LocalTensor<float> &src,
-    DigammaParams &params, const float scalar)
+__aicore__ inline void DigammaGenNegIntMask(
+    const LocalTensor<uint8_t>& mask, const LocalTensor<float>& src, DigammaParams& params, const float scalar)
 {
     // x < 0 &  x > -8388608.0
     DigammaGenCompareMask(params.mask1, src, params, 0.0f, CMPMODE::LT);
     DigammaGenCompareMask(params.mask2, src, params, MIN_NEG_WITH_FLOAT, CMPMODE::GT);
 
     SetVectorMask<float>(0, ConstCeil(params.splitSize, sizeof(uint16_t) * ONE_BYTE_BIT_SIZE));
-    And<uint16_t, false>(params.mask1.ReinterpretCast<uint16_t>(), params.mask1.ReinterpretCast<uint16_t>(),
+    And<uint16_t, false>(
+        params.mask1.ReinterpretCast<uint16_t>(), params.mask1.ReinterpretCast<uint16_t>(),
         params.mask2.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1, params.binaryParams);
     PipeBarrier<PIPE_V>();
     SetVectorMask<float>(0, params.splitSize);
 
     DigammaCast(params.tmpCal1, src, RoundMode::CAST_ROUND);
     uint8_t repeat = DivCeil(params.splitSize * sizeof(float), ONE_REPEAT_BYTE_SIZE);
-    Compare<float, uint8_t, false>(params.mask2, src, params.tmpCal1, CMPMODE::EQ, MASK_PLACEHOLDER, repeat, 
-        params.binaryParams);
+    Compare<float, uint8_t, false>(
+        params.mask2, src, params.tmpCal1, CMPMODE::EQ, MASK_PLACEHOLDER, repeat, params.binaryParams);
     PipeBarrier<PIPE_V>();
 
     SetVectorMask<float>(0, ConstCeil(params.splitSize, sizeof(uint16_t) * ONE_BYTE_BIT_SIZE));
-    And<uint16_t, false>(mask.ReinterpretCast<uint16_t>(), params.mask1.ReinterpretCast<uint16_t>(),
+    And<uint16_t, false>(
+        mask.ReinterpretCast<uint16_t>(), params.mask1.ReinterpretCast<uint16_t>(),
         params.mask2.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1, params.binaryParams);
     PipeBarrier<PIPE_V>();
     SetVectorMask<float>(0, params.splitSize);
 }
 
 // get range mask
-__aicore__ inline void DigammaGenRangeMask(const LocalTensor<uint8_t> &mask, const LocalTensor<float> &src,
-    DigammaParams &params, const float min, const float max)
+__aicore__ inline void DigammaGenRangeMask(
+    const LocalTensor<uint8_t>& mask, const LocalTensor<float>& src, DigammaParams& params, const float min,
+    const float max)
 {
     //  -0.0001 <= x && x < 0.0
     DigammaGenCompareMask(params.mask1, src, params, max, CMPMODE::LT);
     DigammaGenCompareMask(params.mask2, src, params, min, CMPMODE::GE);
 
     SetVectorMask<float>(0, ConstCeil(params.splitSize, sizeof(uint16_t) * ONE_BYTE_BIT_SIZE));
-    And<uint16_t, false>(mask.ReinterpretCast<uint16_t>(), params.mask1.ReinterpretCast<uint16_t>(),
+    And<uint16_t, false>(
+        mask.ReinterpretCast<uint16_t>(), params.mask1.ReinterpretCast<uint16_t>(),
         params.mask2.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1, params.binaryParams);
     PipeBarrier<PIPE_V>();
     SetVectorMask<float>(0, params.splitSize);
 }
 
 // get nan mask
-__aicore__ inline void DigammaGenNanMask(const LocalTensor<uint8_t> &mask, const LocalTensor<float> &src,
-                                         DigammaParams &params)
+__aicore__ inline void DigammaGenNanMask(
+    const LocalTensor<uint8_t>& mask, const LocalTensor<float>& src, DigammaParams& params)
 {
     DigammaGenCompareMask(params.mask1, src, params, 0.0f, CMPMODE::LT);
     DigammaGenCompareMask(params.mask2, src, params, 0.0f, CMPMODE::GE);
 
     SetVectorMask<float>(0, ConstCeil(params.splitSize, sizeof(uint16_t) * ONE_BYTE_BIT_SIZE));
-    Not<uint16_t, false>(params.mask1.ReinterpretCast<uint16_t>(),
-        params.mask1.ReinterpretCast<uint16_t>(),
-        MASK_PLACEHOLDER,
-        1,
+    Not<uint16_t, false>(
+        params.mask1.ReinterpretCast<uint16_t>(), params.mask1.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1,
         params.unaryParams);
-    Not<uint16_t, false>(params.mask2.ReinterpretCast<uint16_t>(),
-        params.mask2.ReinterpretCast<uint16_t>(),
-        MASK_PLACEHOLDER,
-        1,
+    Not<uint16_t, false>(
+        params.mask2.ReinterpretCast<uint16_t>(), params.mask2.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1,
         params.unaryParams);
     PipeBarrier<PIPE_V>();
-    And<uint16_t, false>(mask.ReinterpretCast<uint16_t>(),
-        params.mask1.ReinterpretCast<uint16_t>(),
-        params.mask2.ReinterpretCast<uint16_t>(),
-        MASK_PLACEHOLDER,
-        1,
-        params.binaryParams);
+    And<uint16_t, false>(
+        mask.ReinterpretCast<uint16_t>(), params.mask1.ReinterpretCast<uint16_t>(),
+        params.mask2.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1, params.binaryParams);
     PipeBarrier<PIPE_V>();
     SetVectorMask<float>(0, params.splitSize);
 }
 
 // Select the value of src at mask, and accumulate the result onto dst, used tmpScalar
-__aicore__ inline void DigammaSelect(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const LocalTensor<uint8_t>& mask, const LocalTensor<float>& tmp, DigammaParams& params)
+__aicore__ inline void DigammaSelect(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const LocalTensor<uint8_t>& mask,
+    const LocalTensor<float>& tmp, DigammaParams& params)
 {
     Duplicate<float, false>(params.tmpScalar, 0.0f, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
     PipeBarrier<PIPE_V>();
@@ -196,8 +195,8 @@ __aicore__ inline void DigammaNegativeRange(
 }
 
 template <bool isReuseSource = false>
-__aicore__ inline void DigammaInitParams(const LocalTensor<float> &tmp, const uint32_t &splitSize,
-                                         const LocalTensor<half> &src, DigammaParams &params)
+__aicore__ inline void DigammaInitParams(
+    const LocalTensor<float>& tmp, const uint32_t& splitSize, const LocalTensor<half>& src, DigammaParams& params)
 {
     params.result = tmp;
     params.tmpCal1 = params.result[splitSize];
@@ -226,8 +225,8 @@ __aicore__ inline void DigammaInitParams(const LocalTensor<float> &tmp, const ui
 }
 
 template <bool isReuseSource = false>
-__aicore__ inline void DigammaInitParams(const LocalTensor<float> &tmp, const uint32_t &splitSize,
-                                         const LocalTensor<float> &src, DigammaParams &params)
+__aicore__ inline void DigammaInitParams(
+    const LocalTensor<float>& tmp, const uint32_t& splitSize, const LocalTensor<float>& src, DigammaParams& params)
 {
     params.result = tmp;
     params.tmpCal1 = tmp[splitSize];
@@ -257,9 +256,9 @@ __aicore__ inline void DigammaInitParams(const LocalTensor<float> &tmp, const ui
     params.splitSize = splitSize;
 }
 #pragma end_pipe
-}  // namespace AscendC
+} // namespace AscendC
 #endif
-#endif  // IMPL_MATH_DIGAMMA_DIGAMMA_COMMON_BASIC_IMPL_H
+#endif // IMPL_MATH_DIGAMMA_DIGAMMA_COMMON_BASIC_IMPL_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_DIGAMMA_DIGAMMA_COMMON_BASIC_IMPL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

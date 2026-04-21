@@ -1,15 +1,16 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/reduce/reduce_common_util_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/reduce/reduce_common_util_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_COMMON_UTIL_IMPL_H__
 #endif
@@ -51,23 +52,17 @@ constexpr int32_t PATTERN_RARARARA = 15;
 
 template <int32_t id, bool firstA, bool tailA, int32_t dim>
 struct PatternConstInfo {
-constexpr static int32_t ID = id;
-constexpr static bool FirstA = firstA;
-constexpr static bool TailA = tailA;
-constexpr static int32_t Dim = dim;
+    constexpr static int32_t ID = id;
+    constexpr static bool FirstA = firstA;
+    constexpr static bool TailA = tailA;
+    constexpr static int32_t Dim = dim;
 };
 } // namespace Detail
 } // namespace Pattern
 
 namespace Internal {
 // api mode
-enum class ApiMode : uint8_t {
-    API_MODE_SUM = 0,
-    API_MODE_MIN,
-    API_MODE_MAX,
-    API_MODE_ANY,
-    API_MODE_ALL
-};
+enum class ApiMode : uint8_t { API_MODE_SUM = 0, API_MODE_MIN, API_MODE_MAX, API_MODE_ANY, API_MODE_ALL };
 
 // Find the closest power of two, except 0.
 __aicore__ inline uint32_t FindClosestPowerOfTwo(uint32_t n)
@@ -78,8 +73,8 @@ __aicore__ inline uint32_t FindClosestPowerOfTwo(uint32_t n)
 }
 
 template <class T>
-__aicore__ inline void ComputeMaskBit(uint32_t oneBlkMask, uint32_t oneBlkElems, uint32_t blkNum,
-    uint64_t& maskLow, uint64_t& maskHigh)
+__aicore__ inline void ComputeMaskBit(
+    uint32_t oneBlkMask, uint32_t oneBlkElems, uint32_t blkNum, uint64_t& maskLow, uint64_t& maskHigh)
 {
     // Get bit mask on each blkNum, oneBlkElems means number of elements in one block
     // only support half/float
@@ -100,8 +95,9 @@ __aicore__ inline void ComputeMaskBit(uint32_t oneBlkMask, uint32_t oneBlkElems,
 }
 
 template <class T, ApiMode apiMode, MaskMode maskMode = MaskMode::NORMAL>
-__aicore__ inline void BlockReduceCompute(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const int32_t repeat, const uint64_t mask[], const int32_t blkStride, const int32_t repStride)
+__aicore__ inline void BlockReduceCompute(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const int32_t repeat, const uint64_t mask[],
+    const int32_t blkStride, const int32_t repStride)
 {
     if constexpr (maskMode == MaskMode::NORMAL) {
         if constexpr (apiMode == ApiMode::API_MODE_SUM) {
@@ -121,8 +117,9 @@ __aicore__ inline void BlockReduceCompute(const LocalTensor<T>& dstTensor, const
 }
 
 template <class T, ApiMode apiMode>
-__aicore__ inline void WholeReduceCompute(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const int32_t repeat, const int32_t mask, const int32_t repStride)
+__aicore__ inline void WholeReduceCompute(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const int32_t repeat, const int32_t mask,
+    const int32_t repStride)
 {
     if constexpr (apiMode == ApiMode::API_MODE_MIN || apiMode == ApiMode::API_MODE_ALL) {
         WholeReduceMin(dstTensor, srcTensor, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_VALUE);

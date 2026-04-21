@@ -107,7 +107,7 @@ __aicore__ inline void Fill(GlobalTensor<T>& gmWorkspaceAddr, const uint64_t siz
 
 ## 调用示例<a name="section642mcpsimp"></a>
 
-本调用示例使用8个核，每个核用当前blockIdx的值初始化zGm上的65536个数，每个核的核内计算为x和y两组全1的65536个half类型数据相加，计算结果累加到zGm。此样例中8个核的blockIdx分别为0到7，输入x和y均为全1数据，则最终zGm输出数据为2到9。完整的算子样例请参考[fill算子样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/03_libraries/09_transpose/fill)
+本调用示例使用8个核，每个核用当前blockIdx的值初始化zGm上的65536个数，每个核的核内计算为x和y两组全1的65536个half类型数据相加，计算结果累加到zGm。此样例中8个核的blockIdx分别为0到7，输入x和y均为全1数据，则最终zGm输出数据为2到9。完整的算子样例请参考[fill算子样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/08_tensor_transformation/fill)
 
 ```
 #include "kernel_operator.h"

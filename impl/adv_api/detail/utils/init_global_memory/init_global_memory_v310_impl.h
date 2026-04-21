@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file init_global_memory_v310_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/utils/init_global_memory/init_global_memory_v310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/utils/init_global_memory.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/utils/init_global_memory/init_global_memory_v310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/utils/init_global_memory.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_UTILS_INIT_GLOBAL_MEMORY_INIT_GLOBAL_MEMORY_V310_IMPL_H__
 #endif
@@ -27,7 +28,7 @@
 
 namespace AscendC {
 template <typename T>
-__aicore__ inline void InitGlobalMemoryImpl(GlobalTensor<T> &gmWorkspaceAddr, const uint64_t size, const T value)
+__aicore__ inline void InitGlobalMemoryImpl(GlobalTensor<T>& gmWorkspaceAddr, const uint64_t size, const T value)
 {
     if ASCEND_IS_AIC {
         return;
@@ -38,8 +39,7 @@ __aicore__ inline void InitGlobalMemoryImpl(GlobalTensor<T> &gmWorkspaceAddr, co
     ASCENDC_ASSERT(ret, { KERNEL_LOG(KERNEL_ERROR, "No space left to allocate in Unified Buffer"); });
     constexpr uint32_t maxBurstSize = (MAX_REPEAT_TIMES * MAX_REPEAT_LEN) / sizeof(T);
     const uint32_t popSize = popBuffer.GetSize() >= maxBurstSize ? maxBurstSize : popBuffer.GetSize();
-    ASCENDC_ASSERT((popSize > 0),
-                { KERNEL_LOG(KERNEL_ERROR, "popSize must be larger than 0"); });
+    ASCENDC_ASSERT((popSize > 0), { KERNEL_LOG(KERNEL_ERROR, "popSize must be larger than 0"); });
     const uint32_t round = size / popSize;
     const uint32_t tail = size % popSize;
     const uint32_t roundSize = round != 0 ? popSize : 0;
@@ -67,7 +67,7 @@ __aicore__ inline void InitGlobalMemoryImpl(GlobalTensor<T> &gmWorkspaceAddr, co
 
 template <typename T>
 __aicore__ inline __in_pipe__(V)
-    __out_pipe__(MTE3) void InitGlobalMemory(GlobalTensor<T> &gmWorkspaceAddr, const uint64_t size, const T value)
+    __out_pipe__(MTE3) void InitGlobalMemory(GlobalTensor<T>& gmWorkspaceAddr, const uint64_t size, const T value)
 {
     InitGlobalMemoryImpl<T>(gmWorkspaceAddr, size, value);
 }

@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file ascend_antiquant_m200_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/quantization/antiquant/ascend_antiquant_m200_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/quantization/ascend_antiquant.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/quantization/antiquant/ascend_antiquant_m200_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/quantization/ascend_antiquant.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZATION_ANTIQUANT_ASCEND_ANTIQUANT_M200_IMPL_H__
 #endif
@@ -34,21 +35,24 @@ __aicore__ inline void CheckApiDtypeValid()
 {
     constexpr bool inputValid = (IsSameType<SrcType, int8_t>::value);
     constexpr bool outputValid = (IsSameType<OutType, half>::value);
-    ASCENDC_ASSERT((inputValid && outputValid), {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in AscendAntiQuant, "
-        "current api support dtype combination is src: int8_t, dst: half.");});
+    ASCENDC_ASSERT((inputValid && outputValid), {
+        KERNEL_LOG(
+            KERNEL_ERROR, "Failed to check dtype in AscendAntiQuant, "
+                          "current api support dtype combination is src: int8_t, dst: half.");
+    });
 }
 
 template <typename DstType>
-__aicore__ inline bool AntiQuantCheckPerformanceMode(const LocalTensor<DstType> &scale,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t K)
+__aicore__ inline bool AntiQuantCheckPerformanceMode(
+    const LocalTensor<DstType>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t K)
 {
-    return true;    // DstType can only be FP16, no need for cast
+    return true; // DstType can only be FP16, no need for cast
 }
 
 __aicore__ inline void AntiQuantFp16BrcbWithTransdata(
     const LocalTensor<half>& dst, const LocalTensor<half>& src, const uint32_t scaleN)
 {
-    __ubuf__ half* dstAddr = (__ubuf__  half*)dst.GetPhyAddr();
+    __ubuf__ half* dstAddr = (__ubuf__ half*)dst.GetPhyAddr();
     uint64_t srcAddr = (uint64_t)(src.GetPhyAddr());
     uint64_t dstList[NCHW_CONV_ADDR_LIST_SIZE];
     uint64_t srcList[NCHW_CONV_ADDR_LIST_SIZE];
@@ -70,8 +74,8 @@ __aicore__ inline void AntiQuantFp16BrcbWithTransdata(
 }
 
 template <bool withOffset = true>
-__aicore__ inline void AntiQuantFp16Brcb(const LocalTensor<half> &scale, const LocalTensor<half> &offset,
-    AntiquantParams<half> &params, uint32_t scaleN)
+__aicore__ inline void AntiQuantFp16Brcb(
+    const LocalTensor<half>& scale, const LocalTensor<half>& offset, AntiquantParams<half>& params, uint32_t scaleN)
 {
     AntiQuantFp16BrcbWithTransdata(params.tempTensorScale, scale, scaleN);
     if constexpr (withOffset) {
@@ -80,19 +84,20 @@ __aicore__ inline void AntiQuantFp16Brcb(const LocalTensor<half> &scale, const L
 }
 
 template <typename SrcType, typename DstType>
-__aicore__ inline void AscendAntiQuantBF16Transpose(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
-    const LocalTensor<DstType>& offset, const LocalTensor<DstType>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer,
-    const uint32_t K, const AntiQuantShapeInfo& shapeInfo = {})
-{
-    return;    // BF16 is not supported in current platform
-}
-
-template <typename SrcType, typename DstType>
-__aicore__ inline void AscendAntiQuantBF16Transpose(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
+__aicore__ inline void AscendAntiQuantBF16Transpose(
+    const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src, const LocalTensor<DstType>& offset,
     const LocalTensor<DstType>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t K,
     const AntiQuantShapeInfo& shapeInfo = {})
 {
-    return;    // BF16 is not supported in current platform
+    return; // BF16 is not supported in current platform
+}
+
+template <typename SrcType, typename DstType>
+__aicore__ inline void AscendAntiQuantBF16Transpose(
+    const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src, const LocalTensor<DstType>& scale,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t K, const AntiQuantShapeInfo& shapeInfo = {})
+{
+    return; // BF16 is not supported in current platform
 }
 } // namespace AscendC
 #endif // IMPL_QUANTIZATION_ANTIQUANT_ASCEND_ANTIQUANT_M200_IMPL_H

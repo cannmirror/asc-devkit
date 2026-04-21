@@ -11,9 +11,20 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-find_package(ASC REQUIRED HINTS $ENV{ASCEND_INSTALL_PATH}/compiler/tikcpp/ascendc_kernel_cmake)
+set(CMAKE_ASC_RUN_MODE "npu" CACHE STRING "Run mode: npu, cpu, sim")
+set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "NPU architecture: dav-2201, dav-3510")
+
+find_package(ASC REQUIRED)
 
 project(kernel_samples LANGUAGES ASC CXX)
+
+# 场景编号说明：
+# scenarioNum=1: 128个元素，4条队列，每条32个元素
+# scenarioNum=2: 96个元素，3条队列，每条32个元素
+# scenarioNum=3: 1024个元素，32条队列，多次调用MrgSort
+set(SCENARIO_NUM "1" CACHE STRING "Scene number (1-3)")
+
+add_definitions(-DSCENARIO_NUM=${SCENARIO_NUM})
 
 add_executable(demo
     mrg_sort.asc
@@ -27,13 +38,6 @@ target_link_libraries(demo PRIVATE
     dl
 )
 
-# ======================================================================================
-# NPU 编译选项配置
-#
-# 说明：
-#   - 需根据实际部署的 NPU 硬件架构选择对应的 `npu-arch` 参数。
-# ======================================================================================
 target_compile_options(demo PRIVATE
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
-    # $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3510>
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>
 )

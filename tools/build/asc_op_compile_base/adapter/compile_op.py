@@ -1246,10 +1246,15 @@ def compile_op_common_part(cce_file: str, origin_func_name: str, op_info: OpInfo
         COMPILE_STAGE_MSG_INFO["generate_tiling_start"],
         AscendCLogLevel.LOG_INFO
     )
+
+    is_const_propagation = '-DFORCE_TILING_CONST_PROPAGATION' in compile_option_tuple.compile_options
+    global_var_storage.set_variable("ascendc_tiling_const_propagation", is_const_propagation)
+
     tiling_info: TilingInfo = get_tiling_info_by_tiling(
                                 op_info, infered_info_from_ifile, value_depend_dict, origin_func_name)
 
     CommonUtility.print_compile_log(op_info.kernel_name, "get tiling info success", AscendCLogLevel.LOG_INFO)
+
 
     file_name_tag = distinct_tag + "_tiling_data.h"
     tiling_data_file_path = os.path.join(kernel_meta_dir, op_info.kernel_name + file_name_tag)

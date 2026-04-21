@@ -823,7 +823,7 @@ void MainVecBinaryCastDemo(__gm__ uint8_t* __restrict__ dstGm, __gm__ uint8_t* _
         uint8_t input0Gm[srcDataSize * sizeof(srcType)] = {0};                                        \
         uint8_t input1Gm[srcDataSize * sizeof(srcType)] = {0};                                        \
         uint8_t outputGm[dstDataSize * sizeof(dstType)] = {0};                                        \
-        MOCKER(raise, int32_t (*)(int32_t)).times(1).will(invoke(RaiseStub));                             \
+        MOCKER(raise, int32_t (*)(int32_t)).times(errorTimes).will(invoke(RaiseStub));                    \
         MainVecBinaryCastDemo<dstType, srcType>(outputGm, input0Gm, input1Gm, dstDataSize,     \
             srcDataSize, funcName, testMode);                                                         \
                                                                                                           \

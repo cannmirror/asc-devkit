@@ -235,14 +235,14 @@ public:
 
         srcGlobal1.SetGlobalBuffer(reinterpret_cast<__gm__ T *>(srcGmValue), inDataSize);
         srcGlobal2.SetGlobalBuffer(reinterpret_cast<__gm__ U *>(srcGmIndex), inputdexDataSize);
-        srcGlobal3.SetGlobalBuffer(reinterpret_cast<__gm__ bool *>(finishGm), topKInfo.outter);
+        srcGlobal3.SetGlobalBuffer(reinterpret_cast<__gm__ uint8_t *>(finishGm), topKInfo.outter);
         dstGlobal1.SetGlobalBuffer(reinterpret_cast<__gm__ T *>(dstGmValue), outValueDataSize);
         dstGlobal2.SetGlobalBuffer(reinterpret_cast<__gm__ U *>(dstGmIndex), outIndexDataSize);
 
         pipe.InitBuffer(inQueueX1, 1, inDataSize * sizeof(T));
         pipe.InitBuffer(inQueueX2, 1, inputdexDataSize * sizeof(U));
 
-        finishLocalBytes = topKInfo.outter * sizeof(bool);
+        finishLocalBytes = topKInfo.outter * sizeof(uint8_t);
         if (finishLocalBytes % 32 != 0) {
             finishLocalBytes = (finishLocalBytes + 31) / 32 * 32;
         }
@@ -263,9 +263,10 @@ private:
         LocalTensor<T> srcLocalValue = inQueueX1.AllocTensor<T>();
         LocalTensor<U> srcLocalIndex = inQueueX2.AllocTensor<U>();
         LocalTensor<bool> srcLocalFinish = inQueueX3.AllocTensor<bool>();
+        LocalTensor<uint8_t> srcLocalFinishBytes = srcLocalFinish.template ReinterpretCast<uint8_t>();
         DataCopy(srcLocalValue, srcGlobal1, inDataSize);
         DataCopy(srcLocalIndex, srcGlobal2, inputdexDataSize);
-        DataCopy(srcLocalFinish, srcGlobal3, finishLocalBytes);
+        DataCopy(srcLocalFinishBytes, srcGlobal3, finishLocalBytes);
 
         inQueueX1.EnQue(srcLocalValue);
         inQueueX2.EnQue(srcLocalIndex);
@@ -312,7 +313,7 @@ private:
 private:
     GlobalTensor<T> srcGlobal1;
     GlobalTensor<U> srcGlobal2;
-    GlobalTensor<bool> srcGlobal3;
+    GlobalTensor<uint8_t> srcGlobal3;
     GlobalTensor<T> dstGlobal1;
     GlobalTensor<U> dstGlobal2;
 

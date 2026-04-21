@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file copy_cube_out_datacopy.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/stage/copy_cube_out/copy_cube_out_datacopy.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/stage/copy_cube_out/copy_cube_out_datacopy.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_OUT_COPY_CUBE_OUT_DATACOPY_H__
 #endif
@@ -31,13 +32,13 @@ namespace AscendC {
 namespace Impl {
 namespace Detail {
 /*
-* CopyCubeOut is considered entirely experimental.
-* We retain the freedom to make incompatible changes, but do not guarantee the stability.
-* CopyCubeOut is only for internal usage, does not support extension or customized specialization!
-*/
+ * CopyCubeOut is considered entirely experimental.
+ * We retain the freedom to make incompatible changes, but do not guarantee the stability.
+ * CopyCubeOut is only for internal usage, does not support extension or customized specialization!
+ */
 template <typename IMPL, class A_TYPE, class B_TYPE, class C_TYPE, const auto& MM_CFG, McgShfMode FIXPIPE_MODE>
-class CopyCubeOut<IMPL, A_TYPE, B_TYPE, C_TYPE, MM_CFG, FIXPIPE_MODE, enable_if_t<(MatmulFeatureTrait<MM_CFG>::IsNeedUB())>>
-{
+class CopyCubeOut<
+    IMPL, A_TYPE, B_TYPE, C_TYPE, MM_CFG, FIXPIPE_MODE, enable_if_t<(MatmulFeatureTrait<MM_CFG>::IsNeedUB())>> {
     using SrcT = typename A_TYPE::T;
     using DstT = typename C_TYPE::T;
     using L0cT = typename GetMmDstType<typename A_TYPE::T>::Type;
@@ -50,75 +51,80 @@ class CopyCubeOut<IMPL, A_TYPE, B_TYPE, C_TYPE, MM_CFG, FIXPIPE_MODE, enable_if_
 
 public:
     template <bool enSequentialWrite = false, typename ScheduleContext = int>
-    __aicore__ inline void Copy(const GlobalTensor<DstT>& gm, const LocalTensor<L0cT>& co1Local, int32_t curRow,
-                                   int32_t curCol, int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight,
-                                   int32_t baseBlockWidth, const ScheduleContext& context = 0)
+    __aicore__ inline void Copy(
+        const GlobalTensor<DstT>& gm, const LocalTensor<L0cT>& co1Local, int32_t curRow, int32_t curCol,
+        int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth,
+        const ScheduleContext& context = 0)
     {
-        CopyOutImpl<enSequentialWrite>(gm, co1Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight,
-                                       baseBlockWidth);
+        CopyOutImpl<enSequentialWrite>(
+            gm, co1Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
     }
 
     template <bool enSequentialWrite = false, typename ScheduleContext = int>
-    __aicore__ inline void Copy(const LocalTensor<DstT>& co2Local, const LocalTensor<L0cT>& co1Local, int32_t curRow,
-                                   int32_t curCol, int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight,
-                                   int32_t baseBlockWidth, const ScheduleContext& context = 0)
+    __aicore__ inline void Copy(
+        const LocalTensor<DstT>& co2Local, const LocalTensor<L0cT>& co1Local, int32_t curRow, int32_t curCol,
+        int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth,
+        const ScheduleContext& context = 0)
     {
-        CopyOutImpl<enSequentialWrite>(co2Local, co1Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight,
-                                       baseBlockWidth);
+        CopyOutImpl<enSequentialWrite>(
+            co2Local, co1Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
     }
 
     template <bool enSequentialWrite = false, typename ScheduleContext = int>
-    __aicore__ inline void Copy(const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& co2Local,
-                                   const LocalTensor<L0cT>& co1Local, int32_t curRow, int32_t curCol, int32_t baseHeight,
-                                   int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth,
-                                   const ScheduleContext& context = 0)
+    __aicore__ inline void Copy(
+        const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& co2Local, const LocalTensor<L0cT>& co1Local,
+        int32_t curRow, int32_t curCol, int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight,
+        int32_t baseBlockWidth, const ScheduleContext& context = 0)
     {
-        CopyOutImpl<enSequentialWrite>(gm, co2Local, co1Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight,
-                                       baseBlockWidth);
+        CopyOutImpl<enSequentialWrite>(
+            gm, co2Local, co1Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
     }
 
 private:
     template <bool enSequentialWrite, class T>
-    __aicore__ inline void CopyOutImpl(const T& dst, const LocalTensor<L0cT>& co1Local, int32_t curRow, int32_t curCol,
-                                       int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight,
-                                       int32_t baseBlockWidth)
+    __aicore__ inline void CopyOutImpl(
+        const T& dst, const LocalTensor<L0cT>& co1Local, int32_t curRow, int32_t curCol, int32_t baseHeight,
+        int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth)
     {
         if constexpr (C_TYPE::format == CubeFormat::ND || C_TYPE::format == CubeFormat::ND_ALIGN) {
-            CopyOutNZ2ND<enSequentialWrite>(dst, co1Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight,
-                                            baseBlockWidth);
+            CopyOutNZ2ND<enSequentialWrite>(
+                dst, co1Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
         } else if constexpr (C_TYPE::format == CubeFormat::NZ) {
-            CopyOutNZ2NZ<enSequentialWrite>(dst, co1Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight,
-                                            baseBlockWidth);
+            CopyOutNZ2NZ<enSequentialWrite>(
+                dst, co1Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
         } else {
             ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "Copy: unsupport Matmul format type."); });
         }
     }
 
     template <bool enSequentialWrite, class T>
-    __aicore__ inline void CopyOutImpl(const T& dst, const LocalTensor<DstT>& co2Local,
-        const LocalTensor<L0cT>& co1Local, int32_t curRow, int32_t curCol, int32_t baseHeight,
-        int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth)
+    __aicore__ inline void CopyOutImpl(
+        const T& dst, const LocalTensor<DstT>& co2Local, const LocalTensor<L0cT>& co1Local, int32_t curRow,
+        int32_t curCol, int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth)
     {
-        if constexpr(C_TYPE::format == CubeFormat::ND || C_TYPE::format == CubeFormat::ND_ALIGN) {
-            CopyOutNZ2ND<enSequentialWrite>(dst, co2Local, co1Local, curRow, curCol, baseHeight, baseWidth,
-                                            baseBlockHeight, baseBlockWidth);
+        if constexpr (C_TYPE::format == CubeFormat::ND || C_TYPE::format == CubeFormat::ND_ALIGN) {
+            CopyOutNZ2ND<enSequentialWrite>(
+                dst, co2Local, co1Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
         } else if constexpr (C_TYPE::format == CubeFormat::NZ) {
-            CopyOutNZ2NZ<enSequentialWrite>(dst, co2Local, co1Local, curRow, curCol, baseHeight, baseWidth,
-                                            baseBlockHeight, baseBlockWidth);
+            CopyOutNZ2NZ<enSequentialWrite>(
+                dst, co2Local, co1Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
         } else {
             ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "Copy: unsupport Matmul format type."); });
         }
     }
 
     template <bool enSequentialWrite>
-    __aicore__ inline void CopyOutNZ2NZ(const LocalTensor<DstT>& co2Local, const LocalTensor<L0cT>& co1Local,
-                                        int32_t curRow, int32_t curCol, int32_t baseHeight, int32_t baseWidth,
-                                        int32_t baseBlockHeight, int32_t baseBlockWidth)
+    __aicore__ inline void CopyOutNZ2NZ(
+        const LocalTensor<DstT>& co2Local, const LocalTensor<L0cT>& co1Local, int32_t curRow, int32_t curCol,
+        int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth)
     {
-        ASCENDC_ASSERT((MATMUL_MODULE(MatmulShapeInfo)->GetOrgM() >= MATMUL_MODULE(MatmulShapeTiling)->
-            GetTiling().GetBaseM()), { KERNEL_LOG(KERNEL_ERROR, "M_ is %d , which should be not less than baseM %d",
-            MATMUL_MODULE(MatmulShapeInfo)->GetOrgM(), MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM());
-        });
+        ASCENDC_ASSERT(
+            (MATMUL_MODULE(MatmulShapeInfo)->GetOrgM() >= MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM()), {
+                KERNEL_LOG(
+                    KERNEL_ERROR, "M_ is %d , which should be not less than baseM %d",
+                    MATMUL_MODULE(MatmulShapeInfo)->GetOrgM(),
+                    MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM());
+            });
 
         DataCopyParams dataCopyInfo;
         dataCopyInfo.blockCount = baseBlockWidth;
@@ -128,23 +134,24 @@ private:
         enhancedParams.blockMode = BlockMode::BLOCK_MODE_MATRIX;
         if constexpr (enSequentialWrite) {
             dataCopyInfo.dstStride = 0;
-            CopyCo12Co2WithQuant(co2Local, co1Local, curCol, baseBlockHeight, baseBlockWidth, dataCopyInfo,
-                enhancedParams);
+            CopyCo12Co2WithQuant(
+                co2Local, co1Local, curCol, baseBlockHeight, baseBlockWidth, dataCopyInfo, enhancedParams);
         } else {
             dataCopyInfo.dstStride = (CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreM(), BLOCK_CUBE) -
-                baseBlockHeight * BLOCK_CUBE) * BLOCK_CUBE * sizeof(DstT) / ONE_BLK_SIZE;
+                                      baseBlockHeight * BLOCK_CUBE) *
+                                     BLOCK_CUBE * sizeof(DstT) / ONE_BLK_SIZE;
             int32_t dstOffset = curRow * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM() * BLOCK_CUBE +
-                curCol * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN() *
-                MATMUL_MODULE(MatmulShapeInfo)->GetOrgM();
-            CopyCo12Co2WithQuant(co2Local[dstOffset], co1Local, curCol, baseBlockHeight, baseBlockWidth,
-                dataCopyInfo, enhancedParams);
+                                curCol * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN() *
+                                    MATMUL_MODULE(MatmulShapeInfo)->GetOrgM();
+            CopyCo12Co2WithQuant(
+                co2Local[dstOffset], co1Local, curCol, baseBlockHeight, baseBlockWidth, dataCopyInfo, enhancedParams);
         }
     }
 
     template <bool enSequentialWrite>
-    __aicore__ inline void CopyOutNZ2NZ(const GlobalTensor<DstT>& gm, const LocalTensor<L0cT>& co1Local, int32_t curRow,
-                                        int32_t curCol, int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight,
-                                        int32_t baseBlockWidth)
+    __aicore__ inline void CopyOutNZ2NZ(
+        const GlobalTensor<DstT>& gm, const LocalTensor<L0cT>& co1Local, int32_t curRow, int32_t curCol,
+        int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth)
     {
         CopyOutEnQue();
 
@@ -153,26 +160,32 @@ private:
 
         CopyOutDeQue();
 
-        CopyLocal2GMNZ2NZ<enSequentialWrite>(gm, localBuf, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
+        CopyLocal2GMNZ2NZ<enSequentialWrite>(
+            gm, localBuf, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
     }
 
     template <bool enSequentialWrite>
-    __aicore__ inline void CopyOutNZ2NZ(const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& co2Local,
-        const LocalTensor<L0cT>& co1Local, int32_t curRow, int32_t curCol, int32_t baseHeight, int32_t baseWidth,
-        int32_t baseBlockHeight, int32_t baseBlockWidth)
+    __aicore__ inline void CopyOutNZ2NZ(
+        const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& co2Local, const LocalTensor<L0cT>& co1Local,
+        int32_t curRow, int32_t curCol, int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight,
+        int32_t baseBlockWidth)
     {
-        CopyOutNZ2NZ<enSequentialWrite>(co2Local, co1Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
-        CopyLocal2GMNZ2NZ<enSequentialWrite>(gm, co2Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
+        CopyOutNZ2NZ<enSequentialWrite>(
+            co2Local, co1Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
+        CopyLocal2GMNZ2NZ<enSequentialWrite>(
+            gm, co2Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
     }
 
     template <bool enSequentialWrite>
-    __aicore__ inline void CopyOutNZ2ND(const LocalTensor<DstT>& co2Local, const LocalTensor<L0cT>& co1Local,
-                                        int32_t curRow, int32_t curCol, int32_t baseHeight, int32_t baseWidth,
-                                        int32_t baseBlockHeight, int32_t baseBlockWidth)
+    __aicore__ inline void CopyOutNZ2ND(
+        const LocalTensor<DstT>& co2Local, const LocalTensor<L0cT>& co1Local, int32_t curRow, int32_t curCol,
+        int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth)
     {
         if constexpr (A_TYPE::format == CubeFormat::VECTOR) {
-            ASCENDC_ASSERT((MATMUL_MODULE(MatmulShapeInfo)->GetOrgM() == 1), { KERNEL_LOG(KERNEL_ERROR,
-                "M_ is %d, which should be equal with 1.", MATMUL_MODULE(MatmulShapeInfo)->GetOrgM()); });
+            ASCENDC_ASSERT((MATMUL_MODULE(MatmulShapeInfo)->GetOrgM() == 1), {
+                KERNEL_LOG(
+                    KERNEL_ERROR, "M_ is %d, which should be equal with 1.", MATMUL_MODULE(MatmulShapeInfo)->GetOrgM());
+            });
 
             DataCopyParams dataCopyInfo;
             dataCopyInfo.blockCount = 1;
@@ -187,31 +200,35 @@ private:
                 DataCopy(co2Local[dstOffset], co1Local, dataCopyInfo, enhancedParams);
             }
         } else {
-            ASCENDC_ASSERT((!IsSameType<DstT, int8_t>::value && !IsSameType<DstT, uint8_t>::value),
-                { KERNEL_LOG(KERNEL_ERROR, "Data format should be NZ if GetTensorC to UB when output is int8_t."); });
+            ASCENDC_ASSERT((!IsSameType<DstT, int8_t>::value && !IsSameType<DstT, uint8_t>::value), {
+                KERNEL_LOG(KERNEL_ERROR, "Data format should be NZ if GetTensorC to UB when output is int8_t.");
+            });
 
             LocalTensor<DstT> trans = MATMUL_MODULE(LocalWorkspace)->GetTempWorkspace();
 
             CopyCo12Co2WithoutQuant(trans, co1Local, curCol, baseBlockHeight, baseBlockWidth);
 
-            if constexpr(enSequentialWrite) {
-                TransNZ2NDForDstUB(co2Local, trans, MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN(),
-                    baseHeight, baseBlockWidth, baseBlockHeight);
+            if constexpr (enSequentialWrite) {
+                TransNZ2NDForDstUB(
+                    co2Local, trans, MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN(), baseHeight,
+                    baseBlockWidth, baseBlockHeight);
             } else {
                 uint32_t dimN = (MATMUL_MODULE(MatmulShapeInfo)->GetOrgKc() != 0) ?
-                    MATMUL_MODULE(MatmulShapeInfo)->GetOrgKc() : MATMUL_MODULE(MatmulShapeInfo)->GetOrgN();
+                                    MATMUL_MODULE(MatmulShapeInfo)->GetOrgKc() :
+                                    MATMUL_MODULE(MatmulShapeInfo)->GetOrgN();
                 int32_t dstOffset = curRow * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM() * dimN +
-                    curCol * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
-                TransNZ2NDForDstUB(co2Local[dstOffset], trans, CeilAlign(dimN,
-                    MATMUL_MODULE(CopyCubeOutUtils)->GetBlockCount()), baseHeight, baseBlockWidth, baseBlockHeight);
+                                    curCol * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
+                TransNZ2NDForDstUB(
+                    co2Local[dstOffset], trans, CeilAlign(dimN, MATMUL_MODULE(CopyCubeOutUtils)->GetBlockCount()),
+                    baseHeight, baseBlockWidth, baseBlockHeight);
             }
         }
     }
 
     template <bool enSequentialWrite>
-    __aicore__ inline void CopyOutNZ2ND(const GlobalTensor<DstT>& gm, const LocalTensor<L0cT>& co1Local, int32_t curRow,
-                                        int32_t curCol, int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight,
-                                        int32_t baseBlockWidth)
+    __aicore__ inline void CopyOutNZ2ND(
+        const GlobalTensor<DstT>& gm, const LocalTensor<L0cT>& co1Local, int32_t curRow, int32_t curCol,
+        int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth)
     {
         CopyOutEnQue();
 
@@ -221,35 +238,41 @@ private:
         CopyOutDeQue();
 
         if constexpr (A_TYPE::format == CubeFormat::VECTOR) {
-            CopyLocal2GMNZ2NZ<enSequentialWrite>(gm, localBuf, curRow, curCol, baseHeight, baseWidth, baseBlockHeight,
-                                                 baseBlockWidth);
+            CopyLocal2GMNZ2NZ<enSequentialWrite>(
+                gm, localBuf, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
         } else if constexpr (C_TYPE::format == CubeFormat::ND || C_TYPE::format == CubeFormat::ND_ALIGN) {
-            if constexpr (!ToMatmulConfig(MM_CFG).enVecND2NZ || IsSameType<typename A_TYPE::T, half>::value &&
-                                                                    IsSameType<typename B_TYPE::T, int8_t>::value) {
-                CopyLocal2GMNZ2NDOnTheFly<enSequentialWrite>(gm, localBuf, curRow, curCol, baseHeight, baseWidth,
-                                                             baseBlockHeight, baseBlockWidth);
+            if constexpr (
+                !ToMatmulConfig(MM_CFG).enVecND2NZ ||
+                IsSameType<typename A_TYPE::T, half>::value && IsSameType<typename B_TYPE::T, int8_t>::value) {
+                CopyLocal2GMNZ2NDOnTheFly<enSequentialWrite>(
+                    gm, localBuf, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
             } else {
-                CopyLocal2GMNZ2NDByVec<enSequentialWrite>(gm, localBuf, curRow, curCol, baseHeight, baseWidth,
-                                                          baseBlockHeight, baseBlockWidth);
+                CopyLocal2GMNZ2NDByVec<enSequentialWrite>(
+                    gm, localBuf, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
             }
         }
     }
 
     template <bool enSequentialWrite>
-    __aicore__ inline void CopyOutNZ2ND(const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& co2Local,
-        const LocalTensor<L0cT>& co1Local, int32_t curRow, int32_t curCol, int32_t baseHeight, int32_t baseWidth,
-        int32_t baseBlockHeight, int32_t baseBlockWidth)
+    __aicore__ inline void CopyOutNZ2ND(
+        const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& co2Local, const LocalTensor<L0cT>& co1Local,
+        int32_t curRow, int32_t curCol, int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight,
+        int32_t baseBlockWidth)
     {
-        CopyOutNZ2ND<enSequentialWrite>(co2Local, co1Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
+        CopyOutNZ2ND<enSequentialWrite>(
+            co2Local, co1Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
         if constexpr (A_TYPE::format == CubeFormat::VECTOR) {
-            CopyLocal2GMNZ2NZ<enSequentialWrite>(gm, co2Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
+            CopyLocal2GMNZ2NZ<enSequentialWrite>(
+                gm, co2Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
         } else if constexpr (C_TYPE::format == CubeFormat::ND || C_TYPE::format == CubeFormat::ND_ALIGN) {
-            CopyOutNZ2ND<enSequentialWrite>(gm, co1Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
+            CopyOutNZ2ND<enSequentialWrite>(
+                gm, co1Local, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
         }
     }
 
-    __aicore__ inline void CopyCo12Co2WithQuant(const LocalTensor<DstT>& dst, const LocalTensor<L0cT>& src,
-        int32_t curCol, int32_t baseBlockHeight, int32_t baseBlockWidth, DataCopyParams& dataCopyInfo, DataCopyEnhancedParams& enhancedParams)
+    __aicore__ inline void CopyCo12Co2WithQuant(
+        const LocalTensor<DstT>& dst, const LocalTensor<L0cT>& src, int32_t curCol, int32_t baseBlockHeight,
+        int32_t baseBlockWidth, DataCopyParams& dataCopyInfo, DataCopyEnhancedParams& enhancedParams)
     {
         if constexpr (IsSameType<SrcT, int8_t>::value) {
             MATMUL_MODULE(MatmulQuantProcessor)->UpdateDataCopyParamForQuant(enhancedParams, curCol);
@@ -265,8 +288,7 @@ private:
                 constexpr int32_t STORE_SIZE = BLOCK_CUBE * ONE_BYTE_BIT_SIZE;
                 for (int32_t i = 0; i < Ceil(baseBlockWidth, TWO_TIMES); ++i) {
                     for (int32_t storeMode = 0; storeMode < TWO_TIMES; ++storeMode) {
-                        if (baseBlockWidth % TWO_TIMES != 0 &&
-                            i == Ceil(baseBlockWidth, TWO_TIMES) - 1 &&
+                        if (baseBlockWidth % TWO_TIMES != 0 && i == Ceil(baseBlockWidth, TWO_TIMES) - 1 &&
                             storeMode == 1) {
                             continue;
                         }
@@ -274,8 +296,8 @@ private:
                             enhancedParams.deqTensorAddr = addr + i * WIDTH_SIZE + storeMode * STORE_SIZE;
                         }
                         enhancedParams.sidStoreMode = (uint8_t)storeMode;
-                        DataCopy(dst[dstOffset], src[dstOffset + storeMode * blockOffset],
-                            dataCopyInfo, enhancedParams);
+                        DataCopy(
+                            dst[dstOffset], src[dstOffset + storeMode * blockOffset], dataCopyInfo, enhancedParams);
                     }
                     dstOffset += offset;
                 }
@@ -299,8 +321,9 @@ private:
         }
     }
 
-    __aicore__ inline void CopyCo12Co2WithoutQuant(const LocalTensor<DstT>& dst, const LocalTensor<L0cT>& src, int32_t curCol,
-        int32_t baseBlockHeight, int32_t baseBlockWidth)
+    __aicore__ inline void CopyCo12Co2WithoutQuant(
+        const LocalTensor<DstT>& dst, const LocalTensor<L0cT>& src, int32_t curCol, int32_t baseBlockHeight,
+        int32_t baseBlockWidth)
     {
         DataCopyParams dataCopyInfo;
         dataCopyInfo.blockCount = baseBlockWidth;
@@ -315,7 +338,9 @@ private:
         DataCopy(dst, src, dataCopyInfo, enhancedParams);
     }
 
-    __aicore__ inline void CopyCo12Local(const LocalTensor<DstT>& localBuf, const LocalTensor<L0cT>& co1Local, int32_t curCol, int32_t baseBlockHeight, int32_t baseBlockWidth)
+    __aicore__ inline void CopyCo12Local(
+        const LocalTensor<DstT>& localBuf, const LocalTensor<L0cT>& co1Local, int32_t curCol, int32_t baseBlockHeight,
+        int32_t baseBlockWidth)
     {
         DataCopyParams dataCopyInfo;
         dataCopyInfo.blockCount = 1;
@@ -326,16 +351,17 @@ private:
         } else {
             enhancedParams.blockMode = BlockMode::BLOCK_MODE_MATRIX;
             ASCENDC_ASSERT((localBuf.GetSize() >= dataCopyInfo.blockLen * CUBE_MAX_SIZE), {
-                KERNEL_LOG(KERNEL_ERROR, "copy len is %d, which should be less than dst size %d",
+                KERNEL_LOG(
+                    KERNEL_ERROR, "copy len is %d, which should be less than dst size %d",
                     dataCopyInfo.blockLen * CUBE_MAX_SIZE, localBuf.GetSize());
             });
         }
         CopyCo12Co2WithQuant(localBuf, co1Local, curCol, baseBlockHeight, baseBlockWidth, dataCopyInfo, enhancedParams);
     }
 
-    __aicore__ inline void CopyLocal2GMNZ2NZNotSeq(const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& localBuf,
-        int32_t curRow, int32_t curCol, int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight,
-        int32_t baseBlockWidth)
+    __aicore__ inline void CopyLocal2GMNZ2NZNotSeq(
+        const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& localBuf, int32_t curRow, int32_t curCol,
+        int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth)
     {
         int64_t alignM;
         int alignBaseUseM;
@@ -353,16 +379,15 @@ private:
         int blockCount;
         if constexpr (IsSameType<DstT, int8_t>::value || IsSameType<DstT, uint8_t>::value) {
             dstOffset = curCol * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN() * alignM +
-                curRow * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM() * ONE_BLK_SIZE;
+                        curRow * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM() * ONE_BLK_SIZE;
             dstStride = (alignM - alignBaseUseM) * sizeof(DstT);
             blockLen = baseBlockHeight * BLOCK_CUBE * sizeof(DstT);
             blockCount = Ceil(baseBlockWidth, TWO_TIMES);
         } else {
             dstOffset = curCol * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN() * alignM +
-                curRow * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM() * BLOCK_CUBE;
+                        curRow * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM() * BLOCK_CUBE;
             dstStride = (alignM - alignBaseUseM) * sizeof(DstT) * BLOCK_CUBE / ONE_BLK_SIZE;
-            blockLen = baseBlockHeight * BLOCK_CUBE * sizeof(DstT) *
-                BLOCK_CUBE / ONE_BLK_SIZE;
+            blockLen = baseBlockHeight * BLOCK_CUBE * sizeof(DstT) * BLOCK_CUBE / ONE_BLK_SIZE;
             blockCount = baseBlockWidth;
         }
 
@@ -377,48 +402,55 @@ private:
                 srcStride = baseHeight * BLOCK_CUBE;
             }
             for (int32_t i = 0; i < blockCount; ++i) {
-                DataCopy(gm[dstOffset], localBuf[srcOffset], { 1, static_cast<uint16_t>(blockLen), 0, 0 });
+                DataCopy(gm[dstOffset], localBuf[srcOffset], {1, static_cast<uint16_t>(blockLen), 0, 0});
                 dstOffset += dstStride;
                 srcOffset += srcStride;
             }
         } else {
-            DataCopy(gm[dstOffset], localBuf, { static_cast<uint16_t>(blockCount), static_cast<uint16_t>(blockLen), 0,
-                static_cast<uint16_t>(dstStride) });
+            DataCopy(
+                gm[dstOffset], localBuf,
+                {static_cast<uint16_t>(blockCount), static_cast<uint16_t>(blockLen), 0,
+                 static_cast<uint16_t>(dstStride)});
         }
     }
 
-    __aicore__ inline void CopyLocal2GMNZ2NZSeq(const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& localBuf, int32_t baseHeight, int32_t baseBlockWidth)
+    __aicore__ inline void CopyLocal2GMNZ2NZSeq(
+        const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& localBuf, int32_t baseHeight, int32_t baseBlockWidth)
     {
         int32_t blockLen = baseHeight * BLOCK_CUBE * sizeof(DstT) / ONE_BLK_SIZE;
-        DataCopy(gm, localBuf, { static_cast<uint16_t>(baseBlockWidth),
-            static_cast<uint16_t>(blockLen), 0, 0 });
+        DataCopy(gm, localBuf, {static_cast<uint16_t>(baseBlockWidth), static_cast<uint16_t>(blockLen), 0, 0});
     }
 
     template <bool enSequentialWrite>
-    __aicore__ inline void CopyLocal2GMNZ2NZ(const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& localBuf,
-        int32_t curRow, int32_t curCol, int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth)
+    __aicore__ inline void CopyLocal2GMNZ2NZ(
+        const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& localBuf, int32_t curRow, int32_t curCol,
+        int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth)
     {
         if constexpr (enSequentialWrite) {
             CopyLocal2GMNZ2NZSeq(gm, localBuf, baseHeight, baseBlockWidth);
         } else {
             ASCENDC_ASSERT((MATMUL_MODULE(MatmulShapeInfo)->GetOrgM() >= baseHeight), {
-                KERNEL_LOG(KERNEL_ERROR, "M_ is %d, baseHeight is %d, M_ should be no less than baseHeight",
+                KERNEL_LOG(
+                    KERNEL_ERROR, "M_ is %d, baseHeight is %d, M_ should be no less than baseHeight",
                     MATMUL_MODULE(MatmulShapeInfo)->GetOrgM(), baseHeight);
             });
-            CopyLocal2GMNZ2NZNotSeq(gm, localBuf, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
+            CopyLocal2GMNZ2NZNotSeq(
+                gm, localBuf, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
         }
     }
 
-    __aicore__ inline void TransNZ2NDForDstUB(const LocalTensor<DstT>& co2Local, const LocalTensor<DstT>& trans,
-        int32_t dstStride, int32_t baseHeight, int32_t baseBlockWidth, int32_t baseBlockHeight)
+    __aicore__ inline void TransNZ2NDForDstUB(
+        const LocalTensor<DstT>& co2Local, const LocalTensor<DstT>& trans, int32_t dstStride, int32_t baseHeight,
+        int32_t baseBlockWidth, int32_t baseBlockHeight)
     {
-        DataCopyParams dataCopyInfo {
+        DataCopyParams dataCopyInfo{
             static_cast<uint16_t>(baseBlockWidth),
             static_cast<uint16_t>(MATMUL_MODULE(CopyCubeOutUtils)->GetBlockCount() * sizeof(DstT) / ONE_BLK_SIZE),
-            static_cast<uint16_t>((baseBlockHeight * BLOCK_CUBE * MATMUL_MODULE(CopyCubeOutUtils)->GetBlockCount() -
-                MATMUL_MODULE(CopyCubeOutUtils)->GetBlockCount()) * sizeof(DstT) / ONE_BLK_SIZE),
-            0
-        };
+            static_cast<uint16_t>(
+                (baseBlockHeight * BLOCK_CUBE * MATMUL_MODULE(CopyCubeOutUtils)->GetBlockCount() -
+                 MATMUL_MODULE(CopyCubeOutUtils)->GetBlockCount()) *
+                sizeof(DstT) / ONE_BLK_SIZE),
+            0};
         int32_t dstOffset = 0;
         int32_t srcOffset = 0;
         for (int32_t i = 0; i < baseHeight; i++) {
@@ -429,16 +461,17 @@ private:
     }
 
     template <bool enSequentialWrite>
-    __aicore__ inline void CopyLocal2GMNZ2NDByVec(const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& localBuf,
-        int32_t curRow, int32_t curCol, int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth)
+    __aicore__ inline void CopyLocal2GMNZ2NDByVec(
+        const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& localBuf, int32_t curRow, int32_t curCol,
+        int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth)
     {
-        uint32_t dimN = (MATMUL_MODULE(MatmulShapeInfo)->GetOrgKc() != 0) ?
-            MATMUL_MODULE(MatmulShapeInfo)->GetOrgKc() : MATMUL_MODULE(MatmulShapeInfo)->GetOrgN();
+        uint32_t dimN = (MATMUL_MODULE(MatmulShapeInfo)->GetOrgKc() != 0) ? MATMUL_MODULE(MatmulShapeInfo)->GetOrgKc() :
+                                                                            MATMUL_MODULE(MatmulShapeInfo)->GetOrgN();
 
-        LocalTensor<DstT> trans = MATMUL_MODULE(LocalWorkspace)->template
-            GetWorkspaceWithOffset<ToMatmulConfig(MM_CFG).enableUBReuse>(
-            MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetTransLength())
-            .template ReinterpretCast<DstT>();
+        LocalTensor<DstT> trans = MATMUL_MODULE(LocalWorkspace)
+                                      ->template GetWorkspaceWithOffset<ToMatmulConfig(MM_CFG).enableUBReuse>(
+                                          MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetTransLength())
+                                      .template ReinterpretCast<DstT>();
         int32_t transSize = localBuf.GetSize();
         if constexpr (IsSameType<DstT, int8_t>::value || IsSameType<DstT, uint8_t>::value) {
             if (baseBlockWidth % TWO_TIMES != 0) {
@@ -461,18 +494,20 @@ private:
             if constexpr (IsSameType<DstT, int8_t>::value || IsSameType<DstT, uint8_t>::value) {
                 width = width / TWO_TIMES;
             }
-            ASCENDC_ASSERT((dimN >= width),
-                { KERNEL_LOG(KERNEL_ERROR, "dimN is %d, width is %d, dimN should be no less than width", dimN, width); });
+            ASCENDC_ASSERT((dimN >= width), {
+                KERNEL_LOG(KERNEL_ERROR, "dimN is %d, width is %d, dimN should be no less than width", dimN, width);
+            });
             if constexpr (C_TYPE::format == CubeFormat::ND_ALIGN) {
                 isGmAligned = 1;
             } else {
-                isGmAligned = ((dimN % MATMUL_MODULE(CopyCubeOutUtils)->GetBlockCount()) == 0 &&
-                    (MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN() %
-                    MATMUL_MODULE(CopyCubeOutUtils)->GetBlockCount()) == 0);
+                isGmAligned =
+                    ((dimN % MATMUL_MODULE(CopyCubeOutUtils)->GetBlockCount()) == 0 &&
+                     (MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN() %
+                      MATMUL_MODULE(CopyCubeOutUtils)->GetBlockCount()) == 0);
             }
 
             dstOffset = curRow * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM() * dimN +
-                curCol * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
+                        curCol * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
             dstStride = (dimN - width) * sizeof(DstT) / ONE_BLK_SIZE;
             offset = dimN;
         }
@@ -492,23 +527,26 @@ private:
             ->TransNZ2NDByVec(trans, localBuf, baseBlockHeight, baseBlockWidth, baseHeight, baseWidth, baseBlockWidth);
 
         // 3. copy trans buffer to gm
-        MATMUL_MODULE(CopyCubeOutUtils)->template CopyTrans2GM<enSequentialWrite>(gm, trans, curRow, curCol, baseHeight,
-            baseWidth, baseBlockHeight, baseBlockWidth, dstOffset, offset, dstStride, isComputeLineByLine, isTargetAligned);
+        MATMUL_MODULE(CopyCubeOutUtils)
+            ->template CopyTrans2GM<enSequentialWrite>(
+                gm, trans, curRow, curCol, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth, dstOffset, offset,
+                dstStride, isComputeLineByLine, isTargetAligned);
     }
 
     template <bool enSequentialWrite>
-    __aicore__ inline void CopyLocal2GMNZ2NDOnTheFly(const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& localBuf,
-                                                     int32_t curRow, int32_t curCol, int32_t baseHeight, int32_t baseWidth,
-                                                     int32_t baseBlockHeight, int32_t baseBlockWidth)
+    __aicore__ inline void CopyLocal2GMNZ2NDOnTheFly(
+        const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& localBuf, int32_t curRow, int32_t curCol,
+        int32_t baseHeight, int32_t baseWidth, int32_t baseBlockHeight, int32_t baseBlockWidth)
     {
-        uint32_t dimN = (MATMUL_MODULE(MatmulShapeInfo)->GetOrgKc() != 0) ?
-            MATMUL_MODULE(MatmulShapeInfo)->GetOrgKc() : MATMUL_MODULE(MatmulShapeInfo)->GetOrgN();
+        uint32_t dimN = (MATMUL_MODULE(MatmulShapeInfo)->GetOrgKc() != 0) ? MATMUL_MODULE(MatmulShapeInfo)->GetOrgKc() :
+                                                                            MATMUL_MODULE(MatmulShapeInfo)->GetOrgN();
         int32_t calcWidth = baseWidth / MATMUL_MODULE(CopyCubeOutUtils)->GetBlockCount();
         int32_t dstOffset = curRow * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM() * dimN +
-            curCol * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
+                            curCol * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
         int32_t blockLen = MATMUL_MODULE(CopyCubeOutUtils)->GetBlockCount() * sizeof(DstT) / ONE_BLK_SIZE;
         int32_t srcRepeatGap = (baseBlockHeight * BLOCK_CUBE * MATMUL_MODULE(CopyCubeOutUtils)->GetBlockCount() -
-            MATMUL_MODULE(CopyCubeOutUtils)->GetBlockCount()) * sizeof(DstT) / ONE_BLK_SIZE;
+                                MATMUL_MODULE(CopyCubeOutUtils)->GetBlockCount()) *
+                               sizeof(DstT) / ONE_BLK_SIZE;
         int32_t tail = baseWidth % MATMUL_MODULE(CopyCubeOutUtils)->GetBlockCount();
 
         int32_t offset = dimN;
@@ -528,17 +566,20 @@ private:
         int32_t srcOffset = 0;
         for (int32_t i = 0; i < baseHeight; i++) {
             if (calcWidth > 0) {
-                DataCopy(gm[dstOffset], localBuf[srcOffset], { static_cast<uint16_t>(calcWidth),
-                    static_cast<uint16_t>(blockLen), static_cast<uint16_t>(srcRepeatGap), 0 });
-                if constexpr (IsSameType<typename A_TYPE::T, half>::value &&
-                    IsSameType<typename B_TYPE::T, int8_t>::value) {
+                DataCopy(
+                    gm[dstOffset], localBuf[srcOffset],
+                    {static_cast<uint16_t>(calcWidth), static_cast<uint16_t>(blockLen),
+                     static_cast<uint16_t>(srcRepeatGap), 0});
+                if constexpr (
+                    IsSameType<typename A_TYPE::T, half>::value && IsSameType<typename B_TYPE::T, int8_t>::value) {
                     PipeBarrier<PIPE_MTE3>();
                 }
             }
 
             if (tail != 0) {
-                MATMUL_MODULE(CopyCubeOutUtils)->CopyLocal2GMNZ2NDOnTheFlyTail(
-                    gm[dstOffset], localBuf, baseHeight, baseWidth, i, calcWidth, eventIDMte3ToMte2);
+                MATMUL_MODULE(CopyCubeOutUtils)
+                    ->CopyLocal2GMNZ2NDOnTheFlyTail(
+                        gm[dstOffset], localBuf, baseHeight, baseWidth, i, calcWidth, eventIDMte3ToMte2);
             }
             dstOffset += offset;
             srcOffset += MATMUL_MODULE(CopyCubeOutUtils)->GetBlockCount();
@@ -550,9 +591,9 @@ private:
         GetTPipePtr()->ReleaseEventID<HardEvent::MTE3_MTE2>(eventIDMte3ToMte2);
     }
 };
-}  // namespace Detail
-}  // namespace Impl
-}  // namespace AscendC
+} // namespace Detail
+} // namespace Impl
+} // namespace AscendC
 #endif
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_OUT_COPY_CUBE_OUT_DATACOPY_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

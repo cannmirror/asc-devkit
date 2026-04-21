@@ -36,8 +36,9 @@ inline uint32_t GetAtanMinTmpSize(const uint32_t typeSize)
 }
 } // namespace
 
-void GetAtanMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t& maxValue, uint32_t& minValue)
+void GetAtanMaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    uint32_t& minValue)
 {
     (void)isReuseSource;
     const uint32_t inputSize = srcShape.GetShapeSize();

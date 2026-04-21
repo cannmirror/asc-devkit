@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file philox_3510_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/philox/philox_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/philox.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/philox/philox_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/philox.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_PHILOX_PHILOX_C310_IMPL_H__
 #endif
@@ -50,7 +51,7 @@ constexpr uint32_t EXP_MASK = static_cast<uint32_t>(127) << 23u; // 7 bit exp
 constexpr uint16_t PHILOX_KEY_SIZE = 2;
 constexpr uint16_t PHILOX_COUNTER_SIZE = 4;
 struct philoxStruct {
-    uint32_t philoxKey[PHILOX_KEY_SIZE] = { 0 };
+    uint32_t philoxKey[PHILOX_KEY_SIZE] = {0};
     uint32_t philoxCounter[PHILOX_COUNTER_SIZE] = {0};
 };
 
@@ -63,9 +64,9 @@ struct PhiloxRandomParams {
     uint32_t column;
 };
 
-__simd_callee__ inline void AddWith128Bits(Reg::RegTensor<uint32_t> &ctr0, Reg::RegTensor<uint32_t> &ctr1,
-    Reg::RegTensor<uint32_t> &ctr2, Reg::RegTensor<uint32_t> &ctr3, Reg::RegTensor<uint32_t> &value,
-    Reg::MaskReg &pg)
+__simd_callee__ inline void AddWith128Bits(
+    Reg::RegTensor<uint32_t>& ctr0, Reg::RegTensor<uint32_t>& ctr1, Reg::RegTensor<uint32_t>& ctr2,
+    Reg::RegTensor<uint32_t>& ctr3, Reg::RegTensor<uint32_t>& value, Reg::MaskReg& pg)
 {
     Reg::MaskReg pd;
     Reg::RegTensor<uint32_t> vZero;
@@ -76,8 +77,9 @@ __simd_callee__ inline void AddWith128Bits(Reg::RegTensor<uint32_t> &ctr0, Reg::
     AddCarryOuts(pd, ctr3, ctr3, vZero, pd, pg);
 }
 
-__simd_callee__ inline void UInt2Float(Reg::RegTensor<uint32_t> &tmpCtr0, Reg::RegTensor<uint32_t> &tmpCtr1,
-    Reg::RegTensor<uint32_t> &tmpCtr2, Reg::RegTensor<uint32_t> &tmpCtr3, Reg::MaskReg &pg)
+__simd_callee__ inline void UInt2Float(
+    Reg::RegTensor<uint32_t>& tmpCtr0, Reg::RegTensor<uint32_t>& tmpCtr1, Reg::RegTensor<uint32_t>& tmpCtr2,
+    Reg::RegTensor<uint32_t>& tmpCtr3, Reg::MaskReg& pg)
 {
     Reg::RegTensor<uint32_t> vb32ManMask, vb32ExpMask;
     Duplicate(vb32ManMask, PhiloxInternal::MANTISSA);
@@ -90,19 +92,19 @@ __simd_callee__ inline void UInt2Float(Reg::RegTensor<uint32_t> &tmpCtr0, Reg::R
     Or(tmpCtr1, tmpCtr1, vb32ExpMask, pg);
     Or(tmpCtr2, tmpCtr2, vb32ExpMask, pg);
     Or(tmpCtr3, tmpCtr3, vb32ExpMask, pg);
-    Adds((Reg::RegTensor<float> &)tmpCtr0, (Reg::RegTensor<float> &)tmpCtr0, -1.0f, pg);
-    Adds((Reg::RegTensor<float> &)tmpCtr1, (Reg::RegTensor<float> &)tmpCtr1, -1.0f, pg);
-    Adds((Reg::RegTensor<float> &)tmpCtr2, (Reg::RegTensor<float> &)tmpCtr2, -1.0f, pg);
-    Adds((Reg::RegTensor<float> &)tmpCtr3, (Reg::RegTensor<float> &)tmpCtr3, -1.0f, pg);
+    Adds((Reg::RegTensor<float>&)tmpCtr0, (Reg::RegTensor<float>&)tmpCtr0, -1.0f, pg);
+    Adds((Reg::RegTensor<float>&)tmpCtr1, (Reg::RegTensor<float>&)tmpCtr1, -1.0f, pg);
+    Adds((Reg::RegTensor<float>&)tmpCtr2, (Reg::RegTensor<float>&)tmpCtr2, -1.0f, pg);
+    Adds((Reg::RegTensor<float>&)tmpCtr3, (Reg::RegTensor<float>&)tmpCtr3, -1.0f, pg);
 }
 
 template <uint16_t Rounds>
-__simd_callee__ inline void SpNetworkKernel(Reg::RegTensor<uint32_t> &tmpL0, Reg::RegTensor<uint32_t> &tmpH0,
-    Reg::RegTensor<uint32_t> &tmpL1, Reg::RegTensor<uint32_t> &tmpH1, Reg::RegTensor<uint32_t> &tmpCtr0,
-    Reg::RegTensor<uint32_t> &tmpCtr1, Reg::RegTensor<uint32_t> &tmpCtr2,
-    Reg::RegTensor<uint32_t> &tmpCtr3, Reg::RegTensor<uint32_t> &tmpKey0,
-    Reg::RegTensor<uint32_t> &tmpKey1, Reg::RegTensor<uint32_t> &cMul0, Reg::RegTensor<uint32_t> &cMul1,
-    Reg::MaskReg &pg)
+__simd_callee__ inline void SpNetworkKernel(
+    Reg::RegTensor<uint32_t>& tmpL0, Reg::RegTensor<uint32_t>& tmpH0, Reg::RegTensor<uint32_t>& tmpL1,
+    Reg::RegTensor<uint32_t>& tmpH1, Reg::RegTensor<uint32_t>& tmpCtr0, Reg::RegTensor<uint32_t>& tmpCtr1,
+    Reg::RegTensor<uint32_t>& tmpCtr2, Reg::RegTensor<uint32_t>& tmpCtr3, Reg::RegTensor<uint32_t>& tmpKey0,
+    Reg::RegTensor<uint32_t>& tmpKey1, Reg::RegTensor<uint32_t>& cMul0, Reg::RegTensor<uint32_t>& cMul1,
+    Reg::MaskReg& pg)
 {
     // pragma unroll vs manual unroll(442).
     // when count=16384, round 10, cycles(6904 vs 5549), vex(6822 vs 4260), ipc(0.988 vs 0.768)
@@ -122,10 +124,10 @@ __simd_callee__ inline void SpNetworkKernel(Reg::RegTensor<uint32_t> &tmpL0, Reg
 }
 
 template <uint16_t Rounds, typename T, bool DstUnalign = false>
-__simd_callee__ inline void SpNetworkFull(__ubuf__ uint32_t *dstUbTail, uint16_t tailCount,
-    Reg::RegTensor<uint32_t> &ctr0, Reg::RegTensor<uint32_t> &ctr1, Reg::RegTensor<uint32_t> &ctr2,
-    Reg::RegTensor<uint32_t> &ctr3, Reg::RegTensor<uint32_t> &key0, Reg::RegTensor<uint32_t> &key1,
-    Reg::RegTensor<uint32_t> &cMul0, Reg::RegTensor<uint32_t> &cMul1, Reg::MaskReg &pg)
+__simd_callee__ inline void SpNetworkFull(
+    __ubuf__ uint32_t* dstUbTail, uint16_t tailCount, Reg::RegTensor<uint32_t>& ctr0, Reg::RegTensor<uint32_t>& ctr1,
+    Reg::RegTensor<uint32_t>& ctr2, Reg::RegTensor<uint32_t>& ctr3, Reg::RegTensor<uint32_t>& key0,
+    Reg::RegTensor<uint32_t>& key1, Reg::RegTensor<uint32_t>& cMul0, Reg::RegTensor<uint32_t>& cMul1, Reg::MaskReg& pg)
 {
     Reg::RegTensor<uint32_t> tmpCtr3, tmpCtr2, tmpCtr1, tmpCtr0;
     tmpCtr0 = ctr0;
@@ -135,8 +137,8 @@ __simd_callee__ inline void SpNetworkFull(__ubuf__ uint32_t *dstUbTail, uint16_t
     Reg::RegTensor<uint32_t> tmpKey0 = key0;
     Reg::RegTensor<uint32_t> tmpKey1 = key1;
     Reg::RegTensor<uint32_t> tmpL0, tmpH0, tmpL1, tmpH1;
-    SpNetworkKernel<Rounds>(tmpL0, tmpH0, tmpL1, tmpH1, tmpCtr0, tmpCtr1, tmpCtr2, tmpCtr3, tmpKey0, tmpKey1, cMul0,
-        cMul1, pg);
+    SpNetworkKernel<Rounds>(
+        tmpL0, tmpH0, tmpL1, tmpH1, tmpCtr0, tmpCtr1, tmpCtr2, tmpCtr3, tmpKey0, tmpKey1, cMul0, cMul1, pg);
 
     if constexpr (std::is_same_v<T, float>) {
         UInt2Float(tmpCtr0, tmpCtr1, tmpCtr2, tmpCtr3, pg);
@@ -144,7 +146,7 @@ __simd_callee__ inline void SpNetworkFull(__ubuf__ uint32_t *dstUbTail, uint16_t
 
     if constexpr (DstUnalign) {
         Reg::RegTensor<uint32_t> reorderIndex;
-        Reg::Arange((Reg::RegTensor<int32_t> &)reorderIndex, 0);
+        Reg::Arange((Reg::RegTensor<int32_t>&)reorderIndex, 0);
         Muls(reorderIndex, reorderIndex, PhiloxInternal::PHILOX_ONCE_COUNTER_NUM, pg);
         // column % 4 = 0, scatter pgTail is tailCount / 4
         uint32_t sreg = static_cast<uint32_t>(tailCount / PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
@@ -160,92 +162,92 @@ __simd_callee__ inline void SpNetworkFull(__ubuf__ uint32_t *dstUbTail, uint16_t
         Interleave(tmpCtr2, tmpCtr3, tmpCtr2, tmpCtr3);
         uint32_t sreg = static_cast<uint32_t>(tailCount);
         Reg::MaskReg pgTail = Reg::UpdateMask<T>(sreg);
-        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbTail, tmpCtr0,
-            PhiloxInternal::ELE_CNT_B32_ONCE, pgTail);
+        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(
+            dstUbTail, tmpCtr0, PhiloxInternal::ELE_CNT_B32_ONCE, pgTail);
         pgTail = Reg::UpdateMask<T>(sreg);
-        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbTail, tmpCtr1,
-            PhiloxInternal::ELE_CNT_B32_ONCE, pgTail);
+        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(
+            dstUbTail, tmpCtr1, PhiloxInternal::ELE_CNT_B32_ONCE, pgTail);
         pgTail = Reg::UpdateMask<T>(sreg);
-        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbTail, tmpCtr2,
-            PhiloxInternal::ELE_CNT_B32_ONCE, pgTail);
+        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(
+            dstUbTail, tmpCtr2, PhiloxInternal::ELE_CNT_B32_ONCE, pgTail);
         pgTail = Reg::UpdateMask<T>(sreg);
-        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbTail, tmpCtr3,
-            PhiloxInternal::ELE_CNT_B32_ONCE, pgTail);
+        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(
+            dstUbTail, tmpCtr3, PhiloxInternal::ELE_CNT_B32_ONCE, pgTail);
     }
 }
 
 template <bool DstUnalign = false>
-__simd_callee__ inline void PhiloxUnrollStoreTmpCtrl(__ubuf__ uint32_t *&dstUbT, Reg::RegTensor<uint32_t> &tmpCtr0,
-    Reg::RegTensor<uint32_t> &tmpCtr1, Reg::RegTensor<uint32_t> &tmpCtr2,
-    Reg::RegTensor<uint32_t> &tmpCtr3, Reg::MaskReg &pg)
+__simd_callee__ inline void PhiloxUnrollStoreTmpCtrl(
+    __ubuf__ uint32_t*& dstUbT, Reg::RegTensor<uint32_t>& tmpCtr0, Reg::RegTensor<uint32_t>& tmpCtr1,
+    Reg::RegTensor<uint32_t>& tmpCtr2, Reg::RegTensor<uint32_t>& tmpCtr3, Reg::MaskReg& pg)
 {
     if constexpr (DstUnalign) {
         Reg::UnalignReg ureg;
-        Reg::StoreUnAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr0, ureg,
-            PhiloxInternal::ELE_CNT_B32_ONCE);
-        Reg::StoreUnAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr1, ureg,
-            PhiloxInternal::ELE_CNT_B32_ONCE);
-        Reg::StoreUnAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr2, ureg,
-            PhiloxInternal::ELE_CNT_B32_ONCE);
-        Reg::StoreUnAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr3, ureg,
-            PhiloxInternal::ELE_CNT_B32_ONCE);
+        Reg::StoreUnAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(
+            dstUbT, tmpCtr0, ureg, PhiloxInternal::ELE_CNT_B32_ONCE);
+        Reg::StoreUnAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(
+            dstUbT, tmpCtr1, ureg, PhiloxInternal::ELE_CNT_B32_ONCE);
+        Reg::StoreUnAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(
+            dstUbT, tmpCtr2, ureg, PhiloxInternal::ELE_CNT_B32_ONCE);
+        Reg::StoreUnAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(
+            dstUbT, tmpCtr3, ureg, PhiloxInternal::ELE_CNT_B32_ONCE);
         Reg::StoreUnAlignPost<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbT, ureg, 0);
     } else {
-        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr0,
-            PhiloxInternal::ELE_CNT_B32_ONCE, pg);
-        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr1,
-            PhiloxInternal::ELE_CNT_B32_ONCE, pg);
-        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr2,
-            PhiloxInternal::ELE_CNT_B32_ONCE, pg);
-        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(dstUbT, tmpCtr3,
-            PhiloxInternal::ELE_CNT_B32_ONCE, pg);
+        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(
+            dstUbT, tmpCtr0, PhiloxInternal::ELE_CNT_B32_ONCE, pg);
+        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(
+            dstUbT, tmpCtr1, PhiloxInternal::ELE_CNT_B32_ONCE, pg);
+        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(
+            dstUbT, tmpCtr2, PhiloxInternal::ELE_CNT_B32_ONCE, pg);
+        Reg::StoreAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(
+            dstUbT, tmpCtr3, PhiloxInternal::ELE_CNT_B32_ONCE, pg);
     }
 }
 
 template <bool DstUnalign = false>
-__simd_callee__ inline void PhiloxUnrollLoadTmpCtrl(__ubuf__ uint32_t *&dstUbTT0, __ubuf__ uint32_t *&dstUbTT1,
-    __ubuf__ uint32_t *&dstUbTT2, __ubuf__ uint32_t *&dstUbTT3, Reg::RegTensor<uint32_t> &tmpCtr0,
-    Reg::RegTensor<uint32_t> &tmpCtr1, Reg::RegTensor<uint32_t> &tmpCtr2,
-    Reg::RegTensor<uint32_t> &tmpCtr3)
+__simd_callee__ inline void PhiloxUnrollLoadTmpCtrl(
+    __ubuf__ uint32_t*& dstUbTT0, __ubuf__ uint32_t*& dstUbTT1, __ubuf__ uint32_t*& dstUbTT2,
+    __ubuf__ uint32_t*& dstUbTT3, Reg::RegTensor<uint32_t>& tmpCtr0, Reg::RegTensor<uint32_t>& tmpCtr1,
+    Reg::RegTensor<uint32_t>& tmpCtr2, Reg::RegTensor<uint32_t>& tmpCtr3)
 {
     if constexpr (DstUnalign) {
         Reg::UnalignReg ureg;
         Reg::LoadUnAlignPre(ureg, dstUbTT0);
-        Reg::LoadUnAlign(tmpCtr0, ureg, dstUbTT0,
-            PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
+        Reg::LoadUnAlign(
+            tmpCtr0, ureg, dstUbTT0, PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
         Reg::LoadUnAlignPre(ureg, dstUbTT1);
-        Reg::LoadUnAlign(tmpCtr1, ureg, dstUbTT1,
-            PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
+        Reg::LoadUnAlign(
+            tmpCtr1, ureg, dstUbTT1, PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
         Reg::LoadUnAlignPre(ureg, dstUbTT2);
-        Reg::LoadUnAlign(tmpCtr2, ureg, dstUbTT2,
-            PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
+        Reg::LoadUnAlign(
+            tmpCtr2, ureg, dstUbTT2, PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
         Reg::LoadUnAlignPre(ureg, dstUbTT3);
-        Reg::LoadUnAlign(tmpCtr3, ureg, dstUbTT3,
-            PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
+        Reg::LoadUnAlign(
+            tmpCtr3, ureg, dstUbTT3, PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
     } else {
-        Reg::LoadAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(tmpCtr0, dstUbTT0,
-            PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
-        Reg::LoadAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(tmpCtr1, dstUbTT1,
-            PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
-        Reg::LoadAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(tmpCtr2, dstUbTT2,
-            PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
-        Reg::LoadAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(tmpCtr3, dstUbTT3,
-            PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
+        Reg::LoadAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(
+            tmpCtr0, dstUbTT0, PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
+        Reg::LoadAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(
+            tmpCtr1, dstUbTT1, PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
+        Reg::LoadAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(
+            tmpCtr2, dstUbTT2, PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
+        Reg::LoadAlign<uint32_t, Reg::PostLiteral::POST_MODE_UPDATE>(
+            tmpCtr3, dstUbTT3, PhiloxInternal::ELE_CNT_B32_ONCE * PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
     }
 }
 
 template <typename T, bool DstUnalign = false>
-__simd_callee__ inline void PhiloxRound10MainBlockUnroll442(__ubuf__ uint32_t *dstUb, uint16_t mainIter,
-    Reg::RegTensor<uint32_t> &ctr0, Reg::RegTensor<uint32_t> &ctr1, Reg::RegTensor<uint32_t> &ctr2,
-    Reg::RegTensor<uint32_t> &ctr3, Reg::RegTensor<uint32_t> &key0, Reg::RegTensor<uint32_t> &key1,
-    Reg::RegTensor<uint32_t> &cMul0, Reg::RegTensor<uint32_t> &cMul1,
-    Reg::RegTensor<uint32_t> &vEleStrideB32OneRow, Reg::MaskReg &pg)
+__simd_callee__ inline void PhiloxRound10MainBlockUnroll442(
+    __ubuf__ uint32_t* dstUb, uint16_t mainIter, Reg::RegTensor<uint32_t>& ctr0, Reg::RegTensor<uint32_t>& ctr1,
+    Reg::RegTensor<uint32_t>& ctr2, Reg::RegTensor<uint32_t>& ctr3, Reg::RegTensor<uint32_t>& key0,
+    Reg::RegTensor<uint32_t>& key1, Reg::RegTensor<uint32_t>& cMul0, Reg::RegTensor<uint32_t>& cMul1,
+    Reg::RegTensor<uint32_t>& vEleStrideB32OneRow, Reg::MaskReg& pg)
 {
     Reg::RegTensor<uint32_t> tmpCtr3, tmpCtr2, tmpCtr1, tmpCtr0;
-    __ubuf__ uint32_t *dstUbT = dstUb;
+    __ubuf__ uint32_t* dstUbT = dstUb;
 
     Reg::RegTensor<uint32_t> reorderIndex;
-    Arange((Reg::RegTensor<int32_t> &)reorderIndex, 0);
+    Arange((Reg::RegTensor<int32_t>&)reorderIndex, 0);
     Muls(reorderIndex, reorderIndex, PhiloxInternal::PHILOX_ONCE_COUNTER_NUM, pg);
 
     for (uint16_t i = 0; i < mainIter; i++) {
@@ -306,10 +308,10 @@ __simd_callee__ inline void PhiloxRound10MainBlockUnroll442(__ubuf__ uint32_t *d
     }
 
     dstUbT = dstUb;
-    __ubuf__ uint32_t *dstUbTT0 = dstUbT;
-    __ubuf__ uint32_t *dstUbTT1 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE;
-    __ubuf__ uint32_t *dstUbTT2 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE * 2;
-    __ubuf__ uint32_t *dstUbTT3 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE * 3;
+    __ubuf__ uint32_t* dstUbTT0 = dstUbT;
+    __ubuf__ uint32_t* dstUbTT1 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE;
+    __ubuf__ uint32_t* dstUbTT2 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE * 2;
+    __ubuf__ uint32_t* dstUbTT3 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE * 3;
     Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     for (uint16_t i = 0; i < mainIter; i++) {
@@ -451,17 +453,17 @@ __simd_callee__ inline void PhiloxRound10MainBlockUnroll442(__ubuf__ uint32_t *d
 }
 
 template <typename T, bool DstUnalign = false>
-__simd_callee__ inline void PhiloxRound7MainBlockUnroll43(__ubuf__ uint32_t *dstUb, uint16_t mainIter,
-    Reg::RegTensor<uint32_t> &ctr0, Reg::RegTensor<uint32_t> &ctr1, Reg::RegTensor<uint32_t> &ctr2,
-    Reg::RegTensor<uint32_t> &ctr3, Reg::RegTensor<uint32_t> &key0, Reg::RegTensor<uint32_t> &key1,
-    Reg::RegTensor<uint32_t> &cMul0, Reg::RegTensor<uint32_t> &cMul1,
-    Reg::RegTensor<uint32_t> &vEleStrideB32OneRow, Reg::MaskReg &pg)
+__simd_callee__ inline void PhiloxRound7MainBlockUnroll43(
+    __ubuf__ uint32_t* dstUb, uint16_t mainIter, Reg::RegTensor<uint32_t>& ctr0, Reg::RegTensor<uint32_t>& ctr1,
+    Reg::RegTensor<uint32_t>& ctr2, Reg::RegTensor<uint32_t>& ctr3, Reg::RegTensor<uint32_t>& key0,
+    Reg::RegTensor<uint32_t>& key1, Reg::RegTensor<uint32_t>& cMul0, Reg::RegTensor<uint32_t>& cMul1,
+    Reg::RegTensor<uint32_t>& vEleStrideB32OneRow, Reg::MaskReg& pg)
 {
     Reg::RegTensor<uint32_t> tmpCtr3, tmpCtr2, tmpCtr1, tmpCtr0;
-    __ubuf__ uint32_t *dstUbT = dstUb;
+    __ubuf__ uint32_t* dstUbT = dstUb;
 
     Reg::RegTensor<uint32_t> reorderIndex;
-    Reg::Arange((Reg::RegTensor<int32_t> &)reorderIndex, 0);
+    Reg::Arange((Reg::RegTensor<int32_t>&)reorderIndex, 0);
     Muls(reorderIndex, reorderIndex, PhiloxInternal::PHILOX_ONCE_COUNTER_NUM, pg);
 
     for (uint16_t i = 0; i < mainIter; i++) {
@@ -522,10 +524,10 @@ __simd_callee__ inline void PhiloxRound7MainBlockUnroll43(__ubuf__ uint32_t *dst
     }
 
     dstUbT = dstUb;
-    __ubuf__ uint32_t *dstUbTT0 = dstUbT;
-    __ubuf__ uint32_t *dstUbTT1 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE;
-    __ubuf__ uint32_t *dstUbTT2 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE * 2;
-    __ubuf__ uint32_t *dstUbTT3 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE * 3;
+    __ubuf__ uint32_t* dstUbTT0 = dstUbT;
+    __ubuf__ uint32_t* dstUbTT1 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE;
+    __ubuf__ uint32_t* dstUbTT2 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE * 2;
+    __ubuf__ uint32_t* dstUbTT3 = dstUbT + PhiloxInternal::ELE_CNT_B32_ONCE * 3;
     Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     for (uint16_t i = 0; i < mainIter; i++) {
@@ -592,37 +594,38 @@ __simd_callee__ inline void PhiloxRound7MainBlockUnroll43(__ubuf__ uint32_t *dst
 }
 
 template <uint16_t Rounds = 7, typename T, bool DstUnalign = false>
-__simd_callee__ inline void PhiloxRoundMainBlockUnroll(__ubuf__ uint32_t *dstUb, uint16_t mainIter,
-    Reg::RegTensor<uint32_t> &ctr0, Reg::RegTensor<uint32_t> &ctr1, Reg::RegTensor<uint32_t> &ctr2,
-    Reg::RegTensor<uint32_t> &ctr3, Reg::RegTensor<uint32_t> &key0, Reg::RegTensor<uint32_t> &key1,
-    Reg::RegTensor<uint32_t> &cMul0, Reg::RegTensor<uint32_t> &cMul1,
-    Reg::RegTensor<uint32_t> &vEleStrideB32OneRow, Reg::MaskReg &pg)
+__simd_callee__ inline void PhiloxRoundMainBlockUnroll(
+    __ubuf__ uint32_t* dstUb, uint16_t mainIter, Reg::RegTensor<uint32_t>& ctr0, Reg::RegTensor<uint32_t>& ctr1,
+    Reg::RegTensor<uint32_t>& ctr2, Reg::RegTensor<uint32_t>& ctr3, Reg::RegTensor<uint32_t>& key0,
+    Reg::RegTensor<uint32_t>& key1, Reg::RegTensor<uint32_t>& cMul0, Reg::RegTensor<uint32_t>& cMul1,
+    Reg::RegTensor<uint32_t>& vEleStrideB32OneRow, Reg::MaskReg& pg)
 {
     if constexpr (Rounds == 10) {
         // main block with 4 + 4 + 2 unroll
-        PhiloxRound10MainBlockUnroll442<T, DstUnalign>(dstUb, mainIter, ctr0, ctr1, ctr2, ctr3, key0, key1, cMul0,
-            cMul1, vEleStrideB32OneRow, pg);
+        PhiloxRound10MainBlockUnroll442<T, DstUnalign>(
+            dstUb, mainIter, ctr0, ctr1, ctr2, ctr3, key0, key1, cMul0, cMul1, vEleStrideB32OneRow, pg);
     } else {
         // main block with 4 + 3 unroll
-        PhiloxRound7MainBlockUnroll43<T, DstUnalign>(dstUb, mainIter, ctr0, ctr1, ctr2, ctr3, key0, key1, cMul0, cMul1,
-            vEleStrideB32OneRow, pg);
+        PhiloxRound7MainBlockUnroll43<T, DstUnalign>(
+            dstUb, mainIter, ctr0, ctr1, ctr2, ctr3, key0, key1, cMul0, cMul1, vEleStrideB32OneRow, pg);
     }
 }
 
-__simd_callee__ inline void PhiloxCounterInit(const PhiloxCounter &philoxCounter, Reg::RegTensor<uint32_t> &ctr0,
-    Reg::RegTensor<uint32_t> &ctr1, Reg::RegTensor<uint32_t> &ctr2, Reg::RegTensor<uint32_t> &ctr3,
-    Reg::RegTensor<int32_t> &incIdx, Reg::MaskReg &pg)
+__simd_callee__ inline void PhiloxCounterInit(
+    const PhiloxCounter& philoxCounter, Reg::RegTensor<uint32_t>& ctr0, Reg::RegTensor<uint32_t>& ctr1,
+    Reg::RegTensor<uint32_t>& ctr2, Reg::RegTensor<uint32_t>& ctr3, Reg::RegTensor<int32_t>& incIdx, Reg::MaskReg& pg)
 {
     Duplicate(ctr0, philoxCounter[0]);
     Duplicate(ctr1, philoxCounter[1]);
     Duplicate(ctr2, philoxCounter[2]);
     Duplicate(ctr3, philoxCounter[3]);
-    AddWith128Bits(ctr0, ctr1, ctr2, ctr3, (Reg::RegTensor<uint32_t> &)incIdx, pg);
+    AddWith128Bits(ctr0, ctr1, ctr2, ctr3, (Reg::RegTensor<uint32_t>&)incIdx, pg);
 }
 
 template <uint16_t Rounds = 7, typename T, bool DstUnalign = false>
-__simd_vf__ inline void PhiloxRandomOneRow(__ubuf__ uint32_t *dstUb, __ubuf__ uint32_t *dstUbTail,
-    const philoxStruct philox, uint16_t mainIter, uint16_t tailCount)
+__simd_vf__ inline void PhiloxRandomOneRow(
+    __ubuf__ uint32_t* dstUb, __ubuf__ uint32_t* dstUbTail, const philoxStruct philox, uint16_t mainIter,
+    uint16_t tailCount)
 {
     Reg::MaskReg pg = Reg::CreateMask<uint32_t>();
 
@@ -642,8 +645,8 @@ __simd_vf__ inline void PhiloxRandomOneRow(__ubuf__ uint32_t *dstUb, __ubuf__ ui
     Duplicate(cMul0, PhiloxInternal::CONST_MUL_0);
     Duplicate(cMul1, PhiloxInternal::CONST_MUL_1);
 
-    PhiloxRoundMainBlockUnroll<Rounds, T, DstUnalign>(dstUb, mainIter, ctr0, ctr1, ctr2, ctr3, key0, key1, cMul0, cMul1,
-        vEleStrideB32OneRow, pg);
+    PhiloxRoundMainBlockUnroll<Rounds, T, DstUnalign>(
+        dstUb, mainIter, ctr0, ctr1, ctr2, ctr3, key0, key1, cMul0, cMul1, vEleStrideB32OneRow, pg);
 
     if (tailCount > 0) {
         SpNetworkFull<Rounds, T>(dstUbTail, tailCount, ctr0, ctr1, ctr2, ctr3, key0, key1, cMul0, cMul1, pg);
@@ -682,10 +685,10 @@ for (i.o, 0, row / factor) {
   }
 }
 */
-__simd_callee__ inline void PhiloxRandomIndexCal(__ubuf__ int32_t *indexUb, const PhiloxRandomParams &params,
-    const uint32_t fuseFactor)
+__simd_callee__ inline void PhiloxRandomIndexCal(
+    __ubuf__ int32_t* indexUb, const PhiloxRandomParams& params, const uint32_t fuseFactor)
 {
-    __ubuf__ int32_t *indexUbT = indexUb;
+    __ubuf__ int32_t* indexUbT = indexUb;
     Reg::MaskReg pg = Reg::CreateMask<uint32_t>();
     Reg::RegTensor<int32_t> index, incIdx;
     Reg::UnalignReg ureg;
@@ -703,9 +706,10 @@ __simd_callee__ inline void PhiloxRandomIndexCal(__ubuf__ int32_t *indexUb, cons
 }
 
 template <uint16_t Rounds = 7, typename T, bool DstBlockUnalign, bool DstRepeatUnalign>
-__simd_vf__ inline void PhiloxRandomMultiRowWithFuse(__ubuf__ uint32_t *dstUbStart, __ubuf__ int32_t *indexUb,
-    const philoxStruct philox, const PhiloxRandomParams params, const uint32_t fuseFactor, const uint32_t mainFuseAxis,
-    const uint32_t mainRowsNum, const uint32_t tailFuseAxis)
+__simd_vf__ inline void PhiloxRandomMultiRowWithFuse(
+    __ubuf__ uint32_t* dstUbStart, __ubuf__ int32_t* indexUb, const philoxStruct philox,
+    const PhiloxRandomParams params, const uint32_t fuseFactor, const uint32_t mainFuseAxis, const uint32_t mainRowsNum,
+    const uint32_t tailFuseAxis)
 {
     PhiloxRandomIndexCal(indexUb, params, fuseFactor);
     Reg::RegTensor<uint32_t> ctr3, ctr2, ctr1, ctr0;
@@ -727,29 +731,29 @@ __simd_vf__ inline void PhiloxRandomMultiRowWithFuse(__ubuf__ uint32_t *dstUbSta
     Duplicate(vEleStrideB32OneRow, fuseFactor * params.stride / PhiloxInternal::PHILOX_ONCE_COUNTER_NUM);
 
     if constexpr (!DstRepeatUnalign) {
-        PhiloxRoundMainBlockUnroll<Rounds, T, DstBlockUnalign>(dstUbStart, mainRowsNum, ctr0, ctr1, ctr2, ctr3, key0,
-            key1, cMul0, cMul1, vEleStrideB32OneRow, pg);
+        PhiloxRoundMainBlockUnroll<Rounds, T, DstBlockUnalign>(
+            dstUbStart, mainRowsNum, ctr0, ctr1, ctr2, ctr3, key0, key1, cMul0, cMul1, vEleStrideB32OneRow, pg);
     } else {
         // if dst repeat unalign, use MainBlockUnroll algo may be dst overlap. SpNetworkFull can control each element.
         for (uint16_t i = 0; i < mainRowsNum; i++) {
-            __ubuf__ uint32_t *dstUb = dstUbStart + i * mainFuseAxis;
-            SpNetworkFull<Rounds, T, DstBlockUnalign>(dstUb, mainFuseAxis, ctr0, ctr1, ctr2, ctr3, key0, key1, cMul0,
-                cMul1, pg);
+            __ubuf__ uint32_t* dstUb = dstUbStart + i * mainFuseAxis;
+            SpNetworkFull<Rounds, T, DstBlockUnalign>(
+                dstUb, mainFuseAxis, ctr0, ctr1, ctr2, ctr3, key0, key1, cMul0, cMul1, pg);
             AddWith128Bits(ctr0, ctr1, ctr2, ctr3, vEleStrideB32OneRow, pg);
         }
     }
 
     if (tailFuseAxis > 0) {
-        __ubuf__ uint32_t *dstUbTail = dstUbStart + mainRowsNum * mainFuseAxis;
-        SpNetworkFull<Rounds, T, DstBlockUnalign>(dstUbTail, tailFuseAxis, ctr0, ctr1, ctr2, ctr3, key0, key1, cMul0,
-            cMul1, pg);
+        __ubuf__ uint32_t* dstUbTail = dstUbStart + mainRowsNum * mainFuseAxis;
+        SpNetworkFull<Rounds, T, DstBlockUnalign>(
+            dstUbTail, tailFuseAxis, ctr0, ctr1, ctr2, ctr3, key0, key1, cMul0, cMul1, pg);
     }
 }
 
 template <uint16_t Rounds = 7, typename T, bool DstUnalign>
-__simd_vf__ inline void PhiloxRandomMultiRowNoFuse(__ubuf__ uint32_t *dstUbStart, const philoxStruct philox,
-    const PhiloxRandomParams params, uint32_t strideCounterOneRow, uint16_t mainIter, uint16_t tailCount,
-    uint16_t hasTail)
+__simd_vf__ inline void PhiloxRandomMultiRowNoFuse(
+    __ubuf__ uint32_t* dstUbStart, const philoxStruct philox, const PhiloxRandomParams params,
+    uint32_t strideCounterOneRow, uint16_t mainIter, uint16_t tailCount, uint16_t hasTail)
 {
     Reg::RegTensor<uint32_t> vEleStrideB32OneRow;
     Duplicate(vEleStrideB32OneRow, PhiloxInternal::ELE_CNT_B32_ONCE);
@@ -766,33 +770,33 @@ __simd_vf__ inline void PhiloxRandomMultiRowNoFuse(__ubuf__ uint32_t *dstUbStart
     Reg::MaskReg pg = Reg::CreateMask<uint32_t>();
 
     for (uint16_t i = 0; i < params.row; i++) {
-        __ubuf__ uint32_t *dstUb = dstUbStart + i * params.column;
-        __ubuf__ uint32_t *dstUbTail = dstUb + mainIter * PhiloxInternal::PHILOX_ONCE_REPEAT_NUM;
+        __ubuf__ uint32_t* dstUb = dstUbStart + i * params.column;
+        __ubuf__ uint32_t* dstUbTail = dstUb + mainIter * PhiloxInternal::PHILOX_ONCE_REPEAT_NUM;
 
         Reg::RegTensor<int32_t> incIdx;
         Reg::Arange(incIdx, i * strideCounterOneRow);
         PhiloxCounterInit(philox.philoxCounter, ctr0, ctr1, ctr2, ctr3, incIdx, pg);
-        PhiloxRoundMainBlockUnroll<Rounds, T, DstUnalign>(dstUb, mainIter, ctr0, ctr1, ctr2, ctr3, key0, key1, cMul0,
-            cMul1, vEleStrideB32OneRow, pg);
+        PhiloxRoundMainBlockUnroll<Rounds, T, DstUnalign>(
+            dstUb, mainIter, ctr0, ctr1, ctr2, ctr3, key0, key1, cMul0, cMul1, vEleStrideB32OneRow, pg);
         for (uint16_t j = 0; j < hasTail; j++) {
-            SpNetworkFull<Rounds, T, DstUnalign>(dstUbTail, tailCount, ctr0, ctr1, ctr2, ctr3, key0, key1, cMul0, cMul1,
-                pg);
+            SpNetworkFull<Rounds, T, DstUnalign>(
+                dstUbTail, tailCount, ctr0, ctr1, ctr2, ctr3, key0, key1, cMul0, cMul1, pg);
         }
     }
 }
 
 template <uint16_t Rounds = 7, typename T>
-__aicore__ inline void PhiloxRandomImpl(const LocalTensor<T> &dstLocal, const PhiloxKey &philoxKey,
-    const PhiloxCounter &philoxCounter, uint16_t count)
+__aicore__ inline void PhiloxRandomImpl(
+    const LocalTensor<T>& dstLocal, const PhiloxKey& philoxKey, const PhiloxCounter& philoxCounter, uint16_t count)
 {
-    static_assert(SupportType<T, int32_t, uint32_t, float>(),
-        "PhiloxRandom API only support int32_t/uint32_t/float type");
+    static_assert(
+        SupportType<T, int32_t, uint32_t, float>(), "PhiloxRandom API only support int32_t/uint32_t/float type");
     static_assert(Rounds == 7 || Rounds == 10, "PhiloxRandom API only support 7 or 10 Rounds ");
 
-    __ubuf__ uint32_t *dstUb = (__ubuf__ uint32_t *)dstLocal.GetPhyAddr();
+    __ubuf__ uint32_t* dstUb = (__ubuf__ uint32_t*)dstLocal.GetPhyAddr();
     uint16_t mainIter = count / PhiloxInternal::PHILOX_ONCE_REPEAT_NUM;
     uint16_t tailCount = count - mainIter * PhiloxInternal::PHILOX_ONCE_REPEAT_NUM;
-    __ubuf__ uint32_t *dstUbTail = dstUb + mainIter * PhiloxInternal::PHILOX_ONCE_REPEAT_NUM;
+    __ubuf__ uint32_t* dstUbTail = dstUb + mainIter * PhiloxInternal::PHILOX_ONCE_REPEAT_NUM;
     philoxStruct philox;
     uint16_t philoxKeySize = (philoxKey == nullptr) ? 0 : PHILOX_KEY_SIZE;
     uint16_t philoxCounterSize = (philoxCounter == nullptr) ? 0 : PHILOX_COUNTER_SIZE;
@@ -806,22 +810,25 @@ __aicore__ inline void PhiloxRandomImpl(const LocalTensor<T> &dstLocal, const Ph
 }
 
 template <uint16_t Rounds = 7, typename T>
-__aicore__ inline void PhiloxRandomImpl(const LocalTensor<T> &dstLocal, const PhiloxKey &philoxKey,
-    const PhiloxCounter &philoxCounter, const PhiloxRandomParams &params)
+__aicore__ inline void PhiloxRandomImpl(
+    const LocalTensor<T>& dstLocal, const PhiloxKey& philoxKey, const PhiloxCounter& philoxCounter,
+    const PhiloxRandomParams& params)
 {
-    static_assert(SupportType<T, int32_t, uint32_t, float>(),
-        "PhiloxRandom API only support int32_t/uint32_t/float type");
+    static_assert(
+        SupportType<T, int32_t, uint32_t, float>(), "PhiloxRandom API only support int32_t/uint32_t/float type");
     static_assert(Rounds == 7 || Rounds == 10, "PhiloxRandom API only support 7 or 10 Rounds ");
 
-    ASCENDC_ASSERT((params.stride % PhiloxInternal::PHILOX_ONCE_COUNTER_NUM == 0),
-                   { KERNEL_LOG(KERNEL_ERROR, "params.stride % 4 = 0!"); });
-    ASCENDC_ASSERT((params.column % PhiloxInternal::PHILOX_ONCE_COUNTER_NUM == 0),
-                   { KERNEL_LOG(KERNEL_ERROR, "params.column % 4 = 0!"); });
+    ASCENDC_ASSERT((params.stride % PhiloxInternal::PHILOX_ONCE_COUNTER_NUM == 0), {
+        KERNEL_LOG(KERNEL_ERROR, "params.stride % 4 = 0!");
+    });
+    ASCENDC_ASSERT((params.column % PhiloxInternal::PHILOX_ONCE_COUNTER_NUM == 0), {
+        KERNEL_LOG(KERNEL_ERROR, "params.column % 4 = 0!");
+    });
     ASCENDC_ASSERT((params.stride >= params.column), { KERNEL_LOG(KERNEL_ERROR, "params.stride >= params.column!"); });
-    ASCENDC_ASSERT((params.row > 0 && params.column > 0),
-                   { KERNEL_LOG(KERNEL_ERROR, "params.row > 0 && params.column > 0!"); });
+    ASCENDC_ASSERT(
+        (params.row > 0 && params.column > 0), { KERNEL_LOG(KERNEL_ERROR, "params.row > 0 && params.column > 0!"); });
 
-    __ubuf__ uint32_t *dstUbStart = (__ubuf__ uint32_t *)dstLocal.GetPhyAddr();
+    __ubuf__ uint32_t* dstUbStart = (__ubuf__ uint32_t*)dstLocal.GetPhyAddr();
     philoxStruct philox;
     uint16_t philoxKeySize = (philoxKey == nullptr) ? 0 : PHILOX_KEY_SIZE;
     uint16_t philoxCounterSize = (philoxCounter == nullptr) ? 0 : PHILOX_COUNTER_SIZE;
@@ -843,19 +850,19 @@ __aicore__ inline void PhiloxRandomImpl(const LocalTensor<T> &dstLocal, const Ph
         uint32_t tailFuseAxis = params.row * params.column - mainFuseAxis * mainRowsNum;
         LocalTensor<T> indexTensor;
         PopStackBuffer<T, TPosition::LCM>(indexTensor);
-        __ubuf__ int32_t *indexUb = (__ubuf__ int32_t *)indexTensor.GetPhyAddr();
+        __ubuf__ int32_t* indexUb = (__ubuf__ int32_t*)indexTensor.GetPhyAddr();
         if (mainFuseAxis == PhiloxInternal::PHILOX_ONCE_REPEAT_NUM) {
             // DstBlock align, DstRepeat align
-            PhiloxRandomMultiRowWithFuse<Rounds, T, false, false>(dstUbStart, indexUb, philox,
-                params, fuseFactor, mainFuseAxis, mainRowsNum, tailFuseAxis);
+            PhiloxRandomMultiRowWithFuse<Rounds, T, false, false>(
+                dstUbStart, indexUb, philox, params, fuseFactor, mainFuseAxis, mainRowsNum, tailFuseAxis);
         } else if (mainFuseAxis * sizeof(uint32_t) % ONE_BLOCK_SIZE == 0) {
             // DstBlock align, DstRepeat unalign. use SpNetworkFull align condition
-            PhiloxRandomMultiRowWithFuse<Rounds, T, false, true>(dstUbStart, indexUb, philox,
-                params, fuseFactor, mainFuseAxis, mainRowsNum, tailFuseAxis);
+            PhiloxRandomMultiRowWithFuse<Rounds, T, false, true>(
+                dstUbStart, indexUb, philox, params, fuseFactor, mainFuseAxis, mainRowsNum, tailFuseAxis);
         } else {
             // DstBlock unalign, DstRepeat unalign
-            PhiloxRandomMultiRowWithFuse<Rounds, T, true, true>(dstUbStart, indexUb, philox,
-                params, fuseFactor, mainFuseAxis, mainRowsNum, tailFuseAxis);
+            PhiloxRandomMultiRowWithFuse<Rounds, T, true, true>(
+                dstUbStart, indexUb, philox, params, fuseFactor, mainFuseAxis, mainRowsNum, tailFuseAxis);
         }
     } else {
         // no fuse axis
@@ -865,12 +872,12 @@ __aicore__ inline void PhiloxRandomImpl(const LocalTensor<T> &dstLocal, const Ph
         uint16_t hasTail = static_cast<uint16_t>(tailCount > 0);
         if (params.column / PhiloxInternal::PHILOX_ONCE_COUNTER_NUM * sizeof(uint32_t) % ONE_BLOCK_SIZE == 0) {
             // align pattern. use PhiloxRoundMainBlockUnroll align condition
-            PhiloxRandomMultiRowNoFuse<Rounds, T, false>(dstUbStart, philox, params,
-                strideCounterOneRow, mainIter, tailCount, hasTail);
+            PhiloxRandomMultiRowNoFuse<Rounds, T, false>(
+                dstUbStart, philox, params, strideCounterOneRow, mainIter, tailCount, hasTail);
         } else {
             // unalign pattern. each process element: column / PHILOX_ONCE_COUNTER_NUM
-            PhiloxRandomMultiRowNoFuse<Rounds, T, true>(dstUbStart, philox, params,
-                strideCounterOneRow, mainIter, tailCount, hasTail);
+            PhiloxRandomMultiRowNoFuse<Rounds, T, true>(
+                dstUbStart, philox, params, strideCounterOneRow, mainIter, tailCount, hasTail);
         }
     }
 }

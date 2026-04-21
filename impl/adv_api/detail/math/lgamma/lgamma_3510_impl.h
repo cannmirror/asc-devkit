@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file lgamma_3510_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/lgamma/lgamma_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/lgamma.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/lgamma/lgamma_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/lgamma.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_LGAMMA_LGAMMA_C310_IMPL_H__
 #endif
@@ -27,8 +28,8 @@
 
 namespace AscendC {
 namespace LgammaInternal {
-__simd_callee__ inline void LgammaCalPow70To023(Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& tmpReg,
-    Reg::MaskReg mask)
+__simd_callee__ inline void LgammaCalPow70To023(
+    Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
 {
     constexpr float r0 = -7.72156649015328655494e-02;
     Reg::RegTensor<float> aReg;
@@ -52,8 +53,8 @@ __simd_callee__ inline void LgammaCalPow70To023(Reg::RegTensor<float>& resReg, R
     Reg::Add(resReg, resReg, aReg, mask);
 }
 
-__simd_callee__ inline void LgammaCal023To073(Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& srcReg,
-    Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
+__simd_callee__ inline void LgammaCal023To073(
+    Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& srcReg, Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
 {
     constexpr float r0 = -1.0348905219959115;
     constexpr float r1 = -0.3808607740435038;
@@ -100,19 +101,19 @@ __simd_callee__ inline void LgammaCal023To073(Reg::RegTensor<float>& resReg, Reg
     Reg::Sub(resReg, tmpReg, resReg, mask);
     // res = res * c
     Reg::Mul(resReg, resReg, cReg, mask);
-    //res = res - a
+    // res = res - a
     Reg::Sub(resReg, resReg, aReg, mask);
 }
 
-__simd_callee__ inline void LgammaCal07To123(Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& absReg,
-    Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
+__simd_callee__ inline void LgammaCal07To123(
+    Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& absReg, Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
 {
     Reg::Adds(tmpReg, absReg, fn1, mask);
     LgammaCalPow70To023(resReg, tmpReg, mask);
 }
 
-__simd_callee__ inline void LgammaCal123o173(Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& absReg,
-    Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
+__simd_callee__ inline void LgammaCal123o173(
+    Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& absReg, Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
 {
     constexpr float tc = -1.46163214496836224576e+00;
     Reg::RegTensor<float> aReg;
@@ -157,8 +158,8 @@ __simd_callee__ inline void LgammaCal123o173(Reg::RegTensor<float>& resReg, Reg:
     Reg::Add(resReg, resReg, aReg, mask);
 }
 
-__simd_callee__ inline void LgammaCal173To2(Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& srcReg,
-    Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
+__simd_callee__ inline void LgammaCal173To2(
+    Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& srcReg, Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
 {
     constexpr float r0 = 0.422784325282832;
     constexpr float r1 = -2.000000000156967;
@@ -195,8 +196,8 @@ __simd_callee__ inline void LgammaCal173To2(Reg::RegTensor<float>& resReg, Reg::
     Reg::Mul(resReg, aReg, resReg, mask);
 }
 
-__simd_callee__ inline void LgammaCal2To22(Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& srcReg,
-    Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
+__simd_callee__ inline void LgammaCal2To22(
+    Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& srcReg, Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
 {
     constexpr float r0 = -1.0012922592272755;
     constexpr float r1 = 2.4477420497054303;
@@ -233,8 +234,8 @@ __simd_callee__ inline void LgammaCal2To22(Reg::RegTensor<float>& resReg, Reg::R
     Reg::Div(resReg, bReg, resReg, mask);
 }
 
-__simd_callee__ inline void LgammaCal22To25(Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& srcReg,
-    Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
+__simd_callee__ inline void LgammaCal22To25(
+    Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& srcReg, Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
 {
     constexpr float r0 = 0.5071375856257216;
     constexpr float r1 = -2.0000069063575214;
@@ -267,8 +268,8 @@ __simd_callee__ inline void LgammaCal22To25(Reg::RegTensor<float>& resReg, Reg::
     Reg::Mul(resReg, aReg, resReg, mask);
 }
 
-__simd_callee__ inline void LgammaCal25To3(Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& srcReg,
-    Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
+__simd_callee__ inline void LgammaCal25To3(
+    Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& srcReg, Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
 {
     constexpr float r0 = -2.225444571099429;
     constexpr float r1 = -2.7949471270267456;
@@ -310,8 +311,8 @@ __simd_callee__ inline void LgammaCal25To3(Reg::RegTensor<float>& resReg, Reg::R
     Reg::Sub(resReg, aReg, resReg, mask);
 }
 
-__simd_callee__ inline void LgammaCal3To8(Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& absReg,
-    Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
+__simd_callee__ inline void LgammaCal3To8(
+    Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& absReg, Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
 {
     constexpr float r0 = -7.72156649015328655494e-02;
     constexpr float r1 = 2.14982415960608852501e-01;
@@ -378,8 +379,8 @@ __simd_callee__ inline void LgammaCal3To8(Reg::RegTensor<float>& resReg, Reg::Re
     Reg::Add(resReg, resReg, aReg, mask);
 }
 
-__simd_callee__ inline void LgammaCal8ToPow58(Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& absReg,
-    Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
+__simd_callee__ inline void LgammaCal8ToPow58(
+    Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& absReg, Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
 {
     constexpr float r0 = 4.18938533204672725052e-01;
     constexpr float r1 = 8.33333333333329678849e-02;
@@ -409,8 +410,8 @@ __simd_callee__ inline void LgammaCal8ToPow58(Reg::RegTensor<float>& resReg, Reg
     Reg::Add(resReg, resReg, aReg, mask);
 }
 
-__simd_callee__ inline void SearchSinPi(Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& srcReg,
-    Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
+__simd_callee__ inline void SearchSinPi(
+    Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& srcReg, Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
 {
     constexpr float r0 = 0.9452154240716536;
     constexpr float r1 = 1.323678940948241;
@@ -458,8 +459,8 @@ __simd_callee__ inline void SearchSinPi(Reg::RegTensor<float>& resReg, Reg::RegT
     Reg::Mul(resReg, resReg, srcReg, mask);
 }
 
-__simd_callee__ inline void SinPi(Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& srcReg,
-    Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
+__simd_callee__ inline void SinPi(
+    Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& srcReg, Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
 {
     Reg::RegTensor<float> aReg;
     Reg::RegTensor<float> bReg;
@@ -492,8 +493,9 @@ __simd_callee__ inline void SinPi(Reg::RegTensor<float>& resReg, Reg::RegTensor<
     Reg::Mul(resReg, resReg, bReg, mask);
 }
 
-__simd_callee__ inline void LgammaCalNegPow70(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& resReg,
-    Reg::RegTensor<float>& srcReg, Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
+__simd_callee__ inline void LgammaCalNegPow70(
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& srcReg,
+    Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask)
 {
     constexpr float logpi = 1.14472988584940016388e+00;
     Reg::RegTensor<float> aReg;
@@ -510,9 +512,10 @@ __simd_callee__ inline void LgammaCalNegPow70(Reg::RegTensor<float>& dstReg, Reg
     Reg::Sub(resReg, resReg, dstReg, mask);
 }
 
-__simd_callee__ inline void LgammaCompute1(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& absReg,
-    Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& tmpReg, Reg::MaskReg cmpMaskReg1,
-    Reg::MaskReg cmpMaskReg2, Reg::MaskReg cmpMaskReg, Reg::MaskReg mask)
+__simd_callee__ inline void LgammaCompute1(
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& absReg, Reg::RegTensor<float>& resReg,
+    Reg::RegTensor<float>& tmpReg, Reg::MaskReg cmpMaskReg1, Reg::MaskReg cmpMaskReg2, Reg::MaskReg cmpMaskReg,
+    Reg::MaskReg mask)
 {
     // abs_x <= 2^-70
     Reg::CompareScalar<float, CMPMODE::LE>(cmpMaskReg, absReg, (float&)POW_70, mask);
@@ -584,10 +587,10 @@ __simd_callee__ inline void LgammaCompute1(Reg::RegTensor<float>& dstReg, Reg::R
     Reg::Select(dstReg, resReg, dstReg, cmpMaskReg);
 }
 
-__simd_callee__ inline void LgammaCompute2(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg,
-    Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& tmpReg, Reg::RegTensor<float>& infReg,
-    Reg::RegTensor<float>& nanReg, Reg::RegTensor<float>& scalar0, Reg::RegTensor<float>& scalar1,
-    Reg::MaskReg cmpMaskReg, Reg::MaskReg mask)
+__simd_callee__ inline void LgammaCompute2(
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, Reg::RegTensor<float>& resReg,
+    Reg::RegTensor<float>& tmpReg, Reg::RegTensor<float>& infReg, Reg::RegTensor<float>& nanReg,
+    Reg::RegTensor<float>& scalar0, Reg::RegTensor<float>& scalar1, Reg::MaskReg cmpMaskReg, Reg::MaskReg mask)
 {
     Reg::Abs(tmpReg, srcReg, mask);
     // 2^58 <= abs_x
@@ -608,17 +611,20 @@ __simd_callee__ inline void LgammaCompute2(Reg::RegTensor<float>& dstReg, Reg::R
     Reg::Select(dstReg, infReg, dstReg, cmpMaskReg);
 
     // x == nan
-    Reg::ShiftRights((Reg::RegTensor<uint32_t> &)tmpReg, (Reg::RegTensor<uint32_t> &)srcReg, static_cast<int16_t>(MANTISSA), mask);
-    Reg::And((Reg::RegTensor<uint32_t> &)tmpReg, (Reg::RegTensor<uint32_t> &)tmpReg, (Reg::RegTensor<uint32_t> &)scalar0, mask);
-    Reg::And((Reg::RegTensor<uint32_t> &)resReg, (Reg::RegTensor<uint32_t> &)srcReg, (Reg::RegTensor<uint32_t> &)scalar1, mask);
+    Reg::ShiftRights(
+        (Reg::RegTensor<uint32_t>&)tmpReg, (Reg::RegTensor<uint32_t>&)srcReg, static_cast<int16_t>(MANTISSA), mask);
+    Reg::And(
+        (Reg::RegTensor<uint32_t>&)tmpReg, (Reg::RegTensor<uint32_t>&)tmpReg, (Reg::RegTensor<uint32_t>&)scalar0, mask);
+    Reg::And(
+        (Reg::RegTensor<uint32_t>&)resReg, (Reg::RegTensor<uint32_t>&)srcReg, (Reg::RegTensor<uint32_t>&)scalar1, mask);
     Reg::Compare(cmpMaskReg, tmpReg, scalar0, mask);
     Reg::CompareScalar<float, CMPMODE::NE>(cmpMaskReg, resReg, 0.0f, cmpMaskReg);
     Reg::Select(dstReg, nanReg, dstReg, cmpMaskReg);
 }
 
 template <typename T, bool isReuseSource = false>
-__simd_vf__ inline void LgammaComputeImpl(__ubuf__ T *dstUb, __ubuf__ T *srcUb,
-    __ubuf__ float *workUb, uint32_t calCount, uint16_t repeatTime)
+__simd_vf__ inline void LgammaComputeImpl(
+    __ubuf__ T* dstUb, __ubuf__ T* srcUb, __ubuf__ float* workUb, uint32_t calCount, uint16_t repeatTime)
 {
     constexpr uint32_t stride = GetVecLen() / sizeof(float);
     uint32_t sreg0 = calCount;
@@ -685,13 +691,13 @@ __aicore__ inline void LgammaImpl(
     uint16_t repeatTime = CeilDivision(calCount, stride);
     auto workLocal = tmp.ReinterpretCast<float>();
 
-    __ubuf__ T *dstUb = (__ubuf__ T *)dst.GetPhyAddr();
-    __ubuf__ T *srcUb = (__ubuf__ T *)src.GetPhyAddr();
-    __ubuf__ float *workUb = (__ubuf__ float *)workLocal.GetPhyAddr();
+    __ubuf__ T* dstUb = (__ubuf__ T*)dst.GetPhyAddr();
+    __ubuf__ T* srcUb = (__ubuf__ T*)src.GetPhyAddr();
+    __ubuf__ float* workUb = (__ubuf__ float*)workLocal.GetPhyAddr();
     LgammaInternal::LgammaComputeImpl<T, isReuseSource>(dstUb, srcUb, workUb, calCount, repeatTime);
 }
-}  // namespace AscendC
-#endif  // IMPL_MATH_LGAMMA_LGAMMA_C310_IMPL_H
+} // namespace AscendC
+#endif // IMPL_MATH_LGAMMA_LGAMMA_C310_IMPL_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_LGAMMA_LGAMMA_C310_IMPL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

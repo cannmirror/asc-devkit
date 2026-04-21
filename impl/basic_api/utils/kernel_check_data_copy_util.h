@@ -126,8 +126,8 @@ struct DataCopyApiParams : public DataCopyBaseParams {
 struct DataCopyPadApiParams : public DataCopyBaseParams {
     DataCopyPadApiParams() : DataCopyBaseParams(), isPad(false), leftPadding(0), rightPadding(0), paddingValue(0) {}
     DataCopyPadApiParams(uint64_t dstAddrIn, uint64_t srcAddrIn, uint32_t dstDtypeBytesIn, uint32_t srcDtypeBytesIn,
-        uint8_t dstPosIn, uint8_t srcPosIn, uint16_t blockCountIn, uint16_t blockLenIn, uint16_t srcStrideIn,
-        uint16_t dstStrideIn, bool isPadIn, uint8_t leftPaddingIn, uint8_t rightPaddingIn, uint64_t paddingValueIn)
+        uint8_t dstPosIn, uint8_t srcPosIn, uint16_t blockCountIn, uint16_t blockLenIn, uint64_t srcStrideIn,
+        uint64_t dstStrideIn, bool isPadIn, uint8_t leftPaddingIn, uint8_t rightPaddingIn, uint64_t paddingValueIn)
         : DataCopyBaseParams(dstAddrIn, srcAddrIn, dstDtypeBytesIn, srcDtypeBytesIn,
                             dstPosIn, srcPosIn, blockCountIn, blockLenIn, srcStrideIn, dstStrideIn),
           isPad(isPadIn), leftPadding(leftPaddingIn), rightPadding(rightPaddingIn), paddingValue(paddingValueIn) {}

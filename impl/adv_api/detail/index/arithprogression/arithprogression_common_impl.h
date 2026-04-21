@@ -1,19 +1,20 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file arithprogression_common_impl.h
  * \brief
  */
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/index/arithprogression/arithprogression_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/index/arithprogression.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/index/arithprogression/arithprogression_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/index/arithprogression.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ARITHPROGRESSION_COMMON_IMPL_H__
 #endif
@@ -32,29 +33,30 @@
 namespace AscendC {
 // Generating an underlying arithmetic sequence through scalar operations.
 template <typename T>
-__aicore__ inline void GetBaseArithProgression(const LocalTensor<T> &dstLocal, const T firstValue, const T diffValue,
-    const int32_t count)
+__aicore__ inline void GetBaseArithProgression(
+    const LocalTensor<T>& dstLocal, const T firstValue, const T diffValue, const int32_t count)
 {
     for (int i = 0; i < count; i++) {
-        dstLocal.SetValue(i, static_cast<T>(firstValue) +
-            static_cast<T>(diffValue) * static_cast<T>(i)); // value might be truncated
+        dstLocal.SetValue(
+            i, static_cast<T>(firstValue) + static_cast<T>(diffValue) * static_cast<T>(i)); // value might be truncated
     }
 }
 
 // template specialization for half, 1. cast to float; 2. calculate; 3. cast to half in SetValue
 template <>
-__aicore__ inline void GetBaseArithProgression(const LocalTensor<half> &dstLocal, const half firstValue,
-    const half diffValue, const int32_t count)
+__aicore__ inline void GetBaseArithProgression(
+    const LocalTensor<half>& dstLocal, const half firstValue, const half diffValue, const int32_t count)
 {
     for (int i = 0; i < count; i++) {
-        dstLocal.SetValue(i, static_cast<float>(firstValue) +
-            static_cast<float>(diffValue) * static_cast<float>(i)); // value might be truncated
+        dstLocal.SetValue(
+            i, static_cast<float>(firstValue) +
+                   static_cast<float>(diffValue) * static_cast<float>(i)); // value might be truncated
     }
 }
 
 template <typename T>
-__aicore__ inline void ArithProgressionImpl(const LocalTensor<T> &dstLocal, const T firstValue, const T diffValue,
-    const int32_t count)
+__aicore__ inline void ArithProgressionImpl(
+    const LocalTensor<T>& dstLocal, const T firstValue, const T diffValue, const int32_t count)
 {
     CHECK_FUNC_HIGHLEVEL_API(ArithProgression, (T), (dstLocal, firstValue, diffValue, count));
 
@@ -79,7 +81,8 @@ __aicore__ inline void ArithProgressionImpl(const LocalTensor<T> &dstLocal, cons
             SetVectorMask<T>(0, (((static_cast<uint64_t>(1)) << static_cast<uint32_t>(BLOCK_NUM)) - 1));
             PipeBarrier<PIPE_V>();
             for (int i = 0; i < DEFAULT_BLK_NUM - 1; i++) {
-                Adds<T, false>(dstLocal[(i + 1) * BLOCK_NUM], dstLocal[i * BLOCK_NUM],
+                Adds<T, false>(
+                    dstLocal[(i + 1) * BLOCK_NUM], dstLocal[i * BLOCK_NUM],
                     static_cast<T>(static_cast<float>(diffValue) * static_cast<float>(BLOCK_NUM)), MASK_PLACEHOLDER,
                     (uint16_t)1, addsParamsStride1);
                 PipeBarrier<PIPE_V>();
@@ -90,7 +93,8 @@ __aicore__ inline void ArithProgressionImpl(const LocalTensor<T> &dstLocal, cons
             PipeBarrier<PIPE_V>();
             // Fills the following arithmetic progression with 8 block size arithmetic progressions
             for (int i = 0; i < repeat - 1; i++) {
-                Adds<T, false>(dstLocal[(i + 1) * REPEAT_NUM], dstLocal[i * REPEAT_NUM],
+                Adds<T, false>(
+                    dstLocal[(i + 1) * REPEAT_NUM], dstLocal[i * REPEAT_NUM],
                     static_cast<T>(static_cast<float>(diffValue) * static_cast<float>(REPEAT_NUM)), MASK_PLACEHOLDER,
                     (uint16_t)1, addsParamsStride8);
                 PipeBarrier<PIPE_V>();
@@ -99,7 +103,8 @@ __aicore__ inline void ArithProgressionImpl(const LocalTensor<T> &dstLocal, cons
                 int32_t tail_aligned = (tail + BLOCK_NUM - 1) / BLOCK_NUM * BLOCK_NUM;
                 SetVectorMask<T>(tail_aligned);
                 PipeBarrier<PIPE_V>();
-                Adds<T, false>(dstLocal[repeat * REPEAT_NUM], dstLocal[(repeat - 1) * REPEAT_NUM],
+                Adds<T, false>(
+                    dstLocal[repeat * REPEAT_NUM], dstLocal[(repeat - 1) * REPEAT_NUM],
                     static_cast<T>(static_cast<float>(diffValue) * static_cast<float>(REPEAT_NUM)), MASK_PLACEHOLDER,
                     (uint16_t)1, addsParamsStride8);
                 PipeBarrier<PIPE_V>();
@@ -111,7 +116,8 @@ __aicore__ inline void ArithProgressionImpl(const LocalTensor<T> &dstLocal, cons
             SetVectorMask<T>(0, (((static_cast<uint64_t>(1)) << static_cast<uint32_t>(BLOCK_NUM)) - 1));
             PipeBarrier<PIPE_V>();
             for (int i = 0; i < repeat - 1; i++) {
-                Adds<T, false>(dstLocal[(i + 1) * BLOCK_NUM], dstLocal[i * BLOCK_NUM],
+                Adds<T, false>(
+                    dstLocal[(i + 1) * BLOCK_NUM], dstLocal[i * BLOCK_NUM],
                     static_cast<T>(static_cast<float>(diffValue) * static_cast<float>(BLOCK_NUM)), MASK_PLACEHOLDER,
                     (uint16_t)1, addsParamsStride1);
                 PipeBarrier<PIPE_V>();
@@ -130,8 +136,8 @@ __aicore__ inline void ArithProgressionImpl(const LocalTensor<T> &dstLocal, cons
 }
 
 template <typename T>
-__aicore__ inline __in_pipe__(S) __out_pipe__(V, S) void ArithProgression(const LocalTensor<T> &dstLocal,
-    const T firstValue, const T diffValue, const int32_t count)
+__aicore__ inline __in_pipe__(S) __out_pipe__(V, S) void ArithProgression(
+    const LocalTensor<T>& dstLocal, const T firstValue, const T diffValue, const int32_t count)
 {
     ArithProgressionImpl(dstLocal, firstValue, diffValue, count);
 }

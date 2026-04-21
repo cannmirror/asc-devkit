@@ -37,13 +37,23 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void __trap();
 #endif
 
 #if defined(__NPU_DEVICE__)
-#ifdef assert
+
+#define ASC_INTERNAL_COUNT_ARGS_IMPL(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, N, ...) N
+#define ASC_INTERNAL_COUNT_ARGS(...) ASC_INTERNAL_COUNT_ARGS_IMPL(__VA_ARGS__, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1)
+#define ASC_INTERNAL_GET_ARG_COUNT(...) ASC_INTERNAL_COUNT_ARGS(__VA_ARGS__)
+#define ASC_INTERNAL_ASSERT_IMPL(N, ...) ASC_INTERNAL_ASSERT_FUNC(N, __VA_ARGS__)
+#define ASC_INTERNAL_ASSERT_FUNC(N, ...) ASC_INTERNAL_ASSERT_##N(__VA_ARGS__)
+#define ASC_INTERNAL_ASSERT_1(expr) (static_cast<bool>(expr) ? void(0) : __assert_fail(#expr, __FILE__, __LINE__, (__PRETTY_FUNCTION__)))
+#define ASC_INTERNAL_ASSERT_2(expr, ...) ASC_INTERNAL_ASSERT_1(expr)
+
 #undef assert
-#endif
-#define assert(expr) (static_cast<bool>(expr) ? void(0) : __assert_fail(#expr, __FILE__, __LINE__, ""))
+#undef ascendc_assert
+#define assert(...) ASC_INTERNAL_ASSERT_IMPL(ASC_INTERNAL_GET_ARG_COUNT(__VA_ARGS__), __VA_ARGS__)
+#define ascendc_assert(...) ASC_INTERNAL_ASSERT_IMPL(ASC_INTERNAL_GET_ARG_COUNT(__VA_ARGS__), __VA_ARGS__)
+
 #else
 #ifndef assert
-#define assert(expr) (static_cast<bool>(expr) ? void(0) : __assert_fail(#expr, __FILE__, __LINE__, ""))
+#define assert(expr) (static_cast<bool>(expr) ? void(0) : __assert_fail(#expr, __FILE__, __LINE__, (__PRETTY_FUNCTION__)))
 #endif
 #endif
 

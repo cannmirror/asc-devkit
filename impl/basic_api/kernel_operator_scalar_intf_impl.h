@@ -21,6 +21,7 @@
 #define ASCENDC_MODULE_OPERATOR_SCALAR_INTERFACE_IMPL_H
 #include "kernel_tensor.h"
 #include "kernel_scalar.h"
+#include "kernel_scalar_convert.h"
 
 namespace AscendC {
 template <int countValue>

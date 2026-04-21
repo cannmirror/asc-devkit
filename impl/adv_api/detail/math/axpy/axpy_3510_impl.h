@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file axpy_3510_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/axpy/axpy_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/axpy.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/axpy/axpy_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/axpy.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_AXPY_AXPY_C310_IMPL_H__
 #endif
@@ -32,10 +33,10 @@ namespace AscendC {
 namespace AxpyAPI {
 constexpr Reg::CastTrait castTraitF162F32 = {
     Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN, Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
-template<typename T, typename U>
-__simd_vf__ inline void AxpyCompute(__ubuf__ T* dst, __ubuf__ U* src, U scalarValue, uint32_t calCount,
-                                   uint16_t repeatTimes, uint16_t oneRepSize, uint32_t mainBlockCount,
-                                   uint32_t tailCount, uint16_t offset, uint16_t singleMainBlockCtrl)
+template <typename T, typename U>
+__simd_vf__ inline void AxpyCompute(
+    __ubuf__ T* dst, __ubuf__ U* src, U scalarValue, uint32_t calCount, uint16_t repeatTimes, uint16_t oneRepSize,
+    uint32_t mainBlockCount, uint32_t tailCount, uint16_t offset, uint16_t singleMainBlockCtrl)
 {
     Reg::MaskReg mask, maskTail;
     Reg::RegTensor<T> dstVreg;
@@ -94,10 +95,11 @@ __simd_vf__ inline void AxpyCompute(__ubuf__ T* dst, __ubuf__ U* src, U scalarVa
         Reg::StoreAlign(dst + repeatTimes * oneRepSize * 2 + singleMainBlockCtrl * oneRepSize, dstVreg, maskTail);
     }
 }
-}//namespace AxpyAPI
+} // namespace AxpyAPI
 template <typename T, typename U, bool isReuseSource>
-__aicore__ inline void AxpyImpl(const LocalTensor<T> &dstLocal, const LocalTensor<U> &srcLocal, const U scalarValue, 
-                                const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void AxpyImpl(
+    const LocalTensor<T>& dstLocal, const LocalTensor<U>& srcLocal, const U scalarValue,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
     CHECK_FUNC_HIGHLEVEL_API(Axpy, (T, U, isReuseSource), (dstLocal, srcLocal, scalarValue, sharedTmpBuffer, calCount));
     CheckTensorPosition(sharedTmpBuffer, "sharedTmpBuffer", "VECIN, VECOUT, VECCALC");
@@ -107,8 +109,8 @@ __aicore__ inline void AxpyImpl(const LocalTensor<T> &dstLocal, const LocalTenso
     CheckCalCount(calCount, "calCount", srcLocal, "srcLocal", "Axpy");
     static_assert(SupportType<T, half, float>(), "Axpy current dst data type is not supported on current device!");
     static_assert(SupportType<U, half, float>(), "Axpy current src data type is not supported on current device!");
-    __ubuf__ T *dst = (__ubuf__ T *)dstLocal.GetPhyAddr();
-    __ubuf__ U *src = (__ubuf__ U *)srcLocal.GetPhyAddr();
+    __ubuf__ T* dst = (__ubuf__ T*)dstLocal.GetPhyAddr();
+    __ubuf__ U* src = (__ubuf__ U*)srcLocal.GetPhyAddr();
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(T);
     const uint32_t mainBlockCount = oneRepSize;
     uint32_t tailCount = calCount % oneRepSize;
@@ -120,8 +122,9 @@ __aicore__ inline void AxpyImpl(const LocalTensor<T> &dstLocal, const LocalTenso
     uint16_t repeatTimesUnRoll = repeatTimes / 2;
     uint16_t singleMainBlockCtrl = repeatTimes % 2;
     uint16_t offset = repeatTimesUnRoll * oneRepSize;
-    AxpyAPI::AxpyCompute<T, U>(dst, src, scalarValue, calCount, repeatTimesUnRoll, oneRepSize, mainBlockCount,
-                                        tailCount, offset, singleMainBlockCtrl);
+    AxpyAPI::AxpyCompute<T, U>(
+        dst, src, scalarValue, calCount, repeatTimesUnRoll, oneRepSize, mainBlockCount, tailCount, offset,
+        singleMainBlockCtrl);
 }
 } // namespace AscendC
 #endif // IMPL_MATH_AXPY_AXPY_C310_IMPL_H

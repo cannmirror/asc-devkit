@@ -156,7 +156,6 @@ __aicore__ inline void asc_mmad_mx_sync(__cc__ float* c_matrix, __ca__ fp8_e5m2_
 }
 
 // ==========mmad==========
-// asc_mmad_impl(float-bfloat16_t-bfloat16_t)
 __aicore__ inline void asc_mmad(__cc__ float* c_matrix, __ca__ bfloat16_t* a_matrix, __cb__ bfloat16_t* b_matrix,
                                 uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t unit_flag,
                                 bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val)
@@ -173,7 +172,6 @@ __aicore__ inline void asc_mmad_sync(__cc__ float* c_matrix, __ca__ bfloat16_t* 
                        c_matrix_source, c_matrix_init_val);
 }
 
-// asc_mmad_impl(float-float8_e4m3_t-float8_e4m3_t)
 __aicore__ inline void asc_mmad(__cc__ float* c_matrix, __ca__ float8_e4m3_t* a_matrix, __cb__ float8_e4m3_t* b_matrix,
                                 uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t unit_flag,
                                 bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val)
@@ -191,7 +189,6 @@ __aicore__ inline void asc_mmad_sync(__cc__ float* c_matrix, __ca__ float8_e4m3_
                        c_matrix_source, c_matrix_init_val);
 }
 
-// asc_mmad_impl(float-float8_e4m3_t-float8_e5m2_t)
 __aicore__ inline void asc_mmad(__cc__ float* c_matrix, __ca__ float8_e4m3_t* a_matrix, __cb__ float8_e5m2_t* b_matrix,
                                 uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t unit_flag,
                                 bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val)
@@ -209,7 +206,6 @@ __aicore__ inline void asc_mmad_sync(__cc__ float* c_matrix, __ca__ float8_e4m3_
                        c_matrix_source, c_matrix_init_val);
 }
 
-// asc_mmad(float-float8_e5m2_t-float8_e4m3_t)
 __aicore__ inline void asc_mmad(__cc__ float* c_matrix, __ca__ float8_e5m2_t* a_matrix, __cb__ float8_e4m3_t* b_matrix,
                                 uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t unit_flag,
                                 bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val)
@@ -227,7 +223,6 @@ __aicore__ inline void asc_mmad_sync(__cc__ float* c_matrix, __ca__ float8_e5m2_
                        c_matrix_source, c_matrix_init_val);
 }
 
-// asc_mmad_impl(float-float8_e5m2_t-float8_e5m2_t)
 __aicore__ inline void asc_mmad(__cc__ float* c_matrix, __ca__ float8_e5m2_t* a_matrix, __cb__ float8_e5m2_t* b_matrix,
                                 uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t unit_flag,
                                 bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val)
@@ -245,7 +240,6 @@ __aicore__ inline void asc_mmad_sync(__cc__ float* c_matrix, __ca__ float8_e5m2_
                        c_matrix_source, c_matrix_init_val);
 }
 
-// asc_mmad_impl(float-half-half)
 __aicore__ inline void asc_mmad(__cc__ float* c_matrix, __ca__ half* a_matrix, __cb__ half* b_matrix,
                                 uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t unit_flag,
                                 bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val)
@@ -262,7 +256,6 @@ __aicore__ inline void asc_mmad_sync(__cc__ float* c_matrix, __ca__ half* a_matr
                        c_matrix_source, c_matrix_init_val);
 }
 
-// asc_mmad_impl(float-float-float)
 __aicore__ inline void asc_mmad(__cc__ float* c_matrix, __ca__ float* a_matrix, __cb__ float* b_matrix,
                                 uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t unit_flag,
                                 bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val)
@@ -279,7 +272,6 @@ __aicore__ inline void asc_mmad_sync(__cc__ float* c_matrix, __ca__ float* a_mat
                        c_matrix_source, c_matrix_init_val);
 }
 
-// asc_mmad_impl(int32_t-int8_t-int8_t)
 __aicore__ inline void asc_mmad(__cc__ int32_t* c_matrix, __ca__ int8_t* a_matrix, __cb__ int8_t* b_matrix,
                                 uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t unit_flag,
                                 bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val)

@@ -1,19 +1,20 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file matmul_server_utils.h
  * \brief
  */
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/kfc/matmul_server_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul_client.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/kfc/matmul_server_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul_client.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_KFC_MATMUL_SERVER_UTILS_H__
 #endif
@@ -26,22 +27,24 @@
 
 namespace AscendC {
 
-template <bool IS_IBSHARE> struct IBShareCache {
-    __aicore__ inline IBShareCache() {};
+template <bool IS_IBSHARE>
+struct IBShareCache {
+    __aicore__ inline IBShareCache(){};
 };
 
 template <>
 struct IBShareCache<false> {
-    __aicore__ inline IBShareCache() {};
+    __aicore__ inline IBShareCache(){};
     using ShareCache = uint16_t;
 };
 
 template <>
 struct IBShareCache<true> {
-    __aicore__ inline IBShareCache() {};
+    __aicore__ inline IBShareCache(){};
     using ShareCache = Impl::Detail::GlobalCache;
 };
-template <class A_TYPE, class B_TYPE> __aicore__ constexpr bool IsIBShare()
+template <class A_TYPE, class B_TYPE>
+__aicore__ constexpr bool IsIBShare()
 {
     if constexpr (A_TYPE::ibShare == true) {
         return true;
@@ -62,7 +65,7 @@ struct MatmulMsg {
 };
 
 struct ShareMatmulBase {
-    __aicore__ inline ShareMatmulBase() {};
+    __aicore__ inline ShareMatmulBase(){};
 };
 
 struct ShareMatmul : ShareMatmulBase {
@@ -91,8 +94,7 @@ struct ShareMatmulAux<true> {
 template <const auto& MM_CFG = CFG_NORM>
 __aicore__ inline constexpr bool IsSharedMatmul()
 {
-    if constexpr (!AscendC::ToMatmulConfig(MM_CFG).enableInit ||
-        AscendC::ToMatmulConfig(MM_CFG).enableMixDualMaster) {
+    if constexpr (!AscendC::ToMatmulConfig(MM_CFG).enableInit || AscendC::ToMatmulConfig(MM_CFG).enableMixDualMaster) {
         return true;
     }
     return false;

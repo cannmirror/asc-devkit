@@ -1,20 +1,21 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
- 
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
 /* !
  * \file fmod_3510_impl.h
  * \brief
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/fmod/fmod_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/fmod.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/fmod/fmod_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/fmod.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_FMOD_FMOD_C310_IMPL_H__
 #endif
@@ -23,18 +24,18 @@
 #include "kernel_tensor.h"
 #include "kernel_basic_intf.h"
 #include "../../common/check.h"
- 
+
 namespace AscendC {
 namespace FmodInternal {
 union FloatS32Union {
-    constexpr __aicore__ FloatS32Union(): f(0.0f) {}
-    constexpr __aicore__ FloatS32Union(int32_t val): i(val) {}
+    constexpr __aicore__ FloatS32Union() : f(0.0f) {}
+    constexpr __aicore__ FloatS32Union(int32_t val) : i(val) {}
     float f;
     int32_t i;
 };
 union FloatU32Union {
-    constexpr __aicore__ FloatU32Union(): f(0.0f) {}
-    constexpr __aicore__ FloatU32Union(uint32_t val): i(val) {}
+    constexpr __aicore__ FloatU32Union() : f(0.0f) {}
+    constexpr __aicore__ FloatU32Union(uint32_t val) : i(val) {}
     float f;
     uint32_t i;
 };
@@ -44,22 +45,16 @@ constexpr FloatU32Union nan(F32_NAN);
 constexpr uint16_t oneRepSize = static_cast<uint16_t>(GetVecLen() / sizeof(float));
 
 constexpr Reg::CastTrait castTraitS322F32 = {
-    Reg::RegLayout::UNKNOWN, Reg::SatMode::UNKNOWN, 
-    Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT
-};
+    Reg::RegLayout::UNKNOWN, Reg::SatMode::UNKNOWN, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
 constexpr FloatS32Union scaleList1[FMOD_ITERATION_NUM_MAX] = {
-    FloatS32Union(0x4b800000), FloatS32Union(0x4b800000), FloatS32Union(0x57800000),
-    FloatS32Union(0x63800000), FloatS32Union(0x6f800000), FloatS32Union(0x7b800000), 
-    FloatS32Union(0x7b800000), FloatS32Union(0x7b800000), FloatS32Union(0x7b800000), 
-    FloatS32Union(0x7b800000), FloatS32Union(0x7b800000)
-};
+    FloatS32Union(0x4b800000), FloatS32Union(0x4b800000), FloatS32Union(0x57800000), FloatS32Union(0x63800000),
+    FloatS32Union(0x6f800000), FloatS32Union(0x7b800000), FloatS32Union(0x7b800000), FloatS32Union(0x7b800000),
+    FloatS32Union(0x7b800000), FloatS32Union(0x7b800000), FloatS32Union(0x7b800000)};
 constexpr FloatS32Union scaleList2[FMOD_ITERATION_NUM_MAX] = {
-    FloatS32Union(0x3f800000), FloatS32Union(0x3f800000), FloatS32Union(0x3f800000),
-    FloatS32Union(0x3f800000), FloatS32Union(0x3f800000), FloatS32Union(0x3f800000), 
-    FloatS32Union(0x4b800000), FloatS32Union(0x57800000), FloatS32Union(0x63800000), 
-    FloatS32Union(0x6f800000), FloatS32Union(0x7b800000)
-};
+    FloatS32Union(0x3f800000), FloatS32Union(0x3f800000), FloatS32Union(0x3f800000), FloatS32Union(0x3f800000),
+    FloatS32Union(0x3f800000), FloatS32Union(0x3f800000), FloatS32Union(0x4b800000), FloatS32Union(0x57800000),
+    FloatS32Union(0x63800000), FloatS32Union(0x6f800000), FloatS32Union(0x7b800000)};
 
 template <typename T>
 __simd_callee__ inline void LoadDataWithT(
@@ -87,8 +82,7 @@ __simd_callee__ inline void SaveDataWithT(
     }
 }
 
-__simd_callee__ inline void GetSignBit(
-    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, Reg::MaskReg& mask)
+__simd_callee__ inline void GetSignBit(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, Reg::MaskReg& mask)
 {
     constexpr int16_t signRightNum = 31;
     Reg::RegTensor<uint32_t> oneReg;
@@ -100,8 +94,9 @@ __simd_callee__ inline void GetSignBit(
 }
 
 template <int32_t iterationNum>
-__simd_callee__ inline void SolveScale(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& src1Reg,
-    const float scale1, const float scale2, Reg::MaskReg& mask)
+__simd_callee__ inline void SolveScale(
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& src1Reg, const float scale1, const float scale2,
+    Reg::MaskReg& mask)
 {
     constexpr float maxValue = 3.4028235e38;
     constexpr float subnormal = 1.1754944e-38;
@@ -148,7 +143,7 @@ __simd_callee__ inline void SolveScale(Reg::RegTensor<float>& dstReg, Reg::RegTe
 
 // recurse from itermax to 1
 template <int32_t iterationNum>
-__simd_callee__ inline void SolveScaleIter (
+__simd_callee__ inline void SolveScaleIter(
     Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& src1Reg, Reg::MaskReg& mask)
 {
     SolveScale<iterationNum>(dstReg, src1Reg, scaleList1[iterationNum - 1].f, scaleList2[iterationNum - 1].f, mask);
@@ -159,8 +154,9 @@ __simd_callee__ inline void SolveScaleIter (
 }
 
 template <int32_t iterationNum>
-__simd_callee__ inline void SolveScale(__ubuf__ float* dst, __ubuf__ float* src, const uint16_t unitRepTimes,
-    const float scale1, const float scale2, Reg::MaskReg& mask)
+__simd_callee__ inline void SolveScale(
+    __ubuf__ float* dst, __ubuf__ float* src, const uint16_t unitRepTimes, const float scale1, const float scale2,
+    Reg::MaskReg& mask)
 {
     Reg::RegTensor<float> src1OriginReg;
     Reg::RegTensor<float> src1Reg;
@@ -175,8 +171,9 @@ __simd_callee__ inline void SolveScale(__ubuf__ float* dst, __ubuf__ float* src,
 }
 
 template <int32_t iterationNum>
-__simd_callee__ inline void SolveScaleInit(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float* src1, 
-    const uint16_t unitRepTimes, const float scale1, const float scale2, Reg::MaskReg& mask)
+__simd_callee__ inline void SolveScaleInit(
+    __ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float* src1, const uint16_t unitRepTimes, const float scale1,
+    const float scale2, Reg::MaskReg& mask)
 {
     Reg::RegTensor<float> src0OriginReg;
     Reg::RegTensor<float> src1OriginReg;
@@ -194,13 +191,14 @@ __simd_callee__ inline void SolveScaleInit(__ubuf__ float* dst, __ubuf__ float* 
 
 template <int32_t iterationNum, int32_t totalIterationNum>
 __simd_callee__ inline void SolveScaleIterImpl(
-    __ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float* src1, 
-    const uint16_t unitRepTimes, Reg::MaskReg& mask)
+    __ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float* src1, const uint16_t unitRepTimes, Reg::MaskReg& mask)
 {
     if (iterationNum == totalIterationNum) { // first iteration, initialization
-        SolveScaleInit<iterationNum>(dst, src0, src1, unitRepTimes, scaleList1[iterationNum - 1].f, scaleList2[iterationNum - 1].f, mask);
+        SolveScaleInit<iterationNum>(
+            dst, src0, src1, unitRepTimes, scaleList1[iterationNum - 1].f, scaleList2[iterationNum - 1].f, mask);
     } else {
-        SolveScale<iterationNum>(dst, src1, unitRepTimes, scaleList1[iterationNum - 1].f, scaleList2[iterationNum - 1].f, mask);
+        SolveScale<iterationNum>(
+            dst, src1, unitRepTimes, scaleList1[iterationNum - 1].f, scaleList2[iterationNum - 1].f, mask);
     }
 
     if constexpr (iterationNum > 1) {
@@ -210,15 +208,15 @@ __simd_callee__ inline void SolveScaleIterImpl(
 }
 
 template <int32_t iterationNum>
-__simd_callee__ inline void SolveScaleIter(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float* src1, 
-    const uint16_t unitRepTimes, Reg::MaskReg& mask)
+__simd_callee__ inline void SolveScaleIter(
+    __ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float* src1, const uint16_t unitRepTimes, Reg::MaskReg& mask)
 {
     SolveScaleIterImpl<iterationNum, iterationNum>(dst, src0, src1, unitRepTimes, mask);
 }
-    
 
-__simd_callee__ inline void SolveExceptionScenarios(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& src0Reg,
-    Reg::RegTensor<float>& src1Reg, Reg::RegTensor<float> nanReg, Reg::MaskReg& mask)
+__simd_callee__ inline void SolveExceptionScenarios(
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& src0Reg, Reg::RegTensor<float>& src1Reg,
+    Reg::RegTensor<float> nanReg, Reg::MaskReg& mask)
 {
     Reg::MaskReg src0Is0CmpReg;
     Reg::MaskReg src0IsNeg0CmpReg;
@@ -264,9 +262,9 @@ __simd_callee__ inline void SolveExceptionScenarios(Reg::RegTensor<float>& dstRe
 } // namespace FmodInternal
 
 template <int32_t iterationNum>
-__simd_vf__ inline void FmodComputeIterationF32(__ubuf__ float* dstTensor, __ubuf__ float* src0Tensor,
-    __ubuf__ float* src1Tensor, const uint16_t mainRepeatTimes, const uint16_t mainBlockLen,
-    const uint16_t tailRepeatTimes, uint32_t tailCount)
+__simd_vf__ inline void FmodComputeIterationF32(
+    __ubuf__ float* dstTensor, __ubuf__ float* src0Tensor, __ubuf__ float* src1Tensor, const uint16_t mainRepeatTimes,
+    const uint16_t mainBlockLen, const uint16_t tailRepeatTimes, uint32_t tailCount)
 {
     constexpr FmodInternal::FloatU32Union scale1(0x4B800000); // 2**24
     constexpr FmodInternal::FloatU32Union scale2(0x33800000); // 2**-24
@@ -346,26 +344,26 @@ __simd_vf__ inline void FmodComputeIterationF32(__ubuf__ float* dstTensor, __ubu
 }
 
 template <int32_t iterationNum>
-__aicore__ inline void FmodComputeIteration(const LocalTensor<float>& dstTensor, const LocalTensor<float>& src0Tensor,
-    const LocalTensor<float>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t count)
+__aicore__ inline void FmodComputeIteration(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& src0Tensor, const LocalTensor<float>& src1Tensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t count)
 {
     __ubuf__ float* src0 = (__ubuf__ float*)src0Tensor.GetPhyAddr();
     __ubuf__ float* src1 = (__ubuf__ float*)src1Tensor.GetPhyAddr();
     __ubuf__ float* dst = (__ubuf__ float*)dstTensor.GetPhyAddr();
-    
+
     const uint16_t mainRepeatTimes = static_cast<uint16_t>(count / FmodInternal::oneRepSize);
     const uint16_t mainBlockLen = mainRepeatTimes * FmodInternal::oneRepSize;
 
     uint32_t tailCount = count - mainBlockLen;
     const uint16_t tailRepeatTimes = static_cast<uint16_t>(CeilDivision(tailCount, FmodInternal::oneRepSize));
 
-    FmodComputeIterationF32<iterationNum>(
-        dst, src0, src1, mainRepeatTimes, mainBlockLen, tailRepeatTimes, tailCount);
+    FmodComputeIterationF32<iterationNum>(dst, src0, src1, mainRepeatTimes, mainBlockLen, tailRepeatTimes, tailCount);
 }
 
 template <typename T>
-__simd_vf__ inline void FmodComputeVF(__ubuf__ T* dstTensor, __ubuf__ T* src0Tensor, __ubuf__ T* src1Tensor, 
-    const uint16_t repeatTimes, uint32_t count)
+__simd_vf__ inline void FmodComputeVF(
+    __ubuf__ T* dstTensor, __ubuf__ T* src0Tensor, __ubuf__ T* src1Tensor, const uint16_t repeatTimes, uint32_t count)
 {
     Reg::RegTensor<float> src0Reg;
     Reg::RegTensor<float> src1Reg;
@@ -390,51 +388,55 @@ __simd_vf__ inline void FmodComputeVF(__ubuf__ T* dstTensor, __ubuf__ T* src0Ten
     }
 }
 
-__aicore__ inline void FmodCompute(const LocalTensor<float>& dstTensor, const LocalTensor<float>& src0Tensor,
-    const LocalTensor<float>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t count)
+__aicore__ inline void FmodCompute(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& src0Tensor, const LocalTensor<float>& src1Tensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t count)
 {
-    __ubuf__ float *src0 = (__ubuf__ float *)src0Tensor.GetPhyAddr();
-    __ubuf__ float *src1 = (__ubuf__ float *)src1Tensor.GetPhyAddr();
-    __ubuf__ float *dst = (__ubuf__ float *)dstTensor.GetPhyAddr();
+    __ubuf__ float* src0 = (__ubuf__ float*)src0Tensor.GetPhyAddr();
+    __ubuf__ float* src1 = (__ubuf__ float*)src1Tensor.GetPhyAddr();
+    __ubuf__ float* dst = (__ubuf__ float*)dstTensor.GetPhyAddr();
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(count, FmodInternal::oneRepSize));
- 
+
     FmodComputeVF<float>(dst, src0, src1, repeatTimes, count);
 }
 
-__aicore__ inline void FmodCompute(const LocalTensor<half>& dstTensor, const LocalTensor<half>& src0Tensor,
-    const LocalTensor<half>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t count)
+__aicore__ inline void FmodCompute(
+    const LocalTensor<half>& dstTensor, const LocalTensor<half>& src0Tensor, const LocalTensor<half>& src1Tensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t count)
 {
-    __ubuf__ half *src0 = (__ubuf__ half *)src0Tensor.GetPhyAddr();
-    __ubuf__ half *src1 = (__ubuf__ half *)src1Tensor.GetPhyAddr();
-    __ubuf__ half *dst = (__ubuf__ half *)dstTensor.GetPhyAddr();
+    __ubuf__ half* src0 = (__ubuf__ half*)src0Tensor.GetPhyAddr();
+    __ubuf__ half* src1 = (__ubuf__ half*)src1Tensor.GetPhyAddr();
+    __ubuf__ half* dst = (__ubuf__ half*)dstTensor.GetPhyAddr();
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(count, FmodInternal::oneRepSize));
- 
+
     FmodComputeVF<half>(dst, src0, src1, repeatTimes, count);
 }
 
 template <typename T, bool isReuseSource = false, const FmodConfig& config = DEFAULT_FMOD_CONFIG>
-__aicore__ inline void FmodImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
-    const LocalTensor<T>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void FmodImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
     if ASCEND_IS_AIC {
         return;
     }
- 
+
     CheckTensorPos(dstTensor, Hardware::UB, "dstTensor", "VECIN / VECOUT / VECCALC", "Fmod");
     CheckTensorPos(src0Tensor, Hardware::UB, "src0Tensor", "VECIN / VECOUT / VECCALC", "Fmod");
     CheckTensorPos(src1Tensor, Hardware::UB, "src1Tensor", "VECIN / VECOUT / VECCALC", "Fmod");
     CheckTensorPos(sharedTmpBuffer, Hardware::UB, "sharedTmpBuffer", "VECIN / VECOUT / VECCALC", "Fmod");
- 
+
     CheckCalCount(calCount, "calCount", src0Tensor, "src0Tensor", "Fmod");
     CheckCalCount(calCount, "calCount", src1Tensor, "src1Tensor", "Fmod");
     CheckCalCount(calCount, "calCount", dstTensor, "dstTensor", "Fmod");
- 
- 
-    ASCENDC_ASSERT((src0Tensor.GetSize() == src1Tensor.GetSize()),
-                   { KERNEL_LOG(KERNEL_ERROR, "Input params.GetSize must be equal with each other!"); });
+
+    ASCENDC_ASSERT((src0Tensor.GetSize() == src1Tensor.GetSize()), {
+        KERNEL_LOG(KERNEL_ERROR, "Input params.GetSize must be equal with each other!");
+    });
 
     if constexpr (config.algo == FmodAlgo::ITERATION_COMPENSATION) {
-        static_assert(config.iterationNum >= 1 && config.iterationNum <= FMOD_ITERATION_NUM_MAX,
+        static_assert(
+            config.iterationNum >= 1 && config.iterationNum <= FMOD_ITERATION_NUM_MAX,
             "Iteration number must be in the range [1, 11].");
         static_assert(SupportType<T, float>(), "current data type is not supported on current device!");
         FmodComputeIteration<config.iterationNum>(dstTensor, src0Tensor, src1Tensor, sharedTmpBuffer, calCount);

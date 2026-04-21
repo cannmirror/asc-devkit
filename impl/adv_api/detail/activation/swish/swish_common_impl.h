@@ -1,19 +1,20 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file swish_common_impl.h
  * \brief
  */
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/activation/swish/swish_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/swish.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/activation/swish/swish_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/swish.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SWISH_COMMON_IMPL_H__
 #endif
@@ -34,7 +35,7 @@
 namespace AscendC {
 template <typename T>
 __aicore__ inline void SwishCalcSimplified(
-    const LocalTensor<T> &dstAddr, const LocalTensor<T> &srcAddr, T &scalarValue, uint32_t repeatTimes)
+    const LocalTensor<T>& dstAddr, const LocalTensor<T>& srcAddr, T& scalarValue, uint32_t repeatTimes)
 {
     // swish(x) = x / (1 + e^(-βx))
     // x1 = 1 + e^(-βx)
@@ -55,7 +56,7 @@ __aicore__ inline void SwishCalcSimplified(
 
 template <typename T, bool isReuseSource = false>
 __aicore__ inline __inout_pipe__(V) void SwishCompute(
-    const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal, uint32_t dataSize, const T scalarValue)
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, uint32_t dataSize, const T scalarValue)
 {
     // Only for AI Vector Core
     if ASCEND_IS_AIC {
@@ -70,8 +71,8 @@ __aicore__ inline __inout_pipe__(V) void SwishCompute(
     SetMaskNorm();
 #else
     ResetMask();
-    uint32_t maxRepeatSize = MAX_REPEAT_FLOAT_SIZE;   // for float
-    uint32_t oneRepeatSize = ONE_REPEAT_FLOAT_SIZE;   // for float
+    uint32_t maxRepeatSize = MAX_REPEAT_FLOAT_SIZE; // for float
+    uint32_t oneRepeatSize = ONE_REPEAT_FLOAT_SIZE; // for float
     if constexpr (sizeof(T) == sizeof(half)) {
         maxRepeatSize = MAX_REPEAT_HALF_SIZE;
         oneRepeatSize = ONE_REPEAT_HALF_SIZE;
@@ -103,8 +104,8 @@ __aicore__ inline __inout_pipe__(V) void SwishCompute(
 #endif
     ResetMask();
 }
-}  // namespace AscendC
-#endif  // IMPL_ACTIVATION_SWISH_SWISH_COMMON_IMPL_H
+} // namespace AscendC
+#endif // IMPL_ACTIVATION_SWISH_SWISH_COMMON_IMPL_H
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SWISH_COMMON_IMPL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SWISH_COMMON_IMPL_H__

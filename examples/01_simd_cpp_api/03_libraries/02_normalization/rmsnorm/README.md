@@ -49,14 +49,12 @@
 - 算子实现：  
   本样例中实现的是固定shape(src[1, 1, 16]，gamma[16]，dst[1, 1, 16])的rmsnorm算子。
 
-  - Kernel实现
-
+  - Kernel实现  
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用RmsNorm高阶API接口完成rmsnorm计算，得到最终结果，再搬出到外部存储上。
 
     rmsnorm算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm、gammaGm搬运至LocalMemory，分别存储在srcLocal、gammaLocal中，Compute任务负责对srcLocal、gammaLocal执行rmsnorm计算，计算结果存储在dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm中。
 
-  - Tiling实现
-
+  - Tiling实现  
     rmsnorm算子的tiling实现流程如下：首先获取RmsNorm接口能完成计算所需最大/最小临时空间大小，根据该范围结合实际的内存使用情况设置合适的空间大小，然后根据输入shape、剩余的可供计算的空间大小等信息获取RmsNorm kernel侧接口所需tiling参数。
 
   - 调用实现  

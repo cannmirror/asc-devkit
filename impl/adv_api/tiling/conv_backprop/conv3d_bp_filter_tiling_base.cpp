@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file conv3d_bp_filter_tiling_base.cpp
@@ -24,7 +24,7 @@ constexpr uint64_t L0C_SIZE = 131072;
 constexpr uint64_t UB_SIZE = 262144;
 constexpr uint64_t BT_SIZE = 1024;
 constexpr uint64_t FB_SIZE = 2048;
-constexpr uint32_t MAX_KW_SIZE = 32;   // transdata limit, the current KW limit exceeds 38
+constexpr uint32_t MAX_KW_SIZE = 32; // transdata limit, the current KW limit exceeds 38
 constexpr int32_t BLOCK_CUBE = 16;
 constexpr int64_t BLOCK_CUBE_S64 = 16;
 
@@ -103,30 +103,32 @@ void Conv3dBpFilterTilingBase::SetGradOutputShape(int64_t n, int64_t c, int64_t 
     this->shapeInfo.orgWo = w;
 }
 
-void Conv3dBpFilterTilingBase::SetWeightType(ConvCommonApi::TPosition pos, ConvCommonApi::ConvFormat format, ConvCommonApi::ConvDtype dtype)
+void Conv3dBpFilterTilingBase::SetWeightType(
+    ConvCommonApi::TPosition pos, ConvCommonApi::ConvFormat format, ConvCommonApi::ConvDtype dtype)
 {
     this->descInfo.weightType.pos = pos;
     this->descInfo.weightType.format = format;
     this->descInfo.weightType.dtype = dtype;
 }
 
-void Conv3dBpFilterTilingBase::SetInputType(ConvCommonApi::TPosition pos, ConvCommonApi::ConvFormat format, ConvCommonApi::ConvDtype dtype)
+void Conv3dBpFilterTilingBase::SetInputType(
+    ConvCommonApi::TPosition pos, ConvCommonApi::ConvFormat format, ConvCommonApi::ConvDtype dtype)
 {
     this->descInfo.fMapType.pos = pos;
     this->descInfo.fMapType.format = format;
     this->descInfo.fMapType.dtype = dtype;
 }
 
-void Conv3dBpFilterTilingBase::SetGradOutputType(ConvCommonApi::TPosition pos, ConvCommonApi::ConvFormat format, ConvCommonApi::ConvDtype dtype)
+void Conv3dBpFilterTilingBase::SetGradOutputType(
+    ConvCommonApi::TPosition pos, ConvCommonApi::ConvFormat format, ConvCommonApi::ConvDtype dtype)
 {
     this->descInfo.outBackpropType.pos = pos;
     this->descInfo.outBackpropType.format = format;
     this->descInfo.outBackpropType.dtype = dtype;
 }
 
-
-void Conv3dBpFilterTilingBase::SetPadding(int64_t padFront, int64_t padBack, int64_t padUp, int64_t padDown,
-        int64_t padLeft, int64_t padRight)
+void Conv3dBpFilterTilingBase::SetPadding(
+    int64_t padFront, int64_t padBack, int64_t padUp, int64_t padDown, int64_t padLeft, int64_t padRight)
 {
     this->attrInfo.padFront = padFront;
     this->attrInfo.padBack = padBack;
@@ -268,32 +270,34 @@ bool Conv3dBpFilterTilingBase::CheckInputParam()
 
 bool Conv3dBpFilterTilingBase::CheckInputAttr()
 {
-    if (this->attrInfo.groups != 1){
-        TILING_LOG_ERROR(
-            "Illegal attrs have set: groups=%ld.", this->attrInfo.groups);
+    if (this->attrInfo.groups != 1) {
+        TILING_LOG_ERROR("Illegal attrs have set: groups=%ld.", this->attrInfo.groups);
         return false;
     }
 
-    bool padInvalidFlag = (this->attrInfo.padLeft < 0 || this->attrInfo.padRight < 0 ||
-        this->attrInfo.padUp < 0 || this->attrInfo.padDown < 0 ||
-        this->attrInfo.padFront < 0 || this->attrInfo.padBack < 0);
+    bool padInvalidFlag =
+        (this->attrInfo.padLeft < 0 || this->attrInfo.padRight < 0 || this->attrInfo.padUp < 0 ||
+         this->attrInfo.padDown < 0 || this->attrInfo.padFront < 0 || this->attrInfo.padBack < 0);
     if (padInvalidFlag) {
         TILING_LOG_ERROR(
             "Illegal attrs have set: padUp=%ld, padDown=%ld, padLeft=%ld, padRight=%ld, padFront=%ld, padBack=%ld,\
-            which must >= 0.", this->attrInfo.padUp, this->attrInfo.padDown, this->attrInfo.padLeft,
-            this->attrInfo.padRight, this->attrInfo.padFront, this->attrInfo.padBack);
+            which must >= 0.",
+            this->attrInfo.padUp, this->attrInfo.padDown, this->attrInfo.padLeft, this->attrInfo.padRight,
+            this->attrInfo.padFront, this->attrInfo.padBack);
         return false;
     }
 
     if (this->attrInfo.strideH <= 0 || this->attrInfo.strideW <= 0 || this->attrInfo.strideD <= 0) {
-        TILING_LOG_ERROR("Illegal attrs have set: strideH=%ld, strideW=%ld, strideD=%ld, which must > 0.",
-                         this->attrInfo.strideH, this->attrInfo.strideW, this->attrInfo.strideD);
+        TILING_LOG_ERROR(
+            "Illegal attrs have set: strideH=%ld, strideW=%ld, strideD=%ld, which must > 0.", this->attrInfo.strideH,
+            this->attrInfo.strideW, this->attrInfo.strideD);
         return false;
     }
 
     if (this->attrInfo.dilationH <= 0 || this->attrInfo.dilationW <= 0 || this->attrInfo.dilationD <= 0) {
-        TILING_LOG_ERROR("Illegal attrs have set: dilationH=%ld, dilationW=%ld, dilationD=%ld, which must > 0.",
-                         this->attrInfo.dilationH, this->attrInfo.dilationW, this->attrInfo.dilationD);
+        TILING_LOG_ERROR(
+            "Illegal attrs have set: dilationH=%ld, dilationW=%ld, dilationD=%ld, which must > 0.",
+            this->attrInfo.dilationH, this->attrInfo.dilationW, this->attrInfo.dilationD);
         return false;
     }
 
@@ -302,29 +306,31 @@ bool Conv3dBpFilterTilingBase::CheckInputAttr()
 
 bool Conv3dBpFilterTilingBase::CheckInputShape()
 {
-    if (this->shapeInfo.orgkH <= 0 || this->shapeInfo.orgkW <= 0 ||
-        this->shapeInfo.orgkD <= 0) {
-        TILING_LOG_ERROR("Illegal org weight shapes have set: kH=%ld, kW=%ld, kD=%ld, which must > 0.",
-            this->shapeInfo.orgkH, this->shapeInfo.orgkW, this->shapeInfo.orgkD);
+    if (this->shapeInfo.orgkH <= 0 || this->shapeInfo.orgkW <= 0 || this->shapeInfo.orgkD <= 0) {
+        TILING_LOG_ERROR(
+            "Illegal org weight shapes have set: kH=%ld, kW=%ld, kD=%ld, which must > 0.", this->shapeInfo.orgkH,
+            this->shapeInfo.orgkW, this->shapeInfo.orgkD);
         return false;
     }
 
     if (this->shapeInfo.orgkW > MAX_KW_SIZE) {
-        TILING_LOG_ERROR("Illegal org weight kW have set: kW=%ld, which must <= %u.",
-            this->shapeInfo.orgkW, MAX_KW_SIZE);
+        TILING_LOG_ERROR(
+            "Illegal org weight kW have set: kW=%ld, which must <= %u.", this->shapeInfo.orgkW, MAX_KW_SIZE);
         return false;
     }
 
-    if (this->shapeInfo.orgCi <= 0 || this->shapeInfo.orgHi <= 0 ||
-        this->shapeInfo.orgWi <= 0 || this->shapeInfo.orgDi <= 0) {
-        TILING_LOG_ERROR("Illegal org featureMap shapes have set: Ci=%ld, Hi=%ld, Wi=%ld, Di=%ld, which must > 0.",
+    if (this->shapeInfo.orgCi <= 0 || this->shapeInfo.orgHi <= 0 || this->shapeInfo.orgWi <= 0 ||
+        this->shapeInfo.orgDi <= 0) {
+        TILING_LOG_ERROR(
+            "Illegal org featureMap shapes have set: Ci=%ld, Hi=%ld, Wi=%ld, Di=%ld, which must > 0.",
             this->shapeInfo.orgCi, this->shapeInfo.orgHi, this->shapeInfo.orgWi, this->shapeInfo.orgDi);
         return false;
     }
 
-    if (this->shapeInfo.orgCo <= 0 || this->shapeInfo.orgHo <= 0 ||
-        this->shapeInfo.orgWo <= 0 || this->shapeInfo.orgDo <= 0) {
-        TILING_LOG_ERROR("Illegal org featureMap shapes have set: Co=%ld, Ho=%ld, Wo=%ld, Do=%ld, which must > 0.",
+    if (this->shapeInfo.orgCo <= 0 || this->shapeInfo.orgHo <= 0 || this->shapeInfo.orgWo <= 0 ||
+        this->shapeInfo.orgDo <= 0) {
+        TILING_LOG_ERROR(
+            "Illegal org featureMap shapes have set: Co=%ld, Ho=%ld, Wo=%ld, Do=%ld, which must > 0.",
             this->shapeInfo.orgCo, this->shapeInfo.orgHo, this->shapeInfo.orgWo, this->shapeInfo.orgDo);
         return false;
     }
@@ -335,14 +341,13 @@ bool Conv3dBpFilterTilingBase::CheckInputShape()
 bool Conv3dBpFilterTilingBase::CheckInputFormat()
 {
     if (this->descInfo.weightType.format != ConvCommonApi::ConvFormat::FRACTAL_Z_3D) {
-        TILING_LOG_ERROR("Unsupported weight format: %s.",
-                         g_formatToStr.at(this->descInfo.weightType.format).c_str());
+        TILING_LOG_ERROR("Unsupported weight format: %s.", g_formatToStr.at(this->descInfo.weightType.format).c_str());
         return false;
     }
 
     if (this->descInfo.fMapType.format != ConvCommonApi::ConvFormat::NDC1HWC0) {
-        TILING_LOG_ERROR("Unsupported feature map format: %s.",
-                         g_formatToStr.at(this->descInfo.fMapType.format).c_str());
+        TILING_LOG_ERROR(
+            "Unsupported feature map format: %s.", g_formatToStr.at(this->descInfo.fMapType.format).c_str());
         return false;
     }
 
@@ -354,8 +359,8 @@ bool Conv3dBpFilterTilingBase::CheckLoad3DLimits()
     if (static_cast<uint32_t>(this->attrInfo.strideH) > LOAD3D_MAX_STRIDE_H_W ||
         static_cast<uint32_t>(this->attrInfo.strideW) > LOAD3D_MAX_STRIDE_H_W) {
         TILING_LOG_ERROR(
-            "Attrs not satisfying load3d's limits: strideH=%ld, strideW=%ld, which must <= %u.",
-            this->attrInfo.strideH, this->attrInfo.strideW, LOAD3D_MAX_STRIDE_H_W);
+            "Attrs not satisfying load3d's limits: strideH=%ld, strideW=%ld, which must <= %u.", this->attrInfo.strideH,
+            this->attrInfo.strideW, LOAD3D_MAX_STRIDE_H_W);
         return false;
     }
 
@@ -367,13 +372,14 @@ bool Conv3dBpFilterTilingBase::CheckLoad3DLimits()
         return false;
     }
 
-    bool padLoad3dInvalid = (static_cast<uint32_t>(this->attrInfo.padLeft) > LOAD3D_MAX_PAD ||
-        static_cast<uint32_t>(this->attrInfo.padRight) > LOAD3D_MAX_PAD ||
-        static_cast<uint32_t>(this->attrInfo.padUp) > LOAD3D_MAX_PAD ||
-        static_cast<uint32_t>(this->attrInfo.padDown) > LOAD3D_MAX_PAD);
+    bool padLoad3dInvalid =
+        (static_cast<uint32_t>(this->attrInfo.padLeft) > LOAD3D_MAX_PAD ||
+         static_cast<uint32_t>(this->attrInfo.padRight) > LOAD3D_MAX_PAD ||
+         static_cast<uint32_t>(this->attrInfo.padUp) > LOAD3D_MAX_PAD ||
+         static_cast<uint32_t>(this->attrInfo.padDown) > LOAD3D_MAX_PAD);
     if (padLoad3dInvalid) {
         TILING_LOG_ERROR(
-            "Attrs not satisfying load3d's limits: padUp=%ld, padDown=%ld, padLeft=%ld, padRight=%ld,"\
+            "Attrs not satisfying load3d's limits: padUp=%ld, padDown=%ld, padLeft=%ld, padRight=%ld,"
             "which must <= %u.",
             this->attrInfo.padUp, this->attrInfo.padDown, this->attrInfo.padLeft, this->attrInfo.padRight,
             LOAD3D_MAX_PAD);
@@ -381,8 +387,9 @@ bool Conv3dBpFilterTilingBase::CheckLoad3DLimits()
     }
 
     if (this->shapeInfo.orgkH > LOAD3D_MAX_FILTER_H_W || this->shapeInfo.orgkW > LOAD3D_MAX_FILTER_H_W) {
-        TILING_LOG_ERROR("Weight shape not satisfy Load3D's limits: kh=%ld, kw=%ld, which must <= %u.",
-                         this->shapeInfo.orgkH, this->shapeInfo.orgkW, LOAD3D_MAX_FILTER_H_W);
+        TILING_LOG_ERROR(
+            "Weight shape not satisfy Load3D's limits: kh=%ld, kw=%ld, which must <= %u.", this->shapeInfo.orgkH,
+            this->shapeInfo.orgkW, LOAD3D_MAX_FILTER_H_W);
         return false;
     }
 

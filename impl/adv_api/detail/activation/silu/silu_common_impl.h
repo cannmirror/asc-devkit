@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file silu_common_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/activation/silu/silu_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/silu.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/activation/silu/silu_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/silu.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SILU_COMMON_IMPL_H__
 #endif
@@ -32,8 +33,8 @@
 #endif
 namespace AscendC {
 template <typename T>
-__aicore__ inline void SiluCalcSimplified(const LocalTensor<T> &dstAddr, const LocalTensor<T> &srcAddr,
-    uint32_t repeatTimes)
+__aicore__ inline void SiluCalcSimplified(
+    const LocalTensor<T>& dstAddr, const LocalTensor<T>& srcAddr, uint32_t repeatTimes)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binaryParams;
@@ -53,8 +54,8 @@ __aicore__ inline void SiluCalcSimplified(const LocalTensor<T> &dstAddr, const L
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline __inout_pipe__(V) void SiluCompute(const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal,
-    uint32_t dataSize)
+__aicore__ inline __inout_pipe__(V) void SiluCompute(
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, uint32_t dataSize)
 {
     CHECK_FUNC_HIGHLEVEL_API(Silu, (T, isReuseSource), (dstLocal, srcLocal, dataSize));
 #if ASCENDC_CPU_DEBUG
@@ -71,8 +72,8 @@ __aicore__ inline __inout_pipe__(V) void SiluCompute(const LocalTensor<T> &dstLo
     SetMaskNorm();
 #else
     ResetMask();
-    uint32_t maxRepeatSize = MAX_REPEAT_FLOAT_SIZE;   // for float
-    uint32_t oneRepeatSize = ONE_REPEAT_FLOAT_SIZE;   // for float
+    uint32_t maxRepeatSize = MAX_REPEAT_FLOAT_SIZE; // for float
+    uint32_t oneRepeatSize = ONE_REPEAT_FLOAT_SIZE; // for float
     if constexpr (sizeof(T) == sizeof(half)) {
         maxRepeatSize = MAX_REPEAT_HALF_SIZE;
         oneRepeatSize = ONE_REPEAT_HALF_SIZE;
@@ -103,7 +104,7 @@ __aicore__ inline __inout_pipe__(V) void SiluCompute(const LocalTensor<T> &dstLo
 #endif
     ResetMask();
 }
-}  // namespace AscendC
+} // namespace AscendC
 #endif
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SILU_COMMON_IMPL_H__)

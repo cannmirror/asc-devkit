@@ -43,14 +43,12 @@
 - 算子实现：  
   本样例中实现的是固定shape为输入x[32, 32]，输出y[32, 32]的AdjustSoftMaxResCustom算子。算子中需要判断的max中的值为0xFF7FFFFF，需要向y的结果数据中填充的值为0，将这两个值分别定义为两个全局常量，用于算子实现。
 
-  - Kernel实现
-
+  - Kernel实现  
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用AdjustSoftMax高阶API接口完成计算，得到最终结果，再搬出到外部存储上。
 
     AdjustSoftMaxRes算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGlobal和maxLocal分别存储在srcLocal和maxLocal中，Compute任务负责对maxLocal中的数据进行判断，并更改srcLocal数据。计算结果存储在dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGlobal。
 
-  - Tiling实现
-
+  - Tiling实现  
     根据输入Tensor的长度和宽度确定所需tiling参数height、width、srcSize、dstSize。
 
   - 调用实现  

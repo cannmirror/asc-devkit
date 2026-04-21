@@ -44,7 +44,7 @@
 
 - 算子实现：  
   本样例中实现的是固定shape为4*128的LeakyRelu算子。
-  - Kernel实现   
+  - Kernel实现  
     LeakyRelu算子的数学表达式为：  
   $$
   out = 

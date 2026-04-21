@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file conv3d_tiling_util.h
@@ -27,24 +27,14 @@
 #include "../../detail/conv/common/conv_common.h"
 
 namespace Conv3dTilingApi {
-enum class IterateMNOrder : uint32_t {
-    ITER_M_FST = 0,
-    ITER_N_FST,
-    INVALID
-};
+enum class IterateMNOrder : uint32_t { ITER_M_FST = 0, ITER_N_FST, INVALID };
 
 const std::map<ConvCommonApi::ConvDtype, std::string> g_dtypeToStr = {
-    {ConvCommonApi::ConvDtype::FLOAT16, "float16"},
-    {ConvCommonApi::ConvDtype::FLOAT32, "float32"},
-    {ConvCommonApi::ConvDtype::BF16, "bfloat16"},
-    {ConvCommonApi::ConvDtype::INT4, "int4"},
-    {ConvCommonApi::ConvDtype::INT8, "int8"},
-    {ConvCommonApi::ConvDtype::UINT8, "uint8"},
-    {ConvCommonApi::ConvDtype::INT64, "int64"},
-    {ConvCommonApi::ConvDtype::UINT64, "uint64"},
-    {ConvCommonApi::ConvDtype::INT32, "int32"},
-    {ConvCommonApi::ConvDtype::CONVDTYPEMAX, "UNKNOWN_DTYPE"}
-};
+    {ConvCommonApi::ConvDtype::FLOAT16, "float16"}, {ConvCommonApi::ConvDtype::FLOAT32, "float32"},
+    {ConvCommonApi::ConvDtype::BF16, "bfloat16"},   {ConvCommonApi::ConvDtype::INT4, "int4"},
+    {ConvCommonApi::ConvDtype::INT8, "int8"},       {ConvCommonApi::ConvDtype::UINT8, "uint8"},
+    {ConvCommonApi::ConvDtype::INT64, "int64"},     {ConvCommonApi::ConvDtype::UINT64, "uint64"},
+    {ConvCommonApi::ConvDtype::INT32, "int32"},     {ConvCommonApi::ConvDtype::CONVDTYPEMAX, "UNKNOWN_DTYPE"}};
 
 const std::map<ConvCommonApi::ConvFormat, std::string> g_formatToStr = {
     {ConvCommonApi::ConvFormat::NCHW, "NCHW"},
@@ -58,49 +48,44 @@ const std::map<ConvCommonApi::ConvFormat, std::string> g_formatToStr = {
     {ConvCommonApi::ConvFormat::ND, "ND"},
     {ConvCommonApi::ConvFormat::NDC1HWC0, "NDC1HWC0"},
     {ConvCommonApi::ConvFormat::FRACTAL_Z_3D, "FRACTAL_Z_3D"},
-    {ConvCommonApi::ConvFormat::MAX, "UNKNOWN_FORMAT"}
-};
+    {ConvCommonApi::ConvFormat::MAX, "UNKNOWN_FORMAT"}};
 
 const std::map<ConvCommonApi::ConvDtype, uint32_t> g_dtypeSizeTab = {
-    {ConvCommonApi::ConvDtype::FLOAT16, 2},
-    {ConvCommonApi::ConvDtype::FLOAT32, 4},
-    {ConvCommonApi::ConvDtype::BF16, 2},
-    {ConvCommonApi::ConvDtype::INT8, 1},
-    {ConvCommonApi::ConvDtype::UINT8, 1},
-    {ConvCommonApi::ConvDtype::INT64, 8},
-    {ConvCommonApi::ConvDtype::UINT64, 8},
-    {ConvCommonApi::ConvDtype::INT32, 4}
-};
+    {ConvCommonApi::ConvDtype::FLOAT16, 2}, {ConvCommonApi::ConvDtype::FLOAT32, 4},
+    {ConvCommonApi::ConvDtype::BF16, 2},    {ConvCommonApi::ConvDtype::INT8, 1},
+    {ConvCommonApi::ConvDtype::UINT8, 1},   {ConvCommonApi::ConvDtype::INT64, 8},
+    {ConvCommonApi::ConvDtype::UINT64, 8},  {ConvCommonApi::ConvDtype::INT32, 4}};
 
-
-const uint32_t COUNT_PARAMS_BIAS = 4; // [input, weight, bias, output]
+const uint32_t COUNT_PARAMS_BIAS = 4;    // [input, weight, bias, output]
 const uint32_t COUNT_PARAMS_NO_BIAS = 3; // [input, weight, output]
-/* 
- * int8 dtype: {ConvCommonApi::ConvDtype::INT8, ConvCommonApi::ConvDtype::INT8, ConvCommonApi::ConvDtype::INT32, ConvCommonApi::ConvDtype::FLOAT16}
+/*
+ * int8 dtype: {ConvCommonApi::ConvDtype::INT8, ConvCommonApi::ConvDtype::INT8, ConvCommonApi::ConvDtype::INT32,
+ * ConvCommonApi::ConvDtype::FLOAT16}
  */
 const std::vector<std::vector<ConvCommonApi::ConvDtype>> SUPPORTED_TYPES_WITH_BIAS = {
-    {ConvCommonApi::ConvDtype::BF16, ConvCommonApi::ConvDtype::BF16, ConvCommonApi::ConvDtype::FLOAT32, ConvCommonApi::ConvDtype::BF16},
-    {ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::ConvDtype::FLOAT16}
-};
+    {ConvCommonApi::ConvDtype::BF16, ConvCommonApi::ConvDtype::BF16, ConvCommonApi::ConvDtype::FLOAT32,
+     ConvCommonApi::ConvDtype::BF16},
+    {ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::ConvDtype::FLOAT16,
+     ConvCommonApi::ConvDtype::FLOAT16}};
 /*
  * int8 dtype: {ConvCommonApi::ConvDtype::INT8, ConvCommonApi::ConvDtype::INT8, ConvCommonApi::ConvDtype::FLOAT16}
  */
 const std::vector<std::vector<ConvCommonApi::ConvDtype>> SUPPORTED_TYPES_WITHOUT_BIAS = {
     {ConvCommonApi::ConvDtype::BF16, ConvCommonApi::ConvDtype::BF16, ConvCommonApi::ConvDtype::BF16},
-    {ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::ConvDtype::FLOAT16}
-};
+    {ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::ConvDtype::FLOAT16}};
 
 const std::vector<std::vector<ConvCommonApi::ConvDtype>> POINTWISE_SUPPORTED_TYPES_WITH_BIAS = {
-    {ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::ConvDtype::FLOAT32, ConvCommonApi::ConvDtype::FLOAT16},
-    {ConvCommonApi::ConvDtype::FLOAT32, ConvCommonApi::ConvDtype::FLOAT32, ConvCommonApi::ConvDtype::FLOAT32, ConvCommonApi::ConvDtype::FLOAT32},
-    {ConvCommonApi::ConvDtype::BF16, ConvCommonApi::ConvDtype::BF16, ConvCommonApi::ConvDtype::FLOAT32, ConvCommonApi::ConvDtype::BF16}
-};
+    {ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::ConvDtype::FLOAT32,
+     ConvCommonApi::ConvDtype::FLOAT16},
+    {ConvCommonApi::ConvDtype::FLOAT32, ConvCommonApi::ConvDtype::FLOAT32, ConvCommonApi::ConvDtype::FLOAT32,
+     ConvCommonApi::ConvDtype::FLOAT32},
+    {ConvCommonApi::ConvDtype::BF16, ConvCommonApi::ConvDtype::BF16, ConvCommonApi::ConvDtype::FLOAT32,
+     ConvCommonApi::ConvDtype::BF16}};
 
 const std::vector<std::vector<ConvCommonApi::ConvDtype>> POINTWISE_SUPPORTED_TYPES_WITHOUT_BIAS = {
     {ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::ConvDtype::FLOAT16},
     {ConvCommonApi::ConvDtype::FLOAT32, ConvCommonApi::ConvDtype::FLOAT32, ConvCommonApi::ConvDtype::FLOAT32},
-    {ConvCommonApi::ConvDtype::BF16, ConvCommonApi::ConvDtype::BF16, ConvCommonApi::ConvDtype::BF16}
-};
+    {ConvCommonApi::ConvDtype::BF16, ConvCommonApi::ConvDtype::BF16, ConvCommonApi::ConvDtype::BF16}};
 
 const std::map<platform_ascendc::SocVersion, std::string> SOC_NAME_TAB = {
     {platform_ascendc::SocVersion::ASCEND910, "ASCEND910"},
@@ -108,8 +93,7 @@ const std::map<platform_ascendc::SocVersion, std::string> SOC_NAME_TAB = {
     {platform_ascendc::SocVersion::ASCEND910_93, "ASCEND910_93"},
     {platform_ascendc::SocVersion::ASCEND310P, "ASCEND310P"},
     {platform_ascendc::SocVersion::ASCEND310B, "ASCEND310B"},
-    {platform_ascendc::SocVersion::RESERVED_VERSION, "RESERVED_VERSION"}
-};
+    {platform_ascendc::SocVersion::RESERVED_VERSION, "RESERVED_VERSION"}};
 
 struct ConvType {
     ConvCommonApi::ConvFormat format;
@@ -193,9 +177,8 @@ public:
         ConvCommonApi::ConvDtype madType;
         ConvCommonApi::ConvDtype biasType;
     } typeMaps[static_cast<uint8_t>(ConvCommonApi::ConvDtype::CONVDTYPEMAX) + 1] = {
-        {ConvCommonApi::ConvDtype::CONVDTYPEMAX, ConvCommonApi::ConvDtype::CONVDTYPEMAX}
-    };
-    
+        {ConvCommonApi::ConvDtype::CONVDTYPEMAX, ConvCommonApi::ConvDtype::CONVDTYPEMAX}};
+
     ConvCommonApi::ConvDtype ToBiasType(ConvCommonApi::ConvDtype type) const
     {
         return typeMaps[static_cast<uint8_t>(type)].biasType;
@@ -210,9 +193,12 @@ public:
         SetMapping(ConvCommonApi::ConvDtype::INT4, ConvCommonApi::ConvDtype::INT32, ConvCommonApi::ConvDtype::INT32);
         SetMapping(ConvCommonApi::ConvDtype::INT8, ConvCommonApi::ConvDtype::INT32, ConvCommonApi::ConvDtype::INT32);
         SetMapping(ConvCommonApi::ConvDtype::UINT8, ConvCommonApi::ConvDtype::INT32, ConvCommonApi::ConvDtype::INT32);
-        SetMapping(ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::ConvDtype::FLOAT32, ConvCommonApi::ConvDtype::FLOAT32);
-        SetMapping(ConvCommonApi::ConvDtype::BF16, ConvCommonApi::ConvDtype::FLOAT32, ConvCommonApi::ConvDtype::FLOAT32);
-        SetMapping(ConvCommonApi::ConvDtype::FLOAT32, ConvCommonApi::ConvDtype::FLOAT32, ConvCommonApi::ConvDtype::FLOAT32);
+        SetMapping(
+            ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::ConvDtype::FLOAT32, ConvCommonApi::ConvDtype::FLOAT32);
+        SetMapping(
+            ConvCommonApi::ConvDtype::BF16, ConvCommonApi::ConvDtype::FLOAT32, ConvCommonApi::ConvDtype::FLOAT32);
+        SetMapping(
+            ConvCommonApi::ConvDtype::FLOAT32, ConvCommonApi::ConvDtype::FLOAT32, ConvCommonApi::ConvDtype::FLOAT32);
     }
 
 private:
@@ -227,18 +213,19 @@ struct AscendApiMknMap {
     int32_t GetByIndex(uint32_t idx) const
     {
         if (idx > MKN_MAX_SIZE - 1) {
-        return MKN_VALUE_DEFAULT;
+            return MKN_VALUE_DEFAULT;
         }
         return map[idx];
     }
     int8_t map[MKN_MAX_SIZE];
 };
- 
+
 struct AscendApiCubeMkn {
     int8_t toIdx[static_cast<uint8_t>(ConvCommonApi::ConvDtype::CONVDTYPEMAX) + 1] = {0};
-    AscendApiMknMap maps[3] = {{BLOCK_M0, FP16_CUBE_UNIT, BLOCK_N0}, // fp16
-                               {BLOCK_M0, FP32_CUBE_UNIT, BLOCK_N0}, // fp32
-                               {BLOCK_M0, INT8_CUBE_UNIT, BLOCK_N0}}; // int8
+    AscendApiMknMap maps[3] = {
+        {BLOCK_M0, FP16_CUBE_UNIT, BLOCK_N0},  // fp16
+        {BLOCK_M0, FP32_CUBE_UNIT, BLOCK_N0},  // fp32
+        {BLOCK_M0, INT8_CUBE_UNIT, BLOCK_N0}}; // int8
     uint32_t GetMKN(ConvCommonApi::ConvDtype dType, uint32_t idx) const
     {
         return maps[toIdx[static_cast<uint8_t>(dType)]].GetByIndex(idx);
@@ -259,15 +246,17 @@ int64_t LCM(int64_t numL, int64_t numR);
 uint64_t CeilDiv(uint64_t a, uint64_t b);
 uint64_t AlignB(uint64_t a, uint64_t b);
 uint64_t Gcd(uint64_t a, uint64_t b);
-void CalcCommFactorWithPowerOfTwo(const uint64_t num, const uint64_t numMax, std::vector<uint64_t> &resList);
-void CalcCommFactor(const uint64_t num, const uint64_t numMax, std::vector<uint64_t> &resList);
-void CalcFactorPointWise(uint64_t numMax, std::vector<uint64_t> &resList);
-void VectorElementMultip(std::vector<uint64_t> &range, const uint64_t value);
-bool IsArrayEqual(const std::vector<ConvCommonApi::ConvDtype>& arr1, const std::vector<ConvCommonApi::ConvDtype>& arr2, uint32_t size);
+void CalcCommFactorWithPowerOfTwo(const uint64_t num, const uint64_t numMax, std::vector<uint64_t>& resList);
+void CalcCommFactor(const uint64_t num, const uint64_t numMax, std::vector<uint64_t>& resList);
+void CalcFactorPointWise(uint64_t numMax, std::vector<uint64_t>& resList);
+void VectorElementMultip(std::vector<uint64_t>& range, const uint64_t value);
+bool IsArrayEqual(
+    const std::vector<ConvCommonApi::ConvDtype>& arr1, const std::vector<ConvCommonApi::ConvDtype>& arr2,
+    uint32_t size);
 uint64_t InferHiL1(uint64_t inputHoL1, uint64_t hi, uint64_t singlekH, uint32_t dilationH, uint32_t strideH);
 
 template <typename T, typename = typename std::enable_if<std::is_integral<T>::value>::type>
-bool AddWithOverflowCheck(T &res, T a, T b)
+bool AddWithOverflowCheck(T& res, T a, T b)
 {
     T tmpRes = a + b;
     if (tmpRes < a || tmpRes < b) {
@@ -284,7 +273,7 @@ bool AddWithOverflowCheck(T &res, T a, T b)
 }
 
 template <typename T, typename = typename std::enable_if<std::is_integral<T>::value>::type>
-bool MulWithOverflowCheck(T &res, T a, T b)
+bool MulWithOverflowCheck(T& res, T a, T b)
 {
     if (a == 0 || b == 0) {
         res = 0;
@@ -300,7 +289,7 @@ bool MulWithOverflowCheck(T &res, T a, T b)
 
 // Control the number of parameters passed during invocation to avoid stack overflow
 template <typename T, typename... Args, typename = typename std::enable_if<std::is_integral<T>::value>::type>
-bool MulWithOverflowCheck(T &res, T a, T b, Args... args)
+bool MulWithOverflowCheck(T& res, T a, T b, Args... args)
 {
     T tmp;
     return MulWithOverflowCheck(tmp, a, b) || MulWithOverflowCheck(res, tmp, args...);

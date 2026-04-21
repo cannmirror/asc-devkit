@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/cumsum/regbase/3510/cumsum_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/cumsum.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/cumsum/regbase/3510/cumsum_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/cumsum.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_CUMSUM_REGBASE_C310_CUMSUM_C310_IMPL_H__
 #endif
@@ -56,15 +57,17 @@ __aicore__ inline void CumSumCopyLastRow(const LocalTensor<T>& dstTensor, const 
 }
 
 template <typename T, const CumSumConfig& config>
-__aicore__ inline void CumSumLastDim(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-                                     LocalTensor<T> tempBuffer, const CumSumInfo& cumSumInfo)
+__aicore__ inline void CumSumLastDim(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, LocalTensor<T> tempBuffer,
+    const CumSumInfo& cumSumInfo)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current data type is not supported!"); });
 }
 
 template <typename T = float, const CumSumConfig& config>
-__aicore__ inline void CumSumLastDim(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
-                                     LocalTensor<float> tempBuffer, const CumSumInfo& cumSumInfo)
+__aicore__ inline void CumSumLastDim(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor, LocalTensor<float> tempBuffer,
+    const CumSumInfo& cumSumInfo)
 {
     uint16_t alignOutter =
         (cumSumInfo.outter + NCHW_CONV_ADDR_LIST_SIZE - 1) / NCHW_CONV_ADDR_LIST_SIZE * NCHW_CONV_ADDR_LIST_SIZE;
@@ -80,8 +83,9 @@ __aicore__ inline void CumSumLastDim(const LocalTensor<float>& dstTensor, const 
 }
 
 template <typename T = half, const CumSumConfig& config>
-__aicore__ inline void CumSumLastDim(const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor,
-                                     LocalTensor<half> tempBuffer, const CumSumInfo& cumSumInfo)
+__aicore__ inline void CumSumLastDim(
+    const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor, LocalTensor<half> tempBuffer,
+    const CumSumInfo& cumSumInfo)
 {
     uint16_t alignOutter =
         (cumSumInfo.outter + NCHW_CONV_ADDR_LIST_SIZE - 1) / NCHW_CONV_ADDR_LIST_SIZE * NCHW_CONV_ADDR_LIST_SIZE;
@@ -105,15 +109,17 @@ __aicore__ inline void CumSumLastDim(const LocalTensor<half>& dstTensor, const L
 }
 
 template <typename T, const CumSumConfig& config>
-__aicore__ inline void CumSumFirstDim(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-                                      LocalTensor<uint8_t>& sharedTmpBuffer, const CumSumInfo& cumSumInfo)
+__aicore__ inline void CumSumFirstDim(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, LocalTensor<uint8_t>& sharedTmpBuffer,
+    const CumSumInfo& cumSumInfo)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current data type is not supported!"); });
 }
 
 template <typename T = float, const CumSumConfig& config>
-__aicore__ inline void CumSumFirstDim(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
-                                      LocalTensor<uint8_t>& sharedTmpBuffer, const CumSumInfo& cumSumInfo)
+__aicore__ inline void CumSumFirstDim(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor, LocalTensor<uint8_t>& sharedTmpBuffer,
+    const CumSumInfo& cumSumInfo)
 {
     Internal::CumSumCopyOut(dstTensor, srcTensor, cumSumInfo.outter, cumSumInfo.inner);
     if constexpr (config.algorithm == CumSumAlgorithm::CUMSUM_ALGORITHM_SKLANSKY) {
@@ -125,16 +131,18 @@ __aicore__ inline void CumSumFirstDim(const LocalTensor<float>& dstTensor, const
 }
 
 template <typename T = half, const CumSumConfig& config>
-__aicore__ inline void CumSumFirstDim(const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor,
-                                      LocalTensor<uint8_t>& sharedTmpBuffer, const CumSumInfo& cumSumInfo)
+__aicore__ inline void CumSumFirstDim(
+    const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor, LocalTensor<uint8_t>& sharedTmpBuffer,
+    const CumSumInfo& cumSumInfo)
 {
     const uint32_t minTmpBufferSize = cumSumInfo.outter * cumSumInfo.inner * sizeof(float);
     const uint32_t tmpBufferSize = sharedTmpBuffer.GetSize();
 #if ASCENDC_CPU_DEBUG
     ASCENDC_ASSERT((tmpBufferSize >= minTmpBufferSize), {
-        KERNEL_LOG(KERNEL_ERROR,
-                   "tmpBufferSize can't smaller than minTmpBufferSize, tmpBufferSize is %u, minTmpBufferSize is %u!",
-                   tmpBufferSize, minTmpBufferSize);
+        KERNEL_LOG(
+            KERNEL_ERROR,
+            "tmpBufferSize can't smaller than minTmpBufferSize, tmpBufferSize is %u, minTmpBufferSize is %u!",
+            tmpBufferSize, minTmpBufferSize);
     });
 #endif
     LocalTensor<float> tmpBuffer = sharedTmpBuffer.ReinterpretCast<float>();
@@ -149,9 +157,9 @@ __aicore__ inline void CumSumFirstDim(const LocalTensor<half>& dstTensor, const 
 }
 
 template <typename T, const CumSumConfig& config>
-__aicore__ inline void CumSumImpl(LocalTensor<T>& dstTensor, LocalTensor<T>& lastRowTensor,
-                                  const LocalTensor<T>& srcTensor, LocalTensor<uint8_t>& sharedTmpBuffer,
-                                  const CumSumInfo& cumSumInfo)
+__aicore__ inline void CumSumImpl(
+    LocalTensor<T>& dstTensor, LocalTensor<T>& lastRowTensor, const LocalTensor<T>& srcTensor,
+    LocalTensor<uint8_t>& sharedTmpBuffer, const CumSumInfo& cumSumInfo)
 {
     if ASCEND_IS_AIC {
         return;
@@ -165,9 +173,9 @@ __aicore__ inline void CumSumImpl(LocalTensor<T>& dstTensor, LocalTensor<T>& las
         if constexpr (sizeof(T) == 2) { // 2 is for half
             minCastTempBufferSize = cumSumInfo.inner * NCHW_CONV_ADDR_LIST_SIZE * sizeof(half);
         }
-        const uint32_t minTmpBufferSize =
-            minCastTempBufferSize
-            + NCHW_CONV_ADDR_LIST_SIZE * cumSumInfo.inner * sizeof(T) * 2; // both transpose require a tempBuffer
+        const uint32_t minTmpBufferSize = minCastTempBufferSize + NCHW_CONV_ADDR_LIST_SIZE * cumSumInfo.inner *
+                                                                      sizeof(T) *
+                                                                      2; // both transpose require a tempBuffer
         const uint32_t tmpBufferSize = sharedTmpBuffer.GetSize();
 #if ASCENDC_CPU_DEBUG
         ASCENDC_ASSERT((tmpBufferSize >= minTmpBufferSize), {
@@ -185,15 +193,15 @@ __aicore__ inline void CumSumImpl(LocalTensor<T>& dstTensor, LocalTensor<T>& las
         uint32_t srcLocalOffset = 0;
         LocalTensor<T> tmpBuffer = sharedTmpBuffer.ReinterpretCast<T>();
         for (uint32_t i = 0; i < rangeM; i++) {
-            CumSumLastDim<T, config>(dstTensor[dstLocalOffset], srcTensor[srcLocalOffset], tmpBuffer,
-                                     {oneRepeatSize, cumSumInfo.inner});
+            CumSumLastDim<T, config>(
+                dstTensor[dstLocalOffset], srcTensor[srcLocalOffset], tmpBuffer, {oneRepeatSize, cumSumInfo.inner});
             dstLocalOffset += cumSumInfo.inner * oneRepeatSize;
             srcLocalOffset += cumSumInfo.inner * oneRepeatSize;
         }
 
         if (tailM != 0) {
-            CumSumLastDim<T, config>(dstTensor[dstLocalOffset], srcTensor[srcLocalOffset], tmpBuffer,
-                                     {tailM, cumSumInfo.inner});
+            CumSumLastDim<T, config>(
+                dstTensor[dstLocalOffset], srcTensor[srcLocalOffset], tmpBuffer, {tailM, cumSumInfo.inner});
         }
     } else {
         CumSumFirstDim<T, config>(dstTensor, srcTensor, sharedTmpBuffer, cumSumInfo);

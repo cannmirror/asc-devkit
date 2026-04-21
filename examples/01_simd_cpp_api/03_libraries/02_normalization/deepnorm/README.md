@@ -51,8 +51,7 @@
 - 算子实现：  
   本样例中实现的是固定shape(inputX[4, 16, 64]、inputGx[4, 16, 64]、beta[64]、gamma[64]， output[4, 16, 64]、 outputMean[4, 16]、 outputVariance[4, 16])的deepnorm算子。
 
-  - Kernel实现
-
+  - Kernel实现  
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用DeepNorm高阶API接口完成deepnorm计算，得到最终结果，再搬出到外部存储上。
 
     deepnorm算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor inputX_gm、inputGx_gm、gamma_gm、beta_gm Memory搬运至LocalMemory，分别存储在inputXLocal、inputGxLocal、gammaLocal、betaLocal中，Compute任务负责对inputXLocal、inputGxLocal、gammaLocal、betaLocal执行deepnorm计算，计算结果存储在outputLocal、outputMeanLocal、outputVarianceLocal中，CopyOut任务负责将输出数据从outputLocal、outputMeanLocal、outputVarianceLocal搬运至Global Memory上的输出Tensor output、outputMeanGm、outputVarianceGm中。

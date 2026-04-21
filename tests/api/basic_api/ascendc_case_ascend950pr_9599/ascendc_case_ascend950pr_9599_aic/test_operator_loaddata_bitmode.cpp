@@ -143,7 +143,7 @@ public:
         loadData3dParams.filterSizeH = 0;
         loadData3dParams.fMatrixCtrl = false;
         uint16_t dstStride = DivCeil(mLength, 16);
-        SetLoadDataRepeat({0, 1, 0, dstStride});
+        SetLoadDataRepeatWithStride({0, 1, 0, dstStride});
         Load3DBitModeParam load3DBitModeParam(loadData3dParams);
 
         LoadData<TPosition::A2, TPosition::A1>(a2, leftMatrix, load3DBitModeParam);
@@ -180,9 +180,11 @@ public:
         SetFmatrix(setFMatrixBitModeParams, FmatrixMode::FMATRIX_LEFT);
         SetLoadDataPaddingValue(0); // bit cast
         uint16_t dstStride = DivCeil(nLength, 16);
-        SetLoadDataRepeat({0, 1, 0, dstStride});
         static constexpr IsResetLoad3dConfig LOAD3D_CONFIG = {false, false};
+        SetLoadDataRepeat({0, 1, 0});
         LoadData<Src1T, LOAD3D_CONFIG>(b2, rightMatrix, loadData3dParams);
+        SetLoadDataRepeatWithStride({0, 1, 0, dstStride});
+        LoadDataWithStride<Src1T, LOAD3D_CONFIG>(b2, rightMatrix, loadData3dParams);
         qidB2.EnQue(b2);
         qidB1_.FreeTensor(rightMatrix);
     }

@@ -227,6 +227,9 @@ protected:
 
 TEST_F(TEST_MMAD_INT4, MMAD_Case_int4_load3dv2)
 {
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
+    GTEST_SKIP() << "basic DataCopy GM -> Local on 2201 does not support int4b_t.";
+#endif
     uint16_t m = 16;
     uint16_t n = 64;
     uint16_t k = 64;
@@ -248,6 +251,9 @@ TEST_F(TEST_MMAD_INT4, MMAD_Case_int4_load3dv2)
 
 TEST_F(TEST_MMAD_INT4, MMAD_Case_int4_load2d)
 {
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
+    GTEST_SKIP() << "basic DataCopy GM -> Local on 2201 does not support int4b_t.";
+#endif
     uint16_t m = 16;
     uint16_t n = 64;
     uint16_t k = 64;

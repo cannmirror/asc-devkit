@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file layernorm_variance_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/normalization/layernorm/regbase/3510/layernorm_variance_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/normalization/layernorm/regbase/3510/layernorm_variance_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORM_REGBASE_C310_LAYERNORM_VARIANCE_IMPL_H__
 #endif
@@ -57,8 +58,7 @@ __aicore__ inline void GetLayerNormInternalPara(LayerNormInternalPara& para, con
 }
 
 template <typename T>
-__simd_callee__ inline void CopyInFloatData(Reg::RegTensor<float>& reg, __ubuf__ T* ub,
-    Reg::MaskReg& hFloatAllMask)
+__simd_callee__ inline void CopyInFloatData(Reg::RegTensor<float>& reg, __ubuf__ T* ub, Reg::MaskReg& hFloatAllMask)
 {
     if constexpr (SupportType<T, half>()) {
         Reg::RegTensor<T> oriInputH;
@@ -68,11 +68,11 @@ __simd_callee__ inline void CopyInFloatData(Reg::RegTensor<float>& reg, __ubuf__
         Reg::LoadAlign(reg, ub);
     }
 }
-}
+} // namespace Internal
 
 template <typename T>
-__simd_callee__ inline void CalcHMean(Reg::RegTensor<float>& outputMean, __ubuf__ T* inputX,
-    Internal::LayerNormInternalPara& para)
+__simd_callee__ inline void CalcHMean(
+    Reg::RegTensor<float>& outputMean, __ubuf__ T* inputX, Internal::LayerNormInternalPara& para)
 {
     Reg::RegTensor<float> hDim;
     Reg::Duplicate(hDim, para.hDim);
@@ -113,8 +113,9 @@ __simd_callee__ inline void CalcHMean(Reg::RegTensor<float>& outputMean, __ubuf_
 }
 
 template <typename T>
-__simd_callee__ inline void CalcHVariance(Reg::RegTensor<float>& outputVariance, Reg::RegTensor<float>& meanReg,
-    __ubuf__ T* inputX, Internal::LayerNormInternalPara& para)
+__simd_callee__ inline void CalcHVariance(
+    Reg::RegTensor<float>& outputVariance, Reg::RegTensor<float>& meanReg, __ubuf__ T* inputX,
+    Internal::LayerNormInternalPara& para)
 {
     Reg::RegTensor<float> sumVarianceResultH;
     Reg::Duplicate(sumVarianceResultH, 0);
@@ -170,9 +171,9 @@ __simd_callee__ inline void CalcHVariance(Reg::RegTensor<float>& outputVariance,
 }
 
 template <typename T>
-__simd_callee__ inline void CalcHSingleBlockOutPut(__ubuf__ T* output, Reg::RegTensor<float>& meanReg,
-    Reg::RegTensor<float>& varianceReg, __ubuf__ T* inputX, __ubuf__ T* gamma, __ubuf__ T* beta,
-    Reg::RegTensor<float>& sdReg, Reg::MaskReg& hFloatMask)
+__simd_callee__ inline void CalcHSingleBlockOutPut(
+    __ubuf__ T* output, Reg::RegTensor<float>& meanReg, Reg::RegTensor<float>& varianceReg, __ubuf__ T* inputX,
+    __ubuf__ T* gamma, __ubuf__ T* beta, Reg::RegTensor<float>& sdReg, Reg::MaskReg& hFloatMask)
 {
     Reg::RegTensor<float> resultH;
 
@@ -225,12 +226,12 @@ __simd_callee__ inline void CalcHSingleBlockOutPut(__ubuf__ T* output, Reg::RegT
 }
 
 template <typename T>
-__simd_callee__ inline void CalcHOutPut(__ubuf__ T* output, Reg::RegTensor<float>& meanReg,
-    Reg::RegTensor<float>& varianceReg, __ubuf__ T* inputX, __ubuf__ T* gamma,
-    __ubuf__ T* beta, const T epsilon, Internal::LayerNormInternalPara& para)
+__simd_callee__ inline void CalcHOutPut(
+    __ubuf__ T* output, Reg::RegTensor<float>& meanReg, Reg::RegTensor<float>& varianceReg, __ubuf__ T* inputX,
+    __ubuf__ T* gamma, __ubuf__ T* beta, const T epsilon, Internal::LayerNormInternalPara& para)
 {
     Reg::MaskReg hFloatAllMask = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
-    Reg::RegTensor<float> sdReg;    // The standard deviation.
+    Reg::RegTensor<float> sdReg; // The standard deviation.
 
     // Calc variance + epsilon.
     Reg::Adds(sdReg, varianceReg, epsilon, hFloatAllMask);
@@ -238,22 +239,23 @@ __simd_callee__ inline void CalcHOutPut(__ubuf__ T* output, Reg::RegTensor<float
     Reg::Sqrt(sdReg, sdReg, hFloatAllMask);
 
     for (uint32_t i = 0; i < para.hRepeatTimes; ++i) {
-        CalcHSingleBlockOutPut(output + i * Internal::oneRegSize, meanReg, varianceReg,
-            inputX + i * Internal::oneRegSize, gamma + i * Internal::oneRegSize, beta + i * Internal::oneRegSize,
-            sdReg, hFloatAllMask);
+        CalcHSingleBlockOutPut(
+            output + i * Internal::oneRegSize, meanReg, varianceReg, inputX + i * Internal::oneRegSize,
+            gamma + i * Internal::oneRegSize, beta + i * Internal::oneRegSize, sdReg, hFloatAllMask);
     }
 
     for (uint32_t tail = 0; tail < para.hTailCtrl; ++tail) {
         uint32_t hTailSizeForMask = static_cast<uint32_t>(para.hTailSize);
         Reg::MaskReg hTailFloatMask = Reg::UpdateMask<float>(hTailSizeForMask);
-        CalcHSingleBlockOutPut(output + para.hTailOffset, meanReg, varianceReg, inputX + para.hTailOffset,
-            gamma + para.hTailOffset, beta + para.hTailOffset, sdReg, hTailFloatMask);
+        CalcHSingleBlockOutPut(
+            output + para.hTailOffset, meanReg, varianceReg, inputX + para.hTailOffset, gamma + para.hTailOffset,
+            beta + para.hTailOffset, sdReg, hTailFloatMask);
     }
 }
 
 template <typename T>
-__simd_vf__ inline void LayerNormImplVf(__ubuf__ T* output, __ubuf__ T* outputMean,
-    __ubuf__ T* outputVariance, __ubuf__ T* inputX, __ubuf__ T* gamma,
+__simd_vf__ inline void LayerNormImplVf(
+    __ubuf__ T* output, __ubuf__ T* outputMean, __ubuf__ T* outputVariance, __ubuf__ T* inputX, __ubuf__ T* gamma,
     __ubuf__ T* beta, const T epsilon, Internal::LayerNormInternalPara para, LayerNormTiling tiling)
 {
     Reg::MaskReg floatLowestMask = Reg::CreateMask<float, Reg::MaskPattern::VL1>();
@@ -289,7 +291,8 @@ __simd_vf__ inline void LayerNormImplVf(__ubuf__ T* output, __ubuf__ T* outputMe
 
             if constexpr (SupportType<T, half>()) {
                 Reg::RegTensor<T> oriTypeOutputVariance;
-                Reg::Cast<T, float, Internal::float2HalfCastTrait>(oriTypeOutputVariance, outputVarianceReg, floatLowestMask);
+                Reg::Cast<T, float, Internal::float2HalfCastTrait>(
+                    oriTypeOutputVariance, outputVarianceReg, floatLowestMask);
                 Reg::StoreAlign<T, Reg::StoreDist::DIST_FIRST_ELEMENT_B16>(
                     outputVariance + bIdx * sLength + sIdx, oriTypeOutputVariance, srcLowestMask);
             } else {
@@ -297,41 +300,48 @@ __simd_vf__ inline void LayerNormImplVf(__ubuf__ T* output, __ubuf__ T* outputMe
                     outputVariance + bIdx * sLength + sIdx, outputVarianceReg, floatLowestMask);
             }
 
-            CalcHOutPut(output + bIdx * bTotalLength + sIdx * hLength, meanRegForNextCalc, varianceRegNextCalc,
+            CalcHOutPut(
+                output + bIdx * bTotalLength + sIdx * hLength, meanRegForNextCalc, varianceRegNextCalc,
                 inputX + bIdx * bTotalLength + sIdx * hLength, gamma, beta, epsilon, para);
         }
     }
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void LayerNormImpl(const LocalTensor<T>& output, const LocalTensor<T>& outputMean,
-    const LocalTensor<T>& outputVariance, const LocalTensor<T>& inputX, const LocalTensor<T>& gamma,
-    const LocalTensor<T>& beta, const LocalTensor<uint8_t>& sharedTmpBuffer, const T epsilon, LayerNormTiling& tiling)
+__aicore__ inline void LayerNormImpl(
+    const LocalTensor<T>& output, const LocalTensor<T>& outputMean, const LocalTensor<T>& outputVariance,
+    const LocalTensor<T>& inputX, const LocalTensor<T>& gamma, const LocalTensor<T>& beta,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const T epsilon, LayerNormTiling& tiling)
 {
     static_assert(SupportType<T, half, float>(), "current data type is not supported on current device!");
-    CHECK_FUNC_HIGHLEVEL_API(LayerNorm, (T), (output, outputMean, outputVariance, inputX, gamma, beta, sharedTmpBuffer, epsilon, tiling));
+    CHECK_FUNC_HIGHLEVEL_API(
+        LayerNorm, (T), (output, outputMean, outputVariance, inputX, gamma, beta, sharedTmpBuffer, epsilon, tiling));
     Internal::LayerNormInternalPara para{};
     Internal::GetLayerNormInternalPara<T>(para, tiling);
 
-    LayerNormImplVf<T>((__ubuf__ T*)output.GetPhyAddr(), (__ubuf__ T*)outputMean.GetPhyAddr(),
-        (__ubuf__ T*)outputVariance.GetPhyAddr(), (__ubuf__ T *)inputX.GetPhyAddr(),
-        (__ubuf__ T*)gamma.GetPhyAddr(), (__ubuf__ T*)beta.GetPhyAddr(), epsilon, para, tiling);
+    LayerNormImplVf<T>(
+        (__ubuf__ T*)output.GetPhyAddr(), (__ubuf__ T*)outputMean.GetPhyAddr(),
+        (__ubuf__ T*)outputVariance.GetPhyAddr(), (__ubuf__ T*)inputX.GetPhyAddr(), (__ubuf__ T*)gamma.GetPhyAddr(),
+        (__ubuf__ T*)beta.GetPhyAddr(), epsilon, para, tiling);
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void LayerNormImpl(const LocalTensor<T>& output, const LocalTensor<T>& outputMean,
-    const LocalTensor<T>& outputVariance, const LocalTensor<T>& inputX, const LocalTensor<T>& gamma,
-    const LocalTensor<T>& beta, const T epsilon, LayerNormTiling& tiling)
+__aicore__ inline void LayerNormImpl(
+    const LocalTensor<T>& output, const LocalTensor<T>& outputMean, const LocalTensor<T>& outputVariance,
+    const LocalTensor<T>& inputX, const LocalTensor<T>& gamma, const LocalTensor<T>& beta, const T epsilon,
+    LayerNormTiling& tiling)
 {
     static_assert(SupportType<T, half, float>(), "current data type is not supported on current device!");
     const LocalTensor<uint8_t> sharedTmpBuffer; // Not used, no need to alloc memory.
-    CHECK_FUNC_HIGHLEVEL_API(LayerNorm, (T), (output, outputMean, outputVariance, inputX, gamma, beta, sharedTmpBuffer, epsilon, tiling));
+    CHECK_FUNC_HIGHLEVEL_API(
+        LayerNorm, (T), (output, outputMean, outputVariance, inputX, gamma, beta, sharedTmpBuffer, epsilon, tiling));
     Internal::LayerNormInternalPara para{};
     Internal::GetLayerNormInternalPara<T>(para, tiling);
 
-    LayerNormImplVf<T>((__ubuf__ T*)output.GetPhyAddr(), (__ubuf__ T*)outputMean.GetPhyAddr(),
-        (__ubuf__ T*)outputVariance.GetPhyAddr(), (__ubuf__ T *)inputX.GetPhyAddr(),
-        (__ubuf__ T*)gamma.GetPhyAddr(), (__ubuf__ T*)beta.GetPhyAddr(), epsilon, para, tiling);
+    LayerNormImplVf<T>(
+        (__ubuf__ T*)output.GetPhyAddr(), (__ubuf__ T*)outputMean.GetPhyAddr(),
+        (__ubuf__ T*)outputVariance.GetPhyAddr(), (__ubuf__ T*)inputX.GetPhyAddr(), (__ubuf__ T*)gamma.GetPhyAddr(),
+        (__ubuf__ T*)beta.GetPhyAddr(), epsilon, para, tiling);
 }
 
 } // namespace AscendC

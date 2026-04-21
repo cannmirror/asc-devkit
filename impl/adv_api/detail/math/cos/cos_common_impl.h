@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file cos_common_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/cos/cos_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/cos.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/cos/cos_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/cos.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_COS_COS_COMMON_IMPL_H__
 #endif
@@ -29,7 +30,7 @@
 #endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || \
-    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+                              __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #include "cos_v220_impl.h"
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 #include "cos_v200_impl.h"
@@ -61,8 +62,9 @@ constexpr float COS_POINT_FIVE = 0.5;
 constexpr float COS_M4_SCA = 4.0;
 constexpr float COS_K2_SCA = -2.0;
 
-__aicore__ inline void KPI(const LocalTensor<float>& inputX, const LocalTensor<float>& srcTensor,
-    const LocalTensor<float>& roundTensor, const LocalTensor<float>& kpi)
+__aicore__ inline void KPI(
+    const LocalTensor<float>& inputX, const LocalTensor<float>& srcTensor, const LocalTensor<float>& roundTensor,
+    const LocalTensor<float>& kpi)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binaryParams;
@@ -105,13 +107,14 @@ __aicore__ inline void KPI(const LocalTensor<float>& inputX, const LocalTensor<f
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void CosRound(const LocalTensor<float>& inputX, const LocalTensor<float>& srcTensor,
-    const LocalTensor<float>& roundTensor, const LocalTensor<float>& kpi)
+__aicore__ inline void CosRound(
+    const LocalTensor<float>& inputX, const LocalTensor<float>& srcTensor, const LocalTensor<float>& roundTensor,
+    const LocalTensor<float>& kpi)
 {
     /*
     k=round(x/π + 1/2), x0=x-kπ, x0 belongs to [-π, 0], (x0 + π/2) belongs to [-π/2, π/2]
     π=π_0+π_1+π_2+π_3+π_4 achieve final precision compensation.
-    Final solution�? 
+    Final solution�?
     k = round(x * invpi + 1/2)
     x -= k * pi_0
     x -= k * pi_1
@@ -127,8 +130,8 @@ __aicore__ inline void CosRound(const LocalTensor<float>& inputX, const LocalTen
     Adds<float, false>(roundTensor, roundTensor, COS_POINT_FIVE, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
     // tie to even
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || \
-    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#if defined(__NPU_ARCH__) && \
+    (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     CosCastFullMask(roundTensor, roundTensor, RoundMode::CAST_RINT);
 #else
     CosCast(roundTensor, roundTensor, RoundMode::CAST_RINT);
@@ -136,8 +139,9 @@ __aicore__ inline void CosRound(const LocalTensor<float>& inputX, const LocalTen
     KPI(inputX, srcTensor, roundTensor, kpi);
 }
 
-__aicore__ inline void SignCompute(const LocalTensor<float>& dstTensor, const LocalTensor<float>& inputX,
-    const LocalTensor<float>& roundTensor, const LocalTensor<float>& kpi)
+__aicore__ inline void SignCompute(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& inputX, const LocalTensor<float>& roundTensor,
+    const LocalTensor<float>& kpi)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binaryParams;
@@ -148,8 +152,8 @@ __aicore__ inline void SignCompute(const LocalTensor<float>& dstTensor, const Lo
     Muls<float, false>(dstTensor, roundTensor, COS_POINT_FIVE, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || \
-    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#if defined(__NPU_ARCH__) && \
+    (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     CosCastFullMask(dstTensor, dstTensor, RoundMode::CAST_FLOOR);
 #else
     CosCast(dstTensor, dstTensor, RoundMode::CAST_FLOOR);
@@ -169,8 +173,9 @@ __aicore__ inline void SignCompute(const LocalTensor<float>& dstTensor, const Lo
 }
 
 // use polynomial approximation
-__aicore__ inline void CosPolynomialApproximation(const LocalTensor<float>& dstTensor, const LocalTensor<float>& inputX,
-    const LocalTensor<float>& roundTensor, const LocalTensor<float>& kpi)
+__aicore__ inline void CosPolynomialApproximation(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& inputX, const LocalTensor<float>& roundTensor,
+    const LocalTensor<float>& kpi)
 {
     /*
     cos(x) = (-1)^k*sin(x0 + π/2)
@@ -214,8 +219,9 @@ __aicore__ inline void CosPolynomialApproximation(const LocalTensor<float>& dstT
 }
 
 template <typename T>
-__aicore__ inline void CosCompute(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<float>& tmpBuffer, const uint32_t calSize, bool isReuseSource)
+__aicore__ inline void CosCompute(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<float>& tmpBuffer,
+    const uint32_t calSize, bool isReuseSource)
 {
     const LocalTensor<T>& roundTensor = tmpBuffer;
     const LocalTensor<T>& kpi = roundTensor[calSize];
@@ -229,8 +235,9 @@ __aicore__ inline void CosCompute(const LocalTensor<T>& dstTensor, const LocalTe
 }
 
 template <>
-__aicore__ inline void CosCompute(const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor,
-    const LocalTensor<float>& tmpBuffer, const uint32_t calSize, bool isReuseSource)
+__aicore__ inline void CosCompute(
+    const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor, const LocalTensor<float>& tmpBuffer,
+    const uint32_t calSize, bool isReuseSource)
 {
     (void)isReuseSource;
     const LocalTensor<float>& tempTensorConv = tmpBuffer;
@@ -238,28 +245,31 @@ __aicore__ inline void CosCompute(const LocalTensor<half>& dstTensor, const Loca
     const LocalTensor<float>& kpi = roundTensor[calSize];
     const LocalTensor<float>& inputX = kpi[calSize];
 
-    Cast<float, half, false>(tempTensorConv, srcTensor,
-        RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1, { 1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE });
+    Cast<float, half, false>(
+        tempTensorConv, srcTensor, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
 
     CosRound(inputX, tempTensorConv, roundTensor, kpi);
     CosPolynomialApproximation(tempTensorConv, inputX, roundTensor, kpi);
 
-    Cast<half, float, false>(dstTensor, tempTensorConv,
-        RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1, { 1, 1, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+    Cast<half, float, false>(
+        dstTensor, tempTensorConv, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void CosImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void CosImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
         return;
     }
     CHECK_FUNC_HIGHLEVEL_API(Cos, (T, isReuseSource), (dstTensor, srcTensor, sharedTmpBuffer, calCount));
-    
+
     const uint32_t bufferSize = sharedTmpBuffer.GetSize();
     const uint32_t tmpBufferSize = bufferSize / sizeof(float);
     CheckTmpBufferSize(tmpBufferSize, 0, bufferSize);
@@ -300,8 +310,8 @@ __aicore__ inline void CosImpl(const LocalTensor<T>& dstTensor, const LocalTenso
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void CosImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const uint32_t calCount)
+__aicore__ inline void CosImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -314,9 +324,9 @@ __aicore__ inline void CosImpl(const LocalTensor<T>& dstTensor, const LocalTenso
     ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
     CosImpl<T, isReuseSource>(dstTensor, srcTensor, sharedTmpBuffer, calCount);
 }
-}  // namespace AscendC
+} // namespace AscendC
 
-#endif  // IMPL_MATH_COS_COS_COMMON_IMPL_H
+#endif // IMPL_MATH_COS_COS_COMMON_IMPL_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_COS_COS_COMMON_IMPL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

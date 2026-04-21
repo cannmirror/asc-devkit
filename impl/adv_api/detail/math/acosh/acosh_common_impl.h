@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file acosh_common_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/acosh/acosh_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/acosh.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/acosh/acosh_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/acosh.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ACOSH_ACOSH_COMMON_IMPL_H__
 #endif
@@ -85,8 +86,9 @@ __aicore__ inline void AcoshCompute(
     // In the case of the half data type, there is no direct instruction for the round operation. Therefore, multiple
     // conversions are required.
     // acosh(x) = ln(x + sqrt(x^2 - 1))
-    Cast<float, half, false>(tmpFloatBuffer1, src, RoundMode::CAST_NONE,
-        MASK_PLACEHOLDER, 1, { 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE / ACOSH_STRIDE_DIGITS });
+    Cast<float, half, false>(
+        tmpFloatBuffer1, src, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE / ACOSH_STRIDE_DIGITS});
     PipeBarrier<PIPE_V>();
 
     // x^2
@@ -94,8 +96,8 @@ __aicore__ inline void AcoshCompute(
     PipeBarrier<PIPE_V>();
 
     // x^2 - 1
-    Adds<float, false>(tmpFloatBuffer2, tmpFloatBuffer2, static_cast<half>(ACOSH_NEG_ONE),
-        MASK_PLACEHOLDER, 1, unaryParams);
+    Adds<float, false>(
+        tmpFloatBuffer2, tmpFloatBuffer2, static_cast<half>(ACOSH_NEG_ONE), MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
 
     // sqrt(x^2 - 1)
@@ -116,14 +118,16 @@ __aicore__ inline void AcoshCompute(
     Ln<float, false>(tmpFloatBuffer2, tmpFloatBuffer2, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
 
-    Cast<half, float, false>(dst, tmpFloatBuffer2, RoundMode::CAST_NONE,
-        MASK_PLACEHOLDER, 1, { 1, 1, DEFAULT_REPEAT_STRIDE / ACOSH_STRIDE_DIGITS, DEFAULT_REPEAT_STRIDE});
+    Cast<half, float, false>(
+        dst, tmpFloatBuffer2, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE / ACOSH_STRIDE_DIGITS, DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void AcoshImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void AcoshImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -197,7 +201,7 @@ __aicore__ inline void AcoshImpl(const LocalTensor<T>& dstTensor, const LocalTen
     ASCENDC_ASSERT((ret), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
     AcoshImpl<T, isReuseSource>(dstTensor, srcTensor, sharedTmpBuffer, srcTensor.GetSize());
 }
-}
+} // namespace AscendC
 #endif
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ACOSH_ACOSH_COMMON_IMPL_H__)

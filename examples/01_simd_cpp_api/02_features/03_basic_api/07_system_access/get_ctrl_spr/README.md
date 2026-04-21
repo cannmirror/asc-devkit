@@ -36,8 +36,7 @@
 - 算子实现：  
   本样例中实现的是GetCtrlSpr算子。
 
-  - Kernel实现
-
+  - Kernel实现  
     计算逻辑是：
 
     GetCtrlSpr算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm存储在srcLocal中，Compute任务负责读取寄存器CTRL[8:6]比特位数值，并将结果存储到dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。

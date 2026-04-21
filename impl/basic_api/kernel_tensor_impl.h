@@ -1,4 +1,4 @@
-/**
+﻿/**
 * Copyright (c) 2025 Huawei Technologies Co., Ltd.
 * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 * CANN Open Software License Agreement Version 2.0 (the "License").
@@ -39,7 +39,7 @@ __aicore__ inline constexpr auto Prod(const Shape<Args...>& t) {
 
 template <Hardware pos>
 __aicore__ inline uint32_t GetDynamicMemStartPos() {
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510 && defined(__NPU_DEVICE__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
     if constexpr (pos == Hardware::UB) {
         extern __ubuf__ uint32_t dynamicStartUB[];
         return (uint64_t)(&dynamicStartUB[0]);

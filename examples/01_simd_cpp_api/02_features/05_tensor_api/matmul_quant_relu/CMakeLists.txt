@@ -19,7 +19,7 @@ add_executable(demo
 )
 
 include_directories(
-    /usr/local/Ascend/cann/x86_64-linux/asc/
+    $ENV{ASCEND_HOME_PATH}/x86_64-linux/asc/
 )
 
 target_link_libraries(demo PRIVATE
@@ -32,5 +32,4 @@ target_link_libraries(demo PRIVATE
 
 target_compile_options(demo PRIVATE
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3510>
-    -w
 )

@@ -39,7 +39,6 @@
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">load_data_custom</td></tr>
   </table>
 - 算子实现：  
-
   计算逻辑是：Ascend C提供的矩阵乘计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储并进行分形转换，然后使用计算接口完成两个输入参数矩阵乘运算，得到最终结果，再搬出到外部存储上。  
 
   Matmul算子的实现流程分为几个基本任务：CopyIn，Split，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入inputGM搬运到Local Memory A1/B1中，搬运过程中进行ND至NZ分形转换。Split调用LoadData接口将数据进一步搬运至接口所要求Local Memory A2/B2，Compute任务负责对数据进行矩阵乘运算，计算结果存储在Local Memory CO1中。CopyOut任务负责将输出数据从CO1搬运至Global Memory上的输出outputGm。

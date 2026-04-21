@@ -1,20 +1,21 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
-* \file batch_matmul_utils.h
-* \brief
-*/
+ * \file batch_matmul_utils.h
+ * \brief
+ */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/utils/batch_matmul_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/utils/batch_matmul_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_UTILS_BATCH_MATMUL_UTILS_H__
 #endif
@@ -28,21 +29,23 @@
 namespace AscendC {
 
 template <typename A_TYPE, const auto& MM_CFG>
-constexpr bool IsBmmEnableScheduler = DoMatmulNorm(MM_CFG) &&
+constexpr bool IsBmmEnableScheduler =
+    DoMatmulNorm(MM_CFG) &&
     ((A_TYPE::layout != LayoutMode::NONE && ToMatmulConfig(MM_CFG).batchMode == BatchMode::BATCH_LESS_THAN_L1) ||
-    (A_TYPE::layout == LayoutMode::NORMAL && ToMatmulConfig(MM_CFG).batchMode == BatchMode::BATCH_LARGE_THAN_L1) ||
-    (A_TYPE::layout == LayoutMode::NORMAL && ToMatmulConfig(MM_CFG).batchMode == BatchMode::SINGLE_LARGE_THAN_L1));
+     (A_TYPE::layout == LayoutMode::NORMAL && ToMatmulConfig(MM_CFG).batchMode == BatchMode::BATCH_LARGE_THAN_L1) ||
+     (A_TYPE::layout == LayoutMode::NORMAL && ToMatmulConfig(MM_CFG).batchMode == BatchMode::SINGLE_LARGE_THAN_L1));
 
 template <typename A_TYPE, const auto& MM_CFG>
 constexpr bool IsBmmBatchScheduler = DoMatmulNorm(MM_CFG) &&
-    ((A_TYPE::layout != LayoutMode::NONE && ToMatmulConfig(MM_CFG).batchMode != BatchMode::SINGLE_LARGE_THAN_L1));
+                                     ((A_TYPE::layout != LayoutMode::NONE &&
+                                       ToMatmulConfig(MM_CFG).batchMode != BatchMode::SINGLE_LARGE_THAN_L1));
 
 template <typename A_TYPE, const auto& MM_CFG>
 constexpr bool IsBmmSingleScheduler = DoMatmulNorm(MM_CFG) &&
-    (A_TYPE::layout == LayoutMode::NORMAL && ToMatmulConfig(MM_CFG).batchMode == BatchMode::SINGLE_LARGE_THAN_L1);
+                                      (A_TYPE::layout == LayoutMode::NORMAL &&
+                                       ToMatmulConfig(MM_CFG).batchMode == BatchMode::SINGLE_LARGE_THAN_L1);
 
-struct BatchOffsetInfo
-{
+struct BatchOffsetInfo {
     int32_t modA;
     int32_t divisorA;
     int32_t alignA;
@@ -52,11 +55,10 @@ struct BatchOffsetInfo
     int32_t modBias;
     int32_t divisorBias;
     int32_t alignBias;
-    bool setBiasFlag {false};
+    bool setBiasFlag{false};
 };
 
-struct SplitParams
-{
+struct SplitParams {
     int16_t axisL1Len;
     int16_t kAxisL1Len;
     int16_t axisL1Offset;
@@ -64,8 +66,7 @@ struct SplitParams
     int16_t axisL0Len;
 };
 
-struct BatchSchedulerContext
-{
+struct BatchSchedulerContext {
     int32_t offsetA;
     int32_t offsetB;
     int32_t offsetBias;
@@ -96,7 +97,9 @@ __aicore__ inline uint16_t CeilAlign(uint16_t num1, uint16_t num2)
 }
 
 template <class INPUT_TYPE>
-__aicore__ inline uint64_t CalcNBatchoffset(uint32_t batchValue, uint32_t loopIdx, uint32_t layoutInfoN, uint32_t layoutInfoG, uint32_t layoutInfoD, uint32_t layoutInfoS)
+__aicore__ inline uint64_t CalcNBatchoffset(
+    uint32_t batchValue, uint32_t loopIdx, uint32_t layoutInfoN, uint32_t layoutInfoG, uint32_t layoutInfoD,
+    uint32_t layoutInfoS)
 {
     uint32_t alignedSingleCoreN = layoutInfoD;
     if constexpr (INPUT_TYPE::format == CubeFormat::ND_ALIGN) {
@@ -110,16 +113,18 @@ __aicore__ inline uint64_t CalcNBatchoffset(uint32_t batchValue, uint32_t loopId
     } else if constexpr (INPUT_TYPE::layout == LayoutMode::BSNGD) {
         uint64_t layoutBIdx = loopIdx * batchValue / (layoutInfoN * layoutInfoG);
         uint64_t layoutNGOff = loopIdx * batchValue % (layoutInfoN * layoutInfoG);
-        offset = (layoutBIdx * alignedSingleCoreN * layoutInfoS * layoutInfoN * layoutInfoG + layoutNGOff * alignedSingleCoreN) * sizeof(typename INPUT_TYPE::T); 
-    } 
+        offset = (layoutBIdx * alignedSingleCoreN * layoutInfoS * layoutInfoN * layoutInfoG +
+                  layoutNGOff * alignedSingleCoreN) *
+                 sizeof(typename INPUT_TYPE::T);
+    }
     return offset;
 }
 
-__aicore__ inline uint64_t GetBatchCNum(uint32_t batchA, uint32_t batchB, uint32_t aLayoutInfoG, uint32_t bLayoutInfoG, uint32_t cLayoutInfoG)
+__aicore__ inline uint64_t GetBatchCNum(
+    uint32_t batchA, uint32_t batchB, uint32_t aLayoutInfoG, uint32_t bLayoutInfoG, uint32_t cLayoutInfoG)
 {
     uint32_t batchC = batchA > batchB ? batchA : batchB;
-    bool layoutGCondition = cLayoutInfoG == 1 &&
-                            (aLayoutInfoG != 1 || bLayoutInfoG != 1);
+    bool layoutGCondition = cLayoutInfoG == 1 && (aLayoutInfoG != 1 || bLayoutInfoG != 1);
     if (layoutGCondition) {
         int32_t layoutG = bLayoutInfoG > aLayoutInfoG ? bLayoutInfoG : aLayoutInfoG;
         batchC = batchC / layoutG;

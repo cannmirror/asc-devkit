@@ -31,6 +31,7 @@ asc-devkit:
       - impl/basic_api/kernel_macros.h
       - impl/basic_api/kernel_prof_trace*.h
       - impl/utils/**/*.h
+      - impl/experimental/tensor_api/utils/*.h
       - impl/c_api/instr_impl/npu_arch_2201/utils_impl/**/*.h
       - impl/c_api/instr_impl/npu_arch_3510/utils_impl/**/*.h
       - impl/c_api/instr_impl/npu_arch_3510/vector_compute_impl/asc_reduce_sum_datablock.h
@@ -66,6 +67,8 @@ asc-devkit:
       - impl/c_api/instr_impl/npu_arch_3510/sync_impl/asc_get_buf_impl.h
       - impl/c_api/instr_impl/npu_arch_2201/sync_impl.h
       - impl/c_api/instr_impl/npu_arch_3510/sync_impl.h
+      - impl/c_api/instr_impl/npu_arch_2201/vector_compute_impl/asc_transto5hd_impl.h
+      - impl/c_api/instr_impl/npu_arch_3510/vector_compute_impl/asc_transto5hd_impl.h
       - impl/basic_api/dav_c310/kernel_operator_determine_compute_sync_impl.h
       - impl/basic_api/dav_c310/kernel_operator_proposal_impl.h
       - impl/basic_api/dav_c310/kfc/kfc_comm_server.h
@@ -109,6 +112,12 @@ asc-devkit:
       - impl/tensor_api/arch/datamove/l1_to_fb/routing.h
       - impl/tensor_api/arch/utils/is_format.h
       - impl/tensor_api/arch/datamove/l1_to_bt/routing.h
+      - impl/simt_api/cpp/dav_3510/kernel_simt_bessel_impl.h
+      - impl/simt_api/cpp/kernel_simt_cast_intf_impl.h
+      - impl/simt_api/cpp/dav_3510/kernel_simt_atomic_impl.h
+      - impl/simt_api/cpp/kernel_simt_bessel_intf_impl.h
+      - impl/simt_api/cpp/dav_3510/kernel_simt_warp_level_impl.h
+      - impl/simt_api/cpp/kernel_simt_warp_level_intf_impl.h
       
   llt:
     ut_check: true

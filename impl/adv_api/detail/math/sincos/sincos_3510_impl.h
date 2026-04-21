@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file sincos_3510_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/sincos/sincos_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/sincos.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/sincos/sincos_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/sincos.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_SINCOS_SINCOS_C310_IMPL_H__
 #endif
@@ -31,31 +32,30 @@ namespace AscendC {
 struct SinCosConfig {
     bool isReuseSource;
 };
-constexpr SinCosConfig DEFAULT_SINCOS_CONFIG = { false };
+constexpr SinCosConfig DEFAULT_SINCOS_CONFIG = {false};
 namespace SinCosImpl {
 
-constexpr Reg::CastTrait castTraitF16F32 = { Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN, 
-                                                  Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN };
-constexpr Reg::CastTrait castTraitF32F16 = { Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT, 
-                                                  Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT };
-constexpr Reg::CastTrait castTraitI64F32 = { Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT,
-                                                  Reg::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND };
-constexpr Reg::CastTrait castTraitF32I64 = { Reg::RegLayout::UNKNOWN, Reg::SatMode::NO_SAT,
-                                                  Reg::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND };
-constexpr Reg::CastTrait castTraitI32F32 = { Reg::RegLayout::UNKNOWN, Reg::SatMode::NO_SAT,
-                                                  Reg::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND };
+constexpr Reg::CastTrait castTraitF16F32 = {
+    Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN, Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait castTraitF32F16 = {
+    Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait castTraitI64F32 = {
+    Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
+constexpr Reg::CastTrait castTraitF32I64 = {
+    Reg::RegLayout::UNKNOWN, Reg::SatMode::NO_SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
+constexpr Reg::CastTrait castTraitI32F32 = {
+    Reg::RegLayout::UNKNOWN, Reg::SatMode::NO_SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
 
 template <typename T, typename U>
-__simd_callee__ inline void AndScalar(Reg::RegTensor<T> &dstReg, Reg::RegTensor<U> &srcReg, 
-    T val, Reg::MaskReg& mask)
+__simd_callee__ inline void AndScalar(Reg::RegTensor<T>& dstReg, Reg::RegTensor<U>& srcReg, T val, Reg::MaskReg& mask)
 {
     Reg::RegTensor<T> tmpReg;
     Reg::Duplicate(tmpReg, val, mask);
     Reg::And(dstReg, (Reg::RegTensor<T>&)srcReg, tmpReg, mask);
 }
 
-__simd_callee__ inline void FMaf(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg,
-    float scalarValue, Reg::MaskReg& mask)
+__simd_callee__ inline void FMaf(
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, float scalarValue, Reg::MaskReg& mask)
 {
     // dst = dst * src + scalarValue
     Reg::RegTensor<float> tmpReg;
@@ -63,8 +63,9 @@ __simd_callee__ inline void FMaf(Reg::RegTensor<float>& dstReg, Reg::RegTensor<f
     Reg::FusedMulDstAdd(dstReg, srcReg, tmpReg, mask);
 }
 
-__simd_callee__ inline void FMaf(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg1,
-    Reg::RegTensor<float>& srcReg2, Reg::RegTensor<float>& srcReg3, Reg::MaskReg& mask)
+__simd_callee__ inline void FMaf(
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg1, Reg::RegTensor<float>& srcReg2,
+    Reg::RegTensor<float>& srcReg3, Reg::MaskReg& mask)
 {
     // dst = src1 * src2 + src3
     Reg::RegTensor<float> tmpReg = srcReg1;
@@ -72,8 +73,9 @@ __simd_callee__ inline void FMaf(Reg::RegTensor<float>& dstReg, Reg::RegTensor<f
     dstReg = tmpReg;
 }
 
-__simd_callee__ inline void FMaf(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg1,
-    Reg::RegTensor<float>& srcReg2, float scalarValue, Reg::MaskReg& mask)
+__simd_callee__ inline void FMaf(
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg1, Reg::RegTensor<float>& srcReg2, float scalarValue,
+    Reg::MaskReg& mask)
 {
     // dst = src1 * src2 + scalarValue
     Reg::RegTensor<float> tmpReg;
@@ -81,8 +83,9 @@ __simd_callee__ inline void FMaf(Reg::RegTensor<float>& dstReg, Reg::RegTensor<f
     FMaf(dstReg, srcReg1, srcReg2, tmpReg, mask);
 }
 
-__simd_callee__ inline void FMaf(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg1,
-    float scalarValue, Reg::RegTensor<float>& srcReg2, Reg::MaskReg& mask)
+__simd_callee__ inline void FMaf(
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg1, float scalarValue, Reg::RegTensor<float>& srcReg2,
+    Reg::MaskReg& mask)
 {
     // dst = src1 * scalarValue + src2
     Reg::RegTensor<float> tmpReg;
@@ -90,8 +93,9 @@ __simd_callee__ inline void FMaf(Reg::RegTensor<float>& dstReg, Reg::RegTensor<f
     FMaf(dstReg, srcReg1, tmpReg, srcReg2, mask);
 }
 
-__simd_callee__ inline void FMaf(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg1,
-    float scalarValue, float scalarValue2, Reg::MaskReg& mask)
+__simd_callee__ inline void FMaf(
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg1, float scalarValue, float scalarValue2,
+    Reg::MaskReg& mask)
 {
     // dst = src1 * scalarValue + scalarValue2
     Reg::RegTensor<float> tmpReg, tmpReg2;
@@ -100,8 +104,9 @@ __simd_callee__ inline void FMaf(Reg::RegTensor<float>& dstReg, Reg::RegTensor<f
     FMaf(dstReg, srcReg1, tmpReg, tmpReg2, mask);
 }
 
-__simd_callee__ inline void BitShiftCombine(Reg::RegTensor<uint32_t> &dstReg, Reg::RegTensor<uint32_t> &srcReg1,
-    Reg::RegTensor<uint32_t> &srcReg2, Reg::RegTensor<int32_t> &srcRegE, Reg::MaskReg& mask)
+__simd_callee__ inline void BitShiftCombine(
+    Reg::RegTensor<uint32_t>& dstReg, Reg::RegTensor<uint32_t>& srcReg1, Reg::RegTensor<uint32_t>& srcReg2,
+    Reg::RegTensor<int32_t>& srcRegE, Reg::MaskReg& mask)
 {
     // dst = (src1  << e) | (src2 >> (32 - e));
     constexpr uint32_t BITSHIFTS = 32;
@@ -120,8 +125,8 @@ __aicore__ inline void GenerateZeroVreg(Reg::RegTensor<uint32_t>& zeroReg)
     Reg::Duplicate(zeroReg, 0, b32FullMask);
 }
 
-__simd_callee__ inline void ReinterpretedU32ToFloatAndCastToU32(Reg::RegTensor<uint32_t> &dstReg,
-    Reg::RegTensor<uint32_t> &srcReg, Reg::MaskReg &mask)
+__simd_callee__ inline void ReinterpretedU32ToFloatAndCastToU32(
+    Reg::RegTensor<uint32_t>& dstReg, Reg::RegTensor<uint32_t>& srcReg, Reg::MaskReg& mask)
 {
     // dst = (unsigned int) reinterpret_cast<float &>(src);
     Reg::RegTensor<float> tmpF32Reg;
@@ -132,37 +137,39 @@ __simd_callee__ inline void ReinterpretedU32ToFloatAndCastToU32(Reg::RegTensor<u
     dstReg = (Reg::RegTensor<uint32_t>&)tmpI64Reg.reg[0];
 }
 
-__simd_callee__ inline void TrigComputeP(Reg::RegTensor<uint32_t> &regPHigh, Reg::RegTensor<uint32_t> &regPLow,
-    Reg::RegTensor<uint32_t> &regIa, Reg::RegTensor<uint32_t> &regMid, Reg::RegTensor<uint32_t> &regLo,
-    Reg::RegTensor<uint32_t> &regHi, Reg::MaskReg &mask)
+__simd_callee__ inline void TrigComputeP(
+    Reg::RegTensor<uint32_t>& regPHigh, Reg::RegTensor<uint32_t>& regPLow, Reg::RegTensor<uint32_t>& regIa,
+    Reg::RegTensor<uint32_t>& regMid, Reg::RegTensor<uint32_t>& regLo, Reg::RegTensor<uint32_t>& regHi,
+    Reg::MaskReg& mask)
 {
     Reg::RegTensor<uint64_t, Reg::RegTraitNumTwo> tmpU64Reg;
     Reg::RegTensor<uint32_t> tmpU32Reg, zeroReg;
     Reg::MaskReg carrypMask;
 
     // step 12: p = (unsigned long long int)ia * lo;
-    Reg::Mull((Reg::RegTensor<uint32_t>&)regPLow,
-        (Reg::RegTensor<uint32_t>&)regPHigh, regIa, regLo, mask);
+    Reg::Mull((Reg::RegTensor<uint32_t>&)regPLow, (Reg::RegTensor<uint32_t>&)regPHigh, regIa, regLo, mask);
 
     // step 13: p = (unsigned long long int)ia * mid + (p >> 32);
-    Reg::Mull((Reg::RegTensor<uint32_t>&)tmpU64Reg.reg[0],
-        (Reg::RegTensor<uint32_t>&)tmpU64Reg.reg[1], regIa, regMid, mask);
+    Reg::Mull(
+        (Reg::RegTensor<uint32_t>&)tmpU64Reg.reg[0], (Reg::RegTensor<uint32_t>&)tmpU64Reg.reg[1], regIa, regMid, mask);
 
-    Reg::AddCarryOut(carrypMask, (Reg::RegTensor<uint32_t>&)regPLow,
-        (Reg::RegTensor<uint32_t>&)tmpU64Reg.reg[0], (Reg::RegTensor<uint32_t>&)regPHigh, mask);
+    Reg::AddCarryOut(
+        carrypMask, (Reg::RegTensor<uint32_t>&)regPLow, (Reg::RegTensor<uint32_t>&)tmpU64Reg.reg[0],
+        (Reg::RegTensor<uint32_t>&)regPHigh, mask);
     Reg::Duplicate(zeroReg, 0, mask);
-    Reg::AddCarryOuts(carrypMask, (Reg::RegTensor<uint32_t>&)regPHigh,
-        (Reg::RegTensor<uint32_t>&)tmpU64Reg.reg[1], zeroReg, carrypMask, mask);
+    Reg::AddCarryOuts(
+        carrypMask, (Reg::RegTensor<uint32_t>&)regPHigh, (Reg::RegTensor<uint32_t>&)tmpU64Reg.reg[1], zeroReg,
+        carrypMask, mask);
 
     // step 14: p = ((unsigned long long int)(ia * hi) << 32) + p;
     Reg::Mul(tmpU32Reg, regIa, regHi, mask);
-    Reg::AddCarryOut(carrypMask, (Reg::RegTensor<uint32_t>&)regPHigh,
-        (Reg::RegTensor<uint32_t>&)regPHigh, tmpU32Reg, mask);
+    Reg::AddCarryOut(
+        carrypMask, (Reg::RegTensor<uint32_t>&)regPHigh, (Reg::RegTensor<uint32_t>&)regPHigh, tmpU32Reg, mask);
 }
 
-__simd_callee__ inline void TrigComputeHLQ(Reg::RegTensor<float> &regDh, Reg::RegTensor<float> &regDl,
-    Reg::RegTensor<int32_t> &regQ, Reg::RegTensor<uint32_t> &regPHigh, Reg::RegTensor<uint32_t> &regPLow,
-    Reg::MaskReg &mask)
+__simd_callee__ inline void TrigComputeHLQ(
+    Reg::RegTensor<float>& regDh, Reg::RegTensor<float>& regDl, Reg::RegTensor<int32_t>& regQ,
+    Reg::RegTensor<uint32_t>& regPHigh, Reg::RegTensor<uint32_t>& regPLow, Reg::MaskReg& mask)
 {
     constexpr int16_t Q_SHIFT_BITS = 62;
     constexpr int16_t B32_BITS = 32;
@@ -170,7 +177,7 @@ __simd_callee__ inline void TrigComputeHLQ(Reg::RegTensor<float> &regDh, Reg::Re
     constexpr uint64_t P_AND_COEFF2 = 0x2000000000000000ULL;
     constexpr uint64_t P_SUBS_COEFF = 0x4000000000000000ULL;
     constexpr float P_MULS = 2.0f;
-#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ ==3003 || __NPU_ARCH__ ==3113))
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113))
     constexpr float B64_SHIFT_BITS = static_cast<float>(1ULL << 32);
 #else
     constexpr uint64_t B64_SHIFT_BITS = 1ULL << 32;
@@ -182,13 +189,12 @@ __simd_callee__ inline void TrigComputeHLQ(Reg::RegTensor<float> &regDh, Reg::Re
     Reg::MaskReg tmpMask;
 
     // step 15: q = (int)(p >> 62);
-    Reg::ShiftRights((Reg::RegTensor<uint32_t>&)regQ, 
-        (Reg::RegTensor<uint32_t>&)regPHigh, (int16_t)(Q_SHIFT_BITS - B32_BITS), mask);
+    Reg::ShiftRights(
+        (Reg::RegTensor<uint32_t>&)regQ, (Reg::RegTensor<uint32_t>&)regPHigh, (int16_t)(Q_SHIFT_BITS - B32_BITS), mask);
 
     // step 16: p = p & 0x3fffffffffffffffULL;
     Reg::Duplicate(tmpU32Reg, P_AND_COEFF1 >> B32_BITS, mask);
-    Reg::And((Reg::RegTensor<uint32_t>&)regPHigh,
-        (Reg::RegTensor<uint32_t>&)regPHigh, tmpU32Reg, mask);
+    Reg::And((Reg::RegTensor<uint32_t>&)regPHigh, (Reg::RegTensor<uint32_t>&)regPHigh, tmpU32Reg, mask);
 
     /* step 17:
      * if (p & 0x2000000000000000ULL) {   // fraction >= 0.5
@@ -201,8 +207,7 @@ __simd_callee__ inline void TrigComputeHLQ(Reg::RegTensor<float> &regDh, Reg::Re
     Reg::CompareScalar<uint32_t, CMPMODE::GT>(tmpMask, tmpU32Reg, 0, mask);
     Reg::Duplicate(tmpU32Reg, P_SUBS_COEFF >> B32_BITS, mask);
     Reg::Sub(tmpU32Reg, (Reg::RegTensor<uint32_t>&)regPHigh, tmpU32Reg, mask);
-    Reg::Select((Reg::RegTensor<uint32_t>&)regPHigh, tmpU32Reg,
-        (Reg::RegTensor<uint32_t>&)regPHigh, tmpMask);
+    Reg::Select((Reg::RegTensor<uint32_t>&)regPHigh, tmpU32Reg, (Reg::RegTensor<uint32_t>&)regPHigh, tmpMask);
     Reg::Adds(tmpRegQ, regQ, 1, mask);
     Reg::Select(regQ, tmpRegQ, regQ, tmpMask);
 
@@ -230,8 +235,9 @@ __simd_callee__ inline void TrigComputeHLQ(Reg::RegTensor<float> &regDh, Reg::Re
     Reg::Muls(regDh, tmpRegDH, B64_SHIFT_BITS, mask);
 }
 
-__simd_callee__ inline void TrigRedSlowpathFComputeP(Reg::RegTensor<uint32_t> &regPHigh, Reg::RegTensor<uint32_t> &regPLow,
-    Reg::RegTensor<float> &srcReg, Reg::RegTensor<uint32_t>& oneOverPiFReg, Reg::MaskReg& mask)
+__simd_callee__ inline void TrigRedSlowpathFComputeP(
+    Reg::RegTensor<uint32_t>& regPHigh, Reg::RegTensor<uint32_t>& regPLow, Reg::RegTensor<float>& srcReg,
+    Reg::RegTensor<uint32_t>& oneOverPiFReg, Reg::MaskReg& mask)
 {
     constexpr uint32_t TA_AND_COEFF = 0x007fffff;
     constexpr uint32_t IA_ADD_COEFF = 0x4f000000;
@@ -251,14 +257,14 @@ __simd_callee__ inline void TrigRedSlowpathFComputeP(Reg::RegTensor<uint32_t> &r
     // step 1: unsigned int ta = reinterpret_cast<unsigned int &>(a);
     // ta can be obtained by (RegTensor<uint32_t>&)srcReg;
     // step 2: ia = (ta&0x007fffff) + 0x4f000000;
-    AndScalar(regIa, (Reg::RegTensor<uint32_t> &)srcReg, TA_AND_COEFF, mask);
+    AndScalar(regIa, (Reg::RegTensor<uint32_t>&)srcReg, TA_AND_COEFF, mask);
     Reg::Adds(regIa, regIa, IA_ADD_COEFF, mask);
 
     // step 3: ia = (unsigned int) reinterpret_cast<float &>(ia);
     ReinterpretedU32ToFloatAndCastToU32(regIa, regIa, mask);
 
     // step 4: e = ((ta >> 23) & 0x000000ff) - 127;
-    Reg::ShiftRights(regE, (Reg::RegTensor<int32_t> &)srcReg, TA_SHIFT_BITS, mask);
+    Reg::ShiftRights(regE, (Reg::RegTensor<int32_t>&)srcReg, TA_SHIFT_BITS, mask);
     AndScalar(regE, regE, TA_SHIFT_AND_COEFF, mask);
     Reg::Adds(regE, regE, -E_SUB_COEFF, mask);
 
@@ -304,9 +310,9 @@ __simd_callee__ inline void TrigRedSlowpathFComputeP(Reg::RegTensor<uint32_t> &r
     TrigComputeP(regPHigh, regPLow, regIa, regMid, regLo, regHi, mask);
 }
 
-__simd_callee__ inline void TrigRedSlowpathFComputeRI(Reg::RegTensor<float> &dstRegR, Reg::RegTensor<int32_t> &dstRegI,
-    Reg::RegTensor<uint32_t> &regPHigh, Reg::RegTensor<uint32_t> &regPLow, Reg::RegTensor<float> &srcReg,
-    Reg::MaskReg& mask)
+__simd_callee__ inline void TrigRedSlowpathFComputeRI(
+    Reg::RegTensor<float>& dstRegR, Reg::RegTensor<int32_t>& dstRegI, Reg::RegTensor<uint32_t>& regPHigh,
+    Reg::RegTensor<uint32_t>& regPLow, Reg::RegTensor<float>& srcReg, Reg::MaskReg& mask)
 {
     constexpr float R_MUL_COEFF = 3.4061215800865545e-19;
 
@@ -317,7 +323,7 @@ __simd_callee__ inline void TrigRedSlowpathFComputeRI(Reg::RegTensor<float> &dst
     Reg::MaskReg tmpMask;
 
     TrigComputeHLQ(regDh, regDl, regQ, regPHigh, regPLow, mask);
-    
+
     // step 23: r = d_l*3.4061215800865545e-19;
     Reg::Muls(regR, regDl, R_MUL_COEFF, mask);
     // step 24: r = r + d_h*3.4061215800865545e-19;
@@ -341,8 +347,8 @@ __simd_callee__ inline void TrigRedSlowpathFComputeRI(Reg::RegTensor<float> &dst
     dstRegI = regQ;
 }
 
-__simd_callee__ inline void SinfPoly(Reg::RegTensor<float> &dstReg, Reg::RegTensor<float> &srcRegA,
-    Reg::RegTensor<float> &srcRegS, Reg::MaskReg& mask)
+__simd_callee__ inline void SinfPoly(
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcRegA, Reg::RegTensor<float>& srcRegS, Reg::MaskReg& mask)
 {
     constexpr float SIN_POLY_COEFF0 = 2.86567956e-6f;
     constexpr float SIN_POLY_COEFF1 = -1.98559923e-4f;
@@ -365,8 +371,7 @@ __simd_callee__ inline void SinfPoly(Reg::RegTensor<float> &dstReg, Reg::RegTens
     Reg::FusedMulDstAdd(dstReg, tmpRegT, srcRegA, mask);
 }
 
-__simd_callee__ inline void CosfPoly(Reg::RegTensor<float> &dstReg, Reg::RegTensor<float> &srcRegS,
-    Reg::MaskReg& mask)
+__simd_callee__ inline void CosfPoly(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcRegS, Reg::MaskReg& mask)
 {
     constexpr float COS_POLY_COEFF0 = 2.44677067e-5f;
     constexpr float COS_POLY_COEFF1 = -1.38877297e-3f;
@@ -374,7 +379,7 @@ __simd_callee__ inline void CosfPoly(Reg::RegTensor<float> &dstReg, Reg::RegTens
     constexpr float COS_POLY_COEFF3 = -5.00000000e-1f;
     constexpr float COS_POLY_COEFF4 = 1.00000000e+0f;
 
-    // step 1: r = 2.44677067e-5f; 
+    // step 1: r = 2.44677067e-5f;
     Reg::Duplicate(dstReg, COS_POLY_COEFF0, mask);
     // step 2: r = r* s+ -1.38877297e-3f;
     FMaf(dstReg, srcRegS, COS_POLY_COEFF1, mask);
@@ -386,8 +391,8 @@ __simd_callee__ inline void CosfPoly(Reg::RegTensor<float> &dstReg, Reg::RegTens
     FMaf(dstReg, srcRegS, COS_POLY_COEFF4, mask);
 }
 
-__simd_callee__ inline void TrigRedFPreprocessForHalf(Reg::RegTensor<float> &regR, Reg::RegTensor<int32_t> &regI,
-    Reg::RegTensor<float> &srcRegA, Reg::MaskReg& mask)
+__simd_callee__ inline void TrigRedFPreprocessForHalf(
+    Reg::RegTensor<float>& regR, Reg::RegTensor<int32_t>& regI, Reg::RegTensor<float>& srcRegA, Reg::MaskReg& mask)
 {
     constexpr float J_MUL_COEFF = 0.636619747f;
     constexpr float J_ADD_COEFF = 12582912.0f;
@@ -419,11 +424,11 @@ __simd_callee__ inline void TrigRedFPreprocessForHalf(Reg::RegTensor<float> &reg
     Reg::MulAddDst(regR, regJ, tmpF32Reg, mask);
 }
 
-__simd_callee__ inline void TrigRedFComputeP(Reg::MaskReg& tmpMask, Reg::RegTensor<uint32_t> &regPHigh,
-    Reg::RegTensor<uint32_t> &regPLow, Reg::RegTensor<float> &srcRegA,
-    Reg::RegTensor<uint32_t> &oneOverPiFReg, Reg::MaskReg& mask)
+__simd_callee__ inline void TrigRedFComputeP(
+    Reg::MaskReg& tmpMask, Reg::RegTensor<uint32_t>& regPHigh, Reg::RegTensor<uint32_t>& regPLow,
+    Reg::RegTensor<float>& srcRegA, Reg::RegTensor<uint32_t>& oneOverPiFReg, Reg::MaskReg& mask)
 {
-    constexpr float A_ABS_COEFF = 3.1415926535f*0.25f;
+    constexpr float A_ABS_COEFF = 3.1415926535f * 0.25f;
     Reg::RegTensor<float> tmpF32Reg;
     Reg::RegTensor<int32_t> tmpI32Reg;
     /* step 8:
@@ -436,11 +441,12 @@ __simd_callee__ inline void TrigRedFComputeP(Reg::MaskReg& tmpMask, Reg::RegTens
     TrigRedSlowpathFComputeP(regPHigh, regPLow, srcRegA, oneOverPiFReg, mask);
 }
 
-__simd_callee__ inline void TrigRedFComputeRI(Reg::MaskReg& tmpMask, Reg::RegTensor<float> &dstRegR,
-    Reg::RegTensor<int32_t> &dstRegI, Reg::RegTensor<uint32_t> &regPHigh, Reg::RegTensor<uint32_t> &regPLow,
-    Reg::RegTensor<float> &srcRegA, Reg::MaskReg& mask)
+__simd_callee__ inline void TrigRedFComputeRI(
+    Reg::MaskReg& tmpMask, Reg::RegTensor<float>& dstRegR, Reg::RegTensor<int32_t>& dstRegI,
+    Reg::RegTensor<uint32_t>& regPHigh, Reg::RegTensor<uint32_t>& regPLow, Reg::RegTensor<float>& srcRegA,
+    Reg::MaskReg& mask)
 {
-    constexpr float A_ABS_COEFF = 3.1415926535f*0.25f;
+    constexpr float A_ABS_COEFF = 3.1415926535f * 0.25f;
     Reg::RegTensor<float> tmpF32Reg;
     Reg::RegTensor<int32_t> tmpI32Reg;
     /* step 8:
@@ -454,8 +460,9 @@ __simd_callee__ inline void TrigRedFComputeRI(Reg::MaskReg& tmpMask, Reg::RegTen
 }
 
 /* Compute sine and cosine simultaneously, based on quadrant */
-__simd_callee__ inline void SCFCore(Reg::RegTensor<float> &dstRegSin, Reg::RegTensor<float> &dstRegCos,
-    Reg::RegTensor<int32_t> &regI, Reg::RegTensor<float> &regR, Reg::MaskReg& mask)
+__simd_callee__ inline void SCFCore(
+    Reg::RegTensor<float>& dstRegSin, Reg::RegTensor<float>& dstRegCos, Reg::RegTensor<int32_t>& regI,
+    Reg::RegTensor<float>& regR, Reg::MaskReg& mask)
 {
     constexpr int32_t I_AND_CONDITION = 2;
 
@@ -509,34 +516,32 @@ __simd_callee__ inline void SCFCore(Reg::RegTensor<float> &dstRegSin, Reg::RegTe
     dstRegCos = regC;
 }
 
-__aicore__ inline void InitializeFloatTempBuffer(__ubuf__ uint32_t *&tmpBuffer, __ubuf__ float *&tmpBufferR,
-    __ubuf__ int32_t *&tmpBufferI, const uint32_t alignCount)
+__aicore__ inline void InitializeFloatTempBuffer(
+    __ubuf__ uint32_t*& tmpBuffer, __ubuf__ float*& tmpBufferR, __ubuf__ int32_t*& tmpBufferI,
+    const uint32_t alignCount)
 {
     constexpr uint32_t oneOverPiFAlignedLength = 8;
-    static unsigned int oneOverPiF[6] =
-    {
-        0x28be60db, 0x9391054a, 0x7f09d5f4,
-        0x7d4d3770, 0x36d8a566, 0x4f10e410
-    };
+    static unsigned int oneOverPiF[6] = {0x28be60db, 0x9391054a, 0x7f09d5f4, 0x7d4d3770, 0x36d8a566, 0x4f10e410};
 
     for (uint16_t i = 0; i < 6; ++i) {
         tmpBuffer[i] = oneOverPiF[i];
     }
 
-    tmpBufferR = (__ubuf__ float *)((__ubuf__ uint8_t *)tmpBuffer + sizeof(uint32_t) * oneOverPiFAlignedLength);
-    tmpBufferI = (__ubuf__ int32_t *)((__ubuf__ uint8_t *)tmpBufferR + sizeof(float) * alignCount);
+    tmpBufferR = (__ubuf__ float*)((__ubuf__ uint8_t*)tmpBuffer + sizeof(uint32_t) * oneOverPiFAlignedLength);
+    tmpBufferI = (__ubuf__ int32_t*)((__ubuf__ uint8_t*)tmpBufferR + sizeof(float) * alignCount);
 }
 
-__aicore__ inline void InitializeHalfTempBuffer(__ubuf__ uint32_t *&tmpBuffer, __ubuf__ float *&tmpBufferR,
-    __ubuf__ int32_t *&tmpBufferI, const uint32_t alignCount)
+__aicore__ inline void InitializeHalfTempBuffer(
+    __ubuf__ uint32_t*& tmpBuffer, __ubuf__ float*& tmpBufferR, __ubuf__ int32_t*& tmpBufferI,
+    const uint32_t alignCount)
 {
-    tmpBufferR = (__ubuf__ float *)((__ubuf__ uint8_t *)tmpBuffer);
-    tmpBufferI = (__ubuf__ int32_t *)((__ubuf__ uint8_t *)tmpBufferR + sizeof(float) * alignCount);
+    tmpBufferR = (__ubuf__ float*)((__ubuf__ uint8_t*)tmpBuffer);
+    tmpBufferI = (__ubuf__ int32_t*)((__ubuf__ uint8_t*)tmpBufferR + sizeof(float) * alignCount);
 }
 
 template <typename T>
-__simd_vf__ inline void TrigRedFPreProcessImpl(__ubuf__ float *tmpBufferR, __ubuf__ int32_t *tmpBufferI,
-    __ubuf__ T *src,  uint32_t calCount, uint16_t repeatTimes)
+__simd_vf__ inline void TrigRedFPreProcessImpl(
+    __ubuf__ float* tmpBufferR, __ubuf__ int32_t* tmpBufferI, __ubuf__ T* src, uint32_t calCount, uint16_t repeatTimes)
 {
     Reg::RegTensor<T> srcReg;
     Reg::RegTensor<int32_t> regI;
@@ -554,8 +559,9 @@ __simd_vf__ inline void TrigRedFPreProcessImpl(__ubuf__ float *tmpBufferR, __ubu
 }
 
 template <typename T>
-__simd_vf__ inline void TrigRedFComputePImpl(__ubuf__ uint32_t *tmpBufferRegPHigh, __ubuf__ uint32_t *tmpBufferRegPLow,
-    __ubuf__ T *src, __ubuf__ uint32_t *tmpBuffer, uint32_t calCount, uint16_t repeatTimes)
+__simd_vf__ inline void TrigRedFComputePImpl(
+    __ubuf__ uint32_t* tmpBufferRegPHigh, __ubuf__ uint32_t* tmpBufferRegPLow, __ubuf__ T* src,
+    __ubuf__ uint32_t* tmpBuffer, uint32_t calCount, uint16_t repeatTimes)
 {
     Reg::RegTensor<T> srcReg;
     Reg::RegTensor<uint32_t> oneOverPiFReg, regPHigh, regPLow, regI;
@@ -575,7 +581,7 @@ __simd_vf__ inline void TrigRedFComputePImpl(__ubuf__ uint32_t *tmpBufferRegPHig
         Reg::Duplicate(regI, 0, mask);
         regR = castReg;
         // store the origin q and r in ub
-        Reg::StoreAlign((__ubuf__ float *)tmpBufferRegPHigh + i * B32_DATA_NUM_PER_REPEAT, regR, mask);
+        Reg::StoreAlign((__ubuf__ float*)tmpBufferRegPHigh + i * B32_DATA_NUM_PER_REPEAT, regR, mask);
         Reg::StoreAlign(tmpBufferRegPLow + i * B32_DATA_NUM_PER_REPEAT, regI, mask);
 
         TrigRedFComputeP(selectMask, regPHigh, regPLow, castReg, oneOverPiFReg, mask);
@@ -586,8 +592,9 @@ __simd_vf__ inline void TrigRedFComputePImpl(__ubuf__ uint32_t *tmpBufferRegPHig
 }
 
 template <typename T>
-__simd_vf__ inline void TrigRedFComputeRIImpl(__ubuf__ uint32_t *tmpBufferRegPHigh, __ubuf__ uint32_t *tmpBufferRegPLow,
-    __ubuf__ T *src, __ubuf__ uint32_t *tmpBuffer, uint32_t calCount, uint16_t repeatTimes)
+__simd_vf__ inline void TrigRedFComputeRIImpl(
+    __ubuf__ uint32_t* tmpBufferRegPHigh, __ubuf__ uint32_t* tmpBufferRegPLow, __ubuf__ T* src,
+    __ubuf__ uint32_t* tmpBuffer, uint32_t calCount, uint16_t repeatTimes)
 {
     Reg::RegTensor<T> srcReg;
     Reg::RegTensor<uint32_t> regPHigh, regPLow;
@@ -606,14 +613,14 @@ __simd_vf__ inline void TrigRedFComputeRIImpl(__ubuf__ uint32_t *tmpBufferRegPHi
 
         TrigRedFComputeRI(selectMask, regR, regI, regPHigh, regPLow, castReg, mask);
 
-        Reg::StoreAlign((__ubuf__ float *)tmpBufferRegPHigh + i * B32_DATA_NUM_PER_REPEAT, regR, selectMask);
-        Reg::StoreAlign((__ubuf__ int32_t *)tmpBufferRegPLow + i * B32_DATA_NUM_PER_REPEAT, regI, selectMask);
+        Reg::StoreAlign((__ubuf__ float*)tmpBufferRegPHigh + i * B32_DATA_NUM_PER_REPEAT, regR, selectMask);
+        Reg::StoreAlign((__ubuf__ int32_t*)tmpBufferRegPLow + i * B32_DATA_NUM_PER_REPEAT, regI, selectMask);
     }
 }
 
 template <typename T, int mode = 0>
-__simd_vf__ inline void SCFCoreImpl(__ubuf__ T *dst, __ubuf__ float *tmpBufferR, __ubuf__ int32_t *tmpBufferI,
-    uint32_t calCount, uint16_t repeatTimes)
+__simd_vf__ inline void SCFCoreImpl(
+    __ubuf__ T* dst, __ubuf__ float* tmpBufferR, __ubuf__ int32_t* tmpBufferI, uint32_t calCount, uint16_t repeatTimes)
 {
     Reg::RegTensor<T> srcReg;
     Reg::RegTensor<int32_t> regI;
@@ -643,8 +650,9 @@ __simd_vf__ inline void SCFCoreImpl(__ubuf__ T *dst, __ubuf__ float *tmpBufferR,
 }
 
 template <typename T>
-__simd_vf__ inline void BSCFCoreImpl(__ubuf__ T *dstSin, __ubuf__ T *dstCos, __ubuf__ float *tmpBufferR, __ubuf__ int32_t *tmpBufferI,
-    uint32_t calCount, uint16_t repeatTimes)
+__simd_vf__ inline void BSCFCoreImpl(
+    __ubuf__ T* dstSin, __ubuf__ T* dstCos, __ubuf__ float* tmpBufferR, __ubuf__ int32_t* tmpBufferI, uint32_t calCount,
+    uint16_t repeatTimes)
 {
     Reg::RegTensor<T> srcReg;
     Reg::RegTensor<int32_t> regI;
@@ -671,23 +679,24 @@ __simd_vf__ inline void BSCFCoreImpl(__ubuf__ T *dstSin, __ubuf__ T *dstCos, __u
 }
 } // namespace SinCosImpl
 
-template <typename T> 
-__aicore__ inline void SinRadianReductionImpl(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *tmpBuffer, uint32_t calCount)
+template <typename T>
+__aicore__ inline void SinRadianReductionImpl(
+    __ubuf__ T* dst, __ubuf__ T* src, __ubuf__ uint32_t* tmpBuffer, uint32_t calCount)
 {
-    static_assert((std::is_same_v<T, half> || std::is_same_v<T, float>),
-        "current data type is not supported on current device!");
+    static_assert(
+        (std::is_same_v<T, half> || std::is_same_v<T, float>), "current data type is not supported on current device!");
     constexpr uint32_t oneRepSize = GetVecLen() / sizeof(float);
     uint16_t repeatTimes = CeilDivision(calCount, oneRepSize);
-    __ubuf__ float *tmpBufferR;
-    __ubuf__ int32_t *tmpBufferI;
+    __ubuf__ float* tmpBufferR;
+    __ubuf__ int32_t* tmpBufferI;
     uint32_t alignCount = (calCount + 31) / 32 * 32;
 
     if constexpr (std::is_same_v<T, float>) {
         SinCosImpl::InitializeFloatTempBuffer(tmpBuffer, tmpBufferR, tmpBufferI, alignCount);
         SinCosImpl::TrigRedFComputePImpl<T>(
-            (__ubuf__ uint32_t *)tmpBufferR, (__ubuf__ uint32_t *)tmpBufferI, src, tmpBuffer, calCount, repeatTimes);
+            (__ubuf__ uint32_t*)tmpBufferR, (__ubuf__ uint32_t*)tmpBufferI, src, tmpBuffer, calCount, repeatTimes);
         SinCosImpl::TrigRedFComputeRIImpl<T>(
-            (__ubuf__ uint32_t *)tmpBufferR, (__ubuf__ uint32_t *)tmpBufferI, src, tmpBuffer, calCount, repeatTimes);
+            (__ubuf__ uint32_t*)tmpBufferR, (__ubuf__ uint32_t*)tmpBufferI, src, tmpBuffer, calCount, repeatTimes);
     } else if constexpr (std::is_same_v<T, half>) {
         SinCosImpl::InitializeHalfTempBuffer(tmpBuffer, tmpBufferR, tmpBufferI, alignCount);
         SinCosImpl::TrigRedFPreProcessImpl<T>(tmpBufferR, tmpBufferI, src, calCount, repeatTimes);
@@ -695,23 +704,24 @@ __aicore__ inline void SinRadianReductionImpl(__ubuf__ T *dst, __ubuf__ T *src, 
     SinCosImpl::SCFCoreImpl<T, 0>(dst, tmpBufferR, tmpBufferI, calCount, repeatTimes);
 }
 
-template <typename T> 
-__aicore__ inline void CosRadianReductionImpl(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *tmpBuffer, uint32_t calCount)
+template <typename T>
+__aicore__ inline void CosRadianReductionImpl(
+    __ubuf__ T* dst, __ubuf__ T* src, __ubuf__ uint32_t* tmpBuffer, uint32_t calCount)
 {
-    static_assert((std::is_same_v<T, half> || std::is_same_v<T, float>),
-        "current data type is not supported on current device!");
+    static_assert(
+        (std::is_same_v<T, half> || std::is_same_v<T, float>), "current data type is not supported on current device!");
     constexpr uint32_t oneRepSize = GetVecLen() / sizeof(float);
     uint16_t repeatTimes = CeilDivision(calCount, oneRepSize);
-    __ubuf__ float *tmpBufferR;
-    __ubuf__ int32_t *tmpBufferI;
+    __ubuf__ float* tmpBufferR;
+    __ubuf__ int32_t* tmpBufferI;
     uint32_t alignCount = (calCount + 31) / 32 * 32;
 
     if constexpr (std::is_same_v<T, float>) {
         SinCosImpl::InitializeFloatTempBuffer(tmpBuffer, tmpBufferR, tmpBufferI, alignCount);
         SinCosImpl::TrigRedFComputePImpl<T>(
-            (__ubuf__ uint32_t *)tmpBufferR, (__ubuf__ uint32_t *)tmpBufferI, src, tmpBuffer, calCount, repeatTimes);
+            (__ubuf__ uint32_t*)tmpBufferR, (__ubuf__ uint32_t*)tmpBufferI, src, tmpBuffer, calCount, repeatTimes);
         SinCosImpl::TrigRedFComputeRIImpl<T>(
-            (__ubuf__ uint32_t *)tmpBufferR, (__ubuf__ uint32_t *)tmpBufferI, src, tmpBuffer, calCount, repeatTimes);
+            (__ubuf__ uint32_t*)tmpBufferR, (__ubuf__ uint32_t*)tmpBufferI, src, tmpBuffer, calCount, repeatTimes);
     } else if constexpr (std::is_same_v<T, half>) {
         SinCosImpl::InitializeHalfTempBuffer(tmpBuffer, tmpBufferR, tmpBufferI, alignCount);
         SinCosImpl::TrigRedFPreProcessImpl<T>(tmpBufferR, tmpBufferI, src, calCount, repeatTimes);
@@ -720,8 +730,9 @@ __aicore__ inline void CosRadianReductionImpl(__ubuf__ T *dst, __ubuf__ T *src, 
 }
 
 template <const SinCosConfig& config, typename T>
-__aicore__ inline void SinCosRadianReductionImpl(const LocalTensor<T>& dst0, const LocalTensor<T>& dst1, 
-    const LocalTensor<T>& src, const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
+__aicore__ inline void SinCosRadianReductionImpl(
+    const LocalTensor<T>& dst0, const LocalTensor<T>& dst1, const LocalTensor<T>& src,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -732,20 +743,20 @@ __aicore__ inline void SinCosRadianReductionImpl(const LocalTensor<T>& dst0, con
     __ubuf__ T* dstCosAddr = (__ubuf__ T*)dst1.GetPhyAddr();
     __ubuf__ T* srcAddr = (__ubuf__ T*)src.GetPhyAddr();
     __ubuf__ uint32_t* tmpBuffer = (__ubuf__ uint32_t*)sharedTmpBuffer.GetPhyAddr();
-    static_assert((std::is_same_v<T, half> || std::is_same_v<T, float>),
-        "current data type is not supported on current device!");
+    static_assert(
+        (std::is_same_v<T, half> || std::is_same_v<T, float>), "current data type is not supported on current device!");
     constexpr uint32_t oneRepSize = GetVecLen() / sizeof(float);
     uint16_t repeatTimes = CeilDivision(calCount, oneRepSize);
-    __ubuf__ float *tmpBufferR;
-    __ubuf__ int32_t *tmpBufferI;
+    __ubuf__ float* tmpBufferR;
+    __ubuf__ int32_t* tmpBufferI;
     uint32_t alignCount = (calCount + 31) / 32 * 32;
 
     if constexpr (std::is_same_v<T, float>) {
         SinCosImpl::InitializeFloatTempBuffer(tmpBuffer, tmpBufferR, tmpBufferI, alignCount);
         SinCosImpl::TrigRedFComputePImpl<T>(
-            (__ubuf__ uint32_t *)tmpBufferR, (__ubuf__ uint32_t *)tmpBufferI, srcAddr, tmpBuffer, calCount, repeatTimes);
+            (__ubuf__ uint32_t*)tmpBufferR, (__ubuf__ uint32_t*)tmpBufferI, srcAddr, tmpBuffer, calCount, repeatTimes);
         SinCosImpl::TrigRedFComputeRIImpl<T>(
-            (__ubuf__ uint32_t *)tmpBufferR, (__ubuf__ uint32_t *)tmpBufferI, srcAddr, tmpBuffer, calCount, repeatTimes);
+            (__ubuf__ uint32_t*)tmpBufferR, (__ubuf__ uint32_t*)tmpBufferI, srcAddr, tmpBuffer, calCount, repeatTimes);
     } else if constexpr (std::is_same_v<T, half>) {
         SinCosImpl::InitializeHalfTempBuffer(tmpBuffer, tmpBufferR, tmpBufferI, alignCount);
         SinCosImpl::TrigRedFPreProcessImpl<T>(tmpBufferR, tmpBufferI, srcAddr, calCount, repeatTimes);
@@ -754,8 +765,8 @@ __aicore__ inline void SinCosRadianReductionImpl(const LocalTensor<T>& dst0, con
 }
 
 template <const SinCosConfig& config, typename T>
-__aicore__ inline void SinCosRadianReductionImpl(const LocalTensor<T>& dst0, const LocalTensor<T>& dst1, 
-    const LocalTensor<T>& src, uint32_t calCount)
+__aicore__ inline void SinCosRadianReductionImpl(
+    const LocalTensor<T>& dst0, const LocalTensor<T>& dst1, const LocalTensor<T>& src, uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {

@@ -1,13 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
- 
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #include "include/adv_api/normalization/layernorm_tiling.h"
 #include <cmath>
@@ -36,15 +35,18 @@ constexpr uint32_t SHAPE_DIM = 2;
 constexpr uint32_t LAYERNORM_FOLD_NUM = 2;
 constexpr uint32_t LAYERNORM_SRC_DIM_NUM = 4;
 
-void CheckLayerNormHostCommon(const char *apiName, const char *hostFuncName,
-    const ge::Shape& srcShape, const uint32_t typeSize)
+void CheckLayerNormHostCommon(
+    const char* apiName, const char* hostFuncName, const ge::Shape& srcShape, const uint32_t typeSize)
 {
-    ASCENDC_HOST_ASSERT(srcShape.GetShapeSize() > 0, return, 
-        "[%s][%s] Input Shape size must be greater than 0.", apiName, hostFuncName);
-    ASCENDC_HOST_ASSERT(srcShape.GetDimNum() == LAYERNORM_SRC_DIM_NUM, return, 
-        "[%s][%s] The dims of srcShape is %zu, should be 4 (e.g. [B, S, storageHLength, originHLength])!", 
-        apiName, hostFuncName, srcShape.GetDimNum());
-    ASCENDC_HOST_ASSERT(typeSize == LAYERNORM_SIZEOF_HALF || typeSize == LAYERNORM_SIZEOF_FLOAT, return,
+    ASCENDC_HOST_ASSERT(
+        srcShape.GetShapeSize() > 0, return, "[%s][%s] Input Shape size must be greater than 0.", apiName,
+        hostFuncName);
+    ASCENDC_HOST_ASSERT(
+        srcShape.GetDimNum() == LAYERNORM_SRC_DIM_NUM, return,
+        "[%s][%s] The dims of srcShape is %zu, should be 4 (e.g. [B, S, storageHLength, originHLength])!", apiName,
+        hostFuncName, srcShape.GetDimNum());
+    ASCENDC_HOST_ASSERT(
+        typeSize == LAYERNORM_SIZEOF_HALF || typeSize == LAYERNORM_SIZEOF_FLOAT, return,
         "[%s][%s] Type size %u is unsupported!", apiName, hostFuncName, typeSize);
     return;
 }
@@ -59,10 +61,10 @@ uint32_t GetLayerNormMaxTmpSize(const ge::Shape& srcShape, const uint32_t typeSi
     uint32_t mvTmpLen = bLength * sLength * sizeof(float);
     uint32_t inputLen = bLength * sLength * hLength * sizeof(float);
 
-    mvTmpLen =
-        ((mvTmpLen + LAYERNORM_ONE_BLK_SIZE - LAYERNORM_ONE_NUMBER) >> LAYERNORM_ONE_BLK_SHIFT_AMOUNT) << LAYERNORM_ONE_BLK_SHIFT_AMOUNT;
-    inputLen =
-        ((inputLen + LAYERNORM_ONE_BLK_SIZE - LAYERNORM_ONE_NUMBER) >> LAYERNORM_ONE_BLK_SHIFT_AMOUNT) << LAYERNORM_ONE_BLK_SHIFT_AMOUNT;
+    mvTmpLen = ((mvTmpLen + LAYERNORM_ONE_BLK_SIZE - LAYERNORM_ONE_NUMBER) >> LAYERNORM_ONE_BLK_SHIFT_AMOUNT)
+               << LAYERNORM_ONE_BLK_SHIFT_AMOUNT;
+    inputLen = ((inputLen + LAYERNORM_ONE_BLK_SIZE - LAYERNORM_ONE_NUMBER) >> LAYERNORM_ONE_BLK_SHIFT_AMOUNT)
+               << LAYERNORM_ONE_BLK_SHIFT_AMOUNT;
 
     if (isReuseSource && (typeSize == LAYERNORM_SIZEOF_FLOAT)) {
         return LAYERNORM_TWO_TIMES * inputLen + LAYERNORM_TWO_TIMES * mvTmpLen;
@@ -91,8 +93,9 @@ uint32_t GetLayerNormMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSi
     return LAYERNORM_THREE_TIMES * hLengthDiv + LAYERNORM_TWO_TIMES * mvTmpLen;
 }
 
-void GetLayerNormNDTilingInfoImpl(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const bool isReuseSource, optiling::LayerNormTiling& tiling)
+void GetLayerNormNDTilingInfoImpl(
+    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
+    optiling::LayerNormTiling& tiling)
 {
     std::vector<int64_t> shapeDims = srcShape.GetDims();
 
@@ -183,8 +186,9 @@ void GetLayerNormNDTilingInfoImpl(const ge::Shape& srcShape, const uint32_t stac
     tiling.set_lastDimValueBack(lastDimValueBack);
 }
 
-void GetLayerNormNDTilingInfoImpl(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const bool isReuseSource, AscendC::tiling::LayerNormTiling& tiling)
+void GetLayerNormNDTilingInfoImpl(
+    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
+    AscendC::tiling::LayerNormTiling& tiling)
 {
     optiling::LayerNormTiling tilingData;
     GetLayerNormNDTilingInfoImpl(srcShape, stackBufferSize, typeSize, isReuseSource, tilingData);
@@ -192,45 +196,49 @@ void GetLayerNormNDTilingInfoImpl(const ge::Shape& srcShape, const uint32_t stac
 }
 } // namespace
 
-void GetLayerNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t& maxValue, uint32_t& minValue)
+void GetLayerNormMaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    uint32_t& minValue)
 {
     CheckLayerNormHostCommon("LayerNorm", "GetLayerNormMaxMinTmpSize", srcShape, typeSize);
     maxValue = GetLayerNormMaxTmpSize(srcShape, typeSize, isReuseSource);
     minValue = GetLayerNormMinTmpSize(srcShape, typeSize, isReuseSource);
 }
 
-void GetLayerNormNDTillingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const bool isReuseSource, optiling::LayerNormTiling& tilling)
+void GetLayerNormNDTillingInfo(
+    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
+    optiling::LayerNormTiling& tilling)
 {
     CheckLayerNormHostCommon("LayerNorm", "GetLayerNormNDTillingInfo", srcShape, typeSize);
     GetLayerNormNDTilingInfoImpl(srcShape, stackBufferSize, typeSize, isReuseSource, tilling);
 }
 
-void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const bool isReuseSource, optiling::LayerNormTiling& tiling)
+void GetLayerNormNDTilingInfo(
+    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
+    optiling::LayerNormTiling& tiling)
 {
     CheckLayerNormHostCommon("LayerNorm", "GetLayerNormNDTilingInfo", srcShape, typeSize);
     GetLayerNormNDTilingInfoImpl(srcShape, stackBufferSize, typeSize, isReuseSource, tiling);
 }
 
-void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const bool isReuseSource, AscendC::tiling::LayerNormTiling& tiling)
+void GetLayerNormNDTilingInfo(
+    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
+    AscendC::tiling::LayerNormTiling& tiling)
 {
     CheckLayerNormHostCommon("LayerNorm", "GetLayerNormNDTilingInfo", srcShape, typeSize);
     GetLayerNormNDTilingInfoImpl(srcShape, stackBufferSize, typeSize, isReuseSource, tiling);
 }
 
-void GetWelfordUpdateMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSizeT, const uint32_t typeSizeU,
-    const bool isReuseSource, const bool isInplace, uint32_t& maxValue, uint32_t& minValue)
+void GetWelfordUpdateMaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSizeT, const uint32_t typeSizeU, const bool isReuseSource,
+    const bool isInplace, uint32_t& maxValue, uint32_t& minValue)
 {
     (void)isInplace;
     (void)typeSizeU;
     platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
     ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
     const auto npuArch = platform->GetCurNpuArch();
-    if (npuArch == NpuArch::DAV_3510 ||
-        npuArch == NpuArch::DAV_5102) {
+    if (npuArch == NpuArch::DAV_3510 || npuArch == NpuArch::DAV_5102) {
         (void)typeSizeT;
         (void)isReuseSource;
         minValue = 0;
@@ -239,10 +247,10 @@ void GetWelfordUpdateMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typ
     } else {
         std::vector<int64_t> shapeDims = srcShape.GetDims();
         ASCENDC_HOST_ASSERT(shapeDims.size() == SHAPE_DIM, return, "srcShape dims must be 2.");
-    
+
         const uint32_t rnLength = static_cast<uint32_t>(shapeDims[0]);
         const uint32_t abLength = static_cast<uint32_t>(shapeDims[1]);
-    
+
         if (typeSizeT == sizeof(uint16_t)) {
             minValue = 0x3 * WEL_UP_REP_SIZE; // dispense 3 buffers
         } else if (isReuseSource) {
@@ -254,16 +262,16 @@ void GetWelfordUpdateMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typ
     }
 }
 
-void GetLayerNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
-    const bool isComputeRstd, const bool isOnlyOutput, uint32_t& maxValue, uint32_t& minValue)
+void GetLayerNormMaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, const bool isComputeRstd,
+    const bool isOnlyOutput, uint32_t& maxValue, uint32_t& minValue)
 {
     ASCENDC_HOST_ASSERT(typeSize != 0, return, "typeSize can not be 0!");
     ASCENDC_HOST_ASSERT(isOnlyOutput == false, return, "isOnlyOutput current only support false.");
     platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
     ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
     const auto npuArch = platform->GetCurNpuArch();
-    if (npuArch == NpuArch::DAV_3510 ||
-        npuArch == NpuArch::DAV_5102) {
+    if (npuArch == NpuArch::DAV_3510 || npuArch == NpuArch::DAV_5102) {
         (void)isReuseSource;
         std::vector<int64_t> shapeDims = srcShape.GetDims();
         const uint32_t vecLenB32 = platform->GetVecRegLen() / LAYERNORM_SIZEOF_FLOAT;
@@ -276,7 +284,7 @@ void GetLayerNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSiz
         uint32_t len = (rLengthWithPadding / vecLenB32 + vecLenB16 - 1) / vecLenB16 * vecLenB16 + varianceLen;
         if (!isComputeRstd) {
             len += varianceLen;
-        } 
+        }
         minValue = len * sizeof(float);
         maxValue = minValue;
         return;
@@ -290,18 +298,19 @@ void GetLayerNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSiz
         uint32_t mvTmpLen = aLength * sizeof(float);
         uint32_t inputLen = aLength * rLengthWithPadding * sizeof(float);
         uint32_t rLengthDiv = rLengthWithPadding * sizeof(float);
-        mvTmpLen =
-            (mvTmpLen + LAYERNORM_ONE_BLK_SIZE - LAYERNORM_ONE_NUMBER) / LAYERNORM_ONE_BLK_SIZE * LAYERNORM_ONE_BLK_SIZE;
-        inputLen =
-            (inputLen + LAYERNORM_ONE_BLK_SIZE - LAYERNORM_ONE_NUMBER) / LAYERNORM_ONE_BLK_SIZE * LAYERNORM_ONE_BLK_SIZE;
-        rLengthDiv =
-            (rLengthDiv + LAYERNORM_ONE_BLK_SIZE - LAYERNORM_ONE_NUMBER) / LAYERNORM_ONE_BLK_SIZE * LAYERNORM_ONE_BLK_SIZE;
+        mvTmpLen = (mvTmpLen + LAYERNORM_ONE_BLK_SIZE - LAYERNORM_ONE_NUMBER) / LAYERNORM_ONE_BLK_SIZE *
+                   LAYERNORM_ONE_BLK_SIZE;
+        inputLen = (inputLen + LAYERNORM_ONE_BLK_SIZE - LAYERNORM_ONE_NUMBER) / LAYERNORM_ONE_BLK_SIZE *
+                   LAYERNORM_ONE_BLK_SIZE;
+        rLengthDiv = (rLengthDiv + LAYERNORM_ONE_BLK_SIZE - LAYERNORM_ONE_NUMBER) / LAYERNORM_ONE_BLK_SIZE *
+                     LAYERNORM_ONE_BLK_SIZE;
         maxValue = LAYERNORM_TWO_TIMES * inputLen + LAYERNORM_ONE_NUMBER * mvTmpLen;
         minValue = LAYERNORM_TWO_TIMES * rLengthDiv + LAYERNORM_ONE_NUMBER * mvTmpLen;
         uint32_t maxNormalizeValue;
         uint32_t minNormalizeValue;
-        GetNormalizeMaxMinTmpSize(srcShape, typeSize, typeSize, isReuseSource, isComputeRstd, isOnlyOutput,
-            maxNormalizeValue, minNormalizeValue);
+        GetNormalizeMaxMinTmpSize(
+            srcShape, typeSize, typeSize, isReuseSource, isComputeRstd, isOnlyOutput, maxNormalizeValue,
+            minNormalizeValue);
         if (minValue - mvTmpLen <= minNormalizeValue) {
             minValue = minNormalizeValue + mvTmpLen;
         }
@@ -311,8 +320,9 @@ void GetLayerNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSiz
     }
 }
 
-void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const bool isReuseSource, const bool isComputeRstd, optiling::LayerNormSeparateTiling& tiling)
+void GetLayerNormNDTilingInfo(
+    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
+    const bool isComputeRstd, optiling::LayerNormSeparateTiling& tiling)
 {
     (void)isReuseSource;
     (void)isComputeRstd;
@@ -321,8 +331,7 @@ void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBuf
     platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
     ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
     const auto npuArch = platform->GetCurNpuArch();
-    if (npuArch == NpuArch::DAV_3510 ||
-        npuArch == NpuArch::DAV_5102) {
+    if (npuArch == NpuArch::DAV_3510 || npuArch == NpuArch::DAV_5102) {
         (void)stackBufferSize;
         const uint32_t rLength = static_cast<uint32_t>(shapeDims.back());
         int32_t typeAignSize = 32 / typeSize;
@@ -356,49 +365,50 @@ void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBuf
         const uint32_t rLength = static_cast<uint32_t>(shapeDims[1]);
         int32_t typeAignSize = 32 / typeSize;
         uint32_t rLengthWithPadding = (rLength + typeAignSize - 1) / typeAignSize * typeAignSize;
-    
+
         const uint32_t inputXSize = aLength * rLengthWithPadding;
         const uint32_t meanVarSize = aLength;
-    
+
         uint32_t numberOfTmpBuf = LAYERNORM_TWO_TIMES;
-    
+
         constexpr uint32_t oneBlockNum = LAYERNORM_ONE_BLK_SIZE / LAYERNORM_SIZEOF_FLOAT;
         constexpr uint32_t varianceTmpTensorPos = LAYERNORM_ZERO_NUMBER;
-        const uint32_t varianceTmpTensorSize = (meanVarSize + oneBlockNum - LAYERNORM_ONE_NUMBER) / oneBlockNum * oneBlockNum;
-    
+        const uint32_t varianceTmpTensorSize =
+            (meanVarSize + oneBlockNum - LAYERNORM_ONE_NUMBER) / oneBlockNum * oneBlockNum;
+
         const uint32_t tmpBufSize = stackBufferSize / LAYERNORM_SIZEOF_FLOAT;
-    
+
         uint32_t oneTmpSize = (tmpBufSize - varianceTmpTensorSize) / numberOfTmpBuf;
         oneTmpSize = oneTmpSize / rLengthWithPadding * rLengthWithPadding;
-    
+
         if (oneTmpSize > inputXSize) {
             oneTmpSize = inputXSize;
         }
-    
+
         if (oneTmpSize == LAYERNORM_ZERO_NUMBER) {
             return;
         }
-    
+
         const uint32_t firstTmpStartPos = varianceTmpTensorSize;
         const uint32_t secondTmpStartPos = firstTmpStartPos + oneTmpSize;
-    
+
         const uint32_t loopRound = inputXSize / oneTmpSize;
-    
+
         const uint32_t inputRoundSize = oneTmpSize;
         const uint32_t inputTailSize = inputXSize % oneTmpSize;
-    
+
         const uint32_t inputTailPos = inputXSize - inputTailSize;
-    
+
         const uint32_t meanVarRoundSize = inputRoundSize / rLengthWithPadding;
         const uint32_t meanVarTailSize = inputTailSize / rLengthWithPadding;
-    
+
         const uint32_t meanVarTailPos = meanVarSize - meanVarTailSize;
-    
+
         const uint32_t arCurLength = inputRoundSize;
         const uint32_t aCurLength = meanVarRoundSize;
-    
+
         const float rValueBack = float(1) / static_cast<float>(rLength);
-    
+
         tiling.set_aLength(aLength);
         tiling.set_rLength(rLength);
         tiling.set_inputXSize(inputXSize);
@@ -423,8 +433,9 @@ void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBuf
     }
 }
 
-void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const bool isReuseSource, const bool isComputeRstd, AscendC::tiling::LayerNormSeparateTiling& tiling)
+void GetLayerNormNDTilingInfo(
+    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
+    const bool isComputeRstd, AscendC::tiling::LayerNormSeparateTiling& tiling)
 {
     optiling::LayerNormSeparateTiling tilingData;
     GetLayerNormNDTilingInfo(srcShape, stackBufferSize, typeSize, isReuseSource, isComputeRstd, tilingData);

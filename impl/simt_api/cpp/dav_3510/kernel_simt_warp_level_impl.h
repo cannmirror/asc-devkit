@@ -45,7 +45,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t AllSyncImpl(int32_t predicate)
     auto customFunc = [](int32_t a, int32_t b) -> int32_t { return (a != 0) && (b != 0); };
     return warp.WarpOp(predicate, customFunc);
 #else
-    return bisheng::cce::simt::__all(predicate);
+    return __all(predicate);
 #endif
 }
 
@@ -57,7 +57,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t AnySyncImpl(int32_t predicate)
     auto customFunc = [](int32_t a, int32_t b) -> int32_t { return (a != 0) || (b != 0); };
     return warp.WarpOp(predicate, customFunc);
 #else
-    return bisheng::cce::simt::__any(predicate);
+    return __any(predicate);
 #endif
 }
 
@@ -67,7 +67,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t UniImpl(int32_t predicate)
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "Uni CPU: not supported yet"); });
     return 0;
 #else
-    return bisheng::cce::simt::__uni(predicate);
+    return __uni(predicate);
 #endif
 }
 
@@ -85,7 +85,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t BallotSyncImpl(int32_t predicate)
     auto customFunc = [](uint32_t a, uint32_t b) -> uint32_t { return a + b; };
     return warp.WarpOp(bitNum, customFunc);
 #else
-    return bisheng::cce::simt::__ballot(predicate);
+    return __ballot(predicate);
 #endif
 }
 
@@ -100,14 +100,14 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t ActiveMaskImpl()
     auto customFunc = [](uint32_t a, uint32_t b) -> uint32_t { return a + b; };
     return warp.WarpOp(bitNum, customFunc);
 #else
-    return bisheng::cce::simt::__activemask();
+    return __activemask();
 #endif
 }
 
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflSyncImpl(T var, int32_t srcLane, int32_t width = warpSize)
 {
-    static_assert(SupportType<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>(),
+    static_assert(SupportTypeSimtInternel<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>,
                  "Input type of var only supports int32_t, uint32_t, int64_t, uint64_t, half, half2, float.");
 #if defined(ASCENDC_CPU_DEBUG)
     ASCENDC_ASSERT((width <= WARP_SIZE && width > 0 && WARP_SIZE % width == 0),
@@ -122,7 +122,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflSyncImpl(T var, int32_t srcLane, int
 
     return warp.WarpShuffleOp(var, laneId, srcLane);
 #else
-    return bisheng::cce::simt::__shfl(var,
+    return __shfl(var,
         ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (srcLane));
 #endif
 }
@@ -130,7 +130,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflSyncImpl(T var, int32_t srcLane, int
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflUpSyncImpl(T var, uint32_t delta, int32_t width = warpSize)
 {
-    static_assert(SupportType<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>(),
+    static_assert(SupportTypeSimtInternel<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>,
               "Input type of var only supports int32_t, uint32_t, int64_t, uint64_t, half, half2, float.");
 #if defined(ASCENDC_CPU_DEBUG)
     ASCENDC_ASSERT((width <= WARP_SIZE && width > 0 && WARP_SIZE % width == 0),
@@ -149,7 +149,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflUpSyncImpl(T var, uint32_t delta, in
 
     return warp.WarpShuffleOp(var, laneId, srcLane);
 #else
-    return bisheng::cce::simt::__shfl_up(var,
+    return __shfl_up(var,
         ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_UP_MODE << MAX_OFFSET_START_POS) | (delta));
 #endif
 }
@@ -157,7 +157,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflUpSyncImpl(T var, uint32_t delta, in
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflDownSyncImpl(T var, uint32_t delta, int32_t width = warpSize)
 {
-    static_assert(SupportType<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>(),
+    static_assert(SupportTypeSimtInternel<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>,
               "Input type of var only supports int32_t, uint32_t, int64_t, uint64_t, half, half2, float.");
 #if defined(ASCENDC_CPU_DEBUG)
     ASCENDC_ASSERT((width <= WARP_SIZE && width > 0 && WARP_SIZE % width == 0),
@@ -177,7 +177,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflDownSyncImpl(T var, uint32_t delta, 
 
     return warp.WarpShuffleOp(var, laneId, srcLane);
 #else
-    return bisheng::cce::simt::__shfl_down(var,
+    return __shfl_down(var,
                        ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (delta));
 #endif
 }
@@ -185,7 +185,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflDownSyncImpl(T var, uint32_t delta, 
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflXorSyncImpl(T var, int32_t laneMask, int32_t width = warpSize)
 {
-    static_assert(SupportType<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>(),
+    static_assert(SupportTypeSimtInternel<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>,
               "Input type of var only supports int32_t, uint32_t, int64_t, uint64_t, half, half2, float.");
 #if defined(ASCENDC_CPU_DEBUG)
     ASCENDC_ASSERT((width <= WARP_SIZE && width > 0 && WARP_SIZE % width == 0),
@@ -206,7 +206,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflXorSyncImpl(T var, int32_t laneMask,
 
     return warp.WarpShuffleOp(var, laneId, srcLane);
 #else
-    return bisheng::cce::simt::__shfl_xor(var,
+    return __shfl_xor(var,
                       ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (laneMask));
 #endif
 }
@@ -214,7 +214,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ShflXorSyncImpl(T var, int32_t laneMask,
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ReduceAddSyncImpl(T val)
 {
-    static_assert(SupportType<T, int32_t, uint32_t, half, float>(),
+    static_assert(SupportTypeSimtInternel<T, int32_t, uint32_t, half, float>,
               "Input type of val only supports int32_t, uint32_t, half, float.");
 #if defined(ASCENDC_CPU_DEBUG)
     uint32_t warpId = GetWarpId();
@@ -222,14 +222,14 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ReduceAddSyncImpl(T val)
     auto customFunc = [](T a, T b) -> T { return a + b; };
     return warp.WarpOp(val, customFunc);
 #else
-    return bisheng::cce::simt::__reduce_add(val);
+    return __reduce_add(val);
 #endif
 }
 
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ReduceMaxSyncImpl(T val)
 {
-    static_assert(SupportType<T, int32_t, uint32_t, half, float>(),
+    static_assert(SupportTypeSimtInternel<T, int32_t, uint32_t, half, float>,
               "Input type of val only supports int32_t, uint32_t, half, float.");
 #if defined(ASCENDC_CPU_DEBUG)
     uint32_t warpId = GetWarpId();
@@ -237,14 +237,14 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ReduceMaxSyncImpl(T val)
     auto customFunc = [](T a, T b) -> T { return a > b ? a : b; };
     return warp.WarpOp(val, customFunc);
 #else
-    return bisheng::cce::simt::__reduce_max(val);
+    return __reduce_max(val);
 #endif
 }
 
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ReduceMinSyncImpl(T val)
 {
-    static_assert(SupportType<T, int32_t, uint32_t, half, float>(),
+    static_assert(SupportTypeSimtInternel<T, int32_t, uint32_t, half, float>,
                   "Input type of val only supports int32_t, uint32_t, half, float.");
 #if defined(ASCENDC_CPU_DEBUG)
     uint32_t warpId = GetWarpId();
@@ -252,7 +252,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T ReduceMinSyncImpl(T val)
     auto customFunc = [](T a, T b) -> T { return a < b ? a : b; };
     return warp.WarpOp(val, customFunc);
 #else
-    return bisheng::cce::simt::__reduce_min(val);
+    return __reduce_min(val);
 #endif
 }
 
@@ -269,7 +269,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void ThreadFenceImpl()
 {
 #if defined(ASCENDC_CPU_DEBUG)
 #else
-    bisheng::cce::simt::__threadfence();
+    __threadfence();
 #endif
 }
 }  // namespace Simt

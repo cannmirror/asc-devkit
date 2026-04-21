@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file atan_common_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/atan/atan_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/atan.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/atan/atan_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/atan.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ATAN_ATAN_COMMON_IMPL_H__
 #endif
@@ -38,8 +39,8 @@ constexpr float ATAN_FP16_MAX = 32768;                 // 2^15
 constexpr float ATAN_FP16_MIN = 3.0517578125e-05;      // 2^-15
 constexpr float ATAN_FP32_MAX = 4611686018427387904;   // 2^62
 constexpr float ATAN_FP32_MIN = 2.168404344971009e-19; // 2^-62
-constexpr uint8_t TAYLOR_COUNT_FOUR = 4; // x belongs to (0, tan(pi/8))
-constexpr uint8_t TAYLOR_COUNT_SIX = 6; // x belongs to (tan(pi/8), tan(pi/4))
+constexpr uint8_t TAYLOR_COUNT_FOUR = 4;               // x belongs to (0, tan(pi/8))
+constexpr uint8_t TAYLOR_COUNT_SIX = 6;                // x belongs to (tan(pi/8), tan(pi/4))
 constexpr float MIN_INPUT_VALUE = -10000;
 constexpr float MAX_INPUT_VALUE = 10000;
 
@@ -48,8 +49,7 @@ constexpr float MAX_INPUT_VALUE = 10000;
 //         FP16: sign(x) = 2**(15) * x /(2**(-15) + 2**(15) *|x|)
 //         FP32: sign(x) = 2**(62) * x /(2**(-62) + 2**(62) *|x|)
 template <typename T>
-__aicore__ inline void Sign(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const LocalTensor<T>& denominator)
+__aicore__ inline void Sign(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& denominator)
 {
     UnaryRepeatParams unaryParams;
     BinaryRepeatParams binaryParams;
@@ -65,13 +65,19 @@ __aicore__ inline void Sign(const LocalTensor<T>& dst, const LocalTensor<T>& src
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void TaylorExpand(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
-    const LocalTensor<float>& squareTensor, int32_t expandLevel)
+__aicore__ inline void TaylorExpand(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor, const LocalTensor<float>& squareTensor,
+    int32_t expandLevel)
 {
     // arctan(x) = x - x^3/3 + x^5/5 + ... + (-1)^k*x^(k*2+1)/( k*2+1)
     // 1/(k*2+1)
-    constexpr float factorList[7] = {1, -0.3333333333333333, 0.2, -0.14285714285714285,
-        0.1111111111111111, - 0.09090909090909091, 0.07692307692307693};
+    constexpr float factorList[7] = {1,
+                                     -0.3333333333333333,
+                                     0.2,
+                                     -0.14285714285714285,
+                                     0.1111111111111111,
+                                     -0.09090909090909091,
+                                     0.07692307692307693};
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binaryParams;
     // The initial value of dstTensor is assigned as the coefficient of the last item of expansion.
@@ -92,8 +98,9 @@ __aicore__ inline void TaylorExpand(const LocalTensor<float>& dstTensor, const L
     Mul<float, false>(dstTensor, dstTensor, srcTensor, MASK_PLACEHOLDER, 1, binaryParams);
 }
 
-__aicore__ inline void AtanTransform(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
-    const LocalTensor<float>& tmpTensor, const float transFactor)
+__aicore__ inline void AtanTransform(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor, const LocalTensor<float>& tmpTensor,
+    const float transFactor)
 {
     // (x-y)/(1+xy)
     const UnaryRepeatParams unaryParams;
@@ -119,8 +126,9 @@ __aicore__ inline void AtanTransform(const LocalTensor<float>& dstTensor, const 
 //  when x belongs to (0, tan(pi/8)), Atan(x) = atan(x)
 //  when x belongs to (tan(pi/8), tan(pi/4)), Atan(x) = pi/8 + atan((x- tan(pi/8)) / (1+ x*tan(pi/8)))
 //  when x belongs to (tan(pi/4), +âˆ?, Atan(x) = pi/4 + atan((x-1)/(x+1))
-__aicore__ inline void AtanFormulaImpl(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
-    const LocalTensor<float>& tmpTensor, const uint32_t splitSize)
+__aicore__ inline void AtanFormulaImpl(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor, const LocalTensor<float>& tmpTensor,
+    const uint32_t splitSize)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binParams;
@@ -194,29 +202,34 @@ __aicore__ inline void AtanFormulaImpl(const LocalTensor<float>& dstTensor, cons
 }
 
 template <typename T>
-__aicore__ inline void AtanCompute(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<float>& tmpTensor, const uint32_t splitSize)
+__aicore__ inline void AtanCompute(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<float>& tmpTensor,
+    const uint32_t splitSize)
 {
     AtanFormulaImpl(dstTensor, srcTensor, tmpTensor, splitSize);
 }
 
 template <>
-__aicore__ inline void AtanCompute(const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor,
-    const LocalTensor<float>& tmpTensor, const uint32_t splitSize)
+__aicore__ inline void AtanCompute(
+    const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor, const LocalTensor<float>& tmpTensor,
+    const uint32_t splitSize)
 {
     const LocalTensor<float>& tempTensorConv = tmpTensor[splitSize * 5];
-    Cast<float, half, false>(tempTensorConv, srcTensor,
-        RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1, { 1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE });
+    Cast<float, half, false>(
+        tempTensorConv, srcTensor, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
     AtanFormulaImpl(tempTensorConv, tempTensorConv, tmpTensor, splitSize);
-    Cast<half, float, false>(dstTensor, tempTensorConv,
-        RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1, { 1, 1, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+    Cast<half, float, false>(
+        dstTensor, tempTensorConv, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void AtanImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void AtanImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -261,8 +274,8 @@ __aicore__ inline void AtanImpl(const LocalTensor<T>& dstTensor, const LocalTens
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void AtanImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const uint32_t calCount)
+__aicore__ inline void AtanImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -275,9 +288,9 @@ __aicore__ inline void AtanImpl(const LocalTensor<T>& dstTensor, const LocalTens
     ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
     AtanImpl<T, isReuseSource>(dstTensor, srcTensor, sharedTmpBuffer, calCount);
 }
-}  // namespace AscendC
+} // namespace AscendC
 
-#endif  // IMPL_MATH_ATAN_ATAN_COMMON_IMPL_H
+#endif // IMPL_MATH_ATAN_ATAN_COMMON_IMPL_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ATAN_ATAN_COMMON_IMPL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

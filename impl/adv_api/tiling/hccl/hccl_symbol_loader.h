@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file hccl_symbol_loader.h
@@ -23,13 +23,15 @@
 namespace HcclApi {
 class HcclSymbolLoader {
 public:
-    static HcclSymbolLoader &GetInstance() {
+    static HcclSymbolLoader& GetInstance()
+    {
         static HcclSymbolLoader instance;
         return instance;
     }
 
     template <typename FuncPtr>
-    FuncPtr Load(const std::string &soName, const std::string &funcName) {
+    FuncPtr Load(const std::string& soName, const std::string& funcName)
+    {
         std::lock_guard<std::mutex> lock(mtx_);
 
         const std::string funcKey = soName + "::" + funcName;
@@ -48,7 +50,7 @@ public:
             return nullptr;
         }
 
-        void *symbol = dlsym(libMap_[soName], funcName.c_str());
+        void* symbol = dlsym(libMap_[soName], funcName.c_str());
         if (symbol == nullptr) {
             TILING_LOG_WARNING("Failed to load symbol %s in so %s.", funcName.c_str(), soName.c_str());
             return nullptr;
@@ -60,11 +62,12 @@ public:
     }
 
 private:
-    std::unordered_map<std::string, void *> libMap_{};
-    std::unordered_map<std::string, void *> symbolMap_{};
+    std::unordered_map<std::string, void*> libMap_{};
+    std::unordered_map<std::string, void*> symbolMap_{};
     mutable std::mutex mtx_;
-    ~HcclSymbolLoader() {
-        for (auto &it: libMap_) {
+    ~HcclSymbolLoader()
+    {
+        for (auto& it : libMap_) {
             if (it.second == nullptr) {
                 continue;
             }
@@ -72,4 +75,4 @@ private:
         }
     }
 };
-}
+} // namespace HcclApi

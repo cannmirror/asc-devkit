@@ -1,20 +1,21 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
- 
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
 /*!
  * \file cosh_common_impl.h
  * \brief
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/cosh/cosh_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/cosh.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/cosh/cosh_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/cosh.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_COSH_COSH_COMMON_IMPL_H__
 #endif
@@ -68,8 +69,8 @@ __aicore__ inline void CoshCompute(
 }
 
 template <>
-__aicore__ inline void CoshCompute<half>(const LocalTensor<half>& dst, const LocalTensor<half>& src,
-    const LocalTensor<half>& tmpBuffer, uint32_t calSize)
+__aicore__ inline void CoshCompute<half>(
+    const LocalTensor<half>& dst, const LocalTensor<half>& src, const LocalTensor<half>& tmpBuffer, uint32_t calSize)
 {
     UnaryRepeatParams unaryParams;
     BinaryRepeatParams binaryParams;
@@ -78,8 +79,9 @@ __aicore__ inline void CoshCompute<half>(const LocalTensor<half>& dst, const Loc
     const LocalTensor<float>& tmpFloatBuffer2 = tmpFloatBuffer1[calSize];
     const LocalTensor<float>& tmpFloatBuffer3 = tmpFloatBuffer2[calSize];
 
-    Cast<float, half, false>(tmpFloatBuffer3, src, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
-        { 1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE });
+    Cast<float, half, false>(
+        tmpFloatBuffer3, src, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
     // Calculates y1=e^(x-ln2).
     Adds<float, false>(tmpFloatBuffer2, tmpFloatBuffer3, SCALAR_LN2, MASK_PLACEHOLDER, 1, unaryParams);
@@ -99,10 +101,10 @@ __aicore__ inline void CoshCompute<half>(const LocalTensor<half>& dst, const Loc
     CoshCast(dst, tmpFloatBuffer3);
 }
 
-
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void CoshImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void CoshImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -123,7 +125,6 @@ __aicore__ inline void CoshImpl(const LocalTensor<T>& dstTensor, const LocalTens
         calSize = tmpBufferSize / COSH_FLOAT_CALC_PROCEDURE / ONE_BLK_SIZE * ONE_BLK_SIZE;
     }
     CheckTmpBufferSize(calSize, 0, bufferSize);
-
 
     const uint32_t round = calCount / calSize;
     const uint32_t tail = calCount % calSize;
@@ -147,8 +148,8 @@ __aicore__ inline void CoshImpl(const LocalTensor<T>& dstTensor, const LocalTens
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void CoshImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const uint32_t calCount)
+__aicore__ inline void CoshImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {

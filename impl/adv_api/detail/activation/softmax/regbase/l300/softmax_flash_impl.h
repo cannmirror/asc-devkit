@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file simple_softmax_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/activation/softmax/regbase/l300/softmax_flash_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/softmaxflash.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/activation/softmax/regbase/l300/softmax_flash_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/softmaxflash.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_FLASH_IMPL_H__
 #endif
@@ -28,9 +29,9 @@
 namespace AscendC {
 namespace Internal {
 template <typename T1, typename T2>
-__simd_vf__ inline void SoftmaxFlashNDImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumUb,
-    __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, __ubuf__ T1* expMaxUb, __ubuf__ T2* inSumUb,
-    __ubuf__ T2* inMaxUb, __ubuf__ float* workUb, __ubuf__ float* tmpUb, const uint16_t srcM,
+__simd_vf__ inline void SoftmaxFlashNDImpl(
+    __ubuf__ T1* dstUb, __ubuf__ T2* sumUb, __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, __ubuf__ T1* expMaxUb,
+    __ubuf__ T2* inSumUb, __ubuf__ T2* inMaxUb, __ubuf__ float* workUb, __ubuf__ float* tmpUb, const uint16_t srcM,
     const uint16_t repeatTimes, const uint32_t srcK)
 {
     constexpr uint32_t stride = GetVecLen() / sizeof(float);
@@ -81,7 +82,7 @@ __simd_vf__ inline void SoftmaxFlashNDImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumU
         Reg::MulAddDst(sumVreg, expMaxVreg, tmpVreg, maskOneBlk);
         Reg::Mul(tmpVreg, expMaxVreg, tmpVreg, maskOneBlk);
         Reg::Div(expMaxVreg, tmpVreg, sumVreg, maskOneBlk);
-        if constexpr (sizeof(T1) == 2 && sizeof (T2) == 4) {
+        if constexpr (sizeof(T1) == 2 && sizeof(T2) == 4) {
             Reg::Interleave(expMaxVreg, tmpVreg, expMaxVreg, expMaxVreg);
             StoreIfNeedCast<T1>(expMaxUb + i * blockStride * 2, expMaxVreg, maskExpMax);
         } else {
@@ -112,9 +113,9 @@ __simd_vf__ inline void SoftmaxFlashNDImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumU
 }
 
 template <typename T1, typename T2>
-__simd_vf__ inline void SoftmaxFlashNDWithTailImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumUb,
-    __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, __ubuf__ T1* expMaxUb, __ubuf__ T2* inSumUb,
-    __ubuf__ T2* inMaxUb, __ubuf__ float* workUb, __ubuf__ float* tmpUb, const uint16_t srcM,
+__simd_vf__ inline void SoftmaxFlashNDWithTailImpl(
+    __ubuf__ T1* dstUb, __ubuf__ T2* sumUb, __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, __ubuf__ T1* expMaxUb,
+    __ubuf__ T2* inSumUb, __ubuf__ T2* inMaxUb, __ubuf__ float* workUb, __ubuf__ float* tmpUb, const uint16_t srcM,
     const uint16_t repeatTimes, const uint32_t srcK, const uint32_t originK)
 {
     constexpr uint32_t stride = GetVecLen() / sizeof(float);
@@ -156,7 +157,7 @@ __simd_vf__ inline void SoftmaxFlashNDWithTailImpl(__ubuf__ T1* dstUb, __ubuf__ 
 
         Reg::ReduceMax(maxVreg, maxVreg, maskFull);
         Duplicate(maxVreg, maxVreg, maskOneBlk);
-        LoadIfNeedCast<T2>(tmpVreg, inMaxUb + i *blockStride, maskOneBlk);
+        LoadIfNeedCast<T2>(tmpVreg, inMaxUb + i * blockStride, maskOneBlk);
         Reg::Max(maxVreg, maxVreg, tmpVreg, maskOneBlk);
         StoreIfNeedCast<T2>(maxUb + i * blockStride, maxVreg, maskOneBlk);
 
@@ -177,7 +178,7 @@ __simd_vf__ inline void SoftmaxFlashNDWithTailImpl(__ubuf__ T1* dstUb, __ubuf__ 
         Reg::MulAddDst(sumVreg, expMaxVreg, tmpVreg, maskOneBlk);
         Reg::Mul(tmpVreg, expMaxVreg, tmpVreg, maskOneBlk);
         Reg::Div(expMaxVreg, tmpVreg, sumVreg, maskOneBlk);
-        if constexpr (sizeof(T1) == 2 && sizeof (T2) == 4) {
+        if constexpr (sizeof(T1) == 2 && sizeof(T2) == 4) {
             Reg::Interleave(expMaxVreg, tmpVreg, expMaxVreg, expMaxVreg);
             StoreIfNeedCast<T1>(expMaxUb + i * blockStride * 2, expMaxVreg, maskExpMax);
         } else {
@@ -210,16 +211,17 @@ __simd_vf__ inline void SoftmaxFlashNDWithTailImpl(__ubuf__ T1* dstUb, __ubuf__ 
 } // namespace Internal
 
 template <typename T1, typename T2, bool isBasicBlock = false>
-__aicore__ inline void SoftmaxFlashPostProcess(const LocalTensor<T1> &dstTensor, const LocalTensor<T2> &sumTensor,
-    const LocalTensor<T2> &maxTensor, const LocalTensor<T1> &srcTensor, const LocalTensor<T1> &expMaxTensor,
-    const LocalTensor<T2> &inSumTensor, const LocalTensor<T2> &inMaxTensor, const LocalTensor<float> &workLocal,
-    const LastAxisShapeND &originalSrcShape, const SoftMaxTiling &tiling, bool isUpdate = false,
-    const SoftMaxShapeInfo &softmaxShapeInfo = {})
+__aicore__ inline void SoftmaxFlashPostProcess(
+    const LocalTensor<T1>& dstTensor, const LocalTensor<T2>& sumTensor, const LocalTensor<T2>& maxTensor,
+    const LocalTensor<T1>& srcTensor, const LocalTensor<T1>& expMaxTensor, const LocalTensor<T2>& inSumTensor,
+    const LocalTensor<T2>& inMaxTensor, const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape,
+    const SoftMaxTiling& tiling, bool isUpdate = false, const SoftMaxShapeInfo& softmaxShapeInfo = {})
 {
-    static_assert((SupportType<Tuple<T1, T2>, Tuple<half, float>, Tuple<half, half>,
-                Tuple<float, float>>()), "Failed to check dtype in SoftmaxFlash, current api "
-                "support dtype combination is T1 : half, T2 : float; T1 : half, T2 : half; "
-                "T1 : float, T2 : float");
+    static_assert(
+        (SupportType<Tuple<T1, T2>, Tuple<half, float>, Tuple<half, half>, Tuple<float, float>>()),
+        "Failed to check dtype in SoftmaxFlash, current api "
+        "support dtype combination is T1 : half, T2 : float; T1 : half, T2 : half; "
+        "T1 : float, T2 : float");
     constexpr uint32_t stride = GetVecLen() / sizeof(float);
     constexpr uint32_t blockStride = GetDataBlockSizeInBytes() / sizeof(T2);
     uint32_t srcK = tiling.srcK;
@@ -238,28 +240,31 @@ __aicore__ inline void SoftmaxFlashPostProcess(const LocalTensor<T1> &dstTensor,
     __ubuf__ float* workUb = (__ubuf__ float*)workLocal.GetPhyAddr(srcM * blockStride);
 
     if (!isUpdate) {
-        SoftMaxNDImpl<T1, T2, isBasicBlock>(dstTensor, sumTensor, maxTensor, srcTensor, workLocal, originalSrcShape, tiling);
+        SoftMaxNDImpl<T1, T2, isBasicBlock>(
+            dstTensor, sumTensor, maxTensor, srcTensor, workLocal, originalSrcShape, tiling);
     } else {
         if constexpr (isBasicBlock) {
-            Internal::SoftmaxFlashNDImpl<T1, T2>(dstUb, sumUb, maxUb, srcUb, expMaxUb, inSumUb,
-                    inMaxUb, workUb, tmpUb, srcM, repeatTimes, srcK);
+            Internal::SoftmaxFlashNDImpl<T1, T2>(
+                dstUb, sumUb, maxUb, srcUb, expMaxUb, inSumUb, inMaxUb, workUb, tmpUb, srcM, repeatTimes, srcK);
         } else {
             if (originalSrcShape.k % stride != 0) {
-                Internal::SoftmaxFlashNDWithTailImpl<T1, T2>(dstUb, sumUb, maxUb, srcUb, expMaxUb, inSumUb,
-                        inMaxUb, workUb, tmpUb, srcM, repeatTimes, srcK, originK);
+                Internal::SoftmaxFlashNDWithTailImpl<T1, T2>(
+                    dstUb, sumUb, maxUb, srcUb, expMaxUb, inSumUb, inMaxUb, workUb, tmpUb, srcM, repeatTimes, srcK,
+                    originK);
             } else {
-                Internal::SoftmaxFlashNDImpl<T1, T2>(dstUb, sumUb, maxUb, srcUb, expMaxUb, inSumUb,
-                        inMaxUb, workUb, tmpUb, srcM, repeatTimes, srcK);
+                Internal::SoftmaxFlashNDImpl<T1, T2>(
+                    dstUb, sumUb, maxUb, srcUb, expMaxUb, inSumUb, inMaxUb, workUb, tmpUb, srcM, repeatTimes, srcK);
             }
         }
     }
 }
 
 template <typename T1, typename T2, bool isReuseSource = false, bool isBasicBlock = false>
-__aicore__ inline void SoftmaxFlashCommonImpl(const LocalTensor<T1> &dstTensor, const LocalTensor<T2> &sumTensor,
-    const LocalTensor<T2> &maxTensor, const LocalTensor<T1> &srcTensor, const LocalTensor<T1> &expMaxTensor,
-    const LocalTensor<T2> &inSumTensor, const LocalTensor<T2> &inMaxTensor, const SoftMaxTiling &tiling,
-    bool isUpdate, const SoftMaxShapeInfo &softmaxShapeInfo)
+__aicore__ inline void SoftmaxFlashCommonImpl(
+    const LocalTensor<T1>& dstTensor, const LocalTensor<T2>& sumTensor, const LocalTensor<T2>& maxTensor,
+    const LocalTensor<T1>& srcTensor, const LocalTensor<T1>& expMaxTensor, const LocalTensor<T2>& inSumTensor,
+    const LocalTensor<T2>& inMaxTensor, const SoftMaxTiling& tiling, bool isUpdate,
+    const SoftMaxShapeInfo& softmaxShapeInfo)
 {
     LocalTensor<float> workLocal;
     PopStackBuffer<float, TPosition::LCM>(workLocal);
@@ -271,18 +276,20 @@ __aicore__ inline void SoftmaxFlashCommonImpl(const LocalTensor<T1> &dstTensor, 
         srcNDinfo = GetLastAxisShapeND(srcShape);
         originalSrcShape = GetLastAxisOriginShapeND(srcShape);
     } else {
-        srcNDinfo = { softmaxShapeInfo.srcM, softmaxShapeInfo.srcK };
-        originalSrcShape = { softmaxShapeInfo.oriSrcM, softmaxShapeInfo.oriSrcK };
+        srcNDinfo = {softmaxShapeInfo.srcM, softmaxShapeInfo.srcK};
+        originalSrcShape = {softmaxShapeInfo.oriSrcM, softmaxShapeInfo.oriSrcK};
     }
     if constexpr (std::is_same_v<T1, half> && std::is_same_v<T2, float>) {
         if (srcNDinfo.k != tiling.srcK || srcNDinfo.m != tiling.srcM) {
             SoftMaxTiling newTiling = tiling;
             SoftMaxFlashTilingFunc(workLocalSize, srcNDinfo, newTiling, FLOAT_NUM_PER_BLK, isUpdate, isBasicBlock);
-            SoftmaxFlashPostProcess<half, float, isBasicBlock>(dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor,
-                inMaxTensor, workLocal, originalSrcShape, newTiling, isUpdate);
+            SoftmaxFlashPostProcess<half, float, isBasicBlock>(
+                dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor, inMaxTensor, workLocal,
+                originalSrcShape, newTiling, isUpdate);
         } else {
-            SoftmaxFlashPostProcess<half, float, isBasicBlock>(dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor,
-                inMaxTensor, workLocal, originalSrcShape, tiling, isUpdate);
+            SoftmaxFlashPostProcess<half, float, isBasicBlock>(
+                dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor, inMaxTensor, workLocal,
+                originalSrcShape, tiling, isUpdate);
         }
     } else if (std::is_same_v<T1, T2>) {
         const uint32_t elementNumPerBlk = ONE_BLK_SIZE / sizeof(T1);
@@ -290,20 +297,23 @@ __aicore__ inline void SoftmaxFlashCommonImpl(const LocalTensor<T1> &dstTensor, 
         if (unlikely(srcNDinfo.k != tiling.srcK || srcNDinfo.m != tiling.srcM)) {
             SoftMaxTiling newTiling = tiling;
             SoftMaxFlashTilingFunc(workLocalSize, srcNDinfo, newTiling, elementNumPerBlk, isUpdate, isBasicBlock);
-            SoftmaxFlashPostProcess<T1, T2, isBasicBlock>(dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor,
-                inMaxTensor, workLocal, originalSrcShape, newTiling, isUpdate);
+            SoftmaxFlashPostProcess<T1, T2, isBasicBlock>(
+                dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor, inMaxTensor, workLocal,
+                originalSrcShape, newTiling, isUpdate);
         } else {
-            SoftmaxFlashPostProcess<T1, T2, isBasicBlock>(dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor,
-                inMaxTensor, workLocal, originalSrcShape, tiling, isUpdate);
+            SoftmaxFlashPostProcess<T1, T2, isBasicBlock>(
+                dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor, inMaxTensor, workLocal,
+                originalSrcShape, tiling, isUpdate);
         }
     }
 }
 
 template <typename T1, typename T2, bool isReuseSource = false, bool isBasicBlock = false>
-__aicore__ inline void SoftmaxFlashTmpBufCommonImpl(const LocalTensor<T1> &dstTensor, const LocalTensor<T2> &sumTensor,
-    const LocalTensor<T2> &maxTensor, const LocalTensor<T1> &srcTensor, const LocalTensor<T1> &expMaxTensor,
-    const LocalTensor<T2> &inSumTensor, const LocalTensor<T2> &inMaxTensor, const LocalTensor<uint8_t> &sharedTmpBuffer,
-    const SoftMaxTiling &tiling, bool isUpdate, const SoftMaxShapeInfo &softmaxShapeInfo)
+__aicore__ inline void SoftmaxFlashTmpBufCommonImpl(
+    const LocalTensor<T1>& dstTensor, const LocalTensor<T2>& sumTensor, const LocalTensor<T2>& maxTensor,
+    const LocalTensor<T1>& srcTensor, const LocalTensor<T1>& expMaxTensor, const LocalTensor<T2>& inSumTensor,
+    const LocalTensor<T2>& inMaxTensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const SoftMaxTiling& tiling,
+    bool isUpdate, const SoftMaxShapeInfo& softmaxShapeInfo)
 {
     auto tempBuffer = sharedTmpBuffer.ReinterpretCast<float>();
     uint32_t workLocalSize = tempBuffer.GetSize();
@@ -314,18 +324,20 @@ __aicore__ inline void SoftmaxFlashTmpBufCommonImpl(const LocalTensor<T1> &dstTe
         srcNDinfo = GetLastAxisShapeND(srcShape);
         originalSrcShape = GetLastAxisOriginShapeND(srcShape);
     } else {
-        srcNDinfo = { softmaxShapeInfo.srcM, softmaxShapeInfo.srcK };
-        originalSrcShape = { softmaxShapeInfo.oriSrcM, softmaxShapeInfo.oriSrcK };
+        srcNDinfo = {softmaxShapeInfo.srcM, softmaxShapeInfo.srcK};
+        originalSrcShape = {softmaxShapeInfo.oriSrcM, softmaxShapeInfo.oriSrcK};
     }
     if constexpr (std::is_same_v<T1, half> && std::is_same_v<T2, float>) {
         if (srcNDinfo.k != tiling.srcK || srcNDinfo.m != tiling.srcM) {
             SoftMaxTiling newTiling = tiling;
             SoftMaxFlashTilingFunc(workLocalSize, srcNDinfo, newTiling, FLOAT_NUM_PER_BLK, isUpdate, isBasicBlock);
-            SoftmaxFlashPostProcess<half, float, isBasicBlock>(dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor,
-                inMaxTensor, tempBuffer, originalSrcShape, newTiling, isUpdate);
+            SoftmaxFlashPostProcess<half, float, isBasicBlock>(
+                dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor, inMaxTensor, tempBuffer,
+                originalSrcShape, newTiling, isUpdate);
         } else {
-            SoftmaxFlashPostProcess<half, float, isBasicBlock>(dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor,
-                inMaxTensor, tempBuffer, originalSrcShape, tiling, isUpdate);
+            SoftmaxFlashPostProcess<half, float, isBasicBlock>(
+                dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor, inMaxTensor, tempBuffer,
+                originalSrcShape, tiling, isUpdate);
         }
     } else if (std::is_same_v<T1, T2>) {
         const uint32_t elementNumPerBlk = ONE_BLK_SIZE / sizeof(T1);
@@ -333,16 +345,18 @@ __aicore__ inline void SoftmaxFlashTmpBufCommonImpl(const LocalTensor<T1> &dstTe
         if (unlikely(srcNDinfo.k != tiling.srcK || srcNDinfo.m != tiling.srcM)) {
             SoftMaxTiling newTiling = tiling;
             SoftMaxFlashTilingFunc(workLocalSize, srcNDinfo, newTiling, elementNumPerBlk, isUpdate, isBasicBlock);
-            SoftmaxFlashPostProcess<T1, T2, isBasicBlock>(dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor,
-                inMaxTensor, tempBuffer, originalSrcShape, newTiling, isUpdate);
+            SoftmaxFlashPostProcess<T1, T2, isBasicBlock>(
+                dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor, inMaxTensor, tempBuffer,
+                originalSrcShape, newTiling, isUpdate);
         } else {
-            SoftmaxFlashPostProcess<T1, T2, isBasicBlock>(dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor,
-                inMaxTensor, tempBuffer, originalSrcShape, tiling, isUpdate);
+            SoftmaxFlashPostProcess<T1, T2, isBasicBlock>(
+                dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor, inMaxTensor, tempBuffer,
+                originalSrcShape, tiling, isUpdate);
         }
     }
 }
 
-}
+} // namespace AscendC
 #endif // IMPL_ACTIVATION_SOFTMAX_L300_SOFTMAX_FLASH_IMPL_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_FLASH_IMPL_H__)

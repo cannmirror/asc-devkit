@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file simple_softmax_common_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/activation/softmax/membase/common/simple_softmax_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/simplesoftmax.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/activation/softmax/membase/common/simple_softmax_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/simplesoftmax.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIMPLE_SOFTMAX_COMMON_IMPL_H__
 #endif
@@ -22,9 +23,10 @@
 #define IMPL_ACTIVATION_SOFTMAX_SIMPLE_SOFTMAX_COMMON_IMPL_H
 
 namespace AscendC {
-__aicore__ inline void SimpleSoftMaxGenericNZImpl(const LocalTensor<float>& dst, const LocalTensor<float>& inSumTensor,
-    const LocalTensor<float>& inMaxTensor, const LocalTensor<float>& src, const LocalTensor<float>& workLocal,
-    const SoftMaxTiling& tiling, const uint32_t& offset1, const uint32_t& offset2, const uint32_t& splitCount)
+__aicore__ inline void SimpleSoftMaxGenericNZImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& inSumTensor, const LocalTensor<float>& inMaxTensor,
+    const LocalTensor<float>& src, const LocalTensor<float>& workLocal, const SoftMaxTiling& tiling,
+    const uint32_t& offset1, const uint32_t& offset2, const uint32_t& splitCount)
 {
     const uint32_t splitOffset = tiling.splitM * SOFTMAX_SHAPE_NZ_BASIC_COUNT;
     LocalTensor<float> tmpBuffer0 = workLocal;
@@ -33,7 +35,7 @@ __aicore__ inline void SimpleSoftMaxGenericNZImpl(const LocalTensor<float>& dst,
     const uint32_t splitNZBlockCount = tiling.srcK / SOFTMAX_SHAPE_NZ_BASIC_COUNT;
     const uint32_t lastSplitNZBlockOffset = splitOffset * (splitNZBlockCount - 1);
 
-    DataCopyParams copyParams = { originalSrcM, 1, 0, 1 };
+    DataCopyParams copyParams = {originalSrcM, 1, 0, 1};
     DataCopy(tmpBuffer0, inMaxTensor[offset2], copyParams);
     DataCopy(tmpBuffer0[FLOAT_NUM_PER_BLK], inMaxTensor[offset2], copyParams);
     DataCopy(tmpBuffer1, inSumTensor[offset2], copyParams);
@@ -42,29 +44,33 @@ __aicore__ inline void SimpleSoftMaxGenericNZImpl(const LocalTensor<float>& dst,
     SetMaskCount();
     SetVectorMask<float, MaskMode::COUNTER>(0, splitCount);
     for (uint32_t j = 0; j < splitNZBlockCount; j++) {
-        Sub<float, false>(dst[offset1 + j * tiling.srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT],
+        Sub<float, false>(
+            dst[offset1 + j * tiling.srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT],
             src[offset1 + j * tiling.srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT], tmpBuffer0, MASK_PLACEHOLDER, 1,
-            { 1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+            {1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     }
     PipeBarrier<PIPE_V>();
     for (uint32_t j = 0; j < splitNZBlockCount; j++) {
-        Exp<float, false>(dst[offset1 + j * tiling.srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT],
+        Exp<float, false>(
+            dst[offset1 + j * tiling.srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT],
             dst[offset1 + j * tiling.srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT], MASK_PLACEHOLDER, 1,
-            { 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+            {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     }
     PipeBarrier<PIPE_V>();
     for (uint32_t j = 0; j < splitNZBlockCount; j++) {
-        Div<float, false>(dst[offset1 + j * tiling.srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT],
-            dst[offset1 + j * tiling.srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT], tmpBuffer1, MASK_PLACEHOLDER,
-            1, { 1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+        Div<float, false>(
+            dst[offset1 + j * tiling.srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT],
+            dst[offset1 + j * tiling.srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT], tmpBuffer1, MASK_PLACEHOLDER, 1,
+            {1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     }
     SetMaskNorm();
     ResetMask();
 }
 
-__aicore__ inline void SimpleSoftMaxGenericNZImpl(const LocalTensor<half>& dst, const LocalTensor<half>& inSumTensor,
-    const LocalTensor<half>& inMaxTensor, const LocalTensor<half>& src, const LocalTensor<float>& workLocal,
-    const SoftMaxTiling& tiling, const uint32_t& offset1, const uint32_t& offset2, const uint32_t& splitCount)
+__aicore__ inline void SimpleSoftMaxGenericNZImpl(
+    const LocalTensor<half>& dst, const LocalTensor<half>& inSumTensor, const LocalTensor<half>& inMaxTensor,
+    const LocalTensor<half>& src, const LocalTensor<float>& workLocal, const SoftMaxTiling& tiling,
+    const uint32_t& offset1, const uint32_t& offset2, const uint32_t& splitCount)
 {
     LocalTensor<float> tmpBuffer0 = workLocal;
     LocalTensor<float> tmpBuffer1 = workLocal[tiling.splitSize];
@@ -74,47 +80,53 @@ __aicore__ inline void SimpleSoftMaxGenericNZImpl(const LocalTensor<half>& dst, 
     SetMaskCount();
     SetVectorMask<float, MaskMode::COUNTER>(0, splitCount);
 
-    Cast<float, half, false>(tmpBuffer1, inMaxTensor[offset2], RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
-        { 1, 1, DEFAULT_REPEAT_STRIDE, HALF_REPEAT_STRIDE });
+    Cast<float, half, false>(
+        tmpBuffer1, inMaxTensor[offset2], RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, HALF_REPEAT_STRIDE});
 
     for (uint32_t j = 0; j < splitNZBlockCount; j++) {
-        Cast<float, half, false>(tmpBuffer0[splitOffset * j],
-            src[offset1 + j * tiling.srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT], RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
-            { 1, 1, DEFAULT_REPEAT_STRIDE, HALF_REPEAT_STRIDE });
+        Cast<float, half, false>(
+            tmpBuffer0[splitOffset * j], src[offset1 + j * tiling.srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT],
+            RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1, {1, 1, DEFAULT_REPEAT_STRIDE, HALF_REPEAT_STRIDE});
     }
     PipeBarrier<PIPE_V>();
 
     for (uint32_t j = 0; j < splitNZBlockCount; j++) {
-        Sub<float, false>(tmpBuffer0[splitOffset * j], tmpBuffer0[splitOffset * j], tmpBuffer1, MASK_PLACEHOLDER, 1,
-            { 1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+        Sub<float, false>(
+            tmpBuffer0[splitOffset * j], tmpBuffer0[splitOffset * j], tmpBuffer1, MASK_PLACEHOLDER, 1,
+            {1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     }
     PipeBarrier<PIPE_V>();
     for (uint32_t j = 0; j < splitNZBlockCount; j++) {
-        Exp<float, false>(tmpBuffer0[splitOffset * j], tmpBuffer0[splitOffset * j], MASK_PLACEHOLDER, 1,
-            { 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+        Exp<float, false>(
+            tmpBuffer0[splitOffset * j], tmpBuffer0[splitOffset * j], MASK_PLACEHOLDER, 1,
+            {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     }
 
-    Cast<float, half, false>(tmpBuffer1, inSumTensor[offset2], RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
-        { 1, 1, DEFAULT_REPEAT_STRIDE, HALF_REPEAT_STRIDE });
+    Cast<float, half, false>(
+        tmpBuffer1, inSumTensor[offset2], RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, HALF_REPEAT_STRIDE});
 
     PipeBarrier<PIPE_V>();
     for (uint32_t j = 0; j < splitNZBlockCount; j++) {
-        Div<float, false>(tmpBuffer0[splitOffset * j], tmpBuffer0[splitOffset * j], tmpBuffer1, MASK_PLACEHOLDER, 1,
-            { 1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+        Div<float, false>(
+            tmpBuffer0[splitOffset * j], tmpBuffer0[splitOffset * j], tmpBuffer1, MASK_PLACEHOLDER, 1,
+            {1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     }
     PipeBarrier<PIPE_V>();
     for (uint32_t j = 0; j < splitNZBlockCount; j++) {
-        Cast<half, float, false>(dst[offset1 + j * tiling.srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT],
-            tmpBuffer0[splitOffset * j], FLOAT2HALF_ROUND_MODE, MASK_PLACEHOLDER, 1,
-            { 1, 1, HALF_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+        Cast<half, float, false>(
+            dst[offset1 + j * tiling.srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT], tmpBuffer0[splitOffset * j],
+            FLOAT2HALF_ROUND_MODE, MASK_PLACEHOLDER, 1, {1, 1, HALF_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     }
     SetMaskNorm();
     ResetMask();
 }
 
-__aicore__ inline void SimpleSoftMaxGenericNZImpl(const LocalTensor<half>& dst, const LocalTensor<float>& inSumTensor,
-    const LocalTensor<float>& inMaxTensor, const LocalTensor<half>& src, const LocalTensor<float>& workLocal,
-    const SoftMaxTiling& tiling, const uint32_t& offset1, const uint32_t& offset2, const uint32_t& splitCount)
+__aicore__ inline void SimpleSoftMaxGenericNZImpl(
+    const LocalTensor<half>& dst, const LocalTensor<float>& inSumTensor, const LocalTensor<float>& inMaxTensor,
+    const LocalTensor<half>& src, const LocalTensor<float>& workLocal, const SoftMaxTiling& tiling,
+    const uint32_t& offset1, const uint32_t& offset2, const uint32_t& splitCount)
 {
     LocalTensor<float> tmpBuffer0 = workLocal;
     LocalTensor<float> tmpBuffer1 = workLocal[tiling.splitSize];
@@ -123,7 +135,7 @@ __aicore__ inline void SimpleSoftMaxGenericNZImpl(const LocalTensor<half>& dst, 
     const uint32_t splitNZBlockCount = tiling.srcK / SOFTMAX_SHAPE_NZ_BASIC_COUNT;
     const uint32_t lastSplitNZBlockOffset = splitOffset * (splitNZBlockCount - 1);
 
-    DataCopyParams copyParams = { originalSrcM, 1, 0, 1 };
+    DataCopyParams copyParams = {originalSrcM, 1, 0, 1};
     DataCopy(tmpBuffer1, inMaxTensor[offset2], copyParams);
     DataCopy(tmpBuffer1[FLOAT_NUM_PER_BLK], inMaxTensor[offset2], copyParams);
 
@@ -131,19 +143,21 @@ __aicore__ inline void SimpleSoftMaxGenericNZImpl(const LocalTensor<half>& dst, 
     SetVectorMask<float, MaskMode::COUNTER>(0, splitCount);
 
     for (uint32_t j = 0; j < splitNZBlockCount; j++) {
-        Cast<float, half, false>(tmpBuffer0[splitOffset * j],
-            src[offset1 + j * tiling.srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT], RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
-            { 1, 1, DEFAULT_REPEAT_STRIDE, HALF_REPEAT_STRIDE });
+        Cast<float, half, false>(
+            tmpBuffer0[splitOffset * j], src[offset1 + j * tiling.srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT],
+            RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1, {1, 1, DEFAULT_REPEAT_STRIDE, HALF_REPEAT_STRIDE});
     }
     PipeBarrier<PIPE_V>();
     for (uint32_t j = 0; j < splitNZBlockCount; j++) {
-        Sub<float, false>(tmpBuffer0[splitOffset * j], tmpBuffer0[splitOffset * j], tmpBuffer1, MASK_PLACEHOLDER, 1,
-            { 1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+        Sub<float, false>(
+            tmpBuffer0[splitOffset * j], tmpBuffer0[splitOffset * j], tmpBuffer1, MASK_PLACEHOLDER, 1,
+            {1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     }
     PipeBarrier<PIPE_V>();
     for (uint32_t j = 0; j < splitNZBlockCount; j++) {
-        Exp<float, false>(tmpBuffer0[splitOffset * j], tmpBuffer0[splitOffset * j], MASK_PLACEHOLDER, 1,
-            { 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+        Exp<float, false>(
+            tmpBuffer0[splitOffset * j], tmpBuffer0[splitOffset * j], MASK_PLACEHOLDER, 1,
+            {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     }
     SetMaskNorm();
     ResetMask();
@@ -155,23 +169,24 @@ __aicore__ inline void SimpleSoftMaxGenericNZImpl(const LocalTensor<half>& dst, 
     SetMaskCount();
     SetVectorMask<float, MaskMode::COUNTER>(0, splitCount);
     for (uint32_t j = 0; j < splitNZBlockCount; j++) {
-        Div<float, false>(tmpBuffer0[splitOffset * j], tmpBuffer0[splitOffset * j], tmpBuffer1, MASK_PLACEHOLDER, 1,
-            { 1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+        Div<float, false>(
+            tmpBuffer0[splitOffset * j], tmpBuffer0[splitOffset * j], tmpBuffer1, MASK_PLACEHOLDER, 1,
+            {1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     }
     PipeBarrier<PIPE_V>();
     for (uint32_t j = 0; j < splitNZBlockCount; j++) {
-        Cast<half, float, false>(dst[offset1 + j * tiling.srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT],
-            tmpBuffer0[splitOffset * j], FLOAT2HALF_ROUND_MODE, MASK_PLACEHOLDER, 1,
-            { 1, 1, HALF_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+        Cast<half, float, false>(
+            dst[offset1 + j * tiling.srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT], tmpBuffer0[splitOffset * j],
+            FLOAT2HALF_ROUND_MODE, MASK_PLACEHOLDER, 1, {1, 1, HALF_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     }
     SetMaskNorm();
     ResetMask();
 }
 
 template <typename T1, typename T2>
-__aicore__ inline void SimpleSoftMaxNZImpl(const LocalTensor<T1>& dst, const LocalTensor<T2>& inSumTensor,
-    const LocalTensor<T2>& inMaxTensor, const LocalTensor<T1>& src, const LocalTensor<float> workLocal,
-    const SoftMaxTiling& tiling)
+__aicore__ inline void SimpleSoftMaxNZImpl(
+    const LocalTensor<T1>& dst, const LocalTensor<T2>& inSumTensor, const LocalTensor<T2>& inMaxTensor,
+    const LocalTensor<T1>& src, const LocalTensor<float> workLocal, const SoftMaxTiling& tiling)
 {
     uint32_t offset1 = 0;
     uint32_t offset2 = 0;
@@ -191,9 +206,9 @@ __aicore__ inline void SimpleSoftMaxNZImpl(const LocalTensor<T1>& dst, const Loc
     }
 }
 
-__aicore__ inline void SimpleSoftMaxBasicBlock(const LocalTensor<half>& dst, const LocalTensor<half>& expSumTensor,
-    const LocalTensor<half>& maxTensor, const LocalTensor<half>& src, const LocalTensor<float>& workLocal,
-    const SoftMaxTiling& tiling)
+__aicore__ inline void SimpleSoftMaxBasicBlock(
+    const LocalTensor<half>& dst, const LocalTensor<half>& expSumTensor, const LocalTensor<half>& maxTensor,
+    const LocalTensor<half>& src, const LocalTensor<float>& workLocal, const SoftMaxTiling& tiling)
 {
     const LocalTensor<float>& tmpBuffer0 = workLocal;
     const LocalTensor<float>& tmpBuffer1 = workLocal[tiling.splitSize];
@@ -209,36 +224,43 @@ __aicore__ inline void SimpleSoftMaxBasicBlock(const LocalTensor<half>& dst, con
         offset2 = i * tiling.reduceSize;
         offset1 = i * tiling.splitSize;
 
-        Cast<float, half, false>(tmpBuffer1, maxTensor[offset2], RoundMode::CAST_NONE, MASK_PLACEHOLDER,
-            reduceCeilValue, { 1, 1, DEFAULT_REPEAT_STRIDE, HALF_REPEAT_STRIDE });
-        Cast<float, half, false>(tmpBuffer0, src[offset1], RoundMode::CAST_NONE, MASK_PLACEHOLDER, repeatTimes,
-            { 1, 1, DEFAULT_REPEAT_STRIDE, HALF_REPEAT_STRIDE });
+        Cast<float, half, false>(
+            tmpBuffer1, maxTensor[offset2], RoundMode::CAST_NONE, MASK_PLACEHOLDER, reduceCeilValue,
+            {1, 1, DEFAULT_REPEAT_STRIDE, HALF_REPEAT_STRIDE});
+        Cast<float, half, false>(
+            tmpBuffer0, src[offset1], RoundMode::CAST_NONE, MASK_PLACEHOLDER, repeatTimes,
+            {1, 1, DEFAULT_REPEAT_STRIDE, HALF_REPEAT_STRIDE});
 
         PipeBarrier<PIPE_V>();
         for (uint32_t j = 0; j < splitBlock; ++j) {
-            Sub<float, false>(tmpBuffer0[FLOAT_REPEAT_SIZE * j], tmpBuffer0[FLOAT_REPEAT_SIZE * j], tmpBuffer1,
-                MASK_PLACEHOLDER, (uint8_t)(tiling.splitM), { 1, 1, 0, offset, offset, HALF_FACTOR });
+            Sub<float, false>(
+                tmpBuffer0[FLOAT_REPEAT_SIZE * j], tmpBuffer0[FLOAT_REPEAT_SIZE * j], tmpBuffer1, MASK_PLACEHOLDER,
+                (uint8_t)(tiling.splitM), {1, 1, 0, offset, offset, HALF_FACTOR});
         }
         PipeBarrier<PIPE_V>();
-        Exp<float, false>(tmpBuffer0, tmpBuffer0, MASK_PLACEHOLDER, (uint8_t)(tiling.splitSize / FLOAT_REPEAT_SIZE),
-            { 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+        Exp<float, false>(
+            tmpBuffer0, tmpBuffer0, MASK_PLACEHOLDER, (uint8_t)(tiling.splitSize / FLOAT_REPEAT_SIZE),
+            {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
 
-        Cast<float, half, false>(tmpBuffer1, expSumTensor[offset2], RoundMode::CAST_NONE, MASK_PLACEHOLDER,
-            reduceCeilValue, { 1, 1, DEFAULT_REPEAT_STRIDE, HALF_REPEAT_STRIDE });
+        Cast<float, half, false>(
+            tmpBuffer1, expSumTensor[offset2], RoundMode::CAST_NONE, MASK_PLACEHOLDER, reduceCeilValue,
+            {1, 1, DEFAULT_REPEAT_STRIDE, HALF_REPEAT_STRIDE});
         PipeBarrier<PIPE_V>();
         for (uint32_t j = 0; j < splitBlock; ++j) {
-            Div<float, false>(tmpBuffer0[FLOAT_REPEAT_SIZE * j], tmpBuffer0[FLOAT_REPEAT_SIZE * j], tmpBuffer1,
-                MASK_PLACEHOLDER, (uint8_t)(tiling.splitM), { 1, 1, 0, offset, offset, HALF_FACTOR });
+            Div<float, false>(
+                tmpBuffer0[FLOAT_REPEAT_SIZE * j], tmpBuffer0[FLOAT_REPEAT_SIZE * j], tmpBuffer1, MASK_PLACEHOLDER,
+                (uint8_t)(tiling.splitM), {1, 1, 0, offset, offset, HALF_FACTOR});
         }
         PipeBarrier<PIPE_V>();
-        Cast<half, float, false>(dst[offset1], tmpBuffer0, FLOAT2HALF_ROUND_MODE, MASK_PLACEHOLDER, repeatTimes,
-            { 1, 1, HALF_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+        Cast<half, float, false>(
+            dst[offset1], tmpBuffer0, FLOAT2HALF_ROUND_MODE, MASK_PLACEHOLDER, repeatTimes,
+            {1, 1, HALF_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     }
 }
 
-__aicore__ inline void SimpleSoftMaxBasicBlock(const LocalTensor<float>& dst, const LocalTensor<float>& expSumTensor,
-    const LocalTensor<float>& maxTensor, const LocalTensor<float>& src, const LocalTensor<float>& workLocal,
-    const SoftMaxTiling& tiling)
+__aicore__ inline void SimpleSoftMaxBasicBlock(
+    const LocalTensor<float>& dst, const LocalTensor<float>& expSumTensor, const LocalTensor<float>& maxTensor,
+    const LocalTensor<float>& src, const LocalTensor<float>& workLocal, const SoftMaxTiling& tiling)
 {
 #if ASCENDC_CPU_DEBUG == 1
     uint32_t offset1 = 0;
@@ -251,17 +273,20 @@ __aicore__ inline void SimpleSoftMaxBasicBlock(const LocalTensor<float>& dst, co
         offset1 = i * tiling.splitSize;
 
         for (uint32_t j = 0; j < splitBlock; ++j) {
-            Sub<float, false>(dst[offset1 + FLOAT_REPEAT_SIZE * j], src[offset1 + FLOAT_REPEAT_SIZE * j],
-                maxTensor[offset2], MASK_PLACEHOLDER, (uint8_t)(tiling.splitM), { 1, 1, 0, offset, offset, 1 });
+            Sub<float, false>(
+                dst[offset1 + FLOAT_REPEAT_SIZE * j], src[offset1 + FLOAT_REPEAT_SIZE * j], maxTensor[offset2],
+                MASK_PLACEHOLDER, (uint8_t)(tiling.splitM), {1, 1, 0, offset, offset, 1});
         }
         PipeBarrier<PIPE_V>();
-        Exp<float, false>(dst[offset1], dst[offset1], MASK_PLACEHOLDER, (uint8_t)(tiling.splitSize / FLOAT_REPEAT_SIZE),
-            { 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+        Exp<float, false>(
+            dst[offset1], dst[offset1], MASK_PLACEHOLDER, (uint8_t)(tiling.splitSize / FLOAT_REPEAT_SIZE),
+            {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
         PipeBarrier<PIPE_V>();
 
         for (uint32_t j = 0; j < splitBlock; ++j) {
-            Div<float, false>(dst[offset1 + FLOAT_REPEAT_SIZE * j], dst[offset1 + FLOAT_REPEAT_SIZE * j],
-                expSumTensor[offset2], MASK_PLACEHOLDER, (uint8_t)(tiling.splitM), { 1, 1, 0, offset, offset, 1 });
+            Div<float, false>(
+                dst[offset1 + FLOAT_REPEAT_SIZE * j], dst[offset1 + FLOAT_REPEAT_SIZE * j], expSumTensor[offset2],
+                MASK_PLACEHOLDER, (uint8_t)(tiling.splitM), {1, 1, 0, offset, offset, 1});
         }
     }
 #else
@@ -271,18 +296,20 @@ __aicore__ inline void SimpleSoftMaxBasicBlock(const LocalTensor<float>& dst, co
     SetMaskCount();
     SetVectorMask<float, MaskMode::COUNTER>(0, tiling.srcM * FLOAT_REPEAT_SIZE);
     for (uint32_t j = 0; j < splitBlock; ++j) {
-        Sub<float, false>(dst[FLOAT_REPEAT_SIZE * j], src[FLOAT_REPEAT_SIZE * j], maxTensor, MASK_PLACEHOLDER, 1,
-            { 1, 1, 0, repstride, repstride, 1 });
+        Sub<float, false>(
+            dst[FLOAT_REPEAT_SIZE * j], src[FLOAT_REPEAT_SIZE * j], maxTensor, MASK_PLACEHOLDER, 1,
+            {1, 1, 0, repstride, repstride, 1});
     }
     SetVectorMask<float, MaskMode::COUNTER>(0, tiling.srcSize);
     PipeBarrier<PIPE_V>();
-    Exp<float, false>(dst, dst, MASK_PLACEHOLDER, 1, { 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+    Exp<float, false>(dst, dst, MASK_PLACEHOLDER, 1, {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
 
     SetVectorMask<float, MaskMode::COUNTER>(0, tiling.srcM * FLOAT_REPEAT_SIZE);
     for (uint32_t j = 0; j < splitBlock; ++j) {
-        Div<float, false>(dst[FLOAT_REPEAT_SIZE * j], dst[FLOAT_REPEAT_SIZE * j], expSumTensor, MASK_PLACEHOLDER, 1,
-            { 1, 1, 0, repstride, repstride, 1 });
+        Div<float, false>(
+            dst[FLOAT_REPEAT_SIZE * j], dst[FLOAT_REPEAT_SIZE * j], expSumTensor, MASK_PLACEHOLDER, 1,
+            {1, 1, 0, repstride, repstride, 1});
     }
     SetMaskNorm();
     ResetMask();
@@ -290,9 +317,10 @@ __aicore__ inline void SimpleSoftMaxBasicBlock(const LocalTensor<float>& dst, co
 }
 
 template <const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>
-__aicore__ inline void SimpleSoftMaxGenericNDImpl(const LocalTensor<half>& dst, const LocalTensor<half>& inSumTensor,
-    const LocalTensor<half>& inMaxTensor, const LocalTensor<half>& src, const LocalTensor<float>& workLocal,
-    const SoftMaxTiling& tiling, const uint32_t offset1, const uint32_t offset2, const uint32_t curSplitM)
+__aicore__ inline void SimpleSoftMaxGenericNDImpl(
+    const LocalTensor<half>& dst, const LocalTensor<half>& inSumTensor, const LocalTensor<half>& inMaxTensor,
+    const LocalTensor<half>& src, const LocalTensor<float>& workLocal, const SoftMaxTiling& tiling,
+    const uint32_t offset1, const uint32_t offset2, const uint32_t curSplitM)
 {
     const LocalTensor<float>& tmpBuffer0 = workLocal;
     const LocalTensor<float>& tmpBuffer2 = workLocal[tiling.splitSize];
@@ -319,16 +347,16 @@ __aicore__ inline void SimpleSoftMaxGenericNDImpl(const LocalTensor<half>& dst, 
         Cast(tmpBuffer2, inMaxTensor[offset2], RoundMode::CAST_NONE, reduceSize);
         PipeBarrier<PIPE_V>();
 
-        GenericSubNDImpl(tmpBuffer0, tmpBuffer0, tmpBuffer2, curSplitM, tiling.splitK,
-            DEFAULT_REPEAT_STRIDE * HALF_FACTOR);
+        GenericSubNDImpl(
+            tmpBuffer0, tmpBuffer0, tmpBuffer2, curSplitM, tiling.splitK, DEFAULT_REPEAT_STRIDE * HALF_FACTOR);
 
         PipeBarrier<PIPE_V>();
         Exp(tmpBuffer0, tmpBuffer0, splitSize);
 
         Cast(tmpBuffer2, inSumTensor[offset2], RoundMode::CAST_NONE, reduceSize);
         PipeBarrier<PIPE_V>();
-        GenericDivNDImpl(tmpBuffer0, tmpBuffer0, tmpBuffer2, curSplitM, tiling.splitK,
-            DEFAULT_REPEAT_STRIDE * HALF_FACTOR);
+        GenericDivNDImpl(
+            tmpBuffer0, tmpBuffer0, tmpBuffer2, curSplitM, tiling.splitK, DEFAULT_REPEAT_STRIDE * HALF_FACTOR);
 
         PipeBarrier<PIPE_V>();
         Cast(dst[offset1], tmpBuffer0, FLOAT2HALF_ROUND_MODE, splitSize);
@@ -336,9 +364,10 @@ __aicore__ inline void SimpleSoftMaxGenericNDImpl(const LocalTensor<half>& dst, 
 }
 
 template <const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>
-__aicore__ inline void SimpleSoftMaxGenericNDImpl(const LocalTensor<float>& dst, const LocalTensor<float>& inSumTensor,
-    const LocalTensor<float>& inMaxTensor, const LocalTensor<float>& src, const LocalTensor<float>& workLocal,
-    const SoftMaxTiling& tiling, const uint32_t offset1, const uint32_t offset2, const uint32_t curSplitM)
+__aicore__ inline void SimpleSoftMaxGenericNDImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& inSumTensor, const LocalTensor<float>& inMaxTensor,
+    const LocalTensor<float>& src, const LocalTensor<float>& workLocal, const SoftMaxTiling& tiling,
+    const uint32_t offset1, const uint32_t offset2, const uint32_t curSplitM)
 {
     const uint32_t splitSize = curSplitM * tiling.splitK;
 
@@ -349,27 +378,27 @@ __aicore__ inline void SimpleSoftMaxGenericNDImpl(const LocalTensor<float>& dst,
         PipeBarrier<PIPE_V>();
         GenericDivNDImpl(dst[offset1], dst[offset1], inSumTensor[offset2], curSplitM, tiling.srcK, tiling.reduceK);
     } else {
-        GenericSubNDImpl(dst[offset1], src[offset1], inMaxTensor[offset2], curSplitM, tiling.splitK,
-            DEFAULT_REPEAT_STRIDE);
+        GenericSubNDImpl(
+            dst[offset1], src[offset1], inMaxTensor[offset2], curSplitM, tiling.splitK, DEFAULT_REPEAT_STRIDE);
         PipeBarrier<PIPE_V>();
         Exp(dst[offset1], dst[offset1], splitSize);
         PipeBarrier<PIPE_V>();
-        GenericDivNDImpl(dst[offset1], dst[offset1], inSumTensor[offset2], curSplitM, tiling.splitK,
-            DEFAULT_REPEAT_STRIDE);
+        GenericDivNDImpl(
+            dst[offset1], dst[offset1], inSumTensor[offset2], curSplitM, tiling.splitK, DEFAULT_REPEAT_STRIDE);
     }
 }
 
 template <typename T, bool isBasicBlock = false, const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>
-__aicore__ inline void SimpleSoftMaxNDImpl(const LocalTensor<T>& dst, const LocalTensor<T>& inSumTensor,
-    const LocalTensor<T>& inMaxTensor, const LocalTensor<T>& src, const LocalTensor<float> workLocal,
-    const SoftMaxTiling& tiling)
+__aicore__ inline void SimpleSoftMaxNDImpl(
+    const LocalTensor<T>& dst, const LocalTensor<T>& inSumTensor, const LocalTensor<T>& inMaxTensor,
+    const LocalTensor<T>& src, const LocalTensor<float> workLocal, const SoftMaxTiling& tiling)
 {
     if constexpr (isBasicBlock) {
         SimpleSoftMaxBasicBlock(dst, inSumTensor, inMaxTensor, src, workLocal, tiling);
     } else {
         if constexpr (sizeof(T) == sizeof(float)) {
-            SimpleSoftMaxGenericNDImpl<config>(dst, inSumTensor, inMaxTensor, src, workLocal, tiling, 0, 0,
-                tiling.srcM);
+            SimpleSoftMaxGenericNDImpl<config>(
+                dst, inSumTensor, inMaxTensor, src, workLocal, tiling, 0, 0, tiling.srcM);
         } else {
             uint32_t offset1 = 0;
             uint32_t offset2 = 0;
@@ -377,23 +406,23 @@ __aicore__ inline void SimpleSoftMaxNDImpl(const LocalTensor<T>& dst, const Loca
             for (uint32_t i = 0; i < tiling.rangeM; i++) {
                 offset1 = i * tiling.splitSize;
                 offset2 = i * tiling.reduceSize;
-                SimpleSoftMaxGenericNDImpl<config>(dst, inSumTensor, inMaxTensor, src, workLocal, tiling, offset1,
-                    offset2, tiling.splitM);
+                SimpleSoftMaxGenericNDImpl<config>(
+                    dst, inSumTensor, inMaxTensor, src, workLocal, tiling, offset1, offset2, tiling.splitM);
             }
             PipeBarrier<PIPE_V>();
             if (tiling.tailM != 0) {
                 offset1 = tiling.rangeM * tiling.splitSize;
                 offset2 = tiling.rangeM * tiling.reduceSize;
-                SimpleSoftMaxGenericNDImpl<config>(dst, inSumTensor, inMaxTensor, src, workLocal, tiling, offset1,
-                    offset2, tiling.tailM);
+                SimpleSoftMaxGenericNDImpl<config>(
+                    dst, inSumTensor, inMaxTensor, src, workLocal, tiling, offset1, offset2, tiling.tailM);
             }
         }
     }
 }
 
-__aicore__ inline void SimpleSoftMaxBasicBlock(const LocalTensor<half>& dst, const LocalTensor<float>& inSumTensor,
-    const LocalTensor<float>& inMaxTensor, const LocalTensor<half>& src, const LocalTensor<float>& workLocal,
-    const SoftMaxTiling& tiling)
+__aicore__ inline void SimpleSoftMaxBasicBlock(
+    const LocalTensor<half>& dst, const LocalTensor<float>& inSumTensor, const LocalTensor<float>& inMaxTensor,
+    const LocalTensor<half>& src, const LocalTensor<float>& workLocal, const SoftMaxTiling& tiling)
 {
     const LocalTensor<float>& tmpBuffer0 = workLocal;
 
@@ -407,31 +436,37 @@ __aicore__ inline void SimpleSoftMaxBasicBlock(const LocalTensor<half>& dst, con
         offset2 = i * tiling.reduceM * FLOAT_NUM_PER_BLK;
         offset1 = i * tiling.splitSize;
 
-        Cast<float, half, false>(tmpBuffer0, src[offset1], RoundMode::CAST_NONE, MASK_PLACEHOLDER, repeatTimes,
-            { 1, 1, DEFAULT_REPEAT_STRIDE, HALF_REPEAT_STRIDE });
+        Cast<float, half, false>(
+            tmpBuffer0, src[offset1], RoundMode::CAST_NONE, MASK_PLACEHOLDER, repeatTimes,
+            {1, 1, DEFAULT_REPEAT_STRIDE, HALF_REPEAT_STRIDE});
         PipeBarrier<PIPE_V>();
         for (uint32_t j = 0; j < splitBlock; ++j) {
-            Sub<float, false>(tmpBuffer0[FLOAT_REPEAT_SIZE * j], tmpBuffer0[FLOAT_REPEAT_SIZE * j],
-                inMaxTensor[offset2], MASK_PLACEHOLDER, (uint8_t)(tiling.splitM), { 1, 1, 0, offset, offset, 1 });
+            Sub<float, false>(
+                tmpBuffer0[FLOAT_REPEAT_SIZE * j], tmpBuffer0[FLOAT_REPEAT_SIZE * j], inMaxTensor[offset2],
+                MASK_PLACEHOLDER, (uint8_t)(tiling.splitM), {1, 1, 0, offset, offset, 1});
         }
         PipeBarrier<PIPE_V>();
-        Exp<float, false>(tmpBuffer0, tmpBuffer0, MASK_PLACEHOLDER, (uint8_t)(tiling.splitSize / FLOAT_REPEAT_SIZE),
-            { 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+        Exp<float, false>(
+            tmpBuffer0, tmpBuffer0, MASK_PLACEHOLDER, (uint8_t)(tiling.splitSize / FLOAT_REPEAT_SIZE),
+            {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
         PipeBarrier<PIPE_V>();
         for (uint32_t j = 0; j < splitBlock; ++j) {
-            Div<float, false>(tmpBuffer0[FLOAT_REPEAT_SIZE * j], tmpBuffer0[FLOAT_REPEAT_SIZE * j],
-                inSumTensor[offset2], MASK_PLACEHOLDER, (uint8_t)(tiling.splitM), { 1, 1, 0, offset, offset, 1 });
+            Div<float, false>(
+                tmpBuffer0[FLOAT_REPEAT_SIZE * j], tmpBuffer0[FLOAT_REPEAT_SIZE * j], inSumTensor[offset2],
+                MASK_PLACEHOLDER, (uint8_t)(tiling.splitM), {1, 1, 0, offset, offset, 1});
         }
         PipeBarrier<PIPE_V>();
-        Cast<half, float, false>(dst[offset1], tmpBuffer0, FLOAT2HALF_ROUND_MODE, MASK_PLACEHOLDER, repeatTimes,
-            { 1, 1, HALF_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+        Cast<half, float, false>(
+            dst[offset1], tmpBuffer0, FLOAT2HALF_ROUND_MODE, MASK_PLACEHOLDER, repeatTimes,
+            {1, 1, HALF_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     }
 }
 
 template <const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>
-__aicore__ inline void SimpleSoftMaxGenericNDImpl(const LocalTensor<half>& dst, const LocalTensor<float>& inSumTensor,
-    const LocalTensor<float>& inMaxTensor, const LocalTensor<half>& src, const LocalTensor<float>& workLocal,
-    const SoftMaxTiling& tiling, const uint32_t offset1, const uint32_t offset2, const uint32_t curSplitM)
+__aicore__ inline void SimpleSoftMaxGenericNDImpl(
+    const LocalTensor<half>& dst, const LocalTensor<float>& inSumTensor, const LocalTensor<float>& inMaxTensor,
+    const LocalTensor<half>& src, const LocalTensor<float>& workLocal, const SoftMaxTiling& tiling,
+    const uint32_t offset1, const uint32_t offset2, const uint32_t curSplitM)
 {
     const LocalTensor<float>& tmpBuffer0 = workLocal;
     const uint32_t splitSize = curSplitM * tiling.splitK;
@@ -439,8 +474,7 @@ __aicore__ inline void SimpleSoftMaxGenericNDImpl(const LocalTensor<half>& dst, 
         Cast(tmpBuffer0, src[offset1], RoundMode::CAST_NONE, splitSize);
         PipeBarrier<PIPE_V>();
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
-        GenericSubNDImpl(tmpBuffer0, tmpBuffer0, inMaxTensor[offset2], curSplitM, tiling.srcK,
-            DEFAULT_REPEAT_STRIDE);
+        GenericSubNDImpl(tmpBuffer0, tmpBuffer0, inMaxTensor[offset2], curSplitM, tiling.srcK, DEFAULT_REPEAT_STRIDE);
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         GenericSubNDImpl(tmpBuffer0, tmpBuffer0, inMaxTensor[offset2], curSplitM, tiling.srcK, tiling.reduceK);
 #endif
@@ -448,8 +482,7 @@ __aicore__ inline void SimpleSoftMaxGenericNDImpl(const LocalTensor<half>& dst, 
         Exp(tmpBuffer0, tmpBuffer0, tiling.splitSize);
         PipeBarrier<PIPE_V>();
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
-        GenericDivNDImpl(tmpBuffer0, tmpBuffer0, inSumTensor[offset2], curSplitM, tiling.srcK,
-            DEFAULT_REPEAT_STRIDE);
+        GenericDivNDImpl(tmpBuffer0, tmpBuffer0, inSumTensor[offset2], curSplitM, tiling.srcK, DEFAULT_REPEAT_STRIDE);
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         GenericDivNDImpl(tmpBuffer0, tmpBuffer0, inSumTensor[offset2], curSplitM, tiling.srcK, tiling.reduceK);
 #endif
@@ -458,22 +491,20 @@ __aicore__ inline void SimpleSoftMaxGenericNDImpl(const LocalTensor<half>& dst, 
     } else {
         Cast(tmpBuffer0, src[offset1], RoundMode::CAST_NONE, splitSize);
         PipeBarrier<PIPE_V>();
-        GenericSubNDImpl(tmpBuffer0, tmpBuffer0, inMaxTensor[offset2], curSplitM, tiling.splitK,
-            DEFAULT_REPEAT_STRIDE);
+        GenericSubNDImpl(tmpBuffer0, tmpBuffer0, inMaxTensor[offset2], curSplitM, tiling.splitK, DEFAULT_REPEAT_STRIDE);
         PipeBarrier<PIPE_V>();
         Exp(tmpBuffer0, tmpBuffer0, tiling.splitSize);
         PipeBarrier<PIPE_V>();
-        GenericDivNDImpl(tmpBuffer0, tmpBuffer0, inSumTensor[offset2], curSplitM, tiling.splitK,
-            DEFAULT_REPEAT_STRIDE);
+        GenericDivNDImpl(tmpBuffer0, tmpBuffer0, inSumTensor[offset2], curSplitM, tiling.splitK, DEFAULT_REPEAT_STRIDE);
         PipeBarrier<PIPE_V>();
         Cast(dst[offset1], tmpBuffer0, FLOAT2HALF_ROUND_MODE, splitSize);
     }
 }
 
 template <typename T, bool isBasicBlock = false, const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>
-__aicore__ inline void SimpleSoftMaxNDImpl(const LocalTensor<half>& dst, const LocalTensor<float>& inSumTensor,
-    const LocalTensor<float>& inMaxTensor, const LocalTensor<half>& src, const LocalTensor<float>& workLocal,
-    const SoftMaxTiling& tiling)
+__aicore__ inline void SimpleSoftMaxNDImpl(
+    const LocalTensor<half>& dst, const LocalTensor<float>& inSumTensor, const LocalTensor<float>& inMaxTensor,
+    const LocalTensor<half>& src, const LocalTensor<float>& workLocal, const SoftMaxTiling& tiling)
 {
     if constexpr (isBasicBlock) {
         SimpleSoftMaxBasicBlock(dst, inSumTensor, inMaxTensor, src, workLocal, tiling);
@@ -484,19 +515,19 @@ __aicore__ inline void SimpleSoftMaxNDImpl(const LocalTensor<half>& dst, const L
         for (uint32_t i = 0; i < tiling.rangeM; i++) {
             offset1 = i * tiling.splitSize;
             offset2 = i * tiling.reduceM * FLOAT_NUM_PER_BLK;
-            SimpleSoftMaxGenericNDImpl<config>(dst, inSumTensor, inMaxTensor, src, workLocal, tiling, offset1,
-                offset2, tiling.splitM);
+            SimpleSoftMaxGenericNDImpl<config>(
+                dst, inSumTensor, inMaxTensor, src, workLocal, tiling, offset1, offset2, tiling.splitM);
         }
         PipeBarrier<PIPE_V>();
         if (tiling.tailM != 0) {
             offset1 = tiling.rangeM * tiling.splitSize;
             offset2 = tiling.rangeM * tiling.reduceM * FLOAT_NUM_PER_BLK;
-            SimpleSoftMaxGenericNDImpl<config>(dst, inSumTensor, inMaxTensor, src, workLocal, tiling, offset1,
-                offset2, tiling.tailM);
+            SimpleSoftMaxGenericNDImpl<config>(
+                dst, inSumTensor, inMaxTensor, src, workLocal, tiling, offset1, offset2, tiling.tailM);
         }
     }
 }
-}
+} // namespace AscendC
 #endif // IMPL_ACTIVATION_SOFTMAX_SIMPLE_SOFTMAX_COMMON_IMPL_H
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIMPLE_SOFTMAX_COMMON_IMPL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

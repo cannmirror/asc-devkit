@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file lgamma_common_utils.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/lgamma/lgamma_common_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/lgamma.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/lgamma/lgamma_common_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/lgamma.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_LGAMMA_LGAMMA_COMMON_UTILS_H__
 #endif
@@ -22,8 +23,8 @@
 #define IMPL_MATH_LGAMMA_LGAMMA_COMMON_UTILS_H
 #include "kernel_basic_intf.h"
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510 || \
-    __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && \
+    (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 namespace AscendC {
 namespace {
 constexpr float f05 = 0.5;
@@ -55,38 +56,18 @@ constexpr float t12 = 12.0f;
 constexpr float N01 = -0.1f;
 
 constexpr size_t params007Len = 7U;
-constexpr float params007[params007Len] = {0.00358751555905,
-    -0.00547128543258,
-    -0.0446271263063,
-    0.167317703366,
-    -0.0421359799802,
-    -0.655867278576,
-    0.577215373516};
+constexpr float params007[params007Len] = {0.00358751555905, -0.00547128543258, -0.0446271263063, 0.167317703366,
+                                           -0.0421359799802, -0.655867278576,   0.577215373516};
 
 constexpr size_t params0715Len = 11U;
-constexpr float params0715[params0715Len] = {0.0458826646209,
-    0.103739671409,
-    0.122803635895,
-    0.127524212003,
-    0.143216684461,
-    0.169343575835,
-    0.207407936454,
-    0.27058750391,
-    0.400685429573,
-    0.82246696949,
-    0.577215671539};
+constexpr float params0715[params0715Len] = {0.0458826646209, 0.103739671409, 0.122803635895, 0.127524212003,
+                                             0.143216684461,  0.169343575835, 0.207407936454, 0.27058750391,
+                                             0.400685429573,  0.82246696949,  0.577215671539};
 
 constexpr size_t params153Len = 10U;
-constexpr float params153[params153Len] = {4.95984932058e-05,
-    -0.000220894842641,
-    0.000541314249858,
-    -0.00120451697148,
-    0.00288425176404,
-    -0.00738275796175,
-    0.0205813199282,
-    -0.067352488637,
-    0.322467029095,
-    0.422784328461};
+constexpr float params153[params153Len] = {4.95984932058e-05, -0.000220894842641, 0.000541314249858, -0.00120451697148,
+                                           0.00288425176404,  -0.00738275796175,  0.0205813199282,   -0.067352488637,
+                                           0.322467029095,    0.422784328461};
 
 constexpr size_t params378X1Len = 4U;
 constexpr size_t params378X2Len = 3U;
@@ -97,18 +78,16 @@ constexpr size_t params58Len = 2U;
 constexpr float params58[params58Len] = {0.000777830660809, -0.00277765537612};
 
 constexpr size_t negParamsOddLen = 4U;
-constexpr float negParamsOdd[negParamsOddLen] = {0.00002427957952022552490234375,
-    -0.001388786011375486850738525390625,
-    0.0416667275130748748779296875,
+constexpr float negParamsOdd[negParamsOddLen] = {
+    0.00002427957952022552490234375, -0.001388786011375486850738525390625, 0.0416667275130748748779296875,
     -0.4999999701976776123046875};
 constexpr size_t negParamsEvenLen = 3U;
 constexpr float negParamsEven[negParamsEvenLen] = {
     -0.000195746586541645228862762451171875, 0.0083327032625675201416015625, -0.16666662693023681640625};
-}  // namespace
+} // namespace
 
 struct LGammaParams {
-    __aicore__ LGammaParams()
-    {}
+    __aicore__ LGammaParams() {}
     LocalTensor<float> tmp1;
     LocalTensor<float> tmp2;
     LocalTensor<float> tmp3;
@@ -128,9 +107,9 @@ struct LGammaParams {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 namespace LgammaInternal {
 constexpr Reg::CastTrait LGAMMA_CAST_TRAIT_F162F32 = {
-        Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN, Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+    Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN, Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
 constexpr Reg::CastTrait LGAMMA_CAST_TRAIT_F322F16 = {
-        Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+    Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 constexpr uint32_t POW_70 = 0x1c800000;
 constexpr uint32_t NEG_POW_70 = 0x9c800000;
 constexpr uint32_t F023 = 0x3e6d3308;
@@ -157,9 +136,10 @@ struct MulAddsParams {
     float r2;
     float r3;
     float r4;
-    __aicore__ constexpr MulAddsParams(const float r0In, const float r1In, const float r2In, const float r3In,
-                                       const float r4In)
-    : r0(r0In), r1(r1In), r2(r2In), r3(r3In), r4(r4In) {}
+    __aicore__ constexpr MulAddsParams(
+        const float r0In, const float r1In, const float r2In, const float r3In, const float r4In)
+        : r0(r0In), r1(r1In), r2(r2In), r3(r3In), r4(r4In)
+    {}
 };
 
 __aicore__ inline constexpr MulAddsParams GetConstantsPow70To023()
@@ -270,8 +250,8 @@ __aicore__ inline constexpr MulAddsParams GetConstants8ToPow58()
     return params;
 }
 
-__simd_callee__ inline void LGammaCalcMulAdd(Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& tmpReg,
-    Reg::MaskReg mask, const MulAddsParams& params)
+__simd_callee__ inline void LGammaCalcMulAdd(
+    Reg::RegTensor<float>& resReg, Reg::RegTensor<float>& tmpReg, Reg::MaskReg mask, const MulAddsParams& params)
 {
     Reg::Muls(resReg, tmpReg, params.r0, mask);
     Reg::Adds(resReg, resReg, params.r1, mask);
@@ -284,8 +264,8 @@ __simd_callee__ inline void LGammaCalcMulAdd(Reg::RegTensor<float>& resReg, Reg:
 }
 
 template <typename T>
-__simd_callee__ inline void LgammaLoadData(Reg::RegTensor<float>& dstReg,
-    Reg::RegTensor<T> srcReg, __ubuf__ T* srcUb, Reg::MaskReg& mask)
+__simd_callee__ inline void LgammaLoadData(
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<T> srcReg, __ubuf__ T* srcUb, Reg::MaskReg& mask)
 {
     if constexpr (IsSameType<T, half>::value) {
         Reg::LoadAlign<T, Reg::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb);
@@ -294,11 +274,11 @@ __simd_callee__ inline void LgammaLoadData(Reg::RegTensor<float>& dstReg,
         Reg::LoadAlign<T, Reg::LoadDist::DIST_NORM>(dstReg, srcUb);
     }
 }
-}  // LgammaInternal
+} // namespace LgammaInternal
 #endif
-}  // namespace AscendC
+} // namespace AscendC
 #endif
-#endif  // IMPL_MATH_LGAMMA_LGAMMA_COMMON_UTILS_H
+#endif // IMPL_MATH_LGAMMA_LGAMMA_COMMON_UTILS_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_LGAMMA_LGAMMA_COMMON_UTILS_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

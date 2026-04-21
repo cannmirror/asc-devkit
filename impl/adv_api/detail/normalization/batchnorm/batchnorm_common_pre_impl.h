@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file batchnorm_common_pre_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/normalization/batchnorm/batchnorm_common_pre_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/normalization/batchnorm/batchnorm_common_pre_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_BATCHNORM_BATCHNORM_COMMON_PRE_IMPL_H__
 #endif
@@ -40,12 +41,14 @@ constexpr uint32_t BASIC_BLOCK_LEN = 64;
 __aicore__ inline void StackBufferChecker(const LocalTensor<float>& stackBuffer, const BatchNormTiling& tiling)
 {
     ASCENDC_ASSERT((stackBuffer.GetSize() >= tiling.tmpBufSize), {
-        KERNEL_LOG(KERNEL_ERROR, "stackBuffer.GetSize (%d) should be >= tiling.tmpBufSize (%d)", stackBuffer.GetSize(),
+        KERNEL_LOG(
+            KERNEL_ERROR, "stackBuffer.GetSize (%d) should be >= tiling.tmpBufSize (%d)", stackBuffer.GetSize(),
             tiling.tmpBufSize);
     });
 }
 
-template <bool needCast = false> __aicore__ inline void GetSrcOffset(uint32_t& srcOffset, const BatchNormTiling& tiling)
+template <bool needCast = false>
+__aicore__ inline void GetSrcOffset(uint32_t& srcOffset, const BatchNormTiling& tiling)
 {
     if constexpr (!needCast) {
         srcOffset = tiling.meanVarSize;
@@ -71,8 +74,8 @@ __aicore__ inline void GetUpdateParams(const BatchNormTiling& tiling, BatchNormP
 }
 
 template <typename T, bool needCast = false>
-__aicore__ inline void GetMainTailOffset(uint64_t& inputMainOffset, uint64_t& inputTailOffset,
-    const BatchNormParams<float>& params)
+__aicore__ inline void GetMainTailOffset(
+    uint64_t& inputMainOffset, uint64_t& inputTailOffset, const BatchNormParams<float>& params)
 {
     inputMainOffset = params.oriBTmpLoopOffset;
     inputTailOffset = params.oriBTmpTailOffset;
@@ -83,8 +86,9 @@ __aicore__ inline void GetMainTailOffset(uint64_t& inputMainOffset, uint64_t& in
 }
 
 template <bool isBasicBlock = false>
-__aicore__ inline void CastGammBeta(const LocalTensor<float>& dst, const LocalTensor<half>& src,
-    const BatchNormTiling& tiling, const BatchNormParams<float>& params)
+__aicore__ inline void CastGammBeta(
+    const LocalTensor<float>& dst, const LocalTensor<half>& src, const BatchNormTiling& tiling,
+    const BatchNormParams<float>& params)
 {
     UnaryRepeatParams castUnaryParams;
     castUnaryParams.srcRepStride = (uint8_t)tiling.castHalfRepStride;
@@ -102,8 +106,9 @@ __aicore__ inline void CastGammBeta(const LocalTensor<float>& dst, const LocalTe
 }
 
 template <bool isBasicBlock = false>
-__aicore__ inline void CastOutput(const LocalTensor<half>& output, const LocalTensor<float>& src,
-    const BatchNormTiling& tiling, const BatchNormParams<float>& params)
+__aicore__ inline void CastOutput(
+    const LocalTensor<half>& output, const LocalTensor<float>& src, const BatchNormTiling& tiling,
+    const BatchNormParams<float>& params)
 {
     UnaryRepeatParams unaryParams;
     if constexpr (isBasicBlock) {
@@ -111,12 +116,14 @@ __aicore__ inline void CastOutput(const LocalTensor<half>& output, const LocalTe
         unaryParams.srcRepStride = (uint8_t)tiling.shCurLengthBlockNum;
         for (uint32_t m = 0; m < params.basicLoop; m++) {
             for (uint32_t i = 0; i < params.oriBloop; i++) {
-                Cast<half, float, false>(output[i * params.oriBOutLoopOffset + m * BASIC_BLOCK_LEN],
+                Cast<half, float, false>(
+                    output[i * params.oriBOutLoopOffset + m * BASIC_BLOCK_LEN],
                     src[i * params.oriBTmpLoopOffset + m * BASIC_BLOCK_LEN], RoundMode::CAST_NONE, MASK_PLACEHOLDER,
                     MAX_REPEAT_TIMES, unaryParams);
             }
             if (params.oriBTail) {
-                Cast<half, float, false>(output[params.oriBOutTailOffset + m * BASIC_BLOCK_LEN],
+                Cast<half, float, false>(
+                    output[params.oriBOutTailOffset + m * BASIC_BLOCK_LEN],
                     src[params.oriBTmpTailOffset + m * BASIC_BLOCK_LEN], RoundMode::CAST_NONE, MASK_PLACEHOLDER,
                     (uint8_t)params.oriBTail, unaryParams);
             }
@@ -125,16 +132,18 @@ __aicore__ inline void CastOutput(const LocalTensor<half>& output, const LocalTe
         SetVectorMask<float, MaskMode::COUNTER>(0, tiling.shCurLength);
         unaryParams.dstRepStride = (uint8_t)tiling.castHalfRepStride;
         for (uint32_t i = 0; i < tiling.originalBLength; i++) {
-            Cast<half, float, false>(output[i * tiling.meanVarSize], src[i * tiling.shCurLength], RoundMode::CAST_NONE,
-                MASK_PLACEHOLDER, 1, unaryParams);
+            Cast<half, float, false>(
+                output[i * tiling.meanVarSize], src[i * tiling.shCurLength], RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+                unaryParams);
         }
     }
     PipeBarrier<PIPE_V>();
 }
 
 template <bool isBasicBlock = false>
-__aicore__ inline void CastInput(const LocalTensor<float>& dst, const LocalTensor<half>& input,
-    const BatchNormTiling& tiling, const BatchNormParams<float>& params)
+__aicore__ inline void CastInput(
+    const LocalTensor<float>& dst, const LocalTensor<half>& input, const BatchNormTiling& tiling,
+    const BatchNormParams<float>& params)
 {
     UnaryRepeatParams unaryParams;
     if constexpr (isBasicBlock) {
@@ -142,12 +151,14 @@ __aicore__ inline void CastInput(const LocalTensor<float>& dst, const LocalTenso
         unaryParams.srcRepStride = (uint8_t)tiling.castHalfOutRepStride;
         for (uint32_t m = 0; m < params.basicLoop; m++) {
             for (uint32_t i = 0; i < params.oriBloop; i++) {
-                Cast<float, half, false>(dst[i * params.oriBTmpLoopOffset + m * BASIC_BLOCK_LEN],
+                Cast<float, half, false>(
+                    dst[i * params.oriBTmpLoopOffset + m * BASIC_BLOCK_LEN],
                     input[i * params.oriBOutLoopOffset + m * BASIC_BLOCK_LEN], RoundMode::CAST_NONE, MASK_PLACEHOLDER,
                     MAX_REPEAT_TIMES, unaryParams);
             }
             if (params.oriBTail) {
-                Cast<float, half, false>(dst[params.oriBTmpTailOffset + m * BASIC_BLOCK_LEN],
+                Cast<float, half, false>(
+                    dst[params.oriBTmpTailOffset + m * BASIC_BLOCK_LEN],
                     input[params.oriBOutTailOffset + m * BASIC_BLOCK_LEN], RoundMode::CAST_NONE, MASK_PLACEHOLDER,
                     (uint8_t)params.oriBTail, unaryParams);
             }
@@ -156,16 +167,18 @@ __aicore__ inline void CastInput(const LocalTensor<float>& dst, const LocalTenso
         SetVectorMask<float, MaskMode::COUNTER>(0, tiling.shCurLength);
         unaryParams.srcRepStride = (uint8_t)tiling.castHalfRepStride;
         for (uint32_t i = 0; i < tiling.originalBLength; i++) {
-            Cast<float, half, false>(dst[i * tiling.shCurLength], input[i * tiling.meanVarSize], RoundMode::CAST_NONE,
-                MASK_PLACEHOLDER, 1, unaryParams);
+            Cast<float, half, false>(
+                dst[i * tiling.shCurLength], input[i * tiling.meanVarSize], RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+                unaryParams);
         }
     }
     PipeBarrier<PIPE_V>();
 }
 
 template <bool isBasicBlock = false>
-__aicore__ inline void GetReduceAddResult(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const BatchNormTiling& tiling, const BatchNormParams<float>& params)
+__aicore__ inline void GetReduceAddResult(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const BatchNormTiling& tiling,
+    const BatchNormParams<float>& params)
 {
     SetMaskNorm();
     ResetMask();
@@ -181,13 +194,15 @@ __aicore__ inline void GetReduceAddResult(const LocalTensor<float>& dst, const L
         binaryParams.src1RepStride = 0;
         for (uint32_t m = 0; m < params.basicLoop; m++) {
             for (uint32_t i = 0; i < params.reduceAddLoop; i++) {
-                Add<float, false>(dst[m * BASIC_BLOCK_LEN],
+                Add<float, false>(
+                    dst[m * BASIC_BLOCK_LEN],
                     src[tiling.shCurLength + i * params.oriBTmpLoopOffset + m * BASIC_BLOCK_LEN],
                     dst[m * BASIC_BLOCK_LEN], MASK_PLACEHOLDER, MAX_REPEAT_TIMES, binaryParams);
             }
             if (params.reduceAddTail) {
-                Add<float, false>(dst[m * BASIC_BLOCK_LEN], src[tiling.shCurLength + m * BASIC_BLOCK_LEN],
-                    dst[m * BASIC_BLOCK_LEN], MASK_PLACEHOLDER, (uint8_t)params.reduceAddTail, binaryParams);
+                Add<float, false>(
+                    dst[m * BASIC_BLOCK_LEN], src[tiling.shCurLength + m * BASIC_BLOCK_LEN], dst[m * BASIC_BLOCK_LEN],
+                    MASK_PLACEHOLDER, (uint8_t)params.reduceAddTail, binaryParams);
             }
         }
     } else {
@@ -201,19 +216,21 @@ __aicore__ inline void GetReduceAddResult(const LocalTensor<float>& dst, const L
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void BrcFirstDimByDup(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const uint32_t shLength, const uint32_t bLength)
+__aicore__ inline void BrcFirstDimByDup(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint32_t shLength, const uint32_t bLength)
 {
     for (uint32_t i = 0; i < bLength; i++) {
-        Duplicate<float, false>(dst[i * shLength], static_cast<float>(src.GetValue(i)), MASK_PLACEHOLDER,
-            static_cast<uint8_t>(1), static_cast<uint16_t>(1), static_cast<uint8_t>(DEFAULT_REPEAT_STRIDE));
+        Duplicate<float, false>(
+            dst[i * shLength], static_cast<float>(src.GetValue(i)), MASK_PLACEHOLDER, static_cast<uint8_t>(1),
+            static_cast<uint16_t>(1), static_cast<uint8_t>(DEFAULT_REPEAT_STRIDE));
     }
     PipeBarrier<PIPE_V>();
 }
 
 template <bool isBasicBlock = false>
-__aicore__ inline void BrcFirstDim(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const BatchNormTiling& tiling, const BatchNormParams<float>& params)
+__aicore__ inline void BrcFirstDim(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const BatchNormTiling& tiling,
+    const BatchNormParams<float>& params)
 {
     SetMaskNorm();
     ResetMask();
@@ -225,8 +242,9 @@ __aicore__ inline void BrcFirstDim(const LocalTensor<float>& dst, const LocalTen
 }
 
 template <bool isBasicBlock = false, bool needCast = false>
-__aicore__ inline void GetBatchNormOutputMean(const LocalTensor<float>& outputMean, const LocalTensor<float>& inputX,
-    const BatchNormTiling& tiling, const BatchNormParams<float>& params)
+__aicore__ inline void GetBatchNormOutputMean(
+    const LocalTensor<float>& outputMean, const LocalTensor<float>& inputX, const BatchNormTiling& tiling,
+    const BatchNormParams<float>& params)
 {
     UnaryRepeatParams unaryParams;
     if constexpr (isBasicBlock) {
@@ -239,12 +257,14 @@ __aicore__ inline void GetBatchNormOutputMean(const LocalTensor<float>& outputMe
         GetMainTailOffset<float, needCast>(inputMainOffset, inputTailOffset, params);
         for (uint32_t m = 0; m < params.basicLoop; m++) {
             for (uint32_t i = 0; i < params.oriBloop; i++) {
-                Muls<float, false>(params.tempTensorC[i * params.oriBTmpLoopOffset + m * BASIC_BLOCK_LEN],
+                Muls<float, false>(
+                    params.tempTensorC[i * params.oriBTmpLoopOffset + m * BASIC_BLOCK_LEN],
                     inputX[i * inputMainOffset + m * BASIC_BLOCK_LEN], params.firstDimValueBack, MASK_PLACEHOLDER,
                     MAX_REPEAT_TIMES, unaryParams);
             }
             if (params.oriBTail) {
-                Muls<float, false>(params.tempTensorC[params.oriBTmpTailOffset + m * BASIC_BLOCK_LEN],
+                Muls<float, false>(
+                    params.tempTensorC[params.oriBTmpTailOffset + m * BASIC_BLOCK_LEN],
                     inputX[inputTailOffset + m * BASIC_BLOCK_LEN], params.firstDimValueBack, MASK_PLACEHOLDER,
                     (uint8_t)params.oriBTail, unaryParams);
             }
@@ -255,8 +275,9 @@ __aicore__ inline void GetBatchNormOutputMean(const LocalTensor<float>& outputMe
         SetMaskCount();
         SetVectorMask<float, MaskMode::COUNTER>(0, tiling.shCurLength);
         for (uint32_t i = 0; i < tiling.originalBLength; i++) {
-            Muls<float, false>(params.tempTensorC[i * tiling.shCurLength], inputX[i * params.srcOffset],
-                params.firstDimValueBack, MASK_PLACEHOLDER, 1, unaryParams);
+            Muls<float, false>(
+                params.tempTensorC[i * tiling.shCurLength], inputX[i * params.srcOffset], params.firstDimValueBack,
+                MASK_PLACEHOLDER, 1, unaryParams);
         }
         PipeBarrier<PIPE_V>();
         // reduce batch axis
@@ -265,9 +286,9 @@ __aicore__ inline void GetBatchNormOutputMean(const LocalTensor<float>& outputMe
 }
 
 template <bool needCast = false>
-__aicore__ inline void GetBatchNormOutputVarianceBasicBlock(const LocalTensor<float>& outputVariance,
-    const LocalTensor<float>& inputX, const LocalTensor<float>& outputMean, const BatchNormTiling& tiling,
-    const BatchNormParams<float>& params)
+__aicore__ inline void GetBatchNormOutputVarianceBasicBlock(
+    const LocalTensor<float>& outputVariance, const LocalTensor<float>& inputX, const LocalTensor<float>& outputMean,
+    const BatchNormTiling& tiling, const BatchNormParams<float>& params)
 {
     BinaryRepeatParams subBinaryParams;
     const BinaryRepeatParams mulBinaryParams;
@@ -283,13 +304,15 @@ __aicore__ inline void GetBatchNormOutputVarianceBasicBlock(const LocalTensor<fl
     GetMainTailOffset<float, needCast>(inputMainOffset, inputTailOffset, params);
     for (uint32_t m = 0; m < params.basicLoop; m++) {
         for (uint32_t i = 0; i < params.oriBloop; i++) {
-            Sub<float, false>(params.tempTensorC[i * params.oriBTmpLoopOffset + m * BASIC_BLOCK_LEN],
+            Sub<float, false>(
+                params.tempTensorC[i * params.oriBTmpLoopOffset + m * BASIC_BLOCK_LEN],
                 inputX[i * inputMainOffset + m * BASIC_BLOCK_LEN], outputMean[m * BASIC_BLOCK_LEN], MASK_PLACEHOLDER,
                 MAX_REPEAT_TIMES, subBinaryParams);
             PipeBarrier<PIPE_V>();
         }
         if (params.oriBTail) {
-            Sub<float, false>(params.tempTensorC[params.oriBTmpTailOffset + m * BASIC_BLOCK_LEN],
+            Sub<float, false>(
+                params.tempTensorC[params.oriBTmpTailOffset + m * BASIC_BLOCK_LEN],
                 inputX[inputTailOffset + m * BASIC_BLOCK_LEN], outputMean[m * BASIC_BLOCK_LEN], MASK_PLACEHOLDER,
                 (uint8_t)params.oriBTail, subBinaryParams);
             PipeBarrier<PIPE_V>();
@@ -299,17 +322,17 @@ __aicore__ inline void GetBatchNormOutputVarianceBasicBlock(const LocalTensor<fl
     SetVectorMask<float, MaskMode::COUNTER>(0, tiling.bshCurLength);
     Mul<float, false>(params.tempTensorB, params.tempTensorC, params.tempTensorC, MASK_PLACEHOLDER, 1, mulBinaryParams);
     PipeBarrier<PIPE_V>();
-    Muls<float, false>(params.tempTensorA, params.tempTensorB, params.firstDimValueBack, MASK_PLACEHOLDER, 1,
-        mulsUnaryParams);
+    Muls<float, false>(
+        params.tempTensorA, params.tempTensorB, params.firstDimValueBack, MASK_PLACEHOLDER, 1, mulsUnaryParams);
     PipeBarrier<PIPE_V>();
     GetReduceAddResult<true>(outputVariance, params.tempTensorA, tiling, params);
     SetMaskNorm();
     ResetMask();
 }
 
-__aicore__ inline void GetBatchNormOutputVarianceNorm(const LocalTensor<float>& outputVariance,
-    const LocalTensor<float>& inputX, const LocalTensor<float>& outputMean, const BatchNormTiling& tiling,
-    const BatchNormParams<float>& params)
+__aicore__ inline void GetBatchNormOutputVarianceNorm(
+    const LocalTensor<float>& outputVariance, const LocalTensor<float>& inputX, const LocalTensor<float>& outputMean,
+    const BatchNormTiling& tiling, const BatchNormParams<float>& params)
 {
     const BinaryRepeatParams binaryParams;
     const UnaryRepeatParams mulsUnaryParams;
@@ -317,8 +340,9 @@ __aicore__ inline void GetBatchNormOutputVarianceNorm(const LocalTensor<float>& 
     SetVectorMask<float, MaskMode::COUNTER>(0, tiling.shCurLength);
     // 1„ÄÅsub shape:[s,h]->[b,s,h]
     for (uint32_t i = 0; i < tiling.originalBLength; i++) {
-        Sub<float, false>(params.tempTensorC[i * tiling.shCurLength], inputX[i * params.srcOffset], outputMean,
-            MASK_PLACEHOLDER, 1, binaryParams);
+        Sub<float, false>(
+            params.tempTensorC[i * tiling.shCurLength], inputX[i * params.srcOffset], outputMean, MASK_PLACEHOLDER, 1,
+            binaryParams);
     }
     PipeBarrier<PIPE_V>();
     // 2„Ä?x-meanX)*(x-meanX)   shape:[b,s,h]
@@ -326,17 +350,17 @@ __aicore__ inline void GetBatchNormOutputVarianceNorm(const LocalTensor<float>& 
     Mul<float, false>(params.tempTensorB, params.tempTensorC, params.tempTensorC, MASK_PLACEHOLDER, 1, binaryParams);
     PipeBarrier<PIPE_V>();
     // 3„Ä?x-meanX)*(x-meanX) * (1/m)  shape:[b,s,h]
-    Muls<float, false>(params.tempTensorA, params.tempTensorB, params.firstDimValueBack, MASK_PLACEHOLDER, 1,
-        mulsUnaryParams);
+    Muls<float, false>(
+        params.tempTensorA, params.tempTensorB, params.firstDimValueBack, MASK_PLACEHOLDER, 1, mulsUnaryParams);
     PipeBarrier<PIPE_V>();
     // 4„ÄÅreduce batch axis  shape:[s,h]
     GetReduceAddResult<false>(outputVariance, params.tempTensorA, tiling, params);
 }
 
 template <bool isBasicBlock = false, bool needCast = false>
-__aicore__ inline void GetBatchNormOutputVariance(const LocalTensor<float>& outputVariance,
-    const LocalTensor<float>& inputX, const LocalTensor<float>& outputMean, const BatchNormTiling& tiling,
-    const BatchNormParams<float>& params)
+__aicore__ inline void GetBatchNormOutputVariance(
+    const LocalTensor<float>& outputVariance, const LocalTensor<float>& inputX, const LocalTensor<float>& outputMean,
+    const BatchNormTiling& tiling, const BatchNormParams<float>& params)
 {
     if constexpr (isBasicBlock) {
         GetBatchNormOutputVarianceBasicBlock<needCast>(outputVariance, inputX, outputMean, tiling, params);
@@ -345,9 +369,9 @@ __aicore__ inline void GetBatchNormOutputVariance(const LocalTensor<float>& outp
     }
 }
 
-__aicore__ inline void GetBatchNormOutputPreProcess(const LocalTensor<float>& addSrc,
-    const LocalTensor<float>& addDst, const LocalTensor<float>& tmpDst, const float epsilon, 
-    const BatchNormTiling& tiling)
+__aicore__ inline void GetBatchNormOutputPreProcess(
+    const LocalTensor<float>& addSrc, const LocalTensor<float>& addDst, const LocalTensor<float>& tmpDst,
+    const float epsilon, const BatchNormTiling& tiling)
 {
     const UnaryRepeatParams unaryParams;
     constexpr float exponent = -0.5;
@@ -363,9 +387,10 @@ __aicore__ inline void GetBatchNormOutputPreProcess(const LocalTensor<float>& ad
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void GetBatchNormOutputPreBasicBlock(const LocalTensor<float>& addSrc,
-    const LocalTensor<float>& addDst, const LocalTensor<float>& tmpDst, const LocalTensor<float>& dst,
-    const float epsilon, const BatchNormTiling& tiling, const BatchNormParams<float>& params)
+__aicore__ inline void GetBatchNormOutputPreBasicBlock(
+    const LocalTensor<float>& addSrc, const LocalTensor<float>& addDst, const LocalTensor<float>& tmpDst,
+    const LocalTensor<float>& dst, const float epsilon, const BatchNormTiling& tiling,
+    const BatchNormParams<float>& params)
 {
     GetBatchNormOutputPreProcess(addSrc, addDst, tmpDst, epsilon, tiling);
     SetMaskNorm();
@@ -376,12 +401,14 @@ __aicore__ inline void GetBatchNormOutputPreBasicBlock(const LocalTensor<float>&
     binaryParams.dstRepStride = (uint8_t)tiling.shCurLengthBlockNum;
     for (uint32_t m = 0; m < params.basicLoop; m++) {
         for (uint32_t i = 0; i < params.oriBloop; i++) {
-            Mul<float, false>(dst[i * params.oriBTmpLoopOffset + m * BASIC_BLOCK_LEN], tmpDst[m * BASIC_BLOCK_LEN],
+            Mul<float, false>(
+                dst[i * params.oriBTmpLoopOffset + m * BASIC_BLOCK_LEN], tmpDst[m * BASIC_BLOCK_LEN],
                 dst[i * params.oriBTmpLoopOffset + m * BASIC_BLOCK_LEN], MASK_PLACEHOLDER, MAX_REPEAT_TIMES,
                 binaryParams);
         }
         if (params.oriBTail) {
-            Mul<float, false>(dst[params.oriBTmpTailOffset + m * BASIC_BLOCK_LEN], tmpDst[m * BASIC_BLOCK_LEN],
+            Mul<float, false>(
+                dst[params.oriBTmpTailOffset + m * BASIC_BLOCK_LEN], tmpDst[m * BASIC_BLOCK_LEN],
                 dst[params.oriBTmpTailOffset + m * BASIC_BLOCK_LEN], MASK_PLACEHOLDER, (uint8_t)params.oriBTail,
                 binaryParams);
         }
@@ -389,22 +416,24 @@ __aicore__ inline void GetBatchNormOutputPreBasicBlock(const LocalTensor<float>&
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void GetBatchNormOutputPreNorm(const LocalTensor<float>& addSrc, const LocalTensor<float>& addDst,
-    const LocalTensor<float>& tmpDst, const LocalTensor<float>& dst, const float epsilon, const BatchNormTiling& tiling,
+__aicore__ inline void GetBatchNormOutputPreNorm(
+    const LocalTensor<float>& addSrc, const LocalTensor<float>& addDst, const LocalTensor<float>& tmpDst,
+    const LocalTensor<float>& dst, const float epsilon, const BatchNormTiling& tiling,
     const BatchNormParams<float>& params)
 {
     GetBatchNormOutputPreProcess(addSrc, addDst, tmpDst, epsilon, tiling);
     const BinaryRepeatParams binaryParams;
     for (uint32_t i = 0; i < tiling.originalBLength; i++) {
-        Mul<float, false>(dst[i * tiling.shCurLength], dst[i * tiling.shCurLength], tmpDst, MASK_PLACEHOLDER, 1,
-            binaryParams);
+        Mul<float, false>(
+            dst[i * tiling.shCurLength], dst[i * tiling.shCurLength], tmpDst, MASK_PLACEHOLDER, 1, binaryParams);
     }
     PipeBarrier<PIPE_V>();
 }
 
 template <bool isBasicBlock = false>
-__aicore__ inline void GetBatchNormOutputPre(const LocalTensor<float>& src, const LocalTensor<float>& dst,
-    const float epsilon, const BatchNormTiling& tiling, const BatchNormParams<float>& params)
+__aicore__ inline void GetBatchNormOutputPre(
+    const LocalTensor<float>& src, const LocalTensor<float>& dst, const float epsilon, const BatchNormTiling& tiling,
+    const BatchNormParams<float>& params)
 {
     if constexpr (isBasicBlock) {
         GetBatchNormOutputPreBasicBlock(src, params.tempTensorA, params.tempTensorB, dst, epsilon, tiling, params);

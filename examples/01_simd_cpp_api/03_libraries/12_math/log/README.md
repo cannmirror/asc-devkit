@@ -41,14 +41,12 @@
 - 算子实现：  
   本样例中实现的是固定shape为输入x[8, 2048]，输出y[8, 2048]的log_custom算子。此样例以e做底数为例。
 
-  - Kernel实现
-
+  - Kernel实现  
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用Log高阶API接口完成log计算，得到最终结果，再搬出到外部存储上。
 
     log_custom算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm存储在xLocal中，Compute任务负责对xLocal执行log计算，计算结果存储在yLocal中，CopyOut任务负责将输出数据从yLocal搬运至Global Memory上的输出Tensor yGm。
 
-  - Tiling实现
-
+  - Tiling实现  
     根据输入长度和所用核数量设置tiling参数totalLength和tileNum。
 
   - 调用实现  

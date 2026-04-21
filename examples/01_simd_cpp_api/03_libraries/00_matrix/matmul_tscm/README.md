@@ -1,6 +1,6 @@
-# Matmul算子自定义TSCM输入直调样例
+# Matmul 自定义TSCM输入直调样例
 ## 概述
-本样例介绍Matmul API中用户自定义TSCM输入的使用方式。TSCM即Temp Swap Cache Memory，用于临时把数据交换到额外空间，需开发者自行管理以高效利用硬件资源。该场景由用户自行管理L1 Buffer，再将对应数据地址作为Matmul的输入。
+使用数据来源为GM的用户自定义TSCM的输入的Matmul样例，开发者可以自主管理L1 Buffer以高效利用硬件资源。TSCM即Temp Swap Cache Memory，用于临时把数据交换到额外空间。该场景由开发者管理L1 Buffer，再将输入矩阵数据对应的L1 Buffer地址作为Matmul的输入。
 
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT
@@ -14,76 +14,62 @@
 │       └── verify_result.py    // 真值对比文件
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── matmul_tscm.asc              // Ascend C算子实现 & 调用样例
+│   └── matmul_tscm.asc         // Ascend C样例实现 & 调用样例
 ```
-## 算子描述
-- 算子功能： 
+## 样例描述
+- 样例功能：  
+  Matmul样例自定义A矩阵从Global Memory到L1 Buffer的数据搬入，使A矩阵全部数据常驻在L1 Buffer中，调用Matmul API计算时，A矩阵为TSCM输入，B矩阵设为GM输入，对输入的A、B矩阵做矩阵乘和加Bias偏置。
 
-  Matmul算子自定义A矩阵从GM到L1的数据搬入，使A矩阵全部数据常驻在L1中，调用Matmul API计算时，A矩阵为TSCM输入，B矩阵设为GM输入，对输入的A、B矩阵做矩阵乘和加Bias偏置。
+- 约束条件
+  - TSCM输入的矩阵必须能在L1 Buffer上全载。
 
-- 算子规格： 
-
-  本样例默认执行的算子shape为：M = 64, N = 64, K = 64。
+- 样例规格：  
+  本样例中：M = 64, N = 64, K = 64。
   <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="5" align="center">Matmul</td></tr>
+  <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="5" align="center">Matmul</td></tr>
   </tr>
-  <tr><td rowspan="4" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">isTrans</td></tr>
-  <tr><td align="center">a</td><td align="center">M * K</td><td align="center">float16</td><td align="center">ND</td><td align="center">false</td></tr>
-  <tr><td align="center">b</td><td align="center">K * N</td><td align="center">float16</td><td align="center">ND</td><td align="center">false</td></tr>
-  <tr><td align="center">bias</td><td align="center">N</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td></tr>
+  <tr><td rowspan="4" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">isTrans</td></tr>
+  <tr><td align="center">a</td><td align="center">[M, K]</td><td align="center">float16</td><td align="center">ND</td><td align="center">false</td></tr>
+  <tr><td align="center">b</td><td align="center">[K, N]</td><td align="center">float16</td><td align="center">ND</td><td align="center">false</td></tr>
+  <tr><td align="center">bias</td><td align="center">[1, N]</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td></tr>
   </tr>
   </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">M * N</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td></tr>
+  <tr><td rowspan="1" align="center">样例输出</td><td align="center">c</td><td align="center">[M, N]</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td></tr>
   </tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">matmul_tscm_custom</td></tr>
   </table>
 
-- 算子实现： 
-  - 约束条件
-    - TSCM输入的矩阵必须能在L1 Buffer上全载。
+- 样例实现： 
+  - Kernel关键步骤
+    - 创建Matmul对象。其中左矩阵A的MatmulType中，POSITION为TSCM，SRC_POSITION为默认值GM。
+      ```cpp
+      AscendC::MatmulType<AscendC::TPosition::TSCM, CubeFormat::NZ, AType>
+      ```
+    - 自定义左矩阵A从GM到L1的搬运，设置左矩阵A、右矩阵B、Bias，其中左矩阵A为TSCM输入。
+      ```cpp
+      AscendC::TSCM<AscendC::TPosition::GM, 1> scm;
+      pipe->InitBuffer(scm, 1, tiling.M * tiling.Ka * sizeof(AType));
+      auto scmTensor = scm.AllocTensor<AType>();
+      DataCopy(scmTensor, aGlobal, tiling.M * tiling.Ka);
+      scm.EnQue(scmTensor);
+      AscendC::LocalTensor<AType> scmLocal = scm.DeQue<AType>();
 
-  - Kernel实现
-    - 计算逻辑：C = A * B + Bias。
-      - A、B为源操作数，A为左矩阵，形状为[M, K]；B为右矩阵，形状为[K, N]。
-      - C为目的操作数，存放矩阵乘结果的矩阵，形状为[M, N]。
-      - Bias为矩阵乘偏置，形状为[1, N]。对A*B结果矩阵的每一行都采用该Bias进行偏置。
-    - 具体步骤：
-      - 创建Matmul对象。  
-      - 初始化操作。
-      - 自定义左矩阵A从GM到L1的搬运，设置左矩阵A、右矩阵B、Bias，其中左矩阵A为TSCM输入。
-          ```
-          AscendC::TSCM<AscendC::TPosition::GM, 1> scm;
-          pipe->InitBuffer(scm, 1, tiling.M * tiling.Ka * sizeof(AType));
-          auto scmTensor = scm.AllocTensor<AType>();
-          DataCopy(scmTensor, aGlobal, tiling.M * tiling.Ka);
-          scm.EnQue(scmTensor);
-          AscendC::LocalTensor<AType> scmLocal = scm.DeQue<AType>();
+      matmulObj.SetTensorA(scmLocal, IS_TRANS_A);
+      matmulObj.SetTensorB(bGlobal, IS_TRANS_B);
+      if (tiling.isBias) {
+          matmulObj.SetBias(biasGlobal);
+      }
+      matmulObj.IterateAll(cGlobal);
+      matmulObj.End();
 
-          matmulObj.SetTensorA(scmLocal, IS_TRANS_A);
-          matmulObj.SetTensorB(bGlobal, IS_TRANS_B);
-          if (tiling.isBias) {
-              matmulObj.SetBias(biasGlobal);
-          }
-          matmulObj.IterateAll(cGlobal);
-          matmulObj.End();
-
-          scm.FreeTensor(scmLocal);
-          ```
-      - 完成矩阵乘操作。
-      - 结束矩阵乘操作。
-
-  - Tiling实现
-    - Ascend C提供一组Matmul Tiling API，方便用户获取Matmul kernel计算时所需的Tiling参数。只需要传入A/B/C矩阵等信息，调用API接口，即可获取到TCubeTiling结构体中的相关参数。
-    - 获取Tiling参数的流程如下：
-      - 创建一个Tiling对象。
-      - 设置A、B、C、Bias的参数类型信息；M、N、Ka、Kb形状信息等。
-      - 调用GetTiling接口，获取Tiling信息。
+      scm.FreeTensor(scmLocal);
+      ```
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行
-在本样例根目录下执行如下步骤，编译并执行算子。
+在本样例根目录下执行如下步骤，编译并执行样例。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包

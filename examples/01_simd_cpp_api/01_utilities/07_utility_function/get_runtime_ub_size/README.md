@@ -18,8 +18,7 @@
 
 ## 样例描述
 
-- 样例功能：
-
+- 样例功能：  
   样例基于Abs取绝对值运算进行功能说明，计算公式：
   ```
   z = Abs(x)
@@ -37,15 +36,14 @@
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">kernel_get_runtime_ub_size</td></tr>
   </table>
 
-- 调用实现
-
+- 调用实现  
   使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行
 
 在本样例根目录下执行如下步骤，编译并执行样例。
 
-- 配置环境变量
+- 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
 

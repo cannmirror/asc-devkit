@@ -176,7 +176,7 @@ def skip_mc2_context_size(opinfo: OpInfo):
 def match_options(options, compile_options):
     result = []
     for option in options:
-        match = re.search(f'{option}=(\w+)', ' '.join(compile_options))
+        match = re.search(rf'{option}=(\w+)', ' '.join(compile_options))
         if match:
             result.append(match.group(1))
         else:

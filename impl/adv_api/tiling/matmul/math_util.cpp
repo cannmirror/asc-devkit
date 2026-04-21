@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file math_util.cpp
@@ -41,7 +41,7 @@ int32_t MathUtil::AlignDown(int32_t num1, int32_t num2)
     return (num1 / num2) * num2;
 }
 
-bool MathUtil::CheckMulOverflow(int32_t a, int32_t b, int32_t &c)
+bool MathUtil::CheckMulOverflow(int32_t a, int32_t b, int32_t& c)
 {
     if (a > 0 && b > 0) {
         if (a > (INT32_MAX / b)) {
@@ -73,7 +73,7 @@ int32_t MathUtil::MapShape(int32_t shape, bool roundUpFlag)
     return static_cast<int32_t>(seed);
 }
 
-void MathUtil::GetFactors(std::vector<int32_t> &factorList, int32_t srcNum, int32_t minFactor, int32_t maxFactor)
+void MathUtil::GetFactors(std::vector<int32_t>& factorList, int32_t srcNum, int32_t minFactor, int32_t maxFactor)
 {
     for (int32_t factor = maxFactor; factor >= minFactor; factor--) {
         if (srcNum % factor == 0) {
@@ -82,7 +82,7 @@ void MathUtil::GetFactors(std::vector<int32_t> &factorList, int32_t srcNum, int3
     }
 }
 
-void MathUtil::GetFactors(std::vector<int32_t> &factorList, int32_t srcNum, int32_t maxFactor)
+void MathUtil::GetFactors(std::vector<int32_t>& factorList, int32_t srcNum, int32_t maxFactor)
 {
     int32_t maxNum = std::min(srcNum, maxFactor);
     for (int32_t factor = 1; factor <= maxNum; factor++) {
@@ -92,7 +92,7 @@ void MathUtil::GetFactors(std::vector<int32_t> &factorList, int32_t srcNum, int3
     }
 }
 
-void MathUtil::GetFactorCnt(const int32_t shape, int32_t &factorCnt, const int32_t factorStart, const int32_t factorEnd)
+void MathUtil::GetFactorCnt(const int32_t shape, int32_t& factorCnt, const int32_t factorStart, const int32_t factorEnd)
 {
     for (int32_t i = factorStart; i <= factorEnd; i++) {
         if (shape < i) {
@@ -104,8 +104,8 @@ void MathUtil::GetFactorCnt(const int32_t shape, int32_t &factorCnt, const int32
     }
 }
 
-void MathUtil::GetFactorLayerCnt(const int32_t shape, int32_t &factorCnt, const int32_t factorStart,
-    const int32_t factorEnd)
+void MathUtil::GetFactorLayerCnt(
+    const int32_t shape, int32_t& factorCnt, const int32_t factorStart, const int32_t factorEnd)
 {
     std::vector<int32_t> factorList;
     MathUtil::GetFactors(factorList, shape, factorStart, factorEnd);
@@ -116,14 +116,14 @@ void MathUtil::GetFactorLayerCnt(const int32_t shape, int32_t &factorCnt, const 
     }
 }
 
-void MathUtil::AddFactor(std::vector<int32_t> &dimsFactors, int32_t dim)
+void MathUtil::AddFactor(std::vector<int32_t>& dimsFactors, int32_t dim)
 {
     dimsFactors.push_back(dim);
     sort(dimsFactors.begin(), dimsFactors.end());
     (void)dimsFactors.erase(unique(dimsFactors.begin(), dimsFactors.end()), dimsFactors.cend());
 }
 
-int32_t MathUtil::GetNonFactorMap(std::vector<int32_t> &factorList, int32_t srcNum, int32_t maxFactor)
+int32_t MathUtil::GetNonFactorMap(std::vector<int32_t>& factorList, int32_t srcNum, int32_t maxFactor)
 {
     int32_t factorCnt = 0;
     int32_t mapFactor = srcNum;
@@ -135,8 +135,9 @@ int32_t MathUtil::GetNonFactorMap(std::vector<int32_t> &factorList, int32_t srcN
     return mapFactor;
 }
 
-void MathUtil::GetBlockFactors(std::vector<int32_t> &factorList, const int32_t oriShape, const int32_t mpShape,
-    const int32_t coreNum, const int32_t maxNum)
+void MathUtil::GetBlockFactors(
+    std::vector<int32_t>& factorList, const int32_t oriShape, const int32_t mpShape, const int32_t coreNum,
+    const int32_t maxNum)
 {
     // get all factors of ori_shape/mapshape/coreNum which smaller or equal to maxNum
     for (int32_t i = 1; i <= maxNum; ++i) {
@@ -158,12 +159,12 @@ bool MathUtil::CheckFactorNumSatisfy(const int32_t dim)
         MathUtil::GetFactorLayerCnt(dim, factorL1Cnt, L0_FACTOR_LIMIT + 1, L1_FACTOR_LIMIT);
     }
     bool factorNumNotSatisfied = (factorL0Cnt <= L0_FACTOR_NUM_LIMIT) ||
-        ((dim > L1_FACTOR_LIMIT) && (factorL0Cnt + factorL1Cnt <= L1_FACTOR_NUM_LIMIT));
+                                 ((dim > L1_FACTOR_LIMIT) && (factorL0Cnt + factorL1Cnt <= L1_FACTOR_NUM_LIMIT));
     return !factorNumNotSatisfied;
 }
 
-int32_t MathUtil::FindBestSingleCore(const int32_t oriShape, const int32_t mappedShape, const int32_t coreNum,
-    bool isKDim)
+int32_t MathUtil::FindBestSingleCore(
+    const int32_t oriShape, const int32_t mappedShape, const int32_t coreNum, bool isKDim)
 {
     int32_t bestSingleCore = oriShape;
     int32_t realSingleCore = MathUtil::CeilDivision(oriShape, coreNum);

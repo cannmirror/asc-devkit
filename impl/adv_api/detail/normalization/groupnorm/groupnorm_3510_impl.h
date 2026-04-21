@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file groupnorm_3510_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/normalization/groupnorm/groupnorm_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/normalization/groupnorm/groupnorm_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_GROUPNORM_GROUPNORM_C310_IMPL_H__
 #endif
@@ -32,20 +33,20 @@
 
 namespace AscendC {
 namespace GroupNormInternal {
-constexpr Reg::CastTrait layoutZMrgZ = {Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN,
-                                             Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
-constexpr Reg::CastTrait LayoutZMrgZRndRSatNS = {Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT,
-                                                      Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait layoutZMrgZ = {
+    Reg::RegLayout::ZERO, Reg::SatMode::UNKNOWN, Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr Reg::CastTrait LayoutZMrgZRndRSatNS = {
+    Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
 enum class ShapeScope {
-    ONE = 1,  // less than 256B
-    TWO = 2,  // less than 256 * 256B
-    THREE = 3,  // less than 256 * 256 * 256B
+    ONE = 1,   // less than 256B
+    TWO = 2,   // less than 256 * 256B
+    THREE = 3, // less than 256 * 256 * 256B
 };
 
 template <typename T>
-__simd_callee__ inline void LoadDataWithT(__ubuf__ T* src, Reg::RegTensor<float>& dstReg, Reg::MaskReg& mask,
-                                          uint16_t offset)
+__simd_callee__ inline void LoadDataWithT(
+    __ubuf__ T* src, Reg::RegTensor<float>& dstReg, Reg::MaskReg& mask, uint16_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
         Reg::RegTensor<T> srcOrigin;
@@ -57,8 +58,8 @@ __simd_callee__ inline void LoadDataWithT(__ubuf__ T* src, Reg::RegTensor<float>
 }
 
 template <typename T>
-__simd_callee__ inline void SaveDataWithT(__ubuf__ T* dst, Reg::RegTensor<float>& srcReg, Reg::MaskReg& mask,
-                                          uint16_t offset)
+__simd_callee__ inline void SaveDataWithT(
+    __ubuf__ T* dst, Reg::RegTensor<float>& srcReg, Reg::MaskReg& mask, uint16_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
         Reg::RegTensor<T> regT;
@@ -70,8 +71,8 @@ __simd_callee__ inline void SaveDataWithT(__ubuf__ T* dst, Reg::RegTensor<float>
 }
 
 template <bool IsMean = false, typename T, typename U>
-__simd_callee__ inline void ReduceSumOrMean(__ubuf__ T* dstLocal, __ubuf__ U* srcLocal, uint32_t count, uint16_t repeat,
-                                            float factor = 0)
+__simd_callee__ inline void ReduceSumOrMean(
+    __ubuf__ T* dstLocal, __ubuf__ U* srcLocal, uint32_t count, uint16_t repeat, float factor = 0)
 {
     constexpr uint16_t srcRepOffset = GetVecLen() / sizeof(T);
     Reg::MaskReg mask;
@@ -90,8 +91,8 @@ __simd_callee__ inline void ReduceSumOrMean(__ubuf__ T* dstLocal, __ubuf__ U* sr
 }
 
 template <ShapeScope Scope, typename T, typename U>
-__simd_callee__ inline void ReduceMeanCount(__ubuf__ T* dstLocal, __ubuf__ U* srcLocal, __ubuf__ T* workLocal,
-                                            uint32_t count, float factor)
+__simd_callee__ inline void ReduceMeanCount(
+    __ubuf__ T* dstLocal, __ubuf__ U* srcLocal, __ubuf__ T* workLocal, uint32_t count, float factor)
 {
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(T);
     if constexpr (Scope == ShapeScope::ONE) {
@@ -113,10 +114,10 @@ __simd_callee__ inline void ReduceMeanCount(__ubuf__ T* dstLocal, __ubuf__ U* sr
 }
 
 template <ShapeScope Scope, bool IsHwSizeAlignOneRepeat, typename T>
-__simd_callee__ inline void CalcVariance(__ubuf__ float* outputVarianceTmp, __ubuf__ T* inputX,
-                                         __ubuf__ float* outputMeanTmp, __ubuf__ float* tmpVarLocal,
-                                         __ubuf__ float* tmpLocal, uint16_t index, uint16_t dhwAlignSize, uint16_t d,
-                                         uint16_t hw, uint16_t hwAlignSize, uint16_t hwRepeat, float factor)
+__simd_callee__ inline void CalcVariance(
+    __ubuf__ float* outputVarianceTmp, __ubuf__ T* inputX, __ubuf__ float* outputMeanTmp, __ubuf__ float* tmpVarLocal,
+    __ubuf__ float* tmpLocal, uint16_t index, uint16_t dhwAlignSize, uint16_t d, uint16_t hw, uint16_t hwAlignSize,
+    uint16_t hwRepeat, float factor)
 {
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(float);
     Reg::MaskReg fullMask = Reg::CreateMask<float>();
@@ -153,10 +154,9 @@ __simd_callee__ inline void CalcVariance(__ubuf__ float* outputVarianceTmp, __ub
 }
 
 template <typename T>
-__simd_callee__ inline void CalcTmpOutput(__ubuf__ float* outputTmp, __ubuf__ float* outputVarianceTmp,
-                                          __ubuf__ T* outputVariance, __ubuf__ float* outputMeanTmp,
-                                          __ubuf__ T* outputMean, uint16_t ngRepeat, uint16_t meanVarSize,
-                                          float epsilon)
+__simd_callee__ inline void CalcTmpOutput(
+    __ubuf__ float* outputTmp, __ubuf__ float* outputVarianceTmp, __ubuf__ T* outputVariance,
+    __ubuf__ float* outputMeanTmp, __ubuf__ T* outputMean, uint16_t ngRepeat, uint16_t meanVarSize, float epsilon)
 {
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(float);
     Reg::RegTensor<float> meanReg;
@@ -181,9 +181,9 @@ __simd_callee__ inline void CalcTmpOutput(__ubuf__ float* outputTmp, __ubuf__ fl
 }
 
 template <typename T>
-__simd_callee__ inline void CalcOutput(__ubuf__ T* output, __ubuf__ T* inputX, __ubuf__ float* outputMeanTmp,
-                                       __ubuf__ float* outputTmp, __ubuf__ T* gamma, __ubuf__ T* beta, uint16_t n,
-                                       uint16_t g, uint16_t d, uint16_t hwAlignSize, uint16_t hwRepeat)
+__simd_callee__ inline void CalcOutput(
+    __ubuf__ T* output, __ubuf__ T* inputX, __ubuf__ float* outputMeanTmp, __ubuf__ float* outputTmp, __ubuf__ T* gamma,
+    __ubuf__ T* beta, uint16_t n, uint16_t g, uint16_t d, uint16_t hwAlignSize, uint16_t hwRepeat)
 {
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(float);
     Reg::MaskReg fullMask = Reg::CreateMask<float>();
@@ -226,10 +226,10 @@ __simd_callee__ inline void CalcOutput(__ubuf__ T* output, __ubuf__ T* inputX, _
 }
 
 template <ShapeScope Scope, bool IsHwSizeAlignOneRepeat, typename T>
-__simd_vf__ inline void GroupNormRegbaseImpl(__ubuf__ T* output, __ubuf__ T* outputMean, __ubuf__ T* outputVariance,
-                                             __ubuf__ T* inputX, __ubuf__ T* gamma, __ubuf__ T* beta,
-                                             __ubuf__ float* tmpLocal, float epsilon, uint16_t n, uint16_t g,
-                                             uint16_t d, uint16_t hw, float factor)
+__simd_vf__ inline void GroupNormRegbaseImpl(
+    __ubuf__ T* output, __ubuf__ T* outputMean, __ubuf__ T* outputVariance, __ubuf__ T* inputX, __ubuf__ T* gamma,
+    __ubuf__ T* beta, __ubuf__ float* tmpLocal, float epsilon, uint16_t n, uint16_t g, uint16_t d, uint16_t hw,
+    float factor)
 {
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(float);
     uint16_t meanVarSize = n * g;
@@ -238,10 +238,10 @@ __simd_vf__ inline void GroupNormRegbaseImpl(__ubuf__ T* output, __ubuf__ T* out
     uint16_t dhwAlignSize = hwAlignSize * d;
     uint16_t hwRepeat = static_cast<uint16_t>(CeilDivision(hwAlignSize, oneRepSize));
     uint16_t ngRepeat = static_cast<uint16_t>(CeilDivision(meanVarSize, oneRepSize));
-    __ubuf__ float* tmpVarLocal = tmpLocal + dhwAlignSize;  // tmp space when cal var reduce
-    __ubuf__ float* outputMeanTmp = tmpLocal + 2 * dhwAlignSize;  // half use the space
-    __ubuf__ float* outputVarianceTmp = outputMeanTmp + meanVarSizeAlign;  // half use the space
-    __ubuf__ float* outputTmp = outputVarianceTmp;  // use var tmp output
+    __ubuf__ float* tmpVarLocal = tmpLocal + dhwAlignSize;                // tmp space when cal var reduce
+    __ubuf__ float* outputMeanTmp = tmpLocal + 2 * dhwAlignSize;          // half use the space
+    __ubuf__ float* outputVarianceTmp = outputMeanTmp + meanVarSizeAlign; // half use the space
+    __ubuf__ float* outputTmp = outputVarianceTmp;                        // use var tmp output
     if constexpr (sizeof(T) == sizeof(float)) {
         outputMeanTmp = outputMean;
         outputVarianceTmp = outputVariance;
@@ -253,27 +253,27 @@ __simd_vf__ inline void GroupNormRegbaseImpl(__ubuf__ T* output, __ubuf__ T* out
     Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     for (uint16_t index = 0; index < meanVarSize; index++) {
-        CalcVariance<Scope, IsHwSizeAlignOneRepeat>(outputVarianceTmp, inputX, outputMeanTmp, tmpVarLocal, tmpLocal,
-                                                    index, dhwAlignSize, d, hw, hwAlignSize, hwRepeat, factor);
+        CalcVariance<Scope, IsHwSizeAlignOneRepeat>(
+            outputVarianceTmp, inputX, outputMeanTmp, tmpVarLocal, tmpLocal, index, dhwAlignSize, d, hw, hwAlignSize,
+            hwRepeat, factor);
     }
     Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     // outputTmp = (inputX - mean) / np.sqrt(var + eps)
-    CalcTmpOutput(outputTmp, outputVarianceTmp, outputVariance, outputMeanTmp, outputMean, ngRepeat, meanVarSize,
-                  epsilon);
+    CalcTmpOutput(
+        outputTmp, outputVarianceTmp, outputVariance, outputMeanTmp, outputMean, ngRepeat, meanVarSize, epsilon);
     Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
     // result = outputTmp * gamma + beta
     CalcOutput(output, inputX, outputMeanTmp, outputTmp, gamma, beta, n, g, d, hwAlignSize, hwRepeat);
 }
-}  // namespace GroupNormInternal
+} // namespace GroupNormInternal
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void GroupNormImpl(const LocalTensor<T>& output, const LocalTensor<T>& outputMean,
-                                     const LocalTensor<T>& outputVariance, const LocalTensor<T>& inputX,
-                                     const LocalTensor<T>& gamma, const LocalTensor<T>& beta,
-                                     const LocalTensor<uint8_t>& sharedTmpBuffer, const T epsilon,
-                                     GroupNormTiling& tiling)
+__aicore__ inline void GroupNormImpl(
+    const LocalTensor<T>& output, const LocalTensor<T>& outputMean, const LocalTensor<T>& outputVariance,
+    const LocalTensor<T>& inputX, const LocalTensor<T>& gamma, const LocalTensor<T>& beta,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const T epsilon, GroupNormTiling& tiling)
 {
     static_assert(SupportType<T, half, float>(), "current data type is not supported on current device!");
     if constexpr (isReuseSource) {
@@ -301,7 +301,8 @@ __aicore__ inline void GroupNormImpl(const LocalTensor<T>& output, const LocalTe
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(float);
     bool isHwSizeAlignOneRepeat = (tiling.hw % oneRepSize == 0);
 
-    auto callGroupNorm = [&](auto N) __attribute__((cce_aicore)) {
+    auto callGroupNorm = [&](auto N) __attribute__((cce_aicore))
+    {
         constexpr auto value = N();
         if (isHwSizeAlignOneRepeat) {
             GroupNormInternal::GroupNormRegbaseImpl<value, true>(
@@ -325,19 +326,19 @@ __aicore__ inline void GroupNormImpl(const LocalTensor<T>& output, const LocalTe
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void GroupNormImpl(const LocalTensor<T>& output, const LocalTensor<T>& outputMean,
-                                     const LocalTensor<T>& outputVariance, const LocalTensor<T>& inputX,
-                                     const LocalTensor<T>& gamma, const LocalTensor<T>& beta, const T epsilon,
-                                     GroupNormTiling& tiling)
+__aicore__ inline void GroupNormImpl(
+    const LocalTensor<T>& output, const LocalTensor<T>& outputMean, const LocalTensor<T>& outputVariance,
+    const LocalTensor<T>& inputX, const LocalTensor<T>& gamma, const LocalTensor<T>& beta, const T epsilon,
+    GroupNormTiling& tiling)
 {
     LocalTensor<uint8_t> sharedTmpBuffer;
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);
     ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
-    GroupNormImpl<T, isReuseSource>(output, outputMean, outputVariance, inputX, gamma, beta, sharedTmpBuffer, epsilon,
-                                    tiling);
+    GroupNormImpl<T, isReuseSource>(
+        output, outputMean, outputVariance, inputX, gamma, beta, sharedTmpBuffer, epsilon, tiling);
 }
-}  // namespace AscendC
-#endif  // IMPL_NORMALIZATION_GROUPNORM_GROUPNORM_C310_IMPL_H
+} // namespace AscendC
+#endif // IMPL_NORMALIZATION_GROUPNORM_GROUPNORM_C310_IMPL_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_GROUPNORM_GROUPNORM_C310_IMPL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

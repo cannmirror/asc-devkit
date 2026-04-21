@@ -1,15 +1,16 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/acos/acos_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/acos.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/acos/acos_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/acos.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ACOS_ACOS_COMMON_IMPL_H__
 #endif
@@ -31,8 +32,8 @@ namespace AscendC {
 // Computes acos values based on input types.
 // According formula: arccos(x) = PI*0.5 - arcsin(x).
 template <typename T>
-__aicore__ inline void AcosCompute(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const LocalTensor<T>& tmpBuffer, uint32_t calSize)
+__aicore__ inline void AcosCompute(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& tmpBuffer, uint32_t calSize)
 {
     UnaryRepeatParams unaryParams;
     AsinCompute(dst, src, tmpBuffer, calSize);
@@ -43,8 +44,8 @@ __aicore__ inline void AcosCompute(const LocalTensor<T>& dst, const LocalTensor<
 }
 
 template <>
-__aicore__ inline void AcosCompute<half>(const LocalTensor<half>& dst, const LocalTensor<half>& src,
-    const LocalTensor<half>& tmpBuffer, uint32_t calSize)
+__aicore__ inline void AcosCompute<half>(
+    const LocalTensor<half>& dst, const LocalTensor<half>& src, const LocalTensor<half>& tmpBuffer, uint32_t calSize)
 {
     UnaryRepeatParams unaryParams;
     // res = PI*0.5 - float(asin(x)) -> dst.
@@ -58,13 +59,15 @@ __aicore__ inline void AcosCompute<half>(const LocalTensor<half>& dst, const Loc
     PipeBarrier<PIPE_V>();
     Muls<float, false>(tmpFloatBuffer1, tmpFloatBuffer1, NEG_ONE, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
-    Cast<half, float, false>(dst, tmpFloatBuffer1, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
-        { 1, 1, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+    Cast<half, float, false>(
+        dst, tmpFloatBuffer1, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void AcosImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void AcosImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -110,8 +113,8 @@ __aicore__ inline void AcosImpl(const LocalTensor<T>& dstTensor, const LocalTens
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void AcosImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const uint32_t calCount)
+__aicore__ inline void AcosImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {

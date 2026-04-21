@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file lgamma_common_basic_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/lgamma/lgamma_common_basic_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/lgamma.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/lgamma/lgamma_common_basic_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/lgamma.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_LGAMMA_LGAMMA_COMMON_BASIC_IMPL_H__
 #endif
@@ -28,9 +29,9 @@
 #endif
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 namespace AscendC {
-__aicore__ inline void LGammaCalcMulAdd(const LocalTensor<float> &tmp, const LocalTensor<float> &src,
-    const UnaryRepeatParams &unaryParams, const BinaryRepeatParams binaryParams, const float params[],
-    const size_t paramLen)
+__aicore__ inline void LGammaCalcMulAdd(
+    const LocalTensor<float>& tmp, const LocalTensor<float>& src, const UnaryRepeatParams& unaryParams,
+    const BinaryRepeatParams binaryParams, const float params[], const size_t paramLen)
 {
     // tmp = x * params[0]  + params[1]
     Muls<float, false>(tmp, src, params[0], MASK_PLACEHOLDER, 1, unaryParams);
@@ -61,7 +62,7 @@ __aicore__ inline void LGammaCalcMulAdd(const LocalTensor<float> &tmp, const Loc
 }
 
 // cal result of 0.7 <= x < 1.5 on tmp1, Ln return inf when x is 0
-__aicore__ inline void LGamma007(const LocalTensor<float> &src, const LGammaParams &params)
+__aicore__ inline void LGamma007(const LocalTensor<float>& src, const LGammaParams& params)
 {
     // tmp1 = MulAdd(x)
     LGammaCalcMulAdd(params.tmp1, src, params.unaryParams, params.binaryParams, params007, params007Len);
@@ -78,7 +79,7 @@ __aicore__ inline void LGamma007(const LocalTensor<float> &src, const LGammaPara
 }
 
 // cal result of 0.7 <= x < 1.5 on tmp2
-__aicore__ inline void LGamma0715(const LocalTensor<float> &src, const LGammaParams &params)
+__aicore__ inline void LGamma0715(const LocalTensor<float>& src, const LGammaParams& params)
 {
     // tmp1 = 1.0 - x
     Muls<float, false>(params.tmp1, src, fn1, MASK_PLACEHOLDER, 1, params.unaryParams);
@@ -91,7 +92,7 @@ __aicore__ inline void LGamma0715(const LocalTensor<float> &src, const LGammaPar
 }
 
 // cal result of 1.5 <= x < 3 on tmp2
-__aicore__ inline void LGamma153(const LocalTensor<float> &src, const LGammaParams &params)
+__aicore__ inline void LGamma153(const LocalTensor<float>& src, const LGammaParams& params)
 {
     // tmp1 = x - 2.0
     Adds<float, false>(params.tmp1, src, fn2, MASK_PLACEHOLDER, 1, params.unaryParams);
@@ -102,7 +103,7 @@ __aicore__ inline void LGamma153(const LocalTensor<float> &src, const LGammaPara
 }
 
 // cal result of 3 <= x < 5.8 on tmp3
-__aicore__ inline void LGamma358(const LocalTensor<float> &src, const LGammaParams &params)
+__aicore__ inline void LGamma358(const LocalTensor<float>& src, const LGammaParams& params)
 {
     // tmp1 = x - 3.0
     Adds<float, false>(params.tmp1, src, fn3, MASK_PLACEHOLDER, 1, params.unaryParams);
@@ -130,7 +131,7 @@ __aicore__ inline void LGamma358(const LocalTensor<float> &src, const LGammaPara
 }
 
 // cal result of x >= 5.8 on tmp1
-__aicore__ inline void LGamma58(const LocalTensor<float> &src, const LGammaParams &params)
+__aicore__ inline void LGamma58(const LocalTensor<float>& src, const LGammaParams& params)
 {
     // tmp1 = ln(x) * 0.5
     Ln<float, false>(params.tmp1, src, MASK_PLACEHOLDER, 1, params.unaryParams);
@@ -174,7 +175,7 @@ __aicore__ inline void LGamma58(const LocalTensor<float> &src, const LGammaParam
 
 // gen mask, src < scalar set 1, other set 0, used tmp1
 __aicore__ inline void LGammaGenLTMask(
-    const LocalTensor<uint8_t> &mask, const LocalTensor<float> &src, const LGammaParams &params, const float scalar)
+    const LocalTensor<uint8_t>& mask, const LocalTensor<float>& src, const LGammaParams& params, const float scalar)
 {
     Duplicate<float, false>(params.tmp1, scalar, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
     PipeBarrier<PIPE_V>();
@@ -186,7 +187,7 @@ __aicore__ inline void LGammaGenLTMask(
 
 // gen mask, src >= scalar set 1, other set 0, used tmp1
 __aicore__ inline void LGammaGenGEMask(
-    const LocalTensor<uint8_t> &mask, const LocalTensor<float> &src, const LGammaParams &params, const float scalar)
+    const LocalTensor<uint8_t>& mask, const LocalTensor<float>& src, const LGammaParams& params, const float scalar)
 {
     Duplicate<float, false>(params.tmp1, scalar, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
     PipeBarrier<PIPE_V>();
@@ -198,25 +199,23 @@ __aicore__ inline void LGammaGenGEMask(
 
 // gen mask on params.mask, min > src >= max set 1, other set 0, used tmp1
 __aicore__ inline void LGammaGenRangeMask(
-    const LocalTensor<float> &src, const LGammaParams &params, const float min, const float max)
+    const LocalTensor<float>& src, const LGammaParams& params, const float min, const float max)
 {
     LGammaGenLTMask(params.mask, src, params, max);
     LGammaGenGEMask(params.tmpMask1, src, params, min);
 
     SetVectorMask<float>(0, ConstCeil(params.splitSize, sizeof(uint16_t) * ONE_BYTE_BIT_SIZE));
-    And<uint16_t, false>(params.mask.ReinterpretCast<uint16_t>(),
-        params.tmpMask1.ReinterpretCast<uint16_t>(),
-        params.mask.ReinterpretCast<uint16_t>(),
-        MASK_PLACEHOLDER,
-        1,
-        params.binaryParams);
+    And<uint16_t, false>(
+        params.mask.ReinterpretCast<uint16_t>(), params.tmpMask1.ReinterpretCast<uint16_t>(),
+        params.mask.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1, params.binaryParams);
     SetVectorMask<float>(0, params.splitSize);
     PipeBarrier<PIPE_V>();
 }
 
 // Select the value of src at mask 1, and accumulate the result onto dst, used tmp1
-__aicore__ inline void LGammaSelect(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const LocalTensor<uint8_t>& mask, const LGammaParams& params)
+__aicore__ inline void LGammaSelect(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const LocalTensor<uint8_t>& mask,
+    const LGammaParams& params)
 {
     SetCmpMask<float>(params.tmpScalar);
     PipeBarrier<PIPE_V>();
@@ -227,36 +226,36 @@ __aicore__ inline void LGammaSelect(const LocalTensor<float>& dst, const LocalTe
 }
 
 // tmp6 is |x|, res on tmp5
-__aicore__ inline void LGammaPositive(const LGammaParams &params)
+__aicore__ inline void LGammaPositive(const LGammaParams& params)
 {
     Duplicate<float, false>(params.tmp5, 0.0f, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
     PipeBarrier<PIPE_V>();
 
     // cal and select 0 <= x < 0.7 res
     LGammaGenLTMask(params.mask, params.tmp6, params, f07);
-    LGamma007(params.tmp6, params);  // res on tmp1
+    LGamma007(params.tmp6, params); // res on tmp1
     LGammaSelect(params.tmp5, params.tmp1, params.mask, params);
 
     // cal and select 0.7 <= x < 1.5 res
     LGammaGenRangeMask(params.tmp6, params, f07, f15);
-    LGamma0715(params.tmp6, params);  // res on tmp2
+    LGamma0715(params.tmp6, params); // res on tmp2
     LGammaSelect(params.tmp5, params.tmp2, params.mask, params);
 
     // cal and select 1.5 <= x < 3 res
     LGammaGenRangeMask(params.tmp6, params, f15, f3);
-    LGamma153(params.tmp6, params);  // res on tmp2
+    LGamma153(params.tmp6, params); // res on tmp2
     LGammaSelect(params.tmp5, params.tmp2, params.mask, params);
 
     // cal and select 3 <= x < 5.8 res
     LGammaGenRangeMask(params.tmp6, params, f3, f58);
-    LGamma358(params.tmp6, params);  // res on tmp3
+    LGamma358(params.tmp6, params); // res on tmp3
     LGammaSelect(params.tmp5, params.tmp3, params.mask, params);
 
     // cal and select 5.8 <= x < inf res
     NotNumUnion notNum;
     notNum.i = F32_INF;
     LGammaGenRangeMask(params.tmp6, params, f58, notNum.f);
-    LGamma58(params.tmp6, params);  // res on tmp1
+    LGamma58(params.tmp6, params); // res on tmp1
     LGammaSelect(params.tmp5, params.tmp1, params.mask, params);
 
     // cal and select x >= inf res
@@ -265,7 +264,7 @@ __aicore__ inline void LGammaPositive(const LGammaParams &params)
 }
 
 // cal tmp val on tmp2, mask for odd, tmpMask1 for even, tmp6 is |x|
-__aicore__ inline void LGammaCalNegTmp1(const LGammaParams &params)
+__aicore__ inline void LGammaCalNegTmp1(const LGammaParams& params)
 {
     // tmp2 = floor(tmp6 + tmp6 + 0.5)
     Add<float, false>(params.tmp2, params.tmp6, params.tmp6, MASK_PLACEHOLDER, 1, params.binaryParams);
@@ -287,10 +286,8 @@ __aicore__ inline void LGammaCalNegTmp1(const LGammaParams &params)
     LGammaGenGEMask(params.mask, params.tmp3, params, f05);
     SetVectorMask<float>(0, ConstCeil(params.splitSize, sizeof(uint16_t) * ONE_BYTE_BIT_SIZE));
     // tmpMask1 for even
-    Not<uint16_t, false>(params.tmpMask1.ReinterpretCast<uint16_t>(),
-        params.mask.ReinterpretCast<uint16_t>(),
-        MASK_PLACEHOLDER,
-        1,
+    Not<uint16_t, false>(
+        params.tmpMask1.ReinterpretCast<uint16_t>(), params.mask.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1,
         params.unaryParams);
     SetVectorMask<float>(0, params.splitSize);
     PipeBarrier<PIPE_V>();
@@ -305,7 +302,7 @@ __aicore__ inline void LGammaCalNegTmp1(const LGammaParams &params)
 }
 
 // input is tmp2, mask for odd, tmpMask1 for even, result on tmp2
-__aicore__ inline void LGammaCalNegTmp2(const LGammaParams &params)
+__aicore__ inline void LGammaCalNegTmp2(const LGammaParams& params)
 {
     // tmp3 = tmp2 * tmp2
     Mul<float, false>(params.tmp3, params.tmp2, params.tmp2, MASK_PLACEHOLDER, 1, params.binaryParams);
@@ -332,7 +329,7 @@ __aicore__ inline void LGammaCalNegTmp2(const LGammaParams &params)
 }
 
 // Get final result, tmp3 save for inf
-__aicore__ inline void LGammaCalNegTmp3(const LGammaParams &params)
+__aicore__ inline void LGammaCalNegTmp3(const LGammaParams& params)
 {
     // tmp2 = 1.1447298526763916015625 - ln(|tmp2| * tmp6) - tmp5
     Abs<float, false>(params.tmp1, params.tmp2, MASK_PLACEHOLDER, 1, params.unaryParams);
@@ -354,7 +351,7 @@ __aicore__ inline void LGammaCalNegTmp3(const LGammaParams &params)
 }
 
 // Near zero negative, input as |x|, result on tmp1
-__aicore__ inline void LGammaCalMinNeg(const LocalTensor<float> &src, const LGammaParams &params)
+__aicore__ inline void LGammaCalMinNeg(const LocalTensor<float>& src, const LGammaParams& params)
 {
     // tmp1 = -ln(src)
     Ln<float, false>(params.tmp1, src, MASK_PLACEHOLDER, 1, params.unaryParams);
@@ -364,7 +361,7 @@ __aicore__ inline void LGammaCalMinNeg(const LocalTensor<float> &src, const LGam
 }
 
 // cal for x < 0, result on tmp4, tmp6 is |x|, tmp5 is pos res
-__aicore__ inline void LGammaNegative(const LGammaParams &params)
+__aicore__ inline void LGammaNegative(const LGammaParams& params)
 {
     Duplicate<float, false>(params.tmp4, 0.0f, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
     PipeBarrier<PIPE_V>();
@@ -372,7 +369,7 @@ __aicore__ inline void LGammaNegative(const LGammaParams &params)
     // cal res for 9.99999968266e-20 < x < 0
     constexpr float minf = 9.99999968266e-20;
     LGammaGenLTMask(params.mask, params.tmp6, params, minf);
-    LGammaCalMinNeg(params.tmp6, params);  // res on tmp1
+    LGammaCalMinNeg(params.tmp6, params); // res on tmp1
     LGammaSelect(params.tmp4, params.tmp1, params.mask, params);
 
     // cal temp var, mask for odd, tmpMask1 for even, result on tmp2
@@ -402,7 +399,8 @@ __aicore__ inline void LGammaNegative(const LGammaParams &params)
 
     // cal and
     SetVectorMask<float>(0, ConstCeil(params.splitSize, sizeof(uint16_t) * ONE_BYTE_BIT_SIZE));
-    And<uint16_t, false>(params.mask.ReinterpretCast<uint16_t>(), params.tmpMask1.ReinterpretCast<uint16_t>(),
+    And<uint16_t, false>(
+        params.mask.ReinterpretCast<uint16_t>(), params.tmpMask1.ReinterpretCast<uint16_t>(),
         params.mask.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1, params.binaryParams);
     PipeBarrier<PIPE_V>();
     SetVectorMask<float>(0, params.splitSize);
@@ -410,7 +408,8 @@ __aicore__ inline void LGammaNegative(const LGammaParams &params)
     // cal x >= 9.99999968266e-20 mask, cal and, select
     LGammaGenGEMask(params.tmpMask1, params.tmp6, params, minf);
     SetVectorMask<float>(0, ConstCeil(params.splitSize, sizeof(uint16_t) * ONE_BYTE_BIT_SIZE));
-    And<uint16_t, false>(params.mask.ReinterpretCast<uint16_t>(), params.tmpMask1.ReinterpretCast<uint16_t>(),
+    And<uint16_t, false>(
+        params.mask.ReinterpretCast<uint16_t>(), params.tmpMask1.ReinterpretCast<uint16_t>(),
         params.mask.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1, params.binaryParams);
     PipeBarrier<PIPE_V>();
     SetVectorMask<float>(0, params.splitSize);
@@ -418,15 +417,17 @@ __aicore__ inline void LGammaNegative(const LGammaParams &params)
 
     // cal not
     SetVectorMask<float>(0, ConstCeil(params.splitSize, sizeof(uint16_t) * ONE_BYTE_BIT_SIZE));
-    Not<uint16_t, false>(params.tmpMask1.ReinterpretCast<uint16_t>(), params.mask.ReinterpretCast<uint16_t>(),
-        MASK_PLACEHOLDER, 1, params.unaryParams);
+    Not<uint16_t, false>(
+        params.tmpMask1.ReinterpretCast<uint16_t>(), params.mask.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1,
+        params.unaryParams);
     PipeBarrier<PIPE_V>();
     SetVectorMask<float>(0, params.splitSize);
 
     // and for tmp6 >= 9.99999968266e-20, res is inf
     LGammaGenGEMask(params.mask, params.tmp6, params, minf);
     SetVectorMask<float>(0, ConstCeil(params.splitSize, sizeof(uint16_t) * ONE_BYTE_BIT_SIZE));
-    And<uint16_t, false>(params.tmpMask1.ReinterpretCast<uint16_t>(), params.tmpMask1.ReinterpretCast<uint16_t>(),
+    And<uint16_t, false>(
+        params.tmpMask1.ReinterpretCast<uint16_t>(), params.tmpMask1.ReinterpretCast<uint16_t>(),
         params.mask.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1, params.binaryParams);
     PipeBarrier<PIPE_V>();
     SetVectorMask<float>(0, params.splitSize);
@@ -438,7 +439,7 @@ __aicore__ inline void LGammaNegative(const LGammaParams &params)
 
 template <bool isReuseSource = false>
 __aicore__ inline void LGammaInitFParams(
-    const LocalTensor<float> &tmp, const uint32_t splitSize, const LocalTensor<float> &src, LGammaParams &params)
+    const LocalTensor<float>& tmp, const uint32_t splitSize, const LocalTensor<float>& src, LGammaParams& params)
 {
     params.tmp1 = tmp;
     params.tmp2 = tmp[splitSize];
@@ -474,7 +475,7 @@ __aicore__ inline void LGammaInitFParams(
 
 template <bool isReuseSource = false>
 __aicore__ inline void LGammaInitHParams(
-    const LocalTensor<float> &tmp, const uint32_t splitSize, const LocalTensor<half> &src, LGammaParams &params)
+    const LocalTensor<float>& tmp, const uint32_t splitSize, const LocalTensor<half>& src, LGammaParams& params)
 {
     params.tmp1 = tmp;
     params.tmp2 = tmp[splitSize];
@@ -502,9 +503,9 @@ __aicore__ inline void LGammaInitHParams(
 
     params.splitSize = splitSize;
 }
-}  // namespace AscendC
+} // namespace AscendC
 #endif
-#endif  // IMPL_MATH_LGAMMA_LGAMMA_COMMON_BASIC_IMPL_H
+#endif // IMPL_MATH_LGAMMA_LGAMMA_COMMON_BASIC_IMPL_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_LGAMMA_LGAMMA_COMMON_BASIC_IMPL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

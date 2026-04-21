@@ -1,15 +1,16 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/asin/asin_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/asin.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/asin/asin_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/asin.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ASIN_ASIN_COMMON_IMPL_H__
 #endif
@@ -52,8 +53,8 @@ __aicore__ inline void GetSign(const LocalTensor<T>& dst, const LocalTensor<T>& 
 
 // Calculate Taylor Expansion of Asin by using extra Buffer and not modifying source.
 template <typename T>
-__aicore__ inline void AsinTaylorCompute(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const LocalTensor<T>& localTemp)
+__aicore__ inline void AsinTaylorCompute(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& localTemp)
 {
     BinaryRepeatParams binaryParams;
     UnaryRepeatParams unaryParams;
@@ -105,8 +106,8 @@ __aicore__ inline void AsinTaylorComputeBySquareValue(const LocalTensor<T>& dst,
 
 // Computes high precision asin values for half type inputs by converting inputs to float types and save float asin
 // result at tmp Buffer. Requires 6 times extra buffer of input sizes.
-__aicore__ inline void AsinFp16Compute(const LocalTensor<half>& dst, const LocalTensor<half>& src,
-    const LocalTensor<half>& stackBuffer, uint32_t calSize)
+__aicore__ inline void AsinFp16Compute(
+    const LocalTensor<half>& dst, const LocalTensor<half>& src, const LocalTensor<half>& stackBuffer, uint32_t calSize)
 {
     UnaryRepeatParams unaryParams;
     BinaryRepeatParams binaryParams;
@@ -121,8 +122,9 @@ __aicore__ inline void AsinFp16Compute(const LocalTensor<half>& dst, const Local
 
     // Cast src from half to float type for getting more precise results, but only computes by finishing
     // taylor expansion computation as it's the majority reason of precision loss.
-    Cast<float, half, false>(tmpFloatBuffer2, src, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
-        { 1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE });
+    Cast<float, half, false>(
+        tmpFloatBuffer2, src, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
     // Calculates res2 = PI*0.5 - taylor_compute(sqrt(1 - x^2)) -> tmpFloatBuffer1.
     Mul<float, false>(tmpFloatBuffer2, tmpFloatBuffer2, tmpFloatBuffer2, MASK_PLACEHOLDER, 1, binaryParams);
@@ -162,11 +164,13 @@ __aicore__ inline void AsinFp16Compute(const LocalTensor<half>& dst, const Local
     PipeBarrier<PIPE_V>();
 
     const LocalTensor<int8_t>& tmpS8Buffer = tmpHalfBuffer1.ReinterpretCast<int8_t>();
-    Cast<int8_t, half, false>(tmpS8Buffer, tmpHalfBuffer2, RoundMode::CAST_FLOOR, MASK_PLACEHOLDER, 1,
-        { 1, 1, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+    Cast<int8_t, half, false>(
+        tmpS8Buffer, tmpHalfBuffer2, RoundMode::CAST_FLOOR, MASK_PLACEHOLDER, 1,
+        {1, 1, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
-    Cast<half, int8_t, false>(tmpHalfBuffer2, tmpS8Buffer, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
-        { 1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE });
+    Cast<half, int8_t, false>(
+        tmpHalfBuffer2, tmpS8Buffer, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
 
     Muls<half, false>(tmpHalfBuffer2, tmpHalfBuffer2, static_cast<half>(NEG_ONE), MASK_PLACEHOLDER, 1, unaryParams);
@@ -180,14 +184,16 @@ __aicore__ inline void AsinFp16Compute(const LocalTensor<half>& dst, const Local
     Adds<half, false>(tmpHalfBuffer2, tmpHalfBuffer2, static_cast<half>(NUM_ONE), MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
 
-    Cast<float, half, false>(tmpFloatBuffer2, tmpHalfBuffer2, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
-        { 1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE });
+    Cast<float, half, false>(
+        tmpFloatBuffer2, tmpHalfBuffer2, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
     Mul<float, false>(tmpFloatBuffer1, tmpFloatBuffer1, tmpFloatBuffer2, MASK_PLACEHOLDER, 1, binaryParams);
     PipeBarrier<PIPE_V>();
 
-    Cast<float, half, false>(tmpFloatBuffer2, dst, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
-        { 1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE });
+    Cast<float, half, false>(
+        tmpFloatBuffer2, dst, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
 
     // Calculates res1 = res1 + res2.
@@ -197,13 +203,15 @@ __aicore__ inline void AsinFp16Compute(const LocalTensor<half>& dst, const Local
     // res1 = sign(x) * res1.
     GetSign(tmpHalfBuffer1, src, tmpHalfBuffer2);
     PipeBarrier<PIPE_V>();
-    Cast<float, half, false>(tmpFloatBuffer2, tmpHalfBuffer1, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
-        { 1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE });
+    Cast<float, half, false>(
+        tmpFloatBuffer2, tmpHalfBuffer1, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
     Mul<float, false>(tmpFloatBuffer1, tmpFloatBuffer1, tmpFloatBuffer2, MASK_PLACEHOLDER, 1, binaryParams);
     PipeBarrier<PIPE_V>();
-    Cast<half, float, false>(dst, tmpFloatBuffer1, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
-        { 1, 1, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+    Cast<half, float, false>(
+        dst, tmpFloatBuffer1, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
 }
 
@@ -213,8 +221,8 @@ __aicore__ inline void AsinFp16Compute(const LocalTensor<half>& dst, const Local
 // asin(x) = the 15th order taylor expansion, x belongs to (-2^(-0.5), 2^(-0.5))
 // asin(x) = PI*0.5 - arcsin(sqrt(1-x^2)), x belongs to (2^(-0.5), 1)
 template <typename T>
-__aicore__ inline void AsinCompute(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const LocalTensor<T>& tmpBuffer, uint32_t calSize)
+__aicore__ inline void AsinCompute(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& tmpBuffer, uint32_t calSize)
 {
     UnaryRepeatParams unaryParams;
     BinaryRepeatParams binaryParams;
@@ -294,8 +302,8 @@ __aicore__ inline void AsinCompute(const LocalTensor<T>& dst, const LocalTensor<
 }
 
 template <>
-__aicore__ inline void AsinCompute<half>(const LocalTensor<half>& dst, const LocalTensor<half>& src,
-    const LocalTensor<half>& tmpBuffer, uint32_t calSize)
+__aicore__ inline void AsinCompute<half>(
+    const LocalTensor<half>& dst, const LocalTensor<half>& src, const LocalTensor<half>& tmpBuffer, uint32_t calSize)
 {
     // Due to using half type to computing the above formula, it doesn't satisfy the precision standard,
     // upcast to float for getting more precise results.
@@ -303,8 +311,9 @@ __aicore__ inline void AsinCompute<half>(const LocalTensor<half>& dst, const Loc
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void AsinImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void AsinImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -350,8 +359,8 @@ __aicore__ inline void AsinImpl(const LocalTensor<T>& dstTensor, const LocalTens
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void AsinImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const uint32_t calCount)
+__aicore__ inline void AsinImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {

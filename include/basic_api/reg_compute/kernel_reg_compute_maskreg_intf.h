@@ -49,10 +49,10 @@ __simd_callee__ inline void Move(MaskReg& dst, MaskReg& src, MaskReg& mask);
 __simd_callee__ inline void Move(MaskReg& dst, MaskReg& src);
 
 template <typename T>
-__simd_callee__ inline void MaskInterleave(MaskReg& dst0, MaskReg& dst1, MaskReg& src0, MaskReg& src1);
+__simd_callee__ inline void Interleave(MaskReg& dst0, MaskReg& dst1, MaskReg& src0, MaskReg& src1);
 
 template <typename T>
-__simd_callee__ inline void MaskDeInterleave(MaskReg& dst0, MaskReg& dst1, MaskReg& src0, MaskReg& src1);
+__simd_callee__ inline void DeInterleave(MaskReg& dst0, MaskReg& dst1, MaskReg& src0, MaskReg& src1);
 
 __simd_callee__ inline void Select(MaskReg& dst, MaskReg& src0, MaskReg& src1, MaskReg& mask);
 

@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file matmul_tiling_algorithm.cpp
@@ -90,9 +90,7 @@ constexpr int32_t BASIC_SIZE_32 = 32;
 constexpr int32_t BAND_LIMIT_MAX_CORENUM = 20;
 constexpr float MAX_BAND_WIDTH_RATIO = 4;
 const std::map<uint32_t, float> BAND_WIDTH_TAB = { // (numcols, band ratio)
-    {256, 1}, {512, 1}, {384, 1.5}, {448, 1.7},
-    {320, 2}, {128, 2}, {192, 2.7}
-};
+    {256, 1}, {512, 1}, {384, 1.5}, {448, 1.7}, {320, 2}, {128, 2}, {192, 2.7}};
 
 constexpr int32_t N_BUFFER_33_FACTOR = 3;
 
@@ -116,7 +114,7 @@ bool IsOrgShapeAlign(int32_t orgShape, int32_t alignSize, bool isSmallShape = fa
     }
     return false;
 }
-}
+} // namespace
 
 MatmulTilingAlgorithm::MatmulTilingAlgorithm(MatmulApiTilingBase* tilingIns)
 {
@@ -229,8 +227,9 @@ int32_t MatmulTilingAlgorithm::GetLoadSize(const CoreStatusPack& coreStatus, con
     if (al0FullLoad || bl0FullLoad) {
         return coreStatus.m + coreStatus.n;
     } else if (kFullLoad) {
-        return min(coreStatus.n + MathUtil::CeilDivision(coreStatus.n, l0Status.nL0) * coreStatus.m,
-                   coreStatus.m + MathUtil::CeilDivision(coreStatus.m, l0Status.mL0) * coreStatus.n);
+        return min(
+            coreStatus.n + MathUtil::CeilDivision(coreStatus.n, l0Status.nL0) * coreStatus.m,
+            coreStatus.m + MathUtil::CeilDivision(coreStatus.m, l0Status.mL0) * coreStatus.n);
     } else {
         return MathUtil::CeilDivision(coreStatus.m, l0Status.mL0) * coreStatus.n +
                MathUtil::CeilDivision(coreStatus.n, l0Status.nL0) * coreStatus.m;
@@ -243,9 +242,9 @@ bool MatmulTilingAlgorithm::CheckBaseMNKL1Size(SingleCoreStatus& singleCoreStatu
     int32_t a1Length = static_cast<int32_t>(l0Status.mL0 * l0Status.kL0 * C0_SIZE * C0_BYTE_SIZE);
     int32_t b1Length = static_cast<int32_t>(l0Status.nL0 * l0Status.kL0 * C0_SIZE * C0_BYTE_SIZE);
     int32_t biasLength = (tilingIns_->socVersion == platform_ascendc::SocVersion::ASCEND910B ||
-                          tilingIns_->socVersion == platform_ascendc::SocVersion::ASCEND310B)
-                             ? l0Status.nL0 * C0_SIZE * DTYPE_BYTE_TAB.at(tilingIns_->biasType_.dataType)
-                             : 0;
+                          tilingIns_->socVersion == platform_ascendc::SocVersion::ASCEND310B) ?
+                             l0Status.nL0 * C0_SIZE * DTYPE_BYTE_TAB.at(tilingIns_->biasType_.dataType) :
+                             0;
     int32_t dequantSize = 0;
     if (tilingIns_->deqType == DequantType::TENSOR) {
         dequantSize = l0Status.nL0 * C0_SIZE * UINT64_TYPES;
@@ -267,16 +266,17 @@ bool MatmulTilingAlgorithm::CheckBaseMNKL1Size(SingleCoreStatus& singleCoreStatu
 bool MatmulTilingAlgorithm::CheckK0Align(int32_t k0) const
 {
     if ((tilingIns_->aType_.dataType == DataType::DT_FLOAT && tilingIns_->aType_.type == CubeFormat::NZ &&
-        tilingIns_->aType_.isTrans) ||
+         tilingIns_->aType_.isTrans) ||
         (tilingIns_->bType_.dataType == DataType::DT_FLOAT && tilingIns_->bType_.type == CubeFormat::NZ &&
-        !tilingIns_->bType_.isTrans)) {
+         !tilingIns_->bType_.isTrans)) {
         return k0 % NUM_TWO == 0;
     }
     return true;
 }
 
-void MatmulTilingAlgorithm::GetFinalMkn(SingleCoreStatus& singleCoreStatus, const CoreStatusPack& coreStatus,
-    const int32_t& k0, const int32_t& majorDimFactor, const int32_t& minorDimFactor) const
+void MatmulTilingAlgorithm::GetFinalMkn(
+    SingleCoreStatus& singleCoreStatus, const CoreStatusPack& coreStatus, const int32_t& k0,
+    const int32_t& majorDimFactor, const int32_t& minorDimFactor) const
 {
     if (k0 == 0) {
         return;
@@ -290,13 +290,13 @@ void MatmulTilingAlgorithm::GetFinalMkn(SingleCoreStatus& singleCoreStatus, cons
         l0Status.nL0 = majorDimFactor;
     }
     l0Status.kL0 = k0;
-    const float tmpL0cUse = static_cast<float>(l0Status.mL0 * l0Status.nL0 * l0Status.dbL0C *
-        MIN_FRACTAL_SIZE * FP32_BYTES * 1.0 / tilingIns_->bufferPool_.l0CSize);
+    const float tmpL0cUse = static_cast<float>(
+        l0Status.mL0 * l0Status.nL0 * l0Status.dbL0C * MIN_FRACTAL_SIZE * FP32_BYTES * 1.0 /
+        tilingIns_->bufferPool_.l0CSize);
     // NUM_TWO means L0A and L0B double buffer is default-on.
 
-    const int32_t tmpMte1Cycle =
-        max(2 * 3, l0Status.mL0 * l0Status.kL0 * C0_SIZE * C0_BYTE_SIZE / MTE1_L0A_BANDWIDTH) +
-        max(2 * 3, l0Status.kL0 * l0Status.nL0 * C0_SIZE * C0_BYTE_SIZE / MTE1_L0B_BANDWIDTH);
+    const int32_t tmpMte1Cycle = max(2 * 3, l0Status.mL0 * l0Status.kL0 * C0_SIZE * C0_BYTE_SIZE / MTE1_L0A_BANDWIDTH) +
+                                 max(2 * 3, l0Status.kL0 * l0Status.nL0 * C0_SIZE * C0_BYTE_SIZE / MTE1_L0B_BANDWIDTH);
     const int32_t tmpMadCycle = l0Status.mL0 * l0Status.kL0 * l0Status.nL0; // (m<=4 or n<=2:tmpMte1Cycle > tmpMadCycle)
     const int32_t tmpLoadSize = GetLoadSize(coreStatus, l0Status);
     // calculate load2d loop: A splitK for K loop; B split K for m loop as to V100
@@ -305,23 +305,26 @@ void MatmulTilingAlgorithm::GetFinalMkn(SingleCoreStatus& singleCoreStatus, cons
     const bool condition1 = l0Status.finalML0 == 0;
     const bool condition2 =
         (tmpLoadSize < l0Status.finalLoadSize) || (tmpMte1Cycle < tmpMadCycle && !l0Status.updateUsingMte1);
-    const bool condition3 = (tmpLoadSize == l0Status.finalLoadSize && tmpMadCycle > l0Status.finalMul &&
-        tmpMadCycle * tmpL0cUse >= l0Status.finalMul * l0Status.finalL0cUse);
+    const bool condition3 =
+        (tmpLoadSize == l0Status.finalLoadSize && tmpMadCycle > l0Status.finalMul &&
+         tmpMadCycle * tmpL0cUse >= l0Status.finalMul * l0Status.finalL0cUse);
     const bool condition4 = tmpMadCycle == l0Status.finalMul && tmpLoadSize == l0Status.finalLoadSize &&
-        tmpMte1Loop < l0Status.finalMte1Loop;
+                            tmpMte1Loop < l0Status.finalMte1Loop;
     // Considering pipeline parallelism between MTE1 and MAD
     const bool condition5 = ((tmpMte1Cycle < tmpMadCycle && l0Status.updateUsingMte1) || !l0Status.updateUsingMte1);
     const bool condition6 = CheckBaseMNKL1Size(singleCoreStatus);
-    int32_t lastReduceDim = (tilingIns_->aType_.dataType == DataType::DT_FLOAT ||
-        tilingIns_->bType_.dataType == DataType::DT_FLOAT) ? FLOAT32_REDUCE_BLOCK_SIZE : REDUCE_BLOCK_SIZE;
+    int32_t lastReduceDim =
+        (tilingIns_->aType_.dataType == DataType::DT_FLOAT || tilingIns_->bType_.dataType == DataType::DT_FLOAT) ?
+            FLOAT32_REDUCE_BLOCK_SIZE :
+            REDUCE_BLOCK_SIZE;
 
-    const bool condition7 = (tilingIns_->baseN != -1) || (!(coreStatus.n >= lastReduceDim && l0Status.nL0 <
-        lastReduceDim));
+    const bool condition7 =
+        (tilingIns_->baseN != -1) || (!(coreStatus.n >= lastReduceDim && l0Status.nL0 < lastReduceDim));
 
     const bool condition8 = CheckK0Align(l0Status.kL0);
 
-    const bool validL0 = (condition1 || condition2 || condition3 || condition4) && condition5 &&
-        condition6 && condition7 && condition8;
+    const bool validL0 =
+        (condition1 || condition2 || condition3 || condition4) && condition5 && condition6 && condition7 && condition8;
     if (validL0) {
         l0Status.finalML0 = l0Status.mL0;
         l0Status.finalKL0 = l0Status.kL0;
@@ -347,8 +350,9 @@ void MatmulTilingAlgorithm::GetL0bAlign(std::vector<int32_t>& factors) const
     return;
 }
 
-void MatmulTilingAlgorithm::GetL0FactorsCand(L0Factors& resFactors, const CoreStatusPack& coreStatus,
-    SingleCoreStatus& singleCoreStatus, int32_t* parasCombo, const MatmulRunParas& param) const
+void MatmulTilingAlgorithm::GetL0FactorsCand(
+    L0Factors& resFactors, const CoreStatusPack& coreStatus, SingleCoreStatus& singleCoreStatus, int32_t* parasCombo,
+    const MatmulRunParas& param) const
 {
     (void)(param);
     L0StatusPack& l0Status = singleCoreStatus.l0Status;
@@ -473,9 +477,10 @@ void MatmulTilingAlgorithm::GetL0FactorsCand(L0Factors& resFactors, const CoreSt
                 }
                 // when k_axis <= 8, adjust k0_factor to 2, to generate tiling baseK align to 16
                 if (((tilingIns_->aType_.dataType == DataType::DT_FLOAT && tilingIns_->aType_.type == CubeFormat::NZ &&
-                    tilingIns_->aType_.isTrans) ||
-                    (tilingIns_->bType_.dataType == DataType::DT_FLOAT && tilingIns_->bType_.type == CubeFormat::NZ &&
-                    !tilingIns_->bType_.isTrans)) && k0 == 1) {
+                      tilingIns_->aType_.isTrans) ||
+                     (tilingIns_->bType_.dataType == DataType::DT_FLOAT && tilingIns_->bType_.type == CubeFormat::NZ &&
+                      !tilingIns_->bType_.isTrans)) &&
+                    k0 == 1) {
                     k0 = NUM_TWO;
                 }
                 // Check if the buffer size allocated exceed the hardware buffer size in Float Mode
@@ -488,16 +493,18 @@ void MatmulTilingAlgorithm::GetL0FactorsCand(L0Factors& resFactors, const CoreSt
                     }
 
                     const int32_t l0aBufferSize = tilingIns_->aType_.isTrans ?
-                        MathUtil::Align(k0, 2) * C0_BYTE_SIZE * mL0 * C0_SIZE * DB_ON :
-                        k0 * C0_BYTE_SIZE * mL0 * C0_SIZE * DB_ON;
+                                                      MathUtil::Align(k0, 2) * C0_BYTE_SIZE * mL0 * C0_SIZE * DB_ON :
+                                                      k0 * C0_BYTE_SIZE * mL0 * C0_SIZE * DB_ON;
                     const int32_t l0bBufferSize = (tilingIns_->aType_.isTrans || !tilingIns_->bType_.isTrans) ?
-                        MathUtil::Align(k0, 2) * C0_BYTE_SIZE * nL0 * C0_SIZE * DB_ON :
-                        k0 * C0_BYTE_SIZE * nL0 * C0_SIZE * DB_ON;
-                    if (l0aBufferSize > tilingIns_->bufferPool_.l0ASize || l0bBufferSize > tilingIns_->bufferPool_.l0BSize) {
+                                                      MathUtil::Align(k0, 2) * C0_BYTE_SIZE * nL0 * C0_SIZE * DB_ON :
+                                                      k0 * C0_BYTE_SIZE * nL0 * C0_SIZE * DB_ON;
+                    if (l0aBufferSize > tilingIns_->bufferPool_.l0ASize ||
+                        l0bBufferSize > tilingIns_->bufferPool_.l0BSize) {
                         continue;
                     }
-                } else if (DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8) ||
-                            DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT4)) {
+                } else if (
+                    DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8) ||
+                    DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT4)) {
                     int32_t mL0 = majorDimFactor;
                     int32_t nL0 = minorDimFactor;
                     if (l0Status.maxAxisIdx != 0) {
@@ -506,11 +513,11 @@ void MatmulTilingAlgorithm::GetL0FactorsCand(L0Factors& resFactors, const CoreSt
                     }
 
                     const int32_t l0aBufferSize = tilingIns_->aType_.isTrans ?
-                        k0 * C0_BYTE_SIZE * MathUtil::Align(mL0, 2) * C0_SIZE * DB_ON :
-                        k0 * C0_BYTE_SIZE * mL0 * C0_SIZE * DB_ON;
+                                                      k0 * C0_BYTE_SIZE * MathUtil::Align(mL0, 2) * C0_SIZE * DB_ON :
+                                                      k0 * C0_BYTE_SIZE * mL0 * C0_SIZE * DB_ON;
                     int32_t l0bBufferSize = (tilingIns_->bType_.isTrans) ?
-                        k0 * C0_BYTE_SIZE * nL0 * C0_SIZE * DB_ON :
-                        k0 * C0_BYTE_SIZE *  MathUtil::Align(nL0, 2) * C0_SIZE * DB_ON;
+                                                k0 * C0_BYTE_SIZE * nL0 * C0_SIZE * DB_ON :
+                                                k0 * C0_BYTE_SIZE * MathUtil::Align(nL0, 2) * C0_SIZE * DB_ON;
                     if (l0aBufferSize > tilingIns_->bufferPool_.l0ASize ||
                         l0bBufferSize > tilingIns_->bufferPool_.l0BSize) {
                         continue;
@@ -532,7 +539,8 @@ MKNParasCombo MatmulTilingAlgorithm::GetParasCombo(const int32_t& index, const M
     // Only for david nbuffer33, others not affected.
     // Use actual l0c size can improve performance in david.
     constexpr int32_t l0cSizeForNbuffer33 = 128 * 1024;
-    const int32_t l0CSize = (tilingIns_->scheduleType != ScheduleType::N_BUFFER_33) ? tilingIns_->bufferPool_.l0CSize : l0cSizeForNbuffer33;
+    const int32_t l0CSize =
+        (tilingIns_->scheduleType != ScheduleType::N_BUFFER_33) ? tilingIns_->bufferPool_.l0CSize : l0cSizeForNbuffer33;
     const int32_t mnMax = l0CSize / (C0_SIZE * C0_SIZE) / FP32_BYTES;
     int32_t maxN = 64;
     // in V220/V300, consider bias table buffer limit
@@ -546,15 +554,15 @@ MKNParasCombo MatmulTilingAlgorithm::GetParasCombo(const int32_t& index, const M
     const int32_t maxMk = tilingIns_->aType_.pos == TPosition::TSCM ? 64 : (leftSize / C0_SIZE / C0_BYTE_SIZE);
     const int32_t maxNK = tilingIns_->bType_.pos == TPosition::TSCM ? 64 : (rightSize / C0_SIZE / C0_BYTE_SIZE);
     // dbL0A, dbL0B, dbL0C, maxMk, maxNk, maxMn, maxAxisIdx, maxAxisNum, maxAxisPnt, maxN
-    MKNParasCombo comboZero = { 2, 2, 2, maxMk, maxNK, mnMax / DB_ON, 0, 64, 8, biasBt ? maxN / DB_ON : 64 };
-    MKNParasCombo comboOne = { dbL0A_, dbL0B_, 1, maxMk, maxNK, mnMax, 0, 64, 11, biasBt ? maxN : 64 };
-    parasComboMap = { { 0, comboZero }, { 1, comboOne } };
+    MKNParasCombo comboZero = {2, 2, 2, maxMk, maxNK, mnMax / DB_ON, 0, 64, 8, biasBt ? maxN / DB_ON : 64};
+    MKNParasCombo comboOne = {dbL0A_, dbL0B_, 1, maxMk, maxNK, mnMax, 0, 64, 11, biasBt ? maxN : 64};
+    parasComboMap = {{0, comboZero}, {1, comboOne}};
 
     return parasComboMap[index];
 }
 
-void MatmulTilingAlgorithm::GetL0cDB(const L0Factors (&resFactors)[L0PARAS_COMBO_LEN], const CoreStatusPack& coreStatus,
-    L0StatusPack& l0Status) const
+void MatmulTilingAlgorithm::GetL0cDB(
+    const L0Factors (&resFactors)[L0PARAS_COMBO_LEN], const CoreStatusPack& coreStatus, L0StatusPack& l0Status) const
 {
     const int32_t dbAOnBOnCOnIdx = 0;
     const int32_t dbAOnBOnCOffIdx = 1;
@@ -571,20 +579,18 @@ void MatmulTilingAlgorithm::GetL0cDB(const L0Factors (&resFactors)[L0PARAS_COMBO
     const int32_t loadSizeL0cDbOff = resFactors[dbAOnBOnCOffIdx].finalLoadSize;
     const int32_t mte1CyclesL0cDbOff = resFactors[dbAOnBOnCOffIdx].finalMte1Cycles;
 
-    const int32_t mte3CostDbOn =
-        m0L0cDbOn * n0L0cDbOn * MIN_FRACTAL_SIZE * FP16_BYTES * 1 / MTE1_FIXPIPE_BANDWIDTH;
-    const int32_t mte3CostDbOff =
-        m0L0cDbOff * n0L0cDbOff * MIN_FRACTAL_SIZE * FP16_BYTES * 1 / MTE1_FIXPIPE_BANDWIDTH;
+    const int32_t mte3CostDbOn = m0L0cDbOn * n0L0cDbOn * MIN_FRACTAL_SIZE * FP16_BYTES * 1 / MTE1_FIXPIPE_BANDWIDTH;
+    const int32_t mte3CostDbOff = m0L0cDbOff * n0L0cDbOff * MIN_FRACTAL_SIZE * FP16_BYTES * 1 / MTE1_FIXPIPE_BANDWIDTH;
 
     const int32_t madCylesDbOn = max(m0L0cDbOn * k0L0cDbOn * n0L0cDbOn, static_cast<int32_t>(mte1CyclesL0cDbOn * 0.7));
     const int32_t madCylesDbOff =
         max(m0L0cDbOff * k0L0cDbOff * n0L0cDbOff, static_cast<int32_t>(mte1CyclesL0cDbOff * 0.7));
-    int32_t dbOnPipeTime = MathUtil::CeilDivision(coreStatus.m, m0L0cDbOn) *
-        MathUtil::CeilDivision(coreStatus.n, n0L0cDbOn) *
+    int32_t dbOnPipeTime =
+        MathUtil::CeilDivision(coreStatus.m, m0L0cDbOn) * MathUtil::CeilDivision(coreStatus.n, n0L0cDbOn) *
         ((MathUtil::CeilDivision(coreStatus.k, k0L0cDbOn) - 1) * madCylesDbOn + max(madCylesDbOn, mte3CostDbOn));
     int32_t dbOffPipeTime = MathUtil::CeilDivision(coreStatus.m, m0L0cDbOff) *
-        MathUtil::CeilDivision(coreStatus.n, n0L0cDbOff) *
-        (MathUtil::CeilDivision(coreStatus.k, k0L0cDbOff) * madCylesDbOff + mte3CostDbOff);
+                            MathUtil::CeilDivision(coreStatus.n, n0L0cDbOff) *
+                            (MathUtil::CeilDivision(coreStatus.k, k0L0cDbOff) * madCylesDbOff + mte3CostDbOff);
     dbOnPipeTime = dbOnPipeTime == 0 ? INT32_MAX : dbOnPipeTime;
     dbOffPipeTime = dbOffPipeTime == 0 ? INT32_MAX : dbOffPipeTime;
 
@@ -614,7 +620,8 @@ int32_t MatmulTilingAlgorithm::GetMxCurL1Size(const SingleCoreStatus& singleCore
     int32_t curBiasSize = 0;
     uint32_t bL1Const = 1;
     uint32_t aL1Const = 1;
-    int32_t reduceSize = static_cast<int32_t>(C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
+    int32_t reduceSize =
+        static_cast<int32_t>(C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
     if (IsNeedAlign(true)) {
         aL1Const *= reduceSize / C0_SIZE;
     }
@@ -659,8 +666,9 @@ int32_t MatmulTilingAlgorithm::GetMxCurL1Size(const SingleCoreStatus& singleCore
     return curAL1Size + curBL1Size + curScaleAL1Size + curScaleBL1Size + curBiasSize;
 }
 
-void MatmulTilingAlgorithm::GetL0Factors(const std::string& opType, const MatmulRunParas& param,
-    const CoreStatusPack& coreStatus, SingleCoreStatus& singleCoreStatus) const
+void MatmulTilingAlgorithm::GetL0Factors(
+    const std::string& opType, const MatmulRunParas& param, const CoreStatusPack& coreStatus,
+    SingleCoreStatus& singleCoreStatus) const
 {
     (void)(opType);
     // get mL0, nL0, kL0 factor when singlecore m, n, k is know
@@ -693,7 +701,8 @@ void MatmulTilingAlgorithm::GetL0Factors(const std::string& opType, const Matmul
 
     if (tilingIns_->madType_ == MatrixMadType::MXMODE) {
         int32_t curL1Size = GetMxCurL1Size(singleCoreStatus);
-        int32_t reduceSize = static_cast<int32_t>(C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
+        int32_t reduceSize =
+            static_cast<int32_t>(C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
         if (tilingIns_->aType_.pos == TPosition::TSCM && tilingIns_->bType_.pos == TPosition::GM) {
             if (curL1Size >= tilingIns_->bufferPool_.l1Size) {
                 l0Status.nL0 = (!tilingIns_->bType_.isTrans && tilingIns_->bType_.type == CubeFormat::NZ) ? NUM_TWO : 1;
@@ -714,9 +723,11 @@ bool MatmulTilingAlgorithm::IsNeedAlign(bool isA) const
 {
     if (tilingIns_->madType_ != MatrixMadType::MXMODE) {
         if (isA) {
-            return tilingIns_->aType_.dataType == DataType::DT_FLOAT || (tilingIns_->aType_.dataType == DataType::DT_INT8 && tilingIns_->aType_.isTrans);
+            return tilingIns_->aType_.dataType == DataType::DT_FLOAT ||
+                   (tilingIns_->aType_.dataType == DataType::DT_INT8 && tilingIns_->aType_.isTrans);
         } else {
-            return tilingIns_->bType_.dataType == DataType::DT_FLOAT || (tilingIns_->bType_.dataType == DataType::DT_INT8 && !tilingIns_->bType_.isTrans);
+            return tilingIns_->bType_.dataType == DataType::DT_FLOAT ||
+                   (tilingIns_->bType_.dataType == DataType::DT_INT8 && !tilingIns_->bType_.isTrans);
         }
     } else {
         if (isA) {
@@ -729,7 +740,8 @@ bool MatmulTilingAlgorithm::IsNeedAlign(bool isA) const
 
 void MatmulTilingAlgorithm::GetABL1Const(int32_t& aL1Const, int32_t& bL1Const, const L1StatusPack& l1Status) const
 {
-    int32_t reduceSize = static_cast<int32_t>(C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
+    int32_t reduceSize =
+        static_cast<int32_t>(C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
 
     aL1Const = C0_SIZE * C0_BYTE_SIZE * l1Status.dbAL1;
     if (tilingIns_->madType_ != MatrixMadType::MXMODE) {
@@ -745,7 +757,7 @@ void MatmulTilingAlgorithm::GetABL1Const(int32_t& aL1Const, int32_t& bL1Const, c
 
     // 5/8 means 1/2(B Matrix size) + 1/8(Index Matrix size)
     bL1Const = tilingIns_->isSparse_ ? C0_SIZE * (C0_BYTE_SIZE / 8) * 5 * l1Status.dbBL1 :
-        C0_SIZE * C0_BYTE_SIZE * l1Status.dbBL1;
+                                       C0_SIZE * C0_BYTE_SIZE * l1Status.dbBL1;
     if (tilingIns_->madType_ == MatrixMadType::MXMODE) {
         bL1Const = C0_SIZE * reduceSize * l1Status.dbBL1;
         if (IsNeedAlign(false)) {
@@ -806,30 +818,30 @@ int32_t MatmulTilingAlgorithm::GetL1Size(const L1StatusPack& l1Status, const L0S
     }
 
     const int64_t totalSize = static_cast<int64_t>(curAL1Size) + static_cast<int64_t>(curBL1Size) +
-        static_cast<int64_t>(channelWiseL1Size) + static_cast<int64_t>(dequantSize);
+                              static_cast<int64_t>(channelWiseL1Size) + static_cast<int64_t>(dequantSize);
     return totalSize > INT_MAX ? INT_MAX : static_cast<int32_t>(totalSize);
 }
 
-int32_t MatmulTilingAlgorithm::CalL1MaxLen(int32_t resL1Size, L1StatusPack& l1Status, const L0StatusPack& l0Status,
-    const int32_t alignValue, const L1TilingType axisName) const
+int32_t MatmulTilingAlgorithm::CalL1MaxLen(
+    int32_t resL1Size, L1StatusPack& l1Status, const L0StatusPack& l0Status, const int32_t alignValue,
+    const L1TilingType axisName) const
 {
     int32_t axisMaxLen = 1;
     if (axisName == L1TilingType::KAL1_16) {
-        axisMaxLen = resL1Size /
-            (l1Status.mAL1 * l0Status.mL0 * l1Status.dbAL1 * C0_SIZE * C0_BYTE_SIZE);
+        axisMaxLen = resL1Size / (l1Status.mAL1 * l0Status.mL0 * l1Status.dbAL1 * C0_SIZE * C0_BYTE_SIZE);
     }
     if (axisName == L1TilingType::KBL1_16) {
-        axisMaxLen = resL1Size /
-            (l1Status.nBL1 * l0Status.nL0 * l1Status.dbBL1 * C0_SIZE * C0_BYTE_SIZE);
+        axisMaxLen = resL1Size / (l1Status.nBL1 * l0Status.nL0 * l1Status.dbBL1 * C0_SIZE * C0_BYTE_SIZE);
     }
     axisMaxLen = MathUtil::AlignDown(axisMaxLen, alignValue);
     if (axisName == L1TilingType::M_AL1) {
         axisMaxLen = resL1Size / (MathUtil::Align(l1Status.kAL1, alignValue) * l0Status.mL0 * l1Status.dbAL1 * C0_SIZE *
-            C0_BYTE_SIZE);
+                                  C0_BYTE_SIZE);
     }
     if (axisName == L1TilingType::N_BL1) {
         axisMaxLen = resL1Size / (MathUtil::Align(l1Status.kBL1, alignValue) * l0Status.nL0 * l1Status.dbBL1 * C0_SIZE *
-            C0_BYTE_SIZE + l1Status.channelWiseTimes * l0Status.nL0 * C0_SIZE * C0_BYTE_SIZE);
+                                      C0_BYTE_SIZE +
+                                  l1Status.channelWiseTimes * l0Status.nL0 * C0_SIZE * C0_BYTE_SIZE);
     }
     return axisMaxLen;
 }
@@ -852,8 +864,9 @@ void MatmulTilingAlgorithm::GetNearestFactor(const int32_t& base, int32_t& facto
     }
 }
 
-void MatmulTilingAlgorithm::L1StatusAl1FullLoad(const CoreStatusPack& coreStatus, const L0StatusPack& l0Status,
-    L1StatusPack& l1Status, int32_t res[][IDX_SEVEN]) const
+void MatmulTilingAlgorithm::L1StatusAl1FullLoad(
+    const CoreStatusPack& coreStatus, const L0StatusPack& l0Status, L1StatusPack& l1Status,
+    int32_t res[][IDX_SEVEN]) const
 {
     // if b matrix in L1, then b matrix must full load, goto b matrix full load patch
     if (tilingIns_->bType_.pos == TPosition::TSCM) {
@@ -889,30 +902,35 @@ void MatmulTilingAlgorithm::L1StatusAl1FullLoad(const CoreStatusPack& coreStatus
         if (tilingIns_->deqType == DequantType::TENSOR) {
             dequantSize = l1Status.nBL1 * l0Status.nL0 * C0_SIZE * UINT64_TYPES;
         }
-        l1Status.kBL1 = min(CalL1MaxLen((l1Status.bL1Size - biasSize - dequantSize), l1Status, l0Status, kbAlignValue,
-            L1TilingType::KBL1_16),
+        l1Status.kBL1 = min(
+            CalL1MaxLen(
+                (l1Status.bL1Size - biasSize - dequantSize), l1Status, l0Status, kbAlignValue, L1TilingType::KBL1_16),
             coreStatus.k);
         if (IsUbNd2Nz()) {
             l1Status.dbBL1 = DB_OFF;
             const int32_t b1Length = tilingIns_->bufferPool_.ubSize - a1Length;
-            l1Status.kBL1 = min(CalL1MaxLen(min(l1Status.bL1Size - biasSize - dequantSize, b1Length),
-                l1Status, l0Status, kbAlignValue, L1TilingType::KBL1_16), coreStatus.k);
+            l1Status.kBL1 =
+                min(CalL1MaxLen(
+                        min(l1Status.bL1Size - biasSize - dequantSize, b1Length), l1Status, l0Status, kbAlignValue,
+                        L1TilingType::KBL1_16),
+                    coreStatus.k);
         }
         l1Status.bL1Times = min(l1Status.kBL1 / l0Status.kL0, l1Status.maxKBL1);
         GetNearestFactor(l1Status.allTimes, l1Status.bL1Times); // tik-mm support no factor---ncheck
         l1Status.kBL1 = l1Status.bL1Times * l0Status.kL0;
         if (l1Status.kBL1 == coreStatus.k) {
-            l1Status.nBL1 = min(CalL1MaxLen(l1Status.bL1Size, l1Status, l0Status, kbAlignValue, L1TilingType::N_BL1),
-                l1Status.maxNBL1);
+            l1Status.nBL1 = min(
+                CalL1MaxLen(l1Status.bL1Size, l1Status, l0Status, kbAlignValue, L1TilingType::N_BL1), l1Status.maxNBL1);
             GetNearestFactor(nRepeat, l1Status.nBL1);
         }
 
         const bool invalidL1Status = (l1Status.nBL1 == 0 || l1Status.kBL1 == 0) ? true : false;
         const int32_t possibleMRepeat = (l1Status.kBL1 == coreStatus.k) ? 1 : mRepeat;
         // m+n*m_repeat XXX---ncheck
-        l1Status.loadSize = invalidL1Status ?
-            INT32_MAX :
-            ((tilingIns_->aType_.pos == TPosition::TSCM ? 0 : coreStatus.m) + possibleMRepeat * coreStatus.n);
+        l1Status.loadSize =
+            invalidL1Status ?
+                INT32_MAX :
+                ((tilingIns_->aType_.pos == TPosition::TSCM ? 0 : coreStatus.m) + possibleMRepeat * coreStatus.n);
         if (g_tempCfg.l1DB == DB_ON && l1Status.kBL1 == coreStatus.k && l1Status.nBL1 * l0Status.nL0 == coreStatus.n) {
             l1Status.dbBL1 = DB_OFF;
         }
@@ -926,8 +944,9 @@ void MatmulTilingAlgorithm::L1StatusAl1FullLoad(const CoreStatusPack& coreStatus
     }
 }
 
-void MatmulTilingAlgorithm::L1StatusBl1FullLoad(const CoreStatusPack& coreStatus, const L0StatusPack& l0Status,
-    L1StatusPack& l1Status, int32_t res[][IDX_SEVEN]) const
+void MatmulTilingAlgorithm::L1StatusBl1FullLoad(
+    const CoreStatusPack& coreStatus, const L0StatusPack& l0Status, L1StatusPack& l1Status,
+    int32_t res[][IDX_SEVEN]) const
 {
     // if a matrix in L1, then a matrix must full load, goto a matrix full load patch
     if (tilingIns_->aType_.pos == TPosition::TSCM) {
@@ -963,14 +982,18 @@ void MatmulTilingAlgorithm::L1StatusBl1FullLoad(const CoreStatusPack& coreStatus
         }
         const int32_t biasSize =
             l1Status.channelWiseTimes * l1Status.nBL1 * l0Status.nL0 * C0_SIZE * l0Status.dtypeBias * l1Status.dbBL1;
-        l1Status.kAL1 = min(CalL1MaxLen((l1Status.aL1Size - biasSize - dequantSize), l1Status, l0Status, kaAlignValue,
-            L1TilingType::KAL1_16),
+        l1Status.kAL1 = min(
+            CalL1MaxLen(
+                (l1Status.aL1Size - biasSize - dequantSize), l1Status, l0Status, kaAlignValue, L1TilingType::KAL1_16),
             coreStatus.k);
         if (IsUbNd2Nz()) {
             l1Status.dbAL1 = DB_OFF;
             const int32_t a1Length = tilingIns_->bufferPool_.ubSize - b1Length;
-            l1Status.kAL1 = min(CalL1MaxLen(min(l1Status.aL1Size - biasSize - dequantSize, a1Length),
-                l1Status, l0Status, kaAlignValue, L1TilingType::KAL1_16), coreStatus.k);
+            l1Status.kAL1 =
+                min(CalL1MaxLen(
+                        min(l1Status.aL1Size - biasSize - dequantSize, a1Length), l1Status, l0Status, kaAlignValue,
+                        L1TilingType::KAL1_16),
+                    coreStatus.k);
         }
         l1Status.aL1Times = min(l1Status.kAL1 / l0Status.kL0, l1Status.maxKAL1);
         GetNearestFactor(l1Status.allTimes, l1Status.aL1Times); // tik-mm support no factor---ncheck
@@ -978,15 +1001,16 @@ void MatmulTilingAlgorithm::L1StatusBl1FullLoad(const CoreStatusPack& coreStatus
         if (l1Status.kAL1 == coreStatus.k) {
             l1Status.mAL1 =
                 min(CalL1MaxLen(l1Status.aL1Size - biasSize, l1Status, l0Status, kaAlignValue, L1TilingType::M_AL1),
-                l1Status.maxMAL1);
+                    l1Status.maxMAL1);
             GetNearestFactor(mRepeat, l1Status.mAL1); // tik-mm support no factor---ncheck
         }
 
         const bool invalidL1Status = (l1Status.mAL1 == 0 || l1Status.kAL1 == 0) ? true : false;
         const int32_t possibleNRepeat = (l1Status.kAL1 == coreStatus.k) ? 1 : nRepeat; // no repeat---ncheck
-        l1Status.loadSize = invalidL1Status ?
-            INT32_MAX :
-            ((tilingIns_->bType_.pos == TPosition::TSCM ? 0 : coreStatus.n) + possibleNRepeat * coreStatus.m);
+        l1Status.loadSize =
+            invalidL1Status ?
+                INT32_MAX :
+                ((tilingIns_->bType_.pos == TPosition::TSCM ? 0 : coreStatus.n) + possibleNRepeat * coreStatus.m);
         if (g_tempCfg.l1DB == DB_ON && l1Status.kAL1 == coreStatus.k && l1Status.mAL1 * l0Status.mL0 >= coreStatus.m) {
             l1Status.dbAL1 = DB_OFF;
         }
@@ -1000,8 +1024,9 @@ void MatmulTilingAlgorithm::L1StatusBl1FullLoad(const CoreStatusPack& coreStatus
     }
 }
 
-void MatmulTilingAlgorithm::L1StatusBothFullLoad(const CoreStatusPack& coreStatus, const L0StatusPack& l0Status,
-    L1StatusPack& l1Status, int32_t res[][IDX_SEVEN]) const
+void MatmulTilingAlgorithm::L1StatusBothFullLoad(
+    const CoreStatusPack& coreStatus, const L0StatusPack& l0Status, L1StatusPack& l1Status,
+    int32_t res[][IDX_SEVEN]) const
 {
     l1Status.kAL1 = MathUtil::CeilDivision(l1Status.kAL1, l0Status.kL0) * l0Status.kL0;
     l1Status.kBL1 = MathUtil::CeilDivision(l1Status.kBL1, l0Status.kL0) * l0Status.kL0;
@@ -1009,11 +1034,11 @@ void MatmulTilingAlgorithm::L1StatusBothFullLoad(const CoreStatusPack& coreStatu
     const int32_t a1Length = GetAL1UbSize(l1Status, l0Status);
     const int32_t b1Length = GetBL1UbSize(l1Status, l0Status);
     if (((curL1Size > 0 && curL1Size <= tilingIns_->bufferPool_.l1Size) &&
-        (a1Length + b1Length) <= tilingIns_->bufferPool_.ubSize) ||
+         (a1Length + b1Length) <= tilingIns_->bufferPool_.ubSize) ||
         (tilingIns_->aType_.pos == TPosition::TSCM && tilingIns_->bType_.pos == TPosition::TSCM)) {
         l1Status.bothFullLoad = true;
         l1Status.loadSize = (tilingIns_->aType_.pos == TPosition::TSCM ? 0 : coreStatus.m) +
-            (tilingIns_->bType_.pos == TPosition::TSCM ? 0 : coreStatus.n);
+                            (tilingIns_->bType_.pos == TPosition::TSCM ? 0 : coreStatus.n);
         res[IDX_ZERO][IDX_ZERO] = l1Status.kAL1;
         res[IDX_ZERO][IDX_ONE] = l1Status.mAL1;
         res[IDX_ZERO][IDX_TWO] = l1Status.dbAL1;
@@ -1023,8 +1048,8 @@ void MatmulTilingAlgorithm::L1StatusBothFullLoad(const CoreStatusPack& coreStatu
         res[IDX_ZERO][IDX_SIX] = l1Status.loadSize;
     }
 }
-void MatmulTilingAlgorithm::NeitherFullLoadDb(const CoreStatusPack& coreStatus, const L0StatusPack& l0Status,
-    L1StatusPack& l1Status, const int32_t& kbl1Db) const
+void MatmulTilingAlgorithm::NeitherFullLoadDb(
+    const CoreStatusPack& coreStatus, const L0StatusPack& l0Status, L1StatusPack& l1Status, const int32_t& kbl1Db) const
 {
     const int32_t tmpKbl116 = l1Status.kBL1;
     l1Status.kBL1 = kbl1Db;
@@ -1037,7 +1062,8 @@ void MatmulTilingAlgorithm::NeitherFullLoadDb(const CoreStatusPack& coreStatus, 
         }
     }
     l1Status.kBL1 = coreStatus.k;
-    const bool bothDoubleBuffer = coreStatus.m != l0Status.mL0 && coreStatus.k > l0Status.kL0 &&
+    const bool bothDoubleBuffer =
+        coreStatus.m != l0Status.mL0 && coreStatus.k > l0Status.kL0 &&
         (GetL1Size(l1Status, l0Status) > tilingIns_->bufferPool_.l1Size ||
          (GetAL1UbSize(l1Status, l0Status) + GetBL1UbSize(l1Status, l0Status)) > tilingIns_->bufferPool_.ubSize);
     l1Status.kBL1 = tmpKbl116;
@@ -1055,8 +1081,8 @@ void MatmulTilingAlgorithm::NeitherFullLoadDb(const CoreStatusPack& coreStatus, 
     }
 }
 
-void MatmulTilingAlgorithm::NeitherFullLoadMN(const CoreStatusPack& coreStatus, const L0StatusPack& l0Status,
-    L1StatusPack& l1Status) const
+void MatmulTilingAlgorithm::NeitherFullLoadMN(
+    const CoreStatusPack& coreStatus, const L0StatusPack& l0Status, L1StatusPack& l1Status) const
 {
     const int32_t mRepeat = MathUtil::CeilDivision(coreStatus.m, l0Status.mL0);
     int32_t nRepeat = MathUtil::CeilDivision(coreStatus.n, l0Status.nL0);
@@ -1086,77 +1112,89 @@ void MatmulTilingAlgorithm::NeitherFullLoadMN(const CoreStatusPack& coreStatus, 
     }
     // default l1Status.nBL1 = 1
     // calculate M first condition
-    l1Mfirst.bL1Size = MathUtil::Align(l1Mfirst.kBL1, kbAlignValue) * l0Status.nL0 * C0_SIZE * C0_BYTE_SIZE *
-        l1Mfirst.dbBL1;
+    l1Mfirst.bL1Size =
+        MathUtil::Align(l1Mfirst.kBL1, kbAlignValue) * l0Status.nL0 * C0_SIZE * C0_BYTE_SIZE * l1Mfirst.dbBL1;
     l1Mfirst.aL1Size = tilingIns_->bufferPool_.l1Size - l1Mfirst.bL1Size;
     int32_t a1Length = tilingIns_->bufferPool_.ubSize - GetBL1UbSize(l1Mfirst, l0Status);
-    l1Mfirst.mAL1 = max(min(min(
-        CalL1MaxLen(l1Mfirst.aL1Size - biasSize - dequantSize, l1Mfirst, l0Status, kaAlignValue, L1TilingType::M_AL1),
-        l1Mfirst.maxMAL1),
-        mRepeat),
+    l1Mfirst.mAL1 = max(
+        min(min(CalL1MaxLen(
+                    l1Mfirst.aL1Size - biasSize - dequantSize, l1Mfirst, l0Status, kaAlignValue, L1TilingType::M_AL1),
+                l1Mfirst.maxMAL1),
+            mRepeat),
         1);
     if (IsUbNd2Nz()) {
-        l1Mfirst.mAL1 = max(min(min(
-            CalL1MaxLen(min(l1Mfirst.aL1Size - biasSize - dequantSize, a1Length), l1Mfirst, l0Status, kaAlignValue, L1TilingType::M_AL1),
-            l1Mfirst.maxMAL1),
-            mRepeat),
-            1);
+        l1Mfirst.mAL1 =
+            max(min(min(CalL1MaxLen(
+                            min(l1Mfirst.aL1Size - biasSize - dequantSize, a1Length), l1Mfirst, l0Status, kaAlignValue,
+                            L1TilingType::M_AL1),
+                        l1Mfirst.maxMAL1),
+                    mRepeat),
+                1);
     }
     GetNearestFactor(mRepeat, l1Mfirst.mAL1); // tik-mm support no factor ----ncheck
     l1Mfirst.aL1Size = MathUtil::Align(l1Mfirst.kAL1, kaAlignValue) * l1Mfirst.mAL1 * l0Status.mL0 * C0_SIZE *
-        C0_BYTE_SIZE * l1Mfirst.dbAL1;
+                       C0_BYTE_SIZE * l1Mfirst.dbAL1;
     l1Mfirst.bL1Size = tilingIns_->bufferPool_.l1Size - l1Mfirst.aL1Size;
     int32_t b1Length = tilingIns_->bufferPool_.ubSize - GetAL1UbSize(l1Mfirst, l0Status);
-    l1Mfirst.nBL1 = max(min(min(
-        CalL1MaxLen(l1Mfirst.bL1Size - biasSize - dequantSize, l1Mfirst, l0Status, kbAlignValue, L1TilingType::N_BL1),
-        l1Mfirst.maxNBL1),
-        nRepeat),
+    l1Mfirst.nBL1 = max(
+        min(min(CalL1MaxLen(
+                    l1Mfirst.bL1Size - biasSize - dequantSize, l1Mfirst, l0Status, kbAlignValue, L1TilingType::N_BL1),
+                l1Mfirst.maxNBL1),
+            nRepeat),
         1);
     if (IsUbNd2Nz()) {
-        l1Mfirst.nBL1 = max(min(min(
-            CalL1MaxLen(min(l1Mfirst.bL1Size - biasSize - dequantSize, b1Length), l1Mfirst, l0Status, kbAlignValue, L1TilingType::N_BL1),
-            l1Mfirst.maxNBL1),
-            nRepeat),
-            1);
+        l1Mfirst.nBL1 =
+            max(min(min(CalL1MaxLen(
+                            min(l1Mfirst.bL1Size - biasSize - dequantSize, b1Length), l1Mfirst, l0Status, kbAlignValue,
+                            L1TilingType::N_BL1),
+                        l1Mfirst.maxNBL1),
+                    nRepeat),
+                1);
     }
     GetNearestFactor(nRepeat, l1Mfirst.nBL1);
     l1Mfirst.loadSize =
         coreStatus.m + coreStatus.n * MathUtil::CeilDivision(coreStatus.m, l1Mfirst.mAL1 * l0Status.mL0);
 
     // calculate N first condition
-    l1Nfirst.aL1Size = MathUtil::Align(l1Nfirst.kAL1, kaAlignValue) * l0Status.mL0 * C0_SIZE * C0_BYTE_SIZE *
-        l1Nfirst.dbAL1;
+    l1Nfirst.aL1Size =
+        MathUtil::Align(l1Nfirst.kAL1, kaAlignValue) * l0Status.mL0 * C0_SIZE * C0_BYTE_SIZE * l1Nfirst.dbAL1;
     l1Nfirst.bL1Size = tilingIns_->bufferPool_.l1Size - l1Nfirst.aL1Size;
     b1Length = tilingIns_->bufferPool_.ubSize - GetAL1UbSize(l1Nfirst, l0Status);
-    l1Nfirst.nBL1 = max(min(min(
-        CalL1MaxLen(l1Nfirst.bL1Size - biasSize - dequantSize, l1Nfirst, l0Status, kbAlignValue, L1TilingType::N_BL1),
-        l1Nfirst.maxNBL1),
-        nRepeat),
+    l1Nfirst.nBL1 = max(
+        min(min(CalL1MaxLen(
+                    l1Nfirst.bL1Size - biasSize - dequantSize, l1Nfirst, l0Status, kbAlignValue, L1TilingType::N_BL1),
+                l1Nfirst.maxNBL1),
+            nRepeat),
         1);
     if (IsUbNd2Nz()) {
-        l1Nfirst.nBL1 = max(min(min(
-            CalL1MaxLen(min(l1Nfirst.bL1Size - biasSize - dequantSize, b1Length), l1Nfirst, l0Status, kbAlignValue, L1TilingType::N_BL1),
-            l1Nfirst.maxNBL1),
-            nRepeat),
-            1);
+        l1Nfirst.nBL1 =
+            max(min(min(CalL1MaxLen(
+                            min(l1Nfirst.bL1Size - biasSize - dequantSize, b1Length), l1Nfirst, l0Status, kbAlignValue,
+                            L1TilingType::N_BL1),
+                        l1Nfirst.maxNBL1),
+                    nRepeat),
+                1);
     }
     GetNearestFactor(nRepeat, l1Nfirst.nBL1);
     l1Nfirst.bL1Size = MathUtil::Align(coreStatus.k, kbAlignValue) * l1Nfirst.nBL1 * l0Status.nL0 * C0_SIZE *
-        C0_BYTE_SIZE * l1Nfirst.dbBL1;
+                       C0_BYTE_SIZE * l1Nfirst.dbBL1;
     l1Nfirst.aL1Size = tilingIns_->bufferPool_.l1Size - l1Nfirst.bL1Size;
     a1Length = tilingIns_->bufferPool_.ubSize - GetBL1UbSize(l1Nfirst, l0Status);
     biasSize = biasSize * l1Nfirst.nBL1;
-    l1Nfirst.mAL1 = max(min(min(
-        CalL1MaxLen(l1Nfirst.aL1Size - biasSize - dequantSize, l1Nfirst, l0Status, kaAlignValue, L1TilingType::M_AL1),
-        l1Nfirst.maxMAL1),
-        mRepeat),
+    l1Nfirst.mAL1 = max(
+        min(min(CalL1MaxLen(
+                    l1Nfirst.aL1Size - biasSize - dequantSize, l1Nfirst, l0Status, kaAlignValue, L1TilingType::M_AL1),
+                l1Nfirst.maxMAL1),
+            mRepeat),
         1);
     if (IsUbNd2Nz()) {
-        l1Nfirst.mAL1 = max(min(min(
-            CalL1MaxLen(min(l1Nfirst.aL1Size - biasSize - dequantSize, a1Length), l1Nfirst, l0Status, kaAlignValue, L1TilingType::M_AL1),
-            l1Nfirst.maxMAL1),
-            mRepeat),
-            1);
+        l1Nfirst.mAL1 =
+            max(min(min(CalL1MaxLen(
+                            min(l1Nfirst.aL1Size - biasSize - dequantSize, a1Length), l1Nfirst, l0Status, kaAlignValue,
+                            L1TilingType::M_AL1),
+                        l1Nfirst.maxMAL1),
+                    mRepeat),
+                1);
     }
     GetNearestFactor(mRepeat, l1Nfirst.mAL1);
     l1Nfirst.loadSize =
@@ -1197,12 +1235,12 @@ void MatmulTilingAlgorithm::NeitherFullLoadMN(const CoreStatusPack& coreStatus, 
         l1Status.mAL1 = 1;
         l1Status.nBL1 = 1;
         l1Status.loadSize = coreStatus.m * MathUtil::CeilDivision(coreStatus.n, l1Mfirst.nBL1 * l0Status.nL0) +
-            coreStatus.n * MathUtil::CeilDivision(coreStatus.m, l1Mfirst.mAL1 * l0Status.mL0);
+                            coreStatus.n * MathUtil::CeilDivision(coreStatus.m, l1Mfirst.mAL1 * l0Status.mL0);
     }
 }
 
-void MatmulTilingAlgorithm::NeitherFullLoadKforNZ(const CoreStatusPack& coreStatus, const L0StatusPack& l0Status,
-    L1StatusPack& l1Status) const
+void MatmulTilingAlgorithm::NeitherFullLoadKforNZ(
+    const CoreStatusPack& coreStatus, const L0StatusPack& l0Status, L1StatusPack& l1Status) const
 {
     l1Status.kBL1 = coreStatus.k;
     const int32_t biasSize =
@@ -1217,43 +1255,48 @@ void MatmulTilingAlgorithm::NeitherFullLoadKforNZ(const CoreStatusPack& coreStat
 
     if (GetL1Size(l1Status, l0Status) > 0 && GetL1Size(l1Status, l0Status) <= tilingIns_->bufferPool_.l1Size) {
         l1Status.bL1Size = MathUtil::Align(coreStatus.k, kbAlignValue) * l1Status.nBL1 * l0Status.nL0 * C0_SIZE *
-            C0_BYTE_SIZE * l1Status.dbBL1;
+                           C0_BYTE_SIZE * l1Status.dbBL1;
         l1Status.aL1Size = tilingIns_->bufferPool_.l1Size - l1Status.bL1Size;
         int32_t a1Length = tilingIns_->bufferPool_.ubSize - GetBL1UbSize(l1Status, l0Status);
-        l1Status.kAL1 = min(CalL1MaxLen(l1Status.aL1Size - biasSize - dequantSize, l1Status, l0Status, kaAlignValue,
-            L1TilingType::KAL1_16),
-            coreStatus.k);
-        if (IsUbNd2Nz()) {
-            l1Status.kAL1 = min(CalL1MaxLen(min(l1Status.aL1Size - biasSize - dequantSize, a1Length), l1Status, l0Status, kaAlignValue,
-                L1TilingType::KAL1_16),
+        l1Status.kAL1 =
+            min(CalL1MaxLen(
+                    l1Status.aL1Size - biasSize - dequantSize, l1Status, l0Status, kaAlignValue, L1TilingType::KAL1_16),
                 coreStatus.k);
+        if (IsUbNd2Nz()) {
+            l1Status.kAL1 =
+                min(CalL1MaxLen(
+                        min(l1Status.aL1Size - biasSize - dequantSize, a1Length), l1Status, l0Status, kaAlignValue,
+                        L1TilingType::KAL1_16),
+                    coreStatus.k);
         }
-        
+
         l1Status.aL1Times = max(min(l1Status.kAL1 / l0Status.kL0, l1Status.maxKAL1), 1);
         GetNearestFactor(l1Status.allTimes, l1Status.aL1Times);
         l1Status.kAL1 = l1Status.aL1Times * l0Status.kL0;
     } else {
         // when NeitherFullLoadMN change the nBL1 and mAL1
-        int32_t perK = min((tilingIns_->bufferPool_.l1Size - biasSize - dequantSize) /
-            (l0Status.mL0 * C0_SIZE * C0_BYTE_SIZE * l1Status.dbAL1 +
-            C0_SIZE * l0Status.nL0 * C0_BYTE_SIZE * l1Status.dbBL1) /
-            l0Status.kL0 * l0Status.kL0,
-            coreStatus.k);
-        if (IsUbNd2Nz()) {
-            perK = min(min(tilingIns_->bufferPool_.l1Size - biasSize - dequantSize,
-                tilingIns_->bufferPool_.ubSize) /
-                (l0Status.mL0 * C0_SIZE * C0_BYTE_SIZE * l1Status.dbAL1 +
-                C0_SIZE * l0Status.nL0 * C0_BYTE_SIZE * l1Status.dbBL1) /
-                l0Status.kL0 * l0Status.kL0,
+        int32_t perK =
+            min((tilingIns_->bufferPool_.l1Size - biasSize - dequantSize) /
+                    (l0Status.mL0 * C0_SIZE * C0_BYTE_SIZE * l1Status.dbAL1 +
+                     C0_SIZE * l0Status.nL0 * C0_BYTE_SIZE * l1Status.dbBL1) /
+                    l0Status.kL0 * l0Status.kL0,
                 coreStatus.k);
+        if (IsUbNd2Nz()) {
+            perK =
+                min(min(tilingIns_->bufferPool_.l1Size - biasSize - dequantSize, tilingIns_->bufferPool_.ubSize) /
+                        (l0Status.mL0 * C0_SIZE * C0_BYTE_SIZE * l1Status.dbAL1 +
+                         C0_SIZE * l0Status.nL0 * C0_BYTE_SIZE * l1Status.dbBL1) /
+                        l0Status.kL0 * l0Status.kL0,
+                    coreStatus.k);
         }
         const int32_t biasFactor = tilingIns_->isBias ? l1Status.nBL1 * l0Status.nL0 : 0;
         const int32_t aAlignedPerK = MathUtil::Align(perK, kaAlignValue);
         const int32_t bAlignedPerK = MathUtil::Align(perK, kbAlignValue);
         if (tilingIns_->aType_.dataType == DataType::DT_FLOAT &&
-            !CheckL1Size(l1Status.mAL1 * l0Status.mL0 * aAlignedPerK * l1Status.dbAL1,
-            l1Status.nBL1 * l0Status.nL0 * bAlignedPerK * l1Status.dbBL1,
-            biasFactor * C0_SIZE * l0Status.dtypeBias * l1Status.dbBL1 + dequantSize)) {
+            !CheckL1Size(
+                l1Status.mAL1 * l0Status.mL0 * aAlignedPerK * l1Status.dbAL1,
+                l1Status.nBL1 * l0Status.nL0 * bAlignedPerK * l1Status.dbBL1,
+                biasFactor * C0_SIZE * l0Status.dtypeBias * l1Status.dbBL1 + dequantSize)) {
             perK -= 1;
         }
         int32_t perTimes = min(perK / l0Status.kL0, max(l1Status.maxKAL1, l1Status.maxKBL1));
@@ -1267,13 +1310,14 @@ void MatmulTilingAlgorithm::NeitherFullLoadKforNZ(const CoreStatusPack& coreStat
 
 bool MatmulTilingAlgorithm::CheckL1Size(int32_t amat, int32_t bmat, int32_t curBiasL1Size) const
 {
-    const int64_t loadSizeBytes = (static_cast<int64_t>(amat + bmat) * C0_SIZE * C0_BYTE_SIZE +
-        static_cast<int64_t>(curBiasL1Size));
+    const int64_t loadSizeBytes =
+        (static_cast<int64_t>(amat + bmat) * C0_SIZE * C0_BYTE_SIZE + static_cast<int64_t>(curBiasL1Size));
     return loadSizeBytes <= tilingIns_->bufferPool_.l1Size;
 }
 
-void MatmulTilingAlgorithm::NeitherFullLoadKforND(const CoreStatusPack& coreStatus, const L0StatusPack& l0Status,
-    L1StatusPack& l1Status, const int32_t& kMaxAxis) const
+void MatmulTilingAlgorithm::NeitherFullLoadKforND(
+    const CoreStatusPack& coreStatus, const L0StatusPack& l0Status, L1StatusPack& l1Status,
+    const int32_t& kMaxAxis) const
 {
     int32_t biasSize =
         l1Status.channelWiseTimes * l1Status.nBL1 * l0Status.nL0 * C0_SIZE * l0Status.dtypeBias * l1Status.dbBL1;
@@ -1291,15 +1335,18 @@ void MatmulTilingAlgorithm::NeitherFullLoadKforND(const CoreStatusPack& coreStat
     const int32_t alignM = MathUtil::CeilDivision(l1Status.mAL1 * C0_SIZE, alignValue) * alignValue;
     const int32_t alignN = MathUtil::CeilDivision(l1Status.nBL1 * C0_SIZE, alignValue) * alignValue;
     const int32_t alignK = MathUtil::CeilDivision(l0Status.kL0 * reduceSize, alignValue) * alignValue *
-        DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
+                           DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
     if (kMaxAxis == 1) {
         // first get k_al1, second get k_bl1
         l1Status.kBL1 = l0Status.kL0;
         if ((tilingIns_->bType_.dataType == DataType::DT_FLOAT) ||
-            (tilingIns_->aType_.isTrans && DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8))) {
+            (tilingIns_->aType_.isTrans &&
+             DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8))) {
             l1Status.bL1Size = l1Status.kBL1 * l0Status.nL0 * C0_SIZE * alignK * l1Status.nBL1 * l1Status.dbBL1;
-        } else if (!tilingIns_->bType_.isTrans && (DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8)
-            || DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT4))) {
+        } else if (
+            !tilingIns_->bType_.isTrans &&
+            (DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8) ||
+             DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT4))) {
             l1Status.bL1Size = l1Status.kBL1 * l0Status.nL0 * alignK * alignN * l1Status.dbBL1;
         } else {
             l1Status.bL1Size = l1Status.kBL1 * l1Status.nBL1 * l0Status.nL0 * C0_SIZE * C0_BYTE_SIZE * l1Status.dbBL1;
@@ -1307,48 +1354,57 @@ void MatmulTilingAlgorithm::NeitherFullLoadKforND(const CoreStatusPack& coreStat
         l1Status.aL1Size = tilingIns_->bufferPool_.l1Size - l1Status.bL1Size;
         int32_t a1Length = tilingIns_->bufferPool_.ubSize - GetBL1UbSize(l1Status, l0Status);
         auto factor = l1Status.mAL1 * l0Status.mL0 * C0_SIZE * l1Status.dbAL1 * C0_BYTE_SIZE;
-        l1Status.kAL1 = (factor == 0) ? coreStatus.k : min((l1Status.aL1Size - biasSize - dequantSize) / factor,
-                coreStatus.k);
+        l1Status.kAL1 =
+            (factor == 0) ? coreStatus.k : min((l1Status.aL1Size - biasSize - dequantSize) / factor, coreStatus.k);
         if (IsUbNd2Nz()) {
-            l1Status.kAL1 = (factor == 0) ? coreStatus.k : min(min(l1Status.aL1Size - biasSize - dequantSize, a1Length) / factor,
-                coreStatus.k);
+            l1Status.kAL1 = (factor == 0) ?
+                                coreStatus.k :
+                                min(min(l1Status.aL1Size - biasSize - dequantSize, a1Length) / factor, coreStatus.k);
         }
-        
+
         l1Status.aL1Times = max(l1Status.kAL1 / l0Status.kL0, 1);
         GetNearestFactor(l1Status.allTimes, l1Status.aL1Times); // tik-mm support no factor ----ncheck
         l1Status.kAL1 = l1Status.aL1Times * l0Status.kL0;
         l1Status.aL1Size = l1Status.kAL1 * l1Status.mAL1 * l0Status.mL0 * C0_SIZE * C0_BYTE_SIZE * l1Status.dbAL1;
         l1Status.bL1Size = tilingIns_->bufferPool_.l1Size - l1Status.aL1Size;
         int32_t b1Length = tilingIns_->bufferPool_.ubSize - GetAL1UbSize(l1Status, l0Status);
-        if ((tilingIns_->bType_.dataType == DataType::DT_FLOAT) || (tilingIns_->aType_.isTrans &&
-            DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8))) {
-            l1Status.kBL1 = min((l1Status.bL1Size - biasSize - dequantSize) /
-                    (l1Status.nBL1 * l0Status.nL0 * C0_SIZE * l1Status.dbBL1 * alignK),
+        if ((tilingIns_->bType_.dataType == DataType::DT_FLOAT) ||
+            (tilingIns_->aType_.isTrans &&
+             DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8))) {
+            l1Status.kBL1 =
+                min((l1Status.bL1Size - biasSize - dequantSize) /
+                        (l1Status.nBL1 * l0Status.nL0 * C0_SIZE * l1Status.dbBL1 * alignK),
                     coreStatus.k);
             if (IsUbNd2Nz()) {
-                l1Status.kBL1 = min(min(l1Status.bL1Size - biasSize - dequantSize, b1Length) /
-                    (l1Status.nBL1 * l0Status.nL0 * C0_SIZE * l1Status.dbBL1 * alignK),
-                    coreStatus.k);
+                l1Status.kBL1 =
+                    min(min(l1Status.bL1Size - biasSize - dequantSize, b1Length) /
+                            (l1Status.nBL1 * l0Status.nL0 * C0_SIZE * l1Status.dbBL1 * alignK),
+                        coreStatus.k);
             }
-        } else if (!tilingIns_->bType_.isTrans &&
+        } else if (
+            !tilingIns_->bType_.isTrans &&
             (DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8) ||
-            DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT4))) {
-            l1Status.kBL1 = min((l1Status.bL1Size - biasSize - dequantSize) /
-                    (alignN * l0Status.nL0 * l1Status.dbBL1 * alignK),
+             DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT4))) {
+            l1Status.kBL1 =
+                min((l1Status.bL1Size - biasSize - dequantSize) / (alignN * l0Status.nL0 * l1Status.dbBL1 * alignK),
                     coreStatus.k);
             if (IsUbNd2Nz()) {
-                l1Status.kBL1 = min(min(l1Status.bL1Size - biasSize - dequantSize, b1Length) /
-                    (alignN * l0Status.nL0 * l1Status.dbBL1 * alignK),
-                    coreStatus.k);
-            }            
+                l1Status.kBL1 =
+                    min(min(l1Status.bL1Size - biasSize - dequantSize, b1Length) /
+                            (alignN * l0Status.nL0 * l1Status.dbBL1 * alignK),
+                        coreStatus.k);
+            }
         } else {
-            l1Status.kBL1 = min((l1Status.bL1Size - biasSize - dequantSize)/
-                (l1Status.nBL1 * l0Status.nL0 * C0_SIZE * l1Status.dbBL1 * C0_BYTE_SIZE),
-                coreStatus.k);
+            l1Status.kBL1 =
+                min((l1Status.bL1Size - biasSize - dequantSize) /
+                        (l1Status.nBL1 * l0Status.nL0 * C0_SIZE * l1Status.dbBL1 * C0_BYTE_SIZE),
+                    coreStatus.k);
             if (IsUbNd2Nz()) {
-                l1Status.kBL1 = min(min(l1Status.bL1Size - biasSize - dequantSize, b1Length)/
-                    (l1Status.nBL1 * l0Status.nL0 * C0_SIZE * l1Status.dbBL1 * C0_BYTE_SIZE),
-                    coreStatus.k);}
+                l1Status.kBL1 =
+                    min(min(l1Status.bL1Size - biasSize - dequantSize, b1Length) /
+                            (l1Status.nBL1 * l0Status.nL0 * C0_SIZE * l1Status.dbBL1 * C0_BYTE_SIZE),
+                        coreStatus.k);
+            }
         }
         l1Status.bL1Times = max(min(l1Status.kBL1 / l0Status.kL0, l1Status.maxKBL1), 1);
         GetNearestFactor(l1Status.allTimes, l1Status.bL1Times);
@@ -1358,9 +1414,11 @@ void MatmulTilingAlgorithm::NeitherFullLoadKforND(const CoreStatusPack& coreStat
         // first get k_bl1, second get k_al1
         l1Status.kAL1 = l0Status.kL0;
         if ((tilingIns_->aType_.isTrans && tilingIns_->aType_.dataType == DataType::DT_FLOAT) ||
-            (!tilingIns_->aType_.isTrans && DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8))) {
+            (!tilingIns_->aType_.isTrans &&
+             DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8))) {
             l1Status.aL1Size = l1Status.kAL1 * l1Status.mAL1 * l0Status.mL0 * C0_SIZE * alignK * l1Status.dbAL1;
-        } else if (tilingIns_->aType_.isTrans &&
+        } else if (
+            tilingIns_->aType_.isTrans &&
             DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8)) {
             l1Status.aL1Size = l1Status.kAL1 * alignM * l0Status.mL0 * alignK * l1Status.dbAL1;
         } else {
@@ -1369,13 +1427,15 @@ void MatmulTilingAlgorithm::NeitherFullLoadKforND(const CoreStatusPack& coreStat
 
         l1Status.bL1Size = tilingIns_->bufferPool_.l1Size - l1Status.aL1Size;
         int32_t b1Length = tilingIns_->bufferPool_.ubSize - GetAL1UbSize(l1Status, l0Status);
-        l1Status.kBL1 = min((l1Status.bL1Size - biasSize - dequantSize) /
-            (l1Status.nBL1 * l0Status.nL0 * C0_SIZE * l1Status.dbBL1 * C0_BYTE_SIZE),
-            coreStatus.k);
-        if (IsUbNd2Nz()) {
-            l1Status.kBL1 = min(min(l1Status.bL1Size - biasSize - dequantSize, b1Length) /
-                (l1Status.nBL1 * l0Status.nL0 * C0_SIZE * l1Status.dbBL1 * C0_BYTE_SIZE),
+        l1Status.kBL1 =
+            min((l1Status.bL1Size - biasSize - dequantSize) /
+                    (l1Status.nBL1 * l0Status.nL0 * C0_SIZE * l1Status.dbBL1 * C0_BYTE_SIZE),
                 coreStatus.k);
+        if (IsUbNd2Nz()) {
+            l1Status.kBL1 =
+                min(min(l1Status.bL1Size - biasSize - dequantSize, b1Length) /
+                        (l1Status.nBL1 * l0Status.nL0 * C0_SIZE * l1Status.dbBL1 * C0_BYTE_SIZE),
+                    coreStatus.k);
         }
         l1Status.bL1Times = max(l1Status.kBL1 / l0Status.kL0, 1);
         GetNearestFactor(l1Status.allTimes, l1Status.bL1Times);
@@ -1384,30 +1444,38 @@ void MatmulTilingAlgorithm::NeitherFullLoadKforND(const CoreStatusPack& coreStat
         l1Status.aL1Size = tilingIns_->bufferPool_.l1Size - l1Status.bL1Size;
         int32_t a1Length = tilingIns_->bufferPool_.ubSize - GetBL1UbSize(l1Status, l0Status);
         if ((tilingIns_->aType_.isTrans && tilingIns_->aType_.dataType == DataType::DT_FLOAT) ||
-            (!tilingIns_->aType_.isTrans && (DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8) ||
-            DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT4)))) {
+            (!tilingIns_->aType_.isTrans &&
+             (DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8) ||
+              DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT4)))) {
             auto factor = l1Status.mAL1 * l0Status.mL0 * C0_SIZE * l1Status.dbAL1 * alignK;
-            l1Status.kAL1 = (factor == 0) ? coreStatus.k : min((l1Status.aL1Size - biasSize - dequantSize) / factor,
-                coreStatus.k);
+            l1Status.kAL1 =
+                (factor == 0) ? coreStatus.k : min((l1Status.aL1Size - biasSize - dequantSize) / factor, coreStatus.k);
             if (IsUbNd2Nz()) {
-                l1Status.kAL1 = (factor == 0) ? coreStatus.k : min(min(l1Status.aL1Size - biasSize - dequantSize, a1Length) / factor,
-                    coreStatus.k);
+                l1Status.kAL1 = (factor == 0) ? coreStatus.k :
+                                                min(min(l1Status.aL1Size - biasSize - dequantSize, a1Length) / factor,
+                                                    coreStatus.k);
             }
-        } else if (tilingIns_->aType_.isTrans && DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8)) {
-            l1Status.kAL1 = min((l1Status.aL1Size - biasSize - dequantSize) /
-                (alignM * l0Status.mL0 * l1Status.dbAL1 * alignK), coreStatus.k);
+        } else if (
+            tilingIns_->aType_.isTrans &&
+            DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8)) {
+            l1Status.kAL1 =
+                min((l1Status.aL1Size - biasSize - dequantSize) / (alignM * l0Status.mL0 * l1Status.dbAL1 * alignK),
+                    coreStatus.k);
             if (IsUbNd2Nz()) {
-                l1Status.kAL1 = min(min(l1Status.aL1Size - biasSize - dequantSize, a1Length) /
-                    (alignM * l0Status.mL0 * l1Status.dbAL1 * alignK), coreStatus.k);
+                l1Status.kAL1 =
+                    min(min(l1Status.aL1Size - biasSize - dequantSize, a1Length) /
+                            (alignM * l0Status.mL0 * l1Status.dbAL1 * alignK),
+                        coreStatus.k);
             }
             l1Status.aL1Size = l1Status.kAL1 * alignM * l0Status.mL0 * alignK * l1Status.dbAL1;
         } else {
             auto factor = l1Status.mAL1 * l0Status.mL0 * C0_SIZE * l1Status.dbAL1 * C0_BYTE_SIZE;
-            l1Status.kAL1 = (factor == 0) ? coreStatus.k : min((l1Status.aL1Size - biasSize - dequantSize) / factor,
-                coreStatus.k);
+            l1Status.kAL1 =
+                (factor == 0) ? coreStatus.k : min((l1Status.aL1Size - biasSize - dequantSize) / factor, coreStatus.k);
             if (IsUbNd2Nz()) {
-                l1Status.kAL1 = (factor == 0) ? coreStatus.k : min(min(l1Status.aL1Size - biasSize - dequantSize, a1Length) / factor,
-                    coreStatus.k);
+                l1Status.kAL1 = (factor == 0) ? coreStatus.k :
+                                                min(min(l1Status.aL1Size - biasSize - dequantSize, a1Length) / factor,
+                                                    coreStatus.k);
             }
         }
         l1Status.aL1Times = max(min(l1Status.kAL1 / l0Status.kL0, l1Status.maxKAL1), 1);
@@ -1415,8 +1483,8 @@ void MatmulTilingAlgorithm::NeitherFullLoadKforND(const CoreStatusPack& coreStat
         l1Status.kAL1 = l1Status.aL1Times * l0Status.kL0;
     }
 }
-void MatmulTilingAlgorithm::NeitherFullLoadK(const CoreStatusPack& coreStatus, const L0StatusPack& l0Status,
-    L1StatusPack& l1Status) const
+void MatmulTilingAlgorithm::NeitherFullLoadK(
+    const CoreStatusPack& coreStatus, const L0StatusPack& l0Status, L1StatusPack& l1Status) const
 {
     if (l0Status.kL0 == coreStatus.k) {
         return;
@@ -1441,21 +1509,22 @@ void MatmulTilingAlgorithm::NeitherFullLoadK(const CoreStatusPack& coreStatus, c
     if (g_tempCfg.factorSplit) {
         if (l1Status.kAL1 > l1Status.kBL1 && l1Status.kAL1 % l1Status.kBL1 != 0) {
             while (l1Status.kAL1 % l1Status.kBL1 != 0 ||
-                (l1Status.kAL1 != l1Status.kBL1 && coreStatus.k % l1Status.kAL1 != 0)) {
+                   (l1Status.kAL1 != l1Status.kBL1 && coreStatus.k % l1Status.kAL1 != 0)) {
                 l1Status.kAL1 -= 1;
             }
         }
         if (l1Status.kAL1 < l1Status.kBL1 && l1Status.kBL1 % l1Status.kAL1 != 0) {
             while (l1Status.kBL1 % l1Status.kAL1 != 0 ||
-                (l1Status.kAL1 != l1Status.kBL1 && coreStatus.k % l1Status.kBL1 != 0)) {
+                   (l1Status.kAL1 != l1Status.kBL1 && coreStatus.k % l1Status.kBL1 != 0)) {
                 l1Status.kBL1 -= 1;
             }
         }
     }
 }
 
-void MatmulTilingAlgorithm::L1StatusNeitherFullLoad(const CoreStatusPack& coreStatus, const L0StatusPack& l0Status,
-    L1StatusPack& l1Status, int32_t res[][IDX_SEVEN]) const
+void MatmulTilingAlgorithm::L1StatusNeitherFullLoad(
+    const CoreStatusPack& coreStatus, const L0StatusPack& l0Status, L1StatusPack& l1Status,
+    int32_t res[][IDX_SEVEN]) const
 {
     // if b matrix in L1, then b matrix must full load, skip non-full process
     if (tilingIns_->aType_.pos == TPosition::TSCM || tilingIns_->bType_.pos == TPosition::TSCM) {
@@ -1476,15 +1545,16 @@ void MatmulTilingAlgorithm::L1StatusNeitherFullLoad(const CoreStatusPack& coreSt
     res[IDX_THREE][IDX_SIX] = l1Status.loadSize;
 }
 
-void MatmulTilingAlgorithm::GetL1Factors(const std::string& opType, const MatmulRunParas& param,
-    const CoreStatusPack& coreStatus, const L0StatusPack& l0Status, L1StatusPack& l1Status) const
+void MatmulTilingAlgorithm::GetL1Factors(
+    const std::string& opType, const MatmulRunParas& param, const CoreStatusPack& coreStatus,
+    const L0StatusPack& l0Status, L1StatusPack& l1Status) const
 {
     (void)(opType);
     (void)(param);
     // get mAL1, nBL1, kAL1, kBL1 factors when L0, singlecore factor is know
     // get al1, bl1 double buffer factors
-    const int32_t mte1Loop = MIN_MTE1_LOAD /
-        ((l0Status.nL0 == 1 ? 1 : l0Status.kL0) + (l0Status.kL0 == 1 ? 1 : l0Status.mL0));
+    const int32_t mte1Loop =
+        MIN_MTE1_LOAD / ((l0Status.nL0 == 1 ? 1 : l0Status.kL0) + (l0Status.kL0 == 1 ? 1 : l0Status.mL0));
     int32_t res[IDX_FOUR][IDX_SEVEN] = {0};
     l1Status.allTimes = MathUtil::CeilDivision(coreStatus.k, l0Status.kL0);
     l1Status.maxMAL1 = (coreStatus.m + l0Status.mL0 - 1) / l0Status.mL0;
@@ -1497,8 +1567,8 @@ void MatmulTilingAlgorithm::GetL1Factors(const std::string& opType, const Matmul
         l1Status.channelWiseTimes++;
     }
     // both AL1 and Bl1 full load
-    int32_t bothFullLoadFactors[L1_FACTORS_LEN] = { coreStatus.k, coreStatus.k, l1Status.maxMAL1,
-                                                    l1Status.maxNBL1, DB_OFF, DB_OFF };
+    int32_t bothFullLoadFactors[L1_FACTORS_LEN] = {coreStatus.k,     coreStatus.k, l1Status.maxMAL1,
+                                                   l1Status.maxNBL1, DB_OFF,       DB_OFF};
     // Need to consider L1 extension in FP32 Mode
     l1Status.SetStatus(bothFullLoadFactors);
     L1StatusBothFullLoad(coreStatus, l0Status, l1Status, res);
@@ -1518,61 +1588,71 @@ void MatmulTilingAlgorithm::GetL1Factors(const std::string& opType, const Matmul
     // choose the final factors
     int32_t* tmpFactors = res[IDX_THREE];
     int32_t tmpLoadSize = tmpFactors[IDX_SIX];
-    int32_t reduceSize = static_cast<int32_t>(C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
+    int32_t reduceSize =
+        static_cast<int32_t>(C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
     const int32_t kAl1FactorOne = res[IDX_ONE][IDX_ZERO] > 0 ? MathUtil::CeilDivision(
-        MathUtil::CeilDivision(GetSingleK(), reduceSize), (coreStatus.kDim * res[IDX_ONE][IDX_ZERO])) :
-                                                         1;
+                                                                   MathUtil::CeilDivision(GetSingleK(), reduceSize),
+                                                                   (coreStatus.kDim * res[IDX_ONE][IDX_ZERO])) :
+                                                               1;
     const int32_t kBl1FactorTwo = res[IDX_TWO][IDX_THREE] > 0 ? MathUtil::CeilDivision(
-        MathUtil::CeilDivision(GetSingleK(), reduceSize), (coreStatus.kDim * res[IDX_TWO][IDX_THREE])) :
-                                                          1;
+                                                                    MathUtil::CeilDivision(GetSingleK(), reduceSize),
+                                                                    (coreStatus.kDim * res[IDX_TWO][IDX_THREE])) :
+                                                                1;
     const int32_t kAl1FactorZero = res[IDX_ZERO][IDX_ZERO] > 0 ? MathUtil::CeilDivision(
-        MathUtil::CeilDivision(GetSingleK(), reduceSize), (coreStatus.kDim * res[IDX_ZERO][IDX_ZERO])) :
-                                                           1;
+                                                                     MathUtil::CeilDivision(GetSingleK(), reduceSize),
+                                                                     (coreStatus.kDim * res[IDX_ZERO][IDX_ZERO])) :
+                                                                 1;
     const int32_t kBl1FactorZero = res[IDX_ZERO][IDX_THREE] > 0 ? MathUtil::CeilDivision(
-        MathUtil::CeilDivision(GetSingleK(), reduceSize), (coreStatus.kDim * res[IDX_ZERO][IDX_THREE])) :
-                                                            1;
+                                                                      MathUtil::CeilDivision(GetSingleK(), reduceSize),
+                                                                      (coreStatus.kDim * res[IDX_ZERO][IDX_THREE])) :
+                                                                  1;
 
     const bool al1FullLoad = (tilingIns_->aType_.type == CubeFormat::ND && tilingIns_->bType_.type == CubeFormat::ND) ?
-        (l1Status.aL1FullLoad && kAl1FactorOne == 1) :
-        l1Status.aL1FullLoad;
+                                 (l1Status.aL1FullLoad && kAl1FactorOne == 1) :
+                                 l1Status.aL1FullLoad;
     const bool bl1FullLoad = (tilingIns_->aType_.type == CubeFormat::ND && tilingIns_->bType_.type == CubeFormat::ND) ?
-        (l1Status.bL1FullLoad && kBl1FactorTwo == 1) :
-        l1Status.bL1FullLoad;
+                                 (l1Status.bL1FullLoad && kBl1FactorTwo == 1) :
+                                 l1Status.bL1FullLoad;
     const bool bothFullLoad = (tilingIns_->aType_.type == CubeFormat::ND && tilingIns_->bType_.type == CubeFormat::ND) ?
-        (l1Status.bothFullLoad && kAl1FactorZero == 1 && kBl1FactorZero == 1) :
-        l1Status.bothFullLoad;
-    if (al1FullLoad && (res[IDX_ONE][IDX_SIX] < tmpLoadSize || (res[IDX_ONE][IDX_SIX] == tmpLoadSize &&
-        res[IDX_ONE][IDX_ONE] + res[IDX_ONE][IDX_FOUR] >= tmpFactors[IDX_ONE] + tmpFactors[IDX_FOUR]))) {
+                                  (l1Status.bothFullLoad && kAl1FactorZero == 1 && kBl1FactorZero == 1) :
+                                  l1Status.bothFullLoad;
+    if (al1FullLoad && (res[IDX_ONE][IDX_SIX] < tmpLoadSize ||
+                        (res[IDX_ONE][IDX_SIX] == tmpLoadSize && res[IDX_ONE][IDX_ONE] + res[IDX_ONE][IDX_FOUR] >=
+                                                                     tmpFactors[IDX_ONE] + tmpFactors[IDX_FOUR]))) {
         tmpFactors = res[IDX_ONE];
         tmpLoadSize = tmpFactors[IDX_SIX];
         TILING_LOG_DEBUG("Select Mode One.");
     }
-    if (bl1FullLoad && (res[IDX_TWO][IDX_SIX] < tmpLoadSize || (res[IDX_TWO][IDX_SIX] == tmpLoadSize &&
-        res[IDX_TWO][IDX_ONE] + res[IDX_TWO][IDX_FOUR] >= tmpFactors[IDX_ONE] + tmpFactors[IDX_FOUR]))) {
+    if (bl1FullLoad && (res[IDX_TWO][IDX_SIX] < tmpLoadSize ||
+                        (res[IDX_TWO][IDX_SIX] == tmpLoadSize && res[IDX_TWO][IDX_ONE] + res[IDX_TWO][IDX_FOUR] >=
+                                                                     tmpFactors[IDX_ONE] + tmpFactors[IDX_FOUR]))) {
         tmpFactors = res[IDX_TWO];
         tmpLoadSize = tmpFactors[IDX_SIX];
         TILING_LOG_DEBUG("Select Mode Two.");
     }
-    if (bothFullLoad && (res[IDX_ZERO][IDX_SIX] < tmpLoadSize || (res[IDX_ZERO][IDX_SIX] == tmpLoadSize &&
-        res[IDX_ZERO][IDX_ONE] + res[IDX_ZERO][IDX_FOUR] >= tmpFactors[IDX_ONE] + tmpFactors[IDX_FOUR]))) {
+    if (bothFullLoad && (res[IDX_ZERO][IDX_SIX] < tmpLoadSize ||
+                         (res[IDX_ZERO][IDX_SIX] == tmpLoadSize && res[IDX_ZERO][IDX_ONE] + res[IDX_ZERO][IDX_FOUR] >=
+                                                                       tmpFactors[IDX_ONE] + tmpFactors[IDX_FOUR]))) {
         tmpFactors = res[IDX_ZERO];
         TILING_LOG_DEBUG("Select Mode Zero.");
     }
     int32_t resL1Factors[L1_FACTORS_LEN] = {tmpFactors[IDX_ZERO], tmpFactors[IDX_THREE], tmpFactors[IDX_ONE],
-                                            tmpFactors[IDX_FOUR], tmpFactors[IDX_TWO], tmpFactors[IDX_FIVE]};
+                                            tmpFactors[IDX_FOUR], tmpFactors[IDX_TWO],   tmpFactors[IDX_FIVE]};
     l1Status.SetStatus(resL1Factors);
 }
 
-void MatmulTilingAlgorithm::GetUsedSize(int32_t& l1Size, int32_t& l0cSize, int32_t& ubSize,
-                                        int32_t a1LengthCache, int32_t b1LengthCache) const
+void MatmulTilingAlgorithm::GetUsedSize(
+    int32_t& l1Size, int32_t& l0cSize, int32_t& ubSize, int32_t a1LengthCache, int32_t b1LengthCache) const
 {
     const uint32_t aTypeSize = DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType);
     const uint32_t bTypeSize = DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType);
     const uint32_t cTypeSize = DTYPE_BYTE_TAB.at(tilingIns_->cType_.dataType);
     const uint32_t biasTypeSize = DTYPE_BYTE_TAB.at(tilingIns_->biasType_.dataType);
 
-    const int32_t a1Length = tilingIns_->tiling_.get_baseM() * tilingIns_->tiling_.get_baseK() * aTypeSize / BITS_PER_BYTE;
-    const int32_t b1Length = tilingIns_->tiling_.get_baseN() * tilingIns_->tiling_.get_baseK() * bTypeSize / BITS_PER_BYTE;
+    const int32_t a1Length =
+        tilingIns_->tiling_.get_baseM() * tilingIns_->tiling_.get_baseK() * aTypeSize / BITS_PER_BYTE;
+    const int32_t b1Length =
+        tilingIns_->tiling_.get_baseN() * tilingIns_->tiling_.get_baseK() * bTypeSize / BITS_PER_BYTE;
     const int32_t c1Length = tilingIns_->tiling_.get_baseN() * tilingIns_->tiling_.get_baseM() * FP32_BYTES;
 
     if (tilingIns_->aType_.pos != TPosition::TSCM) {
@@ -1592,7 +1672,7 @@ void MatmulTilingAlgorithm::GetUsedSize(int32_t& l1Size, int32_t& l0cSize, int32
 
     if (static_cast<bool>(tilingIns_->tiling_.get_isBias())) {
         if ((tilingIns_->socVersion == platform_ascendc::SocVersion::ASCEND910B ||
-            tilingIns_->socVersion == platform_ascendc::SocVersion::ASCEND310B) &&
+             tilingIns_->socVersion == platform_ascendc::SocVersion::ASCEND310B) &&
             tilingIns_->biasType_.pos != TPosition::TSCM) {
             // for ascend910b1 bias: gm -> l1 -> bt, need extra l1 space, support bias transform
             l1Size += tilingIns_->tiling_.get_baseN() * biasTypeSize;
@@ -1604,12 +1684,13 @@ void MatmulTilingAlgorithm::GetUsedSize(int32_t& l1Size, int32_t& l0cSize, int32
     if (tilingIns_->socVersion == platform_ascendc::SocVersion::ASCEND910 ||
         tilingIns_->socVersion == platform_ascendc::SocVersion::ASCEND310P ||
         tilingIns_->socVersion == platform_ascendc::SocVersion::ASCEND310B) {
-        // case2: input ND(GM/VECCALC), ND -> NZ transform, for now A/B reuse, only process with tail block, need UB space
-        // (1) input GM, format is ND, need do zero-fill to non-aligned tail block in ub
-        // (2) input VECCALC, format is ND, need do zero-fill to non-aligned tail block in ub
+        // case2: input ND(GM/VECCALC), ND -> NZ transform, for now A/B reuse, only process with tail block, need UB
+        // space (1) input GM, format is ND, need do zero-fill to non-aligned tail block in ub (2) input VECCALC, format
+        // is ND, need do zero-fill to non-aligned tail block in ub
         int32_t aUbLength = 0;
         int32_t bUbLength = 0;
-        if (!tilingIns_->aType_.isTrans && ((tilingIns_->tiling_.get_singleCoreK() * aTypeSize / BITS_PER_BYTE) % C0_BYTE_SIZE != 0)) {
+        if (!tilingIns_->aType_.isTrans &&
+            ((tilingIns_->tiling_.get_singleCoreK() * aTypeSize / BITS_PER_BYTE) % C0_BYTE_SIZE != 0)) {
             aUbLength = tilingIns_->tiling_.get_baseM() * C0_BYTE_SIZE;
         }
         if (tilingIns_->aType_.isTrans &&
@@ -1617,7 +1698,8 @@ void MatmulTilingAlgorithm::GetUsedSize(int32_t& l1Size, int32_t& l0cSize, int32
             aUbLength = tilingIns_->tiling_.get_baseK() * C0_BYTE_SIZE;
         }
 
-        if (!tilingIns_->bType_.isTrans && ((tilingIns_->tiling_.get_singleCoreN() * bTypeSize / BITS_PER_BYTE) % C0_BYTE_SIZE != 0)) {
+        if (!tilingIns_->bType_.isTrans &&
+            ((tilingIns_->tiling_.get_singleCoreN() * bTypeSize / BITS_PER_BYTE) % C0_BYTE_SIZE != 0)) {
             bUbLength = tilingIns_->tiling_.get_baseK() * C0_BYTE_SIZE;
         }
         if (tilingIns_->bType_.isTrans &&
@@ -1640,9 +1722,10 @@ void MatmulTilingAlgorithm::GetUsedSize(int32_t& l1Size, int32_t& l0cSize, int32
             return;
         }
 
-        // case3: output GM/VECCAL, format is ND, for now not re-use input and output non-aligned, is related with db open
-        // (1) output GM, format is NZ/ND_ALIGN/ND, need restore in ub, ND and D is non-aligned , then add more 32B, ub->gm NZ->ND format and data type transform
-        // (2) output VECCALC,format is ND_ALIGN/ND(D aligned), need doNZ->ND transform in ub
+        // case3: output GM/VECCAL, format is ND, for now not re-use input and output non-aligned, is related with db
+        // open (1) output GM, format is NZ/ND_ALIGN/ND, need restore in ub, ND and D is non-aligned , then add more
+        // 32B, ub->gm NZ->ND format and data type transform (2) output VECCALC,format is ND_ALIGN/ND(D aligned), need
+        // doNZ->ND transform in ub
         if (tilingIns_->cType_.pos == TPosition::GM) {
             ubSize += tilingIns_->tiling_.get_baseM() * tilingIns_->tiling_.get_baseN() * cTypeSize;
             if (tilingIns_->cType_.type == CubeFormat::ND &&
@@ -1661,55 +1744,54 @@ void MatmulTilingAlgorithm::GetUsedSize(int32_t& l1Size, int32_t& l0cSize, int32
     return;
 }
 
-void MatmulTilingAlgorithm::GetBankConflictSize(const L1StatusPack& l1Status, const L0StatusPack& l0Status,
-    int32_t& length, bool isAMatrix) const
+void MatmulTilingAlgorithm::GetBankConflictSize(
+    const L1StatusPack& l1Status, const L0StatusPack& l0Status, int32_t& length, bool isAMatrix) const
 {
     constexpr int blockSize = 32;
     constexpr int bankLen = 512;
     bool isBankConflict = false;
     int bankConflictSize = 0;
-    const int32_t reduceSize = static_cast<int32_t>(C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
+    const int32_t reduceSize =
+        static_cast<int32_t>(C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
     if (isAMatrix) {
         if (tilingIns_->aType_.isTrans) {
             isBankConflict =
-                MathUtil::CeilDivision(l1Status.mAL1 * l0Status.mL0 * C0_SIZE, C0_SIZE) *
-                blockSize % bankLen ==
-                0 ?
-                true :
-                false;
+                MathUtil::CeilDivision(l1Status.mAL1 * l0Status.mL0 * C0_SIZE, C0_SIZE) * blockSize % bankLen == 0 ?
+                    true :
+                    false;
             bankConflictSize = l0Status.kL0 * reduceSize * C0_SIZE *
-                MathUtil::CeilDivision(l1Status.kAL1, l0Status.kL0) *
-                DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
+                               MathUtil::CeilDivision(l1Status.kAL1, l0Status.kL0) *
+                               DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
         } else {
             isBankConflict =
-                MathUtil::CeilDivision(MathUtil::CeilDivision(l1Status.kAL1, l0Status.kL0) * l0Status.kL0 * reduceSize,
-                C0_SIZE) * blockSize % bankLen ==
-                0 ?
-                true :
-                false;
+                MathUtil::CeilDivision(
+                    MathUtil::CeilDivision(l1Status.kAL1, l0Status.kL0) * l0Status.kL0 * reduceSize, C0_SIZE) *
+                            blockSize % bankLen ==
+                        0 ?
+                    true :
+                    false;
             bankConflictSize = l0Status.mL0 * C0_SIZE * C0_SIZE * l1Status.mAL1 *
-                DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
+                               DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
         }
     } else {
         if (tilingIns_->bType_.isTrans) {
             isBankConflict =
-                MathUtil::CeilDivision(MathUtil::CeilDivision(l1Status.kBL1, l0Status.kL0) * l0Status.kL0 * reduceSize,
-                C0_SIZE) * blockSize % bankLen ==
-                0 ?
-                true :
-                false;
+                MathUtil::CeilDivision(
+                    MathUtil::CeilDivision(l1Status.kBL1, l0Status.kL0) * l0Status.kL0 * reduceSize, C0_SIZE) *
+                            blockSize % bankLen ==
+                        0 ?
+                    true :
+                    false;
             bankConflictSize = l0Status.nL0 * C0_SIZE * C0_SIZE * l1Status.nBL1 *
-                DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
+                               DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
         } else {
             isBankConflict =
-                MathUtil::CeilDivision(l1Status.nBL1 * l0Status.nL0 * C0_SIZE, C0_SIZE) *
-                blockSize % bankLen ==
-                0 ?
-                true :
-                false;
+                MathUtil::CeilDivision(l1Status.nBL1 * l0Status.nL0 * C0_SIZE, C0_SIZE) * blockSize % bankLen == 0 ?
+                    true :
+                    false;
             bankConflictSize = l0Status.kL0 * reduceSize * C0_SIZE *
-                MathUtil::CeilDivision(l1Status.kBL1, l0Status.kL0) *
-                DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
+                               MathUtil::CeilDivision(l1Status.kBL1, l0Status.kL0) *
+                               DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
         }
     }
     if (isBankConflict) {
@@ -1727,41 +1809,41 @@ void MatmulTilingAlgorithm::GetBankConflictSize(int32_t& length, bool isAMatrix)
         if (tilingIns_->aType_.isTrans) {
             isBankConflict =
                 MathUtil::CeilDivision(tilingIns_->tiling_.get_stepM() * tilingIns_->tiling_.get_baseM(), C0_SIZE) *
-                blockSize % bankLen ==
-                0 ?
-                true :
-                false;
+                            blockSize % bankLen ==
+                        0 ?
+                    true :
+                    false;
             bankConflictSize = tilingIns_->tiling_.get_baseK() * C0_SIZE * tilingIns_->tiling_.get_stepKa() *
-                DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
+                               DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
         } else {
             isBankConflict =
                 MathUtil::CeilDivision(tilingIns_->tiling_.get_stepKa() * tilingIns_->tiling_.get_baseK(), C0_SIZE) *
-                blockSize % bankLen ==
-                0 ?
-                true :
-                false;
+                            blockSize % bankLen ==
+                        0 ?
+                    true :
+                    false;
             bankConflictSize = tilingIns_->tiling_.get_baseM() * C0_SIZE * tilingIns_->tiling_.get_stepM() *
-                DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
+                               DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
         }
     } else {
         if (tilingIns_->bType_.isTrans) {
             isBankConflict =
                 MathUtil::CeilDivision(tilingIns_->tiling_.get_stepKb() * tilingIns_->tiling_.get_baseK(), C0_SIZE) *
-                blockSize % bankLen ==
-                0 ?
-                true :
-                false;
+                            blockSize % bankLen ==
+                        0 ?
+                    true :
+                    false;
             bankConflictSize = tilingIns_->tiling_.get_baseN() * C0_SIZE * tilingIns_->tiling_.get_stepN() *
-                DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
+                               DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
         } else {
             isBankConflict =
                 MathUtil::CeilDivision(tilingIns_->tiling_.get_stepN() * tilingIns_->tiling_.get_baseN(), C0_SIZE) *
-                blockSize % bankLen ==
-                0 ?
-                true :
-                false;
+                            blockSize % bankLen ==
+                        0 ?
+                    true :
+                    false;
             bankConflictSize = tilingIns_->tiling_.get_baseK() * C0_SIZE * tilingIns_->tiling_.get_stepKb() *
-                DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
+                               DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
         }
     }
     if (isBankConflict) {
@@ -1772,12 +1854,13 @@ void MatmulTilingAlgorithm::GetBankConflictSize(int32_t& length, bool isAMatrix)
 int32_t MatmulTilingAlgorithm::GetAL1UbSize(const L1StatusPack& l1Status, const L0StatusPack& l0Status) const
 {
     int32_t a1Length = 0;
-    const int32_t reduceSize = static_cast<int32_t>(C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
+    const int32_t reduceSize =
+        static_cast<int32_t>(C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
     if (IsUbNd2Nz()) {
         // A matrix ND2NZ
         if (tilingIns_->aType_.type == CubeFormat::ND) {
             a1Length = l0Status.mL0 * C0_SIZE * l0Status.kL0 * reduceSize *
-                DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
+                       DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
             if (tilingIns_->mmConfigType == 1) {
                 a1Length = a1Length * MathUtil::CeilDivision(l1Status.kAL1, l0Status.kL0) * l1Status.mAL1;
             }
@@ -1791,12 +1874,13 @@ int32_t MatmulTilingAlgorithm::GetAL1UbSize(const L1StatusPack& l1Status, const 
 int32_t MatmulTilingAlgorithm::GetBL1UbSize(const L1StatusPack& l1Status, const L0StatusPack& l0Status) const
 {
     int32_t b1Length = 0;
-    const int32_t reduceSize = static_cast<int32_t>(C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
+    const int32_t reduceSize =
+        static_cast<int32_t>(C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
     if (IsUbNd2Nz()) {
         // B matrix ND2NZ
         if (tilingIns_->bType_.type == CubeFormat::ND) {
             b1Length = l0Status.nL0 * C0_SIZE * l0Status.kL0 * reduceSize *
-                DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
+                       DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
             if (tilingIns_->mmConfigType == 1) {
                 b1Length = b1Length * MathUtil::CeilDivision(l1Status.kBL1, l0Status.kL0) * l1Status.nBL1;
             }
@@ -1828,7 +1912,7 @@ void MatmulTilingAlgorithm::GetTransLength(int32_t& transLength) const
         // A matrix ND2NZ
         if (tilingIns_->aType_.type == CubeFormat::ND) {
             a1Length = tilingIns_->tiling_.get_baseM() * tilingIns_->tiling_.get_baseK() *
-                DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
+                       DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
             if (tilingIns_->mmConfigType == 1) {
                 a1Length = a1Length * tilingIns_->tiling_.get_stepKa() * tilingIns_->tiling_.get_stepM();
             }
@@ -1836,11 +1920,11 @@ void MatmulTilingAlgorithm::GetTransLength(int32_t& transLength) const
             GetBankConflictSize(a1Length, true);
         }
         // B matrix ND2NZ
-        if (tilingIns_->bType_.type == CubeFormat::ND
-            || (DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8) &&
-            tilingIns_->bType_.type == CubeFormat::NZ && tilingIns_->bType_.isTrans == false)) {
+        if (tilingIns_->bType_.type == CubeFormat::ND ||
+            (DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8) &&
+             tilingIns_->bType_.type == CubeFormat::NZ && tilingIns_->bType_.isTrans == false)) {
             b1Length = tilingIns_->tiling_.get_baseN() * tilingIns_->tiling_.get_baseK() *
-                DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
+                       DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
             if (tilingIns_->mmConfigType == 1) {
                 b1Length = b1Length * tilingIns_->tiling_.get_stepKb() * tilingIns_->tiling_.get_stepN();
             }
@@ -1850,7 +1934,7 @@ void MatmulTilingAlgorithm::GetTransLength(int32_t& transLength) const
         // C matrix NZ2ND
         if (tilingIns_->cType_.type == CubeFormat::ND || tilingIns_->cType_.pos == TPosition::GM) {
             c1Length = tilingIns_->tiling_.get_baseN() * tilingIns_->tiling_.get_baseM() *
-                DTYPE_BYTE_TAB.at(tilingIns_->cType_.dataType);
+                       DTYPE_BYTE_TAB.at(tilingIns_->cType_.dataType);
         }
         // Bias
         if (tilingIns_->isBias && tilingIns_->biasType_.pos != TPosition::VECCALC) {
@@ -1870,33 +1954,38 @@ bool MatmulTilingAlgorithm::CheckBaseMN() const
 {
     // check bias table
     if ((tilingIns_->socVersion == platform_ascendc::SocVersion::ASCEND910B ||
-        tilingIns_->socVersion == platform_ascendc::SocVersion::ASCEND310B) &&
+         tilingIns_->socVersion == platform_ascendc::SocVersion::ASCEND310B) &&
         tilingIns_->isBias && (tilingIns_->baseN > MAX_BIAS_N * C0_SIZE) && tilingIns_->isSupportL0c2Out) {
         return false;
     }
     if (tilingIns_->baseM != -1 && tilingIns_->baseN != -1) {
-        return (tilingIns_->baseM * tilingIns_->baseN * FP32_BYTES <= tilingIns_->bufferPool_.l0CSize &&
+        return (
+            tilingIns_->baseM * tilingIns_->baseN * FP32_BYTES <= tilingIns_->bufferPool_.l0CSize &&
             tilingIns_->baseM * C0_BYTE_SIZE <= tilingIns_->bufferPool_.l0ASize &&
             tilingIns_->baseN * C0_BYTE_SIZE <= tilingIns_->bufferPool_.l0BSize);
     }
     if (tilingIns_->baseM != -1) {
-        return (tilingIns_->baseM * C0_SIZE * FP32_BYTES <= tilingIns_->bufferPool_.l0CSize &&
+        return (
+            tilingIns_->baseM * C0_SIZE * FP32_BYTES <= tilingIns_->bufferPool_.l0CSize &&
             tilingIns_->baseM * C0_BYTE_SIZE <= tilingIns_->bufferPool_.l0ASize);
     }
     if (tilingIns_->baseN != -1) {
-        return (tilingIns_->baseN * C0_SIZE * FP32_BYTES <= tilingIns_->bufferPool_.l0CSize &&
+        return (
+            tilingIns_->baseN * C0_SIZE * FP32_BYTES <= tilingIns_->bufferPool_.l0CSize &&
             tilingIns_->baseN * C0_BYTE_SIZE <= tilingIns_->bufferPool_.l0BSize);
     }
     return true;
 }
 
-int32_t MatmulTilingAlgorithm::GetIteratorOrder(const SingleCoreStatus& singleCoreStatus, const int32_t singleCoreM,
-    const int32_t singleCoreN, const int32_t singleCoreK) const
+int32_t MatmulTilingAlgorithm::GetIteratorOrder(
+    const SingleCoreStatus& singleCoreStatus, const int32_t singleCoreM, const int32_t singleCoreN,
+    const int32_t singleCoreK) const
 {
     if (tilingIns_->traverse_ != MatrixTraverse::NOSET) {
         return static_cast<int32_t>(tilingIns_->traverse_) - 1;
     }
-    const int32_t reduceSize = static_cast<int32_t>(C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
+    const int32_t reduceSize =
+        static_cast<int32_t>(C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
     const bool fullkAL1Load =
         (static_cast<float>(singleCoreK) / (singleCoreStatus.l1Status.kAL1 * reduceSize)) > 1.0 ? false : true;
     bool fullkBL1Load =
@@ -1911,10 +2000,10 @@ int32_t MatmulTilingAlgorithm::GetIteratorOrder(const SingleCoreStatus& singleCo
         return static_cast<int32_t>(MatrixTraverse::FIRSTM) - 1;
     } else {
         // if AL1LoadSize less then BL1LoadSize, then select order N first, vice versa.
-        const int32_t mLoop = MathUtil::CeilDivision(singleCoreM,
-            singleCoreStatus.l1Status.mAL1 * singleCoreStatus.l0Status.mL0 * C0_SIZE);
-        const int32_t nLoop = MathUtil::CeilDivision(singleCoreN,
-            singleCoreStatus.l1Status.nBL1 * singleCoreStatus.l0Status.nL0 * C0_SIZE);
+        const int32_t mLoop = MathUtil::CeilDivision(
+            singleCoreM, singleCoreStatus.l1Status.mAL1 * singleCoreStatus.l0Status.mL0 * C0_SIZE);
+        const int32_t nLoop = MathUtil::CeilDivision(
+            singleCoreN, singleCoreStatus.l1Status.nBL1 * singleCoreStatus.l0Status.nL0 * C0_SIZE);
         const int32_t aL1LoadSize = singleCoreM + singleCoreN * mLoop;
         const int32_t bL1LoadSize = singleCoreN + singleCoreM * nLoop;
         return aL1LoadSize < bL1LoadSize ? 1 : 0;
@@ -1931,8 +2020,9 @@ void MatmulTilingAlgorithm::UpdateDimCalculator(DimCalculator& dimCalRes) const
     }
 }
 
-void MatmulTilingAlgorithm::CalcLoadSize(const DimFactor& dimFactor, const CoreStatusPack& coreStatus,
-    DimCalculator& dimCalRes, const MatmulRunParas& params) const
+void MatmulTilingAlgorithm::CalcLoadSize(
+    const DimFactor& dimFactor, const CoreStatusPack& coreStatus, DimCalculator& dimCalRes,
+    const MatmulRunParas& params) const
 {
     dimCalRes.totalLoadSize = INT_MAX;
     // A/B fullLoad or A fullLoad + B Kdim fullLoad or B fullLoad + A Kdim fullLoad(1/2/4)
@@ -1942,14 +2032,13 @@ void MatmulTilingAlgorithm::CalcLoadSize(const DimFactor& dimFactor, const CoreS
     constexpr int32_t minTotalSize = 128;
     const int32_t n0 = min(minMNSize, coreStatus.n); // need check m,n > 16 or m,n<16
     const int32_t m0 = min(minMNSize, ((n0 == 0) ? 0 : min(coreStatus.m, minTotalSize / n0)));
-    const int32_t k0 = (m0 != 0 && n0 != 0) ? 
-        min(min(minKSize / m0, minKSize / n0), coreStatus.k) : coreStatus.k;
+    const int32_t k0 = (m0 != 0 && n0 != 0) ? min(min(minKSize / m0, minKSize / n0), coreStatus.k) : coreStatus.k;
     const int32_t dbBuffer = 2;
 
     // A/B fullLoad or A fullLoad + B Kdim fullLoad or B fullLoad + A Kdim fullLoad(1/2/4)
     // loadsize = K*(N*mdim+M*ndim)
     const bool bothFullLoad = static_cast<int64_t>(totalSize) * static_cast<int64_t>(dimCalRes.kBytes) <=
-        static_cast<int64_t>(tilingIns_->bufferPool_.l1Size);
+                              static_cast<int64_t>(tilingIns_->bufferPool_.l1Size);
     const bool afullLoadPlsBKFullLoad =
         static_cast<int64_t>(dimCalRes.amatSize + n0 * dbBuffer) * static_cast<int64_t>(dimCalRes.kBytes) <=
         static_cast<int64_t>(tilingIns_->bufferPool_.l1Size);
@@ -1967,10 +2056,8 @@ void MatmulTilingAlgorithm::CalcLoadSize(const DimFactor& dimFactor, const CoreS
     // A kdim not fullLoad + B kdim not fullLoad(9)
     // loadsize = M*K*N*(1/m0+1/n0)
     const bool aKNotfullLoadPlsbKNotFullLoad =
-        (n0 * dimCalRes.kBytes + m0 * k0 * C0_SIZE * C0_BYTE_SIZE) * dbBuffer >
-        tilingIns_->bufferPool_.l1Size &&
-        (m0 * dimCalRes.kBytes + n0 * k0 * C0_SIZE * C0_BYTE_SIZE) * dbBuffer >
-        tilingIns_->bufferPool_.l1Size;
+        (n0 * dimCalRes.kBytes + m0 * k0 * C0_SIZE * C0_BYTE_SIZE) * dbBuffer > tilingIns_->bufferPool_.l1Size &&
+        (m0 * dimCalRes.kBytes + n0 * k0 * C0_SIZE * C0_BYTE_SIZE) * dbBuffer > tilingIns_->bufferPool_.l1Size;
     if (aKNotfullLoadPlsbKNotFullLoad) {
         dimCalRes.tmpAmatSize = dimCalRes.oriAmatSize * MathUtil::CeilDivision(params.n32, n0);
         dimCalRes.tmpBmatSize = dimCalRes.oriBmatSize * MathUtil::CeilDivision(params.m32, m0);
@@ -1983,10 +2070,14 @@ void MatmulTilingAlgorithm::CalcLoadSize(const DimFactor& dimFactor, const CoreS
     // M*K*(ndim+N/m1) or N*K*(mdim+M/n1)
     const bool aKfullLoadPlsbKFullLoad = (m0 + n0) * dimCalRes.kBytes * dbBuffer <= tilingIns_->bufferPool_.l1Size;
     if (aKfullLoadPlsbKFullLoad) {
-        const int32_t m1 = MathUtil::CeilDivision((tilingIns_->bufferPool_.l1Size - n0 *
-            dimCalRes.kBytes * dbBuffer), (dimCalRes.kBytes * dbBuffer * m0)) * m0;
-        const int32_t n1 = MathUtil::CeilDivision((tilingIns_->bufferPool_.l1Size - m0 *
-            dimCalRes.kBytes * dbBuffer), (dimCalRes.kBytes * dbBuffer * n0)) * n0;
+        const int32_t m1 = MathUtil::CeilDivision(
+                               (tilingIns_->bufferPool_.l1Size - n0 * dimCalRes.kBytes * dbBuffer),
+                               (dimCalRes.kBytes * dbBuffer * m0)) *
+                           m0;
+        const int32_t n1 = MathUtil::CeilDivision(
+                               (tilingIns_->bufferPool_.l1Size - m0 * dimCalRes.kBytes * dbBuffer),
+                               (dimCalRes.kBytes * dbBuffer * n0)) *
+                           n0;
         const int32_t mfirstLoad =
             dimCalRes.oriAmatSize * dimFactor.n + dimCalRes.oriBmatSize * MathUtil::CeilDivision(params.m32, m1);
         int32_t nfirstLoad =
@@ -2006,10 +2097,12 @@ void MatmulTilingAlgorithm::CalcLoadSize(const DimFactor& dimFactor, const CoreS
     //  A fullLoad + B Kdim not fullLoad or A K fullLoad + B Kdim not fullLoad(3/6)
     // mdim = coreNum; ndim = 1；
     // loadsize = M*K*(ndim+N/m0)
-    const bool afullLoadPlsbKNotFullLoad = (dimCalRes.amatSize * dimCalRes.kBytes +
-        n0 * k0 * C0_SIZE * C0_BYTE_SIZE * dbBuffer) <= tilingIns_->bufferPool_.l1Size;
-    const bool aKfullLoadPlsbKNotFullLoad = (m0 * dimCalRes.kBytes * dbBuffer +
-        n0 * k0 * C0_SIZE * C0_BYTE_SIZE * dbBuffer) <= tilingIns_->bufferPool_.l1Size;
+    const bool afullLoadPlsbKNotFullLoad =
+        (dimCalRes.amatSize * dimCalRes.kBytes + n0 * k0 * C0_SIZE * C0_BYTE_SIZE * dbBuffer) <=
+        tilingIns_->bufferPool_.l1Size;
+    const bool aKfullLoadPlsbKNotFullLoad =
+        (m0 * dimCalRes.kBytes * dbBuffer + n0 * k0 * C0_SIZE * C0_BYTE_SIZE * dbBuffer) <=
+        tilingIns_->bufferPool_.l1Size;
     if (afullLoadPlsbKNotFullLoad || aKfullLoadPlsbKNotFullLoad) {
         dimCalRes.tmpAmatSize = dimCalRes.oriAmatSize * dimFactor.n;
         dimCalRes.tmpBmatSize = dimCalRes.oriBmatSize * MathUtil::CeilDivision(params.m32, m0);
@@ -2019,10 +2112,12 @@ void MatmulTilingAlgorithm::CalcLoadSize(const DimFactor& dimFactor, const CoreS
 
     // A kdim not fullLoad + B fullLoad or A kdim not fullLoad + B kdim fullLoad(7/8)
     // loadsize = N*K*(mdim+M/n0)
-    const bool aKNotfullLoadPlsbFullLoad = (dimCalRes.bmatSize * dimCalRes.kBytes +
-        m0 * k0 * C0_SIZE * C0_BYTE_SIZE * dbBuffer) <= tilingIns_->bufferPool_.l1Size;
-    const bool aKNotfullLoadPlsbKFullLoad = (n0 * dimCalRes.kBytes * dbBuffer +
-        m0 * k0 * C0_SIZE * C0_BYTE_SIZE * dbBuffer) <= tilingIns_->bufferPool_.l1Size;
+    const bool aKNotfullLoadPlsbFullLoad =
+        (dimCalRes.bmatSize * dimCalRes.kBytes + m0 * k0 * C0_SIZE * C0_BYTE_SIZE * dbBuffer) <=
+        tilingIns_->bufferPool_.l1Size;
+    const bool aKNotfullLoadPlsbKFullLoad =
+        (n0 * dimCalRes.kBytes * dbBuffer + m0 * k0 * C0_SIZE * C0_BYTE_SIZE * dbBuffer) <=
+        tilingIns_->bufferPool_.l1Size;
     if (aKNotfullLoadPlsbFullLoad || aKNotfullLoadPlsbKFullLoad) {
         dimCalRes.tmpAmatSize = dimCalRes.oriBmatSize * dimFactor.m;
         dimCalRes.tmpBmatSize = dimCalRes.oriAmatSize * MathUtil::CeilDivision(params.n32, n0);
@@ -2031,8 +2126,8 @@ void MatmulTilingAlgorithm::CalcLoadSize(const DimFactor& dimFactor, const CoreS
     }
 }
 
-int32_t MatmulTilingAlgorithm::LoopNumFromSingleCoreToL0(const CoreStatusPack& coreStatus,
-    const DimFactor& dimFactor) const
+int32_t MatmulTilingAlgorithm::LoopNumFromSingleCoreToL0(
+    const CoreStatusPack& coreStatus, const DimFactor& dimFactor) const
 {
     if (!dimFactor.IsValid()) {
         return 0;
@@ -2044,15 +2139,14 @@ int32_t MatmulTilingAlgorithm::LoopNumFromSingleCoreToL0(const CoreStatusPack& c
     int32_t m0 = (n0 == 0) ? 0 : min(min(coreStatus.m, minTotalSize / n0), minSize);
     n0 = (m0 == 0) ? 0 : min(min(coreStatus.n, minTotalSize / m0), minSize);
     m0 = (n0 == 0) ? 0 : min(min(coreStatus.m, minTotalSize / n0), minSize);
-    const int32_t k0 = (m0 != 0 && n0 != 0) ?
-        min(min(minSize / m0, minSize / n0), coreStatus.k) : coreStatus.k;
+    const int32_t k0 = (m0 != 0 && n0 != 0) ? min(min(minSize / m0, minSize / n0), coreStatus.k) : coreStatus.k;
     const int32_t loopNum = MathUtil::CeilDivision(coreStatus.m, m0) * MathUtil::CeilDivision(coreStatus.n, n0) *
-        MathUtil::CeilDivision(coreStatus.k, k0);
+                            MathUtil::CeilDivision(coreStatus.k, k0);
     return loopNum;
 }
 
-int32_t MatmulTilingAlgorithm::GetBigPackageCondition(const CoreStatusPack &coreStatus,
-    const DimCalculator &dimCalRes, const MatmulRunParas &params) const
+int32_t MatmulTilingAlgorithm::GetBigPackageCondition(
+    const CoreStatusPack& coreStatus, const DimCalculator& dimCalRes, const MatmulRunParas& params) const
 {
     if (tilingIns_->bType_.isTrans == true && tilingIns_->aType_.isTrans == false) {
         return ATTACH_FLAG_ZERO;
@@ -2081,11 +2175,12 @@ int32_t MatmulTilingAlgorithm::GetBigPackageCondition(const CoreStatusPack &core
     }
 }
 
-void MatmulTilingAlgorithm::GetDimsHelper(const DimFactor& dimFactor, CoreStatusPack& coreStatus,
-    DimCalculator& dimCalRes, const MatmulRunParas& params)
+void MatmulTilingAlgorithm::GetDimsHelper(
+    const DimFactor& dimFactor, CoreStatusPack& coreStatus, DimCalculator& dimCalRes, const MatmulRunParas& params)
 {
-    dimCalRes.kNum = (dimFactor.k == 0) ? 0 : (params.k32 / dimFactor.k * C0_SIZE * REDUCE_BLOCK_SIZE); // contain k * 16
-    dimCalRes.kBytes = dimCalRes.kNum * INPUTDTYPE_BYTES;                 // contain k * 16 * 2
+    dimCalRes.kNum =
+        (dimFactor.k == 0) ? 0 : (params.k32 / dimFactor.k * C0_SIZE * REDUCE_BLOCK_SIZE); // contain k * 16
+    dimCalRes.kBytes = dimCalRes.kNum * INPUTDTYPE_BYTES;                                  // contain k * 16 * 2
     coreStatus.batch = MathUtil::CeilDivision(params.batch32, dimFactor.batch);
     coreStatus.m = MathUtil::CeilDivision(params.m32, dimFactor.m);
     coreStatus.n = MathUtil::CeilDivision(params.n32, dimFactor.n);
@@ -2117,21 +2212,22 @@ void MatmulTilingAlgorithm::GetDimsHelper(const DimFactor& dimFactor, CoreStatus
     bool updateConditionBp3 = bigpackageFlag == 1 ? false : true;
 
     const int32_t loopNum = LoopNumFromSingleCoreToL0(coreStatus, dimFactor);
-    const bool updateConditionCoreUsed = (!updateConditionBp) && ((loopNum < dimCalRes.loopNumToL0) ||
-        (dimFactor.ReduceMul() > dimCalRes.coreUse && loopNum == dimCalRes.loopNumToL0));
+    const bool updateConditionCoreUsed =
+        (!updateConditionBp) && ((loopNum < dimCalRes.loopNumToL0) ||
+                                 (dimFactor.ReduceMul() > dimCalRes.coreUse && loopNum == dimCalRes.loopNumToL0));
     const bool updateConditionLoadsize = (!updateConditionCoreUsed && dimFactor.ReduceMul() == dimCalRes.coreUse) &&
-        dimCalRes.totalLoadSize < dimCalRes.minLoadSize;
+                                         dimCalRes.totalLoadSize < dimCalRes.minLoadSize;
     const int32_t orgBatchM = params.oriShapeAbatch > 1 ? dimCalRes.batchDimFactor : dimCalRes.mDimFactor;
     const int32_t curBatchM = params.oriShapeAbatch > 1 ? dimFactor.batch : dimFactor.m;
-    const bool updateConditionBatchNDim = (!updateConditionCoreUsed && dimFactor.ReduceMul() == dimCalRes.coreUse &&
-        dimCalRes.totalLoadSize == dimCalRes.minLoadSize) &&
+    const bool updateConditionBatchNDim =
+        (!updateConditionCoreUsed && dimFactor.ReduceMul() == dimCalRes.coreUse &&
+         dimCalRes.totalLoadSize == dimCalRes.minLoadSize) &&
         ((dimCalRes.nDimFactor * orgBatchM < curBatchM * dimFactor.n) ||
-        (dimCalRes.nDimFactor * orgBatchM == curBatchM * dimFactor.n &&
-        dimCalRes.batchDimFactor < dimFactor.batch));
+         (dimCalRes.nDimFactor * orgBatchM == curBatchM * dimFactor.n && dimCalRes.batchDimFactor < dimFactor.batch));
 
-    const bool policyCondition =
-        UserPolicy(tilingIns_->bType_.pos == TPosition::TSCM ? TilingPolicy::FIXED_B_TSCM : TilingPolicy::NO_POLICY,
-        coreStatus, dimCalRes);
+    const bool policyCondition = UserPolicy(
+        tilingIns_->bType_.pos == TPosition::TSCM ? TilingPolicy::FIXED_B_TSCM : TilingPolicy::NO_POLICY, coreStatus,
+        dimCalRes);
     if ((updateConditionBp2 || updateConditionCoreUsed || updateConditionLoadsize || updateConditionBatchNDim) &&
         policyCondition && updateConditionBp3) {
         dimCalRes.minLoadSize = dimCalRes.totalLoadSize;
@@ -2144,13 +2240,14 @@ void MatmulTilingAlgorithm::GetDimsHelper(const DimFactor& dimFactor, CoreStatus
         dimCalRes.finalValue = dimCalRes.tmpValue;
         const int32_t minSize = 16;
         dimCalRes.bigPackage = (!tilingIns_->bType_.isTrans ? coreStatus.n >= minSize : true) &&
-            (tilingIns_->aType_.isTrans ? coreStatus.m >= minSize : true) && (dimFactor.n * dimFactor.m * dimFactor.k > 1);
+                               (tilingIns_->aType_.isTrans ? coreStatus.m >= minSize : true) &&
+                               (dimFactor.n * dimFactor.m * dimFactor.k > 1);
         splitCoreFlag_ = true;
     }
 }
 
-bool MatmulTilingAlgorithm::UserPolicy(const TilingPolicy policy, const CoreStatusPack& coreStatus,
-    const DimCalculator& dimCalRes) const
+bool MatmulTilingAlgorithm::UserPolicy(
+    const TilingPolicy policy, const CoreStatusPack& coreStatus, const DimCalculator& dimCalRes) const
 {
     constexpr int32_t minMNSize = 16;
     constexpr int32_t minKSize = 64;
@@ -2185,8 +2282,9 @@ bool MatmulTilingAlgorithm::UserPolicy(const TilingPolicy policy, const CoreStat
     }
 }
 
-bool MatmulTilingAlgorithm::PreProcessMiniShape(const std::string& opType, CoreStatusPack& coreStatus,
-    MatmulRunParas& params, const int32_t& coreNum, bool splitKFlag) const
+bool MatmulTilingAlgorithm::PreProcessMiniShape(
+    const std::string& opType, CoreStatusPack& coreStatus, MatmulRunParas& params, const int32_t& coreNum,
+    bool splitKFlag) const
 {
     (void)(opType);
     // experience value for mini shape
@@ -2196,11 +2294,13 @@ bool MatmulTilingAlgorithm::PreProcessMiniShape(const std::string& opType, CoreS
     // aicore buffers split_k is conflict with m/n shift_inwards
     bool specialScenario = false;
     if (params.n32 > MIN_MTE1_LOAD) {
-        specialScenario = specialScenario ||
+        specialScenario =
+            specialScenario ||
             (splitKFlag && ((static_cast<uint32_t>(params.nMapped) & static_cast<uint32_t>(MIN_MTE1_LOAD - 1)) != 0));
     }
     if (params.m32 > MIN_MTE1_LOAD) {
-        specialScenario = specialScenario ||
+        specialScenario =
+            specialScenario ||
             (splitKFlag && ((static_cast<uint32_t>(params.mMapped) & static_cast<uint32_t>(MIN_MTE1_LOAD - 1)) != 0));
     }
 
@@ -2213,8 +2313,8 @@ bool MatmulTilingAlgorithm::PreProcessMiniShape(const std::string& opType, CoreS
         int32_t kDimCandidate[2] = {0}; // storage 2 factors of k around kDim
         GetTwoFactors(kDimCandidate, coreStatus.kDim, params.k32, coreNum);
         coreStatus.kDim = (params.k32 <= MIN_MTE1_LOAD || !splitKFlag) ?
-            1 :
-            (kDimCandidate[1] > 1 ? kDimCandidate[1] : kDimCandidate[0]);
+                              1 :
+                              (kDimCandidate[1] > 1 ? kDimCandidate[1] : kDimCandidate[0]);
         coreStatus.batch = 1;
         coreStatus.n = coreStatus.nDim == 1 ? params.n32 : MathUtil::CeilDivision(params.nMapped, coreStatus.nDim);
         coreStatus.m = coreStatus.mDim == 1 ? params.m32 : MathUtil::CeilDivision(params.mMapped, coreStatus.mDim);
@@ -2230,19 +2330,19 @@ float MatmulTilingAlgorithm::CalculateBlockCycles(int32_t baseM, int32_t baseN, 
     return static_cast<float>(baseM * baseN * baseK) / (C0_SIZE * C0_SIZE * reduceBlockSize);
 }
 
-float MatmulTilingAlgorithm::CalculateMemoryTraffic(int32_t baseM, int32_t baseN, int32_t baseK,
-    float aMemoryRatio, float bMemoryRatio) const
+float MatmulTilingAlgorithm::CalculateMemoryTraffic(
+    int32_t baseM, int32_t baseN, int32_t baseK, float aMemoryRatio, float bMemoryRatio) const
 {
     float aMatrixSize = aMemoryRatio * baseM * baseK * DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
     float bMatrixSize = bMemoryRatio * baseN * baseK * DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
     return aMatrixSize + bMatrixSize;
 }
 
-bool MatmulTilingAlgorithm::AlignSingleShape(bool needAlign, int32_t orgShape, int32_t factor, int32_t alignSize,
-    int32_t &singleShape) const
+bool MatmulTilingAlgorithm::AlignSingleShape(
+    bool needAlign, int32_t orgShape, int32_t factor, int32_t alignSize, int32_t& singleShape) const
 {
     singleShape = MathUtil::CeilDivision(orgShape, factor);
-    if (!needAlign || alignSize  == 0) {
+    if (!needAlign || alignSize == 0) {
         return true; // orgShape not align, don't need to adjust
     }
     if (factor <= 1) {
@@ -2268,10 +2368,10 @@ ComputeBaseBlock MatmulTilingAlgorithm::GetMultiCoreBasicBlock(const MatmulRunPa
         basicM = basicSize256;
     }
     int32_t basicN = basicSize256;
-    int32_t aDtypeSize = DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) != 0 ?
-        DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) : 1;
+    int32_t aDtypeSize =
+        DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) != 0 ? DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) : 1;
     int32_t basicK = basicSize128 * BITS_PER_BYTE / aDtypeSize;
-    ComputeBaseBlock basicBlock {basicM, basicN, basicK};
+    ComputeBaseBlock basicBlock{basicM, basicN, basicK};
     // SetFixSplit
     if (tilingIns_->baseM != -1) {
         basicBlock.baseM = tilingIns_->baseM;
@@ -2291,23 +2391,25 @@ ComputeBaseBlock MatmulTilingAlgorithm::GetMultiCoreBasicBlock(const MatmulRunPa
     return basicBlock;
 }
 
-float MatmulTilingAlgorithm::CalcBaseBlockBandRatio(int32_t mDim, int32_t nDim, const ComputeBaseBlock &baseBlock) const
+float MatmulTilingAlgorithm::CalcBaseBlockBandRatio(int32_t mDim, int32_t nDim, const ComputeBaseBlock& baseBlock) const
 {
-    float bandRatio = static_cast<float>((numOfBlock_ - mDim) * baseBlock.baseM + (numOfBlock_ - nDim) * baseBlock.baseN) /
+    float bandRatio =
+        static_cast<float>((numOfBlock_ - mDim) * baseBlock.baseM + (numOfBlock_ - nDim) * baseBlock.baseN) /
         static_cast<float>((baseBlock.baseM + baseBlock.baseN) * numOfBlock_);
     return bandRatio;
 }
 
-void MatmulTilingAlgorithm::UpdateBaseBlock(const MatmulRunParas& params,
-    const int32_t sm, const int32_t sn, ComputeBaseBlock &baseBlock) const
+void MatmulTilingAlgorithm::UpdateBaseBlock(
+    const MatmulRunParas& params, const int32_t sm, const int32_t sn, ComputeBaseBlock& baseBlock) const
 {
     constexpr int32_t basicSize128 = 128;
     constexpr int32_t basicSize256 = 256;
     constexpr int32_t basicSize384 = 384;
     constexpr int32_t basicSize32 = 32;
     constexpr int32_t basicSize64 = 64;
-    baseBlock.baseK = min(baseBlock.baseK,
-        MathUtil::Align(static_cast<int32_t>(params.oriShapeKa), BASIC_SIZE_32)); // 32 is more efficient than 16
+    baseBlock.baseK =
+        min(baseBlock.baseK,
+            MathUtil::Align(static_cast<int32_t>(params.oriShapeKa), BASIC_SIZE_32)); // 32 is more efficient than 16
     if (sm >= basicSize128) {
         baseBlock.baseM = basicSize128;
     } else {
@@ -2324,8 +2426,8 @@ void MatmulTilingAlgorithm::UpdateBaseBlock(const MatmulRunParas& params,
     }
 }
 
-ComputeIntensity MatmulTilingAlgorithm::CalcComputeIntensity(const MatmulRunParas& params, const ComputeBaseBlock &baseBlock,
-    const std::pair<int32_t, int32_t> &factor) const
+ComputeIntensity MatmulTilingAlgorithm::CalcComputeIntensity(
+    const MatmulRunParas& params, const ComputeBaseBlock& baseBlock, const std::pair<int32_t, int32_t>& factor) const
 {
     auto mFactor = factor.first;
     auto nFactor = factor.second;
@@ -2339,7 +2441,7 @@ ComputeIntensity MatmulTilingAlgorithm::CalcComputeIntensity(const MatmulRunPara
     bool alignSuccB = AlignSingleShape(bNeedAlign, params.oriShapeN, nFactor, bAlignSize, sn);
     auto shapeM = MathUtil::DivideIntoMainAndTail(sm, baseBlock.baseM);
     auto shapeN = MathUtil::DivideIntoMainAndTail(sn, baseBlock.baseN);
-    
+
     int32_t memoryRatio = (alignSuccA && alignSuccB) ? 1 : 2;
     float bandRatio = CalcBaseBlockBandRatio(mFactor, nFactor, baseBlock);
     std::vector<BaseBlockIntensity> blocks = CalcTotalCycleMemory(shapeM, shapeN, baseBlock, memoryRatio);
@@ -2350,13 +2452,12 @@ ComputeIntensity MatmulTilingAlgorithm::CalcComputeIntensity(const MatmulRunPara
         totalCycles += v.computeCycle;
         totalMemory += v.memoryTraffic;
     }
-    return {
-        {mFactor, nFactor}, totalCycles, (totalMemory > 0) ? totalCycles / totalMemory : 0, bandRatio};
+    return {{mFactor, nFactor}, totalCycles, (totalMemory > 0) ? totalCycles / totalMemory : 0, bandRatio};
 }
 
-std::vector<BaseBlockIntensity> MatmulTilingAlgorithm::CalcTotalCycleMemory(const std::pair<int32_t, int32_t>& shapeM,
-        const std::pair<int32_t, int32_t>& shapeN, const ComputeBaseBlock &baseBlock, const float memoryRatio,
-        const MemoryRatios memoryRatios) const
+std::vector<BaseBlockIntensity> MatmulTilingAlgorithm::CalcTotalCycleMemory(
+    const std::pair<int32_t, int32_t>& shapeM, const std::pair<int32_t, int32_t>& shapeN,
+    const ComputeBaseBlock& baseBlock, const float memoryRatio, const MemoryRatios memoryRatios) const
 {
     std::vector<BaseBlockIntensity> blocks;
     auto mainM = shapeM.first;
@@ -2369,22 +2470,26 @@ std::vector<BaseBlockIntensity> MatmulTilingAlgorithm::CalcTotalCycleMemory(cons
     if (mainM > 0 && mainN > 0) {
         int count = mainM * mainN;
         float cycles = CalculateBlockCycles(baseBlock.baseM, baseBlock.baseN, baseBlock.baseK) * count;
-        float memory = memoryRatio *
-            CalculateMemoryTraffic(baseBlock.baseM, baseBlock.baseN, baseBlock.baseK, aMemoryRatio, bMemoryRatio) * count;
+        float memory =
+            memoryRatio *
+            CalculateMemoryTraffic(baseBlock.baseM, baseBlock.baseN, baseBlock.baseK, aMemoryRatio, bMemoryRatio) *
+            count;
         blocks.push_back({count, cycles, memory});
     }
     // N Tail Chunk
     if (mainM > 0 && tailN > 0) {
         float cycles = CalculateBlockCycles(baseBlock.baseM, tailN, baseBlock.baseK) * mainM;
-        float memory = memoryRatio * CalculateMemoryTraffic(baseBlock.baseM, tailN, baseBlock.baseK,
-            aMemoryRatio, bMemoryRatio) * mainM;
+        float memory = memoryRatio *
+                       CalculateMemoryTraffic(baseBlock.baseM, tailN, baseBlock.baseK, aMemoryRatio, bMemoryRatio) *
+                       mainM;
         blocks.push_back({mainM, cycles, memory});
     }
     // M Tail Chunk
     if (tailM > 0 && mainN > 0) {
         float cycles = CalculateBlockCycles(tailM, baseBlock.baseN, baseBlock.baseK) * mainN;
-        float memory = memoryRatio * CalculateMemoryTraffic(tailM, baseBlock.baseN, baseBlock.baseK,
-            aMemoryRatio, bMemoryRatio) * mainN;
+        float memory = memoryRatio *
+                       CalculateMemoryTraffic(tailM, baseBlock.baseN, baseBlock.baseK, aMemoryRatio, bMemoryRatio) *
+                       mainN;
         blocks.push_back({mainN, cycles, memory});
     }
     // M and N Tail Chunk
@@ -2396,8 +2501,8 @@ std::vector<BaseBlockIntensity> MatmulTilingAlgorithm::CalcTotalCycleMemory(cons
     return blocks;
 }
 
-ComputeIntensitySmallShape MatmulTilingAlgorithm::CalcComputeIntensitySmallShape(const MatmulRunParas& params,
-    const std::pair<int32_t, int32_t> &factor, ComputeBaseBlock &baseBlock) const
+ComputeIntensitySmallShape MatmulTilingAlgorithm::CalcComputeIntensitySmallShape(
+    const MatmulRunParas& params, const std::pair<int32_t, int32_t>& factor, ComputeBaseBlock& baseBlock) const
 {
     auto mFactor = factor.first;
     auto nFactor = factor.second;
@@ -2443,9 +2548,8 @@ ComputeIntensitySmallShape MatmulTilingAlgorithm::CalcComputeIntensitySmallShape
         totalCycles += v.computeCycle;
         totalMemory += v.memoryTraffic;
     }
-    return {
-        {mFactor, nFactor}, totalCycles, (totalMemory > 0) ? totalCycles / totalMemory : 0,
-        bandRatio, totalMemory, baseBlock};
+    return {{mFactor, nFactor}, totalCycles, (totalMemory > 0) ? totalCycles / totalMemory : 0,
+            bandRatio,          totalMemory, baseBlock};
 }
 
 MultiCoreScenario MatmulTilingAlgorithm::GetMultiCoreScenario(const MatmulRunParas& params) const
@@ -2468,7 +2572,7 @@ MultiCoreScenario MatmulTilingAlgorithm::GetMultiCoreScenario(const MatmulRunPar
     return MultiCoreScenario::OTHERS;
 }
 
-void MatmulTilingAlgorithm::UpdateStepK(const ComputeBaseBlock &baseBlock, int32_t &stepK) const
+void MatmulTilingAlgorithm::UpdateStepK(const ComputeBaseBlock& baseBlock, int32_t& stepK) const
 {
     if (stepK * baseBlock.baseK >= GetSingleK()) {
         return;
@@ -2484,32 +2588,32 @@ void MatmulTilingAlgorithm::UpdateStepK(const ComputeBaseBlock &baseBlock, int32
             }
         }
     } else if (stepK * baseBlock.baseK * aTypeBitSize / BITS_PER_BYTE > baseBlockSize256) {
-         if ((stepK * baseBlock.baseK * aTypeBitSize / BITS_PER_BYTE % baseBlockSize256 != 0) &&
+        if ((stepK * baseBlock.baseK * aTypeBitSize / BITS_PER_BYTE % baseBlockSize256 != 0) &&
             (baseBlockSize256 % (baseBlock.baseK * aTypeBitSize / BITS_PER_BYTE) == 0)) {
             while (stepK * baseBlock.baseK * aTypeBitSize / BITS_PER_BYTE % baseBlockSize256 != 0 && stepK > 1) {
                 stepK--;
             }
-        }       
+        }
     }
 }
 
-void MatmulTilingAlgorithm::CalcL1Tiling(const ComputeBaseBlock &baseBlock, int32_t &depthA1, int32_t &depthB1,
-    int32_t &stepKa, int32_t &stepKb) const
+void MatmulTilingAlgorithm::CalcL1Tiling(
+    const ComputeBaseBlock& baseBlock, int32_t& depthA1, int32_t& depthB1, int32_t& stepKa, int32_t& stepKb) const
 {
     int32_t l1Size = tilingIns_->bufferPool_.l1Size;
     constexpr static int32_t reservedL1Size = 256; // l1 reserved 256B
     int32_t depthA1Size = (l1Size / DB_ON / baseBlock.baseM / baseBlock.baseK) * BITS_PER_BYTE /
-        DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType);
+                          DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType);
     int32_t depthB1Size = ((l1Size + reservedL1Size) / DB_ON / baseBlock.baseN / baseBlock.baseK) * BITS_PER_BYTE /
-        DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType);
+                          DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType);
     int32_t btSize = 0;
     if (tilingIns_->isBias) {
         btSize = baseBlock.baseN * DTYPE_BIT_TAB.at(tilingIns_->biasType_.dataType) / BITS_PER_BYTE;
     }
     int32_t baseAByteSize = GetABaseHeightAlign(baseBlock.baseM) * GetABaseWidthAlign(baseBlock.baseK) *
-        DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
+                            DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
     int32_t baseBByteSize = GetBBaseHeightAlign(baseBlock.baseK) * GetBBaseWidthAlign(baseBlock.baseN) *
-        DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
+                            DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
     if (depthA1Size * baseAByteSize + depthB1Size * baseBByteSize > l1Size - btSize) {
         if (GetABaseHeightAlign(baseBlock.baseM) <= GetBBaseWidthAlign(baseBlock.baseN)) {
             depthA1Size = depthA1Size / DB_ON;
@@ -2531,7 +2635,7 @@ void MatmulTilingAlgorithm::CalcL1Tiling(const ComputeBaseBlock &baseBlock, int3
     depthB1 = stepKb * l1Db;
 }
 
-L0StatusPack MatmulTilingAlgorithm::GetL0CoreStatus(const ComputeBaseBlock &baseBlock) const
+L0StatusPack MatmulTilingAlgorithm::GetL0CoreStatus(const ComputeBaseBlock& baseBlock) const
 {
     L0StatusPack l0Status;
     const int32_t reduceSize = C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE;
@@ -2547,8 +2651,8 @@ L0StatusPack MatmulTilingAlgorithm::GetL0CoreStatus(const ComputeBaseBlock &base
     return l0Status;
 }
 
-L1StatusPack MatmulTilingAlgorithm::GetL1CoreStatus(const ComputeBaseBlock &baseBlock, int32_t depthA1, int32_t depthB1,
-    int32_t stepKa, int32_t stepKb) const
+L1StatusPack MatmulTilingAlgorithm::GetL1CoreStatus(
+    const ComputeBaseBlock& baseBlock, int32_t depthA1, int32_t depthB1, int32_t stepKa, int32_t stepKb) const
 {
     L1StatusPack l1Status;
     l1Status.mAL1 = 1;
@@ -2618,8 +2722,7 @@ int64_t MatmulTilingAlgorithm::AdjustOuterProductL0Factor(SingleCoreStatus& sing
     }
     // check whether OUTER_PRODUCT is supported
     if ((tilingIns_->tiling_.get_baseK() < tilingIns_->tiling_.get_singleCoreK()) &&
-        ((tilingIns_->mmConfigType == 1) || ((tilingIns_->mmConfigType == 0) &&
-        (tilingIns_->batchNum != 0)))) {
+        ((tilingIns_->mmConfigType == 1) || ((tilingIns_->mmConfigType == 0) && (tilingIns_->batchNum != 0)))) {
         TILING_LOG_WARNING("MatmulApi Tiling : Unsupported scheduleType is OUTER_PRODUCT");
         return -1L;
     }
@@ -2628,8 +2731,9 @@ int64_t MatmulTilingAlgorithm::AdjustOuterProductL0Factor(SingleCoreStatus& sing
     int32_t newStepM = singleCoreStatus.l1Status.mAL1;
     int32_t newStepN = singleCoreStatus.l1Status.nBL1;
     // when scheduleType is OUTER_PRODUCT, each iteration computes 2 * basicBlock size of data
-    bool isL0CFullUsed = (newBaseM * newBaseN * NUM_TWO * FP32_BYTES) >
-        static_cast<int32_t>(tilingIns_->bufferPool_.l0CSize) ? true : false;
+    bool isL0CFullUsed =
+        (newBaseM * newBaseN * NUM_TWO * FP32_BYTES) > static_cast<int32_t>(tilingIns_->bufferPool_.l0CSize) ? true :
+                                                                                                               false;
     if (isL0CFullUsed && (tilingIns_->tiling_.get_iterateOrder() == 0)) {
         // when scheduleType is OUTER_PRODUCT and iterateOrder is ORDER_M, N db in L0
         newBaseN = MathUtil::Align(newBaseN / NUM_TWO, C0_SIZE);
@@ -2660,8 +2764,8 @@ void MatmulTilingAlgorithm::SetBaseMNK(const SingleCoreStatus& singleCoreStatus)
 {
     int32_t baseM = singleCoreStatus.l0Status.mL0 * C0_SIZE;
     if (tilingIns_->madType_ == MatrixMadType::MXMODE) {
-        bool isAUbNdTrans = tilingIns_->aType_.pos == TPosition::VECOUT && 
-            tilingIns_->aType_.type == CubeFormat::ND && tilingIns_->aType_.isTrans;
+        bool isAUbNdTrans = tilingIns_->aType_.pos == TPosition::VECOUT && tilingIns_->aType_.type == CubeFormat::ND &&
+                            tilingIns_->aType_.isTrans;
         int32_t widthAlignSize = INT8_ALIGN_SIZE;
         if (tilingIns_->aType_.dataType == DataType::DT_FLOAT4_E2M1 ||
             tilingIns_->aType_.dataType == DataType::DT_FLOAT4_E1M2) {
@@ -2677,9 +2781,11 @@ void MatmulTilingAlgorithm::SetBaseMNK(const SingleCoreStatus& singleCoreStatus)
     tilingIns_->tiling_.set_baseK(singleCoreStatus.l0Status.kL0 * reduceSize);
 }
 
-int64_t MatmulTilingAlgorithm::UpdateTiling(const MatmulRunParas& param, const CoreStatusPack &coreStatus, SingleCoreStatus& singleCoreStatus) const
+int64_t MatmulTilingAlgorithm::UpdateTiling(
+    const MatmulRunParas& param, const CoreStatusPack& coreStatus, SingleCoreStatus& singleCoreStatus) const
 {
-    int32_t coreUse = enableSingleShape_ ? tilingIns_->blockDim : coreStatus.batchDim * coreStatus.mDim * coreStatus.kDim * coreStatus.nDim;
+    int32_t coreUse = enableSingleShape_ ? tilingIns_->blockDim :
+                                           coreStatus.batchDim * coreStatus.mDim * coreStatus.kDim * coreStatus.nDim;
     int32_t singleCoreM;
     int32_t singleCoreN;
     int32_t singleCoreK;
@@ -2705,15 +2811,18 @@ int64_t MatmulTilingAlgorithm::UpdateTiling(const MatmulRunParas& param, const C
     if (!AdjustNBuffer33L1Factors(coreStatus, singleCoreStatus)) {
         return -1L;
     }
-    tilingIns_->tiling_.set_depthA1(MathUtil::CeilDivision(singleCoreStatus.l1Status.kAL1,
-        singleCoreStatus.l0Status.kL0) * singleCoreStatus.l1Status.mAL1 * singleCoreStatus.l1Status.dbAL1);
+    tilingIns_->tiling_.set_depthA1(
+        MathUtil::CeilDivision(singleCoreStatus.l1Status.kAL1, singleCoreStatus.l0Status.kL0) *
+        singleCoreStatus.l1Status.mAL1 * singleCoreStatus.l1Status.dbAL1);
     tilingIns_->tiling_.set_depthB1(UpdateDepthB1(singleCoreStatus));
     // if decrease depthB1, nBL1 must decrease to ensure nBL1 is less then depthB1
     singleCoreStatus.l1Status.nBL1 = min(singleCoreStatus.l1Status.nBL1, tilingIns_->tiling_.get_depthB1());
     tilingIns_->tiling_.set_stepM(singleCoreStatus.l1Status.mAL1);
     tilingIns_->tiling_.set_stepN(singleCoreStatus.l1Status.nBL1);
-    tilingIns_->tiling_.set_stepKa(MathUtil::CeilDivision(singleCoreStatus.l1Status.kAL1, singleCoreStatus.l0Status.kL0));
-    tilingIns_->tiling_.set_stepKb(MathUtil::CeilDivision(singleCoreStatus.l1Status.kBL1, singleCoreStatus.l0Status.kL0));
+    tilingIns_->tiling_.set_stepKa(
+        MathUtil::CeilDivision(singleCoreStatus.l1Status.kAL1, singleCoreStatus.l0Status.kL0));
+    tilingIns_->tiling_.set_stepKb(
+        MathUtil::CeilDivision(singleCoreStatus.l1Status.kBL1, singleCoreStatus.l0Status.kL0));
     int32_t mxTypePara = 0;
     // determine whether the scenario is MX
     if (tilingIns_->madType_ == MatrixMadType::MXMODE) {
@@ -2730,8 +2839,8 @@ int64_t MatmulTilingAlgorithm::UpdateTiling(const MatmulRunParas& param, const C
     return 0;
 }
 
-bool MatmulTilingAlgorithm::DoMultiCoreSplitMNTiling(const MatmulRunParas& params, CoreStatusPack& coreStatus,
-    DimCalculator& dimCalRes)
+bool MatmulTilingAlgorithm::DoMultiCoreSplitMNTiling(
+    const MatmulRunParas& params, CoreStatusPack& coreStatus, DimCalculator& dimCalRes)
 {
     auto multiCoreScenario = GetMultiCoreScenario(params);
     if (multiCoreScenario != MultiCoreScenario::SPLIT_MN && multiCoreScenario != MultiCoreScenario::SPLIT_SMALL_MN &&
@@ -2774,12 +2883,12 @@ bool MatmulTilingAlgorithm::NeedOutputAlign(int32_t m, int32_t n, int32_t k) con
     int32_t cTypeSize = DTYPE_BIT_TAB.at(tilingIns_->cType_.dataType);
     constexpr static int32_t outputRatio = 2;
     bool needAlign = static_cast<int64_t>(n * m) * static_cast<int64_t>(outputRatio * cTypeSize) >
-        static_cast<int64_t>(n * k* aTypeSize) + static_cast<int64_t>(m * k * bTypeSize);
+                     static_cast<int64_t>(n * k * aTypeSize) + static_cast<int64_t>(m * k * bTypeSize);
     return needAlign;
 }
 
-bool MatmulTilingAlgorithm::CalcNBuffer33Dims(const MatmulRunParas& params, const ComputeBaseBlock &baseBlock,
-    CoreStatusPack& coreStatus) const
+bool MatmulTilingAlgorithm::CalcNBuffer33Dims(
+    const MatmulRunParas& params, const ComputeBaseBlock& baseBlock, CoreStatusPack& coreStatus) const
 {
     coreStatus.batchDim = 1;
     coreStatus.mDim = MathUtil::CeilDivision(GetSingleM(), baseBlock.baseM * N_BUFFER_33_FACTOR);
@@ -2788,15 +2897,18 @@ bool MatmulTilingAlgorithm::CalcNBuffer33Dims(const MatmulRunParas& params, cons
     } else {
         coreStatus.kDim = 1;
         if (MathUtil::CeilDivision(GetSingleK(), baseBlock.baseK) > N_BUFFER_33_FACTOR) {
-            TILING_LOG_WARNING("MatmulApi Tiling : SingleCoreK %d and baseK %d does not satisfy NBuffer33 requirements. "
-                "Suggest use EnableMultiCoreSplitK to turn on multi core K split.", GetSingleK(), baseBlock.baseK);
+            TILING_LOG_WARNING(
+                "MatmulApi Tiling : SingleCoreK %d and baseK %d does not satisfy NBuffer33 requirements. "
+                "Suggest use EnableMultiCoreSplitK to turn on multi core K split.",
+                GetSingleK(), baseBlock.baseK);
             return false;
         }
     }
     if (coreStatus.mDim * coreStatus.kDim > numOfBlock_) {
-        TILING_LOG_WARNING("MatmulApi Tiling : M %d (baseM %d) or K %d (baseK %d) is too large to find a valid NBuffer33 single core "
-            "shape within %d cores. Remind to slice M or K in test code.", GetSingleM(), baseBlock.baseM,
-            GetSingleK(), baseBlock.baseK, numOfBlock_);
+        TILING_LOG_WARNING(
+            "MatmulApi Tiling : M %d (baseM %d) or K %d (baseK %d) is too large to find a valid NBuffer33 single core "
+            "shape within %d cores. Remind to slice M or K in test code.",
+            GetSingleM(), baseBlock.baseM, GetSingleK(), baseBlock.baseK, numOfBlock_);
     }
 
     std::vector<std::pair<int32_t, int32_t>> dimPairs;
@@ -2808,20 +2920,22 @@ bool MatmulTilingAlgorithm::CalcNBuffer33Dims(const MatmulRunParas& params, cons
         dimPairs.push_back({coreStatus.mDim, nDim});
     }
     std::vector<ComputeIntensity> results;
-    for (const auto &factor : dimPairs) {
+    for (const auto& factor : dimPairs) {
         results.push_back(CalcComputeIntensity(params, baseBlock, factor));
     }
     std::sort(results.begin(), results.end());
-    for (const auto &res : results) {
-        TILING_LOG_DEBUG("intent:%f, cycle: %f, band: %f, mDim: %d, nDim: %d\n",
-            res.avgIntensity, res.computeCycle, res.bandRatio, res.dimFactor.first, res.dimFactor.second);
+    for (const auto& res : results) {
+        TILING_LOG_DEBUG(
+            "intent:%f, cycle: %f, band: %f, mDim: %d, nDim: %d\n", res.avgIntensity, res.computeCycle, res.bandRatio,
+            res.dimFactor.first, res.dimFactor.second);
     }
     coreStatus.nDim = results[0].dimFactor.second;
     return true;
 }
 
-void MatmulTilingAlgorithm::CalcMultiCoreDims(const MatmulRunParas& params, const ComputeBaseBlock &baseBlock,
-    CoreStatusPack& coreStatus, DimCalculator& dimCalRes)
+void MatmulTilingAlgorithm::CalcMultiCoreDims(
+    const MatmulRunParas& params, const ComputeBaseBlock& baseBlock, CoreStatusPack& coreStatus,
+    DimCalculator& dimCalRes)
 {
     auto factors = MathUtil::GetFactorPairs(numOfBlock_);
     std::vector<ComputeIntensity> results;
@@ -2831,8 +2945,9 @@ void MatmulTilingAlgorithm::CalcMultiCoreDims(const MatmulRunParas& params, cons
     // 排序结果
     std::sort(results.begin(), results.end());
     for (auto v : results) {
-        TILING_LOG_DEBUG("intent:%f, cycle: %f, band: %f, mDim: %d, nDim: %d\n",
-            v.avgIntensity, v.computeCycle, v.bandRatio, v.dimFactor.first, v.dimFactor.second);
+        TILING_LOG_DEBUG(
+            "intent:%f, cycle: %f, band: %f, mDim: %d, nDim: %d\n", v.avgIntensity, v.computeCycle, v.bandRatio,
+            v.dimFactor.first, v.dimFactor.second);
     }
     coreStatus.batchDim = 1;
     dimCalRes.nDimFactor = results[0].dimFactor.second;
@@ -2845,28 +2960,31 @@ void MatmulTilingAlgorithm::CalcMultiCoreDims(const MatmulRunParas& params, cons
     return;
 }
 
-void MatmulTilingAlgorithm::CalcMultiCoreDimsSmallShape(const MatmulRunParas& params, ComputeBaseBlock &baseBlock,
-    CoreStatusPack& coreStatus, DimCalculator& dimCalRes)
+void MatmulTilingAlgorithm::CalcMultiCoreDimsSmallShape(
+    const MatmulRunParas& params, ComputeBaseBlock& baseBlock, CoreStatusPack& coreStatus, DimCalculator& dimCalRes)
 {
-    int32_t basicSize128 =128;
-    int32_t basicSize256 =256;
-    //if a certain axis can be fully divided, divided it fully
-    if (params.oriShapeM <= static_cast<int64_t>(basicSize128) && 
+    int32_t basicSize128 = 128;
+    int32_t basicSize256 = 256;
+    // if a certain axis can be fully divided, divided it fully
+    if (params.oriShapeM <= static_cast<int64_t>(basicSize128) &&
         params.oriShapeN >= static_cast<int64_t>(basicSize128 * numOfBlock_)) {
         dimCalRes.mDimFactor = 1;
         dimCalRes.nDimFactor = numOfBlock_;
         coreStatus.mDim = 1;
         coreStatus.nDim = numOfBlock_;
-        (void)UpdateBaseBlock(params, static_cast<int32_t>(params.oriShapeM),
-            static_cast<int32_t>(params.oriShapeN) / numOfBlock_, baseBlock);
-    } else if (params.oriShapeN <= static_cast<int64_t>(basicSize256) &&
-                params.oriShapeM >= static_cast<int64_t>(basicSize128 * numOfBlock_)) {
+        (void)UpdateBaseBlock(
+            params, static_cast<int32_t>(params.oriShapeM), static_cast<int32_t>(params.oriShapeN) / numOfBlock_,
+            baseBlock);
+    } else if (
+        params.oriShapeN <= static_cast<int64_t>(basicSize256) &&
+        params.oriShapeM >= static_cast<int64_t>(basicSize128 * numOfBlock_)) {
         dimCalRes.mDimFactor = numOfBlock_;
         dimCalRes.nDimFactor = 1;
         coreStatus.mDim = numOfBlock_;
         coreStatus.nDim = 1;
-        (void)UpdateBaseBlock(params, static_cast<int32_t>(params.oriShapeM) / numOfBlock_,
-            static_cast<int32_t>(params.oriShapeN), baseBlock);
+        (void)UpdateBaseBlock(
+            params, static_cast<int32_t>(params.oriShapeM) / numOfBlock_, static_cast<int32_t>(params.oriShapeN),
+            baseBlock);
     } else {
         std::vector<ComputeIntensitySmallShape> results;
         for (int32_t i = numOfBlock_; i >= 1; i--) {
@@ -2877,8 +2995,9 @@ void MatmulTilingAlgorithm::CalcMultiCoreDimsSmallShape(const MatmulRunParas& pa
         }
         std::sort(results.begin(), results.end());
         for (auto v : results) {
-            TILING_LOG_DEBUG("memory:%f, intent:%f, cycle: %f, band: %f, mDim: %d, nDim: %d\n",
-                v.memoryTraffic, v.avgIntensity, v.computeCycle, v.bandRatio, v.dimFactor.first, v.dimFactor.second);
+            TILING_LOG_DEBUG(
+                "memory:%f, intent:%f, cycle: %f, band: %f, mDim: %d, nDim: %d\n", v.memoryTraffic, v.avgIntensity,
+                v.computeCycle, v.bandRatio, v.dimFactor.first, v.dimFactor.second);
         }
         coreStatus.batchDim = 1;
         dimCalRes.nDimFactor = results[0].dimFactor.second;
@@ -2887,32 +3006,34 @@ void MatmulTilingAlgorithm::CalcMultiCoreDimsSmallShape(const MatmulRunParas& pa
         coreStatus.mDim = results[0].dimFactor.first;
         coreStatus.nDim = results[0].dimFactor.second;
         coreStatus.kDim = 1;
-        
+
         baseBlock.baseM = results[0].baseBlock.baseM;
         baseBlock.baseN = results[0].baseBlock.baseN;
-        baseBlock.baseK = results[0].baseBlock.baseK;   
+        baseBlock.baseK = results[0].baseBlock.baseK;
     }
 
     int32_t tmpSize = L0_SIZE / DB_ON * BITS_PER_BYTE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType);
     baseBlock.baseK = min(tmpSize / baseBlock.baseM, tmpSize / baseBlock.baseN);
-    baseBlock.baseK = min(MathUtil::AlignDown(baseBlock.baseK, GetC0Size()),
-        static_cast<int32_t>(MathUtil::Align(params.oriShapeKa, static_cast<int64_t>(GetC0Size()))));
+    baseBlock.baseK =
+        min(MathUtil::AlignDown(baseBlock.baseK, GetC0Size()),
+            static_cast<int32_t>(MathUtil::Align(params.oriShapeKa, static_cast<int64_t>(GetC0Size()))));
     (void)CalcMultiCoreDimsPost(params, coreStatus, dimCalRes);
     return;
 }
 
-void MatmulTilingAlgorithm::CalcMultiCoreDimsPost(const MatmulRunParas& params, CoreStatusPack& coreStatus,
-    DimCalculator& dimCalRes)
+void MatmulTilingAlgorithm::CalcMultiCoreDimsPost(
+    const MatmulRunParas& params, CoreStatusPack& coreStatus, DimCalculator& dimCalRes)
 {
     const int32_t n = MathUtil::FindBestSingleCore(params.n32, params.nMapped, dimCalRes.nDimFactor, false);
     const int32_t m = MathUtil::FindBestSingleCore(params.m32, params.mMapped, dimCalRes.mDimFactor, false);
     int32_t aAlignSize = DATA_COPY_ALIGN_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE;
     int32_t bAlignSize = DATA_COPY_ALIGN_SIZE / DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) * BITS_PER_BYTE;
     bool needOutputAlign = NeedOutputAlign(m, n, GetSingleK());
-    (void)AlignSingleShape((!tilingIns_->bType_.isTrans || needOutputAlign), n, coreStatus.nDim, bAlignSize, coreStatus.n);
+    (void)AlignSingleShape(
+        (!tilingIns_->bType_.isTrans || needOutputAlign), n, coreStatus.nDim, bAlignSize, coreStatus.n);
     (void)AlignSingleShape(tilingIns_->aType_.isTrans, m, coreStatus.mDim, aAlignSize, coreStatus.m);
     dimCalRes.kNum = params.k32 / coreStatus.kDim * C0_SIZE * REDUCE_BLOCK_SIZE; // contain k * 16
-    dimCalRes.kBytes = dimCalRes.kNum * INPUTDTYPE_BYTES;                 // contain k * 16 * 2
+    dimCalRes.kBytes = dimCalRes.kNum * INPUTDTYPE_BYTES;                        // contain k * 16 * 2
     coreStatus.batch = params.batch32;
     coreStatus.k = params.k32 / coreStatus.kDim;
     TILING_LOG_DEBUG("CalcMultiCoreDims, coreStatus m: %d n: %d k: %d.", coreStatus.m, coreStatus.n, coreStatus.k);
@@ -2923,8 +3044,9 @@ void MatmulTilingAlgorithm::CalcMultiCoreDimsPost(const MatmulRunParas& params, 
     return;
 }
 
-void MatmulTilingAlgorithm::UpdateMultiCore(const std::string& opType, const MatmulRunParas& params,
-    CoreStatusPack& coreStatus, const DimCalculator& dimCalRes) const
+void MatmulTilingAlgorithm::UpdateMultiCore(
+    const std::string& opType, const MatmulRunParas& params, CoreStatusPack& coreStatus,
+    const DimCalculator& dimCalRes) const
 {
     (void)(opType);
     // Due to the modification of data amount in single-core, the number of multi-core needs to be updated.
@@ -2937,8 +3059,8 @@ void MatmulTilingAlgorithm::UpdateMultiCore(const std::string& opType, const Mat
     } else {
         coreStatus.kDim = dimCalRes.kDimFactor;
     }
-    UpdateBufferSize(tilingIns_->bType_.pos == TPosition::TSCM ? TilingPolicy::FIXED_B_TSCM : TilingPolicy::NO_POLICY,
-        coreStatus);
+    UpdateBufferSize(
+        tilingIns_->bType_.pos == TPosition::TSCM ? TilingPolicy::FIXED_B_TSCM : TilingPolicy::NO_POLICY, coreStatus);
 }
 
 void MatmulTilingAlgorithm::UpdateBufferSize(const TilingPolicy policy, const CoreStatusPack& coreStatus) const
@@ -2958,13 +3080,10 @@ void MatmulTilingAlgorithm::UpdateBufferSize(const TilingPolicy policy, const Co
     }
 }
 
-bool MatmulTilingAlgorithm::IsInvalidFactor(int32_t factor) const
-{
-    return factor > numOfBlock_ || factor <= 0;
-}
+bool MatmulTilingAlgorithm::IsInvalidFactor(int32_t factor) const { return factor > numOfBlock_ || factor <= 0; }
 
-void MatmulTilingAlgorithm::AddOptimalFactors(const std::string& opType, const MatmulRunParas& params,
-    DimCalculator& dimCalRes) const
+void MatmulTilingAlgorithm::AddOptimalFactors(
+    const std::string& opType, const MatmulRunParas& params, DimCalculator& dimCalRes) const
 {
     (void)(opType);
     const int32_t coreNum = numOfBlock_;
@@ -2981,16 +3100,16 @@ void MatmulTilingAlgorithm::AddOptimalFactors(const std::string& opType, const M
     }
 }
 
-void MatmulTilingAlgorithm::GenDimsMapFactors(const std::string& opType, MatmulRunParas& params,
-    DimCalculator& dimCalRes) const
+void MatmulTilingAlgorithm::GenDimsMapFactors(
+    const std::string& opType, MatmulRunParas& params, DimCalculator& dimCalRes) const
 {
     const int32_t coreNum = numOfBlock_;
     dimCalRes.batchDimFactors.reserve(coreNum);
     dimCalRes.mDimFactors.reserve(coreNum);
     dimCalRes.nDimFactors.reserve(coreNum);
     dimCalRes.kDimFactors.reserve(coreNum);
-    MathUtil::GetBlockFactors(dimCalRes.batchDimFactors, params.batch32, params.batchMapped, coreNum,
-        min(coreNum, params.batch32));
+    MathUtil::GetBlockFactors(
+        dimCalRes.batchDimFactors, params.batch32, params.batchMapped, coreNum, min(coreNum, params.batch32));
     MathUtil::GetBlockFactors(dimCalRes.mDimFactors, params.m32, params.mMapped, coreNum, min(coreNum, params.m32));
     MathUtil::GetBlockFactors(dimCalRes.nDimFactors, params.n32, params.nMapped, coreNum, min(coreNum, params.n32));
     // first get kDim candidate
@@ -3003,8 +3122,8 @@ void MatmulTilingAlgorithm::GenDimsMapFactors(const std::string& opType, MatmulR
     AddOptimalFactors(opType, params, dimCalRes);
 }
 
-void MatmulTilingAlgorithm::GetDims(const std::string& opType, MatmulRunParas& params, CoreStatusPack& coreStatus,
-    DimCalculator& dimCalRes)
+void MatmulTilingAlgorithm::GetDims(
+    const std::string& opType, MatmulRunParas& params, CoreStatusPack& coreStatus, DimCalculator& dimCalRes)
 {
     // get batchDim, kDim, mDim and nDim for single core
     // support multi cores slicing along kDim
@@ -3016,8 +3135,8 @@ void MatmulTilingAlgorithm::GetDims(const std::string& opType, MatmulRunParas& p
         coreStatus.nDim = MathUtil::CeilDivision(params.n32, coreStatus.n);
         coreStatus.mDim = MathUtil::CeilDivision(params.m32, coreStatus.m);
         coreStatus.kDim = MathUtil::CeilDivision(params.k32, coreStatus.k);
-        UpdateBufferSize(tilingIns_->bType_.pos == TPosition::TSCM ? TilingPolicy::FIXED_B_TSCM :
-                                                                     TilingPolicy::NO_POLICY,
+        UpdateBufferSize(
+            tilingIns_->bType_.pos == TPosition::TSCM ? TilingPolicy::FIXED_B_TSCM : TilingPolicy::NO_POLICY,
             coreStatus);
         splitCoreFlag_ = true;
         return;
@@ -3051,10 +3170,9 @@ void MatmulTilingAlgorithm::GetDims(const std::string& opType, MatmulRunParas& p
         const int32_t n = MathUtil::FindBestSingleCore(params.n32, params.nMapped, dimCalRes.nDimFactor, false);
         const int32_t m = MathUtil::FindBestSingleCore(params.m32, params.mMapped, dimCalRes.mDimFactor, false);
         const int32_t k = MathUtil::FindBestSingleCore(params.k32, params.kMapped, dimCalRes.kDimFactor, true);
-        const int32_t needCoreNum = static_cast<int32_t>(MathUtil::CeilDivision(params.batch32, coreStatus.batch) *
-                            MathUtil::CeilDivision(params.n32, n) *
-                            MathUtil::CeilDivision(params.m32, m) *
-                            MathUtil::CeilDivision(params.k32, k));
+        const int32_t needCoreNum = static_cast<int32_t>(
+            MathUtil::CeilDivision(params.batch32, coreStatus.batch) * MathUtil::CeilDivision(params.n32, n) *
+            MathUtil::CeilDivision(params.m32, m) * MathUtil::CeilDivision(params.k32, k));
         if (IsInvalidFactor(needCoreNum) == false) {
             coreStatus.n = n;
             coreStatus.m = m;
@@ -3066,8 +3184,8 @@ void MatmulTilingAlgorithm::GetDims(const std::string& opType, MatmulRunParas& p
     UpdateMultiCore(opType, params, coreStatus, dimCalRes);
 }
 
-void MatmulTilingAlgorithm::NonFactorMap(const std::string& opType, MatmulRunParas& param,
-    DimCalculator& dimCalRes) const
+void MatmulTilingAlgorithm::NonFactorMap(
+    const std::string& opType, MatmulRunParas& param, DimCalculator& dimCalRes) const
 {
     (void)(opType);
     param.batchMapped = param.batch32;
@@ -3159,13 +3277,15 @@ bool MatmulTilingAlgorithm::CheckFinalParams(const CoreStatusPack& coreStatus) c
     }
 
     int dateDtypeSize = DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType);
-    int32_t biasL1Size = tilingIns_->isBias ?
-        tilingIns_->tiling_.get_singleCoreN() * tilingIns_->tiling_.get_BatchNum() * dateDtypeSize / BITS_PER_BYTE : 0;
+    int32_t biasL1Size = tilingIns_->isBias ? tilingIns_->tiling_.get_singleCoreN() *
+                                                  tilingIns_->tiling_.get_BatchNum() * dateDtypeSize / BITS_PER_BYTE :
+                                              0;
     if (!tilingIns_->isBMNKBmm && tilingIns_->tiling_.get_BatchNum() > 0 &&
         ((tilingIns_->tiling_.get_singleCoreM() * tilingIns_->tiling_.get_singleCoreK() +
-        tilingIns_->tiling_.get_singleCoreN() * tilingIns_->tiling_.get_singleCoreK()) *
-        tilingIns_->tiling_.get_BatchNum() * dateDtypeSize / BITS_PER_BYTE + biasL1Size >
-        tilingIns_->bufferPool_.l1Size)) {
+          tilingIns_->tiling_.get_singleCoreN() * tilingIns_->tiling_.get_singleCoreK()) *
+                 tilingIns_->tiling_.get_BatchNum() * dateDtypeSize / BITS_PER_BYTE +
+             biasL1Size >
+         tilingIns_->bufferPool_.l1Size)) {
         TILING_LOG_WARNING("MatmulApi Tiling : a/b matrix size of batch mm should less then L1Size");
         return false;
     }
@@ -3186,7 +3306,7 @@ void MatmulTilingAlgorithm::CheckL0DB(SingleCoreStatus& singleCoreStatus, const 
         baseN = MathUtil::Align(singleCoreStatus.l0Status.nL0, L0_FACTOR_NUM_LIMIT) * C0_SIZE;
     }
     if (!tilingIns_->bType_.isTrans && (tilingIns_->bType_.dataType == DataType::DT_FLOAT4_E2M1 ||
-            tilingIns_->bType_.dataType == DataType::DT_FLOAT4_E1M2)) {
+                                        tilingIns_->bType_.dataType == DataType::DT_FLOAT4_E1M2)) {
         baseN = MathUtil::Align(baseN, INT4_ALIGN_SIZE);
     }
     const int32_t aTypeSize = DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType);
@@ -3194,7 +3314,7 @@ void MatmulTilingAlgorithm::CheckL0DB(SingleCoreStatus& singleCoreStatus, const 
     if (baseM * baseK * aTypeSize / BITS_PER_BYTE > tilingIns_->bufferPool_.l0ASize / DB_ON) {
         singleCoreStatus.l0Status.dbL0A = DB_OFF;
     }
-    if (baseN * baseK * bTypeSize / BITS_PER_BYTE> tilingIns_->bufferPool_.l0BSize / DB_ON) {
+    if (baseN * baseK * bTypeSize / BITS_PER_BYTE > tilingIns_->bufferPool_.l0BSize / DB_ON) {
         singleCoreStatus.l0Status.dbL0B = DB_OFF;
     }
     if (baseM * baseN * FP32_BYTES > tilingIns_->bufferPool_.l0CSize / DB_ON) {
@@ -3202,13 +3322,14 @@ void MatmulTilingAlgorithm::CheckL0DB(SingleCoreStatus& singleCoreStatus, const 
     }
 }
 
-void MatmulTilingAlgorithm::GetMxUsedL1Size(const SingleCoreStatus& singleCoreStatus,
-    int32_t& dataUsedL1Size, int32_t& scaleUsedL1Size, int32_t& biasUsedL1Size) const
+void MatmulTilingAlgorithm::GetMxUsedL1Size(
+    const SingleCoreStatus& singleCoreStatus, int32_t& dataUsedL1Size, int32_t& scaleUsedL1Size,
+    int32_t& biasUsedL1Size) const
 {
     int32_t depthA1 = MathUtil::CeilDivision(singleCoreStatus.l1Status.kAL1, singleCoreStatus.l0Status.kL0) *
-        singleCoreStatus.l1Status.mAL1 * singleCoreStatus.l1Status.dbAL1;
+                      singleCoreStatus.l1Status.mAL1 * singleCoreStatus.l1Status.dbAL1;
     int32_t depthB1 = MathUtil::CeilDivision(singleCoreStatus.l1Status.kBL1, singleCoreStatus.l0Status.kL0) *
-        singleCoreStatus.l1Status.nBL1 * singleCoreStatus.l1Status.dbBL1;
+                      singleCoreStatus.l1Status.nBL1 * singleCoreStatus.l1Status.dbBL1;
 
     int32_t stepKa = MathUtil::CeilDivision(singleCoreStatus.l1Status.kAL1, singleCoreStatus.l0Status.kL0);
     int32_t stepKb = MathUtil::CeilDivision(singleCoreStatus.l1Status.kBL1, singleCoreStatus.l0Status.kL0);
@@ -3252,7 +3373,7 @@ void MatmulTilingAlgorithm::AdjustSparseL0Factors(SingleCoreStatus& singleCoreSt
     }
 
     int32_t baseK =
-       singleCoreStatus.l0Status.kL0 * (C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
+        singleCoreStatus.l0Status.kL0 * (C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
     constexpr int32_t sparseBaseKFac = 64; // baseK need to align to 64 on Sparse
     if (baseK <= sparseBaseKFac) {
         baseK = sparseBaseKFac;
@@ -3266,15 +3387,15 @@ void MatmulTilingAlgorithm::AdjustSparseL0Factors(SingleCoreStatus& singleCoreSt
     CheckL0DB(singleCoreStatus, baseK);
 }
 
-void MatmulTilingAlgorithm::UpdateBaseKForMxGemv(int32_t &baseK, SingleCoreStatus& singleCoreStatus) const
+void MatmulTilingAlgorithm::UpdateBaseKForMxGemv(int32_t& baseK, SingleCoreStatus& singleCoreStatus) const
 {
     // For Gemv with m=1, baseK must align to 1024B to meet scaleA's 32B alignment from L1 to L0 cache.
     if (tilingIns_->aType_.type == CubeFormat::VECTOR || tilingIns_->aType_.scaleType == CubeFormat::VECTOR) {
         baseK = baseK <= MX_L1_TO_L0_ALIGN ? MX_L1_TO_L0_ALIGN : MathUtil::AlignDown(baseK, MX_L1_TO_L0_ALIGN);
         singleCoreStatus.l0Status.kL0 =
             baseK / (C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
-        int32_t baseN = tilingIns_->bufferPool_.l0BSize /
-            (baseK * DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE * singleCoreStatus.l0Status.dbL0B);
+        int32_t baseN = tilingIns_->bufferPool_.l0BSize / (baseK * DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) /
+                                                           BITS_PER_BYTE * singleCoreStatus.l0Status.dbL0B);
         singleCoreStatus.l0Status.nL0 =
             singleCoreStatus.l0Status.nL0 >= baseN / C0_SIZE ? baseN / C0_SIZE : singleCoreStatus.l0Status.nL0;
     }
@@ -3313,21 +3434,24 @@ void MatmulTilingAlgorithm::AdjustMxL0Factors(SingleCoreStatus& singleCoreStatus
         }
     }
     // FP8 baseK need must be 64 element aligned
-    int32_t baseK = singleCoreStatus.l0Status.kL0 * (C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
-    if ((tilingIns_->aType_.dataType == DataType::DT_FLOAT8_E5M2 || tilingIns_->aType_.dataType == DataType::DT_FLOAT8_E4M3FN) &&
-        (tilingIns_->bType_.dataType == DataType::DT_FLOAT8_E5M2 || tilingIns_->bType_.dataType == DataType::DT_FLOAT8_E4M3FN)) {
+    int32_t baseK =
+        singleCoreStatus.l0Status.kL0 * (C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
+    if ((tilingIns_->aType_.dataType == DataType::DT_FLOAT8_E5M2 ||
+         tilingIns_->aType_.dataType == DataType::DT_FLOAT8_E4M3FN) &&
+        (tilingIns_->bType_.dataType == DataType::DT_FLOAT8_E5M2 ||
+         tilingIns_->bType_.dataType == DataType::DT_FLOAT8_E4M3FN)) {
         baseK = baseK <= MX_BASEK_FACTOR ? MX_BASEK_FACTOR : MathUtil::AlignDown(baseK, MX_BASEK_FACTOR);
-        singleCoreStatus.l0Status.kL0 = 
+        singleCoreStatus.l0Status.kL0 =
             baseK / (C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE);
     }
     UpdateBaseKForMxGemv(baseK, singleCoreStatus); // mx gemv baseK must align 1024
     bool mL0NeedAlign = tilingIns_->aType_.type == CubeFormat::ND && tilingIns_->aType_.isTrans &&
-        tilingIns_->aType_.scalePos == TPosition::TSCM;
+                        tilingIns_->aType_.scalePos == TPosition::TSCM;
     if (mL0NeedAlign) {
         singleCoreStatus.l0Status.mL0 = MathUtil::Align(singleCoreStatus.l0Status.mL0, L0_FACTOR_NUM_LIMIT);
     }
     bool nL0NeedAlign = tilingIns_->bType_.type == CubeFormat::ND && !tilingIns_->bType_.isTrans &&
-        tilingIns_->bType_.scalePos == TPosition::TSCM;
+                        tilingIns_->bType_.scalePos == TPosition::TSCM;
     if (nL0NeedAlign) {
         singleCoreStatus.l0Status.nL0 = MathUtil::Align(singleCoreStatus.l0Status.nL0, L0_FACTOR_NUM_LIMIT);
     }
@@ -3365,12 +3489,13 @@ void MatmulTilingAlgorithm::FixMxScaleFactorByRange(uint8_t& factor, uint8_t max
     factor = factor < SCALE_FACTOR_MAX_VALUE ? factor : SCALE_FACTOR_MAX_VALUE;
 }
 
-void MatmulTilingAlgorithm::FixMxScaleFactorByPosition(uint8_t& scaleFactorM, uint8_t& scaleFactorN, uint8_t& scaleFactorKa, uint8_t& scaleFactorKb) const
+void MatmulTilingAlgorithm::FixMxScaleFactorByPosition(
+    uint8_t& scaleFactorM, uint8_t& scaleFactorN, uint8_t& scaleFactorKa, uint8_t& scaleFactorKb) const
 {
-    if ((tilingIns_->aType_.type == CubeFormat::ND && tilingIns_->aType_.isTrans == true && 
-        tilingIns_->aType_.scalePos == TPosition::TSCM) &&
-        (tilingIns_->bType_.type == CubeFormat::ND && tilingIns_->bType_.isTrans == false && 
-        tilingIns_->bType_.scalePos == TPosition::TSCM)) {
+    if ((tilingIns_->aType_.type == CubeFormat::ND && tilingIns_->aType_.isTrans == true &&
+         tilingIns_->aType_.scalePos == TPosition::TSCM) &&
+        (tilingIns_->bType_.type == CubeFormat::ND && tilingIns_->bType_.isTrans == false &&
+         tilingIns_->bType_.scalePos == TPosition::TSCM)) {
         scaleFactorM = static_cast<uint8_t>(1);
         scaleFactorN = static_cast<uint8_t>(1);
         scaleFactorKa = static_cast<uint8_t>(1);
@@ -3392,19 +3517,18 @@ void MatmulTilingAlgorithm::GetMxScaleSize(int32_t& scaleA1Size, int32_t& scaleB
 {
     if (tilingIns_->aType_.scalePos == TPosition::TSCM) {
         scaleA1Size = MathUtil::Align(tilingIns_->tiling_.get_singleCoreM(), BLOCK_CUBE) *
-            (MathUtil::CeilDivision(tilingIns_->tiling_.get_singleCoreK(), MX_BASEK_FACTOR) * NUM_TWO);
+                      (MathUtil::CeilDivision(tilingIns_->tiling_.get_singleCoreK(), MX_BASEK_FACTOR) * NUM_TWO);
     } else {
         scaleA1Size = tilingIns_->tiling_.get_stepKa() * tilingIns_->tiling_.get_stepM() * GetMatrixScaleAByteSize();
     }
 
     if (tilingIns_->bType_.scalePos == TPosition::TSCM) {
         scaleB1Size = MathUtil::Align(tilingIns_->tiling_.get_singleCoreN(), BLOCK_CUBE) *
-            (MathUtil::CeilDivision(tilingIns_->tiling_.get_singleCoreK(), MX_BASEK_FACTOR) * NUM_TWO);
+                      (MathUtil::CeilDivision(tilingIns_->tiling_.get_singleCoreK(), MX_BASEK_FACTOR) * NUM_TWO);
     } else {
         scaleB1Size = tilingIns_->tiling_.get_stepKb() * tilingIns_->tiling_.get_stepN() * GetMatrixScaleBByteSize();
     }
 }
-
 
 void MatmulTilingAlgorithm::GetMxScaleFactor(const SingleCoreStatus& singleCoreStatus, int32_t& mxTypePara) const
 {
@@ -3417,7 +3541,8 @@ void MatmulTilingAlgorithm::GetMxScaleFactor(const SingleCoreStatus& singleCoreS
     int32_t scaleB1Size = 0;
     GetMxScaleSize(scaleA1Size, scaleB1Size);
 
-    int32_t remainedL1BufferSize = (tilingIns_->bufferPool_.l1Size - (dataUsedL1Size + biasUsedL1Size + scaleUsedL1Size)) / MX_L1_BUFFER_NUM;
+    int32_t remainedL1BufferSize =
+        (tilingIns_->bufferPool_.l1Size - (dataUsedL1Size + biasUsedL1Size + scaleUsedL1Size)) / MX_L1_BUFFER_NUM;
     int32_t kStep = MathUtil::CeilDivision(tilingIns_->tiling_.get_singleCoreK(), tilingIns_->tiling_.get_baseK());
 
     uint8_t scaleFactorKa = static_cast<uint8_t>(remainedL1BufferSize / scaleA1Size + 1);
@@ -3492,10 +3617,9 @@ void MatmulTilingAlgorithm::PreprocessL0DB()
     return;
 }
 
-void MatmulTilingAlgorithm::SetDepthL1CacheUBParams(int32_t &a1LengthCache, int32_t &b1LengthCache) const
+void MatmulTilingAlgorithm::SetDepthL1CacheUBParams(int32_t& a1LengthCache, int32_t& b1LengthCache) const
 {
-    if (!tilingIns_->enableL1CacheUB ||
-        tilingIns_->socVersion != platform_ascendc::SocVersion::ASCEND310P) {
+    if (!tilingIns_->enableL1CacheUB || tilingIns_->socVersion != platform_ascendc::SocVersion::ASCEND310P) {
         return;
     }
     int32_t a1Length = tilingIns_->tiling_.get_baseM() * tilingIns_->tiling_.get_baseK() *
@@ -3577,10 +3701,10 @@ void MatmulTilingAlgorithm::SetDepthL1CacheUBParams(int32_t &a1LengthCache, int3
 int MatmulTilingAlgorithm::UpdateDepthB1(const SingleCoreStatus& singleCoreStatus) const
 {
     int depthB1 = MathUtil::CeilDivision(singleCoreStatus.l1Status.kBL1, singleCoreStatus.l0Status.kL0) *
-        singleCoreStatus.l1Status.nBL1 * singleCoreStatus.l1Status.dbBL1;
+                  singleCoreStatus.l1Status.nBL1 * singleCoreStatus.l1Status.dbBL1;
     // only bType is f32 need update
-    if (tilingIns_->bType_.dataType != DataType::DT_FLOAT
-        || tilingIns_->socVersion != platform_ascendc::SocVersion::ASCEND910B) {
+    if (tilingIns_->bType_.dataType != DataType::DT_FLOAT ||
+        tilingIns_->socVersion != platform_ascendc::SocVersion::ASCEND910B) {
         return depthB1;
     }
     uint16_t alignedBaseK = MathUtil::CeilDivision(tilingIns_->baseK, FP32_ALIGN_SIZE) * FP32_ALIGN_SIZE;
@@ -3591,8 +3715,8 @@ int MatmulTilingAlgorithm::UpdateDepthB1(const SingleCoreStatus& singleCoreStatu
         alignedBaseKM = alignedBaseK * tilingIns_->baseM;
     }
     // if L1 size is overflow, decrease depthB1
-    if ((tilingIns_->tiling_.get_depthA1() *alignedBaseKM + alignedBaseKN * depthB1) * sizeof(float)
-        > static_cast<size_t>(tilingIns_->bufferPool_.l1Size)) {
+    if ((tilingIns_->tiling_.get_depthA1() * alignedBaseKM + alignedBaseKN * depthB1) * sizeof(float) >
+        static_cast<size_t>(tilingIns_->bufferPool_.l1Size)) {
         depthB1 = tilingIns_->baseN * tilingIns_->baseK * depthB1 / alignedBaseKN;
         depthB1 = depthB1 < 1 ? 1 : depthB1;
     }
@@ -3610,8 +3734,9 @@ int32_t MatmulTilingAlgorithm::GetSingleK() const
 {
     return tilingIns_->singleK != -1 ? tilingIns_->singleK : tilingIns_->orgKa;
 }
-void MatmulTilingAlgorithm::GetSingleShape(const CoreStatusPack &coreStatus, const MatmulRunParas &param,
-    int32_t &singleCoreM, int32_t &singleCoreN, int32_t &singleCoreK) const
+void MatmulTilingAlgorithm::GetSingleShape(
+    const CoreStatusPack& coreStatus, const MatmulRunParas& param, int32_t& singleCoreM, int32_t& singleCoreN,
+    int32_t& singleCoreK) const
 {
     singleCoreM = GetSingleM();
     singleCoreM = MathUtil::CeilDivision(singleCoreM, coreStatus.mDim);
@@ -3629,24 +3754,25 @@ void MatmulTilingAlgorithm::GetSingleShape(const CoreStatusPack &coreStatus, con
         int32_t bAlignSize = DATA_COPY_ALIGN_SIZE / DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) * BITS_PER_BYTE;
         auto multiCoreScenario = GetMultiCoreScenario(param);
         bool needAlign = multiCoreScenario == MultiCoreScenario::SPLIT_MN ||
-                        multiCoreScenario == MultiCoreScenario::SPLIT_SMALL_MN ||
-                        tilingIns_->aType_.type == CubeFormat::NZ ||
-                        tilingIns_->bType_.type == CubeFormat::NZ;
+                         multiCoreScenario == MultiCoreScenario::SPLIT_SMALL_MN ||
+                         tilingIns_->aType_.type == CubeFormat::NZ || tilingIns_->bType_.type == CubeFormat::NZ;
         bool needOutputAlign = NeedOutputAlign(singleCoreM, singleCoreN, singleCoreK);
         bool singleMNAlign = (tilingIns_->cType_.type == CubeFormat::NZ);
-        (void)AlignSingleShape((needAlign && (!tilingIns_->bType_.isTrans || needOutputAlign)) || singleMNAlign,
-            param.n32 * C0_SIZE, coreStatus.nDim, bAlignSize, singleCoreN);
-        (void)AlignSingleShape((needAlign && tilingIns_->aType_.isTrans) || singleMNAlign,
-            param.m32 * C0_SIZE, coreStatus.mDim, aAlignSize, singleCoreM);
+        (void)AlignSingleShape(
+            (needAlign && (!tilingIns_->bType_.isTrans || needOutputAlign)) || singleMNAlign, param.n32 * C0_SIZE,
+            coreStatus.nDim, bAlignSize, singleCoreN);
+        (void)AlignSingleShape(
+            (needAlign && tilingIns_->aType_.isTrans) || singleMNAlign, param.m32 * C0_SIZE, coreStatus.mDim,
+            aAlignSize, singleCoreM);
         if (tilingIns_->enableSplitK_) {
             if (tilingIns_->aType_.dataType == DataType::DT_FLOAT ||
                 tilingIns_->bType_.dataType == DataType::DT_FLOAT) {
                 singleCoreK = MathUtil::CeilDivision(param.k32, coreStatus.kDim) * FLOAT32_REDUCE_BLOCK_SIZE;
             } else if ((tilingIns_->aType_.dataType == DataType::DT_INT8 ||
-                tilingIns_->bType_.dataType == DataType::DT_INT8)) {
+                        tilingIns_->bType_.dataType == DataType::DT_INT8)) {
                 singleCoreK = MathUtil::CeilDivision(param.k32, coreStatus.kDim) * INT8_REDUCE_BLOCK_SIZE;
             } else if ((tilingIns_->aType_.dataType == DataType::DT_INT4 ||
-                tilingIns_->bType_.dataType == DataType::DT_INT4)) {
+                        tilingIns_->bType_.dataType == DataType::DT_INT4)) {
                 singleCoreK = MathUtil::CeilDivision(param.k32, coreStatus.kDim) * INT4_REDUCE_BLOCK_SIZE;
             } else {
                 singleCoreK = MathUtil::CeilDivision(param.k32, coreStatus.kDim) * REDUCE_BLOCK_SIZE;
@@ -3665,7 +3791,7 @@ bool MatmulTilingAlgorithm::CheckSingleShape(int32_t singleCoreM, int32_t single
         if (tilingIns_->cType_.pos == TPosition::VECCALC && tilingIns_->cType_.type == CubeFormat::ND &&
             (singleCoreN * DTYPE_BYTE_TAB.at(tilingIns_->cType_.dataType)) % C0_BYTE_SIZE != 0) {
             TILING_LOG_INFO("For ascend310p/ascend910, when matrix c pos is VECCACL and singleCoreN is not 32B "
-                             "aligned, matrix c not support ND format.");
+                            "aligned, matrix c not support ND format.");
             return false;
         }
     }
@@ -3684,14 +3810,15 @@ bool MatmulTilingAlgorithm::CheckFixSplitInputs(int32_t singleCoreM) const
     }
     int32_t blockM = MathUtil::CeilDivision(singleCoreM, tilingIns_->baseM);
     if (blockM > N_BUFFER_33_FACTOR) {
-        TILING_LOG_WARNING("MatmulApi Tiling : Ceil(singleCoreM / baseM) = %d, should be less than or equal to 3.", blockM);
+        TILING_LOG_WARNING(
+            "MatmulApi Tiling : Ceil(singleCoreM / baseM) = %d, should be less than or equal to 3.", blockM);
         return false;
     }
     return true;
 }
 
-void MatmulTilingAlgorithm::CalcBaseShape(const SingleCoreStatus &singleCoreStatus,
-    int32_t &baseM, int32_t &baseN, int32_t &baseK, int32_t &reduceSize) const
+void MatmulTilingAlgorithm::CalcBaseShape(
+    const SingleCoreStatus& singleCoreStatus, int32_t& baseM, int32_t& baseN, int32_t& baseK, int32_t& reduceSize) const
 {
     baseM = singleCoreStatus.l0Status.mL0 * C0_SIZE;
     baseM = tilingIns_->baseM != -1 ? tilingIns_->baseM : baseM;
@@ -3711,7 +3838,7 @@ void MatmulTilingAlgorithm::CalcBaseShape(const SingleCoreStatus &singleCoreStat
     baseK = singleCoreStatus.l0Status.kL0 * reduceSize;
 }
 
-bool MatmulTilingAlgorithm::CheckL0ASize(int32_t singleCoreM, int32_t singleCoreK, int32_t &baseM, int32_t &baseK) const
+bool MatmulTilingAlgorithm::CheckL0ASize(int32_t singleCoreM, int32_t singleCoreK, int32_t& baseM, int32_t& baseK) const
 {
     int32_t l0aLoadSize = baseM * baseK * DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
     if (l0aLoadSize <= tilingIns_->bufferPool_.l0ASize / DB_OFF) {
@@ -3742,13 +3869,14 @@ bool MatmulTilingAlgorithm::CheckL0ASize(int32_t singleCoreM, int32_t singleCore
         }
     }
 
-    TILING_LOG_WARNING("MatmulApi Tiling : L0A load size %d with baseM %d and baseK %d as final attempt exceeds L0ASize %d. "
+    TILING_LOG_WARNING(
+        "MatmulApi Tiling : L0A load size %d with baseM %d and baseK %d as final attempt exceeds L0ASize %d. "
         "Cannot find valid baseM & baseK under current singleCoreM %d and singleCoreK %d.",
         l0aLoadSize, baseM, baseK, tilingIns_->bufferPool_.l0ASize, singleCoreM, singleCoreK);
     return false;
 }
 
-bool MatmulTilingAlgorithm::CheckL0BSize(int32_t singleCoreN, int32_t singleCoreK, int32_t &baseN, int32_t &baseK) const
+bool MatmulTilingAlgorithm::CheckL0BSize(int32_t singleCoreN, int32_t singleCoreK, int32_t& baseN, int32_t& baseK) const
 {
     int32_t l0bLoadSize = baseN * baseK * DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
     if (l0bLoadSize <= tilingIns_->bufferPool_.l0BSize / DB_OFF) {
@@ -3778,13 +3906,14 @@ bool MatmulTilingAlgorithm::CheckL0BSize(int32_t singleCoreN, int32_t singleCore
         }
     }
 
-    TILING_LOG_WARNING("MatmulApi Tiling : L0B load size %d with baseN %d and baseK %d as final attempt exceeds L0BSize %d. "
+    TILING_LOG_WARNING(
+        "MatmulApi Tiling : L0B load size %d with baseN %d and baseK %d as final attempt exceeds L0BSize %d. "
         "Cannot find valid baseN & baseK under current singleCoreN %d and singleCoreK %d.",
         l0bLoadSize, baseN, baseK, tilingIns_->bufferPool_.l0BSize, singleCoreN, singleCoreK);
     return false;
 }
 
-bool MatmulTilingAlgorithm::CheckL0CSize(int32_t singleCoreM, int32_t singleCoreN, int32_t &baseM, int32_t &baseN) const
+bool MatmulTilingAlgorithm::CheckL0CSize(int32_t singleCoreM, int32_t singleCoreN, int32_t& baseM, int32_t& baseN) const
 {
     int32_t l0cLoadSize = baseM * baseN * FP32_BYTES;
     if (l0cLoadSize <= tilingIns_->bufferPool_.l0CSize / DB_OFF) {
@@ -3811,14 +3940,15 @@ bool MatmulTilingAlgorithm::CheckL0CSize(int32_t singleCoreM, int32_t singleCore
         }
     }
 
-    TILING_LOG_WARNING("MatmulApi Tiling : L0C load size %d with baseM %d and baseN %d as final attempt exceeds L0CSize %d. "
+    TILING_LOG_WARNING(
+        "MatmulApi Tiling : L0C load size %d with baseM %d and baseN %d as final attempt exceeds L0CSize %d. "
         "Cannot find valid baseM & baseN under current singleCoreM %d and singleCoreN %d.",
         l0cLoadSize, baseM, baseN, tilingIns_->bufferPool_.l0CSize, singleCoreM, singleCoreN);
     return false;
 }
 
-void MatmulTilingAlgorithm::CheckL0DB(int32_t baseM, int32_t baseN, int32_t baseK,
-    SingleCoreStatus &singleCoreStatus) const
+void MatmulTilingAlgorithm::CheckL0DB(
+    int32_t baseM, int32_t baseN, int32_t baseK, SingleCoreStatus& singleCoreStatus) const
 {
     int32_t l0aLoadSize = baseM * baseK * DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
     if (l0aLoadSize <= tilingIns_->bufferPool_.l0ASize / DB_ON) {
@@ -3840,8 +3970,8 @@ void MatmulTilingAlgorithm::CheckL0DB(int32_t baseM, int32_t baseN, int32_t base
     }
 }
 
-bool MatmulTilingAlgorithm::AdjustNBuffer33L0Factors(const MatmulRunParas &param, const CoreStatusPack &coreStatus,
-    SingleCoreStatus &singleCoreStatus) const
+bool MatmulTilingAlgorithm::AdjustNBuffer33L0Factors(
+    const MatmulRunParas& param, const CoreStatusPack& coreStatus, SingleCoreStatus& singleCoreStatus) const
 {
     if (tilingIns_->scheduleType != ScheduleType::N_BUFFER_33) {
         TILING_LOG_DEBUG("No need to adjust L0Factors for non-nbuffer33 scenario.");
@@ -3889,30 +4019,31 @@ bool MatmulTilingAlgorithm::AdjustNBuffer33L0Factors(const MatmulRunParas &param
     return true;
 }
 
-int32_t MatmulTilingAlgorithm::GetNBuffer33L1Size(const SingleCoreStatus &singleCoreStatus) const
+int32_t MatmulTilingAlgorithm::GetNBuffer33L1Size(const SingleCoreStatus& singleCoreStatus) const
 {
     int32_t curAL1Size = 0;
     int32_t depthA1 = MathUtil::CeilDivision(singleCoreStatus.l1Status.kAL1, singleCoreStatus.l0Status.kL0) *
-        singleCoreStatus.l1Status.mAL1 * singleCoreStatus.l1Status.dbAL1;
+                      singleCoreStatus.l1Status.mAL1 * singleCoreStatus.l1Status.dbAL1;
     if (!MathUtil::CheckMulOverflow(tilingIns_->tiling_.get_baseM(), tilingIns_->tiling_.get_baseK(), curAL1Size) ||
         !MathUtil::CheckMulOverflow(curAL1Size, depthA1, curAL1Size) ||
-        !MathUtil::CheckMulOverflow(curAL1Size, DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE,
-        curAL1Size)) {
+        !MathUtil::CheckMulOverflow(
+            curAL1Size, DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE, curAL1Size)) {
         return 0;
     }
 
     int32_t curBL1Size = 0;
     int32_t depthB1 = MathUtil::CeilDivision(singleCoreStatus.l1Status.kBL1, singleCoreStatus.l0Status.kL0) *
-        singleCoreStatus.l1Status.nBL1 * singleCoreStatus.l1Status.dbBL1;
+                      singleCoreStatus.l1Status.nBL1 * singleCoreStatus.l1Status.dbBL1;
     if (!MathUtil::CheckMulOverflow(tilingIns_->tiling_.get_baseN(), tilingIns_->tiling_.get_baseK(), curBL1Size) ||
         !MathUtil::CheckMulOverflow(curBL1Size, depthB1, curBL1Size) ||
-        !MathUtil::CheckMulOverflow(curBL1Size, DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE,
-        curBL1Size)) {
+        !MathUtil::CheckMulOverflow(
+            curBL1Size, DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE, curBL1Size)) {
         return 0;
     }
 
     int32_t biasL1Size = !tilingIns_->isBias ? 0 :
-        tilingIns_->tiling_.get_baseN() * DTYPE_BIT_TAB.at(tilingIns_->biasType_.dataType) / BITS_PER_BYTE;
+                                               tilingIns_->tiling_.get_baseN() *
+                                                   DTYPE_BIT_TAB.at(tilingIns_->biasType_.dataType) / BITS_PER_BYTE;
     int32_t dequantSize = 0;
     if (tilingIns_->deqType == DequantType::TENSOR) {
         dequantSize = singleCoreStatus.l1Status.nBL1 * tilingIns_->tiling_.get_baseN() * UINT64_TYPES;
@@ -3920,8 +4051,8 @@ int32_t MatmulTilingAlgorithm::GetNBuffer33L1Size(const SingleCoreStatus &single
     return (curAL1Size + curBL1Size + biasL1Size + dequantSize);
 }
 
-bool MatmulTilingAlgorithm::AdjustNBuffer33L1Factors(const CoreStatusPack &coreStatus,
-    SingleCoreStatus &singleCoreStatus) const
+bool MatmulTilingAlgorithm::AdjustNBuffer33L1Factors(
+    const CoreStatusPack& coreStatus, SingleCoreStatus& singleCoreStatus) const
 {
     if (tilingIns_->scheduleType != ScheduleType::N_BUFFER_33) {
         TILING_LOG_DEBUG("No need to adjust L1Factors for non-nbuffer33 scanario.");
@@ -3935,7 +4066,7 @@ bool MatmulTilingAlgorithm::AdjustNBuffer33L1Factors(const CoreStatusPack &coreS
     }
 
     singleCoreStatus.l1Status.mAL1 =
-        MathUtil::CeilDivision(tilingIns_->tiling_.get_singleCoreM(), tilingIns_->tiling_.get_baseM()); 
+        MathUtil::CeilDivision(tilingIns_->tiling_.get_singleCoreM(), tilingIns_->tiling_.get_baseM());
     int32_t blockK = MathUtil::CeilDivision(tilingIns_->tiling_.get_singleCoreK(), tilingIns_->tiling_.get_baseK());
     if (singleCoreStatus.l1Status.kAL1 != singleCoreStatus.l1Status.kBL1 ||
         MathUtil::CeilDivision(singleCoreStatus.l1Status.kAL1, singleCoreStatus.l0Status.kL0) != blockK) {
@@ -3957,7 +4088,8 @@ bool MatmulTilingAlgorithm::AdjustNBuffer33L1Factors(const CoreStatusPack &coreS
             }
         }
         if (!succFlag) {
-            TILING_LOG_WARNING("MatmulApi Tiling : Current L1 size %d exceeds L1Size limit %d. Cannot find a valid L1 tiling factors.",
+            TILING_LOG_WARNING(
+                "MatmulApi Tiling : Current L1 size %d exceeds L1Size limit %d. Cannot find a valid L1 tiling factors.",
                 curL1Size, tilingIns_->bufferPool_.l1Size);
             return false;
         }
@@ -4059,8 +4191,10 @@ int32_t MatmulTilingAlgorithm::GetABaseHeightAlign(int32_t baseHeight) const
 {
     if (tilingIns_->aType_.dataType == DataType::DT_FLOAT) {
         return MathUtil::Align(baseHeight, BLOCK_CUBE);
-    } else if ((DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8) ||
-        DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT4)) && tilingIns_->aType_.isTrans) {
+    } else if (
+        (DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8) ||
+         DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT4)) &&
+        tilingIns_->aType_.isTrans) {
         return MathUtil::Align(baseHeight, GetC0Size(tilingIns_->aType_.dataType));
     } else {
         return baseHeight;
@@ -4071,8 +4205,10 @@ int32_t MatmulTilingAlgorithm::GetABaseWidthAlign(int32_t baseWidth) const
 {
     if (tilingIns_->aType_.dataType == DataType::DT_FLOAT && tilingIns_->aType_.isTrans) {
         return MathUtil::Align(baseWidth, BLOCK_CUBE);
-    } else if (tilingIns_->aType_.dataType == DataType::DT_FLOAT || (DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8) ||
-        DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT4))) {
+    } else if (
+        tilingIns_->aType_.dataType == DataType::DT_FLOAT ||
+        (DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8) ||
+         DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT4))) {
         return MathUtil::Align(baseWidth, GetC0Size(tilingIns_->aType_.dataType));
     } else {
         return baseWidth;
@@ -4083,7 +4219,8 @@ int32_t MatmulTilingAlgorithm::GetBBaseHeightAlign(int32_t baseHeight) const
 {
     if (tilingIns_->bType_.dataType == DataType::DT_FLOAT && !tilingIns_->bType_.isTrans) {
         return MathUtil::Align(baseHeight, BLOCK_CUBE);
-    } else if (DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8) ||
+    } else if (
+        DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8) ||
         DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT4)) {
         return MathUtil::Align(baseHeight, GetC0Size(tilingIns_->bType_.dataType));
     } else {
@@ -4093,8 +4230,10 @@ int32_t MatmulTilingAlgorithm::GetBBaseHeightAlign(int32_t baseHeight) const
 
 int32_t MatmulTilingAlgorithm::GetBBaseWidthAlign(int32_t baseWidth) const
 {
-    if (tilingIns_->bType_.dataType == DataType::DT_FLOAT || ((DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8) ||
-        DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT4)) && !tilingIns_->bType_.isTrans)) {
+    if (tilingIns_->bType_.dataType == DataType::DT_FLOAT ||
+        ((DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8) ||
+          DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT4)) &&
+         !tilingIns_->bType_.isTrans)) {
         return MathUtil::Align(baseWidth, GetC0Size(tilingIns_->bType_.dataType));
     } else {
         return baseWidth;
@@ -4113,7 +4252,8 @@ int32_t MatmulTilingAlgorithm::GetScaleABaseWidthAlign() const
 
 int32_t MatmulTilingAlgorithm::GetScaleBBaseHeightAlign() const
 {
-    return MathUtil::Align(MathUtil::CeilDivision(tilingIns_->tiling_.get_baseK(), SCALE_K_SIZE), GetC0Size(DataType::DT_FLOAT8_E8M0));
+    return MathUtil::Align(
+        MathUtil::CeilDivision(tilingIns_->tiling_.get_baseK(), SCALE_K_SIZE), GetC0Size(DataType::DT_FLOAT8_E8M0));
 }
 
 int32_t MatmulTilingAlgorithm::GetScaleBBaseWidthAlign() const
@@ -4129,9 +4269,10 @@ int32_t MatmulTilingAlgorithm::GetMatrixAByteSize() const
 {
     if (tilingIns_->aType_.pos == TPosition::VECOUT) {
         return MathUtil::Align(tilingIns_->tiling_.get_singleCoreM(), BLOCK_CUBE) *
-            MathUtil::Align(tilingIns_->tiling_.get_singleCoreK(), C0_SIZE);
+               MathUtil::Align(tilingIns_->tiling_.get_singleCoreK(), C0_SIZE);
     } else if (tilingIns_->aType_.pos == TPosition::GM) {
-        return GetABaseHeightAlign(tilingIns_->tiling_.get_baseM()) * GetABaseWidthAlign(tilingIns_->tiling_.get_baseK());
+        return GetABaseHeightAlign(tilingIns_->tiling_.get_baseM()) *
+               GetABaseWidthAlign(tilingIns_->tiling_.get_baseK());
     } else {
         return 0;
     }
@@ -4141,9 +4282,10 @@ int32_t MatmulTilingAlgorithm::GetMatrixBByteSize() const
 {
     if (tilingIns_->bType_.pos == TPosition::VECOUT) {
         return MathUtil::Align(tilingIns_->tiling_.get_singleCoreK(), BLOCK_CUBE) *
-            MathUtil::Align(tilingIns_->tiling_.get_singleCoreN(), C0_SIZE);
+               MathUtil::Align(tilingIns_->tiling_.get_singleCoreN(), C0_SIZE);
     } else if (tilingIns_->bType_.pos == TPosition::GM) {
-        return GetBBaseHeightAlign(tilingIns_->tiling_.get_baseK()) * GetBBaseWidthAlign(tilingIns_->tiling_.get_baseN());
+        return GetBBaseHeightAlign(tilingIns_->tiling_.get_baseK()) *
+               GetBBaseWidthAlign(tilingIns_->tiling_.get_baseN());
     } else {
         return 0;
     }
@@ -4153,7 +4295,7 @@ int32_t MatmulTilingAlgorithm::GetMatrixScaleAByteSize() const
 {
     if (tilingIns_->aType_.scalePos == TPosition::VECOUT) {
         return MathUtil::Align(tilingIns_->tiling_.get_singleCoreM(), BLOCK_CUBE) *
-            MathUtil::Align(MathUtil::CeilDivision(tilingIns_->tiling_.get_singleCoreK(), SCALE_K_SIZE), C0_SIZE);
+               MathUtil::Align(MathUtil::CeilDivision(tilingIns_->tiling_.get_singleCoreK(), SCALE_K_SIZE), C0_SIZE);
     } else if (tilingIns_->aType_.scalePos == TPosition::GM) {
         return GetScaleABaseHeightAlign() * GetScaleABaseWidthAlign();
     } else {
@@ -4164,8 +4306,9 @@ int32_t MatmulTilingAlgorithm::GetMatrixScaleAByteSize() const
 int32_t MatmulTilingAlgorithm::GetMatrixScaleBByteSize() const
 {
     if (tilingIns_->bType_.scalePos == TPosition::VECOUT) {
-        return MathUtil::Align(MathUtil::CeilDivision(tilingIns_->tiling_.get_singleCoreK(), SCALE_K_SIZE), BLOCK_CUBE) *
-            MathUtil::Align(tilingIns_->tiling_.get_singleCoreN(), C0_SIZE);
+        return MathUtil::Align(
+                   MathUtil::CeilDivision(tilingIns_->tiling_.get_singleCoreK(), SCALE_K_SIZE), BLOCK_CUBE) *
+               MathUtil::Align(tilingIns_->tiling_.get_singleCoreN(), C0_SIZE);
     } else if (tilingIns_->bType_.scalePos == TPosition::GM) {
         return GetScaleBBaseHeightAlign() * GetScaleBBaseWidthAlign();
     } else {
@@ -4173,8 +4316,9 @@ int32_t MatmulTilingAlgorithm::GetMatrixScaleBByteSize() const
     }
 }
 
-void MatmulTilingAlgorithm::CalABAndScaleABL1Space(int32_t matrixByteSize, int32_t cacheNum, int32_t stepSize,
-    uint32_t &curL1UpperHalfAddr, uint32_t &curL1LowerHalfAddr) const
+void MatmulTilingAlgorithm::CalABAndScaleABL1Space(
+    int32_t matrixByteSize, int32_t cacheNum, int32_t stepSize, uint32_t& curL1UpperHalfAddr,
+    uint32_t& curL1LowerHalfAddr) const
 {
     int32_t cacheFactor = (cacheNum / stepSize - 1) % NUM_TWO;
     int32_t queDepth = cacheFactor == 0 ? DB_OFF : DB_ON;
@@ -4212,38 +4356,46 @@ bool MatmulTilingAlgorithm::EnableL1BankConflictOptimise() const
     uint32_t curL1LowerHalfAddr = tilingIns_->oriBufferPool_.l1Size / NUM_TWO;
 
     // A
-    int32_t matrixByteSize = GetABaseHeightAlign(tilingIns_->tiling_.get_baseM()) * GetABaseWidthAlign(tilingIns_->tiling_.get_baseK()) * DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
+    int32_t matrixByteSize = GetABaseHeightAlign(tilingIns_->tiling_.get_baseM()) *
+                             GetABaseWidthAlign(tilingIns_->tiling_.get_baseK()) *
+                             DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
     int32_t cacheNum = tilingIns_->tiling_.get_depthA1();
     int32_t stepSize = tilingIns_->tiling_.get_stepKa() * tilingIns_->tiling_.get_stepM();
     CalABAndScaleABL1Space(matrixByteSize, cacheNum, stepSize, curL1UpperHalfAddr, curL1LowerHalfAddr);
 
     // B
-    matrixByteSize = GetBBaseHeightAlign(tilingIns_->tiling_.get_baseK()) * GetBBaseWidthAlign(tilingIns_->tiling_.get_baseN()) * DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
+    matrixByteSize = GetBBaseHeightAlign(tilingIns_->tiling_.get_baseK()) *
+                     GetBBaseWidthAlign(tilingIns_->tiling_.get_baseN()) *
+                     DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
     cacheNum = tilingIns_->tiling_.get_depthB1();
     stepSize = tilingIns_->tiling_.get_stepKb() * tilingIns_->tiling_.get_stepN();
     CalABAndScaleABL1Space(matrixByteSize, cacheNum, stepSize, curL1UpperHalfAddr, curL1LowerHalfAddr);
 
     // ScaleA
     if (tilingIns_->aType_.hasSetScaleType) {
-        matrixByteSize = GetScaleABaseHeightAlign() * GetScaleABaseWidthAlign() * DTYPE_BIT_TAB.at(DataType::DT_FLOAT8_E8M0) / BITS_PER_BYTE;
+        matrixByteSize = GetScaleABaseHeightAlign() * GetScaleABaseWidthAlign() *
+                         DTYPE_BIT_TAB.at(DataType::DT_FLOAT8_E8M0) / BITS_PER_BYTE;
         cacheNum = tilingIns_->tiling_.get_depthA1();
         stepSize = tilingIns_->tiling_.get_stepKa() * tilingIns_->tiling_.get_stepM() *
-            (static_cast<uint32_t>(tilingIns_->tiling_.get_mxTypePara()) & SCALE_FACTOR_A_MASK);
+                   (static_cast<uint32_t>(tilingIns_->tiling_.get_mxTypePara()) & SCALE_FACTOR_A_MASK);
         CalABAndScaleABL1Space(matrixByteSize, cacheNum, stepSize, curL1UpperHalfAddr, curL1LowerHalfAddr);
     }
 
     // ScaleB
     if (tilingIns_->bType_.hasSetScaleType) {
-        matrixByteSize = GetScaleBBaseHeightAlign() * GetScaleBBaseWidthAlign() * DTYPE_BIT_TAB.at(DataType::DT_FLOAT8_E8M0) / BITS_PER_BYTE;
+        matrixByteSize = GetScaleBBaseHeightAlign() * GetScaleBBaseWidthAlign() *
+                         DTYPE_BIT_TAB.at(DataType::DT_FLOAT8_E8M0) / BITS_PER_BYTE;
         cacheNum = tilingIns_->tiling_.get_depthB1();
         stepSize = tilingIns_->tiling_.get_stepKb() * tilingIns_->tiling_.get_stepN() *
-            ((static_cast<uint32_t>(tilingIns_->tiling_.get_mxTypePara()) & SCALE_FACTOR_B_MASK) >> SCALE_FACTOR_B_OFFSET);
+                   ((static_cast<uint32_t>(tilingIns_->tiling_.get_mxTypePara()) & SCALE_FACTOR_B_MASK) >>
+                    SCALE_FACTOR_B_OFFSET);
         CalABAndScaleABL1Space(matrixByteSize, cacheNum, stepSize, curL1UpperHalfAddr, curL1LowerHalfAddr);
     }
 
     // bias
     if (tilingIns_->isBias) {
-        curL1UpperHalfAddr += tilingIns_->tiling_.get_baseN() * sizeof(DTYPE_BYTE_TAB.at(tilingIns_->biasType_.dataType));
+        curL1UpperHalfAddr +=
+            tilingIns_->tiling_.get_baseN() * sizeof(DTYPE_BYTE_TAB.at(tilingIns_->biasType_.dataType));
     }
 
     // quant
@@ -4253,7 +4405,10 @@ bool MatmulTilingAlgorithm::EnableL1BankConflictOptimise() const
 
     if (curL1UpperHalfAddr > static_cast<uint32_t>(tilingIns_->oriBufferPool_.l1Size / NUM_TWO) ||
         curL1LowerHalfAddr > static_cast<uint32_t>(tilingIns_->oriBufferPool_.l1Size)) {
-        TILING_LOG_WARNING("MatmulApi Tiling : Larger than upper or lower half of L1 buffer size. curL1UpperHalfAddr is %d, curL1LowerHalfAddr is %d.", curL1UpperHalfAddr, curL1LowerHalfAddr);
+        TILING_LOG_WARNING(
+            "MatmulApi Tiling : Larger than upper or lower half of L1 buffer size. curL1UpperHalfAddr is %d, "
+            "curL1LowerHalfAddr is %d.",
+            curL1UpperHalfAddr, curL1LowerHalfAddr);
         return false;
     }
 

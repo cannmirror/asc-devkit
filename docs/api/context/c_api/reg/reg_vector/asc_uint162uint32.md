@@ -10,12 +10,14 @@
 
 将uint16_t类型数据转为uint32_t类型。
 
+由于源操作数与目的操作数类型位宽比为1:2，读取数据时需要将一个VL大小的数据分为两部分，根据不同接口选取索引0或者索引1。
+
 ## 函数原型
 
 ```cpp
-// 数据写入索引为偶数的位置
+// 数据读取索引为偶数的位置
 __simd_callee__ inline void asc_uint162uint32(vector_uint32_t& dst, vector_uint16_t src, vector_bool mask)    
-// 数据写入索引为奇数的位置
+// 数据读取索引为奇数的位置
 __simd_callee__ inline void asc_uint162uint32_v2(vector_uint32_t& dst, vector_uint16_t src, vector_bool mask)
 ```
 

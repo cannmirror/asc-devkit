@@ -1,13 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
-
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file conv3d_bp_input_tiling_base.cpp
@@ -84,7 +83,8 @@ bool Conv3DBpInputTilingBase::SetWeightShape(int64_t cout, int64_t cin, int64_t 
     }
     if (this->shapeInfo.orgCo > 0 && this->shapeInfo.orgCo != cout) {
         TILING_LOG_ERROR(
-            "outChannels(cout) has been set a different value: curValue=%ld, oldValue=%ld", cout, this->shapeInfo.orgCo);
+            "outChannels(cout) has been set a different value: curValue=%ld, oldValue=%ld", cout,
+            this->shapeInfo.orgCo);
         return false;
     }
 
@@ -121,7 +121,7 @@ bool Conv3DBpInputTilingBase::SetInputShape(int64_t n, int64_t c, int64_t d, int
 bool Conv3DBpInputTilingBase::SetGradOutputShape(int64_t n, int64_t c, int64_t d, int64_t h, int64_t w)
 {
     if (this->shapeInfo.orgN > 0 && this->shapeInfo.orgN != n) {
-         TILING_LOG_ERROR(
+        TILING_LOG_ERROR(
             "batch(n) has been set a different value: curValue=%ld, oldValue=%ld", n, this->shapeInfo.orgN);
         return false;
     }
@@ -139,30 +139,32 @@ bool Conv3DBpInputTilingBase::SetGradOutputShape(int64_t n, int64_t c, int64_t d
     return true;
 }
 
-void Conv3DBpInputTilingBase::SetWeightType(ConvCommonApi::TPosition pos, ConvCommonApi::ConvFormat format, ConvCommonApi::ConvDtype dtype)
+void Conv3DBpInputTilingBase::SetWeightType(
+    ConvCommonApi::TPosition pos, ConvCommonApi::ConvFormat format, ConvCommonApi::ConvDtype dtype)
 {
     this->descInfo.weightType.pos = pos;
     this->descInfo.weightType.format = format;
     this->descInfo.weightType.dtype = dtype;
 }
 
-void Conv3DBpInputTilingBase::SetInputType(ConvCommonApi::TPosition pos, ConvCommonApi::ConvFormat format, ConvCommonApi::ConvDtype dtype)
+void Conv3DBpInputTilingBase::SetInputType(
+    ConvCommonApi::TPosition pos, ConvCommonApi::ConvFormat format, ConvCommonApi::ConvDtype dtype)
 {
     this->descInfo.fMapType.pos = pos;
     this->descInfo.fMapType.format = format;
     this->descInfo.fMapType.dtype = dtype;
 }
 
-void Conv3DBpInputTilingBase::SetGradOutputType(ConvCommonApi::TPosition pos, ConvCommonApi::ConvFormat format, ConvCommonApi::ConvDtype dtype)
+void Conv3DBpInputTilingBase::SetGradOutputType(
+    ConvCommonApi::TPosition pos, ConvCommonApi::ConvFormat format, ConvCommonApi::ConvDtype dtype)
 {
     this->descInfo.outBackpropType.pos = pos;
     this->descInfo.outBackpropType.format = format;
     this->descInfo.outBackpropType.dtype = dtype;
 }
 
-
-void Conv3DBpInputTilingBase::SetPadding(int64_t padFront, int64_t padBack, int64_t padUp, int64_t padDown,
-        int64_t padLeft, int64_t padRight)
+void Conv3DBpInputTilingBase::SetPadding(
+    int64_t padFront, int64_t padBack, int64_t padUp, int64_t padDown, int64_t padLeft, int64_t padRight)
 {
     this->attrInfo.padFront = padFront;
     this->attrInfo.padBack = padBack;
@@ -172,8 +174,8 @@ void Conv3DBpInputTilingBase::SetPadding(int64_t padFront, int64_t padBack, int6
     this->attrInfo.padRight = padRight;
 }
 
-void Conv3DBpInputTilingBase::SetBackpropPadding(int64_t backpropPadUp, int64_t backpropPadDown,
-        int64_t backpropPadLeft, int64_t backpropPadRight)
+void Conv3DBpInputTilingBase::SetBackpropPadding(
+    int64_t backpropPadUp, int64_t backpropPadDown, int64_t backpropPadLeft, int64_t backpropPadRight)
 {
     this->attrInfo.backpropPadUp = backpropPadUp;
     this->attrInfo.backpropPadDown = backpropPadDown;
@@ -198,8 +200,8 @@ void Conv3DBpInputTilingBase::SetStride(int64_t strideD, int64_t strideH, int64_
 bool Conv3DBpInputTilingBase::SetOutputPadding(int64_t outputPadD, int64_t outputPadH, int64_t outputPadW)
 {
     if (this->opType_ == OpType::kConv3DBackpropInput) {
-        TILING_LOG_ERROR(
-            "The interface SetOutputPadding conflicts with SetInputShape, To implement Conv3dTranspose, not call SetInputShape please.");  
+        TILING_LOG_ERROR("The interface SetOutputPadding conflicts with SetInputShape, To implement Conv3dTranspose, "
+                         "not call SetInputShape please.");
         return false;
     }
     this->attrInfo.outputPadH = outputPadH;
@@ -208,10 +210,7 @@ bool Conv3DBpInputTilingBase::SetOutputPadding(int64_t outputPadD, int64_t outpu
     return true;
 }
 
-void Conv3DBpInputTilingBase::SetHF32(uint8_t hf32Enable)
-{
-    this->attrInfo.hf32Enable = hf32Enable;
-}
+void Conv3DBpInputTilingBase::SetHF32(uint8_t hf32Enable) { this->attrInfo.hf32Enable = hf32Enable; }
 
 void Conv3DBpInputTilingBase::SetGroup(int64_t groups)
 {
@@ -246,42 +245,46 @@ bool Conv3DBpInputTilingBase::CheckInputParam()
 
 bool Conv3DBpInputTilingBase::CheckInputAttr()
 {
-    if (this->attrInfo.groups != 1){
-        TILING_LOG_ERROR(
-            "Illegal attrs have set: groups=%ld.", this->attrInfo.groups);
+    if (this->attrInfo.groups != 1) {
+        TILING_LOG_ERROR("Illegal attrs have set: groups=%ld.", this->attrInfo.groups);
         return false;
     }
 
-    bool padInvalidFlag = (this->attrInfo.padLeft < 0 || this->attrInfo.padRight < 0 ||
-        this->attrInfo.padUp < 0 || this->attrInfo.padDown < 0 ||
-        this->attrInfo.padFront < 0 || this->attrInfo.padBack < 0);
+    bool padInvalidFlag =
+        (this->attrInfo.padLeft < 0 || this->attrInfo.padRight < 0 || this->attrInfo.padUp < 0 ||
+         this->attrInfo.padDown < 0 || this->attrInfo.padFront < 0 || this->attrInfo.padBack < 0);
     if (padInvalidFlag) {
         TILING_LOG_ERROR(
             "Illegal attrs have set: padUp=%ld, padDown=%ld, padLeft=%ld, padRight=%ld, padFront=%ld, padBack=%ld,\
-            which must >= 0.", this->attrInfo.padUp, this->attrInfo.padDown, this->attrInfo.padLeft,
-            this->attrInfo.padRight, this->attrInfo.padFront, this->attrInfo.padBack);
+            which must >= 0.",
+            this->attrInfo.padUp, this->attrInfo.padDown, this->attrInfo.padLeft, this->attrInfo.padRight,
+            this->attrInfo.padFront, this->attrInfo.padBack);
         return false;
     }
 
-    bool outBackpropPadInvalidFlag = (this->attrInfo.backpropPadLeft < 0 || this->attrInfo.backpropPadRight < 0 ||
-        this->attrInfo.backpropPadUp < 0 || this->attrInfo.backpropPadDown < 0);
+    bool outBackpropPadInvalidFlag =
+        (this->attrInfo.backpropPadLeft < 0 || this->attrInfo.backpropPadRight < 0 ||
+         this->attrInfo.backpropPadUp < 0 || this->attrInfo.backpropPadDown < 0);
     if (outBackpropPadInvalidFlag) {
         TILING_LOG_ERROR(
             "Illegal attrs have set: backpropPadLeft=%ld, backpropPadDown=%ld, backpropPadLeft=%ld, backpropPadRight=%ld,\
-            which must >= 0.", this->attrInfo.backpropPadUp, this->attrInfo.backpropPadDown, this->attrInfo.backpropPadLeft,
+            which must >= 0.",
+            this->attrInfo.backpropPadUp, this->attrInfo.backpropPadDown, this->attrInfo.backpropPadLeft,
             this->attrInfo.backpropPadRight);
         return false;
     }
 
     if (this->attrInfo.strideH <= 0 || this->attrInfo.strideW <= 0 || this->attrInfo.strideD <= 0) {
-        TILING_LOG_ERROR("Illegal attrs have set: strideH=%ld, strideW=%ld, strideD=%ld, which must > 0.",
-                         this->attrInfo.strideH, this->attrInfo.strideW, this->attrInfo.strideD);
+        TILING_LOG_ERROR(
+            "Illegal attrs have set: strideH=%ld, strideW=%ld, strideD=%ld, which must > 0.", this->attrInfo.strideH,
+            this->attrInfo.strideW, this->attrInfo.strideD);
         return false;
     }
 
     if (this->attrInfo.dilationH <= 0 || this->attrInfo.dilationW <= 0 || this->attrInfo.dilationD <= 0) {
-        TILING_LOG_ERROR("Illegal attrs have set: dilationH=%ld, dilationW=%ld, dilationD=%ld, which must > 0.",
-                         this->attrInfo.dilationH, this->attrInfo.dilationW, this->attrInfo.dilationD);
+        TILING_LOG_ERROR(
+            "Illegal attrs have set: dilationH=%ld, dilationW=%ld, dilationD=%ld, which must > 0.",
+            this->attrInfo.dilationH, this->attrInfo.dilationW, this->attrInfo.dilationD);
         return false;
     }
 
@@ -291,15 +294,18 @@ bool Conv3DBpInputTilingBase::CheckInputAttr()
 bool Conv3DBpInputTilingBase::CheckInputShape()
 {
     if (this->shapeInfo.orgkH <= 0 || this->shapeInfo.orgkW <= 0 || this->shapeInfo.orgkD <= 0) {
-        TILING_LOG_ERROR("Illegal org weight shapes have set: kH=%ld, kW=%ld, kD=%ld, which must > 0.",
-            this->shapeInfo.orgkH, this->shapeInfo.orgkW, this->shapeInfo.orgkD);
+        TILING_LOG_ERROR(
+            "Illegal org weight shapes have set: kH=%ld, kW=%ld, kD=%ld, which must > 0.", this->shapeInfo.orgkH,
+            this->shapeInfo.orgkW, this->shapeInfo.orgkD);
         return false;
     }
 
     if (this->shapeInfo.orgN <= 0 || this->shapeInfo.orgCo <= 0 || this->shapeInfo.orgHo <= 0 ||
         this->shapeInfo.orgWo <= 0 || this->shapeInfo.orgDo <= 0) {
-        TILING_LOG_ERROR("Illegal org outBackprop shapes have set: N=%ld Co=%ld, Ho=%ld, Wo=%ld, Do=%ld, which must > 0.",
-            this->shapeInfo.orgN, this->shapeInfo.orgCo, this->shapeInfo.orgHo, this->shapeInfo.orgWo, this->shapeInfo.orgDo);
+        TILING_LOG_ERROR(
+            "Illegal org outBackprop shapes have set: N=%ld Co=%ld, Ho=%ld, Wo=%ld, Do=%ld, which must > 0.",
+            this->shapeInfo.orgN, this->shapeInfo.orgCo, this->shapeInfo.orgHo, this->shapeInfo.orgWo,
+            this->shapeInfo.orgDo);
         return false;
     }
 
@@ -309,14 +315,13 @@ bool Conv3DBpInputTilingBase::CheckInputShape()
 bool Conv3DBpInputTilingBase::CheckInputFormat()
 {
     if (this->descInfo.weightType.format != ConvCommonApi::ConvFormat::FRACTAL_Z_3D) {
-        TILING_LOG_ERROR("Unsupported weight format: %s.",
-                         g_formatToStr.at(this->descInfo.weightType.format).c_str());
+        TILING_LOG_ERROR("Unsupported weight format: %s.", g_formatToStr.at(this->descInfo.weightType.format).c_str());
         return false;
     }
 
     if (this->descInfo.outBackpropType.format != ConvCommonApi::ConvFormat::NDC1HWC0) {
-        TILING_LOG_ERROR("Unsupported outBackprop format: %s.",
-                         g_formatToStr.at(this->descInfo.outBackpropType.format).c_str());
+        TILING_LOG_ERROR(
+            "Unsupported outBackprop format: %s.", g_formatToStr.at(this->descInfo.outBackpropType.format).c_str());
         return false;
     }
 
@@ -406,4 +411,4 @@ void Conv3DBpInputTilingBase::SetFinalTiling(AscendC::tiling::Conv3DBackpropInpu
     SetFinalTiling(tilingData);
     tilingData.SaveToBuffer(&tiling, sizeof(Conv3DBackpropInputTilingData));
 }
-} // ConvBackpropApi
+} // namespace ConvBackpropApi

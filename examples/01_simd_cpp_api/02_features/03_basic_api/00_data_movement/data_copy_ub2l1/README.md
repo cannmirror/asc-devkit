@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例在Mmad矩阵乘场景下，基于DataCopy实现UB(Unified Buffer)到L1(L1 Buffer)的数据搬运。
+本样例在Mmad矩阵乘场景下，基于DataCopy实现UB（Unified Buffer）到L1（L1 Buffer）的数据搬运。
 
 ## 支持的产品
 
@@ -22,7 +22,7 @@
 ## 样例描述
 
 - 样例功能：  
-  将数据从UB(Unified Buffer)搬运到L1(L1 Buffer)，然后进行Mmad矩阵乘计算，最后通过Fixpipe搬出到GM(Global Memory)。
+  将数据从UB（Unified Buffer）搬运到L1（L1 Buffer），然后进行Mmad矩阵乘计算，最后通过Fixpipe搬出到GM（Global Memory）。接口资料参考[随路基础数据搬运](../../../../../../docs/api/context/基础数据搬运.md)。
 - 样例规格：
   <table>
   <tr><td rowspan="3" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
@@ -35,11 +35,11 @@
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">data_copy_ub2l1</td></tr>
   </table>
 - 样例实现：  
-  - 将数据从GM(Global Memory)搬运到UB(Unified Buffer)。
-  - 将数据从UB(Unified Buffer)搬运到L1(L1 Buffer)。
-  - 调用基础API LoadData将数据从L1(L1 Buffer)搬运到A2(L0A Buffer)与B2(L0B Buffer)。
+  - 将数据从GM（Global Memory）搬运到UB（Unified Buffer）。
+  - 将数据从UB（Unified Buffer）搬运到L1（L1 Buffer）。
+  - 调用基础API LoadData将数据从L1（L1 Buffer）搬运到A2（L0A Buffer）与B2(L0B Buffer)。
   - 调用基础API Mmad进行矩阵乘计算。
-  - 调用基础API Fixpipe将数据从CO1(L0C Buffer)搬运到GM(Global Memory)。
+  - 调用基础API Fixpipe将数据从CO1（L0C Buffer）搬运到GM（Global Memory）。
 - 调用实现  
   使用内核调用符<<<>>>调用核函数。
     

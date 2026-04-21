@@ -67,7 +67,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AbsImpl(T x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T UMulHi(T dividend, T magic)
 {
-    static_assert(SupportType<T, uint32_t, uint64_t>(), "Input type T only supports uint32_t, uint64_t.");
+    static_assert(SupportTypeSimtInternel<T, uint32_t, uint64_t>, "Input type T only supports uint32_t, uint64_t.");
 
     if constexpr (std::is_same<T, uint32_t>::value) {
         return (static_cast<uint64_t>(dividend) * static_cast<uint64_t>(magic)) >> ConstantsInternal::FOUR_BYTE_LEN;
@@ -101,7 +101,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T UMulHi(T dividend, T magic)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T UintDivImpl(T dividend, T magic, T shift)
 {
-    static_assert(SupportType<T, uint32_t, uint64_t>(), "Input type T only supports uint32_t, uint64_t.");
+    static_assert(SupportTypeSimtInternel<T, uint32_t, uint64_t>, "Input type T only supports uint32_t, uint64_t.");
 #ifdef ASCENDC_CPU_DEBUG
     if constexpr (std::is_same<T, uint32_t>::value) {
         ASCENDC_ASSERT(dividend <= ConstantsInternal::U32_MAX_VAL,
@@ -115,9 +115,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T UintDivImpl(T dividend, T magic, T shift
 #else
     T q = 0;
     if constexpr (std::is_same<T, uint32_t>::value) {
-        q = bisheng::cce::simt::__umulhi(dividend, magic);
+        q = __umulhi(dividend, magic);
     } else if constexpr (std::is_same<T, uint64_t>::value) {
-        q = bisheng::cce::simt::__umul64hi(dividend, magic);
+        q = __umul64hi(dividend, magic);
     }
 #endif
 
@@ -159,12 +159,12 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T FmaImpl(T x, T y, T z)
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float FmaImpl(float x, float y, float z)
 {
-    return bisheng::cce::simt::__fma(x, y, z);
+    return __fma(x, y, z);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half FmaImpl(half x, half y, half z)
 {
-    return bisheng::cce::simt::__fma(x, y, z);
+    return __fma(x, y, z);
 }
 #endif
 
@@ -568,12 +568,12 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint64_t BrevImpl(uint64_t x)
 #else
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint64_t BrevImpl(uint64_t x)
 {
-    return bisheng::cce::simt::__brev(static_cast<unsigned long long>(x));
+    return __brev(static_cast<unsigned long long>(x));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t BrevImpl(uint32_t x)
 {
-    return bisheng::cce::simt::__brev(x);
+    return __brev(x);
 }
 #endif
 
@@ -596,44 +596,44 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t ClzIntrinsics(uint8_t bitLen, T x,
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t ClzImpl(T x)
 {
-    static_assert(SupportType<T, int32_t, int64_t, uint32_t, uint64_t>(),
+    static_assert(SupportTypeSimtInternel<T, int32_t, int64_t, uint32_t, uint64_t>,
                   "Input type of Clz function only supports int32_t, uint32_t, int64_t, uint64_t.");
-    if constexpr (SupportType<T, uint32_t>()) {
+    if constexpr (SupportTypeSimtInternel<T, uint32_t>) {
         return ClzIntrinsics(ConstantsInternal::FOUR_BYTE_LEN, x, ConstantsInternal::ONE_UINT32);
-    } else if constexpr (SupportType<T, uint64_t>()) {
+    } else if constexpr (SupportTypeSimtInternel<T, uint64_t>) {
         return ClzIntrinsics(ConstantsInternal::EIGHT_BYTE_LEN, x, ConstantsInternal::ONE_UINT64);
-    } else if constexpr (SupportType<T, int32_t>()) {
+    } else if constexpr (SupportTypeSimtInternel<T, int32_t>) {
         return ClzIntrinsics(ConstantsInternal::FOUR_BYTE_LEN, x, ConstantsInternal::ONE_INT32);
-    } else if constexpr (SupportType<T, int64_t>()) {
+    } else if constexpr (SupportTypeSimtInternel<T, int64_t>) {
         return ClzIntrinsics(ConstantsInternal::EIGHT_BYTE_LEN, x, ConstantsInternal::ONE_INT64);
     }
 }
 #else
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t ClzIntrinsics(uint32_t x)
 {
-    return bisheng::cce::simt::__clz(static_cast<int32_t>(x));
+    return __clz(static_cast<int32_t>(x));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t ClzIntrinsics(int32_t x)
 {
-    return bisheng::cce::simt::__clz(x);
+    return __clz(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t ClzIntrinsics(uint64_t x)
 {
-    return bisheng::cce::simt::__clz(static_cast<long long>(x));
+    return __clz(static_cast<long long>(x));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t ClzIntrinsics(int64_t x)
 {
-    return bisheng::cce::simt::__clz(static_cast<long long>(x));
+    return __clz(static_cast<long long>(x));
 }
 
 // count the leading zero bits
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t ClzImpl(T x)
 {
-    static_assert(SupportType<T, int32_t, int64_t, uint32_t, uint64_t>(),
+    static_assert(SupportTypeSimtInternel<T, int32_t, int64_t, uint32_t, uint64_t>,
                   "Input type of Clz function only supports int32_t, uint32_t, int64_t, uint64_t.");
     return ClzIntrinsics(x);
 }
@@ -664,12 +664,12 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t PopcImpl(uint64_t x)
 #else
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t PopcImpl(uint32_t x)
 {
-    return bisheng::cce::simt::__popc(static_cast<unsigned int>(x));
+    return __popc(static_cast<unsigned int>(x));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t PopcImpl(uint64_t x)
 {
-    return bisheng::cce::simt::__popc(static_cast<unsigned long long>(x));
+    return __popc(static_cast<unsigned long long>(x));
 }
 #endif
 
@@ -693,7 +693,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t BytePermImpl(uint32_t x, uint32_t
 #else
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t BytePermImpl(uint32_t x, uint32_t y, uint32_t s)
 {
-    return bisheng::cce::simt::__byte_perm(x, y, s);
+    return __byte_perm(x, y, s);
 }
 #endif
 
@@ -718,12 +718,12 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t FfsImpl(int64_t x)
 #else
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t FfsImpl(int32_t x)
 {
-    return bisheng::cce::simt::__ffs(x);
+    return __ffs(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t FfsImpl(int64_t x)
 {
-    return bisheng::cce::simt::__ffs(static_cast<long long>(x));
+    return __ffs(static_cast<long long>(x));
 }
 #endif
 
@@ -748,12 +748,12 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T MulHiImpl(T x, T y)
 #else
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t MulHiImpl(uint32_t x, uint32_t y)
 {
-    return bisheng::cce::simt::__umulhi(x, y);
+    return __umulhi(x, y);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t MulHiImpl(int32_t x, int32_t y)
 {
-    return bisheng::cce::simt::__mulhi(x, y);
+    return __mulhi(x, y);
 }
 #endif
 }  // namespace Simt

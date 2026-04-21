@@ -1,19 +1,20 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file scheduler_special_mdl.h
  * \brief
  */
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/scheduler/base/scheduler_special_mdl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/scheduler/base/scheduler_special_mdl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_BASE_SCHEDULER_SPECIAL_MDL_H__
 #endif
@@ -32,11 +33,12 @@ namespace Detail {
     We retain the freedom to make incompatible changes, but do not guarantee the stability.
     MatmulScheduler is only for internal usage, does not support extension or customized specialization!
 */
-template <typename IMPL, class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG,
+template <
+    typename IMPL, class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG,
     PolicyType POLICY_TYPE>
-class MatmulScheduler<IMPL, A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, POLICY_TYPE, enable_if_t<DoMatmulSpecialMDL(MM_CFG)>>
-    : public MatmulMDLSchedulerBase<IMPL, A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, POLICY_TYPE>
-{
+class MatmulScheduler<
+    IMPL, A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, POLICY_TYPE, enable_if_t<DoMatmulSpecialMDL(MM_CFG)>>
+    : public MatmulMDLSchedulerBase<IMPL, A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, POLICY_TYPE> {
     MATMUL_USE_MODULE(MLoop);
     MATMUL_USE_MODULE(NLoop);
     MATMUL_USE_MODULE(KLoop);
@@ -80,9 +82,10 @@ public:
     }
 
 private:
-    __aicore__ constexpr auto OneBlockSize() const {
+    __aicore__ constexpr auto OneBlockSize() const
+    {
         return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM() *
-            MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
+               MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
     }
 
     template <typename L1In, typename GMOut>
@@ -91,8 +94,8 @@ private:
         auto loopModule = MATMUL_MODULE(NLoop);
         loopModule->InnerStart();
         do {
-            auto offset = (loopModule->GetInnerIdx() - loopModule->GetOuterIdx() * loopModule->GetInnerIter()) *
-                OneBlockSize();
+            auto offset =
+                (loopModule->GetInnerIdx() - loopModule->GetOuterIdx() * loopModule->GetInnerIter()) * OneBlockSize();
             if (enSequentialWrite) {
                 MATMUL_MODULE(CopyCubeOut)
                     ->template Copy<true>(
@@ -111,10 +114,12 @@ private:
 
     __aicore__ void GetResultImpl(const GlobalTensor<DstT>& gm, uint8_t enAtomic, bool enSequentialWrite)
     {
-        if constexpr (C_TYPE::format != CubeFormat::ND && C_TYPE::format != CubeFormat::ND_ALIGN &&
+        if constexpr (
+            C_TYPE::format != CubeFormat::ND && C_TYPE::format != CubeFormat::ND_ALIGN &&
             C_TYPE::format != CubeFormat::NZ && C_TYPE::format != CubeFormat::COLUMN_MAJOR) {
-            ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR,
-                "Data format of C matrix should be ND, ND_ALIGN, COLUMN_MAJOR or NZ."); });
+            ASCENDC_ASSERT((false), {
+                KERNEL_LOG(KERNEL_ERROR, "Data format of C matrix should be ND, ND_ALIGN, COLUMN_MAJOR or NZ.");
+            });
         }
         // remove dependency conflicts only for scene which is not db
         auto co1Local = MATMUL_MODULE(CubeOutBuffer)->GetTensor();
@@ -152,8 +157,8 @@ private:
             int32_t kL1Stride = MATMUL_MODULE(KLoop)->GetBaseBlockShape() * BASE_MODULE::c0Size_;
             // start k inner loop
             MATMUL_MODULE(KLoop)->InnerStart();
-            auto offset = (loopModule->GetInnerIdx() - loopModule->GetOuterIdx() * loopModule->GetInnerIter()) *
-                OneBlockSize();
+            auto offset =
+                (loopModule->GetInnerIdx() - loopModule->GetOuterIdx() * loopModule->GetInnerIter()) * OneBlockSize();
             do {
                 // allocate L0 buffer
                 ComputeKDB(a1, b1, aL1, bL1, offset, isATranspose, isBTranspose, sL0CInit, sL0CLast);
@@ -167,8 +172,11 @@ private:
 
     __aicore__ inline void SplitBias(const int32_t dataLen)
     {
-        auto bias = MATMUL_MODULE(BiasScheduler)->CopyIn(MATMUL_MODULE(NLoop)->GetBaseShape(), 1,
-            MATMUL_MODULE(NLoop)->GetInnerIdx() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN());
+        auto bias =
+            MATMUL_MODULE(BiasScheduler)
+                ->CopyIn(
+                    MATMUL_MODULE(NLoop)->GetBaseShape(), 1,
+                    MATMUL_MODULE(NLoop)->GetInnerIdx() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN());
         MATMUL_MODULE(BiasScheduler)->SplitLoad(bias, dataLen);
         MATMUL_MODULE(BiasScheduler)->Free(bias);
     }
@@ -186,25 +194,27 @@ private:
         BASE_MODULE::ResetCopyInBuffer();
     }
 
-    __aicore__ inline void ComputeKDB(const LocalTensor<TransT>& a1, const LocalTensor<TransT>& b1,
-        const SplitParams& aL0Params, const SplitParams& bL0Params, const int32_t offset,
-        const bool isATranspose, const bool isBTranspose, const bool sL0CInit, const bool sL0CLast)
+    __aicore__ inline void ComputeKDB(
+        const LocalTensor<TransT>& a1, const LocalTensor<TransT>& b1, const SplitParams& aL0Params,
+        const SplitParams& bL0Params, const int32_t offset, const bool isATranspose, const bool isBTranspose,
+        const bool sL0CInit, const bool sL0CLast)
     {
         MATMUL_MODULE(TBufPoolL0)->Allocate();
         LocalTensor<TransT> a2 = BASE_MODULE::SplitA(a1, aL0Params, isATranspose);
         LocalTensor<TransT> b2 = BASE_MODULE::SplitB(b1, bL0Params, isBTranspose);
         MATMUL_MODULE(TBufPoolL0)->EnQue();
         MATMUL_MODULE(TBufPoolL0)->DeQue();
-        BASE_MODULE::CubeCompute(MATMUL_MODULE(CubeOutBuffer)->GetTensor()[offset], a2, b2, aL0Params.axisL0Len,
-            bL0Params.axisL0Len, MATMUL_MODULE(KLoop)->GetBaseShape(), isATranspose, isBTranspose, sL0CInit, sL0CLast);
+        BASE_MODULE::CubeCompute(
+            MATMUL_MODULE(CubeOutBuffer)->GetTensor()[offset], a2, b2, aL0Params.axisL0Len, bL0Params.axisL0Len,
+            MATMUL_MODULE(KLoop)->GetBaseShape(), isATranspose, isBTranspose, sL0CInit, sL0CLast);
         MATMUL_MODULE(TBufPoolL0)->Free();
         MATMUL_MODULE(BiasScheduler)->Free();
     }
 };
 
-}  // namespace Detail
-}  // namespace Impl
-}  // namespace AscendC
+} // namespace Detail
+} // namespace Impl
+} // namespace AscendC
 
 #endif
 

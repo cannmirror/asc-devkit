@@ -1,15 +1,16 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/reduce/reduce_prod/reduce_prod_v220_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/reduce/reduce_prod/reduce_prod_v220_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_PROD_REDUCE_PROD_V220_IMPL_H__
 #endif
@@ -31,8 +32,9 @@ namespace AscendC {
 namespace Internal {
 
 template <typename T, bool isReuseSource>
-__aicore__ inline void PreProcessReduceForAR(const LocalTensor<T>& src, const LocalTensor<T>& currBuff,
-    uint32_t row, uint32_t last, uint32_t padLast, uint32_t remain, uint32_t& splitK)
+__aicore__ inline void PreProcessReduceForAR(
+    const LocalTensor<T>& src, const LocalTensor<T>& currBuff, uint32_t row, uint32_t last, uint32_t padLast,
+    uint32_t remain, uint32_t& splitK)
 {
     BinaryRepeatParams defaultParam;
     UnaryRepeatParams defaultUnaryParam;
@@ -68,8 +70,9 @@ __aicore__ inline void PreProcessReduceForAR(const LocalTensor<T>& src, const Lo
 }
 
 template <typename T, bool isReuseSource>
-__aicore__ inline void ReduceProdByLastAxis(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const LocalTensor<T>& tmp, uint32_t first, uint32_t last, uint32_t padLast)
+__aicore__ inline void ReduceProdByLastAxis(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& tmp, uint32_t first, uint32_t last,
+    uint32_t padLast)
 {
     constexpr uint32_t bytePerBlk = 32;
     constexpr uint32_t elePerBlk = bytePerBlk / sizeof(T);
@@ -95,7 +98,7 @@ __aicore__ inline void ReduceProdByLastAxis(const LocalTensor<T>& dst, const Loc
         LocalTensor<T> tmpDst = isReuseSource ? src[j * elePerBlk] : resBeforeGather[j * elePerBlk];
 
         PreProcessReduceForAR<T, isReuseSource>(src, tmpRowRes, j, last, padLast, remain, splitKCopy);
-        
+
         while (splitKCopy > elePerBlk) {
             splitKCopy >>= 1;
             SetVectorMask<T, MaskMode::COUNTER>(0, splitKCopy);
@@ -132,24 +135,25 @@ __aicore__ inline void ReduceProdByLastAxis(const LocalTensor<T>& dst, const Loc
 }
 
 template <class T, class pattern, bool isReuseSource = false>
-__aicore__ inline void ReduceProdImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-                                      const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t srcShape[],
-                                      bool srcInnerPad)
+__aicore__ inline void ReduceProdImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t srcShape[], bool srcInnerPad)
 {
     uint32_t last = srcShape[1];
     uint32_t first = srcShape[0];
     constexpr uint32_t elePerBlk = ONE_BLK_SIZE / sizeof(T);
     uint32_t padLast = AlignUp(last, elePerBlk);
     static_assert(SupportType<T, float>(), "failed to check the data type, current api supports data type is float!");
-    static_assert(SupportType<pattern, Pattern::Reduce::AR, Pattern::Reduce::RA>(), 
+    static_assert(
+        SupportType<pattern, Pattern::Reduce::AR, Pattern::Reduce::RA>(),
         "failed to check the reduce pattern, it only supports AR/RA pattern!");
-    CHECK_FUNC_HIGHLEVEL_API(ReduceProd, (T, pattern), (dstTensor, srcTensor, sharedTmpBuffer, srcShape, srcInnerPad, padLast));
+    CHECK_FUNC_HIGHLEVEL_API(
+        ReduceProd, (T, pattern), (dstTensor, srcTensor, sharedTmpBuffer, srcShape, srcInnerPad, padLast));
     LocalTensor<T> tmpDst = sharedTmpBuffer.ReinterpretCast<T>();
     if constexpr (IsSameType<pattern, Pattern::Reduce::AR>::value) {
-        ReduceProdByLastAxis<T, isReuseSource>(dstTensor, srcTensor,tmpDst, first, last, padLast);
+        ReduceProdByLastAxis<T, isReuseSource>(dstTensor, srcTensor, tmpDst, first, last, padLast);
     } else {
-        BinaryReduceByFirstAxis<T, isReuseSource, Mul<T, false>>(
-            dstTensor, srcTensor, tmpDst, first, last, padLast);
+        BinaryReduceByFirstAxis<T, isReuseSource, Mul<T, false>>(dstTensor, srcTensor, tmpDst, first, last, padLast);
     }
     SetMaskNorm();
     ResetMask();

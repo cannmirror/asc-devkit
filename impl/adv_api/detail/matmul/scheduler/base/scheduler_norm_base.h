@@ -1,19 +1,20 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file scheduler_norm_base.h
  * \brief
  */
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/scheduler/base/scheduler_norm_base.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/scheduler/base/scheduler_norm_base.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_BASE_SCHEDULER_NORM_BASE_H__
 #endif
@@ -32,10 +33,11 @@ namespace Detail {
     We retain the freedom to make incompatible changes, but do not guarantee the stability.
     MatmulNormSchedulerBase is only for internal usage, does not support extension or customized specialization!
 */
-template <typename IMPL, class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG,
+template <
+    typename IMPL, class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG,
     PolicyType POLICY_TYPE = PolicyType::MATMUL_DEFAULT>
-class MatmulNormSchedulerBase : public MatmulSchedulerBase<IMPL, A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, POLICY_TYPE>
-{
+class MatmulNormSchedulerBase
+    : public MatmulSchedulerBase<IMPL, A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, POLICY_TYPE> {
     MATMUL_USE_MODULE(MLoop);
     MATMUL_USE_MODULE(NLoop);
     MATMUL_USE_MODULE(KLoop);
@@ -57,15 +59,9 @@ public:
     using BASE_MODULE =
         AscendC::Impl::Detail::MatmulSchedulerBase<IMPL, A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, POLICY_TYPE>;
 
-    __aicore__ inline bool ScheduleOnce(bool enPartialSum)
-    {
-        return false;
-    }
+    __aicore__ inline bool ScheduleOnce(bool enPartialSum) { return false; }
 
-    __aicore__ inline void Reset()
-    {
-        isFirstIter_ = true;
-    }
+    __aicore__ inline void Reset() { isFirstIter_ = true; }
 
 protected:
     __aicore__ inline bool MoveNext()
@@ -102,18 +98,22 @@ protected:
         } else {
             if constexpr (ToMatmulConfig(MM_CFG).iterateOrder == IterateOrder::ORDER_N) {
                 return MoveOnIterateOrderN();
-            } else  if constexpr (ToMatmulConfig(MM_CFG).iterateOrder == IterateOrder::ORDER_M) {
+            } else if constexpr (ToMatmulConfig(MM_CFG).iterateOrder == IterateOrder::ORDER_M) {
                 return MoveOnIterateOrderM();
             } else {
-                if (likely(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder() ==
-                    static_cast<int>(IterateOrder::ORDER_M))) {
+                if (likely(
+                        MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder() ==
+                        static_cast<int>(IterateOrder::ORDER_M))) {
                     return MoveOnIterateOrderM();
                 } else {
-                    ASCENDC_ASSERT((MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder() ==
-                        static_cast<int>(IterateOrder::ORDER_N)), { KERNEL_LOG(KERNEL_ERROR,
-                        "iterateOrder is %d , which should be ORDER_N",
-                        MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder());
-                    });
+                    ASCENDC_ASSERT(
+                        (MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder() ==
+                         static_cast<int>(IterateOrder::ORDER_N)),
+                        {
+                            KERNEL_LOG(
+                                KERNEL_ERROR, "iterateOrder is %d , which should be ORDER_N",
+                                MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder());
+                        });
                     return MoveOnIterateOrderN();
                 }
             }
@@ -126,8 +126,9 @@ protected:
         if constexpr (DoMatmulIBShareNorm(MM_CFG) && A_TYPE::ibShare) {
             ASCENDC_ASSERT(
                 (MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() >= MATMUL_MODULE(MLoop)->GetTotalIter()), {
-                KERNEL_LOG(KERNEL_ERROR, "When iterateOrder is orderN and A is IBShare, stepM >= mIter is required");
-            });
+                    KERNEL_LOG(
+                        KERNEL_ERROR, "When iterateOrder is orderN and A is IBShare, stepM >= mIter is required");
+                });
         }
         // when M inner loop is finished, clear right matrix's data in L1 buffer, and restart M inner loop
         if (!MATMUL_MODULE(MLoop)->InnerNext()) {
@@ -157,8 +158,9 @@ protected:
         if constexpr (DoMatmulIBShareNorm(MM_CFG) && B_TYPE::ibShare) {
             ASCENDC_ASSERT(
                 (MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN() >= MATMUL_MODULE(NLoop)->GetTotalIter()), {
-                KERNEL_LOG(KERNEL_ERROR, "When iterateOrder is orderM and B is IBShare, stepN >= nIter is required");
-            });
+                    KERNEL_LOG(
+                        KERNEL_ERROR, "When iterateOrder is orderM and B is IBShare, stepN >= nIter is required");
+                });
         }
         // when N inner loop is finished, clear left matrix's data in L1 buffer, and restart N inner loop
         if (!MATMUL_MODULE(NLoop)->InnerNext()) {
@@ -220,9 +222,10 @@ protected:
             if constexpr (IsBasic(MM_CFG)) {
                 aL0Params.axisL1Offset = 0;
                 if constexpr (MatmulFeatureTrait<MM_CFG>::IsSupportLoad2dV2()) {
-                    aL0Params.kAxisL1Len = IsSupportB8<typename A_TYPE::T>() ?
-                        CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<false>(), c0Size_) :
-                        CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<false>(), BLOCK_CUBE);                   
+                    aL0Params.kAxisL1Len =
+                        IsSupportB8<typename A_TYPE::T>() ?
+                            CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<false>(), c0Size_) :
+                            CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<false>(), BLOCK_CUBE);
                     return aL0Params;
                 }
             } else {
@@ -250,9 +253,9 @@ protected:
         if constexpr (IsStaticPaddingEnable(MM_CFG)) {
             bL0Params.axisL1Len = CeilAlign(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN(), BLOCK_CUBE);
             bL0Params.axisL0Len = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
-#if __NPU_ARCH__ == 5102  
+#if __NPU_ARCH__ == 5102
             bL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK(), c0SizeB_);
-#else          
+#else
             bL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK(), c0Size_);
 #endif
         } else {
@@ -267,28 +270,39 @@ protected:
         bL0Params.kAxisL1Offset = 0;
         // if input is from L1, update related params
         if constexpr (PhyPosIsL1OrUB<MM_CFG>(B_TYPE::pos)) {
-            bL0Params.axisL1Len = CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreN<IS_INTRA_BLOCK>(), BLOCK_CUBE);
+            bL0Params.axisL1Len =
+                CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreN<IS_INTRA_BLOCK>(), BLOCK_CUBE);
             if constexpr (IsBasic(MM_CFG)) {
                 bL0Params.axisL1Offset = 0;
                 if constexpr (MatmulFeatureTrait<MM_CFG>::IsSupportLoad2dV2()) {
-#if __NPU_ARCH__ == 5102 
-                    bL0Params.kAxisL1Len = (IsSupportB4<TransBT>() || IsSupportB8<TransBT>()) ? CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<false>(), c0SizeB_) : CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<false>(), BLOCK_CUBE);
+#if __NPU_ARCH__ == 5102
+                    bL0Params.kAxisL1Len =
+                        (IsSupportB4<TransBT>() || IsSupportB8<TransBT>()) ?
+                            CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<false>(), c0SizeB_) :
+                            CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<false>(), BLOCK_CUBE);
 #else
-                    bL0Params.kAxisL1Len = IsSupportB8<typename B_TYPE::T>() ? CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<false>(), c0Size_) : CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<false>(), BLOCK_CUBE);                   
+                    bL0Params.kAxisL1Len =
+                        IsSupportB8<typename B_TYPE::T>() ?
+                            CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<false>(), c0Size_) :
+                            CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<false>(), BLOCK_CUBE);
 #endif
                     return bL0Params;
                 }
             } else {
-                bL0Params.axisL1Offset = MATMUL_MODULE(NLoop)->GetInnerIdx() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
+                bL0Params.axisL1Offset =
+                    MATMUL_MODULE(NLoop)->GetInnerIdx() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
             }
             if (MATMUL_MODULE(MatmulShapeInfo)->template IsTransposeB<IS_INTRA_BLOCK>()) {
-#if __NPU_ARCH__ == 5102 
-                bL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<IS_INTRA_BLOCK>(), c0SizeB_);
+#if __NPU_ARCH__ == 5102
+                bL0Params.kAxisL1Len =
+                    CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<IS_INTRA_BLOCK>(), c0SizeB_);
 #else
-                bL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<IS_INTRA_BLOCK>(), c0Size_);
+                bL0Params.kAxisL1Len =
+                    CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<IS_INTRA_BLOCK>(), c0Size_);
 #endif
             } else {
-                bL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<IS_INTRA_BLOCK>(), BLOCK_CUBE);
+                bL0Params.kAxisL1Len =
+                    CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<IS_INTRA_BLOCK>(), BLOCK_CUBE);
             }
         } else {
             bL0Params.axisL1Offset = 0;
@@ -296,8 +310,8 @@ protected:
         return bL0Params;
     }
 
-    __aicore__ inline void SplitPrepare(const bool isATranspose, const bool isBTranspose,
-        SplitParams& aL0Params, SplitParams& bL0Params)
+    __aicore__ inline void SplitPrepare(
+        const bool isATranspose, const bool isBTranspose, SplitParams& aL0Params, SplitParams& bL0Params)
     {
         UpdateSplitParams(aL0Params, bL0Params);
         MATMUL_MODULE(LoadToA2)->Prepare(isATranspose, aL0Params.kAxisL1Len, aL0Params.axisL1Len);
@@ -309,8 +323,8 @@ protected:
     {
         // update Split params related to K loop
         if constexpr (PhyPosIsL1OrUB<MM_CFG>(A_TYPE::pos)) {
-            aL0Params.kAxisL1Offset = MATMUL_MODULE(KLoop)->GetOuterIdx() *
-                MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK();
+            aL0Params.kAxisL1Offset =
+                MATMUL_MODULE(KLoop)->GetOuterIdx() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK();
         } else if constexpr (!IsStaticPaddingEnable(MM_CFG)) {
             if constexpr (IS_INTRA_BLOCK) {
                 aL0Params.kAxisL1Len = MATMUL_MODULE(KLoop)->template GetTileBlockShapeA<true>() * c0Size_;
@@ -319,13 +333,13 @@ protected:
             }
         }
         if constexpr (PhyPosIsL1OrUB<MM_CFG>(B_TYPE::pos)) {
-            bL0Params.kAxisL1Offset = MATMUL_MODULE(KLoop)->GetOuterIdx() *
-            MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK();
+            bL0Params.kAxisL1Offset =
+                MATMUL_MODULE(KLoop)->GetOuterIdx() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK();
         } else if constexpr (!IsStaticPaddingEnable(MM_CFG)) {
             if constexpr (IS_INTRA_BLOCK) {
                 bL0Params.kAxisL1Len = MATMUL_MODULE(KLoop)->template GetTileBlockShapeB<true>() * c0Size_;
             } else {
-#if __NPU_ARCH__ == 5102 
+#if __NPU_ARCH__ == 5102
                 bL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(KLoop)->GetTileShapeB(), c0SizeB_);
 #else
                 bL0Params.kAxisL1Len = MATMUL_MODULE(KLoop)->GetTileBlockShapeB() * c0Size_;
@@ -334,8 +348,8 @@ protected:
         }
     }
 
-    __aicore__ inline void UpdateBiasParams(bool enPartialSum, bool sL0CInit,
-        bool& cmatrixSource, bool& cmatrixInitVal, bool& isBias)
+    __aicore__ inline void UpdateBiasParams(
+        bool enPartialSum, bool sL0CInit, bool& cmatrixSource, bool& cmatrixInitVal, bool& isBias)
     {
         // update params for Compute
         if constexpr (MatmulFeatureTrait<MM_CFG>::IsSupportCmatrixInitVal()) {
@@ -390,8 +404,11 @@ protected:
         if constexpr (IsBasic(MM_CFG)) {
             bias = MATMUL_MODULE(BiasScheduler)->CopyIn(MATMUL_MODULE(NLoop)->GetBaseShape());
         } else {
-            bias = MATMUL_MODULE(BiasScheduler)->CopyIn(MATMUL_MODULE(NLoop)->GetBaseShape(), 1,
-                MATMUL_MODULE(NLoop)->GetInnerIdx() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN());
+            bias =
+                MATMUL_MODULE(BiasScheduler)
+                    ->CopyIn(
+                        MATMUL_MODULE(NLoop)->GetBaseShape(), 1,
+                        MATMUL_MODULE(NLoop)->GetInnerIdx() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN());
         }
         MATMUL_MODULE(BiasScheduler)->SplitLoad(bias, dataLen);
         MATMUL_MODULE(BiasScheduler)->Free(bias);
@@ -404,9 +421,9 @@ protected:
 #endif
 };
 
-}  // namespace Detail
-}  // namespace Impl
-}  // namespace AscendC
+} // namespace Detail
+} // namespace Impl
+} // namespace AscendC
 
 #endif
 

@@ -1,20 +1,21 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
-* \file welfordfinalize_common_impl.h
-* \brief
-*/
+ * \file welfordfinalize_common_impl.h
+ * \brief
+ */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/normalization/welfordfinalize/welfordfinalize_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/normalization/welfordfinalize/welfordfinalize_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_WELFORDFINALIZE_WELFORDFINALIZE_COMMON_IMPL_H__
 #endif
@@ -31,22 +32,19 @@
 #endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
 
-namespace AscendC 
-{
+namespace AscendC {
 constexpr uint32_t OUTPUT_SIZE = 8;
 constexpr uint32_t B32_LEN = 256 / sizeof(float);
 constexpr uint32_t OUTPUT_MASK_B32 = 254;
 
-struct WelfordFinalizeTilingData
-{
+struct WelfordFinalizeTilingData {
     uint32_t computeLength;
     uint32_t round;
     uint32_t tail;
 };
 
 template <typename T>
-struct WelfordFinalizeTmpTensors
-{
+struct WelfordFinalizeTmpTensors {
     __aicore__ WelfordFinalizeTmpTensors() {}
     LocalTensor<T> tempOutputMean;
     LocalTensor<T> tempOutputVariance;
@@ -54,8 +52,9 @@ struct WelfordFinalizeTmpTensors
     LocalTensor<T> tempVariance;
 };
 
-__aicore__ inline void welfordFinalizeOutputPre(const LocalTensor<float> &outputMean, const LocalTensor<float> &outputVariance,
-    const LocalTensor<float> &tempOutputMean, const LocalTensor<float> &tempOutputVariance)
+__aicore__ inline void welfordFinalizeOutputPre(
+    const LocalTensor<float>& outputMean, const LocalTensor<float>& outputVariance,
+    const LocalTensor<float>& tempOutputMean, const LocalTensor<float>& tempOutputVariance)
 {
     Adds(outputMean, tempOutputMean, static_cast<float>(0), 1);
     Adds(outputVariance, tempOutputVariance, static_cast<float>(0), 1);
@@ -64,21 +63,24 @@ __aicore__ inline void welfordFinalizeOutputPre(const LocalTensor<float> &output
     SetMaskNorm();
     SetVectorMask<float>(0, OUTPUT_MASK_B32);
 
-    Duplicate<float, false>(outputMean, 0, MASK_PLACEHOLDER, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+    Duplicate<float, false>(
+        outputMean, 0, MASK_PLACEHOLDER, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
     PipeBarrier<PIPE_V>();
 
-    Duplicate<float, false>(outputVariance, 0, MASK_PLACEHOLDER, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+    Duplicate<float, false>(
+        outputVariance, 0, MASK_PLACEHOLDER, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
     PipeBarrier<PIPE_V>();
 }
 
 template <bool isReuseSource = false>
-__aicore__ inline void WelfordFinalizeExeVariance(const LocalTensor<float> &inputMean, const LocalTensor<float> &inputVariance,
-    const LocalTensor<float> &outputVariance, const LocalTensor<int32_t> &counts, const WelfordFinalizeTmpTensors<float> &tempTensors, 
-    const WelfordFinalizePara &para, const uint32_t computeLength)
+__aicore__ inline void WelfordFinalizeExeVariance(
+    const LocalTensor<float>& inputMean, const LocalTensor<float>& inputVariance,
+    const LocalTensor<float>& outputVariance, const LocalTensor<int32_t>& counts,
+    const WelfordFinalizeTmpTensors<float>& tempTensors, const WelfordFinalizePara& para, const uint32_t computeLength)
 {
     LocalTensor<float> tempMean = tempTensors.tempMean;
     LocalTensor<float> tempVariance = tempTensors.tempVariance;
-    
+
     Adds(tempVariance, tempMean, static_cast<float>(0), 1);
     PipeBarrier<PIPE_V>();
     SetMaskCount();
@@ -111,8 +113,9 @@ __aicore__ inline void WelfordFinalizeExeVariance(const LocalTensor<float> &inpu
 }
 
 template <bool isReuseSource = false>
-__aicore__ inline void WelfordFinalizeExeMean(const LocalTensor<float> &inputMean, const LocalTensor<float> &outputMean, const LocalTensor<int32_t> &counts,
-    const WelfordFinalizeTmpTensors<float> &tempTensors, const WelfordFinalizePara &para, const uint32_t computeLength)
+__aicore__ inline void WelfordFinalizeExeMean(
+    const LocalTensor<float>& inputMean, const LocalTensor<float>& outputMean, const LocalTensor<int32_t>& counts,
+    const WelfordFinalizeTmpTensors<float>& tempTensors, const WelfordFinalizePara& para, const uint32_t computeLength)
 {
     LocalTensor<float> tempMean = tempTensors.tempMean;
     LocalTensor<float> tempVariance = tempTensors.tempVariance;
@@ -134,8 +137,10 @@ __aicore__ inline void WelfordFinalizeExeMean(const LocalTensor<float> &inputMea
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void GetWelfordFinalizeOutputMeanWithTail(const LocalTensor<float> &inputMean, const LocalTensor<float> &tempTensorCal, 
-    const LocalTensor<float> &tempoutputMean, const WelfordFinalizePara &para, const LocalTensor<float> &outputMean, const uint32_t computeLength, const uint32_t offset)
+__aicore__ inline void GetWelfordFinalizeOutputMeanWithTail(
+    const LocalTensor<float>& inputMean, const LocalTensor<float>& tempTensorCal,
+    const LocalTensor<float>& tempoutputMean, const WelfordFinalizePara& para, const LocalTensor<float>& outputMean,
+    const uint32_t computeLength, const uint32_t offset)
 {
     const UnaryRepeatParams unaryParams;
     SetMaskCount();
@@ -158,7 +163,8 @@ __aicore__ inline void GetWelfordFinalizeOutputMeanWithTail(const LocalTensor<fl
 
     if (headComputeLength > 0) {
         SetVectorMask<float, MaskMode::COUNTER>(0, headComputeLength);
-        Muls<float, false>(tempoutputMean, tempoutputMean, (float)headCount / (float)tailCount, MASK_PLACEHOLDER, 1, unaryParams);
+        Muls<float, false>(
+            tempoutputMean, tempoutputMean, (float)headCount / (float)tailCount, MASK_PLACEHOLDER, 1, unaryParams);
         PipeBarrier<PIPE_V>();
     }
 
@@ -168,8 +174,10 @@ __aicore__ inline void GetWelfordFinalizeOutputMeanWithTail(const LocalTensor<fl
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void GetWelfordFinalizeOutputMeanNoTail(const LocalTensor<float> &inputMean, const LocalTensor<float> &tempoutputMean,
-    const LocalTensor<float> &tempTensorCal, const WelfordFinalizePara &para, const LocalTensor<float> &outputMean, const uint32_t computeLength)
+__aicore__ inline void GetWelfordFinalizeOutputMeanNoTail(
+    const LocalTensor<float>& inputMean, const LocalTensor<float>& tempoutputMean,
+    const LocalTensor<float>& tempTensorCal, const WelfordFinalizePara& para, const LocalTensor<float>& outputMean,
+    const uint32_t computeLength)
 {
     SetMaskCount();
     const UnaryRepeatParams unaryParams;
@@ -182,9 +190,10 @@ __aicore__ inline void GetWelfordFinalizeOutputMeanNoTail(const LocalTensor<floa
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void GetWelfordFinalizeOutputVarianceWithTail(const LocalTensor<float> &inputMean, const LocalTensor<float> &inputVariance,
-    const LocalTensor<float> &tempoutputMean, const LocalTensor<float> &tempTensorCal, const WelfordFinalizePara &para, const LocalTensor<float> &outputVariance,
-    const uint32_t computeLength, const uint32_t offset)
+__aicore__ inline void GetWelfordFinalizeOutputVarianceWithTail(
+    const LocalTensor<float>& inputMean, const LocalTensor<float>& inputVariance,
+    const LocalTensor<float>& tempoutputMean, const LocalTensor<float>& tempTensorCal, const WelfordFinalizePara& para,
+    const LocalTensor<float>& outputVariance, const uint32_t computeLength, const uint32_t offset)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binaryParams;
@@ -211,7 +220,8 @@ __aicore__ inline void GetWelfordFinalizeOutputVarianceWithTail(const LocalTenso
 
     if (headComputeLength > 0) {
         SetVectorMask<float, MaskMode::COUNTER>(0, headComputeLength);
-        Muls<float, false>(tempTensorCal, tempTensorCal, (float)headCount / (float)tailCount, MASK_PLACEHOLDER, 1, unaryParams);
+        Muls<float, false>(
+            tempTensorCal, tempTensorCal, (float)headCount / (float)tailCount, MASK_PLACEHOLDER, 1, unaryParams);
         PipeBarrier<PIPE_V>();
     }
 
@@ -226,8 +236,10 @@ __aicore__ inline void GetWelfordFinalizeOutputVarianceWithTail(const LocalTenso
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void GetWelfordFinalizeOutputVarianceNoTail(const LocalTensor<float> &inputMean, const LocalTensor<float> &inputVariance,
-    const LocalTensor<float> &tempoutputMean, const LocalTensor<float> &tempTensorCal, const WelfordFinalizePara &para, const LocalTensor<float> &outputVariance, const uint32_t computeLength)
+__aicore__ inline void GetWelfordFinalizeOutputVarianceNoTail(
+    const LocalTensor<float>& inputMean, const LocalTensor<float>& inputVariance,
+    const LocalTensor<float>& tempoutputMean, const LocalTensor<float>& tempTensorCal, const WelfordFinalizePara& para,
+    const LocalTensor<float>& outputVariance, const uint32_t computeLength)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binaryParams;
@@ -255,8 +267,10 @@ __aicore__ inline void GetWelfordFinalizeOutputVarianceNoTail(const LocalTensor<
 }
 
 template <bool isReuseSource = false>
-__aicore__ inline void WelfordFinalizeExeMean(const LocalTensor<float> &inputMean, const LocalTensor<float> &outputMean,
-    const WelfordFinalizeTmpTensors<float> &tempTensors, const WelfordFinalizePara &para, const uint32_t computeLength, const uint32_t offset)
+__aicore__ inline void WelfordFinalizeExeMean(
+    const LocalTensor<float>& inputMean, const LocalTensor<float>& outputMean,
+    const WelfordFinalizeTmpTensors<float>& tempTensors, const WelfordFinalizePara& para, const uint32_t computeLength,
+    const uint32_t offset)
 {
     LocalTensor<float> tempMean = tempTensors.tempMean;
     LocalTensor<float> tempVariance = tempTensors.tempVariance;
@@ -265,16 +279,20 @@ __aicore__ inline void WelfordFinalizeExeMean(const LocalTensor<float> &inputMea
         GetWelfordFinalizeOutputMeanNoTail(inputMean, tempMean, tempVariance, para, outputMean, computeLength);
     } else {
         ASCENDC_ASSERT((para.tailCount != 0), {
-                KERNEL_LOG(KERNEL_ERROR,
-                           "Failed to check para.tailCount, para.tailCount should not be zero when para.tailCountLength is non-zero!");
-            });
-        GetWelfordFinalizeOutputMeanWithTail(inputMean, tempVariance, tempMean, para, outputMean, computeLength, offset);
+            KERNEL_LOG(
+                KERNEL_ERROR, "Failed to check para.tailCount, para.tailCount should not be zero when "
+                              "para.tailCountLength is non-zero!");
+        });
+        GetWelfordFinalizeOutputMeanWithTail(
+            inputMean, tempVariance, tempMean, para, outputMean, computeLength, offset);
     }
 }
 
 template <bool isReuseSource = false>
-__aicore__ inline void WelfordFinalizeExeVariance(const LocalTensor<float> &inputMean, const LocalTensor<float> &inputVariance,
-    const LocalTensor<float> &outputVariance, WelfordFinalizeTmpTensors<float> &tempTensors, const WelfordFinalizePara &para, const uint32_t computeLength, const uint32_t offset)
+__aicore__ inline void WelfordFinalizeExeVariance(
+    const LocalTensor<float>& inputMean, const LocalTensor<float>& inputVariance,
+    const LocalTensor<float>& outputVariance, WelfordFinalizeTmpTensors<float>& tempTensors,
+    const WelfordFinalizePara& para, const uint32_t computeLength, const uint32_t offset)
 {
     LocalTensor<float> tempMean = tempTensors.tempMean;
     LocalTensor<float> tempVariance = tempTensors.tempVariance;
@@ -283,19 +301,22 @@ __aicore__ inline void WelfordFinalizeExeVariance(const LocalTensor<float> &inpu
     SetMaskCount();
     BroadcastLastDim(tempMean, tempVariance, 1, computeLength);
     if (para.tailCountLength == 0 || para.tailCount == 0) {
-        GetWelfordFinalizeOutputVarianceNoTail(inputMean, inputVariance, tempMean, tempVariance, para, outputVariance, computeLength);
+        GetWelfordFinalizeOutputVarianceNoTail(
+            inputMean, inputVariance, tempMean, tempVariance, para, outputVariance, computeLength);
     } else {
         ASCENDC_ASSERT((para.tailCount != 0), {
-                KERNEL_LOG(KERNEL_ERROR,
-                           "Failed to check para.tailCount, para.tailCount should not be zero when para.tailCountLength is non-zero!");
-            });
-        GetWelfordFinalizeOutputVarianceWithTail(inputMean, inputVariance, tempMean, tempVariance, para, outputVariance, computeLength, offset);
+            KERNEL_LOG(
+                KERNEL_ERROR, "Failed to check para.tailCount, para.tailCount should not be zero when "
+                              "para.tailCountLength is non-zero!");
+        });
+        GetWelfordFinalizeOutputVarianceWithTail(
+            inputMean, inputVariance, tempMean, tempVariance, para, outputVariance, computeLength, offset);
     }
 }
 
 template <bool isReuseSource = false>
-__aicore__ inline void WelfordFinalizeComputeImpl(const LocalTensor<float>& inputMean,
-    const LocalTensor<float>& inputVariance, const LocalTensor<float>& outputMean,
+__aicore__ inline void WelfordFinalizeComputeImpl(
+    const LocalTensor<float>& inputMean, const LocalTensor<float>& inputVariance, const LocalTensor<float>& outputMean,
     const LocalTensor<float>& outputVariance, WelfordFinalizeTmpTensors<float>& tempTensors,
     const WelfordFinalizePara& para, WelfordFinalizeTilingData& tiling)
 {
@@ -305,42 +326,45 @@ __aicore__ inline void WelfordFinalizeComputeImpl(const LocalTensor<float>& inpu
     LocalTensor<float> tempOutputMean = tempTensors.tempOutputMean;
     LocalTensor<float> tempOutputVariance = tempTensors.tempOutputVariance;
 
-    for (uint32_t i = 0; i < tiling.round; i++)
-    {
-        WelfordFinalizeExeMean<isReuseSource>(inputMean[offset], tempOutputMean[outOffset],
-            tempTensors, para, tiling.computeLength, offset);
+    for (uint32_t i = 0; i < tiling.round; i++) {
+        WelfordFinalizeExeMean<isReuseSource>(
+            inputMean[offset], tempOutputMean[outOffset], tempTensors, para, tiling.computeLength, offset);
         offset += tiling.computeLength;
         outOffset++;
         if (outOffset == B32_LEN) {
             SetMaskNorm();
-            WholeReduceSum(tempOutputMean, tempOutputMean, B32_LEN, 1, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, outOffset >> 0x3);
+            WholeReduceSum(
+                tempOutputMean, tempOutputMean, B32_LEN, 1, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, outOffset >> 0x3);
             PipeBarrier<PIPE_V>();
             outOffset = 1;
         }
     }
 
     if (tiling.tail > 0) {
-        WelfordFinalizeExeMean<isReuseSource>(inputMean[offset], tempOutputMean[outOffset],
-            tempTensors, para, tiling.tail, offset);
+        WelfordFinalizeExeMean<isReuseSource>(
+            inputMean[offset], tempOutputMean[outOffset], tempTensors, para, tiling.tail, offset);
         outOffset++;
     }
     SetMaskNorm();
-    WholeReduceSum(tempOutputMean, tempOutputMean, outOffset, 1, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, outOffset >> 0x3);
+    WholeReduceSum(
+        tempOutputMean, tempOutputMean, outOffset, 1, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, outOffset >> 0x3);
     PipeBarrier<PIPE_V>();
 
     offset = 0;
     outOffset = 0;
-    for (uint32_t i = 0; i < tiling.round; i++)
-    {
+    for (uint32_t i = 0; i < tiling.round; i++) {
         Adds(tempMean, tempOutputMean, static_cast<float>(0), 1);
         PipeBarrier<PIPE_V>();
-        WelfordFinalizeExeVariance<isReuseSource>(inputMean[offset], inputVariance[offset], tempOutputVariance[outOffset],
-            tempTensors, para, tiling.computeLength, offset);
+        WelfordFinalizeExeVariance<isReuseSource>(
+            inputMean[offset], inputVariance[offset], tempOutputVariance[outOffset], tempTensors, para,
+            tiling.computeLength, offset);
         offset += tiling.computeLength;
         outOffset++;
         if (outOffset == B32_LEN) {
             SetMaskNorm();
-            WholeReduceSum(tempOutputVariance, tempOutputVariance, B32_LEN, 1, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, outOffset >> 0x3);
+            WholeReduceSum(
+                tempOutputVariance, tempOutputVariance, B32_LEN, 1, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE,
+                outOffset >> 0x3);
             PipeBarrier<PIPE_V>();
             outOffset = 1;
         }
@@ -349,19 +373,21 @@ __aicore__ inline void WelfordFinalizeComputeImpl(const LocalTensor<float>& inpu
     if (tiling.tail > 0) {
         Adds(tempMean, tempOutputMean, static_cast<float>(0), 1);
         PipeBarrier<PIPE_V>();
-        WelfordFinalizeExeVariance<isReuseSource>(inputMean[offset], inputVariance[offset], tempOutputVariance[outOffset],
-            tempTensors, para, tiling.tail, offset);
+        WelfordFinalizeExeVariance<isReuseSource>(
+            inputMean[offset], inputVariance[offset], tempOutputVariance[outOffset], tempTensors, para, tiling.tail,
+            offset);
         outOffset++;
     }
     SetMaskNorm();
-    WholeReduceSum(tempOutputVariance, tempOutputVariance, outOffset, 1, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, outOffset >> 0x3);
+    WholeReduceSum(
+        tempOutputVariance, tempOutputVariance, outOffset, 1, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, outOffset >> 0x3);
     PipeBarrier<PIPE_V>();
     welfordFinalizeOutputPre(outputMean, outputVariance, tempOutputMean, tempOutputVariance);
 }
 
 template <bool isReuseSource = false>
-__aicore__ inline void WelfordFinalizeComputeImpl(const LocalTensor<float>& inputMean,
-    const LocalTensor<float>& inputVariance, const LocalTensor<float>& outputMean,
+__aicore__ inline void WelfordFinalizeComputeImpl(
+    const LocalTensor<float>& inputMean, const LocalTensor<float>& inputVariance, const LocalTensor<float>& outputMean,
     const LocalTensor<float>& outputVariance, const LocalTensor<int32_t>& counts,
     const WelfordFinalizeTmpTensors<float>& tempTensors, const WelfordFinalizePara& para,
     WelfordFinalizeTilingData& tiling)
@@ -372,42 +398,45 @@ __aicore__ inline void WelfordFinalizeComputeImpl(const LocalTensor<float>& inpu
     LocalTensor<float> tempOutputMean = tempTensors.tempOutputMean;
     LocalTensor<float> tempOutputVariance = tempTensors.tempOutputVariance;
 
-    for (uint32_t i = 0; i < tiling.round; i++)
-    {
-        WelfordFinalizeExeMean<isReuseSource>(inputMean[offset], tempOutputMean[outOffset], counts[offset],
-            tempTensors, para, tiling.computeLength);
+    for (uint32_t i = 0; i < tiling.round; i++) {
+        WelfordFinalizeExeMean<isReuseSource>(
+            inputMean[offset], tempOutputMean[outOffset], counts[offset], tempTensors, para, tiling.computeLength);
         offset += tiling.computeLength;
         outOffset++;
         if (outOffset == B32_LEN) {
             SetMaskNorm();
-            WholeReduceSum(tempOutputMean, tempOutputMean, B32_LEN, 1, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, outOffset >> 0x3);
+            WholeReduceSum(
+                tempOutputMean, tempOutputMean, B32_LEN, 1, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, outOffset >> 0x3);
             PipeBarrier<PIPE_V>();
             outOffset = 1;
         }
     }
 
     if (tiling.tail > 0) {
-        WelfordFinalizeExeMean<isReuseSource>(inputMean[offset], tempOutputMean[outOffset], counts[offset],
-            tempTensors, para, tiling.tail);
+        WelfordFinalizeExeMean<isReuseSource>(
+            inputMean[offset], tempOutputMean[outOffset], counts[offset], tempTensors, para, tiling.tail);
         outOffset++;
     }
     SetMaskNorm();
-    WholeReduceSum(tempOutputMean, tempOutputMean, outOffset, 1, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, outOffset >> 0x3);
+    WholeReduceSum(
+        tempOutputMean, tempOutputMean, outOffset, 1, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, outOffset >> 0x3);
     PipeBarrier<PIPE_V>();
 
     offset = 0;
     outOffset = 0;
-    for (uint32_t i = 0; i < tiling.round; i++)
-    {
+    for (uint32_t i = 0; i < tiling.round; i++) {
         Adds(tempMean, tempOutputMean, static_cast<float>(0), 1);
         PipeBarrier<PIPE_V>();
-        WelfordFinalizeExeVariance<isReuseSource>(inputMean[offset], inputVariance[offset], tempOutputVariance[outOffset], counts[offset],
-            tempTensors, para, tiling.computeLength);
+        WelfordFinalizeExeVariance<isReuseSource>(
+            inputMean[offset], inputVariance[offset], tempOutputVariance[outOffset], counts[offset], tempTensors, para,
+            tiling.computeLength);
         offset += tiling.computeLength;
         outOffset++;
         if (outOffset == B32_LEN) {
             SetMaskNorm();
-            WholeReduceSum(tempOutputVariance, tempOutputVariance, B32_LEN, 1, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, outOffset >> 0x3);
+            WholeReduceSum(
+                tempOutputVariance, tempOutputVariance, B32_LEN, 1, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE,
+                outOffset >> 0x3);
             PipeBarrier<PIPE_V>();
             outOffset = 1;
         }
@@ -416,26 +445,31 @@ __aicore__ inline void WelfordFinalizeComputeImpl(const LocalTensor<float>& inpu
     if (tiling.tail > 0) {
         Adds(tempMean, tempOutputMean, static_cast<float>(0), 1);
         PipeBarrier<PIPE_V>();
-        WelfordFinalizeExeVariance<isReuseSource>(inputMean[offset], inputVariance[offset], tempOutputVariance[outOffset], counts[offset],
-            tempTensors, para, tiling.tail);
+        WelfordFinalizeExeVariance<isReuseSource>(
+            inputMean[offset], inputVariance[offset], tempOutputVariance[outOffset], counts[offset], tempTensors, para,
+            tiling.tail);
         outOffset++;
     }
     SetMaskNorm();
-    WholeReduceSum(tempOutputVariance, tempOutputVariance, outOffset, 1, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, outOffset >> 0x3);
+    WholeReduceSum(
+        tempOutputVariance, tempOutputVariance, outOffset, 1, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, outOffset >> 0x3);
     PipeBarrier<PIPE_V>();
     welfordFinalizeOutputPre(outputMean, outputVariance, tempOutputMean, tempOutputVariance);
 }
 
 template <bool isReuseSource = false>
-__aicore__ inline void GetWelfordFinalizeTensorInfo(const LocalTensor<float>& stackBuffer,
-    const WelfordFinalizePara& para, WelfordFinalizeTmpTensors<float>& tempTensors, WelfordFinalizeTilingData& tiling)
+__aicore__ inline void GetWelfordFinalizeTensorInfo(
+    const LocalTensor<float>& stackBuffer, const WelfordFinalizePara& para,
+    WelfordFinalizeTmpTensors<float>& tempTensors, WelfordFinalizeTilingData& tiling)
 {
     // 0x2 indicates reserving twp buffers for the calculations of mean and variance
     uint32_t minTmpSize = B32_LEN * 0x2;
     // 0x2 indicates reserving two buffers for the storage of mean and variance
     const uint32_t minTmpOutSize = B32_LEN * 0x2;
-    ASCENDC_ASSERT((stackBuffer.GetSize() >= (minTmpSize + minTmpOutSize)),
-                { KERNEL_LOG(KERNEL_ERROR, "sharedTmpBuffer size must >= %ld Bytes!", (minTmpSize + minTmpOutSize) * sizeof(float)); });
+    ASCENDC_ASSERT((stackBuffer.GetSize() >= (minTmpSize + minTmpOutSize)), {
+        KERNEL_LOG(
+            KERNEL_ERROR, "sharedTmpBuffer size must >= %ld Bytes!", (minTmpSize + minTmpOutSize) * sizeof(float));
+    });
 
     const uint32_t expFactor = (stackBuffer.GetSize() - minTmpOutSize) / minTmpSize;
     tiling.computeLength = expFactor * B32_LEN;
@@ -448,41 +482,54 @@ __aicore__ inline void GetWelfordFinalizeTensorInfo(const LocalTensor<float>& st
     tempTensors.tempVariance = stackBuffer[minTmpOutSize + tiling.computeLength];
 }
 
-__aicore__ inline void welfordFinalizeCommonCheck(const LocalTensor<float> &inputMean, const LocalTensor<float> &inputVariance,
-                                                const LocalTensor<float> &outputMean, const LocalTensor<float> &outputVariance, const WelfordFinalizePara &para)
+__aicore__ inline void welfordFinalizeCommonCheck(
+    const LocalTensor<float>& inputMean, const LocalTensor<float>& inputVariance, const LocalTensor<float>& outputMean,
+    const LocalTensor<float>& outputVariance, const WelfordFinalizePara& para)
 {
-    ASCENDC_ASSERT((inputMean.GetSize() >= para.abLength), { 
-        KERNEL_LOG(KERNEL_ERROR, 
-        "Failed to check the size of inputMean, size is %u, which should be larger than para.abLength!", inputMean.GetSize()); 
+    ASCENDC_ASSERT((inputMean.GetSize() >= para.abLength), {
+        KERNEL_LOG(
+            KERNEL_ERROR,
+            "Failed to check the size of inputMean, size is %u, which should be larger than para.abLength!",
+            inputMean.GetSize());
     });
-    ASCENDC_ASSERT((inputVariance.GetSize() >= para.abLength), { 
-        KERNEL_LOG(KERNEL_ERROR, 
-        "Failed to check the size of inputVariance, size is %u, which should be para.abLength!", inputVariance.GetSize()); 
+    ASCENDC_ASSERT((inputVariance.GetSize() >= para.abLength), {
+        KERNEL_LOG(
+            KERNEL_ERROR, "Failed to check the size of inputVariance, size is %u, which should be para.abLength!",
+            inputVariance.GetSize());
     });
-    ASCENDC_ASSERT((outputMean.GetSize() >= OUTPUT_SIZE), { 
-        KERNEL_LOG(KERNEL_ERROR, 
-        "Failed to check the size of outputMean, outputMean is %u, which should be larger than 8!", outputMean.GetSize()); 
+    ASCENDC_ASSERT((outputMean.GetSize() >= OUTPUT_SIZE), {
+        KERNEL_LOG(
+            KERNEL_ERROR, "Failed to check the size of outputMean, outputMean is %u, which should be larger than 8!",
+            outputMean.GetSize());
     });
-    ASCENDC_ASSERT((outputVariance.GetSize() >= OUTPUT_SIZE), { 
-        KERNEL_LOG(KERNEL_ERROR, 
-        "Failed to check the size of outputVariance, outputVariance is %u, which should be larger than 8!", outputVariance.GetSize()); 
+    ASCENDC_ASSERT((outputVariance.GetSize() >= OUTPUT_SIZE), {
+        KERNEL_LOG(
+            KERNEL_ERROR,
+            "Failed to check the size of outputVariance, outputVariance is %u, which should be larger than 8!",
+            outputVariance.GetSize());
     });
     ASCENDC_ASSERT((para.abLength > 0 && para.abLength % (ONE_BLK_SIZE / sizeof(float)) == 0), {
-        KERNEL_LOG(KERNEL_ERROR,
-        "Failed to check para.abLength, abLength is %u, which should not be 0 and 32Bytes aligned(float)!", para.abLength);
+        KERNEL_LOG(
+            KERNEL_ERROR,
+            "Failed to check para.abLength, abLength is %u, which should not be 0 and 32Bytes aligned(float)!",
+            para.abLength);
     });
     ASCENDC_ASSERT((para.headCountLength + para.tailCountLength == para.abLength), {
-        KERNEL_LOG(KERNEL_ERROR,
-        "Failed to check para.headCountLength and para.tailCountLength, the sum of them must be equal to para.abLength!");
+        KERNEL_LOG(
+            KERNEL_ERROR, "Failed to check para.headCountLength and para.tailCountLength, the sum of them must be "
+                          "equal to para.abLength!");
     });
 }
 
 template <bool isReuseSource = false>
-__aicore__ inline void WelfordFinalizeImpl(const LocalTensor<float> &outputMean, const LocalTensor<float> &outputVariance,
-                                        const LocalTensor<float> &inputMean, const LocalTensor<float> &inputVariance, const LocalTensor<uint8_t> &sharedTmpBuffer, const WelfordFinalizePara &para)
+__aicore__ inline void WelfordFinalizeImpl(
+    const LocalTensor<float>& outputMean, const LocalTensor<float>& outputVariance, const LocalTensor<float>& inputMean,
+    const LocalTensor<float>& inputVariance, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const WelfordFinalizePara& para)
 {
-    CHECK_FUNC_HIGHLEVEL_API(WelfordFinalize, (isReuseSource), (outputMean, outputVariance, inputMean, inputVariance, sharedTmpBuffer,
-        para));
+    CHECK_FUNC_HIGHLEVEL_API(
+        WelfordFinalize, (isReuseSource),
+        (outputMean, outputVariance, inputMean, inputVariance, sharedTmpBuffer, para));
     welfordFinalizeCommonCheck(inputMean, inputVariance, outputMean, outputVariance, para);
 
     LocalTensor<float> stackBuffer = sharedTmpBuffer.ReinterpretCast<float>();
@@ -491,21 +538,26 @@ __aicore__ inline void WelfordFinalizeImpl(const LocalTensor<float> &outputMean,
     GetWelfordFinalizeTensorInfo<isReuseSource>(stackBuffer, para, tempTensors, tiling);
 
     SetMaskCount();
-    WelfordFinalizeComputeImpl<isReuseSource>(inputMean, inputVariance, outputMean, outputVariance, tempTensors, para, tiling);
+    WelfordFinalizeComputeImpl<isReuseSource>(
+        inputMean, inputVariance, outputMean, outputVariance, tempTensors, para, tiling);
 
     SetMaskNorm();
     ResetMask();
 }
 
 template <bool isReuseSource = false>
-__aicore__ inline void WelfordFinalizeImpl(const LocalTensor<float> &outputMean, const LocalTensor<float> &outputVariance,
-                                        const LocalTensor<float> &inputMean, const LocalTensor<float> &inputVariance, const LocalTensor<int32_t> &counts, const LocalTensor<uint8_t> &sharedTmpBuffer, const WelfordFinalizePara &para)
+__aicore__ inline void WelfordFinalizeImpl(
+    const LocalTensor<float>& outputMean, const LocalTensor<float>& outputVariance, const LocalTensor<float>& inputMean,
+    const LocalTensor<float>& inputVariance, const LocalTensor<int32_t>& counts,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const WelfordFinalizePara& para)
 {
-    CHECK_FUNC_HIGHLEVEL_API(WelfordFinalize, (isReuseSource), (outputMean, outputVariance, inputMean, inputVariance, counts, sharedTmpBuffer,
-        para));
-    ASCENDC_ASSERT((counts.GetSize() >= para.abLength), { 
-        KERNEL_LOG(KERNEL_ERROR, 
-        "Failed to check the size of counts, size is %u, which should be larger than para.abLength!", counts.GetSize()); 
+    CHECK_FUNC_HIGHLEVEL_API(
+        WelfordFinalize, (isReuseSource),
+        (outputMean, outputVariance, inputMean, inputVariance, counts, sharedTmpBuffer, para));
+    ASCENDC_ASSERT((counts.GetSize() >= para.abLength), {
+        KERNEL_LOG(
+            KERNEL_ERROR, "Failed to check the size of counts, size is %u, which should be larger than para.abLength!",
+            counts.GetSize());
     });
     welfordFinalizeCommonCheck(inputMean, inputVariance, outputMean, outputVariance, para);
 
@@ -515,15 +567,17 @@ __aicore__ inline void WelfordFinalizeImpl(const LocalTensor<float> &outputMean,
     GetWelfordFinalizeTensorInfo<isReuseSource>(stackBuffer, para, tempTensors, tiling);
 
     SetMaskCount();
-    WelfordFinalizeComputeImpl<isReuseSource>(inputMean, inputVariance, outputMean, outputVariance, counts, tempTensors, para, tiling);
+    WelfordFinalizeComputeImpl<isReuseSource>(
+        inputMean, inputVariance, outputMean, outputVariance, counts, tempTensors, para, tiling);
 
     SetMaskNorm();
     ResetMask();
 }
 
 template <bool isReuseSource = false>
-__aicore__ inline void WelfordFinalizeImpl(const LocalTensor<float> &outputMean, const LocalTensor<float> &outputVariance,
-                                        const LocalTensor<float> &inputMean, const LocalTensor<float> &inputVariance, const WelfordFinalizePara &para)
+__aicore__ inline void WelfordFinalizeImpl(
+    const LocalTensor<float>& outputMean, const LocalTensor<float>& outputVariance, const LocalTensor<float>& inputMean,
+    const LocalTensor<float>& inputVariance, const WelfordFinalizePara& para)
 {
     LocalTensor<uint8_t> sharedTmpBuffer;
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);
@@ -533,14 +587,16 @@ __aicore__ inline void WelfordFinalizeImpl(const LocalTensor<float> &outputMean,
 }
 
 template <bool isReuseSource = false>
-__aicore__ inline void WelfordFinalizeImpl(const LocalTensor<float> &outputMean, const LocalTensor<float> &outputVariance, const LocalTensor<float> &inputMean,
-                                        const LocalTensor<float> &inputVariance, const LocalTensor<int32_t> &counts, const WelfordFinalizePara &para)
+__aicore__ inline void WelfordFinalizeImpl(
+    const LocalTensor<float>& outputMean, const LocalTensor<float>& outputVariance, const LocalTensor<float>& inputMean,
+    const LocalTensor<float>& inputVariance, const LocalTensor<int32_t>& counts, const WelfordFinalizePara& para)
 {
     LocalTensor<uint8_t> sharedTmpBuffer;
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);
     ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
 
-    WelfordFinalizeImpl<isReuseSource>(outputMean, outputVariance, inputMean, inputVariance, counts, sharedTmpBuffer, para);
+    WelfordFinalizeImpl<isReuseSource>(
+        outputMean, outputVariance, inputMean, inputVariance, counts, sharedTmpBuffer, para);
 }
 } // namespace AscendC
 #endif // IMPL_NORMALIZATION_WELFORDFINALIZE_COMMON_IMPL_H

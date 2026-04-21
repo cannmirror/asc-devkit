@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file bitwise_template.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/bitwise_template/bitwise_template.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/bitwise_and.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/bitwise_template/bitwise_template.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/bitwise_and.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_BITWISE_TEMPLATE_BITWISE_TEMPLATE_H__
 #endif
@@ -26,8 +27,9 @@
 
 namespace AscendC {
 template <auto func, typename T, typename RegT, const Reg::RegTrait& Trait = Reg::RegTraitNumOne>
-__simd_vf__ inline void BitwiseTemplateImplVF(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, uint16_t repeatTime,
-                                             uint32_t count, uint32_t oneRepElm, uint32_t offset)
+__simd_vf__ inline void BitwiseTemplateImplVF(
+    __ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, uint16_t repeatTime, uint32_t count, uint32_t oneRepElm,
+    uint32_t offset)
 {
     RegT dstVreg;
     RegT src0Vreg;
@@ -53,8 +55,8 @@ __simd_vf__ inline void BitwiseTemplateImplVF(__ubuf__ T* dst, __ubuf__ T* src0,
 }
 
 template <auto func, typename T>
-__aicore__ inline void BitwiseTemplateImpl(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
-                                           const LocalTensor<T>& src1, const uint32_t count)
+__aicore__ inline void BitwiseTemplateImpl(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src0, const LocalTensor<T>& src1, const uint32_t count)
 {
     static_assert(
         SupportType<T, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, uint64_t, int64_t>(),
@@ -67,15 +69,15 @@ __aicore__ inline void BitwiseTemplateImpl(const LocalTensor<T>& dst, const Loca
     if constexpr (sizeof(T) == 8) {
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T) * 2);
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm) / 2);
-        uint32_t offset = static_cast<uint32_t>(repeatTime * oneRepElm);    
+        uint32_t offset = static_cast<uint32_t>(repeatTime * oneRepElm);
         BitwiseTemplateImplVF<func, T, Reg::RegTensor<T, Reg::RegTraitNumTwo>, Reg::RegTraitNumTwo>(
             dstTensor, src0Tensor, src1Tensor, repeatTime, count, oneRepElm, offset);
     } else {
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm) / 2);
         uint32_t offset = static_cast<uint32_t>(repeatTime * oneRepElm);
-        BitwiseTemplateImplVF<func, T, Reg::RegTensor<T>>(dstTensor, src0Tensor, src1Tensor, repeatTime,
-                                                                        count, oneRepElm, offset);
+        BitwiseTemplateImplVF<func, T, Reg::RegTensor<T>>(
+            dstTensor, src0Tensor, src1Tensor, repeatTime, count, oneRepElm, offset);
     }
 }
 } // namespace AscendC

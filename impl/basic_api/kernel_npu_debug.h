@@ -12,6 +12,11 @@
  * \file kernel_npu_debug.h
  * \brief
  */
+#if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
+#pragma message("impl/basic_api/kernel_npu_debug.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_operator_mm_intf_impl.h\"\" and use public functions or variables defined in interface headers files.")
+#define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_NPU_DEBUG_H__
+#endif
 #ifndef ASCENDC_MODULE_OPERATOR_KERNEL_NPU_DEBUG_H
 #define ASCENDC_MODULE_OPERATOR_KERNEL_NPU_DEBUG_H
 
@@ -180,6 +185,11 @@ __aicore__ inline void CheckMaskValue(const uint64_t mask, const __gm__ char* ap
         return;
     }
 
+#if __NPU_ARCH__ == 2002
+    ASCENDC_DEBUG_ASSERT((mask != 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check mask value in %s, when in"
+        "norm mode, mask cannot be 0 on current platform.\n", apiName));
+#endif
+
     if constexpr (sizeof(T) == 2) {
         CheckValueRange<uint64_t>(mask, 0, ONE_REPEAT_BYTE_SIZE / sizeof(T), "mask when sizeof(T) == 2" , apiName);
     } else if constexpr (sizeof(T) == 4) {
@@ -205,3 +215,7 @@ __aicore__ inline void CheckVectorTensor(const __gm__ char* apiName, const Ts& .
 } // namespace AscendC
 
 #endif // ASCENDC_MODULE_OPERATOR_KERNEL_NPU_DEBUG_H
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_NPU_DEBUG_H__)
+#undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_NPU_DEBUG_H__
+#endif

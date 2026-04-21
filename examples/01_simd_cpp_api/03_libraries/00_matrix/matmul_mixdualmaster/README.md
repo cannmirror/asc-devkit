@@ -1,6 +1,11 @@
-# Matmul算子双主模式直调样例
+# Matmul 双主模式直调样例
 ## 概述
-本样例介绍通过配置模板参数中enableMixDualMaster使能Matmul双主模式MixDualMaster的使用方式。区别于MIX模式（包含矩阵计算和矢量计算）通过消息机制驱动AIC运行，双主模式为AIC和AIV独立运行代码，不依赖消息驱动，用于提升性能。
+使能双主模式（MixDualMaster）的Matmul样例，AIC和AIV独立运行代码，不依赖消息驱动，用于提升性能。
+
+在Matmul API在默认的MIX模式下，Matmul API通过消息机制由AIV驱动AIC运行；而在双主模式下，双主模式为AIC和AIV独立运行代码，不依赖消息驱动，性能更优。
+当满足以下条件之一时，可以开启双主模式：
+- 核函数类型为MIX，且AIC核数：AIV核数=1：1
+- 核函数类型为MIX，且AIC核数：AIV核数=1：2，且A矩阵和B矩阵同时使能IBSHARE参数
 
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT
@@ -14,64 +19,47 @@
 │       └── verify_result.py    // 真值对比文件
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── matmul_mixdualmaster.asc              // Ascend C算子实现 & 调用样例
+│   └── matmul_mixdualmaster.asc              // Ascend C样例实现 & 调用样例
 ```
-## 算子描述
-- 算子功能： 
+## 样例描述
+- 样例功能：  
+  本样例核函数类型为MIX，且AIC核数：AIV核数=1：2，且A矩阵和B矩阵同时使能IBSHARE参数，同一AIC对应的两个AIV的输入AB矩阵数据在L1 Buffer上相同。  
+  通过设置MatmulConfig参数enableMixDualMaster使能双主模式。
 
-  Matmul算子对输入的A、B矩阵做矩阵乘和加bias偏置。通过设置MatmulConfig参数enableMixDualMaster使能双主模式。
-
-- 算子规格： 
-
-  本样例默认执行的算子shape为：M = 12288, N = 256, K = 128。
+- 样例规格：  
+  本样例中：M = 12288, N = 256, K = 128。
   <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="5" align="center">Matmul</td></tr>
+  <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="5" align="center">Matmul</td></tr>
   </tr>
-  <tr><td rowspan="4" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">isTrans</td></tr>
-  <tr><td align="center">a</td><td align="center">M * K</td><td align="center">float16</td><td align="center">ND</td><td align="center">false</td></tr>
-  <tr><td align="center">b</td><td align="center">K * N</td><td align="center">float16</td><td align="center">ND</td><td align="center">false</td></tr>
-  <tr><td align="center">bias</td><td align="center">N</td><td align="center">float32</td><td align="center">ND</td><td align="center">-</td></tr>
+  <tr><td rowspan="4" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">isTrans</td></tr>
+  <tr><td align="center">a</td><td align="center">[M, K]</td><td align="center">float16</td><td align="center">ND</td><td align="center">false</td></tr>
+  <tr><td align="center">b</td><td align="center">[K, N]</td><td align="center">float16</td><td align="center">ND</td><td align="center">false</td></tr>
+  <tr><td align="center">bias</td><td align="center">[1, N]</td><td align="center">float32</td><td align="center">ND</td><td align="center">-</td></tr>
   </tr>
   </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">M * N</td><td align="center">float32</td><td align="center">ND</td><td align="center">-</td></tr>
+  <tr><td rowspan="1" align="center">样例输出</td><td align="center">c</td><td align="center">[M, N]</td><td align="center">float32</td><td align="center">ND</td><td align="center">-</td></tr>
   </tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">matmul_mixdualmaster_custom</td></tr>
   </table>
-- 算子实现： 
-  - Kernel实现
-    - 计算逻辑：C = A * B + Bias。
-      - A、B为源操作数，A为左矩阵，形状为[M, K]；B为右矩阵，形状为[K, N]。
-      - C为目的操作数，存放矩阵乘结果的矩阵，形状为[M, N]。
-      - Bias为矩阵乘偏置，形状为[1, N]。对A*B结果矩阵的每一行都采用该bias进行偏置。
-    - 具体步骤：
-      - 创建Matmul对象：调用GetNormalConfig接口将enableMixDualMaster参数设置为true，获取自定义模板MM_CFG，通过传入模板参数创建Matmul对象。
-          ```
-          static constexpr auto MM_CFG = GetNormalConfig(false, false, false, BatchMode::BATCH_LESS_THAN_L1, 
-          true, IterateOrder::UNDEF, ScheduleType::INNER_PRODUCT, true, true, false); 
-          // 倒数第二位参数enableMixDualMaster设置为true，创建Matmul对象。矩阵A矩阵B使能IBSHARE参数
-          AscendC::Matmul<
-              AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, AType, false, LayoutMode::NONE, true>,
-              AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, BType, false, LayoutMode::NONE, true>,
-              AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, CType>,
-              AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, BiasType>, MM_CFG> matmulObj;
-          ```
-      - 初始化操作。
-      - 设置左矩阵A、右矩阵B、Bias。
-      - 完成矩阵乘操作。
-      - 结束矩阵乘操作。
-
-  - Tiling实现
-      - Ascend C提供一组Matmul Tiling API，方便用户获取Matmul kernel计算时所需的Tiling参数。只需要传入A/B/C矩阵等信息，调用API接口，即可获取到TCubeTiling结构体中的相关参数。
-      - 获取Tiling参数的流程如下：
-        - 创建一个Tiling对象。
-        - 设置A、B、C、Bias的参数类型信息；M、N、Ka、Kb形状信息等。
-        - 调用GetTiling接口，获取Tiling信息。
+- 样例实现： 
+  - Kernel关键步骤
+    - 创建Matmul对象：调用GetNormalConfig接口将enableMixDualMaster参数设置为true，获取自定义模板MM_CFG，通过传入模板参数创建Matmul对象。
+      ```cpp
+      static constexpr auto MM_CFG = GetNormalConfig(false, false, false, BatchMode::BATCH_LESS_THAN_L1, 
+      true, IterateOrder::UNDEF, ScheduleType::INNER_PRODUCT, true, true, false); 
+      // 倒数第二位参数enableMixDualMaster设置为true，创建Matmul对象。矩阵A矩阵B使能IBSHARE参数
+      AscendC::Matmul<
+          AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, AType, false, LayoutMode::NONE, true>,
+          AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, BType, false, LayoutMode::NONE, true>,
+          AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, CType>,
+          AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, BiasType>, MM_CFG> matmulObj;
+      ```
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行
-在本样例根目录下执行如下步骤，编译并执行算子。
+在本样例根目录下执行如下步骤，编译并执行样例。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包

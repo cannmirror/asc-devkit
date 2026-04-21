@@ -24,6 +24,8 @@
 #include "kernel_check.h"
 #include "kernel_npu_debug.h"
 #include "kernel_log.h"
+#include "kernel_struct_mm.h"
+#include "kernel_struct_fixpipe.h"
 
 namespace AscendC {
 
@@ -56,6 +58,167 @@ __aicore__ static inline void CheckMmadAlign(const LocalTensor<T>& dst, const Lo
     CheckTensorAlign<S>(filter, VALUE_512, "filter", "Mmad");
 }
 
+__aicore__ inline void CheckMmadParamsCommon(const MmadParams& mmadParams, const __gm__ char* apiName)
+{
+    CheckValueRange<uint16_t>(mmadParams.m, 0, UINT12_MAX, "m", apiName);
+    CheckValueRange<uint16_t>(mmadParams.n, 0, UINT12_MAX, "n", apiName);
+    CheckValueRange<uint16_t>(mmadParams.k, 0, UINT12_MAX, "k", apiName);
+    ASCENDC_DEBUG_ASSERT((mmadParams.unitFlag == 0 || mmadParams.unitFlag == 2 || mmadParams.unitFlag == 3),
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check unitFlag value in %s, supported values are 0, 2, and 3.\n",
+        apiName));
+}
+
+template <typename T, typename U, typename S>
+__aicore__ inline void CheckMmadTensorCommon(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
+    const LocalTensor<S>& filter, const MmadParams& mmadParams, const __gm__ char* apiName)
+{
+    constexpr uint32_t align1024B = 1024;
+
+    CheckMmadParamsCommon(mmadParams, apiName);
+    CheckTensorPhyPosition<Hardware::L0C>(dst, "dstLocal", "CO1", apiName);
+    CheckTensorPhyPosition<Hardware::L0A>(fm, "fmLocal", "A2", apiName);
+    CheckTensorPhyPosition<Hardware::L0B>(filter, "filterLocal", "B2", apiName);
+    CheckTensorAlignment(dst, align1024B, "dst", apiName);
+    CheckTensorAlignment(fm, VALUE_512, "fm", apiName);
+    CheckTensorAlignment(filter, VALUE_512, "filter", apiName);
+}
+
+template <typename T, typename U, typename S, typename V>
+__aicore__ inline void CheckMmadTensorCommon(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
+    const LocalTensor<S>& filter, const LocalTensor<V>& bias, const MmadParams& mmadParams, const __gm__ char* apiName)
+{
+    CheckMmadTensorCommon(dst, fm, filter, mmadParams, apiName);
+    CheckTensorAlignment(bias, 128, "bias", apiName);
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 1001) || (__NPU_ARCH__ == 2002))
+    CheckTensorPhyPosition<Hardware::L0C>(bias, "bias", "CO1", apiName);
+#else
+    CheckTensorPhyPosition<Hardware::L0C, Hardware::BIAS>(bias, "bias", "CO1 / C2", apiName);
+#endif
+}
+
+__aicore__ inline void CheckFixpipeQuantPreWithWorkspaceCommon(const QuantMode_t quantPre, const __gm__ char* apiName)
+{
+    ASCENDC_DEBUG_ASSERT((quantPre == QuantMode_t::VDEQF16 || quantPre == QuantMode_t::VQF322B8_PRE ||
+        quantPre == QuantMode_t::VREQ8), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check quantPre value in %s, "
+        "when cbufWorkspace is given, supported values are VDEQF16 / VQF322B8_PRE / VREQ8.\n", apiName));
+}
+
+template <typename T, typename U>
+__aicore__ inline void CheckFixpipeQuantPreCommon(const QuantMode_t quantPre, const __gm__ char* apiName)
+{
+    if constexpr (IsSameType<PrimT<U>, float>::value && SupportType<PrimT<T>, int8_t, uint8_t>()) {
+        ASCENDC_DEBUG_ASSERT((quantPre == QuantMode_t::QF322B8_PRE ||
+            quantPre == QuantMode_t::VQF322B8_PRE), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
+            "Failed to check quantPre value in %s, when src is float and dst is int8_t / uint8_t, supported values "
+            "are QF322B8_PRE and VQF322B8_PRE.\n", apiName));
+    } else if constexpr (IsSameType<PrimT<U>, float>::value && IsSameType<PrimT<T>, half>::value) {
+        ASCENDC_DEBUG_ASSERT((quantPre == QuantMode_t::F322F16), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
+            "Failed to check quantPre value in %s, when src is float and dst is half, supported value is F322F16.\n",
+            apiName));
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+    } else if constexpr (IsSameType<PrimT<U>, float>::value && IsSameType<PrimT<T>, bfloat16_t>::value) {
+        ASCENDC_DEBUG_ASSERT((quantPre == QuantMode_t::F322BF16), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
+            "Failed to check quantPre value in %s, when src is float and dst is bfloat16_t, supported value is "
+            "F322BF16.\n", apiName));
+#endif
+    } else if constexpr (IsSameType<PrimT<U>, int32_t>::value && SupportType<PrimT<T>, int8_t, uint8_t>()) {
+        ASCENDC_DEBUG_ASSERT((quantPre == QuantMode_t::REQ8 ||
+            quantPre == QuantMode_t::VREQ8), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
+            "Failed to check quantPre value in %s, when src is int32_t and dst is int8_t / uint8_t, supported values "
+            "are REQ8 and VREQ8.\n", apiName));
+    } else if constexpr (IsSameType<PrimT<U>, int32_t>::value && IsSameType<PrimT<T>, half>::value) {
+        ASCENDC_DEBUG_ASSERT((quantPre == QuantMode_t::DEQF16 ||
+            quantPre == QuantMode_t::VDEQF16), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
+            "Failed to check quantPre value in %s, when src is int32_t and dst is half, supported values are DEQF16 "
+            "and VDEQF16.\n", apiName));
+    }
+}
+
+template <typename T, typename U, const FixpipeConfig& config>
+__aicore__ inline void CheckFixpipeParamsV220Common(const FixpipeParamsV220& intriParams, const __gm__ char* apiName)
+{
+    if (intriParams.isChannelSplit) {
+        ASCENDC_DEBUG_ASSERT((intriParams.nSize >= 1 && intriParams.nSize <= UINT12_MAX &&
+            intriParams.nSize % 8 == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check nSize value in %s, "
+            "when isChannelSplit is true, its valid range is 1 ~ 4095 and must be divisible by 8, current value "
+            "is %u.\n", apiName, intriParams.nSize));
+        ASCENDC_DEBUG_ASSERT((IsSameType<PrimT<T>, float>::value),
+            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check isChannelSplit value in %s, isChannelSplit can be "
+            "enabled only when dst are float.\n", apiName));
+    } else if constexpr (config.format == CO2Layout::ROW_MAJOR) {
+        CheckValueRange<uint16_t>(intriParams.nSize, 1, UINT12_MAX, "nSize", apiName);
+    } else {
+        ASCENDC_DEBUG_ASSERT((intriParams.nSize >= 1 && intriParams.nSize <= UINT12_MAX &&
+            intriParams.nSize % 16 == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check nSize value in %s, "
+            "when isChannelSplit is false and format is NZ, its valid range is 1 ~ 4095 and must be divisible by 16, "
+            "current value is %u.\n", apiName, intriParams.nSize));
+    }
+
+    constexpr uint16_t maxMSize = config.format == CO2Layout::ROW_MAJOR ? 8192 : UINT16_MAX;
+    CheckValueRange<uint16_t>(intriParams.mSize, 1, maxMSize, "mSize", apiName);
+    ASCENDC_DEBUG_ASSERT((intriParams.dstStride != 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
+        "Failed to check dstStride value in %s, its valid range is 1 ~ 4294967295, current value is %u.\n", apiName,
+        intriParams.dstStride));
+
+    if (intriParams.ndNum > 1) {
+        CheckValueRange<uint16_t>(intriParams.srcNdStride, 1, VALUE_512, "srcNdStride", apiName);
+        CheckValueRange<uint16_t>(intriParams.dstNdStride, 1, UINT16_MAX, "dstNdStride", apiName);
+    }
+
+    CheckFixpipeQuantPreCommon<T, U>(intriParams.quantPre, apiName);
+}
+
+template <typename T>
+__aicore__ inline void CheckFixpipeWorkspace(const LocalTensor<T>& cbufWorkspace,
+    const FixpipeParamsV220& intriParams, const __gm__ char* apiName)
+{
+    ASCENDC_DEBUG_ASSERT((SupportType<PrimT<T>, uint64_t>()), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
+        "Failed to check cbufWorkspace dtype in %s, supported dtype is uint64_t.\n", apiName));
+    CheckTensorPhyPosition<Hardware::L1>(cbufWorkspace, "cbufWorkspace", "A1", apiName);
+
+    ASCENDC_DEBUG_ASSERT((intriParams.quantPre == QuantMode_t::VDEQF16 ||
+        intriParams.quantPre == QuantMode_t::VQF322B8_PRE || intriParams.quantPre == QuantMode_t::VREQ8),
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check quantPre value in %s, "
+        "when cbufWorkspace is given, supported values are VDEQF16 / VQF322B8_PRE / VREQ8.\n", apiName));
+}
+
+template <typename T, typename U, const FixpipeConfig& config>
+__aicore__ inline void CheckFixpipeTensor(const LocalTensor<T>& dst, const LocalTensor<U>& src,
+    const FixpipeParamsV220& intriParams, const __gm__ char* apiName)
+{
+    CheckFixpipeParamsV220Common<T, U, config>(intriParams, apiName);
+    CheckTensorPhyPosition<Hardware::L0C>(src, "src", "CO1", apiName);
+    const uint32_t L0C_SRC_ALIGN = 16 * sizeof(float);
+    CheckTensorAlignment(src, L0C_SRC_ALIGN, "src", apiName);
+    CheckTensorAlignment(dst, ONE_BLK_SIZE, "dst", apiName);
+    CheckTensorPhyPosition<Hardware::L1, Hardware::UB>(dst, "dst", "A1", apiName);
+}
+
+template <typename T, typename U, const FixpipeConfig& config, typename S>
+__aicore__ inline void CheckFixpipeTensor(const LocalTensor<T>& dst, const LocalTensor<U>& src,
+    const LocalTensor<S>& cbufWorkspace, const FixpipeParamsV220& intriParams, const __gm__ char* apiName)
+{
+    CheckFixpipeTensor<T, U, config>(dst, src, intriParams, apiName);
+    CheckFixpipeWorkspace(cbufWorkspace, intriParams, apiName);
+}
+
+template <typename T, typename U, const FixpipeConfig& config>
+__aicore__ inline void CheckFixpipeTensor(const GlobalTensor<T>& dst, const LocalTensor<U>& src,
+    const FixpipeParamsV220& intriParams, const __gm__ char* apiName)
+{
+    (void)dst;
+    CheckFixpipeParamsV220Common<T, U, config>(intriParams, apiName);
+    CheckTensorPhyPosition<Hardware::L0C>(src, "src", "CO1", apiName);
+}
+
+template <typename T, typename U, const FixpipeConfig& config, typename S>
+__aicore__ inline void CheckFixpipeTensor(const GlobalTensor<T>& dst, const LocalTensor<U>& src,
+    const LocalTensor<S>& cbufWorkspace, const FixpipeParamsV220& intriParams, const __gm__ char* apiName)
+{
+    CheckFixpipeTensor<T, U, config>(dst, src, intriParams, apiName);
+    CheckFixpipeWorkspace(cbufWorkspace, intriParams, apiName);
+}
+
 // check LoadData2D datatype
 template <typename T>
 __aicore__ static inline void CheckLoadData2dDatatype()
@@ -81,13 +244,7 @@ __aicore__ static inline void CheckLoadData2dLocal2Local(const LocalTensor<T>& d
     const __gm__ char* apiName)
 {
     CheckTensorPhyPosition<Hardware::L1>(src, "src", "A1 / B1", apiName);
-    if ((TPosition)src.GetPosition() == TPosition::A1) {
-        CheckTensorPhyPosition<Hardware::L0A>(dst, "dst", "A2", apiName);
-    } else if ((TPosition)src.GetPosition() == TPosition::B1){
-        CheckTensorPhyPosition<Hardware::L0B>(dst, "dst", "B2", apiName);
-    } else { // TSCM etc, other L1 pos
-        CheckTensorPhyPosition<Hardware::L0A, Hardware::L0B>(dst, "dst", "A2 / B2", apiName);
-    }
+    CheckTensorPhyPosition<Hardware::L0A, Hardware::L0B>(dst, "dst", "A2 / B2", apiName);
     CheckTensorAlignment(src, ONE_BLK_SIZE, "src", apiName);
     CheckTensorAlignment(dst, VALUE_512, "dst", apiName);
 }
@@ -154,13 +311,7 @@ __aicore__ static inline void CheckLoadDataWithTranspose(const LocalTensor<T>& d
 // dav_c310 + dav_m510 + dav_m310 not support A1 -> A2
 #if __NPU_ARCH__ != 3510 && __NPU_ARCH__ != 5102 && __NPU_ARCH__ != 3102
     CheckTensorPhyPosition<Hardware::L1>(src, "src", "A1 / B1", apiName);
-    if ((TPosition)src.GetPosition() == TPosition::A1) {
-        CheckTensorPhyPosition<Hardware::L0A>(dst, "dst", "A2 when src TPosition is A1", apiName);
-    } else if ((TPosition)src.GetPosition() == TPosition::B1) {
-        CheckTensorPhyPosition<Hardware::L0B>(dst, "dst", "B2 when src TPosition is B1", apiName);
-    } else {  // TSCM etc, other L1 pos
-        CheckTensorPhyPosition<Hardware::L0A, Hardware::L0B>(dst, "dst", "A2 / B2", apiName);
-    }
+    CheckTensorPhyPosition<Hardware::L0A, Hardware::L0B>(dst, "dst", "A2 / B2", apiName);
     if ((TPosition)dst.GetPosition() == TPosition::A2) {
         CheckLoadDataWithTransposeDtype<T>(apiName, true);
     } else {

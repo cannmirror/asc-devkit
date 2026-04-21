@@ -23,6 +23,7 @@ __simd_callee__ inline iter_reg asc_create_iter_reg_b32_impl(uint32_t offset)
     if ASC_IS_AIV {
         return vag_b32(offset);
     }
+    return iter_reg{};
 }
 
 __simd_callee__ inline iter_reg asc_create_iter_reg_b16_impl(uint32_t offset)
@@ -30,6 +31,7 @@ __simd_callee__ inline iter_reg asc_create_iter_reg_b16_impl(uint32_t offset)
     if ASC_IS_AIV {
         return vag_b16(offset);
     }
+    return iter_reg{};
 }
 
 __simd_callee__ inline iter_reg asc_create_iter_reg_b8_impl(uint32_t offset)
@@ -37,6 +39,7 @@ __simd_callee__ inline iter_reg asc_create_iter_reg_b8_impl(uint32_t offset)
     if ASC_IS_AIV {
         return vag_b8(offset);
     }
+    return iter_reg{};
 }
 
 #endif

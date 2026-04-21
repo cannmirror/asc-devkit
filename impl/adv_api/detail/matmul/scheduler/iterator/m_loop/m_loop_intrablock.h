@@ -1,21 +1,21 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file m_loop_intrablock.h
  * \brief
  */
 
-
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/scheduler/iterator/m_loop/m_loop_intrablock.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/scheduler/iterator/m_loop/m_loop_intrablock.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_ITERATOR_M_LOOP_M_LOOP_INTRABLOCK_H__
 #endif
@@ -34,38 +34,42 @@ namespace Detail {
     MLoop is only for internal usage, does not support extension or customized specialization!
 */
 template <typename IMPL, class INPUT_TYPE, const auto& MM_CFG>
-class MLoop<IMPL, INPUT_TYPE, MM_CFG, enable_if_t<IsIntrablock<MM_CFG>>>
-{
+class MLoop<IMPL, INPUT_TYPE, MM_CFG, enable_if_t<IsIntrablock<MM_CFG>>> {
     MATMUL_USE_MODULE(MatmulShapeTiling);
     MATMUL_USE_MODULE(MatmulSubBlockInfo);
+
 public:
     __aicore__ inline MLoop() = default;
     __aicore__ inline ~MLoop() = default;
 
-    __aicore__ inline void Init(int32_t singleShape)
-    {
-        SetSingleShape(singleShape);
-    }
+    __aicore__ inline void Init(int32_t singleShape) { SetSingleShape(singleShape); }
 
     __aicore__ inline void SetSingleShape(int32_t singleShape)
     {
         if (MATMUL_MODULE(MatmulSubBlockInfo)->GetSubBlockIdx() == 0) {
-            totalIter_ = Ceil(static_cast<uint32_t>(singleShape), static_cast<uint32_t>(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM()));
+            totalIter_ = Ceil(
+                static_cast<uint32_t>(singleShape),
+                static_cast<uint32_t>(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM()));
             tailBaseShape_ = singleShape % MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM();
             if (tailBaseShape_ == 0) {
                 tailBaseShape_ = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM();
             }
-            ASCENDC_ASSERT((totalIter_ > 0), { KERNEL_LOG(KERNEL_ERROR,
-                "invalid singleCoreM, totalIter_ is %d , which should be larger than 0", totalIter_);
+            ASCENDC_ASSERT((totalIter_ > 0), {
+                KERNEL_LOG(
+                    KERNEL_ERROR, "invalid singleCoreM, totalIter_ is %d , which should be larger than 0", totalIter_);
             });
         } else {
-            v1TotalIter_ = Ceil(static_cast<uint32_t>(singleShape), static_cast<uint32_t>(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM()));
+            v1TotalIter_ = Ceil(
+                static_cast<uint32_t>(singleShape),
+                static_cast<uint32_t>(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM()));
             v1TailBaseShape_ = singleShape % MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM();
             if (v1TailBaseShape_ == 0) {
                 v1TailBaseShape_ = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM();
             }
-            ASCENDC_ASSERT((v1TotalIter_ > 0), { KERNEL_LOG(KERNEL_ERROR,
-                "invalid singleCoreM, v1TotalIter_ is %d , which should be larger than 0", v1TotalIter_);
+            ASCENDC_ASSERT((v1TotalIter_ > 0), {
+                KERNEL_LOG(
+                    KERNEL_ERROR, "invalid singleCoreM, v1TotalIter_ is %d , which should be larger than 0",
+                    v1TotalIter_);
             });
         }
     }
@@ -99,10 +103,7 @@ public:
         return !OuterEnd();
     }
 
-    __aicore__ inline bool OuterEnd()
-    {
-        return innerStartIdx_ >= totalIter_;
-    }
+    __aicore__ inline bool OuterEnd() { return innerStartIdx_ >= totalIter_; }
 
     template <bool IS_INTRA_BLOCK = false>
     __aicore__ inline uint32_t GetOuterIdx() const
@@ -152,20 +153,11 @@ public:
         UpdateInnerParams();
     }
 
-    __aicore__ inline bool InnerEnd()
-    {
-        return innerIndex_ >= innerStartIdx_ + innerIter_;
-    }
+    __aicore__ inline bool InnerEnd() { return innerIndex_ >= innerStartIdx_ + innerIter_; }
 
-    __aicore__ inline uint32_t GetInnerIdx() const
-    {
-        return innerIndex_;
-    }
+    __aicore__ inline uint32_t GetInnerIdx() const { return innerIndex_; }
 
-    __aicore__ inline uint32_t GetInnerIter() const
-    {
-        return innerIter_;
-    }
+    __aicore__ inline uint32_t GetInnerIter() const { return innerIter_; }
 
     template <bool IS_INTRA_BLOCK = false>
     __aicore__ inline int32_t GetBaseShape() const
@@ -199,14 +191,15 @@ private:
             baseBlockShape_ = Ceil(baseShape_, BLOCK_CUBE);
         } else {
             innerIter_ = (totalIter_ - innerStartIdx_) > MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() ?
-                MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() : (totalIter_ - innerStartIdx_);
+                             MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() :
+                             (totalIter_ - innerStartIdx_);
         }
     }
 
     __aicore__ inline void UpdateInnerParams()
     {
-        baseShape_ = (innerIndex_ + 1 == totalIter_) ? tailBaseShape_ :
-            MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM();
+        baseShape_ =
+            (innerIndex_ + 1 == totalIter_) ? tailBaseShape_ : MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM();
         baseBlockShape_ = Ceil(baseShape_, BLOCK_CUBE);
     }
 
@@ -227,9 +220,9 @@ private:
     int32_t v1BaseBlockShape_;
 };
 
-}  // namespace Detail
-}  // namespace Impl
-}  // namespace AscendC
+} // namespace Detail
+} // namespace Impl
+} // namespace AscendC
 #endif // _M_LOOP_INTRABLOCK_H_
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_ITERATOR_M_LOOP_M_LOOP_INTRABLOCK_H__)

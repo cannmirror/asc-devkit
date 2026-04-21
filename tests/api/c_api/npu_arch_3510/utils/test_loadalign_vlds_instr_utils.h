@@ -153,4 +153,72 @@ TEST_F(TestVectorDatamove##class_name##dst_type##dst_type##src_type##CApi, c_api
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 
+#define TEST_VECTOR_DATAMOVE_LOADALIGN_INSTR_INT4(class_name, c_api_name, cce_name, dst_type, src_type)   \
+                                                                                                \
+class TestVectorDatamove##class_name##dst_type##src_type##CApi : public testing::Test {         \
+protected:                                                                                      \
+    void SetUp() {}                                                                             \
+    void TearDown() {}                                                                          \
+};                                                                                              \
+                                                                                                \
+namespace {                                                                                     \
+void c_api_name##_##dst_type##_##src_type##_Stub(vector_fp4x2_e1m2_t &dst, __ubuf__ float4_e1m2x2_t *src,         \
+    int32_t offset, Literal load_dist) {}                                                       \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorDatamove##class_name##dst_type##src_type##CApi, c_api_name##_##dst_type##_##src_type##_Succ)   \
+{                                                                                               \
+    dst_type dst;                                                                               \
+    __ubuf__ src_type *src;                                                                     \
+                                                                                                \
+    MOCKER_CPP(cce_name, void(vector_fp4x2_e1m2_t &, __ubuf__ float4_e1m2x2_t *, int32_t, Literal))               \
+        .times(1)                                                                               \
+        .will(invoke(c_api_name##_##dst_type##_##src_type##_Stub));                             \
+                                                                                                \
+    c_api_name(dst, src);                                                                       \
+    GlobalMockObject::verify();                                                                 \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorDatamove##class_name##dst_type##src_type##CApi, c_api_name##_##dst_type##_##src_type##_offset_Succ)   \
+{                                                                                               \
+    dst_type dst;                                                                               \
+    __ubuf__ src_type *src;                                                                     \
+    int32_t offset;                                                                             \
+                                                                                                \
+    MOCKER_CPP(cce_name, void(vector_fp4x2_e1m2_t &, __ubuf__ float4_e1m2x2_t *, int32_t, Literal))               \
+        .times(1)                                                                               \
+        .will(invoke(c_api_name##_##dst_type##_##src_type##_Stub));                             \
+                                                                                                \
+    c_api_name(dst, src, offset);                                                               \
+    GlobalMockObject::verify();                                                                 \
+}                                                                                               \
+
+#define TEST_VECTOR_DATAMOVE_LOADALIGN_DEINTLV_INSTR_INT4(class_name, c_api_name, cce_name, dst_type, src_type)   \
+                                                                                                \
+class TestVectorDatamove##class_name##dst_type##dst_type##src_type##CApi : public testing::Test {         \
+protected:                                                                                      \
+    void SetUp() {}                                                                             \
+    void TearDown() {}                                                                          \
+};                                                                                              \
+                                                                                                \
+namespace {                                                                                     \
+void c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub(vector_fp4x2_e1m2_t &dst0, vector_fp4x2_e1m2_t &dst1,   \
+    __ubuf__ float4_e1m2x2_t *src, int32_t offset, int load_dist) {}                                   \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorDatamove##class_name##dst_type##dst_type##src_type##CApi, c_api_name##_##dst_type##_##src_type##_Succ)   \
+{                                                                                               \
+    dst_type dst0;                                                                              \
+    dst_type dst1;                                                                              \
+    __ubuf__ src_type *src;                                                                     \
+    int32_t offset;                                                                             \
+                                                                                                \
+    MOCKER_CPP(cce_name, void(vector_fp4x2_e1m2_t &, vector_fp4x2_e1m2_t &, __ubuf__ float4_e1m2x2_t *, int32_t, int))       \
+        .times(1)                                                                               \
+        .will(invoke(c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub));                \
+                                                                                                \
+    c_api_name(dst0, dst1, src, offset);                                                        \
+    GlobalMockObject::verify();                                                                 \
+}                                                                                               \
+
 #endif

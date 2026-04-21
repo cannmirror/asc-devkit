@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file sort_common_utils.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/sort/sort_common_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/sort/topk.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/sort/sort_common_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/sort/topk.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SORT_SORT_COMMON_UTILS_H__
 #endif
@@ -27,19 +28,23 @@
 
 namespace AscendC {
 namespace Internal {
-template <uint32_t size = sizeof(uint8_t)> struct ExtractTypeBySize {
+template <uint32_t size = sizeof(uint8_t)>
+struct ExtractTypeBySize {
     using T = uint8_t;
 };
 
-template <> struct ExtractTypeBySize<sizeof(uint16_t)> {
+template <>
+struct ExtractTypeBySize<sizeof(uint16_t)> {
     using T = uint16_t;
 };
 
-template <> struct ExtractTypeBySize<sizeof(uint32_t)> {
+template <>
+struct ExtractTypeBySize<sizeof(uint32_t)> {
     using T = uint32_t;
 };
 
-template <> struct ExtractTypeBySize<sizeof(uint64_t)> {
+template <>
+struct ExtractTypeBySize<sizeof(uint64_t)> {
     using T = uint64_t;
 };
 } // namespace Internal
@@ -60,7 +65,7 @@ __aicore__ constexpr bool IsNeedTwiddleFpType()
 }
 
 template <typename T, typename U, bool isDescend>
-__simd_vf__ inline void TwiddleInData(__ubuf__ U *src, __ubuf__ U *dst, uint32_t count)
+__simd_vf__ inline void TwiddleInData(__ubuf__ U* src, __ubuf__ U* dst, uint32_t count)
 // Twiddle add data in ascending order.
 // float and signed int data bit should be reorder into ascending.
 // The following sort will be in ascending level, reverse decending data.
@@ -93,7 +98,7 @@ __simd_vf__ inline void TwiddleInData(__ubuf__ U *src, __ubuf__ U *dst, uint32_t
 }
 
 template <typename T, typename U, bool isDescend>
-__simd_vf__ inline void TwiddleOutData(__ubuf__ U *src, __ubuf__ U *dst, uint32_t count)
+__simd_vf__ inline void TwiddleOutData(__ubuf__ U* src, __ubuf__ U* dst, uint32_t count)
 // Revert twiddled data back.
 {
     uint16_t repeatTime = DivCeil(count, GetVecLen() / sizeof(T));
@@ -104,7 +109,7 @@ __simd_vf__ inline void TwiddleOutData(__ubuf__ U *src, __ubuf__ U *dst, uint32_
     Duplicate(allFReg, -1ul, cmpMask);
     for (uint16_t i = 0; i < repeatTime; i++) {
         MaskReg maskReg = UpdateMask<U>(count);
-        DataCopy<U>(dstReg, (__ubuf__ U *)src + stride * i);
+        DataCopy<U>(dstReg, (__ubuf__ U*)src + stride * i);
         if constexpr (isDescend) {
             Not(dstReg, dstReg, maskReg);
         }

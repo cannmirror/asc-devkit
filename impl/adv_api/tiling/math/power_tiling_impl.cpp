@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file power_tiling_impl.cpp
@@ -57,24 +57,20 @@ struct PowTiling {
     uint32_t intTS = 0;
     uint32_t floatTS = 0;
 
-    constexpr PowTiling(uint32_t halfTTIn, uint32_t intTTIn, uint32_t floatTTIn,
-        uint32_t halfTSIn, uint32_t intTSIn, uint32_t floatTSIn) :
-        halfTT(halfTTIn),
-        intTT(intTTIn),
-        floatTT(floatTTIn),
-        halfTS(halfTSIn),
-        intTS(intTSIn),
-        floatTS(floatTSIn)
-        {}
+    constexpr PowTiling(
+        uint32_t halfTTIn, uint32_t intTTIn, uint32_t floatTTIn, uint32_t halfTSIn, uint32_t intTSIn,
+        uint32_t floatTSIn)
+        : halfTT(halfTTIn), intTT(intTTIn), floatTT(floatTTIn), halfTS(halfTSIn), intTS(intTSIn), floatTS(floatTSIn)
+    {}
 };
 
-constexpr PowTiling POW_TILING_PARAM_V220(POW_TENSOR_TENSOR_HALF_CALC_PROC, POW_TENSOR_TENSOR_INT_CALC_PROC,
-    POW_TENSOR_TENSOR_FLOAT_CALC_PROC, POW_TENSOR_SCALAR_HALF_CALC_PROC, POW_TENSOR_SCALAR_INT_CALC_PROC,
-    POW_TENSOR_SCALAR_FLOAT_CALC_PROC);
+constexpr PowTiling POW_TILING_PARAM_V220(
+    POW_TENSOR_TENSOR_HALF_CALC_PROC, POW_TENSOR_TENSOR_INT_CALC_PROC, POW_TENSOR_TENSOR_FLOAT_CALC_PROC,
+    POW_TENSOR_SCALAR_HALF_CALC_PROC, POW_TENSOR_SCALAR_INT_CALC_PROC, POW_TENSOR_SCALAR_FLOAT_CALC_PROC);
 
-constexpr PowTiling POW_TILING_PARAM_V200(POW_TENSOR_TENSOR_HALF_CALC_PROC_V200, POW_TENSOR_TENSOR_INT_CALC_PROC_V200,
-    POW_TENSOR_TENSOR_FLOAT_CALC_PROC_V200, POW_TENSOR_SCALAR_HALF_CALC_PROC_V200,
-    POW_TENSOR_SCALAR_INT_CALC_PROC_V200,
+constexpr PowTiling POW_TILING_PARAM_V200(
+    POW_TENSOR_TENSOR_HALF_CALC_PROC_V200, POW_TENSOR_TENSOR_INT_CALC_PROC_V200, POW_TENSOR_TENSOR_FLOAT_CALC_PROC_V200,
+    POW_TENSOR_SCALAR_HALF_CALC_PROC_V200, POW_TENSOR_SCALAR_INT_CALC_PROC_V200,
     POW_TENSOR_SCALAR_FLOAT_CALC_PROC_V200);
 
 /*
@@ -89,8 +85,8 @@ inline bool ShapeIsTensor(const ge::Shape& shape)
     return true;
 }
 
-inline uint32_t GetPowerMaxTmpSizeArch3510(const ge::Shape& srcShape1, const ge::Shape& srcShape2,
-    const bool typeIsInt, const bool isReuseSource)
+inline uint32_t GetPowerMaxTmpSizeArch3510(
+    const ge::Shape& srcShape1, const ge::Shape& srcShape2, const bool typeIsInt, const bool isReuseSource)
 {
     (void)(isReuseSource);
     std::vector<int64_t> shapeDims1 = srcShape1.GetDims();
@@ -116,8 +112,8 @@ inline uint32_t GetPowerMaxTmpSizeArch3510(const ge::Shape& srcShape1, const ge:
     return maxTmpSize;
 }
 
-inline uint32_t GetPowerMinTmpSize(const NpuArch npuArch,
-    const ge::Shape& srcShape1, const ge::Shape& srcShape2, const bool typeIsInt,
+inline uint32_t GetPowerMinTmpSize(
+    const NpuArch npuArch, const ge::Shape& srcShape1, const ge::Shape& srcShape2, const bool typeIsInt,
     const uint32_t typeSize, const bool isReuseSource)
 {
     (void)(isReuseSource);
@@ -133,21 +129,19 @@ inline uint32_t GetPowerMinTmpSize(const NpuArch npuArch,
     uint32_t minTmpSize = 0;
 
     if (typeIsInt) {
-        minTmpSize = isPowTensorTensor ?
-            POWER_MIN_TMP_SIZE * param.intTT : POWER_MIN_TMP_SIZE * param.intTS;
+        minTmpSize = isPowTensorTensor ? POWER_MIN_TMP_SIZE * param.intTT : POWER_MIN_TMP_SIZE * param.intTS;
     } else if (typeSize == sizeof(float)) {
-        minTmpSize = (isPowTensorTensor ?
-            POWER_MIN_TMP_SIZE * param.floatTT : POWER_MIN_TMP_SIZE * param.floatTS) + REPEAT_BYTE_SIZE;
+        minTmpSize = (isPowTensorTensor ? POWER_MIN_TMP_SIZE * param.floatTT : POWER_MIN_TMP_SIZE * param.floatTS) +
+                     REPEAT_BYTE_SIZE;
     } else {
-        minTmpSize = isPowTensorTensor ?
-            POWER_MIN_TMP_SIZE * param.halfTT : POWER_MIN_TMP_SIZE * param.halfTS;
+        minTmpSize = isPowTensorTensor ? POWER_MIN_TMP_SIZE * param.halfTT : POWER_MIN_TMP_SIZE * param.halfTS;
         minTmpSize = minTmpSize / POW_HALF_CALC_PROC + REPEAT_BYTE_SIZE;
     }
     return minTmpSize;
 }
 
-inline uint32_t GetPowerMaxTmpSize(const NpuArch npuArch, const ge::Shape& srcShape1,
-    const ge::Shape& srcShape2, const bool typeIsInt,
+inline uint32_t GetPowerMaxTmpSize(
+    const NpuArch npuArch, const ge::Shape& srcShape1, const ge::Shape& srcShape2, const bool typeIsInt,
     const uint32_t typeSize, const bool isReuseSource)
 {
     (void)(isReuseSource);
@@ -177,8 +171,7 @@ inline uint32_t GetPowerMaxTmpSize(const NpuArch npuArch, const ge::Shape& srcSh
     uint32_t maxTmpSize = 0;
     uint32_t calcProc = 0;
     if (typeSize == sizeof(float)) {
-        calcProc = inputSize * typeSize > POWER_MIN_TMP_SIZE ?
-            inputSize * typeSize : POWER_MIN_TMP_SIZE;
+        calcProc = inputSize * typeSize > POWER_MIN_TMP_SIZE ? inputSize * typeSize : POWER_MIN_TMP_SIZE;
     } else {
         calcProc = std::max(inputSize * typeSize, POWER_MIN_TMP_SIZE / POW_HALF_CALC_PROC);
     }
@@ -196,8 +189,8 @@ inline uint32_t GetPowerMaxTmpSize(const NpuArch npuArch, const ge::Shape& srcSh
 Determine the power interface type based on the two input bool values of the interface.
 Return the number of required nodes or buffer size based on the interface type and typeSize.
 */
-void GetPowerTmpBufferFactorSize(const NpuArch npuArch,
-    const bool baseIsTensor, const bool expIsTensor, const bool typeIsInt,
+void GetPowerTmpBufferFactorSize(
+    const NpuArch npuArch, const bool baseIsTensor, const bool expIsTensor, const bool typeIsInt,
     const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer)
 {
     struct PowTiling param(0, 0, 0, 0, 0, 0);
@@ -218,8 +211,8 @@ void GetPowerTmpBufferFactorSize(const NpuArch npuArch,
     }
 }
 
-void GetPowerTmpBufferFactorSizeArch3510(const bool typeIsInt, const uint32_t typeSize,
-    uint32_t& maxLiveNodeCount, uint32_t& extraBuffer)
+void GetPowerTmpBufferFactorSizeArch3510(
+    const bool typeIsInt, const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer)
 {
     extraBuffer = 0u;
     if (typeIsInt) {
@@ -232,18 +225,20 @@ void GetPowerTmpBufferFactorSizeArch3510(const bool typeIsInt, const uint32_t ty
 }
 } // namespace
 
-void GetPowerMaxMinTmpSize(const ge::Shape& srcShape1, const ge::Shape& srcShape2, const bool typeIsInt,
-    const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
+void GetPowerMaxMinTmpSize(
+    const ge::Shape& srcShape1, const ge::Shape& srcShape2, const bool typeIsInt, const uint32_t typeSize,
+    const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
-    ASCENDC_HOST_ASSERT(platform_ascendc::PlatformAscendCManager::GetInstance() != nullptr,
-        return, "PlatformAscendCManager gets instance failed!");
+    ASCENDC_HOST_ASSERT(
+        platform_ascendc::PlatformAscendCManager::GetInstance() != nullptr, return,
+        "PlatformAscendCManager gets instance failed!");
     auto npuArch = platform_ascendc::PlatformAscendCManager::GetInstance()->GetCurNpuArch();
-    ASCENDC_HOST_ASSERT((npuArch == NpuArch::DAV_2201 || npuArch == NpuArch::DAV_2002 ||
-                         npuArch == NpuArch::DAV_3510 || npuArch == NpuArch::DAV_5102 ||
-                         npuArch == NpuArch::DAV_3003 || npuArch == NpuArch::DAV_3113),
+    ASCENDC_HOST_ASSERT(
+        (npuArch == NpuArch::DAV_2201 || npuArch == NpuArch::DAV_2002 || npuArch == NpuArch::DAV_3510 ||
+         npuArch == NpuArch::DAV_5102 || npuArch == NpuArch::DAV_3003 || npuArch == NpuArch::DAV_3113),
         return, "GetPowerMaxMinTmpSize is not supported on current device!");
-    if (npuArch == NpuArch::DAV_3510 || npuArch == NpuArch::DAV_5102 ||
-        npuArch == NpuArch::DAV_3003 || npuArch == NpuArch::DAV_3113) {
+    if (npuArch == NpuArch::DAV_3510 || npuArch == NpuArch::DAV_5102 || npuArch == NpuArch::DAV_3003 ||
+        npuArch == NpuArch::DAV_3113) {
         maxValue = GetPowerMaxTmpSizeArch3510(srcShape1, srcShape2, typeIsInt, isReuseSource);
         minValue = maxValue;
     } else {
@@ -252,23 +247,25 @@ void GetPowerMaxMinTmpSize(const ge::Shape& srcShape1, const ge::Shape& srcShape
     }
 }
 
-void GetPowerTmpBufferFactorSize(const bool baseIsTensor, const bool expIsTensor, const bool typeIsInt,
-    const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer)
+void GetPowerTmpBufferFactorSize(
+    const bool baseIsTensor, const bool expIsTensor, const bool typeIsInt, const uint32_t typeSize,
+    uint32_t& maxLiveNodeCount, uint32_t& extraBuffer)
 {
-    ASCENDC_HOST_ASSERT(platform_ascendc::PlatformAscendCManager::GetInstance() != nullptr,
-        return, "PlatformAscendCManager gets instance failed!");
+    ASCENDC_HOST_ASSERT(
+        platform_ascendc::PlatformAscendCManager::GetInstance() != nullptr, return,
+        "PlatformAscendCManager gets instance failed!");
     const auto npuArch = platform_ascendc::PlatformAscendCManager::GetInstance()->GetCurNpuArch();
-    ASCENDC_HOST_ASSERT((npuArch == NpuArch::DAV_2201 || npuArch == NpuArch::DAV_2002 ||
-                         npuArch == NpuArch::DAV_3510 || npuArch == NpuArch::DAV_5102 ||
-                         npuArch == NpuArch::DAV_3003 || npuArch == NpuArch::DAV_3113),
+    ASCENDC_HOST_ASSERT(
+        (npuArch == NpuArch::DAV_2201 || npuArch == NpuArch::DAV_2002 || npuArch == NpuArch::DAV_3510 ||
+         npuArch == NpuArch::DAV_5102 || npuArch == NpuArch::DAV_3003 || npuArch == NpuArch::DAV_3113),
         return, "GetPowerTmpBufferFactorSize is not supported on current device!");
 
-    if (npuArch == NpuArch::DAV_3510 || npuArch == NpuArch::DAV_5102 ||
-        npuArch == NpuArch::DAV_3003 || npuArch == NpuArch::DAV_3113) {
+    if (npuArch == NpuArch::DAV_3510 || npuArch == NpuArch::DAV_5102 || npuArch == NpuArch::DAV_3003 ||
+        npuArch == NpuArch::DAV_3113) {
         GetPowerTmpBufferFactorSizeArch3510(typeIsInt, typeSize, maxLiveNodeCount, extraBuffer);
     } else {
-        GetPowerTmpBufferFactorSize(npuArch, baseIsTensor, expIsTensor, typeIsInt, typeSize,
-            maxLiveNodeCount, extraBuffer);
+        GetPowerTmpBufferFactorSize(
+            npuArch, baseIsTensor, expIsTensor, typeIsInt, typeSize, maxLiveNodeCount, extraBuffer);
     }
 }
 } // namespace AscendC

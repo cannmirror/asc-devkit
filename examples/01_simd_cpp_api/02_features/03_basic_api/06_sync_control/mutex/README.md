@@ -16,8 +16,7 @@
 ```
 
 ## 算子描述
-- 算子功能： 
-
+- 算子功能：  
   基于Mutex::Lock和Mutex::Unlock实现核内异步流水之间的同步，其功能类似于CPU中的锁机制，通过锁定指定流水再释放流水来实现流水的同步依赖。
 
 - 算子规格：  
@@ -31,8 +30,7 @@
   </table>
 
 - 算子实现：  
-  - kernel实现   
-
+  - kernel实现  
     本算子包括3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务中将Global Memory中输入Tensor xGm和yGm的数据分别搬入到xLocal和yLocal中。Compute任务负责对xLocal、yLocal执行加法操作，计算结果存储在zLocal中。CopyOut任务负责将输出数据从zLocal搬运至Global Memory上的输出Tensor zGm中。以上三个任务中分别在搬入、计算和搬出操作前后分别调用了Mutex::Lock和Mutex::Unlock，实现了同一个核内PIPE_MTE2、PIPE_V和PIPE_MTE3异步流水任务之间的同步。
 
 

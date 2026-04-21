@@ -32,6 +32,7 @@ else()
     ${TOP_DIR}/abl/libc_sec/include
     ${TOP_DIR}/abl/mmpa/inc
     ${TOP_DIR}/metadef/inc
+    ${TOP_DIR}/metadef/inc/external
     ${TOP_DIR}/abl/slog/inc/toolchain
   )
 endif()

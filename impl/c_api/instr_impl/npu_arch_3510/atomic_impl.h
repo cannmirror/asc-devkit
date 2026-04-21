@@ -112,6 +112,4 @@ __aicore__ inline void asc_set_atomic_add_int16()
     asc_set_atomic_add_int16_impl();
 }
 
-
-
 #endif

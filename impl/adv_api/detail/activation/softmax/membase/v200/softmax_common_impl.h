@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file softmax_common_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/activation/softmax/membase/v200/softmax_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/softmax.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/activation/softmax/membase/v200/softmax_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/softmax.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_COMMON_IMPL_H__
 #endif
@@ -28,8 +29,8 @@ namespace AscendC {
 constexpr RoundMode FLOAT2HALF_ROUND_MODE = RoundMode::CAST_NONE;
 
 template <typename T>
-__aicore__ inline void BroadCastLastImpl(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const struct BroadCastLastND& brcParam)
+__aicore__ inline void BroadCastLastImpl(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const struct BroadCastLastND& brcParam)
 {
     event_t eventIdVToS = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_S));
     SetFlag<HardEvent::V_S>(eventIdVToS);
@@ -46,8 +47,9 @@ __aicore__ inline void BroadCastLastImpl(const LocalTensor<T>& dst, const LocalT
 }
 
 template <typename T>
-__aicore__ inline void ReduceMaxLastNDSplitImpl(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const struct ReduceLastND& reduceParam, uint64_t mask, uint32_t splitNum)
+__aicore__ inline void ReduceMaxLastNDSplitImpl(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const struct ReduceLastND& reduceParam, uint64_t mask,
+    uint32_t splitNum)
 {
     const uint32_t elementNumPerBlk = ONE_BLK_SIZE / sizeof(T);
     const uint32_t elementNumPerRep = ONE_REPEAT_BYTE_SIZE / sizeof(T);
@@ -55,20 +57,23 @@ __aicore__ inline void ReduceMaxLastNDSplitImpl(const LocalTensor<T>& dst, const
     const uint32_t tail = reduceParam.srcM % MAX_REPEAT_TIMES;
 
     for (uint32_t i = 0; i < range; i++) {
-        WholeReduceMax(dst[i * MAX_REPEAT_TIMES * reduceParam.dstK],
+        WholeReduceMax(
+            dst[i * MAX_REPEAT_TIMES * reduceParam.dstK],
             src[splitNum * elementNumPerRep + i * MAX_REPEAT_TIMES * reduceParam.srcK], mask, MAX_REPEAT_TIMES,
             reduceParam.dstK / 2, 1, reduceParam.srcK / elementNumPerBlk);
     }
     if (tail != 0) {
-        WholeReduceMax(dst[range * MAX_REPEAT_TIMES * reduceParam.dstK],
+        WholeReduceMax(
+            dst[range * MAX_REPEAT_TIMES * reduceParam.dstK],
             src[splitNum * elementNumPerRep + range * MAX_REPEAT_TIMES * reduceParam.srcK], mask, tail,
             reduceParam.dstK / 2, 1, reduceParam.srcK / elementNumPerBlk);
     }
 }
 
 template <typename T>
-__aicore__ inline void ReduceSumLastNDSplitImpl(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const struct ReduceLastND& reduceParam, uint64_t mask, uint32_t dstRepStride, uint32_t splitNum)
+__aicore__ inline void ReduceSumLastNDSplitImpl(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const struct ReduceLastND& reduceParam, uint64_t mask,
+    uint32_t dstRepStride, uint32_t splitNum)
 {
     const uint32_t elementNumPerBlk = ONE_BLK_SIZE / sizeof(T);
     const uint32_t elementNumPerRep = ONE_REPEAT_BYTE_SIZE / sizeof(T);
@@ -76,21 +81,23 @@ __aicore__ inline void ReduceSumLastNDSplitImpl(const LocalTensor<T>& dst, const
     const uint32_t tail = reduceParam.srcM % MAX_REPEAT_TIMES;
 
     for (uint32_t i = 0; i < range; i++) {
-        WholeReduceSum(dst[i * MAX_REPEAT_TIMES * reduceParam.dstK],
+        WholeReduceSum(
+            dst[i * MAX_REPEAT_TIMES * reduceParam.dstK],
             src[splitNum * elementNumPerRep + i * MAX_REPEAT_TIMES * reduceParam.srcK], mask, MAX_REPEAT_TIMES,
-            dstRepStride, 1,
-            reduceParam.srcK / elementNumPerBlk);
+            dstRepStride, 1, reduceParam.srcK / elementNumPerBlk);
     }
     if (tail != 0) {
-        WholeReduceSum(dst[range * MAX_REPEAT_TIMES * reduceParam.dstK],
+        WholeReduceSum(
+            dst[range * MAX_REPEAT_TIMES * reduceParam.dstK],
             src[splitNum * elementNumPerRep + range * MAX_REPEAT_TIMES * reduceParam.srcK], mask, tail, dstRepStride, 1,
             reduceParam.srcK / elementNumPerBlk);
     }
 }
 
 template <typename T>
-__aicore__ inline void ReduceSumLastNDImpl(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const LocalTensor<T>& tmpTensor, const struct ReduceLastND& reduceParam)
+__aicore__ inline void ReduceSumLastNDImpl(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& tmpTensor,
+    const struct ReduceLastND& reduceParam)
 {
     const uint32_t elementNumPerBlk = ONE_BLK_SIZE / sizeof(T);
     const uint32_t elementNumPerRep = ONE_REPEAT_BYTE_SIZE / sizeof(T);
@@ -104,14 +111,14 @@ __aicore__ inline void ReduceSumLastNDImpl(const LocalTensor<T>& dst, const Loca
         range = reduceParam.srcM / MAX_REPEAT_TIMES;
         tail = reduceParam.srcM % MAX_REPEAT_TIMES;
         for (uint32_t i = 0; i < range; i++) {
-            WholeReduceSum(dst[i * MAX_REPEAT_TIMES * reduceParam.dstK], src[i * MAX_REPEAT_TIMES * reduceParam.srcK],
-                mask, MAX_REPEAT_TIMES, reduceParam.dstK, 1,
-                reduceParam.srcK / elementNumPerBlk);
+            WholeReduceSum(
+                dst[i * MAX_REPEAT_TIMES * reduceParam.dstK], src[i * MAX_REPEAT_TIMES * reduceParam.srcK], mask,
+                MAX_REPEAT_TIMES, reduceParam.dstK, 1, reduceParam.srcK / elementNumPerBlk);
         }
         if (tail != 0) {
-            WholeReduceSum(dst[range * MAX_REPEAT_TIMES * reduceParam.dstK],
-                src[range * MAX_REPEAT_TIMES * reduceParam.srcK], mask, tail, reduceParam.dstK, 1,
-                reduceParam.srcK / elementNumPerBlk);
+            WholeReduceSum(
+                dst[range * MAX_REPEAT_TIMES * reduceParam.dstK], src[range * MAX_REPEAT_TIMES * reduceParam.srcK],
+                mask, tail, reduceParam.dstK, 1, reduceParam.srcK / elementNumPerBlk);
         }
     } else if (reduceParam.originalSrcK > elementNumPerRep) {
         uint32_t splitNum = 0;
@@ -136,12 +143,13 @@ __aicore__ inline void ReduceSumLastNDImpl(const LocalTensor<T>& dst, const Loca
     }
 
     PipeBarrier<PIPE_V>();
-    BroadCastLastND brcParam = { reduceParam.dstM, reduceParam.dstK, reduceParam.dstM, reduceParam.dstK };
+    BroadCastLastND brcParam = {reduceParam.dstM, reduceParam.dstK, reduceParam.dstM, reduceParam.dstK};
     BroadCastLastImpl(dst, dst, brcParam);
 }
 
-__aicore__ inline void ReduceMaxLastNDImpl(const LocalTensor<float>& dstMax, const LocalTensor<float>& src,
-    const LocalTensor<float>& tmpTensor, const struct ReduceLastND& reduceMaxParam)
+__aicore__ inline void ReduceMaxLastNDImpl(
+    const LocalTensor<float>& dstMax, const LocalTensor<float>& src, const LocalTensor<float>& tmpTensor,
+    const struct ReduceLastND& reduceMaxParam)
 {
     uint64_t mask = 0;
     uint32_t range = 0;
@@ -152,13 +160,13 @@ __aicore__ inline void ReduceMaxLastNDImpl(const LocalTensor<float>& dstMax, con
         range = reduceMaxParam.originalSrcM / MAX_REPEAT_TIMES;
         tail = reduceMaxParam.originalSrcM % MAX_REPEAT_TIMES;
         for (uint32_t i = 0; i < range; i++) {
-            WholeReduceMax(dstMax[i * MAX_REPEAT_TIMES * reduceMaxParam.dstK],
-                src[i * MAX_REPEAT_TIMES * reduceMaxParam.srcK], mask, MAX_REPEAT_TIMES,
-                reduceMaxParam.dstK / HALF_FACTOR, 1,
-                reduceMaxParam.srcK / FLOAT_NUM_PER_BLK);
+            WholeReduceMax(
+                dstMax[i * MAX_REPEAT_TIMES * reduceMaxParam.dstK], src[i * MAX_REPEAT_TIMES * reduceMaxParam.srcK],
+                mask, MAX_REPEAT_TIMES, reduceMaxParam.dstK / HALF_FACTOR, 1, reduceMaxParam.srcK / FLOAT_NUM_PER_BLK);
         }
         if (tail != 0) {
-            WholeReduceMax(dstMax[range * MAX_REPEAT_TIMES * reduceMaxParam.dstK],
+            WholeReduceMax(
+                dstMax[range * MAX_REPEAT_TIMES * reduceMaxParam.dstK],
                 src[range * MAX_REPEAT_TIMES * reduceMaxParam.srcK], mask, tail, reduceMaxParam.dstK / HALF_FACTOR, 1,
                 reduceMaxParam.srcK / FLOAT_NUM_PER_BLK);
         }
@@ -184,22 +192,24 @@ __aicore__ inline void ReduceMaxLastNDImpl(const LocalTensor<float>& dstMax, con
         }
     }
     PipeBarrier<PIPE_V>();
-    BroadCastLastND brcParam = { reduceMaxParam.dstM, reduceMaxParam.dstK, reduceMaxParam.dstM, reduceMaxParam.dstK };
+    BroadCastLastND brcParam = {reduceMaxParam.dstM, reduceMaxParam.dstK, reduceMaxParam.dstM, reduceMaxParam.dstK};
     BroadCastLastImpl(dstMax, dstMax, brcParam);
 }
-__aicore__ inline void FirstBlockCopyImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const uint32_t srcM, const uint32_t srcK, const uint16_t dstRepeatStride, const uint16_t srcRepeatStride)
+__aicore__ inline void FirstBlockCopyImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint32_t srcM, const uint32_t srcK,
+    const uint16_t dstRepeatStride, const uint16_t srcRepeatStride)
 {
     SetMaskCount();
     SetVectorMask<float, MaskMode::COUNTER>(0, srcM * FLOAT_REPEAT_SIZE);
-    Adds<float, false>(dst, src, 0, MASK_PLACEHOLDER, 1,
-        { 1, 1, DEFAULT_REPEAT_STRIDE, (uint8_t)(srcK / DEFAULT_REPEAT_STRIDE) });
+    Adds<float, false>(
+        dst, src, 0, MASK_PLACEHOLDER, 1, {1, 1, DEFAULT_REPEAT_STRIDE, (uint8_t)(srcK / DEFAULT_REPEAT_STRIDE)});
     SetMaskNorm();
     ResetMask();
 }
 
-__aicore__ inline void BroadCastImpl(const LocalTensor<float>& dstLocal, const LocalTensor<float>& srcLocal,
-    const uint32_t& repeat, const uint32_t& brcbCount)
+__aicore__ inline void BroadCastImpl(
+    const LocalTensor<float>& dstLocal, const LocalTensor<float>& srcLocal, const uint32_t& repeat,
+    const uint32_t& brcbCount)
 {
     float scalarList[SCALAR_STACK_DEPTH] = {0};
     SetVectorMask<float, MaskMode::NORMAL>(brcbCount);
@@ -211,8 +221,9 @@ __aicore__ inline void BroadCastImpl(const LocalTensor<float>& dstLocal, const L
             scalarList[j] = srcLocal.GetValue(i * SCALAR_STACK_DEPTH + j);
         }
         for (uint32_t k = 0; k < SCALAR_STACK_DEPTH; k++) {
-            Duplicate<float, false>(dstLocal[i * brcbCount * SCALAR_STACK_DEPTH + k * brcbCount], scalarList[k],
-                MASK_PLACEHOLDER, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+            Duplicate<float, false>(
+                dstLocal[i * brcbCount * SCALAR_STACK_DEPTH + k * brcbCount], scalarList[k], MASK_PLACEHOLDER,
+                DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
         }
     }
     if (tailM != 0) {
@@ -220,18 +231,20 @@ __aicore__ inline void BroadCastImpl(const LocalTensor<float>& dstLocal, const L
             scalarList[j] = srcLocal.GetValue(rangeM * SCALAR_STACK_DEPTH + j);
         }
         for (uint32_t k = 0; k < tailM; k++) {
-            Duplicate<float, false>(dstLocal[rangeM * brcbCount * SCALAR_STACK_DEPTH + k * brcbCount], scalarList[k],
-                MASK_PLACEHOLDER, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+            Duplicate<float, false>(
+                dstLocal[rangeM * brcbCount * SCALAR_STACK_DEPTH + k * brcbCount], scalarList[k], MASK_PLACEHOLDER,
+                DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
         }
     }
 }
-__aicore__ inline void BroadCastNDImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const uint32_t originalSrcM)
+__aicore__ inline void BroadCastNDImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint32_t originalSrcM)
 {
     uint8_t repeat = DivCeil(originalSrcM, DEFAULT_REPEAT_STRIDE);
     for (uint8_t i = 0; i < repeat; i++) {
-        Muls<float, false>(dst[i * B16_BYTE_SIZE * FLOAT_REPEAT_SIZE], src[i * DEFAULT_REPEAT_STRIDE], 1.0,
-            MASK_PLACEHOLDER, B16_BYTE_SIZE, { 1, 0, DEFAULT_REPEAT_STRIDE, 0 });
+        Muls<float, false>(
+            dst[i * B16_BYTE_SIZE * FLOAT_REPEAT_SIZE], src[i * DEFAULT_REPEAT_STRIDE], 1.0, MASK_PLACEHOLDER,
+            B16_BYTE_SIZE, {1, 0, DEFAULT_REPEAT_STRIDE, 0});
     }
     PipeBarrier<PIPE_V>();
 
@@ -251,8 +264,8 @@ __aicore__ inline void BroadCastNDImpl(const LocalTensor<float>& dst, const Loca
     TransDataTo5HD<float>(dstList, srcList, transDataParams);
 }
 
-__aicore__ inline void BasicBlockReduceMaxImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const uint32_t originalSrcM, const uint32_t reduceK)
+__aicore__ inline void BasicBlockReduceMaxImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint32_t originalSrcM, const uint32_t reduceK)
 {
     if (originalSrcM == 1) {
         WholeReduceMax<float, false>(dst, src, MASK_PLACEHOLDER, 1, 1, 1, DEFAULT_REPEAT_STRIDE);
@@ -278,8 +291,9 @@ __aicore__ inline void BasicBlockReduceMaxImpl(const LocalTensor<float>& dst, co
         if (reduceK == FLOAT_NUM_PER_BLK) {
             SetMaskCount();
             SetVectorMask<float, MaskMode::COUNTER>(0, originalSrcM * FLOAT_NUM_PER_BLK);
-            Adds<float, false>(dst, src, 0, MASK_PLACEHOLDER, 1,
-                { 1, HALF_FACTOR, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE * HALF_FACTOR});
+            Adds<float, false>(
+                dst, src, 0, MASK_PLACEHOLDER, 1,
+                {1, HALF_FACTOR, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE * HALF_FACTOR});
             SetMaskNorm();
             ResetMask();
         } else {
@@ -287,8 +301,9 @@ __aicore__ inline void BasicBlockReduceMaxImpl(const LocalTensor<float>& dst, co
         }
     }
 }
-__aicore__ inline void NewReduceMaxLastNDImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const LocalTensor<float>& tmpTensor, const struct ReduceLastND& reduceParam)
+__aicore__ inline void NewReduceMaxLastNDImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const LocalTensor<float>& tmpTensor,
+    const struct ReduceLastND& reduceParam)
 {
     ResetMask();
     const uint32_t splitCount = reduceParam.originalSrcK / FLOAT_REPEAT_SIZE;
@@ -298,20 +313,20 @@ __aicore__ inline void NewReduceMaxLastNDImpl(const LocalTensor<float>& dst, con
     if (reduceParam.originalSrcK < FLOAT_REPEAT_SIZE) {
         ReduceMaxLastNDSplitImpl(dst, src, reduceParam, reduceParam.originalSrcK, 0);
         PipeBarrier<PIPE_V>();
-        BroadCastLastND brcParam = { reduceParam.dstM, reduceParam.dstK, reduceParam.dstM, reduceParam.dstK };
+        BroadCastLastND brcParam = {reduceParam.dstM, reduceParam.dstK, reduceParam.dstM, reduceParam.dstK};
         BroadCastLastImpl(dst, dst, brcParam);
     } else {
         if (reduceParam.originalSrcK >= SOFTMAX_FLOAT_SPECIAL_BLOCKREDUCE_LEN) {
             BigBlockReduceMax(tmpTensor, src, splitCount, reduceParam.originalSrcM, reduceParam.srcK);
         } else if (reduceParam.originalSrcK >= HALF_REPEAT_SIZE) {
-            Max<float, false>(tmpTensor, src, src[FLOAT_REPEAT_SIZE], MASK_PLACEHOLDER,
-                (uint8_t)(reduceParam.originalSrcM),
-                { 1, 1, 1, DEFAULT_REPEAT_STRIDE, (uint8_t)srcRepeatStride, (uint8_t)srcRepeatStride });
-            NextBlockMaxImpl(tmpTensor, src, (uint8_t)(reduceParam.originalSrcM), srcRepeatStride, splitCount,
-                reduceParam.srcK);
+            Max<float, false>(
+                tmpTensor, src, src[FLOAT_REPEAT_SIZE], MASK_PLACEHOLDER, (uint8_t)(reduceParam.originalSrcM),
+                {1, 1, 1, DEFAULT_REPEAT_STRIDE, (uint8_t)srcRepeatStride, (uint8_t)srcRepeatStride});
+            NextBlockMaxImpl(
+                tmpTensor, src, (uint8_t)(reduceParam.originalSrcM), srcRepeatStride, splitCount, reduceParam.srcK);
         } else {
-            FirstBlockCopyImpl(tmpTensor, src, reduceParam.originalSrcM, reduceParam.srcK, DEFAULT_REPEAT_STRIDE,
-                srcRepeatStride);
+            FirstBlockCopyImpl(
+                tmpTensor, src, reduceParam.originalSrcM, reduceParam.srcK, DEFAULT_REPEAT_STRIDE, srcRepeatStride);
         }
         if (tailSrcK != 0) {
             PipeBarrier<PIPE_V>();
@@ -323,8 +338,8 @@ __aicore__ inline void NewReduceMaxLastNDImpl(const LocalTensor<float>& dst, con
     }
 }
 
-__aicore__ inline void BasicBlockReduceAddImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const uint32_t originalSrcM, const uint32_t reduceK)
+__aicore__ inline void BasicBlockReduceAddImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint32_t originalSrcM, const uint32_t reduceK)
 {
     if (originalSrcM == 1) {
         WholeReduceSum<float, false>(dst, src, MASK_PLACEHOLDER, 1, 1, 1, DEFAULT_REPEAT_STRIDE);
@@ -351,8 +366,9 @@ __aicore__ inline void BasicBlockReduceAddImpl(const LocalTensor<float>& dst, co
         if (reduceK == FLOAT_NUM_PER_BLK) {
             SetMaskCount();
             SetVectorMask<float, MaskMode::COUNTER>(0, originalSrcM * FLOAT_NUM_PER_BLK);
-            Adds<float, false>(dst, src, 0, MASK_PLACEHOLDER, 1,
-                { 1, HALF_FACTOR, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE * HALF_FACTOR});
+            Adds<float, false>(
+                dst, src, 0, MASK_PLACEHOLDER, 1,
+                {1, HALF_FACTOR, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE * HALF_FACTOR});
             SetMaskNorm();
             ResetMask();
         } else {
@@ -360,8 +376,9 @@ __aicore__ inline void BasicBlockReduceAddImpl(const LocalTensor<float>& dst, co
         }
     }
 }
-__aicore__ inline void NewReduceSumLastNDImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const LocalTensor<float>& tmpTensor, const struct ReduceLastND& reduceParam)
+__aicore__ inline void NewReduceSumLastNDImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const LocalTensor<float>& tmpTensor,
+    const struct ReduceLastND& reduceParam)
 {
     ResetMask();
     const uint32_t splitCount = reduceParam.originalSrcK / FLOAT_REPEAT_SIZE;
@@ -371,20 +388,20 @@ __aicore__ inline void NewReduceSumLastNDImpl(const LocalTensor<float>& dst, con
     if (reduceParam.originalSrcK < FLOAT_REPEAT_SIZE) {
         ReduceSumLastNDSplitImpl(dst, src, reduceParam, reduceParam.originalSrcK, reduceParam.dstK, 0);
         PipeBarrier<PIPE_V>();
-        BroadCastLastND brcParam = { reduceParam.dstM, reduceParam.dstK, reduceParam.dstM, reduceParam.dstK };
+        BroadCastLastND brcParam = {reduceParam.dstM, reduceParam.dstK, reduceParam.dstM, reduceParam.dstK};
         BroadCastLastImpl(dst, dst, brcParam);
     } else {
         if (reduceParam.originalSrcK >= SOFTMAX_FLOAT_SPECIAL_BLOCKREDUCE_LEN) {
             BigBlockReduceSum(tmpTensor, src, splitCount, reduceParam.originalSrcM, reduceParam.srcK);
         } else if (reduceParam.originalSrcK >= HALF_REPEAT_SIZE) {
-            Add<float, false>(tmpTensor, src, src[FLOAT_REPEAT_SIZE], MASK_PLACEHOLDER,
-                (uint8_t)(reduceParam.originalSrcM),
-                { 1, 1, 1, DEFAULT_REPEAT_STRIDE, (uint8_t)srcRepeatStride, (uint8_t)srcRepeatStride });
-            NextBlockAddImpl(tmpTensor, src, (uint8_t)(reduceParam.originalSrcM), srcRepeatStride, splitCount,
-                reduceParam.srcK);
+            Add<float, false>(
+                tmpTensor, src, src[FLOAT_REPEAT_SIZE], MASK_PLACEHOLDER, (uint8_t)(reduceParam.originalSrcM),
+                {1, 1, 1, DEFAULT_REPEAT_STRIDE, (uint8_t)srcRepeatStride, (uint8_t)srcRepeatStride});
+            NextBlockAddImpl(
+                tmpTensor, src, (uint8_t)(reduceParam.originalSrcM), srcRepeatStride, splitCount, reduceParam.srcK);
         } else {
-            FirstBlockCopyImpl(tmpTensor, src, reduceParam.originalSrcM, reduceParam.srcK, DEFAULT_REPEAT_STRIDE,
-                srcRepeatStride);
+            FirstBlockCopyImpl(
+                tmpTensor, src, reduceParam.originalSrcM, reduceParam.srcK, DEFAULT_REPEAT_STRIDE, srcRepeatStride);
         }
 
         if (tailSrcK != 0) {
@@ -396,7 +413,7 @@ __aicore__ inline void NewReduceSumLastNDImpl(const LocalTensor<float>& dst, con
         BasicBlockReduceAddImpl(dst, tmpTensor, reduceParam.originalSrcM, reduceParam.dstK);
     }
 }
-};
+};     // namespace AscendC
 #endif // IMPL_ACTIVATION_SOFTMAX_V200_SOFTMAX_COMMON_IMPL_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_COMMON_IMPL_H__)

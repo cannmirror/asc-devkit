@@ -110,7 +110,7 @@ protected:
 INSTANTIATE_TEST_CASE_P(TEST_OPEARATION_DATACOPYL12L0C, DataCopyDescL12L0cTestsuite,
    ::testing::Values(
     DataCopyL12L0cTestParams { 2, MainDataCopyL12L0c<bfloat16_t, bfloat16_t> },
-    DataCopyL12L0cTestParams { 4, MainDataCopyL12L0c<bfloat16_t, float> },
+    DataCopyL12L0cTestParams { 2, MainDataCopyL12L0c<half, half> },
     DataCopyL12L0cTestParams { 4, MainDataCopyL12L0c<float, float> }, 
     DataCopyL12L0cTestParams { 4, MainDataCopyL12L0c<int32_t, int32_t> } 
     ));

@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例以简单的自定义算子为示例，展示了其编译、打包成自定义算子包，并部署到CANN环境中的流程。
+本样例以简单自定义算子为基础，展示了其编译、打包成自定义算子包，并部署到CANN环境中的流程。
 
 ## 支持的产品
 
@@ -56,18 +56,19 @@
         └── leaky_relu_custom_tiling.h
 ```
 
-## 算子描述
+## 样例描述
 
-Add算子实现两个数据相加，返回相加结果的功能。对应的数学表达式为：
+Add计算公式为：
 
 ```
 z = x + y
 ```
 
-AddCustomTilingSink、AddCustomTemplate与Add功能一致。其中，AddCustomTemplate展示了Tiling模板编程，添加的模板参数包括输入的数据类型、shape等，根据模板参数，简化或统一算子的实现逻辑，开发者可以在模板参数中定义需要的信息，如输入输出的数据类型，其他扩展参数等；AddCustomTilingSink用于展示Tiling下沉场景，y为Tiling值依赖输入，用于区分编译期或运行时的workspace配置。
+AddCustomTilingSink、AddCustomTemplate与Add的核函数功能一致。其中，
+  - AddCustomTemplate展示了Tiling模板编程，添加的模板参数包括输入的数据类型、shape等，根据模板参数，简化或统一样例的实现逻辑，开发者可以在模板参数中定义需要的信息，如输入输出的数据类型，其他扩展参数等；
+  - AddCustomTilingSink用于展示Tiling下沉场景，通过`DEVICE_IMPL_OP_OPTILING`将Tiling函数同时注册到host和device上执行。
 
-LeakyRelu算子实现了将数据按element做带泄露线性整流，返回处理结果的功能。
-对应的数学表达式为：
+LeakyRelu计算公式为：
 
 $$
 y=
@@ -78,33 +79,35 @@ a*x, \quad x<0
 $$
 其中a为scalar值。
 
-## 算子规格描述
+## 样例规格描述
 
 - Add
-  <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">Add</td></tr>
+  <table border="2" align="center">
+  <caption>表1：Add样例规格描述</caption>
+  <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="4" align="center">Add</td></tr>
   </tr>
-  <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">x</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">y</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td rowspan="3" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
+  <tr><td align="center">x</td><td align="center">[8, 2048]</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">y</td><td align="center">[8, 2048]</td><td align="center">float</td><td align="center">ND</td></tr>
   </tr>
   </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td rowspan="1" align="center">样例输出</td><td align="center">z</td><td align="center">[8, 2048]</td><td align="center">float</td><td align="center">ND</td></tr>
   </tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_custom, add_custom_tiling_sink</td></tr>
   </table>
 
 - AddCustomTemplate
 
-  <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">Add</td></tr>
+  <table border="2" align="center">
+  <caption>表2：AddCustomTemplate样例规格描述</caption>
+  <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="4" align="center">Add</td></tr>
   </tr>
-  <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">x</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">y</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td rowspan="3" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
+  <tr><td align="center">x</td><td align="center">[8, 2048]</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">y</td><td align="center">[8, 2048]</td><td align="center">float</td><td align="center">ND</td></tr>
   </tr>
   </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td rowspan="1" align="center">样例输出</td><td align="center">z</td><td align="center">[8, 2048]</td><td align="center">float</td><td align="center">ND</td></tr>
   </tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_template_custom</td></tr>
   <tr><td rowspan="6" align="center">模板参数</td><td colspan="4" align="center">template&lt;typename D_T_X, typename D_T_Y, typename D_T_Z, int TILE_NUM, int IS_SPLIT&gt;</td>
@@ -118,15 +121,16 @@ $$
 
 - LeakyRelu
 
-  <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">LeakyRelu</td></tr>
+  <table border="2" align="center">
+  <caption>表3：LeakyRelu样例规格描述</caption>
+  <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="4" align="center">LeakyRelu</td></tr>
   </tr>
-  <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">x</td><td align="center">8 * 200 * 1024</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td rowspan="3" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
+  <tr><td align="center">x</td><td align="center">[8, 200, 1024]</td><td align="center">float</td><td align="center">ND</td></tr>
   <tr><td align="center">negative_slope</td><td align="center">0.0</td><td align="center">float</td><td align="center">ND</td></tr>
   </tr>
   </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">y</td><td align="center">8 * 200 * 1024</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td rowspan="1" align="center">样例输出</td><td align="center">y</td><td align="center">[8, 200, 1024]</td><td align="center">float</td><td align="center">ND</td></tr>
   </tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">leaky_relu_custom</td></tr>
   </table>
@@ -135,34 +139,36 @@ $$
 
 - Add</br>
   - kernel实现：</br>
-    Ascend C提供的矢量计算接口`Add`的操作元素都为`LocalTensor`，输入数据需要先搬运进片上存储，然后使用计算接口完成两个输入参数相加，得到最终结果，再搬出到外部存储上。</br>
-    Add算子的实现流程分为3个基本任务：`CopyIn`，`Compute`，`CopyOut`。`CopyIn`任务负责将Global Memory上的输入Tensor `xGm`和`yGm`搬运到Local Memory，分别存储在`xLocal`、`yLocal`，`Compute`任务负责对`xLocal`、`yLocal`执行加法操作，计算结果存储在`zLocal`中，`CopyOut`任务负责将输出数据从`zLocal`搬运至Global Memory上的输出Tensor `zGm`中。
+    基于Ascend C提供的矢量计算接口`Add`实现。</br>
 
   - tiling实现：</br>
-    TilingData参数设计，`AddCustomTilingData`参数本质上是和并行数据切分相关的参数，本示例算子使用了2个tiling参数：`totalLength`、`tileNum`。`totalLength`是指需要计算的数据量大小，`tileNum`是指每个核上总计算数据分块个数。比如，`totalLength`这个参数传递到kernel侧后，可以通过除以参与计算的核数，得到每个核上的计算量，这样就完成了多核数据的切分。</br>
+    TilingData参数设计，`AddCustomTilingData`参数本质上是和并行数据切分相关的参数，本示例样例使用了2个tiling参数：`totalLength`和`tileNum`。`totalLength`是指需要计算的数据量大小，`tileNum`是指每个核上总计算数据分块个数。</br>
 
 - AddCustomTemplate</br>
-  功能与Add一致，kernel实现采用同样的`CopyIn`、`Compute`、`CopyOut`三阶段流水。tiling实现分为Tiling模板设计以及TilingData参数设计：
-  - Tiling模板设计，本示例使用了5个模板参数，`D_T_X`、`D_T_Y`、`D_T_Z`分别是指输入x、输入y、输出z的数据类型，`TILE_NUM`是指每个核上总计算数据分块个数，`IS_SPLIT`是是否使能数据分块计算，`IS_SPLIT`为0时`TILE_NUM`无效。通过模板参数组合替代传统的TilingKey。
+  - kernel实现：</br>
+    与Add一致。
+  - Tiling模板设计：</br>
+    本示例使用了5个模板参数，`D_T_X`、`D_T_Y`、`D_T_Z`分别是指输入x、输入y、输出z的数据类型，`TILE_NUM`是指每个核上总计算数据分块个数，`IS_SPLIT`是是否使能数据分块计算，`IS_SPLIT`为0时`TILE_NUM`无效。通过模板参数组合替代传统的TilingKey。
 
-  - TilingData参数设计，本示例算子使用了1个tiling参数，`totalLength`是指所有核需要计算的数据量总大小。</br>
+  - TilingData参数设计：</br>
+    本示例样例使用了1个tiling参数，`totalLength`是指所有核需要计算的数据量总大小。</br>
 
 
 - AddCustomTilingSink</br>
-  功能与Add一致，kernel实现采用同样的`CopyIn`、`Compute`、`CopyOut`三阶段流水，并通过`KERNEL_TASK_TYPE_DEFAULT`接口将算子强制指定在AIC、AIV混合场景运行，满足Tiling下沉算子条件。将所有的Tiling函数逻辑单独在`add_custom_tiling_sink_tiling.cpp`中实现，并通过`DEVICE_IMPL_OP_OPTILING`接口注册下沉的Tiling函数。</br>
+  - kernel实现：</br>
+    功能与Add一致，kernel通过`KERNEL_TASK_TYPE_DEFAULT`接口将样例强制指定在AIC、AIV混合场景运行，满足Tiling下沉算子条件。将所有的Tiling函数逻辑单独在`add_custom_tiling_sink_tiling.cpp`中实现，并通过`DEVICE_IMPL_OP_OPTILING`接口注册下沉的Tiling函数。</br>
 
 - LeakyRelu</br>
   - kernel实现：</br>
-    Ascend C提供的矢量计算接口`LeakyRelu`的操作元素为`LocalTensor`，输入数据需要先搬运进片上存储，然后根据LeakyReLU的计算规则处理，最终结果搬出到外部存储上。</br>
-    LeakyReluCustom算子的实现流程分为3个基本任务：`CopyIn`，`Compute`，`CopyOut`。`CopyIn`任务负责将Global Memory上的输入Tensor `xGm`搬运到Local Memory，存储在`xLocal`，`Compute`任务负责对`xLocal`执行LeakyRelu操作，计算结果存储在`yLocal`中，`CopyOut`任务负责将输出数据从`yLocal`搬运至Global Memory上的输出Tensor `yGm`中。</br>
+    基于高阶API接口`LeakyRelu`实现。</br>
 
   - tiling实现：</br>
-    TilingData参数设计，`LeakyReluCustomTilingData`参数本质上是和并行数据切分相关的参数，本示例算子使用了3个tiling参数：`totalLength`、`tileNum`、`negativeSlope`。`totalLength`、`tileNum`与Add算子类似，`negativeSlope`表示LeakyRelu的负半轴斜率系数，作为计算参数传递给kernel侧。</br>
+    TilingData参数设计，`LeakyReluCustomTilingData`参数本质上是和并行数据切分相关的参数，本示例样例使用了3个tiling参数：`totalLength`、`tileNum`、`negativeSlope`。`totalLength`、`tileNum`与Add样例类似，`negativeSlope`表示LeakyRelu的负半轴斜率系数，作为计算参数传递给kernel侧。</br>
 
 
 ## 编译运行
 
-在本样例根目录下执行如下步骤，编译、打包并部署自定义算子包。
+在本样例根目录下执行如下步骤，编译、打包并部署自定义样例包。
 
 - 配置环境变量
 
@@ -185,7 +191,7 @@ $$
     source ${install_path}/cann/set_env.sh
     ```
 
-- 编译、打包算子并部署
+- 编译、打包样例并部署
 
   ```bash
   mkdir -p build && cd build
@@ -198,3 +204,166 @@ $$
   ```log
   SUCCESS
   ```
+
+## 缓存编译加速（可选）
+
+本样例支持通过 ccache 加速重复编译，提供单机缓存和分布式缓存两种模式。
+
+### 前提条件
+
+- 已安装 `ccache`，建议使用 `ccache >= 4.6.1`
+
+  ```bash
+  apt install ccache
+  ```
+
+- 分布式缓存场景需确认当前版本支持 Redis 存储
+
+  ```bash
+  ccache --version
+  # 预期：Features 中包含 redis-storage
+  ```
+
+### 单机缓存
+
+`ccache` 会作为编译器前置代理接管 host 侧 C/C++ 编译动作。本样例中开启 `-DENABLE_CCACHE=ON` 后，`cmake` 会将 `ccache` 挂接到 `CMAKE_C_COMPILER_LAUNCHER` 和 `CMAKE_CXX_COMPILER_LAUNCHER`。后续编译时，`ccache` 会基于编译命令、源码内容、头文件依赖和编译器内容计算缓存键；若命中缓存，则直接复用历史编译结果。对于未命中的文件，仍按正常流程调用实际编译器完成编译，并将结果写回本地缓存。
+
+通过 cmake 参数启用，无需修改 CMakeLists.txt：
+
+```bash
+mkdir -p build && cd build
+cmake -DENABLE_CCACHE=ON .. && make -j binary package
+```
+
+首次编译后，清空 build 目录重建可命中缓存：
+
+```bash
+ccache -z
+rm -rf build && mkdir -p build && cd build
+cmake -DENABLE_CCACHE=ON .. && make -j binary package
+```
+
+再次执行相同编译流程：
+
+```bash
+rm -rf build && mkdir -p build && cd build
+cmake -DENABLE_CCACHE=ON .. && make -j binary package
+```
+
+查看缓存统计：
+
+```bash
+ccache --show-stats
+# 预期：二次编译后 Primary storage Hits 明显增加
+```
+
+可通过以下方式对比启用和未启用 `ccache` 的差异：
+
+```bash
+# 不启用 ccache
+rm -rf build
+mkdir -p build && cd build
+time cmake .. && time make -j binary package
+cd ..
+
+# 启用 ccache 的首次编译
+ccache -z
+rm -rf build
+mkdir -p build && cd build
+time cmake -DENABLE_CCACHE=ON .. && time make -j binary package
+cd ..
+
+# 启用 ccache 的二次编译
+rm -rf build
+mkdir -p build && cd build
+time cmake -DENABLE_CCACHE=ON .. && time make -j binary package
+ccache --show-stats
+```
+
+结果判定建议关注两类数据：
+
+- 构建耗时：通常首次启用 `ccache` 与未启用差异不明显，第二次使用相同源码和相同命令重新构建时耗时会下降。
+- 缓存统计：二次构建后 `ccache --show-stats` 中 `Primary storage Hits` 明显增加，说明本地缓存命中。
+
+若需要清空本地缓存，可按以下方式操作：
+
+```bash
+# 仅清空统计信息，不删除缓存内容
+ccache -z
+
+# 清空本地缓存内容
+ccache -C
+
+# 同时清空本地缓存内容和统计信息
+ccache -Cz
+```
+
+### 分布式缓存（ccache + Redis）
+
+适用于多机共享缓存场景：机器 A 编译后将结果推送至 Redis，机器 B 在相同源码、相同编译选项和相同工具链版本下可从 Redis 命中缓存，减少重复编译。
+
+分布式场景下，`ccache` 以各机器本地缓存作为一级缓存，Redis 作为共享二级缓存。机器 A 首次编译时会调用实际编译器并将结果写入本地缓存和 Redis；机器 B 在相同源码、相同编译命令和相同编译器内容下再次编译时，可直接从 Redis 命中共享缓存，减少编译动作的重复执行。若两台机器编译器路径不同但内容一致，建议设置 `compiler_check=content`。
+
+组网要求：
+
+- 机器 A：首次编译机器，将缓存写入 Redis，IP 为 `<A_IP>`
+- 机器 B：二次编译机器，从 Redis 验证共享缓存命中，IP 为 `<B_IP>`
+- 机器 C：Redis 服务器，保存共享缓存数据，IP 为 `<C_IP>`
+- A、B、C 三台机器需处于同一网络下，A/B 机器都必须能够访问 `C_IP:6379`
+
+建议机器 A 和机器 B 使用相同的源码内容、相同的编译命令、相同版本的编译器和尽量一致的源码路径，否则可能出现缓存未命中的情况。
+
+**1. 机器 C：部署 Redis 服务**
+
+```bash
+apt install redis-server
+# 启动 Redis 服务
+redis-server --daemonize yes --bind 0.0.0.0 --port 6379 --requirepass <PASSWORD>
+# 验证 Redis 连接
+redis-cli -h <C_IP> -p 6379 -a <PASSWORD> ping
+```
+
+> 说明：上述配置仅用于受控测试环境。共享环境或生产环境建议开启访问控制、认证和网络隔离。
+
+**2. 机器 A / 机器 B：配置 ccache**
+
+```bash
+source /usr/local/Ascend/cann/set_env.sh
+# 验证 Redis 连接
+redis-cli -h <C_IP> -p 6379 -a <PASSWORD> ping
+# 配置 Redis 作为二级存储，带密码认证格式
+# 格式：redis://default:<PASSWORD>@<C_IP>:6379
+ccache --set-config=secondary_storage=redis://default:<PASSWORD>@<C_IP>:6379
+# 配置编译器内容校验，避免路径差异导致缓存未命中
+ccache --set-config=compiler_check=content
+```
+
+**3. 机器 A：执行首次编译**
+
+```bash
+ccache -z
+mkdir -p build && cd build
+cmake -DENABLE_CCACHE=ON .. && make -j binary package
+ccache --show-stats
+```
+
+预期：
+
+- 机器 A `Secondary storage Misses > 0`
+
+**4. 机器 B：执行二次编译**
+
+```bash
+ccache -z
+mkdir -p build && cd build
+cmake -DENABLE_CCACHE=ON .. && make -j binary package
+ccache --show-stats
+```
+
+预期：
+
+- 机器 B `Secondary storage Hits > 0`
+
+更多 `ccache` 配置和缓存行为说明可参考官方文档：
+
+- https://ccache.dev/documentation.html

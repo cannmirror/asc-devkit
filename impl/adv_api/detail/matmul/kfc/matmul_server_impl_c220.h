@@ -1,19 +1,20 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file matmul_server_impl_c220.h
  * \brief
  */
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/kfc/matmul_server_impl_c220.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul_client.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/kfc/matmul_server_impl_c220.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul_client.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_KFC_MATMUL_SERVER_IMPL_C220_H__
 #endif
@@ -24,11 +25,12 @@
 #include "matmul_server.h"
 
 namespace AscendC {
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
 __aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::GetOffsetSize(
-    MsgTmpPos MatmulConfigParams* body, KFC_Enum funID, uint32_t sync, uint64_t &offsetSize,
-    uint32_t &enSequentialWrite, bool hasSetWorkspace)
+    MsgTmpPos MatmulConfigParams* body, KFC_Enum funID, uint32_t sync, uint64_t& offsetSize,
+    uint32_t& enSequentialWrite, bool hasSetWorkspace)
 {
     if constexpr ((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_NORMAL) == 0) {
         ASSERT(body->cAddr != 0); // The output address must be configured.
@@ -58,10 +60,11 @@ __aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
     }
 }
 
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
 __aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::StartIterate(
-    MsgTmpPos MatmulConfigParams* body, KFC_Enum funID, uint32_t sync, uint32_t &cntIterator)
+    MsgTmpPos MatmulConfigParams* body, KFC_Enum funID, uint32_t sync, uint32_t& cntIterator)
 {
     uint64_t size;
     if constexpr (ToMatmulConfig(MM_CFG).singleCoreMN != 0) {
@@ -111,9 +114,11 @@ __aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
     return true;
 }
 
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
-__aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::Init(MSG_POS KfcMsg* msg)
+__aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::Init(
+    MSG_POS KfcMsg* msg)
 {
     if constexpr (!ToMatmulConfig(MM_CFG).enableInit) {
         return;
@@ -128,7 +133,7 @@ __aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
     GlobalTensor<int64_t> tilingGlobal;
     for (int i = 0; i < tCubeTilingSize; i += CACHE_LINE_SIZE) {
         Barrier();
-        tilingGlobal.SetGlobalBuffer((__gm__ int64_t *)(msg->tilingInfo.tilingAddr + i));
+        tilingGlobal.SetGlobalBuffer((__gm__ int64_t*)(msg->tilingInfo.tilingAddr + i));
         DataCacheCleanAndInvalid<int64_t, CacheLine::SINGLE_CACHE_LINE, DcciDst::CACHELINE_OUT>(tilingGlobal);
     }
 
@@ -138,9 +143,11 @@ __aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
     mul.Init(this->tiling_.GetTiling(), nullptr);
 }
 
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
-__aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::SetOrgShape(MSG_POS KfcMsg* msg)
+__aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::SetOrgShape(
+    MSG_POS KfcMsg* msg)
 {
     if constexpr (!ToMatmulConfig(MM_CFG).enableInit) {
         if (mul.GetSubBlockIdx() == 0) {
@@ -159,14 +166,16 @@ __aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
             msgAux.msg1.setOrgShape = true;
         }
     } else {
-        mul.SetOrgShape(msg->orgShape.orgM, msg->orgShape.orgN, msg->orgShape.orgKa, msg->orgShape.orgKb,
-            msg->orgShape.orgKc);
+        mul.SetOrgShape(
+            msg->orgShape.orgM, msg->orgShape.orgN, msg->orgShape.orgKa, msg->orgShape.orgKb, msg->orgShape.orgKc);
     }
 }
 
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
-__aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::GetTensorC(MSG_POS KfcMsg* msg)
+__aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::GetTensorC(
+    MSG_POS KfcMsg* msg)
 {
     if constexpr (A_TYPE::layout != LayoutMode::NONE) {
         return true;
@@ -198,9 +207,11 @@ __aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
     return false;
 }
 
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
-__aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::IterateBatch(MSG_POS KfcMsg* msg)
+__aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::IterateBatch(
+    MSG_POS KfcMsg* msg)
 {
     if constexpr (A_TYPE::layout == LayoutMode::NONE) {
         return true;
@@ -209,10 +220,10 @@ __aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
     GlobalTensor<int64_t> msgGlobalTensor;
     msgGlobalTensor.SetGlobalBuffer(reinterpret_cast<__gm__ int64_t*>(msg) + sizeof(int64_t));
     DataCacheCleanAndInvalid<int64_t, CacheLine::SINGLE_CACHE_LINE, DcciDst::CACHELINE_OUT>(msgGlobalTensor);
-    __gm__ auto *body = &(msg->body);
+    __gm__ auto* body = &(msg->body);
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     if (body->setQuant == 1) {
-        ASSERT(body->quantMode != 1);  // scalar mode is not supported for quantization parameters in
+        ASSERT(body->quantMode != 1); // scalar mode is not supported for quantization parameters in
         // Batch MM
     }
 #endif
@@ -221,13 +232,14 @@ __aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
 
     GlobalTensor<DstT> cGlobal;
     cGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ DstT*>(body->cAddr), size);
-    mul.IterateBatch(cGlobal, body->enPartialSum, (uint8_t)(body->enAtomic),body->enSequentialWrite,
-                    body->matrixStrideA, body->matrixStrideB, body->matrixStrideC);
+    mul.IterateBatch(
+        cGlobal, body->enPartialSum, (uint8_t)(body->enAtomic), body->enSequentialWrite, body->matrixStrideA,
+        body->matrixStrideB, body->matrixStrideC);
     mul.End();
 
     // Now release UB
-    if constexpr (PhyPosIsUB(A_TYPE::pos) || PhyPosIsUB(B_TYPE::pos) ||
-        PhyPosIsUB(BIAS_TYPE::pos) || PhyPosIsUB(C_TYPE::pos)) {
+    if constexpr (
+        PhyPosIsUB(A_TYPE::pos) || PhyPosIsUB(B_TYPE::pos) || PhyPosIsUB(BIAS_TYPE::pos) || PhyPosIsUB(C_TYPE::pos)) {
         if (unlikely(msg->ubAddr >= 0)) {
             kfcCommSrv->FreeUB(msg->ubAddr);
         }
@@ -239,35 +251,45 @@ __aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
     return true;
 }
 
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
-__aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::StartIterateNBatch(
-    MsgTmpPos MatmulConfigParams* body, uint32_t &cntIterator)
+__aicore__ inline void
+MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::StartIterateNBatch(
+    MsgTmpPos MatmulConfigParams* body, uint32_t& cntIterator)
 {
     const uint64_t size = tiling_.GetSingleCoreM() * tiling_.GetSingleCoreN();
     uint64_t singleBatchASize = (uint64_t)(body->sizeAmatrix) / body->batchLoop;
     uint64_t singleBatchBSize = (uint64_t)(body->sizeBmatrix) / body->batchLoop;
     uint32_t batchC = body->batchA > body->batchB ? body->batchA : body->batchB;
-    bool layoutGCondition = tiling_.GetCLayoutInfoG() == 1 &&
-                            (tiling_.GetBLayoutInfoG() != 1 || tiling_.GetALayoutInfoG() != 1);
+    bool layoutGCondition =
+        tiling_.GetCLayoutInfoG() == 1 && (tiling_.GetBLayoutInfoG() != 1 || tiling_.GetALayoutInfoG() != 1);
     if (layoutGCondition) {
-        int32_t layoutG = tiling_.GetBLayoutInfoG() > tiling_.GetALayoutInfoG() ? tiling_.GetBLayoutInfoG() : tiling_.GetALayoutInfoG();
+        int32_t layoutG = tiling_.GetBLayoutInfoG() > tiling_.GetALayoutInfoG() ? tiling_.GetBLayoutInfoG() :
+                                                                                  tiling_.GetALayoutInfoG();
         batchC = batchC / layoutG;
     }
     uint64_t batchOffsetBias = tiling_.GetCLayoutInfoS2() * batchC * sizeof(typename BIAS_TYPE::T);
-    
+
     BmmOffset batchLoopOffset;
     for (uint32_t loopIdx = 0U; loopIdx < body->batchLoop; loopIdx++) {
         const uint64_t biasOffset = batchOffsetBias * loopIdx;
-        batchLoopOffset.offA = CalcNBatchoffset<A_TYPE>(body->batchA, loopIdx, tiling_.GetALayoutInfoN(), tiling_.GetALayoutInfoG(), tiling_.GetALayoutInfoD(), tiling_.GetALayoutInfoS());
-        batchLoopOffset.offB = CalcNBatchoffset<B_TYPE>(body->batchB, loopIdx, tiling_.GetBLayoutInfoN(), tiling_.GetBLayoutInfoG(), tiling_.GetBLayoutInfoD(), tiling_.GetBLayoutInfoS());
-        batchLoopOffset.offC = CalcNBatchoffset<C_TYPE>(batchC, loopIdx, tiling_.GetCLayoutInfoN(), tiling_.GetCLayoutInfoG(), tiling_.GetCLayoutInfoS2(), tiling_.GetCLayoutInfoS1());
+        batchLoopOffset.offA = CalcNBatchoffset<A_TYPE>(
+            body->batchA, loopIdx, tiling_.GetALayoutInfoN(), tiling_.GetALayoutInfoG(), tiling_.GetALayoutInfoD(),
+            tiling_.GetALayoutInfoS());
+        batchLoopOffset.offB = CalcNBatchoffset<B_TYPE>(
+            body->batchB, loopIdx, tiling_.GetBLayoutInfoN(), tiling_.GetBLayoutInfoG(), tiling_.GetBLayoutInfoD(),
+            tiling_.GetBLayoutInfoS());
+        batchLoopOffset.offC = CalcNBatchoffset<C_TYPE>(
+            batchC, loopIdx, tiling_.GetCLayoutInfoN(), tiling_.GetCLayoutInfoG(), tiling_.GetCLayoutInfoS2(),
+            tiling_.GetCLayoutInfoS1());
 
-        IterateSetMessage(body, singleBatchASize, singleBatchBSize, batchLoopOffset.offA, batchLoopOffset.offB, biasOffset);
+        IterateSetMessage(
+            body, singleBatchASize, singleBatchBSize, batchLoopOffset.offA, batchLoopOffset.offB, biasOffset);
         GlobalTensor<DstT> cGlobal;
         cGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ DstT*>(body->cAddr + batchLoopOffset.offC), size);
-        mul.IterateBatch(cGlobal, body->enPartialSum, (uint8_t)(body->enAtomic),
-            body->enSequentialWrite, body->matrixStrideA,
+        mul.IterateBatch(
+            cGlobal, body->enPartialSum, (uint8_t)(body->enAtomic), body->enSequentialWrite, body->matrixStrideA,
             body->matrixStrideB, body->matrixStrideC);
         cntIterator++;
         if (cntIterator < INC_PROCESS_CHECK && (!body->sync && !body->waitIterateBatch)) {
@@ -277,9 +299,11 @@ __aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
     }
 }
 
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
-__aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::IterateNBatch(MSG_POS KfcMsg* msg)
+__aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::IterateNBatch(
+    MSG_POS KfcMsg* msg)
 {
     if constexpr (!ToMatmulConfig(MM_CFG).isNBatch) {
         return true;
@@ -287,18 +311,18 @@ __aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
     GlobalTensor<int64_t> msgGlobal;
     msgGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ int64_t*>(msg) + sizeof(int64_t));
     DataCacheCleanAndInvalid<int64_t, CacheLine::SINGLE_CACHE_LINE, DcciDst::CACHELINE_OUT>(msgGlobal);
-    __gm__ auto *body = &(msg->body);
+    __gm__ auto* body = &(msg->body);
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     if (msg->body.setQuant == 1) {
-        ASSERT(msg->body.quantMode != 1);  // scalar mode is not supported for quantization parameters in
+        ASSERT(msg->body.quantMode != 1); // scalar mode is not supported for quantization parameters in
         // Batch MM
     }
 #endif
     uint32_t cntIterator = 0;
     StartIterateNBatch(body, cntIterator);
     // Now release UB
-    if constexpr (PhyPosIsUB(A_TYPE::pos) || PhyPosIsUB(B_TYPE::pos) ||
-        PhyPosIsUB(BIAS_TYPE::pos) || PhyPosIsUB(C_TYPE::pos)) {
+    if constexpr (
+        PhyPosIsUB(A_TYPE::pos) || PhyPosIsUB(B_TYPE::pos) || PhyPosIsUB(BIAS_TYPE::pos) || PhyPosIsUB(C_TYPE::pos)) {
         if (unlikely(msg->ubAddr >= 0)) {
             kfcCommSrv->FreeUB(msg->ubAddr);
         }
@@ -312,7 +336,8 @@ __aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
     return true;
 }
 
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
 __aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::Iterate(
     MSG_POS KfcMsg* msg, KFC_Enum funID)
@@ -332,19 +357,19 @@ __aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
             }
         }
     } else {
-        ASSERT(!msg->body.iterateFakeMsg &&"Only Ib share mode support fake msg.");
+        ASSERT(!msg->body.iterateFakeMsg && "Only Ib share mode support fake msg.");
     }
     SyncCubeWithVec<A_TYPE::ibShare, B_TYPE::ibShare>();
     QuantCacheRefresh(msg);
     IterateSetMessage(msg, &(msg->body));
     uint32_t cntIterator = 0;
     auto sync = msg->body.sync;
-    if(!StartIterate(&(msg->body), funID, sync, cntIterator)) {
+    if (!StartIterate(&(msg->body), funID, sync, cntIterator)) {
         return false;
     }
     // Now release UB
-    if constexpr (PhyPosIsUB(A_TYPE::pos) || PhyPosIsUB(B_TYPE::pos) ||
-        PhyPosIsUB(BIAS_TYPE::pos) || PhyPosIsUB(C_TYPE::pos)) {
+    if constexpr (
+        PhyPosIsUB(A_TYPE::pos) || PhyPosIsUB(B_TYPE::pos) || PhyPosIsUB(BIAS_TYPE::pos) || PhyPosIsUB(C_TYPE::pos)) {
         if (unlikely(msg->ubAddr >= 0)) {
             kfcCommSrv->FreeUB(msg->ubAddr);
         }
@@ -369,12 +394,14 @@ __aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
 }
 
 #if defined(__ASCENDC_ENABLE_SUPER_KERNEL__)
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
-__aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::SuperKernelEventCount(uint16_t eventID)
+__aicore__ inline void
+MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::SuperKernelEventCount(uint16_t eventID)
 {
-    auto msgRcvStart = reinterpret_cast<__gm__ int64_t *>(kfcCommSrv->GetSecondBuffStart());
-    auto superKernelEvent = reinterpret_cast<__gm__ SuperKernelWaitEventCnt *>(msgRcvStart);
+    auto msgRcvStart = reinterpret_cast<__gm__ int64_t*>(kfcCommSrv->GetSecondBuffStart());
+    auto superKernelEvent = reinterpret_cast<__gm__ SuperKernelWaitEventCnt*>(msgRcvStart);
     int32_t count = superKernelEvent->eventCnt[this->devEvtID] + 1;
     superKernelEvent->eventId[this->devEvtID] = eventID;
     superKernelEvent->eventCnt[this->devEvtID] = count;

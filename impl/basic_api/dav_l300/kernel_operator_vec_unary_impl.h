@@ -349,14 +349,66 @@ UNARY_VEC_COUNTER_IMPL(SqrtImpl, Sqrt, float);
  * Rsqrt                                             *
  * ************************************************************************************************* */
 // Rsqrt::Level 0
-UNARY_VEC_NORMAL_NOT_SUPPORT(RsqrtImpl);
-UNARY_VEC_BITWISE_NOT_SUPPORT(RsqrtImpl);
-// normal mode
-UNARY_VEC_NORMAL_IMPL(RsqrtImpl, Rsqrt, half);
-UNARY_VEC_NORMAL_IMPL(RsqrtImpl, Rsqrt, float);
-// bit mode
-UNARY_VEC_BITWISE_IMPL(RsqrtImpl, Rsqrt, half);
-UNARY_VEC_BITWISE_IMPL(RsqrtImpl, Rsqrt, float);
+namespace RegRsqrt {
+template <typename T, typename RegT, bool precisionMode = false>
+__simd_callee__ inline void Rsqrt(RegT &dstReg, RegT &srcReg, Reg::MaskReg &mask)
+{
+    Reg::MaskReg cmpMask;
+    Reg::Duplicate(dstReg, static_cast<T>(1.0f), mask);
+    Reg::CompareScalar<T, CMPMODE::LT>(cmpMask, srcReg, static_cast<T>(0.0f), mask);
+    if constexpr (!precisionMode) {
+        Reg::Sqrt(srcReg, srcReg, mask);
+        Reg::Div(dstReg, dstReg, srcReg, mask);
+        Reg::Select(dstReg, srcReg, dstReg, cmpMask);
+    } else {
+        if constexpr (SupportType<T, half>()) {
+            static constexpr AscendC::Reg::SqrtSpecificMode SqrtMode = 
+                                    {Reg::MaskMergeMode::ZEROING, false, SqrtAlgo::PRECISION_1ULP_FTZ_FALSE};
+            Reg::Sqrt<T, &SqrtMode>(srcReg, srcReg, mask);
+            static constexpr AscendC::Reg::DivSpecificMode divMode = 
+                                    {Reg::MaskMergeMode::ZEROING, false, DivAlgo::PRECISION_1ULP_FTZ_FALSE};
+            Reg::Div<T, &divMode>(dstReg, dstReg, srcReg, mask);
+        } else {
+            static constexpr AscendC::Reg::SqrtSpecificMode SqrtMode = 
+                                    {Reg::MaskMergeMode::ZEROING, false, SqrtAlgo::PRECISION_0ULP_FTZ_FALSE};
+            Reg::Sqrt<T, &SqrtMode>(srcReg, srcReg, mask);
+            static constexpr AscendC::Reg::DivSpecificMode divMode = 
+                                    {Reg::MaskMergeMode::ZEROING, false, DivAlgo::PRECISION_0ULP_FTZ_FALSE};
+            Reg::Div<T, &divMode>(dstReg, dstReg, srcReg, mask);
+        }
+    }
+}
+} // namespace RegRsqrt
+
+template <typename T, bool isSetMask = true, const RsqrtConfig& config = DEFAULT_RSQRT_CONFIG>
+__aicore__ inline void RsqrtImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t mask[], const uint8_t repeatTime,
+    const UnaryRepeatParams &repeatParams)
+{
+    static_assert((SupportType<T, half, float>()), "current data type is not supported on current device!");
+    if constexpr (config.algo == RsqrtAlgo::INTRINSIC || config.algo == RsqrtAlgo::PRECISION_1ULP_FTZ_TRUE) {
+        constexpr auto func = RegRsqrt::Rsqrt<T, Reg::RegTensor<T>>;
+        Internal::VecUnaryLevel0Template<func, isSetMask, true>(dst, src, mask, 0, repeatTime, repeatParams);
+    } else if constexpr (config.algo == RsqrtAlgo::FAST_INVERSE || config.algo == RsqrtAlgo::PRECISION_0ULP_FTZ_FALSE || 
+                        config.algo == RsqrtAlgo::PRECISION_1ULP_FTZ_FALSE) {
+        constexpr auto func = RegRsqrt::Rsqrt<T, Reg::RegTensor<T>, true>;
+        Internal::VecUnaryLevel0Template<func, isSetMask, true>(dst, src, mask, 0, repeatTime, repeatParams);
+    }
+}
+
+template <typename T, bool isSetMask = true, const RsqrtConfig& config = DEFAULT_RSQRT_CONFIG>
+__aicore__ inline void RsqrtImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t mask, const uint8_t repeatTime,
+    const UnaryRepeatParams &repeatParams)
+{
+    static_assert((SupportType<T, half, float>()), "current data type is not supported on current device!");
+    if constexpr (config.algo == RsqrtAlgo::INTRINSIC || config.algo == RsqrtAlgo::PRECISION_1ULP_FTZ_TRUE) {
+        constexpr auto func = RegRsqrt::Rsqrt<T, Reg::RegTensor<T>>;
+        Internal::VecUnaryLevel0Template<func, isSetMask, false>(dst, src, nullptr, mask, repeatTime, repeatParams);
+    } else if constexpr (config.algo == RsqrtAlgo::FAST_INVERSE || config.algo == RsqrtAlgo::PRECISION_0ULP_FTZ_FALSE || 
+                        config.algo == RsqrtAlgo::PRECISION_1ULP_FTZ_FALSE) {
+        constexpr auto func = RegRsqrt::Rsqrt<T, Reg::RegTensor<T>, true>;
+        Internal::VecUnaryLevel0Template<func, isSetMask, false>(dst, src, nullptr, mask, repeatTime, repeatParams);
+    }
+}
 // Rsqrt::Level 2
 UNARY_VEC_COUNTER_NOT_SUPPORT(RsqrtImpl);
 UNARY_VEC_COUNTER_IMPL(RsqrtImpl, Rsqrt, half);

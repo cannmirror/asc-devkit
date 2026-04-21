@@ -1,19 +1,20 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file matmul_server.h
  * \brief
  */
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/kfc/matmul_server.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul_client.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/kfc/matmul_server.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul_client.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_KFC_MATMUL_SERVER_H__
 #endif
@@ -29,7 +30,8 @@
 
 namespace AscendC {
 
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG = CFG_NORM,
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG = CFG_NORM,
     class MM_CB = MatmulCallBackFunc<nullptr, nullptr, nullptr>, MATMUL_POLICY_DEFAULT_OF(MatmulPolicy)>
 class MatmulService {
     using SrcAT = typename A_TYPE::T;
@@ -62,7 +64,7 @@ public:
             }
 #endif
             this->devEvtID = instID;
-            // A and B both enable ibShare no need to use cache 
+            // A and B both enable ibShare no need to use cache
             if constexpr ((A_TYPE::ibShare || B_TYPE::ibShare) && !(A_TYPE::ibShare && B_TYPE::ibShare)) {
                 if (kfcCommSrv->subBlockID == 0) {
                     gCache.Init();
@@ -80,7 +82,7 @@ public:
                 mul.Init(tiling_.GetTiling(), nullptr);
             } else {
 #endif
-                tiling_.SetTiling((TCubeTiling *)tiling);
+                tiling_.SetTiling((TCubeTiling*)tiling);
                 mul.Init(tiling_.GetTiling(), nullptr);
 #if !defined(ASCENDC_CPU_DEBUG) && defined(__CCE_IS_AICORE__)
             }
@@ -89,7 +91,7 @@ public:
             InitL1Addr();
 #endif
         } else if (tiling) {
-            tiling_.SetTiling((TCubeTiling *)tiling);
+            tiling_.SetTiling((TCubeTiling*)tiling);
             mul.Init(tiling_.GetTiling(), nullptr);
 #if defined(USE_SSBUF)
             InitL1Addr();
@@ -97,10 +99,7 @@ public:
         }
     }
     __aicore__ inline void Init(MSG_POS KfcMsg* msg);
-    __aicore__ inline void SetSubBlockIdx(uint8_t idx)
-    {
-        mul.SetSubBlockIdx(idx);
-    }
+    __aicore__ inline void SetSubBlockIdx(uint8_t idx) { mul.SetSubBlockIdx(idx); }
 
     __aicore__ inline void SetOrgShape(MSG_POS KfcMsg* msg);
     __aicore__ inline void SetSingleShape(__gm__ KfcMsg* msg)
@@ -163,8 +162,8 @@ public:
             return;
         }
         UserDefDataType userData;
-        uint32_t *ptr = reinterpret_cast<uint32_t *>(&userData);
-        MSG_POS uint32_t *ptrMsg = reinterpret_cast<MSG_POS uint32_t *>(&(msg->body));
+        uint32_t* ptr = reinterpret_cast<uint32_t*>(&userData);
+        MSG_POS uint32_t* ptrMsg = reinterpret_cast<MSG_POS uint32_t*>(&(msg->body));
         for (int i = 0; i < sizeof(UserDefDataType) / sizeof(uint32_t); i++) {
             *(ptr + i) = *(ptrMsg + i);
         }
@@ -178,7 +177,7 @@ public:
             return;
         }
         UserDefDataType userData;
-        uint32_t *ptr = reinterpret_cast<uint32_t *>(&userData);
+        uint32_t* ptr = reinterpret_cast<uint32_t*>(&userData);
         if constexpr (sizeof(UserDefDataType) == 4) {
             *ptr = msg->userCustomData;
         } else if constexpr (sizeof(UserDefDataType) == 8) {
@@ -201,10 +200,7 @@ public:
         }
     }
 
-    __aicore__ inline void SetUserDefInfo(__gm__ KfcMsg* msg)
-    {
-        mul.SetUserDefInfo(msg->userDefInfo.tilingPtr);
-    }
+    __aicore__ inline void SetUserDefInfo(__gm__ KfcMsg* msg) { mul.SetUserDefInfo(msg->userDefInfo.tilingPtr); }
 #endif
 
     __aicore__ inline void SetTensorB(MsgTmpPos MatmulConfigParams* body);
@@ -212,18 +208,17 @@ public:
     __aicore__ inline void SetBias(MsgTmpPos MatmulConfigParams* body);
     __aicore__ inline void SetBias(MsgTmpPos MatmulConfigParams* body, const uint64_t offset);
     __aicore__ inline bool GetTensorC(MSG_POS KfcMsg* msg);
-    __aicore__ inline uint16_t GetInstID()
-    {
-        return instID;
-    }
+    __aicore__ inline uint16_t GetInstID() { return instID; }
     __aicore__ inline void IterateSetMessage(MSG_POS KfcMsg* msg, MsgTmpPos MatmulConfigParams* body)
     {
 #if defined(USE_WORKSPACE)
         if constexpr (!ToMatmulConfig(MM_CFG).enableInit) {
             if (mul.GetSubBlockIdx() == 0 && msgAux.msg0.setOrgShape) {
-                mul.SetOrgShape(msgAux.msg0.orgM, msgAux.msg0.orgN, msgAux.msg0.orgKa, msgAux.msg0.orgKb, msgAux.msg0.orgKc);
+                mul.SetOrgShape(
+                    msgAux.msg0.orgM, msgAux.msg0.orgN, msgAux.msg0.orgKa, msgAux.msg0.orgKb, msgAux.msg0.orgKc);
             } else if (mul.GetSubBlockIdx() == 1 && msgAux.msg1.setOrgShape) {
-                mul.SetOrgShape(msgAux.msg1.orgM, msgAux.msg1.orgN, msgAux.msg1.orgKa, msgAux.msg1.orgKb, msgAux.msg1.orgKc);
+                mul.SetOrgShape(
+                    msgAux.msg1.orgM, msgAux.msg1.orgN, msgAux.msg1.orgKa, msgAux.msg1.orgKb, msgAux.msg1.orgKc);
             }
         }
 #endif
@@ -239,7 +234,9 @@ public:
             if constexpr (ToMatmulConfig(MM_CFG).enableQuantVector) {
                 SetQuantVector(body);
             }
-            if constexpr (((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_BATCH) != 0) || ((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_N_BATCH) != 0)) {
+            if constexpr (
+                ((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_BATCH) != 0) ||
+                ((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_N_BATCH) != 0)) {
                 if constexpr (A_TYPE::layout != LayoutMode::NONE) {
                     SetBatchNum(body);
                 }
@@ -267,7 +264,8 @@ public:
         }
     }
 
-    __aicore__ inline void IterateSetMessage(MsgTmpPos MatmulConfigParams* body, const uint64_t batchASize, const uint64_t batchBSize,
+    __aicore__ inline void IterateSetMessage(
+        MsgTmpPos MatmulConfigParams* body, const uint64_t batchASize, const uint64_t batchBSize,
         const uint64_t offsetA = 0, const uint64_t offsetB = 0, const uint64_t offsetBias = 0)
     {
         if (body->isFirstIter) {
@@ -282,19 +280,25 @@ public:
         }
     }
     __aicore__ inline bool IterateBatch(MSG_POS KfcMsg* msg);
-    __aicore__ inline void StartIterateNBatch(MsgTmpPos MatmulConfigParams* body, uint32_t &cntIterator);
+    __aicore__ inline void StartIterateNBatch(MsgTmpPos MatmulConfigParams* body, uint32_t& cntIterator);
     __aicore__ inline bool IterateNBatch(MSG_POS KfcMsg* msg);
-    __aicore__ inline void GetOffsetSize(MsgTmpPos MatmulConfigParams* body, KFC_Enum funID, uint32_t sync, uint64_t &offsetSize, uint32_t &enSequentialWrite, bool hasSetWorkspace = false);
-    __aicore__ inline bool StartIterate(MsgTmpPos MatmulConfigParams* body, KFC_Enum funID, uint32_t sync, uint32_t &cntIterator);
+    __aicore__ inline void GetOffsetSize(
+        MsgTmpPos MatmulConfigParams* body, KFC_Enum funID, uint32_t sync, uint64_t& offsetSize,
+        uint32_t& enSequentialWrite, bool hasSetWorkspace = false);
+    __aicore__ inline bool StartIterate(
+        MsgTmpPos MatmulConfigParams* body, KFC_Enum funID, uint32_t sync, uint32_t& cntIterator);
     __aicore__ inline bool Iterate(MSG_POS KfcMsg* msg, KFC_Enum funID);
 #if defined(__ASCENDC_ENABLE_SUPER_KERNEL__)
     __aicore__ inline void SuperKernelEventCount(uint16_t eventID);
 #endif
     __aicore__ inline void QuantCacheRefresh(__gm__ KfcMsg* msg)
     {
-        if constexpr (((IsSameType<SrcT, int4b_t>::value || IsSameType<SrcT, int8_t>::value) && IsSameType<DstT, half>::value) ||
-            ((IsSameType<SrcT, half>::value || IsSameType<SrcT, bfloat16_t>::value) && IsSameType<DstT, int8_t>::value) ||
-            (IsSameType<SrcT, int8_t>::value && (IsSameType<DstT, uint8_t>::value || IsSameType<DstT, int8_t>::value))) {
+        if constexpr (
+            ((IsSameType<SrcT, int4b_t>::value || IsSameType<SrcT, int8_t>::value) && IsSameType<DstT, half>::value) ||
+            ((IsSameType<SrcT, half>::value || IsSameType<SrcT, bfloat16_t>::value) &&
+             IsSameType<DstT, int8_t>::value) ||
+            (IsSameType<SrcT, int8_t>::value &&
+             (IsSameType<DstT, uint8_t>::value || IsSameType<DstT, int8_t>::value))) {
             GlobalTensor<int64_t> msgGlobal;
             msgGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ int64_t*>(msg) + sizeof(int64_t));
             DataCacheCleanAndInvalid<int64_t, CacheLine::SINGLE_CACHE_LINE, DcciDst::CACHELINE_OUT>(msgGlobal);
@@ -320,7 +324,9 @@ public:
 
         GlobalTensor<DstT> cGlobal;
         cGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ DstT*>(msg->body.cAddr), size);
-        mul.IterateAll(cGlobal, msg->body.enAtomic, msg->body.enSequentialWrite, msg->body.waitIterateAll, msg->body.iterateFakeMsg);
+        mul.IterateAll(
+            cGlobal, msg->body.enAtomic, msg->body.enSequentialWrite, msg->body.waitIterateAll,
+            msg->body.iterateFakeMsg);
 
         uint16_t eventID0 = static_cast<uint16_t>(this->devEvtID * 2 + 0);
         uint16_t eventID1 = static_cast<uint16_t>(this->devEvtID * 2 + 1);
@@ -353,7 +359,7 @@ public:
     }
 
     template <uint8_t enableHardPoll = 0>
-    __aicore__ inline bool SkipMsg(KFC_Enum funID, bool &freeMsg, int &lastMsgId, const int subBlockID)
+    __aicore__ inline bool SkipMsg(KFC_Enum funID, bool& freeMsg, int& lastMsgId, const int subBlockID)
     {
 #if defined(USE_SSBUF)
         if constexpr (enableHardPoll == 1) {
@@ -391,8 +397,8 @@ public:
     }
 
     template <uint8_t enableHardPoll = 0>
-    __aicore__ inline bool LockMsgQueue(KFC_Enum funID, bool &freeMsg, int &lastMsgId, const int subBlockID,
-        MSG_POS KfcMsg *msg = nullptr)
+    __aicore__ inline bool LockMsgQueue(
+        KFC_Enum funID, bool& freeMsg, int& lastMsgId, const int subBlockID, MSG_POS KfcMsg* msg = nullptr)
     {
 #if defined(USE_SSBUF)
         if constexpr (!(A_TYPE::ibShare && B_TYPE::ibShare)) {
@@ -415,9 +421,11 @@ public:
 
     __aicore__ inline bool Process(MSG_POS KfcMsg* msg, KFC_Enum funID)
     {
-        if constexpr (((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_ALL) != 0) ||
+        if constexpr (
+            ((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_ALL) != 0) ||
             ((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_NORMAL) != 0)) {
-            if ((static_cast<uint16_t>(funID) & static_cast<uint16_t>(KFC_Enum::MMFUN_MASK)) == static_cast<uint16_t>(KFC_Enum::MMFUN_MASK)) {
+            if ((static_cast<uint16_t>(funID) & static_cast<uint16_t>(KFC_Enum::MMFUN_MASK)) ==
+                static_cast<uint16_t>(KFC_Enum::MMFUN_MASK)) {
                 if constexpr (ToMatmulConfig(MM_CFG).intraBlockPartSum) {
 #if defined(USE_WORKSPACE)
                     return IterateIntraBlockPartSum(msg, funID);
@@ -427,7 +435,9 @@ public:
                 }
             }
         }
-        if constexpr (((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_BATCH) != 0) && (A_TYPE::layout != LayoutMode::NONE)) {
+        if constexpr (
+            ((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_BATCH) != 0) &&
+            (A_TYPE::layout != LayoutMode::NONE)) {
             if (funID == KFC_Enum::MMFUN_ITERATE_BATCH_ALL) {
                 return IterateBatch(msg);
             }
@@ -456,8 +466,9 @@ public:
                 return true;
             }
         }
-        if constexpr (((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_N_BATCH) != 0) &&
-                      (A_TYPE::layout != LayoutMode::NONE)) {
+        if constexpr (
+            ((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_N_BATCH) != 0) &&
+            (A_TYPE::layout != LayoutMode::NONE)) {
             if (funID == KFC_Enum::MMFUN_ITERATE_N_BATCH_ALL) {
                 return IterateNBatch(msg);
             }
@@ -507,16 +518,17 @@ public:
     }
 
 #if defined(USE_SSBUF)
-    __aicore__ inline void GetMsgFromSSbuf(MSG_POS KfcMsg* msg, MatmulConfigParams &body);
+    __aicore__ inline void GetMsgFromSSbuf(MSG_POS KfcMsg* msg, MatmulConfigParams& body);
     __aicore__ inline void InitL1Addr();
-    __aicore__ inline void CopyL1Addr2SSBUF(MSG_POS MsgMatmulL1Addr *matmulL1AddrMsg_, MatrixL1Addr *matrixL1Addr_);
-    __aicore__ inline void WaitAB(MatmulConfigParams &body);
+    __aicore__ inline void CopyL1Addr2SSBUF(MSG_POS MsgMatmulL1Addr* matmulL1AddrMsg_, MatrixL1Addr* matrixL1Addr_);
+    __aicore__ inline void WaitAB(MatmulConfigParams& body);
     __aicore__ inline void IterNotify();
-    __aicore__ inline void SetTensorScaleA(MatmulConfigParams &body);
-    __aicore__ inline void SetTensorScaleB(MatmulConfigParams &body);
+    __aicore__ inline void SetTensorScaleA(MatmulConfigParams& body);
+    __aicore__ inline void SetTensorScaleB(MatmulConfigParams& body);
 #endif
 public:
     MatmulImpl<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY> mul;
+
 private:
     GM_ADDR workspace;
     KFC_COMM_SERVER_PTR kfcCommSrv;
@@ -524,8 +536,10 @@ private:
     TCubeTiling tmpTiling_; // for compatible with init interface
     typename IBShareCache<IsIBShare<A_TYPE, B_TYPE>()>::ShareCache gCache;
     typename ShareMatmulAux<!ToMatmulConfig(MM_CFG).enableInit>::MSG msgAux;
+
 public:
     uint16_t instID;
+
 private:
     uint16_t devEvtID;
 #if defined(USE_SSBUF)

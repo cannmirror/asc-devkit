@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file conv3d_bp_tiling_util.h
@@ -80,7 +80,7 @@ constexpr int32_t BYTE_BLOCK = 32;
 constexpr uint32_t B16_BITS = 4;
 constexpr uint32_t FP32_BITS = 3;
 constexpr uint32_t FP32_DATA_SIZE = 4;
-constexpr uint32_t F16_DATA_SIZE = 2; //Shared by BF16 and FP16
+constexpr uint32_t F16_DATA_SIZE = 2; // Shared by BF16 and FP16
 constexpr uint32_t NUM_FP32_C1OUT = 2;
 constexpr int32_t FMAP_H_NUM = 2;
 
@@ -103,81 +103,85 @@ const int32_t K_START_POSITION_MAX = 65535;
 const int32_t K_NUM_TWO = 2;
 
 #define OP_TILING_CHECK(cond, log_func, expr) \
-  do {                                        \
-    if (cond) {                               \
-      log_func;                               \
-      expr;                                   \
-    }                                         \
-  } while (0)
-
+    do {                                      \
+        if (cond) {                           \
+            log_func;                         \
+            expr;                             \
+        }                                     \
+    } while (0)
 
 #define D_OP_LOGE(opname, fmt, ...) OpLogSub(OP, DLOG_ERROR, opname, fmt, ##__VA_ARGS__)
 #define OP_LOGE_WITHOUT_REPORT(opname, ...) D_OP_LOGE(get_op_info(opname), __VA_ARGS__)
 
-#define CUBE_INNER_ERR_REPORT(op_name, err_msg, ...)                                                 \
-  do {                                                                                               \
-    OP_LOGE_WITHOUT_REPORT(op_name, err_msg, ##__VA_ARGS__);                                         \
-    REPORT_INNER_ERROR("E69999", "op[%s], " err_msg, get_cstr(get_op_info(op_name)), ##__VA_ARGS__); \
-  } while (0)
-
+#define CUBE_INNER_ERR_REPORT(op_name, err_msg, ...)                                                     \
+    do {                                                                                                 \
+        OP_LOGE_WITHOUT_REPORT(op_name, err_msg, ##__VA_ARGS__);                                         \
+        REPORT_INNER_ERROR("E69999", "op[%s], " err_msg, get_cstr(get_op_info(op_name)), ##__VA_ARGS__); \
+    } while (0)
 
 /**
  * if y is 0, return x
  */
 template <typename T>
-typename std::enable_if <std::is_signed<T>::value, T>::type CeilDiv(T x, T y) {
-  if (y != 0 && x != 0) {
-    const T quotient = x / y;
-    return (x % y != 0 && ((x > 0) == (y > 0))) ? (quotient + 1) : quotient;
-  }
+typename std::enable_if<std::is_signed<T>::value, T>::type CeilDiv(T x, T y)
+{
+    if (y != 0 && x != 0) {
+        const T quotient = x / y;
+        return (x % y != 0 && ((x > 0) == (y > 0))) ? (quotient + 1) : quotient;
+    }
 
-  return x;
+    return x;
 }
 
 /**
  * if y is 0, return x
  */
 template <typename T>
-typename std::enable_if <std::is_unsigned<T>::value, T>::type CeilDiv(T x, T y) {
-  if (y != 0 && x != 0) {
-    const T quotient = x / y;
-    return (x % y != 0) ? (quotient + 1) : quotient;
-  }
+typename std::enable_if<std::is_unsigned<T>::value, T>::type CeilDiv(T x, T y)
+{
+    if (y != 0 && x != 0) {
+        const T quotient = x / y;
+        return (x % y != 0) ? (quotient + 1) : quotient;
+    }
 
-  return x;
+    return x;
 }
 
 template <typename T>
-inline T CeilDivision(T num1, T num2) {
+inline T CeilDivision(T num1, T num2)
+{
     return CeilDiv(num1, num2);
 }
 
-inline int64_t CeilDivision(int64_t num1, int32_t num2) {
-    return CeilDiv(num1, static_cast<int64_t>(num2));
-}
+inline int64_t CeilDivision(int64_t num1, int32_t num2) { return CeilDiv(num1, static_cast<int64_t>(num2)); }
 
 template <typename T>
-inline T Min(T num1, T num2) {
+inline T Min(T num1, T num2)
+{
     return std::min(num1, num2);
 }
 
-inline int32_t Min(int64_t num1, int32_t num2) {
-  return static_cast<int32_t>(std::min(num1, static_cast<int64_t>(num2)));
+inline int32_t Min(int64_t num1, int32_t num2)
+{
+    return static_cast<int32_t>(std::min(num1, static_cast<int64_t>(num2)));
 }
 
-inline int32_t Min(int32_t num1, int64_t num2) {
-  return static_cast<int32_t>(std::min(num2, static_cast<int64_t>(num1)));
+inline int32_t Min(int32_t num1, int64_t num2)
+{
+    return static_cast<int32_t>(std::min(num2, static_cast<int64_t>(num1)));
 }
 
-inline int32_t CalcHi(int32_t ho, int32_t strideH, int32_t kernelHDilation, int32_t oriHi) {
+inline int32_t CalcHi(int32_t ho, int32_t strideH, int32_t kernelHDilation, int32_t oriHi)
+{
     return Min(static_cast<int64_t>(ho - 1) * strideH + kernelHDilation, oriHi);
 }
 
-inline int32_t CalcHo(int64_t k, int32_t wo) {
+inline int32_t CalcHo(int64_t k, int32_t wo)
+{
     if (k == 0 || wo == 0) {
         return 0;
     }
-// The complete K is ho*wo, k may exceed int32, but wo after the following division cannot exceed int32
+    // The complete K is ho*wo, k may exceed int32, but wo after the following division cannot exceed int32
     int32_t ho = static_cast<int32_t>(CeilDivision(k, wo));
     if (k % wo == 0 || wo % k == 0) {
         return ho;
@@ -186,7 +190,8 @@ inline int32_t CalcHo(int64_t k, int32_t wo) {
     }
 }
 
-inline int32_t GetGcd(int32_t param1, int32_t param2) {
+inline int32_t GetGcd(int32_t param1, int32_t param2)
+{
     // get greatest common divisor of param1 and param2
     if (param1 < param2) {
         std::swap(param1, param2);
@@ -201,48 +206,51 @@ inline int32_t GetGcd(int32_t param1, int32_t param2) {
     }
 }
 
-inline void GetFactors(std::vector<int32_t> &factorList, int64_t srcNum, int32_t maxFactor) {
+inline void GetFactors(std::vector<int32_t>& factorList, int64_t srcNum, int32_t maxFactor)
+{
     int32_t max_num = Min(srcNum, maxFactor);
     for (int32_t factor = 1; factor <= max_num; factor++) {
         if (srcNum % factor == 0) {
             factorList.push_back(factor);
         }
     }
-}   
+}
 
 template <typename T>
-inline typename std::enable_if <std::is_integral<T>::value, T>::type CeilAlign(T x, T align) {
+inline typename std::enable_if<std::is_integral<T>::value, T>::type CeilAlign(T x, T align)
+{
     return CeilDiv(x, align) * align;
 }
 
-inline int64_t Lcm(int64_t param1, int64_t param2) {
-  int64_t param1Lcm = param1;
-  int64_t param2Lcm = param2;
-  int64_t temp = param1Lcm * param2Lcm;
-  int64_t param1Temp = param1Lcm;
-  while (param1Lcm % param2Lcm != 0) {
-    param1Temp = param1Lcm;
-    param1Lcm = param2Lcm;
-    param2Lcm = param1Temp % param2Lcm;
-  }
-  return temp / param2Lcm;
+inline int64_t Lcm(int64_t param1, int64_t param2)
+{
+    int64_t param1Lcm = param1;
+    int64_t param2Lcm = param2;
+    int64_t temp = param1Lcm * param2Lcm;
+    int64_t param1Temp = param1Lcm;
+    while (param1Lcm % param2Lcm != 0) {
+        param1Temp = param1Lcm;
+        param1Lcm = param2Lcm;
+        param2Lcm = param1Temp % param2Lcm;
+    }
+    return temp / param2Lcm;
 }
 
-inline int64_t Lcm(int32_t param1, int32_t param2) {
-  return Lcm(static_cast<int64_t>(param1), static_cast<int64_t>(param2));
+inline int64_t Lcm(int32_t param1, int32_t param2)
+{
+    return Lcm(static_cast<int64_t>(param1), static_cast<int64_t>(param2));
 }
 
-inline int64_t Lcm(int64_t param1, int32_t param2) {
-  return Lcm(param1, static_cast<int64_t>(param2));
-}
+inline int64_t Lcm(int64_t param1, int32_t param2) { return Lcm(param1, static_cast<int64_t>(param2)); }
 
 /**
  * if align is 0, return 0
  */
 template <typename T>
-typename std::enable_if <std::is_integral<T>::value, T>::type FloorAlign(T x, T align) {
-  return align == 0 ? 0 : x / align * align;
+typename std::enable_if<std::is_integral<T>::value, T>::type FloorAlign(T x, T align)
+{
+    return align == 0 ? 0 : x / align * align;
 }
 
-}
+} // namespace ConvBackpropApi
 #endif // TILING_CONV_BACKPROP_CONV3D_BP_TILING_UTIL_H

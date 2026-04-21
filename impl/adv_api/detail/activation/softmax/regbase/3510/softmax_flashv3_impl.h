@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file softmax_flashv3_c310_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/activation/softmax/regbase/3510/softmax_flashv3_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/softmaxflashv3.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/activation/softmax/regbase/3510/softmax_flashv3_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/softmaxflashv3.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_FLASHV3_IMPL_H__
 #endif
@@ -27,8 +28,8 @@
 
 namespace AscendC {
 template <typename T, typename U>
-__simd_vf__ __aicore__ inline void SoftmaxFlashV3NDNoUpdateImpl(__ubuf__ T* dstUb,
-    __ubuf__ U* meanUb, __ubuf__ U* expSumUb, __ubuf__ U* maxUb, __ubuf__ T* srcUb,
+__simd_vf__ __aicore__ inline void SoftmaxFlashV3NDNoUpdateImpl(
+    __ubuf__ T* dstUb, __ubuf__ U* meanUb, __ubuf__ U* expSumUb, __ubuf__ U* maxUb, __ubuf__ T* srcUb,
     __ubuf__ float* workUb, __ubuf__ float* newSrcUb, const uint16_t srcM, const uint16_t srcK,
     const uint16_t splitMeanCnt, const uint16_t baseK, const uint16_t tail, const uint16_t remainRepeatTime,
     const uint16_t kRepeatTime, const uint16_t baseKRepeatTime, const float scalar, const float r0, const float r1)
@@ -98,27 +99,26 @@ __simd_vf__ __aicore__ inline void SoftmaxFlashV3NDNoUpdateImpl(__ubuf__ T* dstU
             uint32_t sreg = baseK;
             for (uint16_t k = 0; k < baseKRepeatTime; ++k) { // baseK / 64
                 maskCnt = Reg::UpdateMask<uint32_t>(sreg);
-                __ubuf__ T *srcUbTmp = srcUb + i * srcK + j * baseK + k * repeatStride;
+                __ubuf__ T* srcUbTmp = srcUb + i * srcK + j * baseK + k * repeatStride;
                 Reg::LoadUnAlignPre(ureg0, srcUbTmp);
                 Reg::LoadUnAlign(castVreg, ureg0, srcUbTmp, repeatStride);
                 Reg::UnPack<uint32_t, uint16_t>(
                     (Reg::RegTensor<uint32_t>&)castVreg, (Reg::RegTensor<uint16_t>&)castVreg);
                 Reg::Cast<float, T, Internal::castTraitB16ToB32>(srcVreg, castVreg, maskCnt);
                 Reg::Sub(srcVreg, srcVreg, meanVreg, maskCnt);
-                __ubuf__ float *newSrcUbTmp = newSrcUb + i * srcK + j * baseK + k * repeatStride;
+                __ubuf__ float* newSrcUbTmp = newSrcUb + i * srcK + j * baseK + k * repeatStride;
                 Reg::StoreUnAlign(newSrcUbTmp, srcVreg, ureg1, repeatStride);
                 Reg::StoreUnAlignPost(newSrcUbTmp, ureg1, 0);
                 Reg::Max(maxVreg, maxVreg, srcVreg, maskFull);
             }
             maskCnt = Reg::UpdateMask<uint32_t>(sreg);
-            __ubuf__ T *srcUbTmp = srcUb + i * srcK + j * baseK + baseKRepeatTime * repeatStride;
+            __ubuf__ T* srcUbTmp = srcUb + i * srcK + j * baseK + baseKRepeatTime * repeatStride;
             Reg::LoadUnAlignPre(ureg0, srcUbTmp);
             Reg::LoadUnAlign(castVreg, ureg0, srcUbTmp, tail);
-            Reg::UnPack<uint32_t, uint16_t>(
-                (Reg::RegTensor<uint32_t>&)castVreg, (Reg::RegTensor<uint16_t>&)castVreg);
+            Reg::UnPack<uint32_t, uint16_t>((Reg::RegTensor<uint32_t>&)castVreg, (Reg::RegTensor<uint16_t>&)castVreg);
             Reg::Cast<float, T, Internal::castTraitB16ToB32>(srcVreg, castVreg, maskCnt);
             Reg::Sub(srcVreg, srcVreg, meanVreg, maskCnt);
-            __ubuf__ float *newSrcUbTmp = newSrcUb + i * srcK + j * baseK + baseKRepeatTime * repeatStride;
+            __ubuf__ float* newSrcUbTmp = newSrcUb + i * srcK + j * baseK + baseKRepeatTime * repeatStride;
             Reg::StoreUnAlign(newSrcUbTmp, srcVreg, ureg1, tail);
             Reg::StoreUnAlignPost(newSrcUbTmp, ureg1, 0);
             Reg::Select(srcVreg, srcVreg, minVreg, maskCnt);
@@ -147,20 +147,18 @@ __simd_vf__ __aicore__ inline void SoftmaxFlashV3NDNoUpdateImpl(__ubuf__ T* dstU
 }
 
 template <typename T, typename U>
-__simd_vf__ __aicore__ inline void SoftmaxFlashV3NDUpdateImpl(__ubuf__ T* dstUb,
-    __ubuf__ U* meanUb, __ubuf__ U* expSumUb, __ubuf__ U* maxUb,
-    __ubuf__ T* srcUb, __ubuf__ T* expMaxUb, __ubuf__ U* inMeanUb,
-    __ubuf__ U* inExpSumUb, __ubuf__ U* inMaxUb, __ubuf__ float* workUb,
-    __ubuf__ float* newSrcUb, __ubuf__ float* tmpUb, const uint16_t srcM,
-    const uint16_t srcK, const uint16_t splitMeanCnt, const uint16_t baseK, const uint16_t tail,
-    const uint16_t remainRepeatTime, const uint16_t kRepeatTime, const uint16_t baseKRepeatTime,
-    const uint32_t loopCnt, const float scalar, const float r0, const float r1,
-    const float r2, const float r3)
+__simd_vf__ __aicore__ inline void SoftmaxFlashV3NDUpdateImpl(
+    __ubuf__ T* dstUb, __ubuf__ U* meanUb, __ubuf__ U* expSumUb, __ubuf__ U* maxUb, __ubuf__ T* srcUb,
+    __ubuf__ T* expMaxUb, __ubuf__ U* inMeanUb, __ubuf__ U* inExpSumUb, __ubuf__ U* inMaxUb, __ubuf__ float* workUb,
+    __ubuf__ float* newSrcUb, __ubuf__ float* tmpUb, const uint16_t srcM, const uint16_t srcK,
+    const uint16_t splitMeanCnt, const uint16_t baseK, const uint16_t tail, const uint16_t remainRepeatTime,
+    const uint16_t kRepeatTime, const uint16_t baseKRepeatTime, const uint32_t loopCnt, const float scalar,
+    const float r0, const float r1, const float r2, const float r3)
 {
     constexpr uint32_t repeatStride = GetVecLen() / sizeof(float);
     constexpr uint32_t blockStride = GetDataBlockSizeInBytes() / sizeof(U);
     constexpr uint16_t repeatTime = static_cast<uint16_t>(repeatStride / blockStride);
-    
+
     Reg::MaskReg maskCnt;
     Reg::MaskReg maskFull = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
     Reg::MaskReg maskOnePt = Reg::CreateMask<uint32_t, Reg::MaskPattern::VL1>();
@@ -232,27 +230,26 @@ __simd_vf__ __aicore__ inline void SoftmaxFlashV3NDUpdateImpl(__ubuf__ T* dstUb,
             uint32_t sreg = baseK;
             for (uint16_t k = 0; k < baseKRepeatTime; ++k) { // baseK / 64
                 maskCnt = Reg::UpdateMask<uint32_t>(sreg);
-                __ubuf__ T *srcUbTmp = srcUb + i * srcK + j * baseK + k * repeatStride;
+                __ubuf__ T* srcUbTmp = srcUb + i * srcK + j * baseK + k * repeatStride;
                 Reg::LoadUnAlignPre(ureg0, srcUbTmp);
                 Reg::LoadUnAlign(castVreg, ureg0, srcUbTmp, repeatStride);
                 Reg::UnPack<uint32_t, uint16_t>(
                     (Reg::RegTensor<uint32_t>&)castVreg, (Reg::RegTensor<uint16_t>&)castVreg);
                 Reg::Cast<float, T, Internal::castTraitB16ToB32>(srcVreg, castVreg, maskCnt);
                 Reg::Sub(srcVreg, srcVreg, meanVreg, maskCnt);
-                __ubuf__ float *newSrcUbTmp = newSrcUb + i * srcK + j * baseK + k * repeatStride;
+                __ubuf__ float* newSrcUbTmp = newSrcUb + i * srcK + j * baseK + k * repeatStride;
                 Reg::StoreUnAlign(newSrcUbTmp, srcVreg, ureg1, repeatStride);
                 Reg::StoreUnAlignPost(newSrcUbTmp, ureg1, 0);
                 Reg::Max(maxVreg, maxVreg, srcVreg, maskFull);
             }
             maskCnt = Reg::UpdateMask<uint32_t>(sreg);
-            __ubuf__ T *srcUbTmp = srcUb + i * srcK + j * baseK + baseKRepeatTime * repeatStride;
+            __ubuf__ T* srcUbTmp = srcUb + i * srcK + j * baseK + baseKRepeatTime * repeatStride;
             Reg::LoadUnAlignPre(ureg0, srcUbTmp);
             Reg::LoadUnAlign(castVreg, ureg0, srcUbTmp, tail);
-            Reg::UnPack<uint32_t, uint16_t>(
-                (Reg::RegTensor<uint32_t>&)castVreg, (Reg::RegTensor<uint16_t>&)castVreg);
+            Reg::UnPack<uint32_t, uint16_t>((Reg::RegTensor<uint32_t>&)castVreg, (Reg::RegTensor<uint16_t>&)castVreg);
             Reg::Cast<float, T, Internal::castTraitB16ToB32>(srcVreg, castVreg, maskCnt);
             Reg::Sub(srcVreg, srcVreg, meanVreg, maskCnt);
-            __ubuf__ float *newSrcUbTmp = newSrcUb + i * srcK + j * baseK + baseKRepeatTime * repeatStride;
+            __ubuf__ float* newSrcUbTmp = newSrcUb + i * srcK + j * baseK + baseKRepeatTime * repeatStride;
             Reg::StoreUnAlign(newSrcUbTmp, srcVreg, ureg1, tail);
             Reg::StoreUnAlignPost(newSrcUbTmp, ureg1, 0);
             Reg::Select(srcVreg, srcVreg, minVreg, maskCnt);
@@ -299,13 +296,15 @@ __simd_vf__ __aicore__ inline void SoftmaxFlashV3NDUpdateImpl(__ubuf__ T* dstUb,
     }
 }
 
-template <typename T, typename U, bool isUpdate = false, bool isBasicBlock = false,
+template <
+    typename T, typename U, bool isUpdate = false, bool isBasicBlock = false,
     const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>
-__aicore__ inline void SoftmaxFlashV3Process(const LocalTensor<T>& dstTensor, const LocalTensor<U>& meanTensor,
-    const LocalTensor<U>& expSumTensor, const LocalTensor<U>& maxTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<T>& expMaxTensor, const LocalTensor<U>& inMeanTensor, const LocalTensor<U>& inExpSumTensor,
-    const LocalTensor<U>& inMaxTensor, const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape,
-    const SoftMaxTiling& tiling, const SoftMaxParams& params)
+__aicore__ inline void SoftmaxFlashV3Process(
+    const LocalTensor<T>& dstTensor, const LocalTensor<U>& meanTensor, const LocalTensor<U>& expSumTensor,
+    const LocalTensor<U>& maxTensor, const LocalTensor<T>& srcTensor, const LocalTensor<T>& expMaxTensor,
+    const LocalTensor<U>& inMeanTensor, const LocalTensor<U>& inExpSumTensor, const LocalTensor<U>& inMaxTensor,
+    const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling,
+    const SoftMaxParams& params)
 {
     constexpr uint16_t repeatStride = GetVecLen() / sizeof(float);
     uint16_t srcM = tiling.srcM;
@@ -334,15 +333,17 @@ __aicore__ inline void SoftmaxFlashV3Process(const LocalTensor<T>& dstTensor, co
     __ubuf__ float* newSrcUb = (__ubuf__ float*)workLocal.GetPhyAddr(srcM * repeatStride);
 
     if constexpr (!isUpdate) {
-        SoftmaxFlashV3NDNoUpdateImpl<T, U>(dstUb, meanUb, expSumUb, maxUb, srcUb, workUb, newSrcUb,
-            srcM, srcK, splitMeanCnt, baseK, tail, remainRepeatTime, kRepeatTime, baseKRepeatTime, scalar, r0, r1);
+        SoftmaxFlashV3NDNoUpdateImpl<T, U>(
+            dstUb, meanUb, expSumUb, maxUb, srcUb, workUb, newSrcUb, srcM, srcK, splitMeanCnt, baseK, tail,
+            remainRepeatTime, kRepeatTime, baseKRepeatTime, scalar, r0, r1);
     } else {
         float r2 = static_cast<float>(loopCnt - 1.0f);
         float r3 = static_cast<float>(1.0f / loopCnt);
         __ubuf__ float* tmpUb = (__ubuf__ float*)workLocal.GetPhyAddr(srcM * repeatStride + srcM * srcK);
-        SoftmaxFlashV3NDUpdateImpl<T, U>(dstUb, meanUb, expSumUb, maxUb, srcUb, expMaxUb,
-                inMeanUb, inExpSumUb, inMaxUb, workUb, newSrcUb, tmpUb, srcM, srcK, splitMeanCnt, baseK,
-                tail, remainRepeatTime, kRepeatTime, baseKRepeatTime, loopCnt, scalar, r0, r1, r2, r3);
+        SoftmaxFlashV3NDUpdateImpl<T, U>(
+            dstUb, meanUb, expSumUb, maxUb, srcUb, expMaxUb, inMeanUb, inExpSumUb, inMaxUb, workUb, newSrcUb, tmpUb,
+            srcM, srcK, splitMeanCnt, baseK, tail, remainRepeatTime, kRepeatTime, baseKRepeatTime, loopCnt, scalar, r0,
+            r1, r2, r3);
     }
 }
 } // namespace AscendC

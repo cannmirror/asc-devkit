@@ -1,29 +1,30 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
- 
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
 /*!
-* \file k_loop_mdl_mx.h
-* \brief
-*/
+ * \file k_loop_mdl_mx.h
+ * \brief
+ */
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/scheduler/iterator/k_loop/k_loop_mdl_mx.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/scheduler/iterator/k_loop/k_loop_mdl_mx.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_ITERATOR_K_LOOP_K_LOOP_MDL_MX_H__
 #endif
 
 #ifndef IMPL_MATMUL_SCHEDULER_ITERATOR_K_LOOP_K_LOOP_MDL_MX_H
 #define IMPL_MATMUL_SCHEDULER_ITERATOR_K_LOOP_K_LOOP_MDL_MX_H
- 
+
 #include "k_loop_intf.h"
 #include "k_loop_mdl_base.h"
- 
+
 namespace AscendC {
 namespace Impl {
 namespace Detail {
@@ -33,9 +34,10 @@ namespace Detail {
     KLoop is only for internal usage, does not support extension or customized specialization!
 */
 template <typename IMPL, typename TRANS_T, class A_TYPE, const auto& MM_CFG>
-class KLoop<IMPL, TRANS_T, A_TYPE, MM_CFG, enable_if_t<(DoMatmulMDL(MM_CFG) && !IsKdimReorderLoad<MM_CFG>) && HasScalePosition<A_TYPE>::value>>
-    : public KLoopMDLBase<IMPL, TRANS_T, A_TYPE, MM_CFG>
-{
+class KLoop<
+    IMPL, TRANS_T, A_TYPE, MM_CFG,
+    enable_if_t<(DoMatmulMDL(MM_CFG) && !IsKdimReorderLoad<MM_CFG>)&&HasScalePosition<A_TYPE>::value>>
+    : public KLoopMDLBase<IMPL, TRANS_T, A_TYPE, MM_CFG> {
     MATMUL_USE_MODULE(MLoop);
     MATMUL_USE_MODULE(NLoop);
     MATMUL_USE_MODULE(KLoop);
@@ -52,16 +54,13 @@ class KLoop<IMPL, TRANS_T, A_TYPE, MM_CFG, enable_if_t<(DoMatmulMDL(MM_CFG) && !
     MATMUL_USE_MODULE(MatmulShapeTiling);
     MATMUL_USE_MODULE(MatmulShapeInfo);
     MATMUL_USE_MODULE(MatmulCrossCoreSync);
- 
+
 public:
     using BASE_MODULE = AscendC::Impl::Detail::KLoopMDLBase<IMPL, TRANS_T, A_TYPE, MM_CFG>;
     __aicore__ inline KLoop() = default;
     __aicore__ inline ~KLoop() = default;
- 
-    __aicore__ inline void Init(int32_t singleShape)
-    {
-        SetSingleShape(singleShape);
-    }
+
+    __aicore__ inline void Init(int32_t singleShape) { SetSingleShape(singleShape); }
 
     __aicore__ inline void SetSingleShape(int32_t singleShape)
     {
@@ -74,8 +73,9 @@ public:
         scaleFactorKb_ = tiling.GetScaleFactorKb();
         if (BASE_MODULE::kIter_ > stepKa * scaleFactorKa_) {
             if constexpr (!DoMatmulSpecialMDL(MM_CFG)) {
-                ASCENDC_ASSERT(tiling.GetScaleFactorM() == 1,
-                    { KERNEL_LOG(KERNEL_ERROR, "scaleFactorM is %d, which can only be 1.", tiling.GetScaleFactorM()); });
+                ASCENDC_ASSERT(tiling.GetScaleFactorM() == 1, {
+                    KERNEL_LOG(KERNEL_ERROR, "scaleFactorM is %d, which can only be 1.", tiling.GetScaleFactorM());
+                });
             }
         }
         // originTailScaleStepKa_ represents the origin size of the GM -> L1 tail block
@@ -94,13 +94,13 @@ public:
         isScaleA1KFullLoad_ = (stepKa * scaleFactorKa_) >= BASE_MODULE::kIter_;
         isScaleB1KFullLoad_ = (stepKb * scaleFactorKb_) >= BASE_MODULE::kIter_;
     }
- 
+
     __aicore__ inline void OuterStart()
     {
         BASE_MODULE::outerIdx_ = 0;
         UpdateOuterParams();
     }
- 
+
     __aicore__ inline bool OuterNext()
     {
         BASE_MODULE::outerIdx_++;
@@ -111,16 +111,10 @@ public:
             return true;
         }
     }
- 
-    __aicore__ inline bool IsScaleAKL1FullLoad() const
-    {
-        return isScaleA1KFullLoad_;
-    }
- 
-    __aicore__ inline bool IsScaleBKL1FullLoad() const
-    {
-        return isScaleB1KFullLoad_;
-    }
+
+    __aicore__ inline bool IsScaleAKL1FullLoad() const { return isScaleA1KFullLoad_; }
+
+    __aicore__ inline bool IsScaleBKL1FullLoad() const { return isScaleB1KFullLoad_; }
 
     /**
      * @description: Get current scaleKa outer loop index, used for GetBufferPos in CopyCubeIn
@@ -131,7 +125,7 @@ public:
     {
         return BASE_MODULE::outerIdx_ / (BASE_MODULE::kaStepFactor_ * scaleFactorKa_);
     }
- 
+
     /**
      * @description: Get current scaleKb outer loop index, used for GetBufferPos in CopyCubeIn
      * @param: void
@@ -151,7 +145,7 @@ public:
     {
         return (BASE_MODULE::outerIdx_ + 1) / (BASE_MODULE::kaStepFactor_ * scaleFactorKa_);
     }
- 
+
     /**
      * @description: Get next scaleKb outer loop index, used for ClearL1BufferCache in SchedulerMDL
      * @param: void
@@ -161,26 +155,14 @@ public:
     {
         return (BASE_MODULE::outerIdx_ + 1) / (BASE_MODULE::kbStepFactor_ * scaleFactorKb_);
     }
- 
-    __aicore__ inline int32_t GetTileShapeScaleKa() const
-    {
-        return tileShapeScaleKa_;
-    }
- 
-    __aicore__ inline int32_t GetTileShapeScaleKb() const
-    {
-        return tileShapeScaleKb_;
-    }
- 
-    __aicore__ inline int32_t GetScaleFactorKa() const
-    {
-        return scaleFactorKa_;
-    }
- 
-    __aicore__ inline int32_t GetScaleFactorKb() const
-    {
-        return scaleFactorKb_;
-    }
+
+    __aicore__ inline int32_t GetTileShapeScaleKa() const { return tileShapeScaleKa_; }
+
+    __aicore__ inline int32_t GetTileShapeScaleKb() const { return tileShapeScaleKb_; }
+
+    __aicore__ inline int32_t GetScaleFactorKa() const { return scaleFactorKa_; }
+
+    __aicore__ inline int32_t GetScaleFactorKb() const { return scaleFactorKb_; }
 
     __aicore__ inline void InnerStart()
     {
@@ -250,20 +232,20 @@ protected:
             tileShapeScaleKb_ = Ceil(tilingStepKb * tilingBaseK * scaleFactorKb_, MX_K_FACTOR);
         }
     }
- 
+
 private:
-    int32_t tileShapeScaleKa_;       // scaleKaL1 length
-    int32_t tileShapeScaleKb_;       // scaleKbL1 length
+    int32_t tileShapeScaleKa_; // scaleKaL1 length
+    int32_t tileShapeScaleKb_; // scaleKbL1 length
     uint8_t scaleFactorKa_;
     uint8_t scaleFactorKb_;
- 
+
     int32_t tailScaleStepKa_; // align scaleKaL1 length for GM->L1
     int32_t tailScaleStepKb_; // align scaleKbL1 length for GM->L1
     bool isScaleA1KFullLoad_, isScaleB1KFullLoad_;
 };
-}  // namespace Detail
-}  // namespace Impl
-}  // namespace AscendC
+} // namespace Detail
+} // namespace Impl
+} // namespace AscendC
 #endif
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_ITERATOR_K_LOOP_K_LOOP_MDL_MX_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

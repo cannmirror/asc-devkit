@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file conv3d_tiling_algorithm.h
@@ -21,13 +21,7 @@
 
 namespace Conv3dTilingApi {
 
-enum class L1TilingMode : uint32_t {
-    FULL_LOAD_BL1 = 0,
-    FULL_LOAD_AL1,
-    ALL_FULL_LOAD,
-    NONE_FULL_LOAD,
-    INVALID
-};
+enum class L1TilingMode : uint32_t { FULL_LOAD_BL1 = 0, FULL_LOAD_AL1, ALL_FULL_LOAD, NONE_FULL_LOAD, INVALID };
 
 struct L1TilingFlag {
     L1TilingMode abL1Mode = L1TilingMode::INVALID;
@@ -112,11 +106,8 @@ struct L1TilingCalc {
 
 class Conv3dTilingAlgorithm {
 public:
-    explicit Conv3dTilingAlgorithm(Conv3dTilingBase *tilingIns);
-    virtual ~Conv3dTilingAlgorithm()
-    {
-        tilingIns_ = nullptr;
-    }
+    explicit Conv3dTilingAlgorithm(Conv3dTilingBase* tilingIns);
+    virtual ~Conv3dTilingAlgorithm() { tilingIns_ = nullptr; }
     int64_t Process();
 
 protected:
@@ -155,7 +146,7 @@ private:
     virtual void SetKAL1KBL1TailRes();
     void SetL1TilingRes();
 
-     // L0 tiling
+    // L0 tiling
     int64_t GetL0Tiling();
     void InitPingPong();
     void GetL0TilingRange();

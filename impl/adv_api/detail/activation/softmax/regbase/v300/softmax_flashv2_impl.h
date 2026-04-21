@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file softmax_flashv2_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/activation/softmax/regbase/v300/softmax_flashv2_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/softmaxflashv2.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/activation/softmax/regbase/v300/softmax_flashv2_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/softmaxflashv2.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_FLASHV2_IMPL_H__
 #endif
@@ -26,34 +27,38 @@
 
 namespace AscendC {
 template <typename T1, typename T2, bool isBasicBlock = false, const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>
-__aicore__ inline void SoftmaxFlashV2Update(const LocalTensor<half>& dst, const LocalTensor<float>& expSumTensor,
-    const LocalTensor<float>& maxTensor, const LocalTensor<half>& src, const LocalTensor<half>& expMaxTensor,
-    const LocalTensor<float>& inExpSumTensor, const LocalTensor<float>& inMaxTensor,
-    const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
+__aicore__ inline void SoftmaxFlashV2Update(
+    const LocalTensor<half>& dst, const LocalTensor<float>& expSumTensor, const LocalTensor<float>& maxTensor,
+    const LocalTensor<half>& src, const LocalTensor<half>& expMaxTensor, const LocalTensor<float>& inExpSumTensor,
+    const LocalTensor<float>& inMaxTensor, const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape,
+    const SoftMaxTiling& tiling)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "softmaxflashv2 is not supported on current device!"); });
 }
 template <typename T1, typename T2, bool isBasicBlock = false, const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>
-__aicore__ inline void SoftmaxFlashV2NoUpdate(const LocalTensor<T1>& dst, const LocalTensor<T1>& expSumTensor,
-    const LocalTensor<T1>& maxTensor, const LocalTensor<T1>& src, const LocalTensor<float>& workLocal,
-    const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
+__aicore__ inline void SoftmaxFlashV2NoUpdate(
+    const LocalTensor<T1>& dst, const LocalTensor<T1>& expSumTensor, const LocalTensor<T1>& maxTensor,
+    const LocalTensor<T1>& src, const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape,
+    const SoftMaxTiling& tiling)
 {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
     if (originalSrcShape.k % FLOAT_REPEAT_SIZE) {
-        SoftMaxGenericNDWithTailImpl<T1, T1, isBasicBlock, true>(dst, expSumTensor, maxTensor, src, workLocal, originalSrcShape, tiling);
+        SoftMaxGenericNDWithTailImpl<T1, T1, isBasicBlock, true>(
+            dst, expSumTensor, maxTensor, src, workLocal, originalSrcShape, tiling);
     } else {
-        SoftMaxGenericNDImpl<T1, T1, isBasicBlock, true>(dst, expSumTensor, maxTensor, src, workLocal, originalSrcShape, tiling);
+        SoftMaxGenericNDImpl<T1, T1, isBasicBlock, true>(
+            dst, expSumTensor, maxTensor, src, workLocal, originalSrcShape, tiling);
     }
 #else
     uint32_t offset1 = 0;
     uint32_t offset2 = 0;
     uint32_t splitSize = tiling.splitSize;
     uint32_t reduceSize = tiling.reduceSize;
-    ReduceLastND reduceParam = { tiling.splitM, originalSrcShape.k, tiling.splitM,
-        tiling.splitK, tiling.reduceM,     tiling.reduceK };
+    ReduceLastND reduceParam = {tiling.splitM, originalSrcShape.k, tiling.splitM,
+                                tiling.splitK, tiling.reduceM,     tiling.reduceK};
     for (uint32_t i = 0; i <= tiling.rangeM; i++) {
-        SoftMaxGenericNDImpl<true>(dst, expSumTensor, maxTensor, src, workLocal, tiling, offset1, offset2, splitSize,
-            reduceSize, reduceParam);
+        SoftMaxGenericNDImpl<true>(
+            dst, expSumTensor, maxTensor, src, workLocal, tiling, offset1, offset2, splitSize, reduceSize, reduceParam);
         offset1 += tiling.splitSize;
         offset2 += tiling.reduceSize;
         if (i == (tiling.rangeM - 1)) {
@@ -72,13 +77,14 @@ __aicore__ inline void SoftmaxFlashV2NoUpdate(const LocalTensor<T1>& dst, const 
 #endif
 }
 
-__aicore__ inline void SoftmaxFlashV2UpdateImpl(const LocalTensor<half>& dst, const LocalTensor<half>& sumTensor,
-    const LocalTensor<half>& maxTensor, const LocalTensor<half>& src, const LocalTensor<half>& expMaxTensor,
-    const LocalTensor<half>& inSumTensor, const LocalTensor<half>& inMaxTensor, const LocalTensor<float>& workLocal,
-    const ReduceLastND& reduceParam, const SoftMaxTiling& tiling, const uint32_t& offset1, const uint32_t& offset2,
-    const uint32_t& splitSize, const uint32_t& reduceSize)
+__aicore__ inline void SoftmaxFlashV2UpdateImpl(
+    const LocalTensor<half>& dst, const LocalTensor<half>& sumTensor, const LocalTensor<half>& maxTensor,
+    const LocalTensor<half>& src, const LocalTensor<half>& expMaxTensor, const LocalTensor<half>& inSumTensor,
+    const LocalTensor<half>& inMaxTensor, const LocalTensor<float>& workLocal, const ReduceLastND& reduceParam,
+    const SoftMaxTiling& tiling, const uint32_t& offset1, const uint32_t& offset2, const uint32_t& splitSize,
+    const uint32_t& reduceSize)
 {
-    const LocalTensor<float>& tmpBuffer0 = workLocal;                // for src cast
+    const LocalTensor<float>& tmpBuffer0 = workLocal;                   // for src cast
     const LocalTensor<float>& tmpBuffer1 = workLocal[tiling.splitSize]; // need splitM * 64
     const LocalTensor<float>& tmpBuffer2 = workLocal[tiling.splitSize + tiling.splitM * FLOAT_REPEAT_SIZE];
     const LocalTensor<float>& tmpBuffer3 =
@@ -107,11 +113,12 @@ __aicore__ inline void SoftmaxFlashV2UpdateImpl(const LocalTensor<half>& dst, co
     Add(tmpBuffer1, tmpBuffer1, tmpBuffer2, reduceSize);
     Cast(sumTensor[offset2], tmpBuffer1, RoundMode::CAST_ROUND, reduceSize);
 }
-__aicore__ inline void SoftmaxFlashV2UpdateImpl(const LocalTensor<float>& dst, const LocalTensor<float>& expSumTensor,
-    const LocalTensor<float>& maxTensor, const LocalTensor<float>& src, const LocalTensor<float>& expMaxTensor,
-    const LocalTensor<float>& inExpSumTensor, const LocalTensor<float>& inMaxTensor,
-    const LocalTensor<float>& workLocal, const ReduceLastND& reduceParam, const SoftMaxTiling& tiling,
-    const uint32_t& offset1, const uint32_t& offset2, const uint32_t& splitSize, const uint32_t& reduceSize)
+__aicore__ inline void SoftmaxFlashV2UpdateImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& expSumTensor, const LocalTensor<float>& maxTensor,
+    const LocalTensor<float>& src, const LocalTensor<float>& expMaxTensor, const LocalTensor<float>& inExpSumTensor,
+    const LocalTensor<float>& inMaxTensor, const LocalTensor<float>& workLocal, const ReduceLastND& reduceParam,
+    const SoftMaxTiling& tiling, const uint32_t& offset1, const uint32_t& offset2, const uint32_t& splitSize,
+    const uint32_t& reduceSize)
 {
     const LocalTensor<float>& tmpBuffer0 = workLocal;
     const LocalTensor<float>& tmpBuffer1 = workLocal[tiling.reduceSize]; // tiling.splitM * FLOAT_REPEAT_SIZE
@@ -132,10 +139,11 @@ __aicore__ inline void SoftmaxFlashV2UpdateImpl(const LocalTensor<float>& dst, c
 }
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
-__aicore__ inline void SoftmaxFlashV2UpdateNDImpl(const LocalTensor<half>& dst, const LocalTensor<half>& expSumTensor,
-    const LocalTensor<half>& maxTensor, const LocalTensor<half>& src, const LocalTensor<half>& expMaxTensor,
-    const LocalTensor<half>& inExpSumTensor, const LocalTensor<half>& inMaxTensor, const LocalTensor<float>& workLocal,
-    const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
+__aicore__ inline void SoftmaxFlashV2UpdateNDImpl(
+    const LocalTensor<half>& dst, const LocalTensor<half>& expSumTensor, const LocalTensor<half>& maxTensor,
+    const LocalTensor<half>& src, const LocalTensor<half>& expMaxTensor, const LocalTensor<half>& inExpSumTensor,
+    const LocalTensor<half>& inMaxTensor, const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape,
+    const SoftMaxTiling& tiling)
 {
     uint16_t srcK = tiling.srcK;
     uint16_t reduceK = HALF_NUM_PER_BLK;
@@ -177,10 +185,11 @@ __aicore__ inline void SoftmaxFlashV2UpdateNDImpl(const LocalTensor<half>& dst, 
     Cast(expSumTensor, tmpBuffer0, RoundMode::CAST_ROUND, tiling.reduceSize);
 }
 
-__aicore__ inline void SoftmaxFlashV2UpdateNDImpl(const LocalTensor<float>& dst, const LocalTensor<float>& expSumTensor,
-    const LocalTensor<float>& maxTensor, const LocalTensor<float>& src, const LocalTensor<float>& expMaxTensor,
-    const LocalTensor<float>& inExpSumTensor, const LocalTensor<float>& inMaxTensor,
-    const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
+__aicore__ inline void SoftmaxFlashV2UpdateNDImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& expSumTensor, const LocalTensor<float>& maxTensor,
+    const LocalTensor<float>& src, const LocalTensor<float>& expMaxTensor, const LocalTensor<float>& inExpSumTensor,
+    const LocalTensor<float>& inMaxTensor, const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape,
+    const SoftMaxTiling& tiling)
 {
     uint16_t srcK = tiling.srcK;
     uint16_t reduceK = FLOAT_NUM_PER_BLK;
@@ -211,24 +220,27 @@ __aicore__ inline void SoftmaxFlashV2UpdateNDImpl(const LocalTensor<float>& dst,
 }
 #endif
 template <typename T1, typename T2, bool isBasicBlock = false, const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>
-__aicore__ inline void SoftmaxFlashV2Update(const LocalTensor<T1>& dst, const LocalTensor<T2>& expSumTensor,
-    const LocalTensor<T2>& maxTensor, const LocalTensor<T1>& src, const LocalTensor<T1>& expMaxTensor,
-    const LocalTensor<T2>& inExpSumTensor, const LocalTensor<T2>& inMaxTensor, const LocalTensor<float>& workLocal,
-    const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
+__aicore__ inline void SoftmaxFlashV2Update(
+    const LocalTensor<T1>& dst, const LocalTensor<T2>& expSumTensor, const LocalTensor<T2>& maxTensor,
+    const LocalTensor<T1>& src, const LocalTensor<T1>& expMaxTensor, const LocalTensor<T2>& inExpSumTensor,
+    const LocalTensor<T2>& inMaxTensor, const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape,
+    const SoftMaxTiling& tiling)
 {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
-    SoftmaxFlashV2UpdateNDImpl(dst, expSumTensor, maxTensor, src, expMaxTensor, inExpSumTensor, inMaxTensor,
-                workLocal, originalSrcShape, tiling);
+    SoftmaxFlashV2UpdateNDImpl(
+        dst, expSumTensor, maxTensor, src, expMaxTensor, inExpSumTensor, inMaxTensor, workLocal, originalSrcShape,
+        tiling);
 #else
-    ReduceLastND reduceParam = { tiling.splitM, originalSrcShape.k, tiling.splitM,
-        tiling.splitK, tiling.reduceM,     tiling.reduceK };
+    ReduceLastND reduceParam = {tiling.splitM, originalSrcShape.k, tiling.splitM,
+                                tiling.splitK, tiling.reduceM,     tiling.reduceK};
     uint32_t offset1 = 0;
     uint32_t offset2 = 0;
     uint32_t splitSize = tiling.splitSize;
     uint32_t reduceSize = tiling.reduceSize;
     for (uint32_t i = 0; i <= tiling.rangeM; i++) {
-        SoftmaxFlashV2UpdateImpl(dst, expSumTensor, maxTensor, src, expMaxTensor, inExpSumTensor, inMaxTensor,
-            workLocal, reduceParam, tiling, offset1, offset2, splitSize, reduceSize);
+        SoftmaxFlashV2UpdateImpl(
+            dst, expSumTensor, maxTensor, src, expMaxTensor, inExpSumTensor, inMaxTensor, workLocal, reduceParam,
+            tiling, offset1, offset2, splitSize, reduceSize);
         offset1 += tiling.splitSize;
         offset2 += tiling.reduceSize;
         if (i == (tiling.rangeM - 1)) {
@@ -247,55 +259,66 @@ __aicore__ inline void SoftmaxFlashV2Update(const LocalTensor<T1>& dst, const Lo
 #endif
 }
 
-template <typename T1, typename T2, bool isUpdate = false, bool isBasicBlock = false,
+template <
+    typename T1, typename T2, bool isUpdate = false, bool isBasicBlock = false,
     const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>
-__aicore__ inline void SoftmaxFlashV2PostProcess(const LocalTensor<T1>& dstTensor, const LocalTensor<T2>& expSumTensor,
+__aicore__ inline void SoftmaxFlashV2PostProcess(
+    const LocalTensor<T1>& dstTensor, const LocalTensor<T2>& expSumTensor, const LocalTensor<T2>& maxTensor,
+    const LocalTensor<T1>& srcTensor, const LocalTensor<T1>& expMaxTensor, const LocalTensor<T2>& inExpSumTensor,
+    const LocalTensor<T2>& inMaxTensor, const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape,
+    const SoftMaxTiling& tiling)
+{
+    if constexpr (!isUpdate) {
+        SoftmaxFlashV2NoUpdate<T1, T2, isBasicBlock>(
+            dstTensor, expSumTensor, maxTensor, srcTensor, workLocal, originalSrcShape, tiling);
+    } else {
+        SoftmaxFlashV2Update<T1, T2, isBasicBlock>(
+            dstTensor, expSumTensor, maxTensor, srcTensor, expMaxTensor, inExpSumTensor, inMaxTensor, workLocal,
+            originalSrcShape, tiling);
+    }
+}
+template <typename T1, typename T2, bool isUpdate = false, bool isBasicBlock = false>
+__aicore__ inline void SoftMaxFlashV2NZImpl(
+    const LocalTensor<T1>& dstTensor, const LocalTensor<T2>& sumTensor, const LocalTensor<T2>& maxTensor,
+    const LocalTensor<T1>& srcTensor, const LocalTensor<T1>& expMaxTensor, const LocalTensor<T2>& inSumTensor,
+    const LocalTensor<T2>& inMaxTensor, const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape,
+    const SoftMaxTiling& tiling)
+{
+    ASCENDC_ASSERT(
+        false, { KERNEL_LOG(KERNEL_ERROR, "softmaxflashv2 format NZ is not supported on current device!"); });
+}
+template <typename T1, typename T2, bool isUpdate = false, bool isBasicBlock = false>
+__aicore__ inline void SoftMaxFlashV2NZImpl(
+    const LocalTensor<half>& dstTensor, const LocalTensor<float>& sumTensor, const LocalTensor<float>& maxTensor,
+    const LocalTensor<half>& srcTensor, const LocalTensor<half>& expMaxTensor, const LocalTensor<float>& inSumTensor,
+    const LocalTensor<float>& inMaxTensor, const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape,
+    const SoftMaxTiling& tiling)
+{
+    ASCENDC_ASSERT(
+        false, { KERNEL_LOG(KERNEL_ERROR, "softmaxflashv2 format NZ is not supported on current device!"); });
+}
+template <typename T1, typename T2, bool isBasicBlock = false, const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>
+__aicore__ inline void SoftmaxFlashV2NDImpl(
+    const LocalTensor<half>& dst, const LocalTensor<float>& expSumTensor, const LocalTensor<float>& maxTensor,
+    const LocalTensor<half>& src, const LocalTensor<half>& expMaxTensor, const LocalTensor<float>& inExpSumTensor,
+    const LocalTensor<float>& inMaxTensor, const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape,
+    const SoftMaxTiling& tiling)
+{
+    ASCENDC_ASSERT(
+        false, { KERNEL_LOG(KERNEL_ERROR, "softmaxflashv2 current data type is not supported on current device!"); });
+}
+
+template <typename T1, typename T2, bool isUpdate = false, bool isBasicBlock = false, bool isOutputReduceMax = false>
+__aicore__ inline void SoftmaxFlashV2M1PostProcess(
+    const LocalTensor<T1>& dstTensor, const LocalTensor<T2>& outReduceMax, const LocalTensor<T2>& expSumTensor,
     const LocalTensor<T2>& maxTensor, const LocalTensor<T1>& srcTensor, const LocalTensor<T1>& expMaxTensor,
     const LocalTensor<T2>& inExpSumTensor, const LocalTensor<T2>& inMaxTensor, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
-    if constexpr (!isUpdate) {
-        SoftmaxFlashV2NoUpdate<T1, T2, isBasicBlock>(dstTensor, expSumTensor, maxTensor, srcTensor, workLocal,
-            originalSrcShape, tiling);
-    } else {
-        SoftmaxFlashV2Update<T1, T2, isBasicBlock>(dstTensor, expSumTensor, maxTensor, srcTensor, expMaxTensor,
-            inExpSumTensor, inMaxTensor, workLocal, originalSrcShape, tiling);
-    }
+    ASCENDC_ASSERT(
+        false, { KERNEL_LOG(KERNEL_ERROR, "softmaxflashv2 current data struct is not supported on current device!"); });
 }
-template <typename T1, typename T2, bool isUpdate = false, bool isBasicBlock = false>
-__aicore__ inline void SoftMaxFlashV2NZImpl(const LocalTensor<T1>& dstTensor, const LocalTensor<T2>& sumTensor,
-    const LocalTensor<T2>& maxTensor, const LocalTensor<T1>& srcTensor, const LocalTensor<T1>& expMaxTensor,
-    const LocalTensor<T2>& inSumTensor, const LocalTensor<T2>& inMaxTensor, const LocalTensor<float>& workLocal,
-    const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
-{
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "softmaxflashv2 format NZ is not supported on current device!"); });
-}
-template <typename T1, typename T2, bool isUpdate = false, bool isBasicBlock = false>
-__aicore__ inline void SoftMaxFlashV2NZImpl(const LocalTensor<half>& dstTensor, const LocalTensor<float>& sumTensor,
-    const LocalTensor<float>& maxTensor, const LocalTensor<half>& srcTensor, const LocalTensor<half>& expMaxTensor,
-    const LocalTensor<float>& inSumTensor, const LocalTensor<float>& inMaxTensor, const LocalTensor<float>& workLocal,
-    const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
-{
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "softmaxflashv2 format NZ is not supported on current device!"); });
-}
-template <typename T1, typename T2, bool isBasicBlock = false, const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>
-__aicore__ inline void SoftmaxFlashV2NDImpl(const LocalTensor<half>& dst, const LocalTensor<float>& expSumTensor,
-    const LocalTensor<float>& maxTensor, const LocalTensor<half>& src, const LocalTensor<half>& expMaxTensor,
-    const LocalTensor<float>& inExpSumTensor, const LocalTensor<float>& inMaxTensor,
-    const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
-{
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "softmaxflashv2 current data type is not supported on current device!"); });
-}
-
-template <typename T1, typename T2, bool isUpdate = false, bool isBasicBlock = false, bool isOutputReduceMax = false>
-__aicore__ inline void SoftmaxFlashV2M1PostProcess(const LocalTensor<T1>& dstTensor, const LocalTensor<T2>& outReduceMax,
-    const LocalTensor<T2>& expSumTensor, const LocalTensor<T2>& maxTensor, const LocalTensor<T1>& srcTensor,
-    const LocalTensor<T1>& expMaxTensor, const LocalTensor<T2>& inExpSumTensor, const LocalTensor<T2>& inMaxTensor,
-    const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
-{
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "softmaxflashv2 current data struct is not supported on current device!"); });
-}
-}
+} // namespace AscendC
 #endif // IMPL_ACTIVATION_SOFTMAX_V300_SOFTMAX_FLASHV2_IMPL_H
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_FLASHV2_IMPL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

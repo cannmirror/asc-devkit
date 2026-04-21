@@ -61,6 +61,7 @@ class GlobalStorageSingleton:
         self.ascendc_tiling_no_register = False
         self.ascendc_sk_double_compile = False
         self.ascendc_sk_sub_combine_norm_workflow = False
+        self.ascendc_tiling_const_propagation = False
 
 
     def global_storage_reset(self):
@@ -97,6 +98,7 @@ class GlobalStorageSingleton:
         self.ascendc_tiling_no_register = False
         self.ascendc_sk_double_compile = False
         self.ascendc_sk_sub_combine_norm_workflow = False
+        self.ascendc_tiling_const_propagation = False
 
 
     def set_variable(self, name, value):

@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #include "include/adv_api/normalization/layernorm_grad_tiling.h"
 #include "graph/tensor.h"
@@ -28,21 +28,23 @@ union LastDimValue {
 void CheckSrcShape(std::vector<int64_t> shapeDims)
 {
     constexpr uint32_t LAYERNORM_GRAD_SHAPE_SIZE = 4;
-    ASCENDC_HOST_ASSERT(shapeDims.size() >= LAYERNORM_GRAD_SHAPE_SIZE, return,
-                        "srcShape dims must not be less than 4.");
+    ASCENDC_HOST_ASSERT(
+        shapeDims.size() >= LAYERNORM_GRAD_SHAPE_SIZE, return, "srcShape dims must not be less than 4.");
     ASCENDC_HOST_ASSERT(shapeDims[0] > 0, return, "srcShape[0] must be greater than 0.");
     ASCENDC_HOST_ASSERT(shapeDims[1] > 0, return, "srcShape[1] must be greater than 0.");
     ASCENDC_HOST_ASSERT(shapeDims[2] > 0, return, "srcShape[2] must be greater than 0.");
     ASCENDC_HOST_ASSERT(shapeDims[3] > 0, return, "srcShape[3] must be greater than 0.");
 }
 
-void CheckLayerNormGradHostCommon(const char* apiName, const char* hostFuncName, const ge::Shape& srcShape,
-                                  const uint32_t typeSize)
+void CheckLayerNormGradHostCommon(
+    const char* apiName, const char* hostFuncName, const ge::Shape& srcShape, const uint32_t typeSize)
 {
-    ASCENDC_HOST_ASSERT(typeSize == LAYERNORM_GRAD_HALF_SIZE || typeSize == LAYERNORM_GRAD_FLOAT_SIZE, return,
-                        "[%s][%s] Type size %u is unsupported!", apiName, hostFuncName, typeSize);
-    ASCENDC_HOST_ASSERT(srcShape.GetShapeSize() > 0, return, "[%s][%s] Input Shape size must be greater than 0.",
-                        apiName, hostFuncName);
+    ASCENDC_HOST_ASSERT(
+        typeSize == LAYERNORM_GRAD_HALF_SIZE || typeSize == LAYERNORM_GRAD_FLOAT_SIZE, return,
+        "[%s][%s] Type size %u is unsupported!", apiName, hostFuncName, typeSize);
+    ASCENDC_HOST_ASSERT(
+        srcShape.GetShapeSize() > 0, return, "[%s][%s] Input Shape size must be greater than 0.", apiName,
+        hostFuncName);
     ASCENDC_HOST_ASSERT(
         srcShape.GetDimNum() == LAYERNORM_GRAD_SRC_DIM_NUM, return,
         "[%s][%s] The dims of srcShape is %zu, should be 4 (e.g. [B, S, storageHLength, originHLength])!", apiName,
@@ -82,8 +84,8 @@ void SetTensorInfo(optiling::LayerNormGradTiling& tiling, uint32_t oneCalSize, u
     tiling.set_tmpTensor2Pos(tmpTensor2Pos);
 }
 
-void SetTilingData(optiling::LayerNormGradTiling& tiling, const uint32_t oneCalSize, const uint32_t typeSize,
-                   const bool isReuseSource)
+void SetTilingData(
+    optiling::LayerNormGradTiling& tiling, const uint32_t oneCalSize, const uint32_t typeSize, const bool isReuseSource)
 {
     SetTensorInfo(tiling, oneCalSize, typeSize, isReuseSource);
     tiling.set_tmpTensorBSHSize(oneCalSize);
@@ -98,8 +100,9 @@ void SetTilingData(optiling::LayerNormGradTiling& tiling, const uint32_t oneCalS
 }
 } // namespace
 
-void GetLayerNormGradMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
-                                   uint32_t& maxValue, uint32_t& minValue)
+void GetLayerNormGradMaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    uint32_t& minValue)
 {
     CheckLayerNormGradHostCommon("LayerNormGrad", "GetLayerNormGradMaxMinTmpSize", srcShape, typeSize);
     std::vector<int64_t> shapeDims = srcShape.GetDims();
@@ -141,8 +144,9 @@ void GetLayerNormGradMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typ
     }
 }
 
-void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-                                  const bool isReuseSource, optiling::LayerNormGradTiling& tiling)
+void GetLayerNormGradNDTilingInfo(
+    const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
+    optiling::LayerNormGradTiling& tiling)
 {
     CheckLayerNormGradHostCommon("LayerNormGrad", "GetLayerNormGradNDTilingInfo", srcShape, typeSize);
     std::vector<int64_t> shapeDims = srcShape.GetDims();
@@ -164,8 +168,9 @@ void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stack
         // needless to calculate oneCalSize and nohCalSize
         oneCalSize = static_cast<uint32_t>(1);
         nohCalSize = static_cast<uint32_t>(1);
-    }else{
-        oneCalSize = stackBufferSize * static_cast<uint32_t>(sizeof(uint8_t)) / static_cast<uint32_t>(sizeof(float)) / needBufferBlock;
+    } else {
+        oneCalSize = stackBufferSize * static_cast<uint32_t>(sizeof(uint8_t)) / static_cast<uint32_t>(sizeof(float)) /
+                     needBufferBlock;
         oneCalSize = oneCalSize / hLength * hLength;
         ASCENDC_HOST_ASSERT(oneCalSize > static_cast<uint32_t>(0), return, "stackBufferSize is not enough.");
         nohCalSize = oneCalSize / hLength;
@@ -193,8 +198,9 @@ void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stack
     tiling.set_lastDimValueBackMulTwo(lastDimValueBackMulTwo.uint32Value);
 }
 
-void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const bool isReuseSource, AscendC::tiling::LayerNormGradTiling& tiling)
+void GetLayerNormGradNDTilingInfo(
+    const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
+    AscendC::tiling::LayerNormGradTiling& tiling)
 {
     optiling::LayerNormGradTiling tilingData;
     GetLayerNormGradNDTilingInfo(srcShape, stackBufferSize, typeSize, isReuseSource, tilingData);

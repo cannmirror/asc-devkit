@@ -384,6 +384,24 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ float* address, float
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ float2* address, float2 val);
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ float4* address, float4 val);
+#else
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __isGlobal(const void* ptr);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __isUbuf(const void* ptr);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __isLocal(const void* ptr);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ size_t __cvta_generic_to_global(const void* ptr);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ size_t __cvta_generic_to_ubuf(const void* ptr);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ size_t __cvta_generic_to_local(const void* ptr);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ void* __cvta_global_to_generic(size_t rawbits);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ void* __cvta_ubuf_to_generic(size_t rawbits);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ void* __cvta_local_to_generic(size_t rawbits);
 #endif
 
 static __SIMT_DEVICE_FUNCTIONS_DECL__ int __mulhi(int x, int y);

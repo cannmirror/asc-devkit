@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file hccl_ccu_xn_utils.h
@@ -39,7 +39,7 @@ constexpr uint64_t REPEAT_LOOP_INDEX_SHIFT = 48;
 constexpr uint64_t TOTAL_LOOP_NUM_SHIFT = 41;
 constexpr uint64_t MASK = 0x7f;
 
-__aicore__ inline uint64_t GetOpId(__gm__ CommonPrepareParamCcu *commParam)
+__aicore__ inline uint64_t GetOpId(__gm__ CommonPrepareParamCcu* commParam)
 {
     if (commParam->commType.msgType == ControlMsgType::HCCL_CMD_FINALIZE) {
         return 0xffffffffffffffff;
@@ -56,46 +56,45 @@ __aicore__ inline uint64_t GetOpId(__gm__ CommonPrepareParamCcu *commParam)
 
     uint64_t reduceType = isReduceType ? static_cast<uint64_t>(commParam->op) : 0U;
 
-    KERNEL_LOG(KERNEL_INFO, "ApiClient GetOpId algoType:%d outDataType:%d, reduceType:%d, dataType:%d, commType:%d",
-               algoType, outDataType, reduceType, dataType, commType);
+    KERNEL_LOG(
+        KERNEL_INFO, "ApiClient GetOpId algoType:%d outDataType:%d, reduceType:%d, dataType:%d, commType:%d", algoType,
+        outDataType, reduceType, dataType, commType);
 
     return ((algoType & ALGO_TYPE_MASK) << ALGO_TYPE_SHIFT) |
            ((outDataType & OUT_DATA_TYPE_MASK) << OUT_DATA_TYPE_SHIFT) |
-           ((reduceType & REDUCE_TYPE_MASK) << REDUCE_TYPE_SHIFT) |
-           ((dataType & DATA_TYPE_MASK) << DATA_TYPE_SHIFT) |
+           ((reduceType & REDUCE_TYPE_MASK) << REDUCE_TYPE_SHIFT) | ((dataType & DATA_TYPE_MASK) << DATA_TYPE_SHIFT) |
            (commType & COMM_TYPE_MASK);
 }
 
-__aicore__ inline void AssembleHcclMsgExtForCCU(CcuPrepareParam &ccuParam,
-    __gm__ CommonPrepareParamCcu *commParam, __gm__ AlltoAllVParamCcu *allToAllVParam)
+__aicore__ inline void AssembleHcclMsgExtForCCU(
+    CcuPrepareParam& ccuParam, __gm__ CommonPrepareParamCcu* commParam, __gm__ AlltoAllVParamCcu* allToAllVParam)
 {
-    __gm__ CCUMsgExt *ccuMsgExt = reinterpret_cast<__gm__ CCUMsgExt *>(
+    __gm__ CCUMsgExt* ccuMsgExt = reinterpret_cast<__gm__ CCUMsgExt*>(
         reinterpret_cast<uint64_t>(ccuParam.ccuMsgExt) + CCU_MSG_EXT_RANK_OFFSET * ccuParam.alltoallvCnt);
     FlushDataCache(ccuMsgExt);
     uint64_t dataSize = DATA_TYPE_MAP[static_cast<uint64_t>(commParam->dataType)];
 
-
-    KERNEL_LOG(KERNEL_INFO, "ApiClient AssembleHcclMsgExtForCCU ccuParam.ccuMsgExt:0x%llx, ccuMsgExt:0x%llx",
-               reinterpret_cast<uint64_t>(ccuParam.ccuMsgExt), reinterpret_cast<uint64_t>(ccuMsgExt));
+    KERNEL_LOG(
+        KERNEL_INFO, "ApiClient AssembleHcclMsgExtForCCU ccuParam.ccuMsgExt:0x%llx, ccuMsgExt:0x%llx",
+        reinterpret_cast<uint64_t>(ccuParam.ccuMsgExt), reinterpret_cast<uint64_t>(ccuMsgExt));
 
     for (uint32_t i = 0U; i < ccuParam.rankNum; ++i) {
         ccuMsgExt[i].sendSize = allToAllVParam->sendCounts[i] * dataSize;
         ccuMsgExt[i].recvSize = allToAllVParam->recvCounts[i] * dataSize;
-        ccuMsgExt[i].sendOffset =
-            allToAllVParam->sdispls[i] * dataSize + ccuMsgExt[i].sendSize * ccuParam.repeatIndex;
-        ccuMsgExt[i].recvOffset =
-        allToAllVParam->rdispls[i] * dataSize + ccuMsgExt[i].recvSize * ccuParam.repeatIndex;
-        KERNEL_LOG(KERNEL_INFO, "ApiClient ccuMsgExt rankIndex:%u, sendSize:%d, recvSize:%d, sendOffset:%d, recvOffset:%d",
-                   i, ccuMsgExt[i].sendSize, ccuMsgExt[i].recvSize, ccuMsgExt[i].sendOffset, ccuMsgExt[i].recvOffset);
+        ccuMsgExt[i].sendOffset = allToAllVParam->sdispls[i] * dataSize + ccuMsgExt[i].sendSize * ccuParam.repeatIndex;
+        ccuMsgExt[i].recvOffset = allToAllVParam->rdispls[i] * dataSize + ccuMsgExt[i].recvSize * ccuParam.repeatIndex;
+        KERNEL_LOG(
+            KERNEL_INFO, "ApiClient ccuMsgExt rankIndex:%u, sendSize:%d, recvSize:%d, sendOffset:%d, recvOffset:%d", i,
+            ccuMsgExt[i].sendSize, ccuMsgExt[i].recvSize, ccuMsgExt[i].sendOffset, ccuMsgExt[i].recvOffset);
     }
- 
+
     uint32_t tmpCnt = (sizeof(CCUMsgExt) * ccuParam.rankNum) / MAX_DCCI_CNT;
     uint32_t copyCnt = (sizeof(CCUMsgExt) * ccuParam.rankNum) % MAX_DCCI_CNT ? tmpCnt + 1 : tmpCnt;
     KERNEL_LOG(KERNEL_INFO, "ApiClient AssembleHcclMsgExtForCCU tmpCnt:%d, copyCnt:%d", tmpCnt, copyCnt);
 
     GlobalTensor<int64_t> globalHcclMsgArea;
     uint64_t tmpSize = 0;
-    for (uint32_t i = 0U; i < copyCnt ; ++i) {
+    for (uint32_t i = 0U; i < copyCnt; ++i) {
         FlushDataCache(globalHcclMsgArea, (GM_ADDR)(reinterpret_cast<uint64_t>(ccuMsgExt) + tmpSize));
         tmpSize += MAX_DCCI_CNT;
     }
@@ -104,10 +103,10 @@ __aicore__ inline void AssembleHcclMsgExtForCCU(CcuPrepareParam &ccuParam,
 __aicore__ inline uint64_t GetParallelParameters(uint64_t repeatNum, uint64_t repeatLoopIndex, uint64_t totalLoopNum)
 {
     return ((repeatNum & MASK) << REPEAT_NUM_SHIFT) | ((repeatLoopIndex & MASK) << REPEAT_LOOP_INDEX_SHIFT) |
-        ((totalLoopNum & MASK) << TOTAL_LOOP_NUM_SHIFT);
+           ((totalLoopNum & MASK) << TOTAL_LOOP_NUM_SHIFT);
 }
 
-__aicore__ inline void CalcLoopGroupParam(uint64_t *xnData, uint64_t m, uint64_t n, uint64_t p)
+__aicore__ inline void CalcLoopGroupParam(uint64_t* xnData, uint64_t m, uint64_t n, uint64_t p)
 {
     if (n == 0 && p == 0) {
         // 数据量为loopSize的整数倍，跳过LoopGroup1
@@ -116,19 +115,19 @@ __aicore__ inline void CalcLoopGroupParam(uint64_t *xnData, uint64_t m, uint64_t
     } else if (n != 0 && p == 0) {
         // 数据量为256K * m + CCU_MEMSLICE_SIZE * n
         xnData[6] = GetParallelParameters(n - 1, 0, 1); // ccu xn6
-        xnData[7] = CCU_MEMSLICE_SIZE; // ccu xn7
+        xnData[7] = CCU_MEMSLICE_SIZE;                  // ccu xn7
     } else if (n == 0 && p != 0) {
         // 数据量为loopSize * m + p
         xnData[6] = GetParallelParameters(0, 0, 1); // ccu xn6
-        xnData[7] = p; // ccu xn7
+        xnData[7] = p;                              // ccu xn7
     } else {
         // 数据量为loopSize * m + CCU_MEMSLICE_SIZE * n + p
         xnData[6] = GetParallelParameters(n - 1, 1, CCU_PARAM_INDEX); // ccu xn6
-        xnData[7] = p; // ccu xn7
+        xnData[7] = p;                                                // ccu xn7
     }
 }
 
-__aicore__ inline void CalcGoSize(uint64_t sliceSize, uint64_t loopCount, uint64_t ccuMemsliceSize, uint64_t *goSize)
+__aicore__ inline void CalcGoSize(uint64_t sliceSize, uint64_t loopCount, uint64_t ccuMemsliceSize, uint64_t* goSize)
 {
     uint64_t loopSize = loopCount * ccuMemsliceSize;
     uint64_t m = sliceSize / loopSize;
@@ -156,6 +155,6 @@ __aicore__ inline void CalcGoSize(uint64_t sliceSize, uint64_t loopCount, uint64
         goSize[3] = p;
     }
 }
-}
+} // namespace AscendC
 
 #endif

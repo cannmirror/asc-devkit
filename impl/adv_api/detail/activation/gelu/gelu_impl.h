@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file gelu_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/activation/gelu/gelu_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/gelu.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/activation/gelu/gelu_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/gelu.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GELU_IMPL_H__
 #endif
@@ -33,8 +34,9 @@
 
 namespace AscendC {
 template <typename T>
-__aicore__ inline void GeluCalcTanhParams(const LocalTensor<T>& tempTensorA, const LocalTensor<T>& tempTensorB,
-    const LocalTensor<T>& srcLocal, const GeluParams<T>& params)
+__aicore__ inline void GeluCalcTanhParams(
+    const LocalTensor<T>& tempTensorA, const LocalTensor<T>& tempTensorB, const LocalTensor<T>& srcLocal,
+    const GeluParams<T>& params)
 {
     const T coefficientsA = 0.044715;
     const T coefficientsB = 1.5957691216057308;
@@ -60,8 +62,8 @@ __aicore__ inline void GeluCalcTanhParams(const LocalTensor<T>& tempTensorA, con
 }
 
 template <typename T>
-__aicore__ inline void GeluCalcYGreaterThanZero(const LocalTensor<T>& tempTensorA, const LocalTensor<T>& tempTensorB,
-    const GeluParams<T>& params)
+__aicore__ inline void GeluCalcYGreaterThanZero(
+    const LocalTensor<T>& tempTensorA, const LocalTensor<T>& tempTensorB, const GeluParams<T>& params)
 {
     const UnaryRepeatParams unaryParams;
 
@@ -74,8 +76,9 @@ __aicore__ inline void GeluCalcYGreaterThanZero(const LocalTensor<T>& tempTensor
 }
 
 template <typename T, bool highPerformance = false>
-__aicore__ inline void GeluCalcYLessThanZero(const LocalTensor<T>& tempTensorA, const LocalTensor<T>& tempTensorB,
-    const LocalTensor<T>& srcLocal, const GeluParams<T>& params)
+__aicore__ inline void GeluCalcYLessThanZero(
+    const LocalTensor<T>& tempTensorA, const LocalTensor<T>& tempTensorB, const LocalTensor<T>& srcLocal,
+    const GeluParams<T>& params)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binaryParams;
@@ -106,8 +109,8 @@ __aicore__ inline void GeluCalcYLessThanZero(const LocalTensor<T>& tempTensorA, 
 }
 
 template <typename T, bool highPerformance = false>
-__aicore__ inline void GeluCalcSimplifiedAvoid(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal,
-    const GeluParams<T>& params)
+__aicore__ inline void GeluCalcSimplifiedAvoid(
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const GeluParams<T>& params)
 {
     const BinaryRepeatParams binaryParams;
     const LocalTensor<T>& tempTensorA = params.tempTensorA;
@@ -129,8 +132,8 @@ __aicore__ inline void GeluCalcSimplifiedAvoid(const LocalTensor<T>& dstLocal, c
 }
 
 template <typename T, bool highPerformance = false>
-__aicore__ inline void FastGeluCalcSimplified(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal,
-    const GeluParams<T>& params)
+__aicore__ inline void FastGeluCalcSimplified(
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const GeluParams<T>& params)
 {
     const LocalTensor<T>& stackBuffer = params.tempTensorA;
 
@@ -163,8 +166,8 @@ __aicore__ inline void FastGeluCalcSimplified(const LocalTensor<T>& dstLocal, co
 }
 
 template <typename T>
-__aicore__ inline void FastGeluV2ClipParams(const LocalTensor<T>& tempTensorA, const LocalTensor<T>& srcLocal,
-    const GeluParams<T>& params)
+__aicore__ inline void FastGeluV2ClipParams(
+    const LocalTensor<T>& tempTensorA, const LocalTensor<T>& srcLocal, const GeluParams<T>& params)
 {
     const T coefficientsA = -0.1444;
     const T coefficientsB = -1.769;
@@ -199,8 +202,8 @@ __aicore__ inline void FastGeluV2ClipParams(const LocalTensor<T>& tempTensorA, c
 }
 
 template <typename T, bool highPerformance = false>
-__aicore__ inline void FastGeluV2CalcSimplified(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal,
-    const GeluParams<T>& params)
+__aicore__ inline void FastGeluV2CalcSimplified(
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const GeluParams<T>& params)
 {
     const T coefficients = 0.000000000001;
     const T coefficientsHalf = 0.5;
@@ -289,8 +292,8 @@ __aicore__ inline void GeluCastIntrinsicsImpl(const LocalTensor<half>& dstLocal,
 }
 
 template <uint32_t bufferNumber = 1>
-__aicore__ inline void GeluFormulasHighPrecision(const LocalTensor<half>& dstLocal, const LocalTensor<half>& srcLocal,
-    GeluParams<float>& params,
+__aicore__ inline void GeluFormulasHighPrecision(
+    const LocalTensor<half>& dstLocal, const LocalTensor<half>& srcLocal, GeluParams<float>& params,
     void (*func)(const LocalTensor<float>&, const LocalTensor<float>&, const GeluParams<float>&))
 {
     GeluFormulasTmpCalc<float, true, bufferNumber>(params);
@@ -328,8 +331,9 @@ __aicore__ inline void GeluFormulasHighPrecision(const LocalTensor<half>& dstLoc
 }
 
 template <typename T, uint32_t bufferNumber = 1>
-__aicore__ inline void GeluFormulas(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal,
-    GeluParams<T>& params, void (*func)(const LocalTensor<T>&, const LocalTensor<T>&, const GeluParams<T>&))
+__aicore__ inline void GeluFormulas(
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, GeluParams<T>& params,
+    void (*func)(const LocalTensor<T>&, const LocalTensor<T>&, const GeluParams<T>&))
 {
     GeluFormulasTmpCalc<T, false, bufferNumber>(params);
 
@@ -355,8 +359,9 @@ __aicore__ inline void GeluFormulas(const LocalTensor<T>& dstLocal, const LocalT
 }
 
 template <uint32_t bufferNumber = 1>
-__aicore__ inline void GeluClass(const LocalTensor<half>& dstLocal, const LocalTensor<half>& srcLocal,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t dataSize,
+__aicore__ inline void GeluClass(
+    const LocalTensor<half>& dstLocal, const LocalTensor<half>& srcLocal, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t dataSize,
     void (*func)(const LocalTensor<float>&, const LocalTensor<float>&, const GeluParams<float>&))
 {
     GeluParams<float> params;
@@ -369,9 +374,9 @@ __aicore__ inline void GeluClass(const LocalTensor<half>& dstLocal, const LocalT
 }
 
 template <typename T, uint32_t bufferNumber = 1>
-__aicore__ inline void GeluClass(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t dataSize,
-    void (*func)(const LocalTensor<T>&, const LocalTensor<T>&, const GeluParams<T>&))
+__aicore__ inline void GeluClass(
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t dataSize, void (*func)(const LocalTensor<T>&, const LocalTensor<T>&, const GeluParams<T>&))
 {
     GeluParams<T> params;
     params.dataSize = dataSize;
@@ -383,16 +388,18 @@ __aicore__ inline void GeluClass(const LocalTensor<T>& dstLocal, const LocalTens
 }
 
 template <typename T, bool highPrecision = false, bool highPerformance = false>
-__aicore__ inline void GeluImpl(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t dataSize)
+__aicore__ inline void GeluImpl(
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t dataSize)
 {
-    CHECK_FUNC_HIGHLEVEL_API(Gelu, (T, highPrecision, highPerformance), (dstLocal, srcLocal, sharedTmpBuffer, dataSize));
+    CHECK_FUNC_HIGHLEVEL_API(
+        Gelu, (T, highPrecision, highPerformance), (dstLocal, srcLocal, sharedTmpBuffer, dataSize));
     if constexpr (highPrecision && (sizeof(T) == sizeof(half))) {
-        GeluClass<TWO_OF_STACK_BUFFER>(dstLocal, srcLocal, sharedTmpBuffer, dataSize,
-            GeluCalcSimplifiedAvoid<float, highPerformance>);
+        GeluClass<TWO_OF_STACK_BUFFER>(
+            dstLocal, srcLocal, sharedTmpBuffer, dataSize, GeluCalcSimplifiedAvoid<float, highPerformance>);
     } else {
-        GeluClass<T, TWO_OF_STACK_BUFFER>(dstLocal, srcLocal, sharedTmpBuffer, dataSize,
-            GeluCalcSimplifiedAvoid<T, highPerformance>);
+        GeluClass<T, TWO_OF_STACK_BUFFER>(
+            dstLocal, srcLocal, sharedTmpBuffer, dataSize, GeluCalcSimplifiedAvoid<T, highPerformance>);
     }
 }
 
@@ -407,10 +414,12 @@ __aicore__ inline void GeluImpl(const LocalTensor<T>& dstLocal, const LocalTenso
 }
 
 template <typename T, bool highPrecision = false, bool highPerformance = false>
-__aicore__ inline void FasterGeluImpl(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t dataSize)
+__aicore__ inline void FasterGeluImpl(
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t dataSize)
 {
-    CHECK_FUNC_HIGHLEVEL_API(FasterGelu, (T, highPrecision, highPerformance), (dstLocal, srcLocal, sharedTmpBuffer, dataSize));
+    CHECK_FUNC_HIGHLEVEL_API(
+        FasterGelu, (T, highPrecision, highPerformance), (dstLocal, srcLocal, sharedTmpBuffer, dataSize));
     if constexpr (highPrecision && (sizeof(T) == sizeof(half))) {
         GeluClass(dstLocal, srcLocal, sharedTmpBuffer, dataSize, FastGeluCalcSimplified<float, highPerformance>);
     } else {
@@ -419,8 +428,8 @@ __aicore__ inline void FasterGeluImpl(const LocalTensor<T>& dstLocal, const Loca
 }
 
 template <typename T, bool highPrecision = false, bool highPerformance = false>
-__aicore__ inline void FasterGeluImpl(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal,
-    const uint32_t dataSize)
+__aicore__ inline void FasterGeluImpl(
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const uint32_t dataSize)
 {
     LocalTensor<uint8_t> sharedTmpBuffer;
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);
@@ -430,22 +439,24 @@ __aicore__ inline void FasterGeluImpl(const LocalTensor<T>& dstLocal, const Loca
 }
 
 template <typename T, bool highPrecision = false, bool highPerformance = false>
-__aicore__ inline void FasterGeluV2Impl(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t dataSize)
+__aicore__ inline void FasterGeluV2Impl(
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t dataSize)
 {
-    CHECK_FUNC_HIGHLEVEL_API(FasterGeluV2, (T, highPrecision, highPerformance), (dstLocal, srcLocal, sharedTmpBuffer, dataSize));
+    CHECK_FUNC_HIGHLEVEL_API(
+        FasterGeluV2, (T, highPrecision, highPerformance), (dstLocal, srcLocal, sharedTmpBuffer, dataSize));
     if constexpr (highPrecision && (IsSameType<T, half>::value)) {
-        GeluClass<THREE_OF_STACK_BUFFER>(dstLocal, srcLocal, sharedTmpBuffer, dataSize,
-            FastGeluV2CalcSimplified<float, highPerformance>);
+        GeluClass<THREE_OF_STACK_BUFFER>(
+            dstLocal, srcLocal, sharedTmpBuffer, dataSize, FastGeluV2CalcSimplified<float, highPerformance>);
     } else {
-        GeluClass<T, THREE_OF_STACK_BUFFER>(dstLocal, srcLocal, sharedTmpBuffer, dataSize,
-            FastGeluV2CalcSimplified<T, highPerformance>);
+        GeluClass<T, THREE_OF_STACK_BUFFER>(
+            dstLocal, srcLocal, sharedTmpBuffer, dataSize, FastGeluV2CalcSimplified<T, highPerformance>);
     }
 }
 
 template <typename T, bool highPrecision = false, bool highPerformance = false>
-__aicore__ inline void FasterGeluV2Impl(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal,
-    const uint32_t dataSize)
+__aicore__ inline void FasterGeluV2Impl(
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const uint32_t dataSize)
 {
     LocalTensor<uint8_t> sharedTmpBuffer;
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);

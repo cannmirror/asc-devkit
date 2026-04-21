@@ -1,19 +1,20 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file matmul_server_aux.h
  * \brief
  */
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/kfc/matmul_server_aux.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul_client.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/kfc/matmul_server_aux.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul_client.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_KFC_MATMUL_SERVER_AUX_H__
 #endif
@@ -31,64 +32,71 @@
 
 namespace AscendC {
 
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE = C_TYPE,
-    const auto& MM_CFG = CFG_NORM, class MM_CB = AscendC::MatmulCallBackFunc<nullptr, nullptr, nullptr>,
-    MATMUL_POLICY_DEFAULT_OF(MatmulPolicy)>
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE = C_TYPE, const auto& MM_CFG = CFG_NORM,
+    class MM_CB = AscendC::MatmulCallBackFunc<nullptr, nullptr, nullptr>, MATMUL_POLICY_DEFAULT_OF(MatmulPolicy)>
 struct MatmulInstBase {
     __aicore__ inline MatmulInstBase(){};
 };
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
 struct MatmulInstShared : MatmulInstBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY> {
     __aicore__ inline MatmulInstShared(){};
     AscendC::MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY> cubeObj[1];
 };
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
 struct MatmulInst : MatmulInstBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY> {
     __aicore__ inline MatmulInst(){};
     AscendC::MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY> cubeObj[MIX_NUM];
 };
 
-template <bool SHARED, class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG,
-    class MM_CB, MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
+template <
+    bool SHARED, class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+    MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
 struct MatmulInstAux {
     __aicore__ inline MatmulInstAux(){};
 };
 
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
 struct MatmulInstAux<true, A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY> {
     __aicore__ inline MatmulInstAux(){};
     using MATMUL = MatmulInstShared<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>;
 };
 
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
 struct MatmulInstAux<false, A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY> {
     __aicore__ inline MatmulInstAux(){};
     using MATMUL = MatmulInst<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>;
 };
 
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE = C_TYPE, const auto& MM_CFG = CFG_NORM,
-class MM_CB = AscendC::MatmulCallBackFunc<nullptr, nullptr, nullptr>, MATMUL_POLICY_DEFAULT_OF(MatmulPolicy)>
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE = C_TYPE, const auto& MM_CFG = CFG_NORM,
+    class MM_CB = AscendC::MatmulCallBackFunc<nullptr, nullptr, nullptr>, MATMUL_POLICY_DEFAULT_OF(MatmulPolicy)>
 class MatmulServiceAuxBase {
     using SrcT = typename A_TYPE::T;
     using SrcAT = typename A_TYPE::T;
     using SrcBT = typename B_TYPE::T;
     using DstT = typename C_TYPE::T;
     using BiasT = typename BIAS_TYPE::T;
-    template <class... Args> friend struct AscendC::GetCubeObjConfig;
+    template <class... Args>
+    friend struct AscendC::GetCubeObjConfig;
     constexpr static bool enableMixDualMaster = ToMatmulConfig(MM_CFG).enableMixDualMaster;
     constexpr static bool enableABShare = A_TYPE::ibShare && B_TYPE::ibShare;
 
 public:
     __aicore__ inline MatmulServiceAuxBase() {}
-    typename MatmulInstAux<IsSharedMatmul<MM_CFG>(), A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB,
-        MATMUL_POLICY>::MATMUL cubeObj;
+    typename MatmulInstAux<
+        IsSharedMatmul<MM_CFG>(), A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::MATMUL cubeObj;
 
     // stub functions for MatmulImplBase
-    __aicore__ inline void Init(TCubeTiling *cubeTiling, TPipe *tpipe = nullptr)
+    __aicore__ inline void Init(TCubeTiling* cubeTiling, TPipe* tpipe = nullptr)
     {
         if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
             cubeObj.cubeObj[0].mul.Init(cubeTiling, tpipe);
@@ -153,7 +161,7 @@ public:
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
             ASSERT("SetTensorA localTensor not support when enableMixDualMaster is enabled");
 #endif
-        }   
+        }
     }
     __aicore__ inline void SetTensorB(const LocalTensor<SrcBT>& rightMatrix, bool isTransposeB = false)
     {
@@ -161,7 +169,7 @@ public:
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
             ASSERT("SetTensorB localTensor not support when enableMixDualMaster is enabled");
 #endif
-        } 
+        }
     }
     __aicore__ inline void SetBias(const LocalTensor<BiasT>& inputBias)
     {
@@ -169,7 +177,7 @@ public:
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
             ASSERT("SetBias localTensor not support when enableMixDualMaster is enabled");
 #endif
-        } 
+        }
     }
     __aicore__ inline void SetTensorA(SrcAT aScalar)
     {
@@ -197,7 +205,8 @@ public:
     }
 #if defined(USE_SSBUF)
     template <class T>
-    __aicore__ inline void SetSelfDefineData(T dataPtr){
+    __aicore__ inline void SetSelfDefineData(T dataPtr)
+    {
         if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
             cubeObj.cubeObj[0].mul.SetSelfDefineData(dataPtr);
         }
@@ -234,14 +243,18 @@ public:
             cubeObj.cubeObj[0].mul.SetQuantVector(quantTensor);
         }
     }
-    template <class T> __aicore__ inline void SetWorkspace(__gm__ T* addr, int size)
+    template <class T>
+    __aicore__ inline void SetWorkspace(__gm__ T* addr, int size)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "SetWorkspace not support when enableMixDualMaster is enabled");
     }
-    template <class T> __aicore__ inline void SetWorkspace(GlobalTensor<T>& addr)
+    template <class T>
+    __aicore__ inline void SetWorkspace(GlobalTensor<T>& addr)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "SetWorkspace not support when enableMixDualMaster is enabled");
     }
     __aicore__ inline void End(){};
@@ -252,25 +265,29 @@ public:
         }
     }
 
-    template <bool sync = true> __aicore__ inline bool Iterate(bool enPartialSum = false)
+    template <bool sync = true>
+    __aicore__ inline bool Iterate(bool enPartialSum = false)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster && 
-            "Iterate not support when enableMixDualMaster is enabled");
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster && "Iterate not support when enableMixDualMaster is enabled");
         return false;
     };
 
-    template <bool sync = true, typename T> __aicore__ inline bool Iterate(bool enPartialSum,
-        const LocalTensor<T>& localCmatrix)
+    template <bool sync = true, typename T>
+    __aicore__ inline bool Iterate(bool enPartialSum, const LocalTensor<T>& localCmatrix)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster && 
-            "Iterate not support when enableMixDualMaster is enabled");
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster && "Iterate not support when enableMixDualMaster is enabled");
         return false;
     };
     template <bool sync = true>
-    __aicore__ inline void IterateAll(const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0,
-        bool enSequentialWrite = false, bool waitIterateAll = false, bool fakeMsg = false)
+    __aicore__ inline void IterateAll(
+        const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0, bool enSequentialWrite = false, bool waitIterateAll = false,
+        bool fakeMsg = false)
     {
-        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), {
+            KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput.");
+        });
         if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
 #if defined(USE_SSBUF)
             WaitAB();
@@ -282,7 +299,7 @@ public:
             constexpr uint16_t eventID = 9U;
             WaitEvent(eventID);
             cubeObj.cubeObj[0].mul.IterateAll(gm, enAtomic, enSequentialWrite, waitIterateAll, fakeMsg);
-            if (sync || waitIterateAll){
+            if (sync || waitIterateAll) {
                 NotifyEvent<PIPE_FIX>(cubeObj.cubeObj[0].instID);
             }
 #endif
@@ -290,10 +307,13 @@ public:
         }
     }
     template <bool sync = true>
-    __aicore__ inline void IterateAll(const LocalTensor<DstT>& ubCmatrix, uint8_t enAtomic = 0,
-        bool enSequentialWrite = false, bool waitIterateAll = false)
+    __aicore__ inline void IterateAll(
+        const LocalTensor<DstT>& ubCmatrix, uint8_t enAtomic = 0, bool enSequentialWrite = false,
+        bool waitIterateAll = false)
     {
-        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), {
+            KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput.");
+        });
         if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
             ASSERT("IterateAll localTensor not support when enableMixDualMaster is enabled");
@@ -315,82 +335,96 @@ public:
 #endif
         }
     }
-    __aicore__ inline void WaitIterateAll() {};
+    __aicore__ inline void WaitIterateAll(){};
     template <bool sync = true, bool doPad = false>
-    __aicore__ inline void GetTensorC(const LocalTensor<DstT>& c, uint8_t enAtomic = 0,
-        bool enSequentialWrite = false, uint32_t height = 0, uint32_t width = 0, uint32_t srcGap = 0, uint32_t dstGap = 0)
+    __aicore__ inline void GetTensorC(
+        const LocalTensor<DstT>& c, uint8_t enAtomic = 0, bool enSequentialWrite = false, uint32_t height = 0,
+        uint32_t width = 0, uint32_t srcGap = 0, uint32_t dstGap = 0)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "GetTensorC not support when enableMixDualMaster is enabled");
     }
     template <bool sync = true>
-    __aicore__ inline void GetTensorC(const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0,
+    __aicore__ inline void GetTensorC(
+        const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0, bool enSequentialWrite = false)
+    {
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+            "GetTensorC not support when enableMixDualMaster is enabled");
+    }
+    template <bool sync = true>
+    __aicore__ inline void GetTensorC(
+        const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& cLocal, uint8_t enAtomic = 0,
         bool enSequentialWrite = false)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
-            "GetTensorC not support when enableMixDualMaster is enabled");
-    }
-    template <bool sync = true>
-    __aicore__ inline void GetTensorC(const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& cLocal,
-        uint8_t enAtomic = 0, bool enSequentialWrite = false)
-    {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "GetTensorC not support when enableMixDualMaster is enabled");
     }
     template <bool sync = true>
     __aicore__ inline GlobalTensor<DstT> GetTensorC(uint8_t enAtomic = 0, bool enSequentialWrite = false)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "GetTensorC not support when enableMixDualMaster is enabled");
         GlobalTensor<DstT> global;
         return global;
     };
     template <bool sync = true, bool waitIterateBatch = false>
-    __aicore__ inline void IterateBatch(const GlobalTensor<DstT>& gm, uint32_t batchA, uint32_t batchB,
-        bool enSequentialWrite, const uint32_t matrixStrideA = 0, const uint32_t matrixStrideB = 0,
-        const uint32_t matrixStrideC = 0, const bool enPartialSum = false, const uint8_t enAtomic = 0)
+    __aicore__ inline void IterateBatch(
+        const GlobalTensor<DstT>& gm, uint32_t batchA, uint32_t batchB, bool enSequentialWrite,
+        const uint32_t matrixStrideA = 0, const uint32_t matrixStrideB = 0, const uint32_t matrixStrideC = 0,
+        const bool enPartialSum = false, const uint8_t enAtomic = 0)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "IterateBatch not support when enableMixDualMaster is enabled");
     }
     template <bool sync = true>
-    __aicore__ inline void IterateBatch(const LocalTensor<DstT>& ubCmatrix, uint32_t batchA, uint32_t batchB,
-        bool enSequentialWrite, const uint32_t matrixStrideA = 0, const uint32_t matrixStrideB = 0,
-        const uint32_t matrixStrideC = 0, const bool enPartialSum = false, const uint8_t enAtomic = 0)
+    __aicore__ inline void IterateBatch(
+        const LocalTensor<DstT>& ubCmatrix, uint32_t batchA, uint32_t batchB, bool enSequentialWrite,
+        const uint32_t matrixStrideA = 0, const uint32_t matrixStrideB = 0, const uint32_t matrixStrideC = 0,
+        const bool enPartialSum = false, const uint8_t enAtomic = 0)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "IterateBatch not support when enableMixDualMaster is enabled");
     }
 
-    __aicore__ inline void IterateBatch(const GlobalTensor<DstT>& gm,
-        bool enPartialSum, uint8_t enAtomic, bool enSequentialWrite, const uint32_t matrixStrideA = 0,
-        const uint32_t matrixStrideB = 0, const uint32_t matrixStrideC = 0)
+    __aicore__ inline void IterateBatch(
+        const GlobalTensor<DstT>& gm, bool enPartialSum, uint8_t enAtomic, bool enSequentialWrite,
+        const uint32_t matrixStrideA = 0, const uint32_t matrixStrideB = 0, const uint32_t matrixStrideC = 0)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "IterateBatch not support when enableMixDualMaster is enabled");
     }
 
-    __aicore__ inline void IterateBatch(const LocalTensor<DstT>& ubCmatrix,
-        bool enPartialSum, uint8_t enAtomic, bool enSequentialWrite, const uint32_t matrixStrideA = 0,
-        const uint32_t matrixStrideB = 0, const uint32_t matrixStrideC = 0)
+    __aicore__ inline void IterateBatch(
+        const LocalTensor<DstT>& ubCmatrix, bool enPartialSum, uint8_t enAtomic, bool enSequentialWrite,
+        const uint32_t matrixStrideA = 0, const uint32_t matrixStrideB = 0, const uint32_t matrixStrideC = 0)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "IterateBatch not support when enableMixDualMaster is enabled");
     }
 
     template <bool sync = true, bool waitIterateBatch = false>
-    __aicore__ inline void IterateNBatch(const uint32_t batchLoop, uint32_t batchA, uint32_t batchB,
-        bool enSequentialWrite, const uint32_t matrixStrideA = 0, const uint32_t matrixStrideB = 0,
-        const uint32_t matrixStrideC = 0)
+    __aicore__ inline void IterateNBatch(
+        const uint32_t batchLoop, uint32_t batchA, uint32_t batchB, bool enSequentialWrite,
+        const uint32_t matrixStrideA = 0, const uint32_t matrixStrideB = 0, const uint32_t matrixStrideC = 0)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "IterateNBatch not support when enableMixDualMaster is enabled");
     }
     template <bool sync = true>
-    __aicore__ inline GlobalTensor<DstT> GetBatchTensorC(uint32_t batchA, uint32_t batchB,
-        bool enSequentialWrite = false)
+    __aicore__ inline GlobalTensor<DstT> GetBatchTensorC(
+        uint32_t batchA, uint32_t batchB, bool enSequentialWrite = false)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "GetBatchTensorC not support when enableMixDualMaster is enabled");
         GlobalTensor<DstT> global;
         return global;
@@ -398,43 +432,48 @@ public:
     template <bool sync = true>
     __aicore__ inline GlobalTensor<DstT> GetBatchC(uint32_t batchA, uint32_t batchB, bool enSequentialWrite = false)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
-            "GetBatchC not support when enableMixDualMaster is enabled");
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster && "GetBatchC not support when enableMixDualMaster is enabled");
     }
     template <bool sync = true, bool doPad = false>
-    __aicore__ inline void GetBatchTensorC(const LocalTensor<DstT>& c, uint32_t batchA, uint32_t batchB,
-        bool enSequentialWrite = false, uint32_t height = 0, uint32_t width = 0, uint32_t srcGap = 0,
-        uint32_t dstGap = 0)
+    __aicore__ inline void GetBatchTensorC(
+        const LocalTensor<DstT>& c, uint32_t batchA, uint32_t batchB, bool enSequentialWrite = false,
+        uint32_t height = 0, uint32_t width = 0, uint32_t srcGap = 0, uint32_t dstGap = 0)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "GetBatchTensorC not support when enableMixDualMaster is enabled");
     }
     template <bool sync = true, bool doPad = false>
-    __aicore__ inline void GetBatchC(const LocalTensor<DstT>& c, uint32_t batchA, uint32_t batchB,
-        bool enSequentialWrite = false, uint32_t height = 0, uint32_t width = 0, uint32_t srcGap = 0,
-        uint32_t dstGap = 0)
+    __aicore__ inline void GetBatchC(
+        const LocalTensor<DstT>& c, uint32_t batchA, uint32_t batchB, bool enSequentialWrite = false,
+        uint32_t height = 0, uint32_t width = 0, uint32_t srcGap = 0, uint32_t dstGap = 0)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
-            "GetBatchC not support when enableMixDualMaster is enabled");
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster && "GetBatchC not support when enableMixDualMaster is enabled");
     }
     __aicore__ inline void WaitIterateBatch()
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "WaitIterateBatch not support when enableMixDualMaster is enabled");
     }
     __aicore__ inline void SetLocalWorkspace(const LocalTensor<uint8_t>& tmpBuffer)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "SetLocalWorkspace not support when enableMixDualMaster is enabled");
     }
     __aicore__ inline void AsyncGetTensorC(const LocalTensor<DstT>& c)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "AsyncGetTensorC not support when enableMixDualMaster is enabled");
     }
     __aicore__ inline void WaitGetTensorC()
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "WaitGetTensorC not support when enableMixDualMaster is enabled");
     }
     template <bool isTurnOnDebug = true>
@@ -445,31 +484,37 @@ public:
         }
     }
 #if defined(USE_SSBUF)
-    __aicore__ inline void SetTensorScaleA(const GlobalTensor<fp8_e8m0_t> &a, bool isTransposeScaleA = false)
+    __aicore__ inline void SetTensorScaleA(const GlobalTensor<fp8_e8m0_t>& a, bool isTransposeScaleA = false)
     {
-        static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
+        static_assert(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster,
             "SetTensorScaleA not support when enableMixDualMaster is enabled.");
     }
-    __aicore__ inline void SetTensorScaleA(const LocalTensor<fp8_e8m0_t> &a, bool isTransposeScaleA = false)
+    __aicore__ inline void SetTensorScaleA(const LocalTensor<fp8_e8m0_t>& a, bool isTransposeScaleA = false)
     {
-        static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
+        static_assert(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster,
             "SetTensorScaleA not support when enableMixDualMaster is enabled.");
     }
-    __aicore__ inline void SetTensorScaleB(const GlobalTensor<fp8_e8m0_t> &b, bool isTransposeScaleB = true)
+    __aicore__ inline void SetTensorScaleB(const GlobalTensor<fp8_e8m0_t>& b, bool isTransposeScaleB = true)
     {
-        static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
+        static_assert(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster,
             "SetTensorScaleB not support when enableMixDualMaster is enabled.");
     }
-    __aicore__ inline void SetTensorScaleB(const LocalTensor<fp8_e8m0_t> &b, bool isTransposeScaleB = true)
+    __aicore__ inline void SetTensorScaleB(const LocalTensor<fp8_e8m0_t>& b, bool isTransposeScaleB = true)
     {
-        static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
+        static_assert(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster,
             "SetTensorScaleB not support when enableMixDualMaster is enabled.");
-    }    
+    }
     constexpr static auto CONFIG = ToMatmulConfig(MM_CFG);
+
 private:
     __aicore__ inline void WaitAB()
     {
-        if constexpr (GetPhyType(A_TYPE::pos) == Hardware::UB || GetPhyType(B_TYPE::pos) == Hardware::UB ||
+        if constexpr (
+            GetPhyType(A_TYPE::pos) == Hardware::UB || GetPhyType(B_TYPE::pos) == Hardware::UB ||
             PhyMxScalePosIsUB<A_TYPE>() || PhyMxScalePosIsUB<B_TYPE>() || GetPhyType(BIAS_TYPE::pos) == Hardware::UB) {
             if constexpr (A_TYPE::ibShare && B_TYPE::ibShare) {
                 constexpr uint16_t l1SetIdV0 = static_cast<uint16_t>(VEC_WAIT_INTRA_Enum::UB_L1_L1_L0AB);
@@ -485,8 +530,9 @@ private:
             CrossCoreSetFlag<INTRA_MODE, PIPE_FIX>(
                 GetIntraFlagId(cubeObj.cubeObj[0].instID, static_cast<uint8_t>(VEC_WAIT_INTRA_Enum::WAIT_FIXP), 0U));
             if constexpr (A_TYPE::ibShare && B_TYPE::ibShare) {
-                CrossCoreSetFlag<INTRA_MODE, PIPE_FIX>(GetIntraFlagId(cubeObj.cubeObj[0].instID,
-                    static_cast<uint8_t>(VEC_WAIT_INTRA_Enum::WAIT_FIXP), 1U)); // 1 means sub_block 1
+                CrossCoreSetFlag<INTRA_MODE, PIPE_FIX>(GetIntraFlagId(
+                    cubeObj.cubeObj[0].instID, static_cast<uint8_t>(VEC_WAIT_INTRA_Enum::WAIT_FIXP),
+                    1U)); // 1 means sub_block 1
             }
         }
     }
@@ -494,10 +540,10 @@ private:
 };
 
 // Match Policy with CallBack parameter
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
-class MatmulServiceAux
-: public MatmulServiceAuxBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY> {
+class MatmulServiceAux : public MatmulServiceAuxBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY> {
 public:
     __aicore__ inline MatmulServiceAux() {}
 };

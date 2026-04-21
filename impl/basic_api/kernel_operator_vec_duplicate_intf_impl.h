@@ -21,6 +21,7 @@
 #define ASCENDC_MODULE_OPERATOR_VEC_DUPLICATE_INTERFACE_IMPL_H
 #include "kernel_tensor.h"
 #include "kernel_check.h"
+#include "kernel_npu_debug.h"
 #include "mstx_local_tensor_info.h"
 
 #if __NPU_ARCH__ == 1001
@@ -64,6 +65,10 @@ template <typename T, bool isSetMask>
 __aicore__ inline void Duplicate(const LocalTensor<T>& dst, const T& scalarValue, uint64_t mask,
     const uint8_t repeatTime, const uint16_t dstBlockStride, const uint8_t dstRepeatStride)
 {
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    CheckVectorTensor("Duplicate", NamedTensor(dst, "dst"));
+    CheckMaskValue<T, isSetMask>(mask, "Duplicate");
+#endif
 #ifdef __MSTX_DFX_REPORT__
     MstxTensor::GetMstxVecDupInfo(dst, mask, repeatTime, dstBlockStride, dstRepeatStride, isSetMask, "Duplicate");
 #endif
@@ -82,6 +87,10 @@ template <typename T, bool isSetMask>
 __aicore__ inline void Duplicate(const LocalTensor<T>& dst, const T& scalarValue, uint64_t mask[],
     const uint8_t repeatTime, const uint16_t dstBlockStride, const uint8_t dstRepeatStride)
 {
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    CheckVectorTensor("Duplicate", NamedTensor(dst, "dst"));
+    CheckMaskArray<T, isSetMask>(mask, "Duplicate");
+#endif
 #ifdef __MSTX_DFX_REPORT__
     MstxTensor::GetMstxVecDupInfo(dst, mask[0], mask[1], repeatTime, dstBlockStride, dstRepeatStride, isSetMask, "Duplicate");
 #endif
@@ -106,6 +115,10 @@ __aicore__ inline void Duplicate(const LocalTensor<T>& dst, const T& scalarValue
 template <typename T>
 __aicore__ inline void Duplicate(const LocalTensor<T>& dst, const T& scalarValue, const int32_t& count)
 {
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    CheckVectorTensor("Duplicate", NamedTensor(dst, "dst"));
+    CheckValueRange<int32_t>(count, 0, INT32_MAX, "count", "Duplicate");
+#endif
 #ifdef __MSTX_DFX_REPORT__
     MstxTensor::GetMstxVecDupInfo(dst, count, "Duplicate");
 #endif

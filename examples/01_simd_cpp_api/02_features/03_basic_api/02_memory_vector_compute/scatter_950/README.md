@@ -31,8 +31,7 @@
 - 算子实现：  
   样例中实现的是使用Scatter基础API实现scatter功能。
 
-  - Kernel实现
-
+  - Kernel实现  
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用Scatter基础API接口完成计算，得到最终结果，再搬出到外部存储上。
 
     ScatterCustom算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm存储在srcLocal中，Compute任务负责将srcLocal中的元素按照指定的位置（由输入参数dst_offset和base_addr共同作用）分散到dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。

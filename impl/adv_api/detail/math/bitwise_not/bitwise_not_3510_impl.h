@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file bitwise_not_3510_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/bitwise_not/bitwise_not_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/bitwise_not.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/bitwise_not/bitwise_not_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/bitwise_not.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_BITWISE_NOT_BITWISE_NOT_C310_IMPL_H__
 #endif
@@ -32,8 +33,8 @@ struct BitwiseNotConfig {
 };
 constexpr BitwiseNotConfig DEFAULT_BITWISE_NOT_CONFIG = {false};
 template <typename T, typename RegT, const Reg::RegTrait& Trait = Reg::RegTraitNumOne>
-__simd_vf__ inline void BitwiseNotCompute(__ubuf__ T* dst, __ubuf__ T* src, uint32_t count,
-                                         uint16_t repeatTime, uint32_t oneRepElm, uint32_t offset)
+__simd_vf__ inline void BitwiseNotCompute(
+    __ubuf__ T* dst, __ubuf__ T* src, uint32_t count, uint16_t repeatTime, uint32_t oneRepElm, uint32_t offset)
 {
     Reg::MaskReg mask;
     RegT srcVreg;
@@ -62,8 +63,9 @@ __aicore__ inline void BitwiseNotImpl(const LocalTensor<T>& dst, const LocalTens
         return;
     }
 
-    static_assert(SupportType<T, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, uint64_t, int64_t>(),
-                  "current data type is not supported on current device!");
+    static_assert(
+        SupportType<T, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, uint64_t, int64_t>(),
+        "current data type is not supported on current device!");
     CHECK_FUNC_HIGHLEVEL_API(BitwiseNot, (T, config.isReuseSource), (dst, src, count));
 
     __ubuf__ T* dstTensor = (__ubuf__ T*)dst.GetPhyAddr();
@@ -79,8 +81,7 @@ __aicore__ inline void BitwiseNotImpl(const LocalTensor<T>& dst, const LocalTens
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm) / 2);
         uint32_t offset = repeatTime * oneRepElm;
-        BitwiseNotCompute<T, Reg::RegTensor<T>>(dstTensor, srcTensor, count, repeatTime, oneRepElm,
-                                                              offset);
+        BitwiseNotCompute<T, Reg::RegTensor<T>>(dstTensor, srcTensor, count, repeatTime, oneRepElm, offset);
     }
 }
 } // namespace AscendC

@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file atan_3510_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/atan/atan_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/atan.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/atan/atan_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/atan.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ATAN_ATAN_C310_IMPL_H__
 #endif
@@ -32,7 +33,7 @@ struct AtanConfig {
     AtanAlgo algo = AtanAlgo::TAYLOR_EXPANSION;
 };
 
-constexpr AtanConfig defaultAtanConfig = { AtanAlgo::TAYLOR_EXPANSION };
+constexpr AtanConfig defaultAtanConfig = {AtanAlgo::TAYLOR_EXPANSION};
 
 namespace Internal {
 constexpr float ATAN_FP16_MAX = 32768;                 // 2^15
@@ -48,8 +49,8 @@ constexpr float MAX_INPUT_VALUE = 10000;
 //         FP16: sign(x) = 2**(15) * x /(2**(-15) + 2**(15) *|x|)
 //         FP32: sign(x) = 2**(62) * x /(2**(-62) + 2**(62) *|x|)
 template <typename T>
-__simd_callee__ inline void Sign(Reg::RegTensor<T>& dstReg, Reg::RegTensor<T>& srcReg,
-    Reg::RegTensor<T>& denominator, Reg::MaskReg preg)
+__simd_callee__ inline void Sign(
+    Reg::RegTensor<T>& dstReg, Reg::RegTensor<T>& srcReg, Reg::RegTensor<T>& denominator, Reg::MaskReg preg)
 {
     constexpr float kFpMax = sizeof(T) == sizeof(float) ? ATAN_FP32_MAX : ATAN_FP16_MAX;
     constexpr float kFpMin = sizeof(T) == sizeof(float) ? ATAN_FP32_MIN : ATAN_FP16_MIN;
@@ -61,13 +62,19 @@ __simd_callee__ inline void Sign(Reg::RegTensor<T>& dstReg, Reg::RegTensor<T>& s
 
 // arctan(x) = x - x^3/3 + x^5/5 + ... + (-1)^k*x^(k*2+1)/( k*2+1)
 // 1/(k*2+1)
-__simd_callee__ inline void TaylorExpand(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg,
-    Reg::RegTensor<float>& squareReg, const uint16_t expandLevel, Reg::MaskReg preg)
+__simd_callee__ inline void TaylorExpand(
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, Reg::RegTensor<float>& squareReg,
+    const uint16_t expandLevel, Reg::MaskReg preg)
 {
     // arctan(x) = x - x^3/3 + x^5/5 + ... + (-1)^k*x^(k*2+1)/( k*2+1)
     // 1/(k*2+1)
-    constexpr float factorList[7] = {1, -0.3333333333333333, 0.2, -0.14285714285714285, 0.1111111111111111,
-        -0.09090909090909091, 0.07692307692307693};
+    constexpr float factorList[7] = {1,
+                                     -0.3333333333333333,
+                                     0.2,
+                                     -0.14285714285714285,
+                                     0.1111111111111111,
+                                     -0.09090909090909091,
+                                     0.07692307692307693};
     uint16_t COUNT_SIX = expandLevel == TAYLOR_COUNT_SIX ? 1 : 0;
     // The initial value of dstReg is assigned as the coefficient of the last item of expansion.
     Reg::Mul(squareReg, srcReg, srcReg, preg);
@@ -93,8 +100,9 @@ __simd_callee__ inline void TaylorExpand(Reg::RegTensor<float>& dstReg, Reg::Reg
 }
 
 // (x-y)/(1+xy)
-__simd_callee__ inline void AtanTransform(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg,
-    Reg::RegTensor<float>& tmpReg, const float transFactor, Reg::MaskReg preg)
+__simd_callee__ inline void AtanTransform(
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, Reg::RegTensor<float>& tmpReg,
+    const float transFactor, Reg::MaskReg preg)
 {
     // x*y
     Reg::Muls(dstReg, srcReg, transFactor, preg);
@@ -158,8 +166,7 @@ __simd_callee__ inline void AtanCompute(
 }
 
 template <typename T, bool isReuseSource = false>
-__simd_vf__ inline void AtanTaylorVFImpl(
-    __ubuf__ T* dstUb, __ubuf__ T* srcUb, const uint32_t calCount)
+__simd_vf__ inline void AtanTaylorVFImpl(__ubuf__ T* dstUb, __ubuf__ T* srcUb, const uint32_t calCount)
 {
     uint16_t repeatTimes = CeilDivision(calCount, B32_DATA_NUM_PER_REPEAT);
 
@@ -180,8 +187,7 @@ __simd_vf__ inline void AtanTaylorVFImpl(
         AtanCompute(dstReg, castReg, preg);
         if constexpr (sizeof(T) == sizeof(half)) {
             Reg::Cast<T, float, castTraitB32ToB16>(srcReg, dstReg, preg);
-            Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B32>(
-                dstUb + i * B32_DATA_NUM_PER_REPEAT, srcReg, preg);
+            Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B32>(dstUb + i * B32_DATA_NUM_PER_REPEAT, srcReg, preg);
         } else {
             Reg::StoreAlign(dstUb + i * B32_DATA_NUM_PER_REPEAT, dstReg, preg);
         }
@@ -202,8 +208,7 @@ __aicore__ inline void AtanTaylorImpl(
 }
 
 template <typename T, bool isReuseSource = false>
-__simd_vf__ inline void AtanPolynomialVFImpl(
-    __ubuf__ T* dstUb, __ubuf__ T* srcUb, const uint32_t calCount)
+__simd_vf__ inline void AtanPolynomialVFImpl(__ubuf__ T* dstUb, __ubuf__ T* srcUb, const uint32_t calCount)
 {
     constexpr float a1 = -0.333329409;
     constexpr float a2 = 0.199887753;
@@ -309,28 +314,33 @@ __aicore__ inline void AtanImpl(
     CheckTensorPos<T>(dstTensor, Hardware::UB, "dstTensor", "VECIN / VECCALC / VECOUT", "Atan");
     CheckTensorPos<T>(srcTensor, Hardware::UB, "srcTensor", "VECIN / VECCALC / VECOUT", "Atan");
     ASCENDC_ASSERT((calCount <= srcTensor.GetSize()), {
-        KERNEL_LOG(KERNEL_ERROR, "calCount is %u, which should not be larger than srcTensor length %u", calCount,
+        KERNEL_LOG(
+            KERNEL_ERROR, "calCount is %u, which should not be larger than srcTensor length %u", calCount,
             srcTensor.GetSize());
     });
     ASCENDC_ASSERT((calCount <= dstTensor.GetSize()), {
-        KERNEL_LOG(KERNEL_ERROR, "calCount is %u, which should not be larger than dstTensor length %u", calCount,
+        KERNEL_LOG(
+            KERNEL_ERROR, "calCount is %u, which should not be larger than dstTensor length %u", calCount,
             dstTensor.GetSize());
     });
 
     if constexpr (config.algo == defaultAtanConfig.algo) {
-        static_assert(SupportType<T, half, float>(),
+        static_assert(
+            SupportType<T, half, float>(),
             "Atan with TAYLOR_EXPANSION algorithm only support half/float data type on current device!");
         Internal::AtanTaylorImpl(dstTensor, srcTensor, calCount);
     } else {
-        static_assert(SupportType<T, float>(),
+        static_assert(
+            SupportType<T, float>(),
             "Atan with POLYNOMIAL_APPROXIMATION algorithm only support float data type on current device!!");
         Internal::AtanPolynomialImpl(dstTensor, srcTensor, calCount);
     }
 }
 
 template <typename T, bool isReuseSource = false, const AtanConfig& config = defaultAtanConfig>
-__aicore__ inline void AtanImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void AtanImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {

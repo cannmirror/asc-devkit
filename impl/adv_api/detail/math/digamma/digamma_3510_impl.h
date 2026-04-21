@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file digamma_3510_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/digamma/digamma_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/digamma.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/digamma/digamma_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/digamma.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_DIGAMMA_DIGAMMA_C310_IMPL_H__
 #endif
@@ -31,7 +32,7 @@
 #endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
 
-namespace AscendC{
+namespace AscendC {
 namespace DigammaInternal {
 constexpr float MIN_NEG_FLOAT = -8388608.0;
 constexpr float DIGAMMA_PI = 3.141592653589793238f;
@@ -41,18 +42,22 @@ constexpr uint32_t DIGAMMA_FLOAT_REUSE_CALC_PROC = 6;
 constexpr uint32_t DIGAMMA_HALF_CALC_PROC = 8;
 constexpr size_t DIGAMMA_MAX_LOOP = 5;
 
-constexpr float posCalcConst[] = {2.10927960927960927961e-2, 7.57575757575757575758e-3, 4.16666666666666666667e-3, 
+constexpr float posCalcConst[] = {2.10927960927960927961e-2, 7.57575757575757575758e-3, 4.16666666666666666667e-3,
                                   3.96825396825396825397e-3, 8.33333333333333333333e-3, 8.33333333333333333333e-2};
 constexpr float tmp1CalcConst[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
 constexpr float tmp1HalfCalcConst[] = {1.0, 2.0};
-constexpr float picotCalcConst[] = {0.00326538085938f, 0.0242919921875f, 0.053466796875f,
-                                    0.133377909660f, 0.333332300186f};
+constexpr float picotCalcConst[] = {
+    0.00326538085938f, 0.0242919921875f, 0.053466796875f, 0.133377909660f, 0.333332300186f};
 
-static constexpr Reg::CastTrait FLOAT_TO_INT_CAST_TRAIT = {Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
-static constexpr Reg::CastTrait INT_TO_FLOAT_CAST_TRAIT = {Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
+static constexpr Reg::CastTrait FLOAT_TO_INT_CAST_TRAIT = {
+    Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
+static constexpr Reg::CastTrait INT_TO_FLOAT_CAST_TRAIT = {
+    Reg::RegLayout::ZERO, Reg::SatMode::NO_SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
 
 template <CMPMODE cmpMode>
-__simd_callee__ inline void DigammaGenCompareMask(Reg::MaskReg& maskDst, Reg::RegTensor<float>& srcReg, const float scalar, Reg::MaskReg& mask) {
+__simd_callee__ inline void DigammaGenCompareMask(
+    Reg::MaskReg& maskDst, Reg::RegTensor<float>& srcReg, const float scalar, Reg::MaskReg& mask)
+{
     Reg::MaskReg fullMask = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
     Reg::RegTensor<float> tmpScalarReg;
     Reg::Duplicate(tmpScalarReg, scalar, fullMask);
@@ -60,8 +65,7 @@ __simd_callee__ inline void DigammaGenCompareMask(Reg::MaskReg& maskDst, Reg::Re
 }
 
 __simd_callee__ inline void DigammaSelect(
-    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg,
-    Reg::RegTensor<float>& tmpReg, Reg::MaskReg& mask)
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, Reg::RegTensor<float>& tmpReg, Reg::MaskReg& mask)
 {
     Reg::MaskReg fullMask = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
     Reg::RegTensor<float> tmpScalarReg;
@@ -142,7 +146,8 @@ __simd_callee__ inline void DigammaPositiveTmp1(Reg::RegTensor<float>& dstReg, R
     Reg::Add(dstReg, dstReg, tmpReg2, mask);
 }
 
-__simd_callee__ inline void DigammaPositive(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, Reg::MaskReg& mask)
+__simd_callee__ inline void DigammaPositive(
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, Reg::MaskReg& mask)
 {
     Reg::RegTensor<float> tmpRegForPos;
     DigammaPositiveTmp0(dstReg, srcReg);
@@ -166,8 +171,10 @@ __simd_callee__ inline void DigammaNegPicotPix(Reg::RegTensor<float>& dstReg, Re
     Reg::Sub(tmpReg1, tmpReg1, tmpReg2, mask);
     Reg::Muls(tmpReg1, tmpReg1, 1.5707963267948966f, mask);
     Reg::Cast<int32_t, float, FLOAT_TO_INT_CAST_TRAIT>(tmpReg2s32, tmpReg2, mask);
-    Reg::Duplicate((Reg::RegTensor<int32_t> &)tmpReg3, 1, mask);
-    Reg::And<uint16_t>((Reg::RegTensor<uint16_t> &)tmpReg2s32, (Reg::RegTensor<uint16_t> &)tmpReg2s32, (Reg::RegTensor<uint16_t> &)tmpReg3, mask);
+    Reg::Duplicate((Reg::RegTensor<int32_t>&)tmpReg3, 1, mask);
+    Reg::And<uint16_t>(
+        (Reg::RegTensor<uint16_t>&)tmpReg2s32, (Reg::RegTensor<uint16_t>&)tmpReg2s32,
+        (Reg::RegTensor<uint16_t>&)tmpReg3, mask);
     Reg::Cast<float, int32_t, INT_TO_FLOAT_CAST_TRAIT>(tmpReg2, tmpReg2s32, mask);
     DigammaGenCompareMask<CMPMODE::LT>(mask1, tmpReg2, 0.5f, mask);
     DigammaGenCompareMask<CMPMODE::GE>(mask2, tmpReg2, 0.5f, mask);
@@ -194,7 +201,8 @@ __simd_callee__ inline void DigammaNegPicotPix(Reg::RegTensor<float>& dstReg, Re
     Reg::Muls(dstReg, dstReg, DIGAMMA_PI, mask);
 }
 
-__simd_callee__ inline void DigammaNegative(Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, Reg::MaskReg& mask)
+__simd_callee__ inline void DigammaNegative(
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, Reg::MaskReg& mask)
 {
     Reg::MaskReg fullMask = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
     Reg::RegTensor<float> tmpReg3;
@@ -206,7 +214,9 @@ __simd_callee__ inline void DigammaNegative(Reg::RegTensor<float>& dstReg, Reg::
     Reg::Add(dstReg, dstReg, tmpReg4, mask);
 }
 
-__simd_callee__ inline void DigammaGenNegIntMask(Reg::MaskReg& maskdst, Reg::RegTensor<float>& srcReg, const float scalar, Reg::RegTensor<float>& tmpCal1, Reg::MaskReg& mask)
+__simd_callee__ inline void DigammaGenNegIntMask(
+    Reg::MaskReg& maskdst, Reg::RegTensor<float>& srcReg, const float scalar, Reg::RegTensor<float>& tmpCal1,
+    Reg::MaskReg& mask)
 {
     Reg::MaskReg tmpmask;
     Reg::MaskReg mask1;
@@ -221,7 +231,8 @@ __simd_callee__ inline void DigammaGenNegIntMask(Reg::MaskReg& maskdst, Reg::Reg
     Reg::MaskAnd(maskdst, mask1, mask2, mask);
 }
 
-__simd_callee__ inline void DigammaGenNanMask(Reg::MaskReg& mask0, Reg::RegTensor<float>& srcReg, Reg::MaskReg& mask1, Reg::MaskReg& mask2, Reg::MaskReg& mask)
+__simd_callee__ inline void DigammaGenNanMask(
+    Reg::MaskReg& mask0, Reg::RegTensor<float>& srcReg, Reg::MaskReg& mask1, Reg::MaskReg& mask2, Reg::MaskReg& mask)
 {
     DigammaGenCompareMask<CMPMODE::LT>(mask1, srcReg, 0.0f, mask);
     DigammaGenCompareMask<CMPMODE::GE>(mask2, srcReg, 0.0f, mask);
@@ -231,7 +242,7 @@ __simd_callee__ inline void DigammaGenNanMask(Reg::MaskReg& mask0, Reg::RegTenso
 }
 
 __simd_callee__ inline void DigammaComputeImpl(
-    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>&srcReg, Reg::MaskReg& mask)
+    Reg::RegTensor<float>& dstReg, Reg::RegTensor<float>& srcReg, Reg::MaskReg& mask)
 {
     Reg::MaskReg mask0;
     Reg::MaskReg mask1;
@@ -264,7 +275,7 @@ __simd_callee__ inline void DigammaComputeImpl(
 }
 
 template <typename T = float, bool isReuseSource = false>
-__simd_vf__ inline void DigammaImpl(__ubuf__ float *dstUb, __ubuf__ float *srcUb, uint32_t calCount)
+__simd_vf__ inline void DigammaImpl(__ubuf__ float* dstUb, __ubuf__ float* srcUb, uint32_t calCount)
 {
     constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(float));
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
@@ -279,7 +290,7 @@ __simd_vf__ inline void DigammaImpl(__ubuf__ float *dstUb, __ubuf__ float *srcUb
         Reg::StoreAlign(dstUb + i * sregLower, dstReg, mask);
     }
 }
-} // namespace DigammaInternel
+} // namespace DigammaInternal
 
 template <typename T, bool isReuseSource = false>
 __aicore__ inline void DigammaCompute(
@@ -294,11 +305,10 @@ __aicore__ inline void DigammaCompute(
 
     static_assert(SupportType<T, half, float>(), "current data type is not supported on current device!");
     if constexpr (Std::is_same<T, float>::value) {
-
-        __ubuf__ T *dstUb = (__ubuf__ T *)dst.GetPhyAddr();
-        __ubuf__ T *srcUb = (__ubuf__ T *)src.GetPhyAddr();
+        __ubuf__ T* dstUb = (__ubuf__ T*)dst.GetPhyAddr();
+        __ubuf__ T* srcUb = (__ubuf__ T*)src.GetPhyAddr();
         DigammaInternal::DigammaImpl<T, isReuseSource>(dstUb, srcUb, calCount);
-    } else if constexpr(Std::is_same<T, half>::value) {
+    } else if constexpr (Std::is_same<T, half>::value) {
         if constexpr (isReuseSource) {
             static_assert(SupportType<T, float>(), "isReuseSource is only supported for float on current device!");
         }
@@ -308,8 +318,8 @@ __aicore__ inline void DigammaCompute(
         LocalTensor<float> srcF32 = tmpBuffer[0];
         LocalTensor<float> dstF32 = tmpBuffer[countAlign];
         AscendC::Cast(srcF32, src, AscendC::RoundMode::CAST_NONE, calCount);
-        __ubuf__ float *srcUb = (__ubuf__ float *)srcF32.GetPhyAddr();
-        __ubuf__ float *dstUb = (__ubuf__ float *)dstF32.GetPhyAddr();
+        __ubuf__ float* srcUb = (__ubuf__ float*)srcF32.GetPhyAddr();
+        __ubuf__ float* dstUb = (__ubuf__ float*)dstF32.GetPhyAddr();
         DigammaInternal::DigammaImpl<float, isReuseSource>(dstUb, srcUb, calCount);
         AscendC::Cast(dst, dstF32, AscendC::RoundMode::CAST_NONE, calCount);
     }

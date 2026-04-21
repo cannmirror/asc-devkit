@@ -51,8 +51,7 @@ z = x + y
 <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_custom_v1</td></tr>
 </table>
 
-- 算子实现：
-
+- 算子实现：  
   Add算子的数学表达式为：
 
   ```

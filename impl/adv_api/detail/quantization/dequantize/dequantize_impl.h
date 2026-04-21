@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file dequantize_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/quantization/dequantize/dequantize_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/quantization/dequantize.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/quantization/dequantize/dequantize_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/quantization/dequantize.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZATION_DEQUANTIZE_DEQUANTIZE_IMPL_H__
 #endif
@@ -37,21 +38,26 @@ namespace AscendC {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 // DequantParams check
 template <typename DstT>
-__aicore__ inline bool IsDequantizeParamsValid(const LocalTensor<int32_t>& srcTensor, const LocalTensor<DstT>& dstTensor,
-    DequantParams& params)
+__aicore__ inline bool IsDequantizeParamsValid(
+    const LocalTensor<int32_t>& srcTensor, const LocalTensor<DstT>& dstTensor, DequantParams& params)
 {
     // params.n must be 32B aligned as FP32
-    ASCENDC_ASSERT(params.n % FLOAT_PER_BLOCK == 0, {KERNEL_LOG(KERNEL_ERROR,
-        "params.n %u must be divisible by 8", params.n); });
+    ASCENDC_ASSERT(
+        params.n % FLOAT_PER_BLOCK == 0, { KERNEL_LOG(KERNEL_ERROR, "params.n %u must be divisible by 8", params.n); });
     // params.m * params.n <= srcTensor element num
-    ASCENDC_ASSERT(params.m * params.n <= srcTensor.GetSize(), {KERNEL_LOG(KERNEL_ERROR, "params.m %u * params.n %u \
-        must not be larger than element num of srcTensor %u", params.m, params.n, srcTensor.GetSize()); });
+    ASCENDC_ASSERT(params.m * params.n <= srcTensor.GetSize(), {
+        KERNEL_LOG(
+            KERNEL_ERROR, "params.m %u * params.n %u \
+        must not be larger than element num of srcTensor %u",
+            params.m, params.n, srcTensor.GetSize());
+    });
     // params.m * (params.n after align with DstT) <= dstTensor elementNum
     uint32_t oneBlockNum = ONE_BLK_SIZE / sizeof(DstT);
     uint32_t alignInner = (params.n + oneBlockNum - 1) / oneBlockNum * oneBlockNum;
     uint32_t alignedNum = params.m * alignInner;
-    ASCENDC_ASSERT((alignedNum <= dstTensor.GetSize()), {KERNEL_LOG(KERNEL_ERROR,
-        "dstTensor element num should be not less than %u", alignedNum); });
+    ASCENDC_ASSERT((alignedNum <= dstTensor.GetSize()), {
+        KERNEL_LOG(KERNEL_ERROR, "dstTensor element num should be not less than %u", alignedNum);
+    });
 
     return true;
 }
@@ -60,33 +66,33 @@ template <typename DstT, typename ScaleT, DequantizePolicy policy>
 __aicore__ inline constexpr bool IsDataTypeValid()
 {
     if constexpr (policy == DequantizePolicy::PER_CHANNEL) {
-        constexpr bool isValid1 = (IsSameType<ScaleT, uint64_t>::value)   && (IsSameType<DstT, half>::value);
-        constexpr bool isValid2 = (IsSameType<ScaleT, float>::value)      && (IsSameType<DstT, float>::value);
-        constexpr bool isValid3 = (IsSameType<ScaleT, bfloat16_t>::value)   && (IsSameType<DstT, float>::value);
-        constexpr bool isValid4 = (IsSameType<ScaleT, bfloat16_t>::value)      && (IsSameType<DstT, bfloat16_t>::value);
-        constexpr bool isValid5 = (IsSameType<ScaleT, float>::value)   && (IsSameType<DstT, bfloat16_t>::value);
+        constexpr bool isValid1 = (IsSameType<ScaleT, uint64_t>::value) && (IsSameType<DstT, half>::value);
+        constexpr bool isValid2 = (IsSameType<ScaleT, float>::value) && (IsSameType<DstT, float>::value);
+        constexpr bool isValid3 = (IsSameType<ScaleT, bfloat16_t>::value) && (IsSameType<DstT, float>::value);
+        constexpr bool isValid4 = (IsSameType<ScaleT, bfloat16_t>::value) && (IsSameType<DstT, bfloat16_t>::value);
+        constexpr bool isValid5 = (IsSameType<ScaleT, float>::value) && (IsSameType<DstT, bfloat16_t>::value);
         return isValid1 || isValid2 || isValid3 || isValid4 || isValid5;
     } else if constexpr (policy == DequantizePolicy::PER_TENSOR) {
-        constexpr bool isValid1 = (IsSameType<ScaleT, bfloat16_t>::value)   && (IsSameType<DstT, bfloat16_t>::value);
-        constexpr bool isValid2 = (IsSameType<ScaleT, bfloat16_t>::value)      && (IsSameType<DstT, float>::value);
-        constexpr bool isValid3 = (IsSameType<ScaleT, float>::value)      && (IsSameType<DstT, float>::value);
-        constexpr bool isValid4 = (IsSameType<ScaleT, float>::value)      && (IsSameType<DstT, bfloat16_t>::value);
+        constexpr bool isValid1 = (IsSameType<ScaleT, bfloat16_t>::value) && (IsSameType<DstT, bfloat16_t>::value);
+        constexpr bool isValid2 = (IsSameType<ScaleT, bfloat16_t>::value) && (IsSameType<DstT, float>::value);
+        constexpr bool isValid3 = (IsSameType<ScaleT, float>::value) && (IsSameType<DstT, float>::value);
+        constexpr bool isValid4 = (IsSameType<ScaleT, float>::value) && (IsSameType<DstT, bfloat16_t>::value);
         return isValid1 || isValid2 || isValid3 || isValid4;
     } else if constexpr (policy == DequantizePolicy::PER_TOKEN || policy == DequantizePolicy::PER_GROUP) {
-        constexpr bool isValid1 = (IsSameType<ScaleT, half>::value)  && (IsSameType<DstT, half>::value);
-        constexpr bool isValid2 = (IsSameType<ScaleT, bfloat16_t>::value)  && (IsSameType<DstT, bfloat16_t>::value);
-        constexpr bool isValid3 = (IsSameType<ScaleT, float>::value)       && (IsSameType<DstT, float>::value);
-        constexpr bool isValid4 = (IsSameType<ScaleT, float>::value)       && (IsSameType<DstT, half>::value);
-        constexpr bool isValid5 = (IsSameType<ScaleT, float>::value)       && (IsSameType<DstT, bfloat16_t>::value);
+        constexpr bool isValid1 = (IsSameType<ScaleT, half>::value) && (IsSameType<DstT, half>::value);
+        constexpr bool isValid2 = (IsSameType<ScaleT, bfloat16_t>::value) && (IsSameType<DstT, bfloat16_t>::value);
+        constexpr bool isValid3 = (IsSameType<ScaleT, float>::value) && (IsSameType<DstT, float>::value);
+        constexpr bool isValid4 = (IsSameType<ScaleT, float>::value) && (IsSameType<DstT, half>::value);
+        constexpr bool isValid5 = (IsSameType<ScaleT, float>::value) && (IsSameType<DstT, bfloat16_t>::value);
         return isValid1 || isValid2 || isValid3 || isValid4 || isValid5;
     }
     return false;
 }
 
 template <const DequantizeConfig& config, typename DstT, typename SrcT, typename ScaleT, typename OffsetT>
-__aicore__ inline void DequantizePerTensorImpl(const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor,
-    const ScaleT& scale, const OffsetT& offset, const LocalTensor<uint8_t>& sharedTmpBuffer,
-    const DequantizeParams& params)
+__aicore__ inline void DequantizePerTensorImpl(
+    const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor, const ScaleT& scale, const OffsetT& offset,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const DequantizeParams& params)
 {
     if ASCEND_IS_AIC {
         return;
@@ -94,10 +100,12 @@ __aicore__ inline void DequantizePerTensorImpl(const LocalTensor<DstT>& dstTenso
     static_assert(!config.hasOffset, "Dequantize do not support offset currently");
     static_assert(TypeUtils::IsInnerDefaultType<ScaleT, OffsetT>());
     static_assert(IsSameType<SrcT, int32_t>::value, "Dtype of srcTensor should be int32_t for PER_TENSOR");
-    static_assert(IsDataTypeValid<DstT, ScaleT, config.policy>(),
+    static_assert(
+        IsDataTypeValid<DstT, ScaleT, config.policy>(),
         "current combination of scale dtype and dstTensor dtype is not supported, please check the document");
-    ASCENDC_ASSERT((params.n * sizeof(SrcT) % 32 == 0) && (params.n * sizeof(DstT) % 32 == 0), {KERNEL_LOG(KERNEL_ERROR,
-        "params.n %u must be 32B aligned", params.n);});
+    ASCENDC_ASSERT((params.n * sizeof(SrcT) % 32 == 0) && (params.n * sizeof(DstT) % 32 == 0), {
+        KERNEL_LOG(KERNEL_ERROR, "params.n %u must be 32B aligned", params.n);
+    });
     DequantParams deqParams{params.m, params.n, params.n};
     if (!IsDequantizeParamsValid<DstT>(srcTensor, dstTensor, deqParams)) {
         return;
@@ -106,28 +114,31 @@ __aicore__ inline void DequantizePerTensorImpl(const LocalTensor<DstT>& dstTenso
 }
 
 template <const DequantizeConfig& config, typename DstT, typename SrcT, typename ScaleT, typename OffsetT>
-__aicore__ inline void DequantizePerChannelImpl(const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor,
-    const ScaleT& scale, const OffsetT& offset, const LocalTensor<uint8_t>& sharedTmpBuffer,
-    const DequantizeParams& params)
+__aicore__ inline void DequantizePerChannelImpl(
+    const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor, const ScaleT& scale, const OffsetT& offset,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const DequantizeParams& params)
 {
     static_assert(TypeUtils::IsLocalTensorType<ScaleT, OffsetT>());
     static_assert(IsSameType<SrcT, int32_t>::value, "Dtype of srcTensor should be int32_t for PER_CHANNEL");
     static_assert(!config.hasOffset, "Dequantize do not support offset currently");
-    static_assert(IsDataTypeValid<DstT, typename ScaleT::PrimType, config.policy>(),
+    static_assert(
+        IsDataTypeValid<DstT, typename ScaleT::PrimType, config.policy>(),
         "current combination of scale dtype and dstTensor dtype is not supported, please check the document");
-    ASCENDC_ASSERT((params.n * sizeof(SrcT) % 32 == 0) && (params.n * sizeof(DstT) % 32 == 0), {KERNEL_LOG(KERNEL_ERROR,
-        "params.n %u must be 32B aligned", params.n);});
+    ASCENDC_ASSERT((params.n * sizeof(SrcT) % 32 == 0) && (params.n * sizeof(DstT) % 32 == 0), {
+        KERNEL_LOG(KERNEL_ERROR, "params.n %u must be 32B aligned", params.n);
+    });
     DequantParams deqParams{params.m, params.n, params.n};
     if (!IsDequantizeParamsValid<DstT>(srcTensor, dstTensor, deqParams)) {
         return;
     }
-    DequantPerchannelImpl<DstT, typename ScaleT::PrimType, DeQuantMode::DEQUANT_WITH_MULTI_ROW>(dstTensor, srcTensor, scale, deqParams);
+    DequantPerchannelImpl<DstT, typename ScaleT::PrimType, DeQuantMode::DEQUANT_WITH_MULTI_ROW>(
+        dstTensor, srcTensor, scale, deqParams);
 }
 
 template <const DequantizeConfig& config, typename DstT, typename SrcT, typename ScaleT, typename OffsetT>
-__aicore__ inline void DequantizePerTokenImpl(const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor,
-    const ScaleT& scale, const OffsetT& offset, const LocalTensor<uint8_t>& sharedTmpBuffer,
-    const DequantizeParams& params)
+__aicore__ inline void DequantizePerTokenImpl(
+    const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor, const ScaleT& scale, const OffsetT& offset,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const DequantizeParams& params)
 {
     if ASCEND_IS_AIC {
         return;
@@ -135,10 +146,12 @@ __aicore__ inline void DequantizePerTokenImpl(const LocalTensor<DstT>& dstTensor
     static_assert(!config.hasOffset, "Dequantize do not support offset currently");
     static_assert(TypeUtils::IsLocalTensorType<ScaleT, OffsetT>());
     static_assert(SupportType<SrcT, int32_t, float>(), "Dtype of srcTensor should be int32_t or float for PER_TOKEN");
-    static_assert(IsDataTypeValid<DstT, typename ScaleT::PrimType, config.policy>(),
+    static_assert(
+        IsDataTypeValid<DstT, typename ScaleT::PrimType, config.policy>(),
         "current combination of scale dtype and dstTensor dtype is not supported, please check the document");
-    ASCENDC_ASSERT((params.n * sizeof(SrcT) % 32 == 0) && (params.n * sizeof(DstT) % 32 == 0), {KERNEL_LOG(KERNEL_ERROR,
-        "params.n %u must be 32B aligned", params.n);});
+    ASCENDC_ASSERT((params.n * sizeof(SrcT) % 32 == 0) && (params.n * sizeof(DstT) % 32 == 0), {
+        KERNEL_LOG(KERNEL_ERROR, "params.n %u must be 32B aligned", params.n);
+    });
 
     static constexpr AscendDeQuantConfig deqConfig = {false, config.kDim};
     AscendDeQuantParam deqParams = {params.m, params.n, params.m * params.n, params.groupSize};
@@ -147,9 +160,9 @@ __aicore__ inline void DequantizePerTokenImpl(const LocalTensor<DstT>& dstTensor
 }
 
 template <const DequantizeConfig& config, typename DstT, typename SrcT, typename ScaleT, typename OffsetT>
-__aicore__ inline void DequantizePerGroupImpl(const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor,
-    const ScaleT& scale, const OffsetT& offset, const LocalTensor<uint8_t>& sharedTmpBuffer,
-    const DequantizeParams& params)
+__aicore__ inline void DequantizePerGroupImpl(
+    const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor, const ScaleT& scale, const OffsetT& offset,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const DequantizeParams& params)
 {
     if ASCEND_IS_AIC {
         return;
@@ -157,14 +170,16 @@ __aicore__ inline void DequantizePerGroupImpl(const LocalTensor<DstT>& dstTensor
     static_assert(!config.hasOffset, "Dequantize do not support offset currently");
     static_assert(TypeUtils::IsLocalTensorType<ScaleT, OffsetT>());
     static_assert(SupportType<SrcT, int32_t, float>(), "Dtype of srcTensor should be int32_t or float for PER_GROUP");
-    static_assert(IsDataTypeValid<DstT, typename ScaleT::PrimType, config.policy>(),
-        "current combination of scale dtype and dstTensor dtype is not supported, please check the document");
     static_assert(
-        ((config.kDim == 1) || (config.kDim == 0)), "Dequantize PER_GROUP only support kDim is axis 0/1!");
-    ASCENDC_ASSERT((params.groupSize > 0 && params.groupSize % 32 == 0),
-        { KERNEL_LOG(KERNEL_ERROR, "groupSize must be an integer multiple of 32 and greater than 0 !"); });
-    ASCENDC_ASSERT((params.n * sizeof(SrcT) % 32 == 0) && (params.n * sizeof(DstT) % 32 == 0), {KERNEL_LOG(KERNEL_ERROR,
-        "params.n %u must be 32B aligned", params.n);});
+        IsDataTypeValid<DstT, typename ScaleT::PrimType, config.policy>(),
+        "current combination of scale dtype and dstTensor dtype is not supported, please check the document");
+    static_assert(((config.kDim == 1) || (config.kDim == 0)), "Dequantize PER_GROUP only support kDim is axis 0/1!");
+    ASCENDC_ASSERT((params.groupSize > 0 && params.groupSize % 32 == 0), {
+        KERNEL_LOG(KERNEL_ERROR, "groupSize must be an integer multiple of 32 and greater than 0 !");
+    });
+    ASCENDC_ASSERT((params.n * sizeof(SrcT) % 32 == 0) && (params.n * sizeof(DstT) % 32 == 0), {
+        KERNEL_LOG(KERNEL_ERROR, "params.n %u must be 32B aligned", params.n);
+    });
     static constexpr AscendDeQuantConfig deqConfig = {false, config.kDim};
     AscendDeQuantParam deqParams = {params.m, params.n, params.m * params.n, params.groupSize};
 
@@ -178,8 +193,9 @@ __aicore__ inline void DequantizePerGroupImpl(const LocalTensor<DstT>& dstTensor
 }
 
 template <const DequantizeConfig& config, typename DstT, typename SrcT, typename ScaleT, typename OffsetT>
-__aicore__ inline void DequantizePerTensorImpl(const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor,
-    const ScaleT& scale, const OffsetT& offset, const DequantizeParams& params)
+__aicore__ inline void DequantizePerTensorImpl(
+    const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor, const ScaleT& scale, const OffsetT& offset,
+    const DequantizeParams& params)
 {
     LocalTensor<uint8_t> stackTensor;
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(stackTensor);
@@ -188,8 +204,9 @@ __aicore__ inline void DequantizePerTensorImpl(const LocalTensor<DstT>& dstTenso
 }
 
 template <const DequantizeConfig& config, typename DstT, typename SrcT, typename ScaleT, typename OffsetT>
-__aicore__ inline void DequantizePerChannelImpl(const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor,
-    const ScaleT& scale, const OffsetT& offset, const DequantizeParams& params)
+__aicore__ inline void DequantizePerChannelImpl(
+    const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor, const ScaleT& scale, const OffsetT& offset,
+    const DequantizeParams& params)
 {
     LocalTensor<uint8_t> stackTensor;
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(stackTensor);
@@ -198,8 +215,9 @@ __aicore__ inline void DequantizePerChannelImpl(const LocalTensor<DstT>& dstTens
 }
 
 template <const DequantizeConfig& config, typename DstT, typename SrcT, typename ScaleT, typename OffsetT>
-__aicore__ inline void DequantizePerTokenImpl(const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor,
-    const ScaleT& scale, const OffsetT& offset, const DequantizeParams& params)
+__aicore__ inline void DequantizePerTokenImpl(
+    const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor, const ScaleT& scale, const OffsetT& offset,
+    const DequantizeParams& params)
 {
     LocalTensor<uint8_t> stackTensor;
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(stackTensor);
@@ -208,8 +226,9 @@ __aicore__ inline void DequantizePerTokenImpl(const LocalTensor<DstT>& dstTensor
 }
 
 template <const DequantizeConfig& config, typename DstT, typename SrcT, typename ScaleT, typename OffsetT>
-__aicore__ inline void DequantizePerGroupImpl(const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor,
-    const ScaleT& scale, const OffsetT& offset, const DequantizeParams& params)
+__aicore__ inline void DequantizePerGroupImpl(
+    const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor, const ScaleT& scale, const OffsetT& offset,
+    const DequantizeParams& params)
 {
     LocalTensor<uint8_t> stackTensor;
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(stackTensor);
@@ -230,9 +249,9 @@ __aicore__ inline void CheckDequantizeTensorPos(
 }
 
 template <const DequantizeConfig& config, typename DstT, typename SrcT, typename ScaleT, typename OffsetT>
-__aicore__ inline void DequantizeImpl(const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor,
-    const ScaleT& scale, const OffsetT& offset, const LocalTensor<uint8_t>& sharedTmpBuffer,
-    const DequantizeParams& params)
+__aicore__ inline void DequantizeImpl(
+    const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor, const ScaleT& scale, const OffsetT& offset,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const DequantizeParams& params)
 {
     CheckDequantizeTensorPos(dstTensor, srcTensor, scale, offset);
     CheckTensorPosition(sharedTmpBuffer, "sharedTmpBuffer", "VECIN, VECOUT, VECCALC");
@@ -245,13 +264,14 @@ __aicore__ inline void DequantizeImpl(const LocalTensor<DstT>& dstTensor, const 
     } else if constexpr (config.policy == DequantizePolicy::PER_GROUP) {
         DequantizePerGroupImpl<config>(dstTensor, srcTensor, scale, offset, sharedTmpBuffer, params);
     } else {
-        ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "Unsupported Dequantize policy on current device");});
-    } 
+        ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "Unsupported Dequantize policy on current device"); });
+    }
 }
 
 template <const DequantizeConfig& config, typename DstT, typename SrcT, typename ScaleT, typename OffsetT>
-__aicore__ inline void DequantizeImpl(const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor,
-    const ScaleT& scale, const OffsetT& offset, const DequantizeParams& params)
+__aicore__ inline void DequantizeImpl(
+    const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor, const ScaleT& scale, const OffsetT& offset,
+    const DequantizeParams& params)
 {
     CheckDequantizeTensorPos(dstTensor, srcTensor, scale, offset);
     if constexpr (config.policy == DequantizePolicy::PER_TENSOR) {
@@ -263,8 +283,8 @@ __aicore__ inline void DequantizeImpl(const LocalTensor<DstT>& dstTensor, const 
     } else if constexpr (config.policy == DequantizePolicy::PER_GROUP) {
         DequantizePerGroupImpl<config>(dstTensor, srcTensor, scale, offset, params);
     } else {
-        ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "Unsupported Dequantize policy on current device");});
-    } 
+        ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "Unsupported Dequantize policy on current device"); });
+    }
 }
 #endif
 } // namespace AscendC

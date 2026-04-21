@@ -1,15 +1,16 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/reduce/reduce_common_ra_reuse_align_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/reduce/reduce_common_ra_reuse_align_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_COMMON_RA_REUSE_ALIGN_C310_IMPL_H__
 #endif
@@ -23,10 +24,11 @@
 #include "reduce_common_util_3510_impl.h"
 
 namespace AscendC {
-template <class T, const Reg::RegTrait &Trait, auto Binaryfunc, bool isReuseSource>
-__simd_vf__ inline void ReduceRAOverVLVFImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, __ubuf__ T *tmpAddr, uint16_t dimA,
-    uint32_t dimR, uint32_t mainR, uint32_t tailR, uint16_t loopANum, uint16_t loopANumFinal, uint16_t folds,
-    uint16_t avgFolds, uint16_t foldZero, uint16_t foldOne, uint16_t foldTwo, uint16_t foldThree)
+template <class T, const Reg::RegTrait& Trait, auto Binaryfunc, bool isReuseSource>
+__simd_vf__ inline void ReduceRAOverVLVFImpl(
+    __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, __ubuf__ T* tmpAddr, uint16_t dimA, uint32_t dimR, uint32_t mainR,
+    uint32_t tailR, uint16_t loopANum, uint16_t loopANumFinal, uint16_t folds, uint16_t avgFolds, uint16_t foldZero,
+    uint16_t foldOne, uint16_t foldTwo, uint16_t foldThree)
 {
     constexpr uint16_t vlSize = GetVecLen() / sizeof(T);
     uint16_t needInplaceAdd = tailR > 0 ? 1 : 0;
@@ -39,8 +41,8 @@ __simd_vf__ inline void ReduceRAOverVLVFImpl(__ubuf__ T *dstAddr, __ubuf__ T *sr
     uint32_t copyA = dimA;
     uint32_t dtypeSize = sizeof(T);
     uint32_t aTailOffset = mainR * dimA;
-    
-    __ubuf__ T *addr;
+
+    __ubuf__ T* addr;
     if constexpr (!isReuseSource) {
         Reg::RegTensor<T, Trait> vregTmp;
         Reg::MaskReg mask;
@@ -218,9 +220,9 @@ __simd_vf__ inline void ReduceRAOverVLVFImpl(__ubuf__ T *dstAddr, __ubuf__ T *sr
     }
 }
 
-template <class T, const Reg::RegTrait &Trait, auto Binaryfunc, bool isReuseSource>
-__aicore__ inline void ReduceRAOverVLImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, __ubuf__ T *tmpAddr, uint16_t dimA,
-    uint32_t dimR)
+template <class T, const Reg::RegTrait& Trait, auto Binaryfunc, bool isReuseSource>
+__aicore__ inline void ReduceRAOverVLImpl(
+    __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, __ubuf__ T* tmpAddr, uint16_t dimA, uint32_t dimR)
 {
     constexpr uint16_t vlSize = GetVecLen() / sizeof(T);
     uint32_t mainR = ReduceOpInternal::CalculateMainR(dimR, false, vlSize);
@@ -249,13 +251,14 @@ __aicore__ inline void ReduceRAOverVLImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAd
     uint16_t foldTwo = (tailFolds == ReduceOpInternal::FOLD_TWO) ? 1 : 0;
     uint16_t foldThree = (tailFolds == ReduceOpInternal::FOLD_THREE) ? 1 : 0;
 
-    ReduceRAOverVLVFImpl<T, Trait, Binaryfunc, isReuseSource>(dstAddr, srcAddr, tmpAddr, dimA, dimR,
-        mainR, tailR, loopANum, loopANumFinal, folds, avgFolds, foldZero, foldOne, foldTwo, foldThree);
+    ReduceRAOverVLVFImpl<T, Trait, Binaryfunc, isReuseSource>(
+        dstAddr, srcAddr, tmpAddr, dimA, dimR, mainR, tailR, loopANum, loopANumFinal, folds, avgFolds, foldZero,
+        foldOne, foldTwo, foldThree);
 }
 
-template <class T, const Reg::RegTrait &Trait, auto Binaryfunc, bool isReuseSource>
-__simd_vf__ inline void ReduceRALessThanVLDimR1VFImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, __ubuf__ T *tmpAddr,
-    uint32_t dimA, uint32_t dimR)
+template <class T, const Reg::RegTrait& Trait, auto Binaryfunc, bool isReuseSource>
+__simd_vf__ inline void ReduceRALessThanVLDimR1VFImpl(
+    __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, __ubuf__ T* tmpAddr, uint32_t dimA, uint32_t dimR)
 {
     Reg::RegTensor<T, Trait> vregTmp;
     Reg::MaskReg mask = Reg::UpdateMask<T, Trait>(dimA);
@@ -263,15 +266,16 @@ __simd_vf__ inline void ReduceRALessThanVLDimR1VFImpl(__ubuf__ T *dstAddr, __ubu
     Reg::StoreAlign(dstAddr, vregTmp, mask);
 }
 
-template <class T, const Reg::RegTrait &Trait, auto Binaryfunc, bool isReuseSource>
-__simd_vf__ inline void ReduceRALessThanVLVFImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, __ubuf__ T *tmpAddr, uint32_t dimA,
-    uint32_t dimR, uint32_t mainR, uint32_t tailR, uint16_t folds, uint16_t avgFolds, uint16_t foldZero, uint16_t foldOne,
-    uint16_t foldTwo, uint16_t foldThree)
+template <class T, const Reg::RegTrait& Trait, auto Binaryfunc, bool isReuseSource>
+__simd_vf__ inline void ReduceRALessThanVLVFImpl(
+    __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, __ubuf__ T* tmpAddr, uint32_t dimA, uint32_t dimR, uint32_t mainR,
+    uint32_t tailR, uint16_t folds, uint16_t avgFolds, uint16_t foldZero, uint16_t foldOne, uint16_t foldTwo,
+    uint16_t foldThree)
 {
     constexpr uint16_t vlSize = GetVecLen() / sizeof(T);
     uint16_t needInplaceAdd = tailR > 0 ? 1 : 0;
     uint16_t mainTimes = folds / avgFolds;
-        // Process vlSize axisA each time
+    // Process vlSize axisA each time
     uint32_t processA = dimA;
     uint32_t dtypeSize = sizeof(T);
     uint32_t aTailOffset = mainR * dimA;
@@ -279,7 +283,7 @@ __simd_vf__ inline void ReduceRALessThanVLVFImpl(__ubuf__ T *dstAddr, __ubuf__ T
     uint32_t tailNum = tailR * dimA;
     uint16_t loopRNum = mainR;
 
-    __ubuf__ T *addr;
+    __ubuf__ T* addr;
     Reg::MaskReg mask;
     mask = Reg::UpdateMask<T, Trait>(processA);
     Reg::MaskReg counterMask;
@@ -431,9 +435,9 @@ __simd_vf__ inline void ReduceRALessThanVLVFImpl(__ubuf__ T *dstAddr, __ubuf__ T
     }
 }
 
-template <class T, const Reg::RegTrait &Trait, auto Binaryfunc, bool isReuseSource>
-__aicore__ inline void ReduceRALessThanVLImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, __ubuf__ T *tmpAddr,
-    uint32_t dimA, uint32_t dimR)
+template <class T, const Reg::RegTrait& Trait, auto Binaryfunc, bool isReuseSource>
+__aicore__ inline void ReduceRALessThanVLImpl(
+    __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, __ubuf__ T* tmpAddr, uint32_t dimA, uint32_t dimR)
 {
     constexpr uint16_t vlSize = GetVecLen() / sizeof(T);
     uint32_t mainR = ReduceOpInternal::CalculateMainR(dimR, false, vlSize);
@@ -457,13 +461,13 @@ __aicore__ inline void ReduceRALessThanVLImpl(__ubuf__ T *dstAddr, __ubuf__ T *s
     uint16_t foldTwo = (tailFolds == ReduceOpInternal::FOLD_TWO) ? 1 : 0;
     uint16_t foldThree = (tailFolds == ReduceOpInternal::FOLD_THREE) ? 1 : 0;
 
-    ReduceRALessThanVLVFImpl<T, Trait, Binaryfunc, isReuseSource>(dstAddr, srcAddr, tmpAddr, dimA,
-        dimR, mainR, tailR, folds, avgFolds, foldZero, foldOne, foldTwo, foldThree);
+    ReduceRALessThanVLVFImpl<T, Trait, Binaryfunc, isReuseSource>(
+        dstAddr, srcAddr, tmpAddr, dimA, dimR, mainR, tailR, folds, avgFolds, foldZero, foldOne, foldTwo, foldThree);
 }
 
-template <class T, const Reg::RegTrait &Trait, auto Binaryfunc, bool isReuseSource>
-__simd_vf__ inline void ReduceRAConcatDimR1VFImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, __ubuf__ T *tmpAddr,
-    uint32_t dimA, uint32_t dimR)
+template <class T, const Reg::RegTrait& Trait, auto Binaryfunc, bool isReuseSource>
+__simd_vf__ inline void ReduceRAConcatDimR1VFImpl(
+    __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, __ubuf__ T* tmpAddr, uint32_t dimA, uint32_t dimR)
 {
     Reg::RegTensor<T, Trait> vregTmp;
     Reg::MaskReg mask = Reg::UpdateMask<T, Trait>(dimA);
@@ -471,9 +475,9 @@ __simd_vf__ inline void ReduceRAConcatDimR1VFImpl(__ubuf__ T *dstAddr, __ubuf__ 
     Reg::StoreAlign(dstAddr, vregTmp, mask);
 }
 
-template <class T, const Reg::RegTrait &Trait, auto Binaryfunc, bool isReuseSource>
-__simd_vf__ inline void ReduceRAConcatDimR2VFImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, __ubuf__ T *tmpAddr,
-    uint32_t dimA, uint32_t dimR)
+template <class T, const Reg::RegTrait& Trait, auto Binaryfunc, bool isReuseSource>
+__simd_vf__ inline void ReduceRAConcatDimR2VFImpl(
+    __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, __ubuf__ T* tmpAddr, uint32_t dimA, uint32_t dimR)
 {
     Reg::RegTensor<T, Trait> vregMain;
     Reg::RegTensor<T, Trait> vregTail;
@@ -485,9 +489,10 @@ __simd_vf__ inline void ReduceRAConcatDimR2VFImpl(__ubuf__ T *dstAddr, __ubuf__ 
     Reg::StoreAlign(dstAddr, vregMain, counterMask);
 }
 
-template <class T, const Reg::RegTrait &Trait, auto Binaryfunc, bool isReuseSource>
-__simd_vf__ inline void ReduceRAConcatVFImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, __ubuf__ T *tmpAddr, uint32_t dimA,
-    uint32_t dimR, uint16_t foldTime, uint32_t mainR, uint32_t tailR)
+template <class T, const Reg::RegTrait& Trait, auto Binaryfunc, bool isReuseSource>
+__simd_vf__ inline void ReduceRAConcatVFImpl(
+    __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, __ubuf__ T* tmpAddr, uint32_t dimA, uint32_t dimR, uint16_t foldTime,
+    uint32_t mainR, uint32_t tailR)
 {
     constexpr uint16_t vlSize = GetVecLen() / sizeof(T);
     uint16_t needInplaceAdd = tailR > 0 ? 1 : 0;
@@ -499,8 +504,8 @@ __simd_vf__ inline void ReduceRAConcatVFImpl(__ubuf__ T *dstAddr, __ubuf__ T *sr
     uint32_t copyNum = (mainR - tailR) * dimA;
     uint32_t tailNum = tailR * dimA;
     uint16_t loopDataNum = mainR * dimA;
-    
-    __ubuf__ T *addr;
+
+    __ubuf__ T* addr;
     Reg::MaskReg fullMask;
     fullMask = Reg::CreateMask<T, Reg::MaskPattern::ALL, Trait>();
     Reg::MaskReg counterMask;
@@ -556,9 +561,9 @@ __simd_vf__ inline void ReduceRAConcatVFImpl(__ubuf__ T *dstAddr, __ubuf__ T *sr
     Reg::StoreAlign(dstAddr, vregMain, counterMask);
 }
 
-template <class T, const Reg::RegTrait &Trait, auto Binaryfunc, bool isReuseSource>
-__aicore__ inline void ReduceRAConcatImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, __ubuf__ T *tmpAddr,
-    uint32_t dimA, uint32_t dimR)
+template <class T, const Reg::RegTrait& Trait, auto Binaryfunc, bool isReuseSource>
+__aicore__ inline void ReduceRAConcatImpl(
+    __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, __ubuf__ T* tmpAddr, uint32_t dimA, uint32_t dimR)
 {
     constexpr uint16_t vlSize = GetVecLen() / sizeof(T);
     uint16_t foldTime = Internal::FindClosestPowerOfTwo(dimR);
@@ -582,13 +587,13 @@ __aicore__ inline void ReduceRAConcatImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAd
         return;
     }
 
-    ReduceRAConcatVFImpl<T, Trait, Binaryfunc, isReuseSource>(dstAddr, srcAddr, tmpAddr,
-        dimA, dimR, foldTime, mainR, tailR);
+    ReduceRAConcatVFImpl<T, Trait, Binaryfunc, isReuseSource>(
+        dstAddr, srcAddr, tmpAddr, dimA, dimR, foldTime, mainR, tailR);
 }
 
-template <class T, const Reg::RegTrait &Trait, auto Binaryfunc, bool isReuseSource>
-__aicore__ inline void ReduceRAImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, __ubuf__ T *tmpAddr, uint32_t dimA,
-    uint32_t dimR)
+template <class T, const Reg::RegTrait& Trait, auto Binaryfunc, bool isReuseSource>
+__aicore__ inline void ReduceRAImpl(
+    __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, __ubuf__ T* tmpAddr, uint32_t dimA, uint32_t dimR)
 {
     constexpr uint16_t vlSize = GetVecLen() / sizeof(T);
     if (dimA <= vlSize / ReduceOpInternal::REGULAR_FOLD_NUM || dimA > ReduceOpInternal::U16_STRIDE) {
@@ -596,14 +601,16 @@ __aicore__ inline void ReduceRAImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, __
     } else if (dimA <= vlSize) {
         ReduceRALessThanVLImpl<T, Trait, Binaryfunc, isReuseSource>(dstAddr, srcAddr, tmpAddr, dimA, dimR);
     } else {
-        ReduceRAOverVLImpl<T, Trait, Binaryfunc, isReuseSource>(dstAddr, srcAddr, tmpAddr, static_cast<uint16_t>(dimA), dimR);
+        ReduceRAOverVLImpl<T, Trait, Binaryfunc, isReuseSource>(
+            dstAddr, srcAddr, tmpAddr, static_cast<uint16_t>(dimA), dimR);
     }
 }
 
-template <class T, const Reg::RegTrait &Trait, auto Binaryfunc, bool isReuseSource>
-__simd_vf__ inline void ReduceRAB64ReuseSourceVF(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, __ubuf__ T *tmpAddr, uint32_t dimA,
-    uint32_t dimR, uint32_t mainR, uint32_t tailR, uint16_t loopANum, uint16_t loopANumFinal, uint16_t folds, uint16_t avgFolds,
-    uint16_t foldZero, uint16_t foldOne, uint16_t foldTwo)
+template <class T, const Reg::RegTrait& Trait, auto Binaryfunc, bool isReuseSource>
+__simd_vf__ inline void ReduceRAB64ReuseSourceVF(
+    __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, __ubuf__ T* tmpAddr, uint32_t dimA, uint32_t dimR, uint32_t mainR,
+    uint32_t tailR, uint16_t loopANum, uint16_t loopANumFinal, uint16_t folds, uint16_t avgFolds, uint16_t foldZero,
+    uint16_t foldOne, uint16_t foldTwo)
 {
     constexpr uint16_t vlSize = GetVecLen() / sizeof(float);
     uint16_t needInplaceAdd = tailR > 0 ? 1 : 0;
@@ -614,8 +621,8 @@ __simd_vf__ inline void ReduceRAB64ReuseSourceVF(__ubuf__ T *dstAddr, __ubuf__ T
     uint32_t tailA = dimA;
     uint32_t copyA = dimA;
     uint32_t aTailOffset = mainR * dimA;
-    
-    __ubuf__ T *addr;
+
+    __ubuf__ T* addr;
     if constexpr (!isReuseSource) {
         Reg::RegTensor<T, Trait> vregTmp;
         Reg::MaskReg mask;
@@ -731,9 +738,9 @@ __simd_vf__ inline void ReduceRAB64ReuseSourceVF(__ubuf__ T *dstAddr, __ubuf__ T
     }
 }
 
-template <class T, const Reg::RegTrait &Trait, auto Binaryfunc, bool isReuseSource>
-__aicore__ inline void ReduceRAB64ReuseSource(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, __ubuf__ T *tmpAddr,
-    uint32_t dimA, uint32_t dimR)
+template <class T, const Reg::RegTrait& Trait, auto Binaryfunc, bool isReuseSource>
+__aicore__ inline void ReduceRAB64ReuseSource(
+    __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, __ubuf__ T* tmpAddr, uint32_t dimA, uint32_t dimR)
 {
     constexpr uint16_t vlSize = GetVecLen() / sizeof(float);
     uint32_t mainR = ReduceOpInternal::CalculateMainR(dimR, false, vlSize);
@@ -746,7 +753,7 @@ __aicore__ inline void ReduceRAB64ReuseSource(__ubuf__ T *dstAddr, __ubuf__ T *s
         ReduceOpInternal::ReduceCopyOutImpl<T>(dstAddr, srcAddr, dimA);
         return;
     }
-    
+
     if constexpr (!isReuseSource) {
         if (tailR == 0 && mainR > 1) {
             mainR = mainR / 2;
@@ -762,8 +769,9 @@ __aicore__ inline void ReduceRAB64ReuseSource(__ubuf__ T *dstAddr, __ubuf__ T *s
     uint16_t foldOne = (tailFolds == ReduceOpInternal::FOLD_ONE) ? 1 : 0;
     uint16_t foldTwo = (tailFolds == ReduceOpInternal::FOLD_TWO) ? 1 : 0;
 
-    ReduceRAB64ReuseSourceVF<T, Trait, Binaryfunc, isReuseSource>(dstAddr, srcAddr, tmpAddr, dimA,
-        dimR, mainR, tailR, loopANum, loopANumFinal, folds, avgFolds, foldZero, foldOne, foldTwo);
+    ReduceRAB64ReuseSourceVF<T, Trait, Binaryfunc, isReuseSource>(
+        dstAddr, srcAddr, tmpAddr, dimA, dimR, mainR, tailR, loopANum, loopANumFinal, folds, avgFolds, foldZero,
+        foldOne, foldTwo);
 }
 } // namespace AscendC
 #endif // IMPL_REDUCE_REDUCE_COMMON_RA_REUSE_ALIGN_C310_IMPL_H

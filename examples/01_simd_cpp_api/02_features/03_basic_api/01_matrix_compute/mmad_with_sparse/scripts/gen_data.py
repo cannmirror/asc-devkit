@@ -16,75 +16,140 @@ import numpy as np
 import os
 
 
-def fix_idx_mat(idx_mat):
-    for i in range(idx_mat.shape[1]):
-        for j in range(idx_mat.shape[0]):
-            if j % 2 == 0:
-                if (idx_mat[j][i] - idx_mat[j+1][i]) == 1:
-                    idx_mat[j][i] -= 1
-                elif (idx_mat[j][i] - idx_mat[j+1][i]) == 2:
-                    idx_mat[j][i] -= 2
+def densify_and_generate_index(B):
+    """稠密化稀疏矩阵B,并生成索引矩阵"""
+    N, K = B.shape
+    dense_B = np.zeros((N, K // 2), dtype=B.dtype)  # 稠密化后的矩阵
+    index_matrix = np.zeros((N, K // 2), dtype=np.uint8)  # 索引矩阵
+    index_mask_matrix = np.zeros((N, K // 2), dtype=np.uint32)  # index mask矩阵
+
+    for row in range(N):
+        dense_row = []
+        index_row = []
+        index_mask_row = []
+        
+        for i in range(0, K, 4):
+            block = B[row, i:i+4]
+            nonzero_positions = [j for j in range(4) if block[j] != 0]
+
+            # 记录第1和第2个非零元素的索引
+            if len(nonzero_positions) == 0:
+                index_1 = 0
+                index_2 = 0
+                index_mask_row.extend([i, i])
+            elif len(nonzero_positions) == 1:
+                index_1 = nonzero_positions[0] if nonzero_positions[0] < 3 else 0
+                index_2 = 0 if nonzero_positions[0] < 3 else 2
+                index_mask_row.extend([nonzero_positions[0] + i, i])
+            else:
+                index_1 = nonzero_positions[0]
+                index_2 = nonzero_positions[1] - 1
+                index_mask_row.extend([nonzero_positions[0] + i, nonzero_positions[1] + i])
+            
+            # 记录稠密化后的块
+            dense_block = [block[pos] for pos in nonzero_positions[:2]]
+            if len(dense_block) < 2:
+                dense_block += [0] * (2 - len(dense_block))
+            dense_row.extend(dense_block)
+            
+            # 记录索引
+            index_row.extend([index_1, index_2])
+        dense_B[row, :] = dense_row
+        index_matrix[row, :] = index_row
+        index_mask_matrix[row, :] = index_mask_row
+    
+    return dense_B, index_matrix, index_mask_matrix
 
 
-def denst_idx(idx_mat):
-    idx_mat_golden = np.zeros(\
-        shape=(idx_mat.shape[0], idx_mat.shape[1],\
-               idx_mat.shape[2], int(idx_mat.shape[3] / 4)), dtype=np.uint8)
-    for i in range(idx_mat.shape[0]):
-        for j in range(idx_mat.shape[1]):
-            for k in range(idx_mat.shape[2]):
-                for z in range(idx_mat.shape[3]):
-                    if z % 4 == 0:
-                        idx_mat_golden[i][j][k][z // 4] = idx_mat[i][j][k][z] | \
-                        (idx_mat[i][j][k][z + 1] << 2) | (idx_mat[i][j][k][z + 2] << 4) | \
-                        (idx_mat[i][j][k][z + 3] << 6)
-    return idx_mat_golden
+def construct_sparse_matrix_B(shape):
+    """生成一个指定形状的稀疏矩阵B, 每行的每4个元素块至少包含2个零"""
+    N, K = shape
+    B = np.zeros((N, K), dtype=np.int8)  # 初始化矩阵B为全零
+    
+    for row in range(N):
+        for i in range(0, K, 4):
+            block = np.zeros(4, dtype=np.int8)    
+            # 随机选择2个位置放置非零元素
+            non_zero_positions = np.random.choice(4, 2, replace=False)
+            block[non_zero_positions[0]] = np.random.randint(1, 10, dtype=np.int8)
+            block[non_zero_positions[1]] = np.random.randint(1, 10, dtype=np.int8)
+            # 放置到矩阵B的当前行
+            B[row, i:i+4] = block 
+    return B
 
 
-def dense_tensor(tensor_a, tensor_idx):
-    result = np.zeros(shape=(int(tensor_a.shape[0]/2)), dtype=np.uint8)
-    for i in range(result.shape[0]):
-        if i % 2 == 0:
-            mat_idx = i * 2
-            result[i] = tensor_a[mat_idx + tensor_idx[i]]
-        else:
-            result[i] = tensor_a[mat_idx + tensor_idx[i] + 1]
-    return result
+def gen_sparse_golden(A, dense_B, index_mask_matrix):
+    result_type = np.int32
+    M = A.shape[0]
+    N = dense_B.shape[0]
+    C = np.zeros((M, N), dtype=result_type)
+    # 遍历 b 和 index 的每一行
+    for r in range(N):
+        # 从 a 中根据 index 的第 r 行提取数据
+        selected_columns = index_mask_matrix[r]  # 第 r 行的索引
+        a_selected = A[:, selected_columns]  # 提取对应列
+        
+        # 当前 b 第 r 行与提取后的 a_selected 计算矩阵乘法
+        C[:, r] = np.dot(a_selected.astype(result_type), dense_B[r].astype(result_type)).astype(result_type)
+    return C
 
 
-def cal_sparse_matmul(mat_a, mat_b, mat_idx):
-    result = np.zeros(shape=(mat_a.shape[0], mat_b.shape[1]), dtype=np.int32)
-    for i in range(mat_idx.shape[1]):
-        for j in range(mat_a.shape[0]):
-            densed_a = dense_tensor(mat_a[j, :], mat_idx[:, i])
-            result[j][i] = np.sum(densed_a * mat_b[:, i]).astype(np.int32)
-    return result
+def gen_uint2_zn_idx(index_matrix):
+    # K1 = K // 2
+    N, K1 = index_matrix.shape
+    K2 = K1 // 4
+    index = np.zeros((N, K2), dtype=np.uint8)
+    for row in range(N):
+        index_bytes = []
+        index_row = index_matrix[row]
+        # 4个uint2 拼成一个unint8
+        for j in range(0, len(index_row), 4):
+            indices = index_row[j : j + 4]
+            uint8_value = sum((index << (2 * k)) for k, index in enumerate(indices))
+            index_bytes.append(uint8_value)
+        
+        index[row, :] = index_bytes
+
+    # nd->nz 等价 dn->zn
+    ceil_N = int(np.ceil(N / 16) * 16)
+    pad_N = int(ceil_N - N)
+    ceil_K = int(np.ceil(K2 / 8) * 8)
+    pad_K = int(ceil_K - K2)
+    index_matrix_nz = np.zeros((ceil_N, ceil_K), dtype=np.uint8)
+    index_matrix_nz[:N, :K2] = index
+
+    nz_shape = (ceil_N // 16, 16, ceil_K // 8, 8)
+    index_matrix_nz = index_matrix_nz.reshape(nz_shape)
+    index_matrix_nz = index_matrix_nz.transpose(2, 0, 1, 3)
+    return index_matrix_nz
 
 
 def gen_golden_data():
-    M = 16
-    N = 16
+    M = 128
+    N = 128
     K = 64
 
-    x1_gm = np.random.uniform(1, 10, [16, 64]).astype(np.int8)
-    x2_gm = np.random.uniform(1, 10, [32, 16]).astype(np.int8)
-    idx_gm = np.random.randint(0, 3, (32, 16)).astype(np.uint8)
-    fix_idx_mat(idx_gm)
-    golden = cal_sparse_matmul(x1_gm, x2_gm, idx_gm)
+    A_gm = np.random.randint(1, 10, [M, K]).astype(np.int8)
+    # 构造稀疏B矩阵, 确保每4个元素中至少包含2个零
+    B_gm = construct_sparse_matrix_B((N, K)).astype(np.int8)
+    # 4选2稠密化B矩阵, 并生成对应的uint8类型的索引矩阵与sparse golden生成中A矩阵稠密化需要的矩阵index_mask_matrix
+    dense_B, index_matrix, index_mask_matrix = densify_and_generate_index(B_gm)
+    # 生成稀疏矩阵乘golden
+    golden = gen_sparse_golden(A_gm, dense_B, index_mask_matrix)
+    # 将uint8类型的索引矩阵转换成uint2类型的索引矩阵，并将其转换成Zn
+    idx_gm = gen_uint2_zn_idx(index_matrix)
+
     c0Size = 32
-    x1_gm = x1_gm.reshape((int(M / 16), 16, int(K / c0Size), c0Size))\
-        .transpose(0, 2, 1, 3).astype(np.int8)
-    x2_gm = x2_gm.reshape((int(K / 2 / c0Size), c0Size, int(N / 16), 16))\
-        .transpose(0, 2, 3, 1).astype(np.int8)
-    idx_gm = idx_gm.reshape((int(K / 2 / c0Size), c0Size, int(N / 16), 16))\
-        .transpose(0, 2, 3, 1).astype(np.uint8)
-    idx_gm_golden = denst_idx(idx_gm)
+    x1_gm = A_gm.reshape((int(M / 16), 16, int(K / c0Size), c0Size))\
+        .transpose(2, 0, 1, 3).astype(np.int8)
+    x2_gm = dense_B.reshape((int(N / 16), 16, int(K / 2 / c0Size), c0Size))\
+        .transpose(2, 0, 1, 3).astype(np.int8)
 
     os.system("mkdir -p input")
     os.system("mkdir -p output")
     x1_gm.tofile("./input/x1_gm.bin")
     x2_gm.tofile("./input/x2_gm.bin")
-    idx_gm_golden.tofile("./input/idx_gm.bin")
+    idx_gm.tofile("./input/idx_gm.bin")
     golden.tofile("./output/golden.bin")
 
 

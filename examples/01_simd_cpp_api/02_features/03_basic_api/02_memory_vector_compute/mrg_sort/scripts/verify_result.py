@@ -13,8 +13,8 @@
 
 
 import sys
+import argparse
 import numpy as np
-import tensorflow as tf
 
 
 relative_tol = 1e-3
@@ -22,9 +22,31 @@ absolute_tol = 1e-5
 error_tol = 1e-3
 
 
-def verify_result(output, golden):
-    output = np.fromfile(output, dtype=np.float16).reshape(-1)
-    golden = np.fromfile(golden, dtype=np.float16).reshape(-1)
+def verify_result(scenario_num, output_path, golden_path):
+    """
+    验证输出结果与Golden数据是否一致
+    场景1：验证4个float（GetMrgSortResult值）
+    场景2：验证192个float（96*2）
+    场景3：验证2048个float（1024*2）
+    """
+    if scenario_num == 1:
+        total_floats = 256
+    elif scenario_num == 2:
+        total_floats = 192
+    elif scenario_num == 3:
+        total_floats = 2048
+    else:
+        raise ValueError(f"Unsupported scenario_num: {scenario_num}")
+
+    output = np.fromfile(output_path, dtype=np.float32).reshape(-1)
+    golden = np.fromfile(golden_path, dtype=np.float32).reshape(-1)
+
+    assert output.size >= total_floats, f"output size {output.size} < expected {total_floats}"
+    assert golden.size >= total_floats, f"golden size {golden.size} < expected {total_floats}"
+
+    output = output[:total_floats]
+    golden = golden[:total_floats]
+
     different_element_results = np.isclose(output,
                                            golden,
                                            rtol=relative_tol,
@@ -47,8 +69,14 @@ def verify_result(output, golden):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-scenarioNum", type=int, default=1, choices=range(1, 4),
+                        help="scenario number (1-3)")
+    parser.add_argument("output", type=str, help="output bin file path")
+    parser.add_argument("golden", type=str, help="golden bin file path")
+    args = parser.parse_args()
     try:
-        res = verify_result(sys.argv[1], sys.argv[2])
+        res = verify_result(args.scenarioNum, args.output, args.golden)
         if not res:
             raise ValueError("[ERROR] result error")
         else:

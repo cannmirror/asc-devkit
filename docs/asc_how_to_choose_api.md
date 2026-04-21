@@ -82,8 +82,8 @@ graph TD
 - 希望借助带 `sync` 后缀的计算接口快速进行算法验证的开发者。
 
 **示例**
-- [SIMD Add 算子示例（带同步计算接口）](../examples/00_introduction/01_add/c_api_sync_add/c_api_add.asc)
-- [SIMT Add 算子示例（匹配业界习惯）](../examples/00_introduction/01_add/simt_add/add.asc)
+- [SIMD Add 算子示例（带同步计算接口）](../examples/02_simd_c_api/00_introduction/01_add/c_api_sync_add/c_api_add.asc)
+- [SIMT Add 算子示例（匹配业界习惯）](../examples/03_simt_api/00_introduction/01_add/add.asc)
 - 更多样例请参考 [examples 目录](https://gitcode.com/cann/asc-devkit/tree/master/examples)
 
 ---
@@ -101,8 +101,8 @@ graph TD
 - 需要在生产环境中开发极致性能算子，同时希望保持代码可维护性与可扩展性的场景。
 
 **示例**
-- [基于 Tque / Tpipe 自动管理内存与同步的 SIMD Add 算子示例](../examples/00_introduction/01_add/basic_api_tque_add/add.asc)
-- [基于 LocalMemoryAllocator 自主管理内存与同步的 SIMD Add 算子示例](../examples/00_introduction/01_add/basic_api_memory_allocator_add/add.asc)
+- [基于 Tque / Tpipe 自动管理内存与同步的 SIMD Add 算子示例](../examples/01_simd_cpp_api/00_introduction/01_vector/basic_api_tque_add/add.asc)
+- [基于 LocalMemoryAllocator 自主管理内存与同步的 SIMD Add 算子示例](../examples/01_simd_cpp_api/00_introduction/01_vector/basic_api_memory_allocator_add/add.asc)
 - 基于 Layout 的 Tensor API 示例（待补充）
 
 ---

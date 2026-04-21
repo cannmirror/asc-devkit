@@ -15,7 +15,7 @@
 
 template <typename DTYPE>
 __aicore__ inline void copy_gm_to_cbuf_align_v2_stub(__cbuf__ DTYPE* dst, __gm__ DTYPE* src, uint8_t sid, uint32_t burst_num, uint32_t burst_len, uint8_t left_padding_count,
-                                                uint8_t right_padding_count, bool data_select_bit, uint8_t l2_cache_ctl, uint64_t burst_src_stride, uint64_t burst_dst_stride) {
+                                                uint8_t right_padding_count, bool data_select_bit, uint8_t l2_cache_ctl, uint64_t burst_src_stride, uint32_t burst_dst_stride) {
     EXPECT_EQ(dst, reinterpret_cast<__cbuf__ DTYPE *>(11));
     EXPECT_EQ(src, reinterpret_cast<__gm__ DTYPE *>(22));
     EXPECT_EQ(sid, static_cast<uint8_t>(0));
@@ -26,7 +26,7 @@ __aicore__ inline void copy_gm_to_cbuf_align_v2_stub(__cbuf__ DTYPE* dst, __gm__
     EXPECT_EQ(data_select_bit, static_cast<bool>(true));
     EXPECT_EQ(l2_cache_ctl, static_cast<uint8_t>(77));
     EXPECT_EQ(burst_src_stride, static_cast<uint64_t>(88));
-    EXPECT_EQ(burst_dst_stride, static_cast<uint64_t>(99));
+    EXPECT_EQ(burst_dst_stride, static_cast<uint32_t>(99));
 }
 
 class TEST_COPY_GM_TO_L1_ALIGN : public testing::Test {
@@ -51,14 +51,14 @@ TEST_F(TEST_COPY_GM_TO_L1_ALIGN, TEST_COPY_GM_TO_L1_ALIGN_##dtype)              
     __cbuf__ dtype *dst = reinterpret_cast<__cbuf__ dtype *>(11);                                 \
     __gm__ dtype *src = reinterpret_cast<__gm__ dtype *>(22);                                   \
                                                                                                 \
-    uint32_t burst_num = static_cast<uint16_t>(33);                                                \
-    uint32_t burst_len = static_cast<uint16_t>(44);                                                \
-    uint8_t left_padding_count = static_cast<uint8_t>(55);                                              \
-    uint8_t right_padding_count = static_cast<uint8_t>(66);                                             \
-    bool data_select_bit = static_cast<bool>(true);                                            \
-    uint8_t l2_cache_ctl = static_cast<uint8_t>(77);                                               \
-    uint64_t burst_src_stride = static_cast<uint64_t>(88);                                                 \
-    uint32_t burst_dst_stride = static_cast<uint32_t>(99);                                                 \
+    uint32_t burst_num = 33;                                                \
+    uint32_t burst_len = 44;                                                \
+    uint8_t left_padding_count = 55;                                              \
+    uint8_t right_padding_count = 66;                                             \
+    bool data_select_bit = true;                                            \
+    uint8_t l2_cache_ctl = 77;                                               \
+    uint64_t burst_src_stride = 88;                                                 \
+    uint32_t burst_dst_stride = 99;                                                 \
                                                                                                     \
     asc_copy_gm2l1_align(dst, src, burst_num, burst_len, left_padding_count, right_padding_count, \
                             data_select_bit, l2_cache_ctl, burst_src_stride, burst_dst_stride);         \
@@ -75,14 +75,14 @@ TEST_F(TEST_COPY_GM_TO_L1_ALIGN, TEST_COPY_GM_TO_L1_ALIGN_SYNC_##dtype)         
     __cbuf__ dtype *dst = reinterpret_cast<__cbuf__ dtype *>(11);                                 \
     __gm__ dtype *src = reinterpret_cast<__gm__ dtype *>(22);                                   \
                                                                                                 \
-    uint32_t burst_num = static_cast<uint16_t>(33);                                                \
-    uint32_t burst_len = static_cast<uint16_t>(44);                                                \
-    uint8_t left_padding_count = static_cast<uint8_t>(55);                                              \
-    uint8_t right_padding_count = static_cast<uint8_t>(66);                                             \
-    bool data_select_bit = static_cast<bool>(true);                                            \
-    uint8_t l2_cache_ctl = static_cast<uint8_t>(77);                                               \
-    uint64_t burst_src_stride = static_cast<uint64_t>(88);                                                 \
-    uint32_t burst_dst_stride = static_cast<uint32_t>(99);                                                 \
+    uint32_t burst_num = 33;                                                \
+    uint32_t burst_len = 44;                                                \
+    uint8_t left_padding_count = 55;                                              \
+    uint8_t right_padding_count = 66;                                             \
+    bool data_select_bit = true;                                            \
+    uint8_t l2_cache_ctl = 77;                                               \
+    uint64_t burst_src_stride = 88;                                                 \
+    uint32_t burst_dst_stride = 99;                                                 \
                                                                                                     \
     asc_copy_gm2l1_align_sync(dst, src, burst_num, burst_len, left_padding_count, right_padding_count, \
                             data_select_bit, l2_cache_ctl, burst_src_stride, burst_dst_stride);         \

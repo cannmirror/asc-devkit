@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file matmul_constant_tiling_struct.h
@@ -23,18 +23,9 @@ namespace AscendC {
 template <const auto& TILING>
 struct MatmulTiling {
     using TILING_TYPE = typename std::remove_cv<typename std::remove_reference<decltype(TILING)>::type>::type;
-    __aicore__ inline void SetTiling(const TCubeTiling* __restrict tiling)
-    {
-        tiling_ = tiling;
-    }
-    __aicore__ inline const TCubeTiling* __restrict GetTiling()
-    {
-        return tiling_;
-    }
-    __aicore__ inline bool IsNull() const
-    {
-        return (tiling_ == nullptr);
-    }
+    __aicore__ inline void SetTiling(const TCubeTiling* __restrict tiling) { tiling_ = tiling; }
+    __aicore__ inline const TCubeTiling* __restrict GetTiling() { return tiling_; }
+    __aicore__ inline bool IsNull() const { return (tiling_ == nullptr); }
     __aicore__ inline int32_t GetUsedCoreNum() const
     {
         if constexpr (IsSameTypeV<TILING_TYPE, MatmulApiStaticTiling>) {
@@ -404,8 +395,8 @@ struct MatmulTiling {
     {
         constexpr static uint64_t scaleFactorKaMask = 0x0000007f;
         if constexpr (IsSameTypeV<TILING_TYPE, MatmulApiStaticTiling>) {
-            return (TILING.mxTypePara != -1) ?
-                    (TILING.mxTypePara & scaleFactorKaMask) : tiling_->mxTypePara & scaleFactorKaMask;
+            return (TILING.mxTypePara != -1) ? (TILING.mxTypePara & scaleFactorKaMask) :
+                                               tiling_->mxTypePara & scaleFactorKaMask;
         } else {
             return tiling_->mxTypePara & scaleFactorKaMask;
         }
@@ -416,9 +407,9 @@ struct MatmulTiling {
         constexpr static uint32_t scaleFactorKbOffset = 8;
         if constexpr (IsSameTypeV<TILING_TYPE, MatmulApiStaticTiling>) {
             return (TILING.mxTypePara != -1) ? ((TILING.mxTypePara & scaleFactorKbMask) >> scaleFactorKbOffset) :
-                ((tiling_->mxTypePara & scaleFactorKbMask) >> scaleFactorKbOffset);
+                                               ((tiling_->mxTypePara & scaleFactorKbMask) >> scaleFactorKbOffset);
         } else {
-            return (tiling_->mxTypePara & scaleFactorKbMask) >> scaleFactorKbOffset ;
+            return (tiling_->mxTypePara & scaleFactorKbMask) >> scaleFactorKbOffset;
         }
     }
     __aicore__ inline uint8_t GetScaleFactorM() const
@@ -430,7 +421,7 @@ struct MatmulTiling {
         constexpr static uint32_t scaleFactorMOffset = 16;
         if constexpr (IsSameTypeV<TILING_TYPE, MatmulApiStaticTiling>) {
             return (TILING.mxTypePara != -1) ? ((TILING.mxTypePara & scaleFactorMMask) >> scaleFactorMOffset) :
-                ((tiling_->mxTypePara & scaleFactorMMask) >> scaleFactorMOffset);
+                                               ((tiling_->mxTypePara & scaleFactorMMask) >> scaleFactorMOffset);
         } else {
             return (tiling_->mxTypePara & scaleFactorMMask) >> scaleFactorMOffset;
         }
@@ -444,7 +435,7 @@ struct MatmulTiling {
         constexpr static uint32_t scaleFactorNOffset = 24;
         if constexpr (IsSameTypeV<TILING_TYPE, MatmulApiStaticTiling>) {
             return (TILING.mxTypePara != -1) ? ((TILING.mxTypePara & scaleFactorNMask) >> scaleFactorNOffset) :
-                ((tiling_->mxTypePara & scaleFactorNMask) >> scaleFactorNOffset);
+                                               ((tiling_->mxTypePara & scaleFactorNMask) >> scaleFactorNOffset);
         } else {
             return (tiling_->mxTypePara & scaleFactorNMask) >> scaleFactorNOffset;
         }

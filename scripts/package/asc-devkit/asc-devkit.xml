@@ -158,10 +158,6 @@
         <file value="libaicpu_api.a" file_type="static"/>
     </file_info>
 
-    <file_info value="ascendc_scripts" copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)" install_path="tools/ascendc_tools" install_mod="550" feature="ascendc">
-        <file value="ascendc_parse_dumpinfo.py"/>
-    </file_info>
-
      <file_info value="asc_opc" copy_type="delivery" src_path="tools/build/asc_opc" dst_path="$(TARGET_ENV)/bin" install_path="$(TARGET_ENV)/bin" install_mod="550" feature="ascendc">
         <file value="asc_opc" install_softlink="compiler/bin/asc_opc"/>
     </file_info>

@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file broadcast_gather_3510_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/pad/broadcast/broadcast_gather_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/pad/broadcast.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/pad/broadcast/broadcast_gather_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/pad/broadcast.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_PAD_BROADCAST_BROADCAST_GATHER_C310_IMPL_H__
 #endif
@@ -27,8 +28,9 @@
 
 namespace AscendC {
 template <typename T>
-__simd_vf__ inline void VfGenIndex(__ubuf__ T *indexUb, uint32_t sizeI0, uint32_t sizeI1, uint32_t sizeI2, uint32_t strideI0,
-    uint32_t strideI1, uint32_t strideI2, uint32_t offset)
+__simd_vf__ inline void VfGenIndex(
+    __ubuf__ T* indexUb, uint32_t sizeI0, uint32_t sizeI1, uint32_t sizeI2, uint32_t strideI0, uint32_t strideI1,
+    uint32_t strideI2, uint32_t offset)
 {
     Reg::RegTensor<T> v0;
     Reg::RegTensor<T> v1;
@@ -84,8 +86,9 @@ __simd_vf__ inline void VfGenIndex(__ubuf__ T *indexUb, uint32_t sizeI0, uint32_
 }
 
 template <typename T>
-__simd_vf__ inline void VfGenIndexForFourDim(__ubuf__ T *indexUb, uint32_t sizeI0, uint32_t sizeI1, uint32_t sizeI2, uint32_t sizeI3,
-    uint32_t strideI0, uint32_t strideI1, uint32_t strideI2, uint32_t strideI3, uint32_t offset)
+__simd_vf__ inline void VfGenIndexForFourDim(
+    __ubuf__ T* indexUb, uint32_t sizeI0, uint32_t sizeI1, uint32_t sizeI2, uint32_t sizeI3, uint32_t strideI0,
+    uint32_t strideI1, uint32_t strideI2, uint32_t strideI3, uint32_t offset)
 {
     Reg::RegTensor<T> v0;
     Reg::RegTensor<T> v1;
@@ -151,8 +154,9 @@ __simd_vf__ inline void VfGenIndexForFourDim(__ubuf__ T *indexUb, uint32_t sizeI
 }
 
 template <typename T>
-__simd_vf__ inline void VfGatherBrc(__ubuf__ T *dstUb, __ubuf__ T *srcUb, __ubuf__ T *indexUb, uint16_t size0, uint16_t size1,
-    uint16_t size2, uint16_t srcStride0, uint16_t srcStride1, uint16_t srcStride2, uint32_t main, uint32_t tail)
+__simd_vf__ inline void VfGatherBrc(
+    __ubuf__ T* dstUb, __ubuf__ T* srcUb, __ubuf__ T* indexUb, uint16_t size0, uint16_t size1, uint16_t size2,
+    uint16_t srcStride0, uint16_t srcStride1, uint16_t srcStride2, uint32_t main, uint32_t tail)
 {
     Reg::UnalignReg u0;
     Reg::RegTensor<T> vindex0;
@@ -204,8 +208,9 @@ __simd_vf__ inline void VfGatherBrc(__ubuf__ T *dstUb, __ubuf__ T *srcUb, __ubuf
 }
 
 template <typename T>
-__simd_vf__ inline void VfGatherBrcForFourDim(__ubuf__ T *dstUb, __ubuf__ T *srcUb, __ubuf__ T *indexUb, uint16_t size0, uint16_t size1,
-    uint16_t size2, uint16_t size3, uint16_t srcStride0, uint16_t srcStride1, uint16_t srcStride2, uint16_t srcStride3, uint32_t main,
+__simd_vf__ inline void VfGatherBrcForFourDim(
+    __ubuf__ T* dstUb, __ubuf__ T* srcUb, __ubuf__ T* indexUb, uint16_t size0, uint16_t size1, uint16_t size2,
+    uint16_t size3, uint16_t srcStride0, uint16_t srcStride1, uint16_t srcStride2, uint16_t srcStride3, uint32_t main,
     uint32_t tail)
 {
     Reg::UnalignReg u0;
@@ -264,7 +269,8 @@ __simd_vf__ inline void VfGatherBrcForFourDim(__ubuf__ T *dstUb, __ubuf__ T *src
     Reg::StoreUnAlignPost(dstUb, u0, 0);
 }
 
-template <typename T> __aicore__ inline void GenGatherIndex(__ubuf__ T *indexUb, uint32_t *size, uint32_t *srcStride)
+template <typename T>
+__aicore__ inline void GenGatherIndex(__ubuf__ T* indexUb, uint32_t* size, uint32_t* srcStride)
 {
     constexpr uint32_t VF_LEN = GetVecLen() / sizeof(T);
     uint32_t sizeI[3];
@@ -291,11 +297,11 @@ template <typename T> __aicore__ inline void GenGatherIndex(__ubuf__ T *indexUb,
         sizeI[2] = VF_LEN;
     }
 
-    VfGenIndex<T>(indexUb, sizeI[0], sizeI[1], sizeI[2], srcStrideI[0], srcStrideI[1],
-        srcStrideI[2], 0);
+    VfGenIndex<T>(indexUb, sizeI[0], sizeI[1], sizeI[2], srcStrideI[0], srcStrideI[1], srcStrideI[2], 0);
 }
 
-template <typename T> __aicore__ inline void GenGatherIndexForFourDim(__ubuf__ T *indexUb, uint32_t *size, uint32_t *srcStride)
+template <typename T>
+__aicore__ inline void GenGatherIndexForFourDim(__ubuf__ T* indexUb, uint32_t* size, uint32_t* srcStride)
 {
     constexpr uint32_t VF_LEN = GetVecLen() / sizeof(T);
     uint32_t sizeI[4];
@@ -332,12 +338,12 @@ template <typename T> __aicore__ inline void GenGatherIndexForFourDim(__ubuf__ T
         sizeI[3] = VF_LEN;
     }
 
-    VfGenIndexForFourDim<T>(indexUb, sizeI[0], sizeI[1], sizeI[2], sizeI[3], srcStrideI[0], srcStrideI[1],
-        srcStrideI[2], srcStrideI[3], 0);
+    VfGenIndexForFourDim<T>(
+        indexUb, sizeI[0], sizeI[1], sizeI[2], sizeI[3], srcStrideI[0], srcStrideI[1], srcStrideI[2], srcStrideI[3], 0);
 }
 
 template <typename T>
-__aicore__ inline void GatherWrapper(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint32_t *size, uint32_t *srcStride)
+__aicore__ inline void GatherWrapper(__ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32_t* size, uint32_t* srcStride)
 {
     constexpr uint32_t VF_LEN = GetVecLen() / sizeof(T);
     uint16_t sizeI[3];
@@ -385,20 +391,21 @@ __aicore__ inline void GatherWrapper(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint3
     LocalTensor<T> indexUb;
     PopStackBuffer<T, TPosition::LCM>(indexUb);
     if constexpr (sizeof(T) == sizeof(uint32_t)) {
-        GenGatherIndex((__ubuf__ int32_t *)indexUb.GetPhyAddr(), size, srcStride);
-        VfGatherBrc<uint32_t>((__ubuf__ uint32_t *)dstUb, (__ubuf__ uint32_t *)srcUb,
-            (__ubuf__ uint32_t *)indexUb.GetPhyAddr(), sizeI[0], sizeI[1], sizeI[2], srcStrideI[0], srcStrideI[1],
-            srcStrideI[2], main, tail);
+        GenGatherIndex((__ubuf__ int32_t*)indexUb.GetPhyAddr(), size, srcStride);
+        VfGatherBrc<uint32_t>(
+            (__ubuf__ uint32_t*)dstUb, (__ubuf__ uint32_t*)srcUb, (__ubuf__ uint32_t*)indexUb.GetPhyAddr(), sizeI[0],
+            sizeI[1], sizeI[2], srcStrideI[0], srcStrideI[1], srcStrideI[2], main, tail);
     } else {
-        GenGatherIndex((__ubuf__ int16_t *)indexUb.GetPhyAddr(), size, srcStride);
-        VfGatherBrc<uint16_t>((__ubuf__ uint16_t *)dstUb, (__ubuf__ uint16_t *)srcUb,
-            (__ubuf__ uint16_t *)indexUb.GetPhyAddr(), sizeI[0], sizeI[1], sizeI[2], srcStrideI[0], srcStrideI[1],
-            srcStrideI[2], main, tail);
+        GenGatherIndex((__ubuf__ int16_t*)indexUb.GetPhyAddr(), size, srcStride);
+        VfGatherBrc<uint16_t>(
+            (__ubuf__ uint16_t*)dstUb, (__ubuf__ uint16_t*)srcUb, (__ubuf__ uint16_t*)indexUb.GetPhyAddr(), sizeI[0],
+            sizeI[1], sizeI[2], srcStrideI[0], srcStrideI[1], srcStrideI[2], main, tail);
     }
 }
 
 template <typename T>
-__aicore__ inline void GatherWrapperForFourDim(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint32_t *size, uint32_t *srcStride)
+__aicore__ inline void GatherWrapperForFourDim(
+    __ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32_t* size, uint32_t* srcStride)
 {
     constexpr uint32_t VF_LEN = GetVecLen() / sizeof(T);
     uint16_t sizeI[4];
@@ -443,7 +450,8 @@ __aicore__ inline void GatherWrapperForFourDim(__ubuf__ T *dstUb, __ubuf__ T *sr
         vlTile3 = size[3];
         vlTile2 = VF_LEN / vlTile3;
         sizeI[0] = 1;
-        sizeI[1] = size[0];;
+        sizeI[1] = size[0];
+        ;
         sizeI[2] = size[1];
         sizeI[3] = static_cast<uint16_t>(size[2] / vlTile2);
         srcStrideI[0] = 0;
@@ -468,15 +476,15 @@ __aicore__ inline void GatherWrapperForFourDim(__ubuf__ T *dstUb, __ubuf__ T *sr
     LocalTensor<T> indexUb;
     PopStackBuffer<T, TPosition::LCM>(indexUb);
     if constexpr (sizeof(T) == sizeof(uint32_t)) {
-        GenGatherIndexForFourDim((__ubuf__ int32_t *)indexUb.GetPhyAddr(), size, srcStride);
-        VfGatherBrcForFourDim<uint32_t>((__ubuf__ uint32_t *)dstUb, (__ubuf__ uint32_t *)srcUb,
-            (__ubuf__ uint32_t *)indexUb.GetPhyAddr(), sizeI[0], sizeI[1], sizeI[2], sizeI[3], srcStrideI[0],
-            srcStrideI[1], srcStrideI[2], srcStrideI[3], main, tail);
+        GenGatherIndexForFourDim((__ubuf__ int32_t*)indexUb.GetPhyAddr(), size, srcStride);
+        VfGatherBrcForFourDim<uint32_t>(
+            (__ubuf__ uint32_t*)dstUb, (__ubuf__ uint32_t*)srcUb, (__ubuf__ uint32_t*)indexUb.GetPhyAddr(), sizeI[0],
+            sizeI[1], sizeI[2], sizeI[3], srcStrideI[0], srcStrideI[1], srcStrideI[2], srcStrideI[3], main, tail);
     } else {
-        GenGatherIndexForFourDim((__ubuf__ int16_t *)indexUb.GetPhyAddr(), size, srcStride);
-        VfGatherBrcForFourDim<uint16_t>((__ubuf__ uint16_t *)dstUb, (__ubuf__ uint16_t *)srcUb,
-            (__ubuf__ uint16_t *)indexUb.GetPhyAddr(), sizeI[0], sizeI[1], sizeI[2], sizeI[3], srcStrideI[0],
-            srcStrideI[1], srcStrideI[2], srcStrideI[3], main, tail);
+        GenGatherIndexForFourDim((__ubuf__ int16_t*)indexUb.GetPhyAddr(), size, srcStride);
+        VfGatherBrcForFourDim<uint16_t>(
+            (__ubuf__ uint16_t*)dstUb, (__ubuf__ uint16_t*)srcUb, (__ubuf__ uint16_t*)indexUb.GetPhyAddr(), sizeI[0],
+            sizeI[1], sizeI[2], sizeI[3], srcStrideI[0], srcStrideI[1], srcStrideI[2], srcStrideI[3], main, tail);
     }
 }
 } // namespace AscendC

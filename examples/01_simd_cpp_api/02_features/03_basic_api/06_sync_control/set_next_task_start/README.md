@@ -38,8 +38,7 @@
 - 算子实现：  
   本样例中实现的是SetNextTaskStart算子。
 
-  - Kernel实现
-
+  - Kernel实现  
     计算逻辑是：
 
     SetNextTaskStart算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor src0Gm和src1Gm存储在src0Local和src1Local中，Compute任务负责将两个输入tensor相加，并将结果存储到dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm，并调用SetNextTaskStart。

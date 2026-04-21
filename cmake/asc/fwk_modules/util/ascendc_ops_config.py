@@ -221,12 +221,15 @@ def gen_ops_config(json_file, soc, binary_info_config, config):
     add_op_config(op_file, bin_info, config)
 
 
-def check_single_op_is_void(root_dir):
+def check_single_op_is_void(root_dir, skip_error=False):
     for root, dirs, _ in os.walk(root_dir):
         for sub_dir in dirs:
             dir_path = os.path.join(root, sub_dir)
             if len(os.listdir(dir_path)) == 0:
-                print(f"[ERROR] op {sub_dir}: not any obj compile success")
+                if skip_error:
+                    print(f"[WARNING] op {sub_dir}: not any obj compile success")
+                else:
+                    print(f"[ERROR] op {sub_dir}: not any obj compile success")
                 return False
     return True
 
@@ -266,9 +269,9 @@ def generate_operator_cfg_file(json_files,
 
 
 def gen_all_config(root_dir, soc, out_dir,
-                skip_binary_info_config, op_range="all"):
+                skip_binary_info_config, op_range="all", skip_error=False):
     if op_range != "relocatable":
-        flag = check_single_op_is_void(root_dir)
+        flag = check_single_op_is_void(root_dir, skip_error)
         if flag is False:
             return flag
     all_json_files = get_specified_suffix_file(root_dir, '.json')
@@ -353,6 +356,11 @@ def args_parse():
                         default='all',
                         help='all operators/normal operators/relocatable operators.')
 
+    parser.add_argument('--skip-error',
+                        nargs='?',
+                        default=False,
+                        help='skip error msg.')
+
     return parser.parse_args()
 
 
@@ -364,7 +372,7 @@ def main():
         out_dir = args.out
 
     flag = gen_all_config(args.path, args.soc, out_dir,
-                    args.skip_binary_info_config, args.op_range)
+                    args.skip_binary_info_config, args.op_range, args.skip_error)
     if flag is False:
         sys.exit(1)
 

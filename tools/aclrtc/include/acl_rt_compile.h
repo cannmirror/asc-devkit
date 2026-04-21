@@ -26,7 +26,7 @@ typedef void *aclrtcProg;
  * @param[in] numHeaders Currently must be 0. Header support not implemented.
  * @param[in] headers Currently must be NULL.
  * @param[in] includeNames Currently must be NULL.
- * @return aclError: ACL_RTC_SUCCESS or ACL_ERROR_RTC_XXX
+ * @return aclError: ACL_SUCCESS or ACL_ERROR_RTC_XXX
  */
 aclError aclrtcCreateProg(aclrtcProg *prog, const char *src, const char *name, int numHeaders, const char **headers,
     const char **includeNames);
@@ -36,14 +36,37 @@ aclError aclrtcCreateProg(aclrtcProg *prog, const char *src, const char *name, i
  * @param[in] prog Runtime Compilation program.
  * @param[in] numOptions Number of compiler options.
  * @param[in] options Array of option strings.
- * @return aclError: ACL_RTC_SUCCESS or ACL_ERROR_RTC_XXX
+ * @return aclError: ACL_SUCCESS or ACL_ERROR_RTC_XXX
  */
 aclError aclrtcCompileProg(aclrtcProg prog, int numOptions, const char **options);
 
 /**
+ * @brief Notes the given name expression denoting the address of a global function or device variable.
+ * @param[in] prog Runtime Compilation program.
+ * @param[in] nameExpression Constant expression denoting the address of a global function or
+ *                           device variable. The identical name expression string must be provided
+ *                           on a subsequent call to aclrtcGetLoweredName to extract the lowered name.
+ * @return aclError: ACL_SUCCESS or ACL_ERROR_RTC_XXX
+ */
+aclError aclrtcAddNameExpr(aclrtcProg prog, const char *const nameExpression);
+
+/**
+ * @brief Extracts the lowered (mangled) name for a global function or device variable.
+ * @param[in] prog Runtime Compilation program.
+ * @param[in] nameExpression Constant expression denoting the address of a global function or
+ *                           device variable. Must be identical to the name expression previously
+ *                           provided to aclrtcAddNameExpr.
+ * @param[out] loweredName Lowered (mangled) name corresponding to the provided name expression.
+ *                         The memory containing the name is released when the program is destroyed
+ *                         by aclrtcDestroyProg.
+ * @return aclError: ACL_SUCCESS or ACL_ERROR_RTC_XXX
+ */
+aclError aclrtcGetLoweredName(aclrtcProg prog, const char *nameExpression, const char **loweredName);
+
+/**
  * @brief Destroys the given program.
  * @param[in,out] prog Runtime Compilation program.
- * @return aclError: ACL_RTC_SUCCESS or ACL_ERROR_RTC_XXX
+ * @return aclError: ACL_SUCCESS or ACL_ERROR_RTC_XXX
  */
 aclError aclrtcDestroyProg(aclrtcProg *prog);
 
@@ -51,7 +74,7 @@ aclError aclrtcDestroyProg(aclrtcProg *prog);
  * @brief Retrieves the compiled device ELF binary.
  * @param[in] prog Runtime Compilation program.
  * @param[out] binData Compiled result.
- * @return aclError: ACL_RTC_SUCCESS or ACL_ERROR_RTC_XXX
+ * @return aclError: ACL_SUCCESS or ACL_ERROR_RTC_XXX
  */
 aclError aclrtcGetBinData(aclrtcProg prog, char *binData);
 
@@ -59,7 +82,7 @@ aclError aclrtcGetBinData(aclrtcProg prog, char *binData);
  * @brief Retrieves the size of the compiled device ELF binary.
  * @param[in] prog Runtime Compilation program.
  * @param[out] deviceELFSizeRet Size of the ELF binary.
- * @return aclError: ACL_RTC_SUCCESS or ACL_ERROR_RTC_XXX
+ * @return aclError: ACL_SUCCESS or ACL_ERROR_RTC_XXX
  */
 aclError aclrtcGetBinDataSize(aclrtcProg prog, size_t *binDataSizeRet);
 
@@ -67,7 +90,7 @@ aclError aclrtcGetBinDataSize(aclrtcProg prog, size_t *binDataSizeRet);
  * @brief Retrieves the size of the compilation log.
  * @param[in] prog Runtime Compilation program.
  * @param[out] logSizeRet Size of the log string.
- * @return aclError: ACL_RTC_SUCCESS or ACL_ERROR_RTC_XXX
+ * @return aclError: ACL_SUCCESS or ACL_ERROR_RTC_XXX
  */
 aclError aclrtcGetCompileLogSize(aclrtcProg prog, size_t *logSizeRet);
 
@@ -75,7 +98,7 @@ aclError aclrtcGetCompileLogSize(aclrtcProg prog, size_t *logSizeRet);
  * @brief Retrieves the compilation log.
  * @param[in] prog Runtime Compilation program.
  * @param[out] log Compilation log.
- * @return aclError: ACL_RTC_SUCCESS or ACL_ERROR_RTC_XXX
+ * @return aclError: ACL_SUCCESS or ACL_ERROR_RTC_XXX
  */
 aclError aclrtcGetCompileLog(aclrtcProg prog, char *log);
 

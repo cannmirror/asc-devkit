@@ -19,18 +19,6 @@
 
 #include <cstdint>
 
-namespace bisheng {
-namespace cce {
-namespace simt {
-
-int32_t get_block_idx();
-
-int32_t get_block_num();
-
-}
-}
-}
-
 int32_t asc_get_block_idx();
 
 int32_t asc_get_block_num();

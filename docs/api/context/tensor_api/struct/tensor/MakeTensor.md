@@ -36,13 +36,13 @@
 ## 调用示例
 
   ```cpp
-  // 示例 1: 使用指针和Layout创建张量
+  // 示例1：使用指针和Layout创建张量
   constexpr int tileNum = 4;
   __cbuf__ half dataPtr[tileNum]; // 初始化
   auto ptr = MakeL1memPtr(dataPtr);
   auto layout = MakeNzLayout<half>(32, 32);
   auto tensor = MakeTensor(ptr, layout);
   
-  // 示例 2: 使用指针和形状创建张量（自动计算步幅）
+  // 示例2：使用指针和形状创建张量（自动计算步幅）
   auto tensor2 = MakeTensor(ptr, MakeShape(32, 32), MakeStride(32, 32));
   ```

@@ -174,9 +174,9 @@ struct FixpipeInputParams {
         set_flag(PIPE_MTE2, PIPE_MTE1, EVENT_ID1);                                                                     \
         DataCopy(weight_l1, weightGm, {1, static_cast<uint16_t>(weightSize * (wTSize) / 32), 0, 0});               \
         set_flag(PIPE_MTE2, PIPE_MTE1, EVENT_ID2);                                                                     \
-        SetLoadDataRepeat({0, 1, 0, howoRound / 16});                                                                 \
+        SetLoadDataRepeatWithStride({0, 1, 0, howoRound / 16});                                                                 \
         uint8_t padList[PAD_SIZE] = {0, 0, 0, 0};                                                                      \
-        LoadData<TensorTrait<fmT>>(feature_map_l0a,                                                                                \
+        LoadDataWithStride<TensorTrait<fmT>>(feature_map_l0a,                                                                                \
             feature_map_l1,                                                                                            \
             {padList, h, w, 32, 128, 16, 0, 0, kw, kh, dilationW, dilationH, 2, 2, false, false, 0});                 \
         wait_flag(PIPE_MTE2, PIPE_MTE1, EVENT_ID1);                                                                    \

@@ -28,7 +28,7 @@
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">kernel_write_gm_by_pass_dcache</td></tr>
   </table>
 
-- 算子实现
+- 算子实现  
   本样例中实现的是WriteGmByPassDcache算子。
 
   - Kernel实现  

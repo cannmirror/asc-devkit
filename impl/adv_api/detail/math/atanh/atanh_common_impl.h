@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file atanh_common_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/atanh/atanh_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/atanh.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/atanh/atanh_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/atanh.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ATANH_ATANH_COMMON_IMPL_H__
 #endif
@@ -38,9 +39,8 @@ constexpr uint32_t ATANH_HALF_CALC_PROC = 4;
 // Require 1 times extra buffer of input sizes.
 // atanh(x) = 0.5 * ln((1 + x) / (1 - x)) x:(-1, 1)
 template <typename T>
-__aicore__ inline void AtanhCompute(const LocalTensor<T>& dstTensor,
-    const LocalTensor<T>& srcTensor,
-    const LocalTensor<float> &tmpBuffer,
+__aicore__ inline void AtanhCompute(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<float>& tmpBuffer,
     uint32_t calSize)
 {
     const UnaryRepeatParams unaryParams;
@@ -70,9 +70,8 @@ __aicore__ inline void AtanhCompute(const LocalTensor<T>& dstTensor,
 // Computes high precision atanh values for half type inputs by converting inputs to float types and save float atanh
 // result at tmp Buffer. Requires 4 times extra buffer of input sizes. x:(-1, 1)
 template <>
-__aicore__ inline void AtanhCompute(const LocalTensor<half>& dstTensor,
-    const LocalTensor<half>& srcTensor,
-    const LocalTensor<float> &tmpBuffer,
+__aicore__ inline void AtanhCompute(
+    const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor, const LocalTensor<float>& tmpBuffer,
     uint32_t calSize)
 {
     const UnaryRepeatParams unaryParams;
@@ -82,8 +81,9 @@ __aicore__ inline void AtanhCompute(const LocalTensor<half>& dstTensor,
     LocalTensor<float> tmpFloatBuffer2 = tmpBuffer[calSize];
 
     // half -> float
-    Cast<float, half, false>(tmpFloatBuffer1, srcTensor, RoundMode::CAST_NONE, MASK_PLACEHOLDER,
-        1, { 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE / 2 });
+    Cast<float, half, false>(
+        tmpFloatBuffer1, srcTensor, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE / 2});
     PipeBarrier<PIPE_V>();
 
     // Calculates 1 + x
@@ -108,13 +108,15 @@ __aicore__ inline void AtanhCompute(const LocalTensor<half>& dstTensor,
     PipeBarrier<PIPE_V>();
 
     // float -> half
-    Cast<half, float, false>(dstTensor, tmpFloatBuffer1, RoundMode::CAST_NONE, MASK_PLACEHOLDER,
-        1, { 1, 1, DEFAULT_REPEAT_STRIDE / 2, DEFAULT_REPEAT_STRIDE });
+    Cast<half, float, false>(
+        dstTensor, tmpFloatBuffer1, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE / 2, DEFAULT_REPEAT_STRIDE});
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void AtanhImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void AtanhImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {

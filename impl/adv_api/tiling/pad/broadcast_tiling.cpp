@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file broadcast_tiling.cpp
@@ -72,18 +72,22 @@ void GetBroadCastMaxMinTmpSize220(
     }
 }
 
-void CheckBroadCastParams(const platform_ascendc::PlatformAscendC& ascendcPlatform, const ge::Shape& srcShape,
-    const ge::Shape& dstShape, uint32_t typeSize, const bool isReuseSource, const char* funcName)
+void CheckBroadCastParams(
+    const platform_ascendc::PlatformAscendC& ascendcPlatform, const ge::Shape& srcShape, const ge::Shape& dstShape,
+    uint32_t typeSize, const bool isReuseSource, const char* funcName)
 {
     auto npuArch = ascendcPlatform.GetCurNpuArch();
     if (npuArch == NpuArch::DAV_2201 || npuArch == NpuArch::DAV_2002) {
-        ASCENDC_HOST_ASSERT(typeSize == 1 || typeSize == CAST_TYPE_TWO || typeSize == CAST_TYPE_FOUR, continue,
+        ASCENDC_HOST_ASSERT(
+            typeSize == 1 || typeSize == CAST_TYPE_TWO || typeSize == CAST_TYPE_FOUR, continue,
             "[Broadcast][%s] The value of typeSize is %u, should be 1 or 2 or 4.", funcName, typeSize);
 
-        ASCENDC_HOST_ASSERT(srcShape.GetDimNum() == 1 || srcShape.GetDimNum() == CAST_DIM_TWO, continue,
+        ASCENDC_HOST_ASSERT(
+            srcShape.GetDimNum() == 1 || srcShape.GetDimNum() == CAST_DIM_TWO, continue,
             "[Broadcast][%s] The dims of srcShape is %zu, should be 1 or 2.", funcName, srcShape.GetDimNum());
 
-        ASCENDC_HOST_ASSERT(srcShape.GetDimNum() == dstShape.GetDimNum(), continue,
+        ASCENDC_HOST_ASSERT(
+            srcShape.GetDimNum() == dstShape.GetDimNum(), continue,
             "[Broadcast][%s] The dims of srcShape is %zu, the dims of dstShape is %zu, they should be equal.", funcName,
             srcShape.GetDimNum(), dstShape.GetDimNum());
 
@@ -94,24 +98,26 @@ void CheckBroadCastParams(const platform_ascendc::PlatformAscendC& ascendcPlatfo
 }
 } // namespace
 
-void GetBroadCastMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcPlatform, const ge::Shape& srcShape,
-    const ge::Shape& dstShape, uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
+void GetBroadCastMaxMinTmpSize(
+    const platform_ascendc::PlatformAscendC& ascendcPlatform, const ge::Shape& srcShape, const ge::Shape& dstShape,
+    uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
     CheckBroadCastParams(ascendcPlatform, srcShape, dstShape, typeSize, isReuseSource, "GetBroadCastMaxMinTmpSize");
 
     size_t dstShapeDimNum = dstShape.GetDimNum();
     constexpr uint32_t needDstShapeDimNum = 2;
     auto npuArch = ascendcPlatform.GetCurNpuArch();
-        if (npuArch == NpuArch::DAV_2201 || npuArch == NpuArch::DAV_2002) {
-        ASCENDC_HOST_ASSERT((dstShapeDimNum == needDstShapeDimNum || dstShapeDimNum == 1),
-            return, "Now only support dim = 1 or 2.");
+    if (npuArch == NpuArch::DAV_2201 || npuArch == NpuArch::DAV_2002) {
+        ASCENDC_HOST_ASSERT(
+            (dstShapeDimNum == needDstShapeDimNum || dstShapeDimNum == 1), return, "Now only support dim = 1 or 2.");
     }
-    ASCENDC_HOST_ASSERT((srcShape.GetDimNum() == dstShapeDimNum),
-        return, "SrcShape dim num and dstShape dim num should be same.");
+    ASCENDC_HOST_ASSERT(
+        (srcShape.GetDimNum() == dstShapeDimNum), return, "SrcShape dim num and dstShape dim num should be same.");
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "TypeSize must be greater than 0.");
     for (size_t i = 0; i < dstShapeDimNum; i++) {
-        ASCENDC_HOST_ASSERT((srcShape.GetDim(i) == dstShape.GetDim(i) || srcShape.GetDim(i) == 1),
-            return, "SrcShape cannot broadcast to dstShape.");
+        ASCENDC_HOST_ASSERT(
+            (srcShape.GetDim(i) == dstShape.GetDim(i) || srcShape.GetDim(i) == 1), return,
+            "SrcShape cannot broadcast to dstShape.");
     }
 
     auto srcSize = srcShape.GetShapeSize();
@@ -137,8 +143,8 @@ void GetBroadCastMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcP
     if (npuArch == NpuArch::DAV_2201 || npuArch == NpuArch::DAV_2002) {
         if (axis == 0) {
             const uint32_t castTempBuffer = GetCastTempBuffer(srcShape, dstShape, typeSize);
-            ASCENDC_HOST_ASSERT(dstShape.GetDim(1) % (ONE_BLK_SIZE / typeSize) == 0,
-                return, "dim[1] is not 32-byte aligned.");
+            ASCENDC_HOST_ASSERT(
+                dstShape.GetDim(1) % (ONE_BLK_SIZE / typeSize) == 0, return, "dim[1] is not 32-byte aligned.");
             minValue = ONE_BLK_SIZE + castTempBuffer;
             maxValue = ONE_BLK_SIZE + castTempBuffer;
             return;
@@ -150,8 +156,7 @@ void GetBroadCastMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcP
     } else if (npuArch == NpuArch::DAV_2002) {
         const uint32_t castTempBuffer = GetCastTempBuffer(srcShape, dstShape, typeSize);
         const uint32_t oneBlockElementNum = ONE_BLK_SIZE / typeSize;
-        ASCENDC_HOST_ASSERT(dstShape.GetDim(0) % oneBlockElementNum == 0,
-            return, "dim[0] is not 32-byte aligned.");
+        ASCENDC_HOST_ASSERT(dstShape.GetDim(0) % oneBlockElementNum == 0, return, "dim[0] is not 32-byte aligned.");
         const uint32_t minTmpBufferSize =
             oneBlockElementNum * ((dstShape.GetDim(1) + BRCB_ONE_SIZE - 1) / BRCB_ONE_SIZE) * typeSize;
         minValue = ONE_BLK_SIZE + castTempBuffer + minTmpBufferSize;
@@ -159,4 +164,4 @@ void GetBroadCastMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcP
         maxValue = ONE_BLK_SIZE + castTempBuffer + maxTmpufferSize;
     }
 }
-}  // namespace AscendC
+} // namespace AscendC

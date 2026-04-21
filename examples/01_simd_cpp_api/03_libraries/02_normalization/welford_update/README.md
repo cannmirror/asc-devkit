@@ -46,14 +46,12 @@
 - 算子实现：  
   本样例实现了welford_update算子。
 
-  - Kernel实现
-
+  - Kernel实现  
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用WelfordUpdate高阶API接口完成welford_update计算，得到最终结果，再搬出到外部存储上。
 
     welford_update算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm、inMeanGm、inVarGm存储在srcLocal、inMeanLocal、inVarLocal中，Compute任务负责对srcLocal、inMeanLocal、inVarLocal执行welford_update计算，计算结果存储在outMeanLocal、outVarLocal中，CopyOut任务负责将输出数据从outMeanLocal、outVarLocal搬运至Global Memory上的输出Tensor outMeanGm、outVarGm。
 
-  - Tiling实现
-
+  - Tiling实现  
     welford_update算子的tiling实现流程如下：首先获取welford_update接口能完成计算所需最大/最小临时空间大小，根据该范围结合实际的内存使用情况设置合适的空间大小，然后根据输入长度dataLength确定所需tiling参数。
 
   - 调用实现  

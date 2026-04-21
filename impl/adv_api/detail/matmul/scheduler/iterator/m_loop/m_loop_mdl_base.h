@@ -1,21 +1,21 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file m_loop_mdl_base.h
  * \brief m_loop base class for mdl and mdl_outer_product
  */
 
-
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/scheduler/iterator/m_loop/m_loop_mdl_base.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/scheduler/iterator/m_loop/m_loop_mdl_base.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_ITERATOR_M_LOOP_M_LOOP_MDL_BASE_H__
 #endif
@@ -34,26 +34,21 @@ namespace Detail {
     MLoopMDLBase is only for internal usage, does not support extension or customized specialization!
 */
 template <typename IMPL, class A_TYPE, const auto& MM_CFG>
-class MLoopMDLBase
-{
+class MLoopMDLBase {
     MATMUL_USE_MODULE(MatmulShapeTiling);
+
 public:
     __aicore__ inline MLoopMDLBase() = default;
     __aicore__ inline ~MLoopMDLBase() = default;
 
-    __aicore__ inline void Init(int32_t singleShape)
-    {
-        SetSingleShape(singleShape);
-    }
+    __aicore__ inline void Init(int32_t singleShape) { SetSingleShape(singleShape); }
 
-    __aicore__ inline void SetSingleShape(int32_t singleShape) {
+    __aicore__ inline void SetSingleShape(int32_t singleShape)
+    {
         SetSingleShapeImpl(singleShape, AscendC::Std::integral_constant<PolicyType, IMPL::POLICY::POLICY_TYPE>{});
     }
 
-    __aicore__ inline uint32_t GetTotalIter() const
-    {
-        return totalIter_;
-    }
+    __aicore__ inline uint32_t GetTotalIter() const { return totalIter_; }
 
     __aicore__ inline bool OuterNext()
     {
@@ -109,20 +104,14 @@ public:
         }
     }
 
-    __aicore__ inline int32_t GetTileShape() const
-    {
-        return tileShape_;
-    }
+    __aicore__ inline int32_t GetTileShape() const { return tileShape_; }
 
     __aicore__ inline int32_t GetTileShapeOf(int32_t outerIdx) const
     {
         return (outerIdx + 1 >= outerIter_) ? tailTileShape_ : mainTileShape_;
     }
 
-    __aicore__ inline int32_t GetTileBlockShape() const
-    {
-        return tileBlockShape_;
-    }
+    __aicore__ inline int32_t GetTileBlockShape() const { return tileBlockShape_; }
 
     __aicore__ inline bool InnerNext()
     {
@@ -141,94 +130,82 @@ public:
         UpdateInnerParams();
     }
 
-    __aicore__ inline bool InnerEnd()
-    {
-        return innerIndex_ >= innerStartIdx_ + innerIter_;
-    }
+    __aicore__ inline bool InnerEnd() { return innerIndex_ >= innerStartIdx_ + innerIter_; }
 
-    __aicore__ inline bool IsLastInnerIter()
-    {
-        return innerIndex_ == innerStartIdx_ + innerIter_ - 1;
-    }
+    __aicore__ inline bool IsLastInnerIter() { return innerIndex_ == innerStartIdx_ + innerIter_ - 1; }
 
-    __aicore__ inline uint32_t GetInnerIdx() const
-    {
-        return innerIndex_;
-    }
+    __aicore__ inline uint32_t GetInnerIdx() const { return innerIndex_; }
 
-    __aicore__ inline uint32_t GetInnerIter() const
-    {
-        return innerIter_;
-    }
+    __aicore__ inline uint32_t GetInnerIter() const { return innerIter_; }
 
-    __aicore__ inline int32_t GetBaseShape() const
-    {
-        return baseShape_;
-    }
+    __aicore__ inline int32_t GetBaseShape() const { return baseShape_; }
 
-    __aicore__ inline int32_t GetBaseBlockShape() const
-    {
-        return baseBlockShape_;
-    }
+    __aicore__ inline int32_t GetBaseBlockShape() const { return baseBlockShape_; }
 
-    __aicore__ inline void UpdateInnerParams() {
+    __aicore__ inline void UpdateInnerParams()
+    {
         UpdateInnerParamsImpl(AscendC::Std::integral_constant<PolicyType, IMPL::POLICY::POLICY_TYPE>{});
     }
 
-    __aicore__ inline bool IsAML1FullLoad() const
-    {
-        return isA1MFullLoad_;
-    }
+    __aicore__ inline bool IsAML1FullLoad() const { return isA1MFullLoad_; }
 
 private:
     template <PolicyType P>
-    __aicore__ inline enable_if_t<P != PolicyType::MATMUL_NBUFFER_33, void>
-    SetSingleShapeImpl(int32_t singleShape, AscendC::Std::integral_constant<PolicyType, P>)
+    __aicore__ inline enable_if_t<P != PolicyType::MATMUL_NBUFFER_33, void> SetSingleShapeImpl(
+        int32_t singleShape, AscendC::Std::integral_constant<PolicyType, P>)
     {
-        if constexpr (ToMatmulConfig(MM_CFG).singleCoreM != 0 && ToMatmulConfig(MM_CFG).basicM != 0 &&
+        if constexpr (
+            ToMatmulConfig(MM_CFG).singleCoreM != 0 && ToMatmulConfig(MM_CFG).basicM != 0 &&
             !ToMatmulConfig(MM_CFG).enableSetTail) {
             SetSingleShapeFromCFG(AscendC::Std::integral_constant<PolicyType, IMPL::POLICY::POLICY_TYPE>{});
         } else {
-            SetSingleShapeFromTiling(singleShape, AscendC::Std::integral_constant<PolicyType, IMPL::POLICY::POLICY_TYPE>{});
+            SetSingleShapeFromTiling(
+                singleShape, AscendC::Std::integral_constant<PolicyType, IMPL::POLICY::POLICY_TYPE>{});
         }
         ASCENDC_ASSERT((totalIter_ > 0), {
-            KERNEL_LOG(KERNEL_ERROR, "invalid singleCoreM, totalIter_ is %d , which should be larger than 0",
-                totalIter_);
+            KERNEL_LOG(
+                KERNEL_ERROR, "invalid singleCoreM, totalIter_ is %d , which should be larger than 0", totalIter_);
         });
     }
 
-    __aicore__ inline void SetSingleShapeImpl(int32_t singleShape,
-        AscendC::Std::integral_constant<PolicyType, PolicyType::MATMUL_NBUFFER_33>)
+    __aicore__ inline void SetSingleShapeImpl(
+        int32_t singleShape, AscendC::Std::integral_constant<PolicyType, PolicyType::MATMUL_NBUFFER_33>)
     {
-        if constexpr (ToMatmulConfig(MM_CFG).singleCoreM != 0 && ToMatmulConfig(MM_CFG).basicM != 0 &&
+        if constexpr (
+            ToMatmulConfig(MM_CFG).singleCoreM != 0 && ToMatmulConfig(MM_CFG).basicM != 0 &&
             !ToMatmulConfig(MM_CFG).enableSetTail) {
             SetSingleShapeFromCFG(AscendC::Std::integral_constant<PolicyType, IMPL::POLICY::POLICY_TYPE>{});
         } else {
-            SetSingleShapeFromTiling(singleShape, AscendC::Std::integral_constant<PolicyType, IMPL::POLICY::POLICY_TYPE>{});
+            SetSingleShapeFromTiling(
+                singleShape, AscendC::Std::integral_constant<PolicyType, IMPL::POLICY::POLICY_TYPE>{});
         }
         ASCENDC_ASSERT((totalIter_ <= N_BUFFER_33_FACTOR), {
-            KERNEL_LOG(KERNEL_ERROR, "Invalid singleCoreM or baseM, totalIter_ is %d , "
-                "which should be less than or equal to 3.", totalIter_);
+            KERNEL_LOG(
+                KERNEL_ERROR,
+                "Invalid singleCoreM or baseM, totalIter_ is %d , "
+                "which should be less than or equal to 3.",
+                totalIter_);
         });
         ASCENDC_ASSERT((totalIter_ > 0), {
-            KERNEL_LOG(KERNEL_ERROR, "Invalid singleCoreM, totalIter_ is %d , which should be larger than 0",
-                totalIter_);
+            KERNEL_LOG(
+                KERNEL_ERROR, "Invalid singleCoreM, totalIter_ is %d , which should be larger than 0", totalIter_);
         });
     }
 
     template <PolicyType P>
-    __aicore__ inline enable_if_t<P != PolicyType::MATMUL_NBUFFER_33, void>
-    SetSingleShapeFromCFG(AscendC::Std::integral_constant<PolicyType, P>)
+    __aicore__ inline enable_if_t<P != PolicyType::MATMUL_NBUFFER_33, void> SetSingleShapeFromCFG(
+        AscendC::Std::integral_constant<PolicyType, P>)
     {
         totalIter_ = GetMIter(MM_CFG);
-        outerIter_ = Ceil(static_cast<uint32_t>(ToMatmulConfig(MM_CFG).singleCoreM),
-                            static_cast<uint32_t>(ToMatmulConfig(MM_CFG).basicM * ToMatmulConfig(MM_CFG).stepM));
+        outerIter_ = Ceil(
+            static_cast<uint32_t>(ToMatmulConfig(MM_CFG).singleCoreM),
+            static_cast<uint32_t>(ToMatmulConfig(MM_CFG).basicM * ToMatmulConfig(MM_CFG).stepM));
         tailBaseShape_ = ToMatmulConfig(MM_CFG).singleCoreM % ToMatmulConfig(MM_CFG).basicM;
         if (tailBaseShape_ == 0) {
             tailBaseShape_ = ToMatmulConfig(MM_CFG).basicM;
         }
         mainTileShape_ = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM() *
-                        MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM();
+                         MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM();
         tailTileShape_ = ToMatmulConfig(MM_CFG).singleCoreM % mainTileShape_;
         if (tailTileShape_ == 0) {
             tailTileShape_ = mainTileShape_;
@@ -236,10 +213,12 @@ private:
         isA1MFullLoad_ = ToMatmulConfig(MM_CFG).stepM >= totalIter_;
     }
 
-    __aicore__ inline void SetSingleShapeFromCFG(AscendC::Std::integral_constant<PolicyType, PolicyType::MATMUL_NBUFFER_33>)
+    __aicore__ inline void SetSingleShapeFromCFG(
+        AscendC::Std::integral_constant<PolicyType, PolicyType::MATMUL_NBUFFER_33>)
     {
         ASCENDC_ASSERT((ToMatmulConfig(MM_CFG).stepM == N_BUFFER_33_FACTOR), {
-            KERNEL_LOG(KERNEL_ERROR, "StepM %d should be equal to 3 in case of MATMUL_NBUFFER_33 Policy.",
+            KERNEL_LOG(
+                KERNEL_ERROR, "StepM %d should be equal to 3 in case of MATMUL_NBUFFER_33 Policy.",
                 ToMatmulConfig(MM_CFG).stepM);
         });
         totalIter_ = GetMIter(MM_CFG);
@@ -256,8 +235,8 @@ private:
     }
 
     template <PolicyType P>
-    __aicore__ inline enable_if_t<P != PolicyType::MATMUL_NBUFFER_33, void>
-    SetSingleShapeFromTiling(int32_t singleShape, AscendC::Std::integral_constant<PolicyType, P>)
+    __aicore__ inline enable_if_t<P != PolicyType::MATMUL_NBUFFER_33, void> SetSingleShapeFromTiling(
+        int32_t singleShape, AscendC::Std::integral_constant<PolicyType, P>)
     {
         auto tilingBaseM = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM();
         totalIter_ = singleShape / tilingBaseM;
@@ -276,11 +255,12 @@ private:
         isA1MFullLoad_ = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() >= totalIter_;
     }
 
-    __aicore__ inline void SetSingleShapeFromTiling(int32_t singleShape,
-        AscendC::Std::integral_constant<PolicyType, PolicyType::MATMUL_NBUFFER_33>)
+    __aicore__ inline void SetSingleShapeFromTiling(
+        int32_t singleShape, AscendC::Std::integral_constant<PolicyType, PolicyType::MATMUL_NBUFFER_33>)
     {
         ASCENDC_ASSERT((MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() <= N_BUFFER_33_FACTOR), {
-            KERNEL_LOG(KERNEL_ERROR, "StepM %d should be less than or equal to 3 in case of MATMUL_NBUFFER_33 Policy.",
+            KERNEL_LOG(
+                KERNEL_ERROR, "StepM %d should be less than or equal to 3 in case of MATMUL_NBUFFER_33 Policy.",
                 MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM());
         });
         mainTileShape_ = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM();
@@ -299,19 +279,20 @@ private:
     }
 
     template <PolicyType P>
-    __aicore__ inline enable_if_t<P != PolicyType::MATMUL_NBUFFER_33, void>
-    UpdateInnerParamsImpl(AscendC::Std::integral_constant<PolicyType, P>)
+    __aicore__ inline enable_if_t<P != PolicyType::MATMUL_NBUFFER_33, void> UpdateInnerParamsImpl(
+        AscendC::Std::integral_constant<PolicyType, P>)
     {
         if constexpr (IsBasicM(MM_CFG)) {
             baseShape_ = tailBaseShape_;
         } else {
             baseShape_ = (innerIndex_ + 1 == totalIter_) ? tailBaseShape_ :
-                MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM();
+                                                           MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM();
         }
         baseBlockShape_ = Ceil(baseShape_, BLOCK_CUBE);
     }
 
-    __aicore__ inline void UpdateInnerParamsImpl(AscendC::Std::integral_constant<PolicyType, PolicyType::MATMUL_NBUFFER_33>)
+    __aicore__ inline void UpdateInnerParamsImpl(
+        AscendC::Std::integral_constant<PolicyType, PolicyType::MATMUL_NBUFFER_33>)
     {
         if constexpr (IsBasicM(MM_CFG)) {
             tileShape_ = tailTileShape_;
@@ -319,7 +300,7 @@ private:
         } else {
             tileShape_ = (innerIndex_ + 1 == totalIter_) ? tailTileShape_ : mainTileShape_;
             baseShape_ = (innerIndex_ + 1 == totalIter_) ? tailBaseShape_ :
-                MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM();
+                                                           MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM();
         }
         tileBlockShape_ = Ceil(tileShape_, BLOCK_CUBE);
         baseBlockShape_ = Ceil(baseShape_, BLOCK_CUBE);
@@ -335,7 +316,8 @@ protected:
         } else {
             innerStartIdx_ = outerIndex_ * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM();
             innerIter_ = (totalIter_ - innerStartIdx_) > MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() ?
-                MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() : (totalIter_ - innerStartIdx_);
+                             MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() :
+                             (totalIter_ - innerStartIdx_);
             tileShape_ = (outerIndex_ + 1 >= outerIter_) ? tailTileShape_ : mainTileShape_;
         }
         tileBlockShape_ = Ceil(tileShape_, BLOCK_CUBE);
@@ -359,9 +341,9 @@ protected:
     bool isA1MFullLoad_;
 };
 
-}  // namespace Detail
-}  // namespace Impl
-}  // namespace AscendC
+} // namespace Detail
+} // namespace Impl
+} // namespace AscendC
 #endif // _M_LOOP_MDL_BASE_H_
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_ITERATOR_M_LOOP_M_LOOP_MDL_BASE_H__)

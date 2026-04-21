@@ -208,7 +208,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float SinPoly(float x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T CosImpl(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type of input only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type of input only supports float.");
 
     // Step 1: Reduce the angle to the range [0, pi/2) and determine the quadrant
     int quadrant;
@@ -244,7 +244,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T CosImpl(T x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T SinImpl(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type of input only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type of input only supports float.");
 
     // Step 1: Reduce the angle to the range [0, pi/2) and determine the quadrant
     int quadrant;
@@ -277,7 +277,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T SinImpl(T x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void SinCosImpl(T x, T &s, T &c)
 {
-    static_assert(SupportType<T, float>(), "Input type of input only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type of input only supports float.");
  
     int quadrant;
     float t;
@@ -328,7 +328,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float TanPoly(float x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T TanImpl(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type of input only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type of input only supports float.");
 
     // Step 1: Reduce the angle to the range [0, pi/2) and determine the quadrant
     int quadrant;
@@ -368,7 +368,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float TanhImpl(float x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float TanPiImpl(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type of input only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type of input only supports float.");
     return TanImpl(x * ConstantsInternal::PI);
 }
 
@@ -563,7 +563,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float AtanhImpl(float x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T SqrtImpl(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type of input only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type of input only supports float.");
 #if defined(ASCENDC_CPU_DEBUG)
     return sqrt(x);
 #else
@@ -584,7 +584,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T SqrtImpl(T x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T RsqrtImpl(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type of input only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type of input only supports float.");
     return 1.0f / SqrtImpl(x);
 }
 
@@ -604,7 +604,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T RsqrtImpl(T x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T CoshImpl(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type of input only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type of input only supports float.");
     float y = AbsImpl(x);
     const float tmp = ExpImpl(y - ConstantsInternal::SCALAR_LN2);
     return tmp + 0.25f / tmp;
@@ -623,7 +623,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T CoshImpl(T x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T CospiImpl(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type of input only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type of input only supports float.");
     return CosImpl(x * ConstantsInternal::PI);
 }
 
@@ -649,7 +649,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T CospiImpl(T x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AsinImpl(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type of input only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type of input only supports float.");
     if (AbsImpl(x) > 1) {
         return ConstantsInternal::SIMT_FP32_INF / ConstantsInternal::SIMT_FP32_INF;
     }
@@ -694,7 +694,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AsinImpl(T x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AcosImpl(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type of input only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type of input only supports float.");
     return ConstantsInternal::PI_OF_2 - AsinImpl(x);
 }
 
@@ -711,7 +711,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AcosImpl(T x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AcoshImpl(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type of input only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type of input only supports float.");
     if (x < 1) {
         return ConstantsInternal::SIMT_FP32_INF / ConstantsInternal::SIMT_FP32_INF;
     }
@@ -730,7 +730,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AcoshImpl(T x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T SinhImpl(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type of input only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type of input only supports float.");
     if (AbsImpl(x) > 0.1f) {
         return ExpImpl(x - ConstantsInternal::SCALAR_LN2) - ExpImpl(x * (-1.0f) - ConstantsInternal::SCALAR_LN2);
     } else {
@@ -761,7 +761,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T SinhImpl(T x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T SinpiImpl(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type of input only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type of input only supports float.");
     return SinImpl(x * ConstantsInternal::PI);
 }
 
@@ -779,7 +779,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T SinpiImpl(T x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AsinhImpl(T x)
 {
-    static_assert(SupportType<T, float>(), "Input type of input only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type of input only supports float.");
     if (AbsImpl(x) > 0.1f) {
         return x > 0 ? LogImpl(x + SqrtImpl(x * x + 1.0f)) : LogImpl(SqrtImpl(x * x + 1.0f) - x) * (-1);
     } else {
@@ -804,7 +804,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AsinhImpl(T x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void SinCospiImpl(T x, T &s, T &c)
 {
-    static_assert(SupportType<T, float>(), "Input type of input only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type of input only supports float.");
     return SinCosImpl(x * ConstantsInternal::PI, s, c);
 }
 
@@ -821,7 +821,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void SinCospiImpl(T x, T &s, T &c)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T HypotImpl(T x, T y)
 {
-    static_assert(SupportType<T, float>(), "Input type of input only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type of input only supports float.");
     float absX = AbsImpl(x);
     float absY = AbsImpl(y);
     if (IsPositiveInfImpl(absX) || IsPositiveInfImpl(absY)) {
@@ -856,7 +856,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T HypotImpl(T x, T y)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T RhypotImpl(T x, T y)
 {
-    static_assert(SupportType<T, float>(), "Input type of input only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type of input only supports float.");
     return 1.0f / HypotImpl(x, y);
 }
 
@@ -875,8 +875,8 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T RhypotImpl(T x, T y)
 template <typename T1, typename T2>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T1 FrexpImpl(T1 x, T2 &exp)
 {
-    static_assert(SupportType<T1, float>(), "Input type of input(x) only supports float.");
-    static_assert(SupportType<T2, int>(), "Input type of input(exp) only supports int.");
+    static_assert(SupportTypeSimtInternel<T1, float>, "Input type of input(x) only supports float.");
+    static_assert(SupportTypeSimtInternel<T2, int>, "Input type of input(exp) only supports int.");
     if (x == 0.0f || IsPositiveInfImpl(AbsImpl(x)) || IsNanImpl(x)) {
         exp = 0;
         return x;
@@ -915,8 +915,8 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T1 FrexpImpl(T1 x, T2 &exp)
 template <typename T1, typename T2>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T1 LdexpImpl(T1 x, T2 exp)
 {
-    static_assert(SupportType<T1, float>(), "Input type of input only supports float.");
-    static_assert(SupportType<T2, int>(), "Input type of input(exp) only supports int.");
+    static_assert(SupportTypeSimtInternel<T1, float>, "Input type of input only supports float.");
+    static_assert(SupportTypeSimtInternel<T2, int>, "Input type of input(exp) only supports int.");
 
     if (x == 0.0f || IsPositiveInfImpl(AbsImpl(x)) || IsNanImpl(x) || exp == 0) {
         return x;
@@ -962,7 +962,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T1 LdexpImpl(T1 x, T2 exp)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Norm3dImpl(T a, T b, T c)
 {
-    static_assert(SupportType<T, float>(), "Input type only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type only supports float.");
 
     if (IsInfImpl(a) || IsInfImpl(b) || IsInfImpl(c)) {
         return ConstantsInternal::SIMT_FP32_INF;
@@ -1000,7 +1000,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Norm3dImpl(T a, T b, T c)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Rnorm3dImpl(T a, T b, T c)
 {
-    static_assert(SupportType<T, float>(), "Input type only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type only supports float.");
 
     return 1.0f / Norm3dImpl(a, b, c);
 }
@@ -1024,7 +1024,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Rnorm3dImpl(T a, T b, T c)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Norm4dImpl(T a, T b, T c, T d)
 {
-    static_assert(SupportType<T, float>(), "Input type only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type only supports float.");
 
     if (IsInfImpl(a) || IsInfImpl(b) || IsInfImpl(c) || IsInfImpl(d)) {
         return ConstantsInternal::SIMT_FP32_INF;
@@ -1065,7 +1065,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Norm4dImpl(T a, T b, T c, T d)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T Rnorm4dImpl(T a, T b, T c, T d)
 {
-    static_assert(SupportType<T, float>(), "Input type only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type only supports float.");
 
     return 1.0f / Norm4dImpl(a, b, c, d);
 }
@@ -1139,7 +1139,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T2 RnormImpl(T1 n, T2* a)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T PowImpl(T x, T y)
 {
-    static_assert(SupportType<T, float>(), "Input type only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input type only supports float.");
 
 #if defined(ASCENDC_CPU_DEBUG)
     if (x < 0.0f) {
@@ -1290,7 +1290,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline int ILogbImpl(float x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T CbrtImpl(T x)
 {
-    static_assert(SupportType<T, float>(), "Input value type only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input value type only supports float.");
 
     // get the exponent part of x
     uint32_t xBits = *reinterpret_cast<uint32_t *>(&x);
@@ -1346,7 +1346,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T CbrtImpl(T x)
 template <typename T>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline T RcbrtImpl(T x)
 {
-    static_assert(SupportType<T, float>(), "Input value type only supports float.");
+    static_assert(SupportTypeSimtInternel<T, float>, "Input value type only supports float.");
 
     if (x == 0.0f) {
         return ConstantsInternal::SIMT_FP32_INF;

@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file power_float_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/power/power_float_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/power.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/power/power_float_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/power.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_POWER_POWER_FLOAT_IMPL_H__
 #endif
@@ -44,8 +45,8 @@ __aicore__ inline void InitTmpScalar(const LocalTensor<float>& tmpScalar)
 }
 
 // init Power result(dstTensor) = exp(src1 * ln(|src0|))
-__aicore__ inline void InitDst(const LocalTensor<float>& dst, const LocalTensor<float>& src0,
-    const LocalTensor<float>& src1,
+__aicore__ inline void InitDst(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src0, const LocalTensor<float>& src1,
     const UnaryRepeatParams& unaryParam, const BinaryRepeatParams& binaryParam)
 {
     Abs<float, false>(dst, src0, MASK_PLACEHOLDER, 1, unaryParam);
@@ -58,8 +59,9 @@ __aicore__ inline void InitDst(const LocalTensor<float>& dst, const LocalTensor<
 }
 
 // determine negative sign in tmpTensor1
-__aicore__ inline void DetermineSign(const LocalTensor<float>& src1, const AscPowerFParams& param,
-    const UnaryRepeatParams& unaryParam, const BinaryRepeatParams& binaryParam)
+__aicore__ inline void DetermineSign(
+    const LocalTensor<float>& src1, const AscPowerFParams& param, const UnaryRepeatParams& unaryParam,
+    const BinaryRepeatParams& binaryParam)
 {
     Abs<float, false>(param.tmpTensor1, src1, MASK_PLACEHOLDER, 1, unaryParam);
     PipeBarrier<PIPE_V>();
@@ -81,44 +83,47 @@ __aicore__ inline void DetermineSign(const LocalTensor<float>& src1, const AscPo
 }
 
 // generate mask(tmpMask1) for some ones results
-__aicore__ inline void GenMaskForOne(const LocalTensor<float>& src0, const LocalTensor<float>& src1,
-    const AscPowerFParams& param, const UnaryRepeatParams& unaryParam,
-    const BinaryRepeatParams& binaryParam, const uint32_t calCount)
+__aicore__ inline void GenMaskForOne(
+    const LocalTensor<float>& src0, const LocalTensor<float>& src1, const AscPowerFParams& param,
+    const UnaryRepeatParams& unaryParam, const BinaryRepeatParams& binaryParam, const uint32_t calCount)
 {
     NotNumUnion notNum;
     uint8_t repeat = DivCeil(calCount * sizeof(float), ONE_REPEAT_BYTE_SIZE);
 
     Abs<float, false>(param.tmpTensor1, src1, MASK_PLACEHOLDER, 1, unaryParam);
     PipeBarrier<PIPE_V>();
-    CompareScalar<float, uint8_t, false>(param.tmpMask1, param.tmpTensor1, static_cast<float>(0), CMPMODE::NE,
-        MASK_PLACEHOLDER, repeat, unaryParam);
+    CompareScalar<float, uint8_t, false>(
+        param.tmpMask1, param.tmpTensor1, static_cast<float>(0), CMPMODE::NE, MASK_PLACEHOLDER, repeat, unaryParam);
     PipeBarrier<PIPE_V>();
-    CompareScalar<float, uint8_t, false>(param.tmpMask2, src0, static_cast<float>(1), CMPMODE::NE,
-        MASK_PLACEHOLDER, repeat, unaryParam);
+    CompareScalar<float, uint8_t, false>(
+        param.tmpMask2, src0, static_cast<float>(1), CMPMODE::NE, MASK_PLACEHOLDER, repeat, unaryParam);
     PipeBarrier<PIPE_V>();
     SetVectorMask<float>(0, ConstCeil(calCount, sizeof(uint16_t) * ONE_BYTE_BIT_SIZE));
-    And<uint16_t, false>(param.tmpMask1.ReinterpretCast<uint16_t>(), param.tmpMask2.ReinterpretCast<uint16_t>(),
+    And<uint16_t, false>(
+        param.tmpMask1.ReinterpretCast<uint16_t>(), param.tmpMask2.ReinterpretCast<uint16_t>(),
         param.tmpMask1.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1, binaryParam);
     SetVectorMask<float>(0, calCount);
     PipeBarrier<PIPE_V>();
-    CompareScalar<float, uint8_t, false>(param.tmpMask2, src0, static_cast<float>(-1), CMPMODE::NE,
-        MASK_PLACEHOLDER, repeat, unaryParam);
+    CompareScalar<float, uint8_t, false>(
+        param.tmpMask2, src0, static_cast<float>(-1), CMPMODE::NE, MASK_PLACEHOLDER, repeat, unaryParam);
     PipeBarrier<PIPE_V>();
     notNum.i = F32_INF;
-    CompareScalar<float, uint8_t, false>(param.tmpMask3, param.tmpTensor1, notNum.f, CMPMODE::NE,
-        MASK_PLACEHOLDER, repeat, unaryParam);
+    CompareScalar<float, uint8_t, false>(
+        param.tmpMask3, param.tmpTensor1, notNum.f, CMPMODE::NE, MASK_PLACEHOLDER, repeat, unaryParam);
     PipeBarrier<PIPE_V>();
     SetVectorMask<float>(0, ConstCeil(calCount, sizeof(uint16_t) * ONE_BYTE_BIT_SIZE));
-    Or<uint16_t, false>(param.tmpMask2.ReinterpretCast<uint16_t>(), param.tmpMask3.ReinterpretCast<uint16_t>(),
+    Or<uint16_t, false>(
+        param.tmpMask2.ReinterpretCast<uint16_t>(), param.tmpMask3.ReinterpretCast<uint16_t>(),
         param.tmpMask2.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1, binaryParam);
     PipeBarrier<PIPE_V>();
-    And<uint16_t, false>(param.tmpMask1.ReinterpretCast<uint16_t>(), param.tmpMask2.ReinterpretCast<uint16_t>(),
+    And<uint16_t, false>(
+        param.tmpMask1.ReinterpretCast<uint16_t>(), param.tmpMask2.ReinterpretCast<uint16_t>(),
         param.tmpMask1.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1, binaryParam);
     SetVectorMask<float>(0, calCount);
 }
 
-__aicore__ inline void GenMaskForNan(const LocalTensor<float>& src0,
-    const LocalTensor<float>& src1, const AscPowerFParams& param,
+__aicore__ inline void GenMaskForNan(
+    const LocalTensor<float>& src0, const LocalTensor<float>& src1, const AscPowerFParams& param,
     const UnaryRepeatParams& unaryParam, const BinaryRepeatParams& binaryParam, const uint32_t calCount)
 {
     NotNumUnion notNum;
@@ -127,33 +132,35 @@ __aicore__ inline void GenMaskForNan(const LocalTensor<float>& src0,
 
     Abs<float, false>(param.tmpTensor1, src1, MASK_PLACEHOLDER, 1, unaryParam);
     PipeBarrier<PIPE_V>();
-    CompareScalar<float, uint8_t, false>(param.tmpMask1, param.tmpTensor1, notNum.f, CMPMODE::EQ,
-        MASK_PLACEHOLDER, repeat, unaryParam);
+    CompareScalar<float, uint8_t, false>(
+        param.tmpMask1, param.tmpTensor1, notNum.f, CMPMODE::EQ, MASK_PLACEHOLDER, repeat, unaryParam);
     PipeBarrier<PIPE_V>();
     SetVectorMask<float>(0, ConstCeil(calCount, sizeof(uint16_t) * ONE_BYTE_BIT_SIZE));
-    Or<uint16_t, false>(param.tmpMask1.ReinterpretCast<uint16_t>(),
-        param.finiteIntegerYMask.ReinterpretCast<uint16_t>(), param.tmpMask1.ReinterpretCast<uint16_t>(),
-        MASK_PLACEHOLDER, 1, binaryParam);
+    Or<uint16_t, false>(
+        param.tmpMask1.ReinterpretCast<uint16_t>(), param.finiteIntegerYMask.ReinterpretCast<uint16_t>(),
+        param.tmpMask1.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1, binaryParam);
     SetVectorMask<float>(0, calCount);
-    CompareScalar<float, uint8_t, false>(param.tmpMask2, src0, static_cast<float>(0), CMPMODE::GE,
-        MASK_PLACEHOLDER, repeat, unaryParam);
+    CompareScalar<float, uint8_t, false>(
+        param.tmpMask2, src0, static_cast<float>(0), CMPMODE::GE, MASK_PLACEHOLDER, repeat, unaryParam);
     notNum.i = F32_NEG_INF;
-    CompareScalar<float, uint8_t, false>(param.tmpMask3, src0, notNum.f, CMPMODE::EQ,
-        MASK_PLACEHOLDER, repeat, unaryParam);
+    CompareScalar<float, uint8_t, false>(
+        param.tmpMask3, src0, notNum.f, CMPMODE::EQ, MASK_PLACEHOLDER, repeat, unaryParam);
     PipeBarrier<PIPE_V>();
     SetVectorMask<float>(0, ConstCeil(calCount, sizeof(uint16_t) * ONE_BYTE_BIT_SIZE));
-    Or<uint16_t, false>(param.tmpMask2.ReinterpretCast<uint16_t>(), param.tmpMask3.ReinterpretCast<uint16_t>(),
+    Or<uint16_t, false>(
+        param.tmpMask2.ReinterpretCast<uint16_t>(), param.tmpMask3.ReinterpretCast<uint16_t>(),
         param.tmpMask2.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1, binaryParam);
     PipeBarrier<PIPE_V>();
-    Or<uint16_t, false>(param.tmpMask1.ReinterpretCast<uint16_t>(), param.tmpMask2.ReinterpretCast<uint16_t>(),
+    Or<uint16_t, false>(
+        param.tmpMask1.ReinterpretCast<uint16_t>(), param.tmpMask2.ReinterpretCast<uint16_t>(),
         param.tmpMask1.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1, binaryParam);
     SetVectorMask<float>(0, calCount);
 }
 
 // generate select mask(tmpMask1) for sign
-__aicore__ inline void GenMaskForSign(const LocalTensor<float>& src0, const LocalTensor<float>& src1,
-    const AscPowerFParams& param, const UnaryRepeatParams& unaryParam,
-    const BinaryRepeatParams& binaryParam, const uint32_t calCount)
+__aicore__ inline void GenMaskForSign(
+    const LocalTensor<float>& src0, const LocalTensor<float>& src1, const AscPowerFParams& param,
+    const UnaryRepeatParams& unaryParam, const BinaryRepeatParams& binaryParam, const uint32_t calCount)
 {
     constexpr float intThreshold = 0.00000001f;
     const uint8_t repeat = DivCeil(calCount * sizeof(float), ONE_REPEAT_BYTE_SIZE);
@@ -168,19 +175,20 @@ __aicore__ inline void GenMaskForSign(const LocalTensor<float>& src0, const Loca
     PipeBarrier<PIPE_V>();
     Abs<float, false>(param.tmpTensor3, param.tmpTensor3, MASK_PLACEHOLDER, 1, unaryParam);
     PipeBarrier<PIPE_V>();
-    CompareScalar<float, uint8_t, false>(param.finiteIntegerYMask, param.tmpTensor3, static_cast<float>(intThreshold),
-        CMPMODE::LT, MASK_PLACEHOLDER, repeat, unaryParam);
+    CompareScalar<float, uint8_t, false>(
+        param.finiteIntegerYMask, param.tmpTensor3, static_cast<float>(intThreshold), CMPMODE::LT, MASK_PLACEHOLDER,
+        repeat, unaryParam);
     PipeBarrier<PIPE_V>();
     SetVectorMask<float>(0, ConstCeil(calCount, sizeof(uint16_t) * ONE_BYTE_BIT_SIZE));
-    And<uint16_t, false>(param.tmpMask1.ReinterpretCast<uint16_t>(),
-        param.finiteIntegerYMask.ReinterpretCast<uint16_t>(), param.tmpMask1.ReinterpretCast<uint16_t>(),
-        MASK_PLACEHOLDER, 1, binaryParam);
+    And<uint16_t, false>(
+        param.tmpMask1.ReinterpretCast<uint16_t>(), param.finiteIntegerYMask.ReinterpretCast<uint16_t>(),
+        param.tmpMask1.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1, binaryParam);
     SetVectorMask<float>(0, calCount);
 }
 
-__aicore__ inline void CommonPowerF(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor0,
-    const LocalTensor<float>& srcTensor1, const LocalTensor<float>& tmpScalar,
-    const AscPowerFParams& powerParam, const uint32_t calCount)
+__aicore__ inline void CommonPowerF(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor0, const LocalTensor<float>& srcTensor1,
+    const LocalTensor<float>& tmpScalar, const AscPowerFParams& powerParam, const uint32_t calCount)
 {
     const UnaryRepeatParams unaryParam;
     const BinaryRepeatParams binaryParam;
@@ -192,19 +200,22 @@ __aicore__ inline void CommonPowerF(const LocalTensor<float>& dstTensor, const L
     PipeBarrier<PIPE_V>();
     GenMaskForSign(srcTensor0, srcTensor1, powerParam, unaryParam, binaryParam, calCount);
     PipeBarrier<PIPE_V>();
-    VselPowerTensorScalar(powerParam.tmpTensor2, powerParam.tmpMask1, powerParam.tmpTensor1, tmpScalar,
-        SELMODE::VSEL_TENSOR_SCALAR_MODE, 1, binaryParam, calCount);
+    VselPowerTensorScalar(
+        powerParam.tmpTensor2, powerParam.tmpMask1, powerParam.tmpTensor1, tmpScalar, SELMODE::VSEL_TENSOR_SCALAR_MODE,
+        1, binaryParam, calCount);
     PipeBarrier<PIPE_V>();
     Mul<float, false>(dstTensor, powerParam.tmpTensor2, dstTensor, MASK_PLACEHOLDER, 1, binaryParam);
     PipeBarrier<PIPE_V>();
     GenMaskForOne(srcTensor0, srcTensor1, powerParam, unaryParam, binaryParam, calCount);
     PipeBarrier<PIPE_V>();
-    VselPowerTensorScalar(dstTensor, powerParam.tmpMask1, dstTensor, tmpScalar,
-        SELMODE::VSEL_TENSOR_SCALAR_MODE, 1, binaryParam, calCount);
+    VselPowerTensorScalar(
+        dstTensor, powerParam.tmpMask1, dstTensor, tmpScalar, SELMODE::VSEL_TENSOR_SCALAR_MODE, 1, binaryParam,
+        calCount);
     PipeBarrier<PIPE_V>();
     GenMaskForNan(srcTensor0, srcTensor1, powerParam, unaryParam, binaryParam, calCount);
     PipeBarrier<PIPE_V>();
-    VselPowerTensorScalar(dstTensor, powerParam.tmpMask1, dstTensor, tmpScalar[ONE_BLK_SIZE / sizeof(float)],
+    VselPowerTensorScalar(
+        dstTensor, powerParam.tmpMask1, dstTensor, tmpScalar[ONE_BLK_SIZE / sizeof(float)],
         SELMODE::VSEL_TENSOR_SCALAR_MODE, 1, binaryParam, calCount);
     PipeBarrier<PIPE_V>();
 }

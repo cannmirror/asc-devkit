@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file swiglu_common_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/activation/swiglu/swiglu_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/swiglu.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/activation/swiglu/swiglu_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/swiglu.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SWIGLU_COMMON_IMPL_H__
 #endif
@@ -28,7 +29,6 @@
 #endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
 
-
 namespace AscendC {
 constexpr float NUMBER_ONE = 1.0;
 constexpr uint32_t REPEAT_TIME_SWIGLU = 1;
@@ -37,8 +37,9 @@ constexpr uint32_t SWIGLU_FLOAT_TMP_BUFFER_SIZE = 0;
 constexpr uint32_t SWIGLU_STRIDE_DIGITS = 2;
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void SwiGLUImpl(LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0,
-    const LocalTensor<T>& srcTensor1, const float& scalarValue, const uint32_t calCount)
+__aicore__ inline void SwiGLUImpl(
+    LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0, const LocalTensor<T>& srcTensor1,
+    const float& scalarValue, const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -51,19 +52,20 @@ __aicore__ inline void SwiGLUImpl(LocalTensor<T>& dstTensor, const LocalTensor<T
     SwiGLUImpl<T, isReuseSource>(dstTensor, srcTensor0, srcTensor1, scalarValue, sharedTmpBuffer, calCount);
 }
 
-
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void SwiGLUImpl(LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0, const LocalTensor<T>& srcTensor1,
+__aicore__ inline void SwiGLUImpl(
+    LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0, const LocalTensor<T>& srcTensor1,
     const float& scalarValue, const LocalTensor<uint8_t>& sharedTmpBuffer)
 {
-    CHECK_FUNC_HIGHLEVEL_API(SwiGLU, (T, isReuseSource), (
-        dstTensor, srcTensor0, srcTensor1, scalarValue, sharedTmpBuffer));
+    CHECK_FUNC_HIGHLEVEL_API(
+        SwiGLU, (T, isReuseSource), (dstTensor, srcTensor0, srcTensor1, scalarValue, sharedTmpBuffer));
     SwiGLUImpl<T, isReuseSource>(dstTensor, srcTensor0, srcTensor1, scalarValue, sharedTmpBuffer, srcTensor0.GetSize());
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void SwiGLUImpl(LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0,
-    const LocalTensor<T>& srcTensor1, const float& scalarValue)
+__aicore__ inline void SwiGLUImpl(
+    LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0, const LocalTensor<T>& srcTensor1,
+    const float& scalarValue)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -92,21 +94,23 @@ __aicore__ inline void SwiGLUImpl(
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void SwiGLUImpl(LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0,
-    const LocalTensor<T>& srcTensor1, const float& scalarValue, const LocalTensor<uint8_t>& sharedTmpBuffer,
-    const uint32_t calCount)
+__aicore__ inline void SwiGLUImpl(
+    LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0, const LocalTensor<T>& srcTensor1,
+    const float& scalarValue, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
         return;
     }
-    CHECK_FUNC_HIGHLEVEL_API(SwiGLU, (T, isReuseSource), (
-        dstTensor, srcTensor0, srcTensor1, scalarValue, sharedTmpBuffer, calCount));
+    CHECK_FUNC_HIGHLEVEL_API(
+        SwiGLU, (T, isReuseSource), (dstTensor, srcTensor0, srcTensor1, scalarValue, sharedTmpBuffer, calCount));
 
-    ASCENDC_ASSERT((srcTensor0.GetSize() == srcTensor1.GetSize()),
-        { KERNEL_LOG(KERNEL_ERROR, "Input params.GetSize must be equal with each other!"); });
-    ASCENDC_ASSERT((srcTensor0.GetSize() >= calCount && dstTensor.GetSize() >= calCount),
-        { KERNEL_LOG(KERNEL_ERROR, "Size of calCount should be less than or equal to size of Input and Output!"); });
+    ASCENDC_ASSERT((srcTensor0.GetSize() == srcTensor1.GetSize()), {
+        KERNEL_LOG(KERNEL_ERROR, "Input params.GetSize must be equal with each other!");
+    });
+    ASCENDC_ASSERT((srcTensor0.GetSize() >= calCount && dstTensor.GetSize() >= calCount), {
+        KERNEL_LOG(KERNEL_ERROR, "Size of calCount should be less than or equal to size of Input and Output!");
+    });
 
     LocalTensor<float> tmpBuffer = sharedTmpBuffer.ReinterpretCast<float>();
     tmpBuffer.SetSize(sharedTmpBuffer.GetSize() / sizeof(float));
@@ -138,11 +142,9 @@ __aicore__ inline void SwiGLUImpl(LocalTensor<T>& dstTensor, const LocalTensor<T
     if (tail != 0) {
         // if size of tail is not 32B aligned
         bool isTail32BAligned = (tail * sizeof(T) % ONE_BLK_SIZE == 0);
-        auto tail32BAligned = (tail * sizeof(T) / ONE_BLK_SIZE + (isTail32BAligned ? 0 : 1)) *
-                              ONE_BLK_SIZE / sizeof(T);
+        auto tail32BAligned = (tail * sizeof(T) / ONE_BLK_SIZE + (isTail32BAligned ? 0 : 1)) * ONE_BLK_SIZE / sizeof(T);
         SetVectorMask<T>(0, tail);
-        SwiGLUImpl(dstTensor[offset], srcTensor0[offset], srcTensor1[offset],
-                   scalarValue, tmpBuffer, tail32BAligned);
+        SwiGLUImpl(dstTensor[offset], srcTensor0[offset], srcTensor1[offset], scalarValue, tmpBuffer, tail32BAligned);
     }
 
     SetMaskNorm();
@@ -172,8 +174,9 @@ __aicore__ inline void SwishCalcSimplified(
 }
 
 template <typename T>
-__aicore__ inline void SwiGLUImpl(const LocalTensor<T>& dst, const LocalTensor<T>& src0, const LocalTensor<T>& src1,
-    const float& beta, const LocalTensor<float>& sharedTmpBuffer, uint32_t calCount)
+__aicore__ inline void SwiGLUImpl(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src0, const LocalTensor<T>& src1, const float& beta,
+    const LocalTensor<float>& sharedTmpBuffer, uint32_t calCount)
 {
     // Calculate dstTensor = Swish(srcTensor1)
     float scalar = static_cast<float>(static_cast<float>(-1.0) * static_cast<float>(beta));
@@ -186,16 +189,18 @@ __aicore__ inline void SwiGLUImpl(const LocalTensor<T>& dst, const LocalTensor<T
 }
 
 template <>
-__aicore__ inline void SwiGLUImpl<half>(const LocalTensor<half>& dst, const LocalTensor<half>& src0,
-    const LocalTensor<half>& src1, const float& beta, const LocalTensor<float>& sharedTmpBuffer, uint32_t calCount)
+__aicore__ inline void SwiGLUImpl<half>(
+    const LocalTensor<half>& dst, const LocalTensor<half>& src0, const LocalTensor<half>& src1, const float& beta,
+    const LocalTensor<float>& sharedTmpBuffer, uint32_t calCount)
 {
     LocalTensor<float> tmpSrc1FloatBuffer1 = sharedTmpBuffer;
     LocalTensor<float> tmpSrc1FloatBuffer2 = sharedTmpBuffer[calCount];
     LocalTensor<float> tmpSrc0FloatBuffer = sharedTmpBuffer[2 * calCount];
 
     // src1(half) -> tmpSrc1FloatBuffer1(float)
-    Cast<float, half, false>(tmpSrc1FloatBuffer1, src1, RoundMode::CAST_NONE, MASK_PLACEHOLDER,
-        1, { 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE / SWIGLU_STRIDE_DIGITS });
+    Cast<float, half, false>(
+        tmpSrc1FloatBuffer1, src1, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE / SWIGLU_STRIDE_DIGITS});
     PipeBarrier<PIPE_V>();
 
     // Calculate tmpSrc1FloatBuffer2 = Swish(tmpSrc1FloatBuffer1)
@@ -203,8 +208,9 @@ __aicore__ inline void SwiGLUImpl<half>(const LocalTensor<half>& dst, const Loca
     SwishCalcSimplified(tmpSrc1FloatBuffer2, tmpSrc1FloatBuffer1, scalar);
 
     // src0(half) -> tmpSrc0FloatBuffer(float)
-    Cast<float, half, false>(tmpSrc0FloatBuffer, src0, RoundMode::CAST_NONE, MASK_PLACEHOLDER,
-        1, { 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE / SWIGLU_STRIDE_DIGITS });
+    Cast<float, half, false>(
+        tmpSrc0FloatBuffer, src0, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE / SWIGLU_STRIDE_DIGITS});
     PipeBarrier<PIPE_V>();
 
     const BinaryRepeatParams binaryParams;
@@ -213,11 +219,12 @@ __aicore__ inline void SwiGLUImpl<half>(const LocalTensor<half>& dst, const Loca
     PipeBarrier<PIPE_V>();
 
     // tmpSrc1FloatBuffer2(float) -> dst(half)
-    Cast<half, float, false>(dst, tmpSrc1FloatBuffer2, RoundMode::CAST_NONE, MASK_PLACEHOLDER,
-        1, { 1, 1, DEFAULT_REPEAT_STRIDE / SWIGLU_STRIDE_DIGITS, DEFAULT_REPEAT_STRIDE });
+    Cast<half, float, false>(
+        dst, tmpSrc1FloatBuffer2, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE / SWIGLU_STRIDE_DIGITS, DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
 }
-}
+} // namespace AscendC
 #endif // IMPL_ACTIVATION_SWIGLU_SWIGLU_COMMON_IMPL_H
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SWIGLU_COMMON_IMPL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

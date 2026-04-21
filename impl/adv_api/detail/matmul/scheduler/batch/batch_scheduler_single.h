@@ -1,19 +1,20 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file batch_scheduler_single.h
  * \brief
  */
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/scheduler/batch/batch_scheduler_single.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/scheduler/batch/batch_scheduler_single.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_BATCH_BATCH_SCHEDULER_SINGLE_H__
 #endif
@@ -32,10 +33,12 @@ namespace Detail {
     BatchScheduler is only for internal usage, does not support extension or customized specialization!
 */
 template <typename IMPL, class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG>
-class BatchScheduler<IMPL, A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, enable_if_t<
-    !MatmulFeatureTrait<MM_CFG>::IsSupportCmatrixInitVal() &&
-    (A_TYPE::layout == LayoutMode::NORMAL && ToMatmulConfig(MM_CFG).batchMode == BatchMode::SINGLE_LARGE_THAN_L1)>>
-{
+class BatchScheduler<
+    IMPL, A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG,
+    enable_if_t<
+        !MatmulFeatureTrait<MM_CFG>::IsSupportCmatrixInitVal() &&
+        (A_TYPE::layout == LayoutMode::NORMAL &&
+         ToMatmulConfig(MM_CFG).batchMode == BatchMode::SINGLE_LARGE_THAN_L1)>> {
     MATMUL_USE_MODULE(BatchLoop);
     MATMUL_USE_MODULE(MLoop);
     MATMUL_USE_MODULE(NLoop);
@@ -59,7 +62,7 @@ public:
     __aicore__ inline BatchScheduler() = default;
     __aicore__ inline ~BatchScheduler() = default;
 
-    __aicore__ inline void Init(const TCubeTiling *__restrict cubeTiling, TPipe *tpipe)
+    __aicore__ inline void Init(const TCubeTiling* __restrict cubeTiling, TPipe* tpipe)
     {
         MATMUL_MODULE(Scheduler)->Init(cubeTiling, tpipe);
     }
@@ -74,14 +77,16 @@ public:
         } else {
             MATMUL_MODULE(BiasScheduler)->End();
             MATMUL_MODULE(CubeOutBuffer)->Destroy();
-            if constexpr (((IsSameTypeV<SrcT, int8_t> || IsSameTypeV<SrcT, int4b_t>) && IsSameTypeV<DstT, half>) ||
+            if constexpr (
+                ((IsSameTypeV<SrcT, int8_t> || IsSameTypeV<SrcT, int4b_t>)&&IsSameTypeV<DstT, half>) ||
                 (IsSameTypeV<SrcT, int8_t> && (IsSameTypeV<DstT, int8_t> || IsSameTypeV<DstT, uint8_t>))) {
                 MATMUL_MODULE(MatmulQuantProcessor)->Destroy();
             }
         }
     }
 
-    __aicore__ inline void Schedule(const LocalTensor<DstT>& dst, bool enPartialSum, uint8_t enAtomic, bool enSequentialWrite,
+    __aicore__ inline void Schedule(
+        const LocalTensor<DstT>& dst, bool enPartialSum, uint8_t enAtomic, bool enSequentialWrite,
         const uint32_t matrixStrideA, const uint32_t matrixStrideB, const uint32_t matrixStrideC)
     {
         if constexpr (MatmulFeatureTrait<MM_CFG>::IsNeedUB()) {
@@ -89,7 +94,8 @@ public:
         }
     }
 
-    __aicore__ inline void Schedule(const GlobalTensor<DstT>& dst, bool enPartialSum, uint8_t enAtomic, bool enSequentialWrite,
+    __aicore__ inline void Schedule(
+        const GlobalTensor<DstT>& dst, bool enPartialSum, uint8_t enAtomic, bool enSequentialWrite,
         const uint32_t matrixStrideA, const uint32_t matrixStrideB, const uint32_t matrixStrideC)
     {
         ScheduleImpl(dst, enPartialSum, enAtomic, enSequentialWrite, matrixStrideA, matrixStrideB, matrixStrideC);
@@ -97,8 +103,9 @@ public:
 
 private:
     template <class T>
-    __aicore__ inline void ScheduleImpl(const T& dst, bool enPartialSum, uint8_t enAtomic, bool enSequentialWrite,
-        const uint32_t matrixStrideA, const uint32_t matrixStrideB, const uint32_t matrixStrideC)
+    __aicore__ inline void ScheduleImpl(
+        const T& dst, bool enPartialSum, uint8_t enAtomic, bool enSequentialWrite, const uint32_t matrixStrideA,
+        const uint32_t matrixStrideB, const uint32_t matrixStrideC)
     {
         GlobalTensor<TransAT> aGlobal = MATMUL_MODULE(MatmulTensorInfoA)->GetGlobalTensor();
         GlobalTensor<TransBT> bGlobal = MATMUL_MODULE(MatmulTensorInfoB)->GetGlobalTensor();
@@ -107,13 +114,13 @@ private:
         int32_t batchASize = matmulShapeInfo->GetSingleCoreM() * matmulShapeInfo->GetSingleCoreK();
         int32_t batchBSize = matmulShapeInfo->GetSingleCoreK() * matmulShapeInfo->GetSingleCoreN();
         for (batchLoop->OuterStart(); !batchLoop->OuterEnd(); batchLoop->OuterNext()) {
-            MATMUL_MODULE(CopyCubeInA)->SetInput(aGlobal[batchLoop->GetBatchAIndex() * batchASize],
-                matmulShapeInfo->IsTransposeA());
-            MATMUL_MODULE(CopyCubeInB)->SetInput(bGlobal[batchLoop->GetBatchBIndex() * batchBSize],
-                matmulShapeInfo->IsTransposeB());
+            MATMUL_MODULE(CopyCubeInA)
+                ->SetInput(aGlobal[batchLoop->GetBatchAIndex() * batchASize], matmulShapeInfo->IsTransposeA());
+            MATMUL_MODULE(CopyCubeInB)
+                ->SetInput(bGlobal[batchLoop->GetBatchBIndex() * batchBSize], matmulShapeInfo->IsTransposeB());
             if constexpr (IsSameTypeV<SrcT, int8_t> && IsSameTypeV<DstT, half>) {
                 if (MATMUL_MODULE(MatmulQuantProcessor)->GetMatmulQuantMode() == QuantMode_t::VDEQF16 &&
-                    batchLoop->GetOuterIndex() > 0) { 
+                    batchLoop->GetOuterIndex() > 0) {
                     MATMUL_MODULE(MatmulQuantProcessor)->UpdateQuantTensor(matmulShapeInfo->GetSingleCoreN());
                 }
             }
@@ -135,14 +142,19 @@ private:
             return MoveOnFirstIterate();
         } else {
             if constexpr (ToMatmulConfig(MM_CFG).iterateOrder == IterateOrder::UNDEF) {
-                if (likely(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder() ==
-                    static_cast<int>(IterateOrder::ORDER_M))) {
+                if (likely(
+                        MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder() ==
+                        static_cast<int>(IterateOrder::ORDER_M))) {
                     return MoveOnIterateOrderM();
                 } else {
-                    ASCENDC_ASSERT((MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder() ==
-                        static_cast<int>(IterateOrder::ORDER_N)), {KERNEL_LOG(KERNEL_ERROR, "iterateOrder is %d , which should be ORDER_N",
-                        MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder());
-                    });
+                    ASCENDC_ASSERT(
+                        (MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder() ==
+                         static_cast<int>(IterateOrder::ORDER_N)),
+                        {
+                            KERNEL_LOG(
+                                KERNEL_ERROR, "iterateOrder is %d , which should be ORDER_N",
+                                MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder());
+                        });
                     return MoveOnIterateOrderN();
                 }
             } else if constexpr (ToMatmulConfig(MM_CFG).iterateOrder == IterateOrder::ORDER_M) {
@@ -190,8 +202,9 @@ private:
 
     __aicore__ inline void CopyOut(const GlobalTensor<DstT>& gm, int32_t enAtomic, bool enSequentialWrite)
     {
-        MATMUL_MODULE(Scheduler)->GetResult(gm[MATMUL_MODULE(BatchLoop)->GetOuterIndex() *
-            MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreM() * MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN()],
+        MATMUL_MODULE(Scheduler)->GetResult(
+            gm[MATMUL_MODULE(BatchLoop)->GetOuterIndex() * MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreM() *
+               MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN()],
             enAtomic, enSequentialWrite);
         if constexpr (!MatmulFeatureTrait<MM_CFG>::IsNeedUB()) {
             return;
@@ -203,9 +216,9 @@ private:
             WaitFlag<HardEvent::MTE3_MTE2>(eventIDMte3ToMte2);
         } else if constexpr (ToMatmulConfig(MM_CFG).enableL1CacheUB) {
             if ((MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetDepthAL1CacheUB() == 0 &&
-                A_TYPE::format == CubeFormat::ND) ||
+                 A_TYPE::format == CubeFormat::ND) ||
                 (MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetDepthBL1CacheUB() == 0 &&
-                B_TYPE::format == CubeFormat::ND)) {
+                 B_TYPE::format == CubeFormat::ND)) {
                 event_t eventIDMte3ToMte2 = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::MTE3_MTE2));
                 SetFlag<HardEvent::MTE3_MTE2>(eventIDMte3ToMte2);
                 WaitFlag<HardEvent::MTE3_MTE2>(eventIDMte3ToMte2);
@@ -215,8 +228,10 @@ private:
 
     __aicore__ inline void CopyOut(const LocalTensor<DstT>& ubCmatrix, int32_t enAtomic, bool enSequentialWrite)
     {
-        MATMUL_MODULE(Scheduler)->GetResult(ubCmatrix[MATMUL_MODULE(BatchLoop)->GetOuterIndex() *
-            MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreM() * MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN()],
+        MATMUL_MODULE(Scheduler)->GetResult(
+            ubCmatrix
+                [MATMUL_MODULE(BatchLoop)->GetOuterIndex() * MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreM() *
+                 MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN()],
             enAtomic, enSequentialWrite);
         if constexpr (!MatmulFeatureTrait<MM_CFG>::IsNeedUB()) {
             return;
@@ -226,13 +241,14 @@ private:
         SetFlag<HardEvent::V_MTE2>(eventIDVToMte2);
         WaitFlag<HardEvent::V_MTE2>(eventIDVToMte2);
     }
+
 private:
     bool isFirstIter_;
 };
 
-}  // namespace Detail
-}  // namespace Impl
-}  // namespace AscendC
+} // namespace Detail
+} // namespace Impl
+} // namespace AscendC
 #endif // IMPL_MATMUL_SCHEDULER_BATCH_BATCH_SCHEDULER_SINGLE_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_BATCH_BATCH_SCHEDULER_SINGLE_H__)

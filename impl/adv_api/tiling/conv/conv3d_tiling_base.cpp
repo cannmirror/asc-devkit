@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file conv3d_tiling_base.cpp
@@ -63,8 +63,7 @@ void Conv3dTilingBase::SetOrgWeightShape(int64_t orgCo, int64_t orgKd, int64_t o
     this->shapeInfo.coutOpt = this->shapeInfo.orgCo;
 }
 
-void Conv3dTilingBase::SetSingleWeightShape(int64_t singleCi, int64_t singleKd,
-    int64_t singleKh, int64_t singleKw)
+void Conv3dTilingBase::SetSingleWeightShape(int64_t singleCi, int64_t singleKd, int64_t singleKh, int64_t singleKw)
 {
     this->shapeInfo.singlekH = singleKh;
     this->shapeInfo.singlekW = singleKw;
@@ -97,22 +96,24 @@ void Conv3dTilingBase::SetSingleOutputShape(int64_t singleCo, int64_t singleDo, 
     this->shapeInfo.singleM = singleHo * singleWo;
 }
 
-void Conv3dTilingBase::SetWeightType(const ConvCommonApi::TPosition pos, const ConvCommonApi::ConvFormat format, const ConvCommonApi::ConvDtype dtype)
+void Conv3dTilingBase::SetWeightType(
+    const ConvCommonApi::TPosition pos, const ConvCommonApi::ConvFormat format, const ConvCommonApi::ConvDtype dtype)
 {
     this->descInfo.weightType.pos = pos;
     this->descInfo.weightType.format = format;
     this->descInfo.weightType.dtype = dtype;
 }
 
-void Conv3dTilingBase::SetInputType(const ConvCommonApi::TPosition pos, const ConvCommonApi::ConvFormat format, const ConvCommonApi::ConvDtype dtype)
+void Conv3dTilingBase::SetInputType(
+    const ConvCommonApi::TPosition pos, const ConvCommonApi::ConvFormat format, const ConvCommonApi::ConvDtype dtype)
 {
     this->descInfo.fMapType.pos = pos;
     this->descInfo.fMapType.format = format;
     this->descInfo.fMapType.dtype = dtype;
 }
 
-void Conv3dTilingBase::SetPadding(int64_t padHead, int64_t padTail, int64_t padUp, int64_t padDown,
-        int64_t padLeft, int64_t padRight)
+void Conv3dTilingBase::SetPadding(
+    int64_t padHead, int64_t padTail, int64_t padUp, int64_t padDown, int64_t padLeft, int64_t padRight)
 {
     this->attrInfo.padHead = padHead;
     this->attrInfo.padTail = padTail;
@@ -136,7 +137,8 @@ void Conv3dTilingBase::SetStride(int64_t strideD, int64_t strideH, int64_t strid
     this->attrInfo.strideW = strideW;
 }
 
-void Conv3dTilingBase::SetBiasType(const ConvCommonApi::TPosition pos, const ConvCommonApi::ConvFormat format, const ConvCommonApi::ConvDtype dtype)
+void Conv3dTilingBase::SetBiasType(
+    const ConvCommonApi::TPosition pos, const ConvCommonApi::ConvFormat format, const ConvCommonApi::ConvDtype dtype)
 {
     this->hasBias = true;
     this->descInfo.biasType.pos = pos;
@@ -159,7 +161,8 @@ void Conv3dTilingBase::SetGroups(int64_t groups)
     this->attrInfo.groupOpt = this->attrInfo.groups;
 }
 
-void Conv3dTilingBase::SetOutputType(const ConvCommonApi::TPosition pos, const ConvCommonApi::ConvFormat format, const ConvCommonApi::ConvDtype dtype)
+void Conv3dTilingBase::SetOutputType(
+    const ConvCommonApi::TPosition pos, const ConvCommonApi::ConvFormat format, const ConvCommonApi::ConvDtype dtype)
 {
     this->descInfo.outputType.pos = pos;
     this->descInfo.outputType.format = format;
@@ -226,31 +229,33 @@ bool Conv3dTilingBase::CheckInputAttr()
 {
     if (this->attrInfo.groups != 1 || this->attrInfo.groupOpt != 1) {
         TILING_LOG_ERROR(
-            "Illegal attrs have set: groups=%ld, groupOpt=%ld.", 
-            this->attrInfo.groups, this->attrInfo.groupOpt);
+            "Illegal attrs have set: groups=%ld, groupOpt=%ld.", this->attrInfo.groups, this->attrInfo.groupOpt);
         return false;
     }
 
-    bool padInvalidFlag = (this->attrInfo.padLeft < 0 || this->attrInfo.padRight < 0 ||
-        this->attrInfo.padUp < 0 || this->attrInfo.padDown < 0 ||
-        this->attrInfo.padHead < 0 || this->attrInfo.padTail < 0);
+    bool padInvalidFlag =
+        (this->attrInfo.padLeft < 0 || this->attrInfo.padRight < 0 || this->attrInfo.padUp < 0 ||
+         this->attrInfo.padDown < 0 || this->attrInfo.padHead < 0 || this->attrInfo.padTail < 0);
     if (padInvalidFlag) {
         TILING_LOG_ERROR(
             "Illegal attrs have set: padUp=%ld, padDown=%ld, padLeft=%ld, padRight=%ld, padHead=%ld, padTail=%ld, "
-            "which must >= 0.", this->attrInfo.padUp, this->attrInfo.padDown, this->attrInfo.padLeft,
-            this->attrInfo.padRight, this->attrInfo.padHead, this->attrInfo.padTail);
+            "which must >= 0.",
+            this->attrInfo.padUp, this->attrInfo.padDown, this->attrInfo.padLeft, this->attrInfo.padRight,
+            this->attrInfo.padHead, this->attrInfo.padTail);
         return false;
     }
 
     if (this->attrInfo.strideH <= 0 || this->attrInfo.strideW <= 0 || this->attrInfo.strideD <= 0) {
-        TILING_LOG_ERROR("Illegal attrs have set: strideH=%ld, strideW=%ld, strideD=%ld, which must > 0.",
-                         this->attrInfo.strideH, this->attrInfo.strideW, this->attrInfo.strideD);
+        TILING_LOG_ERROR(
+            "Illegal attrs have set: strideH=%ld, strideW=%ld, strideD=%ld, which must > 0.", this->attrInfo.strideH,
+            this->attrInfo.strideW, this->attrInfo.strideD);
         return false;
     }
 
     if (this->attrInfo.dilationH <= 0 || this->attrInfo.dilationW <= 0 || this->attrInfo.dilationD <= 0) {
-        TILING_LOG_ERROR("Illegal attrs have set: dilationH=%ld, dilationW=%ld, dilationD=%ld, which must > 0.",
-                         this->attrInfo.dilationH, this->attrInfo.dilationW, this->attrInfo.dilationD);
+        TILING_LOG_ERROR(
+            "Illegal attrs have set: dilationH=%ld, dilationW=%ld, dilationD=%ld, which must > 0.",
+            this->attrInfo.dilationH, this->attrInfo.dilationW, this->attrInfo.dilationD);
         return false;
     }
 
@@ -282,7 +287,8 @@ static void CheckOrgInputInfoUpper(const Conv3DInputshape& conv3DInputshape)
         TILING_LOG_WARNING("kD (%ld) is out of range[1, %ld].", conv3DInputshape.orgkD, MAX_ONE_DIM_SIZE);
     }
 
-    int64_t inputSize = conv3DInputshape.orgCi * conv3DInputshape.orgDi * conv3DInputshape.orgHi * conv3DInputshape.orgWi;
+    int64_t inputSize =
+        conv3DInputshape.orgCi * conv3DInputshape.orgDi * conv3DInputshape.orgHi * conv3DInputshape.orgWi;
     if (inputSize > MAX_ORI_INPUT_SIZE) {
         TILING_LOG_WARNING("Cin*Din*Hin*Win (%ld) is out of range[1, %ld].", inputSize, MAX_ORI_INPUT_SIZE);
     }
@@ -290,16 +296,19 @@ static void CheckOrgInputInfoUpper(const Conv3DInputshape& conv3DInputshape)
 
 bool Conv3dTilingBase::CheckOrgInputInfo()
 {
-    if (this->shapeInfo.orgkH <= 0 || this->shapeInfo.orgkW <= 0 || 
-        this->shapeInfo.orgCo <= 0 || this->shapeInfo.orgkD <= 0) {
-        TILING_LOG_ERROR("Input illegal weight shapes have set: Co=%ld, kH=%ld, kW=%ld, kD=%ld, "
-            "which must > 0.", this->shapeInfo.orgCo, this->shapeInfo.orgkH, 
-            this->shapeInfo.orgkW, this->shapeInfo.orgkD);
+    if (this->shapeInfo.orgkH <= 0 || this->shapeInfo.orgkW <= 0 || this->shapeInfo.orgCo <= 0 ||
+        this->shapeInfo.orgkD <= 0) {
+        TILING_LOG_ERROR(
+            "Input illegal weight shapes have set: Co=%ld, kH=%ld, kW=%ld, kD=%ld, "
+            "which must > 0.",
+            this->shapeInfo.orgCo, this->shapeInfo.orgkH, this->shapeInfo.orgkW, this->shapeInfo.orgkD);
         return false;
     }
 
-    if (this->shapeInfo.orgCi <= 0 || this->shapeInfo.orgHi <= 0 || this->shapeInfo.orgWi <= 0 || this->shapeInfo.orgDi <= 0) {
-        TILING_LOG_ERROR("Input illegal featureMap shapes have set: Ci=%ld, Hi=%ld, Wi=%ld, Di=%ld, which must > 0.",
+    if (this->shapeInfo.orgCi <= 0 || this->shapeInfo.orgHi <= 0 || this->shapeInfo.orgWi <= 0 ||
+        this->shapeInfo.orgDi <= 0) {
+        TILING_LOG_ERROR(
+            "Input illegal featureMap shapes have set: Ci=%ld, Hi=%ld, Wi=%ld, Di=%ld, which must > 0.",
             this->shapeInfo.orgCi, this->shapeInfo.orgHi, this->shapeInfo.orgWi, this->shapeInfo.orgDi);
         return false;
     }
@@ -311,34 +320,39 @@ bool Conv3dTilingBase::CheckOrgInputInfo()
 
 bool Conv3dTilingBase::CheckSingleInputInfo()
 {
-    if (this->shapeInfo.singlekH <= 0 || this->shapeInfo.singlekW <= 0 ||
-        this->shapeInfo.singleCo <= 0 || this->shapeInfo.singlekD <= 0) {
-        TILING_LOG_ERROR("Illegal singleCore weight shapes have set: Co=%ld, kH=%ld, kW=%ld, kD=%ld, which must > 0.",
+    if (this->shapeInfo.singlekH <= 0 || this->shapeInfo.singlekW <= 0 || this->shapeInfo.singleCo <= 0 ||
+        this->shapeInfo.singlekD <= 0) {
+        TILING_LOG_ERROR(
+            "Illegal singleCore weight shapes have set: Co=%ld, kH=%ld, kW=%ld, kD=%ld, which must > 0.",
             this->shapeInfo.singleCo, this->shapeInfo.singlekH, this->shapeInfo.singlekW, this->shapeInfo.singlekD);
         return false;
     }
 
     if (this->shapeInfo.singleCo > this->shapeInfo.orgCo) {
-        TILING_LOG_ERROR("Illegal singleCo have set: singleCo=%ld, orgCo=%ld, which must <= orgCo.",
-            this->shapeInfo.singleCo, this->shapeInfo.orgCo);
+        TILING_LOG_ERROR(
+            "Illegal singleCo have set: singleCo=%ld, orgCo=%ld, which must <= orgCo.", this->shapeInfo.singleCo,
+            this->shapeInfo.orgCo);
         return false;
     }
 
     if (this->shapeInfo.singleCi > this->shapeInfo.orgCi) {
-        TILING_LOG_ERROR("Illegal singleCi have set: singleCi=%ld, orgCi=%ld, which must <= orgCi.",
-            this->shapeInfo.singleCi, this->shapeInfo.orgCi);
+        TILING_LOG_ERROR(
+            "Illegal singleCi have set: singleCi=%ld, orgCi=%ld, which must <= orgCi.", this->shapeInfo.singleCi,
+            this->shapeInfo.orgCi);
         return false;
     }
 
     if (this->shapeInfo.singleCi <= 0 || this->shapeInfo.singleDo <= 0 || this->shapeInfo.singleM <= 0) {
-        TILING_LOG_ERROR("Illegal singleCore featureMap shapes have set: Ci=%ld, Do=%ld, M=%ld, which must > 0.",
+        TILING_LOG_ERROR(
+            "Illegal singleCore featureMap shapes have set: Ci=%ld, Do=%ld, M=%ld, which must > 0.",
             this->shapeInfo.singleCi, this->shapeInfo.singleDo, this->shapeInfo.singleM);
         return false;
     }
 
     if (this->shapeInfo.cinOpt <= 0 || this->shapeInfo.coutOpt <= 0) {
-        TILING_LOG_ERROR("Illegal cinOpt and coutOpt have set: cinOpt=%ld, coutOpt=%ld.",
-            this->shapeInfo.cinOpt, this->shapeInfo.coutOpt);
+        TILING_LOG_ERROR(
+            "Illegal cinOpt and coutOpt have set: cinOpt=%ld, coutOpt=%ld.", this->shapeInfo.cinOpt,
+            this->shapeInfo.coutOpt);
         return false;
     }
 
@@ -347,24 +361,26 @@ bool Conv3dTilingBase::CheckSingleInputInfo()
 
 bool Conv3dTilingBase::CheckInputConstraint()
 {
-    if (this->shapeInfo.singlekH != this->shapeInfo.orgkH || this->shapeInfo.singlekW != this->shapeInfo.orgkW
-        || this->shapeInfo.singlekD != this->shapeInfo.orgkD) {
-        TILING_LOG_ERROR("Support singlekH = orgkH, singlekW = orgkW, singlekD = orgkD, "
-            "current singlekH: %ld, orgkH: %ld, singlekW: %ld, orgkW: %ld, singlekD: %ld, orgkD: %ld", this->shapeInfo.singlekH,
-            this->shapeInfo.orgkH, this->shapeInfo.singlekW, this->shapeInfo.orgkW, this->shapeInfo.singlekD,
-            this->shapeInfo.orgkD);
+    if (this->shapeInfo.singlekH != this->shapeInfo.orgkH || this->shapeInfo.singlekW != this->shapeInfo.orgkW ||
+        this->shapeInfo.singlekD != this->shapeInfo.orgkD) {
+        TILING_LOG_ERROR(
+            "Support singlekH = orgkH, singlekW = orgkW, singlekD = orgkD, "
+            "current singlekH: %ld, orgkH: %ld, singlekW: %ld, orgkW: %ld, singlekD: %ld, orgkD: %ld",
+            this->shapeInfo.singlekH, this->shapeInfo.orgkH, this->shapeInfo.singlekW, this->shapeInfo.orgkW,
+            this->shapeInfo.singlekD, this->shapeInfo.orgkD);
         return false;
     }
 
-    if (this->attrInfo.groups == 1 && (this->shapeInfo.orgCi != this->shapeInfo.cinOpt
-        || this->shapeInfo.orgCo != this->shapeInfo.coutOpt)) {
+    if (this->attrInfo.groups == 1 &&
+        (this->shapeInfo.orgCi != this->shapeInfo.cinOpt || this->shapeInfo.orgCo != this->shapeInfo.coutOpt)) {
         TILING_LOG_ERROR("cinOpt not equal to orgCi or coutOpt not equal to orgCo in groups 1");
         return false;
     }
 
     if (this->shapeInfo.singleCi != this->shapeInfo.cinOpt) {
-        TILING_LOG_ERROR("Support singleCi = cinOpt, current singleCi: %ld, cinOpt: %ld", this->shapeInfo.singleCi,
-                         this->shapeInfo.cinOpt);
+        TILING_LOG_ERROR(
+            "Support singleCi = cinOpt, current singleCi: %ld, cinOpt: %ld", this->shapeInfo.singleCi,
+            this->shapeInfo.cinOpt);
         return false;
     }
     return true;
@@ -390,24 +406,20 @@ bool Conv3dTilingBase::CheckInputShape()
 bool Conv3dTilingBase::CheckInputFormat()
 {
     if (this->descInfo.weightType.format != ConvCommonApi::ConvFormat::FRACTAL_Z_3D) {
-        TILING_LOG_ERROR("Unsupported weight format: %s.",
-                         g_formatToStr.at(this->descInfo.weightType.format).c_str());
+        TILING_LOG_ERROR("Unsupported weight format: %s.", g_formatToStr.at(this->descInfo.weightType.format).c_str());
         return false;
     }
 
     if (this->descInfo.fMapType.format != ConvCommonApi::ConvFormat::NDC1HWC0) {
-        TILING_LOG_ERROR("Unsupported input format: %s.",
-                         g_formatToStr.at(this->descInfo.fMapType.format).c_str());
+        TILING_LOG_ERROR("Unsupported input format: %s.", g_formatToStr.at(this->descInfo.fMapType.format).c_str());
         return false;
     }
     if (this->descInfo.outputType.format != ConvCommonApi::ConvFormat::NDC1HWC0) {
-        TILING_LOG_ERROR("Unsupported output format: %s",
-                         g_formatToStr.at(this->descInfo.outputType.format).c_str());
+        TILING_LOG_ERROR("Unsupported output format: %s", g_formatToStr.at(this->descInfo.outputType.format).c_str());
         return false;
     }
     if (this->hasBias && this->descInfo.biasType.format != ConvCommonApi::ConvFormat::ND) {
-        TILING_LOG_ERROR("Unsupported bias format: %s",
-                        g_formatToStr.at(this->descInfo.biasType.format).c_str());
+        TILING_LOG_ERROR("Unsupported bias format: %s", g_formatToStr.at(this->descInfo.biasType.format).c_str());
         return false;
     }
 
@@ -418,16 +430,16 @@ bool Conv3dTilingBase::CheckParamsDtype()
 {
     if (this->hasBias) {
         std::vector<ConvCommonApi::ConvDtype> paramsType = {
-            this->descInfo.fMapType.dtype, this->descInfo.weightType.dtype,
-            this->descInfo.biasType.dtype, this->descInfo.outputType.dtype
-        };
+            this->descInfo.fMapType.dtype, this->descInfo.weightType.dtype, this->descInfo.biasType.dtype,
+            this->descInfo.outputType.dtype};
 
         for (uint64_t kindsId = 0; kindsId < SUPPORTED_TYPES_WITH_BIAS.size(); ++kindsId) {
             if (IsArrayEqual(paramsType, SUPPORTED_TYPES_WITH_BIAS[kindsId], COUNT_PARAMS_BIAS)) {
                 return true;
             }
         }
-        TILING_LOG_ERROR("Unsupported params data type [input, weight, bias, output]: [%s, %s, %s, %s].",
+        TILING_LOG_ERROR(
+            "Unsupported params data type [input, weight, bias, output]: [%s, %s, %s, %s].",
             g_dtypeToStr.at(this->descInfo.fMapType.dtype).c_str(),
             g_dtypeToStr.at(this->descInfo.weightType.dtype).c_str(),
             g_dtypeToStr.at(this->descInfo.biasType.dtype).c_str(),
@@ -435,15 +447,15 @@ bool Conv3dTilingBase::CheckParamsDtype()
         return false;
     } else {
         std::vector<ConvCommonApi::ConvDtype> paramsType = {
-            this->descInfo.fMapType.dtype, this->descInfo.weightType.dtype, this->descInfo.outputType.dtype
-        };
+            this->descInfo.fMapType.dtype, this->descInfo.weightType.dtype, this->descInfo.outputType.dtype};
 
         for (uint64_t kindsId = 0; kindsId < SUPPORTED_TYPES_WITHOUT_BIAS.size(); ++kindsId) {
             if (IsArrayEqual(paramsType, SUPPORTED_TYPES_WITHOUT_BIAS[kindsId], COUNT_PARAMS_NO_BIAS)) {
                 return true;
             }
         }
-        TILING_LOG_ERROR("Unsupported params data type [input, weight, output]: [%s, %s, %s].",
+        TILING_LOG_ERROR(
+            "Unsupported params data type [input, weight, output]: [%s, %s, %s].",
             g_dtypeToStr.at(this->descInfo.fMapType.dtype).c_str(),
             g_dtypeToStr.at(this->descInfo.weightType.dtype).c_str(),
             g_dtypeToStr.at(this->descInfo.outputType.dtype).c_str());
@@ -457,8 +469,8 @@ bool Conv3dTilingBase::CheckLoad3DLimits()
     if (static_cast<uint32_t>(this->attrInfo.strideH) > LOAD3D_MAX_STRIDE_H_W ||
         static_cast<uint32_t>(this->attrInfo.strideW) > LOAD3D_MAX_STRIDE_H_W) {
         TILING_LOG_ERROR(
-            "Attrs not satisfy Load3D's limits: strideH=%ld, strideW=%ld, which must <= %u.",
-            this->attrInfo.strideH, this->attrInfo.strideW, LOAD3D_MAX_STRIDE_H_W);
+            "Attrs not satisfy Load3D's limits: strideH=%ld, strideW=%ld, which must <= %u.", this->attrInfo.strideH,
+            this->attrInfo.strideW, LOAD3D_MAX_STRIDE_H_W);
         return false;
     }
 
@@ -470,10 +482,11 @@ bool Conv3dTilingBase::CheckLoad3DLimits()
         return false;
     }
 
-    bool padLoad3dInvalid = (static_cast<uint32_t>(this->attrInfo.padLeft) > LOAD3D_MAX_PAD ||
-        static_cast<uint32_t>(this->attrInfo.padRight) > LOAD3D_MAX_PAD ||
-        static_cast<uint32_t>(this->attrInfo.padUp) > LOAD3D_MAX_PAD ||
-        static_cast<uint32_t>(this->attrInfo.padDown) > LOAD3D_MAX_PAD);
+    bool padLoad3dInvalid =
+        (static_cast<uint32_t>(this->attrInfo.padLeft) > LOAD3D_MAX_PAD ||
+         static_cast<uint32_t>(this->attrInfo.padRight) > LOAD3D_MAX_PAD ||
+         static_cast<uint32_t>(this->attrInfo.padUp) > LOAD3D_MAX_PAD ||
+         static_cast<uint32_t>(this->attrInfo.padDown) > LOAD3D_MAX_PAD);
     if (padLoad3dInvalid) {
         TILING_LOG_ERROR(
             "Attrs not satisfy Load3D's limits: padUp=%ld, padDown=%ld, padLeft=%ld, padRight=%ld, "
@@ -484,16 +497,18 @@ bool Conv3dTilingBase::CheckLoad3DLimits()
     }
 
     if (this->shapeInfo.orgkH > LOAD3D_MAX_FILTER_H_W || this->shapeInfo.orgkW > LOAD3D_MAX_FILTER_H_W) {
-        TILING_LOG_ERROR("Weight shape not satisfy Load3D's limits: kh=%ld, kw=%ld, which must <= %u.",
-                         this->shapeInfo.orgkH, this->shapeInfo.orgkW, LOAD3D_MAX_FILTER_H_W);
+        TILING_LOG_ERROR(
+            "Weight shape not satisfy Load3D's limits: kh=%ld, kw=%ld, which must <= %u.", this->shapeInfo.orgkH,
+            this->shapeInfo.orgkW, LOAD3D_MAX_FILTER_H_W);
         return false;
     }
 
     auto k0Size = C0_BYTE_SIZE / g_dtypeSizeTab.at(this->descInfo.fMapType.dtype);
     uint64_t tmpkHWSize = this->shapeInfo.orgkH * this->shapeInfo.orgkW * k0Size;
     if (tmpkHWSize > LOAD3D_MAX_DDR2L1_SIZE) {
-        TILING_LOG_ERROR("Weight shape not satisfy Load3D's limits: kH*kW*k0=%lu, which must <= %u.",
-                         tmpkHWSize, LOAD3D_MAX_DDR2L1_SIZE);
+        TILING_LOG_ERROR(
+            "Weight shape not satisfy Load3D's limits: kH*kW*k0=%lu, which must <= %u.", tmpkHWSize,
+            LOAD3D_MAX_DDR2L1_SIZE);
         return false;
     }
 
@@ -508,10 +523,12 @@ bool Conv3dTilingBase::CheckLoadL1SizeLimits()
     uint32_t fMapDtypeSize = static_cast<uint32_t>(g_dtypeSizeTab.at(this->descInfo.fMapType.dtype));
     uint32_t biasDtypeSize = static_cast<uint32_t>(g_dtypeSizeTab.at(this->descInfo.biasType.dtype));
 
-    uint32_t minBiasSize = this->hasBias ? AlignB(n0 * biasDtypeSize, C0_BYTE_SIZE): 0;
+    uint32_t minBiasSize = this->hasBias ? AlignB(n0 * biasDtypeSize, C0_BYTE_SIZE) : 0;
     uint64_t minAL1Size = 0;
     uint64_t orgWo = (this->shapeInfo.orgWi + this->attrInfo.padLeft + this->attrInfo.padRight -
-                             this->attrInfo.dilationW * (this->shapeInfo.orgkW - 1) - 1) / this->attrInfo.strideW + 1;
+                      this->attrInfo.dilationW * (this->shapeInfo.orgkW - 1) - 1) /
+                         this->attrInfo.strideW +
+                     1;
     uint64_t hoAL1min = m0 / orgWo + 2;
     uint64_t tmpHiAL1 = InferHiL1(
         hoAL1min, this->shapeInfo.orgHi, this->shapeInfo.orgkH, this->attrInfo.dilationH, this->attrInfo.strideH);
@@ -540,8 +557,9 @@ bool Conv3dTilingBase::CheckHF32()
         return false;
     }
     if (this->hf32Enable_ && this->descInfo.fMapType.dtype != ConvCommonApi::ConvDtype::FLOAT32) {
-        TILING_LOG_ERROR("hf32Enable can only be true when the dtype is float32, but now is %s.",
-                          g_dtypeToStr.at(this->descInfo.fMapType.dtype).c_str());
+        TILING_LOG_ERROR(
+            "hf32Enable can only be true when the dtype is float32, but now is %s.",
+            g_dtypeToStr.at(this->descInfo.fMapType.dtype).c_str());
         return false;
     }
     return true;
@@ -559,18 +577,21 @@ bool Conv3dTilingBase::CheckPaddedInput()
     int64_t paddedInputW = this->shapeInfo.orgWi + this->attrInfo.padLeft + this->attrInfo.padRight;
 
     if (dilatedKernelD > paddedInputD) {
-        TILING_LOG_ERROR("Dilated kernel depth[%ld] should not be larger than the padded input depth[%ld].",
-                          dilatedKernelD, paddedInputD);
+        TILING_LOG_ERROR(
+            "Dilated kernel depth[%ld] should not be larger than the padded input depth[%ld].", dilatedKernelD,
+            paddedInputD);
         return false;
     }
     if (dilatedKernelH > paddedInputH) {
-        TILING_LOG_ERROR("Dilated kernel height[%ld] should not be larger than the padded input height[%ld].",
-                          dilatedKernelH, paddedInputH);
+        TILING_LOG_ERROR(
+            "Dilated kernel height[%ld] should not be larger than the padded input height[%ld].", dilatedKernelH,
+            paddedInputH);
         return false;
     }
     if (dilatedKernelW > paddedInputW) {
-        TILING_LOG_ERROR("Dilated kernel width[%ld] should not be larger than the padded input width[%ld].",
-                          dilatedKernelW, paddedInputW);
+        TILING_LOG_ERROR(
+            "Dilated kernel width[%ld] should not be larger than the padded input width[%ld].", dilatedKernelW,
+            paddedInputW);
         return false;
     }
 
@@ -597,7 +618,8 @@ void Conv3dTilingBase::SetFinalTilingBasicInfo(optiling::TConv3DApiTiling& tilin
     tiling.set_kernelW(this->shapeInfo.orgkW);
     tiling.set_orgHixWi(this->shapeInfo.orgHi * this->shapeInfo.orgWi);
     tiling.set_orgHoxWo(this->shapeCalc.orgHo * this->shapeCalc.orgWo);
-    tiling.set_cin1xOriHixOriWixk0(this->shapeCalc.singleCi1 * this->shapeInfo.orgHi * this->shapeInfo.orgWi * this->cubeInfo.k0);
+    tiling.set_cin1xOriHixOriWixk0(
+        this->shapeCalc.singleCi1 * this->shapeInfo.orgHi * this->shapeInfo.orgWi * this->cubeInfo.k0);
     tiling.set_oriHixOriWixk0(this->shapeInfo.orgHi * this->shapeInfo.orgWi * this->cubeInfo.k0);
     tiling.set_oriWixk0(this->shapeInfo.orgWi * this->cubeInfo.k0);
     tiling.set_kernelHxkernelW(this->shapeInfo.orgkH * this->shapeInfo.orgkW);
@@ -767,14 +789,21 @@ void Conv3dTilingBase::GetCubeInfo()
 bool Conv3dTilingBase::ShapeInitCalc()
 {
     this->shapeCalc.orgHo = (this->shapeInfo.orgHi + this->attrInfo.padUp + this->attrInfo.padDown -
-                             this->attrInfo.dilationH * (this->shapeInfo.orgkH - 1) - 1) / this->attrInfo.strideH + 1;
+                             this->attrInfo.dilationH * (this->shapeInfo.orgkH - 1) - 1) /
+                                this->attrInfo.strideH +
+                            1;
     this->shapeCalc.orgWo = (this->shapeInfo.orgWi + this->attrInfo.padLeft + this->attrInfo.padRight -
-                             this->attrInfo.dilationW * (this->shapeInfo.orgkW - 1) - 1) / this->attrInfo.strideW + 1;
+                             this->attrInfo.dilationW * (this->shapeInfo.orgkW - 1) - 1) /
+                                this->attrInfo.strideW +
+                            1;
     this->shapeCalc.orgDo = (this->shapeInfo.orgDi + this->attrInfo.padHead + this->attrInfo.padTail -
-                             this->attrInfo.dilationD * (this->shapeInfo.orgkD - 1) - 1) / this->attrInfo.strideD + 1;
+                             this->attrInfo.dilationD * (this->shapeInfo.orgkD - 1) - 1) /
+                                this->attrInfo.strideD +
+                            1;
     if (this->shapeCalc.orgHo <= 0 || this->shapeCalc.orgWo <= 0 || this->shapeCalc.orgDo <= 0) {
-        TILING_LOG_ERROR("Illegal org output shapes cal get: Ho=%lu, Wo=%lu, Do=%lu, which should > 0.",
-                         this->shapeCalc.orgHo, this->shapeCalc.orgWo, this->shapeCalc.orgDo);
+        TILING_LOG_ERROR(
+            "Illegal org output shapes cal get: Ho=%lu, Wo=%lu, Do=%lu, which should > 0.", this->shapeCalc.orgHo,
+            this->shapeCalc.orgWo, this->shapeCalc.orgDo);
         return false;
     }
     if (this->shapeCalc.orgDo > MAX_ONE_DIM_SIZE) {
@@ -787,8 +816,9 @@ bool Conv3dTilingBase::ShapeInitCalc()
         TILING_LOG_WARNING("Wout (%lu) is out of range[1, %lu].", this->shapeCalc.orgWo, MAX_OUT_ONE_DIM_SIZE);
     }
     if (this->shapeInfo.singleDo > static_cast<int64_t>(this->shapeCalc.orgDo)) {
-        TILING_LOG_ERROR("Illegal singleDo have set: singleDo=%ld, orgDo=%lu, which should <= orgDo.",
-                         this->shapeInfo.singleDo, this->shapeCalc.orgDo);
+        TILING_LOG_ERROR(
+            "Illegal singleDo have set: singleDo=%ld, orgDo=%lu, which should <= orgDo.", this->shapeInfo.singleDo,
+            this->shapeCalc.orgDo);
         return false;
     }
     this->shapeCalc.singleCi1 = CeilDiv(this->shapeInfo.singleCi, this->cubeInfo.k0);
@@ -801,22 +831,22 @@ bool Conv3dTilingBase::ShapeInitCalc()
 bool Conv3dTilingBase::CheckParamsOverflow()
 {
     uint64_t prod;
-    bool isOverflow = MulWithOverflowCheck(
-        prod, static_cast<uint64_t>(this->shapeInfo.orgDi),
-        static_cast<uint64_t>(this->attrInfo.groupOpt), CeilDiv(this->shapeInfo.cinOpt, this->cubeInfo.k0),
-        static_cast<uint64_t>(this->shapeInfo.orgHi), static_cast<uint64_t>(this->shapeInfo.orgWi),
-        static_cast<uint64_t>(this->cubeInfo.k0) * g_dtypeSizeTab.at(this->descInfo.fMapType.dtype)
-    ) || MulWithOverflowCheck(
-        prod, static_cast<uint64_t>(this->attrInfo.groupOpt), static_cast<uint64_t>(this->shapeInfo.singlekD),
-        CeilDiv(this->shapeInfo.cinOpt, this->cubeInfo.k0),
-        static_cast<uint64_t>(this->shapeInfo.singlekH), static_cast<uint64_t>(this->shapeInfo.singlekW),
-        CeilDiv(this->shapeInfo.coutOpt, this->cubeInfo.n0), static_cast<uint64_t>(this->cubeInfo.n0) *
-        static_cast<uint64_t>(this->cubeInfo.k0) * g_dtypeSizeTab.at(this->descInfo.weightType.dtype)
-    ) || MulWithOverflowCheck(
-        prod, this->shapeCalc.orgDo, static_cast<uint64_t>(this->attrInfo.groupOpt),
-        CeilDiv(this->shapeInfo.coutOpt, this->cubeInfo.k0), this->shapeCalc.orgHo, this->shapeCalc.orgWo,
-        static_cast<uint64_t>(this->cubeInfo.k0) * g_dtypeSizeTab.at(this->descInfo.outputType.dtype)
-    );
+    bool isOverflow =
+        MulWithOverflowCheck(
+            prod, static_cast<uint64_t>(this->shapeInfo.orgDi), static_cast<uint64_t>(this->attrInfo.groupOpt),
+            CeilDiv(this->shapeInfo.cinOpt, this->cubeInfo.k0), static_cast<uint64_t>(this->shapeInfo.orgHi),
+            static_cast<uint64_t>(this->shapeInfo.orgWi),
+            static_cast<uint64_t>(this->cubeInfo.k0) * g_dtypeSizeTab.at(this->descInfo.fMapType.dtype)) ||
+        MulWithOverflowCheck(
+            prod, static_cast<uint64_t>(this->attrInfo.groupOpt), static_cast<uint64_t>(this->shapeInfo.singlekD),
+            CeilDiv(this->shapeInfo.cinOpt, this->cubeInfo.k0), static_cast<uint64_t>(this->shapeInfo.singlekH),
+            static_cast<uint64_t>(this->shapeInfo.singlekW), CeilDiv(this->shapeInfo.coutOpt, this->cubeInfo.n0),
+            static_cast<uint64_t>(this->cubeInfo.n0) * static_cast<uint64_t>(this->cubeInfo.k0) *
+                g_dtypeSizeTab.at(this->descInfo.weightType.dtype)) ||
+        MulWithOverflowCheck(
+            prod, this->shapeCalc.orgDo, static_cast<uint64_t>(this->attrInfo.groupOpt),
+            CeilDiv(this->shapeInfo.coutOpt, this->cubeInfo.k0), this->shapeCalc.orgHo, this->shapeCalc.orgWo,
+            static_cast<uint64_t>(this->cubeInfo.k0) * g_dtypeSizeTab.at(this->descInfo.outputType.dtype));
     if (isOverflow) {
         TILING_LOG_ERROR("Overflow detected, input or weight size exceeds UINT64_MAX.");
         return false;

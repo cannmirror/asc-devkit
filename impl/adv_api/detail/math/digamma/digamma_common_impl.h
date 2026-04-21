@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file digamma_common_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/digamma/digamma_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/digamma.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/digamma/digamma_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/digamma.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_DIGAMMA_DIGAMMA_COMMON_IMPL_H__
 #endif
@@ -139,8 +140,9 @@ __aicore__ inline void DigammaComputeImpl(
     const LocalTensor<half>& dst, const LocalTensor<half>& src, DigammaParams& params)
 {
     // The half type needs to be converted to the float32 type for calculation.
-    Cast<float, half, false>(params.tmpCal5, src, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
-                             {1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
+    Cast<float, half, false>(
+        params.tmpCal5, src, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
 
     // To reduce memory usage, the first calculation tmpCal3 = pi / tan(pi * (x - floor(x)))
@@ -151,8 +153,7 @@ __aicore__ inline void DigammaComputeImpl(
     PipeBarrier<PIPE_V>();
     TanCompute<float>(params.tmpScalar, params.tmpCal4, params.result.ReinterpretCast<uint8_t>(), params.splitSize);
 
-    Duplicate<float, false>(params.tmpCal1, DIGAMMA_PI, MASK_PLACEHOLDER, 1,
-                            DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+    Duplicate<float, false>(params.tmpCal1, DIGAMMA_PI, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
     PipeBarrier<PIPE_V>();
     Div<float, false>(params.tmpCal3, params.tmpCal1, params.tmpScalar, MASK_PLACEHOLDER, 1, params.binaryParams);
     PipeBarrier<PIPE_V>();
@@ -186,16 +187,18 @@ __aicore__ inline void DigammaComputeImpl(
     DigammaNegativeHalf(params.result, params.tmpCal5, params);
     DigammaSelect(params.tmpCal4, params.result, params.mask, params.tmpCal1, params);
 
-    Cast<float, half, false>(params.tmpCal5, src, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
-                             {1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
+    Cast<float, half, false>(
+        params.tmpCal5, src, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
     // Compute -0.0001 <= x && x < 0.0, and select to params.tmpCal4
     DigammaGenRangeMask(params.mask, params.tmpCal5, params, -0.0001f, 0.0f);
     DigammaNegativeRange(params.result, params.tmpCal5, params);
     DigammaSelect(params.tmpCal4, params.result, params.mask, params.tmpCal1, params);
 
-    Cast<half, float, false>(dst, params.tmpCal4, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
-                             {1, 1, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
+    Cast<half, float, false>(
+        dst, params.tmpCal4, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
 }
 
@@ -233,13 +236,13 @@ __aicore__ inline void DigammaPositiveTmp0(
     Mul<float, false>(params.tmpCal1, params.tmpCal1, params.tmpCal1, MASK_PLACEHOLDER, 1, params.binaryParams);
 
     // C1 - z * c2
-    Duplicate<float, false>(params.tmpCal2, 8.33333333333333333333e-2, MASK_PLACEHOLDER, 1,
-                            DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+    Duplicate<float, false>(
+        params.tmpCal2, 8.33333333333333333333e-2, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
     PipeBarrier<PIPE_V>();
 
     for (size_t i = 0U; i < DIGAMMA_MAX_LOOP; ++i) {
-        Duplicate<float, false>(params.tmpScalar, posCalcConst[i], MASK_PLACEHOLDER, 1,
-                                DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+        Duplicate<float, false>(
+            params.tmpScalar, posCalcConst[i], MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
 
         // z * ()
         Mul<float, false>(params.tmpCal2, params.tmpCal1, params.tmpCal2, MASK_PLACEHOLDER, 1, params.binaryParams);
@@ -250,8 +253,8 @@ __aicore__ inline void DigammaPositiveTmp0(
     }
     constexpr size_t calcSize = 6;
     for (size_t i = DIGAMMA_MAX_LOOP; i < calcSize; ++i) {
-        Duplicate<float, false>(params.tmpScalar, posCalcConst[i], MASK_PLACEHOLDER, 1,
-                                DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+        Duplicate<float, false>(
+            params.tmpScalar, posCalcConst[i], MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
 
         // z * ()
         Mul<float, false>(params.tmpCal2, params.tmpCal1, params.tmpCal2, MASK_PLACEHOLDER, 1, params.binaryParams);
@@ -335,23 +338,26 @@ __aicore__ inline void DigammaNegPicotPix(
     PipeBarrier<PIPE_V>();
 
     // r51(tmpCal2) = f8
-    Cast<int32_t, float, false>(params.tmpCal2.ReinterpretCast<int32_t>(), params.tmpCal2, RoundMode::CAST_ROUND,
-                                MASK_PLACEHOLDER, 1, params.unaryParams);
+    Cast<int32_t, float, false>(
+        params.tmpCal2.ReinterpretCast<int32_t>(), params.tmpCal2, RoundMode::CAST_ROUND, MASK_PLACEHOLDER, 1,
+        params.unaryParams);
     PipeBarrier<PIPE_V>();
 
     // p9(tmpCal2) = (bitwise_and(r51, 1) == 0)
-    Duplicate<int32_t, false>(params.tmpCal3.ReinterpretCast<int32_t>(), 1, MASK_PLACEHOLDER, 1,
-                              DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+    Duplicate<int32_t, false>(
+        params.tmpCal3.ReinterpretCast<int32_t>(), 1, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
     PipeBarrier<PIPE_V>();
     SetVectorMask<float>(0, params.splitSize * (sizeof(float) / sizeof(uint16_t)));
-    And<uint16_t, false>(params.tmpCal2.ReinterpretCast<uint16_t>(), params.tmpCal2.ReinterpretCast<uint16_t>(),
-            params.tmpCal3.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1, params.binaryParams);
+    And<uint16_t, false>(
+        params.tmpCal2.ReinterpretCast<uint16_t>(), params.tmpCal2.ReinterpretCast<uint16_t>(),
+        params.tmpCal3.ReinterpretCast<uint16_t>(), MASK_PLACEHOLDER, 1, params.binaryParams);
     PipeBarrier<PIPE_V>();
     SetVectorMask<float>(0, params.splitSize);
 
     // get p9 == 0 mask
-    Cast<float, int32_t, false>(params.tmpCal2, params.tmpCal2.ReinterpretCast<int32_t>(), RoundMode::CAST_NONE,
-                                MASK_PLACEHOLDER, 1, params.unaryParams);
+    Cast<float, int32_t, false>(
+        params.tmpCal2, params.tmpCal2.ReinterpretCast<int32_t>(), RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        params.unaryParams);
     DigammaGenCompareMask(params.mask1, params.tmpCal2, params, 0.5f, CMPMODE::LT);
     DigammaGenCompareMask(params.mask2, params.tmpCal2, params, 0.5f, CMPMODE::GE);
 
@@ -381,7 +387,7 @@ __aicore__ inline void DigammaNegPicotPix(
     // select f30
     Duplicate<float, false>(dst, 0.0f, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
     PipeBarrier<PIPE_V>();
-    DigammaSelect(dst, params.tmpCal1, params.mask2,  params.tmpCal3, params);
+    DigammaSelect(dst, params.tmpCal1, params.mask2, params.tmpCal3, params);
 
     // f34(tmpCal1) = -1.0 / f30
     Duplicate<float, false>(params.tmpScalar, -1.0f, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
@@ -389,7 +395,7 @@ __aicore__ inline void DigammaNegPicotPix(
     Div<float, false>(params.tmpCal1, params.tmpScalar, params.tmpCal1, MASK_PLACEHOLDER, 1, params.binaryParams);
     PipeBarrier<PIPE_V>();
     // select f34
-    DigammaSelect(dst, params.tmpCal1, params.mask1,  params.tmpCal3, params);
+    DigammaSelect(dst, params.tmpCal1, params.mask1, params.tmpCal3, params);
 
     // dst = dst * pi
     Muls<float, false>(dst, dst, DIGAMMA_PI, MASK_PLACEHOLDER, 1, params.unaryParams);

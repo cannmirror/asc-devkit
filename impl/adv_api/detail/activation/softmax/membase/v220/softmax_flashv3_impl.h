@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file softmax_flashv3_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/activation/softmax/membase/v220/softmax_flashv3_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/softmaxflashv3.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/activation/softmax/membase/v220/softmax_flashv3_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/softmaxflashv3.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_FLASHV3_IMPL_H__
 #endif
@@ -26,31 +27,33 @@
 
 namespace AscendC {
 
-__aicore__ inline void SoftmaxFlashV3ReduceSumImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const LocalTensor<float>& rowMeanLocal, const LocalTensor<float>& rowMeanGlobalTmp,
-    const LocalTensor<float>& meanTmp, const struct ReduceLastND& reduceParam, const uint32_t& baseK,
-    const uint32_t& reduceSize)
+__aicore__ inline void SoftmaxFlashV3ReduceSumImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const LocalTensor<float>& rowMeanLocal,
+    const LocalTensor<float>& rowMeanGlobalTmp, const LocalTensor<float>& meanTmp,
+    const struct ReduceLastND& reduceParam, const uint32_t& baseK, const uint32_t& reduceSize)
 {
     const uint32_t splitCount = reduceParam.originalSrcK / FLOAT_REPEAT_SIZE;
     const uint32_t tailSrcK = reduceParam.originalSrcK % FLOAT_REPEAT_SIZE;
     const uint16_t srcRepeatStride = reduceParam.srcK / FLOAT_NUM_PER_BLK;
 
     for (uint32_t i = 0; i < reduceParam.originalSrcM; i++) {
-        BlockReduceSum<float, false>(dst[FLOAT_REPEAT_SIZE * i], src[i * reduceParam.srcK], FLOAT_NUM_PER_BLK,
-            MASK_PLACEHOLDER, 1, 1, DEFAULT_REPEAT_STRIDE);
+        BlockReduceSum<float, false>(
+            dst[FLOAT_REPEAT_SIZE * i], src[i * reduceParam.srcK], FLOAT_NUM_PER_BLK, MASK_PLACEHOLDER, 1, 1,
+            DEFAULT_REPEAT_STRIDE);
     }
     uint8_t remainRepeat = splitCount - FLOAT_NUM_PER_BLK;
     if (remainRepeat != 0) {
         PipeBarrier<PIPE_V>();
         for (uint32_t j = 0; j < reduceParam.originalSrcM; j++) {
-        Add<float, false>(dst[j * FLOAT_REPEAT_SIZE], src[SOFTMAX_FLOAT_SPECIAL_BLOCKREDUCE_LEN + j * reduceParam.srcK],
-            dst[j * FLOAT_REPEAT_SIZE], 1, remainRepeat, { 1, 1, 1, 0, DEFAULT_REPEAT_STRIDE, 0 });
+            Add<float, false>(
+                dst[j * FLOAT_REPEAT_SIZE], src[SOFTMAX_FLOAT_SPECIAL_BLOCKREDUCE_LEN + j * reduceParam.srcK],
+                dst[j * FLOAT_REPEAT_SIZE], 1, remainRepeat, {1, 1, 1, 0, DEFAULT_REPEAT_STRIDE, 0});
         }
     }
     if (tailSrcK != 0) {
-      PipeBarrier<PIPE_V>();
-      TailAddImpl(dst, src, reduceParam, tailSrcK, srcRepeatStride, splitCount);
-      ResetMask();  
+        PipeBarrier<PIPE_V>();
+        TailAddImpl(dst, src, reduceParam, tailSrcK, srcRepeatStride, splitCount);
+        ResetMask();
     }
     PipeBarrier<PIPE_V>();
     SetMaskCount();
@@ -59,42 +62,52 @@ __aicore__ inline void SoftmaxFlashV3ReduceSumImpl(const LocalTensor<float>& dst
     PipeBarrier<PIPE_V>();
     UnaryRepeatParams unaryParams;
     if (baseK != 0) {
-        Muls<float, false>(rowMeanLocal, rowMeanLocal, static_cast<float>(1.0f / baseK), MASK_PLACEHOLDER, 1, unaryParams); // M * 8
+        Muls<float, false>(
+            rowMeanLocal, rowMeanLocal, static_cast<float>(1.0f / baseK), MASK_PLACEHOLDER, 1, unaryParams); // M * 8
     }
     PipeBarrier<PIPE_V>();
-    BlockReduceSum<float, false>(rowMeanGlobalTmp, rowMeanLocal, 1, MASK_PLACEHOLDER, 1, 1, DEFAULT_REPEAT_STRIDE); // M * 1
+    BlockReduceSum<float, false>(
+        rowMeanGlobalTmp, rowMeanLocal, 1, MASK_PLACEHOLDER, 1, 1, DEFAULT_REPEAT_STRIDE); // M * 1
     PipeBarrier<PIPE_V>();
     const uint32_t repeat = (reduceParam.originalSrcM + BRCB_BROADCAST_NUMBER - 1) / BRCB_BROADCAST_NUMBER;
-    Brcb(dst, rowMeanGlobalTmp, (uint8_t)repeat, { 1, BRCB_BROADCAST_NUMBER }); // M * 8
+    Brcb(dst, rowMeanGlobalTmp, (uint8_t)repeat, {1, BRCB_BROADCAST_NUMBER}); // M * 8
     PipeBarrier<PIPE_V>();
     SetVectorMask<float, MaskMode::COUNTER>(0, reduceParam.originalSrcM * reduceParam.dstK);
-    Copy<float, false>(rowMeanGlobalTmp, dst, MASK_PLACEHOLDER, 1, {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
+    Copy<float, false>(
+        rowMeanGlobalTmp, dst, MASK_PLACEHOLDER, 1, {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
     SetVectorMask<float, MaskMode::COUNTER>(0, reduceSize);
-    Muls<float, false>(meanTmp, rowMeanGlobalTmp, static_cast<float>(1.0f / FLOAT_NUM_PER_BLK), MASK_PLACEHOLDER, 1, unaryParams); // M * 8
+    Muls<float, false>(
+        meanTmp, rowMeanGlobalTmp, static_cast<float>(1.0f / FLOAT_NUM_PER_BLK), MASK_PLACEHOLDER, 1,
+        unaryParams); // M * 8
     SetMaskNorm();
     ResetMask();
 }
 
-__aicore__ inline void ModifyInputImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const LocalTensor<float>& meanTmp, const LocalTensor<float>& workLocal, const LocalTensor<float>& tmpBuffer2,
-    const ReduceLastND& reduceParam, const SoftMaxTiling& tiling, const SoftMaxParams& params, const uint32_t& reduceSize)
+__aicore__ inline void ModifyInputImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const LocalTensor<float>& meanTmp,
+    const LocalTensor<float>& workLocal, const LocalTensor<float>& tmpBuffer2, const ReduceLastND& reduceParam,
+    const SoftMaxTiling& tiling, const SoftMaxParams& params, const uint32_t& reduceSize)
 {
     const LocalTensor<float>& tmpBuffer1 = workLocal[tiling.splitSize + tiling.reduceSize]; // splitM * 64
     const LocalTensor<float>& rowMeanLocal = workLocal[tiling.splitSize + tiling.splitM * 64 + tiling.reduceSize];
-    const LocalTensor<float>& rowMeanGlobalTmp = workLocal[tiling.splitSize + tiling.splitM * 64 + tiling.reduceSize * 2];
+    const LocalTensor<float>& rowMeanGlobalTmp =
+        workLocal[tiling.splitSize + tiling.splitM * 64 + tiling.reduceSize * 2];
     const uint32_t baseK = reduceParam.originalSrcK / params.splitMeanCnt;
 
-    SoftmaxFlashV3ReduceSumImpl(tmpBuffer1, src, rowMeanLocal, rowMeanGlobalTmp, meanTmp, reduceParam, baseK, reduceSize);
+    SoftmaxFlashV3ReduceSumImpl(
+        tmpBuffer1, src, rowMeanLocal, rowMeanGlobalTmp, meanTmp, reduceParam, baseK, reduceSize);
     PipeBarrier<PIPE_V>();
     SetMaskCount();
     SetVectorMask<float, MaskMode::COUNTER>(0, reduceSize);
-    Sub<float, false>(rowMeanGlobalTmp, meanTmp, rowMeanLocal, MASK_PLACEHOLDER, 1,
-        { 1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+    Sub<float, false>(
+        rowMeanGlobalTmp, meanTmp, rowMeanLocal, MASK_PLACEHOLDER, 1,
+        {1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
     UnaryRepeatParams unaryParams;
-    Muls<float, false>(rowMeanGlobalTmp, rowMeanGlobalTmp, static_cast<float>(params.alpha / (1.0f - params.alpha)),
-        MASK_PLACEHOLDER, 1, unaryParams);
+    Muls<float, false>(
+        rowMeanGlobalTmp, rowMeanGlobalTmp, static_cast<float>(params.alpha / (1.0f - params.alpha)), MASK_PLACEHOLDER,
+        1, unaryParams);
     PipeBarrier<PIPE_V>();
     for (uint32_t i = 0; i < reduceParam.originalSrcM; i++) {
         Brcb(tmpBuffer1, rowMeanGlobalTmp[i * params.splitMeanCnt], 1, {1, DEFAULT_REPEAT_STRIDE});
@@ -104,16 +117,18 @@ __aicore__ inline void ModifyInputImpl(const LocalTensor<float>& dst, const Loca
         Copy<float, false>(tmpBuffer2, tmpBuffer1, MASK_PLACEHOLDER, params.splitMeanCnt, copyRepeatParams);
         PipeBarrier<PIPE_V>();
         SetVectorMask<float, MaskMode::COUNTER>(0, reduceParam.srcK);
-        Sub<float, false>(src[i * reduceParam.srcK], src[i * reduceParam.srcK], tmpBuffer2, MASK_PLACEHOLDER, 1,
-            { 1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+        Sub<float, false>(
+            src[i * reduceParam.srcK], src[i * reduceParam.srcK], tmpBuffer2, MASK_PLACEHOLDER, 1,
+            {1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
         PipeBarrier<PIPE_V>();
     }
     SetMaskNorm();
     ResetMask();
 }
-__aicore__ inline void ModifyMaxImpl(const LocalTensor<float>& maxTensor, const LocalTensor<float>& meanTensor,
-    const LocalTensor<float>& src, const LocalTensor<float>& meanTmp, const LocalTensor<float>& maxTmp,
-    const LocalTensor<float>& shiftVal, const SoftMaxParams& params, const uint32_t& reduceSize)
+__aicore__ inline void ModifyMaxImpl(
+    const LocalTensor<float>& maxTensor, const LocalTensor<float>& meanTensor, const LocalTensor<float>& src,
+    const LocalTensor<float>& meanTmp, const LocalTensor<float>& maxTmp, const LocalTensor<float>& shiftVal,
+    const SoftMaxParams& params, const uint32_t& reduceSize)
 {
     float scalar = params.alpha / (1 - params.alpha);
 
@@ -124,18 +139,19 @@ __aicore__ inline void ModifyMaxImpl(const LocalTensor<float>& maxTensor, const 
     Add(maxTensor, maxTmp, shiftVal, reduceSize);
 }
 
-__aicore__ inline void SoftmaxFlashV3NoUpdateImpl(const LocalTensor<half>& dst, const LocalTensor<float>& meanTensor,
-    const LocalTensor<float>& expSumTensor, const LocalTensor<float>& maxTensor, const LocalTensor<half>& src,
-    const LocalTensor<float>& workLocal, const SoftMaxTiling& tiling, const SoftMaxParams& params,
-    const ReduceLastND& reduceParam, const uint32_t& offset1, const uint32_t& offset2, const uint32_t& splitSize,
-    const uint32_t& reduceSize)
+__aicore__ inline void SoftmaxFlashV3NoUpdateImpl(
+    const LocalTensor<half>& dst, const LocalTensor<float>& meanTensor, const LocalTensor<float>& expSumTensor,
+    const LocalTensor<float>& maxTensor, const LocalTensor<half>& src, const LocalTensor<float>& workLocal,
+    const SoftMaxTiling& tiling, const SoftMaxParams& params, const ReduceLastND& reduceParam, const uint32_t& offset1,
+    const uint32_t& offset2, const uint32_t& splitSize, const uint32_t& reduceSize)
 {
     const LocalTensor<float>& tmpBuffer0 = workLocal;
     const LocalTensor<float>& meanTmp = workLocal[tiling.splitSize];
     const LocalTensor<float>& tmpBuffer1 = workLocal[tiling.splitSize + tiling.reduceSize]; // splitM * 64
     const LocalTensor<float>& maxTmp = workLocal[tiling.splitSize + tiling.splitM * 64 + tiling.reduceSize];
     const LocalTensor<float>& shiftCurr = workLocal[tiling.splitSize + tiling.splitM * 64 + tiling.reduceSize * 2];
-    const LocalTensor<float>& tmpBuffer2 = workLocal[tiling.splitSize + tiling.splitM * 64 + tiling.reduceSize * 3]; // srcK
+    const LocalTensor<float>& tmpBuffer2 =
+        workLocal[tiling.splitSize + tiling.splitM * 64 + tiling.reduceSize * 3]; // srcK
 
     Cast(tmpBuffer0, src[offset1], RoundMode::CAST_NONE, splitSize);
     PipeBarrier<PIPE_V>();
@@ -163,8 +179,9 @@ __aicore__ inline void SoftmaxFlashV3NoUpdateImpl(const LocalTensor<half>& dst, 
     NewReduceSumLastNDImpl(expSumTensor[offset2], tmpBuffer0, tmpBuffer1, reduceParam);
 }
 
-__aicore__ inline void SoftmaxFlashV3TailImpl(const SoftMaxTiling& tiling, ReduceLastND& reduceParam,
-    uint32_t& offset1, uint32_t& offset2, uint32_t& splitSize, uint32_t& reduceSize)
+__aicore__ inline void SoftmaxFlashV3TailImpl(
+    const SoftMaxTiling& tiling, ReduceLastND& reduceParam, uint32_t& offset1, uint32_t& offset2, uint32_t& splitSize,
+    uint32_t& reduceSize)
 {
     offset2 = tiling.rangeM * tiling.reduceSize;
     offset1 = tiling.rangeM * tiling.splitSize;
@@ -175,10 +192,10 @@ __aicore__ inline void SoftmaxFlashV3TailImpl(const SoftMaxTiling& tiling, Reduc
     reduceParam.dstM = tiling.tailM;
 }
 
-__aicore__ inline void SoftmaxFlashV3NoUpdateExtImpl(const LocalTensor<half>& dst, const LocalTensor<float>& meanTensor,
-    const LocalTensor<float>& expSumTensor, const LocalTensor<float>& maxTensor, const LocalTensor<half>& src,
-    const LocalTensor<float>& workLocal, const SoftMaxTiling& tiling,
-    const SoftMaxParams& params, ReduceLastND& reduceParam)
+__aicore__ inline void SoftmaxFlashV3NoUpdateExtImpl(
+    const LocalTensor<half>& dst, const LocalTensor<float>& meanTensor, const LocalTensor<float>& expSumTensor,
+    const LocalTensor<float>& maxTensor, const LocalTensor<half>& src, const LocalTensor<float>& workLocal,
+    const SoftMaxTiling& tiling, const SoftMaxParams& params, ReduceLastND& reduceParam)
 {
     uint32_t offset1 = 0;
     uint32_t offset2 = 0;
@@ -187,8 +204,9 @@ __aicore__ inline void SoftmaxFlashV3NoUpdateExtImpl(const LocalTensor<half>& ds
 
     PipeBarrier<PIPE_V>();
     for (uint32_t i = 0; i < tiling.rangeM; i++) {
-        SoftmaxFlashV3NoUpdateImpl(dst, meanTensor, expSumTensor, maxTensor, src, workLocal, tiling, params, reduceParam,
-            offset1, offset2, splitSize, reduceSize);
+        SoftmaxFlashV3NoUpdateImpl(
+            dst, meanTensor, expSumTensor, maxTensor, src, workLocal, tiling, params, reduceParam, offset1, offset2,
+            splitSize, reduceSize);
         offset1 += tiling.splitSize;
         offset2 += tiling.reduceSize;
         PipeBarrier<PIPE_V>();
@@ -196,14 +214,15 @@ __aicore__ inline void SoftmaxFlashV3NoUpdateExtImpl(const LocalTensor<half>& ds
 
     if (tiling.tailM != 0) {
         SoftmaxFlashV3TailImpl(tiling, reduceParam, offset1, offset2, splitSize, reduceSize);
-        SoftmaxFlashV3NoUpdateImpl(dst, meanTensor, expSumTensor, maxTensor, src, workLocal, tiling, params, reduceParam,
-            offset1, offset2, splitSize, reduceSize);
+        SoftmaxFlashV3NoUpdateImpl(
+            dst, meanTensor, expSumTensor, maxTensor, src, workLocal, tiling, params, reduceParam, offset1, offset2,
+            splitSize, reduceSize);
         PipeBarrier<PIPE_V>();
     }
 }
 
-__aicore__ inline void SoftmaxFlashV3UpdateMeanImpl(const LocalTensor<float>& meanTensor,
-    const LocalTensor<float>& inMeanTensor, const LocalTensor<float>& meanTmp,
+__aicore__ inline void SoftmaxFlashV3UpdateMeanImpl(
+    const LocalTensor<float>& meanTensor, const LocalTensor<float>& inMeanTensor, const LocalTensor<float>& meanTmp,
     const SoftMaxParams& params, const uint32_t& reduceSize)
 {
     // mean = (inmean * (n - 1) + mean) / n
@@ -214,9 +233,10 @@ __aicore__ inline void SoftmaxFlashV3UpdateMeanImpl(const LocalTensor<float>& me
     Muls(meanTensor, meanTensor, static_cast<float>(1.0f / params.loopCnt), reduceSize);
 }
 
-__aicore__ inline void SoftmaxFlashV3UpdateImpl(const LocalTensor<half>& dst, const LocalTensor<float>& meanTensor,
-    const LocalTensor<float>& expSumTensor, const LocalTensor<float>& maxTensor, const LocalTensor<half>& src,
-    const LocalTensor<half>& expMaxTensor, const LocalTensor<float>& inMeanTensor, const LocalTensor<float>& inExpSumTensor,
+__aicore__ inline void SoftmaxFlashV3UpdateImpl(
+    const LocalTensor<half>& dst, const LocalTensor<float>& meanTensor, const LocalTensor<float>& expSumTensor,
+    const LocalTensor<float>& maxTensor, const LocalTensor<half>& src, const LocalTensor<half>& expMaxTensor,
+    const LocalTensor<float>& inMeanTensor, const LocalTensor<float>& inExpSumTensor,
     const LocalTensor<float>& inMaxTensor, const LocalTensor<float>& workLocal, const SoftMaxTiling& tiling,
     const SoftMaxParams& params, const ReduceLastND& reduceParam, const uint32_t& offset1, const uint32_t& offset2,
     const uint32_t& splitSize, const uint32_t& reduceSize)
@@ -242,8 +262,9 @@ __aicore__ inline void SoftmaxFlashV3UpdateImpl(const LocalTensor<half>& dst, co
     ModifyMaxImpl(maxTensor[offset2], meanTensor[offset2], tmpBuffer0, meanTmp, maxTmp, shiftCurr, params, reduceSize);
     PipeBarrier<PIPE_V>();
     // shiftPrev = (inmean - mean) * (a / 1 - a)
-    ModifyMaxImpl(maxTmp, meanTensor[offset2], tmpBuffer0, inMeanTensor[offset2], inMaxTensor[offset2], shiftPrev,
-        params, reduceSize);
+    ModifyMaxImpl(
+        maxTmp, meanTensor[offset2], tmpBuffer0, inMeanTensor[offset2], inMaxTensor[offset2], shiftPrev, params,
+        reduceSize);
     PipeBarrier<PIPE_V>();
     // max = max(maxTmp + shiftCurr, inmax + shiftPrev)
     Max(maxTensor[offset2], maxTensor[offset2], maxTmp, reduceSize);
@@ -272,15 +293,16 @@ __aicore__ inline void SoftmaxFlashV3UpdateImpl(const LocalTensor<half>& dst, co
     PipeBarrier<PIPE_V>();
     Add(expSumTensor[offset2], expSumTensor[offset2], meanTmp, reduceSize);
     PipeBarrier<PIPE_V>();
-    BroadCastLastImpl(tmpBuffer0, maxTmp,
-        { tiling.reduceM, B16_BYTE_SIZE * DEFAULT_REPEAT_STRIDE, tiling.reduceM, tiling.reduceK });
+    BroadCastLastImpl(
+        tmpBuffer0, maxTmp, {tiling.reduceM, B16_BYTE_SIZE * DEFAULT_REPEAT_STRIDE, tiling.reduceM, tiling.reduceK});
     PipeBarrier<PIPE_V>();
     Cast(expMaxTensor[offset2 * B16_BYTE_SIZE], tmpBuffer0, FLOAT2HALF_ROUND_MODE, reduceSize * B16_BYTE_SIZE);
 }
 
-__aicore__ inline void SoftmaxFlashV3NDExtImpl(const LocalTensor<half>& dst, const LocalTensor<float>& meanTensor,
-    const LocalTensor<float>& expSumTensor, const LocalTensor<float>& maxTensor, const LocalTensor<half>& src,
-    const LocalTensor<half>& expMaxTensor, const LocalTensor<float>& inMeanTensor, const LocalTensor<float>& inExpSumTensor,
+__aicore__ inline void SoftmaxFlashV3NDExtImpl(
+    const LocalTensor<half>& dst, const LocalTensor<float>& meanTensor, const LocalTensor<float>& expSumTensor,
+    const LocalTensor<float>& maxTensor, const LocalTensor<half>& src, const LocalTensor<half>& expMaxTensor,
+    const LocalTensor<float>& inMeanTensor, const LocalTensor<float>& inExpSumTensor,
     const LocalTensor<float>& inMaxTensor, const LocalTensor<float>& workLocal, const SoftMaxTiling& tiling,
     const SoftMaxParams& params, ReduceLastND& reduceParam)
 {
@@ -291,8 +313,9 @@ __aicore__ inline void SoftmaxFlashV3NDExtImpl(const LocalTensor<half>& dst, con
 
     PipeBarrier<PIPE_V>();
     for (uint32_t i = 0; i < tiling.rangeM; i++) {
-        SoftmaxFlashV3UpdateImpl(dst, meanTensor, expSumTensor, maxTensor, src, expMaxTensor, inMeanTensor, inExpSumTensor,
-            inMaxTensor, workLocal, tiling, params, reduceParam, offset1, offset2, splitSize, reduceSize);
+        SoftmaxFlashV3UpdateImpl(
+            dst, meanTensor, expSumTensor, maxTensor, src, expMaxTensor, inMeanTensor, inExpSumTensor, inMaxTensor,
+            workLocal, tiling, params, reduceParam, offset1, offset2, splitSize, reduceSize);
         offset1 += tiling.splitSize;
         offset2 += tiling.reduceSize;
         PipeBarrier<PIPE_V>();
@@ -300,34 +323,39 @@ __aicore__ inline void SoftmaxFlashV3NDExtImpl(const LocalTensor<half>& dst, con
 
     if (tiling.tailM != 0) {
         SoftmaxFlashV3TailImpl(tiling, reduceParam, offset1, offset2, splitSize, reduceSize);
-        SoftmaxFlashV3UpdateImpl(dst, meanTensor, expSumTensor, maxTensor, src, expMaxTensor, inMeanTensor, inExpSumTensor,
-            inMaxTensor, workLocal, tiling, params, reduceParam, offset1, offset2, splitSize, reduceSize);
+        SoftmaxFlashV3UpdateImpl(
+            dst, meanTensor, expSumTensor, maxTensor, src, expMaxTensor, inMeanTensor, inExpSumTensor, inMaxTensor,
+            workLocal, tiling, params, reduceParam, offset1, offset2, splitSize, reduceSize);
         PipeBarrier<PIPE_V>();
     }
 }
-template <typename T, typename U, bool isUpdate = false, bool isBasicBlock = false,
+template <
+    typename T, typename U, bool isUpdate = false, bool isBasicBlock = false,
     const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>
-__aicore__ inline void SoftmaxFlashV3Process(const LocalTensor<T>& dstTensor, const LocalTensor<U>& meanTensor,
-    const LocalTensor<U>& expSumTensor, const LocalTensor<U>& maxTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<T>& expMaxTensor, const LocalTensor<U>& inMeanTensor, const LocalTensor<U>& inExpSumTensor,
-    const LocalTensor<U>& inMaxTensor, const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape,
-    const SoftMaxTiling& tiling, const SoftMaxParams& params)
+__aicore__ inline void SoftmaxFlashV3Process(
+    const LocalTensor<T>& dstTensor, const LocalTensor<U>& meanTensor, const LocalTensor<U>& expSumTensor,
+    const LocalTensor<U>& maxTensor, const LocalTensor<T>& srcTensor, const LocalTensor<T>& expMaxTensor,
+    const LocalTensor<U>& inMeanTensor, const LocalTensor<U>& inExpSumTensor, const LocalTensor<U>& inMaxTensor,
+    const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling,
+    const SoftMaxParams& params)
 {
     SetMaskNorm();
     ResetMask();
-    ASCENDC_ASSERT((params.srcK >= SOFTMAX_FLOAT_SPECIAL_BLOCKREDUCE_LEN),
-        {KERNEL_LOG(KERNEL_ERROR, "Failed to check shape in SoftmaxFlashV3, it should be greater than 512.");});
-    ReduceLastND reduceParam = { tiling.splitM, originalSrcShape.k, tiling.splitM, tiling.splitK, tiling.reduceM,
-        tiling.reduceK };
+    ASCENDC_ASSERT((params.srcK >= SOFTMAX_FLOAT_SPECIAL_BLOCKREDUCE_LEN), {
+        KERNEL_LOG(KERNEL_ERROR, "Failed to check shape in SoftmaxFlashV3, it should be greater than 512.");
+    });
+    ReduceLastND reduceParam = {tiling.splitM, originalSrcShape.k, tiling.splitM,
+                                tiling.splitK, tiling.reduceM,     tiling.reduceK};
     if constexpr (!isUpdate) {
-        SoftmaxFlashV3NoUpdateExtImpl(dstTensor, meanTensor, expSumTensor, maxTensor, srcTensor, workLocal,
-            tiling, params, reduceParam);
+        SoftmaxFlashV3NoUpdateExtImpl(
+            dstTensor, meanTensor, expSumTensor, maxTensor, srcTensor, workLocal, tiling, params, reduceParam);
     } else {
-        SoftmaxFlashV3NDExtImpl(dstTensor, meanTensor, expSumTensor, maxTensor, srcTensor, expMaxTensor, inMeanTensor,
-            inExpSumTensor, inMaxTensor, workLocal, tiling, params, reduceParam);
+        SoftmaxFlashV3NDExtImpl(
+            dstTensor, meanTensor, expSumTensor, maxTensor, srcTensor, expMaxTensor, inMeanTensor, inExpSumTensor,
+            inMaxTensor, workLocal, tiling, params, reduceParam);
     }
 }
-}
+} // namespace AscendC
 #endif // IMPL_ACTIVATION_SOFTMAX_V220_SOFTMAX_FLASHV3_IMPL_H
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_FLASHV3_IMPL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

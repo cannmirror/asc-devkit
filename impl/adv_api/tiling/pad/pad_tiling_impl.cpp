@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file pad_tiling_impl.cpp
@@ -19,7 +19,7 @@
 namespace optiling {
 REGISTER_TILING_DATA_CLASS(UnPadTilingOpApi, UnPadTiling);
 REGISTER_TILING_DATA_CLASS(PadTilingOpApi, PadTiling);
-}
+} // namespace optiling
 
 namespace AscendC {
 namespace {
@@ -33,33 +33,40 @@ constexpr uint32_t PAD_TYPE_FOUR = 4;
 
 void CheckPadMaxMinTmpSizeParams(const ge::Shape& srcShape, const uint32_t typeSize, const char* funcName)
 {
-    ASCENDC_HOST_ASSERT(typeSize == PAD_TYPE_TWO || typeSize == PAD_TYPE_FOUR, continue,
+    ASCENDC_HOST_ASSERT(
+        typeSize == PAD_TYPE_TWO || typeSize == PAD_TYPE_FOUR, continue,
         "[Pad][%s] The value of typeSize is %u, should be 2 or 4.", funcName, typeSize);
 
-    ASCENDC_HOST_ASSERT(srcShape.GetDimNum() == PAD_DIM_TWO, continue,
-        "[Pad][%s] The dims of srcShape is %zu, should be 2.", funcName, srcShape.GetDimNum());
+    ASCENDC_HOST_ASSERT(
+        srcShape.GetDimNum() == PAD_DIM_TWO, continue, "[Pad][%s] The dims of srcShape is %zu, should be 2.", funcName,
+        srcShape.GetDimNum());
 }
 
-void CheckPadTilingFuncParams(const ge::Shape srcShape, const ge::Shape oriSrcShape, const uint32_t stackBufferSize,
-    const uint32_t typeSize, const char* funcName)
+void CheckPadTilingFuncParams(
+    const ge::Shape srcShape, const ge::Shape oriSrcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const char* funcName)
 {
     (void)stackBufferSize;
     CheckPadMaxMinTmpSizeParams(srcShape, typeSize, funcName);
 
-    ASCENDC_HOST_ASSERT(oriSrcShape.GetDimNum() == PAD_DIM_TWO, continue,
-        "[Pad][%s] The dims of oriSrcShape is %zu, should be 2.", funcName, oriSrcShape.GetDimNum());
-    ASCENDC_HOST_ASSERT(oriSrcShape.GetShapeSize() <= srcShape.GetShapeSize(), continue,
+    ASCENDC_HOST_ASSERT(
+        oriSrcShape.GetDimNum() == PAD_DIM_TWO, continue, "[Pad][%s] The dims of oriSrcShape is %zu, should be 2.",
+        funcName, oriSrcShape.GetDimNum());
+    ASCENDC_HOST_ASSERT(
+        oriSrcShape.GetShapeSize() <= srcShape.GetShapeSize(), continue,
         "[Pad][%s] The size of oriSrcShape is %li, should be less than or equal to srcShape size %li.", funcName,
         oriSrcShape.GetShapeSize(), srcShape.GetShapeSize());
 }
 
 void CheckUnPadParams(const ge::Shape& srcShape, const uint32_t typeSize, const char* funcName)
 {
-    ASCENDC_HOST_ASSERT(typeSize == PAD_TYPE_TWO || typeSize == PAD_TYPE_FOUR, continue,
+    ASCENDC_HOST_ASSERT(
+        typeSize == PAD_TYPE_TWO || typeSize == PAD_TYPE_FOUR, continue,
         "[UnPad][%s] The value of typeSize is %u, should be 2 or 4.", funcName, typeSize);
 
-    ASCENDC_HOST_ASSERT(srcShape.GetDimNum() == PAD_DIM_TWO, continue,
-        "[UnPad][%s] The dims of srcShape is %zu, should be 2.", funcName, srcShape.GetDimNum());
+    ASCENDC_HOST_ASSERT(
+        srcShape.GetDimNum() == PAD_DIM_TWO, continue, "[UnPad][%s] The dims of srcShape is %zu, should be 2.",
+        funcName, srcShape.GetDimNum());
 }
 
 void CheckGetUnPadMaxMinTmpSizeParams(const ge::Shape& srcShape, const uint32_t typeSize, const char* funcName)
@@ -69,8 +76,7 @@ void CheckGetUnPadMaxMinTmpSizeParams(const ge::Shape& srcShape, const uint32_t 
 
 } // namespace
 
-void GetPadMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue,
-    uint32_t& minValue)
+void GetPadMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
 {
     CheckPadMaxMinTmpSizeParams(srcShape, typeSize, "GetPadMaxMinTmpSize");
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
@@ -80,13 +86,14 @@ void GetPadMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, uin
     uint32_t srcWidth = shapeDims[1];
 
     maxValue = ((srcHeight * srcWidth - 1) / PAD_NCHW_CONV_ADDR_LIST_SIZE + 1) * PAD_NCHW_CONV_ADDR_LIST_SIZE *
-        (PAD_ONE_BLK_SIZE / typeSize) * TMP_BUFFER_NUM * typeSize / sizeof(uint8_t);
+               (PAD_ONE_BLK_SIZE / typeSize) * TMP_BUFFER_NUM * typeSize / sizeof(uint8_t);
     minValue =
         PAD_NCHW_CONV_ADDR_LIST_SIZE * (PAD_ONE_BLK_SIZE / typeSize) * TMP_BUFFER_NUM * typeSize / sizeof(uint8_t);
 }
 
-void PadTilingFunc(const ge::Shape srcShape, const ge::Shape oriSrcShape, const uint32_t stackBufferSize,
-    const uint32_t typeSize, optiling::PadTiling& tiling)
+void PadTilingFunc(
+    const ge::Shape srcShape, const ge::Shape oriSrcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    optiling::PadTiling& tiling)
 {
     CheckPadTilingFuncParams(srcShape, oriSrcShape, stackBufferSize, typeSize, "PadTilingFunc");
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
@@ -165,16 +172,18 @@ void PadTilingFunc(const ge::Shape srcShape, const ge::Shape oriSrcShape, const 
     tiling.set_brcbFractalTailRepeatTimesTail(brcbFractalTailRepeatTimesTail);
 }
 
-void PadTilingFunc(const ge::Shape srcShape, const ge::Shape oriSrcShape, const uint32_t stackBufferSize,
-    const uint32_t typeSize, AscendC::tiling::PadTiling& tiling)
+void PadTilingFunc(
+    const ge::Shape srcShape, const ge::Shape oriSrcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    AscendC::tiling::PadTiling& tiling)
 {
     optiling::PadTiling tilingData;
     PadTilingFunc(srcShape, oriSrcShape, stackBufferSize, typeSize, tilingData);
     tilingData.SaveToBuffer(&tiling, sizeof(PadTiling));
 }
 
-void GetUnPadMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcPlatform, const ge::Shape& srcShape,
-    const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
+void GetUnPadMaxMinTmpSize(
+    const platform_ascendc::PlatformAscendC& ascendcPlatform, const ge::Shape& srcShape, const uint32_t typeSize,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     CheckGetUnPadMaxMinTmpSizeParams(srcShape, typeSize, "GetUnPadMaxMinTmpSize");
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
@@ -184,21 +193,19 @@ void GetUnPadMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcPlatf
     uint32_t srcWidth = shapeDims[1];
 
     auto npuArch = ascendcPlatform.GetCurNpuArch();
-    if (npuArch == NpuArch::DAV_2201 ||
-        npuArch == NpuArch::DAV_3510 ||
-        npuArch == NpuArch::DAV_5102) {
+    if (npuArch == NpuArch::DAV_2201 || npuArch == NpuArch::DAV_3510 || npuArch == NpuArch::DAV_5102) {
         maxValue = 0;
         minValue = 0;
     } else {
         maxValue = ((srcHeight * srcWidth - 1) / PAD_NCHW_CONV_ADDR_LIST_SIZE + 1) * PAD_NCHW_CONV_ADDR_LIST_SIZE *
-            (PAD_ONE_BLK_SIZE / typeSize) * TMP_BUFFER_NUM * typeSize / sizeof(uint8_t);
+                   (PAD_ONE_BLK_SIZE / typeSize) * TMP_BUFFER_NUM * typeSize / sizeof(uint8_t);
         minValue =
             PAD_NCHW_CONV_ADDR_LIST_SIZE * (PAD_ONE_BLK_SIZE / typeSize) * TMP_BUFFER_NUM * typeSize / sizeof(uint8_t);
     }
 }
 
-void UnPadTilingFunc(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    optiling::UnPadTiling& tiling)
+void UnPadTilingFunc(
+    const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, optiling::UnPadTiling& tiling)
 {
     CheckGetUnPadMaxMinTmpSizeParams(srcShape, typeSize, "UnPadTilingFunc");
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
@@ -239,11 +246,12 @@ void UnPadTilingFunc(const ge::Shape srcShape, const uint32_t stackBufferSize, c
     tiling.set_widthFractalTail(widthFractalTail);
 }
 
-void UnPadTilingFunc(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+void UnPadTilingFunc(
+    const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
     AscendC::tiling::UnPadTiling& tiling)
 {
     optiling::UnPadTiling tilingData;
     UnPadTilingFunc(srcShape, stackBufferSize, typeSize, tilingData);
     tilingData.SaveToBuffer(&tiling, sizeof(UnPadTiling));
 }
-}
+} // namespace AscendC

@@ -12,10 +12,12 @@ Shape用于表达Tensor形状，Stride则用于区分不同的排布：
 
 图中每个方格中的数字表示该位置元素在内存中按顺序排列时的下标。对于相同的矩阵位置，排布方式不同时，其在内存中的顺序可能是不同的，例如，矩阵坐标 \(1, 0\) 在行优先和列优先的情况下，对应元素在内存中的顺序分别是4和1。
 
-**图 1**  行优先排布  
+**图 1**  行优先排布
+
 ![行优先排布](/figure/行优先排布.png)
 
-**图 2**  列优先排布  
+**图 2**  列优先排布
+
 ![列优先排布](/figure/列优先排布.png)
 
 ## 层次化表述法
@@ -28,7 +30,8 @@ Shape用于表达Tensor形状，Stride则用于区分不同的排布：
 
 - Stride\(\(1, 4\), \(2, 12\)\)
 
-**图 3**  层次化表述法  
+**图 3**  层次化表述法
+
 ![层次化表述法](/figure/层次化表述法.png "层次化表述法")
 
 图中展示了两层矩阵：内层矩阵为内部用灰色线包裹的矩阵，外层矩阵为将内层矩阵视为一个元素时黑色线包裹的矩阵。
@@ -42,7 +45,7 @@ Stride中的每个元素与Shape中的元素对应，表示该对应维度下，
 在基于Ascend C进行矩阵编程场景下，会用到以下几种常用的Layout，这些格式都采用如上文介绍的层次化表述法来表达，要求有内外层两层矩阵，具体表达方式如下：
 
 ```cpp
-Layout = ((Shape): (Stride))
+Layout = ((Shape) : (Stride))
 Shape = ((ShapeRow0, ShapeRow1), (ShapeColumn0, ShapeColumn1))
 Stride = ((StrideRow0, StrideRow1), (StrideColumn0, StrideColumn1))
 ```
@@ -69,7 +72,7 @@ Stride = ((StrideRow0, StrideRow1), (StrideColumn0, StrideColumn1))
     **图 4**  Nz Layout示意图  
     ![分形变换](/figure/分形变换.png)
 
-    通过[MakeNzLayout](struct/layout/layout_fractal/MakeNzLayout.md)接口可以快速构造连续的Nz Layout格式，自行设置StrideRow1和StrideColumn1可以构造非连续的Nz Layout格式。
+    通过[`MakeNzLayout`](struct/layout/layout_fractal/MakeNzLayout.md)接口可以快速构造连续的Nz Layout格式，自行设置StrideRow1和StrideColumn1可以构造非连续的Nz Layout格式。
 
 - Zn Layout
 
@@ -93,7 +96,7 @@ Stride = ((StrideRow0, StrideRow1), (StrideColumn0, StrideColumn1))
     **图 5**  Zn Layout示意图  
     ![分形变换](/figure/分形变换-0.png) 
 
-    通过[MakeZnLayout](struct/layout/layout_fractal/MakeZnLayout.md)接口可以快速构造连续的Zn Layout格式，自行设置StrideRow1和StrideColumn1可以构造非连续的Zn Layout格式。
+    通过[`MakeZnLayout`](struct/layout/layout_fractal/MakeZnLayout.md)接口可以快速构造连续的Zn Layout格式，自行设置StrideRow1和StrideColumn1可以构造非连续的Zn Layout格式。
 
 - ND Layout，一种使用层次化表述法描述的二维行优先排布格式。
 
@@ -116,7 +119,7 @@ Stride = ((StrideRow0, StrideRow1), (StrideColumn0, StrideColumn1))
     **图 6**  ND Layout示意图  
     ![分形变换](/figure/分形变换-1.png)
 
-    通过[MakeNDLayout](struct/layout/layout_fractal/MakeNDLayout.md)接口可以快速的构造连续的ND Layout格式，自行设置StrideRow1可以构造非连续的ND Layout格式。
+    通过[`MakeNDLayout`](struct/layout/layout_fractal/MakeNDLayout.md)接口可以快速的构造连续的ND Layout格式，自行设置StrideRow1可以构造非连续的ND Layout格式。
 
 - DN Layout，一种使用层次化表述法描述的二维列优先排布格式。
 
@@ -139,11 +142,11 @@ Stride = ((StrideRow0, StrideRow1), (StrideColumn0, StrideColumn1))
     **图 7**  DN Layout示意图  
     ![分形变换](/figure/分形变换-2.png) 
 
-    通过[MakeDNLayout](struct/layout/layout_fractal/MakeDNLayout.md)接口可以快速的构造连续的DN Layout格式，自行设置StrideColumn1值可以构造非连续的DN Layout格式。
+    通过[`MakeDNLayout`](struct/layout/layout_fractal/MakeDNLayout.md)接口可以快速的构造连续的DN Layout格式，自行设置StrideColumn1值可以构造非连续的DN Layout格式。
 
 ## 数据结构表
 
-每种分形对应的Layout格式如下表所示，其中T指的是支持的数据类型中除fp8_e8m0_t之外的数据类型，C0_ELEMENT = Std::Int<32/sizeof(T)>{}，特殊情况当T为fp4x2_e2m1_t或fp4x2_e1m2_t时，C0_ELEMENT = Std::Int<64>{}。
+每种分形对应的Layout格式如下表所示，其中T指的是支持的数据类型中除fp8_e8m0_t之外的数据类型，`C0_ELEMENT = Std::Int<32/sizeof(T)>{}`，特殊情况当T为fp4x2_e2m1_t或fp4x2_e1m2_t时，`C0_ELEMENT = Std::Int<64>{}`。
 
 | LayoutFormat | 类型 | ShapeRow0 | ShapeRow1 | ShapeColumn0 | ShapeColumn1 | StrideRow0 | StrideRow1 | StrideColumn0 | StrideColumn1 |
 |-------------|------|-----------|-----------|--------------|--------------|------------|------------|---------------|---------------|

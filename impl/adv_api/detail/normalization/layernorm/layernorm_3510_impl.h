@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file layernorm_3510_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/normalization/layernorm/layernorm_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/normalization/layernorm/layernorm_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORM_LAYERNORM_C310_IMPL_H__
 #endif
@@ -32,9 +33,10 @@
 namespace AscendC {
 // Extracted helper for rLength <= 64, invoked via VF_CALL<>
 template <typename T, bool isOutputVariance = true, bool isCorrection = false>
-__simd_vf__ inline void ComputeMeanVariance64VF(__ubuf__ float* const meanUb, __ubuf__ float* const varianceUb,
-    __ubuf__ T* const srcUb, const uint32_t aLength, const uint32_t rLengthWithPadding, const float k2Rec,
-    const float k2RRec, const float rRecWithCorrection, const uint32_t count)
+__simd_vf__ inline void ComputeMeanVariance64VF(
+    __ubuf__ float* const meanUb, __ubuf__ float* const varianceUb, __ubuf__ T* const srcUb, const uint32_t aLength,
+    const uint32_t rLengthWithPadding, const float k2Rec, const float k2RRec, const float rRecWithCorrection,
+    const uint32_t count)
 {
     Reg::RegTensor<float> src0Reg;
     Reg::RegTensor<float> src1Reg;
@@ -70,9 +72,10 @@ __simd_vf__ inline void ComputeMeanVariance64VF(__ubuf__ float* const meanUb, __
 
 // only support rLength <= 64
 template <typename T, bool isOutputVariance = true, bool isCorrection = false>
-__aicore__ inline void ComputeMeanVariance64(__ubuf__ float* const meanUb, __ubuf__ float* const varianceUb,
-    __ubuf__ T* const srcUb, const uint32_t aLength, const uint32_t rLength, const uint32_t rLengthWithPadding,
-    const float k2Rec, const float k2RRec, const float rRecWithCorrection)
+__aicore__ inline void ComputeMeanVariance64(
+    __ubuf__ float* const meanUb, __ubuf__ float* const varianceUb, __ubuf__ T* const srcUb, const uint32_t aLength,
+    const uint32_t rLength, const uint32_t rLengthWithPadding, const float k2Rec, const float k2RRec,
+    const float rRecWithCorrection)
 {
     const uint32_t count = rLength;
 
@@ -82,8 +85,8 @@ __aicore__ inline void ComputeMeanVariance64(__ubuf__ float* const meanUb, __ubu
 
 // Extracted helper for rLength in (64, 128], invoked via VF_CALL<>
 template <typename T, bool isOutputVariance = true>
-__simd_vf__ inline void ComputeMeanVariance128VF(__ubuf__ float* const meanUb,
-    __ubuf__ float* const varianceUb, __ubuf__ T* const srcUb, const uint32_t aLength,
+__simd_vf__ inline void ComputeMeanVariance128VF(
+    __ubuf__ float* const meanUb, __ubuf__ float* const varianceUb, __ubuf__ T* const srcUb, const uint32_t aLength,
     const uint32_t rLengthWithPadding, const float k2Rec, const float k2RRec, const uint16_t sregLower, uint32_t count)
 {
     Reg::RegTensor<float> src0Reg;
@@ -127,9 +130,10 @@ __simd_vf__ inline void ComputeMeanVariance128VF(__ubuf__ float* const meanUb,
 
 // only support rLength <= 128
 template <typename T, bool isOutputVariance = true>
-__aicore__ inline void ComputeMeanVariance128(__ubuf__ float* const meanUb, __ubuf__ float* const varianceUb,
-    __ubuf__ T* const srcUb, const uint32_t aLength, const uint32_t rLength, const uint32_t rLengthWithPadding,
-    const float k2Rec, const float k2RRec, const uint16_t sregLower)
+__aicore__ inline void ComputeMeanVariance128(
+    __ubuf__ float* const meanUb, __ubuf__ float* const varianceUb, __ubuf__ T* const srcUb, const uint32_t aLength,
+    const uint32_t rLength, const uint32_t rLengthWithPadding, const float k2Rec, const float k2RRec,
+    const uint16_t sregLower)
 {
     const uint32_t count = rLength - sregLower;
 
@@ -139,12 +143,13 @@ __aicore__ inline void ComputeMeanVariance128(__ubuf__ float* const meanUb, __ub
 
 // Helper for ComputeMeanVarianceUseY branching logic
 template <typename T, uint16_t HalfAddTimes, bool isOutputVariance>
-__simd_vf__ inline void ComputeMeanVarianceUseYVF(__ubuf__ T* const srcUb,
-    __ubuf__ T* const workUbYOrigin, __ubuf__ float* const meanUb, __ubuf__ float* const varianceUb,
-    const uint32_t aLength, const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const uint32_t m,
-    const uint16_t repeatTimes1, const uint16_t repeatTimes2, const uint16_t repeatTimes3, const uint32_t count2,
-    const uint32_t mVL, const float k2Rec, const uint16_t halfAddRepeatTimes, const uint32_t lastCount,
-    const float k2RRec, const uint16_t sregLower, const uint16_t dynamicHalfAddTimes)
+__simd_vf__ inline void ComputeMeanVarianceUseYVF(
+    __ubuf__ T* const srcUb, __ubuf__ T* const workUbYOrigin, __ubuf__ float* const meanUb,
+    __ubuf__ float* const varianceUb, const uint32_t aLength, const uint32_t rLengthWithPadding,
+    const uint32_t rHeadLength, const uint32_t m, const uint16_t repeatTimes1, const uint16_t repeatTimes2,
+    const uint16_t repeatTimes3, const uint32_t count2, const uint32_t mVL, const float k2Rec,
+    const uint16_t halfAddRepeatTimes, const uint32_t lastCount, const float k2RRec, const uint16_t sregLower,
+    const uint16_t dynamicHalfAddTimes)
 {
     Reg::MaskReg pregFull = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
     Reg::MaskReg pregOne = Reg::CreateMask<float, Reg::MaskPattern::VL1>();
@@ -153,28 +158,31 @@ __simd_vf__ inline void ComputeMeanVarianceUseYVF(__ubuf__ T* const srcUb,
     uint32_t count = count2;
     Reg::MaskReg preg2 = Reg::UpdateMask<float>(count);
 
-    ComputeMeanUseY<T>(srcUb, workUbYOrigin, pregFull, pregOne, pregLastCount, preg2, aLength, rLengthWithPadding,
-        rHeadLength, m, repeatTimes1, repeatTimes2, repeatTimes3, mVL, k2Rec, sregLower);
+    ComputeMeanUseY<T>(
+        srcUb, workUbYOrigin, pregFull, pregOne, pregLastCount, preg2, aLength, rLengthWithPadding, rHeadLength, m,
+        repeatTimes1, repeatTimes2, repeatTimes3, mVL, k2Rec, sregLower);
     Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
-    ReduceWorkBufferAndStore<T, HalfAddTimes>(workUbYOrigin, meanUb, pregFull, pregOne, pregLastCount, aLength,
-        rLengthWithPadding, halfAddRepeatTimes, lastCountTmp, k2RRec, sregLower,
-        HalfAddTimes == 0 ? dynamicHalfAddTimes : 0);
+    ReduceWorkBufferAndStore<T, HalfAddTimes>(
+        workUbYOrigin, meanUb, pregFull, pregOne, pregLastCount, aLength, rLengthWithPadding, halfAddRepeatTimes,
+        lastCountTmp, k2RRec, sregLower, HalfAddTimes == 0 ? dynamicHalfAddTimes : 0);
     Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
     if constexpr (isOutputVariance) {
-        ComputeVarianceUseY<T>(srcUb, workUbYOrigin, meanUb, pregFull, pregOne, pregLastCount, preg2, aLength,
-            rLengthWithPadding, rHeadLength, m, repeatTimes1, repeatTimes2, repeatTimes3, mVL, k2Rec, sregLower);
+        ComputeVarianceUseY<T>(
+            srcUb, workUbYOrigin, meanUb, pregFull, pregOne, pregLastCount, preg2, aLength, rLengthWithPadding,
+            rHeadLength, m, repeatTimes1, repeatTimes2, repeatTimes3, mVL, k2Rec, sregLower);
         Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
-        ReduceWorkBufferAndStore<T, HalfAddTimes>(workUbYOrigin, varianceUb, pregFull, pregOne, pregLastCount, aLength,
-            rLengthWithPadding, halfAddRepeatTimes, lastCountTmp, k2RRec, sregLower,
-            HalfAddTimes == 0 ? dynamicHalfAddTimes : 0);
+        ReduceWorkBufferAndStore<T, HalfAddTimes>(
+            workUbYOrigin, varianceUb, pregFull, pregOne, pregLastCount, aLength, rLengthWithPadding,
+            halfAddRepeatTimes, lastCountTmp, k2RRec, sregLower, HalfAddTimes == 0 ? dynamicHalfAddTimes : 0);
     }
 }
 
 template <typename T, bool isOutputVariance = true>
-__aicore__ inline void ComputeMeanVarianceUseY(__ubuf__ float* const meanUb, __ubuf__ float* const varianceUb,
-    __ubuf__ T* const srcUb, __ubuf__ T* const workUbYOrigin, const uint32_t k, const uint32_t aLength,
-    const uint32_t rLength, const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const float k2Rec,
-    const float k2RRec, const uint16_t sregLower)
+__aicore__ inline void ComputeMeanVarianceUseY(
+    __ubuf__ float* const meanUb, __ubuf__ float* const varianceUb, __ubuf__ T* const srcUb,
+    __ubuf__ T* const workUbYOrigin, const uint32_t k, const uint32_t aLength, const uint32_t rLength,
+    const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const float k2Rec, const float k2RRec,
+    const uint16_t sregLower)
 {
     const uint32_t m = rLength - rHeadLength;
     const uint16_t halfAddCount = CeilDivision(rHeadLength / 2, sregLower); // total count
@@ -196,21 +204,22 @@ __aicore__ inline void ComputeMeanVarianceUseY(__ubuf__ float* const meanUb, __u
     uint16_t repeatTimes3 = mainTailCount / sregLower / 2;
     uint32_t lastCountTmp = static_cast<uint32_t>(lastCount);
     if (halfAddTimes == 1) {
-        ComputeMeanVarianceUseYVF<T, 1, isOutputVariance>(srcUb, workUbYOrigin, meanUb, varianceUb, aLength,
-            rLengthWithPadding, rHeadLength, m, repeatTimes1, repeatTimes2, repeatTimes3, count2, mVL, k2Rec,
-            halfAddRepeatTimes, lastCountTmp, k2RRec, sregLower, 0);
+        ComputeMeanVarianceUseYVF<T, 1, isOutputVariance>(
+            srcUb, workUbYOrigin, meanUb, varianceUb, aLength, rLengthWithPadding, rHeadLength, m, repeatTimes1,
+            repeatTimes2, repeatTimes3, count2, mVL, k2Rec, halfAddRepeatTimes, lastCountTmp, k2RRec, sregLower, 0);
     } else if (halfAddTimes == 2) {
-        ComputeMeanVarianceUseYVF<T, 2, isOutputVariance>(srcUb, workUbYOrigin, meanUb, varianceUb, aLength,
-            rLengthWithPadding, rHeadLength, m, repeatTimes1, repeatTimes2, repeatTimes3, count2, mVL, k2Rec,
-            halfAddRepeatTimes, lastCountTmp, k2RRec, sregLower, 0);
+        ComputeMeanVarianceUseYVF<T, 2, isOutputVariance>(
+            srcUb, workUbYOrigin, meanUb, varianceUb, aLength, rLengthWithPadding, rHeadLength, m, repeatTimes1,
+            repeatTimes2, repeatTimes3, count2, mVL, k2Rec, halfAddRepeatTimes, lastCountTmp, k2RRec, sregLower, 0);
     } else if (halfAddTimes == 4) {
-        ComputeMeanVarianceUseYVF<T, 4, isOutputVariance>(srcUb, workUbYOrigin, meanUb, varianceUb, aLength,
-            rLengthWithPadding, rHeadLength, m, repeatTimes1, repeatTimes2, repeatTimes3, count2, mVL, k2Rec,
-            halfAddRepeatTimes, lastCountTmp, k2RRec, sregLower, 0);
+        ComputeMeanVarianceUseYVF<T, 4, isOutputVariance>(
+            srcUb, workUbYOrigin, meanUb, varianceUb, aLength, rLengthWithPadding, rHeadLength, m, repeatTimes1,
+            repeatTimes2, repeatTimes3, count2, mVL, k2Rec, halfAddRepeatTimes, lastCountTmp, k2RRec, sregLower, 0);
     } else {
-        ComputeMeanVarianceUseYVF<T, 0, isOutputVariance>(srcUb, workUbYOrigin, meanUb, varianceUb, aLength,
-            rLengthWithPadding, rHeadLength, m, repeatTimes1, repeatTimes2, repeatTimes3, count2, mVL, k2Rec,
-            halfAddRepeatTimes, lastCountTmp, k2RRec, sregLower, halfAddTimes);
+        ComputeMeanVarianceUseYVF<T, 0, isOutputVariance>(
+            srcUb, workUbYOrigin, meanUb, varianceUb, aLength, rLengthWithPadding, rHeadLength, m, repeatTimes1,
+            repeatTimes2, repeatTimes3, count2, mVL, k2Rec, halfAddRepeatTimes, lastCountTmp, k2RRec, sregLower,
+            halfAddTimes);
     }
 }
 
@@ -230,34 +239,38 @@ __aicore__ inline void LayerNormTypeChecks()
 
 // Helper function to dispatch mean and variance computation based on rLength
 template <typename T>
-__aicore__ inline void ComputeMeanVariance(const LocalTensor<float>& outputMean,
-    const LocalTensor<float>& varianceLocal, const LocalTensor<T>& inputX, const LocalTensor<T>& output,
-    const LayerNormPara& para, const LayerNormSeparateTiling& tiling, const uint16_t sregLower)
+__aicore__ inline void ComputeMeanVariance(
+    const LocalTensor<float>& outputMean, const LocalTensor<float>& varianceLocal, const LocalTensor<T>& inputX,
+    const LocalTensor<T>& output, const LayerNormPara& para, const LayerNormSeparateTiling& tiling,
+    const uint16_t sregLower)
 {
     if (tiling.rLength <= sregLower) {
-        ComputeMeanVariance64((__ubuf__ float*)outputMean.GetPhyAddr(),
-            (__ubuf__ float*)varianceLocal.GetPhyAddr(), (__ubuf__ T*)inputX.GetPhyAddr(), para.aLength,
-            tiling.rLength, para.rLengthWithPadding, tiling.k2Rec, tiling.k2RRec, tiling.k2RRec);
+        ComputeMeanVariance64(
+            (__ubuf__ float*)outputMean.GetPhyAddr(), (__ubuf__ float*)varianceLocal.GetPhyAddr(),
+            (__ubuf__ T*)inputX.GetPhyAddr(), para.aLength, tiling.rLength, para.rLengthWithPadding, tiling.k2Rec,
+            tiling.k2RRec, tiling.k2RRec);
     } else if (tiling.rLength <= sregLower * 2) {
-        ComputeMeanVariance128((__ubuf__ float*)outputMean.GetPhyAddr(),
-            (__ubuf__ float*)varianceLocal.GetPhyAddr(), (__ubuf__ T*)inputX.GetPhyAddr(), para.aLength,
-            tiling.rLength, para.rLengthWithPadding, tiling.k2Rec, tiling.k2RRec, sregLower);
+        ComputeMeanVariance128(
+            (__ubuf__ float*)outputMean.GetPhyAddr(), (__ubuf__ float*)varianceLocal.GetPhyAddr(),
+            (__ubuf__ T*)inputX.GetPhyAddr(), para.aLength, tiling.rLength, para.rLengthWithPadding, tiling.k2Rec,
+            tiling.k2RRec, sregLower);
     } else {
-        ComputeMeanVarianceUseY((__ubuf__ float*)outputMean.GetPhyAddr(),
-            (__ubuf__ float*)varianceLocal.GetPhyAddr(), (__ubuf__ T*)inputX.GetPhyAddr(),
-            (__ubuf__ T*)output.GetPhyAddr(), tiling.oneTmpSize, para.aLength, tiling.rLength,
-            para.rLengthWithPadding, tiling.rHeadLength, tiling.k2Rec, tiling.k2RRec, sregLower);
+        ComputeMeanVarianceUseY(
+            (__ubuf__ float*)outputMean.GetPhyAddr(), (__ubuf__ float*)varianceLocal.GetPhyAddr(),
+            (__ubuf__ T*)inputX.GetPhyAddr(), (__ubuf__ T*)output.GetPhyAddr(), tiling.oneTmpSize, para.aLength,
+            tiling.rLength, para.rLengthWithPadding, tiling.rHeadLength, tiling.k2Rec, tiling.k2RRec, sregLower);
     }
 }
 
 template <typename U, typename T, bool isReuseSource = false, const LayerNormConfig& config = LNCFG_NORM>
-__aicore__ inline void LayerNormImpl(const LocalTensor<T>& output, const LocalTensor<float>& outputMean,
-    const LocalTensor<float>& output1, const LocalTensor<T>& inputX, const LocalTensor<U>& gamma,
-    const LocalTensor<U>& beta, const float epsilon, const LocalTensor<uint8_t>& sharedTmpBuffer,
-    const LayerNormPara& para, const LayerNormSeparateTiling& tiling)
+__aicore__ inline void LayerNormImpl(
+    const LocalTensor<T>& output, const LocalTensor<float>& outputMean, const LocalTensor<float>& output1,
+    const LocalTensor<T>& inputX, const LocalTensor<U>& gamma, const LocalTensor<U>& beta, const float epsilon,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const LayerNormPara& para, const LayerNormSeparateTiling& tiling)
 {
-    CHECK_FUNC_HIGHLEVEL_API(LayerNorm, (U, T, isReuseSource, config), (output, outputMean,
-        output1, inputX, gamma, beta, epsilon, sharedTmpBuffer, para, tiling));
+    CHECK_FUNC_HIGHLEVEL_API(
+        LayerNorm, (U, T, isReuseSource, config),
+        (output, outputMean, output1, inputX, gamma, beta, epsilon, sharedTmpBuffer, para, tiling));
 
     LayerNormTypeChecks<U, T, config>();
 
@@ -302,9 +315,10 @@ __aicore__ inline void LayerNormImpl(const LocalTensor<T>& output, const LocalTe
 }
 
 template <typename U, typename T, bool isReuseSource = false, const LayerNormConfig& config = LNCFG_NORM>
-__aicore__ inline void LayerNormImpl(const LocalTensor<T>& output, const LocalTensor<float>& outputMean,
-    const LocalTensor<float>& output1, const LocalTensor<T>& inputX, const LocalTensor<U>& gamma,
-    const LocalTensor<U>& beta, const float epsilon, const LayerNormPara& para, const LayerNormSeparateTiling& tiling)
+__aicore__ inline void LayerNormImpl(
+    const LocalTensor<T>& output, const LocalTensor<float>& outputMean, const LocalTensor<float>& output1,
+    const LocalTensor<T>& inputX, const LocalTensor<U>& gamma, const LocalTensor<U>& beta, const float epsilon,
+    const LayerNormPara& para, const LayerNormSeparateTiling& tiling)
 {
     LocalTensor<uint8_t> sharedTmpBuffer;
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);

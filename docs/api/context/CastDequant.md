@@ -197,8 +197,8 @@
 
 ## 调用示例<a name="section642mcpsimp"></a>
 
-如果您需要运行样例代码，请将该代码段拷贝并替换[样例模板](#section12233154963115)中Compute函数的部分代码即可。
 
+完整的调用样例可参考[复合计算接口样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/02_features/03_basic_api/02_memory_vector_compute/element_wise_compound_compute)。
 -   高维切分计算接口样例-mask连续模式
 
     ```
@@ -263,117 +263,5 @@
   0  0  0  0  0  0  0  0 36 36 33 62 98 64 32 81 49 53 27 70 35  9 63  7
   0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10 89  3 39 94 23 89 16
  23 60 71 42 46 58 65 90]
-```
-
-## 样例模板<a name="section12233154963115"></a>
-
-为了方便您快速运行指令中的参考样例，本章节提供样例模板。
-
-```
-#include "kernel_operator.h"
-template <typename srcType, typename dstType>
-class KernelCastDequant {
-public:
-    __aicore__ inline KernelCastDequant() {}
-    __aicore__ inline void Init(GM_ADDR src_gm, GM_ADDR dst_gm, uint32_t inputSize, bool halfBlock, bool isVecDeq)
-    {
-        srcSize = inputSize;
-        dstSize = inputSize * 2;
-        this->halfBlock = halfBlock;
-        this->isVecDeq = isVecDeq;
-        src_global.SetGlobalBuffer(reinterpret_cast<__gm__ srcType*>(src_gm), srcSize);
-        dst_global.SetGlobalBuffer(reinterpret_cast<__gm__ dstType*>(dst_gm), dstSize);
-        pipe.InitBuffer(inQueueX, 1, srcSize * sizeof(srcType));
-        pipe.InitBuffer(outQueue, 1, dstSize * sizeof(dstType));
-        pipe.InitBuffer(tmpQueue, 1, 128);
-    }
-    __aicore__ inline void Process()
-    {
-        CopyIn();
-        Compute();
-        CopyOut();
-    }
-private:
-    __aicore__ inline void CopyIn()
-    {
-        AscendC::LocalTensor<srcType> srcLocal = inQueueX.AllocTensor<srcType>();
-        AscendC::DataCopy(srcLocal, src_global, srcSize);
-        inQueueX.EnQue(srcLocal);
-    }
-    __aicore__ inline void Compute()
-    {
-        AscendC::LocalTensor<dstType> dstLocal = outQueue.AllocTensor<dstType>();
-        AscendC::LocalTensor<uint64_t> tmpBuffer = tmpQueue.AllocTensor<uint64_t>();
-        AscendC::Duplicate(tmpBuffer.ReinterpretCast<int32_t>(), static_cast<int32_t>(0), 32);
-        AscendC::PipeBarrier<PIPE_V>();
-        AscendC::Duplicate<int32_t>(dstLocal.template ReinterpretCast<int32_t>(), static_cast<int32_t>(0), dstSize / sizeof(int32_t));
-        AscendC::PipeBarrier<PIPE_ALL>();
-        bool signMode = false;
-        if constexpr (AscendC::Std::is_same<dstType, int8_t>::value) {
-            signMode = true;
-        }
-        AscendC::LocalTensor<srcType> srcLocal = inQueueX.DeQue<srcType>();
-        if (halfBlock) {
-            if (isVecDeq) {
-                float vdeqScale[16] = { 1.0 };
-                int16_t vdeqOffset[16] = { 0 };
-                bool vdeqSignMode[16] = { signMode };
-                AscendC::VdeqInfo vdeqInfo(vdeqScale, vdeqOffset, vdeqSignMode);
-                AscendC::SetDeqScale(tmpBuffer, vdeqInfo);
-                AscendC::CastDequant<dstType, srcType, true, true>(dstLocal, srcLocal, srcSize);
-            } else {
-                float scale = 1.0;
-                int16_t offset = 0;
-                AscendC::SetDeqScale(scale, offset, signMode);
-                AscendC::CastDequant<dstType, srcType, false, true>(dstLocal, srcLocal, srcSize);
-            }
-        } else {
-            if (isVecDeq) {
-                float vdeqScale[16] = { 1.0 };
-                int16_t vdeqOffset[16] = { 0 };
-                bool vdeqSignMode[16] = { signMode };
-                AscendC::VdeqInfo vdeqInfo(vdeqScale, vdeqOffset, vdeqSignMode);
-                AscendC::SetDeqScale(tmpBuffer, vdeqInfo);
-                AscendC::CastDequant<dstType, srcType, true, false>(dstLocal, srcLocal, srcSize);
-            } else {
-                float scale = 1.0;
-                int16_t offset = 0;
-                AscendC::SetDeqScale(scale, offset, signMode);
-                AscendC::CastDequant<dstType, srcType, false, false>(dstLocal, srcLocal, srcSize);
-            }
-        }
-        outQueue.EnQue<dstType>(dstLocal);
-        tmpQueue.FreeTensor(tmpBuffer);
-        inQueueX.FreeTensor(srcLocal);
-    }
-    __aicore__ inline void CopyOut()
-    {
-        AscendC::LocalTensor<dstType> dstLocal = outQueue.DeQue<dstType>();
-        AscendC::DataCopy(dst_global, dstLocal, dstSize);
-        outQueue.FreeTensor(dstLocal);
-    }
-private:
-    AscendC::GlobalTensor<srcType> src_global;
-    AscendC::GlobalTensor<dstType> dst_global;
-    AscendC::TPipe pipe;
-    AscendC::TQue<AscendC::TPosition::VECIN, 1> inQueueX;
-    AscendC::TQue<AscendC::TPosition::VECIN, 1> tmpQueue;
-    AscendC::TQue<AscendC::TPosition::VECOUT, 1> outQueue;
-    bool halfBlock = false;
-    bool isVecDeq = false;
-    uint32_t srcSize = 0;
-    uint32_t dstSize = 0;
-};
-template <typename srcType, typename dstType>
-__aicore__ void kernel_cast_deqscale_operator(GM_ADDR src_gm, GM_ADDR dst_gm, uint32_t dataSize, bool halfBlock, bool isVecDeq)
-{
-    KernelCastDequant<srcType, dstType> op;
-    op.Init(src_gm, dst_gm, dataSize, halfBlock, isVecDeq);
-    op.Process();
-}
-extern "C" __global__ __aicore__ void kernel_cast_deqscale_operator_256_int16_t_uint8_t_true_true(GM_ADDR src_gm, GM_ADDR dst_gm)
-{
-    kernel_cast_deqscale_operator<int16_t, uint8_t>(src_gm, dst_gm, 256, true, true);
-}
 ```
 

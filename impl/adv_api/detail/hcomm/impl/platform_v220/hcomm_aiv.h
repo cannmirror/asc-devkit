@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/hcomm/impl/platform_v220/hcomm_aiv.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/simplesoftmax.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/hcomm/impl/platform_v220/hcomm_aiv.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/simplesoftmax.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HCOMM_AIV_H__
 #endif
@@ -42,9 +43,8 @@ __aicore__ inline HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::HcommImpl()
 __aicore__ inline HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::~HcommImpl() {}
 
 template <bool commit, pipe_t commitPipe, pipe_t reqPipe>
-__aicore__ inline HcommHandle HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::Write(ChannelHandle channelHandle,
-                                                                                      GM_ADDR dst, GM_ADDR src,
-                                                                                      uint64_t len)
+__aicore__ inline HcommHandle HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::Write(
+    ChannelHandle channelHandle, GM_ADDR dst, GM_ADDR src, uint64_t len)
 {
     KERNEL_LOG(KERNEL_INFO, "Hcomm Write channelHandle:%llu, dst:%p, src:%p, len:%llu", channelHandle, dst, src, len);
     HcommHandle handleId = ++curHandleId_;
@@ -54,9 +54,8 @@ __aicore__ inline HcommHandle HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::Wr
 }
 
 template <bool commit, pipe_t commitPipe, pipe_t reqPipe>
-__aicore__ inline HcommHandle HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::Read(ChannelHandle channelHandle,
-                                                                                     GM_ADDR dst, GM_ADDR src,
-                                                                                     uint64_t len)
+__aicore__ inline HcommHandle HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::Read(
+    ChannelHandle channelHandle, GM_ADDR dst, GM_ADDR src, uint64_t len)
 {
     KERNEL_LOG(KERNEL_INFO, "Hcomm Read channelHandle:%llu, dst:%p, src:%p, len:%llu", channelHandle, dst, src, len);
     HcommHandle handleId = ++curHandleId_;
@@ -65,7 +64,8 @@ __aicore__ inline HcommHandle HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::Re
     return handleId;
 }
 
-__aicore__ inline void HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::doorBell(__gm__ Channel* channelPtr, uint64_t curHead)
+__aicore__ inline void HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::doorBell(
+    __gm__ Channel* channelPtr, uint64_t curHead)
 {
     uint64_t doorBellInfo = 0;
     doorBellInfo |= channelPtr->sqContextAddr->ctx.rdmaSqContext.qpn; // [0:23] DB_TAG (qp_num)
@@ -83,9 +83,8 @@ __aicore__ inline void HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::doorBell(
     AscendC::DataCopyPad(DBGlobalTensor, ubLocal_, copyParams);
 }
 
-__aicore__ inline void HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::PostSend(ChannelHandle channelHandle,
-                                                                                  GM_ADDR dst, GM_ADDR src,
-                                                                                  uint64_t len, bool isRead)
+__aicore__ inline void HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::PostSend(
+    ChannelHandle channelHandle, GM_ADDR dst, GM_ADDR src, uint64_t len, bool isRead)
 {
     __gm__ Channel* channelPtr = (__gm__ Channel*)channelHandle;
     auto qpNum = channelPtr->sqContextAddr->ctx.rdmaSqContext.qpn;
@@ -99,12 +98,13 @@ __aicore__ inline void HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::PostSend(
     uint64_t shift = 15U;
     auto qpDepth = channelPtr->sqContextAddr->ctx.rdmaSqContext.depth;
 
-    KERNEL_LOG(KERNEL_INFO, "Hcomm doorBell qpNum:%d, sqBaseAddr:%p, wqeSize:%d, curHead:%d, qpDepth:%d", qpNum,
-               sqBaseAddr, wqeSize, curHead, qpDepth);
+    KERNEL_LOG(
+        KERNEL_INFO, "Hcomm doorBell qpNum:%d, sqBaseAddr:%p, wqeSize:%d, curHead:%d, qpDepth:%d", qpNum, sqBaseAddr,
+        wqeSize, curHead, qpDepth);
 
     // Make sure we don't overflow the SQ in an infinite loop - no need to mitigate endless loop as the host
-    // will timeout and kill the kernel, same as all2all kernel if it fails to complete (e.g. in case of link loss) 
-    while(1) {
+    // will timeout and kill the kernel, same as all2all kernel if it fails to complete (e.g. in case of link loss)
+    while (1) {
         CacheWriteThrough((__gm__ uint8_t*)curHardwareTailAddr, 8);
         if ((curHead - *(__gm__ uint32_t*)(curHardwareTailAddr)) < qpDepth - 1) {
             break;

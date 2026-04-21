@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #include "include/adv_api/normalization/rmsnorm_tiling.h"
 
@@ -14,7 +14,7 @@
 
 namespace optiling {
 REGISTER_TILING_DATA_CLASS(RmsNormTilingOpApi, RmsNormTiling);
-}  // namespace optiling
+} // namespace optiling
 
 namespace AscendC {
 namespace {
@@ -97,12 +97,11 @@ uint32_t GetRmsNormMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize
 inline bool RmsNormCheckBasicBlockShape(const uint32_t bLength, const uint32_t sLength, const uint32_t hLength)
 {
     constexpr uint32_t maxBasicBlockH = 2048;
-    return hLength % BASIC_BLK_HLENGTH != 0 ||
-           bLength * sLength % BASIC_BLK_BSLENGTH != 0 ||
-           hLength >= maxBasicBlockH;
+    return hLength % BASIC_BLK_HLENGTH != 0 || bLength * sLength % BASIC_BLK_BSLENGTH != 0 || hLength >= maxBasicBlockH;
 }
 
-bool RmsNormCheckShape(const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t typeSize,
+bool RmsNormCheckShape(
+    const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t typeSize,
     const bool isBasicBlock = false)
 {
     std::vector<int64_t> shapeDims = srcShape.GetDims();
@@ -137,8 +136,8 @@ bool RmsNormCheckShape(const ge::Shape& srcShape, const ge::Shape& originSrcShap
 }
 } // namespace
 
-bool GetRmsNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue,
-    uint32_t& minValue, const bool isBasicBlock)
+bool GetRmsNormMaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue, const bool isBasicBlock)
 {
     std::vector<int64_t> shapeDims = srcShape.GetDims();
     const uint32_t bLength = static_cast<uint32_t>(shapeDims[B_INDEX]);
@@ -153,9 +152,9 @@ bool GetRmsNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize,
     return true;
 }
 
-bool GetRmsNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape,
-    const uint32_t stackBufferByteSize, const uint32_t typeSize, optiling::RmsNormTiling& tiling,
-    const bool isBasicBlock)
+bool GetRmsNormTilingInfo(
+    const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferByteSize,
+    const uint32_t typeSize, optiling::RmsNormTiling& tiling, const bool isBasicBlock)
 {
     if (!RmsNormCheckShape(srcShape, originSrcShape, typeSize, isBasicBlock)) {
         return false;
@@ -183,8 +182,8 @@ bool GetRmsNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcS
     auto alignToBlock = [](const uint32_t inValue, const uint32_t alignUnit) {
         return (inValue + alignUnit - 1) / alignUnit * alignUnit;
     };
-    const uint32_t coeff = (typeSize == sizeof(float) ? 1u: 2u);
-    while (totalSize >= (bsLength + 1) * hLength * coeff  + alignToBlock(bsLength + 1,  ONE_BLK_FLOAT_NUM)) {
+    const uint32_t coeff = (typeSize == sizeof(float) ? 1u : 2u);
+    while (totalSize >= (bsLength + 1) * hLength * coeff + alignToBlock(bsLength + 1, ONE_BLK_FLOAT_NUM)) {
         bsLength++;
     }
     uint32_t oneTmpSize = bsLength * hLength;
@@ -215,13 +214,13 @@ bool GetRmsNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcS
     return true;
 }
 
-bool GetRmsNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape,
-    const uint32_t stackBufferByteSize, const uint32_t typeSize, AscendC::tiling::RmsNormTiling& tiling,
-    const bool isBasicBlock)
+bool GetRmsNormTilingInfo(
+    const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferByteSize,
+    const uint32_t typeSize, AscendC::tiling::RmsNormTiling& tiling, const bool isBasicBlock)
 {
     optiling::RmsNormTiling tilingData;
     bool ret = GetRmsNormTilingInfo(srcShape, originSrcShape, stackBufferByteSize, typeSize, tilingData, isBasicBlock);
     tilingData.SaveToBuffer(&tiling, sizeof(RmsNormTiling));
     return ret;
 }
-}  // namespace AscendC
+} // namespace AscendC

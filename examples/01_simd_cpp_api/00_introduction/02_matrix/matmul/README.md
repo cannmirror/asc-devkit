@@ -24,14 +24,12 @@
 
 ## 样例描述
 
-- 样例功能：
-
+- 样例功能：  
   Matmul计算公式：
   $$
   C = A * B
   $$
-- 样例规格：
-
+- 样例规格：  
   本样例参数M = 512, N = 1024, K = 512，输入规格如下表所示：
   <table>
   <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="4" align="center">Matmul</td></tr>
@@ -54,14 +52,13 @@
     - 通过Iterate接口完成矩阵乘计算
     - 通过LeakyRelu接口完成激活函数计算
 
-  - 调用实现
-
+  - 调用实现  
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行
 
 在本样例根目录下执行如下步骤，编译并执行样例。
-- 配置环境变量
+- 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
     ```bash

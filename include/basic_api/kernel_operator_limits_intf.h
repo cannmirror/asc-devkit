@@ -155,7 +155,6 @@ public:
 #endif
         }
         return T();
-
     }
 
     constexpr __aicore__ static inline T NegativeInfinity()

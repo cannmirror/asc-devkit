@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #include "include/adv_api/normalization/layernorm_grad_beta_tiling.h"
 
@@ -23,17 +23,19 @@ constexpr uint32_t LAYERNORM_GRAD_BETA_HALF_SIZE = 2;
 constexpr uint32_t LAYERNORM_GRAD_BETA_FLOAT_SIZE = 4;
 constexpr uint32_t LAYERNORM_GRAD_BETA_SRC_DIM_NUM = 4;
 
-void CheckLayerNormGradBetaHostCommon(const char *apiName, const char *hostFuncName,
-    const ge::Shape& srcShape, const uint32_t typeSize)
+void CheckLayerNormGradBetaHostCommon(
+    const char* apiName, const char* hostFuncName, const ge::Shape& srcShape, const uint32_t typeSize)
 {
-    ASCENDC_HOST_ASSERT(typeSize == LAYERNORM_GRAD_BETA_HALF_SIZE || 
-        typeSize == LAYERNORM_GRAD_BETA_FLOAT_SIZE, return,
+    ASCENDC_HOST_ASSERT(
+        typeSize == LAYERNORM_GRAD_BETA_HALF_SIZE || typeSize == LAYERNORM_GRAD_BETA_FLOAT_SIZE, return,
         "[%s][%s] Type size %u is unsupported!", apiName, hostFuncName, typeSize);
-    ASCENDC_HOST_ASSERT(srcShape.GetShapeSize() > 0, return, 
-        "[%s][%s] Input Shape size must be greater than 0.", apiName, hostFuncName);
-    ASCENDC_HOST_ASSERT(srcShape.GetDimNum() == LAYERNORM_GRAD_BETA_SRC_DIM_NUM, return, 
-        "[%s][%s] The dims of srcShape is %zu, should be 4 (e.g. [B, S, storageHLength, originHLength])!", 
-        apiName, hostFuncName, srcShape.GetDimNum());
+    ASCENDC_HOST_ASSERT(
+        srcShape.GetShapeSize() > 0, return, "[%s][%s] Input Shape size must be greater than 0.", apiName,
+        hostFuncName);
+    ASCENDC_HOST_ASSERT(
+        srcShape.GetDimNum() == LAYERNORM_GRAD_BETA_SRC_DIM_NUM, return,
+        "[%s][%s] The dims of srcShape is %zu, should be 4 (e.g. [B, S, storageHLength, originHLength])!", apiName,
+        hostFuncName, srcShape.GetDimNum());
     return;
 }
 
@@ -42,8 +44,8 @@ uint32_t GetLayerNormGradBetaMaxTmpSize(const ge::Shape& srcShape, const uint32_
     (void)(isReuseSource);
     std::vector<int64_t> shapeDims = srcShape.GetDims();
     constexpr uint32_t LAYERNORM_GRAD_BETA_SHAPE_SIZE = 4;
-    ASCENDC_HOST_ASSERT(shapeDims.size() >= LAYERNORM_GRAD_BETA_SHAPE_SIZE,
-        return 0, "srcShape dims must not be less than 4.");
+    ASCENDC_HOST_ASSERT(
+        shapeDims.size() >= LAYERNORM_GRAD_BETA_SHAPE_SIZE, return 0, "srcShape dims must not be less than 4.");
     const uint32_t bLength = static_cast<uint32_t>(shapeDims[LAYERNORM_GRAD_BETA_INDEX_BLENGTH]);
     const uint32_t sLength = static_cast<uint32_t>(shapeDims[LAYERNORM_GRAD_BETA_INDEX_SLENGTH]);
     const uint32_t hLength = static_cast<uint32_t>(shapeDims[LAYERNORM_GRAD_BETA_INDEX_HLENGTH]);
@@ -70,8 +72,8 @@ uint32_t GetLayerNormGradBetaMinTmpSize(const ge::Shape& srcShape, const uint32_
     return LAYERNORM_GRAD_BETA_TWO_BUF_NUM * inputSize;
 }
 
-void SetLayerNormGradBetaNDTilingInfo(const LayerNormGradBetaTilingTmp& tilingTmp,
-    optiling::LayerNormGradBetaTiling& tiling)
+void SetLayerNormGradBetaNDTilingInfo(
+    const LayerNormGradBetaTilingTmp& tilingTmp, optiling::LayerNormGradBetaTiling& tiling)
 {
     tiling.set_stackBufferSize(tilingTmp.stackBufferSize);
     tiling.set_bLength(tilingTmp.bLength);
@@ -95,16 +97,18 @@ void SetLayerNormGradBetaNDTilingInfo(const LayerNormGradBetaTilingTmp& tilingTm
 }
 } // namespace
 
-void GetLayerNormGradBetaMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t& maxValue, uint32_t& minValue)
+void GetLayerNormGradBetaMaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    uint32_t& minValue)
 {
     CheckLayerNormGradBetaHostCommon("LayerNormGradBeta", "GetLayerNormGradBetaMaxMinTmpSize", srcShape, typeSize);
     maxValue = GetLayerNormGradBetaMaxTmpSize(srcShape, typeSize, isReuseSource);
     minValue = GetLayerNormGradBetaMinTmpSize(srcShape, typeSize, isReuseSource);
 }
 
-void GetLayerNormGradBetaNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const bool isReuseSource, optiling::LayerNormGradBetaTiling& tiling)
+void GetLayerNormGradBetaNDTilingInfo(
+    const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
+    optiling::LayerNormGradBetaTiling& tiling)
 {
     CheckLayerNormGradBetaHostCommon("LayerNormGradBeta", "GetLayerNormGradBetaNDTilingInfo", srcShape, typeSize);
     LayerNormGradBetaTilingTmp tilingTmp;
@@ -112,8 +116,8 @@ void GetLayerNormGradBetaNDTilingInfo(const ge::Shape srcShape, const uint32_t s
     (void)(isReuseSource);
     std::vector<int64_t> shapeDims = srcShape.GetDims();
     constexpr uint32_t LAYERNORM_GRAD_BETA_SHAPE_SIZE = 4;
-    ASCENDC_HOST_ASSERT(shapeDims.size() >= LAYERNORM_GRAD_BETA_SHAPE_SIZE,
-        return, "srcShape dims must not be less than 4.");
+    ASCENDC_HOST_ASSERT(
+        shapeDims.size() >= LAYERNORM_GRAD_BETA_SHAPE_SIZE, return, "srcShape dims must not be less than 4.");
     // detection shapeDims dimension
 
     tilingTmp.bLength = static_cast<uint32_t>(shapeDims[LAYERNORM_GRAD_BETA_INDEX_BLENGTH]);
@@ -125,8 +129,9 @@ void GetLayerNormGradBetaNDTilingInfo(const ge::Shape srcShape, const uint32_t s
     tilingTmp.bsLength = tilingTmp.bLength * tilingTmp.sLength;
 
     tilingTmp.stackBufferSize = stackBufferSize / sizeof(float);
-    ASCENDC_HOST_ASSERT((tilingTmp.stackBufferSize >= (tilingTmp.hLength + tilingTmp.hLength)),
-        return, "stackBufferSize is not enough.");
+    ASCENDC_HOST_ASSERT(
+        (tilingTmp.stackBufferSize >= (tilingTmp.hLength + tilingTmp.hLength)), return,
+        "stackBufferSize is not enough.");
 
     tilingTmp.oneCalSize = tilingTmp.stackBufferSize;
     tilingTmp.numberOfTmpBuf = LAYERNORM_GRAD_BETA_ONE_BUF_NUM;
@@ -168,8 +173,9 @@ void GetLayerNormGradBetaNDTilingInfo(const ge::Shape srcShape, const uint32_t s
     SetLayerNormGradBetaNDTilingInfo(tilingTmp, tiling);
 }
 
-void GetLayerNormGradBetaNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const bool isReuseSource, AscendC::tiling::LayerNormGradBetaTiling& tiling)
+void GetLayerNormGradBetaNDTilingInfo(
+    const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
+    AscendC::tiling::LayerNormGradBetaTiling& tiling)
 {
     optiling::LayerNormGradBetaTiling tilingData;
     GetLayerNormGradBetaNDTilingInfo(srcShape, stackBufferSize, typeSize, isReuseSource, tilingData);

@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file conv3d_tiling_util.cpp
@@ -17,7 +17,8 @@
 
 namespace Conv3dTilingApi {
 
-int64_t LCM(int64_t numL, int64_t numR) {
+int64_t LCM(int64_t numL, int64_t numR)
+{
     if (numR == 0 || numL == 0) {
         return 1;
     }
@@ -69,7 +70,7 @@ uint64_t Gcd(uint64_t a, uint64_t b)
     return b;
 }
 
-void CalcCommFactorWithPowerOfTwo(const uint64_t num, const uint64_t numMax, std::vector<uint64_t> &resList)
+void CalcCommFactorWithPowerOfTwo(const uint64_t num, const uint64_t numMax, std::vector<uint64_t>& resList)
 {
     uint64_t sqrtMax = static_cast<uint64_t>(sqrt(num));
     for (uint64_t i = 1; i <= sqrtMax; ++i) {
@@ -83,7 +84,7 @@ void CalcCommFactorWithPowerOfTwo(const uint64_t num, const uint64_t numMax, std
             }
         }
     }
-    
+
     for (uint64_t i = CONST_VALUE_2; i <= std::min(num, numMax); i *= CONST_VALUE_2) {
         if (std::find(resList.begin(), resList.end(), i) == resList.end()) {
             resList.emplace_back(i);
@@ -92,7 +93,7 @@ void CalcCommFactorWithPowerOfTwo(const uint64_t num, const uint64_t numMax, std
     sort(resList.begin(), resList.end());
 }
 
-void CalcCommFactor(const uint64_t num, const uint64_t numMax, std::vector<uint64_t> &resList)
+void CalcCommFactor(const uint64_t num, const uint64_t numMax, std::vector<uint64_t>& resList)
 {
     uint64_t sqrtMax = static_cast<uint64_t>(sqrt(num));
     for (uint64_t i = 1; i <= sqrtMax; ++i) {
@@ -109,7 +110,7 @@ void CalcCommFactor(const uint64_t num, const uint64_t numMax, std::vector<uint6
     sort(resList.begin(), resList.end());
 }
 
-void CalcFactorPointWise(uint64_t numMax, std::vector<uint64_t> &resList)
+void CalcFactorPointWise(uint64_t numMax, std::vector<uint64_t>& resList)
 {
     numMax = numMax < CONST_VALUE_2 ? CONST_VALUE_2 : numMax;
     for (uint64_t i = CONST_VALUE_2; i <= numMax; i = i + CONST_VALUE_2) {
@@ -125,7 +126,8 @@ void VectorElementMultip(std::vector<uint64_t>& range, const uint64_t value)
     }
 }
 
-bool IsArrayEqual(const std::vector<ConvCommonApi::ConvDtype>& arr1, const std::vector<ConvCommonApi::ConvDtype>& arr2, uint32_t size)
+bool IsArrayEqual(
+    const std::vector<ConvCommonApi::ConvDtype>& arr1, const std::vector<ConvCommonApi::ConvDtype>& arr2, uint32_t size)
 {
     if (arr1.size() < size || arr2.size() < size) {
         return false;

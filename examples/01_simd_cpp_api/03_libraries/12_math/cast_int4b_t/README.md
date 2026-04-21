@@ -39,8 +39,7 @@
 - 算子实现：  
   本样例中实现的是固定shape为输入x[128]，输出y[64]的CastInt4bT算子。
 
-  - Kernel实现
-
+  - Kernel实现  
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用Cast基础API接口完成cast计算，得到最终结果，再搬出到外部存储上。
     由于host侧目前暂不支持int4b_t，故在申请int4b_t类型的Tensor时，应先申请一个类型为int8_t的Tensor，再用Reinterpretcast转化为int4b_t类型再调用Cast接口。
 

@@ -7,6 +7,7 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
+#include <cstring>
 #include <gtest/gtest.h>
 #include "mockcpp/mockcpp.hpp"
 #include "kernel_tpipe_impl.h"
@@ -170,5 +171,104 @@ TEST_P(DataCopyGm2L1Testsuite, DataCopyGm2L1OpTestCase)
     for (int i = 0; i < (sizeof(dstGm) / sizeof(dstGm[0])); i++) {
         EXPECT_EQ(dstGm[i], 0);
     }
+}
+
+class TscmRealMsgTestSuite : public testing::Test {
+protected:
+    static constexpr size_t WORKSPACE_SIZE = 16 * 1024 * 1024;
+    uint8_t* workspace = nullptr;
+    TPipe pipe;
+    TSCM<TPosition::VECIN, 1> inQueueTscm;
+    int32_t coreTypeBak = 0;
+    decltype(block_num) blockNumBak = 0;
+    decltype(block_idx) blockIdxBak = 0;
+    decltype(sub_block_idx) subBlockIdxBak = 0;
+    decltype(g_taskRation) taskRationBak = 0;
+
+    void SetUp() override
+    {
+        workspace = new uint8_t[WORKSPACE_SIZE];
+        std::memset(workspace, 0, WORKSPACE_SIZE);
+        pipe.InitBuffer(inQueueTscm, 1, 512);
+        coreTypeBak = g_coreType;
+        blockNumBak = block_num;
+        blockIdxBak = block_idx;
+        subBlockIdxBak = sub_block_idx;
+        taskRationBak = g_taskRation;
+        SetGCoreType(2);
+        block_num = 1;
+        block_idx = 0;
+        sub_block_idx = 0;
+        g_taskRation = 1;
+    }
+
+    void TearDown() override
+    {
+        g_kfcClient = nullptr;
+        SetGCoreType(coreTypeBak);
+        block_num = blockNumBak;
+        block_idx = blockIdxBak;
+        sub_block_idx = subBlockIdxBak;
+        g_taskRation = taskRationBak;
+        delete[] workspace;
+        GlobalMockObject::verify();
+    }
+};
+
+TEST_F(TscmRealMsgTestSuite, ScmDataCopyMsgWritesRealKfcMessage)
+{
+    KfcCommClient client(workspace, 0);
+    g_kfcClient = &client;
+    uint8_t src[256] = {0};
+    DataCopyParams intriParams {2, 4, 6, 8};
+    auto dst = reinterpret_cast<__cbuf__ void*>(static_cast<uintptr_t>(0x40));
+
+    ScmDataCopyMsg(dst, src, intriParams, 123);
+
+    auto* msg = client.ubMsg;
+    auto* body = reinterpret_cast<const Gm2L1Params*>(msg->buffer);
+    EXPECT_EQ(KfcMsgGetFunID(msg->head), KFC_Enum::SCMFUN_GM2L1);
+    EXPECT_EQ(reinterpret_cast<uintptr_t>(body->dst), reinterpret_cast<uintptr_t>(dst));
+    EXPECT_EQ(reinterpret_cast<uintptr_t>(body->src), reinterpret_cast<uintptr_t>(src));
+    EXPECT_EQ(body->subBlockID, 0);
+    EXPECT_EQ(body->blockCount, intriParams.blockCount);
+    EXPECT_EQ(body->blockLen, intriParams.blockLen);
+    EXPECT_EQ(body->srcStride, intriParams.srcStride);
+    EXPECT_EQ(body->dstStride, intriParams.dstStride);
+#if KFC_C310_SSBUF == 0
+    EXPECT_EQ(msg->ubAddr, 123);
+#endif
+}
+
+TEST_F(TscmRealMsgTestSuite, ScmDataCopyNd2NzWritesRealKfcMessage)
+{
+    KfcCommClient client(workspace, 0);
+    g_kfcClient = &client;
+    uint8_t src[256] = {0};
+    Nd2NzParams intriParams {1, 32, 32, 0, 32, 32, 1, 0};
+    auto dst = reinterpret_cast<__cbuf__ void*>(static_cast<uintptr_t>(0x80));
+    sub_block_idx = 1;
+    g_taskRation = 2;
+
+    ScmDataCopyND2NZMsg(dst, src, sizeof(half), intriParams, 456);
+
+    auto* msg = client.ubMsg;
+    auto* body = reinterpret_cast<const Gm2L1Nd2NzParams*>(msg->buffer);
+    EXPECT_EQ(KfcMsgGetFunID(msg->head), KFC_Enum::SCMFUN_GM2L1ND2NZ);
+    EXPECT_EQ(reinterpret_cast<uintptr_t>(body->dst), reinterpret_cast<uintptr_t>(dst));
+    EXPECT_EQ(reinterpret_cast<uintptr_t>(body->src), reinterpret_cast<uintptr_t>(src));
+    EXPECT_EQ(body->dataTypeLen, sizeof(half));
+    EXPECT_EQ(body->subBlockID, 1);
+    EXPECT_EQ(body->ndNum, intriParams.ndNum);
+    EXPECT_EQ(body->nValue, intriParams.nValue);
+    EXPECT_EQ(body->dValue, intriParams.dValue);
+    EXPECT_EQ(body->srcNdMatrixStride, intriParams.srcNdMatrixStride);
+    EXPECT_EQ(body->srcDValue, intriParams.srcDValue);
+    EXPECT_EQ(body->dstNzC0Stride, intriParams.dstNzC0Stride);
+    EXPECT_EQ(body->dstNzNStride, intriParams.dstNzNStride);
+    EXPECT_EQ(body->dstNzMatrixStride, intriParams.dstNzMatrixStride);
+#if KFC_C310_SSBUF == 0
+    EXPECT_EQ(msg->ubAddr, 456);
+#endif
 }
 } // namespace AscendC

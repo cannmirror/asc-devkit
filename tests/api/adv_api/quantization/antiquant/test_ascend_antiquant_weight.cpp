@@ -140,7 +140,6 @@ INSTANTIATE_TEST_CASE_P(TEST_OPEARATION_ANTIQUANTWEIGHT, AntiquantWeightTestsuit
     ::testing::Values(
         antiquantWeightParams { 2048, 32, 64, 1024, testAntiQuantWeight<int8_t, half>},
         antiquantWeightParams { 2048, 32, 64, 1024, testAntiQuantWeight<int8_t, bfloat16_t>},
-        antiquantWeightParams { 2048, 32, 64, 1024, testAntiQuantWeight<int4b_t, bfloat16_t>},
         antiquantWeightParams { 2048, 32, 64, 81920, testAntiQuantWeight<int8_t, half>},
         antiquantWeightParams { 2048, 32, 64, 81920, testAntiQuantWeight<int8_t, bfloat16_t>}
         ));

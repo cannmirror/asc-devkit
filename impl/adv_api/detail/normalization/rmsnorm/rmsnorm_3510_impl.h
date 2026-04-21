@@ -1,14 +1,15 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/normalization/rmsnorm/rmsnorm_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/normalization/rmsnorm/rmsnorm_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_RMSNORM_RMSNORM_C310_IMPL_H__
 #endif
@@ -54,8 +55,8 @@ __simd_callee__ inline void SaveDataWithT(
 }
 
 template <typename T>
-__simd_callee__ inline void ComputeSum(__ubuf__ float* dstLocal, __ubuf__ T* srcLocal,
-    uint32_t bsLength, uint32_t hLength, uint32_t oriHLength)
+__simd_callee__ inline void ComputeSum(
+    __ubuf__ float* dstLocal, __ubuf__ T* srcLocal, uint32_t bsLength, uint32_t hLength, uint32_t oriHLength)
 {
     uint16_t mainRepeatTime = static_cast<uint16_t>(oriHLength / oneRepSize);
     uint32_t tailCount = oriHLength % oneRepSize;
@@ -88,8 +89,9 @@ __simd_callee__ inline void ComputeSum(__ubuf__ float* dstLocal, __ubuf__ T* src
     }
 }
 template <typename T>
-__simd_callee__ inline void ComputeY(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __ubuf__ T* gammaLocal, __ubuf__ float* tmpLocal,
-    uint32_t bsLength, uint32_t hLength, uint32_t oriHLength, const float epsilon, float reciprocalOfHLength)
+__simd_callee__ inline void ComputeY(
+    __ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __ubuf__ T* gammaLocal, __ubuf__ float* tmpLocal, uint32_t bsLength,
+    uint32_t hLength, uint32_t oriHLength, const float epsilon, float reciprocalOfHLength)
 {
     constexpr float rsqrtExponent = -0.5;
     Reg::RegTensor<float> srcReg;
@@ -150,8 +152,9 @@ __simd_callee__ inline void ComputeY(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal,
 }
 
 template <typename T>
-__simd_vf__ inline void RmsNormImplVf(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal,
-    __ubuf__ T* gammaLocal, __ubuf__ float* tmpLocal, const float epsilon, const RmsNormTiling tiling)
+__simd_vf__ inline void RmsNormImplVf(
+    __ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __ubuf__ T* gammaLocal, __ubuf__ float* tmpLocal, const float epsilon,
+    const RmsNormTiling tiling)
 {
     uint32_t bLength = tiling.bLength;
     uint32_t sLength = tiling.sLength;
@@ -165,7 +168,9 @@ __simd_vf__ inline void RmsNormImplVf(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal
     for (uint16_t i = 0; i < loopRound; i++) {
         ComputeSum(tmpLocal, srcLocal + i * mainBshLength, mainBsLength, hLength, oriHLength);
         Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
-        ComputeY(dstLocal + i * mainBshLength, srcLocal + i * mainBshLength, gammaLocal, tmpLocal, mainBsLength, hLength, oriHLength, epsilon, reciprocalOfHLength); 
+        ComputeY(
+            dstLocal + i * mainBshLength, srcLocal + i * mainBshLength, gammaLocal, tmpLocal, mainBsLength, hLength,
+            oriHLength, epsilon, reciprocalOfHLength);
     }
     uint32_t inputTailPos = tiling.inputTailPos;
     uint32_t tailBsLength = tiling.tailBsLength;
@@ -173,24 +178,28 @@ __simd_vf__ inline void RmsNormImplVf(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal
     for (uint16_t i = 0; i < tailRound; i++) {
         ComputeSum(tmpLocal, srcLocal + inputTailPos, tailBsLength, hLength, oriHLength);
         Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
-        ComputeY(dstLocal + inputTailPos, srcLocal + inputTailPos, gammaLocal, tmpLocal, tailBsLength, hLength, oriHLength, epsilon, reciprocalOfHLength); 
+        ComputeY(
+            dstLocal + inputTailPos, srcLocal + inputTailPos, gammaLocal, tmpLocal, tailBsLength, hLength, oriHLength,
+            epsilon, reciprocalOfHLength);
     }
 }
 
 template <typename T, bool isBasicBlock = false>
-__aicore__ inline void RmsNormImpl(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal,
-    const LocalTensor<T>& gammaLocal, const LocalTensor<uint8_t>& sharedTmpBuffer, const T epsilon,
-    const RmsNormTiling& tiling)
+__aicore__ inline void RmsNormImpl(
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const LocalTensor<T>& gammaLocal,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const T epsilon, const RmsNormTiling& tiling)
 {
     if ASCEND_IS_AIC {
         return;
     }
     static_assert(SupportType<T, half, float>(), "current data type is not supported on current device!");
-    CHECK_FUNC_HIGHLEVEL_API(RmsNorm, (T, isBasicBlock), (dstLocal, srcLocal, gammaLocal, sharedTmpBuffer, epsilon, tiling));
+    CHECK_FUNC_HIGHLEVEL_API(
+        RmsNorm, (T, isBasicBlock), (dstLocal, srcLocal, gammaLocal, sharedTmpBuffer, epsilon, tiling));
     LocalTensor<float> tmpLocal = sharedTmpBuffer.ReinterpretCast<float>();
     float eps = static_cast<float>(epsilon);
-    RmsNormImplVf<T>((__ubuf__ T*)dstLocal.GetPhyAddr(), (__ubuf__ T*)srcLocal.GetPhyAddr(),
-        (__ubuf__ T*)gammaLocal.GetPhyAddr(), (__ubuf__ float*)tmpLocal.GetPhyAddr(), eps, tiling);
+    RmsNormImplVf<T>(
+        (__ubuf__ T*)dstLocal.GetPhyAddr(), (__ubuf__ T*)srcLocal.GetPhyAddr(), (__ubuf__ T*)gammaLocal.GetPhyAddr(),
+        (__ubuf__ float*)tmpLocal.GetPhyAddr(), eps, tiling);
 }
 } // namespace RmsNormAPI
 } // namespace AscendC

@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file ascend_dequant_tiling_impl.cpp
@@ -23,9 +23,9 @@
 namespace AscendC {
 namespace {
 
-constexpr uint32_t EXPECTED_SHAPE_DIM = 2;      // Expected two dimensional, if 1 dim input, convert to [1, n]
-constexpr uint32_t FLOAT_PER_BLOCK = 8;         // 32B  = FP32(4B) * 8
-constexpr uint32_t FLOAT_PER_REPEAT = 64;       // 256B = FP32(4B) * 64
+constexpr uint32_t EXPECTED_SHAPE_DIM = 2; // Expected two dimensional, if 1 dim input, convert to [1, n]
+constexpr uint32_t FLOAT_PER_BLOCK = 8;    // 32B  = FP32(4B) * 8
+constexpr uint32_t FLOAT_PER_REPEAT = 64;  // 256B = FP32(4B) * 64
 constexpr uint32_t DEQUANT_INT32_SIZE = 4;
 
 inline uint32_t GetAscendDequantMaxTmpSize(const uint32_t outer, const uint32_t inner, const uint32_t deqScaleSize)
@@ -48,15 +48,18 @@ inline uint32_t GetAscendDequantMinTmpSize(const uint32_t outer, const uint32_t 
     return fp32Num * sizeof(float);
 }
 
-void CheckDequantHostCommon(const char *apiName, const char *hostFuncName, const ge::Shape& srcShape, 
-    const uint32_t typeSize)
+void CheckDequantHostCommon(
+    const char* apiName, const char* hostFuncName, const ge::Shape& srcShape, const uint32_t typeSize)
 {
-    ASCENDC_HOST_ASSERT(srcShape.GetShapeSize() > 0, return, 
-        "[%s][%s] Input Shape size must be greater than 0.", apiName, hostFuncName);
-    ASCENDC_HOST_ASSERT(srcShape.GetDimNum() <= EXPECTED_SHAPE_DIM && srcShape.GetDimNum() > 0, return, 
+    ASCENDC_HOST_ASSERT(
+        srcShape.GetShapeSize() > 0, return, "[%s][%s] Input Shape size must be greater than 0.", apiName,
+        hostFuncName);
+    ASCENDC_HOST_ASSERT(
+        srcShape.GetDimNum() <= EXPECTED_SHAPE_DIM && srcShape.GetDimNum() > 0, return,
         "[%s][%s] SrcShape dim %zu is unsupported, must be 1 or 2!", apiName, hostFuncName, srcShape.GetDimNum());
-    ASCENDC_HOST_ASSERT(typeSize == DEQUANT_INT32_SIZE, return, 
-        "[%s][%s] Type size %u is unsupported!", apiName, hostFuncName, typeSize);
+    ASCENDC_HOST_ASSERT(
+        typeSize == DEQUANT_INT32_SIZE, return, "[%s][%s] Type size %u is unsupported!", apiName, hostFuncName,
+        typeSize);
     return;
 }
 } // namespace
@@ -76,11 +79,11 @@ void GetAscendDequantTmpBufferFactorSize(const ge::Shape& srcShape, uint32_t& ma
     }
 }
 
-void GetAscendDequantMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue,
-    uint32_t& minValue)
+void GetAscendDequantMaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
 {
     CheckDequantHostCommon("AscendDequant", "GetAscendDequantMaxMinTmpSize", srcShape, typeSize);
-    std::vector<int64_t> shapeDims = srcShape.GetDims();   // should be 2-dimensional or 1-dimensional
+    std::vector<int64_t> shapeDims = srcShape.GetDims(); // should be 2-dimensional or 1-dimensional
     uint32_t outer = 1;
     uint32_t inner = 0;
 

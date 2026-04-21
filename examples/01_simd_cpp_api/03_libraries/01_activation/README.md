@@ -2,17 +2,15 @@
 
 ## 概述
 
-本样例集介绍了激活函数在算子不同特性的典型用法，给出了对应的端到端实现。
+本样例集展示了激活函数高阶 API 的典型用法，每个样例包含完整的端到端实现。
 
-## 算子开发样例
+## 样例列表
 
 |  目录名称                                                   |  功能描述                                              |
 | ------------------------------------------------------------ | ---------------------------------------------------- |
 | [adjustsoftmaxres](./adjustsoftmaxres) | 本样例介绍了调用AdjustSoftMaxRes高阶API实现AdjustSoftMaxRes算子，并按照核函数直调的方式给出了对应的端到端实现 |
-| [fastergelu](./fastergelu) | 本样例介绍了调用FasterGelu高阶API实现fastergelu单算子，主要演示FasterGelu高阶API在Kernel直调工程中的调用 |
-| [fastergeluv2](./fastergeluv2) | 本样例演示了基于FasterGeluV2高阶API实现的算子实现。样例采用的FastGeluV2版本能降低GELU的算力需求 |
-| [geglu](./geglu) | 本样例演示了基于GeGLU高阶API的算子实现。GELU是一个重要的激活函数，灵感来源于Relu和Dropout，在激活中引入了随机正则的思想 |
-| [gelu](./gelu) | 本样例演示了基于Gelu高阶API实现的算子实现。GELU在激活中引入了随机正则的思想,是一个重要的激活函数 |
+| [geglu](./geglu) | 本样例演示了基于GeGLU高阶API的算子实现。GeGLU是一种结合GELU激活函数的GLU变体 |
+| [gelu](./gelu) | 本样例演示了基于Gelu高阶API的算子实现。样例对输入Tensor按元素做GELU激活计算 |
 | [logsoftmax](./logsoftmax) | 本样例演示了基于LogSoftMax高阶API的算子实现。样例对输入tensor做LogSoftmax计算 |
 | [reglu](./reglu) | 本样例演示了基于ReGLU高阶API的算子实现。ReGlu是一种GLU变体，使用Relu作为激活函数 |
 | [sigmoid](./sigmoid) | 本样例演示了基于Sigmoid高阶API实现的算子实现。样例按元素做逻辑回归Sigmoid |
@@ -24,4 +22,4 @@
 | [softmaxgrad](./softmaxgrad) | 本样例介绍了调用SoftmaxGrad高阶API实现softmaxgrad单算子，将输入tensor[m0, m1, ...mt, n]（t大于等于0）的非尾轴长度相乘的结果看作m，则输入tensor的shape看作[m, n] |
 | [softmaxgradfront](./softmaxgradfront) | 本样例介绍了调用SoftmaxGradFront高阶API实现softmaxgradfront单算子，将输入tensor[m0, m1, ...mt, n]（t大于等于0）的非尾轴长度相乘的结果看作m，则输入tensor的shape看作[m, n] |
 | [swiglu](./swiglu) | 本样例演示了基于SwiGLU高阶API实现的算子实现。样例采用Swish作为激活函数的GLU变体 |
-| [swish](./swish) | 本样例演示了基于Swish高阶API的算子实现。在神经网络中，Swish是一个重要的激活函数 |
+| [swish](./swish) | 本样例演示了基于Swish高阶API的算子实现。样例按元素做Swish激活计算 |

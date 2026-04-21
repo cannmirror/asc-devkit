@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file simple_softmax_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/activation/softmax/regbase/3510/simple_softmax_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/simplesoftmax.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/activation/softmax/regbase/3510/simple_softmax_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/simplesoftmax.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIMPLE_SOFTMAX_IMPL_H__
 #endif
@@ -27,8 +28,8 @@
 namespace AscendC {
 namespace Internal {
 template <typename T1, typename T2>
-__simd_vf__ inline void SimpleSoftMaxGenericNZImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumUb,
-    __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, const uint16_t mRepeatTimes,
+__simd_vf__ inline void SimpleSoftMaxGenericNZImpl(
+    __ubuf__ T1* dstUb, __ubuf__ T2* sumUb, __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, const uint16_t mRepeatTimes,
     const uint16_t kRepeatTimes, const uint16_t outNum, const uint16_t dataBlock)
 {
     Reg::MaskReg maskCnt;
@@ -75,9 +76,9 @@ __simd_vf__ inline void SimpleSoftMaxGenericNZImpl(__ubuf__ T1* dstUb, __ubuf__ 
 }
 
 template <typename T1, typename T2>
-__simd_vf__ inline void SimpleSoftMaxGenericNDImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumUb,
-    __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, const uint16_t srcM, const uint16_t srcK,
-    const uint16_t repeatTimes, const uint16_t blockStride)
+__simd_vf__ inline void SimpleSoftMaxGenericNDImpl(
+    __ubuf__ T1* dstUb, __ubuf__ T2* sumUb, __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, const uint16_t srcM,
+    const uint16_t srcK, const uint16_t repeatTimes, const uint16_t blockStride)
 {
     Reg::MaskReg maskFull = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
     Reg::RegTensor<float> srcVreg;
@@ -102,9 +103,9 @@ __simd_vf__ inline void SimpleSoftMaxGenericNDImpl(__ubuf__ T1* dstUb, __ubuf__ 
 }
 
 template <typename T1, typename T2>
-__simd_vf__ inline void SimpleSoftMaxGenericNDWithTailImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumUb,
-    __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, const uint16_t srcM, const uint16_t srcK,
-    const uint16_t repeatTimes, const uint16_t blockStride)
+__simd_vf__ inline void SimpleSoftMaxGenericNDWithTailImpl(
+    __ubuf__ T1* dstUb, __ubuf__ T2* sumUb, __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, const uint16_t srcM,
+    const uint16_t srcK, const uint16_t repeatTimes, const uint16_t blockStride)
 {
     Reg::MaskReg maskCnt;
     Reg::MaskReg maskFull = Reg::CreateMask<uint32_t, Reg::MaskPattern::ALL>();
@@ -133,19 +134,21 @@ __simd_vf__ inline void SimpleSoftMaxGenericNDWithTailImpl(__ubuf__ T1* dstUb, _
 } // namespace Internal
 
 template <typename T1, typename T2>
-__aicore__ inline void SimpleSoftMaxNZImpl(const LocalTensor<T1>& dst, const LocalTensor<T2>& inSumTensor,
-    const LocalTensor<T2>& inMaxTensor, const LocalTensor<T1>& src, const LocalTensor<float> workLocal,
-    const SoftMaxTiling& tiling, const LastAxisShapeND& originalSrcShape)
+__aicore__ inline void SimpleSoftMaxNZImpl(
+    const LocalTensor<T1>& dst, const LocalTensor<T2>& inSumTensor, const LocalTensor<T2>& inMaxTensor,
+    const LocalTensor<T1>& src, const LocalTensor<float> workLocal, const SoftMaxTiling& tiling,
+    const LastAxisShapeND& originalSrcShape)
 {
-    static_assert((SupportType<Tuple<T1, T2>, Tuple<half, float>, Tuple<half, half>,
-                Tuple<float, float>>()), "Failed to check dtype in SimpleSoftMax, current api "
-                "support dtype combination is T1 : half, T2 : float; T1 : half, T2 : half; "
-                "T1 : float, T2 : float");
+    static_assert(
+        (SupportType<Tuple<T1, T2>, Tuple<half, float>, Tuple<half, half>, Tuple<float, float>>()),
+        "Failed to check dtype in SimpleSoftMax, current api "
+        "support dtype combination is T1 : half, T2 : float; T1 : half, T2 : half; "
+        "T1 : float, T2 : float");
     uint16_t srcM = tiling.srcM;
     uint16_t srcK = tiling.srcK;
     uint16_t oriM = originalSrcShape.m;
-    constexpr uint16_t nzKUnitLen = IsSameType<T2, half>::value ? SOFTMAX_SHAPE_NZ_BASIC_COUNT 
-                                                                : SOFTMAX_SHAPE_NZ_BASIC_COUNT / 2;
+    constexpr uint16_t nzKUnitLen =
+        IsSameType<T2, half>::value ? SOFTMAX_SHAPE_NZ_BASIC_COUNT : SOFTMAX_SHAPE_NZ_BASIC_COUNT / 2;
     uint16_t dataBlock = srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT;
     uint16_t mRepeatTimes = static_cast<uint16_t>(CeilDivision(srcM * nzKUnitLen, FLOAT_REPEAT_SIZE));
     uint16_t kRepeatTimes = srcK / SOFTMAX_SHAPE_NZ_BASIC_COUNT;
@@ -156,20 +159,20 @@ __aicore__ inline void SimpleSoftMaxNZImpl(const LocalTensor<T1>& dst, const Loc
     __ubuf__ T2* maxUb = (__ubuf__ T2*)inMaxTensor.GetPhyAddr();
     __ubuf__ T1* srcUb = (__ubuf__ T1*)src.GetPhyAddr();
 
-    Internal::SimpleSoftMaxGenericNZImpl<T1, T2>(dstUb, sumUb, maxUb, srcUb, mRepeatTimes,
-                                                kRepeatTimes, sreg, dataBlock);
+    Internal::SimpleSoftMaxGenericNZImpl<T1, T2>(
+        dstUb, sumUb, maxUb, srcUb, mRepeatTimes, kRepeatTimes, sreg, dataBlock);
 }
 
-template <typename T1, typename T2, bool isBasicBlock = false,
-    const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>
-__aicore__ inline void SimpleSoftMaxNDImpl(const LocalTensor<T1>& dst, const LocalTensor<T2>& inSumTensor,
-    const LocalTensor<T2>& inMaxTensor, const LocalTensor<T1>& src, const LocalTensor<float> workLocal,
-    const SoftMaxTiling& tiling)
+template <typename T1, typename T2, bool isBasicBlock = false, const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>
+__aicore__ inline void SimpleSoftMaxNDImpl(
+    const LocalTensor<T1>& dst, const LocalTensor<T2>& inSumTensor, const LocalTensor<T2>& inMaxTensor,
+    const LocalTensor<T1>& src, const LocalTensor<float> workLocal, const SoftMaxTiling& tiling)
 {
-    static_assert((SupportType<Tuple<T1, T2>, Tuple<half, float>, Tuple<half, half>,
-                Tuple<float, float>>()), "Failed to check dtype in SimpleSoftMax, current api "
-                "support dtype combination is T1 : half, T2 : float; T1 : half, T2 : half; "
-                "T1 : float, T2 : float");
+    static_assert(
+        (SupportType<Tuple<T1, T2>, Tuple<half, float>, Tuple<half, half>, Tuple<float, float>>()),
+        "Failed to check dtype in SimpleSoftMax, current api "
+        "support dtype combination is T1 : half, T2 : float; T1 : half, T2 : half; "
+        "T1 : float, T2 : float");
     uint16_t srcM = tiling.srcM;
     uint16_t srcK = tiling.srcK;
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(srcK, FLOAT_REPEAT_SIZE));
@@ -181,8 +184,7 @@ __aicore__ inline void SimpleSoftMaxNDImpl(const LocalTensor<T1>& dst, const Loc
     __ubuf__ T1* srcUb = (__ubuf__ T1*)src.GetPhyAddr();
 
     if constexpr (isBasicBlock) {
-        Internal::SimpleSoftMaxGenericNDImpl<T1, T2>(
-            dstUb, sumUb, maxUb, srcUb, srcM, srcK, repeatTimes, blockStride);
+        Internal::SimpleSoftMaxGenericNDImpl<T1, T2>(dstUb, sumUb, maxUb, srcUb, srcM, srcK, repeatTimes, blockStride);
     } else {
         if constexpr (config.oriSrcM == 0 || config.oriSrcK == 0) {
             if (tiling.srcK % FLOAT_REPEAT_SIZE != 0) {
@@ -202,11 +204,13 @@ __aicore__ inline void SimpleSoftMaxNDImpl(const LocalTensor<T1>& dst, const Loc
     }
 }
 
-template <typename T1, typename T2, bool isReuseSource = false, bool isBasicBlock = false, 
-    bool isDataFormatNZ = false, const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>
-__aicore__ inline void SimpleSoftMaxBaseImpl(const LocalTensor<T1>& dst, const LocalTensor<T2>& inSumTensor,
-    const LocalTensor<T2>& inMaxTensor, const LocalTensor<T1>& src, const LocalTensor<float>& workLocal,
-    const SoftMaxTiling& tiling, const SoftMaxShapeInfo& softmaxShapeInfo)
+template <
+    typename T1, typename T2, bool isReuseSource = false, bool isBasicBlock = false, bool isDataFormatNZ = false,
+    const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>
+__aicore__ inline void SimpleSoftMaxBaseImpl(
+    const LocalTensor<T1>& dst, const LocalTensor<T2>& inSumTensor, const LocalTensor<T2>& inMaxTensor,
+    const LocalTensor<T1>& src, const LocalTensor<float>& workLocal, const SoftMaxTiling& tiling,
+    const SoftMaxShapeInfo& softmaxShapeInfo)
 {
     ShapeInfo srcShape = src.GetShapeInfo();
     LastAxisShapeND srcNDinfo;
@@ -215,14 +219,15 @@ __aicore__ inline void SimpleSoftMaxBaseImpl(const LocalTensor<T1>& dst, const L
         srcNDinfo = GetLastAxisShapeND(srcShape);
         originalSrcShape = GetLastAxisOriginShapeND(srcShape);
     } else {
-        srcNDinfo = { softmaxShapeInfo.srcM, softmaxShapeInfo.srcK };
-        originalSrcShape = { softmaxShapeInfo.oriSrcM, softmaxShapeInfo.oriSrcK };
+        srcNDinfo = {softmaxShapeInfo.srcM, softmaxShapeInfo.srcK};
+        originalSrcShape = {softmaxShapeInfo.oriSrcM, softmaxShapeInfo.oriSrcK};
     }
     if constexpr (isDataFormatNZ) {
         if (unlikely(srcNDinfo.k != tiling.srcK || srcNDinfo.m != tiling.srcM)) {
             SoftMaxTiling newTiling = tiling;
-            SoftMaxTilingFunc(workLocal.GetSize(), { srcNDinfo.m, srcNDinfo.k, originalSrcShape.m, srcNDinfo.k },
-                newTiling, sizeof(T1), sizeof(T2), false, isDataFormatNZ);
+            SoftMaxTilingFunc(
+                workLocal.GetSize(), {srcNDinfo.m, srcNDinfo.k, originalSrcShape.m, srcNDinfo.k}, newTiling, sizeof(T1),
+                sizeof(T2), false, isDataFormatNZ);
             SimpleSoftMaxNZImpl<T1, T2>(dst, inSumTensor, inMaxTensor, src, workLocal, newTiling, originalSrcShape);
         } else {
             SimpleSoftMaxNZImpl<T1, T2>(dst, inSumTensor, inMaxTensor, src, workLocal, tiling, originalSrcShape);
@@ -230,8 +235,9 @@ __aicore__ inline void SimpleSoftMaxBaseImpl(const LocalTensor<T1>& dst, const L
     } else {
         if (unlikely(srcNDinfo.k != tiling.srcK || srcNDinfo.m != tiling.srcM)) {
             SoftMaxTiling newTiling = tiling;
-            SoftMaxTilingFunc(workLocal.GetSize(), { srcNDinfo.m, srcNDinfo.k, originalSrcShape.m, srcNDinfo.k },
-                newTiling, sizeof(T1), sizeof(T2), isBasicBlock);
+            SoftMaxTilingFunc(
+                workLocal.GetSize(), {srcNDinfo.m, srcNDinfo.k, originalSrcShape.m, srcNDinfo.k}, newTiling, sizeof(T1),
+                sizeof(T2), isBasicBlock);
             SimpleSoftMaxNDImpl<T1, T2, isBasicBlock, config>(dst, inSumTensor, inMaxTensor, src, workLocal, newTiling);
         } else {
             SimpleSoftMaxNDImpl<T1, T2, isBasicBlock, config>(dst, inSumTensor, inMaxTensor, src, workLocal, tiling);
@@ -239,7 +245,7 @@ __aicore__ inline void SimpleSoftMaxBaseImpl(const LocalTensor<T1>& dst, const L
     }
 }
 
-}
+} // namespace AscendC
 #endif // IMPL_ACTIVATION_SOFTMAX_C310_SIMPLE_SOFTMAX_IMPL_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIMPLE_SOFTMAX_IMPL_H__)

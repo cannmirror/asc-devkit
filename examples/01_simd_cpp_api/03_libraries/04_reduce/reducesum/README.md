@@ -45,14 +45,12 @@
 - 算子实现：  
   本样例中实现的是固定shape为输入src[2, 32]，输出dst[2]的ReduceSumCustom算子。
 
-  - Kernel实现
-
+  - Kernel实现  
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用ReduceSum高阶API接口完成reducesum计算，得到最终结果，再搬出到外部存储上。
 
     ReduceSumCustom算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm存储在srcLocal中，Compute任务负责对srcLocal执行reducesum计算，计算结果存储在dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。
 
-  - Tiling实现
-
+  - Tiling实现  
     根据输入数据的内轴长度、内轴实际长度、外轴长度确定所需tiling参数，例如输出内轴补齐后长度等。调用GetReduceSumMaxMinTmpSize接口获取ReduceSum接口完成计算所需的临时空间大小。
 
   - 调用实现  

@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file normalize_common_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/normalization/normalize/normalize_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/normalization/normalize/normalize_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_NORMALIZE_NORMALIZE_COMMON_IMPL_H__
 #endif
@@ -58,42 +59,46 @@ __aicore__ inline bool CheckParams(const NormalizePara& para)
 {
     static_assert(config.isOnlyOutput == false, "isOnlyOutput must be set false for now.");
     static_assert(config.aLength != 1, "aLength in config must not be 1.");
-    if constexpr(config.aLength != -1) {
-        ASCENDC_ASSERT((config.aLength == para.aLength), {KERNEL_LOG(KERNEL_ERROR,
-            "config.aLength must equal to para.aLength.");});
+    if constexpr (config.aLength != -1) {
+        ASCENDC_ASSERT((config.aLength == para.aLength), {
+            KERNEL_LOG(KERNEL_ERROR, "config.aLength must equal to para.aLength.");
+        });
     }
     return true;
 }
 
 template <typename U, typename T>
-__aicore__ inline void GetNormalizeTensorInfo(const LocalTensor<float>& stackBuffer, const NormalizePara& para,
-    NormalizeTmpTensor<float>& tempTensor, uint32_t& N)
+__aicore__ inline void GetNormalizeTensorInfo(
+    const LocalTensor<float>& stackBuffer, const NormalizePara& para, NormalizeTmpTensor<float>& tempTensor,
+    uint32_t& N)
 {
     // total needed space: A(rstd) + 2R(gamma + beta, half->float) + 2R * N (based on space left)
     // min space is at least A FP32. Thus use A FP32 calculate first, then these A FP32 used for 2R + 2R * N calculation
-    ASCENDC_ASSERT((stackBuffer.GetSize() >= para.aLength), {KERNEL_LOG(KERNEL_ERROR,
-        "StackBuffer size must be at least A FP32!");});
-    uint32_t R2 = para.rLengthWithPadding * 2;   // 2 * R
-    if constexpr(IsSameType<U, float>::value) {
+    ASCENDC_ASSERT((stackBuffer.GetSize() >= para.aLength), {
+        KERNEL_LOG(KERNEL_ERROR, "StackBuffer size must be at least A FP32!");
+    });
+    uint32_t R2 = para.rLengthWithPadding * 2; // 2 * R
+    if constexpr (IsSameType<U, float>::value) {
         N = stackBuffer.GetSize() / R2;
         N = (N >= para.aLength) ? para.aLength : N;
-        ASCENDC_ASSERT((N > 0), {KERNEL_LOG(KERNEL_ERROR, "Stackbuffer size is too small!");});
-        tempTensor.tempTensorA = stackBuffer[0];                                    // NR length tmp buffer 1
-        tempTensor.tempTensorB = stackBuffer[N * para.rLengthWithPadding];          // NR length tmp buffer 2
+        ASCENDC_ASSERT((N > 0), { KERNEL_LOG(KERNEL_ERROR, "Stackbuffer size is too small!"); });
+        tempTensor.tempTensorA = stackBuffer[0];                           // NR length tmp buffer 1
+        tempTensor.tempTensorB = stackBuffer[N * para.rLengthWithPadding]; // NR length tmp buffer 2
     } else {
         N = (stackBuffer.GetSize() - R2) / R2;
         N = (N >= para.aLength) ? para.aLength : N;
-        ASCENDC_ASSERT((N > 0), {KERNEL_LOG(KERNEL_ERROR, "Stackbuffer size is too small!");});
-        tempTensor.tempTensorA = stackBuffer[0];                                    // NR length tmp buffer 1
-        tempTensor.tempTensorB = stackBuffer[N * para.rLengthWithPadding];          // NR length tmp buffer 2
-        tempTensor.gammaTmpTensor = stackBuffer[R2 * N];                            // R    
-        tempTensor.betaTmpTensor = stackBuffer[R2 * N + para.rLengthWithPadding];   // R
+        ASCENDC_ASSERT((N > 0), { KERNEL_LOG(KERNEL_ERROR, "Stackbuffer size is too small!"); });
+        tempTensor.tempTensorA = stackBuffer[0];                                  // NR length tmp buffer 1
+        tempTensor.tempTensorB = stackBuffer[N * para.rLengthWithPadding];        // NR length tmp buffer 2
+        tempTensor.gammaTmpTensor = stackBuffer[R2 * N];                          // R
+        tempTensor.betaTmpTensor = stackBuffer[R2 * N + para.rLengthWithPadding]; // R
     }
 }
 
-__aicore__ inline void GetNormalizeOutputRstd(const LocalTensor<float>& dstRstd, const LocalTensor<float>& srcVar,
-    const NormalizeTmpTensor<float>& tmpTensor, const UnaryRepeatParams& unaryParams,
-    const BinaryRepeatParams& binaryParams, const NormalizePara& para, const float epsilon)
+__aicore__ inline void GetNormalizeOutputRstd(
+    const LocalTensor<float>& dstRstd, const LocalTensor<float>& srcVar, const NormalizeTmpTensor<float>& tmpTensor,
+    const UnaryRepeatParams& unaryParams, const BinaryRepeatParams& binaryParams, const NormalizePara& para,
+    const float epsilon)
 {
     SetMaskCount();
     SetVectorMask<float, MaskMode::COUNTER>(0, para.aLength);
@@ -102,7 +107,8 @@ __aicore__ inline void GetNormalizeOutputRstd(const LocalTensor<float>& dstRstd,
     Adds<float, false>(dstRstd, srcVar, epsilon, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
     // 2. Rsqrt(AddsX) = 1 / Sqrt(AddsX) ==> dstRstd
-    Duplicate<float, false>(tmpTensor.tempTensorA, static_cast<float>(1), 1, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+    Duplicate<float, false>(
+        tmpTensor.tempTensorA, static_cast<float>(1), 1, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
     PipeBarrier<PIPE_V>();
     Sqrt<float, false>(dstRstd, dstRstd, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
@@ -114,43 +120,48 @@ template <typename U>
 __aicore__ inline void CastTensor(const LocalTensor<U>& src, const LocalTensor<float>& castRes)
 {
     // cast FP16 -> FP32
-    Cast<float, U, false>(castRes, src, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1, {1, 1, DEFAULT_REPEAT_STRIDE,
-        HALF_DEFAULT_REPEAT_STRIDE});
+    Cast<float, U, false>(
+        castRes, src, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
 }
 
 template <typename U, const NormalizeConfig& config>
-__aicore__ inline void CastGammaBeta(const LocalTensor<U>& gamma, const LocalTensor<U>& beta,
-    const NormalizeTmpTensor<float>& tmpTensor, const NormalizePara& para)
+__aicore__ inline void CastGammaBeta(
+    const LocalTensor<U>& gamma, const LocalTensor<U>& beta, const NormalizeTmpTensor<float>& tmpTensor,
+    const NormalizePara& para)
 {
     SetVectorMask<float, MaskMode::COUNTER>(0, para.rLength);
-    if constexpr(!config.isNoGamma) {
+    if constexpr (!config.isNoGamma) {
         CastTensor<U>(gamma, tmpTensor.gammaTmpTensor);
     }
-    if constexpr(!config.isNoBeta) {
+    if constexpr (!config.isNoBeta) {
         CastTensor<U>(beta, tmpTensor.betaTmpTensor);
     }
 }
 
 template <typename T>
-__aicore__ inline void CastSrc(const LocalTensor<T>& srcX, const NormalizeTmpTensor<float>& tmpTensor,
-    const NormalizePara& para, const uint32_t N)
+__aicore__ inline void CastSrc(
+    const LocalTensor<T>& srcX, const NormalizeTmpTensor<float>& tmpTensor, const NormalizePara& para, const uint32_t N)
 {
     SetVectorMask<float, MaskMode::COUNTER>(0, N * para.rLengthWithPadding);
-    if constexpr(IsSameType<T, float>::value) {
-        Adds<float, false>(tmpTensor.tempTensorA, srcX, static_cast<float>(0), MASK_PLACEHOLDER, 1, {1, 1, DEFAULT_REPEAT_STRIDE,
-            DEFAULT_REPEAT_STRIDE});
+    if constexpr (IsSameType<T, float>::value) {
+        Adds<float, false>(
+            tmpTensor.tempTensorA, srcX, static_cast<float>(0), MASK_PLACEHOLDER, 1,
+            {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     } else {
-        Cast<float, T, false>(tmpTensor.tempTensorA, srcX, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1, {1, 1,
-            DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
+        Cast<float, T, false>(
+            tmpTensor.tempTensorA, srcX, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+            {1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
     }
     PipeBarrier<PIPE_V>();
 }
 
 // brcbTmp: Var[A], Rstd[A] => [N, R] to calculate with srcX [N, R]
-__aicore__ inline void GetNormalizeOutputPre(const LocalTensor<float>& srcX, const LocalTensor<float>& srcMean,
-    const LocalTensor<float>& srcRstd, const LocalTensor<float>& brcbTmp, const LocalTensor<float>& dstVmuls,
-    const NormalizePara& para, const BinaryRepeatParams& binaryParams, const uint32_t N, const uint32_t NBase)
+__aicore__ inline void GetNormalizeOutputPre(
+    const LocalTensor<float>& srcX, const LocalTensor<float>& srcMean, const LocalTensor<float>& srcRstd,
+    const LocalTensor<float>& brcbTmp, const LocalTensor<float>& dstVmuls, const NormalizePara& para,
+    const BinaryRepeatParams& binaryParams, const uint32_t N, const uint32_t NBase)
 {
     // 1. SrcX [N, R] - (srcMean[A] after brcb [N, R]) ==> SubX [N, R]
     SetVectorMask<float, MaskMode::COUNTER>(0, para.rLength);
@@ -162,8 +173,8 @@ __aicore__ inline void GetNormalizeOutputPre(const LocalTensor<float>& srcX, con
         eventId = GetTPipePtr()->FetchEventID(HardEvent::S_V);
         SetFlag<HardEvent::S_V>(eventId);
         WaitFlag<HardEvent::S_V>(eventId);
-        Duplicate<float, false>(brcbTmp[i * para.rLengthWithPadding], value, 1, 1, DEFAULT_BLK_STRIDE,
-            DEFAULT_REPEAT_STRIDE);
+        Duplicate<float, false>(
+            brcbTmp[i * para.rLengthWithPadding], value, 1, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
     }
     PipeBarrier<PIPE_V>();
 
@@ -178,8 +189,8 @@ __aicore__ inline void GetNormalizeOutputPre(const LocalTensor<float>& srcX, con
         eventId = GetTPipePtr()->FetchEventID(HardEvent::S_V);
         SetFlag<HardEvent::S_V>(eventId);
         WaitFlag<HardEvent::S_V>(eventId);
-        Duplicate<float, false>(brcbTmp[i * para.rLengthWithPadding], value, 1, 1, DEFAULT_BLK_STRIDE,
-            DEFAULT_REPEAT_STRIDE);
+        Duplicate<float, false>(
+            brcbTmp[i * para.rLengthWithPadding], value, 1, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
     }
     PipeBarrier<PIPE_V>();
 
@@ -189,43 +200,50 @@ __aicore__ inline void GetNormalizeOutputPre(const LocalTensor<float>& srcX, con
 }
 
 template <typename T, const NormalizeConfig& config>
-__aicore__ inline void GetNormalizeOutput(const LocalTensor<float>& srcxFP32, const LocalTensor<float>& gammaFP32,
-    const LocalTensor<float>& betaFP32, const LocalTensor<T>& output, const NormalizePara& para,
-    const UnaryRepeatParams& unaryParams, const BinaryRepeatParams& binaryParams, const uint32_t N)
+__aicore__ inline void GetNormalizeOutput(
+    const LocalTensor<float>& srcxFP32, const LocalTensor<float>& gammaFP32, const LocalTensor<float>& betaFP32,
+    const LocalTensor<T>& output, const NormalizePara& para, const UnaryRepeatParams& unaryParams,
+    const BinaryRepeatParams& binaryParams, const uint32_t N)
 {
     SetVectorMask<float, MaskMode::COUNTER>(0, para.rLength);
     for (uint32_t i = 0; i < N; i++) {
-        if constexpr(!config.isNoGamma) {
-            Mul<float, false>(srcxFP32[i * para.rLengthWithPadding], srcxFP32[i * para.rLengthWithPadding], gammaFP32,
+        if constexpr (!config.isNoGamma) {
+            Mul<float, false>(
+                srcxFP32[i * para.rLengthWithPadding], srcxFP32[i * para.rLengthWithPadding], gammaFP32,
                 MASK_PLACEHOLDER, 1, binaryParams);
             PipeBarrier<PIPE_V>();
         }
-        if constexpr(!config.isNoBeta) {
-            Add<float, false>(srcxFP32[i * para.rLengthWithPadding], srcxFP32[i * para.rLengthWithPadding], betaFP32,
+        if constexpr (!config.isNoBeta) {
+            Add<float, false>(
+                srcxFP32[i * para.rLengthWithPadding], srcxFP32[i * para.rLengthWithPadding], betaFP32,
                 MASK_PLACEHOLDER, 1, binaryParams);
             PipeBarrier<PIPE_V>();
         }
     }
     SetVectorMask<float, MaskMode::COUNTER>(0, N * para.rLengthWithPadding);
-    if constexpr(IsSameType<T, float>::value) {
+    if constexpr (IsSameType<T, float>::value) {
         Adds<float, false>(output, srcxFP32, (float)0, MASK_PLACEHOLDER, 1, unaryParams);
     } else {
-        Cast<T, float, false>(output, srcxFP32, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1, {1, 1,
-            HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
+        Cast<T, float, false>(
+            output, srcxFP32, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+            {1, 1, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     }
     PipeBarrier<PIPE_V>();
 }
 
 template <typename U, typename T, bool isReuseSource, const NormalizeConfig& config>
-__aicore__ inline void NormalizeImpl(const LocalTensor<T>& output, const LocalTensor<float>& outputRstd,
-    const LocalTensor<float>& inputMean, const LocalTensor<float>& inputVariance, const LocalTensor<T>& inputX,
-    const LocalTensor<U>& gamma, const LocalTensor<U>& beta, const LocalTensor<uint8_t>& sharedTmpBuffer,
-    const float epsilon, const NormalizePara& para)
+__aicore__ inline void NormalizeImpl(
+    const LocalTensor<T>& output, const LocalTensor<float>& outputRstd, const LocalTensor<float>& inputMean,
+    const LocalTensor<float>& inputVariance, const LocalTensor<T>& inputX, const LocalTensor<U>& gamma,
+    const LocalTensor<U>& beta, const LocalTensor<uint8_t>& sharedTmpBuffer, const float epsilon,
+    const NormalizePara& para)
 {
-    CHECK_FUNC_HIGHLEVEL_API(Normalize, (U, T, isReuseSource, config), (output, outputRstd, inputMean, inputVariance, inputX, gamma, beta,
-        sharedTmpBuffer, epsilon, para));
-    static_assert(IsDtypeValid<U, T>(), "Failed to check dtype in Normalize, current api support dtype combination is "
-        "T: float, U: float; T: half, U: half / float.");
+    CHECK_FUNC_HIGHLEVEL_API(
+        Normalize, (U, T, isReuseSource, config),
+        (output, outputRstd, inputMean, inputVariance, inputX, gamma, beta, sharedTmpBuffer, epsilon, para));
+    static_assert(
+        IsDtypeValid<U, T>(), "Failed to check dtype in Normalize, current api support dtype combination is "
+                              "T: float, U: float; T: half, U: half / float.");
     bool res = CheckParams<config>(para);
 
     const UnaryRepeatParams unaryParam;
@@ -238,35 +256,39 @@ __aicore__ inline void NormalizeImpl(const LocalTensor<T>& output, const LocalTe
     uint32_t tailN = para.aLength % N;
 
     GetNormalizeOutputRstd(outputRstd, inputVariance, tmpTensor, unaryParam, binaryParam, para, epsilon);
-    if constexpr(IsSameType<U, half>::value) {
+    if constexpr (IsSameType<U, half>::value) {
         CastGammaBeta<U, config>(gamma, beta, tmpTensor, para);
     }
 
     for (uint32_t i = 0; i < mainRepeatTimes; i++) {
         uint32_t index = para.rLengthWithPadding * N * i;
         CastSrc<T>(inputX[index], tmpTensor, para, N);
-        GetNormalizeOutputPre(tmpTensor.tempTensorA, inputMean, outputRstd, tmpTensor.tempTensorB,
-            tmpTensor.tempTensorA, para, binaryParam, N, N * i);
-        if constexpr(IsSameType<U, float>::value) {
-            GetNormalizeOutput<T, config>(tmpTensor.tempTensorA, gamma, beta,
-                output[index], para, unaryParam, binaryParam, N);
+        GetNormalizeOutputPre(
+            tmpTensor.tempTensorA, inputMean, outputRstd, tmpTensor.tempTensorB, tmpTensor.tempTensorA, para,
+            binaryParam, N, N * i);
+        if constexpr (IsSameType<U, float>::value) {
+            GetNormalizeOutput<T, config>(
+                tmpTensor.tempTensorA, gamma, beta, output[index], para, unaryParam, binaryParam, N);
         } else {
-            GetNormalizeOutput<T, config>(tmpTensor.tempTensorA, tmpTensor.gammaTmpTensor, tmpTensor.betaTmpTensor,
-                output[index], para, unaryParam, binaryParam, N);
+            GetNormalizeOutput<T, config>(
+                tmpTensor.tempTensorA, tmpTensor.gammaTmpTensor, tmpTensor.betaTmpTensor, output[index], para,
+                unaryParam, binaryParam, N);
         }
     }
 
     if (tailN > 0) {
         uint32_t index = para.rLengthWithPadding * N * mainRepeatTimes;
         CastSrc<T>(inputX[index], tmpTensor, para, tailN);
-        GetNormalizeOutputPre(tmpTensor.tempTensorA, inputMean, outputRstd, tmpTensor.tempTensorB,
-            tmpTensor.tempTensorA, para, binaryParam, tailN, N * mainRepeatTimes);
-        if constexpr(IsSameType<U, float>::value) {
-            GetNormalizeOutput<T, config>(tmpTensor.tempTensorA, gamma, beta,
-                output[index], para, unaryParam, binaryParam, tailN);
+        GetNormalizeOutputPre(
+            tmpTensor.tempTensorA, inputMean, outputRstd, tmpTensor.tempTensorB, tmpTensor.tempTensorA, para,
+            binaryParam, tailN, N * mainRepeatTimes);
+        if constexpr (IsSameType<U, float>::value) {
+            GetNormalizeOutput<T, config>(
+                tmpTensor.tempTensorA, gamma, beta, output[index], para, unaryParam, binaryParam, tailN);
         } else {
-            GetNormalizeOutput<T, config>(tmpTensor.tempTensorA, tmpTensor.gammaTmpTensor, tmpTensor.betaTmpTensor,
-                output[index], para, unaryParam, binaryParam, tailN);
+            GetNormalizeOutput<T, config>(
+                tmpTensor.tempTensorA, tmpTensor.gammaTmpTensor, tmpTensor.betaTmpTensor, output[index], para,
+                unaryParam, binaryParam, tailN);
         }
     }
 
@@ -275,15 +297,16 @@ __aicore__ inline void NormalizeImpl(const LocalTensor<T>& output, const LocalTe
 }
 
 template <typename U, typename T, bool isReuseSource, const NormalizeConfig& config>
-__aicore__ inline void NormalizeImpl(const LocalTensor<T>& output, const LocalTensor<float>& outputRstd,
-    const LocalTensor<float>& inputMean, const LocalTensor<float>& inputVariance, const LocalTensor<T>& inputX,
-    const LocalTensor<U>& gamma, const LocalTensor<U>& beta, const float epsilon, const NormalizePara& para)
+__aicore__ inline void NormalizeImpl(
+    const LocalTensor<T>& output, const LocalTensor<float>& outputRstd, const LocalTensor<float>& inputMean,
+    const LocalTensor<float>& inputVariance, const LocalTensor<T>& inputX, const LocalTensor<U>& gamma,
+    const LocalTensor<U>& beta, const float epsilon, const NormalizePara& para)
 {
     LocalTensor<uint8_t> sharedTmpBuffer;
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);
     ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
-    NormalizeImpl<U, T, isReuseSource, config>(output, outputRstd, inputMean, inputVariance, inputX, gamma, beta,
-        sharedTmpBuffer, epsilon, para);
+    NormalizeImpl<U, T, isReuseSource, config>(
+        output, outputRstd, inputMean, inputVariance, inputX, gamma, beta, sharedTmpBuffer, epsilon, para);
 }
 
 } // namespace AscendC

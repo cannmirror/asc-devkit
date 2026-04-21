@@ -47,14 +47,12 @@
 - 算子实现：  
   本样例中实现的是固定shape(inputX[2, 16, 16, 8]，gamma[16]，beta[16]，groupNum=4)的groupnorm算子。
 
-  - Kernel实现
-
+  - Kernel实现  
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用GroupNorm高阶API接口完成groupnorm计算，得到最终结果，再搬出到外部存储上。
 
     groupnorm算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor inputXGm、gammaGm、betaGm Memory搬运至LocalMemory，分别存储在inputXLocal、gammaLocal、betaLocal中，Compute任务负责对inputXLocal、gammaLocal、betaLocal执行groupnorm计算，计算结果存储在outputLocal、meanLocal、varianceLocal中，CopyOut任务负责将输出数据从outputLocal、meanLocal、varianceLocal搬运至Global Memory上的输出Tensor outputGm、outputMeanGm、outputVarianceGm中。
 
-  - Tiling实现
-
+  - Tiling实现  
     groupnorm算子的tiling实现流程如下：首先获取GroupNorm接口能完成计算所需最大/最小临时空间大小，根据该范围结合实际的内存使用情况设置合适的空间大小，然后根据输入shape、剩余的可供计算的空间大小等信息获取GroupNorm kernel侧接口所需tiling参数。
 
     将 shape 为 [N, C, H, W] 的输入，转化为 [N, G, C/G, H, W]，其中 [C/G, H, W] 是一个计算单元，因为共用同一个 mean 和 variance。当使用最小临时空间时，每次传入 GroupNorm 的 shape 为 [1, C/G, H, W]。当使用最大临时空间时，可以传入整个 input，此时需保证剩余的 UB 空间 ≥ 最大临时空间。

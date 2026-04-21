@@ -37,8 +37,7 @@
 - 算子实现：  
   本样例中实现的是固定shape为输出dst[1280]的PhiloxRandomCustom算子。
 
-  - Kernel实现
-
+  - Kernel实现  
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，根据输入的参数使用PhiloxRandom高阶API接口完成philoxrandom计算，得到最终结果，再搬出到外部存储上。
 
     PhiloxRandomCustom算子的实现流程分为2个基本任务：Compute，CopyOut。Compute任务根据参数执行philoxrandom计算，计算结果存储在dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。

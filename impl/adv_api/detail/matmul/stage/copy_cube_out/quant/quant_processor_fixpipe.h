@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file quant_processor_fixpipe.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/stage/copy_cube_out/quant/quant_processor_fixpipe.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/stage/copy_cube_out/quant/quant_processor_fixpipe.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_OUT_QUANT_QUANT_PROCESSOR_FIXPIPE_H__
 #endif
@@ -32,10 +33,11 @@ namespace Impl {
 namespace Detail {
 
 template <typename IMPL, class A_TYPE, class C_TYPE, const auto& MM_CFG>
-class MatmulQuantProcessor<IMPL, A_TYPE, C_TYPE, MM_CFG, enable_if_t<(IsQuantSenario<typename C_TYPE::T, typename A_TYPE::T>()
-                                                                && !MatmulFeatureTrait<MM_CFG>::IsNeedUB()
-                                                                && !HasScalePosition<A_TYPE>::value)>>
-{
+class MatmulQuantProcessor<
+    IMPL, A_TYPE, C_TYPE, MM_CFG,
+    enable_if_t<(
+        IsQuantSenario<typename C_TYPE::T, typename A_TYPE::T>() && !MatmulFeatureTrait<MM_CFG>::IsNeedUB() &&
+        !HasScalePosition<A_TYPE>::value)>> {
     MATMUL_USE_MODULE(KLoop);
     MATMUL_USE_MODULE(L1Manager);
 
@@ -63,16 +65,10 @@ public:
         }
     }
 
-    __aicore__ inline QuantMode_t GetMatmulQuantMode()
-    {
-        return quantMode_;
-    }
+    __aicore__ inline QuantMode_t GetMatmulQuantMode() { return quantMode_; }
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
-    __aicore__ inline bool IsQuantSenario()
-    {
-        return isPerChannel_ || isPerTensor_;
-    }
+    __aicore__ inline bool IsQuantSenario() { return isPerChannel_ || isPerTensor_; }
 #endif
 
     __aicore__ inline void SetQuantVector(const GlobalTensor<uint64_t>& quantTensor)
@@ -96,13 +92,12 @@ public:
         quantScalar_ = quantScalar;
 
         if constexpr (IsSameTypeV<L0cT, int32_t> && IsSameTypeV<DstT, half>) {
-            quantMode_ = QuantMode_t::DEQF16; 
+            quantMode_ = QuantMode_t::DEQF16;
         } else if constexpr (IsSameTypeV<L0cT, int32_t> && IsTypeOneOfV<DstT, int8_t, uint8_t>) {
             quantMode_ = QuantMode_t::REQ8;
         } else if constexpr (IsSameTypeV<L0cT, float> && IsTypeOneOfV<DstT, int8_t, uint8_t>) {
             quantMode_ = QuantMode_t::QF322B8_PRE;
         }
-
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
         else if constexpr (IsSameTypeV<L0cT, int32_t> && IsSameTypeV<DstT, bfloat16_t>) {
             quantMode_ = QuantMode_t::QS322BF16_PRE;
@@ -110,26 +105,25 @@ public:
             quantMode_ = QuantMode_t::QF322FP8_PRE;
         } else if constexpr (IsSameTypeV<L0cT, float> && IsSameTypeV<DstT, hifloat8_t>) {
             quantMode_ = QuantMode_t::QF322HIF8_PRE;
-        } else if constexpr (IsTypeOneOfV<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t> &&
-            IsSameTypeV<DstT, half>) {
+        } else if constexpr (IsTypeOneOfV<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t> && IsSameTypeV<DstT, half>) {
             quantMode_ = QuantMode_t::QF322F16_PRE;
-        } else if constexpr (IsTypeOneOfV<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t> &&
-            IsSameTypeV<DstT, bfloat16_t>) {
+        } else if constexpr (
+            IsTypeOneOfV<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t> && IsSameTypeV<DstT, bfloat16_t>) {
             quantMode_ = QuantMode_t::QF322BF16_PRE;
-        } else if (IsTypeOneOfV<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t> &&
-            IsSameTypeV<DstT, float>) {
+        } else if (IsTypeOneOfV<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t> && IsSameTypeV<DstT, float>) {
             quantMode_ = QuantMode_t::QF322F32_PRE;
         }
 #endif
     }
 
-    __aicore__ inline void CopyQuantTensor(LocalTensor<uint64_t>& quantTensor,
-        const int32_t curN, const int32_t baseUseN)
+    __aicore__ inline void CopyQuantTensor(
+        LocalTensor<uint64_t>& quantTensor, const int32_t curN, const int32_t baseUseN)
     {
         if (isPerChannel_) {
             int64_t quantTensorGMOffset;
             if constexpr (MatmulFeatureTrait<MM_CFG>::IsSupportL0CToUB() && ToMatmulConfig(MM_CFG).isPartialOutput) {
-                quantTensorGMOffset = (curN * MATMUL_MODULE(KLoop)->GetInnerIter() + MATMUL_MODULE(KLoop)->GetInnerIdx()) * baseN_;
+                quantTensorGMOffset =
+                    (curN * MATMUL_MODULE(KLoop)->GetInnerIter() + MATMUL_MODULE(KLoop)->GetInnerIdx()) * baseN_;
             } else {
                 quantTensorGMOffset = curN * baseN_;
             }
@@ -151,20 +145,11 @@ public:
         }
     }
 
-    __aicore__ inline uint64_t GetQuantScalarValue()
-    {
-        return quantScalar_;
-    }
+    __aicore__ inline uint64_t GetQuantScalarValue() { return quantScalar_; }
 
-    __aicore__ inline void UpdateQuantTensor(int32_t idx)
-    {
-        quantTensor_ = quantTensor_[idx];
-    }
+    __aicore__ inline void UpdateQuantTensor(int32_t idx) { quantTensor_ = quantTensor_[idx]; }
 
-    __aicore__ inline bool IsPerChannelSenario()
-    {
-        return isPerChannel_;
-    }
+    __aicore__ inline bool IsPerChannelSenario() { return isPerChannel_; }
 
     __aicore__ inline void FreeQuantTensor(LocalTensor<uint64_t>& quantTensor)
     {
@@ -175,17 +160,17 @@ public:
 
     __aicore__ inline void Destroy()
     {
-        if constexpr (((IsSameType<SrcT, int8_t>::value || IsSameType<SrcT, int4b_t>::value) &&
-                       IsSameType<DstT, half>::value) ||
-                      (IsSameType<SrcT, int8_t>::value &&
-                       (IsSameType<DstT, int8_t>::value || IsSameType<DstT, uint8_t>::value))) {
+        if constexpr (
+            ((IsSameType<SrcT, int8_t>::value || IsSameType<SrcT, int4b_t>::value) && IsSameType<DstT, half>::value) ||
+            (IsSameType<SrcT, int8_t>::value &&
+             (IsSameType<DstT, int8_t>::value || IsSameType<DstT, uint8_t>::value))) {
             qidFixPipe_.FreeAllEvent();
         }
     }
 
 private:
-    __aicore__ inline void CopyDeqTensorToL1(const LocalTensor<uint64_t>& dst, const GlobalTensor<uint64_t>& src,
-        int32_t calNSize)
+    __aicore__ inline void CopyDeqTensorToL1(
+        const LocalTensor<uint64_t>& dst, const GlobalTensor<uint64_t>& src, int32_t calNSize)
     {
         event_t eventIDFixToMte2 = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::FIX_MTE2));
         SetFlag<HardEvent::FIX_MTE2>(eventIDFixToMte2);
@@ -196,12 +181,12 @@ private:
         if (calNSize % BLOCK_CUBE) {
             // nd2nz pad to 32Bytes align
             uint16_t dValue = calNSize * FLOAT_FACTOR;
-            Nd2NzParams intriParams{ 1, 1, dValue, 0, dValue, 1, 1, 0 };
+            Nd2NzParams intriParams{1, 1, dValue, 0, dValue, 1, 1, 0};
             GlobalTensor<uint32_t> srcTmp;
-            srcTmp.SetGlobalBuffer((__gm__ uint32_t *)src.GetPhyAddr(), src.GetSize());
+            srcTmp.SetGlobalBuffer((__gm__ uint32_t*)src.GetPhyAddr(), src.GetSize());
             DataCopy(dst.ReinterpretCast<uint32_t>(), srcTmp, intriParams);
         } else {
-            DataCopyParams intriParams{ 1, static_cast<uint16_t>(deqDataSize / ONE_BLK_SIZE), 0, 0 };
+            DataCopyParams intriParams{1, static_cast<uint16_t>(deqDataSize / ONE_BLK_SIZE), 0, 0};
             DataCopy(dst, src, intriParams);
         }
         event_t eventIDMte2ToFix = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::MTE2_FIX));
@@ -225,14 +210,12 @@ private:
             quantMode_ = QuantMode_t::VQF322FP8_PRE;
         } else if constexpr (IsSameTypeV<L0cT, float> && IsSameTypeV<DstT, hifloat8_t>) {
             quantMode_ = QuantMode_t::VQF322HIF8_PRE;
-        } else if constexpr (IsTypeOneOfV<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t> &&
-            IsSameTypeV<DstT, half>) {
+        } else if constexpr (IsTypeOneOfV<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t> && IsSameTypeV<DstT, half>) {
             quantMode_ = QuantMode_t::VQF322F16_PRE;
-        } else if constexpr (IsTypeOneOfV<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t> &&
-            IsSameTypeV<DstT, bfloat16_t>) {
+        } else if constexpr (
+            IsTypeOneOfV<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t> && IsSameTypeV<DstT, bfloat16_t>) {
             quantMode_ = QuantMode_t::VQF322BF16_PRE;
-        } else if (IsTypeOneOfV<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t> &&
-            IsSameTypeV<DstT, float>) {
+        } else if (IsTypeOneOfV<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t> && IsSameTypeV<DstT, float>) {
             quantMode_ = QuantMode_t::VQF322F32_PRE;
         }
 #endif
@@ -249,12 +232,13 @@ private:
     uint64_t quantScalar_ = 0;
     int32_t baseN_ = 0;
 };
-}  // namespace Detail
-}  // namespace Impl
-}  // namespace AscendC
+} // namespace Detail
+} // namespace Impl
+} // namespace AscendC
 #endif // IMPL_MATMUL_STAGE_COPY_CUBE_OUT_QUANT_QUANT_PROCESSOR_FIXPIPE_H
 
-#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_OUT_QUANT_QUANT_PROCESSOR_FIXPIPE_H__)
+#if defined( \
+    __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_OUT_QUANT_QUANT_PROCESSOR_FIXPIPE_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_OUT_QUANT_QUANT_PROCESSOR_FIXPIPE_H__
 #endif

@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file power_common_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/power/power_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/power.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/power/power_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/power.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_POWER_POWER_COMMON_IMPL_H__
 #endif
@@ -32,15 +33,16 @@
 
 namespace AscendC {
 // PowerImpl(tensor, tensor) half input
-__aicore__ inline void PowerImpl(const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor0,
-    const LocalTensor<half>& srcTensor1, const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
+__aicore__ inline void PowerImpl(
+    const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor0, const LocalTensor<half>& srcTensor1,
+    const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
 {
     constexpr uint32_t tripleFactor = 3;
     uint32_t tmpBufferSize = stackTensor.GetSize();
     CheckTmpBufferSize(tmpBufferSize, ONE_REPEAT_BYTE_SIZE, tmpBufferSize);
 
-    uint32_t splitSize = (tmpBufferSize - ONE_REPEAT_BYTE_SIZE) / sizeof(float) /
-        TENSOR_TENSOR_HALF / ONE_BLK_SIZE * ONE_BLK_SIZE;
+    uint32_t splitSize =
+        (tmpBufferSize - ONE_REPEAT_BYTE_SIZE) / sizeof(float) / TENSOR_TENSOR_HALF / ONE_BLK_SIZE * ONE_BLK_SIZE;
     CheckTmpBufferSize(splitSize, 0, tmpBufferSize);
 
     LocalTensor<float> tmpScalar = stackTensor.ReinterpretCast<float>();
@@ -87,14 +89,15 @@ __aicore__ inline void PowerImpl(const LocalTensor<half>& dstTensor, const Local
 }
 
 // PowerImpl(tensor, tensor) float input
-__aicore__ inline void PowerImpl(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor0,
-    const LocalTensor<float>& srcTensor1, const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
+__aicore__ inline void PowerImpl(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor0, const LocalTensor<float>& srcTensor1,
+    const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
 {
     uint32_t tmpBufferSize = stackTensor.GetSize();
     CheckTmpBufferSize(tmpBufferSize, ONE_REPEAT_BYTE_SIZE, tmpBufferSize);
 
-    uint32_t splitSize = (tmpBufferSize - ONE_REPEAT_BYTE_SIZE) / sizeof(float) /
-        TENSOR_TENSOR_FLOAT / ONE_BLK_SIZE * ONE_BLK_SIZE;
+    uint32_t splitSize =
+        (tmpBufferSize - ONE_REPEAT_BYTE_SIZE) / sizeof(float) / TENSOR_TENSOR_FLOAT / ONE_BLK_SIZE * ONE_BLK_SIZE;
     CheckTmpBufferSize(splitSize, 0, tmpBufferSize);
 
     LocalTensor<float> tmpScalar = stackTensor.ReinterpretCast<float>();
@@ -107,23 +110,25 @@ __aicore__ inline void PowerImpl(const LocalTensor<float>& dstTensor, const Loca
     uint32_t calcTail = calCount % splitSize;
     for (uint32_t i = 0; i < loopCount; ++i) {
         PipeBarrier<PIPE_V>();
-        CommonPowerF(dstTensor[i * splitSize], srcTensor0[i * splitSize],
-            srcTensor1[i * splitSize], tmpScalar, powerParam, splitSize);
+        CommonPowerF(
+            dstTensor[i * splitSize], srcTensor0[i * splitSize], srcTensor1[i * splitSize], tmpScalar, powerParam,
+            splitSize);
     }
     if (calcTail > 0) {
         SetVectorMask<float>(0, calcTail);
-        CommonPowerF(dstTensor[loopCount * splitSize], srcTensor0[loopCount * splitSize],
-            srcTensor1[loopCount * splitSize], tmpScalar, powerParam, calcTail);
+        CommonPowerF(
+            dstTensor[loopCount * splitSize], srcTensor0[loopCount * splitSize], srcTensor1[loopCount * splitSize],
+            tmpScalar, powerParam, calcTail);
     }
 }
 
 // PowerImpl(tensor, tensor) int32_t input
-__aicore__ inline void PowerImpl(const LocalTensor<int32_t>& dstTensor, const LocalTensor<int32_t>& srcTensor0,
+__aicore__ inline void PowerImpl(
+    const LocalTensor<int32_t>& dstTensor, const LocalTensor<int32_t>& srcTensor0,
     const LocalTensor<int32_t>& srcTensor1, const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
 {
     uint32_t tmpBufferSize = stackTensor.GetSize();
-    uint32_t splitSize = tmpBufferSize / sizeof(int32_t) /
-        TENSOR_TENSOR_INT / ONE_BLK_SIZE * ONE_BLK_SIZE;
+    uint32_t splitSize = tmpBufferSize / sizeof(int32_t) / TENSOR_TENSOR_INT / ONE_BLK_SIZE * ONE_BLK_SIZE;
     CheckTmpBufferSize(splitSize, 0, tmpBufferSize);
 
     AscPowerIParams powerParam;
@@ -133,28 +138,30 @@ __aicore__ inline void PowerImpl(const LocalTensor<int32_t>& dstTensor, const Lo
     uint32_t calcTail = calCount % splitSize;
     for (uint32_t i = 0; i < loopCount; ++i) {
         PipeBarrier<PIPE_V>();
-        CommonPowerI(dstTensor[i * splitSize], srcTensor0[i * splitSize], srcTensor1[i * splitSize],
-            powerParam, splitSize);
+        CommonPowerI(
+            dstTensor[i * splitSize], srcTensor0[i * splitSize], srcTensor1[i * splitSize], powerParam, splitSize);
     }
     if (calcTail > 0) {
         SetVectorMask<int32_t>(0, calcTail);
         PipeBarrier<PIPE_V>();
-        CommonPowerI(dstTensor[loopCount * splitSize], srcTensor0[loopCount * splitSize],
-            srcTensor1[loopCount * splitSize], powerParam, calcTail);
+        CommonPowerI(
+            dstTensor[loopCount * splitSize], srcTensor0[loopCount * splitSize], srcTensor1[loopCount * splitSize],
+            powerParam, calcTail);
         PipeBarrier<PIPE_V>();
     }
 }
 
 // PowerImpl(tensor, scalar) half input
-__aicore__ inline void PowerImpl(const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor0,
-    const half& scalarValue, const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
+__aicore__ inline void PowerImpl(
+    const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor0, const half& scalarValue,
+    const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
 {
     constexpr uint32_t tripleFactor = 3;
     uint32_t tmpBufferSize = stackTensor.GetSize();
     CheckTmpBufferSize(tmpBufferSize, ONE_REPEAT_BYTE_SIZE, tmpBufferSize);
 
-    uint32_t splitSize = (tmpBufferSize - ONE_REPEAT_BYTE_SIZE) / sizeof(float) / TENSOR_SCALAR_HALF /
-        ONE_BLK_SIZE * ONE_BLK_SIZE;
+    uint32_t splitSize =
+        (tmpBufferSize - ONE_REPEAT_BYTE_SIZE) / sizeof(float) / TENSOR_SCALAR_HALF / ONE_BLK_SIZE * ONE_BLK_SIZE;
     CheckTmpBufferSize(splitSize, 0, tmpBufferSize);
 
     LocalTensor<float> tmpScalar = stackTensor.ReinterpretCast<float>();
@@ -198,13 +205,14 @@ __aicore__ inline void PowerImpl(const LocalTensor<half>& dstTensor, const Local
 }
 
 // PowerImpl(tensor, scalar) float input
-__aicore__ inline void PowerImpl(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor0,
-    const float& scalarValue, const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
+__aicore__ inline void PowerImpl(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor0, const float& scalarValue,
+    const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
 {
     uint32_t tmpBufferSize = stackTensor.GetSize();
     CheckTmpBufferSize(tmpBufferSize, ONE_REPEAT_BYTE_SIZE, tmpBufferSize);
-    uint32_t splitSize = (tmpBufferSize - ONE_REPEAT_BYTE_SIZE) / sizeof(float) /
-        TENSOR_SCALAR_FLOAT / ONE_BLK_SIZE * ONE_BLK_SIZE;
+    uint32_t splitSize =
+        (tmpBufferSize - ONE_REPEAT_BYTE_SIZE) / sizeof(float) / TENSOR_SCALAR_FLOAT / ONE_BLK_SIZE * ONE_BLK_SIZE;
     CheckTmpBufferSize(splitSize, 0, tmpBufferSize);
 
     LocalTensor<float> tmpScalar = stackTensor.ReinterpretCast<float>();
@@ -212,8 +220,8 @@ __aicore__ inline void PowerImpl(const LocalTensor<float>& dstTensor, const Loca
     LocalTensor<float> stackSrc1 = stackTensor[ONE_REPEAT_BYTE_SIZE].ReinterpretCast<float>();
     stackSrc1.SetSize(splitSize);
     AscPowerFParams powerParam;
-    PowerFParamsCalc(stackTensor[ONE_REPEAT_BYTE_SIZE + splitSize * sizeof(float)].ReinterpretCast<float>(),
-        powerParam, splitSize);
+    PowerFParamsCalc(
+        stackTensor[ONE_REPEAT_BYTE_SIZE + splitSize * sizeof(float)].ReinterpretCast<float>(), powerParam, splitSize);
     InitTmpScalar(tmpScalar);
     SetVectorMask<float>(0, splitSize);
     PipeBarrier<PIPE_V>();
@@ -222,23 +230,23 @@ __aicore__ inline void PowerImpl(const LocalTensor<float>& dstTensor, const Loca
     uint32_t loopCount = calCount / splitSize;
     uint32_t calcTail = calCount % splitSize;
     for (uint32_t i = 0; i < loopCount; ++i) {
-        CommonPowerF(dstTensor[i * splitSize], srcTensor0[i * splitSize],
-            stackSrc1, tmpScalar, powerParam, splitSize);
+        CommonPowerF(dstTensor[i * splitSize], srcTensor0[i * splitSize], stackSrc1, tmpScalar, powerParam, splitSize);
     }
     if (calcTail > 0) {
         SetVectorMask<float>(0, calcTail);
-        CommonPowerF(dstTensor[loopCount * splitSize], srcTensor0[loopCount * splitSize],
-            stackSrc1, tmpScalar, powerParam, calcTail);
+        CommonPowerF(
+            dstTensor[loopCount * splitSize], srcTensor0[loopCount * splitSize], stackSrc1, tmpScalar, powerParam,
+            calcTail);
     }
 }
 
 // PowerImpl(tensor, scalar) int32_t input
-__aicore__ inline void PowerImpl(const LocalTensor<int32_t>& dstTensor, const LocalTensor<int32_t>& srcTensor0,
-    const int32_t& scalarValue, const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
+__aicore__ inline void PowerImpl(
+    const LocalTensor<int32_t>& dstTensor, const LocalTensor<int32_t>& srcTensor0, const int32_t& scalarValue,
+    const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
 {
     uint32_t tmpBufferSize = stackTensor.GetSize();
-    uint32_t splitSize = tmpBufferSize / sizeof(int32_t) /
-        TENSOR_SCALAR_INT / ONE_BLK_SIZE * ONE_BLK_SIZE;
+    uint32_t splitSize = tmpBufferSize / sizeof(int32_t) / TENSOR_SCALAR_INT / ONE_BLK_SIZE * ONE_BLK_SIZE;
     CheckTmpBufferSize(splitSize, 0, tmpBufferSize);
 
     LocalTensor<int32_t> stackSrc1 = stackTensor.ReinterpretCast<int32_t>();
@@ -252,28 +260,28 @@ __aicore__ inline void PowerImpl(const LocalTensor<int32_t>& dstTensor, const Lo
     Duplicate<int32_t, false>(stackSrc1, scalarValue, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
     PipeBarrier<PIPE_V>();
     for (uint32_t i = 0; i < loopCount; ++i) {
-        CommonPowerI(dstTensor[i * splitSize], srcTensor0[i * splitSize], stackSrc1,
-            powerParam, splitSize);
+        CommonPowerI(dstTensor[i * splitSize], srcTensor0[i * splitSize], stackSrc1, powerParam, splitSize);
         PipeBarrier<PIPE_V>();
     }
     if (calcTail > 0) {
         SetVectorMask<int32_t>(0, calcTail);
-        CommonPowerI(dstTensor[loopCount * splitSize], srcTensor0[loopCount * splitSize], stackSrc1,
-            powerParam, calcTail);
+        CommonPowerI(
+            dstTensor[loopCount * splitSize], srcTensor0[loopCount * splitSize], stackSrc1, powerParam, calcTail);
         PipeBarrier<PIPE_V>();
     }
 }
 
 // PowerImpl(scalar, tensor) half input
-__aicore__ inline void PowerImpl(const LocalTensor<half>& dstTensor, const half& scalarValue,
-    const LocalTensor<half>& srcTensor1, const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
+__aicore__ inline void PowerImpl(
+    const LocalTensor<half>& dstTensor, const half& scalarValue, const LocalTensor<half>& srcTensor1,
+    const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
 {
     constexpr uint32_t tripleFactor = 3;
     uint32_t tmpBufferSize = stackTensor.GetSize();
     CheckTmpBufferSize(tmpBufferSize, ONE_REPEAT_BYTE_SIZE, tmpBufferSize);
 
-    uint32_t splitSize = (tmpBufferSize - ONE_REPEAT_BYTE_SIZE) / sizeof(float) /
-        TENSOR_SCALAR_HALF / ONE_BLK_SIZE * ONE_BLK_SIZE;
+    uint32_t splitSize =
+        (tmpBufferSize - ONE_REPEAT_BYTE_SIZE) / sizeof(float) / TENSOR_SCALAR_HALF / ONE_BLK_SIZE * ONE_BLK_SIZE;
     CheckTmpBufferSize(splitSize, 0, tmpBufferSize);
 
     LocalTensor<float> tmpScalar = stackTensor.ReinterpretCast<float>();
@@ -318,14 +326,15 @@ __aicore__ inline void PowerImpl(const LocalTensor<half>& dstTensor, const half&
 }
 
 // PowerImpl(scalar, tensor) float input
-__aicore__ inline void PowerImpl(const LocalTensor<float>& dstTensor, const float& scalarValue,
-    const LocalTensor<float>& srcTensor1, const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
+__aicore__ inline void PowerImpl(
+    const LocalTensor<float>& dstTensor, const float& scalarValue, const LocalTensor<float>& srcTensor1,
+    const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
 {
     uint32_t tmpBufferSize = stackTensor.GetSize();
     CheckTmpBufferSize(tmpBufferSize, ONE_REPEAT_BYTE_SIZE, tmpBufferSize);
 
-    uint32_t splitSize = (tmpBufferSize - ONE_REPEAT_BYTE_SIZE) / sizeof(float) /
-        TENSOR_SCALAR_FLOAT / ONE_BLK_SIZE * ONE_BLK_SIZE;
+    uint32_t splitSize =
+        (tmpBufferSize - ONE_REPEAT_BYTE_SIZE) / sizeof(float) / TENSOR_SCALAR_FLOAT / ONE_BLK_SIZE * ONE_BLK_SIZE;
     CheckTmpBufferSize(splitSize, 0, tmpBufferSize);
 
     LocalTensor<float> tmpScalar = stackTensor.ReinterpretCast<float>();
@@ -333,8 +342,8 @@ __aicore__ inline void PowerImpl(const LocalTensor<float>& dstTensor, const floa
     LocalTensor<float> stackSrc0 = stackTensor[ONE_REPEAT_BYTE_SIZE].ReinterpretCast<float>();
     stackSrc0.SetSize(splitSize);
     AscPowerFParams powerParam;
-    PowerFParamsCalc(stackTensor[ONE_REPEAT_BYTE_SIZE + splitSize * sizeof(float)].ReinterpretCast<float>(),
-        powerParam, splitSize);
+    PowerFParamsCalc(
+        stackTensor[ONE_REPEAT_BYTE_SIZE + splitSize * sizeof(float)].ReinterpretCast<float>(), powerParam, splitSize);
     InitTmpScalar(tmpScalar);
     SetVectorMask<float>(0, splitSize);
     PipeBarrier<PIPE_V>();
@@ -343,23 +352,23 @@ __aicore__ inline void PowerImpl(const LocalTensor<float>& dstTensor, const floa
     uint32_t loopCount = calCount / splitSize;
     uint32_t calcTail = calCount % splitSize;
     for (uint32_t i = 0; i < loopCount; ++i) {
-        CommonPowerF(dstTensor[i * splitSize], stackSrc0, srcTensor1[i * splitSize],
-            tmpScalar, powerParam, splitSize);
+        CommonPowerF(dstTensor[i * splitSize], stackSrc0, srcTensor1[i * splitSize], tmpScalar, powerParam, splitSize);
     }
     if (calcTail > 0) {
         SetVectorMask<float>(0, calcTail);
-        CommonPowerF(dstTensor[loopCount * splitSize], stackSrc0, srcTensor1[loopCount * splitSize],
-            tmpScalar, powerParam, calcTail);
+        CommonPowerF(
+            dstTensor[loopCount * splitSize], stackSrc0, srcTensor1[loopCount * splitSize], tmpScalar, powerParam,
+            calcTail);
     }
 }
 
 // PowerImpl(scalar, tensor) int32_t input
-__aicore__ inline void PowerImpl(const LocalTensor<int32_t>& dstTensor, const int32_t& scalarValue,
-    const LocalTensor<int32_t>& srcTensor1, const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
+__aicore__ inline void PowerImpl(
+    const LocalTensor<int32_t>& dstTensor, const int32_t& scalarValue, const LocalTensor<int32_t>& srcTensor1,
+    const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
 {
     uint32_t tmpBufferSize = stackTensor.GetSize();
-    uint32_t splitSize = tmpBufferSize / sizeof(int32_t) /
-        TENSOR_SCALAR_INT / ONE_BLK_SIZE * ONE_BLK_SIZE;
+    uint32_t splitSize = tmpBufferSize / sizeof(int32_t) / TENSOR_SCALAR_INT / ONE_BLK_SIZE * ONE_BLK_SIZE;
     CheckTmpBufferSize(splitSize, 0, tmpBufferSize);
 
     LocalTensor<int32_t> stackSrc0 = stackTensor.ReinterpretCast<int32_t>();
@@ -373,14 +382,13 @@ __aicore__ inline void PowerImpl(const LocalTensor<int32_t>& dstTensor, const in
     uint32_t loopCount = calCount / splitSize;
     uint32_t calcTail = calCount % splitSize;
     for (uint32_t i = 0; i < loopCount; ++i) {
-        CommonPowerI(dstTensor[i * splitSize], stackSrc0, srcTensor1[i * splitSize],
-            powerParam, splitSize);
+        CommonPowerI(dstTensor[i * splitSize], stackSrc0, srcTensor1[i * splitSize], powerParam, splitSize);
         PipeBarrier<PIPE_V>();
     }
     if (calcTail > 0) {
         SetVectorMask<int32_t>(0, calcTail);
-        CommonPowerI(dstTensor[loopCount * splitSize], stackSrc0, srcTensor1[loopCount * splitSize],
-            powerParam, calcTail);
+        CommonPowerI(
+            dstTensor[loopCount * splitSize], stackSrc0, srcTensor1[loopCount * splitSize], powerParam, calcTail);
         PipeBarrier<PIPE_V>();
     }
 }
@@ -390,13 +398,15 @@ Power(scalar, tensor) Converts scalar to tensor for processing.
 The interface input parameter contains tmpTensor.
 */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void PowerCommonImpl(const LocalTensor<T>& dstTensor, const T& scalarValue,
-    const LocalTensor<T>& srcTensor1, const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
+__aicore__ inline void PowerCommonImpl(
+    const LocalTensor<T>& dstTensor, const T& scalarValue, const LocalTensor<T>& srcTensor1,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
 {
     if ASCEND_IS_AIC {
         return;
     }
-    CHECK_FUNC_HIGHLEVEL_API(Power, (T, isReuseSource), (dstTensor, scalarValue, srcTensor1, sharedTmpBuffer, calCount));
+    CHECK_FUNC_HIGHLEVEL_API(
+        Power, (T, isReuseSource), (dstTensor, scalarValue, srcTensor1, sharedTmpBuffer, calCount));
 
     SetMaskCount();
     PowerImpl(dstTensor, scalarValue, srcTensor1, sharedTmpBuffer, calCount);
@@ -409,14 +419,16 @@ Power(tensor, scalar) Converts scalar to tensor for processing.
 The interface input parameter contains tmpTensor.
 */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void PowerCommonImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0,
-    const T& scalarValue, const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
+__aicore__ inline void PowerCommonImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0, const T& scalarValue,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
         return;
     }
-    CHECK_FUNC_HIGHLEVEL_API(Power, (T, isReuseSource), (dstTensor, srcTensor0, scalarValue, sharedTmpBuffer, calCount));
+    CHECK_FUNC_HIGHLEVEL_API(
+        Power, (T, isReuseSource), (dstTensor, srcTensor0, scalarValue, sharedTmpBuffer, calCount));
     SetMaskCount();
     PowerImpl(dstTensor, srcTensor0, scalarValue, sharedTmpBuffer, calCount);
     SetMaskNorm();
@@ -428,8 +440,9 @@ Power(tensor, tensor)
 The interface input parameter contains tmpTensor.
 */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void PowerCommonImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0,
-    const LocalTensor<T>& srcTensor1, const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
+__aicore__ inline void PowerCommonImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0, const LocalTensor<T>& srcTensor1,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -443,41 +456,39 @@ __aicore__ inline void PowerCommonImpl(const LocalTensor<T>& dstTensor, const Lo
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void PowerCommonImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
-    const LocalTensor<T>& src1Tensor, uint32_t calCount)
+__aicore__ inline void PowerCommonImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor,
+    uint32_t calCount)
 {
     LocalTensor<uint8_t> stackTensor;
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(stackTensor);
-    ASCENDC_ASSERT((ans),
-                   { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
+    ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
 
     PowerCommonImpl<T, isReuseSource>(dstTensor, src0Tensor, src1Tensor, stackTensor, calCount);
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void PowerCommonImpl(const LocalTensor<T>& dstTensor, const T& src0Scalar,
-    const LocalTensor<T>& src1Tensor, uint32_t calCount)
+__aicore__ inline void PowerCommonImpl(
+    const LocalTensor<T>& dstTensor, const T& src0Scalar, const LocalTensor<T>& src1Tensor, uint32_t calCount)
 {
     LocalTensor<uint8_t> stackTensor;
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(stackTensor);
-    ASCENDC_ASSERT((ans),
-                   { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
+    ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
 
     PowerCommonImpl<T, isReuseSource>(dstTensor, src0Scalar, src1Tensor, stackTensor, calCount);
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void PowerCommonImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
-    const T& src1Scalar, uint32_t calCount)
+__aicore__ inline void PowerCommonImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const T& src1Scalar, uint32_t calCount)
 {
     LocalTensor<uint8_t> stackTensor;
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(stackTensor);
-    ASCENDC_ASSERT((ans),
-                   { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
+    ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
 
     PowerCommonImpl<T, isReuseSource>(dstTensor, src0Tensor, src1Scalar, stackTensor, calCount);
 }
-}  // namespace AscendC
+} // namespace AscendC
 #endif // IMPL_MATH_POWER_POWER_COMMON_IMPL_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_POWER_POWER_COMMON_IMPL_H__)

@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file dequantize_tiling_impl.cpp
@@ -22,9 +22,9 @@
 namespace AscendC {
 namespace {
 
-constexpr uint32_t EXPECTED_SHAPE_DIM = 2;      // Expected two dimensional, if 1 dim input, convert to [1, n]
-constexpr uint32_t FLOAT_PER_BLOCK = 8;         // 32B  = FP32(4B) * 8
-constexpr uint32_t FLOAT_PER_REPEAT = 64;       // 256B = FP32(4B) * 64
+constexpr uint32_t EXPECTED_SHAPE_DIM = 2; // Expected two dimensional, if 1 dim input, convert to [1, n]
+constexpr uint32_t FLOAT_PER_BLOCK = 8;    // 32B  = FP32(4B) * 8
+constexpr uint32_t FLOAT_PER_REPEAT = 64;  // 256B = FP32(4B) * 64
 
 inline uint32_t GetDequantizeMaxTmpSize(const uint32_t outer, const uint32_t inner, const uint32_t scaleSize)
 {
@@ -62,11 +62,11 @@ void GetDequantizeTmpBufferFactorSize(const ge::Shape& srcShape, uint32_t& maxLi
     }
 }
 
-void GetDequantizeMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue,
-    uint32_t& minValue)
+void GetDequantizeMaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
 {
     (void)typeSize;
-    std::vector<int64_t> shapeDims = srcShape.GetDims();   // should be 2-dimensional or 1-dimensional
+    std::vector<int64_t> shapeDims = srcShape.GetDims(); // should be 2-dimensional or 1-dimensional
     uint32_t outer = 1;
     uint32_t inner = 0;
 

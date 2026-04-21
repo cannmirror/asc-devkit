@@ -100,6 +100,84 @@ public:
     }
 };
 
+void RunKernelOperatorMmImplCoverage()
+{
+    constexpr uint16_t mLength = 16;
+    constexpr uint16_t nLength = 16;
+    constexpr uint16_t kLength = 16;
+    constexpr int32_t aSize = mLength * kLength;
+    constexpr int32_t bSize = kLength * nLength;
+    constexpr int32_t cSize = mLength * nLength;
+    uint8_t gmBufferA[aSize * sizeof(half)] = {0};
+    uint8_t gmBufferB[bSize * sizeof(half)] = {0};
+
+    LOCAL_TENSOR_REGISTER(srcA1, half, A1, 0, aSize)
+    LOCAL_TENSOR_REGISTER(srcB1, half, B1, 0, bSize)
+    LOCAL_TENSOR_REGISTER(dstA2, half, A2, 0, aSize)
+    LOCAL_TENSOR_REGISTER(dstB2, half, B2, 0, bSize)
+    LOCAL_TENSOR_REGISTER(dstUb, half, VECIN, 0, aSize)
+    LOCAL_TENSOR_REGISTER(dstL0c, float, CO1, 0, cSize)
+
+    LoadData2DParamsV2 loadData2dA = {0, 0, 1, 1, 1, 1, false, 0};
+    Load2DBitModeParam loadData2dABitMode(loadData2dA);
+    LoadData2DL12L0ACal((__ca__ half *)dstA2.GetPhyAddr(), (__cbuf__ half *)srcA1.GetPhyAddr(), loadData2dABitMode);
+    loadData2dA.ifTranspose = true;
+    Load2DBitModeParam loadData2dATransBitMode(loadData2dA);
+    LoadData2DL12L0ACal((__ca__ half *)dstA2.GetPhyAddr(), (__cbuf__ half *)srcA1.GetPhyAddr(),
+        loadData2dATransBitMode);
+
+    LoadData2DParamsV2 loadData2dB = {0, 0, 1, 1, 1, 1, false, 0};
+    Load2DBitModeParam loadData2dBBitMode(loadData2dB);
+    LoadData2DL12L0BCal((__cb__ half *)dstB2.GetPhyAddr(), (__cbuf__ half *)srcB1.GetPhyAddr(), loadData2dBBitMode);
+    loadData2dB.ifTranspose = true;
+    Load2DBitModeParam loadData2dBTransBitMode(loadData2dB);
+    LoadData2DL12L0BCal((__cb__ half *)dstB2.GetPhyAddr(), (__cbuf__ half *)srcB1.GetPhyAddr(),
+        loadData2dBTransBitMode);
+
+    MmadParams mmadParams;
+    mmadParams.m = mLength;
+    mmadParams.k = kLength;
+    mmadParams.n = nLength;
+    mmadParams.cmatrixSource = false;
+    mmadParams.cmatrixInitVal = false;
+    mmadParams.disableGemv = false;
+    MmadBitModeParams mmadBitModeParams(mmadParams);
+    MmadCal((__cc__ float *)dstL0c.GetPhyAddr(), (__ca__ half *)dstA2.GetPhyAddr(), (__cb__ half *)dstB2.GetPhyAddr(),
+        mmadBitModeParams);
+
+    LoadData3DParamsV2<half> loadData3dParams;
+    loadData3dParams.l1W = 1;
+    loadData3dParams.l1H = kLength;
+    loadData3dParams.channelSize = nLength;
+    loadData3dParams.kExtension = nLength;
+    loadData3dParams.mExtension = kLength;
+    loadData3dParams.kStartPt = 0;
+    loadData3dParams.mStartPt = 0;
+    loadData3dParams.strideW = 1;
+    loadData3dParams.strideH = 1;
+    loadData3dParams.filterW = 1;
+    loadData3dParams.filterH = 1;
+    loadData3dParams.dilationFilterW = 1;
+    loadData3dParams.dilationFilterH = 1;
+    loadData3dParams.filterSizeW = 0;
+    loadData3dParams.filterSizeH = 0;
+    loadData3dParams.enTranspose = true;
+    loadData3dParams.fMatrixCtrl = false;
+    SetFmatrix(SetFMatrixBitModeParams(loadData3dParams), FmatrixMode::FMATRIX_LEFT);
+    SetLoadDataPaddingValue(0);
+    SetLoadDataRepeat({0, 1, 0});
+    LoadData3DV2L12L0BCal((__cb__ half *)dstB2.GetPhyAddr(), (__cbuf__ half *)srcB1.GetPhyAddr(), loadData3dParams);
+
+    MOCKER(raise).stubs().will(returnValue(0));
+    LoadData2DGM2L0ACal((__ca__ half *)dstA2.GetPhyAddr(), (__gm__ half *)gmBufferA, loadData2dA);
+    LoadData2DGM2L0BCal((__cb__ half *)dstB2.GetPhyAddr(), (__gm__ half *)gmBufferB, loadData2dB);
+    InitConstValueParams<half> initParams = {1, 1, 0, static_cast<half>(1)};
+    InitL0ANzMatrixCal((__ca__ half *)dstA2.GetPhyAddr(), initParams);
+    InitL0BNzMatrixCal((__cb__ half *)dstB2.GetPhyAddr(), initParams);
+    LoadData3DV2L12UBCal((__ubuf__ half *)dstUb.GetPhyAddr(), (__cbuf__ half *)srcA1.GetPhyAddr(), loadData3dParams);
+    SetSysWorkSpacePtr(GetSysWorkSpacePtr());
+}
+
 
 class TEST_INTRINSIC_UNREACHABLE : public testing::Test {
 protected:
@@ -125,3 +203,8 @@ protected:
 
 REGIST_INTRINSIC_UNREACHABLE(fp8_e5m2_t);
 REGIST_INTRINSIC_UNREACHABLE(fp8_e4m3fn_t);
+
+TEST_F(TEST_INTRINSIC_UNREACHABLE, KERNEL_OPERATOR_MM_IMPL_BRANCH_COVERAGE)
+{
+    RunKernelOperatorMmImplCoverage();
+}

@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file confusion_transpose_tiling_impl.cpp
@@ -41,21 +41,22 @@ enum class TransposeType {
     // { shape:[B, N, H/N/16, S/16, 16, 16], format:"NZ"}-->{ shape:[B, H/16, S/16, 16, 16], ori_shape:[B, S, H],
     // format:"NZ"}
     TRANSPOSE_NZ2NZ_012_WITHOUT_N,
-    TRANSPOSE_ND2ND_ONLY,    // { shape:[H, W], format:"ND"} -->{ shape:[W, H], format:"ND"}
-    TRANSPOSE_ND_UB_GM,      //  [B, N, S, H/N] -> [B, S, H]
-    TRANSPOSE_GRAD_ND_UB_GM, //  [B, S, H] -> [B, N, S, H/N]
-    TRANSPOSE_ND2ND_B16,     // { shape:[16, 16], format:"ND", dataType: B16} -->{ shape:[16, 16], format:"ND"}
-    TRANSPOSE_NCHW2NHWC,     // [ N, C, H, W] -> [N, H, W, C]
-    TRANSPOSE_NHWC2NCHW,     // [ N, H, W, C] -> [N, C, H, W]
-    TRANSPOSE_ND2ND_021,     // [H, W]->[W, H], [N, H, W]->[N, W, H]
-    TRANSPOSE_ND2ND_102,     // [N, H, W]->[H, N, W]
-    TRANSPOSE_ND2ND_210,      // [N, H, W]->[W, H, N]
+    TRANSPOSE_ND2ND_ONLY,      // { shape:[H, W], format:"ND"} -->{ shape:[W, H], format:"ND"}
+    TRANSPOSE_ND_UB_GM,        //  [B, N, S, H/N] -> [B, S, H]
+    TRANSPOSE_GRAD_ND_UB_GM,   //  [B, S, H] -> [B, N, S, H/N]
+    TRANSPOSE_ND2ND_B16,       // { shape:[16, 16], format:"ND", dataType: B16} -->{ shape:[16, 16], format:"ND"}
+    TRANSPOSE_NCHW2NHWC,       // [ N, C, H, W] -> [N, H, W, C]
+    TRANSPOSE_NHWC2NCHW,       // [ N, H, W, C] -> [N, C, H, W]
+    TRANSPOSE_ND2ND_021,       // [H, W]->[W, H], [N, H, W]->[N, W, H]
+    TRANSPOSE_ND2ND_102,       // [N, H, W]->[H, N, W]
+    TRANSPOSE_ND2ND_210,       // [N, H, W]->[W, H, N]
     TRANSPOSE_ND2NZ_WITH_INTLV // [N, D] -> [N, Z]
 };
 
 // scene1/2：srcShape[B, A1, A2, A3]
-inline void GetConfusionTranspose0213TilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize,
-    const uint32_t typeSize, optiling::ConfusionTransposeTiling& tiling)
+inline void GetConfusionTranspose0213TilingInfo(
+    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    optiling::ConfusionTransposeTiling& tiling)
 {
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
     std::vector<int64_t> shapeDims = srcShape.GetDims();
@@ -97,8 +98,8 @@ inline void GetConfusionTranspose0213TilingInfo(const ge::Shape& srcShape, const
 }
 
 // scene3：srcShape[B, N, S, H/N]
-inline void GetConfusionTranspose2NZ012NTilingInfo(const ge::Shape& srcShape, const uint32_t typeSize,
-    optiling::ConfusionTransposeTiling& tiling)
+inline void GetConfusionTranspose2NZ012NTilingInfo(
+    const ge::Shape& srcShape, const uint32_t typeSize, optiling::ConfusionTransposeTiling& tiling)
 {
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
     std::vector<int64_t> shapeDims = srcShape.GetDims();
@@ -140,8 +141,8 @@ inline void GetConfusionTranspose2NZ012NTilingInfo(const ge::Shape& srcShape, co
 }
 
 // scene4：srcShape[B, N, S, H/N]
-inline void GetConfusionTranspose2ND012NTilingInfo(const ge::Shape& srcShape, const uint32_t typeSize,
-    optiling::ConfusionTransposeTiling& tiling)
+inline void GetConfusionTranspose2ND012NTilingInfo(
+    const ge::Shape& srcShape, const uint32_t typeSize, optiling::ConfusionTransposeTiling& tiling)
 {
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
     std::vector<int64_t> shapeDims = srcShape.GetDims();
@@ -185,8 +186,8 @@ inline void GetConfusionTranspose2ND012NTilingInfo(const ge::Shape& srcShape, co
 }
 
 // scene5/6：srcShape[B, N, S, H/N]
-inline void GetConfusionTranspose012TilingInfo(const ge::Shape& srcShape, const uint32_t typeSize,
-    optiling::ConfusionTransposeTiling& tiling)
+inline void GetConfusionTranspose012TilingInfo(
+    const ge::Shape& srcShape, const uint32_t typeSize, optiling::ConfusionTransposeTiling& tiling)
 {
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
     std::vector<int64_t> shapeDims = srcShape.GetDims();
@@ -224,8 +225,9 @@ inline void GetConfusionTranspose012TilingInfo(const ge::Shape& srcShape, const 
 }
 
 // scene7：srcShape[H, W]
-void GetConfusionTransposeOnlyTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize,
-    const uint32_t typeSize, optiling::ConfusionTransposeTiling& tiling)
+void GetConfusionTransposeOnlyTilingInfo(
+    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    optiling::ConfusionTransposeTiling& tiling)
 {
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
     (void)stackBufferSize;
@@ -245,8 +247,9 @@ void GetConfusionTransposeOnlyTilingInfo(const ge::Shape& srcShape, const uint32
     tiling.set_param5(repeat);
 }
 
-void GetConfusionTransposeOnlyTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize,
-    const uint32_t typeSize, AscendC::tiling::ConfusionTransposeTiling& tiling)
+void GetConfusionTransposeOnlyTilingInfo(
+    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    AscendC::tiling::ConfusionTransposeTiling& tiling)
 {
     optiling::ConfusionTransposeTiling tilingData;
     GetConfusionTransposeOnlyTilingInfo(srcShape, stackBufferSize, typeSize, tilingData);
@@ -254,13 +257,14 @@ void GetConfusionTransposeOnlyTilingInfo(const ge::Shape& srcShape, const uint32
 }
 
 // scene13
-inline void GetConfusionTranspose021TilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize,
-    const uint32_t typeSize, optiling::ConfusionTransposeTiling& tiling)
+inline void GetConfusionTranspose021TilingInfo(
+    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    optiling::ConfusionTransposeTiling& tiling)
 {
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
     (void)stackBufferSize;
     std::vector<int64_t> shapeDims = srcShape.GetDims();
-    ASCENDC_HOST_ASSERT((shapeDims.size() == 3) || (shapeDims.size() == 2) , return, "srcShape must be 2 or 3 dims.");
+    ASCENDC_HOST_ASSERT((shapeDims.size() == 3) || (shapeDims.size() == 2), return, "srcShape must be 2 or 3 dims.");
     uint32_t dim0 = 1;
     uint32_t dim1 = shapeDims[0];
     uint32_t dim2 = shapeDims[1];
@@ -277,8 +281,9 @@ inline void GetConfusionTranspose021TilingInfo(const ge::Shape& srcShape, const 
 }
 
 // scene14
-inline void GetConfusionTranspose102TilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize,
-    const uint32_t typeSize, optiling::ConfusionTransposeTiling& tiling)
+inline void GetConfusionTranspose102TilingInfo(
+    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    optiling::ConfusionTransposeTiling& tiling)
 {
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
     (void)stackBufferSize;
@@ -294,8 +299,9 @@ inline void GetConfusionTranspose102TilingInfo(const ge::Shape& srcShape, const 
 }
 
 // scene15
-inline void GetConfusionTranspose210TilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize,
-    const uint32_t typeSize, optiling::ConfusionTransposeTiling& tiling)
+inline void GetConfusionTranspose210TilingInfo(
+    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    optiling::ConfusionTransposeTiling& tiling)
 {
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
     (void)stackBufferSize;
@@ -380,8 +386,9 @@ inline void GetConfusionTranspose210MaxMinTmpSize(
     minValue = 0;
 }
 
-void GetTransposeTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const uint32_t transposeTypeIn, optiling::ConfusionTransposeTiling& tiling)
+void GetTransposeTilingInfo(
+    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const uint32_t transposeTypeIn,
+    optiling::ConfusionTransposeTiling& tiling)
 {
     if (static_cast<TransposeType>(transposeTypeIn) == TransposeType::TRANSPOSE_NZ2ND_0213 ||
         static_cast<TransposeType>(transposeTypeIn) == TransposeType::TRANSPOSE_NZ2NZ_0213) {
@@ -390,7 +397,8 @@ void GetTransposeTilingInfo(const ge::Shape& srcShape, const uint32_t stackBuffe
         GetConfusionTranspose2NZ012NTilingInfo(srcShape, typeSize, tiling);
     } else if (static_cast<TransposeType>(transposeTypeIn) == TransposeType::TRANSPOSE_NZ2ND_012_WITH_N) {
         GetConfusionTranspose2ND012NTilingInfo(srcShape, typeSize, tiling);
-    } else if (static_cast<TransposeType>(transposeTypeIn) == TransposeType::TRANSPOSE_NZ2ND_012_WITHOUT_N ||
+    } else if (
+        static_cast<TransposeType>(transposeTypeIn) == TransposeType::TRANSPOSE_NZ2ND_012_WITHOUT_N ||
         static_cast<TransposeType>(transposeTypeIn) == TransposeType::TRANSPOSE_NZ2NZ_012_WITHOUT_N) {
         GetConfusionTranspose012TilingInfo(srcShape, typeSize, tiling);
     } else if (static_cast<TransposeType>(transposeTypeIn) == TransposeType::TRANSPOSE_ND2ND_ONLY) {
@@ -404,28 +412,32 @@ void GetTransposeTilingInfo(const ge::Shape& srcShape, const uint32_t stackBuffe
     }
 }
 
-void GetTransposeTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const uint32_t transposeTypeIn, AscendC::tiling::ConfusionTransposeTiling& tiling)
+void GetTransposeTilingInfo(
+    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const uint32_t transposeTypeIn,
+    AscendC::tiling::ConfusionTransposeTiling& tiling)
 {
     optiling::ConfusionTransposeTiling tilingData;
     GetTransposeTilingInfo(srcShape, stackBufferSize, typeSize, transposeTypeIn, tilingData);
     tilingData.SaveToBuffer(&tiling, sizeof(ConfusionTransposeTiling));
 }
 
-void GetConfusionTransposeTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const uint32_t transposeTypeIn, optiling::ConfusionTransposeTiling& tiling)
+void GetConfusionTransposeTilingInfo(
+    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const uint32_t transposeTypeIn,
+    optiling::ConfusionTransposeTiling& tiling)
 {
     GetTransposeTilingInfo(srcShape, stackBufferSize, typeSize, transposeTypeIn, tiling);
 }
 
-void GetConfusionTransposeTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const uint32_t transposeTypeIn, AscendC::tiling::ConfusionTransposeTiling& tiling)
+void GetConfusionTransposeTilingInfo(
+    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const uint32_t transposeTypeIn,
+    AscendC::tiling::ConfusionTransposeTiling& tiling)
 {
     GetTransposeTilingInfo(srcShape, stackBufferSize, typeSize, transposeTypeIn, tiling);
 }
 
-void GetTransposeMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const uint32_t transposeTypeIn,
-    uint32_t& maxValue, uint32_t& minValue)
+void GetTransposeMaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, const uint32_t transposeTypeIn, uint32_t& maxValue,
+    uint32_t& minValue)
 {
     if (static_cast<TransposeType>(transposeTypeIn) == TransposeType::TRANSPOSE_NZ2ND_0213 ||
         static_cast<TransposeType>(transposeTypeIn) == TransposeType::TRANSPOSE_NZ2NZ_0213) {
@@ -434,7 +446,8 @@ void GetTransposeMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSiz
         GetConfusionTranspose2NZ012NMaxMinTmpSize(srcShape, typeSize, maxValue, minValue);
     } else if (static_cast<TransposeType>(transposeTypeIn) == TransposeType::TRANSPOSE_NZ2ND_012_WITH_N) {
         GetConfusionTranspose2ND012NMaxMinTmpSize(srcShape, typeSize, maxValue, minValue);
-    } else if (static_cast<TransposeType>(transposeTypeIn) == TransposeType::TRANSPOSE_NZ2ND_012_WITHOUT_N ||
+    } else if (
+        static_cast<TransposeType>(transposeTypeIn) == TransposeType::TRANSPOSE_NZ2ND_012_WITHOUT_N ||
         static_cast<TransposeType>(transposeTypeIn) == TransposeType::TRANSPOSE_NZ2NZ_012_WITHOUT_N) {
         GetConfusionTranspose012MaxMinTmpSize(srcShape, typeSize, maxValue, minValue);
     } else if (static_cast<TransposeType>(transposeTypeIn) == TransposeType::TRANSPOSE_ND2ND_ONLY) {
@@ -448,8 +461,9 @@ void GetTransposeMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSiz
     }
 }
 
-void GetConfusionTransposeMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize,
-    const uint32_t transposeTypeIn, uint32_t& maxValue, uint32_t& minValue)
+void GetConfusionTransposeMaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, const uint32_t transposeTypeIn, uint32_t& maxValue,
+    uint32_t& minValue)
 {
     GetTransposeMaxMinTmpSize(srcShape, typeSize, transposeTypeIn, maxValue, minValue);
 }

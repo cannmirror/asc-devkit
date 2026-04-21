@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file digamma_tiling_impl.cpp
@@ -52,16 +52,16 @@ inline uint32_t GetMinTmpSize(const uint32_t typeSize, const bool isReuseSource)
         return DIGAMMA_HALF_CALC_FAC * DIGAMMA_ONE_REPEAT_BYTE_SIZE;
     }
 }
-}  // namespace
+} // namespace
 
 void GetDigammaTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer)
 {
-    ASCENDC_HOST_ASSERT(platform_ascendc::PlatformAscendCManager::GetInstance() != nullptr, 
-        return, "PlatformAscendCManager gets instance failed!");
+    ASCENDC_HOST_ASSERT(
+        platform_ascendc::PlatformAscendCManager::GetInstance() != nullptr, return,
+        "PlatformAscendCManager gets instance failed!");
     const auto npuArch = platform_ascendc::PlatformAscendCManager::GetInstance()->GetCurNpuArch();
-    if (npuArch == NpuArch::DAV_3510 ||
-        npuArch == NpuArch::DAV_5102) {
-            extraBuffer = uint32_t(0);
+    if (npuArch == NpuArch::DAV_3510 || npuArch == NpuArch::DAV_5102) {
+        extraBuffer = uint32_t(0);
         maxLiveNodeCount = (typeSize == sizeof(float)) ? 0 : DIGAMMA_HALF_CALC_FAC_Arch3510;
     } else {
         extraBuffer = uint32_t(0);
@@ -69,22 +69,23 @@ void GetDigammaTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNod
     }
 }
 
-void GetDigammaMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t& maxValue, uint32_t& minValue)
+void GetDigammaMaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    uint32_t& minValue)
 {
     const uint32_t inputSize = srcShape.GetShapeSize();
     ASCENDC_HOST_ASSERT(inputSize > 0, return, "Input Shape size must be greater than 0.");
-    ASCENDC_HOST_ASSERT(platform_ascendc::PlatformAscendCManager::GetInstance() != nullptr, 
-        return, "PlatformAscendCManager gets instance failed!");
+    ASCENDC_HOST_ASSERT(
+        platform_ascendc::PlatformAscendCManager::GetInstance() != nullptr, return,
+        "PlatformAscendCManager gets instance failed!");
 
     const auto npuArch = platform_ascendc::PlatformAscendCManager::GetInstance()->GetCurNpuArch();
-    if (npuArch == NpuArch::DAV_3510 ||
-        npuArch == NpuArch::DAV_5102) {
+    if (npuArch == NpuArch::DAV_3510 || npuArch == NpuArch::DAV_5102) {
         maxValue = GetMaxTmpSizeArch3510(inputSize, typeSize);
         minValue = maxValue;
         return;
-    } 
+    }
     maxValue = GetMaxTmpSize(inputSize, typeSize, isReuseSource);
     minValue = GetMinTmpSize(typeSize, isReuseSource);
 }
-}  // namespace AscendC
+} // namespace AscendC

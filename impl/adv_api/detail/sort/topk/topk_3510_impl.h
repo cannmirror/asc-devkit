@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file topk_3510_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/sort/topk/topk_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/sort/topk.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/sort/topk/topk_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/sort/topk.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SORT_TOPK_TOPK_C310_IMPL_H__
 #endif
@@ -34,8 +35,10 @@
 
 namespace AscendC {
 #if ASCENDC_CPU_DEBUG
-template <typename T, bool isInitIndex = false, enum TopKMode topkMode = TopKMode::TOPK_NORMAL, const TopKConfig& config = defaultTopKConfig>
-void TopkInputCheck(const int32_t k, const TopKInfo &topKInfo)
+template <
+    typename T, bool isInitIndex = false, enum TopKMode topkMode = TopKMode::TOPK_NORMAL,
+    const TopKConfig& config = defaultTopKConfig>
+void TopkInputCheck(const int32_t k, const TopKInfo& topKInfo)
 {
     ASCENDC_ASSERT((1 <= k) && (k <= topKInfo.n), {
         KERNEL_LOG(KERNEL_ERROR, "The value of k must be greater than or equal to 1 and less than or equal to inner.");
@@ -66,50 +69,54 @@ void TopkInputCheck(const int32_t k, const TopKInfo &topKInfo)
 #endif
 
 template <typename T>
-__aicore__ inline void GatherDstValAndDstIdx(const LocalTensor<T> &dstValueLocal,
-    const LocalTensor<int32_t> &dstIndexLocal, const LocalTensor<T> &tmpLocal, const TopkTiling &tilling,
-    const int32_t dstOffsetFourBytes, const int outterIdx)
+__aicore__ inline void GatherDstValAndDstIdx(
+    const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& tmpLocal,
+    const TopkTiling& tilling, const int32_t dstOffsetFourBytes, const int outterIdx)
 {
     uint64_t rsvdCnt = 0;
     struct GatherMaskParams reducev2Params(DEFAULT_BLK_STRIDE, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_BLK_STRIDE);
     if constexpr (sizeof(T) == sizeof(float)) {
         // Get Value, The index of the odd position is obtained for each repeat.
-        GatherMask<T>(dstValueLocal[dstOffsetFourBytes], tmpLocal[tilling.innerDataSize], REDUCEV2_MODE_ONE,
-                      true, tilling.maskVreducev2FourBytes, reducev2Params, rsvdCnt);
+        GatherMask<T>(
+            dstValueLocal[dstOffsetFourBytes], tmpLocal[tilling.innerDataSize], REDUCEV2_MODE_ONE, true,
+            tilling.maskVreducev2FourBytes, reducev2Params, rsvdCnt);
     } else {
         int32_t dstOffsetTwoBytes = outterIdx * tilling.kAlignTwoBytes;
         // Get Value. The first element is used for every four elements in each repeat.
-        GatherMask<T>(dstValueLocal[dstOffsetTwoBytes], tmpLocal[tilling.innerDataSize], REDUCEV2_MODE_THREE,
-                      true, tilling.maskVreducev2TwoBytes, reducev2Params, rsvdCnt);
+        GatherMask<T>(
+            dstValueLocal[dstOffsetTwoBytes], tmpLocal[tilling.innerDataSize], REDUCEV2_MODE_THREE, true,
+            tilling.maskVreducev2TwoBytes, reducev2Params, rsvdCnt);
     }
     // Get Index, The index of the even position is obtained for each repeat.
     LocalTensor<int32_t> tempBufferLocal = tmpLocal[tilling.innerDataSize].template ReinterpretCast<int32_t>();
-    GatherMask<int32_t>(dstIndexLocal[dstOffsetFourBytes], tempBufferLocal, REDUCEV2_MODE_TWO, true,
-                      tilling.maskVreducev2FourBytes, reducev2Params, rsvdCnt);
+    GatherMask<int32_t>(
+        dstIndexLocal[dstOffsetFourBytes], tempBufferLocal, REDUCEV2_MODE_TWO, true, tilling.maskVreducev2FourBytes,
+        reducev2Params, rsvdCnt);
 }
 
 template <typename T, bool isInitIndex>
-__aicore__ inline void TmpLocalSort32(const LocalTensor<T> &srcLocal, const LocalTensor<int32_t> &srcIndexLocal,
-    const LocalTensor<T> &tmpLocal, const TopkTiling &tilling, const TopKInfo &topKInfo, const bool isLargest,
-    const int outterIdx)
+__aicore__ inline void TmpLocalSort32(
+    const LocalTensor<T>& srcLocal, const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<T>& tmpLocal,
+    const TopkTiling& tilling, const TopKInfo& topKInfo, const bool isLargest, const int outterIdx)
 {
     int offset = outterIdx * topKInfo.inner;
     LocalTensor<T> tmpBufferLocal = tmpLocal;
     if constexpr (!isInitIndex) {
-        LocalTensor<uint32_t> tempBufferUint32 = tmpLocal[tilling.srcIndexOffset].template
-                                            ReinterpretCast<uint32_t>();
-        Sort<T, true>(tmpLocal[tilling.innerDataSize], srcLocal[offset], tempBufferUint32, tmpBufferLocal, tilling.sortRepeat);
+        LocalTensor<uint32_t> tempBufferUint32 = tmpLocal[tilling.srcIndexOffset].template ReinterpretCast<uint32_t>();
+        Sort<T, true>(
+            tmpLocal[tilling.innerDataSize], srcLocal[offset], tempBufferUint32, tmpBufferLocal, tilling.sortRepeat);
     } else {
         LocalTensor<uint32_t> tempBufferUint32 = srcIndexLocal.template ReinterpretCast<uint32_t>();
-        Sort<T, true>(tmpLocal[tilling.innerDataSize], srcLocal[offset], tempBufferUint32, tmpBufferLocal, tilling.sortRepeat);
+        Sort<T, true>(
+            tmpLocal[tilling.innerDataSize], srcLocal[offset], tempBufferUint32, tmpBufferLocal, tilling.sortRepeat);
     }
 }
 
 template <typename T, bool isInitIndex, bool isHasfinish>
-__aicore__ inline void TopKCompute(const LocalTensor<T> &dstValueLocal, const LocalTensor<int32_t> &dstIndexLocal,
-    const LocalTensor<T> &srcLocal, const LocalTensor<int32_t> &srcIndexLocal, const LocalTensor<bool> &finishLocal,
-    const LocalTensor<T> &tmpLocal, const int32_t k, const TopkTiling &tilling, const TopKInfo &topKInfo,
-    const bool isLargest)
+__aicore__ inline void TopKCompute(
+    const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& srcLocal,
+    const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal, const LocalTensor<T>& tmpLocal,
+    const int32_t k, const TopkTiling& tilling, const TopKInfo& topKInfo, const bool isLargest)
 {
     for (int j = 0; j < topKInfo.outter; ++j) {
         int32_t dstOffsetFourBytes = j * tilling.kAlignFourBytes;
@@ -131,36 +138,32 @@ __aicore__ inline void TopKCompute(const LocalTensor<T> &dstValueLocal, const Lo
 }
 
 template <typename T>
-__aicore__ inline void TopKNSmallGetTopKValue(const LocalTensor<T> &dstValueLocal,
-    const LocalTensor<int32_t> &dstIndexLocal, const LocalTensor<T> &tmpLocal, const int32_t k,
-    const TopkTiling &tilling, const TopKInfo &topKInfo)
+__aicore__ inline void TopKNSmallGetTopKValue(
+    const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& tmpLocal,
+    const int32_t k, const TopkTiling& tilling, const TopKInfo& topKInfo)
 {
     uint64_t rsvdCnt = 0;
     struct GatherMaskParams reducev2Params(DEFAULT_BLK_STRIDE, topKInfo.outter, DEFAULT_REPEAT_STRIDE, 0);
     if constexpr (sizeof(T) == sizeof(float)) {
         // Get Value, The index of the odd position is obtained for each repeat.
-        GatherMask<T>(dstValueLocal, tmpLocal, REDUCEV2_MODE_ONE,
-                      true, 2 * k, reducev2Params, rsvdCnt);
+        GatherMask<T>(dstValueLocal, tmpLocal, REDUCEV2_MODE_ONE, true, 2 * k, reducev2Params, rsvdCnt);
     } else {
         // Get Value. The first element is used for every four elements in each repeat.
-        GatherMask<T>(dstValueLocal, tmpLocal, REDUCEV2_MODE_THREE,
-                      true, 4 * k, reducev2Params, rsvdCnt);
+        GatherMask<T>(dstValueLocal, tmpLocal, REDUCEV2_MODE_THREE, true, 4 * k, reducev2Params, rsvdCnt);
     }
     // Get Index, The index of the even position is obtained for each repeat.
     LocalTensor<int32_t> tempBufferLocal = tmpLocal.template ReinterpretCast<int32_t>();
-    GatherMask<int32_t>(dstIndexLocal, tempBufferLocal, REDUCEV2_MODE_TWO, true,
-                      2 * k, reducev2Params, rsvdCnt);
+    GatherMask<int32_t>(dstIndexLocal, tempBufferLocal, REDUCEV2_MODE_TWO, true, 2 * k, reducev2Params, rsvdCnt);
 }
 
 template <typename T, bool isInitIndex, bool isHasfinish>
-__aicore__ inline void TopKNSmallCompute(const LocalTensor<T> &dstValueLocal, const LocalTensor<int32_t> &dstIndexLocal,
-    const LocalTensor<T> &srcLocal, const LocalTensor<int32_t> &srcIndexLocal, const LocalTensor<bool> &finishLocal,
-    const LocalTensor<T> &tmpLocal, const int32_t k, const TopkTiling &tilling, const TopKInfo &topKInfo,
-    const bool isLargest)
+__aicore__ inline void TopKNSmallCompute(
+    const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& srcLocal,
+    const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal, const LocalTensor<T>& tmpLocal,
+    const int32_t k, const TopkTiling& tilling, const TopKInfo& topKInfo, const bool isLargest)
 {
     if constexpr (!isInitIndex) {
-        LocalTensor<uint32_t> tempBufferUint32 = tmpLocal[tilling.innerDataSize].template
-                                            ReinterpretCast<uint32_t>();
+        LocalTensor<uint32_t> tempBufferUint32 = tmpLocal[tilling.innerDataSize].template ReinterpretCast<uint32_t>();
         Sort32<T>(tmpLocal, srcLocal, tempBufferUint32, topKInfo.outter);
     } else {
         LocalTensor<uint32_t> tempBufferUint32 = srcIndexLocal.template ReinterpretCast<uint32_t>();
@@ -182,10 +185,7 @@ __aicore__ inline constexpr bool IsFloatNum()
     return SupportType<T, float, half, bfloat16_t>();
 }
 
-__aicore__ inline constexpr bool NeedReverse(bool isLargest)
-{
-    return !isLargest;
-}
+__aicore__ inline constexpr bool NeedReverse(bool isLargest) { return !isLargest; }
 
 template <bool isLargest>
 __aicore__ inline constexpr bool NeedReverse()
@@ -205,12 +205,13 @@ __aicore__ inline constexpr bool NeedPreProcess()
     return NeedReverse<isLargest>() || Internal::IsNeedTwiddleType<T>();
 }
 
-
-template<typename T, bool isReuseSrc, bool isLargest>
-__aicore__ inline void InitializeTempBuffer(const LocalTensor<T> &tempBuffer, const uint32_t alignCount, __ubuf__ T *&tmpSrcData, 
-    __ubuf__ int32_t *&tmpSrcIndex, __ubuf__ uint16_t *&tmpHistData, __ubuf__ T *&realWorkData, __ubuf__ T *&sortTmpBuffer)
+template <typename T, bool isReuseSrc, bool isLargest>
+__aicore__ inline void InitializeTempBuffer(
+    const LocalTensor<T>& tempBuffer, const uint32_t alignCount, __ubuf__ T*& tmpSrcData,
+    __ubuf__ int32_t*& tmpSrcIndex, __ubuf__ uint16_t*& tmpHistData, __ubuf__ T*& realWorkData,
+    __ubuf__ T*& sortTmpBuffer)
 {
-    __ubuf__ uint8_t *tmp = (__ubuf__ uint8_t *)tempBuffer.GetPhyAddr();
+    __ubuf__ uint8_t* tmp = (__ubuf__ uint8_t*)tempBuffer.GetPhyAddr();
     tmpSrcData = (__ubuf__ T*)tmp;
 
     if constexpr (sizeof(T) == 8) {
@@ -221,9 +222,9 @@ __aicore__ inline void InitializeTempBuffer(const LocalTensor<T> &tempBuffer, co
             srcOffset += sizeof(T) * alignCount;
         }
 
-        tmpSrcIndex = (__ubuf__ int32_t*)((__ubuf__ uint8_t *)tmpSrcData + srcOffset);
+        tmpSrcIndex = (__ubuf__ int32_t*)((__ubuf__ uint8_t*)tmpSrcData + srcOffset);
     } else {
-        tmpSrcIndex = (__ubuf__ int32_t*)((__ubuf__ uint8_t *)tmpSrcData + sizeof(T) * alignCount);
+        tmpSrcIndex = (__ubuf__ int32_t*)((__ubuf__ uint8_t*)tmpSrcData + sizeof(T) * alignCount);
     }
 
     tmpHistData = (__ubuf__ uint16_t*)(tmpSrcIndex);
@@ -244,12 +245,13 @@ __aicore__ inline void InitializeTempBuffer(const LocalTensor<T> &tempBuffer, co
     }
 }
 
-template<typename T, bool isReuseSrc>
-__aicore__ inline void InitializeTempBuffer(const LocalTensor<T> &tempBuffer, bool isLargest, const uint32_t alignCount, 
-    __ubuf__ T *&tmpSrcData, __ubuf__ int32_t *&tmpSrcIndex, __ubuf__ uint16_t *&tmpHistData, 
-    __ubuf__ T *&realWorkData, __ubuf__ T *&sortTmpBuffer)
+template <typename T, bool isReuseSrc>
+__aicore__ inline void InitializeTempBuffer(
+    const LocalTensor<T>& tempBuffer, bool isLargest, const uint32_t alignCount, __ubuf__ T*& tmpSrcData,
+    __ubuf__ int32_t*& tmpSrcIndex, __ubuf__ uint16_t*& tmpHistData, __ubuf__ T*& realWorkData,
+    __ubuf__ T*& sortTmpBuffer)
 {
-    __ubuf__ uint8_t *tmp = (__ubuf__ uint8_t *)tempBuffer.GetPhyAddr();
+    __ubuf__ uint8_t* tmp = (__ubuf__ uint8_t*)tempBuffer.GetPhyAddr();
     tmpSrcData = (__ubuf__ T*)tmp;
 
     if constexpr (sizeof(T) == 8) {
@@ -259,9 +261,9 @@ __aicore__ inline void InitializeTempBuffer(const LocalTensor<T> &tempBuffer, bo
         } else {
             srcOffset += sizeof(T) * alignCount;
         }
-        tmpSrcIndex = (__ubuf__ int32_t*)((__ubuf__ uint8_t *)tmpSrcData + srcOffset);
+        tmpSrcIndex = (__ubuf__ int32_t*)((__ubuf__ uint8_t*)tmpSrcData + srcOffset);
     } else {
-        tmpSrcIndex = (__ubuf__ int32_t*)((__ubuf__ uint8_t *)tmpSrcData + sizeof(T) * alignCount);
+        tmpSrcIndex = (__ubuf__ int32_t*)((__ubuf__ uint8_t*)tmpSrcData + sizeof(T) * alignCount);
     }
 
     tmpHistData = (__ubuf__ uint16_t*)(tmpSrcIndex);
@@ -285,14 +287,16 @@ __aicore__ inline void InitializeTempBuffer(const LocalTensor<T> &tempBuffer, bo
 __simd_callee__ inline void GetLowestByte(RegTensor<uint8_t>& dst, RegTensor<uint16_t>& src0, RegTensor<uint16_t>& src1)
 {
     RegTensor<uint8_t> tmpU8Reg;
-    DeInterleave(dst, tmpU8Reg, (RegTensor<uint8_t> &)src0, (RegTensor<uint8_t> &)src1);
+    DeInterleave(dst, tmpU8Reg, (RegTensor<uint8_t>&)src0, (RegTensor<uint8_t>&)src1);
 }
 
-__simd_callee__ inline void GetLowestByte(RegTensor<uint8_t>& dst, RegTensor<uint32_t>& src0, RegTensor<uint32_t>& src1, RegTensor<uint32_t>& src2, RegTensor<uint32_t>& src3)
+__simd_callee__ inline void GetLowestByte(
+    RegTensor<uint8_t>& dst, RegTensor<uint32_t>& src0, RegTensor<uint32_t>& src1, RegTensor<uint32_t>& src2,
+    RegTensor<uint32_t>& src3)
 {
     RegTensor<uint16_t> tmpU16Reg0, tmpU16Reg1, tmpU16Reg2;
-    DeInterleave(tmpU16Reg0, tmpU16Reg1, (RegTensor<uint16_t> &)src0, (RegTensor<uint16_t> &)src1);
-    DeInterleave(tmpU16Reg2, tmpU16Reg1, (RegTensor<uint16_t> &)src2, (RegTensor<uint16_t> &)src3);
+    DeInterleave(tmpU16Reg0, tmpU16Reg1, (RegTensor<uint16_t>&)src0, (RegTensor<uint16_t>&)src1);
+    DeInterleave(tmpU16Reg2, tmpU16Reg1, (RegTensor<uint16_t>&)src2, (RegTensor<uint16_t>&)src3);
 
     GetLowestByte(dst, tmpU16Reg0, tmpU16Reg2);
 }
@@ -303,7 +307,8 @@ __simd_callee__ inline void TransToB8Mask(MaskReg& dst, MaskReg& u16Src0, MaskRe
     MaskDeInterleave<uint8_t>(dst, tmpU8Mask, u16Src0, u16Src1);
 }
 
-__simd_callee__ inline void TransToB8Mask(MaskReg& dst, MaskReg& u32Src0, MaskReg& u32Src1, MaskReg& u32Src2, MaskReg& u32Src3)
+__simd_callee__ inline void TransToB8Mask(
+    MaskReg& dst, MaskReg& u32Src0, MaskReg& u32Src1, MaskReg& u32Src2, MaskReg& u32Src3)
 {
     MaskReg tmpU16LowPart0, tmpU16LowPart1, tmpU16LowPart2;
     MaskDeInterleave<uint16_t>(tmpU16LowPart0, tmpU16LowPart1, u32Src0, u32Src1);
@@ -312,8 +317,9 @@ __simd_callee__ inline void TransToB8Mask(MaskReg& dst, MaskReg& u32Src0, MaskRe
     TransToB8Mask(dst, tmpU16LowPart0, tmpU16LowPart2);
 }
 
-__simd_callee__ inline void CollectGivenPosByte(RegTensor<uint8_t>& colWorkBits, __ubuf__ uint64_t *src, uint16_t byteNum, const int32_t srcOffset, 
-__ubuf__ uint64_t* tmpLocal)
+__simd_callee__ inline void CollectGivenPosByte(
+    RegTensor<uint8_t>& colWorkBits, __ubuf__ uint64_t* src, uint16_t byteNum, const int32_t srcOffset,
+    __ubuf__ uint64_t* tmpLocal)
 {
     uint32_t loadCount = GetVecLen() / sizeof(uint32_t);
     uint32_t realCount = loadCount / 2;
@@ -359,15 +365,16 @@ __ubuf__ uint64_t* tmpLocal)
     Reg::LoadAlign(work2, tmpU32 + loadCount * 2);
     Reg::LoadAlign(work3, tmpU32 + loadCount * 3);
 
-    GetLowestByte(colWorkBits, work0, work1, work2, work3);  
+    GetLowestByte(colWorkBits, work0, work1, work2, work3);
 }
 
-__simd_callee__ inline void CompareHighBytesBeforePos(MaskReg& filterMask, __ubuf__ uint64_t *&src, MaskReg& maskReg,
-    uint64_t value, uint16_t byteNum, int32_t srcOffset, __ubuf__ uint64_t* tmpLocal)
+__simd_callee__ inline void CompareHighBytesBeforePos(
+    MaskReg& filterMask, __ubuf__ uint64_t*& src, MaskReg& maskReg, uint64_t value, uint16_t byteNum, int32_t srcOffset,
+    __ubuf__ uint64_t* tmpLocal)
 {
     __ubuf__ uint32_t* srcU32 = (__ubuf__ uint32_t*)src;
     __ubuf__ uint32_t* tmpU32 = (__ubuf__ uint32_t*)tmpLocal;
- 
+
     uint32_t loadCount = GetVecLen() / sizeof(uint32_t);
     uint32_t realCount = loadCount / 2;
     int16_t maskOffsets = static_cast<int16_t>(byteNum * 8);
@@ -431,23 +438,23 @@ __simd_callee__ inline void CompareHighBytesBeforePos(MaskReg& filterMask, __ubu
     MaskReg highRes, lowRes;
     TransToB8Mask(lowRes, lowMask0, lowMask1, lowMask2, lowMask3);
     TransToB8Mask(highRes, highMask0, highMask1, highMask2, highMask3);
-    
+
     MaskReg res;
     MaskAnd(res, highRes, lowRes, maskReg);
     MaskAnd(filterMask, maskReg, res, maskReg);
 }
 
 __simd_callee__ inline void FilterDataAndGivenByteFromOri(
-    MaskReg& filterMask, RegTensor<uint8_t>& colWorkBits, __ubuf__ uint64_t *src, MaskReg& maskReg,
-    uint64_t value, uint16_t byteNum, int32_t srcOffset, __ubuf__ uint64_t* tmpLocal)
+    MaskReg& filterMask, RegTensor<uint8_t>& colWorkBits, __ubuf__ uint64_t* src, MaskReg& maskReg, uint64_t value,
+    uint16_t byteNum, int32_t srcOffset, __ubuf__ uint64_t* tmpLocal)
 {
     CollectGivenPosByte(colWorkBits, src, byteNum, srcOffset * 2, tmpLocal);
     CompareHighBytesBeforePos(filterMask, src, maskReg, value, byteNum, srcOffset * 2, tmpLocal);
 }
 
 __simd_callee__ inline void FilterDataAndGivenByteFromOri(
-    MaskReg& filterMask, RegTensor<uint8_t>& colWorkBits, __ubuf__ uint32_t *src, MaskReg& maskReg,
-    uint32_t value, uint16_t byteNum, int32_t srcOffset, __ubuf__ uint32_t* tmpLocal)
+    MaskReg& filterMask, RegTensor<uint8_t>& colWorkBits, __ubuf__ uint32_t* src, MaskReg& maskReg, uint32_t value,
+    uint16_t byteNum, int32_t srcOffset, __ubuf__ uint32_t* tmpLocal)
 {
     constexpr uint32_t eleCountPerVL = GetVecLen() / sizeof(uint32_t);
     MaskReg fullMask = CreateMask<uint32_t>();
@@ -486,8 +493,8 @@ __simd_callee__ inline void FilterDataAndGivenByteFromOri(
 }
 
 __simd_callee__ inline void FilterDataAndGivenByteFromOri(
-    MaskReg& filterMask, RegTensor<uint8_t>& colWorkBits, __ubuf__ uint16_t *src, MaskReg& maskReg,
-    uint16_t value, uint16_t byteNum, int32_t srcOffset, __ubuf__ uint16_t* tmpLocal)
+    MaskReg& filterMask, RegTensor<uint8_t>& colWorkBits, __ubuf__ uint16_t* src, MaskReg& maskReg, uint16_t value,
+    uint16_t byteNum, int32_t srcOffset, __ubuf__ uint16_t* tmpLocal)
 {
     constexpr uint32_t eleCountPerVL = GetVecLen() / sizeof(uint16_t);
     int16_t byteOffsets = static_cast<int16_t>((byteNum - 1) * 8);
@@ -519,8 +526,8 @@ __simd_callee__ inline void FilterDataAndGivenByteFromOri(
 }
 
 __simd_callee__ inline void FilterDataAndGivenByteFromOri(
-    MaskReg& filterMask, RegTensor<uint8_t>& colWorkBits, __ubuf__ uint8_t *src, MaskReg& maskReg,
-    uint8_t value, uint16_t byteNum, int32_t srcOffset, __ubuf__ uint8_t* tmpLocal)
+    MaskReg& filterMask, RegTensor<uint8_t>& colWorkBits, __ubuf__ uint8_t* src, MaskReg& maskReg, uint8_t value,
+    uint16_t byteNum, int32_t srcOffset, __ubuf__ uint8_t* tmpLocal)
 {
     Reg::LoadAlign(colWorkBits, src + srcOffset);
     MaskReg fullMask = CreateMask<uint8_t>();
@@ -529,8 +536,7 @@ __simd_callee__ inline void FilterDataAndGivenByteFromOri(
 
 template <typename T>
 __simd_vf__ inline void GenerateAccumulateData(
-    __ubuf__ T *src, __ubuf__ uint16_t *hist, __ubuf__ T *tmpSrcData,
-    uint32_t count, T value, uint32_t byteNum)
+    __ubuf__ T* src, __ubuf__ uint16_t* hist, __ubuf__ T* tmpSrcData, uint32_t count, T value, uint32_t byteNum)
 {
     using ConvType = typename AscendC::Internal::ExtractTypeBySize<sizeof(T)>::T;
     auto unsignedValue = static_cast<ConvType>(value);
@@ -551,17 +557,21 @@ __simd_vf__ inline void GenerateAccumulateData(
 
         MaskReg filterMask;
         RegTensor<uint8_t> colWorkBits;
-        FilterDataAndGivenByteFromOri(filterMask, colWorkBits, src, maskReg, workingUnsignedValue, byteNum, i * GetVecLen(), tmpSrcData);
+        FilterDataAndGivenByteFromOri(
+            filterMask, colWorkBits, src, maskReg, workingUnsignedValue, byteNum, i * GetVecLen(), tmpSrcData);
 
-        Histograms<uint8_t, uint16_t, HistogramsBinType::BIN0, HistogramsType::ACCUMULATE>(acumHistLow, colWorkBits, filterMask);
-        Histograms<uint8_t, uint16_t, HistogramsBinType::BIN1, HistogramsType::ACCUMULATE>(acumHistHigh, colWorkBits, filterMask);
+        Histograms<uint8_t, uint16_t, HistogramsBinType::BIN0, HistogramsType::ACCUMULATE>(
+            acumHistLow, colWorkBits, filterMask);
+        Histograms<uint8_t, uint16_t, HistogramsBinType::BIN1, HistogramsType::ACCUMULATE>(
+            acumHistHigh, colWorkBits, filterMask);
     }
 
-    Reg::StoreAlign((__ubuf__ uint16_t *&)hist, acumHistLow, b16FullMask);
-    Reg::StoreAlign((__ubuf__ uint16_t *&)hist + GetVecLen() / sizeof(uint16_t), acumHistHigh, b16FullMask);
+    Reg::StoreAlign((__ubuf__ uint16_t*&)hist, acumHistLow, b16FullMask);
+    Reg::StoreAlign((__ubuf__ uint16_t*&)hist + GetVecLen() / sizeof(uint16_t), acumHistHigh, b16FullMask);
 }
 
-__simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint64_t *src, __ubuf__ uint64_t *dst, const uint64_t value, uint32_t count)
+__simd_vf__ inline void GatherGreaterAndEqualKData(
+    __ubuf__ uint64_t* src, __ubuf__ uint64_t* dst, const uint64_t value, uint32_t count)
 {
     count *= 2;
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(uint32_t);
@@ -576,11 +586,11 @@ __simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint64_t *src, __ubu
     __ubuf__ uint32_t* u32Src = (__ubuf__ uint32_t*)src;
     __ubuf__ uint32_t* u32Dst = (__ubuf__ uint32_t*)dst;
 
-    ClearSpr<SpecialPurposeReg::AR>();  
+    ClearSpr<SpecialPurposeReg::AR>();
     MaskReg fullMask = CreateMask<uint32_t>();
     MaskReg zeroMask = CreateMask<uint32_t, MaskPattern::ALLF>();
     MaskReg halfMask = CreateMask<uint32_t, MaskPattern::H>();
-    
+
     MaskReg lowMask, highMask, tmpMask;
     MaskInterleave<uint32_t>(lowMask, tmpMask, fullMask, zeroMask);
     MaskInterleave<uint32_t>(highMask, tmpMask, zeroMask, fullMask);
@@ -644,7 +654,8 @@ __simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint64_t *src, __ubu
     ClearSpr<SpecialPurposeReg::AR>();
 }
 
-__simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint32_t *src, __ubuf__ uint32_t *dst, const uint32_t value, uint32_t count)
+__simd_vf__ inline void GatherGreaterAndEqualKData(
+    __ubuf__ uint32_t* src, __ubuf__ uint32_t* dst, const uint32_t value, uint32_t count)
 {
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(uint32_t);
     uint16_t repeatTimes = DivCeil(count, eleCountPerVL);
@@ -652,7 +663,7 @@ __simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint32_t *src, __ubu
     auto firstCount = count;
     auto secondCount = count;
 
-    ClearSpr<SpecialPurposeReg::AR>();  
+    ClearSpr<SpecialPurposeReg::AR>();
     UnalignReg unalignReg;
     for (uint16_t i = 0; i < repeatTimes; ++i) {
         MaskReg maskReg = UpdateMask<uint32_t>(firstCount);
@@ -683,10 +694,11 @@ __simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint32_t *src, __ubu
     }
 
     Reg::StoreUnAlignPost(dst, unalignReg);
-    ClearSpr<SpecialPurposeReg::AR>(); 
+    ClearSpr<SpecialPurposeReg::AR>();
 }
 
-__simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint16_t *src, __ubuf__ uint16_t *dst, const uint16_t value, uint32_t count)
+__simd_vf__ inline void GatherGreaterAndEqualKData(
+    __ubuf__ uint16_t* src, __ubuf__ uint16_t* dst, const uint16_t value, uint32_t count)
 {
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(uint16_t);
     uint16_t repeatTimes = DivCeil(count, eleCountPerVL);
@@ -728,7 +740,8 @@ __simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint16_t *src, __ubu
     ClearSpr<SpecialPurposeReg::AR>();
 }
 
-__simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint8_t *src, __ubuf__ uint8_t *dst, const uint8_t value, uint32_t count)
+__simd_vf__ inline void GatherGreaterAndEqualKData(
+    __ubuf__ uint8_t* src, __ubuf__ uint8_t* dst, const uint8_t value, uint32_t count)
 {
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(uint8_t);
     uint16_t repeatTimes = DivCeil(count, eleCountPerVL);
@@ -768,9 +781,9 @@ __simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint8_t *src, __ubuf
     ClearSpr<SpecialPurposeReg::AR>();
 }
 
-
-__simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint64_t *src, __ubuf__ int32_t *inputIndex, 
-    __ubuf__ int32_t *dstIndex, const uint64_t value, uint32_t count)
+__simd_vf__ inline void GatherGreaterAndEqualKIndex(
+    __ubuf__ uint64_t* src, __ubuf__ int32_t* inputIndex, __ubuf__ int32_t* dstIndex, const uint64_t value,
+    uint32_t count)
 {
     count *= 2;
 
@@ -789,7 +802,7 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint64_t *src, __ub
     MaskReg fullMask = CreateMask<uint32_t>();
     MaskReg zeroMask = CreateMask<uint32_t, MaskPattern::ALLF>();
     MaskReg halfMask = CreateMask<uint32_t, MaskPattern::H>();
-    
+
     MaskReg lowMask, highMask, tmpMask;
     MaskInterleave<uint32_t>(lowMask, tmpMask, fullMask, zeroMask);
     MaskInterleave<uint32_t>(highMask, tmpMask, zeroMask, fullMask);
@@ -857,8 +870,9 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint64_t *src, __ub
     ClearSpr<SpecialPurposeReg::AR>();
 }
 
-__simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint32_t *src, __ubuf__ int32_t *inputIndex,
-    __ubuf__ int32_t *dstIndex, const uint32_t value, uint32_t count)
+__simd_vf__ inline void GatherGreaterAndEqualKIndex(
+    __ubuf__ uint32_t* src, __ubuf__ int32_t* inputIndex, __ubuf__ int32_t* dstIndex, const uint32_t value,
+    uint32_t count)
 {
     constexpr uint32_t eleCountPerVL = GetVecLen() / sizeof(uint32_t);
     uint16_t repeatTimes = DivCeil(count, eleCountPerVL);
@@ -903,8 +917,9 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint32_t *src, __ub
     ClearSpr<SpecialPurposeReg::AR>();
 }
 
-__simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint16_t *src, __ubuf__ int32_t *inputIndex,
-    __ubuf__ int32_t *dstIndex, const uint16_t value, uint32_t count)
+__simd_vf__ inline void GatherGreaterAndEqualKIndex(
+    __ubuf__ uint16_t* src, __ubuf__ int32_t* inputIndex, __ubuf__ int32_t* dstIndex, const uint16_t value,
+    uint32_t count)
 {
     constexpr uint32_t u32EleCountPerVL = GetVecLen() / sizeof(int32_t);
     constexpr uint32_t u16EleCountPerVL = GetVecLen() / sizeof(uint16_t);
@@ -951,7 +966,7 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint16_t *src, __ub
         MaskInterleave<uint16_t>(out32Mask0, out32Mask1, out16Mask, zero16Mask);
 
         RegTensor<int32_t> index0, index1;
-        Reg::LoadAlign(index0, inputIndex + i * u16EleCountPerVL );
+        Reg::LoadAlign(index0, inputIndex + i * u16EleCountPerVL);
         Reg::LoadAlign(index1, inputIndex + i * u16EleCountPerVL + u32EleCountPerVL);
 
         RegTensor<int32_t> outIndex0, outIndex1;
@@ -965,8 +980,9 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint16_t *src, __ub
     ClearSpr<SpecialPurposeReg::AR>();
 }
 
-__simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint8_t *src, __ubuf__ int32_t *inputIndex, 
-    __ubuf__ int32_t *dstIndex, const uint8_t value, uint32_t count)
+__simd_vf__ inline void GatherGreaterAndEqualKIndex(
+    __ubuf__ uint8_t* src, __ubuf__ int32_t* inputIndex, __ubuf__ int32_t* dstIndex, const uint8_t value,
+    uint32_t count)
 {
     constexpr uint16_t u8EleCountPerVL = GetVecLen() / sizeof(uint8_t);
     constexpr uint32_t u32EleCountPerVL = GetVecLen() / sizeof(int32_t);
@@ -1058,8 +1074,8 @@ __simd_callee__ inline int32_t GetKPad(int32_t k)
 }
 
 template <typename T>
-__simd_vf__ inline void SaveData(__ubuf__ T *dst, __ubuf__ int32_t *dstIndex, __ubuf__ T *src, __ubuf__ int32_t *srcIndex,
-    const uint32_t count)
+__simd_vf__ inline void SaveData(
+    __ubuf__ T* dst, __ubuf__ int32_t* dstIndex, __ubuf__ T* src, __ubuf__ int32_t* srcIndex, const uint32_t count)
 {
     constexpr uint32_t dataCountPerTime = GetVecLen() / sizeof(T);
     uint16_t dataRepeatTimes = DivCeil(count, dataCountPerTime);
@@ -1072,21 +1088,23 @@ __simd_vf__ inline void SaveData(__ubuf__ T *dst, __ubuf__ int32_t *dstIndex, __
     for (uint16_t i = 0; i < dataRepeatTimes; ++i) {
         MaskReg maskReg = UpdateMask<T>(dCount);
         RegTensor<T> reg;
-        Reg::LoadAlign<T, PostLiteral::POST_MODE_UPDATE>(reg, (__ubuf__ T *&)src, dataCountPerTime);
-        Reg::StoreAlign<T, PostLiteral::POST_MODE_UPDATE>((__ubuf__ T *&)dst, reg, dataCountPerTime, maskReg);
+        Reg::LoadAlign<T, PostLiteral::POST_MODE_UPDATE>(reg, (__ubuf__ T*&)src, dataCountPerTime);
+        Reg::StoreAlign<T, PostLiteral::POST_MODE_UPDATE>((__ubuf__ T*&)dst, reg, dataCountPerTime, maskReg);
     }
 
     for (uint16_t i = 0; i < indexRepeatTimes; ++i) {
         MaskReg maskReg = UpdateMask<int32_t>(iCount);
         RegTensor<int32_t> reg;
-        Reg::LoadAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(reg, (__ubuf__ int32_t *&)srcIndex, indexCountPerTime);
-        Reg::StoreAlign<int32_t, PostLiteral::POST_MODE_UPDATE>((__ubuf__ int32_t *&)dstIndex, reg, indexCountPerTime, maskReg);
+        Reg::LoadAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(reg, (__ubuf__ int32_t*&)srcIndex, indexCountPerTime);
+        Reg::StoreAlign<int32_t, PostLiteral::POST_MODE_UPDATE>(
+            (__ubuf__ int32_t*&)dstIndex, reg, indexCountPerTime, maskReg);
     }
 }
 
 template <typename T>
-__simd_vf__ inline void SaveDataUnAlignVF(__ubuf__ T *dst, __ubuf__ int32_t *dstIndex,
-    __ubuf__ T *src, __ubuf__ int32_t *srcIndex, const TopKInfo topKInfo, const uint32_t k)
+__simd_vf__ inline void SaveDataUnAlignVF(
+    __ubuf__ T* dst, __ubuf__ int32_t* dstIndex, __ubuf__ T* src, __ubuf__ int32_t* srcIndex, const TopKInfo topKInfo,
+    const uint32_t k)
 {
     uint32_t dataMainCountPerTime = GetVecLen() / sizeof(T);
     uint32_t indexMainCountPerTime = GetVecLen() / sizeof(int32_t);
@@ -1101,8 +1119,8 @@ __simd_vf__ inline void SaveDataUnAlignVF(__ubuf__ T *dst, __ubuf__ int32_t *dst
             UnalignReg ureg;
             RegTensor<T> reg;
             auto dstUBT = dst + j * k + i * kPad;
-            Reg::LoadAlign(reg, src + j * kPad + i  * kPad);
-            Reg::StoreUnAlign((__ubuf__ T *&)dstUBT, reg, ureg, k);
+            Reg::LoadAlign(reg, src + j * kPad + i * kPad);
+            Reg::StoreUnAlign((__ubuf__ T*&)dstUBT, reg, ureg, k);
             Reg::StoreUnAlignPost(dstUBT, ureg, 0);
         }
 
@@ -1110,65 +1128,69 @@ __simd_vf__ inline void SaveDataUnAlignVF(__ubuf__ T *dst, __ubuf__ int32_t *dst
             UnalignReg ureg;
             RegTensor<int32_t> reg;
             auto dstUBT = dstIndex + j * k + i * kIndexPad;
-            Reg::LoadAlign(reg, srcIndex + j * kIndexPad + i  * kIndexPad);
-            Reg::StoreUnAlign((__ubuf__ int32_t *&)dstUBT, reg, ureg, k);
+            Reg::LoadAlign(reg, srcIndex + j * kIndexPad + i * kIndexPad);
+            Reg::StoreUnAlign((__ubuf__ int32_t*&)dstUBT, reg, ureg, k);
             Reg::StoreUnAlignPost(dstUBT, ureg, 0);
         }
     }
 }
 
 template <typename T>
-__aicore__ inline void SaveDataUnAlign(const LocalTensor<T> &dstValueLocal, const LocalTensor<int32_t> &dstIndexLocal,
-    const LocalTensor<T> &srcLocal, const LocalTensor<int32_t> &srcIndexLocal, const TopKInfo &topKInfo, const uint32_t k)
+__aicore__ inline void SaveDataUnAlign(
+    const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& srcLocal,
+    const LocalTensor<int32_t>& srcIndexLocal, const TopKInfo& topKInfo, const uint32_t k)
 {
-    __ubuf__ T *src = (__ubuf__ T *)srcLocal.GetPhyAddr();
-    __ubuf__ int32_t *srcIndex = (__ubuf__ int32_t *)srcIndexLocal.GetPhyAddr();
-    __ubuf__ T *dst = (__ubuf__ T *)dstValueLocal.GetPhyAddr();
-    __ubuf__ int32_t *dstIndex = (__ubuf__ int32_t *)dstIndexLocal.GetPhyAddr();
+    __ubuf__ T* src = (__ubuf__ T*)srcLocal.GetPhyAddr();
+    __ubuf__ int32_t* srcIndex = (__ubuf__ int32_t*)srcIndexLocal.GetPhyAddr();
+    __ubuf__ T* dst = (__ubuf__ T*)dstValueLocal.GetPhyAddr();
+    __ubuf__ int32_t* dstIndex = (__ubuf__ int32_t*)dstIndexLocal.GetPhyAddr();
 
     SaveDataUnAlignVF<T>(dst, dstIndex, src, srcIndex, topKInfo, k);
 }
 
-template <typename T, bool isInitIndex = false, bool isReuseSrc = false, const TopKConfig &config = defaultTopKConfig>
-__aicore__ inline void TopKRaidxSelect(const LocalTensor<T> &dstValueLocal, const LocalTensor<int32_t> &dstIndexLocal,
-    const LocalTensor<T> &srcLocal, const LocalTensor<int32_t> &srcIndexLocal, const LocalTensor<T> &tempBuffer, 
-    const int32_t k, const TopkTiling &tilling, const TopKInfo &topKInfo, const bool isLargest)
+template <typename T, bool isInitIndex = false, bool isReuseSrc = false, const TopKConfig& config = defaultTopKConfig>
+__aicore__ inline void TopKRaidxSelect(
+    const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& srcLocal,
+    const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<T>& tempBuffer, const int32_t k,
+    const TopkTiling& tilling, const TopKInfo& topKInfo, const bool isLargest)
 {
     using ConvType = typename AscendC::Internal::ExtractTypeBySize<sizeof(T)>::T;
 
     constexpr bool isOrderFromTemplate = config.order != TopKOrder::UNSET;
     constexpr bool isLargestInTemplate = config.order == TopKOrder::LARGEST;
 
-    __ubuf__ ConvType *src = (__ubuf__ ConvType *)srcLocal.GetPhyAddr();
-    __ubuf__ int32_t *srcIndex = (__ubuf__ int32_t *)srcIndexLocal.GetPhyAddr();
-    __ubuf__ ConvType *dst = (__ubuf__ ConvType *)dstValueLocal.GetPhyAddr();
-    __ubuf__ int32_t *dstIndex = (__ubuf__ int32_t *)dstIndexLocal.GetPhyAddr();
-    __ubuf__ uint8_t *tmp = (__ubuf__ uint8_t *)tempBuffer.GetPhyAddr();
+    __ubuf__ ConvType* src = (__ubuf__ ConvType*)srcLocal.GetPhyAddr();
+    __ubuf__ int32_t* srcIndex = (__ubuf__ int32_t*)srcIndexLocal.GetPhyAddr();
+    __ubuf__ ConvType* dst = (__ubuf__ ConvType*)dstValueLocal.GetPhyAddr();
+    __ubuf__ int32_t* dstIndex = (__ubuf__ int32_t*)dstIndexLocal.GetPhyAddr();
+    __ubuf__ uint8_t* tmp = (__ubuf__ uint8_t*)tempBuffer.GetPhyAddr();
 
     // temp data for storing values which are greater and equal than the topk value, same size with src
-    __ubuf__ ConvType *tmpSrcData;
+    __ubuf__ ConvType* tmpSrcData;
     // temp data for storing indexes related tmpSrcData, same size with srcIndex
-    __ubuf__ int32_t *tmpSrcIndex;
+    __ubuf__ int32_t* tmpSrcIndex;
     // temp data for storing accumulate data, 512B
-    __ubuf__ uint16_t *tmpHistData;
+    __ubuf__ uint16_t* tmpHistData;
     // temp data for storing work src values
-    __ubuf__ ConvType *realWorkData = src;
+    __ubuf__ ConvType* realWorkData = src;
     // temp data for sort
-    __ubuf__ ConvType *sortTmpBuffer;
+    __ubuf__ ConvType* sortTmpBuffer;
 
     uint32_t count = topKInfo.inner;
     uint32_t realCount = topKInfo.n;
 
     if constexpr (isOrderFromTemplate) {
-        InitializeTempBuffer<T, isReuseSrc, isLargestInTemplate>(tempBuffer, count, (__ubuf__ T*&)tmpSrcData, 
-            tmpSrcIndex, tmpHistData, (__ubuf__ T*&)realWorkData, (__ubuf__ T*&)sortTmpBuffer);
+        InitializeTempBuffer<T, isReuseSrc, isLargestInTemplate>(
+            tempBuffer, count, (__ubuf__ T*&)tmpSrcData, tmpSrcIndex, tmpHistData, (__ubuf__ T*&)realWorkData,
+            (__ubuf__ T*&)sortTmpBuffer);
 
         if constexpr (NeedPreProcess<T, isLargestInTemplate>()) {
             Internal::TwiddleInData<T, ConvType, !isLargestInTemplate>(src, realWorkData, count);
         }
     } else {
-        InitializeTempBuffer<T, isReuseSrc>(tempBuffer, isLargest, count, (__ubuf__ T*&)tmpSrcData, tmpSrcIndex, 
-            tmpHistData, (__ubuf__ T*&)realWorkData, (__ubuf__ T*&)sortTmpBuffer);
+        InitializeTempBuffer<T, isReuseSrc>(
+            tempBuffer, isLargest, count, (__ubuf__ T*&)tmpSrcData, tmpSrcIndex, tmpHistData,
+            (__ubuf__ T*&)realWorkData, (__ubuf__ T*&)sortTmpBuffer);
 
         if (NeedPreProcess<T>(isLargest)) {
             if (isLargest) {
@@ -1189,7 +1211,7 @@ __aicore__ inline void TopKRaidxSelect(const LocalTensor<T> &dstValueLocal, cons
 
         SetFlag<HardEvent::V_S>(eventVS);
         WaitFlag<HardEvent::V_S>(eventVS);
-        
+
         int32_t expValue = tmpHistData[255] - remainK;
         int16_t left = 0;
         int16_t right = 255;
@@ -1208,7 +1230,7 @@ __aicore__ inline void TopKRaidxSelect(const LocalTensor<T> &dstValueLocal, cons
             }
         }
         if (!found) {
-            if (right >= 0){
+            if (right >= 0) {
                 kthValue |= (static_cast<ConvType>(right + 1) << ((i - 1) * 8));
                 remainK -= (tmpHistData[255] - tmpHistData[right + 1]);
             } else {
@@ -1234,14 +1256,15 @@ __aicore__ inline void TopKRaidxSelect(const LocalTensor<T> &dstValueLocal, cons
 
         LocalTensor<ConvType> dstValueTensor = dstValueLocal.template ReinterpretCast<ConvType>();
         LocalTensor<int32_t> dstIndexTensor = dstIndexLocal.template ReinterpretCast<int32_t>();
-        Sort<ConvType, int32_t, false, sortConfig>(dstValueTensor, dstIndexTensor, sortDataSrc, sortIndexSrc, sortBufferTensor, static_cast<uint32_t>(k));
+        Sort<ConvType, int32_t, false, sortConfig>(
+            dstValueTensor, dstIndexTensor, sortDataSrc, sortIndexSrc, sortBufferTensor, static_cast<uint32_t>(k));
     } else {
         SaveData<T>((__ubuf__ T*)dst, dstIndex, (__ubuf__ T*)tmpSrcData, tmpSrcIndex, static_cast<uint32_t>(k));
     }
 
     if constexpr (isOrderFromTemplate) {
         if constexpr (NeedPreProcess<T, isLargestInTemplate>()) {
-            Internal::TwiddleOutData<T, ConvType, !isLargestInTemplate>(dst, dst, k);   
+            Internal::TwiddleOutData<T, ConvType, !isLargestInTemplate>(dst, dst, k);
         }
     } else {
         if (NeedPreProcess<T>(isLargest)) {
@@ -1254,14 +1277,16 @@ __aicore__ inline void TopKRaidxSelect(const LocalTensor<T> &dstValueLocal, cons
     }
 }
 
-template <typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false, const TopKConfig &config = defaultTopKConfig>
-__aicore__ inline void TopKNormal(const LocalTensor<T> &dstValueLocal, const LocalTensor<int32_t> &dstIndexLocal,
-    const LocalTensor<T> &srcLocal, const LocalTensor<int32_t> &srcIndexLocal, const LocalTensor<bool> &finishLocal,
-    const LocalTensor<T> &tempBuffer, const int32_t k, const TopkTiling &tilling, const TopKInfo &topKInfo,
-    const bool isLargest = true)
+template <
+    typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false,
+    const TopKConfig& config = defaultTopKConfig>
+__aicore__ inline void TopKNormal(
+    const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& srcLocal,
+    const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal, const LocalTensor<T>& tempBuffer,
+    const int32_t k, const TopkTiling& tilling, const TopKInfo& topKInfo, const bool isLargest = true)
 {
     // if isInitIndex is false, The index of the input data needs to be generated here.
-    LocalTensor<int32_t> realIndexSrc(srcIndexLocal); 
+    LocalTensor<int32_t> realIndexSrc(srcIndexLocal);
     uint32_t initIndexTempBufferSize = 0;
     if constexpr (!isInitIndex) {
         LocalTensor<int32_t> indexSrcTmp = tempBuffer.template ReinterpretCast<int32_t>();
@@ -1273,19 +1298,22 @@ __aicore__ inline void TopKNormal(const LocalTensor<T> &dstValueLocal, const Loc
     int32_t kPad = GetKPad<T>(k);
     int32_t indexKPad = GetKPad<int32_t>(k);
     for (int32_t i = 0; i < topKInfo.outter; ++i) {
-        TopKRaidxSelect<T, isInitIndex, isReuseSrc, config>(dstValueLocal[i * kPad], dstIndexLocal[i * indexKPad], 
-            srcLocal[i * topKInfo.inner], realIndexSrc, tempBuffer[initIndexTempBufferSize], k, tilling, topKInfo, isLargest); 
+        TopKRaidxSelect<T, isInitIndex, isReuseSrc, config>(
+            dstValueLocal[i * kPad], dstIndexLocal[i * indexKPad], srcLocal[i * topKInfo.inner], realIndexSrc,
+            tempBuffer[initIndexTempBufferSize], k, tilling, topKInfo, isLargest);
     }
 }
 
-template <typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false, const TopKConfig &config = defaultTopKConfig>
-__aicore__ inline void TopKNSmall(const LocalTensor<T> &dstValueLocal, const LocalTensor<int32_t> &dstIndexLocal,
-    const LocalTensor<T> &srcLocal, const LocalTensor<int32_t> &srcIndexLocal, const LocalTensor<bool> &finishLocal,
-    const LocalTensor<T> &tempBuffer, const int32_t k, const TopkTiling &tilling, const TopKInfo &topKInfo,
-    const bool isLargest = true)
+template <
+    typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false,
+    const TopKConfig& config = defaultTopKConfig>
+__aicore__ inline void TopKNSmall(
+    const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& srcLocal,
+    const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal, const LocalTensor<T>& tempBuffer,
+    const int32_t k, const TopkTiling& tilling, const TopKInfo& topKInfo, const bool isLargest = true)
 {
     // if isInitIndex is false, The index of the input data needs to be generated here.
-    LocalTensor<int32_t> realIndexSrc(srcIndexLocal); 
+    LocalTensor<int32_t> realIndexSrc(srcIndexLocal);
     LocalTensor<T> tmpDstValueLocal(dstValueLocal);
     LocalTensor<int32_t> tmpDstIndexLocal(dstIndexLocal);
 
@@ -1304,23 +1332,23 @@ __aicore__ inline void TopKNSmall(const LocalTensor<T> &dstValueLocal, const Loc
     int32_t indexKPad = GetKPad<int32_t>(k);
     event_t eventVS = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_S));
     for (int32_t i = 0; i < topKInfo.outter; ++i) {
-        TopKRaidxSelect<T, isInitIndex, isReuseSrc, config>(tmpDstValueLocal[i * kPad], tmpDstIndexLocal[i * indexKPad],
-            srcLocal[i * topKInfo.inner], realIndexSrc[i * topKInfo.inner], tempBuffer[initIndexTempBufferSize], 
-            k, tilling, topKInfo, isLargest);
+        TopKRaidxSelect<T, isInitIndex, isReuseSrc, config>(
+            tmpDstValueLocal[i * kPad], tmpDstIndexLocal[i * indexKPad], srcLocal[i * topKInfo.inner],
+            realIndexSrc[i * topKInfo.inner], tempBuffer[initIndexTempBufferSize], k, tilling, topKInfo, isLargest);
     }
     SetFlag<HardEvent::V_S>(eventVS);
     WaitFlag<HardEvent::V_S>(eventVS);
     SaveDataUnAlign<T>(dstValueLocal, dstIndexLocal, tmpDstValueLocal, tmpDstIndexLocal, topKInfo, k);
 }
 
-}  // namespace RadixSelectTopK
-}  // namespace Reg
+} // namespace RadixSelectTopK
+} // namespace Reg
 
 template <typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false>
-__aicore__ inline void TopKNormal(const LocalTensor<T> &dstValueLocal, const LocalTensor<int32_t> &dstIndexLocal,
-    const LocalTensor<T> &srcLocal, const LocalTensor<int32_t> &srcIndexLocal, const LocalTensor<bool> &finishLocal,
-    const LocalTensor<T> &tempBuffer, const int32_t k, const TopkTiling &tilling, const TopKInfo &topKInfo,
-    const bool isLargest = true)
+__aicore__ inline void TopKNormal(
+    const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& srcLocal,
+    const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal, const LocalTensor<T>& tempBuffer,
+    const int32_t k, const TopkTiling& tilling, const TopKInfo& topKInfo, const bool isLargest = true)
 {
     // if isInitIndex is false, The index of the input data needs to be generated here.
     if constexpr (!isInitIndex) {
@@ -1331,8 +1359,9 @@ __aicore__ inline void TopKNormal(const LocalTensor<T> &dstValueLocal, const Loc
         Muls(srcLocal, srcLocal, T(-1), topKInfo.outter * topKInfo.inner);
     }
 
-    TopKCompute<T, isInitIndex, isHasfinish>(dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal,
-        finishLocal, tempBuffer, k, tilling, topKInfo, isLargest);
+    TopKCompute<T, isInitIndex, isHasfinish>(
+        dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, tempBuffer, k, tilling, topKInfo,
+        isLargest);
 
     if (!isLargest) {
         Muls(dstValueLocal, dstValueLocal, T(-1), tilling.maskOffset);
@@ -1341,15 +1370,14 @@ __aicore__ inline void TopKNormal(const LocalTensor<T> &dstValueLocal, const Loc
 }
 
 template <typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false>
-__aicore__ inline void TopKNSmall(const LocalTensor<T> &dstValueLocal, const LocalTensor<int32_t> &dstIndexLocal,
-    const LocalTensor<T> &srcLocal, const LocalTensor<int32_t> &srcIndexLocal, const LocalTensor<bool> &finishLocal,
-    const LocalTensor<T> &tempBuffer, const int32_t k, const TopkTiling &tilling, const TopKInfo &topKInfo,
-    const bool isLargest = true)
+__aicore__ inline void TopKNSmall(
+    const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& srcLocal,
+    const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal, const LocalTensor<T>& tempBuffer,
+    const int32_t k, const TopkTiling& tilling, const TopKInfo& topKInfo, const bool isLargest = true)
 {
     // if isInitIndex is false, The index of the input data needs to be generated here.
     if constexpr (!isInitIndex) {
-        LocalTensor<int32_t> indexLocalTmp = tempBuffer[tilling.innerDataSize].template
-                                             ReinterpretCast<int32_t>();
+        LocalTensor<int32_t> indexLocalTmp = tempBuffer[tilling.innerDataSize].template ReinterpretCast<int32_t>();
         CreateVecIndex(indexLocalTmp, static_cast<int32_t>(0), topKInfo.inner);
         if (topKInfo.outter > 1) {
             Copy(indexLocalTmp[topKInfo.inner], indexLocalTmp, topKInfo.inner, topKInfo.outter - 1, {1, 1, 4, 0});
@@ -1360,17 +1388,18 @@ __aicore__ inline void TopKNSmall(const LocalTensor<T> &dstValueLocal, const Loc
         Muls(srcLocal, srcLocal, T(-1), topKInfo.outter * topKInfo.inner);
     }
 
-    TopKNSmallCompute<T, isInitIndex, isHasfinish>(dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal,
-        finishLocal, tempBuffer, k, tilling, topKInfo, isLargest);
+    TopKNSmallCompute<T, isInitIndex, isHasfinish>(
+        dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, tempBuffer, k, tilling, topKInfo,
+        isLargest);
 
     if (!isLargest) {
         Muls(dstValueLocal, dstValueLocal, T(-1), tilling.maskOffset);
         Muls(srcLocal, srcLocal, T(-1), topKInfo.outter * topKInfo.inner);
     }
 }
-}  // namespace AscendC
+} // namespace AscendC
 
-#endif  // IMPL_SORT_TOPK_TOPK_C310_IMPL_H
+#endif // IMPL_SORT_TOPK_TOPK_C310_IMPL_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SORT_TOPK_TOPK_C310_IMPL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file batchnorm_v200_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/normalization/batchnorm/batchnorm_v200_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/normalization/batchnorm/batchnorm_v200_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_BATCHNORM_BATCHNORM_V200_IMPL_H__
 #endif
@@ -33,16 +34,18 @@ constexpr uint32_t NCHW_ADDR_LIST_SIZE = 16;
 constexpr uint32_t NCHW_LIST_SIZE_DIV_TWO = 8;
 constexpr uint32_t BASIC_BLOCK_LEN_V200 = 64;
 
-__aicore__ inline void BrcFirstBlockByAdds(const LocalTensor<float>& dst, const uint32_t repeat,
-    const uint32_t firstOffset, UnaryRepeatParams& addsUnaryParams, const BatchNormParams<float>& params)
+__aicore__ inline void BrcFirstBlockByAdds(
+    const LocalTensor<float>& dst, const uint32_t repeat, const uint32_t firstOffset,
+    UnaryRepeatParams& addsUnaryParams, const BatchNormParams<float>& params)
 {
     for (uint32_t m = 0; m < repeat; m++) {
         for (uint32_t i = 0; i < params.oriBloop; i++) {
-            Adds<float, false>(dst[firstOffset + m * firstOffset], dst, 0, MASK_PLACEHOLDER, MAX_REPEAT_TIMES,
-                addsUnaryParams);
+            Adds<float, false>(
+                dst[firstOffset + m * firstOffset], dst, 0, MASK_PLACEHOLDER, MAX_REPEAT_TIMES, addsUnaryParams);
         }
         if (params.oriBTail) {
-            Adds<float, false>(dst[firstOffset + m * firstOffset], dst, 0, MASK_PLACEHOLDER, (uint8_t)params.oriBTail,
+            Adds<float, false>(
+                dst[firstOffset + m * firstOffset], dst, 0, MASK_PLACEHOLDER, (uint8_t)params.oriBTail,
                 addsUnaryParams);
         }
     }
@@ -51,11 +54,13 @@ __aicore__ inline void BrcFirstBlockByAdds(const LocalTensor<float>& dst, const 
     addsUnaryParams.srcBlkStride = DEFAULT_BLK_STRIDE;
     for (uint32_t m = 0; m < (params.basicLoop - 1); m++) {
         for (uint32_t i = 0; i < params.oriBloop; i++) {
-            Adds<float, false>(dst[BASIC_BLOCK_LEN_V200 + m * BASIC_BLOCK_LEN_V200 + i * params.oriBTmpLoopOffset],
+            Adds<float, false>(
+                dst[BASIC_BLOCK_LEN_V200 + m * BASIC_BLOCK_LEN_V200 + i * params.oriBTmpLoopOffset],
                 dst[i * params.oriBTmpLoopOffset], 0, MASK_PLACEHOLDER, MAX_REPEAT_TIMES, addsUnaryParams);
         }
         if (params.oriBTail) {
-            Adds<float, false>(dst[BASIC_BLOCK_LEN_V200 + m * BASIC_BLOCK_LEN_V200 + params.oriBTmpTailOffset],
+            Adds<float, false>(
+                dst[BASIC_BLOCK_LEN_V200 + m * BASIC_BLOCK_LEN_V200 + params.oriBTmpTailOffset],
                 dst[params.oriBTmpTailOffset], 0, MASK_PLACEHOLDER, (uint8_t)params.oriBTail, addsUnaryParams);
         }
     }
@@ -63,8 +68,9 @@ __aicore__ inline void BrcFirstBlockByAdds(const LocalTensor<float>& dst, const 
 }
 
 template <bool isBasicBlock = false>
-__aicore__ inline void BrcFirstDimByTransData(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const BatchNormTiling& tiling, const BatchNormParams<float>& batchnormParams)
+__aicore__ inline void BrcFirstDimByTransData(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const BatchNormTiling& tiling,
+    const BatchNormParams<float>& batchnormParams)
 {
     uint16_t dstRepStride = tiling.shCurLength * FLOAT_BLOCK_NUM_V200 / FLOAT_BLOCK_NUM_V200;
     uint64_t dstLocalList[NCHW_CONV_ADDR_LIST_SIZE];

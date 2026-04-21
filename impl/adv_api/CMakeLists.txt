@@ -91,6 +91,7 @@ if (BUILD_OPEN_PROJECT AND ENABLE_BUILD_DEVICE)
     -DPRODUCT_SIDE=device
     <SOURCE_DIR>
     BUILD_ALWAYS 1)
+  add_dependencies(device_tiling gen_kernel_tiling)
 endif()
 
 

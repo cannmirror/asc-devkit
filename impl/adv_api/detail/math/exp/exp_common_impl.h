@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file exp_common_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/exp/exp_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/exp.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/exp/exp_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/exp.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_EXP_EXP_COMMON_IMPL_H__
 #endif
@@ -31,15 +32,15 @@
 
 namespace AscendC {
 namespace ExpAPI {
-constexpr uint8_t HALF_REPEAT_STRIDE = 4;       // DEFAULT_REPEAT_STRIDE / sizeof(half)
-constexpr uint32_t EXP_TWO = 2;                 // when FP32 + reusesrc, only need 2 tmpBuffer
-constexpr uint32_t EXP_THREE = 3;               // when FP32 + not reusesrc, need 3 tmpBuffer
-constexpr uint32_t EXP_FOUR = 4;                // when FP16, need 4 tmpBuffer
+constexpr uint8_t HALF_REPEAT_STRIDE = 4; // DEFAULT_REPEAT_STRIDE / sizeof(half)
+constexpr uint32_t EXP_TWO = 2;           // when FP32 + reusesrc, only need 2 tmpBuffer
+constexpr uint32_t EXP_THREE = 3;         // when FP32 + not reusesrc, need 3 tmpBuffer
+constexpr uint32_t EXP_FOUR = 4;          // when FP16, need 4 tmpBuffer
 
 // Assign tmpBuffer for exp and calculate relevant parameter
 template <typename T, bool isReuseSource = false, uint8_t expandLevel = 10>
-__aicore__ inline void UpdateExpParams(const LocalTensor<T>& src, const uint32_t calCount,
-    const LocalTensor<float>& stackBuffer, ExpParams<float>& params)
+__aicore__ inline void UpdateExpParams(
+    const LocalTensor<T>& src, const uint32_t calCount, const LocalTensor<float>& stackBuffer, ExpParams<float>& params)
 {
     uint32_t alignNum = ONE_BLK_SIZE / sizeof(T);
     // FP16:                   FloorX + FloorXPow + Res + IntPart
@@ -51,31 +52,32 @@ __aicore__ inline void UpdateExpParams(const LocalTensor<T>& src, const uint32_t
         numberOfTmpBuf = isReuseSource ? EXP_TWO : EXP_THREE;
     }
 
-    uint32_t inputSize = calCount;                           // calCount decides how many number do Exp calculation
-    uint32_t stackBufferSize = stackBuffer.GetSize();        // how many FP32 can store
-    uint32_t oneTmpSize = stackBufferSize / numberOfTmpBuf;  // FP32 num for each tmpTensor after alignment
+    uint32_t inputSize = calCount;                          // calCount decides how many number do Exp calculation
+    uint32_t stackBufferSize = stackBuffer.GetSize();       // how many FP32 can store
+    uint32_t oneTmpSize = stackBufferSize / numberOfTmpBuf; // FP32 num for each tmpTensor after alignment
     oneTmpSize = oneTmpSize / alignNum * alignNum;
-    uint32_t secondOffset = (isFloat && isReuseSource)? 0 : oneTmpSize;   // FP32 + reusesrc do not need FloorX
-    uint32_t fourthOffset = isFloat ? 0 : oneTmpSize;                     // FP32 do not need tmpTensorRes
+    uint32_t secondOffset = (isFloat && isReuseSource) ? 0 : oneTmpSize; // FP32 + reusesrc do not need FloorX
+    uint32_t fourthOffset = isFloat ? 0 : oneTmpSize;                    // FP32 do not need tmpTensorRes
 
     CheckTmpBufferSize(oneTmpSize, 0, stackBufferSize);
 
     params.inputSize = inputSize;
     params.oneTmpSize = oneTmpSize;
-    params.firstTmpStartPos = 0;                                         // tempTensorFloorX
-    params.secondTmpStartPos = secondOffset;                             // tempTensorFloorXPow
-    params.thirdTmpStartPos = params.secondTmpStartPos + oneTmpSize;     // tempTensorRes    mandatory for FP16
-    params.fourthTmpStartPos = params.thirdTmpStartPos + fourthOffset;   // tmpTensorIntPart
-    params.loopNum = inputSize / oneTmpSize;                             // how many times needed for main block
-    params.tailSize = inputSize % oneTmpSize;                            // tail block size
-    params.tailPos = inputSize - params.tailSize;                        // tail block start position
-    params.curDataLength = oneTmpSize;                                   // current data num for calculation
-    params.expandLevel = expandLevel;                                    // taylor param expand level
+    params.firstTmpStartPos = 0;                                       // tempTensorFloorX
+    params.secondTmpStartPos = secondOffset;                           // tempTensorFloorXPow
+    params.thirdTmpStartPos = params.secondTmpStartPos + oneTmpSize;   // tempTensorRes    mandatory for FP16
+    params.fourthTmpStartPos = params.thirdTmpStartPos + fourthOffset; // tmpTensorIntPart
+    params.loopNum = inputSize / oneTmpSize;                           // how many times needed for main block
+    params.tailSize = inputSize % oneTmpSize;                          // tail block size
+    params.tailPos = inputSize - params.tailSize;                      // tail block start position
+    params.curDataLength = oneTmpSize;                                 // current data num for calculation
+    params.expandLevel = expandLevel;                                  // taylor param expand level
 }
 
 template <bool isReuseSource = false, uint8_t expandLevel = 10>
-__aicore__ inline void GetExpTensorInfo(const LocalTensor<half>& src, const LocalTensor<half>& dst,
-    const uint32_t calCount, const LocalTensor<float>& stackBuffer, ExpParams<float>& params)
+__aicore__ inline void GetExpTensorInfo(
+    const LocalTensor<half>& src, const LocalTensor<half>& dst, const uint32_t calCount,
+    const LocalTensor<float>& stackBuffer, ExpParams<float>& params)
 {
     UpdateExpParams<half, isReuseSource, expandLevel>(src, calCount, stackBuffer, params);
     params.tempTensorFloorX = stackBuffer[params.firstTmpStartPos];
@@ -85,11 +87,12 @@ __aicore__ inline void GetExpTensorInfo(const LocalTensor<half>& src, const Loca
 }
 
 template <bool isReuseSource = false, uint8_t expandLevel = 10>
-__aicore__ inline void GetExpTensorInfo(const LocalTensor<float>& src, const LocalTensor<float>& dst,
-    const uint32_t calCount, const LocalTensor<float>& stackBuffer, ExpParams<float>& params)
+__aicore__ inline void GetExpTensorInfo(
+    const LocalTensor<float>& src, const LocalTensor<float>& dst, const uint32_t calCount,
+    const LocalTensor<float>& stackBuffer, ExpParams<float>& params)
 {
     UpdateExpParams<float, isReuseSource, expandLevel>(src, calCount, stackBuffer, params);
-    if constexpr(isReuseSource) {
+    if constexpr (isReuseSource) {
         params.tempTensorFloorX = src;
     } else {
         params.tempTensorFloorX = stackBuffer[params.firstTmpStartPos];
@@ -109,7 +112,7 @@ __aicore__ inline void GetExpInputInTmp(const LocalTensor<T>& src, const ExpPara
     if constexpr (IsSameType<T, half>::value) {
         unaryParams.srcRepStride = HALF_REPEAT_STRIDE;
         Cast<float, half, false>(params.tempTensorFloorX, src, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1, unaryParams);
-    } else {  // FP32: copy
+    } else { // FP32: copy
         Adds<float, false>(params.tempTensorFloorX, src, 0.0, MASK_PLACEHOLDER, 1, unaryParams);
     }
     PipeBarrier<PIPE_V>();
@@ -127,20 +130,22 @@ __aicore__ inline void GetExpFloorInput(const ExpParams<float>& params, uint32_t
 
     // tmpTensorIntPart:   floor(x)       ->   IntX
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
-    Cast<float, float, false>(params.tempTensorIntPart, params.tempTensorFloorX, RoundMode::CAST_FLOOR,
-        MASK_PLACEHOLDER, 1, unaryParams);
+    Cast<float, float, false>(
+        params.tempTensorIntPart, params.tempTensorFloorX, RoundMode::CAST_FLOOR, MASK_PLACEHOLDER, 1, unaryParams);
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
-    Cast<int32_t, float, false>(params.tempTensorIntPart.ReinterpretCast<int32_t>(), params.tempTensorFloorX,
-        RoundMode::CAST_FLOOR, MASK_PLACEHOLDER, 1, { 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+    Cast<int32_t, float, false>(
+        params.tempTensorIntPart.ReinterpretCast<int32_t>(), params.tempTensorFloorX, RoundMode::CAST_FLOOR,
+        MASK_PLACEHOLDER, 1, {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
-    Cast<float, int32_t, false>(params.tempTensorIntPart, params.tempTensorIntPart.ReinterpretCast<int32_t>(),
-        RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1, { 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+    Cast<float, int32_t, false>(
+        params.tempTensorIntPart, params.tempTensorIntPart.ReinterpretCast<int32_t>(), RoundMode::CAST_NONE,
+        MASK_PLACEHOLDER, 1, {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
 #endif
     PipeBarrier<PIPE_V>();
 
     // tmpTensorFloorX:   x - floor(x)    ->   DecimalX
-    Sub<float, false>(params.tempTensorFloorX, params.tempTensorFloorX, params.tempTensorIntPart, MASK_PLACEHOLDER, 1,
-        binaryParams);
+    Sub<float, false>(
+        params.tempTensorFloorX, params.tempTensorFloorX, params.tempTensorIntPart, MASK_PLACEHOLDER, 1, binaryParams);
     PipeBarrier<PIPE_V>();
 
     // tmpTensorIntPart:  exp(floor(x))   ->   ExpIntX
@@ -172,31 +177,35 @@ __aicore__ inline void ExpHighPrecisionExec(const ExpParams<float>& params, uint
     // (x^2 / 2!) + (x^3 / 3!) + .... + (x^expandLevel / expandLevel!)
     for (int32_t i = 2; i < params.expandLevel + 1; i++) {
         // FloorXPow: (x ^ n) / n! * x  ->   (x ^ (n+1)) / n!
-        Mul<float, false>(params.tempTensorFloorXPow, params.tempTensorFloorX, params.tempTensorFloorXPow,
-            MASK_PLACEHOLDER, 1, binaryParams);
+        Mul<float, false>(
+            params.tempTensorFloorXPow, params.tempTensorFloorX, params.tempTensorFloorXPow, MASK_PLACEHOLDER, 1,
+            binaryParams);
         PipeBarrier<PIPE_V>();
 
         // FloorXPow: (x ^ (n+1)) / n! * [1 / (n+1)]  -> (x ^ (n+1)) / (n+1)!
 
-        Muls<float, false>(params.tempTensorFloorXPow, params.tempTensorFloorXPow, 
-            static_cast<float>(1.0) / static_cast<float>(i), MASK_PLACEHOLDER, 1, unaryParams);
+        Muls<float, false>(
+            params.tempTensorFloorXPow, params.tempTensorFloorXPow, static_cast<float>(1.0) / static_cast<float>(i),
+            MASK_PLACEHOLDER, 1, unaryParams);
         PipeBarrier<PIPE_V>();
 
         // Res = Res + FloorXPow
-        Add<float, false>(params.tempTensorRes[offset], params.tempTensorRes[offset], params.tempTensorFloorXPow,
-            MASK_PLACEHOLDER, 1, binaryParams);
+        Add<float, false>(
+            params.tempTensorRes[offset], params.tempTensorRes[offset], params.tempTensorFloorXPow, MASK_PLACEHOLDER, 1,
+            binaryParams);
         PipeBarrier<PIPE_V>();
     }
 
     // Res = exp(Int(x)) * exp(Decimal(x))
-    Mul<float, false>(params.tempTensorRes[offset], params.tempTensorRes[offset], params.tempTensorIntPart,
-        MASK_PLACEHOLDER, 1, binaryParams);
+    Mul<float, false>(
+        params.tempTensorRes[offset], params.tempTensorRes[offset], params.tempTensorIntPart, MASK_PLACEHOLDER, 1,
+        binaryParams);
     PipeBarrier<PIPE_V>();
 }
 
 // cast FP32 tempTensorRes to FP16
-__aicore__ inline void GetExpCastedResult(const LocalTensor<half>& dst, const ExpParams<float>& params,
-    uint32_t maskLength)
+__aicore__ inline void GetExpCastedResult(
+    const LocalTensor<half>& dst, const ExpParams<float>& params, uint32_t maskLength)
 {
     UnaryRepeatParams unaryParams;
     unaryParams.dstRepStride = HALF_REPEAT_STRIDE;
@@ -206,14 +215,15 @@ __aicore__ inline void GetExpCastedResult(const LocalTensor<half>& dst, const Ex
 }
 
 template <typename T>
-__aicore__ inline void ExpHighPrecisionND(const LocalTensor<T>& src, const LocalTensor<T>& dst,
-    const ExpParams<float>& params, uint32_t offset, uint32_t maskLength)
+__aicore__ inline void ExpHighPrecisionND(
+    const LocalTensor<T>& src, const LocalTensor<T>& dst, const ExpParams<float>& params, uint32_t offset,
+    uint32_t maskLength)
 {
     GetExpInputInTmp(src[offset], params, maskLength);
     GetExpFloorInput(params, maskLength);
 
     // FP16 needs to cast FP32 output.
-    if constexpr(IsSameType<T, half>::value) {
+    if constexpr (IsSameType<T, half>::value) {
         ExpHighPrecisionExec(params, maskLength, 0);
         GetExpCastedResult(dst[offset], params, maskLength);
     } else {
@@ -239,10 +249,12 @@ __aicore__ inline void ExpND(const LocalTensor<T>& src, const LocalTensor<T>& ds
 }
 
 template <typename T, uint8_t taylorExpandLevel, bool isReuseSource>
-__aicore__ inline void ExpImpl(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void ExpImpl(
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t calCount)
 {
-    CHECK_FUNC_HIGHLEVEL_API(Exp, (T, taylorExpandLevel, isReuseSource), (dstLocal, srcLocal, sharedTmpBuffer, calCount));
+    CHECK_FUNC_HIGHLEVEL_API(
+        Exp, (T, taylorExpandLevel, isReuseSource), (dstLocal, srcLocal, sharedTmpBuffer, calCount));
 
     if (taylorExpandLevel == 0) {
         Exp<T>(dstLocal, srcLocal, calCount);
@@ -272,8 +284,8 @@ __aicore__ inline void ExpImpl(const LocalTensor<T>& dstLocal, const LocalTensor
 }
 
 } // namespace ExpAPI
-}  // namespace AscendC
-#endif  // IMPL_MATH_EXP_EXP_COMMON_IMPL_H
+} // namespace AscendC
+#endif // IMPL_MATH_EXP_EXP_COMMON_IMPL_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_EXP_EXP_COMMON_IMPL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

@@ -7,12 +7,13 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
+#define ASCENDC_DUMP 1
 #include <gtest/gtest.h>
 #include <mockcpp/mockcpp.hpp>
+#include <vector>
 #include "kernel_operator.h"
 
 using namespace AscendC;
-#define ASCENDC_DUMP
 
 enum class PrintfCaseEnum : uint32_t {
     VALUE = 9
@@ -36,7 +37,7 @@ void DataPrintfCase(__gm__ uint8_t* srcGm, __gm__ uint8_t* workGm, __gm__ uint32
     GlobalTensor<uint8_t> srcGlobal;
     srcGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ uint8_t*>(srcGm), dataSize);
 
-    InitDump(workGm, dumpSize);
+    InitDump(false, workGm, dumpSize);
     PrintTimeStamp(0);
 
     const int32_t signedValue = -3;
@@ -53,16 +54,61 @@ void DataPrintfCase(__gm__ uint8_t* srcGm, __gm__ uint8_t* workGm, __gm__ uint32
 
 TEST_F(TestPrintfSuite, PrintfCase)
 {
-    int32_t tmp = g_coreType;
-    g_coreType = 2;
+    int32_t coreTypeTmp = g_coreType;
+    auto blockNumTmp = block_num;
+    auto blockIdxTmp = block_idx;
+    auto subBlockIdxTmp = sub_block_idx;
+    auto taskRationTmp = g_taskRation;
+    SetGCoreType(2);
+    block_num = 1;
+    block_idx = 0;
+    sub_block_idx = 0;
+    g_taskRation = 1;
 
     constexpr uint32_t dataSize = 64;
-    constexpr uint64_t dumpSize = 96 * 3;
+    constexpr uint64_t dumpSize = DUMP_UINTSIZE;
     uint8_t srcGm[dataSize] = {0};
-    uint8_t workGm[dumpSize * sizeof(uint32_t)] = {0};
+    std::vector<uint8_t> workGm(dumpSize, 0);
     MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStubForPrintf));
 
-    DataPrintfCase(srcGm, workGm, dataSize, dumpSize);
+    DataPrintfCase(srcGm, workGm.data(), dataSize, dumpSize);
 
-    g_coreType = tmp;
+    auto* blockInfo = reinterpret_cast<uint32_t*>(workGm.data());
+    EXPECT_EQ(blockInfo[BLOCK_INFO_MAGIC_POS], BLOCK_INFO_MAGIC_NUM);
+
+    SetGCoreType(coreTypeTmp);
+    block_num = blockNumTmp;
+    block_idx = blockIdxTmp;
+    sub_block_idx = subBlockIdxTmp;
+    g_taskRation = taskRationTmp;
+}
+
+TEST_F(TestPrintfSuite, DumpBlockIdxAndSysVarCase)
+{
+    int32_t coreTypeTmp = g_coreType;
+    auto blockNumTmp = block_num;
+    auto blockIdxTmp = block_idx;
+    auto subBlockIdxTmp = sub_block_idx;
+    auto taskRationTmp = g_taskRation;
+
+    block_num = 1;
+    SetGCoreType(2);
+    block_idx = 3;
+    sub_block_idx = 1;
+    g_taskRation = 2;
+    EXPECT_EQ(GetBlockIdx(), 7);
+    EXPECT_EQ(GetDumpBlockIdx(), 7);
+
+    SetGCoreType(1);
+    block_idx = 4;
+    sub_block_idx = 0;
+    g_taskRation = 2;
+    EXPECT_EQ(GetBlockIdx(), 4);
+    EXPECT_EQ(GetDumpBlockIdx(), 4 + AIV_CORE_NUM);
+
+    SetGCoreType(coreTypeTmp);
+    block_num = blockNumTmp;
+    block_idx = blockIdxTmp;
+    sub_block_idx = subBlockIdxTmp;
+    g_taskRation = taskRationTmp;
 }

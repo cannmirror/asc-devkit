@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file confusion_transpose_base_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/transpose/confusion_transpose/confusion_transpose_base_0213.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/transpose/transdata.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/transpose/confusion_transpose/confusion_transpose_base_0213.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/transpose/transdata.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TRANSPOSE_CONFUSION_TRANSPOSE_CONFUSION_TRANSPOSE_BASE_0213_H__
 #endif
@@ -28,7 +29,8 @@
 namespace AscendC {
 const uint32_t CUBE_HALF_SIZE = CUBE_MAX_SIZE / 2;
 
-template <typename T> struct ConfusionTranspose0213Params {
+template <typename T>
+struct ConfusionTranspose0213Params {
     __aicore__ ConfusionTranspose0213Params(){};
 
     int32_t i;
@@ -61,8 +63,8 @@ template <typename T> struct ConfusionTranspose0213Params {
 };
 
 template <typename T>
-__aicore__ inline void InitConfusionTranspose0213TransParams(ConfusionTranspose0213Tiling& tiling,
-    ConfusionTranspose0213Params<T>& params, TransposeType transposeTypeIn)
+__aicore__ inline void InitConfusionTranspose0213TransParams(
+    ConfusionTranspose0213Tiling& tiling, ConfusionTranspose0213Params<T>& params, TransposeType transposeTypeIn)
 {
     params.transposeType = transposeTypeIn;
 
@@ -100,17 +102,19 @@ __aicore__ inline void InitConfusionTranspose0213TransParams(ConfusionTranspose0
 }
 
 template <typename T>
-__aicore__ inline void ConfusionTranspose0213MainHalf(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    ConfusionTranspose0213Params<T>& params, ConfusionTranspose0213Tiling& tiling, const LocalTensor<T>& tmp1)
+__aicore__ inline void ConfusionTranspose0213MainHalf(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, ConfusionTranspose0213Params<T>& params,
+    ConfusionTranspose0213Tiling& tiling, const LocalTensor<T>& tmp1)
 {
     // src--> tmp
     for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
         params.mainDstLocalList[n] = (uint64_t)tmp1[(tiling.newPopH * n)].GetPhyAddr();
     }
     for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
-        params.mainSrcLocalList[n] = (uint64_t)srcTensor[(tiling.newPopSize * params.m + params.j * tiling.needSize +
-            params.i * tiling.alignA2MulAlignA3 + BLOCK_CUBE * n + params.k * tiling.batchOffset)]
-            .GetPhyAddr();
+        params.mainSrcLocalList[n] =
+            (uint64_t)srcTensor[(tiling.newPopSize * params.m + params.j * tiling.needSize +
+                                 params.i * tiling.alignA2MulAlignA3 + BLOCK_CUBE * n + params.k * tiling.batchOffset)]
+                .GetPhyAddr();
     }
     PipeBarrier<PIPE_V>();
     TransDataTo5HD<T>(params.mainDstLocalList, params.mainSrcLocalList, params.mainTransDataParams);
@@ -118,17 +122,18 @@ __aicore__ inline void ConfusionTranspose0213MainHalf(const LocalTensor<T>& dstT
     if (params.transposeType == TransposeType::TRANSPOSE_NZ2ND_0213) {
         for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
             params.dstLocalList1[n] =
-                (uint64_t)dstTensor[(tiling.newPopH * params.m * tiling.alignA3MulA1 + params.j * BLOCK_CUBE +
-                params.i * tiling.alignA3 + tiling.alignA3MulA1 * n + params.k * tiling.batchOffset)]
-                .GetPhyAddr();
+                (uint64_t)
+                    dstTensor[(tiling.newPopH * params.m * tiling.alignA3MulA1 + params.j * BLOCK_CUBE +
+                               params.i * tiling.alignA3 + tiling.alignA3MulA1 * n + params.k * tiling.batchOffset)]
+                        .GetPhyAddr();
         }
     } else if (params.transposeType == TransposeType::TRANSPOSE_NZ2NZ_0213) {
         for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
             params.dstLocalList1[n] =
                 (uint64_t)
                     dstTensor[(tiling.newPopH * params.m * tiling.alignA3MulA1 + params.j * tiling.shapeA1BlockCube +
-                params.i * BLOCK_CUBE + tiling.alignA3MulA1 * n + params.k * tiling.batchOffset)]
-                .GetPhyAddr();
+                               params.i * BLOCK_CUBE + tiling.alignA3MulA1 * n + params.k * tiling.batchOffset)]
+                        .GetPhyAddr();
         }
     }
     for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
@@ -139,8 +144,9 @@ __aicore__ inline void ConfusionTranspose0213MainHalf(const LocalTensor<T>& dstT
 }
 
 template <typename T>
-__aicore__ inline void ConfusionTranspose0213MainFloat(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    ConfusionTranspose0213Params<T>& params, ConfusionTranspose0213Tiling& tiling, const LocalTensor<T>& tmp1)
+__aicore__ inline void ConfusionTranspose0213MainFloat(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, ConfusionTranspose0213Params<T>& params,
+    ConfusionTranspose0213Tiling& tiling, const LocalTensor<T>& tmp1)
 {
     for (int16_t p = 0; p < 2; p++) {
         // src--> tmp
@@ -149,12 +155,14 @@ __aicore__ inline void ConfusionTranspose0213MainFloat(const LocalTensor<T>& dst
                 (uint64_t)tmp1[(p * tiling.blockSize * tiling.newPopH + tiling.newPopH * (n / 2))].GetPhyAddr();
             params.mainDstLocalList[n + 1] =
                 (uint64_t)tmp1[(p * tiling.blockSize * tiling.newPopH + tiling.newPopH * (n / 2)) + tiling.blockSize]
-                .GetPhyAddr();
+                    .GetPhyAddr();
         }
         for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
-            params.mainSrcLocalList[n] = (uint64_t)
-                srcTensor[(p * tiling.blockSize + tiling.newPopSize * params.m + params.j * tiling.needSize +
-                params.i * tiling.alignA2MulAlignA3 + BLOCK_CUBE * n + params.k * tiling.batchOffset)].GetPhyAddr();
+            params.mainSrcLocalList[n] =
+                (uint64_t)
+                    srcTensor[(p * tiling.blockSize + tiling.newPopSize * params.m + params.j * tiling.needSize +
+                               params.i * tiling.alignA2MulAlignA3 + BLOCK_CUBE * n + params.k * tiling.batchOffset)]
+                        .GetPhyAddr();
         }
         PipeBarrier<PIPE_V>();
         TransDataTo5HD<T>(params.mainDstLocalList, params.mainSrcLocalList, params.mainTransDataParams);
@@ -163,25 +171,34 @@ __aicore__ inline void ConfusionTranspose0213MainFloat(const LocalTensor<T>& dst
         // tmp --> dst
         if (params.transposeType == TransposeType::TRANSPOSE_NZ2ND_0213) {
             for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n = n + 2) {
-                params.dstLocalList1[n] = (uint64_t)dstTensor[(p * tiling.blockSize * tiling.alignA3MulA1 +
-                    tiling.newPopH * params.m * tiling.alignA3MulA1 + params.j * BLOCK_CUBE +
-                    params.i * tiling.alignA3 + tiling.alignA3MulA1 * (n / 2) + params.k * tiling.batchOffset)]
-                    .GetPhyAddr();
-                params.dstLocalList1[n + 1] = (uint64_t)dstTensor[(p * tiling.blockSize * tiling.alignA3MulA1 +
-                    tiling.newPopH * params.m * tiling.alignA3MulA1 + params.j * BLOCK_CUBE +
-                    params.i * tiling.alignA3 + tiling.alignA3MulA1 * (n / 2) + tiling.blockSize +
-                    params.k * tiling.batchOffset)].GetPhyAddr();
+                params.dstLocalList1[n] =
+                    (uint64_t)dstTensor[(p * tiling.blockSize * tiling.alignA3MulA1 +
+                                         tiling.newPopH * params.m * tiling.alignA3MulA1 + params.j * BLOCK_CUBE +
+                                         params.i * tiling.alignA3 + tiling.alignA3MulA1 * (n / 2) +
+                                         params.k * tiling.batchOffset)]
+                        .GetPhyAddr();
+                params.dstLocalList1[n + 1] =
+                    (uint64_t)dstTensor[(p * tiling.blockSize * tiling.alignA3MulA1 +
+                                         tiling.newPopH * params.m * tiling.alignA3MulA1 + params.j * BLOCK_CUBE +
+                                         params.i * tiling.alignA3 + tiling.alignA3MulA1 * (n / 2) + tiling.blockSize +
+                                         params.k * tiling.batchOffset)]
+                        .GetPhyAddr();
             }
         } else if (params.transposeType == TransposeType::TRANSPOSE_NZ2NZ_0213) {
             for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n = n + 2) {
-                params.dstLocalList1[n] = (uint64_t)dstTensor[(p * tiling.blockSize * tiling.alignA3MulA1 +
-                    tiling.newPopH * params.m * tiling.alignA3MulA1 + params.j * tiling.shapeA1BlockCube +
-                    params.i * BLOCK_CUBE + tiling.alignA3MulA1 * (n / 2) + params.k * tiling.batchOffset)]
-                    .GetPhyAddr();
-                params.dstLocalList1[n + 1] = (uint64_t)dstTensor[(p * tiling.blockSize * tiling.alignA3MulA1 +
-                    tiling.newPopH * params.m * tiling.alignA3MulA1 + params.j * tiling.shapeA1BlockCube +
-                    params.i * BLOCK_CUBE + tiling.alignA3MulA1 * (n / 2) + tiling.blockSize +
-                    params.k * tiling.batchOffset)].GetPhyAddr();
+                params.dstLocalList1[n] =
+                    (uint64_t)dstTensor[(p * tiling.blockSize * tiling.alignA3MulA1 +
+                                         tiling.newPopH * params.m * tiling.alignA3MulA1 +
+                                         params.j * tiling.shapeA1BlockCube + params.i * BLOCK_CUBE +
+                                         tiling.alignA3MulA1 * (n / 2) + params.k * tiling.batchOffset)]
+                        .GetPhyAddr();
+                params.dstLocalList1[n + 1] =
+                    (uint64_t)
+                        dstTensor[(p * tiling.blockSize * tiling.alignA3MulA1 +
+                                   tiling.newPopH * params.m * tiling.alignA3MulA1 +
+                                   params.j * tiling.shapeA1BlockCube + params.i * BLOCK_CUBE +
+                                   tiling.alignA3MulA1 * (n / 2) + tiling.blockSize + params.k * tiling.batchOffset)]
+                            .GetPhyAddr();
             }
         }
         for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
@@ -193,8 +210,9 @@ __aicore__ inline void ConfusionTranspose0213MainFloat(const LocalTensor<T>& dst
 }
 
 template <typename T>
-__aicore__ inline void ConfusionTranspose0213TailHalf(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    ConfusionTranspose0213Params<T>& params, ConfusionTranspose0213Tiling& tiling, const LocalTensor<T>& tmp1)
+__aicore__ inline void ConfusionTranspose0213TailHalf(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, ConfusionTranspose0213Params<T>& params,
+    ConfusionTranspose0213Tiling& tiling, const LocalTensor<T>& tmp1)
 {
     // src--> tmp
     for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
@@ -203,23 +221,25 @@ __aicore__ inline void ConfusionTranspose0213TailHalf(const LocalTensor<T>& dstT
     for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
         params.tailSrcLocalList[n] =
             (uint64_t)srcTensor[(tiling.newPopSize * tiling.mainBlocks + params.j * tiling.needSize +
-            params.i * tiling.alignA2MulAlignA3 + BLOCK_CUBE * n + params.k * tiling.batchOffset)]
-            .GetPhyAddr();
+                                 params.i * tiling.alignA2MulAlignA3 + BLOCK_CUBE * n + params.k * tiling.batchOffset)]
+                .GetPhyAddr();
     }
     PipeBarrier<PIPE_V>();
     TransDataTo5HD<T>(params.tailDstLocalList, params.tailSrcLocalList, params.tailTransDataParams);
     // tmp --> dst
     if (params.transposeType == TransposeType::TRANSPOSE_NZ2ND_0213) {
         for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
-            params.dstLocalList2[n] = (uint64_t)dstTensor[(tiling.mainOffset + params.j * BLOCK_CUBE +
-                params.i * tiling.alignA3 + tiling.alignA3MulA1 * n + params.k * tiling.batchOffset)]
-                .GetPhyAddr();
+            params.dstLocalList2[n] =
+                (uint64_t)dstTensor[(tiling.mainOffset + params.j * BLOCK_CUBE + params.i * tiling.alignA3 +
+                                     tiling.alignA3MulA1 * n + params.k * tiling.batchOffset)]
+                    .GetPhyAddr();
         }
     } else if (params.transposeType == TransposeType::TRANSPOSE_NZ2NZ_0213) {
         for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
-            params.dstLocalList2[n] = (uint64_t)dstTensor[(tiling.mainOffset + params.j * tiling.shapeA1BlockCube +
-                params.i * BLOCK_CUBE + tiling.alignA3MulA1 * n + params.k * tiling.batchOffset)]
-                .GetPhyAddr();
+            params.dstLocalList2[n] =
+                (uint64_t)dstTensor[(tiling.mainOffset + params.j * tiling.shapeA1BlockCube + params.i * BLOCK_CUBE +
+                                     tiling.alignA3MulA1 * n + params.k * tiling.batchOffset)]
+                    .GetPhyAddr();
         }
     }
     for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
@@ -230,8 +250,9 @@ __aicore__ inline void ConfusionTranspose0213TailHalf(const LocalTensor<T>& dstT
 }
 
 template <typename T>
-__aicore__ inline void ConfusionTranspose0213TailFloat(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    ConfusionTranspose0213Params<T>& params, ConfusionTranspose0213Tiling& tiling, const LocalTensor<T>& tmp1)
+__aicore__ inline void ConfusionTranspose0213TailFloat(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, ConfusionTranspose0213Params<T>& params,
+    ConfusionTranspose0213Tiling& tiling, const LocalTensor<T>& tmp1)
 {
     for (int16_t p = 0; p < 2; p++) {
         // src--> tmp
@@ -240,12 +261,14 @@ __aicore__ inline void ConfusionTranspose0213TailFloat(const LocalTensor<T>& dst
                 (uint64_t)tmp1[(p * tiling.blockSize * tiling.newPopH + tiling.newPopH * (n / 2))].GetPhyAddr();
             params.tailDstLocalList[n + 1] =
                 (uint64_t)tmp1[(p * tiling.blockSize * tiling.newPopH + tiling.newPopH * (n / 2)) + tiling.blockSize]
-                .GetPhyAddr();
+                    .GetPhyAddr();
         }
         for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
-            params.tailSrcLocalList[n] = (uint64_t)srcTensor[(p * tiling.blockSize +
-                tiling.newPopSize * tiling.mainBlocks + params.j * tiling.needSize +
-                params.i * tiling.alignA2MulAlignA3 + BLOCK_CUBE * n + params.k * tiling.batchOffset)].GetPhyAddr();
+            params.tailSrcLocalList[n] =
+                (uint64_t)srcTensor[(p * tiling.blockSize + tiling.newPopSize * tiling.mainBlocks +
+                                     params.j * tiling.needSize + params.i * tiling.alignA2MulAlignA3 + BLOCK_CUBE * n +
+                                     params.k * tiling.batchOffset)]
+                    .GetPhyAddr();
         }
         PipeBarrier<PIPE_V>();
         TransDataTo5HD<T>(params.tailDstLocalList, params.tailSrcLocalList, params.tailTransDataParams);
@@ -254,21 +277,31 @@ __aicore__ inline void ConfusionTranspose0213TailFloat(const LocalTensor<T>& dst
         // tmp --> dst
         if (params.transposeType == TransposeType::TRANSPOSE_NZ2ND_0213) {
             for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n = n + 2) {
-                params.dstLocalList2[n] = (uint64_t)dstTensor[(p * tiling.blockSize * tiling.alignA3MulA1 +
-                    tiling.mainOffset + params.j * BLOCK_CUBE + params.i * tiling.alignA3 +
-                    tiling.alignA3MulA1 * (n / 2) + params.k * tiling.batchOffset)].GetPhyAddr();
-                params.dstLocalList2[n + 1] = (uint64_t)dstTensor[(p * tiling.blockSize * tiling.alignA3MulA1 +
-                    tiling.mainOffset + params.j * BLOCK_CUBE + params.i * tiling.alignA3 +
-                    tiling.alignA3MulA1 * (n / 2) + tiling.blockSize + params.k * tiling.batchOffset)].GetPhyAddr();
+                params.dstLocalList2[n] =
+                    (uint64_t)dstTensor[(p * tiling.blockSize * tiling.alignA3MulA1 + tiling.mainOffset +
+                                         params.j * BLOCK_CUBE + params.i * tiling.alignA3 +
+                                         tiling.alignA3MulA1 * (n / 2) + params.k * tiling.batchOffset)]
+                        .GetPhyAddr();
+                params.dstLocalList2[n + 1] =
+                    (uint64_t)
+                        dstTensor[(p * tiling.blockSize * tiling.alignA3MulA1 + tiling.mainOffset +
+                                   params.j * BLOCK_CUBE + params.i * tiling.alignA3 + tiling.alignA3MulA1 * (n / 2) +
+                                   tiling.blockSize + params.k * tiling.batchOffset)]
+                            .GetPhyAddr();
             }
         } else if (params.transposeType == TransposeType::TRANSPOSE_NZ2NZ_0213) {
             for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n = n + 2) {
-                params.dstLocalList2[n] = (uint64_t)dstTensor[(p * tiling.blockSize * tiling.alignA3MulA1 +
-                    tiling.mainOffset + params.j * tiling.shapeA1BlockCube + params.i * BLOCK_CUBE +
-                    tiling.alignA3MulA1 * (n / 2) + params.k * tiling.batchOffset)].GetPhyAddr();
-                params.dstLocalList2[n + 1] = (uint64_t)dstTensor[(p * tiling.blockSize * tiling.alignA3MulA1 +
-                    tiling.mainOffset + params.j * tiling.shapeA1BlockCube + params.i * BLOCK_CUBE +
-                    tiling.alignA3MulA1 * (n / 2) + tiling.blockSize + params.k * tiling.batchOffset)].GetPhyAddr();
+                params.dstLocalList2[n] =
+                    (uint64_t)dstTensor[(p * tiling.blockSize * tiling.alignA3MulA1 + tiling.mainOffset +
+                                         params.j * tiling.shapeA1BlockCube + params.i * BLOCK_CUBE +
+                                         tiling.alignA3MulA1 * (n / 2) + params.k * tiling.batchOffset)]
+                        .GetPhyAddr();
+                params.dstLocalList2[n + 1] =
+                    (uint64_t)
+                        dstTensor[(p * tiling.blockSize * tiling.alignA3MulA1 + tiling.mainOffset +
+                                   params.j * tiling.shapeA1BlockCube + params.i * BLOCK_CUBE +
+                                   tiling.alignA3MulA1 * (n / 2) + tiling.blockSize + params.k * tiling.batchOffset)]
+                            .GetPhyAddr();
             }
         }
         for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {

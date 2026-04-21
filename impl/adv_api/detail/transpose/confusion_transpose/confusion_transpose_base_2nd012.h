@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file confusion_transpose_base_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/transpose/confusion_transpose/confusion_transpose_base_2nd012.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/transpose/transdata.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/transpose/confusion_transpose/confusion_transpose_base_2nd012.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/transpose/transdata.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TRANSPOSE_CONFUSION_TRANSPOSE_CONFUSION_TRANSPOSE_BASE_2ND012_H__
 #endif
@@ -24,7 +25,8 @@
 #include "confusion_transpose_base_2nz012.h"
 
 namespace AscendC {
-template <typename T> struct ConfusionTranspose2ND012NParams {
+template <typename T>
+struct ConfusionTranspose2ND012NParams {
     __aicore__ ConfusionTranspose2ND012NParams(){};
 
     int32_t i;
@@ -68,7 +70,7 @@ __aicore__ inline void InitConfusionTranspose2ND012N(
     params.tmp2Count = 0;                 // number of lines in tmp2
     params.dstPrehnCount = 0;             // number of existing columns in dst
     // Set to 0 after each revolution H/N, counting from the beginning
-    params.dstAllCount = 0;               // number of columns in dst
+    params.dstAllCount = 0; // number of columns in dst
     params.dstPrehnCountBefore = 0;
     params.PrehnCount = 0;
 
@@ -90,8 +92,9 @@ __aicore__ inline void InitConfusionTranspose2ND012N(
 }
 
 template <typename T>
-__aicore__ inline void ConfusionTranspose2ND012NTmp1RemainRowCount(const LocalTensor<T>& srcTensor,
-    ConfusionTranspose2ND012NTiling& tiling, ConfusionTranspose2ND012NParams<T>& params, const LocalTensor<T>& tmp1)
+__aicore__ inline void ConfusionTranspose2ND012NTmp1RemainRowCount(
+    const LocalTensor<T>& srcTensor, ConfusionTranspose2ND012NTiling& tiling,
+    ConfusionTranspose2ND012NParams<T>& params, const LocalTensor<T>& tmp1)
 {
     // src->tmp1 :transpose column fractal -- > row fractal
     if (params.tmp1RemainRowCount == 0) {
@@ -100,9 +103,10 @@ __aicore__ inline void ConfusionTranspose2ND012NTmp1RemainRowCount(const LocalTe
                 params.dstLocalList1[n] = (uint64_t)tmp1[BLOCK_CUBE * n].GetPhyAddr();
             }
             for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
-                params.srcLocalList1[n] = (uint64_t)srcTensor[params.i * tiling.alignsCube +
-                    params.j * CUBE_MAX_SIZE + BLOCK_CUBE * n + params.k * tiling.srcBatchOffset]
-                    .GetPhyAddr();
+                params.srcLocalList1[n] = (uint64_t)srcTensor
+                                              [params.i * tiling.alignsCube + params.j * CUBE_MAX_SIZE +
+                                               BLOCK_CUBE * n + params.k * tiling.srcBatchOffset]
+                                                  .GetPhyAddr();
             }
             PipeBarrier<PIPE_V>();
             TransDataTo5HD<T>(params.dstLocalList1, params.srcLocalList1, params.transDataParams1);
@@ -113,9 +117,10 @@ __aicore__ inline void ConfusionTranspose2ND012NTmp1RemainRowCount(const LocalTe
                 }
                 for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
                     params.srcLocalList1[n] =
-                        (uint64_t)srcTensor[params.i * tiling.alignsCube + params.j * CUBE_MAX_SIZE +
-                        m * tiling.blockSize + BLOCK_CUBE * n + params.k * tiling.srcBatchOffset]
-                        .GetPhyAddr();
+                        (uint64_t)srcTensor
+                            [params.i * tiling.alignsCube + params.j * CUBE_MAX_SIZE + m * tiling.blockSize +
+                             BLOCK_CUBE * n + params.k * tiling.srcBatchOffset]
+                                .GetPhyAddr();
                 }
                 PipeBarrier<PIPE_V>();
                 TransDataTo5HD<T>(params.dstLocalList1, params.srcLocalList1, params.transDataParams1);
@@ -127,8 +132,9 @@ __aicore__ inline void ConfusionTranspose2ND012NTmp1RemainRowCount(const LocalTe
 }
 
 template <typename T>
-__aicore__ inline void ConfusionTranspose2ND012NTmp1RemainRowCountFirst(ConfusionTranspose2ND012NTiling& tiling,
-    ConfusionTranspose2ND012NParams<T>& params, const LocalTensor<T>& tmp1, const LocalTensor<T>& tmp2)
+__aicore__ inline void ConfusionTranspose2ND012NTmp1RemainRowCountFirst(
+    ConfusionTranspose2ND012NTiling& tiling, ConfusionTranspose2ND012NParams<T>& params, const LocalTensor<T>& tmp1,
+    const LocalTensor<T>& tmp2)
 {
     // hnDiv >= 16,the number of rows required for updating tmp2 is mainly used for processing the block where each H/N
     // boundary is located.
@@ -156,26 +162,27 @@ __aicore__ inline void ConfusionTranspose2ND012NTmp1RemainRowCountFirst(Confusio
 }
 
 template <typename T>
-__aicore__ inline void ConfusionTranspose2ND012NTmp2NeedRowCountHalf(const LocalTensor<T>& dstTensor,
-    ConfusionTranspose2ND012NTiling& tiling, ConfusionTranspose2ND012NParams<T>& params, const LocalTensor<T>& tmp2)
+__aicore__ inline void ConfusionTranspose2ND012NTmp2NeedRowCountHalf(
+    const LocalTensor<T>& dstTensor, ConfusionTranspose2ND012NTiling& tiling,
+    ConfusionTranspose2ND012NParams<T>& params, const LocalTensor<T>& tmp2)
 {
     if (tiling.hnDiv <= BLOCK_CUBE) {
         for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
             params.dstLocalList2[n] =
-                (uint64_t)
-                    dstTensor[(params.transdataRepeat - params.j * tiling.prehBlockNum) * tiling.alignsMulAlignHnDiv +
-                params.j * tiling.alignHnDivCube + tiling.alignHnDiv * n + params.k * tiling.dstBatchOffset]
-                .GetPhyAddr();
+                (uint64_t)dstTensor
+                    [(params.transdataRepeat - params.j * tiling.prehBlockNum) * tiling.alignsMulAlignHnDiv +
+                     params.j * tiling.alignHnDivCube + tiling.alignHnDiv * n + params.k * tiling.dstBatchOffset]
+                        .GetPhyAddr();
         }
     } else {
         for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
             params.dstLocalList2[n] =
-                (uint64_t)
-                    dstTensor[((params.transdataRepeat - params.j * tiling.prehBlockNum) / tiling.hnDivBlockNum) *
-                tiling.alignsMulAlignHnDiv +
-                ((params.transdataRepeat - params.j * tiling.prehBlockNum) % tiling.hnDivBlockNum) * BLOCK_CUBE +
-                params.j * tiling.alignHnDivCube + tiling.alignHnDiv * n + params.k * tiling.dstBatchOffset]
-                .GetPhyAddr();
+                (uint64_t)dstTensor
+                    [((params.transdataRepeat - params.j * tiling.prehBlockNum) / tiling.hnDivBlockNum) *
+                         tiling.alignsMulAlignHnDiv +
+                     ((params.transdataRepeat - params.j * tiling.prehBlockNum) % tiling.hnDivBlockNum) * BLOCK_CUBE +
+                     params.j * tiling.alignHnDivCube + tiling.alignHnDiv * n + params.k * tiling.dstBatchOffset]
+                        .GetPhyAddr();
         }
     }
     for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
@@ -186,36 +193,40 @@ __aicore__ inline void ConfusionTranspose2ND012NTmp2NeedRowCountHalf(const Local
 }
 
 template <typename T>
-__aicore__ inline void ConfusionTranspose2ND012NTmp2NeedRowCountFloat(const LocalTensor<T>& dstTensor,
-    ConfusionTranspose2ND012NTiling& tiling, ConfusionTranspose2ND012NParams<T>& params, const LocalTensor<T>& tmp2)
+__aicore__ inline void ConfusionTranspose2ND012NTmp2NeedRowCountFloat(
+    const LocalTensor<T>& dstTensor, ConfusionTranspose2ND012NTiling& tiling,
+    ConfusionTranspose2ND012NParams<T>& params, const LocalTensor<T>& tmp2)
 {
     for (uint16_t m = 0; m < 2; m++) {
         if (tiling.hnDiv <= BLOCK_CUBE) {
             for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
                 params.dstLocalList2[n] =
-                    (uint64_t)dstTensor[(params.transdataRepeat - params.j * tiling.prehBlockNum) *
-                    tiling.alignsMulAlignHnDiv +
-                    params.j * tiling.alignHnDivCube + m * CUBE_HALF_SIZE + tiling.blockSize * n +
-                    params.k * tiling.dstBatchOffset]
-                    .GetPhyAddr();
+                    (uint64_t)dstTensor
+                        [(params.transdataRepeat - params.j * tiling.prehBlockNum) * tiling.alignsMulAlignHnDiv +
+                         params.j * tiling.alignHnDivCube + m * CUBE_HALF_SIZE + tiling.blockSize * n +
+                         params.k * tiling.dstBatchOffset]
+                            .GetPhyAddr();
             }
         } else {
             for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n = n + 2) {
                 params.dstLocalList2[n] =
-                    (uint64_t)
-                        dstTensor[((params.transdataRepeat - params.j * tiling.prehBlockNum) / tiling.hnDivBlockNum) *
-                    tiling.alignsMulAlignHnDiv +
-                    ((params.transdataRepeat - params.j * tiling.prehBlockNum) % tiling.hnDivBlockNum) * BLOCK_CUBE +
-                    params.j * tiling.alignHnDivCube + m * tiling.alignHnDivBlockSize + tiling.alignHnDiv * (n / 2) +
-                    params.k * tiling.dstBatchOffset]
-                    .GetPhyAddr();
+                    (uint64_t)dstTensor
+                        [((params.transdataRepeat - params.j * tiling.prehBlockNum) / tiling.hnDivBlockNum) *
+                             tiling.alignsMulAlignHnDiv +
+                         ((params.transdataRepeat - params.j * tiling.prehBlockNum) % tiling.hnDivBlockNum) *
+                             BLOCK_CUBE +
+                         params.j * tiling.alignHnDivCube + m * tiling.alignHnDivBlockSize +
+                         tiling.alignHnDiv * (n / 2) + params.k * tiling.dstBatchOffset]
+                            .GetPhyAddr();
                 params.dstLocalList2[n + 1] =
-                    (uint64_t)
-                        dstTensor[((params.transdataRepeat - params.j * tiling.prehBlockNum) / tiling.hnDivBlockNum) *
-                    tiling.alignsMulAlignHnDiv +
-                    ((params.transdataRepeat - params.j * tiling.prehBlockNum) % tiling.hnDivBlockNum) * BLOCK_CUBE +
-                    params.j * tiling.alignHnDivCube + m * tiling.alignHnDivBlockSize + tiling.alignHnDiv * (n / 2) +
-                    tiling.blockSize + params.k * tiling.dstBatchOffset].GetPhyAddr();
+                    (uint64_t)dstTensor
+                        [((params.transdataRepeat - params.j * tiling.prehBlockNum) / tiling.hnDivBlockNum) *
+                             tiling.alignsMulAlignHnDiv +
+                         ((params.transdataRepeat - params.j * tiling.prehBlockNum) % tiling.hnDivBlockNum) *
+                             BLOCK_CUBE +
+                         params.j * tiling.alignHnDivCube + m * tiling.alignHnDivBlockSize +
+                         tiling.alignHnDiv * (n / 2) + tiling.blockSize + params.k * tiling.dstBatchOffset]
+                            .GetPhyAddr();
             }
         }
         for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
@@ -227,8 +238,9 @@ __aicore__ inline void ConfusionTranspose2ND012NTmp2NeedRowCountFloat(const Loca
 }
 
 template <typename T>
-__aicore__ inline void ConfusionTranspose2ND012NTmp2NeedRowCount(const LocalTensor<T>& dstTensor,
-    ConfusionTranspose2ND012NTiling& tiling, ConfusionTranspose2ND012NParams<T>& params, const LocalTensor<T>& tmp2)
+__aicore__ inline void ConfusionTranspose2ND012NTmp2NeedRowCount(
+    const LocalTensor<T>& dstTensor, ConfusionTranspose2ND012NTiling& tiling,
+    ConfusionTranspose2ND012NParams<T>& params, const LocalTensor<T>& tmp2)
 {
     // first transpose tmp2 -> dst
     if (params.tmp2NeedRowCount == 0) {
@@ -266,8 +278,9 @@ __aicore__ inline void ConfusionTranspose2ND012NTmp2NeedRowCount(const LocalTens
 }
 
 template <typename T>
-__aicore__ inline void ConfusionTranspose2ND012NTmp2NeedRowCountNotZero(ConfusionTranspose2ND012NTiling& tiling,
-    ConfusionTranspose2ND012NParams<T>& params, const LocalTensor<T>& tmp1, const LocalTensor<T>& tmp2)
+__aicore__ inline void ConfusionTranspose2ND012NTmp2NeedRowCountNotZero(
+    ConfusionTranspose2ND012NTiling& tiling, ConfusionTranspose2ND012NParams<T>& params, const LocalTensor<T>& tmp1,
+    const LocalTensor<T>& tmp2)
 {
     // tmp1->tmp2
     if (params.tmp2NeedRowCount != 0) {
@@ -302,26 +315,27 @@ __aicore__ inline void ConfusionTranspose2ND012NTmp2NeedRowCountNotZero(Confusio
 }
 
 template <typename T>
-__aicore__ inline void ConfusionTranspose2ND012Ntmp2NeedRowCountZeroHalf(const LocalTensor<T>& dstTensor,
-    ConfusionTranspose2ND012NTiling& tiling, ConfusionTranspose2ND012NParams<T>& params, const LocalTensor<T>& tmp2)
+__aicore__ inline void ConfusionTranspose2ND012Ntmp2NeedRowCountZeroHalf(
+    const LocalTensor<T>& dstTensor, ConfusionTranspose2ND012NTiling& tiling,
+    ConfusionTranspose2ND012NParams<T>& params, const LocalTensor<T>& tmp2)
 {
     if (tiling.hnDiv <= BLOCK_CUBE) {
         for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
             params.dstLocalList3[n] =
-                (uint64_t)
-                    dstTensor[(params.transdataRepeat - params.j * tiling.prehBlockNum) * tiling.alignsMulAlignHnDiv +
-                params.j * tiling.alignHnDivCube + tiling.alignHnDiv * n + params.k * tiling.dstBatchOffset]
-                .GetPhyAddr();
+                (uint64_t)dstTensor
+                    [(params.transdataRepeat - params.j * tiling.prehBlockNum) * tiling.alignsMulAlignHnDiv +
+                     params.j * tiling.alignHnDivCube + tiling.alignHnDiv * n + params.k * tiling.dstBatchOffset]
+                        .GetPhyAddr();
         }
     } else {
         for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
             params.dstLocalList3[n] =
-                (uint64_t)
-                    dstTensor[((params.transdataRepeat - params.j * tiling.prehBlockNum) / tiling.hnDivBlockNum) *
-                tiling.alignsMulAlignHnDiv +
-                ((params.transdataRepeat - params.j * tiling.prehBlockNum) % tiling.hnDivBlockNum) * BLOCK_CUBE +
-                params.j * tiling.alignHnDivCube + tiling.alignHnDiv * n + params.k * tiling.dstBatchOffset]
-                .GetPhyAddr();
+                (uint64_t)dstTensor
+                    [((params.transdataRepeat - params.j * tiling.prehBlockNum) / tiling.hnDivBlockNum) *
+                         tiling.alignsMulAlignHnDiv +
+                     ((params.transdataRepeat - params.j * tiling.prehBlockNum) % tiling.hnDivBlockNum) * BLOCK_CUBE +
+                     params.j * tiling.alignHnDivCube + tiling.alignHnDiv * n + params.k * tiling.dstBatchOffset]
+                        .GetPhyAddr();
         }
     }
     for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
@@ -332,36 +346,40 @@ __aicore__ inline void ConfusionTranspose2ND012Ntmp2NeedRowCountZeroHalf(const L
 }
 
 template <typename T>
-__aicore__ inline void ConfusionTranspose2ND012Ntmp2NeedRowCountZeroFloat(const LocalTensor<T>& dstTensor,
-    ConfusionTranspose2ND012NTiling& tiling, ConfusionTranspose2ND012NParams<T>& params, const LocalTensor<T>& tmp2)
+__aicore__ inline void ConfusionTranspose2ND012Ntmp2NeedRowCountZeroFloat(
+    const LocalTensor<T>& dstTensor, ConfusionTranspose2ND012NTiling& tiling,
+    ConfusionTranspose2ND012NParams<T>& params, const LocalTensor<T>& tmp2)
 {
     for (uint16_t m = 0; m < 2; m++) {
         if (tiling.hnDiv <= BLOCK_CUBE) {
             for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
                 params.dstLocalList3[n] =
-                    (uint64_t)dstTensor[(params.transdataRepeat - params.j * tiling.prehBlockNum) *
-                    tiling.alignsMulAlignHnDiv +
-                    params.j * tiling.alignHnDivCube + m * CUBE_HALF_SIZE + tiling.blockSize * n +
-                    params.k * tiling.dstBatchOffset]
-                    .GetPhyAddr();
+                    (uint64_t)dstTensor
+                        [(params.transdataRepeat - params.j * tiling.prehBlockNum) * tiling.alignsMulAlignHnDiv +
+                         params.j * tiling.alignHnDivCube + m * CUBE_HALF_SIZE + tiling.blockSize * n +
+                         params.k * tiling.dstBatchOffset]
+                            .GetPhyAddr();
             }
         } else {
             for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n = n + 2) {
                 params.dstLocalList3[n] =
-                    (uint64_t)
-                        dstTensor[((params.transdataRepeat - params.j * tiling.prehBlockNum) / tiling.hnDivBlockNum) *
-                    tiling.alignsMulAlignHnDiv +
-                    ((params.transdataRepeat - params.j * tiling.prehBlockNum) % tiling.hnDivBlockNum) * BLOCK_CUBE +
-                    params.j * tiling.alignHnDivCube + m * tiling.alignHnDivBlockSize + tiling.alignHnDiv * (n / 2) +
-                    params.k * tiling.dstBatchOffset]
-                    .GetPhyAddr();
+                    (uint64_t)dstTensor
+                        [((params.transdataRepeat - params.j * tiling.prehBlockNum) / tiling.hnDivBlockNum) *
+                             tiling.alignsMulAlignHnDiv +
+                         ((params.transdataRepeat - params.j * tiling.prehBlockNum) % tiling.hnDivBlockNum) *
+                             BLOCK_CUBE +
+                         params.j * tiling.alignHnDivCube + m * tiling.alignHnDivBlockSize +
+                         tiling.alignHnDiv * (n / 2) + params.k * tiling.dstBatchOffset]
+                            .GetPhyAddr();
                 params.dstLocalList3[n + 1] =
-                    (uint64_t)
-                        dstTensor[((params.transdataRepeat - params.j * tiling.prehBlockNum) / tiling.hnDivBlockNum) *
-                    tiling.alignsMulAlignHnDiv +
-                    ((params.transdataRepeat - params.j * tiling.prehBlockNum) % tiling.hnDivBlockNum) * BLOCK_CUBE +
-                    params.j * tiling.alignHnDivCube + m * tiling.alignHnDivBlockSize + tiling.alignHnDiv * (n / 2) +
-                    tiling.blockSize + params.k * tiling.dstBatchOffset].GetPhyAddr();
+                    (uint64_t)dstTensor
+                        [((params.transdataRepeat - params.j * tiling.prehBlockNum) / tiling.hnDivBlockNum) *
+                             tiling.alignsMulAlignHnDiv +
+                         ((params.transdataRepeat - params.j * tiling.prehBlockNum) % tiling.hnDivBlockNum) *
+                             BLOCK_CUBE +
+                         params.j * tiling.alignHnDivCube + m * tiling.alignHnDivBlockSize +
+                         tiling.alignHnDiv * (n / 2) + tiling.blockSize + params.k * tiling.dstBatchOffset]
+                            .GetPhyAddr();
             }
         }
         for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
@@ -373,8 +391,9 @@ __aicore__ inline void ConfusionTranspose2ND012Ntmp2NeedRowCountZeroFloat(const 
 }
 
 template <typename T>
-__aicore__ inline void ConfusionTranspose2ND012Ntmp2NeedRowCountZero(const LocalTensor<T>& dstTensor,
-    ConfusionTranspose2ND012NTiling& tiling, ConfusionTranspose2ND012NParams<T>& params, const LocalTensor<T>& tmp2)
+__aicore__ inline void ConfusionTranspose2ND012Ntmp2NeedRowCountZero(
+    const LocalTensor<T>& dstTensor, ConfusionTranspose2ND012NTiling& tiling,
+    ConfusionTranspose2ND012NParams<T>& params, const LocalTensor<T>& tmp2)
 {
     // tmp2->dst
     if (params.tmp2NeedRowCount == 0) {
@@ -398,8 +417,8 @@ __aicore__ inline void ConfusionTranspose2ND012Ntmp2NeedRowCountZero(const Local
             params.tmp2NeedRowCount = BLOCK_CUBE;
         } else if ((tiling.hnDiv >= BLOCK_CUBE) && (params.dstPrehnCount != tiling.hnDiv)) {
             params.tmp2NeedRowCount = (tiling.hnDiv - params.dstPrehnCount) >= BLOCK_CUBE ?
-                BLOCK_CUBE :
-                (tiling.hnDiv - params.dstPrehnCount);
+                                          BLOCK_CUBE :
+                                          (tiling.hnDiv - params.dstPrehnCount);
         } else if (tiling.hnDiv < BLOCK_CUBE) {
             params.tmp2NeedRowCount = tiling.hnDiv;
         }

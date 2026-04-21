@@ -10,20 +10,13 @@
 # ----------------------------------------------------------------------------------------------------------
 
 cmake_minimum_required(VERSION 3.16)
-project(cpudebug)
 
-find_package(tikicpulib REQUIRED)
-add_executable(add ${CMAKE_CURRENT_SOURCE_DIR}/add.cpp)
+find_package(ASC REQUIRED)
+
+project(cpudebug LANGUAGES ASC CXX)
+
+add_executable(add ${CMAKE_CURRENT_SOURCE_DIR}/add.asc)
+
 target_compile_options(add PRIVATE
-    -g -O2 -std=c++17 -D_GLIBCXX_USE_CXX11_ABI=0 -Wall -Werror
-)
-target_link_libraries(add PRIVATE
-    ascendcl
-    tikicpulib::${soc_version}
-)
-
-install(TARGETS add
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>
 )

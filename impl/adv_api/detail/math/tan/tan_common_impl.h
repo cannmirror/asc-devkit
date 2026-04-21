@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file tan_common_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/tan/tan_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/tan.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/tan/tan_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/tan.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_TAN_TAN_COMMON_IMPL_H__
 #endif
@@ -59,8 +60,8 @@ constexpr float TAN_RES_ADDICT_UP = -6.8711573651634203789;
 constexpr float TAN_2ADDS = 61.20362572811089435388;
 constexpr float TAN_3ADDS = -24.8048928861126769186219;
 
-__aicore__ inline void KPI_0(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
-    const LocalTensor<float>& roundTensor)
+__aicore__ inline void KPI_0(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor, const LocalTensor<float>& roundTensor)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binParams;
@@ -72,8 +73,9 @@ __aicore__ inline void KPI_0(const LocalTensor<float>& dstTensor, const LocalTen
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void KPI_1(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
-    const LocalTensor<float>& roundTensor, const LocalTensor<float>& resTensor1, const LocalTensor<float>& resTensor2)
+__aicore__ inline void KPI_1(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor, const LocalTensor<float>& roundTensor,
+    const LocalTensor<float>& resTensor1, const LocalTensor<float>& resTensor2)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binParams;
@@ -91,8 +93,9 @@ __aicore__ inline void KPI_1(const LocalTensor<float>& dstTensor, const LocalTen
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void KPI_2(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
-    const LocalTensor<float>& roundTensor, const LocalTensor<float>& resTensor1, const LocalTensor<float>& resTensor2)
+__aicore__ inline void KPI_2(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor, const LocalTensor<float>& roundTensor,
+    const LocalTensor<float>& resTensor1, const LocalTensor<float>& resTensor2)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binParams;
@@ -116,8 +119,9 @@ __aicore__ inline void KPI_2(const LocalTensor<float>& dstTensor, const LocalTen
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void KPI_3(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
-    const LocalTensor<float>& roundTensor, const LocalTensor<float>& resTensor1, const LocalTensor<float>& resTensor2)
+__aicore__ inline void KPI_3(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor, const LocalTensor<float>& roundTensor,
+    const LocalTensor<float>& resTensor1, const LocalTensor<float>& resTensor2)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binParams;
@@ -135,8 +139,9 @@ __aicore__ inline void KPI_3(const LocalTensor<float>& dstTensor, const LocalTen
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void KPI_4(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
-    const LocalTensor<float>& roundTensor, const LocalTensor<float>& resTensor1, const LocalTensor<float>& resTensor2)
+__aicore__ inline void KPI_4(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor, const LocalTensor<float>& roundTensor,
+    const LocalTensor<float>& resTensor1, const LocalTensor<float>& resTensor2)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binParams;
@@ -155,8 +160,9 @@ __aicore__ inline void KPI_4(const LocalTensor<float>& dstTensor, const LocalTen
 }
 
 // normalized x to (-pi/2,pi/2) using x = x-round(x/π)*π
-__aicore__ inline void TanRound(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
-    const LocalTensor<float>& roundTensor, const LocalTensor<float>& resTensor1, const LocalTensor<float>& resTensor2)
+__aicore__ inline void TanRound(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor, const LocalTensor<float>& roundTensor,
+    const LocalTensor<float>& resTensor1, const LocalTensor<float>& resTensor2)
 {
     /*
     k=round(x/π), x0=x-kπ, x0�?-π/2, π/2)
@@ -192,8 +198,8 @@ __aicore__ inline void TanRound(const LocalTensor<float>& dstTensor, const Local
     KPI_4(dstTensor, srcTensor, roundTensor, resTensor1, resTensor2);
 }
 
-__aicore__ inline void TanPolynomialApproximation(const LocalTensor<float>& dstTensor,
-    const LocalTensor<float>& srcTensor, const LocalTensor<float>& roundTensor,
+__aicore__ inline void TanPolynomialApproximation(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor, const LocalTensor<float>& roundTensor,
     const LocalTensor<float>& resTensor1, const LocalTensor<float>& resTensor2)
 {
     /*
@@ -224,7 +230,7 @@ __aicore__ inline void TanPolynomialApproximation(const LocalTensor<float>& dstT
     Adds<float, false>(dstTensor, dstTensor, TAN_2ADDS, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
     // res_up = mul(res_up, input_x)
-    Mul<float, false>(dstTensor, dstTensor,  srcTensor, MASK_PLACEHOLDER, 1, binParams);
+    Mul<float, false>(dstTensor, dstTensor, srcTensor, MASK_PLACEHOLDER, 1, binParams);
     PipeBarrier<PIPE_V>();
     // res_down = adds(x^2, -24.8048928861126769186219)
     Adds<float, false>(roundTensor, roundTensor, TAN_3ADDS, MASK_PLACEHOLDER, 1, unaryParams);
@@ -241,8 +247,9 @@ __aicore__ inline void TanPolynomialApproximation(const LocalTensor<float>& dstT
 }
 
 template <typename T>
-__aicore__ inline void TanCompute(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<uint8_t>& tmpBuffer, uint32_t calSize)
+__aicore__ inline void TanCompute(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& tmpBuffer,
+    uint32_t calSize)
 {
     const UnaryRepeatParams unaryParams;
     const LocalTensor<T>& tmpTensor1 = tmpBuffer.ReinterpretCast<float>();
@@ -258,8 +265,9 @@ __aicore__ inline void TanCompute(const LocalTensor<T>& dstTensor, const LocalTe
 }
 
 template <>
-__aicore__ inline void TanCompute(const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor,
-    const LocalTensor<uint8_t>& tmpBuffer, uint32_t calSize)
+__aicore__ inline void TanCompute(
+    const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor, const LocalTensor<uint8_t>& tmpBuffer,
+    uint32_t calSize)
 {
     const LocalTensor<float>& tempTensorConv = tmpBuffer.ReinterpretCast<float>();
     const LocalTensor<float>& tmpTensor1 = tempTensorConv[calSize];
@@ -267,22 +275,25 @@ __aicore__ inline void TanCompute(const LocalTensor<half>& dstTensor, const Loca
     const LocalTensor<float>& tmpTensor3 = tmpTensor2[calSize];
     const LocalTensor<float>& tmpTensor4 = tmpTensor3[calSize];
 
-    Cast<float, half, false>(tmpTensor1, srcTensor,
-        RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1, { 1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE });
+    Cast<float, half, false>(
+        tmpTensor1, srcTensor, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
 
     // the input is normalized to (-pi/2,pi/2)
     TanRound(tempTensorConv, tmpTensor1, tmpTensor2, tmpTensor3, tmpTensor4);
     TanPolynomialApproximation(tempTensorConv, tmpTensor1, tmpTensor2, tmpTensor3, tmpTensor4);
 
-    Cast<half, float, false>(dstTensor, tempTensorConv,
-        RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1, { 1, 1, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+    Cast<half, float, false>(
+        dstTensor, tempTensorConv, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void TanImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void TanImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -322,8 +333,8 @@ __aicore__ inline void TanImpl(const LocalTensor<T>& dstTensor, const LocalTenso
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void TanImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const uint32_t calCount)
+__aicore__ inline void TanImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {

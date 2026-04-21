@@ -1,20 +1,21 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
- 
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
 /*!
  * \file reglu_3510_impl.h
  * \brief
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/activation/reglu/reglu_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/reglu.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/activation/reglu/reglu_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/reglu.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REGLU_C310_IMPL_H__
 #endif
@@ -56,8 +57,7 @@ __simd_vf__ inline void ReGluImplVF(
         Reg::Mul(dstVreg, srcVreg0, tmpReg0, mask);
         if constexpr (sizeof(T) == sizeof(half)) {
             Reg::Cast<T, float, castTraitB32ToB16>((Reg::RegTensor<T>&)dstVreg, dstVreg, mask);
-            Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B32>(
-                dst + i * oneRepElm, (Reg::RegTensor<T>&)dstVreg, mask);
+            Reg::StoreAlign<T, Reg::StoreDist::DIST_PACK_B32>(dst + i * oneRepElm, (Reg::RegTensor<T>&)dstVreg, mask);
         } else {
             Reg::StoreAlign(dst + i * oneRepElm, dstVreg, mask);
         }
@@ -66,14 +66,17 @@ __simd_vf__ inline void ReGluImplVF(
 } // namespace Internal
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void ReGluImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0,
-    const LocalTensor<T>& srcTensor1, const uint32_t count)
+__aicore__ inline void ReGluImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0, const LocalTensor<T>& srcTensor1,
+    const uint32_t count)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
         return;
     }
-    static_assert(SupportType<T, half, float, bfloat16_t>(), "ReGlu only support half/float/bfloat16_t data type on current device!");
+    static_assert(
+        SupportType<T, half, float, bfloat16_t>(),
+        "ReGlu only support half/float/bfloat16_t data type on current device!");
     CheckTensorPosition(dstTensor, "dstTensor", "VECIN, VECOUT, VECCALC");
     CheckTensorPosition(srcTensor0, "srcTensor0", "VECIN, VECOUT, VECCALC");
     CheckTensorPosition(srcTensor1, "srcTensor1", "VECIN, VECOUT, VECCALC");
@@ -82,13 +85,15 @@ __aicore__ inline void ReGluImpl(const LocalTensor<T>& dstTensor, const LocalTen
     CheckCalCount(count, "count", srcTensor1, "srcTensor1", "ReGlu");
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(float));
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-    Internal::ReGluImplVF<T>((__ubuf__ T*)dstTensor.GetPhyAddr(), (__ubuf__ T*)srcTensor0.GetPhyAddr(),
-        (__ubuf__ T*)srcTensor1.GetPhyAddr(), count, repeatTimes);
+    Internal::ReGluImplVF<T>(
+        (__ubuf__ T*)dstTensor.GetPhyAddr(), (__ubuf__ T*)srcTensor0.GetPhyAddr(), (__ubuf__ T*)srcTensor1.GetPhyAddr(),
+        count, repeatTimes);
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void ReGluImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0,
-    const LocalTensor<T>& srcTensor1, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t count)
+__aicore__ inline void ReGluImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0, const LocalTensor<T>& srcTensor1,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t count)
 {
     CheckTensorPosition(sharedTmpBuffer, "sharedTmpBuffer", "VECIN, VECOUT, VECCALC");
     ReGluImpl<T, isReuseSource>(dstTensor, srcTensor0, srcTensor1, count);

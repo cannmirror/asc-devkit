@@ -21,15 +21,13 @@
 
 ## 样例描述
 
-- 样例功能：
-
+- 样例功能：  
   样例基于矩阵乘计算为背景，演示asc_dump系列接口（含asc_dump_gm、asc_dump_ubuf、asc_dump_cbuf和asc_dump_l1buf）在NPU侧样例核函数中的使用方法，通过调用上述接口实现不同物理位置上的张量数据可视化。
 
   此外，该系列接口兼容AscendC::DumpTensor接口。但后续开发中，建议优先使用asc_dump系列接口；若需Dump指定偏移位置的数据，由于asc_dump系列暂不支持该能力，可继续使用DumpAccChkPoint接口。
 
 - 样例规格：
-  - Mmad样例：
-
+  - Mmad样例：  
     矩阵乘规格：M = 16, N = 16, K = 16，详细信息如下表：
     <table>
     <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="4" align="center">Mmad</td></tr>
@@ -44,8 +42,7 @@
     <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">mmad_custom</td></tr>
     </table>
 
-- 样例实现：
-
+- 样例实现：  
   1）.asc_dump系列接口的函数签名一样，仅函数名存在区分，这种区分用以表示要Dump的具体位置：
   ```cpp
   __aicore__ inline void asc_dump_gm(__gm__ T* input, uint32_t desc, uint32_t dumpSize);

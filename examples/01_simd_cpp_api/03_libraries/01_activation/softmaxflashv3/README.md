@@ -72,8 +72,7 @@
 - 算子实现：  
   本样例中实现的是固定shape为输入src[8, 2048]，inMax[8, 8]，inSum[8, 8]，inMean[8, 8]， 输出dst[8, 2048]的softmaxflashv3算子。
 
-  - Kernel实现
-
+  - Kernel实现  
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用SoftmaxFlashV3高阶API接口完成softmaxflashv3计算，得到最终结果，再搬出到外部存储上。
 
     softmaxflashv3算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm、inMaxGm、inSumGm、inMeanGm搬运至Local Memory，存储在srcLocal、inMaxLocal、inSumLocal、inMeanLocal，Compute任务负责对srcLocal、inMaxLocal、inSumLocal、inMeanLocal执行softmaxflashv3计算，计算结果存储在dstLocal中，CopyOut任务负责将输出数据dstLocal搬运至Global Memory上的输出Tensor dstGm中。

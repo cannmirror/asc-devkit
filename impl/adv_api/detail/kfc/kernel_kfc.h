@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file kernel_kfc.h
@@ -27,7 +27,7 @@
 #endif
 namespace AscendC {
 constexpr uint16_t WORKSPACE_SYNC_ID = 15;
-__aicore__ inline void clearWorkspace(__gm__ uint8_t *workspace)
+__aicore__ inline void clearWorkspace(__gm__ uint8_t* workspace)
 {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
     AscendC::SetAtomicNone();
@@ -63,11 +63,12 @@ public:
         return quitSize < MIX_NUM;
     }
 #if (defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510) && KFC_C310_SSBUF
-    template <class T, class... Args> __aicore__ inline void Run(T &a, Args &&... b)
+    template <class T, class... Args>
+    __aicore__ inline void Run(T& a, Args&&... b)
     {
         TRACE_START(TraceId::KFC_SERVER_RUN);
         auto ptr = kfcCommSrv;
-        MSG_POS KfcMsg *msg;
+        MSG_POS KfcMsg* msg;
         bool ret = true;
         int i = 0;
         bool mcgSyncSwitch = true;
@@ -164,7 +165,8 @@ public:
         TRACE_STOP(TraceId::KFC_SERVER_RUN);
     }
 #else
-    template <class T, class... Args> __aicore__ inline void Run(T& a, Args&&... b)
+    template <class T, class... Args>
+    __aicore__ inline void Run(T& a, Args&&... b)
     {
         TRACE_START(TraceId::KFC_SERVER_RUN);
         auto ptr = kfcCommSrv;
@@ -178,8 +180,8 @@ public:
                 // The check message is public
                 TRACE_START(TraceId::KFC_SERVER_PROCESS_MSG);
                 auto funID = KfcMsgGetFunID(msg->head);
-                auto srvID = static_cast<KFC_Enum>(static_cast<uint16_t>(funID) &
-                    static_cast<uint16_t>(KFC_Enum::SERVICE_ID_MASK));
+                auto srvID = static_cast<KFC_Enum>(
+                    static_cast<uint16_t>(funID) & static_cast<uint16_t>(KFC_Enum::SERVICE_ID_MASK));
                 bool freeMsg = true;
                 if (srvID == KFC_Enum::SERVICE_ID_MATMUL) {
                     switchPoll = RunAux(i, msg, funID, freeMsg, a, b...);
@@ -198,19 +200,21 @@ public:
                     switchPoll = true;
 
 #ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
-                    // only executed in a 1:2 mode 
+                    // only executed in a 1:2 mode
                     if (quitSize == 2) {
                         // after receiving two exit message, AIC sends a message to AIV and performs a counter reset.
                         auto secondMsgStartPos = ptr->GetSecondBuffStart();
                         // scalar write the GM, dcci write back to GM
-                        dcci(reinterpret_cast<__gm__ int64_t *>(secondMsgStartPos), cache_line_t::SINGLE_CACHE_LINE, dcci_dst_t::CACHELINE_OUT);
+                        dcci(
+                            reinterpret_cast<__gm__ int64_t*>(secondMsgStartPos), cache_line_t::SINGLE_CACHE_LINE,
+                            dcci_dst_t::CACHELINE_OUT);
                         SetFlag<HardEvent::S_MTE3>(EVENT_ID0);
                         WaitFlag<HardEvent::S_MTE3>(EVENT_ID0);
                         NotifyEvent<PIPE_MTE3>(KFC_SYNC_ID);
                     }
 #endif
 
-                    if(msg->ubAddr == 1) {
+                    if (msg->ubAddr == 1) {
                         quitSize++;
                         TRACE_STOP(TraceId::KFC_SERVER_RUN);
                         return;
@@ -237,7 +241,8 @@ public:
     }
 #endif
 
-    template <class T, class... Args> __aicore__ inline void InitObj(TPipe* tpipe, T& a, Args&&... b)
+    template <class T, class... Args>
+    __aicore__ inline void InitObj(TPipe* tpipe, T& a, Args&&... b)
     {
         if constexpr (sizeof(T) == sizeof(void*)) { // Skip previous invalid pointer for compatibility
             InitObj(b...);
@@ -250,23 +255,24 @@ public:
         }
     }
 
-    __aicore__ inline void Quit()
-    {}
+    __aicore__ inline void Quit() {}
 
-    template <class T, class... Args> __aicore__ static inline constexpr bool isTiling()
+    template <class T, class... Args>
+    __aicore__ static inline constexpr bool isTiling()
     {
         return sizeof(T) == sizeof(void*);
     }
 
-    template <class T, class... Args> __aicore__ static T* GetTiling(T* t, Args&&... b)
+    template <class T, class... Args>
+    __aicore__ static T* GetTiling(T* t, Args&&... b)
     {
         return t;
     }
 
 private:
     template <class T, class... Args>
-    __aicore__ inline bool RunAuxSkip(int subBlockID, MSG_POS KfcMsg* msg, KFC_Enum funID, bool& freeMsg,
-        T& a, Args&&... b)
+    __aicore__ inline bool RunAuxSkip(
+        int subBlockID, MSG_POS KfcMsg* msg, KFC_Enum funID, bool& freeMsg, T& a, Args&&... b)
     {
         return RunAux(subBlockID, msg, funID, freeMsg, b...);
     }
@@ -286,7 +292,8 @@ private:
                     freeMsg = true;
                     a.cubeObj.cubeObj[0].SetSubBlockIdx(static_cast<uint8_t>(subBlockID));
                     auto ret = a.cubeObj.cubeObj[0].Process(msg, funID);
-                    if (a.cubeObj.cubeObj[0].template LockMsgQueue<enableHardPoll>(funID, freeMsg, lastMsgId, subBlockID, msg)) {
+                    if (a.cubeObj.cubeObj[0].template LockMsgQueue<enableHardPoll>(
+                            funID, freeMsg, lastMsgId, subBlockID, msg)) {
                         return false; // lock on queue of v0
                     }
                     return ret;
@@ -301,7 +308,8 @@ private:
                 freeMsg = true;
                 a.cubeObj.cubeObj[0].SetSubBlockIdx(static_cast<uint8_t>(subBlockID));
                 auto ret = a.cubeObj.cubeObj[0].Process(msg, funID);
-                if (a.cubeObj.cubeObj[0].template LockMsgQueue<enableHardPoll>(funID, freeMsg, lastMsgId, subBlockID, msg)) {
+                if (a.cubeObj.cubeObj[0].template LockMsgQueue<enableHardPoll>(
+                        funID, freeMsg, lastMsgId, subBlockID, msg)) {
                     return false; // lock on queue of v0
                 }
                 return ret;
@@ -322,15 +330,15 @@ private:
 #else
             if (a.cubeObj.cubeObj[subBlockID].GetInstID() == KfcMsgGetInstID(msg->head)) {
 #endif
-                if (a.cubeObj.cubeObj[subBlockID].template SkipMsg<enableHardPoll>(funID, freeMsg, lastMsgId,
-                    subBlockID)) {
+                if (a.cubeObj.cubeObj[subBlockID].template SkipMsg<enableHardPoll>(
+                        funID, freeMsg, lastMsgId, subBlockID)) {
                     return true;
                 }
                 freeMsg = true;
                 a.cubeObj.cubeObj[subBlockID].SetSubBlockIdx(static_cast<uint8_t>(subBlockID));
                 auto ret = a.cubeObj.cubeObj[subBlockID].Process(msg, funID);
-                if (a.cubeObj.cubeObj[subBlockID].template LockMsgQueue<enableHardPoll>(funID, freeMsg, lastMsgId,
-                    subBlockID, msg)) {
+                if (a.cubeObj.cubeObj[subBlockID].template LockMsgQueue<enableHardPoll>(
+                        funID, freeMsg, lastMsgId, subBlockID, msg)) {
                     return false; // lock on queue of v0
                 }
                 return ret;
@@ -349,14 +357,15 @@ private:
     }
 
     template <class T, class... Args>
-    __aicore__ inline void InitObjAuxSkip(TPipe* tpipe, KFC_COMM_SERVER_PTR kfc, int subBlockID, int instID, T* a,
-        Args&&... b)
+    __aicore__ inline void InitObjAuxSkip(
+        TPipe* tpipe, KFC_COMM_SERVER_PTR kfc, int subBlockID, int instID, T* a, Args&&... b)
     {
         InitObjAux(tpipe, kfc, subBlockID, instID, b...);
     }
 
     template <class T, class... Args>
-    __aicore__ inline void InitObjAux(TPipe *tpipe, KFC_COMM_SERVER_PTR kfc, int subBlockID, int instID, T &a, Args &&...b)
+    __aicore__ inline void InitObjAux(
+        TPipe* tpipe, KFC_COMM_SERVER_PTR kfc, int subBlockID, int instID, T& a, Args&&... b)
     {
         ASSERT(kfc != nullptr && "kfc cannot be nullptr when kfc server init obj aux");
         ASSERT(subBlockID >= 0 && subBlockID < MIX_NUM && "sub block id should be [0, MIX_NUM)");
@@ -366,10 +375,10 @@ private:
         if constexpr (sizeof...(b) == 0) {
             if (a.cubeObj.cubeObj[0].IsSharedObj()) {
                 if (subBlockID == 0) {
-                    a.cubeObj.cubeObj[0].InitKfc(tpipe, (void *)nullptr, kfc, instID, workspace);
+                    a.cubeObj.cubeObj[0].InitKfc(tpipe, (void*)nullptr, kfc, instID, workspace);
                 }
             } else {
-                a.cubeObj.cubeObj[subBlockID].InitKfc(tpipe, (void *)nullptr, kfc, instID, workspace);
+                a.cubeObj.cubeObj[subBlockID].InitKfc(tpipe, (void*)nullptr, kfc, instID, workspace);
             }
         } else if constexpr (isTiling<Args...>()) {
             auto tiling = GetTiling(b...);
@@ -391,7 +400,7 @@ private:
                 }
             }
         } else {
-            a.cubeObj.cubeObj[subBlockID].InitKfc(tpipe, (void *)nullptr, kfc, instID, workspace);
+            a.cubeObj.cubeObj[subBlockID].InitKfc(tpipe, (void*)nullptr, kfc, instID, workspace);
             if constexpr (sizeof...(b) >= 1) {
                 InitObjAux(tpipe, kfc, subBlockID, instID + 1, b...);
             }
@@ -409,15 +418,15 @@ private:
 };
 
 template <class T, class... Args>
-__aicore__ inline void SetMatrixKfcSkip(TPipe* pipe, KfcCommClient* kfcClient, const int32_t instID, GM_ADDR workspace,
-    T& cubeObj, Args&&... b)
+__aicore__ inline void SetMatrixKfcSkip(
+    TPipe* pipe, KfcCommClient* kfcClient, const int32_t instID, GM_ADDR workspace, T& cubeObj, Args&&... b)
 {
     SetMatrixKfc(pipe, kfcClient, instID, workspace, b...);
 }
 
 template <class T, class... Args>
-__aicore__ inline void SetMatrixKfc(TPipe* pipe, KfcCommClient* kfcClient, const int32_t instID, GM_ADDR workspace,
-    T& cubeObj, Args&&... b)
+__aicore__ inline void SetMatrixKfc(
+    TPipe* pipe, KfcCommClient* kfcClient, const int32_t instID, GM_ADDR workspace, T& cubeObj, Args&&... b)
 {
     ASSERT((pipe != nullptr) && "pipe should not be nullptr.");
     ASSERT((kfcClient != nullptr) && "kfcClient should not be nullptr.");

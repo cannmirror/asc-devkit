@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file copy_cube_in_mdl_base.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/stage/copy_cube_in/base/copy_cube_in_mdl_base.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/stage/copy_cube_in/base/copy_cube_in_mdl_base.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_IN_BASE_COPY_CUBE_IN_MDL_BASE_H__
 #endif
@@ -34,9 +35,8 @@ namespace Detail {
     We retain the freedom to make incompatible changes, but do not guarantee the stability.
     CopyCubeInMDLBase is only for internal usage, does not support extension or customized specialization!
 */
-template <typename IMPL, const auto &MM_CFG, class INPUT_TYPE>
-class CopyCubeInMDLBase : public CopyCubeInBase<IMPL, MM_CFG, INPUT_TYPE>
-{
+template <typename IMPL, const auto& MM_CFG, class INPUT_TYPE>
+class CopyCubeInMDLBase : public CopyCubeInBase<IMPL, MM_CFG, INPUT_TYPE> {
     MATMUL_USE_MODULE_ON(CubeInBuffer, INPUT_TYPE::TAG);
     MATMUL_USE_MODULE_ON(CopyCubeInParams, INPUT_TYPE::TAG);
     MATMUL_USE_MODULE_ON(DataCopyUtils, INPUT_TYPE::TAG);
@@ -73,8 +73,9 @@ public:
         int32_t curRow, int32_t curCol, int32_t tileHeight, int32_t tileWidth, const ScheduleContext& context = {})
     {
         if constexpr (PhyPosIsL1(INPUT_TYPE::pos) || INPUT_TYPE::layout != LayoutMode::NONE) {
-            ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR,
-                "Matching error. MDL AsyncLoadData doesn't support BMM && Src L1"); });
+            ASCENDC_ASSERT((false), {
+                KERNEL_LOG(KERNEL_ERROR, "Matching error. MDL AsyncLoadData doesn't support BMM && Src L1");
+            });
         }
 
         LocalTensor<TransT> l1;
@@ -95,21 +96,18 @@ public:
         }
     }
 
-    __aicore__ inline void ClearLoadData(const LocalTensor<TransT>& tensor = LocalTensor<TransT>{},
-        int32_t curRow = 0, int32_t curCol = 0)
+    __aicore__ inline void ClearLoadData(
+        const LocalTensor<TransT>& tensor = LocalTensor<TransT>{}, int32_t curRow = 0, int32_t curCol = 0)
     {
         auto bufferPos = MATMUL_MODULE(CopyCubeInParams)->GetBufferPos();
         MATMUL_MODULE(CubeInBuffer)->FreeTensor(bufferPos);
     }
 
-    __aicore__ inline void AwaitLoadData()
-    {
-        MATMUL_MODULE(CubeInBuffer)->DeQue();
-    }
+    __aicore__ inline void AwaitLoadData() { MATMUL_MODULE(CubeInBuffer)->DeQue(); }
 };
-}  // namespace Detail
-}  // namespace Impl
-}  // namespace AscendC
+} // namespace Detail
+} // namespace Impl
+} // namespace AscendC
 #endif // IMPL_MATMUL_STAGE_COPY_CUBE_IN_BASE_COPY_CUBE_IN_MDL_BASE_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_IN_BASE_COPY_CUBE_IN_MDL_BASE_H__)

@@ -1,15 +1,16 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/transpose/transdata/transdata_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/transpose/transdata.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/transpose/transdata/transdata_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/transpose/transdata.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TRANSPOSE_TRANSDATA_TRANSDATA_IMPL_H__
 #endif
@@ -35,7 +36,7 @@ constexpr int32_t hw0 = 16;
 constexpr int32_t ncdhwDims = 5;
 constexpr int32_t fractalZ3DDims = 7;
 constexpr int32_t ndc1hwc0Dims = 6;
-}
+} // namespace
 
 struct TransDataTmpParams {
     int32_t n;
@@ -51,8 +52,8 @@ struct TransDataTmpParams {
 constexpr int32_t DEFAULT_TRANSDATA_5HD_LIST = 16;
 
 template <typename T>
-__aicore__ inline void DC1Hwn1n0c0ToC1DHwn1n0c0HWAlign(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const TransDataTmpParams& params)
+__aicore__ inline void DC1Hwn1n0c0ToC1DHwn1n0c0HWAlign(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const TransDataTmpParams& params)
 {
     // d, c1, h w n1 n0 c0 -> c1, d, hw1*hw0 n1 n0 c0
     int32_t d = params.d;
@@ -80,7 +81,7 @@ __aicore__ inline void DC1Hwn1n0c0ToC1DHwn1n0c0HWAlign(const LocalTensor<T>& dst
     Duplicate<T>(dst, static_cast<T>(0), dstSize);
     PipeBarrier<PIPE_V>();
 
-    DataCopyParams dataCopyParams = { blockCount, blockLen, srcGap, dstGap };
+    DataCopyParams dataCopyParams = {blockCount, blockLen, srcGap, dstGap};
     for (uint32_t d0 = 0; d0 < dim0; d0++) {
         DataCopy(dst[d0 * hwAlignElems], src[d0 * dim1 * lastDim], dataCopyParams);
     }
@@ -88,8 +89,8 @@ __aicore__ inline void DC1Hwn1n0c0ToC1DHwn1n0c0HWAlign(const LocalTensor<T>& dst
 }
 
 template <typename T>
-__aicore__ inline void C1Dhwn1n0c0ToC1C0Dhwn1n0(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const TransDataTmpParams& params)
+__aicore__ inline void C1Dhwn1n0c0ToC1C0Dhwn1n0(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const TransDataTmpParams& params)
 {
     // C1 DHWN1N0 C0 -> C1 C0 DHWN1N0
     int32_t d = params.d;
@@ -125,8 +126,8 @@ __aicore__ inline void C1Dhwn1n0c0ToC1C0Dhwn1n0(const LocalTensor<T>& dst, const
 }
 
 template <typename T>
-__aicore__ inline void C1c0dhwN1n0ToNcdhw(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const LocalTensor<T>& tmp, const TransDataTmpParams& params)
+__aicore__ inline void C1c0dhwN1n0ToNcdhw(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& tmp, const TransDataTmpParams& params)
 {
     // C1C0DHW N1N0 -> N CDHW
     int32_t d = params.d;
@@ -175,8 +176,8 @@ __aicore__ inline void C1c0dhwN1n0ToNcdhw(const LocalTensor<T>& dst, const Local
 }
 
 template <typename T>
-__aicore__ inline void N1n0C1c0DHWToNCDHW(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const TransDataTmpParams& params)
+__aicore__ inline void N1n0C1c0DHWToNCDHW(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const TransDataTmpParams& params)
 {
     // N1N0 C1C0 D H W -> N C D H W
     int32_t n = params.n;
@@ -187,16 +188,17 @@ __aicore__ inline void N1n0C1c0DHWToNCDHW(const LocalTensor<T>& dst, const Local
 
     uint16_t blockCount = n;
     uint16_t blockLen = (c * (d * padHw)) * sizeof(T) / ONE_BLK_SIZE;
-    uint16_t srcGap = ((c1 * c0 - c) * (d * padHw)) * sizeof(T) /ONE_BLK_SIZE;
+    uint16_t srcGap = ((c1 * c0 - c) * (d * padHw)) * sizeof(T) / ONE_BLK_SIZE;
     uint16_t dstGap = 0;
-    DataCopyParams dataCopyParams = { blockCount, blockLen, srcGap, dstGap };
+    DataCopyParams dataCopyParams = {blockCount, blockLen, srcGap, dstGap};
     DataCopy(dst, src, dataCopyParams);
     PipeBarrier<PIPE_V>();
 }
 
 template <typename T>
-__aicore__ inline void TransDataFractalToNcdhw(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const LocalTensor<uint8_t>& tmpBuffer, const TransDataTmpParams& params)
+__aicore__ inline void TransDataFractalToNcdhw(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<uint8_t>& tmpBuffer,
+    const TransDataTmpParams& params)
 {
     int32_t d = params.d;
     int32_t n1 = params.n1;
@@ -229,7 +231,8 @@ __aicore__ inline void TransDataFractalToNcdhw(const LocalTensor<T>& dst, const 
 
 // Transdata NCDHW -> FRACTAL_Z_3D
 template <typename T>
-__aicore__ inline void TransDataImplNcdhwToFractal(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<uint8_t>& tmpBuffer,
+__aicore__ inline void TransDataImplNcdhwToFractal(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<uint8_t>& tmpBuffer,
     const TransDataTmpParams& param)
 {
     constexpr int32_t elePerBlk = ONE_BLK_SIZE / sizeof(T);
@@ -273,7 +276,7 @@ __aicore__ inline void TransDataImplNcdhwToFractal(const LocalTensor<T>& dst, co
         // handle the last axis if N is not even splited by n0.
         int remain = j == n1 - 1 ? n - j * n0 : n0;
         for (int32_t i = 0; i < DEFAULT_TRANSDATA_5HD_LIST; i++) {
-            dstLocalList[i] = currDstAddr +  (i * n1 * n0) * sizeof(T);
+            dstLocalList[i] = currDstAddr + (i * n1 * n0) * sizeof(T);
         }
         for (int32_t i = 0; i < remain; i++) {
             srcLocalList[i] = currSrcAddr + i * currAxis * sizeof(T);
@@ -333,7 +336,8 @@ __aicore__ inline void TransDataImplNcdhwToFractal(const LocalTensor<T>& dst, co
 
 // Transdata NCDHW -> NDC1HWC0
 template <typename T>
-__aicore__ inline void TransDataImplNcdhwTo6Hd(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<uint8_t>& tmpBuffer,
+__aicore__ inline void TransDataImplNcdhwTo6Hd(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<uint8_t>& tmpBuffer,
     const TransDataTmpParams& param)
 {
     constexpr int32_t c0 = 16;
@@ -406,7 +410,8 @@ __aicore__ inline void TransDataImplNcdhwTo6Hd(const LocalTensor<T>& dst, const 
 
 // Transdata NDC1HWC0 -> NCDHW
 template <typename T>
-__aicore__ inline void TransDataImpl6HdToNcdhw(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<uint8_t>& tmpBuffer,
+__aicore__ inline void TransDataImpl6HdToNcdhw(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<uint8_t>& tmpBuffer,
     const TransDataTmpParams& param)
 {
     const int32_t n = param.n, c = param.c, d = param.d, h = param.h, w = param.w;
@@ -476,7 +481,8 @@ __aicore__ inline void TransDataImpl6HdToNcdhw(const LocalTensor<T>& dst, const 
 template <typename T, typename U, typename S>
 __aicore__ inline void TransDataCheck(const TransDataParams<U, S>& params)
 {
-    static_assert(SupportType<T, half, bfloat16_t, uint16_t, int16_t>(),
+    static_assert(
+        SupportType<T, half, bfloat16_t, uint16_t, int16_t>(),
         "Current only supports half/bfloat16_t/uint16_t/int16_t types.");
     static_assert(is_layout_v<U>, "srcLayout must be a layout");
     static_assert(is_layout_v<S>, "dstLayout must be a layout");
@@ -487,8 +493,9 @@ __aicore__ inline void TransDataCheck(const TransDataParams<U, S>& params)
 }
 
 template <const TransDataConfig& config, typename T, typename U, typename S>
-__aicore__ inline void TransDataImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const TransDataParams<U, S>& params)
+__aicore__ inline void TransDataImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const TransDataParams<U, S>& params)
 {
     TransDataCheck<T, U, S>(params);
     auto srcShape = params.srcLayout.GetShape();
@@ -514,7 +521,7 @@ __aicore__ inline void TransDataImpl(const LocalTensor<T>& dstTensor, const Loca
     int32_t c1 = (c + c0 - 1) / c0;
     int32_t hw1 = (h * w + hw0 - 1) / hw0;
     int32_t padHw = hw1 * hw0;
-    TransDataTmpParams tmpParams = { n, c, d, h, w, n1, c1, padHw };
+    TransDataTmpParams tmpParams = {n, c, d, h, w, n1, c1, padHw};
     if constexpr (config.srcFormat == DataFormat::NCDHW && config.dstFormat == DataFormat::FRACTAL_Z_3D) {
         static_assert(srcShapeSize == ncdhwDims, "srcLayout's shape dims must be equal to 5!");
         static_assert(dstShapeSize == fractalZ3DDims, "dstLayout's shape dims must be equal to 7!");

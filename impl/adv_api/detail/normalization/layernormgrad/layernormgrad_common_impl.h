@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file layernormgrad_common_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/normalization/layernormgrad/layernormgrad_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/normalization/layernormgrad/layernormgrad_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORMGRAD_LAYERNORMGRAD_COMMON_IMPL_H__
 #endif
@@ -34,7 +35,7 @@ const uint32_t LAYERNORM_GRAD_B16_BYTE_SIZE = 2;
 
 namespace AscendC {
 struct LayerNormGradParams {
-    __aicore__ LayerNormGradParams(LayerNormGradTiling &tiling, LocalTensor<float> &stackBuffer)
+    __aicore__ LayerNormGradParams(LayerNormGradTiling& tiling, LocalTensor<float>& stackBuffer)
         : bLength(tiling.bLength),
           sLength(tiling.sLength),
           hLength(tiling.hLength),
@@ -52,8 +53,8 @@ struct LayerNormGradParams {
           tmpTensor1(stackBuffer[tiling.tmpTensor1Pos]),
           tmpTensor2(stackBuffer[tiling.tmpTensor2Pos]),
           tmpTensorBSH(stackBuffer[tiling.tmpTensorBSHPos]),
-          lastDimValueBack(*(reinterpret_cast<float *>(&tiling.lastDimValueBack))),
-          lastDimValueBackMulTwo(*(reinterpret_cast<float *>(&tiling.lastDimValueBackMulTwo)))
+          lastDimValueBack(*(reinterpret_cast<float*>(&tiling.lastDimValueBack))),
+          lastDimValueBackMulTwo(*(reinterpret_cast<float*>(&tiling.lastDimValueBackMulTwo)))
     {
         x1Tensor.SetSize(tiling.x1TensorSize);
         x2Tensor.SetSize(tiling.x2TensorSize);
@@ -97,8 +98,8 @@ struct LayerNormGradParams {
     LocalTensor<float> tmpTensorBSH; // tmp for intermediate use
 };
 
-__aicore__ inline void DuplicateLastDimImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const uint32_t bsLength, const uint32_t hLength)
+__aicore__ inline void DuplicateLastDimImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint32_t bsLength, const uint32_t hLength)
 {
     auto eventIdVToS = GetTPipePtr()->FetchEventID(HardEvent::V_S);
     SetFlag<HardEvent::V_S>(eventIdVToS);
@@ -127,8 +128,8 @@ __aicore__ inline void DuplicateLastDimImpl(const LocalTensor<float>& dst, const
 }
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
-__aicore__ inline void BrcbLastDimImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const uint32_t bsLength, const uint32_t hLength)
+__aicore__ inline void BrcbLastDimImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint32_t bsLength, const uint32_t hLength)
 {
     const uint32_t maxRepeatHSize = BRCB_MAX_REPEAT_SIZE * hLength;
 
@@ -147,12 +148,14 @@ __aicore__ inline void BrcbLastDimImpl(const LocalTensor<float>& dst, const Loca
 
     for (uint32_t i = 0; i < lineRound; i++) {
         for (uint32_t j = 0; j < repeatTimes; j++) {
-            Brcb(dst[i * BRCB_BROADCAST_NUMBER + j * maxRepeatHSize], src[j * BRCB_MAX_REPEAT_SIZE], MAX_REPEAT_TIMES,
+            Brcb(
+                dst[i * BRCB_BROADCAST_NUMBER + j * maxRepeatHSize], src[j * BRCB_MAX_REPEAT_SIZE], MAX_REPEAT_TIMES,
                 repeatParams);
         }
 
         if (tailTimes > 0) {
-            Brcb(dst[i * BRCB_BROADCAST_NUMBER + repeatTimes * maxRepeatHSize], src[repeatTimes * BRCB_MAX_REPEAT_SIZE],
+            Brcb(
+                dst[i * BRCB_BROADCAST_NUMBER + repeatTimes * maxRepeatHSize], src[repeatTimes * BRCB_MAX_REPEAT_SIZE],
                 tailTimes, repeatParams);
         }
         PipeBarrier<PIPE_V>();
@@ -165,8 +168,8 @@ __aicore__ inline void BrcbLastDimImpl(const LocalTensor<float>& dst, const Loca
 }
 #endif
 
-__aicore__ inline void BroadcastLastDimImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const uint32_t dstSize, const uint32_t srcSize)
+__aicore__ inline void BroadcastLastDimImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint32_t dstSize, const uint32_t srcSize)
 {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
     BrcbLastDimImpl(dst, src, srcSize, dstSize / srcSize);
@@ -196,7 +199,8 @@ __aicore__ inline void ReduceSumImpl(
             uint32_t blockTail = repeatTimes % MAX_REPEAT_TIMES;
 
             for (uint32_t j = 0; j < blockNum; j++) {
-                WholeReduceSum(dst[iMulhLength + j * MAX_REPEAT_TIMES], srctmp[iMulhLength + j * MAX_REPEAT_FLOAT_SIZE],
+                WholeReduceSum(
+                    dst[iMulhLength + j * MAX_REPEAT_TIMES], srctmp[iMulhLength + j * MAX_REPEAT_FLOAT_SIZE],
                     ONE_REPEAT_FLOAT_SIZE, MAX_REPEAT_TIMES, 1, 1, DEFAULT_REPEAT_STRIDE);
             }
             PipeBarrier<PIPE_V>();
@@ -208,8 +212,9 @@ __aicore__ inline void ReduceSumImpl(
             }
 
             if (blockTail > 0) {
-                WholeReduceSum(dstTmp, srctmp[iMulhLength + blockNum * MAX_REPEAT_FLOAT_SIZE], ONE_REPEAT_FLOAT_SIZE,
-                    blockTail, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+                WholeReduceSum(
+                    dstTmp, srctmp[iMulhLength + blockNum * MAX_REPEAT_FLOAT_SIZE], ONE_REPEAT_FLOAT_SIZE, blockTail,
+                    DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
                 PipeBarrier<PIPE_V>();
             }
 
@@ -220,8 +225,9 @@ __aicore__ inline void ReduceSumImpl(
             }
 
             if (tailSize > 0) {
-                WholeReduceSum(dstTmp, srctmp[iMulhLength + repeatTimes * ONE_REPEAT_FLOAT_SIZE], tailSize,
-                    DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+                WholeReduceSum(
+                    dstTmp, srctmp[iMulhLength + repeatTimes * ONE_REPEAT_FLOAT_SIZE], tailSize, DEFAULT_BLK_STRIDE,
+                    DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
                 PipeBarrier<PIPE_V>();
             }
 
@@ -239,8 +245,9 @@ __aicore__ inline void DuplicateTensor(
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void ComputePdX1(const LocalTensor<float> &inputDy, const LocalTensor<float> &inputGamma,
-    LayerNormGradParams &param, const uint32_t nohSize, const uint32_t hLength)
+__aicore__ inline void ComputePdX1(
+    const LocalTensor<float>& inputDy, const LocalTensor<float>& inputGamma, LayerNormGradParams& param,
+    const uint32_t nohSize, const uint32_t hLength)
 {
     // x1Tensor = inputDy * inputGamma
     for (size_t i = 0; i < nohSize; ++i) {
@@ -250,8 +257,9 @@ __aicore__ inline void ComputePdX1(const LocalTensor<float> &inputDy, const Loca
 }
 
 template <typename T>
-__aicore__ inline void ComputePdX2(const LocalTensor<T> &inputX, const LocalTensor<T> &inputMean,
-    const LayerNormGradParams &param, const uint32_t calSize, const uint32_t nohSize, const uint32_t hLength)
+__aicore__ inline void ComputePdX2(
+    const LocalTensor<T>& inputX, const LocalTensor<T>& inputMean, const LayerNormGradParams& param,
+    const uint32_t calSize, const uint32_t nohSize, const uint32_t hLength)
 {
     // duplicate inputMean
     DuplicateTensor(param.tmpTensorBSH, inputMean, nohSize, hLength);
@@ -261,22 +269,25 @@ __aicore__ inline void ComputePdX2(const LocalTensor<T> &inputX, const LocalTens
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void DoOneDiv(LocalTensor<float>& dstTensor, LocalTensor<float>& oneTensor,
-    LocalTensor<float>& src1Tensor, const uint32_t nohSize)
+__aicore__ inline void DoOneDiv(
+    LocalTensor<float>& dstTensor, LocalTensor<float>& oneTensor, LocalTensor<float>& src1Tensor,
+    const uint32_t nohSize)
 {
     SetMaskCount();
     SetVectorMask<uint8_t, MaskMode::COUNTER>(0, B32_DATA_NUM_PER_BLOCK);
     Duplicate<float, false>(oneTensor, 1, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
     PipeBarrier<PIPE_V>();
     SetVectorMask<uint8_t, MaskMode::COUNTER>(0, nohSize);
-    Div<float, false>(dstTensor, oneTensor, src1Tensor, MASK_PLACEHOLDER, 1,
-        { 1, 0, 1, DEFAULT_REPEAT_STRIDE, 0, DEFAULT_REPEAT_STRIDE });
+    Div<float, false>(
+        dstTensor, oneTensor, src1Tensor, MASK_PLACEHOLDER, 1,
+        {1, 0, 1, DEFAULT_REPEAT_STRIDE, 0, DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
     SetMaskNorm();
 }
 
-__aicore__ inline void ComputePdVar(const LocalTensor<float> &inputVariance, float epsilon, LayerNormGradParams &param,
-    const uint32_t calSize, const uint32_t nohSize)
+__aicore__ inline void ComputePdVar(
+    const LocalTensor<float>& inputVariance, float epsilon, LayerNormGradParams& param, const uint32_t calSize,
+    const uint32_t nohSize)
 {
     const float multiplier1 = -1.5;
     const float multiplier2 = -0.5;
@@ -311,8 +322,9 @@ __aicore__ inline void ComputePdVar(const LocalTensor<float> &inputVariance, flo
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void ComputePdMean(const LocalTensor<float> &inputVariance, const LocalTensor<float> &resForGamma,
-    float epsilon, LayerNormGradParams &param, const uint32_t calSize, const uint32_t nohSize)
+__aicore__ inline void ComputePdMean(
+    const LocalTensor<float>& inputVariance, const LocalTensor<float>& resForGamma, float epsilon,
+    LayerNormGradParams& param, const uint32_t calSize, const uint32_t nohSize)
 {
     constexpr float exponent = -0.5;
     constexpr float multiplier = -1.0;
@@ -362,8 +374,9 @@ __aicore__ inline void ComputePdMean(const LocalTensor<float> &inputVariance, co
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void ComputePdX(const LocalTensor<float> &inputVariance, const LocalTensor<float> &outputPdX,
-    float epsilon, const LayerNormGradParams &param, const uint32_t calSize, const uint32_t nohSize)
+__aicore__ inline void ComputePdX(
+    const LocalTensor<float>& inputVariance, const LocalTensor<float>& outputPdX, float epsilon,
+    const LayerNormGradParams& param, const uint32_t calSize, const uint32_t nohSize)
 {
     // 1. res0 = x1Tensor * np.power((inputVariance + EPSILON), (-0.5)), already store in resForGamma
     // 2. res1 = pd_var*(2.0 / H)*(x2Tensor)
@@ -389,8 +402,9 @@ __aicore__ inline void ComputePdX(const LocalTensor<float> &inputVariance, const
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void GetTmpTensor(const LocalTensor<float> &outputPdX, const LocalTensor<float> &inputDy,
-    const LocalTensor<float> &inputX, LayerNormGradParams &param, bool isReuseSource = false)
+__aicore__ inline void GetTmpTensor(
+    const LocalTensor<float>& outputPdX, const LocalTensor<float>& inputDy, const LocalTensor<float>& inputX,
+    LayerNormGradParams& param, bool isReuseSource = false)
 {
     param.tmpTensor = outputPdX;
     if (isReuseSource == true) {
@@ -400,17 +414,19 @@ __aicore__ inline void GetTmpTensor(const LocalTensor<float> &outputPdX, const L
 }
 
 template <typename T>
-__aicore__ inline void ComputeProcess(const LocalTensor<T> &inputDy, const LocalTensor<T> &inputX,
-    const LocalTensor<T> &inputVariance, const LocalTensor<T> &inputMean, const LocalTensor<T> &inputGamma,
-    const LocalTensor<T> &outputPdX, const LocalTensor<T> &resForGamma, T epsilon, LayerNormGradParams &param,
-    const uint32_t calSize, const uint32_t nohSize, bool isReuseSource)
+__aicore__ inline void ComputeProcess(
+    const LocalTensor<T>& inputDy, const LocalTensor<T>& inputX, const LocalTensor<T>& inputVariance,
+    const LocalTensor<T>& inputMean, const LocalTensor<T>& inputGamma, const LocalTensor<T>& outputPdX,
+    const LocalTensor<T>& resForGamma, T epsilon, LayerNormGradParams& param, const uint32_t calSize,
+    const uint32_t nohSize, bool isReuseSource)
 {}
 
 template <>
-__aicore__ inline void ComputeProcess<half>(const LocalTensor<half> &inputDy, const LocalTensor<half> &inputX,
-    const LocalTensor<half> &inputVariance, const LocalTensor<half> &inputMean, const LocalTensor<half> &inputGamma,
-    const LocalTensor<half> &outputPdX, const LocalTensor<half> &resForGamma, half epsilon, LayerNormGradParams &param,
-    const uint32_t calSize, const uint32_t nohSize, bool isReuseSource)
+__aicore__ inline void ComputeProcess<half>(
+    const LocalTensor<half>& inputDy, const LocalTensor<half>& inputX, const LocalTensor<half>& inputVariance,
+    const LocalTensor<half>& inputMean, const LocalTensor<half>& inputGamma, const LocalTensor<half>& outputPdX,
+    const LocalTensor<half>& resForGamma, half epsilon, LayerNormGradParams& param, const uint32_t calSize,
+    const uint32_t nohSize, bool isReuseSource)
 {
     Cast(param.tmpTensor1, inputDy, RoundMode::CAST_NONE, calSize);
     Cast(param.tmpTensor2, inputGamma, RoundMode::CAST_NONE, param.hLength);
@@ -440,10 +456,11 @@ __aicore__ inline void ComputeProcess<half>(const LocalTensor<half> &inputDy, co
 }
 
 template <>
-__aicore__ inline void ComputeProcess<float>(const LocalTensor<float> &inputDy, const LocalTensor<float> &inputX,
-    const LocalTensor<float> &inputVariance, const LocalTensor<float> &inputMean, const LocalTensor<float> &inputGamma,
-    const LocalTensor<float> &outputPdX, const LocalTensor<float> &resForGamma, float epsilon,
-    LayerNormGradParams &param, const uint32_t calSize, const uint32_t nohSize, bool isReuseSource)
+__aicore__ inline void ComputeProcess<float>(
+    const LocalTensor<float>& inputDy, const LocalTensor<float>& inputX, const LocalTensor<float>& inputVariance,
+    const LocalTensor<float>& inputMean, const LocalTensor<float>& inputGamma, const LocalTensor<float>& outputPdX,
+    const LocalTensor<float>& resForGamma, float epsilon, LayerNormGradParams& param, const uint32_t calSize,
+    const uint32_t nohSize, bool isReuseSource)
 {
     GetTmpTensor(outputPdX, inputDy, inputX, param, isReuseSource);
     // 1. x1Tensor = inputDy * inputGamma
@@ -463,16 +480,17 @@ __aicore__ inline void ComputeProcess<float>(const LocalTensor<float> &inputDy, 
 }
 
 template <typename T>
-__aicore__ inline void LayerNormGradComputeND(const LocalTensor<T> &inputDy, const LocalTensor<T> &inputX,
-    const LocalTensor<T> &inputVariance, const LocalTensor<T> &inputMean, const LocalTensor<T> &inputGamma,
-    const LocalTensor<T> &outputPdX, const LocalTensor<T> &resForGamma, T epsilon, LayerNormGradParams &param,
-    bool isReuseSource)
+__aicore__ inline void LayerNormGradComputeND(
+    const LocalTensor<T>& inputDy, const LocalTensor<T>& inputX, const LocalTensor<T>& inputVariance,
+    const LocalTensor<T>& inputMean, const LocalTensor<T>& inputGamma, const LocalTensor<T>& outputPdX,
+    const LocalTensor<T>& resForGamma, T epsilon, LayerNormGradParams& param, bool isReuseSource)
 {
     int offset0 = 0; // offset for shape [B, S, H]
     int offset1 = 0; // offset for shape [B, S, 1]
 
     for (size_t i = 0; i < param.loopNum; ++i) {
-        ComputeProcess<T>(inputDy[offset0], inputX[offset0], inputVariance[offset1], inputMean[offset1], inputGamma,
+        ComputeProcess<T>(
+            inputDy[offset0], inputX[offset0], inputVariance[offset1], inputMean[offset1], inputGamma,
             outputPdX[offset0], resForGamma[offset0], epsilon, param, param.oneCalSize, param.nohCalSize,
             isReuseSource);
         offset0 += param.oneCalSize;
@@ -480,30 +498,36 @@ __aicore__ inline void LayerNormGradComputeND(const LocalTensor<T> &inputDy, con
     }
 
     if (param.tailSize != 0) {
-        ComputeProcess<T>(inputDy[offset0], inputX[offset0], inputVariance[offset1], inputMean[offset1], inputGamma,
+        ComputeProcess<T>(
+            inputDy[offset0], inputX[offset0], inputVariance[offset1], inputMean[offset1], inputGamma,
             outputPdX[offset0], resForGamma[offset0], epsilon, param, param.tailSize, param.nohTailSize, isReuseSource);
     }
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void LayerNormGradImpl(const LocalTensor<T> &outputPdX, const LocalTensor<T> &resForGamma,
-    const LocalTensor<T> &inputDy, const LocalTensor<T> &inputX, const LocalTensor<T> &inputVariance,
-    const LocalTensor<T> &inputMean, const LocalTensor<T> &inputGamma, LocalTensor<uint8_t> &sharedTmpBuffer, T epsilon,
-    LayerNormGradTiling &tiling, const LayerNormGradShapeInfo &shapeInfo = {})
+__aicore__ inline void LayerNormGradImpl(
+    const LocalTensor<T>& outputPdX, const LocalTensor<T>& resForGamma, const LocalTensor<T>& inputDy,
+    const LocalTensor<T>& inputX, const LocalTensor<T>& inputVariance, const LocalTensor<T>& inputMean,
+    const LocalTensor<T>& inputGamma, LocalTensor<uint8_t>& sharedTmpBuffer, T epsilon, LayerNormGradTiling& tiling,
+    const LayerNormGradShapeInfo& shapeInfo = {})
 {
     TRACE_START(TraceId::LayerNormGrad);
-    CHECK_FUNC_HIGHLEVEL_API(LayerNormGrad, (T, isReuseSource), (outputPdX, resForGamma, inputDy, inputX, inputVariance, inputMean,
-        inputGamma, sharedTmpBuffer, epsilon, tiling, shapeInfo));
+    CHECK_FUNC_HIGHLEVEL_API(
+        LayerNormGrad, (T, isReuseSource),
+        (outputPdX, resForGamma, inputDy, inputX, inputVariance, inputMean, inputGamma, sharedTmpBuffer, epsilon,
+         tiling, shapeInfo));
 
-    ASCENDC_ASSERT((sharedTmpBuffer.GetSize() >= tiling.stackBufferSize),
-                   { KERNEL_LOG(KERNEL_ERROR, "Stack buffer size not enough."); });
+    ASCENDC_ASSERT((sharedTmpBuffer.GetSize() >= tiling.stackBufferSize), {
+        KERNEL_LOG(KERNEL_ERROR, "Stack buffer size not enough.");
+    });
 
     LocalTensor<float> stackBuffer = sharedTmpBuffer.ReinterpretCast<float>();
     LayerNormGradParams param(tiling, stackBuffer);
 
     if (shapeInfo.dataFormat == DataFormat::ND) {
-        LayerNormGradComputeND(inputDy, inputX, inputVariance, inputMean, inputGamma, outputPdX, resForGamma, epsilon,
-            param, isReuseSource);
+        LayerNormGradComputeND(
+            inputDy, inputX, inputVariance, inputMean, inputGamma, outputPdX, resForGamma, epsilon, param,
+            isReuseSource);
     } else {
         ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "Only support format ND now!"); });
     }
@@ -511,17 +535,19 @@ __aicore__ inline void LayerNormGradImpl(const LocalTensor<T> &outputPdX, const 
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void LayerNormGradImpl(const LocalTensor<T> &outputPdX, const LocalTensor<T> &resForGamma,
-    const LocalTensor<T> &inputDy, const LocalTensor<T> &inputX, const LocalTensor<T> &inputVariance,
-    const LocalTensor<T> &inputMean, const LocalTensor<T> &inputGamma, T epsilon, LayerNormGradTiling &tiling,
-    const LayerNormGradShapeInfo &shapeInfo = {})
+__aicore__ inline void LayerNormGradImpl(
+    const LocalTensor<T>& outputPdX, const LocalTensor<T>& resForGamma, const LocalTensor<T>& inputDy,
+    const LocalTensor<T>& inputX, const LocalTensor<T>& inputVariance, const LocalTensor<T>& inputMean,
+    const LocalTensor<T>& inputGamma, T epsilon, LayerNormGradTiling& tiling,
+    const LayerNormGradShapeInfo& shapeInfo = {})
 {
     LocalTensor<uint8_t> stackBuffer;
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(stackBuffer);
     ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
 
-    LayerNormGradImpl<T, isReuseSource>(outputPdX, resForGamma, inputDy, inputX, inputVariance, inputMean, inputGamma,
-        stackBuffer, epsilon, tiling, shapeInfo);
+    LayerNormGradImpl<T, isReuseSource>(
+        outputPdX, resForGamma, inputDy, inputX, inputVariance, inputMean, inputGamma, stackBuffer, epsilon, tiling,
+        shapeInfo);
 }
 } // namespace AscendC
 #endif // IMPL_NORMALIZATION_LAYERNORMGRAD_LAYERNORMGRAD_COMMON_IMPL_H

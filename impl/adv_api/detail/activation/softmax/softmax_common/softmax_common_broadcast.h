@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file softmax_common_broadcast.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/activation/softmax/softmax_common/softmax_common_broadcast.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/softmax.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/activation/softmax/softmax_common/softmax_common_broadcast.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/softmax.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_COMMON_BROADCAST_H__
 #endif
@@ -27,8 +28,8 @@
 namespace AscendC {
 
 template <typename T>
-__aicore__ inline void AlignedBrcbImpl(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal,
-    const uint32_t brcbCount)
+__aicore__ inline void AlignedBrcbImpl(
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const uint32_t brcbCount)
 {
     T scalarList[SCALAR_STACK_DEPTH] = {0};
 
@@ -37,13 +38,15 @@ __aicore__ inline void AlignedBrcbImpl(const LocalTensor<T>& dstLocal, const Loc
         scalarList[j] = srcLocal.GetValue(j);
     }
     for (uint32_t k = 0; k < SCALAR_STACK_DEPTH; k++) {
-        Duplicate<T, false>(dstLocal[k * brcbCount], scalarList[k], MASK_PLACEHOLDER, DEFAULT_BLK_STRIDE,
-            DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+        Duplicate<T, false>(
+            dstLocal[k * brcbCount], scalarList[k], MASK_PLACEHOLDER, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE,
+            DEFAULT_REPEAT_STRIDE);
     }
 }
 
-__aicore__ inline void ContinuousColumnBrcbImpl(const LocalTensor<float>& dstLocal, const LocalTensor<float>& srcLocal,
-    const uint32_t& repeat, const uint32_t& brcbCount)
+__aicore__ inline void ContinuousColumnBrcbImpl(
+    const LocalTensor<float>& dstLocal, const LocalTensor<float>& srcLocal, const uint32_t& repeat,
+    const uint32_t& brcbCount)
 {
     float scalarList[SCALAR_STACK_DEPTH] = {0};
     SetVectorMask<float>(brcbCount);
@@ -57,8 +60,9 @@ __aicore__ inline void ContinuousColumnBrcbImpl(const LocalTensor<float>& dstLoc
             scalarList[j] = srcLocal.GetValue(offset + j);
         }
         for (uint32_t k = 0; k < SCALAR_STACK_DEPTH; k++) {
-            Duplicate<float, false>(dstLocal[offset + k * brcbCount], scalarList[k], MASK_PLACEHOLDER,
-                DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+            Duplicate<float, false>(
+                dstLocal[offset + k * brcbCount], scalarList[k], MASK_PLACEHOLDER, DEFAULT_BLK_STRIDE,
+                DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
         }
     }
     if (tailM != 0) {
@@ -67,14 +71,16 @@ __aicore__ inline void ContinuousColumnBrcbImpl(const LocalTensor<float>& dstLoc
             scalarList[j] = srcLocal.GetValue(offset + j);
         }
         for (uint32_t k = 0; k < tailM; k++) {
-            Duplicate<float, false>(dstLocal[offset + k * brcbCount], scalarList[k], MASK_PLACEHOLDER,
-                DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+            Duplicate<float, false>(
+                dstLocal[offset + k * brcbCount], scalarList[k], MASK_PLACEHOLDER, DEFAULT_BLK_STRIDE,
+                DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
         }
     }
 }
 
-__aicore__ inline void AlignedColumnBrcbImpl(const LocalTensor<float>& dstLocal, const LocalTensor<float>& srcLocal,
-    const uint32_t& repeat, const uint32_t& brcbCount)
+__aicore__ inline void AlignedColumnBrcbImpl(
+    const LocalTensor<float>& dstLocal, const LocalTensor<float>& srcLocal, const uint32_t& repeat,
+    const uint32_t& brcbCount)
 {
     float scalarList[SCALAR_STACK_DEPTH] = {0};
     SetVectorMask<float>(brcbCount);
@@ -88,8 +94,9 @@ __aicore__ inline void AlignedColumnBrcbImpl(const LocalTensor<float>& dstLocal,
             scalarList[j] = srcLocal.GetValue(offset + j * brcbCount);
         }
         for (uint32_t k = 0; k < SCALAR_STACK_DEPTH; k++) {
-            Duplicate<float, false>(dstLocal[offset + k * brcbCount], scalarList[k], MASK_PLACEHOLDER,
-                DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+            Duplicate<float, false>(
+                dstLocal[offset + k * brcbCount], scalarList[k], MASK_PLACEHOLDER, DEFAULT_BLK_STRIDE,
+                DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
         }
     }
     if (tailM != 0) {
@@ -98,19 +105,21 @@ __aicore__ inline void AlignedColumnBrcbImpl(const LocalTensor<float>& dstLocal,
             scalarList[j] = srcLocal.GetValue(offset + j * brcbCount);
         }
         for (uint32_t k = 0; k < tailM; k++) {
-            Duplicate<float, false>(dstLocal[offset + k * brcbCount], scalarList[k], MASK_PLACEHOLDER,
-                DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+            Duplicate<float, false>(
+                dstLocal[offset + k * brcbCount], scalarList[k], MASK_PLACEHOLDER, DEFAULT_BLK_STRIDE,
+                DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
         }
     }
 }
 
-__aicore__ inline void BroadCastNZImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const uint32_t srcM)
+__aicore__ inline void BroadCastNZImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint32_t srcM)
 {
     uint8_t repeat = srcM / DEFAULT_REPEAT_STRIDE;
     for (uint8_t i = 0; i < repeat; i++) {
-        Muls<float, false>(dst[i * B16_BYTE_SIZE * FLOAT_REPEAT_SIZE], src[i * B16_BYTE_SIZE * FLOAT_REPEAT_SIZE], 1.0,
-            MASK_PLACEHOLDER, B16_BYTE_SIZE, { 1, 0, DEFAULT_REPEAT_STRIDE, 0 });
+        Muls<float, false>(
+            dst[i * B16_BYTE_SIZE * FLOAT_REPEAT_SIZE], src[i * B16_BYTE_SIZE * FLOAT_REPEAT_SIZE], 1.0,
+            MASK_PLACEHOLDER, B16_BYTE_SIZE, {1, 0, DEFAULT_REPEAT_STRIDE, 0});
     }
     PipeBarrier<PIPE_V>();
 
@@ -130,8 +139,9 @@ __aicore__ inline void BroadCastNZImpl(const LocalTensor<float>& dst, const Loca
 }
 
 template <typename T>
-__aicore__ inline void BroadCastLastCompute(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const BroadCastLastND& brcParam, const uint32_t scalarStackDepth, const uint32_t index)
+__aicore__ inline void BroadCastLastCompute(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const BroadCastLastND& brcParam,
+    const uint32_t scalarStackDepth, const uint32_t index)
 {
     const uint32_t elementNumPerRep = ONE_REPEAT_BYTE_SIZE / sizeof(T);
     const uint32_t rangeK = brcParam.dstK / elementNumPerRep;
@@ -143,19 +153,21 @@ __aicore__ inline void BroadCastLastCompute(const LocalTensor<T>& dst, const Loc
     }
     for (uint32_t j = 0; j < rangeK; j++) {
         for (uint32_t k = 0; k < scalarStackDepth; k++) {
-            Duplicate(dst[j * elementNumPerRep + (index * SCALAR_STACK_DEPTH + k) * brcParam.dstK], scalarList[k],
+            Duplicate(
+                dst[j * elementNumPerRep + (index * SCALAR_STACK_DEPTH + k) * brcParam.dstK], scalarList[k],
                 elementNumPerRep, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
         }
     }
     if (tailK != 0) {
         for (uint32_t k = 0; k < scalarStackDepth; k++) {
-            Duplicate(dst[rangeK * elementNumPerRep + (index * SCALAR_STACK_DEPTH + k) * brcParam.dstK], scalarList[k],
-                tailK, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+            Duplicate(
+                dst[rangeK * elementNumPerRep + (index * SCALAR_STACK_DEPTH + k) * brcParam.dstK], scalarList[k], tailK,
+                DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
         }
     }
 }
 
-}; // namespace AscendC
+};     // namespace AscendC
 #endif // IMPL_ACTIVATION_SOFTMAX_SOFTMAX_COMMON_BROADCAST_H
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_COMMON_BROADCAST_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

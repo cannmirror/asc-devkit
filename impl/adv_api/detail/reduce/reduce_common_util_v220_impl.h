@@ -1,15 +1,16 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/reduce/reduce_common_util_v220_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/reduce/reduce_common_util_v220_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_COMMON_UTIL_V220_IMPL_H__
 #endif
@@ -26,8 +27,8 @@ namespace AscendC {
 namespace Internal {
 
 template <typename T, ApiMode apiMode>
-__aicore__ inline void DoReduceLessThanBlk(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    uint32_t firstAxis, uint32_t lastAxis)
+__aicore__ inline void DoReduceLessThanBlk(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, uint32_t firstAxis, uint32_t lastAxis)
 {
     constexpr uint32_t elePerBlk = ONE_BLK_SIZE / sizeof(T);
     constexpr uint32_t elePerRep = ONE_REPEAT_BYTE_SIZE / sizeof(T);
@@ -39,35 +40,36 @@ __aicore__ inline void DoReduceLessThanBlk(const LocalTensor<T>& dstTensor, cons
     uint64_t mainMaskLow = 0;
     uint64_t mainMaskHigh = 0;
     ComputeMaskBit<T>(lastAxis, elePerBlk, mainBlkNum, mainMaskLow, mainMaskHigh);
-    uint64_t mainMask[] = { mainMaskLow, mainMaskHigh };
+    uint64_t mainMask[] = {mainMaskLow, mainMaskHigh};
     uint32_t tailBlkNum = firstAxis % DEFAULT_BLK_NUM;
     if (tailBlkNum == 0 || firstAxis < DEFAULT_BLK_NUM) {
         uint32_t blkMainRepeat = MAX_REPEAT_TIMES;
         for (int32_t i = 0; i < blkMaxRepeat; i++) {
             blkMainRepeat = i == blkMaxRepeat - 1 ? blkRepeatTail : MAX_REPEAT_TIMES;
-            BlockReduceCompute<T, apiMode>(dstTensor[i * MAX_REPEAT_TIMES * DEFAULT_BLK_NUM],
-                srcTensor[i * MAX_REPEAT_TIMES * elePerRep], blkMainRepeat, mainMask, 1,
-                DEFAULT_REPEAT_STRIDE);
+            BlockReduceCompute<T, apiMode>(
+                dstTensor[i * MAX_REPEAT_TIMES * DEFAULT_BLK_NUM], srcTensor[i * MAX_REPEAT_TIMES * elePerRep],
+                blkMainRepeat, mainMask, 1, DEFAULT_REPEAT_STRIDE);
             PipeBarrier<PIPE_V>();
         }
     } else {
         uint64_t tailMaskLow = 0;
         uint64_t tailMaskHigh = 0;
         ComputeMaskBit<T>(lastAxis, elePerBlk, tailBlkNum, tailMaskLow, tailMaskHigh);
-        uint64_t tailMask[] = { tailMaskLow, tailMaskHigh };
+        uint64_t tailMask[] = {tailMaskLow, tailMaskHigh};
         for (int32_t i = 0; i < blkMaxRepeat; i++) {
             if (i == blkMaxRepeat - 1) {
-                BlockReduceCompute<T, apiMode>(dstTensor[i * MAX_REPEAT_TIMES * DEFAULT_BLK_NUM],
-                    srcTensor[i * MAX_REPEAT_TIMES * elePerRep], blkRepeatTail - 1, mainMask, 1,
-                    DEFAULT_REPEAT_STRIDE);
+                BlockReduceCompute<T, apiMode>(
+                    dstTensor[i * MAX_REPEAT_TIMES * DEFAULT_BLK_NUM], srcTensor[i * MAX_REPEAT_TIMES * elePerRep],
+                    blkRepeatTail - 1, mainMask, 1, DEFAULT_REPEAT_STRIDE);
                 PipeBarrier<PIPE_V>();
-                BlockReduceCompute<T, apiMode>(dstTensor[(i * MAX_REPEAT_TIMES + blkRepeatTail - 1) * DEFAULT_BLK_NUM],
+                BlockReduceCompute<T, apiMode>(
+                    dstTensor[(i * MAX_REPEAT_TIMES + blkRepeatTail - 1) * DEFAULT_BLK_NUM],
                     srcTensor[(i * MAX_REPEAT_TIMES + blkRepeatTail - 1) * elePerRep], 1, tailMask, 1,
                     DEFAULT_REPEAT_STRIDE);
             } else {
-                BlockReduceCompute<T, apiMode>(dstTensor[i * MAX_REPEAT_TIMES * DEFAULT_BLK_NUM],
-                    srcTensor[i * MAX_REPEAT_TIMES * elePerRep], MAX_REPEAT_TIMES, mainMask, 1,
-                    DEFAULT_REPEAT_STRIDE);
+                BlockReduceCompute<T, apiMode>(
+                    dstTensor[i * MAX_REPEAT_TIMES * DEFAULT_BLK_NUM], srcTensor[i * MAX_REPEAT_TIMES * elePerRep],
+                    MAX_REPEAT_TIMES, mainMask, 1, DEFAULT_REPEAT_STRIDE);
                 PipeBarrier<PIPE_V>();
             }
         }
@@ -75,20 +77,23 @@ __aicore__ inline void DoReduceLessThanBlk(const LocalTensor<T>& dstTensor, cons
 }
 
 template <typename T, ApiMode apiMode>
-__aicore__ inline void DoReduceOneBlk(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    uint32_t firstAxis, uint32_t lastAxis)
+__aicore__ inline void DoReduceOneBlk(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, uint32_t firstAxis, uint32_t lastAxis)
 {
     SetMaskCount();
     SetVectorMask<T, MaskMode::COUNTER>(0, firstAxis * lastAxis);
-    BlockReduceCompute<T, apiMode, MaskMode::COUNTER>(dstTensor, srcTensor, 1, MASK_PLACEHOLDER_LIST, 1,
-        DEFAULT_REPEAT_STRIDE);
+    BlockReduceCompute<T, apiMode, MaskMode::COUNTER>(
+        dstTensor, srcTensor, 1, MASK_PLACEHOLDER_LIST, 1, DEFAULT_REPEAT_STRIDE);
 }
 
-template <typename T, void (*func)(const LocalTensor<T> &, const LocalTensor<T> &, const LocalTensor<T> &, uint64_t,
-    const uint8_t, const BinaryRepeatParams &)>
-__aicore__ inline void AccValOnBlk(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<T>& tmpTensor, const BinaryRepeatParams& mainParams, const BinaryRepeatParams& tailParams,
-    uint32_t firstAxis, uint32_t lastAxis, uint32_t tmpOffset, uint32_t padLast)
+template <
+    typename T, void (*func)(
+                    const LocalTensor<T>&, const LocalTensor<T>&, const LocalTensor<T>&, uint64_t, const uint8_t,
+                    const BinaryRepeatParams&)>
+__aicore__ inline void AccValOnBlk(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<T>& tmpTensor,
+    const BinaryRepeatParams& mainParams, const BinaryRepeatParams& tailParams, uint32_t firstAxis, uint32_t lastAxis,
+    uint32_t tmpOffset, uint32_t padLast)
 {
     constexpr uint32_t elePerBlk = ONE_BLK_SIZE / sizeof(T);
     uint32_t firstRepeat = DivCeil(firstAxis, MAX_REPEAT_TIMES);
@@ -106,7 +111,8 @@ __aicore__ inline void AccValOnBlk(const LocalTensor<T>& dstTensor, const LocalT
         uint32_t blkRepeat = MAX_REPEAT_TIMES;
         for (int32_t i = 0; i < firstRepeat; i++) {
             blkRepeat = i == firstRepeat - 1 ? firstRepeatTail : MAX_REPEAT_TIMES;
-            func(tmpTensor[i * MAX_REPEAT_TIMES * tmpOffset], tmpTensor[i * MAX_REPEAT_TIMES * tmpOffset],
+            func(
+                tmpTensor[i * MAX_REPEAT_TIMES * tmpOffset], tmpTensor[i * MAX_REPEAT_TIMES * tmpOffset],
                 srcTensor[i * MAX_REPEAT_TIMES * padLast + blkCount * elePerBlk], blkTail, blkRepeat, tailParams);
             PipeBarrier<PIPE_V>();
         }
@@ -114,41 +120,48 @@ __aicore__ inline void AccValOnBlk(const LocalTensor<T>& dstTensor, const LocalT
     }
 }
 
-template <typename T, bool isReuseSource, ApiMode apiMode,
-    void (*func)(const LocalTensor<T> &, const LocalTensor<T> &, const LocalTensor<T> &, uint64_t, const uint8_t,
-        const BinaryRepeatParams &)>
-__aicore__ inline void DoReduceByBlk(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<T>& tmpTensor, uint32_t firstAxis, uint32_t lastAxis, uint32_t padLast)
+template <
+    typename T, bool isReuseSource, ApiMode apiMode,
+    void (*func)(
+        const LocalTensor<T>&, const LocalTensor<T>&, const LocalTensor<T>&, uint64_t, const uint8_t,
+        const BinaryRepeatParams&)>
+__aicore__ inline void DoReduceByBlk(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<T>& tmpTensor,
+    uint32_t firstAxis, uint32_t lastAxis, uint32_t padLast)
 {
     constexpr uint32_t elePerBlk = ONE_BLK_SIZE / sizeof(T);
     uint8_t blkStridePerRow = padLast / elePerBlk;
     uint8_t blkStridePerRep = (padLast / elePerBlk) * DEFAULT_BLK_NUM;
     SetMaskCount();
     if constexpr (!isReuseSource) {
-        UnaryRepeatParams blockUnaryParams{ 1, blkStridePerRow, DEFAULT_REPEAT_STRIDE, blkStridePerRep };
+        UnaryRepeatParams blockUnaryParams{1, blkStridePerRow, DEFAULT_REPEAT_STRIDE, blkStridePerRep};
         SetVectorMask<T, MaskMode::COUNTER>(0, firstAxis * elePerBlk);
         Adds<T, false>(tmpTensor, srcTensor, static_cast<T>(0), MASK_PLACEHOLDER, 1, blockUnaryParams);
         PipeBarrier<PIPE_V>();
-        BinaryRepeatParams blockMainParams{ 1, 1, blkStridePerRow, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, blkStridePerRep};
-        BinaryRepeatParams blockTailParams{ 1, 1, 1, 1, 1, blkStridePerRow };
-        AccValOnBlk<T, func>(dstTensor, srcTensor, tmpTensor, blockMainParams, blockTailParams, firstAxis, lastAxis, elePerBlk, padLast);
+        BinaryRepeatParams blockMainParams{
+            1, 1, blkStridePerRow, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, blkStridePerRep};
+        BinaryRepeatParams blockTailParams{1, 1, 1, 1, 1, blkStridePerRow};
+        AccValOnBlk<T, func>(
+            dstTensor, srcTensor, tmpTensor, blockMainParams, blockTailParams, firstAxis, lastAxis, elePerBlk, padLast);
         SetVectorMask<T, MaskMode::COUNTER>(0, firstAxis * elePerBlk);
-        BlockReduceCompute<T, apiMode, MaskMode::COUNTER>(dstTensor, tmpTensor, 1, MASK_PLACEHOLDER_LIST, 1,
-            DEFAULT_REPEAT_STRIDE);
+        BlockReduceCompute<T, apiMode, MaskMode::COUNTER>(
+            dstTensor, tmpTensor, 1, MASK_PLACEHOLDER_LIST, 1, DEFAULT_REPEAT_STRIDE);
     } else {
-        BinaryRepeatParams blockMainParams{ blkStridePerRow, blkStridePerRow, blkStridePerRow, blkStridePerRep,
-            blkStridePerRep, blkStridePerRep};
-        BinaryRepeatParams blockTailParams{ 1, 1, 1, blkStridePerRow, blkStridePerRow, blkStridePerRow };
-        AccValOnBlk<T, func>(dstTensor, srcTensor, srcTensor, blockMainParams, blockTailParams, firstAxis, lastAxis, padLast, padLast);
+        BinaryRepeatParams blockMainParams{blkStridePerRow, blkStridePerRow, blkStridePerRow,
+                                           blkStridePerRep, blkStridePerRep, blkStridePerRep};
+        BinaryRepeatParams blockTailParams{1, 1, 1, blkStridePerRow, blkStridePerRow, blkStridePerRow};
+        AccValOnBlk<T, func>(
+            dstTensor, srcTensor, srcTensor, blockMainParams, blockTailParams, firstAxis, lastAxis, padLast, padLast);
         SetVectorMask<T, MaskMode::COUNTER>(0, firstAxis * elePerBlk);
-        BlockReduceCompute<T, apiMode, MaskMode::COUNTER>(dstTensor, srcTensor, 1, MASK_PLACEHOLDER_LIST, blkStridePerRow,
-            blkStridePerRep);
+        BlockReduceCompute<T, apiMode, MaskMode::COUNTER>(
+            dstTensor, srcTensor, 1, MASK_PLACEHOLDER_LIST, blkStridePerRow, blkStridePerRep);
     }
 }
 
 template <typename T, ApiMode apiMode>
-__aicore__ inline void GetReduceValOnRep(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<T>& tmpTensor, uint32_t firstAxis, uint32_t tmpOffset, uint32_t repStride)
+__aicore__ inline void GetReduceValOnRep(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<T>& tmpTensor,
+    uint32_t firstAxis, uint32_t tmpOffset, uint32_t repStride)
 {
     constexpr uint32_t elePerRep = ONE_REPEAT_BYTE_SIZE / sizeof(T);
     uint32_t firstRepeat = DivCeil(firstAxis, MAX_REPEAT_TIMES);
@@ -158,27 +171,30 @@ __aicore__ inline void GetReduceValOnRep(const LocalTensor<T>& dstTensor, const 
         uint32_t blockRepeat = MAX_REPEAT_TIMES;
         for (int32_t i = 0; i < firstRepeat; i++) {
             blockRepeat = i == firstRepeat - 1 ? firstRepeatTail : MAX_REPEAT_TIMES;
-            WholeReduceCompute<T, apiMode>(dstTensor[i * MAX_REPEAT_TIMES], tmpTensor[i * MAX_REPEAT_TIMES * tmpOffset],
-                blockRepeat, elePerRep, repStride);
+            WholeReduceCompute<T, apiMode>(
+                dstTensor[i * MAX_REPEAT_TIMES], tmpTensor[i * MAX_REPEAT_TIMES * tmpOffset], blockRepeat, elePerRep,
+                repStride);
             PipeBarrier<PIPE_V>();
         }
     } else {
         SetVectorMask<T, MaskMode::COUNTER>(0, firstAxis * elePerRep);
-        BlockReduceCompute<T, apiMode, MaskMode::COUNTER>(tmpTensor, tmpTensor, 1, MASK_PLACEHOLDER_LIST, 1,
-            repStride);
+        BlockReduceCompute<T, apiMode, MaskMode::COUNTER>(tmpTensor, tmpTensor, 1, MASK_PLACEHOLDER_LIST, 1, repStride);
         PipeBarrier<PIPE_V>();
         SetVectorMask<T, MaskMode::COUNTER>(0, firstAxis * DEFAULT_BLK_NUM);
-        BlockReduceCompute<T, apiMode, MaskMode::COUNTER>(dstTensor, tmpTensor, 1, MASK_PLACEHOLDER_LIST, 1,
-            DEFAULT_REPEAT_STRIDE);
+        BlockReduceCompute<T, apiMode, MaskMode::COUNTER>(
+            dstTensor, tmpTensor, 1, MASK_PLACEHOLDER_LIST, 1, DEFAULT_REPEAT_STRIDE);
     }
 }
 
-template <typename T, ApiMode apiMode,
-    void (*func)(const LocalTensor<T> &, const LocalTensor<T> &, const LocalTensor<T> &, uint64_t, const uint8_t,
-    const BinaryRepeatParams &)>
-__aicore__ inline void AccValOnRep(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<T>& tmpTensor, const BinaryRepeatParams& binaryParams, uint32_t firstAxis, uint32_t lastAxis,
-    uint32_t tmpOffset, uint32_t repStride, uint32_t padLast)
+template <
+    typename T, ApiMode apiMode,
+    void (*func)(
+        const LocalTensor<T>&, const LocalTensor<T>&, const LocalTensor<T>&, uint64_t, const uint8_t,
+        const BinaryRepeatParams&)>
+__aicore__ inline void AccValOnRep(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<T>& tmpTensor,
+    const BinaryRepeatParams& binaryParams, uint32_t firstAxis, uint32_t lastAxis, uint32_t tmpOffset,
+    uint32_t repStride, uint32_t padLast)
 {
     constexpr uint32_t elePerBlk = ONE_BLK_SIZE / sizeof(T);
     constexpr uint32_t elePerRep = ONE_REPEAT_BYTE_SIZE / sizeof(T);
@@ -197,7 +213,8 @@ __aicore__ inline void AccValOnRep(const LocalTensor<T>& dstTensor, const LocalT
         uint32_t repRepeat = MAX_REPEAT_TIMES;
         for (int32_t i = 0; i < firstRepeat; i++) {
             repRepeat = i == firstRepeat - 1 ? firstRepeatTail : MAX_REPEAT_TIMES;
-            func(tmpTensor[i * MAX_REPEAT_TIMES * tmpOffset], tmpTensor[i * MAX_REPEAT_TIMES * tmpOffset],
+            func(
+                tmpTensor[i * MAX_REPEAT_TIMES * tmpOffset], tmpTensor[i * MAX_REPEAT_TIMES * tmpOffset],
                 srcTensor[i * MAX_REPEAT_TIMES * padLast + repCount * elePerRep], repTail, repRepeat, binaryParams);
             PipeBarrier<PIPE_V>();
         }
@@ -206,36 +223,43 @@ __aicore__ inline void AccValOnRep(const LocalTensor<T>& dstTensor, const LocalT
     GetReduceValOnRep<T, apiMode>(dstTensor, srcTensor, tmpTensor, firstAxis, tmpOffset, repStride);
 }
 
-template <typename T, bool isReuseSource, ApiMode apiMode,
-    void (*func)(const LocalTensor<T> &, const LocalTensor<T> &, const LocalTensor<T> &, uint64_t, const uint8_t,
-        const BinaryRepeatParams &)>
-__aicore__ inline void DoReduceByRep(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<T>& tmpTensor, uint32_t firstAxis, uint32_t lastAxis, uint32_t padLast)
+template <
+    typename T, bool isReuseSource, ApiMode apiMode,
+    void (*func)(
+        const LocalTensor<T>&, const LocalTensor<T>&, const LocalTensor<T>&, uint64_t, const uint8_t,
+        const BinaryRepeatParams&)>
+__aicore__ inline void DoReduceByRep(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<T>& tmpTensor,
+    uint32_t firstAxis, uint32_t lastAxis, uint32_t padLast)
 {
     constexpr uint32_t elePerBlk = ONE_BLK_SIZE / sizeof(T);
     constexpr uint32_t elePerRep = ONE_REPEAT_BYTE_SIZE / sizeof(T);
     uint8_t repStridePerRow = padLast / elePerBlk;
     SetMaskCount();
     if constexpr (!isReuseSource) {
-        UnaryRepeatParams repeatUnaryParams{ 1, 1, DEFAULT_REPEAT_STRIDE, repStridePerRow };
+        UnaryRepeatParams repeatUnaryParams{1, 1, DEFAULT_REPEAT_STRIDE, repStridePerRow};
         SetVectorMask<T, MaskMode::COUNTER>(0, firstAxis * elePerRep);
         Adds<T, false>(tmpTensor, srcTensor, static_cast<T>(0), MASK_PLACEHOLDER, 1, repeatUnaryParams);
         PipeBarrier<PIPE_V>();
-        BinaryRepeatParams binaryParams{ 1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, repStridePerRow};
-        AccValOnRep<T, apiMode, func>(dstTensor, srcTensor, tmpTensor, binaryParams, firstAxis, lastAxis, elePerRep,
-            DEFAULT_REPEAT_STRIDE, padLast);
+        BinaryRepeatParams binaryParams{1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, repStridePerRow};
+        AccValOnRep<T, apiMode, func>(
+            dstTensor, srcTensor, tmpTensor, binaryParams, firstAxis, lastAxis, elePerRep, DEFAULT_REPEAT_STRIDE,
+            padLast);
     } else {
-        BinaryRepeatParams binaryParams{ 1, 1, 1, repStridePerRow, repStridePerRow, repStridePerRow};
-        AccValOnRep<T, apiMode, func>(dstTensor, srcTensor, srcTensor, binaryParams, firstAxis, lastAxis, padLast,
-            repStridePerRow, padLast);
+        BinaryRepeatParams binaryParams{1, 1, 1, repStridePerRow, repStridePerRow, repStridePerRow};
+        AccValOnRep<T, apiMode, func>(
+            dstTensor, srcTensor, srcTensor, binaryParams, firstAxis, lastAxis, padLast, repStridePerRow, padLast);
     }
 }
 
-template <typename T, bool isReuseSource, ApiMode apiMode,
-    void (*func)(const LocalTensor<T> &, const LocalTensor<T> &, const LocalTensor<T> &, uint64_t, const uint8_t,
-        const BinaryRepeatParams &)>
-__aicore__ inline void DoLongLastReduce(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<T>& tmpTensor, uint32_t firstAxis, uint32_t lastAxis, uint32_t padLast)
+template <
+    typename T, bool isReuseSource, ApiMode apiMode,
+    void (*func)(
+        const LocalTensor<T>&, const LocalTensor<T>&, const LocalTensor<T>&, uint64_t, const uint8_t,
+        const BinaryRepeatParams&)>
+__aicore__ inline void DoLongLastReduce(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<T>& tmpTensor,
+    uint32_t firstAxis, uint32_t lastAxis, uint32_t padLast)
 {
     constexpr uint32_t elePerBlk = ONE_BLK_SIZE / sizeof(T);
     constexpr uint32_t elePerRep = ONE_REPEAT_BYTE_SIZE / sizeof(T);
@@ -247,8 +271,9 @@ __aicore__ inline void DoLongLastReduce(const LocalTensor<T>& dstTensor, const L
     if constexpr (!isReuseSource) {
         SetVectorMask<T, MaskMode::COUNTER>(0, elePerRep);
         for (int32_t i = 0; i < firstAxis; i++) {
-            Adds<T, false>(tmpTensor[i * elePerRep], srcTensor[i * padLast], static_cast<T>(0), MASK_PLACEHOLDER,
-                1, defaultUnaryParams);
+            Adds<T, false>(
+                tmpTensor[i * elePerRep], srcTensor[i * padLast], static_cast<T>(0), MASK_PLACEHOLDER, 1,
+                defaultUnaryParams);
             PipeBarrier<PIPE_V>();
         }
         uint32_t mask = elePerRep;
@@ -256,8 +281,9 @@ __aicore__ inline void DoLongLastReduce(const LocalTensor<T>& dstTensor, const L
             mask = i == repCount - 1 ? repTail : elePerRep;
             SetVectorMask<T, MaskMode::COUNTER>(0, mask);
             for (int32_t j = 0; j < firstAxis; j++) {
-                func(tmpTensor[j * elePerRep], tmpTensor[j * elePerRep],
-                    srcTensor[j * padLast + i * elePerRep], MASK_PLACEHOLDER, 1, defaultParams);
+                func(
+                    tmpTensor[j * elePerRep], tmpTensor[j * elePerRep], srcTensor[j * padLast + i * elePerRep],
+                    MASK_PLACEHOLDER, 1, defaultParams);
                 PipeBarrier<PIPE_V>();
             }
         }
@@ -269,11 +295,13 @@ __aicore__ inline void DoLongLastReduce(const LocalTensor<T>& dstTensor, const L
                 mask = j == repCount - 1 ? repTail : elePerRep;
                 SetVectorMask<T, MaskMode::COUNTER>(0, mask);
                 if (j == 1) {
-                    func(srcTensor[i * elePerRep], srcTensor[i * padLast], srcTensor[i * padLast + j * elePerRep],
+                    func(
+                        srcTensor[i * elePerRep], srcTensor[i * padLast], srcTensor[i * padLast + j * elePerRep],
                         MASK_PLACEHOLDER, 1, defaultParams);
                     PipeBarrier<PIPE_V>();
                 } else {
-                    func(srcTensor[i * elePerRep], srcTensor[i * elePerRep], srcTensor[i * padLast + j * elePerRep],
+                    func(
+                        srcTensor[i * elePerRep], srcTensor[i * elePerRep], srcTensor[i * padLast + j * elePerRep],
                         MASK_PLACEHOLDER, 1, defaultParams);
                     PipeBarrier<PIPE_V>();
                 }
@@ -283,15 +311,19 @@ __aicore__ inline void DoLongLastReduce(const LocalTensor<T>& dstTensor, const L
     }
 }
 
-template <typename T, bool isReuseSource, ApiMode apiMode,
-    void (*func)(const LocalTensor<T> &, const LocalTensor<T> &, const LocalTensor<T> &, uint64_t, const uint8_t,
-    const BinaryRepeatParams &)>
-__aicore__ inline void BlockReduceByLastAxis(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<T>& tmpTensor, uint32_t firstAxis, uint32_t lastAxis, uint32_t padLast)
+template <
+    typename T, bool isReuseSource, ApiMode apiMode,
+    void (*func)(
+        const LocalTensor<T>&, const LocalTensor<T>&, const LocalTensor<T>&, uint64_t, const uint8_t,
+        const BinaryRepeatParams&)>
+__aicore__ inline void BlockReduceByLastAxis(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<T>& tmpTensor,
+    uint32_t firstAxis, uint32_t lastAxis, uint32_t padLast)
 {
     ASCENDC_ASSERT((dstTensor.GetSize() >= firstAxis), {
-        KERNEL_LOG(KERNEL_ERROR, "dstTensor must be greater than or equal to %u, current size if %u",
-            firstAxis, dstTensor.GetSize());
+        KERNEL_LOG(
+            KERNEL_ERROR, "dstTensor must be greater than or equal to %u, current size if %u", firstAxis,
+            dstTensor.GetSize());
     });
     constexpr uint32_t elePerBlk = ONE_BLK_SIZE / sizeof(T);
     constexpr uint32_t elePerRep = ONE_REPEAT_BYTE_SIZE / sizeof(T);
@@ -304,16 +336,16 @@ __aicore__ inline void BlockReduceByLastAxis(const LocalTensor<T>& dstTensor, co
     } else if (lastAxis >= elePerRep && lastAxis <= MAX_REPEAT_TIMES * elePerBlk) {
         DoReduceByRep<T, isReuseSource, apiMode, func>(dstTensor, srcTensor, tmpTensor, firstAxis, lastAxis, padLast);
     } else {
-        DoLongLastReduce<T, isReuseSource, apiMode, func>(dstTensor, srcTensor, tmpTensor, firstAxis, lastAxis,
-            padLast);
+        DoLongLastReduce<T, isReuseSource, apiMode, func>(
+            dstTensor, srcTensor, tmpTensor, firstAxis, lastAxis, padLast);
     }
 }
 
 struct ReduceParams {
 public:
     __aicore__ ReduceParams() {}
-    __aicore__ ReduceParams(uint32_t first, uint32_t last,
-        uint32_t padLast, uint32_t splitK, uint32_t tail, uint32_t elePerBlk)
+    __aicore__ ReduceParams(
+        uint32_t first, uint32_t last, uint32_t padLast, uint32_t splitK, uint32_t tail, uint32_t elePerBlk)
     {
         this->first = first;
         this->last = last;
@@ -328,17 +360,18 @@ public:
     uint32_t splitK = 0;
     uint32_t tail = 0;
     uint32_t elePerBlk = 0;
-    BinaryRepeatParams defaultParam = { DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE,
-                DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE };
-    UnaryRepeatParams defaultUnaryParam = { DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE,
-                DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE };
+    BinaryRepeatParams defaultParam = {DEFAULT_BLK_STRIDE,    DEFAULT_BLK_STRIDE,    DEFAULT_BLK_STRIDE,
+                                       DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE};
+    UnaryRepeatParams defaultUnaryParam = {
+        DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE};
 };
 
 template <class T, ApiMode apiMode>
-__aicore__ inline void BlkReduceForLoop(const LocalTensor<T>& dst,
-    const LocalTensor<T>& tmp, uint32_t srcOffset, uint32_t first, uint32_t last) {
-    constexpr uint32_t blkReduceDstStride = 8;  // elements uint
-    uint32_t srcPerBlkElements = ONE_BLK_SIZE/sizeof(T);
+__aicore__ inline void BlkReduceForLoop(
+    const LocalTensor<T>& dst, const LocalTensor<T>& tmp, uint32_t srcOffset, uint32_t first, uint32_t last)
+{
+    constexpr uint32_t blkReduceDstStride = 8; // elements uint
+    uint32_t srcPerBlkElements = ONE_BLK_SIZE / sizeof(T);
     uint64_t maskHigh = 0;
     uint32_t oneRepElements = srcPerBlkElements * DEFAULT_BLK_NUM;
     uint32_t nMaxRepBlkNum = first / (MAX_REPEAT_TIMES * DEFAULT_BLK_NUM);
@@ -351,17 +384,18 @@ __aicore__ inline void BlkReduceForLoop(const LocalTensor<T>& dst,
     uint64_t maskLow = 0;
     ComputeMaskBit<T>(oneBlkMask, srcPerBlkElements, DEFAULT_BLK_NUM, maskLow, maskHigh);
 
-    uint64_t blkReduceMask[] = { maskLow, maskHigh };
+    uint64_t blkReduceMask[] = {maskLow, maskHigh};
     for (int k = 0; k < nMaxRepBlkNum; k++) {
-        BlockReduceCompute<T, apiMode>(dst[dstOffset], tmp[srcOffset], MAX_REPEAT_TIMES, blkReduceMask,
-            DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+        BlockReduceCompute<T, apiMode>(
+            dst[dstOffset], tmp[srcOffset], MAX_REPEAT_TIMES, blkReduceMask, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
         PipeBarrier<PIPE_V>();
     }
     if (tailNBlkNum > 0) {
         dstOffset = nMaxRepBlkNum * MAX_REPEAT_TIMES * blkReduceDstStride;
         blkReduceSrcOffset = srcOffset + nMaxRepBlkNum * MAX_REPEAT_TIMES * DEFAULT_BLK_NUM * srcPerBlkElements;
-        BlockReduceCompute<T, apiMode>(dst[dstOffset], tmp[blkReduceSrcOffset], tailNBlkNum, blkReduceMask,
-            DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+        BlockReduceCompute<T, apiMode>(
+            dst[dstOffset], tmp[blkReduceSrcOffset], tailNBlkNum, blkReduceMask, DEFAULT_BLK_STRIDE,
+            DEFAULT_REPEAT_STRIDE);
         PipeBarrier<PIPE_V>();
     }
     if (tailRemainOfBlkNum > 0) {
@@ -369,17 +403,21 @@ __aicore__ inline void BlkReduceForLoop(const LocalTensor<T>& dst,
         maskHigh = 0;
         uint32_t tailBlkReduceRep = 1;
         ComputeMaskBit<T>(oneBlkMask, srcPerBlkElements, tailRemainOfBlkNum, maskLow, maskHigh);
-        uint64_t tailMask[] = { maskLow, maskHigh };
+        uint64_t tailMask[] = {maskLow, maskHigh};
         dstOffset = tailNBlkNum * blkReduceDstStride + (nMaxRepBlkNum * MAX_REPEAT_TIMES * blkReduceDstStride);
-        blkReduceSrcOffset = srcOffset + tailNBlkNum * oneRepElements + (nMaxRepBlkNum * MAX_REPEAT_TIMES * oneRepElements);
-        BlockReduceCompute<T, apiMode>(dst[dstOffset], tmp[blkReduceSrcOffset], tailBlkReduceRep, tailMask,
-            DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+        blkReduceSrcOffset =
+            srcOffset + tailNBlkNum * oneRepElements + (nMaxRepBlkNum * MAX_REPEAT_TIMES * oneRepElements);
+        BlockReduceCompute<T, apiMode>(
+            dst[dstOffset], tmp[blkReduceSrcOffset], tailBlkReduceRep, tailMask, DEFAULT_BLK_STRIDE,
+            DEFAULT_REPEAT_STRIDE);
         PipeBarrier<PIPE_V>();
     }
 }
 
-template <typename T, bool isReuseSource, ApiMode apiMode,
-    void (*func)(const LocalTensor<half>&, const LocalTensor<half>&, const LocalTensor<half>&, uint64_t, const uint8_t,
+template <
+    typename T, bool isReuseSource, ApiMode apiMode,
+    void (*func)(
+        const LocalTensor<half>&, const LocalTensor<half>&, const LocalTensor<half>&, uint64_t, const uint8_t,
         const BinaryRepeatParams&)>
 __aicore__ inline void BinaryReduceAnyAllCompute(
     const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& tmp, const ReduceParams& params)
@@ -391,9 +429,9 @@ __aicore__ inline void BinaryReduceAnyAllCompute(
     SetMaskCount();
     for (int i = 0; i < params.first; i++) {
         SetVectorMask<uint8_t, MaskMode::COUNTER>(params.padLast);
-        Cast<half, uint8_t, false>(tmpBuf, src[i*params.padLast], RoundMode::CAST_NONE,
-            MASK_PLACEHOLDER, 1,
-            { DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE });
+        Cast<half, uint8_t, false>(
+            tmpBuf, src[i * params.padLast], RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+            {DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
         PipeBarrier<PIPE_V>();
         if (params.tail > 0 && params.splitK > 0) {
             SetVectorMask<half, MaskMode::COUNTER>(params.tail);
@@ -408,8 +446,9 @@ __aicore__ inline void BinaryReduceAnyAllCompute(
             PipeBarrier<PIPE_V>();
         }
         SetVectorMask<half, MaskMode::COUNTER>(halfBlkElements);
-        Adds<half, false>(tmpBuf[params.padLast + i * halfBlkElements], tmpBuf, halfZero,
-            MASK_PLACEHOLDER, 1, params.defaultUnaryParam);
+        Adds<half, false>(
+            tmpBuf[params.padLast + i * halfBlkElements], tmpBuf, halfZero, MASK_PLACEHOLDER, 1,
+            params.defaultUnaryParam);
         PipeBarrier<PIPE_V>();
     }
     SetMaskNorm();
@@ -417,23 +456,27 @@ __aicore__ inline void BinaryReduceAnyAllCompute(
     BlkReduceForLoop<half, apiMode>(tmpBuf, tmpBuf, params.padLast, params.first, params.last);
     SetMaskCount();
     SetVectorMask<half, MaskMode::COUNTER>(params.first);
-    Cast<uint8_t, half, false>(dst, tmpBuf, RoundMode::CAST_NONE,
-        MASK_PLACEHOLDER, 1,
-        { DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+    Cast<uint8_t, half, false>(
+        dst, tmpBuf, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
     SetMaskNorm();
     ResetMask();
 }
 
-template <typename T, bool isReuseSource,
-    void (*func)(const LocalTensor<T> &, const LocalTensor<T> &, const LocalTensor<T> &, uint64_t, const uint8_t,
-    const BinaryRepeatParams &)>
-__aicore__ inline void BinaryReduceByFirstAxis(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<T>& tmpTensor, uint32_t firstAxis, uint32_t lastAxis, uint32_t padLast)
+template <
+    typename T, bool isReuseSource,
+    void (*func)(
+        const LocalTensor<T>&, const LocalTensor<T>&, const LocalTensor<T>&, uint64_t, const uint8_t,
+        const BinaryRepeatParams&)>
+__aicore__ inline void BinaryReduceByFirstAxis(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<T>& tmpTensor,
+    uint32_t firstAxis, uint32_t lastAxis, uint32_t padLast)
 {
     ASCENDC_ASSERT((dstTensor.GetSize() >= lastAxis), {
-        KERNEL_LOG(KERNEL_ERROR, "dstTensor must be greater than or equal to %u, current size if %u",
-            lastAxis, dstTensor.GetSize());
+        KERNEL_LOG(
+            KERNEL_ERROR, "dstTensor must be greater than or equal to %u, current size if %u", lastAxis,
+            dstTensor.GetSize());
     });
     BinaryRepeatParams defaultParam;
     UnaryRepeatParams defaultUnaryParam;
@@ -453,8 +496,7 @@ __aicore__ inline void BinaryReduceByFirstAxis(const LocalTensor<T>& dstTensor, 
         // reduce the tail part
         if (remain != 0) {
             SetVectorMask<T, MaskMode::COUNTER>(0, splitK * padLast);
-            Adds<T, false>(tmpTensor, srcTensor, static_cast<T>(0), MASK_PLACEHOLDER, 1,
-                           defaultUnaryParam);
+            Adds<T, false>(tmpTensor, srcTensor, static_cast<T>(0), MASK_PLACEHOLDER, 1, defaultUnaryParam);
             PipeBarrier<PIPE_V>();
             SetVectorMask<T, MaskMode::COUNTER>(0, padLast * remain);
             func(tmpTensor, tmpTensor, srcTensor[splitK * padLast], MASK_PLACEHOLDER, 1, defaultParam);
@@ -471,7 +513,7 @@ __aicore__ inline void BinaryReduceByFirstAxis(const LocalTensor<T>& dstTensor, 
             return;
         }
     }
-    // binary reduce the remain 2^k axis 
+    // binary reduce the remain 2^k axis
     LocalTensor<T> currBuff = isReuseSource ? srcTensor : tmpTensor;
     while (splitK > 1) {
         splitK >>= 1;

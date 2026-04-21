@@ -11,7 +11,6 @@
 
 /* !
  * \file data_utils.h
- * \brief
  */
 
 #ifndef DATA_UTILS_H

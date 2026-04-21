@@ -1,19 +1,20 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 /*!
  * \file power_v220_impl.h
  * \brief
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/power/power_v220_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/power.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/power/power_v220_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/power.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_POWER_POWER_V220_IMPL_H__
 #endif
@@ -32,8 +33,8 @@ constexpr uint32_t TENSOR_SCALAR_INT = 7;
 constexpr uint32_t TENSOR_SCALAR_HALF = 7;
 
 // allocate tmpBuffer for PowerI on V220
-__aicore__ inline void PowerIParamsCalc(const LocalTensor<uint8_t>& tmpTensor, AscPowerIParams& param,
-    uint32_t splitSize)
+__aicore__ inline void PowerIParamsCalc(
+    const LocalTensor<uint8_t>& tmpTensor, AscPowerIParams& param, uint32_t splitSize)
 {
     param.expUBIterate = tmpTensor.ReinterpretCast<int32_t>();
     param.oriAbsExp = param.expUBIterate[splitSize];
@@ -54,8 +55,7 @@ __aicore__ inline void PowerIParamsCalc(const LocalTensor<uint8_t>& tmpTensor, A
 }
 
 // allocate tmpBuffer for PowerF on V220
-__aicore__ inline void PowerFParamsCalc(const LocalTensor<float>& tmpTensor,
-    AscPowerFParams& param, uint32_t splitSize)
+__aicore__ inline void PowerFParamsCalc(const LocalTensor<float>& tmpTensor, AscPowerFParams& param, uint32_t splitSize)
 {
     param.tmpTensor1 = tmpTensor;
     param.tmpTensor2 = tmpTensor[splitSize];
@@ -74,38 +74,43 @@ __aicore__ inline void PowerFParamsCalc(const LocalTensor<float>& tmpTensor,
 }
 
 // Compare input with a int(0), write result to mask in bit
-__aicore__ inline void CompareIntZero(const LocalTensor<uint8_t>& mask, const LocalTensor<int32_t>& intInput,
-    const LocalTensor<int32_t>& tmpTensor, const UnaryRepeatParams& unaryParam, const uint8_t repeat)
+__aicore__ inline void CompareIntZero(
+    const LocalTensor<uint8_t>& mask, const LocalTensor<int32_t>& intInput, const LocalTensor<int32_t>& tmpTensor,
+    const UnaryRepeatParams& unaryParam, const uint8_t repeat)
 {
     (void)(tmpTensor);
-    CompareScalar<int32_t, uint8_t, false>(mask, intInput, static_cast<int32_t>(0), CMPMODE::EQ, MASK_PLACEHOLDER,
-        repeat, unaryParam);
+    CompareScalar<int32_t, uint8_t, false>(
+        mask, intInput, static_cast<int32_t>(0), CMPMODE::EQ, MASK_PLACEHOLDER, repeat, unaryParam);
 }
 
 // Cast float->float with different RoundMode
-__aicore__ inline void CastFloat2Float(const LocalTensor<float>& dst, const LocalTensor<float>& src, RoundMode mode,
-    const UnaryRepeatParams& unaryParam)
+__aicore__ inline void CastFloat2Float(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, RoundMode mode, const UnaryRepeatParams& unaryParam)
 {
     Cast<float, float, false>(dst, src, mode, MASK_PLACEHOLDER, 1, unaryParam);
 }
 
 // copy sign bit to dst
-__aicore__ inline void GrepSignBit(const LocalTensor<uint8_t>& dst, const LocalTensor<float>& src,
-    const LocalTensor<float>& tmpTensor1, const LocalTensor<float>& tmpTensor2,
-    const UnaryRepeatParams& unaryParam, const BinaryRepeatParams& binaryParam, const uint32_t calCount)
+__aicore__ inline void GrepSignBit(
+    const LocalTensor<uint8_t>& dst, const LocalTensor<float>& src, const LocalTensor<float>& tmpTensor1,
+    const LocalTensor<float>& tmpTensor2, const UnaryRepeatParams& unaryParam, const BinaryRepeatParams& binaryParam,
+    const uint32_t calCount)
 {
     constexpr uint32_t signBit = 31;
     const uint8_t repeat = DivCeil(calCount * sizeof(float), ONE_REPEAT_BYTE_SIZE);
-    ShiftRight<uint32_t, false>(tmpTensor1.ReinterpretCast<uint32_t>(), src.ReinterpretCast<uint32_t>(),
-        signBit, MASK_PLACEHOLDER, 1, unaryParam, false);
+    ShiftRight<uint32_t, false>(
+        tmpTensor1.ReinterpretCast<uint32_t>(), src.ReinterpretCast<uint32_t>(), signBit, MASK_PLACEHOLDER, 1,
+        unaryParam, false);
     PipeBarrier<PIPE_V>();
-    CompareScalar<int32_t, uint8_t, false>(dst, tmpTensor1.ReinterpretCast<int32_t>(),
-        static_cast<int32_t>(1), CMPMODE::EQ, MASK_PLACEHOLDER, repeat, unaryParam);
+    CompareScalar<int32_t, uint8_t, false>(
+        dst, tmpTensor1.ReinterpretCast<int32_t>(), static_cast<int32_t>(1), CMPMODE::EQ, MASK_PLACEHOLDER, repeat,
+        unaryParam);
 }
 
 // s32 tensor with positive elements shift right 1 bit
-__aicore__ inline void ShiftRightOneBit(const LocalTensor<int32_t>& srcDst, const LocalTensor<int32_t>& tmpTensor,
-    const UnaryRepeatParams& unaryParam, const BinaryRepeatParams& binaryParam, const uint32_t calCount)
+__aicore__ inline void ShiftRightOneBit(
+    const LocalTensor<int32_t>& srcDst, const LocalTensor<int32_t>& tmpTensor, const UnaryRepeatParams& unaryParam,
+    const BinaryRepeatParams& binaryParam, const uint32_t calCount)
 {
     (void)(binaryParam);
     (void)(calCount);
@@ -113,15 +118,17 @@ __aicore__ inline void ShiftRightOneBit(const LocalTensor<int32_t>& srcDst, cons
 }
 
 // positive element compare with 0
-__aicore__ inline void CompareZeroPositive(const LocalTensor<uint8_t>& dst, const LocalTensor<int32_t>& src,
-    const UnaryRepeatParams& unaryParam, const uint8_t repeat)
+__aicore__ inline void CompareZeroPositive(
+    const LocalTensor<uint8_t>& dst, const LocalTensor<int32_t>& src, const UnaryRepeatParams& unaryParam,
+    const uint8_t repeat)
 {
-    CompareScalar<int32_t, uint8_t, false>(dst, src, static_cast<int32_t>(0), CMPMODE::EQ,
-        MASK_PLACEHOLDER, repeat, unaryParam);
+    CompareScalar<int32_t, uint8_t, false>(
+        dst, src, static_cast<int32_t>(0), CMPMODE::EQ, MASK_PLACEHOLDER, repeat, unaryParam);
 }
 
-__aicore__ inline void ReduceSumCount(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const LocalTensor<float>& tmpTensor, const uint32_t calCount)
+__aicore__ inline void ReduceSumCount(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const LocalTensor<float>& tmpTensor,
+    const uint32_t calCount)
 {
     ReduceSum<float, false>(dst, src, tmpTensor, calCount);
 }

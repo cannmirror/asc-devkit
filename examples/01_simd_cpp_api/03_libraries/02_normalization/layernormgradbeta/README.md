@@ -59,8 +59,7 @@
 - 算子实现：  
   本样例中实现的是固定shape(inputDy[4 * 8 * 512]、resForGamma[4 * 8 * 512]， outputPdGamma[512]、 outputPdBeta[512])的layernormgradbeta_custom算子。
 
-  - Kernel实现
-
+  - Kernel实现  
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用LayerNormGradBeta高阶API接口完成layernormgradbeta计算，得到最终结果，再搬出到外部存储上。
 
     layernormgradbeta算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor inputDyGm、resForGammaGm搬运至LocalMemory，分别存储在inputDyLocal、resForGammaLocal中，Compute任务负责对inputDyLocal、resForGammaLocal执行layernormgradbeta计算，计算结果存储在outputPdGammaLocal、outputPdBetaLocal中，CopyOut任务负责将输出数据从outputPdGammaLocal、outputPdBetaLocal搬运至Global Memory上的输出Tensor outputPdGammaGm、outputPdBetaGm中。

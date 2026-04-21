@@ -1,15 +1,16 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/reduce/reduce_sum/reduce_sum_v220_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/reduce/reduce_sum/reduce_sum_v220_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_SUM_REDUCE_SUM_V220_IMPL_H__
 #endif
@@ -31,17 +32,18 @@ namespace AscendC {
 namespace Internal {
 
 template <class T, bool isReuseSource = false>
-__aicore__ inline void ReduceSumComputeSliceAAxis(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-        const LocalTensor<T>& tmpBuf, const uint32_t repeat,
-        const uint32_t perRowReduceSize, const uint32_t tailLen, const ReduceParams &params) 
+__aicore__ inline void ReduceSumComputeSliceAAxis(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& tmpBuf, const uint32_t repeat,
+    const uint32_t perRowReduceSize, const uint32_t tailLen, const ReduceParams& params)
 {
     uint32_t curOffset;
     if constexpr (isReuseSource) {
         SetVectorMask<T, MaskMode::COUNTER>(tailLen);
         for (uint32_t i = 0; i < repeat; i++) {
             curOffset = i * params.padLast;
-            Add<T, false>(tmpBuf[curOffset], tmpBuf[curOffset],
-                src[curOffset + perRowReduceSize], MASK_PLACEHOLDER, 1, params.defaultParam);
+            Add<T, false>(
+                tmpBuf[curOffset], tmpBuf[curOffset], src[curOffset + perRowReduceSize], MASK_PLACEHOLDER, 1,
+                params.defaultParam);
         }
         PipeBarrier<PIPE_V>();
 
@@ -49,23 +51,24 @@ __aicore__ inline void ReduceSumComputeSliceAAxis(const LocalTensor<T>& dst, con
         uint16_t blockLen = perRowReduceSize / B32_DATA_NUM_PER_BLOCK;
         uint16_t srcStride = (params.padLast - perRowReduceSize) / B32_DATA_NUM_PER_BLOCK;
         uint16_t dstStride = 0;
-        DataCopy(tmpBuf, tmpBuf, { blockCount, blockLen, srcStride, dstStride });
+        DataCopy(tmpBuf, tmpBuf, {blockCount, blockLen, srcStride, dstStride});
         PipeBarrier<PIPE_V>();
     } else {
         for (uint32_t i = 0; i < repeat; i++) {
             curOffset = i * params.padLast;
             SetVectorMask<T, MaskMode::COUNTER>(tailLen);
-            Add<T, false>(tmpBuf[i * perRowReduceSize], tmpBuf[i * perRowReduceSize],
-                src[curOffset + perRowReduceSize], MASK_PLACEHOLDER, 1, params.defaultParam);
+            Add<T, false>(
+                tmpBuf[i * perRowReduceSize], tmpBuf[i * perRowReduceSize], src[curOffset + perRowReduceSize],
+                MASK_PLACEHOLDER, 1, params.defaultParam);
         }
         PipeBarrier<PIPE_V>();
     }
 }
 
 template <class T, bool isReuseSource = false>
-__aicore__ inline void ReduceSumComputeSliceRAxis(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-        const LocalTensor<T>& tmpBuf, const uint32_t repeat,
-        const uint32_t perRowReduceSize, const uint32_t tailLenN, const uint32_t tailLenRemain, const ReduceParams &params) 
+__aicore__ inline void ReduceSumComputeSliceRAxis(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& tmpBuf, const uint32_t repeat,
+    const uint32_t perRowReduceSize, const uint32_t tailLenN, const uint32_t tailLenRemain, const ReduceParams& params)
 {
     SetMaskNorm();
     uint32_t srcOffset;
@@ -81,14 +84,16 @@ __aicore__ inline void ReduceSumComputeSliceRAxis(const LocalTensor<T>& dst, con
     for (uint32_t i = 0; i < tailLenN; i++) {
         srcOffset = perRowReduceSize + i * B32_DATA_NUM_PER_REPEAT;
         tmpOffset = i * B32_DATA_NUM_PER_REPEAT;
-        Add<T, false>(tmpBuf[tmpOffset], tmpBuf[tmpOffset], src[srcOffset], MASK_PLACEHOLDER, repeat,
+        Add<T, false>(
+            tmpBuf[tmpOffset], tmpBuf[tmpOffset], src[srcOffset], MASK_PLACEHOLDER, repeat,
             {1, 1, 1, dstRepStride, src0RepStride, src1RepStride});
     }
     if (tailLenRemain > 0) {
         tmpOffset = tailLenN * B32_DATA_NUM_PER_REPEAT;
         srcOffset = perRowReduceSize + tailLenN * B32_DATA_NUM_PER_REPEAT;
         SetVectorMask<T, MaskMode::NORMAL>(tailLenRemain);
-        Add<T, false>(tmpBuf[tmpOffset], tmpBuf[tmpOffset], src[srcOffset], MASK_PLACEHOLDER, repeat,
+        Add<T, false>(
+            tmpBuf[tmpOffset], tmpBuf[tmpOffset], src[srcOffset], MASK_PLACEHOLDER, repeat,
             {1, 1, 1, dstRepStride, src0RepStride, src1RepStride});
     }
     PipeBarrier<PIPE_V>();
@@ -97,15 +102,15 @@ __aicore__ inline void ReduceSumComputeSliceRAxis(const LocalTensor<T>& dst, con
         uint16_t blockLen = perRowReduceSize / B32_DATA_NUM_PER_BLOCK;
         uint16_t srcStride = (params.padLast - perRowReduceSize) / B32_DATA_NUM_PER_BLOCK;
         uint16_t dstStride = 0;
-        DataCopy(tmpBuf, tmpBuf, { blockCount, blockLen, srcStride, dstStride });
+        DataCopy(tmpBuf, tmpBuf, {blockCount, blockLen, srcStride, dstStride});
         PipeBarrier<PIPE_V>();
     }
 }
 
 template <class T, bool isReuseSource = false>
-__aicore__ inline void ReduceSumComputeTail(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-        const LocalTensor<T>& tmpBuf, const uint32_t repeat,
-        const uint32_t perRowReduceSize, const ReduceParams &params) 
+__aicore__ inline void ReduceSumComputeTail(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& tmpBuf, const uint32_t repeat,
+    const uint32_t perRowReduceSize, const ReduceParams& params)
 {
     uint32_t tailLen = params.tail;
     if (params.tail == 0 && perRowReduceSize > 0) {
@@ -119,24 +124,24 @@ __aicore__ inline void ReduceSumComputeTail(const LocalTensor<T>& dst, const Loc
     bool isLeMaxRepStride = (perRowReduceSize / B32_DATA_NUM_PER_BLOCK) <= vaddMaxRepStrideVal;
     bool performanceSlice = isLastAxisSliceLarge && params.last > B32_DATA_NUM_PER_REPEAT && isLeMaxRepStride;
     if (performanceSlice) {
-        ReduceSumComputeSliceRAxis<T, isReuseSource>(dst, src, tmpBuf,
-            repeat, perRowReduceSize, tailLenN, tailLenRemain, params);
+        ReduceSumComputeSliceRAxis<T, isReuseSource>(
+            dst, src, tmpBuf, repeat, perRowReduceSize, tailLenN, tailLenRemain, params);
     } else {
         ReduceSumComputeSliceAAxis<T, isReuseSource>(dst, src, tmpBuf, repeat, perRowReduceSize, tailLen, params);
     }
 }
 
 template <class T, bool isReuseSource = false>
-__aicore__ inline void ReduceSumInLargeLast(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-        const LocalTensor<T>& tmpBuf, const uint32_t repeat,
-        const uint32_t perRowReduceSize, const ReduceParams &params)
+__aicore__ inline void ReduceSumInLargeLast(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& tmpBuf, const uint32_t repeat,
+    const uint32_t perRowReduceSize, const ReduceParams& params)
 {
     if constexpr (!isReuseSource) {
         uint16_t blockCount = repeat;
         uint16_t blockLen = perRowReduceSize / B32_DATA_NUM_PER_BLOCK;
         uint16_t srcStride = (params.padLast - perRowReduceSize) / B32_DATA_NUM_PER_BLOCK;
         uint16_t dstStride = 0;
-        DataCopy(tmpBuf, src, { blockCount, blockLen, srcStride, dstStride });
+        DataCopy(tmpBuf, src, {blockCount, blockLen, srcStride, dstStride});
         PipeBarrier<PIPE_V>();
     }
     ReduceSumComputeTail<T, isReuseSource>(dst, src, tmpBuf, repeat, perRowReduceSize, params);
@@ -157,8 +162,9 @@ __aicore__ inline void ReduceSumInLargeLast(const LocalTensor<T>& dst, const Loc
 }
 
 template <class T, bool isReuseSource = false>
-__aicore__ inline void ReduceSumArCompute(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const LocalTensor<T>& tmpBuf, const uint32_t perRowReduceSize, const ReduceParams &params) 
+__aicore__ inline void ReduceSumArCompute(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& tmpBuf, const uint32_t perRowReduceSize,
+    const ReduceParams& params)
 {
     constexpr uint32_t maxRepeatTimes = 248;
     uint32_t maxRepOffsetN = params.first / maxRepeatTimes;
@@ -173,15 +179,17 @@ __aicore__ inline void ReduceSumArCompute(const LocalTensor<T>& dst, const Local
         for (uint32_t i = 0; i < maxRepOffsetN; i++) {
             srcMaxRepNOffset = maxRepeatTimes * i * params.padLast;
             dstMaxRepNOffset = maxRepeatTimes * i;
-            WholeReduceSum<T, false>(dst[dstMaxRepNOffset], src[srcMaxRepNOffset],
-                MASK_PLACEHOLDER, maxRepeatTimes, 1, 1, params.padLast / params.elePerBlk);
+            WholeReduceSum<T, false>(
+                dst[dstMaxRepNOffset], src[srcMaxRepNOffset], MASK_PLACEHOLDER, maxRepeatTimes, 1, 1,
+                params.padLast / params.elePerBlk);
         }
         if (maxRepeatOffsetTail > 0) {
             srcMaxRepTailOffset = (params.first - maxRepeatOffsetTail) * params.padLast;
             dstMaxRepTailOffset = params.first - maxRepeatOffsetTail;
             SetVectorMask<T, MaskMode::NORMAL>(params.last);
-            WholeReduceSum<T, false>(dst[dstMaxRepTailOffset], src[srcMaxRepTailOffset],
-                MASK_PLACEHOLDER, maxRepeatOffsetTail, 1, 1, params.padLast / params.elePerBlk);
+            WholeReduceSum<T, false>(
+                dst[dstMaxRepTailOffset], src[srcMaxRepTailOffset], MASK_PLACEHOLDER, maxRepeatOffsetTail, 1, 1,
+                params.padLast / params.elePerBlk);
         }
     } else {
         SetMaskCount();
@@ -191,16 +199,17 @@ __aicore__ inline void ReduceSumArCompute(const LocalTensor<T>& dst, const Local
             srcMaxRepNOffset = maxRepeatTimes * i * params.padLast;
             dstMaxRepNOffset = maxRepeatTimes * i;
             tmpBufMaxRepNOffset = maxRepeatTimes * i * B32_DATA_NUM_PER_REPEAT;
-            ReduceSumInLargeLast<T, isReuseSource>(dst[dstMaxRepNOffset], src[srcMaxRepNOffset],
-                tmpBuf[tmpBufMaxRepNOffset], maxRepeatTimes, perRowReduceSize, params);
+            ReduceSumInLargeLast<T, isReuseSource>(
+                dst[dstMaxRepNOffset], src[srcMaxRepNOffset], tmpBuf[tmpBufMaxRepNOffset], maxRepeatTimes,
+                perRowReduceSize, params);
         }
         if (maxRepeatOffsetTail > 0) {
             srcMaxRepTailOffset = (params.first - maxRepeatOffsetTail) * params.padLast;
             dstMaxRepTailOffset = params.first - maxRepeatOffsetTail;
             tmpBufMaxRepNOffset = (params.first - maxRepeatOffsetTail) * B32_DATA_NUM_PER_REPEAT;
-            ReduceSumInLargeLast<T, isReuseSource>(dst[dstMaxRepTailOffset],
-                src[srcMaxRepTailOffset], tmpBuf[tmpBufMaxRepNOffset],
-                maxRepeatOffsetTail, perRowReduceSize, params);
+            ReduceSumInLargeLast<T, isReuseSource>(
+                dst[dstMaxRepTailOffset], src[srcMaxRepTailOffset], tmpBuf[tmpBufMaxRepNOffset], maxRepeatOffsetTail,
+                perRowReduceSize, params);
         }
         SetMaskNorm();
     }
@@ -209,8 +218,7 @@ __aicore__ inline void ReduceSumArCompute(const LocalTensor<T>& dst, const Local
 }
 
 template <class T, bool isReuseSource = false>
-__aicore__ inline void ReduceSumArReusedSrc(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    ReduceParams params)
+__aicore__ inline void ReduceSumArReusedSrc(const LocalTensor<T>& dst, const LocalTensor<T>& src, ReduceParams params)
 {
     if (params.last <= B32_DATA_NUM_PER_BLOCK) {
         BlkReduceForLoop<T, ApiMode::API_MODE_SUM>(dst, src, 0, params.first, params.last);
@@ -224,8 +232,8 @@ __aicore__ inline void ReduceSumArReusedSrc(const LocalTensor<T>& dst, const Loc
 }
 
 template <class T, bool isReuseSource = false>
-__aicore__ inline void ReduceSumArUnReusedSrc(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const LocalTensor<T>& tmpBuf, const ReduceParams &params)
+__aicore__ inline void ReduceSumArUnReusedSrc(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& tmpBuf, const ReduceParams& params)
 {
     uint32_t perRowReduceSize = params.elePerBlk > params.splitK ? params.elePerBlk : params.splitK;
     if (params.last == params.splitK) {
@@ -240,20 +248,20 @@ __aicore__ inline void ReduceSumArUnReusedSrc(const LocalTensor<T>& dst, const L
 }
 
 template <class T, class pattern, bool isReuseSource = false>
-__aicore__ inline void ReduceSumCommon(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t srcShape[], bool srcInnerPad, const ReduceParams &reduceParams)
+__aicore__ inline void ReduceSumCommon(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t srcShape[], bool srcInnerPad, const ReduceParams& reduceParams)
 {
     uint32_t first = reduceParams.first;
     uint32_t last = reduceParams.last;
     uint32_t padLast = reduceParams.padLast;
-    uint32_t elePerBlk =  reduceParams.elePerBlk;
+    uint32_t elePerBlk = reduceParams.elePerBlk;
     LocalTensor<T> tmpBuf = sharedTmpBuffer.ReinterpretCast<T>();
     if constexpr (IsSameType<pattern, Pattern::Reduce::AR>::value) {
         ASCENDC_ASSERT((dstTensor.GetSize() >= first), {
             KERNEL_LOG(
-                KERNEL_ERROR,
-                "dstTensor must be greater than or equal to %u, current size if %u",
-                first, dstTensor.GetSize());
+                KERNEL_ERROR, "dstTensor must be greater than or equal to %u, current size if %u", first,
+                dstTensor.GetSize());
         });
         uint32_t splitK = 1 << FindClosestPowerOfTwo(last);
         if (last <= elePerBlk) {
@@ -261,35 +269,40 @@ __aicore__ inline void ReduceSumCommon(const LocalTensor<T>& dstTensor, const Lo
         }
         uint32_t tail = last - splitK;
         if constexpr (isReuseSource) {
-            ReduceSumArReusedSrc<T, true>(dstTensor, srcTensor, ReduceParams(
-                first, last, padLast, splitK, tail, elePerBlk));
+            ReduceSumArReusedSrc<T, true>(
+                dstTensor, srcTensor, ReduceParams(first, last, padLast, splitK, tail, elePerBlk));
         } else {
-            ReduceSumArUnReusedSrc<T, false>(dstTensor, srcTensor, tmpBuf,
-                ReduceParams(first, last, padLast, splitK, tail, elePerBlk));
+            ReduceSumArUnReusedSrc<T, false>(
+                dstTensor, srcTensor, tmpBuf, ReduceParams(first, last, padLast, splitK, tail, elePerBlk));
         }
     } else {
         ASCENDC_ASSERT((dstTensor.GetSize() >= last), {
-            KERNEL_LOG(KERNEL_ERROR, "dstTensor must be greater than or equal to %u, current size if %u",
-            last, dstTensor.GetSize());
+            KERNEL_LOG(
+                KERNEL_ERROR, "dstTensor must be greater than or equal to %u, current size if %u", last,
+                dstTensor.GetSize());
         });
-        BinaryReduceByFirstAxis<T, isReuseSource, Add<T, false>>(
-                dstTensor, srcTensor, tmpBuf, first, last, padLast);
+        BinaryReduceByFirstAxis<T, isReuseSource, Add<T, false>>(dstTensor, srcTensor, tmpBuf, first, last, padLast);
     }
 }
 
 template <class T, class pattern, bool isReuseSource = false>
-__aicore__ inline void ReduceSumImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t srcShape[], bool srcInnerPad) {
+__aicore__ inline void ReduceSumImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t srcShape[], bool srcInnerPad)
+{
     uint32_t last = srcShape[1];
     uint32_t first = srcShape[0];
     constexpr uint32_t elePerBlk = ONE_BLK_SIZE / sizeof(T);
     uint32_t padLast = AlignUp(last, elePerBlk);
     static_assert(SupportType<T, float>(), "failed to check the data type, current api supports data type is float!");
-    static_assert(SupportType<pattern, Pattern::Reduce::AR, Pattern::Reduce::RA>(), 
+    static_assert(
+        SupportType<pattern, Pattern::Reduce::AR, Pattern::Reduce::RA>(),
         "failed to check the reduce pattern, it only supports AR/RA pattern!");
-    CHECK_FUNC_HIGHLEVEL_API(ReduceSum, (T, pattern), (dstTensor, srcTensor, sharedTmpBuffer, srcShape, srcInnerPad, padLast));
+    CHECK_FUNC_HIGHLEVEL_API(
+        ReduceSum, (T, pattern), (dstTensor, srcTensor, sharedTmpBuffer, srcShape, srcInnerPad, padLast));
     ReduceParams reduceParams = ReduceParams(first, last, padLast, 0, 0, elePerBlk);
-    ReduceSumCommon<T, pattern, isReuseSource>(dstTensor, srcTensor, sharedTmpBuffer, srcShape, srcInnerPad, reduceParams);
+    ReduceSumCommon<T, pattern, isReuseSource>(
+        dstTensor, srcTensor, sharedTmpBuffer, srcShape, srcInnerPad, reduceParams);
     SetMaskNorm();
     ResetMask();
 }

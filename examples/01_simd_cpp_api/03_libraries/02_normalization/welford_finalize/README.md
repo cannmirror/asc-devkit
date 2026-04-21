@@ -46,8 +46,7 @@
 - 算子实现：  
   本样例中实现的是固定shape(inputX[1, 1024]、mean[1, 1024]、var[1, 1024]， outMean[1, 8]、 outVar[1, 8])的welford_finalize算子。
 
-  - Kernel实现
-
+  - Kernel实现  
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用WelfordFinalize高阶API接口完成welford_finalize计算，得到最终结果，再搬出到外部存储上。
 
     welford_finalize算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor inputXGm、meanGm、varGm存储在inputXLocal、meanLocal、varLocal中，Compute任务负责对inputXLocal、meanLocal、varLocal执行welford_finalize计算，计算结果存储在outMeanLocal、outVarLocal中，CopyOut任务负责将输出数据从outMeanLocal、outVarLocal搬运至Global Memory上的输出Tensor outMeanGm、outVarGm。

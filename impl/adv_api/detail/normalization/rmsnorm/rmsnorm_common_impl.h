@@ -1,14 +1,15 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/normalization/rmsnorm/rmsnorm_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/normalization/rmsnorm/rmsnorm_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_RMSNORM_RMSNORM_COMMON_IMPL_H__
 #endif
@@ -36,7 +37,7 @@ constexpr uint32_t FLOAT_PER_BLOCK = 8;
 constexpr float RSQRT_EXPONENT = -0.5;
 
 struct RmsNormParams {
-    __aicore__ RmsNormParams() {};
+    __aicore__ RmsNormParams(){};
     uint32_t curBsLength = 0;
     uint32_t curBshLength = 0;
     LocalTensor<float> tmpAddr;
@@ -58,8 +59,9 @@ __aicore__ inline void GetRmsNormInfo(
 }
 
 // support dst reuse src
-__aicore__ inline void RmsNormGenericReduceSum(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const uint32_t bsLength, const uint32_t hLength, const uint32_t originalHLength)
+__aicore__ inline void RmsNormGenericReduceSum(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint32_t bsLength, const uint32_t hLength,
+    const uint32_t originalHLength)
 {
     for (uint32_t i = 0; i < bsLength; i++) {
         uint32_t totalNum = originalHLength;
@@ -71,8 +73,9 @@ __aicore__ inline void RmsNormGenericReduceSum(const LocalTensor<float>& dst, co
                 dstTmp = dst[i];
             }
             SetVectorMask<float>(0, totalNum);
-            RepeatReduceSum<float, false>(dstTmp, srcTmp, 1, MASK_PLACEHOLDER, DEFAULT_BLK_STRIDE,
-                DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+            RepeatReduceSum<float, false>(
+                dstTmp, srcTmp, 1, MASK_PLACEHOLDER, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE,
+                DEFAULT_REPEAT_STRIDE);
             PipeBarrier<PIPE_V>();
             totalNum = DivCeil(totalNum, ONE_REPEAT_FLOAT_SIZE);
         }
@@ -80,8 +83,9 @@ __aicore__ inline void RmsNormGenericReduceSum(const LocalTensor<float>& dst, co
 }
 
 template <bool isBasicBlock = false>
-__aicore__ inline void RmsNormReduceSum(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const uint32_t bsLength, const uint32_t hLength, const uint32_t originalHLength)
+__aicore__ inline void RmsNormReduceSum(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint32_t bsLength, const uint32_t hLength,
+    const uint32_t originalHLength)
 {
     if constexpr (isBasicBlock) {
         // split hLength to n*64 parts, all n-parts add to block 0, and use n as for-loop
@@ -102,8 +106,8 @@ __aicore__ inline void RmsNormReduceSum(const LocalTensor<float>& dst, const Loc
         }
 
         // 2. use vcadd to get sum result
-        RepeatReduceSum<float, false>(dst, src, 1, MASK_PLACEHOLDER, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE,
-            DEFAULT_BLK_STRIDE, repStride);
+        RepeatReduceSum<float, false>(
+            dst, src, 1, MASK_PLACEHOLDER, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, repStride);
         PipeBarrier<PIPE_V>();
     } else {
         RmsNormGenericReduceSum(dst, src, bsLength, hLength, originalHLength);
@@ -112,8 +116,9 @@ __aicore__ inline void RmsNormReduceSum(const LocalTensor<float>& dst, const Loc
 
 // src0 is input: [b,s,h], src1 is reduce results: [h,], repeatTime is b*s
 // use bsLength as for loop, and muls to do broadcast multiply
-__aicore__ inline void RmsNormGeneralFirstAxisBrcMul(const LocalTensor<float>& dst, const LocalTensor<float>& src0,
-    const LocalTensor<float>& src1, const uint32_t bshLength, const uint32_t bsLength, const uint32_t hLength)
+__aicore__ inline void RmsNormGeneralFirstAxisBrcMul(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src0, const LocalTensor<float>& src1,
+    const uint32_t bshLength, const uint32_t bsLength, const uint32_t hLength)
 {
     SetVectorMask<float>(0, hLength);
     UnaryRepeatParams unaryParams;
@@ -131,8 +136,9 @@ __aicore__ inline void RmsNormGeneralFirstAxisBrcMul(const LocalTensor<float>& d
 
 // src0's shape is (b*s, h), src1's shape is (b*s)
 template <bool isBasicBlock = false>
-__aicore__ inline void RmsNormFirstAxisBrcMul(const LocalTensor<float>& dst, const LocalTensor<float>& inputAddr,
-    const LocalTensor<float>& reduceAddr, const uint32_t bshLength, const uint32_t bsLength, const uint32_t hLength)
+__aicore__ inline void RmsNormFirstAxisBrcMul(
+    const LocalTensor<float>& dst, const LocalTensor<float>& inputAddr, const LocalTensor<float>& reduceAddr,
+    const uint32_t bshLength, const uint32_t bsLength, const uint32_t hLength)
 {
     if constexpr (isBasicBlock) {
         if (bsLength > BASIC_BLK_BSLENGTH && bsLength > hLength / BASIC_BLK_HLENGTH) {
@@ -149,8 +155,9 @@ __aicore__ inline void RmsNormFirstAxisBrcMul(const LocalTensor<float>& dst, con
     }
 }
 
-__aicore__ inline void RmsNormLastAxisBrcMulImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src0,
-    const LocalTensor<float>& src1, const uint32_t bsLength, const uint32_t hLength)
+__aicore__ inline void RmsNormLastAxisBrcMulImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src0, const LocalTensor<float>& src1,
+    const uint32_t bsLength, const uint32_t hLength)
 {
     const uint32_t loop = hLength / BASIC_BLK_HLENGTH;
     if (loop >= bsLength) {
@@ -184,8 +191,9 @@ __aicore__ inline void RmsNormLastAxisBrcMulImpl(const LocalTensor<float>& dst, 
 
 // src0 is [b,s,h], src1 is [h,], repeatTime is b*s
 template <bool isBasicBlock = false>
-__aicore__ inline void RmsNormLastAxisBrcMul(const LocalTensor<float>& dst, const LocalTensor<float>& src0,
-    const LocalTensor<float>& src1, const uint32_t bsLength, const uint32_t hLength)
+__aicore__ inline void RmsNormLastAxisBrcMul(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src0, const LocalTensor<float>& src1,
+    const uint32_t bsLength, const uint32_t hLength)
 {
     if constexpr (isBasicBlock) {
         RmsNormLastAxisBrcMulImpl(dst, src0, src1, bsLength, hLength);
@@ -210,8 +218,9 @@ __aicore__ inline void RmsNormLastAxisBrcMul(const LocalTensor<float>& dst, cons
 }
 
 template <typename T, bool isBasicBlock = false>
-__aicore__ inline void RmsNormCompute(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const LocalTensor<T>& gamma, const T epsilon, const RmsNormTiling& tiling, RmsNormParams& params)
+__aicore__ inline void RmsNormCompute(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& gamma, const T epsilon,
+    const RmsNormTiling& tiling, RmsNormParams& params)
 {
     UnaryRepeatParams unaryParams;
     // for fp16 need to cast to fp32
@@ -249,14 +258,14 @@ __aicore__ inline void RmsNormCompute(const LocalTensor<T>& dst, const LocalTens
     PipeBarrier<PIPE_V>();
     // step 6: broadcast reduce result [b,s] to [b,s,h]
     // step 7: x / (rms + e)
-    RmsNormFirstAxisBrcMul<isBasicBlock>(params.tmpAddr, params.srcFp32Addr, params.reducedAddr, params.curBshLength,
-        params.curBsLength, tiling.hLength);
+    RmsNormFirstAxisBrcMul<isBasicBlock>(
+        params.tmpAddr, params.srcFp32Addr, params.reducedAddr, params.curBshLength, params.curBsLength,
+        tiling.hLength);
     PipeBarrier<PIPE_V>();
     if constexpr (sizeof(T) == sizeof(half)) {
         unaryParams.srcRepStride = DEFAULT_REPEAT_STRIDE / sizeof(half);
         SetVectorMask<T>(0, tiling.hLength);
-        Cast<float, half, false>(
-            params.srcFp32Addr, gamma, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1, unaryParams);
+        Cast<float, half, false>(params.srcFp32Addr, gamma, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1, unaryParams);
         // step 8: x/(rms) * g
         PipeBarrier<PIPE_V>();
         RmsNormLastAxisBrcMul<isBasicBlock>(
@@ -273,16 +282,18 @@ __aicore__ inline void RmsNormCompute(const LocalTensor<T>& dst, const LocalTens
 }
 
 template <typename T, bool isBasicBlock = false>
-__aicore__ inline void RmsNormImpl(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal,
-    const LocalTensor<T>& gammaLocal, const LocalTensor<uint8_t>& sharedTmpBuffer, const T epsilon,
-    const RmsNormTiling& tiling)
+__aicore__ inline void RmsNormImpl(
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const LocalTensor<T>& gammaLocal,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const T epsilon, const RmsNormTiling& tiling)
 {
     if ASCEND_IS_AIC {
         return;
     }
-    CHECK_FUNC_HIGHLEVEL_API(RmsNorm, (T, isBasicBlock), (dstLocal, srcLocal, gammaLocal, sharedTmpBuffer, epsilon, tiling));
-    ASCENDC_ASSERT((IsSameType<T, half>::value || IsSameType<T, float>::value),
-        { KERNEL_LOG(KERNEL_ERROR, "RmsNorm only support data type: float/half"); });
+    CHECK_FUNC_HIGHLEVEL_API(
+        RmsNorm, (T, isBasicBlock), (dstLocal, srcLocal, gammaLocal, sharedTmpBuffer, epsilon, tiling));
+    ASCENDC_ASSERT((IsSameType<T, half>::value || IsSameType<T, float>::value), {
+        KERNEL_LOG(KERNEL_ERROR, "RmsNorm only support data type: float/half");
+    });
 
     LocalTensor<float> tmpLocal = sharedTmpBuffer.ReinterpretCast<float>();
     RmsNormParams params;
@@ -290,8 +301,7 @@ __aicore__ inline void RmsNormImpl(const LocalTensor<T>& dstLocal, const LocalTe
     SetMaskCount();
     for (uint32_t i = 0; i < tiling.loopRound; ++i) {
         uint32_t offset = i * tiling.mainBshLength;
-        RmsNormCompute<T, isBasicBlock>(
-            dstLocal[offset], srcLocal[offset], gammaLocal, epsilon, tiling, params);
+        RmsNormCompute<T, isBasicBlock>(dstLocal[offset], srcLocal[offset], gammaLocal, epsilon, tiling, params);
     }
     if (tiling.tailBsLength != 0) {
         params.curBshLength = tiling.tailBshLength;
@@ -302,7 +312,7 @@ __aicore__ inline void RmsNormImpl(const LocalTensor<T>& dstLocal, const LocalTe
     SetMaskNorm();
     ResetMask();
 }
-}  // namespace RmsNormAPI
+} // namespace RmsNormAPI
 } // namespace AscendC
 #endif
 #endif // IMPL_NORMALIZATION_RMSNORM_RMSNORM_COMMON_IMPL_H

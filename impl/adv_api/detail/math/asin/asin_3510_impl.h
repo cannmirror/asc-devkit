@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file asin_3510_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/asin/asin_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/asin.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/asin/asin_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/asin.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ASIN_ASIN_C310_IMPL_H__
 #endif
@@ -27,14 +28,14 @@
 
 namespace AscendC {
 namespace Internal {
-constexpr Reg::CastTrait ASIN_CAST_TRAIT_NONE = {Reg::RegLayout::ZERO, Reg::SatMode::SAT,
-    Reg::MaskMergeMode::ZEROING, RoundMode::CAST_NONE};
+constexpr Reg::CastTrait ASIN_CAST_TRAIT_NONE = {
+    Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_NONE};
 
-constexpr Reg::CastTrait ASIN_CAST_TRAIT_FLOOR = {Reg::RegLayout::ZERO, Reg::SatMode::SAT,
-    Reg::MaskMergeMode::ZEROING, RoundMode::CAST_FLOOR};
+constexpr Reg::CastTrait ASIN_CAST_TRAIT_FLOOR = {
+    Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_FLOOR};
 
-constexpr Reg::CastTrait ASIN_CAST_TRAIT_RINT = {Reg::RegLayout::ZERO, Reg::SatMode::SAT,
-    Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr Reg::CastTrait ASIN_CAST_TRAIT_RINT = {
+    Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
 // Calculate Taylor Expansion according to (((k_nx^2 + k_n) * x^2 + k_(n-1)) * x^2 +k_(n-2) …�?*x^2 +k_0)*x.
 template <typename T, typename RegT>
@@ -131,8 +132,8 @@ __simd_callee__ inline void GetSign(RegT& dstReg, RegT& srcReg, Reg::MaskReg& ma
 // asin(x) = the 15th order taylor expansion when x belongs to (-2^(-0.5), 2^(-0.5))
 // asin(x) = PI*0.5 - arcsin(sqrt(1-x^2)) when x belongs to (2^(-0.5), 1)
 template <typename T, bool convertToAcos = false>
-__simd_vf__ inline void AsinComputeVFF32(__ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32_t calSize,
-    uint16_t repeatTimes, uint16_t stride)
+__simd_vf__ inline void AsinComputeVFF32(
+    __ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32_t calSize, uint16_t repeatTimes, uint16_t stride)
 {
     Reg::MaskReg mask;
     Reg::RegTensor<T> srcReg;
@@ -149,18 +150,13 @@ __simd_vf__ inline void AsinComputeVFF32(__ubuf__ T* dstUb, __ubuf__ T* srcUb, u
         // Calculate res1 = taylor_compute(abs(x)) -> dst, abs(x) -> resReg1.
         Reg::Mul(tmpReg, srcReg, srcReg, mask);
         AsinTaylorComputeBySquareValue<T>(resReg1, tmpReg, mask);
-        // As NPU are not good at scalar process like CPU for if-else statement, the solution here used for handling above
-        // 3 scenarios is to calculate 0/1 choices combining the results on both options.
-        // e.g.
-        // Step1: Calculate both option results of x, no matter which range it's at.
-        // result1(x), result2(x)
-        // Step2: Calculate 0/1 choices of both option results of x, no matter which range it's at.
-        // choice1(x), choice2(x)
-        // Step3: Combine choice result and options results, since at least one choice should be zero.
-        // Result = choice1(x) * result1(x) + choice2(x) * result2(x)
-        // choice1 = -Floor(min(abs(x), BOUNDARY) - BOUNDARY).
-        // choice2 = 1 - choice1
-        // res = res1 * choice1 + res2 * choice2
+        // As NPU are not good at scalar process like CPU for if-else statement, the solution here used for handling
+        // above 3 scenarios is to calculate 0/1 choices combining the results on both options. e.g. Step1: Calculate
+        // both option results of x, no matter which range it's at. result1(x), result2(x) Step2: Calculate 0/1 choices
+        // of both option results of x, no matter which range it's at. choice1(x), choice2(x) Step3: Combine choice
+        // result and options results, since at least one choice should be zero. Result = choice1(x) * result1(x) +
+        // choice2(x) * result2(x) choice1 = -Floor(min(abs(x), BOUNDARY) - BOUNDARY). choice2 = 1 - choice1 res = res1
+        // * choice1 + res2 * choice2
         ProcessBranch<T>(resReg1, resReg2, tmpReg, mask);
         GetSign<T>(signReg, srcReg, mask);
         Reg::Mul(dstReg, resReg1, signReg, mask);
@@ -174,8 +170,8 @@ __simd_vf__ inline void AsinComputeVFF32(__ubuf__ T* dstUb, __ubuf__ T* srcUb, u
 }
 
 template <typename T, bool convertToAcos = false>
-__simd_vf__ inline void AsinComputeVFF16(__ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32_t calSize,
-    uint16_t repeatTimes, uint16_t stride)
+__simd_vf__ inline void AsinComputeVFF16(
+    __ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32_t calSize, uint16_t repeatTimes, uint16_t stride)
 {
     Reg::MaskReg mask;
     Reg::RegTensor<half> srcReg;
@@ -204,18 +200,13 @@ __simd_vf__ inline void AsinComputeVFF16(__ubuf__ T* dstUb, __ubuf__ T* srcUb, u
         Reg::Abs(halfReg2, srcReg, mask);
         AsinTaylorCompute<half>(dstReg, halfReg2, mask);
 
-        // As NPU are not good at scalar process like CPU for if-else statement, the solution here used for handling above
-        // 3 scenarios is to calculate 0/1 choices combining the results on both options.
-        // e.g.
-        // Step1: Calculate both option results of x, no matter which range it's at.
-        // result1(x), result2(x)
-        // Step2: Calculate 0/1 choices of both option results of x, no matter which range it's at.
-        // choice1(x), choice2(x)
-        // Step3: Combine choice result and optional result, since at least one choice should be zero.
-        // Result = choice1(x) * result1(x) + choice2(x) * result2(x)
-        // choice1 = -Floor(min(abs(x), BOUNDARY) - BOUNDARY).
-        // choice2 = 1 - choice1
-        // res = res1 * choice1 + res2 * choice2
+        // As NPU are not good at scalar process like CPU for if-else statement, the solution here used for handling
+        // above 3 scenarios is to calculate 0/1 choices combining the results on both options. e.g. Step1: Calculate
+        // both option results of x, no matter which range it's at. result1(x), result2(x) Step2: Calculate 0/1 choices
+        // of both option results of x, no matter which range it's at. choice1(x), choice2(x) Step3: Combine choice
+        // result and optional result, since at least one choice should be zero. Result = choice1(x) * result1(x) +
+        // choice2(x) * result2(x) choice1 = -Floor(min(abs(x), BOUNDARY) - BOUNDARY). choice2 = 1 - choice1 res = res1
+        // * choice1 + res2 * choice2
         Reg::Mins(halfReg2, halfReg2, static_cast<half>(BOUNDARY), mask);
         Reg::Adds(halfReg2, halfReg2, static_cast<half>(-BOUNDARY), mask);
         Reg::Cast<int8_t, half, ASIN_CAST_TRAIT_FLOOR>(s8Reg, halfReg2, mask);
@@ -245,8 +236,8 @@ __simd_vf__ inline void AsinComputeVFF16(__ubuf__ T* dstUb, __ubuf__ T* srcUb, u
 template <typename T, bool convertToAcos = false>
 __aicore__ inline void AsinCompute(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint32_t calSize)
 {
-    __ubuf__ T *dstUb = (__ubuf__ T *)dst.GetPhyAddr();
-    __ubuf__ T *srcUb = (__ubuf__ T *)src.GetPhyAddr();
+    __ubuf__ T* dstUb = (__ubuf__ T*)dst.GetPhyAddr();
+    __ubuf__ T* srcUb = (__ubuf__ T*)src.GetPhyAddr();
 
     // half dtype will be converted to float to improve precision;
     constexpr uint16_t stride = GetVecLen() / sizeof(float);
@@ -259,8 +250,8 @@ __aicore__ inline void AsinCompute(const LocalTensor<T>& dst, const LocalTensor<
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void AsinImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const uint32_t calCount)
+__aicore__ inline void AsinImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -276,8 +267,9 @@ __aicore__ inline void AsinImpl(const LocalTensor<T>& dstTensor, const LocalTens
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void AsinImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void AsinImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {

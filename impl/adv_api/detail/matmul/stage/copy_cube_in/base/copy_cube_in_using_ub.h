@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file copy_cube_in_using_ub.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/stage/copy_cube_in/base/copy_cube_in_using_ub.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/stage/copy_cube_in/base/copy_cube_in_using_ub.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_IN_BASE_COPY_CUBE_IN_USING_UB_H__
 #endif
@@ -37,12 +38,13 @@ namespace Detail {
     CopyCubeIn is only for internal usage, does not support extension or customized specialization!
 */
 template <typename IMPL, class INPUT_TYPE, const auto& MM_CFG>
-class CopyCubeIn<IMPL, INPUT_TYPE, MM_CFG,
-                 enable_if_t<MatmulFeatureTrait<MM_CFG>::IsNeedUB() &&
-                             ((GetCopyCubeInType<INPUT_TYPE, MM_CFG>() == CopyCubeInType::NORMAL) ||
-                              (GetCopyCubeInType<INPUT_TYPE, MM_CFG>() == CopyCubeInType::MDL))>> :
-    public CopyCubeInBase<IMPL, MM_CFG, INPUT_TYPE>
-{
+class CopyCubeIn<
+    IMPL, INPUT_TYPE, MM_CFG,
+    enable_if_t<
+        MatmulFeatureTrait<MM_CFG>::IsNeedUB() &&
+        ((GetCopyCubeInType<INPUT_TYPE, MM_CFG>() == CopyCubeInType::NORMAL) ||
+         (GetCopyCubeInType<INPUT_TYPE, MM_CFG>() == CopyCubeInType::MDL))>>
+    : public CopyCubeInBase<IMPL, MM_CFG, INPUT_TYPE> {
     MATMUL_USE_MODULE_ON(CubeInBuffer, INPUT_TYPE::TAG);
     MATMUL_USE_MODULE_ON(CopyCubeInParams, INPUT_TYPE::TAG);
     MATMUL_USE_MODULE_ON(MatmulTensorInfo, INPUT_TYPE::TAG);
@@ -71,18 +73,18 @@ public:
 
         if constexpr (DoMatmulMDL(MM_CFG) && ToMatmulConfig(MM_CFG).enableL1CacheUB) {
             if (MATMUL_MODULE(CopyCubeInParams)->GetDepthL1CacheUB() > 0) {
-                GetTPipePtr()->InitBuffer(MATMUL_MODULE(DataCopyUtils)->GetQidUbCache(), 1,
-                                          MATMUL_MODULE(CopyCubeInParams)->GetDepthL1CacheUB() *
-                                              MATMUL_MODULE(CopyCubeInParams)->GetStepCol() *
-                                              MATMUL_MODULE(CopyCubeInParams)->GetStepRow() *
-                                              MATMUL_MODULE(CopyCubeInParams)->GetBufferSize() * sizeof(SRC_T));
+                GetTPipePtr()->InitBuffer(
+                    MATMUL_MODULE(DataCopyUtils)->GetQidUbCache(), 1,
+                    MATMUL_MODULE(CopyCubeInParams)->GetDepthL1CacheUB() *
+                        MATMUL_MODULE(CopyCubeInParams)->GetStepCol() * MATMUL_MODULE(CopyCubeInParams)->GetStepRow() *
+                        MATMUL_MODULE(CopyCubeInParams)->GetBufferSize() * sizeof(SRC_T));
             }
         }
     }
 
     template <typename ScheduleContext = int>
-    __aicore__ inline LocalTensor<TRANS_T> LoadData(int32_t curRow, int32_t curCol, int32_t tileHeight,
-                                                    int32_t tileWidth, const ScheduleContext& context = {})
+    __aicore__ inline LocalTensor<TRANS_T> LoadData(
+        int32_t curRow, int32_t curCol, int32_t tileHeight, int32_t tileWidth, const ScheduleContext& context = {})
     {
         LocalTensor<TRANS_T> l1;
         if constexpr (DoMatmulMDL(MM_CFG)) {
@@ -118,8 +120,8 @@ public:
         return l1;
     }
 
-    __aicore__ inline void ClearLoadData(const LocalTensor<TRANS_T>& aMatrix = LocalTensor<TRANS_T>{}, int32_t curRow = 0,
-                                         int32_t curCol = 0)
+    __aicore__ inline void ClearLoadData(
+        const LocalTensor<TRANS_T>& aMatrix = LocalTensor<TRANS_T>{}, int32_t curRow = 0, int32_t curCol = 0)
     {
         if constexpr (DoMatmulMDL(MM_CFG)) {
             auto bufferPos = MATMUL_MODULE(CopyCubeInParams)->GetBufferPos();
@@ -132,8 +134,8 @@ public:
 
 private:
     template <typename INPUT_TYPE_ALIAS = INPUT_TYPE>
-    __aicore__ constexpr enable_if_t<INPUT_TYPE_ALIAS::TAG == InputTypeTag::A, int32_t>
-    GetIterIndexInner(int32_t curRow, int32_t curCol)
+    __aicore__ constexpr enable_if_t<INPUT_TYPE_ALIAS::TAG == InputTypeTag::A, int32_t> GetIterIndexInner(
+        int32_t curRow, int32_t curCol)
     {
         if constexpr (DoMatmulNorm(MM_CFG) || DoMatmulIBShareNorm(MM_CFG)) {
             if (MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder() ==
@@ -159,8 +161,8 @@ private:
     }
 
     template <typename INPUT_TYPE_ALIAS = INPUT_TYPE>
-    __aicore__ constexpr enable_if_t<INPUT_TYPE_ALIAS::TAG == InputTypeTag::B, int32_t>
-    GetIterIndexInner(int32_t curRow, int32_t curCol)
+    __aicore__ constexpr enable_if_t<INPUT_TYPE_ALIAS::TAG == InputTypeTag::B, int32_t> GetIterIndexInner(
+        int32_t curRow, int32_t curCol)
     {
         if constexpr (DoMatmulNorm(MM_CFG) || DoMatmulIBShareNorm(MM_CFG)) {
             if (MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder() ==
@@ -189,9 +191,10 @@ private:
     {
         if constexpr (GetCubeInBufferType<INPUT_TYPE, MM_CFG>() == CubeInBufferType::SINGLE_BUFFER) {
             return 0;
-        } else if constexpr (GetCubeInBufferType<INPUT_TYPE, MM_CFG>() == CubeInBufferType::NORMAL ||
-                             GetCubeInBufferType<INPUT_TYPE, MM_CFG>() == CubeInBufferType::SINGLE_GLOBAL_BUFFER ||
-                             GetCubeInBufferType<INPUT_TYPE, MM_CFG>() == CubeInBufferType::DOUBLE_GLOBAL_BUFFER) {
+        } else if constexpr (
+            GetCubeInBufferType<INPUT_TYPE, MM_CFG>() == CubeInBufferType::NORMAL ||
+            GetCubeInBufferType<INPUT_TYPE, MM_CFG>() == CubeInBufferType::SINGLE_GLOBAL_BUFFER ||
+            GetCubeInBufferType<INPUT_TYPE, MM_CFG>() == CubeInBufferType::DOUBLE_GLOBAL_BUFFER) {
             return GetIterIndexInner(curRow, curCol);
         }
     }

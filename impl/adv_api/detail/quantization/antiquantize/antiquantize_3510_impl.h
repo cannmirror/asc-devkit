@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file antiquantize_3510_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/quantization/antiquantize/antiquantize_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/quantization/antiquantize.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/quantization/antiquantize/antiquantize_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/quantization/antiquantize.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZATION_ANTIQUANTIZE_ANTIQUANTIZE_C310_IMPL_H__
 #endif
@@ -31,8 +32,8 @@
 namespace AscendC {
 namespace AntiQuantizeUtils {
 template <typename SrcT>
-__simd_callee__ inline void CastAntiQuantizeSrcToFp32(Reg::RegTensor<float>& f32SrcVreg, Reg::RegTensor<SrcT>& srcVreg,
-    Reg::RegTensor<half>& f16Vreg, Reg::MaskReg& preg)
+__simd_callee__ inline void CastAntiQuantizeSrcToFp32(
+    Reg::RegTensor<float>& f32SrcVreg, Reg::RegTensor<SrcT>& srcVreg, Reg::RegTensor<half>& f16Vreg, Reg::MaskReg& preg)
 {
     if constexpr (SupportType<SrcT, fp8_e4m3fn_t, fp8_e5m2_t>()) {
         Reg::Cast<float, SrcT, layoutZMrgZ>(f32SrcVreg, srcVreg, preg);
@@ -41,11 +42,12 @@ __simd_callee__ inline void CastAntiQuantizeSrcToFp32(Reg::RegTensor<float>& f32
         Reg::Cast<float, half, layoutZMrgZ>(f32SrcVreg, f16Vreg, preg);
     }
 }
-}
+} // namespace AntiQuantizeUtils
 
 template <typename dstT, typename SrcT, typename scaleT, const AscendAntiQuantConfig& config>
-__simd_vf__ inline void AntiQuantizePerGroupForColCommonVF(__ubuf__ dstT* dstUb, __ubuf__ SrcT* srcUb,
-    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendAntiQuantParam para)
+__simd_vf__ inline void AntiQuantizePerGroupForColCommonVF(
+    __ubuf__ dstT* dstUb, __ubuf__ SrcT* srcUb, __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb,
+    const AscendAntiQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = ASCENDC_QUANT_B32_VF_LEN;
@@ -65,8 +67,8 @@ __simd_vf__ inline void AntiQuantizePerGroupForColCommonVF(__ubuf__ dstT* dstUb,
         sreg = para.n;
         for (uint16_t j = 0; j < repeat; ++j) {
             preg = Reg::UpdateMask<uint32_t>(sreg);
-            GetPerGroupScaleAndOffset<scaleT, config>(scaleUb + i * scaleK, offsetUb + i * scaleK,
-                j * vecLen, para, scaleVreg, offsetVreg);
+            GetPerGroupScaleAndOffset<scaleT, config>(
+                scaleUb + i * scaleK, offsetUb + i * scaleK, j * vecLen, para, scaleVreg, offsetVreg);
             Reg::LoadAlign<SrcT, Reg::LoadDist::DIST_UNPACK4_B8>(srcVreg, srcUb + i * para.n + j * vecLen);
             AntiQuantizeUtils::CastAntiQuantizeSrcToFp32<SrcT>(f32SrcVreg, srcVreg, f16Vreg, preg);
             ConvertToF32ScaleAndOffset<scaleT, config>(scaleVreg, offsetVreg, preg, f32ScaleVreg, f32OffsetVreg);
@@ -86,21 +88,21 @@ __simd_vf__ inline void AntiQuantizePerGroupForColCommonVF(__ubuf__ dstT* dstUb,
  * PER_GROUP for B8                                             *
  * ************************************************************************************************* */
 template <typename dstT, typename SrcT, typename scaleT, const AscendAntiQuantConfig& config>
-__aicore__ inline void AntiQuantizePerGroupForColCommon(const LocalTensor<dstT>& dstTensor, const LocalTensor<SrcT>& srcTensor,
-    const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor, const AscendAntiQuantParam& para)
+__aicore__ inline void AntiQuantizePerGroupForColCommon(
+    const LocalTensor<dstT>& dstTensor, const LocalTensor<SrcT>& srcTensor, const LocalTensor<scaleT>& scaleTensor,
+    const LocalTensor<scaleT>& offsetTensor, const AscendAntiQuantParam& para)
 {
     __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
     __ubuf__ SrcT* srcUb = (__ubuf__ SrcT*)srcTensor.GetPhyAddr();
     __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
     __ubuf__ scaleT* offsetUb = (__ubuf__ scaleT*)offsetTensor.GetPhyAddr();
-    AntiQuantizePerGroupForColCommonVF<dstT, SrcT, scaleT, config>(dstUb, srcUb,
-        scaleUb, offsetUb, para);
+    AntiQuantizePerGroupForColCommonVF<dstT, SrcT, scaleT, config>(dstUb, srcUb, scaleUb, offsetUb, para);
 }
 
 template <typename dstT, typename SrcT, typename scaleT, const AscendAntiQuantConfig& config>
-__simd_callee__ inline void AntiQuantizePerGroupForRowCommonTailBlock(__ubuf__ dstT* dstUb, __ubuf__ SrcT* srcUb,
-    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, uint16_t repeat, uint16_t tailRow, uint32_t n,
-    uint32_t vecLen)
+__simd_callee__ inline void AntiQuantizePerGroupForRowCommonTailBlock(
+    __ubuf__ dstT* dstUb, __ubuf__ SrcT* srcUb, __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, uint16_t repeat,
+    uint16_t tailRow, uint32_t n, uint32_t vecLen)
 {
     Reg::MaskReg preg;
     Reg::RegTensor<scaleT> offsetVreg;
@@ -113,18 +115,16 @@ __simd_callee__ inline void AntiQuantizePerGroupForRowCommonTailBlock(__ubuf__ d
     for (uint16_t i = 0; i < tailRow; ++i) {
         uint32_t sreg = n;
         for (uint16_t j = 0; j < repeat; ++j) {
-            LoadNormScaleAndOffset<scaleT, config>((scaleUb + j * vecLen),
-                (offsetUb + j * vecLen), scaleVreg, offsetVreg);
+            LoadNormScaleAndOffset<scaleT, config>(
+                (scaleUb + j * vecLen), (offsetUb + j * vecLen), scaleVreg, offsetVreg);
             preg = Reg::UpdateMask<uint32_t>(sreg);
-            Reg::LoadAlign<SrcT, Reg::LoadDist::DIST_UNPACK4_B8>(
-                srcVreg, srcUb + i * n + j * vecLen);
+            Reg::LoadAlign<SrcT, Reg::LoadDist::DIST_UNPACK4_B8>(srcVreg, srcUb + i * n + j * vecLen);
             AntiQuantizeUtils::CastAntiQuantizeSrcToFp32<SrcT>(f32SrcVreg, srcVreg, f16Vreg, preg);
             if constexpr (SupportType<scaleT, float>()) {
                 AddOffsetIfExist<float, config>(f32SrcVreg, offsetVreg, preg);
                 Reg::Mul<float, Reg::MaskMergeMode::ZEROING>(f32SrcVreg, f32SrcVreg, scaleVreg, preg);
             } else {
-                ConvertToF32ScaleAndOffset<scaleT, config>(scaleVreg, offsetVreg, preg,
-                    f32ScaleVreg, f32OffsetVreg);
+                ConvertToF32ScaleAndOffset<scaleT, config>(scaleVreg, offsetVreg, preg, f32ScaleVreg, f32OffsetVreg);
                 AddOffsetIfExist<float, config>(f32SrcVreg, f32OffsetVreg, preg);
                 Reg::Mul<float, Reg::MaskMergeMode::ZEROING>(f32SrcVreg, f32SrcVreg, f32ScaleVreg, preg);
             }
@@ -134,9 +134,9 @@ __simd_callee__ inline void AntiQuantizePerGroupForRowCommonTailBlock(__ubuf__ d
 }
 
 template <typename dstT, typename SrcT, typename scaleT, const AscendAntiQuantConfig& config>
-__simd_vf__ inline void AntiQuantizePerGroupForRowCommonVF(__ubuf__ dstT* dstUb, __ubuf__ SrcT* srcUb,
-    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendAntiQuantParam para,
-    uint16_t rowNum, uint16_t tailRow)
+__simd_vf__ inline void AntiQuantizePerGroupForRowCommonVF(
+    __ubuf__ dstT* dstUb, __ubuf__ SrcT* srcUb, __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb,
+    const AscendAntiQuantParam para, uint16_t rowNum, uint16_t tailRow)
 {
     uint16_t mainRowGroup = rowNum / para.groupSize;
     uint32_t vecLen = ASCENDC_QUANT_B32_VF_LEN;
@@ -155,8 +155,8 @@ __simd_vf__ inline void AntiQuantizePerGroupForRowCommonVF(__ubuf__ dstT* dstUb,
             uint32_t sreg = para.n;
             for (uint16_t k = 0; k < repeat; ++k) {
                 preg = Reg::UpdateMask<uint32_t>(sreg);
-                LoadNormScaleAndOffset<scaleT, config>((scaleUb + i * para.n + k * vecLen),
-                    (offsetUb + i * para.n + k * vecLen), scaleVreg, offsetVreg);
+                LoadNormScaleAndOffset<scaleT, config>(
+                    (scaleUb + i * para.n + k * vecLen), (offsetUb + i * para.n + k * vecLen), scaleVreg, offsetVreg);
                 Reg::LoadAlign<SrcT, Reg::LoadDist::DIST_UNPACK4_B8>(
                     srcVreg, (srcUb + (i * para.groupSize + j) * para.n + k * vecLen));
                 AntiQuantizeUtils::CastAntiQuantizeSrcToFp32<SrcT>(f32SrcVreg, srcVreg, f16Vreg, preg);
@@ -178,8 +178,9 @@ __simd_vf__ inline void AntiQuantizePerGroupForRowCommonVF(__ubuf__ dstT* dstUb,
 }
 
 template <typename dstT, typename SrcT, typename scaleT, const AscendAntiQuantConfig& config>
-__aicore__ inline void AntiQuantizePerGroupForRowCommon(const LocalTensor<dstT>& dstTensor, const LocalTensor<SrcT>& srcTensor,
-    const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor, const AscendAntiQuantParam& para)
+__aicore__ inline void AntiQuantizePerGroupForRowCommon(
+    const LocalTensor<dstT>& dstTensor, const LocalTensor<SrcT>& srcTensor, const LocalTensor<scaleT>& scaleTensor,
+    const LocalTensor<scaleT>& offsetTensor, const AscendAntiQuantParam& para)
 {
     __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
     __ubuf__ SrcT* srcUb = (__ubuf__ SrcT*)srcTensor.GetPhyAddr();
@@ -187,13 +188,14 @@ __aicore__ inline void AntiQuantizePerGroupForRowCommon(const LocalTensor<dstT>&
     __ubuf__ scaleT* offsetUb = (__ubuf__ scaleT*)offsetTensor.GetPhyAddr();
     uint16_t rowNum = para.calCount / para.n;
     uint16_t tailRow = rowNum % para.groupSize;
-    AntiQuantizePerGroupForRowCommonVF<dstT, SrcT, scaleT, config>(dstUb, srcUb,
-        scaleUb, offsetUb, para, rowNum, tailRow);
+    AntiQuantizePerGroupForRowCommonVF<dstT, SrcT, scaleT, config>(
+        dstUb, srcUb, scaleUb, offsetUb, para, rowNum, tailRow);
 }
 
 template <typename dstT, typename SrcT, typename scaleT, const AscendAntiQuantConfig& config>
-__simd_vf__ inline void AntiQuantizePerTokenCommonVF(__ubuf__ dstT* dstUb, __ubuf__ SrcT* srcUb,
-    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendAntiQuantParam para)
+__simd_vf__ inline void AntiQuantizePerTokenCommonVF(
+    __ubuf__ dstT* dstUb, __ubuf__ SrcT* srcUb, __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb,
+    const AscendAntiQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = ASCENDC_QUANT_B32_VF_LEN;
@@ -213,16 +215,14 @@ __simd_vf__ inline void AntiQuantizePerTokenCommonVF(__ubuf__ dstT* dstUb, __ubu
         sreg = para.n;
         for (uint16_t j = 0; j < repeat; ++j) {
             preg = Reg::UpdateMask<uint32_t>(sreg);
-            Reg::LoadAlign<SrcT, Reg::LoadDist::DIST_UNPACK4_B8>(
-                srcVreg, srcUb + i * para.n + j * vecLen);
+            Reg::LoadAlign<SrcT, Reg::LoadDist::DIST_UNPACK4_B8>(srcVreg, srcUb + i * para.n + j * vecLen);
             AntiQuantizeUtils::CastAntiQuantizeSrcToFp32<SrcT>(f32Vreg, srcVreg, f16Vreg, preg);
-            
+
             if constexpr (SupportType<scaleT, float>()) {
                 AddOffsetIfExist<float, config>(f32Vreg, offsetVreg, preg);
                 Reg::Mul<float, Reg::MaskMergeMode::ZEROING>(f32Vreg, f32Vreg, scaleVreg, preg);
             } else {
-                ConvertToF32ScaleAndOffset<scaleT, config>(
-                    scaleVreg, offsetVreg, preg, f32ScaleVreg, f32OffsetVreg);
+                ConvertToF32ScaleAndOffset<scaleT, config>(scaleVreg, offsetVreg, preg, f32ScaleVreg, f32OffsetVreg);
                 AddOffsetIfExist<float, config>(f32Vreg, f32OffsetVreg, preg);
                 Reg::Mul<float, Reg::MaskMergeMode::ZEROING>(f32Vreg, f32Vreg, f32ScaleVreg, preg);
             }
@@ -235,24 +235,23 @@ __simd_vf__ inline void AntiQuantizePerTokenCommonVF(__ubuf__ dstT* dstUb, __ubu
  * PER_TOKEN for B8                                             *
  * ************************************************************************************************* */
 template <typename dstT, typename SrcT, typename scaleT, const AscendAntiQuantConfig& config>
-__aicore__ inline void AntiQuantizePerTokenCommon(const LocalTensor<dstT>& dstTensor,
-    const LocalTensor<SrcT>& srcTensor, const LocalTensor<scaleT>& scaleTensor,
+__aicore__ inline void AntiQuantizePerTokenCommon(
+    const LocalTensor<dstT>& dstTensor, const LocalTensor<SrcT>& srcTensor, const LocalTensor<scaleT>& scaleTensor,
     const LocalTensor<scaleT>& offsetTensor, const AscendAntiQuantParam& para)
 {
     __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
     __ubuf__ SrcT* srcUb = (__ubuf__ SrcT*)srcTensor.GetPhyAddr();
     __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
     __ubuf__ scaleT* offsetUb = (__ubuf__ scaleT*)offsetTensor.GetPhyAddr();
-    AntiQuantizePerTokenCommonVF<dstT, SrcT, scaleT, config>(dstUb, srcUb,
-        scaleUb, offsetUb, para);
+    AntiQuantizePerTokenCommonVF<dstT, SrcT, scaleT, config>(dstUb, srcUb, scaleUb, offsetUb, para);
 }
 
 /* **************************************************************************************************
  * PER_TENSOR for B8                                             *
  * ************************************************************************************************* */
 template <bool hasOffset, typename SrcT, typename DstT>
-__simd_vf__ inline void PerTensorProcessCommon(__ubuf__ DstT* dst, __ubuf__ SrcT* src,
-    const DstT offset, const DstT scale, const uint32_t srcCalCount)
+__simd_vf__ inline void PerTensorProcessCommon(
+    __ubuf__ DstT* dst, __ubuf__ SrcT* src, const DstT offset, const DstT scale, const uint32_t srcCalCount)
 {
     Reg::MaskReg preg;
     Reg::RegTensor<SrcT> vreg;
@@ -275,7 +274,8 @@ __simd_vf__ inline void PerTensorProcessCommon(__ubuf__ DstT* dst, __ubuf__ SrcT
             Reg::Muls<float, float, Reg::MaskMergeMode::ZEROING>(f32Vreg, f32Vreg, ToFloat(scale), preg);
         } else {
             if constexpr (hasOffset) {
-                Reg::Adds<float, float, Reg::MaskMergeMode::ZEROING>(f32Vreg, f32Vreg, static_cast<float>(offset), preg);
+                Reg::Adds<float, float, Reg::MaskMergeMode::ZEROING>(
+                    f32Vreg, f32Vreg, static_cast<float>(offset), preg);
             }
             Reg::Muls<float, float, Reg::MaskMergeMode::ZEROING>(f32Vreg, f32Vreg, static_cast<float>(scale), preg);
         }
@@ -286,14 +286,14 @@ __simd_vf__ inline void PerTensorProcessCommon(__ubuf__ DstT* dst, __ubuf__ SrcT
 }
 
 template <const AntiQuantizeConfig& config, typename DstT, typename SrcT>
-__aicore__ inline void AntiQuantizePerTensor(const LocalTensor<DstT>& dst,
-    const LocalTensor<SrcT>& src, const DstT offset, const DstT scale,
+__aicore__ inline void AntiQuantizePerTensor(
+    const LocalTensor<DstT>& dst, const LocalTensor<SrcT>& src, const DstT offset, const DstT scale,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const AntiQuantizeParams& params)
 {
-    static_assert(SupportType<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t, int8_t>(),
+    static_assert(
+        SupportType<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t, int8_t>(),
         "This AntiQuantize only support fp8_e4m3fn_t/fp8_e5m2_t/hifloat8_t/int8_t input dtype");
-    static_assert(SupportType<DstT, half, bfloat16_t>(),
-        "This AntiQuantize only support half/bfloat16_t output dtype");
+    static_assert(SupportType<DstT, half, bfloat16_t>(), "This AntiQuantize only support half/bfloat16_t output dtype");
     __ubuf__ DstT* dstUb = (__ubuf__ DstT*)dst.GetPhyAddr();
     __ubuf__ SrcT* srcUb = (__ubuf__ SrcT*)src.GetPhyAddr();
     auto tmpbuffer = sharedTmpBuffer.ReinterpretCast<DstT>();
@@ -306,8 +306,9 @@ __aicore__ inline void AntiQuantizePerTensor(const LocalTensor<DstT>& dst,
  * PER_CHANNEL for B8                                             *
  * ************************************************************************************************* */
 template <bool hasOffset, typename SrcT, typename DstT>
-__simd_vf__ inline void PerChannelNoTransposeCommon(__ubuf__ DstT* dst, __ubuf__ SrcT* src,
-    __ubuf__ DstT* offset, __ubuf__ DstT* scale, const uint32_t M, const uint32_t N)
+__simd_vf__ inline void PerChannelNoTransposeCommon(
+    __ubuf__ DstT* dst, __ubuf__ SrcT* src, __ubuf__ DstT* offset, __ubuf__ DstT* scale, const uint32_t M,
+    const uint32_t N)
 {
     Reg::MaskReg preg;
     Reg::RegTensor<SrcT> vreg;
@@ -330,7 +331,7 @@ __simd_vf__ inline void PerChannelNoTransposeCommon(__ubuf__ DstT* dst, __ubuf__
             Reg::Cast<float, DstT, layoutZMrgZ>(offsetB32Vreg, offsetB16Vreg, preg); // b16->fp32
         }
         Reg::LoadAlign<DstT, Reg::LoadDist::DIST_UNPACK_B16>(scaleB16Vreg, scale + i * sregLower);
-        Reg::Cast<float, DstT, layoutZMrgZ>(scaleB32Vreg, scaleB16Vreg, preg);   // b16->fp32
+        Reg::Cast<float, DstT, layoutZMrgZ>(scaleB32Vreg, scaleB16Vreg, preg); // b16->fp32
 
         for (uint16_t j = 0; j < (uint16_t)M; ++j) {
             Reg::LoadAlign<SrcT, Reg::LoadDist::DIST_UNPACK4_B8>(vreg, src + j * N + i * sregLower);
@@ -341,15 +342,14 @@ __simd_vf__ inline void PerChannelNoTransposeCommon(__ubuf__ DstT* dst, __ubuf__
             Reg::Mul(f32Vreg, f32Vreg, scaleB32Vreg, preg);
 
             Reg::Cast<DstT, float, LayoutZMrgZRndRSatS>(outReg, f32Vreg, preg);
-            Reg::StoreAlign<DstT, Reg::StoreDist::DIST_PACK_B32>(dst + j * N + i * sregLower, outReg,
-                preg);
+            Reg::StoreAlign<DstT, Reg::StoreDist::DIST_PACK_B32>(dst + j * N + i * sregLower, outReg, preg);
         }
     }
 }
 
 template <bool hasOffset, typename SrcT, typename DstT>
-__aicore__ inline void AntiQuantPerChannelNoTranspose(const LocalTensor<DstT>& dst,
-    const LocalTensor<SrcT>& src, const LocalTensor<DstT>& offset,
+__aicore__ inline void AntiQuantPerChannelNoTranspose(
+    const LocalTensor<DstT>& dst, const LocalTensor<SrcT>& src, const LocalTensor<DstT>& offset,
     const LocalTensor<DstT>& scale, const uint32_t M, const uint32_t N)
 {
     __ubuf__ DstT* scaleUb = (__ubuf__ DstT*)scale.GetPhyAddr();
@@ -363,16 +363,17 @@ __aicore__ inline void AntiQuantPerChannelNoTranspose(const LocalTensor<DstT>& d
  * PER_CHANNEL for B8                                             *
  * ************************************************************************************************* */
 template <const AntiQuantizeConfig& config, typename DstT, typename SrcT, typename ScaleT, typename OffsetT>
-__aicore__ inline void AntiQuantizePerChannel(const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor,
-    const ScaleT& scale, const OffsetT& offset, const LocalTensor<uint8_t>& sharedTmpBuffer, const AntiQuantizeParams& params)
+__aicore__ inline void AntiQuantizePerChannel(
+    const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor, const ScaleT& scale, const OffsetT& offset,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const AntiQuantizeParams& params)
 {
-    static_assert(SupportType<DstT, half, bfloat16_t>(),
-        "This AntiQuantize only support half/bfloat16_t output dtype");
+    static_assert(SupportType<DstT, half, bfloat16_t>(), "This AntiQuantize only support half/bfloat16_t output dtype");
 
-    AntiQuantPerChannelNoTranspose<config.hasOffset, SrcT, DstT>(dstTensor, srcTensor, offset, scale, params.m, params.n);
+    AntiQuantPerChannelNoTranspose<config.hasOffset, SrcT, DstT>(
+        dstTensor, srcTensor, offset, scale, params.m, params.n);
 }
-}  // namespace AscendC
-#endif  // IMPL_QUANTIZATION_ANTIQUANTIZE_C310_IMPL_H
+} // namespace AscendC
+#endif // IMPL_QUANTIZATION_ANTIQUANTIZE_C310_IMPL_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZATION_ANTIQUANTIZE_ANTIQUANTIZE_C310_IMPL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

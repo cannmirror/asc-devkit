@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/hcomm/common/hcomm_inner_def.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/simplesoftmax.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/hcomm/common/hcomm_inner_def.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/simplesoftmax.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HCOMM_INNER_DEF_H__
 #endif
@@ -144,13 +145,12 @@ typedef struct {   // channel 本身一片内存
     uint8_t reserve[1024];
 } Channel;
 
-
 // 宏隔离
 typedef struct {
     // Control Segment
     union {
         struct {
-            uint32_t o : 1;     // Owner
+            uint32_t o : 1; // Owner
             uint32_t ctrlSl : 2;
             uint32_t csl : 2;
             uint32_t difSl : 3;
@@ -207,10 +207,10 @@ typedef struct {
     RoceWqeTaskSeg task;
     uint32_t dataLen;
     uint32_t immeData;
-    uint32_t firstLast  : 1;
-    uint32_t nxtEthHdr  : 7;
-    uint32_t cmdLen     : 8;
-    uint32_t rsvd0      : 8;
+    uint32_t firstLast : 1;
+    uint32_t nxtEthHdr : 7;
+    uint32_t cmdLen : 8;
+    uint32_t rsvd0 : 8;
     uint32_t lastExtLen : 8;
     uint32_t vaHigh32;
     uint32_t vaLow32;
@@ -233,19 +233,19 @@ typedef struct {
 typedef struct {
     union {
         struct {
-            uint32_t pi         : 8;
-            uint32_t resv       : 8;
-            uint32_t xrcvld     : 1;
-            uint32_t vxlan      : 1;
-            uint32_t mtuShift   : 3;
-            uint32_t sgidIndex  : 7;
-            uint32_t queueId    : 4;
-            uint32_t qpn        : 20;
-            uint32_t cntxSize   : 2;
-            uint32_t n          : 1;
-            uint32_t c          : 1;
-            uint32_t cos        : 3;
-            uint32_t type       : 5;
+            uint32_t pi : 8;
+            uint32_t resv : 8;
+            uint32_t xrcvld : 1;
+            uint32_t vxlan : 1;
+            uint32_t mtuShift : 3;
+            uint32_t sgidIndex : 7;
+            uint32_t queueId : 4;
+            uint32_t qpn : 20;
+            uint32_t cntxSize : 2;
+            uint32_t n : 1;
+            uint32_t c : 1;
+            uint32_t cos : 3;
+            uint32_t type : 5;
         } bs;
         uint64_t value;
     } dw0;
@@ -271,4 +271,3 @@ constexpr uint32_t HCOMM_MEM_BLOCK_SIZE = 32;
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HCOMM_INNER_DEF_H__
 #endif
-

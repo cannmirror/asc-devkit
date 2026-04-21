@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file layernormgrad_3510_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/normalization/layernormgrad/regbase/3510/layernormgrad_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/normalization/layernormgrad/regbase/3510/layernormgrad_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORMGRAD_REGBASE_C310_LAYERNORMGRAD_C310_IMPL_H__
 #endif
@@ -35,11 +36,11 @@ constexpr uint32_t LAYERNORM_GRAD_B16_BYTE_SIZE = 2;
 namespace AscendC {
 
 template <typename T>
-__simd_callee__ inline void ComputePdVar(Reg::RegTensor<float>& pdVarReg, Reg::RegTensor<float>& inputVarianceReg,
-    Reg::RegTensor<float>& inputMeanReg, Reg::RegTensor<float>& inputGammaReg, __ubuf__ float* x1Tmp,
-    __ubuf__ float* x2Tmp, __ubuf__ T* inputDy, __ubuf__ T* inputX, float epsilon,
-    LayerNormGradParams& param, Reg::MaskReg& preg, Reg::MaskReg& pregOne, uint32_t offset,
-    uint32_t tmpOffset)
+__simd_callee__ inline void ComputePdVar(
+    Reg::RegTensor<float>& pdVarReg, Reg::RegTensor<float>& inputVarianceReg, Reg::RegTensor<float>& inputMeanReg,
+    Reg::RegTensor<float>& inputGammaReg, __ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp, __ubuf__ T* inputDy,
+    __ubuf__ T* inputX, float epsilon, LayerNormGradParams& param, Reg::MaskReg& preg, Reg::MaskReg& pregOne,
+    uint32_t offset, uint32_t tmpOffset)
 {
     Reg::RegTensor<float> inputDyReg, inputXReg;
     // load and convert to float if necessary
@@ -83,10 +84,10 @@ __simd_callee__ inline void ComputePdVar(Reg::RegTensor<float>& pdVarReg, Reg::R
 }
 
 template <typename T>
-__simd_callee__ inline void ComputePdMean(Reg::RegTensor<float>& pdMeanReg, Reg::RegTensor<float>& res2Reg,
-    Reg::RegTensor<float>& inputVarianceReg, __ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp,
-    __ubuf__ T* resForGamma, float epsilon, LayerNormGradParams& param, Reg::MaskReg& preg,
-    Reg::MaskReg& pregOne, uint32_t offset, uint32_t tmpOffset)
+__simd_callee__ inline void ComputePdMean(
+    Reg::RegTensor<float>& pdMeanReg, Reg::RegTensor<float>& res2Reg, Reg::RegTensor<float>& inputVarianceReg,
+    __ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp, __ubuf__ T* resForGamma, float epsilon, LayerNormGradParams& param,
+    Reg::MaskReg& preg, Reg::MaskReg& pregOne, uint32_t offset, uint32_t tmpOffset)
 {
     Reg::RegTensor<float> tmpReg1, tmpReg2, x1Reg, x2Reg;
     Reg::RegTensor<float> resForGammaReg;
@@ -138,9 +139,10 @@ __simd_callee__ inline void ComputePdMean(Reg::RegTensor<float>& pdMeanReg, Reg:
 }
 
 template <typename T>
-__simd_callee__ inline void ComputePdX(Reg::RegTensor<float>& pdVarReg, Reg::RegTensor<float>& pdMeanReg,
-    __ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp, __ubuf__ T* outputPdX, LayerNormGradParams& param,
-    Reg::MaskReg& preg, Reg::MaskReg& pregOne, uint32_t offset, uint32_t tmpOffset)
+__simd_callee__ inline void ComputePdX(
+    Reg::RegTensor<float>& pdVarReg, Reg::RegTensor<float>& pdMeanReg, __ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp,
+    __ubuf__ T* outputPdX, LayerNormGradParams& param, Reg::MaskReg& preg, Reg::MaskReg& pregOne, uint32_t offset,
+    uint32_t tmpOffset)
 {
     Reg::RegTensor<float> tmpReg, x1Reg, x2Reg;
     Reg::RegTensor<float> outputPdXReg;
@@ -173,11 +175,11 @@ __simd_callee__ inline void ComputePdX(Reg::RegTensor<float>& pdVarReg, Reg::Reg
 }
 
 template <typename T>
-__simd_callee__ inline void ComputePdVarLoop(Reg::RegTensor<float>& pdVarReg,
-    Reg::RegTensor<float>& inputVarianceReg, Reg::RegTensor<float>& inputMeanReg,
-    __ubuf__ T* inputGamma, __ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp,
-    __ubuf__ T* inputDy, __ubuf__ T* inputX, float epsilon, LayerNormGradParams& param, uint16_t repeatTimes,
-    uint16_t oneRepeatTimes, uint32_t baseOffset, Reg::MaskReg& pregOne)
+__simd_callee__ inline void ComputePdVarLoop(
+    Reg::RegTensor<float>& pdVarReg, Reg::RegTensor<float>& inputVarianceReg, Reg::RegTensor<float>& inputMeanReg,
+    __ubuf__ T* inputGamma, __ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp, __ubuf__ T* inputDy, __ubuf__ T* inputX,
+    float epsilon, LayerNormGradParams& param, uint16_t repeatTimes, uint16_t oneRepeatTimes, uint32_t baseOffset,
+    Reg::MaskReg& pregOne)
 {
     uint32_t calCount = param.hLength;
     Reg::MaskReg preg;
@@ -186,8 +188,9 @@ __simd_callee__ inline void ComputePdVarLoop(Reg::RegTensor<float>& pdVarReg,
     for (size_t i = 0; i < repeatTimes; ++i) {
         preg = Reg::UpdateMask<float>(calCount);
         Internal::LayernormGrad::LoadDataWithT<T>(inputGamma, inputGammaReg, preg, i * oneRepeatTimes);
-        ComputePdVar<T>(pdVarReg, inputVarianceReg, inputMeanReg, inputGammaReg, x1Tmp, x2Tmp, inputDy, inputX, epsilon,
-            param, preg, pregOne, i * oneRepeatTimes + baseOffset, i * oneRepeatTimes);
+        ComputePdVar<T>(
+            pdVarReg, inputVarianceReg, inputMeanReg, inputGammaReg, x1Tmp, x2Tmp, inputDy, inputX, epsilon, param,
+            preg, pregOne, i * oneRepeatTimes + baseOffset, i * oneRepeatTimes);
     }
     calCount = param.hLength;
     preg = Reg::UpdateMask<float>(calCount);
@@ -195,17 +198,19 @@ __simd_callee__ inline void ComputePdVarLoop(Reg::RegTensor<float>& pdVarReg,
 }
 
 template <typename T>
-__simd_callee__ inline void ComputePdMeanLoop(Reg::RegTensor<float>& pdMeanReg, Reg::RegTensor<float>& res2Reg,
-    Reg::RegTensor<float>& pdVarReg, Reg::RegTensor<float>& inputVarianceReg, __ubuf__ float* x1Tmp,
-    __ubuf__ float* x2Tmp, __ubuf__ T* resForGamma, float epsilon, LayerNormGradParams& param,
-    uint16_t repeatTimes, uint16_t oneRepeatTimes, uint32_t baseOffset, Reg::MaskReg& pregOne)
+__simd_callee__ inline void ComputePdMeanLoop(
+    Reg::RegTensor<float>& pdMeanReg, Reg::RegTensor<float>& res2Reg, Reg::RegTensor<float>& pdVarReg,
+    Reg::RegTensor<float>& inputVarianceReg, __ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp, __ubuf__ T* resForGamma,
+    float epsilon, LayerNormGradParams& param, uint16_t repeatTimes, uint16_t oneRepeatTimes, uint32_t baseOffset,
+    Reg::MaskReg& pregOne)
 {
     uint32_t calCount = param.hLength;
     Reg::MaskReg preg;
     // PdMean calculation, accumulatively reduce sum
     for (size_t i = 0; i < repeatTimes; ++i) {
         preg = Reg::UpdateMask<float>(calCount);
-        ComputePdMean<T>(pdMeanReg, res2Reg, inputVarianceReg, x1Tmp, x2Tmp, resForGamma, epsilon, param, preg, pregOne,
+        ComputePdMean<T>(
+            pdMeanReg, res2Reg, inputVarianceReg, x1Tmp, x2Tmp, resForGamma, epsilon, param, preg, pregOne,
             i * oneRepeatTimes + baseOffset, i * oneRepeatTimes);
     }
     calCount = param.hLength;
@@ -223,9 +228,10 @@ __simd_callee__ inline void ComputePdMeanLoop(Reg::RegTensor<float>& pdMeanReg, 
 }
 
 template <typename T>
-__simd_callee__ inline void ComputePdXLoop(Reg::RegTensor<float>& pdVarReg, Reg::RegTensor<float>& pdMeanReg,
-    __ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp, __ubuf__ T* outputPdX, LayerNormGradParams& param,
-    uint16_t repeatTimes, uint16_t oneRepeatTimes, uint32_t baseOffset, Reg::MaskReg& pregOne)
+__simd_callee__ inline void ComputePdXLoop(
+    Reg::RegTensor<float>& pdVarReg, Reg::RegTensor<float>& pdMeanReg, __ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp,
+    __ubuf__ T* outputPdX, LayerNormGradParams& param, uint16_t repeatTimes, uint16_t oneRepeatTimes,
+    uint32_t baseOffset, Reg::MaskReg& pregOne)
 {
     // pd_var*(2.0 / H)
     Muls(pdVarReg, pdVarReg, param.twoOverH, pregOne);
@@ -237,15 +243,17 @@ __simd_callee__ inline void ComputePdXLoop(Reg::RegTensor<float>& pdVarReg, Reg:
     Reg::MaskReg preg;
     for (size_t i = 0; i < repeatTimes; ++i) {
         preg = Reg::UpdateMask<float>(calCount);
-        ComputePdX<T>(pdVarReg, pdMeanReg, x1Tmp, x2Tmp, outputPdX, param, preg, pregOne,
-            i * oneRepeatTimes + baseOffset, i * oneRepeatTimes);
+        ComputePdX<T>(
+            pdVarReg, pdMeanReg, x1Tmp, x2Tmp, outputPdX, param, preg, pregOne, i * oneRepeatTimes + baseOffset,
+            i * oneRepeatTimes);
     }
 }
 
 template <typename T, bool isReuseSource>
-__simd_vf__ inline void LayerNormGradVF(__ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp, __ubuf__ T* inputDy,
-    __ubuf__ T* inputX, __ubuf__ T* inputVariance, __ubuf__ T* inputMean, __ubuf__ T* inputGamma,
-    __ubuf__ T* outputPdX, __ubuf__ T* resForGamma, float epsilon, LayerNormGradParams param)
+__simd_vf__ inline void LayerNormGradVF(
+    __ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp, __ubuf__ T* inputDy, __ubuf__ T* inputX, __ubuf__ T* inputVariance,
+    __ubuf__ T* inputMean, __ubuf__ T* inputGamma, __ubuf__ T* outputPdX, __ubuf__ T* resForGamma, float epsilon,
+    LayerNormGradParams param)
 {
     Reg::MaskReg preg = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
     Reg::MaskReg pregFull = Reg::CreateMask<float, Reg::MaskPattern::ALL>();
@@ -267,13 +275,15 @@ __simd_vf__ inline void LayerNormGradVF(__ubuf__ float* x1Tmp, __ubuf__ float* x
 
         uint32_t baseOffset = param.hLength * j;
 
-        ComputePdVarLoop<T>(pdVarReg, inputVarianceReg, inputMeanReg, inputGamma, x1Tmp, x2Tmp, inputDy, inputX,
-            epsilon, param, repeatTimes, oneRepeatTimes, baseOffset, pregOne);
+        ComputePdVarLoop<T>(
+            pdVarReg, inputVarianceReg, inputMeanReg, inputGamma, x1Tmp, x2Tmp, inputDy, inputX, epsilon, param,
+            repeatTimes, oneRepeatTimes, baseOffset, pregOne);
 
         Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
-        ComputePdMeanLoop<T>(pdMeanReg, res2Reg, pdVarReg, inputVarianceReg, x1Tmp, x2Tmp, resForGamma, epsilon, param,
-            repeatTimes, oneRepeatTimes, baseOffset, pregOne);
+        ComputePdMeanLoop<T>(
+            pdMeanReg, res2Reg, pdVarReg, inputVarianceReg, x1Tmp, x2Tmp, resForGamma, epsilon, param, repeatTimes,
+            oneRepeatTimes, baseOffset, pregOne);
 
         Reg::LocalMemBar<Reg::MemType::VEC_STORE, Reg::MemType::VEC_LOAD>();
 
@@ -283,33 +293,36 @@ __simd_vf__ inline void LayerNormGradVF(__ubuf__ float* x1Tmp, __ubuf__ float* x
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void LayerNormGradImpl(const LocalTensor<T>& outputPdX, const LocalTensor<T>& resForGamma,
-    const LocalTensor<T>& inputDy, const LocalTensor<T>& inputX, const LocalTensor<T>& inputVariance,
-    const LocalTensor<T>& inputMean, const LocalTensor<T>& inputGamma, LocalTensor<uint8_t>& tmpBuffer, T epsilon,
-    LayerNormGradTiling& tiling, const LayerNormGradShapeInfo& shapeInfo = {})
+__aicore__ inline void LayerNormGradImpl(
+    const LocalTensor<T>& outputPdX, const LocalTensor<T>& resForGamma, const LocalTensor<T>& inputDy,
+    const LocalTensor<T>& inputX, const LocalTensor<T>& inputVariance, const LocalTensor<T>& inputMean,
+    const LocalTensor<T>& inputGamma, LocalTensor<uint8_t>& tmpBuffer, T epsilon, LayerNormGradTiling& tiling,
+    const LayerNormGradShapeInfo& shapeInfo = {})
 {
     static_assert(SupportType<T, half, float>(), "current data type is not supported on current device!");
-    CHECK_FUNC_HIGHLEVEL_API(LayerNormGrad, (T, isReuseSource),
+    CHECK_FUNC_HIGHLEVEL_API(
+        LayerNormGrad, (T, isReuseSource),
         (outputPdX, resForGamma, inputDy, inputX, inputVariance, inputMean, inputGamma, tmpBuffer, epsilon, tiling,
-            shapeInfo));
+         shapeInfo));
 
-    ASCENDC_ASSERT((tmpBuffer.GetSize() >= tiling.stackBufferSize),
-        { KERNEL_LOG(KERNEL_ERROR, "Stack buffer size not enough."); });
+    ASCENDC_ASSERT((tmpBuffer.GetSize() >= tiling.stackBufferSize), {
+        KERNEL_LOG(KERNEL_ERROR, "Stack buffer size not enough.");
+    });
     ASCENDC_ASSERT(
         shapeInfo.dataFormat == DataFormat::ND, { KERNEL_LOG(KERNEL_ERROR, "Only support format ND now!"); });
 
     LocalTensor<float> sharedTmpBuffer = tmpBuffer.ReinterpretCast<float>();
-    LayerNormGradParams param(tiling.bLength, tiling.sLength, tiling.hLength,
-        *(reinterpret_cast<float*>(&tiling.lastDimValueBack)),
+    LayerNormGradParams param(
+        tiling.bLength, tiling.sLength, tiling.hLength, *(reinterpret_cast<float*>(&tiling.lastDimValueBack)),
         *(reinterpret_cast<float*>(&tiling.lastDimValueBackMulTwo)));
 
-    __ubuf__ T* outputPdXDst = (__ubuf__ T*)outputPdX.GetPhyAddr();         // output gradient
-    __ubuf__ T* resForGammaDst = (__ubuf__ T*)resForGamma.GetPhyAddr();     // gradient w.r.t. gamma
-    __ubuf__ T* inputDySrc = (__ubuf__ T*)inputDy.GetPhyAddr();             // input gradient, (B,S,H)
-    __ubuf__ T* inputXSrc = (__ubuf__ T*)inputX.GetPhyAddr();               // input activations, (B,S,H)
-    __ubuf__ T* inputVarianceSrc = (__ubuf__ T*)inputVariance.GetPhyAddr(); // variance, (B,S,1)
-    __ubuf__ T* inputMeanSrc = (__ubuf__ T*)inputMean.GetPhyAddr();         // mean, (B,S,1)
-    __ubuf__ T* inputGammaSrc = (__ubuf__ T*)inputGamma.GetPhyAddr();       // gamma, (B,S,1)
+    __ubuf__ T* outputPdXDst = (__ubuf__ T*)outputPdX.GetPhyAddr();                     // output gradient
+    __ubuf__ T* resForGammaDst = (__ubuf__ T*)resForGamma.GetPhyAddr();                 // gradient w.r.t. gamma
+    __ubuf__ T* inputDySrc = (__ubuf__ T*)inputDy.GetPhyAddr();                         // input gradient, (B,S,H)
+    __ubuf__ T* inputXSrc = (__ubuf__ T*)inputX.GetPhyAddr();                           // input activations, (B,S,H)
+    __ubuf__ T* inputVarianceSrc = (__ubuf__ T*)inputVariance.GetPhyAddr();             // variance, (B,S,1)
+    __ubuf__ T* inputMeanSrc = (__ubuf__ T*)inputMean.GetPhyAddr();                     // mean, (B,S,1)
+    __ubuf__ T* inputGammaSrc = (__ubuf__ T*)inputGamma.GetPhyAddr();                   // gamma, (B,S,1)
     __ubuf__ float* sharedTmpBufferSrc = (__ubuf__ float*)sharedTmpBuffer.GetPhyAddr(); // temporary buffer
     __ubuf__ float *x1Tmp, *x2Tmp;
 
@@ -324,27 +337,31 @@ __aicore__ inline void LayerNormGradImpl(const LocalTensor<T>& outputPdX, const 
 
     float eps = static_cast<float>(epsilon);
 
-    LayerNormGradVF<T, isReuseSource>(x1Tmp, x2Tmp, inputDySrc, inputXSrc, inputVarianceSrc, inputMeanSrc,
-        inputGammaSrc, outputPdXDst, resForGammaDst, eps, param);
+    LayerNormGradVF<T, isReuseSource>(
+        x1Tmp, x2Tmp, inputDySrc, inputXSrc, inputVarianceSrc, inputMeanSrc, inputGammaSrc, outputPdXDst,
+        resForGammaDst, eps, param);
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void LayerNormGradImpl(const LocalTensor<T>& outputPdX, const LocalTensor<T>& resForGamma,
-    const LocalTensor<T>& inputDy, const LocalTensor<T>& inputX, const LocalTensor<T>& inputVariance,
-    const LocalTensor<T>& inputMean, const LocalTensor<T>& inputGamma, T epsilon, LayerNormGradTiling& tiling,
+__aicore__ inline void LayerNormGradImpl(
+    const LocalTensor<T>& outputPdX, const LocalTensor<T>& resForGamma, const LocalTensor<T>& inputDy,
+    const LocalTensor<T>& inputX, const LocalTensor<T>& inputVariance, const LocalTensor<T>& inputMean,
+    const LocalTensor<T>& inputGamma, T epsilon, LayerNormGradTiling& tiling,
     const LayerNormGradShapeInfo& shapeInfo = {})
 {
     LocalTensor<uint8_t> sharedTmpBuffer;
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);
     ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
 
-    LayerNormGradImpl<T, isReuseSource>(outputPdX, resForGamma, inputDy, inputX, inputVariance, inputMean, inputGamma,
-        sharedTmpBuffer, epsilon, tiling, shapeInfo);
+    LayerNormGradImpl<T, isReuseSource>(
+        outputPdX, resForGamma, inputDy, inputX, inputVariance, inputMean, inputGamma, sharedTmpBuffer, epsilon, tiling,
+        shapeInfo);
 }
 } // namespace AscendC
 #endif // IMPL_NORMALIZATION_LAYER_NORMGRAD_REGBASE_C310_LAYERNORMGRAD_C310_IMPL_H
 
-#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORMGRAD_REGBASE_C310_LAYERNORMGRAD_C310_IMPL_H__)
+#if defined( \
+    __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORMGRAD_REGBASE_C310_LAYERNORMGRAD_C310_IMPL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORMGRAD_REGBASE_C310_LAYERNORMGRAD_C310_IMPL_H__
 #endif

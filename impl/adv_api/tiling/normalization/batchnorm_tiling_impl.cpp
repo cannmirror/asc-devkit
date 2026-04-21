@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #include "include/adv_api/normalization/batchnorm_tiling.h"
 
@@ -46,7 +46,8 @@ inline bool CheckBasicBlockShape(const uint32_t originalBLength, const uint32_t 
     return true;
 }
 
-bool CheckShape(const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t typeSize,
+bool CheckShape(
+    const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t typeSize,
     const bool isBasicBlock = false)
 {
     std::vector<int64_t> shapeDims = srcShape.GetDims();
@@ -72,8 +73,9 @@ bool CheckShape(const ge::Shape& srcShape, const ge::Shape& originSrcShape, cons
     return true;
 }
 
-uint32_t GetBatchNormMaxTmpSize(const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t typeSize,
-    const bool isReuseSource, const bool isBasicBlock)
+uint32_t GetBatchNormMaxTmpSize(
+    const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t typeSize, const bool isReuseSource,
+    const bool isBasicBlock)
 {
     (void)typeSize;
     (void)isReuseSource;
@@ -93,8 +95,9 @@ uint32_t GetBatchNormMaxTmpSize(const ge::Shape& srcShape, const ge::Shape& orig
     return BATCHNORM_THREE_TIMES * inputLen + BATCHNORM_TWO_TIMES * mvTmpLen;
 }
 
-uint32_t GetBatchNormMinTmpSize(const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t typeSize,
-    const bool isReuseSource, const bool isBasicBlock)
+uint32_t GetBatchNormMinTmpSize(
+    const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t typeSize, const bool isReuseSource,
+    const bool isBasicBlock)
 {
     (void)isReuseSource;
     std::vector<int64_t> shapeDims = srcShape.GetDims();
@@ -121,8 +124,9 @@ uint32_t GetBatchNormMinTmpSize(const ge::Shape& srcShape, const ge::Shape& orig
 }
 } // namespace
 
-bool GetBatchNormMaxMinTmpSize(const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t typeSize,
-    const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue, const bool isBasicBlock)
+bool GetBatchNormMaxMinTmpSize(
+    const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue, const bool isBasicBlock)
 {
     std::vector<int64_t> shapeDims = srcShape.GetDims();
     std::vector<int64_t> oriShapeDims = originSrcShape.GetDims();
@@ -138,9 +142,9 @@ bool GetBatchNormMaxMinTmpSize(const ge::Shape& srcShape, const ge::Shape& origi
     return true;
 }
 
-bool GetBatchNormNDTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape,
-    const uint32_t stackBufferByteSize, const uint32_t typeSize, const bool isReuseSource,
-    optiling::BatchNormTiling& tilling, const bool isBasicBlock)
+bool GetBatchNormNDTilingInfo(
+    const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferByteSize,
+    const uint32_t typeSize, const bool isReuseSource, optiling::BatchNormTiling& tilling, const bool isBasicBlock)
 {
     constexpr uint32_t halfBlockNumber = 16;
     if (!CheckShape(srcShape, originSrcShape, typeSize, isBasicBlock)) {
@@ -224,13 +228,14 @@ bool GetBatchNormNDTilingInfo(const ge::Shape& srcShape, const ge::Shape& origin
     return true;
 }
 
-bool GetBatchNormNDTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape,
-    const uint32_t stackBufferByteSize, const uint32_t typeSize, const bool isReuseSource,
-    AscendC::tiling::BatchNormTiling& tilling, const bool isBasicBlock)
+bool GetBatchNormNDTilingInfo(
+    const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferByteSize,
+    const uint32_t typeSize, const bool isReuseSource, AscendC::tiling::BatchNormTiling& tilling,
+    const bool isBasicBlock)
 {
     optiling::BatchNormTiling tillingData;
-    bool ret = GetBatchNormNDTilingInfo(srcShape, originSrcShape, stackBufferByteSize, typeSize, isReuseSource,
-                                    tillingData, isBasicBlock);
+    bool ret = GetBatchNormNDTilingInfo(
+        srcShape, originSrcShape, stackBufferByteSize, typeSize, isReuseSource, tillingData, isBasicBlock);
     tillingData.SaveToBuffer(&tilling, sizeof(BatchNormTiling));
     return ret;
 }

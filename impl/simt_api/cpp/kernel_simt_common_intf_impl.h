@@ -26,23 +26,23 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetWarpSize()
 }
 
 template <int32_t dim>
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetThreadNum()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t GetThreadNum()
 {
     return GetThreadNumImpl<dim>();
 }
 
 template <int32_t dim>
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetThreadIdx()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t GetThreadIdx()
 {
     return GetThreadIdxImpl<dim>();
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetBlockIdx()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t GetBlockIdx()
 {
     return GetBlockIdxImpl();
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetBlockNum()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t GetBlockNum()
 {
     return GetBlockNumImpl();
 }

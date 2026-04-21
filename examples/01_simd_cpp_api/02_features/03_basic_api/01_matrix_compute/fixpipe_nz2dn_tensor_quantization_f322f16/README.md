@@ -14,11 +14,10 @@
 │   └── fixpipe_nz2dn_tensor_quantization_f322f16.asc              // Ascend C算子实现 & 调用样例
 ```
 ## 算子描述
-- 算子功能： 
-
+- 算子功能：  
   本样例中实现对矩阵进行Mmad操作后，通过基础Api的fixpipe接口将计算结果从C1搬出到GM，并进行ReLU激活、F322F16量化并附带NZ2DN分形转换操作。
   其中输入的矩阵A和B的形状为分别为[4, 128], [128, 128], 通过fixpipe接口搬运后输出矩阵C的形状为[4, 128]。
-- 算子规格： 
+- 算子规格：  
   在核函数直调样例中，算子实现支持的shape为：M = 4, N = 128, K = 128。
   <table>
   <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">FixpipeCustom</td></tr>

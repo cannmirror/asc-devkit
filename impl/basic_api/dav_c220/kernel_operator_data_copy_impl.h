@@ -241,7 +241,9 @@ __aicore__ inline void DataCopyUB2L1ND2NZImpl(__cbuf__ T* dst, __ubuf__ T* src, 
 template <typename T>
 __aicore__ inline void DataCopyL12UBImpl(__ubuf__ T* dst, __cbuf__ T* src, const DataCopyParams& intriParams)
 {
-    ASCENDC_REPORT_NOT_SUPPORT(false, "DataCopy from A1 / B1 to VECIN / VECOUT");
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    ReportNotSupport(false, "DataCopy from A1 / B1 to VECIN / VECOUT");
+#endif
 }
 
 template <typename T>

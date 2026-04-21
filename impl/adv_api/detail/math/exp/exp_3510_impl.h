@@ -1,20 +1,21 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
-* \file exp_3510_impl.h
-* \brief
-*/
+ * \file exp_3510_impl.h
+ * \brief
+ */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/exp/exp_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/exp.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/exp/exp_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/exp.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_EXP_EXP_C310_IMPL_H__
 #endif
@@ -32,9 +33,9 @@ constexpr Reg::CastTrait castTraitS162F32 = {
     Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
 constexpr Reg::CastTrait castTraitF322F16 = {
     Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
-template<typename T, uint8_t taylorExpandLevel>
-__simd_vf__ inline void ExpCompute(__ubuf__ T* dst, __ubuf__ T* src, uint32_t calCount, uint16_t repeatTimes,
-    __ubuf__ float* taylorExpandTmpBuffer)
+template <typename T, uint8_t taylorExpandLevel>
+__simd_vf__ inline void ExpCompute(
+    __ubuf__ T* dst, __ubuf__ T* src, uint32_t calCount, uint16_t repeatTimes, __ubuf__ float* taylorExpandTmpBuffer)
 {
     constexpr float dupConstant = 2.0f;
     constexpr uint32_t floatInf = F32_INF;
@@ -100,8 +101,9 @@ __simd_vf__ inline void ExpCompute(__ubuf__ T* dst, __ubuf__ T* src, uint32_t ca
 }
 
 template <typename T, uint8_t taylorExpandLevel, bool isReuseSource>
-__aicore__ inline void ExpImpl(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal,
-   const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void ExpImpl(
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -118,8 +120,8 @@ __aicore__ inline void ExpImpl(const LocalTensor<T>& dstLocal, const LocalTensor
         Exp<T>(dstLocal, srcLocal, calCount);
         return;
     }
-    __ubuf__ T *dst = (__ubuf__ T *)dstLocal.GetPhyAddr();
-    __ubuf__ T *src = (__ubuf__ T *)srcLocal.GetPhyAddr();
+    __ubuf__ T* dst = (__ubuf__ T*)dstLocal.GetPhyAddr();
+    __ubuf__ T* src = (__ubuf__ T*)srcLocal.GetPhyAddr();
     constexpr uint32_t oneRepSize = GetVecLen() / sizeof(float);
     uint16_t repeatTimes = CeilDivision(calCount, oneRepSize);
     __ubuf__ float* sharedTmpBufferAddr = (__ubuf__ float*)sharedTmpBuffer.GetPhyAddr();

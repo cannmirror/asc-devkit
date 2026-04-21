@@ -43,8 +43,7 @@
 - 算子实现：  
   本样例中实现的是固定shape为输入x [960, 960]，max[960, 8]，sum[960, 8]，输出z[960, 960]的softmax算子。
 
-  - Kernel实现
-
+  - Kernel实现  
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用SimpleSoftMax高阶API接口完成softmax计算，得到最终结果，再搬出到外部存储上。
 
     softmax算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm、maxGm和sumGm搬运至Local Memory，分别存储在xLocal、maxLocal和sumLocal中，Compute任务负责对xLocal、maxLocal和sumLocal执行softmax计算，计算结果由于复用了xLocal，因此还是存储在xLocal中，CopyOut任务负责将输出数据从xLocal搬运至Global Memory上的输出Tensor zGm中。

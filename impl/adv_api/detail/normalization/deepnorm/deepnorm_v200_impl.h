@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file deepnorm_v200_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/normalization/deepnorm/deepnorm_v200_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/normalization/deepnorm/deepnorm_v200_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_DEEPNORM_DEEPNORM_V200_IMPL_H__
 #endif
@@ -27,14 +28,14 @@
 
 namespace AscendC {
 namespace DeepNormAPI {
-constexpr uint32_t BASIC_BLOCK_HLENGTH = 64;    // when isBasicBlock, H must be N * 64
-constexpr uint32_t BASIC_BLOCK_BSLENGTH = 8;    // when isBasicBlock, B*S must be N * 8
+constexpr uint32_t BASIC_BLOCK_HLENGTH = 64; // when isBasicBlock, H must be N * 64
+constexpr uint32_t BASIC_BLOCK_BSLENGTH = 8; // when isBasicBlock, B*S must be N * 8
 constexpr uint32_t FLOAT_PER_BLOCK = 8;
-constexpr uint8_t HALF_REPEAT_STRIDE = 4;       // DEFAULT_REPEAT_STRIDE / sizeof(half)
+constexpr uint8_t HALF_REPEAT_STRIDE = 4; // DEFAULT_REPEAT_STRIDE / sizeof(half)
 constexpr float SQRT_EXPONENT = -0.5;
 // use this function only when bsLength is 8 * n (n > 0)
-__aicore__ inline void DeepNormBasicBlockTransdata(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const uint32_t bsLength, const uint32_t hLength)
+__aicore__ inline void DeepNormBasicBlockTransdata(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint32_t bsLength, const uint32_t hLength)
 {
     const uint32_t hbase = BASIC_BLOCK_HLENGTH;
     const uint32_t bsbase = BASIC_BLOCK_BSLENGTH;
@@ -42,7 +43,7 @@ __aicore__ inline void DeepNormBasicBlockTransdata(const LocalTensor<float>& dst
     __ubuf__ float* dstAddr = (__ubuf__ float*)dst.GetPhyAddr();
     __ubuf__ float* srcAddr = (__ubuf__ float*)src.GetPhyAddr();
     // for transdata, if repeatTimes == 1, both repeatstride must be 0
-    uint8_t base = (bsLength % 16 == 0) ? 2 : 1;     // how many groups of 8 number can brcb in one transdata cmd
+    uint8_t base = (bsLength % 16 == 0) ? 2 : 1; // how many groups of 8 number can brcb in one transdata cmd
     uint8_t repeatTimes = bsLength / (BASIC_BLOCK_BSLENGTH * base);
     uint16_t dstRepeatStride = (repeatTimes == 1) ? 0 : BASIC_BLOCK_HLENGTH * base;
     uint16_t srcRepeatStride = (repeatTimes == 1) ? 0 : base;
@@ -67,7 +68,7 @@ __aicore__ inline void DeepNormBasicBlockTransdata(const LocalTensor<float>& dst
             srcList[i] = (uint64_t)src.GetPhyAddr();
             srcList[i + transdataOffset] = (uint64_t)src[bsbase].GetPhyAddr();
         }
-    } else {  // b * s = n * 8
+    } else { // b * s = n * 8
         // when use 8 num in transdata, only dst[0, 2, 4, 6, 8, 10, 12, 14] value matters.
         for (uint32_t i = 0; i < range; i++) {
             dstList[i * step] = (uint64_t)dst[i * hbase].GetPhyAddr();
@@ -87,10 +88,11 @@ __aicore__ inline void DeepNormBasicBlockTransdata(const LocalTensor<float>& dst
 }
 
 // use brcb for calculation while calculating variance    inputMean: outputMean  inputX: input inputX / tmpTensorA
-__aicore__ inline void DeepNormVarianceBasicBlockByBrcb(const LocalTensor<float>& inputX,
-    const LocalTensor<float>& inputMean, const DeepNormTiling& tiling, const DeepNormParams<float>& params)
+__aicore__ inline void DeepNormVarianceBasicBlockByBrcb(
+    const LocalTensor<float>& inputX, const LocalTensor<float>& inputMean, const DeepNormTiling& tiling,
+    const DeepNormParams<float>& params)
 {
-    const uint8_t num = tiling.hLength / BASIC_BLOCK_HLENGTH;     // isBasicBlock guarantee hLength = n * 64
+    const uint8_t num = tiling.hLength / BASIC_BLOCK_HLENGTH; // isBasicBlock guarantee hLength = n * 64
 
     // meanX = broadcast inputMean(B*S) -> (B*S*H)
     // assume B*S*H is 2*8*128, then only broadcast to B*S*64, part 64~128 will reuse part 0~64
@@ -103,18 +105,19 @@ __aicore__ inline void DeepNormVarianceBasicBlockByBrcb(const LocalTensor<float>
     SetVectorMask<float, MaskMode::COUNTER>(0, tiling.bshCurLength / num);
     for (uint32_t i = 0; i < num; i++) {
         // subX = inputX - meanX
-        Sub<float, false>(params.tempTensorB[i * BASIC_BLOCK_HLENGTH], inputX[i * BASIC_BLOCK_HLENGTH],
-            params.tempTensorC, MASK_PLACEHOLDER, 1, binaryParams);
+        Sub<float, false>(
+            params.tempTensorB[i * BASIC_BLOCK_HLENGTH], inputX[i * BASIC_BLOCK_HLENGTH], params.tempTensorC,
+            MASK_PLACEHOLDER, 1, binaryParams);
     }
     PipeBarrier<PIPE_V>();
     SetVectorMask<float, MaskMode::COUNTER>(0, tiling.bshCurLength);
 }
 
 // xSubMean: tmpTensorB
-__aicore__ inline void DeepNormOutputBasicBlockByBrcb(const LocalTensor<float>& xSubMean, const DeepNormTiling& tiling,
-    const DeepNormParams<float>& params)
+__aicore__ inline void DeepNormOutputBasicBlockByBrcb(
+    const LocalTensor<float>& xSubMean, const DeepNormTiling& tiling, const DeepNormParams<float>& params)
 {
-    const uint8_t num = tiling.hLength / BASIC_BLOCK_HLENGTH;     // isBasicBlock guarantee hLength = n * 64
+    const uint8_t num = tiling.hLength / BASIC_BLOCK_HLENGTH; // isBasicBlock guarantee hLength = n * 64
     const UnaryRepeatParams unaryParams;
     BinaryRepeatParams binaryParams;
     binaryParams.dstRepStride = num * DEFAULT_REPEAT_STRIDE;
@@ -127,8 +130,9 @@ __aicore__ inline void DeepNormOutputBasicBlockByBrcb(const LocalTensor<float>& 
     SetVectorMask<float, MaskMode::COUNTER>(0, tiling.bshCurLength / num);
     for (uint32_t i = 0; i < num; i++) {
         // resX = expX * subX
-        Mul<float, false>(params.tempTensorA[i * BASIC_BLOCK_HLENGTH], params.tempTensorC,
-            xSubMean[i * BASIC_BLOCK_HLENGTH], MASK_PLACEHOLDER, 1, binaryParams);
+        Mul<float, false>(
+            params.tempTensorA[i * BASIC_BLOCK_HLENGTH], params.tempTensorC, xSubMean[i * BASIC_BLOCK_HLENGTH],
+            MASK_PLACEHOLDER, 1, binaryParams);
     }
     PipeBarrier<PIPE_V>();
 

@@ -29,14 +29,14 @@ enum class SatMode {
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetWarpSize();
 
 template <int32_t dim = 0>
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetThreadNum();
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t GetThreadNum();
 
 template <int32_t dim = 0>
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetThreadIdx();
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t GetThreadIdx();
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetBlockIdx();
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t GetBlockIdx();
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t GetBlockNum();
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t GetBlockNum();
 
 }  // namespace Simt
 }  // namespace AscendC

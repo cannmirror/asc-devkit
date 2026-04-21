@@ -55,7 +55,7 @@ Layout用于定义张量的布局，包含Shape和Stride信息，描述张量在
 
 - 功能说明
 
-  使用给定shape和stride构造Layout对象。构造Layout对象时传入的Shape和Stride结构，需是[Std::tuple](../../../容器函数.md)结构类型，且满足Std::tuple结构类型的使用约束。
+  使用给定shape和stride构造Layout对象。构造Layout对象时传入的Shape和Stride结构，需是[`Std::tuple`](../../../容器函数.md)结构类型，且满足Std::tuple结构类型的使用约束。
 
 - 函数原型
 

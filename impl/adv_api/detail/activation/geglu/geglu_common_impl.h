@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file geglu_common_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/activation/geglu/geglu_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/geglu.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/activation/geglu/geglu_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/geglu.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GEGLU_COMMON_IMPL_H__
 #endif
@@ -28,7 +29,6 @@
 #endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
 
-
 namespace AscendC {
 constexpr float COEFF0 = -0.0713548162726;
 constexpr float COEFF1 = 2.2363860002236e1;
@@ -38,8 +38,9 @@ constexpr uint32_t GEGLU_STRIDE_DIGITS = 2;
 constexpr uint32_t GEGLU_ALIGNED = 31;
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void GeGLUImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0,
-    const LocalTensor<T>& srcTensor1, uint32_t calCount)
+__aicore__ inline void GeGLUImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0, const LocalTensor<T>& srcTensor1,
+    uint32_t calCount)
 {
     // Only for AI Vector Core.
     if (g_coreType == AIC) {
@@ -51,8 +52,9 @@ __aicore__ inline void GeGLUImpl(const LocalTensor<T>& dstTensor, const LocalTen
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void GeGLUImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0,
-    const LocalTensor<T>& srcTensor1, const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
+__aicore__ inline void GeGLUImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0, const LocalTensor<T>& srcTensor1,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
 {
     CHECK_FUNC_HIGHLEVEL_API(GeGLU, (T, isReuseSource), (dstTensor, srcTensor0, srcTensor1, sharedTmpBuffer, calCount));
     // Only for AI Vector Core
@@ -61,8 +63,11 @@ __aicore__ inline void GeGLUImpl(const LocalTensor<T>& dstTensor, const LocalTen
     }
 #ifdef ASCENDC_CPU_DEBUG
     bool ret = (srcTensor0.GetSize() == srcTensor1.GetSize());
-    ASCENDC_ASSERT(ret, { KERNEL_LOG(KERNEL_ERROR, "Size of src0: %u is not equal to size of src1: %u",
-        srcTensor0.GetSize(), srcTensor1.GetSize()); });
+    ASCENDC_ASSERT(ret, {
+        KERNEL_LOG(
+            KERNEL_ERROR, "Size of src0: %u is not equal to size of src1: %u", srcTensor0.GetSize(),
+            srcTensor1.GetSize());
+    });
     ret = (calCount <= srcTensor0.GetSize()) && (calCount <= dstTensor.GetSize());
     ASCENDC_ASSERT(ret, { KERNEL_LOG(KERNEL_ERROR, "calCount must be less than or equal to src/dst tensor"); });
 
@@ -92,7 +97,8 @@ __aicore__ inline void GeGLUImpl(const LocalTensor<T>& dstTensor, const LocalTen
 }
 
 template <typename T>
-__aicore__ inline void GeGLUCompute(const LocalTensor<T>& dst, const LocalTensor<T>& src0, const LocalTensor<T>& src1,
+__aicore__ inline void GeGLUCompute(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src0, const LocalTensor<T>& src1,
     const LocalTensor<float>& tmpBuffer, uint32_t calSize)
 {
     UnaryRepeatParams unaryParams;
@@ -133,8 +139,9 @@ __aicore__ inline void GeGLUCompute(const LocalTensor<T>& dst, const LocalTensor
 // Compute high precision GeGLU values for half type inputs by converting inputs to float types and save float GeGLU
 // result in tmpBuffer. Requires 4 times extra buffer for input data.
 template <>
-__aicore__ inline void GeGLUCompute(const LocalTensor<half>& dst, const LocalTensor<half>& src0,
-    const LocalTensor<half>& src1, const LocalTensor<float>& tmpBuffer, uint32_t calSize)
+__aicore__ inline void GeGLUCompute(
+    const LocalTensor<half>& dst, const LocalTensor<half>& src0, const LocalTensor<half>& src1,
+    const LocalTensor<float>& tmpBuffer, uint32_t calSize)
 {
     UnaryRepeatParams unaryParams;
     BinaryRepeatParams binaryParams;
@@ -142,7 +149,8 @@ __aicore__ inline void GeGLUCompute(const LocalTensor<half>& dst, const LocalTen
     LocalTensor<float> tmpFloatBuffer1 = tmpBuffer;
     LocalTensor<float> tmpFloatBuffer2 = tmpBuffer[calSize];
 
-    Cast<float, half, false>(tmpFloatBuffer1, src1, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+    Cast<float, half, false>(
+        tmpFloatBuffer1, src1, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
         {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE / GEGLU_STRIDE_DIGITS});
     PipeBarrier<PIPE_V>();
 
@@ -174,7 +182,8 @@ __aicore__ inline void GeGLUCompute(const LocalTensor<half>& dst, const LocalTen
     Div<float, false>(tmpFloatBuffer2, tmpFloatBuffer1, tmpFloatBuffer2, MASK_PLACEHOLDER, 1, binaryParams);
     PipeBarrier<PIPE_V>();
 
-    Cast<float, half, false>(tmpFloatBuffer1, src0, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+    Cast<float, half, false>(
+        tmpFloatBuffer1, src0, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
         {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE / GEGLU_STRIDE_DIGITS});
     PipeBarrier<PIPE_V>();
 
@@ -182,11 +191,12 @@ __aicore__ inline void GeGLUCompute(const LocalTensor<half>& dst, const LocalTen
     Mul<float, false>(tmpFloatBuffer2, tmpFloatBuffer1, tmpFloatBuffer2, MASK_PLACEHOLDER, 1, binaryParams);
     PipeBarrier<PIPE_V>();
 
-    Cast<half, float, false>(dst, tmpFloatBuffer2, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
-        { 1, 1, DEFAULT_REPEAT_STRIDE / GEGLU_STRIDE_DIGITS, DEFAULT_REPEAT_STRIDE });
+    Cast<half, float, false>(
+        dst, tmpFloatBuffer2, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE / GEGLU_STRIDE_DIGITS, DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
 }
-}
+} // namespace AscendC
 #endif
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GEGLU_COMMON_IMPL_H__)

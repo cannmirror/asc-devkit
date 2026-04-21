@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/hcomm/impl/platform_v310/hcomm_aiv.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/simplesoftmax.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/hcomm/impl/platform_v310/hcomm_aiv.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/simplesoftmax.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HCOMM_AIV_H__
 #endif
@@ -50,19 +51,18 @@ __aicore__ inline uint32_t HtoNL(uint32_t x)
     constexpr uint32_t byte1Mask = 0x0000ff00U;
     constexpr uint32_t byte2Mask = 0x00ff0000U;
     constexpr uint32_t byte3Mask = 0xff000000U;
-    
+
     constexpr uint32_t byteShift = 8;
     constexpr uint32_t wordShift = 24;
-    
-    return (((x & byte3Mask) >> wordShift) | 
-            ((x & byte2Mask) >> byteShift) | 
-            ((x & byte1Mask) << byteShift) | 
-            ((x & byte0Mask) << wordShift));
+
+    return (
+        ((x & byte3Mask) >> wordShift) | ((x & byte2Mask) >> byteShift) | ((x & byte1Mask) << byteShift) |
+        ((x & byte0Mask) << wordShift));
 }
 
 template <typename T>
-__aicore__ inline void Gm2Ub(const AscendC::LocalTensor<T>& dstLocal, const AscendC::GlobalTensor<T>& srcGlobal,
-                             int32_t length)
+__aicore__ inline void Gm2Ub(
+    const AscendC::LocalTensor<T>& dstLocal, const AscendC::GlobalTensor<T>& srcGlobal, int32_t length)
 {
     AscendC::DataCopyExtParams copyParams{1, (uint32_t)(length * sizeof(T)), 0, 0, 0};
     AscendC::DataCopyPadExtParams<T> padParams{true, 0, (ONE_BLOCK_SIZE - sizeof(T)) / sizeof(T), 0};
@@ -73,8 +73,8 @@ __aicore__ inline void Gm2Ub(const AscendC::LocalTensor<T>& dstLocal, const Asce
 }
 
 template <typename T>
-__aicore__ inline void Ub2Gm(const AscendC::GlobalTensor<T>& dstGlobal, const AscendC::LocalTensor<T>& srcLocal,
-                             int32_t length)
+__aicore__ inline void Ub2Gm(
+    const AscendC::GlobalTensor<T>& dstGlobal, const AscendC::LocalTensor<T>& srcLocal, int32_t length)
 {
     AscendC::DataCopyExtParams copyParams{1, (uint32_t)(length * sizeof(T)), 0, 0, 0};
     PipeBarrier<PIPE_ALL>();
@@ -96,9 +96,8 @@ __aicore__ inline HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::HcommImpl()
 __aicore__ inline HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::~HcommImpl() {}
 
 template <bool commit, pipe_t commitPipe, pipe_t reqPipe>
-__aicore__ inline HcommHandle HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::Operate(ChannelHandle channel,
-                                                                                        GM_ADDR dst, GM_ADDR src,
-                                                                                        uint64_t len, uint32_t opType)
+__aicore__ inline HcommHandle HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::Operate(
+    ChannelHandle channel, GM_ADDR dst, GM_ADDR src, uint64_t len, uint32_t opType)
 {
     __gm__ Channel* channelPtr = (__gm__ Channel*)(channel);
     auto sqPIAddr = (__gm__ uint32_t*)(channelPtr->sqContextAddr->ctx.rdmaSqContext.headAddr);
@@ -127,9 +126,9 @@ __aicore__ inline HcommHandle HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::Op
 
     __ubuf__ RoceWqeEntry* wqePtr = (__ubuf__ RoceWqeEntry*)(wqeItem_.GetPhyAddr());
     uint8_t owner = (sqHead & sqDepth) == 0 ? 0 : 1;
-    wqePtr->ctrl.dw0.value =
-        HtoNL(owner << HCOMM_WQE_OWNER_OFFSET | 2U << HCOMM_WQE_CTRLSL_OFFSET | 1U << HCOMM_WQE_CR_OFFSET
-              | 1U << HCOMM_WQE_VA_OFFSET | 4U << HCOMM_WQE_TSL_OFFSET | 2U << HCOMM_WQE_BDSL_OFFSET);
+    wqePtr->ctrl.dw0.value = HtoNL(
+        owner << HCOMM_WQE_OWNER_OFFSET | 2U << HCOMM_WQE_CTRLSL_OFFSET | 1U << HCOMM_WQE_CR_OFFSET |
+        1U << HCOMM_WQE_VA_OFFSET | 4U << HCOMM_WQE_TSL_OFFSET | 2U << HCOMM_WQE_BDSL_OFFSET);
     wqePtr->ctrl.dw1.value = HtoNL(1U << HCOMM_WQE_CL_OFFSET);
     wqePtr->doorbell = 0;
     wqePtr->task.dw0.value = HtoNL(opType << HCOMM_WQE_OP_TYPE_OFFSET | 1U << HCOMM_WQE_C_OFFSET);
@@ -180,15 +179,15 @@ __aicore__ inline HcommHandle HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::Op
 }
 
 template <bool commit, pipe_t commitPipe, pipe_t reqPipe>
-__aicore__ inline HcommHandle
-HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::Write(ChannelHandle channel, GM_ADDR dst, GM_ADDR src, uint64_t len)
+__aicore__ inline HcommHandle HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::Write(
+    ChannelHandle channel, GM_ADDR dst, GM_ADDR src, uint64_t len)
 {
     return Operate<commit, commitPipe, reqPipe>(channel, dst, src, len, static_cast<uint32_t>(HCOMM_OP_TYPE::WRITE));
 }
 
 template <bool commit, pipe_t commitPipe, pipe_t reqPipe>
-__aicore__ inline HcommHandle HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::Read(ChannelHandle channel, GM_ADDR dst,
-                                                                                     GM_ADDR src, uint64_t len)
+__aicore__ inline HcommHandle HcommImpl<CommEngine::AIV, CommProtocol::ROCE>::Read(
+    ChannelHandle channel, GM_ADDR dst, GM_ADDR src, uint64_t len)
 {
     return Operate<commit, commitPipe, reqPipe>(channel, dst, src, len, static_cast<uint32_t>(HCOMM_OP_TYPE::READ));
 }

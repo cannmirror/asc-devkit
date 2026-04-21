@@ -24,7 +24,6 @@
 ## 算子描述
 
 - 算子功能：  
-
   AddN算子实现了两个数据相加，返回相加结果的功能，其中核函数的输入参数为动态输入，动态输入参数包含两个入参，x和y。对应的数学表达式为：  
   ```
   z = x + y
@@ -43,7 +42,6 @@
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">addn_custom</td></tr>
   </table>
 - 算子实现：  
-
   动态输入特性是指，核函数的入参采用ListTensorDesc的结构存储输入数据信息。  
   构造TensorList数据结构，示例如下。
   ```cpp

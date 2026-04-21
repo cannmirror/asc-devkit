@@ -33,7 +33,7 @@
 
 - 算子实现：  
   本样例中实现的是固定shape为256的SetAtomicMin算子。
-  - kernel实现   
+  - kernel实现  
     本算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的两个tensor搬运到位于Local Memory的两个LocalTensor中。Compute任务负责对两个输入的tensor求绝对值，并将结果保存在dst0Local和dst1Local中。CopyOut中后续的VECOUT/L0C/L1到GM的数据传输开启原子最小，最后输出数据从dstLocal搬运至Global Memory上时与Global Memory上已有数据进行比较，将最小值写入输出Tensor。
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。

@@ -1,19 +1,20 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/reduce/reduce_any/reduce_any_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/reduce/reduce_any/reduce_any_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_ANY_REDUCE_ANY_C310_IMPL_H__
 #endif
- 
+
 #ifndef IMPL_REDUCE_REDUCE_ANY_REDUCE_ANY_C310_IMPL_H_
 #define IMPL_REDUCE_REDUCE_ANY_REDUCE_ANY_C310_IMPL_H_
 
@@ -30,39 +31,41 @@
 
 namespace AscendC {
 namespace Internal {
-        
+
 template <class T, bool isReuseSource = false>
-__aicore__ inline void ReduceAnyARImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, __ubuf__ T *tmpAddr,
-    uint32_t dimA, uint32_t dimR)
+__aicore__ inline void ReduceAnyARImpl(
+    __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, __ubuf__ T* tmpAddr, uint32_t dimA, uint32_t dimR)
 {
     constexpr uint16_t vlSize = GetVecLen() / sizeof(T);
     using CastType = typename ReduceOpInternal::template ExtractReduceCastType<T>::CastT;
 
     if (dimR <= vlSize) {
-        ReduceARReuseSourceLessThanVL<T, Reg::RegTraitNumOne, vlSize,
-            Reg::Max<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>,
+        ReduceARReuseSourceLessThanVL<
+            T, Reg::RegTraitNumOne, vlSize, Reg::Max<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>,
             Reg::ReduceMax<CastType, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<CastType>>>(
-                dstAddr, srcAddr, dimA, dimR);
+            dstAddr, srcAddr, dimA, dimR);
     } else {
-        ReduceAROverVLImpl<T, Reg::RegTraitNumOne, vlSize,
-            Reg::Max<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>,
-            Reg::ReduceMax<CastType, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<CastType>>,
-            isReuseSource>(dstAddr, srcAddr, tmpAddr, dimA, dimR);
+        ReduceAROverVLImpl<
+            T, Reg::RegTraitNumOne, vlSize, Reg::Max<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>,
+            Reg::ReduceMax<CastType, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<CastType>>, isReuseSource>(
+            dstAddr, srcAddr, tmpAddr, dimA, dimR);
     }
 }
 
 template <typename T, typename pattern, bool isReuseSource = false>
-__aicore__ inline void ReduceAnyImpl(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t srcShape[], bool srcInnerPad)
+__aicore__ inline void ReduceAnyImpl(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t srcShape[], bool srcInnerPad)
 {
     CHECK_FUNC_HIGHLEVEL_API(ReduceAny, (T, pattern), (dst, src, sharedTmpBuffer, srcShape, srcInnerPad, srcShape[1]));
 
     CheckTensorPos<T>(dst, Hardware::UB, "dst", "VECIN / VECCALC / VECOUT", "ReduceAny");
     CheckTensorPos<T>(src, Hardware::UB, "src", "VECIN / VECCALC / VECOUT", "ReduceAny");
     CheckTensorPos<uint8_t>(sharedTmpBuffer, Hardware::UB, "sharedTmpBuffer", "VECIN / VECCALC / VECOUT", "ReduceAny");
-    static_assert(SupportType<T, uint8_t, float>(),
-        "ReduceAny only support uint8_t/float data type on current device!");
-    static_assert(std::is_same_v<pattern, Pattern::Reduce::AR> || std::is_same_v<pattern, Pattern::Reduce::RA>,
+    static_assert(
+        SupportType<T, uint8_t, float>(), "ReduceAny only support uint8_t/float data type on current device!");
+    static_assert(
+        std::is_same_v<pattern, Pattern::Reduce::AR> || std::is_same_v<pattern, Pattern::Reduce::RA>,
         "ReduceAny only support AR and RA pattern on current device!");
 
     __ubuf__ T* dstAddr = (__ubuf__ T*)dst.GetPhyAddr();
@@ -72,8 +75,8 @@ __aicore__ inline void ReduceAnyImpl(const LocalTensor<T>& dst, const LocalTenso
     if constexpr (std::is_same_v<pattern, Pattern::Reduce::AR>) {
         ReduceAnyARImpl<T, isReuseSource>(dstAddr, srcAddr, tmpAddr, srcShape[0], srcShape[1]);
     } else {
-        ReduceRAImpl<T, Reg::RegTraitNumOne,
-            Reg::Max<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>, isReuseSource>(
+        ReduceRAImpl<
+            T, Reg::RegTraitNumOne, Reg::Max<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>, isReuseSource>(
             dstAddr, srcAddr, tmpAddr, srcShape[1], srcShape[0]);
     }
 }

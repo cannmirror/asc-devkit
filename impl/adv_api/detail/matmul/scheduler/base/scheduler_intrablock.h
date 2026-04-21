@@ -1,19 +1,20 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file scheduler_intrablock.h
  * \brief
  */
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/scheduler/base/scheduler_intrablock.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/scheduler/base/scheduler_intrablock.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_BASE_SCHEDULER_INTRABLOCK_H__
 #endif
@@ -46,11 +47,11 @@ static constexpr auto CFG = GetNormCFG<MM_CFG>();
     We retain the freedom to make incompatible changes, but do not guarantee the stability.
     MatmulScheduler is only for internal usage, does not support extension or customized specialization!
 */
-template <typename IMPL, class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG,
+template <
+    typename IMPL, class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG,
     PolicyType POLICY_TYPE>
 class MatmulScheduler<IMPL, A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, POLICY_TYPE, enable_if_t<IsIntrablock<MM_CFG>>>
-    : public MatmulScheduler<IMPL, A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, CFG<MM_CFG>, POLICY_TYPE>
-{
+    : public MatmulScheduler<IMPL, A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, CFG<MM_CFG>, POLICY_TYPE> {
     MATMUL_USE_MODULE(MLoop);
     MATMUL_USE_MODULE(NLoop);
     MATMUL_USE_MODULE(KLoop);
@@ -80,8 +81,8 @@ public:
         ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "IntraBlockPartSum does not support Iterate."); });
     }
 
-    __aicore__ inline void Schedule(const GlobalTensor<DstT>& gm,
-        uint8_t enAtomic = 0, bool enSequentialWrite = false, bool fakeMsg = false)
+    __aicore__ inline void Schedule(
+        const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0, bool enSequentialWrite = false, bool fakeMsg = false)
     {
 #if defined(USE_WORKSPACE)
         if (fakeMsg) {
@@ -148,9 +149,10 @@ private:
                 auto& bufferPool = MATMUL_MODULE(TBufPoolL0)->template Allocate<true>();
                 LocalTensor<TransT> b2 = bufferPool.template GetBuffer<TPosition::B2, TransT, true>(subBlockIdx);
                 b2 = b2[offset];
-                MATMUL_MODULE(LoadToB2)->Load(b2, b1, singleCoreN, kAxisL1Len, baseUseN,
-                    MATMUL_MODULE(KLoop)->template GetBaseShape<IS_INTRA_BLOCK>(),
-                    axisL1Offset, kAxisL1Offset, isBTranspose);
+                MATMUL_MODULE(LoadToB2)->Load(
+                    b2, b1, singleCoreN, kAxisL1Len, baseUseN,
+                    MATMUL_MODULE(KLoop)->template GetBaseShape<IS_INTRA_BLOCK>(), axisL1Offset, kAxisL1Offset,
+                    isBTranspose);
                 offset += l0bStride;
                 axisL1Offset += baseN;
                 kAxisL1Offset += baseK;
@@ -176,15 +178,17 @@ private:
         do {
             int32_t kOuterIdx = MATMUL_MODULE(KLoop)->template GetOuterIdx<IS_INTRA_BLOCK>();
             // CopyIn
-            LocalTensor<TransT> a1 = MATMUL_MODULE(CopyCubeInA)->LoadData(
-                MATMUL_MODULE(MLoop)->template GetOuterIdx<true>(),
-                kOuterIdx, MATMUL_MODULE(MLoop)->template GetTileShape<IS_INTRA_BLOCK>(),
-                MATMUL_MODULE(KLoop)->template GetTileShapeA<IS_INTRA_BLOCK>());
+            LocalTensor<TransT> a1 = MATMUL_MODULE(CopyCubeInA)
+                                         ->LoadData(
+                                             MATMUL_MODULE(MLoop)->template GetOuterIdx<true>(), kOuterIdx,
+                                             MATMUL_MODULE(MLoop)->template GetTileShape<IS_INTRA_BLOCK>(),
+                                             MATMUL_MODULE(KLoop)->template GetTileShapeA<IS_INTRA_BLOCK>());
             if constexpr (!IS_INTRA_BLOCK) {
                 // only v0 core support bias
-                LocalTensor<BiasT> bias = MATMUL_MODULE(BiasScheduler)->CopyIn(
-                    MATMUL_MODULE(NLoop)->template GetBaseShape<false>(), 1,
-                    MATMUL_MODULE(NLoop)->GetInnerIdx() * tiling.GetBaseN());
+                LocalTensor<BiasT> bias = MATMUL_MODULE(BiasScheduler)
+                                              ->CopyIn(
+                                                  MATMUL_MODULE(NLoop)->template GetBaseShape<false>(), 1,
+                                                  MATMUL_MODULE(NLoop)->GetInnerIdx() * tiling.GetBaseN());
                 MATMUL_MODULE(BiasScheduler)->SplitLoad(bias, bL0Params.axisL0Len);
             }
             // update some params in SplitParams which is related to k loop
@@ -197,7 +201,7 @@ private:
                 }
             } else {
                 if constexpr (EnUnitFlag(MM_CFG)) {
-                    sL0CLast = (kOuterIdx == MATMUL_MODULE(KLoop)->template GetTotalIter<true>() - 1 ) ? 1 : 0;
+                    sL0CLast = (kOuterIdx == MATMUL_MODULE(KLoop)->template GetTotalIter<true>() - 1) ? 1 : 0;
                 }
             }
 
@@ -208,8 +212,9 @@ private:
             // Split
             auto& bufferPool = MATMUL_MODULE(TBufPoolL0)->Allocate();
             LocalTensor<TransT> a2 = bufferPool.template GetBuffer<TPosition::A2, TransT>();
-            MATMUL_MODULE(LoadToA2)->Load(a2, a1, aL0Params.axisL1Len, aL0Params.kAxisL1Len,
-                aL0Params.axisL0Len, kL0Len, aL0Params.axisL1Offset, aL0Params.kAxisL1Offset, isATranspose);
+            MATMUL_MODULE(LoadToA2)->Load(
+                a2, a1, aL0Params.axisL1Len, aL0Params.kAxisL1Len, aL0Params.axisL0Len, kL0Len, aL0Params.axisL1Offset,
+                aL0Params.kAxisL1Offset, isATranspose);
             auto kTotalIter = MATMUL_MODULE(KLoop)->template GetTotalIter<IS_INTRA_BLOCK>();
             int32_t posB =
                 (kOuterIdx + MATMUL_MODULE(NLoop)->GetInnerIdx() * kTotalIter) % (tiling.GetStepN() * kTotalIter);
@@ -227,22 +232,23 @@ private:
             bool cmatrixSource;
             bool cmatrixInitVal;
             BASE_MODULE::UpdateBiasParams(IS_INTRA_BLOCK, sL0CInit, cmatrixSource, cmatrixInitVal, isBias);
-            MATMUL_MODULE(MmadCompute)->Compute(MATMUL_MODULE(CubeOutBuffer)->GetTensor(), a2, b2,
-                aL0Params.axisL0Len, kL0Len, bL0Params.axisL0Len, isATranspose,
-                MATMUL_MODULE(MatmulShapeInfo)->template IsTransposeB<IS_INTRA_BLOCK>(),
-                unitFlag, cmatrixSource, cmatrixInitVal, isBias);
+            MATMUL_MODULE(MmadCompute)
+                ->Compute(
+                    MATMUL_MODULE(CubeOutBuffer)->GetTensor(), a2, b2, aL0Params.axisL0Len, kL0Len, bL0Params.axisL0Len,
+                    isATranspose, MATMUL_MODULE(MatmulShapeInfo)->template IsTransposeB<IS_INTRA_BLOCK>(), unitFlag,
+                    cmatrixSource, cmatrixInitVal, isBias);
             bufferPool.Free();
             if constexpr (!IS_INTRA_BLOCK) {
                 MATMUL_MODULE(BiasScheduler)->Free();
             }
 
-            MATMUL_MODULE(CopyCubeInA)->ClearLoadData(
-                a1, MATMUL_MODULE(MLoop)->template GetOuterIdx<true>(), kOuterIdx);
+            MATMUL_MODULE(CopyCubeInA)
+                ->ClearLoadData(a1, MATMUL_MODULE(MLoop)->template GetOuterIdx<true>(), kOuterIdx);
         } while (MATMUL_MODULE(KLoop)->template OuterNext<IS_INTRA_BLOCK>());
     }
 
-    __aicore__ inline void GetResultImpl(const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0,
-        bool enSequentialWrite = false)
+    __aicore__ inline void GetResultImpl(
+        const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0, bool enSequentialWrite = false)
     {
         auto co1Local = MATMUL_MODULE(CubeOutBuffer)->GetTensor();
         MATMUL_MODULE(CubeOutBuffer)->EnQue(co1Local);
@@ -250,19 +256,21 @@ private:
         BASE_MODULE::SetAtomic(enAtomic);
 
         if (enSequentialWrite) {
-            MATMUL_MODULE(CopyCubeOut)->template Copy<true>(gm, co1Local,
-                MATMUL_MODULE(MLoop)->template GetOuterIdx<true>(), MATMUL_MODULE(NLoop)->GetInnerIdx(),
-                MATMUL_MODULE(MLoop)->template GetBaseShape<true>(),
-                MATMUL_MODULE(NLoop)->template GetBaseShape<true>(),
-                MATMUL_MODULE(MLoop)->template GetBaseBlockShape<true>(),
-                MATMUL_MODULE(NLoop)->template GetBaseBlockShape<true>());
+            MATMUL_MODULE(CopyCubeOut)
+                ->template Copy<true>(
+                    gm, co1Local, MATMUL_MODULE(MLoop)->template GetOuterIdx<true>(),
+                    MATMUL_MODULE(NLoop)->GetInnerIdx(), MATMUL_MODULE(MLoop)->template GetBaseShape<true>(),
+                    MATMUL_MODULE(NLoop)->template GetBaseShape<true>(),
+                    MATMUL_MODULE(MLoop)->template GetBaseBlockShape<true>(),
+                    MATMUL_MODULE(NLoop)->template GetBaseBlockShape<true>());
         } else {
-            MATMUL_MODULE(CopyCubeOut)->template Copy<false>(gm, co1Local,
-                MATMUL_MODULE(MLoop)->template GetOuterIdx<true>(), MATMUL_MODULE(NLoop)->GetInnerIdx(),
-                MATMUL_MODULE(MLoop)->template GetBaseShape<true>(),
-                MATMUL_MODULE(NLoop)->template GetBaseShape<true>(),
-                MATMUL_MODULE(MLoop)->template GetBaseBlockShape<true>(),
-                MATMUL_MODULE(NLoop)->template GetBaseBlockShape<true>());
+            MATMUL_MODULE(CopyCubeOut)
+                ->template Copy<false>(
+                    gm, co1Local, MATMUL_MODULE(MLoop)->template GetOuterIdx<true>(),
+                    MATMUL_MODULE(NLoop)->GetInnerIdx(), MATMUL_MODULE(MLoop)->template GetBaseShape<true>(),
+                    MATMUL_MODULE(NLoop)->template GetBaseShape<true>(),
+                    MATMUL_MODULE(MLoop)->template GetBaseBlockShape<true>(),
+                    MATMUL_MODULE(NLoop)->template GetBaseBlockShape<true>());
         }
 
         BASE_MODULE::ClearAtomic(enAtomic);
@@ -271,9 +279,9 @@ private:
     }
 };
 
-}  // namespace Detail
-}  // namespace Impl
-}  // namespace AscendC
+} // namespace Detail
+} // namespace Impl
+} // namespace AscendC
 
 #endif
 

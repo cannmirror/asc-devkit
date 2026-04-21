@@ -1,13 +1,13 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
- 
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
 #include "include/adv_api/sort/topk_tilingdata.h"
 #include "include/adv_api/sort/topk_tiling.h"
 
@@ -78,7 +78,7 @@ uint32_t GenerateBinary1(int32_t k)
 
 uint32_t GenerateBinary10(int32_t k)
 {
-    uint32_t m = BINARY_10;  // 10
+    uint32_t m = BINARY_10; // 10
     for (int i = 1; i < k; ++i) {
         m = (m << BINARY_10) | m;
     }
@@ -87,7 +87,7 @@ uint32_t GenerateBinary10(int32_t k)
 
 uint32_t GenerateBinary01(int32_t k)
 {
-    uint32_t m = 1;  // 01
+    uint32_t m = 1; // 01
     for (int i = 1; i < k; ++i) {
         m = (m << BINARY_10) | m;
     }
@@ -96,14 +96,14 @@ uint32_t GenerateBinary01(int32_t k)
 
 uint16_t GenerateBinary0001(int32_t k)
 {
-    uint16_t m = 1;  // 0001
+    uint16_t m = 1; // 0001
     for (int i = 1; i < k; ++i) {
         m = (m << BINARY_0001) | m;
     }
     return m;
 }
 
-void GetVreduceMask(const int32_t k, const uint32_t dataTypeSize, optiling::TopkTiling &topKTiling)
+void GetVreduceMask(const int32_t k, const uint32_t dataTypeSize, optiling::TopkTiling& topKTiling)
 {
     if (k < SEVENTEEN) {
         topKTiling.set_vreduceIdxMask0(GenerateBinary10(k));
@@ -138,8 +138,9 @@ void GetVreduceMask(const int32_t k, const uint32_t dataTypeSize, optiling::Topk
     }
 }
 
-void GetTopKMaxMinTmpSize310(const int32_t inner, const int32_t outter, const bool isInitIndex, enum TopKMode mode,
-    uint32_t& maxValue, uint32_t& minValue)
+void GetTopKMaxMinTmpSize310(
+    const int32_t inner, const int32_t outter, const bool isInitIndex, enum TopKMode mode, uint32_t& maxValue,
+    uint32_t& minValue)
 {
     // total：(Inner*8B)*2
     if (mode == TopKMode::TOPK_NORMAL) {
@@ -159,8 +160,9 @@ void GetTopKMaxMinTmpSize310(const int32_t inner, const int32_t outter, const bo
     minValue = maxValue;
 }
 
-void GetTopKMaxMinTmpSize220(const int32_t inner, const int32_t outter, const bool isInitIndex, enum TopKMode mode,
-    uint32_t& maxValue, uint32_t& minValue, const bool isLargest)
+void GetTopKMaxMinTmpSize220(
+    const int32_t inner, const int32_t outter, const bool isInitIndex, enum TopKMode mode, uint32_t& maxValue,
+    uint32_t& minValue, const bool isLargest)
 {
     // total：(Inner*4+inner*4)*2
     if ((mode == TopKMode::TOPK_NORMAL) && (isInitIndex)) {
@@ -186,8 +188,9 @@ void GetTopKMaxMinTmpSize220(const int32_t inner, const int32_t outter, const bo
             // islargest is false: inner * outter * TOPK_FLOAT_SIZE
             // vreducev2 block bytes: TOPKNSMALL_MASK_BYTES
             // isInitIndex is false: inner * outter * TOPK_FLOAT_SIZE
-            minValue = static_cast<uint32_t>(inner * outter * EIGHT + inner * outter * TOPK_FLOAT_SIZE +
-                                             TOPKNSMALL_MASK_BYTES + inner * outter * TOPK_FLOAT_SIZE);
+            minValue = static_cast<uint32_t>(
+                inner * outter * EIGHT + inner * outter * TOPK_FLOAT_SIZE + TOPKNSMALL_MASK_BYTES +
+                inner * outter * TOPK_FLOAT_SIZE);
             maxValue = minValue;
         }
     } else {
@@ -203,8 +206,9 @@ void GetTopKMaxMinTmpSize220(const int32_t inner, const int32_t outter, const bo
     }
 }
 
-void GetTopKMaxMinTmpSize200(const int32_t inner, const int32_t outter, enum TopKMode mode, uint32_t& maxValue,
-    uint32_t& minValue, const int32_t dataTypeSize)
+void GetTopKMaxMinTmpSize200(
+    const int32_t inner, const int32_t outter, enum TopKMode mode, uint32_t& maxValue, uint32_t& minValue,
+    const int32_t dataTypeSize)
 {
     if (mode == TopKMode::TOPK_NORMAL) {
         // proposal space Bytes: inner * 8 * dataTypeSize
@@ -220,8 +224,9 @@ void GetTopKMaxMinTmpSize200(const int32_t inner, const int32_t outter, enum Top
     }
 }
 
-void SetTopkNormalVal310(const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize,
-    const bool isInitIndex, optiling::TopkTiling &topKTiling)
+void SetTopkNormalVal310(
+    const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize, const bool isInitIndex,
+    optiling::TopkTiling& topKTiling)
 {
     const int32_t kAlignFourBytesTmp = ((k + SEVEN) / EIGHT) * EIGHT;
     topKTiling.set_kAlignFourBytes(kAlignFourBytesTmp);
@@ -248,8 +253,9 @@ void SetTopkNormalVal310(const int32_t inner, const int32_t outter, const int32_
     }
 }
 
-void SetTopkNormalVal(const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize,
-    const bool isInitIndex, const int32_t kAlignFourBytesTmp, optiling::TopkTiling &topKTiling)
+void SetTopkNormalVal(
+    const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize, const bool isInitIndex,
+    const int32_t kAlignFourBytesTmp, optiling::TopkTiling& topKTiling)
 {
     const int32_t kAlignTwoBytesTmp = ((k + FIFTEEN) / SIXTEEN) * SIXTEEN;
     // inner * 16 / sizeof(float) = inner * 4
@@ -297,8 +303,9 @@ void SetTopkNormalVal(const int32_t inner, const int32_t outter, const int32_t k
     }
 }
 
-void SetTopkNSmallVal310(const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize,
-    const bool isInitIndex, optiling::TopkTiling &topKTiling)
+void SetTopkNSmallVal310(
+    const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize, const bool isInitIndex,
+    optiling::TopkTiling& topKTiling)
 {
     const int32_t innerDataSize = inner * outter * (SORT32_ONE_NUM_BYTES / dataTypeSize);
     topKTiling.set_innerDataSize(innerDataSize);
@@ -310,8 +317,9 @@ void SetTopkNSmallVal310(const int32_t inner, const int32_t outter, const int32_
     }
 }
 
-void SetTopkNSmallVal(const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize,
-    const bool isInitIndex, optiling::TopkTiling &topKTiling, const bool isLargest = false)
+void SetTopkNSmallVal(
+    const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize, const bool isInitIndex,
+    optiling::TopkTiling& topKTiling, const bool isLargest = false)
 {
     int32_t innerDataSize = inner * outter * (SORT32_ONE_NUM_BYTES / dataTypeSize);
     topKTiling.set_innerDataSize(innerDataSize);
@@ -320,11 +328,13 @@ void SetTopkNSmallVal(const int32_t inner, const int32_t outter, const int32_t k
     if (!isLargest) {
         generateNegativeValSize = inner * outter;
     }
-    int32_t mrgSrc1MaskSizeOffset = (innerDataSize) + generateNegativeValSize; // sort32 sort8B + asc(vmuls * -1) + mask space + generate index
+    int32_t mrgSrc1MaskSizeOffset =
+        (innerDataSize) + generateNegativeValSize; // sort32 sort8B + asc(vmuls * -1) + mask space + generate index
     topKTiling.set_topkMrgSrc1MaskSizeOffset(mrgSrc1MaskSizeOffset);
     topKTiling.set_tmpLocalSize(mrgSrc1MaskSizeOffset + TOPKNSMALL_MASK_BYTES / dataTypeSize);
     if (!isInitIndex) {
-        int32_t srcIndexLocalOffset = mrgSrc1MaskSizeOffset + TOPKNSMALL_MASK_BYTES / dataTypeSize; // the space required by mask
+        int32_t srcIndexLocalOffset =
+            mrgSrc1MaskSizeOffset + TOPKNSMALL_MASK_BYTES / dataTypeSize; // the space required by mask
         // Space required for generate indexs: inner * outter * TOPK_FLOAT_SIZE / dataTypeSize
         topKTiling.set_tmpLocalSize(srcIndexLocalOffset + inner * outter * TOPK_FLOAT_SIZE / dataTypeSize);
         topKTiling.set_topkNSmallSrcIndexOffset(srcIndexLocalOffset);
@@ -332,8 +342,9 @@ void SetTopkNSmallVal(const int32_t inner, const int32_t outter, const int32_t k
     GetVreduceMask(k, dataTypeSize, topKTiling);
 }
 
-void SetTopkNormalVal200(const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize,
-    optiling::TopkTiling &topKTiling)
+void SetTopkNormalVal200(
+    const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize,
+    optiling::TopkTiling& topKTiling)
 {
     // proposal space contained elements: inner * 8
     // MrgSort4 space contained elements: inner * 8 * 2
@@ -367,8 +378,9 @@ void SetTopkNormalVal200(const int32_t inner, const int32_t outter, const int32_
     topKTiling.set_kAlignFourBytes(kAlignFourBytesTmp);
 }
 
-void SetTopkNSmallVal200(const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize,
-    optiling::TopkTiling &topKTiling)
+void SetTopkNSmallVal200(
+    const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize,
+    optiling::TopkTiling& topKTiling)
 {
     // proposal space contained elements: inner * outter * 8
     // MrgSort4 space contained elements: inner * outter * 8 * 2
@@ -403,9 +415,9 @@ void SetTopkNSmallVal200(const int32_t inner, const int32_t outter, const int32_
     }
 }
 
-bool TopKTilingFunc(const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize,
-    const bool isInitIndex, enum TopKMode mode, optiling::TopkTiling &topKTiling, const bool isLargest,
-    const NpuArch npuArch)
+bool TopKTilingFunc(
+    const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize, const bool isInitIndex,
+    enum TopKMode mode, optiling::TopkTiling& topKTiling, const bool isLargest, const NpuArch npuArch)
 {
     if (dataTypeSize == 0) {
         return false;
@@ -416,9 +428,7 @@ bool TopKTilingFunc(const int32_t inner, const int32_t outter, const int32_t k, 
         } else {
             SetTopkNSmallVal200(inner, outter, k, dataTypeSize, topKTiling);
         }
-    } else if (npuArch == NpuArch::DAV_3510 ||
-               npuArch == NpuArch::DAV_5102 ||
-               npuArch == NpuArch::DAV_3003) {
+    } else if (npuArch == NpuArch::DAV_3510 || npuArch == NpuArch::DAV_5102 || npuArch == NpuArch::DAV_3003) {
         topKTiling.set_allDataSize(inner * outter);
         if (mode == TopKMode::TOPK_NORMAL) {
             SetTopkNormalVal310(inner, outter, k, dataTypeSize, isInitIndex, topKTiling);
@@ -439,50 +449,55 @@ bool TopKTilingFunc(const int32_t inner, const int32_t outter, const int32_t k, 
     return true;
 }
 
-void CheckTopKHostCommon(const char *apiName, const char *hostFuncName, 
-    const platform_ascendc::PlatformAscendC &ascendcPlatform, const int32_t inner, const int32_t outter, 
-    const bool isInitIndex, enum TopKMode mode, const uint32_t dataTypeSize)
+void CheckTopKHostCommon(
+    const char* apiName, const char* hostFuncName, const platform_ascendc::PlatformAscendC& ascendcPlatform,
+    const int32_t inner, const int32_t outter, const bool isInitIndex, enum TopKMode mode, const uint32_t dataTypeSize)
 {
     const auto npuArch = ascendcPlatform.GetCurNpuArch();
-    ASCENDC_HOST_ASSERT(inner > 0, return, 
-        "[%s][%s] The length of the inner axis must be greater than 0!", apiName, hostFuncName);
-    ASCENDC_HOST_ASSERT(inner % 32 == 0, return, 
-        "[%s][%s] The length of the inner axis must be a multiple of 32!", apiName, hostFuncName);
+    ASCENDC_HOST_ASSERT(
+        inner > 0, return, "[%s][%s] The length of the inner axis must be greater than 0!", apiName, hostFuncName);
+    ASCENDC_HOST_ASSERT(
+        inner % 32 == 0, return, "[%s][%s] The length of the inner axis must be a multiple of 32!", apiName,
+        hostFuncName);
     if (mode == TopKMode::TOPK_NSMALL) {
-        ASCENDC_HOST_ASSERT(inner == 32, return, 
-            "[%s][%s] In Small mode, the length of the inner axis must be 32!", apiName, hostFuncName);
+        ASCENDC_HOST_ASSERT(
+            inner == 32, return, "[%s][%s] In Small mode, the length of the inner axis must be 32!", apiName,
+            hostFuncName);
     }
     if (npuArch == NpuArch::DAV_2002 && isInitIndex == false) {
-        ASCENDC_HOST_ASSERT(inner <= 2048, return, 
+        ASCENDC_HOST_ASSERT(
+            inner <= 2048, return,
             "[%s][%s] In Atlas inference products, when the data type is half and the parameter isInitIndex "
-            "is set to false, the inner axis length must be less than or equal to 2048!", apiName, hostFuncName);
+            "is set to false, the inner axis length must be less than or equal to 2048!",
+            apiName, hostFuncName);
     }
-    ASCENDC_HOST_ASSERT(outter > 0, return, 
-        "[%s][%s] The length of the outter axis must be greater than 0!", apiName, hostFuncName);
+    ASCENDC_HOST_ASSERT(
+        outter > 0, return, "[%s][%s] The length of the outter axis must be greater than 0!", apiName, hostFuncName);
     uint64_t ubSize = 0;
     ascendcPlatform.GetCoreMemSize(platform_ascendc::CoreMemType::UB, ubSize);
-    ASCENDC_HOST_ASSERT(static_cast<uint64_t>(inner * outter * dataTypeSize) <= ubSize, return,
+    ASCENDC_HOST_ASSERT(
+        static_cast<uint64_t>(inner * outter * dataTypeSize) <= ubSize, return,
         "[%s][%s] The size of srcShape is %luB, should be less than UB size.", apiName, hostFuncName,
         static_cast<uint64_t>(inner * outter * dataTypeSize));
-    ASCENDC_HOST_ASSERT(dataTypeSize == TOPK_HALF_SIZE || dataTypeSize == TOPK_FLOAT_SIZE, return,
+    ASCENDC_HOST_ASSERT(
+        dataTypeSize == TOPK_HALF_SIZE || dataTypeSize == TOPK_FLOAT_SIZE, return,
         "[%s][%s] Type size %u is unsupported!", apiName, hostFuncName, dataTypeSize);
     return;
 }
 } // namespace
 
-bool GetTopKMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcPlatform, const int32_t inner,
-    const int32_t outter, const bool isReuseSource, const bool isInitIndex, enum TopKMode mode, const bool isLargest,
+bool GetTopKMaxMinTmpSize(
+    const platform_ascendc::PlatformAscendC& ascendcPlatform, const int32_t inner, const int32_t outter,
+    const bool isReuseSource, const bool isInitIndex, enum TopKMode mode, const bool isLargest,
     const uint32_t dataTypeSize, uint32_t& maxValue, uint32_t& minValue)
 {
-    (void) isReuseSource;
-    CheckTopKHostCommon("TopK", "GetTopKMaxMinTmpSize", ascendcPlatform, inner, outter, isInitIndex, mode, 
-        dataTypeSize);
+    (void)isReuseSource;
+    CheckTopKHostCommon(
+        "TopK", "GetTopKMaxMinTmpSize", ascendcPlatform, inner, outter, isInitIndex, mode, dataTypeSize);
     const auto npuArch = ascendcPlatform.GetCurNpuArch();
     if (npuArch == NpuArch::DAV_2002) {
         GetTopKMaxMinTmpSize200(inner, outter, mode, maxValue, minValue, dataTypeSize);
-    } else if (npuArch == NpuArch::DAV_3510 ||
-               npuArch == NpuArch::DAV_5102 ||
-               npuArch == NpuArch::DAV_3003) {
+    } else if (npuArch == NpuArch::DAV_3510 || npuArch == NpuArch::DAV_5102 || npuArch == NpuArch::DAV_3003) {
         GetTopKMaxMinTmpSize310(inner, outter, isInitIndex, mode, maxValue, minValue);
     } else {
         GetTopKMaxMinTmpSize220(inner, outter, isInitIndex, mode, maxValue, minValue, isLargest);
@@ -490,38 +505,34 @@ bool GetTopKMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcPlatfo
     return true;
 }
 
-bool GetTopKMaxMinTmpSize(const int32_t inner, const int32_t outter, const int32_t k, const bool isReuseSource,
-    const bool isInitIndex, enum TopKMode mode, const bool isLargest, ge::DataType dataType, const TopKConfig& config,
-    uint32_t& maxValue, uint32_t& minValue)
+bool GetTopKMaxMinTmpSize(
+    const int32_t inner, const int32_t outter, const int32_t k, const bool isReuseSource, const bool isInitIndex,
+    enum TopKMode mode, const bool isLargest, ge::DataType dataType, const TopKConfig& config, uint32_t& maxValue,
+    uint32_t& minValue)
 {
-    platform_ascendc::PlatformAscendC *platform = platform_ascendc::PlatformAscendCManager::GetInstance();
+    platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
     ASCENDC_HOST_ASSERT((platform != nullptr), return false, "Failed to get PlatformAscendC");
 
     auto npuArch = platform->GetCurNpuArch();
-    ASCENDC_HOST_ASSERT((npuArch == NpuArch::DAV_3510 ||
-        npuArch == NpuArch::DAV_5102),
-        return false,
+    ASCENDC_HOST_ASSERT(
+        (npuArch == NpuArch::DAV_3510 || npuArch == NpuArch::DAV_5102), return false,
         "Unsupported NpuArch of Topk radix select API.");
 
     ASCENDC_HOST_ASSERT((inner % 32 == 0), return false, "The value of inner must be an integer multiple of 32.");
-    ASCENDC_HOST_ASSERT((1 <= k) && (k <= inner), return false,
+    ASCENDC_HOST_ASSERT(
+        (1 <= k) && (k <= inner), return false,
         "The value of k must be greater than or equal to 1 and less than or equal to inner.");
 
     std::map<ge::DataType, uint32_t> supportTypes = {
-        {ge::DT_INT8, TOPK_RADIX_B8_SIZE},
-        {ge::DT_UINT8, TOPK_RADIX_B8_SIZE},
-        {ge::DT_INT16, TOPK_RADIX_B16_SIZE},
-        {ge::DT_UINT16, TOPK_RADIX_B16_SIZE},
-        {ge::DT_INT32, TOPK_RADIX_B32_SIZE},
-        {ge::DT_UINT32, TOPK_RADIX_B32_SIZE},
-        {ge::DT_INT64, TOPK_RADIX_B64_SIZE},
-        {ge::DT_UINT64, TOPK_RADIX_B64_SIZE},
-        {ge::DT_FLOAT, TOPK_RADIX_B32_SIZE},
-        {ge::DT_FLOAT16, TOPK_RADIX_B16_SIZE},
+        {ge::DT_INT8, TOPK_RADIX_B8_SIZE},   {ge::DT_UINT8, TOPK_RADIX_B8_SIZE},
+        {ge::DT_INT16, TOPK_RADIX_B16_SIZE}, {ge::DT_UINT16, TOPK_RADIX_B16_SIZE},
+        {ge::DT_INT32, TOPK_RADIX_B32_SIZE}, {ge::DT_UINT32, TOPK_RADIX_B32_SIZE},
+        {ge::DT_INT64, TOPK_RADIX_B64_SIZE}, {ge::DT_UINT64, TOPK_RADIX_B64_SIZE},
+        {ge::DT_FLOAT, TOPK_RADIX_B32_SIZE}, {ge::DT_FLOAT16, TOPK_RADIX_B16_SIZE},
         {ge::DT_BF16, TOPK_RADIX_B16_SIZE},
     };
-    std::set<ge::DataType> twiddleTypes = {
-        ge::DT_INT8, ge::DT_INT16, ge::DT_INT32, ge::DT_INT64, ge::DT_FLOAT, ge::DT_FLOAT16, ge::DT_BF16};
+    std::set<ge::DataType> twiddleTypes = {ge::DT_INT8,  ge::DT_INT16,   ge::DT_INT32, ge::DT_INT64,
+                                           ge::DT_FLOAT, ge::DT_FLOAT16, ge::DT_BF16};
 
     auto typeSizeData = supportTypes.find(dataType);
     ASCENDC_HOST_ASSERT(
@@ -552,7 +563,7 @@ bool GetTopKMaxMinTmpSize(const int32_t inner, const int32_t outter, const int32
     uint32_t minSortMem = 0;
     uint32_t maxSortMem = 0;
     if (config.sorted) {
-        std::vector<int64_t> shapeDims = { 1, k };
+        std::vector<int64_t> shapeDims = {1, k};
         auto srcShape = ge::Shape(shapeDims);
         auto indexType = ge::DT_INT32;
         SortConfig sortConfig;
@@ -567,28 +578,30 @@ bool GetTopKMaxMinTmpSize(const int32_t inner, const int32_t outter, const int32
     return true;
 }
 
-bool TopKTilingFunc(const platform_ascendc::PlatformAscendC &ascendcPlatform, const int32_t inner, const int32_t outter,
+bool TopKTilingFunc(
+    const platform_ascendc::PlatformAscendC& ascendcPlatform, const int32_t inner, const int32_t outter,
     const int32_t k, const uint32_t dataTypeSize, const bool isInitIndex, enum TopKMode mode, const bool isLargest,
-    optiling::TopkTiling &topKTiling)
+    optiling::TopkTiling& topKTiling)
 {
     CheckTopKHostCommon("TopK", "TopKTilingFunc", ascendcPlatform, inner, outter, isInitIndex, mode, dataTypeSize);
-    ASCENDC_HOST_ASSERT(k >= 1 && k <= inner, continue, 
-        "[TopK][TopKTilingFunc] The range of value k is [1, %d]!", inner);
+    ASCENDC_HOST_ASSERT(
+        k >= 1 && k <= inner, continue, "[TopK][TopKTilingFunc] The range of value k is [1, %d]!", inner);
     const auto npuArch = ascendcPlatform.GetCurNpuArch();
     return TopKTilingFunc(inner, outter, k, dataTypeSize, isInitIndex, mode, topKTiling, isLargest, npuArch);
 }
 
-bool TopKTilingFunc(const platform_ascendc::PlatformAscendC &ascendcPlatform, const int32_t inner, const int32_t outter,
+bool TopKTilingFunc(
+    const platform_ascendc::PlatformAscendC& ascendcPlatform, const int32_t inner, const int32_t outter,
     const int32_t k, const uint32_t dataTypeSize, const bool isInitIndex, enum TopKMode mode, const bool isLargest,
-    AscendC::tiling::TopkTiling &topKTiling)
+    AscendC::tiling::TopkTiling& topKTiling)
 {
     CheckTopKHostCommon("TopK", "TopKTilingFunc", ascendcPlatform, inner, outter, isInitIndex, mode, dataTypeSize);
-    ASCENDC_HOST_ASSERT(k >= 1 && k <= inner, continue, 
-        "[TopK][TopKTilingFunc] The range of value k is [1, %d]!", inner);
+    ASCENDC_HOST_ASSERT(
+        k >= 1 && k <= inner, continue, "[TopK][TopKTilingFunc] The range of value k is [1, %d]!", inner);
     const auto npuArch = ascendcPlatform.GetCurNpuArch();
     optiling::TopkTiling tilingData;
     bool ret = TopKTilingFunc(inner, outter, k, dataTypeSize, isInitIndex, mode, tilingData, isLargest, npuArch);
     tilingData.SaveToBuffer(&topKTiling, sizeof(TopkTiling));
     return ret;
 }
-}  // namespace AscendC
+} // namespace AscendC

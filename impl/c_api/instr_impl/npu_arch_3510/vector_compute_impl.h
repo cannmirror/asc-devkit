@@ -926,7 +926,7 @@ __simd_callee__ inline void asc_float2half_ro_sat_v2(vector_half& dst, vector_fl
 // ==========asc_uint322int16==========
 __simd_callee__ inline void asc_uint322int16(vector_int16_t& dst, vector_uint32_t src, vector_bool mask)
 {
-    asc_uint322int16_sat_impl(dst, src, mask);
+    asc_uint322int16_impl(dst, src, mask);
 }
 
 __simd_callee__ inline void asc_uint322int16_sat(vector_int16_t& dst, vector_uint32_t src, vector_bool mask)
@@ -936,12 +936,12 @@ __simd_callee__ inline void asc_uint322int16_sat(vector_int16_t& dst, vector_uin
 
 __simd_callee__ inline void asc_uint322int16_v2(vector_int16_t& dst, vector_uint32_t src, vector_bool mask)
 {
-    asc_uint322int16_sat_impl(dst, src, mask);
+    asc_uint322int16_v2_impl(dst, src, mask);
 }
 
 __simd_callee__ inline void asc_uint322int16_sat_v2(vector_int16_t& dst, vector_uint32_t src, vector_bool mask)
 {
-    asc_uint322int16_sat_impl(dst, src, mask);
+    asc_uint322int16_sat_v2_impl(dst, src, mask);
 }
 
 // ==========asc_half2bfloat16==========
@@ -2781,7 +2781,7 @@ __simd_callee__ inline void asc_uint162uint32(vector_uint32_t& dst, vector_uint1
 
 __simd_callee__ inline void asc_uint162uint32_v2(vector_uint32_t& dst, vector_uint16_t src, vector_bool mask)
 {
-    asc_uint162uint32_impl(dst, src, mask);
+    asc_uint162uint32_v2_impl(dst, src, mask);
 }
 
 // ==========asc_hif82float==========
@@ -5170,37 +5170,29 @@ __aicore__ inline void asc_transpose_sync(__ubuf__ uint16_t* dst, __ubuf__ uint1
     asc_transpose_sync_impl(dst, src);
 }
 
-// ==========asc_transto5hd==========
-__aicore__ inline void asc_transto5hd_b8(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride, bool dst_high_half, bool src_high_half)
-{
-    asc_transto5hd_b8_impl(dst, src, repeat, dst_stride, src_stride, dst_high_half, src_high_half);
-}
+// __aicore__ inline void asc_transto5hd_b8(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride, bool dst_high_half, bool src_high_half)
+#define asc_transto5hd_b8(dst, src, repeat, dst_stride, src_stride, dst_high_half, src_high_half)                      \
+    asc_transto5hd_b8_impl((dst), (src), (repeat), (dst_stride), (src_stride), (dst_high_half), (src_high_half))
 
-__aicore__ inline void asc_transto5hd_b8_sync(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride, bool dst_high_half, bool src_high_half)
-{
-    asc_transto5hd_b8_sync_impl(dst, src, repeat, dst_stride, src_stride, dst_high_half, src_high_half);
-}
+// __aicore__ inline void asc_transto5hd_b8_sync(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride, bool dst_high_half, bool src_high_half)
+#define asc_transto5hd_b8_sync(dst, src, repeat, dst_stride, src_stride, dst_high_half, src_high_half)                 \
+    asc_transto5hd_b8_sync_impl((dst), (src), (repeat), (dst_stride), (src_stride), (dst_high_half), (src_high_half))
 
-__aicore__ inline void asc_transto5hd_b16(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride)
-{
-    asc_transto5hd_b16_impl(dst, src, repeat, dst_stride, src_stride);
-}
+// __aicore__ inline void asc_transto5hd_b16(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride)
+#define asc_transto5hd_b16(dst, src, repeat, dst_stride, src_stride)                                                   \
+    asc_transto5hd_b16_impl((dst), (src), (repeat), (dst_stride), (src_stride))
 
-__aicore__ inline void asc_transto5hd_b16_sync(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride)
-{
-    asc_transto5hd_b16_sync_impl(dst, src, repeat, dst_stride, src_stride);
-}
+// __aicore__ inline void asc_transto5hd_b16_sync(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride)
+#define asc_transto5hd_b16_sync(dst, src, repeat, dst_stride, src_stride)                                              \
+    asc_transto5hd_b16_sync_impl((dst), (src), (repeat), (dst_stride), (src_stride))
 
-__aicore__ inline void asc_transto5hd_b32(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride)
-{
-    asc_transto5hd_b32_impl(dst, src, repeat, dst_stride, src_stride);
-}
+// __aicore__ inline void asc_transto5hd_b32(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride)
+#define asc_transto5hd_b32(dst, src, repeat, dst_stride, src_stride)                                                   \
+    asc_transto5hd_b32_impl((dst), (src), (repeat), (dst_stride), (src_stride))
 
-__aicore__ inline void asc_transto5hd_b32_sync(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride)
-{
-    asc_transto5hd_b32_sync_impl(dst, src, repeat, dst_stride, src_stride);
-}
-
+// __aicore__ inline void asc_transto5hd_b32_sync(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride)
+#define asc_transto5hd_b32_sync(dst, src, repeat, dst_stride, src_stride)                                              \
+    asc_transto5hd_b32_sync_impl((dst), (src), (repeat), (dst_stride), (src_stride))
 
 // ===================asc_set_va_reg=====================
 __aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ int8_t** src_array)

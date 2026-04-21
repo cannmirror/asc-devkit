@@ -1,19 +1,20 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file matmul_impl.h
  * \brief
  */
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/matmul_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/matmul_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_MATMUL_IMPL_H__
 #endif
@@ -26,11 +27,13 @@
 namespace AscendC {
 
 // Match Policy with CallBack parameter
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
-class MatmulImpl<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY, enable_if_t<A_TYPE::layout == LayoutMode::NONE && !isMxMatmul<A_TYPE, B_TYPE>>>
-    : public MatmulImplBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>
-{
+class MatmulImpl<
+    A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY,
+    enable_if_t<A_TYPE::layout == LayoutMode::NONE && !isMxMatmul<A_TYPE, B_TYPE>>>
+    : public MatmulImplBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY> {
 private:
     using SrcT = typename A_TYPE::T;
     using DstT = typename C_TYPE::T;
@@ -40,6 +43,7 @@ private:
     MATMUL_USE_MODULE(MatmulAntiQuantProcessor);
     MATMUL_USE_MODULE(MatmulSubBlockInfo);
     MATMUL_USE_MODULE(QtableProcessor);
+
 public:
     using BASE_MODULE = MatmulImplBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>;
     __aicore__ inline MatmulImpl() {}
@@ -49,8 +53,8 @@ public:
         MATMUL_MODULE(MatmulAntiQuantProcessor)->SetAntiQuantScalar(offsetScalar, scaleScalar);
     }
 
-    __aicore__ inline void SetAntiQuantVector(const LocalTensor<SrcT> &offsetTensor,
-        const LocalTensor<SrcT> &scaleTensor)
+    __aicore__ inline void SetAntiQuantVector(
+        const LocalTensor<SrcT>& offsetTensor, const LocalTensor<SrcT>& scaleTensor)
     {
         MATMUL_MODULE(MatmulAntiQuantProcessor)->SetAntiQuantVector(offsetTensor, scaleTensor);
     }
@@ -58,10 +62,13 @@ public:
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
     // v100, v200
     template <bool sync = true>
-    __aicore__ inline void IterateAll(const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0,
-        bool enSequentialWrite = false, bool waitIterateAll = false, bool fakeMsg = false)
+    __aicore__ inline void IterateAll(
+        const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0, bool enSequentialWrite = false, bool waitIterateAll = false,
+        bool fakeMsg = false)
     {
-        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), {
+            KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput.");
+        });
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         GlobalTensor<uint64_t> global;
         global.SetGlobalBuffer((__gm__ uint64_t*)0);
@@ -89,7 +96,9 @@ public:
     template <bool sync = true>
     __aicore__ inline void IterateAll(const LocalTensor<DstT>& ubCmatrix, uint8_t enAtomic = 0)
     {
-        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), {
+            KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput.");
+        });
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         GlobalTensor<uint64_t> global;
         global.SetGlobalBuffer((__gm__ uint64_t*)0);
@@ -106,11 +115,14 @@ public:
 #else
     // v220
     template <bool sync = true>
-    __aicore__ inline void IterateAll(const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0,
-        bool enSequentialWrite = false, bool waitIterateAll = false, bool fakeMsg = false)
+    __aicore__ inline void IterateAll(
+        const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0, bool enSequentialWrite = false, bool waitIterateAll = false,
+        bool fakeMsg = false)
     {
-        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
-        if constexpr(BASE_MODULE::POLICY::POLICY_TYPE == PolicyType::MATMUL_NBUFFER_33) {
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), {
+            KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput.");
+        });
+        if constexpr (BASE_MODULE::POLICY::POLICY_TYPE == PolicyType::MATMUL_NBUFFER_33) {
             static_assert(DoMatmulMDL(MM_CFG), "NBuffer33MatmulPolicy only support MDL config.");
             MATMUL_MODULE(Scheduler)->Schedule(gm, enAtomic, enSequentialWrite);
         } else {
@@ -129,8 +141,10 @@ public:
     template <bool sync = true>
     __aicore__ inline void IterateAll(const LocalTensor<DstT>& ubCmatrix, uint8_t enAtomic = 0)
     {
-        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
-        if constexpr(BASE_MODULE::POLICY::POLICY_TYPE == PolicyType::MATMUL_NBUFFER_33) {
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), {
+            KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput.");
+        });
+        if constexpr (BASE_MODULE::POLICY::POLICY_TYPE == PolicyType::MATMUL_NBUFFER_33) {
             static_assert(DoMatmulMDL(MM_CFG), "NBuffer33MatmulPolicy only support MDL config.");
             MATMUL_MODULE(Scheduler)->Schedule(ubCmatrix, enAtomic);
         } else {
@@ -155,7 +169,8 @@ public:
         WaitFlag<HardEvent::FIX_MTE2>(eventIDFixToMte2);
     }
 
-    __aicore__ inline void SetLookupTable(const GlobalTensor<uint64_t>& qtableTensor) {
+    __aicore__ inline void SetLookupTable(const GlobalTensor<uint64_t>& qtableTensor)
+    {
         MATMUL_MODULE(QtableProcessor)->SetLookupTable(qtableTensor);
     }
 

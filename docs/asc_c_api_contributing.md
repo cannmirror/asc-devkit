@@ -402,9 +402,9 @@ ASCENDC_ASSERT(count <= ASC_CAPI_MAX_COUNT,
 
 // 条件编译
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
-    // NPU ARCH 220X架构特定代码
+    // NPU ARCH 2201架构特定代码
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
-    // NPU ARCH 310X架构特定代码
+    // NPU ARCH 3510架构特定代码
 #endif
 
 #endif

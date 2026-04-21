@@ -231,7 +231,7 @@ __aicore__ inline void LoadDataImpl(const LocalTensor<T>& dst, const LocalTensor
 }
 
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 template <typename T, const IsResetLoad3dConfig &defaultConfig = IS_RESER_LOAD3D_DEFAULT_CONFIG,
     typename U = PrimT<T>, typename std::enable_if<IsSameType<PrimT<T>, U>::value, bool>::type = true>
 __aicore__ inline void LoadDataWithStrideImpl(const LocalTensor<T>& dst, const LocalTensor<T>& src,
@@ -438,11 +438,8 @@ template <typename T, typename U, typename S>
 __aicore__ inline void MmadImpl(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
     const LocalTensor<S>& filter, const MmadParams& mmadParams)
 {
-#if ASCENDC_CPU_DEBUG
-    if (!CheckMmadParams(dst, fm, filter, mmadParams, "Mmad")) {
-        ASCENDC_REPORT_CHECK_ERROR("Mmad", KernelFuncType::NONE_MODE);
-    }
-    CheckMmadAlign(dst, fm, filter);
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    CheckMmadTensorCommon(dst, fm, filter, mmadParams, "Mmad");
 #endif
     MmadCal((__cc__ PrimT<T>*)dst.GetPhyAddr(), (__ca__ PrimT<U>*)fm.GetPhyAddr(),
         (__cb__ PrimT<S>*)filter.GetPhyAddr(), mmadParams);
@@ -452,22 +449,8 @@ template <typename T, typename U, typename S, typename V>
 __aicore__ inline void MmadImpl(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
     const LocalTensor<S>& filter, const LocalTensor<V>& bias, const MmadParams& mmadParams)
 {
-#if ASCENDC_CPU_DEBUG
-    if (!CheckMmadParams(dst, fm, filter, bias, mmadParams, "Mmad with bias")) {
-        ASCENDC_REPORT_CHECK_ERROR("Mmad with bias", KernelFuncType::NONE_MODE);
-    }
-    CheckMmadAlign(dst, fm, filter);
-    CheckTensorAlign<V>(bias, 128, "bias", "Mmad");
-#if __NPU_ARCH__ == 2201
-    ASCENDC_ASSERT((SupportType<Tuple<PrimT<T>, PrimT<U>, PrimT<S>, PrimT<V>>,
-        Tuple<int32_t, int8_t, int8_t, int32_t>,
-        Tuple<float, half, half, float>, Tuple<float, float, float, float>,
-        Tuple<float, bfloat16_t, bfloat16_t, float>>()),
-        {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Mmad, current api support dtype combination is "
-        "Dst: int32_t, src0: int8_t, src1: int8_t, Bias: int32_t; Dst: float, src0: half, src1: half, Bias: float; "
-        "Dst: float, src0: float, src1: float, Bias: float; "
-        "Dst: float, src0: bfloat16_t, src1: bfloat16_t, Bias: float");});
-#endif
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    CheckMmadTensorCommon(dst, fm, filter, bias, mmadParams, "Mmad with bias");
 #endif
     const Hardware biasScope = GetPhyType((TPosition)bias.GetPosition());
     bool cmatrixSource = false;
@@ -718,7 +701,7 @@ __aicore__ inline void SetLoadDataRepeatImpl(const LoadDataRepeatParam& repeatPa
     SetLoadDataRepeatCal(repeatParams);
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 __aicore__ inline void SetLoadDataRepeatWithStrideImpl(const LoadDataRepeatParamWithStride& repeatParams)
 {
     SetLoadDataRepeatWithStrideCal(repeatParams);

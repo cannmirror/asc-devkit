@@ -168,7 +168,7 @@ CopyAtom<CopyTraits<CopyL0C2GM, FixpipeTraitDefault>>{}.Call(globalC, l0CTensor)
 auto atomCopyL0C2GM = MakeCopy(CopyL0C2GM{}, FixpipeTraitDefault{});
 atomCopyL0C2GM.Call(globalC, l0CTensor);
 
-// 带坐标场景传参调用示例, 其中row和col为期望搬运到目标输出GM上的偏移坐标
+// 带坐标场景传参调用示例，其中row和col为期望搬运到目标输出GM上的偏移坐标
 Copy(CopyAtom<CopyTraits<CopyL0C2GM, FixpipeTraitDefault>>{}, globalC, l0CTensor, MakeCoord(row, col));
 
 // 运行时参数调用示例，其中FixpipeParams中unitFlag值传参为3

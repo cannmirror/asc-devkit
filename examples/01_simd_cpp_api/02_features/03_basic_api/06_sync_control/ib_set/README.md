@@ -20,7 +20,6 @@
 
 ## 算子描述
 - 算子功能：  
-
   当不同核之间操作同一块全局内存且可能存在读后写、写后读以及写后写等数据依赖问题时，通过调用该函数来插入同步语句来避免上述数据依赖时可能出现的数据读写错误问题。调用IBSet设置某一个核的标志位，与IBWait成对出现配合使用，表示核之间的同步等待指令，等待某一个核操作完成。
 - 算子规格：  
   <table>  
@@ -35,8 +34,7 @@
 
 - 算子实现：  
 
-  - kernel实现   
-
+  - kernel实现  
     本算子的Process中为两个核分别调用IBSet核IBWait以便操作同一块全局内存时实现同步，避免数据依赖。Process还包括以下3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务中如果当前blockIdx == 0，那么将Global Memory中输入Tensor xGm和yGm的数据分别搬入到xLocal和yLocal中；如果当前blockIdx == 1，那么将Global Memory中输入Tensor zGm和yGm的数据分别搬入到xLocal和yLocal中。Compute任务负责对xLocal、yLocal执行加法操作，计算结果存储在zLocal中。CopyOut任务负责将输出数据从zLocal搬运至Global Memory上的输出Tensor zGm中。
 
   - 调用实现  

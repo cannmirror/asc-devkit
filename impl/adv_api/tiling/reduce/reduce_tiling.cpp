@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #include "include/adv_api/reduce/reduce_tiling.h"
 #include "tiling/platform/platform_ascendc.h"
@@ -39,7 +39,8 @@ uint32_t GetTypeSize(const ge::DataType dataType)
     return 1;
 }
 // Find the most closest power of two results.
-uint32_t FindK(uint32_t n) {
+uint32_t FindK(uint32_t n)
+{
     uint32_t ret = 1U;
     while (n > 1U) {
         ret <<= 1U;
@@ -48,33 +49,38 @@ uint32_t FindK(uint32_t n) {
     return ret;
 }
 
-inline void CheckParams(std::vector<int64_t> shapeDims, bool isSrcInnerPad, ReducePattern pattern,
-    uint32_t first, uint32_t last, std::string apiName, std::string funcName)
+inline void CheckParams(
+    std::vector<int64_t> shapeDims, bool isSrcInnerPad, ReducePattern pattern, uint32_t first, uint32_t last,
+    std::string apiName, std::string funcName)
 {
     platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
     ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
     const auto npuArch = platform->GetCurNpuArch();
 
-    ASCENDC_HOST_ASSERT(shapeDims.size() == ALLOWED_SHAPE_DIM, return,
-        "[%s][%s] srcShape dims must be 2.", apiName.c_str(), funcName.c_str());
-    if (!((apiName == "ReduceMin" || apiName == "ReduceMax" || apiName == "ReduceSum") && 
-        (npuArch == NpuArch::DAV_3510))) {
-        ASCENDC_HOST_ASSERT(isSrcInnerPad, return,
-            "[%s][%s] isSrcInnerPad must be true on this platform.", apiName.c_str(), funcName.c_str());
+    ASCENDC_HOST_ASSERT(
+        shapeDims.size() == ALLOWED_SHAPE_DIM, return, "[%s][%s] srcShape dims must be 2.", apiName.c_str(),
+        funcName.c_str());
+    if (!((apiName == "ReduceMin" || apiName == "ReduceMax" || apiName == "ReduceSum") &&
+          (npuArch == NpuArch::DAV_3510))) {
+        ASCENDC_HOST_ASSERT(
+            isSrcInnerPad, return, "[%s][%s] isSrcInnerPad must be true on this platform.", apiName.c_str(),
+            funcName.c_str());
     }
-    ASCENDC_HOST_ASSERT(pattern == ReducePattern::AR || pattern == ReducePattern::RA,
-        return,
+    ASCENDC_HOST_ASSERT(
+        pattern == ReducePattern::AR || pattern == ReducePattern::RA, return,
         "[%s][%s] Currently only support AR and RA pattern.", apiName.c_str(), funcName.c_str());
     if (!(npuArch == NpuArch::DAV_3510)) {
-        ASCENDC_HOST_ASSERT(first > 0 && last > 0, return,
-        "[%s][%s] both first and last axis must be greater than 0.", apiName.c_str(), funcName.c_str());
+        ASCENDC_HOST_ASSERT(
+            first > 0 && last > 0, return, "[%s][%s] both first and last axis must be greater than 0.", apiName.c_str(),
+            funcName.c_str());
     }
 }
 } // namespace
 
-inline void GetReduceCommonMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
-    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue, bool isBinaryAdd,
-    std::string apiName, std::string funcName)
+inline void GetReduceCommonMaxMinTmpSize(
+    const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern, bool isSrcInnerPad,
+    bool isReuseSource, uint32_t& maxValue, uint32_t& minValue, bool isBinaryAdd, std::string apiName,
+    std::string funcName)
 {
     std::vector<int64_t> shapeDims = srcShape.GetDims();
 
@@ -112,8 +118,9 @@ inline void GetReduceCommonMaxMinTmpSize(const ge::Shape& srcShape, const ge::Da
     maxValue = minValue = k * ((last * GetTypeSize(dataType) + ONE_BLK_SIZE - 1u) / ONE_BLK_SIZE * ONE_BLK_SIZE);
 }
 
-inline void GetReduceSumMeanCommonTmpSize(const ge::Shape& srcShape, ReducePattern pattern, bool isSrcInnerPad,
-    bool isReuseSource, uint32_t& maxValue, uint32_t& minValue, std::string apiName, std::string funcName)
+inline void GetReduceSumMeanCommonTmpSize(
+    const ge::Shape& srcShape, ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue,
+    uint32_t& minValue, std::string apiName, std::string funcName)
 {
     std::vector<int64_t> shapeDims = srcShape.GetDims();
     const uint32_t first = static_cast<uint32_t>(shapeDims[0]);
@@ -145,8 +152,9 @@ inline void GetReduceSumMeanCommonTmpSize(const ge::Shape& srcShape, ReducePatte
     return;
 }
 
-inline void GetReduceAnyAllCommonTmpSize(const ge::Shape& srcShape, ReducePattern pattern, bool isSrcInnerPad,
-    bool isReuseSource, uint32_t& maxValue, uint32_t& minValue, std::string apiName, std::string funcName)
+inline void GetReduceAnyAllCommonTmpSize(
+    const ge::Shape& srcShape, ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue,
+    uint32_t& minValue, std::string apiName, std::string funcName)
 {
     std::vector<int64_t> shapeDims = srcShape.GetDims();
     const uint32_t first = static_cast<uint32_t>(shapeDims[0]);
@@ -170,10 +178,12 @@ inline void GetReduceAnyAllCommonTmpSize(const ge::Shape& srcShape, ReducePatter
     return;
 }
 
-void GetReduceProdMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
-    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
+void GetReduceProdMaxMinTmpSize(
+    const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern, bool isSrcInnerPad,
+    bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
-    ASCENDC_HOST_ASSERT(dataType == ge::DT_FLOAT, return,
+    ASCENDC_HOST_ASSERT(
+        dataType == ge::DT_FLOAT, return,
         "[ReduceProd][GetReduceProdMaxMinTmpSize] it only supports float type on this platform.");
     std::vector<int64_t> shapeDims = srcShape.GetDims();
     const uint32_t first = static_cast<uint32_t>(shapeDims[0]);
@@ -201,108 +211,126 @@ void GetReduceProdMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType da
     maxValue = minValue = k * ((last * GetTypeSize(dataType) + ONE_BLK_SIZE - 1u) / ONE_BLK_SIZE * ONE_BLK_SIZE);
 }
 
-void GetReduceMaxMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
-    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
+void GetReduceMaxMaxMinTmpSize(
+    const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern, bool isSrcInnerPad,
+    bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
     platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
     ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
     const auto npuArch = platform->GetCurNpuArch();
     if (npuArch == NpuArch::DAV_3510) {
-        ASCENDC_HOST_ASSERT(dataType == ge::DT_INT8 || dataType == ge::DT_UINT8 || dataType == ge::DT_INT16 ||
-                            dataType == ge::DT_UINT16 || dataType == ge::DT_FLOAT16 || dataType == ge::DT_BF16 ||
-                            dataType == ge::DT_INT32 || dataType == ge::DT_UINT32 || dataType == ge::DT_FLOAT ||
-                            dataType == ge::DT_INT64 || dataType == ge::DT_UINT64,
-            return,
-            "[ReduceMax][GetReduceMaxMaxMinTmpSize] it only supports \
+        ASCENDC_HOST_ASSERT(
+            dataType == ge::DT_INT8 || dataType == ge::DT_UINT8 || dataType == ge::DT_INT16 ||
+                dataType == ge::DT_UINT16 || dataType == ge::DT_FLOAT16 || dataType == ge::DT_BF16 ||
+                dataType == ge::DT_INT32 || dataType == ge::DT_UINT32 || dataType == ge::DT_FLOAT ||
+                dataType == ge::DT_INT64 || dataType == ge::DT_UINT64,
+            return, "[ReduceMax][GetReduceMaxMaxMinTmpSize] it only supports \
                 int8_t/uint8_t/int16_t/uint16_t/half/bfloat16_t/int32_t/uint32_t/float/int64_t/uint64_t \
                 type on this platform.");
     } else {
-        ASCENDC_HOST_ASSERT(dataType == ge::DT_FLOAT || dataType == ge::DT_FLOAT16,
-            return,
+        ASCENDC_HOST_ASSERT(
+            dataType == ge::DT_FLOAT || dataType == ge::DT_FLOAT16, return,
             "[ReduceMax][GetReduceMaxMaxMinTmpSize] it only supports float and half type on this platform.");
     }
-    GetReduceCommonMaxMinTmpSize(srcShape, dataType, pattern, isSrcInnerPad, isReuseSource, maxValue, minValue, false,
-        "ReduceMax", "GetReduceMaxMaxMinTmpSize");
+    GetReduceCommonMaxMinTmpSize(
+        srcShape, dataType, pattern, isSrcInnerPad, isReuseSource, maxValue, minValue, false, "ReduceMax",
+        "GetReduceMaxMaxMinTmpSize");
 }
 
-void GetReduceMinMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
-    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
+void GetReduceMinMaxMinTmpSize(
+    const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern, bool isSrcInnerPad,
+    bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
     platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
     ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
     const auto npuArch = platform->GetCurNpuArch();
     if (npuArch == NpuArch::DAV_3510) {
-        ASCENDC_HOST_ASSERT(dataType == ge::DT_INT8 || dataType == ge::DT_UINT8 || dataType == ge::DT_INT16 ||
-                            dataType == ge::DT_UINT16 || dataType == ge::DT_FLOAT16 || dataType == ge::DT_BF16 ||
-                            dataType == ge::DT_INT32 || dataType == ge::DT_UINT32 || dataType == ge::DT_FLOAT ||
-                            dataType == ge::DT_INT64 || dataType == ge::DT_UINT64,
-            return,
-            "[ReduceMin][GetReduceMinMaxMinTmpSize] it only supports \
+        ASCENDC_HOST_ASSERT(
+            dataType == ge::DT_INT8 || dataType == ge::DT_UINT8 || dataType == ge::DT_INT16 ||
+                dataType == ge::DT_UINT16 || dataType == ge::DT_FLOAT16 || dataType == ge::DT_BF16 ||
+                dataType == ge::DT_INT32 || dataType == ge::DT_UINT32 || dataType == ge::DT_FLOAT ||
+                dataType == ge::DT_INT64 || dataType == ge::DT_UINT64,
+            return, "[ReduceMin][GetReduceMinMaxMinTmpSize] it only supports \
                 int8_t/uint8_t/int16_t/uint16_t/half/bfloat16_t/int32_t/uint32_t/float/int64_t/uint64_t \
                 type on this platform.");
     } else {
-        ASCENDC_HOST_ASSERT(dataType == ge::DT_FLOAT || dataType == ge::DT_FLOAT16,
-            return,
+        ASCENDC_HOST_ASSERT(
+            dataType == ge::DT_FLOAT || dataType == ge::DT_FLOAT16, return,
             "[ReduceMin][GetReduceMinMaxMinTmpSize] it only supports float and half type on this platform.");
     }
-    GetReduceCommonMaxMinTmpSize(srcShape, dataType, pattern, isSrcInnerPad, isReuseSource, maxValue, minValue, false,
-        "ReduceMin", "GetReduceMinMaxMinTmpSize");
+    GetReduceCommonMaxMinTmpSize(
+        srcShape, dataType, pattern, isSrcInnerPad, isReuseSource, maxValue, minValue, false, "ReduceMin",
+        "GetReduceMinMaxMinTmpSize");
 }
 
-void GetReduceAnyMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
-    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
+void GetReduceAnyMaxMinTmpSize(
+    const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern, bool isSrcInnerPad,
+    bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
-    ASCENDC_HOST_ASSERT(dataType == ge::DT_FLOAT || dataType == ge::DT_UINT8,
-        return,
+    ASCENDC_HOST_ASSERT(
+        dataType == ge::DT_FLOAT || dataType == ge::DT_UINT8, return,
         "[ReduceAny][GetReduceAnyMaxMinTmpSize] it only supports float and uint8_t type on this platform.");
     if (dataType == ge::DT_UINT8) {
-        GetReduceAnyAllCommonTmpSize(srcShape, pattern, isSrcInnerPad, isReuseSource, maxValue, minValue,
-            "ReduceAny", "GetReduceAnyMaxMinTmpSize");
+        GetReduceAnyAllCommonTmpSize(
+            srcShape, pattern, isSrcInnerPad, isReuseSource, maxValue, minValue, "ReduceAny",
+            "GetReduceAnyMaxMinTmpSize");
     } else {
-        GetReduceCommonMaxMinTmpSize(srcShape, dataType, pattern, isSrcInnerPad, isReuseSource, maxValue, minValue,
-            false, "ReduceAny", "GetReduceAnyMaxMinTmpSize");
+        GetReduceCommonMaxMinTmpSize(
+            srcShape, dataType, pattern, isSrcInnerPad, isReuseSource, maxValue, minValue, false, "ReduceAny",
+            "GetReduceAnyMaxMinTmpSize");
     }
 }
 
-void GetReduceAllMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
-    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
+void GetReduceAllMaxMinTmpSize(
+    const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern, bool isSrcInnerPad,
+    bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
-    ASCENDC_HOST_ASSERT((dataType == ge::DT_FLOAT || dataType == ge::DT_UINT8), return,
+    ASCENDC_HOST_ASSERT(
+        (dataType == ge::DT_FLOAT || dataType == ge::DT_UINT8), return,
         "[ReduceAll][GetReduceAllMaxMinTmpSize] it only supports float and uint8 type on this platform.");
     if (dataType == ge::DT_UINT8) {
-        GetReduceAnyAllCommonTmpSize(srcShape, pattern, isSrcInnerPad, isReuseSource, maxValue, minValue,
-            "ReduceAll", "GetReduceAllMaxMinTmpSize");
+        GetReduceAnyAllCommonTmpSize(
+            srcShape, pattern, isSrcInnerPad, isReuseSource, maxValue, minValue, "ReduceAll",
+            "GetReduceAllMaxMinTmpSize");
     } else {
-        GetReduceCommonMaxMinTmpSize(srcShape, dataType, pattern, isSrcInnerPad, isReuseSource, maxValue, minValue,
-            false, "ReduceAll", "GetReduceAllMaxMinTmpSize");
+        GetReduceCommonMaxMinTmpSize(
+            srcShape, dataType, pattern, isSrcInnerPad, isReuseSource, maxValue, minValue, false, "ReduceAll",
+            "GetReduceAllMaxMinTmpSize");
     }
 }
 
-void GetReduceSumMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
-    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
+void GetReduceSumMaxMinTmpSize(
+    const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern, bool isSrcInnerPad,
+    bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
     platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
     ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
     const auto npuArch = platform->GetCurNpuArch();
     if (npuArch == NpuArch::DAV_3510) {
-        ASCENDC_HOST_ASSERT(dataType == ge::DT_INT32 || dataType == ge::DT_UINT32 || dataType == ge::DT_FLOAT ||
-                            dataType == ge::DT_INT64 || dataType == ge::DT_UINT64,
+        ASCENDC_HOST_ASSERT(
+            dataType == ge::DT_INT32 || dataType == ge::DT_UINT32 || dataType == ge::DT_FLOAT ||
+                dataType == ge::DT_INT64 || dataType == ge::DT_UINT64,
             return,
-            "[ReduceSum][GetReduceSumMaxMinTmpSize] it only supports int32_t/uint32_t/float/int64_t/uint64_t type on this platform.");
+            "[ReduceSum][GetReduceSumMaxMinTmpSize] it only supports int32_t/uint32_t/float/int64_t/uint64_t type on "
+            "this platform.");
     } else {
-        ASCENDC_HOST_ASSERT(dataType == ge::DT_FLOAT, return,
+        ASCENDC_HOST_ASSERT(
+            dataType == ge::DT_FLOAT, return,
             "[ReduceSum][GetReduceSumMaxMinTmpSize] it only supports float type on this platform.");
     }
-    GetReduceSumMeanCommonTmpSize(srcShape, pattern, isSrcInnerPad, isReuseSource, maxValue, minValue,
-        "ReduceSum", "GetReduceSumMaxMinTmpSize");
+    GetReduceSumMeanCommonTmpSize(
+        srcShape, pattern, isSrcInnerPad, isReuseSource, maxValue, minValue, "ReduceSum", "GetReduceSumMaxMinTmpSize");
 }
 
-void GetReduceMeanMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
-    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
+void GetReduceMeanMaxMinTmpSize(
+    const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern, bool isSrcInnerPad,
+    bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
-    ASCENDC_HOST_ASSERT(dataType == ge::DT_FLOAT, return,
+    ASCENDC_HOST_ASSERT(
+        dataType == ge::DT_FLOAT, return,
         "[ReduceMean][GetReduceMeanMaxMinTmpSize] it only supports float type on this platform.");
-    GetReduceSumMeanCommonTmpSize(srcShape, pattern, isSrcInnerPad, isReuseSource, maxValue, minValue,
-        "ReduceMean", "GetReduceMeanMaxMinTmpSize");
+    GetReduceSumMeanCommonTmpSize(
+        srcShape, pattern, isSrcInnerPad, isReuseSource, maxValue, minValue, "ReduceMean",
+        "GetReduceMeanMaxMinTmpSize");
 }
-}  // namespace AscendC
+} // namespace AscendC

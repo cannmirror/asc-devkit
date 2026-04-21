@@ -41,9 +41,6 @@ TEST_F(TestVectorDatamoveSetMovPadValue, asc_set_mov_pad_value_##data_type##_suc
 //===========asc_set_copy_pad_val(int8/uint8/e2m1/e1m2/e8m0/e5m2/e4m3fn/int16/uint16/half/bfloat16/int32/uint32/float)===========
 TEST_VECTOR_DATAMOVE_SET_MOV_PAD_VALUE(int8_t, 1, 0x1);
 TEST_VECTOR_DATAMOVE_SET_MOV_PAD_VALUE(uint8_t, 1, 0x1);
-TEST_VECTOR_DATAMOVE_SET_MOV_PAD_VALUE(fp8_e8m0_t, 1, 0x7f);
-TEST_VECTOR_DATAMOVE_SET_MOV_PAD_VALUE(fp8_e5m2_t, 1, 0x3c);
-TEST_VECTOR_DATAMOVE_SET_MOV_PAD_VALUE(fp8_e4m3fn_t, 1, 0x38);
 TEST_VECTOR_DATAMOVE_SET_MOV_PAD_VALUE(int16_t, 1, 0x1);
 TEST_VECTOR_DATAMOVE_SET_MOV_PAD_VALUE(uint16_t, 1, 0x1);
 TEST_VECTOR_DATAMOVE_SET_MOV_PAD_VALUE(half, 1, 0x3c00);

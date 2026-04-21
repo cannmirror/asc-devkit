@@ -133,14 +133,14 @@ extern int32_t g_matmulCount;
 #define ASCEND_IS_AICORE constexpr(false)
 #endif
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || \
-    ((__NPU_ARCH__ == 3113)))
 namespace AscendC {
 namespace Reg {
 } // namespace Reg
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || \
+    ((__NPU_ARCH__ == 3113)))
 namespace MicroAPI = Reg;
-} // namespace AscendC
 #endif
+} // namespace AscendC
 #endif // ASCENDC_KERNEL_MACROS_H
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_MACROS_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

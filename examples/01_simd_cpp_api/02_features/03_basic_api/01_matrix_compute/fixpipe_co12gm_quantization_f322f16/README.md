@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例介绍如何使用基础API Fixpipe将Mmad矩阵乘的结果从CO1(L0C Buffer)搬入GM(Global Memory)，使能随路量化将矩阵乘结果由float类型数据量化为half类型，并完成NZ到ND格式的转换。
+本样例介绍如何使用基础API Fixpipe将Mmad矩阵乘的结果从CO1（L0C Buffer）搬入GM（Global Memory），使能随路量化将矩阵乘结果由float类型数据量化为half类型，并完成NZ到ND格式的转换。
 
 ## 支持的产品
 
@@ -24,9 +24,8 @@
 
 ## 样例描述
 
-- 样例功能
-
-  将Mmad矩阵乘结果通过Fixpipe从CO1(L0C Buffer)搬入GM(Global Memory)，使能随路量化将float类型数据量化为half类型，并完成NZ到ND格式的转换。
+- 样例功能  
+  将Mmad矩阵乘结果通过Fixpipe从CO1（L0C Buffer）搬入GM（Global Memory），使能随路量化将float类型数据量化为half类型，并完成NZ到ND格式的转换。
 
 - 样例规格
 
@@ -39,13 +38,12 @@
   </table>
 
 - 样例实现
-  - 将数据从GM(Global Memory)搬运到L1(L1 Buffer)，并完成ND到NZ的格式转换。
-  - 调用基础API LoadData将数据从L1(L1 Buffer)搬运到A2(L0A Buffer)与B2(L0B Buffer)。
+  - 将数据从GM（Global Memory）搬运到L1（L1 Buffer），并完成ND到NZ的格式转换。
+  - 调用基础API LoadData将数据从L1（L1 Buffer）搬运到A2（L0A Buffer）与B2(L0B Buffer)。
   - 调用基础API Mmad进行矩阵乘计算。
-  - 调用基础API Fixpipe将数据从CO1(L0C Buffer)搬运到GM(Global Memory)，使能随路量化将float类型数据量化为half类型，并完成NZ到ND格式的转换。
+  - 调用基础API Fixpipe将数据从CO1（L0C Buffer）搬运到GM（Global Memory），使能随路量化将float类型数据量化为half类型，并完成NZ到ND格式的转换。
 
-- 调用实现
-
+- 调用实现  
   使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行

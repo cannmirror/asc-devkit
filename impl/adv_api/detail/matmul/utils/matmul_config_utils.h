@@ -1,20 +1,21 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
-* \file matmul_config_utils.h
-* \brief
-*/
+ * \file matmul_config_utils.h
+ * \brief
+ */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/utils/matmul_config_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/utils/matmul_config_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_UTILS_MATMUL_CONFIG_UTILS_H__
 #endif
@@ -47,8 +48,8 @@ constexpr int32_t DB_FACTOR = 1;
 constexpr int32_t DB_FACTOR = 2;
 #endif
 
-constexpr uint8_t UNIT_FLAG_CHECK = 2; 
-constexpr uint8_t UNIT_FLAG_SET = 3; 
+constexpr uint8_t UNIT_FLAG_CHECK = 2;
+constexpr uint8_t UNIT_FLAG_SET = 3;
 constexpr uint8_t ATOMIC_ADD = 1;
 constexpr uint8_t ATOMIC_MAX = 2;
 constexpr uint8_t ATOMIC_MIN = 3;
@@ -132,105 +133,57 @@ enum class MatmulMode {
     IBSHARE_NORM,    // Inner block sharing and normalization fusion optimization
 };
 
-__aicore__ constexpr bool DoMatmulNorm(MatmulConfig mmCFG)
-{
-    return mmCFG.doNorm;
-}
+__aicore__ constexpr bool DoMatmulNorm(MatmulConfig mmCFG) { return mmCFG.doNorm; }
 
-__aicore__ constexpr bool DoMatmulNorm(const MatmulApiStaticTiling &mmCFG)
-{
-    return DoMatmulNorm(mmCFG.cfg);
-}
+__aicore__ constexpr bool DoMatmulNorm(const MatmulApiStaticTiling& mmCFG) { return DoMatmulNorm(mmCFG.cfg); }
 
-__aicore__ constexpr bool DoMatmulBasicBlock(MatmulConfig mmCFG)
-{
-    return mmCFG.doBasicBlock;
-}
+__aicore__ constexpr bool DoMatmulBasicBlock(MatmulConfig mmCFG) { return mmCFG.doBasicBlock; }
 
-__aicore__ constexpr bool DoMatmulBasicBlock(const MatmulApiStaticTiling &mmCFG)
+__aicore__ constexpr bool DoMatmulBasicBlock(const MatmulApiStaticTiling& mmCFG)
 {
     return DoMatmulBasicBlock(mmCFG.cfg);
 }
 
-__aicore__ constexpr bool DoMatmulSpecialBasicBlock(MatmulConfig mmCFG)
-{
-    return mmCFG.doSpecialBasicBlock;
-}
+__aicore__ constexpr bool DoMatmulSpecialBasicBlock(MatmulConfig mmCFG) { return mmCFG.doSpecialBasicBlock; }
 
-__aicore__ constexpr bool DoMatmulSpecialBasicBlock(const MatmulApiStaticTiling &mmCFG)
+__aicore__ constexpr bool DoMatmulSpecialBasicBlock(const MatmulApiStaticTiling& mmCFG)
 {
     return DoMatmulSpecialBasicBlock(mmCFG.cfg);
 }
 
-__aicore__ constexpr bool DoMatmulMDL(MatmulConfig mmCFG)
-{
-    return mmCFG.doMultiDataLoad;
-}
+__aicore__ constexpr bool DoMatmulMDL(MatmulConfig mmCFG) { return mmCFG.doMultiDataLoad; }
 
-__aicore__ constexpr bool DoMatmulMDL(const MatmulApiStaticTiling &mmCFG)
-{
-    return DoMatmulMDL(mmCFG.cfg);
-}
+__aicore__ constexpr bool DoMatmulMDL(const MatmulApiStaticTiling& mmCFG) { return DoMatmulMDL(mmCFG.cfg); }
 
-__aicore__ constexpr bool DoMatmulIBShareNorm(MatmulConfig mmCFG)
-{
-    return mmCFG.doIBShareNorm;
-}
+__aicore__ constexpr bool DoMatmulIBShareNorm(MatmulConfig mmCFG) { return mmCFG.doIBShareNorm; }
 
-__aicore__ constexpr bool DoMatmulIBShareNorm(const MatmulApiStaticTiling &mmCFG)
+__aicore__ constexpr bool DoMatmulIBShareNorm(const MatmulApiStaticTiling& mmCFG)
 {
     return DoMatmulIBShareNorm(mmCFG.cfg);
 }
 
-__aicore__ constexpr bool DoMatmulSpecialMDL(MatmulConfig mmCFG)
-{
-    return mmCFG.doSpecialMDL;
-}
+__aicore__ constexpr bool DoMatmulSpecialMDL(MatmulConfig mmCFG) { return mmCFG.doSpecialMDL; }
 
-__aicore__ constexpr bool DoMatmulSpecialMDL(const MatmulApiStaticTiling &mmCFG)
+__aicore__ constexpr bool DoMatmulSpecialMDL(const MatmulApiStaticTiling& mmCFG)
 {
     return DoMatmulSpecialMDL(mmCFG.cfg);
 }
 
-__aicore__ constexpr bool EnUnitFlag(MatmulConfig mmCFG)
-{
-    return mmCFG.enUnitFlag;
-}
+__aicore__ constexpr bool EnUnitFlag(MatmulConfig mmCFG) { return mmCFG.enUnitFlag; }
 
-__aicore__ constexpr bool EnUnitFlag(const MatmulApiStaticTiling &mmCFG)
-{
-    return EnUnitFlag(mmCFG.cfg);
-}
+__aicore__ constexpr bool EnUnitFlag(const MatmulApiStaticTiling& mmCFG) { return EnUnitFlag(mmCFG.cfg); }
 
-__aicore__ constexpr bool IsSharedObj(MatmulConfig mmCFG)
-{
-    return !mmCFG.enableInit || mmCFG.enableMixDualMaster;
-}
+__aicore__ constexpr bool IsSharedObj(MatmulConfig mmCFG) { return !mmCFG.enableInit || mmCFG.enableMixDualMaster; }
 
-__aicore__ constexpr bool IsSharedObj(const MatmulApiStaticTiling &mmCFG)
-{
-    return IsSharedObj(mmCFG.cfg);
-}
+__aicore__ constexpr bool IsSharedObj(const MatmulApiStaticTiling& mmCFG) { return IsSharedObj(mmCFG.cfg); }
 
-__aicore__ constexpr bool IsA2B2Shared(MatmulConfig mmCFG)
-{
-    return mmCFG.isA2B2Shared;
-}
+__aicore__ constexpr bool IsA2B2Shared(MatmulConfig mmCFG) { return mmCFG.isA2B2Shared; }
 
-__aicore__ constexpr bool IsA2B2Shared(const MatmulApiStaticTiling &mmCFG)
-{
-    return IsA2B2Shared(mmCFG.cfg);
-}
+__aicore__ constexpr bool IsA2B2Shared(const MatmulApiStaticTiling& mmCFG) { return IsA2B2Shared(mmCFG.cfg); }
 
-__aicore__ inline constexpr MatmulConfig ToMatmulConfig(const MatmulConfig &cfg)
-{
-    return cfg;
-}
+__aicore__ inline constexpr MatmulConfig ToMatmulConfig(const MatmulConfig& cfg) { return cfg; }
 
-__aicore__ inline constexpr MatmulConfig ToMatmulConfig(const MatmulApiStaticTiling &cfg)
-{
-    return cfg.cfg;
-}
+__aicore__ inline constexpr MatmulConfig ToMatmulConfig(const MatmulApiStaticTiling& cfg) { return cfg.cfg; }
 
 __aicore__ constexpr MatmulMode GetMatmulMode(MatmulConfig mmCFG)
 {
@@ -246,153 +199,98 @@ __aicore__ constexpr MatmulMode GetMatmulMode(MatmulConfig mmCFG)
     return MatmulMode::NORMAL;
 }
 
-__aicore__ constexpr MatmulMode GetMatmulMode(const MatmulApiStaticTiling &mmCFG)
-{
-    return GetMatmulMode(mmCFG.cfg);
-}
+__aicore__ constexpr MatmulMode GetMatmulMode(const MatmulApiStaticTiling& mmCFG) { return GetMatmulMode(mmCFG.cfg); }
 
-__aicore__ constexpr bool IsFullStaticTiling(MatmulConfig mmCFG)
-{
-    return mmCFG.singleCoreM != 0 && mmCFG.basicM != 0;
-}
+__aicore__ constexpr bool IsFullStaticTiling(MatmulConfig mmCFG) { return mmCFG.singleCoreM != 0 && mmCFG.basicM != 0; }
 
-__aicore__ constexpr bool IsFullStaticTiling(const MatmulApiStaticTiling &mmCFG)
+__aicore__ constexpr bool IsFullStaticTiling(const MatmulApiStaticTiling& mmCFG)
 {
     return IsFullStaticTiling(mmCFG.cfg);
 }
 
-__aicore__ constexpr bool IsStaticTilingEnable(MatmulConfig mmCFG)
-{
-    return mmCFG.singleCoreM != 0;
-}
+__aicore__ constexpr bool IsStaticTilingEnable(MatmulConfig mmCFG) { return mmCFG.singleCoreM != 0; }
 
-__aicore__ constexpr bool IsStaticTilingEnable(const MatmulApiStaticTiling &mmCFG)
+__aicore__ constexpr bool IsStaticTilingEnable(const MatmulApiStaticTiling& mmCFG)
 {
     return IsStaticTilingEnable(mmCFG.cfg);
 }
 
-__aicore__ constexpr bool IsStaticPaddingEnable(MatmulConfig mmCFG)
-{
-    return mmCFG.enableStaticPadZeros;
-}
+__aicore__ constexpr bool IsStaticPaddingEnable(MatmulConfig mmCFG) { return mmCFG.enableStaticPadZeros; }
 
-__aicore__ constexpr bool IsStaticPaddingEnable(const MatmulApiStaticTiling &mmCFG)
+__aicore__ constexpr bool IsStaticPaddingEnable(const MatmulApiStaticTiling& mmCFG)
 {
     return IsStaticPaddingEnable(mmCFG.cfg);
 }
 
-__aicore__ constexpr int GetMIter(MatmulConfig mmCFG)
-{
-    return (mmCFG.singleCoreM + mmCFG.basicM - 1) / mmCFG.basicM;
-}
+__aicore__ constexpr int GetMIter(MatmulConfig mmCFG) { return (mmCFG.singleCoreM + mmCFG.basicM - 1) / mmCFG.basicM; }
 
-__aicore__ constexpr int GetMIter(const MatmulApiStaticTiling &mmCFG)
-{
-    return GetMIter(mmCFG.cfg);
-}
+__aicore__ constexpr int GetMIter(const MatmulApiStaticTiling& mmCFG) { return GetMIter(mmCFG.cfg); }
 
-__aicore__ constexpr int GetNIter(MatmulConfig mmCFG)
-{
-    return (mmCFG.singleCoreN + mmCFG.basicN - 1) / mmCFG.basicN;
-}
+__aicore__ constexpr int GetNIter(MatmulConfig mmCFG) { return (mmCFG.singleCoreN + mmCFG.basicN - 1) / mmCFG.basicN; }
 
-__aicore__ constexpr int GetNIter(const MatmulApiStaticTiling &mmCFG)
-{
-    return GetNIter(mmCFG.cfg);
-}
+__aicore__ constexpr int GetNIter(const MatmulApiStaticTiling& mmCFG) { return GetNIter(mmCFG.cfg); }
 
-__aicore__ constexpr int GetKIter(MatmulConfig mmCFG)
-{
-    return (mmCFG.singleCoreK + mmCFG.basicK - 1) / mmCFG.basicK;
-}
+__aicore__ constexpr int GetKIter(MatmulConfig mmCFG) { return (mmCFG.singleCoreK + mmCFG.basicK - 1) / mmCFG.basicK; }
 
-__aicore__ constexpr int GetKIter(const MatmulApiStaticTiling &mmCFG)
-{
-    return GetKIter(mmCFG.cfg);
-}
+__aicore__ constexpr int GetKIter(const MatmulApiStaticTiling& mmCFG) { return GetKIter(mmCFG.cfg); }
 
 __aicore__ constexpr bool IsBasicM(MatmulConfig mmCFG)
 {
     return (mmCFG.singleCoreM != 0) && (mmCFG.basicM != 0) && (GetMIter(mmCFG) == 1);
 }
 
-__aicore__ constexpr bool IsBasicM(const MatmulApiStaticTiling &mmCFG)
-{
-    return IsBasicM(mmCFG.cfg);
-}
+__aicore__ constexpr bool IsBasicM(const MatmulApiStaticTiling& mmCFG) { return IsBasicM(mmCFG.cfg); }
 
 __aicore__ constexpr bool IsBasicN(MatmulConfig mmCFG)
 {
     return (mmCFG.singleCoreN != 0) && (mmCFG.basicN != 0) && (GetNIter(mmCFG) == 1);
 }
 
-__aicore__ constexpr bool IsBasicN(const MatmulApiStaticTiling &mmCFG)
-{
-    return IsBasicN(mmCFG.cfg);
-}
+__aicore__ constexpr bool IsBasicN(const MatmulApiStaticTiling& mmCFG) { return IsBasicN(mmCFG.cfg); }
 
 __aicore__ constexpr bool IsBasicK(MatmulConfig mmCFG)
 {
     return (mmCFG.singleCoreK != 0) && (mmCFG.basicK != 0) && (GetKIter(mmCFG) == 1);
 }
 
-__aicore__ constexpr bool IsBasicK(const MatmulApiStaticTiling &mmCFG)
-{
-    return IsBasicK(mmCFG.cfg);
-}
+__aicore__ constexpr bool IsBasicK(const MatmulApiStaticTiling& mmCFG) { return IsBasicK(mmCFG.cfg); }
 
-__aicore__ constexpr bool IsBasic(MatmulConfig mmCFG)
-{
-    return IsBasicM(mmCFG) && IsBasicN(mmCFG) && IsBasicK(mmCFG);
-}
+__aicore__ constexpr bool IsBasic(MatmulConfig mmCFG) { return IsBasicM(mmCFG) && IsBasicN(mmCFG) && IsBasicK(mmCFG); }
 
-__aicore__ constexpr bool IsBasic(const MatmulApiStaticTiling &mmCFG)
-{
-    return IsBasic(mmCFG.cfg);
-}
+__aicore__ constexpr bool IsBasic(const MatmulApiStaticTiling& mmCFG) { return IsBasic(mmCFG.cfg); }
 __aicore__ constexpr bool NoTailM(MatmulConfig mmCFG)
 {
     return (!mmCFG.enableSetTail) && (mmCFG.singleCoreM != 0) && (mmCFG.basicM != 0) &&
-        (mmCFG.singleCoreM % mmCFG.basicM == 0);
+           (mmCFG.singleCoreM % mmCFG.basicM == 0);
 }
 
-__aicore__ constexpr bool NoTailM(const MatmulApiStaticTiling &mmCFG)
-{
-    return NoTailM(mmCFG.cfg);
-}
+__aicore__ constexpr bool NoTailM(const MatmulApiStaticTiling& mmCFG) { return NoTailM(mmCFG.cfg); }
 
 __aicore__ constexpr bool NoTailN(MatmulConfig mmCFG)
 {
     return (!mmCFG.enableSetTail) && (mmCFG.singleCoreN != 0) && (mmCFG.basicN != 0) &&
-        (mmCFG.singleCoreN % mmCFG.basicN == 0);
+           (mmCFG.singleCoreN % mmCFG.basicN == 0);
 }
 
-__aicore__ constexpr bool NoTailN(const MatmulApiStaticTiling &mmCFG)
-{
-    return NoTailN(mmCFG.cfg);
-}
+__aicore__ constexpr bool NoTailN(const MatmulApiStaticTiling& mmCFG) { return NoTailN(mmCFG.cfg); }
 
 __aicore__ constexpr bool NoTailK(MatmulConfig mmCFG)
 {
     return (!mmCFG.enableSetTail) && (mmCFG.singleCoreK != 0) && (mmCFG.basicK != 0) &&
-        (mmCFG.singleCoreK % mmCFG.basicK == 0);
+           (mmCFG.singleCoreK % mmCFG.basicK == 0);
 }
 
-__aicore__ constexpr bool NoTailK(const MatmulApiStaticTiling &mmCFG)
-{
-    return NoTailK(mmCFG.cfg);
-}
+__aicore__ constexpr bool NoTailK(const MatmulApiStaticTiling& mmCFG) { return NoTailK(mmCFG.cfg); }
 
 __aicore__ constexpr int GetL0PingPong(MatmulConfig mmCFG)
 {
     return ((mmCFG.basicM * mmCFG.basicK * Impl::DB_FACTOR) <= Impl::L0_SIZE) &&
-        ((mmCFG.basicK * mmCFG.basicN * Impl::DB_FACTOR) <= Impl::L0_SIZE) ? 1 : 0;
+                   ((mmCFG.basicK * mmCFG.basicN * Impl::DB_FACTOR) <= Impl::L0_SIZE) ?
+               1 :
+               0;
 }
 
-__aicore__ constexpr int GetL0PingPong(const MatmulApiStaticTiling &mmCFG)
-{
-    return GetL0PingPong(mmCFG.cfg);
-}
+__aicore__ constexpr int GetL0PingPong(const MatmulApiStaticTiling& mmCFG) { return GetL0PingPong(mmCFG.cfg); }
 
 template <bool isTensorA, bool isTranspose>
 __aicore__ constexpr bool GetDstNzC0Stride(MatmulConfig mmCFG)
@@ -418,7 +316,7 @@ __aicore__ constexpr bool GetDstNzC0Stride(MatmulConfig mmCFG)
 }
 
 template <bool isTensorA, bool isTranspose>
-__aicore__ constexpr bool GetDstNzC0Stride(const MatmulApiStaticTiling &mmCFG)
+__aicore__ constexpr bool GetDstNzC0Stride(const MatmulApiStaticTiling& mmCFG)
 {
     if (mmCFG.cfg.enableStaticPadZeros) {
         if (mmCFG.cfg.doMultiDataLoad) {
@@ -440,53 +338,33 @@ __aicore__ constexpr bool GetDstNzC0Stride(const MatmulApiStaticTiling &mmCFG)
     return GetDstNzC0Stride<isTensorA, isTranspose>(mmCFG.cfg);
 }
 
-__aicore__ constexpr bool IsAFullLoad(MatmulConfig mmCFG)
-{
-    return false;
-}
+__aicore__ constexpr bool IsAFullLoad(MatmulConfig mmCFG) { return false; }
 
-__aicore__ constexpr bool IsAFullLoad(const MatmulApiStaticTiling &mmCFG)
+__aicore__ constexpr bool IsAFullLoad(const MatmulApiStaticTiling& mmCFG)
 {
     if (IsStaticTilingEnable(mmCFG)) {
-        return mmCFG.stepM * mmCFG.baseM >= mmCFG.singleCoreM &&
-            mmCFG.stepKa * mmCFG.baseK >= mmCFG.singleCoreK;
+        return mmCFG.stepM * mmCFG.baseM >= mmCFG.singleCoreM && mmCFG.stepKa * mmCFG.baseK >= mmCFG.singleCoreK;
     }
     return false;
 }
 
-__aicore__ constexpr bool IsBFullLoad(MatmulConfig mmCFG)
-{
-    return false;
-}
+__aicore__ constexpr bool IsBFullLoad(MatmulConfig mmCFG) { return false; }
 
-__aicore__ constexpr bool IsBFullLoad(const MatmulApiStaticTiling &mmCFG)
+__aicore__ constexpr bool IsBFullLoad(const MatmulApiStaticTiling& mmCFG)
 {
     if (IsStaticTilingEnable(mmCFG)) {
-        return mmCFG.stepN * mmCFG.baseN >= mmCFG.singleCoreN &&
-            mmCFG.stepKb * mmCFG.baseK >= mmCFG.singleCoreK;
+        return mmCFG.stepN * mmCFG.baseN >= mmCFG.singleCoreN && mmCFG.stepKb * mmCFG.baseK >= mmCFG.singleCoreK;
     }
     return false;
 }
 
-__aicore__ constexpr bool IsEnableRelu(const MatmulConfig &mmCFG)
-{
-    return mmCFG.enableRelu;
-}
+__aicore__ constexpr bool IsEnableRelu(const MatmulConfig& mmCFG) { return mmCFG.enableRelu; }
 
-__aicore__ constexpr bool IsEnableRelu(const MatmulApiStaticTiling &mmCFG)
-{
-    return IsEnableRelu(mmCFG.cfg);
-}
+__aicore__ constexpr bool IsEnableRelu(const MatmulApiStaticTiling& mmCFG) { return IsEnableRelu(mmCFG.cfg); }
 
-__aicore__ constexpr DecompressionMode DecompMode(const MatmulConfig &mmCFG)
-{
-    return mmCFG.decompMode;
-}
+__aicore__ constexpr DecompressionMode DecompMode(const MatmulConfig& mmCFG) { return mmCFG.decompMode; }
 
-__aicore__ constexpr DecompressionMode DecompMode(const MatmulApiStaticTiling &mmCFG)
-{
-    return DecompMode(mmCFG.cfg);
-}
+__aicore__ constexpr DecompressionMode DecompMode(const MatmulApiStaticTiling& mmCFG) { return DecompMode(mmCFG.cfg); }
 
 } // namespace AscendC
 #endif // _MATMUL_CONFIG_UTILS_H_

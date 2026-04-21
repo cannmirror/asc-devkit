@@ -33,16 +33,16 @@
 - 算子实现：  
 样例中实现的是使用标量搬出的方式对于Scatter功能变换的兼容。
   - Scatter兼容策略
-    - 标量搬出方式兼容Scatter：
+    - 标量搬出方式兼容Scatter：  
     对于完全离散的场景,只能通过标量搬出的方式进行处理。
-    - 修改算法的方式兼容Scatter：
+    - 修改算法的方式兼容Scatter：  
       对于部分有规律的离散计算，譬如`[0~63][128~191][256~319]`...这种数据可以通过Loop循环搬出的方式来提升效率。
       | `64` | 32 | `64` | 16 | `64` | 32 | `64` |
       | --- | --- | --- | --- | --- | --- | --- |
       
       搬运非连续多个64长度的值出去时（存在部分规律）,可以通过Loop循环使能方式进行数据搬运。
 
-  - kernel实现   
+  - kernel实现  
     兼容Scatter算子的实现流程分为3个基本任务：CopyIn任务负责将Global Memory上的输入Tensor srcGm和dstGm搬运到Local Memory，分别存储在xLocal、yLocal，Compute任务负责对xLocal、yLocal进行标量计算，计算结果存储在zLocal中，CopyOut任务负责将输出数据从zLocal搬运至Global Memory上的输出Tensor dstGm中。
 
   - 调用实现  

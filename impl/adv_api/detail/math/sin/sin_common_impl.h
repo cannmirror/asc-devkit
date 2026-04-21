@@ -1,19 +1,20 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file sin_common_impl.h
  * \brief
  */
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/sin/sin_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/sin.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/sin/sin_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/sin.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_SIN_SIN_COMMON_IMPL_H__
 #endif
@@ -54,8 +55,9 @@ constexpr float SIN_POINT_FIVE = 0.5;
 constexpr float SIN_M4_SCA = 4.0;
 constexpr float SIN_K2_SCA = -2.0;
 
-__aicore__ inline void SinSignCompute(const LocalTensor<float>& dstTensor, const LocalTensor<float>& inputX,
-    const LocalTensor<float>& roundTensor, const LocalTensor<float>& kpi)
+__aicore__ inline void SinSignCompute(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& inputX, const LocalTensor<float>& roundTensor,
+    const LocalTensor<float>& kpi)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binaryParams;
@@ -84,8 +86,9 @@ __aicore__ inline void SinSignCompute(const LocalTensor<float>& dstTensor, const
 }
 
 // in [-pi/2, pi/2] use polynomial approximation
-__aicore__ inline void SinPolynomialApproximation(const LocalTensor<float>& dstTensor, const LocalTensor<float>& inputX,
-    const LocalTensor<float>& roundTensor, const LocalTensor<float>& kpi)
+__aicore__ inline void SinPolynomialApproximation(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& inputX, const LocalTensor<float>& roundTensor,
+    const LocalTensor<float>& kpi)
 {
     /*
     sin(x) = (-1)^k*sin(x0)
@@ -123,8 +126,9 @@ __aicore__ inline void SinPolynomialApproximation(const LocalTensor<float>& dstT
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void SinKpi(const LocalTensor<float>& inputX, const LocalTensor<float>& srcTensor,
-    const LocalTensor<float>& roundTensor, const LocalTensor<float>& kpi)
+__aicore__ inline void SinKpi(
+    const LocalTensor<float>& inputX, const LocalTensor<float>& srcTensor, const LocalTensor<float>& roundTensor,
+    const LocalTensor<float>& kpi)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binaryParams;
@@ -155,8 +159,9 @@ __aicore__ inline void SinKpi(const LocalTensor<float>& inputX, const LocalTenso
 }
 
 // normalized x to [-π/2, π/2] using x = x-round(x/π)*π
-__aicore__ inline void SinRound(const LocalTensor<float>& inputX, const LocalTensor<float>& srcTensor,
-                                const LocalTensor<float>& roundTensor, const LocalTensor<float>& kpi)
+__aicore__ inline void SinRound(
+    const LocalTensor<float>& inputX, const LocalTensor<float>& srcTensor, const LocalTensor<float>& roundTensor,
+    const LocalTensor<float>& kpi)
 {
     /*
     k=round(x/π), x0=x-kπ, x0 belongs to [-π/2, π/2]
@@ -180,8 +185,9 @@ __aicore__ inline void SinRound(const LocalTensor<float>& inputX, const LocalTen
 }
 
 template <typename T>
-__aicore__ inline void SinCompute(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<float>& tmpTensor, const uint32_t splitSize, bool isReuseSource)
+__aicore__ inline void SinCompute(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<float>& tmpTensor,
+    const uint32_t splitSize, bool isReuseSource)
 {
     const BinaryRepeatParams binParams;
     LocalTensor<T> roundTensor = tmpTensor;
@@ -195,8 +201,9 @@ __aicore__ inline void SinCompute(const LocalTensor<T>& dstTensor, const LocalTe
 }
 
 template <>
-__aicore__ inline void SinCompute(const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor,
-    const LocalTensor<float>& tmpTensor, const uint32_t splitSize, bool isReuseSource)
+__aicore__ inline void SinCompute(
+    const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor, const LocalTensor<float>& tmpTensor,
+    const uint32_t splitSize, bool isReuseSource)
 {
     (void)isReuseSource;
     const BinaryRepeatParams binParams;
@@ -205,23 +212,25 @@ __aicore__ inline void SinCompute(const LocalTensor<half>& dstTensor, const Loca
     const LocalTensor<float>& kpi = roundTensor[splitSize];
     const LocalTensor<float>& inputX = kpi[splitSize];
 
-    Cast<float, half, false>(tmpBuffer, srcTensor, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
-        { 1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE });
+    Cast<float, half, false>(
+        tmpBuffer, srcTensor, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
 
     // The input is normalized to [-pi/2, pi/2].
     SinRound(inputX, tmpBuffer, roundTensor, kpi); // half cannot use dst as a temporary buffer.
     SinPolynomialApproximation(tmpBuffer, inputX, roundTensor, kpi);
 
-    Cast<half, float, false>(dstTensor, tmpBuffer, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
-        { 1, 1, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+    Cast<half, float, false>(
+        dstTensor, tmpBuffer, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
 }
 
-
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void SinImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void SinImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t calCount)
 {
     CHECK_FUNC_HIGHLEVEL_API(Sin, (T, isReuseSource), (dstTensor, srcTensor, sharedTmpBuffer, calCount));
 
@@ -242,7 +251,7 @@ __aicore__ inline void SinImpl(const LocalTensor<T>& dstTensor, const LocalTenso
     CheckTmpBufferSize(stackSize, 0, bufferSize);
 
     const uint32_t round = calCount / stackSize;
-    const uint32_t tail = calCount %  stackSize;
+    const uint32_t tail = calCount % stackSize;
     SetMaskCount();
     SetVectorMask<T, MaskMode::COUNTER>(0, stackSize);
     uint32_t offset = 0;
@@ -260,8 +269,8 @@ __aicore__ inline void SinImpl(const LocalTensor<T>& dstTensor, const LocalTenso
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void SinImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const uint32_t calCount)
+__aicore__ inline void SinImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -274,9 +283,9 @@ __aicore__ inline void SinImpl(const LocalTensor<T>& dstTensor, const LocalTenso
     ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
     SinImpl<T, isReuseSource>(dstTensor, srcTensor, sharedTmpBuffer, calCount);
 }
-}  // namespace AscendC
+} // namespace AscendC
 
-#endif  // IMPL_MATH_SIN_SIN_COMMON_IMPL_H
+#endif // IMPL_MATH_SIN_SIN_COMMON_IMPL_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_SIN_SIN_COMMON_IMPL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

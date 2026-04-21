@@ -1,15 +1,16 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/reduce/reduce_common_ar_reuse_align_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/reduce/reduce_common_ar_reuse_align_3510_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_COMMON_AR_REUSE_ALIGN_C310_IMPL_H__
 #endif
@@ -24,10 +25,11 @@
 #include "reduce_common_ar_reuse_align_less_than_vl_3510_impl.h"
 
 namespace AscendC {
-template <class T, class U, const Reg::RegTrait &Trait, const Reg::CastTrait &CastTraitUppper,
-    const Reg::CastTrait &CastTraitLower, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc>
-__simd_callee__ inline void ReduceARCastfoldZero(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA, uint32_t dimR,
-    Reg::MaskReg &fullMask)
+template <
+    class T, class U, const Reg::RegTrait& Trait, const Reg::CastTrait& CastTraitUppper,
+    const Reg::CastTrait& CastTraitLower, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc>
+__simd_callee__ inline void ReduceARCastfoldZero(
+    __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint32_t dimA, uint32_t dimR, Reg::MaskReg& fullMask)
 {
     using UnpackSrcT = typename ReduceOpInternal::ExtractUnsignedTypeBySize<sizeof(T)>::T;
     using UnpackDstT = typename ReduceOpInternal::ExtractUnsignedTypeBySize<sizeof(U)>::T;
@@ -40,36 +42,39 @@ __simd_callee__ inline void ReduceARCastfoldZero(__ubuf__ T *dstAddr, __ubuf__ T
         Reg::LoadAlign(vreg0, srcAddr + loopA * dimR);
         Reg::LoadAlign(vreg1, srcAddr + vlSize / 2 + loopA * dimR);
         Binaryfunc(vreg0, vreg0, vreg1, fullMask);
-        Reg::UnPack((Reg::RegTensor<UnpackDstT, Trait> &)vreg0,
-            (Reg::RegTensor<UnpackSrcT, Trait> &)vreg0);
+        Reg::UnPack((Reg::RegTensor<UnpackDstT, Trait>&)vreg0, (Reg::RegTensor<UnpackSrcT, Trait>&)vreg0);
         Reg::Cast<U, T, ReduceOpInternal::CastTraitBF16F32>(vreg0CastB32, vreg0, fullMask);
         Reducefunc(vreg1CastB32, vreg0CastB32, fullMask);
         Reg::Cast<T, U, ReduceOpInternal::CastTraitF32BF16>(vreg1, vreg1CastB32, fullMask);
-        Reg::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
+        Reg::StoreUnAlign((__ubuf__ T*&)dstAddr, vreg1, uDst, 1);
     }
-    Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+    Reg::StoreUnAlignPost((__ubuf__ T*&)dstAddr, uDst, 0);
 }
 
-template <class T, const Reg::RegTrait &Trait, auto Binaryfunc, auto Reducefunc>
-__simd_callee__ inline void ReduceARfoldOneToThree(Reg::RegTensor<T, Trait>& vreg0,
-    Reg::RegTensor<T, Trait>& vreg2, Reg::MaskReg &fullMask)
+template <class T, const Reg::RegTrait& Trait, auto Binaryfunc, auto Reducefunc>
+__simd_callee__ inline void ReduceARfoldOneToThree(
+    Reg::RegTensor<T, Trait>& vreg0, Reg::RegTensor<T, Trait>& vreg2, Reg::MaskReg& fullMask)
 {
     if constexpr (IsSameType<T, bfloat16_t>::value) {
-        ReduceOpInternal::ReduceARCastfoldOneToThree<T, float, Trait, ReduceOpInternal::CastTraitBF16F32,
-            ReduceOpInternal::CastTraitF32BF16, Binaryfunc, Reducefunc>(vreg0, vreg2, fullMask);
+        ReduceOpInternal::ReduceARCastfoldOneToThree<
+            T, float, Trait, ReduceOpInternal::CastTraitBF16F32, ReduceOpInternal::CastTraitF32BF16, Binaryfunc,
+            Reducefunc>(vreg0, vreg2, fullMask);
     } else if constexpr (SupportBytes<T, 1>()) {
-        ReduceOpInternal::ReduceARCastfoldOneToThree<T, half, Trait, ReduceOpInternal::CastTraitB8F16,
-            ReduceOpInternal::CastTraitF16B8, Binaryfunc, Reducefunc>(vreg0, vreg2, fullMask);
+        ReduceOpInternal::ReduceARCastfoldOneToThree<
+            T, half, Trait, ReduceOpInternal::CastTraitB8F16, ReduceOpInternal::CastTraitF16B8, Binaryfunc, Reducefunc>(
+            vreg0, vreg2, fullMask);
     } else {
         Reducefunc(vreg2, vreg0, fullMask);
     }
 }
 
-template <class T, const Reg::RegTrait &Trait, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc, bool isReuseSource>
-__simd_vf__ inline void ReduceARB64OverVLVF(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, __ubuf__ T *tmpAddr, uint32_t dimA,
-    uint32_t dimR, uint32_t mainR, uint32_t tailR, uint16_t dimRAxis, uint16_t inplaceRepeats, uint32_t inplaceTail,
-    uint16_t needInplaceAdd, uint16_t copyRepeats, uint16_t base, uint16_t folds, uint16_t avgFolds, uint16_t mainTimes,
-    uint16_t foldZero, uint16_t foldOne, uint16_t foldTwo)
+template <
+    class T, const Reg::RegTrait& Trait, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc, bool isReuseSource>
+__simd_vf__ inline void ReduceARB64OverVLVF(
+    __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, __ubuf__ T* tmpAddr, uint32_t dimA, uint32_t dimR, uint32_t mainR,
+    uint32_t tailR, uint16_t dimRAxis, uint16_t inplaceRepeats, uint32_t inplaceTail, uint16_t needInplaceAdd,
+    uint16_t copyRepeats, uint16_t base, uint16_t folds, uint16_t avgFolds, uint16_t mainTimes, uint16_t foldZero,
+    uint16_t foldOne, uint16_t foldTwo)
 {
     __ubuf__ T* addr;
     Reg::MaskReg mask;
@@ -178,9 +183,9 @@ __simd_vf__ inline void ReduceARB64OverVLVF(__ubuf__ T *dstAddr, __ubuf__ T *src
             Reg::LoadAlign(b64Vreg1, addr + vlSize + loopA * dimR);
             Binaryfunc(b64Vreg0, b64Vreg0, b64Vreg1, fullMask);
             Reducefunc(b64Vreg2, b64Vreg0, fullMask);
-            Reg::StoreUnAlign((__ubuf__ T *&)dstAddr, b64Vreg2, uDst, 1);
+            Reg::StoreUnAlign((__ubuf__ T*&)dstAddr, b64Vreg2, uDst, 1);
         }
-        Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+        Reg::StoreUnAlignPost((__ubuf__ T*&)dstAddr, uDst, 0);
     }
 
     for (uint16_t i = 0; i < foldTwo; i++) {
@@ -196,9 +201,9 @@ __simd_vf__ inline void ReduceARB64OverVLVF(__ubuf__ T *dstAddr, __ubuf__ T *src
             // L2
             Binaryfunc(b64Vreg0, b64Vreg0, b64Vreg1, fullMask);
             Reducefunc(b64Vreg2, b64Vreg0, fullMask);
-            Reg::StoreUnAlign((__ubuf__ T *&)dstAddr, b64Vreg2, uDst, 1);
+            Reg::StoreUnAlign((__ubuf__ T*&)dstAddr, b64Vreg2, uDst, 1);
         }
-        Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+        Reg::StoreUnAlignPost((__ubuf__ T*&)dstAddr, uDst, 0);
     }
 
     // Reduce to 1
@@ -208,14 +213,15 @@ __simd_vf__ inline void ReduceARB64OverVLVF(__ubuf__ T *dstAddr, __ubuf__ T *src
         for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
             Reg::LoadAlign(b64Vreg0, addr + loopA * dimR);
             Reducefunc(b64Vreg1, b64Vreg0, mask);
-            Reg::StoreUnAlign((__ubuf__ T *&)dstAddr, b64Vreg1, uDst, 1);
+            Reg::StoreUnAlign((__ubuf__ T*&)dstAddr, b64Vreg1, uDst, 1);
         }
-        Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+        Reg::StoreUnAlignPost((__ubuf__ T*&)dstAddr, uDst, 0);
     }
 }
-template <class T, const Reg::RegTrait &Trait, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc, bool isReuseSource>
-__aicore__ inline void ReduceARB64OverVL(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, __ubuf__ T *tmpAddr, uint32_t dimA,
-    uint32_t dimR)
+template <
+    class T, const Reg::RegTrait& Trait, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc, bool isReuseSource>
+__aicore__ inline void ReduceARB64OverVL(
+    __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, __ubuf__ T* tmpAddr, uint32_t dimA, uint32_t dimR)
 {
     uint32_t mainR = ReduceOpInternal::CalculateMainR(dimR, true, vlSize);
     uint32_t tailR = dimR - mainR;
@@ -251,16 +257,18 @@ __aicore__ inline void ReduceARB64OverVL(__ubuf__ T *dstAddr, __ubuf__ T *srcAdd
     uint16_t foldOne = (tailFolds == ReduceOpInternal::FOLD_ONE) ? 1 : 0;
     uint16_t foldTwo = (tailFolds == ReduceOpInternal::FOLD_TWO) ? 1 : 0;
 
-    ReduceARB64OverVLVF<T, Trait, vlSize, Binaryfunc, Reducefunc, isReuseSource>(dstAddr, srcAddr, tmpAddr, dimA,
-        dimR, mainR, tailR, dimRAxis, inplaceRepeats, inplaceTail, needInplaceAdd, copyRepeats, base, folds,
-        avgFolds, mainTimes, foldZero, foldOne, foldTwo);
+    ReduceARB64OverVLVF<T, Trait, vlSize, Binaryfunc, Reducefunc, isReuseSource>(
+        dstAddr, srcAddr, tmpAddr, dimA, dimR, mainR, tailR, dimRAxis, inplaceRepeats, inplaceTail, needInplaceAdd,
+        copyRepeats, base, folds, avgFolds, mainTimes, foldZero, foldOne, foldTwo);
 }
 
-template <class T, const Reg::RegTrait &Trait, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc, bool isReuseSource>
-__simd_vf__ inline void ReduceAROverVLVFImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, __ubuf__ T *tmpAddr, uint32_t dimA,
-    uint32_t dimR, uint32_t mainR, uint32_t tailR, uint16_t dimRAxis, uint16_t inplaceRepeats, uint32_t inplaceTail,
-    uint16_t needInplaceAdd, uint16_t copyRepeats, uint16_t base, uint16_t folds, uint16_t avgFolds, uint16_t mainTimes,
-    uint16_t foldZero, uint16_t foldOne, uint16_t foldTwo, uint16_t foldThree)
+template <
+    class T, const Reg::RegTrait& Trait, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc, bool isReuseSource>
+__simd_vf__ inline void ReduceAROverVLVFImpl(
+    __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, __ubuf__ T* tmpAddr, uint32_t dimA, uint32_t dimR, uint32_t mainR,
+    uint32_t tailR, uint16_t dimRAxis, uint16_t inplaceRepeats, uint32_t inplaceTail, uint16_t needInplaceAdd,
+    uint16_t copyRepeats, uint16_t base, uint16_t folds, uint16_t avgFolds, uint16_t mainTimes, uint16_t foldZero,
+    uint16_t foldOne, uint16_t foldTwo, uint16_t foldThree)
 {
     __ubuf__ T* addr;
     Reg::MaskReg mask;
@@ -394,9 +402,9 @@ __simd_vf__ inline void ReduceAROverVLVFImpl(__ubuf__ T *dstAddr, __ubuf__ T *sr
             Reg::LoadAlign(vreg1, addr + vlSize + loopA * dimR);
             Binaryfunc(vreg0, vreg0, vreg1, fullMask);
             ReduceARfoldOneToThree<T, Trait, Binaryfunc, Reducefunc>(vreg0, vreg2, fullMask);
-            Reg::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg2, uDst, 1);
+            Reg::StoreUnAlign((__ubuf__ T*&)dstAddr, vreg2, uDst, 1);
         }
-        Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+        Reg::StoreUnAlignPost((__ubuf__ T*&)dstAddr, uDst, 0);
     }
 
     for (uint16_t i = 0; i < foldTwo; i++) {
@@ -412,9 +420,9 @@ __simd_vf__ inline void ReduceAROverVLVFImpl(__ubuf__ T *dstAddr, __ubuf__ T *sr
             // L2
             Binaryfunc(vreg0, vreg0, vreg1, fullMask);
             ReduceARfoldOneToThree<T, Trait, Binaryfunc, Reducefunc>(vreg0, vreg2, fullMask);
-            Reg::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg2, uDst, 1);
+            Reg::StoreUnAlign((__ubuf__ T*&)dstAddr, vreg2, uDst, 1);
         }
-        Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+        Reg::StoreUnAlignPost((__ubuf__ T*&)dstAddr, uDst, 0);
     }
 
     for (uint16_t i = 0; i < foldThree; i++) {
@@ -439,35 +447,38 @@ __simd_vf__ inline void ReduceAROverVLVFImpl(__ubuf__ T *dstAddr, __ubuf__ T *sr
             // L3
             Binaryfunc(vreg0, vreg0, vreg1, fullMask);
             ReduceARfoldOneToThree<T, Trait, Binaryfunc, Reducefunc>(vreg0, vreg2, fullMask);
-            Reg::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg2, uDst, 1);
+            Reg::StoreUnAlign((__ubuf__ T*&)dstAddr, vreg2, uDst, 1);
         }
-        Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+        Reg::StoreUnAlignPost((__ubuf__ T*&)dstAddr, uDst, 0);
     }
 
     // Reduce to 1
     for (uint16_t i = 0; i < foldZero; i++) {
         if constexpr (IsSameType<T, bfloat16_t>::value) {
-            ReduceARCastfoldZero<T, float, Trait, ReduceOpInternal::CastTraitBF16F32,
-                ReduceOpInternal::CastTraitF32BF16, vlSize, Binaryfunc, Reducefunc>(dstAddr, addr, dimA, dimR,
-                fullMask);
+            ReduceARCastfoldZero<
+                T, float, Trait, ReduceOpInternal::CastTraitBF16F32, ReduceOpInternal::CastTraitF32BF16, vlSize,
+                Binaryfunc, Reducefunc>(dstAddr, addr, dimA, dimR, fullMask);
         } else if constexpr (SupportBytes<T, 1>()) {
-            ReduceARCastfoldZero<T, half, Trait, ReduceOpInternal::CastTraitB8F16, ReduceOpInternal::CastTraitF16B8,
-                vlSize, Binaryfunc, Reducefunc>(dstAddr, addr, dimA, dimR, fullMask);
+            ReduceARCastfoldZero<
+                T, half, Trait, ReduceOpInternal::CastTraitB8F16, ReduceOpInternal::CastTraitF16B8, vlSize, Binaryfunc,
+                Reducefunc>(dstAddr, addr, dimA, dimR, fullMask);
         } else {
             uint32_t sreg = mainR;
             mask = Reg::UpdateMask<T, Trait>(sreg);
             for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
                 Reg::LoadAlign(vreg0, addr + loopA * dimR);
                 Reducefunc(vreg1, vreg0, mask);
-                Reg::StoreUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
+                Reg::StoreUnAlign((__ubuf__ T*&)dstAddr, vreg1, uDst, 1);
             }
-            Reg::StoreUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+            Reg::StoreUnAlignPost((__ubuf__ T*&)dstAddr, uDst, 0);
         }
     }
 }
 
-template <class T, const Reg::RegTrait &Trait, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc, bool isReuseSource>
-__aicore__ inline void ReduceAROverVLImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, __ubuf__ T *tmpAddr, uint32_t dimA, uint32_t dimR)
+template <
+    class T, const Reg::RegTrait& Trait, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc, bool isReuseSource>
+__aicore__ inline void ReduceAROverVLImpl(
+    __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, __ubuf__ T* tmpAddr, uint32_t dimA, uint32_t dimR)
 {
     uint32_t mainR = ReduceOpInternal::CalculateMainR(dimR, true, vlSize);
     uint32_t tailR = dimR - mainR;
@@ -504,23 +515,28 @@ __aicore__ inline void ReduceAROverVLImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAd
     uint16_t foldTwo = (tailFolds == ReduceOpInternal::FOLD_TWO) ? 1 : 0;
     uint16_t foldThree = (tailFolds == ReduceOpInternal::FOLD_THREE) ? 1 : 0;
 
-    ReduceAROverVLVFImpl<T, Trait, vlSize, Binaryfunc, Reducefunc, isReuseSource>(dstAddr, srcAddr, tmpAddr, dimA,
-        dimR, mainR, tailR, dimRAxis, inplaceRepeats, inplaceTail, needInplaceAdd, copyRepeats, base, folds,
-        avgFolds, mainTimes, foldZero, foldOne, foldTwo, foldThree);
+    ReduceAROverVLVFImpl<T, Trait, vlSize, Binaryfunc, Reducefunc, isReuseSource>(
+        dstAddr, srcAddr, tmpAddr, dimA, dimR, mainR, tailR, dimRAxis, inplaceRepeats, inplaceTail, needInplaceAdd,
+        copyRepeats, base, folds, avgFolds, mainTimes, foldZero, foldOne, foldTwo, foldThree);
 }
 
-template <class T, const Reg::RegTrait &Trait, auto Binaryfunc, auto Reducefunc,
-          bool isReuseSource = false, ReduceType groupReduceType = ReduceType::OTHERS>
-__aicore__ inline void ReduceARImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, __ubuf__ T *tmpAddr, uint32_t dimA, uint32_t dimR)
+template <
+    class T, const Reg::RegTrait& Trait, auto Binaryfunc, auto Reducefunc, bool isReuseSource = false,
+    ReduceType groupReduceType = ReduceType::OTHERS>
+__aicore__ inline void ReduceARImpl(
+    __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, __ubuf__ T* tmpAddr, uint32_t dimA, uint32_t dimR)
 {
     constexpr uint16_t vlSize = SupportBytes<T, 8>() ? GetVecLen() / sizeof(float) : GetVecLen() / sizeof(T);
     if (dimR <= vlSize) {
-        ReduceARReuseSourceLessThanVL<T, Trait, vlSize, Binaryfunc, Reducefunc, groupReduceType>(dstAddr, srcAddr, dimA, dimR);
+        ReduceARReuseSourceLessThanVL<T, Trait, vlSize, Binaryfunc, Reducefunc, groupReduceType>(
+            dstAddr, srcAddr, dimA, dimR);
     } else {
         if constexpr (SupportBytes<T, 8>()) {
-            ReduceARB64OverVL<T, Trait, vlSize, Binaryfunc, Reducefunc, isReuseSource>(dstAddr, srcAddr, tmpAddr, dimA, dimR);
+            ReduceARB64OverVL<T, Trait, vlSize, Binaryfunc, Reducefunc, isReuseSource>(
+                dstAddr, srcAddr, tmpAddr, dimA, dimR);
         } else {
-            ReduceAROverVLImpl<T, Trait, vlSize, Binaryfunc, Reducefunc, isReuseSource>(dstAddr, srcAddr, tmpAddr, dimA, dimR);
+            ReduceAROverVLImpl<T, Trait, vlSize, Binaryfunc, Reducefunc, isReuseSource>(
+                dstAddr, srcAddr, tmpAddr, dimA, dimR);
         }
     }
 }

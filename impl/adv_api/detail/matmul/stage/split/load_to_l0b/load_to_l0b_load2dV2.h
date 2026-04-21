@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file load_to_l0b_load2dV2.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/stage/split/load_to_l0b/load_to_l0b_load2dV2.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/stage/split/load_to_l0b/load_to_l0b_load2dV2.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_SPLIT_LOAD_TO_L0B_LOAD_TO_L0B_LOAD2DV2_H__
 #endif
@@ -29,47 +30,56 @@ namespace AscendC {
 namespace Impl {
 namespace Detail {
 template <typename IMPL, typename INPUT_TYPE, const auto& MM_CFG>
-class LoadToL0B<IMPL, INPUT_TYPE, MM_CFG,
-    enable_if_t<(GetGemvMode<INPUT_TYPE>() == GemvMode::MATRIX) &&
-                (GetLoadInstrType<typename INPUT_TYPE::T, MM_CFG>() == LoadInstrType::LOAD2DV2)>>
-{
+class LoadToL0B<
+    IMPL, INPUT_TYPE, MM_CFG,
+    enable_if_t<
+        (GetGemvMode<INPUT_TYPE>() == GemvMode::MATRIX) &&
+        (GetLoadInstrType<typename INPUT_TYPE::T, MM_CFG>() == LoadInstrType::LOAD2DV2)>> {
     using B_T = typename INPUT_TYPE::TRANS_T;
-    using L0B_T = typename Conditional<HasScalePosition<INPUT_TYPE>::value, typename GetL0DataType<typename INPUT_TYPE::TRANS_T, true>::Type, typename GetL0DataType<typename INPUT_TYPE::TRANS_T, false>::Type>::type;
+    using L0B_T = typename Conditional<
+        HasScalePosition<INPUT_TYPE>::value, typename GetL0DataType<typename INPUT_TYPE::TRANS_T, true>::Type,
+        typename GetL0DataType<typename INPUT_TYPE::TRANS_T, false>::Type>::type;
     using AuxDtype = decltype(GetAuxDataType<INPUT_TYPE>());
-public:
-    __aicore__ inline LoadToL0B() {};
-    __aicore__ inline ~LoadToL0B() {};
 
-    __aicore__ inline void Load(const LocalTensor<L0B_T> &dst, const LocalTensor<B_T> &bMatrix,
-     uint16_t bL1N, uint16_t bL1K, uint16_t madN, uint16_t madK, uint16_t bL1NOffset, uint16_t bL1KOffset,
-     bool isBTranspose, const LocalTensor<AuxDtype> &l1BAuxMatrix = {}, uint16_t bAuxL1K = 0,
-     uint16_t bAuxL1KOffset = 0, uint16_t bAuxL1NOffset = 0) const
+public:
+    __aicore__ inline LoadToL0B(){};
+    __aicore__ inline ~LoadToL0B(){};
+
+    __aicore__ inline void Load(
+        const LocalTensor<L0B_T>& dst, const LocalTensor<B_T>& bMatrix, uint16_t bL1N, uint16_t bL1K, uint16_t madN,
+        uint16_t madK, uint16_t bL1NOffset, uint16_t bL1KOffset, bool isBTranspose,
+        const LocalTensor<AuxDtype>& l1BAuxMatrix = {}, uint16_t bAuxL1K = 0, uint16_t bAuxL1KOffset = 0,
+        uint16_t bAuxL1NOffset = 0) const
     {
         if (isBTranspose) {
             // Mx should run for MXLoad
             if constexpr (!HasScalePosition<INPUT_TYPE>::value) {
                 TransLoadDataToL0(dst, bMatrix, bL1N, madN, madK, bL1NOffset, bL1KOffset);
             } else {
-                MxTransLoadDataToL0(dst, bMatrix, bL1N, madN, madK, bL1NOffset, bL1KOffset,
-                    l1BAuxMatrix, bAuxL1K, bAuxL1KOffset, bAuxL1NOffset);
+                MxTransLoadDataToL0(
+                    dst, bMatrix, bL1N, madN, madK, bL1NOffset, bL1KOffset, l1BAuxMatrix, bAuxL1K, bAuxL1KOffset,
+                    bAuxL1NOffset);
             }
         } else {
             // Mx should run for MXLoad
             if constexpr (!HasScalePosition<INPUT_TYPE>::value) {
                 LoadDataToL0(dst, bMatrix, bL1K, madN, madK, bL1NOffset, bL1KOffset);
             } else {
-                MxLoadDataToL0(dst, bMatrix, bL1K, madN, madK, bL1NOffset, bL1KOffset,
-                    l1BAuxMatrix, bAuxL1K, bAuxL1KOffset, bAuxL1NOffset);
+                MxLoadDataToL0(
+                    dst, bMatrix, bL1K, madN, madK, bL1NOffset, bL1KOffset, l1BAuxMatrix, bAuxL1K, bAuxL1KOffset,
+                    bAuxL1NOffset);
             }
         }
     }
 
-        __aicore__ inline void Prepare(bool isBTranspose, uint16_t bL1K) const {};
+    __aicore__ inline void Prepare(bool isBTranspose, uint16_t bL1K) const {};
+
 private:
     constexpr static int32_t c0Size_ = AuxGetC0Size<B_T>();
 
-    __aicore__ inline void TransLoadDataToL0(const LocalTensor<B_T> &dst, const LocalTensor<B_T> &bMatrix,
-     uint16_t bL1N, uint16_t madN, uint16_t madK, uint16_t bL1NOffset, uint16_t bL1KOffset) const
+    __aicore__ inline void TransLoadDataToL0(
+        const LocalTensor<B_T>& dst, const LocalTensor<B_T>& bMatrix, uint16_t bL1N, uint16_t madN, uint16_t madK,
+        uint16_t bL1NOffset, uint16_t bL1KOffset) const
     {
         LoadData2DParamsV2 loadDataParams;
         loadDataParams.mStartPosition = CeilDiv(bL1NOffset, BLOCK_CUBE);
@@ -82,8 +92,9 @@ private:
         LoadData(dst, bMatrix, loadDataParams);
     }
 
-    __aicore__ inline void LoadDataToL0(const LocalTensor<B_T> &dst, const LocalTensor<B_T> &bMatrix,
-     uint16_t bL1K, uint16_t madN, uint16_t madK, uint16_t bL1NOffset, uint16_t bL1KOffset) const
+    __aicore__ inline void LoadDataToL0(
+        const LocalTensor<B_T>& dst, const LocalTensor<B_T>& bMatrix, uint16_t bL1K, uint16_t madN, uint16_t madK,
+        uint16_t bL1NOffset, uint16_t bL1KOffset) const
     {
         LoadData2DParamsV2 loadDataParams;
         loadDataParams.mStartPosition = CeilDiv(bL1KOffset, BLOCK_CUBE);
@@ -117,8 +128,8 @@ private:
                 LoadData(dst[dstOffset], bMatrix, loadDataParams);
                 dstOffset += dstAddrStride;
             }
-        } 
-#if  __NPU_ARCH__ == 5102
+        }
+#if __NPU_ARCH__ == 5102
         else if constexpr (IsSupportB4<B_T>()) {
             uint16_t l0BLoop = loadDataParams.mStep / M_STEP_MIN_VAL_B4;
             uint64_t dstOffset = 0;
@@ -131,7 +142,7 @@ private:
                 LoadData(dst[dstOffset], bMatrix, loadDataParams);
                 dstOffset += dstAddrStride;
             }
-        } 
+        }
 #endif
         else if constexpr (IsSameType<B_T, float>::value) {
             // in case of mdl && basek=8, the unit of mStartPosition is 16, so don't use it
@@ -144,9 +155,10 @@ private:
         }
     }
 
-    __aicore__ inline void MxTransLoadDataToL0(const LocalTensor<L0B_T> &dst, const LocalTensor<B_T> &bMatrix,
-     uint16_t bL1N, uint16_t madN, uint16_t madK, uint16_t bL1NOffset, uint16_t bL1KOffset,
-     const LocalTensor<AuxDtype> &l1BAuxMatrix, uint16_t bAuxL1K, uint16_t bAuxL1KOffset, uint16_t bAuxL1NOffset) const
+    __aicore__ inline void MxTransLoadDataToL0(
+        const LocalTensor<L0B_T>& dst, const LocalTensor<B_T>& bMatrix, uint16_t bL1N, uint16_t madN, uint16_t madK,
+        uint16_t bL1NOffset, uint16_t bL1KOffset, const LocalTensor<AuxDtype>& l1BAuxMatrix, uint16_t bAuxL1K,
+        uint16_t bAuxL1KOffset, uint16_t bAuxL1NOffset) const
     {
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
         uint8_t mStep = CeilDiv(madN, HW_M0);
@@ -170,7 +182,7 @@ private:
             loadDataMxParams.dstStride = kStep;
         } else if constexpr (SupportType<B_T, fp8_e5m2_t, fp8_e4m3fn_t>()) {
             // for FP8 ,two K0 on the k axis correspond to a small z fractal.
-            uint8_t scaleKStep = CeilDiv(madK, c0Size_* FP8_TWO);
+            uint8_t scaleKStep = CeilDiv(madK, c0Size_ * FP8_TWO);
             loadDataMxParams.yStartPosition = CeilDiv(bAuxL1KOffset, FP8_TWO);
             loadDataMxParams.yStep = scaleKStep;
             loadDataMxParams.srcStride = CeilDiv(bAuxL1K, FP8_TWO);
@@ -180,9 +192,10 @@ private:
 #endif
     }
 
-    __aicore__ inline void MxLoadDataToL0(const LocalTensor<L0B_T> &dst, const LocalTensor<B_T> &bMatrix,
-     uint16_t bL1K, uint16_t madN, uint16_t madK, uint16_t bL1NOffset, uint16_t bL1KOffset,
-     const LocalTensor<AuxDtype> &l1BAuxMatrix, uint16_t bAuxL1K, uint16_t bAuxL1KOffset, uint16_t bAuxL1NOffset) const
+    __aicore__ inline void MxLoadDataToL0(
+        const LocalTensor<L0B_T>& dst, const LocalTensor<B_T>& bMatrix, uint16_t bL1K, uint16_t madN, uint16_t madK,
+        uint16_t bL1NOffset, uint16_t bL1KOffset, const LocalTensor<AuxDtype>& l1BAuxMatrix, uint16_t bAuxL1K,
+        uint16_t bAuxL1KOffset, uint16_t bAuxL1NOffset) const
     {
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
         uint8_t mStep = CeilDiv(madN, HW_M0);
@@ -208,7 +221,7 @@ private:
             loadDataMxParams.dstStride = kStep;
         } else if constexpr (SupportType<B_T, fp8_e5m2_t, fp8_e4m3fn_t>()) {
             // for FP8 ,two K0 on the k axis correspond to a small z fractal.
-            uint8_t scaleKStep = CeilDiv(madK, c0Size_* FP8_TWO);
+            uint8_t scaleKStep = CeilDiv(madK, c0Size_ * FP8_TWO);
             loadDataMxParams.yStartPosition = CeilDiv(bAuxL1KOffset, FP8_TWO);
             loadDataMxParams.yStep = scaleKStep;
             loadDataMxParams.srcStride = CeilDiv(bAuxL1K, FP8_TWO);
@@ -219,9 +232,9 @@ private:
     }
 };
 
-}  // namespace Detail
-}  // namespace Impl
-}  // namespace AscendC
+} // namespace Detail
+} // namespace Impl
+} // namespace AscendC
 #endif
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_SPLIT_LOAD_TO_L0B_LOAD_TO_L0B_LOAD2DV2_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

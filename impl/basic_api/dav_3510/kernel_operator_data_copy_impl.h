@@ -203,6 +203,10 @@ __aicore__ inline void CopyCbufToBt(uint64_t dst, __cbuf__ T* src, const uint16_
     if ASCEND_IS_AIC {
         if constexpr (std::is_same<T, bfloat16_t>::value || std::is_same<T, float>::value
                       || std::is_same<T, int32_t>::value || std::is_same<T, half>::value) {
+            if constexpr (sizeof(T) == 4) {
+                ASCENDC_DEBUG_ASSERT((blockLen % 2 == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
+                    "For float or int32_t types, blockLen must be even when DataCopy from L1 to BIAS."));
+            }
             copy_cbuf_to_bt(dst, src, static_cast<bool>(convControl), blockCount, blockLen, srcStride, dstStride);
         }
     }
@@ -1268,7 +1272,8 @@ __aicore__ inline void DataCopyL0C2L1Impl(__cbuf__ T* dst, __cc__ U* src, const 
 }
 
 template <typename T, typename U>
-__aicore__ inline void DataCopyL0C2GMImpl(__gm__ T* dst, __cc__ U* src, const DataCopyCO12DstParams& intriParams)
+__aicore__ inline void DataCopyL0C2GMImpl(__gm__ T* dst, __cc__ U* src, const DataCopyCO12DstParams& intriParams,
+                                          uint8_t cacheMode)
 {
     if ASCEND_IS_AIC {
         static_assert(
@@ -1285,7 +1290,7 @@ __aicore__ inline void DataCopyL0C2GMImpl(__gm__ T* dst, __cc__ U* src, const Da
                 dstStride = dstStride * ONE_BLK_SIZE / sizeof(T);
             }
             return copy_matrix_cc_to_gm(dst, src, intriParams.sid, intriParams.nSize, intriParams.mSize, dstStride,
-                                        intriParams.srcStride, 0, 0, intriParams.unitFlag,
+                                        intriParams.srcStride, cacheMode, 0, intriParams.unitFlag,
                                         static_cast<uint64_t>(intriParams.quantPre), intriParams.reluPre,
                                         intriParams.channelSplit, intriParams.nz2ndEn, 0, 0, false, false, 0, false,
                                         false, false, false, false, false);

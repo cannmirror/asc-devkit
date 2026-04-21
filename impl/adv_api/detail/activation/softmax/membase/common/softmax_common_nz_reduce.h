@@ -1,20 +1,21 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
- * \file softmax_common_nz_reduce.h 
+ * \file softmax_common_nz_reduce.h
  * \brief
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/activation/softmax/membase/common/softmax_common_nz_reduce.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/softmax.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/activation/softmax/membase/common/softmax_common_nz_reduce.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/softmax.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_COMMON_NZ_REDUCE_H__
 #endif
@@ -22,25 +23,28 @@
 #define IMPL_ACTIVATION_SOFTMAX_SOFTMAX_COMMON_NZ_REDUCE_H
 
 namespace AscendC {
-__aicore__ inline void ReduceMaxSingleBlockNZImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const uint64_t& mask, const ReduceLastND& reduceParam)
+__aicore__ inline void ReduceMaxSingleBlockNZImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint64_t& mask, const ReduceLastND& reduceParam)
 {
     const uint32_t range = reduceParam.srcM / MAX_REPEAT_TIMES;
     const uint32_t tail = reduceParam.srcM % MAX_REPEAT_TIMES;
     for (uint32_t j = 0; j < range; j++) {
-        WholeReduceMax(dst[j * MAX_REPEAT_TIMES * SOFTMAX_SHAPE_NZ_BASIC_COUNT],
+        WholeReduceMax(
+            dst[j * MAX_REPEAT_TIMES * SOFTMAX_SHAPE_NZ_BASIC_COUNT],
             src[j * MAX_REPEAT_TIMES * SOFTMAX_SHAPE_NZ_BASIC_COUNT], mask, MAX_REPEAT_TIMES, DEFAULT_REPEAT_STRIDE, 1,
             SOFTMAX_SHAPE_NZ_BASIC_COUNT / FLOAT_NUM_PER_BLK);
     }
     if (tail != 0) {
-        WholeReduceMax(dst[range * MAX_REPEAT_TIMES * SOFTMAX_SHAPE_NZ_BASIC_COUNT],
+        WholeReduceMax(
+            dst[range * MAX_REPEAT_TIMES * SOFTMAX_SHAPE_NZ_BASIC_COUNT],
             src[range * MAX_REPEAT_TIMES * SOFTMAX_SHAPE_NZ_BASIC_COUNT], mask, tail, DEFAULT_REPEAT_STRIDE, 1,
             SOFTMAX_SHAPE_NZ_BASIC_COUNT / FLOAT_NUM_PER_BLK);
     }
 }
 
-__aicore__ inline void SingleUnAlignedReduceMaxNZImpl(const LocalTensor<float>& tmpBuffer1,
-    const LocalTensor<float>& tmpBuffer0, const uint32_t lastBlockMaskLen, const ReduceLastND& reduceParam)
+__aicore__ inline void SingleUnAlignedReduceMaxNZImpl(
+    const LocalTensor<float>& tmpBuffer1, const LocalTensor<float>& tmpBuffer0, const uint32_t lastBlockMaskLen,
+    const ReduceLastND& reduceParam)
 {
     ReduceMaxSingleBlockNZImpl(tmpBuffer1, tmpBuffer0, lastBlockMaskLen, reduceParam);
 
@@ -53,15 +57,16 @@ __aicore__ inline void SingleUnAlignedReduceMaxNZImpl(const LocalTensor<float>& 
     ResetMask();
 }
 
-__aicore__ inline void ReduceMaxLastNZImpl(const LocalTensor<float>& tmpBuffer1, const LocalTensor<float>& tmpBuffer0,
-    uint64_t mask[2], const ReduceLastND& reduceParam)
+__aicore__ inline void ReduceMaxLastNZImpl(
+    const LocalTensor<float>& tmpBuffer1, const LocalTensor<float>& tmpBuffer0, uint64_t mask[2],
+    const ReduceLastND& reduceParam)
 {
     const uint32_t splitNZBlockCount = reduceParam.srcK / SOFTMAX_SHAPE_NZ_BASIC_COUNT;
     const uint32_t splitOffset = reduceParam.dstM * SOFTMAX_SHAPE_NZ_BASIC_COUNT;
     const uint32_t splitCount = reduceParam.originalSrcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT;
     const uint32_t lastBlockMaskLen = reduceParam.originalSrcK % SOFTMAX_SHAPE_NZ_BASIC_COUNT != 0 ?
-        reduceParam.originalSrcK % SOFTMAX_SHAPE_NZ_BASIC_COUNT :
-        SOFTMAX_SHAPE_NZ_BASIC_COUNT;
+                                          reduceParam.originalSrcK % SOFTMAX_SHAPE_NZ_BASIC_COUNT :
+                                          SOFTMAX_SHAPE_NZ_BASIC_COUNT;
 
     if (unlikely(splitNZBlockCount == 1 && lastBlockMaskLen != SOFTMAX_SHAPE_NZ_BASIC_COUNT)) {
         SingleUnAlignedReduceMaxNZImpl(tmpBuffer1, tmpBuffer0, lastBlockMaskLen, reduceParam);
@@ -71,19 +76,21 @@ __aicore__ inline void ReduceMaxLastNZImpl(const LocalTensor<float>& tmpBuffer1,
         } else {
             SetMaskCount();
             SetVectorMask<float, MaskMode::COUNTER>(0, splitCount);
-            Muls<float, false>(tmpBuffer1, tmpBuffer0, 1.0, MASK_PLACEHOLDER, 1,
-                { 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+            Muls<float, false>(
+                tmpBuffer1, tmpBuffer0, 1.0, MASK_PLACEHOLDER, 1, {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
             PipeBarrier<PIPE_V>();
             for (uint32_t j = 1; j < splitNZBlockCount - 1; j++) {
-                Max<float, false>(tmpBuffer1, tmpBuffer1, tmpBuffer0[splitOffset * j], MASK_PLACEHOLDER, 1,
-                    { 1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+                Max<float, false>(
+                    tmpBuffer1, tmpBuffer1, tmpBuffer0[splitOffset * j], MASK_PLACEHOLDER, 1,
+                    {1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
                 PipeBarrier<PIPE_V>();
             }
             SetMaskNorm();
             ResetMask();
 
-            BinaryComputeWithSpecialMask(tmpBuffer1, tmpBuffer1, tmpBuffer0[splitOffset * (splitNZBlockCount - 1)],
-                mask, lastBlockMaskLen, splitCount, Max<float>);
+            BinaryComputeWithSpecialMask(
+                tmpBuffer1, tmpBuffer1, tmpBuffer0[splitOffset * (splitNZBlockCount - 1)], mask, lastBlockMaskLen,
+                splitCount, Max<float>);
 
             PipeBarrier<PIPE_V>();
             ReduceMaxBlockNZImpl(tmpBuffer1, tmpBuffer1, reduceParam);
@@ -102,25 +109,28 @@ __aicore__ inline void ReduceMaxLastNZImpl(const LocalTensor<float>& tmpBuffer1,
         }
     }
 }
-__aicore__ inline void ReduceSumSingleBlockNZImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
-    const uint64_t& mask, const ReduceLastND& reduceParam)
+__aicore__ inline void ReduceSumSingleBlockNZImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint64_t& mask, const ReduceLastND& reduceParam)
 {
     const uint32_t range = reduceParam.srcM / MAX_REPEAT_TIMES;
     const uint32_t tail = reduceParam.srcM % MAX_REPEAT_TIMES;
     for (uint32_t j = 0; j < range; j++) {
-        WholeReduceSum(dst[j * MAX_REPEAT_TIMES * SOFTMAX_SHAPE_NZ_BASIC_COUNT],
+        WholeReduceSum(
+            dst[j * MAX_REPEAT_TIMES * SOFTMAX_SHAPE_NZ_BASIC_COUNT],
             src[j * MAX_REPEAT_TIMES * SOFTMAX_SHAPE_NZ_BASIC_COUNT], mask, MAX_REPEAT_TIMES,
             SOFTMAX_SHAPE_NZ_BASIC_COUNT, 1, SOFTMAX_SHAPE_NZ_BASIC_COUNT / FLOAT_NUM_PER_BLK);
     }
     if (tail != 0) {
-        WholeReduceSum(dst[range * MAX_REPEAT_TIMES * SOFTMAX_SHAPE_NZ_BASIC_COUNT],
+        WholeReduceSum(
+            dst[range * MAX_REPEAT_TIMES * SOFTMAX_SHAPE_NZ_BASIC_COUNT],
             src[range * MAX_REPEAT_TIMES * SOFTMAX_SHAPE_NZ_BASIC_COUNT], mask, tail, SOFTMAX_SHAPE_NZ_BASIC_COUNT, 1,
             SOFTMAX_SHAPE_NZ_BASIC_COUNT / FLOAT_NUM_PER_BLK);
     }
 }
 
-__aicore__ inline void SingleUnAlignedReduceSumNZImpl(const LocalTensor<float>& tmpBuffer1,
-    const LocalTensor<float>& tmpBuffer0, const uint32_t lastBlockMaskLen, const ReduceLastND& reduceParam)
+__aicore__ inline void SingleUnAlignedReduceSumNZImpl(
+    const LocalTensor<float>& tmpBuffer1, const LocalTensor<float>& tmpBuffer0, const uint32_t lastBlockMaskLen,
+    const ReduceLastND& reduceParam)
 {
     ReduceSumSingleBlockNZImpl(tmpBuffer1, tmpBuffer0, lastBlockMaskLen, reduceParam);
 
@@ -133,15 +143,16 @@ __aicore__ inline void SingleUnAlignedReduceSumNZImpl(const LocalTensor<float>& 
     ResetMask();
 }
 
-__aicore__ inline void ReduceSumLastNZImpl(const LocalTensor<float>& tmpBuffer1, const LocalTensor<float>& tmpBuffer0,
-    uint64_t mask[2], const struct ReduceLastND& reduceParam)
+__aicore__ inline void ReduceSumLastNZImpl(
+    const LocalTensor<float>& tmpBuffer1, const LocalTensor<float>& tmpBuffer0, uint64_t mask[2],
+    const struct ReduceLastND& reduceParam)
 {
     const uint32_t splitOffset = reduceParam.dstM * SOFTMAX_SHAPE_NZ_BASIC_COUNT;
     const uint32_t splitCount = reduceParam.originalSrcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT;
     const uint32_t splitNZBlockCount = reduceParam.srcK / SOFTMAX_SHAPE_NZ_BASIC_COUNT;
     const uint32_t lastBlockMaskLen = reduceParam.originalSrcK % SOFTMAX_SHAPE_NZ_BASIC_COUNT != 0 ?
-        reduceParam.originalSrcK % SOFTMAX_SHAPE_NZ_BASIC_COUNT :
-        SOFTMAX_SHAPE_NZ_BASIC_COUNT;
+                                          reduceParam.originalSrcK % SOFTMAX_SHAPE_NZ_BASIC_COUNT :
+                                          SOFTMAX_SHAPE_NZ_BASIC_COUNT;
 
     if (unlikely(splitNZBlockCount == 1 && lastBlockMaskLen != SOFTMAX_SHAPE_NZ_BASIC_COUNT)) {
         SingleUnAlignedReduceSumNZImpl(tmpBuffer1, tmpBuffer0, lastBlockMaskLen, reduceParam);
@@ -151,19 +162,21 @@ __aicore__ inline void ReduceSumLastNZImpl(const LocalTensor<float>& tmpBuffer1,
         } else {
             SetMaskCount();
             SetVectorMask<float, MaskMode::COUNTER>(0, splitCount);
-            Muls<float, false>(tmpBuffer1, tmpBuffer0, 1.0, MASK_PLACEHOLDER, 1,
-                { 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+            Muls<float, false>(
+                tmpBuffer1, tmpBuffer0, 1.0, MASK_PLACEHOLDER, 1, {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
             PipeBarrier<PIPE_V>();
             for (uint32_t j = 1; j < splitNZBlockCount - 1; j++) {
-                Add<float, false>(tmpBuffer1, tmpBuffer1, tmpBuffer0[splitOffset * j], MASK_PLACEHOLDER, 1,
-                    { 1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
+                Add<float, false>(
+                    tmpBuffer1, tmpBuffer1, tmpBuffer0[splitOffset * j], MASK_PLACEHOLDER, 1,
+                    {1, 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
                 PipeBarrier<PIPE_V>();
             }
             SetMaskNorm();
             ResetMask();
 
-            BinaryComputeWithSpecialMask(tmpBuffer1, tmpBuffer1, tmpBuffer0[splitOffset * (splitNZBlockCount - 1)],
-                mask, lastBlockMaskLen, splitCount, Add<float>);
+            BinaryComputeWithSpecialMask(
+                tmpBuffer1, tmpBuffer1, tmpBuffer0[splitOffset * (splitNZBlockCount - 1)], mask, lastBlockMaskLen,
+                splitCount, Add<float>);
 
             PipeBarrier<PIPE_V>();
             ReduceSumBlockNZImpl(tmpBuffer1, tmpBuffer1, reduceParam);
@@ -183,7 +196,7 @@ __aicore__ inline void ReduceSumLastNZImpl(const LocalTensor<float>& tmpBuffer1,
     }
 }
 
-};
+};     // namespace AscendC
 #endif // IMPL_ACTIVATION_SOFTMAX_SOFTMAX_COMMON_NZ_REDUCE_H
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_COMMON_NZ_REDUCE_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file layernormgradbeta_common_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/normalization/layernormgrad/layernormgradbeta_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/normalization/layernormgrad/layernormgradbeta_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORMGRAD_LAYERNORMGRADBETA_COMMON_IMPL_H__
 #endif
@@ -69,11 +70,11 @@ __aicore__ inline void ReduceSumFirstN(
 }
 
 template <bool isClearDst = false>
-__aicore__ inline void ComputeProcess(const LocalTensor<float> &resForGamma, const LocalTensor<float> &inputDy,
-    const LocalTensor<float> &outputPdGamma, const LocalTensor<float> &outputPdBeta,
-    const LayerNormGradBetaParams &params)
+__aicore__ inline void ComputeProcess(
+    const LocalTensor<float>& resForGamma, const LocalTensor<float>& inputDy, const LocalTensor<float>& outputPdGamma,
+    const LocalTensor<float>& outputPdBeta, const LayerNormGradBetaParams& params)
 {
-    const LocalTensor<float> &resForGammaTmpTensor = params.resForGammaTmpTensor;
+    const LocalTensor<float>& resForGammaTmpTensor = params.resForGammaTmpTensor;
 
     SetVectorMask<float, MaskMode::COUNTER>(0, params.bshCurLength);
 
@@ -89,15 +90,15 @@ __aicore__ inline void ComputeProcess(const LocalTensor<float> &resForGamma, con
 }
 
 template <bool isClearDst = false>
-__aicore__ inline void ComputeProcess(const LocalTensor<half> &resForGamma, const LocalTensor<half> &inputDy,
-    const LocalTensor<half> &outputPdGamma, const LocalTensor<half> &outputPdBeta,
-    const LayerNormGradBetaParams &params)
+__aicore__ inline void ComputeProcess(
+    const LocalTensor<half>& resForGamma, const LocalTensor<half>& inputDy, const LocalTensor<half>& outputPdGamma,
+    const LocalTensor<half>& outputPdBeta, const LayerNormGradBetaParams& params)
 {
-    const LocalTensor<float> &inputDyTmpTensor = params.inputDyTmpTensor;
-    const LocalTensor<float> &resForGammaTmpTensor = params.resForGammaTmpTensor;
+    const LocalTensor<float>& inputDyTmpTensor = params.inputDyTmpTensor;
+    const LocalTensor<float>& resForGammaTmpTensor = params.resForGammaTmpTensor;
 
-    const LocalTensor<float> &gammaTempTensor = params.gammaTempTensor;
-    const LocalTensor<float> &betaTempTensor = params.betaTempTensor;
+    const LocalTensor<float>& gammaTempTensor = params.gammaTempTensor;
+    const LocalTensor<float>& betaTempTensor = params.betaTempTensor;
 
     SetVectorMask<half, MaskMode::COUNTER>(0, params.bshCurLength);
 
@@ -126,9 +127,9 @@ __aicore__ inline void ComputeProcess(const LocalTensor<half> &resForGamma, cons
 }
 
 template <typename T>
-__aicore__ inline void LayerNormGradBetaComputeND(const LocalTensor<T> &resForGamma, const LocalTensor<T> &inputDy,
-    const LocalTensor<T> &outputPdGamma, const LocalTensor<T> &outputPdBeta, const LayerNormGradBetaTiling &tiling,
-    LayerNormGradBetaParams &params)
+__aicore__ inline void LayerNormGradBetaComputeND(
+    const LocalTensor<T>& resForGamma, const LocalTensor<T>& inputDy, const LocalTensor<T>& outputPdGamma,
+    const LocalTensor<T>& outputPdBeta, const LayerNormGradBetaTiling& tiling, LayerNormGradBetaParams& params)
 {
     ComputeProcess<true>(resForGamma, inputDy, outputPdGamma, outputPdBeta, params);
 
@@ -143,14 +144,15 @@ __aicore__ inline void LayerNormGradBetaComputeND(const LocalTensor<T> &resForGa
         params.bshCurLength = tiling.inputTailSize;
         params.bsCurLength = tiling.bsTailSize;
 
-        ComputeProcess(resForGamma[tiling.inputTailPos], inputDy[tiling.inputTailPos], outputPdGamma, outputPdBeta,
-            params);
+        ComputeProcess(
+            resForGamma[tiling.inputTailPos], inputDy[tiling.inputTailPos], outputPdGamma, outputPdBeta, params);
     }
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void GetLayerNormGradBetaTensorInfo(const LocalTensor<T> &resForGamma, const LocalTensor<T> &inputDy,
-    const LocalTensor<float> &stackBuffer, const LayerNormGradBetaTiling &tiling, LayerNormGradBetaParams &params)
+__aicore__ inline void GetLayerNormGradBetaTensorInfo(
+    const LocalTensor<T>& resForGamma, const LocalTensor<T>& inputDy, const LocalTensor<float>& stackBuffer,
+    const LayerNormGradBetaTiling& tiling, LayerNormGradBetaParams& params)
 {
     params.bLength = tiling.bLength;
     params.sLength = tiling.sLength;
@@ -168,7 +170,8 @@ __aicore__ inline void GetLayerNormGradBetaTensorInfo(const LocalTensor<T> &resF
         params.resForGammaTmpTensor = stackBuffer[tiling.resForGammaTmpTensorPos];
 
         ASCENDC_ASSERT((tiling.resForGammaTmpTensorPos + tiling.oneCalSize <= tiling.stackBufferSize), {
-            KERNEL_LOG(KERNEL_ERROR, "resForGammaTmpTensorPos + oneCalSize is (%d) should <= stackBufferSize is (%d)",
+            KERNEL_LOG(
+                KERNEL_ERROR, "resForGammaTmpTensorPos + oneCalSize is (%d) should <= stackBufferSize is (%d)",
                 tiling.resForGammaTmpTensorPos + tiling.oneCalSize, tiling.stackBufferSize);
         });
     }
@@ -180,27 +183,29 @@ __aicore__ inline void GetLayerNormGradBetaTensorInfo(const LocalTensor<T> &resF
             params.resForGammaTmpTensor = stackBuffer[tiling.resForGammaTmpTensorPos];
 
             ASCENDC_ASSERT((tiling.resForGammaTmpTensorPos + tiling.oneCalSize <= tiling.stackBufferSize), {
-                KERNEL_LOG(KERNEL_ERROR,
-                    "resForGammaTmpTensorPos + oneCalSize is (%d) should <= stackBufferSize is (%d)",
+                KERNEL_LOG(
+                    KERNEL_ERROR, "resForGammaTmpTensorPos + oneCalSize is (%d) should <= stackBufferSize is (%d)",
                     tiling.resForGammaTmpTensorPos + tiling.oneCalSize, tiling.stackBufferSize);
             });
         }
     }
 
     ASCENDC_ASSERT((stackBuffer.GetSize() >= tiling.stackBufferSize), {
-        KERNEL_LOG(KERNEL_ERROR, "stackBuffer.GetSize is (%d) >= tiling.stackBufferSize is (%d)", stackBuffer.GetSize(),
+        KERNEL_LOG(
+            KERNEL_ERROR, "stackBuffer.GetSize is (%d) >= tiling.stackBufferSize is (%d)", stackBuffer.GetSize(),
             tiling.stackBufferSize);
     });
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void LayerNormGradBetaImpl(const LocalTensor<T>& outputPdGamma, const LocalTensor<T>& outputPdBeta,
-    const LocalTensor<T>& resForGamma, const LocalTensor<T>& inputDy, const LocalTensor<uint8_t>& sharedTmpBuffer,
-    const LayerNormGradBetaTiling& tiling)
+__aicore__ inline void LayerNormGradBetaImpl(
+    const LocalTensor<T>& outputPdGamma, const LocalTensor<T>& outputPdBeta, const LocalTensor<T>& resForGamma,
+    const LocalTensor<T>& inputDy, const LocalTensor<uint8_t>& sharedTmpBuffer, const LayerNormGradBetaTiling& tiling)
 {
     TRACE_START(TraceId::LayerNormGradBeta);
-    CHECK_FUNC_HIGHLEVEL_API(LayerNormGradBeta, (T, isReuseSource), (outputPdGamma, outputPdBeta, resForGamma, inputDy, sharedTmpBuffer,
-        tiling));
+    CHECK_FUNC_HIGHLEVEL_API(
+        LayerNormGradBeta, (T, isReuseSource),
+        (outputPdGamma, outputPdBeta, resForGamma, inputDy, sharedTmpBuffer, tiling));
     ASCENDC_ASSERT((tiling.oneCalSize > 0), { KERNEL_LOG(KERNEL_ERROR, "tiling.oneCalSize must > 0!"); });
 
     if ASCEND_IS_AIC {
@@ -221,8 +226,9 @@ __aicore__ inline void LayerNormGradBetaImpl(const LocalTensor<T>& outputPdGamma
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void LayerNormGradBetaImpl(const LocalTensor<T>& outputPdGamma, const LocalTensor<T>& outputPdBeta,
-    const LocalTensor<T>& resForGamma, const LocalTensor<T>& inputDy, LayerNormGradBetaTiling& tiling)
+__aicore__ inline void LayerNormGradBetaImpl(
+    const LocalTensor<T>& outputPdGamma, const LocalTensor<T>& outputPdBeta, const LocalTensor<T>& resForGamma,
+    const LocalTensor<T>& inputDy, LayerNormGradBetaTiling& tiling)
 {
     LocalTensor<uint8_t> sharedTmpBuffer; // partial derivation
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);

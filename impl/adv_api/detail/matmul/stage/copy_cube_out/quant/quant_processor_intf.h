@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file quant_processor_intf.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/stage/copy_cube_out/quant/quant_processor_intf.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/stage/copy_cube_out/quant/quant_processor_intf.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_OUT_QUANT_QUANT_PROCESSOR_INTF_H__
 #endif
@@ -29,8 +30,7 @@ namespace Impl {
 namespace Detail {
 
 template <typename IMPL, class A_TYPE, class C_TYPE, const auto& MM_CFG, typename = void>
-class MatmulQuantProcessor
-{
+class MatmulQuantProcessor {
 public:
     __aicore__ inline MatmulQuantProcessor() {}
     __aicore__ inline ~MatmulQuantProcessor() {}
@@ -67,28 +67,19 @@ public:
      * @description: if is quant scenario
      * @return: quant scenario or not
      */
-    __aicore__ inline bool IsQuantSenario()
-    {
-        return false;
-    }
+    __aicore__ inline bool IsQuantSenario() { return false; }
 
     /**
      * @description: Get the quant mode
      * @return: quant mode
      */
-    __aicore__ inline QuantMode_t GetMatmulQuantMode()
-    {
-        return QuantMode_t::NoQuant;
-    }
+    __aicore__ inline QuantMode_t GetMatmulQuantMode() { return QuantMode_t::NoQuant; }
 
     /**
      * @description: Get the Scalar value
      * @return: Scalar Value
      */
-    __aicore__ inline uint64_t GetQuantScalarValue()
-    {
-        return 0;
-    }
+    __aicore__ inline uint64_t GetQuantScalarValue() { return 0; }
 
     /**
      * @description: Free quant param buf
@@ -97,8 +88,9 @@ public:
      * @param: baseUseN: The quant param block size
      * @return: void
      */
-    __aicore__ inline void CopyQuantTensor(LocalTensor<uint64_t>& quantTensor,
-        const int32_t curN, const int32_t baseUseN) {}
+    __aicore__ inline void CopyQuantTensor(
+        LocalTensor<uint64_t>& quantTensor, const int32_t curN, const int32_t baseUseN)
+    {}
 
     /**
      * @description: Update quantTensor by idx
@@ -111,10 +103,7 @@ public:
      * @description: Get the flag to district scalar or vector quant mode
      * @return: void
      */
-    __aicore__ inline bool IsPerChannelSenario()
-    {
-        return false;
-    }
+    __aicore__ inline bool IsPerChannelSenario() { return false; }
 
     /**
      * @description: Free quant param buf for datacopy/fixpipe interface
@@ -135,12 +124,11 @@ public:
      * @param: curCol: The current column index
      * @return: void
      */
-    __aicore__ inline void UpdateDataCopyParamForQuant(DataCopyEnhancedParams& enhancedParams, int curCol)
-    {}
+    __aicore__ inline void UpdateDataCopyParamForQuant(DataCopyEnhancedParams& enhancedParams, int curCol) {}
 };
-}  // namespace Detail
-}  // namespace Impl
-}  // namespace AscendC
+} // namespace Detail
+} // namespace Impl
+} // namespace AscendC
 #endif // IMPL_MATMUL_STAGE_COPY_CUBE_OUT_QUANT_QUANT_PROCESSOR_INTF_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_STAGE_COPY_CUBE_OUT_QUANT_QUANT_PROCESSOR_INTF_H__)

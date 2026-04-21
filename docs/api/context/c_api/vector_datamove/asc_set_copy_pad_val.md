@@ -11,8 +11,13 @@
 ## 功能说明
 
 和asc_copy_gm2ub_align或asc_copy_ub2gm_align接口配合使用，设置连续搬运数据块左右两侧需要填补的数据值。
+
 <cann-filter npu_type="950">
-对于Ascend 950PR/Ascend 950DT产品，该接口仅对asc_copy_gm2ub_align接口有效。
+
+对于Ascend 950PR/Ascend 950DT产品：
+- 该接口仅对asc_copy_gm2ub_align接口有效。
+- fp8_e8m0_t、fp8_e5m2_t、fp8_e4m3fn_t、fp4x2_e2m1_t、fp4x2_e1m2_t、hifloat8_t类型的数据需转换成int8_t类型后再调用本接口。
+
 </cann-filter>
 
 ## 函数原型
@@ -28,20 +33,6 @@ __aicore__ inline void asc_set_copy_pad_val(int32_t pad_value)
 __aicore__ inline void asc_set_copy_pad_val(uint32_t pad_value)
 __aicore__ inline void asc_set_copy_pad_val(float pad_value)
 ```
-
-<cann-filter npu_type="950">
-
-```cpp
-// 如下接口仅在Ascend 950PR/Ascend 950DT版本上支持：
-__aicore__ inline void asc_set_copy_pad_val(fp4x2_e2m1_t pad_value)
-__aicore__ inline void asc_set_copy_pad_val(fp4x2_e1m2_t pad_value)
-__aicore__ inline void asc_set_copy_pad_val(fp8_e8m0_t pad_value)
-__aicore__ inline void asc_set_copy_pad_val(fp8_e5m2_t pad_value)
-__aicore__ inline void asc_set_copy_pad_val(fp8_e4m3fn_t pad_value)
-__aicore__ inline void asc_set_copy_pad_val(hifloat8_t pad_value)
-```
-
-</cann-filter>
 
 ## 参数说明
 

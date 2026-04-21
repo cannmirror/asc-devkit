@@ -17,8 +17,7 @@
 ```
 
 ## 算子描述
-- 算子功能： 
-
+- 算子功能：  
   初始化TBufPool内存资源池。本接口适用于内存资源有限时，希望手动指定UB/L1内存资源复用的场景。本接口初始化后在整体内存资源中划分出一块子资源池。划分出的子资源池TBufPool。
 
 - 算子规格：
@@ -57,8 +56,7 @@
   </table>
 
 - 算子实现：  
-  - Kernel实现
-
+  - Kernel实现  
     Init函数中为tbufPool0划分65536 * 3大小的内存，然后自定义MyBufPool的InitBuffer函数，实现TQue和Tbuf的内存分配。接着执行以下
     3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm和yGm搬运到Local Memory，分别存储在xLocal、yLocal，Compute任务负责对xLocal、yLocal执行加法操作，计算结果存储在zLocal中，CopyOut任务负责将输出数据从zLocal搬运至Global Memory上的输出Tensor zGm中。
 

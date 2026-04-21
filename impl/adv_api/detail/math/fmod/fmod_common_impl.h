@@ -1,20 +1,21 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
- 
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
 /* !
  * \file fmod_common_impl.h
  * \brief
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/fmod/fmod_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/fmod.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/fmod/fmod_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/fmod.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_FMOD_FMOD_COMMON_IMPL_H__
 #endif
@@ -34,11 +35,11 @@ namespace {
 constexpr uint32_t SRC0_IDX = 1;
 constexpr uint32_t SRC1_IDX = 2;
 constexpr uint32_t TRUNC_IDX = 3;
-}
+} // namespace
 
-__aicore__ inline void FmodCompute(const LocalTensor<float>& dstTensor, const LocalTensor<float>& src0Tensor,
-    const LocalTensor<float>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t stackSize,
-    const uint32_t calCount)
+__aicore__ inline void FmodCompute(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& src0Tensor, const LocalTensor<float>& src1Tensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t stackSize, const uint32_t calCount)
 {
     PipeBarrier<PIPE_V>();
 
@@ -55,9 +56,9 @@ __aicore__ inline void FmodCompute(const LocalTensor<float>& dstTensor, const Lo
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void FmodCompute(const LocalTensor<half>& dstTensor, const LocalTensor<half>& src0Tensor,
-    const LocalTensor<half>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t stackSize,
-    const uint32_t calCount)
+__aicore__ inline void FmodCompute(
+    const LocalTensor<half>& dstTensor, const LocalTensor<half>& src0Tensor, const LocalTensor<half>& src1Tensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t stackSize, const uint32_t calCount)
 {
     // floatTmpTensor<float>    = | dst | src0 | src1 |
     // sharedTmpBuffer<uint8_t> = | dst | src0 | src1 | trunc |
@@ -72,15 +73,17 @@ __aicore__ inline void FmodCompute(const LocalTensor<half>& dstTensor, const Loc
     Cast<float, half>(tmpSrc1, src1Tensor, RoundMode::CAST_NONE, calCount);
     PipeBarrier<PIPE_V>();
 
-    FmodCompute(floatTmpTensor, tmpSrc0, tmpSrc1, sharedTmpBuffer[TRUNC_IDX * stackSize * sizeof(float)], stackSize, calCount);
+    FmodCompute(
+        floatTmpTensor, tmpSrc0, tmpSrc1, sharedTmpBuffer[TRUNC_IDX * stackSize * sizeof(float)], stackSize, calCount);
 
     Cast<half, float>(dstTensor, floatTmpTensor, RoundMode::CAST_NONE, calCount);
     PipeBarrier<PIPE_V>();
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void FmodImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
-    const LocalTensor<T>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void FmodImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
     if ASCEND_IS_AIC {
         return;
@@ -92,7 +95,8 @@ __aicore__ inline void FmodImpl(const LocalTensor<T>& dstTensor, const LocalTens
         return;
     }
 
-    constexpr uint32_t maxLiveNodeCount = 8; // The corresponding maxLiveNodeCount for half is 8, extra is 3 * 2 + trunc 2.
+    constexpr uint32_t maxLiveNodeCount =
+        8; // The corresponding maxLiveNodeCount for half is 8, extra is 3 * 2 + trunc 2.
     uint32_t bufferSize = sharedTmpBuffer.GetSize();
     uint32_t stackSize =
         bufferSize / sizeof(T) / maxLiveNodeCount / ONE_BLK_SIZE * ONE_BLK_SIZE; // divided by how many counts
@@ -103,12 +107,14 @@ __aicore__ inline void FmodImpl(const LocalTensor<T>& dstTensor, const LocalTens
     const uint32_t tail = calCount % stackSize;
 
     for (uint32_t i = 0; i < round; ++i) {
-        FmodCompute(dstTensor[i * stackSize], src0Tensor[i * stackSize], src1Tensor[i * stackSize], sharedTmpBuffer,
-            stackSize, stackSize);
+        FmodCompute(
+            dstTensor[i * stackSize], src0Tensor[i * stackSize], src1Tensor[i * stackSize], sharedTmpBuffer, stackSize,
+            stackSize);
     }
     if (tail > 0) {
-        FmodCompute(dstTensor[round * stackSize], src0Tensor[round * stackSize], src1Tensor[round * stackSize],
-            sharedTmpBuffer, stackSize, tail);
+        FmodCompute(
+            dstTensor[round * stackSize], src0Tensor[round * stackSize], src1Tensor[round * stackSize], sharedTmpBuffer,
+            stackSize, tail);
     }
 }
 } // namespace AscendC

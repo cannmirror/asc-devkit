@@ -1,15 +1,16 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/hypot/hypot_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/hypot.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/hypot/hypot_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/hypot.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_H__YPOT_HYPOT_COMMON_IMPL_H
 #endif
@@ -37,15 +38,16 @@ constexpr uint32_t AND_OPERATOR = 0xfe000000;
 constexpr uint32_t ADD_OPERATOR = 0x7e800000;
 constexpr uint32_t OR_OPERATOR = 0x800000;
 
-constexpr Reg::CastTrait HYPOT_CAST_TRAIT_RINT = { Reg::RegLayout::ZERO, Reg::SatMode::SAT,
-    Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT };
-}
+constexpr Reg::CastTrait HYPOT_CAST_TRAIT_RINT = {
+    Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+} // namespace HypotInternal
 
 template <typename T, typename U>
-__simd_callee__ inline void CompareScalar(Reg::MaskReg &cmpMaskZero, Reg::MaskReg &cmpMaskSrcInf,
-    Reg::RegTensor<T> &vSrcTmpReg0, Reg::RegTensor<T> &vSrcTmpReg1, Reg::MaskReg &cmpMaskSrc0NAN,
-    Reg::MaskReg &cmpMaskSrc1NAN, Reg::RegTensor<T> &vRegOne, Reg::RegTensor<T> &vSrcReg0,
-    Reg::RegTensor<T> &vSrcReg1, const U INF, const U NEG_INF, Reg::MaskReg maskReg)
+__simd_callee__ inline void CompareScalar(
+    Reg::MaskReg& cmpMaskZero, Reg::MaskReg& cmpMaskSrcInf, Reg::RegTensor<T>& vSrcTmpReg0,
+    Reg::RegTensor<T>& vSrcTmpReg1, Reg::MaskReg& cmpMaskSrc0NAN, Reg::MaskReg& cmpMaskSrc1NAN,
+    Reg::RegTensor<T>& vRegOne, Reg::RegTensor<T>& vSrcReg0, Reg::RegTensor<T>& vSrcReg1, const U INF, const U NEG_INF,
+    Reg::MaskReg maskReg)
 {
     Reg::MaskReg cmpMaskSrc0INF;
     Reg::MaskReg cmpMaskSrc1INF;
@@ -56,12 +58,12 @@ __simd_callee__ inline void CompareScalar(Reg::MaskReg &cmpMaskZero, Reg::MaskRe
     Reg::MaskReg cmpMaskSrc0Inf;
     Reg::MaskReg cmpMaskSrc1Inf;
 
-    Reg::CompareScalar<U>(cmpMaskSrc0INF, (Reg::RegTensor<U> &)vSrcReg0, INF, maskReg);
-    Reg::CompareScalar<U>(cmpMaskSrc1INF, (Reg::RegTensor<U> &)vSrcReg1, INF, maskReg);
-    Reg::CompareScalar<U>(cmpMaskSrc0NINF, (Reg::RegTensor<U> &)vSrcReg0, NEG_INF, maskReg);
-    Reg::CompareScalar<U>(cmpMaskSrc1NINF, (Reg::RegTensor<U> &)vSrcReg1, NEG_INF, maskReg);
-    Reg::CompareScalar<U>(cmpMaskSrc0Zero, (Reg::RegTensor<U> &)vSrcReg0, 0, maskReg);
-    Reg::CompareScalar<U>(cmpMaskSrc1Zero, (Reg::RegTensor<U> &)vSrcReg1, 0, maskReg);
+    Reg::CompareScalar<U>(cmpMaskSrc0INF, (Reg::RegTensor<U>&)vSrcReg0, INF, maskReg);
+    Reg::CompareScalar<U>(cmpMaskSrc1INF, (Reg::RegTensor<U>&)vSrcReg1, INF, maskReg);
+    Reg::CompareScalar<U>(cmpMaskSrc0NINF, (Reg::RegTensor<U>&)vSrcReg0, NEG_INF, maskReg);
+    Reg::CompareScalar<U>(cmpMaskSrc1NINF, (Reg::RegTensor<U>&)vSrcReg1, NEG_INF, maskReg);
+    Reg::CompareScalar<U>(cmpMaskSrc0Zero, (Reg::RegTensor<U>&)vSrcReg0, 0, maskReg);
+    Reg::CompareScalar<U>(cmpMaskSrc1Zero, (Reg::RegTensor<U>&)vSrcReg1, 0, maskReg);
 
     Reg::MaskAnd(cmpMaskZero, cmpMaskSrc0Zero, cmpMaskSrc1Zero, maskReg);
     Reg::MaskOr(cmpMaskSrc0Inf, cmpMaskSrc0INF, cmpMaskSrc0NINF, maskReg);
@@ -73,8 +75,9 @@ __simd_callee__ inline void CompareScalar(Reg::MaskReg &cmpMaskZero, Reg::MaskRe
     Reg::Select(vSrcTmpReg1, vRegOne, vSrcReg1, cmpMaskSrcInf);
 }
 
-__simd_callee__ inline void HypotCommonProcess(Reg::RegTensor<float> &vSrcTmpReg0, Reg::RegTensor<float> &vSrcTmpReg1,
-    Reg::RegTensor<float> &vDstReg0, Reg::MaskReg maskReg)
+__simd_callee__ inline void HypotCommonProcess(
+    Reg::RegTensor<float>& vSrcTmpReg0, Reg::RegTensor<float>& vSrcTmpReg1, Reg::RegTensor<float>& vDstReg0,
+    Reg::MaskReg maskReg)
 {
     Reg::RegTensor<float> vTmpReg0, vTmpReg1, vTmpReg2, vTmpReg3;
     Reg::RegTensor<int32_t> vAndReg, vNegReg, vAddsReg, vOrReg, vMinReg, vMaxReg;
@@ -98,14 +101,14 @@ __simd_callee__ inline void HypotCommonProcess(Reg::RegTensor<float> &vSrcTmpReg
 }
 
 template <typename T>
-__simd_callee__ inline void HypotCompute(Reg::RegTensor<T> &vSrcTmpReg0, Reg::RegTensor<T> &vSrcTmpReg1,
-    Reg::RegTensor<T> &vDstReg0, Reg::MaskReg maskReg)
+__simd_callee__ inline void HypotCompute(
+    Reg::RegTensor<T>& vSrcTmpReg0, Reg::RegTensor<T>& vSrcTmpReg1, Reg::RegTensor<T>& vDstReg0, Reg::MaskReg maskReg)
 {
     if constexpr (IsSameType<T, bfloat16_t>::value) {
         Reg::RegTensor<float> vDstF, vSrc0, vSrc1;
         Reg::Cast<float, bfloat16_t, HypotInternal::HYPOT_CAST_TRAIT_RINT>(vSrc0, vSrcTmpReg0, maskReg);
         Reg::Cast<float, bfloat16_t, HypotInternal::HYPOT_CAST_TRAIT_RINT>(vSrc1, vSrcTmpReg1, maskReg);
-        
+
         HypotCommonProcess(vSrc0, vSrc1, vDstF, maskReg);
 
         Reg::Cast<bfloat16_t, float, HypotInternal::HYPOT_CAST_TRAIT_RINT>(vDstReg0, vDstF, maskReg);
@@ -115,7 +118,7 @@ __simd_callee__ inline void HypotCompute(Reg::RegTensor<T> &vSrcTmpReg0, Reg::Re
         Reg::Cast<float, half, HypotInternal::HYPOT_CAST_TRAIT_RINT>(vSrc1, vSrcTmpReg1, maskReg);
 
         HypotCommonProcess(vSrc0, vSrc1, vDstF, maskReg);
-        
+
         Reg::Cast<half, float, HypotInternal::HYPOT_CAST_TRAIT_RINT>(vDstReg0, vDstF, maskReg);
     } else {
         HypotCommonProcess(vSrcTmpReg0, vSrcTmpReg1, vDstReg0, maskReg);
@@ -123,8 +126,7 @@ __simd_callee__ inline void HypotCompute(Reg::RegTensor<T> &vSrcTmpReg0, Reg::Re
 }
 
 template <typename T>
-__simd_vf__ inline void VfHypotImpl(__ubuf__ T *dstUb, __ubuf__ T *src0Ub, __ubuf__ T *src1Ub,
-    const uint32_t calCount)
+__simd_vf__ inline void VfHypotImpl(__ubuf__ T* dstUb, __ubuf__ T* src0Ub, __ubuf__ T* src1Ub, const uint32_t calCount)
 {
     Reg::RegTensor<T> vSrcReg0;
     Reg::RegTensor<T> vSrcReg1;
@@ -150,17 +152,17 @@ __simd_vf__ inline void VfHypotImpl(__ubuf__ T *dstUb, __ubuf__ T *src0Ub, __ubu
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
 
     if constexpr (IsSameType<T, float>::value) {
-        Reg::Duplicate((Reg::RegTensor<uint32_t> &)vRegInf, HypotInternal::INF);
-        Reg::Duplicate((Reg::RegTensor<uint32_t> &)vRegOne, 1.0f);
-        Reg::Duplicate((Reg::RegTensor<uint32_t> &)vRegZero, 0);
+        Reg::Duplicate((Reg::RegTensor<uint32_t>&)vRegInf, HypotInternal::INF);
+        Reg::Duplicate((Reg::RegTensor<uint32_t>&)vRegOne, 1.0f);
+        Reg::Duplicate((Reg::RegTensor<uint32_t>&)vRegZero, 0);
     } else if constexpr (IsSameType<T, half>::value) {
-        Reg::Duplicate((Reg::RegTensor<uint16_t> &)vRegInf, HypotInternal::HALF_INF);
-        Reg::Duplicate((Reg::RegTensor<uint16_t> &)vRegOne, 1.0f);
-        Reg::Duplicate((Reg::RegTensor<uint16_t> &)vRegZero, 0);
+        Reg::Duplicate((Reg::RegTensor<uint16_t>&)vRegInf, HypotInternal::HALF_INF);
+        Reg::Duplicate((Reg::RegTensor<uint16_t>&)vRegOne, 1.0f);
+        Reg::Duplicate((Reg::RegTensor<uint16_t>&)vRegZero, 0);
     } else if constexpr (IsSameType<T, bfloat16_t>::value) {
-        Reg::Duplicate((Reg::RegTensor<uint16_t> &)vRegInf, HypotInternal::B_HALF_INF);
-        Reg::Duplicate((Reg::RegTensor<uint16_t> &)vRegOne, HypotInternal::B_HALF_ONE);
-        Reg::Duplicate((Reg::RegTensor<uint16_t> &)vRegZero, 0);
+        Reg::Duplicate((Reg::RegTensor<uint16_t>&)vRegInf, HypotInternal::B_HALF_INF);
+        Reg::Duplicate((Reg::RegTensor<uint16_t>&)vRegOne, HypotInternal::B_HALF_ONE);
+        Reg::Duplicate((Reg::RegTensor<uint16_t>&)vRegZero, 0);
     }
 
     for (uint16_t i = 0; i < repeatTimes; ++i) {
@@ -177,16 +179,17 @@ __simd_vf__ inline void VfHypotImpl(__ubuf__ T *dstUb, __ubuf__ T *src0Ub, __ubu
         Reg::Compare<T, CMPMODE::NE>(cmpMaskSrc0NAN, vSrcReg0, vSrcReg0, maskReg);
         Reg::Compare<T, CMPMODE::NE>(cmpMaskSrc1NAN, vSrcReg1, vSrcReg1, maskReg);
         if constexpr (IsSameType<T, float>::value) {
-            CompareScalar<T, uint32_t>(cmpMaskZero, cmpMaskSrcInf, vSrcTmpReg0, vSrcTmpReg1, cmpMaskSrc0NAN,
-                cmpMaskSrc1NAN, vRegOne, vSrcReg0, vSrcReg1, HypotInternal::INF, HypotInternal::NEG_INF, maskReg);
+            CompareScalar<T, uint32_t>(
+                cmpMaskZero, cmpMaskSrcInf, vSrcTmpReg0, vSrcTmpReg1, cmpMaskSrc0NAN, cmpMaskSrc1NAN, vRegOne, vSrcReg0,
+                vSrcReg1, HypotInternal::INF, HypotInternal::NEG_INF, maskReg);
         } else if constexpr (IsSameType<T, half>::value) {
-            CompareScalar<T, uint16_t>(cmpMaskZero, cmpMaskSrcInf, vSrcTmpReg0, vSrcTmpReg1, cmpMaskSrc0NAN,
-                cmpMaskSrc1NAN, vRegOne, vSrcReg0, vSrcReg1, HypotInternal::HALF_INF, HypotInternal::HALF_NEG_INF,
-                maskReg);
+            CompareScalar<T, uint16_t>(
+                cmpMaskZero, cmpMaskSrcInf, vSrcTmpReg0, vSrcTmpReg1, cmpMaskSrc0NAN, cmpMaskSrc1NAN, vRegOne, vSrcReg0,
+                vSrcReg1, HypotInternal::HALF_INF, HypotInternal::HALF_NEG_INF, maskReg);
         } else if constexpr (IsSameType<T, bfloat16_t>::value) {
-            CompareScalar<T, uint16_t>(cmpMaskZero, cmpMaskSrcInf, vSrcTmpReg0, vSrcTmpReg1, cmpMaskSrc0NAN,
-                cmpMaskSrc1NAN, vRegOne, vSrcReg0, vSrcReg1, HypotInternal::B_HALF_INF, HypotInternal::B_HALF_NEG_INF,
-                maskReg);
+            CompareScalar<T, uint16_t>(
+                cmpMaskZero, cmpMaskSrcInf, vSrcTmpReg0, vSrcTmpReg1, cmpMaskSrc0NAN, cmpMaskSrc1NAN, vRegOne, vSrcReg0,
+                vSrcReg1, HypotInternal::B_HALF_INF, HypotInternal::B_HALF_NEG_INF, maskReg);
         }
 
         HypotCompute<T>(vSrcTmpReg0, vSrcTmpReg1, vDstReg0, maskReg);
@@ -204,10 +207,12 @@ __simd_vf__ inline void VfHypotImpl(__ubuf__ T *dstUb, __ubuf__ T *src0Ub, __ubu
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void HypotImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
-    const LocalTensor<T>& src1Tensor, const uint32_t calCount)
+__aicore__ inline void HypotImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor,
+    const uint32_t calCount)
 {
-    static_assert(SupportType<T, half, bfloat16_t, float>(),
+    static_assert(
+        SupportType<T, half, bfloat16_t, float>(),
         "Hypot only support half/bfloat16_t/float data type on current device!");
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -218,28 +223,32 @@ __aicore__ inline void HypotImpl(const LocalTensor<T>& dstTensor, const LocalTen
     CheckTensorPos<T>(src0Tensor, Hardware::UB, "src0Tensor", "VECIN / VECCALC / VECOUT", "Hypot");
     CheckTensorPos<T>(src1Tensor, Hardware::UB, "src1Tensor", "VECIN / VECCALC / VECOUT", "Hypot");
     ASCENDC_ASSERT((calCount <= src0Tensor.GetSize()), {
-        KERNEL_LOG(KERNEL_ERROR, "calCount is %u, which should not be larger than src0Tensor length %u", calCount,
+        KERNEL_LOG(
+            KERNEL_ERROR, "calCount is %u, which should not be larger than src0Tensor length %u", calCount,
             src0Tensor.GetSize());
     });
     ASCENDC_ASSERT((calCount <= src1Tensor.GetSize()), {
-        KERNEL_LOG(KERNEL_ERROR, "calCount is %u, which should not be larger than src1Tensor length %u", calCount,
+        KERNEL_LOG(
+            KERNEL_ERROR, "calCount is %u, which should not be larger than src1Tensor length %u", calCount,
             src1Tensor.GetSize());
     });
     ASCENDC_ASSERT((calCount <= dstTensor.GetSize()), {
-        KERNEL_LOG(KERNEL_ERROR, "calCount is %u, which should not be larger than dstTensor length %u", calCount,
+        KERNEL_LOG(
+            KERNEL_ERROR, "calCount is %u, which should not be larger than dstTensor length %u", calCount,
             dstTensor.GetSize());
     });
 
-    __ubuf__ T *src0Ub = (__ubuf__ T *)src0Tensor.GetPhyAddr();
-    __ubuf__ T *src1Ub = (__ubuf__ T *)src1Tensor.GetPhyAddr();
-    __ubuf__ T *dstUb = (__ubuf__ T *)dstTensor.GetPhyAddr();
+    __ubuf__ T* src0Ub = (__ubuf__ T*)src0Tensor.GetPhyAddr();
+    __ubuf__ T* src1Ub = (__ubuf__ T*)src1Tensor.GetPhyAddr();
+    __ubuf__ T* dstUb = (__ubuf__ T*)dstTensor.GetPhyAddr();
 
     VfHypotImpl<T>(dstUb, src0Ub, src1Ub, calCount);
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void HypotImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
-    const LocalTensor<T>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void HypotImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {

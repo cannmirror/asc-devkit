@@ -1,19 +1,20 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 /*!
-* \file cube_in_buffer_double_buffer.h
-* \brief
-*/
+ * \file cube_in_buffer_double_buffer.h
+ * \brief
+ */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/resource/cube_in_buffer/cube_in_buffer_double_buffer.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/resource/cube_in_buffer/cube_in_buffer_double_buffer.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_RESOURCE_CUBE_IN_BUFFER_CUBE_IN_BUFFER_DOUBLE_BUFFER_H__
 #endif
@@ -32,21 +33,23 @@ namespace Detail {
     CubeInBuffer is only for internal usage, does not support extension or customized specialization!
 */
 template <typename IMPL, class INPUT_TYPE, const auto& MM_CFG, PolicyType POLICY_TYPE>
-class CubeInBuffer<IMPL, INPUT_TYPE, MM_CFG, POLICY_TYPE, enable_if_t<
-    (GetCubeInBufferType<INPUT_TYPE, MM_CFG>() == CubeInBufferType::DOUBLE_BUFFER &&
-    !(POLICY_TYPE == PolicyType::MATMUL_NBUFFER_33 && INPUT_TYPE::TAG == InputTypeTag::A)) ||
-    GetCubeInBufferType<INPUT_TYPE, MM_CFG>() == CubeInBufferType::DOUBLE_BUFFER_MX>>
-{
+class CubeInBuffer<
+    IMPL, INPUT_TYPE, MM_CFG, POLICY_TYPE,
+    enable_if_t<
+        (GetCubeInBufferType<INPUT_TYPE, MM_CFG>() == CubeInBufferType::DOUBLE_BUFFER &&
+         !(POLICY_TYPE == PolicyType::MATMUL_NBUFFER_33 && INPUT_TYPE::TAG == InputTypeTag::A)) ||
+        GetCubeInBufferType<INPUT_TYPE, MM_CFG>() == CubeInBufferType::DOUBLE_BUFFER_MX>> {
     MATMUL_USE_MODULE(MatmulShapeTiling);
     MATMUL_USE_MODULE(MatmulShapeInfo);
     MATMUL_USE_MODULE(L1Manager);
     using TransT = typename INPUT_TYPE::TRANS_T;
+
 public:
     __aicore__ inline CubeInBuffer() {}
     __aicore__ inline ~CubeInBuffer() {}
     __aicore__ inline void Init(int32_t baseBlockSize, int32_t cacheNum)
     {
-        int32_t matrixByteSize =  baseBlockSize * AscendC::GetBitSize<TransT>() / ONE_BYTE_BIT_SIZE;
+        int32_t matrixByteSize = baseBlockSize * AscendC::GetBitSize<TransT>() / ONE_BYTE_BIT_SIZE;
         int32_t stepSize = GetTotalCacheNum();
         cacheFactor_ = (cacheNum / stepSize - 1) & 1;
         int32_t queDepth = cacheFactor_ == 0 ? SINGLE_QUE : DOUBLE_QUE;
@@ -55,18 +58,21 @@ public:
         if constexpr (ToMatmulConfig(MM_CFG).enableL1BankConflictOptimise) {
             auto initBufferSize = matrixByteSize * stepSize;
             if (queDepth == SINGLE_QUE) {
-                auto addr0 = AscendC::Std::make_tuple(MATMUL_MODULE(L1Manager)->GetCurrentUpperHalfAddr(), initBufferSize);
+                auto addr0 =
+                    AscendC::Std::make_tuple(MATMUL_MODULE(L1Manager)->GetCurrentUpperHalfAddr(), initBufferSize);
                 GetTPipePtr()->InitBuffer(qid_, addr0);
                 MATMUL_MODULE(L1Manager)->SetCurrentAddress(initBufferSize);
             } else if (queDepth == DOUBLE_QUE) {
-                auto addr0 = AscendC::Std::make_tuple(MATMUL_MODULE(L1Manager)->GetCurrentUpperHalfAddr(), initBufferSize);
-                auto addr1 = AscendC::Std::make_tuple(MATMUL_MODULE(L1Manager)->GetCurrentLowerHalfAddr(), initBufferSize);
+                auto addr0 =
+                    AscendC::Std::make_tuple(MATMUL_MODULE(L1Manager)->GetCurrentUpperHalfAddr(), initBufferSize);
+                auto addr1 =
+                    AscendC::Std::make_tuple(MATMUL_MODULE(L1Manager)->GetCurrentLowerHalfAddr(), initBufferSize);
                 GetTPipePtr()->InitBuffer(qid_, addr0, addr1);
                 MATMUL_MODULE(L1Manager)->SetCurrentAddress(initBufferSize, initBufferSize);
             }
         } else {
-            if constexpr(INPUT_TYPE::TAG == InputTypeTag::scaleA || INPUT_TYPE::TAG == InputTypeTag::scaleB) {
-                GetTPipePtr()->InitBuffer(qid_, queDepth, matrixByteSize * stepSize); 
+            if constexpr (INPUT_TYPE::TAG == InputTypeTag::scaleA || INPUT_TYPE::TAG == InputTypeTag::scaleB) {
+                GetTPipePtr()->InitBuffer(qid_, queDepth, matrixByteSize * stepSize);
             } else {
                 GetTPipePtr()->InitBuffer(qid_, queDepth, matrixByteSize * stepSize + GetBankConflictSize());
             }
@@ -92,8 +98,9 @@ public:
 
     __aicore__ inline LocalTensor<TransT> AllocTensor(int32_t bufferPos = -1)
     {
-        ASCENDC_ASSERT(bufferPos != -1,
-            { KERNEL_LOG(KERNEL_ERROR, "bufferPos in AllocTensor for only db version should not be -1."); });
+        ASCENDC_ASSERT(bufferPos != -1, {
+            KERNEL_LOG(KERNEL_ERROR, "bufferPos in AllocTensor for only db version should not be -1.");
+        });
         LocalTensor<TransT> tensor = qid_.template AllocTensor<TransT>();
         int32_t cachePos = bufferPos & cacheFactor_;
         SetCache(cachePos, tensor);
@@ -103,8 +110,9 @@ public:
 
     __aicore__ inline void FreeTensor(int32_t bufferPos = -1, const LocalTensor<TransT>& tensor = LocalTensor<TransT>{})
     {
-        ASCENDC_ASSERT(bufferPos != -1,
-            { KERNEL_LOG(KERNEL_ERROR, "bufferPos in FreeTensor for only db version should not be -1."); });
+        ASCENDC_ASSERT(bufferPos != -1, {
+            KERNEL_LOG(KERNEL_ERROR, "bufferPos in FreeTensor for only db version should not be -1.");
+        });
         int32_t cachePos = bufferPos & cacheFactor_;
         if (IsBufferCaching(cachePos)) {
             qid_.FreeBuffer(GetCache(cachePos));
@@ -126,16 +134,16 @@ public:
 
     __aicore__ inline bool Hit(int32_t iterIndex, int32_t bufferPos = -1)
     {
-        ASCENDC_ASSERT(bufferPos != -1,
-            { KERNEL_LOG(KERNEL_ERROR, "bufferPos in Hit for only db version should not be -1."); });
+        ASCENDC_ASSERT(
+            bufferPos != -1, { KERNEL_LOG(KERNEL_ERROR, "bufferPos in Hit for only db version should not be -1."); });
         return iterIndex != 0 || IsBufferCaching(bufferPos & cacheFactor_);
     }
 
     __aicore__ inline LocalTensor<TransT> GetBuffer(int32_t iterIndex, int32_t bufferPos = -1)
     {
-        (void) iterIndex;
-        ASCENDC_ASSERT(bufferPos != -1,
-            { KERNEL_LOG(KERNEL_ERROR, "bufferPos in Hit for only db version should not be -1."); });
+        (void)iterIndex;
+        ASCENDC_ASSERT(
+            bufferPos != -1, { KERNEL_LOG(KERNEL_ERROR, "bufferPos in Hit for only db version should not be -1."); });
         LocalTensor<TransT> tensor;
         tensor.SetAddr(qid_.GetBufferAddr(GetCache(bufferPos & cacheFactor_)));
         return tensor;
@@ -160,33 +168,37 @@ public:
         if (IsFromUB()) {
             WaitFlag<HardEvent::MTE3_MTE1>(eventIDMte3ToMte1_);
         } else {
-            (void) qid_.DeQue();
+            (void)qid_.DeQue();
         }
 #else
-        (void) qid_.DeQue();
+        (void)qid_.DeQue();
 #endif
     }
 
 private:
     __aicore__ inline int32_t GetTotalCacheNum()
     {
-        constexpr bool isScaleTag = (INPUT_TYPE::TAG == InputTypeTag::scaleA ||
-            INPUT_TYPE::TAG == InputTypeTag::scaleB);
+        constexpr bool isScaleTag =
+            (INPUT_TYPE::TAG == InputTypeTag::scaleA || INPUT_TYPE::TAG == InputTypeTag::scaleB);
         if constexpr (isScaleTag) {
             if constexpr (INPUT_TYPE::TAG == InputTypeTag::scaleA) {
-                return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKa() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() *
-                MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorKa() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorM();
+                return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKa() *
+                       MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() *
+                       MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorKa() *
+                       MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorM();
             } else {
                 return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKb() *
-                    MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN() *
-                    MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorKb() *
-                    MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorN();
+                       MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN() *
+                       MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorKb() *
+                       MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorN();
             }
         } else {
             if constexpr (INPUT_TYPE::TAG == InputTypeTag::A) {
-                return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKa() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM();
+                return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKa() *
+                       MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM();
             } else {
-                return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKb() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN();
+                return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKb() *
+                       MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN();
             }
         }
     }
@@ -207,27 +219,51 @@ private:
                 constexpr int32_t c0Size = AuxGetC0Size<typename INPUT_TYPE::TRANS_T>();
                 if constexpr (INPUT_TYPE::isTrans) {
                     if constexpr (INPUT_TYPE::TAG == InputTypeTag::A) {
-                        bool isBankConflict = Ceil(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM(), c0Size) *
-                            ONE_BLK_SIZE % BANK_CONFLICT_SIZE == 0;
+                        bool isBankConflict = Ceil(
+                                                  MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() *
+                                                      MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM(),
+                                                  c0Size) *
+                                                  ONE_BLK_SIZE % BANK_CONFLICT_SIZE ==
+                                              0;
                         return isBankConflict ? MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK() * c0Size *
-                            MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKa() * sizeof(typename INPUT_TYPE::TRANS_T) : 0;
+                                                    MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKa() *
+                                                    sizeof(typename INPUT_TYPE::TRANS_T) :
+                                                0;
                     } else {
-                        bool isBankConflict = Ceil(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKb() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK(), c0Size) *
-                            ONE_BLK_SIZE % BANK_CONFLICT_SIZE == 0;
+                        bool isBankConflict = Ceil(
+                                                  MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKb() *
+                                                      MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK(),
+                                                  c0Size) *
+                                                  ONE_BLK_SIZE % BANK_CONFLICT_SIZE ==
+                                              0;
                         return isBankConflict ? MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN() * c0Size *
-                            MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN() * sizeof(typename INPUT_TYPE::TRANS_T) : 0;
+                                                    MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN() *
+                                                    sizeof(typename INPUT_TYPE::TRANS_T) :
+                                                0;
                     }
                 } else {
                     if constexpr (INPUT_TYPE::TAG == InputTypeTag::A) {
-                        bool isBankConflict = Ceil(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKa() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK(), c0Size) *
-                            ONE_BLK_SIZE % BANK_CONFLICT_SIZE == 0;
+                        bool isBankConflict = Ceil(
+                                                  MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKa() *
+                                                      MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK(),
+                                                  c0Size) *
+                                                  ONE_BLK_SIZE % BANK_CONFLICT_SIZE ==
+                                              0;
                         return isBankConflict ? MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM() * c0Size *
-                            MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() * sizeof(typename INPUT_TYPE::TRANS_T) : 0;
+                                                    MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() *
+                                                    sizeof(typename INPUT_TYPE::TRANS_T) :
+                                                0;
                     } else {
-                        bool isBankConflict = Ceil(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN(), c0Size) *
-                            ONE_BLK_SIZE % BANK_CONFLICT_SIZE == 0;
+                        bool isBankConflict = Ceil(
+                                                  MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN() *
+                                                      MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN(),
+                                                  c0Size) *
+                                                  ONE_BLK_SIZE % BANK_CONFLICT_SIZE ==
+                                              0;
                         return isBankConflict ? MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK() * c0Size *
-                            MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKb() * sizeof(typename INPUT_TYPE::TRANS_T) : 0;
+                                                    MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKb() *
+                                                    sizeof(typename INPUT_TYPE::TRANS_T) :
+                                                0;
                     }
                 }
             } else {
@@ -238,22 +274,16 @@ private:
         }
     }
 
-    __aicore__ inline auto& GetCache(bool isPong)
-    {
-        return isPong ? cachePong_ : cachePing_;
-    }
+    __aicore__ inline auto& GetCache(bool isPong) { return isPong ? cachePong_ : cachePing_; }
 
-    __aicore__ inline bool IsBufferCaching(bool isPong)
-    {
-        return isPong ? isCachingPong_ : isCachingPing_;
-    }
+    __aicore__ inline bool IsBufferCaching(bool isPong) { return isPong ? isCachingPong_ : isCachingPing_; }
 
     __aicore__ inline void SetCache(bool isPong, const LocalTensor<TransT>& cacheTensor)
     {
         if (isPong) {
-    #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
             Barrier();
-    #endif
+#endif
             cachePong_ = cacheTensor.GetBufferHandle();
         } else {
             cachePing_ = cacheTensor.GetBufferHandle();
@@ -263,9 +293,9 @@ private:
     __aicore__ inline void SetBufferCaching(bool isPong, bool isCaching)
     {
         if (isPong) {
-    #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
             Barrier();
-    #endif
+#endif
             isCachingPong_ = isCaching;
         } else {
             isCachingPing_ = isCaching;
@@ -275,8 +305,8 @@ private:
     __aicore__ inline bool IsFromUB()
     {
         return IsSameType<typename INPUT_TYPE::T, int8_t>::value &&
-            ((INPUT_TYPE::TAG == InputTypeTag::A && MATMUL_MODULE(MatmulShapeInfo)->IsTransposeA()) ||
-            (INPUT_TYPE::TAG == InputTypeTag::B && !MATMUL_MODULE(MatmulShapeInfo)->IsTransposeB()));
+               ((INPUT_TYPE::TAG == InputTypeTag::A && MATMUL_MODULE(MatmulShapeInfo)->IsTransposeA()) ||
+                (INPUT_TYPE::TAG == InputTypeTag::B && !MATMUL_MODULE(MatmulShapeInfo)->IsTransposeB()));
     }
 
 private:
@@ -284,19 +314,20 @@ private:
     typename CubeInQueType<INPUT_TYPE>::QUE qid_;
     TBufHandle cachePong_;
     int32_t cacheFactor_;
-    bool isCachingPing_ { false };
-    bool isCachingPong_ { false };
+    bool isCachingPing_{false};
+    bool isCachingPong_{false};
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
     event_t eventIDMte3ToMte1_;
 #endif
 };
 
-}  // namespace Detail
-}  // namespace Impl
-}  // namespace AscendC
+} // namespace Detail
+} // namespace Impl
+} // namespace AscendC
 #endif // _CUBE_IN_BUFFER_DOUBLE_BUFFER_H_
 
-#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_RESOURCE_CUBE_IN_BUFFER_CUBE_IN_BUFFER_DOUBLE_BUFFER_H__)
+#if defined( \
+    __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_RESOURCE_CUBE_IN_BUFFER_CUBE_IN_BUFFER_DOUBLE_BUFFER_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_RESOURCE_CUBE_IN_BUFFER_CUBE_IN_BUFFER_DOUBLE_BUFFER_H__
 #endif

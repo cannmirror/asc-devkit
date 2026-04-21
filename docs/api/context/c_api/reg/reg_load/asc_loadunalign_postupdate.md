@@ -16,38 +16,40 @@
 ## 函数原型
 
 ```cpp
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_int8_t& dst, vector_load_align& src0, __ubuf__ int8_t *src1, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_uint8_t& dst, vector_load_align& src0, __ubuf__ uint8_t *src1, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp4x2_e2m1_t& dst, vector_load_align& src0, __ubuf__ fp4x2_e2m1_t *src1, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp4x2_e1m2_t& dst, vector_load_align& src0, __ubuf__ fp4x2_e1m2_t *src1, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp8_e8m0_t& dst, vector_load_align& src0, __ubuf__ fp8_e8m0_t *src1, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp8_e5m2_t& dst, vector_load_align& src0, __ubuf__ fp8_e5m2_t *src1, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp8_e4m3fn_t& dst, vector_load_align& src0, __ubuf__ fp8_e4m3fn_t *src1, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_hifloat8_t& dst, vector_load_align& src0, __ubuf__ hifloat8_t *src1, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_half& dst, vector_load_align& src0, __ubuf__ half *src1, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_int16_t& dst, vector_load_align& src0, __ubuf__ int16_t *src1, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_uint16_t& dst, vector_load_align& src0, __ubuf__ uint16_t *src1, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_bfloat16_t& dst, vector_load_align& src0, __ubuf__ bfloat16_t *src1, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_int32_t& dst, vector_load_align& src0, __ubuf__ int32_t *src1, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_uint32_t& dst, vector_load_align& src0, __ubuf__ uint32_t *src1, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_float& dst, vector_load_align& src0, __ubuf__ float *src1, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_int64_t& dst, vector_load_align& src0, __ubuf__ int64_t *src1, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_int8_t& dst, vector_load_align& src0, __ubuf__ int8_t *src1, iter_reg offset, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_uint8_t& dst, vector_load_align& src0, __ubuf__ uint8_t *src1, iter_reg offset, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp4x2_e2m1_t& dst, vector_load_align& src0, __ubuf__ fp4x2_e2m1_t *src1, iter_reg offset, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp4x2_e1m2_t& dst, vector_load_align& src0, __ubuf__ fp4x2_e1m2_t *src1, iter_reg offset, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp8_e8m0_t& dst, vector_load_align& src0, __ubuf__ fp8_e8m0_t *src1, iter_reg offset, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp8_e5m2_t& dst, vector_load_align& src0, __ubuf__ fp8_e5m2_t *src1, iter_reg offset, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp8_e4m3fn_t& dst, vector_load_align& src0, __ubuf__ fp8_e4m3fn_t *src1, iter_reg offset, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_hifloat8_t& dst, vector_load_align& src0, __ubuf__ hifloat8_t *src1, iter_reg offset, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_int16_t& dst, vector_load_align& src0, __ubuf__ int16_t *src1, iter_reg offset, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_uint16_t& dst, vector_load_align& src0, __ubuf__ uint16_t *src1, iter_reg offset, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_half& dst, vector_load_align& src0, __ubuf__ half *src1, iter_reg offset, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_bfloat16_t& dst, vector_load_align& src0, __ubuf__ bfloat16_t *src1, iter_reg offset, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_int32_t& dst, vector_load_align& src0, __ubuf__ int32_t *src1, iter_reg offset, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_uint32_t& dst, vector_load_align& src0, __ubuf__ uint32_t *src1, iter_reg offset, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_float& dst, vector_load_align& src0, __ubuf__ float *src1, iter_reg offset, uint32_t count)
-__simd_callee__ inline void asc_loadunalign_postupdate(vector_int64_t& dst, vector_load_align& src0, __ubuf__ int64_t *src1, iter_reg offset, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_int8_t& dst, vector_load_unalign& src0, __ubuf__ int8_t *src1, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_uint8_t& dst, vector_load_unalign& src0, __ubuf__ uint8_t *src1, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp4x2_e2m1_t& dst, vector_load_unalign& src0, __ubuf__ fp4x2_e2m1_t *src1, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp4x2_e1m2_t& dst, vector_load_unalign& src0, __ubuf__ fp4x2_e1m2_t *src1, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp8_e8m0_t& dst, vector_load_unalign& src0, __ubuf__ fp8_e8m0_t *src1, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp8_e5m2_t& dst, vector_load_unalign& src0, __ubuf__ fp8_e5m2_t *src1, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp8_e4m3fn_t& dst, vector_load_unalign& src0, __ubuf__ fp8_e4m3fn_t *src1, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_hifloat8_t& dst, vector_load_unalign& src0, __ubuf__ hifloat8_t *src1, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_half& dst, vector_load_unalign& src0, __ubuf__ half *src1, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_int16_t& dst, vector_load_unalign& src0, __ubuf__ int16_t *src1, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_uint16_t& dst, vector_load_unalign& src0, __ubuf__ uint16_t *src1, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_bfloat16_t& dst, vector_load_unalign& src0, __ubuf__ bfloat16_t *src1, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_int32_t& dst, vector_load_unalign& src0, __ubuf__ int32_t *src1, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_uint32_t& dst, vector_load_unalign& src0, __ubuf__ uint32_t *src1, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_float& dst, vector_load_unalign& src0, __ubuf__ float *src1, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_int64_t& dst, vector_load_unalign& src0, __ubuf__ int64_t *src1, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_int4x2_t& dst, vector_load_unalign& src0, __ubuf__ int4b_t *src1, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_int8_t& dst, vector_load_unalign& src0, __ubuf__ int8_t *src1, iter_reg offset, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_uint8_t& dst, vector_load_unalign& src0, __ubuf__ uint8_t *src1, iter_reg offset, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp4x2_e2m1_t& dst, vector_load_unalign& src0, __ubuf__ fp4x2_e2m1_t *src1, iter_reg offset, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp4x2_e1m2_t& dst, vector_load_unalign& src0, __ubuf__ fp4x2_e1m2_t *src1, iter_reg offset, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp8_e8m0_t& dst, vector_load_unalign& src0, __ubuf__ fp8_e8m0_t *src1, iter_reg offset, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp8_e5m2_t& dst, vector_load_unalign& src0, __ubuf__ fp8_e5m2_t *src1, iter_reg offset, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp8_e4m3fn_t& dst, vector_load_unalign& src0, __ubuf__ fp8_e4m3fn_t *src1, iter_reg offset, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_hifloat8_t& dst, vector_load_unalign& src0, __ubuf__ hifloat8_t *src1, iter_reg offset, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_int16_t& dst, vector_load_unalign& src0, __ubuf__ int16_t *src1, iter_reg offset, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_uint16_t& dst, vector_load_unalign& src0, __ubuf__ uint16_t *src1, iter_reg offset, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_half& dst, vector_load_unalign& src0, __ubuf__ half *src1, iter_reg offset, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_bfloat16_t& dst, vector_load_unalign& src0, __ubuf__ bfloat16_t *src1, iter_reg offset, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_int32_t& dst, vector_load_unalign& src0, __ubuf__ int32_t *src1, iter_reg offset, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_uint32_t& dst, vector_load_unalign& src0, __ubuf__ uint32_t *src1, iter_reg offset, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_float& dst, vector_load_unalign& src0, __ubuf__ float *src1, iter_reg offset, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_int64_t& dst, vector_load_unalign& src0, __ubuf__ int64_t *src1, iter_reg offset, uint32_t count)
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_int4x2_t& dst, vector_load_unalign& src0, __ubuf__ int4b_t *src1, iter_reg offset, uint32_t count)
 ```
 
 ## 参数说明
@@ -78,7 +80,7 @@ PIPE_V
 
 ```cpp
 vector_int8_t dst;
-vector_load_align src0;
+vector_load_unalign src0;
 __ubuf__ int8_t* src1;
 uint32_t count;
 asc_loadunalign_postupdate(dst, src0, src1, count);

@@ -1,15 +1,16 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/activation/softmax/softmax_common/softmax_common_simple.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/simplesoftmax.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/activation/softmax/softmax_common/softmax_common_simple.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/activation/simplesoftmax.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_COMMON_SIMPLE_H__
 #endif
@@ -27,11 +28,13 @@
 
 namespace AscendC {
 
-template <typename T1, typename T2, bool isReuseSource = false, bool isBasicBlock = false, bool isDataFormatNZ = false,
+template <
+    typename T1, typename T2, bool isReuseSource = false, bool isBasicBlock = false, bool isDataFormatNZ = false,
     const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>
-__aicore__ inline void SimpleSoftMaxBaseImpl(const LocalTensor<T1>& dst, const LocalTensor<T2>& inSumTensor,
-    const LocalTensor<T2>& inMaxTensor, const LocalTensor<T1>& src, const LocalTensor<float>& workLocal,
-    const SoftMaxTiling& tiling, const SoftMaxShapeInfo& softmaxShapeInfo)
+__aicore__ inline void SimpleSoftMaxBaseImpl(
+    const LocalTensor<T1>& dst, const LocalTensor<T2>& inSumTensor, const LocalTensor<T2>& inMaxTensor,
+    const LocalTensor<T1>& src, const LocalTensor<float>& workLocal, const SoftMaxTiling& tiling,
+    const SoftMaxShapeInfo& softmaxShapeInfo)
 {
     SetMaskNorm();
     ResetMask();
@@ -42,14 +45,15 @@ __aicore__ inline void SimpleSoftMaxBaseImpl(const LocalTensor<T1>& dst, const L
         srcNDinfo = GetLastAxisShapeND(srcShape);
         originalSrcShape = GetLastAxisOriginShapeND(srcShape);
     } else {
-        srcNDinfo = { softmaxShapeInfo.srcM, softmaxShapeInfo.srcK };
-        originalSrcShape = { softmaxShapeInfo.oriSrcM, softmaxShapeInfo.oriSrcK };
+        srcNDinfo = {softmaxShapeInfo.srcM, softmaxShapeInfo.srcK};
+        originalSrcShape = {softmaxShapeInfo.oriSrcM, softmaxShapeInfo.oriSrcK};
     }
     if constexpr (isDataFormatNZ) {
         if (unlikely(srcNDinfo.k != tiling.srcK || srcNDinfo.m != tiling.srcM)) {
             SoftMaxTiling newTiling = tiling;
-            SoftMaxTilingFunc(workLocal.GetSize(), { srcNDinfo.m, srcNDinfo.k, originalSrcShape.m, srcNDinfo.k },
-                newTiling, sizeof(T1), sizeof(T2), false, isDataFormatNZ);
+            SoftMaxTilingFunc(
+                workLocal.GetSize(), {srcNDinfo.m, srcNDinfo.k, originalSrcShape.m, srcNDinfo.k}, newTiling, sizeof(T1),
+                sizeof(T2), false, isDataFormatNZ);
             SimpleSoftMaxNZImpl<T1, T2>(dst, inSumTensor, inMaxTensor, src, workLocal, newTiling);
         } else {
             SimpleSoftMaxNZImpl<T1, T2>(dst, inSumTensor, inMaxTensor, src, workLocal, tiling);
@@ -57,8 +61,9 @@ __aicore__ inline void SimpleSoftMaxBaseImpl(const LocalTensor<T1>& dst, const L
     } else {
         if (unlikely(srcNDinfo.k != tiling.srcK || srcNDinfo.m != tiling.srcM)) {
             SoftMaxTiling newTiling = tiling;
-            SoftMaxTilingFunc(workLocal.GetSize(), { srcNDinfo.m, srcNDinfo.k, originalSrcShape.m, srcNDinfo.k },
-                newTiling, sizeof(T1), sizeof(T2), isBasicBlock);
+            SoftMaxTilingFunc(
+                workLocal.GetSize(), {srcNDinfo.m, srcNDinfo.k, originalSrcShape.m, srcNDinfo.k}, newTiling, sizeof(T1),
+                sizeof(T2), isBasicBlock);
             SimpleSoftMaxNDImpl<T1, isBasicBlock, config>(dst, inSumTensor, inMaxTensor, src, workLocal, newTiling);
         } else {
             SimpleSoftMaxNDImpl<T1, isBasicBlock, config>(dst, inSumTensor, inMaxTensor, src, workLocal, tiling);
@@ -66,7 +71,7 @@ __aicore__ inline void SimpleSoftMaxBaseImpl(const LocalTensor<T1>& dst, const L
     }
 }
 
-}
+} // namespace AscendC
 #endif
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_COMMON_SIMPLE_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

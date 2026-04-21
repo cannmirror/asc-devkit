@@ -35,7 +35,7 @@
 
 - 算子实现：  
   本样例中实现的是固定shape为4*128的Axpy算子。
-  - Kernel实现   
+  - Kernel实现  
     Axpy算子的数学表达式为：  
     ```
     out =  x * scalar + out

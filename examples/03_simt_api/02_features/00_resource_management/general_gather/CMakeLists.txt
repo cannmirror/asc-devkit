@@ -26,18 +26,11 @@ function(add_asc_executable TARGET_NAME SOURCE_FILE)
     #   - 需根据实际部署的 NPU 硬件架构选择对应的 `npu-arch` 参数。
     # ======================================================================================
     target_compile_options(${TARGET_NAME} PRIVATE
-        $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3510 --enable-simt -O3 -std=c++17>
-        $<BUILD_INTERFACE:$<$<STREQUAL:${RUN_MODE},sim>:-g -O0>>
-    )
-    
-    target_link_directories(${TARGET_NAME} PRIVATE
-        $<BUILD_INTERFACE:$<$<STREQUAL:${RUN_MODE},sim>:$ENV{ASCEND_HOME_PATH}/tools/simulator/${SOC_VERSION}/lib>>
+        $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3510 --enable-simt>
     )
     
     target_link_libraries(${TARGET_NAME} PRIVATE 
         m
-        $<BUILD_INTERFACE:$<$<STREQUAL:${RUN_MODE},sim>:runtime_camodel>>
-        $<BUILD_INTERFACE:$<$<STREQUAL:${RUN_MODE},sim>:npu_drv>>
         platform
         tiling_api
         dl

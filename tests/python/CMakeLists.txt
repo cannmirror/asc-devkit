@@ -48,7 +48,7 @@ run_python_llt_test(
     SRC_FILES_DIR ${ASCENDC_DIR}/tools/build/asc_op_compile_base/asc_op_compiler/
     TEST_FILES_DIR ${ASCENDC_DIR}/tests/python/asc_op_compiler/
     ENV_FILE ${ASCENDC_DIR}/tests/python/ci/set_python_env.sh
-    ENV_PARAMS ${ASCENDC_DIR}\ py_ut \ 910
+    ENV_PARAMS ${ASCENDC_DIR}\ py_ut
     PRE_TEST_COMMAND
     COVERAGERC_DIR
 )
@@ -79,8 +79,6 @@ run_python_llt_test(
     SRC_FILES_DIR ${ASCENDC_DIR}/tools/build/asc_opc/python
     TEST_FILES_DIR ${ASCENDC_DIR}/tests/python/asc_opc
     EXPORT_PYTHONPATH  ${ASCENDC_DIR}/tools/build/asc_opc
-    ENV_FILE ${ASCENDC_DIR}/tests/python/asc_opc/common/ci/set_python_env.sh
-    ENV_PARAMS ${ASCENDC_DIR}\ py_ut\ 310
     COVERAGERC_DIR
 )
 

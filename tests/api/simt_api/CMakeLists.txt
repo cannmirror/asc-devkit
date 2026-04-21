@@ -31,19 +31,19 @@ set(ASCENDC_TEST_HEADER_FILES
 # # ================ simt_api kernel ut ================
 # ascend950pr_9599 simt test cases
 file(GLOB ASCENDC_TEST_ascend950pr_9599_SIMT_CASE_SRC_FILES
-    common_simt/simt_compiler_stub.cpp
+    common_simt/*.cpp
     ascendc_case_ascend950pr_9599_simt/*.cpp
 )
 
 # mc62cm12aa simt test cases
 file(GLOB ASCENDC_TEST_mc62cm12aa_SIMT_CASE_SRC_FILES
-    common_simt/simt_compiler_stub.cpp
+    common_simt/*.cpp
     ascendc_case_mc62cm12aa_simt/*.cpp
 )
 
 foreach(product_type ${SIMT_PRODUCT_TYPE_LIST})
     add_executable(ascendc_ut_simt_api_${product_type}
-        ${ASCENDC_DIR}/tests/main_global.cpp
+        ${ASCENDC_DIR}/tests/main.cpp
         ../common/k3_pvwrap.cpp
         ${ASCENDC_TEST_${product_type}_SIMT_CASE_SRC_FILES}
     )
@@ -52,12 +52,16 @@ foreach(product_type ${SIMT_PRODUCT_TYPE_LIST})
         UT_TEST
         ASCENDC_OOM=1
         ASCENDC_DUMP=0
+        __CCE_KT_TEST__=1
+        ASCENDC_CPU_DEBUG=1
+        ASCENDC_DEBUG=1
         $<$<STREQUAL:${product_type},ascend950pr_9599>:__NPU_ARCH__=3510;__DAV_C310__;__DAV_C310_VEC__>
         $<$<STREQUAL:${product_type},mc62cm12aa>:__NPU_ARCH__=5102>
     )
 
     target_include_directories(ascendc_ut_simt_api_${product_type} PRIVATE
         ${ASCENDC_TEST_HEADER_FILES}
+        ${ASCEND_CANN_PACKAGE_PATH}/tools/tikicpulib/lib/include
         ${ASCEND_CANN_PACKAGE_PATH}/include/base/
         ${ASCEND_CANN_PACKAGE_PATH}/include/metadef/
     )
@@ -68,8 +72,6 @@ foreach(product_type ${SIMT_PRODUCT_TYPE_LIST})
 
     target_link_libraries(ascendc_ut_simt_api_${product_type} PRIVATE
         $<BUILD_INTERFACE:intf_llt_pub_basic>
-        $<$<STREQUAL:${product_type},ascend950pr_9599>:tikicpulib::ascend950pr_9599>
-        $<$<STREQUAL:${product_type},mc62cm12aa>:tikicpulib::mc62cm12aa>
         kernel_tiling
         -Wl,--no-as-needed
         error_manager
@@ -82,4 +84,12 @@ foreach(product_type ${SIMT_PRODUCT_TYPE_LIST})
         TARGET ascendc_ut_simt_api_${product_type}
         TASK_NUM 1
     )
+    # add_subdirectory(math)
+    # add_dependencies(ascendc_ut_simt_api_${product_type} math)
+    # add_subdirectory(math_half)
+    # add_dependencies(ascendc_ut_simt_api_${product_type} math_half)
+    # add_subdirectory(math_bfloat16)
+    # add_dependencies(ascendc_ut_simt_api_${product_type} math_bfloat16)
+    # add_subdirectory(math_cpp)
+    # add_dependencies(ascendc_ut_simt_api_${product_type} math_cpp)
 endforeach()

@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file matmul_shape_info.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/matmul/param/matmul_shape_info.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/matmul/param/matmul_shape_info.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_PARAM_MATMUL_SHAPE_INFO_H__
 #endif
@@ -27,46 +28,26 @@
 namespace AscendC {
 namespace Impl {
 namespace Detail {
-template <typename IMPL, typename A_TYPE, const auto &MM_CFG>
+template <typename IMPL, typename A_TYPE, const auto& MM_CFG>
 class MatmulShapeInfoBase {
-    using L0cT = typename GetMmDstType<typename A_TYPE::T>::Type; 
+    using L0cT = typename GetMmDstType<typename A_TYPE::T>::Type;
     using SrcT = typename A_TYPE::T;
     MATMUL_USE_MODULE(MatmulShapeTiling);
+
 public:
-    __aicore__ inline void SetTransposeA(bool isTransposeA = false)
-    {
-        isTransposeA_ = isTransposeA;
-    }
+    __aicore__ inline void SetTransposeA(bool isTransposeA = false) { isTransposeA_ = isTransposeA; }
 
-    __aicore__ inline void SetTransposeB(bool isTransposeB = false)
-    {
-        isTransposeB_ = isTransposeB;
-    }
+    __aicore__ inline void SetTransposeB(bool isTransposeB = false) { isTransposeB_ = isTransposeB; }
 
-    __aicore__ inline void SetOrgM(int orgM)
-    {
-        M_ = orgM;
-    }
+    __aicore__ inline void SetOrgM(int orgM) { M_ = orgM; }
 
-    __aicore__ inline void SetOrgN(int orgN)
-    {
-        N_ = orgN;
-    }
+    __aicore__ inline void SetOrgN(int orgN) { N_ = orgN; }
 
-    __aicore__ inline void SetOrgKa(int orgKa)
-    {
-        Ka_ = orgKa;
-    }
+    __aicore__ inline void SetOrgKa(int orgKa) { Ka_ = orgKa; }
 
-    __aicore__ inline void SetOrgKb(int orgKb)
-    {
-        Kb_ = orgKb;
-    }
+    __aicore__ inline void SetOrgKb(int orgKb) { Kb_ = orgKb; }
 
-    __aicore__ inline void SetOrgKc(int orgKc)
-    {
-        Kc_ = orgKc;
-    }
+    __aicore__ inline void SetOrgKc(int orgKc) { Kc_ = orgKc; }
 
     __aicore__ inline void SetOrgShape(int orgM, int orgN, int orgKa, int orgKb, int orgKc)
     {
@@ -81,26 +62,31 @@ public:
     {
         ASCENDC_ASSERT((orgM > 0), { KERNEL_LOG(KERNEL_ERROR, "orgM is %d , which should be larger than 0", orgM); });
         ASCENDC_ASSERT((orgN > 0), { KERNEL_LOG(KERNEL_ERROR, "orgN is %d , which should be larger than 0", orgN); });
-        ASCENDC_ASSERT((orgKa > 0), { KERNEL_LOG(KERNEL_ERROR, "orgKa is %d , which should be larger than 0", orgKa); });
-        ASCENDC_ASSERT((orgKb > 0), { KERNEL_LOG(KERNEL_ERROR, "orgKb is %d , which should be larger than 0", orgKb); });
+        ASCENDC_ASSERT(
+            (orgKa > 0), { KERNEL_LOG(KERNEL_ERROR, "orgKa is %d , which should be larger than 0", orgKa); });
+        ASCENDC_ASSERT(
+            (orgKb > 0), { KERNEL_LOG(KERNEL_ERROR, "orgKb is %d , which should be larger than 0", orgKb); });
     }
 
     __aicore__ inline void CheckTailShape(int tailM, int tailN, int tailK)
     {
-        ASCENDC_ASSERT((tailM >= -1),
-                    { KERNEL_LOG(KERNEL_ERROR, "tailM is %d , which should be not less than -1", tailM); });
-        ASCENDC_ASSERT((tailN >= -1),
-                    { KERNEL_LOG(KERNEL_ERROR, "tailN is %d , which should be not less than -1", tailN); });
-        ASCENDC_ASSERT((tailK >= -1),
-                    { KERNEL_LOG(KERNEL_ERROR, "tailK is %d , which should be not less than -1", tailK); });
+        ASCENDC_ASSERT(
+            (tailM >= -1), { KERNEL_LOG(KERNEL_ERROR, "tailM is %d , which should be not less than -1", tailM); });
+        ASCENDC_ASSERT(
+            (tailN >= -1), { KERNEL_LOG(KERNEL_ERROR, "tailN is %d , which should be not less than -1", tailN); });
+        ASCENDC_ASSERT(
+            (tailK >= -1), { KERNEL_LOG(KERNEL_ERROR, "tailK is %d , which should be not less than -1", tailK); });
         const auto tiling = MATMUL_MODULE(MatmulShapeTiling)->GetTiling();
         if constexpr (DoMatmulIBShareNorm(MM_CFG)) {
-            ASCENDC_ASSERT((tiling.GetSingleCoreM() >= tailM),
-                        { KERNEL_LOG(KERNEL_ERROR, "tailM is %d , which should be not more than singleCoreM_", tailM); });
-            ASCENDC_ASSERT((tiling.GetSingleCoreN() >= tailN),
-                        { KERNEL_LOG(KERNEL_ERROR, "tailN is %d , which should be not more than singleCoreN_", tailN); });
-            ASCENDC_ASSERT((tiling.GetSingleCoreK() >= tailK),
-                        { KERNEL_LOG(KERNEL_ERROR, "tailK is %d , which should be not more than singleCoreK_", tailK); });
+            ASCENDC_ASSERT((tiling.GetSingleCoreM() >= tailM), {
+                KERNEL_LOG(KERNEL_ERROR, "tailM is %d , which should be not more than singleCoreM_", tailM);
+            });
+            ASCENDC_ASSERT((tiling.GetSingleCoreN() >= tailN), {
+                KERNEL_LOG(KERNEL_ERROR, "tailN is %d , which should be not more than singleCoreN_", tailN);
+            });
+            ASCENDC_ASSERT((tiling.GetSingleCoreK() >= tailK), {
+                KERNEL_LOG(KERNEL_ERROR, "tailK is %d , which should be not more than singleCoreK_", tailK);
+            });
         }
     }
 
@@ -109,33 +95,27 @@ public:
         if constexpr (DoMatmulBasicBlock(MM_CFG) || DoMatmulSpecialBasicBlock(MM_CFG)) {
             if constexpr (A_TYPE::format != CubeFormat::VECTOR) {
                 ASCENDC_ASSERT((GetSingleCoreM() % ToMatmulConfig(MM_CFG).basicM == 0), {
-                    KERNEL_LOG(KERNEL_ERROR,
-                        "singleCoreM is %d, basicM is %d, singleCoreM should be a multiple of basicM in Basic Block mode.",
+                    KERNEL_LOG(
+                        KERNEL_ERROR,
+                        "singleCoreM is %d, basicM is %d, singleCoreM should be a multiple of basicM in Basic Block "
+                        "mode.",
                         GetSingleCoreM(), ToMatmulConfig(MM_CFG).basicM);
                 });
             }
             ASCENDC_ASSERT((GetSingleCoreN() % ToMatmulConfig(MM_CFG).basicN == 0), {
-                KERNEL_LOG(KERNEL_ERROR,
+                KERNEL_LOG(
+                    KERNEL_ERROR,
                     "singleCoreN is %d, basicN is %d, singleCoreN should be a multiple of basicN in Basic Block mode.",
                     GetSingleCoreN(), ToMatmulConfig(MM_CFG).basicN);
             });
         }
     }
 
-    __aicore__ inline void SetSingleCoreM(int singleCoreM)
-    {
-        singleCoreM_ = singleCoreM;
-    }
+    __aicore__ inline void SetSingleCoreM(int singleCoreM) { singleCoreM_ = singleCoreM; }
 
-    __aicore__ inline void SetSingleCoreN(int singleCoreN)
-    {
-        singleCoreN_ = singleCoreN;
-    }
+    __aicore__ inline void SetSingleCoreN(int singleCoreN) { singleCoreN_ = singleCoreN; }
 
-    __aicore__ inline void SetSingleCoreK(int singleCoreK)
-    {
-        singleCoreK_ = singleCoreK;
-    }
+    __aicore__ inline void SetSingleCoreK(int singleCoreK) { singleCoreK_ = singleCoreK; }
 
     __aicore__ inline void SetSingleShape(int singleCoreM, int singleCoreN, int singleCoreK)
     {
@@ -151,10 +131,12 @@ public:
 
         const auto& tiling = MATMUL_MODULE(MatmulShapeTiling)->GetTiling();
         SetOrgShape(tiling.GetM(), tiling.GetN(), tiling.GetKa(), tiling.GetKb(), tiling.GetN());
-        if constexpr (DoMatmulSpecialBasicBlock(MM_CFG) && ToMatmulConfig(MM_CFG).singleCoreM != 0 &&
+        if constexpr (
+            DoMatmulSpecialBasicBlock(MM_CFG) && ToMatmulConfig(MM_CFG).singleCoreM != 0 &&
             ToMatmulConfig(MM_CFG).singleCoreN != 0 && ToMatmulConfig(MM_CFG).singleCoreK != 0) {
-            SetSingleShape(ToMatmulConfig(MM_CFG).singleCoreM, ToMatmulConfig(MM_CFG).singleCoreN,
-                                      ToMatmulConfig(MM_CFG).singleCoreK);
+            SetSingleShape(
+                ToMatmulConfig(MM_CFG).singleCoreM, ToMatmulConfig(MM_CFG).singleCoreN,
+                ToMatmulConfig(MM_CFG).singleCoreK);
         } else {
             SetSingleShape(tiling.GetSingleCoreM(), tiling.GetSingleCoreN(), tiling.GetSingleCoreK());
         }
@@ -233,8 +215,8 @@ public:
     }
 
 protected:
-    bool isTransposeA_ { false }; // whether A matrix need to transpose
-    bool isTransposeB_ { false }; // whether B matrix need to transpose
+    bool isTransposeA_{false}; // whether A matrix need to transpose
+    bool isTransposeB_{false}; // whether B matrix need to transpose
     int M_;
     int N_;
     int Ka_;
@@ -245,22 +227,24 @@ protected:
     int singleCoreK_;
 };
 
-template <typename IMPL, typename A_TYPE, const auto &MM_CFG, typename = void>
+template <typename IMPL, typename A_TYPE, const auto& MM_CFG, typename = void>
 class MatmulShapeInfo : public MatmulShapeInfoBase<IMPL, A_TYPE, MM_CFG> {
-    using L0cT = typename GetMmDstType<typename A_TYPE::T>::Type; 
+    using L0cT = typename GetMmDstType<typename A_TYPE::T>::Type;
     using SrcT = typename A_TYPE::T;
     MATMUL_USE_MODULE(MatmulShapeTiling);
+
 public:
     using BASE_MODULE = MatmulShapeInfoBase<IMPL, A_TYPE, MM_CFG>;
 };
 
-template <typename IMPL, typename A_TYPE, const auto &MM_CFG>
+template <typename IMPL, typename A_TYPE, const auto& MM_CFG>
 class MatmulShapeInfo<IMPL, A_TYPE, MM_CFG, enable_if_t<IsIntrablock<MM_CFG>>>
     : public MatmulShapeInfoBase<IMPL, A_TYPE, MM_CFG> {
-    using L0cT = typename GetMmDstType<typename A_TYPE::T>::Type; 
+    using L0cT = typename GetMmDstType<typename A_TYPE::T>::Type;
     using SrcT = typename A_TYPE::T;
     MATMUL_USE_MODULE(MatmulShapeTiling);
     MATMUL_USE_MODULE(MatmulSubBlockInfo);
+
 public:
     using BASE_MODULE = MatmulShapeInfoBase<IMPL, A_TYPE, MM_CFG>;
 
@@ -444,12 +428,13 @@ private:
     IntraBlock intraBlock;
 };
 
-template <typename IMPL, typename A_TYPE, const auto &MM_CFG>
+template <typename IMPL, typename A_TYPE, const auto& MM_CFG>
 class MatmulShapeInfo<IMPL, A_TYPE, MM_CFG, enable_if_t<HasScalePosition<A_TYPE>::value>>
     : public MatmulShapeInfoBase<IMPL, A_TYPE, MM_CFG> {
-    using L0cT = typename GetMmDstType<typename A_TYPE::T>::Type; 
+    using L0cT = typename GetMmDstType<typename A_TYPE::T>::Type;
     using SrcT = typename A_TYPE::T;
     MATMUL_USE_MODULE(MatmulShapeTiling);
+
 public:
     using BASE_MODULE = MatmulShapeInfoBase<IMPL, A_TYPE, MM_CFG>;
 
@@ -493,12 +478,12 @@ public:
     }
 
 private:
-    bool isTransposeScaleA_ { false };
-    bool isTransposeScaleB_ { true };
+    bool isTransposeScaleA_{false};
+    bool isTransposeScaleB_{true};
 };
-}  // namespace Detail
-}  // namespace Impl
-}  // namespace AscendC
+} // namespace Detail
+} // namespace Impl
+} // namespace AscendC
 #endif // IMPL_MATMUL_PARAM_MATMUL_SHAPE_INFO_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_PARAM_MATMUL_SHAPE_INFO_H__)

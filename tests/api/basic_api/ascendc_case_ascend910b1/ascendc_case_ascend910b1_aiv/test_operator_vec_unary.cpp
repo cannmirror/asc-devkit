@@ -81,7 +81,7 @@ void MainVecUnary01(__gm__ uint8_t* __restrict__ srcGm, __gm__ uint8_t* __restri
         CastDeq<uint8_t, int16_t, false, true>(outputLocal3, inputLocal2, dataSize);
         CastDeq<int8_t, int16_t, true, false>(outputLocal2, inputLocal2, dataSize);
         CastDeq<uint8_t, int16_t, true, true>(outputLocal3, inputLocal2, dataSize);
-        CastDeq<uint8_t, int16_t, true, true>(outputLocal3, inputLocal2, 1024);
+        CastDeq<uint8_t, int16_t, true, true>(outputLocal3, inputLocal2, dataSize);
         int maskCount = 32;
         UnaryRepeatParams repeatParams;
         CastDeq<int8_t, int16_t, true, false, false>(outputLocal2, inputLocal2, maskCount, 2, repeatParams);
@@ -98,7 +98,7 @@ void MainVecUnary01(__gm__ uint8_t* __restrict__ srcGm, __gm__ uint8_t* __restri
         CastDequant<uint8_t, int16_t, false, true>(outputLocal3, inputLocal2, dataSize);
         CastDequant<int8_t, int16_t, true, false>(outputLocal2, inputLocal2, dataSize);
         CastDequant<uint8_t, int16_t, true, true>(outputLocal3, inputLocal2, dataSize);
-        CastDequant<uint8_t, int16_t, true, true>(outputLocal3, inputLocal2, 1024);
+        CastDequant<uint8_t, int16_t, true, true>(outputLocal3, inputLocal2, dataSize);
         int maskCount = 32;
         UnaryRepeatParams repeatParams;
         CastDequant<int8_t, int16_t, true, false, false>(outputLocal2, inputLocal2, maskCount, 2, repeatParams);

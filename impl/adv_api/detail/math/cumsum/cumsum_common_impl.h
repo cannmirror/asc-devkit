@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file cumsum_common_impl.h
@@ -14,7 +14,8 @@
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
-#pragma message("impl/adv_api/detail/math/cumsum/cumsum_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/cumsum.h\"\" and use public functions or variables defined in interface headers files.")
+#pragma message( \
+    "impl/adv_api/detail/math/cumsum/cumsum_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/cumsum.h\"\" and use public functions or variables defined in interface headers files.")
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_CUMSUM_CUMSUM_COMMON_IMPL_H__
 #endif
@@ -32,8 +33,9 @@
 
 namespace AscendC {
 
-__aicore__ inline TransDataTo5HDParams ExtractTransDataParam(uint8_t repeatTimes, uint32_t inner, uint16_t alignOutter, 
-    uint32_t oneBlockElementNum, uint16_t dstRepStride, uint32_t srcRepStride)
+__aicore__ inline TransDataTo5HDParams ExtractTransDataParam(
+    uint8_t repeatTimes, uint32_t inner, uint16_t alignOutter, uint32_t oneBlockElementNum, uint16_t dstRepStride,
+    uint32_t srcRepStride)
 {
     repeatTimes = inner / oneBlockElementNum;
     if (repeatTimes > 1) {
@@ -46,8 +48,9 @@ __aicore__ inline TransDataTo5HDParams ExtractTransDataParam(uint8_t repeatTimes
 }
 
 template <typename T>
-__aicore__ inline void CumSumLastDim(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    LocalTensor<T> tempBuffer, const CumSumInfo& cumSumInfo)
+__aicore__ inline void CumSumLastDim(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, LocalTensor<T> tempBuffer,
+    const CumSumInfo& cumSumInfo)
 {
     constexpr uint32_t oneBlockElementNum = ONE_BLK_SIZE / sizeof(T);
     uint16_t alignOutter =
@@ -78,12 +81,15 @@ __aicore__ inline void CumSumLastDim(const LocalTensor<T>& dstTensor, const Loca
             TransDataTo5HD<T>(transDataTo5HDDstLocalList, transDataTo5HDSrcLocalList, params);
         }
     } else {
-        TransDataTo5HDParams params = ExtractTransDataParam(repeatTimes, cumSumInfo.inner, alignOutter,
-            oneBlockElementNum, dstRepStride, srcRepStride);
+        TransDataTo5HDParams params = ExtractTransDataParam(
+            repeatTimes, cumSumInfo.inner, alignOutter, oneBlockElementNum, dstRepStride, srcRepStride);
         for (int32_t i = 0; i < alignOutter / NCHW_CONV_ADDR_LIST_SIZE; i++) {
             for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
-                transDataTo5HDSrcLocalList[n] = (uint64_t)srcTensor[((i * NCHW_CONV_ADDR_LIST_SIZE +
-                    n % (cumSumInfo.outter - i * NCHW_CONV_ADDR_LIST_SIZE)) * cumSumInfo.inner)].GetPhyAddr();
+                transDataTo5HDSrcLocalList[n] =
+                    (uint64_t)srcTensor[((i * NCHW_CONV_ADDR_LIST_SIZE +
+                                          n % (cumSumInfo.outter - i * NCHW_CONV_ADDR_LIST_SIZE)) *
+                                         cumSumInfo.inner)]
+                        .GetPhyAddr();
                 transDataTo5HDDstLocalList[n] =
                     (uint64_t)tempBuffer[i * NCHW_CONV_ADDR_LIST_SIZE + alignOutter * n].GetPhyAddr();
             }
@@ -94,20 +100,23 @@ __aicore__ inline void CumSumLastDim(const LocalTensor<T>& dstTensor, const Loca
     SetMaskCount();
     SetVectorMask<float, MaskMode::COUNTER>(alignOutter * cumSumInfo.inner);
     LocalTensor<float> floatTempBuffer = tempBuffer[alignOutter * cumSumInfo.inner].template ReinterpretCast<float>();
-    Cast<float, T, false>(floatTempBuffer, tempBuffer, RoundMode::CAST_NONE, MASK_PLACEHOLDER,
-        1, {1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
+    Cast<float, T, false>(
+        floatTempBuffer, tempBuffer, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        {1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
 
     SetVectorMask<float>(0, alignOutter);
     const BinaryRepeatParams binaryParams;
     for (uint32_t row = 1; row < cumSumInfo.inner; ++row) {
-        Add<float, false>(floatTempBuffer[row * alignOutter], floatTempBuffer[(row - 1) * alignOutter],
+        Add<float, false>(
+            floatTempBuffer[row * alignOutter], floatTempBuffer[(row - 1) * alignOutter],
             floatTempBuffer[row * alignOutter], MASK_PLACEHOLDER, 1, binaryParams);
         PipeBarrier<PIPE_V>();
     }
 
     SetVectorMask<T, MaskMode::COUNTER>(alignOutter * cumSumInfo.inner);
-    Cast<T, float, false>(tempBuffer, floatTempBuffer, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+    Cast<T, float, false>(
+        tempBuffer, floatTempBuffer, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
         {1, 1, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
     PipeBarrier<PIPE_V>();
     SetMaskNorm();
@@ -164,8 +173,9 @@ __aicore__ inline void CumSumLastDim(const LocalTensor<T>& dstTensor, const Loca
 }
 
 template <>
-__aicore__ inline void CumSumLastDim(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
-    LocalTensor<float> tempBuffer, const CumSumInfo& cumSumInfo)
+__aicore__ inline void CumSumLastDim(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor, LocalTensor<float> tempBuffer,
+    const CumSumInfo& cumSumInfo)
 {
     constexpr uint32_t oneBlockElementNum = ONE_BLK_SIZE / sizeof(float);
     uint8_t repeatTimes = 1;
@@ -182,8 +192,8 @@ __aicore__ inline void CumSumLastDim(const LocalTensor<float>& dstTensor, const 
         if (repeatTimes > 1) {
             // For float data types, within a single repeated iteration, a (16, 8) matrix of float values will be
             // transposed into an (8, 16) layout.
-            dstRepStride = 2;                     // 2 is for float transpose
-            srcRepStride = cumSumInfo.inner * 2;  // 2 is for float transpose
+            dstRepStride = 2;                    // 2 is for float transpose
+            srcRepStride = cumSumInfo.inner * 2; // 2 is for float transpose
         }
         TransDataTo5HDParams params(false, false, repeatTimes, dstRepStride, srcRepStride);
         for (int32_t i = 0; i < cumSumInfo.inner / oneBlockElementNum; i++) {
@@ -191,7 +201,7 @@ __aicore__ inline void CumSumLastDim(const LocalTensor<float>& dstTensor, const 
                 transDataTo5HDSrcLocalList[n] =
                     (uint64_t)srcTensor[i * oneBlockElementNum + n * cumSumInfo.inner].GetPhyAddr();
             }
-            for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE / 2; n++) {  // 2 is for float transpose
+            for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE / 2; n++) { // 2 is for float transpose
                 transDataTo5HDDstLocalList[n * 2] =
                     (uint64_t)tempBuffer[(i * oneBlockElementNum + n) * alignOutter].GetPhyAddr();
                 transDataTo5HDDstLocalList[n * 2 + 1] =
@@ -200,12 +210,15 @@ __aicore__ inline void CumSumLastDim(const LocalTensor<float>& dstTensor, const 
             TransDataTo5HD<float>(transDataTo5HDDstLocalList, transDataTo5HDSrcLocalList, params);
         }
     } else {
-        TransDataTo5HDParams params = ExtractTransDataParam(repeatTimes, cumSumInfo.inner, alignOutter,
-            oneBlockElementNum, dstRepStride, srcRepStride);
+        TransDataTo5HDParams params = ExtractTransDataParam(
+            repeatTimes, cumSumInfo.inner, alignOutter, oneBlockElementNum, dstRepStride, srcRepStride);
         for (int32_t i = 0; i < alignOutter / NCHW_CONV_ADDR_LIST_SIZE; i++) {
             for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE; n++) {
-                transDataTo5HDSrcLocalList[n] = (uint64_t)srcTensor[((i * NCHW_CONV_ADDR_LIST_SIZE +
-                    n % (cumSumInfo.outter - i * NCHW_CONV_ADDR_LIST_SIZE)) * cumSumInfo.inner)].GetPhyAddr();
+                transDataTo5HDSrcLocalList[n] =
+                    (uint64_t)srcTensor[((i * NCHW_CONV_ADDR_LIST_SIZE +
+                                          n % (cumSumInfo.outter - i * NCHW_CONV_ADDR_LIST_SIZE)) *
+                                         cumSumInfo.inner)]
+                        .GetPhyAddr();
             }
             for (int32_t n = 0; n < NCHW_CONV_ADDR_LIST_SIZE / 2; n++) {
                 transDataTo5HDDstLocalList[n * 2] =
@@ -223,11 +236,8 @@ __aicore__ inline void CumSumLastDim(const LocalTensor<float>& dstTensor, const 
     const BinaryRepeatParams binaryParams;
     uint32_t addOffset = alignOutter;
     for (uint32_t row = 1; row < cumSumInfo.inner; ++row) {
-        Add<float, false>(tempBuffer[addOffset],
-            tempBuffer[addOffset - alignOutter],
-            tempBuffer[addOffset],
-            MASK_PLACEHOLDER,
-            1,
+        Add<float, false>(
+            tempBuffer[addOffset], tempBuffer[addOffset - alignOutter], tempBuffer[addOffset], MASK_PLACEHOLDER, 1,
             binaryParams);
         addOffset += alignOutter;
         PipeBarrier<PIPE_V>();
@@ -288,9 +298,9 @@ __aicore__ inline void CumSumLastDim(const LocalTensor<float>& dstTensor, const 
                 transDataTo5HDDstLocalList[n * 2] =
                     (uint64_t)tempBuffer2[(i * NCHW_CONV_ADDR_LIST_SIZE + n) * cumSumInfo.inner].GetPhyAddr();
                 transDataTo5HDDstLocalList[n * 2 + 1] =
-                    (uint64_t)tempBuffer2[(i * NCHW_CONV_ADDR_LIST_SIZE + (n + NCHW_CONV_ADDR_LIST_SIZE / 2)) *
-                                          cumSumInfo.inner]
-                        .GetPhyAddr();
+                    (uint64_t)tempBuffer2
+                        [(i * NCHW_CONV_ADDR_LIST_SIZE + (n + NCHW_CONV_ADDR_LIST_SIZE / 2)) * cumSumInfo.inner]
+                            .GetPhyAddr();
             }
             TransDataTo5HD<float>(transDataTo5HDDstLocalList, transDataTo5HDSrcLocalList, paramsBack);
         }
@@ -306,36 +316,43 @@ __aicore__ inline void CumSumLastDim(const LocalTensor<float>& dstTensor, const 
 }
 
 template <typename T>
-__aicore__ inline void CumSumFirstDim(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    LocalTensor<uint8_t>& sharedTmpBuffer, const CumSumInfo& cumSumInfo)
+__aicore__ inline void CumSumFirstDim(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, LocalTensor<uint8_t>& sharedTmpBuffer,
+    const CumSumInfo& cumSumInfo)
 {
     if constexpr (sizeof(T) == sizeof(half)) {
         const uint32_t minTmpBufferSize = cumSumInfo.outter * cumSumInfo.inner * sizeof(float);
         const uint32_t tmpBufferSize = sharedTmpBuffer.GetSize();
 #if ASCENDC_CPU_DEBUG
         ASCENDC_ASSERT((tmpBufferSize >= minTmpBufferSize), {
-            KERNEL_LOG( KERNEL_ERROR, "Insufficient temporary space, current operation is not enough, "
-                "but only %u units are available, please check the host tiling.", tmpBufferSize);
-        });      
+            KERNEL_LOG(
+                KERNEL_ERROR,
+                "Insufficient temporary space, current operation is not enough, "
+                "but only %u units are available, please check the host tiling.",
+                tmpBufferSize);
+        });
 #endif
         SetMaskCount();
         SetVectorMask<float, MaskMode::COUNTER>(cumSumInfo.outter * cumSumInfo.inner);
         LocalTensor<float> tmpBuffer = sharedTmpBuffer.ReinterpretCast<float>();
-        Cast<float, T, false>(tmpBuffer, srcTensor, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+        Cast<float, T, false>(
+            tmpBuffer, srcTensor, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
             {1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE});
         PipeBarrier<PIPE_V>();
 
         SetVectorMask<T>(0, cumSumInfo.inner);
         const BinaryRepeatParams binaryParams;
         for (uint32_t row = 1; row < cumSumInfo.outter; ++row) {
-            Add<float, false>(tmpBuffer[row * cumSumInfo.inner], tmpBuffer[(row - 1) * cumSumInfo.inner],
+            Add<float, false>(
+                tmpBuffer[row * cumSumInfo.inner], tmpBuffer[(row - 1) * cumSumInfo.inner],
                 tmpBuffer[row * cumSumInfo.inner], MASK_PLACEHOLDER, 1, binaryParams);
             PipeBarrier<PIPE_V>();
         }
 
         SetVectorMask<T, MaskMode::COUNTER>(cumSumInfo.outter * cumSumInfo.inner);
-        Cast<T, float, false>(dstTensor, tmpBuffer, RoundMode::CAST_NONE, MASK_PLACEHOLDER,
-            1, {1, 1, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
+        Cast<T, float, false>(
+            dstTensor, tmpBuffer, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
+            {1, 1, HALF_DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
         PipeBarrier<PIPE_V>();
 
     } else {
@@ -346,12 +363,9 @@ __aicore__ inline void CumSumFirstDim(const LocalTensor<T>& dstTensor, const Loc
         PipeBarrier<PIPE_V>();
         const BinaryRepeatParams binaryParams;
         for (uint32_t row = 1; row < cumSumInfo.outter; ++row) {
-            Add<T, false>(dstTensor[row * cumSumInfo.inner],
-                dstTensor[(row - 1) * cumSumInfo.inner],
-                srcTensor[row * cumSumInfo.inner],
-                MASK_PLACEHOLDER,
-                1,
-                binaryParams);
+            Add<T, false>(
+                dstTensor[row * cumSumInfo.inner], dstTensor[(row - 1) * cumSumInfo.inner],
+                srcTensor[row * cumSumInfo.inner], MASK_PLACEHOLDER, 1, binaryParams);
             PipeBarrier<PIPE_V>();
         }
         SetMaskNorm();
@@ -360,8 +374,9 @@ __aicore__ inline void CumSumFirstDim(const LocalTensor<T>& dstTensor, const Loc
 }
 
 template <typename T, const CumSumConfig& config>
-__aicore__ inline void CumSumImpl(LocalTensor<T>& dstTensor, LocalTensor<T>& lastRowTensor,
-    const LocalTensor<T>& srcTensor, LocalTensor<uint8_t>& sharedTmpBuffer, const CumSumInfo& cumSumInfo)
+__aicore__ inline void CumSumImpl(
+    LocalTensor<T>& dstTensor, LocalTensor<T>& lastRowTensor, const LocalTensor<T>& srcTensor,
+    LocalTensor<uint8_t>& sharedTmpBuffer, const CumSumInfo& cumSumInfo)
 {
     if ASCEND_IS_AIC {
         return;
@@ -374,13 +389,16 @@ __aicore__ inline void CumSumImpl(LocalTensor<T>& dstTensor, LocalTensor<T>& las
             minCastTempBufferSize = cumSumInfo.inner * NCHW_CONV_ADDR_LIST_SIZE * sizeof(half);
         }
         // Both transpose require tempBuffer
-        const uint32_t minTmpBufferSize = minCastTempBufferSize +
-                                          NCHW_CONV_ADDR_LIST_SIZE * cumSumInfo.inner * sizeof(T) * 2;
+        const uint32_t minTmpBufferSize =
+            minCastTempBufferSize + NCHW_CONV_ADDR_LIST_SIZE * cumSumInfo.inner * sizeof(T) * 2;
         const uint32_t tmpBufferSize = sharedTmpBuffer.GetSize();
 #if ASCENDC_CPU_DEBUG
         ASCENDC_ASSERT((tmpBufferSize >= minTmpBufferSize), {
-            KERNEL_LOG( KERNEL_ERROR, "Insufficient temporary space, current operation is not enough, "
-                "but only %u units are available, please check the host tiling.", tmpBufferSize);
+            KERNEL_LOG(
+                KERNEL_ERROR,
+                "Insufficient temporary space, current operation is not enough, "
+                "but only %u units are available, please check the host tiling.",
+                tmpBufferSize);
         });
 #endif
         // outter serves as the loop count, process at least 16 rows of data at once.
@@ -408,18 +426,19 @@ __aicore__ inline void CumSumImpl(LocalTensor<T>& dstTensor, LocalTensor<T>& las
     if constexpr (config.outputLastRow) {
         SetMaskCount();
         SetVectorMask<T>(0, cumSumInfo.inner);
-        Adds<T, false>(lastRowTensor, dstTensor[(cumSumInfo.outter - 1) * cumSumInfo.inner], 0, MASK_PLACEHOLDER,
-            1, {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
+        Adds<T, false>(
+            lastRowTensor, dstTensor[(cumSumInfo.outter - 1) * cumSumInfo.inner], 0, MASK_PLACEHOLDER, 1,
+            {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});
         PipeBarrier<PIPE_V>();
         SetMaskNorm();
         ResetMask();
     }
 }
-}  // namespace AscendC
+} // namespace AscendC
 
 #endif
 
-#endif  // IMPL_MATH_CUMSUM_CUMSUM_COMMON_IMPL_H
+#endif // IMPL_MATH_CUMSUM_CUMSUM_COMMON_IMPL_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_CUMSUM_CUMSUM_COMMON_IMPL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

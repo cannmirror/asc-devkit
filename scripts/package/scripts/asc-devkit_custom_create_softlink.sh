@@ -71,11 +71,6 @@ do_create_stub_softlink() {
         if [ ! -d "$install_path/$latest_dir/tools/ascendc_tools" ]; then
             mkdir -p "$install_path/$latest_dir/tools/ascendc_tools"
         fi
-        if [ ! -e "$install_path/$latest_dir/tools/ascendc_tools/ascendc_parse_dumpinfo.py" ] &&
-           [ -e "$install_path/$version_dir/tools/ascendc_tools/ascendc_parse_dumpinfo.py" ]; then
-            ln -sr "$install_path/$version_dir/tools/ascendc_tools/ascendc_parse_dumpinfo.py" \
-                   "$install_path/$latest_dir/tools/ascendc_tools/ascendc_parse_dumpinfo.py"
-        fi
     fi
     if [ ! -d "$install_path/$version_dir/compiler/bin" ]; then
         mkdir -p "$install_path/$version_dir/compiler/bin"

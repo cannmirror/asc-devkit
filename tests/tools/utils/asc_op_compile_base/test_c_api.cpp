@@ -160,7 +160,6 @@ TEST_F(TEST_ASC_PLATFORM_API, test_CceConfBase_1)
     tvm::cceconf::CceConfBase* conf = tvm::cceconf::CceConfBase::GetInstance();
 
     MOCKER_CPP(&fe::PlatFormInfos::GetPlatformRes, bool(fe::PlatFormInfos::*)(const std::string&, const std::string&, std::string&)).stubs().will(invoke(MockGetPlatformRes));
-    MOCKER_CPP_VIRTUAL(conf, &tvm::cceconf::CceConfBase::IsC220).stubs().will(returnValue(true));
 
     conf->SetOptionalCoreType("DumpCore");
     conf->SetOptionalSocVersion("Ascend310P");
@@ -200,9 +199,11 @@ TEST_F(TEST_ASC_PLATFORM_API, test_CceConfBase_2)
     tvm::cceconf::CceConfBase* conf = tvm::cceconf::CceConfBase::GetInstance();
 
     MOCKER_CPP(&fe::PlatFormInfos::GetPlatformRes, bool(fe::PlatFormInfos::*)(const std::string&, const std::string&, std::string&)).stubs().will(invoke(MockGetPlatformRes));
-    MOCKER_CPP_VIRTUAL(conf, &tvm::cceconf::CceConfBase::IsM310).stubs().will(returnValue(true));
+    MOCKER_CPP(&fe::OptionalInfos::GetSocVersion, std::string(fe::OptionalInfos::*)()).stubs().will(returnValue(std::string("Ascend610Lite")));
 
-    EXPECT_EQ(conf->AcquireCubeCoreCnt(), 4);
+    EXPECT_TRUE(conf->IsM310());
+
+    EXPECT_EQ(conf->AcquireCubeCoreCnt(), 0);
     EXPECT_EQ(conf->AcquireL1Size(), 64);
     EXPECT_EQ(conf->AcquireUBSize(), 1024);
     EXPECT_EQ(conf->AcquireL0ASize(), 32);

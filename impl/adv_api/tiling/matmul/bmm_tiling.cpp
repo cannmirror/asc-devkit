@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file bmm_tiling.cpp
@@ -149,7 +149,8 @@ int32_t BatchMatmulTiling::SetSingleBatch(int32_t singleMIn, int32_t singleNIn)
     return 0;
 }
 
-int32_t BatchMatmulTiling::GetCoreNum(int32_t& dim, int32_t& mDim, int32_t& nDim, int32_t& batchCoreM, int32_t& batchCoreN)
+int32_t BatchMatmulTiling::GetCoreNum(
+    int32_t& dim, int32_t& mDim, int32_t& nDim, int32_t& batchCoreM, int32_t& batchCoreN)
 {
     dim = this->tiling_.get_usedCoreNum();
     mDim = MathUtil::CeilDivision(this->tiling_.get_M(), this->tiling_.get_singleCoreM());
@@ -208,7 +209,8 @@ int32_t BatchMatmulGetTmpBufSize(optiling::TCubeTiling& tiling, matmul_tiling::S
     bufSize.ubSize = max(bufSize.ubSize, max(tiling.get_shareUbSize(), 2 * tiling.get_transLength()));
     return 0;
 }
-int32_t MultiCoreMatmulGetTmpBufSizeV2(AscendC::tiling::TCubeTiling& tiling, matmul_tiling::SysTilingTempBufSize& bufSize)
+int32_t MultiCoreMatmulGetTmpBufSizeV2(
+    AscendC::tiling::TCubeTiling& tiling, matmul_tiling::SysTilingTempBufSize& bufSize)
 {
     bufSize.l1Size = max(bufSize.l1Size, tiling.shareL1Size);
     bufSize.l0cSize = max(bufSize.l0cSize, tiling.shareL0CSize);

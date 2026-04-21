@@ -23,6 +23,7 @@
 #include "kernel_tensor.h"
 #include "kernel_check.h"
 #include "kernel_struct_fixpipe.h"
+#include "kernel_operator_mm_check.h"
 #include "kernel_process_lock.h"
 
 #if __NPU_ARCH__ == 1001
@@ -111,10 +112,9 @@ template <typename T, typename U, const FixpipeConfig &config>
 __aicore__ inline void Fixpipe(const LocalTensor<T> &dst, const LocalTensor<U> &src,
     const FixpipeParamsV220 &intriParams)
 {
-    CheckTensorPos<U>(src, Hardware::L0C, "src", "CO1", "Fixpipe");
-    ASCENDC_CHECK_TPOSITION((GetPhyType((TPosition)dst.GetPosition()) == Hardware::L1) ||
-        (GetPhyType((TPosition)dst.GetPosition()) == Hardware::UB), "dst", "A1", "Fixpipe",
-        ConstDefiner::Instance().logicNameMap.at(static_cast<uint8_t>(dst.GetPosition())));
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    CheckFixpipeTensor<T, U, config>(dst, src, intriParams, "Fixpipe");
+#endif
 
     if ((GetPhyType((TPosition)dst.GetPosition()) == Hardware::L1)) {
         FixpipeL0C2L1Impl<PrimT<T>, PrimT<U>, config>((__cbuf__ PrimT<T>*)dst.GetPhyAddr(),
@@ -131,14 +131,9 @@ template <typename T, typename U, const FixpipeConfig& config, typename S,
 __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const LocalTensor<S>& cbufWorkspace, const FixpipeParamsV220& intriParams)
 {
-    CheckTensorPos<U>(src, Hardware::L0C, "src", "CO1", "Fixpipe");
-    ASCENDC_CHECK_TPOSITION((GetPhyType((TPosition)dst.GetPosition()) == Hardware::L1) ||
-        (GetPhyType((TPosition)dst.GetPosition()) == Hardware::UB), "dst", "A1", "Fixpipe",
-        ConstDefiner::Instance().logicNameMap.at(static_cast<uint8_t>(src.GetPosition())));
-    CheckTensorPos<S>(cbufWorkspace, Hardware::L1, "cbufWorkspace", "A1", "Fixpipe");
-    ASCENDC_ASSERT((intriParams.quantPre == QuantMode_t::VDEQF16 || intriParams.quantPre == QuantMode_t::VQF322B8_PRE ||
-        intriParams.quantPre == QuantMode_t::VREQ8), {KERNEL_LOG(KERNEL_ERROR, "Failed to check quantPre value in "
-        "Fixpipe, when cbufWorkspace is given, supported values are VDEQF16 / VQF322B8_PRE / VREQ8");});
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    CheckFixpipeTensor<T, U, config, S>(dst, src, cbufWorkspace, intriParams, "Fixpipe");
+#endif
     if ((GetPhyType((TPosition)dst.GetPosition()) == Hardware::L1)) {
         FixpipeL0C2L1Impl<PrimT<T>, PrimT<U>, config>((__cbuf__ PrimT<T>*)dst.GetPhyAddr(),
             (__cc__ PrimT<U>*)src.GetPhyAddr(), (__cbuf__ uint64_t*)cbufWorkspace.GetPhyAddr(), intriParams);
@@ -160,7 +155,9 @@ __aicore__ inline void Fixpipe(const GlobalTensor<T> &dst, const LocalTensor<U> 
         isUsedProcessLock = true;
     }
 #endif  // ASCENDC_CPU_DEBUG
-    CheckTensorPos<U>(src, Hardware::L0C, "src", "CO1", "Fixpipe");
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    CheckFixpipeTensor<T, U, config>(dst, src, intriParams, "Fixpipe");
+#endif
     FixpipeL0C2GMImpl<PrimT<T>, PrimT<U>, config>((__gm__ PrimT<T>*)dst.GetPhyAddr(),
         (__cc__ PrimT<U>*)src.GetPhyAddr(),
         intriParams);
@@ -178,11 +175,9 @@ template <typename T, typename U, const FixpipeConfig &config, typename S,
 __aicore__ inline void Fixpipe(const GlobalTensor<T> &dst, const LocalTensor<U> &src,
     const LocalTensor<S> &cbufWorkspace, const FixpipeParamsV220 &intriParams)
 {
-    CheckTensorPos<U>(src, Hardware::L0C, "src", "CO1", "Fixpipe");
-    CheckTensorPos<S>(cbufWorkspace, Hardware::L1, "cbufWorkspace", "A1", "Fixpipe");
-    ASCENDC_ASSERT((intriParams.quantPre == QuantMode_t::VDEQF16 || intriParams.quantPre == QuantMode_t::VQF322B8_PRE ||
-        intriParams.quantPre == QuantMode_t::VREQ8), {KERNEL_LOG(KERNEL_ERROR, "Failed to check quantPre value in "
-        "Fixpipe, when cbufWorkspace is given, supported values are VDEQF16 / VQF322B8_PRE / VREQ8");});
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    CheckFixpipeTensor<T, U, config, S>(dst, src, cbufWorkspace, intriParams, "Fixpipe");
+#endif
     FixpipeL0C2GMImpl<PrimT<T>, PrimT<U>, config>((__gm__ PrimT<T>*)dst.GetPhyAddr(),
         (__cc__ PrimT<U>*)src.GetPhyAddr(),
         (__cbuf__ uint64_t*)cbufWorkspace.GetPhyAddr(), intriParams);

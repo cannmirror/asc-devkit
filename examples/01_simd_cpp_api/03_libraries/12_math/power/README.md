@@ -52,8 +52,7 @@
 - 算子实现：  
   本样例中实现的是固定shape为输入srcbase[16]、srcexp[16]，输出dst[16]的power_custom算子。算子功能mode参数默认为0，即指数和底数都为张量。
 
-  - Kernel实现
-
+  - Kernel实现  
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用Power高阶API接口完成Power计算，得到最终结果，再搬出到外部存储上。
 
     power_custom算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcbaseGm、srcexpGm存储在srcLocal中，输入参数mode用于判断幂运算的类型，Compute任务负责对srcbaseLocal、srcexpLocal执行Power计算，按照mode的值调用不同类调用接口实现计算，计算结果存储在dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。

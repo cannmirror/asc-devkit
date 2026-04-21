@@ -20,7 +20,6 @@
 
 ## 算子描述
 - 算子功能：  
-
   调用SetAtomicAdd接口后，可对后续的从VECOUT/L0C/L1到GM的数据传输开启原子累加，通过模板参数设定不同的累加数据类型。
 - 算子规格：  
 
@@ -38,7 +37,7 @@
 
 
 - 算子实现：
-  - kernel实现   
+  - kernel实现  
     本算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn和Compute任务不进行任何操作。CopyOut任务负责将Global Memory上的输入Tensor src0Gm和src1Gm存储在src0Local中，随后为后续的VECOUT/L0C/L1到GM的数据传输开启原子累加，最后输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
