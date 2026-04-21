@@ -77,6 +77,11 @@ filter_coverage() {
     exit 1
   fi
 
+  local _path_to_gen="$(dirname ${_filtered_file})"
+  if [[ ! -d "${_path_to_gen}" ]]; then
+    mk_dir "${_path_to_gen}"
+  fi
+
   # 获取lcov版本号
   LCOV_MAJOR=$(lcov --version 2>/dev/null | grep -oE '[0-9]+' | head -n 1)
   # 初始化额外参数字符串

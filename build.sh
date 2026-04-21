@@ -13,7 +13,7 @@ set -e
 
 SUPPORTED_SHORT_OPTS=("h" "j" "t" "p" "f")
 SUPPORTED_LONG_OPTS=(
-    "help" "cov" "cache" "pkg" "asan" "make_clean" "cann_3rd_lib_path" "test" "cann_path" "adv_test" "basic_test_one" "basic_test_two" "basic_test_three" "build-type" "extra-cmake-args" "changed_file"
+    "help" "cov" "cache" "pkg" "asan" "make_clean" "cann_3rd_lib_path" "test" "cann_path" "adv_test" "adv_test_two" "basic_test_one" "basic_test_two" "basic_test_three" "basic_test_four" "basic_test_five" "build-type" "extra-cmake-args" "changed_file"
 )
 
 CURRENT_DIR=$(dirname $(readlink -f ${BASH_SOURCE[0]}))
@@ -63,9 +63,12 @@ usage() {
         echo "    -p, --cann_path      Set the cann package installation directory, eg: /usr/local/Ascend/cann"
         echo "    -j                   Compile thread nums, default is 16, eg: -j 8"
         echo "    --adv_test            Build and run the adv part of unit tests"
+        echo "    --adv_test_two        Build and run the adv_test_two part of unit tests"
         echo "    --basic_test_one      Build and run the basic_one part of unit tests"
         echo "    --basic_test_two      Build and run the basic_two part of unit tests"
         echo "    --basic_test_three    Build and run the basic_three part of unit tests"
+        echo "    --basic_test_four     Build and run the basic_four part of unit tests"
+        echo "    --basic_test_five     Build and run the basic_five part of unit tests"
         echo "    --cann_3rd_lib_path  Set the path for third-party library dependencies, eg: ./build"
         echo "    --cov                Enable code coverage for unit tests"
         echo "    --asan               Enable ASAN (address Sanitizer)"
@@ -97,9 +100,12 @@ usage() {
   echo "    -t, --test           Build and run all unit tests"
   echo "    -p, --cann_path      Set the cann package installation directory, eg: /usr/local/Ascend/cann"
   echo "    --adv_test            Build and run the adv part of unit tests"
+  echo "    --adv_test_two        Build and run the adv_test_two part of unit tests"
   echo "    --basic_test_one      Build and run the basic_one part of unit tests"
   echo "    --basic_test_two      Build and run the basic_two part of unit tests"
   echo "    --basic_test_three    Build and run the basic_three part of unit tests"
+  echo "    --basic_test_four     Build and run the basic_four part of unit tests"
+  echo "    --basic_test_five     Build and run the basic_five part of unit tests"
   echo "    --pkg                Compile run package"
   echo "    --cann_3rd_lib_path  Set the path for third-party library dependencies, eg: ./build"
   echo "    --cov                Enable code coverage for unit tests"
@@ -193,9 +199,12 @@ check_help_combinations() {
     case "$arg" in
       -t|--test) has_test=true ;;
       --adv_test) test_part="adv_test" ;;
+      --adv_test_two) test_part="adv_test_two" ;;
       --basic_test_one) test_part="basic_test_one" ;;
       --basic_test_two) test_part="basic_test_two" ;;
       --basic_test_three) test_part="basic_test_three" ;;
+      --basic_test_four) test_part="basic_test_four" ;;
+      --basic_test_five) test_part="basic_test_five" ;;
       --cov) has_cov=true ;;
       --pkg) has_pkg=true ;;
       -h|--help) ;;
@@ -252,9 +261,12 @@ check_param_with_help() {
           --pkg) SHOW_HELP="package" ;;
           -t|--test) SHOW_HELP="test" ;;
           --adv_test) SHOW_HELP="test" ;;
+          --adv_test_two) SHOW_HELP="test" ;;
           --basic_test_one) SHOW_HELP="test" ;;
           --basic_test_two) SHOW_HELP="test" ;;
           --basic_test_three) SHOW_HELP="test" ;;
+          --basic_test_four) SHOW_HELP="test" ;;
+          --basic_test_five) SHOW_HELP="test" ;;
           --make_clean) SHOW_HELP="clean" ;;
         esac
       done
@@ -346,6 +358,11 @@ set_options() {
       check_param_test_part
       shift
       ;;
+    --adv_test_two)
+      TEST_PART="adv_test_two"
+      check_param_test_part
+      shift
+      ;;
     --basic_test_one)
       TEST_PART="basic_test_one"
       check_param_test_part
@@ -358,6 +375,16 @@ set_options() {
       ;;
     --basic_test_three)
       TEST_PART="basic_test_three"
+      check_param_test_part
+      shift
+      ;;
+    --basic_test_four)
+      TEST_PART="basic_test_four"
+      check_param_test_part
+      shift
+      ;;
+    --basic_test_five)
+      TEST_PART="basic_test_five"
       check_param_test_part
       shift
       ;;
@@ -506,12 +533,18 @@ function build_test_part() {
 
   if [ "$TEST_PART" == "adv_test" ]; then
     TEST_TARGET_LIST=("${adv_test_targets[@]}")
+  elif [ "$TEST_PART" == "adv_test_two" ]; then
+    TEST_TARGET_LIST=("${adv_test_two_targets[@]}")
   elif [ "$TEST_PART" == "basic_test_one" ]; then
     TEST_TARGET_LIST=("${basic_test_one_targets[@]}")
   elif [ "$TEST_PART" == "basic_test_two" ]; then
     TEST_TARGET_LIST=("${basic_test_two_targets[@]}")
   elif [ "$TEST_PART" == "basic_test_three" ]; then
     TEST_TARGET_LIST=("${basic_test_three_targets[@]}")
+  elif [ "$TEST_PART" == "basic_test_four" ]; then
+    TEST_TARGET_LIST=("${basic_test_four_targets[@]}")
+  elif [ "$TEST_PART" == "basic_test_five" ]; then
+    TEST_TARGET_LIST=("${basic_test_five_targets[@]}")
   fi
 
   for tag in "${TEST_TARGET_LIST[@]}"; do

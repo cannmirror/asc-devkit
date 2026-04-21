@@ -17,14 +17,17 @@ adv_test_targets=(
     ascendc_ut_adv_api_kernel_ascend310B1
     ascendc_ut_adv_api_kernel_ascend910B1_AIC
     ascendc_ut_adv_api_kernel_ascend910B1_AIV
-    ascendc_ut_adv_api_kernel_ascend950pr_9599_AIC
-    ascendc_ut_adv_api_kernel_ascend950pr_9599_AIV
     ascendc_ut_adv_api_tiling_ascend310p
     ascendc_ut_adv_api_tiling_ascend610
     ascendc_ut_adv_api_tiling_ascend310B1
     ascendc_ut_adv_api_tiling_ascend910B1_AIC
     ascendc_ut_adv_api_tiling_ascend910B1_AIV
     ascendc_ut_adv_api_tiling_ascend950pr_9599_AIC
+)
+
+adv_test_two_targets=(
+    ascendc_ut_adv_api_kernel_ascend950pr_9599_AIC
+    ascendc_ut_adv_api_kernel_ascend950pr_9599_AIV
     ascendc_ut_adv_api_tiling_ascend950pr_9599_AIV
 )
 
@@ -36,16 +39,20 @@ basic_test_one_targets=(
     ascendc_ut_tiling_utils_ascend610Lite
     ascendc_ut_tiling_utils_ascend910B1_AIC
     ascendc_ut_tiling_utils_ascend910B1_AIV
-    ascendc_ut_tiling_utils_ascend950pr_9599_AIC
-    ascendc_ut_tiling_utils_ascend950pr_9599_AIV_BASIC
-    ascendc_ut_tiling_utils_ascend950pr_9599_AIV_FRAMEWORK
-    ascendc_ut_tiling_utils_ascend950pr_9599_AIV_MICRO
-    ascendc_ut_tiling_utils_ascend950pr_9599_AIV_SIMT
     ascendc_ut_tiling_utils_mc62cm12aa_AIC
     ascendc_ut_tiling_utils_mc62cm12aa_BASIC
     ascendc_ut_tiling_utils_mc62cm12aa_FRAMEWORK
     ascendc_ut_tiling_utils_mc62cm12aa_MICRO
     ascendc_ut_tiling_utils_mc62cm12aa_SIMT
+    ascendc_ut_tiling_utils_ascend950pr_9599_AIC
+    ascendc_ut_tiling_utils_ascend950pr_9599_AIV_BASIC
+    ascendc_ut_tiling_utils_ascend950pr_9599_AIV_FRAMEWORK
+    ascendc_ut_tiling_utils_ascend950pr_9599_AIV_MICRO
+    ascendc_ut_tiling_utils_ascend950pr_9599_AIV_SIMT
+    ascendc_ut_basic_api_ascend950pr_9599_AIV_FRAMEWORK
+)
+
+basic_test_two_targets=(
     ascendc_ut_basic_api_ascend910
     ascendc_ut_basic_api_ascend310p
     ascendc_ut_basic_api_ascend610
@@ -54,9 +61,15 @@ basic_test_one_targets=(
     ascendc_ut_basic_api_ascend910B1_AIC
     ascendc_ut_basic_api_ascend910B1_AIV
     ascendc_ut_basic_api_ascend910B1_AIV_MSTX
+    # ascendc_ut_basic_api_mc62cm12aa_AIC
+    # ascendc_ut_basic_api_mc62cm12aa_BASIC
+    # ascendc_ut_basic_api_mc62cm12aa_FRAMEWORK
+    # ascendc_ut_reg_compute_mc62cm12aa
+    # ascendc_ut_simt_api_mc62cm12aa
+    ascendc_ut_basic_api_ascend950pr_9599_AIC
 )
 
-basic_test_two_targets=(
+basic_test_three_targets=(
     ascendc_ut_aclrtc
     ascendc_ut_asc_compile_base
     ascendc_ut_asc_runtime
@@ -65,32 +78,28 @@ basic_test_two_targets=(
     ascendc_ut_tpl_tiling_debug
     ascendc_ut_tpl_tiling_release
     ascendc_ut_aicpu_api
-    ascendc_ut_std_api_ascend910B1
-    ascendc_ut_std_api_ascend950pr_9599
-    # ascendc_ut_basic_api_mc62cm12aa_AIC
-    # ascendc_ut_basic_api_mc62cm12aa_BASIC
-    # ascendc_ut_basic_api_mc62cm12aa_FRAMEWORK
-    # ascendc_ut_reg_compute_mc62cm12aa
-    # ascendc_ut_simt_api_mc62cm12aa
     ascendc_run_all_header_checks
 )
 
-basic_test_three_targets=(
+basic_test_four_targets=(
+    ascendc_ut_std_api_ascend910B1
+    ascendc_ut_std_api_ascend950pr_9599
     ascendc_pyut_asc_compile_common
     ascendc_pyut_asc_op_compiler
     ascendc_pyut_aclrt_launch_kernel
     ascendc_pyut_compile_trace_log
     asc_opc_unittest
+    ascendc_ut_basic_api_ascend950pr_9599_AIV_BASIC
+)
+
+basic_test_five_targets=(
     ascendc_ut_c_api_ascend910B1_AIC
     ascendc_ut_c_api_ascend910B1_AIV
     ascendc_ut_c_api_ascend950pr_9599_AIC
     ascendc_ut_c_api_ascend950pr_9599_AIV
+    ascendc_ut_reg_compute_ascend950pr_9599
     ascendc_ut_tensor_api_NPU_ARCH_2201_AIC
     ascendc_ut_tensor_api_NPU_ARCH_2201_AIV
     ascendc_ut_tensor_api_NPU_ARCH_3510_AIC
-    ascendc_ut_basic_api_ascend950pr_9599_AIC
-    ascendc_ut_basic_api_ascend950pr_9599_AIV_BASIC
-    ascendc_ut_basic_api_ascend950pr_9599_AIV_FRAMEWORK
-    ascendc_ut_reg_compute_ascend950pr_9599
     ascendc_ut_simt_api_ascend950pr_9599
 )
