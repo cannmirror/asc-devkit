@@ -53,7 +53,9 @@ __aicore__ inline void ScmDataCopyMsg(__cbuf__ void* dst, __gm__ void* src, cons
     int32_t ubAddr)
 {
     ASSERT(g_coreType == AIV);
-    ASSERT(GetKfcClient() != nullptr);
+    ASCENDC_DEBUG_ASSERT((GetKfcClient() != nullptr), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
+        "DataCopy Gm2L1 is software-emulated on this device and works with Matmul API. Use REGISTER_MATMUL_OBJ "
+        "to enable Matmul API first.\n"));
     auto msg = GetKfcClient()->AllocMessage();
     ASSERT(sizeof(msg->buffer) >= sizeof(struct Gm2L1Params));
 
