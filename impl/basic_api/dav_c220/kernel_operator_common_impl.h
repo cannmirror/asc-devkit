@@ -116,6 +116,40 @@ __aicore__ inline void CheckLocalMemoryIAImpl(const CheckLocalMemoryIAParam& che
     }
 }
 
+template <int8_t startBit, int8_t endBit>
+__aicore__ inline void CheckCtrlSprBitRange()
+{
+    static_assert((startBit == endBit && startBit == 48), "startBit and endBit must be both 48 on current platform!");
+}
+
+template <int8_t startBit, int8_t endBit>
+__aicore__ static inline void SetCtrlSprImpl(int64_t value)
+{
+    CheckCtrlSprBitRange<startBit, endBit>();
+    if (endBit - startBit == 63) {
+        set_ctrl(value);
+        return;
+    }
+    uint64_t mask = ((uint64_t(1) << (endBit - startBit + 1)) - 1) << startBit;
+    mask = ~mask;
+    int64_t setValue = get_ctrl() & mask;
+    setValue |= (value << startBit);
+    set_ctrl(setValue);
+}
+
+template <int8_t startBit, int8_t endBit>
+__aicore__ static inline int64_t GetCtrlSprImpl()
+{
+    CheckCtrlSprBitRange<startBit, endBit>();
+    int64_t value = get_ctrl();
+    if (endBit - startBit == 63) {
+        return value;
+    }
+    value = value >> startBit;
+    value &= ((uint64_t(1) << (endBit - startBit + 1)) - 1);
+    return value;
+}
+
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_COMMON_IMPL_H
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_COMMON_IMPL_H__)
