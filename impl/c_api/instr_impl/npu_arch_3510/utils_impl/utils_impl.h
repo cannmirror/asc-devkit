@@ -13,8 +13,6 @@
 
 #include "instr_impl/npu_arch_2201/utils_impl/utils_impl.h"
 
-constexpr int64_t VECTOR_REG_WIDTH_3510 = 256;
-
 union asc_gm2l1_loop_size_config {
     uint64_t config;
     struct {

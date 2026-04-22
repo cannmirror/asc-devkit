@@ -18,4 +18,24 @@
 #include "instr_impl/npu_arch_3510/sync_impl/asc_sync_data_barrier_impl.h"
 #include "instr_impl/npu_arch_3510/sync_impl/asc_lock_impl.h"
 
+__aicore__ inline void asc_sync_vec()
+{
+    asc_sync_vec_impl();
+}
+
+__aicore__ inline void asc_sync_mte3(int id)
+{
+    asc_sync_mte3_impl(id);
+}
+
+__aicore__ inline void asc_sync_mte2(int id)
+{
+    asc_sync_mte2_impl(id);
+}
+
+__aicore__ inline void asc_sync()
+{
+    asc_sync_impl();
+}
+
 #endif

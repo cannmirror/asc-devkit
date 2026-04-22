@@ -23,6 +23,6 @@ protected:
 TEST_F(TestSysVarGetVfLen, get_vf_len_equals_256)
 {
     int64_t val = asc_get_vf_len();
-    EXPECT_EQ(VECTOR_REG_WIDTH_3510, val);
+    EXPECT_EQ(256, val);
     GlobalMockObject::verify();
 }
