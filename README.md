@@ -172,27 +172,34 @@ Ascend C提供三类接口，均可实现底层的完备编程能力：
 
 - 💡 关于 ASC 语言语法高亮、代码跳转的支持，如有任何建议或改进意见，欢迎社区开发者积极反馈！
 
-## 📖相关文档
+## 📖相关资源
 
-若您希望深入体验项目功能，扩展原有API或开发全新API、开发自定义算子，请访问如下文档获取详细教程。
-- API开发
+- **编程指南**
   | 文档  |  说明   |
   |---------|--------|
-  |[API列表](./docs/api/README.md)|Ascend C API列表。|
-  |[API贡献指南](./CONTRIBUTING.md)|介绍如何扩展或开发Ascend C API。|
+  |[Ascend C 编程指南](https://hiascend.com/document/redirect/CannCommunityOpdevAscendC)|基于昇腾AI硬件，使用Ascend C编写算子程序，开发自定义算子。|
+  |[Ascend C 实践参考](https://hiascend.com/document/redirect/CannCommunityAscendCBestPractice) | 基于已完成开发的Ascend C算子，介绍如何进一步优化算子性能。 |
+  |[Ascend C API列表](./docs/api/README.md)| Ascend C SIMD&SIMT API，包括语言扩展层C API、C++类库基础API和高阶API|
+  |[Ascend C 样例](./examples)| Ascend C API关键特性介绍样例，包括AICore SIMD&SIMT、AICPU等|
+  |[Ascend C 编程指南（鸿蒙）](https://gitcode.com/cann/cann-recipes-harmony-infer/blob/master/docs/ascendc_develop_guide.md)|基于麒麟AI硬件，使用Ascend C编写算子程序，开发自定义算子。|
 
-- 算子开发
+- **贡献指南**
   | 文档  |  说明   |
   |---------|--------|
-  |[Ascend C编程指南](https://hiascend.com/document/redirect/CannCommunityOpdevAscendC)|基于昇腾AI硬件，使用Ascend C编写算子程序，开发自定义算子。|
-  |[Ascend C最佳实践](https://hiascend.com/document/redirect/CannCommunityAscendCBestPractice) | 基于已完成开发的Ascend C算子，介绍如何进一步优化算子性能。 |
-  |[Ascend C编程指南（鸿蒙）](https://gitcode.com/cann/cann-recipes-harmony-infer/blob/master/docs/ascendc_develop_guide.md)|基于麒麟AI硬件，使用Ascend C编写算子程序，开发自定义算子。|
+  |[CANN 社区贡献指南](https://gitcode.com/cann/community)| CANN社区Issue、PR等通用处理流程|
+  |[ASC-DevKit贡献指南](./CONTRIBUTING.md) | Ascend C API、资料与样例等贡献指南|
 
-## 📌后续规划
+- **其他**
+  | 文档  |  说明   |
+  |---------|--------|
+  |[Ascend C Meetup材料](https://gitcode.com/cann/community/tree/master/events/meetup/slides/sig-ascendc)|Ascend C对外宣传的PPT材料，包括950新增特性等|
+  |[Ascend C Wiki](https://gitcode.com/cann/asc-devkit/wiki)|Ascend C技术宣传文章等|
+  |[CANN-Learning-Hub](https://gitcode.com/cann/cann-learning-hub/tree/master/tutorials/ascendc_operator_development)|Ascend C算子开发在线全流程教程|
+  |[Ascend C Ops Samples](https://gitcode.com/cann/cann-samples)|Ascend C 算子如何逐步实现高性能样例仓|
 
-- 基于Altas A2/A3发布语言扩展层纯C接口，提供基于数组分配内存能力，支持基于指针的计算接口，实现与业界类似的纯C编程体验；
-- Ascend 950PR/Ascend 950DT将支持SIMT编程、SIMD与SIMT混合编程，并通过Layout进一步强化Tensor编程能力；
-- 持续丰富语言扩展层C API(含SIMD、SIMT)和基础API的关键特性介绍，并基于融合编译与 <<<>>>调用完善样例；
+## 📌相关规划
+
+- [Ascend C Development Roadmap (2026 Q2)](https://gitcode.com/cann/asc-devkit/issues/316)；
 
 ## 📝相关信息
 
