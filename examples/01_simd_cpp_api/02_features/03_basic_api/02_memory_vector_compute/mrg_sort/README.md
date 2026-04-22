@@ -123,26 +123,6 @@ cmake -DSCENARIO_NUM=$SCENARIO_NUM -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITEC
 cmake -DSCENARIO_NUM=$SCENARIO_NUM -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # NPU仿真模式
 ```
 
-**CPU调试模式：**
-```bash
-SCENARIO_NUM=1
-mkdir -p build && cd build;
-cmake .. -DSCENARIO_NUM=$SCENARIO_NUM -DRUN_MODE=cpu -DNPU_ARCH=dav-2201; make -j;
-python3 ../scripts/gen_data.py -scenarioNum=$SCENARIO_NUM
-./demo
-python3 ../scripts/verify_result.py -scenarioNum=$SCENARIO_NUM output/output.bin output/golden.bin
-```
-
-**NPU仿真模式：**
-```bash
-SCENARIO_NUM=1
-mkdir -p build && cd build;
-cmake .. -DSCENARIO_NUM=$SCENARIO_NUM -DRUN_MODE=sim -DNPU_ARCH=dav-2201; make -j;
-python3 ../scripts/gen_data.py -scenarioNum=$SCENARIO_NUM
-./demo
-python3 ../scripts/verify_result.py -scenarioNum=$SCENARIO_NUM output/output.bin output/golden.bin
-```
-
 > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
 
 执行结果如下，说明精度对比成功。
