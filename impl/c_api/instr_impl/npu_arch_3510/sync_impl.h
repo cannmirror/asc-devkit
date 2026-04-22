@@ -17,6 +17,7 @@
 #include "instr_impl/npu_arch_3510/sync_impl/asc_sync_block_arrive_impl.h"
 #include "instr_impl/npu_arch_3510/sync_impl/asc_sync_data_barrier_impl.h"
 #include "instr_impl/npu_arch_3510/sync_impl/asc_lock_impl.h"
+#include "instr_impl/npu_arch_3510/sync_impl/asc_unlock_impl.h"
 
 __aicore__ inline void asc_sync_vec()
 {
