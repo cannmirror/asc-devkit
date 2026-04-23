@@ -33,8 +33,6 @@ add_executable(demo
     multidimensional_data_movement.asc
 )
 
-set(NPU_ARCH "dav-3510" CACHE STRING "NPU ARCH, e.g. dav-3510")
-
 target_compile_options(demo PRIVATE
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${NPU_ARCH}>
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>
 )
