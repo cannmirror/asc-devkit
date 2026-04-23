@@ -29,4 +29,5 @@ set(CMAKE_AR            "${CCEC_PATH}/llvm-ar")
 set(CMAKE_STRIP         "${CCEC_PATH}/llvm-strip")
 set(CMAKE_OBJCOPY       "${CCEC_PATH}/llvm-objcopy")
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_SKIP_RPATH TRUE)
