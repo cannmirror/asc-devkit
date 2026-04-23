@@ -14,36 +14,103 @@
 #include "c_api/asc_simd.h"
 #include "c_api/utils_intf.h"
 
-class TestSimdAtomicDcci : public testing::Test { 
+class TestAscCapiSimdDcci : public testing::Test {
 protected:
     void SetUp() {}
     void TearDown() {}
 };
 
 namespace {
-void dcci_Stub(__gm__ void* dst)
+void dcci_single_Stub(__gm__ void* dst, uint64_t entire)
 {
     EXPECT_EQ((__gm__ void*)3, dst);
+    EXPECT_EQ(cache_line_t::SINGLE_CACHE_LINE, entire);
 }
+
+void dcci_single_ub_Stub(__ubuf__ void* dst, uint64_t entire)
+{
+    EXPECT_EQ((__ubuf__ void*)3, dst);
+    EXPECT_EQ(cache_line_t::SINGLE_CACHE_LINE, entire);
+}
+} // namespace
+
+TEST_F(TestAscCapiSimdDcci, dcci_gm_single)
+{
+    __gm__ void* dst = (__gm__ void*)3;
+    MOCKER(dcci, void(__gm__ void*, uint64_t)).times(1).will(invoke(dcci_single_Stub));
+    asc_dcci_single(dst);
+    GlobalMockObject ::verify();
 }
 
-#define TEST_DCCI(entire, type)                                                          \
-TEST_F(TestSimdAtomicDcci, dcci_gm_##entire##_##type##_##void_ptr_uint64_t_Succ)         \
-{                                                                                        \
-    __gm__ void* dst = (__gm__ void*)3;                                                  \
-    MOCKER(dcci, void(__gm__ void*, uint64_t, uint64_t))                                 \
-        .times(1)                                                                        \
-        .will(invoke(dcci_Stub));                                                        \
-    asc_dcci_##entire##_##type(dst);                                                     \
-    GlobalMockObject::verify();                                                          \
-}                                                                                        \
+TEST_F(TestAscCapiSimdDcci, dcci_ub_single)
+{
+    __ubuf__ void* dst = (__ubuf__ void*)3;
+    MOCKER(dcci, void(__ubuf__ void*, uint64_t)).times(1).will(invoke(dcci_single_ub_Stub));
+    asc_ub_dcci_single(dst);
+    GlobalMockObject ::verify();
+}
+
+namespace {
+void dcci_entire_all_Stub(__gm__ void* dst, uint64_t entire, uint64_t type)
+{
+    EXPECT_EQ((__gm__ void*)0, dst);
+    EXPECT_EQ(cache_line_t::ENTIRE_DATA_CACHE, entire);
+    EXPECT_EQ(dcci_dst_t::CACHELINE_ALL, type);
+}
+} // namespace
 
 
-TEST_DCCI(single, all);
-TEST_DCCI(single, ub);
-TEST_DCCI(single, out);
-TEST_DCCI(single, atomic);
-TEST_DCCI(entire, all);
-TEST_DCCI(entire, ub);
-TEST_DCCI(entire, out);
-TEST_DCCI(entire, atomic);
+TEST_F(TestAscCapiSimdDcci, dcci_gm_entire_all)
+{
+    MOCKER(dcci, void(__gm__ void*, uint64_t, uint64_t)).times(1).will(invoke(dcci_entire_all_Stub));
+    asc_dcci_entire_all();
+    GlobalMockObject ::verify();
+}
+
+namespace {
+void dcci_entire_out_Stub(__gm__ void* dst, uint64_t entire, uint64_t type)
+{
+    EXPECT_EQ((__gm__ void*)0, dst);
+    EXPECT_EQ(cache_line_t::ENTIRE_DATA_CACHE, entire);
+    EXPECT_EQ(dcci_dst_t::CACHELINE_OUT, type);
+}
+} // namespace
+
+TEST_F(TestAscCapiSimdDcci, dcci_gm_entire_out)
+{
+    MOCKER(dcci, void(__gm__ void*, uint64_t, uint64_t)).times(1).will(invoke(dcci_entire_out_Stub));
+    asc_dcci_entire_out();
+    GlobalMockObject ::verify();
+}
+
+namespace {
+void dcci_entire_ub_Stub(__gm__ void* dst, uint64_t entire, uint64_t type)
+{
+    EXPECT_EQ((__gm__ void*)0, dst);
+    EXPECT_EQ(cache_line_t::ENTIRE_DATA_CACHE, entire);
+    EXPECT_EQ(dcci_dst_t::CACHELINE_UB, type);
+}
+} // namespace
+
+TEST_F(TestAscCapiSimdDcci, dcci_gm_entire_ub)
+{
+    MOCKER(dcci, void(__gm__ void*, uint64_t, uint64_t)).times(1).will(invoke(dcci_entire_ub_Stub));
+    asc_dcci_entire_ub();
+    GlobalMockObject ::verify();
+}
+
+namespace {
+void dcci_entire_atomic_Stub(__gm__ void* dst, uint64_t entire, uint64_t type)
+{
+    EXPECT_EQ((__gm__ void*)0, dst);
+    EXPECT_EQ(cache_line_t::ENTIRE_DATA_CACHE, entire);
+    EXPECT_EQ(dcci_dst_t::CACHELINE_ATOMIC, type);
+}
+} // namespace
+
+TEST_F(TestAscCapiSimdDcci, dcci_gm_entire_atomic)
+{
+    MOCKER(dcci, void(__gm__ void*, uint64_t, uint64_t)).times(1).will(invoke(dcci_entire_atomic_Stub));
+    asc_dcci_entire_atomic();
+    GlobalMockObject ::verify();
+}

@@ -25,21 +25,26 @@ Scalar单元访问Global Memory，首先会访问每个核内的Data Cache，因
 
 Scalar单元访问UB数据时，该接口需配合[asc_set_ctrl()](../sys_var/asc_set_ctrl.md)接口使用，将CTRL[49]设置为1'b1，开启datacache模式。
 
+<cann-filter npu_type = "950">
+
+针对Ascend 950PR/Ascend 950DT，不支持asc_dcci_entire_ub接口。
+
+</cann-filter>
+
 ## 函数原型
 
    ```cpp
    // 刷新传入地址所在的单个Cache Line
    __aicore__ inline void asc_dcci_single(__gm__ void* dst)
-   __aicore__ inline void asc_dcci_single_all(__gm__ void* dst)
-   __aicore__ inline void asc_dcci_single_ub(__gm__ void* dst)
-   __aicore__ inline void asc_dcci_single_out(__gm__ void* dst)
-   __aicore__ inline void asc_dcci_single_atomic(__gm__ void* dst)
+
+   // 刷新传入的UB地址空间地址所在的单个Cache Line
+   __aicore__ inline void asc_ub_dcci_single(__ubuf__ void* dst)
+
    // 刷新所有Cache Line
-   __aicore__ inline void asc_dcci_entire(__gm__ void* dst)
-   __aicore__ inline void asc_dcci_entire_all(__gm__ void* dst)
-   __aicore__ inline void asc_dcci_entire_ub(__gm__ void* dst)
-   __aicore__ inline void asc_dcci_entire_out(__gm__ void* dst)
-   __aicore__ inline void asc_dcci_entire_atomic(__gm__ void* dst)
+   __aicore__ inline void asc_dcci_entire_all()
+   __aicore__ inline void asc_dcci_entire_ub()
+   __aicore__ inline void asc_dcci_entire_out()
+   __aicore__ inline void asc_dcci_entire_atomic()
    ```
 
 ## 参数说明
@@ -56,14 +61,9 @@ Scalar单元访问UB数据时，该接口需配合[asc_set_ctrl()](../sys_var/as
 
 PIPE_S
 
-
-<cann-filter npu_type = "950">
-
 ## 约束说明
 
-针对Ascend 950PR/Ascend 950DT，不支持asc_dcci_single_ub、asc_dcci_entire_ub接口。
-
-</cann-filter>
+无
 
 ## 调用示例
 
