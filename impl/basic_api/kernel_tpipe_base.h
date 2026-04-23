@@ -75,8 +75,12 @@ struct GlobalManageQueConfig<Hardware::L0C> {
 template <Hardware hardType>
 __aicore__ constexpr bool EnableGlobalManageQue(const TQueConfig &config)
 {
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     return config.bufferLen > 0 && config.bufferNumber > 0 &&
            config.bufferLen * config.bufferNumber == GlobalManageQueConfig<hardType>::totalSize;
+#else
+    return false;
+#endif
 }
 
 template <bool enableGlobalManageQue, const TQueConfig &config> struct BufInfoAux {

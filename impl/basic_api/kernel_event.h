@@ -506,6 +506,35 @@ __aicore__ constexpr TPosition GetBufferLogicPos(TPosition pos, bool isSrc)
     return TPosition::MAX;
 }
 
+__aicore__ constexpr bool IsVecPos(TPosition pos)
+{
+    return pos == TPosition::VECIN || pos == TPosition::VECOUT || pos == TPosition::VECCALC;
+}
+
+__aicore__ constexpr bool IsTQuePositionForVec(TPosition src, TPosition dst)
+{
+    return (IsVecPos(src) || IsVecPos(dst)) && src != TPosition::TSCM && dst != TPosition::TSCM;
+}
+
+template <typename T>
+__aicore__ constexpr bool UseBufIdSync()
+{
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
+    return IsTQuePositionForVec(T::srcPosition, T::dstPosition) || T::config.enableStaticEvtId;
+#else
+    return false;
+#endif
+}
+
+__aicore__ constexpr bool UseBufIdSync(TPosition src, TPosition dst, bool enableStaticEvtId)
+{
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
+    return IsTQuePositionForVec(src, dst) || enableStaticEvtId;
+#else
+    return false;
+#endif
+}
+
 __aicore__ constexpr HardEvent GetQueEvt(Hardware src, Hardware dst, bool fwdDirect, bool nd2nz = false,
                                          bool nz2nd = false)
 {
