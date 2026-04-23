@@ -13,55 +13,88 @@
 #include "c_api/stub/cce_stub.h"
 #include "c_api/asc_simd.h"
 
-class TestSimdAtomicDcci : public testing::Test {
+class TestAscCApiSimdDcci : public testing::Test {
 protected:
     void SetUp() {}
     void TearDown() {}
 };
 
 namespace {
-void dcci_Stub(__gm__ void* dst)
+void dcci_single_Stub(__gm__ void* dstPtr, uint64_t entire)
 {
-    EXPECT_EQ((__gm__ void*)3, dst);
+    EXPECT_EQ((__gm__ void*)3, dstPtr);
+    EXPECT_EQ(cache_line_t::SINGLE_CACHE_LINE, entire);
 }
 
-void dcci_Stub_ub(__ubuf__ void* dst)
+void dcci_single_ub_Stub(__ubuf__ void* dstPtr, uint64_t entire)
 {
-    EXPECT_EQ((__ubuf__ void*)3, dst);
+    EXPECT_EQ((__ubuf__ void*)3, dstPtr);
+    EXPECT_EQ(cache_line_t::SINGLE_CACHE_LINE, entire);
 }
 } // namespace
 
-#define TEST_DCCI(entire, type)                                                          \
-TEST_F(TestSimdAtomicDcci, dcci_gm_##entire##_##type##_##void_ptr_uint64_t_Succ)         \
-{                                                                                        \
-    __gm__ void* dst = (__gm__ void*)3;                                                  \
-    MOCKER(dcci, void(__gm__ void*, uint64_t, uint64_t))                                 \
-        .times(1)                                                                        \
-        .will(invoke(dcci_Stub));                                                        \
-    asc_dcci_##entire##_##type(dst);                                                     \
-    GlobalMockObject::verify();                                                          \
-}                                                                                        \
+TEST_F(TestAscCApiSimdDcci, dcci_gm_single)
+{
+    __gm__ void* dstPtr = (__gm__ void*)3;
+    MOCKER(dcci, void(__gm__ void*, uint64_t)).times(1).will(invoke(dcci_single_Stub));
+    asc_dcci_single(dstPtr);
+    GlobalMockObject ::verify();
+}
+
+TEST_F(TestAscCApiSimdDcci, dcci_ub_single)
+{
+    __ubuf__ void* dstPtr = (__ubuf__ void*)3;
+    MOCKER(dcci, void(__ubuf__ void*, uint64_t)).times(1).will(invoke(dcci_single_ub_Stub));
+    asc_ub_dcci_single(dstPtr);
+    GlobalMockObject ::verify();
+}
+
+namespace {
+void dcci_entire_all_stub(__gm__ void* dstPtr, uint64_t entire, uint64_t type)
+{
+    EXPECT_EQ((__gm__ void*)0, dstPtr);
+    EXPECT_EQ(cache_line_t::ENTIRE_DATA_CACHE, entire);
+    EXPECT_EQ(dcci_dst_t::CACHELINE_ALL, type);
+}
+} // namespace
 
 
-TEST_DCCI(single, all);
-TEST_DCCI(single, out);
-TEST_DCCI(single, atomic);
-TEST_DCCI(entire, all);
-TEST_DCCI(entire, out);
-TEST_DCCI(entire, atomic);
+TEST_F(TestAscCApiSimdDcci, dcci_gm_entire_all)
+{
+    MOCKER(dcci, void(__gm__ void*, uint64_t, uint64_t)).times(1).will(invoke(dcci_entire_all_stub));
+    asc_dcci_entire_all();
+    GlobalMockObject ::verify();
+}
 
-#define TEST_DCCI_UB(entire, type)                                                                                     \
-    TEST_F(TestSimdAtomicDcci, dcci_ub_##entire##_##type##_##void_ptr_uint64_t_Succ)                                   \
-    {                                                                                                                  \
-        __ubuf__ void* dst = (__ubuf__ void*)3;                                                                        \
-        MOCKER(dcci, void(__ubuf__ void*, uint64_t, uint64_t)).times(1).will(invoke(dcci_Stub_ub));                    \
-        asc_ub_dcci_##entire##_##type(dst);                                                                            \
-        GlobalMockObject::verify();                                                                                    \
-    }
+namespace {
+void dcci_entire_out_stub(__gm__ void* dstPtr, uint64_t entire, uint64_t type)
+{
+    EXPECT_EQ((__gm__ void*)0, dstPtr);
+    EXPECT_EQ(cache_line_t::ENTIRE_DATA_CACHE, entire);
+    EXPECT_EQ(dcci_dst_t::CACHELINE_OUT, type);
+}
+} // namespace
 
-TEST_DCCI_UB(single, all);
-TEST_DCCI_UB(single, out);
-TEST_DCCI_UB(single, atomic);
-TEST_DCCI_UB(entire, all);
-TEST_DCCI_UB(entire, out);
-TEST_DCCI_UB(entire, atomic);
+TEST_F(TestAscCApiSimdDcci, dcci_gm_entire_out)
+{
+    MOCKER(dcci, void(__gm__ void*, uint64_t, uint64_t)).times(1).will(invoke(dcci_entire_out_stub));
+    asc_dcci_entire_out();
+    GlobalMockObject ::verify();
+}
+
+
+namespace {
+void dcci_entire_atomic_stub(__gm__ void* dstPtr, uint64_t entire, uint64_t type)
+{
+    EXPECT_EQ((__gm__ void*)0, dstPtr);
+    EXPECT_EQ(cache_line_t::ENTIRE_DATA_CACHE, entire);
+    EXPECT_EQ(dcci_dst_t::CACHELINE_ATOMIC, type);
+}
+} // namespace
+
+TEST_F(TestAscCApiSimdDcci, dcci_gm_entire_atomic)
+{
+    MOCKER(dcci, void(__gm__ void*, uint64_t, uint64_t)).times(1).will(invoke(dcci_entire_atomic_stub));
+    asc_dcci_entire_atomic();
+    GlobalMockObject ::verify();
+}

@@ -15,6 +15,7 @@
 
 __aicore__ inline int64_t asc_get_vf_len_impl()
 {
+    constexpr int64_t VECTOR_REG_WIDTH_3510 = 256;
     return VECTOR_REG_WIDTH_3510;
 }
 
