@@ -16,24 +16,25 @@ import os
 import sys
 import numpy as np
 
-def get_saturation(data, data_type):
-    return np.clip(data, np.iinfo(data_type).min, np.iinfo(data_type).max)
-
 def gen_golden_data_simple(scenario_num):
     total_length = 256
+    data_type = np.float32
+    scalar = 0.0
+    # 生成两个 [1, 256] 矩阵
+    x = np.random.uniform(-2, 2, [1, total_length]).astype(data_type)
+    y = np.random.uniform(-2, 2, [1, total_length]).astype(data_type)
+    # 计算逐元素取较大值
     if scenario_num == 1:
-        src_data_type = np.float16
-        dst_data_type = np.int32
-        x = np.random.uniform(-100, 100, [1, total_length]).astype(src_data_type)
-        golden = np.floor(x).astype(dst_data_type)
+        golden = np.maximum(x, y)
     else:
-        src_data_type = np.float32
-        dst_data_type = np.int16
-        x = np.random.uniform(-100, 100, [1, total_length]).astype(src_data_type)
-        golden = get_saturation(np.round(x), dst_data_type).astype(dst_data_type)
+        golden = y
+        for i in range(total_length):
+            if x[i] > scalar:
+                golden[i] = x[i]
     os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
     x.tofile('./input/input_x.bin')
+    y.tofile('./input/input_y.bin')
     golden.tofile('./output/golden.bin')
 
 if __name__ == "__main__":

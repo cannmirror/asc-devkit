@@ -1,7 +1,22 @@
 # cast样例
 
 ## 概述
-本样例基于RegBase编程范式实现Cast运算，用于RegTensor（Reg矢量计算基本单元）的数据类型转换，主要调用Cast接口。
+本样例基于RegBase编程范式实现Cast运算，主要调用Cast接口实现数据类型转换。  
+本样例支持两种数据类型转换场景，通过环境变量SCENARIO_NUM选择场景。
+  <table>
+    <tr>
+      <td>SCENARIO_NUM</td>
+        <td>数据类型转换</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>数据类型位宽小转大，以half转int32_t为例</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>数据类型位宽大转小，以float转int16_t为例</td>
+    </tr>
+    </table>
 
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT
@@ -18,50 +33,53 @@
 ```
 
 ## 样例描述
-- 样例功能：  
-  本样例对输入向量做数据类型转换。当输入输出的数据类型的位宽不同时，Cast指令会间隔地读取或读取，所以本样例在数据搬入或搬出时会使用相应的压缩或解压缩模式，LoadAlign/StoreAlign接口的使用仅供参考，具体说明如下：
+本样例对输入向量做数据类型转换。当输入输出的数据类型的位宽不同时，Cast接口会间隔地读取或写入，所以本样例在数据搬入或搬出时会使用相应的压缩或解压缩模式，LoadAlign/StoreAlign接口的使用仅供参考，具体说明如下：
 
-  **场景1：数据类型位宽小转大**
-  - 输入：half数据类型，位宽为16bit
-  - 输出：int32_t数据类型，位宽为32bit
-  - 说明：从half到int32_t的Cast指令每次处理64个数据，具体流程和示意图如下：
-    - 搬入：调用LoadAlign接口，使用解压缩模式，搬入数据至2\*N位置，同时2\*N+1位置置0
-    - 计算：调用Cast接口，输入输出位宽比为1:2，所以从xReg的2\*N位置读取数据，类型转换后依次写入至yReg
-    - 搬出：调用StoreAlign接口，常规搬出  
-    <img src="figure/reg_cast_1.png">
-  - 样例规格：
-    <table>
-    <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="3" align="center">AIV样例</td></tr>
-    <tr><td rowspan="2" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td></tr>
-    <tr><td align="center">x</td><td align="center">[1, 256]</td><td align="center">half</td></tr>
-    <tr><td rowspan="1" align="center">样例输出</td><td align="center">y</td><td align="center">[1, 256]</td><td align="center">int32_t</td></tr>
-    <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">cast</td></tr>
-    </table>
-  - 样例实现：  
-    CastVF函数内调用Cast接口进行计算，结果写回UB
-    - 调用实现  
-      使用内核调用符<<<>>>调用核函数。
+**场景1：数据类型位宽小转大**
+- 样例功能：将half类型的数据转换成int32_t类型的数据。
+- 参数说明：
+  - layoutMode = RegLayout::ZERO: Cast接口从xReg索引2\*N+0的位置读取数据，用于配合LoadAlign接口将输入数据依次搬入xReg的2\*N位置
+  - satMode = SatMode::NO_SAT：本场景介绍浮点数转整数的非饱和模式，输入数据超过输出数据类型最值时，结果被截断为输出数据类型的宽度。例如输入half值为4294967297.0，对应整数4294967297（0x100000001），则取低32位，输出int32_t值为1
+  - roundMode = RoundMode::CAST_FLOOR：本场景介绍floor（向下取整）舍入模式。例如输入half值为2.5，则输出int32值为2
+  - mask：Cast接口中，mask会按照入输入和输出中，位宽较大的数据类型来筛选，所以本场景按照int32_t数据类型生成MaskReg
+- 样例规格：
+  <table>
+  <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="3" align="center">AIV样例</td></tr>
+  <tr><td rowspan="2" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td></tr>
+  <tr><td align="center">x</td><td align="center">[1, 256]</td><td align="center">half</td></tr>
+  <tr><td rowspan="1" align="center">样例输出</td><td align="center">y</td><td align="center">[1, 256]</td><td align="center">int32_t</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">cast</td></tr>
+  </table>
+- 样例实现：  
+  从half到int32_t的Cast接口每次处理64个数据，具体流程和示意图如下：
+  - 搬入：调用LoadAlign接口，使用解压缩模式，搬入数据至2\*N位置，同时2\*N+1位置置0
+  - 计算：调用Cast接口，输入输出位宽比为1:2，所以从xReg的2\*N位置读取数据，类型转换后依次写入至yReg
+  - 搬出：调用StoreAlign接口，常规搬出
+  - 调用实现：使用内核调用符<<<>>>调用核函数。  
+  <img src="figure/reg_cast_1.png">
 
-  **场景2：数据类型位宽大转小**
-  - 输入：float数据类型，位宽为32bit
-  - 输出：int16_t数据类型，位宽为16bit
-  - 说明：从half到int32_t的Cast指令每次处理64个数据，具体流程和示意图如下：
-    - 搬入：调用LoadAlign接口，常规搬入
-    - 计算：调用Cast接口，输入输出位宽比为2:1，所以从xReg依次读取数据，类型转换后依次写入至yReg的2\*N位置，同时2\*N+1位置置0
-    - 搬出：调用StoreAlign接口，采用压缩模式，仅搬出2\*N位置的数据  
-    <img src="figure/reg_cast_2.png">
-  - 样例规格：
-    <table>
-    <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="3" align="center">AIV样例</td></tr>
-    <tr><td rowspan="2" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td></tr>
-    <tr><td align="center">x</td><td align="center">[1, 256]</td><td align="center">float</td></tr>
-    <tr><td rowspan="1" align="center">样例输出</td><td align="center">y</td><td align="center">[1, 256]</td><td align="center">int16_t</td></tr>
-    <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">cast</td></tr>
-    </table>
-  - 样例实现：  
-    CastVFF322S16和CastVFF162S32函数内调用Cast接口进行计算，结果写回UB
-    - 调用实现  
-      使用内核调用符<<<>>>调用核函数。
+**场景2：数据类型位宽大转小**
+- 样例功能：将float类型的数据转换成int16_t类型的数据。
+- 参数说明：
+  - layoutMode = RegLayout::ZERO: Cast接口将数据写入yReg索引2\*N+0的位置，用于配合StoreAlign接口搬出yReg的2\*N位置的数据
+  - satMode = SatMode::SAT：本场景介绍浮点数转整数的饱和模式，输入数据超过输出数据类型最值时，结果为输出类型的对应最值。例如输入float值为32768.0，对应整数32768，则取int16_t的最大值，输出int16_t值为32767
+  - roundMode = RoundMode::CAST_ROUND：本场景介绍round（四舍五入取整）舍入模式。例如输入half值为2.5，则输出int32值为3
+  - mask：Cast接口中，mask会按照入输入和输出中，位宽较大的数据类型来筛选，所以本场景按照float数据类型生成MaskReg
+- 样例规格：
+  <table>
+  <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="3" align="center">AIV样例</td></tr>
+  <tr><td rowspan="2" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td></tr>
+  <tr><td align="center">x</td><td align="center">[1, 256]</td><td align="center">float</td></tr>
+  <tr><td rowspan="1" align="center">样例输出</td><td align="center">y</td><td align="center">[1, 256]</td><td align="center">int16_t</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">cast</td></tr>
+  </table>
+- 样例实现：  
+  从float到int16_t的Cast接口每次处理64个数据，具体流程和示意图如下：
+  - 搬入：调用LoadAlign接口，常规搬入
+  - 计算：调用Cast接口，输入输出位宽比为2:1，所以从xReg依次读取数据，类型转换后依次写入至yReg的2\*N位置，同时2\*N+1位置置0
+  - 搬出：调用StoreAlign接口，采用压缩模式，仅搬出2\*N位置的数据
+  - 调用实现：使用内核调用符<<<>>>调用核函数。  
+  <img src="figure/reg_cast_2.png">
 
 ## 编译运行
 在本样例根目录下执行如下步骤，编译并执行样例。

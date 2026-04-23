@@ -13,29 +13,35 @@
 
 
 import os
-import sys
 import numpy as np
 
-def get_saturation(data, data_type):
-    return np.clip(data, np.iinfo(data_type).min, np.iinfo(data_type).max)
-
-def gen_golden_data_simple(scenario_num):
+def gen_golden_data_simple():
     total_length = 256
-    if scenario_num == 1:
-        src_data_type = np.float16
-        dst_data_type = np.int32
-        x = np.random.uniform(-100, 100, [1, total_length]).astype(src_data_type)
-        golden = np.floor(x).astype(dst_data_type)
-    else:
-        src_data_type = np.float32
-        dst_data_type = np.int16
-        x = np.random.uniform(-100, 100, [1, total_length]).astype(src_data_type)
-        golden = get_saturation(np.round(x), dst_data_type).astype(dst_data_type)
+    data_type = np.float32
+
+    # float32 是 4 字节
+    dtype_size = np.dtype(data_type).itemsize
+    # 对于b32数据类型，每次repeat处理64个元素，共4次repeat
+    repeat = total_length // (256 // dtype_size)
+    # 每次repeat对应一个32B的MaskReg
+    mask_length = repeat * 32
+    # 生成两个 [1, 256] 矩阵
+    x = np.random.uniform(0, 2, [1, total_length]).astype(data_type)
+    y = np.random.uniform(0, 2, [1, total_length]).astype(data_type)
+    mask = np.random.randint(0, 255, [1, mask_length]).astype(np.uint8)
+    golden = np.zeros([1, total_length]).astype(data_type)
+
+    # 对于b32数据类型，mask有效位数间隔4bit，golden中每个uint8_t元素对应2个mask值。
+    mask_num = 8 // dtype_size
+    for i in range(total_length):
+        mask_i = mask[0, i // mask_num] >> (i % mask_num * dtype_size) & 1
+        golden[0, i] = x[0, i] if mask_i == 1 else y[0, i]
     os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
     x.tofile('./input/input_x.bin')
+    y.tofile('./input/input_y.bin')
+    mask.tofile('./input/input_mask.bin')
     golden.tofile('./output/golden.bin')
 
 if __name__ == "__main__":
-    scenario_num = int(sys.argv[1])
-    gen_golden_data_simple(scenario_num)
+    gen_golden_data_simple()
