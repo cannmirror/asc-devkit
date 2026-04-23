@@ -1,8 +1,8 @@
-# DataSyncBarrier样例
+# IBSet与IBWait核间同步样例
 
 ## 概述
 
-本样例演示DataSyncBarrier接口的使用方法。DataSyncBarrier用于核内标量单元流水（PIPE_S）的同步，确保标量操作完成后再执行后续操作。样例展示了在SetValue写入标量值后调用DataSyncBarrier确保写入完成，再执行GetValue读取的场景。
+本样例基于IBSet和IBWait实现核间同步，适用于以下场景：当两个核协同操作同一块全局内存且存在数据依赖时，通过IBSet和IBWait实现核间同步，避免数据读写错误。
 
 ## 支持的产品
 
@@ -13,29 +13,35 @@
 ## 目录结构介绍
 
 ```
-├── data_sync_barrier
+├── ib_set_wait
 │   ├── scripts
-│   │   ├── gen_data.py            // 输入数据和真值数据生成脚本
-│   │   └── verify_result.py       // 验证输出数据和真值数据是否一致的验证脚本
-│   ├── CMakeLists.txt             // 编译工程文件
-│   ├── data_utils.h               // 数据读入写出函数
-│   └── data_sync_barrier.asc      // Ascend C样例实现 & 调用样例
+│   │   ├── gen_data.py         // 输入数据和真值数据生成脚本
+│   │   └── verify_result.py    // 验证输出数据和真值数据是否一致的验证脚本
+│   ├── CMakeLists.txt          // 编译工程文件
+│   ├── data_utils.h            // 数据读入写出函数
+│   └── ib_set_wait.asc         // Ascend C样例实现 & 调用样例
 ```
 
-## 样例规格
+## 样例功能描述
 
-<table border="2">
-<caption>表1：样例规格对照表</caption>
-<tr><th>类型</th><th>名称</th><th>Shape</th><th>数据类型</th><th>格式</th></tr>
-<tr><td>输入</td><td>inputGm</td><td>[8]</td><td>float</td><td>ND</td></tr>
-<tr><td>输出</td><td>dstGm</td><td>[8]</td><td>float</td><td>ND</td></tr>
-<tr><td>核函数名</td><td>kernel_data_sync_barrier</td><td>-</td><td>-</td><td>-</td></tr>
+本样例通过两个核协同工作，每个核处理256个half数据，共512个元素。核0负责读取输入x[0:256]和y[0:256]，计算结果写入z[0:256]；核1负责读取核0的输出z[0:256]和输入y[256:512]，计算结果写入z[256:512]。需确保核1在核0完成写操作后才能读取z[0:256]，避免写后读数据依赖问题。
+
+本样例中通过IBSet和IBWait实现核间同步：
+
+- 核0完成z[0:256]的写操作后，通过IBSet设置同步标志位
+- 核1在读取z[0:256]之前，通过IBWait等待核0完成写操作
+
+### 样例规格
+
+<table>
+<caption>表1：样例输入输出规格</caption>
+<tr><td rowspan="1" align="center">样例类型</td><td colspan="5" align="center">核间同步</td></tr>
+<tr><td rowspan="3" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center"></td></tr>
+<tr><td align="center">x</td><td align="center">[512]</td><td align="center">half</td><td align="center">ND</td><td align="center"></td></tr>
+<tr><td align="center">y</td><td align="center">[512]</td><td align="center">half</td><td align="center">ND</td><td align="center"></td></tr>
+<tr><td rowspan="1" align="center">样例输出</td><td align="center">z</td><td align="center">[512]</td><td align="center">half</td><td align="center">ND</td><td align="center"></td></tr>
+<tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">kernel_ib_set_wait</td></tr>
 </table>
-
-## 样例说明
-
-本样例展示了DataSyncBarrier接口的使用：单核执行，演示DataSyncBarrier在标量操作中的同步作用。通过SetValue向Global Tensor写入标量值后，调用DataSyncBarrier确保写入完成，再通过GetValue读取该值，最后将读取的值与输入数据相加输出。
-
 
 ## 编译运行
 

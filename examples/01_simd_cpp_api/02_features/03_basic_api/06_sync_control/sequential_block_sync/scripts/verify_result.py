@@ -17,18 +17,18 @@ import sys
 import numpy as np
 
 
-LOSS = 1e-3 # 容忍偏差，一般fp16要求绝对误差和相对误差均不超过千分之一
+LOSS = 1e-3
 MINIMUM = 10e-10
 
 
 def verify_result(real_result, golden):
     output_type = np.float32
-    real_result = np.fromfile(real_result, dtype=output_type) # 从bin文件读取实际运算结果
-    golden = np.fromfile(golden, dtype=output_type) # 从bin文件读取预期运算结果
-    result = np.abs(real_result - golden) # 计算运算结果和预期结果偏差
-    deno = np.maximum(np.abs(real_result), np.abs(golden)) # 获取最大值并组成新数组
-    result_atol = np.less_equal(result, LOSS) # 计算绝对误差
-    result_rtol = np.less_equal(result / np.add(deno, MINIMUM), LOSS) # 计算相对误差
+    real_result = np.fromfile(real_result, dtype=output_type)
+    golden = np.fromfile(golden, dtype=output_type)
+    result = np.abs(real_result - golden)
+    deno = np.maximum(np.abs(real_result), np.abs(golden))
+    result_atol = np.less_equal(result, LOSS)
+    result_rtol = np.less_equal(result / np.add(deno, MINIMUM), LOSS)
     if not result_rtol.all() and not result_atol.all():
         if np.sum(result_rtol == False) > real_result.size * LOSS \
             and np.sum(result_atol == False) > real_result.size * LOSS:
