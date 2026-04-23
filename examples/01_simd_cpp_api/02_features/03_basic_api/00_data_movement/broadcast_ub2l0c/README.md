@@ -18,10 +18,12 @@
 ```
 
 ## 样例描述
-- 样例功能：  
-  本样例将位于UB（Unified Buffer）上的shape为[1, 16]的数据广播到[16, 16]，并搬运到CO1（L0C Buffer）。接口资料参考[BroadCastVecToMM](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta2/API/ascendcopapi/atlasascendc_api_07_0257.html)。
+- 样例功能：
+
+  本样例将位于UB（Unified Buffer）上的shape为[1, 16]的数据广播到[16, 16]，并搬运到CO1（L0C Buffer）。接口资料参考BroadCastVecToMM。
 - 样例规格：
-  <table border="2" align="center">
+
+  <table border="2">
   <tr><td rowspan="3" align="center">样例输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
   <tr><td align="center">x</td><td align="center">[1, 16]</td><td align="center">float</td><td align="center">ND</td></tr>
@@ -30,7 +32,6 @@
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">broad_cast_vec_to_mm_custom</td></tr>
   </table>
 
-
 - 样例实现：
 
   - kernel实现
@@ -38,12 +39,13 @@
     - 调用BroadCastVecToMM基础API，将UB（Unified Buffer）上的数据从[1, 16]广播到[16, 16]，并搬运到CO1（L0C Buffer）。
     - 调用DataCopy增强数据搬运接口，将广播后的数据从CO1（L0C Buffer）搬运到UB（Unified Buffer）。
 
-- 调用实现  
-  使用内核调用符<<<>>>调用核函数。
+  - 调用实现
+
+    使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行
 在本样例根目录下执行如下步骤，编译并执行样例。
-- 配置环境变量  
+- 配置环境变量
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
     ```bash
@@ -54,20 +56,40 @@
     ```bash
     source $HOME/Ascend/cann/set_env.sh
     ```
-    
+
   - 指定路径install_path，安装CANN软件包
     ```bash
     source ${install_path}/cann/set_env.sh
     ```
-    
+
 - 样例执行
   ```bash
-  mkdir -p build && cd build;   # 创建并进入build目录
-  cmake ..;make -j;             # 编译工程
-  python3 ../scripts/gen_data.py   # 生成测试输入数据
-  ./demo                        # 执行编译生成的可执行程序，执行样例
+  mkdir -p build && cd build;                                               # 创建并进入build目录
+  cmake -DCMAKE_ASC_ARCHITECTURES=dav-2002 ..;make -j;                      # 编译工程，默认npu模式
+  python3 ../scripts/gen_data.py                                            # 生成测试输入数据
+  ./demo                                                                    # 执行编译生成的可执行程序，执行样例
   python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
   ```
+
+  使用 CPU调试 或 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
+  
+  示例如：
+  ```bash
+  cmake -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-2002 ..;make -j; # cpu调试模式
+  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2002 ..;make -j; # NPU仿真模式
+  ```
+
+  > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
+
+- 编译选项说明
+
+  | 选项　　　　　 | 可选值　　　　　　　　　　　| 说明　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 |
+  | ----------------| -----------------------------| --------------------------------------------------------------------------------------|
+  | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`cpu`、`sim` | 运行模式：NPU 运行、CPU调试、NPU仿真　　　　　　　　　　　　　　　　　　　　　　　　 |
+  | `CMAKE_ASC_ARCHITECTURES` | `dav-2002` | NPU 架构：dav-2002 对应 Atlas 推理系列产品AI Core |
+
+- 执行结果
+
   执行结果如下，说明精度对比成功。
   ```bash
   test pass!
