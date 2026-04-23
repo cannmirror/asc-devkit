@@ -12,7 +12,7 @@
 
 ND->NZ的搬运形式如下图：
 
-![ ](../figures/nd2nz.png)
+![ ](../figures/asc_copy_gm2l1_nd2nz.png)
 
 ## 函数原型
 
