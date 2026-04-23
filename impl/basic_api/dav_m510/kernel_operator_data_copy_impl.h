@@ -209,6 +209,10 @@ template <typename T>
 __aicore__ inline void DataCopyGM2UBImpl(__ubuf__ T *dst, __gm__ T *src, const DataCopyParams &intriParams,
     const uint8_t cacheMode = 0)
 {
+    if constexpr (g_gm_overflow_check) {
+        __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
+        AscendCUtils::CheckGmMemOverflowNormal(src, workSpace, true, false, intriParams);
+    }
     if constexpr (!std::is_same<T, void>::value) {
         if constexpr (SupportType<T, fp4x2_e2m1_t, fp4x2_e1m2_t>()) {
             CopyGmToUbufAlignV2((__ubuf__ uint16_t*)dst, (__gm__ uint16_t*)src, intriParams.blockCount,
@@ -232,6 +236,10 @@ template <typename T>
 __aicore__ inline void DataCopyGM2L1Impl(__cbuf__ T *dst, __gm__ T *src, const DataCopyParams &intriParams,
     const uint8_t cacheMode = 0)
 {
+    if constexpr (g_gm_overflow_check) {
+        __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
+        AscendCUtils::CheckGmMemOverflowNormal(src, workSpace, true, false, intriParams);
+    }
     if constexpr (SupportType<T, fp4x2_e2m1_t, fp4x2_e1m2_t>()) {
         CopyGmToCbufAlignV2((__cbuf__ uint8_t*)dst, (__gm__ uint8_t*)src, intriParams.blockCount,
             intriParams.blockLen, 0, 0, intriParams.srcStride, intriParams.dstStride, false, cacheMode);
@@ -287,6 +295,10 @@ template <typename T, bool enableSmallC0 = false>
 __aicore__ inline void DataCopyGM2L1ND2NZImpl(__cbuf__ T *dst, __gm__ T *src, const Nd2NzParams &intriParams,
     const uint8_t cacheMode = 0)
 {
+    if constexpr (g_gm_overflow_check) {
+        __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
+        AscendCUtils::CheckGmMemOverflowNd2Nz(src, workSpace, true, intriParams);
+    }
     if constexpr (SupportType<T, fp4x2_e2m1_t, fp4x2_e1m2_t>()) {
         // data is transferred based on the b8 type, and parameters are set based on the b8 type.
         DataCopyGM2L1ND2NZImplBase<uint8_t, enableSmallC0>((__cbuf__ uint8_t *)dst,
@@ -334,6 +346,10 @@ template <typename T>
 __aicore__ inline void DataCopyGM2L1DN2NZImpl(
     __cbuf__ T *dst, __gm__ T *src, const Dn2NzParams& intriParams, bool enableSmallC0, const uint8_t cacheMode = 0)
 {
+    if constexpr (g_gm_overflow_check) {
+        __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
+        AscendCUtils::CheckGmMemOverflowDn2Nz(src, workSpace, true, intriParams);
+    }
     if constexpr (SupportType<T, fp4x2_e2m1_t, fp4x2_e1m2_t>()) {
         ASCENDC_ASSERT((intriParams.nValue % 2 == 0),
             { KERNEL_LOG(KERNEL_ERROR, "if src datatype is 4bit, the inner axis must be an even number."); });
@@ -382,6 +398,10 @@ template <typename T>
 __aicore__ inline void DataCopyGM2UBND2NZImpl(__ubuf__ T *dst, __gm__ T *src, const Nd2NzParams &intriParams,
     const uint8_t cacheMode = 0)
 {
+    if constexpr (g_gm_overflow_check) {
+        __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
+        AscendCUtils::CheckGmMemOverflowNd2Nz(src, workSpace, true, intriParams);
+    }
     const uint16_t& ndNum = intriParams.ndNum;
     const uint16_t& dValue = intriParams.dValue;
     const uint16_t& srcNdMatrixStride = intriParams.srcNdMatrixStride;
@@ -473,6 +493,10 @@ template <typename T>
 __aicore__ inline void DataCopyUB2GMImpl(__gm__ T *dst, __ubuf__ T *src, const DataCopyParams &intriParams,
     const uint8_t cacheMode = 0)
 {
+    if constexpr (g_gm_overflow_check) {
+        __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
+        AscendCUtils::CheckGmMemOverflowNormal(dst, workSpace, false, false, intriParams);
+    }
     CopyUbufToGmAlignV2(dst, src, intriParams.blockCount, intriParams.blockLen, intriParams.srcStride,
         intriParams.dstStride, false, cacheMode);
 }
@@ -951,6 +975,10 @@ template <typename T, PaddingMode mode = PaddingMode::Normal>
 __aicore__ inline void DataCopyPadUB2GMImpl(__gm__ T *dst, __ubuf__ T *src, const DataCopyParams &intriParams,
     const uint8_t cacheMode = 0)
 {
+    if constexpr (g_gm_overflow_check) {
+        __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
+        AscendCUtils::CheckGmMemOverflowNormal(dst, workSpace, false, true, intriParams);
+    }
     CopyUbufToGmAlignV2<T, mode>(dst, src, intriParams.blockCount, intriParams.blockLen, intriParams.srcStride,
         intriParams.dstStride, true, cacheMode);
 }
@@ -960,6 +988,10 @@ template <typename T, PaddingMode mode = PaddingMode::Normal>
 __aicore__ inline void DataCopyPadUB2GMImpl(__gm__ T *dst, __ubuf__ T *src, const DataCopyExtParams &intriParams,
     const uint8_t cacheMode = 0)
 {
+    if constexpr (g_gm_overflow_check) {
+        __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
+        AscendCUtils::CheckGmMemOverflowNormal(dst, workSpace, false, true, intriParams);
+    }
     ASCENDC_ASSERT((intriParams.dstStride <= static_cast<int64_t>(1ul << 40 - 1)),
         { KERNEL_LOG(KERNEL_ERROR, "dstStride is %d, which should be no more than 2^40-1", intriParams.dstStride); });
     ASCENDC_ASSERT((intriParams.dstStride >= static_cast<int64_t>(0)),
@@ -1161,6 +1193,9 @@ __aicore__ inline void DataCopyWithNDDMAImpl(__ubuf__ T *dst, __gm__ T *src, con
     if constexpr (sizeof(T) == 8) {
         DataCopyWithNDDMAB64Impl<T, dim, config>(dst, src, params, constValue, cacheMode);
         return;
+    }
+    if constexpr (g_gm_overflow_check) {
+        AscendCUtils::CheckGmMemOverflowNddma(src, params);
     }
     constexpr uint8_t sid{ 0 };
     constexpr uint8_t dim0Idx{ 0 }, dim1Idx{ 1 }, dim2Idx{ 2 }, dim3Idx{ 3 }, dim4Idx{ 4 };
