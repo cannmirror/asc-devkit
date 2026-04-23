@@ -14,14 +14,18 @@
 
 import os
 import numpy as np
+import sys
 
+def gen_golden_data_simple(npu_arch):
+    shape = [1024]
 
-def gen_golden_data_simple():
-    shape=[1024]
+    # 根据不同架构生成不同精度的 src
+    if npu_arch == "dav-2201":
+        src = np.random.uniform(low=-4, high=4, size=shape).astype(np.float16)
+    else:
+        src = np.random.uniform(low=-4, high=4, size=shape).astype(np.float32)
 
-    src = np.random.uniform(low=-4, high=4, size=shape).astype(np.float16)
-    # half conversion is important otherwise test failed
-    golden = np.round(src*2.0 + 0.9).astype(np.int8)
+    golden = np.round(src * 2.0 + 0.9).astype(np.int8)
     src = src.astype(np.float32)
     os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
@@ -29,4 +33,14 @@ def gen_golden_data_simple():
     golden.tofile("./output/golden.bin")
 
 if __name__ == "__main__":
-    gen_golden_data_simple()
+    if len(sys.argv) < 2:
+        print("用法: python3 gen_data.py -DNPU_ARCH=dav-2201")
+        sys.exit(1)
+
+    arg = sys.argv[1]
+    if arg.startswith("-DNPU_ARCH="):
+        npu_arch = arg.split("=")[1]
+    else:
+        npu_arch = arg
+
+    gen_golden_data_simple(npu_arch)

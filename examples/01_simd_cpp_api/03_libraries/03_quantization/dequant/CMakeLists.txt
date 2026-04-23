@@ -10,12 +10,7 @@
 
 
 cmake_minimum_required(VERSION 3.16)
-if(DEFINED RUN_MODE)
-    set(CMAKE_ASC_RUN_MODE ${RUN_MODE} CACHE STRING "Alias of RUN_MODE")
-endif()
-if(DEFINED NPU_ARCH)
-    set(CMAKE_ASC_ARCHITECTURES ${NPU_ARCH} CACHE STRING "Alias of NPU_ARCH")
-endif()
+
 find_package(ASC REQUIRED)
 
 project(kernel_samples LANGUAGES ASC CXX)
@@ -23,6 +18,8 @@ project(kernel_samples LANGUAGES ASC CXX)
 add_executable(demo
     dequant.asc
 )
+
+set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "CMAKE_ASC_ARCHITECTURES, e.g. dav-2201, dav-3510")
 
 target_link_libraries(demo PRIVATE
     tiling_api
@@ -34,8 +31,6 @@ target_link_libraries(demo PRIVATE
     graph_base
 )
 
-set(NPU_ARCH "dav-2201" CACHE STRING "NPU ARCH, e.g. dav-2201, dav-3510")
-
 target_compile_options(demo PRIVATE
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${NPU_ARCH}>
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>
 )
