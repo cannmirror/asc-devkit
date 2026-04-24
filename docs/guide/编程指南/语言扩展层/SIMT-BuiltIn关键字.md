@@ -106,11 +106,11 @@
 
 当前提供了以下仅在Device上可用的dim3结构的内置变量：
 
--   blockDim
+-   blockDim<a name="li076017381191"></a>
 
     内置全局变量，在核函数中可以直接使用，用于获取线程块中配置的线程的三维层次结构，即启动VF时配置的dim3结构体实例值。blockDim.x，blockDim.y，blockDim.z分别表示线程块中三个维度的线程数。
 
--   gridDim
+-   gridDim<a name="li20760123812911"></a>
 
     内置全局变量，只能在核函数中使用，表示整个计算任务在各个维度上分别由多少个线程块构成。
 
@@ -1010,7 +1010,9 @@ add_custom<<<block_num, thread_num_per_block, dyn_ubuf_size, stream>>>(x, y, z, 
 
 在多线程并发执行时，每个线程使用较少的寄存器可以让更多的线程和线程块驻留在AI处理器上，从而提升性能。因此，编译器会采用启发式算法，将寄存器溢出（register spilling）和指令数量控制在最低水平，同时尽量减少寄存器的使用量。应用程序可以通过在\_\_global\_\_函数定义中使用\_\_launch\_bounds\_\_\(\)限定符来限制启动边界（launch bounds），提供附加信息辅助编译器优化这一过程，这属于可选配置。
 
--   \_\_launch\_bounds\_\_\(N\)是函数标记宏，在SIMT VF入口函数上可选配置，用于在编译期指定SIMT VF启动的最大线程数。若未配置\_\_launch\_bounds\_\_，最大线程数默认为1024。参数N需要满足：
+-   \_\_launch\_bounds\_\_\(N\) <a name="li23861114618"></a>
+  
+    函数标记宏，在SIMT VF入口函数上可选配置，用于在编译期指定SIMT VF启动的最大线程数。若未配置\_\_launch\_bounds\_\_，最大线程数默认为1024。参数N需要满足：
     -   N \>= dimx \* dimy \* dimz；dimx，dimy，dimz为表示线程的dim3结构体。
     -   N的取值范围为1到2048。
 
