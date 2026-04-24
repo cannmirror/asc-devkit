@@ -90,8 +90,7 @@
   ```bash
   SCENARIO_NUM=2
   mkdir -p build && cd build
-  cmake -DNPU_ARCH=dav-2201 .. -DSCENARIO_NUM=$SCENARIO_NUM
-  make -j
+  cmake .. -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=$SCENARIO_NUM;make -j;
   python3 ../scripts/gen_data.py -scenario=$SCENARIO_NUM
   ./demo
   python3 ../scripts/verify_result.py -scenario=$SCENARIO_NUM output/output.bin output/golden.bin
@@ -101,12 +100,12 @@
   test pass!
   ```
 
-  使用 CPU调试 或 NPU仿真 模式时，添加 `-DRUN_MODE=cpu` 或 `-DRUN_MODE=sim` 参数即可。
+  使用 CPU调试 或 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
 
   示例如下：
   ```bash
-  cmake -DRUN_MODE=cpu -DNPU_ARCH=dav-2201 .. -DSCENARIO_NUM=$SCENARIO_NUM  # cpu调试模式
-  cmake -DRUN_MODE=sim -DNPU_ARCH=dav-2201 .. -DSCENARIO_NUM=$SCENARIO_NUM  # NPU仿真模式
+  cmake .. -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=$SCENARIO_NUM;make -j; # CPU调试模式
+  cmake .. -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=$SCENARIO_NUM;make -j; # NPU仿真模式
   ```
 
   > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
@@ -114,5 +113,6 @@
 - 编译选项说明
   | 选项 | 可选值 | 说明 |
   |------|--------|------|
-  | `RUN_MODE` | `npu`（默认）、`cpu`、`sim` | 运行模式：NPU 运行、CPU调试、NPU仿真 |
-  | `NPU_ARCH` | `dav-2201`（默认）、`dav-3510` | NPU 架构：dav-2201 对应 Atlas A2/A3 系列，dav-3510 对应 Ascend 950PR/Ascend 950DT |
+  | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`cpu`、`sim` | 运行模式：NPU 运行、CPU调试、NPU仿真 |
+  | `CMAKE_ASC_ARCHITECTURES` | `dav-2201`（默认）、`dav-3510` | NPU 架构：dav-2201 对应 Atlas A2/A3 系列，dav-3510 对应 Ascend 950PR/Ascend 950DT |
+  | `SCENARIO_NUM` | `1`（默认）、`2`、`3` | 场景编号：1(CastDequant)、2(AddRelu)、3(Axpy) |
