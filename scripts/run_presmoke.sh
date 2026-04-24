@@ -62,7 +62,7 @@ EXAMPLE_LIST=(
     01_simd_cpp_api/03_libraries/00_matrix/matmul_tscm
     01_simd_cpp_api/03_libraries/01_activation/gelu
     01_simd_cpp_api/03_libraries/02_normalization/layernorm
-    01_simd_cpp_api/03_libraries/03_quantization/antiquant
+    01_simd_cpp_api/03_libraries/03_quantization/dequant
     01_simd_cpp_api/03_libraries/04_reduce/reducemax
     01_simd_cpp_api/03_libraries/05_sort/sort
     01_simd_cpp_api/03_libraries/06_index/arange
