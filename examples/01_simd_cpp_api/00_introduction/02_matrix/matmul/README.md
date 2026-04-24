@@ -49,8 +49,7 @@
   - 实现流程
     - 通过GenerateTiling实现host侧的Tiling计算
     - 通过CalcGMOffset完成分核计算
-    - 通过Iterate接口完成矩阵乘计算
-    - 通过LeakyRelu接口完成激活函数计算
+    - 通过IterateAll接口完成矩阵乘计算
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。

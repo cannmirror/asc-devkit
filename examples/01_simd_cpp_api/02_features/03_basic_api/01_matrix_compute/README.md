@@ -1,6 +1,6 @@
 # Matrix Compute API样例介绍
 ## 概述
-本样例集介绍了Matmul API不同特性的典型用法，给出了对应的端到端实现。
+本样例集介绍了矩阵计算API不同特性的典型用法，给出了对应的端到端实现。
 
 ## 样例列表
 | 目录名称                                                                                       |  功能描述                                              |
@@ -27,4 +27,5 @@
 | [mmad_s8_f16_f32_with_A_B_transpose_option](./mmad_s8_f16_f32_with_A_B_transpose_option)                                                           | 本样例介绍了在 int8_t / half / float 三种数据类型下，以及左、右矩阵均不转置 / 左矩阵不转置、右矩阵转置 / 左矩阵转置、右矩阵不转置 / 左、右矩阵均转置 共 12 种矩阵乘法场景中，相关指令的使用方法，其中 A 和 B 分别表示矩阵乘法的左右输入矩阵。|
 | [mmad_unitflag](./mmad_unitflag)                                                                             | 本样例介绍是否使能unitFlag对于Mmad指令执行矩阵乘法性能的影响。 |
 | [mmad_with_bias](./mmad_with_bias)                                                         | 本样例介绍基于基础API Mmad实现带Bias的矩阵乘 |
+| [mmad_with_gemv](./mmad_with_gemv)                                                         | 本样例介绍了Gemv（M=1）模式下的矩阵乘法 |
 | [mmad_with_sparse](./mmad_with_sparse)                                                     | 本样例介绍基础API MmadWithSparse调用 |
