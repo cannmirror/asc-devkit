@@ -23,19 +23,23 @@ set(ASCENDC_UT_HEADER
     ${CMAKE_CURRENT_LIST_DIR}/..
     ${ASCENDC_DIR}/
     ${ASCENDC_DIR}/include
+    ${ASCENDC_DIR}/include/c_api
     ${ASCENDC_DIR}/include/utils
     ${ASCENDC_DIR}/impl
+    ${ASCENDC_DIR}/impl/c_api
 )
 
-file(GLOB ASCENDC_UT_COMMON_SRC
+file(GLOB CONFIGURE_DEPENDS ASCENDC_UT_COMMON_SRC
     ../common/common.cpp
     ../common/alog_stub.cpp
     ../common/dlog_stub.cpp
     ../common/k3_pvwrap.cpp
 )
 
-file(GLOB ASCENDC_UT_STRUCT_CASE_SRC
-    struct/*.cpp
+file(GLOB ASCENDC_UT_BASIC_STRUCT_CASE_SRC
+    basic_struct/layout/*.cpp
+    basic_struct/pointer/*.cpp
+    basic_struct/tensor/*.cpp
 )
 
 file(GLOB ASCENDC_UT_NPU_ARCH_2201_AIC_CASE_SRC
@@ -58,7 +62,7 @@ foreach(product_type ${ASCENDC_UT_PRODUCT_TYPE_LIST})
     add_executable(ascendc_ut_tensor_api_${product_type}
         ${ASCENDC_DIR}/tests/main.cpp
         ${ASCENDC_UT_COMMON_SRC}
-        ${ASCENDC_UT_STRUCT_CASE_SRC}
+        ${ASCENDC_UT_BASIC_STRUCT_CASE_SRC}
         ${ASCENDC_UT_${product_type}_CASE_SRC}
     )
 
