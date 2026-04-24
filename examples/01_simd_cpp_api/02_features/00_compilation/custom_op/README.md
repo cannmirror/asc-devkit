@@ -226,7 +226,7 @@ $$
 
 ### 单机缓存
 
-`ccache` 会作为编译器前置代理接管 host 侧 C/C++ 编译动作。本样例中开启 `-DENABLE_CCACHE=ON` 后，`cmake` 会将 `ccache` 挂接到 `CMAKE_C_COMPILER_LAUNCHER` 和 `CMAKE_CXX_COMPILER_LAUNCHER`。后续编译时，`ccache` 会基于编译命令、源码内容、头文件依赖和编译器内容计算缓存键；若命中缓存，则直接复用历史编译结果。对于未命中的文件，仍按正常流程调用实际编译器完成编译，并将结果写回本地缓存。
+开启 `-DENABLE_CCACHE=ON` 后，`cmake` 会将 `ccache` 挂接到编译流程中；当源码、编译命令、编译器和构建目录路径一致时，重复构建可直接复用本地缓存结果。
 
 通过 cmake 参数启用，无需修改 CMakeLists.txt：
 
@@ -235,55 +235,21 @@ mkdir -p build && cd build
 cmake -DENABLE_CCACHE=ON .. && make -j binary package
 ```
 
-首次编译后，清空 build 目录重建可命中缓存：
+可按以下方式验证本地缓存是否生效：
 
 ```bash
+ccache -Cz
+# 首次构建：写入缓存
+rm -rf build && mkdir -p build && cd build
+cmake -DENABLE_CCACHE=ON .. && make -j binary package
+cd ..
 ccache -z
+# 二次构建：命中缓存
 rm -rf build && mkdir -p build && cd build
 cmake -DENABLE_CCACHE=ON .. && make -j binary package
 ```
 
-再次执行相同编译流程：
-
-```bash
-rm -rf build && mkdir -p build && cd build
-cmake -DENABLE_CCACHE=ON .. && make -j binary package
-```
-
-查看缓存统计：
-
-```bash
-ccache --show-stats
-# 预期：二次编译后 Primary storage Hits 明显增加
-```
-
-可通过以下方式对比启用和未启用 `ccache` 的差异：
-
-```bash
-# 不启用 ccache
-rm -rf build
-mkdir -p build && cd build
-time cmake .. && time make -j binary package
-cd ..
-
-# 启用 ccache 的首次编译
-ccache -z
-rm -rf build
-mkdir -p build && cd build
-time cmake -DENABLE_CCACHE=ON .. && time make -j binary package
-cd ..
-
-# 启用 ccache 的二次编译
-rm -rf build
-mkdir -p build && cd build
-time cmake -DENABLE_CCACHE=ON .. && time make -j binary package
-ccache --show-stats
-```
-
-结果判定建议关注两类数据：
-
-- 构建耗时：通常首次启用 `ccache` 与未启用差异不明显，第二次使用相同源码和相同命令重新构建时耗时会下降。
-- 缓存统计：二次构建后 `ccache --show-stats` 中 `Primary storage Hits` 明显增加，说明本地缓存命中。
+每次编译后通过 `ccache --show-stats -v` 查看缓存命中情况，可看到二次构建的本地缓存命中率 `Local storage Hits` 显著提升。
 
 若需要清空本地缓存，可按以下方式操作：
 
@@ -302,7 +268,10 @@ ccache -Cz
 
 适用于多机共享缓存场景：机器 A 编译后将结果推送至 Redis，机器 B 在相同源码、相同编译选项和相同工具链版本下可从 Redis 命中缓存，减少重复编译。
 
-分布式场景下，`ccache` 以各机器本地缓存作为一级缓存，Redis 作为共享二级缓存。机器 A 首次编译时会调用实际编译器并将结果写入本地缓存和 Redis；机器 B 在相同源码、相同编译命令和相同编译器内容下再次编译时，可直接从 Redis 命中共享缓存，减少编译动作的重复执行。若两台机器编译器路径不同但内容一致，建议设置 `compiler_check=content`。
+分布式场景下，`ccache` 以各机器本地缓存作为一级缓存，Redis 作为共享二级缓存。机器 A 首次编译时会调用实际编译器并将结果写入本地缓存和 Redis；机器 B 在相同源码、相同编译命令、相同编译器和相同构建目录路径下再次编译时，可直接从 Redis 命中共享缓存，减少编译动作的重复执行。若两台机器编译器路径不同但内容一致，建议设置 `compiler_check=content`。
+
+
+更多 `ccache` 配置和缓存行为说明可参考[ccache官方文档](https://ccache.dev/documentation.html)。
 
 组网要求：
 
@@ -311,10 +280,9 @@ ccache -Cz
 - 机器 C：Redis 服务器，保存共享缓存数据，IP 为 `<C_IP>`
 - A、B、C 三台机器需处于同一网络下，A/B 机器都必须能够访问 `C_IP:6379`
 
-建议机器 A 和机器 B 使用相同的源码内容、相同的编译命令、相同版本的编译器和尽量一致的源码路径，否则可能出现缓存未命中的情况。
+建议机器 A 和机器 B 使用相同的源码内容、相同的编译命令、相同版本的编译器，并保持一致的源码路径和构建目录路径，否则可能出现缓存未命中的情况。
 
 **1. 机器 C：部署 Redis 服务**
-
 ```bash
 apt install redis-server
 # 启动 Redis 服务
@@ -326,9 +294,8 @@ redis-cli -h <C_IP> -p 6379 -a <PASSWORD> ping
 > 说明：上述配置仅用于受控测试环境。共享环境或生产环境建议开启访问控制、认证和网络隔离。
 
 **2. 机器 A / 机器 B：配置 ccache**
-
 ```bash
-source /usr/local/Ascend/cann/set_env.sh
+apt install redis-tools
 # 验证 Redis 连接
 redis-cli -h <C_IP> -p 6379 -a <PASSWORD> ping
 # 配置 Redis 作为二级存储，带密码认证格式
@@ -338,32 +305,11 @@ ccache --set-config=secondary_storage=redis://default:<PASSWORD>@<C_IP>:6379
 ccache --set-config=compiler_check=content
 ```
 
-**3. 机器 A：执行首次编译**
-
+**3. 机器 A / 机器 B：执行构建**
 ```bash
-ccache -z
-mkdir -p build && cd build
+ccache -Cz
+rm -rf build && mkdir -p build && cd build
 cmake -DENABLE_CCACHE=ON .. && make -j binary package
-ccache --show-stats
 ```
 
-预期：
-
-- 机器 A `Secondary storage Misses > 0`
-
-**4. 机器 B：执行二次编译**
-
-```bash
-ccache -z
-mkdir -p build && cd build
-cmake -DENABLE_CCACHE=ON .. && make -j binary package
-ccache --show-stats
-```
-
-预期：
-
-- 机器 B `Secondary storage Hits > 0`
-
-更多 `ccache` 配置和缓存行为说明可参考官方文档：
-
-- https://ccache.dev/documentation.html
+机器 A 构建会写入本地缓存和 Redis，机器 B 本地缓存为空，可从 Redis 读取共享缓存。机器 A 构建后，在机器 B 上执行构建，对比两次 `ccache --show-stats -v` 结果，可看到在机器 B 上远程缓存命中率 `Remote storage Hits` 显著提升。
