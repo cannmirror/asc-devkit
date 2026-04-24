@@ -77,7 +77,7 @@
 
 - 样例功能  
   将矩阵乘的结果从CO1（L0C Buffer）搬运到GM（Global Memory），支持以下两种随路量化模式：
-  - Scalar量化：使用SetFixpipePreQuant接口设置Scalar量化参数。
+  - Scalar量化：使用SetFixpipePreQuantFlag接口设置Scalar量化参数。
   - Tensor量化：使用SetFixPipeConfig接口设置Tensor量化参数。  
   并支持与随路NZ2ND、relu激活能力组合。接口资料参考随路量化激活搬运。
 
