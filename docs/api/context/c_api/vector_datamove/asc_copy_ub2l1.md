@@ -15,19 +15,19 @@
 - 前n个数据搬运
 
 ```c++
-__aicore__ inline void asc_copy_ub2l1(__gm__ void* dst, __ubuf__ void* src, uint32_t size)
+__aicore__ inline void asc_copy_ub2l1(__cbuf__ void* dst, __ubuf__ void* src, uint32_t size)
 ```
 
 - 高维切分搬运
 
 ```c++
-__aicore__ inline void asc_copy_ub2l1(__gm__ void* dst, __ubuf__ void* src, uint16_t n_burst, uint16_t burst_len, uint16_t src_gap, uint16_t dst_gap)
+__aicore__ inline void asc_copy_ub2l1(__cbuf__ void* dst, __ubuf__ void* src, uint16_t n_burst, uint16_t burst_len, uint16_t src_gap, uint16_t dst_gap)
 ```
 
 - 同步计算
 
 ```c++
-__aicore__ inline void asc_copy_ub2l1(__gm__ void* dst, __ubuf__ void* src, uint32_t size)
+__aicore__ inline void asc_copy_ub2l1(__cbuf__ void* dst, __ubuf__ void* src, uint32_t size)
 ```
 
 ## 参数说明
