@@ -113,7 +113,4 @@ PIPE_M
 
 ## 调用示例
 
-```cpp
-// 不带偏置详细调用示例见  https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/02_features/03_basic_api/01_matrix_compute/mmad
-// 带偏置的调用示例见：https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/02_features/03_basic_api/01_matrix_compute/mmad_with_bias
-```
+矩阵乘的样例请参考：[MMad样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/02_features/03_basic_api/01_matrix_compute/mmad)。
