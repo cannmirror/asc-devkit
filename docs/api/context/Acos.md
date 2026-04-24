@@ -178,9 +178,9 @@
 
 ```
 AscendC::TPipe pipe;
-AscendC::TQue<AscendC::TPosition::VECCALC, 1> tmpQue;
-pipe.InitBuffer(tmpQue, 1, bufferSize); // bufferSize 通过Host侧tiling参数获取
-AscendC::LocalTensor<uint8_t> sharedTmpBuffer = tmpQue.AllocTensor<uint8_t>();
+AscendC::TBuf<AscendC::TPosition::VECCALC> tmpBuf;
+pipe.InitBuffer(tmpBuf, bufferSize); // bufferSize 通过Host侧tiling参数获取
+AscendC::LocalTensor<uint8_t> sharedTmpBuffer = tmpBuf.Get<uint8_t>();
 // 输入tensor长度为1024, 算子输入的数据类型为half, 实际计算个数为512
 AscendC::Acos(dstLocal, srcLocal, sharedTmpBuffer, 512);
 ```
@@ -191,4 +191,3 @@ AscendC::Acos(dstLocal, srcLocal, sharedTmpBuffer, 512);
 输入数据(srcLocal): [0.80541134 0.08385705 0.49426016 ...  0.30962205 0.28947052]
 输出数据(dstLocal): [0.6344272 1.4868407 1.0538127  ...  1.2560008 1.2771227]
 ```
-
