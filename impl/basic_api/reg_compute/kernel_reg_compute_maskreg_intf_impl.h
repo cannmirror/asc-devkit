@@ -103,9 +103,19 @@ __simd_callee__ inline void MaskInterleave(MaskReg& dst0, MaskReg& dst1, MaskReg
 {
     MaskInterleaveImpl<T>(dst0, dst1, src0, src1);
 }
+template <typename T>
+__simd_callee__ inline void Interleave(MaskReg& dst0, MaskReg& dst1, MaskReg& src0, MaskReg& src1)
+{
+    MaskInterleaveImpl<T>(dst0, dst1, src0, src1);
+}
 
 template <typename T>
 __simd_callee__ inline void MaskDeInterleave(MaskReg& dst0, MaskReg& dst1, MaskReg& src0, MaskReg& src1)
+{
+    MaskDeInterleaveImpl<T>(dst0, dst1, src0, src1);
+}
+template <typename T>
+__simd_callee__ inline void DeInterleave(MaskReg& dst0, MaskReg& dst1, MaskReg& src0, MaskReg& src1)
 {
     MaskDeInterleaveImpl<T>(dst0, dst1, src0, src1);
 }
