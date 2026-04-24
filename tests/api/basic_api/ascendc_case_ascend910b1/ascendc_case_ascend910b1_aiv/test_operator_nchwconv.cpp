@@ -9,6 +9,7 @@
 */
 #include <gtest/gtest.h>
 #include "kernel_operator.h"
+#include "mockcpp/mockcpp.hpp"
 
 using namespace std;
 using namespace AscendC;
@@ -111,3 +112,159 @@ TEST_P(NchwconvTestsuite, NchwconvTestCase)
         EXPECT_EQ(dstGm[i], 0x00);
     }
 }
+
+// ============================================================
+// TransDataTo5HD NPU Debug validation - negative test cases
+// 3 overloads:
+//   1. (LocalTensor<T> (&dstList)[16], LocalTensor<T> (&srcList)[16], TransDataTo5HDParams)
+//   2. (uint64_t dstList[16], uint64_t srcList[16], TransDataTo5HDParams)
+//   3. (LocalTensor<uint64_t> &dst, LocalTensor<uint64_t> &src, TransDataTo5HDParams)
+// Validation: dtype, dstHighHalf/srcHighHalf (only valid for int8_t/uint8_t),
+//             repeatTimes [0,255], position (UB), alignment (32B)
+// ============================================================
+
+namespace {
+int32_t RaiseStubForNpuDebug(int32_t i)
+{
+    return 0;
+}
+}
+
+class TestTransDataTo5HDNpuDebug : public testing::Test {
+protected:
+    void SetUp()
+    {
+        AscendC::SetGCoreType(2);
+    }
+    void TearDown()
+    {
+        AscendC::CheckSyncState();
+        AscendC::SetGCoreType(0);
+        GlobalMockObject::verify();
+    }
+};
+
+// --- Overload 1: LocalTensor array - dstList position not UB ---
+TEST_F(TestTransDataTo5HDNpuDebug, DstListPositionNotUbOverload1)
+{
+    TPipe tpipe;
+    LocalTensor<half> dstList[NCHW_CONV_ADDR_LIST_SIZE];
+    LocalTensor<half> srcList[NCHW_CONV_ADDR_LIST_SIZE];
+
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 256 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    TBuf<TPosition::VECCALC> srcBuf;
+    tpipe.InitBuffer(srcBuf, 256 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    for (int i = 0; i < NCHW_CONV_ADDR_LIST_SIZE; i++) {
+        dstList[i] = dstLocal[16 * i];
+        srcList[i] = srcLocal[16 * i];
+    }
+
+    TransDataTo5HDParams params;
+    params.dstHighHalf = false;
+    params.srcHighHalf = false;
+    params.repeatTimes = 1;
+    params.dstRepStride = 16;
+    params.srcRepStride = 16;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStubForNpuDebug));
+    TransDataTo5HD<half>(dstList, srcList, params);
+}
+
+// --- Overload 1: LocalTensor array - srcList position not UB ---
+TEST_F(TestTransDataTo5HDNpuDebug, SrcListPositionNotUbOverload1)
+{
+    TPipe tpipe;
+    LocalTensor<half> dstList[NCHW_CONV_ADDR_LIST_SIZE];
+    LocalTensor<half> srcList[NCHW_CONV_ADDR_LIST_SIZE];
+
+    TBuf<TPosition::VECCALC> dstBuf;
+    tpipe.InitBuffer(dstBuf, 256 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    TBuf<TPosition::A1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 256 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    for (int i = 0; i < NCHW_CONV_ADDR_LIST_SIZE; i++) {
+        dstList[i] = dstLocal[16 * i];
+        srcList[i] = srcLocal[16 * i];
+    }
+
+    TransDataTo5HDParams params;
+    params.dstHighHalf = false;
+    params.srcHighHalf = false;
+    params.repeatTimes = 1;
+    params.dstRepStride = 16;
+    params.srcRepStride = 16;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStubForNpuDebug));
+    TransDataTo5HD<half>(dstList, srcList, params);
+}
+
+// --- Overload 1: half type with dstHighHalf=true (only valid for int8_t/uint8_t) ---
+TEST_F(TestTransDataTo5HDNpuDebug, DstHighHalfInvalidForHalfOverload1)
+{
+    TPipe tpipe;
+    LocalTensor<half> dstList[NCHW_CONV_ADDR_LIST_SIZE];
+    LocalTensor<half> srcList[NCHW_CONV_ADDR_LIST_SIZE];
+
+    TBuf<TPosition::VECCALC> dstBuf;
+    tpipe.InitBuffer(dstBuf, 256 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    TBuf<TPosition::VECCALC> srcBuf;
+    tpipe.InitBuffer(srcBuf, 256 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    for (int i = 0; i < NCHW_CONV_ADDR_LIST_SIZE; i++) {
+        dstList[i] = dstLocal[16 * i];
+        srcList[i] = srcLocal[16 * i];
+    }
+
+    TransDataTo5HDParams params;
+    params.dstHighHalf = true;   // invalid for half
+    params.srcHighHalf = false;
+    params.repeatTimes = 1;
+    params.dstRepStride = 16;
+    params.srcRepStride = 16;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStubForNpuDebug));
+    TransDataTo5HD<half>(dstList, srcList, params);
+}
+
+// --- Overload 1: half type with srcHighHalf=true (only valid for int8_t/uint8_t) ---
+TEST_F(TestTransDataTo5HDNpuDebug, SrcHighHalfInvalidForHalfOverload1)
+{
+    TPipe tpipe;
+    LocalTensor<half> dstList[NCHW_CONV_ADDR_LIST_SIZE];
+    LocalTensor<half> srcList[NCHW_CONV_ADDR_LIST_SIZE];
+
+    TBuf<TPosition::VECCALC> dstBuf;
+    tpipe.InitBuffer(dstBuf, 256 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    TBuf<TPosition::VECCALC> srcBuf;
+    tpipe.InitBuffer(srcBuf, 256 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    for (int i = 0; i < NCHW_CONV_ADDR_LIST_SIZE; i++) {
+        dstList[i] = dstLocal[16 * i];
+        srcList[i] = srcLocal[16 * i];
+    }
+
+    TransDataTo5HDParams params;
+    params.dstHighHalf = false;
+    params.srcHighHalf = true;   // invalid for half
+    params.repeatTimes = 1;
+    params.dstRepStride = 16;
+    params.srcRepStride = 16;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStubForNpuDebug));
+    TransDataTo5HD<half>(dstList, srcList, params);
+}
+

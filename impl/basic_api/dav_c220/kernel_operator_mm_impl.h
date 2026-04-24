@@ -480,21 +480,27 @@ template <typename T>
 __aicore__ inline void LoadData3DV1L12L0ACal(__ca__ T* dst, __cbuf__ T* src,
     const LoadData3DParamsV1<T>& loadDataParams)
 {
-    ASCENDC_REPORT_NOT_SUPPORT(false, "LoadData with LoadData3DParamsV1 from A1 to A2");
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    ReportNotSupport(false, "LoadData with LoadData3DParamsV1 from A1 to A2");
+#endif
 }
 
 template <typename T>
 __aicore__ inline void LoadData3DV1L12L0BCal(__cb__ T* dst, __cbuf__ T* src,
     const LoadData3DParamsV1<T>& loadDataParams)
 {
-    ASCENDC_REPORT_NOT_SUPPORT(false, "LoadData with LoadData3DParamsV1 from B1 to B2");
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    ReportNotSupport(false, "LoadData with LoadData3DParamsV1 from B1 to B2");
+#endif
 }
 
 template <typename T>
 __aicore__ inline void LoadData3DV1L12UBCal(__ubuf__ T* dst, __cbuf__ T* src,
     const LoadData3DParamsV1<T>& loadDataParams)
 {
-    ASCENDC_REPORT_NOT_SUPPORT(false, "LoadData with LoadData3DParamsV1 from L1 to UB");
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    ReportNotSupport(false, "LoadData with LoadData3DParamsV1 from L1 to UB");
+#endif
 }
 
 /* **************************************************************************************************
@@ -504,21 +510,27 @@ template <typename T>
 __aicore__ inline void LoadData3DV2L12UBCal(__ubuf__ T* dst, __cbuf__ T* src,
     const LoadData3DParamsV2<T>& loadDataParams)
 {
-    ASCENDC_REPORT_NOT_SUPPORT(false, "LoadData with LoadData3DParamsV2 from L1 to UB");
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    ReportNotSupport(false, "LoadData with LoadData3DParamsV2 from L1 to UB");
+#endif
 }
 
 template <>
 __aicore__ inline void LoadData3DV2L12L0BCal(__cb__ int8_t* dst, __cbuf__ int8_t* src,
     const LoadData3DParamsV2<int8_t>& loadDataParams)
 {
-    ASCENDC_REPORT_NOT_SUPPORT(false, "LoadData with LoadData3DParamsV2 from B1 to B2 with type int8_t");
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    ReportNotSupport(false, "LoadData with LoadData3DParamsV2 from B1 to B2 with type int8_t");
+#endif
 }
 
 template <>
 __aicore__ inline void LoadData3DV2L12L0BCal(__cb__ uint8_t* dst, __cbuf__ uint8_t* src,
     const LoadData3DParamsV2<uint8_t>& loadDataParams)
 {
-    ASCENDC_REPORT_NOT_SUPPORT(false, "LoadData with LoadData3DParamsV2 from B1 to B2 with type uint8_t");
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    ReportNotSupport(false, "LoadData with LoadData3DParamsV2 from B1 to B2 with type uint8_t");
+#endif
 }
 
 /* **************************************************************************************************

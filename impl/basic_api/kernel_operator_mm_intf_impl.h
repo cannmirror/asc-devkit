@@ -23,10 +23,12 @@
 #include "kernel_tensor.h"
 #include "kernel_check.h"
 #include "kernel_reg.h"
+#include "kernel_npu_debug.h"
 #include "kernel_operator_mm_base_impl.h"
 #include "kernel_struct_mm.h"
 
 namespace AscendC {
+
 /* **************************************************************************************************
  * LoadData 2d                                             *
  * ************************************************************************************************* */
@@ -157,21 +159,18 @@ template <typename T, const IsResetLoad3dConfig &defaultConfig,
 __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>& src,
     const LoadData3DParamsV1<U>& loadDataParams)
 {
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    CheckTensorPhyPosition<Hardware::L1>(src, "src", "A1 / B1", "LoadData with LoadData3DParamsV1");
+    CheckTensorAlignment(src, ONE_BLK_SIZE, "src", "LoadData with LoadData3DParamsV1");
+    const Hardware dstScope = GetPhyType((TPosition)dst.GetPosition());
+    if (dstScope == Hardware::L0A || dstScope == Hardware::L0B) {
+        CheckTensorAlignment(dst, VALUE_512, "dst", "LoadData with LoadData3DParamsV1");
+    } else if (dstScope == Hardware::UB) {
+        CheckTensorAlignment(dst, ONE_BLK_SIZE, "dst", "LoadData with LoadData3DParamsV1");
+    }
+    CheckLoadData3dv1Params<U>(loadDataParams);
     CheckLoadData3dParams(loadDataParams.l1H, loadDataParams.l1W, loadDataParams.strideW, loadDataParams.strideH);
-    ASCENDC_CHECK_VALUE_RANGE(loadDataParams.c1Index, MIN_LOAD3D_C1_IDX, MAX_LOAD3D_C1_IDX, "c1Index",
-        "LoadData with LoadData3DParamsV1");
-    ASCENDC_CHECK_VALUE_RANGE(loadDataParams.fetchFilterW, MIN_LOAD3D_FETCH_FILTER, MAX_LOAD3D_FETCH_FILTER,
-        "fetchFilterW", "LoadData with LoadData3DParamsV1");
-    ASCENDC_CHECK_VALUE_RANGE(loadDataParams.fetchFilterH, MIN_LOAD3D_FETCH_FILTER, MAX_LOAD3D_FETCH_FILTER,
-        "fetchFilterH", "LoadData with LoadData3DParamsV1");
-    ASCENDC_CHECK_VALUE_RANGE(loadDataParams.leftTopW, MIN_LOAD3D_LEFT_TOP, MAX_LOAD3D_LEFT_TOP, "leftTopW",
-        "LoadData with LoadData3DParamsV1");
-    ASCENDC_CHECK_VALUE_RANGE(loadDataParams.leftTopH, MIN_LOAD3D_LEFT_TOP, MAX_LOAD3D_LEFT_TOP, "leftTopH",
-        "LoadData with LoadData3DParamsV1");
-    ASCENDC_CHECK_VALUE_RANGE(loadDataParams.jumpStride, MIN_LOAD3D_JUMP_STRIDE, MAX_LOAD3D_JUMP_STRIDE, "jumpStride",
-        "LoadData with LoadData3DParamsV1");
-    ASCENDC_CHECK_VALUE_RANGE(loadDataParams.repeatMode, 0, 1, "repeatMode", "LoadData with LoadData3DParamsV1");
-    ASCENDC_CHECK_VALUE_RANGE(loadDataParams.cSize, 0, 1, "cSize", "LoadData with LoadData3DParamsV1");
+#endif
     LoadDataImpl<T, defaultConfig>(dst, src, loadDataParams);
 }
 
@@ -207,7 +206,16 @@ template <typename T, const IsResetLoad3dConfig &defaultConfig,
 __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>& src,
     const LoadData3DParamsV2<U>& loadDataParams)
 {
-#if ASCENDC_CPU_DEBUG
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    CheckTensorPhyPosition<Hardware::L1>(src, "src", "A1 / B1", "LoadData with LoadData3DParamsV2");
+    CheckTensorAlignment(src, ONE_BLK_SIZE, "src", "LoadData with LoadData3DParamsV2");
+    const Hardware dstScope = GetPhyType((TPosition)dst.GetPosition());
+    if (dstScope == Hardware::L0A || dstScope == Hardware::L0B) {
+        CheckTensorAlignment(dst, VALUE_512, "dst", "LoadData with LoadData3DParamsV2");
+    } else if (dstScope == Hardware::UB) {
+        CheckTensorAlignment(dst, ONE_BLK_SIZE, "dst", "LoadData with LoadData3DParamsV2");
+    }
+    CheckLoadData3dv2Params<U>(loadDataParams);
     CheckLoadData3dv2ChannelSize<T>(loadDataParams.channelSize);
     CheckLoadData3dParams(loadDataParams.l1H, loadDataParams.l1W, loadDataParams.strideW, loadDataParams.strideH);
     CheckLoadData3dv2MatrixParams<T>(loadDataParams.kExtension, loadDataParams.mExtension, loadDataParams.kStartPt,

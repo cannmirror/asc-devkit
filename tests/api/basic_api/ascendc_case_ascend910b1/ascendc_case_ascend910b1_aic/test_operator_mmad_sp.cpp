@@ -10,8 +10,17 @@
 #include <gtest/gtest.h>
 #include "kernel_operator.h"
 #include "test_utils.h"
+#include "mockcpp/mockcpp.hpp"
 
 using namespace std;
+using namespace AscendC;
+
+namespace {
+int32_t RaiseStubForNpuDebug(int32_t i)
+{
+    return 0;
+}
+}
 
 namespace AscendC {
 class KernelMatmulSp {
@@ -188,4 +197,228 @@ TEST_F(TEST_MMAD_SP, MMAD_SP_Case)
     for (int32_t i = 0; i < m * n * sizeof(int32_t); i++) {
         EXPECT_EQ(c[i], 0x00);
     }
+}
+
+// ============================================================
+// LoadDataWithSparse NPU Debug validation - negative test cases
+// Validation: dst position (B2), src position (B1), idx position (B1),
+//             alignment (dst 512B, src 32B, idx 32B)
+// Note: LoadDataWithSparse is only available on C220 (__NPU_ARCH__ == 2201)
+// ============================================================
+
+
+class TestLoadDataWithSparseNpuDebug : public testing::Test {
+protected:
+    void SetUp()
+    {
+        g_coreType = AscendC::AIC_TYPE;
+    }
+    void TearDown()
+    {
+        AscendC::CheckSyncState();
+        AscendC::SetGCoreType(0);
+        GlobalMockObject::verify();
+    }
+};
+
+// dst position not B2 (using A2 instead)
+TEST_F(TestLoadDataWithSparseNpuDebug, DstPositionNotB2)
+{
+    if ASCEND_IS_AIV {
+        return;
+    }
+    TPipe tpipe;
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 512 * sizeof(int8_t));
+    LocalTensor<int8_t> dstLocal = dstBuf.Get<int8_t>();
+
+    TBuf<TPosition::B1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 512 * sizeof(int8_t));
+    LocalTensor<int8_t> srcLocal = srcBuf.Get<int8_t>();
+
+    TBuf<TPosition::B1> idxBuf;
+    tpipe.InitBuffer(idxBuf, 128 * sizeof(uint8_t));
+    LocalTensor<uint8_t> idxLocal = idxBuf.Get<uint8_t>();
+
+    LoadData2dParams loadDataParams;
+    loadDataParams.repeatTimes = 1;
+    loadDataParams.srcStride = 0;
+    loadDataParams.ifTranspose = false;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStubForNpuDebug));
+    LoadDataWithSparse(dstLocal, srcLocal, idxLocal, loadDataParams);
+}
+
+// src position not B1 (using A1 instead)
+TEST_F(TestLoadDataWithSparseNpuDebug, SrcPositionNotB1)
+{
+    if ASCEND_IS_AIV {
+        return;
+    }
+    TPipe tpipe;
+    TBuf<TPosition::B2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 512 * sizeof(int8_t));
+    LocalTensor<int8_t> dstLocal = dstBuf.Get<int8_t>();
+
+    TBuf<TPosition::A1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 512 * sizeof(int8_t));
+    LocalTensor<int8_t> srcLocal = srcBuf.Get<int8_t>();
+
+    TBuf<TPosition::B1> idxBuf;
+    tpipe.InitBuffer(idxBuf, 128 * sizeof(uint8_t));
+    LocalTensor<uint8_t> idxLocal = idxBuf.Get<uint8_t>();
+
+    LoadData2dParams loadDataParams;
+    loadDataParams.repeatTimes = 1;
+    loadDataParams.srcStride = 0;
+    loadDataParams.ifTranspose = false;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStubForNpuDebug));
+    LoadDataWithSparse(dstLocal, srcLocal, idxLocal, loadDataParams);
+}
+
+// idx position not B1 (using A1 instead)
+TEST_F(TestLoadDataWithSparseNpuDebug, IdxPositionNotB1)
+{
+    if ASCEND_IS_AIV {
+        return;
+    }
+    TPipe tpipe;
+    TBuf<TPosition::B2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 512 * sizeof(int8_t));
+    LocalTensor<int8_t> dstLocal = dstBuf.Get<int8_t>();
+
+    TBuf<TPosition::B1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 512 * sizeof(int8_t));
+    LocalTensor<int8_t> srcLocal = srcBuf.Get<int8_t>();
+
+    TBuf<TPosition::A1> idxBuf;
+    tpipe.InitBuffer(idxBuf, 128 * sizeof(uint8_t));
+    LocalTensor<uint8_t> idxLocal = idxBuf.Get<uint8_t>();
+
+    LoadData2dParams loadDataParams;
+    loadDataParams.repeatTimes = 1;
+    loadDataParams.srcStride = 0;
+    loadDataParams.ifTranspose = false;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStubForNpuDebug));
+    LoadDataWithSparse(dstLocal, srcLocal, idxLocal, loadDataParams);
+}
+
+// ============================================================
+// MmadWithSparse NPU Debug validation - negative test cases
+// Validation: dst position (CO1), fm position (A2), filter position (B2),
+//             alignment (dst 1024B, fm 512B, filter 512B),
+//             parameter ranges: m [0, UINT12_MAX], n [0, UINT12_MAX], k [0, UINT12_MAX]
+// Note: MmadWithSparse is only available on C220 (__NPU_ARCH__ == 2201)
+// ============================================================
+
+class TestMmadWithSparseNpuDebug : public testing::Test {
+protected:
+    void SetUp()
+    {
+        g_coreType = AscendC::AIC_TYPE;
+    }
+    void TearDown()
+    {
+        AscendC::CheckSyncState();
+        AscendC::SetGCoreType(0);
+        GlobalMockObject::verify();
+    }
+};
+
+// dst position not CO1 (using A2 instead)
+TEST_F(TestMmadWithSparseNpuDebug, DstPositionNotCO1)
+{
+    if ASCEND_IS_AIV {
+        return;
+    }
+    TPipe tpipe;
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 256 * sizeof(int32_t));
+    LocalTensor<int32_t> dstLocal = dstBuf.Get<int32_t>();
+
+    TBuf<TPosition::A2> fmBuf;
+    tpipe.InitBuffer(fmBuf, 1024 * sizeof(int8_t));
+    LocalTensor<int8_t> fmLocal = fmBuf.Get<int8_t>();
+
+    TBuf<TPosition::B2> filterBuf;
+    tpipe.InitBuffer(filterBuf, 512 * sizeof(int8_t));
+    LocalTensor<int8_t> filterLocal = filterBuf.Get<int8_t>();
+
+    MmadParams mmadParams;
+    mmadParams.m = 16;
+    mmadParams.n = 16;
+    mmadParams.k = 64;
+    mmadParams.unitFlag = false;
+    mmadParams.kDirectionAlign = 0;
+    mmadParams.cmatrixSource = false;
+    mmadParams.cmatrixInitVal = false;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStubForNpuDebug));
+    MmadWithSparse(dstLocal, fmLocal, filterLocal, mmadParams);
+}
+
+// fm position not A2 (using B2 instead)
+TEST_F(TestMmadWithSparseNpuDebug, FmPositionNotA2)
+{
+    if ASCEND_IS_AIV {
+        return;
+    }
+    TPipe tpipe;
+    TBuf<TPosition::CO1> dstBuf;
+    tpipe.InitBuffer(dstBuf, 256 * sizeof(int32_t));
+    LocalTensor<int32_t> dstLocal = dstBuf.Get<int32_t>();
+
+    TBuf<TPosition::B2> fmBuf;
+    tpipe.InitBuffer(fmBuf, 1024 * sizeof(int8_t));
+    LocalTensor<int8_t> fmLocal = fmBuf.Get<int8_t>();
+
+    TBuf<TPosition::B2> filterBuf;
+    tpipe.InitBuffer(filterBuf, 512 * sizeof(int8_t));
+    LocalTensor<int8_t> filterLocal = filterBuf.Get<int8_t>();
+
+    MmadParams mmadParams;
+    mmadParams.m = 16;
+    mmadParams.n = 16;
+    mmadParams.k = 64;
+    mmadParams.unitFlag = false;
+    mmadParams.kDirectionAlign = 0;
+    mmadParams.cmatrixSource = false;
+    mmadParams.cmatrixInitVal = false;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStubForNpuDebug));
+    MmadWithSparse(dstLocal, fmLocal, filterLocal, mmadParams);
+}
+
+// filter position not B2 (using A2 instead)
+TEST_F(TestMmadWithSparseNpuDebug, FilterPositionNotB2)
+{
+    if ASCEND_IS_AIV {
+        return;
+    }
+    TPipe tpipe;
+    TBuf<TPosition::CO1> dstBuf;
+    tpipe.InitBuffer(dstBuf, 256 * sizeof(int32_t));
+    LocalTensor<int32_t> dstLocal = dstBuf.Get<int32_t>();
+
+    TBuf<TPosition::A2> fmBuf;
+    tpipe.InitBuffer(fmBuf, 1024 * sizeof(int8_t));
+    LocalTensor<int8_t> fmLocal = fmBuf.Get<int8_t>();
+
+    TBuf<TPosition::A2> filterBuf;
+    tpipe.InitBuffer(filterBuf, 512 * sizeof(int8_t));
+    LocalTensor<int8_t> filterLocal = filterBuf.Get<int8_t>();
+
+    MmadParams mmadParams;
+    mmadParams.m = 16;
+    mmadParams.n = 16;
+    mmadParams.k = 64;
+    mmadParams.unitFlag = false;
+    mmadParams.kDirectionAlign = 0;
+    mmadParams.cmatrixSource = false;
+    mmadParams.cmatrixInitVal = false;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStubForNpuDebug));
+    MmadWithSparse(dstLocal, fmLocal, filterLocal, mmadParams);
 }

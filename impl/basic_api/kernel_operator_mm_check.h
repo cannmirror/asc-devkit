@@ -326,13 +326,67 @@ __aicore__ static inline void CheckLoadDataWithTranspose(const LocalTensor<T>& d
 __aicore__ static inline void CheckLoadData3dParams(const uint16_t srcHeight, const uint16_t srcWidth,
     const uint8_t srcWStride, const uint8_t srcHStride)
 {
-    ASCENDC_CHECK_VALUE_RANGE(srcHeight, MIN_LOAD3D_L1, MAX_LOAD3D_L1, "l1H", "LoadData with LoadData3DParams");
-    ASCENDC_CHECK_VALUE_RANGE(srcWidth, MIN_LOAD3D_L1, MAX_LOAD3D_L1, "l1W", "LoadData with LoadData3DParams");
-    ASCENDC_CHECK_VALUE_RANGE(srcWStride, MIN_LOAD3D_STRIDE, MAX_LOAD3D_STRIDE, "strideW",
-        "LoadData with LoadData3DParams");
-    ASCENDC_CHECK_VALUE_RANGE(srcHStride, MIN_LOAD3D_STRIDE, MAX_LOAD3D_STRIDE, "strideH",
-        "LoadData with LoadData3DParams");
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    CheckValueRange<uint16_t>(srcHeight, MIN_LOAD3D_L1, MAX_LOAD3D_L1, "l1H", "LoadData with LoadData3DParams");
+    CheckValueRange<uint16_t>(srcWidth, MIN_LOAD3D_L1, MAX_LOAD3D_L1, "l1W", "LoadData with LoadData3DParams");
+    CheckValueRange<uint8_t>(srcWStride, static_cast<uint8_t>(MIN_LOAD3D_STRIDE),
+        static_cast<uint8_t>(MAX_LOAD3D_STRIDE), "strideW", "LoadData with LoadData3DParams");
+    CheckValueRange<uint8_t>(srcHStride, static_cast<uint8_t>(MIN_LOAD3D_STRIDE),
+        static_cast<uint8_t>(MAX_LOAD3D_STRIDE), "strideH", "LoadData with LoadData3DParams");
+#endif
 }
+
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+template <typename U>
+__aicore__ inline void CheckLoadData3dv1Params(const LoadData3DParamsV1<U>& loadDataParams)
+{
+    CheckValueRange<uint16_t>(loadDataParams.c1Index, static_cast<uint16_t>(MIN_LOAD3D_C1_IDX),
+        static_cast<uint16_t>(MAX_LOAD3D_C1_IDX), "c1Index", "LoadData with LoadData3DParamsV1");
+    CheckValueRange<uint8_t>(loadDataParams.fetchFilterW, static_cast<uint8_t>(MIN_LOAD3D_FETCH_FILTER),
+        static_cast<uint8_t>(MAX_LOAD3D_FETCH_FILTER), "fetchFilterW", "LoadData with LoadData3DParamsV1");
+    CheckValueRange<uint8_t>(loadDataParams.fetchFilterH, static_cast<uint8_t>(MIN_LOAD3D_FETCH_FILTER),
+        static_cast<uint8_t>(MAX_LOAD3D_FETCH_FILTER), "fetchFilterH", "LoadData with LoadData3DParamsV1");
+    CheckValueRange<int16_t>(loadDataParams.leftTopW, static_cast<int16_t>(MIN_LOAD3D_LEFT_TOP),
+        static_cast<int16_t>(MAX_LOAD3D_LEFT_TOP), "leftTopW", "LoadData with LoadData3DParamsV1");
+    CheckValueRange<int16_t>(loadDataParams.leftTopH, static_cast<int16_t>(MIN_LOAD3D_LEFT_TOP),
+        static_cast<int16_t>(MAX_LOAD3D_LEFT_TOP), "leftTopH", "LoadData with LoadData3DParamsV1");
+    CheckValueRange<uint8_t>(loadDataParams.filterW, static_cast<uint8_t>(MIN_LOAD3D_FILTER),
+        static_cast<uint8_t>(MAX_LOAD3D_FILTER), "filterW", "LoadData with LoadData3DParamsV1");
+    CheckValueRange<uint8_t>(loadDataParams.filterH, static_cast<uint8_t>(MIN_LOAD3D_FILTER),
+        static_cast<uint8_t>(MAX_LOAD3D_FILTER), "filterH", "LoadData with LoadData3DParamsV1");
+    CheckValueRange<uint8_t>(loadDataParams.dilationFilterW, static_cast<uint8_t>(MIN_LOAD3D_DILATION_FILTER),
+        static_cast<uint8_t>(MAX_LOAD3D_FILTER), "dilationFilterW", "LoadData with LoadData3DParamsV1");
+    CheckValueRange<uint8_t>(loadDataParams.dilationFilterH, static_cast<uint8_t>(MIN_LOAD3D_DILATION_FILTER),
+        static_cast<uint8_t>(MAX_LOAD3D_FILTER), "dilationFilterH", "LoadData with LoadData3DParamsV1");
+    CheckValueRange<uint8_t>(loadDataParams.jumpStride, static_cast<uint8_t>(MIN_LOAD3D_JUMP_STRIDE),
+        static_cast<uint8_t>(MAX_LOAD3D_JUMP_STRIDE), "jumpStride", "LoadData with LoadData3DParamsV1");
+    CheckValueRange<uint8_t>(loadDataParams.repeatMode, 0, 1, "repeatMode", "LoadData with LoadData3DParamsV1");
+    CheckValueRange<uint8_t>(loadDataParams.cSize, 0, 1, "cSize", "LoadData with LoadData3DParamsV1");
+    CheckValueRange<uint8_t>(loadDataParams.repeatTime, static_cast<uint8_t>(MIN_LOAD3D_REPEAT_TIMES),
+        static_cast<uint8_t>(MAX_LOAD3D_FILTER), "repeatTime", "LoadData with LoadData3DParamsV1");
+}
+
+template <typename U>
+__aicore__ inline void CheckLoadData3dv2Params(const LoadData3DParamsV2<U>& loadDataParams)
+{
+    CheckValueRange<uint16_t>(loadDataParams.kExtension, static_cast<uint16_t>(MIN_LOAD3D_EXTENSION),
+        static_cast<uint16_t>(MAX_LOAD3D_EXTENSION), "kExtension", "LoadData with LoadData3DParamsV2");
+    CheckValueRange<uint16_t>(loadDataParams.mExtension, static_cast<uint16_t>(MIN_LOAD3D_EXTENSION),
+        static_cast<uint16_t>(MAX_LOAD3D_EXTENSION), "mExtension", "LoadData with LoadData3DParamsV2");
+    CheckValueRange<uint16_t>(loadDataParams.kStartPt, static_cast<uint16_t>(MIN_LOAD3D_START_PT),
+        static_cast<uint16_t>(MAX_LOAD3D_START_PT), "kStartPt", "LoadData with LoadData3DParamsV2");
+    CheckValueRange<uint16_t>(loadDataParams.mStartPt, static_cast<uint16_t>(MIN_LOAD3D_START_PT),
+        static_cast<uint16_t>(MAX_LOAD3D_START_PT), "mStartPt", "LoadData with LoadData3DParamsV2");
+    CheckValueRange<uint8_t>(loadDataParams.filterW, static_cast<uint8_t>(MIN_LOAD3D_FILTER),
+        static_cast<uint8_t>(MAX_LOAD3D_FILTER), "filterW", "LoadData with LoadData3DParamsV2");
+    CheckValueRange<uint8_t>(loadDataParams.filterH, static_cast<uint8_t>(MIN_LOAD3D_FILTER),
+        static_cast<uint8_t>(MAX_LOAD3D_FILTER), "filterH", "LoadData with LoadData3DParamsV2");
+    CheckValueRange<uint8_t>(loadDataParams.dilationFilterW, static_cast<uint8_t>(MIN_LOAD3D_DILATION_FILTER),
+        static_cast<uint8_t>(MAX_LOAD3D_FILTER), "dilationFilterW", "LoadData with LoadData3DParamsV2");
+    CheckValueRange<uint8_t>(loadDataParams.dilationFilterH, static_cast<uint8_t>(MIN_LOAD3D_DILATION_FILTER),
+        static_cast<uint8_t>(MAX_LOAD3D_FILTER), "dilationFilterH", "LoadData with LoadData3DParamsV2");
+}
+#endif
 
 // check Load3dv2 ChannelSize
 template <typename T>

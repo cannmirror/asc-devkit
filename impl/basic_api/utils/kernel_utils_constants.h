@@ -350,7 +350,7 @@ namespace Internal {
 constexpr int32_t TSCM_CROSS_SYNC_ID_MAX = 11;
 }
 
-#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#if (defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1) || defined(ASCENDC_DEBUG)
 // param check size
 const int32_t MAX_BLOCK_COUNT = 4095;
 const int32_t MIN_BLOCK_COUNT = 1;
@@ -430,6 +430,10 @@ const int32_t MIN_SORT_REPEAT_TIMES = 1;
 namespace Internal {
 constexpr uint8_t REGION_PROPOSAL_ELEMENT_NUM = 8;
 }
+
+#endif // (defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1) || defined(ASCENDC_DEBUG)
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
 
 template <typename T> std::string ScalarToString(T scalarValue);
 template <> inline std::string ScalarToString(half scalarValue)

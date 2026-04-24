@@ -21,6 +21,7 @@
 #ifndef ASCENDC_MODULE_OPERATOR_MM_BASE_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_MM_BASE_IMPL_H
 #include "kernel_tensor.h"
+#include "kernel_npu_debug.h"
 
 #if __NPU_ARCH__ == 1001
 #include "dav_c100/kernel_operator_mm_impl.h"
@@ -514,15 +515,17 @@ template <typename T = int32_t, typename U = int8_t,
 __aicore__ inline void MmadSpImpl(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
     const LocalTensor<U>& filter, const MmadParams& mmadParams)
 {
-    CheckTensorPos<T>(dst, Hardware::L0C, "dst", "CO1", "MmadWithSparse");
-    CheckTensorPos<U>(fm, Hardware::L0A, "fm", "A2", "MmadWithSparse");
-    CheckTensorPos<U>(filter, Hardware::L0B, "filter", "B2", "MmadWithSparse");
-    CheckTensorAlign<T>(dst, 1024, "dst", "MmadWithSparse");             // 1024B aligned
-    CheckTensorAlign<U>(fm, VALUE_512, "fm", "MmadWithSparse");           // 512B aligned
-    CheckTensorAlign<U>(filter, VALUE_512, "filter", "MmadWithSparse");   // 512B aligned
-    ASCENDC_CHECK_VALUE_RANGE(mmadParams.m, 0, UINT12_MAX, "m", "MmadWithSparse");
-    ASCENDC_CHECK_VALUE_RANGE(mmadParams.n, 0, UINT12_MAX, "n", "MmadWithSparse");
-    ASCENDC_CHECK_VALUE_RANGE(mmadParams.k, 0, UINT12_MAX, "k", "MmadWithSparse");
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    CheckTensorPhyPosition<Hardware::L0C>(dst, "dst", "CO1", "MmadWithSparse");
+    CheckTensorPhyPosition<Hardware::L0A>(fm, "fm", "A2", "MmadWithSparse");
+    CheckTensorPhyPosition<Hardware::L0B>(filter, "filter", "B2", "MmadWithSparse");
+    CheckTensorAlignment(dst, 1024, "dst", "MmadWithSparse");             // 1024B aligned
+    CheckTensorAlignment(fm, VALUE_512, "fm", "MmadWithSparse");           // 512B aligned
+    CheckTensorAlignment(filter, VALUE_512, "filter", "MmadWithSparse");   // 512B aligned
+    CheckValueRange<uint16_t>(mmadParams.m, 0, UINT12_MAX, "m", "MmadWithSparse");
+    CheckValueRange<uint16_t>(mmadParams.n, 0, UINT12_MAX, "n", "MmadWithSparse");
+    CheckValueRange<uint16_t>(mmadParams.k, 0, UINT12_MAX, "k", "MmadWithSparse");
+#endif
     MmadSpCal((__cc__ int32_t*)dst.GetPhyAddr(), (__ca__ int8_t*)fm.GetPhyAddr(),
         (__cb__ int8_t*)filter.GetPhyAddr(), mmadParams);
 }
@@ -533,12 +536,14 @@ template <typename T = int8_t, typename U = uint8_t,
 __aicore__ inline void LoadDataWithSparseImpl(const LocalTensor<T> &dst, const LocalTensor<T> &src,
     const LocalTensor<U> &idx, const LoadData2dParams &loadDataParam)
 {
-    CheckTensorPos<T>(dst, Hardware::L0B, "dst", "B2", "LoadDataWithSparse");
-    CheckTensorPos<T>(src, Hardware::L1, "src", "B1", "LoadDataWithSparse");
-    CheckTensorPos<U>(idx, Hardware::L1, "idx", "B1", "LoadDataWithSparse");
-    CheckTensorAlign<T>(dst, VALUE_512, "dst", "LoadDataWithSparse");        // 512B align
-    CheckTensorAlign<T>(src, ONE_BLK_SIZE, "src", "LoadDataWithSparse");     // 32B align
-    CheckTensorAlign<U>(idx, ONE_BLK_SIZE, "idx", "LoadDataWithSparse");    // 32B align
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    CheckTensorPhyPosition<Hardware::L0B>(dst, "dst", "B2", "LoadDataWithSparse");
+    CheckTensorPhyPosition<Hardware::L1>(src, "src", "B1", "LoadDataWithSparse");
+    CheckTensorPhyPosition<Hardware::L1>(idx, "idx", "B1", "LoadDataWithSparse");
+    CheckTensorAlignment(dst, VALUE_512, "dst", "LoadDataWithSparse");        // 512B align
+    CheckTensorAlignment(src, ONE_BLK_SIZE, "src", "LoadDataWithSparse");     // 32B align
+    CheckTensorAlignment(idx, ONE_BLK_SIZE, "idx", "LoadDataWithSparse");    // 32B align
+#endif
     LoadDataWithSparseCal(dst, src, idx, loadDataParam);
 }
 #endif

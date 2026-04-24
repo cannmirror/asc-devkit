@@ -835,7 +835,7 @@ __aicore__ inline void ReduceTailCompute(const LocalTensor<T>& dst, const LocalT
     struct ReduceRepeatParams tailParams(tailCount, 1, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE,
         DEFAULT_REPEAT_STRIDE);
 
-    ReduceImpl<PrimT<T>>((__ubuf__ PrimT<T>*)dst.GetPhyAddr(), // ∏¥”√dst
+    ReduceImpl<PrimT<T>>((__ubuf__ PrimT<T>*)dst.GetPhyAddr(), // reuse dst
         (__ubuf__ PrimT<T>*)src.GetPhyAddr(elementNumPerRep * repeatTime), (__ubuf__ PrimT<T>*)sharedTmpBuffer.GetPhyAddr(),
         tailParams, calIndex, mode);
     eventIdVToS = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_S));

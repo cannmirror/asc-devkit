@@ -333,3 +333,829 @@ TEST_P(TestLoaddata3dv2ApiCheckSuite, Loaddata3dv2ApiCheckAllHighLevel)
 
     // EXPECT_EQ(flag, param.expect);
 }
+
+// ============================================================
+// LoadData3DParamsV1 NPU Debug validation - negative test cases
+// Validation: dtype (uint8_t/int8_t/half), src position (L1), src alignment (32B),
+//             dst alignment (512B if L0A/L0B, 32B if UB),
+//             parameter ranges: l1H, l1W, c1Index, fetchFilterW/H, leftTopW/H,
+//             strideW/H, filterW/H, dilationFilterW/H, jumpStride, repeatMode, cSize, repeatTime
+// ============================================================
+
+class TestLoadData3dv1NpuDebug : public testing::Test {
+protected:
+    void SetUp()
+    {
+        AscendC::SetGCoreType(2);
+    }
+    void TearDown()
+    {
+        AscendC::CheckSyncState();
+        AscendC::SetGCoreType(0);
+        GlobalMockObject::verify();
+    }
+};
+
+// src position not L1 (using A2 instead)
+TEST_F(TestLoadData3dv1NpuDebug, SrcPositionNotL1)
+{
+    TPipe tpipe;
+    TBuf<TPosition::A2> srcBuf;
+    tpipe.InitBuffer(srcBuf, 4096 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 4096 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    LoadData3DParamsV1<half> params;
+    params.padList[0] = 0;
+    params.padList[1] = 0;
+    params.padList[2] = 0;
+    params.padList[3] = 0;
+    params.l1H = 2;
+    params.l1W = 56;
+    params.c1Index = 0;
+    params.fetchFilterW = 0;
+    params.fetchFilterH = 0;
+    params.leftTopW = 0;
+    params.leftTopH = 0;
+    params.strideW = 1;
+    params.strideH = 1;
+    params.filterW = 1;
+    params.filterH = 1;
+    params.dilationFilterW = 1;
+    params.dilationFilterH = 1;
+    params.jumpStride = 1;
+    params.repeatMode = 0;
+    params.repeatTime = 1;
+    params.cSize = 0;
+    params.padValue = 0;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    LoadData<half>(dstLocal, srcLocal, params);
+}
+
+// repeatTimes=0 (below MIN_LOAD3D_REPEAT_TIMES=1)
+TEST_F(TestLoadData3dv1NpuDebug, RepeatTimesUnderflow)
+{
+    TPipe tpipe;
+    TBuf<TPosition::A1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 4096 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 4096 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    LoadData3DParamsV1<half> params;
+    params.padList[0] = 0;
+    params.padList[1] = 0;
+    params.padList[2] = 0;
+    params.padList[3] = 0;
+    params.l1H = 2;
+    params.l1W = 56;
+    params.c1Index = 0;
+    params.fetchFilterW = 0;
+    params.fetchFilterH = 0;
+    params.leftTopW = 0;
+    params.leftTopH = 0;
+    params.strideW = 1;
+    params.strideH = 1;
+    params.filterW = 1;
+    params.filterH = 1;
+    params.dilationFilterW = 1;
+    params.dilationFilterH = 1;
+    params.jumpStride = 1;
+    params.repeatMode = 0;
+    params.repeatTime = 0;  // below min=1
+    params.cSize = 0;
+    params.padValue = 0;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    LoadData<half>(dstLocal, srcLocal, params);
+}
+
+// l1H=0 (below MIN_LOAD3D_L1=1)
+TEST_F(TestLoadData3dv1NpuDebug, L1HUnderflow)
+{
+    TPipe tpipe;
+    TBuf<TPosition::A1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 4096 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 4096 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    LoadData3DParamsV1<half> params;
+    params.padList[0] = 0;
+    params.padList[1] = 0;
+    params.padList[2] = 0;
+    params.padList[3] = 0;
+    params.l1H = 0;  // below min=1
+    params.l1W = 56;
+    params.c1Index = 0;
+    params.fetchFilterW = 0;
+    params.fetchFilterH = 0;
+    params.leftTopW = 0;
+    params.leftTopH = 0;
+    params.strideW = 1;
+    params.strideH = 1;
+    params.filterW = 1;
+    params.filterH = 1;
+    params.dilationFilterW = 1;
+    params.dilationFilterH = 1;
+    params.jumpStride = 1;
+    params.repeatMode = 0;
+    params.repeatTime = 1;
+    params.cSize = 0;
+    params.padValue = 0;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    LoadData<half>(dstLocal, srcLocal, params);
+}
+
+// repeatMode=2 (exceeds [0, 1])
+TEST_F(TestLoadData3dv1NpuDebug, RepeatModeOverflow)
+{
+    TPipe tpipe;
+    TBuf<TPosition::A1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 4096 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 4096 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    LoadData3DParamsV1<half> params;
+    params.padList[0] = 0;
+    params.padList[1] = 0;
+    params.padList[2] = 0;
+    params.padList[3] = 0;
+    params.l1H = 2;
+    params.l1W = 56;
+    params.c1Index = 0;
+    params.fetchFilterW = 0;
+    params.fetchFilterH = 0;
+    params.leftTopW = 0;
+    params.leftTopH = 0;
+    params.strideW = 1;
+    params.strideH = 1;
+    params.filterW = 1;
+    params.filterH = 1;
+    params.dilationFilterW = 1;
+    params.dilationFilterH = 1;
+    params.jumpStride = 1;
+    params.repeatMode = 2;  // exceeds [0, 1]
+    params.repeatTime = 1;
+    params.cSize = 0;
+    params.padValue = 0;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    LoadData<half>(dstLocal, srcLocal, params);
+}
+
+// strideW=0 (below MIN_LOAD3D_STRIDE=1)
+TEST_F(TestLoadData3dv1NpuDebug, StrideWUnderflow)
+{
+    TPipe tpipe;
+    TBuf<TPosition::A1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 4096 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 4096 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    LoadData3DParamsV1<half> params;
+    params.padList[0] = 0;
+    params.padList[1] = 0;
+    params.padList[2] = 0;
+    params.padList[3] = 0;
+    params.l1H = 2;
+    params.l1W = 56;
+    params.c1Index = 0;
+    params.fetchFilterW = 0;
+    params.fetchFilterH = 0;
+    params.leftTopW = 0;
+    params.leftTopH = 0;
+    params.strideW = 0;  // below min=1
+    params.strideH = 1;
+    params.filterW = 1;
+    params.filterH = 1;
+    params.dilationFilterW = 1;
+    params.dilationFilterH = 1;
+    params.jumpStride = 1;
+    params.repeatMode = 0;
+    params.repeatTime = 1;
+    params.cSize = 0;
+    params.padValue = 0;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    LoadData<half>(dstLocal, srcLocal, params);
+}
+
+// l1W=0 (below MIN_LOAD3D_L1=1)
+TEST_F(TestLoadData3dv1NpuDebug, L1WUnderflow)
+{
+    TPipe tpipe;
+    TBuf<TPosition::A1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 4096 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 4096 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    LoadData3DParamsV1<half> params;
+    params.padList[0] = 0;
+    params.padList[1] = 0;
+    params.padList[2] = 0;
+    params.padList[3] = 0;
+    params.l1H = 2;
+    params.l1W = 0;  // below min=1
+    params.c1Index = 0;
+    params.fetchFilterW = 0;
+    params.fetchFilterH = 0;
+    params.leftTopW = 0;
+    params.leftTopH = 0;
+    params.strideW = 1;
+    params.strideH = 1;
+    params.filterW = 1;
+    params.filterH = 1;
+    params.dilationFilterW = 1;
+    params.dilationFilterH = 1;
+    params.jumpStride = 1;
+    params.repeatMode = 0;
+    params.repeatTime = 1;
+    params.cSize = 0;
+    params.padValue = 0;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    LoadData<half>(dstLocal, srcLocal, params);
+}
+
+// c1Index=4096 (exceeds MAX_LOAD3D_C1_IDX=4095)
+TEST_F(TestLoadData3dv1NpuDebug, C1IndexOverflow)
+{
+    TPipe tpipe;
+    TBuf<TPosition::A1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 4096 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 4096 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    LoadData3DParamsV1<half> params;
+    params.padList[0] = 0;
+    params.padList[1] = 0;
+    params.padList[2] = 0;
+    params.padList[3] = 0;
+    params.l1H = 2;
+    params.l1W = 56;
+    params.c1Index = 4096;  // exceeds max=4095
+    params.fetchFilterW = 0;
+    params.fetchFilterH = 0;
+    params.leftTopW = 0;
+    params.leftTopH = 0;
+    params.strideW = 1;
+    params.strideH = 1;
+    params.filterW = 1;
+    params.filterH = 1;
+    params.dilationFilterW = 1;
+    params.dilationFilterH = 1;
+    params.jumpStride = 1;
+    params.repeatMode = 0;
+    params.repeatTime = 1;
+    params.cSize = 0;
+    params.padValue = 0;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    LoadData<half>(dstLocal, srcLocal, params);
+}
+
+// filterW=0 (below MIN_LOAD3D_FILTER=1)
+TEST_F(TestLoadData3dv1NpuDebug, FilterWUnderflow)
+{
+    TPipe tpipe;
+    TBuf<TPosition::A1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 4096 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 4096 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    LoadData3DParamsV1<half> params;
+    params.padList[0] = 0;
+    params.padList[1] = 0;
+    params.padList[2] = 0;
+    params.padList[3] = 0;
+    params.l1H = 2;
+    params.l1W = 56;
+    params.c1Index = 0;
+    params.fetchFilterW = 0;
+    params.fetchFilterH = 0;
+    params.leftTopW = 0;
+    params.leftTopH = 0;
+    params.strideW = 1;
+    params.strideH = 1;
+    params.filterW = 0;  // below min=1
+    params.filterH = 1;
+    params.dilationFilterW = 1;
+    params.dilationFilterH = 1;
+    params.jumpStride = 1;
+    params.repeatMode = 0;
+    params.repeatTime = 1;
+    params.cSize = 0;
+    params.padValue = 0;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    LoadData<half>(dstLocal, srcLocal, params);
+}
+
+// dilationFilterW=0 (below MIN_LOAD3D_DILATION_FILTER=1)
+TEST_F(TestLoadData3dv1NpuDebug, DilationFilterWUnderflow)
+{
+    TPipe tpipe;
+    TBuf<TPosition::A1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 4096 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 4096 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    LoadData3DParamsV1<half> params;
+    params.padList[0] = 0;
+    params.padList[1] = 0;
+    params.padList[2] = 0;
+    params.padList[3] = 0;
+    params.l1H = 2;
+    params.l1W = 56;
+    params.c1Index = 0;
+    params.fetchFilterW = 0;
+    params.fetchFilterH = 0;
+    params.leftTopW = 0;
+    params.leftTopH = 0;
+    params.strideW = 1;
+    params.strideH = 1;
+    params.filterW = 1;
+    params.filterH = 1;
+    params.dilationFilterW = 0;  // below min=1
+    params.dilationFilterH = 1;
+    params.jumpStride = 1;
+    params.repeatMode = 0;
+    params.repeatTime = 1;
+    params.cSize = 0;
+    params.padValue = 0;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    LoadData<half>(dstLocal, srcLocal, params);
+}
+
+// jumpStride=0 (below MIN_LOAD3D_JUMP_STRIDE=1)
+TEST_F(TestLoadData3dv1NpuDebug, JumpStrideUnderflow)
+{
+    TPipe tpipe;
+    TBuf<TPosition::A1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 4096 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 4096 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    LoadData3DParamsV1<half> params;
+    params.padList[0] = 0;
+    params.padList[1] = 0;
+    params.padList[2] = 0;
+    params.padList[3] = 0;
+    params.l1H = 2;
+    params.l1W = 56;
+    params.c1Index = 0;
+    params.fetchFilterW = 0;
+    params.fetchFilterH = 0;
+    params.leftTopW = 0;
+    params.leftTopH = 0;
+    params.strideW = 1;
+    params.strideH = 1;
+    params.filterW = 1;
+    params.filterH = 1;
+    params.dilationFilterW = 1;
+    params.dilationFilterH = 1;
+    params.jumpStride = 0;  // below min=1
+    params.repeatMode = 0;
+    params.repeatTime = 1;
+    params.cSize = 0;
+    params.padValue = 0;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    LoadData<half>(dstLocal, srcLocal, params);
+}
+
+// cSize=2 (exceeds [0, 1])
+TEST_F(TestLoadData3dv1NpuDebug, CSizeOverflow)
+{
+    TPipe tpipe;
+    TBuf<TPosition::A1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 4096 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 4096 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    LoadData3DParamsV1<half> params;
+    params.padList[0] = 0;
+    params.padList[1] = 0;
+    params.padList[2] = 0;
+    params.padList[3] = 0;
+    params.l1H = 2;
+    params.l1W = 56;
+    params.c1Index = 0;
+    params.fetchFilterW = 0;
+    params.fetchFilterH = 0;
+    params.leftTopW = 0;
+    params.leftTopH = 0;
+    params.strideW = 1;
+    params.strideH = 1;
+    params.filterW = 1;
+    params.filterH = 1;
+    params.dilationFilterW = 1;
+    params.dilationFilterH = 1;
+    params.jumpStride = 1;
+    params.repeatMode = 0;
+    params.repeatTime = 1;
+    params.cSize = 2;  // exceeds [0, 1]
+    params.padValue = 0;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    LoadData<half>(dstLocal, srcLocal, params);
+}
+
+// ============================================================
+// LoadData3DParamsV2 NPU Debug validation - negative test cases
+// Validation: src position (L1), src alignment (32B), dst alignment (512B if L0A/L0B, 32B if UB),
+//             dtype based on dst position (A2 vs B2),
+//             parameter ranges: l1H, l1W, kExtension, mExtension, kStartPt, mStartPt,
+//             strideW/H, filterW/H, dilationFilterW/H, channelSize, enTranspose, enSmallK
+// ============================================================
+
+class TestLoadData3dv2NpuDebug : public testing::Test {
+protected:
+    void SetUp()
+    {
+        AscendC::SetGCoreType(2);
+    }
+    void TearDown()
+    {
+        AscendC::CheckSyncState();
+        AscendC::SetGCoreType(0);
+        GlobalMockObject::verify();
+    }
+};
+
+// src position not L1 (using A2 instead)
+TEST_F(TestLoadData3dv2NpuDebug, SrcPositionNotL1)
+{
+    TPipe tpipe;
+    TBuf<TPosition::A2> srcBuf;
+    tpipe.InitBuffer(srcBuf, 8192 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 8192 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    LoadData3DParamsV2<half> params;
+    params.padList[0] = 0;
+    params.padList[1] = 0;
+    params.padList[2] = 0;
+    params.padList[3] = 0;
+    params.l1H = 12;
+    params.l1W = 16;
+    params.channelSize = 32;
+    params.kExtension = 32;
+    params.mExtension = 192;
+    params.kStartPt = 0;
+    params.mStartPt = 0;
+    params.strideW = 1;
+    params.strideH = 1;
+    params.filterW = 1;
+    params.filterH = 1;
+    params.dilationFilterW = 1;
+    params.dilationFilterH = 1;
+    params.enTranspose = false;
+    params.enSmallK = false;
+    params.padValue = 0;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    LoadData<half>(dstLocal, srcLocal, params);
+}
+
+// l1H=0 (below MIN_LOAD3D_L1=1)
+TEST_F(TestLoadData3dv2NpuDebug, L1HUnderflow)
+{
+    TPipe tpipe;
+    TBuf<TPosition::A1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 8192 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 8192 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    LoadData3DParamsV2<half> params;
+    params.padList[0] = 0;
+    params.padList[1] = 0;
+    params.padList[2] = 0;
+    params.padList[3] = 0;
+    params.l1H = 0;  // below min=1
+    params.l1W = 16;
+    params.channelSize = 32;
+    params.kExtension = 32;
+    params.mExtension = 192;
+    params.kStartPt = 0;
+    params.mStartPt = 0;
+    params.strideW = 1;
+    params.strideH = 1;
+    params.filterW = 1;
+    params.filterH = 1;
+    params.dilationFilterW = 1;
+    params.dilationFilterH = 1;
+    params.enTranspose = false;
+    params.enSmallK = false;
+    params.padValue = 0;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    LoadData<half>(dstLocal, srcLocal, params);
+}
+
+// kExtension=0 (below MIN_LOAD3D_EXTENSION=1)
+TEST_F(TestLoadData3dv2NpuDebug, KExtensionUnderflow)
+{
+    TPipe tpipe;
+    TBuf<TPosition::A1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 8192 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 8192 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    LoadData3DParamsV2<half> params;
+    params.padList[0] = 0;
+    params.padList[1] = 0;
+    params.padList[2] = 0;
+    params.padList[3] = 0;
+    params.l1H = 12;
+    params.l1W = 16;
+    params.channelSize = 32;
+    params.kExtension = 0;  // below min=1
+    params.mExtension = 192;
+    params.kStartPt = 0;
+    params.mStartPt = 0;
+    params.strideW = 1;
+    params.strideH = 1;
+    params.filterW = 1;
+    params.filterH = 1;
+    params.dilationFilterW = 1;
+    params.dilationFilterH = 1;
+    params.enTranspose = false;
+    params.enSmallK = false;
+    params.padValue = 0;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    LoadData<half>(dstLocal, srcLocal, params);
+}
+
+// strideW=0 (below MIN_LOAD3D_STRIDE=1)
+TEST_F(TestLoadData3dv2NpuDebug, StrideWUnderflow)
+{
+    TPipe tpipe;
+    TBuf<TPosition::A1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 8192 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 8192 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    LoadData3DParamsV2<half> params;
+    params.padList[0] = 0;
+    params.padList[1] = 0;
+    params.padList[2] = 0;
+    params.padList[3] = 0;
+    params.l1H = 12;
+    params.l1W = 16;
+    params.channelSize = 32;
+    params.kExtension = 32;
+    params.mExtension = 192;
+    params.kStartPt = 0;
+    params.mStartPt = 0;
+    params.strideW = 0;  // below min=1
+    params.strideH = 1;
+    params.filterW = 1;
+    params.filterH = 1;
+    params.dilationFilterW = 1;
+    params.dilationFilterH = 1;
+    params.enTranspose = false;
+    params.enSmallK = false;
+    params.padValue = 0;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    LoadData<half>(dstLocal, srcLocal, params);
+}
+
+// dst on B2 with int8_t type (B2 only supports half/bfloat16_t/float/uint32_t/int32_t, not int8_t)
+TEST_F(TestLoadData3dv2NpuDebug, DstB2InvalidDtypeInt8)
+{
+    TPipe tpipe;
+    TBuf<TPosition::B1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 8192 * sizeof(int8_t));
+    LocalTensor<int8_t> srcLocal = srcBuf.Get<int8_t>();
+
+    TBuf<TPosition::B2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 8192 * sizeof(int8_t));
+    LocalTensor<int8_t> dstLocal = dstBuf.Get<int8_t>();
+
+    LoadData3DParamsV2<int8_t> params;
+    params.padList[0] = 0;
+    params.padList[1] = 0;
+    params.padList[2] = 0;
+    params.padList[3] = 0;
+    params.l1H = 12;
+    params.l1W = 16;
+    params.channelSize = 32;
+    params.kExtension = 32;
+    params.mExtension = 192;
+    params.kStartPt = 0;
+    params.mStartPt = 0;
+    params.strideW = 1;
+    params.strideH = 1;
+    params.filterW = 1;
+    params.filterH = 1;
+    params.dilationFilterW = 1;
+    params.dilationFilterH = 1;
+    params.enTranspose = false;
+    params.enSmallK = false;
+    params.padValue = 0;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    LoadData<int8_t>(dstLocal, srcLocal, params);
+}
+
+// l1W=0 (below MIN_LOAD3D_L1=1)
+TEST_F(TestLoadData3dv2NpuDebug, L1WUnderflow)
+{
+    TPipe tpipe;
+    TBuf<TPosition::A1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 8192 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 8192 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    LoadData3DParamsV2<half> params;
+    params.padList[0] = 0;
+    params.padList[1] = 0;
+    params.padList[2] = 0;
+    params.padList[3] = 0;
+    params.l1H = 12;
+    params.l1W = 0;  // below min=1
+    params.channelSize = 32;
+    params.kExtension = 32;
+    params.mExtension = 192;
+    params.kStartPt = 0;
+    params.mStartPt = 0;
+    params.strideW = 1;
+    params.strideH = 1;
+    params.filterW = 1;
+    params.filterH = 1;
+    params.dilationFilterW = 1;
+    params.dilationFilterH = 1;
+    params.enTranspose = false;
+    params.enSmallK = false;
+    params.padValue = 0;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    LoadData<half>(dstLocal, srcLocal, params);
+}
+
+// mExtension=0 (below MIN_LOAD3D_EXTENSION=1)
+TEST_F(TestLoadData3dv2NpuDebug, MExtensionUnderflow)
+{
+    TPipe tpipe;
+    TBuf<TPosition::A1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 8192 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 8192 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    LoadData3DParamsV2<half> params;
+    params.padList[0] = 0;
+    params.padList[1] = 0;
+    params.padList[2] = 0;
+    params.padList[3] = 0;
+    params.l1H = 12;
+    params.l1W = 16;
+    params.channelSize = 32;
+    params.kExtension = 32;
+    params.mExtension = 0;  // below min=1
+    params.kStartPt = 0;
+    params.mStartPt = 0;
+    params.strideW = 1;
+    params.strideH = 1;
+    params.filterW = 1;
+    params.filterH = 1;
+    params.dilationFilterW = 1;
+    params.dilationFilterH = 1;
+    params.enTranspose = false;
+    params.enSmallK = false;
+    params.padValue = 0;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    LoadData<half>(dstLocal, srcLocal, params);
+}
+
+// filterW=0 (below MIN_LOAD3D_FILTER=1)
+TEST_F(TestLoadData3dv2NpuDebug, FilterWUnderflow)
+{
+    TPipe tpipe;
+    TBuf<TPosition::A1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 8192 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 8192 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    LoadData3DParamsV2<half> params;
+    params.padList[0] = 0;
+    params.padList[1] = 0;
+    params.padList[2] = 0;
+    params.padList[3] = 0;
+    params.l1H = 12;
+    params.l1W = 16;
+    params.channelSize = 32;
+    params.kExtension = 32;
+    params.mExtension = 192;
+    params.kStartPt = 0;
+    params.mStartPt = 0;
+    params.strideW = 1;
+    params.strideH = 1;
+    params.filterW = 0;  // below min=1
+    params.filterH = 1;
+    params.dilationFilterW = 1;
+    params.dilationFilterH = 1;
+    params.enTranspose = false;
+    params.enSmallK = false;
+    params.padValue = 0;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    LoadData<half>(dstLocal, srcLocal, params);
+}
+
+// dilationFilterW=0 (below MIN_LOAD3D_DILATION_FILTER=1)
+TEST_F(TestLoadData3dv2NpuDebug, DilationFilterWUnderflow)
+{
+    TPipe tpipe;
+    TBuf<TPosition::A1> srcBuf;
+    tpipe.InitBuffer(srcBuf, 8192 * sizeof(half));
+    LocalTensor<half> srcLocal = srcBuf.Get<half>();
+
+    TBuf<TPosition::A2> dstBuf;
+    tpipe.InitBuffer(dstBuf, 8192 * sizeof(half));
+    LocalTensor<half> dstLocal = dstBuf.Get<half>();
+
+    LoadData3DParamsV2<half> params;
+    params.padList[0] = 0;
+    params.padList[1] = 0;
+    params.padList[2] = 0;
+    params.padList[3] = 0;
+    params.l1H = 12;
+    params.l1W = 16;
+    params.channelSize = 32;
+    params.kExtension = 32;
+    params.mExtension = 192;
+    params.kStartPt = 0;
+    params.mStartPt = 0;
+    params.strideW = 1;
+    params.strideH = 1;
+    params.filterW = 1;
+    params.filterH = 1;
+    params.dilationFilterW = 0;  // below min=1
+    params.dilationFilterH = 1;
+    params.enTranspose = false;
+    params.enSmallK = false;
+    params.padValue = 0;
+
+    MOCKER(raise, int32_t (*)(int32_t)).stubs().will(invoke(RaiseStub));
+    LoadData<half>(dstLocal, srcLocal, params);
+}

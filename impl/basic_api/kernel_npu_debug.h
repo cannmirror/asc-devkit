@@ -111,6 +111,19 @@ __aicore__ inline void CheckTensorAlignment(const LocalTensor<T>& inputTensor, u
         tensorName, apiName, alignBytes, static_cast<unsigned long long>(tensorAddr)));
 }
 
+__aicore__ inline void CheckAddrAlignment(uint64_t addr, Hardware phyPos, uint32_t alignBytes,
+    const __gm__ char* addrName, const __gm__ char* apiName)
+{
+    uint64_t checkAddr = addr;
+#ifdef ASCENDC_CPU_DEBUG
+    checkAddr = addr - reinterpret_cast<uint64_t>(
+        ConstDefiner::Instance().hardwareCpuBufferMap.at(phyPos));
+#endif
+    ASCENDC_DEBUG_ASSERT((checkAddr % alignBytes == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check %s "
+        "address alignment in %s, its address must align with %u bytes, current address is %llu.\n",
+        addrName, apiName, alignBytes, static_cast<unsigned long long>(checkAddr)));
+}
+
 template <typename T>
 __aicore__ inline void CheckValueRange(T value, T valueLow, T valueHigh, const __gm__ char* paramName,
     const __gm__ char* apiName)
