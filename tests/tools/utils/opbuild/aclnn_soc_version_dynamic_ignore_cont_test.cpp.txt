@@ -1,6 +1,6 @@
 #include <string.h>
 #include "graph/types.h"
-#include "aclnn_rms_norm_grad_test.h"
+#include "aclnn_soc_version_dynamic_ignore_cont_test.h"
 
 namespace {
 typedef struct {
@@ -50,151 +50,49 @@ enum NnopbaseAttrDtype {
     kNnopbaseString,
     kNnopbaseAttrEnd
 };
-uint32_t socSupportList[] = {SOC_VERSION_ASCEND310P,SOC_VERSION_ASCEND910A,SOC_VERSION_ASCEND910_93,SOC_VERSION_ASCEND910B};
-uint32_t socSupportListLen = 4;
+uint32_t socSupportList[] = {SOC_VERSION_ASCEND310P,SOC_VERSION_ASCEND910A,SOC_VERSION_ASCEND910B};
+uint32_t socSupportListLen = 3;
 
-TensorDesc inputDesc0_0[4] =
-    {{ge::DT_FLOAT16, ge::FORMAT_ND},
-     {ge::DT_FLOAT16, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT16, ge::FORMAT_ND}};
-TensorDesc inputDesc0_1[4] =
-    {{ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-TensorDesc outputDesc0_0[2] =
-    {{ge::DT_FLOAT16, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-TensorDesc outputDesc0_1[2] =
-    {{ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-SupportInfo list0_0 = {inputDesc0_0, 4, outputDesc0_0, 2};
-SupportInfo list0_1 = {inputDesc0_1, 4, outputDesc0_1, 2};
-SupportInfo supportInfo0[2] = {list0_0, list0_1};
-OpSocSupportInfo socSupportInfo0= {supportInfo0, 2};
+TensorDesc inputDesc0_0[5] =
+    {{ge::DT_INT64, ge::FORMAT_ND},
+     {ge::DT_INT64, ge::FORMAT_ND},
+     {ge::DT_INT64, ge::FORMAT_ND},
+     {ge::DT_INT64, ge::FORMAT_ND},
+     {ge::DT_INT64, ge::FORMAT_ND}};
+TensorDesc outputDesc0_0[1] =
+    {{ge::DT_INT64, ge::FORMAT_ND}};
+SupportInfo list0_0 = {inputDesc0_0, 5, outputDesc0_0, 1};
+SupportInfo supportInfo0[1] = {list0_0};
+OpSocSupportInfo socSupportInfo0= {supportInfo0, 1};
 
-TensorDesc inputDesc1_0[4] =
-    {{ge::DT_FLOAT16, ge::FORMAT_ND},
-     {ge::DT_FLOAT16, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT16, ge::FORMAT_ND}};
-TensorDesc inputDesc1_1[4] =
-    {{ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-TensorDesc outputDesc1_0[2] =
-    {{ge::DT_FLOAT16, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-TensorDesc outputDesc1_1[2] =
-    {{ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-SupportInfo list1_0 = {inputDesc1_0, 4, outputDesc1_0, 2};
-SupportInfo list1_1 = {inputDesc1_1, 4, outputDesc1_1, 2};
-SupportInfo supportInfo1[2] = {list1_0, list1_1};
-OpSocSupportInfo socSupportInfo1= {supportInfo1, 2};
+TensorDesc inputDesc1_0[5] =
+    {{ge::DT_INT64, ge::FORMAT_ND},
+     {ge::DT_INT64, ge::FORMAT_ND},
+     {ge::DT_INT64, ge::FORMAT_ND},
+     {ge::DT_INT64, ge::FORMAT_ND},
+     {ge::DT_INT64, ge::FORMAT_ND}};
+TensorDesc outputDesc1_0[1] =
+    {{ge::DT_INT64, ge::FORMAT_ND}};
+SupportInfo list1_0 = {inputDesc1_0, 5, outputDesc1_0, 1};
+SupportInfo supportInfo1[1] = {list1_0};
+OpSocSupportInfo socSupportInfo1= {supportInfo1, 1};
 
-TensorDesc inputDesc2_0[4] =
-    {{ge::DT_FLOAT16, ge::FORMAT_ND},
-     {ge::DT_FLOAT16, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-TensorDesc inputDesc2_1[4] =
-    {{ge::DT_BF16, ge::FORMAT_ND},
-     {ge::DT_BF16, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-TensorDesc inputDesc2_2[4] =
-    {{ge::DT_FLOAT16, ge::FORMAT_ND},
-     {ge::DT_FLOAT16, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT16, ge::FORMAT_ND}};
-TensorDesc inputDesc2_3[4] =
-    {{ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-TensorDesc inputDesc2_4[4] =
-    {{ge::DT_BF16, ge::FORMAT_ND},
-     {ge::DT_BF16, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_BF16, ge::FORMAT_ND}};
-TensorDesc outputDesc2_0[2] =
-    {{ge::DT_FLOAT16, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-TensorDesc outputDesc2_1[2] =
-    {{ge::DT_BF16, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-TensorDesc outputDesc2_2[2] =
-    {{ge::DT_FLOAT16, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-TensorDesc outputDesc2_3[2] =
-    {{ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-TensorDesc outputDesc2_4[2] =
-    {{ge::DT_BF16, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-SupportInfo list2_0 = {inputDesc2_0, 4, outputDesc2_0, 2};
-SupportInfo list2_1 = {inputDesc2_1, 4, outputDesc2_1, 2};
-SupportInfo list2_2 = {inputDesc2_2, 4, outputDesc2_2, 2};
-SupportInfo list2_3 = {inputDesc2_3, 4, outputDesc2_3, 2};
-SupportInfo list2_4 = {inputDesc2_4, 4, outputDesc2_4, 2};
-SupportInfo supportInfo2[5] = {list2_0, list2_1, list2_2, list2_3, list2_4};
-OpSocSupportInfo socSupportInfo2= {supportInfo2, 5};
+TensorDesc inputDesc2_0[5] =
+    {{ge::DT_INT64, ge::FORMAT_ND},
+     {ge::DT_INT64, ge::FORMAT_ND},
+     {ge::DT_INT64, ge::FORMAT_ND},
+     {ge::DT_INT64, ge::FORMAT_ND},
+     {ge::DT_INT64, ge::FORMAT_ND}};
+TensorDesc outputDesc2_0[1] =
+    {{ge::DT_INT64, ge::FORMAT_ND}};
+SupportInfo list2_0 = {inputDesc2_0, 5, outputDesc2_0, 1};
+SupportInfo supportInfo2[1] = {list2_0};
+OpSocSupportInfo socSupportInfo2= {supportInfo2, 1};
 
-TensorDesc inputDesc3_0[4] =
-    {{ge::DT_FLOAT16, ge::FORMAT_ND},
-     {ge::DT_FLOAT16, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-TensorDesc inputDesc3_1[4] =
-    {{ge::DT_BF16, ge::FORMAT_ND},
-     {ge::DT_BF16, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-TensorDesc inputDesc3_2[4] =
-    {{ge::DT_FLOAT16, ge::FORMAT_ND},
-     {ge::DT_FLOAT16, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT16, ge::FORMAT_ND}};
-TensorDesc inputDesc3_3[4] =
-    {{ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-TensorDesc inputDesc3_4[4] =
-    {{ge::DT_BF16, ge::FORMAT_ND},
-     {ge::DT_BF16, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_BF16, ge::FORMAT_ND}};
-TensorDesc outputDesc3_0[2] =
-    {{ge::DT_FLOAT16, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-TensorDesc outputDesc3_1[2] =
-    {{ge::DT_BF16, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-TensorDesc outputDesc3_2[2] =
-    {{ge::DT_FLOAT16, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-TensorDesc outputDesc3_3[2] =
-    {{ge::DT_FLOAT, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-TensorDesc outputDesc3_4[2] =
-    {{ge::DT_BF16, ge::FORMAT_ND},
-     {ge::DT_FLOAT, ge::FORMAT_ND}};
-SupportInfo list3_0 = {inputDesc3_0, 4, outputDesc3_0, 2};
-SupportInfo list3_1 = {inputDesc3_1, 4, outputDesc3_1, 2};
-SupportInfo list3_2 = {inputDesc3_2, 4, outputDesc3_2, 2};
-SupportInfo list3_3 = {inputDesc3_3, 4, outputDesc3_3, 2};
-SupportInfo list3_4 = {inputDesc3_4, 4, outputDesc3_4, 2};
-SupportInfo supportInfo3[5] = {list3_0, list3_1, list3_2, list3_3, list3_4};
-OpSocSupportInfo socSupportInfo3= {supportInfo3, 5};
+OpSocSupportInfo opSocSupportList[3] = {socSupportInfo0, socSupportInfo1, socSupportInfo2};
+OpSupportList supportList = {opSocSupportList, 3};
 
-OpSocSupportInfo opSocSupportList[4] = {socSupportInfo0, socSupportInfo1, socSupportInfo2, socSupportInfo3};
-OpSupportList supportList = {opSocSupportList, 4};
-
-[[maybe_unused]] uint32_t NNOPBASE_RmsNormGradTest = 0U;
+[[maybe_unused]] uint32_t NNOPBASE_SocVersionDynamicIgnoreContTest = 0U;
 } // namespace
 
 extern void NnopbaseOpLogE(const aclnnStatus code, const char *const expr);
@@ -269,32 +167,32 @@ using AclnnFunc = aclnnStatus (*)(void *, uint64_t, aclOpExecutor *, aclrtStream
         }                                                               \
     } while (false)
 
-aclnnStatus aclnnRmsNormGradTestGetWorkspaceSize(
-    const aclTensor *dy,
-    const aclTensor *x,
-    const aclTensor *rstd,
-    const aclTensor *gamma,
-    const aclTensor *dxOut,
-    const aclTensor *dgammaOut,
+aclnnStatus aclnnSocVersionDynamicIgnoreContTestGetWorkspaceSize(
+    const aclTensor *x1,
+    const aclTensorList *x2,
+    const aclTensor *x3,
+    const aclTensor *x4,
+    const aclTensorList *x5,
+    const aclTensor *out,
     uint64_t *workspaceSize,
     aclOpExecutor **executor)
 {
     uint64_t timeStamp = NnopbaseMsprofSysTime();
     static NnopbaseDfxId dfxId = {0x60000, __func__, false};
-    static NnopbaseDfxId tilingId = {0x60000, "aclnnRmsNormGradTestTiling", false};
+    static NnopbaseDfxId tilingId = {0x60000, "aclnnSocVersionDynamicIgnoreContTestTiling", false};
     void *nnopExecutor;
     static void *executorSpace = NULL;
-    const char *opType = "RmsNormGradTest";
-    char inputDesc[] = {1, 1, 1, 1};
-    char outputDesc[] = {1, 1};
+    const char *opType = "SocVersionDynamicIgnoreContTest";
+    char inputDesc[] = {1, 2, 1, 1, 2};
+    char outputDesc[] = {1};
     char attrDesc[] = {};
 
-    NNOPBASE_ASSERT_NOTNULL_RETVAL(dy);
-    NNOPBASE_ASSERT_NOTNULL_RETVAL(x);
-    NNOPBASE_ASSERT_NOTNULL_RETVAL(rstd);
-    NNOPBASE_ASSERT_NOTNULL_RETVAL(gamma);
-    NNOPBASE_ASSERT_NOTNULL_RETVAL(dxOut);
-    NNOPBASE_ASSERT_NOTNULL_RETVAL(dgammaOut);
+    NNOPBASE_ASSERT_NOTNULL_RETVAL(x1);
+    NNOPBASE_ASSERT_NOTNULL_RETVAL(x2);
+    NNOPBASE_ASSERT_NOTNULL_RETVAL(x3);
+    NNOPBASE_ASSERT_NOTNULL_RETVAL(x4);
+    NNOPBASE_ASSERT_NOTNULL_RETVAL(x5);
+    NNOPBASE_ASSERT_NOTNULL_RETVAL(out);
 
     if (!executorSpace) {
         NNOPBASE_ASSERT_OK_RETVAL(NnopbaseCreateExecutorSpace(&executorSpace));
@@ -315,26 +213,39 @@ aclnnStatus aclnnRmsNormGradTestGetWorkspaceSize(
             NnopbaseOpLogE(ACLNN_ERR_PARAM_INVALID, "Aclnn does not support current socVersion!");
             return ACLNN_ERR_PARAM_INVALID;
         }
-        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, dy, 0));
-        if (currentSoc == SOC_VERSION_ASCEND910_93 || currentSoc == SOC_VERSION_ASCEND910B) {
-            NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContinuesInput(*executor, x, 1));
+        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, x1, 0));
+        if (currentSoc == SOC_VERSION_ASCEND910B) {
+            if (NnopbaseAddIgnoreContiguousDynamicInput != NULL) {
+                NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContiguousDynamicInput(*executor, x2, 1));
+            } else {
+                NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddDynamicInput(*executor, x2, 1));
+            }
         } else {
-            NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, x, 1));
+            NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddDynamicInput(*executor, x2, 1));
         }
-        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, rstd, 2));
-        if (currentSoc == SOC_VERSION_ASCEND310P) {
-            NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContinuesInput(*executor, gamma, 3));
+        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, x3, 2));
+        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContinuesInput(*executor, x4, 3));
+        if (NnopbaseAddIgnoreContiguousDynamicInput != NULL) {
+            NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContiguousDynamicInput(*executor, x5, 4));
         } else {
-            NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, gamma, 3));
+            NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddDynamicInput(*executor, x5, 4));
         }
     } else {
-        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, dy, 0));
-        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContinuesInput(*executor, x, 1));
-        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, rstd, 2));
-        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, gamma, 3));
+        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, x1, 0));
+        if (NnopbaseAddIgnoreContiguousDynamicInput != NULL) {
+            NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContiguousDynamicInput(*executor, x2, 1));
+        } else {
+            NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddDynamicInput(*executor, x2, 1));
+        }
+        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, x3, 2));
+        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContinuesInput(*executor, x4, 3));
+        if (NnopbaseAddIgnoreContiguousDynamicInput != NULL) {
+            NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContiguousDynamicInput(*executor, x5, 4));
+        } else {
+            NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddDynamicInput(*executor, x5, 4));
+        }
     }
-    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddOutput(*executor, dxOut, 0));
-    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddOutput(*executor, dgammaOut, 1));
+    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddOutput(*executor, out, 0));
     if (NnopbaseMatchArgs != NULL) {
         if (NnopbaseMatchArgs(*executor, workspaceSize)) {
             NnopbaseReportApiInfo(timeStamp, dfxId);
@@ -342,18 +253,18 @@ aclnnStatus aclnnRmsNormGradTestGetWorkspaceSize(
         }
     }
     if (NnopbaseAddParamName != NULL) {
-        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddParamName(*executor, 0, "dy", true));
-        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddParamName(*executor, 1, "x", true));
-        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddParamName(*executor, 2, "rstd", true));
-        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddParamName(*executor, 3, "gamma", true));
-        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddParamName(*executor, 0, "dxOut", false));
-        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddParamName(*executor, 1, "dgammaOut", false));
+        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddParamName(*executor, 0, "x1", true));
+        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddParamName(*executor, 1, "x2", true));
+        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddParamName(*executor, 2, "x3", true));
+        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddParamName(*executor, 3, "x4", true));
+        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddParamName(*executor, 4, "x5", true));
+        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddParamName(*executor, 0, "out", false));
     }
     NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddSupportList(*executor, &supportList, socSupportList, socSupportListLen));
 
     uint64_t inContWorkspaceSize = 0U;
     const aclTensorList *inUnContTensors = nullptr;
-    if (NnopbaseGetSocEnum == NULL || (currentSoc == SOC_VERSION_ASCEND910A || currentSoc == SOC_VERSION_ASCEND910_93 || currentSoc == SOC_VERSION_ASCEND910B)) {
+    if (currentSoc == SOC_VERSION_ASCEND310P || currentSoc == SOC_VERSION_ASCEND910B) {
         aclOpExecutor *aclInExecutor = nullptr;
         NnopbaseGetUnContiguousTensors(*executor, &inUnContTensors);
         if (inUnContTensors != nullptr) {
@@ -370,7 +281,7 @@ aclnnStatus aclnnRmsNormGradTestGetWorkspaceSize(
     return ACLNN_SUCCESS;
 }
 
-aclnnStatus aclnnRmsNormGradTest(
+aclnnStatus aclnnSocVersionDynamicIgnoreContTest(
     void *workspace,
     uint64_t workspaceSize,
     aclOpExecutor *executor,
@@ -385,7 +296,7 @@ aclnnStatus aclnnRmsNormGradTest(
     if (NnopbaseGetSocEnum != NULL) {
         currentSoc = NnopbaseGetSocEnum();
     }
-    if (NnopbaseGetSocEnum == NULL || (currentSoc == SOC_VERSION_ASCEND910A || currentSoc == SOC_VERSION_ASCEND910_93 || currentSoc == SOC_VERSION_ASCEND910B)) {
+    if (currentSoc == SOC_VERSION_ASCEND310P || currentSoc == SOC_VERSION_ASCEND910B) {
         NnopbaseGetUnContExecutor(executor, &aclInExecutor, &inContWorkspaceSize);
         if (workspaceSize < inContWorkspaceSize) {
             NnopbaseOpLogE(ACLNN_ERR_PARAM_INVALID, "input workspaceSize must be larger than contiguous size!");

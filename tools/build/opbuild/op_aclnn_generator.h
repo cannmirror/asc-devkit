@@ -102,6 +102,8 @@ constexpr const char *OP_ACLNN_EXTERN_FUNC =
     "extern aclnnStatus NnopbaseAddOutput(void *executor, const aclTensor *tensor, const uint32_t index);\n"
     "extern aclnnStatus NnopbaseAddDynamicInput(void *executor, const aclTensorList *tensor_list, "
     "const uint32_t index);\n"
+    "extern aclnnStatus __attribute__((weak)) NnopbaseAddIgnoreContiguousDynamicInput(void *executor, "
+    "const aclTensorList *tensor_list, const uint32_t index);\n"
     "extern aclnnStatus NnopbaseAddDynamicOutput(void *executor, const aclTensorList *tensor_list, "
     "const uint32_t index);\n"
     "extern aclnnStatus NnopbaseAddAttrWithDtype(void *executor, void *attrAddr, size_t attrLen, "
@@ -441,6 +443,11 @@ public:
         bool& hasIgnoreCont, std::vector<std::string>& ignoreContSocs) const;
     void GenSingleInputCode(OpDefIoDesc& opDefIoDesc,
         OpDefName& opdefName, std::ofstream& outfile, const OpCodeGenConfig& genConfig, const std::vector<InputContiguousConfig>& contConfigs) const;
+    void GenDynamicInputIgnoreContCode(OpDefIoDesc& opDefIoDesc,
+        const std::vector<InputContiguousConfig>& contConfigs, std::ofstream& outfile, const OpCodeGenConfig& genConfig) const;
+    void GenDynamicInputWeakSymbolCode(OpDefIoDesc& opDefIoDesc, std::ofstream& outfile, const std::string& indent) const;
+    void GenInputIgnoreContCode(OpDefIoDesc& opDefIoDesc,
+        const std::vector<InputContiguousConfig>& contConfigs, std::ofstream& outfile, const OpCodeGenConfig& genConfig) const;
     void AclnnOpGenCodeSetUnContInfo(OpDef& opDef, std::ofstream& outfile, bool needSocCheck) const;
     void AclopGenCodeCommon(OpDef& opDef, OpDefName& opdefName, std::ofstream& outfile, uint32_t version, bool valueDependApi) const;
     void AclnnOpGenIoParam(std::vector<OpParamDef>& params, std::vector<std::string>& paramName,

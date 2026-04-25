@@ -1435,6 +1435,64 @@ void AclnnOpGenerator::GetIgnoreContSocsForInput(const std::vector<InputContiguo
     }
 }
 
+void AclnnOpGenerator::GenDynamicInputIgnoreContCode(OpDefIoDesc& opDefIoDesc,
+    const std::vector<InputContiguousConfig>& contConfigs, std::ofstream& outfile, const OpCodeGenConfig& genConfig) const
+{
+    bool hasIgnoreCont = false;
+    std::vector<std::string> ignoreContSocs;
+    GetIgnoreContSocsForInput(contConfigs, opDefIoDesc.index, hasIgnoreCont, ignoreContSocs);
+    if (hasIgnoreCont && ignoreContSocs.size() < contConfigs[opDefIoDesc.index].socContiguousType.size()) {
+        GenerateSocConditionCode(ignoreContSocs, outfile, false, genConfig.indent);
+        outfile << genConfig.indent << "    ";
+        GenDynamicInputWeakSymbolCode(opDefIoDesc, outfile, genConfig.indent + "    ");
+        outfile << genConfig.indent << "} else {\n";
+        outfile << genConfig.indent << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddDynamicInput(*executor, "
+                << opDefIoDesc.inputName << ", " << opDefIoDesc.index << "));\n";
+        outfile << genConfig.indent << "}\n";
+    } else if (hasIgnoreCont) {
+        outfile << genConfig.indent;
+        GenDynamicInputWeakSymbolCode(opDefIoDesc, outfile, genConfig.indent);
+    } else {
+        outfile << genConfig.indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddDynamicInput(*executor, "
+                << opDefIoDesc.inputName << ", " << opDefIoDesc.index << "));\n";
+    }
+}
+
+void AclnnOpGenerator::GenDynamicInputWeakSymbolCode(OpDefIoDesc& opDefIoDesc,
+    std::ofstream& outfile, const std::string& indent) const
+{
+    outfile << "if (NnopbaseAddIgnoreContiguousDynamicInput != NULL) {\n"
+            << indent << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContiguousDynamicInput(*executor, "
+            << opDefIoDesc.inputName << ", " << opDefIoDesc.index << "));\n"
+            << indent << "} else {\n"
+            << indent << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddDynamicInput(*executor, "
+            << opDefIoDesc.inputName << ", " << opDefIoDesc.index << "));\n"
+            << indent << "}\n";
+}
+
+void AclnnOpGenerator::GenInputIgnoreContCode(OpDefIoDesc& opDefIoDesc,
+    const std::vector<InputContiguousConfig>& contConfigs, std::ofstream& outfile, const OpCodeGenConfig& genConfig) const
+{
+    bool hasIgnoreCont = false;
+    std::vector<std::string> ignoreContSocs;
+    GetIgnoreContSocsForInput(contConfigs, opDefIoDesc.index, hasIgnoreCont, ignoreContSocs);
+    if (hasIgnoreCont && ignoreContSocs.size() < contConfigs[opDefIoDesc.index].socContiguousType.size()) {
+        GenerateSocConditionCode(ignoreContSocs, outfile, false, genConfig.indent);
+        outfile << genConfig.indent << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContinuesInput(*executor, "
+                << opDefIoDesc.inputName << ", " << opDefIoDesc.index << "));\n";
+        outfile << genConfig.indent << "} else {\n";
+        outfile << genConfig.indent << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, "
+                << opDefIoDesc.inputName << ", " << opDefIoDesc.index << "));\n";
+        outfile << genConfig.indent << "}\n";
+    } else if (hasIgnoreCont) {
+        outfile << genConfig.indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContinuesInput(*executor, "
+                << opDefIoDesc.inputName << ", " << opDefIoDesc.index << "));\n";
+    } else {
+        outfile << genConfig.indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, "
+                << opDefIoDesc.inputName << ", " << opDefIoDesc.index << "));\n";
+    }
+}
+
 void AclnnOpGenerator::GenSingleInputCode(OpDefIoDesc& opDefIoDesc,
     OpDefName& opdefName, std::ofstream& outfile, const OpCodeGenConfig& genConfig, const std::vector<InputContiguousConfig>& contConfigs) const
 {
@@ -1452,8 +1510,17 @@ void AclnnOpGenerator::GenSingleInputCode(OpDefIoDesc& opDefIoDesc,
             AclnnSetErrorMessage(str, opDefIoDesc.opType);
         }
     } else if (opDefIoDesc.input.GetParamType() == DYNAMIC) {
-        outfile << genConfig.indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddDynamicInput(*executor, " << opDefIoDesc.inputName
-                << ", " << opDefIoDesc.index << "));\n";
+        if (genConfig.useBaseConfig) {
+            if (opDefIoDesc.input.GetIgnoreContiguous()) {
+                outfile << genConfig.indent;
+                GenDynamicInputWeakSymbolCode(opDefIoDesc, outfile, genConfig.indent);
+            } else {
+                outfile << genConfig.indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddDynamicInput(*executor, "
+                        << opDefIoDesc.inputName << ", " << opDefIoDesc.index << "));\n";
+            }
+        } else {
+            GenDynamicInputIgnoreContCode(opDefIoDesc, contConfigs, outfile, genConfig);
+        }
     } else if (genConfig.useBaseConfig) {
         if (opDefIoDesc.input.GetIgnoreContiguous()) {
             outfile << genConfig.indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContinuesInput(*executor, "
@@ -1463,24 +1530,7 @@ void AclnnOpGenerator::GenSingleInputCode(OpDefIoDesc& opDefIoDesc,
                     << opDefIoDesc.inputName << ", " << opDefIoDesc.index << "));\n";
         }
     } else {
-        bool hasIgnoreCont = false;
-        std::vector<std::string> ignoreContSocs;
-        GetIgnoreContSocsForInput(contConfigs, opDefIoDesc.index, hasIgnoreCont, ignoreContSocs);
-        if (hasIgnoreCont && ignoreContSocs.size() < contConfigs[opDefIoDesc.index].socContiguousType.size()) {
-            GenerateSocConditionCode(ignoreContSocs, outfile, false, genConfig.indent);
-            outfile << genConfig.indent << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContinuesInput(*executor, "
-                    << opDefIoDesc.inputName << ", " << opDefIoDesc.index << "));\n";
-            outfile << genConfig.indent << "} else {\n";
-            outfile << genConfig.indent << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, "
-                    << opDefIoDesc.inputName << ", " << opDefIoDesc.index << "));\n";
-            outfile << genConfig.indent << "}\n";
-        } else if (hasIgnoreCont) {
-            outfile << genConfig.indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContinuesInput(*executor, "
-                    << opDefIoDesc.inputName << ", " << opDefIoDesc.index << "));\n";
-        } else {
-            outfile << genConfig.indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, "
-                    << opDefIoDesc.inputName << ", " << opDefIoDesc.index << "));\n";
-        }
+        GenInputIgnoreContCode(opDefIoDesc, contConfigs, outfile, genConfig);
     }
 }
 

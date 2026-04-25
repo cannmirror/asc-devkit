@@ -1822,4 +1822,37 @@ TEST_F(TEST_OPBUILD, AclnnContiguousConflictSoc)
     EXPECT_EQ(hasErrorMessage, true);
 }
 
+// STC-CONT-003: DYNAMIC输入跨SOC差异配置IgnoreContiguous（SOC条件判断模式）
+TEST_F(TEST_OPBUILD, AclnnSocVersionDynamicIgnoreContRunSuccess)
+{
+    char buf[1024];
+    char *cur_path = getcwd(buf, 1023);
+    char *src_path = getenv("OPS_SRC_FILE_PATH");
+    EXPECT_TRUE(nullptr != src_path);
+    std::string src_file, gen_file;
+    std::ifstream src_if, gen_if;
+    std::stringstream src_ss, gen_ss;
+    std::vector<std::string> src_files = {"/aclnn_soc_version_dynamic_ignore_cont_test.cpp.txt",
+        "/aclnn_soc_version_dynamic_ignore_cont_test.h.txt"};
+    std::vector<std::string> gen_files = {"/aclnn_soc_version_dynamic_ignore_cont_test.cpp",
+        "/aclnn_soc_version_dynamic_ignore_cont_test.h"};
+    for (size_t i = 0U; i < src_files.size(); i++) {
+        src_file = std::string(src_path) + src_files[i];
+        gen_file = std::string(cur_path) + gen_files[i];
+        std::cout << "compare " << src_file << " and " << gen_file << std::endl;
+        src_if.open(src_file);
+        EXPECT_TRUE(src_if.is_open());
+        src_ss << src_if.rdbuf();
+        gen_if.open(gen_file);
+        EXPECT_TRUE(gen_if.is_open());
+        gen_ss << gen_if.rdbuf();
+        EXPECT_EQ(src_ss.str(), gen_ss.str());
+        src_if.close();
+        gen_if.close();
+        src_ss.str("");
+        gen_ss.str("");
+        system(("rm -rf " + gen_file).c_str());
+    }
+}
+
 } // namespace ops
