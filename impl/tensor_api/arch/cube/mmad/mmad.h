@@ -21,6 +21,7 @@
 #ifndef IMPL_TENSOR_API_ARCH_CUBE_MMAD_MMAD_H
 #define IMPL_TENSOR_API_ARCH_CUBE_MMAD_MMAD_H
 
+#include "impl/tensor_api/arch/cube/mmad/mmad_routing.h"
 
 namespace AscendC {
 namespace Te {
@@ -41,6 +42,31 @@ public:
     template <typename Tp, const Tp& traits, typename... Args>
     __aicore__ inline static void Mmad(const Args& ...args)
     {
+        if ASCEND_IS_AIC {
+            MmadImpl<traits, Args...>(args...);
+        }
+    }
+
+private:
+    template <const MmadTrait& trait = DEFAULT_MMAD_TRAIT, typename T, typename U, typename S, typename Params>
+    __aicore__ inline static void MmadImpl(const T& dst, const U& fm, const S& filter, const Params& params)
+    {
+        using dstPos = GetMemLocation<T>;
+        using fmPos = GetMemLocation<U>;
+        using filterPos = GetMemLocation<S>;
+        using Tensor2Tensor = typename MmadTensor2Tensor<dstPos, fmPos, filterPos, Location::INVALID, CURRENT_ARCH_VERSION>::type;
+        Tensor2Tensor::template Run<trait>(dst, fm, filter, params);
+    }
+
+    template <const MmadTrait& trait = DEFAULT_MMAD_TRAIT, typename T, typename U, typename S, typename V, typename Params>
+    __aicore__ inline static void MmadImpl(const T& dst, const U& fm, const S& filter, const V& bias, const Params& params)
+    {
+        using dstPos = GetMemLocation<T>;
+        using fmPos = GetMemLocation<U>;
+        using filterPos = GetMemLocation<S>;
+        using biasPos = GetMemLocation<V>;
+        using Tensor2Tensor = typename MmadTensor2Tensor<dstPos, fmPos, filterPos, biasPos, CURRENT_ARCH_VERSION>::type;
+        Tensor2Tensor::template Run<trait>(dst, fm, filter, bias, params);
     }
 };
 

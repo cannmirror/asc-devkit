@@ -53,6 +53,7 @@ protected:
                                                                                                                     \
         auto mmadAtom = MakeMmad(MmadOperation{}, MmadTraitDefault{}).with(para);                                 \
         Mmad(mmadAtom, l0cTensor, l0aTensor, l0bTensor);                                                          \
+        Mmad(mmadAtom, l0cTensor, l0cTensor, l0bTensor);                                                          \
         Mmad<MmadTraitDefault::TraitType, MmadTraitDefault::value>(mmadAtom, l0cTensor, l0aTensor, l0bTensor);  \
         EXPECT_EQ(c2Addr[0], static_cast<DST_TYPE>(0));                                                            \
     }

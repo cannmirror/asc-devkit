@@ -21,10 +21,11 @@
 #ifndef IMPL_TENSOR_API_ARCH_CUBE_L1_TO_FB_COPY_H
 #define IMPL_TENSOR_API_ARCH_CUBE_L1_TO_FB_COPY_H
 
+#include "impl/tensor_api/arch/cube/l1_to_fb/routing.h"
 
 namespace AscendC {
 namespace Te {
-struct CopyL12FBTrait {};
+
 constexpr CopyL12FBTrait DEFAULT_COPY_L1_FB_TRAIT;
 
 struct CopyL12FBTraitDefault {
@@ -37,6 +38,19 @@ public:
     template <typename Tp, const Tp& traits, typename... Args>
     __aicore__ inline static void Copy(const Args& ...args)
     {
+        if ASCEND_IS_AIC {
+            DataCopyImpl<traits, Args...>(args...);
+        }
+    }
+
+private:
+    template <const CopyL12FBTrait& trait = DEFAULT_COPY_L1_FB_TRAIT, typename T, typename U>
+    __aicore__ inline static void DataCopyImpl(const T& dst, const U& src)
+    {
+        using dstTPos = GetMemLocation<T>;
+        using srcTPos = GetMemLocation<U>;
+        using Tensor2Tensor = typename CopyL12FBTensor2Tensor<dstTPos, srcTPos, CURRENT_ARCH_VERSION>::type;
+        Tensor2Tensor::template Run<trait, T, U>(dst, src);
     }
 };
 
