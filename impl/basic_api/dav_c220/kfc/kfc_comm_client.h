@@ -134,7 +134,9 @@ public:
                 for(int i = 0; i < MAX_MATMUL_OBJ_CNT; i++) {
                     uint32_t eventId = reinterpret_cast<__gm__ SuperKernelWaitEventCnt *>(this->msgRcvStart)->eventId[i];
                     int32_t eventCnt = reinterpret_cast<__gm__ SuperKernelWaitEventCnt *>(this->msgRcvStart)->eventCnt[i];
-                    if (eventCnt > 0) {
+                    // Get the block id of the corresponding mapped object
+                    uint32_t mappedBlockId = GetSubBlockIdxImpl() ? 0 : 1;
+                    if (i * 2 + mappedBlockId == eventId && eventCnt > 0) {
                         // After dividing the count value by 16 and taking the modulus, compensate for the waiting event
                         int32_t waitCnt = eventCnt % 16;
                         for (int i = 0; i < waitCnt; i++) {
