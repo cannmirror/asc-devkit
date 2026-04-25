@@ -30,10 +30,6 @@
         <path value="tools/ascendc_tools" install_mod="750"/>
         <path value="share" install_mod="750"/>
         <path value="share/info" install_mod="750"/>
-        <path value="examples" install_mod="750"/>
-        <path value="examples/01_simd_cpp_api" install_mod="750"/>
-        <path value="examples/02_simd_c_api" install_mod="750"/>
-        <path value="examples/03_simt_api" install_mod="750"/>
         <path value="tools/opbuild" install_mod="750"/>
         <path value="$(TARGET_ENV)/tikcpp" install_softlink="compiler/tikcpp;tools/tikcpp"/>
         <path value="$(TARGET_ENV)/tikcpp/tikcfw"/>
@@ -84,11 +80,9 @@
         <file value="script" install_mod="550" entity="true"/>
         <file value="version.info" install_mod="550" entity="true" install_softlink="compiler/version.info"/>
         <file value="scene.info" install_mod="550" entity="true"/>
-        <file value="examples" install_mod="550" entity="true"/>
     </file_info>
     <file_info copy_type="delivery" src_path="asc-devkit/script" dst_path="asc-devkit/script" install_path="share/info/asc-devkit" install_type="all">
         <file value="filelist.csv" install_mod="550" entity="true"/>
-        <file value="run_presmoke.sh" install_mod="550" entity="true"/>
     </file_info>
     <file_info copy_type="delivery" src_path="asc-devkit" dst_path="asc-devkit" install_path="$(TARGET_ENV)/include/version" install_type="all">
         <file value="asc_devkit_version.h" install_mod="550" entity="true" install_softlink="$(TARGET_ENV)/include/ascendc/asc_devkit_version.h"/>
