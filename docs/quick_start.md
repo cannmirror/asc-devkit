@@ -205,7 +205,7 @@ git clone https://gitcode.com/cann/asc-devkit.git
 以下为本开源仓源码编译和examples算子样例编译运行的基础依赖条件：
 
 - python >= 3.9.0
-- gcc >= 7.3.0
+- gcc >= 7.3.0 / g++ >= 7.3.0 (注意：要求gcc与g++版本一致)
 - cmake >= 3.16.0
 
 ### ⚡ 编译安装<a name="compile&install"></a>
