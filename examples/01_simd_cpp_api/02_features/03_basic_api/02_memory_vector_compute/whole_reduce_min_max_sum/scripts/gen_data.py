@@ -26,15 +26,14 @@ def gen_golden_data(scenarioNum=1):
     场景2：WholeReduceMin，输入half类型[1, 1024]，输出[1, 16]，每个repeat内求最小值及索引
     场景3：WholeReduceSum，输入float类型[1, 2048]，输出[1, 32]，每个repeat内求和
     场景4：RepeatReduceSum，输入float类型[1, 2048]，输出[1, 32]，累加模式求和
-    场景5：WholeReduceMax + GetReduceRepeatMaxMinSpr，输入[1, 1024]，输出[1, 16]，求全局最大值及索引
-    场景6：WholeReduceMin + GetReduceRepeatMaxMinSpr，输入[1, 1024]，输出[1, 16]，求全局最小值及索引
-    场景7：WholeReduceSum非对齐场景，输入float类型[13, 57]，输出[1, 13]，对每行非对齐数据求和
+    场景5：WholeReduceMin + GetReduceRepeatMaxMinSpr，输入[1, 1024]，输出[1, 16]，求全局最小值及索引
+    场景6：WholeReduceSum非对齐场景，输入float类型[13, 57]，输出[1, 13]，对每行非对齐数据求和
     """
     input_type = np.dtype("float16")
     output_type = input_type
     one_repeat_items = 256 // input_type.itemsize
 
-    if scenarioNum == 3 or scenarioNum == 4 or scenarioNum == 7:
+    if scenarioNum == 3 or scenarioNum == 4 or scenarioNum == 6:
         input_type = np.dtype("float32")
         output_type = input_type
         one_repeat_items = 256 // input_type.itemsize
@@ -74,19 +73,11 @@ def gen_golden_data(scenarioNum=1):
         block_length = 1024
         input_x = np.random.uniform(-1000, 1000, [block_length]).astype(input_type)
         golden = np.zeros(2).astype(output_type)
-        it = np.argmax(input_x)
-        idx = np.uint16(it)
-        golden[0] = input_x[it]
-        golden[1] = idx.view(np.float16)
-    elif scenarioNum == 6:
-        block_length = 1024
-        input_x = np.random.uniform(-1000, 1000, [block_length]).astype(input_type)
-        golden = np.zeros(2).astype(output_type)
         it = np.argmin(input_x)
         idx = np.uint16(it)
         golden[0] = input_x[it]
         golden[1] = idx.view(np.float16)
-    elif scenarioNum == 7:
+    elif scenarioNum == 6:
         src_row = 13
         src_col = 57
         input_x = np.random.uniform(1, 10, [src_row, src_col]).astype(input_type)
@@ -112,6 +103,6 @@ def gen_golden_data(scenarioNum=1):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-scenarioNum', type=int, default=1, choices=range(1, 8))
+    parser.add_argument('-scenarioNum', type=int, default=1, choices=range(1, 7))
     args = parser.parse_args()
     gen_golden_data(args.scenarioNum)

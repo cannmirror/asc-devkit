@@ -18,14 +18,6 @@ add_executable(demo
     group_barrier.asc
 )
 
-target_link_libraries(demo PRIVATE
-    tiling_api
-    register
-    platform
-    m
-    dl
-)
-
 # ======================================================================================
 # NPU 编译选项配置
 #

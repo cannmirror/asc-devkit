@@ -1,6 +1,7 @@
-# CrossCoreSetFlag和CrossCoreWaitFlag，实现核间同步样例
+# CrossCoreSetFlag和CrossCoreWaitFlag核间同步样例
+
 ## 概述
-本样例首先介绍核间同步接口[CrossCoreSetFlag和CrossCoreWaitFlag](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta1/API/ascendcopapi/atlasascendc_api_07_0273.html)支持的三种同步模式(详见下表)，随后分别在纯 Vector 计算场景以及Cube 与 Vector 融合计算场景这两个实际业务中，说明上述三种同步模式的具体使用方法。
+本样例首先介绍核间同步接口CrossCoreSetFlag和CrossCoreWaitFlag支持的三种同步模式(详见下表)，随后分别在纯 Vector 计算场景以及Cube 与 Vector 融合计算场景这两个实际业务中，说明上述三种同步模式的具体使用方法。
 <table border="1" align="center">
   <tr bgcolor="lightgray">
     <td>同步控制模式</td>
@@ -27,25 +28,28 @@
 </table>
 
 ## 支持的产品
+
+- Ascend 950PR/Ascend 950DT
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品
 
 ## 目录结构介绍
+
 ```
-├── cross_core_set_flag
+├── cross_core_set_wait_flag
 │   ├── scripts
 │   │   ├── gen_data.py         // 输入数据和真值数据生成脚本
 │   │   └── verify_result.py    // 验证输出数据和真值数据是否一致的验证脚本
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   ├── cross_core_set_flag.h            // Ascend C算子实现
-│   └── cross_core_set_flag.asc      // 调用样例以及结果校验
+│   ├── cross_core_set_wait_flag.h   // Ascend C样例实现
+│   └── cross_core_set_wait_flag.asc // 调用样例以及结果校验
 ```
 
 ## 样例描述
 <table border="1" style="text-align: center;">
   <tr>
-    <td>SCENARIO取值</td>
+    <td>SCENARIO_NUM取值</td>
     <td>业务场景</td>
     <td>使用的同步模式</td>
   </tr>
@@ -65,11 +69,11 @@
     <td>mode 2（AIC等AIV）、mode2（AIV等AIC）、mode0（AIC全核同步）</td>
   </tr>
 </table>
-本样例通过SCENARIO控制执行分支，该变量的不同取值对应不同的业务场景和同步模式。如上表所示，当 SCENARIO取不同值时，会分别演示纯 Vector 计算场景和 Cube 与 Vector 融合计算场景下三种同步模式的具体使用方法。
+本样例通过SCENARIO_NUM控制执行分支，该变量的不同取值对应不同的业务场景和同步模式。如上表所示，当 SCENARIO_NUM取不同值时，会分别演示纯 Vector 计算场景和 Cube 与 Vector 融合计算场景下三种同步模式的具体使用方法。
 
 ### 计算公式与样例规格
 
-#### SCENARIO=0（纯 Vector 计算场景，模式0）
+#### SCENARIO_NUM=0（纯 Vector 计算场景，模式0）
 - 计算公式：  
   $$
   z = \sum_{i=0}^{15} (x \times i)
@@ -84,9 +88,10 @@
   <tr><td rowspan="2" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
   <tr><td align="center">x</td><td align="center">[32]</td><td align="center">float32</td><td align="center">ND</td></tr>
   <tr><td rowspan="1" align="center">样例输出</td><td align="center">z</td><td align="center">[32]</td><td align="center">float32</td><td align="center">ND</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">cross_core_set_wait_flag_custom</td></tr>
   </table>
 
-#### SCENARIO=1（纯 Vector 计算场景，模式1）
+#### SCENARIO_NUM=1（纯 Vector 计算场景，模式1）
 - 计算公式：  
   $$
   z = (x \times 2) + (x \times 3)
@@ -101,9 +106,10 @@
   <tr><td rowspan="2" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
   <tr><td align="center">x</td><td align="center">[32]</td><td align="center">float32</td><td align="center">ND</td></tr>
   <tr><td rowspan="1" align="center">样例输出</td><td align="center">z</td><td align="center">[32]</td><td align="center">float32</td><td align="center">ND</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">cross_core_set_wait_flag_custom</td></tr>
   </table>
 
-#### SCENARIO=2（Cube 与 Vector 融合计算场景）
+#### SCENARIO_NUM=2（Cube 与 Vector 融合计算场景）
 - 计算公式：  
   $$
   C = \text{LeakyRelu}(Cast(A) \times Cast(B))
@@ -122,6 +128,7 @@
   <tr><td align="center">a</td><td align="center">[32, 32]</td><td align="center">uint8</td><td align="center">ND</td><td align="center">false</td></tr>
   <tr><td align="center">b</td><td align="center">[32, 64]</td><td align="center">uint8</td><td align="center">ND</td><td align="center">false</td></tr>
   <tr><td rowspan="1" align="center">样例输出</td><td align="center">c</td><td align="center">[32, 64]</td><td align="center">float32</td><td align="center">ND</td><td align="center">-</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">mmad_custom</td></tr>
   </table>
 ## 样例实现
 ### 1. Cube与Vector融合计算场景
@@ -269,9 +276,9 @@ if ASCEND_IS_AIV {
     op.ProcessAIV();
 }
 ```
-(2) [GetBlockIdx](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta2/API/ascendcopapi/atlasascendc_api_07_0185.html)(获取当前核的index)在AIC和AIV的取值范围不同，其取值与算子设置的逻辑核数和一个AI Core中的AIC与AIV的比例有关。本样例中设置NUM_BLOCKS=8、AIC与AIV的比例为1:2，因此GetBlockIdx在AIC和AIV的取值范围分别为0-7和0-15。
+(2) GetBlockIdx(获取当前核的index)在AIC和AIV的取值范围不同，其取值与算子设置的逻辑核数和一个AI Core中的AIC与AIV的比例有关。本样例中设置NUM_BLOCKS=8、AIC与AIV的比例为1:2，因此GetBlockIdx在AIC和AIV的取值范围分别为0-7和0-15。
 
-(3) 样例采用[静态tensor编程范式](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/850/opdevg/Ascendcopdevg/atlas_ascendc_10_00019.html)需要手动插入[核内同步](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta2/API/ascendcopapi/atlasascendc_api_07_0185.html)。另外，静态Tensor编程方式中需要开发者手动调用[InitSocState()](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta2/API/ascendcopapi/atlasascendc_api_07_00094.html)接口初始化全局状态寄存器。
+(3) 样例采用静态tensor编程范式需要手动插入核内同步。另外，静态Tensor编程方式中需要开发者手动调用InitSocState()接口初始化全局状态寄存器。
 
 #### 3.2 纯Vector计算场景
 (1) 在使用 CrossCoreSetFlag 与 CrossCoreWaitFlag 核间同步接口时，即使是纯 Vector 计算场景，核函数也不能使用__vector__ 修饰符。
@@ -284,16 +291,19 @@ if ASCEND_IS_AIV {
 ```
  (2) 模式 1 要求参与同步的 2个AIV 必须属于同一个AI Core，否则程序会卡死。本样例中，参与同步的两个AIV的 GetBlockIdx=2、3 同属第 2 个 AI Core(下标从 1 开始)；若将GetBlockIdx改为 3 和 4(分别属于两个不同的AI Core)，程序将卡死。
 
- (3) 样例采用[静态tensor编程范式](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/850/opdevg/Ascendcopdevg/atlas_ascendc_10_00019.html)需要手动插入[核内同步](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta2/API/ascendcopapi/atlasascendc_api_07_0185.html)。另外，静态Tensor编程方式中需要开发者手动调用[InitSocState()](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta2/API/ascendcopapi/atlasascendc_api_07_00094.html)接口初始化全局状态寄存器。
-## 编译运行  
-在本样例根目录下执行如下步骤，编译并执行算子。
+ (3) 样例采用静态tensor编程范式需要手动插入核内同步。另外，静态Tensor编程方式中需要开发者手动调用InitSocState()接口初始化全局状态寄存器。
+
+## 编译运行
+
+在本样例根目录下执行如下步骤，编译并执行样例。
+
 - 配置环境变量  
-  请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
+  请根据当前环境上CANN开发套件包的[安装方式](../../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
     ```bash
     source /usr/local/Ascend/cann/set_env.sh
     ```
-    
+
   - 默认路径，非root用户安装CANN软件包
     ```bash
     source $HOME/Ascend/cann/set_env.sh
@@ -303,22 +313,36 @@ if ASCEND_IS_AIV {
     ```bash
     source ${install_path}/cann/set_env.sh
     ```
-
+    
 - 样例执行
   ```bash
-  SCENARIO=0 #取值为0、1、2
-  mkdir -p build && cd build;   # 创建并进入build目录
-  cmake .. -DSCENARIO_NUM=$SCENARIO;make -j;             # 编译工程
-  if [ "$SCENARIO" -eq 2 ]; then
-    echo "Cube和Vector融合计算场景"
-    python3 ../scripts/gen_data.py   # 生成测试输入数据
-    ./demo                           # 执行编译生成的可执行程序，执行样例
-    python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
-  else
-    echo "纯Vector计算场景"
-    ./demo                         # 执行样例
-  fi
+  SCENARIO_NUM=0  # 设置场景编号（取值为0、1、2）
+  mkdir -p build && cd build;      # 创建并进入build目录
+  cmake .. -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=$SCENARIO_NUM;make -j;    # 编译工程
+  python3 ../scripts/gen_data.py -scenarioNum $SCENARIO_NUM   # 生成测试输入数据
+  ./demo                           # 执行编译生成的可执行程序，执行样例
+  python3 ../scripts/verify_result.py ./output/output.bin ./output/golden.bin  # 验证输出结果是否正确
   ```
+
+  使用CPU调试或NPU仿真模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
+  
+  示例如下：
+  ```bash
+  cmake .. -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=$SCENARIO_NUM;make -j; # CPU调试模式
+  cmake .. -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=$SCENARIO_NUM;make -j; # NPU仿真模式
+  ```
+  > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
+
+- 编译选项说明
+
+  | 选项 | 可选值 | 说明 |
+  |------|--------|------|
+  | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`cpu`、`sim` | 运行模式：NPU 运行、CPU调试、NPU仿真 |
+  | `CMAKE_ASC_ARCHITECTURES` | `dav-2201`（默认）、`dav-3510` | NPU 架构：dav-2201 对应 Atlas A2/A3 系列、dav-3510 对应 Ascend 950PR/Ascend 950DT |
+  | `SCENARIO_NUM` | `0`（默认）、`1`、`2` | 场景编号：0（纯Vector模式0）、1（纯Vector模式1）、2（Cube+Vector融合） |
+
+- 执行结果
+
   执行结果如下，说明精度对比成功。
   ```bash
   test pass!
