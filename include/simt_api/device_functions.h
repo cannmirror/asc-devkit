@@ -442,6 +442,26 @@ static __SIMT_DEVICE_FUNCTIONS_DECL__ int __popc(unsigned long x);
 
 static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __byte_perm(unsigned int x, unsigned int y, unsigned int s);
 
+static __SIMT_DEVICE_FUNCTIONS_DECL__ float __saturatef(float x);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __sad(int x, int y, unsigned int z);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __usad(unsigned int x, unsigned int y, unsigned int z);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ int __mul24(int x, int y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __umul24(unsigned int x, unsigned int y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ float __fdividef(float x, float y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ int __hadd(int x, int y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ int __rhadd(int x, int y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __uhadd(unsigned int x, unsigned int y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __urhadd(unsigned int x, unsigned int y);
+
 #include "impl/simt_api/device_functions_impl.h"
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEVICE_FUNCTIONS_H__)

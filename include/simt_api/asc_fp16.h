@@ -486,6 +486,48 @@ static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __hgtux2_mask(half2 x, half2 
 
 static __SIMT_DEVICE_FUNCTIONS_DECL__ half2 __isnanx2(half2 x);
 
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half2 __hmaxx2(const half2 x, const half2 y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half2 __hminx2(const half2 x, const half2 y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half2 __haddx2(const half2 x, const half2 y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half2 __hsubx2(const half2 x, const half2 y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half2 __hmulx2(const half2 x, const half2 y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half2 __hdivx2(const half2 x, const half2 y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half2 __habsx2(const half2 x);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half2 __hfmax2(const half2 x, const half2 y, const half2 z);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half2 __hnegx2(const half2 x);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half __hadd(const half x, const half y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half __hsub(const half x, const half y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half __hmul(const half x, const half y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half __hdiv(const half x, const half y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half __hneg(const half x);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half __hmax_nan(const half x, const half y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half __hmin_nan(const half x, const half y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half __hfma_relu(const half x, const half y, const half z);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half2 __hmaxx2_nan(const half2 x, const half2 y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half2 __hminx2_nan(const half2 x, const half2 y);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half2 __hfmax2_relu(const half2 x, const half2 y, const half2 z);
+
+static __SIMT_DEVICE_FUNCTIONS_DECL__ half2 __hcmadd(const half2 x, const half2 y, const half2 z);
+
 #include "impl/simt_api/asc_fp16_impl.h"
 
 #endif
