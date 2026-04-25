@@ -12,5 +12,5 @@
 | [04_profiling](./04_profiling) | 使用Profiling工具采集性能数据 |
 | [05_sanitizer](./05_sanitizer) | Sanitizer调测工具的使用方法 |
 | [06_clock](./06_clock) | Kernel函数执行耗时打印 |
-| [07_simulator](./07_simulator) | CAmodel仿真 |
+| [07_simulator](./07_simulator) | CAmodel仿真与问题分析 |
 | [08_utility_function](./08_utility_function) | 常用工具函数API |

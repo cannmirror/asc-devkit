@@ -11,6 +11,7 @@
 | [00_data_movement](./00_data_movement/) | 本路径下包含了与数据搬运相关的多个API的样例，展示了数据搬运接口的使用。|
 | [01_matrix_compute](./01_matrix_compute/) | 本样例路径以batch_mmad、fixpipe_co12c1_quantization等算子为示例，展示了矩阵计算接口的使用。|
 | [02_memory_vector_compute](./02_memory_vector_compute/) | 本样例路径以reduce、sort、transpose等算子为示例，展示了内存向量计算接口的使用。|
+| [03_reg_vector_compute](./03_reg_vector_compute/) | 本路径下包含了与向量计算相关的多个API的样例，基于RegBase编程范式实现。|
 | [04_resource_management](./04_resource_management/) | 本路径下包含了与资源管理相关的多个API的样例。每个样例均基于Ascend C的<<<>>>直调方法，支持main函数和kernel函数在同一个cpp文件中实现。         |
 | [06_sync_control](./06_sync_control/) | 本路径下包含了与同步控制相关的多个API的样例。每个样例均基于Ascend C的<<<>>>直调方法，支持main函数和kernel函数在同一个cpp文件中实现。         |
 | [07_system_access](./07_system_access/) | 本路径下包含了与系统变量访问相关的多个API的样例。每个样例均基于Ascend C的<<<>>>直调方法，支持main函数和kernel函数在同一个cpp文件中实现。         |

@@ -28,14 +28,14 @@
   $$
   dst_i = Clamp(src_i, min_i, max_i)
   $$
-  $$
-  dst_i = 
-  \begin{cases}
-  min_i, & src_i < min_i \\
-  src_i, & min_i \le src_i, \le max_i \\
-  max_i, & src_i < max_i \\
-  \end{cases}
-  $$
+$$
+dst_i = 
+\begin{cases}
+min_i, & src_i < min_i \\
+src_i, & min_i \le src_i \le max_i \\
+max_i, & src_i > max_i \\
+\end{cases}
+$$
 
 - 算子规格：  
   <table>

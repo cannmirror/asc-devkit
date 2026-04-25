@@ -9,7 +9,7 @@
 
 ## 目录结构介绍
 ```
-├── 05_mata_address_conflict
+├── mata_address_conflict
 │   ├── scripts
 │   │   ├── gen_data.py                    // 输入数据和真值数据生成脚本
 │   │   └── verify_result.py               // 验证输出数据和真值数据是否一致的验证脚本
@@ -33,17 +33,13 @@
 
 - 算子规格：
 
-  <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">Adds</td></tr>
-  </tr>
-  <tr><td rowspan="2" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">x</td><td align="center">8192 * 128</td><td align="center">float</td><td align="center">ND</td></tr>
-  </tr>
-  </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">8192 * 128</td><td align="center">float</td><td align="center">ND</td></tr>
-  </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">adds_custom_v1/adds_custom_v2/adds_custom_v3</td></tr>
-  </table>
+<table>
+<tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">Adds</td></tr>
+<tr><td rowspan="2" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
+<tr><td align="center">x</td><td align="center">8192 * 128</td><td align="center">float</td><td align="center">ND</td></tr>
+<tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">8192 * 128</td><td align="center">float</td><td align="center">ND</td></tr>
+<tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">adds_custom_v1/adds_custom_v2/adds_custom_v3</td></tr>
+</table>
 
 
 - 算子实现：

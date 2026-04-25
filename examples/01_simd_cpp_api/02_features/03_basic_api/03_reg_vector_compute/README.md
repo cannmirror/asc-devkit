@@ -18,3 +18,6 @@
 | [truncate](./truncate)　　　　 | 本样例基于RegBase编程范式实现Truncate运算，将浮点数截断到整数位　　　　　　　　　　　　　　 |
 | [arange](./arange)　　　　　　 | 本样例基于RegBase编程范式实现Arange运算，以标量值为起始生成递增/递减索引序列　　　　　　　　|
 | [duplicate](./duplicate)　　　 | 本样例基于RegBase编程范式实现Duplicate运算（标量填充），将标量值填充到向量的每个位置　　　　|
+| [compare](./compare)　　　　　　 | 本样例基于RegBase编程范式实现Compare运算，用于比较两个向量或向量与标量的大小关系　　　　|
+| [select](./select)　　　　　　 | 本样例基于RegBase编程范式实现Select运算，根据掩码在两个向量之间选取元素　　　　|
+| [squeeze](./squeeze)　　　　　　 | 本样例基于RegBase编程范式实现Squeeze运算，将向量压缩为标量　　　　|

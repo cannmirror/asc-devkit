@@ -18,3 +18,5 @@
 | [pipe_barrier](./pipe_barrier)                                                       | 本样例基于PipeBarrier实现核内同步，适用于以下场景：阻塞相同流水，具有数据依赖的相同流水之间需要插入此同步。|
 | [data_sync_barrier](./data_sync_barrier)                                                       | 本样例介绍DataSyncBarrier的调用，适用于核内标量单元流水（PIPE_S）的同步。|
 | [group_barrier](./group_barrier) | 本样例实现了两组存在依赖关系的AIV之间的正确同步，A组AIV计算完成后，B组AIV依赖该A组AIV的计算结果进行后续的计算，称A组为Arrive组，B组为Wait组。 |
+| [reg_sync](./reg_sync) | 本样例基于RegSync实现RegBase编程范式下的同步控制。|
+| [cross_core_set_flag](./cross_core_set_flag) | 本样例基于CrossCoreSetFlag和CrossCoreWaitFlag实现跨核同步。|

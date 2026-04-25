@@ -13,7 +13,7 @@
 ## 目录结构介绍
 
 ```
-├── 06_grouped_matmul
+├── grouped_matmul
 │   ├── scripts
 │   │   ├── gen_data.py                    // 输入数据和真值数据生成脚本
 │   │   └── verify_result.py               // 验证输出数据和真值数据是否一致的验证脚本
@@ -47,22 +47,18 @@
 
 - 算子规格：
 
-  <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">QuantGroupMatmul</td></tr>
-  </tr>
-  <tr><td rowspan="7" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">x</td><td align="center">1024 * 1024</td><td align="center">int8</td><td align="center">ND</td></tr>
-  <tr><td align="center">weight</td><td align="center">8 * 1024 * 8192</td><td align="center">int8</td><td align="center">NZ</td></tr>
-  <tr><td align="center">bias</td><td align="center">8 * 8192</td><td align="center">int32</td><td align="center">ND</td></tr>
-  <tr><td align="center">group</td><td align="center">8</td><td align="center">int64</td><td align="center">ND</td></tr>
-  <tr><td align="center">scale</td><td align="center">8 * 8192</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">pretokenScale</td><td align="center">1024</td><td align="center">float</td><td align="center">ND</td></tr>
-  </tr>
-  </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">y</td><td align="center">1024 * 8192</td><td align="center">float16</td><td align="center">ND</td></tr>
-  </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">quant_group_matmul_custom</td></tr>
-  </table>
+<table>
+<tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">QuantGroupMatmul</td></tr>
+<tr><td rowspan="7" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
+<tr><td align="center">x</td><td align="center">1024 * 1024</td><td align="center">int8</td><td align="center">ND</td></tr>
+<tr><td align="center">weight</td><td align="center">8 * 1024 * 8192</td><td align="center">int8</td><td align="center">NZ</td></tr>
+<tr><td align="center">bias</td><td align="center">8 * 8192</td><td align="center">int32</td><td align="center">ND</td></tr>
+<tr><td align="center">group</td><td align="center">8</td><td align="center">int64</td><td align="center">ND</td></tr>
+<tr><td align="center">scale</td><td align="center">8 * 8192</td><td align="center">float</td><td align="center">ND</td></tr>
+<tr><td align="center">pretokenScale</td><td align="center">1024</td><td align="center">float</td><td align="center">ND</td></tr>
+<tr><td rowspan="1" align="center">算子输出</td><td align="center">y</td><td align="center">1024 * 8192</td><td align="center">float16</td><td align="center">ND</td></tr>
+<tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">quant_group_matmul_custom</td></tr>
+</table>
 
 - 算子实现：  
   本样例中实现的是pertoken量化的QuantGroupMatmul算子。

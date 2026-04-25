@@ -12,7 +12,7 @@
 | [geglu](./geglu) | 本样例演示了基于GeGLU高阶API的算子实现。GeGLU是一种结合GELU激活函数的GLU变体 |
 | [gelu](./gelu) | 本样例演示了基于Gelu高阶API的算子实现。样例对输入Tensor按元素做GELU激活计算 |
 | [logsoftmax](./logsoftmax) | 本样例演示了基于LogSoftMax高阶API的算子实现。样例对输入tensor做LogSoftmax计算 |
-| [reglu](./reglu) | 本样例演示了基于ReGLU高阶API的算子实现。ReGlu是一种GLU变体，使用Relu作为激活函数 |
+| [reglu](./reglu) | 本样例演示了基于ReGLU高阶API的算子实现。ReGLU是一种GLU变体，使用ReLU作为激活函数 |
 | [sigmoid](./sigmoid) | 本样例演示了基于Sigmoid高阶API实现的算子实现。样例按元素做逻辑回归Sigmoid |
 | [silu](./silu) | 本样例演示了基于Silu高阶API的算子实现。样例按元素做Silu运算 |
 | [simplesoftmax](./simplesoftmax) | 本样例介绍了调用SimpleSoftMax高阶API实现softmax单算子，使用计算好的sum和max数据对输入tensor做Softmax计算 |

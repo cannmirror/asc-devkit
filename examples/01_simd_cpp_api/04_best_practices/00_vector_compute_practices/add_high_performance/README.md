@@ -21,7 +21,7 @@
 ## 目录结构介绍
 
 ```
-├── 00_add_high_performance
+├── add_high_performance
 │   ├── scripts
 │   │   ├── gen_data.py         // 输入数据和真值数据生成脚本文件
 │   │   └── verify_result.py    // 真值对比文件
