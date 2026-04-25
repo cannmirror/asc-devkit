@@ -40,6 +40,20 @@ install(DIRECTORY ${script_prefix}/
     GROUP_READ GROUP_EXECUTE
     WORLD_READ WORLD_EXECUTE
 )
+
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/examples/
+    DESTINATION asc-devkit/examples
+    COMPONENT asc-devkit
+    FILE_PERMISSIONS
+    OWNER_READ OWNER_WRITE OWNER_EXECUTE
+    GROUP_READ GROUP_EXECUTE
+    WORLD_READ WORLD_EXECUTE
+    DIRECTORY_PERMISSIONS
+    OWNER_READ OWNER_WRITE OWNER_EXECUTE
+    GROUP_READ GROUP_EXECUTE
+    WORLD_READ WORLD_EXECUTE
+)
+
 set(SCRIPTS_FILES
     ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/check_version_required.awk
     ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/common_func.inc
@@ -48,6 +62,7 @@ set(SCRIPTS_FILES
     ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/common_interface.fish
     ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/version_compatiable.inc
     ${CMAKE_SOURCE_DIR}/scripts/package/common/py/merge_binary_info_config.py
+    ${CMAKE_SOURCE_DIR}/scripts/run_presmoke.sh
 )
 
 install(FILES ${SCRIPTS_FILES}
