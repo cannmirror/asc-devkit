@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------------------------------------
-# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+# Copyright (c) 2026 Huawei Technologies Co., Ltd.
 # This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 # CANN Open Software License Agreement Version 2.0 (the "License").
 # Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -19,23 +19,16 @@ add_executable(demo
     sum.asc
 )
 
+set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "CMAKE_ASC_ARCHITECTURES, e.g. dav-2201, dav-3510")
+
 target_link_libraries(demo PRIVATE
     tiling_api
     register
     platform
-    unified_dlog
-    dl
     m
-    graph_base
+    dl
 )
 
-# ======================================================================================
-# NPU 编译选项配置
-#
-# 说明：
-#   - 需根据实际部署的 NPU 硬件架构选择对应的 `npu-arch` 参数。
-# ======================================================================================
 target_compile_options(demo PRIVATE
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
-    # $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3510>
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>
 )
