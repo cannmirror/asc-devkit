@@ -15,20 +15,24 @@
 import os
 import numpy as np
 
-def gen_golden_data_simple():
-    input_type = np.float32
-    output_type = np.float32
-    use_core_num = 3
+
+def gen_golden_data():
+    input_type = np.float16
+    output_type = input_type
     block_length = 256
+    use_core_num = 3
+
     input_shape = [block_length]
     output_shape = input_shape
     input_x = np.ones(input_shape).astype(input_type)
-    golden = use_core_num * input_x
+    input_y = 2 * np.ones(input_shape).astype(input_type)
+    golden = input_y + use_core_num * input_x
     os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
     input_x.tofile("./input/input_x.bin")
+    input_y.tofile("./input/input_y.bin")
     golden.tofile("./output/golden.bin")
 
 
 if __name__ == "__main__":
-    gen_golden_data_simple()
+    gen_golden_data()

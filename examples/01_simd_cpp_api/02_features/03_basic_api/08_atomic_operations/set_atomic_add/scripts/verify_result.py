@@ -22,7 +22,7 @@ ERROR_TOL = 1e-4
 
 
 def verify_result(output, golden):
-    output_type = np.float32
+    output_type = np.float16
     output = np.fromfile(output, dtype=output_type).reshape(-1)
     golden = np.fromfile(golden, dtype=output_type).reshape(-1)
     different_element_results = np.isclose(output,
