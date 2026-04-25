@@ -8,6 +8,10 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
+set(ASCEND_HOME $ENV{ASCEND_HOME_PATH})
+
+set(ASC_INCLUDE_DIR "${ASCEND_HOME}/asc/")
+
 cmake_minimum_required(VERSION 3.16)
 
 find_package(ASC REQUIRED)
@@ -19,7 +23,7 @@ add_executable(demo
 )
 
 include_directories(
-    $ENV{ASCEND_HOME_PATH}/x86_64-linux/asc/
+    "${ASC_INCLUDE_DIR}"
 )
 
 target_link_libraries(demo PRIVATE
