@@ -21,11 +21,12 @@
  */
 #ifndef IMPL_TENSOR_API_ARCH_CUBE_GM_TO_L1_COPY_H
 #define IMPL_TENSOR_API_ARCH_CUBE_GM_TO_L1_COPY_H
-#include "impl/tensor_api/utils/utils_impl.h"
+
+#include "impl/tensor_api/arch/cube/gm_to_l1/routing.h"
 
 namespace AscendC {
 namespace Te {
-struct CopyGM2L1Trait {};
+
 constexpr CopyGM2L1Trait DEFAULT_COPY_GM_TO_L1_TRAIT;
 
 struct CopyGM2L1TraitDefault {
@@ -38,6 +39,24 @@ public:
     template <typename Tp, const Tp& traits, typename... Args>
     __aicore__ inline static void Copy(const Args&... args)
     {
+        if ASCEND_IS_AIC {
+            DataCopyImpl<traits, Args...>(args...);
+        }
+    }
+
+private:
+    template <const CopyGM2L1Trait& trait = DEFAULT_COPY_GM_TO_L1_TRAIT, typename T, typename U>
+    __aicore__ inline static void DataCopyImpl(const T& dst, const U& src)
+    {
+        using DstPos = GetMemLocation<T>;
+        using SrcPos = GetMemLocation<U>;
+        using DstLayout = typename T::layoutType;
+        using SrcLayout = typename U::layoutType;
+        using DstLayoutPtn = GetLayoutPattern<DstLayout>;
+        using SrcLayoutPtn = GetLayoutPattern<SrcLayout>;
+        using Tensor2Tensor =
+            typename CopyGM2L1Tensor2Tensor<DstPos, SrcPos, CURRENT_ARCH_VERSION, DstLayoutPtn, SrcLayoutPtn>::type;
+        Tensor2Tensor::template Run<trait, T, U>(dst, src);
     }
 };
 
