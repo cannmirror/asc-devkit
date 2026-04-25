@@ -73,7 +73,7 @@ docker run --name cann_container --device /dev/davinci0 --device /dev/davinci_ma
 
    - python >= 3.9.0
 
-   - gcc >= 7.3.0
+   - gcc >= 7.3.0 / g++ >= 7.3.0 (注意：要求gcc与g++版本一致)
 
    - cmake >= 3.16.0
 
