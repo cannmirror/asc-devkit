@@ -25,12 +25,15 @@ namespace AscendC {
 namespace Te {
 
 struct CopyGM2L1;
+struct CopyL12UB;
 struct CopyL12L0B;
 struct CopyL12L0A;
 struct CopyL12FB;
 struct CopyL12BT;
 struct CopyL0C2GM;
 struct CopyL0C2GMWith;
+struct CopyL0C2UB;
+struct CopyL0C2UBWith;
 
 } // namespace Te
 } // namespace AscendC

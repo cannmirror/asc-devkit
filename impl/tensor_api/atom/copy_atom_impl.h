@@ -26,7 +26,7 @@
 
 #include "impl/tensor_api/atom/cube/copy_l0c2gm.h"
 #include "impl/tensor_api/atom/cube/copy_l0c2ub.h"
-#include "impl/tensor_api/atom/vector/copy_l12ub.h"
+#include "impl/tensor_api/atom/cube/copy_l12ub.h"
 
 #include "impl/tensor_api/atom/vector/copy_gm2ub.h"
 #include "impl/tensor_api/atom/vector/copy_ub2gm.h"

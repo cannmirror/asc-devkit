@@ -78,6 +78,8 @@ asc-devkit:
       - impl/tensor_api/tensor/layout_size.h
       - impl/tensor_api/tensor/layout_static_fractal.h
       - impl/tensor_api/tensor/pointer_mem_impl.h
+      - impl/tensor_api/arch/cube/**/routing.h
+      - impl/tensor_api/arch/vector/**/routing.h
       - impl/basic_api/dav_c310/kernel_operator_proposal_impl.h
       - impl/basic_api/dav_c310/kfc/kfc_comm_server.h
       - impl/adv_api/detail/reduce/reduce_mean/reduce_mean_3510_impl.h

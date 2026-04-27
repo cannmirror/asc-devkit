@@ -23,11 +23,12 @@
 
 #include "impl/tensor_api/utils/utils_impl.h"
 #include "impl/tensor_api/atom/copy_traits_impl.h"
+#include "impl/tensor_api/arch/vector/gm_to_ub/routing.h"
 
 namespace AscendC {
 namespace Te {
-struct CopyGM2UBTrait{};
-constexpr CopyGM2UBTrait DEFAULT_COPY_GM_TO_UB_TRAIT;
+
+constexpr CopyGM2UBTrait DEFAULT_COPY_GM_TO_UB_TRAIT = CopyGM2UBTrait{};
 
 struct CopyGM2UBTraitDefault {
     using TraitType = CopyGM2UBTrait;
@@ -39,8 +40,20 @@ public:
     template <typename Tp, const Tp& traits, typename... Args>
     __aicore__ inline static void Copy(const Args&... args)
     {
+        if ASCEND_IS_AIV {
+            DataCopyImpl<traits, Args...>(args...);
+        }
     }
 
+private:
+    template <const CopyGM2UBTrait& trait = DEFAULT_COPY_GM_TO_UB_TRAIT, typename T, typename U>
+    __aicore__ inline static void DataCopyImpl(const T& dst, const U& src)
+    {
+        using dstTPos = GetMemLocation<T>;
+        using srcTPos = GetMemLocation<U>;
+        using Tensor2Tensor = typename CopyGM2UBTensor2Tensor<dstTPos, srcTPos, CURRENT_ARCH_VERSION>::type;
+        Tensor2Tensor::template Run<trait, T, U>(dst, src);
+    }
 };
 
 

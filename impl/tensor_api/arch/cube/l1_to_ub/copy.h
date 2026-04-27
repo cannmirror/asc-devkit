@@ -9,57 +9,59 @@
 */
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
-#warning "impl/tensor_api/arch/vector/ub_to_l1/copy.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+#warning "impl/tensor_api/arch/cube/l1_to_ub/copy.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
 
 /*!
-* \file copy.h
-* \brief
-*/
-#ifndef IMPL_TENSOR_API_ARCH_VECTOR_UB_TO_L1_COPY_H
-#define IMPL_TENSOR_API_ARCH_VECTOR_UB_TO_L1_COPY_H
+ * \file copy.h
+ * \brief
+ */
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_L1_TO_UB_COPY_H
+#define IMPL_TENSOR_API_ARCH_CUBE_L1_TO_UB_COPY_H
 
+#include "impl/tensor_api/utils/utils_impl.h"
 #include "impl/tensor_api/atom/copy_traits_impl.h"
-#include "impl/tensor_api/arch/vector/ub_to_l1/routing.h"
+#include "impl/tensor_api/arch/cube/l1_to_ub/routing.h"
 
 namespace AscendC {
 namespace Te {
 
-constexpr CopyUB2L1Trait DEFAULT_COPY_UB_TO_L1_TRAIT;
 
-struct CopyUB2L1TraitDefault {
-    using TraitType = CopyUB2L1Trait;
-    static constexpr const TraitType value = DEFAULT_COPY_UB_TO_L1_TRAIT;
+constexpr CopyL12UBTrait DEFAULT_COPY_L1_TO_UB_TRAIT;
+
+struct CopyL12UBTraitDefault {
+    using TraitType = CopyL12UBTrait;
+    static constexpr const TraitType value = DEFAULT_COPY_L1_TO_UB_TRAIT;
 };
 
-
-struct CopyUB2L1 {
+struct CopyL12UB {
 public:
     template <typename Tp, const Tp& traits, typename... Args>
     __aicore__ inline static void Copy(const Args& ...args)
-    { 
-        if ASCEND_IS_AIV {
-            DataCopyImpl<traits, Args...>(args...); 
+    {
+        if ASCEND_IS_AIC {
+            DataCopyImpl<traits, Args...>(args...);
         }
     }
 
 private:
-    template <const CopyUB2L1Trait& trait = DEFAULT_COPY_UB_TO_L1_TRAIT, typename T, typename U>
+    template <const CopyL12UBTrait& trait = DEFAULT_COPY_L1_TO_UB_TRAIT, typename T, typename U>
     __aicore__ inline static void DataCopyImpl(const T& dst, const U& src)
     {
         using dstTPos = GetMemLocation<T>;
         using srcTPos = GetMemLocation<U>;
-        using Tensor2Tensor = typename CopyUB2L1Tensor2Tensor<dstTPos, srcTPos, CURRENT_ARCH_VERSION>::type;
+        using Tensor2Tensor = typename CopyL12UBTensor2Tensor<dstTPos, srcTPos, CURRENT_ARCH_VERSION>::type;
         Tensor2Tensor::template Run<trait, T, U>(dst, src);
     }
 };
 
-}
-}
 
-#endif // IMPL_TENSOR_API_ARCH_VECTOR_UB_TO_L1_COPY_H
+} // namespace Te
+} // namespace AscendC
+
+#endif // IMPL_TENSOR_API_ARCH_CUBE_L1_TO_UB_COPY_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

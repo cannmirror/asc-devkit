@@ -24,24 +24,60 @@
 
 #include "impl/tensor_api/utils/utils_impl.h"
 #include "impl/tensor_api/atom/copy_traits_impl.h"
+#include "impl/tensor_api/arch/cube/utils/l0c2out_utils.h"
+#include "impl/tensor_api/arch/cube/l0c_to_gm/routing.h"
 
 namespace AscendC {
 namespace Te {
-struct  CopyL0C2GMTrait{};
-constexpr CopyL0C2GMTrait DEFAULT_COPY_L0C2GM_TRAIT;
 
+constexpr CopyL0C2GMTrait DEFAULT_COPY_L0C2GM_TRAIT = CopyL0C2GMTrait{};
 struct CopyL0C2GMTraitDefault {
     using TraitType = CopyL0C2GMTrait;
     static constexpr const TraitType value = DEFAULT_COPY_L0C2GM_TRAIT;
 };
 
-struct CopyL0C2GMBase {};
+struct CopyL0C2GMBase {
+public:
+    template <const CopyL0C2GMTrait& trait = DEFAULT_COPY_L0C2GM_TRAIT, typename T, typename U>
+    __aicore__ inline static void DataCopyImpl(const T& dst, const U& src,
+                                               const FixpipeParams& params = DEFAULT_FIXPIPE_PARAMS)
+    {
+        using dstPos = GetMemLocation<T>;
+        using srcPos = GetMemLocation<U>;
+        using Tensor2Tensor = typename CopyL0C2GMTensor2Tensor<dstPos, srcPos, CURRENT_ARCH_VERSION>::type;
+        Tensor2Tensor{}.template Run<trait>(dst, src, params);
+    }
+
+    template <const CopyL0C2GMTrait& trait = DEFAULT_COPY_L0C2GM_TRAIT, typename T, typename U, typename S>
+    __aicore__ inline static typename Std::enable_if<Std::is_same_v<S, uint64_t>, void>::type
+    DataCopyImpl(const T& dst, const U& src, const S& quant, const FixpipeParams& params = DEFAULT_FIXPIPE_PARAMS)
+    {
+        using dstPos = GetMemLocation<T>;
+        using srcPos = GetMemLocation<U>;
+        using Tensor2Tensor = typename CopyL0C2GMTensor2Tensor<dstPos, srcPos, CURRENT_ARCH_VERSION>::type;
+        Tensor2Tensor{}.template Run<trait>(dst, src, quant, params);
+    }
+
+    template <const CopyL0C2GMTrait& trait = DEFAULT_COPY_L0C2GM_TRAIT, typename T, typename U, typename S>
+    __aicore__ inline static typename Std::enable_if<IsAttrTensorV<S>, void>::type
+    DataCopyImpl(const T& dst, const U& src, const S& quant, const FixpipeParams& params = DEFAULT_FIXPIPE_PARAMS)
+    {
+        using dstPos = GetMemLocation<T>;
+        using srcPos = GetMemLocation<U>;
+        using Tensor2Tensor = typename CopyL0C2GMVectorQuantTensor2Tensor<dstPos, srcPos, CURRENT_ARCH_VERSION>::type;
+        Tensor2Tensor{}.template Run<trait>(dst, src, quant, params);
+    }
+};
 
 struct CopyL0C2GM : public CopyL0C2GMBase {
 public:
     template <typename Tp, const Tp& trait, typename... Args>
     __aicore__ inline static void Copy(const Args&... args)
     {
+        if ASCEND_IS_AIV {
+            return;
+        }
+        DataCopyImpl<trait>(args...);
     }
 };
 
@@ -50,6 +86,10 @@ public:
     template <typename Tp, const Tp& trait, typename... Args>
     __aicore__ inline static void Copy(const Args&... args)
     {
+        if ASCEND_IS_AIV {
+            return;
+        }
+        DataCopyImpl<trait>(args...);
     }
 };
 

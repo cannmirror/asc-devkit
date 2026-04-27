@@ -24,18 +24,50 @@
 
 #include "impl/tensor_api/utils/utils_impl.h"
 #include "impl/tensor_api/atom/copy_traits_impl.h"
+#include "impl/tensor_api/arch/cube/utils/l0c2out_utils.h"
+#include "impl/tensor_api/arch/cube/l0c_to_ub/routing.h"
 
 namespace AscendC {
 namespace Te {
-struct CopyL0C2UBTrait{};
-constexpr CopyL0C2UBTrait DEFAULT_COPY_L0C2UB_TRAIT;
 
+constexpr CopyL0C2UBTrait DEFAULT_COPY_L0C2UB_TRAIT = CopyL0C2UBTrait{};
 struct CopyL0C2UBTraitDefault {
     using TraitType = CopyL0C2UBTrait;
     static constexpr const TraitType value = DEFAULT_COPY_L0C2UB_TRAIT;
 };
 
-struct CopyL0C2UBBase { };
+struct CopyL0C2UBBase {
+public:
+    template <const CopyL0C2UBTrait& trait = DEFAULT_COPY_L0C2UB_TRAIT, typename T, typename U>
+    __aicore__ inline static void DataCopyImpl(const T& dst, const U& src,
+                                               const FixpipeParams& params = DEFAULT_FIXPIPE_PARAMS)
+    {
+        using dstPos = GetMemLocation<T>;
+        using srcPos = GetMemLocation<U>;
+        using Tensor2Tensor = typename CopyL0C2UBTensor2Tensor<dstPos, srcPos, CURRENT_ARCH_VERSION>::type;
+        Tensor2Tensor{}.template Run<trait>(dst, src, params);
+    }
+
+    template <const CopyL0C2UBTrait& trait = DEFAULT_COPY_L0C2UB_TRAIT, typename T, typename U, typename S>
+    __aicore__ inline static typename Std::enable_if<Std::is_same_v<S, uint64_t>, void>::type
+    DataCopyImpl(const T& dst, const U& src, const S& quant, const FixpipeParams& params = DEFAULT_FIXPIPE_PARAMS)
+    {
+        using dstPos = GetMemLocation<T>;
+        using srcPos = GetMemLocation<U>;
+        using Tensor2Tensor = typename CopyL0C2UBTensor2Tensor<dstPos, srcPos, CURRENT_ARCH_VERSION>::type;
+        Tensor2Tensor{}.template Run<trait>(dst, src, quant, params);
+    }
+
+    template <const CopyL0C2UBTrait& trait = DEFAULT_COPY_L0C2UB_TRAIT, typename T, typename U, typename S>
+    __aicore__ inline static typename Std::enable_if<IsAttrTensorV<S>, void>::type
+    DataCopyImpl(const T& dst, const U& src, const S& quant, const FixpipeParams& params = DEFAULT_FIXPIPE_PARAMS)
+    {
+        using dstPos = GetMemLocation<T>;
+        using srcPos = GetMemLocation<U>;
+        using Tensor2Tensor = typename CopyL0C2UBVectorQuantTensor2Tensor<dstPos, srcPos, CURRENT_ARCH_VERSION>::type;
+        Tensor2Tensor{}.template Run<trait>(dst, src, quant, params);
+    }
+};
 
 struct CopyL0C2UB : public CopyL0C2UBBase {
 public:
@@ -45,6 +77,7 @@ public:
         if ASCEND_IS_AIV {
             return;
         }
+        DataCopyImpl<trait>(args...);
     }
 };
 
@@ -56,13 +89,14 @@ public:
         if ASCEND_IS_AIV {
             return;
         }
+        DataCopyImpl<trait>(args...);
     }
 };
 
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ARCH_VECTOR_L0C_TO_UB_COPY_H
+#endif // IMPL_TENSOR_API_ARCH_CUBE_L0C_TO_UB_COPY_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

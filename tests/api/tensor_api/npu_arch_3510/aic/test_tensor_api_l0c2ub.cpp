@@ -12,6 +12,8 @@
 #include "tensor_api/stub/cce_stub.h"
 #include "include/tensor_api/tensor.h"
 
+using namespace AscendC::Te;
+
 class Tensor_Api_Cube_Copy_3510 : public testing::Test {
 protected:
     static void SetUpTestCase() {}
@@ -29,6 +31,17 @@ protected:
 };
 
 namespace {
+using namespace AscendC::Te;
+constexpr bool enableRelu = false;
+constexpr bool enableChannelSplit = true;
+constexpr DualDstMode dualDstCtl = DUAL_DST_DISABLE;
+constexpr CopyL0C2UBTrait l0c2ubTrait = {RoundMode::DEFAULT, enableRelu, enableChannelSplit, dualDstCtl};
+
+struct CopyL0C2UBTraitCustom {
+    using TraitType = CopyL0C2UBTrait;
+    static constexpr const TraitType value = l0c2ubTrait;
+};
+
 
 template <typename LocationTag, typename Pointer, typename Layout>
 auto MakeTensorAt(Pointer ptr, const Layout& layout)
@@ -65,7 +78,7 @@ void RunCopyWithParamPaths(const DstTensor& dst, const SrcTensor& src, const Par
 
 } // namespace
 
-TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2UBRoutesToVectorArchCopy)
+TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2UBNZ2ND)
 {
     using namespace AscendC::Te;
 
@@ -79,6 +92,62 @@ TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2UBRoutesToVectorArchCopy)
 
     RunCopyCallPaths<CopyL0C2UB, CopyL0C2UBTraitDefault>(ubTensor, l0cTensor);
     RunCopyWithParamPaths<CopyL0C2UB, CopyL0C2UBTraitDefault>(ubTensor, l0cTensor, FixpipeParams{});
+
+    EXPECT_EQ(dst[0], 0);
+}
+
+
+TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2UBNZ2DN)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t m = 32;
+    constexpr uint32_t n = 32;
+    __cc__ float src[m * n] = {0};
+    __ubuf__ float dst[m * n] = {0};
+
+    auto l0cTensor = MakeTensorAt<Location::L0C>(src, MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<float, 16>>(m, n));
+    auto ubTensor = MakeTensorAt<Location::UB>(dst, MakeFrameLayout<DNExtLayoutPtn, LayoutTraitDefault<float>>(m, n));
+
+    RunCopyCallPaths<CopyL0C2UB, CopyL0C2UBTraitDefault>(ubTensor, l0cTensor);
+    RunCopyWithParamPaths<CopyL0C2UB, CopyL0C2UBTraitDefault>(ubTensor, l0cTensor, FixpipeParams{});
+
+    EXPECT_EQ(dst[0], 0);
+}
+
+TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2UBNZ2NZNoChannelSplit)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t m = 32;
+    constexpr uint32_t n = 32;
+    __cc__ float src[m * n] = {0};
+    __ubuf__ float dst[m * n] = {0};
+
+    auto l0cTensor = MakeTensorAt<Location::L0C>(src, MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<float, 16>>(m, n));
+    auto ubTensor = MakeTensorAt<Location::UB>(dst, MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<float, 16>>(m, n));
+
+    RunCopyCallPaths<CopyL0C2UB, CopyL0C2UBTraitDefault>(ubTensor, l0cTensor);
+    RunCopyWithParamPaths<CopyL0C2UB, CopyL0C2UBTraitDefault>(ubTensor, l0cTensor, FixpipeParams{});
+
+    EXPECT_EQ(dst[0], 0);
+}
+
+
+TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2UBNZ2NZWithChannelSplit)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t m = 32;
+    constexpr uint32_t n = 32;
+    __cc__ float src[m * n] = {0};
+    __ubuf__ float dst[m * n] = {0};
+
+    auto l0cTensor = MakeTensorAt<Location::L0C>(src, MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<float>>(m, n));
+    auto ubTensor = MakeTensorAt<Location::UB>(dst, MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<float>>(m, n));
+
+    RunCopyCallPaths<CopyL0C2UB, CopyL0C2UBTraitCustom>(ubTensor, l0cTensor);
+    RunCopyWithParamPaths<CopyL0C2UB, CopyL0C2UBTraitCustom>(ubTensor, l0cTensor, FixpipeParams{});
 
     EXPECT_EQ(dst[0], 0);
 }

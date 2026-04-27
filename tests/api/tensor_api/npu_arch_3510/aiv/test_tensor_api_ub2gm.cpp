@@ -19,7 +19,7 @@ protected:
 
     void SetUp() override 
     {
-        AscendC::SetGCoreType(1);
+        AscendC::SetGCoreType(2);
     }
 
     void TearDown() override 
@@ -60,7 +60,7 @@ void RunCopyWithPaths(const DstTensor& dst, const SrcTensor& src)
 
 } // namespace
 
-TEST_F(Tensor_Api_Vector_Copy_3510, CopyUB2GMRoutesToVectorArchCopy)
+TEST_F(Tensor_Api_Vector_Copy_3510, CopyUB2GMND2ND)
 {
     using namespace AscendC::Te;
 
@@ -71,6 +71,42 @@ TEST_F(Tensor_Api_Vector_Copy_3510, CopyUB2GMRoutesToVectorArchCopy)
 
     auto ubTensor = MakeTensorAt<Location::UB>(src, MakeFrameLayout<NDExtLayoutPtn, LayoutTraitDefault<int8_t>>(m, n));
     auto gmTensor = MakeTensorAt<Location::GM>(dst, MakeFrameLayout<NDExtLayoutPtn, LayoutTraitDefault<int8_t>>(m, n));
+
+    RunCopyCallPaths<CopyUB2GM, CopyUB2GMTraitDefault>(gmTensor, ubTensor);
+    RunCopyWithPaths<CopyUB2GM, CopyUB2GMTraitDefault>(gmTensor, ubTensor);
+
+    EXPECT_EQ(dst[0], 0);
+}
+
+TEST_F(Tensor_Api_Vector_Copy_3510, CopyUB2GMDN2DN)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t m = 64;
+    constexpr uint32_t n = 64;
+    __ubuf__ int8_t src[m * n] = {0};
+    __gm__ int8_t dst[m * n] = {0};
+
+    auto ubTensor = MakeTensorAt<Location::UB>(src, MakeFrameLayout<DNExtLayoutPtn, LayoutTraitDefault<int8_t>>(m, n));
+    auto gmTensor = MakeTensorAt<Location::GM>(dst, MakeFrameLayout<DNExtLayoutPtn, LayoutTraitDefault<int8_t>>(m, n));
+
+    RunCopyCallPaths<CopyUB2GM, CopyUB2GMTraitDefault>(gmTensor, ubTensor);
+    RunCopyWithPaths<CopyUB2GM, CopyUB2GMTraitDefault>(gmTensor, ubTensor);
+
+    EXPECT_EQ(dst[0], 0);
+}
+
+TEST_F(Tensor_Api_Vector_Copy_3510, CopyUB2GMNZ2NZ)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t m = 64;
+    constexpr uint32_t n = 64;
+    __ubuf__ int8_t src[m * n] = {0};
+    __gm__ int8_t dst[m * n] = {0};
+
+    auto ubTensor = MakeTensorAt<Location::UB>(src, MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<int8_t>>(m, n));
+    auto gmTensor = MakeTensorAt<Location::GM>(dst, MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<int8_t>>(m, n));
 
     RunCopyCallPaths<CopyUB2GM, CopyUB2GMTraitDefault>(gmTensor, ubTensor);
     RunCopyWithPaths<CopyUB2GM, CopyUB2GMTraitDefault>(gmTensor, ubTensor);

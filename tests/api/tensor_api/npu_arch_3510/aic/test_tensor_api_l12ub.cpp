@@ -60,7 +60,7 @@ void RunCopyWithPaths(const DstTensor& dst, const SrcTensor& src)
 
 } // namespace
 
-TEST_F(Tensor_Api_Vector_Copy_3510, CopyL12UBRoutesToVectorArchCopy)
+TEST_F(Tensor_Api_Vector_Copy_3510, CopyL12UBND2ND)
 {
     using namespace AscendC::Te;
 
@@ -71,6 +71,44 @@ TEST_F(Tensor_Api_Vector_Copy_3510, CopyL12UBRoutesToVectorArchCopy)
 
     auto l1Tensor = MakeTensorAt<Location::L1>(src, MakeFrameLayout<NDExtLayoutPtn, LayoutTraitDefault<int8_t>>(m, n));
     auto ubTensor = MakeTensorAt<Location::UB>(dst, MakeFrameLayout<NDExtLayoutPtn, LayoutTraitDefault<int8_t>>(m, n));
+
+    RunCopyCallPaths<CopyL12UB, CopyL12UBTraitDefault>(ubTensor, l1Tensor);
+    RunCopyWithPaths<CopyL12UB, CopyL12UBTraitDefault>(ubTensor, l1Tensor);
+
+    EXPECT_EQ(dst[0], 0);
+}
+
+
+TEST_F(Tensor_Api_Vector_Copy_3510, CopyL12UBDN2DN)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t m = 64;
+    constexpr uint32_t n = 64;
+    __cbuf__ int8_t src[m * n] = {0};
+    __ubuf__ int8_t dst[m * n] = {0};
+
+    auto l1Tensor = MakeTensorAt<Location::L1>(src, MakeFrameLayout<DNExtLayoutPtn, LayoutTraitDefault<int8_t>>(m, n));
+    auto ubTensor = MakeTensorAt<Location::UB>(dst, MakeFrameLayout<DNExtLayoutPtn, LayoutTraitDefault<int8_t>>(m, n));
+
+    RunCopyCallPaths<CopyL12UB, CopyL12UBTraitDefault>(ubTensor, l1Tensor);
+    RunCopyWithPaths<CopyL12UB, CopyL12UBTraitDefault>(ubTensor, l1Tensor);
+
+    EXPECT_EQ(dst[0], 0);
+}
+
+
+TEST_F(Tensor_Api_Vector_Copy_3510, CopyL12UBNZ2NZ)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t m = 64;
+    constexpr uint32_t n = 64;
+    __cbuf__ int8_t src[m * n] = {0};
+    __ubuf__ int8_t dst[m * n] = {0};
+
+    auto l1Tensor = MakeTensorAt<Location::L1>(src, MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<int8_t>>(m, n));
+    auto ubTensor = MakeTensorAt<Location::UB>(dst, MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<int8_t>>(m, n));
 
     RunCopyCallPaths<CopyL12UB, CopyL12UBTraitDefault>(ubTensor, l1Tensor);
     RunCopyWithPaths<CopyL12UB, CopyL12UBTraitDefault>(ubTensor, l1Tensor);
