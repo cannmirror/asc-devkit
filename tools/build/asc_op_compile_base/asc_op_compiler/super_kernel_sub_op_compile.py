@@ -13,6 +13,7 @@
 super kernel sub op compile
 """
 import os
+import re
 import subprocess
 from asc_op_compile_base.common.context import get_context
 from asc_op_compile_base.common.error_mgr import raise_tbe_python_err, TBE_DEFAULT_PYTHON_ERROR_CODE
@@ -23,6 +24,13 @@ from .ascendc_constants import KernelMetaType, STR_TO_KERNEL_TYPE_V220
 from .super_kernel_utility import run_local_cmd
 from .super_kernel_constants import FUNC_STR, OBJ_FILES_STR, AI_CORE_STR, \
     SuperKernelStreamFusionMode, SuperKernelEarlyStartMode, SuperKernelFeedSyncAllMode
+
+
+def match_kernel_name_patern(op_type, op_list, use_regex=False):
+    """Match op_type against op_list. If use_regex is True, treat list items as regex patterns."""
+    if use_regex:
+        return any(re.fullmatch(pattern, op_type) for pattern in op_list)
+    return op_type in op_list
 
 
 def gen_gm_get_set_value_dcci_compile_options(compile_option_tuple, compile_info, is_static_shape):
@@ -50,18 +58,27 @@ def gen_gm_get_set_value_dcci_compile_options(compile_option_tuple, compile_info
         if part_op.strip()
     ]
 
-    if compile_info.op_type in dcci_before_kernel_start_op_list:
+    is_sub_combine = get_context().get_addition("super_kernel_sub_combine") is True
+    if match_kernel_name_patern(compile_info.kernel_name, dcci_before_kernel_start_op_list, use_regex=is_sub_combine):
         global_var_storage.set_variable("ascendc_sub_super_kernel_call_dcci_before_kernel_start", True)
-    if compile_info.op_type in dcci_after_kernel_end_op_list:
+    if match_kernel_name_patern(compile_info.kernel_name, dcci_after_kernel_end_op_list, use_regex=is_sub_combine):
         global_var_storage.set_variable("ascendc_sub_super_kernel_call_dcci_after_kernel_end", True)
-    if compile_info.op_type in dcci_disable_on_kernel_op_list:
+    if match_kernel_name_patern(compile_info.kernel_name, dcci_disable_on_kernel_op_list, use_regex=is_sub_combine):
         global_var_storage.set_variable("ascendc_sub_super_kernel_call_dcci_disable_on_kernel", True)
 
-    if compile_info.op_type in dcci_disable_on_kernel_op_list or \
-        compile_info.op_type in dcci_before_kernel_start_op_list or \
-        compile_info.op_type in dcci_after_kernel_end_op_list:
-        # do not call dcci in global tensor get set value, call dcci-all before or after sub kernel
-        return
+    if is_sub_combine:
+        # For aclgraph+sk workflow (super_kernel_sub_combine), dcci_disable_on_kernel will not disable sub kernel
+        # gm set get value dcci
+        if match_kernel_name_patern(compile_info.kernel_name, dcci_before_kernel_start_op_list, use_regex=True) or \
+            match_kernel_name_patern(compile_info.kernel_name, dcci_after_kernel_end_op_list, use_regex=True):
+            # do not call dcci in global tensor get set value, call dcci-all before or after sub kernel
+            return
+    else:
+        if compile_info.op_type in dcci_disable_on_kernel_op_list or \
+            compile_info.op_type in dcci_before_kernel_start_op_list or \
+            compile_info.op_type in dcci_after_kernel_end_op_list:
+            # do not call dcci in global tensor get set value, call dcci-all before or after sub kernel
+            return
 
     # dcci-all before sub op end has been removed in sk, so call dcci in global tensor get set value by default
     # in case of performance degradation, try dcci-before-kernel-start or dcci-after-kernel-end or
