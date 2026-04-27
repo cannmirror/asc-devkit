@@ -24,36 +24,36 @@ protected:
 };
 
 namespace {
-void copy_cbuf_to_fbuf_v2_Stub(__fbuf__ void* dst_in, __cbuf__ void* src_in, uint16_t burst_num_in, uint16_t burst_len_in,
+void copy_cbuf_to_fbuf_v2_Stub(__fbuf__ void* dst_in, __cbuf__ void* src_in, uint16_t n_burst_in, uint16_t len_burst_in,
                                       uint16_t src_stride, uint16_t dst_stride)
 {
     __fbuf__ void* dst = reinterpret_cast<__fbuf__ void*>(1);
     __cbuf__ void* src = reinterpret_cast<__cbuf__ void*>(2);
-    uint16_t burst_num = 3;
-    uint16_t burst_len = 4;
+    uint16_t n_burst = 3;
+    uint16_t len_burst = 4;
     uint16_t src_gap_size = 5;
     uint16_t dst_gap_size = 6;
     EXPECT_EQ(dst, dst_in);
     EXPECT_EQ(src, src_in);
-    EXPECT_EQ(burst_num, burst_num_in);
-    EXPECT_EQ(burst_len, burst_len_in);
+    EXPECT_EQ(n_burst, n_burst_in);
+    EXPECT_EQ(len_burst, len_burst_in);
     EXPECT_EQ(src_gap_size, src_stride);
     EXPECT_EQ(dst_gap_size, dst_stride);
 }
 
-void copy_cbuf_to_fbuf_v2_size_Stub(__fbuf__ void* dst_in, __cbuf__ void* src_in, uint16_t burst_num_in, uint16_t burst_len_in,
+void copy_cbuf_to_fbuf_v2_size_Stub(__fbuf__ void* dst_in, __cbuf__ void* src_in, uint16_t n_burst_in, uint16_t len_burst_in,
                                       uint16_t src_stride, uint16_t dst_stride)
 {
     __fbuf__ void* dst = reinterpret_cast<__fbuf__ void*>(1);
     __cbuf__ void* src = reinterpret_cast<__cbuf__ void*>(2);
-    uint16_t burst_num = 1;
-    uint16_t burst_len = 44 / ASC_C_API_ONE_DATABLOCK_SIZE;
+    uint16_t n_burst = 1;
+    uint16_t len_burst = 44 / ASC_C_API_ONE_DATABLOCK_SIZE;
     uint16_t src_gap_size = 0;
     uint16_t dst_gap_size = 0;
     EXPECT_EQ(dst, dst_in);
     EXPECT_EQ(src, src_in);
-    EXPECT_EQ(burst_num, burst_num_in);
-    EXPECT_EQ(burst_len, burst_len_in);
+    EXPECT_EQ(n_burst, n_burst_in);
+    EXPECT_EQ(len_burst, len_burst_in);
     EXPECT_EQ(src_gap_size, src_stride);
     EXPECT_EQ(dst_gap_size, dst_stride);
 }
@@ -64,8 +64,8 @@ TEST_F(TestCubeDmamoveCopyL12FbV2CAPI, c_api_asc_copy_l12fb_Succ)
 {
     __fbuf__ void* dst = reinterpret_cast<__fbuf__ void*>(1);
     __cbuf__ void* src = reinterpret_cast<__cbuf__ void*>(2);
-    uint16_t burst_num = 3;
-    uint16_t burst_len = 4;
+    uint16_t n_burst = 3;
+    uint16_t len_burst = 4;
     uint16_t src_gap_size = 5;
     uint16_t dst_gap_size = 6;
 
@@ -73,7 +73,7 @@ TEST_F(TestCubeDmamoveCopyL12FbV2CAPI, c_api_asc_copy_l12fb_Succ)
         .times(1)
         .will(invoke(copy_cbuf_to_fbuf_v2_Stub));
     
-    asc_copy_l12fb_v2(dst, src, burst_num, burst_len, src_gap_size, dst_gap_size);
+    asc_copy_l12fb_v2(dst, src, n_burst, len_burst, src_gap_size, dst_gap_size);
     GlobalMockObject::verify();
 }
 

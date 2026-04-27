@@ -19,11 +19,11 @@
 
 #include "instr_impl/npu_arch_2201/utils_impl/utils_impl.h"
 
-__aicore__ inline void asc_copy_l12fb_impl(__fbuf__ void* dst, __cbuf__ void* src, uint16_t burst_num,
-                                           uint16_t burst_len, uint16_t src_gap_size, uint16_t dst_gap_size)
+__aicore__ inline void asc_copy_l12fb_impl(__fbuf__ void* dst, __cbuf__ void* src, uint16_t n_burst,
+                                           uint16_t len_burst, uint16_t src_gap_size, uint16_t dst_gap_size)
 {
     if ASC_IS_AIC {
-        copy_cbuf_to_fbuf(dst, src, burst_num, burst_len, src_gap_size, dst_gap_size);
+        copy_cbuf_to_fbuf(dst, src, n_burst, len_burst, src_gap_size, dst_gap_size);
     }
 }
 

@@ -197,15 +197,15 @@ __vector__ __global__ __aicore__ void add_custom(__gm__ float* x, __gm__ float* 
     __ubuf__ float yLocal[C_API_TILE_LENGTH];
     __ubuf__ float zLocal[C_API_TILE_LENGTH];
 
-    uint16_t burst_len = tileLength;
+    uint16_t len_burst = tileLength;
     for (uint32_t i = 0; i < C_API_TILE_NUM; i++) {
         if (i != 0) {
             asc_sync_wait(PIPE_V, PIPE_MTE2, EVENT_ID0);
         }
 
-        burst_len = tileLength * sizeof(float) / C_API_ONE_BLOCK_SIZE;
-        asc_copy_gm2ub(xLocal, xGm + i * tileLength, 0, 1, burst_len, 0, 0);    
-        asc_copy_gm2ub(yLocal, yGm + i * tileLength, 0, 1, burst_len, 0, 0);
+        len_burst = tileLength * sizeof(float) / C_API_ONE_BLOCK_SIZE;
+        asc_copy_gm2ub(xLocal, xGm + i * tileLength, 0, 1, len_burst, 0, 0);    
+        asc_copy_gm2ub(yLocal, yGm + i * tileLength, 0, 1, len_burst, 0, 0);
 
         asc_sync_notify(PIPE_MTE2, PIPE_V, EVENT_ID0);
         asc_sync_wait(PIPE_MTE2, PIPE_V, EVENT_ID0);
@@ -223,7 +223,7 @@ __vector__ __global__ __aicore__ void add_custom(__gm__ float* x, __gm__ float* 
         asc_sync_notify(PIPE_V, PIPE_MTE3, EVENT_ID0);
         asc_sync_wait(PIPE_V, PIPE_MTE3, EVENT_ID0);
 
-        asc_copy_ub2gm(zGm + i * tileLength, zLocal, 0, 1, burst_len, 0, 0);
+        asc_copy_ub2gm(zGm + i * tileLength, zLocal, 0, 1, len_burst, 0, 0);
 
         if (i != (C_API_TILE_NUM-1)) {
             asc_sync_notify(PIPE_MTE3, PIPE_V, EVENT_ID0);

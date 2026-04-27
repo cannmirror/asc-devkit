@@ -24,13 +24,13 @@ protected:                                                                      
 namespace {                                                                                     \
                                                                                                 \
 void cce_name##_uint8_uint16_uint16_uint16_uint16_Stub(__ubuf__ void *dst, __gm__ void *src,    \
-    uint8_t sid, uint16_t n_burst, uint16_t burst_len, uint16_t src_gap, uint16_t dst_gap)      \
+    uint8_t sid, uint16_t n_burst, uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap)      \
 {                                                                                               \
     EXPECT_EQ(dst, reinterpret_cast<__ubuf__ void *>(11));                                      \
     EXPECT_EQ(src, reinterpret_cast<__gm__ void *>(22));                                        \
     EXPECT_EQ(sid, static_cast<uint8_t>(0));                                                    \
     EXPECT_EQ(n_burst, static_cast<uint16_t>(1));                                               \
-    EXPECT_EQ(burst_len, static_cast<uint16_t>(1));                                             \
+    EXPECT_EQ(len_burst, static_cast<uint16_t>(1));                                             \
     EXPECT_EQ(src_gap, static_cast<uint16_t>(0));                                               \
     EXPECT_EQ(dst_gap, static_cast<uint16_t>(0));                                               \
 }                                                                                               \
@@ -43,7 +43,7 @@ TEST_F(TestVectorDatamove##class_name, c_api_name##_CopyConfig_Succ)            
     __gm__ void *src = reinterpret_cast<__gm__ void *>(22);                                     \
                                                                                                 \
     uint16_t n_burst = static_cast<uint64_t>(1);                                                \
-    uint16_t burst_len = static_cast<uint64_t>(1);                                              \
+    uint16_t len_burst = static_cast<uint64_t>(1);                                              \
     uint16_t src_gap = static_cast<uint64_t>(0);                                                \
     uint16_t dst_gap = static_cast<uint64_t>(0);                                                \
                                                                                                 \
@@ -52,7 +52,7 @@ TEST_F(TestVectorDatamove##class_name, c_api_name##_CopyConfig_Succ)            
             .times(1)                                                                           \
             .will(invoke(cce_name##_uint8_uint16_uint16_uint16_uint16_Stub));                   \
                                                                                                 \
-    c_api_name(dst, src, n_burst, burst_len, src_gap, dst_gap);                            \
+    c_api_name(dst, src, n_burst, len_burst, src_gap, dst_gap);                            \
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
                                                                                                 \

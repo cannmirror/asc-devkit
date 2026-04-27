@@ -31,23 +31,23 @@
 
     ```c++
     __aicore__ inline void asc_copy_gm2l1(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
-                                      uint16_t burst_len, uint16_t src_stride, uint16_t dst_stride)
+                                      uint16_t len_burst, uint16_t src_stride, uint16_t dst_stride)
     __aicore__ inline void asc_copy_gm2l1_pad1(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
-                                      uint16_t burst_len, uint16_t src_stride, uint16_t dst_stride)
+                                      uint16_t len_burst, uint16_t src_stride, uint16_t dst_stride)
     __aicore__ inline void asc_copy_gm2l1_pad2(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
-                                      uint16_t burst_len, uint16_t src_stride, uint16_t dst_stride)
+                                      uint16_t len_burst, uint16_t src_stride, uint16_t dst_stride)
     __aicore__ inline void asc_copy_gm2l1_pad3(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
-                                      uint16_t burst_len, uint16_t src_stride, uint16_t dst_stride)
+                                      uint16_t len_burst, uint16_t src_stride, uint16_t dst_stride)
     __aicore__ inline void asc_copy_gm2l1_pad4(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
-                                      uint16_t burst_len, uint16_t src_stride, uint16_t dst_stride)
+                                      uint16_t len_burst, uint16_t src_stride, uint16_t dst_stride)
     __aicore__ inline void asc_copy_gm2l1_pad5(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
-                                      uint16_t burst_len, uint16_t src_stride, uint16_t dst_stride)
+                                      uint16_t len_burst, uint16_t src_stride, uint16_t dst_stride)
     __aicore__ inline void asc_copy_gm2l1_pad6(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
-                                      uint16_t burst_len, uint16_t src_stride, uint16_t dst_stride)
+                                      uint16_t len_burst, uint16_t src_stride, uint16_t dst_stride)
     __aicore__ inline void asc_copy_gm2l1_pad7(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
-                                      uint16_t burst_len, uint16_t src_stride, uint16_t dst_stride)
+                                      uint16_t len_burst, uint16_t src_stride, uint16_t dst_stride)
     __aicore__ inline void asc_copy_gm2l1_pad8(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
-                                      uint16_t burst_len, uint16_t src_stride, uint16_t dst_stride)
+                                      uint16_t len_burst, uint16_t src_stride, uint16_t dst_stride)
     ```
 
 - 同步搬运
@@ -73,7 +73,7 @@
 | src | 输入    | 源操作数的起始地址。                                                      |
 | size | 输入    | 搬运数据大小（字节）。                                                     |
 | n_burst | 输入    | 待搬运的连续传输数据块个数。取值范围：[1, 4095]。                                   |
-| burst_len | 输入    | 待搬运的每个连续传输数据块的长度，单位为DataBlock（32字节）。取值范围：[1, 65535]。            |
+| len_burst | 输入    | 待搬运的每个连续传输数据块的长度，单位为DataBlock（32字节）。取值范围：[1, 65535]。            |
 | src_gap | 输入    | 源操作数相邻连续数据块的间隔（前面一个数据块的尾与后面一个数据块的头的间隔）。<br>单位为DataBlock（32字节）。  |
 | dst_gap | 输入    | 目的操作数相邻连续数据块的间隔（前面一个数据块的尾与后面一个数据块的头的间隔）。<br>单位为DataBlock（32字节）。 |
 
@@ -97,5 +97,5 @@ PIPE_MTE2
 //total_length指参与搬运的数据总长度。
 constexpr uint64_t total_length = 128;
 __cbuf__ half dst[total_length];
-asc_copy_gm2l1((__cbuf__ void*)dst, src, n_burst, burst_len, src_stride, dst_stride);
+asc_copy_gm2l1((__cbuf__ void*)dst, src, n_burst, len_burst, src_stride, dst_stride);
 ```

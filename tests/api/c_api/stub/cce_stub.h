@@ -332,7 +332,7 @@ inline void load_gm_to_cbuf_2dv2_s4(__cbuf__ void *dst, __gm__ void *src, uint32
 
 // ==========copy_cbuf_to_ubuf===========
 inline void copy_cbuf_to_ubuf(__ubuf__ void *dst_addr, __cbuf__ void *src_addr, bool sub_blockid, 
-    uint16_t burst_num, uint16_t burst_len, uint16_t src_gap, uint16_t dst_gap) {}
+    uint16_t n_burst, uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap) {}
 
 
 inline void create_cbuf_matrix_h(__cbuf__ bfloat16_t *dst, int64_t repeat, half value) {}

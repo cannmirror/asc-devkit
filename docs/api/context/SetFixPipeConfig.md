@@ -137,7 +137,7 @@ __aicore__inline void SetFPC(const LocalTensor <int32_t>& reluPreTensor, const L
     uint16_t deqSize = 128; // deq tensor的size
     AscendC::DataCopy(workA1, deqGlobal, deqSize); // deqGlobal为量化系数的gm地址
     AscendC::LocalTensor<uint64_t> deqFB = inQueueDeqFB.AllocTensor<uint64_t>(); // deq tensor在Fix上的地址
-    uint16_t fbufBurstLen = deqSize / 128;  // l1->fix, burst_len unit is 128Bytes
+    uint16_t fbufBurstLen = deqSize / 128;  // l1->fix, len_burst unit is 128Bytes
     AscendC::DataCopyParams dataCopyParams(1, fbufBurstLen, 0, 0);
     AscendC::DataCopy(deqFB, workA1, dataCopyParams); 通过DataCopy搬入C2PIPE2GM。
     AscendC::SetFixPipeConfig(deqFB); // 设置量化tensor

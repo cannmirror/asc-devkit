@@ -20,7 +20,7 @@
 
 - 高维切分搬运
     ```cpp
-    __aicore__ inline void asc_copy_l12bt(uint64_t dst, __cbuf__ void* src, uint16_t conv_control, uint16_t burst_num, uint16_t burst_len, uint16_t source_gap, uint16_t dst_gap)
+    __aicore__ inline void asc_copy_l12bt(uint64_t dst, __cbuf__ void* src, uint16_t conv_control, uint16_t n_burst, uint16_t len_burst, uint16_t source_gap, uint16_t dst_gap)
     ```
 
 - 同步搬运
@@ -35,8 +35,8 @@
 | dst | 输出 | 目的操作数起始地址。 |
 | src | 输入 | 源操作数起始地址。 |
 | conv_control | 输入 | 是否使能随路转化。|
-| burst_num | 输入 | 待搬运的连续传输数据块个数。取值范围：[1, 4095]。 |
-| burst_len | 输入 | 待搬运的每个连续传输数据块的长度，单位为DataBlock（32字节）。取值范围：[1, 65535]。 |
+| n_burst | 输入 | 待搬运的连续传输数据块个数。取值范围：[1, 4095]。 |
+| len_burst | 输入 | 待搬运的每个连续传输数据块的长度，单位为DataBlock（32字节）。取值范围：[1, 65535]。 |
 | source_gap | 输入 | 源操作数相邻连续数据块的间隔（前面一个数据块的尾与后面一个数据块的头的间隔）。<br>单位为DataBlock（32字节）。 |
 | dst_gap | 输入 | 目的操作数相邻连续数据块的间隔（前面一个数据块的尾与后面一个数据块的头的间隔）。<br>单位为DataBlock（32字节）。 |
 

@@ -26,9 +26,9 @@
 #include "instr_impl/npu_arch_2201/vector_datamove_impl/asc_set_copy_pad_val_impl.h"
 
 __aicore__ inline void asc_copy_ub2ub(__ubuf__ void* dst, __ubuf__ void* src,
-    uint16_t n_burst, uint16_t burst_len, uint16_t src_gap, uint16_t dst_gap)
+    uint16_t n_burst, uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap)
 {
-    asc_copy_ub2ub_impl(dst, src, n_burst, burst_len, src_gap, dst_gap);
+    asc_copy_ub2ub_impl(dst, src, n_burst, len_burst, src_gap, dst_gap);
 }
 
 __aicore__ inline void asc_copy_ub2ub(__ubuf__ void* dst, __ubuf__ void* src, uint32_t size)
@@ -42,9 +42,9 @@ __aicore__ inline void asc_copy_ub2ub_sync(__ubuf__ void* dst, __ubuf__ void* sr
 }
 
 __aicore__ inline void asc_copy_gm2ub(__ubuf__ void* dst, __gm__ void* src,
-    uint16_t n_burst, uint16_t burst_len, uint16_t src_gap, uint16_t dst_gap)
+    uint16_t n_burst, uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap)
 {
-    asc_copy_gm2ub_impl(dst, src, n_burst, burst_len, src_gap, dst_gap);
+    asc_copy_gm2ub_impl(dst, src, n_burst, len_burst, src_gap, dst_gap);
 }
 
 __aicore__ inline void asc_copy_gm2ub(__ubuf__ void* dst, __gm__ void* src, uint32_t size)
@@ -63,9 +63,9 @@ __aicore__ inline void asc_copy_ub2gm(__gm__ void* dst, __ubuf__ void* src, uint
 }
 
 __aicore__ inline void asc_copy_ub2gm(__gm__ void* dst, __ubuf__ void* src, uint16_t n_burst,
-    uint16_t burst_len, uint16_t src_gap, uint16_t dst_gap)
+    uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap)
 {
-    asc_copy_ub2gm_impl(dst, src, n_burst, burst_len, src_gap, dst_gap);
+    asc_copy_ub2gm_impl(dst, src, n_burst, len_burst, src_gap, dst_gap);
 }
 
 __aicore__ inline void asc_copy_ub2gm_sync(__gm__ void* dst, __ubuf__ void* src, uint32_t size)

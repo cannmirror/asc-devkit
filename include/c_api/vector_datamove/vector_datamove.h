@@ -49,14 +49,14 @@ __aicore__ inline void asc_set_copy_pad_val(float pad_value);
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
 
 __aicore__ inline void asc_copy_ub2ub(__ubuf__ void* dst, __ubuf__ void* src,
-    uint16_t n_burst, uint16_t burst_len, uint16_t src_gap, uint16_t dst_gap);
+    uint16_t n_burst, uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap);
 
 __aicore__ inline void asc_copy_ub2ub(__ubuf__ void* dst, __ubuf__ void* src, uint32_t size);
 
 __aicore__ inline void asc_copy_ub2ub_sync(__ubuf__ void* dst, __ubuf__ void* src, uint32_t size);
 
 __aicore__ inline void asc_copy_gm2ub(__ubuf__ void* dst, __gm__ void* src,
-    uint16_t n_burst, uint16_t burst_len, uint16_t src_gap, uint16_t dst_gap);
+    uint16_t n_burst, uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap);
 
 __aicore__ inline void asc_copy_gm2ub(__ubuf__ void* dst, __gm__ void* src, uint32_t size);
 
@@ -65,7 +65,7 @@ __aicore__ inline void asc_copy_gm2ub_sync(__ubuf__ void* dst, __gm__ void* src,
 __aicore__ inline void asc_copy_ub2gm(__gm__ void* dst, __ubuf__ void* src, uint32_t size);
 
 __aicore__ inline void asc_copy_ub2gm(__gm__ void* dst, __ubuf__ void* src,
-    uint16_t n_burst, uint16_t burst_len, uint16_t src_gap, uint16_t dst_gap);
+    uint16_t n_burst, uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap);
 
 __aicore__ inline void asc_copy_ub2gm_sync(__gm__ void* dst, __ubuf__ void* src, uint32_t size);
 
@@ -401,7 +401,7 @@ __aicore__ inline void asc_ndim_copy_dci();
 
 //======asc_copy_ub2l1=======
 __aicore__ inline void asc_copy_ub2l1(__cbuf__ void* dst, __ubuf__ void* src,
-                                      uint16_t burst_num, uint16_t burst_len, uint16_t src_gap, uint16_t dst_gap);
+                                      uint16_t n_burst, uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap);
 
 __aicore__ inline void asc_copy_ub2l1(__cbuf__ void* dst, __ubuf__ void* src, uint32_t size);
 
@@ -409,7 +409,7 @@ __aicore__ inline void asc_copy_ub2l1_sync(__cbuf__ void* dst, __ubuf__ void* sr
 
 //======asc_copy_ub2ub=======
 __aicore__ inline void asc_copy_ub2ub(__ubuf__ void* dst, __ubuf__ void* src,
-                                      uint16_t n_burst, uint16_t burst_len, uint16_t src_gap, uint16_t dst_gap);
+                                      uint16_t n_burst, uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap);
 
 __aicore__ inline void asc_copy_ub2ub(__ubuf__ void* dst, __ubuf__ void* src, uint32_t size);
 

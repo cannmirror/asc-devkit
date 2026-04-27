@@ -28,13 +28,13 @@ protected:                                                                      
 namespace {                                                                                     \
                                                                                                 \
 void cce_name##_##c_api_name##_uint64_t_Stub(__cbuf__ void *dst, __gm__ void *src, uint8_t sid, uint16_t n_burst, \
-                uint16_t burst_len, uint16_t src_stride, uint16_t dst_stride, pad_t pad_mode)   \
+                uint16_t len_burst, uint16_t src_stride, uint16_t dst_stride, pad_t pad_mode)   \
 {                                                                                               \
     EXPECT_EQ(dst, reinterpret_cast<__cbuf__ void *>(11));                                      \
     EXPECT_EQ(src, reinterpret_cast<__gm__ void *>(22));                                        \
     EXPECT_EQ(sid, static_cast<uint8_t>(0));                                                    \
     EXPECT_EQ(n_burst, static_cast<uint16_t>(1));                                               \
-    EXPECT_EQ(burst_len, static_cast<uint16_t>(1));                                             \
+    EXPECT_EQ(len_burst, static_cast<uint16_t>(1));                                             \
     EXPECT_EQ(src_stride, static_cast<uint16_t>(0));                                            \
     EXPECT_EQ(dst_stride, static_cast<uint16_t>(0));                                            \
 }                                                                                               \
@@ -47,7 +47,7 @@ TEST_F(TestCubeDmamove##class_name##c_api_name, c_api_name##_CopyConfig_Succ)   
     __gm__ void *src = reinterpret_cast<__gm__ void *>(22);                                     \
                                                                                                 \
     uint16_t n_burst = static_cast<uint16_t>(1);                                                \
-    uint16_t burst_len = static_cast<uint16_t>(1);                                              \
+    uint16_t len_burst = static_cast<uint16_t>(1);                                              \
     uint16_t src_stride = static_cast<uint16_t>(0);                                             \
     uint16_t dst_stride = static_cast<uint16_t>(0);                                             \
                                                                                                 \
@@ -56,7 +56,7 @@ TEST_F(TestCubeDmamove##class_name##c_api_name, c_api_name##_CopyConfig_Succ)   
             .times(1)                                                                           \
             .will(invoke(cce_name##_##c_api_name##_uint64_t_Stub));                             \
                                                                                                 \
-    c_api_name(dst, src, n_burst, burst_len, src_stride, dst_stride);                           \
+    c_api_name(dst, src, n_burst, len_burst, src_stride, dst_stride);                           \
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
                                                                                                 \
