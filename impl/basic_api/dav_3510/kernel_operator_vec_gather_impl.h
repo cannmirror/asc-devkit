@@ -393,7 +393,7 @@ __aicore__ inline void GatherApi2B64Impl(__ubuf__ T *dst, __ubuf__ T *src, __ubu
 // Gather::Level 0 Normal mode
 template <typename T>
 __aicore__ inline void GatherImpl(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
-    const uint32_t srcLength, const uint32_t srcBaseAddr, const uint64_t mask, const uint8_t repeatTime,
+    const uint32_t srcLength, const uint32_t srcBaseOffset, const uint64_t mask, const uint8_t repeatTime,
     const uint16_t &dstRepStride)
 {
     static_assert(SupportBytes<T, 2, 4, 8>(), "Gather only support type b16/b32/b64 on current device");
@@ -412,21 +412,21 @@ __aicore__ inline void GatherImpl(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uin
 
     uint32_t srcBaseIndex;
     if constexpr (sizeof(T) == 2) {
-        srcBaseIndex = srcBaseAddr / sizeof(T);
+        srcBaseIndex = srcBaseOffset / sizeof(T);
         if (isNormalMode) {
             GatherApi0B16Impl<T, true>(dst, src, srcOffsetLocal, srcBaseIndex, newRepeatTimes, dstRepStride, mask);
         } else {
             GatherApi0B16Impl<T, false>(dst, src, srcOffsetLocal, srcBaseIndex, newRepeatTimes, dstRepStride, mask);
         }
     } else if constexpr (sizeof(T) == 4) {
-        srcBaseIndex = srcBaseAddr / sizeof(T);
+        srcBaseIndex = srcBaseOffset / sizeof(T);
         if (isNormalMode) {
             GatherApi0B32Impl<T, true>(dst, src, srcOffsetLocal, srcBaseIndex, newRepeatTimes, dstRepStride, mask);
         } else {
             GatherApi0B32Impl<T, false>(dst, src, srcOffsetLocal, srcBaseIndex, newRepeatTimes, dstRepStride, mask);
         }
     } else {
-        srcBaseIndex = srcBaseAddr / sizeof(uint32_t);
+        srcBaseIndex = srcBaseOffset / sizeof(uint32_t);
         if (isNormalMode) {
             GatherApi0B64NormalImpl<T, true>(dst, src, srcOffsetLocal, srcBaseIndex, newRepeatTimes, dstRepStride,
                 mask);
@@ -443,7 +443,7 @@ __aicore__ inline void GatherImpl(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uin
 // Gather::Level 0 Bit-wise mode
 template <typename T>
 __aicore__ inline void GatherImpl(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
-    const uint32_t srcLength, const uint32_t srcBaseAddr, const uint64_t mask[], const uint8_t repeatTime,
+    const uint32_t srcLength, const uint32_t srcBaseOffset, const uint64_t mask[], const uint8_t repeatTime,
     const uint16_t &dstRepStride)
 {
     static_assert(SupportBytes<T, 2, 4, 8>(), "Gather only support type b16/b32/b64 on current device");
@@ -462,21 +462,21 @@ __aicore__ inline void GatherImpl(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uin
 
     uint32_t srcBaseIndex;
     if constexpr (sizeof(T) == 2) {
-        srcBaseIndex = srcBaseAddr / sizeof(T);
+        srcBaseIndex = srcBaseOffset / sizeof(T);
         if (isNormalMode) {
             GatherApi0B16Impl<T, true>(dst, src, srcOffsetLocal, srcBaseIndex, newRepeatTimes, dstRepStride, mask[0]);
         } else {
             GatherApi0B16Impl<T, false>(dst, src, srcOffsetLocal, srcBaseIndex, newRepeatTimes, dstRepStride, mask[0]);
         }
     } else if constexpr (sizeof(T) == 4) {
-        srcBaseIndex = srcBaseAddr / sizeof(T);
+        srcBaseIndex = srcBaseOffset / sizeof(T);
         if (isNormalMode) {
             GatherApi0B32Impl<T, true>(dst, src, srcOffsetLocal, srcBaseIndex, newRepeatTimes, dstRepStride, mask[0]);
         } else {
             GatherApi0B32Impl<T, false>(dst, src, srcOffsetLocal, srcBaseIndex, newRepeatTimes, dstRepStride, mask[0]);
         }
     } else {
-        srcBaseIndex = srcBaseAddr / sizeof(uint32_t);
+        srcBaseIndex = srcBaseOffset / sizeof(uint32_t);
         if (isNormalMode) {
             GatherApi0B64BitsImpl<T, true>(dst, src, srcOffsetLocal, srcBaseIndex, newRepeatTimes, dstRepStride,
                 mask[0]);
@@ -493,22 +493,22 @@ __aicore__ inline void GatherImpl(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uin
 // Gather::Level 2 Count mode
 template <typename T, bool isSetMask = true>
 __aicore__ inline void GatherImpl(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
-    const uint32_t srcBaseAddr, const uint32_t count)
+    const uint32_t srcBaseOffset, const uint32_t count)
 {
     static_assert(SupportBytes<T, 1, 2, 4, 8>(), "Gather only support type b8/b16/b32/b64 on current device");
 
     uint32_t srcBaseIndex;
     if constexpr (sizeof(T) == 1) {
-        srcBaseIndex = srcBaseAddr / sizeof(T);
+        srcBaseIndex = srcBaseOffset / sizeof(T);
         GatherApi2B8Impl(dst, src, srcOffsetLocal, srcBaseIndex, count);
     } else if constexpr (sizeof(T) == 2) {
-        srcBaseIndex = srcBaseAddr / sizeof(T);
+        srcBaseIndex = srcBaseOffset / sizeof(T);
         GatherApi2B16Impl(dst, src, srcOffsetLocal, srcBaseIndex, count);
     } else if constexpr (sizeof(T) == 4) {
-        srcBaseIndex = srcBaseAddr / sizeof(T);
+        srcBaseIndex = srcBaseOffset / sizeof(T);
         GatherApi2B32Impl(dst, src, srcOffsetLocal, srcBaseIndex, count);
     } else {
-        srcBaseIndex = srcBaseAddr / sizeof(uint32_t);
+        srcBaseIndex = srcBaseOffset / sizeof(uint32_t);
         GatherApi2B64Impl(dst, src, srcOffsetLocal, srcBaseIndex, count);
     }
 }

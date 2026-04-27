@@ -25,37 +25,37 @@ extern "C" __global__ __aicore__ void KernelTestGatherb1() {
     AscendC::Gatherb(dst, src0, offset, repeatTime, repeatParams);
 }
 
-// __aicore__ inline void Gather(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<uint32_t>& srcOffset, const uint32_t srcBaseAddr, const uint64_t mask, const uint8_t repeatTime, const uint16_t dstRepStride);
+// __aicore__ inline void Gather(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<uint32_t>& srcOffset, const uint32_t srcBaseOffset, const uint64_t mask, const uint8_t repeatTime, const uint16_t dstRepStride);
 extern "C" __global__ __aicore__ void KernelTestGather1() {
     AscendC::LocalTensor<uint32_t> dst;
     AscendC::LocalTensor<uint32_t> src;
     AscendC::LocalTensor<uint32_t> srcOffset;
-    uint32_t srcBaseAddr = 0;
+    uint32_t srcBaseOffset = 0;
     uint64_t mask = 0xFFFFFFFFFFFFFFFF;
     uint8_t repeatTime = 1;
     uint16_t dstRepStride = 1;
-    AscendC::Gather(dst, src, srcOffset, srcBaseAddr, mask, repeatTime, dstRepStride);
+    AscendC::Gather(dst, src, srcOffset, srcBaseOffset, mask, repeatTime, dstRepStride);
 }
 
-// __aicore__ inline void Gather(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<uint32_t>& srcOffset, const uint32_t srcBaseAddr, const uint64_t mask[], const uint8_t repeatTime, const uint16_t dstRepStride);
+// __aicore__ inline void Gather(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<uint32_t>& srcOffset, const uint32_t srcBaseOffset, const uint64_t mask[], const uint8_t repeatTime, const uint16_t dstRepStride);
 extern "C" __global__ __aicore__ void KernelTestGather2() {
     AscendC::LocalTensor<uint32_t> dst;
     AscendC::LocalTensor<uint32_t> src;
     AscendC::LocalTensor<uint32_t> srcOffset;
-    uint32_t srcBaseAddr = 0;
+    uint32_t srcBaseOffset = 0;
     uint64_t mask[2] = {0};
     uint8_t repeatTime = 1;
     uint16_t dstRepStride = 1;
-    AscendC::Gather(dst, src, srcOffset, srcBaseAddr, mask, repeatTime, dstRepStride);
+    AscendC::Gather(dst, src, srcOffset, srcBaseOffset, mask, repeatTime, dstRepStride);
 }
 
-// __aicore__ inline void Gather(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<uint32_t>& srcOffset, const uint32_t srcBaseAddr, const uint32_t count);
+// __aicore__ inline void Gather(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<uint32_t>& srcOffset, const uint32_t srcBaseOffset, const uint32_t count);
 extern "C" __global__ __aicore__ void KernelTestGather3() {
     AscendC::LocalTensor<uint32_t> dst;
     AscendC::LocalTensor<uint32_t> src;
     AscendC::LocalTensor<uint32_t> srcOffset;
-    uint32_t srcBaseAddr = 0;
+    uint32_t srcBaseOffset = 0;
     uint32_t count = 0;
-    AscendC::Gather(dst, src, srcOffset, srcBaseAddr, count);
+    AscendC::Gather(dst, src, srcOffset, srcBaseOffset, count);
 }
 #endif

@@ -37,7 +37,7 @@
 
 ```
 template <typename T>
-__aicore__ inline void Gatherb(const LocalTensor<T>& dst, const LocalTensor<T>& src0, const LocalTensor<uint32_t>& offset, const uint8_t repeatTime, const GatherRepeatParams& repeatParams)
+__aicore__ inline void Gatherb(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<uint32_t>& offset, const uint8_t repeatTime, const GatherRepeatParams& repeatParams)
 ```
 
 ## 参数说明<a name="section1619484392111"></a>
@@ -82,7 +82,7 @@ __aicore__ inline void Gatherb(const LocalTensor<T>& dst, const LocalTensor<T>& 
 <p id="p78204190123"><a name="p78204190123"></a><a name="p78204190123"></a><span id="ph1479701815419"><a name="ph1479701815419"></a><a name="ph1479701815419"></a>LocalTensor的起始地址需要32字节对齐。</span></p>
 </td>
 </tr>
-<tr id="row937mcpsimp"><td class="cellrowborder" valign="top" width="15.02%" headers="mcps1.2.4.1.1 "><p id="p3926171610253"><a name="p3926171610253"></a><a name="p3926171610253"></a>src0</p>
+<tr id="row937mcpsimp"><td class="cellrowborder" valign="top" width="15.02%" headers="mcps1.2.4.1.1 "><p id="p3926171610253"><a name="p3926171610253"></a><a name="p3926171610253"></a>src</p>
 </td>
 <td class="cellrowborder" valign="top" width="10%" headers="mcps1.2.4.1.2 "><p id="p4926121682518"><a name="p4926121682518"></a><a name="p4926121682518"></a>输入</p>
 </td>
@@ -99,7 +99,7 @@ __aicore__ inline void Gatherb(const LocalTensor<T>& dst, const LocalTensor<T>& 
 <td class="cellrowborder" valign="top" width="74.98%" headers="mcps1.2.4.1.3 "><p id="p7545916142117"><a name="p7545916142117"></a><a name="p7545916142117"></a>每个datablock在源操作数中对应的地址偏移。</p>
 <p id="p15812123272020"><a name="p15812123272020"></a><a name="p15812123272020"></a><span id="zh-cn_topic_0000001530181537_ph173308471594_2"><a name="zh-cn_topic_0000001530181537_ph173308471594_2"></a><a name="zh-cn_topic_0000001530181537_ph173308471594_2"></a><span id="zh-cn_topic_0000001530181537_ph9902231466_2"><a name="zh-cn_topic_0000001530181537_ph9902231466_2"></a><a name="zh-cn_topic_0000001530181537_ph9902231466_2"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816_2"><a name="zh-cn_topic_0000001530181537_ph1782115034816_2"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816_2"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
 <p id="p18431833185"><a name="p18431833185"></a><a name="p18431833185"></a><span id="ph359873013185"><a name="ph359873013185"></a><a name="ph359873013185"></a>LocalTensor的起始地址需要32字节对齐。</span></p>
-<p id="p1331252141512"><a name="p1331252141512"></a><a name="p1331252141512"></a>该偏移量是相对于src0的基地址而言的。每个元素值要大于等于0，单位为字节；且需要保证偏移后的地址满足32字节对齐。</p>
+<p id="p1331252141512"><a name="p1331252141512"></a><a name="p1331252141512"></a>该偏移量是相对于src的基地址而言的。每个元素值要大于等于0，单位为字节；且需要保证偏移后的地址满足32字节对齐。</p>
 </td>
 </tr>
 <tr id="row4736114341415"><td class="cellrowborder" valign="top" width="15.02%" headers="mcps1.2.4.1.1 "><p id="p47360437147"><a name="p47360437147"></a><a name="p47360437147"></a>repeatTime</p>
@@ -221,4 +221,3 @@ vecOut.EnQue(y_buf);
 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
 ]
 ```
-

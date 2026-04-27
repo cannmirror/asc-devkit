@@ -26,7 +26,7 @@ namespace AscendC {
  * Gather                                             *
  * ************************************************************************************************* */
 template <typename T>
-__aicore__ inline void GatherbImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ uint32_t* offset,
+__aicore__ inline void GatherbImpl(__ubuf__ T* dst, __ubuf__ T* src, __ubuf__ uint32_t* offset,
     const uint32_t srcLength, const uint8_t repeatTime, const GatherRepeatParams& repeatParams)
 {
     ASCENDC_REPORT_NOT_SUPPORT(false, "Gatherb");
@@ -34,7 +34,7 @@ __aicore__ inline void GatherbImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ u
 
 template <typename T>
 __aicore__ inline void GatherImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __ubuf__ uint32_t* srcOffsetLocal,
-    const uint32_t srcLength, const uint32_t srcBaseAddr, const uint64_t mask, const uint8_t repeatTime,
+    const uint32_t srcLength, const uint32_t srcBaseOffset, const uint64_t mask, const uint8_t repeatTime,
     const uint16_t dstRepStride)
 {
     ASCENDC_REPORT_NOT_SUPPORT(false, "Gather");
@@ -42,7 +42,7 @@ __aicore__ inline void GatherImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __
 
 template <typename T>
 __aicore__ inline void GatherImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __ubuf__ uint32_t* srcOffsetLocal,
-    const uint32_t srcLength, const uint32_t srcBaseAddr, const uint64_t mask[], const uint8_t repeatTime,
+    const uint32_t srcLength, const uint32_t srcBaseOffset, const uint64_t mask[], const uint8_t repeatTime,
     const uint16_t dstRepStride)
 {
     ASCENDC_REPORT_NOT_SUPPORT(false, "Gather");

@@ -100,6 +100,17 @@ asc-devkit:
       - impl/basic_api/dav_3510/core_mng/roc/kernel_operator_cube_group_info.h
       - impl/basic_api/kernel_operator_list_tensor_intf_impl.h
       - impl/basic_api/dav_3510/kernel_operator_determine_compute_sync_impl.h
+      - tests/api/basic_api/ascendc_header_checker/kernel_operator_vec_gather_intf.cpp
+      - impl/basic_api/utils/kernel_check_vec_select_util.h
+      - impl/basic_api/dav_3510/kernel_operator_vec_gather_impl.h
+      - impl/basic_api/kernel_operator_vec_gather_intf_impl.h
+      - impl/basic_api/dav_c100/kernel_operator_vec_gather_impl.h
+      - impl/basic_api/dav_m200/kernel_operator_vec_gather_impl.h
+      - impl/basic_api/utils/kernel_check_func.h
+      - include/basic_api/kernel_operator_vec_gather_intf.h
+      - impl/basic_api/dav_c220/kernel_operator_vec_gather_impl.h
+      - impl/basic_api/dav_m510/kernel_operator_vec_gather_impl.h
+      - impl/basic_api/dav_m300/kernel_operator_vec_gather_impl.h
 
   llt:
     ut_check: true

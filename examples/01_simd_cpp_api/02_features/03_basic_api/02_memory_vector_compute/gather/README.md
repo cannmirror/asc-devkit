@@ -54,9 +54,9 @@
 - 数据类型：输入输出uint16_t，srcOffset类型为uint32_t
 - 实现：
     ```cpp
-    AscendC::Gather(dstLocal, src0Local, srcOffset, srcBaseAddr, count);
+    AscendC::Gather(dstLocal, src0Local, srcOffset, srcBaseOffset, count);
     ```
-- 参数：使用用户提供的srcOffset按元素地址偏移，srcBaseAddr=0表示源操作数的起始地址，count=128表示执行处理的数据个数
+- 参数：使用用户提供的srcOffset按元素地址偏移，srcBaseOffset=0表示源操作数的起始地址，count=128表示执行处理的数据个数
 
 **场景4：DataBlock偏移模式**
 - 说明：根据用户输入的地址偏移张量`srcOffset`（按照DataBlock的粒度）进行地址偏移，来获取数据

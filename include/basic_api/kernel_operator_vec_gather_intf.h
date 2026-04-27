@@ -33,18 +33,18 @@
 namespace AscendC {
 /*
  * @ingroup gatherb Level 0
- * @brief this function fetches N addresses from offset,then accesses these N addresses(plus the src0 address)
+ * @brief this function fetches N addresses from offset,then accesses these N addresses(plus the src address)
  * @brief to get N 32Byte block, and finally writes these N blocks into dst.
  * @brief gather element in the uint of block
  * @param [out] dst output LocalTensor
- * @param [in] src0 input LocalTensor
+ * @param [in] src input LocalTensor
  * @param [in] offset input LocalTensor
  * @param [in] repeatTime repeat times
  * @param [in] repeatParams.dstBlkStride dst block stride
  * @param [in] repeatParams.dstRepStride dst repeat stride
  */
 template <typename T>
-__aicore__ inline void Gatherb(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
+__aicore__ inline void Gatherb(const LocalTensor<T>& dst, const LocalTensor<T>& src,
     const LocalTensor<uint32_t>& offset, const uint8_t repeatTime, const GatherRepeatParams& repeatParams);
 
 /*
@@ -53,14 +53,14 @@ __aicore__ inline void Gatherb(const LocalTensor<T>& dst, const LocalTensor<T>& 
  * @param [out] dst output LocalTensor
  * @param [in] src input LocalTensor
  * @param [in] srcOffset input LocalTensor
- * @param [in] srcBaseAddr base address of src
+ * @param [in] srcBaseOffset base address of src
  * @param [in] mask valid element count
  * @param [in] repeatTime repeat times
  * @param [in] dstRepStride dst repeat stride
  */
 template <typename T>
 __aicore__ inline void Gather(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const LocalTensor<uint32_t>& srcOffset, const uint32_t srcBaseAddr, const uint64_t mask,
+    const LocalTensor<uint32_t>& srcOffset, const uint32_t srcBaseOffset, const uint64_t mask,
     const uint8_t repeatTime, const uint16_t dstRepStride);
 
 /*
@@ -69,14 +69,14 @@ __aicore__ inline void Gather(const LocalTensor<T>& dst, const LocalTensor<T>& s
  * @param [out] dst output LocalTensor
  * @param [in] src input LocalTensor
  * @param [in] srcOffset input LocalTensor
- * @param [in] srcBaseAddr base address of src
+ * @param [in] srcBaseOffset base address of src
  * @param [in] mask valid element count(bit mode)
  * @param [in] repeatTime repeat times
  * @param [in] dstRepStride dst repeat stride
  */
 template <typename T>
 __aicore__ inline void Gather(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const LocalTensor<uint32_t>& srcOffset, const uint32_t srcBaseAddr, const uint64_t mask[],
+    const LocalTensor<uint32_t>& srcOffset, const uint32_t srcBaseOffset, const uint64_t mask[],
     const uint8_t repeatTime, const uint16_t dstRepStride);
 
 /*
@@ -85,12 +85,12 @@ __aicore__ inline void Gather(const LocalTensor<T>& dst, const LocalTensor<T>& s
  * @param [out] dst output LocalTensor
  * @param [in] src input LocalTensor
  * @param [in] srcOffset input LocalTensor
- * @param [in] srcBaseAddr base address of src
+ * @param [in] srcBaseOffset base address of src
  * @param [in] count element count
  */
 template <typename T>
 __aicore__ inline void Gather(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const LocalTensor<uint32_t>& srcOffset, const uint32_t srcBaseAddr, const uint32_t count);
+    const LocalTensor<uint32_t>& srcOffset, const uint32_t srcBaseOffset, const uint32_t count);
 } // namespace AscendC
 #pragma end_pipe
 

@@ -108,12 +108,12 @@ bool CheckFuncGatherb(const LocalTensor<T>& dst, const LocalTensor<T>& src0, con
 
 template <typename T, typename U>
 check::VecGatherApiParams BuildVecGatherApiParams(const LocalTensor<T>& dst, const LocalTensor<T>& src0, 
-    const LocalTensor<U>& offset, const uint32_t srcBaseAddr, const uint8_t repeatTime, const uint16_t dstRepStride)
+    const LocalTensor<U>& offset, const uint32_t srcBaseOffset, const uint8_t repeatTime, const uint16_t dstRepStride)
 {
     return check::VecGatherApiParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(offset.GetPhyAddr())),
-        srcBaseAddr,
+        srcBaseOffset,
         repeatTime,
         static_cast<uint16_t>(1),
         dstRepStride,
@@ -130,30 +130,30 @@ check::VecGatherApiParams BuildVecGatherApiParams(const LocalTensor<T>& dst, con
 
 template <typename T, typename U>
 bool CheckFuncGather(const LocalTensor<T>& dst, const LocalTensor<T>& src0, const LocalTensor<U>& offset,
-    const uint32_t srcBaseAddr, const uint64_t mask, const uint8_t repeatTime, const uint16_t dstRepStride,
+    const uint32_t srcBaseOffset, const uint64_t mask, const uint8_t repeatTime, const uint16_t dstRepStride,
     const char* intriName)
 {
-    auto chkParams = BuildVecGatherApiParams(dst, src0, offset, srcBaseAddr, repeatTime, dstRepStride);
+    auto chkParams = BuildVecGatherApiParams(dst, src0, offset, srcBaseOffset, repeatTime, dstRepStride);
     return CheckFuncGatherImpl(chkParams, mask, intriName);
 }
 
 template <typename T, typename U>
 bool CheckFuncGather(const LocalTensor<T>& dst, const LocalTensor<T>& src0, const LocalTensor<U>& offset,
-    const uint32_t srcBaseAddr, const uint64_t mask[], const uint8_t repeatTime, const uint16_t dstRepStride,
+    const uint32_t srcBaseOffset, const uint64_t mask[], const uint8_t repeatTime, const uint16_t dstRepStride,
     const char* intriName)
 {
-    auto chkParams = BuildVecGatherApiParams(dst, src0, offset, srcBaseAddr, repeatTime, dstRepStride);
+    auto chkParams = BuildVecGatherApiParams(dst, src0, offset, srcBaseOffset, repeatTime, dstRepStride);
     return CheckFuncGatherImpl(chkParams, mask, intriName);
 }
 
 template <typename T, typename U>
 bool CheckFuncGather(const LocalTensor<T>& dst, const LocalTensor<T>& src0, const LocalTensor<U>& offset,
-    const uint32_t srcBaseAddr, const uint32_t count, const char* intriName)
+    const uint32_t srcBaseOffset, const uint32_t count, const char* intriName)
 {
     check::VecGatherApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(offset.GetPhyAddr())),
-        srcBaseAddr,
+        srcBaseOffset,
         static_cast<uint32_t>(sizeof(PrimT<T>)),
         static_cast<uint32_t>(sizeof(PrimT<T>)),
         static_cast<uint32_t>(sizeof(PrimT<U>)),
