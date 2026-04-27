@@ -2,7 +2,7 @@
 
 # Ascend C
 
-<h4>Ascend C算子编程语言核心仓：提供语言扩展层C API和C++类库，支持异构编译和<<<>>>直调</h4>
+<h4>基于C/C++构建多层级API，开放芯片完备编程能力，支撑实现极致性能</h4>
 
 [![community](https://img.shields.io/badge/docs-community-brightgreen.svg?style=flat)](https://www.hiascend.com/document/redirect/CannCommunityOpdevAscendC)
 [![repo](https://img.shields.io/badge/docs-repo-blue.svg?style=flat)](https://gitcode.com/cann/asc-devkit/tree/master/docs)
