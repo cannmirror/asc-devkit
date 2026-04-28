@@ -54,4 +54,12 @@ PIPE_FIX
 
 ## 调用示例
 
-无
+```cpp
+constexpr uint16_t n_burst = 1;
+constexpr uint16_t len_burst = 1;
+constexpr uint16_t src_gap = 0;
+constexpr uint16_t dst_gap = 1;
+__cbuf__ void src[256];
+__fbuf__ void dst[256];
+asc_copy_l12fb(dst, src, n_burst, len_burst, src_gap, dst_gap);
+```

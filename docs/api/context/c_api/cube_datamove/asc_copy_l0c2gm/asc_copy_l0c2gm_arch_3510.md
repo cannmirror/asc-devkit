@@ -9,7 +9,8 @@
 ## 功能说明
 
 矩阵计算完成后，对结果进行量化处理，之后将处理结果搬运到GM中。量化参数共有2个：quant_pre和quant_post，分别对应预处理和后处理阶段。
-quant_pre共有8种量化模式，分别为：
+
+quant_pre可选量化模式，分别为：
 - NoQuant：不使能量化功能。
 - F322BF16：float量化成bfloat16_t。量化结果不支持INF_NAN模式。
 - F322F16：float量化成half。量化结果支持INF_NAN模式。
@@ -33,7 +34,8 @@ quant_pre共有8种量化模式，分别为：
 - VQF322BF16_PRE：float量化成bfloat16_t，矢量量化。
 - QF322BF16_PRE：float量化成float，scalar量化。该量化模式精度无法达到双万分之一，可以达到双千分之一。
 - VQF322BF16_PRE：float量化成float，矢量量化。该量化模式精度无法达到双万分之一，可以达到双千分之一。
-quant_post共有3种量化模式，分别为：
+
+quant_post可选量化模式分别为：
 - NoConv：不使能量化功能。
 - QS162B8_POST：int16_t量化成bfloat8_t，scalar量化。
 - VQS162B8_POST：int16_t量化成bfloat8_t，矢量量化。
@@ -246,8 +248,28 @@ PIPE_FIX
 ## 调用示例
 
 ```cpp
+__gm__ bfloat16_t dst[256];
+__cc__ bfloat16_t src[256];
+uint16_t n_size = 1;
+uint16_t m_size = 1;
+uint32_t loop_dst_stride = 0;
+uint16_t loop_src_stride = 0;
+uint8_t l2_cache_ctl = 0;
+uint8_t clip_relu_pre = 0;
+uint8_t unit_flag_ctl = 0;
 uint64_t quant_pre = DEQF16;
+uint8_t relu_pre = 0;
+bool split_en = true;
+bool NZ2ND_en = true;
 uint64_t quant_post = VQS162B8_POST;
-// dst_addr src_addr分别对应目的操作数的输出地址和源操作数的输入地址
-asc_copy_l0c2gm(dst_addr, src_addr, n_size, m_size, loop_dst_stride, loop_src_stride, l2_cache_ctl, clip_relu_pre, unit_flag_ctl, quant_pre, relu_pre, split_en, NZ2ND_en, quant_post, relu_post, clip_relu_post, eltwise_op, eltwise_antq_en, C0_pad_en, broadcast_en, NZ2DN_en);
+uint8_t relu_post = 0;
+bool clip_relu_post = true;
+uint8_t eltwise_op = 0;
+bool eltwise_antq_en = true;
+bool C0_pad_en = true;
+bool broadcast_en = false;
+bool NZ2DN_en = false;
+asc_copy_l0c2gm(dst, src, n_size, m_size, loop_dst_stride, loop_src_stride, l2_cache_ctl, clip_relu_pre,
+    unit_flag_ctl, quant_pre, relu_pre, split_en, NZ2ND_en, quant_post, relu_post, clip_relu_post,
+    eltwise_op, eltwise_antq_en, C0_pad_en, broadcast_en, NZ2DN_en);
 ```
