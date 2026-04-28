@@ -1,44 +1,49 @@
-# mul样例
+# histogram样例
 
 ## 概述
-本样例基于RegBase编程范式实现逐元素乘法运算，采用4核并行模式处理数据。
+本样例基于RegBase编程范式实现直方图统计功能，使用了Histograms接口。
 
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT
 
 ## 目录结构介绍
 ```
-├── mul
+├── histogram
 │   ├── scripts
 │   │   ├── gen_data.py                // 输入数据和真值数据生成脚本
 │   ├── CMakeLists.txt                 // 编译工程文件
 │   ├── data_utils.h                   // 数据读入写出函数
-│   ├── mul.asc                        // AscendC样例实现 & 调用样例
+│   ├── histogram.asc                  // AscendC样例实现 & 调用样例
 │   └── README.md                      // 样例介绍
 ```
 
 ## 样例描述
 - 样例功能：  
-  对两个相同大小的向量做逐元素乘法，向量shape为[1, 1024]，数据类型为float。
+  对uint8_t输入数据做直方图统计，输入向量shape为[1, 256]，数据类型为uint8_t，输出向量shape为[1, 256]，即256个数值的直方图统计结果，数据类型为uint16_t。
 
-- 样例规格：
-  <table>
-  <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="3" align="center">AIV样例</td></tr>
-  <tr><td rowspan="3" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td></tr>
-  <tr><td align="center">x</td><td align="center">[1, 1024]</td><td align="center">float</td></tr>
-  <tr><td align="center">y</td><td align="center">[1, 1024]</td><td align="center">float</td></tr>
-  <tr><td rowspan="1" align="center">样例输出</td><td align="center">z</td><td align="center">[1, 1024]</td><td align="center">float</td></tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="3" align="center">mul</td></tr>
-  </table>
-
-- 样例实现：
-  MulVF函数内调用Mul接口进行计算，结果写回UB。Kernel类通过模板参数`singleCoreLength`指定每核处理的数据量（256个），`GetCoreOffset()`函数计算各核的数据偏移。
-  - 调用实现
-    使用内核调用符`<<<>>>`调用核函数，启动4个核，各核通过`GetBlockIdx()`获取核号并计算数据偏移。
+  **场景1：单核模式**
+  - 一个核处理全部256个输入数据，统计结果为256个bin的频率统计
+  - 样例规格：
+    <table>
+    <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="3" align="center">AIV样例</td></tr>
+    <tr><td rowspan="1" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td></tr>
+    <tr><td></td><td align="center">x</td><td align="center">[1, 256]</td><td align="center">uint8_t</td></tr>
+    <tr><td rowspan="1" align="center">样例输出</td><td align="center">y</td><td align="center">[1, 256]</td><td align="center">uint16_t</td></tr>
+    <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">histogram</td></tr>
+    </table>
+  - 样例实现：
+    HistogramsVF函数内：
+    1. 使用Duplicate初始化dstReg为0
+    2. 使用LoadAlign的postUpdate模式加载输入数据
+    3. 调用Histograms接口进行统计计算，dst0统计[0-127]区间、dst1统计[128-255]区间
+    4. 循环累加所有输入数据块的统计结果
+    5. 使用StoreAlign的postUpdate模式一次性输出统计结果到UB
+    - 调用实现
+      使用内核调用符`<<<>>>`调用核函数，启动1个核。
 
 ## 编译运行
 在本样例根目录下执行如下步骤，编译并执行样例。
-- 配置环境变量  
+- 配置环境变量
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
     ```bash
@@ -60,7 +65,7 @@
   mkdir -p build && cd build;                                                    # 创建并进入build目录
   cmake -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j;                           # 编译工程（默认npu模式）
   python3 ../scripts/gen_data.py                                                 # 生成测试输入数据
-  ./demo                                                                         # 执行编译生成的可执行程序
+  ./demo                                                                         # 执行编译生成的可执行程序，执行样例
   ```
 
   使用 CPU调试 或 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
@@ -80,7 +85,8 @@
   | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`cpu`、`sim` | 运行模式：NPU 运行、CPU调试、NPU仿真 |
   | `CMAKE_ASC_ARCHITECTURES` | `dav-3510` | NPU 架构：dav-3510 对应 Ascend 950PR/Ascend 950DT |
 
-- 执行结果  
+- 执行结果
+
   执行结果如下，说明精度对比成功。
   ```bash
   test pass!

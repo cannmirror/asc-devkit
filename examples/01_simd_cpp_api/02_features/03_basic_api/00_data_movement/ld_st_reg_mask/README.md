@@ -10,16 +10,18 @@
 ```
 ├── ld_st_reg_mask
 │   ├── scripts
-│   │   ├── gen_data.py                // 输入数据和真值数据生成脚本
+│   │   └── gen_data.py                // 输入数据和真值数据生成脚本
+│   ├── figures
+│   │   └── ld_st_reg_mask.png         // 样例原理图
 │   ├── CMakeLists.txt                 // 编译工程文件
 │   ├── data_utils.h                   // 数据读入写出函数
-|   |── README.md                      // 样例介绍
+│   ├── README.md                      // 样例介绍
 │   └── ld_st_reg_mask.asc             // AscendC样例实现 & 调用样例
 ```
 
 ## 样例描述
 - 样例功能：  
-  样例输入一个数据类型为uint8_t，数据量为1024的向量，取前向量的前256bit作为掩码进行Duplicate计算，随后将掩码寄存器的比特位全部置为1，将掩码寄存器的256bit值保存到UB中
+  样例输入一个数据类型为uint8_t，数据量为1024的向量，取向量的前256bit作为掩码进行Duplicate计算，随后将掩码寄存器的比特位全部置为1，将掩码寄存器的256bit值保存到UB中
 - 样例规格：
   <table>
   <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="3" align="center">AIV样例</td></tr>
@@ -37,10 +39,10 @@
   <img src="figures/ld_st_reg_mask.png" width="1000">
 </p>
 
-  1. 在CopyVF函数里，调用Load接口从UB搬运256bit(32*uint8_t)数据到MaskReg，以实现mask的动态设置。本样例中，32个uint8_t数据设置为1,0,...,1，即第一个数和最后一个数为1(b'00000001)，因为芯片每次从低位读取数字，所以这32个数字最终填充到MaskReg中为b'1000...1...000。
-  2. 调用Duplicate指令进行数据填充，MaskReg可以指示计算过程中参与计算的元素，由step1可知MaskReg中第1个bit和第249个bit为1，使用该掩码将只填充RegTensor第1个数和第249个数为2。
-  3. 使用Store接口将RegTensor内的结果保存到UB。
-  4. 将MaskReg中的bit位全部置为1，通过Store接口将MaskReg中的数据保存到UB(地址=step3中的保存地址+256B)，实现MaskReg数据存储在UB上的功能。对应32个uint8_t数，每个数的每位比特位都为1，因此每个数的值都是255(0xFFFF..FF)。
+  1. 在CopyVF函数里，调用LoadAlign接口从UB搬运256bit(32*uint8_t)数据到MaskReg，以实现mask的动态设置。本样例中，32个uint8_t数据设置为1,0,...,1，即第一个数和最后一个数为1(b'00000001)，因为芯片每次从低位读取数字，所以这32个数字最终填充到MaskReg中为b'1000...1...000。
+  2. 调用Duplicate接口进行数据填充，MaskReg可以指示计算过程中参与计算的元素，由step1可知MaskReg中第1个bit和第249个bit为1，使用该掩码将只填充RegTensor第1个数和第249个数为2。
+  3. 使用StoreAlign接口将RegTensor内的结果保存到UB。
+  4. 将MaskReg中的bit位全部置为1，通过StoreAlign接口将MaskReg中的数据保存到UB(地址=step3中的保存地址+256B)，实现MaskReg数据存储在UB上的功能。对应32个uint8_t数，每个数的每位比特位都为1，因此每个数的值都是255(0xFFFF..FF)。
   
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
