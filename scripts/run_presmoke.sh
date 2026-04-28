@@ -46,10 +46,8 @@ EXAMPLE_LIST=(
     01_simd_cpp_api/02_features/03_basic_api/01_matrix_compute/batch_mmad
     01_simd_cpp_api/02_features/03_basic_api/01_matrix_compute/fixpipe_co12c1_tensor_quantization_s322f16
     01_simd_cpp_api/02_features/03_basic_api/01_matrix_compute/fixpipe_co12gm_tensor_quantization_s322f16
-    01_simd_cpp_api/02_features/03_basic_api/01_matrix_compute/load_data
-    01_simd_cpp_api/02_features/03_basic_api/01_matrix_compute/load_data_with_transpose_b16
+    01_simd_cpp_api/02_features/03_basic_api/01_matrix_compute/load_data_l12l0
     01_simd_cpp_api/02_features/03_basic_api/01_matrix_compute/mmad_load3dv2
-    01_simd_cpp_api/02_features/03_basic_api/01_matrix_compute/mmad_s8_f16_f32_with_A_B_transpose_option
     01_simd_cpp_api/02_features/03_basic_api/02_memory_vector_compute/brcb
     01_simd_cpp_api/02_features/03_basic_api/02_memory_vector_compute/compare
     01_simd_cpp_api/02_features/03_basic_api/02_memory_vector_compute/gather
@@ -273,8 +271,8 @@ run_test_case() {
         mmad_load3dv2)
             run_with_params "${code_path}" "${example_name}" "-DSCENARIO_NUM=4 -DM_SIZE=30 -DK_SIZE=40 -DN_SIZE=70" "-scenarioNum=4 -m=30 -k=40 -n=70" "demo" "-scenarioNum=4 output/output.bin output/golden.bin" 2>&1 | tee "${log_path}/${case_name}.log"
             ;;
-        mmad_s8_f16_f32_with_A_B_transpose_option)
-            run_with_params "${code_path}" "${example_name}" "-DSCENARIO_NUM=12 -DM_SIZE=30 -DK_SIZE=70 -DN_SIZE=50" "-scenarioNum=12 -m=30 -k=70 -n=50" "demo" "-scenarioNum=12 output/output.bin output/golden.bin" 2>&1 | tee "${log_path}/${case_name}.log"
+        load_data_l12l0)
+            run_with_params "${code_path}" "${example_name}" "-DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=12" "-scenarioNum=12" "demo" "-scenarioNum=12 output/output.bin output/golden.bin" 2>&1 | tee "${log_path}/${case_name}.log"
             ;;
         antiquant)
             run_with_params_2 "${code_path}" "${example_name}" "-DNPU_ARCH=dav-2201" "" "demo" "" 2>&1 | tee "${log_path}/${case_name}.log"
