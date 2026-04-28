@@ -44,7 +44,7 @@ hello_world<<<numBlocks, nullptr, stream>>>(&args, sizeof(KernelArgs));
 
 -   numBlocks：AI CPU Device侧暂不支持分核逻辑，因此Host侧调用多核无实际意义。建议设置为1。
 -   l2ctrl：保留参数，当前固定为nullptr，开发者无需关注。
--   stream：类型为aclrtStream，stream用于维护一些异步操作的执行顺序，确保按照应用程序中的代码调用顺序在Device上执行。stream创建等管理接口请参考《应用开发指南 \(C&C++\)》中的“AscendCL API参考 \> 运行时管理 \> Stream管理”章节。
+-   stream：类型为aclrtStream，stream用于维护一些异步操作的执行顺序，确保按照应用程序中的代码调用顺序在Device上执行。stream创建等管理接口请参考[《Runtime运行时API》](https://hiascend.com/document/redirect/CannCommunityRuntimeApi)。
 
 >[!NOTE]说明 
 >在编写调用代码时需要遵循如下规范：
@@ -81,5 +81,5 @@ template extern __global__ __aicpu__ uint32_t hello_world<KernelArgs, 4096>(void
 ## 更多进阶用法<a name="section109268265171"></a>
 
 >[!NOTE]说明 
->更多AI CPU API的使用方法请参考AI CPU API。
+>更多AI CPU API的使用方法请参考[AI CPU API](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/AI-CPU-API.md)。
 
