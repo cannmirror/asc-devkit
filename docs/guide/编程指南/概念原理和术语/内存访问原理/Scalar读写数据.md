@@ -34,7 +34,7 @@ globalTensor1.SetValue(8, val);
 globalTensor1.GetValue(8);
 ```
 
-根据上文的工作机制（如下图所示），多核间访问globalTensor1会出现数据不一致的情况，如果其余核需要获取GM数据的变化，则需要开发者手动调用DataCacheCleanAndInvalid来保证数据的一致性。
+根据上文的工作机制（如下图所示），多核间访问globalTensor1会出现数据不一致的情况，如果其余核需要获取GM数据的变化，则需要开发者手动调用[DataCacheCleanAndInvalid](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/DataCacheCleanAndInvalid.md)来保证数据的一致性。
 
 ![](../../../figures/图1-AI-Core内部并行计算架构抽象示意图-32.png)
 
@@ -54,7 +54,7 @@ for (int32_t i = 0; i < srcLen; ++i) {
 
 ## Scalar读写数据时的同步<a name="section554364118119"></a>
 
-Scalar读写Global MemoryUnified Buffer时属于PIPE\_S（Scalar流水）操作，当用户使用SetValue或者GetValue接口，且算子工程使能自动同步时，不需要手动插入同步事件。
+Scalar读写Global Memory和Unified Buffer时属于PIPE\_S（Scalar流水）操作，当用户使用SetValue或者GetValue接口，且算子工程使能自动同步时，不需要手动插入同步事件。
 
 如果用户关闭算子工程的自动同步功能时，则需要手动插入同步事件：
 

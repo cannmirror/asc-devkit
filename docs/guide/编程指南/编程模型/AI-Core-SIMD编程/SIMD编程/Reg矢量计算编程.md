@@ -37,7 +37,7 @@ SIMD Reg矢量计算编程架构中，通过发出指令到Reg矢量计算执行
 
 具体的调用关系图如下：
 
-![](../../../../figures/aicore.png)
+![](../../../../figures/reg_calculation_call_hierarchy.png)
 
 以下为唯一合法函数调用链：
 
@@ -66,7 +66,7 @@ __aicore__ inline void Compute()
 
 ## Reg矢量计算寄存器<a name="section1910719438134"></a>
 
-Reg矢量计算API操作的基础数据类型介绍如下，具体API请参考Reg矢量计算。
+Reg矢量计算API操作的基础数据类型介绍如下，具体API请参考[Reg矢量计算](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/Reg矢量计算.md)。
 
 -   **RegTensor**
 

@@ -1,6 +1,6 @@
 # RTC<a name="ZH-CN_TOPIC_0000002462620725"></a>
 
-RTC是Ascend C运行时编译库，通过aclrtc接口，在程序运行时，将中间代码动态编译成目标机器码，提升程序运行性能。
+RTC是Ascend C运行时编译库，通过[aclrtc](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/RTC.md)接口，在程序运行时，将中间代码动态编译成目标机器码，提升程序运行性能。
 
 运行时编译库提供以下核心接口：
 
@@ -10,7 +10,7 @@ RTC是Ascend C运行时编译库，通过aclrtc接口，在程序运行时，将
 -   aclrtcGetBinData：获取编译后的Device侧二进制数据。
 -   aclrtcDestroyProg：在编译和执行过程结束后，销毁给定的程序。
 
-编译完成后需要调用如下接口完成（仅列出核心接口）Kernel加载与执行。完整流程和详细接口说明请参考《应用开发指南 \(C&C++\)》中的“acl API参考 \> 运行时管理 \> Kernel加载与执行”章节。
+编译完成后需要调用如下接口完成（仅列出核心接口）Kernel加载与执行。完整流程和详细接口说明请参考[《Runtime运行时API》](https://hiascend.com/document/redirect/CannCommunityRuntimeApi)中的“Kernel加载与执行”章节。
 
 1.  通过aclrtBinaryLoadFromData接口解析由aclrtcGetBinData接口获取的算子二进制数据。
 2.  获取核函数句柄并根据核函数句柄操作其参数列表，相关接口包括aclrtBinaryGetFunction（获取核函数句柄）、aclrtKernelArgsInit（初始化参数列表）、aclrtKernelArgsAppend（追加拷贝用户设置的参数值如xDevice,  yDevice, zDevice）等。
