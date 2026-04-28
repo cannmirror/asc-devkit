@@ -25,56 +25,56 @@
 
 #include "instr_impl/npu_arch_3510/utils_impl.h"
 
-__simd_callee__ inline void asc_float2e5m2_rn_impl(vector_f8e5m2& dst, vector_float src, vector_bool mask)
+__simd_callee__ inline void asc_float2e5m2_rn_impl(vector_fp8_e5m2_t& dst, vector_float src, vector_bool mask)
 {
     if ASC_IS_AIV{
         vcvt(dst, src, mask, ROUND_R, RS_DISABLE, PART_P0, MODE_ZEROING);
     }
 }
 
-__simd_callee__ inline void asc_float2e5m2_rn_v2_impl(vector_f8e5m2& dst, vector_float src, vector_bool mask)
+__simd_callee__ inline void asc_float2e5m2_rn_v2_impl(vector_fp8_e5m2_t& dst, vector_float src, vector_bool mask)
 {
     if ASC_IS_AIV{
         vcvt(dst, src, mask, ROUND_R, RS_DISABLE, PART_P1, MODE_ZEROING);
     }
 }
 
-__simd_callee__ inline void asc_float2e5m2_rn_v3_impl(vector_f8e5m2& dst, vector_float src, vector_bool mask)
+__simd_callee__ inline void asc_float2e5m2_rn_v3_impl(vector_fp8_e5m2_t& dst, vector_float src, vector_bool mask)
 {
     if ASC_IS_AIV{
         vcvt(dst, src, mask, ROUND_R, RS_DISABLE, PART_P2, MODE_ZEROING);
     }
 }
 
-__simd_callee__ inline void asc_float2e5m2_rn_v4_impl(vector_f8e5m2& dst, vector_float src, vector_bool mask)
+__simd_callee__ inline void asc_float2e5m2_rn_v4_impl(vector_fp8_e5m2_t& dst, vector_float src, vector_bool mask)
 {
     if ASC_IS_AIV{
         vcvt(dst, src, mask, ROUND_R, RS_DISABLE, PART_P3, MODE_ZEROING);
     }
 }
 
-__simd_callee__ inline void asc_float2e5m2_rn_sat_impl(vector_f8e5m2& dst, vector_float src, vector_bool mask)
+__simd_callee__ inline void asc_float2e5m2_rn_sat_impl(vector_fp8_e5m2_t& dst, vector_float src, vector_bool mask)
 {
     if ASC_IS_AIV{
         vcvt(dst, src, mask, ROUND_R, RS_ENABLE, PART_P0, MODE_ZEROING);
     }
 }
 
-__simd_callee__ inline void asc_float2e5m2_rn_sat_v2_impl(vector_f8e5m2& dst, vector_float src, vector_bool mask)
+__simd_callee__ inline void asc_float2e5m2_rn_sat_v2_impl(vector_fp8_e5m2_t& dst, vector_float src, vector_bool mask)
 {
     if ASC_IS_AIV{
         vcvt(dst, src, mask, ROUND_R, RS_ENABLE, PART_P1, MODE_ZEROING);
     }
 }
 
-__simd_callee__ inline void asc_float2e5m2_rn_sat_v3_impl(vector_f8e5m2& dst, vector_float src, vector_bool mask)
+__simd_callee__ inline void asc_float2e5m2_rn_sat_v3_impl(vector_fp8_e5m2_t& dst, vector_float src, vector_bool mask)
 {
     if ASC_IS_AIV{
         vcvt(dst, src, mask, ROUND_R, RS_ENABLE, PART_P2, MODE_ZEROING);
     }
 }
 
-__simd_callee__ inline void asc_float2e5m2_rn_sat_v4_impl(vector_f8e5m2& dst, vector_float src, vector_bool mask)
+__simd_callee__ inline void asc_float2e5m2_rn_sat_v4_impl(vector_fp8_e5m2_t& dst, vector_float src, vector_bool mask)
 {
     if ASC_IS_AIV{
         vcvt(dst, src, mask, ROUND_R, RS_ENABLE, PART_P3, MODE_ZEROING);

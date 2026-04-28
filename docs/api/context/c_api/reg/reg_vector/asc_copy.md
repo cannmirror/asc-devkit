@@ -24,6 +24,8 @@
     __simd_callee__ inline void asc_copy(vector_int32_t& dst, vector_int32_t src, vector_bool mask)
     __simd_callee__ inline void asc_copy(vector_uint32_t& dst, vector_uint32_t src, vector_bool mask)
     __simd_callee__ inline void asc_copy(vector_float& dst, vector_float src, vector_bool mask)
+    __simd_callee__ inline void asc_copy(vector_bool& dst, vector_bool src, vector_bool mask)
+    __simd_callee__ inline void asc_copy(vector_bool& dst, vector_bool src)
     ```
 
 - 由矢量数据寄存器搬运至掩码数据寄存器

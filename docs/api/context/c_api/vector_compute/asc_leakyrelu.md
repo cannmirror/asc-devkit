@@ -30,8 +30,8 @@ $$
 - 高维切分计算
 
     ```cpp
-    __aicore__ inline void asc_leakyrelu(__ubuf__ half* dst, __ubuf__ half* src, half value, uint8_t repeat, uint8_t dst_block_stride, uint8_t src_block_stride, uint8_t dst_repeat_stride, uint8_t src_repeat_stride)
-    __aicore__ inline void asc_leakyrelu(__ubuf__ float* dst, __ubuf__ float* src, float value, uint8_t repeat, uint8_t dst_block_stride, uint8_t src_block_stride, uint8_t dst_repeat_stride, uint8_t src_repeat_stride) 
+    __aicore__ inline void asc_leakyrelu(__ubuf__ half* dst, __ubuf__ half* src, half value, uint8_t repeat, uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
+    __aicore__ inline void asc_leakyrelu(__ubuf__ float* dst, __ubuf__ float* src, float value, uint8_t repeat, uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride) 
     ```
 
 - 同步计算

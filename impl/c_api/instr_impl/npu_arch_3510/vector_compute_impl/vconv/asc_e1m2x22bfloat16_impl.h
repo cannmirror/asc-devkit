@@ -13,28 +13,28 @@
 
 #include "instr_impl/npu_arch_3510/utils_impl.h"
 
-__simd_callee__ inline void asc_e1m2x22bfloat16_impl(vector_bfloat16_t& dst, vector_f4e1m2x2 src, vector_bool mask)
+__simd_callee__ inline void asc_e1m2x22bfloat16_impl(vector_bfloat16_t& dst, vector_fp4x2_e1m2_t src, vector_bool mask)
 {
     if ASC_IS_AIV {
         vcvt(dst, src, mask, PART_P0, MODE_ZEROING);
     }
 }
 
-__simd_callee__ inline void asc_e1m2x22bfloat16_v2_impl(vector_bfloat16_t& dst, vector_f4e1m2x2 src, vector_bool mask)
+__simd_callee__ inline void asc_e1m2x22bfloat16_v2_impl(vector_bfloat16_t& dst, vector_fp4x2_e1m2_t src, vector_bool mask)
 {
     if ASC_IS_AIV {
         vcvt(dst, src, mask, PART_P1, MODE_ZEROING);
     }
 }
 
-__simd_callee__ inline void asc_e1m2x22bfloat16_v3_impl(vector_bfloat16_t& dst, vector_f4e1m2x2 src, vector_bool mask)
+__simd_callee__ inline void asc_e1m2x22bfloat16_v3_impl(vector_bfloat16_t& dst, vector_fp4x2_e1m2_t src, vector_bool mask)
 {
     if ASC_IS_AIV {
         vcvt(dst, src, mask, PART_P2, MODE_ZEROING);
     }
 }
 
-__simd_callee__ inline void asc_e1m2x22bfloat16_v4_impl(vector_bfloat16_t& dst, vector_f4e1m2x2 src, vector_bool mask)
+__simd_callee__ inline void asc_e1m2x22bfloat16_v4_impl(vector_bfloat16_t& dst, vector_fp4x2_e1m2_t src, vector_bool mask)
 {
     if ASC_IS_AIV {
         vcvt(dst, src, mask, PART_P3, MODE_ZEROING);

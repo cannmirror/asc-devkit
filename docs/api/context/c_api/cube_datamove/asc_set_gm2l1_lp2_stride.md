@@ -17,15 +17,15 @@
 ## 函数原型
 
 ```cpp
-__aicore__ inline void asc_set_gm2l1_loop2_stride(uint32_t loop1_src_stride, uint32_t loop1_dst_stride)
+__aicore__ inline void asc_set_gm2l1_loop2_stride(uint64_t loop2_src_stride, uint64_t loop2_dst_stride)
 ```
 
 ## 参数说明
 
 |参数名|输入/输出|描述|
 |------------|------------|-----------|
-| loop1_src_stride     | 输入     | 外层循环中相邻迭代源操作数的数据块间的间隔，单位为Byte，取值范围为[0,2^40]。|
-| loop1_dst_stride     | 输入     | 外层循环中相邻迭代目标操作数的数据块间的间隔，单位为Byte，取值范围为[0,2^21]，且必须32B对齐。|
+| loop2_src_stride     | 输入     | 外层循环中相邻迭代源操作数的数据块间的间隔，单位为Byte，取值范围为[0,2^40]。|
+| loop2_dst_stride     | 输入     | 外层循环中相邻迭代目标操作数的数据块间的间隔，单位为Byte，取值范围为[0,2^21]，且必须32B对齐。|
 
 ## 返回值说明
 

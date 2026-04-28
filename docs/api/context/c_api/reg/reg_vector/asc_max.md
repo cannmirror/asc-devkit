@@ -21,11 +21,11 @@ __simd_callee__ inline void asc_max(vector_uint8_t& dst, vector_uint8_t src0, ve
 __simd_callee__ inline void asc_max(vector_int8_t& dst, vector_int8_t src0, vector_int8_t src1, vector_bool mask)
 __simd_callee__ inline void asc_max(vector_uint16_t& dst, vector_uint16_t src0, vector_uint16_t src1, vector_bool mask)
 __simd_callee__ inline void asc_max(vector_int16_t& dst, vector_int16_t src0, vector_int16_t src1, vector_bool mask)
-__simd_callee__ inline void asc_max(vector_int32_t & dst, vector_int32_t src0, vector_int32_t src1, vector_bool mask)
-__simd_callee__ inline void asc_max(vector_uint32_t & dst, vector_uint32_t src0, vector_uint32_t src1, vector_bool mask)
-__simd_callee__ inline void asc_max(vector_float & dst, vector_float src0, vector_float src1, vector_bool mask)
-__simd_callee__ inline void asc_max(vector_half & dst, vector_half src0, vector_half src1, vector_bool mask)
-__simd_callee__ inline void asc_max(vector_bfloat16_t & dst, vector_bfloat16_t src0, vector_bfloat16_t src1, vector_bool mask)
+__simd_callee__ inline void asc_max(vector_int32_t& dst, vector_int32_t src0, vector_int32_t src1, vector_bool mask)
+__simd_callee__ inline void asc_max(vector_uint32_t& dst, vector_uint32_t src0, vector_uint32_t src1, vector_bool mask)
+__simd_callee__ inline void asc_max(vector_float& dst, vector_float src0, vector_float src1, vector_bool mask)
+__simd_callee__ inline void asc_max(vector_half& dst, vector_half src0, vector_half src1, vector_bool mask)
+__simd_callee__ inline void asc_max(vector_bfloat16_t& dst, vector_bfloat16_t src0, vector_bfloat16_t src1, vector_bool mask)
 ```
 
 ## 参数说明

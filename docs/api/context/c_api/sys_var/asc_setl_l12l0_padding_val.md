@@ -1,4 +1,4 @@
-# asc_setl_l12l0_padding_val
+# asc_set_l12l0_padding_val
 
 ## 产品支持情况
 
@@ -19,7 +19,7 @@
 ## 函数原型
 
 ```cpp
-__aicore__ inline void asc_setl_l12l0_padding_val(uint64_t config)
+__aicore__ inline void asc_set_l12l0_padding_val(uint64_t config)
 ```
 
 ## 参数说明

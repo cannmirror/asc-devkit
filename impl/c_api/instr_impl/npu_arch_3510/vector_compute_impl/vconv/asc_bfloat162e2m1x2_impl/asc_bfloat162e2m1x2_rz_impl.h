@@ -20,28 +20,28 @@
 
 #include "instr_impl/npu_arch_3510/utils_impl.h"
 
-__simd_callee__ inline void asc_bfloat162e2m1x2_rz_impl(vector_f4e2m1x2& dst, vector_bfloat16_t src, vector_bool mask)
+__simd_callee__ inline void asc_bfloat162e2m1x2_rz_impl(vector_fp4x2_e2m1_t& dst, vector_bfloat16_t src, vector_bool mask)
 {
     if ASC_IS_AIV {
         vcvt(dst, src, mask, ROUND_Z, PART_P0, MODE_ZEROING);
     }
 }
 
-__simd_callee__ inline void asc_bfloat162e2m1x2_rz_v2_impl(vector_f4e2m1x2& dst, vector_bfloat16_t src, vector_bool mask)
+__simd_callee__ inline void asc_bfloat162e2m1x2_rz_v2_impl(vector_fp4x2_e2m1_t& dst, vector_bfloat16_t src, vector_bool mask)
 {
     if ASC_IS_AIV {
         vcvt(dst, src, mask, ROUND_Z, PART_P1, MODE_ZEROING);
     }
 }
 
-__simd_callee__ inline void asc_bfloat162e2m1x2_rz_v3_impl(vector_f4e2m1x2& dst, vector_bfloat16_t src, vector_bool mask)
+__simd_callee__ inline void asc_bfloat162e2m1x2_rz_v3_impl(vector_fp4x2_e2m1_t& dst, vector_bfloat16_t src, vector_bool mask)
 {
     if ASC_IS_AIV {
         vcvt(dst, src, mask, ROUND_Z, PART_P2, MODE_ZEROING);
     }
 }
 
-__simd_callee__ inline void asc_bfloat162e2m1x2_rz_v4_impl(vector_f4e2m1x2& dst, vector_bfloat16_t src, vector_bool mask)
+__simd_callee__ inline void asc_bfloat162e2m1x2_rz_v4_impl(vector_fp4x2_e2m1_t& dst, vector_bfloat16_t src, vector_bool mask)
 {
     if ASC_IS_AIV {
         vcvt(dst, src, mask, ROUND_Z, PART_P3, MODE_ZEROING);

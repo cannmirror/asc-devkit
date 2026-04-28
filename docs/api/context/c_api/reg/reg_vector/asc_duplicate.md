@@ -19,17 +19,17 @@ $$
 ## 函数原型
 
 ```cpp
-__simd_callee__ inline void asc_duplicate(vector_uint8_t& dst, vector_uint8_t value, vector_bool mask)
-__simd_callee__ inline void asc_duplicate(vector_int8_t& dst, vector_int8_t value, vector_bool mask)
-__simd_callee__ inline void asc_duplicate(vector_fp8_e4m3fn_t& dst, vector_fp8_e4m3fn_t value, vector_bool mask)
-__simd_callee__ inline void asc_duplicate(vector_fp8_e5m2_t& dst, vector_fp8_e5m2_t value, vector_bool mask)
-__simd_callee__ inline void asc_duplicate(vector_uint16_t& dst, vector_uint16_t value, vector_bool mask)
-__simd_callee__ inline void asc_duplicate(vector_int16_t& dst, vector_int16_t value, vector_bool mask)
-__simd_callee__ inline void asc_duplicate(vector_half& dst, vector_half value, vector_bool mask)
-__simd_callee__ inline void asc_duplicate(vector_bfloat16_t& dst, vector_bfloat16_t value, vector_bool mask)
-__simd_callee__ inline void asc_duplicate(vector_uint32_t& dst, vector_uint32_t value, vector_bool mask)
-__simd_callee__ inline void asc_duplicate(vector_int32_t& dst, vector_int32_t value, vector_bool mask)
-__simd_callee__ inline void asc_duplicate(vector_float& dst, vector_float value, vector_bool mask)
+__simd_callee__ inline void asc_duplicate(vector_uint8_t& dst, vector_uint8_t src, vector_bool mask)
+__simd_callee__ inline void asc_duplicate(vector_int8_t& dst, vector_int8_t src, vector_bool mask)
+__simd_callee__ inline void asc_duplicate(vector_fp8_e4m3fn_t& dst, vector_fp8_e4m3fn_t src, vector_bool mask)
+__simd_callee__ inline void asc_duplicate(vector_fp8_e5m2_t& dst, vector_fp8_e5m2_t src, vector_bool mask)
+__simd_callee__ inline void asc_duplicate(vector_uint16_t& dst, vector_uint16_t src, vector_bool mask)
+__simd_callee__ inline void asc_duplicate(vector_int16_t& dst, vector_int16_t src, vector_bool mask)
+__simd_callee__ inline void asc_duplicate(vector_half& dst, vector_half src, vector_bool mask)
+__simd_callee__ inline void asc_duplicate(vector_bfloat16_t& dst, vector_bfloat16_t src, vector_bool mask)
+__simd_callee__ inline void asc_duplicate(vector_uint32_t& dst, vector_uint32_t src, vector_bool mask)
+__simd_callee__ inline void asc_duplicate(vector_int32_t& dst, vector_int32_t src, vector_bool mask)
+__simd_callee__ inline void asc_duplicate(vector_float& dst, vector_float src, vector_bool mask)
 ```
 
 ## 参数说明

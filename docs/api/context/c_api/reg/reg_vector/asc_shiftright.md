@@ -13,12 +13,12 @@
 ## 函数原型
 
 ```cpp
-__simd_callee__ inline void asc_shiftright(vector_uint8_t& dst, vector_uint8_t src0, vector_int8 src1, vector_bool mask)
-__simd_callee__ inline void asc_shiftright(vector_int8& dst, vector_int8 src0, vector_int8 src1, vector_bool mask)
-__simd_callee__ inline void asc_shiftright(vector_uint16_t& dst, vector_uint16_t src0, vector_int16 src1, vector_bool mask)
-__simd_callee__ inline void asc_shiftright(vector_int16& dst, vector_int16 src0, vector_int16 src1, vector_bool mask)
-__simd_callee__ inline void asc_shiftright(vector_uint32_t& dst, vector_uint32_t src0, vector_int32 src1, vector_bool mask)
-__simd_callee__ inline void asc_shiftright(vector_int32& dst, vector_int32 src0, vector_int32 src1, vector_bool mask)
+__simd_callee__ inline void asc_shiftright(vector_uint8_t& dst, vector_uint8_t src0, vector_int8_t src1, vector_bool mask)
+__simd_callee__ inline void asc_shiftright(vector_int8_t& dst, vector_int8_t src0, vector_int8_t src1, vector_bool mask)
+__simd_callee__ inline void asc_shiftright(vector_uint16_t& dst, vector_uint16_t src0, vector_int16_t src1, vector_bool mask)
+__simd_callee__ inline void asc_shiftright(vector_int16_t& dst, vector_int16_t src0, vector_int16_t src1, vector_bool mask)
+__simd_callee__ inline void asc_shiftright(vector_uint32_t& dst, vector_uint32_t src0, vector_int32_t src1, vector_bool mask)
+__simd_callee__ inline void asc_shiftright(vector_int32_t& dst, vector_int32_t src0, vector_int32_t src1, vector_bool mask)
 ```
 
 ## 参数说明

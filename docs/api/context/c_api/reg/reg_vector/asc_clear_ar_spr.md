@@ -13,7 +13,7 @@
 ## 函数原型
 
 ```cpp
-__simd_callee__ inline void asc_clear_ar_spr();
+__simd_callee__ inline void asc_clear_ar_spr()
 ```
 
 ## 参数说明
