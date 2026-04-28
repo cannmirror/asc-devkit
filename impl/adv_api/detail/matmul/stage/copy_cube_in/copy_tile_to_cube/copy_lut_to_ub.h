@@ -70,8 +70,8 @@ public:
      */
     __aicore__ inline void Init(uint32_t qtableNum)
     {
-        byteSize_ = CeilAlign(qtableNum * sizeof(uint64_t), ONE_BLK_SIZE);
-        GetTPipePtr()->InitBuffer(qidQtable_, byteSize_);
+        byteSize_ = qtableNum * sizeof(uint64_t);
+        GetTPipePtr()->InitBuffer(qidQtable_, CeilAlign(byteSize_, ONE_BLK_SIZE));
     }
     /**
      * @description: Set qtable tensor params
@@ -80,11 +80,18 @@ public:
      */
     __aicore__ inline void SetLookupTable(const GlobalTensor<uint64_t> &qtableTensor)
     {
+#if __NPU_ARCH__ == 5102
         qtableTensor_ = qidQtable_.Get<uint64_t>();
-        DataCopy(qtableTensor_, qtableTensor, byteSize_ / sizeof(uint64_t));
+        auto dstPadTensor = qtableTensor_.template ReinterpretCast<uint8_t>();
+        auto srcPadTensor = qtableTensor.template ReinterpretCast<uint8_t>();
+        DataCopyParams copyParams{1, static_cast<uint16_t>(byteSize_), 0, 0};
+        uint8_t rightPadding = static_cast<uint8_t>(Ceil(byteSize_, ONE_BLK_SIZE) * ONE_BLK_SIZE - byteSize_);
+        DataCopyPadParams copyPadParams{1, 0, rightPadding, 0};
+        DataCopyPad(dstPadTensor, srcPadTensor, copyParams, copyPadParams);
         TEventID enQueEvtID = GetTPipePtr()->FetchEventID(HardEvent::MTE2_S);
         SetFlag<HardEvent::MTE2_S>(enQueEvtID);
         WaitFlag<HardEvent::MTE2_S>(enQueEvtID);
+#endif
     }
 
     /**
