@@ -35,12 +35,18 @@ inline __gm__ uint8_t* __gm__ g_sysPrintFifoSpace = nullptr;
 namespace __asc_aicore {
 __aicore__ inline void enable_asc_diagnostics()
 {
-#if defined(__ENABLE_ASCENDC_PRINTF__)
 #if (!defined(ASCENDC_DUMP) || (ASCENDC_DUMP != 0)) || defined(ASCENDC_TIME_STAMP_ON)
     static const struct AscTlv __asc_debug_meta_section__ __attribute__ ((used, section (".ascend.meta"))) =
     {4, 4, 1};
 #endif // defined(ASCENDC_DUMP) || defined(ASCENDC_TIME_STAMP_ON)
-#endif // __ENABLE_ASCENDC_PRINTF__
+}
+
+__aicore__ inline void enable_asc_assert()
+{
+#if (!defined(ASCENDC_DUMP) || (ASCENDC_DUMP != 0)) || defined(ASCENDC_TIME_STAMP_ON)
+    static const struct AscTlv __asc_assert_meta_section__ __attribute__ ((used, section (".ascend.meta"))) =
+    {4, 4, 5};
+#endif // defined(ASCENDC_DUMP) || defined(ASCENDC_TIME_STAMP_ON)
 }
 
 template <typename T, typename U, typename... Args>
@@ -70,6 +76,20 @@ __aicore__ inline uint32_t asc_debug_get_core_idx()
 __aicore__ inline uint64_t asc_debug_get_block_idx()
 {
     return asc_debug_get_block_idx_impl();
+}
+
+__aicore__ inline uint64_t asc_debug_get_block_num()
+{
+    return get_block_num();
+}
+
+__aicore__ inline uint64_t asc_debug_get_block_total_num()
+{
+#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510)
+    return asc_debug_get_block_num() * get_task_ration();
+#else
+    return asc_debug_get_block_num();
+#endif
 }
 
 __aicore__ inline int64_t asc_debug_get_program_counter()
@@ -247,6 +267,27 @@ template <typename T>
 __aicore__ constexpr inline DumpTensorDataType get_dump_datatype()
 {
     return get_dump_datatype_impl<T>();
+}
+
+__aicore__ inline void asc_debug_get_cann_vserion(__gm__ char*& versionStr, uint64_t& version, uint64_t& timeStamp)
+{
+#ifdef ASC_DEVKIT_VERSION_STR
+    versionStr = const_cast<__gm__ char*>(ASC_DEVKIT_VERSION_STR);
+#else
+    versionStr = const_cast<__gm__ char*>("Unknown ASC_DEVKIT version");
+#endif
+
+#ifdef ASC_DEVKIT_TIMESTAMP
+    timeStamp = static_cast<uint64_t>(ASC_DEVKIT_TIMESTAMP);
+#else
+    timeStamp = 0;
+#endif
+
+#ifdef ASC_DEVKIT_VERSION
+    version = static_cast<uint64_t>(ASC_DEVKIT_VERSION);
+#else
+    version = 0;
+#endif
 }
 
 } // namespace __asc_aicore

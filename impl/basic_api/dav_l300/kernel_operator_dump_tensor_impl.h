@@ -65,41 +65,6 @@ __aicore__ inline uint8_t GetDumpBlockIdx()
 
 __aicore__ inline void InitDumpImpl(bool mixFlag, uint32_t gmLen)
 {
-    uint32_t totalBlockNum;
-
-    if (g_dumpWorkspaceReserved == nullptr) {
-        ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "init dump get nullptr system workspace ptr"); });
-        return;
-    }
-    uint64_t dumpWorkspaceStart = reinterpret_cast<uint64_t>(g_dumpWorkspaceReserved) - DUMP_WORKSPACE_SIZE;
-    totalBlockNum = get_block_num();
-    uint32_t blockDumpSize = DUMP_UINTSIZE;  // DUMP_UINTSIZE is 1M
-
-    uint32_t blockDim = GetDumpBlockIdx();
-    if (blockDim >= DUMP_CORE_COUNT) {
-        return;
-    }
-    uint32_t blkInfoLen = sizeof(BlockInfo) + sizeof(DumpMeta);
-    uint64_t blockInfoStart = dumpWorkspaceStart + blockDim * DUMP_UINTSIZE;
-    *((__gm__ uint32_t *)blockInfoStart + BLOCK_INFO_LEN_POS) = blockDumpSize;
-    *((__gm__ uint32_t *)blockInfoStart + BLOCK_INFO_CORE_POS) = blockDim;
-    *((__gm__ uint32_t *)blockInfoStart + BLOCK_INFO_BLOCKNUM_POS) = totalBlockNum;
-    *((__gm__ uint32_t *)blockInfoStart + BLOCK_INFO_DUMPOFFSET_POS) = blockDumpSize - blkInfoLen;
-    *((__gm__ uint32_t *)blockInfoStart + BLOCK_INFO_MAGIC_POS) = 0x5aa5bccd;
-    *((__gm__ uint32_t *)blockInfoStart + BLOCK_INFO_RSV_POS) = 0;
-    *((__gm__ uint64_t *)((__gm__ uint32_t *)blockInfoStart + BLOCK_INFO_DUMP_ADDR)) = blockInfoStart + blkInfoLen;
-    dcci((__gm__ uint64_t *)blockInfoStart, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
-    // add DUMP_META info
-    blockInfoStart = blockInfoStart + sizeof(BlockInfo);
-    *(__gm__ uint32_t *)((__gm__ uint8_t *)blockInfoStart + DUMP_META_TYPE_POS) =
-        static_cast<uint32_t>(DumpType::DUMP_META);
-    *(__gm__ uint32_t *)((__gm__ uint8_t *)blockInfoStart + DUMP_META_LEN_POS) = 8;
-    *(__gm__ uint16_t *)((__gm__ uint8_t *)blockInfoStart + DUMP_META_BLOCK_DIM_POS) =
-        static_cast<uint16_t>(get_block_num());
-    *(__gm__ uint8_t *)((__gm__ uint8_t *)blockInfoStart + DUMP_META_CORE_TYPE_POS) = static_cast<uint8_t>(AscendC::MIX);
-    *(__gm__ uint8_t *)((__gm__ uint8_t *)blockInfoStart + DUMP_META_TASK_RATION) = static_cast<uint8_t>(mixFlag);
-    *((__gm__ uint32_t *)blockInfoStart + DUMP_META_RSV_POS) = 0;
-    dcci((__gm__ uint64_t *)blockInfoStart, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
 }
 
 __aicore__ inline DataCopyParams GetDataCopyParamImpl(uint32_t offset)
@@ -552,7 +517,7 @@ __aicore__ inline void UpdateBlockInfo(uint32_t tlvSize)
 template <class... Args>
 __aicore__ inline void PrintfImpl(DumpType printType, __gm__ const char* fmt, Args&&... args)
 {
-#ifdef ASCENDC_DUMP
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
     uint8_t blockIdx = GetDumpBlockIdx();
     if (blockIdx >= DUMP_CORE_COUNT) {
         return;
@@ -587,21 +552,9 @@ __aicore__ inline void PrintfImpl(DumpType printType, __gm__ const char* fmt, Ar
 }
 __aicore__ inline void InitDump(bool mixFlag, uint32_t gmLen)
 {
-#if defined(ASCENDC_DUMP) || defined(ASCENDC_ACC_DUMP)
-    g_dumpWorkspaceReserved = GetSysWorkSpacePtr();
-    InitDumpImpl(mixFlag, gmLen);
-#else
-    return;
-#endif
 }
 __aicore__ inline void InitDump(bool mixFlag, GM_ADDR dumpStartAddr, uint32_t gmLen)
 {
-#if defined(ASCENDC_DUMP) || defined(ASCENDC_ACC_DUMP)
-    g_dumpWorkspaceReserved = dumpStartAddr + DUMP_WORKSPACE_SIZE;
-    InitDumpImpl(mixFlag, gmLen);
-#else
-    return;
-#endif
 }
 }  // namespace AscendC
 #endif

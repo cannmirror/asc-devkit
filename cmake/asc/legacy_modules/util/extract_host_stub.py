@@ -32,7 +32,6 @@ from host_stub_util import CodeMode, FuncMetaType, FuncNameNotFound, MultiFuncNa
     GetFuncParamTypeError, GetFuncParamNameError, ArgumentError, GetOfileModeError, SetKernelTypeError
 from constants import FUNC_SIGNATURE, FUNC_PARAMS, STRUCT, CCE_GLOBAL, FUNC_PARAM_SKIPS, ATTRIBUTE, COMMENT, \
     MIX_CORE_MACRO, FUN_TEMPLATE_HASH_TILING_KEY_BASE, STR_TO_KERNEL_TYPE_V200, STR_TO_KERNEL_TYPE_V220
-from process_dump_info import get_dump_info_by_source
 
 
 IS_V220_MODE = False
@@ -381,7 +380,7 @@ def parse_func_signature_group_by_source(path: str, data: str, build_mode: str) 
 
     func_signs = sorted(func_signs, key=attrgetter('func_name'))
     func_signs = tuple(func_signs)
-    dump_info = get_dump_info_by_source(data)
+    dump_info = {"dump_type": "", "dump_size": 1048576}
     if build_mode == "m200" or build_mode == "c220" or build_mode == "c310":
         kernel_type = find_kernel_type_by_source(path, data, build_mode)
     else:
@@ -776,15 +775,10 @@ def indent_code(code: str, indent: str = '    '):
     return re.sub(r'^(?=.+)', indent, code, flags=re.MULTILINE)
 
 
-def generate_args_declare_code(mode: CodeMode, func_params: Tuple[FuncParam, ...], dump_type: str) -> str:
+def generate_args_declare_code(mode: CodeMode, func_params: Tuple[FuncParam, ...]) -> str:
     """Generate args declare code."""
     buff = io.StringIO()
     buff.write('struct {\n')
-    if dump_type != "":
-        buff.write(r'''#if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON
-        void* __ascendc_dump;
-#endif
-''')
 
     # Match BISHENG ABI format, ptr of args should be aligned to alignof(arg type), minimum 4bytes aligned.
     for func_param in add_ffts_addr_func_param_by_mode(mode, func_params):
@@ -879,8 +873,7 @@ def generate_launch_kernel_code(mode: CodeMode,
 
 def generate_aclrtlaunch_for_normal(func_sign: FuncSign,
                             func_key: int,
-                            mode: CodeMode,
-                            dump_info: dict) -> str:
+                            mode: CodeMode) -> str:
     param_names = tuple(get_param_names_by_func_sign(func_sign))
     block_num_name = param_names[0]
     stream_name = param_names[1]
@@ -937,8 +930,7 @@ def replace_func_params_with_specialization_typename(func_sign: FuncSign,
 
 def generate_func_impl_code(func_sign: FuncSign,
                             func_key: int,
-                            mode: CodeMode,
-                            dump_info: dict) -> str:
+                            mode: CodeMode) -> str:
     """Generate func impl code."""
     param_names = tuple(get_param_names_by_func_sign(func_sign))
     block_num_name = param_names[0]
@@ -970,7 +962,6 @@ template<>
                 func_sign,
                 remove_added_func_params(new_func_params)
             ),
-            dump_info["dump_type"]
         )
     )
     buff.write(args_declare_code)
@@ -979,12 +970,6 @@ template<>
 
     dump_factor = 108 if is_c310_mode() else 75
 
-    if dump_info["dump_type"] != "":
-        buff.write(f'''#if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON
-    constexpr uint32_t __ascendc_one_core_dump_size = {str(dump_info["dump_size"])};
-    AllocAscendMemDevice(&(__ascendc_args.__ascendc_dump), __ascendc_one_core_dump_size * {str(dump_factor)});
-#endif
-''')
     buff.write('''    constexpr uint32_t __ascendc_overflow_status_size = 8;
     AllocAscendMemDevice(&(__ascendc_args.__ascendc_overflow), __ascendc_overflow_status_size);
 ''')
@@ -1006,11 +991,9 @@ template<>
     )
     buff.write(args_assign_code)
     buff.write('\n')
-    if mode == CodeMode.MIX_VECTOR_CORE or "printf" in dump_info["dump_type"] or "timestamp" in dump_info["dump_type"]:
+    if mode == CodeMode.MIX_VECTOR_CORE:
         buff.write("    const char *__ascendc_name = \"{}\";\n".format(name))
 
-    if "assert" in dump_info["dump_type"]:
-        buff.write('    ascendc_set_exception_dump_info(__ascendc_one_core_dump_size);\n')
     if mode == CodeMode.MIX_VECTOR_CORE:
         mix_vector_core_launch_code = f'''
     uint32_t __ascendc_aicNumBlocks;
@@ -1040,12 +1023,6 @@ template<>
     buff.write('''    KernelHandleGradUnregister::GetInstance();
 ''')
 
-    if dump_info["dump_type"] != "":
-        buff.write('#if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON\n')
-        if "printf" in dump_info["dump_type"] or "timestamp" in dump_info["dump_type"]:
-            buff.write(f'    Adx::AdumpPrintWorkSpace(__ascendc_args.__ascendc_dump, \
-__ascendc_one_core_dump_size * {dump_factor}, {stream_name}, __ascendc_name);\n')
-        buff.write('    FreeAscendMemDevice(__ascendc_args.__ascendc_dump);\n#endif\n')
     buff.write('    FreeAscendMemDevice(__ascendc_args.__ascendc_overflow);\n')
 
     buff.write(indent_code('return __ascendc_ret;\n'))
@@ -1062,14 +1039,6 @@ def has_mode_in_func_groups(mode: CodeMode,
                             func_groups: Iterator[FuncSignGroupWithModeBase]) -> bool:
     """Has mode in function groups."""
     return any(map(lambda x: x.mode == mode, func_groups))
-
-
-def has_assert_in_func_groups(func_groups: List[FuncSignGroupWithModeBase]) -> bool:
-    for func_group in func_groups:
-        if "assert" in func_group.dump_info["dump_type"]:
-            return True
-
-    return False
 
 
 def generate_host_stub_head_code_cpu() -> str:
@@ -1216,7 +1185,6 @@ def generate_host_stub_code(func_groups: List[FuncSignGroupWithModeBase],
                             type_definition: str) -> str:
     """Generate host_stub.cpp code."""
     has_mode_func = partial(has_mode_in_func_groups, func_groups=func_groups)
-    dump_assert = has_assert_in_func_groups(func_groups)
     has_mix = (has_mode_func(CodeMode.MIX) or
                has_mode_func(CodeMode.NORMAL) or
                has_mode_func(CodeMode.MIX_VECTOR_CORE) or
@@ -1228,7 +1196,7 @@ def generate_host_stub_code(func_groups: List[FuncSignGroupWithModeBase],
     has_aiv = (has_mode_func(CodeMode.AIV) or
                has_mode_func(CodeMode.KERNEL_TYPE_AIV_ONLY) or
                has_mode_func(CodeMode.KERNEL_TYPE_MIX_AIV_1_0))
-    head_code = generate_host_stub_head_code(has_mix, has_aic, has_aiv, dump_assert)
+    head_code = generate_host_stub_head_code(has_mix, has_aic, has_aiv)
     buff = io.StringIO()
     buff.write(head_code)
     buff.write('\n')
@@ -1241,7 +1209,7 @@ def generate_host_stub_code(func_groups: List[FuncSignGroupWithModeBase],
             buff.write('\n')
 
             # use void* stream in host_stub.cpp
-            normal_launch_code = generate_aclrtlaunch_for_normal(func_sign, key, func_group.mode, func_group.dump_info)
+            normal_launch_code = generate_aclrtlaunch_for_normal(func_sign, key, func_group.mode)
             buff.write(normal_launch_code)
 
             param_names = tuple(get_param_names_by_func_sign(func_sign))
@@ -1255,11 +1223,10 @@ def generate_host_stub_code(func_groups: List[FuncSignGroupWithModeBase],
                 buff.write(f'{func_template_declare_code}\n')
                 for template_id, _ in enumerate(new_func_sign.func_template_specialization_args, 0):
                     template_key = get_template_hash_tiling_key(template_id, key)
-                    func_impl_code = generate_func_impl_code(new_func_sign, template_key, func_group.mode,
-                                                             func_group.dump_info)
+                    func_impl_code = generate_func_impl_code(new_func_sign, template_key, func_group.mode)
                     buff.write(func_impl_code)
             else:
-                func_impl_code = generate_func_impl_code(new_func_sign, key, func_group.mode, func_group.dump_info)
+                func_impl_code = generate_func_impl_code(new_func_sign, key, func_group.mode)
                 buff.write(func_impl_code)
 
     return remove_comments(buff.getvalue())
@@ -1522,8 +1489,6 @@ def source_properties(func_groups: Iterator[FuncSignGroupWithModeBase],
         definitions = []
         for idx, func_sign in enumerate(func_group.func_signs, func_group.base_key):
             compile_section = ""
-            if func_group.dump_info["dump_type"] == "assert":
-                compile_section += f'ASCENDC_DUMP_ASSERT_ONLY'
             if func_sign.func_template_decl:
                 for template_id, _ in enumerate(func_sign.func_template_specialization_args, 0):
                     template_func_name = f'{func_sign.func_name}_template_{template_id}'
@@ -1850,42 +1815,6 @@ def gen_ktype_section(func_sign: FuncSign,
     return section
 
 
-def generate_extra_param(func_group: FuncSignGroupWithModeBase,
-                         new_func_sign: FuncSign):
-    extra_param = "\n"
-    if not RUN_MODE == "cpu":
-        if func_group.dump_info["dump_type"] != "":
-            extra_param += "#if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON\n"
-            if len(new_func_sign.func_params) == 0:
-                extra_param += "GM_ADDR dumpAddr\n"
-            else:
-                extra_param += "GM_ADDR dumpAddr,\n"
-            extra_param += "#endif\n"
-    return extra_param
-
-
-def _generate_dump_source(func_group: FuncSignGroupWithModeBase, is_mix: bool) -> str:
-    if func_group.dump_info["dump_type"] != "":
-        source = "#if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON\n"
-        if func_group.dump_info["dump_type"] == "assert":
-            if is_mix:
-                source += "    AscendC::StoreArgsOfInitDump(true, dumpAddr);\n"
-            else:
-                source += "    AscendC::StoreArgsOfInitDump(false, dumpAddr);\n"
-        else:
-            if is_mix:
-                source += "    AscendC::InitDump(true, dumpAddr, ONE_CORE_DUMP_SIZE);\n"
-            else:
-                source += "    AscendC::InitDump(false, dumpAddr, ONE_CORE_DUMP_SIZE);\n"
-        source += "#ifdef ASCENDC_TIME_STAMP_ON\n"
-        source += "    AscendC::PrintTimeStamp(static_cast<uint32_t>\
-(AscendC::TimeStampId::TIME_STAMP_WRAP_INIT_DUMP));\n"
-        source += "#endif\n"
-        source += "#endif\n\n"
-        return source
-    return ""
-
-
 def _generate_ffts_source(is_mix: bool) -> str:
     if is_mix and is_v220_mode():
         source = "    icache_preload(1);\n"
@@ -1895,25 +1824,6 @@ def _generate_ffts_source(is_mix: bool) -> str:
         source += "#ifdef ASCENDC_TIME_STAMP_ON\n"
         source += "    AscendC::PrintTimeStamp(static_cast<uint32_t>\
 (AscendC::TimeStampId::TIME_STAMP_WRAP_FFTS_ADDR));\n"
-        source += "#endif\n"
-        return source
-    return ""
-
-
-def _generate_printf_source(func_group: FuncSignGroupWithModeBase) -> str:
-    if "printf" in func_group.dump_info["dump_type"]:
-        source = "#ifdef ASCENDC_DUMP\n"
-        source += "    uint64_t __ascendc_tStamp = 0;\n"
-        source += "    uint64_t __ascendc_version = 0;\n"
-        source += "    __gm__ char* __ascendc_versionStr = nullptr;\n"
-        source += "    GetCannVersion(__ascendc_versionStr, __ascendc_version, __ascendc_tStamp);\n"
-        source += "    if (__ascendc_tStamp == 0) {\n"
-        source += "        AscendC::printf(\"[WARNING]: CANN TimeStamp is invalid, \
-CANN TimeStamp is %u\\n\", __ascendc_tStamp);\n"
-        source += "    } else {\n"
-        source += "        AscendC::printf(\"CANN Version: %s, TimeStamp: %u\\n\", \
-(__gm__ const char*)(__ascendc_versionStr), __ascendc_tStamp);\n"
-        source += "    }\n"
         source += "#endif\n"
         return source
     return ""
@@ -1957,9 +1867,7 @@ def _generate_matmul_clear_source(is_mix: bool) -> str:
 def _generate_sub_source(func_group: FuncSignGroupWithModeBase, is_mix: bool, param_names):
     source = ""
     if not RUN_MODE == "cpu":
-        source += _generate_dump_source(func_group, is_mix)
         source += _generate_ffts_source(is_mix)
-        source += _generate_printf_source(func_group)
 
     if len(param_names) > 0:
         source += "#if defined(HAVE_WORKSPACE)\n"
@@ -2044,7 +1952,7 @@ def _generate_origin_func_call(func_sign: FuncSign, param_names: tuple,
 def _generate_overflow_status_check() -> str:
     if RUN_MODE == "cpu":
         return ""
-    return ("#if defined(ASCENDC_DUMP) && defined(ASCENDC_DEBUG)\n"
+    return ("#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0) && defined(ASCENDC_DEBUG)\n"
             "    AscendC::WriteBackOverflow(overflow_status);\n#endif\n")
 
 
@@ -2067,7 +1975,7 @@ def generate_kernel_auto_gen_func_impl(func_group: FuncSignGroupWithModeBase,
                                           new_func_params, func_group, is_mix)
 
     param_names = tuple(get_param_names_by_func_sign(func_sign))
-    extra_param = generate_extra_param(func_group, new_func_sign)
+    extra_param = "\n"
     suffix_extra_param = _get_suffix_extra_param(extra_param, new_func_sign.func_params)
 
     source += _generate_func_decl(func_sign, new_func_sign, extra_param, suffix_extra_param)
@@ -2271,15 +2179,6 @@ def main(argv: List[str]):
     except FileNotFoundError as ex:
         print(f'error: {ex}')
         return False
-
-    for func_group in func_sign_groups:
-        enable_flag = enable_ascendc_time_stamp[func_group.filepath]
-        if enable_flag is True:
-            if func_group.dump_info["dump_type"] != "":
-                func_group.dump_info["dump_type"] = func_group.dump_info["dump_type"] + ",timestamp"
-            else:
-                func_group.dump_info["dump_type"] = "timestamp"
-            func_group.dump_info["dump_size"] = 1048576
 
     if args.dynamic_mode:
         # Each preprocessed file corresponds to two .o files: aiv.o and aic.o.

@@ -23,6 +23,7 @@
 #include "kernel_macros.h"
 #include "kernel_tensor.h"
 #include "kernel_log.h"
+#include "utils/debug/asc_assert.h"
 
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
 #include <cstdint>
@@ -54,20 +55,6 @@ template <class... Args>
 __aicore__ inline void printf(__gm__ const char* fmt, Args&&... args);
 #endif
 
-// assert define
-#undef assert
-#undef ascendc_assert
-#ifdef ASCENDC_DUMP
-#if defined(__NPU_DEVICE__) || defined(__NPU_HOST__) || defined(__ASCC_DEVICE__) || defined(__ASCC_HOST__)
-#define assert(expr) ASCENDC_NPU_DEBUG_ASSERT_IMPL(expr)
-#else
-#define assert(...) ASCENDC_DEBUG_DEPRECATE_ASSERT_IMPL(__VA_ARGS__)
-#endif
-#define ascendc_assert(...) ASCENDC_DEBUG_ASSERT_IMPL(__VA_ARGS__)
-#else
-#define assert(...)
-#define ascendc_assert(...)
-#endif
 }  // namespace AscendC
 
 #include "../../impl/basic_api/kernel_operator_dump_tensor_intf_impl.h"

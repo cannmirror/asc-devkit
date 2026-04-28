@@ -108,12 +108,12 @@ enum KernelType {
     K_TYPE_AIV = 3,                 // v220-vec
     K_TYPE_MIX_AIC_MAIN = 4,        // v220 mix cube/vector 1:2
     K_TYPE_MIX_AIV_MAIN = 5,        // v220 mix vector/cube 1:2
-    K_TYPE_AIC_ROLLBACK = 6,        // v220-cube，aic rollback
-    K_TYPE_AIV_ROLLBACK = 7,        // v220-vec，aiv rollback
+    K_TYPE_AIC_ROLLBACK = 6,        // v220-cube, aic rollback
+    K_TYPE_AIV_ROLLBACK = 7,        // v220-vec, aiv rollback
     K_TYPE_MAX
 };
 
-enum BinaryMetaType { // 函数级TLV类型
+enum BinaryMetaType { // function level TLV type
     B_TYPE_BIN_VERSION_INFO = 0,
     B_TYPE_DEBUG_INFO = 1,
     B_TYPE_DYNAMIC_PARAM = 2,
@@ -121,32 +121,32 @@ enum BinaryMetaType { // 函数级TLV类型
     B_TYPE_SK_INFO = 5
 };
 
-struct BaseTlv {  // TLV头部定义
+struct BaseTlv {  // definition of TLV head
     unsigned short type;
     unsigned short len;
 };
 
 struct BinaryMetaVersion {
     BaseTlv head;     // B_TYPE_BIN_VERSION = 0
-    uint32_t version;  // 版本信息'
+    uint32_t version;  // version info
 };
 
 struct BinaryMetaDebug {
     BaseTlv head;     // B_TYPE_DEBUG_INFO = 1
-    uint32_t debugBufSize;  // 调试需要的内存空间
-    uint32_t debugOptions; // 调试开关开启
+    uint32_t debugBufSize;  // Memory space required for debugging
+    uint32_t debugOptions; // Enable debug switches
 };
 
 struct BinaryMetaDynamicParam {
     BaseTlv head;
     uint16_t reserve;
-    uint16_t dynamicParamMode;  // 动态参数，支持二级指针方式传参给kernel
+    uint16_t dynamicParamMode;  // Dynamic parameters, supporting passing parameters to the kernel via double pointers.
 };
 
 struct BinaryMetaOptionalParam {
     BaseTlv head;
-    uint16_t optionalInputMode; // 对于可选输入需要占位发布
-    uint16_t optionalOutputMode; // 对于可选输入需要占位发布
+    uint16_t optionalInputMode; // For optional inputs, placeholder publication is required.
+    uint16_t optionalOutputMode; // For optional inputs, placeholder publication is required.
 };
 
 struct BinaryMetaAscFeature {
@@ -154,7 +154,7 @@ struct BinaryMetaAscFeature {
     uint32_t feature; // PRINT = 1, FFTS = 2, L2CACHE = 3
 };
 
-enum FuncMetaType { // 函数级TLV类型
+enum FuncMetaType { // function level TLV type
     F_TYPE_KTYPE = 1, // kernel type tlv
     F_TYPE_CROSS_CORE_SYNC = 2, // cross core sync
     F_TYPE_MIX_TASK_RATION = 3, // MIX CORE TYPE
@@ -169,7 +169,7 @@ enum FuncMetaType { // 函数级TLV类型
 
 struct FuncMetaDeterministic {
     BaseTlv head;
-    uint32_t deterministic; // 确定性计算
+    uint32_t deterministic; // Deterministic computation
 };
 
 struct FuncMetaFunctionEntry {
@@ -183,7 +183,7 @@ struct FuncMetaNumBlocks {
     uint32_t numBlocks; // numBlocks
 };
 
-enum CrossCoreSyncType { // 函数级TLV类型
+enum CrossCoreSyncType { // function level TLV type
     C_TYPE_USE_SYNC = 1, // use cross core sync
     C_TYPE_MAX
 };
@@ -389,11 +389,6 @@ static const FuncMetaSknlMap SK_BIND_NAME_CONCAT(g_sknl_map_, __COUNTER__) =    
 
 #define REGISTER_TILING_DEFAULT(tiling_struct)  ENABLE_FEATURE_FOR_TILING(default, tiling_struct)
 #define REGISTER_TILING_FOR_TILINGKEY(expression, tiling_struct)  ENABLE_FEATURE_FOR_TILING(expression, tiling_struct)
-
-#define ENABLE_PRINTF() ENABLE_FEATURE_FOR_COMPILE(printf, 1)
-#define ENABLE_PRINTF_DUMP_SIZE() ENABLE_FEATURE_FOR_COMPILE(printfBufSize, 1048576)
-#define ENABLE_ASSERT() ENABLE_FEATURE_FOR_COMPILE(assert, 1)
-#define ENABLE_ASSERT_DUMP_SIZE() ENABLE_FEATURE_FOR_COMPILE(assertBufSize, 1024)
 
 #ifndef ONE_CORE_DUMP_SIZE
 #define ONE_CORE_DUMP_SIZE (1024 * 1024)

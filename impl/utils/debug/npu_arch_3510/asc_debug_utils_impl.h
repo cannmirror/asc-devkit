@@ -54,6 +54,15 @@ __aicore__ inline uint64_t asc_debug_get_block_idx_impl()
 #endif
 }
 
+__aicore__ inline int64_t get_task_ration()
+{
+#if defined(__DAV_CUBE__)
+    return 1;
+#else
+    return get_subblockdim();
+#endif
+}
+
 __aicore__ inline void sync_all_impl()
 {
     pipe_barrier(PIPE_ALL);

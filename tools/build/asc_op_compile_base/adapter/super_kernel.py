@@ -21,7 +21,6 @@ from .super_kernel_op_compile import compile_super_kernel, gen_file_header
 from .super_kernel_constants import SuperKernelPreLoadMode, SuperKernelDataCacheMode, \
     SuperKernelEarlyStartMode, SubOperatorType, SuperKernelDebugDcciAllMode, SuperKernelDebugSyncAllMode, \
     SuperKernelFeedSyncAllMode, SuperKernelProfilingMode, ERR_CODE, SuperKernelDeviceType, SuperKernelKernelType
-from .super_kernel_compile_base import gen_super_dump_code
 from .super_kernel_sub_op_infos import indent_code_func, SubOperatorInfos
 from .super_kernel_op_infos import SuperOperatorInfos
 
@@ -644,7 +643,6 @@ auto_gen_{super_operator.kernel_name}_kernel(void) {{\n"
     if super_operator.timestamp_option:
         is_mix = super_operator.kernel_type in \
             [SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_1, SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_2]
-        super_kernel_file += gen_super_dump_code(is_mix, 1048576, super_operator.workspace_size)
         if super_operator.profiling_mode.value == SuperKernelProfilingMode.ProfilingEnable.value:
             profiling_offset = ws_offset + 1
             super_kernel_file += f"    GM_ADDR profilingPtr = param_base[{profiling_offset}];\n"
@@ -923,7 +921,6 @@ auto_gen_{super_operator.kernel_name}_kernel(void) {{\n"
     if super_operator.timestamp_option:
         is_mix = super_operator.kernel_type in \
             [SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_1, SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_2]
-        super_kernel_file += gen_super_dump_code(is_mix, 1048576, super_operator.workspace_size)
         if super_operator.profiling_mode.value == SuperKernelProfilingMode.ProfilingEnable.value:
             profiling_offset = ws_offset + 1
             super_kernel_file += f"    GM_ADDR profilingPtr = param_base[{profiling_offset}];\n"

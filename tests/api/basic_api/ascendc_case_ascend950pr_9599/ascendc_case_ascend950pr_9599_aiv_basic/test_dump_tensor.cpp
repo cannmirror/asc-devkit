@@ -127,9 +127,6 @@ TEST_P(TestDumpTensorSuite, TestDumpTensorCases)
 
     param.CalFunc(dstGm, srcGm, workGm.data(), param.dataSize, param.dstSize, param.dumpSize);
 
-    auto* blockInfo = reinterpret_cast<uint32_t*>(workGm.data());
-    EXPECT_EQ(blockInfo[BLOCK_INFO_MAGIC_POS], BLOCK_INFO_MAGIC_NUM);
-
     SetGCoreType(coreTypeTmp);
     block_num = blockNumTmp;
     block_idx = blockIdxTmp;
@@ -146,20 +143,6 @@ TEST_F(TestDumpTensorSuite, InitDumpImplNullWorkspaceReturns)
     InitDumpImpl(false, DUMP_UINTSIZE);
 
     EXPECT_EQ(AscendC::g_dumpWorkspaceReserved, nullptr);
-}
-
-TEST_F(TestDumpTensorSuite, InitDumpImplMixFlagWritesMixedBlockNum)
-{
-    DumpTensorRuntimeGuard guard;
-    SetAivDumpEnv(1, 0, 0, 1);
-
-    std::vector<uint8_t> workGm(DUMP_UINTSIZE, 0);
-    AscendC::g_dumpWorkspaceReserved = workGm.data();
-    InitDumpImpl(true, DUMP_UINTSIZE);
-
-    auto* blockInfo = reinterpret_cast<uint32_t*>(workGm.data());
-    EXPECT_EQ(blockInfo[BLOCK_INFO_MAGIC_POS], BLOCK_INFO_MAGIC_NUM);
-    EXPECT_EQ(blockInfo[BLOCK_INFO_BLOCKNUM_POS], 3U);
 }
 
 TEST_F(TestDumpTensorSuite, InitDumpImplSkipsOutOfRangeCore)

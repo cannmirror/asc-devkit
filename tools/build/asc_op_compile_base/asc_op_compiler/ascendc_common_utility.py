@@ -877,14 +877,7 @@ def convert_customized_config_to_inferchannel(config: CustomizedConfig):
     no_set_kernel_type = False
     default_kernel_type = first_tiling_info.kernel_type
     code_channel = -1
-    allow_debug_key = {'printf', 'assert'}
-    dump_type = []
-    for k, v in config.debug_info:
-        if k not in allow_debug_key:
-            raise Exception(f"invalid debug key: {k}")
-        dump_type.append(k)
-    dump_size = 108 * 1024 * 1024
-    dump_info = {'dump_type': ','.join(dump_type), 'dump_size': dump_size}
+    dump_info = {'dump_type': ''}
     template_tiling_info = {}
     default_tiling_struct = config.default_tiling_struct_name
     tiling_struct_expr_map = {}

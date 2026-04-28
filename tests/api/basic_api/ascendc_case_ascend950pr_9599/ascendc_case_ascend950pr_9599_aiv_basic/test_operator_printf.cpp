@@ -73,9 +73,6 @@ TEST_F(TestPrintfSuite, PrintfCase)
 
     DataPrintfCase(srcGm, workGm.data(), dataSize, dumpSize);
 
-    auto* blockInfo = reinterpret_cast<uint32_t*>(workGm.data());
-    EXPECT_EQ(blockInfo[BLOCK_INFO_MAGIC_POS], BLOCK_INFO_MAGIC_NUM);
-
     SetGCoreType(coreTypeTmp);
     block_num = blockNumTmp;
     block_idx = blockIdxTmp;

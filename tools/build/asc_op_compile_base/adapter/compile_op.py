@@ -258,11 +258,6 @@ into superkernel", AscendCLogLevel.LOG_WARNING)
     if aicore_num is not None and vectorcore_num is not None:
         js["platformInfo"] = {"cubeCoreCnt": int(aicore_num), "vectorCoreCnt": int(vectorcore_num)}
 
-    if not global_var_storage.get_variable("ascendc_dump_disable_compile_options") \
-        and compile_info.dump_info.get("dump_type", "") != "":
-        js["debugOptions"] = compile_info.dump_info["dump_type"]
-        js["debugBufSize"] = global_var_storage.get_variable("ascendc_required_dump_workspace_size")
-
     # set tilingdata of mc2 operator when online static compile
     if tiling_info.static_shape_flag is True and op_info.mc2_ctx is not None and len(op_info.mc2_ctx) != 0:
         js["runInfo"] = tiling_info.raw_run_info
@@ -446,7 +441,7 @@ def _gen_kernel_func_declare_head(is_mix: bool, is_single_and_using_hard_sync: b
 
 
 def _gen_set_workspace_codes(is_mix: bool, is_single_and_using_hard_sync: bool, \
-    opinfo: OpInfo, tiling_info: TilingInfo, dump_size: int, \
+    opinfo: OpInfo, tiling_info: TilingInfo, \
     compile_options: list, compile_info: CompileInfo):
     # set workspace
     source = ""
@@ -456,7 +451,7 @@ def _gen_set_workspace_codes(is_mix: bool, is_single_and_using_hard_sync: bool, 
     else:
         source += "    GM_ADDR usrWorkspace = workspace + AscendC::RESERVED_WORKSPACE;\n"
     if "oom" in get_current_build_config("tir.op_debug_config"):
-        source = add_op_param_to_workspace(opinfo, tiling_info, source, dump_size, compile_options, compile_info)
+        source = add_op_param_to_workspace(opinfo, tiling_info, source, compile_options, compile_info)
 
     needs_ffts = (is_mix or is_single_and_using_hard_sync) and not CommonUtility.is_c310()
     # set ffts_addr for ascend910b mix op or is_single_and_using_hard_sync scene
@@ -477,20 +472,6 @@ def _gen_set_workspace_codes(is_mix: bool, is_single_and_using_hard_sync: bool, 
         source += "    if constexpr (g_coreType == AscendC::AIC) {\n"
         source += "        matmul::clearWorkspace(workspace);\n"
         source += add_time_stamp_codes('TIME_STAMP_WRAP_CLEAR_WK_SPAC', 2)
-        source += "    }\n"
-        source += "#endif\n"
-    if "printf" in compile_info.dump_info["dump_type"]:
-        source += "#ifdef ASCENDC_DUMP\n"
-        source += "    uint64_t __ascendc_tStamp = 0;\n"
-        source += "    uint64_t __ascendc_version = 0;\n"
-        source += "     __gm__ char* __ascendc_versionStr = nullptr;\n"
-        source += "    GetCannVersion(__ascendc_versionStr, __ascendc_version, __ascendc_tStamp);\n"
-        source += "    if (__ascendc_tStamp == 0) {\n"
-        source += "        AscendC::printf(\"[WARNING]: CANN TimeStamp is invalid, \
-CANN TimeStamp is %u\\n\", __ascendc_tStamp);\n"
-        source += "    } else {\n"
-        source += "        AscendC::printf(\"CANN Version: %s, TimeStamp: %u\\n\", \
-(__gm__ const char*)(__ascendc_versionStr), __ascendc_tStamp);\n"
         source += "    }\n"
         source += "#endif\n"
     return source
@@ -546,11 +527,6 @@ def gen_meta_info_section(compile_info, op_info):
 
     if "oom" in get_current_build_config("tir.op_debug_config"):
         debug_options |= debug_options_table["oom"]
-    if not global_var_storage.get_variable("ascendc_dump_disable_compile_options") \
-        and compile_info.dump_info.get("dump_type", "") != "":
-        for dump_type in compile_info.dump_info["dump_type"].split(','):
-            debug_options |= debug_options_table[dump_type]
-        debug_buf_size = global_var_storage.get_variable("ascendc_required_dump_workspace_size")
     section_var += \
         f"static const struct BinaryMetaDebug {kernel_name}_kernel_metainfo_debug_section __attribute__ "
     section_var += f"((used, section (\".ascend.meta\"))) = "
@@ -581,7 +557,6 @@ def gen_kernel_fun(compile_info: CompileInfo, func_name: str, opinfo: OpInfo, \
     compile_options = compile_option_tuple.compile_options
     src_file = compile_info.src_file
     out_file = compile_info.gen_kernel_func_file
-    dump_size = compile_info.dump_info["dump_size"]
 
     file_name = os.path.basename(src_file)
     file_name_without_ext = os.path.splitext(file_name)[0]
@@ -594,14 +569,6 @@ def gen_kernel_fun(compile_info: CompileInfo, func_name: str, opinfo: OpInfo, \
     source += "#define __global__ inline\n"
     source += f"#include \"{src_file}\"\n"
     source += "#include \"kernel_common.h\"\n"
-
-    ascendc_dump_on = "-DASCENDC_DUMP=0" not in compile_options
-    dump_info = compile_info.dump_info["dump_type"] != "" and ascendc_dump_on
-
-    if (CommonUtility.is_c310()) and dump_info:
-        source += "#if defined(RAW_AIC_ONLY_DUMP_TENSOR)\n"  # dump L1
-        source += "#include \"include/adv_api/matmul/matmul_intf.h\"\n"  # maybe cube only no matmul::clearWorkspace
-        source += "#endif\n"
 
     source += "#undef __global__\n"
     source += "#if ASCENDC_CPU_DEBUG\n"
@@ -651,34 +618,16 @@ def gen_kernel_fun(compile_info: CompileInfo, func_name: str, opinfo: OpInfo, \
     source_declare_pub_fun = f"ascendc_{auto_gen_kernel_func}(" + called_func_params + ");"
 
 
-    if (CommonUtility.is_c310()) and dump_info:
-        source += "#if defined(ASCENDC_DUMP) && defined(RAW_AIC_ONLY_DUMP_TENSOR)\n"
-        source += "    if ASCEND_IS_AIV {\n"
-        source += "        AscendC::EnableL1Dump();\n"
-        source += "        workspace += " + \
-            str(global_var_storage.get_variable(
-                "ascendc_required_dump_workspace_size")) + ";\n"
-        source += "        AscendC::SetSysWorkspaceForce(workspace);\n"
-        source += "        constexpr uint32_t ASCENDC_DUMP_SIZE = 123;\n"
-        if is_mix:
-            source += "        AscendC::InitDump(true, ASCENDC_DUMP_SIZE);\n"
-        else:
-            source += "        AscendC::InitDump(false, ASCENDC_DUMP_SIZE);\n"
-        source += "        AscendC::DumpL1TensorTransferByUB();\n"
-        source += "        return;\n"
-        source += "    }\n"
-        source += "#endif\n"
-
     # init dump and system workspace
     if global_var_storage.get_variable("ascendc_enable_super_kernel") is False:
-        source += gen_init_dump_code(is_mix, dump_size)
+        source += gen_init_dump_code()
         # set mc2 context
         source += _gen_set_mc2_ctx_param(opinfo)
         source += add_time_stamp_codes('TIME_STAMP_WRAP_MC2_CTX')
         # implicit add aicore exception restart begin position
         # set workspace
         source += _gen_set_workspace_codes(is_mix, is_single_and_using_hard_sync, opinfo, tiling_info, \
-                                       dump_size, compile_options, compile_info)
+                                       compile_options, compile_info)
     else:
         source += _gen_set_mc2_ctx_param(opinfo)
         source += "    AscendC::SetSysWorkspaceForce(workspace);\n"
@@ -756,14 +705,6 @@ def gen_kernel_fun(compile_info: CompileInfo, func_name: str, opinfo: OpInfo, \
     from tbe.common.buildcfg.buildcfg_mapping import status_check
     if get_current_build_config(status_check) and (CommonUtility.is_v200() or CommonUtility.is_v100()):
         source += "    AscendC::WriteBackOverflow(overflowStatus);\n"
-
-    if (CommonUtility.is_c310()) and dump_info:
-        source += "#if defined(ASCENDC_DUMP) && defined(RAW_AIC_ONLY_DUMP_TENSOR)\n"
-        source += "    if ASCEND_IS_AIC {\n"
-        source += "        pipe_barrier(PIPE_ALL);\n"
-        source += "        AscendC::FinalizeL1TensorDump();\n"
-        source += "    }\n"
-        source += "#endif\n"
 
     if not global_var_storage.get_variable("ascendc_enable_super_kernel") and \
                     (CommonUtility.is_c310() or CommonUtility.is_m510()):
@@ -1318,10 +1259,7 @@ def compile_op_common_part(cce_file: str, origin_func_name: str, op_info: OpInfo
     compile_info.tiling_key_kernel_type = infered_info_from_ifile.tiling_key_kernel_type
     compile_info.no_set_kernel_type = infered_info_from_ifile.no_set_kernel_type
     compile_info.default_kernel_type = infered_info_from_ifile.default_kernel_type
-    compile_info.dump_info = infered_info_from_ifile.dump_info \
-        if (infered_info_from_ifile.dump_info.get('dump_type') is not None
-            and infered_info_from_ifile.dump_info.get('dump_size') is not None) \
-        else {'dump_type': '', 'dump_size': 1024}
+    compile_info.dump_info = {'dump_type': '', 'dump_size': 1024}
 
     # generate tiling struct size, dfx section
     if global_var_storage.get_variable("ascendc_tiling_no_register"):
@@ -1507,34 +1445,10 @@ def compile_op_with_customized_config(cce_file: str, origin_func_name: str, op_i
 
 def handle_dump_options(compile_info: CompileInfo, compile_option_tuple):
     # dump ktype handle
-    ascendc_dump_on = "-DASCENDC_DUMP=0" not in compile_option_tuple.compile_options
-    dump_info = compile_info.dump_info["dump_type"] != "" and ascendc_dump_on
     compile_info.raw_tiling_key_kernel_type = copy.deepcopy(compile_info.tiling_key_kernel_type)
-    if (CommonUtility.is_c310()) and dump_info:
-        tiling_key_kernel_type = compile_info.tiling_key_kernel_type
-        for tiling_key in tiling_key_kernel_type:
-            if tiling_key_kernel_type[tiling_key] == KernelMetaType.KERNEL_TYPE_AIC_ONLY:
-                tiling_key_kernel_type[tiling_key] = KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2
-
-    # check assert only
-    if compile_info.dump_info["dump_type"] == "assert":
-        compile_option_tuple.compile_options.append('-DASCENDC_DUMP_ASSERT_ONLY')
-        global_var_storage.set_variable("ascendc_dump_assert_only", True)
-
-    # handle dump macro
-    if "assert" not in compile_info.dump_info["dump_type"] and "printf" not in compile_info.dump_info["dump_type"]:
-        compile_option_tuple.compile_options.append('-DASCENDC_DUMP=0')
-        length_before = len(compile_option_tuple.compile_options)
-        CommonUtility.remove_options(compile_option_tuple.compile_options, ['-DASCENDC_DUMP', '-DASCENDC_DUMP=1'])
-        length_after = len(compile_option_tuple.compile_options)
-        if length_before != length_after:
-            CommonUtility.print_compile_log(compile_info.kernel_name, \
-                "-DASCENDC_DUMP=1 is deleted because the feature is not used internally in src file", \
-                AscendCLogLevel.LOG_WARNING)
 
     # dump or acc or timestamp or recognize_simtvf will need extra workspace
     ascendc_enable_dump_workspace = ("-DASCENDC_DUMP=0" not in compile_option_tuple.compile_options) or \
-        ("assert" == compile_info.dump_info["dump_type"]) or \
         (global_var_storage.get_variable("ascendc_time_stamp_compile_options") is True) or \
         "-DASCENDC_ACC_DUMP" in compile_option_tuple.compile_options or \
         (global_var_storage.get_variable("ascendc_recognize_simtvf") is True)
@@ -2350,12 +2264,6 @@ def replay_op(op_info: OpInfo, entry_obj: str, code_channel: int, src_file: str,
     """replay_op feature is at sunset
     """
     return True, "success"
-
-
-def set_dump_assert_flag(compile_info: CompileInfo):
-    """Set ascendc_dump_assert_only flag when dump_type is assert"""
-    if compile_info.dump_info.get("dump_type") == "assert":
-        global_var_storage.set_variable("ascendc_dump_assert_only", True)
 
 
 def get_code_channel(src_file: str, kernel_name: str, optype: str, compile_options_input: list = None):

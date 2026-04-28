@@ -35,7 +35,7 @@ using ::printf;
 template <typename... Args>
 inline auto PRINTF(Args&&... args) -> decltype(printf(std::forward<Args>(args)...))
 {
-#ifdef ASCENDC_DUMP
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
     return printf(std::forward<Args>(args)...);
 #else
     return 0;
@@ -48,7 +48,7 @@ inline auto PRINTF(Args&&... args) -> decltype(printf(std::forward<Args>(args)..
 template <class... Args>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void PRINTF(const __gm__ char* fmt, Args&&... args)
 {
-#ifdef ASCENDC_DUMP
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
     __asc_simt_vf::simt_printf_impl(__asc_simt_vf::DumpType::DUMP_SIMT_PRINTF, fmt, args...);
 #endif
 }
@@ -56,7 +56,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void PRINTF(const __gm__ char* fmt, Args&&
 template <class... Args>
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void printf(const __gm__ char* fmt, Args&&... args)
 {
-#ifdef ASCENDC_DUMP
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
     __asc_simt_vf::simt_printf_impl(__asc_simt_vf::DumpType::DUMP_SIMT_PRINTF, fmt, args...);
 #endif
 }
