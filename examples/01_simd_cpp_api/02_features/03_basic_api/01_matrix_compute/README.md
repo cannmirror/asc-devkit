@@ -7,6 +7,7 @@
 |--------------------------------------------------------------------------------------------| ---------------------------------------------------- |
 | [fixpipe_co12gm](./fixpipe_co12gm)               | 本样例介绍如何使用Fixpipe将矩阵乘的结果从CO1（L0C Buffer）搬出到GM（Global Memory） |
 | [fixpipe_co12ub](./fixpipe_co12ub)               | 本样例介绍如何使用Fixpipe将矩阵乘的结果从CO1（L0C Buffer）搬出到UB（Unified Buffer） |
+| [fixpipe_co12l1](./fixpipe_co12l1)               | 本样例介绍如何使用Fixpipe将矩阵乘的结果从CO1（L0C Buffer）搬出到L1（L1 Buffer） |
 | [fixpipe_co12c1_quantization_s322f16](./fixpipe_co12c1_quantization_s322f16)               | 本样例介绍如何使用基础API Fixpipe将矩阵乘的结果从CO1搬入C1，并使能随路量化将矩阵乘结果由int32_t类型数据量化为half类型 |
 | [fixpipe_co12c1_quantization_s322s8](./fixpipe_co12c1_quantization_s322s8)               | 本样例介绍如何使用组合API Fixpipe或基础API DataCopy将矩阵乘的结果从L0C搬出到L1，并支持随路quant, relu能力组合，与unitflag能力组合，将矩阵乘结果由int32_t类型数据量化为int8_t类型 |
 | [fixpipe_co12c1_quantization_f322s8](./fixpipe_co12c1_quantization_f322s8)                 | 本样例介绍如何使用组合API Fixpipe或基础API DataCopy将矩阵乘的结果从L0C搬出到L1，并支持随路quant, relu能力组合，与unitflag能力组合，输入half类型数据，输出由float类型量化为int8_t类型, int8_t输出默认开启channel merge能力。 |
