@@ -13,86 +13,27 @@
 
 
 import os
-import sys
-import torch
+import argparse
 import numpy as np
-from ml_dtypes import bfloat16
 
 
-def gen_golden_data_simple():
-    dtype = np.float32
-
-    x_gm_type = dtype
-    y_gm_type = dtype
-
-    if x_gm_type == np.int8:
-        range_min = -128
-        range_max = 127
-    elif x_gm_type == np.uint8:
-        range_min = 0
-        range_max = 255
-    elif x_gm_type == np.int16:
-        range_min = -32768
-        range_max = 32767
-    elif x_gm_type == np.uint16:
-        range_min = 0
-        range_max = 65535
-    elif x_gm_type == np.int32:
-        range_min = -2147483648
-        range_max = 2147483647
-    elif x_gm_type == np.uint32:
-        range_min = 0
-        range_max = 4294967295
-    elif x_gm_type == np.int64:
-        range_min = -9223372036854775808
-        range_max = 9223372036854775807
-    elif x_gm_type == np.uint64:
-        range_min = 0
-        range_max = 18446744073709551615
-    else:
-        range_min = -10
-        range_max = 10
-
+def gen_golden_data():
     np.random.seed(0)
 
-    a_length = 136
-    r_length = 32
+    # 输入shape: [32, 136] (Pattern=RA: rLength=32, aLength=136)
+    dtype = np.float32
+    x_gm = np.random.uniform(-10, 10, [32, 136]).astype(dtype)
 
-    pattern = 1
-    x_gm_shape = [a_length, -1]
-    if pattern == 1:
-        x_gm_shape = [r_length, -1]
-
-    x_gm = np.random.uniform(range_min, range_max, [4352]).reshape(x_gm_shape).astype(x_gm_type)
-
-    if x_gm_type == bfloat16:
-        tensor_x = torch.from_numpy(x_gm.astype(np.float32))
-        tensor_y, top_indices = torch.max(tensor_x, 1)
-        if pattern == 1:
-            tensor_y, top_indices = torch.max(tensor_x, 0)
-        y_gm = tensor_y.cpu().numpy().astype(y_gm_type)
-    elif x_gm_type == np.uint32 or x_gm_type == np.uint16:
-        tensor_x = torch.from_numpy(x_gm.astype(np.int64))
-        tensor_x = tensor_x.to(torch.int64)
-        tensor_y, top_indices = torch.max(tensor_x, 1)
-        if pattern == 1:
-            tensor_y, top_indices = torch.max(tensor_x, 0)
-        y_gm = tensor_y.cpu().numpy().astype(y_gm_type)
-    elif x_gm_type == np.uint64:
-        y_gm = np.max(x_gm, axis=1)
-        if pattern == 1:
-            y_gm = np.max(x_gm, axis=0)
-    else:
-        tensor_x = torch.from_numpy(x_gm)
-        tensor_y, top_indices = torch.max(tensor_x, 1)
-        if pattern == 1:
-            tensor_y, top_indices = torch.max(tensor_x, 0)
-        y_gm = tensor_y.cpu().numpy().astype(y_gm_type)
+    # Pattern=1 (RA模式): 输入[rLength, aLength] = [32, 136]
+    # 沿axis=0（第一个维度）归约，对每列的32个元素求最大值
+    # 输出shape为[aLength] = [136]
+    y_gm = np.max(x_gm, axis=0).astype(dtype)
 
     os.makedirs("input", exist_ok=True)
     x_gm.tofile("./input/input_x.bin")
     os.makedirs("output", exist_ok=True)
     y_gm.tofile("./output/golden.bin")
 
+
 if __name__ == "__main__":
-    gen_golden_data_simple()
+    gen_golden_data()

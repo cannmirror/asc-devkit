@@ -9,8 +9,5 @@
 | 目录名称                                                                                                                 | 功能描述                                                                        | 
 |----------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------| 
 | [reduce](./reduce)                                                                                                   | 本样例介绍了调用WholeReduceSum和BlockReduceSum高阶API实现reduce算子，实现了连续内存上数据元素的累加，返回累加结果的功能         |
-| [reducemax](./reducemax)                                                                                             | 本样例介绍了调用ReduceMax高阶API实现reducemax算子，在所有的输入数据中找出最大值及最大值对应的索引位置                  |
-| [reducemean](./reducemean)                                                                                           | 本样例演示了基于ReduceMean高阶API实现reducemean算子。样例对一个多维向量按照指定的维度求平均值                  |
-| [reducemin](./reducemin)                                                                                             | 本样例演示了调用ReduceMin高阶API实现reducemin算子。样例对一个多维向量在指定的维度求最小值                     |
-| [reducesum](./reducesum)                                                                                           | 本样例演示了基于ReduceSum高阶API实现reducesum算子。样例对一个多维向量按照指定的维度进行数据累加                  |
+| [reducemax](./reducemax)                                                                                           | 本样例演示了基于ReduceMax高阶API对一个多维向量按照指定的维度求最大值及最大值对应的索引值。                 |
 | [sum](./sum)                                                                                                         | 本样例介绍了调用Sum高阶API实现sum算子，获取输入数据最后一个维度的元素总和                                   |
