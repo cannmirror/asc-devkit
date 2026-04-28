@@ -15,28 +15,41 @@ import os
 import sys
 
 
-def file_filter(path):
+def get_file_action(path):
     """
-    Determine if the file contains files that do not require compilation.
+    Determine CI action based on file path.
+    Returns:
+        "SKIP"    - Skip all (no compile and test, no package)
+        "PKG"     - Trigger package build
+        "COMPILE" - Normal compile
     """
-    key_words = ['.md', 'OWNERS', 'LICENSE', 'classify_rule.yaml', 'examples', 'docs']
-    for key_word in key_words:
-        if key_word in path:
-            return True
-    return False
+    skip_keywords = ['.md', 'OWNERS', 'LICENSE', 'classify_rule.yaml', 'docs']
+    pkg_keywords = ['examples']
+    
+    for kw in skip_keywords:
+        if kw in path:
+            return "SKIP"
+    
+    for kw in pkg_keywords:
+        if kw in path:
+            return "PKG"
+    
+    return "COMPILE"
 
 
 def main():
-    """"
-    get change info from ci, CI_MODE=True, ci will write 'get diff >/change_file.txt'
-    Return whether to skip compilation.
+    """
+    Get change info from ci, CI_MODE=True, ci will write 'get diff >/change_file.txt'
+    Returns:
+        "SKIP"    - Skip all (docs, OWNERS, .md only)
+        "PKG"     - Trigger package build (examples only)
+        "COMPILE" - Normal compile (source code changes)
     """
     if len(sys.argv) < 2:
-        return "FALSE"
+        return "COMPILE"
 
     changed_files_arg = sys.argv[1]
     try:
-        # 读取修改的文件列表
         if os.path.isfile(changed_files_arg) and changed_files_arg.endswith('.txt'):
             with open(changed_files_arg, 'r') as f:
                 changed_files = [line.strip() for line in f.readlines() if line.strip()]
@@ -45,20 +58,23 @@ def main():
         else:
             changed_files = [changed_files_arg.strip()]
     except BaseException as err:
-        return "FALSE"
-    finally:
-        pass
+        return "COMPILE"
 
     if not changed_files:
-        return "FALSE"
+        return "COMPILE"
 
-    need_skip = True
-    for file_path in changed_files:
-        need_skip = need_skip and file_filter(file_path)
-        if not need_skip:
-            return "FALSE"
-
-    return "TRUE"
+    actions = [get_file_action(f) for f in changed_files]
+    
+    if all(a == "SKIP" for a in actions):
+        return "SKIP"
+    
+    if any(a == "PKG" for a in actions):
+        if not any(a == "COMPILE" for a in actions):
+            return "PKG"
+        else:
+            return "COMPILE"
+    
+    return "COMPILE"
 
 
 if __name__ == '__main__':
