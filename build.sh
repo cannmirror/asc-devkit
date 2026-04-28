@@ -13,7 +13,7 @@ set -e
 
 SUPPORTED_SHORT_OPTS=("h" "j" "t" "p" "f")
 SUPPORTED_LONG_OPTS=(
-    "help" "cov" "cache" "pkg" "asan" "make_clean" "cann_3rd_lib_path" "test" "cann_path" "adv_test" "adv_test_two" "basic_test_one" "basic_test_two" "basic_test_three" "basic_test_four" "basic_test_five" "build-type" "extra-cmake-args" "changed_file"
+    "help" "cov" "cache" "pkg" "asan" "make_clean" "cann_3rd_lib_path" "test" "cann_path" "adv_test" "adv_test_two" "arm_test" "basic_test_one" "basic_test_two" "basic_test_three" "basic_test_four" "basic_test_five" "build-type" "extra-cmake-args" "changed_file"
 )
 
 CURRENT_DIR=$(dirname $(readlink -f ${BASH_SOURCE[0]}))
@@ -64,6 +64,7 @@ usage() {
         echo "    -j                   Compile thread nums, default is 16, eg: -j 8"
         echo "    --adv_test            Build and run the adv part of unit tests"
         echo "    --adv_test_two        Build and run the adv_test_two part of unit tests"
+        echo "    --arm_test            Build and run the arm part of unit tests"
         echo "    --basic_test_one      Build and run the basic_one part of unit tests"
         echo "    --basic_test_two      Build and run the basic_two part of unit tests"
         echo "    --basic_test_three    Build and run the basic_three part of unit tests"
@@ -101,6 +102,7 @@ usage() {
   echo "    -p, --cann_path      Set the cann package installation directory, eg: /usr/local/Ascend/cann"
   echo "    --adv_test            Build and run the adv part of unit tests"
   echo "    --adv_test_two        Build and run the adv_test_two part of unit tests"
+  echo "    --arm_test            Build and run the arm part of unit tests"
   echo "    --basic_test_one      Build and run the basic_one part of unit tests"
   echo "    --basic_test_two      Build and run the basic_two part of unit tests"
   echo "    --basic_test_three    Build and run the basic_three part of unit tests"
@@ -200,6 +202,7 @@ check_help_combinations() {
       -t|--test) has_test=true ;;
       --adv_test) test_part="adv_test" ;;
       --adv_test_two) test_part="adv_test_two" ;;
+      --arm_test) test_part="arm_test" ;;
       --basic_test_one) test_part="basic_test_one" ;;
       --basic_test_two) test_part="basic_test_two" ;;
       --basic_test_three) test_part="basic_test_three" ;;
@@ -262,6 +265,7 @@ check_param_with_help() {
           -t|--test) SHOW_HELP="test" ;;
           --adv_test) SHOW_HELP="test" ;;
           --adv_test_two) SHOW_HELP="test" ;;
+          --arm_test) SHOW_HELP="test" ;;
           --basic_test_one) SHOW_HELP="test" ;;
           --basic_test_two) SHOW_HELP="test" ;;
           --basic_test_three) SHOW_HELP="test" ;;
@@ -360,6 +364,11 @@ set_options() {
       ;;
     --adv_test_two)
       TEST_PART="adv_test_two"
+      check_param_test_part
+      shift
+      ;;
+    --arm_test)
+      TEST_PART="arm_test"
       check_param_test_part
       shift
       ;;
@@ -535,6 +544,8 @@ function build_test_part() {
     TEST_TARGET_LIST=("${adv_test_targets[@]}")
   elif [ "$TEST_PART" == "adv_test_two" ]; then
     TEST_TARGET_LIST=("${adv_test_two_targets[@]}")
+  elif [ "$TEST_PART" == "arm_test" ]; then
+    TEST_TARGET_LIST=("${arm_test_targets[@]}")
   elif [ "$TEST_PART" == "basic_test_one" ]; then
     TEST_TARGET_LIST=("${basic_test_one_targets[@]}")
   elif [ "$TEST_PART" == "basic_test_two" ]; then
