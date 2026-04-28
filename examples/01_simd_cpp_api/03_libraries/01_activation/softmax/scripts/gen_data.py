@@ -11,15 +11,12 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
-
 import os
 import numpy as np
 
 
 def softmax_py_float(x):
-    """
-    Compute the softmax function for each channel of the input x.
-    """
+    """Compute the softmax function for each channel of the input x."""
     orig_shape = x.shape
     x_max = np.max(x, axis=-1)
     x_max = np.reshape(x_max, [orig_shape[0], 1])
@@ -34,25 +31,38 @@ def softmax_py_float(x):
     out = np.reshape(x_div, [orig_shape[0], orig_shape[1]])
     return out, x_max, x_sum
 
-def gen_golden_data_simple():
-    x_shape = (960, 960)
-    workspace_shape = (1024)
-    x = np.random.uniform(-1, 1, x_shape).astype(np.float32)
-    output_max = np.zeros([x_shape[0], 8], dtype=np.float32)
-    output_sum = np.zeros([x_shape[0], 8], dtype=np.float32)
-    workspace = np.random.uniform(0, 0, workspace_shape).astype(np.uint32)
 
-    golden, max, sum = softmax_py_float(x)
-    output_max = output_max + max
-    output_sum = output_sum + sum
+def adjust_softmax_res(res, max_val, res_shape):
+    """Adjust softmax results based on max values."""
+    target = 0xFF7FFFFF
+    to = 0.0
+    for i in range(res_shape[0]):
+        if max_val[i][0] == target:
+            for j in range(res_shape[1]):
+                res[i][j] = to
+    return
 
+
+def gen_golden_data():
+    """Generate golden data for SoftMax + AdjustSoftMaxRes."""
     os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
+
+    x_shape = (32, 32)
+    workspace_shape = (1024,)
+    x = np.random.uniform(-1, 1, x_shape).astype(np.float32)
+    workspace = np.zeros(workspace_shape, dtype=np.uint32)
+
+    softmax_out, max_val, sum_val = softmax_py_float(x)
+
+    adjust_softmax_res(softmax_out, max_val, softmax_out.shape)
+
     x.tofile("./input/input_x.bin")
     workspace.tofile("./input/workspace.bin")
-    output_max.tofile("./output/golden_max.bin")
-    output_sum.tofile("./output/golden_sum.bin")
-    golden.tofile("./output/golden.bin")
+    softmax_out.tofile("./output/golden.bin")
+
+    print(f"Generated data: input_x {x.shape}, golden {softmax_out.shape}")
+
 
 if __name__ == "__main__":
-    gen_golden_data_simple()
+    gen_golden_data()

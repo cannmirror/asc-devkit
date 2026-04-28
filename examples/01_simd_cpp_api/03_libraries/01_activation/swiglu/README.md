@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例演示了基于SwiGLU高阶API实现的算子实现。样例采用Swish作为激活函数的GLU变体。
+本样例在大语言模型和混合专家(MoE)场景下，基于SwiGLU高阶API对两个输入Tensor按元素做SwiGLU计算。SwiGLU是采用Swish作为激活函数的GLU变体，计算公式为 dst_i = src0_i ⊗ Swish(src1_i)，其中 Swish(x) = x/(1+e^(-βx))。该API常用于LLM中的门控前馈网络(FFN)，支持float/half/bfloat16_t等数据类型。本样例使用float数据类型，输入Tensor元素个数为32，beta值为1，完成SwiGLU激活计算。
 
 ## 支持的产品
 
@@ -16,14 +16,14 @@
 ├── swiglu
 │   ├── scripts
 │   │   ├── gen_data.py         // 输入数据和真值数据生成脚本
-│   ├── CMakeLists.txt          // 编译工程文件
+│   ├── CMakeLists.txt          // 编译工程文件（支持 -DCMAKE_ASC_RUN_MODE、-DCMAKE_ASC_ARCHITECTURES）
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── swiglu.asc              // Ascend C算子实现 & 调用样例
+│   └── swiglu.asc              // Ascend C样例实现 & 调用（含Tiling机制）
 ```
 
-## 算子描述
+## 样例描述
 
-- 算子功能：  
+- 样例功能：  
   SwiGLU是采用Swish作为激活函数的GLU变体。
 
   计算公式如下：
@@ -31,36 +31,41 @@
   其中Swish激活函数的计算公式如下（β为常量）：
   $$Swish(x)=x/(1 + e^{(-\beta x)})$$
 
-- 算子规格：  
-  <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center"> swiglu </td></tr>
+- 样例规格：  
+  <table border="2" align="left">
+  <caption>表1：样例规格表</caption>
+  <tr><td align="center" rowspan="1">样例类型</td><td align="center" colspan="4"> swiglu </td></tr>
 
-  <tr><td rowspan="4" align="center">算子输入</td></tr>
+  <tr><td align="center" rowspan="4">样例输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">src0</td><td align="center">32</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">src1</td><td align="center">32</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td rowspan="2" align="center">算子输出</td></tr>
-  <tr><td align="center">dst</td><td align="center">32</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">src0</td><td align="center">[1, 32]</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">src1</td><td align="center">[1, 32]</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center" rowspan="2">样例输出</td></tr>
+  <tr><td align="center">dst</td><td align="center">[1, 32]</td><td align="center">float</td><td align="center">ND</td></tr>
 
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">swiglu_custom</td></tr>
+  <tr><td align="center" rowspan="1">核函数名</td><td align="center" colspan="4">swiglu_custom</td></tr>
   </table>
 
-- 算子实现：  
-  本样例中实现的是固定shape为输入src0[32]、src1[32]，输出dst[32]的swiglu_custom算子。
+- 样例实现：  
+  本样例实现的是固定shape的样例，输入元素个数为32。通过Tiling机制将计算参数（dataLength、sharedTmpBufferSize）从Host端传递到Device端，支持灵活配置计算规模。
 
   - Kernel实现  
-    计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用SwiGLU高阶API接口完成SwiGLU计算，得到最终结果，再搬出到外部存储上。
+    核心计算步骤：将输入数据从GM搬运到UB后，调用 `AscendC::SwiGLU` 完成SwiGLU计算，再将结果搬回Global Memory。
 
-    swiglu_custom算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor src0Gm、src1Gm存储在srcLocal中，Compute任务负责对src0Local、src1Local执行SwiGLU计算，计算结果存储在dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。
+  - Tiling实现  
+    临时空间处理：通过 `AscendC::GetSwiGLUMaxMinTmpSize` 获取所需临时空间大小，由Tiling传递到Kernel端。当临时空间大于0时，使用开发者提供的buffer；否则由框架自动申请。
 
   - 调用实现  
-    使用内核调用符<<<>>>调用核函数。
+    使用内核调用符 `<<<>>>` 调用核函数，传入src0、src1、dst、workspace和tiling参数。
 
-## 编译运行  
+## 编译运行
 
-在本样例根目录下执行如下步骤，编译并执行算子。
-- 配置环境变量  
+在本样例根目录下执行如下步骤，编译并执行样例。
+
+- 配置环境变量
+
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
+
   - 默认路径，root用户安装CANN软件包
     ```bash
     source /usr/local/Ascend/cann/set_env.sh
@@ -75,14 +80,40 @@
     ```bash
     source ${install_path}/cann/set_env.sh
     ```
-    
+
 - 样例执行
+
+  **默认模式（dav-2201架构）**：
   ```bash
-  mkdir -p build && cd build;   # 创建并进入build目录
-  cmake ..;make -j;             # 编译工程
-  python3 ../scripts/gen_data.py   # 生成测试输入数据
-  ./demo                        # 执行编译生成的可执行程序，执行样例
+  mkdir -p build && cd build;
+  cmake -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..; make -j;
+  python3 ../scripts/gen_data.py
+  ./demo
   ```
+
+  使用CPU调试或NPU仿真模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
+
+  示例如下：
+  ```bash
+  cmake -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..; make -j; # cpu调试模式
+  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..; make -j; # NPU仿真模式
+  ```
+
+  > **注意：** 切换编译模式前需清理cmake缓存，可在build目录下执行 `rm CMakeCache.txt` 后重新cmake。
+
+- 编译选项说明
+
+  <div align="left">
+  <table>
+  <caption>表2：编译选项说明</caption>
+  <tr><td align="center">选项</td><td align="center">可选值</td><td align="center">说明</td></tr>
+  <tr><td align="center">CMAKE_ASC_RUN_MODE</td><td align="center">npu（默认）、cpu、sim</td><td align="center">运行模式：NPU运行、CPU调试、NPU仿真</td></tr>
+  <tr><td align="center">CMAKE_ASC_ARCHITECTURES</td><td align="center">dav-2201（默认）、dav-3510</td><td align="center">NPU架构：dav-2201对应Atlas A2/A3系列，dav-3510对应Ascend 950PR/Ascend 950DT</td></tr>
+  </table>
+  </div>
+
+- 执行结果
+
   执行结果如下，说明精度对比成功。
   ```bash
   test pass!

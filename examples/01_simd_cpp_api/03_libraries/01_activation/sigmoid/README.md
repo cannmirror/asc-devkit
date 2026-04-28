@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例演示了基于Sigmoid高阶API实现的算子实现。样例按元素做逻辑回归Sigmoid。
+本样例基于Sigmoid高阶API对输入Tensor按元素做逻辑回归Sigmoid计算。该API常用于二分类任务的输出层、门控机制（如LSTM、GRU），将输出映射到(0,1)区间作为概率。本样例使用float数据类型，输入Tensor元素个数为1024，完成Sigmoid激活计算。
 
 ## 支持的产品
 
@@ -21,43 +21,48 @@
 │   └── sigmoid.asc             // Ascend C算子实现 & 调用样例
 ```
 
-## 算子描述
+## 样例描述
 
-- 算子功能：  
+- 样例功能：
   按元素做逻辑回归Sigmoid。
 
   计算公式如下：
   $$dstTensor_i = Sigmoid(srcTensor_i)$$
   $$Sigmoid(x)=1/(1 + e^{-x})$$
 
-- 算子规格：  
-  <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center"> sigmoid </td></tr>
+- 样例规格：
 
-  <tr><td rowspan="3" align="center">算子输入</td></tr>
-  <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">src</td><td align="center">1024</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td rowspan="2" align="center">算子输出</td></tr>
-  <tr><td align="center">dst</td><td align="center">1024</td><td align="center">float</td><td align="center">ND</td></tr>
+<div align="left">
+<table>
+<caption>表1：样例规格表</caption>
+<tr><td align="center" rowspan="1">样例类型(OpType)</td><td align="center" colspan="4"> sigmoid </td></tr>
 
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">sigmoid_custom</td></tr>
-  </table>
+<tr><td align="center" rowspan="3">样例输入</td></tr>
+<tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
+<tr><td align="center">src</td><td align="center">[1, 1024]</td><td align="center">float</td><td align="center">ND</td></tr>
+<tr><td align="center" rowspan="2">样例输出</td></tr>
+<tr><td align="center">dst</td><td align="center">[1, 1024]</td><td align="center">float</td><td align="center">ND</td></tr>
 
-- 算子实现：  
-  本样例中实现的是固定shape为输入src[1024]，输出dst[1024]的sigmoid_custom算子。
+<tr><td align="center" rowspan="1">核函数名</td><td align="center" colspan="4">sigmoid_custom</td></tr>
+</table>
+</div>
+
+- 样例实现：  
+  本样例中实现的是固定shape为输入src[1, 1024]，输出dst[1, 1024]的sigmoid_custom样例。
 
   - Kernel实现  
-    计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用Sigmoid高阶API接口完成Sigmoid计算，得到最终结果，再搬出到外部存储上。
+    核心计算步骤：将输入数据搬入后，调用 `AscendC::Sigmoid` 完成 Sigmoid 计算，再将结果搬出。
 
-    sigmoid_custom算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm存储在srcLocal中，Compute任务负责对srcLocal执行Sigmoid计算，计算结果存储在dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。
+  - Tiling实现  
+    本样例为单核逐元素计算场景，无需复杂分核逻辑。Host端通过 `AscendC::GetSigmoidMaxMinTmpSize` 获取API所需临时缓冲区大小，直接传递给Kernel使用。
 
-  - 调用实现  
+  - 调用实现
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行
 
-在本样例根目录下执行如下步骤，编译并执行算子。
-- 配置环境变量  
+在本样例根目录下执行如下步骤，编译并执行样例。
+- 配置环境变量
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
     ```bash
@@ -73,14 +78,34 @@
     ```bash
     source ${install_path}/cann/set_env.sh
     ```
-    
+
 - 样例执行
   ```bash
-  mkdir -p build && cd build;   # 创建并进入build目录
-  cmake ..;make -j;             # 编译工程
-  python3 ../scripts/gen_data.py   # 生成测试输入数据
-  ./demo                        # 执行编译生成的可执行程序，执行样例
+  mkdir -p build && cd build;
+  cmake -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # 默认npu模式
+  python3 ../scripts/gen_data.py
+  ./demo
   ```
+
+  使用 CPU调试 或 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
+
+  示例如下：
+  ```bash
+  cmake -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # cpu调试模式
+  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # NPU仿真模式
+  ```
+
+  > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
+
+- 编译选项说明
+
+  | 选项 | 可选值 | 说明 |
+  |------|--------|------|
+  | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`cpu`、`sim` | 运行模式：NPU 运行、CPU调试、NPU仿真 |
+  | `CMAKE_ASC_ARCHITECTURES` | `dav-2201`（默认）、`dav-3510` | NPU 架构：dav-2201 对应 Atlas A2/A3 系列，dav-3510 对应 Ascend 950PR/Ascend 950DT |
+
+- 执行结果
+
   执行结果如下，说明精度对比成功。
   ```bash
   test pass!
