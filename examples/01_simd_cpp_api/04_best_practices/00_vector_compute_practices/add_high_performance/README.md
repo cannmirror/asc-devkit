@@ -372,12 +372,11 @@ UB内存分配（双缓冲）：
 
 | Task Duration(μs) | aiv_time(μs) | aiv_vec_time(μs) | aiv_vec_ratio | aiv_scalar_time(μs) | aiv_scalar_ratio | aiv_mte2_time(μs) | aiv_mte2_ratio | aiv_mte3_time(μs) | aiv_mte3_ratio |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 187.54 | 179.71 | 12.846 | 0.071 | 3.896 | 0.021 | 171.226 | 0.953 | 63.901 | 0.356 |
+| 187.68 | 185.15 | 12.846 | 0.069 | 4.479 | 0.024 | 175.997 | 0.951 | 160.291 | 0.866 |
 
 **优化效果分析**：
-- 端到端性能：187.54μs，相比Case 4耗时减少 **29.0%**
-- MTE2耗时：从250.528μs降至171.226μs，减少 **31.6%**
-- MTE3耗时：从84.988μs降至63.901μs，减少 **24.8%**
+- 端到端性能：187.68μs，相比Case 4耗时减少 **28.9%**
+- MTE2耗时：从250.528μs降至175.997μs，减少 **29.8%**
 - 向量指令耗时：12.846μs，保持不变
 
 **原理说明**：
@@ -385,14 +384,14 @@ UB内存分配（双缓冲）：
   - L2 Cache是AI Core和HBM之间的缓存层
   - 重复访问的数据可从L2 Cache读取，速度更快
 - **流式访问特点**：
-  - Add算子的输入数据只读取一次，不存在数据复用
+  - Add的输入数据只读取一次，不存在数据复用
 
 **性能优化建议**：
 > 💡 **合理采用L2 Cache bypass**
 > 
 > 1. 对于只读取一次的输入数据（如本例的x、y），设置`SetL2CacheHint(CACHE_MODE_DISABLE)`
 > 2. 对于需要重复访问的数据（如卷积的权重），保留L2 Cache
-> 3. 建议用户按照实测数据进行配置优化，在实际的模型和训练场景中，需要结合上下游算子进行合理配置
+> 3. 建议用户按照实测数据进行配置优化，在实际的模型和训练场景中，需要结合上下游进行合理配置
 
 **下一步优化方向**：
 - 搬运效率已提升，但向量指令效率仍有优化空间
@@ -429,12 +428,14 @@ static constexpr uint32_t zAddrPongBC = zAddrPingBC + BANK_CONFLICT_DATA_COPY_LE
 
 **内存布局优化**：
 
+针对Atlas A2/A3 系列产品，UB的大小为192KB，包含16个Bank Group，每个Bank Group包含3个Bank，每个Bank大小为4KB，由128行组成，每行长度为32B。
+
 未优化前的UB Bank内存布局（即case5）
 <img src="figure/UBBankConflict.png" width="100%">
 
 可以看到这样同时存在一个bank内的读写冲突，一个bankgroup内的读读冲突以及写写冲突。
 
-优化后的UB Bank内存布局
+优化后的UB Bank内存布局（case6）
 <img src="figure/UBBankConflictResolution.png" width="100%">
 
 由于vec指令一拍读取256B的数据（即同时读取8个block的数据），如上图xping、yping的起始地址正好错开了256B，有效消解了ub bank冲突。
@@ -448,11 +449,12 @@ static constexpr uint32_t zAddrPongBC = zAddrPingBC + BANK_CONFLICT_DATA_COPY_LE
 
 | Task Duration(μs) | aiv_time(μs) | aiv_vec_time(μs) | aiv_vec_ratio | aiv_scalar_time(μs) | aiv_scalar_ratio | aiv_mte2_time(μs) | aiv_mte2_ratio | aiv_mte3_time(μs) | aiv_mte3_ratio |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 186.96 | 182.33 | 6.954 | 0.038 | 3.589 | 0.02 | 173.626 | 0.952 | 77.56 | 0.425 |
+| 184.52 | 178.49 | 6.954 | 0.039 | 3.424 | 0.019 | 171.611 | 0.961 | 121.442 | 0.68 |
 
 **优化效果分析**：
-- 端到端性能：186.96μs，相比Case 5耗时减少 **0.31%**
+- 端到端性能：184.52μs，相比Case 5耗时减少 **1.7%**
 - 向量指令耗时：从12.846μs降至6.954μs，减少 **45.9%**
+- MTE3耗时：从160.291μs降至121.442μs，减少 **24.2%**
 
 **原理说明**：
 - **Bank Conflict问题**：
@@ -472,8 +474,8 @@ static constexpr uint32_t zAddrPongBC = zAddrPingBC + BANK_CONFLICT_DATA_COPY_LE
 > 3. Bank Conflict优化对vector-bound场景收益明显
 
 **最终性能总结**：
-- 相比基准Case 0：性能提升 **6631倍**（1239689.1μs → 186.96μs）
-- 相比单核向量Case 1：性能提升 **36.9倍**（6909.6μs → 186.96μs）
+- 相比基准Case 0：性能提升 **6711倍**（1239689.1μs → 184.52μs）
+- 相比单核向量Case 1：性能提升 **37.3倍**（6909.6μs → 184.52μs）
 
 
 ---
@@ -490,8 +492,8 @@ static constexpr uint32_t zAddrPongBC = zAddrPingBC + BANK_CONFLICT_DATA_COPY_LE
 | 2 | 多核均匀切分 | 48 | 4096 | 306.58 | 15.885 | 5.904 | 1.2457 | NA | 4043.6x |
 | 3 | 增大搬运粒度 | 48 | 16384 | 268.5 | 12.845 | 5.904 | 1.4560 | NA | 4617.1x |
 | 4 | 双缓冲 | 48 | 16384 | 264.02 | 12.846 | 5.904 | NA | 1.6072 | 4695.4x |
-| 5 | L2 Cache bypass | 48 | 16384 | 187.54 | 12.846 | 5.904 | NA | 2.3516 | 6610.3x |
-| 6 | Bank Conflict优化 | 48 | 16256 | 186.96 | 6.954 | 5.904 | NA | 2.3191 | 6630.8x |
+| 5 | L2 Cache bypass | 48 | 16384 | 187.68 | 12.846 | 5.904 | NA | 2.2755 | 6612.2x |
+| 6 | Bank Conflict优化 | 48 | 16256 | 184.52 | 6.954 | 5.904 | NA | 2.3456 | 6710.7x |
 
 表中的“理论vector耗时”表示在当前核数配置下，仅考虑Vector计算本身时的理论执行时间。本样例的性能数据在Atlas A2训练系列产品上运行，该处理器每cycle处理128个half数据，主频为1.85GHz。理论vector耗时的计算公式为
 $$
@@ -526,9 +528,9 @@ $$
 BW_{read} = \frac{8192 \times 8192 \times 2 \times 2}{184.369 \times 10^{-6}} = \frac{268435456}{184.369 \times 10^{-6}} \approx 1.4560 \times 10^{12} \text{ B/s} \approx 1.4560 \text{ TB/s}
 $$
 
-以 Case 6 为例（$T_{mte2}=173.626\mu s$）：
+以 Case 6 为例（$T_{mte2}=171.611\mu s$）：
 $$
-BW_{rw} = \frac{8192 \times 8192 \times (2+1) \times 2}{173.626 \times 10^{-6}} = \frac{402653184}{173.626 \times 10^{-6}} \approx 2.3191 \times 10^{12} \text{ B/s} \approx 2.3191 \text{ TB/s}
+BW_{rw} = \frac{8192 \times 8192 \times (2+1) \times 2}{171.611 \times 10^{-6}} = \frac{402653184}{171.611 \times 10^{-6}} \approx 2.3456 \times 10^{12} \text{ B/s} \approx 2.3456 \text{ TB/s}
 $$
 
 之所以读写混合带宽会高于 1.8 TB/s，是因为这里统计的不是纯读带宽，而是“读 + 写”的混合带宽。开启双缓冲后，读写流水是并行的；同时，z 写数据时会命中 L2 Cache，而 L2 的带宽很高，所以写的带宽较高。因此，在以 mte2 作为读写混合时间来估算时，分子统计了读写总数据量，最终得到的混合带宽会高于 1.8 TB/s。
@@ -544,27 +546,24 @@ $$
 | 2 | 多核均匀切分 | 64 | 4096 | 310.489 | 15.465 | 4.965 | 1.184 | NA | 3956.6x |
 | 3 | 增大搬运粒度 | 64 | 21760 | 251.684 | 11.121 | 4.965 | 1.454 | NA | 4881.0x |
 | 4 | 双缓冲 | 64 | 21760 | 247.665 | 10.976 | 4.965 | NA | 1.712 | 4960.2x |
-| 5 | L2 Cache bypass | 64 | 21760 | 192.219 | 10.988 | 4.965 | NA | 2.159 | 6391.0x |
-| 6 | Bank Conflict优化 | 64 | 21632 | 191.586 | 10.86 | 4.965 | NA | 2.147 | 6412.1x |
+| 5 | L2 Cache bypass | 64 | 21760 | 182.04 | 10.997 | 4.965 | NA | 2.256 | 6748.4x |
 
 Ascend 950系列上 `dataCopyLen` 增大的主要原因是UB容量由192KB提升至256KB。本样例在双缓冲场景下需要同时放置 `x/y/z` 的 Ping-Pong 共6块缓冲区，因此单块可用空间可近似表示为 `UBSIZE/6`：
-- Atlas A2/A3 系列：`192KB / 6 = 32KB`，对应 `32KB / 2B = 16384` 个half
-- Ascend 950系列：`256KB / 6 ≈ 42.67KB`，对应约 `21840` 个half
+- Atlas A2/A3 系列：`192KB / 6 = 32KB`，对应 `32KB / 2B = 16384` 个`half`
+- Ascend 950系列：`256KB / 6 ≈ 42.67KB`，对应约 `21840` 个`half`
 
-因此在Ascend 950系列上，按容量上限估算，单块 `dataCopyLen` 可提升至约 `21840`（half）。
-在实际实现中，推荐用户将搬运粒度和计算粒度都对齐到512B，以获得更稳定的性能表现，因此case3-5选用 `dataCopyLen=21760`，其对应字节数为`21760 * 2B = 43520B = 85 * 512B`；case6为避免Bank Conflict使用 `21632`。
+因此在Ascend 950系列上，按容量上限估算，单块 `dataCopyLen` 可提升至约 `21840`个`half`数据。
+在实际实现中，推荐用户将搬运粒度和计算粒度都对齐到512B，以获得更稳定的性能表现，因此case3-5选用 `dataCopyLen=21760`，其对应字节数为`21760 * 2B = 43520B = 85 * 512B`。
 
-在Ascend 950系列产品上，该处理器每cycle处理128个half数据，主频为1.65GHz，AIV核数为64，因此理论vector耗时为
+在Ascend 950系列产品上BANK的排列不同，不需要考虑Bank冲突，因此只列出了case0～case5的性能数据。该处理器每cycle处理128个half数据，主频为1.65GHz，AIV核数为64，因此理论vector耗时为
 $$
 T_{\text{theory}} = \frac{8192 \times 8192}{128 \times 1.65 \times 10^9 \times 64} = \frac{67108864}{1.35168 \times 10^{13}} \approx 4.965 \times 10^{-6} \text{ s} = 4.965 \text{ μs}
 $$
 
-为什么Ascend 950系列未达到理论vector耗时峰值：
+Ascend 950系列未达到理论vector耗时峰值的原因如下：
 
-- 该理论值仅统计“纯Vector计算”时间，不包含数据搬运、事件同步、流水线调度等开销；而实测Case 6中 `aiv_vec_time=10.86μs`、Task Duration为 `191.586μs`，`aiv_mte2_reatio`高达98.3%，受限于带宽限制，说明端到端瓶颈不在纯计算本身。
-- Ascend 950系列 RegBase的主要收益来自“减少冗余Load/Store、寄存器复用、提升无依赖并发指令比例”。当前Add样例核心计算基本是单条Add，计算链较短、可融合/可双发空间有限，难以充分释放RegBase的峰值优势。
-
-综上，Ascend 950系列在本样例中“未达到理论vector峰值”是预期现象，理论值反映的是理想计算上限，而当前场景仍主要受搬运与指令编排开销约束。
+- 该理论值仅统计“纯Vector计算”时间，不包含数据搬运、事件同步、流水线调度等开销；而实测Case 5中 `aiv_vec_time=10.997μs`、Task Duration为 `182.04μs`，`aiv_mte2_reatio`高达98.3%，受限于带宽限制，说明端到端瓶颈不在纯计算本身。
+- Ascend 950系列 RegBase的主要收益来自“减少冗余Load/Store、寄存器复用、提升无依赖并发指令比例”。当前Add样例核心计算基本是单条Add，计算链较短、可融合/可双发空间有限，难以充分释放RegBase的优势。
 
 ### 优化要点总结
 
@@ -600,7 +599,7 @@ cmake -DSCENARIO=6 -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..   # 编译 case 6（可
 
 ### 编译执行
 
-在本样例根目录下执行如下步骤，编译并执行算子：
+在本样例根目录下执行如下步骤，编译并执行样例：
 
 - **配置环境变量**  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
@@ -622,7 +621,7 @@ cmake -DSCENARIO=6 -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..   # 编译 case 6（可
 - **样例执行**
   ```bash 
   mkdir -p build && cd build;   # 创建并进入build目录
-  cmake -DSCENARIO=6 -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;  # 编译工程，默认npu模式
+  cmake -DSCENARIO_NUM=6 -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;  # 编译工程，默认npu模式
   python3 ../scripts/gen_data.py   # 生成测试输入数据
   ./demo                           # 执行（使用编译时指定的case）
   python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
@@ -632,11 +631,12 @@ cmake -DSCENARIO=6 -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..   # 编译 case 6（可
 
   示例如下：
   ```bash
-  cmake -DSCENARIO=6 -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # CPU调试模式
-  cmake -DSCENARIO=6 -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # NPU仿真模式
+  cmake -DSCENARIO_NUM=6 -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # CPU调试模式
+  cmake -DSCENARIO_NUM=6 -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # NPU仿真模式
   ```
 
   > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
+  
 
   编译选项说明：
 
@@ -644,7 +644,7 @@ cmake -DSCENARIO=6 -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..   # 编译 case 6（可
   |------|------|---------|--------|
   | CMAKE_ASC_RUN_MODE | 运行模式 | npu, cpu, sim | npu |
   | CMAKE_ASC_ARCHITECTURES | NPU硬件架构 | dav-2201, dav-3510 | dav-2201 |
-  | SCENARIO | 性能优化case编号 | 0, 1, 2, 3, 4, 5, 6 | 0 |
+  | SCENARIO_NUM | 性能优化case编号 | 0, 1, 2, 3, 4, 5, 6 | 0 |
   
   执行结果如下，说明精度对比成功。
   ```bash

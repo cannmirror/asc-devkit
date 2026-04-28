@@ -73,7 +73,6 @@ static_assert(cfg::M % cfg::SINGLE_M == 0, "M must be divisible by SINGLE_M");
 static_assert(cfg::N % cfg::SINGLE_N == 0, "N must be divisible by SINGLE_N");
 static_assert(cfg::K == cfg::SINGLE_K, "K must equal SINGLE_K");
 
-
 // mxTypePara bit layout (MatmulApiStaticTiling/TCubeTiling):
 // [0:6]   scaleFactorKa
 // [8:14]  scaleFactorKb
@@ -112,21 +111,19 @@ __aicore__ inline constexpr MatmulApiStaticTiling GetMxConstantCFG()
 template <bool EnableScaleCache>
 class MatmulKernel {
 public:
-    __aicore__ inline MatmulKernel() {};
+    __aicore__ inline MatmulKernel(){};
 
-    using aType =
-        AscendC::MatmulTypeWithScale<AscendC::TPosition::GM, AscendC::TPosition::GM, CubeFormat::ND, fp4x2_e1m2_t,
-                                     false>;
-    using bType =
-        AscendC::MatmulTypeWithScale<AscendC::TPosition::GM, AscendC::TPosition::GM, CubeFormat::ND, fp4x2_e1m2_t,
-                                     false>;
+    using aType = AscendC::MatmulTypeWithScale<
+        AscendC::TPosition::GM, AscendC::TPosition::GM, CubeFormat::ND, fp4x2_e1m2_t, false>;
+    using bType = AscendC::MatmulTypeWithScale<
+        AscendC::TPosition::GM, AscendC::TPosition::GM, CubeFormat::ND, fp4x2_e1m2_t, false>;
     using cType = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, bfloat16_t>;
 
     constexpr static auto CONSTANT_CFG = GetMxConstantCFG<aType, bType, cType, EnableScaleCache>();
 
-    AscendC::Matmul<aType, bType, cType, cType, CONSTANT_CFG,
-                        AscendC::MatmulCallBackFunc<nullptr, nullptr, nullptr>,
-                        AscendC::Impl::Detail::MatmulWithScalePolicy>
+    AscendC::Matmul<
+        aType, bType, cType, cType, CONSTANT_CFG, AscendC::MatmulCallBackFunc<nullptr, nullptr, nullptr>,
+        AscendC::Impl::Detail::MatmulWithScalePolicy>
         matmulObj;
 
     __aicore__ inline void Init(GM_ADDR a, GM_ADDR b, GM_ADDR as, GM_ADDR bs, GM_ADDR c)

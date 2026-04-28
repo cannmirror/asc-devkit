@@ -12,7 +12,7 @@
 ## 目录结构介绍
 
 ```
-├── matmul_basic_API_high_performance
+├── matmul_basic_api_high_performance
 │   ├── scripts
 │   │   ├── gen_data.py         // 输入数据和真值数据生成脚本文件
 │   │   └── verify_result.py    // 真值对比文件
