@@ -583,6 +583,7 @@ fi
 log "[INFO] validate shared libraries before installation"
 validate_shared_libraries
 if [ $? -ne 0 ]; then
+    log "[ERROR] Shared library validation failed. To skip this validation and continue installation, run this package again with --force."
     exit 1
 fi
 
