@@ -56,4 +56,9 @@ PIPE_MTE1
 
 ## 调用示例
 
-无
+```cpp
+constexpr uint32_t total_length = 128;
+__cbuf__ void src[total_length];
+// dst参数为目标操作数的起始地址
+asc_copy_l12bt(dst, src, total_length);
+```

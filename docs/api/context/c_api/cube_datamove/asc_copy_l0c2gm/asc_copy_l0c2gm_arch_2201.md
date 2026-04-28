@@ -61,7 +61,6 @@
 | m_size | 输入 | 源NZ矩阵在M方向上的大小。<br> - 不使能NZ2ND功能：取值范围为[1, 65535]。<br> - 使能NZ2ND功能，m_size的取值范围为[1, 8192]。 |
 | dst_stride_dst_d | 输入 |目的相邻ND矩阵起始地址之间的偏移 。 |
 | src_stride | 输入 | 源NZ矩阵中相邻Z排布的起始地址偏移，取值范围为[0, 65535]，单位为16*sizeof(数据类型)。 |
-| unit_flag | 输入 | asc_mmad接口和本接口细粒度的并行，使能该功能后，硬件每计算完一个分形，计算结果就会被搬出，该功能不适用于在L0C Buffer累加的场景。 |
 | unit_flag_mode | 输入 | 与unit_flag参数相关，取值如下：<br>0：保留值；<br>2：使能unit_flag，硬件执行完指令之后，不会设置寄存器；<br>3：使能unit_flag，硬件执行完指令后，会将unit_flag关闭。 |
 | quant_pre |输入|量化参数。取值见[功能说明](./asc_copy_l0c2gm_arch_2201.md#功能说明)。|
 | relu_pre | 输入 | 使能relu。 |
@@ -84,8 +83,21 @@ PIPE_MTE1
 ## 调用示例
 
 ```cpp
-constexpr uint64_t total_length = 128;    // total_length指参与搬运的数据总长度
-uint64_t quant_pre = NoQuant;
+// total_length指参与搬运的数据总长度
+constexpr uint64_t total_length = 128;
 // dst src分别对应目的操作数的输出地址和源操作数的输入地址
-asc_copy_l0c2gm(dst, src, n_size, m_size, dst_stride_dst_d, src_stride, unit_flag_mode, quant_pre, relu_pre, channel_split, nz2nd_en);
+__gm__ int32_t dst[total_length];
+__cc__ int32_t src[total_length];
+// 其余入参均已默认数值传入
+uint16_t n_size = 16;
+uint16_t m_size = 16;
+uint32_t dst_stride_dst_d = 0;
+uint16_t src_stride = 8;
+uint8_t unit_flag_mode = 0;
+uint64_t quant_pre = NoQuant;
+uint8_t relu_pre = 0;
+bool channel_split = false;
+bool nz2nd_en = false;
+// 函数调用
+asc_copy_l0c2gm_sync(dst, src, n_size, m_size, dst_stride_dst_d, src_stride, unit_flag_mode, quant_pre, relu_pre, channel_split, nz2nd_en);
 ```
