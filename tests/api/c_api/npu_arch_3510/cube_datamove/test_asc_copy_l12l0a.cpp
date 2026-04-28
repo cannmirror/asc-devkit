@@ -53,24 +53,24 @@ TEST_F(TEST_COPY_L1_TO_L0A, TEST_COPY_L1_TO_L0A_##dtype)               \
     __ca__ dtype *dst = reinterpret_cast<__ca__ dtype *>(11);                                 \
     __cbuf__ dtype *src = reinterpret_cast<__cbuf__ dtype *>(22);                                   \
                                                                                                 \
-    uint16_t step_k = static_cast<uint16_t>(33);                                                \
-    uint16_t step_m = static_cast<uint16_t>(44);                                                \
-    uint16_t pos_k = static_cast<uint16_t>(55);                                              \
-    uint16_t pos_m = static_cast<uint16_t>(66);                                             \
+    uint16_t k_extension = static_cast<uint16_t>(33);                                                \
+    uint16_t m_extension = static_cast<uint16_t>(44);                                                \
+    uint16_t k_start_pt = static_cast<uint16_t>(55);                                              \
+    uint16_t m_start_pt = static_cast<uint16_t>(66);                                             \
     uint8_t stride_w = static_cast<uint8_t>(77);                                            \
     uint8_t stride_h = static_cast<uint8_t>(88);                                               \
-    uint8_t w_k = static_cast<uint8_t>(99);                                                 \
-    uint8_t h_k = static_cast<uint8_t>(12);                                                 \
-    uint8_t dilation_w = static_cast<uint8_t>(13);                                          \
-    uint8_t dilation_h = static_cast<uint8_t>(14);                                          \
-    bool filter_w = static_cast<bool>(true);                                          \
-    bool filter_h = static_cast<bool>(true);                                          \
+    uint8_t filter_w = static_cast<uint8_t>(99);                                                 \
+    uint8_t filter_h = static_cast<uint8_t>(12);                                                 \
+    uint8_t dilation_filter_w = static_cast<uint8_t>(13);                                          \
+    uint8_t dilation_filter_h = static_cast<uint8_t>(14);                                          \
+    bool filter_size_w = static_cast<bool>(true);                                          \
+    bool filter_size_h = static_cast<bool>(true);                                          \
     bool transpose = static_cast<bool>(true);                                          \
     bool fmatrix_ctrl = static_cast<bool>(true);                                          \
-    uint16_t size_channel = static_cast<uint16_t>(15);                                          \
+    uint16_t channel_size = static_cast<uint16_t>(15);                                          \
                                                                                                     \
-    asc_copy_l12l0a(dst, src, step_k, step_m, pos_k, pos_m, stride_w, stride_h, w_k, h_k, dilation_w,    \
-                            dilation_h, filter_w, filter_h, transpose, fmatrix_ctrl, size_channel);                                          \
+    asc_copy_l12l0a(dst, src, k_extension, m_extension, k_start_pt, m_start_pt, stride_w, stride_h, filter_w, filter_h, \
+                        dilation_filter_w, dilation_filter_h, filter_size_w, filter_size_h, transpose, fmatrix_ctrl, channel_size);                                          \
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
                                                                                                 \
@@ -79,24 +79,24 @@ TEST_F(TEST_COPY_L1_TO_L0A, TEST_COPY_L1_TO_L0A_SYNC_##dtype)                   
     __ca__ dtype *dst = reinterpret_cast<__ca__ dtype *>(11);                                 \
     __cbuf__ dtype *src = reinterpret_cast<__cbuf__ dtype *>(22);                                   \
                                                                                                 \
-    uint16_t step_k = static_cast<uint16_t>(33);                                                \
-    uint16_t step_m = static_cast<uint16_t>(44);                                                \
-    uint16_t pos_k = static_cast<uint16_t>(55);                                              \
-    uint16_t pos_m = static_cast<uint16_t>(66);                                             \
+    uint16_t k_extension = static_cast<uint16_t>(33);                                                \
+    uint16_t m_extension = static_cast<uint16_t>(44);                                                \
+    uint16_t k_start_pt = static_cast<uint16_t>(55);                                              \
+    uint16_t m_start_pt = static_cast<uint16_t>(66);                                             \
     uint8_t stride_w = static_cast<uint8_t>(77);                                            \
     uint8_t stride_h = static_cast<uint8_t>(88);                                               \
-    uint8_t w_k = static_cast<uint8_t>(99);                                                 \
-    uint8_t h_k = static_cast<uint8_t>(12);                                                 \
-    uint8_t dilation_w = static_cast<uint8_t>(13);                                          \
-    uint8_t dilation_h = static_cast<uint8_t>(14);                                          \
-    bool filter_w = static_cast<bool>(true);                                          \
-    bool filter_h = static_cast<bool>(true);                                          \
+    uint8_t filter_w = static_cast<uint8_t>(99);                                                 \
+    uint8_t filter_h = static_cast<uint8_t>(12);                                                 \
+    uint8_t dilation_filter_w = static_cast<uint8_t>(13);                                          \
+    uint8_t dilation_filter_h = static_cast<uint8_t>(14);                                          \
+    bool filter_size_w = static_cast<bool>(true);                                          \
+    bool filter_size_h = static_cast<bool>(true);                                          \
     bool transpose = static_cast<bool>(true);                                          \
     bool fmatrix_ctrl = static_cast<bool>(true);                                          \
-    uint16_t size_channel = static_cast<uint16_t>(15);                                          \
+    uint16_t channel_size = static_cast<uint16_t>(15);                                          \
                                                                                                     \
-    asc_copy_l12l0a_sync(dst, src, step_k, step_m, pos_k, pos_m, stride_w, stride_h, w_k, h_k, dilation_w,    \
-                            dilation_h, filter_w, filter_h, transpose, fmatrix_ctrl, size_channel);                                          \
+    asc_copy_l12l0a_sync(dst, src, k_extension, m_extension, k_start_pt, m_start_pt, stride_w, stride_h, filter_w, filter_h, \
+                        dilation_filter_w, dilation_filter_h, filter_size_w, filter_size_h, transpose, fmatrix_ctrl, channel_size);                                          \
     GlobalMockObject::verify();                                                                 \
 }    
 
