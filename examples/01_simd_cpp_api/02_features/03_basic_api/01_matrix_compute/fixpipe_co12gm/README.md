@@ -74,18 +74,27 @@
 - 输出：C [128, 256] float类型，Nz格式
 - 实现：使用 `Fixpipe<outputType, l0cType, AscendC::CFG_NZ>` 将数据从CO1搬出到GM，输出为Nz格式
 - 说明：CO1数据为Nz格式直接输出到GM的Nz格式，数据保持原格式不变
+<p align="center">
+  <img src="figures/fixpipe_co12gm_NZ2NZ.png" width="500">
+</p>
 
 **场景2：输出格式ND，输出数据类型float**
 - 输入：A [128, 128] half类型，ND格式；B [128, 256] half类型，ND格式
 - 输出：C [128, 256] float类型，ND格式
 - 实现：使用 `Fixpipe<outputType, l0cType, AscendC::CFG_ROW_MAJOR>` 指定ROW_MAJOR格式转换
 - 说明：将CO1中的Nz格式数据转换为ND格式输出到GM，ND格式没有Nz格式的对齐要求，输出时需要按实际大小配置参数
+<p align="center">
+  <img src="figures/fixpipe_co12gm_NZ2ND.png" width="500">
+</p>
 
 **场景3：输出格式DN，输出数据类型float（仅Ascend 950PR/Ascend 950DT支持）**
 - 输入：A [128, 128] half类型，ND格式；B [128, 256] half类型，ND格式
 - 输出：C [256, 128] float类型，DN格式
 - 实现：使用 `Fixpipe<outputType, l0cType, AscendC::CFG_COLUMN_MAJOR>` 指定COLUMN_MAJOR格式转换
 - 说明：将CO1中的Nz格式数据转换为DN格式输出到GM
+<p align="center">
+  <img src="figures/fixpipe_co12gm_NZ2DN.png" width="500">
+</p>
 
 **场景4：输出格式ND，输出数据类型int8_t，使能Scalar量化**
 - 输入：A [128, 128] half类型，ND格式；B [128, 256] half类型，ND格式
