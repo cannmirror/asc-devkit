@@ -82,6 +82,28 @@ class TestCompileUtility(unittest.TestCase):
         self.assertRaises(Exception, parse_super_kernel_options, "func-align:early-start=1:early-start=1")
         self.assertRaises(Exception, parse_super_kernel_options, "func-align:early-start=1:test=1")
 
+    def test_parse_super_kernel_options_none_and_empty(self):
+        # None should return {} without AttributeError
+        res = parse_super_kernel_options(None)
+        self.assertEqual(res, {})
+        # empty string should return {}
+        res = parse_super_kernel_options("")
+        self.assertEqual(res, {})
+        # whitespace-only string should return {}
+        res = parse_super_kernel_options("   ")
+        self.assertEqual(res, {})
+
+    def test_parse_super_kernel_options_strip_quotes(self):
+        res = parse_super_kernel_options('"early-start=1"')
+        self.assertEqual(res, {'early-start': SuperKernelEarlyStartMode.EarlyStartEnableV2})
+
+    def test_parse_super_kernel_options_convert_underscore_to_hyphen(self):
+        res = parse_super_kernel_options("early_start=1", convert_underscore_to_hyphen=True)
+        self.assertEqual(res, {'early-start': SuperKernelEarlyStartMode.EarlyStartEnableV2})
+
+    def test_parse_super_kernel_options_no_convert_underscore(self):
+        self.assertRaises(Exception, parse_super_kernel_options, "early_start=1", False)
+
     def test_check_func_align(self):
         self.assertRaises(Exception, check_func_align, "test")
         self.assertRaises(Exception, check_func_align, "3")
