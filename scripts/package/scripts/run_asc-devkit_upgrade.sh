@@ -19,7 +19,7 @@ docker_root=""
 sourcedir="$PWD/asc-devkit"
 curpath=$(dirname $(readlink -f "$0"))
 common_func_path="${curpath}/common_func.inc"
-pkg_version_path="${curpath}/../../version.info"
+pkg_version_path="${curpath}/../version.info"
 chip_type="all"
 feature_type="all"
 

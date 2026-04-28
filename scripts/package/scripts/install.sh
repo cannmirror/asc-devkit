@@ -20,7 +20,7 @@ version_compat_func_path="${curpath}/version_compatiable.inc"
 common_func_v2_path="${curpath}/common_func_v2.inc"
 version_cfg_path="${curpath}/version_cfg.inc"
 asc_devkit_func_path="${curpath}/asc-devkit_func.sh"
-pkg_version_path="${curpath}/../../version.info"
+pkg_version_path="${curpath}/../version.info"
 install_info_old="/etc/ascend_install.info"
 run_dir="$(echo "$2" | cut -d'-' -f 3-)"
 

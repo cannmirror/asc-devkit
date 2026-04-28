@@ -5,13 +5,13 @@
         <product_name>cann</product_name>
         <func_name>asc-devkit</func_name>
         <suffix>run</suffix>
-        <install_script>asc-devkit/script/install.sh</install_script>
-        <help>asc-devkit/script/help.info</help>
+        <install_script>share/info/asc-devkit/script/install.sh</install_script>
+        <help>share/info/asc-devkit/script/help.info</help>
         <version>asc-devkit/version.xml</version>
         <check_features>true</check_features>
     </package_info>
 
-    <generate_info value="scene.info" dst_path="asc-devkit" install_path="share/info/asc-devkit" install_mod="440">
+    <generate_info value="scene.info" dst_path="share/info/asc-devkit" install_path="share/info/asc-devkit" install_mod="440">
         <os>$(OS_NAME)</os>
         <os_version>$(OS_VER)</os_version>
         <arch>$(ARCH)</arch>
@@ -76,12 +76,12 @@
         <path value="$(TARGET_ENV)/devlib/linux/x86_64"/>
         <path value="$(TARGET_ENV)/devlib/linux/aarch64"/>
     </dir_info>
-    <file_info copy_type="delivery" src_path="asc-devkit" dst_path="asc-devkit" install_path="share/info/asc-devkit" install_type="all">
+    <file_info copy_type="delivery" src_path="asc-devkit" dst_path="share/info/asc-devkit" install_path="share/info/asc-devkit" install_type="all">
         <file value="script" install_mod="550" entity="true"/>
         <file value="version.info" install_mod="550" entity="true" install_softlink="compiler/version.info"/>
         <file value="scene.info" install_mod="550" entity="true"/>
     </file_info>
-    <file_info copy_type="delivery" src_path="asc-devkit/script" dst_path="asc-devkit/script" install_path="share/info/asc-devkit" install_type="all">
+    <file_info copy_type="delivery" src_path="asc-devkit/script" dst_path="share/info/asc-devkit/script" install_path="share/info/asc-devkit/script" install_type="all">
         <file value="filelist.csv" install_mod="550" entity="true"/>
     </file_info>
     <file_info copy_type="delivery" src_path="asc-devkit" dst_path="asc-devkit" install_path="$(TARGET_ENV)/include/version" install_type="all">
