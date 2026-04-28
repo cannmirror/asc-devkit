@@ -400,6 +400,14 @@ __aicore__ inline void DumpTensorGM2GMImpl(const GlobalTensor<T>& src, uint32_t 
     set_ctrl(ctrlValue);
 }
 
+__aicore__ __gm__ inline BlockInfo *GetBlockInfo() 
+{
+    uint8_t core = GetDumpBlockIdx();
+    uint64_t dumpWorkspaceStart = reinterpret_cast<uint64_t>(g_dumpWorkspaceReserved) - DUMP_WORKSPACE_SIZE;
+    __gm__ BlockInfo *blockInfo = (__gm__ BlockInfo *)(dumpWorkspaceStart +  DUMP_UINTSIZE * core);
+    return blockInfo;
+}
+
 __aicore__ __gm__ inline BlockRingBufInfo* GetBlockRingBufInfo()
 {
     uint32_t blockIdx = (get_coreid() & 0x00FF) % DUMP_CORE_COUNT; // & 0x00FF to fix coreid in 910C
