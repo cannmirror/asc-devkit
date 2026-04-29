@@ -2,7 +2,15 @@
 
 ## 概述
 
-本样例演示了基于LogicalAnd高阶API的算子实现。样例按元素进行与操作，当输入的数据类型不是bool时，零被视为False，非零数据被视为True。
+本样例基于LogicalAnd高阶API实现按元素进行与操作，当输入的数据类型不是bool时，零被视为False，非零数据被视为True。
+
+> **接口提示：** 除本样例使用的 `LogicalAnd` 接口外，Ascend C 还提供了以下逻辑运算高阶API接口：
+>
+> - **LogicalAnds**：逻辑与运算（标量版本）。
+> - **LogicalNot**：逻辑非运算。
+> - **LogicalOr**：逻辑或运算。
+> - **LogicalOrs**：逻辑或运算（标量版本）。
+> - **LogicalXor**：逻辑异或运算。
 
 ## 支持的产品
 
@@ -10,46 +18,44 @@
 
 ## 目录结构介绍
 
-```
+```plain
 ├── logicaland
 │   ├── scripts
-│   │   ├── gen_data.py         // 输入数据和真值数据生成脚本
+│   │   └── gen_data.py         // 输入数据和真值数据生成脚本
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── logicaland.asc      // Ascend C算子实现 & 调用样例
+│   └── logicaland.asc          // Ascend C算子实现 & 调用样例
 ```
 
-## 算子描述
+## 样例描述
 
-- 算子功能：  
+- 样例功能：  
   按元素进行与操作。当输入的数据类型不是bool时，零被视为False，非零数据被视为True。  
   计算公式如下：
   $$
   dst_i = src0_i \&\& src1_i
   $$
 
-
-- 算子规格：  
+- 样例规格：  
   <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center"> logicaland </td></tr>
+  <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="4" align="center"> logicaland </td></tr>
 
-  <tr><td rowspan="4" align="center">算子输入</td></tr>
+  <tr><td rowspan="4" align="center">样例输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">src0</td><td align="center">1024</td><td align="center">bool</td><td align="center">ND</td></tr>
-  <tr><td align="center">src1</td><td align="center">1024</td><td align="center">bool</td><td align="center">ND</td></tr>
-  <tr><td rowspan="2" align="center">算子输出</td></tr>
-  <tr><td align="center">dst</td><td align="center">1024</td><td align="center">bool</td><td align="center">ND</td></tr>
+  <tr><td align="center">src0</td><td align="center">[1, 1024]</td><td align="center">bool</td><td align="center">ND</td></tr>
+  <tr><td align="center">src1</td><td align="center">[1, 1024]</td><td align="center">bool</td><td align="center">ND</td></tr>
+  <tr><td rowspan="2" align="center">样例输出</td></tr>
+  <tr><td align="center">dst</td><td align="center">[1, 1024]</td><td align="center">bool</td><td align="center">ND</td></tr>
 
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">logicaland_custom</td></tr>
   </table>
 
-- 算子实现：  
-  本样例中实现的是固定shape为输入src0[1024]、src1[1024]，输出dst[1024]的logicaland_custom算子。
+- 样例实现：  
+  本样例中实现的是固定shape为输入src0[1, 1024]、src1[1, 1024]，输出dst[1, 1024]的logicaland_custom样例。
 
-  - Kernel实现  
-    计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用LogicalAnd高阶API接口完成LogicalAnd计算，得到最终结果，再搬出到外部存储上。
+  - Kernel实现
 
-    logicaland_custom算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor src0Gm、src1Gm存储在srcLocal中，Compute任务负责对src0Local、src1Local执行LogicalAnd计算，计算结果存储在dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。
+    使用LogicalAnd高阶API接口完成按元素与操作的计算。
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
@@ -57,31 +63,58 @@
 ## 编译运行  
 
 在本样例根目录下执行如下步骤，编译并执行算子。
+
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
+
     ```bash
     source /usr/local/Ascend/cann/set_env.sh
     ```
 
   - 默认路径，非root用户安装CANN软件包
+
     ```bash
     source $HOME/Ascend/cann/set_env.sh
     ```
 
   - 指定路径install_path，安装CANN软件包
+
     ```bash
     source ${install_path}/cann/set_env.sh
     ```
-    
+
 - 样例执行
+
   ```bash
-  mkdir -p build && cd build;   # 创建并进入build目录
-  cmake ..;make -j;             # 编译工程
+  mkdir -p build && cd build;      # 创建并进入build目录
+  cmake -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j;    # 编译工程，默认npu模式
   python3 ../scripts/gen_data.py   # 生成测试输入数据
-  ./demo                        # 执行编译生成的可执行程序，执行样例
+  ./demo                           # 执行编译生成的可执行程序，执行样例
   ```
+
+  使用 CPU调试 或 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
+
+  示例如：
+
+  ```bash
+  cmake -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j; # cpu调试模式
+  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j; # NPU仿真模式
+  ```
+
+  > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
+
+- 编译选项说明
+
+  | 选项 | 可选值 | 说明 |
+  |------|--------|------|
+  | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`cpu`、`sim` | 运行模式：NPU 运行、CPU调试、NPU仿真 |
+  | `CMAKE_ASC_ARCHITECTURES` | `dav-3510`（默认） | NPU 架构：dav-3510 对应 Ascend 950PR/Ascend 950DT |
+
+- 执行结果
+
   执行结果如下，说明精度对比成功。
+
   ```bash
   test pass!
   ```

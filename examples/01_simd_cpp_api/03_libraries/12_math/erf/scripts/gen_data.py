@@ -22,7 +22,7 @@ def gen_golden_data_simple():
 
     np.random.seed(123321)
     src_type = np.float32
-    src_shape = [1288]
+    src_shape = [12288]
     calcount = 12288
     api_mode = 0
     min_value = np.finfo(src_type).min
