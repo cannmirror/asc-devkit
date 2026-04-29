@@ -44,8 +44,6 @@ EXAMPLE_LIST=(
     01_simd_cpp_api/00_introduction/03_fusion_operation/matmul_leakyrelu
     01_simd_cpp_api/01_utilities/03_cpudebug
     01_simd_cpp_api/02_features/03_basic_api/01_matrix_compute/batch_mmad
-    01_simd_cpp_api/02_features/03_basic_api/01_matrix_compute/fixpipe_co12c1_tensor_quantization_s322f16
-    01_simd_cpp_api/02_features/03_basic_api/01_matrix_compute/fixpipe_co12gm_tensor_quantization_s322f16
     01_simd_cpp_api/02_features/03_basic_api/01_matrix_compute/load_data_l12l0
     01_simd_cpp_api/02_features/03_basic_api/01_matrix_compute/mmad_load3dv2
     01_simd_cpp_api/02_features/03_basic_api/02_memory_vector_compute/brcb
