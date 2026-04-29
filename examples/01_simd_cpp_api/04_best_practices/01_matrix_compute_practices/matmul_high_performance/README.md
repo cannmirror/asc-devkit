@@ -536,65 +536,64 @@ $$MTE2耗时误差 = \frac{{1900.322\mu s} - {1832.1\mu s}}{{1832.1\mu s}} = 3.7
 
 ## 编译运行
 在本样例根目录下执行如下步骤，编译并执行样例。
+- 配置环境变量  
+  请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
+  - 默认路径，root用户安装CANN软件包
+    ```bash
+    source /usr/local/Ascend/cann/set_env.sh
+    ```
 
-### 配置环境变量
-请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
+  - 默认路径，非root用户安装CANN软件包
+    ```bash
+    source $HOME/Ascend/cann/set_env.sh
+    ```
 
-- 默认路径，root用户安装CANN软件包
+  - 指定路径install_path，安装CANN软件包
+    ```bash
+    source ${install_path}/cann/set_env.sh
+    ```
+
+- 样例执行
   ```bash
-  source /usr/local/Ascend/cann/set_env.sh
-  ```
-
-- 默认路径，非root用户安装CANN软件包
-  ```bash
-  source $HOME/Ascend/cann/set_env.sh
-  ```
-
-- 指定路径install_path，安装CANN软件包
-  ```bash
-  source ${install_path}/cann/set_env.sh
-  ```
-
-### 样例执行
-```bash
   mkdir -p build && cd build;   # 创建并进入build目录
-  cmake -DCASE_TYPE=0 -DNPU_ARCH=dav-2201 ..;make -j;  # 编译指定case（默认为0，可替换为0-8），默认npu模式
+  cmake -DCASE_TYPE=0 -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;  # 编译指定case（默认为0，可替换为0-8），默认npu模式
   python3 ../scripts/gen_data.py   # 生成测试输入数据
   ./demo                           # 执行（使用编译时指定的case）
   python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
-```
+  ```
 
-  使用 NPU仿真 模式时，添加 `-DRUN_MODE=sim` 参数即可。
+  使用 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
 
   示例如下：
   ```bash
-  cmake -DCASE_TYPE=0 -DRUN_MODE=sim -DNPU_ARCH=dav-2201 ..;make -j; # NPU仿真模式
+  cmake -DCASE_TYPE=0 -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # NPU仿真模式
   ```
 
   > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
 
-### 编译选项说明
+- 编译选项说明
 
-| 选项 | 可选值 | 说明 |
-|------|--------|------|
-| `CASE_TYPE` | `0`-`8` | 样例类型（0-8），默认为0 |
-| `RUN_MODE` | `npu`（默认）、`sim` | 运行模式：NPU 运行、NPU仿真 |
-| `NPU_ARCH` | `dav-2201`（默认）、`dav-3510` | NPU 架构：dav-2201 对应 Atlas A2/A3 系列，dav-3510 对应 Ascend 950PR/Ascend 950DT |
+  | 选项 | 可选值 | 说明 |
+  |------|--------|------|
+  | `CASE_TYPE` | `0`-`8` | 样例类型（0-8），默认为0 |
+  | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`sim` | 运行模式：NPU 运行、NPU仿真 |
+  | `CMAKE_ASC_ARCHITECTURES` | `dav-2201`（默认）、`dav-3510` | NPU 架构：dav-2201 对应 Atlas A2 训练系列产品/Atlas A2 推理系列产品和Atlas A3 训练系列产品/Atlas A3 推理系列产品，dav-3510 对应 Ascend 950PR/Ascend 950DT |
 
-执行结果如下，说明精度对比成功。
-```bash
-test pass!
-```
- ### 性能分析
-    
-  使用 `msprof` 工具获取详细性能数据：
-    
+  执行结果如下，说明精度对比成功。
   ```bash
-  msprof ./demo   # 分析case 的性能
+  test pass!
   ```
 
-  当前目录下会生成PROF_前缀的文件夹，`mindstudio_profiler_output`目录保存Host和各个Device的性能数据汇总，性能数据分析推荐查看该目录下文件
-  ```bash
+## 性能分析
+
+使用 `msprof` 工具获取详细性能数据：
+
+```bash
+msprof ./demo   # 分析case 的性能
+```
+
+当前目录下会生成PROF_前缀的文件夹，`mindstudio_profiler_output`目录保存Host和各个Device的性能数据汇总，性能数据分析推荐查看该目录下文件
+```bash
 PROF_xxxx_XXXXXX
 ├── device_{id}
 └── host

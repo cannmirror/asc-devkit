@@ -44,11 +44,7 @@
   - 实现流程
     - 通过GenerateTiling实现host侧的Tiling计算
     - 通过CalcGMOffset完成分核计算
-<<<<<<< HEAD
     - 通过Iterate接口完成矩阵乘计算
-=======
-    - 通过IterateAll接口完成矩阵乘计算
->>>>>>> a942c86d (update activation examples)
 
   - 调用实现
     使用内核调用符<<<>>>调用核函数。
@@ -96,7 +92,7 @@
 | 选项 | 可选值 | 说明 |
 |------|--------|------|
 | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`sim` | 运行模式：NPU 运行、NPU仿真 |
-| `CMAKE_ASC_ARCHITECTURES` | `dav-2201`（默认）、`dav-3510` | NPU 架构：dav-2201 对应 Atlas A2 训练系列产品/Atlas A2 推理系列产品/Atlas A3 训练系列产品/Atlas A3 推理系列产品，dav-3510 对应 Ascend 950PR/Ascend 950DT |
+| `CMAKE_ASC_ARCHITECTURES` | `dav-2201`（默认）、`dav-3510` | NPU 架构：dav-2201 对应 Atlas A2 训练系列产品/Atlas A2 推理系列产品和Atlas A3 训练系列产品/Atlas A3 推理系列产品，dav-3510 对应 Ascend 950PR/Ascend 950DT |
 
 - 执行结果
   执行结果如下，说明精度对比成功。

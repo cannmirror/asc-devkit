@@ -394,60 +394,56 @@ $$MTE2耗时误差 = \frac{1874.267 - 1832.10}{1832.10} = 2.30\%$$
 ## 编译运行
 
 在本样例根目录下执行如下步骤，编译并执行样例。
+- 配置环境变量  
+  请根据当前环境上 CANN 开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
+  - 默认路径，root 用户安装 CANN 软件包
+    ```bash
+    source /usr/local/Ascend/cann/set_env.sh
+    ```
 
-### 配置环境变量
+  - 默认路径，非 root 用户安装 CANN 软件包
+    ```bash
+    source $HOME/Ascend/cann/set_env.sh
+    ```
 
-请根据当前环境上 CANN 开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
+  - 指定路径 install_path，安装 CANN 软件包
+    ```bash
+    source ${install_path}/cann/set_env.sh
+    ```
 
-- 默认路径，root 用户安装 CANN 软件包
+- 样例执行
   ```bash
-  source /usr/local/Ascend/cann/set_env.sh
+  SCENARIO=1                                                           # 选择执行场景（1为不使能L2Cache切分，2为使能L2Cache切分）
+  mkdir -p build && cd build;                                          # 创建并进入 build 目录
+  cmake -DSCENARIO_NUM=$SCENARIO -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;  # 编译工程（默认npu模式）
+  python3 ../scripts/gen_data.py                                       # 生成测试输入数据
+  ./demo                                                               # 执行编译生成的可执行程序
+  python3 ../scripts/verify_result.py output/output.bin output/golden.bin
   ```
 
-- 默认路径，非 root 用户安装 CANN 软件包
+  使用 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
+
+  示例：
   ```bash
-  source $HOME/Ascend/cann/set_env.sh
+  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;   # NPU 仿真模式
   ```
 
-- 指定路径 install_path，安装 CANN 软件包
+  > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
+
+- 编译选项说明
+
+  | 参数 | 说明 | 可选值 | 默认值 |
+  |------|------|---------|--------|
+  | `SCENARIO_NUM` | `1` / `2` | 1: 不使能L2Cache切分；2: 使能L2Cache切分 | `1` |
+  | `CMAKE_ASC_RUN_MODE` | 运行模式 | `npu`、`sim` | `npu` |
+  | `CMAKE_ASC_ARCHITECTURES` | NPU 硬件架构 | `dav-2201`、`dav-3510` | `dav-2201` |
+
+  执行结果如下，说明精度对比成功。
   ```bash
-  source ${install_path}/cann/set_env.sh
+  test pass!
   ```
 
-### 样例执行
-
-```bash
-SCENARIO=1                                                           # 选择执行场景（1为不使能L2Cache切分，2为使能L2Cache切分）
-mkdir -p build && cd build;                                          # 创建并进入 build 目录
-cmake -DSCENARIO_NUM=$SCENARIO -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;  # 编译工程（默认npu模式）
-python3 ../scripts/gen_data.py                                       # 生成测试输入数据
-./demo                                                               # 执行编译生成的可执行程序
-python3 ../scripts/verify_result.py output/output.bin output/golden.bin
-```
-
-使用 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
-
-示例：
-```bash
-cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;   # NPU 仿真模式
-```
-
-> **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
-
-### 编译选项说明
-
-| 参数 | 说明 | 可选值 | 默认值 |
-|------|------|---------|--------|
-| `SCENARIO_NUM` | `1` / `2` | 1: 不使能L2Cache切分；2: 使能L2Cache切分 | `1` |
-| `CMAKE_ASC_RUN_MODE` | 运行模式 | `npu`、`sim` | `npu` |
-| `CMAKE_ASC_ARCHITECTURES` | NPU 硬件架构 | `dav-2201`、`dav-3510` | `dav-2201` |
-
-执行结果如下，说明精度对比成功。
-```bash
-test pass!
-```
-
-### 性能分析
+## 性能分析
 
 使用 `msprof` 工具获取详细性能数据：
 

@@ -5,6 +5,8 @@
 使用静态Tensor编程方法进行add算子的编程，实现SetFlag/WaitFlag同步指令的If-Else内外依赖。
 
 ## 支持的产品
+
+- Ascend 950PR/Ascend 950DT
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品
 
