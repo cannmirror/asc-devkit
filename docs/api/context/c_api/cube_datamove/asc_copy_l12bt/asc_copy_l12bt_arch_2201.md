@@ -57,8 +57,13 @@ PIPE_MTE1
 ## 调用示例
 
 ```cpp
-constexpr uint32_t total_length = 128;
-__cbuf__ void src[total_length];
-// dst参数为目标操作数的起始地址
-asc_copy_l12bt(dst, src, total_length);
+constexpr uint16_t n_burst = 1;
+constexpr uint16_t len_burst = 1;
+constexpr uint16_t source_gap = 0;
+constexpr uint16_t dst_gap = 1;
+constexpr uint16_t conv_control = 0;
+__cbuf__ half src[256];
+__biasbuf__ half dst[256];
+uint64_t dst_addr = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst)) / 16;
+asc_copy_l12bt(dst_addr, src, conv_control, n_burst, len_burst, source_gap, dst_gap);
 ```
