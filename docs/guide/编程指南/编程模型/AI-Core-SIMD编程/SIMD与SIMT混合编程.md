@@ -194,7 +194,7 @@ UB（即Unified Buffer）内存空间总大小为256KB，参考[图3](#fig184031
         SIMD与SIMT混合编程中SIMT VF核函数定义的[\_\_simt\_vf\_\_](../../语言扩展层/SIMD-BuiltIn关键字.md#li611618392141)、\_\_gm\_\_修饰符需要单独进行标识。关于SIMT VF函数编程的相关约束请参考[附录](../../附录/CPP标准支持/语法限制/函数.md)。
 
         ```
-        __simt__vf__ __launch_bounds__(thread_num) inline void simt_vector_function(__ubuf__ float* input, …)
+        __simt_vf__ __launch_bounds__(thread_num) inline void simt_vector_function(__ubuf__ float* input, …)
         ```
 
     -   SIMD VF函数定义：
