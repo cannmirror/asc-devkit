@@ -124,7 +124,7 @@ __aicore__ inline void copy_cbuf_to_bt_two_type_stub(uint64_t dst, __cbuf__ SRC_
         EXPECT_EQ(convControl, 0);
     }
     EXPECT_EQ(blockCount, DST_SIZE1);
-    EXPECT_EQ(blockLen, DST_SIZE2 * sizeof(DST_DTYPE) / TEST_L12BT_UNIT);
+    EXPECT_EQ(blockLen, DST_SIZE2 * sizeof(SRC_DTYPE) / TEST_L12BT_UNIT);
     EXPECT_EQ(srcStride, (SRC_SIZE2 - DST_SIZE2) * sizeof(SRC_DTYPE) / TEST_C0_SIZE);
     EXPECT_EQ(dstStride, (DST_SIZE2 - DST_SIZE2) * sizeof(DST_DTYPE) / TEST_L12BT_UNIT);
 }
