@@ -16,24 +16,33 @@ import os
 import sys
 import numpy as np
 
+def taylor_exp(src, n):
+    if n < 1:
+        raise
+    item = np.ones_like(src).astype(np.float32)
+    result = np.ones_like(src).astype(np.float32)
+    for i in range(n):
+        item *= src/(i+1)
+        result += item
+    return result
 
-def gen_golden_data_simple():
+def gen_golden_data_simple(item_num=10):
     dtype = np.float32
-    src_shape = [8192]
+    cal_count = 8192
+    src_shape = [cal_count]
     np.random.seed(0)
     input_dtype = dtype
-    cal_count = 8192
-    is_high_preci = 0
     min_num, max_num = input_dtype(-10), input_dtype(10)
-    element_num = 1
-    for a in src_shape:
-        element_num *= a
+
     src = np.random.uniform(min_num, max_num, src_shape).astype(input_dtype)
-    if is_high_preci == 1:
-        src = src.astype(np.float32)
     src_exp = src[:cal_count]
     src_ori = np.zeros(src.size - cal_count).astype(src.dtype)
-    src_exp = np.exp(src_exp)
+    if item_num:
+        xa = np.floor(src_exp)
+        xb = src_exp - xa
+        src_exp = np.exp(xa) * taylor_exp(xb, item_num)
+    else:
+        src_exp = np.exp(src_exp)
     golden = np.concatenate((src_exp, src_ori), axis=None)
 
     if input_dtype != np.float32:
