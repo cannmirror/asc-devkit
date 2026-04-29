@@ -22,6 +22,7 @@
 #include "kernel_tensor.h"
 #include "kernel_check.h"
 #include "kernel_struct_binary.h"
+#include "kernel_npu_debug.h"
 #include "mstx_local_tensor_info.h"
 
 #if __NPU_ARCH__ == 1001
@@ -52,9 +53,15 @@ __aicore__ inline void MulCast(const LocalTensor<T> &dst, const LocalTensor<U> &
 {
     using DstPrimType = PrimT<T>;
     using SrcPrimType = PrimT<U>;
-    ASCENDC_ASSERT((SupportType<SrcPrimType, half>() && SupportType<DstPrimType, int8_t, uint8_t>()), {
-        KERNEL_LOG(KERNEL_ERROR, "Failed "
-        "to check dtype in MulCast, current api support dtype combination is src: half, dst: int8_t / uint8_t");});
+    using MaskCheckType = typename Conditional<(sizeof(DstPrimType) >= sizeof(SrcPrimType)),
+        DstPrimType, SrcPrimType>::type;
+    ASCENDC_DEBUG_ASSERT((SupportType<SrcPrimType, half>() && SupportType<DstPrimType, int8_t, uint8_t>()), 
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed "
+        "to check dtype in MulCast, current api support dtype combination is src: half, dst: int8_t / uint8_t"));
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    CheckVectorTensor("MulCast", NamedTensor(dst, "dst"), NamedTensor(src0, "src0"), NamedTensor(src1, "src1"));
+    CheckMaskValue<MaskCheckType, isSetMask>(mask, "MulCast");
+#endif
 #if ASCENDC_CPU_DEBUG
     if (!CheckFuncVecBinaryDiffType(dst, src0, src1, mask, repeatTime, repeatParams, "MulCast")) {
         ASCENDC_REPORT_CHECK_ERROR("MulCast", KernelFuncType::MASK_COUNT_MODE);
@@ -73,9 +80,15 @@ __aicore__ inline void MulCast(const LocalTensor<T> &dst, const LocalTensor<U> &
 {
     using DstPrimType = PrimT<T>;
     using SrcPrimType = PrimT<U>;
-    ASCENDC_ASSERT((SupportType<SrcPrimType, half>() && SupportType<DstPrimType, int8_t, uint8_t>()), {
-        KERNEL_LOG(KERNEL_ERROR, "Failed "
-        "to check dtype in MulCast, current api support dtype combination is src: half, dst: int8_t / uint8_t");});
+    using MaskCheckType = typename Conditional<(sizeof(DstPrimType) >= sizeof(SrcPrimType)),
+        DstPrimType, SrcPrimType>::type;
+    ASCENDC_DEBUG_ASSERT((SupportType<SrcPrimType, half>() && SupportType<DstPrimType, int8_t, uint8_t>()), 
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed "
+        "to check dtype in MulCast, current api support dtype combination is src: half, dst: int8_t / uint8_t"));
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    CheckMaskArray<MaskCheckType, isSetMask>(mask, "MulCast");
+    CheckVectorTensor("MulCast", NamedTensor(dst, "dst"), NamedTensor(src0, "src0"), NamedTensor(src1, "src1"));
+#endif
 #if ASCENDC_CPU_DEBUG
     if (!CheckFuncVecBinaryDiffType(dst, src0, src1, mask, repeatTime, repeatParams, "MulCast")) {
         ASCENDC_REPORT_CHECK_ERROR("MulCast", KernelFuncType::MASK_BIT_MODE);
@@ -91,6 +104,10 @@ template <typename T, typename U>
 __aicore__ inline void MulCast(const LocalTensor<T> &dst, const LocalTensor<U> &src0,
     const LocalTensor<U> &src1, uint32_t count)
 {
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    CheckVectorTensor("MulCast", NamedTensor(dst, "dst"), NamedTensor(src0, "src0"), NamedTensor(src1, "src1"));
+    CheckCalcount(static_cast<int32_t>(count), "count", "MulCast");
+#endif
 #if ASCENDC_CPU_DEBUG
     if (!CheckFuncVecBinaryDiffType(dst, src0, src1, count, "MulCast")) {
         ASCENDC_REPORT_CHECK_ERROR("MulCast", KernelFuncType::CALCOUNT_MODE);

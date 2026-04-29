@@ -70,8 +70,12 @@ template <typename T, typename U>
 __aicore__ inline void MulCastCalc(const LocalTensor<T> &dst, const LocalTensor<U> &src0,
     const LocalTensor<U> &src1, uint32_t count)
 {
-    ASCENDC_ASSERT((SupportType<PrimT<U>, half>() && SupportType<PrimT<T>, int8_t, uint8_t>()), {KERNEL_LOG(KERNEL_ERROR, "Failed "
-        "to check dtype in MulCast, current api support dtype combination is src: half, dst: int8_t / uint8_t");});
+    ASCENDC_DEBUG_ASSERT(
+        (SupportType<PrimT<U>, half>() && SupportType<PrimT<T>, int8_t, uint8_t>()),
+        KERNEL_LOG_INTERNAL(
+            KERNEL_ERROR,
+            "Failed "
+            "to check dtype in MulCast, current api support dtype combination is src: half, dst: int8_t / uint8_t"));
     if ASCEND_IS_AIV {
         BinaryRepeatParams repeatParams;
         repeatParams.dstRepStride = HALF_DEFAULT_REPEAT_STRIDE;
