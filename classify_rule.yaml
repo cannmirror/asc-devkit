@@ -102,6 +102,7 @@ asc-devkit:
       - impl/basic_api/kernel_operator_list_tensor_intf_impl.h
       - impl/basic_api/dav_3510/kernel_operator_determine_compute_sync_impl.h
       - tests/api/basic_api/ascendc_header_checker/kernel_operator_vec_gather_intf.cpp
+      - impl/basic_api/utils/kernel_utils_mode.h
       - impl/basic_api/utils/kernel_check_vec_select_util.h
       - impl/basic_api/dav_3510/kernel_operator_vec_gather_impl.h
       - impl/basic_api/kernel_operator_vec_gather_intf_impl.h
