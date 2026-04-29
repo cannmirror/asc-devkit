@@ -14,8 +14,7 @@
 
 import os
 import numpy as np
-import tensorflow as tf
-bfloat16 = tf.bfloat16.as_numpy_dtype
+from ml_dtypes import bfloat16
 
 
 def gen_golden_data_simple():

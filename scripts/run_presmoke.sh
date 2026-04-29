@@ -248,7 +248,7 @@ run_test_case() {
         matmul_b8|matmul_ibshareB)
             run_with_params "${code_path}" "${example_name}" "-DDT_MODE=0" "0" 2>&1 | tee "${log_path}/${case_name}.log"
             ;;
-        hello_world_npu|add_dynamic|get_tpipe_ptr|group_barrier|acosh)
+        hello_world_npu|list_tensor_desc_input|get_tpipe_ptr|group_barrier|acosh)
             run_with_params "${code_path}" "${example_name}" "" "" "demo" "" 2>&1 | tee "${log_path}/${case_name}.log"
             ;;
         basic_api_tque_add)

@@ -14,10 +14,9 @@
 
 import sys
 import numpy as np
-import tensorflow as tf
+from ml_dtypes import bfloat16
 
 
-bfloat16 = tf.bfloat16.as_numpy_dtype
 relative_tol = 1e-3
 absolute_tol = 1e-5
 error_tol = 1e-3

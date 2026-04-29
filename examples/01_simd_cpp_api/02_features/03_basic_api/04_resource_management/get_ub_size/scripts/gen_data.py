@@ -2,7 +2,7 @@
 # coding=utf-8
 
 # ----------------------------------------------------------------------------------------------------------
-# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+# Copyright (c) 2026 Huawei Technologies Co., Ltd.
 # This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 # CANN Open Software License Agreement Version 2.0 (the "License").
 # Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 
 
 import os
+import argparse
 import numpy as np
 
 
@@ -25,21 +26,39 @@ def get_range_by_dtype(input_type):
     except ValueError:
         print(f"Unsupported data type:{input_type}")
 
-def gen_golden_data_simple():
+
+def gen_golden_data(scenarioNum):
+    """
+    生成测试输入数据和真值数据
+    Args:
+        scenarioNum: 场景编号(1=GetUBSizeInBytes, 2=GetRuntimeUBSize)
+    """
     input_type = np.float16
     output_type = np.float16
     min_val, max_val = get_range_by_dtype(input_type)
-    block_length = 16384
     
-    input_shape = [block_length]
-    output_shape = input_shape
-    input_x = np.random.uniform(min_val, max_val, input_shape).astype(input_type)
+    if scenarioNum == 1:
+        # 场景1：GetUBSizeInBytes，shape=[16384]
+        total_length = 16384
+    elif scenarioNum == 2:
+        # 场景2：GetRuntimeUBSize，shape=[126976]
+        total_length = 126976
+    else:
+        print(f"scenarioNum {scenarioNum} is not supported!")
+        return
+    
+    input_x = np.random.uniform(min_val, max_val, [total_length]).astype(input_type)
     golden = np.abs(input_x)
+    
     os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
+    
     input_x.tofile("./input/input_x.bin")
     golden.tofile("./output/golden.bin")
 
 
 if __name__ == "__main__":
-    gen_golden_data_simple()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-scenarioNum', type=int, default=1, choices=range(1, 3))
+    args = parser.parse_args()
+    gen_golden_data(args.scenarioNum)

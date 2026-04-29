@@ -1,6 +1,3 @@
-#!/usr/bin/python3
-# coding=utf-8
-
 # ----------------------------------------------------------------------------------------------------------
 # Copyright (c) 2025 Huawei Technologies Co., Ltd.
 # This program is free software, you can redistribute it and/or modify it under the terms and conditions of
@@ -12,25 +9,19 @@
 # ----------------------------------------------------------------------------------------------------------
 
 
-import os
-import numpy as np
+cmake_minimum_required(VERSION 3.16)
+
+set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "NPU architecture: dav-2201, dav-3510")
+
+find_package(ASC REQUIRED)
+
+project(kernel_samples LANGUAGES ASC CXX)
+
+add_executable(demo
+    list_tensor_desc_input.asc
+)
 
 
-def gen_golden_data_simple():
-    input_type = np.dtype("float16")
-    output_type = input_type
-    buf_size = 65536
-    mask = 32768
-    input_x = np.ones(buf_size, dtype=input_type)
-    input_y = np.ones(buf_size, dtype=input_type)
-    golden = np.zeros(buf_size, dtype=output_type)
-    golden[0:mask] = input_x[0:mask] + input_y[0:mask]
-    os.makedirs("input", exist_ok=True)
-    os.makedirs("output", exist_ok=True)
-    input_x.tofile("./input/input_x.bin")
-    input_y.tofile("./input/input_y.bin")
-    golden.tofile("./output/golden.bin")
-
-
-if __name__ == "__main__":
-    gen_golden_data_simple()
+target_compile_options(demo PRIVATE
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>
+)
