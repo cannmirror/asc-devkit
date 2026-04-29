@@ -17,31 +17,27 @@ import argparse
 import numpy as np
 
 
-def get_data(scenarioNum=1):
-    x = np.random.randn(1024).astype(np.float32)
-    y = np.random.randn(1024).astype(np.float32)
-    if scenarioNum == 1:
-        z = x + y
-    elif scenarioNum == 2:
-        z = x - y
-        z[:64] = z[-64:]
-    else:
-        raise ValueError(f"Unsupported scenarioNum: {scenarioNum}")
-    return x, y, z
-
-
 def gen_golden_data_simple(scenarioNum=1):
     os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
-    x, y, z = get_data(scenarioNum)
+    count = 1024
+    x = np.random.randn(count).astype(np.float32)
     x.tofile("./input/input_x.bin")
-    y.tofile("./input/input_y.bin")
-    z.tofile("./output/golden.bin")
+    if scenarioNum == 1:
+        z = np.exp(x)
+        z.tofile("./output/golden.bin")
+    elif scenarioNum == 2:
+        count = 8
+        x = np.random.randn(count).astype(np.float32)
+        x.tofile("./input/input_x.bin")
+        golden = np.zeros(8, dtype=np.float32)
+        golden[0] = np.sum(np.abs(x)).astype(np.float32)
+        golden.tofile("./output/golden.bin")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-scenarioNum', type=int, default=1, choices=[1, 2],
-                        help='Scenario number: 1=Add, 2=Sub')
+                        help='Scenario number: 1=RegSync, 2=UbSync')
     args = parser.parse_args()
     gen_golden_data_simple(args.scenarioNum)

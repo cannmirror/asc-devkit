@@ -1,21 +1,22 @@
 # reg_sync样例
 
 ## 概述
-本样例演示了基于RegBase编程范式下对UB（Unified Buffer）读或写操作的同步指令使用。样例中使用到了寄存器保序特性（优化读写之间的同步指令）和LoalMemBar接口来保序。本样例支持两种计算场景：读写依赖和写写依赖，通过环境变量选择场景。
+本样例基于RegBase编程范式实现UB(Unified Buffer)读或写操作的同步机制，支持多种场景，通过环境变量选择场景。
     <table>
- 	  	 	<tr>
- 	  	 		<td>scenarioNum</td>
- 	  	 		<td>同步场景</td>
- 	  	 	</tr>
- 	  	 	<tr>
- 	  	 		<td>1</td>
- 	  	 		<td>读写依赖（寄存器保序）</td>
- 	  	 	</tr>
- 	  	 	<tr>
- 	  	 		<td>2</td>
- 	  	 		<td>写写依赖（LocalMemBar）</td>
- 	  	 	</tr>
- 	  	 </table>
+  	 	<tr>
+ 	 		<td>scenarioNum</td>
+ 	 		<td>同步场景</td>
+ 	 	</tr>
+ 	 	<tr>
+ 	 		<td>1</td>
+ 	 		<td>寄存器保序</td>
+ 	 	</tr>
+ 	 	<tr>
+ 	 		<td>2</td>
+ 	 		<td>LocalMemBar（写读依赖）</td>
+ 	 	</tr>
+ 	 </table>
+
 
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT
@@ -31,28 +32,56 @@
 │   └── README.md                      // 样例介绍
 ```
 
-## 算子描述
-- 算子功能：  
-  算子输入一个长度为1024的向量A和一个长度为1024的向量B，数据类型为float，进行向量相加或相减操作。
-- 算子规格：
-  <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="3" align="center">AIV算子</td></tr>
-  </tr>
-  <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td></tr>
-  <tr><td align="center">x</td><td align="center">1024</td><td align="center">float</td></tr>
-  <tr><td align="center">y</td><td align="center">1024</td><td align="center">float</td></tr>
-  </tr>
-  </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">1024</td><td align="center">float</td></tr>
-  </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">reg_sync</td></tr>
-  </table>
-- 算子实现：  
-  主要包括以下步骤：
-  1. 在vf函数中每次迭代读取向量A到reg0，读取向量B的数据到reg1，进行相加后结果写到reg0，随后将reg0的数据保存到dstAddr，写指令与Add指令都用到了寄存器reg0，读指令与Add指令都用到了寄存器reg1，触发了寄存器保序机制，可以优化掉读写之间的同步指令。
-  2. 在vf函数中每次迭代读取向量A到reg0，读取向量B的数据到reg1，进行相减后结果写到reg3，每次迭代都将reg3的数据保存到dstAddr，由于每次保存的数据地址都相同，所以需要加LocalMemBar指令来保序。该样例场景2只为演示LocalMemBar指令的使用。
-  - 调用实现  
-    使用内核调用符<<<>>>调用核函数。
+## 样例描述
+
+### 场景1：寄存器保序
+
+**样例功能**：对输入向量 x 进行原地 exp 计算，结果写回同一地址。
+
+**样例规格**：
+<table>
+<tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="3" align="center">AIV样例</td></tr>
+<tr><td rowspan="2" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td></tr>
+<tr><td align="center">x</td><td align="center">[1, 1024]</td><td align="center">float</td></tr>
+<tr><td rowspan="1" align="center">样例输出</td><td align="center">z</td><td align="center">[1, 1024]</td><td align="center">float</td></tr>
+<tr><td rowspan="1" align="center">核函数名</td><td colspan="3" align="center">reg_sync</td></tr>
+</table>
+
+- 样例实现  
+RegSyncVf函数内：
+1. LoadAlign和StoreAlign操作同一地址
+2. 读写入同一寄存器：读LoadAlign后写StoreAlign
+3. 硬件自动保证StoreAlign等待LoadAlign完成，不用加LocalMemBar
+- 调用实现  
+  使用内核调用符`<<<>>>`调用核函数，启动1个核。
+
+### 场景2：LocalMemBar（写读依赖）
+
+**样例功能**：计算向量的绝对值之和：`sum = Σ|x[i]|`
+
+**样例规格**：
+<table>
+<tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="3" align="center">AIV样例</td></tr>
+<tr><td rowspan="2" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td></tr>
+<tr><td align="center">x</td><td align="center">[1, 8]</td><td align="center">float</td></tr>
+<tr><td rowspan="1" align="center">样例输出</td><td align="center">sum</td><td align="center">[1, 1]</td><td align="center">float</td></tr>
+<tr><td rowspan="1" align="center">核函数名</td><td colspan="3" align="center">reg_sync</td></tr>
+</table>
+
+- 样例实现  
+UbSyncVf函数内：
+1. 从UB读取输入数据到RegTensor
+2. 计算绝对值得到|x|
+3. 将|x|写入UB的临时缓冲区
+4. 调用LocalMemBar等待写入完成（读等写同步）
+5. 从UB临时缓冲区读取|x|
+6. 累加求和并输出结果
+- 调用实现  
+  使用内核调用符`<<<>>>`调用核函数，启动1个核。
+
+**LocalMemBar必要性说明**：
+步骤3将|x|写入UB，步骤5需从同一UB地址读取。存在读后写依赖（RAW），读操作必须等待写操作完成。若缺少LocalMemBar，步骤5可能读到未更新的旧数据。LocalMemBar确保UB写入完成后再执行读取操作。
+
 
 ## 编译运行
 在本样例根目录下执行如下步骤，编译并执行算子。
@@ -99,7 +128,7 @@
 | ----------------| -----------------------------| ---------------------------------------------------|
 | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`cpu`、`sim` | 运行模式：NPU 运行、CPU调试、NPU仿真　　　　　　　|
 | `CMAKE_ASC_ARCHITECTURES` | `dav-3510` | NPU 架构：dav-3510 对应 Ascend 950PR/Ascend 950DT |
-| `SCENARIO_NUM` | `1`、`2`　　　　　　　　　　| 场景编号：1=读写依赖，2=写写依赖　　　　　　　　　|
+| `SCENARIO_NUM` | `1`、`2`　　　　　　　　　　| 场景编号：1=寄存器保序，2=LocalMemBar　　　　　　　|
 
 - 执行结果  
   执行结果如下，说明精度对比成功。
