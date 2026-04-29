@@ -76,30 +76,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __hmax(half x, half y)
     } else if (__hisnan(y)) {
         return x;
     }
-    if (__internal_is_positive_inf(x)) {
-        return x;
-    } else if (__internal_is_positive_inf(y)) {
-        return y;
-    }
-    if (__internal_is_negative_inf(x)) {
-        return y;
-    } else if (__internal_is_negative_inf(y)) {
-        return x;
-    }
-    if (x == (half)0 && y == (half)0) {
-        bool sign_bitx = reinterpret_cast<uint16_t&>(x) & 0x8000;
-        bool sign_bity = reinterpret_cast<uint16_t&>(y) & 0x8000;
-        if (sign_bitx) {
-            return y;
-        } else if (sign_bity) {
-            return x;
-        }
-    }
-    if (x > y) {
-        return x;
-    } else {
-        return y;
-    }
+    return __hmax_nan(x, y);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __hmin(half x, half y)
@@ -109,30 +86,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __hmin(half x, half y)
     } else if (__hisnan(y)) {
         return x;
     }
-    if (__internal_is_negative_inf(x)) {
-        return x;
-    } else if (__internal_is_negative_inf(y)) {
-        return y;
-    }
-    if (__internal_is_positive_inf(x)) {
-        return y;
-    } else if (__internal_is_positive_inf(y)) {
-        return x;
-    }
-    if (x == (half)0 && y == (half)0) {
-        bool sign_bitx = reinterpret_cast<uint16_t&>(x) & 0x8000;
-        bool sign_bity = reinterpret_cast<uint16_t&>(y) & 0x8000;
-        if (sign_bitx) {
-            return x;
-        } else if (sign_bity) {
-            return y;
-        }
-    }
-    if (x < y) {
-        return x;
-    } else {
-        return y;
-    }
+    return __hmin_nan(x, y);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half hcos(half x)

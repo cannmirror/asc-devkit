@@ -55,10 +55,10 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T AbsImpl(T x)
 {
     if constexpr (std::is_same_v<T, int32_t> || std::is_same_v<T, float> || std::is_same_v<T, int64_t>) {
         return abs(x);
-    } else if (x < 0) {
-        return -x;
-    } else {
-        return x;
+    } else if constexpr (std::is_same_v<T, half>) {
+        uint16_t bits = *reinterpret_cast<uint16_t*>(&x);
+        bits &= 0x7FFF;
+        return *reinterpret_cast<half*>(&bits);
     }
 }
 #endif
@@ -182,10 +182,20 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T MaxImpl(T x, T y)
                   std::is_same_v<T, int64_t> || std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> ||
                   std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>) {
         return max(x, y);
-    } else if (x > y) {
-        return x;
-    } else {
-        return y;
+    } else if constexpr (std::is_same_v<T, float>) {
+        if (IsNan(x)) {
+            return y;
+        } else if (IsNan(y)) {
+            return x;
+        }
+        return __fmaxf(x, y);
+    } else if constexpr (std::is_same_v<T, half>) {
+        if (IsNan(x)) {
+            return y;
+        } else if (IsNan(y)) {
+            return x;
+        }
+        return __hmax_nan(x, y);
     }
 }
 #endif
@@ -204,10 +214,20 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline T MinImpl(T x, T y)
                   std::is_same_v<T, int64_t> || std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> ||
                   std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>) {
         return min(x, y);
-    } else if (x < y) {
-        return x;
-    } else {
-        return y;
+    } else if constexpr (std::is_same_v<T, float>) {
+        if (IsNan(x)) {
+            return y;
+        } else if (IsNan(y)) {
+            return x;
+        }
+        return __fminf(x, y);
+    } else if constexpr (std::is_same_v<T, half>) {
+        if (IsNan(x)) {
+            return y;
+        } else if (IsNan(y)) {
+            return x;
+        }
+        return __hmin_nan(x, y);
     }
 }
 #endif

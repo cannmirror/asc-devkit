@@ -85,11 +85,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float ceilf(float x)
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float fabsf(float x)
 {
-    if (x < 0.0f) {
-        return -x;
-    } else {
-        return x;
-    }
+    return __fabsf(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float fmaf(float x, float y, float z)
