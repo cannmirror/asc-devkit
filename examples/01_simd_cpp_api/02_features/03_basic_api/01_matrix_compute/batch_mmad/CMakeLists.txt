@@ -10,6 +10,8 @@
 
 cmake_minimum_required(VERSION 3.16)
 
+set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "NPU architecture: dav-2201, dav-3510")
+
 find_package(ASC REQUIRED)
 
 project(kernel_samples LANGUAGES ASC CXX)
@@ -18,31 +20,6 @@ add_executable(demo
     batch_mmad.asc
 )
 
-target_link_libraries(demo PRIVATE
-    tiling_api
-    register
-    platform
-    m
-)
-message(STATUS "[INFO] B_SIZE is ${B_SIZE}")
-message(STATUS "[INFO] M_SIZE is ${M_SIZE}")
-message(STATUS "[INFO] K_SIZE is ${K_SIZE}")
-message(STATUS "[INFO] N_SIZE is ${N_SIZE}")
-
-target_compile_definitions(demo PRIVATE
-    B_SIZE=${B_SIZE}
-    M_SIZE=${M_SIZE}
-    K_SIZE=${K_SIZE}
-    N_SIZE=${N_SIZE}
-)
-
-# ======================================================================================
-# NPU 编译选项配置
-#
-# 说明：
-#   - 需根据实际部署的 NPU 硬件架构选择对应的 `npu-arch` 参数。
-# ======================================================================================
 target_compile_options(demo PRIVATE
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
-    # $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3510>
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>
 )

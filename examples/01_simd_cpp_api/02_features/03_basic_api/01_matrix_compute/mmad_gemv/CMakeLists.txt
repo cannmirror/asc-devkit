@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------------------------------------
-# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+# Copyright (c) 2026 Huawei Technologies Co., Ltd.
 # This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 # CANN Open Software License Agreement Version 2.0 (the "License").
 # Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -8,31 +8,31 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
-
 cmake_minimum_required(VERSION 3.16)
+
+set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "NPU architecture: dav-2201, dav-3510")
 
 find_package(ASC REQUIRED)
 
 project(kernel_samples LANGUAGES ASC CXX)
 
 add_executable(demo
-    mmad_with_bias.asc
+    mmad_gemv.asc
 )
 
-target_link_libraries(demo PRIVATE
-    tiling_api
-    register
-    platform
-    m
+set(DISABLE_GEMV 0 CACHE STRING "DISABLE_GEMV, e.g. 0 or 1")
+if(NOT DISABLE_GEMV MATCHES "(0|1)$")
+    message(FATAL_ERROR "DISABLE_GEMV must be 0 or 1, current value: ${DISABLE_GEMV}")
+endif()
+if(DISABLE_GEMV EQUAL 1 AND CMAKE_ASC_ARCHITECTURES STREQUAL "dav-2201")
+    message(FATAL_ERROR "GEMV can only be disable when CMAKE_ASC_ARCHITECTURES=dav-3510.")
+endif()
+
+message(STATUS "[INFO] DISABLE_GEMV is ${DISABLE_GEMV}")
+target_compile_definitions(demo PRIVATE
+    DISABLE_GEMV=${DISABLE_GEMV}
 )
 
-# ======================================================================================
-# NPU 编译选项配置
-#
-# 说明：
-#   - 需根据实际部署的 NPU 硬件架构选择对应的 `npu-arch` 参数。
-# ======================================================================================
 target_compile_options(demo PRIVATE
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
-    # $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3510>
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>
 )

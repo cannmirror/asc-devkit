@@ -1,6 +1,6 @@
 # Mmad样例
 ## 概述
-本样例介绍了输入为ND格式，B4 / B8 / B16 / B32输入数据类型（具体以int4_t / int8_t / half / float为例），四种输入数据类型下的矩阵乘法，说明如何通过Mmad指令实现矩阵乘法计算（C = A x B + Bias）。
+本样例介绍了输入为ND格式，B4 / B8 / B16 / B32输入数据类型（具体以int4_t / int8_t / bfloat16 / float为例），四种输入数据类型下的矩阵乘法，说明如何通过Mmad指令实现矩阵乘法计算（C = A x B + Bias）。
 
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT
@@ -16,7 +16,7 @@
 │   │   └── verify_result.py        // 验证输出数据和真值数据是否一致的验证脚本
 │   ├── CMakeLists.txt              // 编译工程文件
 │   ├── data_utils.h                // 数据读入写出函数
-│   └── mmad.asc                    // Ascend C算子实现 & 调用样例
+│   └── mmad.asc                    // Ascend C样例实现 & 调用样例
 ```
 
 ## 样例描述
@@ -122,7 +122,7 @@
     <td>float</td>
     <td>转置</td>
     <td>转置</td>
-    <td>带Bias且传入biasTensor的场景。</td>
+    <td>带Bias且传入biasTensor的场景</td>
   </tr>
 </table>
 
@@ -217,22 +217,22 @@ Mmad计算中包含了补齐的无效数据，需要配合Fixpipe指令在L0C搬
   python3 ../scripts/verify_result.py -scenarioNum=$SCENARIO output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
   ```
 
-  使用NPU仿真 模式时，添加`-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
-  
-  示例如：
+  使用 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
+
+  示例如下：
   ```bash
-  cmake .. -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=$SCENARIO;make -j; # NPU仿真模式
+  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # NPU仿真模式
   ```
 
   > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
 
 - 编译选项说明
 
-  | 参数 | 说明 | 可选值 | 默认值 |
-  |------|------|--------|--------|
-  | CMAKE_ASC_RUN_MODE | 运行模式 | npu、sim | npu |
-  | CMAKE_ASC_ARCHITECTURES | NPU硬件架构 | dav-2201、dav-3510 | dav-2201 |
-  | SCENARIO_NUM | 场景编号 | 1-4 | 1 |
+  | 选项 | 可选值 | 说明 |
+  |------|--------|------|
+  | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`sim` | 运行模式：NPU运行、NPU仿真 |
+  | `CMAKE_ASC_ARCHITECTURES` | `dav-2201`（默认）、`dav-3510` | NPU 架构：dav-2201 对应 Atlas A2 训练系列产品/Atlas A2 推理系列产品/Atlas A3 训练系列产品/Atlas A3 推理系列产品，dav-3510 对应 Ascend 950PR/Ascend 950DT |
+  | `SCENARIO_NUM` |  `1`（默认）、`2`、`3`、`4` | 场景编号，分别对应B4 / B8 / B16 / B32输入数据类型；`仅在CMAKE_ASC_ARCHITECTURES=dav-2201时支持设为1` |
 
 - 执行结果
 

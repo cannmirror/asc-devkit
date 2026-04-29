@@ -13,14 +13,14 @@
 ## 目录结构介绍
 
 ```
-├── mmad_with_gemv
+├── mmad_gemv
 │   ├── img                         // 本文中的插图文件
 │   ├── scripts
 │   │   ├── gen_data.py             // 输入数据和真值数据生成脚本
 │   │   └── verify_result.py        // 验证输出数据和真值数据是否一致的验证脚本
 │   ├── CMakeLists.txt              // 编译工程文件
 │   ├── data_utils.h                // 数据读入写出函数
-│   └── mmad_with_gemv.asc          // Ascend C算子实现 & 调用样例
+│   └── mmad_gemv.asc          // Ascend C样例实现 & 调用样例
 ```
 
 ## 样例描述
@@ -83,22 +83,23 @@ GEMV模式是指Mmad计算中M=1，形状为(1, K)的左矩阵A与形状为(K, N
   python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
   ```
 
-  使用NPU仿真 模式时，添加`-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
-  
-  示例如：
+  使用 CPU调试 或 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
+
+  示例如下：
   ```bash
-  cmake .. -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DDISABLE_GEMV=0;make -j; # NPU仿真模式
+  cmake -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # cpu调试模式
+  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # NPU仿真模式
   ```
 
   > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
 
 - 编译选项说明
 
-  | 参数 | 可选值 | 默认值 | 说明 |
-  |------|--------|--------|------|
-  | CMAKE_ASC_RUN_MODE | npu、sim | npu | 运行模式 |
-  | CMAKE_ASC_ARCHITECTURES | dav-2201、dav-3510 | dav-2201 | NPU硬件架构 |
-  | DISABLE_GEMV | 0、1 | 0 | 是否关闭GEMV模式，`仅在CMAKE_ASC_ARCHITECTURES==dav-3510时支持设为1` |
+  | 选项 | 可选值 | 说明 |
+  |------|--------|------|
+  | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`cpu`、`sim` | 运行模式：NPU运行、CPU调试、NPU仿真 |
+  | `CMAKE_ASC_ARCHITECTURES` | `dav-2201`（默认）、`dav-3510` | NPU架构：dav-2201 对应 Atlas A2 训练系列产品/Atlas A2 推理系列产品/Atlas A3 训练系列产品/Atlas A3 推理系列产品，dav-3510 对应 Ascend 950PR/Ascend 950DT |
+  | `DISABLE_GEMV` | `0`（默认）、`1` | 是否关闭GEMV模式，`仅在CMAKE_ASC_ARCHITECTURES==dav-3510时支持设为1` |
 
 - 执行结果
 

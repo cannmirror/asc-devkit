@@ -12,11 +12,11 @@
 # ----------------------------------------------------------------------------------------------------------
 
 import os
-import argparse
 import numpy as np
 
 
-def gen_golden_data(B=3,M=0,K=0,N=0):
+def gen_golden_data():
+    B, M, K, N = 4, 30, 40, 70
     #带batch的矩阵乘，输入[B, M, K]和[B, K, N]
     input_type = np.dtype("float32")
     golden = np.zeros([B, M, N]).astype(np.float32)
@@ -31,10 +31,4 @@ def gen_golden_data(B=3,M=0,K=0,N=0):
     golden.tofile("./output/golden.bin")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-b', type=int, default=1, choices=range(1,13))
-    parser.add_argument('-m', type=int)
-    parser.add_argument('-k', type=int)
-    parser.add_argument('-n', type=int)
-    args = parser.parse_args()
-    gen_golden_data(args.b, args.m, args.k, args.n)
+    gen_golden_data()

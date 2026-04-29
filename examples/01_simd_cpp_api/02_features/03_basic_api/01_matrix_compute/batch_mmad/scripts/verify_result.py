@@ -13,8 +13,6 @@
 
 import sys
 import numpy as np
-import tensorflow as tf
-
 
 # for float32
 relative_tol = 1e-6
@@ -51,7 +49,7 @@ if __name__ == '__main__':
         if not res:
             raise ValueError("[ERROR] result error")
         else:
-            print("test pass")
+            print("test pass!")
     except Exception as e:
         print(e)
         sys.exit(1)
