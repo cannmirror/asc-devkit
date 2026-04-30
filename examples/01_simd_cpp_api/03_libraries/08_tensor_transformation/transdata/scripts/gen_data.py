@@ -16,6 +16,7 @@ import os
 import sys
 from enum import Enum
 import numpy as np
+import argparse
 
 
 class TransDataMode(Enum):
@@ -25,12 +26,11 @@ class TransDataMode(Enum):
     NDC1HWC0_NCDHW = 4
 
 
-def gen_golden_data_simple():
+def gen_golden_data_simple(mode):
     dtype = np.float16
     np.random.seed(123)
     np.set_printoptions(threshold=sys.maxsize)
     np.set_printoptions(linewidth=32)
-    mode = 1
     n = 16
     c = 16
     d = 1
@@ -116,4 +116,8 @@ def gen_golden_data_simple():
 
 
 if __name__ == "__main__":
-    gen_golden_data_simple()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--mode', type=int, choices=range(1,5), help='指定数据转换的场景，取值1~4')
+    args = parser.parse_args()
+    mode = args.mode if args.mode else 1
+    gen_golden_data_simple(mode)

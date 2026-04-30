@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例基于Kernel直调算子工程，介绍了调用BroadCast高阶API实现broadcast单算子，主要演示BroadCast高阶API在Kernel直调工程中的调用。
+本样例基于Broadcast高阶API实现数据广播功能，支持将输入Tensor按照指定轴扩展到目标shape，适用于数据对齐和维度扩展等场景。
 
 ## 支持的产品
 
@@ -12,27 +12,30 @@
 
 ## 目录结构介绍
 
-```
+```plain
 ├── broadcast
 │   ├── scripts
-│   │   ├── gen_data.py         // 输入数据和真值数据生成脚本
+│   │   └── gen_data.py         // 输入数据和真值数据生成脚本
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── broadcast.asc           // Ascend C算子实现 & 调用样例
+│   └── broadcast.asc           // Ascend C样例实现 & 调用样例
 ```
 
-## 算子描述
+## 样例描述
 
-- 算子功能：  
-  broadcast单算子，对输入tensor做广播计算。
-- 算子规格：  
+- 样例功能：  
+  对输入Tensor做广播计算。
+
+- 样例规格：
+
 <table>
+  <caption>表1：样例规格说明-场景0</caption>
   <tr>
-    <td align="center">算子类型(OpType)</td>
+    <td align="center">样例类型(OpType)</td>
     <td colspan="4" align="center">broadcast</td>
   </tr>
   <tr>
-    <td rowspan="2" align="center">算子输入</td>
+    <td rowspan="2" align="center">样例输入</td>
     <td align="center">name</td>
     <td align="center">shape</td>
     <td align="center">data type</td>
@@ -40,14 +43,14 @@
   </tr>
   <tr>
     <td align="center">x</td>
-    <td align="center">1 * 48 / 96 * 1</td>
+    <td align="center">[1, 48]</td>
     <td align="center">float</td>
     <td align="center">ND</td>
   </tr>
   <tr>
-    <td align="center">算子输出</td>
+    <td align="center">样例输出</td>
     <td align="center">y</td>
-    <td align="center">96 * 48 / 96 * 96</td>
+    <td align="center">[96, 48]</td>
     <td align="center">float</td>
     <td align="center">ND</td>
   </tr>
@@ -57,48 +60,115 @@
   </tr>
 </table>
 
-- 算子实现：  
-  本样例中实现了两种场景的broadcast算子，分别是[1, 48]到[96, 48]的广播和[96, 1]到[96, 96]的广播。
+<table>
+  <caption>表2：样例规格说明-场景1</caption>
+  <tr>
+    <td align="center">样例类型(OpType)</td>
+    <td colspan="4" align="center">broadcast</td>
+  </tr>
+  <tr>
+    <td rowspan="2" align="center">样例输入</td>
+    <td align="center">name</td>
+    <td align="center">shape</td>
+    <td align="center">data type</td>
+    <td align="center">format</td>
+  </tr>
+  <tr>
+    <td align="center">x</td>
+    <td align="center">[96, 1]</td>
+    <td align="center">float</td>
+    <td align="center">ND</td>
+  </tr>
+  <tr>
+    <td align="center">样例输出</td>
+    <td align="center">y</td>
+    <td align="center">[96, 96]</td>
+    <td align="center">float</td>
+    <td align="center">ND</td>
+  </tr>
+  <tr>
+    <td align="center">核函数名</td>
+    <td colspan="4" align="center">broadcast_custom</td>
+  </tr>
+</table>
+
+- 场景说明：
+
+  <table>
+  <caption>表3：TESTCASE参数说明</caption>
+  <tr><td align="center">TESTCASE</td><td align="center">输入shape</td><td align="center">输出shape</td><td align="center">广播轴(axis)</td><td align="center">说明</td></tr>
+  <tr><td align="center">0</td><td align="center">[1, 48]</td><td align="center">[96, 48]</td><td align="center">0</td><td align="center">在第一维进行广播，将1扩展为96</td></tr>
+  <tr><td align="center">1</td><td align="center">[96, 1]</td><td align="center">[96, 96]</td><td align="center">1</td><td align="center">在第二维进行广播，将1扩展为96</td></tr>
+  </table>
+
+- 样例实现：  
+  本样例中实现了两种场景的broadcast样例，分别是[1, 48]到[96, 48]的广播和[96, 1]到[96, 96]的广播。
 
   - Kernel实现  
-    计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用BroadCast高阶API接口完成broadcast计算，得到最终结果，再搬出到外部存储上。
-
-    broadcast算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm搬运至Local Memory，存储在xLocal中，Compute任务负责对xLocal执行broadcast计算，然后存储在yLocal中，CopyOut任务负责将输出数据从yLocal搬运至Global Memory上的输出Tensor yGm中。
+    使用Broadcast高阶API接口完成广播，将输入Tensor按照指定轴扩展到目标shape
 
   - Tiling实现  
-    broadcast算子的tiling实现流程如下：首先获取input和output的二维shape，然后将其与广播的轴、input/output tensor的维度填充到TilingData中。
+    broadcast样例的tiling实现流程如下：首先获取input和output的二维shape，然后将其与广播的轴、input/output tensor的维度填充到TilingData中。
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行  
 
-在本样例根目录下执行如下步骤，编译并执行算子。
+在本样例根目录下执行如下步骤，编译并执行样例。
+
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
+
     ```bash
     source /usr/local/Ascend/cann/set_env.sh
     ```
 
   - 默认路径，非root用户安装CANN软件包
+
     ```bash
     source $HOME/Ascend/cann/set_env.sh
     ```
 
   - 指定路径install_path，安装CANN软件包
+
     ```bash
     source ${install_path}/cann/set_env.sh
     ```
-    
+
 - 样例执行
+
   ```bash
+  TESTCASE=1                    # 0: shape[1, 48]->[96,48]  1: shape[96,1]->[96,96]
   mkdir -p build && cd build;   # 创建并进入build目录
-  cmake ..;make -j;             # 编译工程
-  python3 ../scripts/gen_data.py   # 生成测试输入数据
-  ./demo                        # 执行编译生成的可执行程序，执行样例
+  cmake -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;    # 编译工程，默认npu模式
+  python3 ../scripts/gen_data.py --testcase $TESTCASE  # 生成测试输入数据
+  ./demo $TESTCASE              # 执行编译生成的可执行程序，执行样例
   ```
+
+  使用 CPU调试 或 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
+  
+  示例如下：
+
+  ```bash
+  cmake -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # cpu调试模式
+  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # NPU仿真模式
+  ```
+
+  > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
+
+- 编译选项说明
+
+  | 选项 | 可选值 | 说明 |
+  |------|--------|------|
+  | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`cpu`、`sim` | 运行模式：NPU 运行、CPU调试、NPU仿真 |
+  | `CMAKE_ASC_ARCHITECTURES` | `dav-2201`（默认）、`dav-3510` | NPU 架构：dav-2201 对应 Atlas A2/A3 系列，dav-3510 对应 Ascend 950PR/Ascend 950DT |
+
+- 执行结果
+
   执行结果如下，说明精度对比成功。
+
   ```bash
   test pass!
   ```

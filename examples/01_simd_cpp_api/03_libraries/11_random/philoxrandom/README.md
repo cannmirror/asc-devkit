@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例介绍了基于Ascend C异构混合编程模型演示PhiloxRandom融合算子的核函数直调实现，基于Philox随机数生成算法，给定随机数种，生成若干的随机数。
+本样例基于PhiloxRandom高阶API实现随机数生成功能，支持基于Philox算法生成指定数量的随机数，适用于需要高质量随机数的场景。
 
 ## 支持的产品
 
@@ -10,69 +10,99 @@
 
 ## 目录结构介绍
 
-```
+```plain
 ├── philoxrandom
 │   ├── scripts
-│   │   ├── gen_data.py         // 输入数据和真值数据生成脚本
+│   │   └── gen_data.py         // 输入数据和真值数据生成脚本
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── philoxrandom.asc        // Ascend C算子实现 & 调用样例
+│   └── philoxrandom.asc        // Ascend C样例实现 & 调用样例
 ```
 
-## 算子描述
+## 样例描述
 
-- 算子功能：  
-  根据最后一轴的方向对各元素求平均值。  
-  如果输入是向量，则在向量中对各元素相加求平均；如果输入是矩阵，则沿最后一个维度对元素求平均。本接口最多支持输入为二维数据，不支持更高维度的输入。
-- 算子规格：  
+- 样例功能：  
+  基于Philox随机数生成算法，给定随机数种，生成若干的随机数。
+- 样例规格：  
   <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center"> philoxrandom </td></tr>
+  <caption>表1：样例输入输出规格</caption>
+  <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="4" align="center"> philoxrandom </td></tr>
 
-  <tr><td rowspan="2" align="center">算子输出</td></tr>
-  <tr><td align="center">dst</td><td align="center">1280</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td rowspan="2" align="center">样例输出</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
+  <tr><td align="center">dst</td><td align="center">[1, 1280]</td><td align="center">float</td><td align="center">ND</td></tr>
 
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">philoxrandom_custom</td></tr>
   </table>
 
-- 算子实现：  
-  本样例中实现的是固定shape为输出dst[1280]的PhiloxRandomCustom算子。
+- 样例实现：  
+  本样例中实现的是固定shape为输出dst[1, 1280]的philoxrandom_custom样例。
 
-  - Kernel实现  
-    计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，根据输入的参数使用PhiloxRandom高阶API接口完成philoxrandom计算，得到最终结果，再搬出到外部存储上。
+  - Kernel实现
 
-    PhiloxRandomCustom算子的实现流程分为2个基本任务：Compute，CopyOut。Compute任务根据参数执行philoxrandom计算，计算结果存储在dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。
+    计算逻辑包含以下步骤：
+    1. 在Local Memory（Unified Buffer）中分配输出空间
+    2. 对输出空间进行清零初始化
+    3. 使用PhiloxRandom高阶API生成随机数
+    4. 将生成的随机数从Local Memory搬出到Global Memory
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
 
-## 编译运行  
+## 编译运行
 
-在本样例根目录下执行如下步骤，编译并执行算子。
+在本样例根目录下执行如下步骤，编译并执行样例。
+
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
+
     ```bash
     source /usr/local/Ascend/cann/set_env.sh
     ```
 
   - 默认路径，非root用户安装CANN软件包
+
     ```bash
     source $HOME/Ascend/cann/set_env.sh
     ```
 
   - 指定路径install_path，安装CANN软件包
+
     ```bash
     source ${install_path}/cann/set_env.sh
     ```
-    
+
 - 样例执行
+
   ```bash
-  mkdir -p build && cd build;   # 创建并进入build目录
-  cmake ..;make -j;             # 编译工程
+  mkdir -p build && cd build;      # 创建并进入build目录
+  cmake -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j;    # 编译工程，默认npu模式
   python3 ../scripts/gen_data.py   # 生成测试输入数据
-  ./demo                        # 执行编译生成的可执行程序，执行样例
+  ./demo                           # 执行编译生成的可执行程序，执行样例
   ```
+
+  使用 CPU调试 或 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
+  
+  示例如：
+
+  ```bash
+  cmake -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j; # cpu调试模式
+  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j; # NPU仿真模式
+  ```
+
+  > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
+
+- 编译选项说明
+
+  | 选项 | 可选值 | 说明 |
+  |------|--------|------|
+  | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`cpu`、`sim` | 运行模式：NPU 运行、CPU调试、NPU仿真 |
+  | `CMAKE_ASC_ARCHITECTURES` | `dav-3510`（默认） | NPU 架构：dav-3510 对应 Ascend 950PR/Ascend 950DT |
+
+- 执行结果
+
   执行结果如下，说明精度对比成功。
+
   ```bash
   test pass!
   ```
