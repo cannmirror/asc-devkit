@@ -23,7 +23,7 @@
 
 -   环境变量配置
 
-    安装CANN软件后，使用CANN运行用户进行编译、运行时，需要以CANN运行用户登录环境，执行**source $_\{INSTALL\_DIR\}_/set\_env.sh**命令设置环境变量。$\{INSTALL\_DIR\}请替换为CANN软件安装后文件存储路径。以root用户安装为例，安装后文件默认存储路径为：/usr/local/Ascend/cann。
+    安装CANN软件后，使用CANN运行用户进行编译、运行时，需要以CANN运行用户登录环境，执行source $_\{INSTALL\_DIR\}_/set\_env.sh命令设置环境变量。$\{INSTALL\_DIR\}请替换为CANN软件安装后文件存储路径。以root用户安装为例，安装后文件默认存储路径为：/usr/local/Ascend/cann。
 
 ## 算子分析<a name="zh-cn_topic_0000001565030288_zh-cn_topic_0000001552186366_section1242991675619"></a>
 
@@ -146,7 +146,7 @@
     };
     ```
 
-2.  根据[核函数定义和调用](../../../编程指南/编程模型/AI-Core-SIMD编程/核函数.md#zh-cn_topic_0000001447989210_section1915102519220)中介绍的规则进行**核函数的定义，**并在核函数中调用算子类的Init和Process函数，算子类实现在后续步骤中介绍。
+2.  根据[核函数定义和调用](../../../编程指南/编程模型/AI-Core-SIMD编程/核函数.md#zh-cn_topic_0000001447989210_section1915102519220)中介绍的规则进行**核函数的定义**，并在核函数中调用算子类的Init和Process函数，算子类实现在后续步骤中介绍。
 
     ```
     __global__ __aicore__ void add_custom(GM_ADDR x, GM_ADDR y, GM_ADDR z, AddCustomTilingData tiling)
@@ -166,7 +166,7 @@
 
     -   算子类的Init函数，完成内存初始化相关工作，Process函数完成算子实现的核心逻辑。
 
-3.  **根据矢量编程范式实现算子类**，本样例中定义KernelAdd算子类，其具体成员如下**：**
+3.  **根据矢量编程范式实现算子类**，本样例中定义KernelAdd算子类，其具体成员如下：
 
     ```
     class KernelAdd {

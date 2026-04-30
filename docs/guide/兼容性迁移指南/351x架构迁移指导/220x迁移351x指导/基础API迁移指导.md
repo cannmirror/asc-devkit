@@ -6,9 +6,9 @@
 
 -   **351x架构默认不支持Subnormal功能。**
 
-    **说明：**SubNormal浮点数指的是指数位全为0、尾数不为0的浮点数，用于表示比最小正常数更小的值，避免“下溢为0”。351x版本默认不支持Subnormal，Subnormal浮点数在计算中被视为0。
+    **说明**：SubNormal浮点数指的是指数位全为0、尾数不为0的浮点数，用于表示比最小正常数更小的值，避免“下溢为0”。351x版本默认不支持Subnormal，Subnormal浮点数在计算中被视为0。
 
-    **兼容方案：**通过设置config模板参数来配置Subnormal计算模式。软件模拟对Subnormal数据的处理，通过精度扩展等处理方式来避免Subnormal浮点数下溢为0。
+    **兼容方案**：通过设置config模板参数来配置Subnormal计算模式。软件模拟对Subnormal数据的处理，通过精度扩展等处理方式来避免Subnormal浮点数下溢为0。
 
     **表 1**  涉及Subnormal的API和config参数说明
 
@@ -69,9 +69,9 @@
 
 -   **DataCopy接口不支持L1 Buffer -\> GM通路。**
 
-    **说明：**硬件删除L1 Buffer到GM的通路，无法将数据从L1 Buffer直接搬运到GM中。现有接口不支持L1 Buffer到GM的直接搬运。
+    **说明**：硬件删除L1 Buffer到GM的通路，无法将数据从L1 Buffer直接搬运到GM中。现有接口不支持L1 Buffer到GM的直接搬运。
 
-    **兼容方案：**对于纯Cube计算场景：在GM多分配一个单位矩阵，通过Mmad矩阵乘法计算输出到L0C Buffer，再从L0C Buffer通过Fixpipe搬运到GM。对于Vector和Cube计算融合场景，可以通过L1 Buffer搬运到UB，再搬运到GM。以下以纯Cube计算场景为例进行说明，介绍算子核心流程**。**
+    **兼容方案**：对于纯Cube计算场景：在GM多分配一个单位矩阵，通过Mmad矩阵乘法计算输出到L0C Buffer，再从L0C Buffer通过Fixpipe搬运到GM。对于Vector和Cube计算融合场景，可以通过L1 Buffer搬运到UB，再搬运到GM。以下以纯Cube计算场景为例进行说明，介绍算子核心流程。
 
     1.  将矩阵A从GM搬运到L1 Buffer。
 
@@ -156,7 +156,7 @@
 
 -   **不支持SetLoadDataBoundary接口。**
 
-    **说明：**351x架构硬件删除了L1 Buffer的边界值设定相关寄存器，不再支持SetLoadDataBoundary接口。该接口用于设置Load3D时L1 Buffer的边界值。如果指令在处理源操作数时，源操作数在L1 Buffer上的地址超出设置的边界，则会从L1 Buffer的起始地址开始读取数据。设置为0表示无边界，可以使用整个L1 Buffer。
+    **说明**：351x架构硬件删除了L1 Buffer的边界值设定相关寄存器，不再支持SetLoadDataBoundary接口。该接口用于设置Load3D时L1 Buffer的边界值。如果指令在处理源操作数时，源操作数在L1 Buffer上的地址超出设置的边界，则会从L1 Buffer的起始地址开始读取数据。设置为0表示无边界，可以使用整个L1 Buffer。
 
     **兼容方案**：
 
@@ -259,7 +259,7 @@
 
 -   **Cube计算单元删除int4b\_t数据类型。**
 
-    **说明：**相较于220x架构版本，351x架构版本的Cube计算单元不支持int4b\_t。相关的基础API有LoadData、Mmad和LoadDataWithTranspose，这些接口不再支持int4b\_t。
+    **说明**：相较于220x架构版本，351x架构版本的Cube计算单元不支持int4b\_t。相关的基础API有LoadData、Mmad和LoadDataWithTranspose，这些接口不再支持int4b\_t。
 
     **兼容方案**：算子侧通过编写CV融合算子在Vector Core进行int4b\_t到int8\_t的Cast转换，再通过UB搬运到L1后进行Mmad计算。图层面可以在该算子前增加Cast节点进行int4b\_t到int8\_t的转换。
 
@@ -323,7 +323,7 @@
 
 -   **L0A Buffer分形改变，从ZZ转换为ZN格式。**
 
-    **说明：**涉及的API有LoadData、Mmad和LoadDataWithTranspose。
+    **说明**：涉及的API有LoadData、Mmad和LoadDataWithTranspose。
 
     -   220x架构版本，参与矩阵乘计算（A \* B = C）时， ABC矩阵的数据排布格式分别为ZZ，ZN，NZ。A、B、C矩阵分别位于L0A Buffer、L0B Buffer、L0C Buffer。
 
@@ -387,13 +387,13 @@
 
     **说明**：LoadDataWithSparse用于将存储在L1 Buffer中的512B稠密权重矩阵搬运到L0B buffer，并同时读取128B的索引矩阵以实现稠密矩阵的稀疏化。由于351x架构版本不支持结构化稀疏功能，因此LoadDataWithSparse在此版本中并不适用。另一方面，MmadWithSparse负责执行矩阵乘加操作，其中右矩阵B为稠密矩阵，需要通过调用LoadDataWithSparse进行载入。由于351x架构不支持LoadDataWithSparse，因此MmadWithSparse也无法在351x架构版本中使用。
 
-    **兼容方案：**在算子侧可以不调用LoadDatawithSparse进行矩阵稠密转稀疏操作，然后使用Mmad进行正常的稠密矩阵计算。稀疏矩阵相关算法可参考MmadWithSparse中的介绍。
+    **兼容方案**：在算子侧可以不调用LoadDatawithSparse进行矩阵稠密转稀疏操作，然后使用Mmad进行正常的稠密矩阵计算。稀疏矩阵相关算法可参考MmadWithSparse中的介绍。
 
 -   **351x架构版本删除GM-\> L0A Buffer/L0B Buffer 通路**
 
-    **说明：**硬件删除GM-\> L0A Buffer/L0B Buffer通路，调用LoadData时，不再支持这些通路。
+    **说明**：硬件删除GM-\> L0A Buffer/L0B Buffer通路，调用LoadData时，不再支持这些通路。
 
-    **兼容方案：**实现GM-\> L0A Buffer/L0B Buffer搬运需拆分成两步进行，先从GM搬运到L1 Buffer，再从L1 Buffer搬运到L0A Buffer、L0B Buffer。
+    **兼容方案**：实现GM-\> L0A Buffer/L0B Buffer搬运需拆分成两步进行，先从GM搬运到L1 Buffer，再从L1 Buffer搬运到L0A Buffer、L0B Buffer。
 
     以GM -\> L1 Buffer -\> L0A Buffer通路为例可以参考以下步骤：
 
@@ -425,9 +425,9 @@
 
 -   **351x架构版本删除L0A Buffer/L0B Buffer初始化的相关硬件指令。**
 
-    **说明：**InitConstValue将特定存储位置的LocalTensor初始化为某一具体数值，不支持直接初始化L0A Buffer、L0B Buffer。
+    **说明**：InitConstValue将特定存储位置的LocalTensor初始化为某一具体数值，不支持直接初始化L0A Buffer、L0B Buffer。
 
-    **兼容方案：**先初始化L1 Buffer，再通过LoadData接口将L1 Buffer上的数据搬运到L0A Buffer、L0B Buffer。
+    **兼容方案**：先初始化L1 Buffer，再通过LoadData接口将L1 Buffer上的数据搬运到L0A Buffer、L0B Buffer。
 
     以 GM -\> L1 Buffer -\> L0A Buffer的数据通路为例：
 
@@ -461,7 +461,7 @@
 
 -   **不支持CheckLocalMemoryIA，351x架构版本相关寄存器删除。**
 
-    **说明：**CheckLocalMemoryIA监视设定范围内的UB读写行为，如果监视到有设定范围的读写行为则会出现EXCEPTION报错，未监视到设定范围的读写行为则不会报错。
+    **说明**：CheckLocalMemoryIA监视设定范围内的UB读写行为，如果监视到有设定范围的读写行为则会出现EXCEPTION报错，未监视到设定范围的读写行为则不会报错。
 
     **兼容方案**：该接口为调测接口，对功能无影响。
 
@@ -469,7 +469,7 @@
 
 -   **L1 Buffer上不支持Tensor信息的打印。**
 
-    **说明：**因芯片删除L1 Buffer -\> GM通路，不支持L1 Buffer -\> GM的功能。
+    **说明**：因芯片删除L1 Buffer -\> GM通路，不支持L1 Buffer -\> GM的功能。
 
-    **兼容方案：**该接口为调测接口，对功能无影响。
+    **兼容方案**：该接口为调测接口，对功能无影响。
 

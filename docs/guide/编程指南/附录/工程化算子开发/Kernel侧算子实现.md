@@ -4,7 +4,7 @@
 
 ## 自动生成kernel侧算子实现模板<a name="section282118105913"></a>
 
-在算子工程目录下的“op\_kernel/xxx.cpp”文件中实现算子的核函数。核函数的定义模板已通过msOpGen工具自动生成，样例如下所示**。注意这里参数的顺序按照“输入、输出、workspace、tiling”的顺序排布，开发者不要调整其顺序。**
+在算子工程目录下的“op\_kernel/xxx.cpp”文件中实现算子的核函数。核函数的定义模板已通过msOpGen工具自动生成，样例如下所示。**注意这里参数的顺序按照“输入、输出、workspace、tiling”的顺序排布，开发者不要调整其顺序。**
 
 ```
 #include "kernel_operator.h"
