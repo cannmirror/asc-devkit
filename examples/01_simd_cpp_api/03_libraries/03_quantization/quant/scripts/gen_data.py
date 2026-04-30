@@ -34,11 +34,11 @@ def gen_golden_data_simple(npu_arch):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("用法: python3 gen_data.py -DNPU_ARCH=dav-2201")
+        print("用法: python3 gen_data.py -DCMAKE_ASC_ARCHITECTURES=dav-2201")
         sys.exit(1)
 
     arg = sys.argv[1]
-    if arg.startswith("-DNPU_ARCH="):
+    if arg.startswith("-DCMAKE_ASC_ARCHITECTURES="):
         npu_arch = arg.split("=")[1]
     else:
         npu_arch = arg

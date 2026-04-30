@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例基于Kernel直调算子工程，介绍了调用Select高阶API实现SelectCustom单算子，给定两个源操作数src0和src1，根据maskTensor相应位置的值（非bit位）选取元素，得到目的操作数dst。
+本样例基于Select高阶API实现条件选择功能，根据掩码mask从向量源操作数src0和标量源操作数src1中选择对应位置的元素输出。当mask值为1时选择标量源操作数src1的值，当mask值为0时选择向量源操作数src0对应位置的元素。
 
 ## 支持的产品
 
@@ -15,50 +15,51 @@
 ```
 ├── select
 │   ├── scripts
-│   │   ├── gen_data.py         // 输入数据和真值数据生成脚本
+│   │   └── gen_data.py         // 输入数据和真值数据生成脚本
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── select.asc              // Ascend C算子实现 & 调用样例
+│   └── select.asc              // Ascend C样例实现 & 调用样例
 ```
 
-## 算子描述
+## 样例描述
 
-- 算子功能：  
-  SelectCustom单算子，对输入src0Tensor和src1Scalar，根据maskTensor相应位置的值(非bit位)从二者中选取元素得到dstTensor。
-- 算子规格：  
+- 样例功能：  
+  本样例根据掩码mask相应位置的值，从源操作数src0和源操作数src1Scalar中选取元素得到dstTensor。当mask值为1时选择src1Scalar，当mask值为0时选择src0对应位置的元素。
+  
+- 样例规格：
   <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center"> select </td></tr>
+  <caption>表1：样例输入输出规格</caption>
+  <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="4" align="center"> select </td></tr>
 
-  <tr><td rowspan="4" align="center">算子输入</td></tr>
+  <tr><td rowspan="4" align="center">样例输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">src</td><td align="center">2*32</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">mask</td><td align="center">2*32</td><td align="center">bool</td><td align="center">ND</td></tr>
+  <tr><td align="center">src</td><td align="center">[2, 32]</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">mask</td><td align="center">[2, 32]</td><td align="center">uint8_t</td><td align="center">ND</td></tr>
+  <tr></tr>
 
 
-  <tr><td rowspan="2" align="center">算子输出</td></tr>
-  <tr><td align="center">dst</td><td align="center">2*32</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td rowspan="2" align="center">样例输出</td></tr>
+  <tr><td align="center">dst</td><td align="center">[2, 32]</td><td align="center">float</td><td align="center">ND</td></tr>
 
 
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">select_custom</td></tr>
   </table>
 
-- 算子实现：  
-  本样例中实现的是固定shape，输入src[2, 32]、mask[2, 32]，输出dst[2, 32]的SelectCustom算子。src1Scalar为固定值1.234，数据类型为float。
+- 样例实现：  
+    本样例中实现的是固定shape输入src0[2, 32]、mask[2, 32]，输出dst[2, 32]的SelectCustom样例。src1Scalar为固定值1.234，数据类型为float。
 
-  - Kernel实现  
-    计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用Select高阶API接口完成计算，得到最终结果，再搬出到外部存储上。
+  - Kernel实现:  
+    计算逻辑是：输入数据需要先搬运进片上存储，然后使用Select高阶API接口完成计算，再将结果搬出。
 
-    SelectCustom算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm、maskGm存储在srcLocal、maskLocal中，Compute任务负责对srcLocal、maskLocal执行Select计算，计算结果存储在dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。
+  - Tiling实现:  
+    该样例的tiling实现流程如下：使用GetSelectMaxMinTmpSize接口计算所需最大/最小临时空间大小，使用最小临时空间，然后根据输入长度确定所需tiling参数，并将scalar类型的源操作数包含在tiling中传递到kernel侧。
 
-  - Tiling实现  
-    SelectCustom算子的tiling实现流程如下：首先获取Select接口能完成计算所需最大/最小临时空间大小，根据该范围结合实际的内存使用情况设置合适的空间大小，然后根据SrcTensor和maskTensor的shape信息，确定其余tiling参数，最后将scalar类型的源操作数也包含在tiling中传递到kernel侧。
-
-  - 调用实现  
+  - 调用实现:  
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行  
 
-在本样例根目录下执行如下步骤，编译并执行算子。
+在本样例根目录下执行如下步骤，编译并执行样例。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
@@ -76,13 +77,33 @@
     source ${install_path}/cann/set_env.sh
     ```
     
-- 样例执行
+- 样例执行（NPU模式）
   ```bash
   mkdir -p build && cd build;   # 创建并进入build目录
-  cmake ..;make -j;             # 编译工程
+  cmake .. -DCMAKE_ASC_ARCHITECTURES=dav-2201;make -j;             # 编译工程
   python3 ../scripts/gen_data.py   # 生成测试输入数据
   ./demo                        # 执行编译生成的可执行程序，执行样例
   ```
+
+  使用 CPU调试 或 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
+
+  示例如下：
+  ```bash
+  cmake -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # cpu调试模式
+  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # NPU仿真模式
+  ```
+
+  > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
+
+- 编译选项说明
+
+  | 选项 | 可选值 | 说明 |
+  |------|--------|------|
+  | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`cpu`、`sim` | 运行模式：NPU 运行、CPU调试、NPU仿真 |
+  | `CMAKE_ASC_ARCHITECTURES` | `dav-2201`（默认）、`dav-3510` | NPU 架构：dav-2201 对应 Atlas A2/A3 系列，dav-3510 对应 Ascend 950PR/Ascend 950DT |
+
+- 执行结果
+
   执行结果如下，说明精度对比成功。
   ```bash
   test pass!

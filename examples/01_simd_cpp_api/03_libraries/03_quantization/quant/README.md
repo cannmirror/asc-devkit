@@ -81,7 +81,7 @@
   ```bash
   mkdir -p build && cd build;
   cmake -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # 默认npu模式
-  python3 ../scripts/gen_data.py -DNPU_ARCH=dav-2201   # 生成测试输入数据
+  python3 ../scripts/gen_data.py -DCMAKE_ASC_ARCHITECTURES=dav-2201   # 生成测试输入数据
   ./demo
   ```
 

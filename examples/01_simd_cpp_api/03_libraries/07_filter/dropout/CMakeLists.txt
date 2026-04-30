@@ -19,6 +19,8 @@ add_executable(demo
     dropout.asc
 )
 
+set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "CMAKE_ASC_ARCHITECTURES, e.g. dav-2201, dav-3510")
+
 target_link_libraries(demo PRIVATE
     tiling_api
     register
@@ -28,13 +30,6 @@ target_link_libraries(demo PRIVATE
     graph_base
 )
 
-# ======================================================================================
-# NPU 编译选项配置
-#
-# 说明：
-#   - 需根据实际部署的 NPU 硬件架构选择对应的 `npu-arch` 参数。
-# ======================================================================================
 target_compile_options(demo PRIVATE
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
-    # $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3510>
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>
 )
