@@ -53,6 +53,14 @@ __aicore__ inline void printf(__gm__ const char* fmt, Args&&... args)
 }
 } // namespace __asc_aicore
 #endif
+
+namespace __asc_simd_vf {
+template <class... Args>
+__simd_callee__ inline void printf(__ubuf__ const char* fmt, Args&&... args)
+{
+    printf_impl(fmt, args...);
+}
+}
 #endif
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_PRINTF_H__)
