@@ -8,7 +8,7 @@ Ascend C提供多层级API，满足多维场景算子开发诉求。
 -   **基础API**：基于Tensor进行编程的C++类库API，实现单指令级抽象，为底层算子开发提供灵活控制能力。
 -   **高阶API**：封装单核公共算法，涵盖一些常见的计算算法（如卷积、矩阵运算等），显著降低复杂算法开发门槛。
 -   **算子模板库**：基于模板提供算子完整实现参考，简化Tiling（切分算法）开发，支撑用户自定义扩展。
--   **Python前端：**[PyAsc编程语言](https://gitcode.com/cann/pyasc)基于Python原生接口，提供芯片底层完备编程能力，支持基于Python接口开发高性能Ascend C算子。
+-   **Python前端**：[PyAsc编程语言](https://gitcode.com/cann/pyasc)基于Python原生接口，提供芯片底层完备编程能力，支持基于Python接口开发高性能Ascend C算子。
 
 ![](../figures/成长地图.png)
 

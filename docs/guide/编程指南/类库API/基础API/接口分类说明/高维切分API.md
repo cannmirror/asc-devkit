@@ -35,7 +35,7 @@
 
         当repeatTime大于1，需要多次迭代完成矢量计算时，您可以根据不同的使用场景合理设置相邻迭代间相同datablock的地址步长repeatStride的值。
 
-        下图给出了多次迭代间非连续场景的示意图，示例中源操作数和目的操作数的**repeatStride**均配置为9，表示相邻迭代间相同datablock起始地址之间的间隔为9个datablock。相同datablock是指datablock在迭代内的位置相同，比如下图中的src1和src9处于相邻迭代，在迭代内都是第一个datablock的位置，其间隔即为**repeatStride**的数值**。**
+        下图给出了多次迭代间非连续场景的示意图，示例中源操作数和目的操作数的**repeatStride**均配置为9，表示相邻迭代间相同datablock起始地址之间的间隔为9个datablock。相同datablock是指datablock在迭代内的位置相同，比如下图中的src1和src9处于相邻迭代，在迭代内都是第一个datablock的位置，其间隔即为**repeatStride**的数值。
 
         **图 5**  多次迭代间非连续场景的示意图<a name="zh-cn_topic_0000002267504656_zh-cn_topic_0000001764162593_fig7376324392"></a>  
         ![](../../../../figures/多次迭代间非连续场景的示意图.png "多次迭代间非连续场景的示意图")
@@ -56,19 +56,19 @@ dataBlockStride是指同一迭代内不同datablock的地址步长。
 
 repeatStride是指相邻迭代间相同datablock的地址步长。
 
--   **连续计算场景：**假设定义一个Tensor供目的操作数和源操作数同时使用（即地址重叠），repeatStride取值为8。此时，矢量计算单元第一次迭代读取连续8个datablock，第二轮迭代读取下一个连续的8个datablock，通过多次迭代即可完成所有输入数据的计算。
+-   **连续计算场景**：假设定义一个Tensor供目的操作数和源操作数同时使用（即地址重叠），repeatStride取值为8。此时，矢量计算单元第一次迭代读取连续8个datablock，第二轮迭代读取下一个连续的8个datablock，通过多次迭代即可完成所有输入数据的计算。
 
     ![](../../../../figures/repeat_stride1.png)
 
--   **非连续计算场景：**repeatStride取值大于8（如取10）时，则相邻迭代间矢量计算单元读取的数据在地址上不连续，出现2个datablock的间隔。
+-   **非连续计算场景**：repeatStride取值大于8（如取10）时，则相邻迭代间矢量计算单元读取的数据在地址上不连续，出现2个datablock的间隔。
 
     ![](../../../../figures/repeat_stride2.png)
 
--   **反复计算场景：**repeatStride取值为0时，矢量计算单元会对首个连续的8个datablock进行反复读取和计算。
+-   **反复计算场景**：repeatStride取值为0时，矢量计算单元会对首个连续的8个datablock进行反复读取和计算。
 
     ![](../../../../figures/repeat_stride3.png)
 
--   **部分重复计算：**repeatStride取值大于0且小于8时，相邻迭代间部分数据会被矢量计算单元重复读取和计算，此种情形一般场景不涉及。
+-   **部分重复计算**：repeatStride取值大于0且小于8时，相邻迭代间部分数据会被矢量计算单元重复读取和计算，此种情形一般场景不涉及。
 
     ![](../../../../figures/repeat_stride4.png)
 

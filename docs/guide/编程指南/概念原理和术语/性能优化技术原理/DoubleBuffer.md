@@ -22,7 +22,7 @@ pipe.InitBuffer(inQueueX, 2, 256);
 **图 2**  DoubleBuffer机制<a name="fig189541246194710"></a>  
 ![](../../../figures/DoubleBuffer机制.png "DoubleBuffer机制")
 
-**需要注意：**
+**需要注意**：
 
 多数情况下，采用DoubleBuffer能有效提升Vector的时间利用率，缩减算子执行时间。然而，DoubleBuffer机制缓解Vector闲置问题并不代表它总能带来整体的性能提升。例如：
 
