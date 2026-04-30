@@ -331,8 +331,6 @@ public:
 
         if (AscendC::GetBlockIdx() == 0) {
             AscendC::DataCopy(yLocal, atomicResultGm, this->blockLength); // PIPE_MTE2
-            AscendC::printf("============== In PrintTensor Process AIV %d ==============", AscendC::GetBlockIdx());
-            AscendC::DumpTensor(yLocal, AscendC::GetBlockIdx(), this->blockLength);
             AscendC::DataCopy(atomicResultGm, yLocal, this->blockLength);
             return;
         }
@@ -363,8 +361,6 @@ public:
 
             if (AscendC::GetBlockIdx() == 2) {
                 AscendC::DataCopy(yLocal, atomicResultGm, this->blockLength);
-                AscendC::printf("============== In PrintTensor Process AIV %d ==============", AscendC::GetBlockIdx());
-                AscendC::DumpTensor(yLocal, AscendC::GetBlockIdx(), this->blockLength);
                 AscendC::DataCopy(atomicResultGm, yLocal, this->blockLength);
                 return;
             }
