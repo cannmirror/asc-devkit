@@ -1,7 +1,7 @@
 # Matrix Compute API样例介绍
 ## 概述
 本样例集介绍了矩阵计算API不同特性的典型用法，给出了对应的端到端实现。目录下的样例命名按照"API名称_通路"，如下：
-1. **load_data_**：以"data_copy_"开头的样例介绍L1 Buffer -> L0 Buffer的相关API；
+1. **load_data_**：以"load_data_"开头的样例介绍L1 Buffer -> L0 Buffer的相关API；
 2. **mmad_**：以"mmad_"开头的样例介绍矩阵乘法Mmad API；
 3. **fixpipe_**：以"fixpipe_"开头的样例介绍L0C Buffer → GM/L1 Buffer/UB的相关API；
 
