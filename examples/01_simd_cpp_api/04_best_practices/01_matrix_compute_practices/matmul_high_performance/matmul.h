@@ -24,7 +24,7 @@
 #include "kernel_operator.h"
 #define ASCENDC_CUBE_ONLY
 #include "lib/matmul_intf.h"
-
+constexpr uint32_t scenarioNum = SCENARIO_NUM;
 constexpr uint32_t M = 8192;
 constexpr uint32_t N = 8192;
 constexpr uint32_t K = 8192;
@@ -43,14 +43,14 @@ constexpr uint32_t TILING_DEPTHB1_PARAM = 8;
 constexpr uint32_t TILING_STEPKB_PARAM = 4;
 constexpr uint32_t TILING_STEPMN_PARAM = 1;
 
-#if defined(NPU_ARCH_DAV_2201)
+#if (NPU_ARCH == 2201)
 constexpr uint32_t SINGLE_N = 1536;
 constexpr uint32_t SINGLE_N_SPLIT = 683;
 constexpr uint32_t BASE_M = 128;
 constexpr uint32_t TILING_DEPTHA1_PARAM = 16;
 constexpr uint32_t TILING_STEPKA_PARAM = 8;
 constexpr uint32_t CORE_NUM = 24;
-#elif defined(NPU_ARCH_DAV_3510)
+#elif (NPU_ARCH == 3510)
 constexpr uint32_t SINGLE_N = 1024;
 constexpr uint32_t SINGLE_N_SPLIT = 512;
 constexpr uint32_t BASE_M = 256;

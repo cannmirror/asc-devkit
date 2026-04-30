@@ -42,6 +42,7 @@
 <tr><td rowspan="1" align="center">样例输出</td><td align="center">C</td><td align="center">[M, N]</td><td align="center">float16</td><td align="center">ND</td><td align="center">-</td></tr>
 <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">mmad_custom</td></tr>
 </table>
+
 ## 样例实现
 
 ### 性能指标说明
@@ -174,8 +175,8 @@ if ((kOffsetInChunkA + 1) == stepKa) {
 
 ```cpp
 constexpr uint32_t mIter = AscendC::DivCeil(M, singleCoreM);
-uint32_t mIterIdx = get_block_idx() % mIter;
-uint32_t nIterIdx = get_block_idx() / mIter;
+uint32_t mIterIdx = AscendC::GetBlockIdx() % mIter;
+uint32_t nIterIdx = AscendC::GetBlockIdx() / mIter;
 ```
 
 #### 6. 常量 Tiling
