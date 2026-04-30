@@ -24,7 +24,7 @@
 | 参数名 | 输入/输出 | 描述 |
 | :---  | :--- | :--- |
 | pipe | 输入 | 需要执行同步指令的流水类型。|
-| flagID | 输入 | 事件标号，取值范围[0,15]。|
+| flag_id | 输入 | 事件标号，取值范围[0,15]。|
 
 ## 返回值说明
 
@@ -36,14 +36,14 @@ PIPE_S
 
 ## 约束说明
 
-- flagID的取值范围为0至15，每个flagID的计数器范围为0至15。
-- 必须保证每个flagID的四位计数器不溢出，否则将引发异常。
-- 必须保证相同的ID在同一时间仅被一条流水线使用。
+- flag_id的取值范围为0至15，每个flag_id的计数器范围为0至15。
+- 必须保证每个flag_id的四位计数器不溢出，否则将引发异常。
+- 必须保证相同的flag_id在同一时间仅被一条流水线使用。
 
 ## 调用示例
 
 ```cpp
-int64_t flagID = 1;
-asc_sync_block_arrive(PIPE_S, flagID);
-asc_sync_block_wait(PIPE_S, flagID);  
+int64_t flag_id = 1;
+asc_sync_block_arrive(PIPE_S, flag_id);
+asc_sync_block_wait(PIPE_S, flag_id);  
 ```

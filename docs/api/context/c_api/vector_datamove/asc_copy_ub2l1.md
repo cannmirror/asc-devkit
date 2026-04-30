@@ -27,14 +27,14 @@ __aicore__ inline void asc_copy_ub2l1(__cbuf__ void* dst, __ubuf__ void* src, ui
 - 同步计算
 
 ```c++
-__aicore__ inline void asc_copy_ub2l1(__cbuf__ void* dst, __ubuf__ void* src, uint32_t size)
+__aicore__ inline void asc_copy_ub2l1_sync(__cbuf__ void* dst, __ubuf__ void* src, uint32_t size)
 ```
 
 ## 参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | :--- | :--- | :--- |
-| dst | 输出 | 目的GM地址。 |
+| dst | 输出 | 目的L1 Buffer地址。 |
 | src | 输入 | 源UB地址。 |
 | size | 输入 | 搬运数据大小（字节）。 |
 | n_burst | 输入 | 待搬运的连续传输数据块个数。取值范围：[1, 4095]。 |

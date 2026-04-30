@@ -15,8 +15,8 @@
 | 参数 | 传入接口 | 描述 |
 | :--- | :------- | :--- |
 | loopi_size | 本接口 | 表示每个维度内，处理的元素个数（不包含Padding元素）。<br> 单位为元素个数，取值范围为[0, 2^20-1]。 |
-| loopi_src_stride | [asc_set_ndim_loopi_stride](./asc_set_ndim_loop_stride.md) | 表示每个维度内，该源操作数元素与下一个元素间的间隔。<br> 单位为元素个数，取值范围为[0, 20^40-1]。 |
-| loopi_dst_stride | [asc_set_ndim_loopi_stride](./asc_set_ndim_loop_stride.md) | 表示每个维度内，该目的操作数元素与下一个元素间的间隔。<br> 单位为元素个数，取值范围为[0, 20^40-1]。 |
+| loopi_src_stride | [asc_set_ndim_loopi_stride](./asc_set_ndim_loop_stride.md) | 表示每个维度内，该源操作数元素与下一个元素间的间隔。<br> 单位为元素个数，取值范围为[0, 2^40-1]。 |
+| loopi_dst_stride | [asc_set_ndim_loopi_stride](./asc_set_ndim_loop_stride.md) | 表示每个维度内，该目的操作数元素与下一个元素间的间隔。<br> 单位为元素个数，取值范围为[0, 2^40-1]。 |
 
 表2 Padding配置涉及的所有参数及其传入接口其中i表示第i维，可取值[0,4]
 | 参数 | 传入接口 | 描述 |

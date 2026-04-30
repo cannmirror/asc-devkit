@@ -184,5 +184,5 @@ uint16_t n = 1;
 uint8_t unit_flag = 2;
 bool cmatrix_source = true;
 bool cmatrix_init_val = true;
-asc_mmad_sparse(c, a, b, m, k, n, unit_flag, cmatrix_source, cmatrix_init_val)
+asc_mmad_sparse(c, a, b, m, k, n, unit_flag, cmatrix_source, cmatrix_init_val);
 ```
