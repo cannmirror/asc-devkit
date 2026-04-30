@@ -27,7 +27,7 @@
 │   │   └── verify_result.py    // 真值对比文件
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   ├── add.asc                 // Ascend C样例实现（包含7个优化case）
+│   └── add.asc                 // Ascend C样例实现（包含7个优化case）
 ```
 
 ## 样例描述
@@ -53,8 +53,8 @@ $$
 **表1 AI Core 性能指标字段说明表**
 | 字段名 | 字段含义 |
 |:---:|:---|
-|Task Duration(μs)|Task整体耗时，包含调度到加速器的时间、加速器上的执行时间以及响应结束时间。|
-|aiv_time|Task在AI Vector Core上的理论执行时间，单位为μs。|
+| Task Duration(μs)|Task整体耗时，包含调度到加速器的时间、加速器上的执行时间以及响应结束时间。|
+| aiv_time|Task在AI Vector Core上的理论执行时间，单位为μs。|
 | aiv_vec_time(μs) | vec类型指令（向量类运算指令）耗时，单位μs。 |
 | aiv_vec_ratio | vec类型指令（向量类运算指令）的cycle数在total cycle数中的占用比。 |
 | aiv_scalar_time(μs) | scalar类型指令（标量类运算指令）耗时，单位μs。 |
@@ -555,7 +555,7 @@ Ascend 950系列上 `dataCopyLen` 增大的主要原因是UB容量由192KB提升
 因此在Ascend 950系列上，按容量上限估算，单块 `dataCopyLen` 可提升至约 `21840`个`half`数据。
 在实际实现中，推荐用户将搬运粒度和计算粒度都对齐到512B，以获得更稳定的性能表现，因此case3-5选用 `dataCopyLen=21760`，其对应字节数为`21760 * 2B = 43520B = 85 * 512B`。
 
-在Ascend 950系列产品上BANK的排列不同，不需要考虑Bank冲突，因此只列出了case0～case5的性能数据。该处理器每cycle处理128个half数据，主频为1.65GHz，AIV核数为64，因此理论vector耗时为
+在Ascend 950系列产品上BANK的排列不同，本样例暂时不需要考虑Bank冲突，因此只列出了case0～case5的性能数据。该处理器每cycle处理128个half数据，主频为1.65GHz，AIV核数为64，因此理论vector耗时为
 $$
 T_{\text{theory}} = \frac{8192 \times 8192}{128 \times 1.65 \times 10^9 \times 64} = \frac{67108864}{1.35168 \times 10^{13}} \approx 4.965 \times 10^{-6} \text{ s} = 4.965 \text{ μs}
 $$
