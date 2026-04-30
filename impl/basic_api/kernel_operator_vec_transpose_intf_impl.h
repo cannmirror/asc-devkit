@@ -61,13 +61,13 @@ __aicore__ inline void CheckTransDataTo5HDParams(const TransDataTo5HDParams& nch
     // dstHighHalf/srcHighHalf only valid for int8_t/uint8_t
     if constexpr (!SupportType<PrimType, int8_t, uint8_t>()) {
         ASCENDC_DEBUG_ASSERT((nchwconvParams.dstHighHalf == false),
-            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check dstHighHalf in TransDataTo5HD, "
+            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check dstHighHalf in TransDataTo5HD with TransDataTo5HDParams, "
             "dstHighHalf is only valid for int8_t / uint8_t dtype.\n"));
         ASCENDC_DEBUG_ASSERT((nchwconvParams.srcHighHalf == false),
-            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check srcHighHalf in TransDataTo5HD, "
+            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check srcHighHalf in TransDataTo5HD with TransDataTo5HDParams, "
             "srcHighHalf is only valid for int8_t / uint8_t dtype.\n"));
     }
-    CheckValueRange<int32_t>(nchwconvParams.repeatTimes, 0, 255, "repeatTimes", "TransDataTo5HD");
+    CheckValueRange<int32_t>(nchwconvParams.repeatTimes, 0, 255, "repeatTimes", "TransDataTo5HD with TransDataTo5HDParams");
 }
 
 /* **************************************************************************************************

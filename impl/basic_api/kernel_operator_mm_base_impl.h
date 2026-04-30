@@ -97,10 +97,10 @@ __aicore__ inline void LoadDataImpl(const LocalTensor<T>& dst, const LocalTensor
         ASCENDC_REPORT_CHECK_ERROR("LoadData with LoadData3DParamsV1", KernelFuncType::NONE_MODE);
     }
 #endif
-    ASCENDC_ASSERT((SupportType<PrimT<T>, uint8_t, int8_t, half>()),
-        {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in "
+    ASCENDC_DEBUG_ASSERT((SupportType<PrimT<T>, uint8_t, int8_t, half>()),
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check dtype in "
         "LoadData with LoadData3DParamsV1, current api support dtype combination is src and dst both: uint8_t / int8_t "
-        "/ half.");});
+        "/ half.\n"));
 
     if constexpr (defaultConfig.isSetFMatrix) {
         Load3DSetFMatrixCal(loadDataParams.l1H, loadDataParams.l1W, loadDataParams.padList);
@@ -162,9 +162,11 @@ template <typename T, const IsResetLoad3dConfig &defaultConfig = IS_RESER_LOAD3D
 __aicore__ inline void LoadDataImpl(const LocalTensor<T>& dst, const LocalTensor<T>& src,
     const LoadData3DParamsV2<U>& loadDataParams)
 {
-    ASCENDC_ASSERT(CheckFuncLoadData3dv2(dst, src, loadDataParams, "LoadData with LoadData3DParamsV2"), {
+#ifdef ASCENDC_CPU_DEBUG
+    if (!CheckFuncLoadData3dv2(dst, src, loadDataParams, "LoadData with LoadData3DParamsV2")) {
         ASCENDC_REPORT_CHECK_ERROR("LoadData with LoadData3DParamsV2", KernelFuncType::NONE_MODE);
-    });
+    }
+#endif
     if constexpr (defaultConfig.isSetFMatrix) {
         Load3DSetFMatrixCal(loadDataParams.l1H, loadDataParams.l1W, loadDataParams.padList);
     }
@@ -180,14 +182,14 @@ __aicore__ inline void LoadDataImpl(const LocalTensor<T>& dst, const LocalTensor
         "/ half / int4b_t.");});
 #elif __NPU_ARCH__ == 2201
     if (dstScope == Hardware::L0A) {
-        ASCENDC_ASSERT((SupportType<PrimT<T>, uint8_t, int8_t, half, bfloat16_t, float, uint32_t, int32_t, int4b_t>()),
-            {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in LoadData with LoadData3DParamsV2 when dst position is "
+        ASCENDC_DEBUG_ASSERT((SupportType<PrimT<T>, uint8_t, int8_t, half, bfloat16_t, float, uint32_t, int32_t, int4b_t>()),
+            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check dtype in LoadData with LoadData3DParamsV2 when dst position is "
             "A2, current api support dtype combination is src and dst both: uint8_t / int8_t / half / bfloat16_t / "
-            "float / uint32_t / int32_t / int4b_t.");});
+            "float / uint32_t / int32_t / int4b_t.\n"));
     } else if (dstScope == Hardware::L0B) {
-        ASCENDC_ASSERT((SupportType<PrimT<T>, half, bfloat16_t, float, uint32_t, int32_t>()), {KERNEL_LOG(KERNEL_ERROR,
-            "Failed to check dtype in LoadData with LoadData3DParamsV2 when dst position is B2, current api support "
-            "dtype combination is src and dst both: half / bfloat16_t / float / uint32_t / int32_t.");});
+        ASCENDC_DEBUG_ASSERT((SupportType<PrimT<T>, half, bfloat16_t, float, uint32_t, int32_t>()),
+            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check dtype in LoadData with LoadData3DParamsV2 when dst position is B2, "
+            "current api support dtype combination is src and dst both: half / bfloat16_t / float / uint32_t / int32_t.\n"));
     }
 #elif __NPU_ARCH__ == 3510
     ASCENDC_ASSERT(loadDataParams.kExtension * sizeof(T) % ONE_BLK_SIZE == 0, {
@@ -522,9 +524,9 @@ __aicore__ inline void MmadSpImpl(const LocalTensor<T>& dst, const LocalTensor<U
     CheckTensorAlignment(dst, 1024, "dst", "MmadWithSparse");             // 1024B aligned
     CheckTensorAlignment(fm, VALUE_512, "fm", "MmadWithSparse");           // 512B aligned
     CheckTensorAlignment(filter, VALUE_512, "filter", "MmadWithSparse");   // 512B aligned
-    CheckValueRange<uint16_t>(mmadParams.m, 0, UINT12_MAX, "m", "MmadWithSparse");
-    CheckValueRange<uint16_t>(mmadParams.n, 0, UINT12_MAX, "n", "MmadWithSparse");
-    CheckValueRange<uint16_t>(mmadParams.k, 0, UINT12_MAX, "k", "MmadWithSparse");
+    CheckValueRange<uint16_t>(mmadParams.m, 0, UINT12_MAX, "m", "MmadWithSparse with MmadParams");
+    CheckValueRange<uint16_t>(mmadParams.n, 0, UINT12_MAX, "n", "MmadWithSparse with MmadParams");
+    CheckValueRange<uint16_t>(mmadParams.k, 0, UINT12_MAX, "k", "MmadWithSparse with MmadParams");
 #endif
     MmadSpCal((__cc__ int32_t*)dst.GetPhyAddr(), (__ca__ int8_t*)fm.GetPhyAddr(),
         (__cb__ int8_t*)filter.GetPhyAddr(), mmadParams);
