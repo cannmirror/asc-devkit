@@ -10,7 +10,7 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
-sourcedir="$PWD/asc-devkit"
+sourcedir="$PWD"
 curpath=$(dirname $(readlink -f "$0"))
 common_func_path="${curpath}/common_func.inc"
 devkit_func_path="${curpath}/asc-devkit_func.sh"
@@ -65,9 +65,9 @@ done
 
 WHL_INSTALL_DIR_PATH="${common_parse_dir}/python/site-packages"
 PYTHON_ASC_OP_COMPILE_BASE_NAME="asc_op_compile_base"
-PYTHON_ASC_OP_COMPILE_BASE_WHL_PATH="${sourcedir}/../lib/asc_op_compile_base-0.1.0-py3-none-any.whl"
+PYTHON_ASC_OP_COMPILE_BASE_WHL_PATH="${sourcedir}/lib/asc_op_compile_base-0.1.0-py3-none-any.whl"
 PYTHON_ASC_OPC_TOOL_NAME="asc_opc_tool"
-PYTHON_ASC_OPC_TOOL_WHL_PATH="${sourcedir}/../lib/asc_opc_tool-0.1.0-py3-none-any.whl"
+PYTHON_ASC_OPC_TOOL_WHL_PATH="${sourcedir}/lib/asc_opc_tool-0.1.0-py3-none-any.whl"
 
 # 写日志
 log() {
@@ -113,7 +113,10 @@ custom_install() {
 
     # create softlinks for stub libs in devlib/linux/${ARCH}
     create_stub_softlink "$common_parse_dir"
-
+    
+    if [ -d "${common_parse_dir}/lib" ]; then
+        rm -rf "${common_parse_dir}/lib"
+    fi
     return 0
 }
 

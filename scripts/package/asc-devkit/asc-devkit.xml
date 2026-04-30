@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config name="asc-devkit" copy_type="delivery" src_path="lib/host" dst_path="usr/local/Ascend" install_path="asc-devkit"
+<config name="asc-devkit" copy_type="delivery" src_path="lib/host" dst_path="asc-devkit" install_path="asc-devkit"
         install_own="$username:$usergroup" install_mod="750" install_type="all">
     <package_info>
         <product_name>cann</product_name>
@@ -9,6 +9,7 @@
         <help>share/info/asc-devkit/script/help.info</help>
         <version>asc-devkit/version.xml</version>
         <check_features>true</check_features>
+        <copy_all>true</copy_all>
     </package_info>
 
     <generate_info value="scene.info" dst_path="share/info/asc-devkit" install_path="share/info/asc-devkit" install_mod="440">
@@ -84,7 +85,7 @@
     <file_info copy_type="delivery" src_path="asc-devkit/script" dst_path="share/info/asc-devkit/script" install_path="share/info/asc-devkit/script" install_type="all">
         <file value="filelist.csv" install_mod="550" entity="true"/>
     </file_info>
-    <file_info copy_type="delivery" src_path="asc-devkit" dst_path="asc-devkit" install_path="$(TARGET_ENV)/include/version" install_type="all">
+    <file_info copy_type="delivery" src_path="asc-devkit" dst_path="$(TARGET_ENV)/include/version" install_path="$(TARGET_ENV)/include/version" install_type="all">
         <file value="asc_devkit_version.h" install_mod="550" entity="true" install_softlink="$(TARGET_ENV)/include/ascendc/asc_devkit_version.h"/>
     </file_info>
     <file_info copy_type="delivery" src_path="lib/host/asc/impl" dst_path="$(TARGET_ENV)/asc/impl" install_path="$(TARGET_ENV)/asc/impl" install_type="all">
@@ -143,19 +144,19 @@
         <file value="libtiling_api.a" file_type="static" pkg_feature="filter_as31xm1_device" optional="true"/>
     </file_info>
 
-    <file_info value="acl_rtc" copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)" install_path="$(TARGET_ENV)/lib64" install_type="all" install_mod="440">
+    <file_info value="acl_rtc" copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)/lib64" install_path="$(TARGET_ENV)/lib64" install_type="all" install_mod="440">
         <file value="libacl_rtc.so" file_type="shared"/>
     </file_info>
 
-    <file_info value="acl_rtc" copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)" install_path="$(TARGET_ENV)/lib64">
+    <file_info value="acl_rtc" copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)/lib64" install_path="$(TARGET_ENV)/lib64">
         <file value="libascendc_runtime.a" install_mod="440"/>
     </file_info>
 
-    <file_info value="acl_rtc" copy_type="delivery" src_path="lib/host" dst_path="bin" install_path="$(TARGET_ENV)/bin">
+    <file_info value="acl_rtc" copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)/bin" install_path="$(TARGET_ENV)/bin">
         <file value="ascendc_pack_kernel" install_mod="550"/>
     </file_info>
 
-    <file_info copy_type="delivery" src_path="lib/device" dst_path="$(TARGET_ENV)" install_path="$(TARGET_ENV)/lib64/device/lib64" pkg_feature="filter_florence">
+    <file_info copy_type="delivery" src_path="lib/device" dst_path="$(TARGET_ENV)/lib64/device/lib64" install_path="$(TARGET_ENV)/lib64/device/lib64" pkg_feature="filter_florence">
         <file value="libaicpu_api.a" file_type="static"/>
     </file_info>
 
@@ -167,7 +168,7 @@
         <file value="op_build" file_type= "executable"/>
     </file_info>
 
-    <file_info copy_type="source" src_path="build/makeself" dst_path="makeself" install_path="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/fwk_modules/util/makeself">
+    <file_info copy_type="source" src_path="build/makeself" dst_path="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/fwk_modules/util/makeself" install_path="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/fwk_modules/util/makeself">
         <file value="COPYING" install_mod="550"/>
         <file value="make-release.sh" install_mod="550"/>
         <file value="Makefile" install_mod="550"/>
@@ -178,7 +179,7 @@
         <file value="VERSION" install_mod="550"/>
     </file_info>
 
-    <file_info copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)/ascendc_kernel_cmake" install_path="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake">
+    <file_info copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake" install_path="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake">
         <file value="fwk_modules"/>
         <file value="legacy_modules"/>
         <file value="asc_modules"/>
@@ -186,11 +187,11 @@
         <file value="ascendc.cmake"/>
     </file_info>
 
-    <file_info copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)/ascendc_kernel_cmake" install_path="$(TARGET_ENV)/lib64/cmake">
+    <file_info copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)/lib64/cmake" install_path="$(TARGET_ENV)/lib64/cmake">
         <file value="aicpu-config.cmake" install_softlink="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/aicpu-config.cmake"/>
         <file value="asc-config.cmake" install_softlink="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/asc-config.cmake"/>
     </file_info>
-    <file_info value="acl_rt"  copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)/acl" install_path="$(TARGET_ENV)/include/acl" install_mod="440">
+    <file_info value="acl_rt"  copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)/include/acl" install_path="$(TARGET_ENV)/include/acl" install_mod="440">
         <file value="acl_rt_compile.h"/>
     </file_info>
 

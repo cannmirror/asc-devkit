@@ -33,6 +33,8 @@ set(ASCENDC_IMPL_DIR ${ASCENDC_DIR}/impl)
 if(BUILD_OPEN_PROJECT)
   include(cmake/config.cmake)
   set(INSTALL_LIBRARY_DIR ${CMAKE_SYSTEM_PROCESSOR}-linux)
+  set(INSTALL_RUNTIME_DIR ${CMAKE_SYSTEM_PROCESSOR}-linux/bin)
+  set(INSTALL_OPTIONAL OPTIONAL)
 endif()
 
 add_subdirectory(impl)

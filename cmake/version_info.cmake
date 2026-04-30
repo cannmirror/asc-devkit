@@ -94,5 +94,5 @@ set(VERSION_FILES
 )
 
 install(FILES ${VERSION_FILES}
-    DESTINATION asc-devkit COMPONENT asc-devkit
+    DESTINATION ${CMAKE_SYSTEM_PROCESSOR}-linux/include/version COMPONENT asc-devkit
 )

@@ -241,7 +241,7 @@ install(CODE "file(CREATE_LINK ../../../../asc/impl/utils/common_types.h ${CMAKE
 
 # 3 tikcpp/tikcfw
 install(CODE "file(CREATE_LINK ../../ascendc/include/basic_api/impl ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/tikcpp/tikcfw/impl SYMBOLIC)")
-install(CODE "file(CREATE_LINK ../../ascendc/include/basic_api/interface ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/tikcpp/tikcfw/interface SYMBOLIC)")
+install(CODE "file(CREATE_LINK ../../asc/include/interface ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/tikcpp/tikcfw/interface SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../ascendc/include/basic_api/op_frame ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/tikcpp/tikcfw/op_frame SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../ascendc/include/basic_api/kernel_operator.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/tikcpp/tikcfw/kernel_operator.h SYMBOLIC)")
 

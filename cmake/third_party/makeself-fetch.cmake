@@ -57,4 +57,13 @@ execute_process(
 
 # 安装到目标位置
 install(DIRECTORY ${MAKESELF_PATH} 
-        DESTINATION . COMPONENT asc-devkit)
+        DESTINATION ${INSTALL_LIBRARY_DIR}/tikcpp/ascendc_kernel_cmake/fwk_modules/util 
+        FILE_PERMISSIONS
+            OWNER_READ OWNER_EXECUTE
+            GROUP_READ GROUP_EXECUTE
+        COMPONENT asc-devkit
+        PATTERN ".github" EXCLUDE
+        PATTERN ".gitignore" EXCLUDE
+        PATTERN ".gitmodules" EXCLUDE
+        PATTERN "test" EXCLUDE
+)

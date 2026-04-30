@@ -26,16 +26,18 @@ install(FILES common_types.h sys_constants.h sys_macros.h
     DESTINATION ${INSTALL_LIBRARY_DIR}/asc/impl/utils ${INSTALL_OPTIONAL} COMPONENT asc-devkit
 )
 
+if(NOT BUILD_OPEN_PROJECT)
+    file(MAKE_DIRECTORY "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/host_api/include/tiling/")
+    file(MAKE_DIRECTORY "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/host_api/include/log")
+    install(CODE "file(CREATE_LINK ../../../../../asc/include/utils/tiling/template_argument.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/host_api/include/tiling/template_argument.h SYMBOLIC)")
+    install(CODE "file(CREATE_LINK ../../../../../asc/include/utils/log/asc_cpu_log.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/host_api/include/log/asc_cpu_log.h SYMBOLIC)")
+endif()    
 file(MAKE_DIRECTORY "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/tiling/platform")
 file(MAKE_DIRECTORY "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/tiling/context")
-file(MAKE_DIRECTORY "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/host_api/include/tiling/")
-file(MAKE_DIRECTORY "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/host_api/include/log")
 file(MAKE_DIRECTORY "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/highlevel_api/utils/log")
 
 install(CODE "file(CREATE_LINK ../../utils/tiling/platform/platform_ascendc.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/tiling/platform/platform_ascendc.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../utils/context/context_builder.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/tiling/context/context_builder.h SYMBOLIC)")
-install(CODE "file(CREATE_LINK ../../../../../asc/include/utils/tiling/template_argument.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/host_api/include/tiling/template_argument.h SYMBOLIC)")
-install(CODE "file(CREATE_LINK ../../../../../asc/include/utils/log/asc_cpu_log.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/host_api/include/log/asc_cpu_log.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../utils/tiling/template_argument.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/tiling/template_argument.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../../asc/include/utils/log/asc_cpu_log.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/highlevel_api/utils/log/asc_cpu_log.h SYMBOLIC)")
 

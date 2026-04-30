@@ -97,53 +97,55 @@ endif()
 
 
 # copy include to asc impl
-install(
-  FILES ${KERNEL_TILING_HEAD}
-  DESTINATION
-    ${INSTALL_LIBRARY_DIR}/asc/include/adv_api/
-  ${INSTALL_OPTIONAL} COMPONENT asc-devkit)
+if(NOT "${DPRODUCT_SIDE}" STREQUAL "device")
+  install(
+    FILES ${KERNEL_TILING_HEAD}
+    DESTINATION
+      ${INSTALL_LIBRARY_DIR}/asc/include/adv_api/
+    ${INSTALL_OPTIONAL} COMPONENT asc-devkit)
 
-# copy detail to asc impl
-install(
-  DIRECTORY detail/
-  DESTINATION ${INSTALL_LIBRARY_DIR}/asc/impl/adv_api/detail
-  ${INSTALL_OPTIONAL} COMPONENT asc-devkit FILES_MATCHING
-  PATTERN "*.h"
-  PATTERN "CMakeLists.txt" EXCLUDE)
+  # copy detail to asc impl
+  install(
+    DIRECTORY detail/
+    DESTINATION ${INSTALL_LIBRARY_DIR}/asc/impl/adv_api/detail
+    ${INSTALL_OPTIONAL} COMPONENT asc-devkit FILES_MATCHING
+    PATTERN "*.h"
+    PATTERN "CMakeLists.txt" EXCLUDE)
 
-# copy tiling to asc impl
-install(
-  DIRECTORY tiling/
-  DESTINATION ${INSTALL_LIBRARY_DIR}/asc/impl/adv_api/tiling
-  ${INSTALL_OPTIONAL} COMPONENT asc-devkit FILES_MATCHING
-  PATTERN "*.h"
-  PATTERN "CMakeLists.txt" EXCLUDE)
+  # copy tiling to asc impl
+  install(
+    DIRECTORY tiling/
+    DESTINATION ${INSTALL_LIBRARY_DIR}/asc/impl/adv_api/tiling
+    ${INSTALL_OPTIONAL} COMPONENT asc-devkit FILES_MATCHING
+    PATTERN "*.h"
+    PATTERN "CMakeLists.txt" EXCLUDE)
 
-# cp include to asc include
-install(
-  DIRECTORY ${ASCENDC_INCLUDE_DIR}/adv_api/
-  DESTINATION ${INSTALL_LIBRARY_DIR}/asc/include/adv_api/
-  ${INSTALL_OPTIONAL} COMPONENT asc-devkit)
+  # cp include to asc include
+  install(
+    DIRECTORY ${ASCENDC_INCLUDE_DIR}/adv_api/
+    DESTINATION ${INSTALL_LIBRARY_DIR}/asc/include/adv_api/
+    ${INSTALL_OPTIONAL} COMPONENT asc-devkit)
 
-# generate softlink
-configure_file(${ASCENDC_ADV_API_CMAKE_DIR}/kernel_headers.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/kernel_headers.cmake @ONLY)
-install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/kernel_headers.cmake)
+  # generate softlink
+  configure_file(${ASCENDC_ADV_API_CMAKE_DIR}/kernel_headers.cmake
+                ${CMAKE_CURRENT_BINARY_DIR}/kernel_headers.cmake @ONLY)
+  install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/kernel_headers.cmake)
 
-configure_file(${ASCENDC_ADV_API_CMAKE_DIR}/kernel_impl.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/kernel_impl.cmake @ONLY)
-install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/kernel_impl.cmake)
+  configure_file(${ASCENDC_ADV_API_CMAKE_DIR}/kernel_impl.cmake
+                ${CMAKE_CURRENT_BINARY_DIR}/kernel_impl.cmake @ONLY)
+  install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/kernel_impl.cmake)
 
-configure_file(${ASCENDC_ADV_API_CMAKE_DIR}/kernel_directory.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/kernel_directory.cmake @ONLY)
-install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/kernel_directory.cmake)
+  configure_file(${ASCENDC_ADV_API_CMAKE_DIR}/kernel_directory.cmake
+                ${CMAKE_CURRENT_BINARY_DIR}/kernel_directory.cmake @ONLY)
+  install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/kernel_directory.cmake)
 
-configure_file(
-    ${ASCENDC_ADV_API_CMAKE_DIR}/utils_headers.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/utils_headers.cmake
-    @ONLY
-)
-install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/utils_headers.cmake)
+  configure_file(
+      ${ASCENDC_ADV_API_CMAKE_DIR}/utils_headers.cmake
+      ${CMAKE_CURRENT_BINARY_DIR}/utils_headers.cmake
+      @ONLY
+  )
+  install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/utils_headers.cmake)
+endif()  
 
 if(NOT BUILD_OPEN_PROJECT)
   install_package(
