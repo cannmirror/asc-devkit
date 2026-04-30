@@ -29,11 +29,11 @@ namespace Te {
 
 struct MmadOpWith : public MmadOperation {};
 
-template <typename MmaTraits>
-struct MmadTraits<MmadOpWith, MmaTraits>
+template <typename MmadTraitsType>
+struct MmadTraits<MmadOpWith, MmadTraitsType>
 {
-    using TraitType = typename MmaTraits::TraitType;
-    static constexpr const TraitType defaultTrait = MmaTraits::value;
+    using TraitType = typename MmadTraitsType::TraitType;
+    static constexpr const TraitType defaultTrait = MmadTraitsType::value;
 
     template <const TraitType& traits = defaultTrait, typename... Args>
     __aicore__ inline void MmadUnpack(const Args& ...args) const {
@@ -43,8 +43,8 @@ struct MmadTraits<MmadOpWith, MmaTraits>
     MmadParams params;
 };
 
-template <typename MmaTraits>
-struct MmadTraits<MmadOperation, MmaTraits> : public MmadTraits<MmadOperation, MmaTraits, MmadOpWith, MmadTraitDefault> {};
+template <typename MmadTraitsType>
+struct MmadTraits<MmadOperation, MmadTraitsType> : public MmadTraits<MmadOperation, MmadTraitsType, MmadOpWith, MmadTraitDefault> {};
 
 template <>
 struct MmadTraits<MmadOperation> : public MmadTraits<MmadOperation, MmadTraitDefault> {};

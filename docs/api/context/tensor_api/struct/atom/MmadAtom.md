@@ -28,14 +28,14 @@ struct MmadAtom {
 ## 约束说明
 
 - Args的数量和类型必须与矩阵乘加操作的要求匹配。
-- MmadAtom通常与Mad函数配合使用。
+- MmadAtom通常与Mmad函数配合使用。
 
 ## 调用示例
 
 ```cpp
 // 创建MmadAtom
-auto mmadAtom = AscendC::Te::MakeMad(arg1, arg2, arg3);
+auto mmadAtom = AscendC::Te::MakeMmad(arg1, arg2, arg3);
 
 // 执行矩阵乘加操作
-AscendC::Te::Mad(mmadAtom, dst, src0, src1);
+AscendC::Te::Mmad(mmadAtom, dst, src0, src1);
 ```

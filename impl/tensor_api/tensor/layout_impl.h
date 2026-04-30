@@ -111,7 +111,7 @@ __aicore__ inline decltype(auto) MakeSliceLayout(const Coord& coord, const SrcLa
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_TENSOR_MAKE_LAYOUT_IMPL_H
+#endif // IMPL_TENSOR_API_TENSOR_LAYOUT_IMPL_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

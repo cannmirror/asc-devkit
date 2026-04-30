@@ -52,7 +52,7 @@ Tensor API当前仅支持Ascend 950PR/Ascend 950DT。
 #### 接口
 
 - [Copy](data_move/Copy.md)：数据搬运算法，封装多级存储间的数据传输。包括DataCopy（GM→L1）、LoadData（L1→L0A/L0B）、FixPipe（L0C→OUT）等通路。
-- [Mad](cube_compute/Mad.md)：矩阵乘加算法，封装MMAD指令。通过Traits配置数据类型、计算块大小等参数。
+- [Mmad](cube_compute/Mmad.md)：矩阵乘加算法，封装MMAD指令。通过Traits配置数据类型、计算块大小等参数。
 
 完整数据结构和接口列表请参考[Tensor API列表](tensor_api_list.md)。
 

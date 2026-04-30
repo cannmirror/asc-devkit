@@ -43,20 +43,20 @@ struct IsPtrTrait<T, void_t<typename T::type>> : Std::true_type {};
 template <typename T>
 using MemPtrTraitT = typename Std::conditional<IsPtrTrait<T>::value, T, PtrTrait<T>>::type;
 
-template <typename HardWare, typename TraitOrType, typename... Args>
+template <typename Hardware, typename TraitOrType, typename... Args>
 __aicore__ inline constexpr auto MakeMemPtr(Args... args)
 {
     using Arg = typename Std::tuple_element<0, Std::tuple<Args...>>::type;
     static_assert(!IsMemPtrIterator<Arg>::value, "MakeMemPtr expects a byteOffset.");
-    return MakeLocationMemPtr<HardWare, MemPtrTraitT<TraitOrType>>(args...);
+    return MakeLocationMemPtr<Hardware, MemPtrTraitT<TraitOrType>>(args...);
 }
 
-template <typename HardWare, typename... Args>
+template <typename Hardware, typename... Args>
 __aicore__ inline constexpr auto MakeMemPtr(Args... args)
 {
     using Arg = typename Std::tuple_element<0, Std::tuple<Args...>>::type;
-    static_assert(IsMemPtrIterator<Arg>::value, "MakeMemPtr<HardWare>(arg) expects an iterator/pointer");
-    return MakeHardwareMemPtr<HardWare>(args...);
+    static_assert(IsMemPtrIterator<Arg>::value, "MakeMemPtr<Hardware>(arg) expects an iterator/pointer");
+    return MakeHardwareMemPtr<Hardware>(args...);
 }
 
 } // namespace Te

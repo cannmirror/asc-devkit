@@ -26,17 +26,17 @@
 namespace AscendC {
 namespace Te {
 
-template <typename MmaOperation, typename... MmaOpArgs>
+template <typename MmadOperation, typename... MmadOpArgs>
 struct MmadTraits;
 
 template <typename... Args>
 struct MmadAtom;
 
-template <typename MmaOperation>
-struct MmadAtom<MmaOperation>;
+template <typename MmadOperation>
+struct MmadAtom<MmadOperation>;
 
-template <typename MmaOperation, typename... Args>
-struct MmadAtom<MmadTraits<MmaOperation, Args...>>;
+template <typename MmadOperation, typename... Args>
+struct MmadAtom<MmadTraits<MmadOperation, Args...>>;
 
 } // namespace Te
 } // namespace AscendC

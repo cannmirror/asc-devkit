@@ -180,7 +180,7 @@ struct IsAttrTensor<LocalTensor<TensorAttribute<Engine,Layout>>> : Std::true_typ
 template <typename T>
 constexpr bool IsAttrTensorV = IsAttrTensor<Std::remove_cvref_t<T>>::value;
 
-// make_tensor.h
+// tensor construction
 template <typename T, typename = void>
 struct HasDereference : Std::false_type {};
 

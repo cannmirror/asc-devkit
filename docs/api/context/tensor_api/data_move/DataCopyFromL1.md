@@ -237,7 +237,7 @@ PIPE_MTE1(L1 Buffer -> BiasTable Buffer)或PIPE_FIX(L1 Buffer -> Fixpipe Buffer)
     para.n = n;
     para.k = k;
     para.cmatrixInitVal = true;
-    Mad(MmadAtom<MmadTraits<MmadOperation, MmadTraitDefault>>{}, l0CTensor, l0ATensor, l0BTensor, biasTensor, para);
+    Mmad(MmadAtom<MmadTraits<MmadOperation, MmadTraitDefault>>{}, l0CTensor, l0ATensor, l0BTensor, biasTensor, para);
 
     set_flag(PIPE_M, PIPE_FIX, EVENT_ID0);
     wait_flag(PIPE_M, PIPE_FIX, EVENT_ID0);    
