@@ -71,6 +71,6 @@ constexpr uint8_t repeat = 2;
 constexpr uint16_t src_stride = 0;
 constexpr uint16_t dst_stride = 1;
 __gm__ half src[256];
-__cb__ half dst[256];
+__cbuf__ half dst[256];
 asc_copy_gm2l1(dst, src, base_idx, repeat, src_stride, dst_stride);
 ```
