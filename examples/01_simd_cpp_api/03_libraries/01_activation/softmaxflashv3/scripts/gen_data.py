@@ -110,8 +110,8 @@ def softmax_flash_v3(x, height, width, cnt, inmax=None, insum=None, inmean=None,
         x_sum = np.sum(x_exp, axis=(-1), keepdims=True)
         x_sum_new = exp_max * insum + x_sum
     if is_fp16:
-        x_exp = x_exp.astype(np.float16)
-    return (x_exp, x_max, x_sum, x_mean, exp_max)
+        x_exp_half = x_exp.astype(np.float16)
+        return (x_exp_half, x_max, x_sum, x_mean, exp_max)
 
 def gen_golden_data_simple():
     tiling_shape = [8]
@@ -160,12 +160,12 @@ def gen_golden_data_simple():
             x1.tofile("./input/input.bin")
             out_1, max_1, sum_1, mean_1, exp_max_1 = softmax_flash_v3(x1, height, width, loopcnt,
             max_front, sum_front, mean_front, update=False, is_fp16=True)
-            out_1.tofile("./output/golden.bin")
+            out_1.astype(np.float32).tofile("./output/golden.bin")
         else:
             x2.tofile("./input/input.bin")
             out_2, max_2, sum_2, mean_2, exp_max_2 = softmax_flash_v3(x2, height, width, loopcnt,
             max_front, sum_front, mean_front, update=True, is_fp16=True)
-            out_2.tofile("./output/golden.bin")
+            out_2.astype(np.float32).tofile("./output/golden.bin")
 
 if __name__ == "__main__":
     gen_golden_data_simple()

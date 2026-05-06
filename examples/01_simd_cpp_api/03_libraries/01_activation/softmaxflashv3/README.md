@@ -84,7 +84,7 @@
     核心计算步骤：将输入数据搬入后，调用 `AscendC::SoftmaxFlashV3` 完成 SoftmaxFlashV3 计算，再将结果搬出。
 
   - Tiling实现  
-    softmaxflashv3样例的tiling实现流程如下：首先对shape按照行数进行分核，使用平均分配法先按照核数向上对齐分配，确定主核的计算行数，再确定尾核计算行数，对主核计算的shape调用GetSoftMaxFlashV3MaxMinTmpSize获取API所需临时缓冲区大小，Kernel侧根据baseM自行计算SoftMaxTiling参数。
+    softmaxflashv3样例的tiling实现流程如下：首先对shape按照行数进行分核，使用平均分配法先按照核数向上对齐分配，确定主核的计算行数，再确定尾核计算行数，Kernel侧根据baseM自行计算SoftMaxTiling参数。
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
