@@ -15,8 +15,12 @@
 
 class TestSysVarSetL0c2gmQuantPost : public testing::Test { 
 protected:
-    void SetUp() {}
-    void TearDown() {}
+    void SetUp() {
+        g_coreType = C_API_AIC_TYPE;
+    }
+    void TearDown() {
+        g_coreType = C_API_AIV_TYPE;
+    }
 };
 
 void set_l0c2gm_quant_post_Stub(uint64_t config) {

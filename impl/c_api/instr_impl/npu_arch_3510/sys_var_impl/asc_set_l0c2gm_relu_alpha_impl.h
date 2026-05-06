@@ -22,7 +22,9 @@
 
 __aicore__ inline void asc_set_l0c2gm_relu_alpha_impl(uint64_t config)
 {
-    set_relu_alpha(config);
+    if ASC_IS_AIC {
+        set_relu_alpha(config);
+    }
 }
 
 #endif

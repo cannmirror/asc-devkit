@@ -22,22 +22,39 @@
 
 __aicore__ inline void asc_set_l13d_padding_impl(uint64_t config)
 {
-    set_padding(config);
+    if ASC_IS_AIC {
+        uint64_t paddingValue = 0;
+        uint64_t padValueShiftBit = 8;
+        paddingValue = (config << padValueShiftBit) | (config & 0xFF);
+        set_padding(paddingValue);
+    }
 }
 
 __aicore__ inline void asc_set_l13d_padding_impl(half config)
 {
-    set_padding(config);
+    if ASC_IS_AIC {
+        asc_scalar_bitcode bitcode;
+        bitcode.input_half = config;
+        set_padding(bitcode.output);
+    }
 }
 
 __aicore__ inline void asc_set_l13d_padding_impl(int16_t config)
 {
-    set_padding(config);
+    if ASC_IS_AIC {
+        asc_scalar_bitcode bitcode;
+        bitcode.input_int16_t = config;
+        set_padding(bitcode.output);
+    }
 }
 
 __aicore__ inline void asc_set_l13d_padding_impl(uint16_t config)
 {
-    set_padding(config);
+    if ASC_IS_AIC {
+        asc_scalar_bitcode bitcode;
+        bitcode.input_uint16_t = config;
+        set_padding(bitcode.output);
+    }
 }
 
 #endif

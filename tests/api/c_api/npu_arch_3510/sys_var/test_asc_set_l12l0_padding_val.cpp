@@ -15,8 +15,12 @@
 
 class TestSysVarSetL12L0PaddingVal : public testing::Test { 
 protected:
-    void SetUp() {}
-    void TearDown() {}
+    void SetUp() {
+        g_coreType = C_API_AIC_TYPE;
+    }
+    void TearDown() {
+        g_coreType = C_API_AIV_TYPE;
+    }
 };
 
 void set_l12l0_padding_val_Stub(uint64_t config) {

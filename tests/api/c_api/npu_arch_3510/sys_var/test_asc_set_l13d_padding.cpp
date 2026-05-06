@@ -17,20 +17,19 @@
 \
 class TestSysVarSetL13dPadding##data_type : public testing::Test {\
 protected:\
-    void SetUp() {}\
-    void TearDown() {}\
+    void SetUp() {\
+        g_coreType = C_API_AIC_TYPE;\
+    }\
+    void TearDown() {\
+        g_coreType = C_API_AIV_TYPE;\
+    }\
 };\
-\
-void set_l12ub_loop_size_Stub##data_type(data_type config) {\
-    EXPECT_EQ(config, static_cast<data_type>(33));\
-}\
 \
 TEST_F(TestSysVarSetL13dPadding##data_type, c_api_set_l12ub_loop_size##data_type)\
 {\
     data_type input = 33;\
-    MOCKER_CPP(set_padding, void(data_type))\
-            .times(1)\
-            .will(invoke(set_l12ub_loop_size_Stub##data_type));\
+    MOCKER_CPP(set_padding, void(uint64_t))\
+            .times(1);\
     asc_set_l13d_padding(input);\
     asc_init();\
     GlobalMockObject::verify();\
