@@ -204,12 +204,12 @@ __aicore__ inline void print_common_head()
 }
 
 template <class... Args>
-__aicore__ inline void print_dump_head()
+__aicore__ inline void print_dump_head(DumpType debugType)
 {
 #ifdef __DAV_VEC__
-    scalar_printf_impl(DumpType::DUMP_SCALAR, "[AIV Block %u/%u] ", asc_debug_get_block_idx(), asc_debug_get_block_total_num());
+    scalar_printf_impl(debugType, "[AIV Block %u/%u] ", asc_debug_get_block_idx(), asc_debug_get_block_total_num());
 #else
-    scalar_printf_impl(DumpType::DUMP_SCALAR, "[AIC Block %u/%u] ", asc_debug_get_block_idx(), asc_debug_get_block_total_num());
+    scalar_printf_impl(debugType, "[AIC Block %u/%u] ", asc_debug_get_block_idx(), asc_debug_get_block_total_num());
 #endif
 }
 
@@ -223,7 +223,7 @@ __aicore__ inline void printf_impl_common(DumpType debugType, __gm__ const char*
         print_common_head();
     }
 #endif
-    print_dump_head();
+    print_dump_head(debugType);
     scalar_printf_impl(debugType, fmt, args...);
     set_ctrl(ctrlValue);
 }
@@ -240,6 +240,20 @@ __aicore__ inline void printf_impl_assert(__gm__ const char* fmt, Args&&... args
 {
     enable_asc_assert();
     printf_impl_common(DumpType::DUMP_ASSERT, fmt, args...);
+}
+
+template <typename... Args>
+inline __aicore__ void printf_impl_assert_msg(const __gm__ char* __assertion, const __gm__ char* __file, unsigned int __line,
+    const __gm__ char* __function, const __gm__ char* fmt, Args&&... args) {
+    uint64_t ctrlValue = get_ctrl();
+
+    enable_asc_assert();
+    set_atomic_none();
+    scalar_printf_impl(DumpType::DUMP_ASSERT, fmt, args...);
+    print_dump_head(DumpType::DUMP_ASSERT);
+    scalar_printf_impl(DumpType::DUMP_ASSERT, "[ASSERT] %s:%u: %s: Assertion `%s' failed.\n",
+                       __file, __line, __function, __assertion);
+    set_ctrl(ctrlValue);
 }
 
 } // namespace __asc_aicore
@@ -261,6 +275,13 @@ template <class... Args>
 __aicore__ inline void printf_impl_assert(__gm__ const char* fmt, Args&&... args)
 {
     std::printf(fmt, args...);
+}
+
+template <typename... Args>
+inline __aicore__ void printf_impl_assert_msg(const __gm__ char* __assertion, const __gm__ char* __file, unsigned int __line,
+    const __gm__ char* __function, const __gm__ char* fmt, Args&&... args) {
+    std::printf(fmt, args...);
+    std::printf("[ASSERT] %s:%u: %s: Assertion `%s' failed.\n",  __file, __line, __function, __assertion);
 }
 
 template <class... Args>
