@@ -1436,7 +1436,7 @@ template <typename T>
 __aicore__ inline void DataCopyPadUB2L1Impl(__cbuf__ T* dst, __ubuf__ T* src, const DataCopyParams& intriParams,
                                             const uint8_t cacheMode = 0)
 {
-    ASSERT(false && "unsupported data copy from gm to ubuf with pad in Ascend910");
+    ASSERT(false && "unsupported data copy from gm to ubuf with pad on current device");
 }
 
 __aicore__ inline void NdDmaDciImpl() {

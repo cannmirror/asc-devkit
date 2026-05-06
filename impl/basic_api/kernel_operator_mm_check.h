@@ -103,9 +103,21 @@ __aicore__ inline void CheckFixpipeQuantPreWithWorkspaceCommon(const QuantMode_t
         "when cbufWorkspace is given, supported values are VDEQF16 / VQF322B8_PRE / VREQ8.\n", apiName));
 }
 
+__aicore__ inline void CheckFixpipeQuantPreValid(const QuantMode_t quantPre, const __gm__ char* apiName)
+{
+    ASCENDC_DEBUG_ASSERT((quantPre == QuantMode_t::NoQuant || quantPre == QuantMode_t::F322F16 ||
+        quantPre == QuantMode_t::F322BF16 || quantPre == QuantMode_t::DEQF16 ||
+        quantPre == QuantMode_t::VDEQF16 || quantPre == QuantMode_t::QF322B8_PRE ||
+        quantPre == QuantMode_t::VQF322B8_PRE || quantPre == QuantMode_t::REQ8 ||
+        quantPre == QuantMode_t::VREQ8), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
+        "Failed to check quantPre value in %s, supported values are NoQuant / F322F16 / F322BF16 / DEQF16 / "
+        "VDEQF16 / QF322B8_PRE / VQF322B8_PRE / REQ8 / VREQ8.\n", apiName));
+}
+
 template <typename T, typename U>
 __aicore__ inline void CheckFixpipeQuantPreCommon(const QuantMode_t quantPre, const __gm__ char* apiName)
 {
+    CheckFixpipeQuantPreValid(quantPre, apiName);
     if constexpr (IsSameType<PrimT<U>, float>::value && SupportType<PrimT<T>, int8_t, uint8_t>()) {
         ASCENDC_DEBUG_ASSERT((quantPre == QuantMode_t::QF322B8_PRE ||
             quantPre == QuantMode_t::VQF322B8_PRE), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
@@ -142,9 +154,12 @@ __aicore__ inline void CheckFixpipeParamsV220Common(const FixpipeParamsV220& int
             intriParams.nSize % 8 == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check nSize value in %s, "
             "when isChannelSplit is true, its valid range is 1 ~ 4095 and must be divisible by 8, current value "
             "is %u.\n", apiName, intriParams.nSize));
-        ASCENDC_DEBUG_ASSERT((IsSameType<PrimT<T>, float>::value),
+        ASCENDC_DEBUG_ASSERT((IsSameType<PrimT<T>, float>::value && IsSameType<PrimT<U>, float>::value),
             KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check isChannelSplit value in %s, isChannelSplit can be "
-            "enabled only when dst are float.\n", apiName));
+            "enabled only when src and dst are float.\n", apiName));
+        ASCENDC_DEBUG_ASSERT((config.format != CO2Layout::ROW_MAJOR), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
+            "Failed to check isChannelSplit value in %s, isChannelSplit and NZ2ND cannot be enabled at the same "
+            "time.\n", apiName));
     } else if constexpr (config.format == CO2Layout::ROW_MAJOR) {
         CheckValueRange<uint16_t>(intriParams.nSize, 1, UINT12_MAX, "nSize", apiName);
     } else {
@@ -160,10 +175,15 @@ __aicore__ inline void CheckFixpipeParamsV220Common(const FixpipeParamsV220& int
         "Failed to check dstStride value in %s, its valid range is 1 ~ 4294967295, current value is %u.\n", apiName,
         intriParams.dstStride));
 
+    ASCENDC_DEBUG_WARNING((intriParams.ndNum != 0), KERNEL_LOG_INTERNAL(KERNEL_WARN,
+        "FixpipeParamsV220.ndNum is 0 in %s, the instruction will not be executed.\n", apiName));
     if (intriParams.ndNum > 1) {
         CheckValueRange<uint16_t>(intriParams.srcNdStride, 1, VALUE_512, "srcNdStride", apiName);
         CheckValueRange<uint16_t>(intriParams.dstNdStride, 1, UINT16_MAX, "dstNdStride", apiName);
     }
+    ASCENDC_DEBUG_ASSERT((intriParams.unitFlag == 0 || intriParams.unitFlag == 2 || intriParams.unitFlag == 3),
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check unitFlag value in %s, supported values are 0, 2, and 3.\n",
+        apiName));
 
     CheckFixpipeQuantPreCommon<T, U>(intriParams.quantPre, apiName);
 }

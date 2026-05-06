@@ -424,7 +424,8 @@ TEST_F(TensorScopeTest, FixpipeChannelSplitOnlySupportsFloatDst)
     streambuffer << resultFile.rdbuf();
     std::string resultString(streambuffer.str());
     std::string goldenStr =
-        "Failed to check isChannelSplit value in Fixpipe, isChannelSplit can be enabled only when dst are float.";
+        "Failed to check isChannelSplit value in Fixpipe, isChannelSplit can be set true only when src and dst are "
+        "both float";
     resultFile.close();
 
     EXPECT_TRUE(resultString.find(goldenStr) != std::string::npos);

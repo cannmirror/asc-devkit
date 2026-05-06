@@ -82,7 +82,7 @@ void MainDataCopyPadKernelWrongPos(__gm__ uint8_t* __restrict__ srcGm, __gm__ ui
     DataCopyExtParams copyExtParams{1, 20 * sizeof(T), 0, 0, 0};
     DataCopyPadExtParams<T> padExtParams{true, 0, 1, 3};
 
-    MOCKER(raise, int32_t (*)(int32_t)).times(19).will(invoke(RaiseStubForDataCopyPad));
+    MOCKER(raise, int32_t (*)(int32_t)).times(22).will(invoke(RaiseStubForDataCopyPad));
     DataCopyPad(inputLocal, srcGlobal, copyParams, padParams);
     DataCopyPad(srcGlobal, inputLocal, copyParams);
     DataCopyPad(inputLocal, srcGlobal, copyExtParams, padExtParams);

@@ -23,30 +23,6 @@
 #include "kernel_common.h"
 #include "kernel_process_lock.h"
 namespace AscendC {
-// DataCopyParams:    uint16_t blockCount, uint16_t blockLen
-// DataCopyExtParams: uint16_t blockCount, uint32_t blockLen
-template <typename T>
-__aicore__ inline void CheckDataCopyPadParams(uint16_t blockCount, uint32_t blockLen, bool isGMtoUB)
-{
-#if ASCENDC_CPU_DEBUG
-    constexpr uint32_t dataCopyPadBlkLenLimit = 2097151;    // 21 bits in total, thus range [0, 2097151]
-    ASCENDC_CHECK_VALUE_RANGE(blockCount, 0, UINT12_MAX, "blockCount", "DataCopyPad");
-    ASCENDC_CHECK_VALUE_RANGE(blockLen, 0, dataCopyPadBlkLenLimit, "blockLen", "DataCopyPad");
-    if (isGMtoUB) {
-        ASCENDC_ASSERT((blockLen % sizeof(T) == 0), { KERNEL_LOG(KERNEL_ERROR, "Failed to check blockLen value in "
-            "DataCopyPad from GM to VECIN / VECOUT, it must be divisible by %zu, current value is %lu.", sizeof(T),
-            blockLen); });
-    }
-#endif
-}
-
-// DataCopyParams: uint16_t blockCount: 12 bits
-__aicore__ inline void CheckDataCopyParams(uint16_t blockCount, uint16_t blockLen)
-{
-    ASCENDC_CHECK_VALUE_RANGE(blockCount, 1, UINT12_MAX, "blockCount", "DataCopy");
-    ASCENDC_CHECK_VALUE_RANGE(blockLen, 1, UINT16_MAX, "blockLen", "DataCopy");
-}
-
 __aicore__ inline void ValidateUbL1Address(uint64_t absUbAddr, uint64_t absL1Addr, uint32_t tensorSize)
 {
     ASCENDC_ASSERT((absUbAddr < TOTAL_UB_SIZE), {
@@ -74,7 +50,6 @@ template <typename T>
 __aicore__ inline void DataCopyGM2UBImpl(__ubuf__ T* dst, __gm__ T* src, const DataCopyParams& intriParams)
 {
     if ASCEND_IS_AIV {
-        CheckDataCopyParams(intriParams.blockCount, intriParams.blockLen);
         ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(dst)) % ONE_BLK_SIZE == 0),
             KERNEL_LOG_INTERNAL(KERNEL_ERROR, "dst address should be 32B aligned \n"));
         if constexpr (g_gm_overflow_check) {
@@ -90,7 +65,6 @@ template <typename T>
 __aicore__ inline void DataCopyGM2L1Impl(__cbuf__ T* dst, __gm__ T* src, const DataCopyParams& intriParams)
 {
     if ASCEND_IS_AIC {
-        CheckDataCopyParams(intriParams.blockCount, intriParams.blockLen);
         ASCENDC_CHECK_TENSOR_PTR_ALIGN(dst, TPosition::A1, ONE_BLK_SIZE, "dstLocal", "DataCopy from GM to A1 / B1");
         if constexpr (g_gm_overflow_check) {
             __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
@@ -120,7 +94,6 @@ __aicore__ inline void DataCopyUB2GMImpl(__gm__ T* dst, __ubuf__ T* src, const D
     if ASCEND_IS_AIV {
         ASCENDC_ASSERT((dst != nullptr), { KERNEL_LOG(KERNEL_ERROR, "dst ptr can not be nullptr"); });
         ASCENDC_ASSERT((src != nullptr), { KERNEL_LOG(KERNEL_ERROR, "src ptr can not be nullptr"); });
-        CheckDataCopyParams(intriParams.blockCount, intriParams.blockLen);
         ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, 
             "src address should be 32B aligned \n"));
 
@@ -137,7 +110,6 @@ template <typename T>
 __aicore__ inline void DataCopyUB2UBImpl(__ubuf__ T* dst, __ubuf__ T* src, const DataCopyParams& intriParams)
 {
     if ASCEND_IS_AIV {
-        CheckDataCopyParams(intriParams.blockCount, intriParams.blockLen);
         ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, 
             "src address should be 32B aligned \n"));
         ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(dst)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, 
@@ -155,7 +127,9 @@ __aicore__ inline void DataCopyUB2L1Impl(__cbuf__ T* dst, __ubuf__ T* src, const
     ASCENDC_ASSERT((dst != nullptr), { KERNEL_LOG(KERNEL_ERROR, "dst ptr can not be nullptr"); });
     ASCENDC_ASSERT((src != nullptr), { KERNEL_LOG(KERNEL_ERROR, "src ptr can not be nullptr"); });
     if ASCEND_IS_AIV {
-        ASCENDC_ASSERT((GetKfcClient() != nullptr), { KERNEL_LOG(KERNEL_ERROR, "kfc client ptr can not be nullptr"); });
+        ASCENDC_DEBUG_ASSERT((GetKfcClient() != nullptr), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
+        "DataCopy from UB to L1 is software-emulated on this device and works with Matmul API. Use "
+        "REGISTER_MATMUL_OBJ to enable Matmul API first.\n"));
         ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, 
             "src address should be 32B aligned \n"));
         // 1.获取GM的地址
@@ -174,7 +148,6 @@ __aicore__ inline void DataCopyUB2L1Impl(__cbuf__ T* dst, __ubuf__ T* src, const
         SetFlag<HardEvent::V_MTE3>(eventID);
         WaitFlag<HardEvent::V_MTE3>(eventID);
         // 2.进行对等拷贝ub->GM
-        CheckDataCopyParams(intriParams.blockCount, intriParams.blockLen);
         copy_ubuf_to_gm((__gm__ void*)gmAddr, (__ubuf__ void*)src, 0, intriParams.blockCount, intriParams.blockLen,
             intriParams.srcStride, intriParams.srcStride);
 
@@ -203,7 +176,9 @@ __aicore__ inline void DataCopyUB2L1ND2NZImpl(__cbuf__ T* dst, __ubuf__ T* src, 
     ASCENDC_ASSERT((dst != nullptr), { KERNEL_LOG(KERNEL_ERROR, "dst ptr can not be nullptr"); });
     ASCENDC_ASSERT((src != nullptr), { KERNEL_LOG(KERNEL_ERROR, "src ptr can not be nullptr"); });
     if ASCEND_IS_AIV {
-        ASSERT(GetKfcClient() != nullptr);
+        ASCENDC_DEBUG_ASSERT((GetKfcClient() != nullptr), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
+        "DataCopy UB to L1 with ND2NZ is software-emulated on this device and works with Matmul API. Use "
+        "REGISTER_MATMUL_OBJ to enable Matmul API first.\n"));
         ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, 
             "src address should be 32B aligned \n"));
         uint32_t tensorSize = intriParams.nValue * intriParams.dValue;
@@ -251,7 +226,6 @@ __aicore__ inline __inout_pipe__(MTE1) void DataCopyL12BTImpl(const uint64_t dst
     const DataCopyParams &intriParams)
 {
     if ASCEND_IS_AIC {
-        CheckDataCopyParams(intriParams.blockCount, intriParams.blockLen);
         copy_cbuf_to_bt(dst, (__cbuf__ void*)src, isEnableConv, intriParams.blockCount, intriParams.blockLen,
             intriParams.srcStride, intriParams.dstStride);
     }
@@ -262,7 +236,6 @@ __aicore__ inline __inout_pipe__(FIX) void DataCopyL12FBImpl(
     __fbuf__ T* dst, __cbuf__ T* src, const DataCopyParams &intriParams)
 {
     if ASCEND_IS_AIC {
-        CheckDataCopyParams(intriParams.blockCount, intriParams.blockLen);
         copy_cbuf_to_fbuf((__fbuf__ void*)dst, (__cbuf__ void*)src, intriParams.blockCount, intriParams.blockLen,
             intriParams.srcStride, intriParams.dstStride);
     }
@@ -322,7 +295,6 @@ template <typename T>
 __aicore__ inline void DataCopyL12GMImpl(__gm__ T* dst, __cbuf__ T* src, const DataCopyParams& intriParams)
 {
     if ASCEND_IS_AIC {
-        CheckDataCopyParams(intriParams.blockCount, intriParams.blockLen);
         ASCENDC_CHECK_TENSOR_PTR_ALIGN(src, TPosition::A1, ONE_BLK_SIZE, "srcLocal", "DataCopy from A1 / B1 to GM");
         if constexpr (g_gm_overflow_check) {
             __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
@@ -403,14 +375,14 @@ template <typename T, typename U>
 __aicore__ inline void DataCopyL0C2UBImpl(__ubuf__ T* dst, __cc__ U* src, const DataCopyParams& intriParams,
     const DataCopyEnhancedParams& enhancedParams)
 {
-    ASCENDC_REPORT_NOT_SUPPORT(false, "DataCopy from CO1 to CO2");
+    ReportNotSupport(false, "DataCopy from CO1 to CO2");
 }
 
 template <typename T, typename U>
 __aicore__ inline void DataCopyUB2L0CImpl(__cc__ T* dst, __ubuf__ U* src, const DataCopyParams& intriParams,
     const DataCopyEnhancedParams& enhancedParams)
 {
-    ASCENDC_REPORT_NOT_SUPPORT(false, "DataCopy from CO2 to CO1");
+    ReportNotSupport(false, "DataCopy from CO2 to CO1");
 }
 
 template <typename T>
@@ -434,7 +406,6 @@ __aicore__ inline void DataCopyPadGm2UBImpl(__ubuf__ T* dst, __gm__ T* src, cons
     }
     ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(dst)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, 
         "Failed to check dst tensor address alignment in DataCopyPad from GM to VECIN / VECOUT, it should be 32B aligned.\n"));
-    CheckDataCopyPadParams<T>(intriParams.blockCount, static_cast<uint32_t>(intriParams.blockLen), true);
     if (padParams.isPad) {
         set_mov_pad_val(padParams.paddingValue);
     }
@@ -471,7 +442,6 @@ __aicore__ inline void DataCopyPadGm2UBImpl(__ubuf__ T* dst, __gm__ T* src, cons
     }
     ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(dst)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed "
         "to check dst tensor address alignment in DataCopyPad from GM to VECIN / VECOUT, it should be 32B aligned.\n"));
-    CheckDataCopyPadParams<T>(intriParams.blockCount, intriParams.blockLen, true);
     if (padParams.isPad) {
         set_mov_pad_val(GetScalarBitcodeValue(static_cast<T>(padParams.paddingValue)));
     }
@@ -518,7 +488,6 @@ __aicore__ inline void DataCopyPadUB2GMImpl(__gm__ T* dst, __ubuf__ T* src, cons
     }
     ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed "
         "to check src tensor address alignment in DataCopyPad from VECIN / VECOUT to GM, it should be 32B aligned.\n"));
-    CheckDataCopyPadParams<T>(intriParams.blockCount, static_cast<uint32_t>(intriParams.blockLen), false);
     if constexpr (g_gm_overflow_check && (sizeof(T) == B8_BYTE_SIZE || sizeof(T) == B16_BYTE_SIZE
         || sizeof(T) == B32_BYTE_SIZE || sizeof(T) == B64_BYTE_SIZE)) {
         __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
@@ -548,7 +517,6 @@ __aicore__ inline void DataCopyPadUB2GMImpl(__gm__ T* dst, __ubuf__ T* src, cons
     }
     ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed "
         "to check src tensor address alignment in DataCopyPad from VECIN / VECOUT to GM, it should be 32B aligned.\n"));
-    CheckDataCopyPadParams<T>(intriParams.blockCount, intriParams.blockLen, false);
     if constexpr (g_gm_overflow_check && (sizeof(T) == B8_BYTE_SIZE || sizeof(T) == B16_BYTE_SIZE
         || sizeof(T) == B32_BYTE_SIZE || sizeof(T) == B64_BYTE_SIZE)) {
         __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
@@ -578,9 +546,10 @@ __aicore__ inline void DataCopyPadUB2L1Impl(__cbuf__ T* dst, __ubuf__ T* src, co
     ASCENDC_ASSERT((GetTPipePtr() != nullptr), { KERNEL_LOG(KERNEL_ERROR, "tpipe ptr can not be nullptr"); });
     ASCENDC_ASSERT((dst != nullptr), { KERNEL_LOG(KERNEL_ERROR, "dst ptr can not be nullptr"); });
     ASCENDC_ASSERT((src != nullptr), { KERNEL_LOG(KERNEL_ERROR, "src ptr can not be nullptr"); });
-    CheckDataCopyPadParams<T>(intriParams.blockCount, static_cast<uint32_t>(intriParams.blockLen), false);
     if ASCEND_IS_AIV {
-        ASCENDC_ASSERT((GetKfcClient() != nullptr), { KERNEL_LOG(KERNEL_ERROR, "kfc client ptr can not be nullptr"); });
+        ASCENDC_DEBUG_ASSERT((GetKfcClient() != nullptr), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
+        "DataCopyPad from UB to L1 is software-emulated on this device and works with Matmul API. Use "
+        "REGISTER_MATMUL_OBJ to enable Matmul API first.\n"));
         ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, 
             "Failed to check src tensor address alignment in DataCopyPad from VECIN / VECOUT to TSCM, it should be 32B "
             "aligned.\n"));
@@ -627,9 +596,10 @@ __aicore__ inline void DataCopyPadUB2L1Impl(__cbuf__ T* dst, __ubuf__ T* src, co
     ASCENDC_ASSERT((GetTPipePtr() != nullptr), { KERNEL_LOG(KERNEL_ERROR, "tpipe ptr can not be nullptr"); });
     ASCENDC_ASSERT((dst != nullptr), { KERNEL_LOG(KERNEL_ERROR, "dst ptr can not be nullptr"); });
     ASCENDC_ASSERT((src != nullptr), { KERNEL_LOG(KERNEL_ERROR, "src ptr can not be nullptr"); });
-    CheckDataCopyPadParams<T>(intriParams.blockCount, intriParams.blockLen, false);
     if ASCEND_IS_AIV {
-        ASCENDC_ASSERT((GetKfcClient() != nullptr), { KERNEL_LOG(KERNEL_ERROR, "kfc client ptr can not be nullptr"); });
+        ASCENDC_DEBUG_ASSERT((GetKfcClient() != nullptr), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
+        "DataCopyPad from UB to L1 is software-emulated on this device and works with Matmul API. Use "
+        "REGISTER_MATMUL_OBJ to enable Matmul API first.\n"));
         ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, 
             "Failed to check src tensor address alignment in DataCopyPad from VECIN / VECOUT to TSCM, it should be 32B "
             "aligned.\n"));
@@ -1043,27 +1013,27 @@ __aicore__ inline void DataCopyUB2UBIntf(const LocalTensor<T> &dst, const LocalT
 template <typename T>
 __aicore__ inline void DataCopyPadL12GMImpl(__gm__ T* dst, __cbuf__ T* src, const DataCopyParams& intriParams)
 {
-    ASCENDC_REPORT_NOT_SUPPORT(false, "DataCopyPad from A1/B1/C1 to GM");
+    ReportNotSupport(false, "DataCopyPad from A1/B1/C1 to GM");
 }
 
 template <typename T>
 __aicore__ inline void DataCopyPadL12GMImpl(__gm__ T* dst, __cbuf__ T* src, const DataCopyExtParams& intriParams)
 {
-    ASCENDC_REPORT_NOT_SUPPORT(false, "DataCopyPad from A1/B1/C1 to GM");
+    ReportNotSupport(false, "DataCopyPad from A1/B1/C1 to GM");
 }
 
 template <typename T>
 __aicore__ inline void DataCopyPadGM2L1Impl(__cbuf__ T* dst, __gm__ T* src, const DataCopyParams& intriParams,
     const DataCopyPadParams& padParams)
 {
-    ASCENDC_REPORT_NOT_SUPPORT(false, "DataCopyPad from GM to A1/B1/C1");
+    ReportNotSupport(false, "DataCopyPad from GM to A1/B1/C1");
 }
 
 template <typename T>
 __aicore__ inline void DataCopyPadGM2L1Impl(__cbuf__ T* dst, __gm__ T* src, const DataCopyExtParams& intriParams,
     const DataCopyPadExtParams<T>& padParams)
 {
-    ASCENDC_REPORT_NOT_SUPPORT(false, "DataCopyPad from GM to A1/B1/C1");
+    ReportNotSupport(false, "DataCopyPad from GM to A1/B1/C1");
 }
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_DATA_COPY_IMPL_H
