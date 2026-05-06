@@ -48,7 +48,9 @@ template <typename T, bool setRelu = false>
 __aicore__ inline void SetFixPipeConfigImpl(const LocalTensor<T> &pre, bool isUnitFlag = false)
 {
     if ASCEND_IS_AIC {
-        CheckTensorPos<T>(pre, Hardware::FIXBUF, "pre", "C2PIPE2GM", "SetFixPipeConfig");
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+        CheckTensorPhyPosition<Hardware::FIXBUF, Hardware::L0C>(pre, "pre", "C2PIPE2GM / CO1", "SetFixPipeConfig");
+#endif
         uint64_t config = 0;
         if constexpr (setRelu) {
             config = config | ((uint64_t)pre.GetPhyAddr() >> 6);        // in unit of 64B, FPC[7:0], ReluPreAddr.
