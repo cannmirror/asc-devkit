@@ -82,6 +82,28 @@ private:
         }
     }
 };
+
+class LoadCbufToL0MxScaleA3510 {
+public:
+    template <const CopyL12L0ATrait& trait, typename U, typename... Params>
+    __aicore__ inline static void LoadData(const uint64_t& mxDstAddr, const U& src, const Params& ...params)
+    {
+        LoadCbufToMxScaleA(mxDstAddr, src.Data().Get(), params...);
+    }
+
+private:
+    template <typename T>
+    __aicore__ inline static void LoadCbufToMxScaleA(uint64_t mxDstAddr, __cbuf__ T* src, uint16_t mStartPosition,
+        uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride)
+    {
+        if ASCEND_IS_AIV {
+            return;
+        }
+        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
+            asc_copy_l12l0a_mx(mxDstAddr, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+        }
+    }
+};
 } // namespace Te
 } // namespace AscendC
 

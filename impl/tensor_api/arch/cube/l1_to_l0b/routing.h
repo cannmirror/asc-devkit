@@ -26,9 +26,11 @@
 #include "impl/tensor_api/arch/cube/l1_to_l0b/npu_arch_3510/zn2zn.h"
 #include "impl/tensor_api/arch/cube/l1_to_l0b/npu_arch_3510/nz2zn.h"
 #include "impl/tensor_api/arch/cube/l1_to_l0b/npu_arch_3510/nz2znb8b4.h"
+#include "impl/tensor_api/arch/cube/l1_to_l0b/npu_arch_3510/scaleb.h"
 #include "impl/tensor_api/arch/cube/l1_to_l0b/npu_arch_3510/zn2zn_with_coord.h"
 #include "impl/tensor_api/arch/cube/l1_to_l0b/npu_arch_3510/nz2zn_with_coord.h"
 #include "impl/tensor_api/arch/cube/l1_to_l0b/npu_arch_3510/nz2znb8b4_with_coord.h"
+#include "impl/tensor_api/arch/cube/l1_to_l0b/npu_arch_3510/scaleb_with_coord.h"
 
 namespace AscendC {
 namespace Te {
@@ -78,6 +80,18 @@ template <>
 struct CopyL12L0BTensor2Tensor<Location::L0B, Location::L1, ArchVersion::V3510, ZNLayoutPtn, NZLayoutPtn, CopyMode::TRANS_B8B4_COORD>
 {
     using type = LoadDataL12L0BNZ2ZNB8B4WithCoord3510;
+};
+
+template <>
+struct CopyL12L0BTensor2Tensor<Location::L0B, Location::L1, ArchVersion::V3510, NNLayoutPtn, NNLayoutPtn, CopyMode::NORMAL>
+{
+    using type = LoadDataL12L0MxScaleB3510;
+};
+
+template <>
+struct CopyL12L0BTensor2Tensor<Location::L0B, Location::L1, ArchVersion::V3510, NNLayoutPtn, NNLayoutPtn, CopyMode::NORMAL_COORD>
+{
+    using type = LoadDataL12L0MxScaleBWithCoord3510;
 };
 } // namespace Te
 } // namespace AscendC
