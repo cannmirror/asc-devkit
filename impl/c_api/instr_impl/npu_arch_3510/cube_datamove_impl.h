@@ -2031,46 +2031,46 @@ __aicore__ inline void asc_copy_l12bt_sync(uint64_t dst, __cbuf__ int32_t* src, 
 
 //=============asc_copy_l0c2l1===============
 __aicore__ inline void asc_copy_l0c2l1(__cbuf__ void *dst, __cc__ float *src, uint16_t n_size,
-            uint16_t m_size, uint32_t loop_dst_stride, uint16_t loop_src_stride, uint8_t l2_cache_ctl, uint8_t clip_relu_pre,
-            uint8_t unit_flag_mode, uint64_t quant_pre, uint8_t relu_pre, bool split_en, bool NZ2ND_en, uint64_t quant_post,
+            uint16_t m_size, uint32_t dst_stride, uint16_t src_stride, uint8_t l2_cache_ctl, uint8_t clip_relu_pre,
+            uint8_t unit_flag_mode, uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool NZ2ND_en, uint64_t quant_post,
             uint8_t relu_post, bool clip_relu_post, uint8_t eltwise_op, bool eltwise_antq_en,
             bool C0_pad_en, bool broadcast_en, bool NZ2DN_en)
 {
-    asc_copy_l0c2l1_impl(dst, src, n_size, m_size, loop_dst_stride, loop_src_stride, l2_cache_ctl,
-        clip_relu_pre, unit_flag_mode, quant_pre, relu_pre, split_en, NZ2ND_en, quant_post, relu_post, clip_relu_post,
+    asc_copy_l0c2l1_impl(dst, src, n_size, m_size, dst_stride, src_stride, l2_cache_ctl,
+        clip_relu_pre, unit_flag_mode, quant_pre, relu_pre, channel_split, NZ2ND_en, quant_post, relu_post, clip_relu_post,
         eltwise_op, eltwise_antq_en, C0_pad_en, broadcast_en, NZ2DN_en);
 }
 
 __aicore__ inline void asc_copy_l0c2l1_sync(__cbuf__ void *dst, __cc__ float *src, uint16_t n_size,
-            uint16_t m_size, uint32_t loop_dst_stride, uint16_t loop_src_stride, uint8_t l2_cache_ctl, uint8_t clip_relu_pre,
-            uint8_t unit_flag_mode, uint64_t quant_pre, uint8_t relu_pre, bool split_en, bool NZ2ND_en, uint64_t quant_post,
+            uint16_t m_size, uint32_t dst_stride, uint16_t src_stride, uint8_t l2_cache_ctl, uint8_t clip_relu_pre,
+            uint8_t unit_flag_mode, uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool NZ2ND_en, uint64_t quant_post,
             uint8_t relu_post, bool clip_relu_post, uint8_t eltwise_op, bool eltwise_antq_en,
             bool C0_pad_en, bool broadcast_en, bool NZ2DN_en)
 {
-    asc_copy_l0c2l1_sync_impl(dst, src, n_size, m_size, loop_dst_stride, loop_src_stride, l2_cache_ctl,
-        clip_relu_pre, unit_flag_mode, quant_pre, relu_pre, split_en, NZ2ND_en, quant_post, relu_post, clip_relu_post,
+    asc_copy_l0c2l1_sync_impl(dst, src, n_size, m_size, dst_stride, src_stride, l2_cache_ctl,
+        clip_relu_pre, unit_flag_mode, quant_pre, relu_pre, channel_split, NZ2ND_en, quant_post, relu_post, clip_relu_post,
         eltwise_op, eltwise_antq_en, C0_pad_en, broadcast_en, NZ2DN_en);
 }
 
 __aicore__ inline void asc_copy_l0c2l1(__cbuf__ void *dst, __cc__ int32_t *src, uint16_t n_size,
-            uint16_t m_size, uint32_t loop_dst_stride, uint16_t loop_src_stride, uint8_t l2_cache_ctl, uint8_t clip_relu_pre,
-            uint8_t unit_flag_mode, uint64_t quant_pre, uint8_t relu_pre, bool split_en, bool NZ2ND_en, uint64_t quant_post,
+            uint16_t m_size, uint32_t dst_stride, uint16_t src_stride, uint8_t l2_cache_ctl, uint8_t clip_relu_pre,
+            uint8_t unit_flag_mode, uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool NZ2ND_en, uint64_t quant_post,
             uint8_t relu_post, bool clip_relu_post, uint8_t eltwise_op, bool eltwise_antq_en,
             bool C0_pad_en, bool broadcast_en, bool NZ2DN_en)
 {
-    asc_copy_l0c2l1_impl(dst, src, n_size, m_size, loop_dst_stride, loop_src_stride, l2_cache_ctl,
-        clip_relu_pre, unit_flag_mode, quant_pre, relu_pre, split_en, NZ2ND_en, quant_post, relu_post, clip_relu_post,
+    asc_copy_l0c2l1_impl(dst, src, n_size, m_size, dst_stride, src_stride, l2_cache_ctl,
+        clip_relu_pre, unit_flag_mode, quant_pre, relu_pre, channel_split, NZ2ND_en, quant_post, relu_post, clip_relu_post,
         eltwise_op, eltwise_antq_en, C0_pad_en, broadcast_en, NZ2DN_en);
 }
 
 __aicore__ inline void asc_copy_l0c2l1_sync(__cbuf__ void *dst, __cc__ int32_t *src, uint16_t n_size,
-            uint16_t m_size, uint32_t loop_dst_stride, uint16_t loop_src_stride, uint8_t l2_cache_ctl, uint8_t clip_relu_pre,
-            uint8_t unit_flag_mode, uint64_t quant_pre, uint8_t relu_pre, bool split_en, bool NZ2ND_en, uint64_t quant_post,
+            uint16_t m_size, uint32_t dst_stride, uint16_t src_stride, uint8_t l2_cache_ctl, uint8_t clip_relu_pre,
+            uint8_t unit_flag_mode, uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool NZ2ND_en, uint64_t quant_post,
             uint8_t relu_post, bool clip_relu_post, uint8_t eltwise_op, bool eltwise_antq_en,
             bool C0_pad_en, bool broadcast_en, bool NZ2DN_en)
 {
-    asc_copy_l0c2l1_sync_impl(dst, src, n_size, m_size, loop_dst_stride, loop_src_stride, l2_cache_ctl,
-        clip_relu_pre, unit_flag_mode, quant_pre, relu_pre, split_en, NZ2ND_en, quant_post, relu_post, clip_relu_post,
+    asc_copy_l0c2l1_sync_impl(dst, src, n_size, m_size, dst_stride, src_stride, l2_cache_ctl,
+        clip_relu_pre, unit_flag_mode, quant_pre, relu_pre, channel_split, NZ2ND_en, quant_post, relu_post, clip_relu_post,
         eltwise_op, eltwise_antq_en, C0_pad_en, broadcast_en, NZ2DN_en);
 }
 
