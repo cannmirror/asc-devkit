@@ -59,9 +59,12 @@ asc-devkit:
       - impl/basic_api/common_types.h
       - impl/adv_api/detail/hccl/common/hccl_inner_def.h
       - impl/adv_api/detail/hccl/common/hccl_base.h
+      - impl/adv_api/detail/hccl/common/hccl_aicpu_def.h
       - impl/adv_api/detail/hccl/impl/platform_v310/hccl_ccu_v0_def.h
       - impl/adv_api/detail/hccl/impl/platform_v310/hccl_ccu_v0.h
       - impl/adv_api/detail/hccl/impl/hccl_impl.h
+      - impl/adv_api/detail/hccl/impl/hccl_v220_impl.h
+      - impl/adv_api/detail/hccl/impl/hccl_v310_impl.h
       - impl/c_api/instr_impl/npu_arch_2201/sync_impl/asc_sync_data_barrier_impl.h
       - impl/c_api/instr_impl/npu_arch_3510/sync_impl/asc_sync_data_barrier_impl.h
       - impl/c_api/instr_impl/npu_arch_3510/sync_impl/asc_lock_impl.h

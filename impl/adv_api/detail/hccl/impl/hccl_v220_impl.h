@@ -15,6 +15,6 @@
 #ifndef IMPL_HCCL_HCCL_V220_IMPL_H
 #define IMPL_HCCL_HCCL_V220_IMPL_H
 
-#include "platform_v220/hccl_aicpu_def.h"
+#include "../common/hccl_aicpu_def.h"
 
 #endif
