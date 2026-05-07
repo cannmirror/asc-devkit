@@ -771,6 +771,9 @@ __aicore__ inline void TPipe::DestroyWithoutPipeAll()
 __aicore__ inline void TPipe::Destroy()
 {
     DestroyWithoutPipeAll();
+#ifndef __ASCENDC_ENABLE_SUPER_KERNEL__
+    pipe_barrier(PIPE_ALL);
+#endif
 }
 
 __aicore__ inline void TPipe::Reset()
