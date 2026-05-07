@@ -8,4 +8,5 @@
 
 | 目录名称                                                | 功能描述                   |
 |-----------------------------------------------------|------------------------|
+| [01_sync_instruction](./01_sync_instruction/) | 展示SIMT同步与内存栅栏接口的相关样例。 |
 | [02_atomic_operation](./02_atomic_operation/) | 展示SIMT中atomic相关的API样例。 |
