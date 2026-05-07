@@ -59,11 +59,12 @@ def gen_gm_get_set_value_dcci_compile_options(compile_option_tuple, compile_info
     ]
 
     is_sub_combine = get_context().get_addition("super_kernel_sub_combine") is True
-    if match_kernel_name_patern(compile_info.kernel_name, dcci_before_kernel_start_op_list, use_regex=is_sub_combine):
+    match_key = compile_info.kernel_name if is_sub_combine else compile_info.op_type
+    if match_kernel_name_patern(match_key, dcci_before_kernel_start_op_list, use_regex=is_sub_combine):
         global_var_storage.set_variable("ascendc_sub_super_kernel_call_dcci_before_kernel_start", True)
-    if match_kernel_name_patern(compile_info.kernel_name, dcci_after_kernel_end_op_list, use_regex=is_sub_combine):
+    if match_kernel_name_patern(match_key, dcci_after_kernel_end_op_list, use_regex=is_sub_combine):
         global_var_storage.set_variable("ascendc_sub_super_kernel_call_dcci_after_kernel_end", True)
-    if match_kernel_name_patern(compile_info.kernel_name, dcci_disable_on_kernel_op_list, use_regex=is_sub_combine):
+    if match_kernel_name_patern(match_key, dcci_disable_on_kernel_op_list, use_regex=is_sub_combine):
         global_var_storage.set_variable("ascendc_sub_super_kernel_call_dcci_disable_on_kernel", True)
 
     if is_sub_combine:
