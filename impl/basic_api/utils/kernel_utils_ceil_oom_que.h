@@ -323,6 +323,14 @@ __aicore__ constexpr bool SupportType()
     return IsSameType<T, U>::value;
 }
 
+template <auto T, auto U, auto... Args> __aicore__ constexpr bool SupportEnum()
+{
+    if constexpr (sizeof...(Args) > 0) {
+        return T == U || SupportEnum<T, Args...>();
+    }
+    return T == U;
+}
+
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)) || defined(__ASC_NPU_HOST__)
 template <typename T> struct GetComplexElementType {
     using Type = T;
@@ -367,14 +375,6 @@ template <typename T, int U, int... Args> __aicore__ constexpr bool SupportBytes
     return sizeof(T) == U;
 }
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
-template <auto T, auto U, auto... Args> __aicore__ constexpr bool SupportEnum()
-{
-    if constexpr (sizeof...(Args) > 0) {
-        return T == U || SupportEnum<T, Args...>();
-    }
-    return T == U;
-}
-
 template <auto funcPtr, typename... Args> __aicore__ inline void VF_CALL(Args &&... args)
 {
     __VEC_SCOPE__
@@ -424,14 +424,6 @@ template <typename T, typename U> __aicore__ constexpr bool IsLocalTensorType()
     return IsLocalTensorType<T>() && IsLocalTensorType<U>();
 }
 } // TypeUtils
-
-template <auto T, auto U, auto... Args> __aicore__ constexpr bool SupportEnum()
-{
-    if constexpr (sizeof...(Args) > 0) {
-        return T == U || SupportEnum<T, Args...>();
-    }
-    return T == U;
-}
 
 template <auto funcPtr, typename... Args> __aicore__ inline void VF_CALL(Args &&... args)
 {

@@ -39,17 +39,17 @@ void MainVecReduce(__gm__ uint8_t* __restrict__ srcGm, __gm__ uint8_t* __restric
     SetFlag<HardEvent::MTE2_V>(eventIdMte2ToV);
     WaitFlag<HardEvent::MTE2_V>(eventIdMte2ToV);
 
-    BlockReduceMax<T>(outputLocal, inputLocal, 1, 64, 8, 1, 8);
-    BlockReduceMin<T>(outputLocal, inputLocal, 1, 64, 8, 1, 8);
-    BlockReduceSum<T>(outputLocal, inputLocal, 1, 64, 8, 1, 8);
-    PairReduceSum<T>(outputLocal, inputLocal, 1, 64, 8, 1, 8);
+    ReduceDataBlock<ReduceType::MAX, T>(outputLocal, inputLocal, 64, 1, 8, 1, 8);
+    ReduceDataBlock<ReduceType::MIN, T>(outputLocal, inputLocal, 64, 1, 8, 1, 8);
+    ReduceDataBlock<ReduceType::SUM, T>(outputLocal, inputLocal, 64, 1, 8, 1, 8);
+    ReducePairElem<ReduceType::SUM, T>(outputLocal, inputLocal, 64, 1, 8, 1, 8);
 
     SetMaskCount();
     SetVectorMask<PrimT<T>, MaskMode::COUNTER>(0, 64);
-    BlockReduceMax<T, false>(outputLocal, inputLocal, 1, 64, 8, 1, 8);
-    BlockReduceMin<T, false>(outputLocal, inputLocal, 1, 64, 8, 1, 8);
-    BlockReduceSum<T, false>(outputLocal, inputLocal, 1, 64, 8, 1, 8);
-    PairReduceSum<T, false>(outputLocal, inputLocal, 1, 64, 8, 1, 8);
+    ReduceDataBlock<ReduceType::MAX, T, T, false>(outputLocal, inputLocal, 64, 1, 8, 1, 8);
+    ReduceDataBlock<ReduceType::MIN, T, T, false>(outputLocal, inputLocal, 64, 1, 8, 1, 8);
+    ReduceDataBlock<ReduceType::SUM, T, T, false>(outputLocal, inputLocal, 64, 1, 8, 1, 8);
+    ReducePairElem<ReduceType::SUM, T, T, false>(outputLocal, inputLocal, 64, 1, 8, 1, 8);
     SetMaskNorm();
     AscendCUtils::ResetMask();
     event_t eventIdVToMte3 = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_MTE3));
@@ -243,47 +243,47 @@ __global__ __aicore__ void MainWholeReduceSimple(__gm__ uint8_t* __restrict__ sr
     SetFlag<HardEvent::MTE2_V>(eventIdMte2ToV);
     WaitFlag<HardEvent::MTE2_V>(eventIdMte2ToV);
 
-    WholeReduceMax<T>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_VALUE_INDEX);
-    WholeReduceMax<T>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_INDEX_VALUE);
-    WholeReduceMax<T>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_VALUE);
-    WholeReduceMax<T>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_INDEX);
-    WholeReduceSum<T>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride);
-    WholeReduceMin<T>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_VALUE_INDEX);
-    WholeReduceMin<T>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_INDEX_VALUE);
-    WholeReduceMin<T>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_VALUE);
-    WholeReduceMin<T>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_INDEX);
+    ReduceRepeat<ReduceType::MAX, T>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_VALUE_INDEX);
+    ReduceRepeat<ReduceType::MAX, T>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_INDEX_VALUE);
+    ReduceRepeat<ReduceType::MAX, T>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_VALUE);
+    ReduceRepeat<ReduceType::MAX, T>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_INDEX);
+    ReduceRepeat<ReduceType::SUM, T>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride);
+    ReduceRepeat<ReduceType::MIN, T>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_VALUE_INDEX);
+    ReduceRepeat<ReduceType::MIN, T>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_INDEX_VALUE);
+    ReduceRepeat<ReduceType::MIN, T>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_VALUE);
+    ReduceRepeat<ReduceType::MIN, T>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_INDEX);
 
-    WholeReduceMax<T>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_VALUE_INDEX);
-    WholeReduceMax<T>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_INDEX_VALUE);
-    WholeReduceMax<T>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_VALUE);
-    WholeReduceMax<T>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_INDEX);
-    WholeReduceSum<T>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride);
-    WholeReduceMin<T>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_VALUE_INDEX);
-    WholeReduceMin<T>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_INDEX_VALUE);
-    WholeReduceMin<T>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_VALUE);
-    WholeReduceMin<T>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_INDEX);
+    ReduceRepeat<ReduceType::MAX, T>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_VALUE_INDEX);
+    ReduceRepeat<ReduceType::MAX, T>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_INDEX_VALUE);
+    ReduceRepeat<ReduceType::MAX, T>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_VALUE);
+    ReduceRepeat<ReduceType::MAX, T>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_INDEX);
+    ReduceRepeat<ReduceType::SUM, T>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride);
+    ReduceRepeat<ReduceType::MIN, T>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_VALUE_INDEX);
+    ReduceRepeat<ReduceType::MIN, T>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_INDEX_VALUE);
+    ReduceRepeat<ReduceType::MIN, T>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_VALUE);
+    ReduceRepeat<ReduceType::MIN, T>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_INDEX);
 
     SetMaskCount();
     SetVectorMask<PrimT<T>, MaskMode::COUNTER>(0, 64);
-    WholeReduceMax<T, false>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_VALUE_INDEX);
-    WholeReduceMax<T, false>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_INDEX_VALUE);
-    WholeReduceMax<T, false>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_VALUE);
-    WholeReduceMax<T, false>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_INDEX);
-    WholeReduceSum<T, false>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride);
-    WholeReduceMin<T, false>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_VALUE_INDEX);
-    WholeReduceMin<T, false>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_INDEX_VALUE);
-    WholeReduceMin<T, false>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_VALUE);
-    WholeReduceMin<T, false>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_INDEX);
+    ReduceRepeat<ReduceType::MAX, T, T, false>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_VALUE_INDEX);
+    ReduceRepeat<ReduceType::MAX, T, T, false>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_INDEX_VALUE);
+    ReduceRepeat<ReduceType::MAX, T, T, false>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_VALUE);
+    ReduceRepeat<ReduceType::MAX, T, T, false>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_INDEX);
+    ReduceRepeat<ReduceType::SUM, T, T, false>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride);
+    ReduceRepeat<ReduceType::MIN, T, T, false>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_VALUE_INDEX);
+    ReduceRepeat<ReduceType::MIN, T, T, false>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_INDEX_VALUE);
+    ReduceRepeat<ReduceType::MIN, T, T, false>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_VALUE);
+    ReduceRepeat<ReduceType::MIN, T, T, false>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_INDEX);
 
-    WholeReduceMax<T, false>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_VALUE_INDEX);
-    WholeReduceMax<T, false>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_INDEX_VALUE);
-    WholeReduceMax<T, false>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_VALUE);
-    WholeReduceMax<T, false>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_INDEX);
-    WholeReduceSum<T, false>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride);
-    WholeReduceMin<T, false>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_VALUE_INDEX);
-    WholeReduceMin<T, false>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_INDEX_VALUE);
-    WholeReduceMin<T, false>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_VALUE);
-    WholeReduceMin<T, false>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_INDEX);
+    ReduceRepeat<ReduceType::MAX, T, T, false>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_VALUE_INDEX);
+    ReduceRepeat<ReduceType::MAX, T, T, false>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_INDEX_VALUE);
+    ReduceRepeat<ReduceType::MAX, T, T, false>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_VALUE);
+    ReduceRepeat<ReduceType::MAX, T, T, false>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_INDEX);
+    ReduceRepeat<ReduceType::SUM, T, T, false>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride);
+    ReduceRepeat<ReduceType::MIN, T, T, false>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_VALUE_INDEX);
+    ReduceRepeat<ReduceType::MIN, T, T, false>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_INDEX_VALUE);
+    ReduceRepeat<ReduceType::MIN, T, T, false>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_VALUE);
+    ReduceRepeat<ReduceType::MIN, T, T, false>(outputLocal, inputLocal, masks, repeat, 1, 1, repStride, ReduceOrder::ORDER_ONLY_INDEX);
     SetMaskNorm();
     AscendCUtils::ResetMask();
     event_t eventIdVToMte3 = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_MTE3));
@@ -382,7 +382,7 @@ TEST_F(ReduceSimpleTestsuite, GetMaxMinCntCase)
     SetFlag<HardEvent::MTE2_V>(eventIdMte2ToV);
     WaitFlag<HardEvent::MTE2_V>(eventIdMte2ToV);
 
-    WholeReduceMax<float>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_VALUE_INDEX);
+    ReduceRepeat<ReduceType::MAX, float>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_VALUE_INDEX);
 
     event_t eventIdVToS = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_S));
     SetFlag<HardEvent::V_S>(eventIdVToS);
@@ -443,7 +443,7 @@ TEST_F(ReduceSimpleTestsuite, GetReduceRepeatMaxMinSprCase)
     SetFlag<HardEvent::MTE2_V>(eventIdMte2ToV);
     WaitFlag<HardEvent::MTE2_V>(eventIdMte2ToV);
 
-    WholeReduceMax<float>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_VALUE_INDEX);
+    ReduceRepeat<ReduceType::MAX, float>(outputLocal, inputLocal, mask, repeat, 1, 1, repStride, ReduceOrder::ORDER_VALUE_INDEX);
 
     event_t eventIdVToS = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_S));
     SetFlag<HardEvent::V_S>(eventIdVToS);
@@ -451,13 +451,13 @@ TEST_F(ReduceSimpleTestsuite, GetReduceRepeatMaxMinSprCase)
 
     uint32_t maxMinVal = 0;
     uint32_t maxMinIdx = 0;
-    GetReduceRepeatMaxMinSpr<float>(maxMinVal, maxMinIdx);
+    GetReduceMaxMinCount<float>(maxMinVal, maxMinIdx);
     EXPECT_EQ(maxMinVal, 0x0);
     EXPECT_EQ(maxMinIdx, 0x0);
 
     float maxMinFp32Val = 0;
     float maxMinFp32Idx = 0;
-    GetReduceRepeatMaxMinSpr<float>(maxMinFp32Val, maxMinFp32Idx);
+    GetReduceMaxMinCount<float>(maxMinFp32Val, maxMinFp32Idx);
     EXPECT_EQ(maxMinFp32Val, 0x0);
     EXPECT_EQ(maxMinFp32Idx, 0x0);
 

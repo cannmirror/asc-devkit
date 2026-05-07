@@ -365,11 +365,7 @@ enum class RoundControl {
     ROUND
 };
 
-enum class ReduceType {
-    SUM = 0,
-    MAX,
-    MIN,
-};
+using ReduceType = AscendC::ReduceType;
 
 enum class PairReduce {
     SUM = 0,
@@ -383,4 +379,3 @@ enum class PairReduce {
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_UTILS_H__
 #endif
-

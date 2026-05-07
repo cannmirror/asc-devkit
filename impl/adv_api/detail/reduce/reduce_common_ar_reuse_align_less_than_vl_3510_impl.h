@@ -96,22 +96,15 @@ __simd_vf__ inline void ReduceARLessThanVL(__ubuf__ T* dstAddr, __ubuf__ T* srcA
     Reg::StoreUnAlignPost((__ubuf__ T*&)dstAddr, uDst, 0);
 }
 
-enum class ReduceType {
-    IS_REDUCE_SUM,
-    IS_REDUCE_MAX,
-    IS_REDUCE_MIN,
-    OTHERS,
-};
-
 template <class T, const Reg::RegTrait& Trait, ReduceType reduceType>
 __simd_callee__ inline void GroupReduce(
     Reg::RegTensor<T, Trait>& dst, Reg::RegTensor<T, Trait>& src, Reg::MaskReg& mask)
 {
-    if constexpr (reduceType == ReduceType::IS_REDUCE_SUM) {
+    if constexpr (reduceType == ReduceType::SUM) {
         Reg::ReduceSumWithDataBlock(dst, src, mask);
-    } else if constexpr (reduceType == ReduceType::IS_REDUCE_MAX) {
+    } else if constexpr (reduceType == ReduceType::MAX) {
         Reg::ReduceMaxWithDataBlock(dst, src, mask);
-    } else if constexpr (reduceType == ReduceType::IS_REDUCE_MIN) {
+    } else if constexpr (reduceType == ReduceType::MIN) {
         Reg::ReduceMinWithDataBlock(dst, src, mask);
     }
 }
@@ -168,7 +161,7 @@ __aicore__ inline void GroupReduceARLessThanVL(__ubuf__ T* dstAddr, __ubuf__ T* 
 
 template <
     class T, const Reg::RegTrait& Trait, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc,
-    ReduceType groupReduceType = ReduceType::OTHERS>
+    ReduceType groupReduceType = ReduceType::NONE>
 __aicore__ inline void ReduceARReuseSourceLessThanVL(
     __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint32_t dimA, uint32_t dimR)
 {
@@ -182,7 +175,7 @@ __aicore__ inline void ReduceARReuseSourceLessThanVL(
         ReduceARCastLessThanVL<
             T, half, Trait, ReduceOpInternal::CastTraitB8F16, ReduceOpInternal::CastTraitF16B8, vlSize, Binaryfunc,
             Reducefunc>(dstAddr, srcAddr, dimA, dimR);
-    } else if constexpr (groupReduceType != ReduceType::OTHERS) {
+    } else if constexpr (groupReduceType != ReduceType::NONE) {
         if (dimR == GetDataBlockSizeInBytes() / sizeof(T)) {
             GroupReduceARLessThanVL<T, Trait, vlSize, Binaryfunc, groupReduceType, false>(dstAddr, srcAddr, dimA, dimR);
         } else if (dimR < vlSize / 2) {

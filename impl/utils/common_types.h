@@ -21,7 +21,14 @@
 
 namespace AscendC {
 enum class Hardware : uint8_t { GM, UB, L1, L0A, L0B, L0C, BIAS, FIXBUF, MAX };
-}
+
+enum class ReduceType {
+    NONE = -1,
+    SUM = 0,
+    MAX,
+    MIN,
+};
+} // namespace AscendC
 
 #if !defined(ASCENDC_CPU_DEBUG)
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3510)) || defined(__ASC_NPU_HOST__)

@@ -522,7 +522,7 @@ __aicore__ inline void ReduceAROverVLImpl(
 
 template <
     class T, const Reg::RegTrait& Trait, auto Binaryfunc, auto Reducefunc, bool isReuseSource = false,
-    ReduceType groupReduceType = ReduceType::OTHERS>
+    ReduceType groupReduceType = ReduceType::NONE>
 __aicore__ inline void ReduceARImpl(
     __ubuf__ T* dstAddr, __ubuf__ T* srcAddr, __ubuf__ T* tmpAddr, uint32_t dimA, uint32_t dimR)
 {

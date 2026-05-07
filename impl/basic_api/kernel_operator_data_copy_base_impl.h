@@ -51,14 +51,8 @@
 
 namespace AscendC {
 #if __NPU_ARCH__ == 2201
-enum class ReduceType : uint8_t {
-    NO_REDUCE,
-    REDUCE_ADD,
-    REDUCE_MIN,
-    REDUCE_MAX,
-};
 
-template <typename T, enum ReduceType reduceType = ReduceType::NO_REDUCE>
+template <typename T, enum ReduceType reduceType = ReduceType::NONE>
 __aicore__ inline void DataCopyWithReduce(const GlobalTensor<T>& dst, const LocalTensor<T>& src,
     const uint32_t count)
 {
@@ -67,32 +61,32 @@ __aicore__ inline void DataCopyWithReduce(const GlobalTensor<T>& dst, const Loca
     DataCopyWithReduce<T, reduceType>(dst, src, repeatParams);
 }
 
-template <typename T, enum ReduceType reduceType = ReduceType::NO_REDUCE>
+template <typename T, enum ReduceType reduceType = ReduceType::NONE>
 __aicore__ inline void DataCopyWithReduce(const GlobalTensor<T>& dst, const LocalTensor<T>& src,
     const DataCopyParams& repeatParams)
 {
     AscendC::SetAtomicNoneImpl();
-    if constexpr (reduceType == ReduceType::REDUCE_ADD) {
+    if constexpr (reduceType == ReduceType::SUM) {
         AscendC::SetAtomicAddImpl<T>();
-    } else if constexpr (reduceType == ReduceType::REDUCE_MIN) {
+    } else if constexpr (reduceType == ReduceType::MIN) {
         AscendC::SetAtomicMinImpl<T>();
-    } else if constexpr (reduceType == ReduceType::REDUCE_MAX) {
+    } else if constexpr (reduceType == ReduceType::MAX) {
         AscendC::SetAtomicMaxImpl<T>();
     }
     DataCopy(dst, src, repeatParams);
     AscendC::SetAtomicNoneImpl();
 }
 
-template <typename T, enum ReduceType reduceType = ReduceType::NO_REDUCE>
+template <typename T, enum ReduceType reduceType = ReduceType::NONE>
 __aicore__ inline void DataCopyPadWithReduce(const GlobalTensor<T>& dst, const LocalTensor<T>& src,
     const DataCopyExtParams& dataCopyExtParams)
 {
     AscendC::SetAtomicNoneImpl();
-    if constexpr (reduceType == ReduceType::REDUCE_ADD) {
+    if constexpr (reduceType == ReduceType::SUM) {
         AscendC::SetAtomicAddImpl<T>();
-    } else if constexpr (reduceType == ReduceType::REDUCE_MIN) {
+    } else if constexpr (reduceType == ReduceType::MIN) {
         AscendC::SetAtomicMinImpl<T>();
-    } else if constexpr (reduceType == ReduceType::REDUCE_MAX) {
+    } else if constexpr (reduceType == ReduceType::MAX) {
         AscendC::SetAtomicMaxImpl<T>();
     }
     DataCopyPad(dst, src, dataCopyExtParams);

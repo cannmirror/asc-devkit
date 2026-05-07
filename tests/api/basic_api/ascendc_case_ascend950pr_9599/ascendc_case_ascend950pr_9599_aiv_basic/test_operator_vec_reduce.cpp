@@ -13,15 +13,15 @@
 using namespace std;
 using namespace AscendC;
 
-template <typename T>
+template <typename T, typename U = T>
 void VecWholeReduceSum(__gm__ uint8_t* __restrict__ dstGm, __gm__ uint8_t* __restrict__ srcGm,
     __gm__ int32_t dataSize)
 {
     TPipe tpipe;
     GlobalTensor<T> input0Global;
-    GlobalTensor<T> outputGlobal;
+    GlobalTensor<U> outputGlobal;
     input0Global.SetGlobalBuffer(reinterpret_cast<__gm__ T*>(srcGm), dataSize);
-    outputGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ T*>(dstGm), dataSize);
+    outputGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ U*>(dstGm), dataSize);
 
     LocalTensor<T> input0Local;
     TBuffAddr tbuf0;
@@ -29,11 +29,11 @@ void VecWholeReduceSum(__gm__ uint8_t* __restrict__ dstGm, __gm__ uint8_t* __res
     input0Local.SetAddr(tbuf0);
     input0Local.InitBuffer(0, dataSize);
 
-    LocalTensor<T> outputLocal;
+    LocalTensor<U> outputLocal;
     TBuffAddr tbuf2;
     tbuf2.logicPos = static_cast<uint8_t>(TPosition::VECCALC);
     outputLocal.SetAddr(tbuf2);
-    outputLocal.InitBuffer(dataSize * sizeof(T) * 2, dataSize);
+    outputLocal.InitBuffer(dataSize * sizeof(U) * 2, dataSize);
 
     DataCopy(input0Local, input0Global, dataSize);
 
@@ -42,13 +42,13 @@ void VecWholeReduceSum(__gm__ uint8_t* __restrict__ dstGm, __gm__ uint8_t* __res
     uint64_t mask[2] = {0xffffffff, 0xffffffff};
     uint64_t counterMask[2] = {144, 0};
     uint8_t repeatTimes = dataSize / (256 / sizeof(T));
-    WholeReduceSum<T>(outputLocal, input0Local, mask, repeatTimes, 1, 1, 8);
+    ReduceRepeat<ReduceType::SUM, T, U>(outputLocal, input0Local, mask, repeatTimes, 1, 1, 8);
 
     AscendC::SetMaskCount();
     AscendC::SetVectorMask<T, MaskMode::COUNTER>(0, 144);
-    WholeReduceSum<T, false>(outputLocal, input0Local, AscendC::MASK_PLACEHOLDER_LIST, repeatTimes, 1, 1, 8);
+    ReduceRepeat<ReduceType::SUM, T, U, false>(outputLocal, input0Local, AscendC::MASK_PLACEHOLDER_LIST, repeatTimes, 1, 1, 8);
     AscendC::ResetMask();
-    WholeReduceSum<T>(outputLocal, input0Local, counterMask, repeatTimes, 1, 1, 8);
+    ReduceRepeat<ReduceType::SUM, T, U>(outputLocal, input0Local, counterMask, repeatTimes, 1, 1, 8);
     AscendC::SetMaskNorm();
 
     set_flag(PIPE_V, PIPE_MTE3, EVENT_ID0);
@@ -60,7 +60,8 @@ void VecWholeReduceSum(__gm__ uint8_t* __restrict__ dstGm, __gm__ uint8_t* __res
 
 struct ReduceTestParams {
     int32_t dataSize;
-    int32_t databitSize;
+    int32_t srcDatabitSize;
+    int32_t dstDatabitSize;
     void (*cal_func)(uint8_t*, uint8_t*, int32_t);
 };
 
@@ -71,14 +72,14 @@ protected:
 };
 
 INSTANTIATE_TEST_CASE_P(ReduceSimpleTestCase, ReduceSimpleTestsuite,
-    ::testing::Values(ReduceTestParams{ 256, 2, VecWholeReduceSum<half> }));
+    ::testing::Values(ReduceTestParams{ 256, 2, 2, VecWholeReduceSum<half>}));
 
 TEST_P(ReduceSimpleTestsuite, ReduceSimpleTestCase)
 {
     TPipe tpipe;
     auto param = GetParam();
-    uint8_t srcGm[param.dataSize * param.databitSize] = {0};
-    uint8_t dstGm[param.dataSize * param.databitSize] = {0};
+    uint8_t srcGm[param.dataSize * param.srcDatabitSize] = {0};
+    uint8_t dstGm[param.dataSize * param.dstDatabitSize] = {0};
 
     param.cal_func(dstGm, srcGm, param.dataSize);
     for (int32_t i = 0; i < param.dataSize; i++) {

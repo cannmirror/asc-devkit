@@ -59,7 +59,7 @@ __aicore__ inline void ReduceSumARReuseSourceCompute(
         ReduceARImpl<
             T, Reg::RegTraitNumOne, Reg::Add<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>,
             Reg::ReduceSum<T, T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>, Reg::RegTensor<T>>, isReuseSource,
-            ReduceType::IS_REDUCE_SUM>(dstAddr, srcAddr, tmpAddr, srcShape[0], srcShape[1]);
+            ReduceType::SUM>(dstAddr, srcAddr, tmpAddr, srcShape[0], srcShape[1]);
     } else {
         ReduceARReuseSourceUnAligned<
             T, Reg::RegTraitNumOne, Reg::Add<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>,

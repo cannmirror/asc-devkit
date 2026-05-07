@@ -57,7 +57,7 @@ __aicore__ inline void ReduceMaxARReuseSourceCompute(
         ReduceARImpl<
             T, Reg::RegTraitNumOne, Reg::Max<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>,
             Reg::ReduceMax<castType, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<castType>>, isReuseSource,
-            ReduceType::IS_REDUCE_MAX>(dstAddr, srcAddr, tmpAddr, srcShape[0], srcShape[1]);
+            ReduceType::MAX>(dstAddr, srcAddr, tmpAddr, srcShape[0], srcShape[1]);
     } else {
         if constexpr (SupportBytes<T, 1>()) {
             constexpr uint32_t ONE_STRIDE = 32768;

@@ -57,7 +57,7 @@ __aicore__ inline void ReduceMinARReuseSourceCompute(
         ReduceARImpl<
             T, Reg::RegTraitNumOne, Reg::Min<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>,
             Reg::ReduceMin<castType, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<castType>>, isReuseSource,
-            ReduceType::IS_REDUCE_MIN>(dstAddr, srcAddr, tmpAddr, srcShape[0], srcShape[1]);
+            ReduceType::MIN>(dstAddr, srcAddr, tmpAddr, srcShape[0], srcShape[1]);
     } else {
         if constexpr (SupportBytes<T, 1>()) {
             constexpr uint32_t ONE_STRIDE = 32768;

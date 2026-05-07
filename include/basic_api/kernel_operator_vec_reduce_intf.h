@@ -23,6 +23,7 @@
 #include "kernel_macros.h"
 #include "kernel_tensor.h"
 #include "utils/kernel_utils_mode.h"
+#include "utils/common_types.h"
 
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
 #include <cstdint>
@@ -31,179 +32,32 @@
 
 namespace AscendC {
 #pragma begin_pipe(V)
-/* *************** BlockReduceMax /BlockReduceMin /BlockReduceSum PairReduceSum ********************* */
-/*
- * @ingroup BlockReduceSum
- * @brief Sum all elements in each block
- * @param [out] dst output LocalTensor
- * @param [in] src input LocalTensor
- * @param [in] repeatTime repeat times
- * @param [in] mask[]/maskcount mask array/count
- * @param [in] dstRepStride dst repeat stride
- * @param [in] srcBlkStride src block stride
- * @param [in] srcRepStride src repeat stride
- */
-template <typename T, bool isSetMask = true>
-__aicore__ inline void BlockReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t repeatTime, const int32_t mask, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride);
 
-/*
- * @ingroup BlockReduceMax
- * @brief Maximize all elements in each block
- * @param [out] dst output LocalTensor
- * @param [in] src input LocalTensor
- * @param [in] repeatTime repeat times
- * @param [in] mask[]/maskcount mask array/count
- * @param [in] dstRepStride dst repeat stride
- * @param [in] srcBlkStride src block stride
- * @param [in] srcRepStride src repeat stride
- */
-template <typename T, bool isSetMask = true>
-__aicore__ inline void BlockReduceMax(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t repeatTime, const int32_t mask, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride);
+template <ReduceType reduceType, typename T, typename U = T, bool isSetMask = true>
+__aicore__ inline void ReduceDataBlock(const LocalTensor<U>& dst, const LocalTensor<T>& src, const int32_t mask,
+    const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride);
 
-/*
- * @ingroup BlockReduceMin
- * @brief Find the minimum value of all elements in each block
- * @param [out] dst output LocalTensor
- * @param [in] src input LocalTensor
- * @param [in] repeatTime repeat times
- * @param [in] mask[]/maskcount mask array/count
- * @param [in] dstRepStride dst repeat stride
- * @param [in] srcBlkStride src block stride
- * @param [in] srcRepStride src repeat stride
- */
-template <typename T, bool isSetMask = true>
-__aicore__ inline void BlockReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t repeatTime, const int32_t mask, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride);
+template <ReduceType reduceType, typename T, typename U = T, bool isSetMask = true>
+__aicore__ inline void ReduceDataBlock(const LocalTensor<U>& dst, const LocalTensor<T>& src, const uint64_t mask[],
+    const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride);
 
-/*
- * @ingroup PairReduceSum
- * @brief Sum of adjacent inner pair (parity) elements
- * @param [out] dst output LocalTensor
- * @param [in] src input LocalTensor
- * @param [in] repeatTime repeat times
- * @param [in] mask[]/maskcount mask array/count
- * @param [in] dstRepStride dst repeat stride
- * @param [in] srcBlkStride src block stride
- * @param [in] srcRepStride src repeat stride
- */
-template <typename T, bool isSetMask = true>
-__aicore__ inline void PairReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t repeatTime, const int32_t mask, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride);
+template <ReduceType reduceType, typename T, typename U = T, bool isSetMask = true>
+__aicore__ inline void ReducePairElem(const LocalTensor<U>& dst, const LocalTensor<T>& src, const int32_t mask,
+    const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride);
 
-template <typename T, bool isSetMask = true>
-__aicore__ inline void BlockReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t repeatTime, const uint64_t mask[], const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride);
+template <ReduceType reduceType, typename T, typename U = T, bool isSetMask = true>
+__aicore__ inline void ReducePairElem(const LocalTensor<U>& dst, const LocalTensor<T>& src, const uint64_t mask[],
+    const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride);
 
-template <typename T, bool isSetMask = true>
-__aicore__ inline void BlockReduceMax(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t repeatTime, const uint64_t mask[], const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride);
+template <ReduceType reduceType, typename T, typename U = T, bool isSetMask = true>
+__aicore__ inline void ReduceRepeat(const LocalTensor<U>& dst, const LocalTensor<T>& src, const int32_t mask,
+    const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride,
+    ReduceOrder order = ReduceOrder::ORDER_VALUE_INDEX);
 
-template <typename T, bool isSetMask = true>
-__aicore__ inline void BlockReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t repeatTime, const uint64_t mask[], const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride);
-
-template <typename T, bool isSetMask = true>
-__aicore__ inline void PairReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t repeatTime, const uint64_t mask[], const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride);
-
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
-template <typename T, bool isSetMask = true, typename U = T>
-__aicore__ inline void RepeatReduceSum(const LocalTensor<U>& dst, const LocalTensor<T>& src,
-    const int32_t repeatTime, const int32_t mask, const int32_t dstBlkStride, const int32_t srcBlkStride,
-    const int32_t dstRepStride, const int32_t srcRepStride);
-#else
-template <typename T, bool isSetMask = true>
-__aicore__ inline void RepeatReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t repeatTime, const int32_t mask, const int32_t dstBlkStride, const int32_t srcBlkStride,
-    const int32_t dstRepStride, const int32_t srcRepStride);
-#endif
-
-/* **************************************** Whole Reduce Interface ****************************************** */
-/*
- * @ingroup WholeReduceSum
- * @brief Sum of all effective elements in each repeatTime
- * @param [out] dst output LocalTensor
- * @param [in] src input LocalTensor
- * @param [in] repeatTime repeat times
- * @param [in] mask[]/maskcount mask array/count
- * @param [in] dstRepStride dst repeat stride
- * @param [in] srcBlkStride src block stride
- * @param [in] srcRepStride src repeat stride
- */
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
-template <typename T, bool isSetMask = true, typename U = T>
-__aicore__ inline void WholeReduceSum(const LocalTensor<U>& dst, const LocalTensor<T>& src,
-    const uint64_t mask[], const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride);
-#else
-template <typename T, bool isSetMask = true>
-__aicore__ inline void WholeReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const uint64_t mask[], const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride);
-#endif
-
-/*
- * @ingroup WholeReduceMax
- * @brief Index of the maximum value of all elements in each repeat
- * @param [out] dst output LocalTensor
- * @param [in] src input LocalTensor
- * @param [in] repeatTime repeat times
- * @param [in] mask[]/maskcount mask array/count
- * @param [in] dstRepStride dst repeat stride
- * @param [in] srcBlkStride src block stride
- * @param [in] srcRepStride src repeat stride
- */
-template <typename T, bool isSetMask = true>
-__aicore__ inline void WholeReduceMax(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const uint64_t mask[], const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride, ReduceOrder order = ReduceOrder::ORDER_VALUE_INDEX);
-
-/*
- * @ingroup WholeReduceMin
- * @brief Index of the minimum value of all elements in each repeat
- * @param [out] dst output LocalTensor
- * @param [in] src input LocalTensor
- * @param [in] repeatTime repeat times
- * @param [in] mask[]/maskcount mask array/count
- * @param [in] dstRepStride dst repeat stride
- * @param [in] srcBlkStride src block stride
- * @param [in] srcRepStride src repeat stride
- */
-template <typename T, bool isSetMask = true>
-__aicore__ inline void WholeReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const uint64_t mask[], const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride, ReduceOrder order = ReduceOrder::ORDER_VALUE_INDEX);
-
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
-template <typename T, bool isSetMask = true, typename U = T>
-__aicore__ inline void WholeReduceSum(const LocalTensor<U>& dst, const LocalTensor<T>& src,
-    const int32_t mask, const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride);
-#else
-template <typename T, bool isSetMask = true>
-__aicore__ inline void WholeReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t mask, const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride);
-#endif
-
-template <typename T, bool isSetMask = true>
-__aicore__ inline void WholeReduceMax(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t mask, const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride, ReduceOrder order = ReduceOrder::ORDER_VALUE_INDEX);
-template <typename T, bool isSetMask = true>
-__aicore__ inline void WholeReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t mask, const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride, ReduceOrder order = ReduceOrder::ORDER_VALUE_INDEX);
+template <ReduceType reduceType, typename T, typename U = T, bool isSetMask = true>
+__aicore__ inline void ReduceRepeat(const LocalTensor<U>& dst, const LocalTensor<T>& src, const uint64_t mask[],
+    const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride,
+    ReduceOrder order = ReduceOrder::ORDER_VALUE_INDEX);
 
 /* **************************************** Reduce Interface ****************************************** */
 /*
