@@ -27,9 +27,9 @@
 #endif
 #endif
 
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 #ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
 using dim3 = cce::dim3;
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 
 template <auto funcPtr, typename... Args>
 __aicore__ inline void asc_vf_call(dim3 threadNums, Args &&...args)
