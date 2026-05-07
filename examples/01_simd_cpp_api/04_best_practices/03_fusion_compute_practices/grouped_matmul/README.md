@@ -56,7 +56,7 @@
 <tr><td align="center">group</td><td align="center">8</td><td align="center">int64</td><td align="center">ND</td></tr>
 <tr><td align="center">scale</td><td align="center">8 * 8192</td><td align="center">float</td><td align="center">ND</td></tr>
 <tr><td align="center">pretokenScale</td><td align="center">1024</td><td align="center">float</td><td align="center">ND</td></tr>
-<tr><td rowspan="1" align="center">算子输出</td><td align="center">y</td><td align="center">1024 * 8192</td><td align="center">float16</td><td align="center">ND</td></tr>
+<tr><td rowspan="1" align="center">算子输出</td><td align="center">y</td><td align="center">1024 * 8192</td><td align="center">half</td><td align="center">ND</td></tr>
 <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">quant_group_matmul_custom</td></tr>
 </table>
 

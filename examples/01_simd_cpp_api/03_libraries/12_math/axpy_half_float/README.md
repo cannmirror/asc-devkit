@@ -33,11 +33,14 @@
   out = x * scalar + out
   $$
 
-- 样例规格：  
+- 样例规格：
   <table>
   <caption>表1：样例规格</caption>
   <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="5" align="center"> Axpy </td></tr>
-  <tr><td rowspan="2" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">default</td></tr> <tr><td align="center">x</td><td align="center">[4, 128]</td><td align="center">float16</td><td align="center">ND</td><td align="center">\</td></tr> <tr><td rowspan="1" align="center">样例输出</td><td align="center">out</td><td align="center">[4, 128]</td><td align="center">float32</td><td align="center">ND</td><td align="center">\</td></tr> <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">kernel_vec_ternary_scalar_Axpy_half_2_float</td></tr>
+  <tr><td rowspan="2" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">default</td></tr>
+  <tr><td align="center">x</td><td align="center">[4, 128]</td><td align="center">half</td><td align="center">ND</td><td align="center">\</td></tr>
+  <tr><td rowspan="1" align="center">样例输出</td><td align="center">out</td><td align="center">[4, 128]</td><td align="center">float32</td><td align="center">ND</td><td align="center">\</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">kernel_vec_ternary_scalar_Axpy_half_2_float</td></tr>
   </table>
 
 - 样例实现：  

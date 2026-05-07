@@ -31,8 +31,8 @@
   <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="6" align="center">Matmul</td></tr>
   </tr>
   <tr><td rowspan="4" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">isTrans</td><td align="center">layout</td></tr>
-  <tr><td align="center">a</td><td align="center">[BatchNum, M, K]</td><td align="center">float16</td><td align="center">ND</td><td align="center">false</td><td align="center">NORMAL</td></tr>
-  <tr><td align="center">b</td><td align="center">[BatchNum, K, N]</td><td align="center">float16</td><td align="center">ND</td><td align="center">false</td><td align="center">NORMAL</td></tr>
+  <tr><td align="center">a</td><td align="center">[BatchNum, M, K]</td><td align="center">half</td><td align="center">ND</td><td align="center">false</td><td align="center">NORMAL</td></tr>
+  <tr><td align="center">b</td><td align="center">[BatchNum, K, N]</td><td align="center">half</td><td align="center">ND</td><td align="center">false</td><td align="center">NORMAL</td></tr>
   <tr><td align="center">bias</td><td align="center">[BatchNum, 1, N]</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td><td align="center">-</td></tr>
   </tr>
   </tr>
