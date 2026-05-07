@@ -1,0 +1,11 @@
+# API Features样例介绍
+
+## 概述
+
+基于Ascend C SIMT的API样例，展示SIMT编程的各类API。
+
+## 算子开发样例
+
+| 目录名称                                                | 功能描述                   |
+|-----------------------------------------------------|------------------------|
+| [02_atomic_operation](./02_atomic_operation/) | 展示SIMT中atomic相关的API样例。 |
