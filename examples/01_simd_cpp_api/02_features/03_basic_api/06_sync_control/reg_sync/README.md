@@ -22,6 +22,7 @@
 - Ascend 950PR/Ascend 950DT
 
 ## 目录结构介绍
+
 ```
 ├── reg_sync
 │   ├── scripts
@@ -88,21 +89,25 @@ UbSyncVf函数内：
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
+
     ```bash
     source /usr/local/Ascend/cann/set_env.sh
     ```
 
   - 默认路径，非root用户安装CANN软件包
+
     ```bash
     source $HOME/Ascend/cann/set_env.sh
     ```
 
   - 指定路径install_path，安装CANN软件包
+
     ```bash
     source ${install_path}/cann/set_env.sh
     ```
     
 - 样例执行
+
   ```bash
   SCENARIO=1
   mkdir -p build && cd build;                                                   # 创建并进入build目录
@@ -114,6 +119,7 @@ UbSyncVf函数内：
   使用 CPU调试 或 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
 
   示例如下：
+
   ```bash
   SCENARIO=1
   cmake -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-3510 -DSCENARIO_NUM=$SCENARIO ..;make -j; # cpu调试模式
@@ -132,6 +138,7 @@ UbSyncVf函数内：
 
 - 执行结果  
   执行结果如下，说明精度对比成功。
+
   ```bash
   test pass!
   ```

@@ -17,8 +17,21 @@ find_package(ASC REQUIRED)
 
 project(kernel_samples LANGUAGES ASC CXX)
 
+set(SCENARIO_NUM "1" CACHE STRING "Scenario number (1-4)")
+
+if(NOT SCENARIO_NUM MATCHES "^[1-4]$")
+    message(FATAL_ERROR "SCENARIO_NUM must be 1, 2, 3 or 4, but got ${SCENARIO_NUM}")
+endif()
+
+if(SCENARIO_NUM STREQUAL "2" OR SCENARIO_NUM STREQUAL "3")
+    set(CMAKE_ASC_ARCHITECTURES "dav-3510" CACHE STRING "NPU architecture: dav-3510" FORCE)
+    message(STATUS "Scenario ${SCENARIO_NUM} requires dav-3510 architecture")
+endif()
+
+add_definitions(-DSCENARIO_NUM=${SCENARIO_NUM})
+
 add_executable(demo
-    pipe_barrier.asc
+    element_wise_logic.asc
 )
 
 target_compile_options(demo PRIVATE

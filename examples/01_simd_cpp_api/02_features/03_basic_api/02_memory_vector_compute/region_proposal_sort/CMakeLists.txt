@@ -11,7 +11,6 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-set(CMAKE_ASC_RUN_MODE "npu" CACHE STRING "Run mode: npu, cpu, sim")
 set(CMAKE_ASC_ARCHITECTURES "dav-2002" CACHE STRING "NPU architecture: dav-2002")
 
 find_package(ASC REQUIRED)

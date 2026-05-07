@@ -24,3 +24,5 @@
 | [region_proposal_sort](./region_proposal_sort) | 本样例介绍Region Proposal相关的排序接口使用方法 |
 | [transpose](./transpose) | 本样例基于Transpose、TransDataTo5HD接口实现数据转置功能，包括16*16的二维矩阵数据块转置，[N,C,H,W]与[N,H,W,C]四维矩阵互相转换以及NCHW格式转换成NC1HWC0格式。 |
 | [whole_reduce_min_max_sum](./whole_reduce_min_max_sum)                                                                               | 本样例介绍归约类接口在多种场景下的使用方法，包括WholeReduceMax、WholeReduceMin、WholeReduceSum、RepeatReduceSum，以及WholeReduceMax/Min配合GetReduceRepeatMaxMinSpr获取全局极值及索引的使用方法。                  |
+| [interleave_pair](./interleave_pair) | 本样例基于Interleave和DeInterleave接口实现元素交织和解交织功能 |
+| [element_wise_logic](./element_wise_logic) | 本样例基于And、Ors、ShiftLeft、ShiftRight接口实现按位逻辑运算功能 |
