@@ -21,8 +21,9 @@
 
 #ifndef ASCENDC_MODULE_KERNEL_LOG_INTF_H
 #define ASCENDC_MODULE_KERNEL_LOG_INTF_H
-#if defined(__NPU_DEVICE__) || defined(__ASCC_DEVICE__)
-#include "impl/utils/debug/asc_aicore_assert_impl.h"
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510)) && \
+    !(defined(ASCENDC_CPU_DEBUG) && (ASCENDC_CPU_DEBUG == 1))
+#include "impl/utils/debug/asc_aicore_printf_impl.h"
 #endif
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
 #include <string>
@@ -343,8 +344,8 @@ __aicore__ static __attribute__ ((noinline)) void AssertPrint(__gm__ const char*
 #define ASC_WARNING_MSG__(prompt, expr, fmt, ...)                                                          \
     do {                                                                                                   \
         if (!(expr)) {                                                                                     \
-            AscendC::AssertPrint("%s[WARNING] [CANN_VERSION : %s][TimeStamp : %u] %s:%u: Assertion `%s' " fmt, prompt,\
-            (__gm__ const char*)(ASC_DEVKIT_VERSION_STR), static_cast<uint64_t>(ASC_DEVKIT_TIMESTAMP),                 \
+            __asc_aicore::printf_impl("%s[WARNING] [CANN_VERSION : %s][TimeStamp : %u] %s:%u: Assertion `%s' " fmt,\
+            prompt, (__gm__ const char*)(ASC_DEVKIT_VERSION_STR), static_cast<uint64_t>(ASC_DEVKIT_TIMESTAMP),\
             __FILE__, __LINE__, #expr, ##__VA_ARGS__);                                                     \
         }                                                                                                  \
     } while (0)
@@ -366,7 +367,7 @@ __aicore__ static __attribute__ ((noinline)) void AssertPrint(__gm__ const char*
 #define ASC_WARNING_MSG__(prompt, expr, fmt, ...)                                                                  \
     do {                                                                                                          \
         if (!(expr)) {                                                                                            \
-            AscendC::AssertPrint("%s[WARNING] %s:%u: Assertion `%s' " fmt, prompt, __FILE__, __LINE__, #expr, ##__VA_ARGS__); \
+            __asc_aicore::printf_impl("%s[WARNING] %s:%u: Assertion `%s' " fmt, prompt, __FILE__, __LINE__, #expr, ##__VA_ARGS__); \
         }                                                                                                         \
     } while (0)
 #endif
@@ -414,7 +415,11 @@ namespace AscendC{
 #ifdef ASCENDC_DEBUG
 #define KERNEL_LOG_INTERNAL(level, format, ...) format, ##__VA_ARGS__
 #define ASCENDC_DEBUG_ASSERT(...) ASCENDC_DEBUG_ASSERT_IMPL(__VA_ARGS__)
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510))
 #define ASCENDC_DEBUG_WARNING(...) ASCENDC_DEBUG_WARNING_IMPL(__VA_ARGS__)
+#else
+#define ASCENDC_DEBUG_WARNING(...)
+#endif
 #else
 #define KERNEL_LOG_INTERNAL(level, format, ...)
 #define ASCENDC_DEBUG_ASSERT(...)
