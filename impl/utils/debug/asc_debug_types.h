@@ -15,19 +15,21 @@
 #ifndef IMPL_UTILS_DEBUG_ASC_DEBUG_TYPES_H
 #define IMPL_UTILS_DEBUG_ASC_DEBUG_TYPES_H
 
-#define SIMD_VF_PRINTF_UBUF_MAX_SIZE 1024
-#define SIMD_VF_MAGIC_NUMBER 0xF0A00B0F
+#ifndef ASCENDC_SIMD_VF_PRINTF_UBUF_MAX_SIZE
+#define ASCENDC_SIMD_VF_PRINTF_UBUF_MAX_SIZE 1024
+#endif
+#define ASCENDC_SIMD_VF_MAGIC_NUMBER 0xF0A00B0F
 
 struct BlockVFBufInfo {
-    uint32_t magic = SIMD_VF_MAGIC_NUMBER;
-    uint32_t length = SIMD_VF_PRINTF_UBUF_MAX_SIZE;
+    uint32_t magic = ASCENDC_SIMD_VF_MAGIC_NUMBER;
+    uint32_t length = ASCENDC_SIMD_VF_PRINTF_UBUF_MAX_SIZE;
     uint32_t writeLen = 0;
     uint16_t pidx = 0;
     uint8_t flag = 0;
     uint8_t resv1 = 0;
     uint16_t blockIdx = 0;
     uint16_t resv2 = 0;
-    uint8_t buffer[SIMD_VF_PRINTF_UBUF_MAX_SIZE];
+    uint8_t buffer[ASCENDC_SIMD_VF_PRINTF_UBUF_MAX_SIZE];
 };
 
 namespace __asc_aicore {
