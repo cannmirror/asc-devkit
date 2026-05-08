@@ -25,7 +25,7 @@
 
 ## 算子描述
 
-### 1.batch mmad定义
+### batch mmad定义
 
 批量矩阵乘法（batch mmad）是普通矩阵乘法在批次维度（Batch Dimension） 上的扩展，核心逻辑是：对一个包含多个矩阵的批次数据，逐一对批次内的矩阵执行标准矩阵乘法，最终输出同批次数量的结果矩阵。
 
@@ -34,7 +34,39 @@ C[i]=A[i]×B[i]。
 
 需要注意的是不同批次的矩阵之间不会互相计算。
 
-### 2.矩阵批量搬入（GM->L1）
+### 样例规格
+
+本样例中输入输出矩阵的规格，如下表1所示：
+
+<table border="2">
+<caption>表1：输入输出的规格</caption>
+  <tr>
+    <td >输入输出</td>
+    <td>数据类型</td>
+    <td>Shape</td>
+    <td>是否转置</td>
+  </tr>
+  <tr>
+    <td>输入矩阵A</td>
+    <td>float</td>
+    <td>[4, 30, 40]</td>
+    <td>false</td>
+  </tr>
+  <tr>
+    <td>输入矩阵B</td>
+    <td>float</td>
+    <td>[4, 40, 70]</td>
+    <td>false</td>
+  </tr>
+  <tr>
+    <td>输出矩阵C</td>
+    <td>float</td>
+    <td>[4, 30, 70]</td>
+    <td>-</td>
+  </tr>
+</table>
+
+### 矩阵批量搬入（GM->L1）
 
 根据batch mmad的定义可知，共计B对A、B矩阵进行矩阵乘法。数据从GM-->L1通路时，如下所示调用随路转换ND2NZ搬运接口时，通过配置`nd2nzA1Params.ndNum = B`，实现一次性搬入B对A、B矩阵。
 
@@ -62,7 +94,7 @@ nd2nzA1Params.dstNzNStride = 1;
 nd2nzA1Params.dstNzMatrixStride = aSizeAlignL0;
 ```
 
-### 3.L1->L0A/L0B搬运和矩阵乘Mmad循环执行B次
+### L1->L0A/L0B搬运和矩阵乘Mmad循环执行B次
 
 for循环B次，每次从L1->L0A/L0B搬运每个batch的A、B矩阵，mmad指令每次计算一对A、B矩阵矩阵乘的结果
 
@@ -86,7 +118,7 @@ AscendC::Mmad(c1Local[batchIndex * CeilAlign(m, cubeShape[0]) * CeilAlign(n, cub
               a2Local, b2Local, mmadParams);
 ```
 
-### 4.矩阵批量搬出
+### 矩阵批量搬出
 
 数据从L0C-->GM通路时，如下所示调用fixpipe搬运接口时，通过配置fixpipeParams.ndNum = B，实现一次性搬出B对C矩阵。注意的是L0C中的C矩阵是对齐后的，而搬出到GM的C矩阵是原始非对齐的shape。
 
@@ -107,7 +139,7 @@ fixpipeParams.srcNdStride = (CeilAlign(m, cubeShape[0]) * CeilAlign(n, cubeShape
 // 目的相邻ND矩阵起始地址之间的偏移，单位：element
 ```
 
-### 5.避免数据占用总内存超过存储空间限制
+### 避免数据占用总内存超过存储空间限制
 
 用户应该保证batch mmad整个过程中的数据所占总的内存不超过存储空间限制。
 用户可以通过PlatformAscendC类成员函数[GetCoreMemSize](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/850alpha002/API/ascendcopapi/atlasascendc_api_07_1034.html)，获取获取硬件平台中L1、L0A、L0B、L0C存储空间的内存大小。

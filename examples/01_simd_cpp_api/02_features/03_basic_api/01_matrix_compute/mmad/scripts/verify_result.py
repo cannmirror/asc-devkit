@@ -23,7 +23,7 @@ error_tol = 1e-4
 
 
 def verify_result(scenario_num, output, golden):
-    if scenario_num > 2:
+    if scenario_num in [2, 3]:
         output_type = np.float32
     else:
         output_type = np.int32

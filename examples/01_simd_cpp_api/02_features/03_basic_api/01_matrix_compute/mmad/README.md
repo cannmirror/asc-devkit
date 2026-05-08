@@ -22,7 +22,7 @@
 ## 样例描述
 一次完整的矩阵乘法涉及的数据搬运过程包括：GM-->L1、L1-->L0A/L0B、L1-->BT（BiasTable Buffer）、L0C-->GM，其中不同存储单元的数据排布格式，如下表1所示：  
 
-<table border="2" align="center">
+<table border="2">
 <caption>表1：不同存储单元的数据排布格式</caption>
   <tr>
     <td >存储单元</td>
@@ -55,7 +55,7 @@
 </table>
 
 通常的矩阵乘法计算公式：C = A × B + Bias，其中A、B、Bias、C矩阵的需要满足的shape分别为[M,K]、[K,N]、[N]和[M,N]。Bias的数据类型与C矩阵数据类型的对应关系，如表2所示：
-<table border="2" align="center">
+<table border="2">
 <caption>表 2：L0C 与输入 Bias 的数据类型对应关系</caption>
   <tr>
     <td>Bias在GM/L1上的数据类型</td>
@@ -82,7 +82,7 @@
 
 程序中scenarioNum参数不同取值对应的场景，如下表3所示：
 
-<table border="2" align="center">
+<table border="2">
 <caption>表3：scenarioNum不同取值的含义</caption>
   <tr>
     <td >scenarioNum</td>
@@ -94,14 +94,6 @@
   </tr>
   <tr>
     <td>1</td>
-    <td>int4b_t</td>
-    <td>int32_t</td>
-    <td>不转置</td>
-    <td>转置</td>
-    <td>不启用Bias，C矩阵的初始值为0</td>
-  </tr>
-  <tr>
-    <td>2</td>
     <td>int8_t</td>
     <td>int32_t</td>
     <td>不转置</td>
@@ -109,7 +101,7 @@
     <td>带Bias且不传入biasTensor，C矩阵的初始值来源于C2</td>
   </tr>
   <tr>
-    <td>3</td>
+    <td>2</td>
     <td>bfloat16</td>
     <td>bfloat16</td>
     <td>不转置</td>
@@ -117,26 +109,27 @@
     <td>不带Bias，C矩阵累加来源于CO1初始值</td>
   </tr>
   <tr>
-    <td>4</td>
+    <td>3</td>
     <td>float</td>
     <td>float</td>
     <td>转置</td>
     <td>转置</td>
     <td>带Bias且传入biasTensor的场景</td>
   </tr>
+  <tr>
+    <td>4</td>
+    <td>int4b_t</td>
+    <td>int32_t</td>
+    <td>不转置</td>
+    <td>转置</td>
+    <td>不启用Bias，C矩阵的初始值为0</td>
+  </tr>
 </table>
 
 ### 场景详细说明
   本样例通过编译参数 `SCENARIO_NUM` 选择不同的输出场景，所有场景基于相同的矩阵乘规格：[M, N, K] = [30, 40, 70]，核函数名为 `mmad_custom`。
 
-**场景1 int4b_t输入，int32_t输出，C矩阵初始值为0**
-
-- 输入：A不转置 [30, 70] int4b_t类型，ND格式；B转置 [40, 70] int4b_t类型，ND格式；不带Bias
-- 输出：C [30, 40] int32_t类型，ND格式
-- 实现：使用`Mmad`实现矩阵乘法运算，通过参数：`mmadParams.cmatrixInitVal = true`，设置C矩阵初始值为0
-- 说明：该场景仅支持Atlas A3 训练系列产品/Atlas A3 推理系列产品/Atlas A2 训练系列产品/Atlas A2 推理系列产品，且不支持使用传入biasTensor的方式加Bias（场景4）。
-
-**场景2 int8_t输入，int32_t输出，C矩阵初始值来源于C2**
+**场景1 int8_t输入，int32_t输出，C矩阵初始值来源于C2**
 - 输入：A不转置 [30, 70] int8_t类型，ND格式；B不转置 [70, 40] int8_t类型，ND格式；Bias [40] int32_t类型
 - 输出：C [30, 40] int32_t类型，ND格式
 - 实现：使用`Mmad`实现矩阵乘法运算，不传入biasTensor通过参数：`mmadParams.cmatrixInitVal = false、mmadParams.cmatrixSource = true`，设置C矩阵初始值来源于C2
@@ -148,13 +141,13 @@
 图1：int8_t类型，B不转置，N轴实际对齐要求与Mmad指令默认不一致
 </p>
 
-**场景3 bfloat16输入，float输出，A不转置，B转置，C矩阵初始值来源于CO1**
+**场景2 bfloat16输入，float输出，A不转置，B转置，C矩阵初始值来源于CO1**
 - 输入：A不转置 [30, 70] bfloat16类型，ND格式；B转置 [40, 70] bfloat16类型，ND格式；不带Bias，C矩阵初始值来源于CO1
 - 输出：C [30, 40] float类型，ND格式
 - 实现：使用`Mmad`实现矩阵乘法运算，通过参数：`mmadParams.cmatrixInitVal = false、mmadParams.cmatrixSource = false`，设置C矩阵初始值来源于CO1
 - 说明：该场景进行两次Mmad计算，第一次计算结果存储在CO1，作为下一次计算的C矩阵初始值，最终累加两次Mmad计算结果。
 
-**场景4 float输入，float输出，A转置，B转置，传入biasTensor，kDirectionAlign值设为true**
+**场景3 float输入，float输出，A转置，B转置，传入biasTensor，kDirectionAlign值设为true**
 - 输入：A转置 [70, 30] float类型，ND格式；B转置 [40, 70] float类型，ND格式；Bias [40] float类型
 - 输出：C [30, 40] float类型，ND格式
 - 实现：使用`Mmad`实现矩阵乘法运算，传入biasTensor，该场景下`mmadParams.cmatrixSource`参数无效
@@ -165,6 +158,13 @@
 <p align="center">
 图2：float类型，A转置，K轴实际对齐与Mmad指令默认要求不一致
 </p>
+
+**场景4 int4b_t输入，int32_t输出，C矩阵初始值为0**
+
+- 输入：A不转置 [30, 70] int4b_t类型，ND格式；B转置 [40, 70] int4b_t类型，ND格式；不带Bias
+- 输出：C [30, 40] int32_t类型，ND格式
+- 实现：使用`Mmad`实现矩阵乘法运算，通过参数：`mmadParams.cmatrixInitVal = true`，设置C矩阵初始值为0
+- 说明：该场景仅支持Atlas A3 训练系列产品/Atlas A3 推理系列产品/Atlas A2 训练系列产品/Atlas A2 推理系列产品，且不支持使用传入biasTensor的方式加Bias（场景3）。
 
 ### 矩阵乘法（Mmad）
 
@@ -232,7 +232,7 @@ Mmad计算中包含了补齐的无效数据，需要配合Fixpipe指令在L0C搬
   |------|--------|------|
   | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`sim` | 运行模式：NPU运行、NPU仿真 |
   | `CMAKE_ASC_ARCHITECTURES` | `dav-2201`（默认）、`dav-3510` | NPU 架构：dav-2201 对应 Atlas A2 训练系列产品/Atlas A2 推理系列产品/Atlas A3 训练系列产品/Atlas A3 推理系列产品，dav-3510 对应 Ascend 950PR/Ascend 950DT |
-  | `SCENARIO_NUM` |  `1`（默认）、`2`、`3`、`4` | 场景编号，分别对应B4 / B8 / B16 / B32输入数据类型；`仅在CMAKE_ASC_ARCHITECTURES=dav-2201时支持设为1` |
+  | `SCENARIO_NUM` |  `1`（默认）、`2`、`3`、`4` | 场景编号，分别对应int8_t / bfloat16 / float / int4b_t输入数据类型；`仅在CMAKE_ASC_ARCHITECTURES=dav-2201时支持设为4` |
 
 - 执行结果
 
