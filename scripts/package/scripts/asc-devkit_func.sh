@@ -310,6 +310,14 @@ create_mc2_runtime_softlink() {
         return
     fi
 
+    if [ ! -e "${install_path}/hccl/include/hccl/hccl.h" ] && \
+       [ ! -e "${install_path}/hccl/lib64/libmc2_client.so" ] && \
+       [ ! -e "${install_path}/hccl/built-in/data/op/aicpu/libmc2_server.json" ] && \
+       [ ! -e "${install_path}/hccl/Ascend/aicpu/mc2_server.tar.gz" ]; then
+        log "INFO" "MC2 runtime artifacts do not exist, skip runtime softlinks."
+        return 0
+    fi
+
     create_mc2_runtime_one_softlink "${install_path}" "hccl/include/hccl/hccl.h" "${arch_linux_path}/include/hccl/hccl.h" "true"
     [ $? -ne 0 ] && return 1
     create_mc2_runtime_one_softlink "${install_path}" "hccl/include/hccl/hccl_mc2.h" "${arch_linux_path}/include/hccl/hccl_mc2.h" "true"
