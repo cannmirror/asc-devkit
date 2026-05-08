@@ -28,14 +28,14 @@
 __simd_callee__ inline void asc_int642float_rz_impl(vector_float& dst, vector_int64_t src, vector_bool mask)
 {
     if ASC_IS_AIV {
-        vcvt(dst, src, mask, ROUND_R, PART_EVEN, MODE_ZEROING);
+        vcvt(dst, src, mask, ROUND_Z, PART_EVEN, MODE_ZEROING);
     }
 }
 
 __simd_callee__ inline void asc_int642float_rz_v2_impl(vector_float& dst, vector_int64_t src, vector_bool mask)
 {
     if ASC_IS_AIV {
-        vcvt(dst, src, mask, ROUND_R, PART_ODD, MODE_ZEROING);
+        vcvt(dst, src, mask, ROUND_Z, PART_ODD, MODE_ZEROING);
     }
 }
 #endif
