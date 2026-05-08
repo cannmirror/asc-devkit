@@ -2,7 +2,7 @@
 # coding=utf-8
 
 # ----------------------------------------------------------------------------------------------------------
-# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+# Copyright (c) 2026 Huawei Technologies Co., Ltd.
 # This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 # CANN Open Software License Agreement Version 2.0 (the "License").
 # Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -13,27 +13,31 @@
 
 
 import os
+import sys
 import numpy as np
 
-
-def gen_data():
-    src = np.zeros(1024, dtype=np.uint8)
-    src[0] = 1
-    src[31] = 1
-    dst = np.zeros(1024, dtype=np.uint8)
-    dst[0] = 2
-    dst[248] = 2
-    dst[256:] = 255
-    return src, dst
-
-
-def gen_golden_data_simple():
+def gen_golden_data():
+    total_length = 1024
+    data_type = np.float32
+    
+    input_x = np.zeros(total_length, dtype=data_type)
+    input_x[1:129] = 1.0
+    input_x = input_x.reshape(1, total_length)
+    
+    input_y = np.zeros(total_length, dtype=data_type)
+    input_y[2:130] = 1.0
+    input_y = input_y.reshape(1, total_length)
+    
     os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
-    src, golden = gen_data()
-    src.tofile('./input/input.bin')
+    
+    input_x.tofile('./input/input_x.bin')
+    input_y.tofile('./input/input_y.bin')
+    
+    golden = np.zeros(total_length, dtype=data_type).reshape(1, total_length)
+    golden[0, 3:131] = input_x[0, 1:129] + input_y[0, 2:130]
+    
     golden.tofile('./output/golden.bin')
 
-
 if __name__ == "__main__":
-    gen_golden_data_simple()
+    gen_golden_data()

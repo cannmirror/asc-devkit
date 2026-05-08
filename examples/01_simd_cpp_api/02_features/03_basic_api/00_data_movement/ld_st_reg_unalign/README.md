@@ -9,9 +9,12 @@
 ## 目录结构介绍
 ```
 ├── ld_st_reg_unalign
+│   ├── scripts
+│   │   ├── gen_data.py                // 输入数据和真值数据生成脚本
 │   ├── CMakeLists.txt                 // 编译工程文件
+│   ├── data_utils.h                   // 数据读入写出函数
+│   ├── ld_st_reg_unalign.asc          // AscendC样例实现 & 调用样例
 │   └── README.md                      // 样例介绍
-│   └── ld_st_reg_unalign.asc          // AscendC样例实现 & 调用样例
 ```
 
 ## 样例描述
@@ -56,9 +59,10 @@
     
 - 样例执行
   ```bash
-  mkdir -p build && cd build;                                               # 创建并进入build目录
-  cmake -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j;                      # 编译工程
-  ./demo                                                                    # 执行编译生成的可执行程序，执行样例
+  python3 ../scripts/gen_data.py                        # 生成测试输入数据
+  mkdir -p build && cd build;                           # 创建并进入build目录
+  cmake -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j;  # 编译工程（默认npu模式）
+  ./demo                                                # 执行编译生成的可执行程序，执行样例
   ```
 
   使用 CPU调试 或 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
@@ -69,7 +73,7 @@
   cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j; # NPU仿真模式
   ```
 
-  > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
+  > **注意：** 切换编译模式或场景前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
 
 - 编译选项说明
 
