@@ -98,7 +98,7 @@ Reg矢量计算API操作的基础数据类型介绍如下，具体API请参考[R
         AscendC::Reg::MaskReg mask;
         AscendC::Reg::AddrReg aReg;
         for (uint16_t i = 0; i < repeatTimes; ++i) {
-            aReg = AscendC::Reg::CreateAddrReg<T>(i, oneRepeatSize);        
+            aReg = AscendC::Reg::CreateAddrReg<T>(i, oneRepeatSize);
             mask = AscendC::Reg::UpdateMask<T>(count);
             AscendC::Reg::LoadAlign(srcReg0, src0Addr, aReg);
             AscendC::Reg::LoadAlign(srcReg1, src1Addr, aReg);
@@ -164,39 +164,39 @@ __simd_callee__ inline void Add(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask
 
 ```
 // SIMD函数
-template <typename T> 
-__simd_vf__ inline void AddVF(__ubuf__ T* dstAddr, __ubuf__ T* src0Addr, __ubuf__ T* src1Addr, uint32_t count,  uint32_t oneRepeatSize, uint16_t repeatTimes) 
-{     
-    AscendC::Reg::RegTensor<T> srcReg0;
-    AscendC::Reg::RegTensor<T> srcReg0;
+template <typename T>
+__simd_vf__ inline void AddVF(
+    __ubuf__ T* dstAddr, __ubuf__ T* src0Addr, __ubuf__ T* src1Addr, uint32_t count, uint32_t oneRepeatSize, uint16_t repeatTimes)
+{
+    AscendC::Reg::RegTensor<T> src0Reg;
+    AscendC::Reg::RegTensor<T> src1Reg;
     AscendC::Reg::RegTensor<T> dstReg;
     AscendC::Reg::MaskReg mask;
-    for (uint16_t i = 0; i < repeatTimes; ++i) {
+    for (uint16_t i = 0; i < repeatTimes; i++) {
         mask = AscendC::Reg::UpdateMask<T>(count);
-        AscendC::Reg::LoadAlign(srcReg0, src0Addr + i * oneRepeatSize);  
-        AscendC::Reg::LoadAlign(srcReg1, src1Addr + i * oneRepeatSize);
-        AscendC::Reg::Add(dstReg, srcReg0, srcReg1, mask);
-        AscendC::Reg::StoreAlign(dstAddr + i * oneRepeatSize, dstReg , mask);
+        AscendC::Reg::LoadAlign(src0Reg, src0Addr + i * oneRepeatSize);
+        AscendC::Reg::LoadAlign(src1Reg, src1Addr + i * oneRepeatSize);
+        AscendC::Reg::Add(dstReg, src0Reg, src1Reg, mask);
+        AscendC::Reg::StoreAlign(dstAddr + i * oneRepeatSize, dstReg, mask);
     }
 }
 
-template <typename T> 
-__aicore__ inline void Compute()      
-{  
-     AscendC::LocalTensor<T> dst = outQueueZ.AllocTensor<T>();     
-     AscendC::LocalTensor<T> src0 = inQueueX.DeQue<T>();
-     AscendC::LocalTensor<T> src1 = inQueueY.DeQue<T>();
-     constexpr uint32_t oneRepeatSize = AscendC::GetVecLen()/sizeof(T);
-     uint32_t count = 512;
-     // 向上取整，计算repeat
-     uint16_t repeatTimes = AscendC::CeilDivision(count, oneRepeatSize);
-     __ubuf__ T* dstAddr = (__ubuf__ T*)dst.GetPhyAddr();
-     __ubuf__ T* src0Addr = (__ubuf__ T*)src0.GetPhyAddr();
-     __ubuf__ T* src1Addr = (__ubuf__ T*)src1.GetPhyAddr();
-     asc_vf_call<AddVF<T>>(dstAddr, src0Addr, src1Addr, count, oneRepeatSize, repeatTimes);
-     outQueueZ.EnQue(dst);
-     inQueueX.FreeTensor(src0);
-     inQueueY.FreeTensor(src1);
+template <typename T>
+__aicore__ inline void Compute()
+{
+    AscendC::LocalTensor<T> dst = outQueueZ.AllocTensor<T>();
+    AscendC::LocalTensor<T> src0 = inQueueX.DeQue<T>();
+    AscendC::LocalTensor<T> src1 = inQueueY.DeQue<T>();
+    constexpr uint32_t oneRepeatSize = AscendC::GetVecLen() / sizeof(T);
+    uint32_t count = 512;
+    // 向上取整，计算循环次数
+    uint16_t repeatTimes = AscendC::CeilDivision(count, oneRepeatSize);
+    __ubuf__ T* dstAddr = (__ubuf__ T*)dst.GetPhyAddr();
+    __ubuf__ T* src0Addr = (__ubuf__ T*)src0.GetPhyAddr();
+    __ubuf__ T* src1Addr = (__ubuf__ T*)src1.GetPhyAddr();
+    asc_vf_call<AddVF<T>>(dstAddr, src0Addr, src1Addr, count, oneRepeatSize, repeatTimes);
+    outQueueZ.EnQue(dst);
+    inQueueX.FreeTensor(src0);
+    inQueueY.FreeTensor(src1);
 }
 ```
-
