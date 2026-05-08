@@ -143,6 +143,7 @@ void GetGroupNormNDTilingInfo(
     uint32_t oneTmpSize = (tmpBufSize - meanVarTotalSize) / numberOfTmpBuf;
 
     // The length of a group is one unit.
+    ASCENDC_HOST_ASSERT(dhwAlignSize != 0, return, "the value of dhwAlignSize should not be zero!");
     uint32_t bsCurLength = oneTmpSize / dhwAlignSize;
 
     // determine whether the smallShape calculation is satisfied
