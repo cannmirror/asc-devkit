@@ -13,11 +13,12 @@ set -e
 
 SUPPORTED_SHORT_OPTS=("h" "j" "t" "p" "f")
 SUPPORTED_LONG_OPTS=(
-    "help" "cov" "cache" "pkg" "asan" "make_clean" "cann_3rd_lib_path" "test" "cann_path" "adv_test" "adv_test_two" "arm_test" "basic_test_one" "basic_test_two" "basic_test_three" "basic_test_four" "basic_test_five" "build-type" "extra-cmake-args" "changed_file"
+    "help" "cov" "cache" "pkg" "asan" "make_clean" "cann_3rd_lib_path" "test" "cann_path" "adv_test" "adv_test_two" "arm_test" "basic_test_one" "basic_test_two" "basic_test_three" "basic_test_four" "basic_test_five" "build-type" "extra-cmake-args" "changed_file" "enable-sign" "sign-script"
 )
 
 CURRENT_DIR=$(dirname $(readlink -f ${BASH_SOURCE[0]}))
 BUILD_DIR=${CURRENT_DIR}/build
+BUILD_DEVICE_DIR="${CURRENT_DIR}/build_device"
 OUTPUT_DIR=${CURRENT_DIR}/build_out
 CANN_3RD_LIB_PATH=${BUILD_DIR}
 USER_ID=$(id -u)
@@ -29,6 +30,9 @@ USE_CXX11_ABI=0
 CMAKE_TOOLCHAIN_FILE_VAL=""
 CHANGED_FILES=""
 CI_MODE=FALSE
+ENABLE_SIGN="false"
+VERSION_INFO="8.5.0"
+CUSTOM_SIGN_SCRIPT="${CURRENT_DIR}/impl/adv_api/detail/hccl/cc/scripts/sign/community_sign_build.py"
 
 dotted_line="----------------------------------------------------------------"
 
@@ -459,6 +463,14 @@ set_options() {
       check_param_test_build_type
       shift
       ;;
+    --enable-sign)
+        ENABLE_SIGN="true"
+        shift
+        ;;
+    --sign-script)
+        CUSTOM_SIGN_SCRIPT="$(realpath $2)"
+        shift 2
+        ;;
     --build-type)
       BUILD_TYPE="$2"
       check_param_test_build_type
@@ -497,6 +509,7 @@ set_env() {
     exit 1
   fi
 
+  source $ASCEND_CANN_PACKAGE_PATH/set_env.sh || echo "0"
 }
 
 function clean()
@@ -521,8 +534,8 @@ function cmake_config()
 
 function build()
 {
-  local target="$1"
-  cmake --build . --target ${target} -j ${THREAD_NUM}
+  log "Info: build target:$@ JOB_NUM:${JOB_NUM}"
+  cmake --build . --target "$@" -j ${THREAD_NUM}
 }
 
 function build_package(){
@@ -559,8 +572,13 @@ function build_test_part() {
   fi
 
   for tag in "${TEST_TARGET_LIST[@]}"; do
-    TARGETS="${TARGETS} --target ${tag}"
-    TEST_MOD="${tag},${TEST_MOD}"
+    if [ "${tag}" == "hccl_checker_ops_stest" ]; then
+      local hccl_st_dir="${CURRENT_DIR}/tests/api/adv_api/hccl/cc/st/algorithm"
+      bash ${hccl_st_dir}/build.sh
+    else
+      TARGETS="${TARGETS} --target ${tag}"
+      TEST_MOD="${tag},${TEST_MOD}"
+    fi
   done
 
   CUSTOM_OPTION="${CUSTOM_OPTION} -DTEST_MOD=${TEST_MOD}"
@@ -571,6 +589,18 @@ function build_test_part() {
   cmake_config
   cmake --build . ${TARGETS} -j ${THREAD_NUM}
   return 0
+}
+
+function build_device(){
+    cmake_config
+    log "Info: build_device"
+    TARGET_LIST="mc2_server"
+    echo "TARGET_LIST=${TARGET_LIST}"
+    PKG_TARGET_LIST="generate_device_aicpu_package"
+    echo "PKG_TARGET_LIST=${PKG_TARGET_LIST}"
+    SIGN_TARGET_LIST="sign_mc2_server"
+    echo "SIGN_TARGET_LIST=${SIGN_TARGET_LIST}"
+    build ${TARGET_LIST} ${PKG_TARGET_LIST} ${SIGN_TARGET_LIST}
 }
 
 set_ci_mode() {
@@ -655,7 +685,17 @@ main() {
   elif [ -n "$TEST_PART" ]; then
     build_test_part
   elif [ -n "${PKG}" ]; then
+    mkdir -p ${BUILD_DEVICE_DIR}
+    cd ${BUILD_DEVICE_DIR}
+    CURRENT_CUSTOM_OPTION="${CUSTOM_OPTION}"
+    DEVICE_C_COMPILER="${ASCEND_CANN_PACKAGE_PATH}/toolkit/toolchain/hcc/bin/aarch64-target-linux-gnu-gcc"
+    DEVICE_CXX_COMPILER="${ASCEND_CANN_PACKAGE_PATH}/toolkit/toolchain/hcc/bin/aarch64-target-linux-gnu-g++"
+    CUSTOM_OPTION="${CURRENT_CUSTOM_OPTION} -DFULL_MODE=ON -DDEVICE_MODE=ON -DKERNEL_MODE=ON -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DCMAKE_C_COMPILER=${DEVICE_C_COMPILER} -DCMAKE_CXX_COMPILER=${DEVICE_CXX_COMPILER} -DCUSTOM_SIGN_SCRIPT=${CUSTOM_SIGN_SCRIPT} -DENABLE_SIGN=${ENABLE_SIGN} -DVERSION_INFO=${VERSION_INFO}"
+    build_device
+    cd ${BUILD_DIR}
+    CUSTOM_OPTION="${CURRENT_CUSTOM_OPTION} -DPACKAGE_OPEN_PROJECT=ON -DKERNEL_MODE=OFF"
     build_package
+    [ -n "${BUILD_DEVICE_DIR}" ] && rm -rf ${BUILD_DEVICE_DIR}
   else
     cmake_config
     build all

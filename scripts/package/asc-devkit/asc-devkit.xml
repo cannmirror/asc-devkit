@@ -24,6 +24,10 @@
         <block name="DevlibCommon"/>
     </block_info>
 
+    <block_info dependtree="false" dst_path="hccl" block_conf_path="ascend">
+        <block name="HcclLib"/>
+    </block_info>
+
     <dir_info value="asc-devkit" install_mod="550">
         <path value="compiler" install_mod="750"/>
         <path value="compiler/bin" install_mod="750"/>
@@ -31,6 +35,12 @@
         <path value="tools/ascendc_tools" install_mod="750"/>
         <path value="share" install_mod="750"/>
         <path value="share/info" install_mod="750"/>
+        <path value="share/info/hccl" install_mod="750"/>
+        <path value="share/info/hccl/script" install_mod="550"/>
+        <path value="examples" install_mod="750"/>
+        <path value="examples/01_simd_cpp_api" install_mod="750"/>
+        <path value="examples/02_simd_c_api" install_mod="750"/>
+        <path value="examples/03_simt_api" install_mod="750"/>
         <path value="tools/opbuild" install_mod="750"/>
         <path value="$(TARGET_ENV)/tikcpp" install_softlink="compiler/tikcpp;tools/tikcpp"/>
         <path value="$(TARGET_ENV)/tikcpp/tikcfw"/>

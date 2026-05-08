@@ -65,6 +65,7 @@ asc-devkit:
       - impl/adv_api/detail/hccl/impl/hccl_impl.h
       - impl/adv_api/detail/hccl/impl/hccl_v220_impl.h
       - impl/adv_api/detail/hccl/impl/hccl_v310_impl.h
+      - impl/adv_api/detail/hccl/cc
       - impl/c_api/instr_impl/npu_arch_2201/sync_impl/asc_sync_data_barrier_impl.h
       - impl/c_api/instr_impl/npu_arch_3510/sync_impl/asc_sync_data_barrier_impl.h
       - impl/c_api/instr_impl/npu_arch_3510/sync_impl/asc_lock_impl.h

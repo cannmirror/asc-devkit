@@ -257,4 +257,201 @@ remove_stub_softlink() {
     })
 }
 
+create_mc2_runtime_one_softlink() {
+    local install_path="$1"
+    local src_rel_path="$2"
+    local dst_rel_path="$3"
+    local required="${4:-true}"
+    local src_path="${install_path}/${src_rel_path}"
+    local dst_path="${install_path}/${dst_rel_path}"
+    local dst_dir="$(dirname "${dst_path}")"
+
+    if [ -e "${dst_path}" ]; then
+        if [ -d "${dst_path}" ] && [ ! -L "${dst_path}" ]; then
+            log "ERROR" "MC2 runtime path ${dst_rel_path} is a directory, cannot create file softlink."
+            return 1
+        fi
+        log "INFO" "MC2 runtime path ${dst_rel_path} already exists, skip creating softlink."
+        return 0
+    fi
+
+    if [ -L "${dst_path}" ]; then
+        log "WARNING" "MC2 runtime softlink ${dst_rel_path} is broken, recreate it."
+        rm -f "${dst_path}"
+    fi
+
+    if [ ! -e "${src_path}" ]; then
+        if [ "${required}" = "true" ]; then
+            log "ERROR" "MC2 runtime source ${src_rel_path} does not exist, cannot create ${dst_rel_path}."
+            return 1
+        fi
+        log "WARNING" "MC2 runtime source ${src_rel_path} does not exist, skip creating ${dst_rel_path}."
+        return 0
+    fi
+
+    mkdir -p "${dst_dir}"
+    if [ $? -ne 0 ]; then
+        log "ERROR" "failed to create MC2 runtime dir ${dst_dir}."
+        return 1
+    fi
+
+    create_softlink_by_relative_ln "$(dirname "${src_path}")" "${dst_dir}" "$(basename "${src_path}")" "$(basename "${dst_path}")"
+    if [ $? -ne 0 ]; then
+        log "ERROR" "failed to create MC2 runtime softlink ${dst_rel_path}."
+        return 1
+    fi
+    log "WARNING" "MC2 runtime path ${dst_rel_path} was missing, created fallback softlink -> ${src_rel_path}."
+    return 0
+}
+
+create_mc2_runtime_softlink() {
+    local install_path="$1"
+    if [ ! -d "$install_path" ]; then
+        return
+    fi
+
+    create_mc2_runtime_one_softlink "${install_path}" "hccl/include/hccl/hccl.h" "${arch_linux_path}/include/hccl/hccl.h" "true"
+    [ $? -ne 0 ] && return 1
+    create_mc2_runtime_one_softlink "${install_path}" "hccl/include/hccl/hccl_mc2.h" "${arch_linux_path}/include/hccl/hccl_mc2.h" "true"
+    [ $? -ne 0 ] && return 1
+    create_mc2_runtime_one_softlink "${install_path}" "hccl/lib64/libmc2_client.so" "${arch_linux_path}/lib64/libmc2_client.so" "true"
+    [ $? -ne 0 ] && return 1
+    create_mc2_runtime_one_softlink "${install_path}" "hccl/lib64/libmc2_compat.so" "${arch_linux_path}/lib64/libmc2_compat.so" "true"
+    [ $? -ne 0 ] && return 1
+    create_mc2_runtime_one_softlink "${install_path}" "hccl/Ascend/aicpu/mc2_server.tar.gz" "opp/built-in/op_impl/aicpu/kernel/mc2_server.tar.gz" "false"
+    [ $? -ne 0 ] && return 1
+    create_mc2_runtime_one_softlink "${install_path}" "hccl/built-in/data/op/aicpu/libmc2_server.json" "opp/built-in/op_impl/aicpu/config/libmc2_server.json" "true"
+}
+
+remove_mc2_runtime_one_softlink() {
+    local install_path="$1"
+    local dst_rel_path="$2"
+    local dst_path="${install_path}/${dst_rel_path}"
+
+    if [ -L "${dst_path}" ]; then
+        rm -f "${dst_path}"
+        log "INFO" "remove MC2 runtime softlink ${dst_rel_path}."
+    fi
+}
+
+remove_mc2_runtime_softlink() {
+    local install_path="$1"
+    if [ ! -d "$install_path" ]; then
+        return
+    fi
+
+    remove_mc2_runtime_one_softlink "${install_path}" "${arch_linux_path}/include/hccl/hccl.h"
+    remove_mc2_runtime_one_softlink "${install_path}" "${arch_linux_path}/include/hccl/hccl_mc2.h"
+    remove_mc2_runtime_one_softlink "${install_path}" "${arch_linux_path}/lib64/libmc2_client.so"
+    remove_mc2_runtime_one_softlink "${install_path}" "${arch_linux_path}/lib64/libmc2_compat.so"
+    remove_mc2_runtime_one_softlink "${install_path}" "opp/built-in/op_impl/aicpu/kernel/mc2_server.tar.gz"
+    remove_mc2_runtime_one_softlink "${install_path}" "opp/built-in/op_impl/aicpu/config/libmc2_server.json"
+}
+
 pkg_arch_name="$(get_pkg_arch_name)"
+
+create_compiler_atc_fwkacllib_softlink() {
+    local install_path="$1"
+    local in_install_for_all="$2"
+    local dir_mod="" dir_mod_new=""
+    local pkg=""
+    local pkg_installed=""
+
+    local file=""
+    local lib64_file_list="$(ls ${install_path}/hccl/lib64 | awk '{print $NF}')"
+
+    for pkg in "compiler" "atc" "fwkacllib"; do
+        if [ "${in_install_for_all}" = "" ]; then
+            dir_mod_new="750"
+            dir_mod="750"
+            if [ "$pkg" = "compiler" ]; then
+                dir_mod="550"
+            fi
+        else
+            dir_mod_new="755"
+            dir_mod="755"
+            if [ "$pkg" = "compiler" ]; then
+                dir_mod="555"
+            fi
+        fi
+
+        mkdir -p "${install_path}/${pkg}"
+        chmod "${dir_mod_new}" "${install_path}/${pkg}"
+
+        if [ "$pkg" = "compiler" ]; then
+            if [ -e "${install_path}/${pkg}/include" ]; then
+                chmod "${dir_mod_new}" "${install_path}/${pkg}/include"
+                remove_dir "${install_path}/${pkg}/include/hccl"
+                chmod "${dir_mod}" "${install_path}/${pkg}/include"
+            fi
+
+            if [ -e "${install_path}/hccl/include/hccl" ]; then
+                if [ ! -e "${install_path}/${pkg}/include" ]; then
+                    mkdir -p "${install_path}/${pkg}/include"
+                fi
+                chmod "${dir_mod_new}" "${install_path}/${pkg}/include"
+                mkdir -p "${install_path}/${pkg}/include/hccl"
+                chmod "${dir_mod_new}" "${install_path}/${pkg}/include/hccl"
+                create_softlink_by_relative_ln "${install_path}/hccl/include/hccl" "${install_path}/${pkg}/include/hccl" "*" "."
+                chmod "${dir_mod}" "${install_path}/${pkg}/include/hccl"
+                chmod "${dir_mod}" "${install_path}/${pkg}/include"
+            fi
+        fi
+
+        mkdir -p "${install_path}/${pkg}/lib64"
+        chmod "${dir_mod_new}" "${install_path}/${pkg}/lib64"
+        for file in $lib64_file_list; do
+            if [ "$file" != "plugin" ]; then
+                create_softlink_by_relative_ln "${install_path}/hccl/lib64" "${install_path}/${pkg}/lib64" "${file}"
+            fi
+        done
+
+        chmod "${dir_mod}" "${install_path}/${pkg}/lib64"
+
+        chmod "${dir_mod}" "${install_path}/${pkg}"
+
+    done
+}
+
+remove_compiler_atc_fwkacllib_softlink() {
+    local install_path="$1"
+    local pkg=""
+    local file=""
+    local lib64_file_list="$(ls ${install_path}/hccl/lib64 | awk '{print $NF}')"
+
+    for pkg in "compiler" "atc" "fwkacllib"; do
+        if [ -e "${install_path}/${pkg}/include" ]; then
+            chmod u+w "${install_path}/${pkg}/include"
+            remove_dir "${install_path}/${pkg}/include/hccl"
+            if [ "$pkg" = "compiler" ]; then
+                chmod u-w "${install_path}/${pkg}/include"
+            fi
+        fi
+
+        if [ -e "${install_path}/${pkg}/lib64" ]; then
+            chmod u+w "${install_path}/${pkg}/lib64"
+            for file in $lib64_file_list; do
+                if [ "$file" != "plugin" ]; then
+                    \rm -rf "${install_path}/${pkg}/lib64/${file}"
+                fi
+            done
+        fi
+
+        if [ -e "${install_path}/${pkg}" ]; then
+            chmod u+w "${install_path}/${pkg}"
+        fi
+        remove_dir_if_empty "${install_path}/${pkg}/lib64"
+        if [ -e "${install_path}/${pkg}/lib64" ]; then
+            if [ "$pkg" = "compiler" ]; then
+                chmod u-w "${install_path}/${pkg}/lib64"
+            fi
+        fi
+        remove_dir_if_empty "${install_path}/${pkg}/include"
+        remove_dir_if_empty "${install_path}/${pkg}"
+        if [ -e "${install_path}/${pkg}" ]; then
+            if [ "$pkg" = "compiler" ]; then
+                chmod u-w "${install_path}/${pkg}"
+            fi
+        fi
+    done
+}

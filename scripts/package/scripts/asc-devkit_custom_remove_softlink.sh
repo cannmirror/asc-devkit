@@ -132,6 +132,9 @@ remove_softlink "asc_op_compile_base"
 remove_softlink "asc_op_compile_base-*.dist-info"
 remove_softlink "asc_opc_tool"
 remove_softlink "asc_opc_tool-*.dist-info"
+# hccl python whl 软链接
+remove_softlink "hccl"
+remove_softlink "hccl-*.dist-info"
 
 remove_empty_dir "$WHL_SOFTLINK_INSTALL_DIR_PATH"
 remove_empty_dir "$install_path/$latest_dir/python"

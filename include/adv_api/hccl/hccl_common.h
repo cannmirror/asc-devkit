@@ -7,7 +7,6 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
-
 /*!
  * \file hccl_common.h
  * \brief
@@ -98,7 +97,8 @@ enum HcclDataType {
     HCCL_DATA_TYPE_FP8E4M3 = 15, // fp8e4m3
     HCCL_DATA_TYPE_FP8E5M2 = 16, // fp8e5m2
     HCCL_DATA_TYPE_FP8E8M0 = 17, // fp8e8m0
-    HCCL_DATA_TYPE_RESERVED    // reserved
+    HCCL_DATA_TYPE_MXFP8 = 18, // mxfp8
+    HCCL_DATA_TYPE_RESERVED = 255    // reserved
 };
 
 enum class ScopeType: uint8_t {
