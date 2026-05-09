@@ -339,7 +339,6 @@ template <typename T>
 __simd_vf__ inline void BrcNlastGatherBOne(
     __ubuf__ T* dstUb, __ubuf__ T* srcUb, __ubuf__ uint32_t* indexUb, uint16_t size0, uint16_t size1)
 {
-    constexpr uint32_t oneBlockElementNum = GetDataBlockSizeInBytes() / sizeof(T);
     uint32_t main = size0 * size1;
 
     Reg::MaskReg pregFull = Reg::CreateMask<T>();
@@ -359,7 +358,6 @@ __simd_vf__ inline void BrcNlastGatherBTwo(
     __ubuf__ T* dstUb, __ubuf__ T* srcUb, __ubuf__ uint32_t* indexUb, uint16_t size0, uint16_t size1)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
-    constexpr uint32_t oneBlockElementNum = GetDataBlockSizeInBytes() / sizeof(T);
     uint16_t factor = VF_LEN / size1;
     uint16_t repeatTimes = CeilDivision(size0, factor) - 1;
     uint32_t main = factor * size1;
@@ -983,10 +981,8 @@ __aicore__ inline bool BrcLastWrapperForThreeDim(
         } else {
             BrcLastE2BLessThanVL(dstUb, srcUb, sizeI[0], sizeI[1], sizeI[2], stride[0]);
         }
-    } else if (sizeI[2] < VF_LEN_HALF && sizeof(T) != sizeof(uint8_t)) {
-        uint32_t newDstShape[3] = {dstShape[0], dstShape[1], dstShape[2]};
-        uint32_t newSrcStride[3] = {srcStride[0], srcStride[1], srcStride[2]};
-        GatherWrapper(dstUb, srcUb, newDstShape, newSrcStride);
+    } else if (sizeI[2] < VF_LEN_HALF) {
+        GatherWrapper(dstUb, srcUb, dstShape, srcStride);
     } else if (sizeI[2] <= VF_LEN) {
         if (sizeI[2] % oneBlockElementNum == 0) {
             BrcLastLessThanVLAligned<T>(dstUb, srcUb, sizeI[0], sizeI[1], sizeI[2], stride[0], stride[1]);
@@ -1033,9 +1029,7 @@ __aicore__ inline bool BrcLastWrapperForFourDim(
         sizeI[2] % DEFAULT_BLK_NUM == 0) {
         BrcLastE2B(dstUb, srcUb, sizeI[0], sizeI[1], sizeI[2], sizeI[3], stride[0], stride[1]);
     } else if (sizeI[3] < VF_LEN_HALF && sizeof(T) != sizeof(uint8_t)) {
-        uint32_t newDstShape[4] = {dstShape[0], dstShape[1], dstShape[2], dstShape[3]};
-        uint32_t newSrcStride[4] = {srcStride[0], srcStride[1], srcStride[2], srcStride[3]};
-        GatherWrapperForFourDim(dstUb, srcUb, newDstShape, newSrcStride);
+        GatherWrapperForFourDim(dstUb, srcUb, dstShape, srcStride);
     } else if (sizeI[3] <= VF_LEN) {
         if (sizeI[3] % oneBlockElementNum == 0) {
             BrcLastLessThanVLAligned<T>(
@@ -1170,10 +1164,8 @@ __aicore__ inline bool BrcNlastWrapperForThreeDim(
     stride[1] = static_cast<uint16_t>(srcStride[1]);
     stride[2] = static_cast<uint16_t>(srcStride[2]);
 
-    if (sizeI[2] < VF_LEN_HALF && sizeof(T) != sizeof(uint8_t)) {
-        uint32_t newDstShape[3] = {dstShape[0], dstShape[1], dstShape[2]};
-        uint32_t newSrcStride[3] = {srcStride[0], srcStride[1], srcStride[2]};
-        GatherWrapper(dstUb, srcUb, newDstShape, newSrcStride);
+    if (sizeI[2] < VF_LEN_HALF) {
+        GatherWrapper(dstUb, srcUb, dstShape, srcStride);
     } else if (sizeI[2] <= VF_LEN) {
         BrcNlastLessThanVLUnaligned<T>(dstUb, srcUb, sizeI[0], sizeI[1], sizeI[2], stride[0], stride[1]);
     } else {
@@ -1214,9 +1206,7 @@ __aicore__ inline bool BrcNlastWrapperForFourDim(
     stride[3] = static_cast<uint16_t>(srcStride[3]);
 
     if (sizeI[3] < VF_LEN_HALF && sizeof(T) != sizeof(uint8_t)) {
-        uint32_t newDstShape[4] = {dstShape[0], dstShape[1], dstShape[2], dstShape[3]};
-        uint32_t newSrcStride[4] = {srcStride[0], srcStride[1], srcStride[2], srcStride[3]};
-        GatherWrapperForFourDim(dstUb, srcUb, newDstShape, newSrcStride);
+        GatherWrapperForFourDim(dstUb, srcUb, dstShape, srcStride);
     } else if (sizeI[3] <= VF_LEN) {
         if (sizeI[3] % oneBlockElementNum == 0) {
             BrcNlastLessThanVLAligned<T>(
@@ -1255,26 +1245,12 @@ __aicore__ inline void BrcNlastWrapperForMoreDim(
     __ubuf__ T* dstUb, __ubuf__ T* srcUb, const uint32_t* dstShape, const uint32_t* dstStride,
     const uint32_t* srcStride)
 {
-    uint16_t sizeI[4];
-    uint16_t stride[4];
-    sizeI[0] = static_cast<uint16_t>(dstShape[1]);
-    sizeI[1] = static_cast<uint16_t>(dstShape[2]);
-    sizeI[2] = static_cast<uint16_t>(dstShape[3]);
-    sizeI[3] = static_cast<uint16_t>(dstShape[4]);
-    stride[0] = static_cast<uint16_t>(srcStride[1]);
-    stride[1] = static_cast<uint16_t>(srcStride[2]);
-    stride[2] = static_cast<uint16_t>(srcStride[3]);
-    stride[3] = static_cast<uint16_t>(srcStride[4]);
-    uint32_t totalDim = 9;
-
     __ubuf__ T* srcUbTmp = srcUb;
     __ubuf__ T* dstUbTmp = dstUb;
     for (uint16_t p = 0; p < static_cast<uint16_t>(dstShape[0]); ++p) {
         dstUb = dstUbTmp + p * dstStride[0];
         srcUb = srcUbTmp + p * srcStride[0];
-        uint32_t newDstShape[4] = {dstShape[1], dstShape[2], dstShape[3], dstShape[4]};
-        uint32_t newSrcStride[4] = {srcStride[1], srcStride[2], srcStride[3], srcStride[4]};
-        GatherWrapperForFourDim(dstUb, srcUb, newDstShape, newSrcStride);
+        GatherWrapperForFourDim(dstUb, srcUb, dstShape + 1, srcStride + 1);
     }
 }
 
@@ -1331,11 +1307,7 @@ __aicore__ inline void BrcNlastWrapperForMoreDimDynamicShape(
                                 j * srcStride[(dim - 8 + totalDim) % totalDim] +
                                 i * srcStride[(dim - 9 + totalDim) % totalDim];
                         if (sizeI[3] < VF_LEN_HALF && sizeof(T) != sizeof(uint8_t)) {
-                            uint32_t newDstShape[4] = {
-                                dstShape[dim - 4], dstShape[dim - 3], dstShape[dim - 2], dstShape[dim - 1]};
-                            uint32_t newSrcStride[4] = {
-                                srcStride[dim - 4], srcStride[dim - 3], srcStride[dim - 2], srcStride[dim - 1]};
-                            GatherWrapperForFourDim(dstUb, srcUb, newDstShape, newSrcStride);
+                            GatherWrapperForFourDim(dstUb, srcUb, dstShape + dim - 4, srcStride + dim - 4);
                         } else if (sizeI[3] <= VF_LEN) {
                             if (sizeI[3] % oneBlockElementNum == 0) {
                                 BrcNlastLessThanVLAligned<T>(
