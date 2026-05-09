@@ -73,4 +73,21 @@ PIPE_M
 
 ## 调用示例
 
-无
+```cpp
+// total_length指参与搬运的数据总长度
+constexpr uint64_t total_length = 128;
+// 以下三个参数分别对应矩阵c,a,b的地址
+__cc__ float c_matrix[total_length];
+__ca__ fp8_e4m3fn_t a_matrix[total_length];
+__cb__ fp8_e4m3fn_t b_matrix[total_length];
+
+uint16_t left_height = 16;
+uint16_t n_dim = 16;
+uint16_t right_width =16;
+uint8_t unit_flag = 0;
+bool disable_gemv = false;
+bool c_matrix_source = false;
+bool c_matrix_init_val = true;
+// 函数调用
+asc_mmad_mx_sync(c_matrix, a_matrix, b_matrix, left_height, n_dim, right_width, unit_flag, disable_gemv, c_matrix_source, c_matrix_init_val);
+```
