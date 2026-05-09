@@ -331,6 +331,8 @@ public:
 
         if (AscendC::GetBlockIdx() == 0) {
             AscendC::DataCopy(yLocal, atomicResultGm, this->blockLength); // PIPE_MTE2
+            AscendC::SetFlag<AscendC::HardEvent::MTE2_MTE3>(EVENT_ID0);
+            AscendC::WaitFlag<AscendC::HardEvent::MTE2_MTE3>(EVENT_ID0);
             AscendC::DataCopy(atomicResultGm, yLocal, this->blockLength);
             return;
         }
@@ -361,6 +363,8 @@ public:
 
             if (AscendC::GetBlockIdx() == 2) {
                 AscendC::DataCopy(yLocal, atomicResultGm, this->blockLength);
+                AscendC::SetFlag<AscendC::HardEvent::MTE2_MTE3>(EVENT_ID0);
+                AscendC::WaitFlag<AscendC::HardEvent::MTE2_MTE3>(EVENT_ID0);
                 AscendC::DataCopy(atomicResultGm, yLocal, this->blockLength);
                 return;
             }
