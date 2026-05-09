@@ -48,24 +48,51 @@ __aicore__ inline void AssembleHcclMsgExt(const AlltoAllVParamExt &param, uint32
     dst->valid = HCCL_MSG_VALID_MASK;
 }
 
+constexpr uint32_t HCCL_CONTROL_RESERVED_PRIMITIVE_ID_IDX = 0U;
+constexpr uint32_t HCCL_CONTROL_RESERVED_PRIMITIVE_RESET_IDX = 1U;
+
+// Keep primitiveId state in GM reserved bytes to avoid function-local static state across kernel launches.
+__aicore__ inline void ResetPrimitiveIdStateInControlMsg(__gm__ ControlHcclMsg *controlMsgGM)
+{
+    ASCENDC_HCCL_API_ASSERT(controlMsgGM != nullptr, { return; }, "Control msg is nullptr.");
+    controlMsgGM->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_ID_IDX] = 0U;
+    controlMsgGM->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_RESET_IDX] = 0U;
+    FlushDataCache(controlMsgGM);
+}
+
+__aicore__ inline void ResetPrimitiveIdOnceInControlMsg(__gm__ ControlHcclMsg *controlMsgGM)
+{
+    ASCENDC_HCCL_API_ASSERT(controlMsgGM != nullptr, { return; }, "Control msg is nullptr.");
+    FlushDataCache(controlMsgGM);
+    if (controlMsgGM->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_RESET_IDX] == 0U) {
+        controlMsgGM->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_ID_IDX] = 0U;
+        controlMsgGM->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_RESET_IDX] = 1U;
+        FlushDataCache(controlMsgGM);
+    }
+}
+
+__aicore__ inline uint8_t FetchAndIncPrimitiveIdInControlMsg(__gm__ ControlHcclMsg *controlMsgGM)
+{
+    ASCENDC_HCCL_API_ASSERT(controlMsgGM != nullptr, { return 0U; }, "Control msg is nullptr.");
+    FlushDataCache(controlMsgGM);
+    uint8_t seqNum = controlMsgGM->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_ID_IDX];
+    controlMsgGM->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_ID_IDX] = static_cast<uint8_t>(seqNum + 1U);
+    FlushDataCache(controlMsgGM);
+    return seqNum;
+}
+
 __aicore__ inline void AssembleHcclMsg(const CommonPrepareParam &param, HcclTilingVersion ver, HcclHandle handle,
                                        uint64_t tiling, __gm__ HcclMsg *dst, __gm__ ControlHcclMsg *controlMsgGM)
 {
     HcclMsg tmp{};
-    static uint8_t primitiveId = 0U;
-    static bool isResetPrimitiveId = false;
     FlushDataCache(controlMsgGM);
     if (controlMsgGM->resetSeq > 0) {
         controlMsgGM->resetSeq = 0;
-        if (!isResetPrimitiveId) {
-            primitiveId = 0U;
-            isResetPrimitiveId = true;
-        }
+        ResetPrimitiveIdOnceInControlMsg(controlMsgGM);
     }
     tmp.commType.msgType = param.commType.msgType;
     if (param.commType.msgType == ControlMsgType::HCCL_CMD_FINALIZE) {
-        primitiveId = 0U;
-        isResetPrimitiveId = false;
+        ResetPrimitiveIdStateInControlMsg(controlMsgGM);
     } else {
         tmp.opType = param.op;
         tmp.sendBuffer = reinterpret_cast<uint64_t>(param.sendBuf);
@@ -76,14 +103,14 @@ __aicore__ inline void AssembleHcclMsg(const CommonPrepareParam &param, HcclTili
             tmp.addMsg.v0Msg.hcclDataType = param.dataType;
             tmp.addMsg.v0Msg.repeatCnt = param.repeat;
             tmp.addMsg.v0Msg.selfHandleID = handle;
-            tmp.addMsg.v0Msg.seqNum = primitiveId++;
+            tmp.addMsg.v0Msg.seqNum = FetchAndIncPrimitiveIdInControlMsg(controlMsgGM);
             tmp.addMsg.v0Msg.version = ver;
         } else {
             tmp.addMsg.v1Msg.ccOpTilingData = tiling;
             tmp.addMsg.v1Msg.hcclDataType = param.dataType;
             tmp.addMsg.v1Msg.repeatCnt = param.repeat;
             tmp.addMsg.v1Msg.selfHandleID = handle;
-            tmp.addMsg.v1Msg.seqNum = primitiveId++;
+            tmp.addMsg.v1Msg.seqNum = FetchAndIncPrimitiveIdInControlMsg(controlMsgGM);
             tmp.addMsg.v1Msg.version = ver;
         }
     }
