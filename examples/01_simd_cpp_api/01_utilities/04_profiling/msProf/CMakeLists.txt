@@ -11,6 +11,8 @@
 
 cmake_minimum_required(VERSION 3.16)
 
+set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "NPU architecture: dav-2201, dav-3510")
+
 find_package(ASC REQUIRED)
 
 project(kernel_samples LANGUAGES ASC CXX)
@@ -27,10 +29,8 @@ set(SHARED_LIBRARIES
     dl
 )
 
-set(NPU_ARCH "dav-2201" CACHE STRING "NPU ARCH, e.g. dav-2201, dav-3510")
-
 set(COMPILE_OPTIONS
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${NPU_ARCH}>
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>
 )
 
 add_executable(demo ${ASC_SOURCES})

@@ -51,9 +51,17 @@
 - 样例执行
   ```bash
   mkdir -p build && cd build;   # 创建并进入build目录
-  cmake ..; make -j;            # 编译工程
+  cmake -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..; make -j;            # 编译工程
   ./demo                        # 执行样例
   ```
+
+- 编译选项说明
+
+| 选项 | 可选值 | 说明 |
+|------|--------|------|
+| `CMAKE_ASC_ARCHITECTURES` | `dav-3510` | NPU 架构：dav-3510 对应 Ascend 950PR/Ascend 950DT |
+
+- 执行结果
   执行结果如下，说明时间打点功能和精度对比成功。
   ```
   simt_vf execute cycle : 22289

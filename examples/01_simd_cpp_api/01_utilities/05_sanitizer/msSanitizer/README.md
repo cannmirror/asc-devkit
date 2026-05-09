@@ -48,7 +48,7 @@ z = x + y
 <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_custom</td></tr>
 </table>
 
-- 算子实现：  
+- 算子实现：
   Add算子的数学表达式为：
 
   ```
@@ -64,11 +64,11 @@ z = x + y
 本样例代码为正确实现。用户可以按照下述方式来复现各个异常场景，体验msSanitizer的异常检测能力。
 - **内存检测**
   - 非法读写：由于访问了未分配的内存导致的异常。
-    
+
     用户可以注释掉正确的DataCopy，使用错误的DataCopy复现该场景。LocalTensor xLocal分配的大小为TILE_LENGTH，但是搬运中大小错误的填为TILE_LENGTH * 2，大于xLocal分配的大小，因此触发非法读写。
     ```
     // 1. correct datacopy
-    AscendC::DataCopy(xLocal, xGm[i * TILE_LENGTH], TILE_LENGTH);    
+    AscendC::DataCopy(xLocal, xGm[i * TILE_LENGTH], TILE_LENGTH);
     // 2. illegal read of xGm (TILE_LENGTH*2)
     // AscendC::DataCopy(xLocal, xGm[i * TILE_LENGTH], TILE_LENGTH * 2);
     ```
@@ -81,11 +81,11 @@ z = x + y
     ```
 
   - 非对齐访问：内存访问未满足字节对齐要求
-    
+
     用户可以注释掉正确的DataCopy，使用错误的DataCopy复现该场景。DataCopy GM->UB的搬运中，UB侧地址应该要满足32B对齐，但是xLocal[5]不满足32B对齐(5 * sizeof(float) = 20)，因此触发非对齐访问。
     ```
     // 1. correct datacopy
-    AscendC::DataCopy(xLocal, xGm[i * TILE_LENGTH], TILE_LENGTH);    
+    AscendC::DataCopy(xLocal, xGm[i * TILE_LENGTH], TILE_LENGTH);
     // 3. misaligned access of xLocal (should be 32Byte aligned)
     // AscendC::DataCopy(xLocal[5], xGm[i * TILE_LENGTH], TILE_LENGTH);
     ```
@@ -97,12 +97,12 @@ z = x + y
     ======    in block aiv(0-7) on device 0
     ```
   - 内存泄漏：申请内存使用后未释放，导致程序在运行过程中内存占用持续增加的异常
-    
+
     用户可以注释掉这行aclrtFree来复现该场景。注释前tilingDevice被正常释放，注释后tilingDevice在使用后未释放，因此触发内存泄漏。
 
     注意：调用mssanitizer时需要传入--leak-check=yes来开启分配内存泄露检查。
     ```
-    // 1. correct free for memory. If deleted, it will trigger memory leak check.  
+    // 1. correct free for memory. If deleted, it will trigger memory leak check.
     aclrtFree(tilingDevice);
     ```
 
@@ -115,7 +115,7 @@ z = x + y
     ======      allocated in :0 (serialNo:0)
     ```
   - 分配内存未使用：对内存分配后未使用导致的异常
-    
+
     用户可以注释掉正确的aclrtMalloc, 使用错误的aclrtMalloc来复现该场景。inputDevice[i]需要分配的大小为inputsInfo[i].length，但是实际分配了inputsInfo[i].length * 5，其中有inputsInfo[i].length * 4未使用，因此触发分配内存未使用。
 
     注意：调用mssanitizer时需要传入--check-unused-memory=yes来开启分配内存未使用检查。
@@ -135,13 +135,13 @@ z = x + y
 
 - **竞争检测**
   - 竞争检测：用于解决在并行计算环境中内存访问竞争的问题。
-    
+
     用户可以注释掉SetFlag和WaitFlag来复现该场景。SetFlag和WaitFlag是用来保证MTE2 GM->UB的搬运和Vector计算Add的时序，删除后可能会导致先计算Add再搬运数据导致精度异常，因此触发竞争检测。
 
     注意：调用mssanitizer时需要传入--tool=racecheck来开启竞争检测。
     ```
     // dependency of PIPE_MTE2 & PIPE_V caused by xLocal/yLocal in one single loop
-    // If SetFlag and WaitFlag are deleted, will trigger RAW 
+    // If SetFlag and WaitFlag are deleted, will trigger RAW
     AscendC::SetFlag<AscendC::HardEvent::MTE2_V>(EVENT_ID0);
     AscendC::WaitFlag<AscendC::HardEvent::MTE2_V>(EVENT_ID0);
     ```
@@ -157,12 +157,12 @@ z = x + y
 
 - **未初始化检测**
   - 未初始化检测：内存申请后为未初始化状态，未对内存进行写入，直接读取未初始化的值导致的异常。
-    
+
     用户可以注释掉下述的SetGlobalBuffer来复现该场景。对于device侧的zGm在使用前未初始化，因此触发未初始化检测。
 
     注意：调用mssanitizer时需要传入--tool=initcheck来开启竞争检测。
     ```
-    // correct initialize of zGm. 
+    // correct initialize of zGm.
     // If deleted, it will trigger uninitialized read
     zGm.SetGlobalBuffer((__gm__ float *)z + AscendC::GetBlockIdx() * singleCoreLength, singleCoreLength);
     ```
@@ -176,7 +176,7 @@ z = x + y
 ## 编译运行
 
 在本样例根目录下执行如下步骤，编译并执行算子。
-- 配置环境变量  
+- 配置环境变量
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
     ```bash
@@ -192,11 +192,11 @@ z = x + y
     ```bash
     source ${install_path}/cann/set_env.sh
     ```
-  
+
 - 样例执行
   ```bash
   mkdir -p build && cd build;      # 创建并进入build目录
-  cmake ..;make -j;                # 编译工程
+  cmake -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;                # 编译工程
   python3 ../scripts/gen_data.py   # 生成测试输入数据
 
   # 执行编译生成的可执行程序，使用mssanitizer执行样例
@@ -206,9 +206,17 @@ z = x + y
   mssanitizer ./demo --check-unused-memory=yes   # 开启分配内存未使用检查
   mssanitizer ./demo --tool=racecheck            # 竞争检测
   mssanitizer ./demo --tool=initcheck            # 未初始化检测
-                           
+
   python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
   ```
+
+- 编译选项说明
+
+| 选项 | 可选值 | 说明 |
+|------|--------|------|
+| `CMAKE_ASC_ARCHITECTURES` | `dav-2201` | NPU 架构：dav-2201 对应 Atlas A2 训练系列产品/Atlas A2 推理系列产品和Atlas A3 训练系列产品/Atlas A3 推理系列产品 |
+
+- 执行结果
   执行结果如下，说明精度对比成功。
   ```bash
   test pass!

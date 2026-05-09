@@ -80,11 +80,19 @@ msProf工具是单算子性能分析工具。包含msprof op和msprof op simulat
 - 样例执行
   ```bash
   mkdir -p build && cd build;           # 创建并进入build目录
-  cmake ..;make -j;                     # 编译工程
+  cmake -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;                     # 编译工程
   python3 ../scripts/gen_data.py        # 生成测试输入数据
   msprof op ./demo                      # 基于可执行文件demo通过msprof op执行算子调优
   python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
   ```
+
+- 编译选项说明
+
+| 选项 | 可选值 | 说明 |
+|------|--------|------|
+| `CMAKE_ASC_ARCHITECTURES` | `dav-2201`（默认）、`dav-3510` | NPU 架构：dav-2201 对应 Atlas A2 训练系列产品/Atlas A2 推理系列产品和Atlas A3 训练系列产品/Atlas A3 推理系列产品，dav-3510 对应 Ascend 950PR/Ascend 950DT |
+
+- 执行结果
   执行结果如下，说明精度对比成功。
   ```bash
   test pass!
