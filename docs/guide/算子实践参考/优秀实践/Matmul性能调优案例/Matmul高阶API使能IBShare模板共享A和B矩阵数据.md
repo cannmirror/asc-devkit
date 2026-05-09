@@ -45,7 +45,7 @@
 </tbody>
 </table>
 
-开启IBShare和未开启IBShare的完整样例请参考[A、B矩阵均使能IBShare样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/00_matrix/matmul_ibshareAB)和[MatmulNoABshare样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/00_matrix/matmul_no_ibshareAB)。
+开启IBShare和未开启IBShare的完整样例请参考[A、B矩阵均使能IBShare样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/00_matrix/matmul_ibshareAB)。
 
 ## 获取性能数据<a name="section4647105095111"></a>
 
@@ -131,4 +131,3 @@ MatmulABshareKernel<aType, bType, cType>::CalcOffset(int32_t blockIdx, const TCu
 ## 总结<a name="section15200958526"></a>
 
 融合算子场景下，Matmul A矩阵和B矩阵同时开启IBShare，以Cube核视角分核，可以有效减少Cube侧的Scalar开销，提升性能。
-

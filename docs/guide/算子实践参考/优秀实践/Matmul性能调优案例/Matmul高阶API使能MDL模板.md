@@ -101,7 +101,7 @@ Tiling参数如下：
 **图 2**  MDL模板流水示意图<a name="fig15563371352"></a>  
 ![](../../../figures/MDL模板流水示意图.png "MDL模板流水示意图")
 
-Matmul API使能MDL模板的完整样例请参考[Matmul API性能优化样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/00_matrix/matmul_perf)。使能MDL模板的主要步骤如下：
+Matmul API使能MDL模板的完整样例请参考[使能UnitFlag功能和MDL模板的Mamtul样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/00_matrix/matmul_unitflag)。使能MDL模板的主要步骤如下：
 
 1.  创建Matmul对象，使用默认的MDL模板参数CFG\_MDL。
 
@@ -129,4 +129,3 @@ Matmul API使能MDL模板的完整样例请参考[Matmul API性能优化样例](
 ## 总结<a name="section1593812115413"></a>
 
 大Shape输入、MTE2搬运次数多，且MTE1流水等MTE2流水的同步等待耗时较长的场景下，可以使能MDL模板。通过实现MTE2从Global Memory一次性搬入多个基本块到A1或B1，使后续的MTE1流水能尽量复用A1/B1的缓存数据，减少MTE2的搬运次数，从而提升算子性能。
-
