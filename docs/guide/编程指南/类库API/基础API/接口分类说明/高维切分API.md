@@ -1,8 +1,8 @@
 # 高维切分API<a name="ZH-CN_TOPIC_0000002271261208"></a>
 
 >[!NOTE]说明 
->-   本章节对**矢量计算基础API**中的**tensor高维切分计算**接口做解释说明。如果您不需要使用此类接口，可略过该章节。
->-   下文中的repeatTime、dataBlockStride、repeatStride、mask为通用描述，其命名不一定与具体指令中的参数命名完全对应。
+>- 本章节对**矢量计算基础API**中的**tensor高维切分计算**接口做解释说明。如果您不需要使用此类接口，可略过该章节。
+>- 下文中的repeatTime、dataBlockStride、repeatStride、mask为通用描述，其命名不一定与具体指令中的参数命名完全对应。
 >    比如，单次迭代内不同datablock间地址步长dataBlockStride参数，在单目API中，对应为dstBlkStride、srcBlkStride参数；在双目API中，对应为dstBlkStride、src0BlkStride、src1BlkStride参数。
 >    您可以在具体接口的参数说明中，找到参数含义的描述。
 

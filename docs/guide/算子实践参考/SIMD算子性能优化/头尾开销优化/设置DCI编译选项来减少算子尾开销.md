@@ -2,7 +2,7 @@
 
 >[!NOTE]说明 
 >该性能优化建议适用于如下型号：
->-   Ascend 950PR/Ascend 950DT
+>- Ascend 950PR/Ascend 950DT
 
 【优先级】高
 

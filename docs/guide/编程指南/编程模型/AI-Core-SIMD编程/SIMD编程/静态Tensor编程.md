@@ -9,8 +9,8 @@
 ![](../../../../figures/图1-开发Ascend-C算子的基本流程.png)
 
 >[!NOTE]说明
->-  静态Tensor编程的使用约束和限制请参考[使用约束和限制](#section19853161834615)。
->-  本节涉及的完整样例请参考[静态Tensor编程样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/04_best_practices/00_vector_compute_practices/add_high_performance)。
+>- 静态Tensor编程的使用约束和限制请参考[使用约束和限制](#section19853161834615)。
+>- 本节涉及的完整样例请参考[静态Tensor编程样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/04_best_practices/00_vector_compute_practices/add_high_performance)。
 
 ## 编程范式<a name="section1486516584319"></a>
 

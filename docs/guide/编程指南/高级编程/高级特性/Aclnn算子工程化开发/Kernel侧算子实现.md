@@ -74,8 +74,8 @@ extern "C" __global__ __aicore__ void add_custom(GM_ADDR x, GM_ADDR y, GM_ADDR z
 ![](../../../../figures/流水任务运行示意图-33.png)
 
 >[!NOTE]说明 
->-   输出的顺序和原型定义中输出的顺序保持一致。
->-   对于uint64\_t的输出数据类型（对于tensor而言），需要将dim的uint32\_t的高位设置为1，表示以uint64\_t类型解析该tensor。
+>- 输出的顺序和原型定义中输出的顺序保持一致。
+>- 对于uint64\_t的输出数据类型（对于tensor而言），需要将dim的uint32\_t的高位设置为1，表示以uint64\_t类型解析该tensor。
 
 -   如下示例中，算子中有一个输出依赖计算得出，输出tensor的数据类型为uint32\_t，计算完成后，得到输出的shape为（32, 64），出参shape\_out用于存放该shape信息，值为（2, 32, 64）。代码示例如下：
 

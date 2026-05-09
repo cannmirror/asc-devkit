@@ -13,7 +13,7 @@ aclnnStatus aclnnXxxGetWorkspaceSize(const aclTensor *src, ..., aclTensor *out, 
 aclnnStatus aclnnXxx(void *workspace, uint64_t workspaceSize, aclOpExecutor *executor, aclrtStream stream);
 ```
 
-其中aclnn_Xxx_GetWorkspaceSize/aclnn_Xxx_TensorGetWorkspaceSize为第一段接口，主要用于计算本次API调用过程中需要多少workspace内存，获取到本次计算所需的workspaceSize后，按照workspaceSize申请NPU内存，然后调用第二段接口aclnn_Xxx_执行计算_。__Xxx_代表[算子原型注册](算子原型定义.md)时传入的算子类型。
+其中aclnn_Xxx_GetWorkspaceSize/aclnn_Xxx_TensorGetWorkspaceSize为第一段接口，主要用于计算本次API调用过程中需要多少workspace内存，获取到本次计算所需的workspaceSize后，按照workspaceSize申请NPU内存，然后调用第二段接口aclnn_Xxx_执行计算_。Xxx代表[算子原型注册](算子原型定义.md)时传入的算子类型。
 
 **aclnn_Xxx_GetWorkspaceSize**接口的输入输出参数生成规则如下：
 
