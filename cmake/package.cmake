@@ -41,12 +41,12 @@ install(DIRECTORY ${script_prefix}/
     WORLD_READ WORLD_EXECUTE
 )
 set(SCRIPTS_FILES
-    ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/check_version_required.awk
-    ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/common_func.inc
-    ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/common_interface.bash
-    ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/common_interface.csh
-    ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/common_interface.fish
-    ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/version_compatiable.inc
+    ${CANN_CMAKE_DIR}/scripts/install/check_version_required.awk
+    ${CANN_CMAKE_DIR}/scripts/install/common_func.inc
+    ${CANN_CMAKE_DIR}/scripts/install/common_interface.sh
+    ${CANN_CMAKE_DIR}/scripts/install/common_interface.csh
+    ${CANN_CMAKE_DIR}/scripts/install/common_interface.fish
+    ${CANN_CMAKE_DIR}/scripts/install/version_compatiable.inc
     ${CMAKE_SOURCE_DIR}/scripts/package/common/py/merge_binary_info_config.py
 )
 
@@ -55,26 +55,20 @@ install(FILES ${SCRIPTS_FILES}
 )
 
 set(COMMON_FILES
-    ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/install_common_parser.sh
-    ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/common_func_v2.inc
-    ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/common_func_v3.inc
-    ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/common_installer.inc
-    ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/script_operator.inc
-    ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/version_cfg.inc
+    ${CANN_CMAKE_DIR}/scripts/install/install_common_parser.sh
+    ${CANN_CMAKE_DIR}/scripts/install/common_func_v2.inc
+    ${CANN_CMAKE_DIR}/scripts/install/common_installer.inc
+    ${CANN_CMAKE_DIR}/scripts/install/script_operator.inc
+    ${CANN_CMAKE_DIR}/scripts/install/version_cfg.inc
 )
 
 set(PACKAGE_FILES
     ${COMMON_FILES}
-    ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/multi_version.inc
+    ${CANN_CMAKE_DIR}/scripts/install/multi_version.inc
 )
-set(LATEST_MANGER_FILES
-    ${COMMON_FILES}
-    ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/common_func.inc
-    ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/version_compatiable.inc
-    ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/check_version_required.awk
-)
+
 set(CONF_FILES 
-    ${CMAKE_SOURCE_DIR}/scripts/package/common/cfg/path.cfg
+    ${CANN_CMAKE_DIR}/scripts/package/cfg/path.cfg
 )
 install(FILES ${CONF_FILES}
     DESTINATION ${CMAKE_SYSTEM_PROCESSOR}-linux/conf COMPONENT asc-devkit
@@ -149,20 +143,19 @@ set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
 set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CMAKE_SYSTEM_NAME}")
 
-set(CPACK_INSTALL_PREFIX "/")
+# 安装到目标位置
+install(DIRECTORY ${MAKESELF_PATH} 
+        DESTINATION ${INSTALL_LIBRARY_DIR}/tikcpp/ascendc_kernel_cmake/fwk_modules/util 
+        FILE_PERMISSIONS
+            OWNER_READ OWNER_EXECUTE
+            GROUP_READ GROUP_EXECUTE
+        COMPONENT asc-devkit
+        PATTERN ".github" EXCLUDE
+        PATTERN ".gitignore" EXCLUDE
+        PATTERN ".gitmodules" EXCLUDE
+        PATTERN "test" EXCLUDE
+)
 
-set(CPACK_CMAKE_SOURCE_DIR "${CMAKE_SOURCE_DIR}")
-set(CPACK_CMAKE_BINARY_DIR "${CMAKE_BINARY_DIR}")
-set(CPACK_CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
-set(CPACK_CMAKE_CURRENT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
-set(CPACK_MAKESELF_PATH "${MAKESELF_PATH}")
-set(CPACK_ARCH "${ARCH}")
-set(CPACK_SET_DESTDIR ON)
-set(CPACK_GENERATOR External)
-set(CPACK_EXTERNAL_PACKAGE_SCRIPT "${CMAKE_SOURCE_DIR}/cmake/makeself.cmake")
-set(CPACK_EXTERNAL_ENABLE_STAGING true)
-set(CPACK_PACKAGE_DIRECTORY "${CMAKE_BINARY_DIR}")
-set(CPACK_VERSION "${VERSION}")
-
-message(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
-include(CPack)
+if (NOT ENABLE_COV AND NOT ENABLE_UT)
+    set_cann_cpack_config(asc-devkit OUTPUT "${PROJECT_SOURCE_DIR}/build_out" NO_CLEAN)
+endif()

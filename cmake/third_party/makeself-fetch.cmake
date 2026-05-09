@@ -54,16 +54,3 @@ execute_process(
     RESULT_VARIABLE CHMOD_RESULT
     ERROR_VARIABLE CHMOD_ERROR
 )
-
-# 安装到目标位置
-install(DIRECTORY ${MAKESELF_PATH} 
-        DESTINATION ${INSTALL_LIBRARY_DIR}/tikcpp/ascendc_kernel_cmake/fwk_modules/util 
-        FILE_PERMISSIONS
-            OWNER_READ OWNER_EXECUTE
-            GROUP_READ GROUP_EXECUTE
-        COMPONENT asc-devkit
-        PATTERN ".github" EXCLUDE
-        PATTERN ".gitignore" EXCLUDE
-        PATTERN ".gitmodules" EXCLUDE
-        PATTERN "test" EXCLUDE
-)
