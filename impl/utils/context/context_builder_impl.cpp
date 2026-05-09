@@ -202,6 +202,8 @@ void ContextBuilderImpl::AddInputTd(int32_t index, ge::DataType dtype, ge::Forma
     void *buffer = malloc(static_cast<size_t>(tensorSize));
     if (buffer == nullptr) {
         CXT_ASCENDC_LOGE("AddInputTd %d failed, alloc device memory failed.", index);
+        errFlag_ = true;
+        return;
     }
     if (!context_ascendc::DataUtils::ReadBinFile(filePath, buffer, static_cast<size_t>(tensorSize))) {
         CXT_ASCENDC_LOGE("Add Input Idx :%d error, file path is invalid", index);

@@ -22,6 +22,13 @@
 #include "utils/context/context_builder.h"
 #include "utils/context/context_builder_impl.h"
 
+static int64_t GetTensorSizeByStorageShapeStub(const gert::StorageShape& storageShape, const ge::DataType &dtype)
+{
+    (void)storageShape;
+    (void)dtype;
+    return 10000000000LL;
+}
+
 class TestTiling : public testing::Test {
 protected:
     static void SetUpTestCase() {}
@@ -32,6 +39,33 @@ protected:
         GlobalMockObject::verify();
     }
 };
+
+TEST_F(TestTiling, TestAddInputTdMallocFailed)
+{
+    gert::StorageShape input_shape = {{1024, 5120}, {1024, 5120}};
+    gert::StorageShape output_shape = {{1024, 5120}, {1024, 5120}};
+    std::string file_path = "./test_data.bin";
+    auto param = gert::TilingData::CreateCap(4096);
+    auto workspace_size_holder = gert::ContinuousVector::Create<size_t>(4096);
+    auto ws_size = reinterpret_cast<gert::ContinuousVector *>(workspace_size_holder.get());
+
+    MOCKER_CPP(&context_ascendc::DataUtils::GetTensorSizeByStorageShape)
+        .stubs()
+        .will(invoke(GetTensorSizeByStorageShapeStub));
+
+    auto holder = context_ascendc::ContextBuilder()
+        .NodeIoNum(1, 1)
+        .IrInstanceNum({1})
+        .SetOpNameType("tmpName", "tmpType")
+        .AddInputTd(0, ge::DT_FLOAT16, ge::FORMAT_ND, ge::FORMAT_ND, input_shape, file_path)
+        .AddOutputTd(0, ge::DT_FLOAT16, ge::FORMAT_ND, ge::FORMAT_ND, output_shape)
+        .TilingData(param.get())
+        .Workspace(ws_size)
+        .BuildTilingContext();
+
+    EXPECT_EQ(holder, nullptr);
+    GlobalMockObject::verify();
+}
 
 
 TEST_F(TestTiling, GetShapeSize)
