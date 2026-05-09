@@ -3,12 +3,12 @@
 在静态图模式下，可以通过**整图下沉**优化调度性能。将完整的计算图一次性下发至Device侧，后续执行则无需Host参与，由Device自主完成计算，从而减少Host-Device交互开销，提升执行效率。部分算子的Tiling计算依赖运行时输入的具体数值（**Tiling值依赖**），需在执行时动态计算Tiling参数。针对该场景，可采用**Tiling下沉**优化方案：将Tiling计算下沉至Device侧的AI CPU上执行，从而实现计算全程在Device侧高效完成。
 
 >[!NOTE]说明 
->-   基于新版本CANN包（支持Tiling下沉特性）编译生成的Tiling下沉算子，不兼容旧版CANN（不支持Tiling下沉特性）运行环境。
->-   当前仅融合算子（矢量计算和矩阵计算融合）支持进行Tiling下沉。
->-   Tiling下沉功能仅支持如下产品型号：
->    -   Atlas A3 训练系列产品/Atlas A3 推理系列产品
->    -   Atlas A2 训练系列产品/Atlas A2 推理系列产品
->    -   Ascend 950PR/Ascend 950DT，暂不支持
+>- 基于新版本CANN包（支持Tiling下沉特性）编译生成的Tiling下沉算子，不兼容旧版CANN（不支持Tiling下沉特性）运行环境。
+>- 当前仅融合算子（矢量计算和矩阵计算融合）支持进行Tiling下沉。
+>- Tiling下沉功能仅支持如下产品型号：
+>    - Atlas A3 训练系列产品/Atlas A3 推理系列产品
+>    - Atlas A2 训练系列产品/Atlas A2 推理系列产品
+>    - Ascend 950PR/Ascend 950DT，暂不支持
 
 自定义算子使能Tiling下沉的步骤如下，完整样例请参考[Tiling下沉算子样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/02_features/00_compilation/custom_op)。
 

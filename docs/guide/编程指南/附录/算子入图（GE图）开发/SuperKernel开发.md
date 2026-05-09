@@ -3,14 +3,14 @@
 SuperKernel是一种算子的二进制融合技术，与源码融合不同，它聚焦于内核函数 \(Kernel\) 的二进制的调度方案，展开深度优化，于已编译的二进制代码基础上融合创建一个超级Kernel函数（SuperKernel），以调用子函数的方式调用多个其他内核函数，也就是子Kernel。相对于单算子下发，SuperKernel技术可以减少任务调度等待时间和调度开销，同时利用Task间隙资源进一步优化算子头开销。
 
 >[!NOTE]说明 
->-   SuperKernel仅适用于静态图场景。
->-   SuperKernel适用于如下型号：
->    -   Atlas A3 训练系列产品/Atlas A3 推理系列产品
->    -   Ascend 950PR/Ascend 950DT
+>- SuperKernel仅适用于静态图场景。
+>- SuperKernel适用于如下型号：
+>    - Atlas A3 训练系列产品/Atlas A3 推理系列产品
+>    - Ascend 950PR/Ascend 950DT
 
 ## 自定义算子支持SuperKernel<a name="section20981216853"></a>
 
-自定义算子支持SuperKernel与普通算子在开发流程上并无显著差异，但需注意一些**特定约束**（详见下文）。当前SuperKernel特性仅支持在Pytorch框架使用，所以完成[算子入图（GE图）开发](基本开发流程.md)开发后，还需要参考《PyTorch图模式使用指南\(TorchAir\)》中的“自定义算子入图”章节，完成Pytorch入图。同时，TorchAir提供标定SuperKernel范围的能力，用户可根据实际业务需求对融合范围内的算子进行标记和优化配置。具体内容请参考《[PyTorch图模式使用指南\(TorchAir\)](https://www.hiascend.com/document/detail/zh/Pytorch/710/modthirdparty/torchairuseguide/torchair_00003.html)》中的“max-autotune模式功能 \>[图内标定SuperKernel范围](https://www.hiascend.com/document/detail/zh/Pytorch/710/modthirdparty/torchairuseguide/torchair_00035.html)”章节。
+自定义算子支持SuperKernel与普通算子在开发流程上并无显著差异，但需注意一些**特定约束**（详见下文）。当前SuperKernel特性仅支持在Pytorch框架使用，所以完成[算子入图（GE图）开发](基本开发流程.md)开发后，还需要参考《PyTorch图模式使用指南\(TorchAir\)》中的“自定义算子入图”章节，完成Pytorch入图。同时，TorchAir提供标定SuperKernel范围的能力，用户可根据实际业务需求对融合范围内的算子进行标记和优化配置。具体内容请参考[《Ascend Extension for PyTorch》](https://www.hiascend.com/document/redirect/pytorchuserguide)中“Pytorch图模式使用(TorchAir) >  max-autotune模式功能 > 图内标定SuperKernel范围”章节。
 
 开发时的**特定约束**说明如下：
 
@@ -29,7 +29,14 @@ SuperKernel是一种算子的二进制融合技术，与源码融合不同，它
 
     如果开发者调用GlobalTensor的GetValue和SetValue接口对GM进行标量读写，SuperKernel编译时会自动在两个接口内部插入DataCacheCleanAndInvalid指令刷新单个Cache Line，保证一定的数据缓存一致性。不会在子Kernel调用前后插入DataCacheCleanAndInvalid。
 
-    但需要注意的是，过多调用GetValue和SetValue，在SuperKernel场景下会导致性能劣化，开发者需要尽量减少该接口调用。对于劣化过多的算子，SuperKernel提供了编译选项dcci-before-kernel-start、dcci-after-kernel-start、dcci-disable-on-kernel，可以关闭指定算子内GetValue/SetValue中自动插入的缓存刷新指令以提升模型性能，最终由模型用户决定是否在SuperKernel调用该算子前或后插入整个DCache刷新，编译选项具体内容请参考[图内标定SuperKernel范围](https://www.hiascend.com/document/detail/zh/Pytorch/710/modthirdparty/torchairuseguide/torchair_00035.html)中编译选项说明。
+    如果开发者通过GlobalTensor的()运算符接口来获取值(读值时会插入DataCacheCleanAndInvalid指令刷新单个Cache Line保证数据缓存一致性)，但通过该接口直接改写了GlobalTensor对应位置的值时，则不会自动插入DataCacheCleanAndInvalid指令，开发者需要自行保证数据缓存一致性。比如:
+    ```c++
+    AscendC::GlobalTensor<float> xGm;
+    xGm.SetGlobalBuffer((__gm__ float *)(addr), length); // addr 为GM地址，length为对应GM长度
+    xGm(0) = (float)(1.0); // 在获取值时，SuperKernel能够保证自动刷新cache line，但是写值时，相当于普通变量直接赋值，SuperKernel无法插入DataCacheCleanAndInvalid，需要用户保证数据缓存的一致性。
+    ```
+
+    同时，需要额外注意的是，过多调用GetValue和SetValue，在SuperKernel场景下会导致性能劣化，开发者需要尽量减少该接口调用。对于劣化过多的算子，SuperKernel提供了编译选项dcci-before-kernel-start、dcci-after-kernel-start、dcci-disable-on-kernel，可以关闭指定算子内GetValue/SetValue中自动插入的缓存刷新指令以提升模型性能，最终由模型用户决定是否在SuperKernel调用该算子前或后插入整个DCache刷新，编译选项具体内容请参考图内标定SuperKernel范围中编译选项说明。
 
     特别地，对于Tiling下沉场景，通常会涉及二进制复用优化，无法在线选择上述的Cache刷新机制，SuperKernel框架统一在每个子Kernel调用前后都插入DataCacheCleanAndInvalid指令，刷新整个DCache。不会在GetValue和SetValue自动进行缓存刷新。
 

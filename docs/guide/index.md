@@ -134,7 +134,7 @@
                 -   [基本流程](编程指南/附录/工程化算子开发/Host侧Tiling实现/基本流程.md)
                 -   [通过TilingData传递属性信息](编程指南/附录/工程化算子开发/Host侧Tiling实现/通过TilingData传递属性信息.md)
                 -   [使用高阶API时配套的Tiling实现](编程指南/附录/工程化算子开发/Host侧Tiling实现/使用高阶API时配套的Tiling实现.md)
-                -   [使用标准C++语法定义Tiling结构体](编程指南/附录/工程化算子开发/Host侧Tiling实现/使用标准C++语法定义Tiling结构体.md)
+                -   [使用标准C++语法定义Tiling结构体](编程指南/附录/工程化算子开发/Host侧Tiling实现/使用标准CPP语法定义Tiling结构体.md)
                 -   [Tiling模板编程](编程指南/附录/工程化算子开发/Host侧Tiling实现/Tiling模板编程.md)
 
             -   [算子包编译](编程指南/附录/工程化算子开发/算子包编译/算子工程编译.md)

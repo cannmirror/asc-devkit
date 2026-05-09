@@ -4,7 +4,7 @@
 
 在涉及多个TilingKey的场景中，开发者依赖TilingKey来管理kernel的实现，无论是在管理还是使用上都会遇到相当大的复杂性。为了简化这一过程，可以采用模板编程的方法来替代传统的TilingKey编程，从而减少对TilingKey数值标识的依赖，使kernel的管理更加直观和高效。使用步骤如下，完整样例请参考[Tiling模板编程样例](https://gitee.com/ascend/samples/tree/master/operator/ascendc/0_introduction/6_addtemplate_frameworklaunch)。
 
-1.  <a name="li1949014102516"></a>在[自定义算子工程](../../工程化算子开发)的op\_kernel目录下，新增定义模板参数和模板参数组合的头文件，本示例中头文件命名为tiling\_key\_add\_custom.h。
+1.  <a name="li1949014102516"></a>在[自定义算子工程](../../工程化算子开发/工程化算子开发.md)的op\_kernel目录下，新增定义模板参数和模板参数组合的头文件，本示例中头文件命名为tiling\_key\_add\_custom.h。
 
     -   该头文件中需要包含模板头文件ascendc/host\_api/tiling/template\_argument.h。
     -   定义模板参数ASCENDC\_TPL\_ARGS\_DECL和模板参数组合ASCENDC\_TPL\_ARGS\_SEL（即可使用的模板）。具体API参考见[模板参数定义](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/模板参数定义.md)。

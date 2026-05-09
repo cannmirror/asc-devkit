@@ -8,7 +8,7 @@
 
 ## CPU侧验证核函数<a name="section1227643165914"></a>
 
-在非昇腾设备上，开发者可以利用CPU仿真环境先行进行算子开发和测试，并在准备就绪后，利用昇腾设备进行加速计算。在[编译与运行](../../编译与运行/)章节，我们已经介绍了算子Kernel程序NPU域的编译运行。相比于NPU域的算子运行逻辑，CPU域调试将算子Kernel程序以Host程序的形式进行编译，此时算子Kernel程序链接CPU调测库，执行编译生成的可执行文件，可以完成算子CPU域的运行验证。CPU侧的运行程序，通过GDB通用调试工具进行单步调试，可以精准验证程序执行流程是否符合预期。
+在非昇腾设备上，开发者可以利用CPU仿真环境先行进行算子开发和测试，并在准备就绪后，利用昇腾设备进行加速计算。在[编译与运行](../../编译与运行/编译与运行.md)章节，我们已经介绍了算子Kernel程序NPU域的编译运行。相比于NPU域的算子运行逻辑，CPU域调试将算子Kernel程序以Host程序的形式进行编译，此时算子Kernel程序链接CPU调测库，执行编译生成的可执行文件，可以完成算子CPU域的运行验证。CPU侧的运行程序，通过GDB通用调试工具进行单步调试，可以精准验证程序执行流程是否符合预期。
 
 **图 1**  CPU域和NPU域的核函数运行逻辑对比<a name="fig39851716019"></a>  
 ![](../../../figures/CPU域和NPU域的核函数运行逻辑对比.png "CPU域和NPU域的核函数运行逻辑对比")
@@ -37,15 +37,15 @@
 
 >[!NOTE]说明 
 >为了实现CPU域与NPU域代码归一，框架在CPU域中仅对部分acl接口进行适配，开发者在使用CPU域调测功能时，仅支持使用如下acl接口，并且不支持用户自行链接ascendcl库：
->-   有实际功能接口，支持CPU域调用
->    -   aclDataTypeSize、aclFloat16ToFloat、aclFloatToFloat16。
->    -   aclrtMalloc、aclrtFree、aclrtMallocHost、aclrtFreeHost、aclrtMemset、aclrtMemsetAsync、aclrtMemcpy、aclrtMemcpyAsync、aclrtMemcpy2d、aclrtMemcpy2dAsync、aclrtCreateContext、aclrtDestroyContext。
->-   无实际功能接口，打桩实现。
->    -   Profiling数据采集
+>- 有实际功能接口，支持CPU域调用
+>    - aclDataTypeSize、aclFloat16ToFloat、aclFloatToFloat16。
+>    - aclrtMalloc、aclrtFree、aclrtMallocHost、aclrtFreeHost、aclrtMemset、aclrtMemsetAsync、aclrtMemcpy、aclrtMemcpyAsync、aclrtMemcpy2d、aclrtMemcpy2dAsync、aclrtCreateContext、aclrtDestroyContext。
+>- 无实际功能接口，打桩实现。
+>    - Profiling数据采集
 >        aclprofInit、aclprofSetConfig、aclprofStart、aclprofStop、aclprofFinalize。
->    -   系统配置
+>    - 系统配置
 >        aclInit、aclFinalize、aclrtGetVersion。
->    -   运行时管理
+>    - 运行时管理
 >        aclrtSetDevice、aclrtResetDevice、aclrtCreateStream、aclrtCreateStreamWithConfig、aclrtDestroyStream、aclrtDestroyStreamForce、aclrtSynchronizeStream、aclrtCreateContext、aclrtDestroyContext。
 
 ## gdb调试<a name="section13838280458"></a>

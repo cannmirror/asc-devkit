@@ -168,10 +168,10 @@ AddKernelInvocationNeo
     >```
     >ACLRT_LAUNCH_KERNEL(kernel_name)(numBlocks, stream, argument list);
     >```
-    >-   kernel\_name：算子核函数的名称。
-    >-   numBlocks：规定了核函数将会在几个核上执行。每个执行该核函数的核会被分配一个逻辑ID，即block\_idx，可以在核函数的实现中调用[GetBlockIdx](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/GetBlockIdx.md)来获取block\_idx。
-    >-   stream，类型为aclrtStream，stream用于维护一些异步操作的执行顺序，确保按照应用程序中的代码调用顺序在Device上执行。stream创建等管理接口请参考[《Runtime运行时API》](https://hiascend.com/document/redirect/CannCommunityRuntimeApi)。
-    >-   argument list：参数列表，与核函数的参数列表保持一致。
+    >- kernel\_name：算子核函数的名称。
+    >- numBlocks：规定了核函数将会在几个核上执行。每个执行该核函数的核会被分配一个逻辑ID，即block\_idx，可以在核函数的实现中调用[GetBlockIdx](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/GetBlockIdx.md)来获取block\_idx。
+    >- stream，类型为aclrtStream，stream用于维护一些异步操作的执行顺序，确保按照应用程序中的代码调用顺序在Device上执行。stream创建等管理接口请参考[《Runtime运行时API》](https://hiascend.com/document/redirect/CannCommunityRuntimeApi)。
+    >- argument list：参数列表，与核函数的参数列表保持一致。
 
 ## CMake编译配置文件编写<a name="section185111259496"></a>
 
@@ -372,9 +372,9 @@ if __name__ == '__main__':
 **图 4**  一键式编译运行脚本流程图<a name="fig125041443583"></a>  
 ![](../../figures/一键式编译运行脚本流程图.png "一键式编译运行脚本流程图")
 
->[!NOTE]注意 
+>[!NOTE]说明 
 >**样例中提供的一键式编译运行脚本并不能适用于所有的算子运行验证场景，使用时请根据实际情况进行修改。**
->-   根据Ascend C算子的算法原理的不同，自行实现输入和真值数据的生成脚本。
+>- 根据Ascend C算子的算法原理的不同，自行实现输入和真值数据的生成脚本。
 
 完成上述文件的编写后，可以执行一键式编译运行脚本，编译和运行应用程序。
 
@@ -525,14 +525,14 @@ bash run.sh -r npu  -v <soc_version> -i <install_path> -b Debug -p <install-pref
 
 >[!NOTE]说明 
 >为了实现CPU域与NPU域代码归一，仅对部分acl接口进行适配，开发者在使用CPU域调测功能时，仅支持使用如下acl接口：
->-   有实际功能接口，支持CPU域调用
->    -   aclDataTypeSize、aclFloat16ToFloat、aclFloatToFloat16。
->    -   aclrtMalloc、aclrtFree、aclrtMallocHost、aclrtFreeHost、aclrtMemset、aclrtMemsetAsync、aclrtMemcpy、aclrtMemcpyAsync、aclrtMemcpy2d、aclrtMemcpy2dAsync、aclrtCreateContext、aclrtDestroyContext。
->-   无实际功能接口，打桩实现。
->    -   Profiling数据采集
+>- 有实际功能接口，支持CPU域调用
+>    - aclDataTypeSize、aclFloat16ToFloat、aclFloatToFloat16。
+>    - aclrtMalloc、aclrtFree、aclrtMallocHost、aclrtFreeHost、aclrtMemset、aclrtMemsetAsync、aclrtMemcpy、aclrtMemcpyAsync、aclrtMemcpy2d、aclrtMemcpy2dAsync、aclrtCreateContext、aclrtDestroyContext。
+>- 无实际功能接口，打桩实现。
+>    - Profiling数据采集
 >        aclprofInit、aclprofSetConfig、aclprofStart、aclprofStop、aclprofFinalize。
->    -   系统配置
+>    - 系统配置
 >        aclInit、aclFinalize、aclrtGetVersion。
->    -   运行时管理
+>    - 运行时管理
 >        aclrtSetDevice、aclrtResetDevice、aclrtCreateStream、aclrtCreateStreamWithConfig、aclrtDestroyStream、aclrtDestroyStreamForce、aclrtSynchronizeStream、aclrtCreateContext、aclrtDestroyContext。
 

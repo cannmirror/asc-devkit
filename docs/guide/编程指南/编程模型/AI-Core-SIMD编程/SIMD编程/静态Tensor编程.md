@@ -9,8 +9,8 @@
 ![](../../../../figures/图1-开发Ascend-C算子的基本流程.png)
 
 >[!NOTE]说明 
->-   静态Tensor编程的使用约束和限制请参考[使用约束和限制](#section19853161834615)。
->-   本节涉及的完整样例请参考[静态Tensor编程样例](https://gitee.com/ascend/samples/tree/master/operator/ascendc/0_introduction/23_static_tensor_programming_kernellaunch)。
+>- 静态Tensor编程的使用约束和限制请参考[使用约束和限制](#section19853161834615)。
+>- 本节涉及的完整样例请参考[静态Tensor编程样例](https://gitee.com/ascend/samples/tree/master/operator/ascendc/0_introduction/23_static_tensor_programming_kernellaunch)。
 
 ## 编程范式<a name="section1486516584319"></a>
 
