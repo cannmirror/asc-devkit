@@ -409,35 +409,29 @@
 
 -   **3510架构版本删除L0A Buffer/L0B Buffer初始化的相关硬件指令。**
 
-    **说明**：InitConstValue将特定存储位置的LocalTensor初始化为某一具体数值，不支持直接初始化L0A Buffer、L0B Buffer。
+    **说明**：Fill接口将特定存储位置的LocalTensor初始化为某一具体数值，不支持直接初始化L0A Buffer、L0B Buffer。
 
-    **兼容方案**：先初始化L1 Buffer，再通过LoadData接口将L1 Buffer上的数据搬运到L0A Buffer、L0B Buffer。
+    **兼容方案**：先通过Fill接口初始化L1 Buffer，再通过LoadData接口将L1 Buffer上的数据搬运到L0A Buffer、L0B Buffer。具体代码可参考[Fill兼容性样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/05_compatibility_guide/fill)。
 
     以 GM -\> L1 Buffer -\> L0A Buffer的数据通路为例：
 
     1.  初始化L1 Buffer。
 
         ```
-        __aicore__ inline void InitConstA1()
+        __aicore__ inline void InitConstA1(AscendC::LocalTensor<T>& a1Local)
         {
-            AscendC::LocalTensor<T> leftMatrix = inQueueA1.AllocTensor<T>();
-            AscendC::InitConstValue(leftMatrix, {1, static_cast<uint16_t>(m * k * sizeof(T) / 32), 0, 1});
-            inQueueA1.EnQue(leftMatrix);
+            AscendC::Fill(a1Local, {1, static_cast<uint16_t>(M * K * sizeof(T) / 32), 0, 1});
         }
         ```
 
     2.  调用LoadData接口将L1 Buffer上的数据搬运到L0A Buffer。
 
         ```
-        __aicore__ inline void Load2DA1ToL0A()
+        __aicore__ inline void Load2DA1ToA2(AscendC::LocalTensor<T>& a1Local, AscendC::LocalTensor<T>& a2Local)
         {
-            AscendC::LocalTensor<T> a1 = inQueueA1.DeQue<T>();
-            AscendC::LocalTensor<T> a2 = inQueueA2.AllocTensor<T>();
             AscendC::LoadData2DParamsV2 loadDataParams;
             ...
-            AscendC::LoadData(a2, a1, loadDataParams);
-            inQueueA2.EnQue(a2);
-            inQueueA1.FreeTensor(a1);
+            AscendC::LoadData(a2Local, a1Local, loadDataParams);
         }
         ```
 

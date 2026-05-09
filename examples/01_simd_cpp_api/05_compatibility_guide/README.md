@@ -10,8 +10,7 @@
 |  目录名称  |  功能描述  |
 | -------------------------------------------------- | ---------------------------------------------------- |
 | [data_copy_l1togm](./data_copy_l1togm) | 本样例演示L1数据搬运到GM的端到端流程。 |
-| [fill_910B](./fill_910B) | 本样例直接使用基础API InitConstValue对L0A Buffer和L0B Buffer进行初始化。 |
-| [fill_950](./fill_950) | 新架构版本删除L0A Buffer/L0B Buffer初始化的相关硬件指令。用户可以通过先初始化L1 Buffer，再通过LoadData接口将L1 Buffer上的数据搬运到L0A Buffer/L0B Buffer。 |
+| [fill](./fill) | 本样例展示如何使用Fill接口对L0A Buffer和L0B Buffer进行初始化。 |
 | [matmul_s4_910B](./matmul_s4_910B) | 本样例直接使用Matmul高阶API进行矩阵计算。 |
 | [matmul_s4_950](./matmul_s4_950) | 新架构下Cube计算单元删除int4b_t数据类型。用户可以在算子侧通过MIX模式在Vector Core进行int4b_t到int8_t的Cast转换，再通过UB搬运到L1后进行Mmad计算。 |
 | [pattern_transformation](./pattern_transformation) | 新架构下基础的mmad样例，从L1 Buffer->L0A Buffer的通路不需要做Nz2Zz分型转换。 |
