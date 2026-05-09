@@ -91,6 +91,11 @@ TEST_VECTOR_DATAMOVE_GATHER_INSTR_1(Vselr, asc_gather, vselr, fp8_e4m3fn_t, uint
 TEST_VECTOR_DATAMOVE_GATHER_INSTR_1(Vselr, asc_gather, vselr, fp8_e5m2_t, uint8_t);
 TEST_VECTOR_DATAMOVE_GATHER_INSTR_1(Vselr, asc_gather, vselr, fp8_e8m0_t, uint8_t);
 
+TEST_VECTOR_DATAMOVE_GATHER_INSTR_0(Vgather2_BC, asc_gather, vgather2_bc, int16_t, vector_int16_t, uint32_t);
+TEST_VECTOR_DATAMOVE_GATHER_INSTR_0(Vgather2_BC, asc_gather, vgather2_bc, uint16_t, vector_uint16_t, uint32_t);
+TEST_VECTOR_DATAMOVE_GATHER_INSTR_0(Vgather2_BC, asc_gather, vgather2_bc, half, vector_half, uint32_t);
+TEST_VECTOR_DATAMOVE_GATHER_INSTR_0(Vgather2_BC, asc_gather, vgather2_bc, bfloat16_t, vector_bfloat16_t, uint32_t);
+
 class TestCApiVectorDataMoveAscGatherHifloat8 : public testing::Test {
 protected:
     void SetUp() {}

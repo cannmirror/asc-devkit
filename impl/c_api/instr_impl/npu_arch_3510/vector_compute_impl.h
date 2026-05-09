@@ -206,6 +206,11 @@
 #include "instr_impl/npu_arch_3510/vector_compute_impl/asc_xor_impl.h"
 #include "instr_impl/npu_arch_3510/vector_compute_impl/asc_prelu_impl.h"
 #include "instr_impl/npu_arch_3510/vector_compute_impl/asc_clear_ar_spr_impl.h"
+#include "instr_impl/npu_arch_3510/vector_compute_impl/asc_bitsort_impl.h"
+#include "instr_impl/npu_arch_3510/vector_compute_impl/asc_mrgsort4_impl.h"
+#include "instr_impl/npu_arch_3510/vector_compute_impl/asc_transpose_impl.h"
+#include "instr_impl/npu_arch_3510/vector_compute_impl/asc_transto5hd_impl.h"
+#include "instr_impl/npu_arch_3510/vector_compute_impl/asc_set_va_reg_impl.h"
 
 // ==========asc_create_iter_reg(b8/b16/b32)=========
 __simd_callee__ inline iter_reg asc_create_iter_reg_b32(uint32_t offset)
@@ -1185,6 +1190,66 @@ __simd_callee__ inline void asc_duplicate_scalar(vector_int32_t& dst, int32_t va
 __simd_callee__ inline void asc_duplicate_scalar(vector_float& dst, float value, vector_bool mask)
 {
     asc_duplicate_scalar_impl(dst, value, mask);
+}
+
+__simd_callee__ inline void asc_duplicate_scalar(vector_uint8_t& dst, uint8_t value)
+{
+    asc_duplicate_scalar_impl(dst, value);
+}
+
+__simd_callee__ inline void asc_duplicate_scalar(vector_int8_t& dst, int8_t value)
+{
+    asc_duplicate_scalar_impl(dst, value);
+}
+
+__simd_callee__ inline void asc_duplicate_scalar(vector_uint16_t& dst, uint16_t value)
+{
+    asc_duplicate_scalar_impl(dst, value);
+}
+
+__simd_callee__ inline void asc_duplicate_scalar(vector_int16_t& dst, int16_t value)
+{
+    asc_duplicate_scalar_impl(dst, value);
+}
+
+__simd_callee__ inline void asc_duplicate_scalar(vector_uint32_t& dst, uint32_t value)
+{
+    asc_duplicate_scalar_impl(dst, value);
+}
+
+__simd_callee__ inline void asc_duplicate_scalar(vector_int32_t& dst, int32_t value)
+{
+    asc_duplicate_scalar_impl(dst, value);
+}
+
+__simd_callee__ inline void asc_duplicate_scalar(vector_half& dst, half value)
+{
+    asc_duplicate_scalar_impl(dst, value);
+}
+
+__simd_callee__ inline void asc_duplicate_scalar(vector_float& dst, float value)
+{
+    asc_duplicate_scalar_impl(dst, value);
+}
+
+__simd_callee__ inline void asc_duplicate_scalar(vector_bfloat16_t& dst, bfloat16_t value)
+{
+    asc_duplicate_scalar_impl(dst, value);
+}
+
+__simd_callee__ inline void asc_duplicate_scalar(vector_fp8_e4m3fn_t& dst, fp8_e4m3fn_t value)
+{
+    asc_duplicate_scalar_impl(dst, value);
+}
+
+__simd_callee__ inline void asc_duplicate_scalar(vector_fp8_e5m2_t& dst, fp8_e5m2_t value)
+{
+    asc_duplicate_scalar_impl(dst, value);
+}
+
+__simd_callee__ inline void asc_duplicate_scalar(vector_fp8_e8m0_t& dst, fp8_e8m0_t value)
+{
+    asc_duplicate_scalar_impl(dst, value);
 }
 
 // ==========asc_duplicate(uint8_t/int8_t/uint16_t/int16_t/half/bfloat16_t/uint32_t/int32_t/float)==========
@@ -3236,32 +3301,32 @@ __simd_callee__ inline void asc_mul(vector_float& dst, vector_float src0, vector
 // ==========asc_mul_scalar(int16_t/uint16_t/half/int32_t/uint32_t/float)==========
 __simd_callee__ inline void asc_mul_scalar(vector_int16_t& dst, vector_int16_t src, int16_t value, vector_bool mask)
 {
-    asc_mul_salar_impl(dst, src, value, mask);
+    asc_mul_scalar_impl(dst, src, value, mask);
 }
 
 __simd_callee__ inline void asc_mul_scalar(vector_uint16_t& dst, vector_uint16_t src, uint16_t value, vector_bool mask)
 {
-    asc_mul_salar_impl(dst, src, value, mask);
+    asc_mul_scalar_impl(dst, src, value, mask);
 }
 
 __simd_callee__ inline void asc_mul_scalar(vector_half& dst, vector_half src, half value, vector_bool mask)
 {
-    asc_mul_salar_impl(dst, src, value, mask);
+    asc_mul_scalar_impl(dst, src, value, mask);
 }
 
 __simd_callee__ inline void asc_mul_scalar(vector_int32_t& dst, vector_int32_t src, int32_t value, vector_bool mask)
 {
-    asc_mul_salar_impl(dst, src, value, mask);
+    asc_mul_scalar_impl(dst, src, value, mask);
 }
 
 __simd_callee__ inline void asc_mul_scalar(vector_uint32_t& dst, vector_uint32_t src, uint32_t value, vector_bool mask)
 {
-    asc_mul_salar_impl(dst, src, value, mask);
+    asc_mul_scalar_impl(dst, src, value, mask);
 }
 
 __simd_callee__ inline void asc_mul_scalar(vector_float& dst, vector_float src, float value, vector_bool mask)
 {
-    asc_mul_salar_impl(dst, src, value, mask);
+    asc_mul_scalar_impl(dst, src, value, mask);
 }
 
 // ==========asc_eq(vcmp int8_t/uint8_t/int16_t/uint16_t/half/bfloat16_t/int32_t/uint32_t/float)==========
@@ -4769,6 +4834,16 @@ __simd_callee__ inline void asc_copy(vector_bool& dst, vector_bool src)
     asc_copy_impl(dst, src); 
 }
 
+__simd_callee__ inline void asc_copy(vector_bool& dst, vector_uint16_t src, int16_t part)
+{
+    asc_copy_impl(dst, src, part);
+}
+
+__simd_callee__ inline void asc_copy(vector_bool& dst, vector_uint32_t src, int16_t part)
+{
+    asc_copy_impl(dst, src, part);
+}
+
 // ==========asc_float2e4m3_rn=========
 __simd_callee__ inline void asc_float2e4m3_rn_sat(vector_fp8_e4m3fn_t& dst, vector_float src, vector_bool mask)
 {
@@ -5014,5 +5089,149 @@ __simd_callee__ inline void asc_mull(vector_int32_t& dst0, vector_int32_t& dst1,
 __simd_callee__ inline void asc_clear_ar_spr()
 {
     asc_clear_ar_spr_impl();
+}
+
+// ==========asc_bitsort(half/float)==========
+__aicore__ inline void asc_bitsort(__ubuf__ half* dst, __ubuf__ half* src0, __ubuf__ uint32_t* src1, int32_t repeat)
+{
+    asc_bitsort_impl(dst, src0, src1, repeat);
+}
+
+__aicore__ inline void asc_bitsort_sync(__ubuf__ half* dst, __ubuf__ half* src0, __ubuf__ uint32_t* src1,
+                                        int32_t repeat)
+{
+    asc_bitsort_sync_impl(dst, src0, src1, repeat);
+}
+
+__aicore__ inline void asc_bitsort(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ uint32_t* src1, int32_t repeat)
+{
+    asc_bitsort_impl(dst, src0, src1, repeat);
+}
+
+__aicore__ inline void asc_bitsort_sync(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ uint32_t* src1,
+                                        int32_t repeat)
+{
+    asc_bitsort_sync_impl(dst, src0, src1, repeat);
+}
+
+// ==========asc_mrgsort4(half/float)==========
+__aicore__ inline void asc_mrgsort4(__ubuf__ half* dst, __ubuf__ half* src, uint8_t repeat, uint16_t element_length_0,
+                                    uint16_t element_length_1, uint16_t element_length_2, uint16_t element_length_3,
+                                    bool if_exhausted_suspension, uint8_t valid_bit)
+{
+    asc_mrgsort4_impl(dst, src, repeat, element_length_0, element_length_1, element_length_2, element_length_3,
+                      if_exhausted_suspension, valid_bit);
+}
+
+__aicore__ inline void asc_mrgsort4_sync(__ubuf__ half* dst, __ubuf__ half* src, uint8_t repeat,
+                                         uint16_t element_length_0, uint16_t element_length_1,
+                                         uint16_t element_length_2, uint16_t element_length_3,
+                                         bool if_exhausted_suspension, uint8_t valid_bit)
+{
+    asc_mrgsort4_sync_impl(dst, src, repeat, element_length_0, element_length_1, element_length_2, element_length_3,
+                           if_exhausted_suspension, valid_bit);
+}
+
+__aicore__ inline void asc_mrgsort4(__ubuf__ float* dst, __ubuf__ float* src, uint8_t repeat, uint16_t element_length_0,
+                                    uint16_t element_length_1, uint16_t element_length_2, uint16_t element_length_3,
+                                    bool if_exhausted_suspension, uint8_t valid_bit)
+{
+    asc_mrgsort4_impl(dst, src, repeat, element_length_0, element_length_1, element_length_2, element_length_3,
+                      if_exhausted_suspension, valid_bit);
+}
+
+__aicore__ inline void asc_mrgsort4_sync(__ubuf__ float* dst, __ubuf__ float* src, uint8_t repeat,
+                                         uint16_t element_length_0, uint16_t element_length_1,
+                                         uint16_t element_length_2, uint16_t element_length_3,
+                                         bool if_exhausted_suspension, uint8_t valid_bit)
+{
+    asc_mrgsort4_sync_impl(dst, src, repeat, element_length_0, element_length_1, element_length_2, element_length_3,
+                           if_exhausted_suspension, valid_bit);
+}
+
+// ==========asc_transpose(int16_t/uint16_t)==========
+__aicore__ inline void asc_transpose(__ubuf__ int16_t* dst, __ubuf__ int16_t* src)
+{
+    asc_transpose_impl(dst, src);
+}
+
+__aicore__ inline void asc_transpose_sync(__ubuf__ int16_t* dst, __ubuf__ int16_t* src)
+{
+    asc_transpose_sync_impl(dst, src);
+}
+
+__aicore__ inline void asc_transpose(__ubuf__ uint16_t* dst, __ubuf__ uint16_t* src)
+{
+    asc_transpose_impl(dst, src);
+}
+
+__aicore__ inline void asc_transpose_sync(__ubuf__ uint16_t* dst, __ubuf__ uint16_t* src)
+{
+    asc_transpose_sync_impl(dst, src);
+}
+
+// __aicore__ inline void asc_transto5hd_b8(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride, bool dst_high_half, bool src_high_half)
+#define asc_transto5hd_b8(dst, src, repeat, dst_stride, src_stride, dst_high_half, src_high_half)                      \
+    asc_transto5hd_b8_impl((dst), (src), (repeat), (dst_stride), (src_stride), (dst_high_half), (src_high_half))
+
+// __aicore__ inline void asc_transto5hd_b8_sync(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride, bool dst_high_half, bool src_high_half)
+#define asc_transto5hd_b8_sync(dst, src, repeat, dst_stride, src_stride, dst_high_half, src_high_half)                 \
+    asc_transto5hd_b8_sync_impl((dst), (src), (repeat), (dst_stride), (src_stride), (dst_high_half), (src_high_half))
+
+// __aicore__ inline void asc_transto5hd_b16(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride)
+#define asc_transto5hd_b16(dst, src, repeat, dst_stride, src_stride)                                                   \
+    asc_transto5hd_b16_impl((dst), (src), (repeat), (dst_stride), (src_stride))
+
+// __aicore__ inline void asc_transto5hd_b16_sync(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride)
+#define asc_transto5hd_b16_sync(dst, src, repeat, dst_stride, src_stride)                                              \
+    asc_transto5hd_b16_sync_impl((dst), (src), (repeat), (dst_stride), (src_stride))
+
+// __aicore__ inline void asc_transto5hd_b32(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride)
+#define asc_transto5hd_b32(dst, src, repeat, dst_stride, src_stride)                                                   \
+    asc_transto5hd_b32_impl((dst), (src), (repeat), (dst_stride), (src_stride))
+
+// __aicore__ inline void asc_transto5hd_b32_sync(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride)
+#define asc_transto5hd_b32_sync(dst, src, repeat, dst_stride, src_stride)                                              \
+    asc_transto5hd_b32_sync_impl((dst), (src), (repeat), (dst_stride), (src_stride))
+
+// ===================asc_set_va_reg=====================
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ int8_t** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ uint8_t** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ int16_t** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ uint16_t** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ half** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ int32_t** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ uint32_t** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ float** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
 }
 #endif

@@ -20,42 +20,42 @@
 
 #include "instr_impl/npu_arch_3510/utils_impl.h"
 
-__simd_callee__ inline void asc_mul_salar_impl(vector_int32_t& dst, vector_int32_t src, int32_t value, vector_bool mask)
+__simd_callee__ inline void asc_mul_scalar_impl(vector_int32_t& dst, vector_int32_t src, int32_t value, vector_bool mask)
 {
     if ASC_IS_AIV {
         vmuls(dst, src, value, mask, MODE_ZEROING);
     }
 }
 
-__simd_callee__ inline void asc_mul_salar_impl(vector_int16_t& dst, vector_int16_t src, int16_t value, vector_bool mask)
+__simd_callee__ inline void asc_mul_scalar_impl(vector_int16_t& dst, vector_int16_t src, int16_t value, vector_bool mask)
 {
     if ASC_IS_AIV {
         vmuls(dst, src, value, mask, MODE_ZEROING);
     }
 }
 
-__simd_callee__ inline void asc_mul_salar_impl(vector_uint32_t& dst, vector_uint32_t src, uint32_t value, vector_bool mask)
+__simd_callee__ inline void asc_mul_scalar_impl(vector_uint32_t& dst, vector_uint32_t src, uint32_t value, vector_bool mask)
 {
     if ASC_IS_AIV {
         vmuls(dst, src, value, mask, MODE_ZEROING);
     }
 }
 
-__simd_callee__ inline void asc_mul_salar_impl(vector_uint16_t& dst, vector_uint16_t src, uint16_t value, vector_bool mask)
+__simd_callee__ inline void asc_mul_scalar_impl(vector_uint16_t& dst, vector_uint16_t src, uint16_t value, vector_bool mask)
 {
     if ASC_IS_AIV {
         vmuls(dst, src, value, mask, MODE_ZEROING);
     }
 }
 
-__simd_callee__ inline void asc_mul_salar_impl(vector_float& dst, vector_float src, float value, vector_bool mask)
+__simd_callee__ inline void asc_mul_scalar_impl(vector_float& dst, vector_float src, float value, vector_bool mask)
 {
     if ASC_IS_AIV {
         vmuls(dst, src, value, mask, MODE_ZEROING);
     }
 }
 
-__simd_callee__ inline void asc_mul_salar_impl(vector_half& dst, vector_half src, half value, vector_bool mask)
+__simd_callee__ inline void asc_mul_scalar_impl(vector_half& dst, vector_half src, half value, vector_bool mask)
 {
     if ASC_IS_AIV {
         vmuls(dst, src, value, mask, MODE_ZEROING);

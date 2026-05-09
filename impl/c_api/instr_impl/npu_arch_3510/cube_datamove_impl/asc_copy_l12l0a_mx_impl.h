@@ -33,6 +33,13 @@ __aicore__ inline void asc_copy_l12l0a_mx_impl(uint64_t dst, __cbuf__ fp8_e8m0_t
     }
 }
 
+__aicore__ inline void asc_copy_l12l0a_mx_sync_impl(uint64_t dst, __cbuf__ fp8_e8m0_t* src, uint16_t x_start_pos,
+    uint16_t y_start_pos, uint8_t x_step, uint8_t y_step, uint16_t src_stride, uint16_t dst_stride)
+{
+    asc_copy_l12l0a_mx_impl(dst, src, x_start_pos, y_start_pos, x_step, y_step, src_stride, dst_stride);
+    asc_sync_post_process();
+}
+
 #endif
 
 #if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)

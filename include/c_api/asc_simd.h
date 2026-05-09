@@ -41,7 +41,6 @@
 #include "c_api/scalar_compute/scalar_compute.h"
 #include "c_api/sync/sync.h"
 #include "c_api/sys_var/sys_var.h"
-#include "c_api/vector_compute/vector_compute.h"
 #include "c_api/vector_datamove/vector_datamove.h"
 #include "c_api/reg_compute/reg_convert.h"
 #include "c_api/reg_compute/reg_load.h"

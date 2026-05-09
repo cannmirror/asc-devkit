@@ -34,19 +34,9 @@ void asc_sync_wait_stub(pipe_t pipe, pipe_t tpipe, event_t id)
     EXPECT_EQ(event_t::EVENT_ID0, id);
 }
 
-void pipe_barrier_all_stub(pipe_t pipe)
+void asc_sync_pipe_stub(pipe_t pipe)
 { 
     EXPECT_EQ(pipe_t::PIPE_ALL, pipe);
-}
-
-void pipe_barrier_mte2_stub(pipe_t pipe)
-{ 
-    EXPECT_EQ(pipe_t::PIPE_MTE2, pipe);
-}
-
-void pipe_barrier_mte3_stub(pipe_t pipe)
-{ 
-    EXPECT_EQ(pipe_t::PIPE_MTE3, pipe);
 }
 }
 
@@ -81,48 +71,8 @@ TEST_F(TestSyncInstrCAPI, c_api_sync_pipe_Succ)
     pipe_t pipe = pipe_t::PIPE_ALL;
     MOCKER_CPP(pipe_barrier, void(pipe_t))
             .times(1)
-            .will(invoke(pipe_barrier_all_stub));
+            .will(invoke(asc_sync_pipe_stub));
 
     asc_sync_pipe(pipe);
-    GlobalMockObject::verify();
-}
-
-TEST_F(TestSyncInstrCAPI, asc_sync_vec_Succ)
-{
-    MOCKER_CPP(pipe_barrier, void(pipe_t))
-            .times(1)
-            .will(invoke(pipe_barrier_all_stub));
-
-    asc_sync_vec();
-    GlobalMockObject::verify();
-}
-
-TEST_F(TestSyncInstrCAPI, asc_sync_Succ)
-{
-    MOCKER_CPP(pipe_barrier, void(pipe_t))
-            .times(1)
-            .will(invoke(pipe_barrier_all_stub));
-
-    asc_sync();
-    GlobalMockObject::verify();
-}
-
-TEST_F(TestSyncInstrCAPI, asc_sync_mte2_Succ)
-{
-    MOCKER_CPP(pipe_barrier, void(pipe_t))
-            .times(1)
-            .will(invoke(pipe_barrier_mte2_stub));
-
-    asc_sync_mte2(0);
-    GlobalMockObject::verify();
-}
-
-TEST_F(TestSyncInstrCAPI, asc_sync_mte3_Succ)
-{
-    MOCKER_CPP(pipe_barrier, void(pipe_t))
-            .times(1)
-            .will(invoke(pipe_barrier_mte3_stub));
-
-    asc_sync_mte3(0);
     GlobalMockObject::verify();
 }

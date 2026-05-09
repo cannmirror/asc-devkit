@@ -27,34 +27,6 @@
 
 #define asc_sync_pipe_impl(pipe) pipe_barrier(pipe)
 
-__aicore__ inline void asc_sync_vec_impl()
-{
-    pipe_barrier(pipe_t::PIPE_ALL);
-}
-
-__aicore__ inline void asc_sync_mte2_impl(int id)
-{
-    set_flag(pipe_t::PIPE_MTE2, pipe_t::PIPE_MTE3, static_cast<event_t>(id));
-    set_flag(pipe_t::PIPE_MTE2, pipe_t::PIPE_V, static_cast<event_t>(id));
-    wait_flag(pipe_t::PIPE_MTE2, pipe_t::PIPE_MTE3, static_cast<event_t>(id));
-    wait_flag(pipe_t::PIPE_MTE2, pipe_t::PIPE_V, static_cast<event_t>(id));
-    pipe_barrier(pipe_t::PIPE_MTE2);
-}
-
-__aicore__ inline void asc_sync_mte3_impl(int id)
-{
-    set_flag(pipe_t::PIPE_MTE3, pipe_t::PIPE_MTE2, static_cast<event_t>(id));
-    set_flag(pipe_t::PIPE_MTE3, pipe_t::PIPE_V, static_cast<event_t>(id));
-    wait_flag(pipe_t::PIPE_MTE3, pipe_t::PIPE_MTE2, static_cast<event_t>(id));
-    wait_flag(pipe_t::PIPE_MTE3, pipe_t::PIPE_V, static_cast<event_t>(id));
-    pipe_barrier(pipe_t::PIPE_MTE3);
-}
-
-__aicore__ inline void asc_sync_impl()
-{
-    pipe_barrier(pipe_t::PIPE_ALL);
-}
-
 #endif
 
 #if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)

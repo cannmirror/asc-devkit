@@ -41,7 +41,7 @@ __simd_callee__ inline void asc_min_scalar_impl(vector_uint32_t& dst, vector_uin
     }
 }
 
-//asc_min6 int16_t
+//asc_min_scalar int16_t
 __simd_callee__ inline void asc_min_scalar_impl(vector_int16_t& dst, vector_int16_t src, int16_t value, vector_bool mask)
 {
     if ASC_IS_AIV{

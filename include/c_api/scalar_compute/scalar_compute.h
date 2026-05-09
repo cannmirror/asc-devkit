@@ -70,6 +70,10 @@ __aicore__ inline void asc_store_dev(__gm__ int64_t* addr, int64_t value);
 
 __aicore__ inline void asc_store_dev(__gm__ uint64_t* addr, uint64_t value);
 
+__aicore__ inline uint64_t asc_clear_nthbit(uint64_t bits, int64_t idx);
+
+__aicore__ inline uint64_t asc_set_nthbit(uint64_t bits, int64_t idx);
+
 #endif
 
 #endif

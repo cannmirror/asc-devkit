@@ -155,6 +155,7 @@
 #include "instr_impl/npu_arch_2201/vector_compute_impl/asc_set_va_reg_impl.h"
 #include "instr_impl/npu_arch_2201/vector_compute_impl/asc_pair_reduce_sum_impl.h"
 #include "instr_impl/npu_arch_2201/vector_compute_impl/asc_copy_impl.h"
+#include "instr_impl/npu_arch_2201/vector_compute_impl/asc_squeeze_impl.h"
 
 // ==========asc_add(half/float/int16_t/int32_t)==========
 __aicore__ inline void asc_add(__ubuf__ half* dst, __ubuf__ half* src0, __ubuf__ half* src1, uint32_t count)
@@ -4924,6 +4925,30 @@ __aicore__ inline void asc_transpose_sync(__ubuf__ uint16_t* dst, __ubuf__ uint1
     asc_transpose_sync_impl(dst, src);
 }
 
+// __aicore__ inline void asc_transto5hd_b8(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride, bool dst_high_half, bool src_high_half)
+#define asc_transto5hd_b8(dst, src, repeat, dst_stride, src_stride, dst_high_half, src_high_half)                      \
+    asc_transto5hd_b8_impl((dst), (src), (repeat), (dst_stride), (src_stride), (dst_high_half), (src_high_half))
+
+// __aicore__ inline void asc_transto5hd_b8_sync(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride, bool dst_high_half, bool src_high_half)
+#define asc_transto5hd_b8_sync(dst, src, repeat, dst_stride, src_stride, dst_high_half, src_high_half)                 \
+    asc_transto5hd_b8_sync_impl((dst), (src), (repeat), (dst_stride), (src_stride), (dst_high_half), (src_high_half))
+
+// __aicore__ inline void asc_transto5hd_b16(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride)
+#define asc_transto5hd_b16(dst, src, repeat, dst_stride, src_stride)                                                   \
+    asc_transto5hd_b16_impl((dst), (src), (repeat), (dst_stride), (src_stride))
+
+// __aicore__ inline void asc_transto5hd_b16_sync(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride)
+#define asc_transto5hd_b16_sync(dst, src, repeat, dst_stride, src_stride)                                              \
+    asc_transto5hd_b16_sync_impl((dst), (src), (repeat), (dst_stride), (src_stride))
+
+// __aicore__ inline void asc_transto5hd_b32(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride)
+#define asc_transto5hd_b32(dst, src, repeat, dst_stride, src_stride)                                                   \
+    asc_transto5hd_b32_impl((dst), (src), (repeat), (dst_stride), (src_stride))
+
+// __aicore__ inline void asc_transto5hd_b32_sync(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat, uint16_t dst_stride, uint16_t src_stride)
+#define asc_transto5hd_b32_sync(dst, src, repeat, dst_stride, src_stride)                                              \
+    asc_transto5hd_b32_sync_impl((dst), (src), (repeat), (dst_stride), (src_stride))
+
 // ==========asc_duplicate(half/int16_t/uint16_t/bfloat16_t/float/int32_t/uint32_t)==========
 __aicore__ inline void asc_duplicate(__ubuf__ half* dst, half src, uint8_t repeat,
     uint16_t dst_block_stride, uint16_t dst_repeat_stride)
@@ -5206,6 +5231,20 @@ __aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ uint32_t** src_a
 __aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ float** src_array)
 {
     asc_set_va_reg_impl(addr, src_array);
+}
+
+
+// =========asc_squeeze=========
+__aicore__ inline void asc_squeeze(__ubuf__ uint16_t* dst, __ubuf__ uint16_t* src0, __ubuf__ uint16_t* src1, uint8_t repeat, uint8_t dst_block_stride, uint8_t src0_block_stride, uint8_t src1_block_stride, uint8_t dst_repeat_stride, uint8_t src0_repeat_stride, uint8_t src1_repeat_stride)
+{
+    asc_squeeze_impl(dst, src0, src1, repeat, dst_block_stride, src0_block_stride, src1_block_stride, dst_repeat_stride,
+        src0_repeat_stride, src1_repeat_stride);
+}
+
+__aicore__ inline void asc_squeeze(__ubuf__ uint32_t* dst, __ubuf__ uint32_t* src0, __ubuf__ uint32_t* src1, uint8_t repeat, uint8_t dst_block_stride, uint8_t src0_block_stride, uint8_t src1_block_stride, uint8_t dst_repeat_stride, uint8_t src0_repeat_stride, uint8_t src1_repeat_stride)
+{
+    asc_squeeze_impl(dst, src0, src1, repeat, dst_block_stride, src0_block_stride, src1_block_stride, dst_repeat_stride,
+            src0_repeat_stride, src1_repeat_stride);
 }
 
 #endif

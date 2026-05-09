@@ -19,6 +19,8 @@
 #include "instr_impl/npu_arch_3510/scalar_compute_impl/asc_float2int32_impl.h"
 #include "instr_impl/npu_arch_3510/scalar_compute_impl/asc_sflbits_impl.h"
 #include "instr_impl/npu_arch_3510/scalar_compute_impl/asc_ffz_impl.h"
+#include "instr_impl/npu_arch_3510/scalar_compute_impl/asc_clear_nthbit_impl.h"
+#include "instr_impl/npu_arch_3510/scalar_compute_impl/asc_set_nthbit_impl.h"
 
 // ==========asc_clz==========
 __aicore__ inline int64_t asc_clz(uint64_t value_in)
@@ -112,6 +114,18 @@ __aicore__ inline int64_t asc_sflbits(int64_t value)
 __aicore__ inline int64_t asc_ffz(uint64_t value)
 {
     return asc_ffz_impl(value);
+}
+
+//=============asc_clear_nthbit================
+__aicore__ inline uint64_t asc_clear_nthbit(uint64_t bits, int64_t idx)
+{
+    return asc_clear_nthbit_impl(bits, idx);
+}
+
+//=============asc_set_nthbit================
+__aicore__ inline uint64_t asc_set_nthbit(uint64_t bits, int64_t idx)
+{
+    return asc_set_nthbit_impl(bits, idx);
 }
 
 #endif

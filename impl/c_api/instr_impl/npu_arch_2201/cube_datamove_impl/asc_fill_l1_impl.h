@@ -216,6 +216,38 @@ __aicore__ inline void asc_fill_l1_sync_impl(__cbuf__ bfloat16_t* dst, bfloat16_
     asc_sync_post_process();
 }
 
+// create_cbuf_matrix_h
+__aicore__ inline void asc_fill_l1_impl(__cbuf__ bfloat16_t* dst, half value,
+                                              const asc_fill_value_config& config)
+{
+    if ASC_IS_AIC {
+        create_cbuf_matrix_h(dst, config.config, value);
+    }
+}
+
+__aicore__ inline void asc_fill_l1_sync_impl(__cbuf__ bfloat16_t* dst, half value,
+                                                   const asc_fill_value_config& config)
+{
+    asc_fill_l1_impl(dst, value, config);
+    asc_sync_post_process();
+}
+
+// create_cbuf_matrix_ui
+__aicore__ inline void asc_fill_l1_impl(__cbuf__ bfloat16_t* dst, uint32_t value,
+                                              const asc_fill_value_config& config)
+{
+    if ASC_IS_AIC {
+        create_cbuf_matrix_ui(dst, config.config, value);
+    }
+}
+
+__aicore__ inline void asc_fill_l1_sync_impl(__cbuf__ bfloat16_t* dst, uint32_t value,
+                                                   const asc_fill_value_config& config)
+{
+    asc_fill_l1_impl(dst, value, config);
+    asc_sync_post_process();
+}
+
 #endif
 
 #if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)

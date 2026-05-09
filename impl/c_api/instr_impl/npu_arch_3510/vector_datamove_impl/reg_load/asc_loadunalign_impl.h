@@ -134,4 +134,12 @@ __simd_callee__ inline void asc_loadunalign_impl(vector_fp4x2_e1m2_t& dst, vecto
     }
 }
 
+__simd_callee__ inline void asc_loadunalign_impl(vector_int4x2_t& dst, vector_load_unalign& src0, __ubuf__ int4b_t *src1)
+{
+    if ASC_IS_AIV {
+        __ubuf__ float4_e1m2x2_t* src1_tmp = reinterpret_cast<__ubuf__ float4_e1m2x2_t*>(src1);
+        vldus(reinterpret_cast<vector_fp4x2_e1m2_t&>(dst), src0, src1_tmp);
+    }
+}
+
 #endif

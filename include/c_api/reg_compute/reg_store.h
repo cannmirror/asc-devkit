@@ -62,6 +62,9 @@ __simd_callee__ inline void asc_storealign(__ubuf__  fp4x2_e2m1_t* dst_align32b,
 __simd_callee__ inline void asc_storealign(__ubuf__  fp4x2_e1m2_t* dst_align32b, vector_fp4x2_e1m2_t src,
     vector_bool mask);
 
+__simd_callee__ inline void asc_storealign(__ubuf__  int4b_t* dst_align32b, vector_int4x2_t src,
+    vector_bool mask);
+
 // ==========asc_storealign_1st(u8/s8/half/u16/s16/float/u32/s32/bf16/e4m3/e5m2/e8m0/e1m2/e2m1)=========
 __simd_callee__ inline void asc_storealign_1st(__ubuf__  int8_t* dst_align32b, vector_int8_t src);
 
@@ -92,6 +95,8 @@ __simd_callee__ inline void asc_storealign_1st(__ubuf__  fp8_e8m0_t* dst_align32
 __simd_callee__ inline void asc_storealign_1st(__ubuf__  fp4x2_e2m1_t* dst_align32b, vector_fp4x2_e2m1_t src);
 
 __simd_callee__ inline void asc_storealign_1st(__ubuf__  fp4x2_e1m2_t* dst_align32b, vector_fp4x2_e1m2_t src);
+
+__simd_callee__ inline void asc_storealign_1st(__ubuf__  int4b_t* dst_align32b, vector_int4x2_t src);
 
 // ==========asc_storealign_pack(half/u16/s16/float/u32/s32/u64/s64/bf16)=========
 __simd_callee__ inline void asc_storealign_pack(__ubuf__  int16_t* dst_align32b, vector_int16_t src,
@@ -174,6 +179,9 @@ __simd_callee__ inline void asc_storealign_intlv(__ubuf__  fp4x2_e2m1_t* dst_ali
 __simd_callee__ inline void asc_storealign_intlv(__ubuf__  fp4x2_e1m2_t* dst_align32b, vector_fp4x2_e1m2_t src0,
     vector_fp4x2_e1m2_t src1);
 
+__simd_callee__ inline void asc_storealign_intlv(__ubuf__  int4b_t* dst_align32b, vector_int4x2_t src0,
+    vector_int4x2_t src1);
+
 //===========使用vsts通过int32_t传入偏移，用户可以选择更新偏移或者更新src地址
 __simd_callee__ inline void asc_storealign(__ubuf__ int8_t* dst_align32b, vector_int8_t src, int32_t offset,
     vector_bool mask);
@@ -220,6 +228,9 @@ __simd_callee__ inline void asc_storealign(__ubuf__ fp4x2_e2m1_t* dst_align32b, 
 __simd_callee__ inline void asc_storealign(__ubuf__ fp4x2_e1m2_t* dst_align32b, vector_fp4x2_e1m2_t src, int32_t offset,
     vector_bool mask);
 
+__simd_callee__ inline void asc_storealign(__ubuf__ int4b_t* dst_align32b, vector_int4x2_t src, int32_t offset,
+    vector_bool mask);
+
 // storealign_1st
 __simd_callee__ inline void asc_storealign_1st(__ubuf__ int8_t* dst_align32b, vector_int8_t src, int32_t offset);
 
@@ -250,6 +261,8 @@ __simd_callee__ inline void asc_storealign_1st(__ubuf__ fp8_e8m0_t* dst_align32b
 __simd_callee__ inline void asc_storealign_1st(__ubuf__ fp4x2_e2m1_t* dst_align32b, vector_fp4x2_e2m1_t src, int32_t offset);
 
 __simd_callee__ inline void asc_storealign_1st(__ubuf__ fp4x2_e1m2_t* dst_align32b, vector_fp4x2_e1m2_t src, int32_t offset);
+
+__simd_callee__ inline void asc_storealign_1st(__ubuf__ int4b_t* dst_align32b, vector_int4x2_t src, int32_t offset);
 
 // storealign_pack
 __simd_callee__ inline void asc_storealign_pack(__ubuf__ int16_t* dst_align32b, vector_int16_t src, int32_t offset,
@@ -331,6 +344,9 @@ __simd_callee__ inline void asc_storealign_intlv(__ubuf__  fp4x2_e2m1_t* dst_ali
 
 __simd_callee__ inline void asc_storealign_intlv(__ubuf__  fp4x2_e1m2_t* dst_align32b, vector_fp4x2_e1m2_t src0,
     vector_fp4x2_e1m2_t src1, int32_t offset);
+
+__simd_callee__ inline void asc_storealign_intlv(__ubuf__  int4b_t* dst_align32b, vector_int4x2_t src0,
+    vector_int4x2_t src1, int32_t offset);
 
 //===========使用vsts通过int32_t传入偏移，增加PostMode可以设置成硬件自动Post Update
 __simd_callee__ inline void asc_storealign_postupdate(__ubuf__ int8_t* dst_align32b, vector_int8_t src, int32_t offset,
@@ -464,6 +480,9 @@ __simd_callee__ inline void asc_storealign(__ubuf__  fp4x2_e2m1_t* dst_align32b,
 __simd_callee__ inline void asc_storealign(__ubuf__  fp4x2_e1m2_t* dst_align32b, vector_fp4x2_e1m2_t src, iter_reg offset,
     vector_bool mask);
 
+__simd_callee__ inline void asc_storealign(__ubuf__  int4b_t* dst_align32b, vector_int4x2_t src, iter_reg offset,
+    vector_bool mask);
+
 // ==========asc_storealign_1st(u8/s8/half/u16/s16/float/u32/s32/bf16/e4m3/e5m2/e8m0/e1m2/e2m1)=========
 __simd_callee__ inline void asc_storealign_1st(__ubuf__  int8_t* dst_align32b, vector_int8_t src, iter_reg offset);
 
@@ -494,6 +513,8 @@ __simd_callee__ inline void asc_storealign_1st(__ubuf__  fp8_e8m0_t* dst_align32
 __simd_callee__ inline void asc_storealign_1st(__ubuf__  fp4x2_e2m1_t* dst_align32b, vector_fp4x2_e2m1_t src, iter_reg offset);
 
 __simd_callee__ inline void asc_storealign_1st(__ubuf__  fp4x2_e1m2_t* dst_align32b, vector_fp4x2_e1m2_t src, iter_reg offset);
+
+__simd_callee__ inline void asc_storealign_1st(__ubuf__  int4b_t* dst_align32b, vector_int4x2_t src, iter_reg offset);
 
 // ==========asc_storealign_pack(half/u16/s16/float/u32/s32/u64/s64/bf16)=========
 __simd_callee__ inline void asc_storealign_pack(__ubuf__  int16_t* dst_align32b, vector_int16_t src, iter_reg offset,
@@ -576,54 +597,60 @@ __simd_callee__ inline void asc_storealign_intlv(__ubuf__  fp4x2_e2m1_t* dst_ali
 __simd_callee__ inline void asc_storealign_intlv(__ubuf__  fp4x2_e1m2_t* dst_align32b, vector_fp4x2_e1m2_t src0,
     vector_fp4x2_e1m2_t src1, iter_reg offset);
 
+__simd_callee__ inline void asc_storealign_intlv(__ubuf__  int4b_t* dst_align32b, vector_int4x2_t src0,
+    vector_int4x2_t src1, iter_reg offset);
+
 // ==========asc_storeunalign(u8/s8/half/u16/s16/float/u32/s32/s64/bf16/e4m3/e5m2/e8m0/e1m2/e2m1)=========
-__simd_callee__ inline void asc_storeunalign(__ubuf__  int8_t*& dst, vector_store_unalign& src0,
+__simd_callee__ inline void asc_storeunalign(__ubuf__  int8_t* dst, vector_store_unalign& src0,
     vector_int8_t src1, uint32_t count);
 
-__simd_callee__ inline void asc_storeunalign(__ubuf__  uint8_t*& dst, vector_store_unalign& src0,
+__simd_callee__ inline void asc_storeunalign(__ubuf__  uint8_t* dst, vector_store_unalign& src0,
     vector_uint8_t src1, uint32_t count);
 
-__simd_callee__ inline void asc_storeunalign(__ubuf__  int16_t*& dst, vector_store_unalign& src0,
+__simd_callee__ inline void asc_storeunalign(__ubuf__  int16_t* dst, vector_store_unalign& src0,
     vector_int16_t src1, uint32_t count);
 
-__simd_callee__ inline void asc_storeunalign(__ubuf__  uint16_t*& dst, vector_store_unalign& src0,
+__simd_callee__ inline void asc_storeunalign(__ubuf__  uint16_t* dst, vector_store_unalign& src0,
     vector_uint16_t src1, uint32_t count);
 
-__simd_callee__ inline void asc_storeunalign(__ubuf__  int32_t*& dst, vector_store_unalign& src0,
+__simd_callee__ inline void asc_storeunalign(__ubuf__  int32_t* dst, vector_store_unalign& src0,
     vector_int32_t src1, uint32_t count);
 
-__simd_callee__ inline void asc_storeunalign(__ubuf__  int64_t*& dst, vector_store_unalign& src0,
+__simd_callee__ inline void asc_storeunalign(__ubuf__  int64_t* dst, vector_store_unalign& src0,
     vector_int64_t src1, uint32_t count);
 
-__simd_callee__ inline void asc_storeunalign(__ubuf__  uint32_t*& dst, vector_store_unalign& src0,
+__simd_callee__ inline void asc_storeunalign(__ubuf__  uint32_t* dst, vector_store_unalign& src0,
     vector_uint32_t src1, uint32_t count);
 
-__simd_callee__ inline void asc_storeunalign(__ubuf__  half*& dst, vector_store_unalign& src0,
+__simd_callee__ inline void asc_storeunalign(__ubuf__  half* dst, vector_store_unalign& src0,
     vector_half src1, uint32_t count);
 
-__simd_callee__ inline void asc_storeunalign(__ubuf__  float*& dst, vector_store_unalign& src0,
+__simd_callee__ inline void asc_storeunalign(__ubuf__  float* dst, vector_store_unalign& src0,
     vector_float src1, uint32_t count);
 
-__simd_callee__ inline void asc_storeunalign(__ubuf__  bfloat16_t*& dst, vector_store_unalign& src0,
+__simd_callee__ inline void asc_storeunalign(__ubuf__  bfloat16_t* dst, vector_store_unalign& src0,
     vector_bfloat16_t src1, uint32_t count);
 
-__simd_callee__ inline void asc_storeunalign(__ubuf__  fp8_e4m3fn_t*& dst, vector_store_unalign& src0,
+__simd_callee__ inline void asc_storeunalign(__ubuf__  fp8_e4m3fn_t* dst, vector_store_unalign& src0,
     vector_fp8_e4m3fn_t src1, uint32_t count);
 
-__simd_callee__ inline void asc_storeunalign(__ubuf__ hifloat8_t*& dst, vector_store_unalign& src0,
+__simd_callee__ inline void asc_storeunalign(__ubuf__ hifloat8_t* dst, vector_store_unalign& src0,
     vector_hifloat8_t src1, uint32_t count);
 
-__simd_callee__ inline void asc_storeunalign(__ubuf__  fp8_e5m2_t*& dst, vector_store_unalign& src0,
+__simd_callee__ inline void asc_storeunalign(__ubuf__  fp8_e5m2_t* dst, vector_store_unalign& src0,
     vector_fp8_e5m2_t src1, uint32_t count);
 
-__simd_callee__ inline void asc_storeunalign(__ubuf__  fp8_e8m0_t*& dst, vector_store_unalign& src0,
+__simd_callee__ inline void asc_storeunalign(__ubuf__  fp8_e8m0_t* dst, vector_store_unalign& src0,
     vector_fp8_e8m0_t src1, uint32_t count);
 
-__simd_callee__ inline void asc_storeunalign(__ubuf__  fp4x2_e2m1_t*& dst, vector_store_unalign& src0,
+__simd_callee__ inline void asc_storeunalign(__ubuf__  fp4x2_e2m1_t* dst, vector_store_unalign& src0,
     vector_fp4x2_e2m1_t src1, uint32_t count);
 
-__simd_callee__ inline void asc_storeunalign(__ubuf__  fp4x2_e1m2_t*& dst, vector_store_unalign& src0,
+__simd_callee__ inline void asc_storeunalign(__ubuf__  fp4x2_e1m2_t* dst, vector_store_unalign& src0,
     vector_fp4x2_e1m2_t src1, uint32_t count);
+
+__simd_callee__ inline void asc_storeunalign(__ubuf__  int4b_t*& dst, vector_store_unalign& src0,
+    vector_int4x2_t src1, uint32_t count);
 
 // ==========使用uint32_t作为存储偏移量，每调用一次接口更新目的操作数在UB上的地址=========
 // ==========asc_storeunalign_postupdate(u8/s8/half/u16/s16/float/u32/s32/s64/bf16/e4m3/e5m2/e8m0/e1m2/e2m1)=========
@@ -675,6 +702,41 @@ __simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  fp4x2_e2m1_t*&
 __simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  fp4x2_e1m2_t*& dst, vector_store_unalign& src0,
     vector_fp4x2_e1m2_t src1, uint32_t count);
 
+__simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  int4b_t*& dst, vector_store_unalign& src0,
+    vector_int4x2_t src1, uint32_t count);
+
+__simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  int8_t* dst, vector_store_unalign& src0, vector_int8_t src1);
+
+__simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  uint8_t* dst, vector_store_unalign& src0, vector_uint8_t src1);
+
+__simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  int16_t* dst, vector_store_unalign& src0, vector_int16_t src1);
+
+__simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  uint16_t* dst, vector_store_unalign& src0, vector_uint16_t src1);
+
+__simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  int32_t* dst, vector_store_unalign& src0, vector_int32_t src1);
+
+__simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  uint32_t* dst, vector_store_unalign& src0, vector_uint32_t src1);
+    
+__simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  int64_t* dst, vector_store_unalign& src0, vector_int64_t src1);
+
+__simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  half* dst, vector_store_unalign& src0, vector_half src1);
+
+__simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  float* dst, vector_store_unalign& src0, vector_float src1);
+
+__simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  bfloat16_t* dst, vector_store_unalign& src0, vector_bfloat16_t src1);
+
+__simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  fp8_e4m3fn_t* dst, vector_store_unalign& src0, vector_fp8_e4m3fn_t src1);
+
+__simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  fp8_e5m2_t* dst, vector_store_unalign& src0, vector_fp8_e5m2_t src1);
+
+__simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  fp8_e8m0_t* dst, vector_store_unalign& src0, vector_fp8_e8m0_t src1);
+
+__simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  fp4x2_e2m1_t* dst, vector_store_unalign& src0, vector_fp4x2_e2m1_t src1);
+
+__simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  fp4x2_e1m2_t* dst, vector_store_unalign& src0, vector_fp4x2_e1m2_t src1);
+
+__simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  int4b_t* dst, vector_store_unalign& src0, vector_int4x2_t src1);
+
 // ==========使用iter_reg作为存储偏移量，每调用一次接口更新目的操作数在UB上的地址=========
 // ==========asc_storeunalign_postupdate(u8/s8/half/u16/s16/float/u32/s32/s64/bf16/e4m3/e5m2/e8m0/e1m2/e2m1)=========
 __simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  int8_t* dst, vector_store_unalign& src0,
@@ -724,6 +786,9 @@ __simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  fp4x2_e2m1_t* 
 
 __simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  fp4x2_e1m2_t* dst, vector_store_unalign& src0,
     vector_fp4x2_e1m2_t src1, iter_reg& count);
+
+__simd_callee__ inline void asc_storeunalign_postupdate(__ubuf__  int4b_t* dst, vector_store_unalign& src0,
+    vector_int4x2_t src1, iter_reg& count);
 
 // ==========asc_storealign(u8/s8/half/u16/s16/float/u32/s32/bf16/f8e4m3/f8e5m2/f8e8m0)=========
 __simd_callee__ inline void asc_storealign(__ubuf__ int8_t* dst_align32b, vector_int8_t src, uint16_t block_stride, uint16_t repeat_stride, vector_bool mask);
@@ -788,6 +853,8 @@ __simd_callee__ inline void asc_storeunalign_post(__ubuf__  fp4x2_e2m1_t* dst, v
 
 __simd_callee__ inline void asc_storeunalign_post(__ubuf__  fp4x2_e1m2_t* dst, vector_store_unalign src, int32_t offset);
 
+__simd_callee__ inline void asc_storeunalign_post(__ubuf__  int4b_t* dst, vector_store_unalign src, int32_t offset);
+
 __simd_callee__ inline void asc_storeunalign_post(__ubuf__  fp8_e8m0_t* dst, vector_store_unalign src, int32_t offset);
 
 __simd_callee__ inline void asc_storeunalign_post(__ubuf__  fp8_e5m2_t* dst, vector_store_unalign src, int32_t offset);
@@ -813,6 +880,39 @@ __simd_callee__ inline void asc_storeunalign_post(__ubuf__  float* dst, vector_s
 __simd_callee__ inline void asc_storeunalign_post(__ubuf__  int64_t* dst, vector_store_unalign src, int32_t offset);
 
 //===========asc_storeunalign_post(int8/uint8/e2m1/e1m2/e8m0/e5m2/e4m3fn/int16/uint16/half/bfloat16/int32/uint32/float/int64)===========
+__simd_callee__ inline void asc_storeunalign_post(__ubuf__  int8_t* dst, vector_store_unalign src);
+
+__simd_callee__ inline void asc_storeunalign_post(__ubuf__  uint8_t* dst, vector_store_unalign src);
+
+__simd_callee__ inline void asc_storeunalign_post(__ubuf__  fp4x2_e2m1_t* dst, vector_store_unalign src);
+
+__simd_callee__ inline void asc_storeunalign_post(__ubuf__  fp4x2_e1m2_t* dst, vector_store_unalign src);
+
+__simd_callee__ inline void asc_storeunalign_post(__ubuf__  int4b_t* dst, vector_store_unalign src);
+
+__simd_callee__ inline void asc_storeunalign_post(__ubuf__  fp8_e8m0_t* dst, vector_store_unalign src);
+
+__simd_callee__ inline void asc_storeunalign_post(__ubuf__  fp8_e5m2_t* dst, vector_store_unalign src);
+
+__simd_callee__ inline void asc_storeunalign_post(__ubuf__  fp8_e4m3fn_t* dst, vector_store_unalign src);
+
+__simd_callee__ inline void asc_storeunalign_post(__ubuf__  int16_t* dst, vector_store_unalign src);
+
+__simd_callee__ inline void asc_storeunalign_post(__ubuf__  uint16_t* dst, vector_store_unalign src);
+
+__simd_callee__ inline void asc_storeunalign_post(__ubuf__  half* dst, vector_store_unalign src);
+
+__simd_callee__ inline void asc_storeunalign_post(__ubuf__  bfloat16_t* dst, vector_store_unalign src);
+
+__simd_callee__ inline void asc_storeunalign_post(__ubuf__  int32_t* dst, vector_store_unalign src);
+
+__simd_callee__ inline void asc_storeunalign_post(__ubuf__  uint32_t* dst, vector_store_unalign src);
+
+__simd_callee__ inline void asc_storeunalign_post(__ubuf__  float* dst, vector_store_unalign src);
+
+__simd_callee__ inline void asc_storeunalign_post(__ubuf__  int64_t* dst, vector_store_unalign src);
+
+//===========asc_storeunalign_post(int8/uint8/e2m1/e1m2/e8m0/e5m2/e4m3fn/int16/uint16/half/bfloat16/int32/uint32/float/int64)===========
 __simd_callee__ inline void asc_storeunalign_post(__ubuf__  int8_t* dst, vector_store_unalign src, iter_reg offset);
 
 __simd_callee__ inline void asc_storeunalign_post(__ubuf__  uint8_t* dst, vector_store_unalign src, iter_reg offset);
@@ -820,6 +920,8 @@ __simd_callee__ inline void asc_storeunalign_post(__ubuf__  uint8_t* dst, vector
 __simd_callee__ inline void asc_storeunalign_post(__ubuf__  fp4x2_e2m1_t* dst, vector_store_unalign src, iter_reg offset);
 
 __simd_callee__ inline void asc_storeunalign_post(__ubuf__  fp4x2_e1m2_t* dst, vector_store_unalign src, iter_reg offset);
+
+__simd_callee__ inline void asc_storeunalign_post(__ubuf__  int4b_t* dst, vector_store_unalign src, iter_reg offset);
 
 __simd_callee__ inline void asc_storeunalign_post(__ubuf__  fp8_e8m0_t* dst, vector_store_unalign src, iter_reg offset);
 
@@ -854,6 +956,8 @@ __simd_callee__ inline void asc_storeunalign_post_postupdate(__ubuf__  fp4x2_e2m
 
 __simd_callee__ inline void asc_storeunalign_post_postupdate(__ubuf__  fp4x2_e1m2_t*& dst, vector_store_unalign src, int32_t offset);
 
+__simd_callee__ inline void asc_storeunalign_post_postupdate(__ubuf__  int4b_t*& dst, vector_store_unalign src, int32_t offset);
+
 __simd_callee__ inline void asc_storeunalign_post_postupdate(__ubuf__  fp8_e8m0_t*& dst, vector_store_unalign src, int32_t offset);
 
 __simd_callee__ inline void asc_storeunalign_post_postupdate(__ubuf__  fp8_e5m2_t*& dst, vector_store_unalign src, int32_t offset);
@@ -886,6 +990,8 @@ __simd_callee__ inline void asc_store(__ubuf__  uint8_t* dst, vector_uint8_t src
 __simd_callee__ inline void asc_store(__ubuf__  fp4x2_e2m1_t* dst, vector_fp4x2_e2m1_t src);
 
 __simd_callee__ inline void asc_store(__ubuf__  fp4x2_e1m2_t* dst, vector_fp4x2_e1m2_t src);
+
+__simd_callee__ inline void asc_store(__ubuf__  int4b_t* dst, vector_int4x2_t src);
 
 __simd_callee__ inline void asc_store(__ubuf__  fp8_e8m0_t* dst, vector_fp8_e8m0_t src);
 
@@ -941,5 +1047,35 @@ __simd_callee__ inline void asc_store(__ubuf__ hifloat8_t* dst, vector_hifloat8_
 __simd_callee__ inline void asc_store(__ubuf__  fp4x2_e2m1_t* dst, vector_fp4x2_e2m1_t src, uint32_t count);
 
 __simd_callee__ inline void asc_store(__ubuf__  fp4x2_e1m2_t* dst, vector_fp4x2_e1m2_t src, uint32_t count);
+
+__simd_callee__ inline void asc_store(__ubuf__  int4b_t* dst, vector_int4x2_t src, uint32_t count);
+
+__simd_callee__ inline void asc_storealign(__ubuf__ uint32_t* dst, vector_bool src, iter_reg  offset);
+__simd_callee__ inline void asc_storealign_pack(__ubuf__ uint32_t* dst,  vector_bool src,  iter_reg  offset);
+__simd_callee__ inline void asc_storealign(__ubuf__ uint16_t* dst, vector_bool src, iter_reg  offset);
+__simd_callee__ inline void asc_storealign_pack(__ubuf__ uint16_t* dst,  vector_bool src,  iter_reg  offset);
+__simd_callee__ inline void asc_storealign(__ubuf__ uint8_t* dst, vector_bool src, iter_reg  offset);
+__simd_callee__ inline void asc_storealign_pack(__ubuf__ uint8_t* dst,  vector_bool src,  iter_reg  offset);
+
+__simd_callee__ inline void asc_storealign(__ubuf__ uint32_t* dst, vector_bool src);
+__simd_callee__ inline void asc_storealign_pack(__ubuf__ uint32_t* dst, vector_bool src);
+__simd_callee__ inline void asc_storealign(__ubuf__ uint16_t* dst, vector_bool src);
+__simd_callee__ inline void asc_storealign_pack(__ubuf__ uint16_t* dst, vector_bool src);
+__simd_callee__ inline void asc_storealign(__ubuf__ uint8_t* dst, vector_bool src);
+__simd_callee__ inline void asc_storealign_pack(__ubuf__ uint8_t* dst, vector_bool src);
+
+__simd_callee__ inline void asc_storealign(__ubuf__ uint32_t* dst,  vector_bool src, int32_t  offset);
+__simd_callee__ inline void asc_storealign_pack(__ubuf__ uint32_t* dst, vector_bool src, int32_t offset);
+__simd_callee__ inline void asc_storealign(__ubuf__ uint16_t* dst,  vector_bool src, int32_t  offset);
+__simd_callee__ inline void asc_storealign_pack(__ubuf__ uint16_t* dst, vector_bool src, int32_t offset);
+__simd_callee__ inline void asc_storealign(__ubuf__ uint8_t* dst,  vector_bool src, int32_t  offset);
+__simd_callee__ inline void asc_storealign_pack(__ubuf__ uint8_t* dst, vector_bool src, int32_t offset);
+
+__simd_callee__ inline void asc_storealign_postupdate(__ubuf__ uint32_t*& dst, vector_bool src, int32_t offset);
+__simd_callee__ inline void asc_storealign_pack_postupdate(__ubuf__ uint32_t*& dst, vector_bool src, int32_t offset);
+__simd_callee__ inline void asc_storealign_postupdate(__ubuf__ uint16_t*& dst, vector_bool src, int32_t offset);
+__simd_callee__ inline void asc_storealign_pack_postupdate(__ubuf__ uint16_t*& dst, vector_bool src, int32_t offset);
+__simd_callee__ inline void asc_storealign_postupdate(__ubuf__ uint8_t*& dst, vector_bool src, int32_t offset);
+__simd_callee__ inline void asc_storealign_pack_postupdate(__ubuf__ uint8_t*& dst, vector_bool src, int32_t offset);
 
 #endif

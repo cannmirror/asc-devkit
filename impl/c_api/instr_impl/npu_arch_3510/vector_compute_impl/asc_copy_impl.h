@@ -101,6 +101,20 @@ __simd_callee__ inline void asc_copy_impl(vector_bool& dst, vector_bool src)
         pmov(dst, src);
     }
 }
+
+__simd_callee__ inline void asc_copy_impl(vector_bool& dst, vector_uint16_t src, int16_t part)
+{
+    if ASC_IS_AIV{
+        movvp(dst, src, part);
+    }
+}
+
+__simd_callee__ inline void asc_copy_impl(vector_bool& dst, vector_uint32_t src, int16_t part)
+{
+    if ASC_IS_AIV{
+        movvp(dst, src, part);
+    }
+}
 #endif
 
 #if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)

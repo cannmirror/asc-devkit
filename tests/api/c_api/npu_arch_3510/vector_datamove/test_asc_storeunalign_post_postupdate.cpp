@@ -65,6 +65,32 @@ TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 
+#define TEST_VECTOR_DATAMOVE_STOREUNALIGN_INSTR_5_INT4B(class_name, c_api_name, cce_name, data_type)  \
+                                                                                                \
+class TestVectorDataMove##class_name##_##data_type##_CApi : public testing::Test {              \
+protected:                                                                                      \
+    void SetUp() {}                                                                             \
+    void TearDown() {}                                                                          \
+};                                                                                              \
+                                                                                                \
+namespace {                                                                                     \
+void cce_name##_##data_type##_Stub(vector_store_unalign src, __ubuf__ float4_e1m2x2_t *&dst, int32_t offset, Literal dist) {} \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_type##_Succ)    \
+{                                                                                               \
+    __ubuf__ data_type *dst = reinterpret_cast<__ubuf__ data_type *>(0);                        \
+    vector_store_unalign src;                                                                     \
+    iter_reg offset;                                                                            \
+                                                                                                \
+    MOCKER_CPP(cce_name, void(vector_store_unalign, __ubuf__ float4_e1m2x2_t *&, int32_t, Literal))     \
+        .times(1)                                                                               \
+        .will(invoke(cce_name##_##data_type##_Stub));                                           \
+                                                                                                \
+    c_api_name(dst, src, offset);                                                               \
+    GlobalMockObject::verify();                                                                 \
+}                                                                                               \
+
 TEST_VECTOR_DATAMOVE_STOREUNALIGN_INSTR_5(Vstas, asc_storeunalign_post_postupdate, vstas, int8_t);
 TEST_VECTOR_DATAMOVE_STOREUNALIGN_INSTR_5(Vstas, asc_storeunalign_post_postupdate, vstas, uint8_t);
 TEST_VECTOR_DATAMOVE_STOREUNALIGN_INSTR_5(Vstas, asc_storeunalign_post_postupdate, vstas, int16_t);
@@ -81,3 +107,4 @@ TEST_VECTOR_DATAMOVE_STOREUNALIGN_INSTR_5(Vstas, asc_storeunalign_post_postupdat
 TEST_VECTOR_DATAMOVE_STOREUNALIGN_INSTR_5(Vstas, asc_storeunalign_post_postupdate, vstas, fp8_e8m0_t);
 TEST_VECTOR_DATAMOVE_STOREUNALIGN_INSTR_5(Vstas, asc_storeunalign_post_postupdate, vstas, fp4x2_e2m1_t);
 TEST_VECTOR_DATAMOVE_STOREUNALIGN_INSTR_5(Vstas, asc_storeunalign_post_postupdate, vstas, fp4x2_e1m2_t);
+TEST_VECTOR_DATAMOVE_STOREUNALIGN_INSTR_5_INT4B(Vstas, asc_storeunalign_post_postupdate, vstas, int4b_t);

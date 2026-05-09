@@ -18,7 +18,7 @@
 
 #define TEST_CUBE_COMPUTE_FIXPIPE_L0C2L1_INSTR(class_name, c_api_name, cce_name, dst_data_type, src_data_type)          \
                                                                                                                         \
-class TestCubeDatamove##class_name##_##dst_data_type##src_data_type : public testing::Test {                            \
+class TestCubeDatamove##class_name##_##dst_data_type##_##src_data_type : public testing::Test {                            \
 protected:                                                                                                              \
     void SetUp() {                                                                                                      \
         g_coreType = C_API_AIC_TYPE;                                                                             \
@@ -75,7 +75,7 @@ void c_api_name##_##dst_data_type##_##src_data_type##_Stub(__cbuf__ dst_data_typ
 }                                                                                                                       \
 }                                                                                                                       \
                                                                                                                         \
-TEST_F(TestCubeDatamove##class_name##_##dst_data_type##src_data_type, c_api_name_##dst_data_type##_##src_data_type##_Succ) \
+TEST_F(TestCubeDatamove##class_name##_##dst_data_type##_##src_data_type, c_api_name##dst_data_type##_##src_data_type##_Succ) \
 {                                                                                                                       \
     __cbuf__ dst_data_type * dst = reinterpret_cast<__cbuf__ dst_data_type *>(1);                                       \
     __cc__ src_data_type * src = reinterpret_cast<__cc__ src_data_type *>(2);                                           \
@@ -103,13 +103,57 @@ TEST_F(TestCubeDatamove##class_name##_##dst_data_type##src_data_type, c_api_name
     GlobalMockObject::verify();                                                                                         \
 }
 
+// copy_matrix_cc_to_cbuf_s4
+#define TEST_CUBE_COMPUTE_FIXPIPE_L0C2L1_S4_INSTR(class_name, c_api_name, cce_name, dst_data_type, src_data_type) \
+class TestCubeDatamoveS4##class_name##_##dst_data_type##_##src_data_type : public testing::Test { \
+    protected: \
+        void SetUp() { \
+            g_coreType = C_API_AIC_TYPE; \
+        } \
+        void TearDown() { \
+            g_coreType = C_API_AIV_TYPE; \
+        } \
+    }; \
+TEST_F(TestCubeDatamoveS4##class_name##_##dst_data_type##_##src_data_type, c_api_name##_##dst_data_type##_##src_data_type##_Succ) \
+{ \
+    __cbuf__ dst_data_type * dst = reinterpret_cast<__cbuf__ dst_data_type *>(1); \
+    __cc__ src_data_type * src = reinterpret_cast<__cc__ src_data_type *>(2); \
+    uint16_t n_size = 3; \
+    uint16_t m_size = 4; \
+    uint32_t loop_dst_stride = 6; \
+    uint16_t loop_src_stride = 7; \
+    uint8_t l2_cache_ctl = 5; \
+    uint8_t clip_relu_pre = 8; \
+    uint8_t unit_flag_ctl = 10; \
+    uint64_t quant_pre = 11; \
+    uint8_t relu_pre = 12; \
+    bool split_en = true; \
+    bool NZ2ND_en = true; \
+    uint64_t quant_post = 13; \
+    uint8_t relu_post = 14; \
+    bool clip_relu_post = true; \
+    uint8_t eltwise_op = 15; \
+    bool eltwise_antq_en = true; \
+    bool C0_pad_en = true; \
+    bool broadcast_en = false; \
+    bool NZ2DN_en = false; \
+    c_api_name(dst, src, n_size, m_size, loop_dst_stride, loop_src_stride, l2_cache_ctl, clip_relu_pre, \
+        unit_flag_ctl, quant_pre, relu_pre, split_en, NZ2ND_en, quant_post, relu_post, clip_relu_post, \
+        eltwise_op, eltwise_antq_en, C0_pad_en, broadcast_en, NZ2DN_en); \
+    GlobalMockObject::verify(); \
+}
+
 #endif
 
-TEST_CUBE_COMPUTE_FIXPIPE_L0C2L1_INSTR(L0c2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf, half, float);
-TEST_CUBE_COMPUTE_FIXPIPE_L0C2L1_INSTR(L0c2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf, int8_t, float);
-TEST_CUBE_COMPUTE_FIXPIPE_L0C2L1_INSTR(L0c2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf, uint8_t, float);
-TEST_CUBE_COMPUTE_FIXPIPE_L0C2L1_INSTR(L0c2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf, float, float);
-TEST_CUBE_COMPUTE_FIXPIPE_L0C2L1_INSTR(L0c2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf, half, int32_t);
-TEST_CUBE_COMPUTE_FIXPIPE_L0C2L1_INSTR(L0c2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf, int8_t, int32_t);
-TEST_CUBE_COMPUTE_FIXPIPE_L0C2L1_INSTR(L0c2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf, uint8_t, int32_t);
-TEST_CUBE_COMPUTE_FIXPIPE_L0C2L1_INSTR(L0c2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf, int32_t, int32_t);
+
+TEST_CUBE_COMPUTE_FIXPIPE_L0C2L1_INSTR(L0C2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf, half, float);
+TEST_CUBE_COMPUTE_FIXPIPE_L0C2L1_INSTR(L0C2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf, int8_t, float);
+TEST_CUBE_COMPUTE_FIXPIPE_L0C2L1_INSTR(L0C2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf, uint8_t, float);
+TEST_CUBE_COMPUTE_FIXPIPE_L0C2L1_INSTR(L0C2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf, float, float);
+TEST_CUBE_COMPUTE_FIXPIPE_L0C2L1_INSTR(L0C2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf, half, int32_t);
+TEST_CUBE_COMPUTE_FIXPIPE_L0C2L1_INSTR(L0C2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf, int8_t, int32_t);
+TEST_CUBE_COMPUTE_FIXPIPE_L0C2L1_INSTR(L0C2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf, uint8_t, int32_t);
+TEST_CUBE_COMPUTE_FIXPIPE_L0C2L1_INSTR(L0C2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf, int32_t, int32_t);
+
+TEST_CUBE_COMPUTE_FIXPIPE_L0C2L1_S4_INSTR(L0C2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf_s4, void, float);
+TEST_CUBE_COMPUTE_FIXPIPE_L0C2L1_S4_INSTR(L0C2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf_s4, void, int32_t);

@@ -13,7 +13,7 @@
 #include "tests/api/c_api/stub/cce_stub.h"
 #include "include/c_api/asc_simd.h"
 
-#define TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(class_name, c_api_name, cce_name, data_type, cce_data_type)            \
+#define TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(class_name, c_api_name, cce_name, dst_data_type, data_type, cce_data_type)            \
                                                                                                 \
 class TestVectorDataMove##class_name##_##data_type##_CApi : public testing::Test {                 \
 protected:                                                                                      \
@@ -29,7 +29,7 @@ void cce_name##_##data_type##_Stub(vector_##cce_data_type& dst, __ubuf__ cce_dat
 TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_type##_Succ)       \
 {                                                                                               \
     __ubuf__ data_type *src = reinterpret_cast<__ubuf__ data_type *>(0);               \
-    vector_##data_type dst;                                                                             \
+    dst_data_type dst;                                                                             \
     vector_uint32_t index;                                                                             \
     vector_bool mask;                                                                           \
                                                                                                 \
@@ -41,7 +41,7 @@ TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 
-#define TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(class_name, c_api_name, cce_name, data_type, cce_data_type)            \
+#define TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(class_name, c_api_name, cce_name, dst_data_type, data_type, cce_data_type)            \
                                                                                                 \
 class TestVectorDataMove##class_name##_##data_type##_CApi : public testing::Test {                 \
 protected:                                                                                      \
@@ -56,7 +56,7 @@ void cce_name##_##data_type##_Stub_1(vector_##cce_data_type& dst, __ubuf__ cce_d
 TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_type##_Succ)       \
 {                                                                                               \
     __ubuf__ data_type *src = reinterpret_cast<__ubuf__ data_type *>(0);               \
-    vector_##data_type dst;                                                                             \
+    dst_data_type dst;                                                                             \
     vector_uint32_t index;                                                                             \
                                                                                                 \
     MOCKER_CPP(cce_name, void(vector_##cce_data_type&, __ubuf__ cce_data_type *, vector_uint32_t))                     \
@@ -67,36 +67,38 @@ TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, int8_t, int8_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, uint8_t, uint8_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, int16_t, int16_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, uint16_t, uint16_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, int32_t, int32_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, uint32_t, uint32_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, int64_t, int64_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, uint64_t, uint64_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, half, half);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, float, float);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, bfloat16_t, bfloat16_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, fp8_e4m3fn_t, fp8_e4m3fn_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, hifloat8_t, uint8_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, fp8_e5m2_t, fp8_e5m2_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, fp4x2_e2m1_t, fp4x2_e2m1_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, fp4x2_e1m2_t, fp4x2_e1m2_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, fp8_e8m0_t, fp8_e8m0_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, int8_t, int8_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, uint8_t, uint8_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, int16_t, int16_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, uint16_t, uint16_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, int32_t, int32_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, uint32_t, uint32_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, int64_t, int64_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, half, half);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, float, float);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, bfloat16_t, bfloat16_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, fp8_e4m3fn_t, fp8_e4m3fn_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, hifloat8_t, uint8_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, fp8_e5m2_t, fp8_e5m2_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, fp4x2_e2m1_t, fp4x2_e2m1_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, fp4x2_e1m2_t, fp4x2_e1m2_t);
-TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, fp8_e8m0_t, fp8_e8m0_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, vector_int8_t, int8_t, int8_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, vector_uint8_t, uint8_t, uint8_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, vector_int16_t, int16_t, int16_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, vector_uint16_t, uint16_t, uint16_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, vector_int32_t, int32_t, int32_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, vector_uint32_t, uint32_t, uint32_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, vector_int64_t, int64_t, int64_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, vector_uint64_t, uint64_t, uint64_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, vector_half, half, half);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, vector_float, float, float);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, vector_bfloat16_t, bfloat16_t, bfloat16_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, vector_fp8_e4m3fn_t, fp8_e4m3fn_t, fp8_e4m3fn_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, vector_hifloat8_t, hifloat8_t, uint8_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, vector_fp8_e5m2_t, fp8_e5m2_t, fp8_e5m2_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, vector_fp4x2_e2m1_t, fp4x2_e2m1_t, fp4x2_e2m1_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, vector_fp4x2_e1m2_t, fp4x2_e1m2_t, fp4x2_e1m2_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, vector_int4x2_t, int4b_t, fp4x2_e1m2_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_0(Vgatherb, asc_gather_datablock, vgatherb, vector_fp8_e8m0_t, fp8_e8m0_t, fp8_e8m0_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, vector_int8_t, int8_t, int8_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, vector_uint8_t, uint8_t, uint8_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, vector_int16_t, int16_t, int16_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, vector_uint16_t, uint16_t, uint16_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, vector_int32_t, int32_t, int32_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, vector_uint32_t, uint32_t, uint32_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, vector_int64_t, int64_t, int64_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, vector_half, half, half);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, vector_float, float, float);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, vector_bfloat16_t, bfloat16_t, bfloat16_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, vector_fp8_e4m3fn_t, fp8_e4m3fn_t, fp8_e4m3fn_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, vector_hifloat8_t, hifloat8_t, uint8_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, vector_fp8_e5m2_t, fp8_e5m2_t, fp8_e5m2_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, vector_fp4x2_e2m1_t, fp4x2_e2m1_t, fp4x2_e2m1_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, vector_fp4x2_e1m2_t, fp4x2_e1m2_t, fp4x2_e1m2_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, vector_int4x2_t, int4b_t, fp4x2_e1m2_t);
+TEST_VECTOR_DATAMOVE_GATHER_DATABLOCK_INSTR_1(Vgatherb_1, asc_gather_datablock, vgatherb, vector_fp8_e8m0_t, fp8_e8m0_t, fp8_e8m0_t);

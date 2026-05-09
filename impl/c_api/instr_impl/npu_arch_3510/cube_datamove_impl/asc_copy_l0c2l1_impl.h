@@ -141,6 +141,60 @@ __aicore__ inline void asc_copy_l0c2l1_impl(__cbuf__ int32_t* dst, __cc__ int32_
     }
 }
 
+// void float
+__aicore__ inline void asc_copy_l0c2l1_impl(__cbuf__ void *dst_addr, __cc__ float *src_addr, uint16_t n_size,
+            uint16_t m_size, uint32_t loop_dst_stride, uint16_t loop_src_stride, uint8_t l2_cache_ctl, uint8_t clip_relu_pre,
+            uint8_t unit_flag_ctl, uint64_t quant_pre, uint8_t relu_pre, bool split_en, bool NZ2ND_en, uint64_t quant_post,
+            uint8_t relu_post, bool clip_relu_post, uint8_t eltwise_op, bool eltwise_antq_en,
+            bool C0_pad_en, bool broadcast_en, bool NZ2DN_en)
+{
+    if ASC_IS_AIC {
+        copy_matrix_cc_to_cbuf_s4(dst_addr, src_addr, 0, n_size, m_size, loop_dst_stride, loop_src_stride, l2_cache_ctl, clip_relu_pre,
+            unit_flag_ctl, static_cast<QuantMode_t>(quant_pre), relu_pre, split_en, NZ2ND_en, static_cast<QuantMode_post>(quant_post),
+            relu_post, clip_relu_post, false, eltwise_op, eltwise_antq_en, false, C0_pad_en, false,
+            broadcast_en, NZ2DN_en);
+    }
+}
+
+__aicore__ inline void asc_copy_l0c2l1_sync_impl(__cbuf__ void *dst_addr, __cc__ float *src_addr, uint16_t n_size,
+            uint16_t m_size, uint32_t loop_dst_stride, uint16_t loop_src_stride, uint8_t l2_cache_ctl, uint8_t clip_relu_pre,
+            uint8_t unit_flag_ctl, uint64_t quant_pre, uint8_t relu_pre, bool split_en, bool NZ2ND_en, uint64_t quant_post,
+            uint8_t relu_post, bool clip_relu_post, uint8_t eltwise_op, bool eltwise_antq_en,
+            bool C0_pad_en, bool broadcast_en, bool NZ2DN_en)
+{
+    asc_copy_l0c2l1_impl(dst_addr, src_addr, n_size, m_size, loop_dst_stride, loop_src_stride, l2_cache_ctl, clip_relu_pre,
+        unit_flag_ctl, quant_pre, relu_pre, split_en, NZ2ND_en, quant_post, relu_post, clip_relu_post,
+        eltwise_op, eltwise_antq_en, C0_pad_en, broadcast_en, NZ2DN_en);
+    asc_sync_post_process();
+}
+
+// void int32_t
+__aicore__ inline void asc_copy_l0c2l1_impl(__cbuf__ void *dst_addr, __cc__ int32_t *src_addr, uint16_t n_size,
+            uint16_t m_size, uint32_t loop_dst_stride, uint16_t loop_src_stride, uint8_t l2_cache_ctl, uint8_t clip_relu_pre,
+            uint8_t unit_flag_ctl, uint64_t quant_pre, uint8_t relu_pre, bool split_en, bool NZ2ND_en, uint64_t quant_post,
+            uint8_t relu_post, bool clip_relu_post, uint8_t eltwise_op, bool eltwise_antq_en,
+            bool C0_pad_en, bool broadcast_en, bool NZ2DN_en)
+{
+    if ASC_IS_AIC {
+        copy_matrix_cc_to_cbuf_s4(dst_addr, src_addr, 0, n_size, m_size, loop_dst_stride, loop_src_stride, l2_cache_ctl, clip_relu_pre,
+            unit_flag_ctl, static_cast<QuantMode_t>(quant_pre), relu_pre, split_en, NZ2ND_en, static_cast<QuantMode_post>(quant_post),
+            relu_post, clip_relu_post, false, eltwise_op, eltwise_antq_en, false, C0_pad_en, false,
+            broadcast_en, NZ2DN_en);
+    }
+}
+
+__aicore__ inline void asc_copy_l0c2l1_sync_impl(__cbuf__ void *dst_addr, __cc__ int32_t *src_addr, uint16_t n_size,
+            uint16_t m_size, uint32_t loop_dst_stride, uint16_t loop_src_stride, uint8_t l2_cache_ctl, uint8_t clip_relu_pre,
+            uint8_t unit_flag_ctl, uint64_t quant_pre, uint8_t relu_pre, bool split_en, bool NZ2ND_en, uint64_t quant_post,
+            uint8_t relu_post, bool clip_relu_post, uint8_t eltwise_op, bool eltwise_antq_en,
+            bool C0_pad_en, bool broadcast_en, bool NZ2DN_en)
+{
+    asc_copy_l0c2l1_impl(dst_addr, src_addr, n_size, m_size, loop_dst_stride, loop_src_stride, l2_cache_ctl, clip_relu_pre,
+        unit_flag_ctl, quant_pre, relu_pre, split_en, NZ2ND_en, quant_post, relu_post, clip_relu_post,
+        eltwise_op, eltwise_antq_en, C0_pad_en, broadcast_en, NZ2DN_en);
+    asc_sync_post_process();
+}
+
 #endif
 
 #if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)

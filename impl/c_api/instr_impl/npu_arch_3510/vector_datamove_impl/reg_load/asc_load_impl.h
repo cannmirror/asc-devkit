@@ -162,4 +162,13 @@ __simd_callee__ inline void asc_load_impl(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4
     }
 }
 
+__simd_callee__ inline void asc_load_impl(vector_int4x2_t& dst, __ubuf__ int4b_t* src)
+{
+    if ASC_IS_AIV {
+        vector_load_unalign ureg;
+        asc_loadunalign_pre_impl(ureg, src);
+        asc_loadunalign_impl(dst, ureg, src);
+    }
+}
+
 #endif

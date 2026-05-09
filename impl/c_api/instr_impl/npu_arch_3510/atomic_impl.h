@@ -23,6 +23,9 @@
 #include "instr_impl/npu_arch_3510/atomic_impl/asc_set_atomic_min_bfloat_impl.h"
 #include "instr_impl/npu_arch_3510/atomic_impl/asc_set_atomic_max_bfloat_impl.h"
 #include "instr_impl/npu_arch_3510/atomic_impl/asc_set_atomic_min_float16_impl.h"
+#include "instr_impl/npu_arch_3510/atomic_impl/asc_set_atomic_add_int_impl.h"
+#include "instr_impl/npu_arch_3510/atomic_impl/asc_set_atomic_add_int8_impl.h"
+#include "instr_impl/npu_arch_3510/atomic_impl/asc_set_atomic_add_int16_impl.h"
 
  // ==========asc_set_atomic_add_float16==========
 __aicore__ inline void asc_set_atomic_add_float16()
@@ -91,5 +94,22 @@ __aicore__ inline void asc_set_atomic_min_float16()
     asc_set_atomic_min_float16_impl();
 }
 
+// ==========asc_set_atomic_add_int==========
+__aicore__ inline void asc_set_atomic_add_int()
+{
+    asc_set_atomic_add_int_impl();
+}
+
+// ==========asc_set_atomic_add_int8==========
+__aicore__ inline void asc_set_atomic_add_int8()
+{
+    asc_set_atomic_add_int8_impl();
+}
+
+// ==========asc_set_atomic_add_int16==========
+__aicore__ inline void asc_set_atomic_add_int16()
+{
+    asc_set_atomic_add_int16_impl();
+}
 
 #endif

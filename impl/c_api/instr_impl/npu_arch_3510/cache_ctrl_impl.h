@@ -15,6 +15,7 @@
 #include "instr_impl/npu_arch_3510/cache_ctrl_impl/asc_data_cache_preload_impl.h"
 #include "instr_impl/npu_arch_3510/cache_ctrl_impl/asc_dcci_impl.h"
 #include "instr_impl/npu_arch_3510/cache_ctrl_impl/asc_get_icache_preload_status_impl.h"
+#include "instr_impl/npu_arch_3510/cache_ctrl_impl/asc_dci_impl.h"
 
 // ==========asc_icache_preload==========
 __aicore__ inline void asc_icache_preload(const void* addr, int64_t prefetch_len)
@@ -27,9 +28,66 @@ __aicore__ inline void asc_datacache_preload(__gm__ uint64_t* address, int64_t o
     asc_datacache_preload_impl(address, offset);
 }
 
+//==============asc_dcci(__gm__)===============
 __aicore__ inline void asc_dcci_single(__gm__ void* dst)
 {
     asc_dcci_single_impl(dst);
+}
+
+__aicore__ inline void asc_dcci_entire(__gm__ void* dst)
+{
+    asc_dcci_entire_impl(dst);
+}
+
+__aicore__ inline void asc_dcci_single_all(__gm__ void* dst)
+{
+    asc_dcci_single_all_impl(dst);
+}
+
+__aicore__ inline void asc_dcci_single_out(__gm__ void* dst)
+{
+    asc_dcci_single_out_impl(dst);
+}
+
+__aicore__ inline void asc_dcci_single_atomic(__gm__ void* dst)
+{
+    asc_dcci_single_atomic_impl(dst);
+}
+
+__aicore__ inline void asc_dcci_entire_all(__gm__ void* dst)
+{
+    asc_dcci_entire_all_impl(dst);
+}
+
+__aicore__ inline void asc_dcci_entire_out(__gm__ void* dst)
+{
+    asc_dcci_entire_out_impl(dst);
+}
+
+__aicore__ inline void asc_dcci_entire_atomic(__gm__ void* dst)
+{
+    asc_dcci_entire_atomic_impl(dst);
+}
+
+//==============asc_dcci(__ubuf__)===============
+__aicore__ inline void asc_ub_dcci_entire(__ubuf__ void* dst)
+{
+    asc_ub_dcci_entire_impl(dst);
+}
+
+__aicore__ inline void asc_ub_dcci_entire_out(__ubuf__ void* dst)
+{
+    asc_ub_dcci_entire_out_impl(dst);
+}
+
+__aicore__ inline void asc_ub_dcci_entire_atomic(__ubuf__ void* dst)
+{
+    asc_ub_dcci_entire_atomic_impl(dst);
+}
+
+__aicore__ inline void asc_ub_dcci_entire_all(__ubuf__ void* dst)
+{
+    asc_ub_dcci_entire_all_impl(dst);
 }
 
 __aicore__ inline void asc_ub_dcci_single(__ubuf__ void* dst)
@@ -37,19 +95,19 @@ __aicore__ inline void asc_ub_dcci_single(__ubuf__ void* dst)
     asc_ub_dcci_single_impl(dst);
 }
 
-__aicore__ inline void asc_dcci_entire_all()
+__aicore__ inline void asc_ub_dcci_single_out(__ubuf__ void* dst)
 {
-    asc_dcci_entire_all_impl();
+    asc_ub_dcci_single_out_impl(dst);
 }
 
-__aicore__ inline void asc_dcci_entire_out()
+__aicore__ inline void asc_ub_dcci_single_atomic(__ubuf__ void* dst)
 {
-    asc_dcci_entire_out_impl();
+    asc_ub_dcci_single_atomic_impl(dst);
 }
 
-__aicore__ inline void asc_dcci_entire_atomic()
+__aicore__ inline void asc_ub_dcci_single_all(__ubuf__ void* dst)
 {
-    asc_dcci_entire_atomic_impl();
+    asc_ub_dcci_single_all_impl(dst);
 }
 
 //=========asc_get_icache_preload_status========
@@ -58,5 +116,10 @@ __aicore__ inline int64_t asc_get_icache_preload_status()
     return asc_get_icache_preload_status_impl();
 }
 
+//==============asc_dci===============
+__aicore__ inline void asc_dci()
+{
+    asc_dci_impl();
+}
 
 #endif

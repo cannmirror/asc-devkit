@@ -21,22 +21,25 @@ protected:
 };
 
 namespace {
-void asc_sync_block_arrive_stub(pipe_t pipe, uint64_t config)
+constexpr uint16_t SYNC_MODE_SHIFT_VALUE = 4;
+constexpr uint16_t SYNC_FLAG_SHIFT_VALUE = 8;
+
+void ffts_cross_core_sync_stub(pipe_t pipe, uint64_t config)
 {
-    EXPECT_EQ(273, config);
+    uint16_t mode = 0x02;
+    uint64_t flag_id = 5;
+    uint64_t expectedConfig = (0x1 + ((mode & 0x3) << SYNC_MODE_SHIFT_VALUE) + ((flag_id & 0xf) << SYNC_FLAG_SHIFT_VALUE));
+    EXPECT_EQ(pipe, pipe_t::PIPE_V);
+    EXPECT_EQ(config, expectedConfig);
 }
-}
+} // namespace
 
 TEST_F(TestSyncBlkArrive, sync_block_arrive_Succ)
 {
-    uint8_t mode = 1;
-    int64_t flagID = 1;
-    uint64_t config = 273;
-    pipe_t pipe = PIPE_S;
-    MOCKER_CPP(ffts_cross_core_sync, void(pipe_t, uint64_t))
-            .times(1)
-            .will(invoke(asc_sync_block_arrive_stub));
+    pipe_t pipe = pipe_t::PIPE_V;
+    int64_t flag_id = 5;
+    MOCKER_CPP(ffts_cross_core_sync, void(pipe_t, uint64_t)).times(1).will(invoke(ffts_cross_core_sync_stub));
 
-    asc_sync_block_arrive(pipe, mode, flagID);
+    asc_sync_block_arrive(pipe, flag_id);
     GlobalMockObject::verify();
 }

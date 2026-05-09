@@ -41,11 +41,31 @@ __aicore__ inline void asc_sync_mte2(int id);
 
 __aicore__ inline void asc_sync();
 
-__aicore__ inline void asc_sync_block_arrive(pipe_t pipe, uint8_t mode, int64_t flagID);
+#define asc_sync_block_arrive(pipe, flag_id) asc_sync_block_arrive_impl((pipe), (flag_id))
 
-__aicore__ inline void asc_sync_block_wait(int64_t flagID);
+#define asc_sync_data_barrier(arg) asc_sync_data_barrier_impl((arg))
 
-__aicore__ inline void asc_sync_data_barrier(mem_dsb_t arg);
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
+
+#define asc_sync_block_wait(pipe, flagID) wait_flag_dev((flagID))
+
+#define asc_sync_inter_wait(pipe, flagID) wait_flag_dev((flagID))
+
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
+
+#define asc_sync_intra_arrive(pipe, sync_id) set_intra_block((pipe), (sync_id))
+
+#define asc_sync_intra_wait(pipe, sync_id) wait_intra_block((pipe), (sync_id))
+
+#define asc_sync_inter_wait(pipe, flag_id) wait_flag_dev((pipe), (flag_id))
+
+#define asc_sync_block_wait(pipe, flag_id) wait_flag_dev((pipe), (flag_id))
+
+#define asc_release_buf(pipe, buf_id, mode) rls_buf((pipe), (buf_id), (mode))
+
+#define asc_get_buf(pipe, buf_id, mode) asc_get_buf_impl((pipe), (buf_id), (mode))
+
+#endif
 
 #endif
 
@@ -53,4 +73,3 @@ __aicore__ inline void asc_sync_data_barrier(mem_dsb_t arg);
 #undef ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS  
 #undef UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H  
 #endif    
-
