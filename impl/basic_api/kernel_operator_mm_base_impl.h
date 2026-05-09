@@ -524,9 +524,7 @@ __aicore__ inline void MmadSpImpl(const LocalTensor<T>& dst, const LocalTensor<U
     CheckTensorAlignment(dst, 1024, "dst", "MmadWithSparse");             // 1024B aligned
     CheckTensorAlignment(fm, VALUE_512, "fm", "MmadWithSparse");           // 512B aligned
     CheckTensorAlignment(filter, VALUE_512, "filter", "MmadWithSparse");   // 512B aligned
-    CheckValueRange<uint16_t>(mmadParams.m, 0, UINT12_MAX, "m", "MmadWithSparse with MmadParams");
-    CheckValueRange<uint16_t>(mmadParams.n, 0, UINT12_MAX, "n", "MmadWithSparse with MmadParams");
-    CheckValueRange<uint16_t>(mmadParams.k, 0, UINT12_MAX, "k", "MmadWithSparse with MmadParams");
+    CheckMmadParamsCommon(mmadParams, "MmadWithSparse with MmadParams");
 #endif
     MmadSpCal((__cc__ int32_t*)dst.GetPhyAddr(), (__ca__ int8_t*)fm.GetPhyAddr(),
         (__cb__ int8_t*)filter.GetPhyAddr(), mmadParams);
