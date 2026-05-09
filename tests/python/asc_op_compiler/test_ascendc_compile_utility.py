@@ -26,6 +26,7 @@ sys.path.insert(0, FRAMEWORK_PATH)
 
 from asc_op_compile_base.asc_op_compiler.ascendc_common_utility import *
 from asc_op_compile_base.asc_op_compiler.super_kernel_option_parse import *
+from asc_op_compile_base.common.context.op_context import OpContext
 
 
 class TestCompileUtility(unittest.TestCase):
@@ -97,12 +98,23 @@ class TestCompileUtility(unittest.TestCase):
         res = parse_super_kernel_options('"early-start=1"')
         self.assertEqual(res, {'early-start': SuperKernelEarlyStartMode.EarlyStartEnableV2})
 
-    def test_parse_super_kernel_options_convert_underscore_to_hyphen(self):
-        res = parse_super_kernel_options("early_start=1", convert_underscore_to_hyphen=True)
-        self.assertEqual(res, {'early-start': SuperKernelEarlyStartMode.EarlyStartEnableV2})
+    def test_aclgraph_options_accept_dcci_underscore_keys(self):
+        with OpContext() as ctx:
+            ctx.add_addition("super_kernel_sub_combine", True)
+            res = parse_super_kernel_options(
+                "dcci_before_kernel_start=MatMul.*:stream_fusion=1:debug_sync_all=1")
+        self.assertEqual(res, {"dcci-before-kernel-start": "MatMul.*"})
 
-    def test_parse_super_kernel_options_no_convert_underscore(self):
-        self.assertRaises(Exception, parse_super_kernel_options, "early_start=1", False)
+    def test_ge_options_reject_underscore_keys(self):
+        self.assertRaises(Exception, parse_super_kernel_options, "early_start=1")
+
+    def test_aclgraph_options_ignore_numeric_preload_code(self):
+        for value in ("0", "1", "2"):
+            with self.subTest(value=value):
+                with OpContext() as ctx:
+                    ctx.add_addition("super_kernel_sub_combine", True)
+                    res = parse_super_kernel_options(f"preload-code={value}")
+                self.assertEqual(res, {})
 
     def test_check_func_align(self):
         self.assertRaises(Exception, check_func_align, "test")
