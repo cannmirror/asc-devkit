@@ -635,6 +635,7 @@ set_ci_mode() {
 
     if [[ "${CI_ACTION}" == "PKG" && "${PKG}" == "true" ]]; then
       log "[INFO] CI mode: Trigger package build for examples changes."
+      CUSTOM_OPTION="${CUSTOM_OPTION} -DPACKAGE_OPEN_PROJECT=ON -DKERNEL_MODE=OFF"
       build_package
       exit 0
     fi
