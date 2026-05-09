@@ -219,17 +219,13 @@ def _json_post_process(compile_info: CompileInfo, op_info: OpInfo, tiling_info: 
             f"The operator {op_info.op_type} has not been adapted to superkernel. Therefore, \
 the superkernel cannot be integrated with the operator.", \
             AscendCLogLevel.LOG_WARNING)
-    if "isSimt" in js and js["isSimt"] == 1:
-        CommonUtility.print_compile_log(compile_info.kernel_name, \
-        f"The current soc version does not support merging simt type operator:{op_info.op_type} \
-into superkernel", AscendCLogLevel.LOG_WARNING)
 
-    if CommonUtility.is_c310() and "isSimt" not in js:
+    if CommonUtility.is_c310():
         if tiling_info.local_memory_size > 0 or _get_simt_type_in_staic(tiling_info, compile_info, obj_path):
             js["supportSuperKernel"] = 0
-            js["isSimt"] = 1
-        else:
-            js["isSimt"] = 0
+            CommonUtility.print_compile_log(compile_info.kernel_name, \
+            f"The current soc version does not support merging simt type operator:{op_info.op_type} \
+    into superkernel", AscendCLogLevel.LOG_INFO)
 
     aicore_num = get_context().get_addition("_op_aicore_num")
     vectorcore_num = get_context().get_addition("_op_vectorcore_num")
