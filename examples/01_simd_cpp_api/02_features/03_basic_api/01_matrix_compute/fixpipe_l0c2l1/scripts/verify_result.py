@@ -23,9 +23,11 @@ error_tol = 1e-3
 def verify_result(output, golden, scenarioNum, ascArch):
     if (scenarioNum == "1") or (scenarioNum == "4"):
         if ascArch == "dav-2201":
-            return -1
-        output = np.fromfile(output, dtype=np.float32).reshape(-1)
-        golden = np.fromfile(golden, dtype=np.float32).reshape(-1)
+            output = np.fromfile(output, dtype=np.float16).reshape(-1)
+            golden = np.fromfile(golden, dtype=np.float16).reshape(-1)
+        else:
+            output = np.fromfile(output, dtype=np.float32).reshape(-1)
+            golden = np.fromfile(golden, dtype=np.float32).reshape(-1)
     else:
         if ascArch == "dav-2201":
             output = np.fromfile(output, dtype=np.int8).reshape(-1)

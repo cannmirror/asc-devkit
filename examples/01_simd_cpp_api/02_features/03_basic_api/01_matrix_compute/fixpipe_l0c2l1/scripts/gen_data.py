@@ -122,7 +122,6 @@ def gen_golden_data(scenarioNum=1, ascArch="dav-2201"):
     kRound = 2 #沿着K轴切分为两块
 
     input_type = np.dtype("float16")
-    output_type = np.dtype("float32")
     x1_gm = np.random.uniform(-2, 2, [M, K]).astype(input_type)
     x2_gm = np.random.uniform(-2, 2, [K, N]).astype(input_type)
     golden = np.matmul(x1_gm.astype(np.float32), x2_gm.astype(np.float32)).astype(np.float32)
@@ -137,29 +136,35 @@ def gen_golden_data(scenarioNum=1, ascArch="dav-2201"):
     os.makedirs("output", exist_ok=True)
 
     if scenarioNum == 1:
-        golden = golden.astype(np.float16)
+        l1_output_type = np.dtype("float16")
+        golden = golden.astype(l1_output_type)
+        block_cols = 16
+        golden_a2 = golden.reshape((int(M / 16), 16, int(N / block_cols), block_cols)).transpose(2, 0, 1, 3).astype(l1_output_type)
         # 针对dav-3510，再计算一次普通矩阵乘法并搬出到GM做计算结果验证
         golden = np.matmul(golden.astype(np.float32), x3_gm_half.astype(np.float32)).astype(np.float32)
 
     elif scenarioNum == 2:
-        output_type = np.dtype("int8")
-        golden = pre_quant_relu(golden, output_type, M, N, 1, 0) #scalar
+        l1_output_type = np.dtype("int8")
+        golden = pre_quant_relu(golden, l1_output_type, M, N, 1, 0) #scalar
         block_cols = 32
-        golden_a2 = golden.reshape((int(M / 16), 16, int(N / block_cols), block_cols)).transpose(2, 0, 1, 3).astype(output_type)
+        golden_a2 = golden.reshape((int(M / 16), 16, int(N / block_cols), block_cols)).transpose(2, 0, 1, 3).astype(l1_output_type)
         # 针对dav-3510，再计算一次普通矩阵乘法并搬出到GM做计算结果验证
         golden = np.matmul(golden.astype(np.int32), x3_gm_int8.astype(np.int32)).astype(np.int32)
 
     elif scenarioNum == 3:
-        output_type = np.dtype("int8")
-        golden = pre_quant_relu(golden, output_type, M, N, 2, 0) #vector
+        l1_output_type = np.dtype("int8")
+        golden = pre_quant_relu(golden, l1_output_type, M, N, 2, 0) #vector
         block_cols = 32
-        golden_a2 = golden.reshape((int(M / 16), 16, int(N / block_cols), block_cols)).transpose(2, 0, 1, 3).astype(output_type)
+        golden_a2 = golden.reshape((int(M / 16), 16, int(N / block_cols), block_cols)).transpose(2, 0, 1, 3).astype(l1_output_type)
         # 针对dav-3510，再计算一次普通矩阵乘法并搬出到GM做计算结果验证
         golden = np.matmul(golden.astype(np.int32), x3_gm_int8.astype(np.int32)).astype(np.int32)
 
     elif scenarioNum == 4:
-        golden = np.maximum(golden, 0).astype(output_type)
-        golden = golden.astype(np.float16)
+        l1_output_type = np.dtype("float16")
+        golden = np.maximum(golden, 0)
+        golden = golden.astype(l1_output_type)
+        block_cols = 16
+        golden_a2 = golden.reshape((int(M / 16), 16, int(N / block_cols), block_cols)).transpose(2, 0, 1, 3).astype(l1_output_type)
         # 针对dav-3510，再计算一次普通矩阵乘法并搬出到GM做计算结果验证
         golden = np.matmul(golden.astype(np.float32), x3_gm_half.astype(np.float32)).astype(np.float32)
 

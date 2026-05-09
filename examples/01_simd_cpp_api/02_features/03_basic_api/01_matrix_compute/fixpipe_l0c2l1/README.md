@@ -2,10 +2,10 @@
 
 ## 概述
 
-本样例介绍如何使用Fixpipe将矩阵乘的结果从CO1（L0C Buffer）搬出到L1（L1 Buffer），支持数据类型转换、随路量化、ReLU等功能。这些接口用于将L0C中的矩阵乘计算结果高效地传输到内存，并支持各种数据格式转换和预处理能力。
+本样例介绍如何使用Fixpipe将矩阵乘的结果从L0C（L0C Buffer）搬出到L1（L1 Buffer），支持数据类型转换、随路量化、ReLU等功能。这些接口用于将L0C中的矩阵乘计算结果高效地传输到L1 Buffer，并支持各种数据格式转换和预处理能力。
 
 注意：
-- Atlas A3 训练系列产品/Atlas A3 推理系列产品、Atlas A2 训练系列产品/Atlas A2 推理系列产品仅支持输出格式为Nz，且不支持输出数据类型为float，必须量化为其他数据类型。
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品、Atlas A2 训练系列产品/Atlas A2 推理系列产品在L0C到L1通路下仅支持输出格式为Nz，且不支持输出数据类型为float，必须量化为其他数据类型。
 - Ascend 950PR/Ascend 950DT不支持将数据从L1直接搬运到GM，因此，本样例中从L0C搬运到L1上的结果矩阵将作为下一次矩阵乘的输入，再进行一次矩阵计算并将结果输出到GM。（Atlas A2/A3系列产品支持将数据从L1直接搬运到GM，本样例中选择直接搬出）
 
 
@@ -44,7 +44,7 @@
 <tr><td align="center">`nSize`</td><td align="center">✅</td><td align="center">✅</td><td>输出矩阵在N方向上的大小</td></tr>
 <tr><td align="center">`mSize`</td><td align="center">✅</td><td align="center">✅</td><td>输出矩阵在M方向上的大小</td></tr>
 <tr><td align="center">`srcStride`</td><td align="center">✅</td><td align="center">✅</td><td>源Nz矩阵中相邻Z排布的起始地址偏移</td></tr>
-<tr><td align="center">`dstStride`</td><td align="center">✅</td><td align="center">✅</td><td>目的矩阵中相邻Z排布的起始地址偏移（Nz格式）或每行元素个数（ND/DN格式）</td></tr>
+<tr><td align="center">`dstStride`</td><td align="center">✅</td><td align="center">✅</td><td>目的矩阵中相邻Z排布的起始地址偏移（Nz格式，注意两种结构体在单位上的区别）或每行元素个数（ND/DN格式）</td></tr>
 <tr><td align="center">`quantPre`</td><td align="center">✅</td><td align="center">✅</td><td>量化模式控制</td></tr>
 <tr><td align="center">`deqScalar`</td><td align="center">✅</td><td align="center">✅</td><td>scalar量化参数</td></tr>
 <tr><td align="center">`reluEn`</td><td align="center">✅</td><td align="center">✅</td><td>ReLU开关</td></tr>
@@ -59,24 +59,24 @@
 
 ## 场景详细说明
 
-本样例通过编译参数 `SCENARIO_NUM` 选择不同的输出场景， `SCENARIO_NUM` 不同取值对应的含义如下表所示。其中Atlas A3 训练系列产品/Atlas A3 推理系列产品、Atlas A2 训练系列产品/Atlas A2 推理系列产品可以运行场景2和3，Ascend 950PR/Ascend 950DT可以运行所有场景。
+本样例通过编译参数 `SCENARIO_NUM` 选择不同的输出场景， `SCENARIO_NUM` 不同取值对应的含义如下表所示。
 所有场景基于相同的矩阵乘规格：[M, N, K] = [128, 128, 128]，核函数名为 `fixpipe_l0c2l1`。
 
 <table>
 <caption style="font-weight: normal;">
  	     <span style="font-weight: bold; font-size: 1.2em;">📌 表2：scenarioNum不同取值的含义</span>
-<tr><td rowspan="1" align="center">scenarioNum</td><td align="center">L0C数据类型</td><td align="center">L1数据类型</td><td align="center">输出格式</td><td align="center">是否使能量化</td><td align="center">是否使能ReLU</td><td align="center">支持产品型号</td></tr>
-<tr><td align="center">1</td><td align="center">float</td><td align="center">half</td><td align="center">Nz</td><td align="center">否(cast)</td><td align="center">否</td><td align="center">Ascend 950PR/Ascend 950DT</td></tr>
-<tr><td align="center">2</td><td align="center">float</td><td align="center">int8_t</td><td align="center">Nz</td><td align="center">是(scalar)</td><td align="center">否</td><td align="center">均支持</td></tr>
-<tr><td align="center">3</td><td align="center">float</td><td align="center">int8_t</td><td align="center">Nz</td><td align="center">是(vector)</td><td align="center">否</td><td align="center">均支持</td></tr>
-<tr><td align="center">4</td><td align="center">float</td><td align="center">half</td><td align="center">Nz</td><td align="center">否</td><td align="center">是</td><td align="center">Ascend 950PR/Ascend 950DT</td></tr>
+<tr><td rowspan="1" align="center">scenarioNum</td><td align="center">L0C数据类型</td><td align="center">L1数据类型</td><td align="center">输出格式</td><td align="center">是否使能量化</td><td align="center">是否使能ReLU</td></tr>
+<tr><td align="center">1</td><td align="center">float</td><td align="center">half</td><td align="center">Nz</td><td align="center">否(cast)</td><td align="center">否</td></tr>
+<tr><td align="center">2</td><td align="center">float</td><td align="center">int8_t</td><td align="center">Nz</td><td align="center">是(scalar)</td><td align="center">否</td></tr>
+<tr><td align="center">3</td><td align="center">float</td><td align="center">int8_t</td><td align="center">Nz</td><td align="center">是(vector)</td><td align="center">否</td></tr>
+<tr><td align="center">4</td><td align="center">float</td><td align="center">half</td><td align="center">Nz</td><td align="center">否(cast)</td><td align="center">是</td></tr>
 </table>
 
-**场景1：输出格式Nz，输出到L1数据类型为half（仅Ascend 950PR/Ascend 950DT）**
+**场景1：输出格式Nz，输出到L1数据类型为half**
 - 输入：A [128, 128] half类型，ND格式；B [128, 128] half类型，ND格式
 - 输出：C [128, 128] half类型，Nz格式
-- 实现：使用 `Fixpipe<outputType, l0cType, AscendC::CFG_Nz>` 将数据从CO1搬出到L1，输出为Nz格式
-- 说明：CO1数据为Nz格式直接输出到L1的Nz格式，数据保持原格式不变
+- 实现：使用 `Fixpipe<outputType, l0cType, AscendC::CFG_Nz>` 将数据从L0C搬出到L1，输出为Nz格式
+- 说明：L0C数据为Nz格式直接输出到L1的Nz格式，数据保持原格式不变
 
 **场景2：输出格式Nz，输出到L1数据类型为int8_t，使能Scalar量化**
 - 输入：A [128, 128] half类型，ND格式；B [128, 128] half类型，ND格式
@@ -90,11 +90,11 @@
 - 实现：设置 `fixpipeParams.quantPre = QuantMode_t::VQF322B8_PRE`，使用Vector量化模式，并通过quantAlphaTensor传入每列的量化参数
 - 说明：将float类型数据量化为int8_t类型，C矩阵的每一列对应一个量化参数，使用的量化参数需要从GM拷贝量化参数到L1
 
-**场景4：输出格式Nz，输出到L1数据类型为half，使能ReLU（仅Ascend 950PR/Ascend 950DT）**
+**场景4：输出格式Nz，输出到L1数据类型为half，使能ReLU**
 - 输入：A [128, 128] half类型，ND格式；B [128, 128] half类型，ND格式
 - 输出：C [128, 128] half类型，Nz格式
 - 实现：设置 `fixpipeParams.reluEn = true` 开启ReLU功能
-- 说明：在数据从CO1搬出到L1的过程中执行ReLU操作，即将负值置为0
+- 说明：在数据从L0C搬出到L1的过程中执行ReLU操作，即将负值置为0
 
 ## 编译运行
 
@@ -118,7 +118,7 @@
 
 - 样例执行
   ```bash
-  SCENARIO_NUM=2 ASC_ARCH=dav-2201
+  SCENARIO_NUM=1 ASC_ARCH=dav-2201
   mkdir -p build && cd build;      # 创建并进入build目录
   cmake -DSCENARIO_NUM=$SCENARIO_NUM -DCMAKE_ASC_ARCHITECTURES=$ASC_ARCH ..;make -j;    # 编译工程（默认dav-2201 NPU模式）
   python3 ../scripts/gen_data.py -scenarioNum=$SCENARIO_NUM -ascArch=$ASC_ARCH  # 生成测试输入数据
@@ -129,7 +129,7 @@
 
   示例如下：
   ```bash
-  cmake -DCMAKE_ASC_RUN_MODE=sim -DSCENARIO_NUM=$SCENARIO_NUM -DCMAKE_ASC_ARCHITECTURES=$ASC_ARCH -D_ASC_ARCHITECTURES=$ASC_ARCH_NUM ..;make -j;  # NPU仿真模式
+  cmake -DCMAKE_ASC_RUN_MODE=sim -DSCENARIO_NUM=$SCENARIO_NUM -DCMAKE_ASC_ARCHITECTURES=$ASC_ARCH ..;make -j;  # NPU仿真模式
   ```
 
   > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
