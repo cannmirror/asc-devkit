@@ -325,7 +325,7 @@ Kernel侧的关键步骤介绍如下：
     mm.End();
     ```
 
-更多完整的算子样例请参考[Scale的K方向为偶数的MxMatmul样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/00_matrix/matmul_mx_norm_even)、[Scale的K方向为奇数的MxMatmul样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/00_matrix/matmul_mx_norm_odd)、[mx\_ub\_tscm\_nz样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/00_matrix/matmul_mx_ub_tscm_nz)、[matmul\_mx\_typepara样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/00_matrix/matmul_mx_typepara)。
+更多完整的算子样例请参考[MxMatmul样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/00_matrix/matmul_mx)、[自定义输入来源的MxMatmul样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/00_matrix/matmul_mx_ub_tscm_nz)、[scale多倍缓存的MxMatmul样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/00_matrix/matmul_mx_scale_cache)。
 
 ## 参数说明<a name="zh-cn_topic_0000002270097206_section2756107144914"></a>
 
@@ -405,7 +405,6 @@ Kernel侧的关键步骤介绍如下：
 <td class="cellrowborder" valign="top" width="81.89%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000002270097206_p22682252237"><a name="zh-cn_topic_0000002270097206_p22682252237"></a><a name="zh-cn_topic_0000002270097206_p22682252237"></a>是否开启使能scaleA、scaleB矩阵转置的功能。默认值为ISTRANS参数的取值。参数支持的取值如下：</p>
 <p id="p1407842193011"><a name="p1407842193011"></a><a name="p1407842193011"></a>true：开启使能矩阵转置的功能。开启后，分别通过SetTensorScaleA和SetTensorScaleB中的isTransposeScaleA、isTransposeScaleB参数设置scaleA、scaleB矩阵是否转置。在Scale矩阵为ND格式的场景中，若设置scaleA、scaleB矩阵转置，Matmul会认为scaleA矩阵形状为[Ceil(K/64), M, 2]，scaleB矩阵形状为[N, Ceil(K/64), 2]。</p>
 <p id="p19408124217308"><a name="p19408124217308"></a><a name="p19408124217308"></a>false：不开启使能矩阵转置的功能。通过SetTensorScaleA和SetTensorScaleB不能设置scaleA、scaleB矩阵的转置情况。Matmul会认为scaleA矩阵形状为[M, Ceil(K/64), 2]，scaleB矩阵形状为[Ceil(K/64), N, 2]。</p>
-<p id="zh-cn_topic_0000002270097206_p1714645645816"><a name="zh-cn_topic_0000002270097206_p1714645645816"></a><a name="zh-cn_topic_0000002270097206_p1714645645816"></a>使用该参数的完整样例请参考<span id="zh-cn_topic_0000002270097206_ph176803703218"><a name="zh-cn_topic_0000002270097206_ph176803703218"></a><a name="zh-cn_topic_0000002270097206_ph176803703218"></a><a href="https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/00_matrix/matmul_mx_scalea_trans" target="_blank" rel="noopener noreferrer">scaleA转置scaleB不转置的的MxMatmul样例</a></span>、<span id="zh-cn_topic_0000002270097206_ph170939183211"><a name="zh-cn_topic_0000002270097206_ph170939183211"></a><a name="zh-cn_topic_0000002270097206_ph170939183211"></a><a href="https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/00_matrix/matmul_mx_scaleb_trans" target="_blank" rel="noopener noreferrer">scaleA不转置scaleB转置的的MxMatmul样例</a></span>。</p>
 </td>
 </tr>
 <tr id="zh-cn_topic_0000002270097206_row11254846161912"><td class="cellrowborder" valign="top" width="18.11%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000002270097206_p6158144912199"><a name="zh-cn_topic_0000002270097206_p6158144912199"></a><a name="zh-cn_topic_0000002270097206_p6158144912199"></a>SCALE_SRCPOS</p>

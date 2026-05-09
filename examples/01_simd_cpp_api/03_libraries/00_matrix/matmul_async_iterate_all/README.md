@@ -76,15 +76,36 @@
     source ${install_path}/cann/set_env.sh
     ```
 
-- 样例执行  
+- 样例执行
+
   ```bash
   mkdir -p build && cd build;   # 创建并进入build目录
-  cmake ..;make -j;             # 编译工程
+  cmake -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;             # 编译工程，默认npu模式
   python3 ../scripts/gen_data.py   # 生成测试输入数据
   ./demo                        # 执行编译生成的可执行程序，执行样例
   python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
   ```
-  执行结果如下，说明精度对比成功。
+
+  使用 CPU调试 或 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
+
+  示例如：
+  ```bash
+  cmake -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # cpu调试模式
+  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # NPU仿真模式
+  ```
+
+  > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
+
+- 编译选项说明
+
+  | 参数 | 说明 | 可选值 | 默认值 |
+  |------|------|---------|--------|
+  | CMAKE_ASC_RUN_MODE | 运行模式 | npu, cpu, sim | npu |
+  | CMAKE_ASC_ARCHITECTURES | NPU硬件架构 | dav-2201, dav-3510 | dav-2201 |
+
+- 执行结果
+
+  执行结果如下，说明精度对比成功：
   ```bash
   test pass!
   ```

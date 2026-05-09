@@ -14,7 +14,7 @@ TSCM表示L1 Buffer空间对应的逻辑内存，L1 Buffer相关内容见[存储
 
 ## 调用示例<a name="zh-cn_topic_0000002298654821_section15486294368"></a>
 
-完整的算子样例请参考[自定义数据来源为GM的TSCM输入的Matmul算子样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/00_matrix/matmul_tscm)、[BatchMatmul自定义TSCM输入的算子样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/00_matrix/batch_matmul_tscm)。
+完整的算子样例请参考[自定义数据来源为GM的TSCM输入的Matmul算子样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/00_matrix/matmul_tscm)。
 
 ```
 TQue<TPosition::A1, 1> scm; // 队列逻辑位置A1，队列深度为1
@@ -35,4 +35,3 @@ mm1.SetBias(gm_bias);
 mm1.IterateAll(gm_c);
 scm.FreeTensor(scmLocal);
 ```
-

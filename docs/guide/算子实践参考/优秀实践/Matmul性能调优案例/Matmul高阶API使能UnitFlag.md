@@ -87,7 +87,7 @@
 **图 2**  开启UnitFlag功能<a name="fig58335714416"></a>  
 ![](../../../figures/开启UnitFlag功能.png "开启UnitFlag功能")
 
-Matmul API使能UnitFlag功能的完整样例请参考[Matmul API性能优化样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/00_matrix/matmul_perf)。使能UnitFlag功能的主要步骤如下：
+Matmul API使能UnitFlag功能的完整样例请参考[使能UnitFlag功能和MDL模板的Mamtul样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/00_matrix/matmul_unitflag)。使能UnitFlag功能的主要步骤如下：
 
 1.  自定义MatmulConfig模板参数，将其中的enUnitFlag参数设置为true，使能UnitFlag功能。
 
@@ -124,4 +124,3 @@ Matmul API使能UnitFlag功能的完整样例请参考[Matmul API性能优化样
 ## 总结<a name="section8281219125011"></a>
 
 在算子的MMAD计算流水和FIXPIPE数据搬出流水串行且未被其他流水掩盖（比如MTE2 Bound）时，考虑使能UnitFlag功能，实现MMAD计算流水和FIXPIPE数据搬出流水的流水并行，提升算子性能。
-
