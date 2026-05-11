@@ -22,7 +22,9 @@
 
 __aicore__ inline void asc_set_l0c2gm_channel_para_impl(uint64_t config)
 {
-    set_channel_para(config);
+    if ASC_IS_AIC {
+        set_channel_para(config);
+    }
 }
 #endif
 
