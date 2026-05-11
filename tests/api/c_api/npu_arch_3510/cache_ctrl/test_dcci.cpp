@@ -37,7 +37,11 @@ TEST_F(TestAscCApiSimdDcci, dcci_gm_single)
 {
     __gm__ void* dstPtr = (__gm__ void*)3;
     MOCKER(dcci, void(__gm__ void*, uint64_t)).times(1).will(invoke(dcci_single_Stub));
+#ifdef ASCENDC_CPU_DEBUG
+    __asc_aicore::asc_dcci_single(dstPtr);
+#else
     asc_dcci_single(dstPtr);
+#endif
     GlobalMockObject ::verify();
 }
 

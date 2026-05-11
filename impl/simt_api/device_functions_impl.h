@@ -1027,7 +1027,27 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ float4* address, floa
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(address, val);
 }
 
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_dcci_entire(__gm__ void* dst) {
+    dcci(dst, 1);
+}
+#else
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_dcci_entire(void* dst) {
+    dcci(dst, 1);
+}
 #endif
+
+namespace __asc_simt_vf {
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_dcci_single(__gm__ void* dst) {
+    dcci(dst, 0);
+}
+#else
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_dcci_single(void* dst) {
+    dcci(dst, 0);
+}
+#endif
+}
+
 #endif
 #endif  // IMPL_SIMT_API_DEVICE_FUNCTIONS_IMPL_H
 

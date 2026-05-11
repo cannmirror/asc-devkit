@@ -462,6 +462,27 @@ static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __uhadd(unsigned int x, unsig
 
 static __SIMT_DEVICE_FUNCTIONS_DECL__ unsigned int __urhadd(unsigned int x, unsigned int y);
 
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_dcci_entire(__gm__ void* dst);
+#else
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_dcci_entire(void* dst);
+#endif
+
+/**
+ * __asc_simt_vf : Implicit namespace, no qualification needed at call sites
+ * Usage example:
+ *    __gm__ void* dst;
+ *    asc_dcci_single(dst);                 // recommended
+ *    __asc_simt_vf::asc_dcci_single(dst);  // not recommended
+ */
+namespace __asc_simt_vf {
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_dcci_single(__gm__ void* dst);
+#else
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_dcci_single(void* dst);
+#endif
+}
+
 #include "impl/simt_api/device_functions_impl.h"
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEVICE_FUNCTIONS_H__)
