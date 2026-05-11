@@ -32,6 +32,7 @@ set(ASCENDC_IMPL_DIR ${ASCENDC_DIR}/impl)
 
 if(BUILD_OPEN_PROJECT)
   include(cmake/config.cmake)
+  include(cmake/func.cmake)
   set(INSTALL_LIBRARY_DIR ${CMAKE_SYSTEM_PROCESSOR}-linux)
 endif()
 
