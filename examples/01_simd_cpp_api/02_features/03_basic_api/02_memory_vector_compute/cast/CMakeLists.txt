@@ -30,6 +30,11 @@ target_link_libraries(demo PRIVATE
     dl
 )
 
+# 场景参数
+# 0 - half to int4b_t
+# 1 - half to int32_t
+set(SCENARIO "0" CACHE STRING "Scene 0, 1")
+
 target_compile_definitions(demo PRIVATE
     SCENARIO=${SCENARIO}
 )

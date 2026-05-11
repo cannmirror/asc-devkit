@@ -85,7 +85,7 @@
 - 样例执行
 
   ```bash
-  SCENARIO=1
+  SCENARIO=0
   mkdir -p build && cd build;      # 创建并进入build目录
   cmake -DSCENARIO=$SCENARIO -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;    # 编译工程，默认npu模式
   python3 ../scripts/gen_data.py --scenario $SCENARIO  # 生成测试输入数据

@@ -28,6 +28,13 @@ target_link_libraries(demo PRIVATE
     platform
     m
     dl
+    graph_base
+)
+
+set(SCENARIO "0" CACHE STRING "Scenario 0,1,2")
+
+target_compile_definitions(demo PRIVATE
+    SCENARIO=${SCENARIO}
 )
 
 target_compile_options(demo PRIVATE

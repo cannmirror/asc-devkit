@@ -28,6 +28,7 @@ target_link_libraries(demo PRIVATE
     platform
     m
     dl
+    graph_base
 )
 
 target_compile_options(demo PRIVATE
