@@ -22,7 +22,7 @@ project(kernel_samples LANGUAGES ASC CXX)
 # 场景1：CastDequant - 反量化与类型转换融合
 # 场景2：AddRelu - 向量加法与ReLU激活融合
 # 场景3：Axpy - 标量乘法与向量加法融合
-set(SCENARIO_NUM "2" CACHE STRING "Scene number (1: CastDequant, 2: AddRelu, 3: Axpy)")
+set(SCENARIO_NUM "1" CACHE STRING "Scene number (1: CastDequant, 2: AddRelu, 3: Axpy)")
 
 add_definitions(-DSCENARIO_NUM=${SCENARIO_NUM})
 

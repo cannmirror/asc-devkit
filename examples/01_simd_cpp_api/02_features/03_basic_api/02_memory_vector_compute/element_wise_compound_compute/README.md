@@ -88,7 +88,7 @@
     
 - 样例执行
   ```bash
-  SCENARIO_NUM=2
+  SCENARIO_NUM=1
   mkdir -p build && cd build
   cmake .. -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=$SCENARIO_NUM;make -j;
   python3 ../scripts/gen_data.py -scenario=$SCENARIO_NUM
