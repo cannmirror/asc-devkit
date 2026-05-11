@@ -69,24 +69,11 @@ endfunction()
 
 function(ascendc_fatbin_library target_name)
     set_source_files_properties(${ARGN} PROPERTIES LANGUAGE ASC)
-    file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/fatbin/${target_name}/)
-
-    add_library(${target_name} OBJECT ${ARGN})
-
+    # first generate device.o
+    add_library(${target_name} MODULE ${ARGN})
     target_compile_options(${target_name} PRIVATE
         --aicore-only           # compile device.o
     )
-    library_interface_setup(${target_name})
-
-    set(output_path ${CMAKE_INSTALL_PREFIX}/fatbin/${target_name}/${target_name}.o)
-    add_custom_target(lld_copy_${target_name} ALL
-        COMMAND ${CMAKE_ASC_LLD_LINKER} -m aicorelinux -Ttext=0 $<TARGET_OBJECTS:${target_name}> -static -o ${output_path}
-        COMMAND cp ${output_path} ${CMAKE_CURRENT_BINARY_DIR}
-        COMMAND_EXPAND_LISTS
-        COMMENT "Generate final device.o from ascendc_fatbin_library"
-    )
-
-    add_dependencies(lld_copy_${target_name} ${target_name})
 endfunction()
 
 function(ascendc_compile_definitions target_name target_scope)

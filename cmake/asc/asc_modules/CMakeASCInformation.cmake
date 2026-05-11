@@ -62,12 +62,6 @@ if(NOT DEFINED CMAKE_ASC_ARCHIVE_FINISH)
     set(CMAKE_ASC_ARCHIVE_FINISH "<CMAKE_RANLIB> <TARGET>")
 endif()
 
-
-# rule variable to create a shared module
-if(NOT CMAKE_ASC_CREATE_SHARED_MODULE)
-    set(CMAKE_ASC_CREATE_SHARED_MODULE ${CMAKE_ASC_CREATE_SHARED_LIBRARY})
-endif()
-
 # when language is set to ASC, execute when add_executable.
 # FLAGS: -D
 # ASC_LINK_FLAGS: link options
@@ -81,6 +75,14 @@ if(NOT CMAKE_ASC_CREATE_SHARED_LIBRARY)
     set(CMAKE_ASC_CREATE_SHARED_LIBRARY "<CMAKE_ASC_COMPILER> <CMAKE_SHARED_LIBRARY_ASC_FLAGS> \
 <LANGUAGE_COMPILE_FLAGS> <LINK_FLAGS> <CMAKE_SHARED_LIBRARY_CREATE_ASC_FLAGS> <SONAME_FLAG><TARGET_SONAME> -o <TARGET> \
 <OBJECTS> <LINK_LIBRARIES>")
+endif()
+
+# rule variable to create a shared module : for fatbin(device.o)
+# normal output: libxxx.so     ASC output: xxx.o
+if(NOT CMAKE_ASC_CREATE_SHARED_MODULE)
+    set(CMAKE_SHARED_MODULE_PREFIX_ASC "")
+    set(CMAKE_SHARED_MODULE_SUFFIX_ASC ".o")
+    set(CMAKE_ASC_CREATE_SHARED_MODULE "${CMAKE_ASC_LLD_LINKER} -m aicorelinux -Ttext=0 <OBJECTS> -static -o <TARGET>")
 endif()
 
 set(CMAKE_ASC_INFORMATION_LOADED 1)   # 标记Cmake已经加载初始化ASC编程语言
@@ -118,7 +120,7 @@ if(CMAKE_ASC_RUN_MODE STREQUAL "cpu")
         math(EXPR _soc_dir_index "${_index} + 2")
         list(GET _ARCH_TO_SOC_DIR_MAP ${_short_index} _SHORT_NPU_ARCH)
         list(GET _ARCH_TO_SOC_DIR_MAP ${_soc_dir_index} _SOC_DIR)
-        
+
         # system include
         set(ASC_CPU_SYSTEM_INCLUDE_OPTIONS "-isystem$ENV{ASCEND_HOME_PATH}/tools/tikicpulib/lib/include -isystem$ENV{ASCEND_HOME_PATH}/include \
 -isystem$ENV{ASCEND_HOME_PATH}/asc/impl/adv_api \
@@ -130,13 +132,13 @@ if(CMAKE_ASC_RUN_MODE STREQUAL "cpu")
 -isystem$ENV{ASCEND_HOME_PATH}/asc/include/c_api -isystem$ENV{ASCEND_HOME_PATH}/asc/include/interface \
 -isystem$ENV{ASCEND_HOME_PATH}/asc/include/micro_api -isystem$ENV{ASCEND_HOME_PATH}/asc/include/simt_api \
 -isystem$ENV{ASCEND_HOME_PATH}/asc/include/tiling -isystem$ENV{ASCEND_HOME_PATH}/asc/include/utils")
-        
+
         # 添加编译选项
         string(APPEND CMAKE_ASC_FLAGS "-g -D_GLIBCXX_USE_CXX11_ABI=0 -DASCENDC_DEBUG=1 -D__NPU_ARCH__=${_SHORT_NPU_ARCH} --run-mode=cpu ${ASC_CPU_SYSTEM_INCLUDE_OPTIONS}")
-        
+
         # 配置链接选项
         string(APPEND CMAKE_ASC_LINK_FLAGS "--run-mode=cpu -Wl,--disable-new-dtags")
-                
+
         # 配置链接库
         link_libraries(
             -Wl,-rpath,$ENV{ASCEND_HOME_PATH}/lib64
@@ -168,7 +170,7 @@ if(CMAKE_ASC_RUN_MODE STREQUAL "cpu")
             dl
             ascend_dump
         )
-        
+
     else()
         message(FATAL_ERROR "Unsupported ASC architecture for CPU mode: ${CMAKE_ASC_ARCHITECTURES}, should be dav-2002, dav-2201, dav-3510")
     endif()
