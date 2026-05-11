@@ -23,6 +23,7 @@
 #ifndef IMPL_TENSOR_API_TENSOR_POINTER_PATTERN_H
 #define IMPL_TENSOR_API_TENSOR_POINTER_PATTERN_H
 
+#include "impl/tensor_api/utils/utils_impl.h"
 #include "impl/tensor_api/tensor/pointer_mem_impl.h"
 #include "impl/tensor_api/tensor/pointer_pattern_impl.h"
 
@@ -57,6 +58,13 @@ __aicore__ inline constexpr auto MakeMemPtr(Args... args)
     using Arg = typename Std::tuple_element<0, Std::tuple<Args...>>::type;
     static_assert(IsMemPtrIterator<Arg>::value, "MakeMemPtr<Hardware>(arg) expects an iterator/pointer");
     return MakeHardwareMemPtr<Hardware>(args...);
+}
+
+template <typename Iterator>
+__aicore__ inline constexpr auto MakeMemPtr(const Iterator& iter)
+{
+    using hardware = GetAttributeLocation<Iterator>;
+    return MakeMemPtr<hardware>(iter);
 }
 
 } // namespace Te

@@ -28,7 +28,7 @@ asc-devkit:
       - impl/basic_api/kernel_macros.h
       - impl/basic_api/kernel_prof_trace*.h
       - impl/utils/**/*.h
-      - impl/experimental/tensor_api/utils/*.h
+      - impl/tensor_api/utils/*.h
       - impl/c_api/instr_impl/npu_arch_2201/utils_impl/**/*.h
       - impl/c_api/instr_impl/npu_arch_3510/utils_impl/**/*.h
       - impl/basic_api/reg_compute/kernel_reg_compute_struct_intf_impl.h
