@@ -570,10 +570,6 @@ private:
                     gm[dstOffset], localBuf[srcOffset],
                     {static_cast<uint16_t>(calcWidth), static_cast<uint16_t>(blockLen),
                      static_cast<uint16_t>(srcRepeatGap), 0});
-                if constexpr (
-                    IsSameType<typename A_TYPE::T, half>::value && IsSameType<typename B_TYPE::T, int8_t>::value) {
-                    PipeBarrier<PIPE_MTE3>();
-                }
             }
 
             if (tail != 0) {
