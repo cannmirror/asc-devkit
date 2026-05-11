@@ -28,15 +28,15 @@ protected:                                                                      
 namespace {                                                                                     \
                                                                                                 \
 void cce_name##_##c_api_name##_uint64_t_Stub(__cbuf__ void *dst, __gm__ void *src, uint8_t sid, uint16_t n_burst, \
-                uint16_t len_burst, uint16_t src_stride, uint16_t dst_stride, pad_t pad_mode)   \
+                uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap, pad_t pad_mode)   \
 {                                                                                               \
     EXPECT_EQ(dst, reinterpret_cast<__cbuf__ void *>(11));                                      \
     EXPECT_EQ(src, reinterpret_cast<__gm__ void *>(22));                                        \
     EXPECT_EQ(sid, static_cast<uint8_t>(0));                                                    \
     EXPECT_EQ(n_burst, static_cast<uint16_t>(1));                                               \
     EXPECT_EQ(len_burst, static_cast<uint16_t>(1));                                             \
-    EXPECT_EQ(src_stride, static_cast<uint16_t>(0));                                            \
-    EXPECT_EQ(dst_stride, static_cast<uint16_t>(0));                                            \
+    EXPECT_EQ(src_gap, static_cast<uint16_t>(0));                                            \
+    EXPECT_EQ(dst_gap, static_cast<uint16_t>(0));                                            \
 }                                                                                               \
                                                                                                 \
 }                                                                                               \
@@ -48,15 +48,15 @@ TEST_F(TestCubeDmamove##class_name##c_api_name, c_api_name##_CopyConfig_Succ)   
                                                                                                 \
     uint16_t n_burst = static_cast<uint16_t>(1);                                                \
     uint16_t len_burst = static_cast<uint16_t>(1);                                              \
-    uint16_t src_stride = static_cast<uint16_t>(0);                                             \
-    uint16_t dst_stride = static_cast<uint16_t>(0);                                             \
+    uint16_t src_gap = static_cast<uint16_t>(0);                                             \
+    uint16_t dst_gap = static_cast<uint16_t>(0);                                             \
                                                                                                 \
     MOCKER_CPP(cce_name, void(__cbuf__ void *, __gm__ void *,                                   \
                 uint8_t, uint16_t, uint16_t, uint16_t, uint16_t, pad_t))                        \
             .times(1)                                                                           \
             .will(invoke(cce_name##_##c_api_name##_uint64_t_Stub));                             \
                                                                                                 \
-    c_api_name(dst, src, n_burst, len_burst, src_stride, dst_stride);                           \
+    c_api_name(dst, src, n_burst, len_burst, src_gap, dst_gap);                           \
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
                                                                                                 \
@@ -102,14 +102,14 @@ TEST_CUBE_DMAMOVE_COPY_GM_TO_CBUF(CopyGM2L1_PAD8, asc_copy_gm2l1_pad8, copy_gm_t
 
 
 template <typename DTYPE>
-__aicore__ inline void load_gm_to_cbuf_stub(__cbuf__ DTYPE *dst, __gm__ DTYPE *src, uint16_t base_idx, uint8_t repeat, uint16_t src_stride, uint16_t dst_stride,
+__aicore__ inline void load_gm_to_cbuf_stub(__cbuf__ DTYPE *dst, __gm__ DTYPE *src, uint16_t base_idx, uint8_t repeat, uint16_t src_gap, uint16_t dst_gap,
                                         uint8_t sid, addr_cal_mode_t addr_cal_mode) {
     EXPECT_EQ(dst, reinterpret_cast<__cbuf__ DTYPE *>(11));
     EXPECT_EQ(src, reinterpret_cast<__gm__ DTYPE *>(22));
     EXPECT_EQ(base_idx, static_cast<uint16_t>(33));
     EXPECT_EQ(repeat, static_cast<uint8_t>(44));
-    EXPECT_EQ(src_stride, static_cast<uint16_t>(55));
-    EXPECT_EQ(dst_stride, static_cast<uint16_t>(66));
+    EXPECT_EQ(src_gap, static_cast<uint16_t>(55));
+    EXPECT_EQ(dst_gap, static_cast<uint16_t>(66));
     EXPECT_EQ(sid, static_cast<uint8_t>(0));
     EXPECT_EQ(addr_cal_mode, static_cast<addr_cal_mode_t>(addr_cal_mode_t::inc));
 }
@@ -139,10 +139,10 @@ TEST_F(TEST_COPY_GM_TO_L1, TEST_COPY_GM_TO_L1_##dtype)               \
                                                                                                 \
     uint16_t base_idx = static_cast<uint16_t>(33);                                                \
     uint8_t repeat = static_cast<uint8_t>(44);                                                \
-    uint16_t src_stride = static_cast<uint16_t>(55);                                              \
-    uint8_t dst_stride = static_cast<uint8_t>(66);                                             \
+    uint16_t src_gap = static_cast<uint16_t>(55);                                              \
+    uint8_t dst_gap = static_cast<uint8_t>(66);                                             \
                                                                                                     \
-    asc_copy_gm2l1(dst, src, base_idx, repeat, src_stride, dst_stride);         \
+    asc_copy_gm2l1(dst, src, base_idx, repeat, src_gap, dst_gap);         \
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
                                                                                                 \
@@ -157,10 +157,10 @@ TEST_F(TEST_COPY_GM_TO_L1, TEST_COPY_GM_TO_L1_SYNC_##dtype)                     
                                                                                                 \
     uint16_t base_idx = static_cast<uint16_t>(33);                                                \
     uint8_t repeat = static_cast<uint8_t>(44);                                                \
-    uint16_t src_stride = static_cast<uint16_t>(55);                                              \
-    uint8_t dst_stride = static_cast<uint8_t>(66);                                             \
+    uint16_t src_gap = static_cast<uint16_t>(55);                                              \
+    uint8_t dst_gap = static_cast<uint8_t>(66);                                             \
                                                                                                     \
-    asc_copy_gm2l1_sync(dst, src, base_idx, repeat, src_stride, dst_stride);         \
+    asc_copy_gm2l1_sync(dst, src, base_idx, repeat, src_gap, dst_gap);         \
     GlobalMockObject::verify();                                                                 \
 }
 
