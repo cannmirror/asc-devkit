@@ -18,18 +18,18 @@ void VecWholeReduceSum(__gm__ uint8_t* __restrict__ dstGm, __gm__ uint8_t* __res
     __gm__ int32_t dataSize)
 {
     TPipe tpipe;
-    GlobalTensor<T> input0Global;
-    GlobalTensor<U> outputGlobal;
-    input0Global.SetGlobalBuffer(reinterpret_cast<__gm__ T*>(srcGm), dataSize);
-    outputGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ U*>(dstGm), dataSize);
-
-    LocalTensor<T> input0Local;
+    GlobalTensor<T> outputGlobal;
+    GlobalTensor<U> input0Global;
+    outputGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ T*>(dstGm), dataSize);
+    input0Global.SetGlobalBuffer(reinterpret_cast<__gm__ U*>(srcGm), dataSize);
+    
+    LocalTensor<U> input0Local;
     TBuffAddr tbuf0;
     tbuf0.logicPos = static_cast<uint8_t>(TPosition::VECCALC);
     input0Local.SetAddr(tbuf0);
     input0Local.InitBuffer(0, dataSize);
 
-    LocalTensor<U> outputLocal;
+    LocalTensor<T> outputLocal;
     TBuffAddr tbuf2;
     tbuf2.logicPos = static_cast<uint8_t>(TPosition::VECCALC);
     outputLocal.SetAddr(tbuf2);
@@ -45,7 +45,7 @@ void VecWholeReduceSum(__gm__ uint8_t* __restrict__ dstGm, __gm__ uint8_t* __res
     ReduceRepeat<ReduceType::SUM, T, U>(outputLocal, input0Local, mask, repeatTimes, 1, 1, 8);
 
     AscendC::SetMaskCount();
-    AscendC::SetVectorMask<T, MaskMode::COUNTER>(0, 144);
+    AscendC::SetVectorMask<U, MaskMode::COUNTER>(0, 144);
     ReduceRepeat<ReduceType::SUM, T, U, false>(outputLocal, input0Local, AscendC::MASK_PLACEHOLDER_LIST, repeatTimes, 1, 1, 8);
     AscendC::ResetMask();
     ReduceRepeat<ReduceType::SUM, T, U>(outputLocal, input0Local, counterMask, repeatTimes, 1, 1, 8);

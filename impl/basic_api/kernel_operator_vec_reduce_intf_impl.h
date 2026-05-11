@@ -69,18 +69,18 @@ __aicore__ inline void CheckReduceBaseParams(const LocalTensor<T>& dst, const Lo
 // ReduceDataBlock common checks: dtype, repeatTime, position, alignment
 // Used by: ReduceDataBlock (both maskCount and maskBit overloads)
 template <typename T, typename U>
-__aicore__ inline void CheckReduceDataBlockParams(const LocalTensor<U>& dst, const LocalTensor<T>& src,
+__aicore__ inline void CheckReduceDataBlockParams(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const int32_t repeatTime, const __gm__ char* apiName)
 {
     CheckReduceBaseParams<T>(dst, src, repeatTime, apiName);
-    using DstPrimType = PrimT<U>;
+    using DstPrimType = PrimT<T>;
     CheckTensorAlignment(dst, 8 * sizeof(DstPrimType), "dst", apiName);  // half: 16B, float: 32B
 }
 
 // ReduceRepeat common checks: dtype, repeatTime, position, alignment (with order)
 // Used by: ReduceRepeat<MAX,MIN> (both maskCount and maskBit overloads)
 template <typename T, typename U>
-__aicore__ inline void CheckReduceRepeatCommonParams(const LocalTensor<U>& dst, const LocalTensor<T>& src,
+__aicore__ inline void CheckReduceRepeatCommonParams(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const int32_t repeatTime, ReduceOrder order, const __gm__ char* apiName)
 {
 #if __NPU_ARCH__ == 3510
@@ -99,14 +99,14 @@ __aicore__ inline void CheckReduceRepeatCommonParams(const LocalTensor<U>& dst, 
 #elif (__NPU_ARCH__ == 1001) || (__NPU_ARCH__ == 2002)
         CheckValueRange<int>(static_cast<int>(order), 0, 1, "order", apiName);
 #endif
-    using DstPrimType = PrimT<U>;
+    using DstPrimType = PrimT<T>;
     CheckTensorAlignment(dst, 2 * sizeof(DstPrimType), "dst", apiName);
 }
 
 // ReduceRepeat common checks: dtype, repeatTime, position, alignment (without order)
 // Used by: ReduceRepeat<Sum> (both maskCount and maskBit overloads)
 template <typename T, typename U>
-__aicore__ inline void CheckReduceRepeatCommonParams(const LocalTensor<U>& dst, const LocalTensor<T>& src,
+__aicore__ inline void CheckReduceRepeatCommonParams(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const int32_t repeatTime, const __gm__ char* apiName)
 {
 #if __NPU_ARCH__ == 3510
@@ -117,17 +117,17 @@ __aicore__ inline void CheckReduceRepeatCommonParams(const LocalTensor<U>& dst, 
 #else
     CheckReduceBaseParams<T>(dst, src, repeatTime, apiName);
 #endif
-    using DstPrimType = PrimT<U>;
+    using DstPrimType = PrimT<T>;
     CheckTensorAlignment(dst, sizeof(DstPrimType), "dst", apiName);
 }
 
 // interal common implementation for ReduceDataBlock, used for both maskCount and maskBit overloads, with same check logic
 template <ReduceType reduceType, typename T, typename U, bool isSetMask, typename MaskType>
-__aicore__ inline void ReduceDataBlockCommon(const LocalTensor<U>& dst, const LocalTensor<T>& src, const MaskType mask,
+__aicore__ inline void ReduceDataBlockCommon(const LocalTensor<T>& dst, const LocalTensor<U>& src, const MaskType mask,
     const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride)
 {
-    using SrcPrimType = PrimT<T>;
-    using DstPrimType = PrimT<U>;
+    using DstPrimType = PrimT<T>;
+    using SrcPrimType = PrimT<U>;
     static_assert((SupportEnum<reduceType, ReduceType::SUM, ReduceType::MAX, ReduceType::MIN>()),
         "Invalid reduceType for ReduceDataBlock, only ReduceType::SUM, ReduceType::MAX and ReduceType::MIN are supported.");
     static_assert(Std::is_same_v<SrcPrimType, DstPrimType>,
@@ -163,11 +163,11 @@ __aicore__ inline void ReduceDataBlockCommon(const LocalTensor<U>& dst, const Lo
 
 // internal common implementation for ReducePairElem, used for both maskCount and maskBit overloads, with same check logic
 template <ReduceType reduceType, typename T, typename U, bool isSetMask, typename MaskType>
-__aicore__ inline void ReducePairElemCommon(const LocalTensor<U>& dst, const LocalTensor<T>& src, const MaskType mask,
+__aicore__ inline void ReducePairElemCommon(const LocalTensor<T>& dst, const LocalTensor<U>& src, const MaskType mask,
     const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride)
 {
-    using SrcPrimType = PrimT<T>;
-    using DstPrimType = PrimT<U>;
+    using DstPrimType = PrimT<T>;
+    using SrcPrimType = PrimT<U>;
     static_assert((SupportEnum<reduceType, ReduceType::SUM>()),
         "Invalid reduceType for ReducePairElem, only ReduceType::SUM is supported.");
     static_assert(Std::is_same_v<SrcPrimType, DstPrimType>,
@@ -197,7 +197,7 @@ __aicore__ inline void ReducePairElemCommon(const LocalTensor<U>& dst, const Loc
 
 // internal check for ReduceRepeat with ReduceType::SUM, only used for sum since max/min has order param check
 template <typename T, typename U, bool isSetMask, typename MaskType>
-__aicore__ inline void CheckReduceRepeatSumParams(const LocalTensor<U>& dst, const LocalTensor<T>& src,
+__aicore__ inline void CheckReduceRepeatSumParams(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const MaskType mask, const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
     const int32_t srcRepStride)
 {
@@ -215,7 +215,7 @@ __aicore__ inline void CheckReduceRepeatSumParams(const LocalTensor<U>& dst, con
 
 // internal check for ReduceRepeat with ReduceType::MAX/MIN, used for max/min since it has order param check
 template <typename T, typename U, bool isSetMask, typename MaskType>
-__aicore__ inline void CheckReduceRepeatMaxMinParams(const LocalTensor<U>& dst, const LocalTensor<T>& src,
+__aicore__ inline void CheckReduceRepeatMaxMinParams(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const MaskType mask, const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
     const int32_t srcRepStride, ReduceOrder order)
 {
@@ -242,20 +242,20 @@ __aicore__ inline void CheckReduceRepeatMaxMinParams(const LocalTensor<U>& dst, 
 
 // internal common implementation for ReduceRepeat, used for both maskCount and maskBit overloads, with same check logic
 template <ReduceType reduceType, typename T, typename U, bool isSetMask, typename MaskType>
-__aicore__ inline void ReduceRepeatCommon(const LocalTensor<U>& dst, const LocalTensor<T>& src,
+__aicore__ inline void ReduceRepeatCommon(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const MaskType mask, const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
     const int32_t srcRepStride, ReduceOrder order)
 {
-    using SrcPrimType = PrimT<T>;
-    using DstPrimType = PrimT<U>;
+    using DstPrimType = PrimT<T>;
+    using SrcPrimType = PrimT<U>;
     static_assert((SupportEnum<reduceType, ReduceType::SUM, ReduceType::MAX, ReduceType::MIN>()),
         "Invalid reduceType for ReduceRepeat, only ReduceType::SUM, ReduceType::MAX and ReduceType::MIN are supported.");
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
     static_assert((reduceType == ReduceType::SUM || Std::is_same_v<SrcPrimType, DstPrimType>),
-        "ReduceRepeat for MAX/MIN only supports identical src type (T) and dst type (U) for current NPU_ARCH.");
+        "ReduceRepeat for MAX/MIN only supports identical dst type (T) and src type (U) for current NPU_ARCH.");
 #else
     static_assert(Std::is_same_v<SrcPrimType, DstPrimType>,
-        "ReduceRepeat only supports identical src type (T) and dst type (U) for current NPU_ARCH.");
+        "ReduceRepeat only supports identical dst type (T) and src type (U) for current NPU_ARCH.");
 #endif
 #if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
     if constexpr (Std::is_same_v<MaskType, int32_t>) {
@@ -283,7 +283,7 @@ __aicore__ inline void ReduceRepeatCommon(const LocalTensor<U>& dst, const Local
 }  // namespace Internal
 
 template <ReduceType reduceType, typename T, typename U, bool isSetMask>
-__aicore__ inline void ReduceDataBlock(const LocalTensor<U>& dst, const LocalTensor<T>& src, const int32_t mask,
+__aicore__ inline void ReduceDataBlock(const LocalTensor<T>& dst, const LocalTensor<U>& src, const int32_t mask,
     const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride)
 {
 #ifdef __MSTX_DFX_REPORT__
@@ -293,7 +293,7 @@ __aicore__ inline void ReduceDataBlock(const LocalTensor<U>& dst, const LocalTen
 }
 
 template <ReduceType reduceType, typename T, typename U, bool isSetMask>
-__aicore__ inline void ReduceDataBlock(const LocalTensor<U>& dst, const LocalTensor<T>& src, const uint64_t mask[],
+__aicore__ inline void ReduceDataBlock(const LocalTensor<T>& dst, const LocalTensor<U>& src, const uint64_t mask[],
     const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride)
 {
 #ifdef __MSTX_DFX_REPORT__
@@ -303,7 +303,7 @@ __aicore__ inline void ReduceDataBlock(const LocalTensor<U>& dst, const LocalTen
 }
 
 template <ReduceType reduceType, typename T, typename U, bool isSetMask>
-__aicore__ inline void ReducePairElem(const LocalTensor<U>& dst, const LocalTensor<T>& src, const int32_t mask,
+__aicore__ inline void ReducePairElem(const LocalTensor<T>& dst, const LocalTensor<U>& src, const int32_t mask,
     const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride)
 {
 #ifdef __MSTX_DFX_REPORT__
@@ -313,7 +313,7 @@ __aicore__ inline void ReducePairElem(const LocalTensor<U>& dst, const LocalTens
 }
 
 template <ReduceType reduceType, typename T, typename U, bool isSetMask>
-__aicore__ inline void ReducePairElem(const LocalTensor<U>& dst, const LocalTensor<T>& src, const uint64_t mask[],
+__aicore__ inline void ReducePairElem(const LocalTensor<T>& dst, const LocalTensor<U>& src, const uint64_t mask[],
     const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride)
 {
 #ifdef __MSTX_DFX_REPORT__
@@ -323,7 +323,7 @@ __aicore__ inline void ReducePairElem(const LocalTensor<U>& dst, const LocalTens
 }
 
 template <ReduceType reduceType, typename T, typename U, bool isSetMask>
-__aicore__ inline void ReduceRepeat(const LocalTensor<U>& dst, const LocalTensor<T>& src,
+__aicore__ inline void ReduceRepeat(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const int32_t mask, const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
     const int32_t srcRepStride, ReduceOrder order)
 {
@@ -335,7 +335,7 @@ __aicore__ inline void ReduceRepeat(const LocalTensor<U>& dst, const LocalTensor
 }
 
 template <ReduceType reduceType, typename T, typename U, bool isSetMask>
-__aicore__ inline void ReduceRepeat(const LocalTensor<U>& dst, const LocalTensor<T>& src,
+__aicore__ inline void ReduceRepeat(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const uint64_t mask[], const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
     const int32_t srcRepStride, ReduceOrder order)
 {
@@ -543,7 +543,8 @@ __aicore__ inline void WholeReduceSum(const LocalTensor<U>& dst, const LocalTens
     const uint64_t mask[], const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
     const int32_t srcRepStride)
 {
-    ReduceRepeat<ReduceType::SUM, T, U, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
+    // the typename in ReduceRepeat is reversed for better readability of dst/src
+    ReduceRepeat<ReduceType::SUM, U, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
 }
 #else
 // WholeReduceSum has been updated, please use ReduceRepeat instead.
@@ -592,7 +593,8 @@ __aicore__ inline void WholeReduceSum(const LocalTensor<U>& dst, const LocalTens
     const int32_t mask, const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
     const int32_t srcRepStride)
 {
-    ReduceRepeat<ReduceType::SUM, T, U, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
+    // the typename in ReduceRepeat is reversed for better readability of dst/src
+    ReduceRepeat<ReduceType::SUM, U, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
 }
 #else
 // WholeReduceSum has been updated, please use ReduceRepeat instead.
