@@ -1,4 +1,4 @@
-# 避免bank冲突（Ascend 950PR/Ascend 950DT）<a name="ZH-CN_TOPIC_0000002531242067"></a>
+# 避免bank冲突（NPU架构版本3510）<a name="ZH-CN_TOPIC_0000002531242067"></a>
 
 为了提高数据访问的效率和吞吐量，Unified Buffer采用了bank（大小相等的内存模块）结构设计。Unified Buffer总大小为256K，划分为16个bank。每个bank由512行组成，每行长度为32B。这16个bank进一步组织为8个bank group，每个bank group包含2个bank，例如bank7和bank15组成一个bank group。
 

@@ -1,4 +1,4 @@
-# 避免bank冲突（NPU架构版本220x）<a name="ZH-CN_TOPIC_0000002499562140"></a>
+# 避免bank冲突（NPU架构版本2201）<a name="ZH-CN_TOPIC_0000002499562140"></a>
 
 【优先级】高
 

@@ -31,7 +31,7 @@
     cmake -B build -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-2201
     ```
 
-    cpu表示开启CPU域编译，dav-后为NPU架构版本号，请根据实际情况进行填写。
+    cpu表示开启CPU域编译，dav-后为NPU架构版本号，请根据实际情况参考[对应关系表](../../语言扩展层/SIMD-BuiltIn关键字.md#table65291052154114)进行填写。
 
     其他CMakeLists.txt项目配置[通过CMake编译](../../编译与运行/AI-Core-SIMD编译/通过CMake编译.md)进行编写。
 

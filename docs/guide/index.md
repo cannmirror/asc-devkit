@@ -263,8 +263,8 @@
             -   [通过缩减Tensor ShapeInfo维度，优化栈空间](算子实践参考/SIMD算子性能优化/内存访问/通过缩减Tensor-ShapeInfo维度-优化栈空间.md)
             -   [避免UB的bank冲突](算子实践参考/SIMD算子性能优化/内存访问/避免UB的bank冲突/概述.md)
                 -   [概述](算子实践参考/SIMD算子性能优化/内存访问/避免UB的bank冲突/概述.md)
-                -   [避免bank冲突（NPU架构版本220x）](算子实践参考/SIMD算子性能优化/内存访问/避免UB的bank冲突/避免bank冲突（NPU架构版本220x）.md)
-                -   [避免bank冲突（Ascend 950PR/Ascend 950DT）](算子实践参考/SIMD算子性能优化/内存访问/避免UB的bank冲突/避免bank冲突（Ascend-950PR-Ascend-950DT）.md)
+                -   [避免bank冲突（NPU架构版本2201）](算子实践参考/SIMD算子性能优化/内存访问/避免UB的bank冲突/避免bank冲突（NPU架构版本2201）.md)
+                -   [避免bank冲突（NPU架构版本3510）](算子实践参考/SIMD算子性能优化/内存访问/避免UB的bank冲突/避免bank冲突（NPU架构版本3510）.md)
 
             -   [L2 Cache切分](算子实践参考/SIMD算子性能优化/内存访问/L2-Cache切分.md)
 
