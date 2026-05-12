@@ -1,0 +1,13 @@
+.vscode
+/build/
+build_out
+output
+__pycache__/
+/examples/**/build/
+AGENTS.md
+oat_reports/
+log/
+third_party/
+openssl-device-src/
+openssl-host-src/
+build_device/
