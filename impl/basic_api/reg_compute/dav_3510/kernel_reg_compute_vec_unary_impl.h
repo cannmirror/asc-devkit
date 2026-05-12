@@ -428,25 +428,39 @@ __simd_callee__ inline void SqrtImpl(U& dstReg, U& srcReg, MaskReg& mask)
                           "Reg Sqrt for high precision mode by using fast_inverse approach only supports float.");
             SqrtFastInverseImpl<T, mode, U>(dstReg, srcReg, mask);
         } else if constexpr (sprMode.algo == SqrtAlgo::PRECISION_1ULP_FTZ_FALSE) {
-            static_assert(SupportType<T, half>(),
-                          "Reg Sqrt for PRECISION_1ULP_FTZ_FALSE only supports half.");
-            HalfUnion multiplyFactor0;
-            multiplyFactor0.i = 0x6C00;
-            HalfUnion multiplyFactor1;
-            multiplyFactor1.i = 0x2400;
-            HalfUnion subnormalThreshold;
-            subnormalThreshold.i = 0x03FF;
             RegTensor<T> tmpReg;
             RegTensor<T> dstRegCopy;
             RegTensor<T> srcRegCopy = srcReg;
             MaskReg cmpMaskReg;
+            if constexpr (IsSameType<ActualT, half>::value) {
+                HalfUnion multiplyFactor0;
+                multiplyFactor0.i = 0x6C00;
+                HalfUnion multiplyFactor1;
+                multiplyFactor1.i = 0x2400;
+                HalfUnion subnormalThreshold;
+                subnormalThreshold.i = 0x03FF;
 
-            vcmps_lt(cmpMaskReg, srcRegCopy, subnormalThreshold.f, mask);
-            vmuls(tmpReg, srcRegCopy, multiplyFactor0.f, mask, modeValue);
-            vsel(srcRegCopy, tmpReg, srcRegCopy, cmpMaskReg);
-            vsqrt(dstRegCopy, srcRegCopy, mask, modeValue);
-            vmuls(tmpReg, dstRegCopy, multiplyFactor1.f, mask, modeValue);
-            vsel(dstReg, tmpReg, dstRegCopy, cmpMaskReg);
+                vcmps_lt(cmpMaskReg, srcRegCopy, subnormalThreshold.f, mask);
+                vmuls(tmpReg, srcRegCopy, multiplyFactor0.f, mask, modeValue);
+                vsel(srcRegCopy, tmpReg, srcRegCopy, cmpMaskReg);
+                vsqrt(dstRegCopy, srcRegCopy, mask, modeValue);
+                vmuls(tmpReg, dstRegCopy, multiplyFactor1.f, mask, modeValue);
+                vsel(dstReg, tmpReg, dstRegCopy, cmpMaskReg);
+            } else if constexpr (IsSameType<ActualT, float>::value) {
+                NotNumUnion multiplyFactor0;
+                multiplyFactor0.i = 0x4B800000;
+                NotNumUnion multiplyFactor1;
+                multiplyFactor1.i = 0x39800000;
+                NotNumUnion subnormalThreshold;
+                subnormalThreshold.i = 0x007FFFFF;
+
+                vcmps_lt(cmpMaskReg, srcRegCopy, subnormalThreshold.f, mask);
+                vmuls(tmpReg, srcRegCopy, multiplyFactor0.f, mask, modeValue);
+                vsel(srcRegCopy, tmpReg, srcRegCopy, cmpMaskReg);
+                vsqrt(dstRegCopy, srcRegCopy, mask, modeValue);
+                vmuls(tmpReg, dstRegCopy, multiplyFactor1.f, mask, modeValue);
+                vsel(dstReg, tmpReg, dstRegCopy, cmpMaskReg);
+            }
         } else {
             vsqrt(dstReg, srcReg, mask, modeValue);
         }
@@ -782,4 +796,3 @@ __simd_callee__ inline void NotImpl(U& dstReg, U& srcReg, MaskReg& mask)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_VEC_UNARY_IMPL__
 #endif
-
