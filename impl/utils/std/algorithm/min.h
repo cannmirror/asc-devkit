@@ -14,7 +14,6 @@
  */
 #ifndef IMPL_STD_MIN_H
 #define IMPL_STD_MIN_H
-#include "../type_traits/is_same.h"
 
 namespace AscendC {
 namespace Std {
@@ -23,7 +22,6 @@ ASCENDC_HOST_AICORE inline constexpr auto min(const T& src0, const U& src1)
 {
     return (src0 < src1) ? src0 : src1;
 }
-
 }
 }
 #endif
