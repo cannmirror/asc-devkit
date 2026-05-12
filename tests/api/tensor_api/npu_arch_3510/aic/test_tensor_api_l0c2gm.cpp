@@ -7,6 +7,7 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
+
 #include <gtest/gtest.h>
 #include "tensor_api/stub/cce_stub.h"
 #include "include/tensor_api/tensor.h"
@@ -14,8 +15,24 @@
 
 #define GM_ADDR __gm__ uint8_t*
 
-class TEST_TENSOR_API_FIXPIPE : public testing::Test {
+enum class CubeFormat {
+    ND = 0,
+    NZ,
+    DN,
+};
+
+template <CubeFormat FORMAT, typename TYPE>
+struct InputInfo {
+    constexpr static CubeFormat format = FORMAT;
+    using T = TYPE;
+};
+
+
+class Tensor_Api_Cube_Copy_3510 : public testing::Test {
 protected:
+    static void SetUpTestCase() {}
+    static void TearDownTestCase() {}
+
     void SetUp() override {
         AscendC::SetGCoreType(1);
         is_mock_copy_matrix_cc_to_gm = true;
@@ -31,19 +48,125 @@ protected:
     }
 };
 
+namespace {
 using namespace AscendC::Te;
+constexpr bool enableRelu = false;
+constexpr bool enableChannelSplit = true;
+constexpr CopyL0C2GMTrait l0c2gmTrait = {RoundMode::DEFAULT, enableRelu, enableChannelSplit};
 
-enum class CubeFormat {
-    ND = 0,
-    NZ,
-    DN,
+struct CopyL0C2GMTraitCustom {
+    using TraitType = CopyL0C2GMTrait;
+    static constexpr const TraitType value = l0c2gmTrait;
 };
 
-template <CubeFormat FORMAT, typename TYPE>
-struct InputInfo {
-    constexpr static CubeFormat format = FORMAT;
-    using T = TYPE;
-};
+template <typename LocationTag, typename Pointer, typename Layout>
+auto MakeTensorAt(Pointer ptr, const Layout& layout)
+{
+    return AscendC::Te::MakeTensor(AscendC::Te::MakeMemPtr<LocationTag>(ptr), layout);
+}
+
+template <typename CopyOp, typename Trait, typename DstTensor, typename SrcTensor>
+void RunCopyCallPaths(const DstTensor& dst, const SrcTensor& src)
+{
+    using namespace AscendC::Te;
+
+    auto atom = MakeCopy(CopyOp{}, Trait{});
+    atom.Call(dst, src);
+
+    CopyAtom<CopyTraits<CopyOp, Trait>>{}.Call(dst, src);
+    Copy(CopyAtom<CopyTraits<CopyOp, Trait>>{}, dst, src);
+}
+
+template <typename CopyOp, typename Trait, typename Param, typename DstTensor, typename SrcTensor>
+void RunCopyWithParamPaths(const DstTensor& dst, const SrcTensor& src, const Param& param)
+{
+    using namespace AscendC::Te;
+
+    auto atom = MakeCopy(CopyOp{}).with(param);
+    atom.Call(dst, src);
+
+    auto copiedAtom = CopyAtom<CopyTraits<CopyOp, Trait>>{}.with(param);
+    copiedAtom.Call(dst, src);
+
+    Copy(copiedAtom, dst, src);
+    Copy(CopyAtom<CopyTraits<CopyOp, Trait>>{}, dst, src, param);
+}
+
+} // namespace
+
+TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2GMNZ2ND)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t m = 64;
+    constexpr uint32_t n = 32;
+    __cc__ float src[m * n] = {0};
+    __gm__ float dst[m * n] = {0};
+
+    auto l0cTensor = MakeTensorAt<Location::L0C>(src, MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<float, 16>>(m, n));
+    auto gmTensor = MakeTensorAt<Location::GM>(dst, MakeFrameLayout<NDExtLayoutPtn, LayoutTraitDefault<float>>(m, n));
+
+    RunCopyCallPaths<CopyL0C2GM, CopyL0C2GMTraitDefault>(gmTensor, l0cTensor);
+    RunCopyWithParamPaths<CopyL0C2GM, CopyL0C2GMTraitDefault>(gmTensor, l0cTensor, FixpipeParams{});
+
+    EXPECT_EQ(dst[0], 0);
+}
+
+TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2GMNZ2DN)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t m = 64;
+    constexpr uint32_t n = 32;
+    __cc__ float src[m * n] = {0};
+    __gm__ float dst[m * n] = {0};
+
+    auto l0cTensor = MakeTensorAt<Location::L0C>(src, MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<float, 16>>(m, n));
+    auto gmTensor = MakeTensorAt<Location::GM>(dst, MakeFrameLayout<DNExtLayoutPtn, LayoutTraitDefault<float>>(m, n));
+
+    RunCopyCallPaths<CopyL0C2GM, CopyL0C2GMTraitDefault>(gmTensor, l0cTensor);
+    RunCopyWithParamPaths<CopyL0C2GM, CopyL0C2GMTraitDefault>(gmTensor, l0cTensor, FixpipeParams{});
+
+    EXPECT_EQ(dst[0], 0);
+}
+
+TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2GMNZ2NZNoChannelSplit)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t m = 64;
+    constexpr uint32_t n = 32;
+    __cc__ float src[m * n] = {0};
+    __gm__ float dst[m * n] = {0};
+
+    auto l0cTensor = MakeTensorAt<Location::L0C>(src, MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<float, 16>>(m, n));
+    auto gmTensor = MakeTensorAt<Location::GM>(dst, MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<float, 16>>(m, n));
+
+    RunCopyCallPaths<CopyL0C2GM, CopyL0C2GMTraitDefault>(gmTensor, l0cTensor);
+    RunCopyWithParamPaths<CopyL0C2GM, CopyL0C2GMTraitDefault>(gmTensor, l0cTensor, FixpipeParams{});
+
+    EXPECT_EQ(dst[0], 0);
+}
+
+
+TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2GMNZ2NZWithChannelSplit)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t m = 64;
+    constexpr uint32_t n = 32;
+    __cc__ float src[m * n] = {0};
+    __gm__ float dst[m * n] = {0};
+
+    auto l0cTensor = MakeTensorAt<Location::L0C>(src, MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<float>>(m, n));
+    auto gmTensor = MakeTensorAt<Location::GM>(dst, MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<float>>(m, n));
+
+    RunCopyCallPaths<CopyL0C2GM, CopyL0C2GMTraitCustom>(gmTensor, l0cTensor);
+    RunCopyWithParamPaths<CopyL0C2GM, CopyL0C2GMTraitCustom>(gmTensor, l0cTensor, FixpipeParams{});
+
+    EXPECT_EQ(dst[0], 0);
+}
+
 
 template <class L0C_TYPE, class C_TYPE, QuantMode_t QUANT_MODE, bool IS_TENSOR, bool HAS_COORD>
 class TestCase {
@@ -170,7 +293,7 @@ private:
 };
 
 template <class L0C_TYPE, class C_TYPE, QuantMode_t QUANT_MODE, bool IS_TENSOR, bool HAS_COORD>
-__aicore__ inline void TestFixpipe(GM_ADDR cGM, int32_t m, int32_t n, int32_t usedCoreNum)
+__aicore__ inline void TestL0c2Gm(GM_ADDR cGM, int32_t m, int32_t n, int32_t usedCoreNum)
 {
     // cube core cases, ignore vector core
     if (g_coreType == AscendC::AIV) {
@@ -190,30 +313,30 @@ __aicore__ inline void TestFixpipe(GM_ADDR cGM, int32_t m, int32_t n, int32_t us
     ins.TestRun(m, n, gmC);
 }
 
-#define KERNEL_TENSOR_API_FIXPIPE_E2E(coreNum, M, N, C_Format, L0C_DType, C_DType, Quant_Mode, Is_Tensor, Has_Coord) \
-    TEST_F(TEST_TENSOR_API_FIXPIPE, kernel_tensor_api_fixpipe_##coreNum##_##M##_##N##_##C_Format##_##L0C_DType##_##C_DType##_##Quant_Mode##_##Is_Tensor##_##Has_Coord) \
+#define KERNEL_TENSOR_API_L0C2GM_E2E(coreNum, M, N, C_Format, L0C_DType, C_DType, Quant_Mode, Is_Tensor, Has_Coord) \
+    TEST_F(Tensor_Api_Cube_Copy_3510, kernel_tensor_api_l0c2gm_##coreNum##_##M##_##N##_##C_Format##_##L0C_DType##_##C_DType##_##Quant_Mode##_##Is_Tensor##_##Has_Coord) \
     { \
         uint8_t cGM[M * N * sizeof(C_DType)] = {0}; \
         typedef InputInfo<CubeFormat::NZ, L0C_DType> l0cType; \
         typedef InputInfo<CubeFormat::C_Format, C_DType> cType; \
-        TestFixpipe<l0cType, cType, QuantMode_t::Quant_Mode, Is_Tensor, Has_Coord>(cGM, M, N, coreNum); \
+        TestL0c2Gm<l0cType, cType, QuantMode_t::Quant_Mode, Is_Tensor, Has_Coord>(cGM, M, N, coreNum); \
         for (uint32_t i = 0; i < M * N; i++) { \
             EXPECT_EQ(cGM[i], 0x00); \
         } \
     }
 
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 16, 16, ND, float, float, NoQuant, false, false)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 16, 16, NZ, float, float, NoQuant, false, false)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 16, 16, DN, float, float, NoQuant, false, false)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, ND, float, float, NoQuant, false, false)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, ND, float, float, NoQuant, false, true)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, NZ, float, float, NoQuant, false, false)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, NZ, float, float, NoQuant, false, true)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 16, 16, ND, float, half, F322F16, false, false)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, ND, float, half, F322F16, false, true)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 16, 16, ND, float, half, VQF322F16_PRE, true, false)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, ND, int32_t, int8_t, REQ8, false, false)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, NZ, int32_t, int8_t, REQ8, false, false)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, NZ, int32_t, int8_t, VREQ8, true, false)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, DN, int32_t, int8_t, REQ8, false, false)
-KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, DN, int32_t, int8_t, VREQ8, true, false)
+KERNEL_TENSOR_API_L0C2GM_E2E(1, 16, 16, ND, float, float, NoQuant, false, false)
+KERNEL_TENSOR_API_L0C2GM_E2E(1, 16, 16, NZ, float, float, NoQuant, false, false)
+KERNEL_TENSOR_API_L0C2GM_E2E(1, 16, 16, DN, float, float, NoQuant, false, false)
+KERNEL_TENSOR_API_L0C2GM_E2E(1, 128, 64, ND, float, float, NoQuant, false, false)
+KERNEL_TENSOR_API_L0C2GM_E2E(1, 128, 64, ND, float, float, NoQuant, false, true)
+KERNEL_TENSOR_API_L0C2GM_E2E(1, 128, 64, NZ, float, float, NoQuant, false, false)
+KERNEL_TENSOR_API_L0C2GM_E2E(1, 128, 64, NZ, float, float, NoQuant, false, true)
+KERNEL_TENSOR_API_L0C2GM_E2E(1, 16, 16, ND, float, half, F322F16, false, false)
+KERNEL_TENSOR_API_L0C2GM_E2E(1, 128, 64, ND, float, half, F322F16, false, true)
+KERNEL_TENSOR_API_L0C2GM_E2E(1, 16, 16, ND, float, half, VQF322F16_PRE, true, false)
+KERNEL_TENSOR_API_L0C2GM_E2E(1, 128, 64, ND, int32_t, int8_t, REQ8, false, false)
+KERNEL_TENSOR_API_L0C2GM_E2E(1, 128, 64, NZ, int32_t, int8_t, REQ8, false, false)
+KERNEL_TENSOR_API_L0C2GM_E2E(1, 128, 64, NZ, int32_t, int8_t, VREQ8, true, false)
+KERNEL_TENSOR_API_L0C2GM_E2E(1, 128, 64, DN, int32_t, int8_t, REQ8, false, false)
+KERNEL_TENSOR_API_L0C2GM_E2E(1, 128, 64, DN, int32_t, int8_t, VREQ8, true, false)
