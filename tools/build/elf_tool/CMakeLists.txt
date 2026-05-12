@@ -27,5 +27,5 @@ endif()
 
 target_link_libraries(elf_tool_obj PRIVATE
     $<BUILD_INTERFACE:intf_pub>
-    c_sec_static
+    static_c_sec
 )

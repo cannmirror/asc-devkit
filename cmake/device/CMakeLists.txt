@@ -13,5 +13,13 @@ include(../fetch_cann_cmake.cmake)
 project(ascendc_tiling_api)
 
 init_cann_project()
+
+set(HI_PYTHON "python3" CACHE STRING "python executor")
+set(ASCENDC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+set(ASCENDC_INCLUDE_DIR ${ASCENDC_DIR}/include)
+set(ASCENDC_IMPL_DIR ${ASCENDC_DIR}/impl)
 set(INSTALL_LIBRARY_DIR ${CMAKE_HOST_SYSTEM_PROCESSOR}-linux/lib64/device)
+
+include(${ASCENDC_DIR}/impl/adv_api/gen_kernel_tiling.cmake)
+
 add_subdirectory(../../impl/adv_api/tiling tiling)

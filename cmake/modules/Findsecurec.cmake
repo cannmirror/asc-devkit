@@ -73,6 +73,12 @@ if(securec_FOUND)
     IMPORTED_LOCATION "${C_SEC_STATIC_LIBRARY}"
   )
 
+  add_library(static_c_sec STATIC IMPORTED)
+  set_target_properties(static_c_sec PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${C_SEC_INCLUDE}"
+    IMPORTED_LOCATION "${C_SEC_STATIC_LIBRARY}"
+  )
+
   add_library(c_sec SHARED IMPORTED)
   if(WIN32)
     set_target_properties(c_sec PROPERTIES

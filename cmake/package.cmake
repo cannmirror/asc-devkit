@@ -27,7 +27,7 @@ message(STATUS "CMAKE_BINARY_DIR = ${CMAKE_BINARY_DIR}")
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/third_party/makeself-fetch.cmake)
 
-set(script_prefix ${CMAKE_SOURCE_DIR}/scripts/package/scripts/)
+set(script_prefix ${CMAKE_CURRENT_SOURCE_DIR}/scripts/package/scripts/)
 install(DIRECTORY ${script_prefix}/
     DESTINATION share/info/asc-devkit/script
     COMPONENT asc-devkit
@@ -47,7 +47,7 @@ set(SCRIPTS_FILES
     ${CANN_CMAKE_DIR}/scripts/install/common_interface.csh
     ${CANN_CMAKE_DIR}/scripts/install/common_interface.fish
     ${CANN_CMAKE_DIR}/scripts/install/version_compatiable.inc
-    ${CMAKE_SOURCE_DIR}/scripts/package/common/py/merge_binary_info_config.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/package/common/py/merge_binary_info_config.py
 )
 
 install(FILES ${SCRIPTS_FILES}
@@ -101,5 +101,5 @@ install(DIRECTORY ${MAKESELF_PATH}
 )
 
 if (NOT ENABLE_COV AND NOT ENABLE_UT)
-    set_cann_cpack_config(asc-devkit OUTPUT "${PROJECT_SOURCE_DIR}/build_out" NO_CLEAN)
+    set_cann_cpack_config(asc-devkit OUTPUT "${CMAKE_SOURCE_DIR}/build_out" NO_CLEAN)
 endif()

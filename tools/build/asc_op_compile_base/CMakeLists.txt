@@ -86,8 +86,11 @@ add_custom_target(${ASC_OP_COMPILE_BASE_WHL_NAME} ALL
     cp ${ASC_OP_COMPILE_BASE_SRC}/setup.py ${ASC_OP_COMPILE_BASE_DIR}/ &&
     cd ${ASC_OP_COMPILE_BASE_DIR} && ${HI_PYTHON} setup.py bdist_wheel && cd - &&
     ls && pwd &&
-    mkdir ${CMAKE_INSTALL_PREFIX}/lib -p &&
-    ${CMAKE_COMMAND} -E rename ${ASC_OP_COMPILE_BASE_DIR}/dist/asc_op_compile_base*.whl ${CMAKE_INSTALL_PREFIX}/lib/${ASC_OP_COMPILE_BASE_WHL_NAME} &&
+    ${CMAKE_COMMAND} -E rename ${ASC_OP_COMPILE_BASE_DIR}/dist/asc_op_compile_base*.whl ${CMAKE_CURRENT_BINARY_DIR}/${ASC_OP_COMPILE_BASE_WHL_NAME} &&
     echo "[ASC_OP_COMPILE_BASE] Build target ${ASC_OP_COMPILE_BASE_WHL_NAME} end"
   DEPENDS asc_platform
 )
+
+if(BUILD_OPEN_PROJECT)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${ASC_OP_COMPILE_BASE_WHL_NAME} DESTINATION lib COMPONENT asc-devkit)
+endif()

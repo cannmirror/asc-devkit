@@ -24,8 +24,7 @@ add_custom_target(${OPC_WHL_NAME} ALL
     cp -rf ${OPC_BASE}/setup.py ${OPC_DIR}/ &&
     cd ${OPC_DIR} && ${HI_PYTHON} setup.py bdist_wheel && cd - &&
     ls && pwd &&
-    mkdir ${CMAKE_INSTALL_PREFIX}/lib -p &&
-    ${CMAKE_COMMAND} -E rename  ${OPC_DIR}/dist/asc_opc*.whl ${CMAKE_INSTALL_PREFIX}/lib/${OPC_WHL_NAME} &&
+    ${CMAKE_COMMAND} -E rename ${OPC_DIR}/dist/asc_opc*.whl ${CMAKE_CURRENT_BINARY_DIR}/${OPC_WHL_NAME} &&
     echo "[OPC] Build target ${OPC_WHL_NAME} end"
 )
 
@@ -33,4 +32,5 @@ if(BUILD_OPEN_PROJECT)
   install(FILES ${OPC_BASE}/asc_opc
     DESTINATION ${INSTALL_LIBRARY_DIR}/bin COMPONENT asc-devkit
   )
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${OPC_WHL_NAME} DESTINATION lib COMPONENT asc-devkit)
 endif()
