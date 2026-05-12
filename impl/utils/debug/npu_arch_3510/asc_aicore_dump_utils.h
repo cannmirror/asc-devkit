@@ -110,9 +110,7 @@ __simd_callee__ inline void set_dump_tlv_data_reg(U& src, __ubuf__ DumpTensorTlv
     // Store interface simulation, supports unaligned transfer. dump_dst_addr is likely unaligned.
     uint32_t count = dump_tlv->dumpSize / sizeof(T);
     vector_align ureg;
-    constexpr auto postValue = 
-        std::integral_constant<::Post, static_cast<::Post>(AscendC::Reg::PostLiteral::POST_MODE_UPDATE)>();
-    vstus(ureg, count * 2, (vector_u32&)src, (__ubuf__ uint32_t*&)dump_dst_addr, postValue);
+    vstus(ureg, count * 2, (vector_u32&)src, (__ubuf__ uint32_t*&)dump_dst_addr, POST_UPDATE);
     vstas(ureg, (__ubuf__ uint32_t*&)dump_dst_addr, count * 2, POST_UPDATE);
 }
 
