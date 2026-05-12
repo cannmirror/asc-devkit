@@ -283,10 +283,10 @@ MatmulApiTilingBase::~MatmulApiTilingBase() = default;
 int32_t MatmulApiTilingBase::SetAType(TPosition pos, CubeFormat type, DataType dataType, bool isTrans)
 {
     // need detection rationality of data, and data combinations
-    TILING_LOG_DEBUG(" A matrix TPosition: %d", static_cast<int32_t>(pos));
-    TILING_LOG_DEBUG(" A matrix CubeFormat: %d", static_cast<int32_t>(type));
-    TILING_LOG_DEBUG(" A matrix dataType: %d", static_cast<int32_t>(dataType));
-    TILING_LOG_DEBUG(" A matrix isTrans: %d", static_cast<int32_t>(isTrans));
+    TILING_LOG_DEBUG("A matrix TPosition: %d", static_cast<int32_t>(pos));
+    TILING_LOG_DEBUG("A matrix CubeFormat: %d", static_cast<int32_t>(type));
+    TILING_LOG_DEBUG("A matrix dataType: %d", static_cast<int32_t>(dataType));
+    TILING_LOG_DEBUG("A matrix isTrans: %d", static_cast<int32_t>(isTrans));
     aType_.pos = pos;
     aType_.type = type;
     aType_.dataType = dataType;
@@ -296,10 +296,10 @@ int32_t MatmulApiTilingBase::SetAType(TPosition pos, CubeFormat type, DataType d
 
 int32_t MatmulApiTilingBase::SetBType(TPosition pos, CubeFormat type, DataType dataType, bool isTrans)
 {
-    TILING_LOG_DEBUG(" B matrix TPosition: %d", static_cast<int32_t>(pos));
-    TILING_LOG_DEBUG(" B matrix CubeFormat: %d", static_cast<int32_t>(type));
-    TILING_LOG_DEBUG(" B matrix dataType: %d", static_cast<int32_t>(dataType));
-    TILING_LOG_DEBUG(" B matrix isTrans: %d", static_cast<int32_t>(isTrans));
+    TILING_LOG_DEBUG("B matrix TPosition: %d", static_cast<int32_t>(pos));
+    TILING_LOG_DEBUG("B matrix CubeFormat: %d", static_cast<int32_t>(type));
+    TILING_LOG_DEBUG("B matrix dataType: %d", static_cast<int32_t>(dataType));
+    TILING_LOG_DEBUG("B matrix isTrans: %d", static_cast<int32_t>(isTrans));
 
     // need detection rationality of data, and data combinations
     bType_.pos = pos;
@@ -311,9 +311,9 @@ int32_t MatmulApiTilingBase::SetBType(TPosition pos, CubeFormat type, DataType d
 
 int32_t MatmulApiTilingBase::SetScaleAType(TPosition scalePos, CubeFormat scaleType, bool isScaleTrans)
 {
-    TILING_LOG_DEBUG(" A scale TPosition: %d", static_cast<int32_t>(scalePos));
-    TILING_LOG_DEBUG(" A scale Type: %d", static_cast<int32_t>(scaleType));
-    TILING_LOG_DEBUG(" A scale isTrans: %d", static_cast<int32_t>(isScaleTrans));
+    TILING_LOG_DEBUG("A scale TPosition: %d", static_cast<int32_t>(scalePos));
+    TILING_LOG_DEBUG("A scale Type: %d", static_cast<int32_t>(scaleType));
+    TILING_LOG_DEBUG("A scale isTrans: %d", static_cast<int32_t>(isScaleTrans));
     aType_.hasSetScaleType = true;
     aType_.scalePos = scalePos;
     aType_.scaleType = scaleType;
@@ -323,9 +323,9 @@ int32_t MatmulApiTilingBase::SetScaleAType(TPosition scalePos, CubeFormat scaleT
 
 int32_t MatmulApiTilingBase::SetScaleBType(TPosition scalePos, CubeFormat scaleType, bool isScaleTrans)
 {
-    TILING_LOG_DEBUG(" B scale TPosition: %d", static_cast<int32_t>(scalePos));
-    TILING_LOG_DEBUG(" B scale Type: %d", static_cast<int32_t>(scaleType));
-    TILING_LOG_DEBUG(" B scale isTrans: %d", static_cast<int32_t>(isScaleTrans));
+    TILING_LOG_DEBUG("B scale TPosition: %d", static_cast<int32_t>(scalePos));
+    TILING_LOG_DEBUG("B scale Type: %d", static_cast<int32_t>(scaleType));
+    TILING_LOG_DEBUG("B scale isTrans: %d", static_cast<int32_t>(isScaleTrans));
     bType_.hasSetScaleType = true;
     bType_.scalePos = scalePos;
     bType_.scaleType = scaleType;
@@ -335,9 +335,9 @@ int32_t MatmulApiTilingBase::SetScaleBType(TPosition scalePos, CubeFormat scaleT
 
 int32_t MatmulApiTilingBase::SetCType(TPosition pos, CubeFormat type, DataType dataType)
 {
-    TILING_LOG_DEBUG(" C matrix TPosition: %d", static_cast<int32_t>(pos));
-    TILING_LOG_DEBUG(" C matrix CubeFormat: %d", static_cast<int32_t>(type));
-    TILING_LOG_DEBUG(" C matrix dataType: %d", static_cast<int32_t>(dataType));
+    TILING_LOG_DEBUG("C matrix TPosition: %d", static_cast<int32_t>(pos));
+    TILING_LOG_DEBUG("C matrix CubeFormat: %d", static_cast<int32_t>(type));
+    TILING_LOG_DEBUG("C matrix dataType: %d", static_cast<int32_t>(dataType));
 
     // need detection rationality of data, and data combinations
     cType_.pos = pos;
@@ -348,9 +348,9 @@ int32_t MatmulApiTilingBase::SetCType(TPosition pos, CubeFormat type, DataType d
 
 int32_t MatmulApiTilingBase::SetBiasType(TPosition pos, CubeFormat type, DataType dataType)
 {
-    TILING_LOG_DEBUG(" Bias TPosition: %d", static_cast<int32_t>(pos));
-    TILING_LOG_DEBUG(" Bias CubeFormat: %d", static_cast<int32_t>(type));
-    TILING_LOG_DEBUG(" Bias dataType: %d", static_cast<int32_t>(dataType));
+    TILING_LOG_DEBUG("Bias TPosition: %d", static_cast<int32_t>(pos));
+    TILING_LOG_DEBUG("Bias CubeFormat: %d", static_cast<int32_t>(type));
+    TILING_LOG_DEBUG("Bias dataType: %d", static_cast<int32_t>(dataType));
 
     // need detection rationality of data, and data combinations
     biasType_.pos = pos;
@@ -366,10 +366,10 @@ int32_t MatmulApiTilingBase::SetOrgShape(int32_t orgMIn, int32_t orgNIn, int32_t
 
 int32_t MatmulApiTilingBase::SetOrgShape(int32_t orgMIn, int32_t orgNIn, int32_t orgKaIn, int32_t orgKbIn)
 {
-    TILING_LOG_DEBUG(" Set Original M: %d", orgMIn);
-    TILING_LOG_DEBUG(" Set Original N: %d", orgNIn);
-    TILING_LOG_DEBUG(" Set Original Ka: %d", orgKaIn);
-    TILING_LOG_DEBUG(" Set Original Kb: %d", orgKbIn);
+    TILING_LOG_DEBUG("Set Original M: %d", orgMIn);
+    TILING_LOG_DEBUG("Set Original N: %d", orgNIn);
+    TILING_LOG_DEBUG("Set Original Ka: %d", orgKaIn);
+    TILING_LOG_DEBUG("Set Original Kb: %d", orgKbIn);
 
     this->orgM = orgMIn;
     this->orgN = orgNIn;
@@ -380,11 +380,11 @@ int32_t MatmulApiTilingBase::SetOrgShape(int32_t orgMIn, int32_t orgNIn, int32_t
 
 int32_t MatmulApiTilingBase::SetALayout(int32_t b, int32_t s, int32_t n, int32_t g, int32_t d)
 {
-    TILING_LOG_DEBUG(" Set ALayout B: %d", b);
-    TILING_LOG_DEBUG(" Set ALayout S: %d", s);
-    TILING_LOG_DEBUG(" Set ALayout N: %d", n);
-    TILING_LOG_DEBUG(" Set ALayout G: %d", g);
-    TILING_LOG_DEBUG(" Set ALayout D: %d", d);
+    TILING_LOG_DEBUG("Set ALayout B: %d", b);
+    TILING_LOG_DEBUG("Set ALayout S: %d", s);
+    TILING_LOG_DEBUG("Set ALayout N: %d", n);
+    TILING_LOG_DEBUG("Set ALayout G: %d", g);
+    TILING_LOG_DEBUG("Set ALayout D: %d", d);
 
     this->aLayoutInfoB = b;
     this->aLayoutInfoS = s;
@@ -396,11 +396,11 @@ int32_t MatmulApiTilingBase::SetALayout(int32_t b, int32_t s, int32_t n, int32_t
 
 int32_t MatmulApiTilingBase::SetBLayout(int32_t b, int32_t s, int32_t n, int32_t g, int32_t d)
 {
-    TILING_LOG_DEBUG(" Set BLayout B: %d", b);
-    TILING_LOG_DEBUG(" Set BLayout S: %d", s);
-    TILING_LOG_DEBUG(" Set BLayout N: %d", n);
-    TILING_LOG_DEBUG(" Set BLayout G: %d", g);
-    TILING_LOG_DEBUG(" Set BLayout D: %d", d);
+    TILING_LOG_DEBUG("Set BLayout B: %d", b);
+    TILING_LOG_DEBUG("Set BLayout S: %d", s);
+    TILING_LOG_DEBUG("Set BLayout N: %d", n);
+    TILING_LOG_DEBUG("Set BLayout G: %d", g);
+    TILING_LOG_DEBUG("Set BLayout D: %d", d);
 
     this->bLayoutInfoB = b;
     this->bLayoutInfoS = s;
@@ -412,11 +412,11 @@ int32_t MatmulApiTilingBase::SetBLayout(int32_t b, int32_t s, int32_t n, int32_t
 
 int32_t MatmulApiTilingBase::SetCLayout(int32_t b, int32_t s, int32_t n, int32_t g, int32_t d)
 {
-    TILING_LOG_DEBUG(" Set CLayout B: %d", b);
-    TILING_LOG_DEBUG(" Set CLayout S: %d", s);
-    TILING_LOG_DEBUG(" Set CLayout N: %d", n);
-    TILING_LOG_DEBUG(" Set CLayout G: %d", g);
-    TILING_LOG_DEBUG(" Set CLayout D: %d", d);
+    TILING_LOG_DEBUG("Set CLayout B: %d", b);
+    TILING_LOG_DEBUG("Set CLayout S: %d", s);
+    TILING_LOG_DEBUG("Set CLayout N: %d", n);
+    TILING_LOG_DEBUG("Set CLayout G: %d", g);
+    TILING_LOG_DEBUG("Set CLayout D: %d", d);
 
     this->cLayoutInfoB = b;
     this->cLayoutInfoS1 = s;
@@ -483,9 +483,9 @@ int32_t MatmulApiTilingBase::SetBatchNum(int32_t batch)
 
 int32_t MatmulApiTilingBase::SetShape(int32_t m, int32_t n, int32_t k)
 {
-    TILING_LOG_DEBUG(" Set Single M: %d", m);
-    TILING_LOG_DEBUG(" Set Single N: %d", n);
-    TILING_LOG_DEBUG(" Set Single K: %d", k);
+    TILING_LOG_DEBUG("Set Single M: %d", m);
+    TILING_LOG_DEBUG("Set Single N: %d", n);
+    TILING_LOG_DEBUG("Set Single K: %d", k);
 
     this->singleM = m;
     this->singleN = n;
@@ -501,7 +501,7 @@ int32_t MatmulApiTilingBase::SetShape(int32_t m, int32_t n, int32_t k)
 
 int32_t MatmulApiTilingBase::EnableBias(bool isBiasIn)
 {
-    TILING_LOG_DEBUG(" Set bias: %d", static_cast<int32_t>(isBiasIn));
+    TILING_LOG_DEBUG("Set bias: %d", static_cast<int32_t>(isBiasIn));
     this->isBias = isBiasIn;
     return 0;
 }
@@ -510,9 +510,9 @@ int32_t MatmulApiTilingBase::SetBias(bool isBiasIn) { return EnableBias(isBiasIn
 
 int32_t MatmulApiTilingBase::SetFixSplit(int32_t baseMIn, int32_t baseNIn, int32_t baseKIn)
 {
-    TILING_LOG_DEBUG(" Set fixed split baseM: %d", baseMIn);
-    TILING_LOG_DEBUG(" Set fixed split baseN: %d", baseNIn);
-    TILING_LOG_DEBUG(" Set fixed split baseK: %d", baseKIn);
+    TILING_LOG_DEBUG("Set fixed split baseM: %d", baseMIn);
+    TILING_LOG_DEBUG("Set fixed split baseN: %d", baseNIn);
+    TILING_LOG_DEBUG("Set fixed split baseK: %d", baseKIn);
     if (baseMIn == 0 || baseNIn == 0 || baseKIn == 0) {
         return -1;
     }
@@ -554,10 +554,10 @@ int32_t MatmulApiTilingBase::SetDoubleBuffer(bool a, bool b, bool c, bool bias, 
 // set allowed used space, default using all space of chip
 int32_t MatmulApiTilingBase::SetBufferSpace(int32_t l1Size, int32_t l0CSize, int32_t ubSize, int32_t btSize)
 {
-    TILING_LOG_DEBUG(" Set Size L1: %d", l1Size);
-    TILING_LOG_DEBUG(" Set Size L0CSize: %d", l0CSize);
-    TILING_LOG_DEBUG(" Set Size UBSize: %d", ubSize);
-    TILING_LOG_DEBUG(" Set Size BtSize: %d", btSize);
+    TILING_LOG_DEBUG("Set Size L1: %d", l1Size);
+    TILING_LOG_DEBUG("Set Size L0CSize: %d", l0CSize);
+    TILING_LOG_DEBUG("Set Size UBSize: %d", ubSize);
+    TILING_LOG_DEBUG("Set Size BtSize: %d", btSize);
     if (l1Size < -1 || (l1Size > this->bufferPool_.l1Size)) {
         TILING_LOG_INFO("Provided L1 size is out of range");
         return -1;
