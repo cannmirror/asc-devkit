@@ -995,6 +995,48 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_cas(half2 *address, half2
     return __atomic_cas(address, compare, val);
 }
 #endif
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_ldcg(half* address)
+{
+    return __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>(address);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_ldcg(half2* address)
+{
+    int32_t t = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>(reinterpret_cast<int32_t*>(address));
+    return reinterpret_cast<half2&>(t);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_ldca(half* address)
+{
+    return __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(address);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_ldca(half2* address)
+{
+    int32_t t = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(reinterpret_cast<int32_t*>(address));
+    return reinterpret_cast<half2&>(t);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stcg(half* address, half val)
+{
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>(address, val);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stcg(half2* address, half2 val)
+{
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>(reinterpret_cast<int32_t*>(address), reinterpret_cast<int32_t&>(val));
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(half* address, half val)
+{
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(address, val);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(half2* address, half2 val)
+{
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(reinterpret_cast<int32_t*>(address), reinterpret_cast<int32_t&>(val));
+}
 #endif
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_shfl(half var, int32_t src_lane, int32_t width)

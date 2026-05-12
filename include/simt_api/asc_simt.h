@@ -23,9 +23,7 @@
 #include "simt_api/common_functions.h"
 #include "simt_api/math_functions.h"
 #include "simt_api/device_functions.h"
-#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
 #include "simt_api/vector_functions.h"
-#endif
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_SIMT_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
