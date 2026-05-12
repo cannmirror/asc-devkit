@@ -119,8 +119,8 @@
     内置全局变量，只能在核函数中使用，用于获取块索引。表示当前线程所在的线程块在整个网格中的位置坐标。
 
     -   blockIdx.x的范围是0到gridDim.x - 1。
-    -   blockIdx.y的范围是0到gridDim.y - 1，目前只能返回0。
-    -   blockIdx.z的范围是0到gridDim.z - 1，目前只能返回0。
+    -   blockIdx.y的范围是0到gridDim.y - 1。
+    -   blockIdx.z的范围是0到gridDim.z - 1。
 
 -   threadIdx<a name="li7760123814919"></a>
 
