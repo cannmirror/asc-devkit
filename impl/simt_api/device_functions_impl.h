@@ -1026,6 +1026,10 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ float4* address, floa
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(address, val);
 }
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_dcci_entire(__gm__ void* dst) {
+    dcci(dst, 1);
+}
 #else
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long int asc_ldcg(long int* address)
 {
@@ -1796,10 +1800,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(float4* address, float4 val)
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(address, val);
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_dcci_entire(__gm__ void* dst) {
-    dcci(dst, 1);
-}
-#else
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_dcci_entire(void* dst) {
     dcci(dst, 1);
 }
