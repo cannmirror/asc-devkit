@@ -46,12 +46,12 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline bool IsNegativeInfImpl(float x)
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline bool IsFiniteImpl(float x)
 {
-    return !IsNanImpl(x) && !IsInfImpl(x);
+    return __isfinite(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline bool IsFiniteImpl(half x)
 {
-    return !IsNanImpl(x) && !IsInfImpl(x);
+    return __isfinite(x);
 }
 }  // namespace Simt
 }  // namespace AscendC
