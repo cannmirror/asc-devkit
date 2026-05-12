@@ -61,7 +61,7 @@ $bisheng --npu-arch=dav-2201 main.asc -c -o main.asc.o
 $bisheng hello_world.aicpu.o main.asc.o -o demo
 ```
 
-上文我们通过一个入门示例介绍了使用bisheng命令行编译生成可执行文件的示例。除此之外，使用bisheng命令行也支持编译生成AI CPU算子的动态库与静态库，用户可在asc代码中通过内核调用符<<<...\>\>\>调用AI CPU算子的核函数，并在编译asc代码源文件生成可执行文件的时候，链接AI CPU动态库或者静态库，注意：若单独编译AI CPU算子代码生成动态库、静态库时，需要手动链接[表2](AI-Core-SIMT编译/通过CMake编译.md#table201231542115513)。
+上文我们通过一个入门示例介绍了使用bisheng命令行编译生成可执行文件的示例。除此之外，使用bisheng命令行也支持编译生成AI CPU算子的动态库与静态库，用户可在asc代码中通过内核调用符<<<...\>\>\>调用AI CPU算子的核函数，并在编译asc代码源文件生成可执行文件的时候，链接AI CPU动态库或者静态库，注意：若单独编译AI CPU算子代码生成动态库、静态库时，需要手动链接[表2](AI-Core算子编译基本用法.md#table201231542115513)。
 
 -   编译生成算子动态库
 
@@ -173,7 +173,7 @@ AI CPU算子常用的编译选项说明如下：
 </tbody>
 </table>
 
-## 通过CMake编译<a name="section1121825118533"></a>
+## CMake方式编译<a name="section1121825118533"></a>
 
 项目中可以使用CMake来更简便地使用毕昇编译器编译AI CPU算子，生成可执行文件、动态库、静态库或二进制文件。
 
@@ -358,61 +358,3 @@ target_compile_options(demo PRIVATE
 </tr>
 </tbody>
 </table>
-
-**表 3**  编译AI CPU算子需要手动链接的库
-
-<a name="table346945145419"></a>
-<table><thead align="left"><tr id="row247245105412"><th class="cellrowborder" valign="top" width="23.98%" id="mcps1.2.3.1.1"><p id="p247194525413"><a name="p247194525413"></a><a name="p247194525413"></a>名称</p>
-</th>
-<th class="cellrowborder" valign="top" width="76.02%" id="mcps1.2.3.1.2"><p id="p847154515416"><a name="p847154515416"></a><a name="p847154515416"></a>作用描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row1747184585416"><td class="cellrowborder" valign="top" width="23.98%" headers="mcps1.2.3.1.1 "><p id="p1047154517544"><a name="p1047154517544"></a><a name="p1047154517544"></a>libascendc_runtime.a</p>
-</td>
-<td class="cellrowborder" valign="top" width="76.02%" headers="mcps1.2.3.1.2 "><p id="p1647545185419"><a name="p1647545185419"></a><a name="p1647545185419"></a>Ascend C算子参数等组装库。</p>
-</td>
-</tr>
-<tr id="row2471459548"><td class="cellrowborder" valign="top" width="23.98%" headers="mcps1.2.3.1.1 "><p id="p194724511542"><a name="p194724511542"></a><a name="p194724511542"></a>libruntime.so</p>
-</td>
-<td class="cellrowborder" valign="top" width="76.02%" headers="mcps1.2.3.1.2 "><p id="p20471845185417"><a name="p20471845185417"></a><a name="p20471845185417"></a>Runtime运行库。</p>
-</td>
-</tr>
-<tr id="row124734515546"><td class="cellrowborder" valign="top" width="23.98%" headers="mcps1.2.3.1.1 "><p id="p147134512548"><a name="p147134512548"></a><a name="p147134512548"></a>libprofapi.so</p>
-</td>
-<td class="cellrowborder" valign="top" width="76.02%" headers="mcps1.2.3.1.2 "><p id="p14719452541"><a name="p14719452541"></a><a name="p14719452541"></a>Ascend C算子运行性能数据采集库。</p>
-</td>
-</tr>
-<tr id="row1647345105420"><td class="cellrowborder" valign="top" width="23.98%" headers="mcps1.2.3.1.1 "><p id="p104784517542"><a name="p104784517542"></a><a name="p104784517542"></a>libunified_dlog.so</p>
-</td>
-<td class="cellrowborder" valign="top" width="76.02%" headers="mcps1.2.3.1.2 "><p id="p147184545410"><a name="p147184545410"></a><a name="p147184545410"></a>CANN日志收集库。</p>
-</td>
-</tr>
-<tr id="row54717452542"><td class="cellrowborder" valign="top" width="23.98%" headers="mcps1.2.3.1.1 "><p id="p1247124511546"><a name="p1247124511546"></a><a name="p1247124511546"></a>libmmpa.so</p>
-</td>
-<td class="cellrowborder" valign="top" width="76.02%" headers="mcps1.2.3.1.2 "><p id="p34774520544"><a name="p34774520544"></a><a name="p34774520544"></a>CANN系统接口库。</p>
-</td>
-</tr>
-<tr id="row247114520549"><td class="cellrowborder" valign="top" width="23.98%" headers="mcps1.2.3.1.1 "><p id="p8471645165412"><a name="p8471645165412"></a><a name="p8471645165412"></a>libascend_dump.so</p>
-</td>
-<td class="cellrowborder" valign="top" width="76.02%" headers="mcps1.2.3.1.2 "><p id="p1947164513547"><a name="p1947164513547"></a><a name="p1947164513547"></a>CANN维测信息库。</p>
-</td>
-</tr>
-<tr id="row747114515415"><td class="cellrowborder" valign="top" width="23.98%" headers="mcps1.2.3.1.1 "><p id="p6473454549"><a name="p6473454549"></a><a name="p6473454549"></a>libc_sec.so</p>
-</td>
-<td class="cellrowborder" valign="top" width="76.02%" headers="mcps1.2.3.1.2 "><p id="p1847204512547"><a name="p1847204512547"></a><a name="p1847204512547"></a>CANN安全函数库。</p>
-</td>
-</tr>
-<tr id="row3472045145410"><td class="cellrowborder" valign="top" width="23.98%" headers="mcps1.2.3.1.1 "><p id="p124819454540"><a name="p124819454540"></a><a name="p124819454540"></a>liberror_manager.so</p>
-</td>
-<td class="cellrowborder" valign="top" width="76.02%" headers="mcps1.2.3.1.2 "><p id="p2484452543"><a name="p2484452543"></a><a name="p2484452543"></a>CANN错误信息管理库。</p>
-</td>
-</tr>
-<tr id="row7487453546"><td class="cellrowborder" valign="top" width="23.98%" headers="mcps1.2.3.1.1 "><p id="p84884585415"><a name="p84884585415"></a><a name="p84884585415"></a>libascendcl.so</p>
-</td>
-<td class="cellrowborder" valign="top" width="76.02%" headers="mcps1.2.3.1.2 "><p id="p124817452541"><a name="p124817452541"></a><a name="p124817452541"></a>acl相关接口库。</p>
-</td>
-</tr>
-</tbody>
-</table>
-

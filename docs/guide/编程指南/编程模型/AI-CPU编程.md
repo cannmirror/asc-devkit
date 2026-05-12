@@ -52,7 +52,7 @@ hello_world<<<numBlocks, nullptr, stream>>>(&args, sizeof(KernelArgs));
 >- Host侧调用\_\_global\_\_ \_\_aicpu\_\_函数时必须使用<<<\>\>\>异构调用语法，输入的函数入参在入参指针的基础上需要输入从指针中读取的数据大小。
 >- 在Host侧使用内核调用符<<<...\>\>\>调用AI Core与AI CPU算子时不能使用同一条stream。
 
-加载和运行算子时，需要使用Runtime API，完成运行时管理和配置，详细内容请参考[算子运行](../编译与运行/算子运行.md)。AI CPU算子的编译请参考[AI CPU算子编译](../编译与运行/AI-CPU算子编译.md)。
+加载和运行算子时，需要使用Runtime API，完成运行时管理和配置，详细内容请参考[算子运行](../编译与运行/异步执行.md)。AI CPU算子的编译请参考[AI CPU算子编译](../编译与运行/算子编译/AI-CPU算子编译基本用法.md)。
 
 ## AI CPU模板核函数<a name="section135075471718"></a>
 
@@ -82,4 +82,3 @@ template extern __global__ __aicpu__ uint32_t hello_world<KernelArgs, 4096>(void
 
 >[!NOTE]说明 
 >更多AI CPU API的使用方法请参考[AI CPU API](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/AI-CPU-API.md)。
-
