@@ -27,8 +27,8 @@ TEST_F(Tensor_Api_Tensor_CacheMode, SetL2CacheHint)
     constexpr uint32_t TILE_LENGTH = 8;
     __gm__ float data[TILE_LENGTH] = {0, 1, 2, 3, 4, 5, 6, 7};
     auto ptr = MakeMemPtr<Location::GM>(data);
-    auto tensor = MakeTensor(ptr, MakeShape(AscendC::Std::Int<2>{}, AscendC::Std::Int<2>{}, AscendC::Std::Int<2>{}),
-                             MakeStride(AscendC::Std::Int<4>{}, AscendC::Std::Int<2>{}, AscendC::Std::Int<1>{}));
+    auto tensor = MakeTensor(ptr, MakeShape(AscendC::Std::_2{}, AscendC::Std::_2{}, AscendC::Std::_2{}),
+                             MakeStride(AscendC::Std::_4{}, AscendC::Std::_2{}, AscendC::Std::_1{}));
 
     tensor.SetL2CacheHint(CacheMode::CACHE_MODE_DISABLE);
     EXPECT_EQ(tensor.Engine().GetCacheMode(), static_cast<uint8_t>(CacheMode::CACHE_MODE_DISABLE));

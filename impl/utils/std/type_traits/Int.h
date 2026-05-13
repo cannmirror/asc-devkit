@@ -42,6 +42,7 @@ using _8      = Int<8>;
 using _9      = Int<9>;
 using _10     = Int<10>;
 using _16     = Int<16>;
+using _24     = Int<24>;
 using _32     = Int<32>;
 using _64     = Int<64>;
 using _128    = Int<128>;

@@ -159,8 +159,8 @@ private:
     {
         auto dstAddr = reinterpret_cast<__fbuf__ uint64_t*>(AllocFbTempBuf(calNSize));
         auto dst = MakeTensor(MakeMemPtr<Location::FIXBUF>(dstAddr), src.Layout());
-        auto coord = MakeCoord(Std::Int<0>{}, nIterIndex * MAIN_LOOP_N_SIZE_3510);
-        auto shape = MakeShape(Std::Int<1>{}, calNSize);
+        auto coord = MakeCoord(_0{}, nIterIndex * MAIN_LOOP_N_SIZE_3510);
+        auto shape = MakeShape(_1{}, calNSize);
         auto tileSrc = src.Slice(coord, shape);
         DataCopyL12FB3510::Run<DEFAULT_COPY_L1_FB_TRAIT>(dst, tileSrc);
         SetFpc(dstAddr);

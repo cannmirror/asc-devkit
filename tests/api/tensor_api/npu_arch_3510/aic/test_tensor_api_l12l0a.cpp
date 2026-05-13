@@ -142,12 +142,12 @@ TEST_F(Tensor_Api_Cube_Copy_3510, TestLoadDataMx_##TYPE##M##N##SRC_FORMAT##DST_F
     using namespace AscendC::Te; \
     __##DST_TAG##__ TYPE dst[M * N]; \
     auto dstIterator = MakeMemPtr<Location::DST_POS>(dst); \
-    auto dstMatrixLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(DST_FORMAT), AscendC::Std::Int<2>>(M, N); \
+    auto dstMatrixLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(DST_FORMAT), AscendC::Std::_2>(M, N); \
     auto dstTensor = MakeTensor(dstIterator, dstMatrixLayout); \
  \
     __##SRC_TAG##__ TYPE src[M * N]; \
     auto srcIterator = MakeMemPtr<Location::SRC_POS>(src); \
-    auto srcMatrixLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(SRC_FORMAT), AscendC::Std::Int<2>>(M, N); \
+    auto srcMatrixLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(SRC_FORMAT), AscendC::Std::_2>(M, N); \
     auto srcTensor = MakeTensor(srcIterator, srcMatrixLayout); \
  \
     auto coord = MakeCoord(AscendC::Std::Int<COORD_I>{}, AscendC::Std::Int<COORD_J>{}); \
