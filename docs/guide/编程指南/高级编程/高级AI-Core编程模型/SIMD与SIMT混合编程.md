@@ -249,84 +249,73 @@ UB（即Unified Buffer）内存空间总大小为256KB，参考[图3](#fig184031
 
 ## 编程示例<a name="section776244992018"></a>
 
-样例中介绍的算子完整代码请参见[SIMD与SIMT混合编程实现gather&adds算子样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/00_introduction/03_fusion_operation/simt_gather_and_simd_adds)。
+样例中介绍的算子完整代码请参见[SIMD与SIMT混合编程实现gather&adds算子样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/00_introduction/03_fusion_operation/gather_adds_simt_simd_hybrid)。
 
 ```
-__simt_vf__ __launch_bounds__(THREAD_COUNT) inline void simt_gather(
-    __gm__ float* input,
-    __gm__ uint32_t* index,
-    __ubuf__ float* gather_output,
-    uint32_t input_total_length,
-    uint32_t index_total_length,
-    uint32_t output_total_length)
+__simt_vf__ __launch_bounds__(THREAD_COUNT) inline void simt_gather(__gm__ float* input, __gm__ uint32_t* index, __ubuf__ float* gatherOutput, uint32_t inputTotalLength,
+    uint32_t indexTotalLength, uint32_t outputTotalLength)
 {
-    if (threadIdx.x >= output_total_length) {
-        return;
-    }
-    // blockIdx will be supported later.
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx >= index_total_length) {
+    if (threadIdx.x >= outputTotalLength) {
         return;
     }
 
-    uint32_t gather_idx = index[idx];
-    if (gather_idx >= input_total_length) {
+    uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= indexTotalLength) {
         return;
     }
 
-    gather_output[threadIdx.x] = input[gather_idx];
+    uint32_t gatherIdx = index[idx];
+    if (gatherIdx >= inputTotalLength) {
+        return;
+    }
+
+    gatherOutput[threadIdx.x] = input[gatherIdx];
 }
 
-__simd_vf__ inline void simd_adds(__ubuf__ float* output, __ubuf__ float* input,
-    uint32_t count, uint32_t one_repeat_size, uint16_t repeat_times)
+__simd_vf__ inline void simd_adds(__ubuf__ float* output, __ubuf__ float* input, uint32_t count, uint32_t oneRepeatSize, uint16_t repeatTimes)
 {
-    AscendC::Reg::RegTensor<float> src_reg0;
-    AscendC::Reg::RegTensor<float> dst_reg0;
-    AscendC::Reg::MaskReg mask_reg; 
+    AscendC::Reg::RegTensor<float> srcReg0;
+    AscendC::Reg::RegTensor<float> dstReg0;
+    AscendC::Reg::MaskReg maskReg;
 
-    for (uint16_t i = 0; i < repeat_times; i++) {
-        mask_reg = AscendC::Reg::UpdateMask<float>(count);
-        AscendC::Reg::LoadAlign(src_reg0, input + i * one_repeat_size);
-        AscendC::Reg::Adds(dst_reg0, src_reg0, ADDS_ADDEND, mask_reg);
-        AscendC::Reg::StoreAlign(output + i * one_repeat_size, dst_reg0, mask_reg);
+    for (uint16_t i = 0; i < repeatTimes; i++) {
+        maskReg = AscendC::Reg::UpdateMask<float>(count);
+        AscendC::Reg::LoadAlign(srcReg0, input + i * oneRepeatSize);
+        AscendC::Reg::Adds(dstReg0, srcReg0, ADDS_ADDEND, maskReg);
+        AscendC::Reg::StoreAlign(output + i * oneRepeatSize, dstReg0, maskReg);
     }
 }
 
-__global__ __aicore__ void gather_and_adds_kernel(__gm__ float* input, __gm__ uint32_t* index, __gm__ float* output,
-    uint32_t input_total_length, uint32_t index_total_length)
+__global__ __vector__ void gather_and_adds_kernel(__gm__ float* input, __gm__ uint32_t* index, __gm__ float* output, uint32_t inputTotalLength, uint32_t indexTotalLength)
 {
-    KERNEL_TASK_TYPE_DEFAULT(KERNEL_TYPE_AIV_ONLY);
-    AscendC::LocalMemAllocator<AscendC::Hardware::UB> ub_allocator;
+    AscendC::LocalMemAllocator<AscendC::Hardware::UB> ubAllocator;
     // 1. gather numbers from input.
-    uint32_t index_total_length_per_block = index_total_length / AscendC::GetBlockNum();
-    AscendC::LocalTensor<float> gather_output = ub_allocator.Alloc<float>(index_total_length_per_block);
-    asc_vf_call<simt_gather>(dim3(THREAD_COUNT),input, index,
-                             (__ubuf__ float *)gather_output.GetPhyAddr(),
-                             input_total_length,
-                             index_total_length,
-                             index_total_length_per_block);
-
+    uint32_t indexTotalLengthPerBlock = indexTotalLength / AscendC::GetBlockNum();
+    AscendC::LocalTensor<float> gatherOutput = ubAllocator.Alloc<float>(indexTotalLengthPerBlock);
+    asc_vf_call<simt_gather>(
+        dim3(THREAD_COUNT), input, index, (__ubuf__ float*)gatherOutput.GetPhyAddr(), inputTotalLength,
+        indexTotalLength, indexTotalLengthPerBlock);
     // 2. use reg compute api to do addition.
-    AscendC::LocalTensor<float> adds_output = ub_allocator.Alloc<float>(index_total_length_per_block);
-    constexpr uint32_t one_repeat_size = AscendC::GetVecLen() / sizeof(float);
-    uint16_t repeat_times = (index_total_length_per_block + one_repeat_size - 1) / one_repeat_size;
-    asc_vf_call<simd_adds>((__ubuf__ float *)adds_output.GetPhyAddr(),
-        (__ubuf__ float *)gather_output.GetPhyAddr(), index_total_length_per_block, one_repeat_size, repeat_times);
+    AscendC::LocalTensor<float> addsOutput = ubAllocator.Alloc<float>(indexTotalLengthPerBlock);
+    constexpr uint32_t oneRepeatSize = AscendC::GetVecLen() / sizeof(float);
+    uint16_t repeatTimes = (indexTotalLengthPerBlock + oneRepeatSize - 1) / oneRepeatSize;
+
+    asc_vf_call<simd_adds>(
+        (__ubuf__ float*)addsOutput.GetPhyAddr(), (__ubuf__ float*)gatherOutput.GetPhyAddr(), indexTotalLengthPerBlock,
+        oneRepeatSize, repeatTimes);
 
     AscendC::SetFlag<AscendC::HardEvent::V_MTE3>(0);
     AscendC::WaitFlag<AscendC::HardEvent::V_MTE3>(0);
-
     // 3. copy data to global memory.
-    AscendC::GlobalTensor<float> output_global_tensor;
-    output_global_tensor.SetGlobalBuffer(output + index_total_length_per_block * AscendC::GetBlockIdx());
-    AscendC::DataCopy(output_global_tensor, adds_output, index_total_length_per_block);
+    AscendC::GlobalTensor<float> outputGlobalTensor;
+    outputGlobalTensor.SetGlobalBuffer(output + indexTotalLengthPerBlock * AscendC::GetBlockIdx());
+    AscendC::DataCopy(outputGlobalTensor, addsOutput, indexTotalLengthPerBlock);
 }
 
 int main(int argc, char *argv[])
 {
-     …
-     //numBlocks only supports one dimension currently.
-     gather_and_adds_kernel<<<numBlocks, dynUBufSize, stream>>>(input_device, index_device, output_device, input_total_length, index_total_length);
-     …
+    …
+    gather_and_adds_kernel<<<numBlocks, dynUBufSize, stream>>>(inputDevice, indexDevice, outputDevice, inputTotalLength, indexTotalLength);
+    …
 }
 ```

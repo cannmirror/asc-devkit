@@ -8,5 +8,5 @@
 
 |  目录名称                                                   |  功能描述                                              |
 | ------------------------------------------------------------ | ---------------------------------------------------- |
-| [basic_api_memory_allocator_add](./basic_api_memory_allocator_add) | 基于静态Tensor编程实现 |
-| [basic_api_tque_add](./basic_api_tque_add) | 基于TQue和TPipe编程实现 |
+| [add](./add) | 基于静态Tensor编程实现 |
+| [add_tpipe_tque](./add_tpipe_tque) | 基于TQue和TPipe编程实现 |

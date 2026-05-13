@@ -1,6 +1,6 @@
 # HelloWorld<a name="ZH-CN_TOPIC_0000002500621202"></a>
 
-本示例展示了如何使用Ascend C编写一个简单的"Hello World"程序，包括核函数（设备侧实现的入口函数）的实现、调用流程以及编译运行的完整步骤。通过本示例，您可以快速了解Ascend C的基本开发流程。完整样例请参考[LINK](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/00_introduction/00_quickstart/hello_world_npu)。
+本示例展示了如何使用Ascend C编写一个简单的"Hello World"程序，包括核函数（设备侧实现的入口函数）的实现、调用流程以及编译运行的完整步骤。通过本示例，您可以快速了解Ascend C的基本开发流程。完整样例请参考[LINK](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/00_introduction/00_quickstart/hello_world)。
 
 代码文件hello\_world.asc包括核函数实现和主函数实现。
 
@@ -48,7 +48,7 @@ int32_t main(int argc, char const *argv[])
 >    - Ascend 950PR/Ascend 950DT
 >    - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 >    - Atlas A2 训练系列产品/Atlas A2 推理系列产品
->- 编译命令中的--npu-arch用于指定NPU的架构版本，dav-后为架构版本号，请替换为您实际使用的架构版本号。各AI处理器型号对应的架构版本号请通过[AI处理器型号和\_\_NPU\_ARCH\_\_的对应关系](../../../编程指南/语言扩展层/SIMD-BuiltIn关键字.md#table65291052154114)进行查询。
+>- 编译命令中的--npu-arch用于指定NPU的架构版本，dav-后为架构版本号，请替换为您实际使用的架构版本号（bisheng命令行编译）或通过CMAKE_ASC_ARCHITECTURES传入（CMake编译）。各AI处理器型号对应的架构版本号请通过[AI处理器型号和\_\_NPU\_ARCH\_\_的对应关系](../../../编程指南/语言扩展层/SIMD-BuiltIn关键字.md#table65291052154114)进行查询。
 
 -   **使用bisheng命令行进行编译**
 
@@ -63,6 +63,8 @@ int32_t main(int argc, char const *argv[])
 
     ```
     cmake_minimum_required(VERSION 3.16)
+    # CMAKE_ASC_ARCHITECTURES是用来决定NPU架构的编译参数，可选值为：dav-2201, dav-3510
+    set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "NPU architecture: dav-2201, dav-3510")
     # find_package(ASC)是CMake中用于查找和配置Ascend C编译工具链的命令
     find_package(ASC REQUIRED)
     # 指定项目支持的语言包括ASC和CXX，ASC表示支持使用毕昇编译器对Ascend C编程语言进行编译
@@ -71,16 +73,16 @@ int32_t main(int argc, char const *argv[])
         hello_world.asc
     )
     # 通过编译选项设置NPU架构
-    target_compile_options(demo PRIVATE   
-       $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
+    target_compile_options(demo PRIVATE
+        $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>
     )
     ```
 
     编译和运行步骤如下：
 
     ```
-    mkdir -p build && cd build; 
-    cmake ..;make -j;
+    mkdir -p build && cd build;
+    cmake -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;
     ./demo
     ```
 
@@ -96,4 +98,3 @@ int32_t main(int argc, char const *argv[])
 [Block (6/8)]: Hello World!!!
 [Block (7/8)]: Hello World!!!
 ```
-

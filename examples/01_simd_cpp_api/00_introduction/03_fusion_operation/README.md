@@ -8,5 +8,5 @@
 
 |  目录名称                                                   |  功能描述                                              |
 | ------------------------------------------------------------ | ---------------------------------------------------- |
-| [matmul_leakyrelu](./matmul_leakyrelu) | 基于高阶API实现Matmul矩阵乘与LeakyRelu激活函数计算融合 |
-| [simt_gather_and_simd_adds](./simt_gather_and_simd_adds) | 基于SIMT和SIMD实现Gather和Adds融合计算 |
+| [matmul_leakyrelu_high_level_api](./matmul_leakyrelu_high_level_api) | 基于高阶API实现Matmul矩阵乘与LeakyRelu激活函数计算融合 |
+| [gather_adds_simt_simd_hybrid](./gather_adds_simt_simd_hybrid) | 基于SIMT和SIMD实现Gather和Adds融合计算 |

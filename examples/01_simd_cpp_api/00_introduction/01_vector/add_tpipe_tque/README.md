@@ -1,8 +1,8 @@
-# 基于静态Tensor编程实现Matmul计算
+# 基于TPipe和TQue的Add样例
 
 ## 概述
 
-本样例基于静态Tensor编程范式实现多核矩阵乘计算。
+本样例基于TPipe和TQue的内存和同步管理机制实现Add向量加法操作。
 
 ## 支持的产品
 
@@ -13,40 +13,35 @@
 ## 目录结构介绍
 
 ```
-├── matmul
+├── add_tpipe_tque
 │   ├── scripts
-│   │   ├── gen_data.py         // 输入数据和真值数据生成脚本文件
-│   │   └── verify_result.py    // 真值对比文件
-│   ├── CMakeLists.txt          // 编译工程文件
-│   ├── data_utils.h            // 数据读入写出函数
-│   └── matmul.asc              // Ascend C样例实现 & 调用样例
+│   │   ├── gen_data.py             // 输入数据和真值数据生成脚本
+│   │   └── verify_result.py        // 验证输出数据和真值数据是否一致的验证脚本
+│   ├── CMakeLists.txt              // 编译工程文件
+│   ├── data_utils.h                // 数据读入写出函数
+│   └── add.asc                     // Ascend C样例实现，tque管理内存 & 调用样例
 ```
 
 ## 样例描述
 
 - 样例功能：  
-  Matmul计算公式：
-  $$
-  C = A * B
-  $$
-- 样例规格：  
-  本样例参数M = 512, N = 1024, K = 512，调用4个核完成计算，输入规格如下表所示：
+  计算公式：
+  ```
+  z = x + y
+  ```
+- 样例规格：
   <table>
-  <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="4" align="center">Matmul</td></tr>
+  <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="4" align="center">Add</td></tr>
   <tr><td rowspan="3" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">A</td><td align="center">[M, K]</td><td align="center">half</td><td align="center">ND</td></tr>
-  <tr><td align="center">B</td><td align="center">[K, N]</td><td align="center">half</td><td align="center">ND</td></tr>
-  <tr><td rowspan="1" align="center">样例输出</td><td align="center">C</td><td align="center">[M, N]</td><td align="center">half</td><td align="center">ND</td></tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">mmad_custom</td></tr>
+  <tr><td align="center">x</td><td align="center">[8, 2048]</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">y</td><td align="center">[8, 2048]</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td rowspan="1" align="center">样例输出</td><td align="center">z</td><td align="center">[8, 2048]</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_custom</td></tr>
   </table>
 
 - 样例实现：
-  - 实现流程
-    - 通过InitGMOffsets完成分核计算
-    - 通过DataCopy基础API，将数据从GM（Global Memory）搬运到L1（L1 Buffer）并完成ND到NZ的格式转换
-    - 通过LoadData接口，将数据从L1（L1 Buffer）搬运到L0A（L0A Buffer）/L0B（L0B Buffer）
-    - 通过Mmad接口完成矩阵乘计算
-    - 通过Fixpipe接口，将结果从L0C（L0C Buffer）搬运回GM（Global Memory）
+  - Kernel实现  
+    使用TPipe和TQue管理内存和同步，完成对输入数据的向量加法操作。
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
@@ -70,13 +65,12 @@
     ```bash
     source ${install_path}/cann/set_env.sh
     ```
-
 - 样例执行
   ```bash
   mkdir -p build && cd build;                                               # 创建并进入build目录
   cmake -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;                      # 编译工程（默认npu模式）
   python3 ../scripts/gen_data.py                                            # 生成测试输入数据
-  ./demo                                                                    # 执行编译生成的可执行程序，执行样例
+  ./demo                                                                     # 执行编译生成的可执行程序，执行样例
   python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
   ```
 
@@ -94,7 +88,7 @@
 
 | 选项 | 可选值 | 说明 |
 |------|--------|------|
-| `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`sim` | 运行模式：NPU 运行、NPU仿真 |
+| `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`cpu`、`sim` | 运行模式：NPU 运行、CPU调试、NPU仿真 |
 | `CMAKE_ASC_ARCHITECTURES` | `dav-2201`（默认）、`dav-3510` | NPU 架构：dav-2201 对应 Atlas A2 训练系列产品/Atlas A2 推理系列产品和Atlas A3 训练系列产品/Atlas A3 推理系列产品，dav-3510 对应 Ascend 950PR/Ascend 950DT |
 
 - 执行结果  

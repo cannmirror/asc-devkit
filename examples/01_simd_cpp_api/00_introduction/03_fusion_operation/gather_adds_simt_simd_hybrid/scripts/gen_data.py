@@ -1,5 +1,8 @@
+#!/usr/bin/python3
+# coding=utf-8
+
 # ----------------------------------------------------------------------------------------------------------
-# Copyright (c) 2026 Huawei Technologies Co., Ltd.
+# Copyright (c) 2025 Huawei Technologies Co., Ltd.
 # This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 # CANN Open Software License Agreement Version 2.0 (the "License").
 # Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -9,18 +12,26 @@
 # ----------------------------------------------------------------------------------------------------------
 
 
-cmake_minimum_required(VERSION 3.16)
+import os
+import numpy as np
 
-set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "NPU architecture: dav-2201, dav-3510")
 
-find_package(ASC REQUIRED)
+def gen_golden_data_simple():
+    input_total_length = 100000
+    index_total_length = 8 * 1024
+    adds_addend = 1.0
+    
+    input_x = np.random.uniform(0.0, 100.0, [input_total_length]).astype(np.float32)
+    index = np.random.randint(0, input_total_length, [index_total_length]).astype(np.uint32)
+    
+    golden = input_x[index] + adds_addend
+    
+    os.makedirs("input", exist_ok=True)
+    os.makedirs("output", exist_ok=True)
+    input_x.tofile("./input/input_x.bin")
+    index.tofile("./input/index.bin")
+    golden.tofile("./output/golden.bin")
 
-project(kernel_samples LANGUAGES ASC CXX)
 
-add_executable(demo
-    matmul.asc
-)
-
-target_compile_options(demo PRIVATE
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>
-)
+if __name__ == "__main__":
+    gen_golden_data_simple()

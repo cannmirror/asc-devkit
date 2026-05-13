@@ -8,5 +8,5 @@
 
 |  目录名称                                                   |  功能描述                                              |
 | ------------------------------------------------------------ | ---------------------------------------------------- |
-| [matmul](./matmul) | 基于Matmul高阶API实现矩阵乘计算 |
-| [matmul_memory_allocator](./matmul_memory_allocator) | 基于静态Tensor编程范式实现矩阵乘计算 |
+| [matmul](./matmul) | 基于静态Tensor编程范式实现矩阵乘计算 |
+| [matmul_high_level_api](./matmul_high_level_api) | 基于Matmul高阶API实现矩阵乘计算 |

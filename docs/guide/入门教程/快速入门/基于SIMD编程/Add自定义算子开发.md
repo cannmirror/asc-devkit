@@ -12,7 +12,7 @@
 ![](../../../figures/开发Ascend-C算子的基本流程.png "开发Ascend-C算子的基本流程")
 
 >[!NOTE]说明
->- 请点击[LINK](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/00_introduction/01_vector/basic_api_tque_add)获取样例代码。
+>- 请点击[LINK](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/00_introduction/01_vector/add_tpipe_tque)获取样例代码。
 >- 使用本教程只需要您具有一定的C/C++基础，在此基础上，如果您已经对Ascend C编程模型有一定的了解，您可以在实际操作的过程中加深对理论的理解；如果您还没有开始了解Ascend C编程模型，也无需担心，您可以先尝试跑通教程中的样例，参考教程最后的[指引](#zh-cn_topic_0000001565030288_section128349412384)进行进一步的学习。
 
 ## 环境准备<a name="zh-cn_topic_0000001565030288_zh-cn_topic_0000001552186366_section412999115218"></a>
@@ -124,7 +124,7 @@
 </tr>
 <tr id="zh-cn_topic_0000001565030288_zh-cn_topic_0000001552186366_zh-cn_topic_0229825559_zh-cn_topic_0229823837_zh-cn_topic_0211294710_row54819813236"><th class="firstcol" valign="top" id="mcps1.2.6.11.1"><p id="zh-cn_topic_0000001565030288_zh-cn_topic_0000001552186366_zh-cn_topic_0229825559_zh-cn_topic_0229823837_zh-cn_topic_0211294710_p74958142316"><a name="zh-cn_topic_0000001565030288_zh-cn_topic_0000001552186366_zh-cn_topic_0229825559_zh-cn_topic_0229823837_zh-cn_topic_0211294710_p74958142316"></a><a name="zh-cn_topic_0000001565030288_zh-cn_topic_0000001552186366_zh-cn_topic_0229825559_zh-cn_topic_0229823837_zh-cn_topic_0211294710_p74958142316"></a>算子实现文件名称</p>
 </th>
-<td class="cellrowborder" colspan="4" valign="top" headers="mcps1.2.6.11.1 "><p id="zh-cn_topic_0000001565030288_zh-cn_topic_0000001552186366_p1180818388211"><a name="zh-cn_topic_0000001565030288_zh-cn_topic_0000001552186366_p1180818388211"></a><a name="zh-cn_topic_0000001565030288_zh-cn_topic_0000001552186366_p1180818388211"></a>add_custom.asc</p>
+<td class="cellrowborder" colspan="4" valign="top" headers="mcps1.2.6.11.1 "><p id="zh-cn_topic_0000001565030288_zh-cn_topic_0000001552186366_p1180818388211"><a name="zh-cn_topic_0000001565030288_zh-cn_topic_0000001552186366_p1180818388211"></a><a name="zh-cn_topic_0000001565030288_zh-cn_topic_0000001552186366_p1180818388211"></a>add.asc</p>
 </td>
 </tr>
 </tbody>
@@ -132,7 +132,7 @@
 
 ## 核函数开发<a name="zh-cn_topic_0000001565030288_zh-cn_topic_0000001552186366_section822273613219"></a>
 
-完成环境准备和初步的算子分析后，即可开始Ascend C核函数的开发。开发之前请先从[LINK](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/00_introduction/01_vector/basic_api_tque_add)获取样例代码，以下样例代码在add\_custom.asc中实现。
+完成环境准备和初步的算子分析后，即可开始Ascend C核函数的开发。开发之前请先从[LINK](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/00_introduction/01_vector/add_tpipe_tque)获取样例代码，以下样例代码在add.asc中实现。
 
 本样例中使用多核并行计算，即把数据进行分片，分配到多个核上进行处理。Ascend C核函数是在一个核上的处理函数，所以只处理部分数据。分配方案是：假设共启用8个核，数据整体长度为8 \* 2048个元素，平均分配到8个核上运行，每个核上处理的数据大小为2048个元素。对于单核上的处理数据，也可以进行数据切块，实现对数据的流水并行处理。
 
@@ -149,16 +149,15 @@
 2.  根据[核函数定义和调用](../../../编程指南/编程模型/AI-Core-SIMD编程/核函数.md#zh-cn_topic_0000001447989210_section1915102519220)中介绍的规则进行**核函数的定义**，并在核函数中调用算子类的Init和Process函数，算子类实现在后续步骤中介绍。
 
     ```
-    __global__ __aicore__ void add_custom(GM_ADDR x, GM_ADDR y, GM_ADDR z, AddCustomTilingData tiling)
+    __global__ __vector__ void add_custom(GM_ADDR x, GM_ADDR y, GM_ADDR z, AddCustomTilingData tiling)
     {
-        KERNEL_TASK_TYPE_DEFAULT(KERNEL_TYPE_AIV_ONLY);    // 设置Kernel类型为Vector核（用于矢量计算）
         KernelAdd op;
         op.Init(x, y, z, tiling.totalLength, tiling.tileNum);
         op.Process();
     }
     ```
 
-    -   使用\_\_global\_\_函数类型限定符来标识它是一个核函数，可以被<<<\>\>\>调用；使用\_\_aicore\_\_函数类型限定符来标识该核函数在设备端AI Core上执行。指针入参变量需要增加变量类型限定符\_\_gm\_\_，表明该指针变量指向Global Memory上某处内存地址。为了统一表达，使用GM\_ADDR宏来修饰入参，GM\_ADDR宏定义如下：
+    -   使用\_\_global\_\_函数类型限定符来标识它是一个核函数，可以被<<<\>\>\>调用；使用\_\_vector\_\_函数类型限定符来标识该核函数在设备端Vector Core上执行。指针入参变量需要增加变量类型限定符\_\_gm\_\_，表明该指针变量指向Global Memory上某处内存地址。为了统一表达，使用GM\_ADDR宏来修饰入参，GM\_ADDR宏定义如下：
 
         ```
         #define GM_ADDR __gm__ uint8_t*
@@ -342,59 +341,28 @@
     // 核函数开发部分
     ...
     
-    __global__ __aicore__ void add_custom(GM_ADDR x, GM_ADDR y, GM_ADDR z, AddCustomTilingData tiling)
+    __global__ __vector__ void add_custom(GM_ADDR x, GM_ADDR y, GM_ADDR z, AddCustomTilingData tiling)
     {
-        KERNEL_TASK_TYPE_DEFAULT(KERNEL_TYPE_AIV_ONLY);    
         KernelAdd op;
         op.Init(x, y, z, tiling.totalLength, tiling.tileNum);
         op.Process();
     }
     
     // 通过<<<...>>>内核调用符调用算子
-    std::vector<float> kernel_add(std::vector<float> &x, std::vector<float> &y)
-    {
-    ...
-    }
-    
-    
-    // 计算结果比对
-    uint32_t VerifyResult(std::vector<float> &output, std::vector<float> &golden)
-    {
-        auto printTensor = [](std::vector<float> &tensor, const char *name) {
-            constexpr size_t maxPrintSize = 20;
-            std::cout << name << ": ";
-            std::copy(tensor.begin(), tensor.begin() + std::min(tensor.size(), maxPrintSize),
-                std::ostream_iterator<float>(std::cout, " "));
-            if (tensor.size() > maxPrintSize) {
-                std::cout << "...";
-            }
-            std::cout << std::endl;
-        };
-        printTensor(output, "Output");
-        printTensor(golden, "Golden");
-        if (std::equal(golden.begin(), golden.end(), output.begin())) {
-            std::cout << "[Success] Case accuracy is verification passed." << std::endl;
-            return 0;
-        } else {
-            std::cout << "[Failed] Case accuracy is verification failed!" << std::endl;
-            return 1;
-        }
-        return 0;
-    }
+    add_custom<<<numBlocks, nullptr, stream>>>(xDevice, yDevice, zDevice, tiling);
     
     // 算子验证主程序
-    int32_t main(int32_t argc, char *argv[])
+    int32_t main(int32_t argc, char* argv[])
     {
+        uint32_t numBlocks = 8;
         constexpr uint32_t totalLength = 8 * 2048;
-        constexpr float valueX = 1.2f;
-        constexpr float valueY = 2.3f;
-        std::vector<float> x(totalLength, valueX);
-        std::vector<float> y(totalLength, valueY);
-    
-        std::vector<float> output = kernel_add(x, y);
-    
-        std::vector<float> golden(totalLength, valueX + valueY);
-        return VerifyResult(output, golden);
+        size_t inputByteSize = totalLength * sizeof(float);
+        size_t outputByteSize = totalLength * sizeof(float);
+        AddCustomTilingData tiling = {totalLength, 8};
+
+        add_custom<<<numBlocks, nullptr, stream>>>(xDevice, yDevice, zDevice, tiling);
+
+        return 0;
     }
     ```
 
@@ -406,79 +374,78 @@
     如下示例中的acl API使用方法请参考[《Runtime运行时API》](https://hiascend.com/document/redirect/CannCommunityRuntimeApi)。
 
     ```
-    std::vector<float> kernel_add(std::vector<float> &x, std::vector<float> &y)
-    {
-        constexpr uint32_t numBlocks = 8;
-        uint32_t totalLength = x.size();
-        size_t totalByteSize = totalLength * sizeof(float);
-        int32_t deviceId = 0;
-        aclrtStream stream = nullptr;
-        AddCustomTilingData tiling = {/*totalLength:*/totalLength, /*tileNum:*/8};
-        uint8_t *xHost = reinterpret_cast<uint8_t *>(x.data());
-        uint8_t *yHost = reinterpret_cast<uint8_t *>(y.data());
-        uint8_t *zHost = nullptr;
-        uint8_t *xDevice = nullptr;
-        uint8_t *yDevice = nullptr;
-        uint8_t *zDevice = nullptr;
-    
-        // 初始化
+        uint8_t* xHost = nullptr;
+        uint8_t* yHost = nullptr;
+        uint8_t* zHost = nullptr;
+        uint8_t* xDevice = nullptr;
+        uint8_t* yDevice = nullptr;
+        uint8_t* zDevice = nullptr;
+
         aclInit(nullptr);
-        // 运行管理资源申请
+        int32_t deviceId = 0;
         aclrtSetDevice(deviceId);
+        aclrtStream stream = nullptr;
         aclrtCreateStream(&stream);
-        // 分配Host内存
-        aclrtMallocHost((void **)(&zHost), totalByteSize);
-        // 分配Device内存
-        aclrtMalloc((void **)&xDevice, totalByteSize, ACL_MEM_MALLOC_HUGE_FIRST);
-        aclrtMalloc((void **)&yDevice, totalByteSize, ACL_MEM_MALLOC_HUGE_FIRST);
-        aclrtMalloc((void **)&zDevice, totalByteSize, ACL_MEM_MALLOC_HUGE_FIRST);
-        // 将Host上的输入数据拷贝到Device侧
-        aclrtMemcpy(xDevice, totalByteSize, xHost, totalByteSize, ACL_MEMCPY_HOST_TO_DEVICE);
-        aclrtMemcpy(yDevice, totalByteSize, yHost, totalByteSize, ACL_MEMCPY_HOST_TO_DEVICE);
-        // 用内核调用符<<<...>>>调用核函数完成指定的运算
+
+        aclrtMallocHost((void**)(&xHost), inputByteSize);
+        aclrtMallocHost((void**)(&yHost), inputByteSize);
+        aclrtMallocHost((void**)(&zHost), outputByteSize);
+        aclrtMalloc((void**)&xDevice, inputByteSize, ACL_MEM_MALLOC_HUGE_FIRST);
+        aclrtMalloc((void**)&yDevice, inputByteSize, ACL_MEM_MALLOC_HUGE_FIRST);
+        aclrtMalloc((void**)&zDevice, outputByteSize, ACL_MEM_MALLOC_HUGE_FIRST);
+
+        ReadFile("./input/input_x.bin", inputByteSize, xHost, inputByteSize);
+        ReadFile("./input/input_y.bin", inputByteSize, yHost, inputByteSize);
+        aclrtMemcpy(xDevice, inputByteSize, xHost, inputByteSize, ACL_MEMCPY_HOST_TO_DEVICE);
+        aclrtMemcpy(yDevice, inputByteSize, yHost, inputByteSize, ACL_MEMCPY_HOST_TO_DEVICE);
+
         add_custom<<<numBlocks, nullptr, stream>>>(xDevice, yDevice, zDevice, tiling);
         aclrtSynchronizeStream(stream);
-        // 将Device上的运算结果拷贝回Host
-        aclrtMemcpy(zHost, totalByteSize, zDevice, totalByteSize, ACL_MEMCPY_DEVICE_TO_HOST);
-        std::vector<float> z((float *)zHost, (float *)(zHost + totalByteSize));
-        // 释放申请的资源
+
+        aclrtMemcpy(zHost, outputByteSize, zDevice, outputByteSize, ACL_MEMCPY_DEVICE_TO_HOST);
+        WriteFile("./output/output.bin", zHost, outputByteSize);
+
         aclrtFree(xDevice);
         aclrtFree(yDevice);
         aclrtFree(zDevice);
+        aclrtFreeHost(xHost);
+        aclrtFreeHost(yHost);
         aclrtFreeHost(zHost);
-        // 去初始化
+
         aclrtDestroyStream(stream);
         aclrtResetDevice(deviceId);
         aclFinalize();
-        return z;
-    }
     ```
 
 3.  CMake编译配置如下：
 
     ```
     cmake_minimum_required(VERSION 3.16)
+    # CMAKE_ASC_ARCHITECTURES是用来决定NPU架构的编译参数，可选值为：dav-2201, dav-3510
+    set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "NPU architecture: dav-2201, dav-3510")
     # find_package(ASC)是CMake中用于查找和配置Ascend C编译工具链的命令
     find_package(ASC REQUIRED)
     # 指定项目支持的语言包括ASC和CXX，ASC表示支持使用毕昇编译器对Ascend C编程语言进行编译
     project(kernel_samples LANGUAGES ASC CXX)
     
-    add_executable(demo
-        add_custom.asc
+    add_executable(add
+        add.asc
     )
     
     # 通过编译选项设置NPU架构
-    target_compile_options(demo PRIVATE   
-       $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
+    target_compile_options(add PRIVATE
+        $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>
     )
     ```
 
 4.  编译和运行步骤如下
 
     ```
-    mkdir -p build && cd build; 
-    cmake ..;make -j;
+    mkdir -p build && cd build;
+    cmake -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;
+    python3 ../scripts/gen_data.py
     ./demo
+    python3 ../scripts/verify_result.py output/output.bin output/golden.bin
     ```
 
     >[!NOTE]说明 
@@ -486,9 +453,8 @@
     >    - Ascend 950PR/Ascend 950DT
     >    - Atlas A3 训练系列产品/Atlas A3 推理系列产品
     >    - Atlas A2 训练系列产品/Atlas A2 推理系列产品
-    >- _-_-npu-arch用于指定NPU的架构版本，dav-后为架构版本号，请替换为您实际使用的架构版本号。各AI处理器型号对应的架构版本号请通过[AI处理器型号和\_\_NPU\_ARCH\_\_的对应关系](../../../编程指南/语言扩展层/SIMD-BuiltIn关键字.md#table65291052154114)进行查询。
+    >- _-_-npu-arch用于指定NPU的架构版本，dav-后为架构版本号，请通过CMAKE_ASC_ARCHITECTURES传入您实际使用的架构版本号。各AI处理器型号对应的架构版本号请通过[AI处理器型号和\_\_NPU\_ARCH\_\_的对应关系](../../../编程指南/语言扩展层/SIMD-BuiltIn关键字.md#table65291052154114)进行查询。
 
 ## 接下来的引导<a name="zh-cn_topic_0000001565030288_section128349412384"></a>
 
 如果您对教程中的多核并行、流水编程等概念不了解，导致阅读过程有些吃力，可以参考[编程模型](../../../编程指南/编程模型/编程模型.md)学习基本概念，再来回顾本教程；如果您已经了解相关概念，并跑通了该样例，您可以参考[矢量编程](../../../算子实践参考/SIMD算子实现/矢量编程/矢量编程.md)了解Ascend C矢量编程中的更多细节。
-
