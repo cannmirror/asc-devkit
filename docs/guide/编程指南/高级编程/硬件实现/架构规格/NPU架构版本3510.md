@@ -276,7 +276,7 @@ Channel merge支持S8、U8、S4和U4数据类型，而Channel split支持FP32数
     -   EventID的数量有限，使用后应立即调用ReleaseEventID释放资源，避免EventID耗尽，影响系统正常运行。
     -   SetFlag和WaitFlag必须成对使用，且SetFlag和WaitFlag的参数必须完全一致（包括模板参数和事件ID）。如果不匹配，可能导致当前核的计算异常，或影响下一个核的算子执行，引发timeout问题。
 
-        例如，SetFlag<HardEvent::S\_MTE3\>\(1\)和SetFlag<HardEvent::MTE3\_MTE1\>\(1\)设置的不是同一个EventID，因为其模板参数不同。只有当模板参数和事件ID完全一致时，才表示同一个EventID。
+        例如，`SetFlag<HardEvent::S_MTE3>(1)`和`SetFlag<HardEvent::MTE3_MTE1>(1)`设置的不是同一个EventID，因为其模板参数不同。只有当模板参数和事件ID完全一致时，才表示同一个EventID。
 
     -   不允许连续设置同一个EventID，因为这可能导致事件状态混乱或未被正确处理。
     -   不建议手动插入TEventID，不能手动插入6和7的TEventID，因为它们可能被系统预留或用于特殊用途。
@@ -316,7 +316,7 @@ Channel merge支持S8、U8、S4和U4数据类型，而Channel split支持FP32数
 
     -   **与高阶 API 的使用冲突**
 
-        [Matmul高阶API](https://www.hiascend.com/document/detail/zh/canncommercial/81RC1/apiref/ascendcopapi/atlasascendc_api_07_0612.html)内部实现中使用了本接口进行核间同步控制，所以不建议开发者同时使用该接口和Matmul高阶API，否则会有flagId冲突的风险。
+        Matmul高阶API内部实现中使用了本接口进行核间同步控制，所以不建议开发者同时使用该接口和Matmul高阶API，否则会有flagId冲突的风险。
 
     -   **计数器限制**
 
