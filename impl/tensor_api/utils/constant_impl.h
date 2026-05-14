@@ -22,7 +22,6 @@
 #ifndef IMPL_TENSOR_API_UTILS_CONSTANT_IMPL_H
 #define IMPL_TENSOR_API_UTILS_CONSTANT_IMPL_H
 
-#include "impl/utils/std/type_traits/Int.h"
 #include "impl/tensor_api/utils/extra_impl.h"
 #include "impl/tensor_api/utils/map_impl.h"
 
