@@ -26,10 +26,10 @@
 - 融合编译与<<<>>>调用方式支持[CPU模式](https://gitcode.com/cann/asc-tools/pull/138)以及[SIM仿真模式](https://gitcode.com/cann/asc-devkit/blob/master/cmake/asc/asc_modules/CMakeASCInformation.cmake)。
 ### 📖 资料文档
 - 新增90+ [Reg编程接口API](./docs/api/context/Reg%E7%9F%A2%E9%87%8F%E8%AE%A1%E7%AE%97.md)资料，Reg矢量计算API是面向RegBase架构开发的API，用户可通过该API直接对芯片中涉及Vector计算的寄存器进行操作，实现更大的灵活性和更好的性能。
-- 新增SIMT[快速入门](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta2/opdevg/Ascendcopdevg/atlas_ascendc_map_10_0022.html)、[编程模型](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta2/opdevg/Ascendcopdevg/atlas_ascendc_10_10064.html)和[算子实现](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta2/opdevg/Ascendcopdevg/atlasascendc_api_07_10293.html)介绍。
-- 新增SIMD与SIMT[混合编程模型](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta2/opdevg/Ascendcopdevg/atlas_ascendc_10_10052.html)、[算子实现](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta2/opdevg/Ascendcopdevg/atlas_ascendc_10_10039.html)、[性能优化](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta2/opdevg/Ascendcopdevg/atlas_ascendc_best_practices_10_10029.html)介绍。
-- 新增[SIMT API](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta2/API/ascendcopapi/atlasascendc_api_07_0427.html)资料章节。
-- 新增[兼容性迁移指南](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta2/opdevg/Ascendcopdevg/atlas_ascendc_compatibility_10_00001.html)（220x架构版本迁移到351x架构版本）。
+- 新增SIMT[快速入门](docs/guide/入门教程/快速入门/基于SIMT编程/Add自定义算子开发.md)、[编程模型](docs/guide/编程指南/编程模型/AI-Core-SIMT编程/抽象硬件架构.md)和[算子实现](docs/guide/算子实践参考/SIMT算子实现/基础知识.md)介绍。
+- 新增SIMD与SIMT[混合编程模型](docs/guide/编程指南/高级编程/高级AI-Core编程模型/SIMD与SIMT混合编程.md)、[算子实现](docs/guide/算子实践参考/SIMD与SIMT混合算子实现/基础知识.md)、[性能优化](docs/guide/算子实践参考/SIMD与SIMT混合算子性能优化/内存访问/使用Unified-Buffer提升内存访问效率.md)介绍。
+- 新增[SIMT API](docs/api/context/简介-140.md)资料章节。
+- 新增[兼容性迁移指南](docs/guide/跨代迁移兼容性指南/Ascend-C-API兼容策略.md)（220x架构版本迁移到351x架构版本）。
 - 昇腾社区中，Ascend C算子开发新增[可视化专区](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta2/opdevg/Ascendcopdevg/atlas_ascendc_map_10_0017.html)，通过视频呈现Cube和Vector算子的执行过程。
 
 有关所有历史版本及更新的详细信息，请参阅[CHANGELOG.md](./CHANGELOG.md)
