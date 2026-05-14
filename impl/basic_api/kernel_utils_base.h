@@ -303,7 +303,7 @@ public:
     __aicore__ static inline uint64_t GetGMLen(const DataCopyExtParams& intriParams, const bool& isSrc,
                                                const bool& isMovAlignIntri)
     {
-        uint16_t stride = intriParams.dstStride;
+        int64_t stride = intriParams.dstStride;
         uint16_t burstLenUnit = 32;
         uint16_t strideUnit = 32;
         if (isSrc) {
@@ -316,8 +316,8 @@ public:
         if (intriParams.blockLen == 0) {
             return 0;
         }
-        uint64_t gmLen = static_cast<uint64_t>(intriParams.blockCount) * intriParams.blockLen * burstLenUnit
-                         + (intriParams.blockCount - 1) * stride * strideUnit;
+        uint64_t gmLen = static_cast<uint64_t>(static_cast<int64_t>(intriParams.blockCount *
+                         intriParams.blockLen * burstLenUnit) + (intriParams.blockCount - 1) * stride * strideUnit);
         return gmLen;
     }
 
