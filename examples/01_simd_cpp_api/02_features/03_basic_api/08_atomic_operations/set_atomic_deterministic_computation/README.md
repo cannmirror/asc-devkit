@@ -172,7 +172,6 @@ if (GetBlockIdx == 0) {
 }
 ```
 由于当前未提供用于控制不同核之间执行顺序的硬件同步接口，因此确定性计算场景下的核间同步需通过软件方式实现。针对纯 Vector 样例、纯 Cube 样例及 Mix（同时包含 Vector 与 Cube 计算）样例三种场景，所采用的软件同步方案存在差异，具体如下表所示。
-
 <table border="1" style="text-align: left;">
   <tr>
     <th style="padding: 8px;">样例类型</th>
@@ -180,12 +179,11 @@ if (GetBlockIdx == 0) {
     <th style="padding: 8px;">说明</th>
   </tr>
   <tr>
-    <td style="padding: 8px;">纯Vector样例</td>
+    <td style="padding: 8px;" rowspan="2">纯Vector样例</td>
     <td style="padding: 8px;">方案1：通过多对IBSet和IBWait接口组合，可实现多个AIV间的同步，可参考样例中SCENARIO_NUM=2的分支。</td>
     <td style="padding: 8px;">方案1支持指定部分AIV参与同步，并可控制各AIV的执行顺序。</td>
   </tr>
   <tr>
-    <td style="padding: 8px;">纯Vector样例</td>
     <td style="padding: 8px;">方案2： 通过InitDetermineComputeWorkspace、NotifyNextBlock 和 WaitPreBlock三个接口配合使用，确保所有AIV核按照blockIdx升序顺序执行，可参考样例中SCENARIO_NUM=4的分支(待支持)。</td>
     <td style="padding: 8px;">方案2要求所有AIV必须参与同步，且执行顺序固定为blockIdx升序。</td>
   </tr>
@@ -194,13 +192,7 @@ if (GetBlockIdx == 0) {
     <td style="padding: 8px;">通过GM中的信号量实现核间同步，先建立一对核之间的同步，进而扩展至多个核之间的同步，可参考样例中SCENARIO_NUM=3的分支。</td>
     <td style="padding: 8px;">通过Scalar单元访问GM时，需考虑多核间数据一致性问题。<br>此处的"核"可以是AIV或者AIC。</td>
   </tr>
-  <tr>
-    <td style="padding: 8px;">Mix样例</td>
-    <td style="padding: 8px;"></td>
-    <td style="padding: 8px;"></td>
-  </tr>
 </table>
-
 下图展示了两个核之间如何通过GM中的信号量进行核间同步：
 
 ![一对核之间软件同步方案流程图](img/一对核之间软件同步方案流程图.png)
@@ -304,14 +296,14 @@ $$
   <tr><td rowspan="1" align="center">核数(numBlocks)</td><td colspan="4" align="center">4</td></tr>
   </table>
 
-### 2.3 下一步开发计划
-当前存在以下待开发事项：
-<table>
-  <tr><th>事项</th><th>说明</th></tr>
-  <tr><td>Ascend 950PR/Ascend 950DT，待支持</td><td>SCENARIO_NUM=3时，多个AIC做原子操作确定性计算。当前AIC中向GM搬出数据时，调用DataCopy使用了L1-->GM数据通路，该数据通路在Ascend 950PR/Ascend 950DT上不支持。下一步整改计划：当前AIC中向GM搬出数据时，调用FixPipe使用L0C-->GM数据通路。</td></tr>
-  <tr><td rowspan="2">Tpipe编程方式转换为静态tensor编程方式</td><td>SCENARIO_NUM=1和3时，下一步计划整改为静态tensor编程方式。</td></tr>
-  <tr><td>SCENARIO_NUM=2时，多个AIV做原子操作确定性计算。由于IBSet和IBWait以及InitDetermineComputeWorkspace、NotifyNextBlock 和 WaitPreBlock，不支持静态tensor编程方式。</td></tr>
-</table>
+### 2.3 注意事项
+
+#### (1) 当 `SCENARIO_NUM=3` 时，样例不支持 Ascend 950PR/Ascend 950DT。
+当`SCENARIO_NUM=1` 和 `SCENARIO_NUM=2`样例支持 Ascend 950PR/Ascend 950DT。
+当`SCENARIO_NUM=3` 时，调用 `DataCopy` 从L1向GM搬出数据，然而在Ascend 950PR/Ascend 950DT架构下，DataCopy接口不支持L1 Buffer -> GM通路，因此当 `SCENARIO_NUM=3` 时，样例不支持 Ascend 950PR/Ascend 950DT。如果要支持Ascend 950PR/Ascend 950DT，可以参考[基础API迁移指导](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta2/opdevg/Ascendcopdevg/atlas_ascendc_compatibility_10_00005.html)中的兼容性方案。
+
+#### (2) 当 `SCENARIO_NUM=2` 时，样例不支持静态 tensor 编程方式。
+当SCENARIO_NUM=2 时，调用了`IBSet` 和 `IBWait` 做核间同步，然而以上两个接口内部实现需要借助TPipe框架做核内同步，因此当SCENARIO_NUM=2 时，样例不支持静态 tensor 编程方式。
 
 ## 编译运行  
 在本样例根目录下执行如下步骤，编译并执行样例。
@@ -336,8 +328,8 @@ $$
   ```bash
   SCENARIO_NUM=1 # 默认演示单个AIV核内的确定性计算
   mkdir -p build && cd build;   # 创建并进入build目录
-  cmake .. -DSCENARIO_NUM=${SCENARIO_NUM};make -j;             # 编译工程
-  python3 ../scripts/gen_data.py   # 生成测试输入数据
+  cmake .. -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=${SCENARIO_NUM};make -j;  # 编译工程
+  python3 ../scripts/gen_data.py
   ./demo                        # 执行编译生成的可执行程序，执行样例
   python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
   ```

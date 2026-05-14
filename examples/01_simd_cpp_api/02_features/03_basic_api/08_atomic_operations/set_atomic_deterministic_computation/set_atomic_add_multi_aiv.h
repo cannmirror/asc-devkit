@@ -16,8 +16,13 @@
 #include "acl/acl.h"
 #include "data_utils.h"
 #include "kernel_operator.h"
+
 class KernelSetAtomicAddMultiAIV {
 public:
+    // 数据长度常量（32字节对齐）
+    static constexpr int32_t DATA_LENGTH = 8;
+    // gmWorkspace申请的空间最少要求为：3 * 32Bytes + 32Bytes 
+    static constexpr int32_t SYNC_SPACE_LENGTH = 256; 
     __aicore__ inline KernelSetAtomicAddMultiAIV() {}
     __aicore__ inline void Init(
         __gm__ uint8_t* src0Gm, __gm__ uint8_t* src1Gm, __gm__ uint8_t* src2Gm, __gm__ uint8_t* src3Gm,
@@ -31,13 +36,13 @@ public:
         src3Global.SetGlobalBuffer((__gm__ float*)src3Gm);
         src4Global.SetGlobalBuffer((__gm__ int32_t*)src4Gm);
         dstGlobal.SetGlobalBuffer((__gm__ float*)dstGm);
-        pipe->InitBuffer(vecIn, 1, 8 * sizeof(int32_t));
-        pipe->InitBuffer(inQueueSrc0, 1, 8 * sizeof(float));
-        pipe->InitBuffer(inQueueSrc1, 1, 8 * sizeof(float));
-        pipe->InitBuffer(inQueueSrc2, 1, 8 * sizeof(float));
-        pipe->InitBuffer(inQueueSrc3, 1, 8 * sizeof(float));
-        pipe->InitBuffer(inQueueSrc4, 1, 256 * sizeof(int32_t));
-        pipe->InitBuffer(outQueueDst, 1, 8 * sizeof(float));
+        pipe->InitBuffer(vecIn, 1, DATA_LENGTH * sizeof(int32_t));
+        pipe->InitBuffer(inQueueSrc0, 1, DATA_LENGTH * sizeof(float));
+        pipe->InitBuffer(inQueueSrc1, 1, DATA_LENGTH * sizeof(float));
+        pipe->InitBuffer(inQueueSrc2, 1, DATA_LENGTH * sizeof(float));
+        pipe->InitBuffer(inQueueSrc3, 1, DATA_LENGTH * sizeof(float));
+        pipe->InitBuffer(inQueueSrc4, 1, SYNC_SPACE_LENGTH * sizeof(int32_t));
+        pipe->InitBuffer(outQueueDst, 1, DATA_LENGTH * sizeof(float));
     }
     __aicore__ inline void Process()
     {
@@ -46,12 +51,12 @@ public:
 
         if (blockIdx == 0) {
             AscendC::LocalTensor<float> src0Local = inQueueSrc0.AllocTensor<float>();
-            AscendC::DataCopy(src0Local, src0Global, 8);
+            AscendC::DataCopy(src0Local, src0Global, DATA_LENGTH);
             AscendC::SetFlag<AscendC::HardEvent::MTE2_MTE3>(0);
             AscendC::WaitFlag<AscendC::HardEvent::MTE2_MTE3>(0);
 
             // 在原子累加之前，以src0Local初始化GM
-            AscendC::DataCopy(dstGlobal, src0Local, 8);
+            AscendC::DataCopy(dstGlobal, src0Local, DATA_LENGTH);
 
             // 核0通知核2，核0的src0Local初始化已完成
             auto sync_buf = vecIn.AllocTensor<int32_t>();
@@ -65,13 +70,13 @@ public:
             auto sync_buf = vecIn.AllocTensor<int32_t>();
             AscendC::IBWait(src4Global, sync_buf, 3, 0); // 最后两个参数：int32_t blockIdx, int32_t eventID
 
-            AscendC::DataCopy(src1Local, src1Global, 8);
+            AscendC::DataCopy(src1Local, src1Global, DATA_LENGTH);
             AscendC::SetFlag<AscendC::HardEvent::MTE2_MTE3>(0);
             AscendC::WaitFlag<AscendC::HardEvent::MTE2_MTE3>(0);
 
             AscendC::DisableDmaAtomic();
             AscendC::SetAtomicAdd<float>();
-            AscendC::DataCopy(dstGlobal, src1Local, 8);
+            AscendC::DataCopy(dstGlobal, src1Local, DATA_LENGTH);
             AscendC::DisableDmaAtomic();
             vecIn.FreeTensor(sync_buf);
             inQueueSrc1.FreeTensor(src1Local);
@@ -82,13 +87,13 @@ public:
             auto sync_buf = vecIn.AllocTensor<int32_t>();
             AscendC::IBWait(src4Global, sync_buf, 0, 0); // 最后两个参数：int32_t blockIdx, int32_t eventID
 
-            AscendC::DataCopy(src2Local, src2Global, 8);
+            AscendC::DataCopy(src2Local, src2Global, DATA_LENGTH);
             AscendC::SetFlag<AscendC::HardEvent::MTE2_MTE3>(0);
             AscendC::WaitFlag<AscendC::HardEvent::MTE2_MTE3>(0);
 
             AscendC::DisableDmaAtomic();
             AscendC::SetAtomicAdd<float>();
-            AscendC::DataCopy(dstGlobal, src2Local, 8);
+            AscendC::DataCopy(dstGlobal, src2Local, DATA_LENGTH);
             AscendC::DisableDmaAtomic();
 
             // 核2通知核3，核2数据已经累加完成
@@ -102,14 +107,14 @@ public:
             AscendC::IBWait(src4Global, sync_buf, 2, 0); // 最后两个参数：int32_t blockIdx, int32_t eventID
 
             AscendC::LocalTensor<float> src3Local = inQueueSrc3.AllocTensor<float>();
-            AscendC::DataCopy(src3Local, src3Global, 8);
+            AscendC::DataCopy(src3Local, src3Global, DATA_LENGTH);
             //  AscendC::DumpTensor(src3Local,0,8);
             AscendC::SetFlag<AscendC::HardEvent::MTE2_MTE3>(0);
             AscendC::WaitFlag<AscendC::HardEvent::MTE2_MTE3>(0);
 
             AscendC::DisableDmaAtomic();
             AscendC::SetAtomicAdd<float>();
-            AscendC::DataCopy(dstGlobal, src3Local, 8);
+            AscendC::DataCopy(dstGlobal, src3Local, DATA_LENGTH);
             AscendC::DisableDmaAtomic();
 
             // 核3通知核1，核3数据已经累加完成
@@ -133,5 +138,5 @@ private:
     AscendC::GlobalTensor<int32_t> src4Global;
     AscendC::LocalTensor<float> src0Local, src1Local, src2Local, src3Local;
     AscendC::LocalTensor<int32_t> src4Local;
-    int32_t blockIdx = -1;
+    int32_t blockIdx = 0;
 };
