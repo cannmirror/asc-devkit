@@ -250,5 +250,5 @@ if(NOT "${PRODUCT_SIDE}" STREQUAL "device")
                 ARCHIVE DESTINATION ${ASCENDC_API_ADV_MULT_INSTALL_DIR} ${INSTALL_OPTIONAL} COMPONENT asc-devkit)
         configure_file(${ASCENDC_ADV_API_CMAKE_DIR}/tiling_headers.cmake
                        ${CMAKE_CURRENT_BINARY_DIR}/tiling_headers.cmake @ONLY)
-        install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/tiling_headers.cmake)
+        install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/tiling_headers.cmake COMPONENT asc-devkit)
 endif()

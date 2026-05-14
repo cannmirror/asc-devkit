@@ -92,22 +92,22 @@ if(NOT "${DPRODUCT_SIDE}" STREQUAL "device")
   # generate softlink
   configure_file(${ASCENDC_ADV_API_CMAKE_DIR}/kernel_headers.cmake
                 ${CMAKE_CURRENT_BINARY_DIR}/kernel_headers.cmake @ONLY)
-  install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/kernel_headers.cmake)
+  install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/kernel_headers.cmake COMPONENT asc-devkit)
 
   configure_file(${ASCENDC_ADV_API_CMAKE_DIR}/kernel_impl.cmake
                 ${CMAKE_CURRENT_BINARY_DIR}/kernel_impl.cmake @ONLY)
-  install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/kernel_impl.cmake)
+  install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/kernel_impl.cmake COMPONENT asc-devkit)
 
   configure_file(${ASCENDC_ADV_API_CMAKE_DIR}/kernel_directory.cmake
                 ${CMAKE_CURRENT_BINARY_DIR}/kernel_directory.cmake @ONLY)
-  install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/kernel_directory.cmake)
+  install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/kernel_directory.cmake COMPONENT asc-devkit)
 
   configure_file(
       ${ASCENDC_ADV_API_CMAKE_DIR}/utils_headers.cmake
       ${CMAKE_CURRENT_BINARY_DIR}/utils_headers.cmake
       @ONLY
   )
-  install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/utils_headers.cmake)
+  install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/utils_headers.cmake COMPONENT asc-devkit)
 endif()  
 
 if (BUILD_OPEN_PROJECT AND ENABLE_BUILD_DEVICE)
