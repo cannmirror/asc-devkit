@@ -766,6 +766,9 @@ __aicore__ inline void TPipe::Destroy()
         ReleaseEventID<HardEvent::M_MTE1>(2);
     }
     Internal::g_bufId = 0;
+#ifndef __ASCENDC_ENABLE_SUPER_KERNEL__
+    pipe_barrier(PIPE_ALL);
+#endif
 }
 
 __aicore__ inline void TPipe::Reset()
