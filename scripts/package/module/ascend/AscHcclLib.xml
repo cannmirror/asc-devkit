@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<block name="HcclLib" copy_type="delivery" src_path="" dst_path="" install_path="" install_own="$username:$usergroup" install_mod="550" install_type="run;devel">
+<block name="AscHcclLib" copy_type="delivery" src_path="" dst_path="" install_path="" install_own="$username:$usergroup" install_mod="550" install_type="run;devel">
     <dir_info install_mod="550">
         <path value="$(TARGET_ENV)/lib64"/>
         <path value="$(TARGET_ENV)/include" install_type="devel"/>

@@ -25,7 +25,7 @@
     </block_info>
 
     <block_info dependtree="false" dst_path="hccl" block_conf_path="ascend">
-        <block name="HcclLib"/>
+        <block name="AscHcclLib"/>
     </block_info>
 
     <dir_info value="asc-devkit" install_mod="550">
