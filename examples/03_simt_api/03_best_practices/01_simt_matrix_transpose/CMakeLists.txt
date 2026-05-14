@@ -1,0 +1,36 @@
+# ----------------------------------------------------------------------------------------------------------
+# This program is free software, you can redistribute it and/or modify it.
+# Copyright (c) 2026 Huawei Technologies Co., Ltd.
+# This file is a part of the CANN Open Software.
+# Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
+# Please refer to the License for details. You may not use this file except in compliance with the License.
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+# INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+# See LICENSE in the root of the software repository for the full text of the License.
+# ----------------------------------------------------------------------------------------------------------
+
+cmake_minimum_required(VERSION 3.16)
+
+find_package(ASC REQUIRED)
+
+project(kernel_samples LANGUAGES ASC CXX)
+
+set(SCENARIO_NUM "3" CACHE STRING "Case type to run (0-3)")
+
+add_executable(matrix_transpose
+    matrix_transpose.asc
+)
+
+target_compile_definitions(matrix_transpose PRIVATE
+    SCENARIO_NUM=${SCENARIO_NUM}
+)
+
+# ======================================================================================
+# NPU 编译选项配置
+#
+# 说明：
+#   - 需根据实际部署的 NPU 硬件架构选择对应的 `npu-arch` 参数。
+# ======================================================================================
+target_compile_options(matrix_transpose PRIVATE
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3510 --enable-simt>
+)
