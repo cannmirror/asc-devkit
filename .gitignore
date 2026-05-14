@@ -1,4 +1,5 @@
 .vscode
+.idea/
 /build/
 build_out
 output
@@ -11,3 +12,6 @@ third_party/
 openssl-device-src/
 openssl-host-src/
 build_device/
+*.o
+*.log
+
