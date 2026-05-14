@@ -43,6 +43,31 @@ static half __hmin_nan(half x, half y)
 }
 
 template<typename T, typename U>
+T __shfl(T var, U mask)
+{
+    return var;
+}
+
+static inline unsigned int __brev(unsigned int x)
+{
+    unsigned int result = 0;
+    for (int i = 0; i < 32; i++) {
+        result |= ((x >> i) & 1) << (31 - i);
+    }
+    return result;
+}
+
+static inline int __popc(unsigned int x)
+{
+    int count = 0;
+    while (x) {
+        count += x & 1;
+        x >>= 1;
+    }
+    return count;
+}
+
+template<typename T, typename U>
 constexpr uint32_t GetRoundBitNum()
 {
     if constexpr (std::is_same<T, half>::value && std::is_same<U, float>::value) {
