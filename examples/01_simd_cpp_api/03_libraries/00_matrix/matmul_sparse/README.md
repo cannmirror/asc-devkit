@@ -2,7 +2,8 @@
 
 ## 概述
 4:2稀疏矩阵乘（Sparse Matmul）的Matmul样例，可以减少矩阵乘计算时的内存占用和计算量。稀疏矩阵乘会跳过稀疏矩阵B中的零元素，仅对非零元素进行数据搬运存储和计算。  
-该场景下输入的原始左矩阵A、右矩阵为稀疏矩阵，稀疏矩阵B中每4个元素中至少有2个零元素；在进行Matmul计算前，用户需要自行对B矩阵进行4：2稠密化，即基于原始稀疏矩阵B在每4个元素中过滤掉2个零元素，使B矩阵稠密化为稠密矩阵。Sparse Matmul场景调用Matmul API完成A矩阵与4：2稠密化后的B矩阵的矩阵乘计算。
+该场景下输入的原始左矩阵A、右矩阵为稀疏矩阵，稀疏矩阵B中每4个元素中至少有2个零元素；在进行Matmul计算前，用户需要自行对B矩阵进行4：2稠密化，即基于原始稀疏矩阵B在每4个元素中过滤掉2个零元素，使B矩阵稠密化为稠密矩阵。Sparse Matmul场景调用Matmul API完成A矩阵与4：2稠密化后的B矩阵的矩阵乘计算。  
+> **注：** 4:2稀疏矩阵乘（Sparse Matmul）当前只支持B矩阵转置。
 
 ## 支持的产品
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
@@ -30,7 +31,7 @@
   </tr>
   <tr><td rowspan="4" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">isTrans</td></tr>
   <tr><td align="center">a</td><td align="center">[M, K]</td><td align="center">int8_t</td><td align="center">ND</td><td align="center">false</td></tr>
-  <tr><td align="center">b</td><td align="center">[K, N]</td><td align="center">int8_t</td><td align="center">ND</td><td align="center">false</td></tr>
+  <tr><td align="center">b</td><td align="center">[K, N]</td><td align="center">int8_t</td><td align="center">ND</td><td align="center">true</td></tr>
   <tr><td align="center">bias</td><td align="center">[1, N]</td><td align="center">int32_t</td><td align="center">ND</td><td align="center">-</td></tr>
   </tr>
   </tr>
@@ -43,7 +44,7 @@
   - Kernel关键步骤
     - 创建Matmul对象时，通过SparseMatmulType定义矩阵B的参数类型信息。
       ```cpp
-      using A_TYPE = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, ATYPE, true>;
+      using A_TYPE = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, ATYPE, false>;
       // 使用SparseMatmulType定义矩阵B的参数类型信息
       using B_TYPE = AscendC::SparseMatmulType<AscendC::TPosition::GM, AscendC::TPosition::GM, CubeFormat::ND, BType, true>;
       using C_TYPE = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, CType>;
