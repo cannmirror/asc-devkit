@@ -255,3 +255,11 @@ HcclAllocComResourceByTiling(HcclComm comm, void *stream, void *mc2Tiling, void 
 
     return HCCL_SUCCESS;
 }
+
+extern "C" HcclResult __attribute__((visibility("default")))
+HcclAllocComResourceByTilingA5Mc2(HcclComm comm, void *stream, void *mc2Tiling, void **opResCtx)
+{
+    HCCL_RUN_INFO("[MC2_CLIENT_A5_AICPU] enter asc-devkit explicit A5 MC2 resource allocator, "
+        "comm[%p], stream[%p], tiling[%p].", comm, stream, mc2Tiling);
+    return HcclAllocComResourceByTiling(comm, stream, mc2Tiling, opResCtx);
+}
