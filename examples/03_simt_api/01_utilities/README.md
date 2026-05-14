@@ -8,3 +8,4 @@
 | [00_printf](./00_printf) | 本样例展示上板打印功能使用方法。 |
 | [01_assert](./01_assert/) | 本样例展示上板assert断言的功能。 |
 | [03_profiling](./03_profiling/) | 本样例展示如何在上板环境使用Profiling工具采集性能数据。 |
+| [09_log](./09_log/) | 本样例展示Ascend日志功能的使用方法，包括日志打屏、落盘及级别控制。 |
