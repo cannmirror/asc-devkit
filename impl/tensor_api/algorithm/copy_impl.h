@@ -39,6 +39,31 @@ __aicore__ inline void Copy(const CopyAtom<T>& atomCopy, const Params& ...params
     atomCopy.Call(params...);
 }
 
+using CopyDispatchSet = TupleMap<
+    Std::tuple<Std::tuple<Location::L1, Location::GM>, CopyAtom<CopyGM2L1>>,
+    Std::tuple<Std::tuple<Location::UB, Location::GM>, CopyAtom<CopyGM2UB>>,
+    Std::tuple<Std::tuple<Location::GM, Location::UB>, CopyAtom<CopyUB2GM>>,
+    Std::tuple<Std::tuple<Location::L1, Location::UB>, CopyAtom<CopyUB2L1>>,
+    Std::tuple<Std::tuple<Location::UB, Location::L1>, CopyAtom<CopyL12UB>>,
+    Std::tuple<Std::tuple<Location::L0A, Location::L1>, CopyAtom<CopyL12L0A>>,
+    Std::tuple<Std::tuple<Location::L0B, Location::L1>, CopyAtom<CopyL12L0B>>,
+    Std::tuple<Std::tuple<Location::BIAS, Location::L1>, CopyAtom<CopyL12BT>>,
+    Std::tuple<Std::tuple<Location::FIXBUF, Location::L1>, CopyAtom<CopyL12FB>>,
+    Std::tuple<Std::tuple<Location::GM, Location::L0C>, CopyAtom<CopyL0C2GM>>,
+    Std::tuple<Std::tuple<Location::UB, Location::L0C>, CopyAtom<CopyL0C2UB>>>;
+
+template <typename T, typename U, Std::enable_if_t<IsAttrTensorV<T> && IsAttrTensorV<U>, int> = 0,
+    typename... Params>
+__aicore__ inline void
+Copy(const T& dst, const U& src, const Params& ...params)
+{
+    using DstLocation = GetMemLocation<T>;
+    using SrcLocation = GetMemLocation<U>;
+    using CopyAtomType = typename CopyDispatchSet::template Get<Std::tuple<DstLocation, SrcLocation>>;
+    static_assert(!Std::is_same_v<CopyAtomType, EmptyValue>, "Unsupported Copy dst/src location combination.");
+    CopyAtomType{}.Call(dst, src, params...);
+}
+
 template <typename... Args>
 __aicore__ inline auto MakeCopy(const Args& ...traits) {
     return CopyAtom<CopyTraits<Args...>>{};
