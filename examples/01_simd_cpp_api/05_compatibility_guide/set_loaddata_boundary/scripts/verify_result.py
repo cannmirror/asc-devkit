@@ -2,7 +2,7 @@
 # coding=utf-8
 
 # ----------------------------------------------------------------------------------------------------------
-# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+# Copyright (c) 2026 Huawei Technologies Co., Ltd.
 # This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 # CANN Open Software License Agreement Version 2.0 (the "License").
 # Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -14,14 +14,12 @@
 
 import sys
 import numpy as np
-import tensorflow as tf
 
 
-float32 = tf.float32.as_numpy_dtype
 RELATIVE_TOL = 1e-3
 ABSOLUTE_TOL = 1e-5
 ERROR_TOL = 1e-3
-data_type = float32
+data_type = np.float32
 
 def verify_result(output, golden):
     output = np.fromfile(output, dtype=data_type).reshape(-1)
