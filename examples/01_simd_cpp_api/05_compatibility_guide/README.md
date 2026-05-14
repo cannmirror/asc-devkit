@@ -14,6 +14,5 @@
 | [matmul_s4_910B](./matmul_s4_910B) | 本样例直接使用Matmul高阶API进行矩阵计算。 |
 | [matmul_s4_950](./matmul_s4_950) | 新架构下Cube计算单元删除int4b_t数据类型。用户可以在算子侧通过MIX模式在Vector Core进行int4b_t到int8_t的Cast转换，再通过UB搬运到L1后进行Mmad计算。 |
 | [pattern_transformation](./pattern_transformation) | 本样例基于基础的mmad样例，演示了 L1 Buffer -> L0A Buffer 通路的分形转换逻辑。 |
-| [scatter](./scatter) | 本样例介绍兼容Scatter算子实现及核函数直调方法。 |
-| [scatter_950](./scatter_950) | 本样例基于Scatter指令实现数据离散，可根据输入张量和目的地址偏移张量，将输入张量分散到结果张量中。                                                                                              |
+| [scatter](./scatter) | 本样例演示数据离散功能，可根据输入张量和目的地址偏移张量，将输入张量分散到结果张量中。 |
 | [set_loaddata_boundary](./set_loaddata_boundary) | 本样例实现L1 Buffer边界值的设置。 |
