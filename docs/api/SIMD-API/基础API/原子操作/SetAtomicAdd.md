@@ -94,7 +94,7 @@ __aicore__ inline void SetAtomicAdd()
 
 ## 调用示例<a name="section177231425115410"></a>
 
-本示例中，使用DataCopy从VECOUT搬出数据到外部dstGlobal时进行原子累加。为保证原子累加的正确性，在核函数调用前，需要对dstGm清零。详细示例请参考[SetAtomicAdd样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/02_features/03_basic_api/08_atomic_operations/set_atomic_add)。
+本示例中，使用DataCopy从VECOUT搬出数据到外部dstGlobal时进行原子累加。为保证原子累加的正确性，在核函数调用前，需要对dstGm清零。详细示例请参考[DataMovementWithAtomicOperations样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/02_features/03_basic_api/08_atomic_operations/data_movement_with_atomic_operations)。
 
 调用示例如下：
 

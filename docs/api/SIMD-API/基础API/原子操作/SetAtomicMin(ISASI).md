@@ -92,7 +92,7 @@ __aicore__ inline void SetAtomicMin()
 
 ## 调用示例<a name="section177231425115410"></a>
 
-完整使用样例请参见[SetAtomicAdd样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/02_features/03_basic_api/08_atomic_operations/set_atomic_add)。
+完整使用样例请参见[DataMovementWithAtomicOperations样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/02_features/03_basic_api/08_atomic_operations/data_movement_with_atomic_operations)。
 
 ```
 #include "kernel_operator.h"

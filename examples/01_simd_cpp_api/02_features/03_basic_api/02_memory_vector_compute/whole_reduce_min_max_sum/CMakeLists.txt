@@ -19,7 +19,7 @@ project(kernel_samples LANGUAGES ASC CXX)
 
 # 场景参数（通过命令行传入）
 # SCENARIO_NUM: 场景编号
-#   1 - WholeReduceMax：每个repeat内求最大值及索引，输入[1, 1024]，输出[1, 16]
+#   1 - WholeReduceMax：每个repeat内求最大值，输入[1, 1024]，输出[1, 8]
 #   2 - WholeReduceMin：每个repeat内求最小值及索引，输入[1, 1024]，输出[1, 16]
 #   3 - WholeReduceSum：每个repeat内求和，输入float类型[1, 2048]，输出[1, 32]
 #   4 - RepeatReduceSum：累加模式求和，输入float类型[1, 2048]，输出[1, 32]
