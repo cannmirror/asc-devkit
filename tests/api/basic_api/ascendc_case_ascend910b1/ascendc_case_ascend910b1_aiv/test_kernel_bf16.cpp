@@ -37,7 +37,7 @@ class TestBf16Suite : public testing::Test, public testing::WithParamInterface<T
 INSTANTIATE_TEST_CASE_P(TEST_BF16, TestBf16Suite,
     ::testing::Values(TestBf16Params { 1, 1, 0x7F80, 0x7F800000, 0x7F80, 0, 0x7C00, 1, 1, 2},
     TestBf16Params { 1, 1, 0x7F80, 0x7F800000, 0, 0x7F80, 0x7C00, 1, 1, 2},
-    TestBf16Params { 3.4028236692093846346337460743177e+38, INFINITY, 0x7FFF, 0x7FFFFFFF, 0x7FFF, 0, 0x7FFF, 2.30e+38, 1.0e+38, 3.30e+38},
+    TestBf16Params { static_cast<float>(3.4028236692093846346337460743177e+38), INFINITY, 0x7FFF, 0x7FFFFFFF, 0x7FFF, 0, 0x7FFF, 2.30e+38, 1.0e+38, 3.30e+38},
     TestBf16Params { 64, 64, 0, 0, 0, 0x7FFF, 0x7FFF, -1, 1, 0},
     TestBf16Params { -5, -5, 0, 0, 0x03, 0x04, 0x07, 0, 0, 0}));
 

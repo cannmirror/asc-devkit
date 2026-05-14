@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 #include <gtest/gtest.h>
 #include <mockcpp/mockcpp.hpp>
 #include "kernel_operator.h"
@@ -17,9 +17,9 @@ using namespace std;
 namespace AscendC {
 struct FixpipeInputParams {
     __aicore__ FixpipeInputParams() {}
-    __aicore__ FixpipeInputParams(const uint16_t c1In, const uint16_t hIn, const uint16_t wIn, const uint8_t khIn,
-        const uint8_t kwIn, const uint16_t coutIn, const uint16_t c0In, const uint16_t dilationHIn,
-        const uint16_t dilationWIn)
+    __aicore__ FixpipeInputParams(
+        const uint16_t c1In, const uint16_t hIn, const uint16_t wIn, const uint8_t khIn, const uint8_t kwIn,
+        const uint16_t coutIn, const uint16_t c0In, const uint16_t dilationHIn, const uint16_t dilationWIn)
     {
         c1 = c1In;
         h = hIn;
@@ -37,14 +37,14 @@ struct FixpipeInputParams {
         howo = ho * wo;
         howoRound = ((howo + 16 - 1) / 16) * 16;
 
-        featureMapSize = c1 * h * w * c0;     // [c1, h, w, c0]
+        featureMapSize = c1 * h * w * c0;      // [c1, h, w, c0]
         weightSize = c1 * kh * kw * cout * c0; // [c1, kh, kw, cout, c0]
         featureMapL0aSize = howoRound * (c1 * kh * kw * c0);
         weightL0bSize = (c1 * kh * kw * c0) * coutBlocks * 16;
         m = howo;
         k = c1 * kh * kw * c0;
         n = cout;
-        deqSize = cout;                    // [cout]
+        deqSize = cout;                   // [cout]
         dstSize = coutBlocks * howo * 16; // [coutBlocks, howo, 16]
         dstL0cSize = coutBlocks * howoRound * 16;
 
@@ -90,19 +90,17 @@ struct FixpipeInputParams {
  * ************************************************************************************************* */
 #define FIXPIPE_RELU_FUNC(deqMode, deqScalar, enRelu, fixpipeParams) fixpipeParams.reluEn = enRelu;
 
-#define FIXPIPE_DEQ_CONV_RELU_FUNC(deqMode, deqScalar, enRelu, fixpipeParams)   \
-    fixpipeParams.quantParams = { deqMode };                                    \
+#define FIXPIPE_DEQ_CONV_RELU_FUNC(deqMode, deqScalar, enRelu, fixpipeParams) \
+    fixpipeParams.quantParams = {deqMode};                                    \
     fixpipeParams.reluEn = enRelu;
 
 #define FIXPIPE_DEQ_SCALAR_RELU_FUNC(deqMode, deqScalar, enRelu, fixpipeParams) \
-    fixpipeParams.quantParams = { deqMode, deqScalar };                         \
+    fixpipeParams.quantParams = {deqMode, static_cast<uint64_t>(deqScalar)};    \
     fixpipeParams.reluEn = enRelu;
 
-
-#define KERNEL_FIXPIPE(fmT, wT, l1OutT, dstT, fmTSize, wTSize, l1OutTSize, dstTSize, name, deqMode,                   \
-    fixpipeFunc)                                                                                                      \
-    extern "C" __global__ __aicore__ void kernel_fixpipe_##name(GM_ADDR fmData, GM_ADDR weData, GM_ADDR deqTensor,    \
-        GM_ADDR outputData, const FixpipeInputParams& inputParams)                                                    \
+#define KERNEL_FIXPIPE(fmT, wT, l1OutT, dstT, fmTSize, wTSize, l1OutTSize, dstTSize, name, deqMode, fixpipeFunc)      \
+    extern "C" __global__ __aicore__ void kernel_fixpipe_##name(                                                      \
+        GM_ADDR fmData, GM_ADDR weData, GM_ADDR deqTensor, GM_ADDR outputData, const FixpipeInputParams& inputParams) \
     {                                                                                                                 \
         TPipe tpipe;                                                                                                  \
         const uint16_t c1 = inputParams.c1;                                                                           \
@@ -150,46 +148,44 @@ struct FixpipeInputParams {
         outputGm.SetGlobalBuffer(reinterpret_cast<__gm__ dstT*>(outputData), dstSize);                                \
                                                                                                                       \
         LOCAL_TENSOR_REGISTER(featureMapL1, TensorTrait<fmT>, A1, 0, featureMapSize)                                  \
-        LOCAL_TENSOR_REGISTER(weightL1, TensorTrait<wT>, B1, featureMapSize * fmTSize, weightSize)                    \
+        LOCAL_TENSOR_REGISTER(weightL1, TensorTrait<wT>, B1, featureMapSize* fmTSize, weightSize)                     \
                                                                                                                       \
         LOCAL_TENSOR_REGISTER(featureMapL0a, TensorTrait<fmT>, A2, 0, featureMapL0aSize)                              \
         LOCAL_TENSOR_REGISTER(weightL0b, TensorTrait<wT>, B2, 0, weightL0bSize)                                       \
         LOCAL_TENSOR_REGISTER(dstL0c, TensorTrait<l1OutT>, CO1, 0, dstL0cSize)                                        \
                                                                                                                       \
-        DataCopy(featureMapL1, featureMapGm,                                                                          \
-            { 1, static_cast<uint16_t>(featureMapSize * fmTSize / 32), 0, 0 });                                       \
+        DataCopy(featureMapL1, featureMapGm, {1, static_cast<uint16_t>(featureMapSize * fmTSize / 32), 0, 0});        \
         set_flag(PIPE_MTE2, PIPE_MTE1, EVENT_ID1);                                                                    \
-        DataCopy(weightL1, weightGm, { 1, static_cast<uint16_t>(weightSize * wTSize / 32), 0, 0 });                   \
+        DataCopy(weightL1, weightGm, {1, static_cast<uint16_t>(weightSize * wTSize / 32), 0, 0});                     \
         set_flag(PIPE_MTE2, PIPE_MTE1, EVENT_ID2);                                                                    \
         uint8_t padList[PAD_SIZE] = {0, 0, 0, 0};                                                                     \
-        LoadData<TensorTrait<fmT>>(featureMapL0a, featureMapL1,                                                       \
-            { padList, h, w, 36, 128, 16, 0, 0, kw, kh, dilationW, dilationH, 2, 2, false, false, 0 });               \
+        LoadData<TensorTrait<fmT>>(                                                                                   \
+            featureMapL0a, featureMapL1,                                                                              \
+            {padList, h, w, 36, 128, 16, 0, 0, kw, kh, dilationW, dilationH, 2, 2, false, false, 0});                 \
         wait_flag(PIPE_MTE2, PIPE_MTE1, EVENT_ID1);                                                                   \
                                                                                                                       \
-        LoadData(weightL0b, weightL1, { 0, weRepeat, 1, 0, 0, false, 0 });                                            \
+        LoadData(weightL0b, weightL1, {0, weRepeat, 1, 0, 0, false, 0});                                              \
                                                                                                                       \
         set_flag(PIPE_MTE1, PIPE_M, EVENT_ID0);                                                                       \
         wait_flag(PIPE_MTE1, PIPE_M, EVENT_ID0);                                                                      \
                                                                                                                       \
-        Mmad(dstL0c, featureMapL0a, weightL0b, { m, n, k, 0, false, true });                                          \
+        Mmad(dstL0c, featureMapL0a, weightL0b, {m, n, k, 0, false, true});                                            \
                                                                                                                       \
         wait_flag(PIPE_MTE2, PIPE_MTE1, EVENT_ID2);                                                                   \
                                                                                                                       \
         set_flag(PIPE_M, PIPE_FIX, EVENT_ID0);                                                                        \
         wait_flag(PIPE_M, PIPE_FIX, EVENT_ID0);                                                                       \
                                                                                                                       \
-                                                                                                                      \
-        LOCAL_TENSOR_REGISTER(cbufWorkspace, TensorTrait<uint64_t>, C1, featureMapSize * fmTSize + weightSize * wTSize,     \
-            deqSize)                                                                                                  \
+        LOCAL_TENSOR_REGISTER(                                                                                        \
+            cbufWorkspace, TensorTrait<uint64_t>, C1, featureMapSize* fmTSize + weightSize * wTSize, deqSize)         \
         FixpipeParams<l1OutT> fixpipeParams;                                                                          \
         if (enNz2nd) {                                                                                                \
-            fixpipeParams = { coutBlocks, static_cast<uint16_t>(howo * 16 * l1OutTSize / 32), 0,                      \
-                inputParams.cout };                                                                                   \
-            fixpipeParams.nz2ndParams = { enNz2nd, 1, 0, 0, inputParams.cout };                                       \
+            fixpipeParams = {coutBlocks, static_cast<uint16_t>(howo * 16 * l1OutTSize / 32), 0, inputParams.cout};    \
+            fixpipeParams.nz2ndParams = {enNz2nd, 1, 0, 0, inputParams.cout};                                         \
         } else {                                                                                                      \
-            fixpipeParams = { coutBlocks, static_cast<uint16_t>(howo * 16 * l1OutTSize / 32), 0, 0 };                 \
+            fixpipeParams = {coutBlocks, static_cast<uint16_t>(howo * 16 * l1OutTSize / 32), 0, 0};                   \
         }                                                                                                             \
-        fixpipeFunc(deqMode, static_cast<float>(0.5), reluEn, fixpipeParams);                                         \
+        fixpipeFunc(deqMode, static_cast<uint64_t>(0.5), reluEn, fixpipeParams);                                         \
         if (fixpipeParams.quantParams.quantPre == QuantMode_t::VDEQF16 ||                                             \
             fixpipeParams.quantParams.quantPre == QuantMode_t::VQF322B8_PRE ||                                        \
             fixpipeParams.quantParams.quantPre == QuantMode_t::VREQ8) {                                               \
@@ -197,24 +193,24 @@ struct FixpipeInputParams {
         } else {                                                                                                      \
             Fixpipe(outputGm, dstL0c, fixpipeParams);                                                                 \
         }                                                                                                             \
-        PipeBarrier<PIPE_ALL>();                                                                                       \
+        PipeBarrier<PIPE_ALL>();                                                                                      \
     }
 
 KERNEL_FIXPIPE(half, half, float, float, 2, 2, 4, 4, f322f32_relu, QuantMode_t::NoQuant, FIXPIPE_RELU_FUNC)
 KERNEL_FIXPIPE(int8_t, int8_t, int32_t, int32_t, 1, 1, 4, 4, s322s32_relu, QuantMode_t::NoQuant, FIXPIPE_RELU_FUNC)
 KERNEL_FIXPIPE(half, half, float, half, 2, 2, 4, 2, f322f16_relu, QuantMode_t::F322F16, FIXPIPE_DEQ_CONV_RELU_FUNC)
-KERNEL_FIXPIPE(int8_t, int8_t, int32_t, half, 1, 1, 4, 2, s322f16_scalar_relu, QuantMode_t::DEQF16,
-    FIXPIPE_DEQ_SCALAR_RELU_FUNC)
-KERNEL_FIXPIPE(int8_t, int8_t, int32_t, half, 1, 1, 4, 2, s322f16_tensor_relu, QuantMode_t::VDEQF16,
-    FIXPIPE_DEQ_CONV_RELU_FUNC)
-KERNEL_FIXPIPE(half, half, float, int8_t, 2, 2, 4, 1, f322s8_scalar_relu, QuantMode_t::QF322B8_PRE,
-    FIXPIPE_DEQ_SCALAR_RELU_FUNC)
-KERNEL_FIXPIPE(half, half, float, uint8_t, 2, 2, 4, 1, f322u8_tensor_relu, QuantMode_t::VQF322B8_PRE,
-    FIXPIPE_DEQ_CONV_RELU_FUNC)
-KERNEL_FIXPIPE(int8_t, int8_t, int32_t, int8_t, 1, 1, 4, 1, s322s8_scalar_relu, QuantMode_t::REQ8,
-    FIXPIPE_DEQ_SCALAR_RELU_FUNC)
-KERNEL_FIXPIPE(int8_t, int8_t, int32_t, uint8_t, 1, 1, 4, 1, s322u8_tensor_relu, QuantMode_t::VREQ8,
-    FIXPIPE_DEQ_CONV_RELU_FUNC)
+KERNEL_FIXPIPE(
+    int8_t, int8_t, int32_t, half, 1, 1, 4, 2, s322f16_scalar_relu, QuantMode_t::DEQF16, FIXPIPE_DEQ_SCALAR_RELU_FUNC)
+KERNEL_FIXPIPE(
+    int8_t, int8_t, int32_t, half, 1, 1, 4, 2, s322f16_tensor_relu, QuantMode_t::VDEQF16, FIXPIPE_DEQ_CONV_RELU_FUNC)
+KERNEL_FIXPIPE(
+    half, half, float, int8_t, 2, 2, 4, 1, f322s8_scalar_relu, QuantMode_t::QF322B8_PRE, FIXPIPE_DEQ_SCALAR_RELU_FUNC)
+KERNEL_FIXPIPE(
+    half, half, float, uint8_t, 2, 2, 4, 1, f322u8_tensor_relu, QuantMode_t::VQF322B8_PRE, FIXPIPE_DEQ_CONV_RELU_FUNC)
+KERNEL_FIXPIPE(
+    int8_t, int8_t, int32_t, int8_t, 1, 1, 4, 1, s322s8_scalar_relu, QuantMode_t::REQ8, FIXPIPE_DEQ_SCALAR_RELU_FUNC)
+KERNEL_FIXPIPE(
+    int8_t, int8_t, int32_t, uint8_t, 1, 1, 4, 1, s322u8_tensor_relu, QuantMode_t::VREQ8, FIXPIPE_DEQ_CONV_RELU_FUNC)
 
 struct FixpipeTestParams {
     FixpipeInputParams inputParams;
@@ -229,10 +225,7 @@ struct FixpipeTestParams {
 
 class FixpipeTestsuite : public testing::Test, public testing::WithParamInterface<FixpipeTestParams> {
 protected:
-    void SetUp()
-    {
-        g_coreType = AscendC::AIC_TYPE;
-    }
+    void SetUp() { g_coreType = AscendC::AIC_TYPE; }
     void TearDown()
     {
         AscendC::CheckSyncState();
@@ -240,35 +233,35 @@ protected:
     }
 };
 
-INSTANTIATE_TEST_CASE_P(TEST_FIXPIPE, FixpipeTestsuite,
+INSTANTIATE_TEST_CASE_P(
+    TEST_FIXPIPE, FixpipeTestsuite,
     ::testing::Values(
-    FixpipeTestParams { { 2, 4, 4, 2, 2, 128, 16, 2, 2 }, 2, 2, 4, 4, kernel_fixpipe_f322f32_relu, true, true },
-    FixpipeTestParams { { 2, 4, 4, 2, 2, 16, 16, 2, 2 }, 2, 2, 4, 4, kernel_fixpipe_f322f32_relu, false, false },
-    FixpipeTestParams { { 1, 4, 4, 2, 2, 128, 32, 1, 1 }, 1, 1, 4, 4, kernel_fixpipe_s322s32_relu, true, true },
-    FixpipeTestParams { { 1, 4, 4, 2, 2, 32, 32, 1, 1 }, 1, 1, 4, 4, kernel_fixpipe_s322s32_relu, false, false },
-    FixpipeTestParams { { 2, 4, 4, 2, 2, 128, 16, 2, 2 }, 2, 2, 4, 2, kernel_fixpipe_f322f16_relu, true, true },
-    FixpipeTestParams { { 2, 4, 4, 2, 2, 16, 16, 2, 2 }, 2, 2, 4, 2, kernel_fixpipe_f322f16_relu, true, true },
-    FixpipeTestParams { { 2, 4, 4, 2, 2, 16, 16, 2, 2 }, 2, 2, 4, 2, kernel_fixpipe_f322f16_relu, false, false },
-    FixpipeTestParams { { 1, 4, 4, 2, 2, 128, 32, 1, 1 }, 1, 1, 4, 2, kernel_fixpipe_s322f16_scalar_relu, true, true },
-    FixpipeTestParams { { 1, 4, 4, 2, 2, 32, 32, 1, 1 }, 1, 1, 4, 2, kernel_fixpipe_s322f16_scalar_relu, false, false },
-    FixpipeTestParams { { 1, 4, 4, 2, 2, 128, 32, 1, 1 }, 1, 1, 4, 2, kernel_fixpipe_s322f16_tensor_relu, true, true },
-    FixpipeTestParams { { 1, 4, 4, 2, 2, 128, 32, 1, 1 }, 1, 1, 4, 2, kernel_fixpipe_s322f16_tensor_relu, true, false },
-    FixpipeTestParams { { 1, 4, 4, 2, 2, 32, 32, 1, 1 }, 1, 1, 4, 2, kernel_fixpipe_s322f16_tensor_relu, false, true },
-    FixpipeTestParams { { 1, 4, 4, 2, 2, 32, 32, 1, 1 }, 1, 1, 4, 2, kernel_fixpipe_s322f16_tensor_relu, false, false },
-    FixpipeTestParams { { 1, 4, 4, 2, 2, 32, 32, 1, 1 }, 2, 2, 4, 1, kernel_fixpipe_f322s8_scalar_relu, false, false },
-    FixpipeTestParams { { 1, 4, 4, 2, 2, 128, 32, 1, 1 }, 2, 2, 4, 1, kernel_fixpipe_f322u8_tensor_relu, true, true },
-    FixpipeTestParams { { 1, 4, 4, 2, 2, 32, 32, 1, 1 }, 1, 1, 4, 1, kernel_fixpipe_s322s8_scalar_relu, false, false },
-    FixpipeTestParams { { 1, 4, 4, 2, 2, 128, 32, 1, 1 }, 1, 1, 4, 1, kernel_fixpipe_s322u8_tensor_relu, true, true }
-    ));
+        FixpipeTestParams{{2, 4, 4, 2, 2, 128, 16, 2, 2}, 2, 2, 4, 4, kernel_fixpipe_f322f32_relu, true, true},
+        FixpipeTestParams{{2, 4, 4, 2, 2, 16, 16, 2, 2}, 2, 2, 4, 4, kernel_fixpipe_f322f32_relu, false, false},
+        FixpipeTestParams{{1, 4, 4, 2, 2, 128, 32, 1, 1}, 1, 1, 4, 4, kernel_fixpipe_s322s32_relu, true, true},
+        FixpipeTestParams{{1, 4, 4, 2, 2, 32, 32, 1, 1}, 1, 1, 4, 4, kernel_fixpipe_s322s32_relu, false, false},
+        FixpipeTestParams{{2, 4, 4, 2, 2, 128, 16, 2, 2}, 2, 2, 4, 2, kernel_fixpipe_f322f16_relu, true, true},
+        FixpipeTestParams{{2, 4, 4, 2, 2, 16, 16, 2, 2}, 2, 2, 4, 2, kernel_fixpipe_f322f16_relu, true, true},
+        FixpipeTestParams{{2, 4, 4, 2, 2, 16, 16, 2, 2}, 2, 2, 4, 2, kernel_fixpipe_f322f16_relu, false, false},
+        FixpipeTestParams{{1, 4, 4, 2, 2, 128, 32, 1, 1}, 1, 1, 4, 2, kernel_fixpipe_s322f16_scalar_relu, true, true},
+        FixpipeTestParams{{1, 4, 4, 2, 2, 32, 32, 1, 1}, 1, 1, 4, 2, kernel_fixpipe_s322f16_scalar_relu, false, false},
+        FixpipeTestParams{{1, 4, 4, 2, 2, 128, 32, 1, 1}, 1, 1, 4, 2, kernel_fixpipe_s322f16_tensor_relu, true, true},
+        FixpipeTestParams{{1, 4, 4, 2, 2, 128, 32, 1, 1}, 1, 1, 4, 2, kernel_fixpipe_s322f16_tensor_relu, true, false},
+        FixpipeTestParams{{1, 4, 4, 2, 2, 32, 32, 1, 1}, 1, 1, 4, 2, kernel_fixpipe_s322f16_tensor_relu, false, true},
+        FixpipeTestParams{{1, 4, 4, 2, 2, 32, 32, 1, 1}, 1, 1, 4, 2, kernel_fixpipe_s322f16_tensor_relu, false, false},
+        FixpipeTestParams{{1, 4, 4, 2, 2, 32, 32, 1, 1}, 2, 2, 4, 1, kernel_fixpipe_f322s8_scalar_relu, false, false},
+        FixpipeTestParams{{1, 4, 4, 2, 2, 128, 32, 1, 1}, 2, 2, 4, 1, kernel_fixpipe_f322u8_tensor_relu, true, true},
+        FixpipeTestParams{{1, 4, 4, 2, 2, 32, 32, 1, 1}, 1, 1, 4, 1, kernel_fixpipe_s322s8_scalar_relu, false, false},
+        FixpipeTestParams{{1, 4, 4, 2, 2, 128, 32, 1, 1}, 1, 1, 4, 1, kernel_fixpipe_s322u8_tensor_relu, true, true}));
 
 TEST_P(FixpipeTestsuite, FixpipeTestCase)
 {
     auto param = GetParam();
 
-    uint8_t fmData[param.inputParams.featureMapSize * param.fmTSize] = { 0 };
-    uint8_t wtData[param.inputParams.weightSize * param.wTSize] = { 0 };
-    uint8_t deqTensor[param.inputParams.deqSize * sizeof(uint64_t)] = { 0 };
-    uint8_t outputData[param.inputParams.dstSize * param.dstTSize] = { 0 };
+    uint8_t fmData[param.inputParams.featureMapSize * param.fmTSize] = {0};
+    uint8_t wtData[param.inputParams.weightSize * param.wTSize] = {0};
+    uint8_t deqTensor[param.inputParams.deqSize * sizeof(uint64_t)] = {0};
+    uint8_t outputData[param.inputParams.dstSize * param.dstTSize] = {0};
 
     param.inputParams.reluEn = param.reluEn;
     param.inputParams.enNz2nd = param.enNz2nd;
@@ -282,10 +275,10 @@ TEST_P(FixpipeTestsuite, FixpipeTestCaseCheckGmOverflow)
 {
     auto param = GetParam();
 
-    uint8_t fmData[param.inputParams.featureMapSize * param.fmTSize] = { 0 };
-    uint8_t wtData[param.inputParams.weightSize * param.wTSize] = { 0 };
-    uint8_t deqTensor[param.inputParams.deqSize * sizeof(uint64_t)] = { 0 };
-    uint8_t outputData[param.inputParams.dstSize * param.dstTSize] = { 0 };
+    uint8_t fmData[param.inputParams.featureMapSize * param.fmTSize] = {0};
+    uint8_t wtData[param.inputParams.weightSize * param.wTSize] = {0};
+    uint8_t deqTensor[param.inputParams.deqSize * sizeof(uint64_t)] = {0};
+    uint8_t outputData[param.inputParams.dstSize * param.dstTSize] = {0};
     constexpr size_t workspaceSize = AscendC::RESERVED_WORKSPACE;
     uint8_t* sysWorkSpacePtr = (uint8_t*)AscendC::GmAlloc(workspaceSize);
     memset(sysWorkSpacePtr, 0, workspaceSize);
@@ -294,14 +287,18 @@ TEST_P(FixpipeTestsuite, FixpipeTestCaseCheckGmOverflow)
     }
     g_sysWorkspaceReserved = sysWorkSpacePtr;
     uint8_t* workspace = GetSysWorkSpacePtr();
-    *((__gm__ uint64_t *)((__gm__ uint8_t *)workspace + 11 * 1024 * 1024)) = 2;
-    *((__gm__ uint64_t *)((__gm__ uint8_t *)workspace + 11 * 1024 * 1024 + 8)) = 1;
-    *((__gm__ uintptr_t *)((__gm__ uint8_t *)workspace + 11 * 1024 * 1024 + 16)) = reinterpret_cast<uintptr_t>(fmData);
-    *((__gm__ uint64_t *)((__gm__ uint8_t *)workspace + 11 * 1024 * 1024 + 24)) = param.inputParams.featureMapSize * param.fmTSize;
-    *((__gm__ uintptr_t *)((__gm__ uint8_t *)workspace + 11 * 1024 * 1024 + 32)) = reinterpret_cast<uintptr_t>(wtData);
-    *((__gm__ uint64_t *)((__gm__ uint8_t *)workspace + 11 * 1024 * 1024 + 40)) = param.inputParams.weightSize * param.wTSize;
-    *((__gm__ uintptr_t *)((__gm__ uint8_t *)workspace + 11 * 1024 * 1024 + 48)) = reinterpret_cast<uintptr_t>(outputData);
-    *((__gm__ uint64_t *)((__gm__ uint8_t *)workspace + 11 * 1024 * 1024 + 56)) = param.inputParams.dstSize * param.dstTSize;
+    *((__gm__ uint64_t*)((__gm__ uint8_t*)workspace + 11 * 1024 * 1024)) = 2;
+    *((__gm__ uint64_t*)((__gm__ uint8_t*)workspace + 11 * 1024 * 1024 + 8)) = 1;
+    *((__gm__ uintptr_t*)((__gm__ uint8_t*)workspace + 11 * 1024 * 1024 + 16)) = reinterpret_cast<uintptr_t>(fmData);
+    *((__gm__ uint64_t*)((__gm__ uint8_t*)workspace + 11 * 1024 * 1024 + 24)) =
+        param.inputParams.featureMapSize * param.fmTSize;
+    *((__gm__ uintptr_t*)((__gm__ uint8_t*)workspace + 11 * 1024 * 1024 + 32)) = reinterpret_cast<uintptr_t>(wtData);
+    *((__gm__ uint64_t*)((__gm__ uint8_t*)workspace + 11 * 1024 * 1024 + 40)) =
+        param.inputParams.weightSize * param.wTSize;
+    *((__gm__ uintptr_t*)((__gm__ uint8_t*)workspace + 11 * 1024 * 1024 + 48)) =
+        reinterpret_cast<uintptr_t>(outputData);
+    *((__gm__ uint64_t*)((__gm__ uint8_t*)workspace + 11 * 1024 * 1024 + 56)) =
+        param.inputParams.dstSize * param.dstTSize;
 
     param.inputParams.reluEn = param.reluEn;
     param.inputParams.enNz2nd = param.enNz2nd;
@@ -315,10 +312,7 @@ TEST_P(FixpipeTestsuite, FixpipeTestCaseCheckGmOverflow)
 
 class TEST_FIXPIPE_SPR : public testing::Test {
 protected:
-    void SetUp()
-    {
-        AscendC::SetGCoreType(1);
-    }
+    void SetUp() { AscendC::SetGCoreType(1); }
     void TearDown()
     {
         AscendC::CheckSyncState();
