@@ -110,7 +110,7 @@ if(NOT "${DPRODUCT_SIDE}" STREQUAL "device")
   install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/utils_headers.cmake)
 endif()  
 
-if (ENABLE_BUILD_DEVICE)
+if (BUILD_OPEN_PROJECT AND ENABLE_BUILD_DEVICE)
     add_subdirectory(detail/hccl/cc)
 
     set(HCCL_CC_BUILD_DIR ${CMAKE_BINARY_DIR}/impl/adv_api/detail/hccl/cc)

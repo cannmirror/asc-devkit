@@ -69,72 +69,74 @@ else()
     )
 endif()
 
-add_library(mc2_compat SHARED)
+if(PRODUCT_SIDE STREQUAL "host")
+    add_library(mc2_compat SHARED)
 
-if(BUILD_OPEN_PROJECT)
-    target_compile_definitions(mc2_compat PRIVATE
-        OPEN_BUILD_PROJECT
-        $<$<STREQUAL:${PRODUCT_SIDE},host>:_GLIBCXX_USE_CXX11_ABI=0>
+    if(BUILD_OPEN_PROJECT)
+        target_compile_definitions(mc2_compat PRIVATE
+            OPEN_BUILD_PROJECT
+            $<$<STREQUAL:${PRODUCT_SIDE},host>:_GLIBCXX_USE_CXX11_ABI=0>
+        )
+    else()
+        target_compile_definitions(mc2_compat PRIVATE
+            $<$<STREQUAL:${PRODUCT_SIDE},host>:_GLIBCXX_USE_CXX11_ABI=0>
+        )
+    endif()
+
+    target_include_directories(mc2_compat PRIVATE
+        ${INCLUDE_LIST}
     )
-else()
-    target_compile_definitions(mc2_compat PRIVATE
-        $<$<STREQUAL:${PRODUCT_SIDE},host>:_GLIBCXX_USE_CXX11_ABI=0>
+
+    target_compile_options(mc2_compat PRIVATE
+        -Werror
+        -fno-common
+        -fno-strict-aliasing
+        -pipe
+        $<$<CONFIG:Release>:-O3>
+        $<$<CONFIG:Debug>:-g>
+        -std=c++14
+        -fstack-protector-all
+    )
+
+    target_link_options(mc2_compat PRIVATE
+        -Wl,-z,relro
+        -Wl,-z,now
+        -Wl,-z,noexecstack
+        $<$<CONFIG:Release>:-s>
+    )
+
+    if(BUILD_OPEN_PROJECT)
+        target_link_libraries(mc2_compat PRIVATE
+            -Wl,--no-as-needed
+            unified_dlog
+            -Wl,--no-as-needed
+        )
+    else()
+        target_link_libraries(mc2_compat PRIVATE
+            $<BUILD_INTERFACE:slog_headers>
+            -Wl,--no-as-needed
+            unified_dlog
+            -Wl,--no-as-needed
+        )
+    endif()
+
+    target_link_directories(mc2_compat PRIVATE
+        ${ASCEND_CANN_PACKAGE_PATH}/lib64
+    )
+
+    install(TARGETS mc2_compat
+        LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR} OPTIONAL
+    )
+
+    target_sources(mc2_compat PRIVATE
+        hccl_rank_graph_dl.cc
+        hccl_res_dl.cc
+        hcomm_primitives_dl.cc
+        hcomm_dlsym.cc
+        hccl_inner_dl.cc
+        hcomm_host_profiling_dl.cc
     )
 endif()
-
-target_include_directories(mc2_compat PRIVATE
-    ${INCLUDE_LIST}
-)
-
-target_compile_options(mc2_compat PRIVATE
-    -Werror
-    -fno-common
-    -fno-strict-aliasing
-    -pipe
-    $<$<CONFIG:Release>:-O3>
-    $<$<CONFIG:Debug>:-g>
-    -std=c++14
-    -fstack-protector-all
-)
-
-target_link_options(mc2_compat PRIVATE
-    -Wl,-z,relro
-    -Wl,-z,now
-    -Wl,-z,noexecstack
-    $<$<CONFIG:Release>:-s>
-)
-
-if(BUILD_OPEN_PROJECT)
-    target_link_libraries(mc2_compat PRIVATE
-        -Wl,--no-as-needed
-        unified_dlog
-        -Wl,--no-as-needed
-    )
-else()
-    target_link_libraries(mc2_compat PRIVATE
-        $<BUILD_INTERFACE:slog_headers>
-        -Wl,--no-as-needed
-        unified_dlog
-        -Wl,--no-as-needed
-    )
-endif()
-
-target_link_directories(mc2_compat PRIVATE
-    ${ASCEND_CANN_PACKAGE_PATH}/lib64
-)
-
-install(TARGETS mc2_compat
-    LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR} OPTIONAL
-)
-
-target_sources(mc2_compat PRIVATE
-    hccl_rank_graph_dl.cc
-    hccl_res_dl.cc
-    hcomm_primitives_dl.cc
-    hcomm_dlsym.cc
-    hccl_inner_dl.cc
-    hcomm_host_profiling_dl.cc
-)
 
 if((DEVICE_MODE AND BUILD_OPEN_PROJECT) OR (NOT BUILD_OPEN_PROJECT))
     add_library(mc2_kernel_compat SHARED

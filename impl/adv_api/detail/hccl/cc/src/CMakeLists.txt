@@ -387,9 +387,9 @@ endif()
 
 add_definitions(-DORION_MODE)
 
-add_library(mc2_client SHARED)
+if(NOT KERNEL_MODE AND PRODUCT_SIDE STREQUAL "host")
+    add_library(mc2_client SHARED)
 
-if(NOT KERNEL_MODE)
     # 基于ini生成json文件
     SET(HCCL_CMAKE_DIR ${HCCL_CC_DIR}/cmake/)
     message(STATUS "HCCL_CMAKE_DIR = ${HCCL_CMAKE_DIR}")
@@ -402,99 +402,100 @@ if(NOT KERNEL_MODE)
         DESTINATION ${INSTALL_AICPU_KERNEL_JSON_DIR} OPTIONAL
     )
     add_dependencies(mc2_client aicpu_kernel_json)
-endif()
 
-if(BUILD_OPEN_PROJECT)
+    if(BUILD_OPEN_PROJECT)
+        target_compile_definitions(mc2_client PRIVATE
+            OPEN_BUILD_PROJECT
+            $<$<STREQUAL:${PRODUCT_SIDE},host>:_GLIBCXX_USE_CXX11_ABI=0>
+        )
+    else()
+        target_compile_definitions(mc2_client PRIVATE
+            $<$<STREQUAL:${PRODUCT_SIDE},host>:_GLIBCXX_USE_CXX11_ABI=0>
+        )
+    endif()
+
+    target_include_directories(mc2_client PRIVATE
+        ${INCLUDE_LIST}
+    )
+
     target_compile_definitions(mc2_client PRIVATE
-        OPEN_BUILD_PROJECT
-        $<$<STREQUAL:${PRODUCT_SIDE},host>:_GLIBCXX_USE_CXX11_ABI=0>
+        -DHOST_COMPILE
     )
-else()
-    target_compile_definitions(mc2_client PRIVATE
-        $<$<STREQUAL:${PRODUCT_SIDE},host>:_GLIBCXX_USE_CXX11_ABI=0>
+
+    target_compile_options(mc2_client PRIVATE
+        -Werror
+        -fno-common
+        -fno-strict-aliasing
+        -pipe
+        -O3
+        $<$<CONFIG:Debug>:-g>
+        -std=c++14
+        -fstack-protector-all
     )
-endif()
 
-target_include_directories(mc2_client PRIVATE
-    ${INCLUDE_LIST}
-)
-
-target_compile_definitions(mc2_client PRIVATE
-    -DHOST_COMPILE
-)
-
-target_compile_options(mc2_client PRIVATE
-    -Werror
-    -fno-common
-    -fno-strict-aliasing
-    -pipe
-    -O3
-    $<$<CONFIG:Debug>:-g>
-    -std=c++14
-    -fstack-protector-all
-)
-
-# libhccl
-target_link_options(mc2_client PRIVATE
-    -Wl,-z,relro
-    -Wl,-z,now
-    -Wl,-z,noexecstack
-    -Wl,-Bsymbolic-functions
-    $<$<CONFIG:Release>:-s>
-)
-
-target_link_directories(mc2_client PRIVATE
-    ${ASCEND_CANN_PACKAGE_PATH}/lib64
-)
-
-add_dependencies(mc2_client mc2_compat)
-
-# libhcomm must precede mc2_compat: mc2_compat exports weak fallback wrappers
-# that must not preempt real HCOMM symbols during dynamic symbol binding.
-if(BUILD_OPEN_PROJECT)
-    set(MC2_CLIENT_HCOMM_STUB_SRC
-        ${CMAKE_CURRENT_BINARY_DIR}/mc2_client_hcomm_stub.cc)
-    file(WRITE ${MC2_CLIENT_HCOMM_STUB_SRC}
-        "extern \"C\" void __mc2_hcomm_stub(void) {}\n")
-    add_library(mc2_client_hcomm_stub SHARED
-        ${MC2_CLIENT_HCOMM_STUB_SRC})
-    set_target_properties(mc2_client_hcomm_stub PROPERTIES
-        OUTPUT_NAME hcomm
-        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mc2_client_link_stub)
-    target_link_options(mc2_client_hcomm_stub PRIVATE
-        -Wl,-soname,libhcomm.so)
-
-    target_link_libraries(mc2_client PRIVATE
-        -Wl,--no-as-needed
-        mc2_client_hcomm_stub
-        mc2_compat
-        acl_rt
-        c_sec
-        unified_dlog
-        mmpa
-        -Wl,--no-as-needed
+    # libhccl
+    target_link_options(mc2_client PRIVATE
+        -Wl,-z,relro
+        -Wl,-z,now
+        -Wl,-z,noexecstack
+        -Wl,-Bsymbolic-functions
+        $<$<CONFIG:Release>:-s>
     )
-else()
-    target_link_libraries(mc2_client PRIVATE
-        $<BUILD_INTERFACE:slog_headers>
-        $<BUILD_INTERFACE:msprof_headers>
-        $<BUILD_INTERFACE:npu_runtime_headers>
-        $<BUILD_INTERFACE:mmpa_headers>
-        -Wl,--no-as-needed
-        hcomm
-        mc2_compat
-        acl_rt
-        c_sec
-        unified_dlog
-        mmpa
-        -Wl,--no-as-needed
-        ofed_headers
+
+    target_link_directories(mc2_client PRIVATE
+        ${ASCEND_CANN_PACKAGE_PATH}/lib64
+    )
+
+    add_dependencies(mc2_client mc2_compat)
+
+    # libhcomm must precede mc2_compat: mc2_compat exports weak fallback wrappers
+    # that must not preempt real HCOMM symbols during dynamic symbol binding.
+    if(BUILD_OPEN_PROJECT)
+        set(MC2_CLIENT_HCOMM_STUB_SRC
+            ${CMAKE_CURRENT_BINARY_DIR}/mc2_client_hcomm_stub.cc)
+        file(WRITE ${MC2_CLIENT_HCOMM_STUB_SRC}
+            "extern \"C\" void __mc2_hcomm_stub(void) {}\n")
+        add_library(mc2_client_hcomm_stub SHARED
+            ${MC2_CLIENT_HCOMM_STUB_SRC})
+        set_target_properties(mc2_client_hcomm_stub PROPERTIES
+            OUTPUT_NAME hcomm
+            LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mc2_client_link_stub)
+        target_link_options(mc2_client_hcomm_stub PRIVATE
+            -Wl,-soname,libhcomm.so)
+
+        target_link_libraries(mc2_client PRIVATE
+            -Wl,--no-as-needed
+            mc2_client_hcomm_stub
+            mc2_compat
+            acl_rt
+            c_sec
+            unified_dlog
+            mmpa
+            -Wl,--no-as-needed
+        )
+    else()
+        target_link_libraries(mc2_client PRIVATE
+            $<BUILD_INTERFACE:slog_headers>
+            $<BUILD_INTERFACE:msprof_headers>
+            $<BUILD_INTERFACE:npu_runtime_headers>
+            $<BUILD_INTERFACE:mmpa_headers>
+            -Wl,--no-as-needed
+            hcomm
+            mc2_compat
+            acl_rt
+            c_sec
+            unified_dlog
+            mmpa
+            -Wl,--no-as-needed
+            ofed_headers
+        )
+    endif()
+
+    install(TARGETS mc2_client
+        LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR} OPTIONAL
     )
 endif()
 
-install(TARGETS mc2_client
-    LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR} OPTIONAL
-)
 if((DEVICE_MODE AND BUILD_OPEN_PROJECT) OR (NOT BUILD_OPEN_PROJECT))
     install(TARGETS mc2_server
         LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR} OPTIONAL
@@ -502,10 +503,14 @@ if((DEVICE_MODE AND BUILD_OPEN_PROJECT) OR (NOT BUILD_OPEN_PROJECT))
 endif()
 
 add_subdirectory(common)
-add_subdirectory(ops)
-add_subdirectory(aicpu_kfc)
+
+if(PRODUCT_SIDE STREQUAL "host")
+    add_subdirectory(ops)
+endif()
 
 if(DEVICE_MODE AND KERNEL_MODE)
+    add_subdirectory(aicpu_kfc EXCLUDE_FROM_ALL)
+
     set(CCL_KERNEL_TAR_DIR ${CMAKE_SOURCE_DIR}/build_device/ccl_kernel_tar_pkg/aicpu_kernels_device)
     add_custom_command(
         TARGET mc2_server
