@@ -1,7 +1,7 @@
 # reg_sync样例
 
 ## 概述
-本样例基于RegBase编程范式实现UB(Unified Buffer)读或写操作的同步机制，支持多种场景，通过环境变量选择场景。
+本样例基于Reg编程接口实现UB(Unified Buffer)读或写操作的同步机制，支持多种场景，通过环境变量选择场景。
     <table>
   	 	<tr>
  	 		<td>scenarioNum</td>

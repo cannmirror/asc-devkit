@@ -1,7 +1,7 @@
 # reduce_pair样例
 
 ## 概述
-本样例基于RegBase编程范式实现PairReduceElem运算，主要调用PairReduceElem接口（SUM模式）。
+本样例基于Reg编程接口实现PairReduceElem运算，主要调用PairReduceElem接口（SUM模式）。
 - PairReduceElem接口对相邻的奇偶元素对进行归约求和，当前仅支持SUM归约模式
 
 

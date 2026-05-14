@@ -1,7 +1,7 @@
 # scatter_st_reg样例
 
 ## 概述
-本样例基于RegBase编程范式实现离散数据搬出功能（按元素分散到UB(Unified Buffer)），使用Scatter接口。
+本样例基于Reg编程接口实现离散数据搬出功能（按元素分散到UB(Unified Buffer)），使用Scatter接口。
 
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT

@@ -18,9 +18,23 @@ find_package(ASC REQUIRED)
 
 project(kernel_samples LANGUAGES ASC CXX)
 
+set(SCENARIO_NUM "1" CACHE STRING "Scene number (1-2)")
+
+message(STATUS "[INFO] SCENARIO_NUM is ${SCENARIO_NUM}")
+
+if(NOT DEFINED SCENARIO_NUM)
+    message(FATAL_ERROR "SCENARIO_NUM is not set. Please specify -DSCENARIO_NUM=1 or -DSCENARIO_NUM=2")
+endif()
+
+if(NOT SCENARIO_NUM EQUAL 1 AND NOT SCENARIO_NUM EQUAL 2)
+    message(FATAL_ERROR "SCENARIO_NUM must be 1 or 2, got: ${SCENARIO_NUM}")
+endif()
+
 add_executable(demo
     ld_st_reg_unalign.asc
 )
+
+target_compile_definitions(demo PRIVATE SCENARIO_NUM=${SCENARIO_NUM})
 
 target_link_libraries(demo PRIVATE
     tiling_api

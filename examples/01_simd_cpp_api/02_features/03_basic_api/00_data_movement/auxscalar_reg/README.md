@@ -1,7 +1,7 @@
 # auxscalar_reg样例
 
 ## 概述
-本样例基于RegBase编程范式实现AuxScalar方式从UB(Unified Buffer)读取多个标量数据，结合Adds进行向量与标量加法计算。
+本样例基于Reg编程接口实现AuxScalar方式从UB(Unified Buffer)读取多个标量数据，结合Adds进行向量与标量加法计算。
 
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT

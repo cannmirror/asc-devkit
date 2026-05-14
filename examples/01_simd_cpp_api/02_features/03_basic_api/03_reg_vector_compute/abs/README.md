@@ -1,7 +1,7 @@
 # abs样例
 
 ## 概述
-本样例基于RegBase编程范式实现Abs运算，主要调用Abs接口。
+本样例基于Reg编程接口实现Abs运算，主要调用Abs接口。
 - Relu/Exp/Sqrt/Ln/Log/Log2/Log10/Neg接口皆可参考该样例
 
 ## 支持的产品

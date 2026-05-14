@@ -1,7 +1,7 @@
 # move_reg样例
 
 ## 概述
-本样例基于RegBase编程范式演示验证从RegTensor(Reg矢量计算基本单元)中搬运数据到MaskReg（掩码寄存器），使用MaskGenWithRegTensor接口。
+本样例基于Reg编程接口演示验证从RegTensor(Reg矢量计算基本单元)中搬运数据到MaskReg（掩码寄存器），使用MaskGenWithRegTensor接口。
 
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT

@@ -1,7 +1,7 @@
 # gather_ld_reg样例
 
 ## 概述
-本样例基于RegBase编程范式实现将离散数据从UB(Unified Buffer)搬入到RegTensor(Reg矢量计算基本单元)的功能，支持两种场景，通过编译时宏选择场景。
+本样例基于Reg编程接口实现将离散数据从UB(Unified Buffer)搬入到RegTensor(Reg矢量计算基本单元)的功能，支持两种场景，通过编译时宏选择场景。
     <table>
   	 	 	<tr>
   	 	 		<td>scenarioNum</td>

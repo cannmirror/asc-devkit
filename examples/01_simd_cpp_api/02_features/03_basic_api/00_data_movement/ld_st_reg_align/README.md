@@ -1,7 +1,7 @@
 # ld_st_reg_align样例
 
 ## 概述
-本样例基于RegBase编程范式实现UB(Unified Buffer)对RegTensor(Reg矢量计算基本单元)的连续和非连续的对齐数据搬运操作，该样例使用LoadAlign，StoreAlign接口，以及POST_MODE_UPDATE、DATA_BLOCK_COPY等模式的使能。本样例支持6种搬运场景，通过环境变量选择场景。
+本样例基于Reg编程接口实现UB(Unified Buffer)对RegTensor(Reg矢量计算基本单元)的连续和非连续的对齐数据搬运操作，该样例使用LoadAlign，StoreAlign接口，以及POST_MODE_UPDATE、DATA_BLOCK_COPY等模式的使能。本样例支持6种搬运场景，通过环境变量选择场景。
     <table>
       <tr>
         <td>scenarioNum</td>

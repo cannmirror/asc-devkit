@@ -1,7 +1,7 @@
 # mergemode样例
 
 ## 概述
-本样例基于RegBase编程范式验证MaskMergeMode::MERGING模式的行为特性，演示未激活mask位保留dstReg原值的机制，使用Max接口进行验证。
+本样例基于Reg编程接口验证MaskMergeMode::MERGING模式的行为特性，演示未激活mask位保留dstReg原值的机制，使用Max接口进行验证。
 
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT

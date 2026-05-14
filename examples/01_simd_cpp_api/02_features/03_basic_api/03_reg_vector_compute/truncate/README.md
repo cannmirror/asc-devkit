@@ -1,7 +1,7 @@
 # truncate样例
 
 ## 概述
-本样例基于RegBase编程范式实现Truncate运算，用于将RegTensor（Reg矢量计算基本单元）的浮点数截断到整数位，主要调用Truncate接口。
+本样例基于Reg编程接口实现Truncate运算，用于将RegTensor（Reg矢量计算基本单元）的浮点数截断到整数位，主要调用Truncate接口。
 
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT

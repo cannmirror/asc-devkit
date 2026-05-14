@@ -1,7 +1,7 @@
 # 基于RegBase编程add样例
 
 ## 概述
-本样例基于RegBase编程范式实现Add计算，采用4核并行模式处理数据。
+本样例基于Reg编程接口实现Add计算，采用4核并行模式处理数据。
 
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT

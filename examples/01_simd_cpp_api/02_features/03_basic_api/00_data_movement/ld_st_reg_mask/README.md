@@ -1,7 +1,7 @@
 # ld_st_reg_mask样例
 
 ## 概述
-本样例基于RegBase编程范式实现UB(Unified Buffer)对MaskReg(掩码寄存器)的搬入搬出，以及使用mask进行掩码搬出的操作。样例使用LoadAlign，StoreAlign，CreateMask，Duplicate接口。
+本样例基于Reg编程接口实现UB(Unified Buffer)对MaskReg(掩码寄存器)的搬入搬出，以及使用mask进行掩码搬出的操作。样例使用LoadAlign，StoreAlign，CreateMask，Duplicate接口。
 
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT

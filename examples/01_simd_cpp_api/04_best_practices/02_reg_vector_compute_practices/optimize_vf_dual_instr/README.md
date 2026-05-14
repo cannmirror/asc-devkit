@@ -1,7 +1,7 @@
 # optimize_vf_dual_instr样例
 
 ## 概述
-本样例演示了SIMD场景下，基于RegBase编程范式下vf指令双发优化的样例，通过合理拆分VF循环，适当搬出中间结果到UB，减少数据依赖。
+本样例演示了SIMD场景下，基于Reg编程接口下vf指令双发优化的样例，通过合理拆分VF循环，适当搬出中间结果到UB，减少数据依赖。
 
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT

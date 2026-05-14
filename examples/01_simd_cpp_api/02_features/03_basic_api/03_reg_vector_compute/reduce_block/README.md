@@ -1,7 +1,7 @@
 # reduce_block样例
 
 ## 概述
-本样例基于RegBase编程范式实现ReduceDataBlock运算，主要调用ReduceDataBlock接口（SUM模式）。
+本样例基于Reg编程接口实现ReduceDataBlock运算，主要调用ReduceDataBlock接口（SUM模式）。
 - ReduceDataBlock接口支持SUM/MAX/MIN归约模式，本样例以SUM模式为例
 
 ## 支持的产品

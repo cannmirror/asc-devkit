@@ -1,7 +1,7 @@
 # duplicate样例
 
 ## 概述
-本样例基于RegBase编程范式实现Duplicate运算（标量填充模式），主要调用Duplicate接口。
+本样例基于Reg编程接口实现Duplicate运算（标量填充模式），主要调用Duplicate接口。
 - `Duplicate(dstReg, scalarValue, mask)` 接口将一个标量值复制多次并填充到向量中
 - `Duplicate(dstReg, srcReg, mask)` 接口将源RegTensor的第一个元素复制多次并填充到向量中
 

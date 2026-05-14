@@ -1,7 +1,7 @@
 # compare样例
 
 ## 概述
-本样例基于RegBase编程范式实现Compare、Compares接口完成多场景下的数据比较功能。  
+本样例基于Reg编程接口实现Compare、Compares接口完成多场景下的数据比较功能。  
 本样例支持两种比较场景，通过环境变量SCENARIO_NUM选择场景。
   <table>
     <tr>
