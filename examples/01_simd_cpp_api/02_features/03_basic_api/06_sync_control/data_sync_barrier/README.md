@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例演示DataSyncBarrier接口的使用方法。DataSyncBarrier用于核内标量单元流水（PIPE_S）的同步，确保标量操作完成后再执行后续操作。样例展示了在SetValue写入标量值后调用DataSyncBarrier确保写入完成，再执行GetValue读取的场景。
+本样例介绍DataSyncBarrier的调用，该接口功能：阻塞后续的指令执行，直到所有之前的内存访问指令（需要等待的内存位置可通过参数控制）执行结束。
 
 ## 支持的产品
 
@@ -27,37 +27,53 @@
 <table border="2">
 <caption>表1：样例规格对照表</caption>
 <tr><th>类型</th><th>名称</th><th>Shape</th><th>数据类型</th><th>格式</th></tr>
-<tr><td>输入</td><td>inputGm</td><td>[8]</td><td>float</td><td>ND</td></tr>
-<tr><td>输出</td><td>dstGm</td><td>[8]</td><td>float</td><td>ND</td></tr>
-<tr><td>核函数名</td><td>kernel_data_sync_barrier</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>输入</td><td>srcGm</td><td>[1, 8]</td><td>int32_t</td><td>ND</td></tr>
+<tr><td>输出</td><td>dstGm</td><td>[1, 8]</td><td>int32_t</td><td>ND</td></tr>
+<tr><td>核函数名</td><td colspan="4" style="text-align:center;">kernel_data_sync_barrier</td></tr>
 </table>
 
 ## 样例说明
 
-本样例展示了DataSyncBarrier接口的使用：单核执行，演示DataSyncBarrier在标量操作中的同步作用。通过SetValue向Global Tensor写入标量值后，调用DataSyncBarrier确保写入完成，再通过GetValue读取该值，最后将读取的值与输入数据相加输出。
+下面按步骤介绍本样例中 `DataSyncBarrier` 的使用场景：
+
+1. 系统中有两个 AIV 核，分别记为核 0 和核 1。GM 中的两个变量 `x` 和 `y` 初始值都为 1。
+2. 核 0 先通过标量流水接口WriteGmByPassDCache向 `srcGm[1]` 写入 `x=7`。
+3. 核 0 再插入 `DataSyncBarrier<AscendC::MemDsbT::DDR>()`，等待前一次 GM 写操作完成。
+4. 核 0 随后向 `srcGm[0]` 写入 `y=6`。
+5. 核 1 持续轮询 `srcGm[0]`，直到读到 `y=6`，再读取 `srcGm[1]`，并将 `2 * x` 写入输出。
+
+预期行为是：
+
+- 当核 1 读到 `y=6` 时，`x=7` 必须已经写回 GM。
+- 因此核 1 读到的 `x` 应为 7，最终输出应为 14。
+
+如果不加同步，标量流水不保证两次 GM 写入的先后顺序，可能出现 `y` 已更新而 `x` 尚未完成写入的情况。这样核 1 即使已经看到 `y=6`，也可能读到错误的 `x` 值。
 
 
 ## 编译运行
 
 在本样例根目录下执行如下步骤，编译并执行样例。
 
-- 配置环境变量  
+- 配置环境变量
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
+
     ```bash
     source /usr/local/Ascend/cann/set_env.sh
     ```
 
   - 默认路径，非root用户安装CANN软件包
+
     ```bash
     source $HOME/Ascend/cann/set_env.sh
     ```
 
   - 指定路径install_path，安装CANN软件包
+
     ```bash
     source ${install_path}/cann/set_env.sh
     ```
-    
+
 - 样例执行
   ```bash
   mkdir -p build && cd build;      # 创建并进入build目录
@@ -68,7 +84,7 @@
   ```
 
   使用CPU调试或NPU仿真模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
-  
+
   示例如下：
   ```bash
   cmake .. -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-2201;make -j; # CPU调试模式
@@ -80,12 +96,13 @@
 
   | 选项 | 可选值 | 说明 |
   |------|--------|------|
-  | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`cpu`、`sim` | 运行模式：NPU 运行、CPU调试、NPU仿真 |
-  | `CMAKE_ASC_ARCHITECTURES` | `dav-2201`（默认）、`dav-3510` | NPU 架构：dav-2201 对应 Atlas A2 训练系列产品/Atlas A2 推理系列产品和Atlas A3 训练系列产品/Atlas A3 推理系列产品、dav-3510 对应 Ascend 950PR/Ascend 950DT |
+  | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`cpu`、`sim` | 运行模式：NPU运行、CPU调试、NPU仿真 |
+  | `CMAKE_ASC_ARCHITECTURES` | `dav-2201`（默认）、`dav-3510` | NPU架构：dav-2201对应Atlas A2/A3，dav-3510对应Ascend 950 |
 
 - 执行结果
 
   执行结果如下，说明精度对比成功。
+
   ```bash
   test pass!
   ```

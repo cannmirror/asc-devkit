@@ -19,7 +19,7 @@ import numpy as np
 def gen_golden_data_simple():
     input_type = np.dtype("float32")
     output_type = input_type
-    buf_size = 2048
+    buf_size = 1024 * 1024
 
     input_x = np.ones(buf_size, dtype=input_type)
     input_y = np.ones(buf_size, dtype=input_type)

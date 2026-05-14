@@ -11,25 +11,19 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
-
 import os
 import numpy as np
 
 
+TOTAL_LENGTH = 8
+DATA_VALUE = 7
+
+
 def gen_golden_data():
-    """
-    生成DataSyncBarrier样例的输入数据和Golden数据
-    """
-    data_type = np.float32
-    total_length = 8
-    
-    # 生成随机输入数据（范围0-100）
-    input_x = np.random.uniform(0, 100, size=total_length).astype(data_type)
-    
-    # SetValue写入1.145616，GetValue读取该值
-    # 输出 = 输入 + 1.145616
-    golden = input_x + 1.145616
-    
+    input_x = np.ones(TOTAL_LENGTH, dtype=np.int32)
+    golden = np.zeros(TOTAL_LENGTH, dtype=np.int32)
+    golden[0] = 2 * DATA_VALUE
+
     os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
     input_x.tofile("./input/input_x.bin")

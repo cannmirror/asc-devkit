@@ -4,6 +4,8 @@
 
 本样例实现了两组存在依赖关系的AIV之间的正确同步，A组AIV计算完成后，B组AIV依赖该A组AIV的计算结果进行后续的计算，称A组为Arrive组，B组为Wait组。
 
+> **注意：** 本样例仅适用于基于TPipe和TQue的编程模式。
+
 ## 支持的产品
 
 - Ascend 950PR/Ascend 950DT
@@ -21,15 +23,15 @@
 
 ## 样例描述
 
-- 样例功能：  
+- 样例功能：
   GroupBarrier样例实现了两组存在依赖关系的AIV之间的正确同步，A组AIV计算完成后，B组AIV依赖该A组AIV的计算结果进行后续的计算，称A组为Arrive组，B组为Wait组。本样例不进行输入输出计算，仅通过Arrive组写完指定数值之后，Wait组读取该数值，printf打印出正确的数值完成验证。
 
-- 样例规格：  
+- 样例规格：
   <table>
   <tr><td rowspan="2" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
   <tr><td align="center">barGm</td><td align="center">[3072]</td><td align="center">uint8_t</td><td align="center">ND</td></tr>
   <tr><td rowspan="1" align="center">样例输出</td><td align="center">z</td><td align="center">[8]</td><td align="center">int32_t</td><td align="center">ND</td></tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">kernel_group_barrier</td></tr>  
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">kernel_group_barrier</td></tr>
   </table>
 
 - 样例实现：
@@ -40,7 +42,7 @@
 
 在本样例根目录下执行如下步骤，编译并执行样例。
 
-- 配置环境变量  
+- 配置环境变量
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
 
@@ -59,7 +61,7 @@
     ```bash
     source ${install_path}/cann/set_env.sh
     ```
-    
+
 - 样例执行
 
   ```bash
@@ -69,7 +71,7 @@
   ```
 
   使用NPU仿真模式时，添加`-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
-  
+
   示例如下：
 
   ```bash

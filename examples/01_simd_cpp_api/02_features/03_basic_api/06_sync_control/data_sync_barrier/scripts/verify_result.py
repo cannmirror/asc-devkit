@@ -11,47 +11,33 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
-
 import sys
 import numpy as np
 
 
-RELATIVE_TOL = 1e-6
-ABSOLUTE_TOL = 1e-9
-ERROR_TOL = 1e-4
+def verify_result(output_file, golden_file):
+    output = np.fromfile(output_file, dtype=np.int32).reshape(-1)
+    golden = np.fromfile(golden_file, dtype=np.int32).reshape(-1)
+    if output.size < golden.size:
+        raise ValueError(f"output size {output.size} < expected {golden.size}")
+
+    output = output[:golden.size]
+    different_indexes = np.where(output != golden)[0]
+    for index in different_indexes[:100]:
+        print("data index: %06d, expected: %d, actual: %d" % (index, golden[index], output[index]))
+
+    error_ratio = float(different_indexes.size) / golden.size
+    print("error ratio: %.4f, tolerance: %.4f" % (error_ratio, 0.0))
+    return different_indexes.size == 0
 
 
-def verify_result(output, golden):
-    output_type = np.float32
-    output = np.fromfile(output, dtype=output_type).reshape(-1)
-    golden = np.fromfile(golden, dtype=output_type).reshape(-1)
-    different_element_results = np.isclose(output,
-                                           golden,
-                                           rtol=RELATIVE_TOL,
-                                           atol=ABSOLUTE_TOL,
-                                           equal_nan=True)
-    different_element_indexes = np.where(different_element_results == False)[0]
-    for index in range(len(different_element_indexes)):
-        real_index = different_element_indexes[index]
-        golden_data = golden[real_index]
-        output_data = output[real_index]
-        print(
-            "data index: %06d, expected: %-.9f, actual: %-.9f" %
-            (real_index, golden_data, output_data))
-        if index == 100:
-            break
-    error_ratio = float(different_element_indexes.size) / golden.size
-    print("error ratio: %.4f, tolerance: %.4f" % (error_ratio, ERROR_TOL))
-    return error_ratio <= ERROR_TOL
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
-        res = verify_result(sys.argv[1], sys.argv[2])
-        if not res:
+        if len(sys.argv) != 3:
+            raise ValueError("usage: verify_result.py output_file golden_file")
+        if not verify_result(sys.argv[1], sys.argv[2]):
             raise ValueError("[ERROR] result error")
-        else:
-            print("test pass!")
-    except Exception as e:
-        print(e)
+        print("test pass!")
+    except Exception as err:
+        print(err)
         sys.exit(1)

@@ -24,14 +24,15 @@ project(kernel_samples LANGUAGES ASC CXX)
 #   3 - 输入[3, 24]，输出[1, 80]，half类型，Compact模式
 #   4 - 输入[1, 320]，输出[1, 576]，int8类型，SetLoopModePara loop mode（Compact模式）
 #   5 - 输入[1, 320]，输出[1, 576]，int8类型，SetLoopModePara loop mode（Normal模式）
-set(SCENARIO_NUM "1" CACHE STRING "Scene number (1-5)")
+#   6 - 输入[2, 4, 3, 128, 126]五维，搬运[2, 2, 2, 64, 126]，int8类型，SetLoopModePara loop mode（Normal模式）
+set(SCENARIO_NUM "1" CACHE STRING "Scene number (1-6)")
 
-if(NOT SCENARIO_NUM MATCHES "^[1-5]$")
+if(NOT SCENARIO_NUM MATCHES "^[1-6]$")
     message(FATAL_ERROR "SCENARIO_NUM must be 1, 2, 3, 4, 5 or 6, but got ${SCENARIO_NUM}")
 endif()
 
-# 场景3/4/5仅支持dav-3510
-if(SCENARIO_NUM STREQUAL "3" OR SCENARIO_NUM STREQUAL "4" OR SCENARIO_NUM STREQUAL "5")
+# 场景3/4/5/6仅支持dav-3510
+if(SCENARIO_NUM STREQUAL "3" OR SCENARIO_NUM STREQUAL "4" OR SCENARIO_NUM STREQUAL "5" OR SCENARIO_NUM STREQUAL "6")
     if(CMAKE_ASC_ARCHITECTURES STREQUAL "dav-2201")
         message(FATAL_ERROR "SCENARIO_NUM=${SCENARIO_NUM} only supports dav-3510, not dav-2201")
     endif()

@@ -1,8 +1,5 @@
-#!/usr/bin/python3
-# coding=utf-8
-
 # ----------------------------------------------------------------------------------------------------------
-# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+# Copyright (c) 2026 Huawei Technologies Co., Ltd.
 # This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 # CANN Open Software License Agreement Version 2.0 (the "License").
 # Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -12,27 +9,26 @@
 # ----------------------------------------------------------------------------------------------------------
 
 
-import os
-import numpy as np
+cmake_minimum_required(VERSION 3.16)
 
+set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "NPU architecture: dav-2201, dav-3510")
 
-def gen_golden_data():
-    input_type = np.float16
-    output_type = input_type
-    block_length = 256
-    use_core_num = 3
+find_package(ASC REQUIRED)
 
-    input_shape = [block_length]
-    output_shape = input_shape
-    input_x = np.ones(input_shape).astype(input_type)
-    input_y = 2 * np.ones(input_shape).astype(input_type)
-    golden = input_y + use_core_num * input_x
-    os.makedirs("input", exist_ok=True)
-    os.makedirs("output", exist_ok=True)
-    input_x.tofile("./input/input_x.bin")
-    input_y.tofile("./input/input_y.bin")
-    golden.tofile("./output/golden.bin")
+project(kernel_samples LANGUAGES ASC CXX)
 
+set(SCENARIO_NUM "1" CACHE STRING "Scenario number (1-2)")
 
-if __name__ == "__main__":
-    gen_golden_data()
+if(NOT SCENARIO_NUM MATCHES "^[1-2]$")
+    message(FATAL_ERROR "SCENARIO_NUM must be 1 or 2, but got ${SCENARIO_NUM}")
+endif()
+
+add_definitions(-DSCENARIO_NUM=${SCENARIO_NUM})
+
+add_executable(demo
+    data_movement_with_atomic_operations.asc
+)
+
+target_compile_options(demo PRIVATE
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>
+)
