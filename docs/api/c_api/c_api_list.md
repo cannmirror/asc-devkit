@@ -156,8 +156,8 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | <cann-filter npu_type = "950"> [asc_copy_l12l0a_mx](cube_datamove/asc_copy_l12l0a_mx.md)                                    | 将Mx scale矩阵从L1 Buffer搬运到L0A Buffer。</cann-filter> |
 | <cann-filter npu_type = "950"> [asc_copy_l12l0b_mx](cube_datamove/asc_copy_l12l0b_mx.md)                                    | 将Mx scale矩阵从L1 Buffer搬运到L0B Buffer。</cann-filter> |
 | [asc_set_l13d_padding](cube_datamove/asc_set_l13d_padding.md)                                                               | 设置Pad属性描述，用于在调用asc_copy_l12l0a接口时配置填充数值。 |
-| [asc_set_l13d_fmatrix](cube_datamove/asc_set_l13d_fmatrix.md)                                                               | 设置Feature map属性描述，用于在调用[asc_copy_l12l0a](cube_datamove/asc_copy_l12l0a.md)/[asc_copy_l12l0b](cube_datamove/asc_copy_l12l0b.md)的3D格式搬运接口时配置填充数值。从左矩阵获取FeatureMap的属性时使用该接口。 |
-| [asc_set_l13d_fmatrix_b](cube_datamove/asc_set_l13d_fmatrix_b.md)                                                           | 设置Feature map属性描述，用于在调用[asc_copy_l12l0a](cube_datamove/asc_copy_l12l0a.md)/[asc_copy_l12l0b](cube_datamove/asc_copy_l12l0b.md)的3D格式搬运接口时配置填充数值。从右矩阵获取FeatureMap的属性时使用该接口。|
+| [asc_set_l13d_fmatrix](cube_datamove/asc_set_l13d_fmatrix.md)                                                               | 设置Feature map属性描述，用于在调用[asc_copy_l12l0a](cube_datamove/asc_copy_l12l0a)/[asc_copy_l12l0b](cube_datamove/asc_copy_l12l0b)的3D格式搬运接口时配置填充数值。从左矩阵获取FeatureMap的属性时使用该接口。|
+| [asc_set_l13d_fmatrix_b](cube_datamove/asc_set_l13d_fmatrix_b.md)                                                           | 设置Feature map属性描述，用于在调用[asc_copy_l12l0a](cube_datamove/asc_copy_l12l0a)/[asc_copy_l12l0b](cube_datamove/asc_copy_l12l0b)的3D格式搬运接口时配置填充数值。从右矩阵获取FeatureMap的属性时使用该接口。|
 | [asc_set_l0c2gm_lrelu_alpha](cube_datamove/asc_set_l0c2gm_lrelu_alpha.md)                                                   | 用于设置asc_copy_l0c2l1或asc_copy_l0c2gm接口计算过程中使用的Leaky ReLU alpha值。该值只支持half和float两种数据类型。 |
 | [asc_copy_ub2ub](vector_datamove/asc_copy_ub2ub.md)                                                                         | 将数据从Unified Buffer搬运到Unified Buffer。 |
 | [asc_copy_gm2ub](vector_datamove/asc_copy_gm2ub.md)                                                                         | 将数据从Global Memory搬运到 Unified Buffer。 |
@@ -248,7 +248,7 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_get_sys_virtual_base](sys_var/asc_get_sys_virtual_base.md) | 获取系统虚拟基地址。 |
 | [asc_get_vf_len](sys_var/asc_get_vf_len.md) | 获取Tensor位宽VL（Vector Length）的大小。 |
 | <cann-filter npu_type = "950"> [asc_set_gm2l1_nz_para](sys_var/asc_set_gm2l1_nz_para.md) | 设置MTE2_NZ_PARA寄存器的值。</cann-filter> |
-| <cann-filter npu_type = "950"> [asc_setl_l12l0_padding_val](sys_var/asc_setl_l12l0_padding_val.md) | 设置PADDING_B寄存器的值。</cann-filter> |
+| <cann-filter npu_type = "950"> [asc_set_l12l0_padding_val](sys_var/asc_set_l12l0_padding_val.md) | 设置PADDING_B寄存器的值。</cann-filter> |
 | <cann-filter npu_type = "950"> [asc_set_l0c2gm_quant_post](sys_var/asc_set_l0c2gm_quant_post.md) | 设置QUANT_POST寄存器的值。</cann-filter> |
 | <cann-filter npu_type = "950"> [asc_set_l0c2gm_relu_alpha](sys_var/asc_set_l0c2gm_relu_alpha.md) | 设置RELU_ALPHA寄存器的值。</cann-filter> |
 | [asc_set_l0c2gm_channel_para](sys_var/asc_set_l0c2gm_channel_para.md) | 对通道步长参数的专用寄存器的比特位进行设置。 |
