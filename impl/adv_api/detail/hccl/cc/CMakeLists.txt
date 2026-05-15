@@ -112,7 +112,7 @@ elseif(BUILD_OPEN_PROJECT)
 
     if (PRODUCT_SIDE STREQUAL "host")
         install(FILES ${CMAKE_BINARY_DIR}/device_build/signatures/mc2_server.tar.gz
-            DESTINATION hccl/Ascend/aicpu
+            DESTINATION opp/built-in/op_impl/aicpu/kernel
             COMPONENT asc-devkit
         )
     endif()
