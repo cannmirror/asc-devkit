@@ -61,7 +61,7 @@ void GenerateTilingData(uint8_t* tilingBuf, uint32_t numBlocks)
     uint32_t tailNum = numBlocks - formerNum;
     // 整核计算的数据长度：totalLengthAligned / NUM_BLOCKS为每个核上计算的元素个数，formerLength为上述元素个数向上32字节对齐的结果
     uint32_t formerLength =
-            static_cast<uint32_t>(((totalLengthAligned + numBlocks - 1) / numBlocks + alignNum - 1) / alignNum) * alignNum;
+            static_cast<uint32_t>(((totalLengthAligned + numBlocks - 1) / numBlocks + ALIGN_NUM - 1) / ALIGN_NUM) * ALIGN_NUM;
     // 尾核计算的数据长度：totalLengthAligned / NUM_BLOCKS为每个核上计算的元素个数，tailLength 为上述元素个数向下32字节对齐的结果
     uint32_t tailLength = (totalLengthAligned / numBlocks / ALIGN_NUM) * ALIGN_NUM;
     ...
@@ -111,4 +111,3 @@ __aicore__ inline void Init(GM_ADDR x, GM_ADDR y, GM_ADDR z, AddCustomTilingData
 ```
 
 其余实现与[多核Tiling](多核Tiling.md)中的实现一致，这里不重复进行说明。
-
