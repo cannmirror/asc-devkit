@@ -42,23 +42,32 @@ using LayoutFormatSet = TupleMap<
     Std::tuple<ScaleBNDLayoutPtn, MakeScaleBNDFrameLayout>,
     Std::tuple<ScaleBDNLayoutPtn, MakeScaleBDNFrameLayout>>;
 
-template <typename T = uint16_t, size_t C0 = 32 / sizeof(T)>
-struct LayoutTraitDefault {
+template <typename T, size_t C0>
+struct LayoutTrait {
     using type = T;
     static constexpr auto C0_ELEMENT = Std::Int<C0>{};
 };
 
-template <typename T = fp8_e8m0_t, size_t C0 = 2 / sizeof(T)>
-struct LayoutTraitScale {
-    using type = T;
-    static constexpr auto C0_ELEMENT = Std::Int<C0>{};
-};
+template <typename T = uint16_t, size_t C0 = C0_ELEMENT<T>>
+struct LayoutTraitDefault : LayoutTrait<T, C0> {};
 
-template <typename T = fp4x2_e2m1_t, size_t C0 = 64 / sizeof(T)>
-struct LayoutTraitFP4 {
-    using type = T;
-    static constexpr auto C0_ELEMENT = Std::Int<C0>{};
-};
+struct LayoutTraitScale : LayoutTraitDefault<fp8_e8m0_t, 2 / sizeof(fp8_e8m0_t)> {};
+
+struct LayoutTraitFP4 : LayoutTraitDefault<fp4x2_e2m1_t, C0_ELEMENT<fp4x2_e2m1_t>> {};
+
+using FormatTraitSet = TupleMap<
+    Std::tuple<NZLayoutPtn, LayoutTraitDefault<>>,
+    Std::tuple<NDLayoutPtn, LayoutTraitDefault<>>,
+    Std::tuple<DNLayoutPtn, LayoutTraitDefault<>>,
+    Std::tuple<NDExtLayoutPtn, LayoutTraitDefault<>>,
+    Std::tuple<DNExtLayoutPtn, LayoutTraitDefault<>>,
+    Std::tuple<NNLayoutPtn, LayoutTraitDefault<>>,
+    Std::tuple<ZZLayoutPtn, LayoutTraitDefault<>>,
+    Std::tuple<ZNLayoutPtn, LayoutTraitDefault<>>,
+    Std::tuple<ScaleANDLayoutPtn, LayoutTraitScale>,
+    Std::tuple<ScaleADNLayoutPtn, LayoutTraitScale>,
+    Std::tuple<ScaleBNDLayoutPtn, LayoutTraitScale>,
+    Std::tuple<ScaleBDNLayoutPtn, LayoutTraitScale>>;
 
 template <typename T, typename = void>
 struct IsFrameLayoutTrait : Std::false_type {};
@@ -69,28 +78,54 @@ struct IsFrameLayoutTrait<T, void_t<typename T::type, decltype(T::C0_ELEMENT)>> 
 template <typename T>
 constexpr bool IsFrameLayoutTraitV = IsFrameLayoutTrait<T>::value;
 
+template <typename T, bool = IsIntegralConstantV<Std::remove_cvref_t<T>>>
+struct FrameLayoutTrait {
+    using type = LayoutTraitDefault<Std::remove_cvref_t<T>>;
+};
+
+template <typename T>
+struct FrameLayoutTrait<T, true> {
+    using type = LayoutTraitDefault<uint16_t, Std::remove_cvref_t<T>::value>;
+};
+
+template <typename T>
+using FrameLayoutTraitT = typename FrameLayoutTrait<T>::type;
+
+template <typename LayoutPattern, typename TraitType>
+struct GetTrait {
+    using type = TraitType;
+};
+
+template <typename LayoutPattern>
+struct GetTrait<LayoutPattern, LayoutTraitDefault<>> {
+    using type = typename FormatTraitSet::template Get<LayoutPattern>;
+};
+
 template <typename LayoutPattern, typename TraitType = LayoutTraitDefault<>,
-    Std::enable_if_t<!IsIntegralConstantV<TraitType>, int> = 0, typename... Args>
-__aicore__ inline decltype(auto) MakeFrameLayout(const Args&... args) {
-    static_assert(IsFrameLayoutTraitV<TraitType>,
-        "MakeFrameLayout<LayoutPattern, TraitType>(...) expects TraitType to define type and C0_ELEMENT.");
+    Std::enable_if_t<IsFrameLayoutTraitV<TraitType>, int> = 0, typename... Args>
+__aicore__ inline constexpr decltype(auto) MakeFrameLayout(const Args&... args) {
+    using Trait = typename GetTrait<LayoutPattern, TraitType>::type;
     using LayoutMaker = typename LayoutFormatSet::template Get<LayoutPattern>;
     static_assert(!Std::is_same_v<LayoutMaker, EmptyValue>, "Unsupported layout pattern.");
-    return LayoutMaker::template Make<TraitType>(args...);
+    return LayoutMaker::template Make<Trait>(args...);
 }
 
-template <typename LayoutPattern, typename IntType,
-    Std::enable_if_t<IsIntegralConstantV<IntType>, int> = 0, typename... Args>
-__aicore__ inline decltype(auto) MakeFrameLayout(const Args&... args) {
-    using LayoutMaker = typename LayoutFormatSet::template Get<LayoutPattern>;
-    static_assert(!Std::is_same_v<LayoutMaker, EmptyValue>, "Unsupported layout pattern.");
-    return LayoutMaker::template Make<LayoutTraitDefault<uint16_t, IntType::value>>(args...);
+template <typename LayoutPattern, typename IntTypeOrDataType,
+    Std::enable_if_t<!IsFrameLayoutTraitV<IntTypeOrDataType>, int> = 0, typename... Args>
+__aicore__ inline constexpr decltype(auto) MakeFrameLayout(const Args&... args) {
+    using TraitType = FrameLayoutTraitT<IntTypeOrDataType>;
+    return MakeFrameLayout<LayoutPattern, TraitType>(args...);
+}
+
+template <typename LayoutPattern, size_t C0Element, typename... Args>
+__aicore__ inline constexpr decltype(auto) MakeFrameLayout(const Args&... args) {
+    return MakeFrameLayout<LayoutPattern, Std::Int<C0Element>>(args...);
 }
 
 template <typename LayoutPattern, typename TraitType = LayoutTraitDefault<>>
 struct FrameLayoutFormat {
     template <typename... Args>
-    __aicore__ inline decltype(auto) operator()(const Args&... args) {
+    __aicore__ inline constexpr decltype(auto) operator()(const Args&... args) {
         return MakeFrameLayout<LayoutPattern, TraitType>(args...);
     }
 };

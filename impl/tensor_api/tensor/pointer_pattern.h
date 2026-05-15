@@ -44,27 +44,36 @@ struct IsPtrTrait<T, void_t<typename T::type>> : Std::true_type {};
 template <typename T>
 using MemPtrTraitT = typename Std::conditional<IsPtrTrait<T>::value, T, PtrTrait<T>>::type;
 
-template <typename... Args>
-using FirstArgT = typename Std::tuple_element<0, Std::tuple<Args...>>::type;
+template <typename Hardware, typename Arg>
+using EnableMakePtrByTrait =
+    Std::enable_if_t<IsHardwareV<Hardware> && !IsMemPtrIterator<Std::remove_cvref_t<Arg>>::value, int>;
 
-template <typename Hardware, typename TraitOrType, typename... Args,
-        Std::enable_if_t<!IsMemPtrIterator<FirstArgT<Args...>>::value, int> = 0>
-__aicore__ inline constexpr auto MakeMemPtr(Args... args)
-{
-    return MakeLocationMemPtr<Hardware, MemPtrTraitT<TraitOrType>>(args...);
-}
-
-template <typename Hardware, typename... Args,
-        Std::enable_if_t<IsMemPtrIterator<FirstArgT<Args...>>::value, int> = 0>
-__aicore__ inline constexpr auto MakeMemPtr(Args... args)
-{
-    return MakeHardwareMemPtr<Hardware>(args...);
-}
+template <typename Hardware, typename Arg>
+using EnableMakeHardwarePtr =
+    Std::enable_if_t<IsHardwareV<Hardware> && IsMemPtrIterator<Std::remove_cvref_t<Arg>>::value, int>;
 
 template <typename Iterator>
-__aicore__ inline constexpr auto MakeMemPtr(const Iterator& iter)
+using EnableMakePtrByIter =
+    Std::enable_if_t<IsMemPtrIterator<Std::remove_cvref_t<Iterator>>::value, int>;
+
+template <typename Hardware, typename TraitOrType, typename Arg0, typename... Args,
+    EnableMakePtrByTrait<Hardware, Arg0> = 0>
+__aicore__ inline constexpr auto MakeMemPtr(Arg0 arg0, Args... args)
 {
-    using hardware = GetAttributeLocation<Iterator>;
+    return MakeLocationMemPtr<Hardware, MemPtrTraitT<TraitOrType>>(arg0, args...);
+}
+
+template <typename Hardware, typename Arg0, typename... Args,
+        EnableMakeHardwarePtr<Hardware, Arg0> = 0>
+__aicore__ inline constexpr auto MakeMemPtr(Arg0 arg0, Args... args)
+{
+    return MakeHardwareMemPtr<Hardware>(arg0, args...);
+}
+
+template <typename Iterator, EnableMakePtrByIter<Iterator> = 0>
+__aicore__ inline constexpr auto MakeMemPtr(Iterator& iter)
+{
+    using hardware = GetAttributeLocation<typename IterEle<Iterator>::type*>;
     return MakeMemPtr<hardware>(iter);
 }
 

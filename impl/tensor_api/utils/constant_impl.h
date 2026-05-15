@@ -96,6 +96,24 @@ namespace Location {
     struct SSBUF {};
 }
 
+template <typename T>
+struct IsHardware {
+private:
+    template <typename Tp, typename... Tps>
+    __aicore__ inline static constexpr bool IsUnqualifiedAnyOf() {
+        return (... || Std::is_same_v<Std::remove_cvref_t<Tp>, Tps>);
+    }
+
+public:
+    static constexpr bool value = IsUnqualifiedAnyOf<T,
+        Location::INVALID, Location::GM, Location::UB, Location::L1,
+        Location::L0A, Location::L0B, Location::L0C, Location::BIAS,
+        Location::FIXBUF, Location::SSBUF>();
+};
+
+template <typename T>
+constexpr bool IsHardwareV = IsHardware<T>::value;
+
 template <typename TupleType>
 using tuple_sequence = Std::make_index_sequence<Std::tuple_size_v<Std::remove_cvref_t<TupleType>>>;
 

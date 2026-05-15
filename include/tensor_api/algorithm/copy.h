@@ -38,7 +38,7 @@ __aicore__ inline void
 Copy(const T& dst, const U& src, const Params& ...params);
 
 template <typename... Args>
-__aicore__ inline auto MakeCopy(const Args& ...traits);
+__aicore__ inline constexpr auto MakeCopy(const Args& ...traits);
 
 }
 }

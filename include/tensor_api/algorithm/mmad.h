@@ -38,7 +38,7 @@ __aicore__ inline void
 Mmad(const T& dst, const U& fm, const S& filter, const Params& ...params);
 
 template <typename... Args>
-__aicore__ inline auto MakeMmad(const Args& ...traits);
+__aicore__ inline constexpr auto MakeMmad(const Args& ...traits);
 
 }
 }

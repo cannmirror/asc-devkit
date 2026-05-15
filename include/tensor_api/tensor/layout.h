@@ -79,12 +79,15 @@ template <typename Tensor, typename Coord, typename Info>
 __aicore__ inline constexpr decltype(auto) Slice(Tensor&& tensor, const Coord& coord, const Info& info);
 
 template <typename LayoutPattern, typename TraitType,
-    Std::enable_if_t<!IsIntegralConstantV<TraitType>, int> Enable, typename... Args>
-__aicore__ inline decltype(auto) MakeFrameLayout(const Args&... args);
+    Std::enable_if_t<IsFrameLayoutTraitV<TraitType>, int> Enable, typename... Args>
+__aicore__ inline constexpr decltype(auto) MakeFrameLayout(const Args&... args);
 
-template <typename LayoutPattern, typename IntType,
-    Std::enable_if_t<IsIntegralConstantV<IntType>, int> Enable, typename... Args>
-__aicore__ inline decltype(auto) MakeFrameLayout(const Args&... args);
+template <typename LayoutPattern, typename IntTypeOrDataType,
+    Std::enable_if_t<!IsFrameLayoutTraitV<IntTypeOrDataType>, int> Enable, typename... Args>
+__aicore__ inline constexpr decltype(auto) MakeFrameLayout(const Args&... args);
+
+template <typename LayoutPattern, size_t C0Element, typename... Args>
+__aicore__ inline constexpr decltype(auto) MakeFrameLayout(const Args&... args);
 
 } // namespace Te
 } // namespace AscendC
