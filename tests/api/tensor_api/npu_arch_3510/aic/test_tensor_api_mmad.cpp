@@ -62,3 +62,4 @@ protected:
 MMAD_INTERFACE_TEST(float, half, 16, 16, 16);
 MMAD_INTERFACE_TEST(float, float, 16, 16, 16);
 MMAD_INTERFACE_TEST(float, bfloat16_t, 16, 16, 16);
+MMAD_INTERFACE_TEST(float, hifloat8_t, 16, 16, 16);
