@@ -200,6 +200,7 @@ function(simple_kernel_compile)
   get_property(error_msg_file GLOBAL PROPERTY _ASC_PKG_ERROR_FILE)
   set(BINCMP_ERROR_LOG ${error_msg_file})
   set(BINCMP_COMPILE_LOG "${CMAKE_CURRENT_BINARY_DIR}/${BINCMP_OP_TYPE}_${BINCMP_COMPUTE_UNIT}_compile.log")
+  set(BINCMP_COMPILE_FAIL_FLAG "${CMAKE_CURRENT_BINARY_DIR}/${BINCMP_OP_TYPE}_${BINCMP_COMPUTE_UNIT}_fail.log")
   set(COMPILE_LOG "${CMAKE_CURRENT_BINARY_DIR}/compile.log")
 
   if (NOT ${ENABLE_CROSS_COMPILE})
@@ -219,12 +220,12 @@ function(simple_kernel_compile)
             --json-file=${BINCMP_JSON_FILE} \
             --target-name=${BINCMP_TARGET_NAME} \
             --auto-gen-path=${auto_gen_path} \
-            --build-tool=$(MAKE) > ${BINCMP_COMPILE_LOG} 2>&1 || true"
+            --build-tool=$(MAKE) > ${BINCMP_COMPILE_LOG} 2>&1; echo $? > ${BINCMP_COMPILE_FAIL_FLAG}"
       )
 
       # Collect failure information and append it to BINCMP_ERROR_LOG
       set(CHECK_ERROR_CMD
-          "if grep -q -i 'error\\|exception\\|traceback' ${BINCMP_COMPILE_LOG}; then \
+          "if ! grep -q -x -i '0' ${BINCMP_COMPILE_FAIL_FLAG}; then \
               ERROR_MSG='fail op-type: ${BINCMP_OP_TYPE}, fail compute-unit: ${BINCMP_COMPUTE_UNIT}.'; \
               if [ ! -f ${BINCMP_ERROR_LOG} ] || ! grep -qF \"\${ERROR_MSG}\" ${BINCMP_ERROR_LOG}; then \
                   echo '' >> ${BINCMP_ERROR_LOG}; \
@@ -232,7 +233,8 @@ function(simple_kernel_compile)
               fi; \
               cat ${BINCMP_COMPILE_LOG} >> ${COMPILE_LOG}; \
           fi; \
-          rm -f ${BINCMP_COMPILE_LOG}"
+          rm -f ${BINCMP_COMPILE_LOG}; \
+          rm -f ${BINCMP_COMPILE_FAIL_FLAG}"
       )
 
       add_custom_target(${BINCMP_OP_TYPE}_${BINCMP_COMPUTE_UNIT}
@@ -279,12 +281,12 @@ function(simple_kernel_compile)
             --json-file=${BINCMP_JSON_FILE} \
             --target-name=${BINCMP_TARGET_NAME} \
             --auto-gen-path=${auto_gen_path} \
-            --build-tool=$(MAKE) > ${BINCMP_COMPILE_LOG} 2>&1 || true"
+            --build-tool=$(MAKE) > ${BINCMP_COMPILE_LOG} 2>&1; echo $? > ${BINCMP_COMPILE_FAIL_FLAG}"
       )
 
       # Collect failure information and append it to BINCMP_ERROR_LOG
       set(CHECK_ERROR_CMD
-          "if grep -q -i 'error\\|exception\\|traceback' ${BINCMP_COMPILE_LOG}; then \
+          "if ! grep -q -x -i '0' ${BINCMP_COMPILE_FAIL_FLAG}; then \
               ERROR_MSG='fail op-type: ${BINCMP_OP_TYPE}, fail compute-unit: ${BINCMP_COMPUTE_UNIT}.'; \
               if [ ! -f ${BINCMP_ERROR_LOG} ] || ! grep -qF \"\${ERROR_MSG}\" ${BINCMP_ERROR_LOG}; then \
                   echo '' >> ${BINCMP_ERROR_LOG}; \
@@ -292,7 +294,8 @@ function(simple_kernel_compile)
               fi; \
               cat ${BINCMP_COMPILE_LOG} >> ${COMPILE_LOG}; \
           fi; \
-          rm -f ${BINCMP_COMPILE_LOG}"
+          rm -f ${BINCMP_COMPILE_LOG}; \
+          rm -f ${BINCMP_COMPILE_FAIL_FLAG}"
       )
 
       add_custom_target(${BINCMP_OP_TYPE}_${BINCMP_COMPUTE_UNIT}
