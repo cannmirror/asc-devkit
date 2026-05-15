@@ -169,8 +169,6 @@ custom_uninstall() {
 
     # remove softlinks for stub libs in devlib/linux/${ARCH}
     remove_stub_softlink "$common_parse_dir"
-    remove_mc2_runtime_softlink "$common_parse_dir"
-    remove_mc2_runtime_artifacts "$common_parse_dir"
 
     return 0
 }
