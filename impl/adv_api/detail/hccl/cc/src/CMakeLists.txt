@@ -496,12 +496,6 @@ if(NOT KERNEL_MODE AND PRODUCT_SIDE STREQUAL "host")
     )
 endif()
 
-if((DEVICE_MODE AND BUILD_OPEN_PROJECT) OR (NOT BUILD_OPEN_PROJECT))
-    install(TARGETS mc2_server
-        LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR} OPTIONAL
-    )
-endif()
-
 add_subdirectory(common)
 
 if(PRODUCT_SIDE STREQUAL "host")

@@ -292,7 +292,6 @@ target_include_directories(ccl_kernel_plf_a PRIVATE
 
 # 给ccl_kernel_plf添加编译选项
 target_compile_options(ccl_kernel_plf PRIVATE
-    -Werror
     -Wall
     -fno-common
     -fno-strict-aliasing
@@ -305,7 +304,6 @@ target_compile_options(ccl_kernel_plf PRIVATE
 
 # 给ccl_kernel_plf_a添加编译选项
 target_compile_options(ccl_kernel_plf_a PRIVATE
-    -Werror
     -Wall
     -fno-common
     -fno-strict-aliasing

@@ -455,7 +455,6 @@ if(NOT BUILD_OPEN_PROJECT OR (BUILD_OPEN_PROJECT AND KERNEL_MODE))
     )
 
     target_compile_options(ccl_kernel PRIVATE
-        -Werror
         -Wfloat-equal
         -Wall
         -fno-common

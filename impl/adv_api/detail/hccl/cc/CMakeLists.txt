@@ -7,27 +7,14 @@
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
-cmake_minimum_required(VERSION 3.16.0)
-option(BUILD_OPEN_PROJECT "Build open hccl project." ON)
-option(KERNEL_MODE "Kernel mode." ON)
-
 set(HCCL_CC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(HCCL_CC_INCLUDE_DIR ${ASCENDC_DIR}/include/adv_api/hccl/internal)
 set(HCCL_LOCAL_HEADER_DIRS
     ${ASCENDC_DIR}
     ${HCCL_CC_INCLUDE_DIR}
 )
-message(STATUS "KERNEL_MODE=${KERNEL_MODE}")
-message(STATUS "BUILD_OPEN_PROJECT=${BUILD_OPEN_PROJECT}")
-message(STATUS "AARCH_MODE=${AARCH_MODE}")
 
-find_program(CCAHE_PROGRAM ccache)
-if(CCAHE_PROGRAM)
-    set(CMAKE_C_COMPILER_LAUNCHER ${CCAHE_PROGRAM})
-    set(CMAKE_CXX_COMPILER_LAUNCHER ${CCAHE_PROGRAM})
-endif()
-
-if((BUILD_OPEN_PROJECT AND KERNEL_MODE) OR AARCH_MODE)
+if(BUILD_OPEN_PROJECT AND KERNEL_MODE)
     set(TOOLCHAIN_DIR ${ASCEND_CANN_PACKAGE_PATH}/toolkit/toolchain/hcc)
     message(STATUS "TOOLCHAIN_DIR=${TOOLCHAIN_DIR}")
     if (NOT "x${TOOLCHAIN_DIR}" STREQUAL "x")
@@ -123,22 +110,11 @@ elseif(BUILD_OPEN_PROJECT)
         endif()
     endif()
 
-    if (NOT DEVICE_MODE)
-        message(STATUS "Detected INSTALL_LIBRARY_DIR: ${INSTALL_LIBRARY_DIR}")
-
-        set(BUILD_DEVICE_DIR ${CMAKE_SOURCE_DIR}/build_device/)
-        add_custom_target(install_tar DEPENDS
-            ${BUILD_DEVICE_DIR}/signatures/mc2_server.tar.gz
-            ${BUILD_DEVICE_DIR}/aicpu_custom/libmc2_server.so
-        )
-        install(FILES ${BUILD_DEVICE_DIR}/signatures/mc2_server.tar.gz
+    if (PRODUCT_SIDE STREQUAL "host")
+        install(FILES ${CMAKE_BINARY_DIR}/device_build/signatures/mc2_server.tar.gz
+            DESTINATION hccl/Ascend/aicpu
             COMPONENT asc-devkit
-            DESTINATION ${INSTALL_DEVICE_TAR_DIR} OPTIONAL
         )
-        install(FILES ${BUILD_DEVICE_DIR}/aicpu_custom/libmc2_server.so
-            DESTINATION ${INSTALL_AICPU_KERNEL_JSON_DIR} OPTIONAL
-        )
-        add_dependencies(install_tar mc2_client)
     endif()
 
     set(HCCL_HEAD

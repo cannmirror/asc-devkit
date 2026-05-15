@@ -90,23 +90,14 @@ set(HOST_STUBS
 )
 endif()
 
-if (AARCH_MODE)
-    set(STUBS
-        ascend_hal
-        slog
-        aicpu_sharder
-        ${HOST_STUBS}
-    )
-else()
-    set(STUBS
-        ascend_hal
-        slog
-        aicpu_sharder
-        ${HOST_STUBS}
-        runtime
-        acl_rt
-    )
-endif()
+set(STUBS
+    ascend_hal
+    slog
+    aicpu_sharder
+    ${HOST_STUBS}
+    runtime
+    acl_rt
+)
 
 foreach(STUB ${STUBS})
     if(NOT TARGET ${STUB})

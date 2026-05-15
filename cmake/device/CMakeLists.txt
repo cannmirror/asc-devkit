@@ -19,7 +19,12 @@ set(ASCENDC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 set(ASCENDC_INCLUDE_DIR ${ASCENDC_DIR}/include)
 set(ASCENDC_IMPL_DIR ${ASCENDC_DIR}/impl)
 set(INSTALL_LIBRARY_DIR ${CMAKE_HOST_SYSTEM_PROCESSOR}-linux/lib64/device)
+get_filename_component(ASC_DEVKIT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE)
 
 include(${ASCENDC_DIR}/impl/adv_api/gen_kernel_tiling.cmake)
 
-add_subdirectory(../../impl/adv_api/tiling tiling)
+set(DEVICE_MODE TRUE)
+set(KERNEL_MODE TRUE)
+
+add_subdirectory(../../impl/adv_api/tiling impl/adv_api/tiling)
+add_subdirectory(../../impl/adv_api/detail/hccl/cc impl/adv_api/detail/hccl/cc)

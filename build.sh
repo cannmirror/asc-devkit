@@ -18,7 +18,6 @@ SUPPORTED_LONG_OPTS=(
 
 CURRENT_DIR=$(dirname $(readlink -f ${BASH_SOURCE[0]}))
 BUILD_DIR=${CURRENT_DIR}/build
-BUILD_DEVICE_DIR="${CURRENT_DIR}/build_device"
 OUTPUT_DIR=${CURRENT_DIR}/build_out
 CANN_3RD_LIB_PATH=${BUILD_DIR}
 USER_ID=$(id -u)
@@ -591,24 +590,6 @@ function build_test_part() {
   return 0
 }
 
-function build_device(){
-    cmake_config
-    log "Info: build_device"
-    TARGET_LIST="mc2_server"
-    echo "TARGET_LIST=${TARGET_LIST}"
-    PKG_TARGET_LIST="generate_device_aicpu_package"
-    echo "PKG_TARGET_LIST=${PKG_TARGET_LIST}"
-    SIGN_TARGET_LIST="sign_mc2_server"
-    echo "SIGN_TARGET_LIST=${SIGN_TARGET_LIST}"
-    build ${TARGET_LIST} ${PKG_TARGET_LIST} ${SIGN_TARGET_LIST}
-}
-
-function is_build_device_enabled(){
-  local enable_build_device_lower
-  enable_build_device_lower=$(echo "${ENABLE_BUILD_DEVICE}" | tr '[:upper:]' '[:lower:]')
-  [[ "${enable_build_device_lower}" == "on" || "${enable_build_device_lower}" == "true" || "${enable_build_device_lower}" == "1" || "${enable_build_device_lower}" == "yes" ]]
-}
-
 set_ci_mode() {
   if [[ "$CHANGED_FILES" != /* ]]; then
     CHANGED_FILES=${CURRENT_DIR}/$CHANGED_FILES
@@ -692,22 +673,8 @@ main() {
   elif [ -n "$TEST_PART" ]; then
     build_test_part
   elif [ -n "${PKG}" ]; then
-    CURRENT_CUSTOM_OPTION="${CUSTOM_OPTION}"
-    if is_build_device_enabled; then
-      mkdir -p ${BUILD_DEVICE_DIR}
-      cd ${BUILD_DEVICE_DIR}
-      DEVICE_C_COMPILER="${ASCEND_CANN_PACKAGE_PATH}/toolkit/toolchain/hcc/bin/aarch64-target-linux-gnu-gcc"
-      DEVICE_CXX_COMPILER="${ASCEND_CANN_PACKAGE_PATH}/toolkit/toolchain/hcc/bin/aarch64-target-linux-gnu-g++"
-      CUSTOM_OPTION="${CURRENT_CUSTOM_OPTION} -DENABLE_BUILD_DEVICE=${ENABLE_BUILD_DEVICE} -DFULL_MODE=ON -DDEVICE_MODE=ON -DKERNEL_MODE=ON -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DCMAKE_C_COMPILER=${DEVICE_C_COMPILER} -DCMAKE_CXX_COMPILER=${DEVICE_CXX_COMPILER} -DCUSTOM_SIGN_SCRIPT=${CUSTOM_SIGN_SCRIPT} -DENABLE_SIGN=${ENABLE_SIGN} -DVERSION_INFO=${VERSION_INFO}"
-      build_device
-      cd ${BUILD_DIR}
-    else
-      log "Info: ENABLE_BUILD_DEVICE=${ENABLE_BUILD_DEVICE}, skip HCCL/MC2 device build."
-      [ -n "${BUILD_DEVICE_DIR}" ] && rm -rf ${BUILD_DEVICE_DIR}
-    fi
-    CUSTOM_OPTION="${CURRENT_CUSTOM_OPTION} -DPACKAGE_OPEN_PROJECT=ON -DKERNEL_MODE=OFF"
+    CUSTOM_OPTION="${CUSTOM_OPTION} -DCUSTOM_SIGN_SCRIPT=${CUSTOM_SIGN_SCRIPT} -DENABLE_SIGN=${ENABLE_SIGN} -DVERSION_INFO=${VERSION_INFO} -DPACKAGE_OPEN_PROJECT=ON"
     build_package
-    [ -n "${BUILD_DEVICE_DIR}" ] && rm -rf ${BUILD_DEVICE_DIR}
   else
     cmake_config
     build all
