@@ -1823,7 +1823,7 @@ union asc_store_align_config{
         };
 };
 
-// ==========asc_storealign_impl(int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/float8_e4m3_t/float8_e5m2_t/float8_e8m0_t/bfloat16_t/half/float)==========
+// ==========asc_storealign_impl(int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/fp8_e4m3fn_t/fp8_e5m2_t/fp8_e8m0_t/bfloat16_t/half/float)==========
 __simd_callee__ inline void asc_storealign_impl(__ubuf__ int8_t* dst_align32b, vector_int8_t src, uint16_t block_stride, uint16_t repeat_stride, vector_bool mask)
 {
     if ASC_IS_AIV {
@@ -1966,7 +1966,7 @@ union asc_store_align_config_post{
         };
 };
 
-// ==========asc_storealign_postupdate_impl(int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/float8_e4m3_t/float8_e5m2_t/float8_e8m0_t/bfloat16_t/half/float)==========
+// ==========asc_storealign_postupdate_impl(int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/fp8_e4m3fn_t/fp8_e5m2_t/fp8_e8m0_t/bfloat16_t/half/float)==========
 __simd_callee__ inline void asc_storealign_postupdate_impl(__ubuf__ int8_t* dst_align32b, vector_int8_t src, uint16_t block_stride, uint16_t repeat_stride, vector_bool mask)
 {
     if ASC_IS_AIV {

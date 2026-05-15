@@ -969,7 +969,7 @@ __simd_callee__ inline void asc_min_scalar(vector_uint8_t& dst, vector_uint8_t s
 
 __simd_callee__ inline void asc_min_scalar(vector_float& dst, vector_float src, float value, vector_bool mask);
 
-__simd_callee__ inline void asc_min_scalar(vector_half& dst, vector_f16 src, half value, vector_bool mask);
+__simd_callee__ inline void asc_min_scalar(vector_half& dst, vector_half src, half value, vector_bool mask);
 
 //==================asc_reduce_max_datablock====================
 __simd_callee__ inline void asc_reduce_max_datablock(vector_half& dst, vector_half src, vector_bool mask);
