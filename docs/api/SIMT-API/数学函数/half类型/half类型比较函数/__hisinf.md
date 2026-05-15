@@ -1,95 +1,45 @@
-# \_\_hisinf<a name="ZH-CN_TOPIC_0000002501535058"></a>
+# \_\_hisinf
 
-## 产品支持情况<a name="section65472564339"></a>
+## 产品支持情况
 
-<a name="table35471056133316"></a>
-<table><thead align="left"><tr id="row1254775613337"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p115470567338"><a name="p115470567338"></a><a name="p115470567338"></a><span id="ph754765619335"><a name="ph754765619335"></a><a name="ph754765619335"></a>产品</span></p>
-</th>
-<th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p105472564333"><a name="p105472564333"></a><a name="p105472564333"></a>是否支持</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row1754713568333"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p145471156133318"><a name="p145471156133318"></a><a name="p145471156133318"></a><span id="ph5547195620331"><a name="ph5547195620331"></a><a name="ph5547195620331"></a>Ascend 950PR/Ascend 950DT</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p154714569332"><a name="p154714569332"></a><a name="p154714569332"></a>√</p>
-</td>
-</tr>
-<tr id="row2547165663312"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p10547145613338"><a name="p10547145613338"></a><a name="p10547145613338"></a><span id="ph1454775619335"><a name="ph1454775619335"></a><a name="ph1454775619335"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1254775653310"><a name="p1254775653310"></a><a name="p1254775653310"></a>x</p>
-</td>
-</tr>
-<tr id="row854765633311"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p10547105615331"><a name="p10547105615331"></a><a name="p10547105615331"></a><span id="ph5547175693319"><a name="ph5547175693319"></a><a name="ph5547175693319"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p55478566339"><a name="p55478566339"></a><a name="p55478566339"></a>x</p>
-</td>
-</tr>
-<tr id="row155473562334"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p20547165633316"><a name="p20547165633316"></a><a name="p20547165633316"></a><span id="ph1954775683313"><a name="ph1954775683313"></a><a name="ph1954775683313"></a><term id="zh-cn_topic_0000001312391781_term354143892110"><a name="zh-cn_topic_0000001312391781_term354143892110"></a><a name="zh-cn_topic_0000001312391781_term354143892110"></a>Atlas 200I/500 A2 推理产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p4547185613334"><a name="p4547185613334"></a><a name="p4547185613334"></a>x</p>
-</td>
-</tr>
-<tr id="row17547356113314"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p7547756163313"><a name="p7547756163313"></a><a name="p7547756163313"></a><span id="ph11547155617335"><a name="ph11547155617335"></a><a name="ph11547155617335"></a><term id="zh-cn_topic_0000001312391781_term1964153212227"><a name="zh-cn_topic_0000001312391781_term1964153212227"></a><a name="zh-cn_topic_0000001312391781_term1964153212227"></a>Atlas 推理系列产品</term>AI Core</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1547205663315"><a name="p1547205663315"></a><a name="p1547205663315"></a>x</p>
-</td>
-</tr>
-<tr id="row155475563331"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1654718568332"><a name="p1654718568332"></a><a name="p1654718568332"></a><span id="ph854785610332"><a name="ph854785610332"></a><a name="ph854785610332"></a><term id="zh-cn_topic_0000001312391781_term1463893615224"><a name="zh-cn_topic_0000001312391781_term1463893615224"></a><a name="zh-cn_topic_0000001312391781_term1463893615224"></a>Atlas 推理系列产品</term>Vector Core</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1954712569338"><a name="p1954712569338"></a><a name="p1954712569338"></a>x</p>
-</td>
-</tr>
-<tr id="row1654705611336"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p65477563332"><a name="p65477563332"></a><a name="p65477563332"></a><span id="ph354755653312"><a name="ph354755653312"></a><a name="ph354755653312"></a><term id="zh-cn_topic_0000001312391781_term71949488213"><a name="zh-cn_topic_0000001312391781_term71949488213"></a><a name="zh-cn_topic_0000001312391781_term71949488213"></a>Atlas 训练系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1854714569333"><a name="p1854714569333"></a><a name="p1854714569333"></a>x</p>
-</td>
-</tr>
-</tbody>
-</table>
+| 产品 | 是否支持 |
+| --- | --- |
+| Ascend 950PR/Ascend 950DT | √ |
+| Atlas A3 训练系列产品/Atlas A3 推理系列产品 | x |
+| Atlas A2 训练系列产品/Atlas A2 推理系列产品 | x |
+| Atlas 200I/500 A2 推理产品 | x |
+| Atlas 推理系列产品AI Core | x |
+| Atlas 推理系列产品Vector Core | x |
+| Atlas 训练系列产品 | x |
 
-## 功能说明<a name="section19548756173310"></a>
+## 功能说明
 
 判断浮点数是否为无穷。
 
-## 函数原型<a name="section13548205617332"></a>
+## 函数原型
 
 ```
 inline bool __hisinf(half x)
 ```
 
-## 参数说明<a name="section20548135663313"></a>
+## 参数说明
 
 **表 1**  参数说明
 
-<a name="table1454895614332"></a>
-<table><thead align="left"><tr id="row165489569331"><th class="cellrowborder" valign="top" width="18.54%" id="mcps1.2.4.1.1"><p id="p1654895643314"><a name="p1654895643314"></a><a name="p1654895643314"></a>参数名</p>
-</th>
-<th class="cellrowborder" valign="top" width="10.05%" id="mcps1.2.4.1.2"><p id="p654865618337"><a name="p654865618337"></a><a name="p654865618337"></a>输入/输出</p>
-</th>
-<th class="cellrowborder" valign="top" width="71.41%" id="mcps1.2.4.1.3"><p id="p205487566333"><a name="p205487566333"></a><a name="p205487566333"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row17548175619336"><td class="cellrowborder" valign="top" width="18.54%" headers="mcps1.2.4.1.1 "><p id="p1054865603311"><a name="p1054865603311"></a><a name="p1054865603311"></a>x</p>
-</td>
-<td class="cellrowborder" valign="top" width="10.05%" headers="mcps1.2.4.1.2 "><p id="p16548115653318"><a name="p16548115653318"></a><a name="p16548115653318"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="71.41%" headers="mcps1.2.4.1.3 "><p id="p55481156103319"><a name="p55481156103319"></a><a name="p55481156103319"></a>源操作数。</p>
-</td>
-</tr>
-</tbody>
-</table>
+| 参数名 | 输入/输出 | 描述 |
+| --- | --- | --- |
+| x | 输入 | 源操作数。 |
 
-## 返回值说明<a name="section1654815561336"></a>
+## 返回值说明
 
 -   false：输入不是无穷。
 -   true：输入为inf、-inf。
 
-## 约束说明<a name="section165481356163312"></a>
+## 约束说明
 
 无
 
-## 需要包含的头文件<a name="section10354115115916"></a>
+## 需要包含的头文件
 
 使用half类型接口需要包含"simt\_api/asc\_fp16.h"头文件。
 
@@ -97,7 +47,7 @@ inline bool __hisinf(half x)
 #include "simt_api/asc_fp16.h"
 ```
 
-## 调用示例<a name="section14548125615335"></a>
+## 调用示例
 
 -   SIMT编程场景：
 
