@@ -230,7 +230,7 @@ def check_single_op_is_void(root_dir, skip_error=False):
                     print(f"[WARNING] op {sub_dir}: not any obj compile success")
                 else:
                     print(f"[ERROR] op {sub_dir}: not any obj compile success")
-                return False
+                    return False
     return True
 
 
