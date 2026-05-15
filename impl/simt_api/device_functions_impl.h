@@ -296,9 +296,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline long4 asc_ldcg(__gm__ long4* address)
 {
     longlong4 t;
     t.x = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address);
-    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 1);
-    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 2);
-    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 3);
+    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_Y_OFFSET);
+    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_Z_OFFSET);
+    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_W_OFFSET);
     return (long4&)t;
 }
 
@@ -306,9 +306,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline ulong4 asc_ldcg(__gm__ ulong4* address)
 {
     longlong4 t;
     t.x = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address);
-    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 1);
-    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 2);
-    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 3);
+    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_Y_OFFSET);
+    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_Z_OFFSET);
+    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_W_OFFSET);
     return (ulong4&)t;
 }
 
@@ -326,9 +326,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline longlong4 asc_ldcg(__gm__ longlong4* addre
 {
     longlong4 t;
     t.x = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address);
-    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 1);
-    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 2);
-    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 3);
+    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_Y_OFFSET);
+    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_Z_OFFSET);
+    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_W_OFFSET);
     return t;
 }
 
@@ -336,9 +336,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline ulonglong4 asc_ldcg(__gm__ ulonglong4* add
 {
     longlong4 t;
     t.x = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address);
-    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 1);
-    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 2);
-    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 3);
+    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_Y_OFFSET);
+    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_Z_OFFSET);
+    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_W_OFFSET);
     return (ulonglong4&)t;
 }
 
@@ -493,9 +493,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline long4 asc_ldca(__gm__ long4* address)
 {
     long4 t;
     t.x = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address);
-    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 1);
-    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 2);
-    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 3);
+    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_Y_OFFSET);
+    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_Z_OFFSET);
+    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_W_OFFSET);
     return t;
 }
 
@@ -503,9 +503,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline ulong4 asc_ldca(__gm__ ulong4* address)
 {
     ulong4 t;
     t.x = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address);
-    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 1);
-    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 2);
-    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 3);
+    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_Y_OFFSET);
+    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_Z_OFFSET);
+    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_W_OFFSET);
     return t;
 }
 
@@ -523,9 +523,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline longlong4 asc_ldca(__gm__ longlong4* addre
 {
     longlong4 t;
     t.x = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address);
-    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 1);
-    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 2);
-    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 3);
+    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_Y_OFFSET);
+    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_Z_OFFSET);
+    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_W_OFFSET);
     return t;
 }
 
@@ -533,9 +533,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline ulonglong4 asc_ldca(__gm__ ulonglong4* add
 {
     longlong4 t;
     t.x = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address);
-    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 1);
-    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 2);
-    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 3);
+    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_Y_OFFSET);
+    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_Z_OFFSET);
+    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_W_OFFSET);
     return (ulonglong4&)t;
 }
 
@@ -691,11 +691,11 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stcg(__gm__ long4* address, long4
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address,
                                                                                (int64_t)val.x);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 1,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_Y_OFFSET,
                                                                                (int64_t)val.y);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 2,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_Z_OFFSET,
                                                                                (int64_t)val.z);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 3,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_W_OFFSET,
                                                                                (int64_t)val.w);
 }
 
@@ -703,11 +703,11 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stcg(__gm__ ulong4* address, ulon
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address,
                                                                                (int64_t)val.x);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 1,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_Y_OFFSET,
                                                                                (int64_t)val.y);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 2,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_Z_OFFSET,
                                                                                (int64_t)val.z);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 3,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_W_OFFSET,
                                                                                (int64_t)val.w);
 }
 
@@ -725,11 +725,11 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stcg(__gm__ longlong4* address, l
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address,
                                                                                (int64_t)val.x);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 1,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_Y_OFFSET,
                                                                                (int64_t)val.y);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 2,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_Z_OFFSET,
                                                                                (int64_t)val.z);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 3,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_W_OFFSET,
                                                                                (int64_t)val.w);
 }
 
@@ -737,11 +737,11 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stcg(__gm__ ulonglong4* address, 
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address,
                                                                                (int64_t)val.x);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 1,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_Y_OFFSET,
                                                                                (int64_t)val.y);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 2,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_Z_OFFSET,
                                                                                (int64_t)val.z);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + 3,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((__gm__ int64_t*)address + ASCRT_W_OFFSET,
                                                                                (int64_t)val.w);
 }
 
@@ -883,17 +883,17 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ ulong2* address, ulon
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ long4* address, long4 val)
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address, (int64_t)val.x);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 1, (int64_t)val.y);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 2, (int64_t)val.z);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 3, (int64_t)val.w);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_Y_OFFSET, (int64_t)val.y);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_Z_OFFSET, (int64_t)val.z);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_W_OFFSET, (int64_t)val.w);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ ulong4* address, ulong4 val)
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ uint64_t*)address, (uint64_t)val.x);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ uint64_t*)address + 1, (uint64_t)val.y);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ uint64_t*)address + 2, (uint64_t)val.z);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ uint64_t*)address + 3, (uint64_t)val.w);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ uint64_t*)address + ASCRT_Y_OFFSET, (uint64_t)val.y);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ uint64_t*)address + ASCRT_Z_OFFSET, (uint64_t)val.z);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ uint64_t*)address + ASCRT_W_OFFSET, (uint64_t)val.w);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ longlong2* address, longlong2 val)
@@ -909,17 +909,17 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ ulonglong2* address, 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ longlong4* address, longlong4 val)
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address, (int64_t)val.x);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 1, (int64_t)val.y);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 2, (int64_t)val.z);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 3, (int64_t)val.w);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_Y_OFFSET, (int64_t)val.y);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_Z_OFFSET, (int64_t)val.z);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_W_OFFSET, (int64_t)val.w);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ ulonglong4* address, ulonglong4 val)
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address, (int64_t)val.x);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 1, (int64_t)val.y);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 2, (int64_t)val.z);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + 3, (int64_t)val.w);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_Y_OFFSET, (int64_t)val.y);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_Z_OFFSET, (int64_t)val.z);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((__gm__ int64_t*)address + ASCRT_W_OFFSET, (int64_t)val.w);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ signed char* address, signed char val)
@@ -1069,9 +1069,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline long4 asc_ldcg(long4* address)
 {
     longlong4 t;
     t.x = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address);
-    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 1);
-    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 2);
-    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 3);
+    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_Y_OFFSET);
+    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_Z_OFFSET);
+    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_W_OFFSET);
     return (long4&)t;
 }
 
@@ -1079,9 +1079,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline ulong4 asc_ldcg(ulong4* address)
 {
     longlong4 t;
     t.x = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address);
-    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 1);
-    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 2);
-    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 3);
+    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_Y_OFFSET);
+    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_Z_OFFSET);
+    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_W_OFFSET);
     return (ulong4&)t;
 }
 
@@ -1099,9 +1099,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline longlong4 asc_ldcg(longlong4* address)
 {
     longlong4 t;
     t.x = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address);
-    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 1);
-    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 2);
-    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 3);
+    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_Y_OFFSET);
+    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_Z_OFFSET);
+    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_W_OFFSET);
     return t;
 }
 
@@ -1109,9 +1109,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline ulonglong4 asc_ldcg(ulonglong4* address)
 {
     longlong4 t;
     t.x = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address);
-    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 1);
-    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 2);
-    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 3);
+    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_Y_OFFSET);
+    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_Z_OFFSET);
+    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_W_OFFSET);
     return (ulonglong4&)t;
 }
 
@@ -1266,9 +1266,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline long4 asc_ldca(long4* address)
 {
     long4 t;
     t.x = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address);
-    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 1);
-    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 2);
-    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 3);
+    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_Y_OFFSET);
+    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_Z_OFFSET);
+    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_W_OFFSET);
     return t;
 }
 
@@ -1276,9 +1276,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline ulong4 asc_ldca(ulong4* address)
 {
     ulong4 t;
     t.x = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address);
-    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 1);
-    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 2);
-    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 3);
+    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_Y_OFFSET);
+    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_Z_OFFSET);
+    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_W_OFFSET);
     return t;
 }
 
@@ -1296,9 +1296,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline longlong4 asc_ldca(longlong4* address)
 {
     longlong4 t;
     t.x = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address);
-    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 1);
-    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 2);
-    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 3);
+    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_Y_OFFSET);
+    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_Z_OFFSET);
+    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_W_OFFSET);
     return t;
 }
 
@@ -1306,9 +1306,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline ulonglong4 asc_ldca(ulonglong4* address)
 {
     longlong4 t;
     t.x = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address);
-    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 1);
-    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 2);
-    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 3);
+    t.y = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_Y_OFFSET);
+    t.z = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_Z_OFFSET);
+    t.w = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_W_OFFSET);
     return (ulonglong4&)t;
 }
 
@@ -1464,11 +1464,11 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stcg(long4* address, long4 val)
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address,
                                                                                (int64_t)val.x);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 1,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_Y_OFFSET,
                                                                                (int64_t)val.y);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 2,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_Z_OFFSET,
                                                                                (int64_t)val.z);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 3,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_W_OFFSET,
                                                                                (int64_t)val.w);
 }
 
@@ -1476,11 +1476,11 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stcg(ulong4* address, ulong4 val)
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address,
                                                                                (int64_t)val.x);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 1,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_Y_OFFSET,
                                                                                (int64_t)val.y);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 2,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_Z_OFFSET,
                                                                                (int64_t)val.z);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 3,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_W_OFFSET,
                                                                                (int64_t)val.w);
 }
 
@@ -1498,11 +1498,11 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stcg(longlong4* address, longlong
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address,
                                                                                (int64_t)val.x);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 1,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_Y_OFFSET,
                                                                                (int64_t)val.y);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 2,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_Z_OFFSET,
                                                                                (int64_t)val.z);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 3,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_W_OFFSET,
                                                                                (int64_t)val.w);
 }
 
@@ -1510,11 +1510,11 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stcg(ulonglong4* address, ulonglo
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address,
                                                                                (int64_t)val.x);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 1,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_Y_OFFSET,
                                                                                (int64_t)val.y);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 2,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_Z_OFFSET,
                                                                                (int64_t)val.z);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + 3,
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>((int64_t*)address + ASCRT_W_OFFSET,
                                                                                (int64_t)val.w);
 }
 
@@ -1656,17 +1656,17 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(ulong2* address, ulong2 val)
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(long4* address, long4 val)
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address, (int64_t)val.x);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 1, (int64_t)val.y);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 2, (int64_t)val.z);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 3, (int64_t)val.w);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_Y_OFFSET, (int64_t)val.y);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_Z_OFFSET, (int64_t)val.z);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_W_OFFSET, (int64_t)val.w);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(ulong4* address, ulong4 val)
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((uint64_t*)address, (uint64_t)val.x);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((uint64_t*)address + 1, (uint64_t)val.y);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((uint64_t*)address + 2, (uint64_t)val.z);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((uint64_t*)address + 3, (uint64_t)val.w);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((uint64_t*)address + ASCRT_Y_OFFSET, (uint64_t)val.y);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((uint64_t*)address + ASCRT_Z_OFFSET, (uint64_t)val.z);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((uint64_t*)address + ASCRT_W_OFFSET, (uint64_t)val.w);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(longlong2* address, longlong2 val)
@@ -1682,17 +1682,17 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(ulonglong2* address, ulonglo
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(longlong4* address, longlong4 val)
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address, (int64_t)val.x);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 1, (int64_t)val.y);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 2, (int64_t)val.z);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 3, (int64_t)val.w);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_Y_OFFSET, (int64_t)val.y);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_Z_OFFSET, (int64_t)val.z);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_W_OFFSET, (int64_t)val.w);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(ulonglong4* address, ulonglong4 val)
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address, (int64_t)val.x);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 1, (int64_t)val.y);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 2, (int64_t)val.z);
-    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + 3, (int64_t)val.w);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_Y_OFFSET, (int64_t)val.y);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_Z_OFFSET, (int64_t)val.z);
+    __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>((int64_t*)address + ASCRT_W_OFFSET, (int64_t)val.w);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(signed char* address, signed char val)
