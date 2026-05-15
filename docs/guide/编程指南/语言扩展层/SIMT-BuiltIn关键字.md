@@ -126,9 +126,24 @@
 
     内置全局变量，在核函数中可以直接使用，用于获取当前线程在线程块内部的索引。threadIdx.x，threadIdx.y，threadIdx.z分别表示当前线程在3个维度的索引，threadIdx.x的范围为\[0, blockDim.x\)，threadIdx.y的范围为\[0, blockDim.y\)，threadIdx.z的范围为\[0, blockDim.z\)。线程块内线程的索引与线程ID对应关系如下：
 
-    -   对于一维线程块，其线程ID为threadIdx.x。
-    -   对于二维线程块，其线程ID为（threadIdx.x + threadIdx.y \* blockDim.x）。
-    -   对于三维线程块，其线程ID为（threadIdx.x + threadIdx.y \* blockDim.x + threadIdx.z \* blockDim.x \* blockDim.y）。
+    -   对于一维线程块，其线程ID为blockIdx.x \* blockDim.x + threadIdx.x。
+
+        ![](../../figures/线程ID图示-1.png)
+
+    -   对于二维线程块，其线程ID为二维结构，其计算公式为：
+
+        ```
+        threadID.x = blockIdx.x * blockDim.x + threadIdx.x；
+        threadID.y = blockIdx.y * blockDim.y + threadIdx.y；
+        ```
+
+    -   对于三维线程块，其线程ID为三维结构，其计算公式为：
+
+        ```
+        threadID.x = blockIdx.x * blockDim.x + threadIdx.x；
+        threadID.y = blockIdx.y * blockDim.y + threadIdx.y；
+        threadID.z = blockIdx.z * blockDim.z + threadIdx.z；
+        ```
 
 当前提供了以下仅在Device上可用的int类型的内置变量：
 
