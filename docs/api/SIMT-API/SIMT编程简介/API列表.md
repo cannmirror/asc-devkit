@@ -3269,9 +3269,20 @@
 </tbody>
 </table>
 
+## 访存函数<a name="section1064618511375"></a>
+
+**表 24**  访存函数
+
+| 接口名 | 功能描述 |
+| --- | --- |
+| [asc_ldcg](../访存函数/asc_ldcg.md) | 从L2 Cache加载缓存的数据，如果缓存命中，则直接返回数据。若未命中，则从Global Memory地址预加载数据缓存至L2 Cache，并返回数据。 |
+| [asc_ldca](../访存函数/asc_ldca.md) | 首先从Data Cache加载缓存数据，若未命中，则尝试从L2 Cache加载。如果Data Cache和L2 Cache中均未找到所需数据，则从Global Memory中读取数据，然后将其缓存到L2 Cache和Data Cache中。 |
+| [asc_stcg](../访存函数/asc_stcg.md) | 将指定数据存储到Global Memory的地址address中，并缓存到L2 Cache，但不缓存至Data Cache。 |
+| [asc_stwt](../访存函数/asc_stwt.md) | 将指定数据存储到Global Memory的地址address中，并缓存至Data Cache和L2 Cache。 |
+
 ## 地址空间谓词函数<a name="section97001946144014"></a>
 
-**表 24**  地址空间谓词函数
+**表 25**  地址空间谓词函数
 
 <a name="table22661153112118"></a>
 <table><thead align="left"><tr id="row1926617533219"><th class="cellrowborder" valign="top" width="40%" id="mcps1.2.3.1.1"><p id="p226710533217"><a name="p226710533217"></a><a name="p226710533217"></a>接口名</p>
@@ -3300,7 +3311,7 @@
 
 ## 地址空间转换函数<a name="section11840265418"></a>
 
-**表 25**  地址空间转换函数
+**表 26**  地址空间转换函数
 
 <a name="table1342852412222"></a>
 <table><thead align="left"><tr id="row04281324162215"><th class="cellrowborder" valign="top" width="40%" id="mcps1.2.3.1.1"><p id="p1642952411229"><a name="p1642952411229"></a><a name="p1642952411229"></a>接口名</p>

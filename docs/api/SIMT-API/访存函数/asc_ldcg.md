@@ -180,7 +180,7 @@ L2 Cache中的缓存数据或输入的Global Memory地址上的数据。
 
 ## 约束说明
 
-SIMT编程场景当前不支持使用该接口。
+无
 
 ## 需要包含的头文件
 
@@ -199,6 +199,16 @@ SIMT编程场景当前不支持使用该接口。
 ```
 
 ## 调用示例
+
+-   SIMT编程场景：
+
+    ```
+    __global__ __launch_bounds__(1024) void kernel_asc_ldcg(float* dst, float* src)
+    {
+        int idx = threadIdx.x + blockIdx.x * blockDim.x;
+        dst[idx] = asc_ldcg(src + idx);
+    }
+    ```
 
 -   SIMD与SIMT混合编程场景：
 
