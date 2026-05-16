@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例展示了复合计算类接口的使用方法。复合计算接口将多个计算操作融合在一条指令中完成，相比分开调用多个基础接口，可有效减少指令数量、降低中间存储开销、提升计算效率。接口资料参考CastDequant/AddRelu/Axpy。
+本样例展示了复合计算类接口的使用方法。复合计算接口将多个计算操作融合在一条指令中完成，相比分开调用多个基础接口，可有效减少指令数量、降低中间存储开销、提升计算效率。接口资料参考AddRelu/Axpy。
 
 ## 支持的产品
 
@@ -37,14 +37,6 @@
   </tr>
   <tr>
     <td align="left">1</td>
-    <td align="left">CastDequant</td>
-    <td align="left">反量化与类型转换融合</td>
-    <td align="left">dst = (src * scale) + offset</td>
-    <td align="left">int16</td>
-    <td align="left">uint8</td>
-  </tr>
-  <tr>
-    <td align="left">2</td>
     <td align="left">AddRelu</td>
     <td align="left">向量加法与ReLU激活融合</td>
     <td align="left">dst = max(src0 + src1, 0)</td>
@@ -52,7 +44,7 @@
     <td align="left">half</td>
   </tr>
   <tr>
-    <td align="left">3</td>
+    <td align="left">2</td>
     <td align="left">Axpy</td>
     <td align="left">标量乘法与向量加法融合</td>
     <td align="left">dst = dst + src * scalar</td>
@@ -63,8 +55,14 @@
 
   输入输出shape均为[1, 512]，format为ND，核函数名为`element_wise_compound_compute_custom`。
 
-- 样例实现：  
-  输入数据从Global Memory搬运至LocalTensor，根据SCENARIO_NUM编译参数执行对应的复合计算，结果再搬出到Global Memory。实现流程包含CopyIn、Compute、CopyOut三个任务，使用内核调用符`<<<>>>`调用核函数。
+- 样例实现：
+  - Kernel实现
+    - 调用DataCopy基础API，将数据从GM（Global Memory）搬运到UB（Unified Buffer）
+    - 根据场景调用不同的复合计算接口：场景1调用AddRelu实现向量加法与ReLU激活融合、场景2调用Axpy实现标量乘法与向量加法融合
+    - 调用DataCopy基础API，将结果从UB（Unified Buffer）搬运至GM（Global Memory）
+
+- 调用实现  
+  使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行  
 
@@ -89,11 +87,11 @@
 - 样例执行
   ```bash
   SCENARIO_NUM=1
-  mkdir -p build && cd build
-  cmake .. -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=$SCENARIO_NUM;make -j;
-  python3 ../scripts/gen_data.py -scenario=$SCENARIO_NUM
-  ./demo
-  python3 ../scripts/verify_result.py -scenario=$SCENARIO_NUM output/output.bin output/golden.bin
+  mkdir -p build && cd build;      # 创建并进入build目录
+  cmake -DSCENARIO_NUM=$SCENARIO_NUM -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;    # 编译工程，默认npu模式
+  python3 ../scripts/gen_data.py -scenarioNum=$SCENARIO_NUM  # 生成测试输入数据
+  ./demo                        # 执行编译生成的可执行程序，执行样例
+  python3 ../scripts/verify_result.py output/output.bin output/golden.bin  # 验证输出结果是否正确
   ```
   执行结果如下，说明精度对比成功。
   ```bash
@@ -104,8 +102,8 @@
 
   示例如下：
   ```bash
-  cmake .. -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=$SCENARIO_NUM;make -j; # CPU调试模式
-  cmake .. -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=$SCENARIO_NUM;make -j; # NPU仿真模式
+  cmake -DSCENARIO_NUM=$SCENARIO_NUM -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # CPU调试模式
+  cmake -DSCENARIO_NUM=$SCENARIO_NUM -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # NPU仿真模式
   ```
 
   > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
@@ -115,4 +113,4 @@
   |------|--------|------|
   | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`cpu`、`sim` | 运行模式：NPU 运行、CPU调试、NPU仿真 |
   | `CMAKE_ASC_ARCHITECTURES` | `dav-2201`（默认）、`dav-3510` | NPU 架构：dav-2201 对应 Atlas A2 训练系列产品/Atlas A2 推理系列产品和Atlas A3 训练系列产品/Atlas A3 推理系列产品，dav-3510 对应 Ascend 950PR/Ascend 950DT |
-  | `SCENARIO_NUM` | `1`（默认）、`2`、`3` | 场景编号：1(CastDequant)、2(AddRelu)、3(Axpy) |
+  | `SCENARIO_NUM` | `1`（默认）、`2` | 场景编号：1(AddRelu)、2(Axpy) |

@@ -11,7 +11,6 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-set(CMAKE_ASC_RUN_MODE "npu" CACHE STRING "Run mode: npu, cpu, sim")
 set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "NPU architecture: dav-2201, dav-3510")
 
 find_package(ASC REQUIRED)
@@ -22,21 +21,19 @@ add_executable(demo
     cast.asc
 )
 
-target_link_libraries(demo PRIVATE
-    tiling_api
-    register
-    platform
-    m
-    dl
-)
+message(STATUS "[INFO] SCENARIO_NUM is ${SCENARIO_NUM}")
 
-# 场景参数
-# 0 - half to int4b_t
-# 1 - half to int32_t
-set(SCENARIO "0" CACHE STRING "Scene 0, 1")
+if(NOT DEFINED SCENARIO_NUM)
+    message(FATAL_ERROR "SCENARIO_NUM is not set. Please specify -DSCENARIO_NUM=0/1")
+endif()
+
+set(VALID_SCENARIOS 0 1)
+if(NOT SCENARIO_NUM IN_LIST VALID_SCENARIOS)
+    message(FATAL_ERROR "SCENARIO_NUM must be 0 or 1, got: ${SCENARIO_NUM}")
+endif()
 
 target_compile_definitions(demo PRIVATE
-    SCENARIO=${SCENARIO}
+    SCENARIO_NUM=${SCENARIO_NUM}
 )
 
 target_compile_options(demo PRIVATE

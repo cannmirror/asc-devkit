@@ -8,7 +8,7 @@
 
 |  目录名称                                                  |  功能描述                                             |
 | ----------------------------------------------------------- | --------------------------------------------------- |
-| [tpipe_reuse](./tpipe_reuse) | 本样例基于TPipe::Init和TPipe::Destory，实现TPipe重复申请与使用。|
+| [tpipe_reuse](./tpipe_reuse) | 本样例基于TPipe::Init和TPipe::Destroy，实现TPipe重复申请与使用。|
 | [get_tpipe_ptr](./get_tpipe_ptr) | 样例基于GetTPipePtr获取全局TPipe指针，核函数无需显式传入TPipe指针，即可进行TPipe相关的操作。 |
 | [tbufpool_management](./tbufpool_management) | 本样例基于TPipe::InitBufPool和TBufPool::InitBufPool接口实现TBufPool内存资源管理，展示TBufPool资源分配、内存划分、内存复用和自定义TBufPool等使用方式。|
 | [list_tensor_desc_input](./list_tensor_desc_input) | 本样例基于静态Tensor编程模型实现AddN样例，采用ListTensorDesc结构处理动态输入参数，结合静态内存分配与事件同步机制实现数据搬运与计算任务的协同调度。 |

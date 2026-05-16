@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例在数据填充场景下，基于Brcb API实现广播复制功能，将输入张量的数据复制填充到输出张量的多个datablock中。Brcb API支持每次从输入张量中取8个元素，分别填充到输出张量的8个datablock（每个datablock为32字节）中，每个元素对应一个datablock，实现高效的数据广播操作。
+本样例在数据填充场景下，基于Brcb API实现广播复制功能，将输入Tensor的数据复制填充到输出Tensor的多个DataBlock中。Brcb API支持每次从输入Tensor中取8个元素，分别填充到输出Tensor的8个DataBlock（每个DataBlock为32字节）中，每个元素对应一个DataBlock，实现高效的数据广播操作。
 
 ## 支持的产品
 
@@ -25,7 +25,7 @@
 ## 样例描述
 
 - 样例功能：  
-  本样例展示了使用Brcb API实现广播复制功能，每次从输入张量中取8个元素，分别填充到输出张量的8个datablock（每个datablock为32字节）中，每个元素对应一个datablock。Brcb API适用于需要将少量数据广播到大量位置的场景，例如常量填充、掩码生成等。通过repeatTime参数控制迭代次数，通过dstBlkStride和dstRepStride参数控制datablock间的地址步长。所用API详细介绍请参考[Brcb API文档](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta1/API/ascendcopapi/atlasascendc_api_07_0089.html)。
+  本样例展示了使用Brcb API实现广播复制功能，每次从输入Tensor中取8个元素，分别填充到输出Tensor的8个DataBlock（每个DataBlock为32字节）中，每个元素对应一个DataBlock。Brcb API适用于需要将少量数据广播到大量位置的场景，例如常量填充、掩码生成等。通过repeatTime参数控制迭代次数，通过dstBlkStride和dstRepStride参数控制DataBlock间的地址步长。所用API详细介绍请参考[Brcb API文档](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta1/API/ascendcopapi/atlasascendc_api_07_0089.html)。
 
 - 样例规格：  
   <table border="2" align="center">
@@ -44,14 +44,9 @@
   本样例中实现的是固定shape为输入x[1,16]，输出y[1,256]的Brcb广播复制样例。
 
   - Kernel实现  
-    计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用Brcb基础API接口完成广播复制，得到最终结果，再搬出到外部存储上。
-    
-    Brcb API参数说明：
-    - dst：目标张量，用于存储广播复制的结果
-    - src：源张量，要进行广播的数据
-    - repeatTime：指令迭代次数，本样例中为2，表示执行2次广播操作
-    - dstBlkStride：单次迭代内，不同datablock间地址步长，本样例中为1
-    - dstRepStride：相邻迭代间，相同datablock地址步长，本样例中为8
+    - 调用DataCopy基础API，将数据从GM（Global Memory）搬运到UB（Unified Buffer）
+    - 调用Brcb接口，执行广播复制操作，将输入Tensor的数据复制填充到输出Tensor的多个DataBlock中
+    - 调用DataCopy基础API，将数据从UB（Unified Buffer）搬运到GM（Global Memory）
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。

@@ -61,17 +61,14 @@ def verify_result(output_path, golden_path, dtype=np.float16):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-scenario', type=int, default=2, choices=[1, 2, 3],
-                        help='Scenario number: 1=CastDequant, 2=AddRelu, 3=Axpy')
+    parser.add_argument('-scenario', type=int, default=1, choices=[1, 2],
+                        help='Scenario number: 1=AddRelu, 2=Axpy')
     parser.add_argument('output', help='Output file path')
     parser.add_argument('golden', help='Golden file path')
     args = parser.parse_args()
 
-    # 根据场景选择数据类型
-    if args.scenario == 1:
-        dtype = np.uint8
-    else:
-        dtype = np.float16
+    # 场景1/2均为half类型
+    dtype = np.float16
 
     try:
         res = verify_result(args.output, args.golden, dtype)

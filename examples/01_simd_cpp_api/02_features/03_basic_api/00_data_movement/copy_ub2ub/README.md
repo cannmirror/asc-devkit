@@ -1,10 +1,8 @@
-# Copy接口多场景示例
+# Copy接口样例
 
 ## 概述
 
-本样例介绍Copy接口在多种场景下的使用方法。Copy接口用于在Unified Buffer内部进行数据搬运（VECIN、VECCALC、VECOUT之间），支持mask连续模式和counter模式。样例支持通过编译参数切换不同场景，便于开发者理解Copy接口的使用方法。
-
-数据搬运过程包括：Global Memory（GM）→VECIN队列、VECIN→VECOUT（使用Copy API）、VECOUT队列→Global Memory（GM）。其中Copy API通过mask参数控制参与计算的元素数量，通过DataBlock参数控制数据块的地址步长，实现对数据搬运过程的精细化管理。
+本样例基于Copy接口实现UB（Unified Buffer）内部数据搬运功能，适用于需要在VECIN、VECCALC、VECOUT等不同TPosition之间搬运数据的场景。样例支持通过编译参数切换不同场景，便于开发者理解Copy接口的使用方法。
 
 ## 支持的产品
 
@@ -21,7 +19,7 @@
 │   │   └── verify_result.py        // 验证输出数据和真值数据是否一致的验证脚本
 │   ├── CMakeLists.txt              // 编译工程文件
 │   ├── data_utils.h                // 数据读入写出函数
-│   └── copy.asc                  // Ascend C样例实现 & 调用样例
+│   └── copy.asc                    // Ascend C样例实现 & 调用样例
 ```
 
 ## 场景说明
@@ -30,34 +28,71 @@
 
 <table border="2">
 <caption>表1：场景配置对照表</caption>
-<tr><th>scenarioNum</th><th>输入Shape</th><th>输出Shape</th><th>搬运模式</th><th>说明</th></tr>
-<tr><td>1</td><td>[1, 512]</td><td>[1, 512]</td><td>mask连续模式</td><td>简单数据搬运，源和目的空间相同</td></tr>
-<tr><td>2</td><td>[18, 64]</td><td>[18, 8]</td><td>mask连续模式</td><td>从大空间搬运部分数据，源和目的空间不同</td></tr>
-<tr><td>3</td><td>[18, 64]</td><td>[18, 8]</td><td>counter模式</td><td>使用counter模式从大空间搬运部分数据</td></tr>
+<tr><th>scenarioNum</th><th>输入Shape</th><th>输出Shape</th><th>计算模式</th><th>说明</th></tr>
+<tr><td>1</td><td>[1, 512]</td><td>[1, 512]</td><td>tensor高维切分计算</td><td>源操作数和目的操作数空间共享</td></tr>
+<tr><td>2</td><td>[18, 64]</td><td>[18, 8]</td><td>tensor高维切分计算</td><td>源操作数和目的操作数空间不同</td></tr>
+<tr><td>3</td><td>[18, 64]</td><td>[18, 8]</td><td>Counter模式</td><td>源操作数和目的操作数空间不同</td></tr>
 </table>
 
-### 场景详细说明
+### 场景参数说明
 
-**场景1：mask连续模式，源和目的空间相同**
-- 输入输出：[1, 512]个int32元素
-- 参数配置：mask=64, repeatTime=8, stride={1, 1, 8, 8}
-- 说明：每次迭代处理64个元素，迭代8次，共搬运512个元素
+**tensor高维切分计算**：通过mask参数控制每次迭代内参与计算的元素个数，每个DataBlock大小为32B，包含8个元素（int32类型下）。通过repeatTime参数控制迭代次数，stride参数控制源操作数和目的操作数的地址步长。
 
-**场景2：mask连续模式，源和目的空间不同**
-- 输入：[18, 64]个int32元素（共1152个）
-- 输出：[18, 8]个int32元素（共144个）
-- 参数配置：mask=8, repeatTime=18, stride={1, 1, 1, 8}
-- 说明：从每行64个元素中搬运前8个，共18行；srcRepeatSize=1跳过64个元素（8个block），dstRepeatSize=8紧凑排列
+**Counter模式**：mask参数表示每次Repeat处理的元素个数，参与计算的元素个数为repeatTime * mask。通过SetMaskCount设置计算模式，通过SetVectorMask设置mask。
 
-**场景3：counter模式，源和目的空间不同**
-- 输入：[18, 64]个int32元素（共1152个）
-- 输出：[18, 8]个int32元素（共144个）
-- 参数配置：使用SetVectorMask设置counter模式，mask=144, repeatTime=1, stride={1, 8, 8, 8}
-- 说明：counter模式下mask代表每次repeat处理的元素个数，每次迭代处理144个元素（全部行），迭代1次
+**stride参数**：{dstStride, srcStride, dstRepeatSize, srcRepeatSize}控制源操作数和目的操作数在同一迭代内和相邻迭代间的地址步长。
+
+- **场景1**：tensor高维切分计算，mask=64，repeatTime=8，stride={1, 1, 8, 8}。源操作数和目的操作数空间共享，每次迭代处理64个元素，迭代8次，共搬运512个元素。
+
+- **场景2**：tensor高维切分计算，mask=8，repeatTime=18，stride={1, 1, 1, 8}。从[18, 64]搬运[18, 8]，srcRepeatSize=8表示源操作数每次Repeat跳过64个元素（跳到下一行），dstRepeatSize=1表示目的操作数紧凑排列，共搬运144个元素。
+
+- **场景3**：Counter模式，mask=144，repeatTime=1，stride={1, 8, 8, 8}。从[18, 64]搬运[18, 8]，srcStride=8表示源操作数每个DataBlock地址步长为8（取每一行的前8个元素），共搬运144个元素。
+
+## 样例描述
+
+- 样例规格
+  <table border="2">
+  <caption>表2：样例规格</caption>
+  <tr>
+    <td align="center">类别</td>
+    <td align="center">name</td>
+    <td align="center">shape</td>
+    <td align="center">data type</td>
+    <td align="center">format</td>
+  </tr>
+  <tr>
+    <td align="center">样例输入</td>
+    <td align="center">x</td>
+    <td align="center">[1, 512]/[18, 64]</td>
+    <td align="center">int32</td>
+    <td align="center">ND</td>
+  </tr>
+  <tr>
+    <td align="center">样例输出</td>
+    <td align="center">z</td>
+    <td align="center">[1, 512]/[18, 8]</td>
+    <td align="center">int32</td>
+    <td align="center">ND</td>
+  </tr>
+  <tr>
+    <td align="center">核函数名</td>
+    <td colspan="4" align="center">copy_custom</td>
+  </tr>
+  </table>
+
+- 样例实现
+  - Kernel实现
+    - 调用DataCopy基础API，将数据从GM（Global Memory）搬运到UB（Unified Buffer）
+    - 调用Copy接口，将数据从UB（Unified Buffer）搬运到UB（Unified Buffer），支持tensor高维切分计算和Counter模式两种计算模式
+    - 调用DataCopy基础API，将数据从UB（Unified Buffer）搬运到GM（Global Memory）
+
+- 调用实现  
+  使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行
 
 在本样例根目录下执行如下步骤，编译并执行样例。
+
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包

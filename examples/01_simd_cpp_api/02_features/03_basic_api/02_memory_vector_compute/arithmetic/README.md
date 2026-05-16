@@ -48,7 +48,9 @@
 - 样例实现：  
   本样例中实现的是固定shape为[4, 128]的LeakyRelu样例。
   - Kernel实现  
-    计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用计算接口计算LeakyRelu操作后的值，得到最终结果，再搬出到外部存储上。  
+    - 调用DataCopy基础API，将数据从GM（Global Memory）搬运到UB（Unified Buffer）
+    - 调用LeakyRelu接口，对输入Tensor执行Leaky Relu操作
+    - 调用DataCopy基础API，将计算结果从UB（Unified Buffer）搬运至GM（Global Memory）
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。

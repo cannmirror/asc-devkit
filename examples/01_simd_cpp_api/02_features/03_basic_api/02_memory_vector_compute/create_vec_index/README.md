@@ -44,15 +44,14 @@
   本样例中实现的是固定shape为输出y[1,128]的CreateVecIndex样例，生成从0开始的128个连续整数索引（0, 1, 2, ..., 127）。
   
   CreateVecIndex API参数说明：
-  - dst：目标张量，用于存储生成的索引向量
+  - dst：目的操作数，用于存储生成的索引向量
   - startIndex：索引的起始值，本样例中为0
-  - count：参与计算的元素个数，本样例中为128（repeatTime * 256 / sizeof(uint16_t)）
-  - repeatTime：指令迭代次数，控制生成的数据量
-  - dstBlkStride：单次迭代内，不同datablock间地址步长
-  - dstRepStride：相邻迭代间，相同datablock地址步长
+  - count：参与计算的元素个数，本样例中为128
 
   - Kernel实现  
-    计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，首先分配输出缓冲区，然后使用CreateVecIndex基础API接口生成索引向量，得到最终结果，再搬出到外部存储上。
+    - 调用Duplicate接口，初始化UB（Unified Buffer）缓冲区为0
+    - 调用CreateVecIndex接口，生成从0开始的连续索引向量
+    - 调用DataCopy基础API，将结果从UB（Unified Buffer）搬运到GM（Global Memory）
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。

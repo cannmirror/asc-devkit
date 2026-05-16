@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例在数据填充场景下，基于Duplicate API实现将标量值或立即数复制多次并填充到向量中。Duplicate API支持将单个标量值或立即数复制指定次数，填充到目标张量的所有元素中，常用于初始化张量、常量填充、掩码生成等场景。
+本样例在数据填充场景下，基于Duplicate API实现将标量值或立即数复制多次并填充到向量中。Duplicate API支持将单个标量值或立即数复制指定次数，填充到目的Tensor的所有元素中，常用于初始化Tensor、常量填充、掩码生成等场景。
 
 ## 支持的产品
 
@@ -25,7 +25,7 @@
 ## 样例描述
 
 - 样例功能：  
-  本样例展示了使用Duplicate API实现数据填充功能，将标量值或立即数复制多次并填充到向量中。Duplicate API适用于需要将常量值填充到张量的场景，例如张量初始化、常量填充、掩码生成等。通过value参数指定要填充的标量值，通过count参数指定填充的元素个数。所用API详细介绍请参考[Duplicate API文档](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta1/API/ascendcopapi/atlasascendc_api_07_0088.html)。
+  本样例展示了使用Duplicate API实现数据填充功能，将标量值或立即数复制多次并填充到向量中。Duplicate API适用于需要将常量值填充到Tensor的场景，例如Tensor初始化、常量填充、掩码生成等。通过value参数指定要填充的标量值，通过count参数指定填充的元素个数。所用API详细介绍请参考[Duplicate API文档](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta1/API/ascendcopapi/atlasascendc_api_07_0088.html)。
 
 - 样例规格：  
   <table border="2" align="center">
@@ -44,12 +44,14 @@
   本样例中实现的是固定shape为输入x[1,256]，输出y[1,256]的Duplicate数据填充样例。
   
   Duplicate API参数说明：
-  - dst：目标张量，用于存储填充结果
+  - dst：目的操作数，用于存储填充结果
   - value：要填充的标量值或立即数，本样例中为half类型的常量值18.0
   - count：填充的元素个数，本样例中为256
 
   - Kernel实现  
-    计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用Duplicate基础API接口将常量值18.0填充到输出张量的256个元素中，再搬出到外部存储上。
+    - 调用DataCopy基础API，将数据从GM（Global Memory）搬运到UB（Unified Buffer）
+    - 调用Duplicate接口，将标量值填充到输出Tensor的所有元素中
+    - 调用DataCopy基础API，将结果从UB（Unified Buffer）搬运至GM（Global Memory）
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。

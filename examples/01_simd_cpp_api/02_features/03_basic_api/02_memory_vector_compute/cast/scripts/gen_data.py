@@ -63,6 +63,6 @@ def gen_golden_data_simple_int4b():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--scenario', type=int, choices=(0, 1), help='选择场景')
+    parser.add_argument('-scenarioNum', type=int, choices=(0, 1), help='选择场景')
     args = parser.parse_args()
-    gen_golden_data_simple() if args.scenario else gen_golden_data_simple_int4b()
+    gen_golden_data_simple() if args.scenarioNum else gen_golden_data_simple_int4b()

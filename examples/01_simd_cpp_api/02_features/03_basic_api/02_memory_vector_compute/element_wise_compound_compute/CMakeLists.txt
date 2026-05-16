@@ -11,23 +11,29 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-set(CMAKE_ASC_RUN_MODE "npu" CACHE STRING "Run mode: npu, cpu, sim")
 set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "NPU architecture: dav-2201, dav-3510")
 
 find_package(ASC REQUIRED)
 
 project(kernel_samples LANGUAGES ASC CXX)
 
-# 场景参数（通过命令行传入）
-# 场景1：CastDequant - 反量化与类型转换融合
-# 场景2：AddRelu - 向量加法与ReLU激活融合
-# 场景3：Axpy - 标量乘法与向量加法融合
-set(SCENARIO_NUM "1" CACHE STRING "Scene number (1: CastDequant, 2: AddRelu, 3: Axpy)")
+message(STATUS "[INFO] SCENARIO_NUM is ${SCENARIO_NUM}")
 
-add_definitions(-DSCENARIO_NUM=${SCENARIO_NUM})
+if(NOT DEFINED SCENARIO_NUM)
+    message(FATAL_ERROR "SCENARIO_NUM is not set. Please specify -DSCENARIO_NUM=1/2")
+endif()
+
+set(VALID_SCENARIOS 1 2)
+if(NOT SCENARIO_NUM IN_LIST VALID_SCENARIOS)
+    message(FATAL_ERROR "SCENARIO_NUM must be 1 or 2, got: ${SCENARIO_NUM}")
+endif()
 
 add_executable(demo
     element_wise_compound_compute.asc
+)
+
+target_compile_definitions(demo PRIVATE
+    SCENARIO_NUM=${SCENARIO_NUM}
 )
 
 target_compile_options(demo PRIVATE
