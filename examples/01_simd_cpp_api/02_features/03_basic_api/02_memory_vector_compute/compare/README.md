@@ -66,7 +66,7 @@
     ```
 - 参数：src1Scalar=src1Local.GetValue(0), cmpMode=AscendC::CMPMODE::LT，srcDataSize=256
 
-**场景4：Compares（灵活标量位置）——仅Ascend 950PR/Ascend 950DT产品支持**
+**场景4：Compares（灵活标量位置）----此场景仅在 Ascend 950PR/Ascend 950DT产品支持**
 - 说明：逐元素比较`src0Local`（tensor）中的元素和`src1Scalar`（标量）的大小，其中标量可以支持在前和在后两种场景
 - 输入：src0Local=[1, 256], src1Local=[1, 16]  其中`src1Scalar`通过src1Local[idx]方法从中获取一个元素作为标量进行比较
 - 输入数据类型：float

@@ -58,7 +58,7 @@
     AscendC::Select(dst, selMask, src0, src1, cmpMode, count);
     ```
 
-**场景4：Select（灵活标量位置）——仅Ascend 950PR/Ascend 950DT产品支持**
+**场景4：Select（灵活标量位置）----此场景仅在 Ascend 950PR/Ascend 950DT产品支持**
 
   - 说明：与场景2功能类似，只是标量位置更灵活。
   - 实现：
