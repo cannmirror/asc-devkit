@@ -114,7 +114,7 @@ if(NOT "${DPRODUCT_SIDE}" STREQUAL "device")
   install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/utils_headers.cmake COMPONENT asc-devkit)
 endif()  
 
-if (BUILD_OPEN_PROJECT AND ENABLE_BUILD_DEVICE)
+if (BUILD_OPEN_PROJECT)
     add_subdirectory(detail/hccl/cc)
 endif()
 
