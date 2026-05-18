@@ -77,7 +77,7 @@ TEST_F(Tensor_Api_Cube_Copy_3510, CopyGM2L1RoutesToCubeArchCopy)
     __cbuf__ float dst[m * n] = {0};
 
     auto gmTensor = MakeTensorAt<Location::GM>(src, MakeFrameLayout<NDExtLayoutPtn, LayoutTraitDefault<float>>(m, n));
-    auto l1Tensor = MakeTensorAt<Location::L1>(dst, MakeFrameLayout<DNExtLayoutPtn, LayoutTraitDefault<float>>(m, n));
+    auto l1Tensor = MakeTensorAt<Location::L1>(dst, MakeFrameLayout<NDExtLayoutPtn, LayoutTraitDefault<float>>(m, n));
 
     RunCopyCallPaths<CopyGM2L1, CopyGM2L1TraitDefault>(l1Tensor, gmTensor);
     RunCopyWithPaths<CopyGM2L1, CopyGM2L1TraitDefault>(l1Tensor, gmTensor);

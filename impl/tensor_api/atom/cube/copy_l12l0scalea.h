@@ -10,34 +10,34 @@
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #warning                                                                                                               \
-    "impl/tensor_api/atom/cube/copy_l12l0a.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+    "impl/tensor_api/atom/cube/copy_l12l0scalea.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
 
 /*!
- * \file copy_l12l0a.h
+ * \file copy_l12l0scalea.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ATOM_CUBE_COPY_L12L0A_H
-#define IMPL_TENSOR_API_ATOM_CUBE_COPY_L12L0A_H
+#ifndef IMPL_TENSOR_API_ATOM_CUBE_COPY_L12L0SCALEA_H
+#define IMPL_TENSOR_API_ATOM_CUBE_COPY_L12L0SCALEA_H
 
-#include "impl/tensor_api/arch/cube/l1_to_l0a/copy.h"
+#include "impl/tensor_api/arch/cube/l1_to_l0scalea/copy.h"
 #include "impl/tensor_api/atom/copy_traits_impl.h"
 
 namespace AscendC {
 namespace Te {
 
 template <typename Traits>
-struct CopyTraits<CopyL12L0A, Traits> : public CopyTraits<CopyL12L0A, Traits, CopyL12L0A, Traits> {};
+struct CopyTraits<CopyL12L0ScaleA, Traits> : public CopyTraits<CopyL12L0ScaleA, Traits, CopyL12L0ScaleA, Traits> {};
 
 template <>
-struct CopyTraits<CopyL12L0A> : public CopyTraits<CopyL12L0A, CopyL12L0ATraitDefault> {};
+struct CopyTraits<CopyL12L0ScaleA> : public CopyTraits<CopyL12L0ScaleA, CopyL12L0ScaleATraitDefault> {};
 
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ATOM_CUBE_COPY_L12L0A_H
+#endif // IMPL_TENSOR_API_ATOM_CUBE_COPY_L12L0SCALEA_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

@@ -42,7 +42,10 @@ namespace Te {
 class CopyGM2L1Ignore {
 public:
     template <const CopyGM2L1Trait& trait, typename... Args>
-    __aicore__ inline static void Run(const Args&... args){}
+    __aicore__ inline static void Run(const Args&... args)
+    {
+        static_assert(Std::is_same_v<Args..., void>, "CopyGM2L1Ignore should not be called");
+    }
 };
 
 template <typename dstPos, typename srcPos, uint32_t Version, typename DstLayoutPtn, typename SrcLayoutPtn>

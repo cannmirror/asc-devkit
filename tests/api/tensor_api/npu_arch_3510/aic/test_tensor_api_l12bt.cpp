@@ -71,7 +71,7 @@ TEST_F(Tensor_Api_Cube_Copy_3510, CopyL12BTRoutesToCubeArchCopy)
     __biasbuf__ float dst[m * n] = {0};
 
     auto l1Tensor = MakeTensorAt<Location::L1>(src, MakeFrameLayout<NDExtLayoutPtn, LayoutTraitDefault<float>>(m, n));
-    auto btTensor = MakeTensorAt<Location::L1>(dst, MakeFrameLayout<NDExtLayoutPtn, LayoutTraitDefault<float>>(m, n));
+    auto btTensor = MakeTensorAt<Location::BIAS>(dst, MakeFrameLayout<NDExtLayoutPtn, LayoutTraitDefault<float>>(m, n));
 
     RunCopyCallPaths<CopyL12BT, CopyL12BTTraitDefault>(btTensor, l1Tensor);
     RunCopyWithPaths<CopyL12BT, CopyL12BTTraitDefault>(btTensor, l1Tensor);
@@ -89,7 +89,7 @@ TEST_F(Tensor_Api_Cube_Copy_3510, CopyL12BTNDLayoutRoutesToCubeArchCopy)
     __biasbuf__ float dst[m * n] = {0};
 
     auto l1Tensor = MakeTensorAt<Location::L1>(src, MakeFrameLayout<NDLayoutPtn, LayoutTraitDefault<float>>(m, n));
-    auto btTensor = MakeTensorAt<Location::L1>(dst, MakeFrameLayout<NDLayoutPtn, LayoutTraitDefault<float>>(m, n));
+    auto btTensor = MakeTensorAt<Location::BIAS>(dst, MakeFrameLayout<NDLayoutPtn, LayoutTraitDefault<float>>(m, n));
 
     RunCopyCallPaths<CopyL12BT, CopyL12BTTraitDefault>(btTensor, l1Tensor);
     RunCopyWithPaths<CopyL12BT, CopyL12BTTraitDefault>(btTensor, l1Tensor);
