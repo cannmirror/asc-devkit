@@ -101,7 +101,7 @@ $$
   <tr><td align="center">x</td><td align="center">[8, 2048]</td><td align="center">float</td><td align="center">ND</td></tr>
   <tr><td align="center">y</td><td align="center">[8, 2048]</td><td align="center">float</td><td align="center">ND</td></tr>
   <tr><td rowspan="1" align="center">样例输出</td><td align="center">z</td><td align="center">[8, 2048]</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_template_custom</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_custom_template</td></tr>
   <tr><td rowspan="6" align="center">模板参数</td><td colspan="4" align="center">template&lt;typename D_T_X, typename D_T_Y, typename D_T_Z, int TILE_NUM, int IS_SPLIT&gt;</td>
       <tr><td>D_T_X</td><td colspan="1">typename</td><td colspan="2">数据类型(half，float)</td></tr>
       <tr><td>D_T_Y</td><td colspan="1">typename</td><td colspan="2">数据类型(half，float)</td></tr>
