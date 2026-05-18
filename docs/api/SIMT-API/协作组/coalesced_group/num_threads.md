@@ -2,7 +2,7 @@
 
 ## 功能说明
 
-获取协作组内线程总数。
+获取`coalesced_group`组内线程总数。
 
 ## 函数原型
 
@@ -16,7 +16,7 @@ unsigned long long num_threads() const
 
 ## 返回值说明
 
-协作组内线程总数。
+`coalesced_group`组内线程总数。
 
 ## 约束说明
 
@@ -24,7 +24,7 @@ unsigned long long num_threads() const
 
 ## 调用示例
 
-示例代码中偶数id的线程使用`coalesced_group`进行协同，奇数线程独立执行业务。
+示例代码中偶数id的线程使用`coalesced_group`进行协同，奇数线程独立执行业务，一个Warp中共有16个偶数id的线程。
 
 - SIMT编程场景：
 
@@ -35,7 +35,7 @@ unsigned long long num_threads() const
         ...
         if (threadIdx.x % 2 == 0) {
             coalesced_group active = coalesced_threads();
-            unsigned long long thread_num = active.num_threads(); // 返回16，一个warp中共有16个偶数id的线程
+            unsigned long long thread_num = active.num_threads(); // 返回16
         }
         ...
     }
@@ -50,7 +50,7 @@ unsigned long long num_threads() const
         ...
         if (threadIdx.x % 2 == 0) {
             coalesced_group active = coalesced_threads();
-            unsigned long long thread_num = active.num_threads(); // 返回16，一个warp中共有16个偶数id的线程
+            unsigned long long thread_num = active.num_threads(); // 返回16
         }
         ...
     }

@@ -2,9 +2,7 @@
 
 ## 功能说明
 
-判断协作组内每个活跃线程的输入是否为0。
-
-组内活跃线程执行本接口时，对组内所有活跃线程的输入操作数`predicate`进行判断，返回一个32bit的无符号整数，若线程输入的`predicate`不为0，则返回值中与线程rank对应的bit位为1，否则为0。组内所有活跃线程返回相同的结果。
+判断`thread_block_tile`组内每个活跃线程的输入是否为0。
 
 ## 函数原型
 
@@ -22,7 +20,7 @@ unsigned int ballot(int predicate) const
 
 ## 返回值说明
 
-32bit的无符号整数：若组内活跃线程输入的`predicate`不为0，则返回值中与线程rank对应的bit位为1，否则为0。
+32bit的无符号整数：若`thread_block_tile`组内活跃线程输入的`predicate`不为0，则返回值中与线程rank对应的bit位为1，否则为0。
 
 ## 约束说明
 

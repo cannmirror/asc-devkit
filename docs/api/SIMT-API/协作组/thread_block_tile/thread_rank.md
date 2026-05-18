@@ -2,7 +2,7 @@
 
 ## 功能说明
 
-获取当前线程在协作组内的排名。
+获取当前线程在所属的`thread_block_tile`组内的排名，排名从0开始。
 
 ## 函数原型
 
@@ -16,7 +16,7 @@ unsigned long long thread_rank() const
 
 ## 返回值说明
 
-当前线程在协作组内的排名。
+当前线程在所属的`thread_block_tile`组内的排名。
 
 ## 约束说明
 
@@ -24,7 +24,7 @@ unsigned long long thread_rank() const
 
 ## 调用示例
 
-以4个线程为一组划分线程块，获取协作组内当前线程在组内的排名。
+示例代码中以4个线程为一组划分线程块，各线程在所属的`thread_block_tile`组内的排名如下图所示。
 
 **图 1**   thread_rank接口返回值示意图  
 ![](../../../figures/thread_block_tile_rank.png "thread_block_tile_rank")

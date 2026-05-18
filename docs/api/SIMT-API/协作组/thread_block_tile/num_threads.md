@@ -2,7 +2,7 @@
 
 ## 功能说明
 
-获取`thread_block_tile`组内线程的总数。
+获取当前线程所属的`thread_block_tile`组内的线程总数。
 
 ## 函数原型
 
@@ -16,7 +16,7 @@ unsigned long long num_threads() const
 
 ## 返回值说明
 
-组内线程的总数。
+当前线程所属的`thread_block_tile`组内的线程总数。
 
 ## 约束说明
 

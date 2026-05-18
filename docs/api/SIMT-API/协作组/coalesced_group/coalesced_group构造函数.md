@@ -2,7 +2,7 @@
 
 ## 函数功能
 
-`coalesced_group`不提供默认的构造函数，用户使用`coalesced_threads`函数创建对象。
+`coalesced_group`不提供默认的构造函数，用户使用`coalesced_threads`函数创建`coalesced_group`对象。
 
 ## 函数原型
 
@@ -16,7 +16,7 @@ coalesced_group coalesced_threads()
 
 ## 返回值说明
 
-返回一个`coalesced_group`对象。
+返回一个`coalesced_group`对象，该对象包含当前Warp内所有活跃的线程。
 
 ## 约束说明
 
@@ -32,7 +32,7 @@ coalesced_group coalesced_threads()
     {
         ...
         if (threadIdx.x % 2 == 0) {
-            coalesced_group active = coalesced_threads(); // 该coalesced_group中包含一个warp内所有线程id为偶数的线程
+            coalesced_group active = coalesced_threads(); // 该coalesced_group中包含当前warp内所有线程id为偶数的线程
         }
         ...
     }
@@ -46,7 +46,7 @@ coalesced_group coalesced_threads()
     {
         ...
         if (threadIdx.x % 2 == 0) {
-            coalesced_group active = coalesced_threads(); // 该coalesced_group中包含一个warp内所有线程id为偶数的线程
+            coalesced_group active = coalesced_threads(); // 该coalesced_group中包含当前warp内所有线程id为偶数的线程
         }
         ...
     }

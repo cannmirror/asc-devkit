@@ -2,7 +2,7 @@
 
 ## 功能说明
 
-获取当前线程所在的协作组其父组被划分时创建的子组的数量。
+获取当前线程所在的协作组其直接父组被划分时创建的子组的数量。
 
 ## 函数原型
 
@@ -16,8 +16,9 @@ unsigned long long meta_group_size() const
 
 ## 返回值说明
 
-父组被划分时创建的组的数量。
-- 如果该组是通过`coalesced_threads`创建的，则meta_group_size()的值将为1。
+直接父组被划分时创建的子组的数量。
+
+- 如果该组是通过`coalesced_threads`创建的，则`meta_group_size()`的返回值将为1。
 
 ## 约束说明
 

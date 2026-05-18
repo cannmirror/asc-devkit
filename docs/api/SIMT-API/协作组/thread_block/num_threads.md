@@ -2,7 +2,7 @@
 
 ## 函数功能
 
-获取`thread_block`组内线程总数。
+获取当前线程所属线程块内的线程总数。
 
 ## 函数原型
 
@@ -16,7 +16,7 @@ static unsigned int num_threads()
 
 ## 返回值说明
 
-组内线程总数，即blockDim.x * blockDim.y * blockDim.z。
+当前线程所属线程块内的线程总数，即blockDim.x * blockDim.y * blockDim.z。
 
 ## 约束说明
 

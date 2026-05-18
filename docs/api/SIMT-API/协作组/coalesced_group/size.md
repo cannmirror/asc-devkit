@@ -2,7 +2,7 @@
 
 ## 功能说明
 
-获取协作组内线程总数，与接口`num_threads`功能相同。
+获取`coalesced_group`组内线程总数，与接口[num_threads](num_threads.md)功能相同。
 
 ## 函数原型
 
@@ -16,7 +16,7 @@ unsigned long long size() const
 
 ## 返回值说明
 
-协作组内线程总数。
+`coalesced_group`组内线程总数。
 
 ## 约束说明
 
