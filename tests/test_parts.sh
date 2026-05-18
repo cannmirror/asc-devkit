@@ -119,4 +119,7 @@ arm_test_targets=(
     ascendc_ut_elf_tool
     ascendc_ut_pack_kernel
     ascendc_ut_simt_api_ascend950pr_9599
+    ascendc_run_all_host_header_checks
+    ascendc_run_all_host_header_checks_npu
+    ascendc_run_all_host_header_checks_npu_single
 )

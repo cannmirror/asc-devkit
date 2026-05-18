@@ -120,7 +120,7 @@ function(create_check_targets MODE_SUFFIX MODE_DEFINES)
     endif()
     add_custom_target(${RUN_ALL_TARGET}
         DEPENDS ${${TARGET_VAR}}
-        COMMENT "Running all header checks (${COMPILER_TYPE} ${MODE_DESC} mode)..."
+        COMMENT "Running all host header checks (${COMPILER_TYPE} ${MODE_DESC} mode)..."
     )
 endfunction()
 
