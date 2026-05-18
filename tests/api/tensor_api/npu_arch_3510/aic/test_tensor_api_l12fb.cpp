@@ -79,6 +79,24 @@ TEST_F(Tensor_Api_Cube_Copy_3510, CopyL12FBRoutesToCubeArchCopy)
     EXPECT_EQ(dst[0], 0);
 }
 
+TEST_F(Tensor_Api_Cube_Copy_3510, CopyL12FBNDLayoutRoutesToCubeArchCopy)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t m = 32;
+    constexpr uint32_t n = 32;
+    __cbuf__ float src[m * n] = {0};
+    __fbuf__ float dst[m * n] = {0};
+
+    auto l1Tensor = MakeTensorAt<Location::L1>(src, MakeFrameLayout<NDLayoutPtn, LayoutTraitDefault<float>>(m, n));
+    auto fbTensor = MakeTensorAt<Location::L1>(dst, MakeFrameLayout<NDLayoutPtn, LayoutTraitDefault<float>>(m, n));
+
+    RunCopyCallPaths<CopyL12FB, CopyL12FBTraitDefault>(fbTensor, l1Tensor);
+    RunCopyWithPaths<CopyL12FB, CopyL12FBTraitDefault>(fbTensor, l1Tensor);
+
+    EXPECT_EQ(dst[0], 0);
+}
+
 enum class CubeLayout {
     RowMajor,
     NZ,

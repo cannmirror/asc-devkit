@@ -96,6 +96,24 @@ TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2UBNZ2ND)
     EXPECT_EQ(dst[0], 0);
 }
 
+TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2UBNZ2NDLayout)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t m = 32;
+    constexpr uint32_t n = 32;
+    __cc__ float src[m * n] = {0};
+    __ubuf__ float dst[m * n] = {0};
+
+    auto l0cTensor = MakeTensorAt<Location::L0C>(src, MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<float, 16>>(m, n));
+    auto ubTensor = MakeTensorAt<Location::UB>(dst, MakeFrameLayout<NDLayoutPtn, LayoutTraitDefault<float>>(m, n));
+
+    RunCopyCallPaths<CopyL0C2UB, CopyL0C2UBTraitDefault>(ubTensor, l0cTensor);
+    RunCopyWithParamPaths<CopyL0C2UB, CopyL0C2UBTraitDefault>(ubTensor, l0cTensor, FixpipeParams{});
+
+    EXPECT_EQ(dst[0], 0);
+}
+
 
 TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2UBNZ2DN)
 {
@@ -108,6 +126,24 @@ TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2UBNZ2DN)
 
     auto l0cTensor = MakeTensorAt<Location::L0C>(src, MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<float, 16>>(m, n));
     auto ubTensor = MakeTensorAt<Location::UB>(dst, MakeFrameLayout<DNExtLayoutPtn, LayoutTraitDefault<float>>(m, n));
+
+    RunCopyCallPaths<CopyL0C2UB, CopyL0C2UBTraitDefault>(ubTensor, l0cTensor);
+    RunCopyWithParamPaths<CopyL0C2UB, CopyL0C2UBTraitDefault>(ubTensor, l0cTensor, FixpipeParams{});
+
+    EXPECT_EQ(dst[0], 0);
+}
+
+TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2UBNZ2DNLayout)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t m = 32;
+    constexpr uint32_t n = 32;
+    __cc__ float src[m * n] = {0};
+    __ubuf__ float dst[m * n] = {0};
+
+    auto l0cTensor = MakeTensorAt<Location::L0C>(src, MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<float, 16>>(m, n));
+    auto ubTensor = MakeTensorAt<Location::UB>(dst, MakeFrameLayout<DNLayoutPtn, LayoutTraitDefault<float>>(m, n));
 
     RunCopyCallPaths<CopyL0C2UB, CopyL0C2UBTraitDefault>(ubTensor, l0cTensor);
     RunCopyWithParamPaths<CopyL0C2UB, CopyL0C2UBTraitDefault>(ubTensor, l0cTensor, FixpipeParams{});

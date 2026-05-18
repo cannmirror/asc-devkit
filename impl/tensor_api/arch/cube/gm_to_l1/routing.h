@@ -56,7 +56,17 @@ struct CopyGM2L1Tensor2Tensor<Location::L1, Location::GM, ArchVersion::V3510, ND
 };
 
 template <>
+struct CopyGM2L1Tensor2Tensor<Location::L1, Location::GM, ArchVersion::V3510, NDLayoutPtn, NDLayoutPtn> {
+    using type = CopyGmToCbufAlignV2ND;
+};
+
+template <>
 struct CopyGM2L1Tensor2Tensor<Location::L1, Location::GM, ArchVersion::V3510, NZLayoutPtn, NDExtLayoutPtn> {
+    using type = CopyGmToCbufMultiND2Nz;
+};
+
+template <>
+struct CopyGM2L1Tensor2Tensor<Location::L1, Location::GM, ArchVersion::V3510, NZLayoutPtn, NDLayoutPtn> {
     using type = CopyGmToCbufMultiND2Nz;
 };
 
@@ -66,12 +76,27 @@ struct CopyGM2L1Tensor2Tensor<Location::L1, Location::GM, ArchVersion::V3510, ZN
 };
 
 template <>
+struct CopyGM2L1Tensor2Tensor<Location::L1, Location::GM, ArchVersion::V3510, ZNLayoutPtn, NDLayoutPtn> {
+    using type = CopyGmToCbufMultiND2Zn;
+};
+
+template <>
 struct CopyGM2L1Tensor2Tensor<Location::L1, Location::GM, ArchVersion::V3510, NZLayoutPtn, DNExtLayoutPtn> {
     using type = CopyGmToCbufMultiDN2Nz;
 };
 
 template <>
+struct CopyGM2L1Tensor2Tensor<Location::L1, Location::GM, ArchVersion::V3510, NZLayoutPtn, DNLayoutPtn> {
+    using type = CopyGmToCbufMultiDN2Nz;
+};
+
+template <>
 struct CopyGM2L1Tensor2Tensor<Location::L1, Location::GM, ArchVersion::V3510, ZNLayoutPtn, DNExtLayoutPtn> {
+    using type = CopyGmToCbufMultiDN2Zn;
+};
+
+template <>
+struct CopyGM2L1Tensor2Tensor<Location::L1, Location::GM, ArchVersion::V3510, ZNLayoutPtn, DNLayoutPtn> {
     using type = CopyGmToCbufMultiDN2Zn;
 };
 
