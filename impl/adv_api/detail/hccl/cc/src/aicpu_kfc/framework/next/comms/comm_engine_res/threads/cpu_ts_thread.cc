@@ -196,6 +196,11 @@ void CpuTsThread::LaunchTask() const
     return;
 }
 
+void CpuTsThread::TryLaunchTask() const
+{
+    HCCL_DEBUG("[%s] CpuTsThread does not support TryLaunchTask, skip", __func__);
+}
+
 // Local Data Plane Functions
 HcclResult CpuTsThread::LocalNotifyRecord(uint32_t notifyId) const
 {
