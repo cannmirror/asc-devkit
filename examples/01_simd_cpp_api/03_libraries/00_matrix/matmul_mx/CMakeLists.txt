@@ -31,5 +31,5 @@ target_link_libraries(demo PRIVATE
 
 target_compile_options(demo PRIVATE
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>
-    -DENABLE_CVarez_COMM_VIA_SSBUF=true
+    -DENABLE_CV_COMM_VIA_SSBUF=true
 )

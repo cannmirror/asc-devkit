@@ -29,10 +29,19 @@ target_link_libraries(demo PRIVATE
     dl
 )
 
-target_compile_definitions(demo PRIVATE
-    DT_MODE=${DT_MODE}
-)
+set(DT_MODE "0" CACHE STRING "Scene number (0-4)")
+
 message(STATUS "[INFO] DT_MODE is ${DT_MODE}")
+
+if(NOT DEFINED DT_MODE)
+    message(FATAL_ERROR "DT_MODE is not set. Please specify -DDT_MODE=0, 1, 2, 3 or 4")
+endif()
+
+if(NOT DT_MODE EQUAL 0 AND NOT DT_MODE EQUAL 1 AND NOT DT_MODE EQUAL 2 AND NOT DT_MODE EQUAL 3 AND NOT DT_MODE EQUAL 4)
+    message(FATAL_ERROR "DT_MODE must be 0, 1, 2, 3 or 4, got: ${DT_MODE}")
+endif()
+
+target_compile_definitions(demo PRIVATE DT_MODE=${DT_MODE})
 
 target_compile_options(demo PRIVATE
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>

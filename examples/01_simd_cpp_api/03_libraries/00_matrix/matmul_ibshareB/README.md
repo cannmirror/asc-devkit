@@ -2,7 +2,21 @@
 
 ## 概述
 
-调开启IBShare功能，复用L1 Buffer上相同的A矩阵或者B矩阵数据的样例，本样例为仅B矩阵复用场景。开启功能可以减少数据搬运开销。
+调开启IBShare功能，复用L1 Buffer上相同的A矩阵或者B矩阵数据的样例，本样例为仅B矩阵复用场景。开启功能可以减少数据搬运开销。支持多种场景，通过环境变量选择场景。
+    <table>
+	 	<tr>
+	 		<td>scenarioNum</td>
+	 		<td>场景类型</td>
+	 	</tr>
+	 	<tr>
+	 		<td>1</td>
+	 		<td>默认实现，使能IBShare模板</td>
+	 	</tr>
+	 	<tr>
+	 		<td>2</td>
+	 		<td>使能纯Cube模式 + IBShareB</td>
+	 	</tr>
+	 </table>
 
 ## 支持的产品
 
@@ -106,32 +120,32 @@
 - 样例执行
 
   ```bash
-  # -DMODE=0：默认实现。使能IBShare模板；
-  # -DMODE=1：使能纯Cube模式 + IBShareB；
-  mkdir -p build && cd build;    # 创建并进入build目录
-  cmake -DMODE=0 -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;    # 编译工程，默认npu模式
-  python3 ../scripts/gen_data.py    # 生成测试输入数据
-  ./demo                        # 执行编译生成的可执行程序，执行样例
-  python3 ../scripts/verify_result.py output/output.bin output/golden.bin    # 验证输出结果是否正确，确认算法逻辑正确
+  SCENARIO=1                                                                    # 默认实现。使能IBShare模板
+  mkdir -p build && cd build;                                                   # 创建并进入build目录
+  cmake -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=$SCENARIO ..;make -j; # 编译工程，默认npu模式
+  python3 ../scripts/gen_data.py                                                # 生成测试输入数据
+  ./demo                                                                        # 执行编译生成的可执行程序，执行样例
+  python3 ../scripts/verify_result.py output/output.bin output/golden.bin       # 验证输出结果是否正确，确认算法逻辑正确
   ```
 
   使用 CPU调试 或 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
 
   示例如：
   ```bash
-  cmake -DMODE=0 -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # cpu调试模式
-  cmake -DMODE=0 -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # NPU仿真模式
+  SCENARIO=1
+  cmake -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=$SCENARIO ..;make -j; # cpu调试模式
+  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=$SCENARIO ..;make -j; # NPU仿真模式
   ```
 
   > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
 
 - 编译选项说明
 
-  | 参数 | 说明 | 可选值 | 默认值 |
-  |------|------|---------|--------|
-  | MODE | 模式选择 | 0, 1 | 0 |
-  | CMAKE_ASC_RUN_MODE | 运行模式 | npu, cpu, sim | npu |
-  | CMAKE_ASC_ARCHITECTURES | NPU硬件架构 | dav-2201, dav-3510 | dav-2201 |
+  | 选项　　　　　 | 可选值　　　　　　　　　　　| 说明　　　　　　　　　　　　　　　　　　　　　　　|
+  | ----------------| -----------------------------| ---------------------------------------------------|
+  | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`cpu`、`sim` | 运行模式：NPU 运行、CPU调试、NPU仿真　　　　　　　|
+  | `CMAKE_ASC_ARCHITECTURES` | `dav-2201`、`dav-3510` | NPU 架构：dav-2201 对应 Atlas A2 训练系列产品/Atlas A2 推理系列产品 与 Atlas A3 训练系列产品/Atlas A3 推理系列产品，dav-3510 对应 Ascend 950PR/Ascend 950DT |
+  | `SCENARIO_NUM` | `1`（默认）、`2` | 场景编号：1=默认实现，使能IBShare模板，2=使能纯Cube模式 + IBShareB |
 
 - 执行结果
 
