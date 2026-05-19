@@ -428,7 +428,7 @@ __ubuf__ int * __gm__ ptr;
     ```
     // m is in a specific kernel parameter address space, 
     // it's physical location is implementation determined.
-    __global__ __aicore__ void foo(int m) {
+    __global__ __vector__ void foo(int m) {
       // OK. i is an int variable allocated in private address space
       int i;
     }
