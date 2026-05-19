@@ -28,7 +28,7 @@ __global__ __aicore__ void MainNchwconv(__gm__ uint16_t* __restrict__ dstGm, __g
     LocalTensor<T> inputLocal = tbuf.Get<T>();
 
     TBuf<TPosition::VECCALC> tbuf1;
-    tpipe.InitBuffer(tbuf1, dataSize * sizeof(PrimT<T>));
+    tpipe.InitBuffer(tbuf1, dataSize * sizeof(PrimT<T>) * 2);
     LocalTensor<T> outputLocal = tbuf1.Get<T>();
 
     TBuf<TPosition::VECCALC> tbuf2;

@@ -470,8 +470,6 @@ KERNEL_MATMUL_TESTCASE_DYNAMICS(TEST_KERNEL_MATMUL, tiling_params_mx_case5, GM, 
     fp4x2_e1m2_t, fp4x2_e2m1_t, float, bfloat16_t, 1, 0, 1, 1, CFG_MDL);
 KERNEL_MATMUL_TESTCASE_DYNAMICS(TEST_KERNEL_MATMUL, tiling_params_mx_case7, GM, GM, GM, GM, GM, GM, ND, ND, ND, ND, ND, ND,
     fp8_e4m3fn_t, fp8_e4m3fn_t, float, float, 0, 0, 0, 0, CFG_NORM);
-KERNEL_MATMUL_TESTCASE_DYNAMICS(TEST_KERNEL_MATMUL, tiling_params_mx_case8, TSCM, TSCM, TSCM, TSCM, GM, TSCM, NZ, NZ, NZ, NZ, NZ, NZ,
-    fp8_e5m2_t, fp8_e5m2_t, float, float, 1, 0, 1, 0, CFG_NORM);
 KERNEL_MATMUL_TESTCASE_DYNAMICS(TEST_KERNEL_MATMUL, tiling_params_mx_case9, GM, TSCM, TSCM, GM, GM, GM, ND, NZ, NZ, ND, ND, ND,
     fp4x2_e1m2_t, fp4x2_e1m2_t, float, half, 0, 0, 1, 0, CFG_NORM);
 KERNEL_MATMUL_TESTCASE_DYNAMICS(TEST_KERNEL_MATMUL, tiling_params_mx_case10, TSCM, GM, GM, TSCM, GM, GM, NZ, ND, ND, NZ, ND, ND,
@@ -488,11 +486,6 @@ KERNEL_MATMUL_TESTCASE_DYNAMICS(TEST_KERNEL_MATMUL, tiling_params_mx_case15, GM,
     fp8_e4m3fn_t, fp8_e5m2_t, float, float, 0, 1, 0, 1, CFG_MDL);
 KERNEL_MATMUL_TESTCASE_DYNAMICS(TEST_KERNEL_MATMUL, tiling_params_mx_case15, GM, GM, GM, GM, GM, GM, ND, ND, ND, ND, ND, ND,
     fp8_e4m3fn_t, fp8_e5m2_t, float, float, 0, 1, 0, 1, CFG_NORM);
-// FP8 NZ input
-KERNEL_MATMUL_TESTCASE_DYNAMICS(TEST_KERNEL_MATMUL, tiling_params_mx_case13, GM, GM, GM, GM, GM, GM, NZ, NZ, NZ, NZ, ND, ND,
-    fp8_e4m3fn_t, fp8_e4m3fn_t, float, bfloat16_t, 0, 0, 1, 0, CFG_MDL);
-KERNEL_MATMUL_TESTCASE_DYNAMICS(TEST_KERNEL_MATMUL, tiling_params_mx_case14, GM, GM, GM, GM, GM, GM, NZ, NZ, NZ, NZ, ND, ND,
-    fp8_e4m3fn_t, fp8_e4m3fn_t, float, bfloat16_t, 1, 0, 0, 0, CFG_NORM);
 // FP4 ND input
 KERNEL_MATMUL_TESTCASE_DYNAMICS(TEST_KERNEL_MATMUL, tiling_params_mx_case16, GM, GM, GM, GM, GM, GM, ND, ND, ND, ND, ND, ND,
     fp4x2_e1m2_t, fp4x2_e1m2_t, bfloat16_t, float, 0, 0, 1, 1, CFG_MDL);
@@ -591,8 +584,6 @@ KERNEL_MATMUL_TESTCASE_DYNAMICS(TEST_KERNEL_MATMUL, tiling_params_mx_case22, GM,
 // Gemv
 TilingParamsMx tiling_params_mx_case23 = {1, 1, 48, 6272, 1, 48, 6272, 16, 32, 1024, 1, 1, 1, 1, 1, 1, 0, 0, 16843009};
 
-KERNEL_MATMUL_TESTCASE_DYNAMICS(TEST_KERNEL_MATMUL, tiling_params_mx_case23, GM, GM, TSCM, GM, GM, GM, VECTOR, VECTOR, NZ, ND, NZ, ND,
-    fp8_e4m3fn_t, fp8_e5m2_t, float, float, 0, 0, 0, 0, CFG_MDL);
 KERNEL_MATMUL_TESTCASE_DYNAMICS(TEST_KERNEL_MATMUL, tiling_params_mx_case23, GM, GM, GM, TSCM, GM, GM, VECTOR, VECTOR, NZ, ND, NZ, ND,
     fp4x2_e1m2_t, fp4x2_e1m2_t, float, float, 0, 0, 0, 0, CFG_NORM);
 

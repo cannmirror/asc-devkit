@@ -190,12 +190,22 @@ public:
 #endif
     };
 
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
+    const std::map<std::string, uint16_t> dstBurstLenUnitMap = {
+        { "L0C16UB", 512 },    { "L0C32UB", 1024 },    { "UBL0C16", 512 },   { "UBL0C32", 1024 },
+        { "L1L0C16", 512 },    { "L1L0C32", 1024 },    { "L0CV16UB", 32 },   { "L0CV32UB", 64 },
+        { "UBL0CV16", 512 },   { "UBL0CV32", 1024 },   { "L0CSC32UB", 256 }, { "UBL0CSC32", 256 },
+        { "L0CDPf16UB", 512 }, { "L0CDPf32UB", 1024 }, { "L1BT", 32 },      { "L1FB", 64 },
+    };
+#else
     const std::map<std::string, uint16_t> dstBurstLenUnitMap = {
         { "L0C16UB", 512 },    { "L0C32UB", 1024 },    { "UBL0C16", 512 },   { "UBL0C32", 1024 },
         { "L1L0C16", 512 },    { "L1L0C32", 1024 },    { "L0CV16UB", 32 },   { "L0CV32UB", 64 },
         { "UBL0CV16", 512 },   { "UBL0CV32", 1024 },   { "L0CSC32UB", 256 }, { "UBL0CSC32", 256 },
         { "L0CDPf16UB", 512 }, { "L0CDPf32UB", 1024 }, { "L1BT", 64 },      { "L1FB", 128 },
     };
+#endif
+
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
     const std::map<std::string, uint16_t> srcBurstLenUnitMap {
         { "L0C16UB", 512 },   { "L0C32UB", 1024 },  { "UBL0C16", 512 },    { "UBL0C32", 1024 },    { "L1L0C16", 512 },

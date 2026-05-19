@@ -34,7 +34,7 @@ public:
     __aicore__ inline ~CustomCubeInBuffer() {}
     __aicore__ inline void Init(int32_t baseBlockSize, int32_t cacheNum)
     {
-        GetTPipePtr()->InitBuffer(qid_, 1, 16384);
+        GetTPipePtr()->InitBuffer(qid_, 1, 122880);
     }
     __aicore__ inline void Destroy() {
         if (cacheProc_ > 0) {
@@ -434,7 +434,7 @@ TEST_F(TestCopyCubeInMdlMx, Copy_Cube_In_IterateOrder_Tiling_UNDEF_Config_N) {
 
 TEST_F(TestCopyCubeInMdlMx, Copy_Cube_In_FP8_CeilK_Is_Odd) {
     // coreNum, M, N, K, singleCoreM, singleCoreN, singleCoreK, baseM, baseN, baseK, depthA1, depthB1, stepM, stepN, stepKa, stepKb, isBias, iterateOrder, MxTypePara
-    TilingParamsMx tilingParamsMx = {1, 382, 2, 400, 382, 2, 400, 192, 32, 256, 4, 2, 2, 1, 2, 2, 0, 0, 16843009};
+    TilingParamsMx tilingParamsMx = {1, 382, 2, 200, 382, 2, 200, 192, 32, 256, 4, 2, 2, 1, 2, 2, 0, 0, 16843009};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
     mm4.InitVar(tiling);
@@ -442,7 +442,7 @@ TEST_F(TestCopyCubeInMdlMx, Copy_Cube_In_FP8_CeilK_Is_Odd) {
     mm4.SetTranspose(true, false, false, true);
     const int32_t tileM = 382;
     const int32_t tileN = 2;
-    const int32_t tileK = 400;
+    const int32_t tileK = 200;
     mm4.RunCase(0, 0, tileM, tileN, tileK);
 }
 

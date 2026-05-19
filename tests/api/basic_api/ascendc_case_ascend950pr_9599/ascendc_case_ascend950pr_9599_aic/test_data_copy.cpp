@@ -45,7 +45,7 @@ void MainDataCopyKernel(__gm__ uint8_t* __restrict__ srcGm, __gm__ uint8_t* __re
     testGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ half*>(dstGm), dataSize);
 
     TSCM<TPosition::GM> tque;
-    tpipe.InitBuffer(tque, 1, 2048);
+    tpipe.InitBuffer(tque, 1, 4096);
     Nd2NzParams intriParams;
     intriParams.ndNum = 1;
     intriParams.nValue = 32;
@@ -88,9 +88,9 @@ void MainDataCopyKernelFixpipe(__gm__ uint8_t* __restrict__ srcGm, __gm__ uint8_
     DataCopyParams dataCopyParams(1, 2, 0, 0);
     DataCopy(deqLocal, l1Local, dataCopyParams);
     SetFixPipeConfig(deqLocal);
-    DataCopyCO12DstParams intriParams(16, 16, 0, 0, QuantMode_t::VDEQF16, static_cast<uint8_t>(0), 0, 0);
+    DataCopyCO12DstParams intriParams(4, 4, 0, 0, QuantMode_t::VDEQF16, static_cast<uint8_t>(0), 0, 0);
     DataCopy(dstGlobal, inputLocal, intriParams);
-    DataCopyCO12DstParams intriParams2(16, 16, 0, 0, QuantMode_t::VDEQF16, static_cast<uint8_t>(0), 1, 0);
+    DataCopyCO12DstParams intriParams2(4, 4, 0, 0, QuantMode_t::VDEQF16, static_cast<uint8_t>(0), 1, 0);
     DataCopy(dstGlobal, inputLocal, intriParams2);
 }
 
@@ -141,7 +141,7 @@ void main_tensortrait_data_copy_kernel(__gm__ uint8_t* __restrict__ srcGm, __gm_
     testGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ half*>(dstGm), dataSize);
 
     TSCM<TPosition::GM> tque;
-    tpipe.InitBuffer(tque, 1, 2048);
+    tpipe.InitBuffer(tque, 1, 4096);
     Nd2NzParams intriParams;
     intriParams.ndNum = 1;
     intriParams.nValue = 32;
@@ -246,9 +246,9 @@ void main_tensortrait_data_copy_kernel_fixpipe(__gm__ uint8_t* __restrict__ srcG
     DataCopyParams dataCopyParams(1, 2, 0, 0);
     DataCopy(deqLocal, l1Local, dataCopyParams);
     SetFixPipeConfig(deqLocal);
-    DataCopyCO12DstParams intriParams(16, 16, 0, 0, QuantMode_t::VDEQF16, static_cast<uint8_t>(0), 0, 0);
+    DataCopyCO12DstParams intriParams(4, 4, 0, 0, QuantMode_t::VDEQF16, static_cast<uint8_t>(0), 0, 0);
     DataCopy(dstGlobal, inputLocal, intriParams);
-    DataCopyCO12DstParams intriParams2(16, 16, 0, 0, QuantMode_t::VDEQF16, static_cast<uint8_t>(0), 1, 0);
+    DataCopyCO12DstParams intriParams2(4, 4, 0, 0, QuantMode_t::VDEQF16, static_cast<uint8_t>(0), 1, 0);
     DataCopy(dstGlobal, inputLocal, intriParams2);
 }
 
@@ -385,7 +385,7 @@ private:
  
         DataCopy(srcLocal, srcGlobal, intriParams);
  
-        DataCopyParams params(1, 128, 0, 0);
+        DataCopyParams params(1, 2, 0, 0);
         DataCopy(srcLocalL1, srcLocal, params);
         inQueueSrcUB.EnQue(srcLocal);
     }

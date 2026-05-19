@@ -50,7 +50,7 @@ void MainDataCopyPadKernel(__gm__ uint8_t* __restrict__ srcGm, __gm__ uint8_t* _
     tbufOut.logicPos = static_cast<uint8_t>(TPosition::VECCALC);
     outputLocal.SetAddr(tbufOut);
     outputLocal.InitBuffer(0, dataSize);
-    DataCopyParams datacopyParams{1, 32 * sizeof(T), 0, 0};
+    DataCopyParams datacopyParams{1, 2, 0, 0};
     DataCopyPadParams datacopyPadParams{false, 0, 0, 0};
     DataCopyExtParams copyParams{1, 20 * sizeof(T), 0, 0, 0};
     LoopModeParams loopParams{1, 1, 0, 32 * sizeof(T), 0, 32 * sizeof(T)};

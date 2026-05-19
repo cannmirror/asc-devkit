@@ -53,7 +53,7 @@ void MainDataCopyKernel(__gm__ uint8_t* __restrict__ srcGm, __gm__ uint8_t* __re
     tbufL1.logicPos = static_cast<uint8_t>(TPosition::A1);
     l1Local.SetAddr(tbufL1);
     l1Local.InitBuffer(0, dataSize);
-    DataCopyParams datacopyParams{1, 32 * sizeof(T), 0, 0};
+    DataCopyParams datacopyParams{1, 8, 0, 0};
     DataCopyEnhancedParams enhancedParams;
     enhancedParams.blockMode = BlockMode::BLOCK_MODE_MATRIX;
     DataCopy(inputLocal, srcGlobal, datacopyParams);
