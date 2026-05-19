@@ -1112,18 +1112,63 @@ def link_kernel_obj(compile_info: CompileInfo, op_info: OpInfo, tiling_info: Til
     CommonUtility.print_compile_log(op_info.kernel_name, "link relocatable success", AscendCLogLevel.LOG_INFO)
 
 
+def _match_regex(pattern: str, op_name: str) -> bool:
+    """
+    Match regex pattern with op_name.
+    Supports '.' (matches any single char) and '*' (matches zero or more of preceding element).
+    """
+    if len(pattern) > 0 and pattern[0] == '*':
+        return False
+
+    m, n = len(op_name), len(pattern)
+
+    def matches(i: int, j: int) -> bool:
+        if i == 0 or j == 0:
+            return False
+        if pattern[j - 1] == '.':
+            return True
+        return op_name[i - 1] == pattern[j - 1]
+
+    dp = [[False] * (n + 1) for _ in range(m + 1)]
+    dp[0][0] = True
+    for i in range(m + 1):
+        for j in range(1, n + 1):
+            if pattern[j - 1] == '*':
+                if j >= 2:
+                    dp[i][j] |= dp[i][j - 2]
+                    if matches(i, j - 1):
+                        dp[i][j] |= dp[i - 1][j]
+            elif matches(i, j):
+                dp[i][j] |= dp[i - 1][j - 1]
+    return dp[m][n]
+
+
+def _get_dcci_disable_cap_bitmap(compile_info: CompileInfo, kernel_symbols: list) -> int:
+    """
+    Check if DCCI should be disabled for any kernel in kernel_symbols.
+    Returns 4 if matched, 0 otherwise.
+    """
+    sp_options = compile_info.super_kernel_info.get("sp_options", {})
+    patterns = sp_options.get("dcci-disable-on-kernel", [])
+    if isinstance(patterns, list) and patterns:
+        for kernel_name in kernel_symbols:
+            if any(_match_regex(p, kernel_name) for p in patterns):
+                return 4
+    return 0
+
+
 def compile_sk_bind(compile_info: CompileInfo, compile_info_origin: CompileInfo, compile_option_tuple, kernel_meta_dir):
     sk_bind_src_file = os.path.join(kernel_meta_dir, "sk_bind.cpp")
     sk_bind_dst_file = os.path.join(kernel_meta_dir, "sk_bind.o")
     source = "#include \"kernel_operator.h\"\n"
 
-    # Calculate capability bitmap based on compile_info early start flags
-    # bitmap definition: bit0:wait_flag(1), bit1:set_flag(2), bit2:dcci(4), default:4
-    cap_bitmap = 4  # Default value
+    # bitmap definition: bit0:wait_flag(1), bit1:set_flag(2), bit2:dcci_disable(4), default:0
+    cap_bitmap = 0
     if compile_info.super_kernel_early_start_wait_flag:
-        cap_bitmap |= 1  # Set bit 0 for wait flag
+        cap_bitmap |= 1
     if compile_info.super_kernel_early_start_set_flag:
-        cap_bitmap |= 2  # Set bit 1 for set flag
+        cap_bitmap |= 2
+    cap_bitmap |= _get_dcci_disable_cap_bitmap(compile_info, compile_info_origin.global_kernel_symbols)
 
     for idx, global_syb in enumerate(compile_info_origin.global_kernel_symbols):
         sk_syb = compile_info.global_kernel_symbols[idx]

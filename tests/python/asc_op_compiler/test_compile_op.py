@@ -45,7 +45,7 @@ from asc_op_compile_base.asc_op_compiler.compile_op import _gen_kernel_func_decl
     _compile_ascendc_cce_v200_with_kernel_type, _dynamic_kernel_list_to_json, \
     _compile_ascendc_cce_v200_with_kernel_type_for_dynamic, _gen_dynamic_json_for_v200, \
     _gen_static_json_for_mix_v200, _gen_static_json_for_no_mix_v200, _gen_non_mix_sub_json, _gen_mix_json_from_seperate_json, \
-    _gen_mix_sub_json, _update_compile_option, gen_meta_info_section
+    _gen_mix_sub_json, _update_compile_option, gen_meta_info_section, _match_regex, _get_dcci_disable_cap_bitmap
 from asc_op_compile_base.asc_op_compiler.ascendc_compile_v220 import call_bisheng_v220, get_ktype_section_variable, decode_mode, v220_mode, v310_mode
 from asc_op_compile_base.asc_op_compiler.ascendc_compile_dfx import DFXSectionGenerator
 from asc_op_compile_base.asc_op_compiler.ascendc_compile_v200 import call_bisheng_v200_static
@@ -4957,6 +4957,110 @@ const static uint64_t L0A_SIZE = 65536 * block_idx;
         tiling = DFXArgInfo("tiling", DFXParamType.TILING)
         DFXSectionGenerator().insert_param(tiling)
         DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, tiling_info, tiling_key_struct_size_map, kernel_name)
+
+    def test_match_regex_basic(self):
+        self.assertFalse(_match_regex("*abc", "abc"))
+        self.assertFalse(_match_regex("*", "test"))
+
+    def test_match_regex_exact_match(self):
+        self.assertTrue(_match_regex("abc", "abc"))
+        self.assertFalse(_match_regex("abc", "abd"))
+        self.assertFalse(_match_regex("abc", "abcd"))
+
+    def test_match_regex_dot(self):
+        self.assertTrue(_match_regex("a.c", "abc"))
+        self.assertTrue(_match_regex("a.c", "aac"))
+        self.assertTrue(_match_regex(".", "x"))
+        self.assertFalse(_match_regex("a.c", "ac"))
+
+    def test_match_regex_star(self):
+        self.assertTrue(_match_regex("ab*c", "ac"))
+        self.assertTrue(_match_regex("ab*c", "abc"))
+        self.assertTrue(_match_regex("ab*c", "abbbc"))
+        self.assertTrue(_match_regex("a*", ""))
+        self.assertTrue(_match_regex("a*", "aaa"))
+        self.assertFalse(_match_regex("ab*c", "adc"))
+
+    def test_match_regex_wildcard(self):
+        self.assertTrue(_match_regex(".*", "anything"))
+        self.assertTrue(_match_regex(".*", ""))
+        self.assertTrue(_match_regex("a.*b", "acb"))
+        self.assertTrue(_match_regex("a.*b", "a123b"))
+        self.assertFalse(_match_regex("a.*b", "abx"))
+
+    def test_match_regex_prefix_suffix(self):
+        self.assertTrue(_match_regex("abc.*", "abc"))
+        self.assertTrue(_match_regex("abc.*", "abcdef"))
+        self.assertTrue(_match_regex(".*abc", "abc"))
+        self.assertTrue(_match_regex(".*abc", "xyzabc"))
+        self.assertFalse(_match_regex("abc.*", "ab"))
+
+    def test_match_regex_complex(self):
+        self.assertTrue(_match_regex("a.*b.*c", "abc"))
+        self.assertTrue(_match_regex("a.*b.*c", "aXbYc"))
+        self.assertTrue(_match_regex("a*b*c*", "abc"))
+        self.assertTrue(_match_regex("a*b*c*", "aaabbbccc"))
+
+    def test_match_regex_empty(self):
+        self.assertTrue(_match_regex("", ""))
+        self.assertFalse(_match_regex("", "a"))
+        self.assertFalse(_match_regex("a", ""))
+
+    def test_get_dcci_disable_cap_bitmap_empty_patterns(self):
+        compile_info = CompileInfo()
+        compile_info.super_kernel_info = {}
+        result = _get_dcci_disable_cap_bitmap(compile_info, ["kernel_a"])
+        self.assertEqual(result, 0)
+
+    def test_get_dcci_disable_cap_bitmap_patterns_not_list(self):
+        compile_info = CompileInfo()
+        compile_info.super_kernel_info = {"sp_options": {"dcci-disable-on-kernel": "not_a_list"}}
+        result = _get_dcci_disable_cap_bitmap(compile_info, ["kernel_a"])
+        self.assertEqual(result, 0)
+
+    def test_get_dcci_disable_cap_bitmap_patterns_empty_list(self):
+        compile_info = CompileInfo()
+        compile_info.super_kernel_info = {"sp_options": {"dcci-disable-on-kernel": []}}
+        result = _get_dcci_disable_cap_bitmap(compile_info, ["kernel_a"])
+        self.assertEqual(result, 0)
+
+    def test_get_dcci_disable_cap_bitmap_matched(self):
+        compile_info = CompileInfo()
+        compile_info.super_kernel_info = {"sp_options": {"dcci-disable-on-kernel": ["kernel_a", "kernel_b"]}}
+        result = _get_dcci_disable_cap_bitmap(compile_info, ["kernel_a"])
+        self.assertEqual(result, 4)
+
+    def test_get_dcci_disable_cap_bitmap_not_matched(self):
+        compile_info = CompileInfo()
+        compile_info.super_kernel_info = {"sp_options": {"dcci-disable-on-kernel": ["kernel_x", "kernel_y"]}}
+        result = _get_dcci_disable_cap_bitmap(compile_info, ["kernel_a"])
+        self.assertEqual(result, 0)
+
+    def test_get_dcci_disable_cap_bitmap_wildcard_match(self):
+        compile_info = CompileInfo()
+        compile_info.super_kernel_info = {"sp_options": {"dcci-disable-on-kernel": ["kernel_.*", ".*_test"]}}
+        result = _get_dcci_disable_cap_bitmap(compile_info, ["kernel_abc"])
+        self.assertEqual(result, 4)
+        result = _get_dcci_disable_cap_bitmap(compile_info, ["op_test"])
+        self.assertEqual(result, 4)
+
+    def test_get_dcci_disable_cap_bitmap_multi_symbols_first_match(self):
+        compile_info = CompileInfo()
+        compile_info.super_kernel_info = {"sp_options": {"dcci-disable-on-kernel": ["kernel_b"]}}
+        result = _get_dcci_disable_cap_bitmap(compile_info, ["kernel_a", "kernel_b", "kernel_c"])
+        self.assertEqual(result, 4)
+
+    def test_get_dcci_disable_cap_bitmap_multi_symbols_no_match(self):
+        compile_info = CompileInfo()
+        compile_info.super_kernel_info = {"sp_options": {"dcci-disable-on-kernel": ["kernel_x"]}}
+        result = _get_dcci_disable_cap_bitmap(compile_info, ["kernel_a", "kernel_b", "kernel_c"])
+        self.assertEqual(result, 0)
+
+    def test_get_dcci_disable_cap_bitmap_no_sp_options(self):
+        compile_info = CompileInfo()
+        compile_info.super_kernel_info = {"other_option": "value"}
+        result = _get_dcci_disable_cap_bitmap(compile_info, ["kernel_a"])
+        self.assertEqual(result, 0)
 
 
 if __name__ == "__main__":
