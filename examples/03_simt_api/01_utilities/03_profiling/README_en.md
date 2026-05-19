@@ -1,0 +1,8 @@
+# Profiling Example Introduction
+## Overview
+This example demonstrates how to collect performance data through Profiling tools.
+
+## Example List
+|  Directory Name                                                   |  Function Description                                              |
+| ------------------------------------------------------------ | ---------------------------------------------------- |
+| [msProf](./msProf) | This example implements a Gather example based on Ascend C programming language, uses msProf tool for debugging, and provides the corresponding end-to-end implementation. |
