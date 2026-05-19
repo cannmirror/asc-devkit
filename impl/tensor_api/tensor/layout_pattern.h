@@ -40,7 +40,6 @@ struct ScaleANDLayoutPtn {};
 struct ScaleADNLayoutPtn {};
 struct ScaleBNDLayoutPtn {};
 struct ScaleBDNLayoutPtn {};
-struct DefaultPtn {};
 
 template <typename LayoutPattern, typename TraitType, typename ShapeType, typename StrideType>
 __aicore__ inline constexpr auto MakePatternLayout(const ShapeType& shape, const StrideType& stride)

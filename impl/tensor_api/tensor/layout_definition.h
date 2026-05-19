@@ -45,9 +45,7 @@ using Tile = Std::tuple<Layouts...>;
 template <typename... Coords>
 using Coord = Std::tuple<Coords...>;
 
-struct DefaultInfo {};
-
-template <typename T, typename U, typename Info = DefaultInfo>
+template <typename T, typename U, typename Info = Std::ignore_t>
 struct Layout : private Std::tuple<T, U>
 {
 public:
@@ -133,14 +131,9 @@ private:
     using tag = Info;
 };
 
-struct DefaultPtn;
-
-template <typename T, size_t C0>
-struct LayoutTraitDefault;
-
 template <typename T>
 struct GetLayoutInfo {
-    using type = Std::tuple<DefaultPtn, LayoutTraitDefault<uint16_t, 32 / sizeof(uint16_t)>>;
+    using type = Std::tuple<Std::ignore_t, Std::ignore_t>;
 };
 
 template <typename T, typename U, typename LayoutPattern, typename TraitType>

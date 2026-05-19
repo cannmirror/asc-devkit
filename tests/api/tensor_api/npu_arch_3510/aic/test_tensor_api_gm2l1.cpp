@@ -76,8 +76,8 @@ TEST_F(Tensor_Api_Cube_Copy_3510, CopyGM2L1RoutesToCubeArchCopy)
     __gm__ float src[m * n] = {0};
     __cbuf__ float dst[m * n] = {0};
 
-    auto gmTensor = MakeTensorAt<Location::GM>(src, MakeFrameLayout<NDExtLayoutPtn, LayoutTraitDefault<float>>(m, n));
-    auto l1Tensor = MakeTensorAt<Location::L1>(dst, MakeFrameLayout<NDExtLayoutPtn, LayoutTraitDefault<float>>(m, n));
+    auto gmTensor = MakeTensorAt<Location::GM>(src, MakeFrameLayout<NDExtLayoutPtn>(m, n));
+    auto l1Tensor = MakeTensorAt<Location::L1>(dst, MakeFrameLayout<NDExtLayoutPtn>(m, n));
 
     RunCopyCallPaths<CopyGM2L1, CopyGM2L1TraitDefault>(l1Tensor, gmTensor);
     RunCopyWithPaths<CopyGM2L1, CopyGM2L1TraitDefault>(l1Tensor, gmTensor);
@@ -244,7 +244,7 @@ private:
     template <typename T>                                                                                              \
     constexpr auto Make##NAME = [](auto row, auto col) {                                                               \
         constexpr size_t C0 = IsB4Type<T> ? 64 : 32 / sizeof(T);                                                               \
-        return MakeFrameLayout<NAME##LayoutPtn, LayoutTraitDefault<T, C0>>(row, col);                                  \
+        return MakeFrameLayout<NAME##LayoutPtn, LayoutTrait<T, Int<C0>>>(row, col);                                  \
     };
 
 MAKE_LAYOUT_FUNC(NDExt)
@@ -258,7 +258,7 @@ MAKE_LAYOUT_FUNC(ZN)
 #define MAKE_LAYOUT_FUNC(NAME)                                                                                         \
     template <typename T>                                                                                              \
     constexpr auto Make##NAME =                                                                                        \
-        [](auto row, auto col) { return MakeFrameLayout<NAME##LayoutPtn, LayoutTraitDefault<T, 2>>(row, col); };
+        [](auto row, auto col) { return MakeFrameLayout<NAME##LayoutPtn, LayoutTrait<T, _2>>(row, col); };
 
 MAKE_LAYOUT_FUNC(ZZ)
 MAKE_LAYOUT_FUNC(NN)

@@ -166,6 +166,11 @@ template <typename A, typename... BList>
 constexpr bool IsOneOfAttrV = CheckAllSame<A, BList...>::value;
 
 template <typename DataType>
+inline constexpr bool IsDataType = IsOneOfAttrV<Std::remove_cvref_t<DataType>, hifloat8_t, bfloat16_t, fp4x2_e1m2_t, fp4x2_e2m1_t, 
+                                                fp8_e5m2_t, fp8_e4m3fn_t, fp8_e8m0_t> || Std::is_integral_v<Std::remove_cvref_t<DataType>> 
+                                                || Std::is_floating_point_v<Std::remove_cvref_t<DataType>>;
+
+template <typename DataType>
 inline constexpr bool IsB4Type = IsOneOfAttrV<DataType, fp4x2_e1m2_t, fp4x2_e2m1_t>;
 
 template<typename T = Std::ignore_t>

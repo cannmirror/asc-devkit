@@ -247,7 +247,7 @@ __aicore__ inline void CheckOneLayoutPattern() {
     using LayoutPattern = GetLayoutPattern<Layout>;
     using TraitType = GetLayoutTrait<Layout>;
     using PatternCheck = typename LayoutPatternCheckSet::template Get<LayoutPattern>;
-    static_assert(!Std::is_same_v<PatternCheck, EmptyValue>, "Unsupported layout pattern.");
+    static_assert(!Std::is_same_v<PatternCheck, Std::ignore_t>, "Unsupported layout pattern.");
     PatternCheck::template Check<T, TraitType>();
 }
 

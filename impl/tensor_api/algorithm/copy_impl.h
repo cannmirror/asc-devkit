@@ -62,7 +62,7 @@ Copy(const T& dst, const U& src, const Params& ...params)
     using DstLocation = GetMemLocation<T>;
     using SrcLocation = GetMemLocation<U>;
     using CopyAtomType = typename CopyDispatchSet::template Get<Std::tuple<DstLocation, SrcLocation>>;
-    static_assert(!Std::is_same_v<CopyAtomType, EmptyValue>, "Unsupported Copy dst/src location combination.");
+    static_assert(!Std::is_same_v<CopyAtomType, Std::ignore_t>, "Unsupported Copy dst/src location combination.");
     CopyAtomType{}.Call(dst, src, params...);
 }
 
