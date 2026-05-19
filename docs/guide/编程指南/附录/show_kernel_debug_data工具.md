@@ -1,6 +1,6 @@
 # show\_kernel\_debug\_data工具<a name="ZH-CN_TOPIC_0000002046969553"></a>
 
-在Ascend C算子程序代码中，用户可以使用AscendC::[DumpTensor](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/DumpTensor.md)、AscendC::[printf](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/printf.md)、AscendC::[PrintTimeStamp](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/PrintTimeStamp.md)、[ascendc\_assert](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/ascendc_assert.md)接口打印相关调试信息，并通过aclInit接口或直接配置acl.json文件，启用Dump配置，导出Ascend C算子Kernel的调测信息。本工具提供了对调测信息的离线解析能力，帮助用户获取并解析调试信息，即将导出的bin文件解析成可读格式。本工具的使用示例可参考[show\_kernel\_debug\_data样例](https://gitcode.com/cann/asc-tools/tree/master/examples/01_show_kernel_debug_data)。
+在Ascend C算子程序代码中，用户可以使用AscendC::[DumpTensor](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_0192.html)、AscendC::[printf](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_0193.html)、AscendC::[PrintTimeStamp](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_00002.html)、[ascendc\_assert](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_00168.html)接口打印相关调试信息，并通过aclInit接口或直接配置acl.json文件，启用Dump配置，导出Ascend C算子Kernel的调测信息。本工具提供了对调测信息的离线解析能力，帮助用户获取并解析调试信息，即将导出的bin文件解析成可读格式。本工具的使用示例可参考[show\_kernel\_debug\_data样例](https://gitcode.com/cann/asc-tools/tree/master/examples/01_show_kernel_debug_data)。
 
 >[!NOTE]说明 
 >show\_kernel\_debug\_data支持多用户并发调用，但用户需要指定不同的落盘路径，否则可能出现落盘内容被覆盖等问题。
@@ -14,7 +14,7 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1613032013400"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p11131020174013"><a name="p11131020174013"></a><a name="p11131020174013"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+<tbody><tr id="row1613032013400"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p11131020174013"><a name="p11131020174013"></a><a name="p11131020174013"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Atlas 350 加速卡</span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p31311820124011"><a name="p31311820124011"></a><a name="p31311820124011"></a>√</p>
 </td>

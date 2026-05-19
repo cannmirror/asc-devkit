@@ -4,7 +4,7 @@
 
 >[!NOTE]说明 
 >该性能优化指导适用于如下产品型号：
->- Ascend 950PR/Ascend 950DT
+>- Atlas 350 加速卡
 >- Atlas A3 训练系列产品/Atlas A3 推理系列产品
 >- Atlas A2 训练系列产品/Atlas A2 推理系列产品
 

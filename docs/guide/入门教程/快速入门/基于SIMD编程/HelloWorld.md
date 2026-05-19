@@ -45,7 +45,7 @@ int32_t main(int argc, char const *argv[])
 
 >[!NOTE]说明 
 >- 该样例仅支持如下型号：
->    - Ascend 950PR/Ascend 950DT
+>    - Atlas 350 加速卡
 >    - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 >    - Atlas A2 训练系列产品/Atlas A2 推理系列产品
 >- 编译命令中的--npu-arch用于指定NPU的架构版本，dav-后为架构版本号，请替换为您实际使用的架构版本号。各AI处理器型号对应的架构版本号请通过[AI处理器型号和\_\_NPU\_ARCH\_\_的对应关系](../../../编程指南/语言扩展层/SIMD-BuiltIn关键字.md#table65291052154114)进行查询。

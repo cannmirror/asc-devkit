@@ -1,6 +1,6 @@
 # SIMT语言扩展层C API<a name="ZH-CN_TOPIC_0000002509743873"></a>
 
-SIMT编程基于AI Core的硬件能力实现，可以使用[asc\_vf\_call](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/asc_vf_call.md)接口启动SIMT VF（Vector Function）子任务。当前，SIMT语言扩展层支持的C API类别如下：
+SIMT编程基于AI Core的硬件能力实现，可以使用[asc\_vf\_call](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_10303.html)接口启动SIMT VF（Vector Function）子任务。当前，SIMT语言扩展层支持的C API类别如下：
 
 -   同步与内存栅栏：提供内存管理与同步接口，解决不同核内的线程间可能存在的数据竞争以及线程的同步问题。
 -   原子操作：提供对Unified Buffer或Global Memory上的数据与指定数据执行原子操作的一系列API接口。

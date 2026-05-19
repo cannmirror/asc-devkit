@@ -52,7 +52,7 @@ Ascend C提供多层级API，满足多维场景算子开发诉求。
 
 Ascend C支持在如下AI处理器型号使用：
 
--   Ascend 950PR/Ascend 950DT
+-   Atlas 350 加速卡
 -   Atlas A3 训练系列产品/Atlas A3 推理系列产品
 -   Atlas A2 训练系列产品/Atlas A2 推理系列产品
 

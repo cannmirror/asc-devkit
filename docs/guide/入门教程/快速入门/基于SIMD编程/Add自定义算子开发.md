@@ -48,10 +48,10 @@
     -   根据对算子输入输出的分析，确定核函数有3个参数x，y，z；x，y为输入参数，z为输出参数。
 
 4.  确定算子实现所需接口。
-    -   实现涉及外部存储和内部存储间的数据搬运，查看Ascend C  API参考中的数据搬运接口，需要使用[DataCopy](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/DataCopy.md)来实现数据搬移。
-    -   本样例只涉及矢量计算的加法操作，查看Ascend C  API参考中的矢量计算接口[Memory矢量计算](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/Memory矢量计算.md)，初步分析可使用Add接口[Add](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/Add.md)实现x+y。
-    -   计算中使用到的Tensor数据结构，使用[AllocTensor](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/AllocTensor.md)、[FreeTensor](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/FreeTensor.md)进行申请和释放。
-    -   并行流水任务之间使用Queue队列完成同步，会使用到[EnQue](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/EnQue.md)、[DeQue](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/DeQue.md)等接口。
+    -   实现涉及外部存储和内部存储间的数据搬运，查看Ascend C  API参考中的数据搬运接口，需要使用[DataCopy](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_0101.html)来实现数据搬移。
+    -   本样例只涉及矢量计算的加法操作，查看Ascend C  API参考中的矢量计算接口[Memory矢量计算](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_0023.html)，初步分析可使用Add接口[Add](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_0035.html)实现x+y。
+    -   计算中使用到的Tensor数据结构，使用[AllocTensor](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_0138.html)、[FreeTensor](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_0139.html)进行申请和释放。
+    -   并行流水任务之间使用Queue队列完成同步，会使用到[EnQue](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_0140.html)、[DeQue](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_0141.html)等接口。
 
 通过以上分析，得到Ascend C  Add算子的设计规格如下：
 
@@ -211,7 +211,7 @@
 
     每个核上处理的数据地址需要在起始地址上增加GetBlockIdx\(\) \* blockLength（每个block处理的数据长度）的偏移来获取。这样也就实现了多核并行计算的数据切分。
 
-    以输入x为例，x + blockLength \* GetBlockIdx\(\)即为单核处理程序中x在Global Memory上的内存偏移地址，获取偏移地址后，使用GlobalTensor类的[SetGlobalBuffer](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/GlobalTensor.md)接口设定该核上Global Memory的起始地址以及长度。具体示意图如下。
+    以输入x为例，x + blockLength \* GetBlockIdx\(\)即为单核处理程序中x在Global Memory上的内存偏移地址，获取偏移地址后，使用GlobalTensor类的[SetGlobalBuffer](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_0007.html)接口设定该核上Global Memory的起始地址以及长度。具体示意图如下。
 
     **图 3**  多核并行处理示意图<a name="zh-cn_topic_0000001565030288_fig744312161511"></a>  
     ![](../../../figures/多核并行处理示意图.png "多核并行处理示意图")
@@ -268,8 +268,8 @@
 
     1.  CopyIn函数实现。
 
-        1.  使用[DataCopy](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/DataCopy.md)接口将GlobalTensor数据拷贝到LocalTensor。
-        2.  使用[EnQue](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/EnQue.md)将LocalTensor放入VecIn的Queue中。
+        1.  使用[DataCopy](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_0101.html)接口将GlobalTensor数据拷贝到LocalTensor。
+        2.  使用[EnQue](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_0140.html)将LocalTensor放入VecIn的Queue中。
 
         ```
         __aicore__ inline void CopyIn( int32_t progress)
@@ -288,10 +288,10 @@
 
     2.  Compute函数实现。
 
-        1.  使用[DeQue](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/DeQue.md)从VecIn中取出LocalTensor。
-        2.  使用Ascend C接口[Add](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/Add.md)完成矢量计算。
-        3.  使用[EnQue](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/EnQue.md)将计算结果LocalTensor放入到VecOut的Queue中。
-        4.  使用[FreeTensor](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/FreeTensor.md)将释放不再使用的LocalTensor。
+        1.  使用[DeQue](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_0141.html)从VecIn中取出LocalTensor。
+        2.  使用Ascend C接口[Add](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_0035.html)完成矢量计算。
+        3.  使用[EnQue](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_0140.html)将计算结果LocalTensor放入到VecOut的Queue中。
+        4.  使用[FreeTensor](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_0139.html)将释放不再使用的LocalTensor。
 
         ```
         __aicore__ inline void Compute(int32_t progress)
@@ -312,9 +312,9 @@
 
     3.  CopyOut函数实现。
 
-        1.  使用[DeQue](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/DeQue.md)接口从VecOut的Queue中取出LocalTensor。
-        2.  使用[DataCopy](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/DataCopy.md)接口将LocalTensor拷贝到GlobalTensor上。
-        3.  使用[FreeTensor](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/FreeTensor.md)将不再使用的LocalTensor进行回收。
+        1.  使用[DeQue](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_0141.html)接口从VecOut的Queue中取出LocalTensor。
+        2.  使用[DataCopy](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_0101.html)接口将LocalTensor拷贝到GlobalTensor上。
+        3.  使用[FreeTensor](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_0139.html)将不再使用的LocalTensor进行回收。
 
         ```
          __aicore__ inline void CopyOut(int32_t progress)
@@ -483,7 +483,7 @@
 
     >[!NOTE]说明 
     >- 该样例仅支持如下型号：
-    >    - Ascend 950PR/Ascend 950DT
+    >    - Atlas 350 加速卡
     >    - Atlas A3 训练系列产品/Atlas A3 推理系列产品
     >    - Atlas A2 训练系列产品/Atlas A2 推理系列产品
     >- _-_-npu-arch用于指定NPU的架构版本，dav-后为架构版本号，请替换为您实际使用的架构版本号。各AI处理器型号对应的架构版本号请通过[AI处理器型号和\_\_NPU\_ARCH\_\_的对应关系](../../../编程指南/语言扩展层/SIMD-BuiltIn关键字.md#table65291052154114)进行查询。

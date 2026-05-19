@@ -17,7 +17,7 @@
     </th>
     </tr>
     </thead>
-    <tbody><tr id="row1986372151716"><td class="cellrowborder" valign="top" width="49.59%" headers="mcps1.2.3.1.1 "><p id="p2864142161711"><a name="p2864142161711"></a><a name="p2864142161711"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+    <tbody><tr id="row1986372151716"><td class="cellrowborder" valign="top" width="49.59%" headers="mcps1.2.3.1.1 "><p id="p2864142161711"><a name="p2864142161711"></a><a name="p2864142161711"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Atlas 350 加速卡</span></p>
     </td>
     <td class="cellrowborder" valign="top" width="50.41%" headers="mcps1.2.3.1.2 "><p id="p5880145213281"><a name="p5880145213281"></a><a name="p5880145213281"></a>3510</p>
     </td>
@@ -543,7 +543,7 @@ __ubuf__ int * __gm__ ptr;
 
 ## SIMD与SIMT混合编程场景<a name="section952111671314"></a>
 
-SIMD与SIMT混合编程场景中，SIMT VF的入口函数使用\_\_simt\_vf\_\_进行标识，通过在SIMD的\_\_aicore\_\_函数中使用[asc\_vf\_call](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/asc_vf_call.md)调用SIMT入口函数。被SIMT VF入口函数调用的函数使用\_\_simt\_callee\_\_进行标识。
+SIMD与SIMT混合编程场景中，SIMT VF的入口函数使用\_\_simt\_vf\_\_进行标识，通过在SIMD的\_\_aicore\_\_函数中使用[asc\_vf\_call](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/API/ascendcopapi/atlasascendc_api_07_10303.html)调用SIMT入口函数。被SIMT VF入口函数调用的函数使用\_\_simt\_callee\_\_进行标识。
 
 -   \_\_simt\_vf\_\_ <a name="li611618392141"></a>
 
