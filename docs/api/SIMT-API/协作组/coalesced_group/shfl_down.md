@@ -1,5 +1,17 @@
 # shfl_down
 
+## 产品支持情况
+
+| 产品 | 是否支持 |
+| --- | --- |
+| Ascend 950PR/Ascend 950DT | √ |
+| Atlas A3 训练系列产品/Atlas A3 推理系列产品 | x |
+| Atlas A2 训练系列产品/Atlas A2 推理系列产品 | x |
+| Atlas 200I/500 A2 推理产品 | x |
+| Atlas 推理系列产品AI Core | x |
+| Atlas 推理系列产品Vector Core | x |
+| Atlas 训练系列产品 | x |
+
 ## 功能说明
 
 获取`coalesced_group`组内当前线程向后偏移`delta`的线程的数据。

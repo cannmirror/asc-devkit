@@ -5,12 +5,6 @@
 > [!CAUTION]注意 
 > SIMT架构不支持独立线程调度，一个Warp内的各协作组间应避免存在数据依赖，否则可能出现卡死的情况。
 
-## 需包含的头文件
-
-```C++
-#include "simt_api/cooperative_groups.h"
-```
-
 ## Public成员函数
 
 ```C++

@@ -1,5 +1,17 @@
 # shfl_xor
 
+## 产品支持情况
+
+| 产品 | 是否支持 |
+| --- | --- |
+| Ascend 950PR/Ascend 950DT | √ |
+| Atlas A3 训练系列产品/Atlas A3 推理系列产品 | x |
+| Atlas A2 训练系列产品/Atlas A2 推理系列产品 | x |
+| Atlas 200I/500 A2 推理产品 | x |
+| Atlas 推理系列产品AI Core | x |
+| Atlas 推理系列产品Vector Core | x |
+| Atlas 训练系列产品 | x |
+
 ## 功能说明
 
 将当前线程的rank与`lane_mask`进行按位异或运算得到的rank，获取该rank的线程输入的`var`值。
