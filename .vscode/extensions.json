@@ -1,9 +1,0 @@
-{
-    "recommendations": [
-        "eamodio.gitlens",
-        "ms-python.python",
-        "ms-vscode.cpptools",
-        "ms-vscode.cmake-tools",
-        "llvm-vs-code-extensions.vscode-clangd"
-    ]
-}
