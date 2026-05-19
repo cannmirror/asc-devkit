@@ -10,13 +10,13 @@ This sample introduces the impact of same-address conflicts and two solutions, p
 
 ## Directory Structure
 ```
-├── mata_address_conflict
+├── gm_address_conflict
 │   ├── scripts
 │   │   ├── gen_data.py                    // Input data and golden data generation script
 │   │   └── verify_result.py               // Verification script for output data and golden data
 │   ├── CMakeLists.txt                     // Build project file
 │   ├── data_utils.h                       // Data read/write functions
-│   └── mata_address_conflict.asc          // Ascend C operator implementation & call sample
+│   └── gm_address_conflict.asc            // Ascend C operator implementation & call sample
 ```
 
 ## Operator Description
