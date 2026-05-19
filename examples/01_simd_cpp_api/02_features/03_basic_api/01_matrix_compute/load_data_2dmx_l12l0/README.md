@@ -217,7 +217,7 @@
 
 **场景1：输入FP4数据类型，isAtranspose=false，isBtranspose=true**
 - 输入A [40, 70]，fp4x2_e1m2_t类型，ND格式；B [50, 70]，fp4x2_e2m1_t类型，ND格式；
-- scaleA [40, 4]，fp8_e8m0_t类型；scaleB [4, 50]，fp8_e8m0_t类型；
+- scaleA [40, 4]，fp8_e8m0_t类型；scaleB [50, 4]，fp8_e8m0_t类型；
 - 输出C [40, 50]，float类型，ND格式；
 - 实现：调用`LoadData`指令，传入`LoadData2DParamsV2`（ifTranspose=false）和`LoadData2DMxParams`两个结构体参数，一次完成A矩阵从L1搬运到L0A、scaleA矩阵从L1搬运到L0A_MX，如图1；B矩阵同理，一次完成B矩阵从L1搬运到L0B、scaleB矩阵从L1搬运到L0B_MX，如图2；
 - 说明：
@@ -270,7 +270,7 @@
 
 **场景3：输入FP8数据类型，isAtranspose=false，isBtranspose=true**
 - 输入A [40, 70]，fp8_e4m3fn_t类型，ND格式；B [50, 70]，fp8_e5m2_t类型，ND格式；
-- scaleA [40, 4]，fp8_e8m0_t类型；scaleB [4, 50]，fp8_e8m0_t类型；
+- scaleA [40, 4]，fp8_e8m0_t类型；scaleB [50, 4]，fp8_e8m0_t类型；
 - 输出C [40, 50]，float类型，ND格式；
 - 实现：调用`LoadData`指令，传入`LoadData2DParamsV2`（ifTranspose=false）和`LoadData2DMxParams`两个结构体参数，一次完成A矩阵从L1搬运到L0A、scaleA矩阵从L1搬运到L0A_MX，如图5；B矩阵同理，一次完成B矩阵从L1搬运到L0B、scaleB矩阵从L1搬运到L0B_MX，如图6；
 - 说明：与场景1类似，但数据类型为FP8。
@@ -991,9 +991,9 @@ A矩阵不转置输入[m, k]时，L1 -> L0A不需要转置，loadDataParams.ifTr
             loadMxDataParams.yStartPosition = 0;
             // xStep/yStep配置scaleA的row/col方向搬运长度；stride按row方向相邻分形间隔配置
             loadMxDataParams.xStep = CeilDivision(scaleMAlignL1, fractalShape[0]);
-            loadMxDataParams.yStep = CeilDivision(packedK, SCALE_CEIL_NUMBER);
-            loadMxDataParams.srcStride = scaleK;
-            loadMxDataParams.dstStride = CeilDivision(packedK, SCALE_CEIL_NUMBER);
+            loadMxDataParams.yStep = scaleK / SCALE_EVEN_NUMBER;
+            loadMxDataParams.srcStride = scaleK / SCALE_EVEN_NUMBER;
+            loadMxDataParams.dstStride = scaleK / SCALE_EVEN_NUMBER;
 
             AscendC::LoadData(a2Local, a1Local, scaleA1Local, loadDataParams, loadMxDataParams);
 
@@ -1039,9 +1039,9 @@ A矩阵转置输入[k, m]时，L1 -> L0A需要转置，单次调用`LoadData`并
             loadMxDataParams.yStartPosition = 0;
             // xStep/yStep配置scaleA的row/col方向搬运长度；stride按row方向相邻分形间隔配置
             loadMxDataParams.xStep = CeilDivision(scaleMAlignL1, fractalShape[0]);
-            loadMxDataParams.yStep = CeilDivision(packedK, SCALE_CEIL_NUMBER);
-            loadMxDataParams.srcStride = scaleK;
-            loadMxDataParams.dstStride = CeilDivision(packedK, SCALE_CEIL_NUMBER);
+            loadMxDataParams.yStep = scaleK / SCALE_EVEN_NUMBER;
+            loadMxDataParams.srcStride = scaleK / SCALE_EVEN_NUMBER;
+            loadMxDataParams.dstStride = scaleK / SCALE_EVEN_NUMBER;
 
             AscendC::LoadData(a2Local, a1Local, scaleA1Local, loadDataParams, loadMxDataParams);
 
@@ -1096,8 +1096,8 @@ A矩阵转置输入[k, m]时，L1 -> L0A需要转置，单次调用`LoadData`并
             loadMxDataParams.xStartPosition = 0;
             loadMxDataParams.yStartPosition = 0;
             // srcStride/dstStride表示scaleA源/目的矩阵row方向相邻分形起始地址间隔，单位32B
-            loadMxDataParams.srcStride = scaleK;
-            loadMxDataParams.dstStride = CeilDivision(packedK, SCALE_CEIL_NUMBER);
+            loadMxDataParams.srcStride = scaleK / SCALE_EVEN_NUMBER;
+            loadMxDataParams.dstStride = scaleK / SCALE_EVEN_NUMBER;
 
             uint32_t dstOffset = 0;
             uint16_t L0ALoopNum = CeilDivision(kaAlignL0, fractalShape[0] * fractalNum);
@@ -1108,8 +1108,8 @@ A矩阵转置输入[k, m]时，L1 -> L0A需要转置，单次调用`LoadData`并
                     loadMxDataParams.xStep = 0;
                     loadMxDataParams.yStep = 0;
                 } else {
-                    loadMxDataParams.xStep = mStepAlign;
-                    loadMxDataParams.yStep = CeilDivision(packedK, SCALE_CEIL_NUMBER);
+                    loadMxDataParams.xStep = CeilDivision(scaleMAlignL1, fractalShape[0]);
+                    loadMxDataParams.yStep = scaleK / SCALE_EVEN_NUMBER;
                 }
                 AscendC::LoadData(a2Local[dstOffset], a1Local, scaleA1Local, loadDataParams, loadMxDataParams);
                 dstOffset += CeilAlign(mAlignL0, fractalShape[0]) * fractalShape[1];
@@ -1163,15 +1163,17 @@ B矩阵转置输入[n, k]时，L1 -> L0B不需要转置，单次调用`LoadData`
             loadDataParams.dstStride = CeilDivision(nAlignL0, fractalShape[0]);
             loadDataParams.ifTranspose = false;
 
+            // 配置scaleB从L1->L0B_MX搬运的参数时，可将scaleNAlignL1的方向看做row，scaleK所在的方向看做col
+            // 即小分型16*2， 16在row方向，2在col方向
             AscendC::LoadData2DMxParams loadMxDataParams;
             // scaleB同步从L1源操作数的row方向第0个分形、col方向第0个32B块开始搬运
             loadMxDataParams.xStartPosition = 0;
             loadMxDataParams.yStartPosition = 0;
             // xStep/yStep配置scaleB的row/col方向搬运长度；stride按row方向相邻分形间隔配置
             loadMxDataParams.xStep = CeilDivision(scaleNAlignL1, fractalShape[0]);
-            loadMxDataParams.yStep = CeilDivision(packedK, SCALE_CEIL_NUMBER);
-            loadMxDataParams.srcStride = scaleK;
-            loadMxDataParams.dstStride = CeilDivision(packedK, SCALE_CEIL_NUMBER);
+            loadMxDataParams.yStep = scaleK / SCALE_EVEN_NUMBER;
+            loadMxDataParams.srcStride = scaleK / SCALE_EVEN_NUMBER;
+            loadMxDataParams.dstStride = scaleK / SCALE_EVEN_NUMBER;
 
             AscendC::LoadData(b2Local, b1Local, scaleB1Local, loadDataParams, loadMxDataParams);
 
@@ -1212,15 +1214,17 @@ B矩阵不转置输入[k, n]时，L1 -> L0B需要转置，单次调用`LoadData`
             loadDataParams.dstStride = CeilDivision(nAlignL0, fractalShape[0]);
             loadDataParams.ifTranspose = true;
 
+            // 配置scaleB从L1->L0B_MX搬运的参数时，可将scaleNAlignL1的方向看做row，scaleK所在的方向看做col
+            // 即小分型16*2， 16在row方向，2在col方向
             AscendC::LoadData2DMxParams loadMxDataParams;
             // scaleB同步从L1源操作数的row方向第0个分形、col方向第0个32B块开始搬运
             loadMxDataParams.xStartPosition = 0;
             loadMxDataParams.yStartPosition = 0;
             // xStep/yStep配置scaleB的row/col方向搬运长度；stride按row方向相邻分形间隔配置
             loadMxDataParams.xStep = CeilDivision(scaleNAlignL1, fractalShape[0]);
-            loadMxDataParams.yStep = CeilDivision(packedK, SCALE_CEIL_NUMBER);
-            loadMxDataParams.srcStride = scaleK;
-            loadMxDataParams.dstStride = CeilDivision(packedK, SCALE_CEIL_NUMBER);
+            loadMxDataParams.yStep = scaleK / SCALE_EVEN_NUMBER;
+            loadMxDataParams.srcStride = scaleK / SCALE_EVEN_NUMBER;
+            loadMxDataParams.dstStride = scaleK / SCALE_EVEN_NUMBER;
 
             AscendC::LoadData(b2Local, b1Local, scaleB1Local, loadDataParams, loadMxDataParams);
 
@@ -1296,7 +1300,7 @@ MX矩阵乘法公式为 C = (scaleA ⊗ A) * (scaleB ⊗ B)，`Mmad`指令会自
   cmake .. -DCMAKE_ASC_ARCHITECTURES=dav-3510 -DSCENARIO_NUM=$SCENARIO;make -j;    # 编译工程，默认npu模式
   python3 ../scripts/gen_data.py -scenarioNum=$SCENARIO   # 生成测试输入数据
   ./demo                           # 执行编译生成的可执行程序，执行样例
-  python3 ../scripts/verify_result.py -scenarioNum=$SCENARIO output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
+  python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
   ```
 
   使用 CPU调试 或 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。

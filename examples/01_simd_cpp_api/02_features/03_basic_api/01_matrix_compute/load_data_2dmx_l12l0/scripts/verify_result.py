@@ -12,14 +12,32 @@
 # ----------------------------------------------------------------------------------------------------------
 
 import sys
+import argparse
+from pathlib import Path
 import numpy as np
 
 
-def verify_result(scenario_num, output_file, golden_file):
-    m, n = 40, 50
+def read_result_file(file_path, label, expected_size):
+    path = Path(file_path)
+    if not path.is_file():
+        raise FileNotFoundError(
+            f"{label} file not found: {file_path}. "
+            f"Current directory: {Path.cwd()}. "
+            "Please run gen_data.py and ./demo in the build directory before verification."
+        )
 
-    output_data = np.fromfile(output_file, dtype=np.float32)
-    golden_data = np.fromfile(golden_file, dtype=np.float32)
+    data = np.fromfile(path, dtype=np.float32)
+    if data.size != expected_size:
+        raise ValueError(f"{label} file size error: expected {expected_size} float32 values, got {data.size}")
+    return data
+
+
+def verify_result(output_file, golden_file):
+    m, n = 40, 50
+    expected_size = m * n
+
+    output_data = read_result_file(output_file, "output", expected_size)
+    golden_data = read_result_file(golden_file, "golden", expected_size)
 
     output_data = output_data.reshape(m, n)
     golden_data = golden_data.reshape(m, n)
@@ -38,19 +56,14 @@ def verify_result(scenario_num, output_file, golden_file):
 
 
 if __name__ == "__main__":
-    scenario_num = 1
-    output_file = "output/output.bin"
-    golden_file = "output/golden.bin"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("output", type=str, nargs="?", default="output/output.bin")
+    parser.add_argument("golden", type=str, nargs="?", default="output/golden.bin")
+    args = parser.parse_args()
 
-    if len(sys.argv) > 1:
-        args = sys.argv[1:]
-        for arg in args:
-            if "scenarioNum" in arg:
-                scenario_num = int(arg.split("=")[1])
-            elif arg.endswith(".bin"):
-                if "output" in arg:
-                    output_file = arg
-                elif "golden" in arg:
-                    golden_file = arg
-
-    verify_result(scenario_num, output_file, golden_file)
+    try:
+        if not verify_result(args.output, args.golden):
+            sys.exit(1)
+    except Exception as e:
+        print(e)
+        sys.exit(1)

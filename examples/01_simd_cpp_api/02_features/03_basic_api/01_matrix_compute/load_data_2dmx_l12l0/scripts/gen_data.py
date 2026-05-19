@@ -113,9 +113,16 @@ def gen_golden_data_fp4(scenario_num, m, n, k):
 
     x1_gm = np.random.uniform(-2, 2, [m, k]).astype(a_dtype)
     x2_gm = np.random.uniform(-2, 2, [k, n]).astype(b_dtype)
-    
-    x1_scale_gm = np.random.randint(127, 130, [m, sk]).astype(np.uint8)
-    x2_scale_gm = np.random.randint(127, 130, [sk, n]).astype(np.uint8)
+
+    # 当scaleK = (k + 32 - 1) // 32为奇数时，根据指令约束需要给scale的k方向填0补齐到偶数，避免脏数据参与运算
+    x1_scale_gm = np.random.randint(0, 1, [m, sk]).astype(np.uint8)
+    x2_scale_gm = np.random.randint(0, 1, [sk, n]).astype(np.uint8)
+
+    x1_scale_gm_random = np.random.randint(127, 130, [m, scale_k_unaligned]).astype(np.uint8)
+    x2_scale_gm_random = np.random.randint(127, 130, [scale_k_unaligned, n]).astype(np.uint8)
+
+    x1_scale_gm[:, :scale_k_unaligned] = x1_scale_gm_random
+    x2_scale_gm[:scale_k_unaligned, :] = x2_scale_gm_random
 
     x1_full = mx_decompress(x1_gm.astype(np.float32), x1_scale_gm, 32)
     x2_full = mx_decompress_b(x2_gm.astype(np.float32), x2_scale_gm, 32)
@@ -174,8 +181,15 @@ def gen_golden_data_fp8(scenario_num, m, n, k):
     x1_gm = np.random.uniform(-10, 10, [m, k]).astype(a_dtype)
     x2_gm = np.random.uniform(-10, 10, [k, n]).astype(b_dtype)
     
-    x1_scale_gm = np.random.randint(127, 130, [m, sk]).astype(np.uint8)
-    x2_scale_gm = np.random.randint(127, 130, [sk, n]).astype(np.uint8)
+    # 当scaleK = (k + 32 - 1) // 32为奇数时，根据指令约束需要给scale的k方向填0补齐到偶数，避免脏数据参与运算
+    x1_scale_gm = np.random.randint(0, 1, [m, sk]).astype(np.uint8)
+    x2_scale_gm = np.random.randint(0, 1, [sk, n]).astype(np.uint8)
+
+    x1_scale_gm_random = np.random.randint(127, 130, [m, scale_k_unaligned]).astype(np.uint8)
+    x2_scale_gm_random = np.random.randint(127, 130, [scale_k_unaligned, n]).astype(np.uint8)
+
+    x1_scale_gm[:, :scale_k_unaligned] = x1_scale_gm_random
+    x2_scale_gm[:scale_k_unaligned, :] = x2_scale_gm_random
 
     x1_full = mx_decompress(x1_gm.astype(np.float32), x1_scale_gm, 32)
     x2_full = mx_decompress_b(x2_gm.astype(np.float32), x2_scale_gm, 32)
