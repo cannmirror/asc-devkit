@@ -32,6 +32,7 @@ constexpr size_t FOUR_DIM_DATA = 4;
 constexpr size_t FRACTAL_FIXED = 16;
 constexpr size_t MX_SCALE_K0 = 2;
 constexpr uint32_t BLOCK_CUBE = 16;
+constexpr uint64_t HIFLOAT8_MMAD_CTRL_MASK = 0x200000000000ULL;
 
 struct ArchVersion {
     static constexpr uint32_t V3510 = 3510;
@@ -59,8 +60,6 @@ namespace CopyMode {
     struct TRANS_B8B4_COORD {};
 };
 
-enum class LayoutFormat : uint8_t { NZ, ZN, ZZ, DN, ND, NN};
-
 namespace Location {
     struct INVALID {};
     struct GM {};
@@ -68,10 +67,31 @@ namespace Location {
     struct L1 {};
     struct L0A {};
     struct L0B {};
+    struct L0ScaleA {};
+    struct L0ScaleB {};
     struct L0C {};
     struct BIAS {};
     struct FIXBUF {};
+    struct SSBUF {};
 }
+
+template <typename T>
+struct IsHardware {
+private:
+    template <typename Tp, typename... Tps>
+    __aicore__ inline static constexpr bool IsUnqualifiedAnyOf() {
+        return (... || Std::is_same_v<Std::remove_cvref_t<Tp>, Tps>);
+    }
+
+public:
+    static constexpr bool value = IsUnqualifiedAnyOf<T,
+        Location::INVALID, Location::GM, Location::UB, Location::L1,
+        Location::L0A, Location::L0B, Location::L0ScaleA, Location::L0ScaleB,
+        Location::L0C, Location::BIAS, Location::FIXBUF, Location::SSBUF>();
+};
+
+template <typename T>
+constexpr bool IsHardwareV = IsHardware<T>::value;
 
 template <typename TupleType>
 using tuple_sequence = Std::make_index_sequence<Std::tuple_size_v<Std::remove_cvref_t<TupleType>>>;
@@ -87,11 +107,13 @@ struct locationAttr {
     using fbufAttr =        __fbuf__    T*;
     using ssbufAttr =       __ssbuf__   T*;
     using biasbufAttr =     __biasbuf__ T*;
+    using noneAttr =                    T*;
 
     using type = Std::tuple<gmAttr, cbufAttr, caAttr, cbAttr, ccAttr, ubufAttr, fbufAttr, ssbufAttr, biasbufAttr>;
 
     using locationMap = TupleMap<Std::tuple<Location::GM, gmAttr>, Std::tuple<Location::L1, cbufAttr>, Std::tuple<Location::L0A, caAttr>,
-    Std::tuple<Location::L0B, cbAttr>, Std::tuple<Location::L0C, ccAttr>, Std::tuple<Location::UB, ubufAttr>, 
+    Std::tuple<Location::L0B, cbAttr>, Std::tuple<Location::L0ScaleA, noneAttr>,
+    Std::tuple<Location::L0ScaleB, noneAttr>, Std::tuple<Location::L0C, ccAttr>, Std::tuple<Location::UB, ubufAttr>, 
     Std::tuple<Location::BIAS, biasbufAttr>, Std::tuple<Location::FIXBUF, fbufAttr>>;
 };
 
