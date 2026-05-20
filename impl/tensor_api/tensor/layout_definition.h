@@ -58,9 +58,10 @@ public:
         static_assert(Std::is_tuple_v<T> && Std::is_tuple_v<U>, "Shape or Stride is not tuple!");
     }
 
+    template <size_t... I>
     __aicore__ inline constexpr decltype(auto) Capacity() const
     {
-        return GetCapacity(Shape(), Stride());
+        return GetCapacity(Shape<I...>(), Stride<I...>());
     }
 
     __aicore__ inline constexpr decltype(auto) layout()

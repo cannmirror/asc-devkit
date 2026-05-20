@@ -28,33 +28,41 @@ namespace AscendC {
 namespace Te {
 
 template <typename... Ts>
-__aicore__ inline constexpr Shape<Ts...> MakeShape(const Ts&... t)
+struct HasZeroIntegralConstant : Std::bool_constant<
+    (... || Std::is_same_v<Std::remove_cvref_t<Ts>, Std::Int<0>>)> {};
+
+template <typename T, typename... Ts>
+__aicore__ inline constexpr Shape<T, Ts...> MakeShape(const T& t, const Ts&... ts)
 {
-    return {t...};
+    static_assert(!HasZeroIntegralConstant<T, Ts...>::value,
+        "MakeShape does not accept Int<0> arguments.");
+    return {t, ts...};
 }
 
-template <typename... Ts>
-__aicore__ inline constexpr Stride<Ts...> MakeStride(const Ts&... t)
+template <typename T, typename... Ts>
+__aicore__ inline constexpr Stride<T, Ts...> MakeStride(const T& t, const Ts&... ts)
 {
-    return {t...};
+    return {t, ts...};
 }
 
-template <typename... Ts>
-__aicore__ inline constexpr Tile<Ts...> MakeTile(const Ts&... t)
+template <typename T, typename... Ts>
+__aicore__ inline constexpr Tile<T, Ts...> MakeTile(const T& t, const Ts&... ts)
 {
-    return {t...};
+    return {t, ts...};
 }
 
-template <typename... Ts>
-__aicore__ inline constexpr Coord<Ts...> MakeCoord(const Ts&... t)
+template <typename T, typename... Ts>
+__aicore__ inline constexpr Coord<T, Ts...> MakeCoord(const T& t, const Ts&... ts)
 {
-    return {t...};
+    return {t, ts...};
 }
 
 template <typename T, typename U>
 __aicore__ inline constexpr auto MakeLayout(const T& shape, const U& stride)
 {
     static_assert(Std::is_tuple_v<T> && Std::is_tuple_v<U>, "Shape or Stride is not tuple!");
+    static_assert(NestingDepthV<T> == NestingDepthV<U> && Std::tuple_size_v<T> == Std::tuple_size_v<U>,
+                    "Shape and Stride structure are not compatible.");
     return Layout<T, U>(shape, stride);
 }
 
@@ -244,7 +252,7 @@ template <size_t... Is, typename LayoutType,
     typename = Std::enable_if_t<IsLayoutV<LayoutType>>>
 __aicore__ inline constexpr auto Capacity(const LayoutType& layout)
 {
-    return layout.Capacity();
+    return layout.template Capacity<Is...>();
 }
 
 template <typename Tensor, typename Coord, typename Info>
