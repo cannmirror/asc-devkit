@@ -28,7 +28,7 @@
 
 - 样例规格：
   - Mmad样例：  
-    矩阵乘规格：M = 16, N = 16, K = 16，详细信息如下表：
+    矩阵乘规格：M = 32, N = 32, K = 32，详细信息如下表：
     <table>
     <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="4" align="center">Mmad</td></tr>
     </tr>

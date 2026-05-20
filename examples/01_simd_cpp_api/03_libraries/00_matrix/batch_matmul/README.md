@@ -28,7 +28,7 @@
 - 样例功能：  
   调用Matmul高阶API，实现批量处理3组Matmul计算，每组对BSNGD格式的A、B矩阵分别做矩阵乘和加bias偏置。
 
-  BSNGD格式具体可参考[IterateBatch](../../../../../docs/api/context/IterateBatch.md)中对该数据排布的介绍。
+  BSNGD格式具体可参考[IterateBatch](../../../../../docs/api/SIMD-API/高阶API/矩阵计算/Matmul-Kernel侧接口/IterateBatch.md)中对该数据排布的介绍。
 
 - 样例规格：   
   <table>

@@ -20,7 +20,7 @@
 - 样例功能：  
   BatchMatmul样例，批量处理3组Matmul计算，每组对NORMAL格式的A、B矩阵分别做矩阵乘和加bias偏置。通过配置MatmulConfig的isBiasBatch参数，使能每次Matmul计算时复用同一个Bias矩阵。
   
-  NORMAL格式具体可参考[IterateBatch](../../../../../docs/api/context/IterateBatch.md)中对该数据排布的介绍。
+  NORMAL格式具体可参考[IterateBatch](../../../../../docs/api/SIMD-API/高阶API/矩阵计算/Matmul-Kernel侧接口/IterateBatch.md)中对该数据排布的介绍。
 
 - 约束条件
   - 输入和输出的Layout类型都为NORMAL时，不支持BatchMode为SINGLE_LARGE_THAN_L1的场景。

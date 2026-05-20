@@ -13,7 +13,7 @@
 ## 目录结构介绍
 
 ```
-├── torch_library
+├── torch_library_report_tensor
 │   ├── CMakeLists.txt           // 编译工程文件
 │   ├── add_custom_test.py       // PyTorch调用脚本
 │   ├── add_custom.asc           // 集成Profiling采集Shape信息

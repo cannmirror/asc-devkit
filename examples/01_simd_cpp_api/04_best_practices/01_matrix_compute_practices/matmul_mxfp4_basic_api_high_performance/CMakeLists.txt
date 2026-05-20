@@ -14,10 +14,6 @@ cmake_minimum_required(VERSION 3.16)
 set(CMAKE_ASC_RUN_MODE "npu" CACHE STRING "Run mode: npu, sim")
 set(CMAKE_ASC_ARCHITECTURES "dav-3510" CACHE STRING "NPU architecture: dav-3510")
 
-# if(NOT CMAKE_ASC_ARCHITECTURES STREQUAL "dav-3510")
-#    message(FATAL_ERROR "matmul_mxfp4_basic_api_high_performance only supports CMAKE_ASC_ARCHITECTURES=dav-3510")
-# endif()
-
 find_package(ASC REQUIRED)
 
 project(kernel_samples LANGUAGES ASC CXX)

@@ -41,7 +41,7 @@
   </tr>
   <tr><td rowspan="1" align="center">样例输出</td><td align="center">c</td><td align="center">[M, N]</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td></tr>
   </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">matmul_mx_custom</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">matmulMxNormEvenCustom</td></tr>
   </table>
 
 - 样例实现： 

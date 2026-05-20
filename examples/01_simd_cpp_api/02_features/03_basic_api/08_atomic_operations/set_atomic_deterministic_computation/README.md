@@ -8,7 +8,7 @@
 
 ## 目录结构介绍
 ```
-├── set_atomic_determine_compute
+├── set_atomic_deterministic_computation
 │   ├── figures                      // README中图片资源目录
 │   ├── scripts
 │   │   ├── gen_data.py         // 输入数据和真值数据生成脚本
@@ -18,7 +18,7 @@
 │   ├── set_atomic_add_multi_aic.h    // 多AIC核同步实现
 │   ├── set_atomic_add_multi_aiv.h    // 多AIV核同步实现
 │   ├── set_atomic_add_single_aiv.h   // 单AIV核同步实现
-│   ├── set_atomic_determine_compute.asc  // Ascend C样例实现 & 调用样例
+│   ├── set_atomic_deterministic_computation.asc  // Ascend C样例实现 & 调用样例
 ```
 
 ## 1. 确定性计算

@@ -13,7 +13,7 @@
 ## 目录结构介绍
 
 ```
-├── matmul_leakyrelu
+├── msProf
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
 │   ├── matmul_leakyrelu.asc    // Ascend C算子实现 & 调用样例

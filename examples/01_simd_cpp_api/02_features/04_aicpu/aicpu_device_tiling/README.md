@@ -11,7 +11,7 @@
 
 ## 目录结构介绍
 ```
-├── 02_aicpu_device_tiling
+├── aicpu_device_tiling
 │   ├── CMakeLists.txt                     // 编译工程文件
 │   ├── aicore_kernel.asc                  // AI Core算子实现
 │   ├── kernel_args.h                      // tiling结构体头文件

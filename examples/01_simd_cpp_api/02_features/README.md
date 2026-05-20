@@ -2,7 +2,7 @@
 
 ## 概述
 
-基于Ascend C特性样例，介绍了Aclnn（ge入图）工程、LocalMemoryAllocator、Barrier单独内存申请分配等特性。
+介绍 Ascend C SIMD 特性样例，覆盖编译工程、算子调用、框架接入、Basic API、AI CPU 以及 Tensor API 等场景，用于展示不同特性的典型实现方式和编译运行流程。
 
 ## 样例列表
 
