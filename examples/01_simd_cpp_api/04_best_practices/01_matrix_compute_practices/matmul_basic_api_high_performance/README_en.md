@@ -397,51 +397,61 @@ Compared to Atlas A2 Training Series Chip, Ascend 950PR Chip data transfer is mo
 
 Execute the following steps in the sample root directory to build and run the sample.
 
+- Switch Case
+
+  Specify the scenario to compile through `-DSCENARIO_NUM=N` during cmake compilation. Scenario descriptions:
+  - `1`: Not enable L2Cache splitting
+  - `2`: Enable L2Cache splitting
+
 - Configure Environment Variables
-  Select the corresponding environment variable configuration command based on the [installation method](../../../../../docs/en/quick_start.md#prepare&install) of the CANN development kit package in the current environment.
-  - Default path, root user installed CANN software package
+
+  Select the appropriate command to configure environment variables based on the [installation method](../../../../../docs/en/quick_start.md#prepare&install) of the CANN development kit on your current environment.
+  - Default path, CANN package installed by root user
     ```bash
     source /usr/local/Ascend/cann/set_env.sh
     ```
 
-  - Default path, non-root user installed CANN software package
+  - Default path, CANN package installed by non-root user
     ```bash
     source $HOME/Ascend/cann/set_env.sh
     ```
 
-  - Specified path install_path, installed CANN software package
+  - Specified path install_path, CANN package installed
     ```bash
     source ${install_path}/cann/set_env.sh
     ```
 
-- Sample Execution
+- Execute Example
+
   ```bash
-  SCENARIO=1                                                           # Select execution scenario (1 for not enabling L2Cache splitting, 2 for enabling L2Cache splitting)
-  mkdir -p build && cd build;                                          # Create and enter build directory
-  cmake -DSCENARIO_NUM=$SCENARIO -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;  # Build project (default npu mode)
-  python3 ../scripts/gen_data.py                                       # Generate test input data
-  ./demo                                                               # Execute compiled executable program
-  python3 ../scripts/verify_result.py output/output.bin output/golden.bin
+  SCENARIO_NUM=1
+  mkdir -p build && cd build;      # Create and enter build directory
+  cmake .. -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=$SCENARIO_NUM;make -j;    # Build project, default npu mode
+  python3 ../scripts/gen_data.py   # Generate test input data
+  ./demo                           # Execute the compiled executable program to run the example
+  python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # Verify output result correctness and confirm algorithm logic
   ```
 
-  When using CPU debug or NPU simulation mode, add `-DCMAKE_ASC_RUN_MODE=cpu` or `-DCMAKE_ASC_RUN_MODE=sim` parameter.
+  When using NPU simulation mode, add the `-DCMAKE_ASC_RUN_MODE=sim` parameter.
 
   Example:
   ```bash
-  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;   # NPU simulation mode
+  cmake .. -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=$SCENARIO_NUM;make -j; # NPU simulation mode
   ```
 
-  > **Note:** Before switching build mode, need to clear cmake cache. Can execute `rm CMakeCache.txt` in build directory and then re-run cmake.
+  > **Note:** Before switching compilation mode or Scenario, you need to clean the cmake cache. You can execute `rm CMakeCache.txt` in the build directory and then re-run cmake.
 
-- Build Option Description
+- Compilation Options Description
 
-  | Parameter | Description | Available Values | Default Value |
-  |------|------|---------|--------|
-  | `SCENARIO_NUM` | `1` / `2` | 1: Not enable L2Cache splitting; 2: Enable L2Cache splitting | `1` |
-  | `CMAKE_ASC_RUN_MODE` | Run mode | `npu`, `sim` | `npu` |
-  | `CMAKE_ASC_ARCHITECTURES` | NPU hardware architecture | `dav-2201`, `dav-3510` | `dav-2201` |
+  | Option | Available Values | Description |
+  |------|--------|------|
+  | `CMAKE_ASC_RUN_MODE` | `npu` (default), `sim` | Run mode: NPU run, NPU simulation |
+  | `CMAKE_ASC_ARCHITECTURES` | `dav-2201`, `dav-3510` | NPU architecture: dav-2201 corresponds to A2/A3, dav-3510 corresponds to Ascend 950PR |
+  | `SCENARIO_NUM` | `1`, `2` | Scenario number: 1=Not enable L2Cache splitting, 2=Enable L2Cache splitting |
 
-  The execution result shown below indicates the accuracy comparison succeeded.
+- Execution Result
+
+  The following output indicates successful precision comparison.
   ```bash
   test pass!
   ```

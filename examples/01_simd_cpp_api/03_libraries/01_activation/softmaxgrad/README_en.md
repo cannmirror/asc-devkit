@@ -69,19 +69,18 @@ Execute the following steps in the root directory of this example to build and r
 
 - Configure Environment Variables
 
-  Select the corresponding command to configure environment variables based on the [installation method](../../../../../docs/en/quick_start.md#prepare&install) of the CANN development toolkit package on your current environment.
-
-  - Default path, root user installed CANN software package
+  Select the appropriate command to configure environment variables based on the [installation method](../../../../../docs/en/quick_start.md#prepare&install) of the CANN development kit on your current environment.
+  - Default path, CANN package installed by root user
     ```bash
     source /usr/local/Ascend/cann/set_env.sh
     ```
 
-  - Default path, non-root user installed CANN software package
+  - Default path, CANN package installed by non-root user
     ```bash
     source $HOME/Ascend/cann/set_env.sh
     ```
 
-  - Specified path install_path, installed CANN software package
+  - Specified path install_path, CANN package installed
     ```bash
     source ${install_path}/cann/set_env.sh
     ```
