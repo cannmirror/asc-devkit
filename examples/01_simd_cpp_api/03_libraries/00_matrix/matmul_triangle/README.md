@@ -8,9 +8,11 @@ TrianUpperMatmulPolicy（上三角模板策略）和TrianLowerMatmulPolicy（下
 ## 目录结构介绍
 ```
 ├── matmul_triangle
-│   └── scripts
-│       ├── gen_data.py         // 输入数据和真值数据生成脚本文件
-│       └── verify_result.py    // 真值对比文件
+│   ├── figures
+│   │   └── matmul_triangle.png // 样例原理图
+│   ├── scripts
+│   │   ├── gen_data.py         // 输入数据和真值数据生成脚本文件
+│   │   └── verify_result.py    // 真值对比文件
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
 │   └── matmul_triangle.asc     // Ascend C样例实现 & 调用样例
@@ -20,7 +22,7 @@ TrianUpperMatmulPolicy（上三角模板策略）和TrianLowerMatmulPolicy（下
   使用上三角模板策略时，index为0、5、10、15的核，使用上三角模板策略进行三角矩阵计算；index为4、8、9、12、13、14的核，进行常规的矩阵乘计算；index为1、2、3、6、7、11的核不执行计算。  
   使用下三角模板策略时，index为0、5、10、15的核，使用下三角模板策略进行三角矩阵计算；index为1、2、3、6、7、11的核，进行常规的矩阵乘计算；index为4、8、9、12、13、14的核不执行计算。
 
-  ![mm_triangle.png](../../../../../docs/api/context/figures/mm_triangle.png)
+  ![mm_triangle.png](./figures/matmul_triangle.png)
 
 - 样例规格：  
   本样例中：M = 2558, N = 2045, K = 128。
