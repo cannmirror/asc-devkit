@@ -26,19 +26,38 @@
 namespace AscendC {
 namespace Te {
 
-template <typename Tp, const Tp& traits, typename T, typename... Params>
-__aicore__ inline void Copy(const CopyAtom<T>& atomCopy, const Params& ...params);
+/**
+ * @brief Perform a copy operation with a preconstructed CopyAtom.
+ * @param atomCopy : Copy atom object that determines the copy behavior.
+ * @param dst : Destination tensor.
+ * @param src : Source tensor.
+ */
+template <typename AtomType, typename DstTensor, typename SrcTensor>
+__aicore__ inline void Copy(const CopyAtom<AtomType>& atomCopy, const DstTensor& dst, const SrcTensor& src);
 
-template <typename T, typename... Params>
-__aicore__ inline void Copy(const CopyAtom<T>& atomCopy, const Params& ...params);
+/**
+ * @brief Perform a copy operation with a preconstructed CopyAtom and a quantization parameter.
+ * @param atomCopy : Copy atom object that determines the copy behavior.
+ * @param dst : Destination tensor.
+ * @param src : Source tensor.
+ * @param quant : Quantization parameter, which can be a scalar or a Tensor API tensor.
+ */
+template <typename AtomType, typename DstTensor, typename SrcTensor, typename QuantParam,
+    Std::enable_if_t<IsCopyQuantParamV<QuantParam>, int> Enable>
+__aicore__ inline void Copy(const CopyAtom<AtomType>& atomCopy, const DstTensor& dst, const SrcTensor& src,
+    const QuantParam& quant);
 
-template <typename T, typename U, Std::enable_if_t<IsAttrTensorV<T> && IsAttrTensorV<U>, int>,
-    typename... Params>
-__aicore__ inline void
-Copy(const T& dst, const U& src, const Params& ...params);
+/**
+ * @brief Construct a CopyAtom from the copy operation type.
+ */
+template <typename CopyOperationType>
+__aicore__ inline constexpr auto MakeCopy();
 
-template <typename... Args>
-__aicore__ inline constexpr auto MakeCopy(const Args& ...traits);
+/**
+ * @brief Construct a CopyAtom from the copy operation type and trait type.
+ */
+template <typename CopyOperationType, typename CopyTraitType>
+__aicore__ inline constexpr auto MakeCopy();
 
 }
 }

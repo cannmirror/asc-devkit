@@ -38,7 +38,7 @@ void RunCopyCallPaths(const DstTensor& dst, const SrcTensor& src)
 {
     using namespace AscendC::Te;
 
-    auto atom = MakeCopy(CopyOp{}, Trait{});
+    auto atom = MakeCopy<CopyOp, Trait>();
     atom.Call(dst, src);
 
     CopyAtom<CopyTraits<CopyOp, Trait>>{}.Call(dst, src);
@@ -73,9 +73,7 @@ TEST_F(Tensor_Api_Cube_Copy_L12L0ScaleA_3510, CopyL12L0ScaleARoutesToCubeArchCop
 
     RunCopyCallPaths<CopyL12L0ScaleA, CopyL12L0ScaleATraitDefault>(l0aTensor, l1Tensor);
     RunCopyWithPaths<CopyL12L0ScaleA, CopyL12L0ScaleATraitDefault>(l0aTensor, l1Tensor);
-    Copy(CopyAtom<CopyTraits<CopyL12L0ScaleA, CopyL12L0ScaleATraitDefault>>{}, l0aTensor, l1Tensor, coord);
-    Copy(l0aTensor, l1Tensor);
-    Copy(l0aTensor, l1Tensor, coord);
+    CopyAtom<CopyTraits<CopyL12L0ScaleA, CopyL12L0ScaleATraitDefault>>{}.Call(l0aTensor, l1Tensor, coord);
 
     EXPECT_EQ(dst[0], static_cast<fp8_e8m0_t>(0));
 }

@@ -57,12 +57,10 @@ using namespace AscendC::Te;
         para.unitFlag = 0;                                                                                         \
         para.cmatrixInitVal = false;                                                                              \
                                                                                                                    \
-        auto mmadAtom = MakeMmad(MmadOperation{}, MmadTraitDefault{}).with(para);                                 \
+        auto mmadAtom = MakeMmad<MmadOperation, MmadTraitDefault>().with(para);                                 \
         Mmad(mmadAtom, l0cTensor, l0aTensor, l0bTensor, biasTensor);                                               \
-        Mmad(l0cTensor, l0aTensor, l0bTensor, biasTensor, para);                                                   \
         Mmad(mmadAtom, l0cTensor, l0cTensor, l0bTensor, biasTensor);                                               \
-        Mmad<MmadTraitDefault::TraitType, MmadTraitDefault::value>(                                                 \
-            mmadAtom, l0cTensor, l0aTensor, l0bTensor, biasTensor);                                                \
+        Mmad(mmadAtom, l0cTensor, l0aTensor, l0bTensor, biasTensor);                                               \
         EXPECT_EQ(c2Addr[0], static_cast<DST_TYPE>(0));                                                           \
     }
 
@@ -97,11 +95,9 @@ using namespace AscendC::Te;
         para.unitFlag = 0;                                                                                         \
         para.cmatrixInitVal = false;                                                                              \
                                                                                                                    \
-        auto mmadAtom = MakeMmad(MmadOperation{}, MmadTraitDefault{}).with(para);                                 \
+        auto mmadAtom = MakeMmad<MmadOperation, MmadTraitDefault>().with(para);                                 \
         Mmad(mmadAtom, l0cTensor, l0aTensor, l0bTensor, biasTensor);                                               \
-        Mmad(l0cTensor, l0aTensor, l0bTensor, biasTensor, para);                                                   \
-        Mmad<MmadTraitDefault::TraitType, MmadTraitDefault::value>(                                                 \
-            mmadAtom, l0cTensor, l0aTensor, l0bTensor, biasTensor);                                                \
+        Mmad(mmadAtom, l0cTensor, l0aTensor, l0bTensor, biasTensor);                                               \
         EXPECT_EQ(c2Addr[0], static_cast<DST_TYPE>(0));                                                           \
     }
 
