@@ -69,7 +69,7 @@ This sample demonstrates how to report operator Shape information during Profili
 
 - Configure Environment Variables
 
-  Select the appropriate command to configure environment variables based on the [installation method](../../../../../../docs/en/quick_start.md#prepare&install) of the CANN development kit package in your current environment.
+  Select the appropriate command to configure environment variables based on the [installation method](../../../../../docs/en/quick_start.md#prepare&install) of the CANN development kit package in your current environment.
   - Default path, CANN package installed by root user
 
     ```bash
