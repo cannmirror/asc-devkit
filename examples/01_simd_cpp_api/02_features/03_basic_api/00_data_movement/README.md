@@ -11,6 +11,7 @@
 | [auxscalar_reg](./auxscalar_reg)                          | 本样例演示使用AuxScalar方式从UB读取多个标量数据参与计算 |
 | [broadcast_ub2l0c](./broadcast_ub2l0c)                    | 本样例基于BroadCastVecToMM实现数据广播搬运，将位于UB（Unified Buffer）上数据进行广播并搬运到CO1（L0C Buffer） |
 | [copy_ub2ub](./copy_ub2ub)                                | 本样例基于Copy实现数据搬运，适用于VECIN，VECOUT之间的数据搬运，支持mask连续模式和counter模式。 |
+| [data_copy_gm2l1](./data_copy_gm2l1)                      | 本样例介绍如何使用DataCopy将输入数据从GM（Global Memory）搬出到L1（L1 Buffer） |
 | [data_copy_gm2ub_nddma](./data_copy_gm2ub_nddma)          | 本样例介绍如何使用多维数据搬运接口实现GM（Global Memory）到UB（Unified Buffer）通路的数据搬运，通过自由配置搬入的维度信息以及对应的Stride，可以用于Padding、Transpose、BroadCast、Slice等多种数据变换操作 |
 | [data_copy_gm2ub_slice](./data_copy_gm2ub_slice)          | 本样例基于DataCopy实现数据切片搬运，提取多维Tensor数据的子集进行GM（Global Memory）与UB（Unified Buffer）通路之间的搬运 |
 | [data_copy_l0c2gm](./data_copy_l0c2gm)                    | 本样例在卷积场景下，基于DataCopy实现数据随路量化激活搬运 |

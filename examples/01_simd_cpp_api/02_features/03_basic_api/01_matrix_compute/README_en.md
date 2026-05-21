@@ -3,16 +3,14 @@
 ## Overview
 
 This sample set introduces typical usage of different features of matrix computation APIs, providing corresponding end-to-end implementations. Samples in the directory are named according to "API_name_pathway", as follows:
-1. **data_copy**: Samples starting with "data_copy" introduce related APIs for Global Memory -> L1 Buffer;
-2. **load_data**: Samples starting with "load_data" introduce related APIs for L1 Buffer -> L0 Buffer;
-3. **mmad**: Samples starting with "mmad" introduce matrix multiplication Mmad API;
-4. **fixpipe**: Samples starting with "fixpipe" introduce related APIs for L0C Buffer → Global Memory/L1 Buffer/Unified Buffer;
+1. **load_data**: Samples starting with "load_data" introduce related APIs for L1 Buffer -> L0 Buffer;
+2. **mmad**: Samples starting with "mmad" introduce matrix multiplication Mmad API;
+3. **fixpipe**: Samples starting with "fixpipe" introduce related APIs for L0C Buffer → Global Memory/L1 Buffer/Unified Buffer;
 
 ## Sample List
 
 | Directory Name | Function Description |
 |--------------------------------------------------------------------------------------------| ---------------------------------------------------- |
-| [data_copy_gm2l1](./data_copy_gm2l1) | This sample introduces how to use DataCopy to move input data from GM (Global Memory) to L1 (L1 Buffer) |
 | [fixpipe_l0c2gm](./fixpipe_l0c2gm) | This sample introduces how to use Fixpipe to move matrix multiplication results from CO1 (L0C Buffer) to GM (Global Memory) |
 | [fixpipe_l0c2ub](./fixpipe_l0c2ub) | This sample introduces how to use Fixpipe to move matrix multiplication results from CO1 (L0C Buffer) to UB (Unified Buffer) |
 | [fixpipe_l0c2l1](./fixpipe_l0c2l1) | This sample introduces how to use Fixpipe to move matrix multiplication results from CO1 (L0C Buffer) to L1 (L1 Buffer) |
