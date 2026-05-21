@@ -252,35 +252,9 @@ done
 - case3相对case2的变化，说明规避Bank冲突是否进一步改善性能。
 - 如果某个case性能没有提升，需要结合矩阵规模、硬件、编译选项和msprof数据说明可能原因。
 
-## 7. 一键复现实验命令
 
-如果已经完成代码下载，可直接执行下面命令重新编译并运行两个样例：
 
-```bash
-source /usr/local/Ascend/cann/set_env.sh
-cd ${ASC_DEVKIT_ROOT}
-
-cd ${ASC_DEVKIT_ROOT}/demo/simt/basic_scatter
-mkdir -p build
-cd build
-cmake ..
-make -j
-./scatter
-./scatter 8 32
-
-cd ${ASC_DEVKIT_ROOT}/demo/simt/matrix_transpose
-for s in 0 1 2 3; do
-  echo "=== matrix_transpose SCENARIO_NUM=${s} ==="
-  mkdir -p build_case_${s}
-  cd build_case_${s}
-  cmake -DSCENARIO_NUM=${s} ..
-  make -j
-  ./matrix_transpose
-  cd ..
-done
-```
-
-## 8. 注意事项
+## 7. 注意事项
 
 1. `SCENARIO_NUM` 必须显式设置为 `0`、`1`、`2` 或 `3`。不要执行 `cmake -DSCENARIO_NUM=$SCENARIO_NUM ..` 时让 shell 变量为空，否则会生成空宏并导致编译失败。
 2. 如果运行时报 `context is a null pointer`，优先检查 CANN 环境是否已 source、设备是否可见、当前用户是否有设备访问权限。
