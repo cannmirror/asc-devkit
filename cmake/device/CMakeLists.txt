@@ -23,6 +23,8 @@ get_filename_component(ASC_DEVKIT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLU
 
 find_cann_package(aicpu_sharder REQUIRED)
 find_cann_package(tilingdata_base REQUIRED OBJECTS)
+find_cann_package(metadef REQUIRED)
+find_cann_package(unified_dlog REQUIRED)
 
 include(${ASCENDC_DIR}/impl/adv_api/gen_kernel_tiling.cmake)
 

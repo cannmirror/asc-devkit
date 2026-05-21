@@ -22,8 +22,6 @@ if(BUILD_OPEN_PROJECT)
   target_include_directories(asc_platform PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/c_api
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
-    ${ASCEND_CANN_PACKAGE_PATH}/include
-    ${ASCEND_CANN_PACKAGE_PATH}/include/base
   )
 else()
   target_include_directories(asc_platform PRIVATE

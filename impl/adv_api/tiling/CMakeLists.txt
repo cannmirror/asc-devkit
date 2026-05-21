@@ -18,11 +18,6 @@ target_include_directories(
     $<BUILD_INTERFACE:${ASCENDC_DIR}>
     $<BUILD_INTERFACE:${ASCENDC_DIR}/include>
     $<$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>:$<BUILD_INTERFACE:${ASCENDC_DIR}/include/adv_api>>
-    $<$<BOOL:${BUILD_OPEN_PROJECT}>:$<BUILD_INTERFACE:${ASCEND_CANN_PACKAGE_PATH}>>
-    $<$<BOOL:${BUILD_OPEN_PROJECT}>:$<BUILD_INTERFACE:${ASCEND_CANN_PACKAGE_PATH}/include>>
-    $<$<BOOL:${BUILD_OPEN_PROJECT}>:$<BUILD_INTERFACE:${ASCEND_CANN_PACKAGE_PATH}/include/base>>
-    $<$<BOOL:${BUILD_OPEN_PROJECT}>:$<BUILD_INTERFACE:${ASCEND_CANN_PACKAGE_PATH}/pkg_inc>>
-    $<$<BOOL:${BUILD_OPEN_PROJECT}>:$<BUILD_INTERFACE:${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base>>
     $<$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>:$<BUILD_INTERFACE:${ASCENDC_DIR}/include/basic_api>>
     $<$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>:$<BUILD_INTERFACE:${ASCENDC_DIR}/../../asc/asc-devkit>>
     $<$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>:$<BUILD_INTERFACE:${ASCENDC_DIR}/../../asc/asc-devkit/include>>
@@ -35,7 +30,10 @@ target_include_directories(
     $<INSTALL_INTERFACE:include/ascendc/include/highlevel_api/tiling>)
 
 target_link_libraries(tiling_api_headers
-                      INTERFACE $<BUILD_INTERFACE:tikcfw_headers>)
+                      INTERFACE 
+                      $<BUILD_INTERFACE:metadef_headers>
+                      $<BUILD_INTERFACE:unified_dlog>
+                      $<BUILD_INTERFACE:tikcfw_headers>)
 
 add_library(
   tiling_api STATIC

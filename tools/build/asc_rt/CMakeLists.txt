@@ -11,12 +11,10 @@ add_library(ascend_runtime_base OBJECT ascendc_runtime.cpp aicpu_rt.cpp)
 
 if(BUILD_OPEN_PROJECT)
   target_include_directories(ascend_runtime_base PRIVATE
-    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime
-    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/profiling
-    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc
-    ${ASCEND_CANN_PACKAGE_PATH}/include/acl
-    ${ASCEND_CANN_PACKAGE_PATH}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
+  )
+  target_link_libraries(ascend_runtime_base PRIVATE
+    runtime_headers
   )
 else()
   target_include_directories(ascend_runtime_base PRIVATE
