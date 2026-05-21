@@ -6,7 +6,7 @@ SuperKernel是一种算子的二进制融合技术，与源码融合不同，它
 >- SuperKernel仅适用于静态图场景。
 >- SuperKernel适用于如下型号：
 >    - Atlas A3 训练系列产品/Atlas A3 推理系列产品
->    - Ascend 950PR/Ascend 950DT
+>    - Ascend 950PR/Ascend 950DT，该型号下SuperKernel特性是试验特性，在后续版本中会调整或改进，不保证后续兼容性，请开发者在使用过程中关注后续版本更新。
 
 ## 自定义算子支持SuperKernel<a name="section20981216853"></a>
 
