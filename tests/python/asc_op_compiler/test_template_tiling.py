@@ -22,6 +22,7 @@ FRAMEWORK_PATH = os.path.join(TOP_PATH, "tools/build/")
 sys.path.insert(0, FRAMEWORK_PATH)
 
 import asc_op_compile_base
+from asc_op_compile_base.asc_op_compiler import template_tiling
 from asc_op_compile_base.asc_op_compiler.template_tiling import *
 
 
@@ -183,6 +184,78 @@ class TestCompileOp(unittest.TestCase):
                 result = decode_tiling()
                 self.assertEqual(result.get(17435146).get("paramArgs"), ['10', '10', '10', '1', '0'])
                 self.assertEqual(result.get(17435146).get("kernelType"), 2)
+
+    def test_template_tiling_datatype(self):
+        input0 = int(template_tiling.ASCENDC_TPL_INPUT_BIAS)
+        output0 = int(template_tiling.ASCENDC_TPL_OUTPUT_BIAS)
+        input0_expr = f"({input0} + (3 * 7 - 21))"
+        output0_expr = f"({output0} + ((8 // 4) - 2))"
+        d_t_x_sel_expr = "(13 * 2 + 1)"
+        d_t_y_sel_expr = "((5 - 2) * 1)"
+        declare_param_str = \
+            f"@@ASCENDC_TPL_ARGS_DECL_AddTemplateCustom@@ = {{@@ASCENDC_TPL_DATATYPE_DECL_D_T_X@@ = {{C_DT_FLOAT16, C_DT_BF16, {input0_expr}}},"\
+            f"@@ASCENDC_TPL_DATATYPE_DECL_D_T_Y@@ = {{C_DT_FLOAT, C_DT_INT32, {output0_expr}}},"\
+            "@@ASCENDC_TPL_BOOL_DECL_IS_SPLIT@@ = {0, 1},};"
+        select_param_str = \
+            f"@@ASCENDC_TPL_LISTS@@ = {{@@{{@@ASCENDC_TPL_DATATYPE_SEL_D_T_X@@ = {{{d_t_x_sel_expr}}},"\
+            f"@@ASCENDC_TPL_DATATYPE_SEL_D_T_Y@@ = {{{d_t_y_sel_expr}}},@@ASCENDC_TPL_BOOL_SEL_IS_SPLIT@@ = {{1}},}},}};"
+        op_info = OpInfo(
+            inputs=[{"dtype": ["float16", "bfloat16"]}],
+            outputs=[{"dtype": ["float32", "int32"]}]
+        )
+
+        with asc_op_compile_base.common.context.op_context.OpContext():
+            with mock.patch.object(asc_op_compile_base.common.context.get_context(), 'get_addition', return_value = ''):
+                with mock.patch.object(
+                    template_tiling, 'safe_parse_value', wraps=template_tiling.safe_parse_value
+                ) as mock_safe_parse_value:
+                    extract_template_tiling_info(declare_param_str, select_param_str)
+                    dtype_options, dtype_select_indexes = extract_decl_param_options(op_info, "dtype")
+                    result = decode_tiling()
+
+        self.assertIn(mock.call("C_DT_BF16"), mock_safe_parse_value.call_args_list)
+        self.assertIn(mock.call("C_DT_INT32"), mock_safe_parse_value.call_args_list)
+        self.assertIn(mock.call(input0_expr), mock_safe_parse_value.call_args_list)
+        self.assertIn(mock.call(output0_expr), mock_safe_parse_value.call_args_list)
+        self.assertIn(mock.call(d_t_x_sel_expr), mock_safe_parse_value.call_args_list)
+        self.assertIn(mock.call(d_t_y_sel_expr), mock_safe_parse_value.call_args_list)
+        self.assertEqual(dtype_options, [["float16", "bfloat16"], ["float32", "int32"]])
+        self.assertEqual(dtype_select_indexes, [True, True])
+        decoded_info = next(iter(result.values()))
+        self.assertEqual(decoded_info.get("dtypeParams"), ["bfloat16", "int32"])
+        self.assertEqual(decoded_info.get("paramArgs"), ["TypeFromId<27>::type", "TypeFromId<3>::type", "1"])
+
+    def test_template_tiling_datatype_parse_values(self):
+        self.assertEqual(safe_parse_value("27"), 27)
+        self.assertEqual(safe_parse_value("(13 * 2 + 1)"), 27)
+        self.assertEqual(safe_parse_value("C_DT_BF16"), 27)
+        self.assertEqual(safe_parse_value("C_FORMAT_ND"), 2)
+        self.assertEqual(safe_parse_value("C_DT_UNKNOWN"), -1)
+        self.assertEqual(extract_expr("{C_DT_FLOAT16, (13 * 2 + 1), C_DT_UNKNOWN, C_FORMAT_ND}"), [1, 27, 2])
+
+    def test_template_tiling_datatype_invalid_select_value(self):
+        declare_param_str = \
+            "@@ASCENDC_TPL_ARGS_DECL_AddTemplateCustom@@ = {@@ASCENDC_TPL_DATATYPE_DECL_D_T_X@@ = {C_DT_FLOAT16, C_DT_BF16},"\
+            "@@ASCENDC_TPL_BOOL_DECL_IS_SPLIT@@ = {0, 1},};"
+        select_param_str = \
+            "@@ASCENDC_TPL_LISTS@@ = {@@{@@ASCENDC_TPL_DATATYPE_SEL_D_T_X@@ = {(2 * 3 + 1)},"\
+            "@@ASCENDC_TPL_BOOL_SEL_IS_SPLIT@@ = {1},},};"
+
+        with self.assertRaises(RuntimeError) as e:
+            extract_template_tiling_info(declare_param_str, select_param_str)
+        self.assertEqual(
+            e.exception.args,
+            ("Cannot find value {7} from ASCENDC_TPL_DATATYPE_SEL D_T_X in ASCENDC_TPL_DATATYPE_DECL,"
+             " please check your macro define.",)
+        )
+
+    def test_template_tiling_datatype_invalid_parse_value(self):
+        declare_param_str = \
+            "@@ASCENDC_TPL_ARGS_DECL_AddTemplateCustom@@ = {@@ASCENDC_TPL_DATATYPE_DECL_D_T_X@@ = {C_DT_UNKNOWN},};"
+
+        with self.assertRaises(RuntimeError) as e:
+            extract_template_tiling_info(declare_param_str, "")
+        self.assertEqual(e.exception.args, ("values of ASCENDC_TPL_DATATYPE_DECL D_T_X is empty!",))
 
     def test_template_tiling_deterministic(self):
         declare_param_str = "@@structFlashAttentionScore@@ =@@ASCENDC_TPL_ARGS_DECL_FlashAttentionScore@@ = {@@ASCENDC_TPL_DTYPE_DECL_X@@ = { 10, 30, 20},@@ASCENDC_TPL_FORMAT_DECL_Y@@ = {15, 25},@@ASCENDC_TPL_UINT_DECL_Z@@ = {8, 2, 2, 0, 2, 3, 4, 5, 6},@@ASCENDC_TPL_BOOL_DECL_S@@ = {0, 1}, };"
