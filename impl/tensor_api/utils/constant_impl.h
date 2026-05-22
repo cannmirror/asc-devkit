@@ -75,6 +75,11 @@ namespace Location {
     struct SSBUF {};
 }
 
+template <typename... Ts>
+struct HasZeroIntegralConstant : Std::bool_constant<
+    (... || Std::is_same_v<Std::remove_cvref_t<Ts>, Std::Int<0>>)> {};
+
+    
 template <typename T>
 struct IsHardware {
 private:
