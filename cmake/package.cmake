@@ -25,7 +25,7 @@ message(STATUS "CMAKE_SOURCE_DIR = ${CMAKE_SOURCE_DIR}")
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}")
 message(STATUS "CMAKE_BINARY_DIR = ${CMAKE_BINARY_DIR}")
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/third_party/makeself-fetch.cmake)
+add_cann_third_party(makeself-fetch)
 
 set(script_prefix ${CMAKE_CURRENT_SOURCE_DIR}/scripts/package/scripts/)
 install(DIRECTORY ${script_prefix}/

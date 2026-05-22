@@ -148,8 +148,8 @@ set(include_list
 
 # 指定ccl_kernel_plf所需包含文件搜索路径
 if(BUILD_OPEN_PROJECT)
-    include(${HCCL_CC_DIR}/cmake/third_party/json.cmake)
-    include(${HCCL_CC_DIR}/cmake/third_party/rdma-core.cmake)
+    add_cann_third_party(json)
+    add_cann_third_party(rdma-core)
 
     target_compile_definitions(ccl_kernel_plf PRIVATE
         OPEN_BUILD_PROJECT)
