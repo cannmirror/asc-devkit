@@ -24,7 +24,7 @@
 
 #include "impl/tensor_api/utils/utils_impl.h"
 #include "impl/tensor_api/tensor/pointer_pattern.h"
-#include "impl/tensor_api/tensor/local_tensor_impl.h"
+#include "impl/tensor_api/tensor/tensor_impl.h"
 #include "impl/tensor_api/arch/utils/is_format.h"
 
 namespace AscendC {

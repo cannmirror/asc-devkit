@@ -110,7 +110,6 @@ private:
         bool nz2ndEn = isNdFormat;
         bool nz2dnEn = isDnFormat;
 
-        uint8_t cacheMode = dst.Engine().GetCacheMode();
         bool isChannelSplit = trait.enableChannelSplit;
 
         uint8_t dualDstCtl = trait.dualDstCtl;
