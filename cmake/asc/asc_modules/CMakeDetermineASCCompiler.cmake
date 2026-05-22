@@ -14,8 +14,10 @@
 message(STATUS "System processer: ${CMAKE_SYSTEM_PROCESSOR}")
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
     set(ASCEND_CANN_PACKAGE_LINUX_PATH $ENV{ASCEND_HOME_PATH}/x86_64-linux)
+    set(CMAKE_ASC_COMPILER_ARCHITECTURE_ID "x86_64")
 elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|arm")
     set(ASCEND_CANN_PACKAGE_LINUX_PATH $ENV{ASCEND_HOME_PATH}/aarch64-linux)
+    set(CMAKE_ASC_COMPILER_ARCHITECTURE_ID "aarch64")
 else ()
     message(FATAL_ERROR "Unknown architecture: ${CMAKE_SYSTEM_PROCESSOR}")
 endif()
@@ -25,8 +27,20 @@ find_program(CMAKE_ASC_COMPILER NAMES "bisheng" PATHS "${ASCEND_CANN_PACKAGE_LIN
 mark_as_advanced(CMAKE_ASC_COMPILER)
 message(STATUS "CMAKE_ASC_COMPILER: " ${CMAKE_ASC_COMPILER})
 
-set(CMAKE_ASC_SOURCE_FILE_EXTENSIONS asc)    # Specify .asc as the supported file extension
+if (NOT CMAKE_ASC_COMPILER OR NOT EXISTS "${CMAKE_ASC_COMPILER}")
+    message(FATAL_ERROR "ASC compiler not found or does not exist: '${CMAKE_ASC_COMPILER}'")
+endif()
+
+# Source file extensions: respect user override set before enable_language(ASC); default to "asc".
+if (NOT DEFINED CMAKE_ASC_SOURCE_FILE_EXTENSIONS OR CMAKE_ASC_SOURCE_FILE_EXTENSIONS STREQUAL "")
+    set(CMAKE_ASC_SOURCE_FILE_EXTENSIONS asc)
+endif()
 set(CMAKE_ASC_COMPILER_ENV_VAR "ASC")        # Name the language ASC
+
+# Default ASC language standard (currently C++17).
+if (NOT DEFINED CMAKE_ASC_STANDARD_DEFAULT OR CMAKE_ASC_STANDARD_DEFAULT STREQUAL "")
+    set(CMAKE_ASC_STANDARD_DEFAULT "17")
+endif()
 
 # Sequence for the first compilation: CMakeDetermineASCCompiler.cmake -> CMakeASCInformation.cmake
 # Incremental compilation: CMakeASCInformation.cmake

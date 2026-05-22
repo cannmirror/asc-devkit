@@ -51,7 +51,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void __trap();
 
 #undef assert
 #undef ascendc_assert
-#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0) && !(defined(NDEBUG))
 #define assert(...) ASC_INTERNAL_ASSERT_IMPL(ASC_INTERNAL_GET_ARG_COUNT(__VA_ARGS__), __VA_ARGS__)
 #define ascendc_assert(...) ASC_INTERNAL_ASSERT_IMPL(ASC_INTERNAL_GET_ARG_COUNT(__VA_ARGS__), __VA_ARGS__)
 #else

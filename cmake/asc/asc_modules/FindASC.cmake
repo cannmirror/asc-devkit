@@ -57,6 +57,7 @@ function(ascendc_library target_name target_type)
 
     set_source_files_properties(${ARGN} PROPERTIES LANGUAGE ASC)
     add_library(${target_name} ${target_type} ${ARGN})
+    set_target_properties(${target_name} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
     library_interface_setup(${target_name})
 

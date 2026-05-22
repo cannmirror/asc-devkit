@@ -21,11 +21,11 @@ AI Core SIMD的基本编译流程如下：Host代码使用Host编译器编译成
   //  指定核函数在AI Core上执行
   __global__ __aicore__ kernel()
 
-  bisheng  -c example.asc -o example.o --npu-arch=dav-xxxx  
-  bisheng  -c main.cpp   -o main.o
-  bisheng  example.o  main.o -o main
+  bisheng -c example.asc -o example.o --npu-arch=dav-xxxx
+  bisheng -c main.cpp -o main.o
+  bisheng example.o main.o -o main
   // 或
-  bisheng main.cpp example.asc  -o main --npu-arch=dav-xxxx
+  bisheng main.cpp example.asc -o main --npu-arch=dav-xxxx
   ```
 
 - 单独编译
@@ -227,32 +227,35 @@ AI Core SIMT的基本编译流程如下：Host代码使用Host编译器编译成
 以下是CMake脚本的示例及其核心步骤说明：
 
 ```cmake
-# 1、find_package(ASC)是CMake中用于查找和配置Ascend C编译工具链的命令
+# 1、设置编译配置变量
+# CMAKE_ASC_ARCHITECTURES：指定NPU架构版本，当前默认值为dav-2201，可通过-DCMAKE_ASC_ARCHITECTURES=dav-xxxx覆盖默认值
+set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "NPU architecture")
+
+# 2、find_package(ASC)是CMake中用于查找和配置Ascend C编译工具链的命令
 find_package(ASC)
 
-# 2、指定项目支持的语言包括ASC，ASC表示支持使用毕昇编译器对Ascend C编程语言进行编译
+# 3、指定项目支持的语言包括ASC，ASC表示支持使用毕昇编译器对Ascend C编程语言进行编译
 project(kernel_samples LANGUAGES ASC)
 
-# 3、使用CMake接口编译可执行文件、动态库、静态库、二进制文件
+# 4、使用CMake接口编译可执行文件、动态库、静态库、二进制文件
 add_executable(demo
     add_custom.asc
 )
-#.....
-target_compile_options(demo PRIVATE
-    # --npu-arch用于指定NPU的架构版本，dav-后为架构版本号，各产品型号对应的架构版本号。
-    # <COMPILE_LANGUAGE:ASC>:表明该编译选项仅对语言ASC生效
-    $<$<COMPILE_LANGUAGE:ASC>: --npu-arch=dav-3510>
-)
 ```
 
-编译AI Core SIMT代码时，需要在编译选项中增加`--enable-simt`，示例如下，完整样例请参考：[LINK](https://gitcode.com/cann/asc-devkit/tree/master/examples/03_simt_api/00_introduction/00_quickstart/hello_world_simt)。
+编译AI Core SIMT代码时，需要在编译选项中增加`--enable-simt`，或通过`CMAKE_ASC_ENABLE_SIMT`设置为ON启用SIMT编译模式，示例如下，完整样例请参考：[LINK](https://gitcode.com/cann/asc-devkit/tree/master/examples/03_simt_api/00_introduction/00_quickstart/hello_world_simt)。
 
 ```cmake
-target_compile_options(demo PRIVATE
-    # --npu-arch用于指定NPU的架构版本，dav-后为架构版本号，各产品型号对应的架构版本号。
-    # <COMPILE_LANGUAGE:ASC>:表明该编译选项仅对语言ASC生效
-    # --enable-simt: 表明启动SIMT 方式编译
-    $<$<COMPILE_LANGUAGE:ASC>: --npu-arch=dav-3510 --enable-simt>
+# CMAKE_ASC_ARCHITECTURES：指定NPU架构版本，可通过-DCMAKE_ASC_ARCHITECTURES=dav-xxxx覆盖默认值
+set(CMAKE_ASC_ARCHITECTURES "dav-3510" CACHE STRING "NPU architecture")
+# 启用SIMT编译模式
+set(CMAKE_ASC_ENABLE_SIMT ON)
+
+find_package(ASC)
+project(kernel_samples LANGUAGES ASC)
+
+add_executable(demo
+    add_custom.asc
 )
 ```
 
@@ -280,10 +283,23 @@ target_compile_options(demo PRIVATE
     )
     ```
 **表1 常用的CMAKE配置变量说明**
-|  变量名称| 配置说明 |
+| 变量名称 | 配置说明 |
 |--|--|
-|CMAKE_BUILD_TYPE  | 编译模式选项，可配置为：“Release”，Release版本，不包含调试信息，编译最终发布的版本。“Debug”，Debug版本，包含调试信息，便于开发者开发和调试。 |
-|CMAKE_INSTALL_PREFIX | 用于指定CMake执行install时，安装的路径前缀，执行install后编译产物（ascendc_library中指定的target以及对应的头文件）会安装在该路径下。默认路径为当前目录的out目录下。
+| CMAKE_BUILD_TYPE | 编译模式选项，可配置为：”Release”，Release版本，不包含调试信息，编译最终发布的版本。”Debug”，Debug版本，包含调试信息，便于开发者开发和调试。配置其他值时CMake会发出警告，但不中止构建。 |
+| CMAKE_ASC_COMPILER | 指定Ascend C的编译器路径，默认由CMake自动探测。路径不存在时配置阶段报错终止。 |
+| CMAKE_ASC_SOURCE_FILE_EXTENSIONS | ASC源文件扩展名列表，默认为asc。 |
+| CMAKE_ASC_STANDARD | 指定编译使用的C++标准版本，默认值为17。设置低于17的值时CMake会发出警告。 |
+| CMAKE_ASC_ARCHITECTURES | 指定目标NPU架构版本，取值为`dav-<arch-version>`（如dav-2201、dav-3510）。NPU运行模式下，CMake会自动将该值以`--npu-arch=<value>`注入编译命令。 |
+| CMAKE_ASC_RUN_MODE | 指定算子运行模式，支持npu（默认，在NPU设备上运行）、cpu（CPU调试模式）、sim（仿真模式）。不同模式下CMake会自动调整链接库和编译选项。 |
+| CMAKE_ASC_FLAGS | 为所有构建类型（Debug, Release等）添加的通用编译选项。 |
+| CMAKE_ASC_FLAGS\_DEBUG | 专用于 Debug 构建的编译选项，默认为`-O0 -g`。 |
+| CMAKE_ASC_FLAGS\_RELEASE | 专用于 Release 构建的编译选项，默认为`-O3 -DNDEBUG`。 |
+| CMAKE_ASC_COMPILER_LAUNCHER | 编译命令的前置启动器（如ccache、distcc），未设置时直接调用编译器。 |
+| CMAKE_ASC_LINKER_LAUNCHER | 链接命令的前置启动器，未设置时直接执行链接。 |
+| CMAKE_ASC_COMPILER_AR | 静态库归档工具，默认使用系统ar工具。设置后，静态库的归档命令将使用该工具替代默认ar。 |
+| CMAKE_ASC_COMPILER_LINKER | 链接驱动，默认使用bisheng编译器作为链接驱动，仅在有明确替换需求时设置。 |
+| CMAKE_ASC_ENABLE_SIMT | 是否启用SIMT编译模式，设置为ON时在编译命令中自动注入--enable-simt选项，默认为OFF。 |
+| CMAKE_INSTALL_PREFIX | 用于指定CMake执行install时，安装的路径前缀，执行install后编译产物（ascendc_library中指定的target以及对应的头文件）会安装在该路径下。默认路径为当前目录的out目录下。 |
 
 ## 其他编译相关说明
 
