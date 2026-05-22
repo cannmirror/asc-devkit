@@ -28,6 +28,11 @@ add_executable(demo
 
 set(ASCEND_HOME $ENV{ASCEND_HOME_PATH})
 
+set(ASC_INCLUDE_DIR "${ASCEND_HOME}/asc/")
+include_directories(
+    "${ASC_INCLUDE_DIR}"
+)
+
 target_link_libraries(demo PRIVATE
     tiling_api
     register
