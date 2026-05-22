@@ -149,7 +149,7 @@ __aicore__ static inline void SetCtrlSpr(int64_t value)
 <tr id="row560871715215"><td class="cellrowborder" valign="top" width="17.68%" headers="mcps1.2.5.1.1 "><p id="p182361236192111"><a name="p182361236192111"></a><a name="p182361236192111"></a>CTRL[48]</p>
 </td>
 <td class="cellrowborder" valign="top" width="46.46%" headers="mcps1.2.5.1.2 "><p id="p4162174512467"><a name="p4162174512467"></a><a name="p4162174512467"></a><span>用于控制浮点数计算和浮点数精度转换时的饱和模式，仅在CTRL[60]使能时生效。</span></p>
-<a name="ul1584405315476"></a><a name="ul1584405315476"></a><ul id="ul1584405315476"><li>1'b0：饱和模式，INF输出会被饱和为&plusmn;MAX， NaN输出会被饱和为0；</li><li>1'b1：非饱和模式，INF/NAN保持原输出。</li></ul>
+<a name="ul1584405315476"></a><a name="ul1584405315476"></a><ul id="ul1584405315476"><li>1'b0：饱和模式，inf输出会被饱和为&plusmn;MAX， nan输出会被饱和为0；</li><li>1'b1：非饱和模式，inf/nan保持原输出。</li></ul>
 <p id="p96554915494"><a name="p96554915494"></a><a name="p96554915494"></a>该控制位仅支持如下数据类型：</p>
 <a name="ul106598917497"></a><a name="ul106598917497"></a><ul id="ul106598917497"><li>浮点数计算时支持half数据类型；</li><li>浮点数精度转换时支持如下数据类型：hifloat8_t、fp8_e8m0_t、fp8_e5m2_t、fp8_e4m3fn_t、half、bfloat16_t。</li></ul>
 </td>
@@ -163,9 +163,9 @@ __aicore__ static inline void SetCtrlSpr(int64_t value)
 </tr>
 <tr id="row6608417152114"><td class="cellrowborder" valign="top" width="17.68%" headers="mcps1.2.5.1.1 "><p id="p4793193912113"><a name="p4793193912113"></a><a name="p4793193912113"></a>CTRL[50]</p>
 </td>
-<td class="cellrowborder" valign="top" width="46.46%" headers="mcps1.2.5.1.2 "><p id="p14895105819547"><a name="p14895105819547"></a><a name="p14895105819547"></a>用于控制浮点数精度转换时的NAN饱和模式，在CTRL[48]设置为饱和模式时生效。</p>
-<p id="p123841545102313"><a name="p123841545102313"></a><a name="p123841545102313"></a>1'b0：NAN输出会被转换为0.0；</p>
-<p id="p143843455234"><a name="p143843455234"></a><a name="p143843455234"></a>1'b1：NAN输出会保持NAN。</p>
+<td class="cellrowborder" valign="top" width="46.46%" headers="mcps1.2.5.1.2 "><p id="p14895105819547"><a name="p14895105819547"></a><a name="p14895105819547"></a>用于控制浮点数精度转换时的nan饱和模式，在CTRL[48]设置为饱和模式时生效。</p>
+<p id="p123841545102313"><a name="p123841545102313"></a><a name="p123841545102313"></a>1'b0：nan输出会被转换为0.0；</p>
+<p id="p143843455234"><a name="p143843455234"></a><a name="p143843455234"></a>1'b1：nan输出会保持nan。</p>
 <p id="p1192141319562"><a name="p1192141319562"></a><a name="p1192141319562"></a>该控制位仅支持如下数据类型：</p>
 <p id="p144771653181917"><a name="p144771653181917"></a><a name="p144771653181917"></a>fp8_e8m0_t、fp8_e5m2_t、fp8_e4m3fn_t。</p>
 </td>
@@ -226,7 +226,7 @@ __aicore__ static inline void SetCtrlSpr(int64_t value)
 <tbody><tr id="row1215533752111"><td class="cellrowborder" valign="top" width="17.68%" headers="mcps1.2.5.1.1 "><p id="p1815573718212"><a name="p1815573718212"></a><a name="p1815573718212"></a>CTRL[48]</p>
 </td>
 <td class="cellrowborder" valign="top" width="46.46%" headers="mcps1.2.5.1.2 "><p id="p141559379215"><a name="p141559379215"></a><a name="p141559379215"></a><span>用于控制浮点数计算和浮点数精度转换时的饱和模式。</span></p>
-<a name="ul19155173732110"></a><a name="ul19155173732110"></a><ul id="ul19155173732110"><li>1'b0：饱和模式，INF输出会被饱和为&plusmn;MAX， NaN输出会被饱和为0；</li><li>1'b1：非饱和模式，INF/NAN保持原输出。</li></ul>
+<a name="ul19155173732110"></a><a name="ul19155173732110"></a><ul id="ul19155173732110"><li>1'b0：饱和模式，inf输出会被饱和为&plusmn;MAX， nan输出会被饱和为0；</li><li>1'b1：非饱和模式，inf/nan保持原输出。</li></ul>
 <p id="p015523702110"><a name="p015523702110"></a><a name="p015523702110"></a>该控制位仅支持如下数据类型：</p>
 <a name="ul15155173719216"></a><a name="ul15155173719216"></a><ul id="ul15155173719216"><li>浮点数计算时支持half、bfloat16_t数据类型；</li><li>浮点数精度转换时支持如下数据类型：half、bfloat16_t。</li></ul>
 </td>
@@ -254,7 +254,7 @@ __aicore__ static inline void SetCtrlSpr(int64_t value)
 <tbody><tr id="row12301837195317"><td class="cellrowborder" valign="top" width="17.68%" headers="mcps1.2.5.1.1 "><p id="p1230103775318"><a name="p1230103775318"></a><a name="p1230103775318"></a>CTRL[48]</p>
 </td>
 <td class="cellrowborder" valign="top" width="46.46%" headers="mcps1.2.5.1.2 "><p id="p1530163725311"><a name="p1530163725311"></a><a name="p1530163725311"></a><span>用于控制浮点数计算和浮点数精度转换时的饱和模式。</span></p>
-<a name="ul1431637125311"></a><a name="ul1431637125311"></a><ul id="ul1431637125311"><li>1'b0：饱和模式，INF输出会被饱和为&plusmn;MAX， NaN输出会被饱和为0；</li><li>1'b1：非饱和模式，INF/NAN保持原输出。</li></ul>
+<a name="ul1431637125311"></a><a name="ul1431637125311"></a><ul id="ul1431637125311"><li>1'b0：饱和模式，inf输出会被饱和为&plusmn;MAX， nan输出会被饱和为0；</li><li>1'b1：非饱和模式，inf/nan保持原输出。</li></ul>
 <p id="p1831737185311"><a name="p1831737185311"></a><a name="p1831737185311"></a>该控制位仅支持如下数据类型：</p>
 <a name="ul12315375531"></a><a name="ul12315375531"></a><ul id="ul12315375531"><li>浮点数计算时支持half、bfloat16_t数据类型；</li><li>浮点数精度转换时支持如下数据类型：half、bfloat16_t。</li></ul>
 </td>
