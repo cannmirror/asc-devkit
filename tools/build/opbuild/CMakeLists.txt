@@ -43,6 +43,7 @@ target_link_libraries(op_build PRIVATE
   unified_dlog
   mmpa
   error_manager
+  $<$<BOOL:${ENABLE_UNIFIED_BUILD}>:ascend_protobuf>
 )
 
 target_link_options(op_build PRIVATE

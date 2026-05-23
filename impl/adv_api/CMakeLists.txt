@@ -9,6 +9,8 @@
 # ----------------------------------------------------------------------------------------------------------
 add_compile_options(-Wno-error)
 
+include(gen_kernel_tiling.cmake)
+
 # generate tiling_api.h softlink
 if(NOT BUILD_OPEN_PROJECT)
   add_custom_command(
@@ -19,41 +21,8 @@ if(NOT BUILD_OPEN_PROJECT)
     DEPENDS ${ASCENDC_INCLUDE_DIR}/adv_api/tiling_api.h)
   add_custom_target(gen_kernel_api ALL
                     DEPENDS ${CMAKE_BINARY_DIR}/tiling/tiling_api.h)
-endif()
-
-include(gen_kernel_tiling.cmake)
-
-add_library(asc_host_headers INTERFACE)
-target_include_directories(
-  asc_host_headers
-  INTERFACE $<BUILD_INTERFACE:${ASCENDC_DIR}/include/adv_api/hccl/internal>
-)
-
-add_library(asc_kernel_headers INTERFACE)
-target_include_directories(
-  asc_kernel_headers
-  INTERFACE $<BUILD_INTERFACE:${ASCENDC_DIR}>
-            $<BUILD_INTERFACE:${ASCENDC_DIR}/include>
-            $<BUILD_INTERFACE:${ASCENDC_DIR}/include/basic_api>
-            $<BUILD_INTERFACE:${ASCENDC_DIR}/include/simt_api>
-            $<BUILD_INTERFACE:${ASCENDC_DIR}/impl>
-            $<BUILD_INTERFACE:${ASCENDC_DIR}/impl/basic_api>
-            $<BUILD_INTERFACE:${ASCENDC_DIR}/impl/simt_api>
-)
-
-add_library(kernel_tiling_headers INTERFACE)
-add_dependencies(kernel_tiling_headers gen_kernel_tiling)
-if(NOT BUILD_OPEN_PROJECT)
   add_dependencies(kernel_tiling_headers gen_kernel_api)
 endif()
-target_include_directories(
-  kernel_tiling_headers
-  INTERFACE $<INSTALL_INTERFACE:include>
-            $<INSTALL_INTERFACE:include/tikcpp>
-            $<INSTALL_INTERFACE:include/tikcpp/tikcfw>
-            $<INSTALL_INTERFACE:include/tikcpp/tikcfw/kernel_tiling>
-            $<BUILD_INTERFACE:${KERNEL_TILING_DIR}>
-            $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>)
 
 add_subdirectory(tiling)
 
