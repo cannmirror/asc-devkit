@@ -187,8 +187,25 @@ function escapeVueInterpolations(html) {
   )
 }
 
+function addHeadingAnchors(html) {
+  const headingRegex = /<h([23456])((?:\s[^>]*)?)>([\s\S]*?)<\/h\1>/gi
+  const seen = new Map()
+  return html.replace(headingRegex, (match, level, attrs, content) => {
+    const text = content.replace(/<[^>]+>/g, '').trim()
+    if (!text) return match
+    const baseSlug = text.replace(/\s+/g, '-')
+    const count = seen.get(baseSlug) || 0
+    const slug = count === 0 ? baseSlug : `${baseSlug}-${count}`
+    seen.set(baseSlug, count + 1)
+    const idAttr = attrs.match(/\sid\s*=\s*["']/) ? '' : ` id="${slug}"`
+    const anchor = `<a class="header-anchor" href="#${slug}">&#x200B;</a>`
+    return `<h${level}${attrs}${idAttr}>${content}${anchor}</h${level}>`
+  })
+}
+
 function loadHeaderCache(filePath) {
-  const cachePath = filePath + '.header'
+  const absPath = resolve(import.meta.dirname, '..', filePath)
+  const cachePath = absPath + '.header'
   if (!existsSync(cachePath)) return null
   try {
     return JSON.parse(readFileSync(cachePath, 'utf-8'))
@@ -212,7 +229,8 @@ export default defineConfig({
       md.render = function (src, env) {
         if (src.includes('<!-- RAW_HTML -->')) {
           const htmlContent = src.replace(/^.*<!-- RAW_HTML -->\s*/s, '').replace(/\s*$/, '')
-          let html = escapeVueInterpolations(htmlContent)
+          let html = addHeadingAnchors(htmlContent)
+          html = escapeVueInterpolations(html)
           return `<div v-pre>\n${html}\n</div>`
         }
 
@@ -292,7 +310,7 @@ export default defineConfig({
               const headingRegex = /<h([23456])([^>]*)>(.*?)<\/h\1>/gi
               return raw.replace(headingRegex, (_, level, attrs, text) => {
                 const clean = text.replace(/<[^>]+>/g, '').trim()
-                let id = clean.replace(/\s+/g, '-').toLowerCase()
+                let id = clean.replace(/\s+/g, '-')
                 if (seen[id]) id = `${id}-${seen[id]++}`
                 else seen[id] = 1
                 const inner = `<a class="header-anchor" href="#${id}">\u00b6</a>`
@@ -310,7 +328,7 @@ export default defineConfig({
           return html.replace(headingRegex, (_, level, attrs, text) => {
             if (text.includes('header-anchor')) return `<h${level}${attrs}>${text}</h${level}>`
             const clean = text.replace(/<[^>]+>/g, '').trim()
-            let id = clean.replace(/\s+/g, '-').toLowerCase()
+            let id = clean.replace(/\s+/g, '-')
             if (seen[id]) id = `${id}-${seen[id]++}`
             else seen[id] = 1
             const existing = text.match(/<a[^>]*>.*?<\/a>/)

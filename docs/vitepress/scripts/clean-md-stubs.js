@@ -25,6 +25,10 @@ for (const stub of stubs) {
     unlinkSync(stub)
     removed++
   }
+  const headerFile = stub + '.header'
+  if (existsSync(headerFile)) {
+    unlinkSync(headerFile)
+  }
 }
 
 unlinkSync(manifestFile)

@@ -8,7 +8,7 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-const { readdirSync, writeFileSync, existsSync, mkdirSync } = require('node:fs')
+const { readdirSync, writeFileSync, existsSync, mkdirSync, readFileSync } = require('node:fs')
 const { join, resolve } = require('node:path')
 
 const docsDir = resolve(__dirname, '..', 'docs')
@@ -19,6 +19,48 @@ const PLACEHOLDER_PNG = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
   'base64'
 )
+
+function extractBodyContent(html) {
+  const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i)
+  if (bodyMatch) return bodyMatch[1]
+  return html
+}
+
+function slugify(text) {
+  return text.trim().replace(/\s+/g, '-')
+}
+
+function extractHeaders(html) {
+  const headingRegex = /<h([23456])(?:\s[^>]*)?>([\s\S]*?)<\/h\1>/gi
+  const headers = []
+  const seen = new Map()
+  let match
+  while ((match = headingRegex.exec(html)) !== null) {
+    const level = parseInt(match[1])
+    let text = match[2].replace(/<[^>]+>/g, '').trim()
+    if (!text) continue
+    const baseSlug = slugify(text)
+    const count = seen.get(baseSlug) || 0
+    const slug = count === 0 ? baseSlug : `${baseSlug}-${count}`
+    seen.set(baseSlug, count + 1)
+    headers.push({ level, title: text, slug, link: `#${slug}` })
+  }
+  return headers
+}
+
+function genHeaderCache(htmlPath, mdPath) {
+  try {
+    const raw = readFileSync(htmlPath, 'utf-8')
+    const html = extractBodyContent(raw)
+    const headers = extractHeaders(html)
+    if (headers.length > 0) {
+      writeFileSync(mdPath + '.header', JSON.stringify(headers, null, 2), 'utf-8')
+    }
+    return headers.length
+  } catch {
+    return 0
+  }
+}
 
 function findAllHtml(dir) {
   const results = []
@@ -42,15 +84,18 @@ function genStubs(subdir) {
   }
   const htmlFiles = findAllHtml(dir)
   const stubs = []
+  let totalHeaders = 0
   for (const htmlPath of htmlFiles) {
     const mdPath = htmlPath.replace(/\.html$/, '.md')
+    const count = genHeaderCache(htmlPath, mdPath)
+    totalHeaders += count
     if (!existsSync(mdPath)) {
       writeFileSync(mdPath, '', 'utf-8')
       stubs.push(mdPath)
     }
   }
   allStubs.push(...stubs)
-  console.log(`  ${subdir}/: generated ${stubs.length} .md stubs (${htmlFiles.length} .html files)`)
+  console.log(`  ${subdir}/: generated ${stubs.length} .md stubs, ${totalHeaders} headers (${htmlFiles.length} .html files)`)
 }
 
 const allStubs = []

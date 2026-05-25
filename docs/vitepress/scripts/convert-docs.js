@@ -28,6 +28,7 @@ function runMdparser(inputDir, outputDir, label) {
   const args = [
     '-c',
     `import sys; sys.path.insert(0, '${scriptsDirUnix}'); from mdparser.cli import main; main()`,
+    '-s',
     inputUnix,
     '-o', outputUnix,
     '-r',

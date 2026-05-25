@@ -11,11 +11,18 @@
 # ----------------------------------------------------------------------------------------------------------
 
 
+import html as html_mod
 import pathlib
 import re
 import cmarkgfm
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name
+from pygments.formatters import HtmlFormatter
+from pygments.util import ClassNotFound
 
 _CSS = None
+_PYGMENTS_FORMATTER = None
+_PYGMENTS_CSS = None
 
 
 def _load_css():
@@ -23,9 +30,17 @@ def _load_css():
     if _CSS is not None:
         return _CSS
     candidates = [
-        pathlib.Path(__file__).parent.parent.parent / "node_modules" / "github-markdown-css" / "github-markdown.css",
-        pathlib.Path(__file__).parent.parent / "node_modules" / "github-markdown-css" / "github-markdown.css",
-        pathlib.Path("/home/zjj/md-parser/node_modules/github-markdown-css/github-markdown.css"),
+        pathlib.Path(__file__).parent.parent.parent
+        / "node_modules"
+        / "github-markdown-css"
+        / "github-markdown.css",
+        pathlib.Path(__file__).parent.parent
+        / "node_modules"
+        / "github-markdown-css"
+        / "github-markdown.css",
+        pathlib.Path(
+            "/home/zjj/md-parser/node_modules/github-markdown-css/github-markdown.css"
+        ),
     ]
     for p in candidates:
         if p.exists():
@@ -34,10 +49,119 @@ def _load_css():
     _CSS = ""
     return _CSS
 
+
 _OPTIONS = cmarkgfm.Options.CMARK_OPT_UNSAFE
 
-_MD_LINK_RE = re.compile(r'(href|src)="((?!https?:|//)[^"]+)\.md"')
+_MD_LINK_RE = re.compile(r'(href|src)="((?!https?:|//)[^"]+)\.md(#[^"]*)?"')
 
+_CALLOUT_RE = re.compile(
+    r"<blockquote>\s*\n<p>\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\](.*?)</p>\s*\n(.*?)</blockquote>",
+    re.DOTALL,
+)
+
+_CALLOUT_ICONS = {
+    "NOTE": (
+        '<svg class="callout-icon" viewBox="0 0 16 16" width="16" height="16">'
+        '<path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13Z'
+        "M6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2"
+        'a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/>'
+        "</svg>"
+    ),
+    "TIP": (
+        '<svg class="callout-icon" viewBox="0 0 16 16" width="16" height="16">'
+        '<path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253'
+        "c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.21"
+        "c-.132-.932-.5-1.583-.83-2.06A10.5 10.5 0 0 0 3.5 7.8c-.574-.686-1-1.441-1-2.55"
+        "C2.5 3.11 4.637 0 8 0s5.5 3.11 5.5 5.25c0 1.109-.426 1.864-1 2.55-.202.241-.39.452"
+        "-.557.645-.328.38-.534.821-.534 1.305 0 .553-.448 1-1 1s-1-.448-1-1"
+        "c0-.984.424-1.625.984-2.304l.214-.253c.223-.264.47-.556.673-.848"
+        "C11.549 6.26 12 5.38 12 4.5 12 2.69 10.363 1.5 8 1.5Zm2 12.75"
+        "a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h2.5a.75.75 0 0 1 .75.75"
+        'ZM8 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z"/>'
+        "</svg>"
+    ),
+    "IMPORTANT": (
+        '<svg class="callout-icon" viewBox="0 0 16 16" width="16" height="16">'
+        '<path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5'
+        "A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.574A1.458 1.458 0 0 1 3 14.543V13"
+        "H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5"
+        "c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5"
+        "a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5"
+        'a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/>'
+        "</svg>"
+    ),
+    "WARNING": (
+        '<svg class="callout-icon" viewBox="0 0 16 16" width="16" height="16">'
+        '<path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378'
+        "A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Z"
+        "M8 5a.75.75 0 0 0-.75.75v2.5a.75.75 0 0 0 1.5 0v-2.5A.75.75 0 0 0 8 5Z"
+        'm1 6a1 1 0 1 0-2 0 1 1 0 0 0 2 0Z"/>'
+        "</svg>"
+    ),
+    "CAUTION": (
+        '<svg class="callout-icon" viewBox="0 0 16 16" width="16" height="16">'
+        '<path d="M4.47.22A.749.749 0 0 1 5 0h6c.199 0 .389.079.53.22l4.25 4.25'
+        "c.141.14.22.331.22.53v6a.749.749 0 0 1-.22.53l-4.25 4.25A.749.749 0 0 1 11 16H5"
+        "a.749.749 0 0 1-.53-.22L.22 11.53A.749.749 0 0 1 0 11V5"
+        "c0-.199.079-.389.22-.53Zm.84 1.28L1.5 5.31v5.38l3.81 3.81h5.38l3.81-3.81V5.31"
+        "L10.69 1.5ZM8 4a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5"
+        'A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/>'
+        "</svg>"
+    ),
+}
+
+_CALLOUT_CSS = """
+.markdown-body .callout {
+  padding: 0 1rem;
+  margin-bottom: 1rem;
+  border-left: 0.25em solid;
+  border-radius: 0;
+}
+.markdown-body .callout .callout-title {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  line-height: 1.5;
+  margin-bottom: 0;
+  padding-top: 0.5rem;
+}
+.markdown-body .callout .callout-title .callout-icon {
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
+.markdown-body .callout > p:last-child {
+  padding-bottom: 0.5rem;
+  margin-bottom: 0;
+}
+.markdown-body .callout > p {
+  margin-top: 0.25rem;
+}
+.markdown-body .callout-note {
+  border-left-color: #0969da;
+}
+.markdown-body .callout-note .callout-title { color: #0969da; }
+.markdown-body .callout-note .callout-icon { fill: #0969da; }
+.markdown-body .callout-tip {
+  border-left-color: #1a7f37;
+}
+.markdown-body .callout-tip .callout-title { color: #1a7f37; }
+.markdown-body .callout-tip .callout-icon { fill: #1a7f37; }
+.markdown-body .callout-important {
+  border-left-color: #8250df;
+}
+.markdown-body .callout-important .callout-title { color: #8250df; }
+.markdown-body .callout-important .callout-icon { fill: #8250df; }
+.markdown-body .callout-warning {
+  border-left-color: #9a6700;
+}
+.markdown-body .callout-warning .callout-title { color: #9a6700; }
+.markdown-body .callout-warning .callout-icon { fill: #9a6700; }
+.markdown-body .callout-caution {
+  border-left-color: #cf222e;
+}
+.markdown-body .callout-caution .callout-title { color: #cf222e; }
+.markdown-body .callout-caution .callout-icon { fill: #cf222e; }
+"""
 _TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -51,6 +175,16 @@ _TEMPLATE = """<!DOCTYPE html>
 <article class="markdown-body">
 {body}
 </article>
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  const text = pre.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied');
+    setTimeout(() => btn.classList.remove('copied'), 2000);
+  });
+}
+</script>
 </body>
 </html>
 """
@@ -65,13 +199,202 @@ def gfm_to_html(text: str) -> str:
 
 
 def _fix_links(html: str) -> str:
-    return _MD_LINK_RE.sub(r'\1="\2.html"', html)
+    return _MD_LINK_RE.sub(r'\1="\2.html\3"', html)
+
+
+def _fix_callouts(html: str) -> str:
+    def _replace(m):
+        callout_type = m.group(1)
+        callout_lower = callout_type.lower()
+        title = m.group(2).strip()
+        body_content = m.group(3).strip()
+        icon = _CALLOUT_ICONS.get(callout_type, "")
+        type_label = dict(
+            NOTE="Note",
+            TIP="Tip",
+            IMPORTANT="Important",
+            WARNING="Warning",
+            CAUTION="Caution",
+        ).get(callout_type, callout_type)
+        if not body_content and "\n" in title:
+            title, body_content = title.split("\n", 1)
+            title = title.strip()
+            body_content = f"<p>{body_content.strip()}</p>"
+        title_text = title if title else type_label
+        parts = [f'<p class="callout-title">{icon}{title_text}</p>']
+        if body_content:
+            parts.append(body_content)
+        body_html = "\n".join(parts)
+        return f'<div class="callout callout-{callout_lower}">\n{body_html}\n</div>'
+
+    return _CALLOUT_RE.sub(_replace, html)
+
+
+_PYGMENTS_LANG_LABELS = {
+    "py": "Python",
+    "python": "Python",
+    "cpp": "C++",
+    "c++": "C++",
+    "cxx": "C++",
+    "c": "C",
+    "bash": "Bash",
+    "sh": "Shell",
+    "shell": "Shell",
+    "js": "JavaScript",
+    "javascript": "JavaScript",
+    "ts": "TypeScript",
+    "typescript": "TypeScript",
+    "java": "Java",
+    "go": "Go",
+    "rust": "Rust",
+    "json": "JSON",
+    "yaml": "YAML",
+    "yml": "YAML",
+    "xml": "XML",
+    "html": "HTML",
+    "css": "CSS",
+    "sql": "SQL",
+    "makefile": "Makefile",
+    "mk": "Makefile",
+    "cmake": "CMake",
+    "dockerfile": "Dockerfile",
+    "docker": "Dockerfile",
+    "diff": "Diff",
+    "text": "Text",
+    "ini": "INI",
+    "toml": "TOML",
+}
+
+_PYGMENTS_FORMATTER = None
+_PYGMENTS_CSS = None
+
+
+def _get_pygments_formatter():
+    global _PYGMENTS_FORMATTER
+    if _PYGMENTS_FORMATTER is None:
+        _PYGMENTS_FORMATTER = HtmlFormatter(style="default", nowrap=True)
+    return _PYGMENTS_FORMATTER
+
+
+def _get_pygments_css() -> str:
+    global _PYGMENTS_CSS
+    if _PYGMENTS_CSS is not None:
+        return _PYGMENTS_CSS
+    _PYGMENTS_CSS = HtmlFormatter(style="default").get_style_defs(
+        ".markdown-body .highlight"
+    )
+    return _PYGMENTS_CSS
+
+
+_HIGHLIGHT_CSS = """
+.markdown-body .code-block {
+  margin-bottom: 1rem;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.markdown-body .code-block .code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 1rem;
+  background: #f6f8fa;
+  border-bottom: 1px solid #d0d7de;
+  font-size: 12px;
+  color: #57606a;
+}
+.markdown-body .code-block .code-header .lang-label {
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.markdown-body .code-block pre {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: #f6f8fa;
+}
+.markdown-body .code-block pre code {
+  background: transparent;
+  border: 0;
+}
+.markdown-body .code-header .copy-btn {
+  display: flex;
+  align-items: center;
+  padding: 2px 6px;
+  border: 1px solid #d0d7de;
+  border-radius: 4px;
+  background: #fff;
+  color: #57606a;
+  cursor: pointer;
+  font-size: 12px;
+}
+.markdown-body .code-header .copy-btn:hover {
+  background: #eaeef2;
+}
+.markdown-body .code-header .copy-btn svg {
+  fill: #57606a;
+}
+.markdown-body .code-header .copy-btn.copied {
+  color: #1a7f37;
+  border-color: #1a7f37;
+}
+.markdown-body .code-header .copy-btn.copied svg {
+  fill: #1a7f37;
+}
+"""
+
+_CODEFENCE_RE = re.compile(
+    r'<pre(?:\s+lang="([^"]*)")?>\s*<code>(.*?)</code>\s*</pre>',
+    re.DOTALL,
+)
+
+
+def _highlight_code(html: str) -> str:
+    def _replace(m):
+        lang = m.group(1)
+        code = m.group(2)
+        text = html_mod.unescape(code)
+        if not lang:
+            lang = "cpp"
+        label = _PYGMENTS_LANG_LABELS.get(lang.lower(), lang.capitalize())
+        try:
+            lexer = get_lexer_by_name(lang, stripall=True)
+        except ClassNotFound:
+            return f'<div class="code-block"><pre class="highlight"><code>{code}</code></pre></div>'
+        formatter = _get_pygments_formatter()
+        highlighted = highlight(text, lexer, formatter)
+        return (
+            f'<div class="code-block">'
+            f'<div class="code-header"><span class="lang-label">{label}</span>'
+            f'<button class="copy-btn" onclick="copyCode(this)" title="复制代码">'
+            f'<svg width="16" height="16" viewBox="0 0 16 16">'
+            f'<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5'
+            f"a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25"
+            f"v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5"
+            f'A1.75 1.75 0 0 1 0 14.25Z"/>'
+            f'<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75'
+            f"v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Z"
+            f"m1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5"
+            f'a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/>'
+            f"</svg>"
+            f"</button>"
+            f"</div>"
+            f'<pre class="highlight"><code>{highlighted}</code></pre>'
+            f"</div>"
+        )
+
+    return _CODEFENCE_RE.sub(_replace, html)
 
 
 def parse_string(text: str, gfm: bool = True) -> str:
     if gfm:
-        return _fix_links(gfm_to_html(text))
-    return _fix_links(markdown_to_html(text))
+        html = gfm_to_html(text)
+    else:
+        html = markdown_to_html(text)
+    html = _fix_links(html)
+    html = _fix_callouts(html)
+    html = _highlight_code(html)
+    return html
 
 
 def parse_file(filepath: str, gfm: bool = True) -> str:
@@ -81,4 +404,7 @@ def parse_file(filepath: str, gfm: bool = True) -> str:
 
 
 def render_html(body: str) -> str:
-    return _TEMPLATE.format(style=_load_css(), body=body)
+    html = _TEMPLATE
+    html = html.replace("{style}", _load_css())
+    html = html.replace("{body}", body)
+    return html
