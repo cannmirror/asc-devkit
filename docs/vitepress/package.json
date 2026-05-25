@@ -1,0 +1,34 @@
+{
+  "name": "vitepress-docs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:convert": "node scripts/convert-docs.js",
+    "docs:genstubs": "node scripts/gen-md-stubs.js",
+    "docs:cleanstubs": "node scripts/clean-md-stubs.js",
+    "docs:prebuild": "npm run docs:convert && npm run docs:genstubs",
+    "docs:postbuild": "npm run docs:cleanstubs",
+    "docs:build": "npm run docs:prebuild && cross-env NODE_OPTIONS=--max-old-space-size=8192 vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
+  "devDependencies": {
+    "cheerio": "^1.2.0",
+    "cross-env": "^10.1.0",
+    "vitepress": "^1.6.4"
+  },
+  "dependencies": {
+    "github-markdown-css": "^5.9.0",
+    "vue": "^3.5.34"
+  }
+}
