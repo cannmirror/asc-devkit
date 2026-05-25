@@ -107,15 +107,16 @@ int index_in = input_col + width * input_row;
 
 | 指标                | 说明                                                                                      |
 | ------------------- | ----------------------------------------------------------------------------------------- |
-| Task Duration(us)   | Task整体耗时，包含调度到加速器的时间、加速器上的执行时间以及响应结束时间                  |
-| aiv_time(us)        | Task在AI Vector Core上的理论执行时间，单位为us                                            |
-| aiv_total_cycles    | 该Task被分配到每个AI Vector Core计算单元上后，每个AI Vector Core计算单元上的执行cycle总数 |
-| aiv_vec_time(us)    | vec类型指令（向量类运算指令）耗时，单位为us                                               |
-| aiv_vec_ratio       | vec类型指令（向量类运算指令）的cycle数在total cycle数中的占用比                           |
-| aiv_scalar_time(us) | scalar类型指令（标量类运算指令）耗时，单位为us                                            |
-| aiv_scalar_ratio    | scalar类型指令（标量类运算指令）的cycle数在total cycle数中的占用比                        |
-
-除Task Duration外，本例中其余指标均展示的为所有block上性能指标的平均值。
+| Task Duration(μs)|Task整体耗时，包含调度到加速器的时间、加速器上的执行时间以及响应结束时间。|
+| aiv_time|Task在AI Vector Core上的理论执行时间，单位为μs。|
+| aiv_vec_time(μs) | vec类型指令（向量类运算指令）耗时，单位μs。 |
+| aiv_vec_ratio | vec类型指令（向量类运算指令）的cycle数在total cycle数中的占用比。 |
+| aiv_scalar_time(μs) | scalar类型指令（标量类运算指令）耗时，单位μs。 |
+| aiv_scalar_ratio | scalar类型指令（标量类运算指令）的cycle数在total cycle数中的占用比。 |
+| aiv_mte2_time(μs) | mte2类型指令（GM->UB搬运类指令）耗时，单位μs。 |
+| aiv_mte2_ratio | mte2类型指令（GM->UB搬运类指令）的cycle数在total cycle数中的占用比。 |
+| aiv_mte3_time(μs) | mte3类型指令（UB->GM搬运类指令）耗时，单位μs。 |
+| aiv_mte3_ratio | mte3类型指令（UB->GM搬运类指令）的cycle数在total cycle数中的占用比。 |
 
 ### Case 0: 直接索引转置版本
 
@@ -123,10 +124,10 @@ int index_in = input_col + width * input_row;
 
 **核心实现**：
 
-- 每个block处理一个32×32 tile
-- 每个SIMT线程处理tile内1个元素
-- 线程先按原坐标从GM读取输入元素，再计算该元素转置后的输出位置，并把数据直接写到转置后的GM地址
-- GM读取方向连续，GM写回方向不连续
+- 每个block处理一个32×32 tile。
+- 每个SIMT线程处理tile内1个元素。
+- 线程先按原坐标从GM读取输入元素，再计算该元素转置后的输出位置，并把数据直接写到转置后的GM地址。
+- GM读取方向连续，GM写回方向不连续。
 
 下图展示了Case 0的数据流，其中标红展示了一个Warp在读取GM和写入GM时处理的元素。对于同一个Warp的线程会读取GM输入中tile的一行元素，写回到GM输出中tile的一列。在读取GM输入时，相邻线程访问的元素地址连续，为连续读，在写回到输出时，相邻线程却被拆散到输出矩阵的不同行上，为不连续写。因此，这一版的核心问题是转置后的写回地址不再连续，这通常会显著影响整体吞吐。
 
@@ -143,14 +144,14 @@ output[index_out] = input[index_in];
 
 **性能数据**：
 
-| Task Duration(us) | aiv_time(us) | aiv_total_cycles | aiv_vec_time(us) | aiv_vec_ratio | aiv_scalar_time(us) | aiv_scalar_ratio |
-| :---------------: | :----------: | :--------------: | :--------------: | :-----------: | :-----------------: | :--------------: |
-|      70.304      |    4.257    |     7024.463     |      4.115      |     0.967     |        0.131        |      0.030      |
+| Task Duration(μs) | aiv_time(μs) | aiv_vec_time(μs) | aiv_vec_ratio | aiv_scalar_time(μs) | aiv_scalar_ratio | aiv_mte2_time(μs) | aiv_mte2_ratio | aiv_mte3_time(μs) | aiv_mte3_ratio |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| 63.731 | 62.810 | 58.143 | 0.926 | 2.439 | 0.039 | 0.059 | 0.001 | 0.02 | 0.0 |
 
 **分析**：
 
-- Case 0的Task Duration为70.304us，作为直接索引转置版本，是后续优化版本的对比基线
-- 该版本GM读取仍然是连续读，但GM写回是跨行、非连续写，同一个Warp的写请求难以高效合并，因此整体耗时主要受限于写回访存模式
+- Case 0的Task Duration为63.731μs，作为直接索引转置版本，是后续优化版本的对比基线。
+- 该版本GM读取仍然是连续读，但GM写回是跨行、非连续写，同一个Warp的写请求难以高效合并，因此整体耗时主要受限于写回访存模式。
 
 ---
 
@@ -160,53 +161,42 @@ output[index_out] = input[index_in];
 
 **核心实现**：
 
-- 每个线程从GM读取tile中的1个元素，一个Warp会读取一个tile的一行元素
-- 按原坐标把元素写入UB中的tile，一个Warp会将读取的一行写入到UB中的tile的一行
-- 同步后，每个线程从UB中取数，一个Warp会读取UB中tile的一列元素
-- 将取出的值写回GM中的转置位置，一个Warp会将读取UB的一列元素写入到GM输出中tile的一行
+- 将输入数据的tile从GM搬运到UB上。
+- 每个线程从UB中取数，一个Warp会读取UB中tile的一列元素。
+- 将取出的值写回GM中的转置位置，一个Warp会将读取UB的一列元素写入到GM输出中tile的一行。
 
 下图展示了Case 1的数据流，其中标红和标黄的元素展示了一个Warp的线程在读取GM和写入GM时处理的元素。读取GM输入时，整个tile会按照GM的排布搬到UB，在写入GM输出时一个Warp的线程会读取UB上的一列元素写回到其对应的转置后的位置。
 
 <img src="./figures/case1.png" width="60%">
 
-与Case 0不同的是，Case 0中线程是“直接把输入元素写到转置后的GM位置”，所以相邻线程会被打散到输出矩阵的不同行上，而Case 1中，线程先把数据放到UB里，把原来不连续的全局写访问转移到UB内的不连续读。因此，这一版的核心收益是：虽然增加了一次UB读写和一次同步，但换来了GM侧“读连续、写也连续”的访问模式，整体耗时通常会明显低于Case 0。
+与Case 0不同的是，Case 0中线程是“直接把输入元素写到转置后的GM位置”，所以相邻线程会被打散到输出矩阵的不同行上，而Case 1中，核函数先通过 `asc_copy_gm2ub_align` 将输入tile按GM布局搬到UB，再由SIMT线程从UB中按转置方向读取并写回GM。因此，这一版的核心收益是：把原来不连续的GM写回转移为UB侧转置读取，换来GM侧“读连续、写也连续”的访问模式，整体耗时明显低于Case 0。
 
 **关键代码**：
 
 ```cpp
-int tile_row = threadIdx.x / TILE_DIM;
-int tile_col = threadIdx.x % TILE_DIM;
+uint32_t tile_row = threadIdx.x / TILE_DIM;
+uint32_t tile_col = threadIdx.x % TILE_DIM;
 
-tile[tile_row][tile_col] = input[index_in];
-asc_syncthreads();
-
-int block_row = blockIdx.x / grid_width;
-int block_col = blockIdx.x % grid_width;
-
-int output_row = block_col * TILE_DIM + tile_row;
-int output_col = block_row * TILE_DIM + tile_col;
-int index_out = output_col + output_row * height;
-
-output[index_out] = tile[tile_col][tile_row];
+output_tile[tile_col + tile_row * height] = input_tile[tile_col * TILE_DIM + tile_row];
 ```
 
 **优化手段**：
 
-- 使用UB作为tile中转区，把Case 0中的非连续GM写转移为UB侧访问
-- 调整输出tile的block坐标，使写回GM时同一个Warp更接近按行连续写入
-- 通过 `asc_syncthreads()` 保证整个tile写入UB后再执行转置方向读取
+- 使用UB作为tile中转区，把Case 0中的非连续GM写转移为UB侧转置读取。
+- 调整输出tile的block坐标，使写回GM时同一个Warp更接近按行连续写入。
+- 通过 `asc_sync_notify()` / `asc_sync_wait()` 保证GM到UB的搬运完成后再启动SIMT VF处理。
 
 **性能数据**：
 
-| Task Duration(us) | aiv_time(us) | aiv_total_cycles | aiv_vec_time(us) | aiv_vec_ratio | aiv_scalar_time(us) | aiv_scalar_ratio |
-| :---------------: | :----------: | :--------------: | :--------------: | :-----------: | :-----------------: | :--------------: |
-|      44.440      |    2.441    |     4027.577     |      2.295      |     0.941     |        0.134        |      0.054      |
+| Task Duration(μs) | aiv_time(μs) | aiv_vec_time(μs) | aiv_vec_ratio | aiv_scalar_time(μs) | aiv_scalar_ratio | aiv_mte2_time(μs) | aiv_mte2_ratio | aiv_mte3_time(μs) | aiv_mte3_ratio |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| 30.602 | 29.6 | 16.942 | 0.572 | 3.404 | 0.115 | 6.912 | 0.234 | 0.022 | 0.001 |
 
 **分析**：
 
-- 相比Case 0的直接索引转置版本，Case 1的Task Duration从70.304us降低到44.440us，耗时下降约36.8%
-- 按Task Duration计算，Case 1整体约为Case 0的1.58倍性能，说明通过UB中转改善GM写回连续性后，端到端耗时有明显下降
-- Case 1仍然需要额外的UB读写和同步，因此优化后的Task Duration没有降到纯连续访存的理想水平；这部分耗时是UB中转换取GM访存合并带来的必要开销
+- 相比Case 0的直接索引转置版本，Case 1的Task Duration从63.731μs降低到30.602μs，耗时下降约52.0%。
+- 按Task Duration计算，Case 1整体约为Case 0的2.08倍性能，说明通过UB中转改善GM写回连续性后，端到端耗时有明显下降。
+- Case 1降低了Case 0中代价较高的非连续GM写回开销，但代码中仍存在GM到UB的tile搬运、流水同步以及SIMT线程对UB的转置方向读取，因此优化后的Task Duration仍不会等同于单纯连续GM读写的理想耗时。
 
 ---
 
@@ -216,19 +206,19 @@ output[index_out] = tile[tile_col][tile_row];
 
 **综合优化效果**：
 
-- 通过Case 0到Case 1的访存合并优化，样例Task Duration从70.304us降低到44.440us，耗时下降约36.8%
-- Case 1相对Case 0性能提升约1.58倍，说明通过UB中转改善GM写回连续性后，端到端耗时有明显收益
+- 通过Case 0到Case 1的访存合并优化，样例Task Duration从63.731μs降低到30.602μs，耗时下降约52.0%。
+- Case 1相对Case 0性能提升约2.08倍，说明通过UB中转改善GM写回连续性后，端到端耗时有明显收益。
 
-| Case version | Task Duration(us) | 端到端耗时相对Case 0 | 优化点                           |
+| Case version | Task Duration(μs) | 端到端耗时相对Case 0 | 优化点                           |
 | ------------ | ----------------- | -------------------- | -------------------------------- |
-| Case 0       | 70.304            | **1x**         | 直接索引转置，GM连续读、非连续写 |
-| Case 1       | 44.440            | **1.58x**      | UB中转，全局访存合并             |
+| Case 0       | 63.731            | **1x**         | 直接索引转置，GM连续读、非连续写 |
+| Case 1       | 30.602            | **2.08x**      | UB中转，全局访存合并             |
 
 ## 调优建议
 
 1. **优先关注GM访存连续性**：矩阵转置计算量很小，端到端耗时主要受读写访存模式影响。
 2. **使用UB中转改善写回模式**：当直接转置导致GM非连续写时，可以将不连续访问转移到UB侧，换取GM侧连续读写。
-3. **注意同步开销**：UB中转需要同步保证tile数据完整，优化时需要同时关注访存收益与同步、UB读写开销之间的平衡。
+3. **注意搬运与流水同步开销**：UB中转需要从GM搬运到UB，并通过流水同步保证tile数据可被SIMT线程读取，优化时需要同时关注GM访存收益、UB转置读和流水同步开销之间的平衡。
 
 ## 编译运行
 
@@ -283,20 +273,25 @@ output[index_out] = tile[tile_col][tile_row];
 使用 `msprof` 工具获取详细性能数据：
 
 ```bash
-msprof op ./demo   # 分析case的性能
+msprof ./demo   # 分析case的性能
 ```
 
-会在默认目录下生成以“OPPROF_{timestamp}_XXX”命名的文件夹,性能数据文件夹结构示例如下：
+当前目录下会生成PROF_前缀的文件夹，`mindstudio_profiler_output`目录保存Host和各个Device的性能数据汇总，性能数据分析推荐查看该目录下文件
 
-```text
-├──dump                       # 原始的性能数据，用户无需关注
-├──ArithmeticUtilization.csv  # cube/vector指令cycle占比
-├──L2Cache.csv                # L2 Cache命中率
-├──Memory.csv                 # UB，L1和主存储器读写带宽速率
-├──MemoryL0.csv               # L0A，L0B，和L0C读写带宽速率
-├──MemoryUB.csv               # Vector和Scalar到UB的读写带宽速率
-├──OpBasicInfo.csv            # 算子基础信息
-├──PipeUtilization.csv        # 采集计算单元和搬运单元耗时和占比
-├──ResourceConflictRatio.csv  # UB上的 bank group、bank conflict和资源冲突率在所有指令中的占比
-└──visualize_data.bin         # MindStudio Insight呈现文件
+```bash
+PROF_xxxx_XXXXXX
+├── device_{id}
+└── host
+└── mindstudio_profiler_log
+└── mindstudio_profiler_output    # 保存Host和各个Device的性能数据汇总
+    ├── msprof_*.json
+    ├── xx_*.csv
+    └── README.txt
+```
+
+查看具体的性能分析结果：
+
+```bash
+# 查看Task Duration 以及各项数据
+cat ./PROF_*/mindstudio_profiler_output/op_summary_*.csv
 ```
