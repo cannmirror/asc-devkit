@@ -20,7 +20,7 @@ AIC和AIV独立运行机制，又称双主模式。在[分离模式](../../../..
 
 ## 调用示例<a name="zh-cn_topic_0000002299608693_section15486294368"></a>
 
-完整的算子样例请参考[使能双主模式的算子样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/00_matrix/matmul_mixdualmaster)。
+完整的算子样例请参考[使能双主模式的算子样例](https://gitcode.com/cann/asc-devkit/tree/9.1.0-beta.2/examples/01_simd_cpp_api/03_libraries/00_matrix/matmul_mixdualmaster)。
 
 ```
 // 修改模板参数enableMixDualMaster=true，Norm模板开启双主模式，MDL模板使用[GetMDLConfig](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/GetMDLConfig.md)接口获取模板参数。
