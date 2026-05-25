@@ -27,6 +27,7 @@
 #include "utils/kernel_utils_struct_dma_params.h"
 #include "utils/kernel_utils_struct_norm_sort.h"
 #include "utils/kernel_utils_struct_param.h"
+#include "utils/debug/asc_debug_utils.h"
 
 #include "kernel_struct_data_copy.h"
 #include "kernel_scalar_convert.h"
@@ -258,6 +259,13 @@ enum class TimeStampId : uint32_t {
 
     TIME_STAMP_MAX = 0xffff,
 };
+
+template <auto funcPtr, typename... Args> __aicore__ inline void AscVFCallImpl(Args &&... args)
+{
+    AscVFDebugInitUb();
+    funcPtr(args...);
+    AscVFDebugTransferUb();
+}
 } // namespace AscendC
 #endif // ASCENDC_MODULE_UTILS_H
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_UTILS_H__)
