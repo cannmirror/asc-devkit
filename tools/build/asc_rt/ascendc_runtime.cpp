@@ -22,8 +22,8 @@
 #include <string>
 #include <cstring>
 
-#include "runtime/rt_ffts.h"
-#include "runtime/kernel.h"
+#include "rt_external_base.h"
+#include "rt_external_kernel.h"
 #include "acl_rt.h"
 #include "ascendc_tool_log.h"
 
@@ -255,90 +255,42 @@ int32_t AscendLaunchKernelWithHostArgs(void* funcHandle,
 
 uint32_t RegisterAscendBinary(const char *fileBuf, size_t fileSize, uint32_t type, void **handle)
 {
-    rtDevBinary_t binary;
-
+    uint32_t magic = ACL_RT_BINARY_MAGIC_ELF_AICORE;
     switch (static_cast<ElfType>(type)) {
         case ElfType::ELF_TYPE_AIVEC:
-            binary.magic = RT_DEV_BINARY_MAGIC_ELF_AIVEC;
+            magic = ACL_RT_BINARY_MAGIC_ELF_VECTOR_CORE;
             break;
         case ElfType::ELF_TYPE_AICUBE:
-            binary.magic = RT_DEV_BINARY_MAGIC_ELF_AICUBE;
+            magic = ACL_RT_BINARY_MAGIC_ELF_CUBE_CORE;
             break;
         case ElfType::ELF_TYPE_ELF:
         default:
-            binary.magic = RT_DEV_BINARY_MAGIC_ELF;
+            magic = ACL_RT_BINARY_MAGIC_ELF_AICORE;
     }
-    binary.version = 0;
-    binary.data = fileBuf;
-    binary.length = fileSize;
-    return rtRegisterAllKernel(&binary, handle);
-}
 
-int32_t AscendDevBinaryRegister(const void *fileBuf, size_t fileSize, void **handle)
-{
-    rtDevBinary_t binary;
-    binary.magic = RT_DEV_BINARY_MAGIC_ELF;
-    binary.version = 0;
-    binary.data = fileBuf;
-    binary.length = fileSize;
-    return rtDevBinaryRegister(&binary, handle);
-}
-
-int32_t AscendFunctionRegister(void *handle, const char *stubFunc)
-{
-    return rtFunctionRegister(handle, stubFunc, stubFunc, stubFunc, 0);
+    aclrtBinaryLoadOption magicLoadOption;
+    magicLoadOption.type = ACL_RT_BINARY_LOAD_OPT_MAGIC;
+    magicLoadOption.value.magic = magic;
+    aclrtBinaryLoadOptions loadOptions = {&magicLoadOption, 1};
+    return aclrtBinaryLoadFromData(fileBuf, fileSize, &loadOptions, handle);
 }
 
 uint32_t LaunchAscendKernel(void *handle, const uint64_t key, const uint32_t numBlocks, void **args, uint32_t size,
     const rtStream_t stream)
 {
-    rtArgsEx_t argsInfo = {
-        .args = nullptr,
-        .hostInputInfoPtr = nullptr,
-        .argsSize = 0,
-        .tilingAddrOffset = 0,
-        .tilingDataOffset = 0,
-        .hostInputInfoNum = 0,
-        .hasTiling = 0,
-        .isNoNeedH2DCopy = 0,
-        .reserved = {0, 0, 0, 0}};
-    argsInfo.args = (void *)args;
-    argsInfo.argsSize = size;
-    return rtKernelLaunchWithHandle(handle, key, numBlocks, &argsInfo, nullptr, stream, nullptr);
-}
-
-int32_t AscendKernelLaunchWithFlagV2(const char *stubFunc, const uint32_t numBlocks, void **args, uint32_t size,
-    const rtStream_t stream, const uint32_t ubufDynamicSize)
-{
-    rtArgsEx_t argsInfo = {
-        .args = nullptr,
-        .hostInputInfoPtr = nullptr,
-        .argsSize = 0,
-        .tilingAddrOffset = 0,
-        .tilingDataOffset = 0,
-        .hostInputInfoNum = 0,
-        .hasTiling = 0,
-        .isNoNeedH2DCopy = 0,
-        .reserved = {0, 0, 0, 0}};
-    argsInfo.args = static_cast<void*>(args);
-    argsInfo.argsSize = size;
-    if (ubufDynamicSize > 0) {
-        rtTaskCfgInfo_t cfgInfo{};
-        cfgInfo.localMemorySize = ubufDynamicSize;
-        return rtKernelLaunchWithFlagV2(stubFunc, numBlocks, &argsInfo, nullptr, stream, 0, &cfgInfo);
-    }
-    return rtKernelLaunchWithFlagV2(stubFunc, numBlocks, &argsInfo, nullptr, stream, 0, nullptr);
+    aclrtFuncHandle funcHandle;
+    ASCENDC_ASSERT_RTOK_RETVAL(aclrtBinaryGetFunctionByEntry(handle, key, &funcHandle));
+    return aclrtLaunchKernelWithHostArgs(funcHandle, numBlocks, stream, nullptr, (void *)args, size, nullptr, 0);
 }
 
 uint32_t GetAscendCoreSyncAddr(void **addr)
 {
-    uint32_t len;
-    return rtGetC2cCtrlAddr((uint64_t *)addr, &len);
+    return aclrtGetHardwareSyncAddr(addr);
 }
 
 int UnregisterAscendBinary(void *hdl)
 {
-    return rtDevBinaryUnRegister(hdl);
+    return aclrtBinaryUnLoad(hdl);
 }
 
 static void MsprofRc(const char *name, const uint64_t timeStamp)
@@ -493,7 +445,6 @@ uint32_t FreeAscendMemDevice(void *devMem)
     }
     return 0;
 }
-
 typedef struct {
     rtStream_t stream;
     rtEvent_t eventA;
@@ -545,9 +496,54 @@ static inline uint32_t AscendCExecutorPreportProfiling(
         }                                     \
     } while (false)
 
-void AscendCDestroyStreamCallBack(rtStream_t stream, const bool isCreate)
+static uint32_t AscendCExecutorLaunchKernel(void* binHandle, const uint64_t tilingKey, const uint32_t numBlocks,
+    void** args, uint32_t size, const rtStream_t stream)
 {
-    if (isCreate) {
+    ASCENDLOGI("tilingKey is %lu, numBlocks is %u, stream is %p\n", tilingKey, numBlocks, stream);
+    aclrtFuncHandle funcHandle;
+    ASCENDC_ASSERT_RTOK_RETVAL(aclrtBinaryGetFunctionByEntry(binHandle, tilingKey, &funcHandle));
+    constexpr uint32_t attrLen = 2;
+    aclrtLaunchKernelAttrValue engTypeValue{};
+    engTypeValue.engineType = ACL_RT_ENGINE_TYPE_AIC;
+    aclrtLaunchKernelAttrValue blkValue{};
+    blkValue.blockDimOffset = 0;
+    aclrtLaunchKernelAttr attrList[attrLen] = {
+        {ACL_RT_LAUNCH_KERNEL_ATTR_ENGINE_TYPE, engTypeValue},
+        {ACL_RT_LAUNCH_KERNEL_ATTR_BLOCKDIM_OFFSET, blkValue},
+    };
+    aclrtLaunchKernelCfg cfg = {attrList, attrLen};
+    ASCENDC_ASSERT_RTOK_RETVAL(aclrtLaunchKernelWithHostArgs(
+        funcHandle, numBlocks, stream, &cfg,
+        (void *)args, size, nullptr, 0));
+    return ASCENDC_SUCCESS;
+}
+
+static uint32_t AscendCExecutorVectorCoreLaunchKernel(void* binHandle, const uint64_t tilingKey,
+    const uint32_t numBlocks, void** args, uint32_t size, const rtStream_t stream, uint32_t aivNumBlocksOffset)
+{
+    ASCENDLOGI("tilingKey is %lu, aiv numBlocks is %u\n", tilingKey, numBlocks);
+    aclrtFuncHandle funcHandle;
+    ASCENDC_ASSERT_RTOK_RETVAL(aclrtBinaryGetFunctionByEntry(binHandle, tilingKey, &funcHandle));
+    constexpr uint32_t attrLen = 2;
+    aclrtLaunchKernelAttrValue engTypeValue{};
+    engTypeValue.engineType = ACL_RT_ENGINE_TYPE_AIV;
+    aclrtLaunchKernelAttrValue blkValue{};
+    blkValue.blockDimOffset = aivNumBlocksOffset;
+    aclrtLaunchKernelAttr attrList[attrLen] = {
+        {ACL_RT_LAUNCH_KERNEL_ATTR_ENGINE_TYPE, engTypeValue},
+        {ACL_RT_LAUNCH_KERNEL_ATTR_BLOCKDIM_OFFSET, blkValue},
+    };
+    aclrtLaunchKernelCfg cfg = {attrList, attrLen};
+    ASCENDC_ASSERT_RTOK_RETVAL(aclrtLaunchKernelWithHostArgs(
+        funcHandle, numBlocks, stream, &cfg,
+        (void *)args, size, nullptr, 0));
+    return ASCENDC_SUCCESS;
+}
+
+void StreamStateCallback(aclrtStream stream, aclrtStreamState state, void *args)
+{
+    (void)args;
+    if (state == ACL_RT_STREAM_STATE_CREATE_POST) {
         return;
     }
     if (g_ascStreamMap.find(stream) != g_ascStreamMap.end()) {
@@ -568,53 +564,11 @@ void AscendCDestroyStreamCallBack(rtStream_t stream, const bool isCreate)
     return;
 }
 
-
-static rtArgsEx_t InitializeArgsInfo(void **args, uint32_t size)
-{
-    rtArgsEx_t argsInfo = {.args = nullptr,
-        .hostInputInfoPtr = nullptr,
-        .argsSize = 0,
-        .tilingAddrOffset = 0,
-        .tilingDataOffset = 0,
-        .hostInputInfoNum = 0,
-        .hasTiling = 0,
-        .isNoNeedH2DCopy = 0,
-        .reserved = {0, 0, 0, 0}};
-    argsInfo.args = reinterpret_cast<void *>(args);
-    argsInfo.argsSize = size;
-    return argsInfo;
-}
-
-static uint32_t AscendCExecutorLaunchKernel(void* binHandle, const uint64_t tilingKey, const uint32_t numBlocks,
-    void** args, uint32_t size, const rtStream_t stream)
-{
-    // scheMode new is not need;
-    const uint8_t scheMode = 0;
-    const rtTaskCfgInfo_t cfgInfo = { 0U, 0U, scheMode, false, 0U, 0U, 0U, {0U, 0U}, 0U };
-    ASCENDLOGI("tilingKey is %lu, scheMode is %hhu, numBlocks is %u, stream is %p\n", tilingKey, scheMode, numBlocks,
-        stream);
-    rtArgsEx_t argsInfo = InitializeArgsInfo(args, size);
-    ASCENDC_ASSERT_RTOK_RETVAL(
-        rtKernelLaunchWithHandleV2(binHandle, tilingKey, numBlocks, &argsInfo, nullptr, stream, &cfgInfo));
-    return ASCENDC_SUCCESS;
-}
-
-static uint32_t AscendCExecutorVectorCoreLaunchKernel(void* binHandle, const uint64_t tilingKey,
-    const uint32_t numBlocks, void** args, uint32_t size, const rtStream_t stream, uint32_t aivNumBlocksOffset)
-{
-    ASCENDLOGI("tilingKey is %lu, aiv numBlocks1 is %u\n", tilingKey, numBlocks);
-    const uint8_t scheMode = 0;
-    const rtTaskCfgInfo_t cfgInfo = { 0U, 0U, scheMode, false, aivNumBlocksOffset, 0U, 0U, {0U, 0U}, 0U };
-    rtArgsEx_t argsInfo = InitializeArgsInfo(args, size);
-    ASCENDC_ASSERT_RTOK_RETVAL(
-        rtVectorCoreKernelLaunchWithHandle(binHandle, tilingKey, numBlocks, &argsInfo, nullptr, stream, &cfgInfo));
-    return ASCENDC_SUCCESS;
-}
-
 static uint32_t AscendCExecutorGetStreamAndEvent(
     const rtStream_t stream, rtStream_t *subStream, rtEvent_t *evtA, rtEvent_t *evtB,
     std::shared_ptr<std::mutex> &streamLckPtr)
 {
+    const uint32_t RT_STREAM_PRIORITY_DEFAULT_VAL = 0U;      // RT_STREAM_PRIORITY_DEFAULT = 0U
     const std::lock_guard<std::mutex> lock(g_ascStreamMtx);
     rtStream_t mainStream = stream;
     if (stream == nullptr) {
@@ -632,12 +586,12 @@ static uint32_t AscendCExecutorGetStreamAndEvent(
         *evtB = g_ascStreamMap[mainStream].eventB;
         ASCENDLOGI("find main stream is %p, subStream %p, eventA %p, eventB %p", mainStream, *subStream, *evtA, *evtB);
     } else {
-        CHECK_COND(aclrtCreateStreamWithConfig(subStream, RT_STREAM_PRIORITY_DEFAULT,
-                                           RT_STREAM_FAST_LAUNCH | RT_STREAM_FAST_SYNC) == RT_ERROR_NONE,
+        CHECK_COND(aclrtCreateStreamWithConfig(subStream, RT_STREAM_PRIORITY_DEFAULT_VAL,
+                                           ACL_STREAM_FAST_LAUNCH | ACL_STREAM_FAST_SYNC) == RT_ERROR_NONE,
                    ASCENDC_ERR_RUNTIME_ERROR, "create stream %p failed.", subStream);
-        CHECK_COND(aclrtCreateEventExWithFlag(evtA, RT_EVENT_WITH_FLAG) == RT_ERROR_NONE,
+        CHECK_COND(aclrtCreateEventExWithFlag(evtA, ACL_EVENT_SYNC) == RT_ERROR_NONE,
                    ASCENDC_ERR_RUNTIME_ERROR, "create event %p failed.", evtA);
-        CHECK_COND(aclrtCreateEventExWithFlag(evtB, RT_EVENT_WITH_FLAG) == RT_ERROR_NONE,
+        CHECK_COND(aclrtCreateEventExWithFlag(evtB, ACL_EVENT_SYNC) == RT_ERROR_NONE,
                    ASCENDC_ERR_RUNTIME_ERROR, "create event %p failed.", evtB);
         g_ascStreamMap[mainStream] = {*subStream, *evtA, *evtB};
     }
@@ -646,7 +600,7 @@ static uint32_t AscendCExecutorGetStreamAndEvent(
     if (g_ascendCRegistedCallBack) {
         return ASCENDC_SUCCESS;
     }
-    ASCENDC_ASSERT_RTOK_RETVAL(rtRegStreamStateCallback("AscendCDestroySteam", AscendCDestroyStreamCallBack));
+    ASCENDC_ASSERT_RTOK_RETVAL(aclrtRegStreamStateCallback("AscendCDestroySteam", StreamStateCallback, nullptr));
 
     g_ascendCRegistedCallBack = true;
     return ASCENDC_SUCCESS;

@@ -12,6 +12,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <ctime>
+#include <cstring>
 #include <string>
 #include <unordered_map>
 #include <fcntl.h>
@@ -23,6 +24,7 @@
 #include "securec.h"
 #include "runtime/kernel.h"
 #include "acl_rt.h"
+#include "aprof_pub.h"
 #include "ascendc_tool_log.h"
 
 #include <iostream>
@@ -44,6 +46,20 @@ protected:
     }
 };
 
+extern "C" uint32_t g_msprofReportCompactInfoCallCount;
+extern "C" uint32_t g_msprofReportAdditionalInfoCallCount;
+extern "C" uint32_t g_msprofReportApiCallCount;
+extern "C" uint32_t g_msprofRegisterCallbackCallCount;
+extern "C" uint32_t g_msprofLastRegisterModuleId;
+extern "C" ProfCommandHandle g_msprofLastRegisterCallback;
+extern "C" MsprofApi g_msprofLastApi;
+extern "C" MsprofCompactInfo g_msprofLastCompactInfo;
+extern "C" MsprofAdditionalInfo g_msprofLastAdditionalInfo;
+extern "C" int64_t g_aclrtGetDeviceInfoAicoreNum;
+extern "C" int64_t g_aclrtGetDeviceInfoVectorNum;
+
+static void ResetAscRtStubState();
+
 TEST_F(TEST_ASCENDC_RUNTIME, ascendcRuntimeProfTest){
     const char *name = "xxx";
     uint32_t numBlocks = 1;
@@ -61,6 +77,26 @@ TEST_F(TEST_ASCENDC_RUNTIME, ascendcRuntimeProfFixTest){
     const uint64_t startTime = 0;
     ReportAscendProf(name, numBlocks, taskType, startTime);
     EXPECT_NO_THROW(GlobalMockObject::verify());
+}
+
+TEST_F(TEST_ASCENDC_RUNTIME, ReportAscendProfMixTaskReportsAdditionalInfo)
+{
+    ResetAscRtStubState();
+    ReportAscendProf("mix_op", 7, 0, 100);
+    EXPECT_EQ(g_msprofReportApiCallCount, 1);
+    EXPECT_EQ(g_msprofReportAdditionalInfoCallCount, 1);
+    EXPECT_EQ(g_msprofReportCompactInfoCallCount, 1);
+    EXPECT_EQ(g_msprofLastCompactInfo.data.nodeBasicInfo.blockDim, ((7U & 0xFFFFU) | (2U << 16U)));
+}
+
+TEST_F(TEST_ASCENDC_RUNTIME, ReportAscendProfNormalTaskDoesNotReportAdditionalInfo)
+{
+    ResetAscRtStubState();
+    ReportAscendProf("aic_op", 3, 2, 50);
+    EXPECT_EQ(g_msprofReportApiCallCount, 1);
+    EXPECT_EQ(g_msprofReportAdditionalInfoCallCount, 0);
+    EXPECT_EQ(g_msprofReportCompactInfoCallCount, 1);
+    EXPECT_EQ(g_msprofLastCompactInfo.data.nodeBasicInfo.blockDim, 3U);
 }
 
 #define ASCENDC_DUMP_SIZE 75 * 1024 * 1024
@@ -84,27 +120,6 @@ TEST_F(TEST_ASCENDC_RUNTIME, ascendcRuntimeRegisterTest){
     UnregisterAscendBinary(handle);
 }
 
-TEST_F(TEST_ASCENDC_RUNTIME, ascendcRuntimeDevBinaryRegisterTest) {
-    uint8_t fileBuf[32];
-    size_t fileSize = 32;
-    void *handle;
-    int32_t ret;
-    ret = AscendDevBinaryRegister(fileBuf, fileSize, &handle);
-    EXPECT_EQ(ret, 0);
-    const char* stubFunc = "hello_world";
-    ret = AscendFunctionRegister(handle, stubFunc);
-    EXPECT_EQ(ret, 0);
-    MOCKER(rtKernelLaunchWithFlagV2).stubs().will(returnValue(0));
-    uint32_t numBlocks;
-    void **args = nullptr;
-    uint32_t size;
-    rtStream_t stream = nullptr;
-    ret = AscendKernelLaunchWithFlagV2(stubFunc, numBlocks, args, size, stream, 0);
-    EXPECT_EQ(ret, 0);
-    ret = AscendKernelLaunchWithFlagV2(stubFunc, numBlocks, args, size, stream, 2048);
-    EXPECT_EQ(ret, 0);
-}
-
 TEST_F(TEST_ASCENDC_RUNTIME, ascendcRuntimeMemoryFailedTest){
     size_t bufsize = 16;
     uint32_t ret;
@@ -124,11 +139,23 @@ TEST_F(TEST_ASCENDC_RUNTIME, ascendcRuntimeGetProfStatusTest){
 }
 
 TEST_F(TEST_ASCENDC_RUNTIME, GetCoreNumForMixVectorCore){
+    ResetAscRtStubState();
+    g_aclrtGetDeviceInfoAicoreNum = 32;
+    g_aclrtGetDeviceInfoVectorNum = 16;
     uint32_t aiCoreNum = 0;
     uint32_t vectorCoreNum = 0;
     GetCoreNumForMixVectorCore(&aiCoreNum, &vectorCoreNum);
-    EXPECT_EQ(aiCoreNum, 0);
-    EXPECT_EQ(vectorCoreNum, 0);
+    EXPECT_EQ(aiCoreNum, 32U);
+    EXPECT_EQ(vectorCoreNum, 16U);
+}
+
+TEST_F(TEST_ASCENDC_RUNTIME, AscendProfRegisterRecordsCallback)
+{
+    ResetAscRtStubState();
+    AscendProfRegister();
+    EXPECT_EQ(g_msprofRegisterCallbackCallCount, 1);
+    EXPECT_EQ(g_msprofLastRegisterModuleId, 69U);
+    EXPECT_NE(g_msprofLastRegisterCallback, nullptr);
 }
 
 typedef void *rtEvent_t;
@@ -143,25 +170,98 @@ typedef struct {
 
 extern "C" uint32_t LaunchAscendKernelForVectorCore(const char *opType, void *handle, const uint64_t key, void **args, uint32_t size,
     const void *stream, bool enableProf, uint32_t aicNumBlocks, uint32_t aivNumBlocks, uint32_t aivNumBlocksOffset);
-extern "C" void AscendCDestroyStreamCallBack(rtStream_t stream, const bool isCreate);
 extern std::unordered_map<const void *, AscendCStreamForVectorCore> g_ascStreamMap;
 extern "C" uint32_t LaunchAscendKernel(void *handle, const uint64_t key, const uint32_t numBlocks, void **args, uint32_t size,
     const rtStream_t stream);
+extern "C" void StreamStateCallback(aclrtStream stream, aclrtStreamState state, void *args);
+extern "C" uint32_t g_aclrtLaunchKernelWithHostArgsCallCount;
+extern "C" uint32_t g_aclrtLaunchKernelWithHostArgsLastNumBlocks;
+extern "C" aclrtStream g_aclrtLaunchKernelWithHostArgsLastStream;
+extern "C" size_t g_aclrtLaunchKernelWithHostArgsLastArgsSize;
+extern "C" uint32_t g_aclrtLaunchKernelWithHostArgsLastCfgAttrNum;
+extern "C" aclrtLaunchKernelAttr g_aclrtLaunchKernelWithHostArgsLastAttrs[4];
+extern "C" const char *g_aclrtRegStreamStateCallbackLastName;
+extern "C" aclrtStreamStateCallback g_aclrtRegStreamStateCallbackLastCallback;
+extern "C" void *g_aclrtRegStreamStateCallbackLastArg;
+extern "C" aclrtStream g_aclrtCreateStreamWithConfigLastStream;
+extern "C" aclrtEvent g_aclrtCreateEventExWithFlagLastEventA;
+extern "C" aclrtEvent g_aclrtCreateEventExWithFlagLastEventB;
+extern "C" uint32_t g_aclrtCreateEventExWithFlagCallCount;
+extern "C" uint32_t g_aclrtCreateStreamWithConfigCallCount;
+extern "C" uint32_t g_aclrtDestroyStreamCallCount;
+extern "C" uint32_t g_aclrtDestroyEventCallCount;
+extern "C" aclrtStream g_aclrtDestroyStreamLastStream;
+extern "C" aclrtEvent g_aclrtDestroyEventLastEvent;
+extern "C" aclrtEvent g_aclrtRecordEventLastEvent;
+extern "C" aclrtStream g_aclrtRecordEventLastStream;
+extern "C" aclrtStream g_aclrtStreamWaitEventLastStream;
+extern "C" aclrtEvent g_aclrtStreamWaitEventLastEvent;
+extern "C" int64_t g_aclrtGetDeviceInfoAicoreNum;
+extern "C" int64_t g_aclrtGetDeviceInfoVectorNum;
+extern "C" uint32_t g_msprofReportCompactInfoCallCount;
+extern "C" uint32_t g_msprofReportAdditionalInfoCallCount;
+extern "C" uint32_t g_msprofReportApiCallCount;
+extern "C" uint32_t g_msprofRegisterCallbackCallCount;
+extern "C" uint32_t g_msprofLastRegisterModuleId;
+extern "C" ProfCommandHandle g_msprofLastRegisterCallback;
+extern "C" MsprofApi g_msprofLastApi;
+extern "C" MsprofCompactInfo g_msprofLastCompactInfo;
+extern "C" MsprofAdditionalInfo g_msprofLastAdditionalInfo;
+
+static void ResetAscRtStubState()
+{
+    g_ascStreamMap.clear();
+    g_aclrtLaunchKernelWithHostArgsCallCount = 0;
+    g_aclrtLaunchKernelWithHostArgsLastNumBlocks = 0;
+    g_aclrtLaunchKernelWithHostArgsLastStream = nullptr;
+    g_aclrtLaunchKernelWithHostArgsLastArgsSize = 0;
+    g_aclrtLaunchKernelWithHostArgsLastCfgAttrNum = 0;
+    memset(g_aclrtLaunchKernelWithHostArgsLastAttrs, 0, sizeof(g_aclrtLaunchKernelWithHostArgsLastAttrs));
+    g_aclrtRegStreamStateCallbackLastName = nullptr;
+    g_aclrtRegStreamStateCallbackLastCallback = nullptr;
+    g_aclrtRegStreamStateCallbackLastArg = nullptr;
+    g_aclrtCreateStreamWithConfigCallCount = 0;
+    g_aclrtCreateEventExWithFlagCallCount = 0;
+    g_aclrtDestroyStreamCallCount = 0;
+    g_aclrtDestroyEventCallCount = 0;
+    g_aclrtDestroyStreamLastStream = nullptr;
+    g_aclrtDestroyEventLastEvent = nullptr;
+    g_aclrtRecordEventLastEvent = nullptr;
+    g_aclrtRecordEventLastStream = nullptr;
+    g_aclrtStreamWaitEventLastStream = nullptr;
+    g_aclrtStreamWaitEventLastEvent = nullptr;
+    g_aclrtGetDeviceInfoAicoreNum = 0;
+    g_aclrtGetDeviceInfoVectorNum = 0;
+    g_msprofReportCompactInfoCallCount = 0;
+    g_msprofReportAdditionalInfoCallCount = 0;
+    g_msprofReportApiCallCount = 0;
+    g_msprofRegisterCallbackCallCount = 0;
+    g_msprofLastRegisterModuleId = 0;
+    g_msprofLastRegisterCallback = nullptr;
+    memset(&g_msprofLastApi, 0, sizeof(g_msprofLastApi));
+    memset(&g_msprofLastCompactInfo, 0, sizeof(g_msprofLastCompactInfo));
+    memset(&g_msprofLastAdditionalInfo, 0, sizeof(g_msprofLastAdditionalInfo));
+}
 
 
-TEST_F(TEST_ASCENDC_RUNTIME, LaunchVectorCore){
-    const char* opType = "AddCustom";
-    void * handle = nullptr;
-    void **args = nullptr;
+TEST_F(TEST_ASCENDC_RUNTIME, StreamStateCallbackTest){
+    ResetAscRtStubState();
     void *stream = nullptr;
+    void *args = nullptr;
+    aclrtStreamState stateCreate = ACL_RT_STREAM_STATE_CREATE_POST;
+    aclrtStreamState stateDestroy = ACL_RT_STREAM_STATE_DESTROY_PRE;
     AscendCStreamForVectorCore streamForVectorCore;
-    AscendCDestroyStreamCallBack(stream, true);
+    streamForVectorCore.stream = reinterpret_cast<void *>(0x1111);
+    streamForVectorCore.eventA = reinterpret_cast<void *>(0x2222);
+    streamForVectorCore.eventB = reinterpret_cast<void *>(0x3333);
+    StreamStateCallback(stream, stateCreate, args);
     g_ascStreamMap[stream] = streamForVectorCore;
-    AscendCDestroyStreamCallBack(stream, false);
-    uint32_t ret = LaunchAscendKernelForVectorCore(opType, handle, 0, args, 0, stream, false, 1, 1, 0);
-    EXPECT_EQ(ret, 0);
-    ret = LaunchAscendKernelForVectorCore(opType, handle, 0, args, 0, stream, true, 1, 1, 0);
-    EXPECT_EQ(ret, 0);
+    StreamStateCallback(stream, stateDestroy, args);
+    EXPECT_EQ(g_ascStreamMap.find(stream), g_ascStreamMap.cend());
+    EXPECT_EQ(g_aclrtDestroyStreamCallCount, 1);
+    EXPECT_EQ(g_aclrtDestroyEventCallCount, 2);
+    EXPECT_EQ(g_aclrtDestroyStreamLastStream, streamForVectorCore.stream);
+    EXPECT_EQ(g_aclrtDestroyEventLastEvent, streamForVectorCore.eventB);
 }
 
 const char *fake_rtGetSocVersion()
@@ -205,6 +305,72 @@ TEST_F(TEST_ASCENDC_RUNTIME, LaunchAscendKernelA){
     aclrtLaunchKernelWithConfig(handle, numBlocks, stream, cfg, nullptr, nullptr);
     uint32_t ret = LaunchAscendKernel(handle, key, numBlocks, args, size, stream);
     EXPECT_EQ(ret, 0);
+}
+
+TEST_F(TEST_ASCENDC_RUNTIME, LaunchAscendKernelForVectorCoreLaunchesAicAndAivWithExpectedCfg)
+{
+    ResetAscRtStubState();
+    void *handle = nullptr;
+    void *stream = reinterpret_cast<void *>(0x5000);
+    void *arg0 = reinterpret_cast<void *>(0x6000);
+    void **args = &arg0;
+    uint32_t ret = LaunchAscendKernelForVectorCore("mix_vector", handle, 0, args, sizeof(arg0), stream, false,
+        6, 4, 6);
+    EXPECT_EQ(ret, 0U);
+    EXPECT_EQ(g_aclrtCreateStreamWithConfigCallCount, 1U);
+    EXPECT_EQ(g_aclrtCreateEventExWithFlagCallCount, 2U);
+    EXPECT_EQ(g_aclrtLaunchKernelWithHostArgsCallCount, 2U);
+    EXPECT_EQ(g_aclrtLaunchKernelWithHostArgsLastNumBlocks, 4U);
+    EXPECT_EQ(g_aclrtLaunchKernelWithHostArgsLastStream, g_aclrtCreateStreamWithConfigLastStream);
+    EXPECT_EQ(g_aclrtLaunchKernelWithHostArgsLastCfgAttrNum, 2U);
+    EXPECT_EQ(g_aclrtLaunchKernelWithHostArgsLastAttrs[0].id, ACL_RT_LAUNCH_KERNEL_ATTR_ENGINE_TYPE);
+    EXPECT_EQ(g_aclrtLaunchKernelWithHostArgsLastAttrs[0].value.engineType, ACL_RT_ENGINE_TYPE_AIV);
+    EXPECT_EQ(g_aclrtLaunchKernelWithHostArgsLastAttrs[1].id, ACL_RT_LAUNCH_KERNEL_ATTR_BLOCKDIM_OFFSET);
+    EXPECT_EQ(g_aclrtLaunchKernelWithHostArgsLastAttrs[1].value.blockDimOffset, 6U);
+    EXPECT_STREQ(g_aclrtRegStreamStateCallbackLastName, "AscendCDestroySteam");
+    EXPECT_NE(g_aclrtRegStreamStateCallbackLastCallback, nullptr);
+    EXPECT_EQ(g_aclrtRecordEventLastEvent, g_aclrtCreateEventExWithFlagLastEventB);
+    EXPECT_EQ(g_aclrtStreamWaitEventLastStream, stream);
+    EXPECT_EQ(g_aclrtStreamWaitEventLastEvent, g_aclrtCreateEventExWithFlagLastEventB);
+}
+
+TEST_F(TEST_ASCENDC_RUNTIME, LaunchAscendKernelForVectorCoreWithProfilingReportsBothTasks)
+{
+    ResetAscRtStubState();
+    void *handle = nullptr;
+    void *stream = reinterpret_cast<void *>(0x7000);
+    void *arg0 = reinterpret_cast<void *>(0x8000);
+    void **args = &arg0;
+    uint32_t ret = LaunchAscendKernelForVectorCore("mix_vector_prof", handle, 0, args, sizeof(arg0), stream, true,
+        3, 5, 3);
+    EXPECT_EQ(ret, 0U);
+    EXPECT_EQ(g_msprofReportApiCallCount, 2U);
+    EXPECT_EQ(g_msprofReportCompactInfoCallCount, 2U);
+    EXPECT_EQ(g_msprofReportAdditionalInfoCallCount, 0U);
+    EXPECT_EQ(g_msprofLastCompactInfo.data.nodeBasicInfo.taskType, MSPROF_GE_TASK_TYPE_AIV);
+    EXPECT_EQ(g_msprofLastCompactInfo.data.nodeBasicInfo.blockDim, 5U);
+}
+
+TEST_F(TEST_ASCENDC_RUNTIME, LaunchAscendKernelForVectorCoreReusesExistingSubStream)
+{
+    ResetAscRtStubState();
+    void *mainStream = reinterpret_cast<void *>(0x9000);
+    AscendCStreamForVectorCore streamForVectorCore;
+    streamForVectorCore.stream = reinterpret_cast<void *>(0x9001);
+    streamForVectorCore.eventA = reinterpret_cast<void *>(0x9002);
+    streamForVectorCore.eventB = reinterpret_cast<void *>(0x9003);
+    g_ascStreamMap[mainStream] = streamForVectorCore;
+    void *arg0 = reinterpret_cast<void *>(0x9004);
+    void **args = &arg0;
+    uint32_t ret = LaunchAscendKernelForVectorCore("mix_vector_reuse", nullptr, 0, args, sizeof(arg0), mainStream,
+        false, 2, 1, 2);
+    EXPECT_EQ(ret, 0U);
+    EXPECT_EQ(g_aclrtCreateStreamWithConfigCallCount, 0U);
+    EXPECT_EQ(g_aclrtCreateEventExWithFlagCallCount, 0U);
+    EXPECT_EQ(g_aclrtLaunchKernelWithHostArgsCallCount, 2U);
+    EXPECT_EQ(g_aclrtLaunchKernelWithHostArgsLastStream, streamForVectorCore.stream);
+    EXPECT_EQ(g_aclrtRecordEventLastEvent, streamForVectorCore.eventB);
+    EXPECT_EQ(g_aclrtStreamWaitEventLastEvent, streamForVectorCore.eventB);
 }
 
 TEST_F(TEST_ASCENDC_RUNTIME, AscendDevBinaryLazyRegister) {
@@ -424,6 +590,19 @@ TEST_F(TEST_ASCENDC_RUNTIME, AscendLaunchKernelWithHostArgs_950) {
     }, ::testing::ExitedWithCode(0), "");
 }
 
+TEST_F(TEST_ASCENDC_RUNTIME, AscendLaunchKernelWithHostArgs_950_without_dynamic_ubuf) {
+    void* funcHandle = nullptr;
+    uint32_t numBlocks = 2;
+    void* stream = nullptr;
+    void* hostArgs = nullptr;
+    size_t argsSize = 0;
+    EXPECT_EXIT({
+        MOCKER(aclrtGetSocName).stubs().will(returnValue((const char*)"Ascend950"));
+        int32_t ret = AscendLaunchKernelWithHostArgs(funcHandle, numBlocks, stream, hostArgs, argsSize, 0);
+        exit(ret == 0 ? 0 : 1);
+    }, ::testing::ExitedWithCode(0), "");
+}
+
 TEST_F(TEST_ASCENDC_RUNTIME, AscendCFunctionGetMetaInfoKtype) {
     void* funcHandle = nullptr;
     unsigned int kernelType = 5;
@@ -549,9 +728,35 @@ TEST_F(TEST_ASCENDC_RUNTIME, AscendCGetProfkTypeImplAic) {
     EXPECT_EQ(ret, 6);
 }
 
+uint32_t AscendCFunctionGetMetaInfoKtypeStubAicRollback(void *funcHandle, unsigned int *curKernelType)
+{
+    *curKernelType = K_TYPE_AIC_ROLLBACK;
+    return 0;
+}
+
+uint32_t AscendCFunctionGetMetaInfoKtypeStubAivRollback(void *funcHandle, unsigned int *curKernelType)
+{
+    *curKernelType = K_TYPE_AIV_ROLLBACK;
+    return 0;
+}
+
 TEST_F(TEST_ASCENDC_RUNTIME, AscendCGetProfkTypeImplAiv) {
     void* funcHandle = nullptr;
     MOCKER(AscendCFunctionGetMetaInfoKtype).stubs().will(invoke(AscendCFunctionGetMetaInfoKtypeStubAiv));
+    uint32_t ret = AscendCGetProfkTypeImpl(funcHandle);
+    EXPECT_EQ(ret, 5);
+}
+
+TEST_F(TEST_ASCENDC_RUNTIME, AscendCGetProfkTypeImplAicRollback) {
+    void* funcHandle = nullptr;
+    MOCKER(AscendCFunctionGetMetaInfoKtype).stubs().will(invoke(AscendCFunctionGetMetaInfoKtypeStubAicRollback));
+    uint32_t ret = AscendCGetProfkTypeImpl(funcHandle);
+    EXPECT_EQ(ret, 6);
+}
+
+TEST_F(TEST_ASCENDC_RUNTIME, AscendCGetProfkTypeImplAivRollback) {
+    void* funcHandle = nullptr;
+    MOCKER(AscendCFunctionGetMetaInfoKtype).stubs().will(invoke(AscendCFunctionGetMetaInfoKtypeStubAivRollback));
     uint32_t ret = AscendCGetProfkTypeImpl(funcHandle);
     EXPECT_EQ(ret, 5);
 }
