@@ -98,12 +98,11 @@ __aicore__ inline void SetNextTaskStart()
 {
 #ifdef __ASCENDC_ENABLE_SET_NEXT_TASK_START
     SetNextTaskStartImpl<AIV_PIPE, AIC_PIPE>();
-    return;
-#endif
+#else
     if constexpr (FORCE) {
         SetNextTaskStartImpl<AIV_PIPE, AIC_PIPE, true>();
-        return;
     }
+#endif
 }
 
 template<bool FORCE>
@@ -111,12 +110,11 @@ __aicore__ inline void WaitPreTaskEnd()
 {
 #ifdef __ASCENDC_ENABLE_WAIT_PRE_TASK_END
     WaitPreTaskEndImpl();
-    return;
-#endif
+#else
     if constexpr (FORCE) {
         WaitPreTaskEndImpl<-1, true>();
-        return;
     }
+#endif
 }
 
 __aicore__ inline void InitSocState()

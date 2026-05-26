@@ -4426,6 +4426,7 @@ auto __enable_feature_for_compile_deterministic = 1;
 
     def test_get_sync_task_start_end_instr_from_i_file(self):
         dst_i_file = os.path.join(TOP_PATH, 'kernel_meta', 'add_custom.i')
+        os.makedirs(os.path.dirname(dst_i_file), exist_ok=True)
         os.system(f"touch {dst_i_file}")
         with open(dst_i_file, "w") as file:
             context = """
@@ -4445,6 +4446,69 @@ WaitPreTaskEnd();
         self.assertEqual(res1, False)
         self.assertEqual(res2, False)
         os.remove(os.path.join(TOP_PATH, 'kernel_meta', 'add_custom.i'))
+
+    def test_get_sync_task_start_end_instr_from_i_file_with_template_args(self):
+        context = """
+__aicore__ inline void SetNextTaskStart();
+__aicore__ inline void WaitPreTaskEnd();
+AscendC::SetNextTaskStart<PIPE_MTE3, PIPE_FIX, true>();
+AscendC::WaitPreTaskEnd<true>();
+AscendC::SetNextTaskStart<PIPE_MTE3, PIPE_FIX, true>();
+AscendC::WaitPreTaskEnd<true>();
+"""
+        res1, res2 = KernelInfoInfer.get_sync_task_start_end_instr_from_i_file(context)
+        self.assertEqual(res1, True)
+        self.assertEqual(res2, True)
+
+    def test_infer_info_from_ifile_uses_shared_scan_for_aclgraph_early_start(self):
+        dst_i_file = os.path.join(TOP_PATH, 'kernel_meta', 'aclgraph_early_start.i')
+        os.makedirs(os.path.dirname(dst_i_file), exist_ok=True)
+        os.system(f"touch {dst_i_file}")
+        context = """
+template<pipe_t AIV_PIPE = PIPE_MTE3, pipe_t AIC_PIPE = PIPE_FIX, bool FORCE = false>
+__aicore__ inline void SetNextTaskStart();
+template<pipe_t AIV_PIPE, pipe_t AIC_PIPE, bool FORCE>
+__aicore__ inline void SetNextTaskStart()
+{
+    SetNextTaskStartImpl<AIV_PIPE, AIC_PIPE, true>();
+}
+template<bool FORCE = false>
+__aicore__ inline void WaitPreTaskEnd();
+template<bool FORCE>
+__aicore__ inline void WaitPreTaskEnd()
+{
+    WaitPreTaskEndImpl();
+}
+void add_custom();
+void add_custom()
+{
+    AscendC::SetNextTaskStart<PIPE_MTE3, PIPE_FIX, true>();
+    AscendC::WaitPreTaskEnd<true>();
+    AscendC::SetNextTaskStart<PIPE_MTE3, PIPE_FIX, true>();
+    AscendC::WaitPreTaskEnd<true>();
+}
+"""
+        with open(dst_i_file, "w") as file:
+            file.write(context)
+        op_info = OpInfo(kernel_name="AclgraphForceOp", op_type="AclgraphForceOp", inputs=[], outputs=[])
+        global_var_storage.set_variable("ascendc_enable_super_kernel", True)
+        global_var_storage.set_variable("ascendc_compile_debug_config", True)
+        try:
+            with asc_op_compile_base.common.context.op_context.OpContext() as ctx:
+                ctx.add_addition("super_kernel_sub_combine", True)
+                with mock.patch.object(CommonUtility, "is_v220", return_value=False), \
+                     mock.patch.object(CommonUtility, "is_c310", return_value=False), \
+                     mock.patch.object(CommonUtility, "is_m510", return_value=True), \
+                     mock.patch.object(KernelInfoInfer, "_gen_tiling_key_struct_map", return_value={}):
+                    result = KernelInfoInfer.infer_info_from_ifile(op_info, dst_i_file, None,
+                                                                   "add_custom.cpp", "add_custom")
+            self.assertTrue(result.super_kernel_early_start_set_flag)
+            self.assertTrue(result.super_kernel_early_start_wait_flag)
+        finally:
+            global_var_storage.set_variable("ascendc_enable_super_kernel", False)
+            global_var_storage.set_variable("ascendc_compile_debug_config", False)
+            if os.path.exists(dst_i_file):
+                os.remove(dst_i_file)
 
     def test_get_tiling_struct_size(self):
         compile_info = CompileInfo()

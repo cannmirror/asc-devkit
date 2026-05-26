@@ -238,7 +238,7 @@ class TestAscendCCompileBase(unittest.TestCase):
                     self.assertEqual(compile_option_tuple.compile_options[0], "-D__ASCENDC_SUPERKERNEL_EARLY_START_V2")
                     self.assertEqual(compile_option_tuple.compile_options[1], "-D__ASCENDC_ENABLE_SET_NEXT_TASK_START")
 
-        # aclgraph sub combine path records flags through global storage, not legacy macros.
+        # aclgraph sub combine path enables V3 runtime-mask path and records flags through global storage.
         global_var_storage.global_storage_reset()
         with asc_op_compile_base.common.context.op_context.OpContext() as ctx:
             with buildcfg.build_config():
@@ -246,12 +246,77 @@ class TestAscendCCompileBase(unittest.TestCase):
                     return_value=True):
                     compile_option_tuple = CompileOptionTuple([], [])
                     compile_info = CompileInfo()
+                    compile_info.super_kernel_info = {"sp_options": {"early-start": "1"}}
+                    compile_info.super_kernel_early_start_set_flag = True
+                    compile_info.super_kernel_early_start_wait_flag = True
+                    gen_sub_super_kernel_early_start_compile_options(compile_option_tuple, compile_info)
+                    self.assertEqual(len(compile_option_tuple.compile_options), 3)
+                    self.assertEqual(compile_option_tuple.compile_options[0],
+                                     "-D__ASCENDC_SUPERKERNEL_EARLY_START_V3")
+                    self.assertEqual(compile_option_tuple.compile_options[1],
+                                     "-D__ASCENDC_ENABLE_SET_NEXT_TASK_START")
+                    self.assertEqual(compile_option_tuple.compile_options[2],
+                                     "-D__ASCENDC_ENABLE_WAIT_PRE_TASK_END")
+                    self.assertTrue(global_var_storage.get_variable("ascendc_sub_super_kernel_early_start_set_flag"))
+                    self.assertTrue(global_var_storage.get_variable("ascendc_sub_super_kernel_early_start_wait_flag"))
+        global_var_storage.global_storage_reset()
+
+        # aclgraph sub combine path emits only set-side macro when only set flag is detected.
+        global_var_storage.global_storage_reset()
+        with asc_op_compile_base.common.context.op_context.OpContext() as ctx:
+            with buildcfg.build_config():
+                with mock.patch.object(asc_op_compile_base.common.context.get_context(), 'get_addition',\
+                    return_value=True):
+                    compile_option_tuple = CompileOptionTuple([], [])
+                    compile_info = CompileInfo()
+                    compile_info.super_kernel_info = {"sp_options": {"early-start": "1"}}
+                    compile_info.super_kernel_early_start_set_flag = True
+                    compile_info.super_kernel_early_start_wait_flag = False
+                    gen_sub_super_kernel_early_start_compile_options(compile_option_tuple, compile_info)
+                    self.assertEqual(compile_option_tuple.compile_options, [
+                        "-D__ASCENDC_SUPERKERNEL_EARLY_START_V3",
+                        "-D__ASCENDC_ENABLE_SET_NEXT_TASK_START"
+                    ])
+                    self.assertTrue(global_var_storage.get_variable("ascendc_sub_super_kernel_early_start_set_flag"))
+                    self.assertFalse(global_var_storage.get_variable("ascendc_sub_super_kernel_early_start_wait_flag"))
+        global_var_storage.global_storage_reset()
+
+        # aclgraph sub combine path emits only wait-side macro when only wait flag is detected.
+        global_var_storage.global_storage_reset()
+        with asc_op_compile_base.common.context.op_context.OpContext() as ctx:
+            with buildcfg.build_config():
+                with mock.patch.object(asc_op_compile_base.common.context.get_context(), 'get_addition',\
+                    return_value=True):
+                    compile_option_tuple = CompileOptionTuple([], [])
+                    compile_info = CompileInfo()
+                    compile_info.super_kernel_info = {"sp_options": {"early-start": "1"}}
+                    compile_info.super_kernel_early_start_set_flag = False
+                    compile_info.super_kernel_early_start_wait_flag = True
+                    gen_sub_super_kernel_early_start_compile_options(compile_option_tuple, compile_info)
+                    self.assertEqual(compile_option_tuple.compile_options, [
+                        "-D__ASCENDC_SUPERKERNEL_EARLY_START_V3",
+                        "-D__ASCENDC_ENABLE_WAIT_PRE_TASK_END"
+                    ])
+                    self.assertFalse(global_var_storage.get_variable("ascendc_sub_super_kernel_early_start_set_flag"))
+                    self.assertTrue(global_var_storage.get_variable("ascendc_sub_super_kernel_early_start_wait_flag"))
+        global_var_storage.global_storage_reset()
+
+        # aclgraph sub combine path inherits early-start disable from top options.
+        global_var_storage.global_storage_reset()
+        with asc_op_compile_base.common.context.op_context.OpContext() as ctx:
+            with buildcfg.build_config():
+                with mock.patch.object(asc_op_compile_base.common.context.get_context(), 'get_addition',\
+                    return_value=True):
+                    compile_option_tuple = CompileOptionTuple([], [])
+                    compile_info = CompileInfo()
+                    compile_info.super_kernel_info = {
+                        "sp_options": {"early-start": "0"}}
                     compile_info.super_kernel_early_start_set_flag = True
                     compile_info.super_kernel_early_start_wait_flag = True
                     gen_sub_super_kernel_early_start_compile_options(compile_option_tuple, compile_info)
                     self.assertEqual(len(compile_option_tuple.compile_options), 0)
-                    self.assertTrue(global_var_storage.get_variable("ascendc_sub_super_kernel_early_start_set_flag"))
-                    self.assertTrue(global_var_storage.get_variable("ascendc_sub_super_kernel_early_start_wait_flag"))
+                    self.assertFalse(global_var_storage.get_variable("ascendc_sub_super_kernel_early_start_set_flag"))
+                    self.assertFalse(global_var_storage.get_variable("ascendc_sub_super_kernel_early_start_wait_flag"))
         global_var_storage.global_storage_reset()
 
         # super_kernel_sub_info assert

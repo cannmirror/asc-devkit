@@ -66,8 +66,8 @@ class KernelInfoInfer:
         if so, return true
         otherwise, return false
         """
-        set_pattern = r'SetNextTaskStart\s*\(\s*\)\s*\;'
-        wait_pattern = r'WaitPreTaskEnd\s*\(\s*\)\s*\;'
+        set_pattern = r'SetNextTaskStart\s*(?:<[^;{]*>)?\s*\(\s*\)\s*\;'
+        wait_pattern = r'WaitPreTaskEnd\s*(?:<[^;{]*>)?\s*\(\s*\)\s*\;'
         set_match = re.findall(set_pattern, content)
         wait_match = re.findall(wait_pattern, content)
         return len(set_match) > 2, len(wait_match) > 2

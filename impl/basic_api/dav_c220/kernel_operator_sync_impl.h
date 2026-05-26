@@ -149,12 +149,13 @@ __aicore__ inline void SetNextTaskStartImpl()
     if ASCEND_IS_AIV {
         ffts_cross_core_sync(AIV_PIPE, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIV_ONLY_ALL));
     }
-    return;
-#endif
+#elif defined(__ASCENDC_SUPERKERNEL_EARLY_START_V3)
+    SetNextTaskStartV3Impl<AIV_PIPE, AIC_PIPE>(g_super_kernel_early_start_config);
+#else
     if constexpr (FORCE) {
         SetNextTaskStartV3Impl<AIV_PIPE, AIC_PIPE>(g_super_kernel_early_start_config);
-        return;
     }
+#endif
 }
 
 __aicore__ inline void WaitPreTaskEndV2Impl()
@@ -275,7 +276,6 @@ __aicore__ inline void WaitPreTaskEndImpl()
         ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIV_FLAG));
         wait_flag_dev(AscendC::SYNC_AIC_AIV_FLAG);
     }
-    return;
 #elif defined(__ASCENDC_SUPERKERNEL_EARLY_START_V2)
     if constexpr (earlyStartConfig == -1) {
         WaitPreTaskEndV2Impl();
@@ -349,12 +349,13 @@ __aicore__ inline void WaitPreTaskEndImpl()
             wait_flag_dev(AscendC::SYNC_AIC_AIV_FLAG);
         }
     }
-    return;
-#endif
+#elif defined(__ASCENDC_SUPERKERNEL_EARLY_START_V3)
+    WaitPreTaskEndV3Impl(g_super_kernel_early_start_config);
+#else
     if constexpr (FORCE) {
         WaitPreTaskEndV3Impl(g_super_kernel_early_start_config);
-        return;
     }
+#endif
 }
 
 template <bool isAIVOnly = true> __aicore__ inline void SyncAllImpl()

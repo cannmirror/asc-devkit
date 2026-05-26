@@ -237,12 +237,13 @@ __aicore__ inline void SetNextTaskStartImpl()
     if ASCEND_IS_AIV {
         ffts_cross_core_sync(AIV_PIPE, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIV_ONLY_ALL));
     }
-    return;
-#endif
+#elif defined(__ASCENDC_SUPERKERNEL_EARLY_START_V3)
+    SetNextTaskStartV3Impl<AIV_PIPE, AIC_PIPE>(g_super_kernel_early_start_config);
+#else
     if constexpr (FORCE) {
         SetNextTaskStartV3Impl<AIV_PIPE, AIC_PIPE>(g_super_kernel_early_start_config);
-        return;
     }
+#endif
 }
 
 template<int8_t enableTightSync = -1>
@@ -683,11 +684,11 @@ __aicore__ inline void WaitPreTaskEndLooseV3Impl(uint32_t earlyStartConfig)
 
 __aicore__ inline void WaitPreTaskEndV3Impl(uint32_t earlyStartConfig)
 {
-#ifndef __ASCENDC_DAVID_SPLIT_CORE__
-    WaitPreTaskEndTightV3Impl(earlyStartConfig);
-#else
-    WaitPreTaskEndLooseV3Impl(earlyStartConfig);
-#endif
+    if (earlyStartConfig & Internal::ASCENDC_SUPER_KERNEL_EARLY_START_CTRL_SPLIT_CORE) {
+        WaitPreTaskEndLooseV3Impl(earlyStartConfig);
+    } else {
+        WaitPreTaskEndTightV3Impl(earlyStartConfig);
+    }
 }
 
 // optimize if-else scalar cost, will be called only in superkernel.cpp
@@ -700,12 +701,13 @@ __aicore__ inline void WaitPreTaskEndImpl()
 #else
     WaitPreTaskEndLooseImpl<earlyStartConfig>();
 #endif
-    return;
-#endif
+#elif defined(__ASCENDC_SUPERKERNEL_EARLY_START_V3)
+    WaitPreTaskEndV3Impl(g_super_kernel_early_start_config);
+#else
     if constexpr (FORCE) {
         WaitPreTaskEndV3Impl(g_super_kernel_early_start_config);
-        return;
     }
+#endif
 }
 
 #if defined(__ASCENDC_SUPERKERNEL_AUTO_SYNC_ALL__)
