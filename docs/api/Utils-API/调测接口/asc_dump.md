@@ -75,6 +75,22 @@ __aicore__ inline void asc_dump_l1buf(__cbuf__ T* input, uint32_t desc, uint32_t
 // L0C内存上的数据打印
 template<typename T>
 __aicore__ inline void asc_dump_cbuf(__cc__ T* input, uint32_t desc, uint32_t dump_size)
+
+// GM内存上的数据打印
+template<typename T>
+__aicore__ inline void asc_dump(__gm__ T* input, uint32_t desc, uint32_t dump_size);
+
+// UB内存上的数据打印
+template<typename T>
+__aicore__ inline void asc_dump(__ubuf__ T* input, uint32_t desc, uint32_t dump_size);
+
+// L1内存上的数据打印
+template<typename T>
+__aicore__ inline void asc_dump(__cbuf__ T* input, uint32_t desc, uint32_t dump_size);
+
+// L0C内存上的数据打印
+template<typename T>
+__aicore__ inline void asc_dump(__cc__ T* input, uint32_t desc, uint32_t dump_size);
 ```
 
 以下接口为simd\_vf中所使用的asc\_dump接口，仅支持Ascend 950PR/Ascend 950DT。
@@ -178,4 +194,3 @@ __simd_vf__ inline void SimdVfDumpReg()
     asc_dump<float>(src_reg, desc, dump_size);
 }
 ```
-
