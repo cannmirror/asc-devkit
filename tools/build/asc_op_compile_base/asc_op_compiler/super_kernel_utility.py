@@ -68,20 +68,28 @@ def check_exist_forbidden_symbols(dst_i_file, forbidden_symbols, allow_path):
     return result_symbol_list, path_list, line_result
 
 
+_FORBIDDEN_API_REPLACEMENT = {
+    'get_block_idx': 'AscendC::GetBlockIdx()',
+    'get_block_num': 'AscendC::GetBlockNum()',
+    'get_task_ration': 'AscendC::GetTaskRation()',
+    'block_idx': 'AscendC::GetBlockIdx()',
+}
+
+
 def check_exist_instrinsic_when_super_kernel(dst_i_file):
-    forbbiden_instrinsis = ['get_block_idx', 'get_block_num', 'get_task_ration', 'block_idx']
-    allow_instrinsic_path_mark = ['bisheng_compiler', 'ccec_compiler', 'tikcpp/tikcfw', 'asc/impl', 'impl/basic_api']
+    forbidden_apis = list(_FORBIDDEN_API_REPLACEMENT.keys())
+    allow_path_mark = ['bisheng_compiler', 'ccec_compiler', 'tikcpp/tikcfw', 'asc/impl', 'impl/basic_api']
     result_symbol_list, path_list, line_result =\
-        check_exist_forbidden_symbols(dst_i_file, forbbiden_instrinsis, allow_instrinsic_path_mark)
+        check_exist_forbidden_symbols(dst_i_file, forbidden_apis, allow_path_mark)
     result_str = ''
     len_result_symbol_list = len(result_symbol_list)
     if len_result_symbol_list != 0:
         result_str += f'ERROR({len_result_symbol_list}): '
         for i, result in enumerate(result_symbol_list):
-            if result == 'get_block_idx':
-                result += ' or block_idx'
-            result_str += f"instrinsic {result} is forbidden in sub operator "\
-                          f"{path_list[i]}, code line is : {line_result[i]}"
+            replacement = _FORBIDDEN_API_REPLACEMENT.get(result, '')
+            result_str += f"Use of {result} is not allowed in SuperKernel"\
+                          f", please use {replacement} instead (op: {path_list[i]}"\
+                          f", line: {line_result[i]})"
             if i != len_result_symbol_list - 1:
                 result_str += '\n'
         CommonUtility().ascendc_raise_python_err(ERR_CODE, result_str)
