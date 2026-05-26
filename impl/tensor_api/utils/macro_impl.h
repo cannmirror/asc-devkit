@@ -26,6 +26,28 @@
 #include "include/utils/common_types.h"
 #include "c_api/asc_simd.h"
 
+#if (__CCE__)
+    #ifndef ASCENDC_HOST
+        #define ASCENDC_HOST __host__
+    #endif
+    #ifndef ASCENDC_AICORE
+        #define ASCENDC_AICORE __aicore__
+    #endif
+    #ifndef ASCENDC_HOST_AICORE
+        #define ASCENDC_HOST_AICORE __host_aicore__
+    #endif
+#else
+    #ifndef ASCENDC_HOST
+        #define ASCENDC_HOST
+    #endif
+    #ifndef ASCENDC_AICORE
+        #define ASCENDC_AICORE
+    #endif
+    #ifndef ASCENDC_HOST_AICORE
+        #define ASCENDC_HOST_AICORE
+    #endif
+#endif
+
 #endif //IMPL_TENSOR_API_UTILS_MACRO_IMPL_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
