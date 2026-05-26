@@ -71,7 +71,7 @@ def check_exist_forbidden_symbols(dst_i_file, forbidden_symbols, allow_path):
 _FORBIDDEN_API_REPLACEMENT = {
     'get_block_idx': 'AscendC::GetBlockIdx()',
     'get_block_num': 'AscendC::GetBlockNum()',
-    'get_task_ration': 'AscendC::GetTaskRation()',
+    'get_task_ration': 'AscendC::GetTaskRatio()',
     'block_idx': 'AscendC::GetBlockIdx()',
 }
 
