@@ -39,8 +39,9 @@ docker --version
 
 ```bash
 mkdir -p /usr/local/lib/docker/cli-plugins
-ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
-curl -fsSL "https://github.com/docker/buildx/releases/latest/download/buildx-linux-${ARCH}" \
+version="v0.34.1"
+arch=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
+curl -fsSL "https://github.com/docker/buildx/releases/download/${version}/buildx-${version}.linux-${arch}" \
      -o /usr/local/lib/docker/cli-plugins/docker-buildx
 chmod +x /usr/local/lib/docker/cli-plugins/docker-buildx
 ```
@@ -195,23 +196,27 @@ docker run -itd --name ascendc_container ascendc:ubuntu24.04
 
 ### 镜像源
 
-构建时可通过构建参数覆盖默认镜像源：
+构建参数及默认值：
+
+| 构建参数 | 默认值 | 说明 |
+| --- | --- | --- |
+| `GENERAL_MIRROR` | `mirrors.huaweicloud.com` | apt / pypi 共用的镜像 |
+| `CONDA_MIRROR` | `https://mirrors.tuna.tsinghua.edu.cn/anaconda` | conda channels 前缀，含协议头 |
+| `REPO_SCRIPT_URL` | `https://mirrors.tuna.tsinghua.edu.cn/git/git-repo` | `repo` 工具脚本下载地址，可按网络环境替换为可访问的脚本地址，如：`https://storage.googleapis.com/git-repo-downloads/repo` |
+| `REPO_GIT_URL` | `https://mirrors.ustc.edu.cn/aosp/git-repo` | `repo` 工具运行时使用的仓库地址 |
+
+覆盖示例：
 
 ```bash
 docker buildx build --network host \
-  --build-arg APT_MIRROR=mirrors.ustc.edu.cn \
   --build-arg CONDA_MIRROR=https://mirrors.ustc.edu.cn/anaconda \
-  --build-arg PYPI_MIRROR=https://pypi.mirrors.ustc.edu.cn/simple \
+  --build-arg REPO_SCRIPT_URL=https://storage.googleapis.com/git-repo-downloads/repo \
   -t ascendc:ubuntu24.04 .devcontainer/
 ```
 
-可用镜像源：
+### 构建缓存
 
-| 构建参数 | 默认 | 清华大学镜像 | 中科大镜像 | 华为云镜像 |
-| :----------: | ------ | ---------- | -------- | -------- |
-| `APT_MIRROR` | `mirrors.huaweicloud.com` | `mirrors.tuna.tsinghua.edu.cn` | `mirrors.ustc.edu.cn` | `mirrors.huaweicloud.com` |
-| `CONDA_MIRROR` | `mirrors.tuna.tsinghua.edu.cn/anaconda` | `mirrors.tuna.tsinghua.edu.cn/anaconda` | `mirrors.ustc.edu.cn/anaconda` | — |
-| `PYPI_MIRROR` | `repo.huaweicloud.com/repository/pypi/simple` | `pypi.tuna.tsinghua.edu.cn/simple` | `pypi.mirrors.ustc.edu.cn/simple` | `repo.huaweicloud.com/repository/pypi/simple` |
+Dockerfile 已为 apt / pip 接入 BuildKit `--mount=type=cache`。重复构建（仅修改非软件包层）时，包索引和已下载的 wheel 不会重复走网络，秒级完成。`docker buildx build` 默认启用 BuildKit，无需额外配置。
 
 ### 挂载目录
 
