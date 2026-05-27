@@ -1,5 +1,42 @@
 # Tensor API手册资料目录导览
 
+- **[基础数据结构](data_structure_directory.md)**
+    - **[Layout数据结构](data_structure/layout_structure/layout_structure_directory.md)**
+        - **[Layout和层次化表述法](<data_structure/layout_structure/Layout和层次化表述法.md>)**
+        - **[Layout](data_structure/layout_structure/Layout.md)**
+        - **[Shape](data_structure/layout_structure/Shape.md)**
+        - **[Stride](data_structure/layout_structure/Stride.md)**
+        - **[Coord](data_structure/layout_structure/Coord.md)**
+    - **[Layout相关接口](data_structure/layout_structure/layout_structure_api.md)**
+        - **[MakeLayout](data_structure/layout_structure/MakeLayout.md)**
+        - **[MakeFrameLayout](data_structure/layout_structure/MakeFrameLayout.md)**
+        - **[MakeShape](data_structure/layout_structure/MakeShape.md)**
+        - **[MakeStride](data_structure/layout_structure/MakeStride.md)**
+        - **[MakeCoord](data_structure/layout_structure/MakeCoord.md)**
+        - **[GetShape](data_structure/layout_structure/GetShape.md)**
+        - **[GetStride](data_structure/layout_structure/GetStride.md)**
+        - **[Get](data_structure/layout_structure/Get.md)**
+        - **[Select](data_structure/layout_structure/Select.md)**
+        - **[Capacity](data_structure/layout_structure/Capacity.md)**
+        - **[Size](data_structure/layout_structure/Size.md)**
+        - **[Coshape](data_structure/layout_structure/Coshape.md)**
+        - **[Cosize](data_structure/layout_structure/Cosize.md)**
+        - **[Rank](data_structure/layout_structure/Rank.md)**
+    - **[Tensor数据结构](data_structure/tensor_structure/tensor_structure_directory.md)**
+        - **[Tensor](data_structure/tensor_structure/Tensor.md)**
+        - **[Pointer](data_structure/tensor_structure/Pointer.md)**
+        - **[ViewEngine](data_structure/tensor_structure/ViewEngine.md)**
+    - **[Tensor相关接口](data_structure/tensor_structure/tensor_structure_api.md)**
+        - **[MakeTensor](data_structure/tensor_structure/MakeTensor.md)**
+        - **[MakeMemPtr](data_structure/tensor_structure/MakeMemPtr.md)**
+        - **[Slice](data_structure/tensor_structure/Slice.md)**
+    - **[工具函数](data_structure/utils/tool_functions.md)**
+        - **[GetLayoutPattern](data_structure/utils/GetLayoutPattern.md)**
+        - **[GetLayoutTrait](data_structure/utils/GetLayoutTrait.md)**
+        - **[IsAttrTensorV](data_structure/utils/IsAttrTensorV.md)**
+        - **[IsHardwareV](data_structure/utils/IsHardwareV.md)**
+        - **[IsIntegralConstantV](data_structure/utils/IsIntegralConstantV.md)**
+        - **[IsLayoutV](data_structure/utils/IsLayoutV.md)**
 - **[矩阵计算](matrix_computation_directory.md)**
     - **[矩阵计算的搬入](data_movement/matrix_data_in_directory.md)**
         - **[总体说明](data_movement/matrix_data_in_overview.md)**
