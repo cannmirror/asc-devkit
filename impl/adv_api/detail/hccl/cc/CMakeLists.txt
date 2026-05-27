@@ -128,3 +128,4 @@ elseif(BUILD_OPEN_PROJECT)
         DESTINATION ${INSTALL_INCLUDE_DIR}/hccl/ OPTIONAL
     )
 endif()
+
