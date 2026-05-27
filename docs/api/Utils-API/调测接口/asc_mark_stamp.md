@@ -75,7 +75,7 @@ __aicore__ inline void asc_mark_stamp()
 <td class="cellrowborder" valign="top" width="50%" headers="mcps1.1.3.1.2 "><p id="p148291124113616"><a name="p148291124113616"></a><a name="p148291124113616"></a>指定打点所在的pipeline类型。</p>
 </td>
 </tr>
-<tr id="row182624413210"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.1.3.1.1 "><p id="p11826104433211"><a name="p11826104433211"></a><a name="p11826104433211"></a>index</p>
+<tr id="row182624413210"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.1.3.1.1 "><p id="p11826104433211"><a name="p11826104433211"></a><a name="p11826104433211"></a>idx</p>
 </td>
 <td class="cellrowborder" valign="top" width="50%" headers="mcps1.1.3.1.2 "><p id="p1826184413328"><a name="p1826184413328"></a><a name="p1826184413328"></a>用户设置的打点的唯一标识id。</p>
 </td>
@@ -89,8 +89,8 @@ __aicore__ inline void asc_mark_stamp()
 
 ## 约束说明<a name="zh-cn_topic_0000002000280437_zh-cn_topic_0000001997078721_section43265506459"></a>
 
--   index取值范围为\[0,4095\]。为方便从打点图中找到对应的代码，建议不要重复使用相同的index。
--   如果在循环中增加了一个MarkStamp指令，每次执行到指令时都会输出一个打点，且index是相同的。
+-   idx取值范围为\[0,4095\]。为方便从打点图中找到对应的代码，建议不要重复使用相同的idx。
+-   如果在循环中增加了一个MarkStamp指令，每次执行到指令时都会输出一个打点，且idx是相同的。
 -   如果开发者在两个相邻的VF分别打标记，由于编译器可能会对VF A和VF B做融合，MarkStamp1和MarkStamp2则会被优化掉，不会输出打点。
 
 ## 调用示例<a name="zh-cn_topic_0000002000280437_zh-cn_topic_0000001997078721_section82241477610"></a>

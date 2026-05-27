@@ -64,7 +64,7 @@
 在算子Kernel侧的实现代码中，需要输出日志信息时，调用printf接口打印相关内容。
 
 > [!CAUTION]注意 
->printf（PRINTF）接口打印功能会对算子实际运行的性能带来一定影响，通常在调测阶段使用。开发者可以按需通过设置ASCENDC\_DUMP=0的方式关闭打印功能
+>printf（PRINTF）接口打印功能会对算子实际运行的性能带来一定影响，通常在调测阶段使用。开发者可以按需通过设置ASCENDC\_DUMP=0的方式关闭打印功能。
 
 ## 函数原型<a name="section2067518173415"></a>
 
@@ -96,7 +96,7 @@ __simd_callee__ inline void printf( const __ubuf__ char* fmt, Args&&... args)
 <td class="cellrowborder" valign="top" width="11.93%" headers="mcps1.1.4.1.2 "><p id="p135196472314"><a name="p135196472314"></a><a name="p135196472314"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="71.58%" headers="mcps1.1.4.1.3 "><p id="p1965816506312"><a name="p1965816506312"></a><a name="p1965816506312"></a>格式控制字符串，包含两种类型的对象：普通字符和转换说明。</p>
-<a name="ul419411543310"></a><a name="ul419411543310"></a><ul id="ul419411543310"><li>普通字符将原样不动地打印输出。</li><li>转换说明并不直接输出而是用于控制printf中参数的转换和打印。每个转换说明都由一个百分号字符（%）开始，以转换说明结束，从而说明输出数据的类型 。<div class="p" id="p158820115597"><a name="p158820115597"></a><a name="p158820115597"></a>支持的转换类型包括：<a name="ul541124915329"></a><a name="ul541124915329"></a><ul id="ul541124915329"><li>%d / %ld / %lld / %i / %li / %lli：输出十进制数，支持打印的数据类型：int8_t、int16_t、int32_t、int64_t</li><li>%f / %F：输出浮点数，支持打印的数据类型：float、half、bfloat16_t</li><li>%x / %lx / %llx：输出十六进制整数，支持打印的数据类型：int8_t、int16_t、int32_t、int64_t、uint8_t、uint16_t、uint32_t、uint64_t</li><li>%s：输出字符串</li><li>%u / %lu /%llu：输出unsigned类型数据，支持打印的数据类型：uint8_t、uint16_t、uint32_t、uint64_t</li><li>%p：输出指针地址</li></ul>
+<a name="ul419411543310"></a><a name="ul419411543310"></a><ul id="ul419411543310"><li>普通字符将原样不动地打印输出。</li><li>转换说明并不直接输出而是用于控制printf中参数的转换和打印。每个转换说明都由一个百分号字符（%）开始，以转换说明结束，从而说明输出数据的类型 。<div class="p" id="p158820115597"><a name="p158820115597"></a><a name="p158820115597"></a>支持的转换类型包括：<a name="ul541124915329"></a><a name="ul541124915329"></a><ul id="ul541124915329"><li>%d / %ld / %lld / %i / %li / %lli：输出十进制数，支持打印的数据类型：int8_t、int16_t、int32_t、int64_t</li><li>%f / %F：输出浮点数，支持打印的数据类型：float、half、bfloat16_t</li><li>%x / %lx / %llx：输出十六进制整数，支持打印的数据类型：int8_t、int16_t、int32_t、int64_t、uint8_t、uint16_t、uint32_t、uint64_t</li><li>%s：输出字符串</li><li>%u / %lu / %llu：输出unsigned类型数据，支持打印的数据类型：uint8_t、uint16_t、uint32_t、uint64_t</li><li>%p：输出指针地址</li></ul>
 </div>
 <p id="p1133101265017"><a name="p1133101265017"></a><a name="p1133101265017"></a><strong id="b164621818125011"><a name="b164621818125011"></a><a name="b164621818125011"></a>注意</strong>：上文列出的数据类型是NPU域调试支持的数据类型，CPU域调试时，支持的数据类型和C/C++规范保持一致。</p>
 </li></ul>
