@@ -53,7 +53,7 @@ __aicore__ inline void ScatterCheck()
         int32_t, uint64_t, int64_t>()), {KERNEL_LOG(KERNEL_ERROR,
         "Failed to check dtype in Scatter, current api support dtype combination is src and dst both: "
         "uint8 / int8 / half / bfloat16_t / uint16_t / int16_t / float / uint32_t / int32_t, uint64_t, int64_t");});
-#elif ((__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3510))
+#elif ((__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102))
     ASCENDC_ASSERT((SupportType<PrimType, uint8_t, int8_t, half, bfloat16_t, uint16_t, int16_t, float, uint32_t,
         int32_t>()), {KERNEL_LOG(KERNEL_ERROR,
         "Failed to check dtype in Scatter, current api support dtype combination is src and "
