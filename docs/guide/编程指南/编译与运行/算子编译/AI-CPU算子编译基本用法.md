@@ -1,8 +1,10 @@
 # AI CPU算子编译<a name="ZH-CN_TOPIC_0000002522571023"></a>
 
+与AI Core算子只需一个`.asc`文件即可编译生成可执行文件不同，AI CPU算子需要同时包含`.aicpu`文件（核函数定义）和`.asc`文件（通过内核调用符调用核函数）才能编译生成可执行文件。
+
 ## 通过bisheng命令行编译<a name="section153291123460"></a>
 
-下文基于一个Hello World打印样例来讲解如何通过bisheng命令行编译AI CPU算子。
+下文基于一个Hello World打印样例来讲解如何通过bisheng命令行编译AI CPU算子。该样例包含`hello_world.aicpu`文件（AI CPU核函数定义）和`main.asc`文件（通过内核调用符调用AI CPU核函数）。
 
 hello\_world.aicpu文件内容如下：
 
@@ -54,9 +56,10 @@ int32_t main(int argc, char const *argv[])
 
 $\{INSTALL\_DIR\}请替换为CANN软件安装后文件存储路径。以root用户安装为例，安装后文件默认存储路径为：/usr/local/Ascend/cann。
 
+各产品型号对应的架构版本号请通过[对应关系表](../语言扩展层/SIMD-BuiltIn关键字.md#table65291052154114)进行查询。
+
 ```
 $bisheng -O2 hello_world.aicpu --cce-aicpu-L${INSTALL_DIR}/lib64/device/lib64 --cce-aicpu-laicpu_api -I${INSTALL_DIR}/include/ascendc/aicpu_api -c -o hello_world.aicpu.o
-# --npu-arch用于指定NPU的架构版本，dav-后为架构版本号，各产品型号对应的架构版本号请通过[对应关系表](../语言扩展层/SIMD-BuiltIn关键字.md#table65291052154114)进行查询。
 $bisheng --npu-arch=dav-2201 main.asc -c -o main.asc.o
 $bisheng hello_world.aicpu.o main.asc.o -o demo
 ```
@@ -206,11 +209,13 @@ add_executable(demo
 set_target_properties(demo PROPERTIES LINKER_LANGUAGE ASC)  # 指定链接使用语言
 
 target_compile_options(demo PRIVATE
-    # --npu-arch用于指定NPU的架构版本，dav-后为架构版本号，各产品型号对应的架构版本号请通过[对应关系表](../语言扩展层/SIMD-BuiltIn关键字.md#table65291052154114)进行查询。
+    # --npu-arch用于指定NPU的架构版本，dav-后为架构版本号
     # <COMPILE_LANGUAGE:ASC>:表明该编译选项仅对语言ASC生效
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
 )
 ```
+
+各产品型号对应的架构版本号请通过[对应关系表](../语言扩展层/SIMD-BuiltIn关键字.md#table65291052154114)进行查询。
 
 如果需要CMake编译编译生成动态库、静态库，下面提供了更详细具体的编译示例：
 
@@ -302,7 +307,7 @@ target_compile_options(demo PRIVATE
 </tr>
 <tr id="row74518458542"><td class="cellrowborder" valign="top" width="24.54%" headers="mcps1.2.3.1.1 "><p id="p14520459540"><a name="p14520459540"></a><a name="p14520459540"></a>CMAKE_INSTALL_PREFIX</p>
 </td>
-<td class="cellrowborder" valign="top" width="75.46000000000001%" headers="mcps1.2.3.1.2 "><p id="p145114515419"><a name="p145114515419"></a><a name="p145114515419"></a>用于指定CMake执行install时，安装的路径前缀，执行install后编译产物（ascendc_library中指定的target以及对应的头文件）会安装在该路径下。默认路径为当前目录的out目录下。</p>
+<td class="cellrowborder" valign="top" width="75.46000000000001%" headers="mcps1.2.3.1.2 "><p id="p145114515419"><a name="p145114515419"></a><a name="p145114515419"></a>用于指定CMake执行install时，安装的路径前缀，执行install后编译产物会安装在该路径下。默认路径为当前目录的out目录下。</p>
 </td>
 </tr>
 <tr id="row124534535416"><td class="cellrowborder" valign="top" width="24.54%" headers="mcps1.2.3.1.1 "><p id="p144516455548"><a name="p144516455548"></a><a name="p144516455548"></a>CMAKE_CXX_COMPILER_LAUNCHER</p>
