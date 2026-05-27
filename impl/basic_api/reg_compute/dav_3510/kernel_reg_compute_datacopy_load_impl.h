@@ -413,7 +413,8 @@ __simd_callee__ inline void DataCopyImpl(U& dstReg, __ubuf__ T*& srcAddr, uint32
     uint32_t repeatStride, MaskReg &mask)
 {
     if constexpr (postMode == PostLiteral::POST_MODE_NORMAL) {
-        DataCopyImpl<T, dataMode, U>(dstReg, srcAddr, dataBlockStride, mask);
+        DataCopyImpl<T, dataMode, U>(dstReg, srcAddr + repeatStride * ONE_BLOCK_SIZE / sizeof(T),
+                                     dataBlockStride, mask);
     }  else {
         using ActualT = typename U::ActualT;
         static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -445,4 +446,3 @@ __simd_callee__ inline void DataCopyImpl(U& dstReg, __ubuf__ T*& srcAddr, uint32
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_DATACOPY_LOAD_IMPL__
 #endif
-

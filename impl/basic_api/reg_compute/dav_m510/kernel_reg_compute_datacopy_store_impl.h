@@ -297,7 +297,8 @@ __simd_callee__ inline void DataCopyImpl(__ubuf__ T*& dstAddr, U& srcReg, uint32
                                          uint32_t repeatStride, MaskReg& mask)
 {
     if constexpr (postMode == PostLiteral::POST_MODE_NORMAL) {
-        DataCopyImpl<T, dataMode, U>(dstAddr, srcReg, dataBlockStride, mask);
+        DataCopyImpl<T, dataMode, U>(dstAddr + repeatStride * ONE_BLOCK_SIZE / sizeof(T),
+                                     srcReg, dataBlockStride, mask);
     }  else {
         using ActualT = typename U::ActualT;
         static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -526,4 +527,3 @@ template <typename T> __simd_callee__ inline void DataCopyUnAlignPostImpl(__ubuf
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_DATACOPY_STORE_IMPL__
 #endif
-

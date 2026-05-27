@@ -165,6 +165,20 @@ private:
         }
     }
 
+    __aicore__ inline void ComputeMode601(__ubuf__ T *dst, __ubuf__ T *src)
+    {
+        Reg::RegTensor<T> vreg0;
+        Reg::MaskReg preg = Reg::CreateMask<T>();
+        constexpr uint32_t sregLower = (uint32_t)(VECTOR_REG_WIDTH / sizeof(T));
+        uint16_t repeatTimes = CeilDivision(dstSize, sregLower);
+        for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
+            Reg::DataCopy<T, DataCopyMode::DATA_BLOCK_COPY, Reg::PostLiteral::POST_MODE_NORMAL>(
+                vreg0, src, 1, 8, preg);
+            Reg::DataCopy<T, DataCopyMode::DATA_BLOCK_COPY, Reg::PostLiteral::POST_MODE_NORMAL>(
+                dst, vreg0, 1, 8, preg);
+        }
+    }
+
     __aicore__ inline void ComputeMode7(__ubuf__ T *dst, __ubuf__ T *src)
     {
         Reg::RegTensor<T> vreg0;
@@ -335,6 +349,8 @@ private:
                 ComputeMode5(dst, src);
             } else if constexpr (Mode == 6) {
                 ComputeMode6(dst, src);
+            } else if constexpr (Mode == 601) {
+                ComputeMode601(dst, src);
             } else if constexpr (Mode == 7) {
                 ComputeMode7(dst, src);
             } else if constexpr (Mode == 8) {
@@ -422,6 +438,7 @@ class MicroDatacopyTestsuite
 
 MICRO_DATACOPY_TEST_CASE(0);
 MICRO_DATACOPY_TEST_CASE(1);
+MICRO_DATACOPY_TEST_CASE(3);
 MICRO_DATACOPY_TEST_CASE(301);
 MICRO_DATACOPY_TEST_CASE(302);
 MICRO_DATACOPY_TEST_CASE(4);
@@ -432,6 +449,8 @@ MICRO_DATACOPY_TEST_CASE(9);
 MICRO_DATACOPY_TEST_CASE(10);
 MICRO_DATACOPY_TEST_CASE(11);
 MICRO_DATACOPY_TEST_CASE(12);
+MICRO_DATACOPY_TEST_CASE(601);
+
 
 #define MICRO_DATACOPY_TEST_CASE_B64(MODE)                                                        \
     using MicroDatacopyTestsuite_mode_b64##MODE = MicroDatacopyTestsuite<MODE>;                   \
