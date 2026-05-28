@@ -20,4 +20,4 @@
 | [mmad_unitflag](./mmad_unitflag) |  本样例介绍了如何在调用Mmad指令时，使用unitFlag功能。 | Ascend 950PR/Ascend 950DT<br>Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 |
 | [mmad_gemv](./mmad_gemv) |  本样例介绍了Gemv（M=1）模式下的矩阵乘法 | Ascend 950PR/Ascend 950DT<br>Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 |
 | [mmad_with_sparse](./mmad_with_sparse) |  本样例介绍基础API MmadWithSparse调用 | Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 |
-| [mmad_mx](./mmad_mx)                                                     | 样例介绍了输入为ND格式，A、B矩阵为FP4（fp4x2_e1m2_t、fp4x2_e2m1_t）和FP8（fp8_e4m3fn_t、fp8_e5m2_t）数据类型，量化矩阵scaleA、scaleB为fp8_e8m0_t数据类型，左矩阵和左量化矩阵不转置、右矩阵和右量化矩阵转置共 4 种包含缩放功能的矩阵乘（简称：MX矩阵乘法） |
+| [mmad_mx](./mmad_mx)  |  本样例介绍了输入为ND格式，A、B矩阵为FP4（fp4x2_e1m2_t、fp4x2_e2m1_t）和FP8（fp8_e4m3fn_t、fp8_e5m2_t）数据类型，量化系数矩阵scaleA、scaleB为fp8_e8m0_t数据类型，左矩阵和左量化系数矩阵不转置、右矩阵和右量化系数矩阵转置共 4 种带有量化功能的矩阵乘（简称：MX矩阵乘法） |

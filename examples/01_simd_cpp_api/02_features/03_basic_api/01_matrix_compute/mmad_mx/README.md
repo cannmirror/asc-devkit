@@ -1,7 +1,7 @@
 # Mmad MX样例
 ## 概述
 
-本样例介绍了输入为ND格式，A、B矩阵为FP4（fp4x2_e1m2_t、fp4x2_e2m1_t）和FP8（fp8_e4m3fn_t、fp8_e5m2_t）数据类型，缩放矩阵scaleA、scaleB为fp8_e8m0_t数据类型，左矩阵和左缩放矩阵不转置、右矩阵和右缩放矩阵转置共 4 种包含缩放功能的矩阵乘（简称：MX矩阵乘法）。
+本样例介绍了输入为ND格式，A、B矩阵为FP4（fp4x2_e1m2_t、fp4x2_e2m1_t）和FP8（fp8_e4m3fn_t、fp8_e5m2_t）数据类型，量化系数矩阵scaleA、scaleB为fp8_e8m0_t数据类型，左矩阵和左量化系数矩阵不转置、右矩阵和右量化系数矩阵转置共 4 种带有量化功能的矩阵乘（简称：MX矩阵乘法）。
 
 ## 支持的产品
 
@@ -140,14 +140,14 @@ MX矩阵乘法计算公式：$$ C = (ScaleA ⊗ A) x (ScaleB ⊗ B) + Bias $$
 
 ### 矩阵乘法（Mmad）
 
-`Mmad`指令会自动完成左、右矩阵与对应scale矩阵的广播乘法，k方向上每32个元素共享一个缩放因子。以A、B矩阵均为FP4类型为例，下图展示了A、ScaleA、B、ScaleB的分型排布格式和缩放功能原理：
+`Mmad`指令会自动完成左、右矩阵与对应scale矩阵的广播乘法，k方向上每32个元素共享一个量化因子。以A、B矩阵均为FP4类型为例，下图展示了A、ScaleA、B、ScaleB的分型排布格式和量化功能原理：
 
 <p align="center">
   <img src="figures/mmad-mx.png" width="1000">
 </p>
 
 <p align="center">
-图1：带有缩放功能的矩阵乘示意图
+图1：带有量化功能的矩阵乘示意图
 </p>
 
 需要注意的是，mmadParams.k取alignK = CeilAlign(k, 64) = 128，而非原始的k=70，这是因为MX矩阵乘法中Mmad指令要求k方向向64对齐。
