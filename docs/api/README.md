@@ -68,9 +68,10 @@
             -   [is\_tensorTrait](SIMD-API/基础数据结构/TensorTrait/is_tensorTrait.md)
             -   [更多样例](SIMD-API/基础数据结构/TensorTrait/更多样例.md)
 
-        -   [内置数据类型](SIMD-API/基础数据结构/内置数据类型.md)
-
     -   [基础API](SIMD-API/基础API/基础API.md)
+        -   [数据结构](SIMD-API/基础API/数据结构/数据结构.md)
+            -   [内置数据类型](SIMD-API/基础API/数据结构/内置数据类型.md)
+            -   [精度转换](SIMD-API/基础API/数据结构/precision_conversion.md)
         -   [Memory数据搬运](SIMD-API/基础API/Memory数据搬运/Memory数据搬运.md)
             -   [DataCopy](SIMD-API/基础API/Memory数据搬运/DataCopy/DataCopy.md)
                 -   [DataCopy简介](SIMD-API/基础API/Memory数据搬运/DataCopy/DataCopy简介.md)
