@@ -30,7 +30,7 @@ __aicore__ inline void AxpyIntrinsicsImpl(__ubuf__ T* dst, __ubuf__ U* src, U sc
     ASCENDC_DEBUG_ASSERT((SupportType<Tuple<T, U>, Tuple<half, half>, Tuple<float, float>, Tuple<float, half>>()),
         KERNEL_LOG_INTERNAL(KERNEL_ERROR,
             "Failed to check dtype in Axpy, current api support dtype combination is src: "
-            "half, dst: half / float; src: float, dst: float."));
+            "half, dst: half / float; src: float, dst: float.\n"));
     vaxpy(dst, src, scalarValue, repeatTime, repeatParams.dstBlkStride, repeatParams.srcBlkStride,
         repeatParams.dstRepStride, repeatParams.srcRepStride);
 }
