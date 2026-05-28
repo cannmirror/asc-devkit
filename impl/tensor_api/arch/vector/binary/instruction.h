@@ -30,11 +30,30 @@ namespace AscendC {
 namespace Te {
 namespace Inst {
 
+class UpdateMask {
+public:
+    template <typename T, typename U>
+    __simd_callee__ inline static vector_bool Run(U& value)
+    {
+        if constexpr (sizeof(T) == sizeof(uint32_t)) {
+            return asc_update_mask_b32(value);
+        } else if constexpr (sizeof(T) == sizeof(uint16_t)) {
+            return asc_update_mask_b16(value);
+        } else if constexpr (sizeof(T) == sizeof(uint8_t)) {
+            return asc_update_mask_b8(value);
+        } else {
+            return vector_bool{};
+        }
+    }
+};
+
 class Add {
 public:
     template <typename T>
     __simd_callee__ inline static void Run(T& dst, T src0, T src1, vector_bool mask) {
-        asc_add(dst, src0, src1, mask);
+        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
+            asc_add(dst, src0, src1, mask);
+        }
     }
 };
 
@@ -42,7 +61,9 @@ class Madd {
 public:
     template <typename T>
     __simd_callee__ inline static void Run(T& dst, T src0, T src1, vector_bool mask) {
-        asc_madd(dst, src0, src1, mask);
+        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
+            asc_madd(dst, src0, src1, mask);
+        }
     }
 };
 
@@ -166,26 +187,7 @@ public:
     }
 };
 
-class UpdateMask {
-public:
-    template <typename T, typename U>
-    __simd_callee__ inline static vector_bool Run(U& value)
-    {
-        if constexpr (sizeof(T) == sizeof(uint32_t)) {
-            return asc_update_mask_b32(value);
-        } else if constexpr (sizeof(T) == sizeof(uint16_t)) {
-            return asc_update_mask_b16(value);
-        } else if constexpr (sizeof(T) == sizeof(uint8_t)) {
-            return asc_update_mask_b8(value);
-        } else {
-            return vector_bool{};
-        }
-    }
-};
-
-}
-}
-}
+}}}
 
 #endif // IMPL_TENSOR_API_ARCH_VECTOR_BINARY_INSTRUCTION_H
 

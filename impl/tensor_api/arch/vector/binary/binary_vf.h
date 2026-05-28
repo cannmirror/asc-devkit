@@ -27,56 +27,64 @@
 namespace AscendC {
 namespace Te {
 
-template<typename CalcFunc, typename UpdateMaskFunc, typename T>
-__simd_vf__ inline void BinaryVF(uint16_t rep, uint16_t oneRepSize, uint32_t blockLength, __ubuf__ T* zLocal, __ubuf__ T* xLocal, __ubuf__ T* yLocal)
-{
-    using VectorTypeTransform = TupleMap<
-    Std::tuple<uint8_t,        vector_uint8_t>,
-    Std::tuple<uint16_t,       vector_uint16_t>,
-    Std::tuple<uint32_t,       vector_uint32_t>,
-    Std::tuple<uint64_t,       vector_uint64_t>,
-    Std::tuple<int8_t,         vector_int8_t>,
-    Std::tuple<int16_t,        vector_int16_t>,
-    Std::tuple<int32_t,        vector_int32_t>,
-    Std::tuple<int64_t,        vector_int64_t>,
-    Std::tuple<bfloat16_t,     vector_bfloat16_t>,
-    Std::tuple<half,           vector_half>,
-    Std::tuple<float,          vector_float>,
-    Std::tuple<hifloat8_t,     vector_hifloat8_t>,
-    Std::tuple<fp8_e4m3fn_t,   vector_fp8_e4m3fn_t>,
-    Std::tuple<fp8_e5m2_t,     vector_fp8_e5m2_t>,
-    Std::tuple<fp8_e8m0_t,     vector_fp8_e8m0_t>,
-    Std::tuple<int4x2_t,       vector_int4x2_t>,
-    Std::tuple<fp4x2_e2m1_t,   vector_fp4x2_e2m1_t>,
-    Std::tuple<fp4x2_e1m2_t,   vector_fp4x2_e1m2_t>>;
+template<typename CalcFunc, typename TraitType>
+class BinaryVF {
+public:
+    template<typename T>
+    __simd_vf__ inline static void Run(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, uint16_t repeat, uint16_t oneRepSize, uint32_t dataSize)
+    {
+        using VectorTypeTransform = TupleMap<
+            Std::tuple<int8_t,         vector_int8_t>,
+            Std::tuple<uint8_t,        vector_uint8_t>,
+            Std::tuple<int16_t,        vector_int16_t>,
+            Std::tuple<uint16_t,       vector_uint16_t>,
+            Std::tuple<int32_t,        vector_int32_t>,
+            Std::tuple<uint32_t,       vector_uint32_t>,
+            Std::tuple<int64_t,        vector_int64_t>,
+            Std::tuple<uint64_t,       vector_uint64_t>,
+            Std::tuple<half,           vector_half>,
+            Std::tuple<float,          vector_float>,
+            Std::tuple<bfloat16_t,     vector_bfloat16_t>,
+            Std::tuple<fp8_e4m3fn_t,   vector_fp8_e4m3fn_t>,
+            Std::tuple<fp8_e5m2_t,     vector_fp8_e5m2_t>,
+            Std::tuple<fp8_e8m0_t,     vector_fp8_e8m0_t>,
+            Std::tuple<hifloat8_t,     vector_hifloat8_t>,
+            Std::tuple<int4x2_t,       vector_int4x2_t>,
+            Std::tuple<fp4x2_e2m1_t,   vector_fp4x2_e2m1_t>,
+            Std::tuple<fp4x2_e1m2_t,   vector_fp4x2_e1m2_t>>;
 
-    using RegType = typename VectorTypeTransform::template Get<T>;
+        using RegType = typename VectorTypeTransform::template Get<T>;
 
-    vector_bool vmask;
-    RegType reg_src0;
-    RegType reg_src1;
-    RegType reg_dst;
-    for (uint16_t i = 0; i < rep; i++) {
-        vmask = UpdateMaskFunc::template Run<T>(blockLength);
-        asc_loadalign(reg_src0, xLocal + i * oneRepSize);
-        asc_loadalign(reg_src1, yLocal + i * oneRepSize);
-        CalcFunc::template Run<RegType>(reg_dst, reg_src0, reg_src1, vmask);
-        asc_storealign(zLocal + i * oneRepSize, reg_dst, vmask);
+        vector_bool vmask;
+        RegType reg_src0;
+        RegType reg_src1;
+        RegType reg_dst;
+        for (uint16_t i = 0; i < repeat; i++) {
+            vmask = Inst::UpdateMask::template Run<T>(dataSize);
+            asc_loadalign(reg_src0, src0 + i * oneRepSize);
+            asc_loadalign(reg_src1, src1 + i * oneRepSize);
+            CalcFunc::template Run<RegType>(reg_dst, reg_src0, reg_src1, vmask);
+            asc_storealign(dst + i * oneRepSize, reg_dst, vmask);
+        }
     }
-}
+};
 
-template<typename CalcFunc, typename Args0, typename... Args>
-__aicore__ inline void Transform2VF(const Args0& args0, const Args&... args)
-{
-    using type = GetAttributeElementType<typename Args0::elementType*>;
-    uint32_t blockLength = args0.Size();
+template<typename CalcFunc, typename TraitType>
+class Transform2BinaryVF {
+public:
+    template<typename T, typename U, typename V>
+    __aicore__ inline static void Run(const T& dst, const U& src0, const V& src1)
+    {
+        using type = GetAttributeElementType<typename T::elementType*>;
+        uint32_t dataSize = dst.Size();
 
-    constexpr uint16_t VECTOR_REG_WIDTH = 256;
-    constexpr uint16_t oneRepSize = VECTOR_REG_WIDTH / sizeof(type);
-    uint16_t rep = Std::ceil_division(blockLength, oneRepSize);
-    
-    BinaryVF<CalcFunc, Inst::UpdateMask, type>(rep, oneRepSize, blockLength, args0.Data().Get(), args.Data().Get()...);
-}
+        constexpr uint16_t VECTOR_REG_WIDTH = 256;
+        constexpr uint16_t oneRepSize = VECTOR_REG_WIDTH / sizeof(type);
+        uint16_t repeat = Std::ceil_division(dataSize, oneRepSize);
+        
+        BinaryVF<CalcFunc, TraitType>::template Run<type>(dst.Data().Get(), src0.Data().Get(), src1.Data().Get(), repeat, oneRepSize, dataSize);
+    }
+};
 
 }
 }

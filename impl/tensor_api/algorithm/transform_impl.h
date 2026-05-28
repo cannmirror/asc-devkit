@@ -22,15 +22,15 @@
 #ifndef IMPL_TENSOR_API_ALGORITHM_TRANSFORM_IMPL_H
 #define IMPL_TENSOR_API_ALGORITHM_TRANSFORM_IMPL_H
 
-#include "impl/tensor_api/arch/vector/binary/binary_vf.h"
+#include "impl/tensor_api/arch/vector/transform/transform_vf.h"
 
 namespace AscendC {
 namespace Te {
 
-template<typename CalcFunc, typename T, typename U, typename V>
-__aicore__ inline void Transform(const T& dst, const U& src0, const V& src1)
+template<typename CalcFunc, typename TraitType = Std::ignore_t, typename... Args>
+__aicore__ inline void Transform(const Args&... args)
 {
-    Transform2VF<CalcFunc>(dst, src0, src1);
+    Transform2VF<CalcFunc, TraitType>::template Run(args...);
 }
 
 }
