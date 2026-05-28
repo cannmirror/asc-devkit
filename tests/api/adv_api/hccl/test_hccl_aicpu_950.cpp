@@ -313,4 +313,110 @@ TEST_F(HcclSuiteAICPU, AlltoAllV_repeat3_prepare1_commit0_wait3_success)
         EXPECT_EQ(hccl.Wait(handleId), HCCL_SUCCESS);
     }
 }
+
+TEST_F(HcclSuiteAICPU, PrimitiveIdStateInControlMsg_success)
+{
+    std::vector<uint8_t> workSpace(WORKSPACE_SIZE + 1024);
+    HcclMsgArea* hcclMsgArea = GetHcclMsgArea(workSpace.data());
+    ControlHcclMsg* controlMsg = &hcclMsgArea->controlMsg;
+
+    controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_ID_IDX] = 9U;
+    controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_RESET_IDX] = 1U;
+    ResetPrimitiveIdStateInControlMsg(controlMsg);
+    EXPECT_EQ(controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_ID_IDX], 0U);
+    EXPECT_EQ(controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_RESET_IDX], 0U);
+
+    EXPECT_EQ(FetchAndIncPrimitiveIdInControlMsg(controlMsg), 0U);
+    EXPECT_EQ(FetchAndIncPrimitiveIdInControlMsg(controlMsg), 1U);
+    EXPECT_EQ(controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_ID_IDX], 2U);
+
+    controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_ID_IDX] = 7U;
+    controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_RESET_IDX] = 0U;
+    ResetPrimitiveIdOnceInControlMsg(controlMsg);
+    EXPECT_EQ(controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_ID_IDX], 0U);
+    EXPECT_EQ(controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_RESET_IDX], 1U);
+
+    controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_ID_IDX] = 5U;
+    ResetPrimitiveIdOnceInControlMsg(controlMsg);
+    EXPECT_EQ(controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_ID_IDX], 5U);
+    EXPECT_EQ(controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_RESET_IDX], 1U);
+}
+
+TEST_F(HcclSuiteAICPU, AssembleHcclMsgV2_deprecatedTiling_success)
+{
+    std::vector<uint8_t> workSpace(WORKSPACE_SIZE + 1024);
+    HcclMsgArea* hcclMsgArea = GetHcclMsgArea(workSpace.data());
+    ControlHcclMsg* controlMsg = &hcclMsgArea->controlMsg;
+    HcclMsg* sendMsg = &hcclMsgArea->commMsg.singleMsg.sendMsgs[0];
+    CommonPrepareParam param{};
+    param.commType.prepareType = HcclCMDType::HCCL_CMD_ALLREDUCE;
+    param.sendBuf = reinterpret_cast<GM_ADDR>(0x1234);
+    param.recvBuf = reinterpret_cast<GM_ADDR>(0x4321);
+    param.count = 16U;
+    param.dataType = HcclDataType::HCCL_DATA_TYPE_INT8;
+    param.op = HcclReduceOp::HCCL_REDUCE_SUM;
+    param.strideCount = 8U;
+    param.repeat = 3U;
+    controlMsg->resetSeq = 1U;
+    controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_ID_IDX] = 11U;
+    controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_RESET_IDX] = 0U;
+
+    AssembleHcclMsgV2(param, HcclTilingVersion::DEPRECATED_TILING_VERSION, 2, 0UL, sendMsg, controlMsg);
+
+    EXPECT_EQ(controlMsg->resetSeq, 0U);
+    EXPECT_EQ(controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_ID_IDX], 1U);
+    EXPECT_EQ(controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_RESET_IDX], 1U);
+    EXPECT_EQ(sendMsg->commType.prepareType, HcclCMDType::HCCL_CMD_ALLREDUCE);
+    EXPECT_EQ(sendMsg->opType, HcclReduceOp::HCCL_REDUCE_SUM);
+    EXPECT_EQ(sendMsg->sendBuffer, 0x1234UL);
+    EXPECT_EQ(sendMsg->recvBuffer, 0x4321UL);
+    EXPECT_EQ(sendMsg->dataCnt, 16U);
+    EXPECT_EQ(sendMsg->strideCount, 8U);
+    EXPECT_EQ(sendMsg->addMsg.v0Msg.hcclDataType, HcclDataType::HCCL_DATA_TYPE_INT8);
+    EXPECT_EQ(sendMsg->addMsg.v0Msg.repeatCnt, 3U);
+    EXPECT_EQ(sendMsg->addMsg.v0Msg.selfHandleID, 2);
+    EXPECT_EQ(sendMsg->addMsg.v0Msg.seqNum, 0U);
+    EXPECT_EQ(sendMsg->addMsg.v0Msg.version, HcclTilingVersion::DEPRECATED_TILING_VERSION);
+    EXPECT_EQ(sendMsg->addMsg.v0Msg.valid, HCCL_MSG_VALID_MASK);
+}
+
+TEST_F(HcclSuiteAICPU, AssembleHcclMsgV2_contextDecoupleAndFinalize_success)
+{
+    std::vector<uint8_t> workSpace(WORKSPACE_SIZE + 1024);
+    HcclMsgArea* hcclMsgArea = GetHcclMsgArea(workSpace.data());
+    ControlHcclMsg* controlMsg = &hcclMsgArea->controlMsg;
+    HcclMsg* sendMsg = &hcclMsgArea->commMsg.singleMsg.sendMsgs[0];
+    HcclMsg* finalizeMsg = &hcclMsgArea->commMsg.singleMsg.sendMsgs[1];
+    CommonPrepareParam param{};
+    param.commType.prepareType = HcclCMDType::HCCL_CMD_ALLGATHER;
+    param.sendBuf = reinterpret_cast<GM_ADDR>(0x2345);
+    param.recvBuf = reinterpret_cast<GM_ADDR>(0x5432);
+    param.count = 32U;
+    param.dataType = HcclDataType::HCCL_DATA_TYPE_INT8;
+    param.strideCount = 4U;
+    param.repeat = 2U;
+    controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_ID_IDX] = 6U;
+    controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_RESET_IDX] = 1U;
+
+    AssembleHcclMsgV2(param, HcclTilingVersion::CONTEXT_DECOUPLE_VERSION, 3, 0x1000UL, sendMsg, controlMsg);
+
+    EXPECT_EQ(controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_ID_IDX], 7U);
+    EXPECT_EQ(sendMsg->commType.prepareType, HcclCMDType::HCCL_CMD_ALLGATHER);
+    EXPECT_EQ(sendMsg->addMsg.v1Msg.ccOpTilingData, 0x1000UL);
+    EXPECT_EQ(sendMsg->addMsg.v1Msg.hcclDataType, HcclDataType::HCCL_DATA_TYPE_INT8);
+    EXPECT_EQ(sendMsg->addMsg.v1Msg.repeatCnt, 2U);
+    EXPECT_EQ(sendMsg->addMsg.v1Msg.selfHandleID, 3);
+    EXPECT_EQ(sendMsg->addMsg.v1Msg.seqNum, 6U);
+    EXPECT_EQ(sendMsg->addMsg.v1Msg.version, HcclTilingVersion::CONTEXT_DECOUPLE_VERSION);
+    EXPECT_EQ(sendMsg->addMsg.v1Msg.valid, HCCL_MSG_VALID_MASK);
+
+    CommonPrepareParam finalizeParam{};
+    finalizeParam.commType.msgType = ControlMsgType::HCCL_CMD_FINALIZE;
+    AssembleHcclMsgV2(finalizeParam, HcclTilingVersion::CONTEXT_DECOUPLE_VERSION, 0, 0UL, finalizeMsg, controlMsg);
+
+    EXPECT_EQ(controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_ID_IDX], 0U);
+    EXPECT_EQ(controlMsg->reserved[HCCL_CONTROL_RESERVED_PRIMITIVE_RESET_IDX], 0U);
+    EXPECT_EQ(finalizeMsg->commType.msgType, ControlMsgType::HCCL_CMD_FINALIZE);
+    EXPECT_EQ(finalizeMsg->addMsg.v0Msg.valid, HCCL_MSG_VALID_MASK);
+}
 }

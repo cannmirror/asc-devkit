@@ -33,6 +33,11 @@ bool IsBatchLaunchMode() {
     return g_threadLaunchCtx.IsBatchLaunchMode();
 }
 
+HcclResult HandleDispatchAllStreams()
+{
+    return g_threadLaunchCtx.HandleDispatchAllStreams();
+}
+
 void AddThread(ThreadHandle thread) {
     g_threadLaunchCtx.AddThread(thread);
 }
@@ -266,6 +271,28 @@ HcclResult CommTaskLaunch(ThreadHandle *threads, uint32_t threadNum) // host fft
     }
 
     return HcclTaskLaunch(streams.data(), threadNum);
+}
+
+HcclResult DispatchAllStreams(ThreadHandle *threads, uint32_t threadNum)
+{
+    CHK_PTR_NULL(threads);
+    CHK_PRT_RET(threadNum < 1, HCCL_ERROR("[DispatchAllStreams]threadNum is less than 1"), HCCL_E_PARA);
+
+    Thread *threadPtr = reinterpret_cast<Thread *>(threads[0]);
+    CHK_PTR_NULL(threadPtr);
+
+    if (!threadPtr->IsDeviceA5()) {
+        HCCL_ERROR("[%s] DispatchAllStreams is only supported on A5 device.", __func__);
+        return HCCL_E_NOT_SUPPORT;
+    }
+
+    for (uint32_t i = 0; i < threadNum; i++) {
+        Thread *threadPtrLoop = reinterpret_cast<Thread *>(threads[i]);
+        CHK_PTR_NULL(threadPtrLoop);
+        HCCL_DEBUG("[%s] Dispatching streams in thread[0x%llx].", __func__, threads[i]);
+        threadPtrLoop->TryLaunchTask();
+    }
+    return HCCL_SUCCESS;
 }
 
 namespace {
