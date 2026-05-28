@@ -36,8 +36,8 @@ bfloat16_t __hneg(const bfloat16_t x)
 
 | x值 | 返回值 |
 | --- | --- |
-| +0 | +0 |
-| -0 | -0 |
+| +0 | -0 |
+| -0 | +0 |
 | inf | -inf |
 | -inf | inf |
 | nan | nan |
@@ -75,4 +75,3 @@ bfloat16_t __hneg(const bfloat16_t x)
         dst[idx] = __hneg(x[idx]);
     }
     ```
-
