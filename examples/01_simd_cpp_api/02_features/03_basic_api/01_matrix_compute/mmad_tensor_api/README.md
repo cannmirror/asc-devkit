@@ -47,21 +47,21 @@
 
   在核函数直调样例中，样例默认支持的shape为：M = 1024, N = 1024, K = 256。
 
-  <table border="2" align="center">
+  <table border="2">
   <caption>表1：样例规格表</caption>
-  <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="4" align="center">Matmul with Quant</td></tr>
-  <tr><td rowspan="5" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">x (矩阵A)</td><td align="center">[M, K]</td><td align="center">int8_t</td><td align="center">ND</td></tr>
-  <tr><td align="center">y (矩阵B，转置存储)</td><td align="center">[N, K]</td><td align="center">int8_t</td><td align="center">DN</td></tr>
-  <tr><td align="center">quant</td><td align="center">[N]</td><td align="center">uint64_t</td><td align="center">ND</td></tr>
-  <tr><td rowspan="1" align="center">样例输出</td><td align="center">z (矩阵C)</td><td align="center">[M, N]</td><td align="center">half</td><td align="center">ND</td></tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">mmad_tensor_api</td></tr>
+  <tr><td rowspan="1" align="left">样例类型(OpType)</td><td colspan="4" align="left">Matmul with Quant</td></tr>
+  <tr><td rowspan="4" align="left">样例输入</td><td align="left">name</td><td align="left">shape</td><td align="left">data type</td><td align="left">format</td></tr>
+  <tr><td align="left">x (矩阵A)</td><td align="left">[M, K]</td><td align="left">int8_t</td><td align="left">ND</td></tr>
+  <tr><td align="left">y (矩阵B，转置存储)</td><td align="left">[N, K]</td><td align="left">int8_t</td><td align="left">DN</td></tr>
+  <tr><td align="left">quant</td><td align="left">[N]</td><td align="left">uint64_t</td><td align="left">ND</td></tr>
+  <tr><td rowspan="1" align="left">样例输出</td><td align="left">z (矩阵C)</td><td align="left">[M, N]</td><td align="left">half</td><td align="left">ND</td></tr>
+  <tr><td rowspan="1" align="left">核函数名</td><td colspan="4" align="left">mmad_tensor_api</td></tr>
   </table>
 
   编译期模板参数默认值：
 
   | 参数    | 默认值 | 说明                    |
-  | ------- | ------ | ----------------------- |
+  | :------ | :----- | :---------------------- |
   | BASE_M  | 256    | M维度基础分块大小       |
   | BASE_N  | 256    | N维度基础分块大小       |
   | BASE_K  | 64     | K维度基础分块大小       |
@@ -73,7 +73,7 @@
   运行时动态参数默认值：
 
   | 参数         | 默认值 | 说明                       |
-  | ------------ | ------ | -------------------------- |
+  | :----------- | :----- | :------------------------- |
   | m            | 1024   | 矩阵A的行数                |
   | n            | 1024   | 矩阵B的列数                |
   | k            | 256    | 矩阵A的列数/矩阵B的行数    |
@@ -127,7 +127,7 @@
 - 编译选项说明
 
   | 选项 | 可选值 | 说明 |
-  |------|--------|------|
+  | :--- | :----- | :--- |
   | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`sim` | 运行模式：NPU运行、NPU仿真 |
   | `CMAKE_ASC_ARCHITECTURES` | `dav-3510`（默认） | NPU架构：dav-3510 对应 Ascend 950PR/Ascend 950DT |
 
