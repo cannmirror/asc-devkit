@@ -26,8 +26,12 @@ add_executable(demo
     mmad_mx.asc
 )
 
-target_include_directories(demo PRIVATE
-    ./
+set(ASCEND_HOME $ENV{ASCEND_HOME_PATH})
+
+set(ASC_INCLUDE_DIR "${ASCEND_HOME}/asc/")
+
+include_directories(
+    "${ASC_INCLUDE_DIR}"
 )
 
 target_compile_definitions(demo PRIVATE

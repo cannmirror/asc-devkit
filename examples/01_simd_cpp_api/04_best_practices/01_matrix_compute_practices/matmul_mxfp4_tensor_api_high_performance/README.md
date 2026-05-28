@@ -53,6 +53,7 @@ $$
 | C | `[M, N]` | `bfloat16_t` | ND | 输出矩阵 |
 
 其中：
+
 - 两个`fp4x2_e1m2_t`打包存储在一个字节中，因此当数据类型为`fp4`时，K 需要为偶数
 - `scaleK = align_even(ceil(K / 32))`，表示先向上整除再对齐到 2 的倍数。由于硬件约束要求 scale 数据在 K 方向满足 2Byte 连续对齐，因此 scaleK 必须为偶数
 - 由于硬件约束，当 ScaleB 矩阵为 `[scaleK, N]` 输入时，需要 K 方向 2 Byte连续，因此推荐 ScaleB 采用`[N, scaleK]`输入
@@ -151,7 +152,7 @@ MxMatmul 的输入不是两路，而是四路：A、B、ScaleA、ScaleB。因此
 
 通过 `stepK=2` 一次搬入 `stepK * baseM * baseK` 的 A 矩阵数据 和 `stepK * baseN * baseK` 的 B 矩阵数据，减少搬运指令数量，提高 GM 到 L1 的搬运效率。
 
-scale 的搬运粒度由 `scaleFactorK=4` 控制，一次搬入 `scaleFactorK * stepK * baseM * baseSK` 的 ScakeA 矩阵数据 和 `scaleFactorK * stepK * baseN * baseSK` 的 ScaleB 矩阵数据，其中`baseSK = basK / 32`。它的作用是让 ScaleA/ScaleB 在 K 方向相比于 A/B 一次覆盖更大的范围，减少 scale 反复搬运带来的 MTE2 压力。
+scale 的搬运粒度由 `scaleFactorK=4` 控制，一次搬入 `scaleFactorK * stepK * baseM * baseSK` 的 ScaleA 矩阵数据 和 `scaleFactorK * stepK * baseN * baseSK` 的 ScaleB 矩阵数据，其中`baseSK = basK / 32`。它的作用是让 ScaleA/ScaleB 在 K 方向相比于 A/B 一次覆盖更大的范围，减少 scale 反复搬运带来的 MTE2 压力。
 
 以 A 矩阵数据搬运为例，`Copy` 一次搬入 `stepK` 个 K 方向 base 块，每个base块为 `baseM * baseK`：
 
@@ -199,14 +200,13 @@ AscendC::Te::Copy(l12l0ScaleAAtom, l0TensorAs, l1ReadBufAs.Slice(AscendC::Te::Ma
 | L0B | `B Ping/Pong` | 当前 K block 的 B 数据 | Cube `Mmad` 右操作数 |
 | L0C | `C` | float 累加结果 | `Mmad` 输出，供写回GM |
 
-
 一个简化的流水节奏如下：
 
 ```text
 time     |---------------------------------------------------------------------------->
 
 GM->L1   | A/B/ScaleA/ScaleB Ping | A/B/ScaleA/ScaleB Pong | A/B/ScaleA/ScaleB Ping |
-L1->L0                            | L0 Ping load --|       | L0 Pong load --|    
+L1->L0                            | L0 Ping load --|       | L0 Pong load --|
 Cube                                               | Mmad Ping ---|   | Mmad Pong ---|
 L0C->GM                                                           | Copy L0C to GM ---
 ```
@@ -331,6 +331,7 @@ next LoadData
 ## 理论性能对比
 
 性能指标说明表：
+
 | 指标 | 说明 |
 |------|------|
 | `Task Duration(μs)` | 整个任务执行的总时间，算子端到端执行时间以该参数为准 |
@@ -433,19 +434,22 @@ pip3 install en_dtypes==0.0.4
 
 ### 配置环境变量
 
-请根据当前环境上 CANN 开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
+请根据当前环境上 CANN 开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令，**当前仅支持使用CANN master**。
 
 - 默认路径，root 用户安装 CANN 软件包
+
   ```bash
   source /usr/local/Ascend/cann/set_env.sh
   ```
 
 - 默认路径，非 root 用户安装 CANN 软件包
+
   ```bash
   source $HOME/Ascend/cann/set_env.sh
   ```
 
 - 指定路径 install_path，安装 CANN 软件包
+
   ```bash
   source ${install_path}/cann/set_env.sh
   ```
