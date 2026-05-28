@@ -117,7 +117,7 @@ __aicore__ inline void Duplicate(const LocalTensor<T>& dst, const T& scalarValue
 {
 #if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
     CheckVectorTensor("Duplicate", NamedTensor(dst, "dst"));
-    CheckValueRange<int32_t>(count, 0, INT32_MAX, "count", "Duplicate");
+    CheckCalcount(count, "count", "Duplicate");
 #endif
 #ifdef __MSTX_DFX_REPORT__
     MstxTensor::GetMstxVecDupInfo(dst, count, "Duplicate");
