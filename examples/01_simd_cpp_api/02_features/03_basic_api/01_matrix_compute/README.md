@@ -17,6 +17,7 @@
 | [mmad_load3dv2](./mmad_load3dv2) |  本样例介绍LoadData3DV2指令将A、B矩阵从L1搬运到L0A/L0B的过程，其中 A 和 B 分别表示矩阵乘法的左右输入矩阵。LoadData3DV2指令参数配置及执行指令前后各个矩阵数据排布变化，均配合示意图进行了说明 | Ascend 950PR/Ascend 950DT<br>Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 |
 | [batch_mmad](./batch_mmad) |  本样例介绍在输入为float数据类型并且左、右矩阵均不转置的场景下，带batch的矩阵乘法，其中从GM-->L1、L0C-->GM、L0C-->L1这三条通路分别采用了DataCopy ND2NZ和Fixpipe批量搬运数据，从L1-->L0A/L0B以及Mmad执行矩阵乘这两个步骤则是循环batch次，每次循环内只处理一对左、右矩阵 | Ascend 950PR/Ascend 950DT<br>Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 |
 | [mmad](./mmad) |  本样例介绍了输入为ND格式，B4 / B8 / B16 / B32输入数据类型（具体以int4_t / int8_t / bfloat16 / float为例），四种输入数据类型下的矩阵乘法，说明如何通过Mmad指令实现矩阵乘法计算（C = A x B + Bias） | Ascend 950PR/Ascend 950DT<br>Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 |
+| [mmad_tensor_api](./mmad_tensor_api) |  本样例介绍基于Tensor API实现动态Shape矩阵乘法和随路量化计算 | Ascend 950PR/Ascend 950DT |
 | [mmad_unitflag](./mmad_unitflag) |  本样例介绍了如何在调用Mmad指令时，使用unitFlag功能。 | Ascend 950PR/Ascend 950DT<br>Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 |
 | [mmad_gemv](./mmad_gemv) |  本样例介绍了Gemv（M=1）模式下的矩阵乘法 | Ascend 950PR/Ascend 950DT<br>Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 |
 | [mmad_with_sparse](./mmad_with_sparse) |  本样例介绍基础API MmadWithSparse调用 | Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 |
