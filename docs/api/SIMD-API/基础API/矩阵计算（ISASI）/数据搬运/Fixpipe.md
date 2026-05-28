@@ -461,11 +461,11 @@ constexpr FixpipeConfig CFG_COLUMN_MAJOR = {CO2Layout::COLUMN_MAJOR};</pre>
 <p id="p4222657114418"><a name="p4222657114418"></a><a name="p4222657114418"></a>使能该功能时，Fixpipe指令的unitFlag设置为3即可。</p>
 </td>
 </tr>
-<tr id="row6563440185617"><td class="cellrowborder" valign="top" width="14.19%" headers="mcps1.2.4.1.1 "><p id="p356384012560"><a name="p356384012560"></a><a name="p356384012560"></a>TransformParams</p>
+<tr id="row6563440185617"><td class="cellrowborder" valign="top" width="14.19%" headers="mcps1.2.4.1.1 "><p id="p356384012560"><a name="p356384012560"></a><a name="p356384012560"></a>params</p>
 </td>
 <td class="cellrowborder" valign="top" width="9.16%" headers="mcps1.2.4.1.2 "><p id="p1156354035611"><a name="p1156354035611"></a><a name="p1156354035611"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="76.64999999999999%" headers="mcps1.2.4.1.3 "><p id="p87341352154"><a name="p87341352154"></a><a name="p87341352154"></a>TransformParams 结构体是一个基于模板参数的类型选择器，用于在编译时根据不同的CO2Layout布局类型，自动选择对应的参数类型。</p>
+<td class="cellrowborder" valign="top" width="76.64999999999999%" headers="mcps1.2.4.1.3 "><p id="p87341352154"><a name="p87341352154"></a><a name="p87341352154"></a>params是类型为TransformParams的成员变量，TransformParams结构体是一个基于模板参数的类型选择器，用于在编译时根据不同的CO2Layout布局类型，自动选择对应的参数类型。</p>
 <a name="screen17278377518"></a><a name="screen17278377518"></a><pre class="screen" codetype="Cpp" id="screen17278377518">template &lt;CO2Layout format&gt;
 struct TransformParams {};
 template &lt;&gt;
