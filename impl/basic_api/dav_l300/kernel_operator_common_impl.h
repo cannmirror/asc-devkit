@@ -670,9 +670,9 @@ template <typename DstT, typename SrcT, typename IndexT>
 __aicore__ inline void DataCopyGather(
     RegTensor<DstT> &dstReg, LocalMem SrcT *baseAddr, RegTensor<IndexT> &index, MaskReg &mask)
 {
-    static_assert((sizeof(SrcT) == 1 && sizeof(DstT) == 2 && std::is_same_v<IndexT, uint16_t>) ||
-                      (sizeof(SrcT) == 2 && sizeof(DstT) == 2 && std::is_same_v<IndexT, uint16_t>) ||
-                      (sizeof(SrcT) == 4 && sizeof(DstT) == 4 && std::is_same_v<IndexT, uint32_t>),
+    static_assert((sizeof(SrcT) == 1 && sizeof(DstT) == 2 && Std::is_same_v<IndexT, uint16_t>) ||
+                      (sizeof(SrcT) == 2 && sizeof(DstT) == 2 && Std::is_same_v<IndexT, uint16_t>) ||
+                      (sizeof(SrcT) == 4 && sizeof(DstT) == 4 && Std::is_same_v<IndexT, uint32_t>),
         "DataCopyGather only support src data type b8/b16/b32 with dst type is b16/b16/b32 respectively and each index "
         "type is u16/u16/u32 respectively");
     if constexpr (sizeof(SrcT) == 1 && sizeof(DstT) == 2) {

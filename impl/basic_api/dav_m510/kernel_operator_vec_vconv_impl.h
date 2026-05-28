@@ -136,7 +136,7 @@ __aicore__ inline void CastIntrinsicsB64ImplVF(__ubuf__ DST_TYPE *dst, __ubuf__ 
     uint32_t sreg = static_cast<uint32_t>(calCount);
     static constexpr Reg::CastTrait castTrait = {
         Reg::RegLayout::ZERO, Reg::SatMode::SAT, Reg::MaskMergeMode::ZEROING, roundMode};
-    if constexpr (std::is_same_v<SRC_TYPE, complex64> && std::is_same_v<DST_TYPE, complex32>) {
+    if constexpr (Std::is_same_v<SRC_TYPE, complex64> && Std::is_same_v<DST_TYPE, complex32>) {
         __VEC_SCOPE__  // complex 64 -> 32
         {
             Reg::MaskReg preg;
@@ -155,7 +155,7 @@ __aicore__ inline void CastIntrinsicsB64ImplVF(__ubuf__ DST_TYPE *dst, __ubuf__ 
                 Reg::StoreAlign(dst + i * oneRepSize, dstVreg, preg);
             }
         }
-    } else if constexpr (std::is_same_v<SRC_TYPE, complex64> && std::is_same_v<DST_TYPE, complex64>) {
+    } else if constexpr (Std::is_same_v<SRC_TYPE, complex64> && Std::is_same_v<DST_TYPE, complex64>) {
         __VEC_SCOPE__  // complex64 -> 64
         {
             Reg::MaskReg preg;
@@ -171,7 +171,7 @@ __aicore__ inline void CastIntrinsicsB64ImplVF(__ubuf__ DST_TYPE *dst, __ubuf__ 
                 Reg::StoreAlign(dst + i * oneRepSize, dstVreg, preg);
             }
         }
-    } else if constexpr (std::is_same_v<SRC_TYPE, complex32> && std::is_same_v<DST_TYPE, complex64>) {
+    } else if constexpr (Std::is_same_v<SRC_TYPE, complex32> && Std::is_same_v<DST_TYPE, complex64>) {
         __VEC_SCOPE__  // complex32 -> 64
         {
             Reg::MaskReg preg;
@@ -277,10 +277,10 @@ __aicore__ inline void CastIntrinsicsImplVF(__ubuf__ DST_TYPE *dst, __ubuf__ SRC
         } else {
             GenLoadL2<DST_TYPE, SRC_TYPE>(srcVreg, src + i * oneRepSize, preg);
         }
-        if constexpr (std::is_same_v<SRC_TYPE, int32_t> && std::is_same_v<DST_TYPE, half>) {
+        if constexpr (Std::is_same_v<SRC_TYPE, int32_t> && Std::is_same_v<DST_TYPE, half>) {
             Reg::Cast<float, SRC_TYPE, castTrait>((Reg::RegTensor<float> &)dstVreg, srcVreg, preg);
             Reg::Cast<DST_TYPE, float, castTrait>(dstVreg, (Reg::RegTensor<float> &)dstVreg, preg);
-        } else if constexpr (std::is_same_v<SRC_TYPE, float> && std::is_same_v<DST_TYPE, float>) {
+        } else if constexpr (Std::is_same_v<SRC_TYPE, float> && Std::is_same_v<DST_TYPE, float>) {
             Reg::Truncate<DST_TYPE, roundMode>(dstVreg, srcVreg, preg);
         } else {
             Reg::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, preg);
@@ -488,21 +488,21 @@ __aicore__ inline void GenLoadL0(Reg::RegTensor<SRC_TYPE> &srcVreg, __ubuf__ SRC
         Reg::UnPack<uint32_t, uint16_t>(
             (Reg::RegTensor<uint32_t> &)srcVreg, (Reg::RegTensor<uint16_t> &)srcVreg);
     } else if constexpr (sizeof(SRC_TYPE) == 1 && sizeof(DST_TYPE) == 2) {
-        if constexpr (std::is_same_v<SRC_TYPE, int8_t>) {
+        if constexpr (Std::is_same_v<SRC_TYPE, int8_t>) {
             Reg::UnPack<int16_t, int8_t>((Reg::RegTensor<int16_t> &)srcVreg, srcVreg);
         } else {
             Reg::UnPack<uint16_t, uint8_t>(
                 (Reg::RegTensor<uint16_t> &)srcVreg, (Reg::RegTensor<uint8_t> &)srcVreg);
         }
     } else if constexpr (sizeof(SRC_TYPE) == 2 && sizeof(DST_TYPE) == 4) {
-        if constexpr (std::is_same_v<SRC_TYPE, int16_t>) {
+        if constexpr (Std::is_same_v<SRC_TYPE, int16_t>) {
             Reg::UnPack<int32_t, int16_t>((Reg::RegTensor<int32_t> &)srcVreg, srcVreg);
         } else {
             Reg::UnPack<uint32_t, uint16_t>(
                 (Reg::RegTensor<uint32_t> &)srcVreg, (Reg::RegTensor<uint16_t> &)srcVreg);
         }
     } else if constexpr (sizeof(SRC_TYPE) == 1 && sizeof(DST_TYPE) == 4) {
-        if constexpr (std::is_same_v<SRC_TYPE, int8_t>) {
+        if constexpr (Std::is_same_v<SRC_TYPE, int8_t>) {
             Reg::UnPack<int16_t, int8_t>((Reg::RegTensor<int16_t> &)srcVreg, srcVreg);
             Reg::UnPack<int32_t, int16_t>(
                 (Reg::RegTensor<int32_t> &)srcVreg, (Reg::RegTensor<int16_t> &)srcVreg);
@@ -581,10 +581,10 @@ __aicore__ inline void CastIntrinsicsImplVF2(__ubuf__ DST_TYPE *dst, __ubuf__ SR
     }
     for (uint16_t i = 0; i < repeatTime; ++i) {
         GenLoadL0<DST_TYPE, SRC_TYPE>(srcVreg, src, ldPreg, repeatParams);
-        if constexpr (std::is_same_v<SRC_TYPE, int32_t> && std::is_same_v<DST_TYPE, half>) {
+        if constexpr (Std::is_same_v<SRC_TYPE, int32_t> && Std::is_same_v<DST_TYPE, half>) {
             Reg::Cast<float, SRC_TYPE, castTrait>((Reg::RegTensor<float> &)dstVreg, srcVreg, exPreg);
             Reg::Cast<DST_TYPE, float, castTrait>(dstVreg, (Reg::RegTensor<float> &)dstVreg, exPreg);
-        } else if constexpr (std::is_same_v<SRC_TYPE, float> && std::is_same_v<DST_TYPE, float>) {
+        } else if constexpr (Std::is_same_v<SRC_TYPE, float> && Std::is_same_v<DST_TYPE, float>) {
             Reg::Truncate<DST_TYPE, roundMode>(dstVreg, srcVreg, exPreg);
         } else {
             Reg::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, exPreg);
@@ -721,10 +721,10 @@ __aicore__ inline void CastIntrinsicsImplCounterVF(__ubuf__ DST_TYPE *dst, __ubu
             }
         }
         GenLoadL0<DST_TYPE, SRC_TYPE>(srcVreg, src, ldPreg, repeatParams);
-        if constexpr (std::is_same_v<SRC_TYPE, int32_t> && std::is_same_v<DST_TYPE, half>) {
+        if constexpr (Std::is_same_v<SRC_TYPE, int32_t> && Std::is_same_v<DST_TYPE, half>) {
             Reg::Cast<float, SRC_TYPE, castTrait>((Reg::RegTensor<float> &)dstVreg, srcVreg, exPreg);
             Reg::Cast<DST_TYPE, float, castTrait>(dstVreg, (Reg::RegTensor<float> &)dstVreg, exPreg);
-        } else if constexpr (std::is_same_v<SRC_TYPE, float> && std::is_same_v<DST_TYPE, float>) {
+        } else if constexpr (Std::is_same_v<SRC_TYPE, float> && Std::is_same_v<DST_TYPE, float>) {
             Reg::Truncate<DST_TYPE, roundMode>(dstVreg, srcVreg, exPreg);
         } else {
             Reg::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, exPreg);
@@ -997,10 +997,10 @@ __aicore__ inline void CastIntrinsicsImplVF1(__ubuf__ DST_TYPE *dst, __ubuf__ SR
     }
     for (uint16_t i = 0; i < repeatTime; ++i) {
         GenLoadL0<DST_TYPE, SRC_TYPE>(srcVreg, src, ldPreg, repeatParams);
-        if constexpr (std::is_same_v<SRC_TYPE, int32_t> && std::is_same_v<DST_TYPE, half>) {
+        if constexpr (Std::is_same_v<SRC_TYPE, int32_t> && Std::is_same_v<DST_TYPE, half>) {
             Reg::Cast<float, SRC_TYPE, castTrait>((Reg::RegTensor<float> &)dstVreg, srcVreg, exPreg);
             Reg::Cast<DST_TYPE, float, castTrait>(dstVreg, (Reg::RegTensor<float> &)dstVreg, exPreg);
-        } else if constexpr (std::is_same_v<SRC_TYPE, float> && std::is_same_v<DST_TYPE, float>) {
+        } else if constexpr (Std::is_same_v<SRC_TYPE, float> && Std::is_same_v<DST_TYPE, float>) {
             Reg::Truncate<DST_TYPE, roundMode>(dstVreg, srcVreg, exPreg);
         } else {
             Reg::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, exPreg);

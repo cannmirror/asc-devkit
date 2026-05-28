@@ -30,7 +30,7 @@ template <typename T = DefaultType, CMPMODE mode = CMPMODE::EQ, typename RegT>
 __simd_callee__ inline void CompareImpl(MaskReg &dstMask, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float>(),
         "current data type is not supported on current device!");
     if constexpr (mode == CMPMODE::EQ) {
@@ -52,7 +52,7 @@ template <typename T = DefaultType, CMPMODE mode = CMPMODE::EQ, typename RegT, t
 __simd_callee__ inline void CompareScalarImpl(MaskReg &dstMask, RegT &srcReg, ScalarT scalarValue, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(
         SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t, uint64_t, int64_t>(),
         "current data type is not supported on current device!");
@@ -81,7 +81,7 @@ template <typename T = DefaultType, typename RegT>
 __simd_callee__ inline void SelectImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float>(),
         "current data type is not supported on current device!");
     vsel(dstReg, srcReg0, srcReg1, mask);
@@ -95,4 +95,3 @@ __simd_callee__ inline void SelectImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_VEC_CMPSEL_IMPL__
 #endif
-

@@ -503,8 +503,8 @@ __simd_callee__ inline void CastImpl(S& dstReg, V& srcReg, MaskReg& mask)
 {
     using ActualT = typename S::ActualT;
     using ActualU = typename V::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(std::is_same_v<U, DefaultType> || std::is_same_v<U, ActualU>, "U type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<U, DefaultType> || Std::is_same_v<U, ActualU>, "U type is not correct!");
     if constexpr (trait.mrgMode == MaskMergeMode::MERGING) {
         static_assert(SupportEnum<trait.layoutMode, RegLayout::UNKNOWN, RegLayout::ZERO>(),
             "current Cast api only supported MERGING Mode for RegLayout::UNKNOWN/ZERO on current device!");

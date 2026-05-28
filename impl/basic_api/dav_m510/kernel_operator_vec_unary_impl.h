@@ -572,7 +572,7 @@ __aicore__ inline void AbsImpl(__ubuf__ T *dst, __ubuf__ U *src, const uint32_t 
 {
     static_assert(SupportType<T, half, float>() && SupportType<U, complex32, complex64>(),
         "current data type is not supported on current device!");
-    static_assert(std::is_same_v<T, typename U::EleType>, "dst type do not match with src complex elements' type");
+    static_assert(Std::is_same_v<T, typename U::EleType>, "dst type do not match with src complex elements' type");
     __VEC_SCOPE__
     {
         Reg::RegTensor<U, Reg::RegTraitNumTwo> vSrcReg0;

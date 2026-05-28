@@ -32,8 +32,8 @@ __simd_callee__ inline void HistogramsImpl(V& dstReg, S& srcReg, MaskReg& mask)
 {
     using ActualT = typename S::ActualT;
     using ActualU = typename V::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(std::is_same_v<U, DefaultType> || std::is_same_v<U, ActualU>, "U type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<U, DefaultType> || Std::is_same_v<U, ActualU>, "U type is not correct!");
     static_assert((SupportType<ActualT, uint8_t>()), "current data type is not supported on current device!");
     static_assert((SupportType<ActualU, uint16_t>()), "current data type is not supported on current device!");
     auto constexpr HistogramsMode = std::integral_constant<::Bin, static_cast<::Bin>(mode)>();
@@ -51,4 +51,3 @@ __simd_callee__ inline void HistogramsImpl(V& dstReg, S& srcReg, MaskReg& mask)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_HISTOGRAMS_IMPL__
 #endif
-

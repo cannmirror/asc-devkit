@@ -64,16 +64,16 @@ __simd_callee__ inline void DataCopyGatherImpl(T3& dstReg, __ubuf__ T1* baseAddr
 {
     using ActualDstT = typename T3::ActualT;
     using ActualIndexT = typename T4::ActualT;
-    static_assert(std::is_same_v<T0, DefaultType> || std::is_same_v<T0, ActualDstT>, "T0 type is not correct!");
-    static_assert(std::is_same_v<T2, DefaultType> || std::is_same_v<T2, ActualIndexT>, "T2 type is not correct!");
-    static_assert((sizeof(T1) == 1 && sizeof(ActualDstT) == 2 && std::is_same_v<ActualIndexT, uint16_t>) ||
-                  (sizeof(T1) == 2 && sizeof(ActualDstT) == 2 && std::is_same_v<ActualIndexT, uint16_t>) ||
-                  (sizeof(T1) == 4 && sizeof(ActualDstT) == 4 && std::is_same_v<ActualIndexT, uint32_t>) ||
+    static_assert(Std::is_same_v<T0, DefaultType> || Std::is_same_v<T0, ActualDstT>, "T0 type is not correct!");
+    static_assert(Std::is_same_v<T2, DefaultType> || Std::is_same_v<T2, ActualIndexT>, "T2 type is not correct!");
+    static_assert((sizeof(T1) == 1 && sizeof(ActualDstT) == 2 && Std::is_same_v<ActualIndexT, uint16_t>) ||
+                  (sizeof(T1) == 2 && sizeof(ActualDstT) == 2 && Std::is_same_v<ActualIndexT, uint16_t>) ||
+                  (sizeof(T1) == 4 && sizeof(ActualDstT) == 4 && Std::is_same_v<ActualIndexT, uint32_t>) ||
                   (sizeof(T1) == 8 && sizeof(ActualDstT) == 8 && SupportType<ActualIndexT, uint32_t, uint64_t>()),
                   "Gather only support src data type b8/b16/b32/b64 with dst type is b16/b16/b32/b64 respectively and "
                   "each index type is u16/u16/u32/(u32/u64) respectively on current device");
     // when index T4<b64, 1> only 32 element valid not support T3<b64, 2> mode
-    static_assert(!(sizeof(T1) == 8 && std::is_same_v<ActualIndexT, uint64_t> &&
+    static_assert(!(sizeof(T1) == 8 && Std::is_same_v<ActualIndexT, uint64_t> &&
                   CheckRegTrait<T4, RegTraitNumOne>() && CheckRegTrait<T3, RegTraitNumTwo>()),
                   "current data type is not supported on current device!");
     if constexpr (sizeof(T1) == 1 && sizeof(ActualDstT) == 2) {
@@ -83,9 +83,9 @@ __simd_callee__ inline void DataCopyGatherImpl(T3& dstReg, __ubuf__ T1* baseAddr
     } else if constexpr (sizeof(T1) == 4 && sizeof(ActualDstT) == 4) {
         vgather2((vector_s32&)dstReg, (__ubuf__ int32_t*)baseAddr, index, mask);
     } else {
-        if constexpr (std::is_same_v<ActualIndexT, uint32_t>) {
+        if constexpr (Std::is_same_v<ActualIndexT, uint32_t>) {
             DataCopyGatherB64Impl(dstReg, baseAddr, index, mask);
-        } else if constexpr (std::is_same_v<ActualIndexT, uint64_t>) {
+        } else if constexpr (Std::is_same_v<ActualIndexT, uint64_t>) {
             if constexpr (CheckRegTrait<T4, RegTraitNumOne>() && CheckRegTrait<T3, RegTraitNumOne>()) {
                 RegTensor<uint32_t> lowIndex;
                 RegTensor<uint32_t> highIndex;
@@ -105,8 +105,8 @@ __simd_callee__ inline void DataCopyGatherBImpl(U& dstReg, __ubuf__ T* baseAddr,
 {
     using ActualT = typename U::ActualT;
     using ActualIndexT = typename S::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(std::is_same_v<ActualIndexT, uint32_t>, "IndexT type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<ActualIndexT, uint32_t>, "IndexT type is not correct!");
     static_assert(CheckRegTrait<U, RegTraitNumOne>(), "RegTensor only support RegTraitNumOne on current device!");
     static_assert(CheckRegTrait<S, RegTraitNumOne>(), "RegTensor only support RegTraitNumOne on current device!");
     static_assert(SupportBytes<ActualT, 1, 2, 4, 8>(),
@@ -159,22 +159,22 @@ __simd_callee__ inline void DataCopyScatterImpl(__ubuf__ T* baseAddr, S& srcReg,
 {
     using ActualT = typename S::ActualT;
     using ActualIndexT = typename V::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(std::is_same_v<U, DefaultType> || std::is_same_v<U, ActualIndexT>, "U type is not correct!");
-    static_assert((sizeof(ActualT) == 1 && std::is_same_v<ActualIndexT, uint16_t>) ||
-                  (sizeof(ActualT) == 2 && std::is_same_v<ActualIndexT, uint16_t>) ||
-                  (sizeof(ActualT) == 4 && std::is_same_v<ActualIndexT, uint32_t>) ||
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<U, DefaultType> || Std::is_same_v<U, ActualIndexT>, "U type is not correct!");
+    static_assert((sizeof(ActualT) == 1 && Std::is_same_v<ActualIndexT, uint16_t>) ||
+                  (sizeof(ActualT) == 2 && Std::is_same_v<ActualIndexT, uint16_t>) ||
+                  (sizeof(ActualT) == 4 && Std::is_same_v<ActualIndexT, uint32_t>) ||
                   (sizeof(ActualT) == 8 && SupportType<ActualIndexT, uint32_t, uint64_t>()),
                   "Scatter only support data type b8/b16/b32/b64"
                   "with each index type is u16/u16/u32/(u32/u64) respectively on current device");
     // when index V<b64, 1> only 32 element valid not support S<b64, 2> mode
-    static_assert(!(sizeof(ActualT) == 8 && std::is_same_v<ActualIndexT, uint64_t> &&
+    static_assert(!(sizeof(ActualT) == 8 && Std::is_same_v<ActualIndexT, uint64_t> &&
                   CheckRegTrait<S, RegTraitNumTwo>() && CheckRegTrait<V, RegTraitNumOne>()),
                   "current data type is not supported on current device!");
     if constexpr (sizeof(ActualT) == 8) {
-        if constexpr (std::is_same_v<ActualIndexT, uint32_t>) {
+        if constexpr (Std::is_same_v<ActualIndexT, uint32_t>) {
             DataCopyScatterB64Impl(baseAddr, srcReg, index, mask);
-        } else if constexpr (std::is_same_v<ActualIndexT, uint64_t>) {
+        } else if constexpr (Std::is_same_v<ActualIndexT, uint64_t>) {
             if constexpr (CheckRegTrait<S, RegTraitNumOne>() && CheckRegTrait<V, RegTraitNumOne>()) {
                 RegTensor<uint32_t> lowIndex;
                 RegTensor<uint32_t> highIndex;
@@ -274,4 +274,3 @@ __simd_callee__ inline void DataCopyUnAlignImpl(__ubuf__ T*& dstAddr, MaskReg& m
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_DATACOPY_IMPL__
 #endif
-

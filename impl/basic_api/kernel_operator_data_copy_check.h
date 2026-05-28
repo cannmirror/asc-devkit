@@ -321,7 +321,7 @@ __aicore__ inline void CheckDataCopyPadPaddingCommon(const PadParamsT& padParams
         KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check rightPadding value in %s, rightPadding bytes must be less "
         "than or equal to %u, current bytes is %u.\n", apiName, padLimit,
         static_cast<uint32_t>(padParams.rightPadding) * sizeof(PrimT<T>)));
-    if constexpr (std::is_same_v<PadParamsT, DataCopyPadParams>) {
+    if constexpr (Std::is_same_v<PadParamsT, DataCopyPadParams>) {
         ASCENDC_DEBUG_ASSERT((padParams.paddingValue == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
             "Failed to check paddingValue value in %s, DataCopyPadParams.paddingValue only supports 0.\n", apiName));
     } else if constexpr (sizeof(PrimT<T>) == sizeof(uint64_t)) {

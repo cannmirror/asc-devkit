@@ -30,7 +30,7 @@ template <typename T = DefaultType, GatherMaskMode store = GatherMaskMode::NO_ST
 __simd_callee__ inline void GatherMaskImpl(U& dstReg, U srcReg, MaskReg& mask)
 {
     using ActualT = typename U::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t, half, float>(),
                   "current data type is not supported on current device!");
     constexpr auto modeValue = std::integral_constant<::StoreMode, static_cast<::StoreMode>(store)>();
@@ -41,7 +41,7 @@ template <typename T = DefaultType, typename U>
 __simd_callee__ inline void PrefixSumImpl(U& dstReg, MaskReg& mask)
 {
     using ActualT = typename U::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t>(),
                   "current data type is not supported on current device!");
     vusqz(dstReg, mask);
@@ -71,9 +71,9 @@ __simd_callee__ inline void GatherImpl(S& dstReg, S& srcReg, V& indexReg)
 {
     using ActualT = typename S::ActualT;
     using ActualU = typename V::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>,
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>,
                   "Gather T data type is not correct on current device!");
-    static_assert(std::is_same_v<U, DefaultType> || std::is_same_v<U, ActualU>,
+    static_assert(Std::is_same_v<U, DefaultType> || Std::is_same_v<U, ActualU>,
                   "Gather U data type is not correct  on current device!");
     static_assert(SupportBytes<ActualT, 1, 2, 4>(), "Gather does not support current data type on current device!");
     static_assert(SupportType<ActualU, uint8_t, uint16_t, uint32_t>(),
@@ -97,4 +97,3 @@ __simd_callee__ inline void GatherImpl(S& dstReg, S& srcReg, V& indexReg)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_GATHER_MASK_IMPL__
 #endif
-

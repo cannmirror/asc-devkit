@@ -31,9 +31,9 @@ __simd_callee__ inline void GatherImpl(RegT &dstReg, RegT &srcReg, RegU &indexRe
 {
     using ActualT = typename RegT::ActualT;
     using ActualU = typename RegU::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>,
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>,
         "Gather T data type is not correct on current device!");
-    static_assert(std::is_same_v<U, DefaultType> || std::is_same_v<U, ActualU>,
+    static_assert(Std::is_same_v<U, DefaultType> || Std::is_same_v<U, ActualU>,
         "Gather U data type is not correct on current device!");
     static_assert(SupportBytes<ActualT, 1, 2, 4>(),
         "Gather does not support current data type on current device!");
@@ -53,7 +53,7 @@ template <typename T = DefaultType, GatherMaskMode store = GatherMaskMode::NO_ST
 __simd_callee__ inline void GatherMaskImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t, half, float>(),
         "current data type is not supported on current device!");
     constexpr auto modeValue = std::integral_constant<::StoreMode, static_cast<::StoreMode>(store)>();
@@ -64,7 +64,7 @@ template <typename T = DefaultType, typename RegT>
 __simd_callee__ inline void PrefixSumImpl(RegT &dstReg, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t>(),
         "current data type is not supported on current device!");
     vusqz(dstReg, mask);
@@ -91,4 +91,3 @@ template <SpecialPurposeReg spr = SpecialPurposeReg::AR> __simd_callee__ inline 
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_GATHER_MASK_IMPL__
 #endif
-

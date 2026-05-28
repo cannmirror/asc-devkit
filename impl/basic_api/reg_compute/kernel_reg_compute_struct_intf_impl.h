@@ -36,7 +36,7 @@ __aicore__ void RegTensor<T, regTrait>::Print() const
     uint32_t rowNum;
     constexpr uint16_t b4RepElems = 512;
     constexpr uint16_t b4BlkElems = 64;
-    if constexpr (std::is_same_v<T, fp4x2_e2m1_t> || std::is_same_v<T, fp4x2_e1m2_t>) {
+    if constexpr (Std::is_same_v<T, fp4x2_e2m1_t> || Std::is_same_v<T, fp4x2_e1m2_t>) {
         printLen = b4RepElems;
         blockNum = b4BlkElems;
         rowNum = printLen / blockNum;
@@ -55,24 +55,24 @@ __aicore__ void RegTensor<T, regTrait>::Print() const
             for (uint32_t j = 0; j < blockNum; j++) {
                 if constexpr ((sizeof(T) == sizeof(int8_t)) || (sizeof(T) == sizeof(bool))) {
                     os << static_cast<int32_t>(reg[regIdx][i * blockNum + j]) << " ";
-                } else if constexpr (std::is_same_v<T, half> || std::is_same_v<T, bfloat16_t> ||
-                                    std::is_same_v<T, fp8_e4m3fn_t> || std::is_same_v<T, fp8_e5m2_t> ||
-                                    std::is_same_v<T, hifloat8_t>) {
+                } else if constexpr (Std::is_same_v<T, half> || Std::is_same_v<T, bfloat16_t> ||
+                                    Std::is_same_v<T, fp8_e4m3fn_t> || Std::is_same_v<T, fp8_e5m2_t> ||
+                                    Std::is_same_v<T, hifloat8_t>) {
                     os << reg[regIdx][i * blockNum + j].ToFloat() << " ";
-                } else if constexpr (std::is_same_v<T, fp4x2_e2m1_t> || std::is_same_v<T, fp4x2_e1m2_t>) {
+                } else if constexpr (Std::is_same_v<T, fp4x2_e2m1_t> || Std::is_same_v<T, fp4x2_e1m2_t>) {
                     os << ((bfloat16_t)reg[regIdx][i * blockNum + j]).ToFloat() << " ";
 #if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
-                } else if constexpr (std::is_same_v<T, complex32>) {
+                } else if constexpr (Std::is_same_v<T, complex32>) {
                     const float real = (*(reinterpret_cast<const half*>(&reg[regIdx][i * blockNum + j]))).ToFloat();
                     const float image =
                         (*(reinterpret_cast<const half*>(&reg[regIdx][i * blockNum + j]) + 1)).ToFloat();
                     os << real << " " << image << " ";
-                } else if (std::is_same_v<T, complex64>) {
+                } else if (Std::is_same_v<T, complex64>) {
                     const float real = *(reinterpret_cast<const float*>(&reg[regIdx][i * blockNum + j]));
                     const float image = *(reinterpret_cast<const float*>(&reg[regIdx][i * blockNum + j]) + 1);
                     os << real << " " << image << " ";
 #endif
-                } else if constexpr (std::is_same_v<T, int4x2_t>) {
+                } else if constexpr (Std::is_same_v<T, int4x2_t>) {
                     os << static_cast<int16_t>(reg[regIdx][i * blockNum + j].data & 0xf) << " "
                     << static_cast<int16_t>((reg[regIdx][i * blockNum + j].data >> 4) & 0xf) << " ";
                 } else {
@@ -96,4 +96,3 @@ __aicore__ void RegTensor<T, regTrait>::Print() const
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_STRUCT_INTF_IMPL__
 #endif
-

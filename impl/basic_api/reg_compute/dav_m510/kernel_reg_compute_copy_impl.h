@@ -30,7 +30,7 @@ template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::MERGING,
 __simd_callee__ inline void CopyImpl(U& dstReg, U& srcReg, MaskReg mask)
 {
     using ActualT = typename U::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, bool, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, uint64_t,
                   int64_t, half, float, bfloat16_t>(), "current data type is not supported on current device!");
     static_assert(SupportEnum<mode, MaskMergeMode::MERGING>(),
@@ -61,7 +61,7 @@ template <typename T = DefaultType, typename U>
 __simd_callee__ inline void CopyImpl(U& dstReg, U& srcReg)
 {
     using ActualT = typename U::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, bool, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, uint64_t, int64_t,
                   half, float, bfloat16_t>(), "current data type is not supported on current device!");
     if constexpr (IsSameType<ActualT, bool>::value) {
@@ -85,4 +85,3 @@ __simd_callee__ inline void CopyImpl(U& dstReg, U& srcReg)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_COPY_IMPL__
 #endif
-

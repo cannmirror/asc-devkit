@@ -67,7 +67,7 @@ template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMo
 __simd_callee__ inline void AddsImpl(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
     using ActualT = typename S::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float,
                   bfloat16_t, uint64_t, int64_t, complex32, complex64>(),
                   "current data type is not supported on current device!");
@@ -140,7 +140,7 @@ template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMo
 __simd_callee__ inline void MulsImpl(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
     using ActualT = typename S::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint16_t, int16_t, uint32_t, int32_t, half, float,
                   uint64_t, int64_t, complex32, complex64>(),
                   "current data type is not supported on current device!");
@@ -194,7 +194,7 @@ template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMo
 __simd_callee__ inline void MaxsImpl(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
     using ActualT = typename S::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float,
                   bfloat16_t, uint64_t, int64_t>(),
                   "current data type is not supported on current device!");
@@ -218,7 +218,7 @@ template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMo
 __simd_callee__ inline void MinsImpl(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
     using ActualT = typename S::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t,
                   uint64_t, int64_t>(), "current data type is not supported on current device!");
     static_assert(SupportType<U, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t, uint64_t,
@@ -240,7 +240,7 @@ template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMo
 __simd_callee__ inline void ShiftLeftsImpl(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
     using ActualT = typename S::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, uint64_t, int64_t>(),
                   "current data type is not supported on current device!");
     static_assert(SupportType<U, int16_t>(), "current scalarValue data type is not supported on current device!");
@@ -273,7 +273,7 @@ __simd_callee__ inline void ShiftLeftsB64Impl(U& dstReg, U& srcReg, T scalarValu
     using ActualT = typename U::ActualT;
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     int16_t B32Width = 32;
-    if constexpr (std::is_same_v<ActualT, uint64_t>) {
+    if constexpr (Std::is_same_v<ActualT, uint64_t>) {
         RegTensor<uint32_t> tmpReg0;
         RegTensor<uint32_t> tmpReg1;
         vshls(tmpReg0, (RegTensor<uint32_t>&)srcReg.reg[0], scalarValue, mask, modeValue);
@@ -282,7 +282,7 @@ __simd_callee__ inline void ShiftLeftsB64Impl(U& dstReg, U& srcReg, T scalarValu
         vshrs(tmpReg0, (RegTensor<uint32_t>&)srcReg.reg[0], B32Width - scalarValue, mask, modeValue);
         vshls(tmpReg1, (RegTensor<uint32_t>&)srcReg.reg[1], scalarValue, mask, modeValue);
         Or((RegTensor<uint32_t>&)dstReg.reg[1], tmpReg0, tmpReg1, mask);
-    } else if constexpr (std::is_same_v<ActualT, int64_t>) {
+    } else if constexpr (Std::is_same_v<ActualT, int64_t>) {
         RegTensor<int32_t> tmpReg0;
         RegTensor<int32_t> tmpReg1;
         vshls((RegTensor<uint32_t>&)tmpReg0, (RegTensor<uint32_t>&)srcReg.reg[0], scalarValue, mask, modeValue);
@@ -298,7 +298,7 @@ template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMo
 __simd_callee__ inline void ShiftRightsImpl(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
     using ActualT = typename S::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, uint64_t, int64_t>(),
                   "current data type is not supported on current device!");
     static_assert(SupportType<U, int16_t>(), "current scalarValue data type is not supported on current device!");
@@ -330,7 +330,7 @@ __simd_callee__ inline void ShiftRightsB64Impl(U& dstReg, U& srcReg, T scalarVal
     using ActualT = typename U::ActualT;
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     int16_t B32Width = 32;
-    if constexpr (std::is_same_v<ActualT, uint64_t>) {
+    if constexpr (Std::is_same_v<ActualT, uint64_t>) {
         RegTensor<uint32_t> tmpReg0;
         RegTensor<uint32_t> tmpReg1;
         vshrs(tmpReg0, (RegTensor<uint32_t>&)srcReg.reg[0], scalarValue, mask, modeValue);
@@ -339,7 +339,7 @@ __simd_callee__ inline void ShiftRightsB64Impl(U& dstReg, U& srcReg, T scalarVal
         vshrs(tmpReg0, (RegTensor<uint32_t>&)srcReg.reg[0], B32Width + scalarValue, mask, modeValue);
         vshrs(tmpReg1, (RegTensor<uint32_t>&)srcReg.reg[1], scalarValue, mask, modeValue);
         Or((RegTensor<uint32_t> &)dstReg.reg[1], tmpReg0, tmpReg1, mask);
-    } else if constexpr (std::is_same_v<ActualT, int64_t>) {
+    } else if constexpr (Std::is_same_v<ActualT, int64_t>) {
         RegTensor<int32_t> tmpReg0;
         RegTensor<int32_t> tmpReg1;
         vshrs((RegTensor<uint32_t>&)tmpReg0, (RegTensor<uint32_t>&)srcReg.reg[0], scalarValue, mask, modeValue);
@@ -355,7 +355,7 @@ template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMo
 __simd_callee__ inline void LeakyReluImpl(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
     using ActualT = typename S::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, half, float>(), "current data type is not supported on current device!");
     static_assert(SupportType<U, half, float>(), "current scalarValue data type is not supported on current device!");
     static_assert(Std::is_convertible<U, ActualT>(), "scalarValue data type could be converted to RegTensor data type");
@@ -372,4 +372,3 @@ __simd_callee__ inline void LeakyReluImpl(S& dstReg, S& srcReg, U scalarValue, M
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_VEC_BINARY_SCALAR_IMPL__
 #endif
-

@@ -43,7 +43,7 @@ template <typename T = DefaultType, IndexOrder order = IndexOrder::INCREASE_ORDE
 __simd_callee__ inline void ArangeImpl(S& dstReg, U scalarValue)
 {
     using ActualT = typename S::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert((SupportType<ActualT, int8_t, int16_t, int32_t, float, half, int64_t>()),
                   "current Arange data type is not supported on current device!");
     static_assert(Std::is_convertible<U, ActualT>(),
@@ -71,4 +71,3 @@ __simd_callee__ inline void ArangeImpl(S& dstReg, U scalarValue)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_VEC_ARANGE_IMPL__
 #endif
-

@@ -33,8 +33,8 @@ __simd_callee__ inline void PackImpl(RegT &dstReg, RegU &srcReg)
 {
     using ActualT = typename RegT::ActualT;
     using ActualU = typename RegU::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(std::is_same_v<U, DefaultType> || std::is_same_v<U, ActualU>, "U type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<U, DefaultType> || Std::is_same_v<U, ActualU>, "U type is not correct!");
     static_assert((SupportType<Tuple<ActualT, ActualU>, Tuple<uint8_t, uint16_t>, Tuple<uint8_t, int16_t>,
         Tuple<uint16_t, uint32_t>, Tuple<uint16_t, int32_t>>()),
         "unsupport datatype");
@@ -64,8 +64,8 @@ __simd_callee__ inline void UnPackImpl(RegT &dstReg, RegU &srcReg)
 {
     using ActualT = typename RegT::ActualT;
     using ActualU = typename RegU::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(std::is_same_v<U, DefaultType> || std::is_same_v<U, ActualU>, "U type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<U, DefaultType> || Std::is_same_v<U, ActualU>, "U type is not correct!");
     static_assert((SupportType<Tuple<ActualT, ActualU>, Tuple<uint32_t, uint16_t>, Tuple<int32_t, int16_t>,
         Tuple<uint16_t, uint8_t>, Tuple<int16_t, int8_t>>()),
         "unsupport datatype");
@@ -75,7 +75,7 @@ __simd_callee__ inline void UnPackImpl(RegT &dstReg, RegU &srcReg)
     } else {
         RegTensor<uint32_t> padReg;
         MaskReg mask0 = CreateMask<ActualU, MaskPattern::ALL>();
-        if constexpr (std::is_same_v<ActualU, int32_t>) {
+        if constexpr (Std::is_same_v<ActualU, int32_t>) {
             ShiftRights<int32_t, int16_t>((RegTensor<int32_t> &)padReg, srcReg, 31, mask0);
         } else {
             Duplicate(padReg, 0, mask0);
@@ -101,4 +101,3 @@ __simd_callee__ inline void UnPackImpl(RegT &dstReg, RegU &srcReg)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_PACK_IMPL__
 #endif
-

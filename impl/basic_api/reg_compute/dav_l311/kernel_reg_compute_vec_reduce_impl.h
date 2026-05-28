@@ -31,8 +31,8 @@ __simd_callee__ inline void ReduceSumImpl(DstRegT &dstReg, SrcRegT srcReg, MaskR
 {
     using ActualDstRegT = typename DstRegT::ActualT;
     using ActualSrcRegT = typename SrcRegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualDstRegT>, "T type is not correct!");
-    static_assert(std::is_same_v<U, DefaultType> || std::is_same_v<U, ActualSrcRegT>, "U type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualDstRegT>, "T type is not correct!");
+    static_assert(Std::is_same_v<U, DefaultType> || Std::is_same_v<U, ActualSrcRegT>, "U type is not correct!");
     static_assert((SupportType<Tuple<ActualDstRegT, ActualSrcRegT>, Tuple<int32_t, int16_t>, Tuple<int32_t, int32_t>,
         Tuple<uint16_t, uint8_t>, Tuple<uint32_t, uint16_t>, Tuple<int16_t, int8_t>, Tuple<uint32_t, uint32_t>,
         Tuple<half, half>, Tuple<float, float>>()),
@@ -46,7 +46,7 @@ template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
 __simd_callee__ inline void ReduceMaxImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert((SupportType<ActualT, int8_t, uint8_t, uint16_t, int16_t, uint32_t, int32_t, float, half>()),
         "unsupported datatype on current device!");
 
@@ -58,7 +58,7 @@ template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
 __simd_callee__ inline void ReduceMinImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert((SupportType<ActualT, int8_t, uint8_t, uint16_t, int16_t, uint32_t, int32_t, float, half>()),
         "unsupported datatype on current device!");
 
@@ -70,7 +70,7 @@ template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
 __simd_callee__ inline void ReduceSumWithDataBlockImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert((SupportType<ActualT, float, half>()), "unsupported datatype on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
@@ -81,7 +81,7 @@ template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
 __simd_callee__ inline void ReduceMaxWithDataBlockImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert((SupportType<ActualT, float, half>()), "unsupported datatype on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
@@ -92,7 +92,7 @@ template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
 __simd_callee__ inline void ReduceMinWithDataBlockImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert((SupportType<ActualT, float, half>()), "unsupported datatype on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
@@ -103,7 +103,7 @@ template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
 __simd_callee__ inline void PairReduceSumImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert((SupportType<ActualT, float, half>()), "unsupported datatype on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
@@ -117,4 +117,3 @@ __simd_callee__ inline void PairReduceSumImpl(RegT &dstReg, RegT srcReg, MaskReg
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_VEC_REDUCE_IMPL__
 #endif
-

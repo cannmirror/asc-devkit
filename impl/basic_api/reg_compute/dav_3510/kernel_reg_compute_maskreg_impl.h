@@ -112,7 +112,7 @@ template <typename T = DefaultType, int16_t offset, typename U>
 __simd_callee__ inline void MaskGenWithRegTensorImpl(MaskReg &dst, U &srcReg)
 {
     using ActualT = typename U::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportBytes<ActualT, 2, 4>(), "MaskGenWithRegTensor only support type b16/b32 on current device");
     if constexpr (sizeof(ActualT) == 2) {
         static_assert((offset >= 0) && (offset <= 15), "MaskGenWithRegTensor offset must be in 0~15 when T is b16");
@@ -217,4 +217,3 @@ __simd_callee__ inline MaskReg MoveMaskImpl()
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_MASKREG_IMPL__
 #endif
-

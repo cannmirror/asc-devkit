@@ -37,7 +37,7 @@ template <typename T, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT
 __simd_callee__ inline void FusedMulDstAddImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, half, float>(), "current data type is not supported on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
@@ -48,7 +48,7 @@ template <typename T, MaskMergeMode mode, typename RegT>
 __simd_callee__ inline void FusedAbsSubImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, half, float>(), "current data type is not supported on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
@@ -70,4 +70,3 @@ __simd_callee__ inline void FusedExpSubImpl(RegT &dstReg, RegU &srcReg0, RegU &s
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_VEC_FUSED_IMPL__
 #endif
-

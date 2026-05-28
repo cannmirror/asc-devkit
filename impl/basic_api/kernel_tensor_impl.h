@@ -440,7 +440,7 @@ inline std::string GetComplexStr(const T& val)
     static constexpr uint32_t all32BitsOne = 0xFFFFFFFF;
     static_assert(SupportType<T, complex32, complex64>(), "Unsupported complex type.");
     std::string str = "";
-    if constexpr(std::is_same_v<T, complex32>) {
+    if constexpr(Std::is_same_v<T, complex32>) {
         if (val.imag.ToFloat() > 0 || !(*(reinterpret_cast<const uint16_t*>(&val.imag)) & all16BitsOne)) {
             str += std::to_string(val.real.ToFloat()) + "+" + std::to_string(val.imag.ToFloat()) + "j ";
         } else {
@@ -488,10 +488,10 @@ inline void LocalTensor<T>::Print(uint32_t len)
                 if constexpr ((sizeof(PrimType) == sizeof(int8_t)) || (sizeof(PrimType) == sizeof(bool))) {
                     os_ << static_cast<int32_t>(GetValue(i * blockNum + j)) << " ";
 #if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
-                } else if constexpr (std::is_same_v<PrimType, fp8_e4m3fn_t> || std::is_same_v<PrimType, fp8_e5m2_t> ||
-                                     std::is_same_v<PrimType, hifloat8_t>) {
+                } else if constexpr (Std::is_same_v<PrimType, fp8_e4m3fn_t> || Std::is_same_v<PrimType, fp8_e5m2_t> ||
+                                     Std::is_same_v<PrimType, hifloat8_t>) {
                     os_ << GetValue(i * blockNum + j).ToFloat() << " ";
-                } else if constexpr (std::is_same_v<PrimType, complex32> || std::is_same_v<PrimType, complex64>) {
+                } else if constexpr (Std::is_same_v<PrimType, complex32> || Std::is_same_v<PrimType, complex64>) {
                     PrimType val = GetValue(i * blockNum + j);
                     os_ << GetComplexStr(val);
 #endif
@@ -507,10 +507,10 @@ inline void LocalTensor<T>::Print(uint32_t len)
                 if constexpr ((sizeof(PrimType) == sizeof(int8_t)) || (sizeof(PrimType) == sizeof(bool))) {
                     os_ << static_cast<int32_t>(GetValue(rowNum * blockNum + i)) << " ";
 #if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
-                } else if constexpr (std::is_same_v<PrimType, fp8_e4m3fn_t> || std::is_same_v<PrimType, fp8_e5m2_t> ||
-                                     std::is_same_v<PrimType, hifloat8_t>) {
+                } else if constexpr (Std::is_same_v<PrimType, fp8_e4m3fn_t> || Std::is_same_v<PrimType, fp8_e5m2_t> ||
+                                     Std::is_same_v<PrimType, hifloat8_t>) {
                     os_ << GetValue(rowNum * blockNum + i).ToFloat() << " ";
-                } else if constexpr (std::is_same_v<PrimType, complex32> || std::is_same_v<PrimType, complex64>) {
+                } else if constexpr (Std::is_same_v<PrimType, complex32> || Std::is_same_v<PrimType, complex64>) {
                     PrimType val = GetValue(rowNum * blockNum + i);
                     os_ << GetComplexStr(val);
 #endif

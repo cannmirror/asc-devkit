@@ -32,8 +32,8 @@ __simd_callee__ inline void FusedMulsCastImpl(T3& dstReg, T4& srcReg, T2 scalarV
 {
     using ActualT = typename T3::ActualT;
     using ActualU = typename T4::ActualT;
-    static_assert(std::is_same_v<T0, DefaultType> || std::is_same_v<T0, ActualT>, "T0 type is not correct!");
-    static_assert(std::is_same_v<T1, DefaultType> || std::is_same_v<T1, ActualU>, "T1 type is not correct!");
+    static_assert(Std::is_same_v<T0, DefaultType> || Std::is_same_v<T0, ActualT>, "T0 type is not correct!");
+    static_assert(Std::is_same_v<T1, DefaultType> || Std::is_same_v<T1, ActualU>, "T1 type is not correct!");
     static_assert(SupportType<Tuple<ActualT, ActualU, T2>, Tuple<half, float, float>>(),
                   "current data type is not supported on current device!");
     static_assert(SupportEnum<layout, RegLayout::ZERO, RegLayout::ONE>(),
@@ -47,7 +47,7 @@ template <typename T, MaskMergeMode mode, typename U>
 __simd_callee__ inline void FusedAbsSubImpl(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
     using ActualT = typename U::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, half, float, int64_t>(),
                   "current data type is not supported on current device!");
     static_assert(SupportEnum<mode, MaskMergeMode::ZEROING>(),
@@ -80,8 +80,8 @@ __simd_callee__ inline void FusedExpSubImpl(S& dstReg, V& srcReg0, V& srcReg1, M
 {
     using ActualT = typename S::ActualT;
     using ActualU = typename V::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(std::is_same_v<U, DefaultType> || std::is_same_v<U, ActualU>, "U type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<U, DefaultType> || Std::is_same_v<U, ActualU>, "U type is not correct!");
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
     static_assert(SupportType<Tuple<ActualT, ActualU>, Tuple<half, half>, Tuple<float, float>>(),
                   "current data type is not supported on current device!");
@@ -102,7 +102,7 @@ template <typename T, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
 __simd_callee__ inline void FusedMulDstAddImpl(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
     using ActualT = typename U::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, half, float, bfloat16_t>(),
                   "current data type is not supported on current device!");
     static_assert(SupportEnum<mode, MaskMergeMode::ZEROING>(), "FusedMulDstAdd only support Mode ZEROING");
@@ -117,4 +117,3 @@ __simd_callee__ inline void FusedMulDstAddImpl(U& dstReg, U& srcReg0, U& srcReg1
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_VEC_FUSED_IMPL__
 #endif
-

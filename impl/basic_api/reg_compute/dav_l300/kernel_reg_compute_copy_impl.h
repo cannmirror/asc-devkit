@@ -29,7 +29,7 @@ template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
 __simd_callee__ inline void CopyImpl(RegT &dstReg, RegT &srcReg, MaskReg mask)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportEnum<mode, MaskMergeMode::MERGING>(),
         "current Move api only supported MaskMergeMode MERGING!");
     constexpr auto modeValue = GetMaskMergeMode<mode>();
@@ -39,7 +39,7 @@ __simd_callee__ inline void CopyImpl(RegT &dstReg, RegT &srcReg, MaskReg mask)
 template <typename T = DefaultType, typename RegT> __simd_callee__ inline void CopyImpl(RegT &dstReg, RegT &srcReg)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     vmov(dstReg, srcReg);
 }
 } // namespace Reg
@@ -50,4 +50,3 @@ template <typename T = DefaultType, typename RegT> __simd_callee__ inline void C
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_COPY_IMPL__
 #endif
-

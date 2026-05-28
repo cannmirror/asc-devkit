@@ -130,7 +130,7 @@ template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
 __simd_callee__ inline void AbsImpl(U &dstReg, U &srcReg, MaskReg &mask)
 {
     using ActualT = typename U::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, int8_t, int16_t, int32_t, half, float>(),
         "current data type is not supported on current device!");
 
@@ -142,7 +142,7 @@ template <typename T, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
 __simd_callee__ inline void ReluImpl(U &dstReg, U &srcReg, MaskReg &mask)
 {
     using ActualT = typename U::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, int32_t, half, float>(),
         "current data type is not supported on current device!");
 
@@ -184,7 +184,7 @@ template <typename T = DefaultType, auto mode = MaskMergeMode::ZEROING, typename
 __simd_callee__ inline void LogImpl(U &dstReg, U &srcReg, MaskReg &mask)
 {
     using ActualT = typename U::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, half, float>(), "current data type is not supported on current device!");
     static_assert(IsSameType<decltype(mode), MaskMergeMode>::value ||
                   IsSameType<decltype(mode), const LogSpecificMode*>::value ||
@@ -253,7 +253,7 @@ template <typename T = DefaultType, auto mode = MaskMergeMode::ZEROING, typename
 __simd_callee__ inline void Log2Impl(U &dstReg, U &srcReg, MaskReg &mask)
 {
     using ActualT = typename U::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, half, float>(), "current data type is not supported on current device!");
     static_assert(IsSameType<decltype(mode), MaskMergeMode>::value || IsSameType<decltype(mode),
                 const Log2SpecificMode*>::value,
@@ -274,7 +274,7 @@ template <typename T = DefaultType, auto mode = MaskMergeMode::ZEROING, typename
 __simd_callee__ inline void Log10Impl(U &dstReg, U &srcReg, MaskReg &mask)
 {
     using ActualT = typename U::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, half, float>(), "current data type is not supported on current device!");
     static_assert(IsSameType<decltype(mode), MaskMergeMode>::value || IsSameType<decltype(mode),
                   const Log10SpecificMode *>::value,
@@ -295,7 +295,7 @@ template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
 __simd_callee__ inline void NegImpl(U &dstReg, U &srcReg, MaskReg &mask)
 {
     using ActualT = typename U::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, int8_t, int16_t, int32_t, half, float>(),
         "current data type is not supported on current device!");
 
@@ -307,7 +307,7 @@ template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
 __simd_callee__ inline void NotImpl(U &dstReg, U &srcReg, MaskReg &mask)
 {
     using ActualT = typename U::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float>(),
         "current data type is not supported on current device!");
 
@@ -322,4 +322,3 @@ __simd_callee__ inline void NotImpl(U &dstReg, U &srcReg, MaskReg &mask)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_VEC_UNARY_IMPL__
 #endif
-

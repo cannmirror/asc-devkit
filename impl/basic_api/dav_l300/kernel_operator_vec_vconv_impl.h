@@ -657,21 +657,21 @@ __simd_callee__ inline void GenLoadL0(Reg::RegTensor<SRC_TYPE> &srcVreg, __ubuf_
         Reg::UnPack<uint32_t, uint16_t>(
             (Reg::RegTensor<uint32_t> &)srcVreg, (Reg::RegTensor<uint16_t> &)srcVreg);
     } else if constexpr (sizeof(SRC_TYPE) == 1 && sizeof(DST_TYPE) == 2) {
-        if constexpr (std::is_same_v<SRC_TYPE, int8_t>) {
+        if constexpr (Std::is_same_v<SRC_TYPE, int8_t>) {
             Reg::UnPack<int16_t, int8_t>((Reg::RegTensor<int16_t> &)srcVreg, srcVreg);
         } else {
             Reg::UnPack<uint16_t, uint8_t>(
                 (Reg::RegTensor<uint16_t> &)srcVreg, (Reg::RegTensor<uint8_t> &)srcVreg);
         }
     } else if constexpr (sizeof(SRC_TYPE) == 2 && sizeof(DST_TYPE) == 4) {
-        if constexpr (std::is_same_v<SRC_TYPE, int16_t>) {
+        if constexpr (Std::is_same_v<SRC_TYPE, int16_t>) {
             Reg::UnPack<int32_t, int16_t>((Reg::RegTensor<int32_t> &)srcVreg, srcVreg);
         } else {
             Reg::UnPack<uint32_t, uint16_t>(
                 (Reg::RegTensor<uint32_t> &)srcVreg, (Reg::RegTensor<uint16_t> &)srcVreg);
         }
     } else if constexpr (sizeof(SRC_TYPE) == 1 && sizeof(DST_TYPE) == 4) {
-        if constexpr (std::is_same_v<SRC_TYPE, int8_t>) {
+        if constexpr (Std::is_same_v<SRC_TYPE, int8_t>) {
             Reg::UnPack<int16_t, int8_t>((Reg::RegTensor<int16_t> &)srcVreg, srcVreg);
             Reg::UnPack<int32_t, int16_t>(
                 (Reg::RegTensor<int32_t> &)srcVreg, (Reg::RegTensor<int16_t> &)srcVreg);
@@ -750,12 +750,12 @@ __simd_vf__ inline void CastIntrinsicsImplVF2(__ubuf__ DST_TYPE *dst, __ubuf__ S
     }
     for (uint16_t i = 0; i < repeatTimes; ++i) {
         GenLoadL0<DST_TYPE, SRC_TYPE>(srcVreg, src, ldPreg, repeatParams);
-        if constexpr (std::is_same_v<SRC_TYPE, int32_t> && std::is_same_v<DST_TYPE, half>) {
+        if constexpr (Std::is_same_v<SRC_TYPE, int32_t> && Std::is_same_v<DST_TYPE, half>) {
             Reg::Cast<float, SRC_TYPE, castTrait>((Reg::RegTensor<float> &)dstVreg, srcVreg, exPreg);
             float deqValueTmp = static_cast<float>(g_deqValue);
             Reg::Muls((Reg::RegTensor<float> &)dstVreg, (Reg::RegTensor<float> &)dstVreg, deqValueTmp, exPreg);
             Reg::Cast<DST_TYPE, float, castTrait>(dstVreg, (Reg::RegTensor<float> &)dstVreg, exPreg);
-        } else if constexpr (std::is_same_v<SRC_TYPE, float> && std::is_same_v<DST_TYPE, float>) {
+        } else if constexpr (Std::is_same_v<SRC_TYPE, float> && Std::is_same_v<DST_TYPE, float>) {
             Reg::Truncate<DST_TYPE, roundMode>(dstVreg, srcVreg, exPreg);
         } else {
             Reg::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, exPreg);
@@ -819,12 +819,12 @@ __simd_vf__ inline void CastIntrinsicsImplCounterVF(__ubuf__ DST_TYPE *dst, __ub
             }
         }
         GenLoadL0<DST_TYPE, SRC_TYPE>(srcVreg, src, ldPreg, repeatParams);
-        if constexpr (std::is_same_v<SRC_TYPE, int32_t> && std::is_same_v<DST_TYPE, half>) {
+        if constexpr (Std::is_same_v<SRC_TYPE, int32_t> && Std::is_same_v<DST_TYPE, half>) {
             Reg::Cast<float, SRC_TYPE, castTrait>((Reg::RegTensor<float> &)dstVreg, srcVreg, exPreg);
             float deqValueTmp = static_cast<float>(g_deqValue);
             Reg::Muls((Reg::RegTensor<float> &)dstVreg, (Reg::RegTensor<float> &)dstVreg, deqValueTmp, exPreg);
             Reg::Cast<DST_TYPE, float, castTrait>(dstVreg, (Reg::RegTensor<float> &)dstVreg, exPreg);
-        } else if constexpr (std::is_same_v<SRC_TYPE, float> && std::is_same_v<DST_TYPE, float>) {
+        } else if constexpr (Std::is_same_v<SRC_TYPE, float> && Std::is_same_v<DST_TYPE, float>) {
             Reg::Truncate<DST_TYPE, roundMode>(dstVreg, srcVreg, exPreg);
         } else {
             Reg::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, exPreg);
@@ -1121,12 +1121,12 @@ __simd_vf__ inline void CastIntrinsicsImplVF1(__ubuf__ DST_TYPE *dst, __ubuf__ S
     }
     for (uint16_t i = 0; i < repeatTimes; ++i) {
         GenLoadL0<DST_TYPE, SRC_TYPE>(srcVreg, src, ldPreg, repeatParams);
-        if constexpr (std::is_same_v<SRC_TYPE, int32_t> && std::is_same_v<DST_TYPE, half>) {
+        if constexpr (Std::is_same_v<SRC_TYPE, int32_t> && Std::is_same_v<DST_TYPE, half>) {
             Reg::Cast<float, SRC_TYPE, castTrait>((Reg::RegTensor<float> &)dstVreg, srcVreg, exPreg);
             float deqValueTmp = static_cast<float>(g_deqValue);
             Reg::Muls((Reg::RegTensor<float> &)dstVreg, (Reg::RegTensor<float> &)dstVreg, deqValueTmp, exPreg);
             Reg::Cast<DST_TYPE, float, castTrait>(dstVreg, (Reg::RegTensor<float> &)dstVreg, exPreg);
-        } else if constexpr (std::is_same_v<SRC_TYPE, float> && std::is_same_v<DST_TYPE, float>) {
+        } else if constexpr (Std::is_same_v<SRC_TYPE, float> && Std::is_same_v<DST_TYPE, float>) {
             Reg::Truncate<DST_TYPE, roundMode>(dstVreg, srcVreg, exPreg);
         } else {
             Reg::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, exPreg);

@@ -1303,9 +1303,9 @@ template <typename T, typename U, typename S>
 __simd_callee__ inline void DataCopyGather(RegTensor<T> &dstReg, LocalMem U *baseAddr, RegTensor<S> &index,
     MaskReg &mask)
 {
-    static_assert((sizeof(U) == 1 && sizeof(T) == 2 && std::is_same_v<S, uint16_t>) ||
-        (sizeof(U) == 2 && sizeof(T) == 2 && std::is_same_v<S, uint16_t>) ||
-        (sizeof(U) == 4 && sizeof(T) == 4 && std::is_same_v<S, uint32_t>),
+    static_assert((sizeof(U) == 1 && sizeof(T) == 2 && Std::is_same_v<S, uint16_t>) ||
+        (sizeof(U) == 2 && sizeof(T) == 2 && Std::is_same_v<S, uint16_t>) ||
+        (sizeof(U) == 4 && sizeof(T) == 4 && Std::is_same_v<S, uint32_t>),
         "DataCopyGather only support src data type b8/b16/b32 with dst type is b16/b16/b32 respectively and each index "
         "type is u16/u16/u32 respectively");
     if constexpr (sizeof(U) == 1 && sizeof(T) == 2) {

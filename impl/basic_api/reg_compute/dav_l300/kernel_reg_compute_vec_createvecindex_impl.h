@@ -30,7 +30,7 @@ template <typename T = DefaultType, IndexOrder order = IndexOrder::INCREASE_ORDE
 __simd_callee__ inline void ArangeImpl(RegT &dstReg, T1 scalarValue)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert((SupportType<ActualT, int8_t, int16_t, int32_t, float, half>()),
     "unsupported datatype on current device!");
     constexpr auto orderMode = std::integral_constant<::Order, static_cast<::Order>(order)>();
@@ -41,7 +41,7 @@ template <typename T = DefaultType, typename T1, typename RegT>
 __simd_callee__ inline void ArangeWithPatternImpl(RegT &dstReg, T1 scalarValue)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert((SupportType<ActualT, uint16_t, uint32_t, int16_t, int32_t>()),
     "unsupported datatype on current device!");
     vcp(dstReg, (ActualT)scalarValue);
@@ -54,4 +54,3 @@ __simd_callee__ inline void ArangeWithPatternImpl(RegT &dstReg, T1 scalarValue)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_VEC_CREATEVECINDEX_IMPL__
 #endif
-

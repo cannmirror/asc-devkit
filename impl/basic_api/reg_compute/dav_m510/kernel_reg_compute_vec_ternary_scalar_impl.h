@@ -31,7 +31,7 @@ template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMo
 __simd_callee__ inline void AxpyImpl(S& dstReg, S& srcReg, const U scalarValue, MaskReg& mask)
 {
     using ActualT = typename S::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, half, float, uint64_t, int64_t>(),
                   "current Axpy data type is not supported on current device!");
     static_assert(SupportType<U, half, float, uint64_t, int64_t>(),
@@ -56,4 +56,3 @@ __simd_callee__ inline void AxpyImpl(S& dstReg, S& srcReg, const U scalarValue, 
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_VEC_TERNARY_SCALAR_IMPL__
 #endif
-
