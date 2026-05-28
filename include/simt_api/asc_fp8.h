@@ -61,7 +61,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline __asc_fp8x2_storage_t
 __asc_cvt_float2_to_fp8x2(const float2 x, const __asc_saturation_t saturate,
                           const __asc_fp8_interpretation_t fp8_interpretation);
 
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
 #include "impl/simt_api/asc_fp8_impl.h"
+#endif
 
 #endif
 
