@@ -10,7 +10,7 @@
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #warning                                                                                                               \
-    "impl/tensor_api/arch/cube/l1_to_ub/npu_arch_3510/instruction.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+    "impl/tensor_api/arch/cube/l1_to_fb/copy_impl/instruction.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
@@ -19,8 +19,8 @@
  * \file instruction.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_CUBE_L1_TO_UB_NPU_ARCH_3510_INSTRUCTION_H
-#define IMPL_TENSOR_API_ARCH_CUBE_L1_TO_UB_NPU_ARCH_3510_INSTRUCTION_H
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_L1_TO_FB_COPY_IMPL_INSTRUCTION_H
+#define IMPL_TENSOR_API_ARCH_CUBE_L1_TO_FB_COPY_IMPL_INSTRUCTION_H
 
 #include "impl/tensor_api/tensor/pointer_pattern.h"
 #include "impl/tensor_api/tensor/tensor_impl.h"
@@ -29,24 +29,27 @@
 namespace AscendC {
 namespace Te {
 
-class CopyCbufToUbufInstr {
+struct CopyL12FBTrait {};
+
+class CopyL12FBInstr {
 public:
     template <typename T, typename U, typename... Params>
     __aicore__ inline static void DataCopy(const T& dst, const U& src, const Params&... params)
-    { CopyCbufToUbuf(dst.Data().Get(), src.Data().Get(), params...); }
+    {
+        CopyL12FB(dst.Data().Get(), src.Data().Get(), params...);
+    }
 
 private:
     template <typename T>
-    __aicore__ inline static void CopyCbufToUbuf(__ubuf__ T* dst, __cbuf__ T* src, const uint16_t blockCount,
-                                                 const uint16_t blockLen, const uint16_t srcStride,
-                                                 const uint16_t dstStride)
+    __aicore__ inline static void CopyL12FB(__fbuf__ T* dst, __cbuf__ T* src, uint16_t blockCount,
+        uint16_t blockLen, uint16_t srcStride, uint16_t dstStride)
     {
         if ASCEND_IS_AIV {
             return;
         }
 
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            asc_copy_l12ub(dst, src, 0, blockCount, blockLen, srcStride, dstStride);
+            asc_copy_l12fb(dst, src, blockCount, blockLen, srcStride, dstStride);
         }
     }
 };
@@ -54,7 +57,7 @@ private:
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ARCH_CUBE_L1_TO_UB_NPU_ARCH_3510_INSTRUCTION_H
+#endif // IMPL_TENSOR_API_ARCH_CUBE_L1_TO_FB_COPY_IMPL_INSTRUCTION_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

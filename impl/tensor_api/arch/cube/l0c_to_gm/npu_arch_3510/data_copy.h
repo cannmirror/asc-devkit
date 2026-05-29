@@ -182,7 +182,7 @@ private:
         auto coord = MakeCoord(_0{}, nIterIndex * MAIN_LOOP_N_SIZE_3510);
         auto shape = MakeShape(_1{}, calNSize);
         auto tileSrc = src.Slice(coord, shape);
-        DataCopyL12FB3510::Run<DEFAULT_COPY_L1_FB_TRAIT>(dst, tileSrc);
+        CopyL12FBND::Run<DEFAULT_COPY_L1_FB_TRAIT>(dst, tileSrc);
         SetFpc(dstAddr);
     }
 
