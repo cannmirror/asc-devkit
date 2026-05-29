@@ -9,24 +9,14 @@
 */
 
 if (typeof document !== 'undefined') {
-  function initCodeCopy() {
-    document.querySelectorAll('.code-block .copy-btn').forEach(btn => {
-      if (btn.dataset.bound) return
-      btn.dataset.bound = '1'
-      btn.addEventListener('click', () => {
-        const pre = btn.closest('.code-block').querySelector('pre')
-        if (!pre) return
-        navigator.clipboard.writeText(pre.textContent).then(() => {
-          btn.classList.add('copied')
-          setTimeout(() => btn.classList.remove('copied'), 2000)
-        })
-      })
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.code-block .copy-btn')
+    if (!btn) return
+    const pre = btn.closest('.code-block').querySelector('pre')
+    if (!pre) return
+    navigator.clipboard.writeText(pre.textContent).then(() => {
+      btn.classList.add('copied')
+      setTimeout(() => btn.classList.remove('copied'), 2000)
     })
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initCodeCopy)
-  } else {
-    initCodeCopy()
-  }
+  })
 }

@@ -1,0 +1,160 @@
+interface PagefindResult {
+  url: string
+  content: string
+  word_count: number
+  filters: Filters
+  meta: Meta
+  anchors: Anchor[]
+  weighted_locations: WeightedLocation[]
+  locations: number[]
+  raw_content: string
+  raw_url: string
+  excerpt: string
+  sub_results: SubResult[]
+}
+
+interface SubResult {
+  title: string
+  url: string
+  anchor: Anchor
+  weighted_locations: WeightedLocation[]
+  locations: number[]
+  excerpt: string
+}
+
+interface WeightedLocation {
+  weight: number
+  balanced_score: number
+  location: number
+}
+
+interface Anchor {
+  element: string
+  id: string
+  text: string
+  location: number
+}
+
+interface Meta {
+  image_alt: string
+  title: string
+  image: string
+  base64: string
+  date?: string
+}
+
+interface Filters {
+}
+
+function decodeBase64AndDeserialize(base64String: string) {
+  if (!base64String) {
+    return {}
+  }
+  try {
+    const serialized = decodeURIComponent(atob(base64String))
+    const obj = JSON.parse(serialized)
+    return obj
+  }
+  catch {
+    return {}
+  }
+}
+
+export function formatPagefindResult(result: PagefindResult, count = 1) {
+  const { sub_results: subResults, anchors, weighted_locations: weightedLocations } = result
+  weightedLocations.sort((a, b) => {
+    if (b.weight === a.weight) {
+      return a.location - b.location
+    }
+    return b.weight - a.weight
+  })
+
+  const subs: SubResult[] = []
+  for (const { location } of weightedLocations) {
+    const filterData = subResults.filter((sub) => {
+      const { locations } = sub
+      const [min] = locations || []
+      if (typeof min !== 'number') {
+        return false
+      }
+      const max = locations.length === 1 ? Number.POSITIVE_INFINITY : locations[locations.length - 1]
+      return min <= location && location <= max
+    })
+
+    const sub = filterData.reduce((prev, curr) => {
+      if (!prev) {
+        return curr
+      }
+      return prev.locations.length > curr.locations.length ? prev : curr
+    }, null as SubResult | null)
+
+    if (!sub) {
+      continue
+    }
+
+    subs.push(sub)
+
+    if (subs.length >= count) {
+      break
+    }
+  }
+
+  subs.sort((a, b) => {
+    const [minA] = a.locations || []
+    const [minB] = b.locations || []
+    if (!minA || !minB) {
+      return 0
+    }
+    return minA - minB
+  })
+
+  const filterMap = new Map<string, any>()
+  return subs.map(sub => parseSubResult(sub, anchors, result))
+    .filter((v) => {
+      if (filterMap.has(v.meta.title)) {
+        return false
+      }
+      filterMap.set(v.meta.title, v)
+      return true
+    })
+}
+
+function parseSubResult(sub: SubResult, anchors: Anchor[], result: PagefindResult) {
+  const route = sub?.url || result?.url
+  const description = sub?.excerpt || result?.excerpt
+
+  const locationsAnchors = anchors?.filter((a) => {
+    if (!sub)
+      return false
+    try {
+      return a.location <= sub.anchor.location && a.element <= sub.anchor.element
+    }
+    catch {
+      return false
+    }
+  }) || []
+  locationsAnchors.reverse()
+
+  const filteredAnchors = locationsAnchors.reduce((prev, curr) => {
+    const isHave = prev.some(p => p.element === curr.element)
+    if (isHave) {
+      return prev
+    }
+    prev.unshift(curr)
+    return prev
+  }, [] as Anchor[])
+  const title = filteredAnchors.length ? filteredAnchors.map(t => t.text.trim()).filter(v => !!v).join(' > ') : result.meta.title
+
+  const { base64, date, ...otherMeta } = result.meta
+  return {
+    route,
+    meta: {
+      date: date ? +date : undefined,
+      ...decodeBase64AndDeserialize(base64),
+      ...otherMeta,
+      title,
+      description,
+    },
+    result
+  }
+}

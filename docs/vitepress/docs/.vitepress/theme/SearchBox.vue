@@ -8,19 +8,38 @@ const loading = ref(false)
 const showResults = ref(false)
 const selectedIndex = ref(-1)
 
+function getDirInfo(url) {
+  const parts = url.replace(/\/$/, '').split('/').filter(Boolean)
+  if (parts.length <= 1) return []
+  const routePrefixes = ['api', 'guide']
+  let start = routePrefixes.includes(parts[0]) ? 1 : 0
+  return parts.slice(start, -1).slice(-3)
+}
+
+let pagefindReady = false
+let pagefindPromise = null
+
 function initPagefind() {
-  try {
-    if (window.__pagefind__) return
-    const script = document.createElement('script')
-    script.src = '/pagefind/pagefind.js'
-    script.onload = () => {
-      if (window.Pagefind) {
-        window.Pagefind.init()
+  if (pagefindReady) return
+  if (pagefindPromise) return pagefindPromise
+  pagefindPromise = new Promise((resolve) => {
+    try {
+      const script = document.createElement('script')
+      script.src = '/pagefind/pagefind.js'
+      script.onload = async () => {
+        try {
+          if (window.Pagefind) {
+            await window.Pagefind.init()
+            pagefindReady = true
+          }
+        } catch {}
+        resolve()
       }
-    }
-    document.head.appendChild(script)
-    window.__pagefind__ = true
-  } catch {}
+      script.onerror = () => resolve()
+      document.head.appendChild(script)
+    } catch { resolve() }
+  })
+  return pagefindPromise
 }
 
 function debounce(fn, delay) {
@@ -32,15 +51,29 @@ function debounce(fn, delay) {
 }
 
 async function doSearch(q) {
-  if (!window.Pagefind || !q.trim()) {
+  if (!q.trim()) {
     results.value = []
     return
   }
+  if (!pagefindReady) {
+    await initPagefind()
+    if (!pagefindReady) return
+  }
   loading.value = true
   try {
-    const p = await window.Pagefind.init()
-    const search = await p.search(q.trim())
-    results.value = search.results.slice(0, 10)
+    const search = await window.Pagefind.search(q.trim())
+    const mapped = []
+    for (const r of search.results.slice(0, 24)) {
+      const data = await r.data()
+      mapped.push({
+        id: r.id,
+        url: data.url,
+        excerpt: data.excerpt,
+        meta: data.meta || {},
+        breadcrumbs: getDirInfo(data.url),
+      })
+    }
+    results.value = mapped
     selectedIndex.value = -1
   } catch {
     results.value = []
@@ -52,7 +85,7 @@ async function doSearch(q) {
 const debouncedSearch = debounce(doSearch, 200)
 
 function onInput() {
-  showResults.value = !!query.value.trim()
+  showResults.value = true
   debouncedSearch(query.value)
 }
 
@@ -66,7 +99,7 @@ function onKeyDown(e) {
     selectedIndex.value = selectedIndex.value <= 0 ? results.value.length - 1 : selectedIndex.value - 1
   } else if (e.key === 'Enter' && selectedIndex.value >= 0) {
     const r = results.value[selectedIndex.value]
-    if (r) window.location.href = r.data.url
+    if (r) window.location.href = r.url
     showResults.value = false
     query.value = ''
   } else if (e.key === 'Escape') {
@@ -110,9 +143,14 @@ onUnmounted(() => {
         :key="r.id"
         :class="{ selected: i === selectedIndex }"
       >
-        <a :href="r.data.url" @click="showResults = false; query = ''">
-          <span class="result-title">{{ r.data.meta?.title || r.data.url }}</span>
-          <span class="result-excerpt" v-html="r.data.excerpt"></span>
+        <a :href="r.url" @click="showResults = false; query = ''">
+          <div v-if="r.breadcrumbs.length" class="result-breadcrumbs">
+            <span v-for="(seg, si) in r.breadcrumbs" :key="si" class="result-crumb">
+              {{ seg }}
+            </span>
+          </div>
+          <div class="result-title">{{ r.meta?.title || r.url }}</div>
+          <div v-if="r.excerpt" class="result-excerpt" v-html="r.excerpt" />
         </a>
       </li>
     </ul>
@@ -167,8 +205,8 @@ onUnmounted(() => {
   position: absolute;
   top: 100%;
   left: 0;
-  min-width: 400px;
-  max-height: 400px;
+  min-width: 480px;
+  max-height: 480px;
   overflow-y: auto;
   background: var(--vp-c-bg-soft);
   border: 1px solid var(--vp-c-divider);
@@ -197,19 +235,37 @@ onUnmounted(() => {
   background: var(--vp-c-bg-alt);
 }
 
-.result-title {
-  display: block;
-  font-size: 14px;
-  font-weight: 500;
+.result-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
   margin-bottom: 2px;
-  color: var(--vp-c-brand);
+  font-size: 12px;
+  color: var(--vp-c-text-2);
+  line-height: 1.4;
+}
+
+.result-crumb:not(:last-child)::after {
+  content: ' \203A ';
+  opacity: 0.5;
+}
+
+.result-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+  line-height: 1.4;
 }
 
 .result-excerpt {
-  display: block;
+  margin-top: 2px;
   font-size: 12px;
   color: var(--vp-c-text-2);
   line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .result-excerpt :deep(mark) {

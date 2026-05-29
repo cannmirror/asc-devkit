@@ -2,7 +2,44 @@ import { defineConfig } from 'vitepress'
 import { existsSync, readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { load as cheerioLoad } from 'cheerio'
+import { pagefindPlugin, chineseSearchOptimize } from 'vitepress-plugin-pagefind'
 import sidebars from './sidebar.mjs'
+
+const docsRoot = resolve(import.meta.dirname, '..')
+
+function filterEmptyPages(items, docsRoot) {
+  return items.reduce((acc, item) => {
+    const entry = { ...item }
+    if (item.items) {
+      entry.items = filterEmptyPages(item.items, docsRoot)
+    }
+    if (item.items && entry.items.length > 0) {
+      acc.push(entry)
+      return acc
+    }
+    if (item.link) {
+      const relPath = item.link.startsWith('/') ? item.link.slice(1) : item.link
+      const headerPath = resolve(docsRoot, relPath + '.md.header')
+      if (!existsSync(headerPath)) {
+        acc.push(entry)
+        return acc
+      }
+      try {
+        const headers = JSON.parse(readFileSync(headerPath, 'utf-8'))
+        if (headers.length === 0) return acc
+      } catch {
+        return acc
+      }
+    }
+    acc.push(entry)
+    return acc
+  }, [])
+}
+
+const filteredSidebars = {}
+for (const [key, items] of Object.entries(sidebars)) {
+  filteredSidebars[key] = filterEmptyPages(items, docsRoot)
+}
 
 function extractBodyContent(html) {
   const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i)
@@ -84,6 +121,12 @@ function placeholderPlugin() {
 
 function fixCannFilterTags(src) {
   if (!/<(cann-filter|term|ph|__gm__|__ubuf__)\b/i.test(src)) return src
+
+  src = src.replace(
+    /<cann-filter\s+npu-type="(\w+)"\s*>([\s\S]*?)<\/cann-filter>/gi,
+    (_, type, content) => `\nCANNFILTER_DIV_${type}_OPEN\n${content}\nCANNFILTER_DIV_${type}_CLOSE\n`
+  )
+
   return src
     .replace(/<\/?cann-filter\b[^>]*>/gi, '')
     .replace(/<(term|ph|__gm__|__ubuf__)\b[^>]*>([\s\S]*?)<\/\1>/gis, '$2')
@@ -223,43 +266,55 @@ export default defineConfig({
   lastUpdated: false,
 
   markdown: {
-    html: false,
     config(md) {
       const originalRender = md.render.bind(md)
-      md.render = function (src, env) {
-        if (src.includes('<!-- RAW_HTML -->')) {
-          const htmlContent = src.replace(/^.*<!-- RAW_HTML -->\s*/s, '').replace(/\s*$/, '')
-          let html = addHeadingAnchors(htmlContent)
-          html = escapeVueInterpolations(html)
-          return `<div v-pre>\n${html}\n</div>`
-        }
-
+      const originalRenderAsync = md.renderAsync ? md.renderAsync.bind(md) : null
+      const processSource = (src) => {
         src = fixCannFilterTags(src)
-
         if (src.startsWith('    >') || src.includes('\n    >')) {
           src = fixIndentedBlockquotes(src)
         }
-
         if (src.includes('<span') && src.includes('|')) {
           src = fixSpanCrossingTableCells(src)
         }
-
         if (src.includes('<table')) {
           src = convertHtmlTablesToMarkdown(src)
         }
-
-        let html = originalRender(src, env)
-
+        return src
+      }
+      const processHtml = (html) => {
         if (html.includes('CANNFILTER_DIV_')) {
           html = html.replace(/<p>\s*CANNFILTER_DIV_(\w+)_OPEN\s*<\/p>/g, '<div data-filter="$1">')
           html = html.replace(/<p>\s*CANNFILTER_DIV_(\w+)_CLOSE\s*<\/p>/g, '</div>')
         }
-
         if (html.includes('{{')) {
           html = escapeVueInterpolations(html)
         }
-
+        return html
+      }
+      const renderFn = (src, env) => {
+        if (src.includes('<!-- RAW_HTML -->')) {
+          const htmlContent = src.replace(/^.*<!-- RAW_HTML -->\s*/s, '').replace(/\s*$/, '')
+          let html = addHeadingAnchors(htmlContent)
+          html = html.replace(
+            /<cann-filter\s+npu-type="(\w+)"\s*>([\s\S]*?)<\/cann-filter>/gi,
+            '<div data-filter="$1">$2</div>'
+          )
+          html = escapeVueInterpolations(html)
+          return `<div v-pre>\n${html}\n</div>`
+        }
+        src = processSource(src)
+        let html = originalRender(src, env)
+        html = processHtml(html)
         return `<div v-pre>${html}</div>`
+      }
+      md.render = function (src, env) {
+        return renderFn(src, env)
+      }
+      if (originalRenderAsync) {
+        md.renderAsync = async function (src, env) {
+          return renderFn(src, env)
+        }
       }
     },
   },
@@ -267,23 +322,41 @@ export default defineConfig({
   transformPageData(pageData) {
     const cache = loadHeaderCache(pageData.filePath)
     if (cache && cache.length > 0) {
-      pageData.headers = cache
+      pageData.outlineHeaders = cache
     }
   },
 
+  buildConcurrency: 1,
+
   vite: {
+    sourcemap: false,
     resolve: {
       preserveSymlinks: true,
     },
-    plugins: [htmlAsMdPlugin(), placeholderPlugin()],
-  },
-
-  vue: {
-    template: {
-      compilerOptions: {
-        onError: (error) => {
-          if (error.code === 2) return
-          throw error
+    plugins: [htmlAsMdPlugin(), placeholderPlugin(), pagefindPlugin({
+      btnPlaceholder: '搜索',
+      placeholder: '搜索文档',
+      emptyText: '未找到结果',
+      heading: '共: {{searchResult}} 条结果',
+      customSearchQuery: chineseSearchOptimize,
+    }), {
+      name: 'vitepress-override-search-vue',
+      enforce: 'post',
+      config: () => ({
+        resolve: {
+          alias: {
+            './VPNavBarSearch.vue': resolve(import.meta.dirname, 'theme', 'Search.vue'),
+          },
+        },
+      }),
+    }],
+    vue: {
+      template: {
+        compilerOptions: {
+          onError: (error) => {
+            if (error.code === 2) return
+            throw error
+          },
         },
       },
     },
@@ -296,57 +369,13 @@ export default defineConfig({
       { text: 'Ascend C API', link: '/api/Ascend-C-API列表' },
     ],
 
-    sidebar: sidebars,
-
     search: {
-      provider: 'local',
-      options: {
-        _render(src, env, md) {
-          if (!src || !src.trim()) {
-            const htmlPath = env.path.replace(/\.md$/, '.html')
-            if (existsSync(htmlPath)) {
-              const raw = readFileSync(htmlPath, 'utf-8')
-              const seen = {}
-              const headingRegex = /<h([23456])([^>]*)>(.*?)<\/h\1>/gi
-              return raw.replace(headingRegex, (_, level, attrs, text) => {
-                const clean = text.replace(/<[^>]+>/g, '').trim()
-                let id = clean.replace(/\s+/g, '-')
-                if (seen[id]) id = `${id}-${seen[id]++}`
-                else seen[id] = 1
-                const inner = `<a class="header-anchor" href="#${id}">\u00b6</a>`
-                const existing = text.match(/<a[^>]*>.*?<\/a>/)
-                if (existing) return `<h${level}${attrs}>${text}${inner}</h${level}>`
-                return `<h${level}${attrs}>${clean}${inner}</h${level}>`
-              })
-            }
-            return ''
-          }
-          const html = md.render(src, env)
-          if (!src.includes('<!-- RAW_HTML -->')) return html
-          const seen = {}
-          const headingRegex = /<h([23456])([^>]*)>(.*?)<\/h\1>/gi
-          return html.replace(headingRegex, (_, level, attrs, text) => {
-            if (text.includes('header-anchor')) return `<h${level}${attrs}>${text}</h${level}>`
-            const clean = text.replace(/<[^>]+>/g, '').trim()
-            let id = clean.replace(/\s+/g, '-')
-            if (seen[id]) id = `${id}-${seen[id]++}`
-            else seen[id] = 1
-            const existing = text.match(/<a[^>]*>.*?<\/a>/)
-            if (existing) return `<h${level}${attrs}>${text}<a class="header-anchor" href="#${id}">\u00b6</a></h${level}>`
-            return `<h${level}${attrs}>${clean}<a class="header-anchor" href="#${id}">\u00b6</a></h${level}>`
-          })
-        },
-        translations: {
-          button: { buttonText: '搜索文档' },
-          modal: { noResultsText: '未找到结果', footer: { selectText: '选择', navigateText: '切换' } },
-        },
-      },
+      provider: 'algolia',
     },
 
-    outline: {
-      level: [2, 3],
-      label: '本页内容',
-    },
+    sidebar: filteredSidebars,
+
+    outline: false,
 
     docFooter: {
       prev: '上一页',

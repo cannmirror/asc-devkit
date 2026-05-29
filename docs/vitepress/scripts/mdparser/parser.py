@@ -175,16 +175,6 @@ _TEMPLATE = """<!DOCTYPE html>
 <article class="markdown-body">
 {body}
 </article>
-<script>
-function copyCode(btn) {
-  const pre = btn.closest('.code-block').querySelector('pre');
-  const text = pre.textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    btn.classList.add('copied');
-    setTimeout(() => btn.classList.remove('copied'), 2000);
-  });
-}
-</script>
 </body>
 </html>
 """
@@ -355,7 +345,7 @@ def _highlight_code(html: str) -> str:
         code = m.group(2)
         text = html_mod.unescape(code)
         if not lang:
-            lang = "cpp"
+            lang = "text"
         label = _PYGMENTS_LANG_LABELS.get(lang.lower(), lang.capitalize())
         try:
             lexer = get_lexer_by_name(lang, stripall=True)
@@ -366,7 +356,7 @@ def _highlight_code(html: str) -> str:
         return (
             f'<div class="code-block">'
             f'<div class="code-header"><span class="lang-label">{label}</span>'
-            f'<button class="copy-btn" onclick="copyCode(this)" title="复制代码">'
+            f'<button class="copy-btn" title="复制代码">'
             f'<svg width="16" height="16" viewBox="0 0 16 16">'
             f'<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5'
             f"a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25"

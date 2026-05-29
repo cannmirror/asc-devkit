@@ -6,6 +6,7 @@ docs/.vitepress/.temp
 docs/api
 docs/guide
 docs/figures
+docs/public
 build-output*.log
 *.zip
 .stubs-manifest.json

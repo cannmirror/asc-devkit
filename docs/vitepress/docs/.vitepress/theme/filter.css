@@ -8,6 +8,13 @@
   visibility: hidden;
 }
 
+.filter-label {
+  font-size: 12px;
+  color: var(--vp-c-text-2);
+  margin-right: 6px;
+  white-space: nowrap;
+}
+
 .filter-select {
   border: 1px solid var(--vp-c-divider);
   border-radius: 4px;
@@ -66,3 +73,5 @@
 .home-layout .VPFeatures .item:last-child {
   grid-column: 2 / 4;
 }
+
+

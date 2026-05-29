@@ -1,3 +1,18 @@
+function removeSelfRefItems(items) {
+  return items.map(item => {
+    const entry = { ...item }
+    if (entry.items && entry.items.length > 0) {
+      const children = removeSelfRefItems(entry.items)
+      if (children.length > 0 && children[0].text === entry.text && children[0].link) {
+        entry.items = children.slice(1)
+      } else {
+        entry.items = children
+      }
+    }
+    return entry
+  })
+}
+
 function addNumbering(items, prefix = '') {
   return items.map((item, i) => {
     const num = prefix ? `${prefix}${i + 1}.` : `${i + 1}.`
@@ -10,7 +25,7 @@ function addNumbering(items, prefix = '') {
 }
 
 export default {
-  "/guide/": addNumbering([
+  "/guide/": addNumbering(removeSelfRefItems([
   {
     "text": "入门教程",
     "collapsed": true,
@@ -1451,10 +1466,10 @@ export default {
       }
     ]
   }
-]),
+])),
 
 
-   "/api/": addNumbering([
+   "/api/": addNumbering(removeSelfRefItems([
     {
       "text": "Ascend C API列表",
       "link": "/api/Ascend-C-API列表"
@@ -10371,5 +10386,5 @@ export default {
       "text": "README",
       "link": "/api/README"
     }
-  ])
+  ]))
 }
