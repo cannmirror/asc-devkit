@@ -103,7 +103,7 @@ private:
         AscendC::DataCopyPadParams padParams{false, 0, 0, 0};
 
         for (uint32_t mBlockIdx = 0; mBlockIdx < fullMBlockCount; mBlockIdx++) {
-            // offsetAddr 为 true 时，在每组 numBlocks 个 M 块内按 blockIdx 轮转访问顺序。
+            // M 方向先按 numBlocks 切成大块，offsetAddr 为 true 时在每组 numBlocks 个大块内轮转访问顺序。
             uint32_t blockGroupStart = (mBlockIdx / numBlocks) * numBlocks;
             uint32_t curMBlockIdx = offsetAddr ? blockGroupStart + (mBlockIdx + blockIdx) % numBlocks : mBlockIdx;
             uint32_t mStart = curMBlockIdx * singleCoreM;
