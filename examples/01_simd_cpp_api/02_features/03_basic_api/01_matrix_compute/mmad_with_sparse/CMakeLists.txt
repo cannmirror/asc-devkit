@@ -12,7 +12,11 @@
 cmake_minimum_required(VERSION 3.16)
 
 # 仅支持dav-2201
-set(CMAKE_ASC_ARCHITECTURES "dav-2201")
+set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "NPU architecture: dav-2201")
+
+if(NOT CMAKE_ASC_ARCHITECTURES STREQUAL "dav-2201")
+    message(FATAL_ERROR "mmad_with_sparse only supports dav-2201, but got ${CMAKE_ASC_ARCHITECTURES}")
+endif()
 
 find_package(ASC REQUIRED)
 

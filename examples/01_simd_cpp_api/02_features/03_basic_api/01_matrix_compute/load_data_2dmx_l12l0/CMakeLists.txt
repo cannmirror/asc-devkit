@@ -10,8 +10,11 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-set(CMAKE_ASC_RUN_MODE "npu" CACHE STRING "Run mode: npu, cpu, sim")
 set(CMAKE_ASC_ARCHITECTURES "dav-3510" CACHE STRING "NPU architecture: dav-3510")
+
+if(NOT CMAKE_ASC_ARCHITECTURES STREQUAL "dav-3510")
+    message(FATAL_ERROR "load_data_2dmx_l12l0 only supports dav-3510, but got ${CMAKE_ASC_ARCHITECTURES}")
+endif()
 
 find_package(ASC REQUIRED)
 
@@ -24,15 +27,11 @@ add_executable(demo
 target_link_libraries(demo PRIVATE
 )
 
+set(SCENARIO_NUM "1" CACHE STRING "Scene number (1-6)")
 message(STATUS "[INFO] SCENARIO_NUM is ${SCENARIO_NUM}")
 
-if(NOT DEFINED SCENARIO_NUM)
-    message(FATAL_ERROR "SCENARIO_NUM is not set. Please specify -DSCENARIO_NUM=1/2/3/4/5/6")
-endif()
-
-set(VALID_SCENARIOS 1 2 3 4 5 6)
-if(NOT SCENARIO_NUM IN_LIST VALID_SCENARIOS)
-    message(FATAL_ERROR "SCENARIO_NUM must be 1,2,3,4,5,6, got: ${SCENARIO_NUM}")
+if(NOT SCENARIO_NUM MATCHES "^[1-6]$")
+    message(FATAL_ERROR "SCENARIO_NUM must be 1, 2, 3, 4, 5 or 6, but got ${SCENARIO_NUM}")
 endif()
 
 target_compile_definitions(demo PRIVATE

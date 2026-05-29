@@ -2,17 +2,15 @@
 
 ## 概述
 
-本样例介绍了输入为ND格式，B8 / B16 / B32输入数据类型（具体以int8_t / half / float为例），左、右矩阵转置、不转置组合共 7 种矩阵乘法场景中使用 `LoadData` 接口配合LoadData2DParamsV2结构体参数(本样例中简称：`Load2Dv2`接口)将矩阵数据从 L1 搬运到 L0A/L0B 的方法。
-- 使用 `LoadData2DParamsV2` 参数结构体
-- L0A 数据排布为 **Nz 格式**
-- L0B 数据排布为 **Zn 格式**
-- 支持转置功能，通过 `ifTranspose` 参数控制
-- 支持 int8_t、half、float 三种数据类型
+本样例展示如何调用`LoadData`接口并配置`LoadData2DParamsV2`结构体参数（本样例中简称：`Load2Dv2`接口），将A / B矩阵从L1搬运到L0A / L0B。
+
+样例覆盖int8_t、half、float三种输入数据类型，以及A / B矩阵转置和不转置输入场景。L0A数据排布为Nz格式，L0B数据排布为Zn格式。
 
 ## 支持的产品
+
 - Ascend 950PR/Ascend 950DT
 
-## 目录结构
+## 目录结构介绍
 
 ```
 ├── load_data_2dv2_l12l0
@@ -27,155 +25,137 @@
 
 ## 样例描述
 
-### 样例功能
+### 1. 整体流程
 
 样例整体流程如下：
 
-```
+```text
 GM(ND) -> L1(Nz) -> L0A(Nz)/L0B(Zn) -> L0C(Nz) -> GM(ND)
-       │         │                  │          │       
-    DataCopy  Load2Dv2            Mmad        Fixpipe 
+       │         │                  │          │
+    DataCopy  Load2Dv2            Mmad        Fixpipe
 ```
 
 **步骤详解**：
 
-1. **GM → L1**：使用 `DataCopy` 实现 ND 到 Nz 格式转换
-2. **L1 → L0A/L0B**：使用 `Load2Dv2` 接口搬运，通过 `ifTranspose` 控制转置
-3. **矩阵乘**：使用 `Mmad` 接口执行矩阵乘法
-4. **L0C → GM**：使用 `Fixpipe` 接口搬出结果
+1. **GM -> L1**：使用`DataCopy`实现ND到Nz格式转换。
+2. **L1 -> L0A / L0B**：使用`Load2Dv2`接口并配置`LoadData2DParamsV2`结构体参数，通过`ifTranspose`控制是否转置。
+3. **矩阵乘**：使用`Mmad`接口执行矩阵乘法。
+4. **L0C -> GM**：使用`Fixpipe`接口搬出结果。
 
+本样例固定矩阵乘规格为`[m, n, k] = [40, 50, 70]`，输出C矩阵为`[40, 50]`，ND格式。核函数通过`scenarioNum`选择不同场景。
 
-所有场景基于相同的矩阵乘规格：[m, n, k] = [40, 50, 70]，核函数名称为"KernelLoadDataL12L0Load2Dv2"。以参数scenarioNum来代表上述7种场景，scenarioNum不同取值对应的含义如下，如下[表1](#表1)所示：<br>
+### 2. 场景关键差异
+
+各场景的输入shape、转置标志和L1 -> L0搬运方式见[表1](#表1)。
 
 <a name="表1"></a>
-<table border="2">
+<table border="2" align="center">
 <caption style="font-weight: normal;">
-    <span style="font-weight: bold; font-size: 1.2em;">📌 表1：scenarioNum不同取值的含义</span>
+    <span style="font-weight: bold; font-size: 1.2em;">📌 表1：scenarioNum不同取值的含义</span></caption>
   <tr>
     <td ><span style="font-weight: bold;">scenarioNum</span></td>
     <td><span style="font-weight: bold;">输入数据类型</span></td>
     <td><span style="font-weight: bold;">输出数据类型</span></td>
+    <td><span style="font-weight: bold;">输入shape</span></td>
     <td><span style="font-weight: bold;">isAtranspose</span></td>
     <td><span style="font-weight: bold;">isBtranspose</span></td>
     <td><span style="font-weight: bold;">是否多搬多算</span></td>
-    <td><span style="font-weight: bold;">L1->L0调用接口方式</span></td>
+    <td><span style="font-weight: bold;">L1 -> L0搬运方式</span></td>
   </tr>
   <tr>
     <td><span style="font-weight: bold;">1</span></td>
     <td rowspan="2" >int8_t</td>
     <td rowspan="2" >int32_t</td>
+    <td>A [40, 70]<br>B [50, 70]</td>
     <td>false</td>
     <td>true</td>
     <td>否</td>
-    <td>Load2Dv2</td>
+    <td><code>Load2Dv2</code></td>
   </tr>
   <tr>
     <td><span style="font-weight: bold;">2</span></td>
+    <td>A [70, 40]<br>B [70, 50]</td>
     <td>true</td>
     <td>false</td>
     <td>是</td>
-    <td>Load2Dv2</td>
+    <td><code>Load2Dv2</code></td>
   </tr>
   <tr>
     <td><span style="font-weight: bold;">3</span></td>
     <td rowspan="2" >half</td>
     <td rowspan="2" >float</td>
+    <td>A [40, 70]<br>B [50, 70]</td>
     <td>false</td>
     <td>true</td>
     <td>否</td>
-    <td>Load2Dv2</td>
+    <td><code>Load2Dv2</code></td>
   </tr>
   <tr>
     <td><span style="font-weight: bold;">4</span></td>
+    <td>A [70, 40]<br>B [70, 50]</td>
     <td>true</td>
     <td>false</td>
     <td>否</td>
-    <td>Load2Dv2</td>
+    <td><code>Load2Dv2</code></td>
   </tr>
   <tr>
     <td><span style="font-weight: bold;">5</span></td>
     <td rowspan="2" >float</td>
     <td rowspan="2" >float</td>
+    <td>A [40, 70]<br>B [50, 70]</td>
     <td>false</td>
     <td>true</td>
     <td>否</td>
-    <td>Load2Dv2</td>
+    <td><code>Load2Dv2</code></td>
   </tr>
   <tr>
     <td><span style="font-weight: bold;">6</span></td>
+    <td>A [70, 40]<br>B [70, 50]</td>
     <td>true</td>
     <td>false</td>
     <td>否</td>
-    <td>Load2Dv2</td>
+    <td><code>Load2Dv2</code></td>
   </tr>
   <tr>
     <td><span style="font-weight: bold;">7</span></td>
     <td rowspan="1" >int8_t</td>
     <td rowspan="1" >int32_t</td>
+    <td>A [70, 40]<br>B [70, 50]</td>
     <td>true</td>
     <td>false</td>
     <td>否</td>
-    <td>for循环+Load2Dv2</td>
+    <td>for循环 + <code>Load2Dv2</code></td>
   </tr>
 </table>
 
-注：scenarioNum取值7时，L1->L0A的搬运采用for循环+Load2Dv2, 其余场景均调用一次Load2dV2。
+下面按搬运模式说明场景关键差异。
 
+**`Load2Dv2`不转置搬运：场景1 / 3 / 5**
 
-**场景1：输入int8_t数据类型，isAtranspose=False，isBtranspose=True**
-- 输入A [40, 70]，int8_t类型，ND格式; B [50, 70]，int8_t类型，ND格式;
-- 输出C [40, 50]，int32_t类型，ND格式；
-- 实现：使用一次Load2DV2将A矩阵从L1搬运到L0A，使用一次Load2DV2将B矩阵从L1搬运到L0B;
-- 说明：L1->L0A不需要转置，通过配置mStep、kStep、srcStride、srcStride等参数完成A矩阵L1 -> L0A的搬运；同理，L1->L0B不需要转置，B矩阵通过配置Step、kStep、srcStride、srcStride等参数完成L1 -> L0B的搬运及大分形排布格式的变化。
+- A矩阵不转置输入`[m, k]`，B矩阵转置输入`[n, k]`。
+- L1 -> L0A / L0B均不需要转置，`loadDataParams.ifTranspose = false`。
 
-**场景2：输入int8_t数据类型，isAtranspose=True，isBtranspose=False**
-- 输入A [70, 40]，int8_t类型，ND格式; B [70, 50]，int8_t类型，ND格式;
-- 输出C [40, 50]，int32_t类型，ND格式;
-- 实现：使用一次Load2DV2将A矩阵从L1搬运到L0A，使用一次Load2DV2将B矩阵从L1搬运到L0B;
-- 说明：A矩阵调用一次Load2DV2指令，通过配置mStep、kStep、srcStride、srcStride，并配置ifTranspose为true，完成A矩阵从L1到L0A的搬运，搬运过程中会伴随转置；B矩阵调用一次Load2DV2指令，配置mStep、kStep、srcStride、srcStride，并配置ifTranspose为true，完成B矩阵从L1到L0B的搬运，搬运过程中会伴随转置。该场景m方向多搬多算脏数据分形，在L0C搬出到GM时，通过fixpipeParam.mSize = m来保证无效数据参与计算的结果不会被搬出。
+**`Load2Dv2`转置搬运，单次调用：场景2 / 4 / 6**
 
-**场景3：输入half数据类型，isAtranspose=False，isBtranspose=True**
-- 输入A [40, 70]，half类型，ND格式; B [50, 70]，half类型，ND格式;
-- 输出C [40, 50]，float类型，ND格式；
-- 实现：使用一次Load2DV2将A矩阵从L1搬运到L0A，使用一次Load2DV2将B矩阵从L1搬运到L0B;
-- 说明：L1->L0A不需要转置，通过配置mStep、kStep、srcStride、srcStride等参数完成A矩阵L1 -> L0A的搬运；同理，L1->L0B不需要转置，B矩阵通过配置Step、kStep、srcStride、srcStride等参数完成L1 -> L0B的搬运及大分形排布格式的变化。
+- A矩阵转置输入`[k, m]`，B矩阵不转置输入`[k, n]`。
+- L1 -> L0A / L0B均需要转置，`loadDataParams.ifTranspose = true`。
+- 场景2中，int8_t转置单次搬运会导致m方向多搬多算脏数据分形，`Fixpipe`搬出时通过`fixpipeParams.mSize = m`只搬出有效区域。
 
-**场景4：输入half数据类型，isAtranspose=True，isBtranspose=False**
-- 输入A [70, 40]，half类型，ND格式; B [70, 50]，half类型，ND格式;
-- 输出C [40, 50]，float类型，ND格式；
-- 实现：使用一次Load2DV2将A矩阵从L1搬运到L0A，使用一次Load2DV2将B矩阵从L1搬运到L0B;
-- 说明：A矩阵调用一次Load2DV2指令，通过配置mStep、kStep、srcStride、srcStride，并配置ifTranspose为true，完成A矩阵从L1到L0A的搬运，搬运过程中会伴随转置；B矩阵调用一次Load2DV2指令，配置mStep、kStep、srcStride、srcStride，并配置ifTranspose为true，完成B矩阵从L1到L0B的搬运，搬运过程中会伴随转置。
+**`Load2Dv2`转置搬运，for循环调用：场景7**
 
-**场景5：输入float数据类型，isAtranspose=False，isBtranspose=True**
-- 输入A [40, 70]，float类型，ND格式; B [50, 70]，float类型，ND格式;
-- 输出C [40, 50]，float类型，ND格式；
-- 实现：使用一次Load2DV2将A矩阵从L1搬运到L0A，使用一次Load2DV2将B矩阵从L1搬运到L0B;
-- 说明：L1->L0A不需要转置，通过配置mStep、kStep、srcStride、srcStride等参数完成A矩阵L1 -> L0A的搬运；同理，L1->L0B不需要转置，B矩阵通过配置Step、kStep、srcStride、srcStride等参数完成L1 -> L0B的搬运及大分形排布格式的变化。
+- 场景7与场景2同为int8_t转置输入。
+- A矩阵采用for循环调用`Load2Dv2`，在写入L0A时跳过m方向尾部脏数据分形，使矩阵计算时没有额外脏数据分形参与。
 
-**场景6：输入float数据类型，isAtranspose=True，isBtranspose=False**
-- 输入A [70, 40]，float类型，ND格式; B [70, 50]，float类型，ND格式;
-- 输出C [40, 50]，float类型，ND格式；
-- 实现：使用一次Load2DV2将A矩阵从L1搬运到L0A，使用一次Load2DV2将B矩阵从L1搬运到L0B;
-- 说明：A矩阵调用一次Load2DV2指令，通过配置mStep、kStep、srcStride、srcStride，并配置ifTranspose为true，完成A矩阵从L1到L0A的搬运，搬运过程中会伴随转置；B矩阵调用一次Load2DV2指令，配置mStep、kStep、srcStride、srcStride，并配置ifTranspose为true，完成B矩阵从L1到L0B的搬运，搬运过程中会伴随转置。
+### 3. 参数说明
 
-**场景7：输入int8_t数据类型，isAtranspose=True，isBtranspose=False**
-- 输入A [70, 40]，int8_t类型，ND格式; B [70, 50]，int8_t类型，ND格式;
-- 输出C [40, 50]，int32_t类型，ND格式;
-- 实现：使用for循环+Load2DV2将A矩阵从L1搬运到L0A，使用一次Load2DV2将B矩阵从L1搬运到L0B;
-- 说明：A矩阵沿k方向for循环，调用多次Load2DV2指令，一次从L1上搬运k轴方向上的2个分形 * m轴方向上的CeilDivision(k, fractalShape[1])个分形，通过配置mStep、kStep、srcStride、srcStride，并配置ifTranspose为true，完成A矩阵从L1到L0A的搬运，搬运过程中会伴随转置；B矩阵调用一次Load2DV2指令，配置mStep、kStep、srcStride、srcStride，并配置ifTranspose为true，完成B矩阵从L1到L0B的搬运，搬运过程中会伴随转置。该场景通过for循环配合dstStride参数在写入L0A时跳过转置时多读的m方向脏数据分形，使矩阵计算m方向没有多余脏数据分形参与计算。
+后续代码和参数说明会反复使用分形和对齐相关变量，本节先集中定义这些概念。
 
-为了方便描述，在此对后续常用概念给出定义：
- 
-（1）fractalShape: 小分形的shape为[16, 32 / sizeof(T)]，其中T表示输入数据类型。本样例涉及到数据类型的分形相关信息如[表2](#表2)。
-
-（2）fractalSize: 1个小分形包含的元素个数，具体可参考[表2](#表2)。
-
-
-（3）fractalNum: 当从L1 -> L0A/L0B需要转置时，Load2DV2接口内部会按照小方块矩阵转置，对于B8和B32数据类型fractalShape分别为[16,32]和[16,8]，都需要两个连续的小分形合并为一个方块然后转置，因此该参数表示一个方块包含几个小分形，具体可参考[表2](#表2)。
-
+- `fractalShape`：小分形的shape。B8 / B16 / B32输入数据类型的shape为`[16, 32 / sizeof(T)]`，其中`T`表示输入数据类型。本样例涉及的数据类型分形相关信息见[表2](#表2)。
+- `fractalSize`：1个小分形包含的元素个数，具体见[表2](#表2)。
+- `fractalNum`：当从L1 -> L0A / L0B需要转置时，`Load2Dv2`接口会按正方形矩阵转置。需要多个连续小分形合并为一个正方形矩阵时，`fractalNum`表示该正方形矩阵包含的小分形个数，具体见[表2](#表2)。
 
 <a name="表2"></a>
-<table border="2">
+<table border="2" align="center">
 <caption style="font-weight: normal;">
     <span style="font-weight: bold; font-size: 1.2em;">📌 表2：不同数据类型分形相关信息</span></caption>
   <tr>
@@ -204,29 +184,26 @@ GM(ND) -> L1(Nz) -> L0A(Nz)/L0B(Zn) -> L0C(Nz) -> GM(ND)
   </tr>
 </table>
 
+- `CeilAlign`：向上对齐操作。例如`m = 30`时，`CeilAlign(30, 16) = 32`，表示将m轴向16对齐，对齐后m轴长度为32。
 
-（4）CeilAlign：向上对齐操作，例如m=30时，CeilAlign(30, 16)=32，表示将m轴向16对齐，对齐后m轴长度为32。
+```cpp
+__aicore__ inline uint16_t CeilAlign(uint16_t size, uint16_t alignValue) {
+    return (size + alignValue - 1) / alignValue * alignValue;
+}
+```
 
+- `CeilDivision`：向上取整除法，一般用于求解向上对齐后的循环次数。
+- `mAlignValue`：m轴向`mAlignValue`对齐。例如`mAlignValue = 32`，代表m轴对齐到32；依次类推还有`nAlignValue`、`kaAlignValue`、`kbAlignValue`。
+- `mAlignL1`和`mAlignL0`：A矩阵分别在L1和L0A上时，m轴对齐后的值。依次类推还有`nAlignL1`、`nAlignL0`、`kaAlignL1`、`kaAlignL0`、`kbAlignL1`、`kbAlignL0`。
 
+### 4. 对齐要求
 
-      __aicore__ inline uint16_t CeilAlign(uint16_t size, uint16_t alignValue) {
-          return (size + alignValue - 1) / alignValue * alignValue;
-      }
-
-（5）CeilDivision：向上取整除法，一般用于求解向上对齐后的循环次数。
-
-（6）mAlignValue：m轴向mAlignValue对齐，例如mAlignValue=32，代表m轴对齐到32，依次类推还有nAlignValuem表示轴向nAlignValue对齐，kaAlignValue表示A矩阵k轴向kaAlignValue对齐，kbAlignValue表示B矩阵k轴向kbAlignValue对齐。
-
-（7）mAlignL0和mAlignL1：A矩阵分别在L1和L0A上时，m轴对齐后的值。依次类推还有nAlignL0、nAlignL1、kaAlignL0、kaAlignL1、kbAlignL0、kbAlignL1。
-
-
-另外，A、B矩阵在L1和L0上在row和col方向上对齐的要求也不相同，现将[表2](#表2)中scenarioNum取1-6对应的6种场景(L1上的排布格式为Nz)的对齐要求总结得到
-如下[表3](#表3)、[表4](#表4)：
+A / B矩阵在L1和L0上各轴的对齐要求不同，后续配置`Load2Dv2`、`Mmad`和`Fixpipe`参数时会用到这些值。[表3](#表3)、[表4](#表4)总结scenarioNum取1-6时A / B矩阵在L1和L0上的对齐要求；[表5](#表5)、[表6](#表6)总结scenarioNum取7时的对齐要求。
 
 <a name="表3"></a>
-<table border="2">
+<table border="2" align="center">
 <caption style="font-weight: normal;">
-    <span style="font-weight: bold; font-size: 1.2em;">📌 表3：A、B矩阵在L1上各个轴对齐要求(L1排布格式为Nz)</span></caption>
+    <span style="font-weight: bold; font-size: 1.2em;">📌 表3：A、B矩阵在L1上各个轴对齐要求（L1排布格式为Nz）</span></caption>
   <tr>
     <td></td>
     <td align="center"><span style="font-weight: bold;">B8 (fractalNum=2)</span></td>
@@ -267,9 +244,8 @@ GM(ND) -> L1(Nz) -> L0A(Nz)/L0B(Zn) -> L0C(Nz) -> GM(ND)
   </tr>
 </table>
 
-
 <a name="表4"></a>
-<table border="2">
+<table border="2" align="center">
 <caption style="font-weight: normal;">
     <span style="font-weight: bold; font-size: 1.2em;">📌 表4：A、B矩阵在L0上各个轴对齐要求</span></caption>
   <tr>
@@ -279,14 +255,14 @@ GM(ND) -> L1(Nz) -> L0A(Nz)/L0B(Zn) -> L0C(Nz) -> GM(ND)
     <td align="center"><span style="font-weight: bold;">B32 (fractalNum=2)</span></td>
   </tr>
   <tr>
-    <td rowspan="2" align="center"><span style="font-weight: bold;">A矩阵不转置输入[m, k]，L1->L0A不需要转置</span></td>
+    <td rowspan="2" align="center"><span style="font-weight: bold;">A矩阵不转置输入[m, k]，L1 -> L0A不需要转置</span></td>
     <td colspan="3" align="center">mAlignValue = fractalShape[0]</td>
   </tr>
   <tr>
     <td colspan="3" align="center" >kaAlignValue = fractalShape[1]</td>
   </tr>
   <tr>
-    <td rowspan="2" align="center"><span style="font-weight: bold;">A矩阵转置输入[k, m]，L1->L0A需要转置</span></td>
+    <td rowspan="2" align="center"><span style="font-weight: bold;">A矩阵转置输入[k, m]，L1 -> L0A需要转置</span></td>
     <td colspan="2" align="center">kaAlignValue = fractalShape[1]</td>
     <td >kaAlignValue = fractalShape[1] * fractalNum</td>
   </tr>
@@ -295,7 +271,7 @@ GM(ND) -> L1(Nz) -> L0A(Nz)/L0B(Zn) -> L0C(Nz) -> GM(ND)
     <td align="center" >mAlignValue = fractalShape[0]</td>
   </tr>
     <tr>
-    <td rowspan="2" align="center"><span style="font-weight: bold;">B矩阵不转置输入[k, n]，L1->L0B需要转置</span></td>
+    <td rowspan="2" align="center"><span style="font-weight: bold;">B矩阵不转置输入[k, n]，L1 -> L0B需要转置</span></td>
     <td colspan="2" align="center">kbAlignValue = fractalShape[1]</td>
       <td align="center">kbAlignValue = fractalShape[1] * fractalNum</td>
   </tr>
@@ -304,7 +280,7 @@ GM(ND) -> L1(Nz) -> L0A(Nz)/L0B(Zn) -> L0C(Nz) -> GM(ND)
     <td align="center" >nAlignValue = fractalShape[0]</td>
   </tr>
  <tr>
-    <td rowspan="2" align="center"><span style="font-weight: bold;">B矩阵转置输入[n, k]，L1->L0B不需要转置</span></td>
+    <td rowspan="2" align="center"><span style="font-weight: bold;">B矩阵转置输入[n, k]，L1 -> L0B不需要转置</span></td>
     <td colspan="3" align="center">nAlignValue = fractalShape[0]</td>
   </tr>
   <tr>
@@ -312,10 +288,10 @@ GM(ND) -> L1(Nz) -> L0A(Nz)/L0B(Zn) -> L0C(Nz) -> GM(ND)
   </tr>
 </table>
 
+当scenarioNum=7时，A矩阵用for循环 + `Load2Dv2`实现L1 -> L0A搬运，L0A只写入有效数据按分形对齐后的区域。
 
-特别的，当scenarioNum=7时，A矩阵用for循环+Load2DV2实现L1->L0A的搬运，L0A仅写入有效数据向分形对齐后的数据，A、B矩阵在L1和L0上在高度和宽度方向上对齐的要求如[表5](#表5)、[表6](#表6)：
 <a name="表5"></a>
-<table border="2">
+<table border="2" align="center">
 <caption style="font-weight: normal;">
     <span style="font-weight: bold; font-size: 1.2em;">📌 表5：scenarioNum=7，A、B矩阵在L1上各个轴对齐要求</span></caption>
   <tr>
@@ -339,7 +315,7 @@ GM(ND) -> L1(Nz) -> L0A(Nz)/L0B(Zn) -> L0C(Nz) -> GM(ND)
 </table>
 
 <a name="表6"></a>
-<table border="2">
+<table border="2" align="center">
 <caption style="font-weight: normal;">
     <span style="font-weight: bold; font-size: 1.2em;">📌 表6：scenarioNum=7，A、B矩阵在L0上各个轴对齐要求</span></caption>
   <tr>
@@ -347,14 +323,14 @@ GM(ND) -> L1(Nz) -> L0A(Nz)/L0B(Zn) -> L0C(Nz) -> GM(ND)
     <td align="center" ><span style="font-weight: bold;">int8_t (fractalNum=2)</span></td>
   </tr>
    <tr>
-    <td rowspan="2"><span style="font-weight: bold;">A矩阵转置输入[k, m]，L1->L0A需要转置</span></td>
+    <td rowspan="2"><span style="font-weight: bold;">A矩阵转置输入[k, m]，L1 -> L0A需要转置</span></td>
     <td align="center" >mAlignValue = fractalShape[0]</td>
   </tr>
     <tr>
     <td align="center" >kaAlignValue = fractalShape[1]</td>
   </tr>
    <tr>
-    <td rowspan="2"><span style="font-weight: bold;">B矩阵不转置输入[k, n]，L1->L0B需要转置</span></td>
+    <td rowspan="2"><span style="font-weight: bold;">B矩阵不转置输入[k, n]，L1 -> L0B需要转置</span></td>
     <td align="center" >kbAlignValue = fractalShape[1]</td>
   </tr>
     <tr>
@@ -362,345 +338,325 @@ GM(ND) -> L1(Nz) -> L0A(Nz)/L0B(Zn) -> L0C(Nz) -> GM(ND)
   </tr>
 </table>
 
-### 样例实现
-A/B矩阵在L1上的数据排布格式为Nz，在L0A、L0B上分别为Nz、Zn。在L1->L0过程中调用Load2DV2接口完成数据搬运及格式变换。
-#### A矩阵 L1->L0A 不转置
 
-L1 -> L0A不转置时数据搬运，不存在大分形和小分形排布格式变化。该场景下，B8 / B16 / B32这3种数据类型使用Load2DV2接口参数配置基本相同，仅fractalShape有区别，可参考[表2](#表2)。以int8_t为例展示图示。<br>
+### 5. `Load2Dv2`
 
+A / B矩阵在L1上均为Nz排布，在L0A、L0B上分别为Nz、Zn排布。L1 -> L0阶段调用`LoadData`接口并配置`LoadData2DParamsV2`结构体参数，本文简称为`Load2Dv2`。
 
-<p align="center">
-  <img src="figures/B8_A_l1_l0A_Load2dv2.png">
-</p>
+阅读本章时可先按[表1](#表1)确定场景，再按[表3](#表3)-[表6](#表6)选择对齐值。`LoadData2DParamsV2`配置时重点关注以下参数：
 
-<p align="center">
-图1: int8_t数据类型下，L1 -> L0A不转置，调用Load2DV2数据排布示意图
-</p>
+- `ifTranspose`：控制L1 -> L0搬运时是否转置。A矩阵不转置输入`[m, k]`、B矩阵转置输入`[n, k]`时取`false`；A矩阵转置输入`[k, m]`、B矩阵不转置输入`[k, n]`时取`true`。
+- `mStep`、`kStep`：分别表示本次搬运覆盖的row方向、col方向小分形个数。转置搬运时，B8 / B32需要按方型分形组合搬运，相关步长需满足`fractalNum`要求。
+- `srcStride`、`dstStride`：分别表示L1源矩阵和L0目标矩阵row方向相邻小分形之间的间隔。
+- `mStartPosition`、`kStartPosition`：表示本次搬运在L1源矩阵中的起始小分形位置。场景7中通过循环修改`mStartPosition`，分段搬运A矩阵。
 
+#### 5.1. A矩阵 L1 -> L0A 不转置
 
-如图1所示，从L1上A矩阵的起始地址开始搬运，m为row，配置mstep参数，k为col，配置kStep参数，调用一次指令完成整个A矩阵从L1->L0A的搬运。
+L1 -> L0A不转置时，B8 / B16 / B32三种数据类型的参数配置基本相同，仅`fractalShape`不同，可参考[表2](#表2)。以int8_t为例展示图示。
+
+<div align="center">
+  <img src="figures/B8_A_l1_l0A_Load2dv2.png" width="800"><br>
+  图1: int8_t数据类型下，L1 -> L0A不转置，调用Load2Dv2数据排布示意图
+</div>
+
+参数配置要点：
+
+- `mStep = CeilDivision(mAlignL1, fractalShape[0])`，表示row方向搬运m轴对应的小分形个数。
+- `kStep = CeilDivision(kaAlignL1, fractalShape[1])`，表示col方向搬运k轴对应的小分形个数。
+- `ifTranspose = false`，表示只完成L1 Nz到L0A Nz的排布搬运，不做转置。
 
 ```cpp
-mAlignL1 = CeilAlign(m, fractalShape[0]);
-kaAlignL1 = CeilAlign(k, fractalShape[1]);
-mAlignL0 = CeilAlign(m, fractalShape[0]);
-kaAlignL0 = CeilAlign(k, fractalShape[1]);
+mAlignL1 = CeilAlign(m, fractalShape[0]); // 48
+kaAlignL1 = CeilAlign(k, fractalShape[1]); // 96
+mAlignL0 = CeilAlign(m, fractalShape[0]); // 48
+kaAlignL0 = CeilAlign(k, fractalShape[1]); // 96
 AscendC::LoadData2DParamsV2 loadDataParams;
 loadDataParams.mStartPosition = 0;
 loadDataParams.kStartPosition = 0;
-loadDataParams.mStep = CeilDivision(mAlignL1, fractalShape[0]); // row
-loadDataParams.kStep = CeilDivision(kaAlignL1, fractalShape[1]); // col
-loadDataParams.srcStride = CeilDivision(mAlignL1, fractalShape[0]);
-loadDataParams.dstStride = CeilDivision(mAlignL0, fractalShape[0]);
+loadDataParams.mStep = CeilDivision(mAlignL1, fractalShape[0]); // 3
+loadDataParams.kStep = CeilDivision(kaAlignL1, fractalShape[1]); // 3
+loadDataParams.srcStride = CeilDivision(mAlignL1, fractalShape[0]); // 3
+loadDataParams.dstStride = CeilDivision(mAlignL0, fractalShape[0]); // 3
 loadDataParams.ifTranspose = false;
 loadDataParams.sid = 0;
 AscendC::LoadData(a2Local, a1Local, loadDataParams);
 ```
 
-#### A矩阵 L1->L0A 转置
+#### 5.2. A矩阵 L1 -> L0A 转置
 
-L1->L0A时大分形排布格式变换，且小分形需要转置。以int8_t、half、float为例，按照数据类型，分小节分别介绍B8 / B16 / B32这3不同数据类型转置场景图示说明。
+L1 -> L0A需要转置时，`loadDataParams.ifTranspose = true`。转置时`Load2Dv2`会按方型分形组合完成小分形转置和L0A Nz排布写入；不同数据类型的方型分形组合方式不同，下面按B8 / B16 / B32分别说明。
 
-##### B8输入数据类型
-B8输入数据类型分形为16 * 32，L1->L0转置时会按照方型将row方向的2个16 * 32的分形拼成1个32 * 32的方型进行转置。本样例中以int8_t输入数据类型为例，m为40，若调用一次Load2DV2指令完成L1->L0A的搬运+转置，则在写入L0A上时m方向会多写1个分形的无效数据，矩阵计算Mmad在计算时m方向也多算1个分形的无效数据，在Fixpipe搬出时仅搬出有效数据即可；若调用for循环+Load2DV2指令完成L1->L0A的搬运+转置，在写入时可跳过m方向的无效数据分形。下面分别介绍这2种场景。<br>
-**调用一次Load2DV2**
+##### 5.2.1. B8输入数据类型
 
+B8输入数据类型分形为16 * 32，L1 -> L0转置时会按照方型将row方向的2个16 * 32分形拼成1个32 * 32方型进行转置。下面以int8_t为例说明单次调用和for循环调用两种方式。
 
-调用一次Load2DV2完成L1->L0A搬运+转置的图示如下：
+**单次调用**
 
+调用一次`Load2Dv2`完成L1 -> L0A搬运和转置的图示如下：
 
-<p align="center">
-  <img src="figures/B8_A_l1_l0A_trans_load2dv2.png">
-</p>
+<div align="center">
+  <img src="figures/B8_A_l1_l0A_trans_load2dv2.png" width="800"><br>
+  图2: int8_t数据类型下，L1 -> L0A转置，调用一次Load2Dv2数据排布示意图
+</div>
 
-<p align="center">
-图2: int8_t数据类型下，L1 -> L0A转置，调用一次Load2DV2数据排布示意图
-</p>
-
-
-本样例m=40，如图2所示，在L1上mAlignL1 = CeilAlign(m, fractalShape[1])=64。mAlignL1 - m = 24 > 16，调用一次Load2DV2完成L1->L0A搬运时，m方向会搬运1个无效的分形，如图红框所示。该场景矩阵计算Mmad在计算时m方向也多算1个分形的无效数据，即 mmadParams.m = CeilAlign(m, fractalShape[0] * fractalNum)，在Fixpipe搬出时仅搬出有效数据(fixpipeParams.mSize = m)。
-
+本样例`m = 40`，B8转置搬运时`mAlignL1 = CeilAlign(m, fractalShape[1]) = 64`，`mAlignL1 - m = 24 > 16`。单次调用`Load2Dv2`时，m方向会多搬1个无效分形；`Mmad`计算时需要设置`mmadParams.m = CeilAlign(m, fractalShape[0] * fractalNum)`让该分形参与计算，最后由`Fixpipe`通过`fixpipeParams.mSize = m`只搬出有效区域。
 
 ```cpp
-kaAlignL1 = CeilAlign(k, fractalShape[0] * fractalNum);
-mAlignL1 = CeilAlign(m, fractalShape[1]);
-mAlignL0 = CeilAlign(m, fractalShape[0] * fractalNum);
-kaAlignL0 = CeilAlign(k, fractalShape[1]);
+kaAlignL1 = CeilAlign(k, fractalShape[0] * fractalNum); // 96
+mAlignL1 = CeilAlign(m, fractalShape[1]); // 64
+mAlignL0 = CeilAlign(m, fractalShape[0] * fractalNum); // 64
+kaAlignL0 = CeilAlign(k, fractalShape[1]); // 96
 AscendC::LoadData2DParamsV2 loadDataParams;
-loadDataParams.mStep = CeilDivision(kaAlignL1, fractalShape[0]);
-loadDataParams.kStep = CeilDivision(mAlignL1, fractalShape[1]);
-loadDataParams.srcStride = CeilDivision(kaAlignL1, fractalShape[0]);
-loadDataParams.dstStride = CeilDivision(mAlignL0, fractalShape[0]);
+loadDataParams.mStep = CeilDivision(kaAlignL1, fractalShape[0]); // 6
+loadDataParams.kStep = CeilDivision(mAlignL1, fractalShape[1]); // 2
+loadDataParams.srcStride = CeilDivision(kaAlignL1, fractalShape[0]); // 6
+loadDataParams.dstStride = CeilDivision(mAlignL0, fractalShape[0]); // 4
 loadDataParams.ifTranspose = true;
 loadDataParams.sid = 0;
 AscendC::LoadData(a2Local, a1Local, loadDataParams);
 ```
 
+**for循环调用**
 
-**for循环+Load2Dv2**
+for循环调用多次`Load2Dv2`完成L1 -> L0A搬运和转置的图示如下：
 
+<div align="center">
+  <img src="figures/B8_A_l1_l0A_trans_for_load2dv2.png" width="800"><br>
+  图3: int8_t数据类型下，L1 -> L0A转置，for循环调用多次Load2Dv2数据排布示意图
+</div>
 
-for循环调用多次Load2DV2完成L1->L0A搬运+转置的图示如下：
-
-<p align="center">
-  <img src="figures/B8_A_l1_l0A_trans_for_load2dv2.png">
-</p>
-
-<p align="center">
-图3: int8_t数据类型下，L1 -> L0A转置，for循环调用多次Load2DV2数据排布示意图
-</p>
-
-
-本样例m=40，如图3所示，在L1上mAlignL1 = CeilAlign(m, fractalShape[1])=64。mAlignL1 - m = 24 > 16，此时，沿k方向for循环，调用多次Load2DV2指令，一次从L1上搬运k轴方向上的2个分形 * m轴方向上的CeilDivision(k, fractalShape[1])个分形，如图红框所示。dstStride配置为m方向有效数据向小分形fractalShape[0]对齐，则在写入L0A时跳过转置时多读的m方向脏数据分形，使矩阵计算m方向没有多余脏数据分形参与计算。
-
+for循环调用时，沿L1 row方向（A矩阵k轴）分段搬运，每次搬运k轴方向2个分形、m轴方向`CeilDivision(mAlignL0, fractalShape[1])`个分形。`dstStride`按m方向有效数据向`fractalShape[0]`对齐配置，写入L0A时跳过转置多读的m方向脏数据分形，使`Mmad`计算时m方向没有额外脏数据分形参与。
 
 ```cpp
-kaAlignL1 = CeilAlign(k, fractalShape[0] * fractalNum);
-mAlignL1 = CeilAlign(m, fractalShape[1]);
-mAlignL0 = CeilAlign(m, fractalShape[0]);
-kaAlignL0 = CeilAlign(k, fractalShape[1]);
-// 输入为int8类型，A矩阵[k,m]转置输入，L1->L0A需要转置
-// for循环调用Load2DV2，以k轴方向做for循环，每次循环在L1的k方向搬运2个分形，在L0A上跳过m方向尾脏数据分形，m方向多搬运数据不超过1个分形
-uint16_t L0ALoopNum = CeilDivision(kaAlignL0, fractalShape[0] * fractalNum);
-loadDataParams.mStep = INT8_M_STEP_ALIGN;
-loadDataParams.kStep = CeilDivision(mAlignL0, fractalShape[1]);
-loadDataParams.srcStride = CeilDivision(kaAlignL1, fractalShape[0]);
-loadDataParams.dstStride = CeilDivision(mAlignL0, fractalShape[0]);
+kaAlignL1 = CeilAlign(k, fractalShape[0] * fractalNum); // 96
+mAlignL1 = CeilAlign(m, fractalShape[1]); // 64
+mAlignL0 = CeilAlign(m, fractalShape[0]); // 48
+kaAlignL0 = CeilAlign(k, fractalShape[1]); // 96
+// 输入为int8类型，A矩阵[k,m]转置输入，L1 -> L0A需要转置
+// for循环调用Load2Dv2，以k轴方向做for循环，每次循环在L1的k方向搬运2个分形，在L0A上跳过m方向尾脏数据分形，m方向多搬运数据不超过1个分形
+uint16_t L0ALoopNum = CeilDivision(kaAlignL0, fractalShape[0] * fractalNum); // 3
+loadDataParams.mStep = INT8_M_STEP_ALIGN; // 2
+loadDataParams.kStep = CeilDivision(mAlignL0, fractalShape[1]); // 2
+loadDataParams.srcStride = CeilDivision(kaAlignL1, fractalShape[0]); // 6
+loadDataParams.dstStride = CeilDivision(mAlignL0, fractalShape[0]); // 3
 loadDataParams.ifTranspose = true;
 uint32_t dstOffset = 0;
 for (uint16_t loopIdx = 0; loopIdx < L0ALoopNum; ++loopIdx) {
     loadDataParams.mStartPosition = INT8_M_STEP_ALIGN * loopIdx;
     AscendC::LoadData(a2Local[dstOffset], a1Local, loadDataParams);
-    dstOffset += CeilAlign(mAlignL0, fractalShape[0]) * fractalShape[1];
+    dstOffset += CeilAlign(mAlignL0, fractalShape[0]) * fractalShape[1]; // 1536
 }
 ```
 
-##### B16输入数据类型
-B16输入数据类型分形为16 * 16，一个分形即一个方型，L1->L0转置时会按照小分形进行转置，调用一次Load2DV2即可完成L1->L0A数据搬运及转置。本样例以half为例，调用一次Load2DV2完成L1->L0A搬运+转置的图示如下：
+##### 5.2.2. B16输入数据类型
 
+B16输入数据类型分形为16 * 16，一个分形即一个方型，L1 -> L0转置时会按照小分形进行转置，调用一次`Load2Dv2`即可完成L1 -> L0A数据搬运及转置。本样例以half为例展示图示。
 
-<p align="center">
-  <img src="figures/B16_A_l1_l0A_trans_load2dv2.png">
-</p>
+<div align="center">
+  <img src="figures/B16_A_l1_l0A_trans_load2dv2.png" width="800"><br>
+  图4: half数据类型下，L1 -> L0A转置，调用一次Load2Dv2数据排布示意图
+</div>
 
-<p align="center">
-图4: half数据类型下，L1 -> L0A转置，调用一次Load2DV2数据排布示意图
-</p>
+参数配置要点：
 
-如图4所示，从L1上A矩阵的起始地址开始搬运，k为row，配置mstep参数，m为col，配置kStep参数，配合ifTranspose=true，调用一次指令完成整个A矩阵从L1->L0A的搬运+转置。
+- `mStep = CeilDivision(kaAlignL1, fractalShape[0])`，表示row方向搬运k轴对应的小分形个数。
+- `kStep = CeilDivision(mAlignL1, fractalShape[1])`，表示col方向搬运m轴对应的小分形个数。
+- `ifTranspose = true`，表示搬运到L0A时完成转置。
 
 ```cpp
-kaAlignL1 = CeilAlign(k, fractalShape[0] * fractalNum);
-mAlignL1 = CeilAlign(m, fractalShape[1]);
-mAlignL0 = CeilAlign(m, fractalShape[0] * fractalNum);
-kaAlignL0 = CeilAlign(k, fractalShape[1]);
+kaAlignL1 = CeilAlign(k, fractalShape[0] * fractalNum); // 80
+mAlignL1 = CeilAlign(m, fractalShape[1]); // 48
+mAlignL0 = CeilAlign(m, fractalShape[0] * fractalNum); // 48
+kaAlignL0 = CeilAlign(k, fractalShape[1]); // 80
 AscendC::LoadData2DParamsV2 loadDataParams;
-loadDataParams.mStep = CeilDivision(kaAlignL1, fractalShape[0]);
-loadDataParams.kStep = CeilDivision(mAlignL1, fractalShape[1]);
-loadDataParams.srcStride = CeilDivision(kaAlignL1, fractalShape[0]);
-loadDataParams.dstStride = CeilDivision(mAlignL0, fractalShape[0]);
+loadDataParams.mStep = CeilDivision(kaAlignL1, fractalShape[0]); // 5
+loadDataParams.kStep = CeilDivision(mAlignL1, fractalShape[1]); // 3
+loadDataParams.srcStride = CeilDivision(kaAlignL1, fractalShape[0]); // 5
+loadDataParams.dstStride = CeilDivision(mAlignL0, fractalShape[0]); // 3
 loadDataParams.ifTranspose = true;
 loadDataParams.sid = 0;
 AscendC::LoadData(a2Local, a1Local, loadDataParams);
 ```
 
+##### 5.2.3. B32输入数据类型
 
-##### B32输入数据类型
-B32输入数据类型分形为16 * 8，L1->L0转置时会按照方型将col方向的2个16 * 8的分形拼成1个16 * 16的方型进行转置。本样例以float数据类型为例，调用一次Load2DV2完成L1->L0A搬运+转置的图示如下:
+B32输入数据类型分形为16 * 8，L1 -> L0转置时会按照方型将col方向的2个16 * 8分形拼成1个16 * 16方型进行转置。本样例以float为例展示图示。
 
-<p align="center">
-  <img src="figures/B32_A_l1_l0A_trans_load2dv2.png">
-</p>
+<div align="center">
+  <img src="figures/B32_A_l1_l0A_trans_load2dv2.png" width="800"><br>
+  图5: float数据类型下，L1 -> L0A转置，调用一次Load2Dv2数据排布示意图
+</div>
 
-<p align="center">
-图5: float数据类型下，L1 -> L0A转置，调用一次Load2DV2数据排布示意图
-</p>
-
-
-本样例中m为40，由于转置时会将col方向2个分形拼成方型进行转置（kStep必须是2的倍数），L1上col方向（m方向）会多一个无效分形数据以满足指令要求。调用一次Load2DV2指令完成L1->L0A的搬运+转置，写入L0A上时k方向会多写1个分形的无效数据。由于L0A上排布格式为Nz，k方向多余的无效分形数据在尾部，在进行矩阵计算Mmad时配置k方向mmadParams.k = k即可仅让有效数据参与矩阵计算。
-
+本样例`m = 40`。B32转置搬运时需要将col方向2个分形拼成方型，**`kStep`必须是2的倍数**，因此L1上col方向（m方向）会多读1个无效分形。写入L0A后，k方向尾部会多1个无效分形；由于L0A为Nz排布，`Mmad`配置`mmadParams.k = k`即可只让有效k轴数据参与计算。
 
 ```cpp
-kaAlignL1 = CeilAlign(k, fractalShape[0]);
-mAlignL1 = CeilAlign(m, fractalShape[1] * fractalNum);
-mAlignL0 = CeilAlign(m, fractalShape[0]);
-kaAlignL0 = CeilAlign(k, fractalShape[1] * fractalNum);
+kaAlignL1 = CeilAlign(k, fractalShape[0]); // 80
+mAlignL1 = CeilAlign(m, fractalShape[1] * fractalNum); // 48
+mAlignL0 = CeilAlign(m, fractalShape[0]); // 48
+kaAlignL0 = CeilAlign(k, fractalShape[1] * fractalNum); // 80
 AscendC::LoadData2DParamsV2 loadDataParams;
-loadDataParams.mStep = CeilDivision(kaAlignL1, fractalShape[0]);
-loadDataParams.kStep = CeilDivision(mAlignL1, fractalShape[1]);
-loadDataParams.srcStride = CeilDivision(kaAlignL1, fractalShape[0]);
-loadDataParams.dstStride = CeilDivision(mAlignL0, fractalShape[0]);
+loadDataParams.mStep = CeilDivision(kaAlignL1, fractalShape[0]); // 5
+loadDataParams.kStep = CeilDivision(mAlignL1, fractalShape[1]); // 6
+loadDataParams.srcStride = CeilDivision(kaAlignL1, fractalShape[0]); // 5
+loadDataParams.dstStride = CeilDivision(mAlignL0, fractalShape[0]); // 3
 loadDataParams.ifTranspose = true;
 loadDataParams.sid = 0;
 AscendC::LoadData(a2Local, a1Local, loadDataParams);
 ```
 
+#### 5.3. B矩阵 L1 -> L0B 不转置
 
-#### B矩阵 L1->L0B 不转置
+L1 -> L0B不转置时，B8 / B16 / B32三种数据类型的参数配置基本相同，仅`fractalShape`不同，可参考[表2](#表2)。以float为例展示图示。
 
-L1 -> L0B不转置时数据搬运，仅存在大分形格式变化。该场景下，B8 / B16 / B32这3种数据类型使用Load2DV2接口参数配置基本相同，仅fractalShape有区别，可参考[表2](#表2)。以float为例展示图示。<br>
+<div align="center">
+  <img src="figures/B32_B_l1_l0B_load2dv2.png" width="1100"><br>
+  图6: float数据类型下，L1 -> L0B不转置，调用一次Load2Dv2数据排布示意图
+</div>
 
+参数配置要点：
 
-<p align="center">
-  <img src="figures/B32_B_l1_l0B_load2dv2.png">
-</p>
-
-<p align="center">
-图6: float数据类型下，L1 -> L0B不转置，调用一次Load2DV2数据排布示意图
-</p>
-
-
-如图6所示，从L1上B矩阵的起始地址开始搬运，n为row，配置mstep参数，k为col，配置kStep参数，调用一次指令完成整个B矩阵从L1->L0B的搬运。
+- `mStep = CeilDivision(nAlignL1, fractalShape[0])`，表示row方向搬运n轴对应的小分形个数。
+- `kStep = CeilDivision(kbAlignL1, fractalShape[1])`，表示col方向搬运k轴对应的小分形个数。
+- `ifTranspose = false`，表示只完成L1 Nz到L0B Zn的排布搬运，不做转置。
 
 ```cpp
-nAlignL1 = CeilAlign(n, fractalShape[0]);
-kbAlignL1 = CeilAlign(k, fractalShape[1]);
-kbAlignL0 = CeilAlign(k, fractalShape[1]);
-nAlignL0 = CeilAlign(n, fractalShape[0]);
+nAlignL1 = CeilAlign(n, fractalShape[0]); // 64
+kbAlignL1 = CeilAlign(k, fractalShape[1]); // 72
+kbAlignL0 = CeilAlign(k, fractalShape[1]); // 72
+nAlignL0 = CeilAlign(n, fractalShape[0]); // 64
 AscendC::LoadData2DParamsV2 loadDataParams;
 loadDataParams.mStartPosition = 0;
 loadDataParams.kStartPosition = 0;
-loadDataParams.mStep = CeilDivision(nAlignL1, fractalShape[0]);
-loadDataParams.kStep = CeilDivision(kbAlignL1, fractalShape[1]);
-loadDataParams.srcStride = CeilDivision(nAlignL1, fractalShape[0]);
-loadDataParams.dstStride = CeilDivision(nAlignL0, fractalShape[0]);
+loadDataParams.mStep = CeilDivision(nAlignL1, fractalShape[0]); // 4
+loadDataParams.kStep = CeilDivision(kbAlignL1, fractalShape[1]); // 9
+loadDataParams.srcStride = CeilDivision(nAlignL1, fractalShape[0]); // 4
+loadDataParams.dstStride = CeilDivision(nAlignL0, fractalShape[0]); // 4
 loadDataParams.ifTranspose = false;
 loadDataParams.sid = 0;
 AscendC::LoadData(b2Local, b1Local, loadDataParams);
 ```
 
-#### B矩阵 L1->L0B 转置
+#### 5.4. B矩阵 L1 -> L0B 转置
 
-L1->L0B时大分形排布格式变换，且小分形需要转置。以int8_t、half、float为例，按照数据类型，分小节分别介绍B8 / B16 / B32这3不同数据类型转置场景图示说明。
+L1 -> L0B需要转置时，`loadDataParams.ifTranspose = true`。转置时`Load2Dv2`会按方型分形组合完成小分形转置和L0B Zn排布写入；不同数据类型的方型分形组合方式不同，下面按B8 / B16 / B32分别说明。
 
-##### B8输入数据类型
-B8输入数据类型分形为16 * 32，L1->L0转置时会按照方型将row方向的2个16 * 32的分形拼成1个32 * 32的方型进行转置。本样例中以int8_t为例，调用一次Load2DV2指令完成L1->L0B的搬运+转置，如下图所示。
+##### 5.4.1. B8输入数据类型
 
+B8输入数据类型分形为16 * 32，L1 -> L0转置时会按照方型将row方向的2个16 * 32的分形拼成1个32 * 32的方型进行转置。本样例以int8_t为例展示图示。
 
-<p align="center">
-  <img src="figures/B8_B_l1_l0B_trans_load2dv2.png">
-</p>
+<div align="center">
+  <img src="figures/B8_B_l1_l0B_trans_load2dv2.png" width="1100"><br>
+  图7: int8_t数据类型下，L1 -> L0B转置，调用一次Load2Dv2数据排布示意图
+</div>
 
-<p align="center">
-图7: int8_t数据类型下，L1 -> L0B转置，调用一次Load2DV2数据排布示意图
-</p>
-
-
-本样例中k=70，由于转置时会将row方向2个分形拼成方型进行转置（指令参数mStep必须是2的倍数），L1上row方向（k方向）会多一个无效分形数据以满足指令要求。调用一次Load2DV2指令完成L1->L0B的搬运+转置。
+本样例`k = 70`。B8转置搬运时需要将row方向2个分形拼成方型，**`mStep`必须是2的倍数**，因此L1上row方向（k方向）会多读1个无效分形。
 
 ```cpp
-kbAlignL1 = CeilAlign(k, fractalShape[0] * fractalNum);
-nAlignL1 = CeilAlign(n, fractalShape[1]);
-kbAlignL0 = CeilAlign(k, fractalShape[1]);
-nAlignL0 = CeilAlign(n, fractalShape[0] * fractalNum);
+kbAlignL1 = CeilAlign(k, fractalShape[0] * fractalNum); // 96
+nAlignL1 = CeilAlign(n, fractalShape[1]); // 64
+kbAlignL0 = CeilAlign(k, fractalShape[1]); // 96
+nAlignL0 = CeilAlign(n, fractalShape[0] * fractalNum); // 64
 AscendC::LoadData2DParamsV2 loadDataParams;
-loadDataParams.mStep = CeilDivision(kbAlignL1, fractalShape[0]);
-loadDataParams.kStep = CeilDivision(nAlignL1, fractalShape[1]);
-loadDataParams.srcStride = CeilDivision(kbAlignL1, fractalShape[0]);
-loadDataParams.dstStride = CeilDivision(nAlignL0, fractalShape[0]);
+loadDataParams.mStep = CeilDivision(kbAlignL1, fractalShape[0]); // 6
+loadDataParams.kStep = CeilDivision(nAlignL1, fractalShape[1]); // 2
+loadDataParams.srcStride = CeilDivision(kbAlignL1, fractalShape[0]); // 6
+loadDataParams.dstStride = CeilDivision(nAlignL0, fractalShape[0]); // 4
 loadDataParams.ifTranspose = true;
 AscendC::LoadData(b2Local, b1Local, loadDataParams);
 ```
 
-##### B16输入数据类型
+##### 5.4.2. B16输入数据类型
 
-B16输入数据类型分形为16*16，一个分形即一个方型，L1->L0转置时会按照小分形进行转置，调用一次Load2DV2即可完成L1->L0B数据搬运及转置。本样例以half为例，调用一次Load2DV2完成L1->L0B搬运+转置的图示如下：
+B16输入数据类型分形为16 * 16，一个分形即一个方型，L1 -> L0转置时会按照小分形进行转置，调用一次`Load2Dv2`即可完成L1 -> L0B数据搬运及转置。本样例以half为例展示图示。
 
+<div align="center">
+  <img src="figures/B16_B_l1_l0B_trans_load2dv2.png" width="800"><br>
+  图8: half数据类型下，L1 -> L0B转置，调用一次Load2Dv2数据排布示意图
+</div>
 
-<p align="center">
-  <img src="figures/B16_B_l1_l0B_trans_load2dv2.png">
-</p>
+参数配置要点：
 
-<p align="center">
-图8: half数据类型下，L1 -> L0B转置，调用一次Load2DV2数据排布示意图
-</p>
-
-
-如图8所示，从L1上B矩阵的起始地址开始搬运，k为row，配置mstep参数，N为col，配置kStep参数，配合ifTranspose=true，调用一次指令完成整个B矩阵从L1->L0B的搬运+转置。
-
+- `mStep = CeilDivision(kbAlignL1, fractalShape[0])`，表示row方向搬运k轴对应的小分形个数。
+- `kStep = CeilDivision(nAlignL1, fractalShape[1])`，表示col方向搬运n轴对应的小分形个数。
+- `ifTranspose = true`，表示搬运到L0B时完成转置。
 
 ```cpp
-kbAlignL1 = CeilAlign(k, fractalShape[0] * fractalNum);
-nAlignL1 = CeilAlign(n, fractalShape[1]);
-kbAlignL0 = CeilAlign(k, fractalShape[1]);
-nAlignL0 = CeilAlign(n, fractalShape[0] * fractalNum);
+kbAlignL1 = CeilAlign(k, fractalShape[0] * fractalNum); // 80
+nAlignL1 = CeilAlign(n, fractalShape[1]); // 64
+kbAlignL0 = CeilAlign(k, fractalShape[1]); // 80
+nAlignL0 = CeilAlign(n, fractalShape[0] * fractalNum); // 64
 AscendC::LoadData2DParamsV2 loadDataParams;
-loadDataParams.mStep = CeilDivision(kbAlignL1, fractalShape[0]);
-loadDataParams.kStep = CeilDivision(nAlignL1, fractalShape[1]);
-loadDataParams.srcStride = CeilDivision(kbAlignL1, fractalShape[0]);
-loadDataParams.dstStride = CeilDivision(nAlignL0, fractalShape[0]);
+loadDataParams.mStep = CeilDivision(kbAlignL1, fractalShape[0]); // 5
+loadDataParams.kStep = CeilDivision(nAlignL1, fractalShape[1]); // 4
+loadDataParams.srcStride = CeilDivision(kbAlignL1, fractalShape[0]); // 5
+loadDataParams.dstStride = CeilDivision(nAlignL0, fractalShape[0]); // 4
 loadDataParams.ifTranspose = true;
 AscendC::LoadData(b2Local, b1Local, loadDataParams);
 ```
 
-##### B32输入数据类型
-B32输入数据类型分形为16 * 8，L1->L0转置时会按照方型将col方向的2个16 * 8的分形拼成1个16 * 16的方型进行转置。本样例中以float为例，调用一次Load2DV2指令完成L1->L0B的搬运+转置，如下图所示。
+##### 5.4.3. B32输入数据类型
 
+B32输入数据类型分形为16 * 8，L1 -> L0转置时会按照方型将col方向的2个16 * 8的分形拼成1个16 * 16的方型进行转置。本样例以float为例展示图示。
 
-<p align="center">
-  <img src="figures/B32_B_l1_l0B_trans_load2dv2.png">
-</p>
+<div align="center">
+  <img src="figures/B32_B_l1_l0B_trans_load2dv2.png" width="1100"><br>
+  图9: float数据类型下，L1 -> L0B转置，调用一次Load2Dv2数据排布示意图
+</div>
 
-<p align="center">
-图9: float数据类型下，L1 -> L0B转置，调用一次Load2DV2数据排布示意图
-</p>
-
-
-本样例中n=50，由于转置时会将col方向2个分形拼成方型进行转置（指令参数kStep必须是2的倍数），L1上col方向（n方向）会多一个无效分形数据以满足指令要求。调用一次Load2DV2指令完成L1->L0B的搬运+转置，写入L0B上时k方向会多写1个分形的无效数据。由于L0B上排布格式为Zn，k方向多余的无效分形数据在尾部，在进行矩阵计算Mmad时配置mmadParams.k = k即可仅让有效数据参与矩阵计算。
-
+本样例`n = 50`。B32转置搬运时需要将col方向2个分形拼成方型，**`kStep`必须是2的倍数**，因此L1上col方向（n方向）会多读1个无效分形。写入L0B后，k方向尾部会多1个无效分形；由于L0B为Zn排布，`Mmad`配置`mmadParams.k = k`即可只让有效k轴数据参与计算。
 
 ```cpp
-kbAlignL1 = CeilAlign(k, fractalShape[0]);
-nAlignL1 = CeilAlign(n, fractalShape[1] * fractalNum);
-kbAlignL0 = CeilAlign(k, fractalShape[1] * fractalNum);
-nAlignL0 = CeilAlign(n, fractalShape[0]);
+kbAlignL1 = CeilAlign(k, fractalShape[0]); // 80
+nAlignL1 = CeilAlign(n, fractalShape[1] * fractalNum); // 64
+kbAlignL0 = CeilAlign(k, fractalShape[1] * fractalNum); // 80
+nAlignL0 = CeilAlign(n, fractalShape[0]); // 64
 AscendC::LoadData2DParamsV2 loadDataParams;
-loadDataParams.mStep = CeilDivision(kbAlignL1, fractalShape[0]);
-loadDataParams.kStep = CeilDivision(nAlignL1, fractalShape[1]);
-loadDataParams.srcStride = CeilDivision(kbAlignL1, fractalShape[0]);
-loadDataParams.dstStride = CeilDivision(nAlignL0, fractalShape[0]);
+loadDataParams.mStep = CeilDivision(kbAlignL1, fractalShape[0]); // 5
+loadDataParams.kStep = CeilDivision(nAlignL1, fractalShape[1]); // 8
+loadDataParams.srcStride = CeilDivision(kbAlignL1, fractalShape[0]); // 5
+loadDataParams.dstStride = CeilDivision(nAlignL0, fractalShape[0]); // 4
 loadDataParams.ifTranspose = true;
 AscendC::LoadData(b2Local, b1Local, loadDataParams);
 ```
-
 
 ## 编译运行
+
 在本样例根目录下执行如下步骤，编译并执行样例。
 - 配置环境变量
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
+
     ```bash
     source /usr/local/Ascend/cann/set_env.sh
     ```
-
   - 默认路径，非root用户安装CANN软件包
+
     ```bash
     source $HOME/Ascend/cann/set_env.sh
     ```
-
   - 指定路径install_path，安装CANN软件包
+
     ```bash
     source ${install_path}/cann/set_env.sh
     ```
-
 - 样例执行
-  ```bash
-  SCENARIO=1
-  mkdir -p build && cd build;
-  cmake -DCMAKE_ASC_ARCHITECTURES=dav-3510 -DSCENARIO_NUM=$SCENARIO ..;make -j;
-  python3 ../scripts/gen_data.py -scenarioNum=$SCENARIO
-  ./demo
-  python3 ../scripts/verify_result.py -scenarioNum=$SCENARIO output/output.bin output/golden.bin
-  ```
 
+  ```bash
+  SCENARIO_NUM=1
+  mkdir -p build && cd build;
+  cmake -DCMAKE_ASC_ARCHITECTURES=dav-3510 -DSCENARIO_NUM=$SCENARIO_NUM ..;make -j;
+  python3 ../scripts/gen_data.py -scenarioNum=$SCENARIO_NUM
+  ./demo
+  python3 ../scripts/verify_result.py -scenarioNum=$SCENARIO_NUM output/output.bin output/golden.bin
+  ```
   使用 CPU调试 或 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
 
   示例如下：
-  ```bash
-  cmake -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-3510 -DSCENARIO_NUM=$SCENARIO ..;make -j;   # CPU调试模式
-  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-3510 -DSCENARIO_NUM=$SCENARIO ..;make -j;   # NPU仿真模式
-  ```
 
+  ```bash
+  cmake -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-3510 -DSCENARIO_NUM=$SCENARIO_NUM ..;make -j;   # CPU调试模式
+  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-3510 -DSCENARIO_NUM=$SCENARIO_NUM ..;make -j;   # NPU仿真模式
+  ```
   > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
 
 - 编译选项说明
@@ -714,6 +670,7 @@ AscendC::LoadData(b2Local, b1Local, loadDataParams);
 - 执行结果
 
   执行结果如下，说明精度对比成功。
+
   ```bash
   test pass!
   ```

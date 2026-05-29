@@ -21,11 +21,11 @@ add_executable(demo
 )
 
 set(DISABLE_GEMV 0 CACHE STRING "DISABLE_GEMV, e.g. 0 or 1")
-if(NOT DISABLE_GEMV MATCHES "(0|1)$")
-    message(FATAL_ERROR "DISABLE_GEMV must be 0 or 1, current value: ${DISABLE_GEMV}")
+if(NOT DISABLE_GEMV MATCHES "^[0-1]$")
+    message(FATAL_ERROR "DISABLE_GEMV must be 0 or 1, but got ${DISABLE_GEMV}")
 endif()
-if(DISABLE_GEMV EQUAL 1 AND CMAKE_ASC_ARCHITECTURES STREQUAL "dav-2201")
-    message(FATAL_ERROR "GEMV can only be disable when CMAKE_ASC_ARCHITECTURES=dav-3510.")
+if(DISABLE_GEMV STREQUAL "1" AND CMAKE_ASC_ARCHITECTURES STREQUAL "dav-2201")
+    message(FATAL_ERROR "DISABLE_GEMV=1 only supports dav-3510, not dav-2201")
 endif()
 
 message(STATUS "[INFO] DISABLE_GEMV is ${DISABLE_GEMV}")

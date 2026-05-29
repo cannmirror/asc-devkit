@@ -1,13 +1,17 @@
 # Mmad样例
+
 ## 概述
+
 本样例介绍了输入为ND格式，B4 / B8 / B16 / B32输入数据类型（具体以int4_t / int8_t / bfloat16 / float为例），四种输入数据类型下的矩阵乘法，说明如何通过Mmad指令实现矩阵乘法计算（C = A x B + Bias）。
 
 ## 支持的产品
+
 - Ascend 950PR/Ascend 950DT
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品
 
 ## 目录结构介绍
+
 ```
 ├── mmad
 │   ├── figures                     // 图示
@@ -18,12 +22,14 @@
 │   ├── data_utils.h                // 数据读入写出函数
 │   └── mmad.asc                    // Ascend C样例实现 & 调用样例
 ```
-
 ## 样例描述
-一次完整的矩阵乘法涉及的数据搬运过程包括：GM-->L1、L1-->L0A/L0B、L1-->BT（BiasTable Buffer）、L0C-->GM，其中不同存储单元的数据排布格式，如下表1所示：  
 
-<table border="2">
-<caption>表1：不同存储单元的数据排布格式</caption>
+一次完整的矩阵乘法涉及的数据搬运过程包括：GM-->L1、L1-->L0A/L0B、L1-->BT（BiasTable Buffer）、L0C-->GM，其中不同存储单元的数据排布格式，如下表1所示：
+
+<a name="表1"></a>
+<table border="2" align="center">
+<caption style="font-weight: normal;">
+    <span style="font-weight: bold; font-size: 1.2em;">📌 表1：不同存储单元的数据排布格式</span></caption>
   <tr>
     <td >存储单元</td>
     <td>数据排布格式</td>
@@ -55,8 +61,10 @@
 </table>
 
 通常的矩阵乘法计算公式：C = A × B + Bias，其中A、B、Bias、C矩阵的需要满足的shape分别为[M,K]、[K,N]、[N]和[M,N]。Bias的数据类型与C矩阵数据类型的对应关系，如表2所示：
-<table border="2">
-<caption>表 2：L0C 与输入 Bias 的数据类型对应关系</caption>
+<a name="表2"></a>
+<table border="2" align="center">
+<caption style="font-weight: normal;">
+    <span style="font-weight: bold; font-size: 1.2em;">📌 表2：L0C 与输入 Bias 的数据类型对应关系</span></caption>
   <tr>
     <td>Bias在GM/L1上的数据类型</td>
     <td>Bias在BT（BiasTable Buffer）上的数据类型</td>
@@ -82,8 +90,10 @@
 
 程序中scenarioNum参数不同取值对应的场景，如下表3所示：
 
-<table border="2">
-<caption>表3：scenarioNum不同取值的含义</caption>
+<a name="表3"></a>
+<table border="2" align="center">
+<caption style="font-weight: normal;">
+    <span style="font-weight: bold; font-size: 1.2em;">📌 表3：scenarioNum不同取值的含义</span></caption>
   <tr>
     <td >scenarioNum</td>
     <td>输入数据类型</td>
@@ -127,12 +137,16 @@
 </table>
 
 ### 场景详细说明
+
   本样例通过编译参数 `SCENARIO_NUM` 选择不同的输出场景，所有场景基于相同的矩阵乘规格：[M, N, K] = [30, 40, 70]，核函数名为 `mmad_custom`。
 
 **场景1 int8_t输入，int32_t输出，C矩阵初始值来源于C2**
-- 输入：A不转置 [30, 70] int8_t类型，ND格式；B不转置 [70, 40] int8_t类型，ND格式；Bias [40] int32_t类型
+- 输入：
+  - A 不转置 [30, 70] int8_t类型，ND格式
+  - B 不转置 [70, 40] int8_t类型，ND格式
+  - Bias [1, 40] int32_t类型
 - 输出：C [30, 40] int32_t类型，ND格式
-- 实现：使用`Mmad`实现矩阵乘法运算，不传入biasTensor通过参数：`mmadParams.cmatrixInitVal = false、mmadParams.cmatrixSource = true`，设置C矩阵初始值来源于C2
+- 实现：使用`Mmad`实现矩阵乘法运算，不传入biasTensor通过参数：`mmadParams.cmatrixInitVal = false、mmadParams.cmatrixSource = true`，设置C矩阵初始值来源于C2。
 - 说明：int8_t类型输入，B矩阵不转置场景下，N轴向2 * 16对齐，填充了全部是无效数据的32 * 16的分形。如下图1所示，如果设置`mmadParams.n = N`，就会导致读入编号为3、7的分形，同时又没能将包含有效数据的编号为9、10的分形读入。因此需要设置：`mmadParams.n = CeilAlign(N, BLOCK_CUBE * fractalNum)`，此时会读入全部分型，虽然矩阵计算结果中包含了无效数据参与计算的结果，但是在Fixpipe指令搬出数据时通过设置`fixpipeParams.nSize = N`来保证无效数据参与计算的结果不会被搬出。
 <p align="center">
   <img src="figures/mmad_s8_L0B_转置.png" width="700">
@@ -142,16 +156,22 @@
 </p>
 
 **场景2 bfloat16输入，float输出，A不转置，B转置，C矩阵初始值来源于CO1**
-- 输入：A不转置 [30, 70] bfloat16类型，ND格式；B转置 [40, 70] bfloat16类型，ND格式；不带Bias，C矩阵初始值来源于CO1
+- 输入：
+  - A 不转置 [30, 70] bfloat16类型，ND格式
+  - B 转置 [40, 70] bfloat16类型，ND格式
 - 输出：C [30, 40] float类型，ND格式
 - 实现：使用`Mmad`实现矩阵乘法运算，通过参数：`mmadParams.cmatrixInitVal = false、mmadParams.cmatrixSource = false`，设置C矩阵初始值来源于CO1
 - 说明：该场景进行两次Mmad计算，第一次计算结果存储在CO1，作为下一次计算的C矩阵初始值，最终累加两次Mmad计算结果。
 
 **场景3 float输入，float输出，A转置，B转置，传入biasTensor，kDirectionAlign值设为true**
-- 输入：A转置 [70, 30] float类型，ND格式；B转置 [40, 70] float类型，ND格式；Bias [40] float类型
+- 输入：
+  - A转置 [70, 30] float类型，ND格式
+  - B 转置 [40, 70] float类型，ND格式
+  - Bias [1, 40] float类型
 - 输出：C [30, 40] float类型，ND格式
 - 实现：使用`Mmad`实现矩阵乘法运算，传入biasTensor，该场景下`mmadParams.cmatrixSource`参数无效
 - 说明：float类型输入，A矩阵转置场景下，需要使用`mmadParams.kDirectionAlign`来解决K轴实际向`CeilAlign(K, 8*2)`对齐，与Mmad指令默认要求对齐到`CeilAlign(K, 8)`不一的问题。该场景下该参数设置为真，K轴对齐到`CeilAlign(K, 16)`，矩阵计算单元从L0A读取数据会跳过填充的无效数据，其余场景下该参数默认为flase，K轴仍向`CeilAlign(K, 8)`对齐，如下图2所示：
+
 <p align="center">
   <img src="figures/mmad_f32_L0A_转置.png" width="1100">
 </p>
@@ -161,7 +181,9 @@
 
 **场景4 int4b_t输入，int32_t输出，C矩阵初始值为0，仅支持Atlas A3 训练系列产品/Atlas A3 推理系列产品、Atlas A2 训练系列产品/Atlas A2 推理系列产品**
 
-- 输入：A不转置 [30, 70] int4b_t类型，ND格式；B转置 [40, 70] int4b_t类型，ND格式；不带Bias
+- 输入：
+  - A 不转置 [30, 70] int4b_t类型，ND格式
+  - B 转置 [40, 70] int4b_t类型，ND格式
 - 输出：C [30, 40] int32_t类型，ND格式
 - 实现：使用`Mmad`实现矩阵乘法运算，通过参数：`mmadParams.cmatrixInitVal = true`，设置C矩阵初始值为0
 - 说明：该场景不支持使用传入biasTensor的方式加Bias（场景3）。
@@ -169,9 +191,12 @@
 ### 矩阵乘法（Mmad）
 
 下面将介绍如何配置
-[Mmad](https://www.hiascend.com/document/detail/zh/canncommercial/850/API/ascendcopapi/atlasascendc_api_07_0249.html)指令的MmadParams结构体的成员，各个成员变量的具体含义这里不再赘述。
+Mmad指令的MmadParams结构体的成员，各个成员变量的具体含义这里不再赘述。
 
-需要注意的是当Mmad指令执行时，矩阵计算单元会从L0A/L0B连续读入多个分形参与矩阵乘计算，读入分形的数量根据MmadParams结构体的成员变量m、n、k的取值以及Mmad指令对L0A/L0B上A矩阵和B矩阵各个轴的对齐要求来计算的。以输入为b16类型为例：Mmad指令是按照A矩阵分形为[16,16]、B矩阵分形为[16,16]来连续读入分形的，也就是说矩阵计算单元从L0A/L0B连续读入的分形总数目分别为：2x5=10、5x3=15，写入到L0C的分形总数为2x3=6。如下图所示，图3表示Atlas A3 训练系列产品/Atlas A3 推理系列产品和Atlas A2 训练系列产品/Atlas A2 推理系列产品，图4表示Ascend 950PR/Ascend 950DT，两者在L0A上的数据排布不一致，前者为Zz，后者则是Nz。
+需要注意的是，执行Mmad指令时，矩阵计算单元会从L0A/L0B连续读入多个分形参与矩阵乘计算。读入分形的数量由MmadParams结构体成员m、n、k的取值，以及Mmad指令对L0A/L0B上A矩阵、B矩阵各轴的对齐要求共同决定。
+
+以b16输入类型为例，Mmad指令会按照A矩阵分形[16, 16]、B矩阵分形[16, 16]连续读入数据。此时，矩阵计算单元从L0A/L0B读入的分形总数分别为2 x 5 = 10和5 x 3 = 15，写入L0C的分形总数为2 x 3 = 6。如下图所示，图3对应Atlas A3训练系列产品/Atlas A3推理系列产品和Atlas A2训练系列产品/Atlas A2推理系列产品，图4对应Ascend 950PR/Ascend 950DT；两者在L0A上的数据排布不同，前者为Zz，后者为Nz。
+
 <p align="center">
   <img src="figures/mmad_f16_A3.png" width="900">
 </p>
@@ -187,27 +212,31 @@
 
 Mmad计算中包含了补齐的无效数据，需要配合Fixpipe指令在L0C搬出到GM过程中，排除参数Mmad计算过程中填充的无效数据。
 
-
 ## 编译运行
+
 在本样例根目录下执行如下步骤，编译并执行算子。
+
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
+
     ```bash
     source /usr/local/Ascend/cann/set_env.sh
     ```
 
   - 默认路径，非root用户安装CANN软件包
+
     ```bash
     source $HOME/Ascend/cann/set_env.sh
     ```
-
   - 指定路径install_path，安装CANN软件包
+
     ```bash
     source ${install_path}/cann/set_env.sh
     ```
   
 - 样例执行
+
   ```bash
   SCENARIO=1
   mkdir -p build && cd build;      # 创建并进入build目录
@@ -220,6 +249,7 @@ Mmad计算中包含了补齐的无效数据，需要配合Fixpipe指令在L0C搬
   使用 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
 
   示例如下：
+
   ```bash
   cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=$SCENARIO ..;make -j; # NPU仿真模式
   ```
@@ -237,6 +267,7 @@ Mmad计算中包含了补齐的无效数据，需要配合Fixpipe指令在L0C搬
 - 执行结果
 
   执行结果如下，说明精度对比成功。
+
   ```bash
   test pass!
   ```

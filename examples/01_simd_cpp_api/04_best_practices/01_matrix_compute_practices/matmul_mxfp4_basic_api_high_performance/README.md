@@ -248,7 +248,7 @@ AscendC::LocalTensor<fp4x2_e1m2_t> a2LocalPong(AscendC::TPosition::A2, L0_PINGPO
 time     |---------------------------------------------------------------------------->
 
 GM->L1   | A/B/scaleA/scaleB Ping | A/B/scaleA/scaleB Pong | A/B/scaleA/scaleB Ping |
-L1->L0                            | L0 Ping load --|       | L0 Pong load --|    
+L1->L0                            | L0 Ping load --|       | L0 Pong load --|
 Cube                                               | Mmad Ping ---|   | Mmad Pong ---|
 Fixpipe                                                           | fixpipe C ---
 ```

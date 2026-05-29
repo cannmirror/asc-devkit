@@ -10,7 +10,6 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-set(CMAKE_ASC_RUN_MODE "npu" CACHE STRING "Run mode: npu, cpu, sim")
 set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "NPU architecture: dav-2201, dav-3510")
 
 find_package(ASC REQUIRED)
@@ -33,6 +32,13 @@ target_link_libraries(demo PRIVATE)
 #   6 - 输出格式ND，输出数据类型float，使能relu
 #   7 - 输出格式NZ，输出数据类型float，使能channel split
 set(SCENARIO_NUM "1" CACHE STRING "Scene number (1-7)")
+if(NOT SCENARIO_NUM MATCHES "^[1-7]$")
+    message(FATAL_ERROR "SCENARIO_NUM must be 1, 2, 3, 4, 5, 6 or 7, but got ${SCENARIO_NUM}")
+endif()
+
+if(SCENARIO_NUM STREQUAL "3" AND CMAKE_ASC_ARCHITECTURES STREQUAL "dav-2201")
+    message(FATAL_ERROR "SCENARIO_NUM=${SCENARIO_NUM} only supports dav-3510, not dav-2201")
+endif()
 
 add_definitions(-DSCENARIO_NUM=${SCENARIO_NUM})
 

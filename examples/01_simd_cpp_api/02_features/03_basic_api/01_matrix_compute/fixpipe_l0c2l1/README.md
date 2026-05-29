@@ -8,7 +8,6 @@
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品、Atlas A2 训练系列产品/Atlas A2 推理系列产品在L0C到L1通路下仅支持输出格式为Nz，且不支持输出数据类型为float，必须量化为其他数据类型。
 - Ascend 950PR/Ascend 950DT不支持将数据从L1直接搬运到GM，因此，本样例中从L0C搬运到L1上的结果矩阵将作为下一次矩阵乘的输入，再进行一次矩阵计算并将结果输出到GM。（Atlas A2/A3系列产品支持将数据从L1直接搬运到GM，本样例中选择直接搬出）
 
-
 ## 支持的产品
 
 - Ascend 950PR/Ascend 950DT
@@ -26,7 +25,6 @@
 │   ├── data_utils.h                   // 数据读入写出函数
 │   └── fixpipe_l0c2l1.asc             // Ascend C样例实现 & 调用样例
 ```
-
 ## FixpipeParamsV220 与 FixpipeParamsArch3510 结构体对比
 
 不同产品支持的参数结构体不同：
@@ -37,34 +35,36 @@
 - `dav-2201` 架构：使用 `FixpipeParamsV220`
 - `dav-3510` 架构：使用 `FixpipeParamsArch3510`
 
-<table>
+<a name="表1"></a>
+<table border="2" align="center">
 <caption style="font-weight: normal;">
- 	     <span style="font-weight: bold; font-size: 1.2em;">📌 表1：参数结构体对比</span>
+    <span style="font-weight: bold; font-size: 1.2em;">📌 表1：参数结构体对比</span></caption>
 <tr><td rowspan="1" align="center">成员名</td><td align="center">FixpipeParamsV220</td><td align="center">FixpipeParamsArch3510</td><td align="center">说明</td></tr>
-<tr><td align="center">`nSize`</td><td align="center">✅</td><td align="center">✅</td><td>输出矩阵在N方向上的大小</td></tr>
-<tr><td align="center">`mSize`</td><td align="center">✅</td><td align="center">✅</td><td>输出矩阵在M方向上的大小</td></tr>
-<tr><td align="center">`srcStride`</td><td align="center">✅</td><td align="center">✅</td><td>源Nz矩阵中相邻Z排布的起始地址偏移</td></tr>
-<tr><td align="center">`dstStride`</td><td align="center">✅</td><td align="center">✅</td><td>目的矩阵中相邻Z排布的起始地址偏移（Nz格式，注意两种结构体在单位上的区别）或每行元素个数（ND/DN格式）</td></tr>
-<tr><td align="center">`quantPre`</td><td align="center">✅</td><td align="center">✅</td><td>量化模式控制</td></tr>
-<tr><td align="center">`deqScalar`</td><td align="center">✅</td><td align="center">✅</td><td>scalar量化参数</td></tr>
-<tr><td align="center">`reluEn`</td><td align="center">✅</td><td align="center">✅</td><td>ReLU开关</td></tr>
-<tr><td align="center">`unitFlag`</td><td align="center">✅</td><td align="center">✅</td><td>Mmad与Fixpipe细粒度并行控制</td></tr>
-<tr><td align="center">`isChannelSplit`</td><td align="center">✅</td><td align="center">✅</td><td>通道拆分开关</td></tr>
-<tr><td align="center">`ndNum` / `srcNdStride` / `dstNdStride`</td><td align="center">✅</td><td align="center">✅（在TransformParams中）</td><td>Nz2ND场景下控制多矩阵传输的参数，在V220中为独立成员，在Arch3510中被整合到`TransformParams`结构体中</td></tr>
-<tr><td align="center">`dnNum` / `srcNzMatrixStride` / `dstDnMatrixStride` / `srcNzC0Stride`</td><td align="center">❌</td><td align="center">✅（在TransformParams中）</td><td>Nz2DN场景下控制多矩阵传输的参数，仅Arch3510支持</td></tr>
-<tr><td align="center">`TransformParams`</td><td align="center">❌</td><td align="center">✅</td><td>基于模板参数的类型选择器，根据CO2Layout自动选择参数类型</td></tr>
-<tr><td align="center">`dualDstCtrl`</td><td align="center">❌</td><td align="center">✅</td><td>双目标模式控制，支持M维度拆分或N维度拆分</td></tr>
-<tr><td align="center">`subBlockId`</td><td align="center">❌</td><td align="center">✅</td><td>单目标模式下指示目标UB的编号</td></tr>
+<tr><td align="center"><code>nSize</code></td><td align="center">✅</td><td align="center">✅</td><td>输出矩阵在N方向上的大小</td></tr>
+<tr><td align="center"><code>mSize</code></td><td align="center">✅</td><td align="center">✅</td><td>输出矩阵在M方向上的大小</td></tr>
+<tr><td align="center"><code>srcStride</code></td><td align="center">✅</td><td align="center">✅</td><td>源Nz矩阵中相邻Z排布的起始地址偏移</td></tr>
+<tr><td align="center"><code>dstStride</code></td><td align="center">✅</td><td align="center">✅</td><td>目的矩阵中相邻Z排布的起始地址偏移（Nz格式，注意两种结构体在单位上的区别）或每行元素个数（ND/DN格式）</td></tr>
+<tr><td align="center"><code>quantPre</code></td><td align="center">✅</td><td align="center">✅</td><td>量化模式控制</td></tr>
+<tr><td align="center"><code>deqScalar</code></td><td align="center">✅</td><td align="center">✅</td><td>scalar量化参数</td></tr>
+<tr><td align="center"><code>reluEn</code></td><td align="center">✅</td><td align="center">✅</td><td>ReLU开关</td></tr>
+<tr><td align="center"><code>unitFlag</code></td><td align="center">✅</td><td align="center">✅</td><td>Mmad与Fixpipe细粒度并行控制</td></tr>
+<tr><td align="center"><code>isChannelSplit</code></td><td align="center">✅</td><td align="center">✅</td><td>通道拆分开关</td></tr>
+<tr><td align="center"><code>ndNum</code> / <code>srcNdStride</code> / <code>dstNdStride</code></td><td align="center">✅</td><td align="center">✅（在<code>TransformParams</code>中）</td><td>Nz2ND场景下控制多矩阵传输的参数，在V220中为独立成员，在Arch3510中被整合到<code>TransformParams</code>结构体中</td></tr>
+<tr><td align="center"><code>dnNum</code> / <code>srcNzMatrixStride</code> / <code>dstDnMatrixStride</code> / <code>srcNzC0Stride</code></td><td align="center">❌</td><td align="center">✅（在<code>TransformParams</code>中）</td><td>Nz2DN场景下控制多矩阵传输的参数，仅Arch3510支持</td></tr>
+<tr><td align="center"><code>TransformParams</code></td><td align="center">❌</td><td align="center">✅</td><td>基于模板参数的类型选择器，根据CO2Layout自动选择参数类型</td></tr>
+<tr><td align="center"><code>dualDstCtrl</code></td><td align="center">❌</td><td align="center">✅</td><td>双目标模式控制，支持M维度拆分或N维度拆分</td></tr>
+<tr><td align="center"><code>subBlockId</code></td><td align="center">❌</td><td align="center">✅</td><td>单目标模式下指示目标UB的编号</td></tr>
 </table>
 
 ## 场景详细说明
 
-本样例通过编译参数 `SCENARIO_NUM` 选择不同的输出场景， `SCENARIO_NUM` 不同取值对应的含义如下表所示。
+本样例通过编译参数 `SCENARIO_NUM` 选择不同的输出场景，`SCENARIO_NUM` 不同取值对应的含义如下表所示。
 所有场景基于相同的矩阵乘规格：[M, N, K] = [128, 128, 128]，核函数名为 `fixpipe_l0c2l1`。
 
-<table>
+<a name="表2"></a>
+<table border="2" align="center">
 <caption style="font-weight: normal;">
- 	     <span style="font-weight: bold; font-size: 1.2em;">📌 表2：scenarioNum不同取值的含义</span>
+    <span style="font-weight: bold; font-size: 1.2em;">📌 表2：scenarioNum不同取值的含义</span></caption>
 <tr><td rowspan="1" align="center">scenarioNum</td><td align="center">L0C数据类型</td><td align="center">L1数据类型</td><td align="center">输出格式</td><td align="center">是否使能量化</td><td align="center">是否使能ReLU</td></tr>
 <tr><td align="center">1</td><td align="center">float</td><td align="center">half</td><td align="center">Nz</td><td align="center">否(cast)</td><td align="center">否</td></tr>
 <tr><td align="center">2</td><td align="center">float</td><td align="center">int8_t</td><td align="center">Nz</td><td align="center">是(scalar)</td><td align="center">否</td></tr>
@@ -102,21 +102,22 @@
 - 配置环境变量
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
+
     ```bash
     source /usr/local/Ascend/cann/set_env.sh
     ```
-
   - 默认路径，非root用户安装CANN软件包
+
     ```bash
     source $HOME/Ascend/cann/set_env.sh
     ```
-
   - 指定路径install_path，安装CANN软件包
+
     ```bash
     source ${install_path}/cann/set_env.sh
     ```
-
 - 样例执行
+
   ```bash
   SCENARIO_NUM=1 ASC_ARCH=dav-2201
   mkdir -p build && cd build;      # 创建并进入build目录
@@ -129,11 +130,11 @@
   使用 CPU调试 或 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
 
   示例如下：
+
   ```bash
   cmake -DCMAKE_ASC_RUN_MODE=cpu -DSCENARIO_NUM=$SCENARIO_NUM -DCMAKE_ASC_ARCHITECTURES=$ASC_ARCH ..;make -j;  # CPU调试模式
   cmake -DCMAKE_ASC_RUN_MODE=sim -DSCENARIO_NUM=$SCENARIO_NUM -DCMAKE_ASC_ARCHITECTURES=$ASC_ARCH ..;make -j;  # NPU仿真模式
   ```
-
   > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
 
 - 编译选项说明
@@ -144,6 +145,7 @@
   | `SCENARIO_NUM` | 1-4 | 场景编号 |
 
   执行结果如下，说明精度对比成功。
+
   ```bash
   test pass!
   ```

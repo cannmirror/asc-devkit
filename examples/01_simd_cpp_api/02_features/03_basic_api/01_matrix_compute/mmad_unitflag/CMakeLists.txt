@@ -21,8 +21,8 @@ add_executable(demo
 )
 
 set(ENABLE_UNITFLAG 1 CACHE STRING "ENABLE_UNITFLAG, e.g. 0 or 1")
-if(NOT ENABLE_UNITFLAG MATCHES "(0|1)$")
-    message(FATAL_ERROR "ENABLE_UNITFLAG must be 0 or 1, current value: ${ENABLE_UNITFLAG}")
+if(NOT ENABLE_UNITFLAG MATCHES "^[0-1]$")
+    message(FATAL_ERROR "ENABLE_UNITFLAG must be 0 or 1, but got ${ENABLE_UNITFLAG}")
 endif()
 
 message(STATUS "[INFO] ENABLE_UNITFLAG is ${ENABLE_UNITFLAG}")

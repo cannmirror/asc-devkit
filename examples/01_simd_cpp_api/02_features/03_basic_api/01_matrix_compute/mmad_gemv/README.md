@@ -22,10 +22,9 @@
 │   ├── data_utils.h                // 数据读入写出函数
 │   └── mmad_gemv.asc               // Ascend C样例实现 & 调用样例
 ```
-
 ## 样例描述
 
-GEMV模式是指Mmad计算中M=1，形状为(1, K)的左矩阵A与形状为(K, N)的右矩阵B进行矩阵乘运算的场景。当M=1时，自动开启GEMV模式，仅在Ascend 950PR/Ascend 950DT上支持通过设置`mmadParams.disableGemv = true`关闭。本样例中通过编译参数`DISABLE_GEMV`选择是否关闭GEMV模式，0 代表开启GEMV，1 代表关闭。  
+GEMV模式是指Mmad计算中M=1，形状为(1, K)的左矩阵A与形状为(K, N)的右矩阵B进行矩阵乘运算的场景。当M=1时，自动开启GEMV模式，仅在Ascend 950PR/Ascend 950DT上支持通过设置`mmadParams.disableGemv = true`关闭。本样例中通过编译参数`DISABLE_GEMV`选择是否关闭GEMV模式，0 代表开启GEMV，1 代表关闭。
 
 以M=1，K=256，N=32，左右矩阵数据类型为half为具体示例，说明GEMV模式、非GEMV模式下Mmad计算的过程。
 
@@ -60,21 +59,23 @@ GEMV模式是指Mmad计算中M=1，形状为(1, K)的左矩阵A与形状为(K, N
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
+
     ```bash
     source /usr/local/Ascend/cann/set_env.sh
     ```
-
   - 默认路径，非root用户安装CANN软件包
+
     ```bash
     source $HOME/Ascend/cann/set_env.sh
     ```
-
   - 指定路径install_path，安装CANN软件包
+
     ```bash
     source ${install_path}/cann/set_env.sh
     ```
   
 - 样例执行
+
   ```bash
   mkdir -p build && cd build;      # 创建并进入build目录
   cmake -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DDISABLE_GEMV=0 ..;make -j;    # 编译工程，默认npu模式
@@ -82,15 +83,14 @@ GEMV模式是指Mmad计算中M=1，形状为(1, K)的左矩阵A与形状为(K, N
   ./demo                           # 执行编译生成的可执行程序，执行样例
   python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
   ```
-
   使用 CPU调试 或 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
 
   示例如下：
+
   ```bash
   cmake -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DDISABLE_GEMV=0 ..;make -j; # cpu调试模式
   cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DDISABLE_GEMV=0 ..;make -j; # NPU仿真模式
   ```
-
   > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
 
 - 编译选项说明
@@ -104,6 +104,7 @@ GEMV模式是指Mmad计算中M=1，形状为(1, K)的左矩阵A与形状为(K, N
 - 执行结果
 
   执行结果如下，说明精度对比成功。
+
   ```bash
   test pass!
   ```

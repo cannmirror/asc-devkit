@@ -23,8 +23,10 @@
 ## 样例描述
 一次完整的MX矩阵乘法涉及的数据搬运过程包括：GM-->L1、L1-->L0A/L0AMX/L0B/L0BMX、L1-->BT（BiasTable Buffer）、L0C-->GM，其中不同存储单元的数据排布格式，如下表1所示：  
 
-<table border="2">
-<caption>表1：不同存储单元的数据排布格式</caption>
+<a name="表1"></a>
+<table border="2" align="center">
+<caption style="font-weight: normal;">
+    <span style="font-weight: bold; font-size: 1.2em;">📌 表1：不同存储单元的数据排布格式</span></caption>
   <tr>
     <td >存储单元</td>
     <td>数据排布格式</td>
@@ -60,8 +62,10 @@ MX矩阵乘法计算公式：$$ C = (ScaleA ⊗ A) x (ScaleB ⊗ B) + Bias $$
 
 程序中scenarioNum参数不同取值对应的场景，如下表2所示：
 
-<table border="2">
-<caption>表2：scenarioNum不同取值的含义</caption>
+<a name="表2"></a>
+<table border="2" align="center">
+<caption style="font-weight: normal;">
+    <span style="font-weight: bold; font-size: 1.2em;">📌 表2：scenarioNum不同取值的含义</span></caption>
   <tr>
     <td >scenarioNum</td>
     <td>A Type</td>

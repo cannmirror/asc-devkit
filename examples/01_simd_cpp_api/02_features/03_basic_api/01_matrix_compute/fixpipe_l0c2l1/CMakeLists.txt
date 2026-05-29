@@ -28,18 +28,12 @@ target_link_libraries(demo PRIVATE)
 #   2 - 输出格式Nz，输出到L1的数据类型为int8_t，使能Scalar量化
 #   3 - 输出格式Nz，输出到L1的数据类型为int8_t，使能Vector量化
 #   4 - 输出格式Nz，输出到L1的数据类型为half，使能relu
+set(SCENARIO_NUM "1" CACHE STRING "Scene number (1-4)")
 message(STATUS "[INFO] SCENARIO_NUM is ${SCENARIO_NUM}")
 
-if(NOT DEFINED SCENARIO_NUM)
-    message(FATAL_ERROR "SCENARIO_NUM is not set. Please specify -DSCENARIO_NUM=1/2/3/4")
+if(NOT SCENARIO_NUM MATCHES "^[1-4]$")
+    message(FATAL_ERROR "SCENARIO_NUM must be 1, 2, 3 or 4, but got ${SCENARIO_NUM}")
 endif()
-
-set(VALID_SCENARIOS 1 2 3 4)
-if(NOT SCENARIO_NUM IN_LIST VALID_SCENARIOS)
-    message(FATAL_ERROR "SCENARIO_NUM must be 1,2,3,4, got: ${SCENARIO_NUM}")
-endif()
-
-set(SCENARIO_NUM "1" CACHE STRING "Scene number (1-4)")
 
 add_definitions(-DSCENARIO_NUM=${SCENARIO_NUM})
 

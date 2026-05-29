@@ -10,6 +10,17 @@
 
 cmake_minimum_required(VERSION 3.16)
 
+set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "NPU architecture: dav-2201, dav-3510")
+set(SCENARIO_NUM "4" CACHE STRING "Scene number (1-5)")
+set(M_SIZE "30" CACHE STRING "M size")
+set(K_SIZE "40" CACHE STRING "K size")
+set(N_SIZE "70" CACHE STRING "N size")
+
+
+if(NOT SCENARIO_NUM MATCHES "^[1-5]$")
+    message(FATAL_ERROR "SCENARIO_NUM must be 1, 2, 3, 4 or 5, but got ${SCENARIO_NUM}")
+endif()
+
 find_package(ASC REQUIRED)
 
 project(kernel_samples LANGUAGES ASC CXX)
@@ -18,12 +29,8 @@ add_executable(demo
     mmad_load3dv2.asc
 )
 
-target_link_libraries(demo PRIVATE
-    tiling_api
-    register
-    platform
-    m
-)
+target_link_libraries(demo PRIVATE)
+
 message(STATUS "[INFO] M_SIZE is ${M_SIZE}")
 message(STATUS "[INFO] K_SIZE is ${K_SIZE}")
 message(STATUS "[INFO] N_SIZE is ${N_SIZE}")
@@ -35,13 +42,6 @@ target_compile_definitions(demo PRIVATE
     SCENARIO_NUM=${SCENARIO_NUM}
 )
 
-# ======================================================================================
-# NPU 编译选项配置
-#
-# 说明：
-#   - 需根据实际部署的 NPU 硬件架构选择对应的 `npu-arch` 参数。
-# ======================================================================================
 target_compile_options(demo PRIVATE
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
-    # $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3510>
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>
 )
