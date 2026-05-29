@@ -1,8 +1,8 @@
 # asc_copy_l12ub
 
-## AI处理器支持情况
+## 产品支持情况
 
-| AI处理器类型 | 是否支持  |
+| 产品 | 是否支持  |
 | :----------------------- | :------: |
 |<cann-filter npu_type = "950"> Ascend 950PR/Ascend 950DT | √</cann-filter> |
 | <term>Atlas A3 训练系列产品/Atlas A3 推理系列产品</term> |    x     |

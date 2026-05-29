@@ -1,7 +1,7 @@
 # asc_set_l0c2gm_config
-## AI处理器支持情况
+## 产品支持情况
 
-|AI处理器类型   | 是否支持 |
+|产品   | 是否支持 |
 | ------------|:----:|
 | <cann-filter npu_type="950"><term>Ascend 950PR/Ascend 950DT</term>  | √ </cann-filter>|
 | Atlas A3 训练系列产品/Atlas A3 推理系列产品 | √    |

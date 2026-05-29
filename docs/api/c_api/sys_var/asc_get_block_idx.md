@@ -23,7 +23,7 @@ __aicore__ inline int64_t asc_get_block_idx()
 
 ## 返回值说明
 
-无
+当前运行核的索引。
 
 ## 流水类型
 
