@@ -13,7 +13,7 @@
     **表 1**  涉及Subnormal的API和config参数说明
 
     <a name="table288510533427"></a>
-    <table><thead align="left"><tr id="row388575318425"><th class="cellrowborder" align="center" valign="top" width="27%" id="mcps1.2.3.1.1"><p id="p12885175314420"><a name="p12885175314420"></a><a name="p12885175314420"></a>Ascend C 基础API</p>
+    <table><thead align="left"><tr id="row388575318425"><th class="cellrowborder" align="center" valign="top" width="27%" id="mcps1.2.3.1.1"><p id="p12885175314420"><a name="p12885175314420"></a><a name="p12885175314420"></a>Ascend C基础API</p>
     </th>
     <th class="cellrowborder" align="center" valign="top" width="73%" id="mcps1.2.3.1.2"><p id="p1288585311428"><a name="p1288585311428"></a><a name="p1288585311428"></a>兼容说明</p>
     </th>
@@ -34,40 +34,47 @@
     可以参考以下代码片段：
 
     ```
-    
     // 定义模板参数
     constexpr AscendC::LnConfig CONFIG = {
         AscendC::LnAlgo::PRECISION_1ULP_FTZ_FALSE
     };
-    template <typename T>
-    __aicore__ inline void Compute(GM_ADDR dst, GM_ADDR src, uint32_t count)
+    constexpr uint32_t DATA_COUNT = 1024;
+    constexpr uint32_t xAddr = 0;
+    constexpr uint32_t yAddr = xAddr + DATA_COUNT * sizeof(half);
+
+    // 核函数入口：使用__vector__显式声明Vector核函数，搭配静态Tensor方式编程
+    __vector__ __global__ void ln_custom(__gm__ uint8_t* src, __gm__ uint8_t* dst)
     {
-        AscendC::TPipe pipe;
-        AscendC::GlobalTensor<T> srcGlobal;
-        AscendC::GlobalTensor<T> dstGlobal;
-        srcGlobal.SetGlobalBuffer((__gm__ T*)src);
-        dstGlobal.SetGlobalBuffer((__gm__ T*)dst);
-        AscendC::TQue<AscendC::TPosition::VECIN, 1> inQueue;
-        AscendC::TQue<AscendC::TPosition::VECOUT, 1> outQueue;
-        pipe.InitBuffer(inQueue, 1, count * sizeof(T));
-        pipe.InitBuffer(outQueue, 1, count * sizeof(T));
-        AscendC::LocalTensor<T> dstLocal = outQueue.AllocTensor<T>();
-        AscendC::LocalTensor<T> srcLocal = inQueue.AllocTensor<T>();
-        AscendC::DataCopy(srcLocal, srcGlobal, count);
+        // 静态Tensor需要手动调用InitSocState初始化全局状态寄存器
+        AscendC::InitSocState();
+
+        AscendC::GlobalTensor<half> srcGlobal;
+        AscendC::GlobalTensor<half> dstGlobal;
+        srcGlobal.SetGlobalBuffer((__gm__ half*)src, DATA_COUNT);
+        dstGlobal.SetGlobalBuffer((__gm__ half*)dst, DATA_COUNT);
+
+        // 直接构造指定地址和存储位置的LocalTensor（静态Tensor方式）
+        AscendC::LocalTensor<half> srcLocal(AscendC::TPosition::VECCALC, xAddr, DATA_COUNT);
+        AscendC::LocalTensor<half> dstLocal(AscendC::TPosition::VECCALC, yAddr, DATA_COUNT);
+
+        AscendC::DataCopy(srcLocal, srcGlobal, DATA_COUNT);
         AscendC::SetFlag<AscendC::HardEvent::MTE2_V>(EVENT_ID0);
         AscendC::WaitFlag<AscendC::HardEvent::MTE2_V>(EVENT_ID0);
-        // 调用基础API Ln，传入模板参数
-        AscendC::Ln<T, CONFIG>(dstLocal, srcLocal, count);
-        AscendC::SetFlag<AscendC::HardEvent::V_MTE3>(EVENT_ID1);
-        AscendC::WaitFlag<AscendC::HardEvent::V_MTE3>(EVENT_ID1);
-        AscendC::DataCopy(dstGlobal, dstLocal, count);
-        inQueue.FreeTensor(srcLocal);
+
+        // 调用Ln基础API，传入模板参数
+        AscendC::Ln<half, CONFIG>(dstLocal, srcLocal, DATA_COUNT);
+
+        AscendC::SetFlag<AscendC::HardEvent::V_MTE3>(EVENT_ID0);
+        AscendC::WaitFlag<AscendC::HardEvent::V_MTE3>(EVENT_ID0);
+        AscendC::DataCopy(dstGlobal, dstLocal, DATA_COUNT);
+
+        AscendC::PipeBarrier<PIPE_ALL>();
     }
     ```
 
 ## 数据搬运<a name="section7530159122210"></a>
 
--   **DataCopy接口不支持L1 Buffer -\> GM通路。**
+-   **DataCopy接口不支持L1 Buffer-\>GM通路。**
 
     **说明**：硬件删除L1 Buffer到GM的通路，无法将数据从L1 Buffer直接搬运到GM中。现有接口不支持L1 Buffer到GM的直接搬运。
 
@@ -217,7 +224,7 @@
                 AscendC::SetLoadDataPaddingValue(0);
                 AscendC::LoadData<U, LOAD3D_CONFIG>(b2, rightMatrix, loadData3dParams);
         #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
-                uint16_t dstStride = AscendC::DivCeil(N, 16);6
+                uint16_t dstStride = AscendC::DivCeil(N, 16);
                 AscendC::SetLoadDataRepeatWithStride({0, 1, 0, dstStride});
                 AscendC::SetLoadDataPaddingValue(0);
                 AscendC::LoadDataWithStride<U, LOAD3D_CONFIG>(b2, rightMatrix, loadData3dParams);
@@ -263,24 +270,28 @@
         __aicore__ inline void Unzip(AscendC::GlobalTensor<int8_t>& dstGlobalTensor,
             AscendC::GlobalTensor<int8_t>& srcGlobalTensor, uint32_t count)
         {
-            AscendC::LocalTensor<int8_t> srcLocalTensor = inQueueSrc.AllocTensor<int8_t>();
-            AscendC::DataCopy(srcLocalTensor, srcGlobalTensor, count);
-            inQueueSrc.EnQue(srcLocalTensor);
+            constexpr uint32_t oneBlockBytes = 32;
+            uint32_t srcAddr = 0;
+            uint32_t tmpAddr = srcAddr + AscendC::AlignUp(count * sizeof(int8_t), oneBlockBytes);
+            uint32_t dstAddr = tmpAddr + AscendC::AlignUp(count * 2 * sizeof(half), oneBlockBytes);
 
-            srcLocalTensor = inQueueSrc.DeQue<int8_t>();
-            AscendC::LocalTensor<half> tmpTensor = tmpQueue.AllocTensor<half>();
-            AscendC::LocalTensor<int8_t> dstLocalTensor = outQueueDst.AllocTensor<int8_t>();
+            AscendC::LocalTensor<int8_t> srcLocalTensor(AscendC::TPosition::VECCALC, srcAddr, count);
+            AscendC::LocalTensor<half> tmpTensor(AscendC::TPosition::VECCALC, tmpAddr, count * 2);
+            AscendC::LocalTensor<int8_t> dstLocalTensor(AscendC::TPosition::VECCALC, dstAddr, count * 2);
+
+            AscendC::DataCopy(srcLocalTensor, srcGlobalTensor, count);
+            AscendC::SetFlag<AscendC::HardEvent::MTE2_V>(EVENT_ID0);
+            AscendC::WaitFlag<AscendC::HardEvent::MTE2_V>(EVENT_ID0);
+
             AscendC::LocalTensor<AscendC::int4b_t> int4SrcLocalTensor =
                 srcLocalTensor.ReinterpretCast<AscendC::int4b_t>();
             AscendC::Cast<half, AscendC::int4b_t>(tmpTensor, int4SrcLocalTensor, AscendC::RoundMode::CAST_NONE, count * 2);
+            AscendC::PipeBarrier<PIPE_V>();
             AscendC::Cast<int8_t, half>(dstLocalTensor, tmpTensor, AscendC::RoundMode::CAST_CEIL, count * 2);
-            outQueueDst.EnQue<int8_t>(dstLocalTensor);
-            inQueueSrc.FreeTensor(srcLocalTensor);
-            tmpQueue.FreeTensor(tmpTensor);
 
-            dstLocalTensor = outQueueDst.DeQue<int8_t>();
+            AscendC::SetFlag<AscendC::HardEvent::V_MTE3>(EVENT_ID0);
+            AscendC::WaitFlag<AscendC::HardEvent::V_MTE3>(EVENT_ID0);
             AscendC::DataCopy(dstGlobalTensor, dstLocalTensor, count * 2);
-            outQueueDst.FreeTensor(dstLocalTensor);
         }
         ```
 
@@ -377,37 +388,32 @@
 
     **兼容方案**：在算子侧可以不调用LoadDatawithSparse进行矩阵稠密转稀疏操作，然后使用Mmad进行正常的稠密矩阵计算。稀疏矩阵相关算法可参考MmadWithSparse中的介绍。
 
--   **3510架构版本删除GM-\> L0A Buffer/L0B Buffer 通路**
+-   **3510架构版本删除GM-\>L0A Buffer/L0B Buffer通路**
 
-    **说明**：硬件删除GM-\> L0A Buffer/L0B Buffer通路，调用LoadData时，不再支持这些通路。
+    **说明**：硬件删除GM-\>L0A Buffer/L0B Buffer通路，调用LoadData时，不再支持这些通路。
 
-    **兼容方案**：实现GM-\> L0A Buffer/L0B Buffer搬运需拆分成两步进行，先从GM搬运到L1 Buffer，再从L1 Buffer搬运到L0A Buffer、L0B Buffer。
+    **兼容方案**：实现GM-\>L0A Buffer/L0B Buffer搬运需拆分成两步进行，先从GM搬运到L1 Buffer，再从L1 Buffer搬运到L0A Buffer、L0B Buffer。
 
-    以GM -\> L1 Buffer -\> L0A Buffer通路为例可以参考以下步骤：
+     以GM-\>L1 Buffer-\>L0A Buffer通路为例可以参考以下步骤：
 
     1.  将矩阵A从GM搬运到L1 Buffer。
 
         ```
-        __aicore__ inline void CopyGmToA1()
+        __aicore__ inline void CopyGmToA1(AscendC::LocalTensor<T>& leftMatrix)
         {
-            AscendC::LocalTensor<T> leftMatrix = inQueueA1.AllocTensor<T>();
             AscendC::Nd2NzParams intriParams1{1, 64, 128, 0, 128, 64, 1, 0};
             AscendC::DataCopy(leftMatrix, aGlobal, intriParams1);
-            inQueueA1.EnQue(leftMatrix);
         }
         ```
 
     2.  将矩阵A从L1 Buffer搬运到L0A Buffer。
 
         ```
-        __aicore__ inline void Load2DA1ToL0A()
+        __aicore__ inline void Load2DA1ToL0A(AscendC::LocalTensor<T>& a1, AscendC::LocalTensor<T>& a2)
         {
-            AscendC::LocalTensor<T> a1 = inQueueA1.DeQue<T>();
-            AscendC::LocalTensor<T> a2 = inQueueA2.AllocTensor<T>();
             AscendC::LoadData2DParamsV2 loadDataParams;
             ...
             AscendC::LoadData(a2, a1, loadDataParams);
-            ...
         }
         ```
 
@@ -417,7 +423,7 @@
 
     **兼容方案**：先通过Fill接口初始化L1 Buffer，再通过LoadData接口将L1 Buffer上的数据搬运到L0A Buffer、L0B Buffer。具体代码可参考[Fill兼容性样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/05_compatibility_guide/fill)。
 
-    以 GM -\> L1 Buffer -\> L0A Buffer的数据通路为例：
+    以GM-\>L1 Buffer-\>L0A Buffer的数据通路为例：
 
     1.  初始化L1 Buffer。
 
@@ -447,10 +453,10 @@
 
     **兼容方案**：该接口为调测接口，对功能无影响。
 
-## 调测 API<a name="section12611957102116"></a>
+## 调测API<a name="section12611957102116"></a>
 
 -   **L1 Buffer上不支持Tensor信息的打印。**
 
-    **说明**：因芯片删除L1 Buffer -\> GM通路，不支持L1 Buffer -\> GM的功能。
+    **说明**：因芯片删除L1 Buffer-\>GM通路，不支持L1 Buffer-\>GM的功能。
 
     **兼容方案**：该接口为调测接口，对功能无影响。
