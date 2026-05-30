@@ -2,7 +2,10 @@
 
 ## 概述
 
-本样例基于WaitPreTaskEnd和SetNextTaskStart两个接口实现Superkernel的子kernel并行。WaitPreTaskEnd在子kernel第一条搬运指令前调用，使得调用前的指令可以与前序其他子kernel并行执行；SetNextTaskStart在子kernel最后一条搬运指令后调用，使得调用后的指令可以与后续其他子kernel并行执行。两个接口配合使用可最大化子kernel间的并行度，提升整体性能。
+本样例基于WaitPreTaskEnd和SetNextTaskStart两个接口实现Superkernel的子kernel并行。
+- WaitPreTaskEnd在子kernel第一条搬运指令前调用，使得调用前的指令可以与前序其他子kernel并行执行；
+- SetNextTaskStart在子kernel最后一条搬运指令后调用，使得调用后的指令可以与后续其他子kernel并行执行。
+- 两个接口配合使用可最大化子kernel间的并行度，提升整体性能。
 
 ## 支持的产品
 

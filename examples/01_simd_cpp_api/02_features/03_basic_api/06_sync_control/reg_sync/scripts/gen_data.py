@@ -27,11 +27,10 @@ def gen_golden_data_simple(scenarioNum=1):
         z = np.exp(x)
         z.tofile("./output/golden.bin")
     elif scenarioNum == 2:
-        count = 8
         x = np.random.randn(count).astype(np.float32)
         x.tofile("./input/input_x.bin")
-        golden = np.zeros(8, dtype=np.float32)
-        golden[0] = np.sum(np.abs(x)).astype(np.float32)
+        exp = np.exp(x - np.max(x))
+        golden = exp / np.sum(exp)
         golden.tofile("./output/golden.bin")
 
 

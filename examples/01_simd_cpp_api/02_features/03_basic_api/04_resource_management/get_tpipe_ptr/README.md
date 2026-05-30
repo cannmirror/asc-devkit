@@ -29,23 +29,20 @@
   **调用GetTPipePtr接口**
 
   ```cpp
-  class KernelAdd {
-      // 没有TPipe成员变量
+    __aicore__ inline void InitTPipe()
+    {
+        AscendC::TPipe pipe;
+    }
 
-      __aicore__ inline void Init(__gm__ uint8_t* x, __gm__ uint8_t* y, __gm__ uint8_t* z, uint32_t totalLength, uint32_t tileNum)
-      {
-          // 调用GetTPipePtr获取TPipe指针并使用
-          GetTPipePtr()->InitBuffer(inQueueX, BUFFER_NUM, this->tileLength * sizeof(float));
-      }
-  };
-
-  __global__ __vector__ void add_custom(__gm__ uint8_t* x, __gm__ uint8_t* y, __gm__ uint8_t* z, AddCustomTilingData tiling)
-  {
-      // 不用显式传入TPipe指针
-      KernelAdd op;
-      op.Init(x, y, z, tiling.totalLength, tiling.tileNum);
-      op.Process();
-  }
+    template <uint32_t totalLength, uint32_t tileNum>
+    __global__ __vector__ void get_tpipe_ptr_custom(__gm__ uint8_t* x, __gm__ uint8_t* y, __gm__ uint8_t* z)
+    {
+        // 不用显式传入TPipe指针，且没有TPipe变量
+        InitTPipe();
+        // ...
+        // 调用GetTPipePtr获取TPipe指针并使用
+        GetTPipePtr()->InitBuffer(inQueueX, BUFFER_NUM, tileLength * sizeof(float));
+    }
   ```
 
   **不调用GetTPipePtr接口（核函数显式传入TPipe指针）**

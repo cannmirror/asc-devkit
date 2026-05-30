@@ -28,7 +28,7 @@
 
 - 样例功能
 
-  本样例以Muls计算为例展示TPipe的重复申请与释放。
+  本样例以两次完整的Muls计算为例，展示TPipe的重复申请与释放。前一次计算的TPipe对象先Destroy，后一次计算的TPipe对象才能Init。
 
 - 样例规格
 
@@ -64,15 +64,9 @@
 
   - Kernel实现
 
-    - 调用TPipe::Init接口初始化TPipe对象，调用TPipe::InitBuffer接口为TQue分配内存空间。
+    - 创建pipe1对象，调用TPipe::Init接口初始化，计算，并调用TPipe::Destroy接口销毁pipe1对象。
 
-    - 调用DataCopy基础API，将数据从GM（Global Memory）搬运到UB（Unified Buffer）。
-
-    - 调用Muls接口，将输入tensor与值为3的标量相乘。
-
-    - 调用DataCopy基础API，将计算结果从UB（Unified Buffer）搬运至GM（Global Memory）。
-
-    - 调用TPipe::Destroy接口销毁TPipe对象，实现TPipe重复申请与使用。
+    - 创建pipe2对象，调用TPipe::Init接口初始化，计算，并调用TPipe::Destroy接口销毁pipe2对象。
 
   - 调用实现
 

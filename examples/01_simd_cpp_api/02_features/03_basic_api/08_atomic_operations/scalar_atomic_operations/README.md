@@ -26,27 +26,18 @@
 
 本样例通过编译参数 `SCENARIO_NUM` 来切换不同的场景：
 
+**场景1：AtomicAdd原子加操作**  
+  三个核依次调度，每个核对GM的首个元素（dst[0]）原子加1，返回值为原子操作前的旧值。最终dst[0]的值为初始值加3
+
+**场景2：AtomicCas原子比较交换操作**  
+  三个核依次调度，每个核检查GM首个元素是否等于expected值1，若相等则替换为newValue值2，不相等则不修改。返回值为原子操作前的旧值
+
 <table border="2">
 <caption>表1：场景配置对照表</caption>
-<tr><th>scenarioNum</th><th>原子操作接口</th><th>输入Shape</th><th>输出Shape</th><th>数据类型</th><th>说明</th></tr>
-<tr><td>1</td><td>AtomicAdd</td><td>[1, 256]</td><td>[1, 256]</td><td>int32</td><td>三个核并行对GM首个元素进行原子加1操作</td></tr>
-<tr><td>2</td><td>AtomicCas</td><td>[1, 256]</td><td>[1, 256]</td><td>uint32</td><td>三个核并行对GM首个元素进行原子比较交换（如果值为1则替换为2）</td></tr>
+<tr><th>scenarioNum</th><th>原子操作接口</th><th>输出Shape</th><th>数据类型</th><th>说明</th></tr>
+<tr><td>1</td><td>AtomicAdd</td><td>[1, 256]</td><td>int32</td><td>三个核并行对GM首个元素进行原子加1操作</td></tr>
+<tr><td>2</td><td>AtomicCas</td><td>[1, 256]</td><td>uint32</td><td>三个核并行对GM首个元素进行原子比较交换（如果值为1则替换为2）</td></tr>
 </table>
-
-**场景1：AtomicAdd原子加操作**
-- 输入shape：src=[1, 256]
-- 输出shape：dst=[1, 256]
-- 数据类型：int32
-- 参数：并行block数=3
-- 说明：三个核依次调度，每个核对GM的首个元素（dst[0]）原子加1，返回值为原子操作前的旧值。最终dst[0]的值为初始值加3
-
-
-**场景2：AtomicCas原子比较交换操作**
-- 输入shape：src=[1, 256]
-- 输出shape：dst=[1, 256]
-- 数据类型：uint32
-- 参数：并行block数=3
-- 说明：三个核依次调度，每个核检查GM首个元素是否等于expected值1，若相等则替换为newValue值2，不相等则不修改。返回值为原子操作前的旧值
 
 ## 编译运行
 
