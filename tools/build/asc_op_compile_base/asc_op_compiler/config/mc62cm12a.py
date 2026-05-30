@@ -10,7 +10,7 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 """
-ArchRuntimeConfig MC62CM12A
+ArchRuntimeConfig MC62
 """
 
 from asc_op_compile_base.asc_op_compiler.config.run_settings import RuntimeConfig
@@ -167,4 +167,3 @@ class ArchRuntimeConfig(RuntimeConfig):
             kernel_compile_config,
             cmd_compiler_config,
         )
-

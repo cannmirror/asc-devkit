@@ -77,7 +77,7 @@ enum class SocVersion {
     HI3796CV300CS,
     HI3796CV300ES,
     MC61AM21A,
-    MC62CM12A,
+    MC62,
     SD3403,
     KIRINX90,
     KIRIN9030,

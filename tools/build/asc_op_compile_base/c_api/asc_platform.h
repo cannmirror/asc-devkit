@@ -63,7 +63,7 @@ enum class DPLATFORM {
   ASCEND_950,     // C310
   KIRINX90,
   KIRIN9030,
-  MC62CM12A,
+  MC62,
   MC32DM11A,
   DEFAULT_CURRENT
 };
@@ -114,6 +114,21 @@ constexpr const char* Ascend_910_9372 = "Ascend910_9372";
 constexpr const char* Ascend_910_9362 = "Ascend910_9362";
 constexpr const char* Ascend_950 = "Ascend950";
 constexpr const char* MC62CM12AA = "MC62CM12AA";
+constexpr const char* MC62DM22AA = "MC62DM22AA";
+constexpr const char* MC62CM13AA = "MC62CM13AA";
+constexpr const char* MC62DM23AA = "MC62DM23AA";
+constexpr const char* MC62CM13AB = "MC62CM13AB";
+constexpr const char* MC62DM23AB = "MC62DM23AB";
+constexpr const char* MC62CM12AC = "MC62CM12AC";
+constexpr const char* MC62DM22AC = "MC62DM22AC";
+constexpr const char* MC62CM12AD = "MC62CM12AD";
+constexpr const char* MC62DM22AD = "MC62DM22AD";
+constexpr const char* MC62CM12AE = "MC62CM12AE";
+constexpr const char* MC62DM22AE = "MC62DM22AE";
+constexpr const char* MC62CM12AB = "MC62CM12AB";
+constexpr const char* MC62DM22AB = "MC62DM22AB";
+constexpr const char* MC62CM12AF = "MC62CM12AF";
+constexpr const char* MC62DM22AF = "MC62DM22AF";
 constexpr const char* Ascend950PR_9599 = "Ascend950PR_9599";
 constexpr const char* Ascend950PR_958a = "Ascend950PR_958a";
 constexpr const char* Ascend950PR_9589 = "Ascend950PR_9589";
@@ -630,4 +645,3 @@ class CceConfBase {
 }  // namespace tvm
 
 #endif  // PLATFORM_H_
-

@@ -705,7 +705,7 @@ class TestCompileOp(unittest.TestCase):
             cfg.current()["tir.op_debug_config"] = ["oom"]
         from asc_op_compile_base.asc_op_compiler.ascendc_common_utility import CommonUtility as utility
         get_soc = global_var_storage.get_variable("ascendc_short_soc_version")
-        global_var_storage.set_variable("ascendc_short_soc_version", "MC62CM12A")
+        global_var_storage.set_variable("ascendc_short_soc_version", "MC62")
         self.assertTrue(utility.is_m510())
         global_var_storage.set_variable("ascendc_short_soc_version", get_soc)
 

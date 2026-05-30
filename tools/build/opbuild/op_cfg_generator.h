@@ -36,7 +36,7 @@ const std::set<std::string> VALID_SOC_SET = {
     "bs9sx1a",
     "bs9sx2a",
     "mc61am21a",
-    "mc62cm12a",
+    "mc62",
     "ascend910_96",
     "kirinx90",
     "kirin9030",
