@@ -73,13 +73,13 @@ def gen_golden_data(work_dir, dt_mode):
     data_type_str = "hif8_hif8_float"
 
     if dt_mode == 1:
-        DATA_TYPE_STR = "fp8_e4m3fn_fp8_e4m3fn_float"
+        data_type_str = "fp8_e4m3fn_fp8_e4m3fn_float"
     elif dt_mode == 2:
-        DATA_TYPE_STR = "fp8_e5m2_fp8_e5m2_float"
+        data_type_str = "fp8_e5m2_fp8_e5m2_float"
     elif dt_mode == 3:
-        DATA_TYPE_STR = "fp8_e4m3fn_fp8_e5m2_float"
+        data_type_str = "fp8_e4m3fn_fp8_e5m2_float"
     elif dt_mode == 4:
-        DATA_TYPE_STR = "fp8_e5m2_fp8_e4m3fn_float"
+        data_type_str = "fp8_e5m2_fp8_e4m3fn_float"
 
     if data_type_str == "float16_float32":
         gen_golden_data_fp16(work_dir)
@@ -88,7 +88,7 @@ def gen_golden_data(work_dir, dt_mode):
     elif data_type_str == "hif8_hif8_float":
         gen_golden_data_hif8(work_dir)
     elif "fp8" in data_type_str:
-        gen_golden_data_fp8(work_dir)
+        gen_golden_data_fp8(work_dir, data_type_str)
     else:
         logging.info("[ERROR] can't support data type %s" % (data_type_str))
         return -1
@@ -134,7 +134,7 @@ def gen_golden_data_hif8(work_dir, dst_type=np.float32):
     savebinfile(work_dir, x1_gm_hif8, x2_gm_hif8, y_gm, bias_gm)
     return 0
 
-def gen_golden_data_fp8(work_dir, dst_type=np.float32):
+def gen_golden_data_fp8(work_dir, data_type_str, dst_type=np.float32):
     c0size = 32
     if data_type_str == "fp8_e4m3fn_fp8_e4m3fn_float":
         srca_type = ml_dtypes.float8_e4m3fn
