@@ -19,13 +19,13 @@
 
 ## 样例描述
 - 样例功能：  
-  本样例基于RegBase编程范式实现向量自加操作。输入`x`为`float`类型二维数据，输出`y`与输入shape一致，每个输出元素满足`y[i] = x[i] + x[i]`。样例采用4核并行处理，输入总长度为`512 * 512`个`float`元素，每个核处理`totalLength / 4`个连续元素，展示GM/UB数据搬运、VF函数调用、RegBase寄存器计算和流水同步的基本流程。
+  本样例基于RegBase编程范式实现向量自加操作。输入`x`为`float`类型二维数据，输出`y`与输入shape一致，每个输出元素满足`y[i] = x[i] + x[i]`。样例采用4核并行处理，输入总长度为`256 * 256`个`float`元素，每个核处理`totalLength / 4`个连续元素，展示GM/UB数据搬运、VF函数调用、RegBase寄存器计算和流水同步的基本流程。
 - 样例规格：
   <table>
   <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="3" align="center">AIV样例</td></tr>
   <tr><td rowspan="2" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td></tr>
-  <tr><td align="center">x</td><td align="center">[512, 512]</td><td align="center">float</td></tr>
-  <tr><td rowspan="1" align="center">样例输出</td><td align="center">y</td><td align="center">[512, 512]</td><td align="center">float</td></tr>
+  <tr><td align="center">x</td><td align="center">[256, 256]</td><td align="center">float</td></tr>
+  <tr><td rowspan="1" align="center">样例输出</td><td align="center">y</td><td align="center">[256, 256]</td><td align="center">float</td></tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">vector_add</td></tr>
   </table>
 

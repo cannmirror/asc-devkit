@@ -24,8 +24,6 @@ add_executable(demo
     gelu.asc
 )
 
-target_link_libraries(demo PRIVATE)
-
 message(STATUS "[INFO] SCENARIO_NUM is ${SCENARIO_NUM}")
 message(STATUS "[INFO] CMAKE_VF_MODE is ${CMAKE_VF_MODE}")
 

@@ -117,8 +117,6 @@ $$
   cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j
   ```
 
-  新版本 CANN 包中，dav-3510 架构的 NPU 仿真临时依赖 `tools/simulator/dav_3510/camodel` 目录。本样例的 CMake 工程会在仿真模式下自动添加该目录的链接搜索路径和运行时库搜索路径，后续包侧修复默认路径后可删除这段兼容说明。
-
 - 编译选项说明
 
   | 选项 | 可选值 | 说明 |

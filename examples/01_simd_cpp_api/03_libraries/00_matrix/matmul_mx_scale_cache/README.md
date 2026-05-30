@@ -10,6 +10,10 @@
 
 - Ascend 950PR/Ascend 950DT
 
+## 支持的CANN软件版本
+
+- \>= CANN 9.1.0
+
 ## 目录结构介绍
 ```
 ├── matmul_mx_scale_cache

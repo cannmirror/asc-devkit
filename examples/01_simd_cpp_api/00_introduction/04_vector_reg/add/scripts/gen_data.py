@@ -16,8 +16,8 @@ import os
 import numpy as np
 
 def gen_golden_data_simple():
-    inner = 512
-    outter = 512
+    inner = 256
+    outter = 256
     data_type = np.float32
     src = np.ones([outter, inner]).astype(data_type)
     golden = np.copy(src)

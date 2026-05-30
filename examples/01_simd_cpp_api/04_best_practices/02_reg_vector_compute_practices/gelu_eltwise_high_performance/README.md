@@ -581,7 +581,7 @@ $$
   | 选项　　　　　 | 可选值　　　　　　　　　　　| 说明　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 |
   | ----------------| -----------------------------| --------------------------------------------------------------------------------------|
   | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`cpu`、`sim` | 运行模式：NPU 运行、CPU调试、NPU仿真　　　　　　　　　　　　　　　　　　　　　　　　 |
-  | `CMAKE_ASC_ARCHITECTURES` | `dav-3510` | NPU 架构：dav-3510 对应 Ascend 950PR/Ascend 950DT |
+  | `CMAKE_ASC_ARCHITECTURES` | `dav-3510` | NPU 架构：Ascend 950PR/Ascend 950DT |
   | `SCENARIO_NUM` | `0`、`1`、`2`、`3`　　　　　| Case编号：0=单loop+128bytes，1=单loop+256bytes，2=loop拆分，3=loop拆分+unroll |
 
 - 执行结果
