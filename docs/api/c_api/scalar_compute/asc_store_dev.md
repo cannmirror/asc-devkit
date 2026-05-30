@@ -53,7 +53,7 @@ PIPE_S
 ## 调用示例
 
 ```c++
-__gm__ int32_t* addr;
+__gm__ int32_t addr[256];
 int32_t value = 2;
 asc_store_dev(addr, value);
 ```

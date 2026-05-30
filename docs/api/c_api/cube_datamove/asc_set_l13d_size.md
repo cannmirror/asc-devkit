@@ -13,7 +13,7 @@
 
 ## 函数原型
 
-```c++
+```cpp
 __aicore__ inline void asc_set_l13d_size(uint64_t value)
 ```
 
@@ -42,7 +42,7 @@ PIPE_S
 
 ## 调用示例
 
-```c++
+```cpp
 uint64_t value = 1024;
 asc_set_l13d_size(value);    // 设置L1 Buffer的边界值为1024（单位：字节）
 ```

@@ -8,11 +8,11 @@
 
 ## 功能说明
 
-对矩阵数据进行实时padding，完成padding后将数据从Global Memory搬运到L1 Buffer。
+对矩阵数据进行实时padding，完成padding后将数据从Global Memory搬运到L1 Buffer。需要与[asc_set_gm2l1_loop_size](./asc_set_gm2l1_loop_size.md)、[asc_set_gm2l1_loop1_stride](./asc_set_gm2l1_loop1_stride.md)、[asc_set_gm2l1_loop2_stride](./asc_set_gm2l1_loop2_stride.md)和[asc_set_gm2l1_pad](./asc_set_gm2l1_pad.md)配合使用。
 
 ## 函数原型
 
-- 常规计算
+- 常规搬运
 
     ```cpp
     __aicore__ inline void asc_copy_gm2l1_align(__cbuf__ int8_t* dst, __gm__ int8_t* src, uint32_t n_burst, uint32_t len_burst, uint8_t left_padding_count, uint8_t right_padding_count, bool data_select_bit, uint8_t l2_cache_ctl, uint64_t burst_src_stride, uint32_t burst_dst_stride)
@@ -27,7 +27,7 @@
     __aicore__ inline void asc_copy_gm2l1_align(__cbuf__ float* dst, __gm__ float* src, uint32_t n_burst, uint32_t len_burst, uint8_t left_padding_count, uint8_t right_padding_count, bool data_select_bit, uint8_t l2_cache_ctl, uint64_t burst_src_stride, uint32_t burst_dst_stride)
     ```
 
-- 同步计算
+- 同步搬运
 
     ```cpp
     __aicore__ inline void asc_copy_gm2l1_align_sync(__cbuf__ int8_t* dst, __gm__ int8_t* src, uint32_t n_burst, uint32_t len_burst, uint8_t left_padding_count, uint8_t right_padding_count, bool data_select_bit, uint8_t l2_cache_ctl, uint64_t burst_src_stride, uint32_t burst_dst_stride)

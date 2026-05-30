@@ -37,7 +37,8 @@ PIPE_V
 
 ## 调用示例
 
-```
+```cpp
+constexpr uint32_t total_length = 128;
 __ubuf__ int8_t dst[total_length];
 ...     // 进行Compare操作
 asc_get_cmp_mask(dst);

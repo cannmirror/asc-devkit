@@ -81,7 +81,7 @@ PIPE_V
 ```cpp
 vector_int8_t dst;
 vector_load_unalign src0;
-__ubuf__ int8_t* src1;
-uint32_t count;
+__ubuf__ int8_t src1[256];
+uint32_t count = 16;
 asc_loadunalign_postupdate(dst, src0, src1, count);
 ```

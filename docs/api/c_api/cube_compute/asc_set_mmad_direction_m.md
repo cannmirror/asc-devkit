@@ -13,7 +13,7 @@
 
 ## 函数原型
 
-```c++
+```cpp
 __aicore__ inline void asc_set_mmad_direction_m()
 ```
 
@@ -35,6 +35,6 @@ PIPE_S
 
 ## 调用示例
 
-```c++
+```cpp
 asc_set_mmad_direction_m();
 ```

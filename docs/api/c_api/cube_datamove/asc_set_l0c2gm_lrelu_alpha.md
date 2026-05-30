@@ -14,7 +14,7 @@
 
 ## 函数原型
 
-```c++
+```cpp
 __aicore__ inline void asc_set_l0c2gm_lrelu_alpha(half& config)
 __aicore__ inline void asc_set_l0c2gm_lrelu_alpha(float& config)
 ```
@@ -39,7 +39,7 @@ PIPE_S
 
 ## 调用示例
 
-```c++
+```cpp
 half config = 0.5;
 asc_set_l0c2gm_lrelu_alpha(config);
 ```

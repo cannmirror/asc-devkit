@@ -58,5 +58,6 @@ vector_half dst;
 vector_half src;
 half scalar_val = 0.0f;
 vector_bool mask = asc_create_mask_b16(PAT_ALL);
+asc_loadalign(src, src_addr);  // src_addr是外部输入的UB内存空间地址
 asc_add_scalar(dst, src, scalar_val, mask);
 ```

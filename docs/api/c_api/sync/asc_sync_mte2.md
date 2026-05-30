@@ -56,5 +56,5 @@ asc_add(dst, src1, src0, total_length);
 // 同步操作：前置操作完成后才能启动后续操作。
 asc_sync();
 
-asc_copy_ub2gm((__gm__ void*)dst_gm, (__ubuf__ void*)dst, blockLength * sizeof(float));
+asc_copy_ub2gm((__gm__ void*)dst_gm, (__ubuf__ void*)dst, total_length * sizeof(float));
 ```

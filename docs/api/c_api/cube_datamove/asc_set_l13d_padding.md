@@ -14,7 +14,7 @@
 
 ## 函数原型
 
-```c++
+```cpp
 __aicore__ inline void asc_set_l13d_padding(uint64_t config)
 __aicore__ inline void asc_set_l13d_padding(half config)
 __aicore__ inline void asc_set_l13d_padding(int16_t config)
@@ -41,7 +41,7 @@ PIPE_S
 
 ## 调用示例
 
-```c++
+```cpp
 constexpr uint64_t config = 0;
 asc_set_l13d_padding(config);
 ```

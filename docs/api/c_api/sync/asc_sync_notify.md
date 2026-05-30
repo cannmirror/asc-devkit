@@ -51,14 +51,14 @@ asc_copy_gm2ub((__ubuf__ void*)src0, (__gm__ void*)src0_gm, total_length * sizeo
 asc_copy_gm2ub((__ubuf__ void*)src1, (__gm__ void*)src1_gm, total_length * sizeof(float));
 
 // 同步操作：数据搬运操作（GM到UB，PIPE_MTE2流水）完成后才能启动计算操作（PIPE_V流水）。
-asc_sync_notify(PIPE_MTE2, PIPE_V, EVENT_ID0);
-asc_sync_wait(PIPE_MTE2, PIPE_V, EVENT_ID0);
+asc_sync_notify(PIPE_MTE2, PIPE_V, EVENT_ID0);  // EVENT_ID0为外部传入的同步ID。
+asc_sync_wait(PIPE_MTE2, PIPE_V, EVENT_ID0);  // EVENT_ID0为外部传入的同步ID。
 
 asc_add(dst, src1, src0, total_length);
 
 // 同步操作：计算操作（PIPE_V流水）完成后才能启动数据搬运操作（UB到GM，PIPE_MTE3流水）。
-asc_sync_notify(PIPE_V, PIPE_MTE3, EVENT_ID0);
-asc_sync_wait(PIPE_V, PIPE_MTE3, EVENT_ID0);
+asc_sync_notify(PIPE_V, PIPE_MTE3, EVENT_ID0);  // EVENT_ID0为外部传入的同步ID。
+asc_sync_wait(PIPE_V, PIPE_MTE3, EVENT_ID0);  // EVENT_ID0为外部传入的同步ID。
 
-asc_copy_ub2gm((__gm__ void*)dst_gm, (__ubuf__ void*)dst, blockLength * sizeof(float));
+asc_copy_ub2gm((__gm__ void*)dst_gm, (__ubuf__ void*)dst, total_length * sizeof(float));
 ```

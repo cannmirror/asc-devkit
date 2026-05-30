@@ -15,7 +15,7 @@
 
 - 常规搬运
 
-    ```c++
+    ```cpp
     __aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ int8_t* dst, __gm__ int8_t* src, uint16_t nd_num,
         uint16_t n_value, uint16_t d_value, uint16_t src_nd_matrix_stride, uint16_t src_d_value, uint16_t dst_nz_c0_stride,
         uint16_t dst_nz_n_stride, uint16_t dst_nz_matrix_stride)
@@ -44,7 +44,7 @@
 
 - 同步搬运
 
-    ```c++
+    ```cpp
     __aicore__ inline void asc_copy_gm2l1_nd2nz_sync(__cbuf__ int8_t* dst, __gm__ int8_t* src, uint16_t nd_num,
         uint16_t n_value, uint16_t d_value, uint16_t src_nd_matrix_stride, uint16_t src_d_value, uint16_t dst_nz_c0_stride,
         uint16_t dst_nz_n_stride, uint16_t dst_nz_matrix_stride)
@@ -78,7 +78,7 @@
 |:---------------------|:------|:--------------------------------------------------------------------------------------------------------------------------------------|
 | dst                  | 输出    | 目的操作数（矢量）的起始地址。                                                                                                                       |
 | src                  | 输入    | 源操作数的起始地址。                                                                                                                            |
-| nd_num               | 输入    | 传输ND矩阵的数目，取值范围：n_num∈[0, 4095]。                                                                                                       |
+| nd_num               | 输入    | 传输ND矩阵的数目，取值范围：nd_num∈[0, 4095]。                                                                                                       |
 | n_value              | 输入    | ND矩阵的行数，取值范围：n_value∈[0, 16384]。                                                                                                      |
 | d_value              | 输入    | ND矩阵的列数，取值范围：d_value∈[0, 65535]。                                                                                                      |
 | src_nd_matrix_stride | 输入    | 源操作数相邻ND矩阵起始地址间的偏移，取值范围：src_nd_matrix_stride∈[0, 65535]，单位为元素。                                                                        |
@@ -121,7 +121,7 @@ constexpr uint16_t src_d_value = 48;
 // 格式从nd转换为nz后，多行数据起始地址之间的偏移
 constexpr uint16_t dst_nz_c0_stride = 11;
 // src中一个nd矩阵的第x行和第x+1行转换为nz格式后在dst中的偏移
-constexpr uin16_t dst_nz_n_stride = 2;
+constexpr uint16_t dst_nz_n_stride = 2;
 // dst中第x个nd矩阵的起点和第x+1个nd矩阵的起点的偏移
 constexpr uint16_t dst_nz_matrix_stride = 96;
 asc_copy_gm2l1_nd2nz(dst, src, nd_num, n_value, d_value, src_nd_matrix_stride, src_d_value, dst_nz_c0_stride, dst_nz_n_stride, dst_nz_matrix_stride);

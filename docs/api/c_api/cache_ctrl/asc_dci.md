@@ -4,7 +4,7 @@
 
 | 产品 | 是否支持  |
 | :-----------| :------: |
-| Ascend 950PR/Ascend 950DT | √ |
+| <cann-filter npu_type="950">Ascend 950PR/Ascend 950DT  | √ </cann-filter>|
 
 ## 功能说明
 
@@ -30,7 +30,7 @@ PIPE_S
 
 ## 约束说明
 
-在调用asc_dci之前，需调用asc_sync_data_barrier插入DSB_ALL指令, 等待所有内存访问指令执行结束。
+在调用asc_dci之前，需调用[asc_sync_data_barrier](../sync/asc_sync_data_barrier.md)插入DSB_ALL指令, 等待所有内存访问指令执行结束。
 
 ## 调用示例
 

@@ -14,7 +14,7 @@
 
 ## 函数原型
 
-```c++
+```cpp
 __aicore__ inline int64_t asc_get_icache_preload_status()
 ```
 
@@ -36,6 +36,6 @@ PIPE_S
 
 ## 调用示例
 
-```c++
+```cpp
 int64_t status = asc_get_icache_preload_status();
 ```

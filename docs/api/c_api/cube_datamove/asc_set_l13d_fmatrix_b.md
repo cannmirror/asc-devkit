@@ -15,7 +15,7 @@
 
 ## 函数原型
 
-```c++
+```cpp
 __aicore__ inline void asc_set_l13d_fmatrix_b(asc_l13d_fmatrix_config& config)
 ```
 
@@ -39,7 +39,7 @@ PIPE_S
 
 ## 调用示例
 
-```c++
+```cpp
 asc_l13d_fmatrix_config config;
 asc_set_l13d_fmatrix_b(config);
 ```

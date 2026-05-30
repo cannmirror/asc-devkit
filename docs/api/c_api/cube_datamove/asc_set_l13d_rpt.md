@@ -14,7 +14,7 @@
 
 ## 函数原型
 
-```c++
+```cpp
 __aicore__ inline void asc_set_l13d_rpt(asc_load3d_v2_config& config)
 ```
 
@@ -38,7 +38,7 @@ PIPE_S
 
 ## 调用示例
 
-```c++
+```cpp
 asc_load3d_v2_config config;
 asc_set_l13d_rpt(config); // 设置Load3D的repeat相关参数为默认值rpt_stride：0，rpt_time：1，rpt_mode：0
 ```

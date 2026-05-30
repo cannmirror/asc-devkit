@@ -33,15 +33,15 @@ quant_pre可选量化模式分别为：
 - VQF322F16_PRE：float量化成half，矢量量化。
 - QF322BF16_PRE：float量化成bfloat16_t，scalar量化。
 - VQF322BF16_PRE：float量化成bfloat16_t，矢量量化。
-- QF322BF16_PRE：float量化成float，scalar量化。该量化模式精度无法达到双万分之一，可以达到双千分之一。
-- VQF322BF16_PRE：float量化成float，矢量量化。该量化模式精度无法达到双万分之一，可以达到双千分之一。
+- QF322F32_PRE：float量化成float，scalar量化。该量化模式精度无法达到双万分之一，可以达到双千分之一。
+- VQF322F32_PRE：float量化成float，矢量量化。该量化模式精度无法达到双万分之一，可以达到双千分之一。
 
 quant_post可选量化模式分别为：
 - NoConv：不使能量化功能。
-- QS162B8_POST：int16_t量化成bfloat8_t，scalar量化。
-- VQS162B8_POST：int16_t量化成bfloat8_t，矢量量化。
-- QF162B8_POST：half量化成bfloat8_t，scalar量化。
-- VQF162B8_POST：half量化成bfloat8_t，矢量量化。
+- QS162B8_POST：int16_t量化成uint8_t/int8_t，scalar量化。
+- VQS162B8_POST：int16_t量化成uint8_t/int8_t，矢量量化。
+- QF162B8_POST：half量化成uint8_t/int8_t，scalar量化。
+- VQF162B8_POST：half量化成uint8_t/int8_t，矢量量化。
 - QS162S4_POST：int16_t量化成int4_t，scalar量化。
 - VQS162S4_POST：int16_t量化成int4_t，矢量量化。
 - QF162S4_POST：half量化成int4_t类型，scalar量化。

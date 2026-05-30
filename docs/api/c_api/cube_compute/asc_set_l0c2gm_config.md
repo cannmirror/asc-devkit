@@ -3,7 +3,7 @@
 
 |产品   | 是否支持 |
 | ------------|:----:|
-| <cann-filter npu_type="950"><term>Ascend 950PR/Ascend 950DT</term>  | √ </cann-filter>|
+| <cann-filter npu_type="950">Ascend 950PR/Ascend 950DT | √ </cann-filter>|
 | Atlas A3 训练系列产品/Atlas A3 推理系列产品 | √    |
 | Atlas A2 训练系列产品/Atlas A2 推理系列产品 | √    |
 
@@ -13,7 +13,7 @@
 
 ## 函数原型
 
-```c++
+```cpp
 __aicore__ inline void asc_set_l0c2gm_config(uint64_t relu_pre, uint64_t quant_pre, bool enable_unit_flag)
 ```
 
@@ -41,7 +41,7 @@ PIPE_S
 
 ## 调用示例
 
-```c++
+```cpp
 constexpr uint64_t relu_pre = 0;
 constexpr uint64_t quant_pre = 0x1000;// 假设量化操作有效地址为 0x1000
 asc_set_l0c2gm_config(relu_pre, quant_pre, true);

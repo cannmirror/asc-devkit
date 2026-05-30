@@ -40,7 +40,7 @@ PIPE_S
 ## 调用示例
 
 ```cpp
-__gm__ uint64_t* addr;
+__gm__ uint64_t addr[256];
 int64_t offset = 0;
 asc_datacache_preload(addr, offset);
 ```

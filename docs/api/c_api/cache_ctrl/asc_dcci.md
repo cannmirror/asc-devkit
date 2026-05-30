@@ -16,7 +16,7 @@
 
 如上图所示：
 
-DMA搬运单元读写Global Memory，数据通过asc_copy_ub2gm[](../vector_datamove/asc_copy_ub2gm.md)和asc_copy_gm2ub[](../vector_datamove/asc_copy_gm2ub.md)等接口在UB等Local Memory和Global Memory间交互，没有Cache一致性问题；
+DMA搬运单元读写Global Memory，数据通过[asc_copy_ub2gm](../vector_datamove/asc_copy_ub2gm.md)和[asc_copy_gm2ub](../vector_datamove/asc_copy_gm2ub.md)等接口在UB等Local Memory和Global Memory间交互，没有Cache一致性问题；
 Scalar单元访问Global Memory，首先会访问每个核内的Data Cache，因此存在Data Cache与Global Memory的Cache一致性问题。
 该接口用来刷新Cache，保证Cache的一致性，使用场景如下：
 
@@ -68,7 +68,7 @@ PIPE_S
 ## 调用示例
 
 ```cpp
-// 示例1：SINGLE_CACHE_LINE 模式，假设mmAddr_为0x40（64B对齐）
+// 示例1：SINGLE_CACHE_LINE 模式，假设首地址为0x40（64B对齐）
 // total_length 指参与计算的数据长度
 constexpr uint64_t total_length = 32;
 __gm__ int16_t src[total_length];
@@ -76,5 +76,5 @@ for( int i = 0; i < total_length; i++) {
    src[i] = i;
 }
 // 由于首地址64B对齐，调用asc_dcci指令后，会立刻刷新前32个数
-asc_dcci_single_out(reinterpret_cast<__gm__ uint64_t*>(src))
+asc_dcci_single(reinterpret_cast<__gm__ uint64_t*>(src))
 ```
