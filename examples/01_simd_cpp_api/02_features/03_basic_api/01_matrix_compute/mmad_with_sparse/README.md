@@ -29,7 +29,7 @@
   ```
   C = A * B
   ```
-  其中矩阵B为稠密化后的矩阵，原始B矩阵每4个元素中至少包含2个零元素，通过4选2稠密化策略进行压缩存储，并且B矩阵必须转置，即为[N,K]输入。A、B矩阵数据类型只支持int8_t，index矩阵矩阵数据类型为uint8_t
+  其中矩阵B为稠密化后的矩阵，原始B矩阵每4个元素中至少包含2个零元素，通过4选2稠密化策略进行压缩存储，并且B矩阵必须转置，即为[N,K]输入。A、B矩阵数据类型只支持int8_t，index矩阵数据类型为uint8_t
 - 样例规格：
 
 <a name="表1"></a>
@@ -40,16 +40,13 @@
   <tr><td align="center">a</td><td align="center">[128, 128]</td><td align="center">int8</td><td align="center">NZ</td></tr>
   <tr><td align="center">b</td><td align="center">[64, 128]</td><td align="center">int8</td><td align="center">NZ</td></tr>
   <tr><td align="center">idx</td><td align="center">[128, 8]</td><td align="center">uint8</td><td align="center">ZN</td></tr>
-  </tr>
-  </tr>
   <tr><td rowspan="1" align="center">样例输出</td><td align="center">c</td><td align="center">[128, 128]</td><td align="center">int32</td><td align="center">ND</td></tr>
-  </tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">mmad_with_sparse_custom</td></tr>
 </table>
 
 - 样例实现：
   样例实现流程分为以下步骤：
-  - **CopyIn**：将Global Memory上的输入数据搬运到Local Memory L1中，并把加载索引矩阵到L1中，其中Index分型与B矩阵分型必须为Zn分型，即GM上的B矩阵必须为转置，Index离线生成必须为Zn排布
+  - **CopyIn**：将Global Memory上的输入数据搬运到Local Memory L1中，并将索引矩阵加载到L1中，其中Index分形与B矩阵分形必须为Zn分形，即GM上的B矩阵必须为转置，Index离线生成必须为Zn排布
   - **SplitB**：使用LoadDataWithSparse将B矩阵和索引矩阵从L1搬运到L0B与内置索引buffer中
   - **SplitA**：将A矩阵从L1搬运到L0A中
   - **Compute**：使用MmadWithSparse完成稀疏矩阵乘运算，计算结果存储在Local Memory L0C中
@@ -108,6 +105,7 @@
   ```bash
   test pass!
   ```
+
 ## 数据生成与验证说明
 
 ### gen_data.py 脚本功能

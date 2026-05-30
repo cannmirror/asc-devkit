@@ -164,6 +164,33 @@ if ((kOffsetInChunkA + 1) == stepKa) {
 
 **问题背景**：MTE1 指令队列深度为 32。使用 LoadData2D 时，由于单条 LoadData2D 指令搬运粒度有限，搬运一个 baseM×baseK 的切片需要用 for 循环发射多条 LoadData2D 指令。例如 baseM=128、baseK=64 时，最少需要发射 `baseK/16 = 4` 条 LoadData2D 指令。
 
+**代码实现**：使用 LoadData2D 时，需要按 `CUBE_BLOCK` 粒度循环发射多条搬运指令；改为 LoadData3D 后，可用一条指令描述完整的 base 切片。
+
+优化前，`baseK=64` 时循环次数为 4：
+
+```cpp
+AscendC::LoadData2DParams loadDataParams;
+for (int i = 0; i < AscendC::DivCeil(baseK, CUBE_BLOCK); ++i) {
+    AscendC::LoadData(b2Local[i * dstOffset], b1Local[srcAddr + i * srcOffset], loadDataParams);
+}
+```
+
+优化后，使用 `LoadData3DParamsV2` 一次性描述 `baseM * baseK` 切片：
+
+```cpp
+AscendC::LoadData3DParamsV2<half> loadDataParams;
+loadDataParams.l1H = 1;
+loadDataParams.l1W = baseM;
+loadDataParams.channelSize = baseK;
+loadDataParams.kExtension = baseK;
+loadDataParams.mExtension = curMAlign;
+loadDataParams.mStartPt = 0;
+loadDataParams.kStartPt = 0;
+AscendC::LoadData(a2Local, a1Local[srcAddr], loadDataParams);
+```
+
+这样每个 base 切片的 MTE1 指令数从多条 `LoadData2D` 降为 1 条 `LoadData3D`，可以降低 MTE1 队列占用。B 矩阵非转置输入时，同样通过 `LoadData3DParamsV2` 配置 `enTranspose = true` 完成转置搬运。
+
 > **注意**：Atlas A5 芯片提供了 `LoadData2DParamsV2` 接口，单条指令即可完成搬运，无需 LoadData3D。因此本样例通过 `__NPU_ARCH__` 条件编译区分两种架构的 LoadData 实现。
 
 #### 5. 多核并行切分

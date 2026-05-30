@@ -22,6 +22,7 @@
 │   ├── data_utils.h                // 数据读入写出函数
 │   └── mmad_gemv.asc               // Ascend C样例实现 & 调用样例
 ```
+
 ## 样例描述
 
 GEMV模式是指Mmad计算中M=1，形状为(1, K)的左矩阵A与形状为(K, N)的右矩阵B进行矩阵乘运算的场景。当M=1时，自动开启GEMV模式，仅在Ascend 950PR/Ascend 950DT上支持通过设置`mmadParams.disableGemv = true`关闭。本样例中通过编译参数`DISABLE_GEMV`选择是否关闭GEMV模式，0 代表开启GEMV，1 代表关闭。
@@ -32,7 +33,7 @@ GEMV模式是指Mmad计算中M=1，形状为(1, K)的左矩阵A与形状为(K, N
 
   将A矩阵从A1搬运到A2时，1 * 256的向量被当作16 * 16的矩阵进行处理，调用LoadData接口一次完成16 * 16分形大小的矩阵搬运。B矩阵的搬运以及矩阵乘计算跟基础场景相同，如下图1所示。
   <p align="center">
-  <img src="figures/开启gemv.png" width="1100">
+  <img src="figures/开启gemv.png" width="600">
   </p>
   <p align="center">
   图1：GEMV模式，Mmad计算示意图
@@ -42,7 +43,7 @@ GEMV模式是指Mmad计算中M=1，形状为(1, K)的左矩阵A与形状为(K, N
 
   将A矩阵从A1搬运到A2时，1 * 256的向量被当作非对齐矩阵数据进行处理，将M方向对齐到16后进行搬运。调用LoadData接口每次搬运16 * 16分形大小的矩阵，一共搬运CeilDiv(K, 16)=16次，导致搬运数据量增加，性能相较于GEMV模式差，如下图2所示。
   <p align="center">
-  <img src="figures/关闭gemv.png" width="1100">
+  <img src="figures/关闭gemv.png" width="600">
   </p>
   <p align="center">
   图2：非GEMV模式，Mmad计算示意图

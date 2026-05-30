@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例基于DataCopy实现数据随路量化激活搬运，将矩阵乘的结果从CO1（L0C Buffer）搬运到GM（Global Memory），并支持随路NZ2ND、随路量化、relu激活能力组合。本样例给出了6种不同的测试场景（scenario）。
+本样例基于DataCopy实现数据随路量化激活搬运，将矩阵乘的结果从L0C Buffer搬运到GM（Global Memory），并支持随路NZ2ND、随路量化、relu激活能力组合。本样例给出了6种不同的测试场景（scenario）。
     <table>
  	  	 	<tr>
  	  	 		<td>scenarioNum</td>
@@ -76,7 +76,7 @@
 ## 样例描述
 
 - 样例功能  
-  将矩阵乘的结果从CO1（L0C Buffer）搬运到GM（Global Memory），支持以下两种随路量化模式：
+  将矩阵乘的结果从L0C Buffer搬运到GM（Global Memory），支持以下两种随路量化模式：
   - Scalar量化：使用SetFixpipePreQuantFlag接口设置Scalar量化参数。
   - Tensor量化：使用SetFixPipeConfig接口设置Tensor量化参数。  
   并支持与随路NZ2ND、relu激活能力组合。接口资料参考随路量化激活搬运。
@@ -159,7 +159,7 @@
 
     - 调用Mmad接口，将输入shape[128, 128]的矩阵A和输入shape[128, 256]的矩阵B做矩阵乘法，得到输出shape[128, 256]的结果矩阵。
 
-    - 配置DataCopyCO12DstParams参数用于DataCopy随路量化激活搬运，将Mmad计算出的结果从CO1（L0C Buffer）搬出到GM（Global Memory）。
+    - 配置DataCopyCO12DstParams参数用于DataCopy随路量化激活搬运，将Mmad计算出的结果从L0C Buffer搬出到GM（Global Memory）。
 
   - 调用实现  
     使用内核调用符`<<<>>>`调用核函数。

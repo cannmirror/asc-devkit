@@ -39,7 +39,7 @@
   - 将数据从UB（Unified Buffer）搬运到L1（L1 Buffer）。
   - 调用基础API LoadData将数据从L1（L1 Buffer）搬运到A2（L0A Buffer）与B2(L0B Buffer)。
   - 调用基础API Mmad进行矩阵乘计算。
-  - 调用基础API Fixpipe将数据从CO1（L0C Buffer）搬运到GM（Global Memory）。
+  - 调用基础API Fixpipe将数据从L0C Buffer搬运到GM（Global Memory）。
 - 调用实现  
   使用内核调用符<<<>>>调用核函数。
     

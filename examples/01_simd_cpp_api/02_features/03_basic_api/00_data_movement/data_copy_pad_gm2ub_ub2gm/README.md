@@ -101,7 +101,7 @@
 - 数据类型：int8
 - 搬运规格：[2, 2, 2, 64, 126]，每个126字节补2字节padding到128字节
 - 参数配置：
-  - GM→UB：LoopModeParams{loop1Size=2, loop2Size=2, loop1SrcStride=128*126, loop1DstStride=64*128, loop2SrcStride=3*128*126, loop2DstStride=2*64*128}，DataCopyMVType::OUT_TO_UB
+  - GM→UB：LoopModeParams{loop1Size=2, loop2Size=2, loop1SrcStride=128\*126, loop1DstStride=64\*128, loop2SrcStride=3\*128\*126, loop2DstStride=2\*64\*128}，DataCopyMVType::OUT_TO_UB
   - DataCopyExtParams：blockCount=64, blockLen=126, srcStride=0, dstStride=0
   - DataCopyPadExtParams：isPad=true, leftPadding=0, rightPadding=0, padValue=0
   - 第0维使用for循环搬运2次

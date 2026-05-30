@@ -1,7 +1,7 @@
 # BroadCastVecToMM样例
 
 ## 概述
-本样例基于BroadCastVecToMM实现数据广播搬运，将位于UB（Unified Buffer）上数据进行广播并搬运到CO1（L0C Buffer）。
+本样例基于BroadCastVecToMM实现数据广播搬运，将位于UB（Unified Buffer）上数据进行广播并搬运到L0C Buffer。
 
 ## 支持的产品
 - Atlas 推理系列产品AI Core
@@ -20,7 +20,7 @@
 ## 样例描述
 - 样例功能：
 
-  本样例将位于UB（Unified Buffer）上的shape为[1, 16]的数据广播到[16, 16]，并搬运到CO1（L0C Buffer）。接口资料参考BroadCastVecToMM。
+  本样例将位于UB（Unified Buffer）上的shape为[1, 16]的数据广播到[16, 16]，并搬运到L0C Buffer。接口资料参考BroadCastVecToMM。
 - 样例规格：
 
   <table border="2">
@@ -36,8 +36,8 @@
 
   - kernel实现
     - 调用DataCopy基础API，将数据从GM（Global Memory）搬运到UB（Unified Buffer），并将广播后的数据搬出到GM（Global Memory）。
-    - 调用BroadCastVecToMM基础API，将UB（Unified Buffer）上的数据从[1, 16]广播到[16, 16]，并搬运到CO1（L0C Buffer）。
-    - 调用DataCopy增强数据搬运接口，将广播后的数据从CO1（L0C Buffer）搬运到UB（Unified Buffer）。
+    - 调用BroadCastVecToMM基础API，将UB（Unified Buffer）上的数据从[1, 16]广播到[16, 16]，并搬运到L0C Buffer。
+    - 调用DataCopy增强数据搬运接口，将广播后的数据从L0C Buffer搬运到UB（Unified Buffer）。
 
   - 调用实现
 

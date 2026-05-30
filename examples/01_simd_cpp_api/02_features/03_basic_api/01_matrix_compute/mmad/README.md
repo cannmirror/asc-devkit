@@ -22,9 +22,10 @@
 │   ├── data_utils.h                // 数据读入写出函数
 │   └── mmad.asc                    // Ascend C样例实现 & 调用样例
 ```
+
 ## 样例描述
 
-一次完整的矩阵乘法涉及的数据搬运过程包括：GM-->L1、L1-->L0A/L0B、L1-->BT（BiasTable Buffer）、L0C-->GM，其中不同存储单元的数据排布格式，如下表1所示：
+一次完整的矩阵乘法涉及的数据搬运过程包括：GM -> L1、L1 -> L0A / L0B、L1 -> BT（BiasTable Buffer）、L0C -> GM，其中不同存储单元的数据排布格式，如下表1所示：
 
 <a name="表1"></a>
 <table border="2" align="center">
@@ -147,7 +148,7 @@
   - Bias [1, 40] int32_t类型
 - 输出：C [30, 40] int32_t类型，ND格式
 - 实现：使用`Mmad`实现矩阵乘法运算，不传入biasTensor通过参数：`mmadParams.cmatrixInitVal = false、mmadParams.cmatrixSource = true`，设置C矩阵初始值来源于C2。
-- 说明：int8_t类型输入，B矩阵不转置场景下，N轴向2 * 16对齐，填充了全部是无效数据的32 * 16的分形。如下图1所示，如果设置`mmadParams.n = N`，就会导致读入编号为3、7的分形，同时又没能将包含有效数据的编号为9、10的分形读入。因此需要设置：`mmadParams.n = CeilAlign(N, BLOCK_CUBE * fractalNum)`，此时会读入全部分型，虽然矩阵计算结果中包含了无效数据参与计算的结果，但是在Fixpipe指令搬出数据时通过设置`fixpipeParams.nSize = N`来保证无效数据参与计算的结果不会被搬出。
+- 说明：int8_t类型输入，B矩阵不转置场景下，N轴向2 * 16对齐，填充了全部是无效数据的32 * 16的分形。如下图1所示，如果设置`mmadParams.n = N`，就会导致读入编号为3、7的分形，同时又没能将包含有效数据的编号为9、10的分形读入。因此需要设置：`mmadParams.n = CeilAlign(N, BLOCK_CUBE * fractalNum)`，此时会读入全部分形，虽然矩阵计算结果中包含了无效数据参与计算的结果，但是在Fixpipe指令搬出数据时通过设置`fixpipeParams.nSize = N`来保证无效数据参与计算的结果不会被搬出。
 <p align="center">
   <img src="figures/mmad_s8_L0B_转置.png" width="700">
 </p>

@@ -418,9 +418,8 @@ for (uint32_t mBlockIdx = 0; mBlockIdx < fullMBlockCount; mBlockIdx++) {
 - 样例执行
 
   ```bash
-  SCENARIO_NUM=1
+  SCENARIO_NUM=1 ASC_ARCH=dav-2201
   COPY_DST=UB
-  ASC_ARCH=dav-2201
   mkdir -p build
   cd build
   cmake -DSCENARIO_NUM=$SCENARIO_NUM -DCOPY_DST=$COPY_DST -DCMAKE_ASC_ARCHITECTURES=$ASC_ARCH ..

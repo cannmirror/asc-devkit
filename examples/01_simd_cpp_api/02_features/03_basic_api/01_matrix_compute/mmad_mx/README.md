@@ -1,4 +1,5 @@
 # Mmad MX样例
+
 ## 概述
 
 本样例介绍了输入为ND格式，A、B矩阵为FP4（fp4x2_e1m2_t、fp4x2_e2m1_t）和FP8（fp8_e4m3fn_t、fp8_e5m2_t）数据类型，量化系数矩阵scaleA、scaleB为fp8_e8m0_t数据类型，左矩阵和左量化系数矩阵不转置、右矩阵和右量化系数矩阵转置共 4 种带有量化功能的矩阵乘（简称：MX矩阵乘法）。
@@ -8,6 +9,7 @@
 - Ascend 950PR/Ascend 950DT
 
 ## 目录结构介绍
+
 ```
 ├── mmad_mx
 │   ├── figures                     // 图示
@@ -21,7 +23,8 @@
 ```
 
 ## 样例描述
-一次完整的MX矩阵乘法涉及的数据搬运过程包括：GM-->L1、L1-->L0A/L0AMX/L0B/L0BMX、L1-->BT（BiasTable Buffer）、L0C-->GM，其中不同存储单元的数据排布格式，如下表1所示：  
+
+一次完整的MX矩阵乘法涉及的数据搬运过程包括：GM -> L1、L1 -> L0A / L0AMX / L0B / L0BMX、L1 -> BT（BiasTable Buffer）、L0C -> GM，其中不同存储单元的数据排布格式，如下表1所示：
 
 <a name="表1"></a>
 <table border="2" align="center">
@@ -125,26 +128,26 @@ MX矩阵乘法计算公式：$$ C = (ScaleA ⊗ A) x (ScaleB ⊗ B) + Bias $$
 
 - 输入：A不转置 [40, 70] fp4x2_e1m2_t类型，ND格式；ScaleA不转置 [40, 4] fp8_e8m0_t类型，ND格式；B转置 [50, 70] fp4x2_e2m1_t类型，ND格式；ScaleB转置 [50, 4] fp8_e8m0_t类型，ND格式；不带Bias
 - 输出：C [40, 50] float类型，ND格式
-- 实现：使用`Mmad`实现矩阵乘法运算，通过参数：`mmadParams.cmatrixInitVal = true`，设置C矩阵初始值为0
+- 实现：使用`MmadMx`实现矩阵乘法运算，通过参数：`mmadParams.cmatrixInitVal = true`，设置C矩阵初始值为0
 
 **场景2 C矩阵初始值来源于C2**
 - 输入：A不转置 [40, 70] fp4x2_e2m1_t类型，ND格式；ScaleA不转置 [40, 4] fp8_e8m0_t类型，ND格式；B转置 [50, 70] fp4x2_e1m2_t类型，ND格式；ScaleB转置 [50, 4] fp8_e8m0_t类型，ND格式；带Bias，C矩阵初始值来源于C2
 - 输出：C [40, 50] float类型，ND格式
-- 实现：使用`Mmad`实现矩阵乘法运算，不传入biasTensor，通过参数：`mmadParams.cmatrixInitVal = false、mmadParams.cmatrixSource = true`，设置C矩阵初始值来源于C2
+- 实现：使用`MmadMx`实现矩阵乘法运算，不传入biasTensor，通过参数：`mmadParams.cmatrixInitVal = false、mmadParams.cmatrixSource = true`，设置C矩阵初始值来源于C2
 
 **场景3 C矩阵初始值来源于CO1**
 - 输入：A不转置 [40, 70] fp8_e4m3fn_t类型，ND格式；ScaleA不转置 [40, 4] fp8_e8m0_t类型，ND格式；B转置 [50, 70] fp8_e5m2_t类型，ND格式；ScaleB转置 [50, 4] fp8_e8m0_t类型，ND格式；不带Bias，C矩阵初始值来源于CO1
 - 输出：C [40, 50] float类型，ND格式
-- 实现：使用`Mmad`实现矩阵乘法运算，通过参数：`mmadParams.cmatrixInitVal = false、mmadParams.cmatrixSource = false`，设置C矩阵初始值来源于CO1
+- 实现：使用`MmadMx`实现矩阵乘法运算，通过参数：`mmadParams.cmatrixInitVal = false、mmadParams.cmatrixSource = false`，设置C矩阵初始值来源于CO1
 
 **场景4 C矩阵初始值来源于biasTensor**
 - 输入：A不转置 [40, 70] fp8_e5m2_t类型，ND格式；ScaleA不转置 [40, 4] fp8_e8m0_t类型，ND格式；B转置 [50, 70] fp8_e4m3fn_t类型，ND格式；ScaleB转置 [50, 4] fp8_e8m0_t类型，ND格式；带Bias，C矩阵初始值来源于传入的biasTensor
 - 输出：C [40, 50] float类型，ND格式
-- 实现：使用`Mmad`实现矩阵乘法运算，传入biasTensor，该场景下`mmadParams.cmatrixSource`参数无效
+- 实现：使用`MmadMx`实现矩阵乘法运算，传入biasTensor，该场景下`mmadParams.cmatrixSource`参数无效
 
-### 矩阵乘法（Mmad）
+### 矩阵乘法（MmadMx）
 
-`Mmad`指令会自动完成左、右矩阵与对应scale矩阵的广播乘法，k方向上每32个元素共享一个量化因子。以A、B矩阵均为FP4类型为例，下图展示了A、ScaleA、B、ScaleB的分型排布格式和量化功能原理：
+`MmadMx`指令会自动完成左、右矩阵与对应scale矩阵的广播乘法，k方向上每32个元素共享一个量化因子。以A、B矩阵均为FP4类型为例，下图展示了A、ScaleA、B、ScaleB的分形排布格式和量化功能原理：
 
 <p align="center">
   <img src="figures/mmad-mx.png" width="1000">
