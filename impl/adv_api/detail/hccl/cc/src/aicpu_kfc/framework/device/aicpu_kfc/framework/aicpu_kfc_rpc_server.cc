@@ -194,7 +194,8 @@ bool AicpuKfcRpcServer::ReadApiValidMsg(HcclMsg *rMsg, HcclMsg *msg, bool reset)
     uint32_t modifiedXor = AicpuKfcUtils::GenXor(rMsg);
     static uint32_t xorCheckNum = 0;
     if (xorCheckNum % MC2_API_XORCHECK_PRINT_NUM == 0 && modifiedXor != rMsg->addMsg.v0Msg.xorCheck) {
-        HCCL_RUN_INFO("[MC2] data is modified! rMsg:%s msg:%s, modifiedXor:%u, origin_xor:%u.",
+        HCCL_RUN_INFO("[AICPU_ORDER_DFX][Msg] [MC2] data is modified! rMsg:%s msg:%s, modifiedXor:%u, "
+                      "origin_xor:%u.",
                       AicpuKfcUtils::GetMsgSimpleStr(*rMsg).c_str(), AicpuKfcUtils::GetMsgSimpleStr(*msg).c_str(),
                       modifiedXor, rMsg->addMsg.v0Msg.xorCheck);
         xorCheckNum++;
@@ -209,7 +210,7 @@ bool AicpuKfcRpcServer::ReadApiValidMsg(HcclMsg *rMsg, HcclMsg *msg, bool reset)
     static uint32_t cmpCheckNum = 0;
     if (memcmp(rMsg, msg, sizeof(HcclMsg)) != 0) {
         if (cmpCheckNum % MC2_API_XORCHECK_PRINT_NUM == 0) {
-            HCCL_RUN_INFO("[MC2] Check msg equal fail, rMsg:%s msg:%s",
+            HCCL_RUN_INFO("[AICPU_ORDER_DFX][Msg] [MC2] Check msg equal fail, rMsg:%s msg:%s",
                           AicpuKfcUtils::GetMsgSimpleStr(*rMsg).c_str(), AicpuKfcUtils::GetMsgSimpleStr(*msg).c_str());
         }
         cmpCheckNum++;
