@@ -27,6 +27,24 @@ namespace Hccl {
 using namespace std;
 constexpr u32 RTSQ_A5_PART_ID   = 0;
 constexpr u32 PRINT_INTERVAL  = 30;
+constexpr u32 RTSQ_A5_INVALID_SQE_TYPE = 0xFFFFFFFFU;
+
+static inline u32 GetA5SqeType(Rt91095StarsSqeType sqeType)
+{
+    return static_cast<u32>(static_cast<u8>(sqeType));
+}
+
+void LogAicpuOrderDfxSqe(const char *stage, u32 streamId, u32 taskId, u32 sqeType, u32 sqId, u32 sqHead,
+    u32 sqTail, u32 pendingSqeCnt)
+{
+    if (LIKELY(!HcclCheckLogLevel(HCCL_LOG_INFO))) {
+        return;
+    }
+    HCCL_INFO("[AICPU_ORDER_DFX][SQE] stage[%s], streamId[%u], taskId[%u], sqeType[%u], sqId[%u], "
+              "sqHead[%u], sqTail[%u], pendingSqeCnt[%u].",
+              stage, streamId, taskId, sqeType, sqId, sqHead, sqTail, pendingSqeCnt);
+}
+
 RtsqA5::RtsqA5(u32 devPhyId, u32 streamId, u32 sqId) : RtsqBase(devPhyId, streamId, sqId)
 {
     if (UNLIKELY(SetTaskIdBySqeId() != HCCL_SUCCESS)) {
@@ -155,9 +173,13 @@ void RtsqA5::CopyLocBufToSq()
 void RtsqA5::LaunchTask()
 {
     HCCL_INFO("RtsqA5::%s: START, pendingSqeCnt[%u]", __func__, pendingSqeCnt);
+    LogAicpuOrderDfxSqe("LaunchTaskStart", streamId_, taskId_, RTSQ_A5_INVALID_SQE_TYPE, sqId_, sqHead_, sqTail_,
+        pendingSqeCnt);
 
     if (pendingSqeCnt == 0) { // 没有SQE ，直接返回
         HCCL_INFO("RtsqA5::%s: pendingSqeCnt is %u, return", __func__, pendingSqeCnt);
+        LogAicpuOrderDfxSqe("LaunchTaskEmpty", streamId_, taskId_, RTSQ_A5_INVALID_SQE_TYPE, sqId_, sqHead_,
+            sqTail_, pendingSqeCnt);
         return;
     }
     // 确保 rtsq 有足够空间放pending SQE
@@ -179,14 +201,20 @@ void RtsqA5::LaunchTask()
     pendingSqeCnt = 0;
     (void)memset_s(locBuf, rtsqSqeSize * perLaunchSqeCnt, 0, rtsqSqeSize * perLaunchSqeCnt); // locBuffer清零
     HCCL_INFO("RtsqA5::%s: END, pendingSqeCnt[%u], sqHead_[%u] sqTail_[%u]", __func__, pendingSqeCnt, sqHead_, sqTail_);
+    LogAicpuOrderDfxSqe("LaunchTaskEnd", streamId_, taskId_, RTSQ_A5_INVALID_SQE_TYPE, sqId_, sqHead_, sqTail_,
+        pendingSqeCnt);
 }
 
 void RtsqA5::TryLaunchTask()
 {
     HCCL_DEBUG("RtsqA5::%s: START, pendingSqeCnt[%u]", __func__, pendingSqeCnt);
+    LogAicpuOrderDfxSqe("TryLaunchTaskStart", streamId_, taskId_, RTSQ_A5_INVALID_SQE_TYPE, sqId_, sqHead_,
+        sqTail_, pendingSqeCnt);
 
     if (pendingSqeCnt == 0) {
         HCCL_DEBUG("RtsqA5::%s: pendingSqeCnt is %u, return", __func__, pendingSqeCnt);
+        LogAicpuOrderDfxSqe("TryLaunchTaskEmpty", streamId_, taskId_, RTSQ_A5_INVALID_SQE_TYPE, sqId_, sqHead_,
+            sqTail_, pendingSqeCnt);
         return;
     }
 
@@ -207,6 +235,8 @@ void RtsqA5::TryLaunchTask()
     pendingSqeCnt = 0;
     (void)memset_s(locBuf, rtsqSqeSize * perLaunchSqeCnt, 0, rtsqSqeSize * perLaunchSqeCnt);
     HCCL_INFO("RtsqA5::%s: END, pendingSqeCnt[%u], sqHead_[%u] sqTail_[%u]", __func__, pendingSqeCnt, sqHead_, sqTail_);
+    LogAicpuOrderDfxSqe("TryLaunchTaskEnd", streamId_, taskId_, RTSQ_A5_INVALID_SQE_TYPE, sqId_, sqHead_, sqTail_,
+        pendingSqeCnt);
 }
 
 u8 *RtsqA5::GetCurrSqeBuffer()
@@ -245,6 +275,12 @@ void RtsqA5::NotifyWait(u32 notifyId, u32 timeout)
 {
     BuildA5SqeNotifyWait(streamId_, taskId_, notifyId, timeout, GetCurrSqeBuffer());
     HCCL_INFO("RtsqA5::NotifyWait: streamId %u, taskId %u, notifyId %u, timeout %u", streamId_, taskId_, notifyId, timeout);
+    if (UNLIKELY(HcclCheckLogLevel(HCCL_LOG_INFO))) {
+        HCCL_INFO("[AICPU_ORDER_DFX][SQE] stage[NotifyWait], streamId[%u], taskId[%u], sqeType[%u], "
+                  "sqId[%u], sqHead[%u], sqTail[%u], pendingSqeCnt[%u], notifyId[%u], timeout[%u].",
+                  streamId_, taskId_, GetA5SqeType(Rt91095StarsSqeType::RT_91095_SQE_TYPE_NOTIFY_WAIT), sqId_,
+                  sqHead_, sqTail_, pendingSqeCnt, notifyId, timeout);
+    }
     RefreshInfo();
 }
 
@@ -252,6 +288,12 @@ void RtsqA5::NotifyRecordLoc(u32 notifyId)
 {
     BuildA5SqeNotifyRecord(streamId_, taskId_, notifyId, GetCurrSqeBuffer());
     HCCL_INFO("RtsqA5::NotifyRecordLoc: streamId %u, taskId %u, notifyId %u", streamId_, taskId_, notifyId);
+    if (UNLIKELY(HcclCheckLogLevel(HCCL_LOG_INFO))) {
+        HCCL_INFO("[AICPU_ORDER_DFX][SQE] stage[NotifyRecordLoc], streamId[%u], taskId[%u], sqeType[%u], "
+                  "sqId[%u], sqHead[%u], sqTail[%u], pendingSqeCnt[%u], notifyId[%u].",
+                  streamId_, taskId_, GetA5SqeType(Rt91095StarsSqeType::RT_91095_SQE_TYPE_NOTIFY_RECORD), sqId_,
+                  sqHead_, sqTail_, pendingSqeCnt, notifyId);
+    }
     RefreshInfo();
 }
 
@@ -290,6 +332,13 @@ void RtsqA5::SdmaCopy(u64 srcAddr, u64 dstAddr, u32 size, u32 partId)
     BuildA5SqeSdmaCopy(streamId_, taskId_, dstAddr, srcAddr, size, RTSQ_A5_PART_ID, 0, GetCurrSqeBuffer());
     HCCL_INFO("RtsqA5::SdmaCopy: streamId %u, taskId %u, srcAddr 0x%llx, dstAddr 0x%llx, size %u", streamId_, taskId_,
         srcAddr, dstAddr, size);
+    if (UNLIKELY(HcclCheckLogLevel(HCCL_LOG_INFO))) {
+        HCCL_INFO("[AICPU_ORDER_DFX][SQE] stage[SdmaCopy], streamId[%u], taskId[%u], sqeType[%u], sqId[%u], "
+                  "sqHead[%u], sqTail[%u], pendingSqeCnt[%u], srcAddr[0x%llx], dstAddr[0x%llx], size[%u], "
+                  "partId[%u], dataType[none], reduceOp[none].",
+                  streamId_, taskId_, GetA5SqeType(Rt91095StarsSqeType::RT_91095_SQE_TYPE_SDMA), sqId_, sqHead_,
+                  sqTail_, pendingSqeCnt, srcAddr, dstAddr, size, partId);
+    }
     RefreshInfo();
 }
 
@@ -323,6 +372,14 @@ void RtsqA5::SdmaReduce(u64 srcAddr, u64 dstAddr, u32 size, u32 partId, const Re
     BuildA5SqeSdmaCopy(streamId_, taskId_, dstAddr, srcAddr, size, RTSQ_A5_PART_ID, (op | type), GetCurrSqeBuffer());
     HCCL_INFO("RtsqA5::SdmaReduce: streamId %u, taskId %u, srcAddr 0x%llx, dstAddr 0x%llx, size %u", streamId_, taskId_,
         srcAddr, dstAddr, size);
+    if (UNLIKELY(HcclCheckLogLevel(HCCL_LOG_INFO))) {
+        HCCL_INFO("[AICPU_ORDER_DFX][SQE] stage[SdmaReduce], streamId[%u], taskId[%u], sqeType[%u], sqId[%u], "
+                  "sqHead[%u], sqTail[%u], pendingSqeCnt[%u], srcAddr[0x%llx], dstAddr[0x%llx], size[%u], "
+                  "partId[%u], dataType[%s], reduceOp[%s].",
+                  streamId_, taskId_, GetA5SqeType(Rt91095StarsSqeType::RT_91095_SQE_TYPE_SDMA), sqId_, sqHead_,
+                  sqTail_, pendingSqeCnt, srcAddr, dstAddr, size, partId, reduceIn.dataType.Describe().c_str(),
+                  reduceIn.reduceOp.Describe().c_str());
+    }
     RefreshInfo();
 }
 
@@ -363,6 +420,12 @@ void RtsqA5::UbDbSend(const UbJettyLiteId &jettyLiteId, u16 piValue)
     // piValue需要使用u16数据类型，保证自然增长，用于判断是否翻转
     BuildA5SqeUbDbSend(streamId_, taskId_, jettyLiteId, piValue, GetCurrSqeBuffer());
     HCCL_INFO("[RtsqA5][UbDbSend] piValue(UbPi):%u, SqTail(Rtsq Pi):%u", piValue, sqTail_);
+    if (UNLIKELY(HcclCheckLogLevel(HCCL_LOG_INFO))) {
+        HCCL_INFO("[AICPU_ORDER_DFX][SQE] stage[UbDbSend], streamId[%u], taskId[%u], sqeType[%u], sqId[%u], "
+                  "sqHead[%u], sqTail[%u], pendingSqeCnt[%u], piValue[%u].",
+                  streamId_, taskId_, GetA5SqeType(Rt91095StarsSqeType::RT_91095_SQE_TYPE_UBDMA), sqId_, sqHead_,
+                  sqTail_, pendingSqeCnt, piValue);
+    }
     RefreshInfo();
 }
 
@@ -371,6 +434,13 @@ void RtsqA5::CCoreNotifyWait(u64 waitAddr, u64 curTurnCntAddr, bool last)
     BuildA5SqeCCoreNotifyWait(streamId_, taskId_, waitAddr, curTurnCntAddr, last, GetCurrSqeBuffer());
     HCCL_INFO("RtsqA5::CCoreNotifyWait: streamId %u, taskId %u, waitAddr %llu, curTurnCntAddr %llu, last %d", streamId_,
               taskId_, waitAddr, curTurnCntAddr, last);
+    if (UNLIKELY(HcclCheckLogLevel(HCCL_LOG_INFO))) {
+        HCCL_INFO("[AICPU_ORDER_DFX][SQE] stage[CCoreNotifyWait], streamId[%u], taskId[%u], sqeType[%u], "
+                  "sqId[%u], sqHead[%u], sqTail[%u], pendingSqeCnt[%u], waitAddr[0x%llx], valueAddr[0x%llx], "
+                  "last[%d].",
+                  streamId_, taskId_, GetA5SqeType(Rt91095StarsSqeType::RT_91095_SQE_TYPE_COND), sqId_,
+                  sqHead_, sqTail_, pendingSqeCnt, waitAddr, curTurnCntAddr, last);
+    }
     RefreshInfo();
 }
 
@@ -379,6 +449,12 @@ void RtsqA5::CCoreNotifyRecord(u64 recordAddr, u64 curTurnCntAddr)
     BuildA5SqeCCoreNotifyRecord(streamId_, taskId_, recordAddr, curTurnCntAddr, GetCurrSqeBuffer());
     HCCL_INFO("RtsqA5::CCoreNotifyRecord: streamId %u, taskId %u, recordAddr %llu, curTurnCntAddr %llu", streamId_, taskId_,
               recordAddr, curTurnCntAddr);
+    if (UNLIKELY(HcclCheckLogLevel(HCCL_LOG_INFO))) {
+        HCCL_INFO("[AICPU_ORDER_DFX][SQE] stage[CCoreNotifyRecord], streamId[%u], taskId[%u], sqeType[%u], "
+                  "sqId[%u], sqHead[%u], sqTail[%u], pendingSqeCnt[%u], recordAddr[0x%llx], valueAddr[0x%llx].",
+                  streamId_, taskId_, GetA5SqeType(Rt91095StarsSqeType::RT_91095_SQE_TYPE_COND), sqId_,
+                  sqHead_, sqTail_, pendingSqeCnt, recordAddr, curTurnCntAddr);
+    }
     RefreshInfo();
 }
 

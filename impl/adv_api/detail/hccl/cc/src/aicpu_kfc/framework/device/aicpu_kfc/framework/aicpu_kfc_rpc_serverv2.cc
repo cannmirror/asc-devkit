@@ -294,7 +294,7 @@ bool AicpuKfcRpcServerV2::ReadValidMsgExtArea(int32_t idx, u32 rankSize)
     static uint32_t msgExtXorCheckTurn = 0;
     if (UNLIKELY(msgExtXorCheck != extMsgList.xorCheck)) {
         if (msgExtXorCheckTurn++ % MC2_API_XORCHECK_PRINT_NUM == 0) {
-            HCCL_RUN_INFO("Extend data is modified! modified_xor:%llu, origin_xor:%llu.",
+            HCCL_RUN_INFO("[AICPU_ORDER_DFX][MsgExt] Extend data is modified! modified_xor:%llu, origin_xor:%llu.",
                           msgExtXorCheck, extMsgList.xorCheck);
         }
         return false;
@@ -307,6 +307,8 @@ bool AicpuKfcRpcServerV2::ReadValidMsgExtArea(int32_t idx, u32 rankSize)
     (void)memcpy_s(msgExt_->recvOffset, copySize, extMsgList.recvOffset, copySize);
     (void)memcpy_s(msgExt_->reserved, sizeof(HcclMsgExt) - offsetof(HcclMsgExt, reserved),
                    extMsgList.reserved, sizeof(HcclMsgExt) - offsetof(HcclMsgExt, reserved));
+    HCCL_INFO("[AICPU_ORDER_DFX][MsgExt] ReadValidMsgExtArea msgPos[%d]: %s",
+              idx, AicpuKfcUtils::GetMsgSimpleStr(rankSize, *msgExt_).c_str());
 
 #ifdef __aarch64__
     __asm__ __volatile__("dsb ld" : : : "memory");
@@ -355,7 +357,7 @@ bool AicpuKfcRpcServerV2::ReadValidMsg(HcclMsg *rMsg, HcclMsg *msg, bool needReP
         if (msgXorCheckTurn++ % MC2_API_XORCHECK_PRINT_NUM == 0) {
             AicpuKfcUtils::PrintMsg("Rcv src msg", *msg, true);
             AicpuKfcUtils::PrintMsg("Rcv dst msg", *rMsg, true);
-            HCCL_RUN_INFO("data is modified! modified_xor:%u, origin_xor:%u.", msgXorCheck,
+            HCCL_RUN_INFO("[AICPU_ORDER_DFX][Msg] data is modified! modified_xor:%u, origin_xor:%u.", msgXorCheck,
                           rMsg->addMsg.v0Msg.xorCheck);
         }
         return false;

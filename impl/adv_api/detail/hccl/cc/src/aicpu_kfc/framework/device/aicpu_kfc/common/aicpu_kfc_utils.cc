@@ -108,12 +108,14 @@ void AicpuKfcUtils::PrintMsg(const std::string &desc, const HcclMsg &msg, bool r
     const s32 logLevel = (runFlag ? HCCL_DLOG_DEFAULT : DLOG_INFO);
     const HcclTilingVersion ver = msg.addMsg.v0Msg.version;
     if (ver != HcclTilingVersion::DEPRECATED_TILING_VERSION) {
-        HCCL_LOG_BY_LEVEL(logLevel, "%s: Msg[version %u, commType %u, opType %u, sendBuffer %p, recvBuffer %p, "
+        HCCL_LOG_BY_LEVEL(logLevel, "[AICPU_ORDER_DFX][Msg] %s: Msg[version %u, msgType %u, prepareType %u, "
+                                    "opType %u, sendBuffer %p, recvBuffer %p, "
                                     "dataCnt %lu, strideCount %lu, ccOpTilingData %#llx, valid %u, hcclDataType %u, "
                                     "repeatCnt %u, selfHandleID %d, seqNum %u, xorCheck %u]", desc.c_str(),
                                     static_cast<u32>(msg.addMsg.v0Msg.version), static_cast<u32>(msg.commType.msgType),
-                                    static_cast<u32>(msg.opType), msg.sendBuffer, msg.recvBuffer, msg.dataCnt,
-                                    msg.strideCount, msg.addMsg.v1Msg.ccOpTilingData, msg.addMsg.v1Msg.valid,
+                                    static_cast<u32>(msg.commType.prepareType), static_cast<u32>(msg.opType),
+                                    msg.sendBuffer, msg.recvBuffer, msg.dataCnt, msg.strideCount,
+                                    msg.addMsg.v1Msg.ccOpTilingData, msg.addMsg.v1Msg.valid,
                                     static_cast<u32>(msg.addMsg.v1Msg.hcclDataType), msg.addMsg.v1Msg.repeatCnt,
                                     static_cast<s32>(msg.addMsg.v1Msg.selfHandleID), msg.addMsg.v1Msg.seqNum,
                                     msg.addMsg.v1Msg.xorCheck);
@@ -121,12 +123,14 @@ void AicpuKfcUtils::PrintMsg(const std::string &desc, const HcclMsg &msg, bool r
             PrintTilingData(desc, *(reinterpret_cast<Mc2CcTilingInner *>(msg.addMsg.v1Msg.ccOpTilingData)), runFlag);
         }
     } else {
-        HCCL_LOG_BY_LEVEL(logLevel, "%s: Msg[version %u, commType %u, opType %u, sendBuffer %p, recvBuffer %p, "
+        HCCL_LOG_BY_LEVEL(logLevel, "[AICPU_ORDER_DFX][Msg] %s: Msg[version %u, msgType %u, prepareType %u, "
+                                    "opType %u, sendBuffer %p, recvBuffer %p, "
                                     "dataCnt %lu, strideCount %lu, hcclDataType %u, p2pSrcDestRankId %u, valid %u, "
                                     "repeatCnt %u, everyTurnRsp %u, everyTurnWait %u, commDepGroupID %d, "
                                     "commDepHandleID %d, selfHandleID %d, seqNum %u, xorCheck %u]",
                                     desc.c_str(), static_cast<u32>(msg.addMsg.v0Msg.version),
-                                    static_cast<u32>(msg.commType.msgType), static_cast<u32>(msg.opType),
+                                    static_cast<u32>(msg.commType.msgType),
+                                    static_cast<u32>(msg.commType.prepareType), static_cast<u32>(msg.opType),
                                     msg.sendBuffer, msg.recvBuffer, msg.dataCnt, msg.strideCount,
                                     static_cast<u32>(msg.addMsg.v0Msg.hcclDataType), msg.addMsg.v0Msg.p2pSrcDestRankId,
                                     msg.addMsg.v0Msg.valid, msg.addMsg.v0Msg.repeatCnt, msg.addMsg.v0Msg.everyTurnRsp,
@@ -140,34 +144,36 @@ std::string AicpuKfcUtils::GetMsgSimpleStr(const HcclMsg &msg)
 {
     const HcclTilingVersion ver = msg.addMsg.v0Msg.version;
     std::stringstream ss;
-    ss << std::to_string(static_cast<u32>(msg.commType.msgType)) << ",";
-    ss << std::to_string(static_cast<u32>(msg.opType)) << ",";
-    ss << "0x" << std::hex << msg.sendBuffer << ",";
-    ss << "0x" << std::hex << msg.recvBuffer << ",";
-    ss << std::to_string(msg.dataCnt) << ",";
-    ss << std::to_string(msg.strideCount) << ",";
+    ss << "version:" << std::to_string(static_cast<u32>(ver)) << ",";
+    ss << "msgType:" << std::to_string(static_cast<u32>(msg.commType.msgType)) << ",";
+    ss << "prepareType:" << std::to_string(static_cast<u32>(msg.commType.prepareType)) << ",";
+    ss << "opType:" << std::to_string(static_cast<u32>(msg.opType)) << ",";
+    ss << "sendBuffer:0x" << std::hex << msg.sendBuffer << ",";
+    ss << "recvBuffer:0x" << std::hex << msg.recvBuffer << std::dec << ",";
+    ss << "dataCnt:" << std::to_string(msg.dataCnt) << ",";
+    ss << "strideCount:" << std::to_string(msg.strideCount) << ",";
     if (ver != HcclTilingVersion::DEPRECATED_TILING_VERSION) {
-        ss << "0x" << std::hex << msg.addMsg.v1Msg.ccOpTilingData << ",";
-        ss << "0x" << std::hex << msg.addMsg.v1Msg.valid << ",";
-        ss << std::to_string(static_cast<u32>(msg.addMsg.v1Msg.hcclDataType)) << ",";
-        ss << std::to_string(msg.addMsg.v1Msg.repeatCnt) << ",";
-        ss << std::to_string(static_cast<s32>(msg.addMsg.v1Msg.selfHandleID)) << ",";
-        ss << std::to_string(static_cast<u32>(msg.addMsg.v1Msg.seqNum)) << ",";
-        ss << std::to_string(static_cast<u32>(msg.addMsg.v1Msg.version)) << ",";
-        ss << std::to_string(msg.addMsg.v1Msg.xorCheck) << ".";
+        ss << "ccOpTilingData:0x" << std::hex << msg.addMsg.v1Msg.ccOpTilingData << ",";
+        ss << "valid:0x" << std::hex << msg.addMsg.v1Msg.valid << std::dec << ",";
+        ss << "hcclDataType:" << std::to_string(static_cast<u32>(msg.addMsg.v1Msg.hcclDataType)) << ",";
+        ss << "repeatCnt:" << std::to_string(msg.addMsg.v1Msg.repeatCnt) << ",";
+        ss << "selfHandleID:" << std::to_string(static_cast<s32>(msg.addMsg.v1Msg.selfHandleID)) << ",";
+        ss << "seqNum:" << std::to_string(static_cast<u32>(msg.addMsg.v1Msg.seqNum)) << ",";
+        ss << "addMsgVersion:" << std::to_string(static_cast<u32>(msg.addMsg.v1Msg.version)) << ",";
+        ss << "xorCheck:" << std::to_string(msg.addMsg.v1Msg.xorCheck) << ".";
     } else {
-        ss << std::to_string(static_cast<u32>(msg.addMsg.v0Msg.hcclDataType)) << ",";
-        ss << std::to_string(msg.addMsg.v0Msg.p2pSrcDestRankId) << ",";
-        ss << "0x" << std::hex << msg.addMsg.v0Msg.valid << ",";
-        ss << std::to_string(static_cast<u32>(msg.addMsg.v0Msg.repeatCnt)) << ",";
-        ss << std::to_string(static_cast<u32>(msg.addMsg.v0Msg.everyTurnRsp)) << ",";
-        ss << std::to_string(static_cast<u32>(msg.addMsg.v0Msg.everyTurnWait)) << ",";
-        ss << std::to_string(static_cast<s32>(msg.addMsg.v0Msg.commDepGroupID)) << ",";
-        ss << std::to_string(static_cast<s32>(msg.addMsg.v0Msg.commDepHandleID)) << ",";
-        ss << std::to_string(static_cast<s32>(msg.addMsg.v0Msg.selfHandleID)) << ",";
-        ss << std::to_string(static_cast<u32>(msg.addMsg.v0Msg.seqNum)) << ",";
-        ss << std::to_string(static_cast<u32>(msg.addMsg.v0Msg.version)) << ",";
-        ss << std::to_string(msg.addMsg.v0Msg.xorCheck) << ",";
+        ss << "hcclDataType:" << std::to_string(static_cast<u32>(msg.addMsg.v0Msg.hcclDataType)) << ",";
+        ss << "p2pSrcDestRankId:" << std::to_string(msg.addMsg.v0Msg.p2pSrcDestRankId) << ",";
+        ss << "valid:0x" << std::hex << msg.addMsg.v0Msg.valid << std::dec << ",";
+        ss << "repeatCnt:" << std::to_string(static_cast<u32>(msg.addMsg.v0Msg.repeatCnt)) << ",";
+        ss << "everyTurnRsp:" << std::to_string(static_cast<u32>(msg.addMsg.v0Msg.everyTurnRsp)) << ",";
+        ss << "everyTurnWait:" << std::to_string(static_cast<u32>(msg.addMsg.v0Msg.everyTurnWait)) << ",";
+        ss << "commDepGroupID:" << std::to_string(static_cast<s32>(msg.addMsg.v0Msg.commDepGroupID)) << ",";
+        ss << "commDepHandleID:" << std::to_string(static_cast<s32>(msg.addMsg.v0Msg.commDepHandleID)) << ",";
+        ss << "selfHandleID:" << std::to_string(static_cast<s32>(msg.addMsg.v0Msg.selfHandleID)) << ",";
+        ss << "seqNum:" << std::to_string(static_cast<u32>(msg.addMsg.v0Msg.seqNum)) << ",";
+        ss << "addMsgVersion:" << std::to_string(static_cast<u32>(msg.addMsg.v0Msg.version)) << ",";
+        ss << "xorCheck:" << std::to_string(msg.addMsg.v0Msg.xorCheck) << ",";
     }
     return ss.str();
 }
@@ -175,7 +181,7 @@ std::string AicpuKfcUtils::GetMsgSimpleStr(const HcclMsg &msg)
 std::string AicpuKfcUtils::GetMsgSimpleStr(u32 rankSize, const HcclMsgExt &msg)
 {
     std::stringstream ss;
-    ss << "sendCounts:";
+    ss << "rankSize:" << rankSize << ",valid:" << msg.valid << ",xorCheck:" << msg.xorCheck << ",sendCounts:";
     for (u32 i = 0; i < rankSize; ++i) {
         ss << msg.sendCounts[i] << ",";
     }
@@ -441,27 +447,29 @@ void AicpuKfcUtils::PrintAllHcclMsgArea(HcclMsgArea *hcclMsgArea, u32 rankSize, 
         if (type == HcclCMDType::HCCL_CMD_INVALID || type >= HcclCMDType::HCCL_CMD_MAX) {
             continue;
         }
-        HCCL_LOG_BY_LEVEL(logLevel, "SendMsg[%d]: %s", i, GetMsgSimpleStr(msg.sendMsgs[i]).c_str());
+        HCCL_LOG_BY_LEVEL(logLevel, "[AICPU_ORDER_DFX][Msg] SendMsg[%d]: %s",
+            i, GetMsgSimpleStr(msg.sendMsgs[i]).c_str());
     }
     // recvMsgList暂不支持，不处理了
     for (uint32_t i = 0; i < HCCL_MSG_CNT; ++i) {
         if (static_cast<HcclCMDType>(msg.sendMsgs[i].commType.msgType) != HcclCMDType::HCCL_CMD_ALLTOALLV) {
             continue;
         }
-        HCCL_LOG_BY_LEVEL(logLevel, "MsgExt[%d]: %s", i, GetMsgSimpleStr(rankSize, msg.paramExtMsgList[i]).c_str());
+        HCCL_LOG_BY_LEVEL(logLevel, "[AICPU_ORDER_DFX][MsgExt] MsgExt[%d]: %s",
+            i, GetMsgSimpleStr(rankSize, msg.paramExtMsgList[i]).c_str());
     }
 
     std::stringstream ssCommitCnt;
     for (uint32_t i = 0; i < HCCL_MSG_CNT; ++i) {
         ssCommitCnt << msg.commitTurnCnt[i].cnt << ",";
     }
-    HCCL_LOG_BY_LEVEL(logLevel, "commitTurnCnt: %s", ssCommitCnt.str().c_str());
+    HCCL_LOG_BY_LEVEL(logLevel, "[AICPU_ORDER_DFX][Counter] commitTurnCnt: %s", ssCommitCnt.str().c_str());
 
     std::stringstream ssFinishCnt;
     for (uint32_t i = 0; i < HCCL_MSG_CNT; ++i) {
         ssFinishCnt << msg.finishedTurnCnt[i].cnt << ",";
     }
-    HCCL_LOG_BY_LEVEL(logLevel, "finishedTurnCnt: %s", ssFinishCnt.str().c_str());
+    HCCL_LOG_BY_LEVEL(logLevel, "[AICPU_ORDER_DFX][Counter] finishedTurnCnt: %s", ssFinishCnt.str().c_str());
 
     PrintApiStats(hcclMsgArea, logLevel);
 
@@ -482,7 +490,8 @@ void AicpuKfcUtils::PrintAllHcclMsgAreaForMulti(HcclMsgArea *hcclMsgArea, bool e
             if (type == HcclCMDType::HCCL_CMD_INVALID || type >= HcclCMDType::HCCL_CMD_MAX) {
                 continue;
             }
-            HCCL_LOG_BY_LEVEL(logLevel, "SendMsg[%u/%u]: %s", i, j, GetMsgSimpleStr(msg.sendMsgs[i][j]).c_str());
+            HCCL_LOG_BY_LEVEL(logLevel, "[AICPU_ORDER_DFX][Msg] SendMsg[%u/%u]: %s",
+                i, j, GetMsgSimpleStr(msg.sendMsgs[i][j]).c_str());
         }
     }
     HCCL_LOG_BY_LEVEL(logLevel, "********* msgArea %p end print **********", hcclMsgArea);
@@ -591,8 +600,10 @@ HcclResult AicpuKfcUtils::ReadMsgFromMemory(HcclMsgExt *src, u32 rankSize, HcclM
     if (UNLIKELY(xorVal != src->xorCheck)) {
         static u32 cnt = 0;
         if (cnt++ % MC2_API_XORCHECK_PRINT_NUM == 0) {
-            HCCL_RUN_INFO("Rcv src ext msg %s", GetMsgSimpleStr(rankSize, *src).c_str());
-            HCCL_RUN_INFO("Rcv dst ext msg %s", GetMsgSimpleStr(rankSize, dst).c_str());
+            HCCL_RUN_INFO("[AICPU_ORDER_DFX][MsgExt] Rcv src ext msg %s",
+                GetMsgSimpleStr(rankSize, *src).c_str());
+            HCCL_RUN_INFO("[AICPU_ORDER_DFX][MsgExt] Rcv dst ext msg %s",
+                GetMsgSimpleStr(rankSize, dst).c_str());
             HCCL_RUN_INFO("Extended data is modified, modified_xor:%llu, origin_xor:%llu.", xorVal, src->xorCheck);
         }
         return HCCL_E_AGAIN;
@@ -601,6 +612,6 @@ HcclResult AicpuKfcUtils::ReadMsgFromMemory(HcclMsgExt *src, u32 rankSize, HcclM
 #ifdef __aarch64__
     __asm__ __volatile__("dsb st" : : : "memory");
 #endif
-    HCCL_INFO("Read extended message %s", GetMsgSimpleStr(rankSize, dst).c_str());
+    HCCL_INFO("[AICPU_ORDER_DFX][MsgExt] Read extended message %s", GetMsgSimpleStr(rankSize, dst).c_str());
     return HCCL_SUCCESS;
 }
