@@ -9,7 +9,8 @@
 */
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
-#warning "mmad_with_bias.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+#warning                                                                                                               \
+    "impl/tensor_api/arch/cube/mmad/mmad_impl/mmad_with_bias.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
@@ -18,18 +19,18 @@
  * \file mmad_with_bias.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_CUBE_MMAD_NPU_ARCH_3510_MMAD_WITH_BIAS_H
-#define IMPL_TENSOR_API_ARCH_CUBE_MMAD_NPU_ARCH_3510_MMAD_WITH_BIAS_H
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_MMAD_MMAD_IMPL_MMAD_WITH_BIAS_H
+#define IMPL_TENSOR_API_ARCH_CUBE_MMAD_MMAD_IMPL_MMAD_WITH_BIAS_H
 
-#include "impl/tensor_api/arch/cube/mmad/npu_arch_3510/instruction.h"
+#include "impl/tensor_api/arch/cube/mmad/mmad_impl/instruction.h"
 
 namespace AscendC {
 namespace Te {
 
-class MmadWithBias3510 {
+class MmadWithBias {
 public:
-    template <const MmadTrait& trait, typename T, typename U, typename S, typename V, typename Params>    
-    __aicore__ inline static void Run(const T& dst, const U& fm, const S& filter, const V& bias, const Params& params) 
+    template <const MmadTrait& trait, typename T, typename U, typename S, typename V, typename Params>
+    __aicore__ inline static void Run(const T& dst, const U& fm, const S& filter, const V& bias, const Params& params)
     {
         MmadImpl<trait, T, U, S, V>(dst, fm, filter, bias, params);
     }
@@ -38,7 +39,7 @@ private:
     template <const MmadTrait& trait, typename T, typename U, typename S, typename V>
     __aicore__ inline static constexpr void CheckTemplateForNormal()
     {
-        
+
         CheckLayoutPattern<T, U, S, V>();
         CheckDataTypeFor3510::CheckMmadBiasDataType<T, U, S, V>();
     }
@@ -65,10 +66,10 @@ private:
         }
 
         if constexpr (trait.mmadType == MmadType::NORMAL) {
-            MmadBiasInstr::Mmad(dst, fm, filter, bias, params.m, params.k, params.n, params.unitFlag, trait.disableGemv, cmatrixSource, 
+            MmadBiasInstr::Mmad(dst, fm, filter, bias, params.m, params.k, params.n, params.unitFlag, trait.disableGemv, cmatrixSource,
                                 false);
         } else if constexpr (trait.mmadType == MmadType::MX) {
-            MmadMxBiasInstr::Mmad(dst, fm, filter, bias, params.m, params.k, params.n, params.unitFlag, trait.disableGemv, cmatrixSource, 
+            MmadMxBiasInstr::Mmad(dst, fm, filter, bias, params.m, params.k, params.n, params.unitFlag, trait.disableGemv, cmatrixSource,
                                  false);
         }
     }
@@ -76,7 +77,7 @@ private:
 
 }} // namespace Te AscendC
 
-#endif // IMPL_TENSOR_API_ARCH_CUBE_MMAD_NPU_ARCH_3510_MMAD_WITH_BIAS_H
+#endif // IMPL_TENSOR_API_ARCH_CUBE_MMAD_MMAD_IMPL_MMAD_WITH_BIAS_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
