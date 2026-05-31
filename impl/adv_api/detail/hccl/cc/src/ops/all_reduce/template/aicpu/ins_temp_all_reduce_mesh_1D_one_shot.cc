@@ -1,12 +1,13 @@
 /**
-* Copyright (c) 2026 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2026 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
 #include "ins_temp_all_reduce_mesh_1D_one_shot.h"
 #include "alg_data_trans_wrapper.h"
 
@@ -75,10 +76,9 @@ HcclResult InsTempAllReduceMesh1DOneShot::KernelRun(const OpParam& param,
         dataType_ == HcclDataType::HCCL_DATA_TYPE_INT64 || dataType_ == HcclDataType::HCCL_DATA_TYPE_UINT64 ||
         dataType_ == HcclDataType::HCCL_DATA_TYPE_FP64 || param.reduceType == HcclReduceOp::HCCL_REDUCE_PROD;
     HCCL_INFO("[InsTempAllReduceMesh1DOneShot] Run Start");
-    // 这里不支持绕路的时候，应该就用原始的tempInsQues就行
-    CHK_PRT_RET(threadNum_ != templateResource.threads.size(),
-                HCCL_ERROR("[InsTempAllReduceMesh1DOneShot] Rank [%d], requiredThread Error.", myRank_),
-                HcclResult::HCCL_E_INTERNAL);
+    CHK_PRT_RET(threadNum_ != templateRankSize_,
+            HCCL_ERROR("[InsTempAllReduceMesh1DOneShot][KernelRun] thread num is invalid, need[%u], actual[%u].",
+                templateRankSize_, threadNum_), HcclResult::HCCL_E_INTERNAL);
     
     RankSliceInfo sliceInfoVec;
     CHK_RET(CalcSlice(processSize_, sliceInfoVec));
@@ -94,7 +94,7 @@ HcclResult InsTempAllReduceMesh1DOneShot::KernelRun(const OpParam& param,
         CHK_RET(PostSyncInterThreads(templateResource.threads[0], subThreads, notifyIdxSubToMain_));
     }
     CHK_PRT(PostLocalReduce(param, templateResource.threads, tempAlgParams, sliceInfoVec));
-    HCCL_INFO("[InsTempAllReduceMesh1DOneShot][Run] AllReduceMesh1DOneShot finished: rank[%d] end", myRank_);
+    HCCL_INFO("[InsTempAllReduceMesh1DOneShot][KernelRun] AllReduceMesh1DOneShot finished: rank[%d] end", myRank_);
     return HCCL_SUCCESS;
 }
 
@@ -151,8 +151,8 @@ HcclResult InsTempAllReduceMesh1DOneShot::RunAllReduce(const OpParam& param,
         rxDstSlices.push_back(rxDstSlice);
 
         SendRecvInfo sendRecvInfo{{linkSend, linkRecv},
-                             {{txSrcSlices, txDstSlices}, {rxSrcSlices, rxDstSlices}}};
-        CHK_PRT_RET(SendRecvWrite(sendRecvInfo, threads[queIdx]),
+                             {{txSrcSlices, txDstSlices}, {rxSrcSlices, rxDstSlices}}, dataType_};
+        CHK_PRT_RET(SendRecvBatchWrite(sendRecvInfo, threads[queIdx]),
             HCCL_ERROR("[InsTempAllReduceMesh1DOneShot] RunAllReduce SendRecv failed"),
             HcclResult::HCCL_E_INTERNAL);
     }
