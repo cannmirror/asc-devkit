@@ -31,35 +31,16 @@ namespace Te {
 template<typename CalcFunc, typename TraitType>
 class Transform2VF {
 private:
-    template <typename T, typename Tuple>
-    struct Contains : Std::false_type {};
-
-    template <typename T, typename... Ts>
-    struct Contains<T, Std::tuple<Ts...>> : Std::bool_constant<(Std::is_same_v<T, Ts> || ...)> {};
-
-    template <typename Input, typename TransformSet>
-    struct FindTransform;
-
-    template <typename Input, typename Set, typename Func, typename... Rest>
-    struct FindTransform<Input, Std::tuple<Std::tuple<Set, Func>, Rest...>> {
-        using type = Std::conditional_t<Contains<Input, Set>::value, Func, typename FindTransform<Input, Std::tuple<Rest...>>::type>;
-    };
-
-    template <typename Input, typename Set, typename Func>
-    struct FindTransform<Input, Std::tuple<Std::tuple<Set, Func>>> {
-        using type = Std::conditional_t<Contains<Input, Set>::value, Func, Std::ignore_t>;
-    };
-
     using binarySet = Std::tuple<Inst::Add, Inst::Sub, Inst::Madd, Inst::And, Inst::Select, Inst::AbsSub, Inst::Min, Inst::Max,
         Inst::Or, Inst::Mul, Inst::ExpSubEven, Inst::ExpSubOdd, Inst::ShiftLeft, Inst::ShiftRight, Inst::Div, Inst::Xor, Inst::Prelu>;
     using castSet = Std::tuple<Inst::Ceil, Inst::U82U16>;
 
-    using transformSet = Std::tuple<
+    using transformSet = TupleMap<
         Std::tuple<binarySet, Transform2BinaryVF<CalcFunc, TraitType>>,
         Std::tuple<castSet, Transform2CastVF<CalcFunc, TraitType>>>;
 
     template <typename Input>
-    using Find = typename FindTransform<Input, transformSet>::type;
+    using Find = typename transformSet::template Find<Input>;
 
 public:
     template<typename... Args>
