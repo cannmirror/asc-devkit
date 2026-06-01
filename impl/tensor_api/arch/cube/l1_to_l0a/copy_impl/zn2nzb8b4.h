@@ -31,7 +31,7 @@ class LoadDataL12L0AZN2NZB8B4 {
 public:
     template <const CopyL12L0ATrait& trait, typename T, typename U>
     __aicore__ inline static void Run(const T& dst, const U& src) {
-        LoadDataImpl<TransTrait<trait, true>, T, U>(dst, src);
+        LoadDataImpl<trait, T, U>(dst, src);
     }
 
 private:
@@ -42,7 +42,7 @@ private:
         CheckDataType::CheckL12L0ADataType<T, U>();
     }
 
-        template <const CopyL12L0ATrait& trait, typename T, typename U>
+    template <const CopyL12L0ATrait& trait, typename T, typename U>
     __aicore__ inline static void LoadDataImplB4(const T& dst, const U& src, uint16_t mStartPosition,
         uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride)
     {
@@ -54,7 +54,7 @@ private:
         mStep = M_STEP_MIN_VAL_B4;
         for (uint16_t idx = 0; idx < mLoop; ++idx) {
             auto sliceDst = dst(MakeCoord(MakeCoord(0, 0), MakeCoord(0, idx)));
-            LoadCbufToCa::LoadData<trait>(sliceDst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            LoadCbufToCa::LoadData<true>(sliceDst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             mStartPosition += M_STEP_MIN_VAL_B4;
         }
     }
@@ -71,7 +71,7 @@ private:
         mStep = M_STEP_MIN_VAL_B8;
         for (uint16_t idx = 0; idx < mLoop; ++idx) {
             auto sliceDst = dst(MakeCoord(MakeCoord(0, 0), MakeCoord(0, idx)));
-            LoadCbufToCa::LoadData<trait>(sliceDst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            LoadCbufToCa::LoadData<true>(sliceDst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             mStartPosition += M_STEP_MIN_VAL_B8;
         }
     }
@@ -99,13 +99,13 @@ private:
         auto dstStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(dstLayout) / STRIDE_UNIT;
         if constexpr (IsB4Type<DstType>) {
             if (m1 < FRACTAL_FIXED) {
-                LoadCbufToCa::LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+                LoadCbufToCa::LoadData<true>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             } else {
                 LoadDataImplB4<trait, T, U>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             }
         } else {
             if (m1 < FRACTAL_FIXED) {
-                LoadCbufToCa::LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+                LoadCbufToCa::LoadData<true>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             } else {
                 LoadDataImplB8<trait, T, U>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             }

@@ -55,7 +55,7 @@ private:
         auto srcStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(srcLayout) >> 5;
         auto dstStride = kStep;
         uint64_t mxDstAddr = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.Data().Get()));
-        LoadCbufToL0MxScaleB3510::LoadData<trait>(mxDstAddr, src, mStartPosition, kStartPosition, mStep, kStep,
+        LoadCbufToL0MxScaleB3510::LoadData(mxDstAddr, src, mStartPosition, kStartPosition, mStep, kStep,
             srcStride, dstStride);
     }
 };

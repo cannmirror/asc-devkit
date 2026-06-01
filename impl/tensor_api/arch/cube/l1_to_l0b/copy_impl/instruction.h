@@ -29,14 +29,14 @@
 namespace AscendC {
 namespace Te {
 
-using CopyL12L0BTrait = LoadDataTrait;
+struct CopyL12L0BTrait {};
 
 class LoadCbufToCb {
 public:
-    template <const CopyL12L0BTrait& trait, typename T, typename U, typename... Params>
+    template <bool transpose, typename T, typename U, typename... Params>
     __aicore__ inline static void LoadData(const T& dst, const U& src, const Params& ...params)
     {
-        LoadCbufToCbImpl<trait.transposed>(dst.Data().Get(), src.Data().Get(), params...);
+        LoadCbufToCbImpl<transpose>(dst.Data().Get(), src.Data().Get(), params...);
     }
 
 private:

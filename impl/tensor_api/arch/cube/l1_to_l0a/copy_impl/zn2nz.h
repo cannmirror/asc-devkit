@@ -31,7 +31,7 @@ class LoadDataL12L0AZN2NZ {
 public:
     template <const CopyL12L0ATrait& trait, typename T, typename U>
     __aicore__ inline static void Run(const T& dst, const U& src) {
-        LoadDataImpl<TransTrait<trait, true>, T, U>(dst, src);
+        LoadDataImpl<trait, T, U>(dst, src);
     }
 
 private:
@@ -59,7 +59,7 @@ private:
         uint32_t STRIDE_UNIT = C0_ELEMENT<DstType> * FRACTAL_FIXED;
         auto srcStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(srcLayout) / STRIDE_UNIT;
         auto dstStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(dstLayout) / STRIDE_UNIT;
-        LoadCbufToCa::LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+        LoadCbufToCa::LoadData<true>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
     }
 };
 } // namespace Te

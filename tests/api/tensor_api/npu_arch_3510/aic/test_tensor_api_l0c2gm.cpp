@@ -419,3 +419,5 @@ KERNEL_TENSOR_API_L0C2GM_E2E_LAYOUT(1, 128, 64, ND, NDLayoutPtn, int32_t, int8_t
 KERNEL_TENSOR_API_L0C2GM_E2E_LAYOUT(1, 16, 16, DN, DNLayoutPtn, float, float, NoQuant, false, false)
 KERNEL_TENSOR_API_L0C2GM_E2E_LAYOUT(1, 128, 64, DN, DNLayoutPtn, float, float, NoQuant, false, false)
 KERNEL_TENSOR_API_L0C2GM_E2E_LAYOUT(1, 128, 64, DN, DNLayoutPtn, int32_t, int8_t, REQ8, false, false)
+KERNEL_TENSOR_API_L0C2GM_E2E_LAYOUT(1, 16, 16, ND, NDLayoutPtn, int32_t, half, VDEQF16, true, false)
+KERNEL_TENSOR_API_L0C2GM_E2E_LAYOUT(1, 16, 16, DN, DNLayoutPtn, int32_t, half, VDEQF16, true, false)

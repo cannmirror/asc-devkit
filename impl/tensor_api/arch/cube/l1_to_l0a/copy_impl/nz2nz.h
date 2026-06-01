@@ -31,7 +31,7 @@ class LoadDataL12L0ANZ2NZ {
 public:
     template <const CopyL12L0ATrait& trait, typename T, typename U>
     __aicore__ inline static void Run(const T& dst, const U& src) {
-        LoadDataImpl<TransTrait<trait, false>, T, U>(dst, src);
+        LoadDataImpl<trait, T, U>(dst, src);
     }
 
 private:    
@@ -59,9 +59,9 @@ private:
         auto srcStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(srcLayout) / STRIDE_UNIT;
         auto dstStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(dstLayout) / STRIDE_UNIT;
         if constexpr (IsB4Type<DstType>) {
-            LoadCbufToCa::LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            LoadCbufToCa::LoadData<false>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
         } else {
-            LoadCbufToCa::LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            LoadCbufToCa::LoadData<false>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
         }
     }
 };

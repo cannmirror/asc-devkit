@@ -29,9 +29,6 @@
 namespace AscendC {
 namespace Te {
 
-template<const LoadDataTrait& trait, bool transpose> 
-constexpr LoadDataTrait TransTrait = LoadDataTrait(trait, transpose); 
-
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
 #define SCALAR_QUANT_MODE QuantMode_t::DEQF16, QuantMode_t::QF322B8_PRE, QuantMode_t::REQ8,\
     QuantMode_t::QS322BF16_PRE, QuantMode_t::QF322F16_PRE, QuantMode_t::QF322BF16_PRE, QuantMode_t::QF322FP8_PRE,\

@@ -64,27 +64,12 @@ struct MmadParams {
     bool cmatrixInitVal = false;
 };
 
-struct DataCopyTrait {};
-
 enum class RoundMode : uint8_t {DEFAULT = 0, HYBRID};
-
 
 enum DualDstMode : uint8_t {
     DUAL_DST_DISABLE = 0,
     DUAL_DST_SPLIT_M,
     DUAL_DST_SPLIT_N
-};
-
-struct FixpipeTrait {
-    __aicore__ constexpr FixpipeTrait() {}
-
-    __aicore__ constexpr FixpipeTrait(RoundMode roundModeIn, bool enableReluIn, bool enableChannelSplitIn, DualDstMode dualDstCtlIn) :
-        roundMode(roundModeIn), enableRelu(enableReluIn), enableChannelSplit(enableChannelSplitIn), dualDstCtl(dualDstCtlIn) {}
-
-    RoundMode roundMode = RoundMode::DEFAULT;
-    bool enableRelu = false;
-    bool enableChannelSplit = false;
-    DualDstMode dualDstCtl = DUAL_DST_DISABLE;
 };
 
 struct FixpipeParams {
@@ -95,16 +80,6 @@ struct FixpipeParams {
     uint8_t unitFlag = 0;
 
     bool subBlockId = false;
-};
-
-struct LoadDataTrait {
-    __aicore__ constexpr LoadDataTrait() {}
-
-    __aicore__ constexpr LoadDataTrait(bool transposedIn) : transposed(transposedIn) {}
-
-    __aicore__ constexpr LoadDataTrait(const LoadDataTrait& trait, bool transposedIn) : transposed(transposedIn) {}
-
-    bool transposed = false;
 };
 
 } // namespace Te 

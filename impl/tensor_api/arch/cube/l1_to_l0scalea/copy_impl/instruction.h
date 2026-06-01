@@ -29,11 +29,11 @@
 namespace AscendC {
 namespace Te {
 
-using CopyL12L0ScaleATrait = LoadDataTrait;
+struct CopyL12L0ScaleATrait {};
 
 class LoadCbufToL0MxScaleA3510 {
 public:
-    template <const CopyL12L0ScaleATrait& trait, typename U, typename... Params>
+    template <typename U, typename... Params>
     __aicore__ inline static void LoadData(const uint64_t& mxDstAddr, const U& src, const Params& ...params)
     {
         LoadCbufToMxScaleA(mxDstAddr, src.Data().Get(), params...);

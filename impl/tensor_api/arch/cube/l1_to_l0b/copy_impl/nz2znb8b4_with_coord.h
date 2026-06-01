@@ -31,7 +31,7 @@ class LoadDataL12L0BNZ2ZNB8B4WithCoord {
 public:
     template <const CopyL12L0BTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline static void Run(const T& dst, const U& src, const Coord& coord) {
-        LoadDataImpl<TransTrait<trait, true>, T, U, Coord>(dst, src, coord);
+        LoadDataImpl<trait, T, U, Coord>(dst, src, coord);
     }
 
 private:
@@ -54,7 +54,7 @@ private:
         mStep = M_STEP_MIN_VAL_B4;
         for (uint16_t idx = 0; idx < nLoop; ++idx) {
             auto sliceDst = dst(MakeCoord(MakeCoord(0, idx), MakeCoord(0, 0)));
-            LoadCbufToCb::LoadData<trait>(sliceDst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            LoadCbufToCb::LoadData<true>(sliceDst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             mStartPosition += M_STEP_MIN_VAL_B4;
         }
     }
@@ -71,7 +71,7 @@ private:
         mStep = M_STEP_MIN_VAL_B8;
         for (uint16_t idx = 0; idx < nLoop; ++idx) {
             auto sliceDst = dst(MakeCoord(MakeCoord(0, idx), MakeCoord(0, 0)));
-            LoadCbufToCb::LoadData<trait>(sliceDst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+            LoadCbufToCb::LoadData<true>(sliceDst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             mStartPosition += M_STEP_MIN_VAL_B8;
         }
     }
@@ -99,13 +99,13 @@ private:
         auto dstStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(dstLayout) / STRIDE_UNIT;
         if constexpr (IsB4Type<DstType>) {
             if (n1 < FRACTAL_FIXED) {
-                LoadCbufToCb::LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+                LoadCbufToCb::LoadData<true>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             } else {
                 LoadDataImplB4<trait, T, U>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             }
         } else {
             if (n1 < FRACTAL_FIXED) {
-                LoadCbufToCb::LoadData<trait>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+                LoadCbufToCb::LoadData<true>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             } else {
                 LoadDataImplB8<trait, T, U>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
             }
