@@ -1,11 +1,87 @@
 import { defineConfig } from 'vitepress'
-import { existsSync, readFileSync } from 'node:fs'
-import { join, resolve } from 'node:path'
+import { existsSync, readFileSync, copyFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { load as cheerioLoad } from 'cheerio'
-import { pagefindPlugin, chineseSearchOptimize } from 'vitepress-plugin-pagefind'
-import sidebars from './sidebar.mjs'
+import { pagefindPlugin } from 'vitepress-plugin-pagefind'
 
 const docsRoot = resolve(import.meta.dirname, '..')
+
+function removeSelfRefItems(items) {
+  return items.map(item => {
+    const entry = { ...item }
+    if (entry.items && entry.items.length > 0) {
+      const children = removeSelfRefItems(entry.items)
+      if (children.length > 0 && children[0].text === entry.text && children[0].link) {
+        entry.items = children.slice(1)
+      } else {
+        entry.items = children
+      }
+    }
+    return entry
+  })
+}
+
+function addNumbering(items, prefix = '') {
+  return items.map((item, i) => {
+    const num = prefix ? `${prefix}${i + 1}.` : `${i + 1}.`
+    return {
+      ...item,
+      text: `${num} ${item.text}`,
+      ...(item.items ? { items: addNumbering(item.items, num) } : {}),
+    }
+  })
+}
+
+function parseMdSidebar(filePath, urlPrefix) {
+  const content = readFileSync(filePath, 'utf-8')
+  const lines = content.split('\n')
+  const rawEntries = []
+
+  for (const line of lines) {
+    const m = line.match(/^(\s*)-\s+\[(.+?)\]\((.+)\)/)
+    if (!m) continue
+    const indent = m[1].length
+    const text = m[2].replace(/\\([\\`*_{}[\]()#+\-.!|~&<>])/g, '$1')
+    let link = m[3].replace(/^\.\//, '')
+    link = link.replace(/\.md$/, '')
+    rawEntries.push({ indent, text, link })
+  }
+
+  if (rawEntries.length === 0) return []
+
+  const indentValues = [...new Set(rawEntries.filter(e => e.indent > 0).map(e => e.indent))].sort((a, b) => a - b)
+  const indentUnit = indentValues[0] || 4
+
+  const root = { items: [] }
+  const stack = [{ depth: -indentUnit, node: root }]
+
+  for (const entry of rawEntries) {
+    const depth = entry.indent
+    const current = { text: entry.text, link: urlPrefix + entry.link }
+
+    while (stack.length > 1 && stack[stack.length - 1].depth >= depth) {
+      stack.pop()
+    }
+
+    const parent = stack[stack.length - 1].node
+    if (!parent.items) parent.items = []
+    parent.items.push(current)
+
+    stack.push({ depth, node: current })
+  }
+
+  function addCollapsed(items) {
+    return items.map(item => {
+      if (item.items && item.items.length > 0) {
+        const { link, ...rest } = item
+        return { ...rest, collapsed: true, items: addCollapsed(item.items) }
+      }
+      return item
+    })
+  }
+
+  return addCollapsed(root.items)
+}
 
 function filterEmptyPages(items, docsRoot) {
   return items.reduce((acc, item) => {
@@ -36,9 +112,25 @@ function filterEmptyPages(items, docsRoot) {
   }, [])
 }
 
+const repoRoot = resolve(import.meta.dirname, '../../../..')
+
+const sidebarConfigs = [
+  { prefix: '/guide/', sourceFileName: 'index.md' },
+  { prefix: '/api/', sourceFileName: 'README.md' },
+]
+
 const filteredSidebars = {}
-for (const [key, items] of Object.entries(sidebars)) {
-  filteredSidebars[key] = filterEmptyPages(items, docsRoot)
+
+for (const { prefix, sourceFileName } of sidebarConfigs) {
+  const sourceDir = prefix === '/api/' ? 'api' : 'guide'
+  const sourcePath = resolve(repoRoot, 'docs', sourceDir, sourceFileName)
+  let items = parseMdSidebar(sourcePath, prefix)
+  items = removeSelfRefItems(items)
+  items = addNumbering(items)
+  if (prefix === '/api/') {
+    items.push({ text: 'README', link: '/api/README' })
+  }
+  filteredSidebars[prefix] = filterEmptyPages(items, docsRoot)
 }
 
 function extractBodyContent(html) {
@@ -203,11 +295,6 @@ function replaceCannFilterTags(src, replacer) {
 function fixCannFilterTags(src) {
   if (!/<(cann-filter|term|ph|__gm__|__ubuf__)\b/i.test(src)) return src
 
-  src = replaceCannFilterTags(src, {
-    start(type) { return `\nCANNFILTER_DIV_${type}_OPEN\n` },
-    end(type) { return `\nCANNFILTER_DIV_${type}_CLOSE\n` },
-  })
-
   return src
     .replace(/<\/?cann-filter\b[^>]*>/gi, '')
     .replace(/<(term|ph|__gm__|__ubuf__)\b[^>]*>([\s\S]*?)<\/\1>/gis, '$2')
@@ -365,10 +452,6 @@ export default defineConfig({
         return src
       }
       const processHtml = (html) => {
-        if (html.includes('CANNFILTER_DIV_')) {
-          html = html.replace(/<p>\s*CANNFILTER_DIV_([A-Za-z0-9_,]+)_OPEN\s*<\/p>/g, '<div data-filter="$1">')
-          html = html.replace(/<p>\s*CANNFILTER_DIV_([A-Za-z0-9_,]+)_CLOSE\s*<\/p>/g, '</div>')
-        }
         if (html.includes('{{')) {
           html = escapeVueInterpolations(html)
         }
@@ -401,6 +484,13 @@ export default defineConfig({
     },
   },
 
+  transformHtml(code) {
+    return code.replace(
+      /(<div[^>]*class="[^"]*vp-doc[^"]*")([^>]*>)/,
+      '$1 data-pagefind-body$2'
+    )
+  },
+
   transformPageData(pageData) {
     const cache = loadHeaderCache(pageData.filePath)
     if (cache && cache.length > 0) {
@@ -425,8 +515,36 @@ export default defineConfig({
       placeholder: '搜索文档',
       emptyText: '未找到结果',
       heading: '共: {{searchResult}} 条结果',
-      customSearchQuery: chineseSearchOptimize,
     }), {
+      name: 'serve-theme-assets',
+      configureServer(server) {
+        const themeAssets = resolve(import.meta.dirname, 'theme/assets')
+        server.middlewares.use(async (req, res, next) => {
+          const file = req.url === '/ascend-logo.svg' ? 'ascend-logo.svg'
+            : req.url === '/favicon.ico' ? 'favicon.ico' : null
+          if (file) {
+            const fp = resolve(themeAssets, file)
+            if (existsSync(fp)) {
+              const mime = file.endsWith('.svg') ? 'image/svg+xml' : 'image/x-icon'
+              res.setHeader('Content-Type', mime)
+              res.end(readFileSync(fp))
+              return
+            }
+          }
+          next()
+        })
+      },
+      writeBundle(options) {
+        const themeAssets = resolve(import.meta.dirname, 'theme/assets')
+        const dest = options.dir
+        if (dest) {
+          for (const f of ['ascend-logo.svg', 'favicon.ico']) {
+            const src = resolve(themeAssets, f)
+            if (existsSync(src)) copyFileSync(src, resolve(dest, f))
+          }
+        }
+      },
+    }, {
       name: 'vitepress-override-search-vue',
       enforce: 'post',
       config: () => ({
@@ -441,7 +559,7 @@ export default defineConfig({
       template: {
         compilerOptions: {
           onError: (error) => {
-            if (error.code === 2) return
+            if ([2, 21, 46].includes(error.code)) return
             throw error
           },
         },
@@ -449,7 +567,13 @@ export default defineConfig({
     },
   },
 
+  head: [
+    ['link', { rel: 'icon', href: '/favicon.ico' }],
+  ],
+
   themeConfig: {
+    logo: '/ascend-logo.svg',
+
     nav: [
       { text: '首页', link: '/' },
       { text: 'AscendC算子开发指南', link: '/guide/入门教程/Ascend-C概述与学习路径' },

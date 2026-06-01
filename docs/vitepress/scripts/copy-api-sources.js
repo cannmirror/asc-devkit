@@ -51,4 +51,49 @@ for (const src of files) {
 }
 
 fs.writeFileSync(path.join(outDir, 'manifest.json'), JSON.stringify(manifest, null, 2), 'utf-8')
+
+const bundle = {}
+for (const src of files) {
+  const rel = path.relative(apiDir, src).replace(/\\/g, '/')
+  bundle[rel] = fs.readFileSync(src, 'utf-8')
+}
+fs.writeFileSync(path.join(outDir, 'bundle.json'), JSON.stringify(bundle), 'utf-8')
+
+const bundleSize = (fs.statSync(path.join(outDir, 'bundle.json')).size / (1024 * 1024)).toFixed(1)
 console.log(`copied ${files.length} .md files to docs/public/api-source/files/`)
+console.log(`generated bundle.json (${bundleSize} MB) with ${Object.keys(bundle).length} entries`)
+
+const contribFiles = [
+  'asc_adv_api_contributing.md',
+  'asc_basic_api_contributing.md',
+  'asc_c_api_contributing.md',
+  'asc_how_to_choose_api.md',
+  'quick_start.md',
+]
+
+const contribSrcDir = path.resolve(repoRoot, 'docs')
+const contribDstDir = path.resolve(root, 'docs')
+fs.mkdirSync(contribDstDir, { recursive: true })
+
+let copiedCount = 0
+for (const f of contribFiles) {
+  const src = path.join(contribSrcDir, f)
+  if (fs.existsSync(src)) {
+    fs.copyFileSync(src, path.join(contribDstDir, f))
+    copiedCount++
+  }
+}
+
+const contribEnDir = path.resolve(repoRoot, 'docs', 'en')
+const contribEnDst = path.resolve(root, 'docs', 'en')
+fs.mkdirSync(contribEnDst, { recursive: true })
+
+for (const f of contribFiles) {
+  const src = path.join(contribEnDir, f)
+  if (fs.existsSync(src)) {
+    fs.copyFileSync(src, path.join(contribEnDst, f))
+    copiedCount++
+  }
+}
+
+console.log(`copied ${copiedCount} contrib docs to vitepress source`)

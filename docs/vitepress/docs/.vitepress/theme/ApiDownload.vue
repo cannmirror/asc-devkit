@@ -1,10 +1,10 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRoute } from 'vitepress'
-import JSZip from 'jszip'
 
 const route = useRoute()
 const loading = ref(false)
+const progress = ref('')
 const isApiPage = computed(() => route.path.startsWith('/api/'))
 
 function getFilterVersion() {
@@ -76,27 +76,6 @@ function filterCannFilterTags(src, version) {
   return result.replace(/<\/?cann-filter\b[^>]*>/gi, '')
 }
 
-async function fetchManifest() {
-  try {
-    const resp = await fetch('/api-source/manifest.json')
-    if (!resp.ok) return null
-    return await resp.json()
-  } catch {
-    return null
-  }
-}
-
-function getSidebarHrefs() {
-  if (typeof document === 'undefined') return []
-  const links = document.querySelectorAll('.VPSidebar a[href^="/api/"]')
-  const hrefs = [...links].map(a => a.getAttribute('href'))
-  return [...new Set(hrefs)]
-}
-
-function sidebarHrefToRelPath(href) {
-  return href.replace(/^\/api\//, '').replace(/\.html$/, '').replace(/\/$/, '') + '.md'
-}
-
 function timestamp() {
   const now = new Date()
   const y = now.getFullYear()
@@ -124,62 +103,68 @@ async function handleDownload() {
   const versionLabel = version === 'all' ? 'all' : ('v' + version)
 
   loading.value = true
+  progress.value = '下载数据中...'
 
   try {
-    const manifest = await fetchManifest()
-    if (!manifest || Object.keys(manifest).length === 0) {
-      console.error('No source files found in manifest')
-      return
-    }
+    const resp = await fetch('/api-source/bundle.json')
+    if (!resp.ok) throw new Error(`Bundle not found (HTTP ${resp.status})`)
 
-    const sidebarHrefs = getSidebarHrefs()
-    if (sidebarHrefs.length === 0) {
-      console.error('No sidebar links found')
-      return
-    }
+    const total = Number(resp.headers.get('content-length') || '0')
+    const reader = resp.body.getReader()
+    const chunks = []
+    let received = 0
 
-    const fileEntries = []
-    for (const href of sidebarHrefs) {
-      const relPath = sidebarHrefToRelPath(href)
-      const decoded = decodeURIComponent(relPath).replace(/\\/g, '/')
-      const hash = manifest[decoded]
-      if (hash) {
-        fileEntries.push({ relPath: decoded, hash })
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      chunks.push(value)
+      received += value.length
+      if (total > 0) {
+        progress.value = `下载中 ${Math.round(received / total * 100)}%`
       }
     }
 
-    if (fileEntries.length === 0) {
-      console.error('No matching source files found')
+    progress.value = '解析数据中...'
+    const rawBlob = new Blob(chunks)
+    const text = await rawBlob.text()
+    const bundle = JSON.parse(text)
+
+    const entries = Object.entries(bundle)
+    const fileTotal = entries.length
+    if (fileTotal === 0) {
+      console.error('No source files in bundle')
       return
     }
 
+    progress.value = '打包中 0%'
+    const JSZip = (await import('jszip')).default
     const zip = new JSZip()
-    const batchSize = 30
+    let processed = 0
 
-    for (let i = 0; i < fileEntries.length; i += batchSize) {
-      const batch = fileEntries.slice(i, i + batchSize)
-      const results = await Promise.all(batch.map(async ({ relPath, hash }) => {
-        try {
-          const url = '/api-source/files/' + hash + '.md'
-          const resp = await fetch(url)
-          if (!resp.ok) return null
-          let content = await resp.text()
-          content = filterContentByVersion(content, version)
-          return { filename: relPath, content }
-        } catch {
-          return null
-        }
-      }))
-      for (const r of results) {
-        if (r) zip.file(r.filename, r.content)
+    for (const [relPath, content] of entries) {
+      const filtered = filterContentByVersion(content, version)
+      zip.file(relPath, filtered)
+      processed++
+      if (processed % 100 === 0) {
+        const pct = Math.round(processed / fileTotal * 100)
+        progress.value = `打包中 ${pct}%`
+        await new Promise(r => setTimeout(r, 0))
       }
     }
 
+    progress.value = '生成 ZIP...'
     const blob = await zip.generateAsync({ type: 'blob' })
     const ts = timestamp()
     downloadBlob(blob, 'AscendC-API_' + versionLabel + '_' + ts + '.zip')
+    progress.value = ''
   } catch (err) {
     console.error('Download failed:', err)
+    progress.value = `失败: ${err.message}`
+    setTimeout(() => {
+      if (progress.value.startsWith('失败:')) {
+        progress.value = ''
+      }
+    }, 5000)
   } finally {
     loading.value = false
   }
@@ -187,38 +172,48 @@ async function handleDownload() {
 </script>
 
 <template>
-  <button
-    v-if="isApiPage"
-    class="api-download-btn"
-    :class="{ loading }"
-    :disabled="loading"
-    :title="loading ? '打包中...' : '下载全部 API Markdown'"
-    @click="handleDownload"
-  >
-    <svg
-      v-if="!loading"
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+  <div v-if="isApiPage" class="api-download-wrapper">
+    <button
+      class="api-download-btn"
+      :class="{ loading }"
+      :disabled="loading"
+      :title="loading ? progress : '下载全部 API Markdown'"
+      @click="handleDownload"
     >
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="7 10 12 15 17 10" />
-      <line x1="12" y1="15" x2="12" y2="3" />
-    </svg>
-    <span v-else class="spinner" />
-  </button>
+      <svg
+        v-if="!loading"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" y2="3" />
+      </svg>
+      <span v-else class="spinner" />
+    </button>
+    <div v-if="progress" class="download-progress" :class="{ error: progress.startsWith('失败:') }">{{ progress }}</div>
+  </div>
 </template>
 
 <style scoped>
-.api-download-btn {
+.api-download-wrapper {
   position: fixed;
   bottom: 40px;
   right: 96px;
+  z-index: 99;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.api-download-btn {
   width: 44px;
   height: 44px;
   border: 1px solid var(--vp-c-divider);
@@ -229,7 +224,6 @@ async function handleDownload() {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 99;
   transition: all 0.3s;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -257,6 +251,21 @@ async function handleDownload() {
   border-top-color: var(--vp-c-brand-1);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
+}
+
+.download-progress {
+  font-size: 11px;
+  color: var(--vp-c-text-2);
+  white-space: nowrap;
+  background: var(--vp-c-bg-soft);
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--vp-c-divider);
+}
+
+.download-progress.error {
+  color: var(--vp-c-danger-1);
+  border-color: var(--vp-c-danger-1);
 }
 
 @keyframes spin {
