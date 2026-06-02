@@ -209,7 +209,7 @@ Host侧自动获取Tiling参数的关键步骤介绍如下：
 
 2.  **设置A、B、C、Bias的内存逻辑位置、格式、数据类型以及是否转置的信息，设置scaleA、scaleB的内存逻辑位置、格式以及是否转置的信息。**
 
-    调用[SetScaleAType](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/SetScaleAType.md)、[SetScaleBType](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/SetScaleBType.md)接口，设置scaleA、scaleB的内存逻辑位置、格式以及是否转置。
+    调用[SetScaleAType](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetScaleAType.md)、[SetScaleBType](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetScaleBType.md)接口，设置scaleA、scaleB的内存逻辑位置、格式以及是否转置。
 
     ```
     cubeTiling.SetAType(AscendC::TPosition::GM, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT8_E5M2, false);
@@ -222,7 +222,7 @@ Host侧自动获取Tiling参数的关键步骤介绍如下：
 
 3.  **设置MxMatmul场景**。
 
-    调用[SetMadType](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/SetMadType.md)接口，设置Tiling计算逻辑为MxMatmul场景。
+    调用[SetMadType](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetMadType.md)接口，设置Tiling计算逻辑为MxMatmul场景。
 
     ```
     cubetiling.SetMadType(MatrixMadType::MXMODE);
@@ -294,7 +294,7 @@ Kernel侧的关键步骤介绍如下：
 
 3.  **设置左矩阵A、右矩阵B、左量化系数矩阵scaleA、右量化系数矩阵scaleB、Bias。**
 
-    通过[SetTensorScaleA](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/SetTensorScaleA.md)、[SetTensorScaleB](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/SetTensorScaleB.md)设置左量化系数矩阵scaleA、右量化系数矩阵scaleB。
+    通过[SetTensorScaleA](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/高阶API/矩阵计算/Matmul-Kernel侧接口/SetTensorScaleA.md)、[SetTensorScaleB](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/高阶API/矩阵计算/Matmul-Kernel侧接口/SetTensorScaleB.md)设置左量化系数矩阵scaleA、右量化系数矩阵scaleB。
 
     ```
     mm.SetTensorA(gm_a, isTransposeA);    // 设置左矩阵A
@@ -427,7 +427,7 @@ Kernel侧的关键步骤介绍如下：
 -   在MxMatmul场景中，通过将A矩阵和scaleA矩阵的数据格式设置为VECTOR，来开启[GEMV模式](矩阵向量乘.md)。在此模式下，A和scaleA矩阵仅支持内存逻辑位置为GM，并且均不支持转置。
 -   A矩阵、B矩阵为UB输入时，矩阵的内轴需要向上32字节对齐，例如，A矩阵的形状为\(M, K\)时，将K对齐到32字节；A矩阵的形状为\(K, M\)时，将M对齐到32字节。
 -   scaleA矩阵、scaleB矩阵为UB输入时，矩阵的内轴需要向上32字节对齐，例如，scaleA矩阵的形状为\(M, K/32\)时，将K/32对齐到32字节；scaleA矩阵的形状为\(K/32, M\)时，将M对齐到32字节。
--   当scaleA和scaleB矩阵以ND格式输入时，高阶API在内部实现格式转换时，需要占用UB临时空间。开发者需使用[SetLocalWorkspace](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/SetLocalWorkspace.md)接口配置临时空间，临时空间大小（单位字节）的计算公式如下。
+-   当scaleA和scaleB矩阵以ND格式输入时，高阶API在内部实现格式转换时，需要占用UB临时空间。开发者需使用[SetLocalWorkspace](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/高阶API/矩阵计算/Matmul-Kernel侧接口/SetLocalWorkspace.md)接口配置临时空间，临时空间大小（单位字节）的计算公式如下。
 
     ```
     int32_t scaleATmpBuf = 0;
