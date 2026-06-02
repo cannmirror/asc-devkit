@@ -191,6 +191,18 @@ private:
                                                   Std::index_sequence<Is...>)
     { CopyMatrixCcToGmInstr::DataCopy<quantPre>(dst, src, Std::get<Is>(paramTuple)...); }
 
+    template <typename T>
+    __aicore__ inline static constexpr auto MakeDstCoord(uint32_t nOffset)
+    {
+        using LayoutType = typename T::layoutType;
+        if constexpr (LayoutType::depth == FOUR_DIM_DATA) {
+            return MakeCoord(MakeCoord(0, 0), MakeCoord(0, nOffset));
+        } else {
+            static_assert(LayoutType::depth == TWO_DIM_DATA, "Only support two-dim or four-dim dst tensor.");
+            return MakeCoord(0, nOffset);
+        }
+    }
+
     template <const CopyL0C2GMTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V>
     __aicore__ inline static void ExecuteDataCopy(const T& dst, const U& src, const V& quant, uint16_t nIterNum,
                                                   uint32_t calNSize, uint32_t tailNSize, const FixpipeParams& params)
@@ -202,7 +214,7 @@ private:
             InsertSync();
 
             const auto srcCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, i * CBURST_NUM_3510));
-            const auto dstCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, i * MAIN_LOOP_N_SIZE_3510));
+            const auto dstCoord = MakeDstCoord<T>(i * MAIN_LOOP_N_SIZE_3510);
 
             DataCopyWrapper<quantPre>(dst(dstCoord), src(srcCoord), mainLoopParam,
                                       Std::make_index_sequence<Std::tuple_size_v<decltype(mainLoopParam)>>{});
@@ -215,7 +227,7 @@ private:
             InsertSync();
 
             const auto srcCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, nIterNum * CBURST_NUM_3510));
-            const auto dstCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, nIterNum * MAIN_LOOP_N_SIZE_3510));
+            const auto dstCoord = MakeDstCoord<T>(nIterNum * MAIN_LOOP_N_SIZE_3510);
 
             DataCopyWrapper<quantPre>(dst(dstCoord), src(srcCoord), tailParam,
                                       Std::make_index_sequence<Std::tuple_size_v<decltype(tailParam)>>{});

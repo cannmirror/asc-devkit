@@ -11,6 +11,38 @@
 #include <gtest/gtest.h>
 #include "tensor_api/stub/cce_stub.h"
 #include "include/tensor_api/tensor.h"
+#include <type_traits>
+
+enum class CubeFormat {
+    ND = 0,
+    NZ,
+    DN,
+};
+
+template <CubeFormat FORMAT>
+struct DefaultCLayoutPtn;
+
+template <>
+struct DefaultCLayoutPtn<CubeFormat::ND> {
+    using Type = AscendC::Te::NDExtLayoutPtn;
+};
+
+template <>
+struct DefaultCLayoutPtn<CubeFormat::NZ> {
+    using Type = AscendC::Te::NZLayoutPtn;
+};
+
+template <>
+struct DefaultCLayoutPtn<CubeFormat::DN> {
+    using Type = AscendC::Te::DNExtLayoutPtn;
+};
+
+template <CubeFormat FORMAT, typename TYPE, typename LAYOUT_PATTERN = typename DefaultCLayoutPtn<FORMAT>::Type>
+struct InputInfo {
+    constexpr static CubeFormat format = FORMAT;
+    using T = TYPE;
+    using LayoutPtn = LAYOUT_PATTERN;
+};
 
 using namespace AscendC::Te;
 
@@ -114,7 +146,6 @@ TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2UBNZ2NDLayout)
     EXPECT_EQ(dst[0], 0);
 }
 
-
 TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2UBNZ2DN)
 {
     using namespace AscendC::Te;
@@ -187,3 +218,148 @@ TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2UBNZ2NZWithChannelSplit)
 
     EXPECT_EQ(dst[0], 0);
 }
+
+template <class L0C_TYPE, class C_TYPE, QuantMode_t QUANT_MODE, bool IS_TENSOR, bool HAS_COORD>
+class L0C2UBTestCase {
+    using DstT = typename C_TYPE::T;
+    using L0cT = typename L0C_TYPE::T;
+
+public:
+    __aicore__ inline L0C2UBTestCase() {}
+
+    __aicore__ inline void TestRun(int32_t m, int32_t n, __ubuf__ DstT* c)
+    {
+        ubC_ = c;
+        mLength_ = m;
+        nLength_ = n;
+        qAddr_ = reinterpret_cast<__cbuf__ uint64_t*>(0);
+        l0cAddr_ = reinterpret_cast<__cc__ L0cT*>(0);
+        constexpr uint32_t base = 0;
+
+        auto l0cIterator = MakeMemPtr<Location::L0C>(l0cAddr_);
+        auto l0cMatrixLayout = MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<L0cT, _16>>(mLength_, nLength_);
+        auto l0cTensor = MakeTensor(l0cIterator, l0cMatrixLayout);
+        auto ubTensor = MakeUBTensor();
+
+        if constexpr (QUANT_MODE == QuantMode_t::NoQuant || QUANT_MODE == QuantMode_t::F322F16) {
+            if constexpr (HAS_COORD) {
+                auto ubTensorTile = Slice(ubTensor, MakeCoord(base, base), MakeShape(m - base, n - base));
+                Copy(CopyAtom<CopyTraits<CopyL0C2UB, CopyL0C2UBTraitDefault>>{}, ubTensorTile, l0cTensor);
+            } else {
+                Copy(CopyAtom<CopyTraits<CopyL0C2UB, CopyL0C2UBTraitDefault>>{}, ubTensor, l0cTensor);
+            }
+        } else if constexpr (IS_TENSOR) {
+            auto qIterator = MakeMemPtr<Location::L1>(qAddr_);
+            auto qMatrixLayout = MakeFrameLayout<NDExtLayoutPtn>(1, nLength_);
+            auto qTensor = MakeTensor(qIterator, qMatrixLayout);
+            if constexpr (HAS_COORD) {
+                auto ubTensorTile = Slice(ubTensor, MakeCoord(base, base), MakeShape(m - base, n - base));
+                Copy(CopyAtom<CopyTraits<CopyL0C2UB, CopyL0C2UBTraitDefault>>{}, ubTensorTile, l0cTensor, qTensor);
+            } else {
+                Copy(CopyAtom<CopyTraits<CopyL0C2UB, CopyL0C2UBTraitDefault>>{}, ubTensor, l0cTensor, qTensor);
+            }
+        } else {
+            uint64_t quant = 1;
+            if constexpr (HAS_COORD) {
+                auto ubTensorTile = Slice(ubTensor, MakeCoord(base, base), MakeShape(m - base, n - base));
+                Copy(CopyAtom<CopyTraits<CopyL0C2UB, CopyL0C2UBTraitDefault>>{}, ubTensorTile, l0cTensor, quant);
+            } else {
+                Copy(CopyAtom<CopyTraits<CopyL0C2UB, CopyL0C2UBTraitDefault>>{}, ubTensor, l0cTensor, quant);
+            }
+        }
+    }
+
+private:
+    int32_t mLength_ = 0;
+    int32_t nLength_ = 0;
+
+    __ubuf__ DstT* ubC_;
+    __cbuf__ uint64_t* qAddr_;
+    __cc__ L0cT* l0cAddr_;
+
+    __aicore__ inline constexpr auto MakeUBTensor()
+    {
+        auto ubIterator = MakeMemPtr<Location::UB>(ubC_);
+        if constexpr (C_TYPE::format == CubeFormat::NZ) {
+            using CastT = std::conditional_t<sizeof(DstT) == 4, half, DstT>;
+            auto ubMatrixLayout = MakeFrameLayout<typename C_TYPE::LayoutPtn, LayoutTraitDefault<CastT>>(mLength_,
+                                                                                                         nLength_);
+            return MakeTensor(ubIterator, ubMatrixLayout);
+        } else {
+            auto ubMatrixLayout = MakeFrameLayout<typename C_TYPE::LayoutPtn>(mLength_, nLength_);
+            return MakeTensor(ubIterator, ubMatrixLayout);
+        }
+    }
+};
+
+template <class L0C_TYPE, class C_TYPE, QuantMode_t QUANT_MODE, bool IS_TENSOR, bool HAS_COORD>
+__aicore__ inline void TestL0c2Ub(uint8_t* cUB, int32_t m, int32_t n, int32_t usedCoreNum)
+{
+    if (g_coreType == AscendC::AIV) {
+        return;
+    }
+
+    using C_T = typename C_TYPE::T;
+
+    if (block_idx >= usedCoreNum) {
+        return;
+    }
+
+    auto ubC = reinterpret_cast<__ubuf__ C_T*>(cUB);
+
+    L0C2UBTestCase<L0C_TYPE, C_TYPE, QUANT_MODE, IS_TENSOR, HAS_COORD> ins;
+    ins.TestRun(m, n, ubC);
+}
+
+#define KERNEL_TENSOR_API_L0C2UB_E2E(coreNum, M, N, C_Format, L0C_DType, C_DType, Quant_Mode, Is_Tensor, Has_Coord) \
+    TEST_F(Tensor_Api_Cube_Copy_3510, kernel_tensor_api_l0c2ub_##coreNum##_##M##_##N##_##C_Format##_##L0C_DType##_##C_DType##_##Quant_Mode##_##Is_Tensor##_##Has_Coord) \
+    { \
+        uint8_t cUB[M * N * sizeof(C_DType)] = {0}; \
+        typedef InputInfo<CubeFormat::NZ, L0C_DType> l0cType; \
+        typedef InputInfo<CubeFormat::C_Format, C_DType> cType; \
+        TestL0c2Ub<l0cType, cType, QuantMode_t::Quant_Mode, Is_Tensor, Has_Coord>(cUB, M, N, coreNum); \
+        for (uint32_t i = 0; i < M * N; i++) { \
+            EXPECT_EQ(cUB[i], 0x00); \
+        } \
+    }
+
+#define KERNEL_TENSOR_API_L0C2UB_E2E_LAYOUT(coreNum, M, N, C_Format, C_LayoutPtn, L0C_DType, C_DType, Quant_Mode,    \
+                                            Is_Tensor, Has_Coord)                                                    \
+    TEST_F(Tensor_Api_Cube_Copy_3510, kernel_tensor_api_l0c2ub_##coreNum##_##M##_##N##_##C_Format##_##C_LayoutPtn##_##L0C_DType##_##C_DType##_##Quant_Mode##_##Is_Tensor##_##Has_Coord) \
+    {                                                                                                                \
+        uint8_t cUB[M * N * sizeof(C_DType)] = {0};                                                                  \
+        typedef InputInfo<CubeFormat::NZ, L0C_DType> l0cType;                                                        \
+        typedef InputInfo<CubeFormat::C_Format, C_DType, C_LayoutPtn> cType;                                         \
+        TestL0c2Ub<l0cType, cType, QuantMode_t::Quant_Mode, Is_Tensor, Has_Coord>(cUB, M, N, coreNum);               \
+        for (uint32_t i = 0; i < M * N; i++) {                                                                       \
+            EXPECT_EQ(cUB[i], 0x00);                                                                                 \
+        }                                                                                                            \
+    }
+
+KERNEL_TENSOR_API_L0C2UB_E2E(1, 16, 16, ND, float, float, NoQuant, false, false)
+KERNEL_TENSOR_API_L0C2UB_E2E(1, 16, 16, NZ, float, float, NoQuant, false, false)
+KERNEL_TENSOR_API_L0C2UB_E2E(1, 16, 16, DN, float, float, NoQuant, false, false)
+KERNEL_TENSOR_API_L0C2UB_E2E(1, 128, 64, ND, float, float, NoQuant, false, false)
+KERNEL_TENSOR_API_L0C2UB_E2E(1, 128, 64, ND, float, float, NoQuant, false, true)
+KERNEL_TENSOR_API_L0C2UB_E2E(1, 128, 64, NZ, float, float, NoQuant, false, false)
+KERNEL_TENSOR_API_L0C2UB_E2E(1, 128, 64, NZ, float, float, NoQuant, false, true)
+KERNEL_TENSOR_API_L0C2UB_E2E(1, 16, 16, ND, float, half, F322F16, false, false)
+KERNEL_TENSOR_API_L0C2UB_E2E(1, 128, 64, ND, float, half, F322F16, false, true)
+KERNEL_TENSOR_API_L0C2UB_E2E(1, 16, 16, ND, float, half, VQF322F16_PRE, true, false)
+KERNEL_TENSOR_API_L0C2UB_E2E(1, 128, 64, ND, int32_t, int8_t, REQ8, false, false)
+KERNEL_TENSOR_API_L0C2UB_E2E(1, 128, 64, NZ, int32_t, int8_t, REQ8, false, false)
+KERNEL_TENSOR_API_L0C2UB_E2E(1, 128, 64, NZ, int32_t, int8_t, VREQ8, true, false)
+KERNEL_TENSOR_API_L0C2UB_E2E(1, 128, 64, DN, int32_t, int8_t, REQ8, false, false)
+KERNEL_TENSOR_API_L0C2UB_E2E(1, 128, 64, DN, int32_t, int8_t, VREQ8, true, false)
+
+KERNEL_TENSOR_API_L0C2UB_E2E_LAYOUT(1, 16, 16, ND, NDLayoutPtn, float, float, NoQuant, false, false)
+KERNEL_TENSOR_API_L0C2UB_E2E_LAYOUT(1, 128, 64, ND, NDLayoutPtn, float, float, NoQuant, false, false)
+KERNEL_TENSOR_API_L0C2UB_E2E_LAYOUT(1, 128, 64, ND, NDLayoutPtn, float, float, NoQuant, false, true)
+KERNEL_TENSOR_API_L0C2UB_E2E_LAYOUT(1, 16, 16, ND, NDLayoutPtn, float, half, F322F16, false, false)
+KERNEL_TENSOR_API_L0C2UB_E2E_LAYOUT(1, 128, 64, ND, NDLayoutPtn, float, half, F322F16, false, true)
+KERNEL_TENSOR_API_L0C2UB_E2E_LAYOUT(1, 128, 64, ND, NDLayoutPtn, int32_t, int8_t, REQ8, false, false)
+KERNEL_TENSOR_API_L0C2UB_E2E_LAYOUT(1, 16, 16, DN, DNLayoutPtn, float, float, NoQuant, false, false)
+KERNEL_TENSOR_API_L0C2UB_E2E_LAYOUT(1, 128, 64, DN, DNLayoutPtn, float, float, NoQuant, false, false)
+KERNEL_TENSOR_API_L0C2UB_E2E_LAYOUT(1, 128, 64, DN, DNLayoutPtn, int32_t, int8_t, REQ8, false, false)
+KERNEL_TENSOR_API_L0C2UB_E2E_LAYOUT(1, 16, 513, ND, NDLayoutPtn, int32_t, half, VDEQF16, true, false)
+KERNEL_TENSOR_API_L0C2UB_E2E_LAYOUT(1, 16, 16, DN, DNLayoutPtn, int32_t, half, VDEQF16, true, false)
