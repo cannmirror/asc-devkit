@@ -146,11 +146,11 @@ export default {
                 "items": [
                   {
                     "text": "静态Tensor编程",
-                    "link": "/guide/编程指南/编程模型/AI-Core-SIMD编程/基于Tensor的C++编程/静态Tensor编程"
+                    "link": "/guide/编程指南/编程模型/AI-Core-SIMD编程/基于Tensor的CPP编程/静态Tensor编程"
                   },
                   {
                     "text": "Reg矢量计算编程",
-                    "link": "/guide/编程指南/编程模型/AI-Core-SIMD编程/基于Tensor的C++编程/Reg矢量计算编程"
+                    "link": "/guide/编程指南/编程模型/AI-Core-SIMD编程/基于Tensor的CPP编程/Reg矢量计算编程"
                   }
                 ]
               },
@@ -9472,11 +9472,11 @@ export default {
               "items": [
                 {
                   "text": "max",
-                  "link": "/api/Utils-API/C++标准库/算法/max-267"
+                  "link": "/api/Utils-API/CPP标准库/算法/max-267"
                 },
                 {
                   "text": "min",
-                  "link": "/api/Utils-API/C++标准库/算法/min-268"
+                  "link": "/api/Utils-API/CPP标准库/算法/min-268"
                 }
               ]
             },
@@ -9486,11 +9486,11 @@ export default {
               "items": [
                 {
                   "text": "abs",
-                  "link": "/api/Utils-API/C++标准库/数学函数/abs1"
+                  "link": "/api/Utils-API/CPP标准库/数学函数/abs1"
                 },
                 {
                   "text": "sqrt",
-                  "link": "/api/Utils-API/C++标准库/数学函数/sqrt1"
+                  "link": "/api/Utils-API/CPP标准库/数学函数/sqrt1"
                 }
               ]
             },
@@ -9500,15 +9500,15 @@ export default {
               "items": [
                 {
                   "text": "tuple",
-                  "link": "/api/Utils-API/C++标准库/容器函数/tuple"
+                  "link": "/api/Utils-API/CPP标准库/容器函数/tuple"
                 },
                 {
                   "text": "get",
-                  "link": "/api/Utils-API/C++标准库/容器函数/get1"
+                  "link": "/api/Utils-API/CPP标准库/容器函数/get1"
                 },
                 {
                   "text": "make_tuple",
-                  "link": "/api/Utils-API/C++标准库/容器函数/make_tuple"
+                  "link": "/api/Utils-API/CPP标准库/容器函数/make_tuple"
                 }
               ]
             },
@@ -9518,99 +9518,99 @@ export default {
               "items": [
                 {
                   "text": "is_convertible",
-                  "link": "/api/Utils-API/C++标准库/类型特性/is_convertible"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/is_convertible"
                 },
                 {
                   "text": "is_base_of",
-                  "link": "/api/Utils-API/C++标准库/类型特性/is_base_of"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/is_base_of"
                 },
                 {
                   "text": "is_same",
-                  "link": "/api/Utils-API/C++标准库/类型特性/is_same"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/is_same"
                 },
                 {
                   "text": "is_void",
-                  "link": "/api/Utils-API/C++标准库/类型特性/is_void"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/is_void"
                 },
                 {
                   "text": "is_integral",
-                  "link": "/api/Utils-API/C++标准库/类型特性/is_integral"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/is_integral"
                 },
                 {
                   "text": "is_floating_point",
-                  "link": "/api/Utils-API/C++标准库/类型特性/is_floating_point"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/is_floating_point"
                 },
                 {
                   "text": "is_array",
-                  "link": "/api/Utils-API/C++标准库/类型特性/is_array"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/is_array"
                 },
                 {
                   "text": "is_pointer",
-                  "link": "/api/Utils-API/C++标准库/类型特性/is_pointer"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/is_pointer"
                 },
                 {
                   "text": "is_reference",
-                  "link": "/api/Utils-API/C++标准库/类型特性/is_reference"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/is_reference"
                 },
                 {
                   "text": "is_const",
-                  "link": "/api/Utils-API/C++标准库/类型特性/is_const"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/is_const"
                 },
                 {
                   "text": "remove_const",
-                  "link": "/api/Utils-API/C++标准库/类型特性/remove_const"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/remove_const"
                 },
                 {
                   "text": "remove_volatile",
-                  "link": "/api/Utils-API/C++标准库/类型特性/remove_volatile"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/remove_volatile"
                 },
                 {
                   "text": "remove_cv",
-                  "link": "/api/Utils-API/C++标准库/类型特性/remove_cv"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/remove_cv"
                 },
                 {
                   "text": "remove_reference",
-                  "link": "/api/Utils-API/C++标准库/类型特性/remove_reference"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/remove_reference"
                 },
                 {
                   "text": "remove_pointer",
-                  "link": "/api/Utils-API/C++标准库/类型特性/remove_pointer"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/remove_pointer"
                 },
                 {
                   "text": "add_const",
-                  "link": "/api/Utils-API/C++标准库/类型特性/add_const"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/add_const"
                 },
                 {
                   "text": "add_volatile",
-                  "link": "/api/Utils-API/C++标准库/类型特性/add_volatile"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/add_volatile"
                 },
                 {
                   "text": "add_cv",
-                  "link": "/api/Utils-API/C++标准库/类型特性/add_cv"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/add_cv"
                 },
                 {
                   "text": "add_pointer",
-                  "link": "/api/Utils-API/C++标准库/类型特性/add_pointer"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/add_pointer"
                 },
                 {
                   "text": "add_lvalue_reference",
-                  "link": "/api/Utils-API/C++标准库/类型特性/add_lvalue_reference"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/add_lvalue_reference"
                 },
                 {
                   "text": "add_rvalue_reference",
-                  "link": "/api/Utils-API/C++标准库/类型特性/add_rvalue_reference"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/add_rvalue_reference"
                 },
                 {
                   "text": "enable_if",
-                  "link": "/api/Utils-API/C++标准库/类型特性/enable_if"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/enable_if"
                 },
                 {
                   "text": "conditional",
-                  "link": "/api/Utils-API/C++标准库/类型特性/conditional"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/conditional"
                 },
                 {
                   "text": "integral_constant",
-                  "link": "/api/Utils-API/C++标准库/类型特性/integral_constant"
+                  "link": "/api/Utils-API/CPP标准库/类型特性/integral_constant"
                 }
               ]
             },
@@ -9620,7 +9620,7 @@ export default {
               "items": [
                 {
                   "text": "integer_sequence",
-                  "link": "/api/Utils-API/C++标准库/通用工具/integer_sequence"
+                  "link": "/api/Utils-API/CPP标准库/通用工具/integer_sequence"
                 }
               ]
             }

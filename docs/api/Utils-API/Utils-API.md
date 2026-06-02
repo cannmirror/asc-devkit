@@ -2,7 +2,7 @@
 
 -   **[Utils API列表](Utils-API列表.md)**  
 
--   **[C++标准库](C++标准库/C++标准库.md)**  
+-   **[C++标准库](CPP标准库/CPP标准库.md)**  
 
 -   **[平台信息获取](平台信息获取/平台信息获取.md)**  
 
@@ -23,4 +23,3 @@
 -   **[调测接口](调测接口/调测接口.md)**  
 
 -   **[SuperKernel](SuperKernel/SuperKernel.md)**  
-

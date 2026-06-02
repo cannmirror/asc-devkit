@@ -39,7 +39,7 @@ __aicore__ inline constexpr auto MakeLayout(const ShapeType& shape, const Stride
 
 ## 约束说明
 
-构造Layout对象时传入的Shape和Stride结构，需是[`Std::tuple`](../../../../Utils-API/C++标准库/容器函数/容器函数.md)结构类型，且满足Std::tuple结构类型的使用约束。
+构造Layout对象时传入的Shape和Stride结构，需是[`Std::tuple`](../../../../Utils-API/CPP标准库/容器函数/容器函数.md)结构类型，且满足Std::tuple结构类型的使用约束。
 
 ## 调用示例
 
@@ -60,4 +60,3 @@ value = Std::get<0>(layoutInit.Stride()); // value = 1
 value = Std::get<1>(layoutInit.Stride()); // value = 100
 value = Std::get<2>(layoutInit.Stride()); // value = 200
 ```
-

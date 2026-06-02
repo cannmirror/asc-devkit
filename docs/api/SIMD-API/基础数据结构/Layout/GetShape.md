@@ -64,7 +64,7 @@ __aicore__ inline constexpr decltype(auto) GetShape() const {}
 
 ## 返回值说明<a name="zh-cn_topic_0000002078447573_zh-cn_topic_0000001576806829_zh-cn_topic_0000001339187720_section25791320141317"></a>
 
-描述张量形状的Shape对象，Shape结构类型（[Std::tuple](../../../Utils-API/C++标准库/容器函数/容器函数.md)类型的别名），定义如下：
+描述张量形状的Shape对象，Shape结构类型（[Std::tuple](../../../Utils-API/CPP标准库/容器函数/容器函数.md)类型的别名），定义如下：
 
 ```
 template <typename... Shapes>
@@ -89,4 +89,3 @@ int value = AscendC::Std::get<0>(layoutMake.GetShape()); // value = 10
 value = AscendC::Std::get<1>(layoutMake.GetShape()); // value = 20
 value = AscendC::Std::get<2>(layoutMake.GetShape()); // value = 30
 ```
-

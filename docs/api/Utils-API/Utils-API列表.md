@@ -9,162 +9,162 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row99811354881"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p29811545811"><a name="p29811545811"></a><a name="p29811545811"></a><a href="C++标准库/算法/max-267.md">max</a></p>
+<tbody><tr id="row99811354881"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p29811545811"><a name="p29811545811"></a><a name="p29811545811"></a><a href="CPP标准库/算法/max-267.md">max</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p138701595101"><a name="p138701595101"></a><a name="p138701595101"></a>比较相同数据类型的两个数中的最大值。</p>
 </td>
 </tr>
-<tr id="row99818543818"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p179811546812"><a name="p179811546812"></a><a name="p179811546812"></a><a href="C++标准库/算法/min-268.md">min</a></p>
+<tr id="row99818543818"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p179811546812"><a name="p179811546812"></a><a name="p179811546812"></a><a href="CPP标准库/算法/min-268.md">min</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p986935911109"><a name="p986935911109"></a><a name="p986935911109"></a>比较相同数据类型的两个数中的最小值。</p>
 </td>
 </tr>
-<tr id="row9612616122612"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p690582982619"><a name="p690582982619"></a><a name="p690582982619"></a><a href="C++标准库/数学函数/abs1.md">abs</a></p>
+<tr id="row9612616122612"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p690582982619"><a name="p690582982619"></a><a name="p690582982619"></a><a href="CPP标准库/数学函数/abs1.md">abs</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p1161313165264"><a name="p1161313165264"></a><a name="p1161313165264"></a>获取输入数据的绝对值。</p>
 </td>
 </tr>
-<tr id="row1711751919267"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p14905729172617"><a name="p14905729172617"></a><a name="p14905729172617"></a><a href="C++标准库/数学函数/sqrt1.md">sqrt</a></p>
+<tr id="row1711751919267"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p14905729172617"><a name="p14905729172617"></a><a name="p14905729172617"></a><a href="CPP标准库/数学函数/sqrt1.md">sqrt</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p5117419162612"><a name="p5117419162612"></a><a name="p5117419162612"></a>计算输入数据的平方根。</p>
 </td>
 </tr>
-<tr id="row17982175418816"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p298213542810"><a name="p298213542810"></a><a name="p298213542810"></a><a href="C++标准库/通用工具/integer_sequence.md">integer_sequence</a></p>
+<tr id="row17982175418816"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p298213542810"><a name="p298213542810"></a><a name="p298213542810"></a><a href="CPP标准库/通用工具/integer_sequence.md">integer_sequence</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p8869259101018"><a name="p8869259101018"></a><a name="p8869259101018"></a>用于生成一个整数序列。</p>
 </td>
 </tr>
-<tr id="row139821454384"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1598219543820"><a name="p1598219543820"></a><a name="p1598219543820"></a><a href="C++标准库/容器函数/tuple.md">tuple</a></p>
+<tr id="row139821454384"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1598219543820"><a name="p1598219543820"></a><a name="p1598219543820"></a><a href="CPP标准库/容器函数/tuple.md">tuple</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p88681259101020"><a name="p88681259101020"></a><a name="p88681259101020"></a>允许存储多个不同类型元素的容器。</p>
 </td>
 </tr>
-<tr id="row19821854887"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1829135316100"><a name="p1829135316100"></a><a name="p1829135316100"></a><a href="C++标准库/容器函数/get1.md">get</a></p>
+<tr id="row19821854887"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1829135316100"><a name="p1829135316100"></a><a name="p1829135316100"></a><a href="CPP标准库/容器函数/get1.md">get</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p42902537103"><a name="p42902537103"></a><a name="p42902537103"></a>从tuple容器中提取指定位置的元素。</p>
 </td>
 </tr>
-<tr id="row19821254681"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p9290175311107"><a name="p9290175311107"></a><a name="p9290175311107"></a><a href="C++标准库/容器函数/make_tuple.md">make_tuple</a></p>
+<tr id="row19821254681"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p9290175311107"><a name="p9290175311107"></a><a name="p9290175311107"></a><a href="CPP标准库/容器函数/make_tuple.md">make_tuple</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p028955381015"><a name="p028955381015"></a><a name="p028955381015"></a>用于便捷地创建tuple对象。</p>
 </td>
 </tr>
-<tr id="row169828546818"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p6289453151012"><a name="p6289453151012"></a><a name="p6289453151012"></a><a href="C++标准库/类型特性/is_convertible.md">is_convertible</a></p>
+<tr id="row169828546818"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p6289453151012"><a name="p6289453151012"></a><a name="p6289453151012"></a><a href="CPP标准库/类型特性/is_convertible.md">is_convertible</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p1028845351011"><a name="p1028845351011"></a><a name="p1028845351011"></a>在程序编译时判断两个类型之间是否可以进行隐式转换。</p>
 </td>
 </tr>
-<tr id="row498311545815"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p42881453151010"><a name="p42881453151010"></a><a name="p42881453151010"></a><a href="C++标准库/类型特性/is_base_of.md">is_base_of</a></p>
+<tr id="row498311545815"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p42881453151010"><a name="p42881453151010"></a><a name="p42881453151010"></a><a href="CPP标准库/类型特性/is_base_of.md">is_base_of</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p11287105315108"><a name="p11287105315108"></a><a name="p11287105315108"></a>在程序编译时判断一个类型是否为另一个类型的基类。</p>
 </td>
 </tr>
-<tr id="row1598312541817"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p172878539107"><a name="p172878539107"></a><a name="p172878539107"></a><a href="C++标准库/类型特性/is_same.md">is_same</a></p>
+<tr id="row1598312541817"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p172878539107"><a name="p172878539107"></a><a name="p172878539107"></a><a href="CPP标准库/类型特性/is_same.md">is_same</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p1128711539108"><a name="p1128711539108"></a><a name="p1128711539108"></a>在程序编译时判断两个类型是否完全相同。</p>
 </td>
 </tr>
-<tr id="row1633720117221"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p93381111122210"><a name="p93381111122210"></a><a name="p93381111122210"></a><a href="C++标准库/类型特性/is_void.md">is_void</a></p>
+<tr id="row1633720117221"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p93381111122210"><a name="p93381111122210"></a><a name="p93381111122210"></a><a href="CPP标准库/类型特性/is_void.md">is_void</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p1533831115228"><a name="p1533831115228"></a><a name="p1533831115228"></a>在程序编译时，检测一个类型是否为void类型。</p>
 </td>
 </tr>
-<tr id="row52421326162217"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p12242172662210"><a name="p12242172662210"></a><a name="p12242172662210"></a><a href="C++标准库/类型特性/is_integral.md">is_integral</a></p>
+<tr id="row52421326162217"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p12242172662210"><a name="p12242172662210"></a><a name="p12242172662210"></a><a href="CPP标准库/类型特性/is_integral.md">is_integral</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p1624252612219"><a name="p1624252612219"></a><a name="p1624252612219"></a>在程序编译时，检测一个类型是否为整数类型。</p>
 </td>
 </tr>
-<tr id="row11734172662219"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1973415265225"><a name="p1973415265225"></a><a name="p1973415265225"></a><a href="C++标准库/类型特性/is_floating_point.md">is_floating_point</a></p>
+<tr id="row11734172662219"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1973415265225"><a name="p1973415265225"></a><a name="p1973415265225"></a><a href="CPP标准库/类型特性/is_floating_point.md">is_floating_point</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p57343265222"><a name="p57343265222"></a><a name="p57343265222"></a>在程序编译时，检测一个类型是否为浮点类型。</p>
 </td>
 </tr>
-<tr id="row222019272222"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p6220182752214"><a name="p6220182752214"></a><a name="p6220182752214"></a><a href="C++标准库/类型特性/is_array.md">is_array</a></p>
+<tr id="row222019272222"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p6220182752214"><a name="p6220182752214"></a><a name="p6220182752214"></a><a href="CPP标准库/类型特性/is_array.md">is_array</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p422182716228"><a name="p422182716228"></a><a name="p422182716228"></a>在程序编译时，检测一个类型是否为数组类型。</p>
 </td>
 </tr>
-<tr id="row7633162752214"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p163352792217"><a name="p163352792217"></a><a name="p163352792217"></a><a href="C++标准库/类型特性/is_pointer.md">is_pointer</a></p>
+<tr id="row7633162752214"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p163352792217"><a name="p163352792217"></a><a name="p163352792217"></a><a href="CPP标准库/类型特性/is_pointer.md">is_pointer</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p663302713222"><a name="p663302713222"></a><a name="p663302713222"></a>在程序编译时，判断一个类型是否为指针类型。</p>
 </td>
 </tr>
-<tr id="row238102862215"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p13381828182211"><a name="p13381828182211"></a><a name="p13381828182211"></a><a href="C++标准库/类型特性/is_reference.md">is_reference</a></p>
+<tr id="row238102862215"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p13381828182211"><a name="p13381828182211"></a><a name="p13381828182211"></a><a href="CPP标准库/类型特性/is_reference.md">is_reference</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p939162872220"><a name="p939162872220"></a><a name="p939162872220"></a>在程序编译时，检测一个类型是否为引用类型。</p>
 </td>
 </tr>
-<tr id="row204651428192213"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p8465152814228"><a name="p8465152814228"></a><a name="p8465152814228"></a><a href="C++标准库/类型特性/is_const.md">is_const</a></p>
+<tr id="row204651428192213"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p8465152814228"><a name="p8465152814228"></a><a name="p8465152814228"></a><a href="CPP标准库/类型特性/is_const.md">is_const</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p1046562819221"><a name="p1046562819221"></a><a name="p1046562819221"></a>在程序编译时，检测一个类型是否为const限定的类型。</p>
 </td>
 </tr>
-<tr id="row7909628112210"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1090919288227"><a name="p1090919288227"></a><a name="p1090919288227"></a><a href="C++标准库/类型特性/remove_const.md">remove_const</a></p>
+<tr id="row7909628112210"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1090919288227"><a name="p1090919288227"></a><a name="p1090919288227"></a><a href="CPP标准库/类型特性/remove_const.md">remove_const</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p129091628182219"><a name="p129091628182219"></a><a name="p129091628182219"></a>在程序编译时，对传入的模板参数类型移除const限定符。</p>
 </td>
 </tr>
-<tr id="row20307202992210"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p130722972215"><a name="p130722972215"></a><a name="p130722972215"></a><a href="C++标准库/类型特性/remove_volatile.md">remove_volatile</a></p>
+<tr id="row20307202992210"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p130722972215"><a name="p130722972215"></a><a name="p130722972215"></a><a href="CPP标准库/类型特性/remove_volatile.md">remove_volatile</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p830772915225"><a name="p830772915225"></a><a name="p830772915225"></a>在程序编译时，对传入的模板参数类型移除volatile限定符。</p>
 </td>
 </tr>
-<tr id="row158421829152216"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p484217299222"><a name="p484217299222"></a><a name="p484217299222"></a><a href="C++标准库/类型特性/remove_cv.md">remove_cv</a></p>
+<tr id="row158421829152216"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p484217299222"><a name="p484217299222"></a><a name="p484217299222"></a><a href="CPP标准库/类型特性/remove_cv.md">remove_cv</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p284232922210"><a name="p284232922210"></a><a name="p284232922210"></a>在程序编译时，对传入的模板参数类型移除const限定符或volatile限定符，或同时移除这两种限定符。</p>
 </td>
 </tr>
-<tr id="row16326103092214"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p332613052215"><a name="p332613052215"></a><a name="p332613052215"></a><a href="C++标准库/类型特性/remove_reference.md">remove_reference</a></p>
+<tr id="row16326103092214"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p332613052215"><a name="p332613052215"></a><a name="p332613052215"></a><a href="CPP标准库/类型特性/remove_reference.md">remove_reference</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p1532653082214"><a name="p1532653082214"></a><a name="p1532653082214"></a>在程序编译时，从给定类型中移除引用限定符。</p>
 </td>
 </tr>
-<tr id="row19738173016229"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1373818309226"><a name="p1373818309226"></a><a name="p1373818309226"></a><a href="C++标准库/类型特性/remove_pointer.md">remove_pointer</a></p>
+<tr id="row19738173016229"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1373818309226"><a name="p1373818309226"></a><a name="p1373818309226"></a><a href="CPP标准库/类型特性/remove_pointer.md">remove_pointer</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p873883092210"><a name="p873883092210"></a><a name="p873883092210"></a>在程序编译时，从给定类型中移除指针限定符。</p>
 </td>
 </tr>
-<tr id="row2169173192219"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1816912311226"><a name="p1816912311226"></a><a name="p1816912311226"></a><a href="C++标准库/类型特性/add_const.md">add_const</a></p>
+<tr id="row2169173192219"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1816912311226"><a name="p1816912311226"></a><a name="p1816912311226"></a><a href="CPP标准库/类型特性/add_const.md">add_const</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p01692316228"><a name="p01692316228"></a><a name="p01692316228"></a>在程序编译时，为指定类型添加const限定符。</p>
 </td>
 </tr>
-<tr id="row6604193111220"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p7604103110226"><a name="p7604103110226"></a><a name="p7604103110226"></a><a href="C++标准库/类型特性/add_volatile.md">add_volatile</a></p>
+<tr id="row6604193111220"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p7604103110226"><a name="p7604103110226"></a><a name="p7604103110226"></a><a href="CPP标准库/类型特性/add_volatile.md">add_volatile</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p860419319222"><a name="p860419319222"></a><a name="p860419319222"></a>在程序编译时，为指定类型添加volatile限定符。</p>
 </td>
 </tr>
-<tr id="row1151173214224"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p12521432172212"><a name="p12521432172212"></a><a name="p12521432172212"></a><a href="C++标准库/类型特性/add_cv.md">add_cv</a></p>
+<tr id="row1151173214224"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p12521432172212"><a name="p12521432172212"></a><a name="p12521432172212"></a><a href="CPP标准库/类型特性/add_cv.md">add_cv</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p65293272214"><a name="p65293272214"></a><a name="p65293272214"></a>在程序编译时，为指定类型添加const和volatile限定符。</p>
 </td>
 </tr>
-<tr id="row8490932192211"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1849183212225"><a name="p1849183212225"></a><a name="p1849183212225"></a><a href="C++标准库/类型特性/add_pointer.md">add_pointer</a></p>
+<tr id="row8490932192211"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1849183212225"><a name="p1849183212225"></a><a name="p1849183212225"></a><a href="CPP标准库/类型特性/add_pointer.md">add_pointer</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p14491532112214"><a name="p14491532112214"></a><a name="p14491532112214"></a>在程序编译时，为指定类型添加指针限定符。</p>
 </td>
 </tr>
-<tr id="row99214327228"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p5921163211227"><a name="p5921163211227"></a><a name="p5921163211227"></a><a href="C++标准库/类型特性/add_lvalue_reference.md">add_lvalue_reference</a></p>
+<tr id="row99214327228"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p5921163211227"><a name="p5921163211227"></a><a name="p5921163211227"></a><a href="CPP标准库/类型特性/add_lvalue_reference.md">add_lvalue_reference</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p492143211222"><a name="p492143211222"></a><a name="p492143211222"></a>在程序编译时，为指定类型添加左值引用限定符。</p>
 </td>
 </tr>
-<tr id="row4302033132213"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p3302163352214"><a name="p3302163352214"></a><a name="p3302163352214"></a><a href="C++标准库/类型特性/add_rvalue_reference.md">add_rvalue_reference</a></p>
+<tr id="row4302033132213"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p3302163352214"><a name="p3302163352214"></a><a name="p3302163352214"></a><a href="CPP标准库/类型特性/add_rvalue_reference.md">add_rvalue_reference</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p630218339222"><a name="p630218339222"></a><a name="p630218339222"></a>在程序编译时，为指定类型添加右值引用限定符。</p>
 </td>
 </tr>
-<tr id="row498311541816"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p4286105318107"><a name="p4286105318107"></a><a name="p4286105318107"></a><a href="C++标准库/类型特性/enable_if.md">enable_if</a></p>
+<tr id="row498311541816"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p4286105318107"><a name="p4286105318107"></a><a name="p4286105318107"></a><a href="CPP标准库/类型特性/enable_if.md">enable_if</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p1328665317104"><a name="p1328665317104"></a><a name="p1328665317104"></a>在程序编译时根据某个条件启用或禁用特定的函数模板、类模板或模板特化。</p>
 </td>
 </tr>
-<tr id="row49836541682"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p18285105321019"><a name="p18285105321019"></a><a name="p18285105321019"></a><a href="C++标准库/类型特性/conditional.md">conditional</a></p>
+<tr id="row49836541682"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p18285105321019"><a name="p18285105321019"></a><a name="p18285105321019"></a><a href="CPP标准库/类型特性/conditional.md">conditional</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p1928525319102"><a name="p1928525319102"></a><a name="p1928525319102"></a>在程序编译时根据一个布尔条件从两个类型中选择一个类型。</p>
 </td>
 </tr>
-<tr id="row15509255143618"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p968185918363"><a name="p968185918363"></a><a name="p968185918363"></a><a href="C++标准库/类型特性/integral_constant.md">integral_constant</a></p>
+<tr id="row15509255143618"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p968185918363"><a name="p968185918363"></a><a name="p968185918363"></a><a href="CPP标准库/类型特性/integral_constant.md">integral_constant</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p15098558367"><a name="p15098558367"></a><a name="p15098558367"></a>用于封装一个编译时常量整数值，是标准库中许多类型特性和编译时计算的基础组件。</p>
 </td>
@@ -338,4 +338,3 @@
 </tr>
 </tbody>
 </table>
-
