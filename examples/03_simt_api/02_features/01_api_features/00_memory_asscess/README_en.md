@@ -8,4 +8,4 @@ This document presents memory access samples based on Ascend C SIMT, demonstrati
 
 | Directory Name | Description |
 | --- | --- |
-| [00_simt_insert_hash_table](./00_simt_insert_hash_table) | This example implements the InsertHashTable operator based on Ascend C SIMT programming, demonstrating the capability of SIMT operators to handle complex business logic. |
+| [insert_hash_table](./insert_hash_table) | This example implements the InsertHashTable operator based on Ascend C SIMT programming, demonstrating the capability of SIMT operators to handle complex business logic. |
