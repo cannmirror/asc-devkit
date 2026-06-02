@@ -47,20 +47,9 @@ class GlobalTensor;
 
 template <auto funcPtr, typename... Args> __aicore__ inline void asc_vf_call(Args &&... args)
 {
-#if (defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510)
-#if ASCENDC_SIMD_VF_DEBUG == 1
-    constexpr uint64_t RESERVED_UB_SIZE = 8 * 1024;
-    uint64_t ascReservedAddr = get_shmem_sz() - RESERVED_UB_SIZE;
-    uint16_t blockIdx = asc_debug_get_block_idx();
-    get_printf_ubuf_addr_aicore(ascReservedAddr, blockIdx);
-#endif
-    funcPtr(args...);
-#if ASCENDC_SIMD_VF_DEBUG == 1
-    // To avoid differences between -O0 and -O2, delete after the compiler resolves.
-    pipe_barrier(PIPE_ALL);
-    asc_vf_debug_ub2gm();
-#endif
-#endif
+    if ASCEND_IS_AIV {
+        AscendC::AscVFCallImpl<funcPtr>(args...);
+    }
 }
 
 #if __NPU_ARCH__ == 2201 || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
