@@ -120,12 +120,12 @@
 - 样例执行
 
   ```bash
-  SCENARIO_NUM=1 ASC_ARCH=dav-2201
+  SCENARIO_NUM=1
   mkdir -p build && cd build;      # 创建并进入build目录
-  cmake -DSCENARIO_NUM=$SCENARIO_NUM -DCMAKE_ASC_ARCHITECTURES=$ASC_ARCH ..;make -j;    # 编译工程（默认dav-2201 NPU模式）
-  python3 ../scripts/gen_data.py -scenarioNum=$SCENARIO_NUM -ascArch=$ASC_ARCH  # 生成测试输入数据
+  cmake -DSCENARIO_NUM=$SCENARIO_NUM -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;    # 编译工程（默认dav-2201 NPU模式）
+  python3 ../scripts/gen_data.py -scenarioNum=$SCENARIO_NUM  # 生成测试输入数据
   ./demo                           # 执行编译生成的可执行程序，执行样例
-  python3 ../scripts/verify_result.py output/output.bin ./output/golden.bin $SCENARIO_NUM $ASC_ARCH # 验证输出结果是否正确
+  python3 ../scripts/verify_result.py output/output.bin ./output/golden.bin $SCENARIO_NUM # 验证输出结果是否正确
   ```
 
   使用 CPU调试 或 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
@@ -133,8 +133,8 @@
   示例如下：
 
   ```bash
-  cmake -DCMAKE_ASC_RUN_MODE=cpu -DSCENARIO_NUM=$SCENARIO_NUM -DCMAKE_ASC_ARCHITECTURES=$ASC_ARCH ..;make -j;  # CPU调试模式
-  cmake -DCMAKE_ASC_RUN_MODE=sim -DSCENARIO_NUM=$SCENARIO_NUM -DCMAKE_ASC_ARCHITECTURES=$ASC_ARCH ..;make -j;  # NPU仿真模式
+  cmake -DCMAKE_ASC_RUN_MODE=cpu -DSCENARIO_NUM=$SCENARIO_NUM -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;  # CPU调试模式
+  cmake -DCMAKE_ASC_RUN_MODE=sim -DSCENARIO_NUM=$SCENARIO_NUM -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;  # NPU仿真模式
   ```
   > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
 

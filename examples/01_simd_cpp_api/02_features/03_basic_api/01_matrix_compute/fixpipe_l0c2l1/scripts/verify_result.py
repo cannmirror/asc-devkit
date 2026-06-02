@@ -12,29 +12,36 @@
 # ----------------------------------------------------------------------------------------------------------
 
 import sys
+import os
 import numpy as np
 
 
 relative_tol = 1e-3
 absolute_tol = 1e-3
 error_tol = 1e-3
+M = 128
+N = 128
 
 
-def verify_result(output, golden, scenarioNum, ascArch):
+def nz_to_nd(data, block_cols):
+    return data.reshape((N // block_cols, M // 16, 16, block_cols)).transpose(1, 2, 0, 3).reshape(-1)
+
+
+def verify_result(output, golden, scenarioNum):
     if (scenarioNum == "1") or (scenarioNum == "4"):
-        if ascArch == "dav-2201":
+        golden = np.fromfile(golden, dtype=np.float16).reshape(-1)
+        if os.path.getsize(output) == M * N * np.dtype(np.float16).itemsize:
             output = np.fromfile(output, dtype=np.float16).reshape(-1)
-            golden = np.fromfile(golden, dtype=np.float16).reshape(-1)
+            output = nz_to_nd(output, 16)
         else:
             output = np.fromfile(output, dtype=np.float32).reshape(-1)
-            golden = np.fromfile(golden, dtype=np.float32).reshape(-1)
     else:
-        if ascArch == "dav-2201":
+        golden = np.fromfile(golden, dtype=np.int8).reshape(-1)
+        if os.path.getsize(output) == M * N * np.dtype(np.int8).itemsize:
             output = np.fromfile(output, dtype=np.int8).reshape(-1)
-            golden = np.fromfile(golden, dtype=np.int8).reshape(-1)
+            output = nz_to_nd(output, 32)
         else:
             output = np.fromfile(output, dtype=np.int32).reshape(-1)
-            golden = np.fromfile(golden, dtype=np.int32).reshape(-1)
     different_element_results = np.isclose(output,
                                            golden,
                                            rtol=relative_tol,
@@ -57,7 +64,7 @@ def verify_result(output, golden, scenarioNum, ascArch):
 
 if __name__ == '__main__':
     try:
-        res = verify_result(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+        res = verify_result(sys.argv[1], sys.argv[2], sys.argv[3])
         if res == -1:
             print("not supported!")
         elif not res:

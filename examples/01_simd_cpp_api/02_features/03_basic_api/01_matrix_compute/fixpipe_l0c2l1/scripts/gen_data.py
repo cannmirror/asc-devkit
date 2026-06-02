@@ -115,7 +115,7 @@ def pre_quant_relu(golden, dst_type, m, n, pre_quant_mode, pre_relu_mode):
     return quant_golden
 
 
-def gen_golden_data(scenarioNum=1, ascArch="dav-2201"):
+def gen_golden_data(scenarioNum=1):
     M = 128
     K = 128
     N = 128
@@ -125,12 +125,11 @@ def gen_golden_data(scenarioNum=1, ascArch="dav-2201"):
     x1_gm = np.random.uniform(-2, 2, [M, K]).astype(input_type)
     x2_gm = np.random.uniform(-2, 2, [K, N]).astype(input_type)
     golden = np.matmul(x1_gm.astype(np.float32), x2_gm.astype(np.float32)).astype(np.float32)
-    golden_a2 = np.random.uniform(0, 2, [M, N]).astype(np.int8)
     
     l1_input_type_half = np.dtype("float16")
-    x3_gm_half = np.random.uniform(-2, 2, [N, N]).astype(l1_input_type_half)
+    x3_gm_half = np.eye(N, dtype=l1_input_type_half)
     l1_input_type_int8 = np.dtype("int8")
-    x3_gm_int8 = np.random.uniform(-2, 2, [N, N]).astype(l1_input_type_int8)
+    x3_gm_int8 = np.eye(N, dtype=l1_input_type_int8)
 
     os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
@@ -138,35 +137,19 @@ def gen_golden_data(scenarioNum=1, ascArch="dav-2201"):
     if scenarioNum == 1:
         l1_output_type = np.dtype("float16")
         golden = golden.astype(l1_output_type)
-        block_cols = 16
-        golden_a2 = golden.reshape((int(M / 16), 16, int(N / block_cols), block_cols)).transpose(2, 0, 1, 3).astype(l1_output_type)
-        # 针对dav-3510，再计算一次普通矩阵乘法并搬出到GM做计算结果验证
-        golden = np.matmul(golden.astype(np.float32), x3_gm_half.astype(np.float32)).astype(np.float32)
 
     elif scenarioNum == 2:
         l1_output_type = np.dtype("int8")
         golden = pre_quant_relu(golden, l1_output_type, M, N, 1, 0) #scalar
-        block_cols = 32
-        golden_a2 = golden.reshape((int(M / 16), 16, int(N / block_cols), block_cols)).transpose(2, 0, 1, 3).astype(l1_output_type)
-        # 针对dav-3510，再计算一次普通矩阵乘法并搬出到GM做计算结果验证
-        golden = np.matmul(golden.astype(np.int32), x3_gm_int8.astype(np.int32)).astype(np.int32)
 
     elif scenarioNum == 3:
         l1_output_type = np.dtype("int8")
         golden = pre_quant_relu(golden, l1_output_type, M, N, 2, 0) #vector
-        block_cols = 32
-        golden_a2 = golden.reshape((int(M / 16), 16, int(N / block_cols), block_cols)).transpose(2, 0, 1, 3).astype(l1_output_type)
-        # 针对dav-3510，再计算一次普通矩阵乘法并搬出到GM做计算结果验证
-        golden = np.matmul(golden.astype(np.int32), x3_gm_int8.astype(np.int32)).astype(np.int32)
 
     elif scenarioNum == 4:
         l1_output_type = np.dtype("float16")
         golden = np.maximum(golden, 0)
         golden = golden.astype(l1_output_type)
-        block_cols = 16
-        golden_a2 = golden.reshape((int(M / 16), 16, int(N / block_cols), block_cols)).transpose(2, 0, 1, 3).astype(l1_output_type)
-        # 针对dav-3510，再计算一次普通矩阵乘法并搬出到GM做计算结果验证
-        golden = np.matmul(golden.astype(np.float32), x3_gm_half.astype(np.float32)).astype(np.float32)
 
     if kRound > 1:
         # 将K轴外移
@@ -175,15 +158,11 @@ def gen_golden_data(scenarioNum=1, ascArch="dav-2201"):
     x2_gm.astype(input_type).tofile("./input/x2_gm.bin")
     x3_gm_half.astype(l1_input_type_half).tofile("./input/x3_gm_half.bin")
     x3_gm_int8.astype(l1_input_type_int8).tofile("./input/x3_gm_int8.bin")
-    if ascArch == "dav-2201":
-        golden_a2.tofile("./output/golden.bin")
-    else:
-        golden.tofile("./output/golden.bin")
+    golden.tofile("./output/golden.bin")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-scenarioNum', type=int, default=1, choices=range(1, 5))
-    parser.add_argument('-ascArch', type=str, default="dav-2201")
     args = parser.parse_args()
-    gen_golden_data(args.scenarioNum, args.ascArch)
+    gen_golden_data(args.scenarioNum)

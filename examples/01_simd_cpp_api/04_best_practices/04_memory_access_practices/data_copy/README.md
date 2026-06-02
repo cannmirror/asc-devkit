@@ -420,10 +420,8 @@ for (uint32_t mBlockIdx = 0; mBlockIdx < fullMBlockCount; mBlockIdx++) {
   ```bash
   SCENARIO_NUM=1 ASC_ARCH=dav-2201
   COPY_DST=UB
-  mkdir -p build
-  cd build
-  cmake -DSCENARIO_NUM=$SCENARIO_NUM -DCOPY_DST=$COPY_DST -DCMAKE_ASC_ARCHITECTURES=$ASC_ARCH ..
-  make -j
+  mkdir -p build && cd build
+  cmake -DSCENARIO_NUM=$SCENARIO_NUM -DCOPY_DST=$COPY_DST -DCMAKE_ASC_ARCHITECTURES=$ASC_ARCH ..;make -j; 
   python3 ../scripts/gen_data.py -scenarioNum $SCENARIO_NUM -copyDst $COPY_DST -arch $ASC_ARCH
   ./demo
   ```
