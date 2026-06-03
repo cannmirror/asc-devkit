@@ -255,6 +255,8 @@ __aicore__ __inline__ __gm__ T *L2CacheAlter(__gm__ T *addr, CacheMode mode)
         value = uint64_t(0b100) << L2_CACHE_OFFSET;
     } else if (mode == CacheMode::CACHE_MODE_NORMAL) {
         value = uint64_t(0b000) << L2_CACHE_OFFSET;
+    } else if (mode == CacheMode::CACHE_MODE_PERSISTENT) {
+        value = uint64_t(0b010) << L2_CACHE_OFFSET;
     }
     return (__gm__ T *)((reinterpret_cast<uint64_t>(addr) & L2_CACHE_OFFSET_MASK) | value);
 }
@@ -263,6 +265,8 @@ __aicore__ __inline__ CacheMode ToCacheModeEnum(uint8_t mode)
 {
     if (mode == 0b100) {
         return CacheMode::CACHE_MODE_DISABLE;
+    } else if (mode == 0b010) {
+        return CacheMode::CACHE_MODE_PERSISTENT;
     }
     return CacheMode::CACHE_MODE_NORMAL;
 }
