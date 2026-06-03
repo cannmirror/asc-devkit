@@ -1,8 +1,8 @@
-# BitwiseOr接口<a name="ZH-CN_TOPIC_0000002474573353"></a>
+# BitwiseOr接口
 
--   **[BitwiseOr](BitwiseOr.md)**  
+-   **[BitwiseOr](BitwiseOr.md)**
 
--   **[GetBitwiseOrMaxMinTmpSize](GetBitwiseOrMaxMinTmpSize.md)**  
+-   **[GetBitwiseOrMaxMinTmpSize](GetBitwiseOrMaxMinTmpSize.md)**
 
--   **[GetBitwiseOrTmpBufferFactorSize](GetBitwiseOrTmpBufferFactorSize.md)**  
+-   **[GetBitwiseOrTmpBufferFactorSize](GetBitwiseOrTmpBufferFactorSize.md)**
 

@@ -1,8 +1,8 @@
-# Acosh接口<a name="ZH-CN_TOPIC_0000001864688337"></a>
+# Acosh接口
 
--   **[Acosh](Acosh.md)**  
+-   **[Acosh](Acosh.md)**
 
--   **[GetAcoshMaxMinTmpSize](GetAcoshMaxMinTmpSize.md)**  
+-   **[GetAcoshMaxMinTmpSize](GetAcoshMaxMinTmpSize.md)**
 
--   **[GetAcoshTmpBufferFactorSize](GetAcoshTmpBufferFactorSize.md)**  
+-   **[GetAcoshTmpBufferFactorSize](GetAcoshTmpBufferFactorSize.md)**
 

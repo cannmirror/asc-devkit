@@ -1,8 +1,8 @@
-# Exp接口<a name="ZH-CN_TOPIC_0000001864768537"></a>
+# Exp接口
 
--   **[Exp](Exp-81.md)**  
+-   **[Exp](Exp-81.md)**
 
--   **[GetExpMaxMinTmpSize](GetExpMaxMinTmpSize.md)**  
+-   **[GetExpMaxMinTmpSize](GetExpMaxMinTmpSize.md)**
 
--   **[GetExpTmpBufferFactorSize](GetExpTmpBufferFactorSize.md)**  
+-   **[GetExpTmpBufferFactorSize](GetExpTmpBufferFactorSize.md)**
 

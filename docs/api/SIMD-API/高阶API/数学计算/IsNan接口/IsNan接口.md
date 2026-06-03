@@ -1,8 +1,8 @@
-# IsNan接口<a name="ZH-CN_TOPIC_0000002382538169"></a>
+# IsNan接口
 
--   **[IsNan](IsNan.md)**  
+-   **[IsNan](IsNan.md)**
 
--   **[GetIsNanMaxMinTmpSize](GetIsNanMaxMinTmpSize.md)**  
+-   **[GetIsNanMaxMinTmpSize](GetIsNanMaxMinTmpSize.md)**
 
--   **[GetIsNanTmpBufferFactorSize](GetIsNanTmpBufferFactorSize.md)**  
+-   **[GetIsNanTmpBufferFactorSize](GetIsNanTmpBufferFactorSize.md)**
 

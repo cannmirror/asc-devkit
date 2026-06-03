@@ -1,8 +1,8 @@
-# Xor接口<a name="ZH-CN_TOPIC_0000001876066449"></a>
+# Xor接口
 
--   **[Xor](Xor-82.md)**  
+-   **[Xor](Xor-82.md)**
 
--   **[GetXorMaxMinTmpSize](GetXorMaxMinTmpSize.md)**  
+-   **[GetXorMaxMinTmpSize](GetXorMaxMinTmpSize.md)**
 
--   **[GetXorTmpBufferFactorSize](GetXorTmpBufferFactorSize.md)**  
+-   **[GetXorTmpBufferFactorSize](GetXorTmpBufferFactorSize.md)**
 

@@ -1,8 +1,8 @@
-# Sin接口<a name="ZH-CN_TOPIC_0000001864688321"></a>
+# Sin接口
 
--   **[Sin](Sin.md)**  
+-   **[Sin](Sin.md)**
 
--   **[GetSinMaxMinTmpSize](GetSinMaxMinTmpSize.md)**  
+-   **[GetSinMaxMinTmpSize](GetSinMaxMinTmpSize.md)**
 
--   **[GetSinTmpBufferFactorSize](GetSinTmpBufferFactorSize.md)**  
+-   **[GetSinTmpBufferFactorSize](GetSinTmpBufferFactorSize.md)**
 

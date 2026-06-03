@@ -1,8 +1,8 @@
-# Erfc接口<a name="ZH-CN_TOPIC_0000001864688333"></a>
+# Erfc接口
 
--   **[Erfc](Erfc.md)**  
+-   **[Erfc](Erfc.md)**
 
--   **[GetErfcMaxMinTmpSize](GetErfcMaxMinTmpSize.md)**  
+-   **[GetErfcMaxMinTmpSize](GetErfcMaxMinTmpSize.md)**
 
--   **[GetErfcTmpBufferFactorSize](GetErfcTmpBufferFactorSize.md)**  
+-   **[GetErfcTmpBufferFactorSize](GetErfcTmpBufferFactorSize.md)**
 

@@ -1,8 +1,8 @@
-# Lgamma接口<a name="ZH-CN_TOPIC_0000001818088568"></a>
+# Lgamma接口
 
--   **[Lgamma](Lgamma.md)**  
+-   **[Lgamma](Lgamma.md)**
 
--   **[GetLgammaMaxMinTmpSize](GetLgammaMaxMinTmpSize.md)**  
+-   **[GetLgammaMaxMinTmpSize](GetLgammaMaxMinTmpSize.md)**
 
--   **[GetLgammaTmpBufferFactorSize](GetLgammaTmpBufferFactorSize.md)**  
+-   **[GetLgammaTmpBufferFactorSize](GetLgammaTmpBufferFactorSize.md)**
 

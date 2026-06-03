@@ -1,8 +1,8 @@
-# BitwiseNot接口<a name="ZH-CN_TOPIC_0000002474573349"></a>
+# BitwiseNot接口
 
--   **[BitwiseNot](BitwiseNot.md)**  
+-   **[BitwiseNot](BitwiseNot.md)**
 
--   **[GetBitwiseNotMaxMinTmpSize](GetBitwiseNotMaxMinTmpSize.md)**  
+-   **[GetBitwiseNotMaxMinTmpSize](GetBitwiseNotMaxMinTmpSize.md)**
 
--   **[GetBitwiseNotTmpBufferFactorSize](GetBitwiseNotTmpBufferFactorSize.md)**  
+-   **[GetBitwiseNotTmpBufferFactorSize](GetBitwiseNotTmpBufferFactorSize.md)**
 

@@ -1,8 +1,8 @@
-# Trunc接口<a name="ZH-CN_TOPIC_0000001817928788"></a>
+# Trunc接口
 
--   **[Trunc](Trunc.md)**  
+-   **[Trunc](Trunc.md)**
 
--   **[GetTruncMaxMinTmpSize](GetTruncMaxMinTmpSize.md)**  
+-   **[GetTruncMaxMinTmpSize](GetTruncMaxMinTmpSize.md)**
 
--   **[GetTruncTmpBufferFactorSize](GetTruncTmpBufferFactorSize.md)**  
+-   **[GetTruncTmpBufferFactorSize](GetTruncTmpBufferFactorSize.md)**
 

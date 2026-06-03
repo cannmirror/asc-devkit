@@ -1,8 +1,8 @@
-# Tan接口<a name="ZH-CN_TOPIC_0000001864688329"></a>
+# Tan接口
 
--   **[Tan](Tan.md)**  
+-   **[Tan](Tan.md)**
 
--   **[GetTanMaxMinTmpSize](GetTanMaxMinTmpSize.md)**  
+-   **[GetTanMaxMinTmpSize](GetTanMaxMinTmpSize.md)**
 
--   **[GetTanTmpBufferFactorSize](GetTanTmpBufferFactorSize.md)**  
+-   **[GetTanTmpBufferFactorSize](GetTanTmpBufferFactorSize.md)**
 

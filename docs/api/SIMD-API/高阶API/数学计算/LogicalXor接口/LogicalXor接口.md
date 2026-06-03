@@ -1,8 +1,8 @@
-# LogicalXor接口<a name="ZH-CN_TOPIC_0000002474573361"></a>
+# LogicalXor接口
 
--   **[LogicalXor](LogicalXor.md)**  
+-   **[LogicalXor](LogicalXor.md)**
 
--   **[GetLogicalXorMaxMinTmpSize](GetLogicalXorMaxMinTmpSize.md)**  
+-   **[GetLogicalXorMaxMinTmpSize](GetLogicalXorMaxMinTmpSize.md)**
 
--   **[GetLogicalXorTmpBufferFactorSize](GetLogicalXorTmpBufferFactorSize.md)**  
+-   **[GetLogicalXorTmpBufferFactorSize](GetLogicalXorTmpBufferFactorSize.md)**
 

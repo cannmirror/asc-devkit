@@ -1,8 +1,8 @@
-# Digamma接口<a name="ZH-CN_TOPIC_0000001864688345"></a>
+# Digamma接口
 
--   **[Digamma](Digamma.md)**  
+-   **[Digamma](Digamma.md)**
 
--   **[GetDigammaMaxMinTmpSize](GetDigammaMaxMinTmpSize.md)**  
+-   **[GetDigammaMaxMinTmpSize](GetDigammaMaxMinTmpSize.md)**
 
--   **[GetDigammaTmpBufferFactorSize](GetDigammaTmpBufferFactorSize.md)**  
+-   **[GetDigammaTmpBufferFactorSize](GetDigammaTmpBufferFactorSize.md)**
 

@@ -1,8 +1,8 @@
-# Floor接口<a name="ZH-CN_TOPIC_0000001817928796"></a>
+# Floor接口
 
--   **[Floor](Floor.md)**  
+-   **[Floor](Floor.md)**
 
--   **[GetFloorMaxMinTmpSize](GetFloorMaxMinTmpSize.md)**  
+-   **[GetFloorMaxMinTmpSize](GetFloorMaxMinTmpSize.md)**
 
--   **[GetFloorTmpBufferFactorSize](GetFloorTmpBufferFactorSize.md)**  
+-   **[GetFloorTmpBufferFactorSize](GetFloorTmpBufferFactorSize.md)**
 

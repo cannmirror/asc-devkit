@@ -1,12 +1,12 @@
-# Clamp接口<a name="ZH-CN_TOPIC_0000001818088564"></a>
+# Clamp接口
 
--   **[Clamp](Clamp.md)**  
+-   **[Clamp](Clamp.md)**
 
--   **[ClampMax](ClampMax.md)**  
+-   **[ClampMax](ClampMax.md)**
 
--   **[ClampMin](ClampMin.md)**  
+-   **[ClampMin](ClampMin.md)**
 
--   **[GetClampMaxMinTmpSize](GetClampMaxMinTmpSize.md)**  
+-   **[GetClampMaxMinTmpSize](GetClampMaxMinTmpSize.md)**
 
--   **[GetClampTmpBufferFactorSize](GetClampTmpBufferFactorSize.md)**  
+-   **[GetClampTmpBufferFactorSize](GetClampTmpBufferFactorSize.md)**
 

@@ -1,8 +1,8 @@
-# Fma接口<a name="ZH-CN_TOPIC_0000002382378441"></a>
+# Fma接口
 
--   **[Fma](Fma.md)**  
+-   **[Fma](Fma.md)**
 
--   **[GetFmaMaxMinTmpSize](GetFmaMaxMinTmpSize.md)**  
+-   **[GetFmaMaxMinTmpSize](GetFmaMaxMinTmpSize.md)**
 
--   **[GetFmaTmpBufferFactorSize](GetFmaTmpBufferFactorSize.md)**  
+-   **[GetFmaTmpBufferFactorSize](GetFmaTmpBufferFactorSize.md)**
 

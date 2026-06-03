@@ -1,6 +1,6 @@
-# CumSum接口<a name="ZH-CN_TOPIC_0000001892653558"></a>
+# CumSum接口
 
--   **[CumSum](CumSum.md)**  
+-   **[CumSum](CumSum.md)**
 
--   **[GetCumSumMaxMinTmpSize](GetCumSumMaxMinTmpSize.md)**  
+-   **[GetCumSumMaxMinTmpSize](GetCumSumMaxMinTmpSize.md)**
 

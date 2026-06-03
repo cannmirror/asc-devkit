@@ -1,8 +1,8 @@
-# Hypot接口<a name="ZH-CN_TOPIC_0000002259350493"></a>
+# Hypot接口
 
--   **[Hypot](Hypot.md)**  
+-   **[Hypot](Hypot.md)**
 
--   **[GetHypotMaxMinTmpSize](GetHypotMaxMinTmpSize.md)**  
+-   **[GetHypotMaxMinTmpSize](GetHypotMaxMinTmpSize.md)**
 
--   **[GetHypotTmpBufferFactorSize](GetHypotTmpBufferFactorSize.md)**  
+-   **[GetHypotTmpBufferFactorSize](GetHypotTmpBufferFactorSize.md)**
 

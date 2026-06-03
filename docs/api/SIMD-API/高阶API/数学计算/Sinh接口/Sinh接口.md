@@ -1,8 +1,8 @@
-# Sinh接口<a name="ZH-CN_TOPIC_0000001864768521"></a>
+# Sinh接口
 
--   **[Sinh](Sinh.md)**  
+-   **[Sinh](Sinh.md)**
 
--   **[GetSinhMaxMinTmpSize](GetSinhMaxMinTmpSize.md)**  
+-   **[GetSinhMaxMinTmpSize](GetSinhMaxMinTmpSize.md)**
 
--   **[GetSinhTmpBufferFactorSize](GetSinhTmpBufferFactorSize.md)**  
+-   **[GetSinhTmpBufferFactorSize](GetSinhTmpBufferFactorSize.md)**
 

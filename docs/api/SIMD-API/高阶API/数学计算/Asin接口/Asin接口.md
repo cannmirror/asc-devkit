@@ -1,8 +1,8 @@
-# Asin接口<a name="ZH-CN_TOPIC_0000001818088544"></a>
+# Asin接口
 
--   **[Asin](Asin.md)**  
+-   **[Asin](Asin.md)**
 
--   **[GetAsinMaxMinTmpSize](GetAsinMaxMinTmpSize.md)**  
+-   **[GetAsinMaxMinTmpSize](GetAsinMaxMinTmpSize.md)**
 
--   **[GetAsinTmpBufferFactorSize](GetAsinTmpBufferFactorSize.md)**  
+-   **[GetAsinTmpBufferFactorSize](GetAsinTmpBufferFactorSize.md)**
 

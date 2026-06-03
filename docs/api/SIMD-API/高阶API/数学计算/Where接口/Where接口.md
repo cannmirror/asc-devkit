@@ -1,8 +1,8 @@
-# Where接口<a name="ZH-CN_TOPIC_0000002392194998"></a>
+# Where接口
 
--   **[Where](Where.md)**  
+-   **[Where](Where.md)**
 
--   **[GetWhereMaxMinTmpSize](GetWhereMaxMinTmpSize.md)**  
+-   **[GetWhereMaxMinTmpSize](GetWhereMaxMinTmpSize.md)**
 
--   **[GetWhereTmpBufferFactorSize](GetWhereTmpBufferFactorSize.md)**  
+-   **[GetWhereTmpBufferFactorSize](GetWhereTmpBufferFactorSize.md)**
 

@@ -1,8 +1,8 @@
-# Log接口<a name="ZH-CN_TOPIC_0000001818088548"></a>
+# Log接口
 
--   **[Log](Log-79.md)**  
+-   **[Log](Log-79.md)**
 
--   **[GetLogMaxMinTmpSize](GetLogMaxMinTmpSize.md)**  
+-   **[GetLogMaxMinTmpSize](GetLogMaxMinTmpSize.md)**
 
--   **[GetLogTmpBufferFactorSize](GetLogTmpBufferFactorSize.md)**  
+-   **[GetLogTmpBufferFactorSize](GetLogTmpBufferFactorSize.md)**
 

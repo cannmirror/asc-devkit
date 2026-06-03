@@ -1,8 +1,8 @@
-# Power接口<a name="ZH-CN_TOPIC_0000001817928784"></a>
+# Power接口
 
--   **[Power](Power.md)**  
+-   **[Power](Power.md)**
 
--   **[GetPowerMaxMinTmpSize](GetPowerMaxMinTmpSize.md)**  
+-   **[GetPowerMaxMinTmpSize](GetPowerMaxMinTmpSize.md)**
 
--   **[GetPowerTmpBufferFactorSize](GetPowerTmpBufferFactorSize.md)**  
+-   **[GetPowerTmpBufferFactorSize](GetPowerTmpBufferFactorSize.md)**
 

@@ -1,8 +1,8 @@
-# Axpy接口<a name="ZH-CN_TOPIC_0000001817928800"></a>
+# Axpy接口
 
--   **[Axpy](Axpy-80.md)**  
+-   **[Axpy](Axpy-80.md)**
 
--   **[GetAxpyMaxMinTmpSize](GetAxpyMaxMinTmpSize.md)**  
+-   **[GetAxpyMaxMinTmpSize](GetAxpyMaxMinTmpSize.md)**
 
--   **[GetAxpyTmpBufferFactorSize](GetAxpyTmpBufferFactorSize.md)**  
+-   **[GetAxpyTmpBufferFactorSize](GetAxpyTmpBufferFactorSize.md)**
 

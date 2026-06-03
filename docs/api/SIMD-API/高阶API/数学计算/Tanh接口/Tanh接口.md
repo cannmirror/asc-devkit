@@ -1,8 +1,8 @@
-# Tanh接口<a name="ZH-CN_TOPIC_0000001864768513"></a>
+# Tanh接口
 
--   **[Tanh](Tanh.md)**  
+-   **[Tanh](Tanh.md)**
 
--   **[GetTanhMaxMinTmpSize](GetTanhMaxMinTmpSize.md)**  
+-   **[GetTanhMaxMinTmpSize](GetTanhMaxMinTmpSize.md)**
 
--   **[GetTanhTmpBufferFactorSize](GetTanhTmpBufferFactorSize.md)**  
+-   **[GetTanhTmpBufferFactorSize](GetTanhTmpBufferFactorSize.md)**
 

@@ -1,8 +1,8 @@
-# Ceil接口<a name="ZH-CN_TOPIC_0000001864768533"></a>
+# Ceil接口
 
--   **[Ceil](Ceil.md)**  
+-   **[Ceil](Ceil.md)**
 
--   **[GetCeilMaxMinTmpSize](GetCeilMaxMinTmpSize.md)**  
+-   **[GetCeilMaxMinTmpSize](GetCeilMaxMinTmpSize.md)**
 
--   **[GetCeilTmpBufferFactorSize](GetCeilTmpBufferFactorSize.md)**  
+-   **[GetCeilTmpBufferFactorSize](GetCeilTmpBufferFactorSize.md)**
 

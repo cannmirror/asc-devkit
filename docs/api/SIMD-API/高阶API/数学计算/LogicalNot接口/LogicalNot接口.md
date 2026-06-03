@@ -1,8 +1,8 @@
-# LogicalNot接口<a name="ZH-CN_TOPIC_0000002385923956"></a>
+# LogicalNot接口
 
--   **[LogicalNot](LogicalNot.md)**  
+-   **[LogicalNot](LogicalNot.md)**
 
--   **[GetLogicalNotMaxMinTmpSize](GetLogicalNotMaxMinTmpSize.md)**  
+-   **[GetLogicalNotMaxMinTmpSize](GetLogicalNotMaxMinTmpSize.md)**
 
--   **[GetLogicalNotTmpBufferFactorSize](GetLogicalNotTmpBufferFactorSize.md)**  
+-   **[GetLogicalNotTmpBufferFactorSize](GetLogicalNotTmpBufferFactorSize.md)**
 

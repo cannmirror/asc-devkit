@@ -1,8 +1,8 @@
-# Fmod接口<a name="ZH-CN_TOPIC_0000002057327298"></a>
+# Fmod接口
 
--   **[Fmod](Fmod.md)**  
+-   **[Fmod](Fmod.md)**
 
--   **[GetFmodMaxMinTmpSize](GetFmodMaxMinTmpSize.md)**  
+-   **[GetFmodMaxMinTmpSize](GetFmodMaxMinTmpSize.md)**
 
--   **[GetFmodTmpBufferFactorSize](GetFmodTmpBufferFactorSize.md)**  
+-   **[GetFmodTmpBufferFactorSize](GetFmodTmpBufferFactorSize.md)**
 

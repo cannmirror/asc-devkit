@@ -1,8 +1,8 @@
-# Atanh接口<a name="ZH-CN_TOPIC_0000001864768529"></a>
+# Atanh接口
 
--   **[Atanh](Atanh.md)**  
+-   **[Atanh](Atanh.md)**
 
--   **[GetAtanhMaxMinTmpSize](GetAtanhMaxMinTmpSize.md)**  
+-   **[GetAtanhMaxMinTmpSize](GetAtanhMaxMinTmpSize.md)**
 
--   **[GetAtanhTmpBufferFactorSize](GetAtanhTmpBufferFactorSize.md)**  
+-   **[GetAtanhTmpBufferFactorSize](GetAtanhTmpBufferFactorSize.md)**
 

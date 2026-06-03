@@ -1,8 +1,8 @@
-# LogicalOr接口<a name="ZH-CN_TOPIC_0000002419483161"></a>
+# LogicalOr接口
 
--   **[LogicalOr](LogicalOr.md)**  
+-   **[LogicalOr](LogicalOr.md)**
 
--   **[GetLogicalOrMaxMinTmpSize](GetLogicalOrMaxMinTmpSize.md)**  
+-   **[GetLogicalOrMaxMinTmpSize](GetLogicalOrMaxMinTmpSize.md)**
 
--   **[GetLogicalOrTmpBufferFactorSize](GetLogicalOrTmpBufferFactorSize.md)**  
+-   **[GetLogicalOrTmpBufferFactorSize](GetLogicalOrTmpBufferFactorSize.md)**
 

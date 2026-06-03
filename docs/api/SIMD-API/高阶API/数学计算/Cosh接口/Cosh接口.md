@@ -1,8 +1,8 @@
-# Cosh接口<a name="ZH-CN_TOPIC_0000001818088552"></a>
+# Cosh接口
 
--   **[Cosh](Cosh.md)**  
+-   **[Cosh](Cosh.md)**
 
--   **[GetCoshMaxMinTmpSize](GetCoshMaxMinTmpSize.md)**  
+-   **[GetCoshMaxMinTmpSize](GetCoshMaxMinTmpSize.md)**
 
--   **[GetCoshTmpBufferFactorSize](GetCoshTmpBufferFactorSize.md)**  
+-   **[GetCoshTmpBufferFactorSize](GetCoshTmpBufferFactorSize.md)**
 

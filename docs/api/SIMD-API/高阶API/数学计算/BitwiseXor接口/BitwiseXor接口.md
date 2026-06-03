@@ -1,8 +1,8 @@
-# BitwiseXor接口<a name="ZH-CN_TOPIC_0000002474573357"></a>
+# BitwiseXor接口
 
--   **[BitwiseXor](BitwiseXor.md)**  
+-   **[BitwiseXor](BitwiseXor.md)**
 
--   **[GetBitwiseXorMaxMinTmpSize](GetBitwiseXorMaxMinTmpSize.md)**  
+-   **[GetBitwiseXorMaxMinTmpSize](GetBitwiseXorMaxMinTmpSize.md)**
 
--   **[GetBitwiseXorTmpBufferFactorSize](GetBitwiseXorTmpBufferFactorSize.md)**  
+-   **[GetBitwiseXorTmpBufferFactorSize](GetBitwiseXorTmpBufferFactorSize.md)**
 

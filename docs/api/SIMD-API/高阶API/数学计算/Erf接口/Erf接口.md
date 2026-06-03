@@ -1,8 +1,8 @@
-# Erf接口<a name="ZH-CN_TOPIC_0000001818088556"></a>
+# Erf接口
 
--   **[Erf](Erf.md)**  
+-   **[Erf](Erf.md)**
 
--   **[GetErfMaxMinTmpSize](GetErfMaxMinTmpSize.md)**  
+-   **[GetErfMaxMinTmpSize](GetErfMaxMinTmpSize.md)**
 
--   **[GetErfTmpBufferFactorSize](GetErfTmpBufferFactorSize.md)**  
+-   **[GetErfTmpBufferFactorSize](GetErfTmpBufferFactorSize.md)**
 

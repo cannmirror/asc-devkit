@@ -1,8 +1,8 @@
-# SinCos接口<a name="ZH-CN_TOPIC_0000002382378445"></a>
+# SinCos接口
 
--   **[SinCos](SinCos.md)**  
+-   **[SinCos](SinCos.md)**
 
--   **[GetSinCosMaxMinTmpSize](GetSinCosMaxMinTmpSize.md)**  
+-   **[GetSinCosMaxMinTmpSize](GetSinCosMaxMinTmpSize.md)**
 
--   **[GetSinCosTmpBufferFactorSize](GetSinCosTmpBufferFactorSize.md)**  
+-   **[GetSinCosTmpBufferFactorSize](GetSinCosTmpBufferFactorSize.md)**
 

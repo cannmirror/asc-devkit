@@ -1,8 +1,8 @@
-# Round接口<a name="ZH-CN_TOPIC_0000001864688341"></a>
+# Round接口
 
--   **[Round](Round.md)**  
+-   **[Round](Round.md)**
 
--   **[GetRoundMaxMinTmpSize](GetRoundMaxMinTmpSize.md)**  
+-   **[GetRoundMaxMinTmpSize](GetRoundMaxMinTmpSize.md)**
 
--   **[GetRoundTmpBufferFactorSize](GetRoundTmpBufferFactorSize.md)**  
+-   **[GetRoundTmpBufferFactorSize](GetRoundTmpBufferFactorSize.md)**
 

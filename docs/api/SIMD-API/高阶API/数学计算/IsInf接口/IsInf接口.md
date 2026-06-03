@@ -1,8 +1,8 @@
-# IsInf接口<a name="ZH-CN_TOPIC_0000002348658006"></a>
+# IsInf接口
 
--   **[IsInf](IsInf.md)**  
+-   **[IsInf](IsInf.md)**
 
--   **[GetIsInfMaxMinTmpSize](GetIsInfMaxMinTmpSize.md)**  
+-   **[GetIsInfMaxMinTmpSize](GetIsInfMaxMinTmpSize.md)**
 
--   **[GetIsInfTmpBufferFactorSize](GetIsInfTmpBufferFactorSize.md)**  
+-   **[GetIsInfTmpBufferFactorSize](GetIsInfTmpBufferFactorSize.md)**
 
