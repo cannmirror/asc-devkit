@@ -1,6 +1,6 @@
-# ReduceAny接口<a name="ZH-CN_TOPIC_0000002223077834"></a>
+# ReduceAny接口
 
--   **[ReduceAny](ReduceAny.md)**  
+-   **[ReduceAny](ReduceAny.md)**
 
--   **[GetReduceAnyMaxMinTmpSize](GetReduceAnyMaxMinTmpSize.md)**  
+-   **[GetReduceAnyMaxMinTmpSize](GetReduceAnyMaxMinTmpSize.md)**
 

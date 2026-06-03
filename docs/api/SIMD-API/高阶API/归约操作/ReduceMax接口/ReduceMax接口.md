@@ -1,6 +1,6 @@
-# ReduceMax接口<a name="ZH-CN_TOPIC_0000002132346922"></a>
+# ReduceMax接口
 
--   **[ReduceMax](ReduceMax-91.md)**  
+-   **[ReduceMax](ReduceMax-91.md)**
 
--   **[GetReduceMaxMaxMinTmpSize](GetReduceMaxMaxMinTmpSize.md)**  
+-   **[GetReduceMaxMaxMinTmpSize](GetReduceMaxMaxMinTmpSize.md)**
 

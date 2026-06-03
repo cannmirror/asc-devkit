@@ -1,6 +1,6 @@
-# Sum接口<a name="ZH-CN_TOPIC_0000001829147014"></a>
+# Sum接口
 
--   **[Sum](Sum.md)**  
+-   **[Sum](Sum.md)**
 
--   **[GetSumMaxMinTmpSize](GetSumMaxMinTmpSize.md)**  
+-   **[GetSumMaxMinTmpSize](GetSumMaxMinTmpSize.md)**
 

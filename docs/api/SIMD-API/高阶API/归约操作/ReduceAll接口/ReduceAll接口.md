@@ -1,6 +1,6 @@
-# ReduceAll接口<a name="ZH-CN_TOPIC_0000002258037501"></a>
+# ReduceAll接口
 
--   **[ReduceAll](ReduceAll.md)**  
+-   **[ReduceAll](ReduceAll.md)**
 
--   **[GetReduceAllMaxMinTmpSize](GetReduceAllMaxMinTmpSize.md)**  
+-   **[GetReduceAllMaxMinTmpSize](GetReduceAllMaxMinTmpSize.md)**
 

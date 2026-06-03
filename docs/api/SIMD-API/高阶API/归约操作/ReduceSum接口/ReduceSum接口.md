@@ -1,6 +1,6 @@
-# ReduceSum接口<a name="ZH-CN_TOPIC_0000002098346274"></a>
+# ReduceSum接口
 
--   **[ReduceSum](ReduceSum-90.md)**  
+-   **[ReduceSum](ReduceSum-90.md)**
 
--   **[GetReduceSumMaxMinTmpSize](GetReduceSumMaxMinTmpSize.md)**  
+-   **[GetReduceSumMaxMinTmpSize](GetReduceSumMaxMinTmpSize.md)**
 

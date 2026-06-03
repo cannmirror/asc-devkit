@@ -1,8 +1,8 @@
-# Mean接口<a name="ZH-CN_TOPIC_0000001829306770"></a>
+# Mean接口
 
--   **[Mean](Mean.md)**  
+-   **[Mean](Mean.md)**
 
--   **[GetMeanMaxMinTmpSize](GetMeanMaxMinTmpSize.md)**  
+-   **[GetMeanMaxMinTmpSize](GetMeanMaxMinTmpSize.md)**
 
--   **[GetMeanTmpBufferFactorSize](GetMeanTmpBufferFactorSize.md)**  
+-   **[GetMeanTmpBufferFactorSize](GetMeanTmpBufferFactorSize.md)**
 
