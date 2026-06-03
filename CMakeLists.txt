@@ -36,6 +36,7 @@ if(BUILD_OPEN_PROJECT)
   include(cmake/func.cmake)
   set(INSTALL_LIBRARY_DIR ${CMAKE_SYSTEM_PROCESSOR}-linux)
   include(cmake/dependencies.cmake)
+  add_cann_target_options()
 endif()
 
 add_subdirectory(impl)
