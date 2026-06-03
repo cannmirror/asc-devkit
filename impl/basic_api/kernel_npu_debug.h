@@ -27,6 +27,26 @@
 
 namespace AscendC {
 
+namespace Internal {
+
+template <typename T>
+__aicore__ inline bool CheckIsZero(T param)
+{
+    // 910B does not support scalar comparison for half / bf16 / double etc. Convert to uint for comparison.
+    if constexpr (sizeof(T) == 1) {
+        return *reinterpret_cast<const uint8_t*>(&param) == 0;
+    } else if constexpr (sizeof(T) == 2) {
+        return *reinterpret_cast<const uint16_t*>(&param) == 0;
+    } else if constexpr (sizeof(T) == 4) {
+        return *reinterpret_cast<const uint32_t*>(&param) == 0;
+    } else if constexpr (sizeof(T) == 8) {
+        return *reinterpret_cast<const uint64_t*>(&param) == 0;
+    }
+    return true;
+}
+
+} // namespace Internal
+
 template <typename T>
 struct NamedTensor {
     __aicore__ NamedTensor(const LocalTensor<T>& tensorIn, const __gm__ char* tensorNameIn)

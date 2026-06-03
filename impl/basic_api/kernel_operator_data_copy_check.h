@@ -334,10 +334,11 @@ __aicore__ inline void CheckDataCopyPadPaddingCommon(const PadParamsT& padParams
         "than or equal to %u, current bytes is %u.\n", apiName, padLimit,
         static_cast<uint32_t>(padParams.rightPadding) * sizeof(PrimT<T>)));
     if constexpr (Std::is_same_v<PadParamsT, DataCopyPadParams>) {
+        // paddingValue is always uint64_t dtype
         ASCENDC_DEBUG_ASSERT((padParams.paddingValue == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
             "Failed to check paddingValue value in %s, DataCopyPadParams.paddingValue only supports 0.\n", apiName));
     } else if constexpr (sizeof(PrimT<T>) == sizeof(uint64_t)) {
-        ASCENDC_DEBUG_ASSERT((padParams.paddingValue == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
+        ASCENDC_DEBUG_ASSERT((Internal::CheckIsZero<T>(padParams.paddingValue)), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
             "Failed to check paddingValue value in %s, when data type length is 64 bits, paddingValue only supports "
             "0.\n", apiName));
     }
