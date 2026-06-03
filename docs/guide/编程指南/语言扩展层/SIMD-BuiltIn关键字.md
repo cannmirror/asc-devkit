@@ -506,6 +506,48 @@ __ubuf__ int * __gm__ ptr;
 <p id="p278616379351"><a name="p278616379351"></a><a name="p278616379351"></a>可以通过对该常量值的判断，来实现了AIV与AIC核代码的区分和隔离。功能等同于直接使用ASCEND_IS_AIV、ASCEND_IS_AIC。</p>
 </td>
 </tr>
+<tr><td class="cellrowborder" valign="top" width="16.14838516148385%" headers="mcps1.1.4.1.1 "><p>constexpr uint64_t ASC_UB_SIZE</p>
+</td>
+<td class="cellrowborder" valign="top" width="25.847415258474154%" headers="mcps1.1.4.1.2 "><p>取值由当前AI处理器决定，若该AI处理器不存在这块空间，则默认配置为0。</p>
+</td>
+<td class="cellrowborder" valign="top" width="58.00419958004199%" headers="mcps1.1.4.1.3 "><p>表示当前AI处理器架构下Unified Buffer（UB）的容量，可用于编译期获取UB资源大小。</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="16.14838516148385%" headers="mcps1.1.4.1.1 "><p>constexpr uint64_t ASC_L1_SIZE</p>
+</td>
+<td class="cellrowborder" valign="top" width="25.847415258474154%" headers="mcps1.1.4.1.2 "><p>取值由当前AI处理器决定，若该AI处理器不存在这块空间，则默认配置为0。</p>
+</td>
+<td class="cellrowborder" valign="top" width="58.00419958004199%" headers="mcps1.1.4.1.3 "><p>表示当前AI处理器架构下L1 Buffer的容量，可用于编译期获取L1 Buffer大小。</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="16.14838516148385%" headers="mcps1.1.4.1.1 "><p>constexpr uint64_t ASC_L0A_SIZE</p>
+</td>
+<td class="cellrowborder" valign="top" width="25.847415258474154%" headers="mcps1.1.4.1.2 "><p>取值由当前AI处理器决定，若该AI处理器不存在这块空间，则默认配置为0。</p>
+</td>
+<td class="cellrowborder" valign="top" width="58.00419958004199%" headers="mcps1.1.4.1.3 "><p>表示当前AI处理器架构下L0A Buffer的容量，可用于编译期获取L0A Buffer大小。</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="16.14838516148385%" headers="mcps1.1.4.1.1 "><p>constexpr uint64_t ASC_L0B_SIZE</p>
+</td>
+<td class="cellrowborder" valign="top" width="25.847415258474154%" headers="mcps1.1.4.1.2 "><p>取值由当前AI处理器决定，若该AI处理器不存在这块空间，则默认配置为0。</p>
+</td>
+<td class="cellrowborder" valign="top" width="58.00419958004199%" headers="mcps1.1.4.1.3 "><p>表示当前AI处理器架构下L0B Buffer的容量，可用于编译期获取L0B Buffer大小。</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="16.14838516148385%" headers="mcps1.1.4.1.1 "><p>constexpr uint64_t ASC_L0C_SIZE</p>
+</td>
+<td class="cellrowborder" valign="top" width="25.847415258474154%" headers="mcps1.1.4.1.2 "><p>取值由当前AI处理器决定，若该AI处理器不存在这块空间，则默认配置为0。</p>
+</td>
+<td class="cellrowborder" valign="top" width="58.00419958004199%" headers="mcps1.1.4.1.3 "><p>表示当前AI处理器架构下L0C Buffer的容量，可用于编译期获取L0C资源大小。</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="16.14838516148385%" headers="mcps1.1.4.1.1 "><p>constexpr uint64_t ASC_BT_SIZE</p>
+</td>
+<td class="cellrowborder" valign="top" width="25.847415258474154%" headers="mcps1.1.4.1.2 "><p>取值由当前AI处理器决定，若该AI处理器不存在这块空间，则默认配置为0。</p>
+</td>
+<td class="cellrowborder" valign="top" width="58.00419958004199%" headers="mcps1.1.4.1.3 "><p>表示当前AI处理器架构下BiasTable Buffer的容量，可用于编译期获取BiasTable资源大小。</p>
+</td>
+</tr>
 </tbody>
 </table>
 

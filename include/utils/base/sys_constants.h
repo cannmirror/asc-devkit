@@ -15,6 +15,66 @@
 #ifndef INCLUDE_UTILS_BASE_SYS_CONSTANTS_H
 #define INCLUDE_UTILS_BASE_SYS_CONSTANTS_H
 
+#include <cstdint>
+
 #include "impl/utils/sys_constants.h"
+
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001)
+constexpr uint64_t ASC_UB_SIZE = 256 * 1024;
+constexpr uint64_t ASC_L1_SIZE = 1024 * 1024;
+constexpr uint64_t ASC_L0A_SIZE = 64 * 1024;
+constexpr uint64_t ASC_L0B_SIZE = 64 * 1024;
+constexpr uint64_t ASC_L0C_SIZE = 256 * 1024;
+constexpr uint64_t ASC_BT_SIZE = 0;
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002)
+constexpr uint64_t ASC_UB_SIZE = 256 * 1024;
+constexpr uint64_t ASC_L1_SIZE = 1024 * 1024;
+constexpr uint64_t ASC_L0A_SIZE = 64 * 1024;
+constexpr uint64_t ASC_L0B_SIZE = 64 * 1024;
+constexpr uint64_t ASC_L0C_SIZE = 256 * 1024;
+constexpr uint64_t ASC_BT_SIZE = 0;
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
+constexpr uint64_t ASC_UB_SIZE = 192 * 1024 - 256;
+constexpr uint64_t ASC_L1_SIZE = 512 * 1024 - 256;
+constexpr uint64_t ASC_L0A_SIZE = 64 * 1024;
+constexpr uint64_t ASC_L0B_SIZE = 64 * 1024;
+constexpr uint64_t ASC_L0C_SIZE = 128 * 1024;
+constexpr uint64_t ASC_BT_SIZE = 1 * 1024;
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3002)
+constexpr uint64_t ASC_UB_SIZE = 248 * 1024;
+constexpr uint64_t ASC_L1_SIZE = 1024 * 1024;
+constexpr uint64_t ASC_L0A_SIZE = 64 * 1024;
+constexpr uint64_t ASC_L0B_SIZE = 64 * 1024;
+constexpr uint64_t ASC_L0C_SIZE = 128 * 1024;
+constexpr uint64_t ASC_BT_SIZE = 1 * 1024;
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003)
+constexpr uint64_t ASC_UB_SIZE = 128 * 1024;
+constexpr uint64_t ASC_L1_SIZE = 1024 * 1024;
+constexpr uint64_t ASC_L0A_SIZE = 64 * 1024;
+constexpr uint64_t ASC_L0B_SIZE = 64 * 1024;
+constexpr uint64_t ASC_L0C_SIZE = 128 * 1024;
+constexpr uint64_t ASC_BT_SIZE = 1 * 1024;
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3113)
+constexpr uint64_t ASC_UB_SIZE = 128 * 1024;
+constexpr uint64_t ASC_L1_SIZE = 512 * 1024;
+constexpr uint64_t ASC_L0A_SIZE = 32 * 1024;
+constexpr uint64_t ASC_L0B_SIZE = 32 * 1024;
+constexpr uint64_t ASC_L0C_SIZE = 64 * 1024;
+constexpr uint64_t ASC_BT_SIZE = 1 * 1024;
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
+constexpr uint64_t ASC_UB_SIZE = 248 * 1024;
+constexpr uint64_t ASC_L1_SIZE = 512 * 1024;
+constexpr uint64_t ASC_L0A_SIZE = 64 * 1024;
+constexpr uint64_t ASC_L0B_SIZE = 64 * 1024;
+constexpr uint64_t ASC_L0C_SIZE = 256 * 1024;
+constexpr uint64_t ASC_BT_SIZE = 4 * 1024;
+#else
+constexpr uint64_t ASC_UB_SIZE = 0;
+constexpr uint64_t ASC_L1_SIZE = 0;
+constexpr uint64_t ASC_L0A_SIZE = 0;
+constexpr uint64_t ASC_L0B_SIZE = 0;
+constexpr uint64_t ASC_L0C_SIZE = 0;
+constexpr uint64_t ASC_BT_SIZE = 0;
+#endif
 
 #endif
