@@ -47,6 +47,12 @@ public:
     }
 };
 
+class Cast {
+public:
+    template<typename... Args>
+    __simd_callee__ inline static void Run(const Args&... args) {}
+};
+
 class Ceil {
 public:
     template <typename T>

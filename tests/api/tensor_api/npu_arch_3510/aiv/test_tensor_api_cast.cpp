@@ -77,4 +77,4 @@ VECTOR_CAST_3510(Ceil, half, half)
 VECTOR_CAST_3510(Ceil, float, float)
 VECTOR_CAST_3510(Ceil, bfloat16_t, bfloat16_t)
 
-VECTOR_CAST_3510(U82U16, uint16_t, uint8_t)
+VECTOR_CAST_3510(Cast, uint16_t, uint8_t)
