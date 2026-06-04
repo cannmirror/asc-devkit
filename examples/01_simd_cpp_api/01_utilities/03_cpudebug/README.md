@@ -7,8 +7,8 @@
 ## 支持的产品
 
 - Ascend 950PR/Ascend 950DT
-- Atlas A2 训练系列产品/Atlas A2 推理系列产品
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品
  
 ## 目录结构介绍
 
@@ -72,6 +72,8 @@
   [Success] Case accuracy is verification passed.
   ```
 - 进入gdb模式调试  
+  > **说明：** 需使用 GDB 12.1及以上版本。
+  
   编译生成的CPU域可执行程序支持通过gdb进行调试。gdb支持设置断点、查看寄存器和内存状态、单步执行、查看调用栈等常用调试操作。在上述指令中"./cpu_debug"前加入"gdb --args"，再次执行指令即可进入gdb模式。
   ```bash
   gdb --args ./cpu_debug
@@ -93,9 +95,6 @@
 
   # 单步执行
   (gdb) next
-
-  # 打印变量值
-  (gdb) print xLocal.GetValue(0)
 
   # 继续执行到下一个断点
   (gdb) continue
