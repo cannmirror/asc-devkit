@@ -13,6 +13,7 @@
 #include "executor_common_ops.h"
 #include "topo_match_base.h"
 #include "topo_match_multilevel.h"
+#include "topo_match_pcie_mix.h"
 #include "topo_match_ubx.h"
 
 namespace mc2_ops_hccl {
