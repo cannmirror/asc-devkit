@@ -48,12 +48,11 @@ __aicore__ inline constexpr auto MakePatternLayout(const ShapeType& shape, const
     return LayoutT(shape, stride);
 } 
 
-template <typename LayoutPattern, typename TraitType, typename Batch, typename Row, typename Column, typename LayoutType>
-__aicore__ inline constexpr auto MakeBatchPatternLayout(
-    const Batch& batch, const Row& row, const Column& column, const LayoutType& layout)
+template <typename LayoutPattern, typename TraitType, typename Batch, typename LayoutType>
+__aicore__ inline constexpr auto MakeBatchPatternLayout(const Batch& batch, const LayoutType& layout)
 {
     return MakePatternLayout<LayoutPattern, TraitType>(
-        MakeShape(batch, layout.Shape()), MakeStride(row * column, layout.Stride()));
+        MakeShape(batch, layout.Shape()), MakeStride(layout.Capacity(), layout.Stride()));
 }
 
 struct MakeNzFrameLayout {
@@ -70,7 +69,7 @@ struct MakeNzFrameLayout {
 
     template <typename TraitType, typename Batch, typename T, typename U>
     __aicore__ inline static auto Make(Batch batch, T row, U column) {
-        return MakeBatchPatternLayout<NZLayoutPtn, TraitType>(batch, row, column, Make<TraitType>(row, column));
+        return MakeBatchPatternLayout<NZLayoutPtn, TraitType>(batch, Make<TraitType>(row, column));
     }
 };
 
@@ -85,7 +84,7 @@ struct MakeNDExtFrameLayout {
 
     template <typename TraitType, typename Batch, typename T, typename U>
     __aicore__ inline static auto Make(Batch batch, T row, U column) {
-        return MakeBatchPatternLayout<NDExtLayoutPtn, TraitType>(batch, row, column, Make<TraitType>(row, column));
+        return MakeBatchPatternLayout<NDExtLayoutPtn, TraitType>(batch, Make<TraitType>(row, column));
     }
 };
 
@@ -100,7 +99,7 @@ struct MakeNDFrameLayout {
 
     template <typename TraitType, typename Batch, typename T, typename U>
     __aicore__ inline static auto Make(Batch batch, T row, U column) {
-        return MakeBatchPatternLayout<NDLayoutPtn, TraitType>(batch, row, column, Make<TraitType>(row, column));
+        return MakeBatchPatternLayout<NDLayoutPtn, TraitType>(batch, Make<TraitType>(row, column));
     }
 };
 
@@ -118,7 +117,7 @@ struct MakeZnFrameLayout {
 
     template <typename TraitType, typename Batch, typename T, typename U>
     __aicore__ inline static auto Make(Batch batch, T row, U column) {
-        return MakeBatchPatternLayout<ZNLayoutPtn, TraitType>(batch, row, column, Make<TraitType>(row, column));
+        return MakeBatchPatternLayout<ZNLayoutPtn, TraitType>(batch, Make<TraitType>(row, column));
     }
 };
 
@@ -133,7 +132,7 @@ struct MakeDNFrameLayout {
 
     template <typename TraitType, typename Batch, typename T, typename U>
     __aicore__ inline static auto Make(Batch batch, T row, U column) {
-        return MakeBatchPatternLayout<DNLayoutPtn, TraitType>(batch, row, column, Make<TraitType>(row, column));
+        return MakeBatchPatternLayout<DNLayoutPtn, TraitType>(batch, Make<TraitType>(row, column));
     }
 };
 
@@ -148,7 +147,7 @@ struct MakeDNExtFrameLayout {
 
     template <typename TraitType, typename Batch, typename T, typename U>
     __aicore__ inline static auto Make(Batch batch, T row, U column) {
-        return MakeBatchPatternLayout<DNExtLayoutPtn, TraitType>(batch, row, column, Make<TraitType>(row, column));
+        return MakeBatchPatternLayout<DNExtLayoutPtn, TraitType>(batch, Make<TraitType>(row, column));
     }
 };
 

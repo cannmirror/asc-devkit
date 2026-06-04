@@ -53,8 +53,8 @@ __aicore__ inline decltype(auto) MakeCoordLayout(const Coord& coord, const Layou
     using ShapeType = Std::remove_cvref_t<decltype(layout.Shape())>;
     using CoordType = Std::remove_cvref_t<Coord>;
     static_assert(IsLayoutV<LayoutType> && Std::is_tuple_v<CoordType>, "LayoutType must be Layout");
-    static_assert(NestingDepthV<ShapeType> == NestingDepthV<CoordType> && 
-        Std::tuple_size_v<ShapeType> == Std::tuple_size_v<CoordType>, 
+    static_assert(NestingDepthV<ShapeType> == NestingDepthV<CoordType> &&
+        Std::tuple_size_v<ShapeType> == Std::tuple_size_v<CoordType>,
         "Shape and coord must have same tuple structure");
     auto coordShape = TransformTupleApply(layout.Shape(), coord, DiffOp{});
     using TraitType = GetLayoutTrait<LayoutType>;
@@ -71,31 +71,12 @@ __aicore__ inline decltype(auto) MakeSlicePatternLayout(const LayoutType& layout
 }
 
 template <typename Coord, typename LayoutType, typename SliceShape>
-__aicore__ inline decltype(auto) MakeTwoDimSliceLayout(
+__aicore__ inline decltype(auto) MakeSameShapeSliceLayout(
     const Coord& coord, const LayoutType& layout, const SliceShape& sliceShape)
 {
-    static_assert(NestingDepthV<SliceShape> == TWO_DIM_DATA,
-        "SliceShape must be Two Dim when layout is Two Dim");
-    auto srcRow = Get<0>(layout.Shape()) - Get<0>(coord);
-    auto srcCol = Get<1>(layout.Shape()) - Get<1>(coord);
-    auto realRow = Std::min(srcRow, Get<0>(sliceShape));
-    auto realCol = Std::min(srcCol, Get<1>(sliceShape));
-    return MakeSlicePatternLayout(layout, MakeShape(realRow, realCol));
-}
-
-template <typename Coord, typename LayoutType, typename SliceShape>
-__aicore__ inline decltype(auto) MakeThreeDimSliceLayout(
-    const Coord& coord, const LayoutType& layout, const SliceShape& sliceShape)
-{
-    static_assert(NestingDepthV<SliceShape> == THREE_DIM_DATA,
-        "SliceShape must be Three Dim when layout is Three Dim");
-    auto srcBatch = Get<0>(layout.Shape()) - Get<0>(coord);
-    auto srcRow = Get<1, 0>(layout.Shape()) - Get<1, 0>(coord);
-    auto srcCol = Get<1, 1>(layout.Shape()) - Get<1, 1>(coord);
-    auto realBatch = Std::min(srcBatch, Get<0>(sliceShape));
-    auto realRow = Std::min(srcRow, Get<1, 0>(sliceShape));
-    auto realCol = Std::min(srcCol, Get<1, 1>(sliceShape));
-    return MakeSlicePatternLayout(layout, MakeShape(realBatch, MakeShape(realRow, realCol)));
+    auto coordLayout = MakeCoordLayout(coord, layout);
+    auto realShape = TransformTupleApply(coordLayout.Shape(), sliceShape, MinOp{});
+    return MakeSlicePatternLayout(layout, realShape);
 }
 
 template <typename Coord, typename LayoutType, typename SliceShape>
@@ -140,23 +121,25 @@ template <typename Coord, typename LayoutType, typename SliceShape, Std::enable_
 __aicore__ inline decltype(auto) MakeSliceLayout(const Coord& coord, const LayoutType& layout, const SliceShape& sliceShape) 
 {
     static_assert(IsLayoutV<LayoutType>, "LayoutType must be Layout");
-    static_assert(Std::is_tuple_v<SliceShape>, "SliceShape must be a tuple");
-    static_assert(NestingDepthV<SliceShape> == TWO_DIM_DATA || NestingDepthV<SliceShape> == THREE_DIM_DATA,
-        "Only Support Two Dim or Three Dim SliceShape");
+    static_assert(Std::is_tuple_v<Std::remove_cvref_t<SliceShape>>, "SliceShape must be a tuple");
     using OriginShape = Std::remove_cvref_t<decltype(layout.Shape())>;
+    using SliceShapeType = Std::remove_cvref_t<SliceShape>;
     constexpr auto originShapeDepth = NestingDepthV<OriginShape>;
-    if constexpr (originShapeDepth == TWO_DIM_DATA) {
-        return MakeTwoDimSliceLayout(coord, layout, sliceShape);
-    } else if constexpr (originShapeDepth == THREE_DIM_DATA) {
-        return MakeThreeDimSliceLayout(coord, layout, sliceShape);
-    } else if constexpr (originShapeDepth == FOUR_DIM_DATA) {
+    constexpr auto sliceShapeDepth = NestingDepthV<SliceShapeType>;
+    constexpr bool isSameShape = originShapeDepth == sliceShapeDepth &&
+        Std::tuple_size_v<OriginShape> == Std::tuple_size_v<SliceShapeType>;
+
+    if constexpr (isSameShape) {
+        return MakeSameShapeSliceLayout(coord, layout, sliceShape);
+    } else if constexpr (originShapeDepth == FOUR_DIM_DATA && sliceShapeDepth == TWO_DIM_DATA) {
         return MakeFourDimSliceLayout(coord, layout, sliceShape);
-    } else if constexpr (originShapeDepth == FIVE_DIM_DATA) {
+    } else if constexpr (originShapeDepth == FIVE_DIM_DATA && sliceShapeDepth == THREE_DIM_DATA) {
         return MakeFiveDimSliceLayout(coord, layout, sliceShape);
     } else {
-        static_assert(originShapeDepth == TWO_DIM_DATA || originShapeDepth == THREE_DIM_DATA ||
-            originShapeDepth == FOUR_DIM_DATA || originShapeDepth == FIVE_DIM_DATA,
-            "Only Support Two Dim, Three Dim, Four Dim, or Five Dim Layout");
+        static_assert(isSameShape || (originShapeDepth == FOUR_DIM_DATA && sliceShapeDepth == TWO_DIM_DATA) ||
+            (originShapeDepth == FIVE_DIM_DATA && sliceShapeDepth == THREE_DIM_DATA),
+            "SliceShape must be same structure as Layout shape, or logical Two Dim Shape for Four Dim Layout, "
+            "or logical Three Dim Shape for Five Dim Layout.");
     }
 }
 
@@ -172,6 +155,17 @@ __aicore__ inline decltype(auto) MakeSliceLayout(const Coord& coord, const SrcLa
     using TraitType = GetLayoutTrait<SrcLayoutType>;
     using PatternType = GetLayoutPattern<SrcLayoutType>;
     return MakePatternLayout<PatternType, TraitType>(sliceShape, srcLayout.Stride());
+}
+
+template <typename LayoutType, typename = Std::enable_if_t<IsLayoutV<LayoutType>>>
+__aicore__ inline constexpr decltype(auto) RemoveBatchDim(const LayoutType& layout)
+{
+    constexpr auto layoutDepth = LayoutType::depth;
+    static_assert(layoutDepth == THREE_DIM_DATA || layoutDepth == FIVE_DIM_DATA,
+        "RemoveBatchDim only supports Three Dim or Five Dim Layout.");
+    using TraitType = GetLayoutTrait<LayoutType>;
+    using PatternType = GetLayoutPattern<LayoutType>;
+    return MakePatternLayout<PatternType, TraitType>(Get<1>(layout.Shape()), Get<1>(layout.Stride()));
 }
 
 } // namespace Te

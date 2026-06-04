@@ -64,6 +64,45 @@ TEST_F(Tensor_Api_Layout_Struct, TestMakeLayoutFromNestedShape)
     EXPECT_EQ(AscendC::Std::get<1>(colStride), 24);
 }
 
+TEST_F(Tensor_Api_Layout_Struct, TestRemoveBatchDimFromThreeDimLayout)
+{
+    using namespace AscendC::Te;
+
+    auto layout = MakePatternLayout<NDLayoutPtn, LayoutTraitDefault<>>(
+        MakeShape(2, MakeShape(8, 16)), MakeStride(128, MakeStride(16, 1)));
+    auto noBatchLayout = RemoveBatchDim(layout);
+
+    static_assert(decltype(noBatchLayout)::depth == TWO_DIM_DATA);
+    static_assert(AscendC::Std::is_same_v<GetLayoutPattern<decltype(noBatchLayout)>, NDLayoutPtn>);
+    EXPECT_EQ(AscendC::Std::get<0>(noBatchLayout.Shape()), 8);
+    EXPECT_EQ(AscendC::Std::get<1>(noBatchLayout.Shape()), 16);
+    EXPECT_EQ(AscendC::Std::get<0>(noBatchLayout.Stride()), 16);
+    EXPECT_EQ(AscendC::Std::get<1>(noBatchLayout.Stride()), 1);
+}
+
+TEST_F(Tensor_Api_Layout_Struct, TestRemoveBatchDimFromFiveDimLayout)
+{
+    using namespace AscendC::Te;
+
+    auto layout = MakePatternLayout<NZLayoutPtn, LayoutTraitDefault<>>(
+        MakeShape(2, MakeShape(MakeShape(16, 2), MakeShape(16, 4))),
+        MakeStride(2048, MakeStride(MakeStride(16, 256), MakeStride(1, 512))));
+    auto noBatchLayout = RemoveBatchDim(layout);
+    auto shape = noBatchLayout.Shape();
+    auto stride = noBatchLayout.Stride();
+
+    static_assert(decltype(noBatchLayout)::depth == FOUR_DIM_DATA);
+    static_assert(AscendC::Std::is_same_v<GetLayoutPattern<decltype(noBatchLayout)>, NZLayoutPtn>);
+    EXPECT_EQ(AscendC::Std::get<0>(AscendC::Std::get<0>(shape)), 16);
+    EXPECT_EQ(AscendC::Std::get<1>(AscendC::Std::get<0>(shape)), 2);
+    EXPECT_EQ(AscendC::Std::get<0>(AscendC::Std::get<1>(shape)), 16);
+    EXPECT_EQ(AscendC::Std::get<1>(AscendC::Std::get<1>(shape)), 4);
+    EXPECT_EQ(AscendC::Std::get<0>(AscendC::Std::get<0>(stride)), 16);
+    EXPECT_EQ(AscendC::Std::get<1>(AscendC::Std::get<0>(stride)), 256);
+    EXPECT_EQ(AscendC::Std::get<0>(AscendC::Std::get<1>(stride)), 1);
+    EXPECT_EQ(AscendC::Std::get<1>(AscendC::Std::get<1>(stride)), 512);
+}
+
 TEST_F(Tensor_Api_Layout_Struct, TestMakeTuple)
 {
     using namespace AscendC::Te;
