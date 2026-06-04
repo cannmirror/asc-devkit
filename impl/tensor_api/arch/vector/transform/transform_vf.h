@@ -24,6 +24,8 @@
 
 #include "impl/tensor_api/arch/vector/binary/binary_vf.h"
 #include "impl/tensor_api/arch/vector/cast/cast_vf.h"
+#include "impl/tensor_api/arch/vector/binary_scalar/binary_scalar_vf.h"
+#include "impl/tensor_api/arch/vector/axpy/axpy_vf.h"
 
 namespace AscendC {
 namespace Te {
@@ -33,12 +35,18 @@ class Transform2VF {
 private:
     using binarySet = Std::tuple<Inst::Add, Inst::Sub, Inst::Madd, Inst::And, Inst::Select, Inst::AbsSub, Inst::Min, Inst::Max,
         Inst::Or, Inst::Mul, Inst::ExpSubEven, Inst::ExpSubOdd, Inst::ShiftLeft, Inst::ShiftRight, Inst::Div, Inst::Xor, Inst::Prelu>;
+    using binaryScalarSet = Std::tuple<
+        Inst::MulScalar, Inst::AddScalar, Inst::MaxScalar, Inst::MinScalar,
+        Inst::ShiftLeftScalar, Inst::ShiftRightScalar,
+        Inst::MulsEven, Inst::MulsOdd>;
     using castSet = Std::tuple<Inst::Cast, Inst::Ceil>;
+    using axpySet = Std::tuple<Inst::Axpy>;
 
     using transformSet = TupleMap<
         Std::tuple<castSet, Transform2CastInstMatch<CalcFunc, TraitType>>,
-        Std::tuple<binarySet, Transform2BinaryVF<CalcFunc, TraitType>>>;
-
+        Std::tuple<binarySet, Transform2BinaryVF<CalcFunc, TraitType>>,
+        Std::tuple<binaryScalarSet, Transform2BinaryScalarVF<CalcFunc, TraitType>>,
+        Std::tuple<axpySet, Transform2AxpyVF<CalcFunc, TraitType>>>;
     template <typename Input>
     using Find = typename transformSet::template Find<Input>;
 
