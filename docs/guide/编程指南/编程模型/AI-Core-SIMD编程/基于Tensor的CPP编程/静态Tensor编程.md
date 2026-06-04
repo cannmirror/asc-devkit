@@ -739,21 +739,21 @@
 </tr>
 <tr id="row1798773512412"><td class="cellrowborder" valign="top" width="29.630000000000003%" headers="mcps1.2.4.1.1 "><p id="p189871935184120"><a name="p189871935184120"></a><a name="p189871935184120"></a>基础API &gt; 矢量计算 &gt; 复合计算</p>
 </td>
-<td class="cellrowborder" valign="top" width="44.519999999999996%" headers="mcps1.2.4.1.2 "><p id="p10987133511418"><a name="p10987133511418"></a><a name="p10987133511418"></a>Axpy、AddRelu、AddReluCast、AddDeqRelu、SubRelu、SubReluCast、MulAddDst、MulCast、FusedMulAdd、MulAddRelu、AbsSub、FusedExpSub、MulsCast</p>
+<td class="cellrowborder" valign="top" width="44.519999999999996%" headers="mcps1.2.4.1.2 "><p id="p10987133511418"><a name="p10987133511418"></a><a name="p10987133511418"></a>Axpy、CastDequant、AddRelu、AddReluCast、AddDeqRelu、SubRelu、SubReluCast、MulAddDst、MulCast、FusedMulAdd、MulAddRelu、AbsSub、FusedExpSub、MulsCast</p>
 </td>
 <td class="cellrowborder" valign="top" width="25.85%" headers="mcps1.2.4.1.3 "><p id="p179879356419"><a name="p179879356419"></a><a name="p179879356419"></a>-</p>
 </td>
 </tr>
 <tr id="row5600192234115"><td class="cellrowborder" valign="top" width="29.630000000000003%" headers="mcps1.2.4.1.1 "><p id="p7600112274111"><a name="p7600112274111"></a><a name="p7600112274111"></a>基础API &gt; 矢量计算 &gt; 比较与选择</p>
 </td>
-<td class="cellrowborder" valign="top" width="44.519999999999996%" headers="mcps1.2.4.1.2 "><p id="p16681911154710"><a name="p16681911154710"></a><a name="p16681911154710"></a>Compare、Compares、Compares（灵活标量位置）、GetCmpMask、SetCmpMask、GatherMask、Select（灵活标量位置）</p>
+<td class="cellrowborder" valign="top" width="44.519999999999996%" headers="mcps1.2.4.1.2 "><p id="p16681911154710"><a name="p16681911154710"></a><a name="p16681911154710"></a>Compare、Compares、Compares（灵活标量位置）、GetCmpMask、SetCmpMask、GatherMask、Select、Select（灵活标量位置）</p>
 </td>
-<td class="cellrowborder" valign="top" width="25.85%" headers="mcps1.2.4.1.3 "><p id="p46001422164119"><a name="p46001422164119"></a><a name="p46001422164119"></a>-</p>
+<td class="cellrowborder" valign="top" width="25.85%" headers="mcps1.2.4.1.3 "><p id="p46001422164119"><a name="p46001422164119"></a><a name="p46001422164119"></a>Select不支持：tensor高位切分计算->Select模式0和模式2->不传入mask参数接口中的模式0。</p>
 </td>
 </tr>
 <tr id="row998718356411"><td class="cellrowborder" valign="top" width="29.630000000000003%" headers="mcps1.2.4.1.1 "><p id="p5987335194120"><a name="p5987335194120"></a><a name="p5987335194120"></a>基础API &gt; 矢量计算 &gt; 类型转换</p>
 </td>
-<td class="cellrowborder" valign="top" width="44.519999999999996%" headers="mcps1.2.4.1.2 "><p id="p198717354419"><a name="p198717354419"></a><a name="p198717354419"></a>Truncate</p>
+<td class="cellrowborder" valign="top" width="44.519999999999996%" headers="mcps1.2.4.1.2 "><p id="p198717354419"><a name="p198717354419"></a><a name="p198717354419"></a>Cast、Truncate</p>
 </td>
 <td class="cellrowborder" valign="top" width="25.85%" headers="mcps1.2.4.1.3 "><p id="p798719352419"><a name="p798719352419"></a><a name="p798719352419"></a>-</p>
 </td>
@@ -798,6 +798,13 @@
 <td class="cellrowborder" valign="top" width="44.519999999999996%" headers="mcps1.2.4.1.2 "><p id="p99871335184114"><a name="p99871335184114"></a><a name="p99871335184114"></a>SetMaskCount、SetMaskNorm、SetVectorMask、ResetMask</p>
 </td>
 <td class="cellrowborder" valign="top" width="25.85%" headers="mcps1.2.4.1.3 "><p id="p18988435204114"><a name="p18988435204114"></a><a name="p18988435204114"></a>-</p>
+</td>
+</tr>
+<tr id="row1198714156411"><td class="cellrowborder" valign="top" width="29.630000000000003%" headers="mcps1.2.4.1.1 "><p id="p1698718951871"><a name="p1698718951871"></a><a name="p1698718951871"></a>基础API &gt; 矢量计算 &gt; 量化设置</p>
+</td>
+<td class="cellrowborder" valign="top" width="44.519999999999996%" headers="mcps1.2.4.1.2 "><p id="p1752718121879"><a name="p1752718121879"></a><a name="p1752718121879"></a>SetDeqScale</p>
+</td>
+<td class="cellrowborder" valign="top" width="25.85%" headers="mcps1.2.4.1.3 "><p id="p1687112812182"><a name="p1687112812182"></a><a name="p1687112812182"></a>-</p>
 </td>
 </tr>
 <tr id="row098783516418"><td class="cellrowborder" valign="top" width="29.630000000000003%" headers="mcps1.2.4.1.1 "><p id="p139874354418"><a name="p139874354418"></a><a name="p139874354418"></a>基础API &gt; 矢量计算 &gt; 数据重排</p>
