@@ -192,7 +192,7 @@
 
 -   上三角模板策略使用示例
 
-    ```
+    ```cpp
     #include "lib/matmul_intf.h"
     
     typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> aType; 
@@ -217,7 +217,7 @@
 
 -   下三角模板策略使用示例
 
-    ```
+    ```cpp
     #include "lib/matmul_intf.h"
     
     typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> aType; 
@@ -242,7 +242,7 @@
 
 -   NBuffer33模板策略使用示例
 
-    ```
+    ```cpp
     #define ASCENDC_CUBE_ONLY
     #include "lib/matmul_intf.h"
     
@@ -269,7 +269,7 @@
 
 -   MxMatmul模板策略使用示例
 
-    ```
+    ```cpp
     #include "lib/matmul_intf.h"
     typedef MatmulTypeWithScale<AscendC::TPosition::GM, AscendC::TPosition::GM, CubeFormat::ND, AType, isTransposeA> aType;
     typedef MatmulTypeWithScale<AscendC::TPosition::GM, AscendC::TPosition::GM, CubeFormat::ND, BType, isTransposeB> bType;
@@ -295,7 +295,7 @@
 
 -   SplitM模板策略使用示例
 
-    ```
+    ```cpp
     #include "lib/matmul_intf.h"
     
     typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half, LayoutMode::NONE, true> aType; 
@@ -321,7 +321,6 @@
     uint16_t nIter_ = Ceil(tiling.singleCoreN, tiling.baseN);
     uint16_t mIter_ = Ceil(tiling.singleCoreM, tiling.baseM);
     uint16_t mnIter_ = nIter_ * mIter_;
-    uint16_t size = tiling.baseM / 2 * tiling.baseN;
     for (int i = 0; i < mnIter_; i++) {
          mm.template GetTensorC<false>(bufferC, false, false);  // false // kfc vec0 iterate             
          PipeBarrier<PIPE_ALL>();
@@ -342,7 +341,7 @@
 
 -   SplitN模板策略使用示例
 
-    ```
+    ```cpp
     #include "lib/matmul_intf.h"
     
     typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half, LayoutMode::NONE, true> aType; 
@@ -368,7 +367,6 @@
     uint16_t nIter_ = Ceil(tiling.singleCoreN, tiling.baseN);
     uint16_t mIter_ = Ceil(tiling.singleCoreM, tiling.baseM);
     uint16_t mnIter_ = nIter_ * mIter_;
-    uint16_t size = tiling.baseM / 2 * tiling.baseN;
     for (int i = 0; i < mnIter_; i++) {
          mm.template GetTensorC<false>(bufferC, false, false);  // false // kfc vec0 iterate             
          PipeBarrier<PIPE_ALL>();
