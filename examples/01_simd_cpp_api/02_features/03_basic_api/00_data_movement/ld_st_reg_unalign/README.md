@@ -1,10 +1,10 @@
 # ld_st_reg_unalign样例
 
 ## 概述
-本样例基于Reg编程接口实现UB(Unified Buffer)对RegTensor(Reg矢量计算基本单元)的非对齐数据搬运操作，支持多种场景，通过环境变量选择场景。
+本样例基于Reg编程接口实现UB(Unified Buffer)对RegTensor(Reg矢量计算基本单元)的非对齐数据搬运操作，支持多种场景，通过 CMake 编译参数 `SCENARIO_NUM` 选择场景。
     <table>
 	 	<tr>
-	 		<td>scenarioNum</td>
+        <td>SCENARIO_NUM</td>
 	 		<td>场景类型</td>
 	 	</tr>
 	 	<tr>
@@ -114,10 +114,10 @@
 
   在本样例目录下执行如下命令。
   ```bash
-  SCENARIO=1                                                                    # 设置场景编号
+  SCENARIO_NUM=1                                                                # 设置场景编号
   mkdir -p build && cd build;                                                   # 创建并进入build目录
-  cmake -DCMAKE_ASC_ARCHITECTURES=dav-3510 -DSCENARIO_NUM=$SCENARIO ..;make -j; # 编译工程（默认npu模式）
-  python3 ../scripts/gen_data.py -scenarioNum=$SCENARIO                         # 生成测试输入数据
+  cmake -DCMAKE_ASC_ARCHITECTURES=dav-3510 -DSCENARIO_NUM=$SCENARIO_NUM ..;make -j; # 编译工程（默认npu模式）
+  python3 ../scripts/gen_data.py -scenarioNum=$SCENARIO_NUM                     # 生成测试输入数据
   ./demo                                                                        # 执行编译生成的可执行程序，执行样例
   ```
 
@@ -125,9 +125,9 @@
 
   示例如下：
   ```bash
-  SCENARIO=1
-  cmake -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-3510 -DSCENARIO_NUM=$SCENARIO ..;make -j; # cpu调试模式
-  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-3510 -DSCENARIO_NUM=$SCENARIO ..;make -j; # NPU仿真模式
+  SCENARIO_NUM=1
+  cmake -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-3510 -DSCENARIO_NUM=$SCENARIO_NUM ..;make -j; # cpu调试模式
+  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-3510 -DSCENARIO_NUM=$SCENARIO_NUM ..;make -j; # NPU仿真模式
   ```
 
   > **注意：** 切换编译模式或场景前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。

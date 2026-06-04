@@ -2,7 +2,7 @@
 
 ## 概述
 本样例基于Reg编程接口实现Cast运算，主要调用Cast接口实现数据类型转换。  
-本样例支持两种数据类型转换场景，通过环境变量SCENARIO_NUM选择场景。
+本样例支持两种数据类型转换场景，通过 CMake 编译参数 `SCENARIO_NUM` 选择场景。
   <table>
     <tr>
       <td>SCENARIO_NUM</td>
@@ -100,10 +100,10 @@
 
   在本样例目录下执行如下命令。
   ```bash
-  SCENARIO=1                                                                     # 执行场景1
+  SCENARIO_NUM=1                                                                 # 执行场景1
   mkdir -p build && cd build;                                                    # 创建并进入build目录
-  cmake -DSCENARIO_NUM=$SCENARIO -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j;  # 编译工程（默认npu模式）
-  python3 ../scripts/gen_data.py -scenarioNum=$SCENARIO                          # 生成测试输入数据
+  cmake -DSCENARIO_NUM=$SCENARIO_NUM -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j;  # 编译工程（默认npu模式）
+  python3 ../scripts/gen_data.py -scenarioNum=$SCENARIO_NUM                      # 生成测试输入数据
   ./demo                                                                         # 执行编译生成的可执行程序，执行样例
   ```
  
