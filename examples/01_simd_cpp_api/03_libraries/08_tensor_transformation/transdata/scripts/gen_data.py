@@ -82,17 +82,14 @@ def gen_golden_data_simple(mode):
         src = np.random.uniform(-100, 100, size=(src_size,)).astype(dtype)
         # src: d c1 h w n1 n0 c0    (fractal_z_3d)
         golden = src.reshape((d, c1, h * w, n1, n0, c0))
-        golden = np.pad(
-            golden, ((0, 0), (0, 0), (0, hw1 * hw0 - h * w), (0, 0), (0, 0), (0, 0)), constant_values=0,
-            mode="constant")
-        # d, c1, hw_align n1 n0 c0 -> c1, d, hw_align n1 n0 c0
+        # d, c1, hw n1 n0 c0 -> c1, d, hw n1 n0 c0
         golden = golden.transpose(1, 0, 2, 3, 4, 5)
-        # c1, d hw_align n1n0, c0 -> c1, c0, d hw_align n1n0
+        # c1, d hw n1n0, c0 -> c1, c0, d hw n1n0
         golden = golden.transpose(0, 5, 1, 2, 3, 4)
-        # c1c0, d hw_align, n1, n0 -> n1n0, c1c0, d hw_align
+        # c1c0, d hw, n1, n0 -> n1n0, c1c0, d hw
         golden = golden.transpose(4, 5, 0, 1, 2, 3)
-        golden = golden.reshape((n1 * n0, c1 * c0, d, hw1 * hw0))
-        # n1n0, c1c0, d hw_align -> n, c, d, hw_align
+        golden = golden.reshape((n1 * n0, c1 * c0, d, h * w))
+        # n1n0, c1c0, d hw -> n, c, d, hw
         diff_n = n - n1 * n0
         diff_c = c - c1 * c0
         golden = golden[:(diff_n if diff_n != 0 else None), :(diff_c if diff_c != 0 else None), :, :]
