@@ -646,7 +646,14 @@ if(NOT BUILD_OPEN_PROJECT OR (BUILD_OPEN_PROJECT AND KERNEL_MODE))
                 ${CCL_KERNEL_INCLUDE_LIST}
                 ${ORION_HEAD_LIST}
             )
-            target_link_libraries(${target_name} PRIVATE ascend_hal c_sec unified_dlog runtime_headers acl_rt_headers)
+            target_link_libraries(${target_name} PRIVATE
+                rdma_core_headers
+                ascend_hal 
+                c_sec 
+                unified_dlog 
+                runtime_headers 
+                acl_rt_headers
+            )
             if(TARGET json)
                 target_link_libraries(${target_name} PRIVATE json)
                 add_dependencies(${target_name} json)
@@ -693,6 +700,7 @@ if(NOT BUILD_OPEN_PROJECT OR (BUILD_OPEN_PROJECT AND KERNEL_MODE))
         )
 
         target_link_libraries(mc2_server PRIVATE
+            rdma_core_headers
             -Wl,--no-as-needed
             ascend_hal
             c_sec
@@ -864,6 +872,7 @@ if(NOT BUILD_OPEN_PROJECT)
         $<BUILD_INTERFACE:npu_runtime_headers>
         $<BUILD_INTERFACE:atrace_headers>
         $<BUILD_INTERFACE:kernel_tiling_headers>
+        $<BUILD_INTERFACE:rdma_core_headers>
         -Wl,--no-as-needed
         ${HCCL_C_SEC_LINK}
         asc_ccl_kernel_plf
@@ -1025,7 +1034,13 @@ if(DEVICE_MODE AND KERNEL_MODE)
         ${ORION_HEAD_LIST}
     )
 
-    target_link_libraries(asc_aicpu_custom PRIVATE ${AICPU_CUSTOM_LINK_LIBRARIES} ascend_hal c_sec unified_dlog)
+    target_link_libraries(asc_aicpu_custom PRIVATE
+        ${AICPU_CUSTOM_LINK_LIBRARIES}
+        rdma_core_headers
+        ascend_hal 
+        c_sec 
+        unified_dlog
+    )
 
     add_dependencies(asc_aicpu_custom asc_ccl_kernel asc_ccl_kernel_plf_a asc_aicpu_custom_json)
     set_target_properties(asc_aicpu_custom PROPERTIES
