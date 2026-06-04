@@ -1,53 +1,16 @@
-# TransData<a name="ZH-CN_TOPIC_0000002298710212"></a>
+# TransData
 
-## 产品支持情况<a name="section1586581915393"></a>
+## 产品支持情况
 
-<a name="table169596713360"></a>
-<table><thead align="left"><tr id="row129590715369"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p17959971362"><a name="p17959971362"></a><a name="p17959971362"></a><span id="ph895914718367"><a name="ph895914718367"></a><a name="ph895914718367"></a>产品</span></p>
-</th>
-<th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p89594763612"><a name="p89594763612"></a><a name="p89594763612"></a>是否支持</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row18959673369"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1595910763613"><a name="p1595910763613"></a><a name="p1595910763613"></a><span id="ph1595918753613"><a name="ph1595918753613"></a><a name="ph1595918753613"></a>Ascend 950PR/Ascend 950DT</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1695957133611"><a name="p1695957133611"></a><a name="p1695957133611"></a>√</p>
-</td>
-</tr>
-<tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1095914793613"><a name="p1095914793613"></a><a name="p1095914793613"></a>√</p>
-</td>
-</tr>
-<tr id="row89591478362"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p7959157163619"><a name="p7959157163619"></a><a name="p7959157163619"></a><span id="ph1995997193619"><a name="ph1995997193619"></a><a name="ph1995997193619"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p149598793615"><a name="p149598793615"></a><a name="p149598793615"></a>√</p>
-</td>
-</tr>
-<tr id="row99591673368"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p595947173615"><a name="p595947173615"></a><a name="p595947173615"></a><span id="ph995910783620"><a name="ph995910783620"></a><a name="ph995910783620"></a><term id="zh-cn_topic_0000001312391781_term354143892110"><a name="zh-cn_topic_0000001312391781_term354143892110"></a><a name="zh-cn_topic_0000001312391781_term354143892110"></a>Atlas 200I/500 A2 推理产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p59606716367"><a name="p59606716367"></a><a name="p59606716367"></a>x</p>
-</td>
-</tr>
-<tr id="row1196047183615"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1898493283210"><a name="p1898493283210"></a><a name="p1898493283210"></a><span id="ph1498417326325"><a name="ph1498417326325"></a><a name="ph1498417326325"></a><term id="zh-cn_topic_0000001312391781_term1964153212227"><a name="zh-cn_topic_0000001312391781_term1964153212227"></a><a name="zh-cn_topic_0000001312391781_term1964153212227"></a>Atlas 推理系列产品</term>AI Core</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1680812310331"><a name="p1680812310331"></a><a name="p1680812310331"></a>x</p>
-</td>
-</tr>
-<tr id="row041413315316"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p8192738133217"><a name="p8192738133217"></a><a name="p8192738133217"></a><span id="ph1119217385324"><a name="ph1119217385324"></a><a name="ph1119217385324"></a><term id="zh-cn_topic_0000001312391781_term1463893615224"><a name="zh-cn_topic_0000001312391781_term1463893615224"></a><a name="zh-cn_topic_0000001312391781_term1463893615224"></a>Atlas 推理系列产品</term>Vector Core</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p124151433133113"><a name="p124151433133113"></a><a name="p124151433133113"></a>x</p>
-</td>
-</tr>
-<tr id="row69603716362"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p29601972368"><a name="p29601972368"></a><a name="p29601972368"></a><span id="ph8960167193611"><a name="ph8960167193611"></a><a name="ph8960167193611"></a><term id="zh-cn_topic_0000001312391781_term71949488213"><a name="zh-cn_topic_0000001312391781_term71949488213"></a><a name="zh-cn_topic_0000001312391781_term71949488213"></a>Atlas 训练系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p096010715361"><a name="p096010715361"></a><a name="p096010715361"></a>x</p>
-</td>
-</tr>
-</tbody>
-</table>
+- Ascend 950PR/Ascend 950DT：支持
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持
+- Atlas 200I/500 A2 推理产品：不支持
+- Atlas 推理系列产品AI Core：不支持
+- Atlas 推理系列产品Vector Core：不支持
+- Atlas 训练系列产品：不支持
 
-## 功能说明<a name="section153011250151413"></a>
+## 功能说明
 
 将输入数据的排布格式转换为目标排布格式。
 
@@ -61,31 +24,31 @@
 
     输入Tensor \{shape:\[N, C, D, H, W\]\}，输出Tensor \{shape:\[N, D, C/16, H, W, 16\]\}。请注意，C0实际上等于16，为便于展示，下图中C0被设定为2。
 
-    **图 1**  NCDHW格式转为NDC1HWC0格式示意图<a name="fig128260305283"></a>  
+    **图 1**  NCDHW格式转为NDC1HWC0格式示意图
     ![](../../../figures/NCDHW格式转为NDC1HWC0格式示意图.png "NCDHW格式转为NDC1HWC0格式示意图")
 
 -   场景2：NDC1HWC0 -\> NCDHW
 
     输入Tensor \{shape:\[N, D, C/16, H, W, 16\]\}，输出Tensor \{shape:\[N, C, D, H, W\]\}。请注意，C0实际上等于16，为便于展示，下图中C0被设定为2。
 
-    **图 2**  NDC1HWC0格式转为NCDHW格式示意图<a name="fig881811465288"></a>  
+    **图 2**  NDC1HWC0格式转为NCDHW格式示意图
     ![](../../../figures/NDC1HWC0格式转为NCDHW格式示意图.png "NDC1HWC0格式转为NCDHW格式示意图")
 
 -   场景3：NCDHW -\> FRACTAL\_Z\_3D
 
     输入Tensor \{shape:\[N, C, D, H, W\]\}，输出Tensor \{shape:\[D, C/16, H, W, N/16, 16, 16\]\}。请注意，C0和N0实际上等于16，为便于展示，下图中C0和N0被设定为2。
 
-    **图 3**  NCDHW格式转为FRACTAL\_Z\_3D格式示意图<a name="fig1654210353315"></a>  
+    **图 3**  NCDHW格式转为FRACTAL\_Z\_3D格式示意图
     ![](../../../figures/NCDHW格式转为FRACTAL_Z_3D格式示意图.png "NCDHW格式转为FRACTAL_Z_3D格式示意图")
 
 -   场景4：FRACTAL\_Z\_3D -\> NCDHW
 
     输入Tensor \{shape:\[D, C/16, H, W, N/16, 16, 16\]\}，输出Tensor \{shape:\[N, C, D, H, W\]\}。请注意，C0和N0实际上等于16，为便于展示，下图中C0和N0被设定为2。
 
-    **图 4**  FRACTAL\_Z\_3D格式转为NCDHW格式示意图<a name="fig11273144613317"></a>  
+    **图 4**  FRACTAL\_Z\_3D格式转为NCDHW格式示意图
     ![](../../../figures/FRACTAL_Z_3D格式转为NCDHW格式示意图.png "FRACTAL_Z_3D格式转为NCDHW格式示意图")
 
-## 函数原型<a name="section620mcpsimp"></a>
+## 函数原型
 
 -   通过sharedTmpBuffer入参传入临时空间
 
@@ -108,21 +71,19 @@
 
 通过sharedTmpBuffer传入的情况，开发者需要为tensor申请空间；接口框架申请的方式，开发者需要预留临时空间。临时空间大小BufferSize的获取方式如下：通过[GetTransDataMaxMinTmpSize](GetTransDataMaxMinTmpSize.md)中提供的接口获取需要预留空间范围的大小。
 
-## 参数说明<a name="section622mcpsimp"></a>
+## 参数说明
 
 **表 1**  模板参数说明
 
-<a name="table575571914269"></a>
-<table><thead align="left"><tr id="row18755131942614"><th class="cellrowborder" valign="top" width="19.39%" id="mcps1.2.3.1.1"><p id="p675519193268"><a name="p675519193268"></a><a name="p675519193268"></a>参数名</p>
-</th>
-<th class="cellrowborder" valign="top" width="80.61%" id="mcps1.2.3.1.2"><p id="p375511918267"><a name="p375511918267"></a><a name="p375511918267"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row14755141911264"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p56349366135"><a name="p56349366135"></a><a name="p56349366135"></a>config</p>
-</td>
-<td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p206471529436"><a name="p206471529436"></a><a name="p206471529436"></a>指定数据格式转换的场景。当前支持的转换场景有如下四种：NCDHW -&gt; NDC1HWC0、NDC1HWC0 -&gt; NCDHW、NCDHW -&gt; FRACTAL_Z_3D、FRACTAL_Z_3D -&gt; NCDHW。该参数为TransDataConfig类型，具体定义如下。</p>
-<a name="screen1119148131414"></a><a name="screen1119148131414"></a><pre class="screen" codetype="Cpp" id="screen1119148131414">struct TransDataConfig {
+| 参数名 | 描述 |
+| --- | --- |
+| config | 指定数据格式转换的场景。当前支持的转换场景有如下四种：NCDHW -> NDC1HWC0、NDC1HWC0 -> NCDHW、NCDHW -> FRACTAL_Z_3D、FRACTAL_Z_3D -> NCDHW。该参数为TransDataConfig类型，具体定义如下方代码所示。<br><br>配置示例如下。<br>constexpr AscendC::TransDataConfig config1 = {AscendC::DataFormat::NCDHW, AscendC::DataFormat::FRACTAL_Z_3D}; |
+| T | 操作数的数据类型。支持的数据类型为：int16_t、uint16_t、half、bfloat16_t。 |
+| U | 源操作数的Shape信息，[Layout](../../基础数据结构/Layout/Layout.md)类型。<br>AscendC::Layout ncdhwLayout = AscendC::MakeLayout(AscendC::MakeShape(n, c, d, h, w), AscendC::MakeStride()); |
+| S | 目的操作数的Shape信息，[Layout](../../基础数据结构/Layout/Layout.md)类型。<br>AscendC::Layout fractalzLayout = AscendC::MakeLayout(AscendC::MakeShape(d, c1, h, w, n1, n0, c0), AscendC::MakeStride()); |
+
+```
+struct TransDataConfig {
     DataFormat srcFormat;
     DataFormat dstFormat;
 };
@@ -136,93 +97,35 @@ enum class DataFormat : uint8_t {
     NCDHW,
     NDC1HWC0,
     FRACTAL_Z_3D,
-};</pre>
-<p id="p179471913103"><a name="p179471913103"></a><a name="p179471913103"></a>配置示例如下。</p>
-<a name="screen9584125817019"></a><a name="screen9584125817019"></a><pre class="screen" codetype="Cpp" id="screen9584125817019">constexpr AscendC::TransDataConfig config1 = {AscendC::DataFormat::NCDHW, AscendC::DataFormat::FRACTAL_Z_3D};</pre>
-</td>
-</tr>
-<tr id="row0878818204013"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p1587851844012"><a name="p1587851844012"></a><a name="p1587851844012"></a>T</p>
-</td>
-<td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p2419165319183"><a name="p2419165319183"></a><a name="p2419165319183"></a>操作数的数据类型。支持的数据类型为：int16_t、uint16_t、half、bfloat16_t。</p>
-</td>
-</tr>
-<tr id="row9756719122620"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p1682112447268"><a name="p1682112447268"></a><a name="p1682112447268"></a>U</p>
-</td>
-<td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p4869143081918"><a name="p4869143081918"></a><a name="p4869143081918"></a>源操作数的Shape信息，<a href="../../基础数据结构/Layout/Layout.md">Layout</a>类型。</p>
-<a name="screen1124141215213"></a><a name="screen1124141215213"></a><pre class="screen" codetype="Cpp" id="screen1124141215213">AscendC::Layout ncdhwLayout = AscendC::MakeLayout(AscendC::MakeShape(n, c, d, h, w), AscendC::MakeStride());</pre>
-</td>
-</tr>
-<tr id="row73314211619"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p183315212164"><a name="p183315212164"></a><a name="p183315212164"></a>S</p>
-</td>
-<td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p123321522165"><a name="p123321522165"></a><a name="p123321522165"></a>目的操作数的Shape信息，<a href="../../基础数据结构/Layout/Layout.md">Layout</a>类型。</p>
-<a name="screen940315320219"></a><a name="screen940315320219"></a><pre class="screen" codetype="Cpp" id="screen940315320219">AscendC::Layout fractalzLayout = AscendC::MakeLayout(AscendC::MakeShape(d, c1, h, w, n1, n0, c0), AscendC::MakeStride());</pre>
-</td>
-</tr>
-</tbody>
-</table>
+};
+```
 
 **表 2**  接口参数说明
 
-<a name="table148471830151913"></a>
-<table><thead align="left"><tr id="row1984733010194"><th class="cellrowborder" valign="top" width="17.380000000000003%" id="mcps1.2.4.1.1"><p id="p2847730181917"><a name="p2847730181917"></a><a name="p2847730181917"></a>参数名</p>
-</th>
-<th class="cellrowborder" valign="top" width="10.36%" id="mcps1.2.4.1.2"><p id="p58476303197"><a name="p58476303197"></a><a name="p58476303197"></a>输入/输出</p>
-</th>
-<th class="cellrowborder" valign="top" width="72.26%" id="mcps1.2.4.1.3"><p id="p10847203021913"><a name="p10847203021913"></a><a name="p10847203021913"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row98477303196"><td class="cellrowborder" valign="top" width="17.380000000000003%" headers="mcps1.2.4.1.1 "><p id="p15847183018194"><a name="p15847183018194"></a><a name="p15847183018194"></a>dstTensor</p>
-</td>
-<td class="cellrowborder" valign="top" width="10.36%" headers="mcps1.2.4.1.2 "><p id="p148471930161917"><a name="p148471930161917"></a><a name="p148471930161917"></a>输出</p>
-</td>
-<td class="cellrowborder" valign="top" width="72.26%" headers="mcps1.2.4.1.3 "><p id="p17444349398"><a name="p17444349398"></a><a name="p17444349398"></a>目的操作数。</p>
-<p id="p16703131355116"><a name="p16703131355116"></a><a name="p16703131355116"></a><span id="zh-cn_topic_0000001530181537_ph173308471594"><a name="zh-cn_topic_0000001530181537_ph173308471594"></a><a name="zh-cn_topic_0000001530181537_ph173308471594"></a><span id="zh-cn_topic_0000001530181537_ph9902231466"><a name="zh-cn_topic_0000001530181537_ph9902231466"></a><a name="zh-cn_topic_0000001530181537_ph9902231466"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816"><a name="zh-cn_topic_0000001530181537_ph1782115034816"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816"></a>类型为<a href="../../基础数据结构/LocalTensor/LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
-</td>
-</tr>
-<tr id="row11848103091920"><td class="cellrowborder" valign="top" width="17.380000000000003%" headers="mcps1.2.4.1.1 "><p id="p58481330191917"><a name="p58481330191917"></a><a name="p58481330191917"></a>srcTensor</p>
-</td>
-<td class="cellrowborder" valign="top" width="10.36%" headers="mcps1.2.4.1.2 "><p id="p158485305196"><a name="p158485305196"></a><a name="p158485305196"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="72.26%" headers="mcps1.2.4.1.3 "><p id="p3707144233915"><a name="p3707144233915"></a><a name="p3707144233915"></a>源操作数。</p>
-<p id="p261714443395"><a name="p261714443395"></a><a name="p261714443395"></a><span id="zh-cn_topic_0000001530181537_ph173308471594_1"><a name="zh-cn_topic_0000001530181537_ph173308471594_1"></a><a name="zh-cn_topic_0000001530181537_ph173308471594_1"></a><span id="zh-cn_topic_0000001530181537_ph9902231466_1"><a name="zh-cn_topic_0000001530181537_ph9902231466_1"></a><a name="zh-cn_topic_0000001530181537_ph9902231466_1"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816_1"><a name="zh-cn_topic_0000001530181537_ph1782115034816_1"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816_1"></a>类型为<a href="../../基础数据结构/LocalTensor/LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
-<p id="p515144315188"><a name="p515144315188"></a><a name="p515144315188"></a>源操作数的数据类型需要与目的操作数保持一致。</p>
-</td>
-</tr>
-<tr id="row1854110155415"><td class="cellrowborder" valign="top" width="17.380000000000003%" headers="mcps1.2.4.1.1 "><p id="p1313415271911"><a name="p1313415271911"></a><a name="p1313415271911"></a>sharedTmpBuffer</p>
-</td>
-<td class="cellrowborder" valign="top" width="10.36%" headers="mcps1.2.4.1.2 "><p id="p5133352201914"><a name="p5133352201914"></a><a name="p5133352201914"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="72.26%" headers="mcps1.2.4.1.3 "><p id="p0400131017545"><a name="p0400131017545"></a><a name="p0400131017545"></a>临时缓存。</p>
-<p id="p11947511105415"><a name="p11947511105415"></a><a name="p11947511105415"></a><span id="zh-cn_topic_0000001530181537_ph173308471594_2"><a name="zh-cn_topic_0000001530181537_ph173308471594_2"></a><a name="zh-cn_topic_0000001530181537_ph173308471594_2"></a><span id="zh-cn_topic_0000001530181537_ph9902231466_2"><a name="zh-cn_topic_0000001530181537_ph9902231466_2"></a><a name="zh-cn_topic_0000001530181537_ph9902231466_2"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816_2"><a name="zh-cn_topic_0000001530181537_ph1782115034816_2"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816_2"></a>类型为<a href="../../基础数据结构/LocalTensor/LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
-<p id="p104071111204211"><a name="p104071111204211"></a><a name="p104071111204211"></a>用于TransData内部复杂计算时存储中间变量，由开发者提供。</p>
-<p id="p5881016172817"><a name="p5881016172817"></a><a name="p5881016172817"></a>临时空间大小BufferSize的获取方式请参考<a href="GetTransDataMaxMinTmpSize.md">GetTransDataMaxMinTmpSize</a>。</p>
-</td>
-</tr>
-<tr id="row15497954143513"><td class="cellrowborder" valign="top" width="17.380000000000003%" headers="mcps1.2.4.1.1 "><p id="p113255792013"><a name="p113255792013"></a><a name="p113255792013"></a>params</p>
-</td>
-<td class="cellrowborder" valign="top" width="10.36%" headers="mcps1.2.4.1.2 "><p id="p1440319114363"><a name="p1440319114363"></a><a name="p1440319114363"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="72.26%" headers="mcps1.2.4.1.3 "><p id="p98048617240"><a name="p98048617240"></a><a name="p98048617240"></a>源操作数和目的操作数的Shape信息。该参数为TransDataParams数据类型，具体定义如下，其中模板参数T、U必须为<a href="../../基础数据结构/Layout/Layout.md">Layout</a>类型。该参数指定的Shape维度必须与config中Format对应维度保持一致。</p>
-<a name="screen3715198122411"></a><a name="screen3715198122411"></a><pre class="screen" codetype="Cpp" id="screen3715198122411">template &lt;typename T, typename U&gt;
+| 参数名 | 输入/输出 | 描述 |
+| --- | --- | --- |
+| dstTensor | 输出 | 目的操作数。<br><br>类型为[LocalTensor](../../基础数据结构/LocalTensor/LocalTensor.md)，支持的TPosition为VECIN/VECCALC/VECOUT。 |
+| srcTensor | 输入 | 源操作数。<br><br>类型为[LocalTensor](../../基础数据结构/LocalTensor/LocalTensor.md)，支持的TPosition为VECIN/VECCALC/VECOUT。<br><br>源操作数的数据类型需要与目的操作数保持一致。 |
+| sharedTmpBuffer | 输入 | 临时缓存。<br><br>类型为[LocalTensor](../../基础数据结构/LocalTensor/LocalTensor.md)，支持的TPosition为VECIN/VECCALC/VECOUT。<br><br>用于TransData内部复杂计算时存储中间变量，由开发者提供。<br><br>临时空间大小BufferSize的获取方式请参考[GetTransDataMaxMinTmpSize](GetTransDataMaxMinTmpSize.md)。 |
+| params | 输入 | 源操作数和目的操作数的Shape信息。该参数为TransDataParams数据类型，具体定义及配置示例如下，其中模板参数T、U必须为[Layout](../../基础数据结构/Layout/Layout.md)类型。该参数指定的Shape维度必须与config中Format对应维度保持一致。|
+
+```
+template <typename T, typename U>
 struct TransDataParams {
     T srcLayout;
     U dstLayout;
-};</pre>
-<p id="p18216192616319"><a name="p18216192616319"></a><a name="p18216192616319"></a>配置示例如下。</p>
-<a name="screen97701538438"></a><a name="screen97701538438"></a><pre class="screen" codetype="Cpp" id="screen97701538438">AscendC::Layout ncdhwLayout = AscendC::MakeLayout(AscendC::MakeShape(n, c, d, h, w), AscendC::MakeStride());
-AscendC::Layout fractalzLayout = AscendC::MakeLayout(AscendC::MakeShape(d, c1, h, w, n1, n0, c0), AscendC::MakeStride());
-AscendC::TransDataParams&lt;decltype(ncdhwLayout), decltype(fractalzLayout)&gt; params = {ncdhwLayout, fractalzLayout};</pre>
-</td>
-</tr>
-</tbody>
-</table>
+};
 
-## 返回值说明<a name="section38228281712"></a>
+AscendC::Layout ncdhwLayout = AscendC::MakeLayout(AscendC::MakeShape(n, c, d, h, w), AscendC::MakeStride());
+AscendC::Layout fractalzLayout = AscendC::MakeLayout(AscendC::MakeShape(d, c1, h, w, n1, n0, c0), AscendC::MakeStride());
+AscendC::TransDataParams&lt;decltype(ncdhwLayout), decltype(fractalzLayout)&gt; params = {ncdhwLayout, fractalzLayout};
+```
+
+## 返回值说明
 
 无
 
-## 约束说明<a name="section633mcpsimp"></a>
+## 约束说明
 
 -   操作数地址对齐要求请参见[通用地址对齐约束](../../通用说明和约束.md#section796754519912)。
 -   不支持源操作数与目的操作数地址重叠。
@@ -230,7 +133,7 @@ AscendC::TransDataParams&lt;decltype(ncdhwLayout), decltype(fractalzLayout)&gt; 
 -   对于NCDHW格式的输入，如果H轴和W轴合并后的轴不是32字节对齐，则在调用此接口前，用户需要在合并后的轴上填充数据，使其达到32字节对齐。调用此接口时，在指定Shape信息的参数处，应传入原始Shape，即合轴前的Shape。例如，如果输入的原始Shape是\[1, 16, 2, 3, 5\]，则用户需要将输入数据填充至Shape \[1, 16, 2, 16\]，填充的数据为无效数据。
 -   对于NCDHW格式的输出，接口实现将H轴和W轴合并，并在合并后的轴上填充数据以达到32字节对齐；调用此接口时，在指定Shape信息的参数处，应传入原始Shape，即合并轴前的Shape。例如，如果原始NCDHW格式的目标Shape为\[1, 16, 2, 3, 5\]，则实际输出Shape为\[1, 16, 2, 16\]的数据，其中接口填充的数据为无效数据。
 
-## 调用示例<a name="section642mcpsimp"></a>
+## 调用示例
 
 更多样例可参考[TransData样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_libraries/08_tensor_transformation/transdata)。
 
@@ -251,7 +154,7 @@ AscendC::TransData<config>(dstLocal, srcLocal, tmp, params);
 
 ```
 输入、输出的数据类型为half
-输入数据(src): 
+输入数据(src):
 [[[[[  0   1   2   3   4   5   6   7]
     [  8   9  10  11  12  13  14  15]]]
 
@@ -351,7 +254,7 @@ AscendC::TransData<config>(dstLocal, srcLocal, tmp, params);
 输入config：{DataFormat::NCDHW, DataFormat::NDC1HWC0}
 输入params：{(1, 32, 2, 2, 8), (1, 2, 2, 2, 8, 16)}
 
-输出数据(dst): 
+输出数据(dst):
 [[[[[[  0  16  32  48  64  80  96 112 128 144 160 176
       192 208 224 240]
      [  1  17  33  49  65  81  97 113 129 145 161 177
@@ -387,7 +290,6 @@ AscendC::TransData<config>(dstLocal, srcLocal, tmp, params);
       206 222 238 254]
      [ 15  31  47  63  79  95 111 127 143 159 175 191
       207 223 239 255]]]
-
 
    [[[256 272 288 304 320 336 352 368 384 400 416 432
       448 464 480 496]
@@ -426,4 +328,3 @@ AscendC::TransData<config>(dstLocal, srcLocal, tmp, params);
       463 479 495 511]]]]]]
 
 ```
-
