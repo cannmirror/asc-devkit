@@ -68,7 +68,7 @@
 
 ```
 #define TRACE_START(TraceId apid)
-#define TRACE_START(pipe_t pipe, TraceId apid) // 该接口仅支持Ascend 950PR/Ascend 950DT
+#define TRACE_START(pipe_t pipe, TraceId apid)
 ```
 
 ## 参数说明<a name="zh-cn_topic_0000002000280437_zh-cn_topic_0000001997078721_section158061867342"></a>
@@ -94,7 +94,7 @@
 </td>
 <td class="cellrowborder" valign="top" width="11.93%" headers="mcps1.1.4.1.2 "><p id="p1635612571064"><a name="p1635612571064"></a><a name="p1635612571064"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="71.58%" headers="mcps1.1.4.1.3 "><p id="p427654917613"><a name="p427654917613"></a><a name="p427654917613"></a>指定打点所在的pipeline类型。</p>
+<td class="cellrowborder" valign="top" width="71.58%" headers="mcps1.1.4.1.3 "><p id="p427654917613"><a name="p427654917613"></a><a name="p427654917613"></a>指定打点所在的pipeline类型，取值请参考<a href="../../SIMD-API/基础API/同步控制/核内同步/核内同步能力概述.md#zh-cn_topic_0000002542725361_section1272612276459">硬件流水类型</a>。仅Ascend 950PR/Ascend 950DT生效，其他产品上不生效。</p>
 </td>
 </tr>
 </tbody>
@@ -120,4 +120,3 @@ TRACE_START(0x2);
 Add(zLocal, xLocal, yLocal, dataSize);
 TRACE_STOP(0x2);
 ```
-

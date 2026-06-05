@@ -68,7 +68,7 @@
 
 ```
 #define TRACE_STOP(TraceId apid)
-#define TRACE_STOP(pipe_t pipe, TraceId apid)// 该接口仅支持Ascend 950PR/Ascend 950DT
+#define TRACE_STOP(pipe_t pipe, TraceId apid)
 ```
 
 ## 参数说明<a name="zh-cn_topic_0000002000199857_zh-cn_topic_0000001997078721_section158061867342"></a>
@@ -93,7 +93,7 @@
 </td>
 <td class="cellrowborder" valign="top" width="11.93%" headers="mcps1.1.4.1.2 "><p id="p1635612571064"><a name="p1635612571064"></a><a name="p1635612571064"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="71.58%" headers="mcps1.1.4.1.3 "><p id="p16461100992"><a name="p16461100992"></a><a name="p16461100992"></a>取值需与<a href="TRACE_START.md">TRACE_START</a>参数取值保持一致，否则影响打点结果。</p>
+<td class="cellrowborder" valign="top" width="71.58%" headers="mcps1.1.4.1.3 "><p id="p16461100992"><a name="p16461100992"></a><a name="p16461100992"></a>取值需与<a href="TRACE_START.md">TRACE_START</a>的pipe参数取值保持一致，pipe取值请参考<a href="../../SIMD-API/基础API/同步控制/核内同步/核内同步能力概述.md#zh-cn_topic_0000002542725361_section1272612276459">硬件流水类型</a>，否则影响打点结果。仅Ascend 950PR/Ascend 950DT生效，其他产品上不生效。</p>
 </td>
 </tr>
 </tbody>
@@ -119,4 +119,3 @@ TRACE_START(0x1);
 DataCopy(zGm, zLocal, this->totalLength);
 TRACE_STOP(0x1);
 ```
-

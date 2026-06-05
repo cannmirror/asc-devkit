@@ -64,7 +64,13 @@
 ## 函数原型<a name="section2067518173415"></a>
 
 ```
-inline uint64_t clock(void)
+__aicore__ inline uint64_t clock(void)
+```
+
+以下接口为SIMT VF中所使用的clock接口，仅支持Ascend 950PR/Ascend 950DT。
+
+```
+__simt_callee__ inline uint64_t clock(void)
 ```
 
 ## 参数说明<a name="section158061867342"></a>
