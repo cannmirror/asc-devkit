@@ -50,10 +50,22 @@ public:
     template <const CopyL0C2UBTrait& trait, QuantMode_t quantPre, typename T, typename U>
     __aicore__ inline static void DataCopyImpl(const T& dst, const U& src, const FixpipeParams& params)
     {
-        auto dstLayout = dst.Layout();
-        auto srcLayout = src.Layout();
-        constexpr bool isNdFormat = IsSatisfiedPtnFormatV<T, NDExtLayoutPtn> || IsSatisfiedPtnFormatV<T, NDLayoutPtn>;
-        constexpr bool isDnFormat = IsSatisfiedPtnFormatV<T, DNExtLayoutPtn> || IsSatisfiedPtnFormatV<T, DNLayoutPtn>;
+        if constexpr (IsL0COutSrcBatchLayoutV<U>) {
+            EmitDataCopy<trait, quantPre>(dst, src, Te::Get<1>(dst.Layout()), Te::Get<1>(src.Layout()), params);
+        } else {
+            EmitDataCopy<trait, quantPre>(dst, src, dst.Layout(), src.Layout(), params);
+        }
+    }
+
+private:
+    template <const CopyL0C2UBTrait& trait, QuantMode_t quantPre, typename T, typename U, typename DstLayout,
+              typename SrcLayout>
+    __aicore__ inline static void EmitDataCopy(
+        const T& dst, const U& src, const DstLayout& dstLayout, const SrcLayout& srcLayout,
+        const FixpipeParams& params)
+    {
+        constexpr bool isNdFormat = IsL0COutNDFormatV<T>;
+        constexpr bool isDnFormat = IsL0COutDNFormatV<T>;
 
         uint32_t nSize = Std::min(GetTotalColumnShape(srcLayout), GetTotalColumnShape(dstLayout));
         uint32_t mSize = Std::min(GetTotalRowShape(srcLayout), GetTotalRowShape(dstLayout));
@@ -61,17 +73,9 @@ public:
         uint32_t dstStride = 0;
 
         if constexpr (isNdFormat) {
-            if constexpr (IsSatisfiedPtnFormatV<T, NDLayoutPtn>) {
-                dstStride = GetElement<AttrInfo::Stride, AttrInfo::Row>(dstLayout);
-            } else {
-                dstStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(dstLayout);
-            }
+            dstStride = GetL0COutNDStride<T>(dstLayout);
         } else {
-            if constexpr (IsSatisfiedPtnFormatV<T, DNLayoutPtn>) {
-                dstStride = GetElement<AttrInfo::Stride, AttrInfo::Column>(dstLayout);
-            } else {
-                dstStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(dstLayout);
-            }
+            dstStride = GetL0COutDNStride<T>(dstLayout);
         }
 
         bool reluEn = trait.enableRelu;
@@ -93,7 +97,22 @@ public:
     template <const CopyL0C2UBTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V>
     __aicore__ inline static void DataCopyImpl(const T& dst, const U& src, const V& quant, const FixpipeParams& params)
     {
-        uint32_t nSize = GetTotalColumnShape(src.Layout());
+        if constexpr (IsL0COutSrcBatchLayoutV<U>) {
+            EmitDataCopy<trait, quantPre>(
+                dst, src, quant, Te::Get<1>(dst.Layout()), Te::Get<1>(src.Layout()), params);
+        } else {
+            EmitDataCopy<trait, quantPre>(dst, src, quant, dst.Layout(), src.Layout(), params);
+        }
+    }
+
+private:
+    template <const CopyL0C2UBTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V,
+              typename DstLayout, typename SrcLayout>
+    __aicore__ inline static void EmitDataCopy(const T& dst, const U& src, const V& quant,
+                                               const DstLayout& dstLayout, const SrcLayout& srcLayout,
+                                               const FixpipeParams& params)
+    {
+        uint32_t nSize = Std::min(GetTotalColumnShape(srcLayout), GetTotalColumnShape(dstLayout));
         uint16_t nIterNum = 1;
         uint32_t calNSize = nSize;
         uint32_t tailNSize = 0;
@@ -102,17 +121,16 @@ public:
             tailNSize = nSize % MAIN_LOOP_N_SIZE;
             calNSize = MAIN_LOOP_N_SIZE;
         }
-        ExecuteDataCopy<trait, quantPre>(dst, src, quant, nIterNum, calNSize, tailNSize, params);
+        ExecuteDataCopy<trait, quantPre>(
+            dst, src, quant, nIterNum, calNSize, tailNSize, dstLayout, srcLayout, params);
     }
 
-private:
-    template <const CopyL0C2UBTrait& trait, typename T, typename U, bool IsTail>
-    __aicore__ inline static auto GenerateParams(const T& dst, const U& src, const FixpipeParams& params)
+    template <const CopyL0C2UBTrait& trait, typename T, bool IsTail, typename DstLayout, typename SrcLayout>
+    __aicore__ inline static auto GenerateParams(
+        const DstLayout& dstLayout, const SrcLayout& srcLayout, const FixpipeParams& params)
     {
-        auto dstLayout = dst.Layout();
-        auto srcLayout = src.Layout();
-        constexpr bool isNdFormat = IsSatisfiedPtnFormatV<T, NDExtLayoutPtn> || IsSatisfiedPtnFormatV<T, NDLayoutPtn>;
-        constexpr bool isDnFormat = IsSatisfiedPtnFormatV<T, DNExtLayoutPtn> || IsSatisfiedPtnFormatV<T, DNLayoutPtn>;
+        constexpr bool isNdFormat = IsL0COutNDFormatV<T>;
+        constexpr bool isDnFormat = IsL0COutDNFormatV<T>;
 
         uint32_t nSize = Std::min(GetTotalColumnShape(srcLayout), GetTotalColumnShape(dstLayout));
         uint32_t mSize = Std::min(GetTotalRowShape(srcLayout), GetTotalRowShape(dstLayout));
@@ -127,17 +145,9 @@ private:
         const uint32_t srcStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(srcLayout) / FRACTAL_FIXED;
         uint32_t dstStride = 0;
         if constexpr (isNdFormat) {
-            if constexpr (IsSatisfiedPtnFormatV<T, NDLayoutPtn>) {
-                dstStride = GetElement<AttrInfo::Stride, AttrInfo::Row>(dstLayout);
-            } else {
-                dstStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(dstLayout);
-            }
+            dstStride = GetL0COutNDStride<T>(dstLayout);
         } else {
-            if constexpr (IsSatisfiedPtnFormatV<T, DNLayoutPtn>) {
-                dstStride = GetElement<AttrInfo::Stride, AttrInfo::Column>(dstLayout);
-            } else {
-                dstStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(dstLayout);
-            }
+            dstStride = GetL0COutDNStride<T>(dstLayout);
         }
 
         const bool reluEn = trait.enableRelu;
@@ -175,25 +185,44 @@ private:
     __aicore__ inline static constexpr auto MakeDstCoord(uint32_t nOffset)
     {
         using LayoutType = typename T::layoutType;
-        if constexpr (LayoutType::depth == FOUR_DIM_DATA) {
+        if constexpr (LayoutType::depth == FIVE_DIM_DATA) {
+            return MakeCoord(_0{}, MakeCoord(MakeCoord(0, 0), MakeCoord(0, nOffset)));
+        } else if constexpr (LayoutType::depth == FOUR_DIM_DATA) {
             return MakeCoord(MakeCoord(0, 0), MakeCoord(0, nOffset));
+        } else if constexpr (LayoutType::depth == THREE_DIM_DATA) {
+            return MakeCoord(_0{}, MakeCoord(0, nOffset));
         } else {
             static_assert(LayoutType::depth == TWO_DIM_DATA, "Only support two-dim or four-dim dst tensor.");
             return MakeCoord(0, nOffset);
         }
     }
 
-    template <const CopyL0C2UBTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V>
-    __aicore__ inline static void ExecuteDataCopy(const T& dst, const U& src, const V& quant, uint16_t nIterNum,
-                                                  uint32_t calNSize, uint32_t tailNSize, const FixpipeParams& params)
+    template <typename U>
+    __aicore__ inline static constexpr auto MakeSrcCoord(uint32_t nOffset)
     {
-        const auto mainLoopParam = GenerateParams<trait, T, U, false>(dst, src, params);
+        using LayoutType = typename U::layoutType;
+        if constexpr (LayoutType::depth == FIVE_DIM_DATA) {
+            return MakeCoord(_0{}, MakeCoord(MakeCoord(0, 0), MakeCoord(0, nOffset)));
+        } else {
+            static_assert(LayoutType::depth == FOUR_DIM_DATA, "Only support four-dim or five-dim src tensor.");
+            return MakeCoord(MakeCoord(0, 0), MakeCoord(0, nOffset));
+        }
+    }
+
+    template <const CopyL0C2UBTrait& trait, QuantMode_t quantPre, typename T, typename U, typename V,
+              typename DstLayout, typename SrcLayout>
+    __aicore__ inline static void ExecuteDataCopy(const T& dst, const U& src, const V& quant, uint16_t nIterNum,
+                                                  uint32_t calNSize, uint32_t tailNSize,
+                                                  const DstLayout& dstLayout, const SrcLayout& srcLayout,
+                                                  const FixpipeParams& params)
+    {
+        const auto mainLoopParam = GenerateParams<trait, T, false>(dstLayout, srcLayout, params);
 
         for (uint16_t i = 0; i < nIterNum; ++i) {
             CopyL12Fb(quant, calNSize, i);
             InsertSync();
 
-            const auto srcCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, i * CBURST_NUM));
+            const auto srcCoord = MakeSrcCoord<U>(i * CBURST_NUM);
             const auto dstCoord = MakeDstCoord<T>(i * MAIN_LOOP_N_SIZE);
 
             DataCopyWrapper<quantPre>(dst(dstCoord), src(srcCoord), mainLoopParam,
@@ -201,12 +230,12 @@ private:
         }
 
         if (tailNSize) {
-            const auto tailParam = GenerateParams<trait, T, U, true>(dst, src, params);
+            const auto tailParam = GenerateParams<trait, T, true>(dstLayout, srcLayout, params);
 
             CopyL12Fb(quant, tailNSize, nIterNum);
             InsertSync();
 
-            const auto srcCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, nIterNum * CBURST_NUM));
+            const auto srcCoord = MakeSrcCoord<U>(nIterNum * CBURST_NUM);
             const auto dstCoord = MakeDstCoord<T>(nIterNum * MAIN_LOOP_N_SIZE);
 
             DataCopyWrapper<quantPre>(dst(dstCoord), src(srcCoord), tailParam,

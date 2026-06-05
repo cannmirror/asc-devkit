@@ -111,6 +111,64 @@ void RunCopyWithParamPaths(const DstTensor& dst, const SrcTensor& src, const Par
     Copy(CopyAtom<CopyTraits<CopyOp, Trait>>{}.with(param), dst, src);
 }
 
+uint64_t gExpectedLoop3Para = 0;
+uint64_t gExpectedChannelPara = 0;
+
+void SetLoop3ParaStub(uint64_t config)
+{
+    EXPECT_EQ(gExpectedLoop3Para, config);
+}
+
+void SetChannelParaStub(uint64_t config)
+{
+    EXPECT_EQ(gExpectedChannelPara, config);
+}
+
+template <typename DstLayoutPtn>
+void RunL0C2GMBatchNoQuant(uint32_t expectedDstStride, bool nz2ndEn, bool nz2dnEn, bool expectChannelPara)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t kSrcBatch = 3;
+    constexpr uint32_t kDstBatch = 9;
+    constexpr uint32_t kM = 32;
+    constexpr uint32_t kN = 64;
+    constexpr uint32_t kMatrixSize = kM * kN;
+    constexpr uint32_t kSrcBatchStride = kMatrixSize / FRACTAL_FIXED;
+    constexpr uint16_t kSrcMatrixStride = kM;
+    constexpr uint64_t kSrcC0Stride = 1;
+
+    __cc__ float src[kSrcBatch * kMatrixSize] = {0};
+    __gm__ float dst[kDstBatch * kMatrixSize] = {0};
+
+    auto srcTensor = MakeTensorAt<Location::L0C>(
+        src, MakeFrameLayout<NZLayoutPtn, LayoutTraitDefault<float, _16>>(kSrcBatch, kM, kN));
+    auto dstTensor = MakeTensorAt<Location::GM>(
+        dst, MakeFrameLayout<DstLayoutPtn, LayoutTraitDefault<float>>(kDstBatch, kM, kN));
+
+    n_size_global = kN;
+    m_size_global = kM;
+    src_stride_global = kSrcMatrixStride;
+    dst_stride_global = expectedDstStride;
+    NZ2ND_en_global = nz2ndEn;
+    NZ2DN_en_global = nz2dnEn;
+    gm_addr_global = dst;
+    quant_pre_global = static_cast<uint64_t>(QuantMode_t::NoQuant);
+    gExpectedLoop3Para = (static_cast<uint64_t>(kMatrixSize) << 32) |
+                         (static_cast<uint64_t>(kSrcBatchStride) << 16) | kSrcBatch;
+
+    MOCKER(set_loop3_para, void(uint64_t)).times(1).will(invoke(SetLoop3ParaStub));
+    if (expectChannelPara) {
+        gExpectedChannelPara = kSrcC0Stride << 48;
+        MOCKER_CPP(set_channel_para, void(uint64_t)).times(1).will(invoke(SetChannelParaStub));
+    }
+
+    auto atom = MakeCopy(CopyL0C2GM{}, CopyL0C2GMTraitDefault{});
+    atom.Call(dstTensor, srcTensor);
+
+    GlobalMockObject::verify();
+}
+
 } // namespace
 
 TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2GMNZ2ND)
@@ -220,6 +278,26 @@ TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2GMNZ2NZWithChannelSplit)
     RunCopyWithParamPaths<CopyL0C2GM, CopyL0C2GMTraitCustom>(gmTensor, l0cTensor, FixpipeParams{});
 
     EXPECT_EQ(dst[0], 0);
+}
+
+TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2GMBatchNZ2NDExt)
+{
+    RunL0C2GMBatchNoQuant<NDExtLayoutPtn>(64, true, false, false);
+}
+
+TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2GMBatchNZ2NDLayout)
+{
+    RunL0C2GMBatchNoQuant<NDLayoutPtn>(64, true, false, false);
+}
+
+TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2GMBatchNZ2DNExt)
+{
+    RunL0C2GMBatchNoQuant<DNExtLayoutPtn>(32, false, true, true);
+}
+
+TEST_F(Tensor_Api_Cube_Copy_3510, CopyL0C2GMBatchNZ2DNLayout)
+{
+    RunL0C2GMBatchNoQuant<DNLayoutPtn>(32, false, true, true);
 }
 
 
