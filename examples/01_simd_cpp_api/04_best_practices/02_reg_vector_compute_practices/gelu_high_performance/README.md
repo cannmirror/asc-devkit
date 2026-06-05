@@ -4,6 +4,8 @@
 
 本样例以Gelu计算为例，介绍RegBase的向量性能调优方法，样例展示使能VF融合和循环展开之后的性能收益情况。
 
+> **前置阅读**：[Gelu算子入门样例](https://gitcode.com/cann/asc-devkit/blob/master/examples/01_simd_cpp_api/00_introduction/04_vector_reg/gelu/README.md)，本样例基于入门样例进行性能优化，建议先阅读入门样例了解基础概念。
+
 **优化路径**：
 - Case 0: Gelu未使能VF融合能力（基准）
 - Case 1: 启用RegBase API和VF融合能力
@@ -203,7 +205,7 @@ __aicore__ inline void GeluCompute(
 ```
 
 **样例配置**：
-- 多核切分：M方向分32份，N方向2份，共计64份数据，分布到64core上计算
+- 多核切分：M方向（shape 第一维，行方向）分32份，N方向（shape 第二维，列方向）分2份，共计64份数据，分布到64core上计算
 - `tileLen = 8192` 为每次搬运和计算的数据元素个数
 
 **性能数据**：
@@ -226,20 +228,199 @@ __aicore__ inline void GeluCompute(
 
 ---
 
-### Case 1: 启用RegBase API和VF融合能力
+## 中级性能优化
 
-**实现方式**：参考 `KernelGelu::GeluVfBasic()` 函数实现
+### Case 1: 启用RegBase API和VF融合能力 
 
-将基础API转换为RegBase API，使用寄存器级别的向量计算接口，减少数据在UB和Reg之间的交互。
+### 性能瓶颈分析
 
-**关键代码**：
+基于 Case 0 的 Profiling 数据，当前入门级代码的核心性能瓶颈如下：
+
+**Profiling 数据抓取**：
+
+使用 `msprof` 工具对 Case 0 进行性能采集，关键指标如下：
+
+| 指标 | 数值 | 占比 |
+|:---|:---|:---|
+| Task Duration | 351.525μs | - |
+| aiv_vec_time | 147.895μs | 42.2% |
+| aiv_scalar_time | 9.513μs | 2.7% |
+| aiv_mte2_time | 320.283μs | 91.3% |
+| aiv_mte3_time | 303.647μs | 86.6% |
+
+**核心瓶颈解读**：
+
+- **痛点1：向量计算开销占比高**：向量指令耗时 147.895μs，占比 42.2%。每次基础 API 向量计算内部会进行 load → compute → store 操作，数据需在 UB 和寄存器之间反复交互，8 次向量计算产生 8 次 Load/Store 开销。
+- **痛点2：指令级并行度低**：基础 API 每条向量指令间需插入 `PipeBarrier<PIPE_V>()` 同步，无法利用 VF 融合的双发特性，标量开销占比 2.7%。
+
+### 优化手段解析与实施：RegBase API + VF融合
+
+**MemBase vs RegBase 概念对比**：
+
+| 维度 | MemBase（基础API） | RegBase（VF融合API） |
+|:---|:---|:---|
+| 编程接口 | Compute API（如 `Mul(yLocal, xLocal, xLocal, n)`） | Reg API（如 `Reg::Mul(yReg, xReg, xReg, mask)`） |
+| 数据驻留 | 每条指令隐式 Load/Store，中间结果写回 UB | 数据显式加载到寄存器后常驻，中间结果暂存寄存器 |
+| 同步方式 | 每条指令间需 `PipeBarrier<PIPE_V>()` 同步 | VF 函数内无需显式同步，硬件自动管理依赖 |
+| 调用方式 | 直接调用 Compute API | 通过 `asc_vf_call` 调用 VF 函数 |
+| 适用场景 | 简单计算、单步或少步运算 | 多步骤融合计算，减少 UB 读写次数 |
+| 性能特征 | 每步 Load/Store 开销大，IPC 低 | 仅 1 次 Load + 1 次 Store，支持双发，IPC 高 |
+
+> **选择建议**：当计算步骤较多（≥3步）且中间结果无需写回 UB 时，优先选择 RegBase + VF 融合，可显著减少 UB 读写次数并利用双发特性提升 IPC。
+
+**RegBase API 关键概念**：
+
+| 关键字/概念 | 含义 | 详细文档 |
+|:---|:---|:---|
+| `__simd_vf__` | VF 函数声明修饰符，表示该函数运行在 VF（Vector Function）执行域 | [asc_vf_call](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Reg矢量计算/asc_vf_call.md) |
+| `__ubuf__` | UB 地址空间限定符，标记指针指向 UB 内存区域 | [asc_vf_call](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Reg矢量计算/asc_vf_call.md) |
+| `RegTensor<T>` | 寄存器级 Tensor 对象，数据驻留在向量寄存器中（区别于驻留 UB 的 `LocalTensor`） | [RegTensor](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Reg矢量计算/寄存器数据类型/RegTensor.md) |
+| `MaskReg` | 向量掩码寄存器，控制每次计算参与运算的元素数量 | [MaskReg](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Reg矢量计算/寄存器数据类型/MaskReg.md) |
+| `LoadAlign` | 连续对齐搬运，将数据从 UB 加载到寄存器 | [连续对齐搬入](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Reg矢量计算/Reg数据搬运/连续对齐搬入.md) |
+| `StoreAlign` | 连续对齐搬运，将数据从寄存器写回 UB | [连续对齐搬出](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Reg矢量计算/Reg数据搬运/连续对齐搬出.md) |
+| `asc_vf_call` | VF 函数调用入口，在核函数中调用 VF 函数 | [asc_vf_call](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Reg矢量计算/asc_vf_call.md) |
+| `UpdateMask` | 根据剩余元素数更新掩码寄存器 | [MoveMask](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Reg矢量计算/MaskReg计算/MoveMask.md) |
+
+**原理解析**：
+
+RegBase API 提供寄存器级别的向量计算接口，配合 [asc_vf_call](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Reg矢量计算/asc_vf_call.md) 调用 VF 函数，可实现 VF 融合。VF 融合的核心优势：
+- 在 VF 函数内，数据从 UB 加载到寄存器后，所有中间计算均在寄存器中完成，仅需一次 [LoadAlign](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Reg矢量计算/Reg数据搬运/连续对齐搬入.md) 和一次 [StoreAlign](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Reg矢量计算/Reg数据搬运/连续对齐搬出.md)，消除中间结果的 Load/Store 开销
+- 支持 VF 双发特性，常规计算指令并行度可达 512 bytes/cycle，指令发射效率（IPC）大幅提升
+
+```
+基础API模式：                    VF融合模式：
+Load → Mul → Store              LoadAlign → Mul
+Load → Mul → Store                   → Mul
+Load → Muls → Store                   → Muls
+Load → Add → Store                    → Add
+Load → Muls → Store                   → Muls
+Load → Exp → Store                    → Exp
+Load → Adds → Store                   → Adds
+Load → Div → Store                    → Div → StoreAlign
+（8次Load/Store）                 （1次Load/1次Store）
+```
+
+**代码改造点**：
+
+对比入门级 Case 0 代码，关键改造如下：
+- 将基础 API 的 8 次独立向量计算替换为 `asc_vf_call` 调用的 VF 函数
+- VF 函数内使用 `Reg::LoadAlign`/`Reg::StoreAlign` 替代反复的 Load/Store
+- 移除 `PipeBarrier<PIPE_V>()` 同步，VF 函数内计算无需显式同步
+
 ```cpp
+// Case 0: 基础API，每次计算需Load/Store + PipeBarrier同步
+AscendC::Mul(yLocal, xLocal, xLocal, n);
+AscendC::PipeBarrier<PIPE_V>();
+AscendC::Mul(yLocal, yLocal, xLocal, n);
+AscendC::PipeBarrier<PIPE_V>();
+// ... 共8次计算，8次同步
+
+// Case 1: RegBase API + VF融合，寄存器内完成全部计算
 __simd_vf__ inline void GeluVfBasic(__ubuf__ float* xAddr, __ubuf__ float* yAddr, uint32_t n, uint32_t loopNum)
 {
     constexpr uint32_t oneRepeatSize = AscendC::GetVecLen() / sizeof(float);
     AscendC::Reg::MaskReg mask;
     AscendC::Reg::RegTensor<float> xReg, yReg;
 
+    for (uint16_t i = 0; i < loopNum; ++i) {
+        mask = AscendC::Reg::UpdateMask<float>(n);
+        AscendC::Reg::LoadAlign(xReg, xAddr + i * oneRepeatSize);  // 仅一次Load
+        AscendC::Reg::Mul(yReg, xReg, xReg, mask);
+        AscendC::Reg::Mul(yReg, yReg, xReg, mask);
+        AscendC::Reg::Muls(yReg, yReg, COEFF_A, mask);
+        AscendC::Reg::Add(yReg, xReg, yReg, mask);
+        AscendC::Reg::Muls(yReg, yReg, COEFF_B, mask);
+        AscendC::Reg::Exp(yReg, yReg, mask);
+        AscendC::Reg::Adds(yReg, yReg, 1.0f, mask);
+        AscendC::Reg::Div(yReg, xReg, yReg, mask);
+        AscendC::Reg::StoreAlign(yAddr + i * oneRepeatSize, yReg, mask);  // 仅一次Store
+    }
+}
+```
+
+**VF 函数调用上下文**：
+
+上述 VF 函数定义了 GELU 在寄存器中的计算逻辑，在核函数中通过 `asc_vf_call` 调用，调用示例如下：
+
+```cpp
+// 核函数中调用 VF 函数的代码片段
+constexpr uint32_t oneRepeatSize = AscendC::GetVecLen() / sizeof(float);
+uint32_t loopNum = AscendC::CeilDivision(singleCoreLength, oneRepeatSize);
+__ubuf__ float* xAddr = reinterpret_cast<__ubuf__ float*>(xLocal.GetPhyAddr());
+__ubuf__ float* yAddr = reinterpret_cast<__ubuf__ float*>(yLocal.GetPhyAddr());
+// 通过 asc_vf_call 调用 VF 函数，传入 UB 地址、元素数和循环次数
+asc_vf_call<GeluVfBasic>(xAddr, yAddr, singleCoreLength, loopNum);
+```
+
+**样例配置**：
+- 多核切分：M方向分32份，N方向2份，共计64份数据，分布到64core上计算
+- `tileLen = 8192` 为每次搬运和计算的数据元素个数
+
+### 优化效果评估
+
+**性能提升对比**：
+
+| 指标 | Case 0（入门版） | Case 1（中级优化版） | 提升幅度 |
+|:---|:---:|:---:|:---:|
+| Task Duration(μs) | 351.525 | 348.868 | 0.76% |
+| aiv_vec_time(μs) | 147.895 | 66.277 | **55.2%** |
+| aiv_vec_ratio | 0.422 | 0.19 | - |
+| aiv_scalar_time(μs) | 9.513 | 3.03 | **68.2%** |
+| aiv_scalar_ratio | 0.027 | 0.009 | - |
+| aiv_mte2_time(μs) | 320.283 | 320.543 | - |
+| aiv_mte3_time(μs) | 303.647 | 314.547 | - |
+
+> 本样例为 MTE2 bound，数据搬运占比超过 90%，因此端到端收益不明显，但向量计算耗时的优化效果显著。
+
+**本阶段结论**：
+- 通过 VF 融合，向量指令耗时从 147.895μs 降至 66.277μs，减少 **55.2%**，IPC 达到 1.20
+- 当前样例为 MTE2 bound，性能瓶颈仍在数据搬运，VF 计算效率仍有提升空间
+- VF 函数内 GELU 计算依赖路径较长，循环内指令双发效率未充分发挥，IPC 仅为 1.20，距离理论极限 2.0 仍有差距，需进一步优化指令级并行度
+
+---
+
+## 高阶极限打磨
+
+### Case 2: 启用RegBase API、VF融合能力和循环展开优化
+
+### 极限性能目标与残余瓶颈深剖
+
+**距离理论峰值的差距**：
+
+Case 1 的 IPC 为 1.20，距离 VF 融合理论极限 IPC=2.0 仍有较大差距。VF 融合场景下，常规计算指令并行度可达 512 bytes/cycle，但当前循环执行方式限制了指令双发效率。
+
+**微架构级 Profiling 分析**：
+
+基于 Case 1 的性能数据，残余瓶颈主要体现在：
+- **瓶颈1：VF 函数循环内指令依赖链过长**：GELU 计算包含 8 条向量指令（Mul×2、Muls×2、Add×1、Exp×1、Adds×1、Div×1），形成较长的依赖链。循环执行时，编译器在有限执行队列中调度的循环次数太少，导致每 cycle 可双发的指令数不足，IPC 仅为 1.20
+- **瓶颈2：循环控制标量开销**：for 循环的变量更新、条件判断引入标量指令，在向量指令大幅缩短后相对占比上升
+
+### 极致打磨手段：循环展开优化
+
+**原理**：
+
+VF 函数内的 for 循环为简单迭代结构，编译器默认按序生成循环控制指令（比较、跳转），导致循环迭代之间存在标量开销。通过 `#pragma unroll N` 告诉编译器将循环展开 N 份，消除循环控制开销，同时使多组迭代的 VF 指令可交错排布，提高指令级并行度（ILP），使更多指令能够连续双发射。
+
+```
+未展开：                         展开后：
+Iter0: Load→Mul→...→Store       Iter0: Load→Mul→...→Store
+  ↓ (循环控制开销)               Iter1: Load→Mul→...→Store
+Iter1: Load→Mul→...→Store       Iter2: Load→Mul→...→Store
+  ↓ (循环控制开销)               Iter3: Load→Mul→...→Store
+Iter2: Load→Mul→...→Store       ...（无循环控制开销，指令可交错排布）
+```
+
+**优化方案**：
+
+在 VF 函数的 for 循环前添加 `#pragma unroll 6`，展开因子 6 为经验值，需根据实际场景调优：
+
+```cpp
+__simd_vf__ inline static void GeluVfBasic(__ubuf__ float* xAddr, __ubuf__ float* yAddr, uint32_t n, uint32_t loopNum)
+{
+    constexpr uint32_t oneRepeatSize = AscendC::GetVecLen() / sizeof(float);
+    AscendC::Reg::MaskReg mask;
+    AscendC::Reg::RegTensor<float> xReg, yReg;
+    #pragma unroll 6  // 循环展开优化，提高指令级并行度
     for (uint16_t i = 0; i < loopNum; ++i) {
         mask = AscendC::Reg::UpdateMask<float>(n);
         AscendC::Reg::LoadAlign(xReg, xAddr + i * oneRepeatSize);
@@ -256,72 +437,40 @@ __simd_vf__ inline void GeluVfBasic(__ubuf__ float* xAddr, __ubuf__ float* yAddr
 }
 ```
 
-**样例配置**：
-- 多核切分：M方向分32份，N方向2份，共计64份数据，分布到64core上计算
-- `tileLen = 8192` 为每次搬运和计算的数据元素个数
-
-**优化手段**：
-- **RegBase API优势**：
-  - 寄存器级别的数据访问，减少中间数据的Load/Store开销
-  - 支持Hardware Loop优化，循环可被优化为硬件级向量循环
-
-**性能数据**：
-
-| Task Duration(μs) | aiv_time(μs) | aiv_vec_time(μs) | aiv_vec_ratio | aiv_scalar_time(μs) | aiv_scalar_ratio | aiv_mte2_time(μs) | aiv_mte2_ratio | aiv_mte3_time(μs) | aiv_mte3_ratio |
-|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
-| 348.868 | 347.99 | 66.277 | 0.19 | 3.03 | 0.009 | 320.543 | 0.921 | 314.547 | 0.904 |
-
-**优化效果分析**：
-- 端到端耗时：**348.868μs**，相比Case 0耗时减少 **0.76%**，本样例为MTE2 bound，因此端到端收益不明显
-- 向量指令耗时：66.277μs，相比Case 0耗时减少 **55.2%**
-
----
-
-### Case 2: 启用RegBase API、VF融合能力和循环展开优化
-
-**实现方式**：参考 `KernelGelu::GeluVfBasic()` 函数实现，添加 `#pragma unroll 6` 循环展开优化
-在Case 1中由于Gelu计算依赖路径较长，使用循环展开优化，提高指令级并行度。
-
-**关键代码**：
-```cpp
-__simd_vf__ inline static void GeluVfBasic(__ubuf__ float* xAddr, __ubuf__ float* yAddr, uint32_t n, uint32_t loopNum)
-{
-    constexpr uint32_t oneRepeatSize = AscendC::GetVecLen() / sizeof(float);
-    AscendC::Reg::MaskReg mask;
-    AscendC::Reg::RegTensor<float> xReg, yReg;
-    #pragma unroll 6  // 循环展开优化
-    for (uint16_t i = 0; i < loopNum; ++i) {
-        mask = AscendC::Reg::UpdateMask<float>(n);
-        AscendC::Reg::LoadAlign(xReg, xAddr + i * oneRepeatSize);
-        // ……
-    }
-}
-```
+**展开因子选择建议**：
+- 展开过多：增加寄存器压力，可能导致溢出，性能反而劣化，同时代码大小增加
+- 展开过少：优化效果不明显
+- 建议：逐次尝试 2、4、6、8 等值，找到最优展开次数
 
 **样例配置**：
 - 多核切分：M方向分32份，N方向分2份，共计64份数据，分布到64core上计算
 - `tileLen = 8192` 为每次搬运和计算的数据元素个数
 
-**优化手段**：
-- **循环展开优化原理**：
-  - 通过 `#pragma unroll 6` 告诉编译器展开循环，每次展开6个迭代
-  - 提高指令级并行度，使更多VF指令能够连续发射
+### 终极性能达成验证
 
-- **循环展开收益分析**：
-  - 展开因子选择：`unroll 6` 为经验值，需要根据实际场景调优
-  - 展开过多：可能增加寄存器压力，导致性能劣化，同时代码大小也会增加
-  - 展开过少：优化效果不明显
-  - 建议：用户可以采用逐次尝试的方法，找到最优的循环展开次数
+**Profiling 报告**：
 
-**性能数据**：
+| 指标 | Case 0（基准） | Case 1（VF融合） | Case 2（VF融合+循环展开） |
+|:---|:---:|:---:|:---:|
+| Task Duration(μs) | 351.525 | 348.868 | **344.436** |
+| aiv_vec_time(μs) | 147.895 | 66.277 | **63.655** |
+| aiv_vec_ratio | 0.422 | 0.19 | 0.185 |
+| aiv_scalar_time(μs) | 9.513 | 3.03 | 4.757 |
+| aiv_scalar_ratio | 0.027 | 0.009 | 0.014 |
+| aiv_mte2_time(μs) | 320.283 | 320.543 | 315.468 |
+| aiv_mte3_time(μs) | 303.647 | 314.547 | 306.069 |
+| IPC | - | 1.20 | **1.25** |
 
-| Task Duration(μs) | aiv_time(μs) | aiv_vec_time(μs) | aiv_vec_ratio | aiv_scalar_time(μs) | aiv_scalar_ratio | aiv_mte2_time(μs) | aiv_mte2_ratio | aiv_mte3_time(μs) | aiv_mte3_ratio |
-|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
-| 344.436 | 343.82 | 63.655 | 0.185 | 4.757 | 0.014 | 315.468 | 0.918 | 306.069 | 0.89 |
+**关键验证指标**：
+- 向量指令耗时从 Case 0 的 147.895μs 降至 **63.655μs**，减少 **56.9%**
+- IPC 从 Case 1 的 1.20 提升至 **1.25**，提升 **4.2%**，指令发射效率进一步逼近理论极限
+- 循环展开有效提高了指令级并行度，多组迭代的 VF 指令可交错双发射
 
-**优化效果分析**：
-- 端到端耗时：**344.436μs**，相比Case 0耗时减少 **2.0%**，相比Case 1耗时减少 **1.3%**（MTE2 bound，端到端收益不明显）
-- 向量指令耗时：63.655μs，相比Case 0耗时减少 **56.9%**，相比Case 1耗时减少 **4.6%**
+**终极性能总结**：
+- 在 VF 融合 + 循环展开的组合优化下，向量计算效率已达较优水平
+- 当前 IPC 为 1.25，距离理论极限 2.0 仍有空间，主要受限于 GELU 8 条指令的依赖链长度
+- 本样例为 MTE2 bound（数据搬运占比超过 90%），端到端收益受限于搬运瓶颈
+- 进一步提升 IPC 的方向：将过长的 loop 循环切分为多个短循环，在长 latency 指令（如 Exp、Div）结束点进行拆分，使每组依赖链更短，双发效率更高。本样例 loop 循环较短，不适用于该优化项
 
 ---
 
@@ -505,7 +654,7 @@ $$
 
 - 配置环境变量
 
-  请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，配置环境变量。
+  请根据当前环境上CANN开发套件包的[安装方式](https://gitcode.com/cann/asc-devkit/blob/master/docs/quick_start.md#prepare&install)，配置环境变量。
   ```bash
   source ${install_path}/cann/set_env.sh
   ```
