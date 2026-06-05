@@ -82,7 +82,7 @@ enum class TBufState : uint8_t {
 struct TBufType {
     TBufState state;
     HardEvent freeBufEvt;
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     union {
         struct {
             TEventID enQueEvtID;
@@ -125,11 +125,7 @@ public:
         "Please do not use it!")]]
     void InitBuffer(const uint32_t bufferOffset, const uint32_t bufferSize)
     {
-#if (__NPU_ARCH__ == 5102)
-        if constexpr (IsSameType<PrimType, int4b_t>::value || IsSameType<PrimType, int2b_t>::value || IsSameType<PrimType, uint1b_t>::value) {
-#else
         if constexpr (IsSameType<PrimType, int4b_t>::value) {
-#endif
             ASCENDC_DEBUG_ASSERT((bufferSize != 0),
                     KERNEL_LOG_INTERNAL(KERNEL_ERROR, "InitBuffer bufferSize must be larger than 0."));
 
@@ -153,30 +149,7 @@ public:
                 positionHardMap.at(AscendC::TPosition(this->address_.logicPos))) +
                 bufferOffset;
             this->address_.dataLen = bufferSize * INT4_BIT_NUM / ONE_BYTE_BIT_SIZE;
-#if (__NPU_ARCH__ == 5102)
-        } else if constexpr (IsSameType<PrimType, int2b_t>::value) {
-            ASCENDC_DEBUG_ASSERT((bufferOffset + bufferSize * INT2_BIT_NUM / ONE_BYTE_BIT_SIZE <=
-            ConstDefiner::Instance().bufferInitLen.at(positionHardMap.at(
-                AscendC::TPosition(this->address_.logicPos)))),
-                            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "bufferOffset is %d, bufferSize is %d, buffer overflow",
-                                bufferOffset, bufferSize));
 
-            this->address_.absAddr = ConstDefiner::Instance().hardwareCpuBufferMap.at(
-                positionHardMap.at(AscendC::TPosition(this->address_.logicPos))) +
-                bufferOffset;
-            this->address_.dataLen = bufferSize * INT2_BIT_NUM / ONE_BYTE_BIT_SIZE;
-        } else if constexpr (IsSameType<PrimType, uint1b_t>::value) {
-            ASCENDC_DEBUG_ASSERT((bufferOffset + bufferSize * INT1_BIT_NUM / ONE_BYTE_BIT_SIZE <=
-            ConstDefiner::Instance().bufferInitLen.at(positionHardMap.at(
-                AscendC::TPosition(this->address_.logicPos)))),
-                            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "bufferOffset is %d, bufferSize is %d, buffer overflow",
-                                bufferOffset, bufferSize));
-
-            this->address_.absAddr = ConstDefiner::Instance().hardwareCpuBufferMap.at(
-                positionHardMap.at(AscendC::TPosition(this->address_.logicPos))) +
-                bufferOffset;
-            this->address_.dataLen = bufferSize * INT1_BIT_NUM / ONE_BYTE_BIT_SIZE;
-#endif
         } else {
             ASCENDC_DEBUG_ASSERT((bufferOffset % ONE_BLK_SIZE == 0),
             KERNEL_LOG_INTERNAL(KERNEL_ERROR, "bufferOffset is %u, which should be 32Bytes aligned", bufferOffset));
@@ -206,12 +179,7 @@ public:
         this->address_.bufferAddr = get_imm(0) + bufferOffset;
         if constexpr (IsSameType<PrimType, int4b_t>::value) {
             this->address_.dataLen = bufferSize * INT4_BIT_NUM / ONE_BYTE_BIT_SIZE;
-#if (__NPU_ARCH__ == 5102)
-        } else if constexpr (IsSameType<PrimType, int2b_t>::value) {
-            this->address_.dataLen = bufferSize * INT2_BIT_NUM / ONE_BYTE_BIT_SIZE;
-        } else if constexpr (IsSameType<PrimType, uint1b_t>::value) {
-            this->address_.dataLen = bufferSize * INT1_BIT_NUM / ONE_BYTE_BIT_SIZE;
-#endif
+
         } else {
             this->address_.dataLen = bufferSize * sizeof(PrimType);
         }
@@ -233,14 +201,7 @@ public:
         if constexpr (IsSameType<PrimType, int4b_t>::value) {
             address_ = address_ + offset / INT4_TWO;
             oriAddress_ = oriAddress_ + offset / INT4_TWO;
-#if (__NPU_ARCH__ == 5102)
-        } else if constexpr (IsSameType<PrimType, int2b_t>::value) {
-            address_ = address_ + offset / INT2_FOUR;
-            oriAddress_ = oriAddress_ + offset / INT2_FOUR;
-        } else if constexpr (IsSameType<PrimType, uint1b_t>::value) {
-            address_ = address_ + offset / INT1_EIGHT;
-            oriAddress_ = oriAddress_ + offset / INT1_EIGHT;
-#endif
+
         } else {
             address_ = address_ + offset;
             oriAddress_ = oriAddress_ + offset;

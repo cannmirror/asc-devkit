@@ -32,7 +32,7 @@ struct TBufHandleAux<1> {
     using T = TBufHandle;
 };
 constexpr TEventID INVALID_TEVENTID = (static_cast<TEventID>(-1));
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510)
 constexpr uint8_t INVALID_STATIC_ENQUE_HEAD = 0xff;
 constexpr int32_t MIN_BUFFER_BLOCK_SIZE = 32 * 1024;
 constexpr uint8_t TSCM_BUFID_MAX = 20;
@@ -141,7 +141,7 @@ struct TPipeImpl {
     SpmInfo spmInfo_;
     // the tscm buffer addr
     uint32_t tscmBufferPtr_;
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510)
     TBufId bufIdPool_;
     TBufId tscmBufIdPool_;
     TBufId sharedEvtId_;
@@ -160,7 +160,7 @@ struct TBufPoolImpl {
     uint32_t maxAddr_;
     uint32_t maxLen_;
     uint8_t curBufSize_;
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510)
     uint32_t bufIdPool_;
     uint32_t availableIdMask_;
 #endif
@@ -200,7 +200,7 @@ __aicore__ inline void TPipeBase::InitShareBufStart(uint32_t mode, uint32_t* sha
     this->g_tpipeImpl.bufPool_[static_cast<uint8_t>(Hardware::L0B)].maxAddr = 0;
     // v100 Shouldn't Use Bias Table
     this->g_tpipeImpl.bufPool_[static_cast<uint8_t>(Hardware::BIAS)].maxAddr = 0;
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510)
     Internal::g_sharedEvtId = Internal::g_bufId;
 #endif
 
@@ -219,7 +219,7 @@ __aicore__ inline void TPipeBase::InitShareBufEnd()
         g_tpipeImpl.shareBufPool_.maxAddr[static_cast<uint8_t>(TShareBuf::ShareHard::UB)];
 #endif
 
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510)
     Internal::g_bufId = Internal::g_sharedEvtId;
 #endif
 

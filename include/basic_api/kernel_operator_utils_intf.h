@@ -29,7 +29,7 @@
 #endif
 namespace AscendC {
 
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510)
 template <int count = 1>
 __aicore__ inline void Nop()
 {

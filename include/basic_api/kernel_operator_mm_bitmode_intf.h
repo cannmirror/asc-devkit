@@ -19,7 +19,7 @@
 
 #ifndef ASCENDC_MODULE_OPERATOR_MM_BITMODE_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_MM_BITMODE_INTERFACE_H
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 
 #include "kernel_struct_mm.h"
 #include "../../impl/basic_api/kernel_operator_mm_bitmode_struct.h"
@@ -165,7 +165,7 @@ private:
 
 #include "../../impl/basic_api/kernel_operator_mm_bitmode_intf_impl.h"
 
-#endif // __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102
+#endif // __NPU_ARCH__ == 3510
 #endif
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_MM_BITMODE_INTF_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

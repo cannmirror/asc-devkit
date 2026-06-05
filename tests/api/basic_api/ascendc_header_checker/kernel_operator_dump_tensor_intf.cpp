@@ -14,7 +14,6 @@
 #include "kernel_operator_dump_tensor_intf.h"
 #endif
 
-#if __NPU_ARCH__ != 5102
 // __aicore__ inline void DumpTensor(const LocalTensor<T> &tensor, uint32_t desc, uint32_t dumpSize);
 extern "C" __global__ __aicore__ void KernelTestDumpTensor1() {
     AscendC::LocalTensor<float> tensor;
@@ -66,7 +65,6 @@ extern "C" __global__ __aicore__ void KernelTestDumpAccChkPoint2() {
     uint32_t dumpSize = 0;
     AscendC::DumpAccChkPoint(tensor, index, countOff, dumpSize);
 }
-#endif
 
 // // __aicore__ inline void PRINTF(__gm__ const char* fmt, Args&&... args);
 // extern "C" __global__ __aicore__ void KernelTestPRINTF1() {

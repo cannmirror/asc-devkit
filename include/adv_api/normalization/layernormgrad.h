@@ -21,12 +21,12 @@
 #ifndef LIB_NORMALIZATION_LAYERNORMGRAD_H
 #define LIB_NORMALIZATION_LAYERNORMGRAD_H
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510)
 #include "kernel_tensor.h"
 #include "include/adv_api/normalization/layernormgrad_utils.h"
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #include "../../../impl/adv_api/detail/normalization/layernormgrad/layernormgrad_common_impl.h"
-#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 #include "../../../impl/adv_api/detail/normalization/layernormgrad/regbase/3510/layernormgrad_3510_impl.h"
 #endif
 #include "kernel_tiling/kernel_tiling.h"

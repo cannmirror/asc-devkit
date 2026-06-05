@@ -35,7 +35,7 @@ static __attribute__((noinline)) __SIMT_DEVICE_FUNCTIONS_DECL__ void printf(cons
 #endif
 } // namespace __asc_simt_vf
 
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510)
 #include "impl/utils/debug/asc_printf_simt_impl.h"
 #endif
 #endif

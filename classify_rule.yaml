@@ -27,7 +27,7 @@ asc-devkit:
       - tools/**/*.h
       - impl/**/dav_l300/*.h
       - impl/**/dav_l311/*.h
-      - impl/**/dav_m510/*.h
+
       - impl/basic_api/kernel_macros.h
       - impl/basic_api/kernel_prof_trace*.h
       - impl/utils/**/*.h
@@ -89,9 +89,9 @@ asc-devkit:
       - impl/basic_api/dav_c310/kernel_operator_proposal_impl.h
       - impl/basic_api/dav_c310/kfc/kfc_comm_server.h
       - impl/adv_api/detail/reduce/reduce_mean/reduce_mean_3510_impl.h
-      - impl/basic_api/dav_m510/kfc/kfc_comm.h
-      - impl/basic_api/dav_m510/kfc/kfc_comm_client.h
-      - impl/basic_api/dav_m510/kfc/kfc_comm_server.h
+
+
+
       - impl/basic_api/dav_c310/kfc/kfc_comm_client.h
       - impl/basic_api/dav_3510/kernel_operator_reg_others_impl.h
       - impl/basic_api/kernel_operator_mm_bitmode_struct.h
@@ -116,7 +116,7 @@ asc-devkit:
       - impl/basic_api/utils/kernel_check_func.h
       - include/basic_api/kernel_operator_vec_gather_intf.h
       - impl/basic_api/dav_c220/kernel_operator_vec_gather_impl.h
-      - impl/basic_api/dav_m510/kernel_operator_vec_gather_impl.h
+
       - impl/basic_api/dav_m300/kernel_operator_vec_gather_impl.h
       - impl/simt_api/cpp/kernel_simt_print_intf_impl.h
       - impl/adv_api/detail/matmul/stage/copy_cube_in/copy_tile_to_cube/copy_lut_to_ub.h

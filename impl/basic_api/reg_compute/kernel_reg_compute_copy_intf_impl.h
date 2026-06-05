@@ -26,8 +26,6 @@
 #include "../../basic_api/reg_compute/dav_l300/kernel_reg_compute_copy_impl.h"
 #elif __NPU_ARCH__ == 3113
 #include "../../basic_api/reg_compute/dav_l311/kernel_reg_compute_copy_impl.h"
-#elif __NPU_ARCH__ == 5102
-#include "../../basic_api/reg_compute/dav_m510/kernel_reg_compute_copy_impl.h"
 #else
 #include "../../basic_api/reg_compute/dav_3510/kernel_reg_compute_copy_impl.h"
 #endif

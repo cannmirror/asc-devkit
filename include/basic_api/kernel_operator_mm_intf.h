@@ -27,7 +27,7 @@
 #include "utils/kernel_utils_constants.h"
 #include "utils/kernel_utils_macros.h"
 
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510)
 #include "kernel_operator_mm_bitmode_intf.h"
 #endif
 
@@ -90,22 +90,14 @@ template <typename T>
 __aicore__ inline __inout_pipe__(MTE2) void LoadData(
     const LocalTensor<T>& dst, const GlobalTensor<T>& src, const LoadData2DParamsV2& loadDataParams);
 
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510)
 template <typename T, typename U = T>
 __aicore__ inline void LoadData(
     const LocalTensor<U>& dst, const LocalTensor<T>& src, const LocalTensor<fp8_e8m0_t>& srcMx,
     const LoadData2DParamsV2& loadDataParams, const LoadData2DMxParams& loadMxDataParams);
 #endif
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
-template <typename T, typename U>
-__aicore__ inline __inout_pipe__(MTE2) void LoadData(
-    const LocalTensor<T>& dst, const GlobalTensor<U>& src, const LoadData2DParamsV2& loadDataParams,
-    const Nd2NzParamsV2& nd2nzParams)
-{
-    LoadDataImpl(dst, src, loadDataParams, nd2nzParams);
-}
-#endif
+
 
 /* **************************************************************************************************
  * LoadData 3dv1                                             *
@@ -174,15 +166,14 @@ template <
 __aicore__ inline void LoadData(
     const LocalTensor<T>& dst, const LocalTensor<T>& src, const LoadData3DParamsV2<U>& loadDataParams);
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
-template <
-    typename T, const IsResetLoad3dConfig& defaultConfig = IS_RESER_LOAD3D_DEFAULT_CONFIG, typename U = PrimT<T>,
-    typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
-__aicore__ inline void LoadDataWithStride(
-    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LoadData3DParamsV2<U>& loadDataParams);
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
+template <typename T, const IsResetLoad3dConfig &defaultConfig = IS_RESER_LOAD3D_DEFAULT_CONFIG,
+    typename U = PrimT<T>, typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
+__aicore__ inline void LoadDataWithStride(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const LoadData3DParamsV2<U>& loadDataParams);
 #endif
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 template <TPosition DstPos, TPosition SrcPos, typename T>
 __aicore__ inline void LoadData(
     const LocalTensor<T>& dst, const LocalTensor<T>& src, const Load3DBitModeParam& loadDataParams);
@@ -218,7 +209,7 @@ template <typename T>
 __aicore__ inline void LoadData(
     const LocalTensor<T>& dst, const LocalTensor<T>& src, const LoadData3DParamsV2Pro& loadDataParams);
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 template <TPosition DstPos, TPosition SrcPos, typename T>
 __aicore__ inline void LoadData(
     const LocalTensor<T>& dst, const LocalTensor<T>& src, const Load2DBitModeParam& loadDataParams);
@@ -412,8 +403,9 @@ __aicore__ inline void SetLoadDataPaddingValue(const T padValue);
  */
 __aicore__ inline void SetFmatrix(uint16_t l1H, uint16_t l1W, const uint8_t padList[4], const FmatrixMode& fmatrixMode);
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
-__aicore__ inline void SetFmatrix(const SetFMatrixBitModeParams& param, const FmatrixMode& fmatrixMode);
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
+__aicore__ inline void SetFmatrix(const SetFMatrixBitModeParams& param,
+    const FmatrixMode &fmatrixMode);
 #endif
 /* **************************************************************************************************
  * SetLoadDataBoundary                                             *
@@ -427,7 +419,7 @@ __aicore__ inline void SetLoadDataBoundary(uint32_t boundaryValue);
 
 __aicore__ inline void SetLoadDataRepeat(const LoadDataRepeatParam& repeatParams);
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 __aicore__ inline void SetLoadDataRepeatWithStride(const LoadDataRepeatParamWithStride& repeatParams);
 #endif
 

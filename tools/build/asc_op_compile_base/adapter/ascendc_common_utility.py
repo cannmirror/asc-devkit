@@ -494,18 +494,6 @@ class CommonUtility:
 
 
     @staticmethod
-    def is_m510():
-        """return if current soc version is m510
-
-        Returns:
-            res: True means m510
-        """
-        short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
-        if short_soc_version in ["MC62CM12A", "MC32DM11A"]:
-            return True
-        return False
-
-    @staticmethod
     def is_l300():
         """return if current soc version is l300
 
@@ -539,8 +527,7 @@ class CommonUtility:
         chip_version = "c220"
         if CommonUtility.is_c310():
             chip_version = "c310"
-        elif CommonUtility.is_m510():
-            chip_version = "510r2"
+
         return chip_version
 
 

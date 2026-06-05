@@ -39,7 +39,7 @@ __aicore__ inline int64_t CountLeadingZeroImpl(uint64_t valueIn)
     return clz(valueIn);
 }
 
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510)
 __aicore__ inline uint64_t GetUintDivMagic(uint64_t dividend,  uint64_t divisor)
 {
     uint64_t quotient = 0;
@@ -115,7 +115,7 @@ __aicore__ inline int64_t GetSFFValueImpl(uint64_t valueIn)
     }
 }
 
-#if __NPU_ARCH__ == 2201 || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if __NPU_ARCH__ == 2201 || (__NPU_ARCH__ == 3510)
 template <typename T>
 __aicore__ inline void WriteGmByPassDCacheImpl(__gm__ T* addr, T value)
 {
@@ -189,7 +189,7 @@ template <typename T, typename U, RoundMode roundMode>
 __aicore__ inline U CastImpl(T valueIn)
 {
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) ||                         \
-    (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 5102) ||                         \
+    (__NPU_ARCH__ == 2002) ||                         \
     (__NPU_ARCH__ == 3113) ||                         \
     (__NPU_ARCH__ == 3510))
     if constexpr (std::is_same<U, half>::value) {
@@ -211,7 +211,7 @@ template <typename T, typename U, RoundMode roundMode>
 __aicore__ inline U ScalarCastImpl(T valueIn)
 {
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) ||                         \
-    (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 5102) ||                         \
+    (__NPU_ARCH__ == 2002) ||                         \
     (__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3103) ||                         \
     (__NPU_ARCH__ == 3113) ||                         \
     (__NPU_ARCH__ == 3510))

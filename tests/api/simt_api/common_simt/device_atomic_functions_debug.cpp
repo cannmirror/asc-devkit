@@ -81,7 +81,7 @@ T AtomicXorCPU(__gm__ T *address, T val)
         return AtomicSubCPU<TYPE>(dst, val);                                    \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_SIMT_ATOMIC_SUB(atomicSub, uint32_t);
 REGISTER_SIMT_ATOMIC_SUB(atomicSub, int32_t);
 REGISTER_SIMT_ATOMIC_SUB(atomicSub, uint64_t);
@@ -95,7 +95,7 @@ REGISTER_SIMT_ATOMIC_SUB(atomicSub, float);
         return AtomicExchCPU<TYPE>(dst, val);                                   \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_SIMT_ATOMIC_EXCH(atomicExch, int32_t);
 REGISTER_SIMT_ATOMIC_EXCH(atomicExch, int64_t);
 REGISTER_SIMT_ATOMIC_EXCH(atomicExch, float);
@@ -107,7 +107,7 @@ REGISTER_SIMT_ATOMIC_EXCH(atomicExch, float);
         return AtomicIncCPU<TYPE>(dst, val);                                    \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_SIMT_ATOMIC_INC(atomicInc, uint32_t);
 REGISTER_SIMT_ATOMIC_INC(atomicInc, uint64_t);
 #endif
@@ -118,7 +118,7 @@ REGISTER_SIMT_ATOMIC_INC(atomicInc, uint64_t);
         return AtomicDecCPU<TYPE>(dst, val);                                    \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_SIMT_ATOMIC_DEC(atomicDec, uint32_t);
 REGISTER_SIMT_ATOMIC_DEC(atomicDec, uint64_t);
 #endif
@@ -129,7 +129,7 @@ REGISTER_SIMT_ATOMIC_DEC(atomicDec, uint64_t);
         return AtomicCasCPU<TYPE>(dst, val1, val2);                             \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_SIMT_ATOMIC_CAS(atomicCAS, int32_t);
 REGISTER_SIMT_ATOMIC_CAS(atomicCAS, int64_t);
 REGISTER_SIMT_ATOMIC_CAS(atomicCAS, float);
@@ -141,7 +141,7 @@ REGISTER_SIMT_ATOMIC_CAS(atomicCAS, float);
         return AtomicAndCPU<TYPE>(dst, val);                                    \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_SIMT_ATOMIC_AND(atomicAnd, uint32_t);
 REGISTER_SIMT_ATOMIC_AND(atomicAnd, int32_t);
 REGISTER_SIMT_ATOMIC_AND(atomicAnd, uint64_t);
@@ -154,7 +154,7 @@ REGISTER_SIMT_ATOMIC_AND(atomicAnd, int64_t);
         return AtomicOrCPU<TYPE>(dst, val);                                     \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_SIMT_ATOMIC_OR(atomicOr, uint32_t);
 REGISTER_SIMT_ATOMIC_OR(atomicOr, int32_t);
 REGISTER_SIMT_ATOMIC_OR(atomicOr, uint64_t);
@@ -167,7 +167,7 @@ REGISTER_SIMT_ATOMIC_OR(atomicOr, int64_t);
         return AtomicXorCPU<TYPE>(dst, val);                                    \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_SIMT_ATOMIC_XOR(atomicXOr, uint32_t);
 REGISTER_SIMT_ATOMIC_XOR(atomicXOr, int32_t);
 REGISTER_SIMT_ATOMIC_XOR(atomicXOr, uint64_t);
@@ -187,7 +187,7 @@ T AtomicAddVecCPU(__gm__ T *address, T val)
         return AtomicAddVecCPU<TYPE>(dst, val);                                 \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_ATOMIC_ADD_VEC(atomicAdd, half2);
 REGISTER_ATOMIC_ADD_VEC(atomicAdd, bfloat16x2_t);
 #endif
@@ -205,7 +205,7 @@ T AtomicSubVecCPU(__gm__ T *address, T val)
         return AtomicSubVecCPU<TYPE>(dst, val);                                 \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_ATOMIC_SUB_VEC(atomicSub, half2);
 REGISTER_ATOMIC_SUB_VEC(atomicSub, bfloat16x2_t);
 #endif
@@ -223,7 +223,7 @@ T AtomicExchVecCPU(__gm__ T *address, T val)
         return AtomicExchVecCPU<TYPE>(dst, val);                                \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_ATOMIC_EXCH_VEC(atomicExch, half2);
 REGISTER_ATOMIC_EXCH_VEC(atomicExch, bfloat16x2_t);
 #endif
@@ -241,7 +241,7 @@ T AtomicMaxVecCPU(__gm__ T *address, T val)
         return AtomicMaxVecCPU<TYPE>(dst, val);                                 \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_ATOMIC_MAX_VEC(atomicMax, half2);
 REGISTER_ATOMIC_MAX_VEC(atomicMax, bfloat16x2_t);
 #endif
@@ -259,7 +259,7 @@ T AtomicMinVecCPU(__gm__ T *address, T val)
         return AtomicMinVecCPU<TYPE>(dst, val);                                 \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_ATOMIC_MIN_VEC(atomicMin, half2);
 REGISTER_ATOMIC_MIN_VEC(atomicMin, bfloat16x2_t);
 #endif
@@ -277,7 +277,7 @@ T AtomicCasVecCPU(__gm__ T *address, T compare, T val)
         return AtomicCasVecCPU<TYPE>(dst, val1, val2);                          \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_SIMT_ATOMIC_CAS_VEC(atomicCAS, half2);
 REGISTER_SIMT_ATOMIC_CAS_VEC(atomicCAS, bfloat16x2_t);
 #endif

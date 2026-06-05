@@ -23,7 +23,7 @@
 #ifndef LIB_QUANTIZATION_QUANTIZE_H
 #define LIB_QUANTIZATION_QUANTIZE_H
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 #include "kernel_tensor.h"
 #include "include/adv_api/quantization/quantize_utils.h"
 #include "../../../impl/adv_api/detail/common/check.h"

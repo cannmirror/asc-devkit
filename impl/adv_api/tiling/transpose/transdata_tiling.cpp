@@ -197,7 +197,7 @@ bool GetTransDataMaxMinTmpSize(
     const auto npuArch = platform.GetCurNpuArch();
     ;
     ASCENDC_HOST_ASSERT(
-        (npuArch == NpuArch::DAV_2201 || npuArch == NpuArch::DAV_3510 || npuArch == NpuArch::DAV_5102), return false,
+        (npuArch == NpuArch::DAV_2201 || npuArch == NpuArch::DAV_3510), return false,
         "[TransData][GetTransDataMaxMinTmpSize] Unsupported NpuArch for TransData API.");
 
     TmpTransDataParams tmpParam;

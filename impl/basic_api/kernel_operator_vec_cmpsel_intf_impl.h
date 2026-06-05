@@ -39,8 +39,6 @@
 #elif __NPU_ARCH__ == 3510
 #include "dav_3510/kernel_operator_vec_cmp_impl.h"
 #include "dav_3510/kernel_operator_vec_sel_impl.h"
-#elif (__NPU_ARCH__ == 5102)
-#include "dav_m510/kernel_operator_vec_cmpsel_impl.h"
 #elif __NPU_ARCH__ == 3003
 #include "dav_l300/kernel_operator_vec_cmpsel_impl.h"
 #elif __NPU_ARCH__ == 3113
@@ -178,7 +176,7 @@ __aicore__ inline void Compare(const LocalTensor<U>& dst, const LocalTensor<T>& 
         ASCENDC_REPORT_CHECK_ERROR("Compare", KernelFuncType::CALCOUNT_MODE);
     }
 #endif
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     ASCENDC_ASSERT(((count * sizeof(T)) % ONE_REPEAT_BYTE_SIZE == 0),
         {KERNEL_LOG(KERNEL_ERROR, "Failed to check count elements size in Compare, current size "
         "is %u, should be an integer multiple of 256.", count * sizeof(T));});
@@ -614,7 +612,7 @@ __aicore__ inline void Select(const LocalTensor<T>& dst, const LocalTensor<U>& s
         (__ubuf__ DataPrimType*)src0.GetPhyAddr(), src1, selMode, count);
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 /* **************************************************************************************************
  * Compares                                           *
  * ************************************************************************************************* */
@@ -734,7 +732,7 @@ __aicore__ inline void Compares(const T2& dst, const T3& src0,
     static_assert(SupportType<T2, LocalTensor<uint8_t>>());
 
     using ActualU = typename T2::PrimType;
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     ASCENDC_ASSERT(((count * sizeof(T3)) % ONE_REPEAT_BYTE_SIZE == 0),
         {KERNEL_LOG(KERNEL_ERROR, "Failed to check count elements size in Compares, current size "
         "is %u, should be an integer multiple of 256.", count * sizeof(T3));});
@@ -770,7 +768,7 @@ __aicore__ inline void CompareScalar(const T2& dst, const T3& src0,
     static_assert(SupportType<T2, LocalTensor<uint8_t>>());
 
     using ActualU = typename T2::PrimType;
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     ASCENDC_ASSERT(((count * sizeof(T3)) % ONE_REPEAT_BYTE_SIZE == 0),
         {KERNEL_LOG(KERNEL_ERROR, "Failed to check count elements size in CompareScalar, current size "
         "is %u, should be an integer multiple of 256.", count * sizeof(T3));});

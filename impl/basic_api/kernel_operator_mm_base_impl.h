@@ -36,8 +36,6 @@
 #include "dav_m310/kernel_operator_mm_impl.h"
 #elif __NPU_ARCH__ == 3510
 #include "dav_3510/kernel_operator_mm_impl.h"
-#elif (__NPU_ARCH__ == 5102)
-#include "dav_m510/kernel_operator_mm_impl.h"
 #elif (__NPU_ARCH__ == 3003)
 #include "dav_l300/kernel_operator_mm_impl.h"
 #elif (__NPU_ARCH__ == 3113)
@@ -254,7 +252,8 @@ __aicore__ inline void LoadDataImpl(
     }
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 template <
     typename T, const IsResetLoad3dConfig& defaultConfig = IS_RESER_LOAD3D_DEFAULT_CONFIG, typename U = PrimT<T>,
     typename std::enable_if<IsSameType<PrimT<T>, U>::value, bool>::type = true>
@@ -316,7 +315,8 @@ LoadDataWithStride(
 }
 #endif
 
-#if ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) ||            \
+     (__NPU_ARCH__ == 3510))
 // cce compiler process load3d bfloat16_t using B8, so use the half dtype instead
 template <const IsResetLoad3dConfig& defaultConfig>
 [[deprecated("NOTICE: LoadData<IsResetLoad3dConfig> has been deprecated and will be removed in the next version."
@@ -329,22 +329,8 @@ LoadData(
 }
 #endif
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
-template <typename T, typename U>
-__aicore__ inline __inout_pipe__(MTE2) void LoadDataImpl(
-    const LocalTensor<T>& dst, const GlobalTensor<U>& src, const LoadData2DParamsV2& loadDataParams,
-    const Nd2NzParamsV2& nd2nzParams)
-{
-    const Hardware dstScope = GetPhyType((TPosition)dst.GetPosition());
-    if (dstScope == Hardware::L1) {
-        LoadData2DGM2L1Cal((__cbuf__ T*)dst.GetPhyAddr(), (__gm__ U*)src.GetPhyAddr(), loadDataParams, nd2nzParams);
-    } else {
-        ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "dst only support A1/B1"); });
-    }
-}
-#endif
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 template <TPosition Dst, TPosition Src, typename T>
 __aicore__ inline void LoadDataImpl(
     const LocalTensor<T>& dst, const LocalTensor<T>& src, const Load3DBitModeParam& loadDataParams)
@@ -790,8 +776,8 @@ __aicore__ inline void SetFmatrixImpl(
     }
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
-__aicore__ inline void SetFmatrixImpl(const SetFMatrixBitModeParams& param, const FmatrixMode& fmatrixMode)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
+__aicore__ inline void SetFmatrixImpl(const SetFMatrixBitModeParams &param, const FmatrixMode &fmatrixMode)
 {
     if (fmatrixMode == FmatrixMode::FMATRIX_LEFT) {
         Load3DSetFMatrixCal(param.GetConfig0());
@@ -819,7 +805,7 @@ __aicore__ inline void SetLoadDataRepeatImpl(const LoadDataRepeatParam& repeatPa
     SetLoadDataRepeatCal(repeatParams);
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 __aicore__ inline void SetLoadDataRepeatWithStrideImpl(const LoadDataRepeatParamWithStride& repeatParams)
 {
     SetLoadDataRepeatWithStrideCal(repeatParams);

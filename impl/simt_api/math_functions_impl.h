@@ -26,7 +26,7 @@
 #include "simt_api/math_constants.h"
 #include "impl/simt_api/internal_functions_impl.h"
 
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510)
 
 #define ASCRT_FOUR_BYTE_LEN_U       32U
 
@@ -2061,8 +2061,8 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float __internal_cal_y0(float abs_x)
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float __internal_cal_result_case1(float abs_x)
 {
     //  log[gamma(x)]
-    //  = −γ(x-1) + ∑(n=2 to inf)[(-1)^n*h(n)/n](x-1)^n
-    //  = γ(1-x) + ∑(n=2 to inf)[h(n)/n](-x+1)^n
+    //  = −�?x-1) + �?n=2 to inf)[(-1)^n*h(n)/n](x-1)^n
+    //  = γ(1-x) + �?n=2 to inf)[h(n)/n](-x+1)^n
     float one_minus_x = 1.0f - abs_x;
     float result = 0.045882664f;                             //  0.045882664f    :  Coefficient of O(11)
     result = fmaf(result, one_minus_x, 0.10373967f);   //  0.10373967f     :   Coefficient of O(10)
@@ -2082,7 +2082,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float __internal_cal_result_case1(float ab
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float __internal_cal_result_case2(float abs_x)
 {
     //  log[gamma(x)]
-    //  = (1−γ)(x-2) + [(pi^2-6)/12](x-2)^2 + O(3)
+    //  = (1−�?(x-2) + [(pi^2-6)/12](x-2)^2 + O(3)
     float x_minus_two = abs_x - 2.0f;
     float result = 0.0000495984932f;                              //  -0.000049598493f    :   Coefficient of O(10)
     result = fmaf(result, x_minus_two, -0.00022089484f);   //  -0.000220894843f    :   Coefficient of O(9)
@@ -2224,7 +2224,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float cyl_bessel_i0f(float x)
         y = y * rsqrtf(abs_x);
         return y * (expf(abs_x * 0.5f) - 1) * (expf(abs_x * 0.5f) + 1) + y;
     } else {
-        //  I_0(x) = ∑(k=0 to inf)[1/k!Γ(k+1)*(x/2)^2k ]
+        //  I_0(x) = �?k=0 to inf)[1/k!Γ(k+1)*(x/2)^2k ]
         float square_x = abs_x * abs_x;
         float y = 1.551427e-19;                       // 1.551427e-19        : Coefficient of O(10)
         y = fmaf(y, square_x, 1.4492505e-17f);      // 1.4492505e-17        : Coefficient of O(9)

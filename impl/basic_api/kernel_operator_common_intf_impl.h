@@ -75,11 +75,6 @@
 #endif
 #include "dav_3510/core_mng/roc/kernel_operator_cube_group_handle_impl.h"
 #include "dav_3510/core_mng/roc/kernel_operator_group_barrier_impl.h"
-#elif (__NPU_ARCH__ == 5102)
-#include "dav_m510/kernel_operator_set_atomic_impl.h"
-#include "dav_m510/kernel_operator_common_impl.h"
-#include "dav_m510/kernel_operator_sync_impl.h"
-#include "dav_m510/kernel_operator_vec_duplicate_impl.h"
 #elif (__NPU_ARCH__ == 3113)
 #include "dav_l311/kernel_operator_sync_impl.h"
 #include "dav_l311/kernel_operator_set_atomic_impl.h"
@@ -118,12 +113,10 @@ template <typename T>
 __aicore__ inline __in_pipe__(V)
     __out_pipe__(MTE3) void InitOutput(GlobalTensor<T> gmWorkspaceAddr, uint32_t size, T value)
 {
-#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
-#if (__NPU_ARCH__ != 5102)
+#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510)
     if ASCEND_IS_AIC {
         return;
     }
-#endif
     LocalTensor<T> popBuffer;
     bool ret = PopStackBuffer<T, TPosition::LCM>(popBuffer);
     uint32_t maxBurstSize = (MAX_REPEAT_TIMES * ONE_BLK_SIZE) / sizeof(T);
@@ -177,7 +170,7 @@ __aicore__ inline void CheckLocalMemoryIA(const CheckLocalMemoryIAParam& checkPa
     CheckLocalMemoryIAImpl(checkParams);
 }
 
-#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3510)
 template <HardEvent event, MemoryT memT, bool isVirtual> __aicore__ inline void HSetFlag(int32_t eventID)
 {
     if (g_coreType == AIV) {
@@ -195,7 +188,7 @@ template <HardEvent event, MemoryT memT, bool isVirtual> __aicore__ inline void 
 }
 #endif
 
-#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
+#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
 template <int8_t startBit, int8_t endBit>
 __aicore__ static inline void SetCtrlSpr(int64_t value){
     SetCtrlSprImpl<startBit, endBit>(value);

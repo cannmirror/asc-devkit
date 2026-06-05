@@ -58,7 +58,7 @@ struct VecBinaryApiParams {
         src1Pos = static_cast<uint8_t>(GetPhyType(static_cast<TPosition>(src1PosIn)));
     }
 
-    // Íâ²¿²ÎÊýÐÞ¸Ä£¬´«Èëlogic_pos£¬µ«ÊÇÐÂÔöÄÚ²¿ÐÂÔölog_pos,Ô­ÓÐµÄpos±£Áô£¬ÔÚÄÚ²¿×ª»»
+    // ï¿½â²¿ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸Ä£ï¿½ï¿½ï¿½ï¿½ï¿½logic_posï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½ï¿½log_pos,Ô­ï¿½Ðµï¿½posï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½×ªï¿½ï¿½
     VecBinaryApiParams(uint64_t dstAddrIn, uint64_t src0AddrIn, uint64_t src1AddrIn, uint32_t dstDtypeBytesIn,
         uint32_t src0DtypeBytesIn, uint32_t src1DtypeBytesIn, uint64_t dstSizeIn, uint64_t src0SizeIn,
         uint64_t src1SizeIn, uint8_t dstPosIn, uint8_t src0PosIn, uint8_t src1PosIn, uint32_t count)
@@ -146,7 +146,7 @@ struct VecBinaryScalarApiParams {
         calCount = count;
     }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     VecBinaryScalarApiParams(uint64_t dstAddrIn, uint64_t src0AddrIn, uint8_t repeatIn, uint16_t dstBlockStrideIn,
         uint16_t src0BlockStrideIn, uint16_t dstRepeatStrideIn, uint16_t src0RepeatStrideIn, uint32_t dstDtypeBytesIn,
         uint32_t src0DtypeBytesIn, uint64_t dstSizeIn, uint64_t src0SizeIn, uint8_t dstPosIn, uint8_t src0PosIn, uint8_t scalarPosIn)
@@ -207,7 +207,7 @@ struct VecBinaryScalarApiParams {
     uint8_t src0LogicPos = 0;
     uint32_t calCount = 0;
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     uint8_t scalarPos = 1;
     uint8_t enableFlexibleScalar = 0;
 #endif

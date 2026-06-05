@@ -22,7 +22,7 @@
 #define LIB_QUANTIZATION_ASCEND_DEQUANT_H
 #include "include/adv_api/quantization/ascend_dequant_utils.h"
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
-    __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #include "kernel_tensor.h"
 #include "../../../impl/adv_api/detail/quantization/dequant/ascend_dequant_common_impl.h"
 
@@ -43,7 +43,7 @@ namespace AscendC {
  * \param [out] dstTensor: Output localTensor.
  * \param [in] srcTensor: Input src localTensor
  * \param [in] deqScale: Input deqScale localTensor
- * \param [in] sharedTmpBufferï¼?extra temporary shared space used for intermediate values among calculation process,
+ * \param [in] sharedTmpBufferï¿½?extra temporary shared space used for intermediate values among calculation process,
  *             whose required space size should refer to corresponding tiling API, which is defined at
  *             ascend_dequant_tiling.h. Generally, the more space you allocate, the better performance you will achieve,
  *             and the performance reaches peak when buffer size is maximum(calculated by tiling function). Moreover, it
@@ -151,7 +151,7 @@ __aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const L
  * \param [out] dstTensor: Output localTensor.
  * \param [in] srcTensor: Input src localTensor
  * \param [in] deqScale: Input deqScale localTensor
- * \param [in] sharedTmpBufferï¼?extra temporary shared space used for intermediate values among calculation process,
+ * \param [in] sharedTmpBufferï¿½?extra temporary shared space used for intermediate values among calculation process,
  *             whose required space size should refer to corresponding tiling API, which is defined at
  *             ascend_dequant_tiling.h. Generally, the more space you allocate, the better performance you will achieve,
  *             and the performance reaches peak when buffer size is maximum(calculated by tiling function). Moreover, it
@@ -246,7 +246,7 @@ __aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const L
     AscendDequantScalarImpl<dstT, scaleT, mode>(dstTensor, srcTensor, deqScale, params);
 }
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 template <typename dstT, typename srcT, typename scaleT, const AscendDeQuantConfig& config, const AscendDeQuantPolicy& policy>
 __aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
                                      const LocalTensor<scaleT> &scaleTensor, const LocalTensor<scaleT> &offsetTensor,

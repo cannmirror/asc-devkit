@@ -188,7 +188,7 @@ struct DataCopyPadParams {
 struct DataCopyExtParams {
     __aicore__ DataCopyExtParams() {}
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     __aicore__ DataCopyExtParams(const uint16_t count, const uint32_t len, const int64_t srcStrideIn,
         const int64_t dstStrideIn, const uint32_t rsvIn)
 #else
@@ -204,7 +204,7 @@ struct DataCopyExtParams {
 
     uint16_t blockCount = DEFAULT_DATA_COPY_NBURST;
     uint32_t blockLen = 0;
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     int64_t srcStride = static_cast<int64_t>(DEFAULT_DATA_COPY_STRIDE);
     int64_t dstStride = static_cast<int64_t>(DEFAULT_DATA_COPY_STRIDE);
 #else
@@ -215,7 +215,7 @@ struct DataCopyExtParams {
 };
 
 template <typename T> struct DataCopyPadExtParams {
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     using TYPE = typename GetPadValueType<T>::Type;
     __aicore__ DataCopyPadExtParams()
     {
@@ -257,7 +257,7 @@ template <typename T> struct DataCopyPadExtParams {
 struct Nd2NzParams {
     __aicore__ Nd2NzParams() {}
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     __aicore__ Nd2NzParams(const uint16_t ndNumIn, const uint16_t nValueIn, const uint32_t dValueIn,
         const uint64_t srcNdMatrixStrideIn, const uint64_t srcDValueIn, const uint16_t dstNzC0StrideIn,
         const uint16_t dstNzNStrideIn, const uint32_t dstNzMatrixStrideIn)

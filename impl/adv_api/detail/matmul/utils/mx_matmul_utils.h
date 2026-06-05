@@ -232,12 +232,6 @@ __aicore__ constexpr int32_t GetBitSize()
         return ONE_BYTE_BIT_SIZE / 2;
     }
 #endif
-#if __NPU_ARCH__ == 5102
-    if (IsSameTypeV<T, AscendC::int2b_t>) {
-        return ONE_BYTE_BIT_SIZE / 4;
-    }
-#endif
-
     return ONE_BYTE_BIT_SIZE * 2;
 }
 
@@ -265,22 +259,10 @@ __aicore__ inline constexpr auto GetTransBDataType()
         B_TYPE mxBType;
         return mxBType;
     }
-#if __NPU_ARCH__ == 5102
-    else if constexpr (
-        DecompMode(MM_CFG) == DecompressionMode::DECOMP_1bitTo4bit ||
-        DecompMode(MM_CFG) == DecompressionMode::DECOMP_2bitTo4bit) {
-        MatmulType<TPosition::GM, CubeFormat::NZ, int4b_t> bType;
-        return bType;
-    } else if constexpr (DecompMode(MM_CFG) == DecompressionMode::DECOMP_4bitTo8bit) {
-        MatmulType<TPosition::GM, CubeFormat::NZ, int8_t> bType;
-        return bType;
-    }
-#else
     else if constexpr (IsL1BNeedTrans<A_TYPE, B_TYPE, MM_CFG>()) {
         A_TYPE aType;
         return aType;
     }
-#endif
     else {
         B_TYPE bType;
         return bType;

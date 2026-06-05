@@ -22,7 +22,7 @@
 #ifndef LIB_MATH_LOGICAL_ORS_H
 #define LIB_MATH_LOGICAL_ORS_H
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 #include "kernel_tensor.h"
 #include "../../../impl/adv_api/detail/math/logical_ors/logical_ors_common_impl.h"
 

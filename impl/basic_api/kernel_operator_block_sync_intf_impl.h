@@ -49,8 +49,6 @@
 #include "dav_m310/kernel_operator_common_impl.h"
 #elif __NPU_ARCH__ == 3510
 #include "dav_3510/kernel_operator_sync_impl.h"
-#elif (__NPU_ARCH__ == 5102)
-#include "dav_m510/kernel_operator_sync_impl.h"
 #elif (__NPU_ARCH__ == 3113)
 #include "dav_l311/kernel_operator_sync_impl.h"
 #endif
@@ -114,7 +112,7 @@ __aicore__ inline void PipeBarrier()
 }
 
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) ||       \
-    (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) ||       \
+    (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3510) ||       \
     (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) ||                                 \
     (__NPU_ARCH__ == 3113))
 template <MemDsbT arg0>
@@ -137,12 +135,10 @@ __aicore__ inline void IBSet(const GlobalTensor<int32_t> &gmWorkspace,
     const LocalTensor<int32_t> &ubWorkspace, int32_t blockIdx, int32_t eventID)
 {
     int32_t blockNum = GetBlockNum();
-#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
-#if (__NPU_ARCH__ != 5102)
+#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510)
     if ASCEND_IS_AIC {
         return;
     }
-#endif
     if (!isAIVOnly) {
         blockNum = GetBlockNum() * 2;
     }
@@ -178,12 +174,10 @@ __aicore__ inline void IBWait(const GlobalTensor<int32_t> &gmWorkspace,
     const LocalTensor<int32_t> &ubWorkspace, int32_t blockIdx, int32_t eventID)
 {
     int32_t blockNum = GetBlockNum();
-#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
-#if (__NPU_ARCH__ != 5102)
+#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510)
     if ASCEND_IS_AIC {
         return;
     }
-#endif
     if (!isAIVOnly) {
         blockNum = GetBlockNum() * 2;
     }
@@ -233,7 +227,7 @@ __aicore__ inline void SyncAll(const GlobalTensor<int32_t> &gmWorkspace,
 #endif
 }
 
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510)
 template<bool isAIVOnly, const SyncAllConfig& config>
 __aicore__ inline void SyncAll()
 {
@@ -259,7 +253,7 @@ __aicore__ inline void CrossCoreWaitFlag(uint16_t flagId)
     WaitEventImpl<modeId, pipe>(flagId);
 }
 
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510)
 template <pipe_t pipe, uint8_t subBlockSyncMode = 2>
 __aicore__ inline void NotifyEvent(uint16_t flagId)
 {

@@ -125,8 +125,7 @@ __aicore__ inline void CheckDataCopyLocalAlignment(const LocalTensor<T>& dst, co
         CheckTensorAlignment(dst, 64, "dst", apiName);
         return;
     }
-#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3510) || \
-    (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3510)
     if (dstHwPos == Hardware::FIXBUF) {
         CheckTensorAlignment(dst, 128, "dst", apiName);
         return;

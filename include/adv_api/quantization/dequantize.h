@@ -25,7 +25,7 @@
 namespace AscendC {
 #pragma begin_pipe(V)
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 /*!
  * \ingroup Dequantize
  * \brief For DequantizeParams {m, n, groupSize}, m means src tensor has m rows, each row has n num;
@@ -41,7 +41,7 @@ namespace AscendC {
  * \param [in] srcTensor: Input src localTensor.
  * \param [in] scale: Input scale.
  * \param [in] offset: Reserved input offset.
- * \param [in] sharedTmpBufferï¼?extra temporary shared space used for intermediate values among calculation process,
+ * \param [in] sharedTmpBufferï¿½?extra temporary shared space used for intermediate values among calculation process,
  *             whose required space size should refer to corresponding tiling API, which is defined at
  *             ascend_dequant_tiling.h. Generally, the more space you allocate, the better performance you will achieve,
  *             and the performance reaches peak when buffer size is maximum(calculated by tiling function). Moreover, it

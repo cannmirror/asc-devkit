@@ -24,8 +24,7 @@
 
 #if (__NPU_ARCH__ == 3510) || \
     (__NPU_ARCH__ == 3003) || \
-    ((__NPU_ARCH__ == 3113)) || defined(__ASC_NPU_HOST__) || \
-    (__NPU_ARCH__ == 5102)
+    ((__NPU_ARCH__ == 3113)) || defined(__ASC_NPU_HOST__)
 #include "kernel_reg_compute_maskreg_intf_impl.h"
 #include "kernel_reg_compute_addrreg_intf_impl.h"
 #include "kernel_reg_compute_common_intf_impl.h"
