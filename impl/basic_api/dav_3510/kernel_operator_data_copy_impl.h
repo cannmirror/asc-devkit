@@ -815,8 +815,15 @@ __aicore__ inline void DataCopyUB2L0CImpl(__cc__ T* dst, __ubuf__ U* src, const 
 template <typename T, uint8_t subBlockId = 0>
 __aicore__ inline void DataCopyL12UBImpl(__ubuf__ T* dst, __cbuf__ T* src, const DataCopyParams& intriParams)
 {
+#if __MIX_CORE_AIC_RATION__ != 1
+    static_assert(subBlockId < 2, "subBlockId must be less than 2 when AIC:AIV ratio is 1:2");
     CopyCbufToUbuf<T, subBlockId>(dst, src, intriParams.blockCount, intriParams.blockLen, intriParams.srcStride,
                    intriParams.dstStride);
+#else
+    ASCENDC_ASSERT((false), {
+        KERNEL_LOG(KERNEL_ERROR, "unsupported data copy from A1 / B1 to VECIN / VECOUT on current device when AIC:AIV ratio is 1:1");
+    });
+#endif
 }
 
 template <typename T>
