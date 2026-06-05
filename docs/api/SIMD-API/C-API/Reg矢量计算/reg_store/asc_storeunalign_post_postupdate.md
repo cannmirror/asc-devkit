@@ -54,7 +54,7 @@ __simd_callee__ inline void asc_storeunalign_post_postupdate(__ubuf__  int64_t*&
 | src | 输入 | 非对齐寄存器，用于保存非对齐数据，长度32B。 |
 | offset | 输入 | 目的操作数结束地址的偏移，单位为元素个数。 |
 
-非对齐寄存器和地址寄存器的详细说明请参见[reg数据类型定义.md](../reg数据类型定义.md)。
+非对齐寄存器的详细说明请参见[reg数据类型定义.md](../reg数据类型定义.md)。
 
 ## 返回值说明
 

@@ -142,7 +142,7 @@ PIPE_V
     asc_storeunalign_post(dst, ureg);
     ```
 
-- 使用uint32_t作为存储偏移量
+- 使用int32_t作为存储偏移量
 
     ```cpp
     // dst地址为8，非32B对齐，占用的地址为UB[8:520]。
