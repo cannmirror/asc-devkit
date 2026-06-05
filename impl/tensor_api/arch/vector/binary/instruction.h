@@ -30,23 +30,6 @@ namespace AscendC {
 namespace Te {
 namespace Inst {
 
-class UpdateMask {
-public:
-    template <typename T, typename U>
-    __simd_callee__ inline static vector_bool Run(U& value)
-    {
-        if constexpr (sizeof(T) == sizeof(uint32_t)) {
-            return asc_update_mask_b32(value);
-        } else if constexpr (sizeof(T) == sizeof(uint16_t)) {
-            return asc_update_mask_b16(value);
-        } else if constexpr (sizeof(T) == sizeof(uint8_t)) {
-            return asc_update_mask_b8(value);
-        } else {
-            return vector_bool{};
-        }
-    }
-};
-
 class Add {
 public:
     template <typename T>

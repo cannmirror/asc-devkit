@@ -23,6 +23,7 @@
 #define IMPL_TENSOR_API_ARCH_VECTOR_BINARY_SCALAR_BINARY_SCALAR_VF_H
 
 #include "impl/tensor_api/arch/vector/binary_scalar/instruction.h"
+#include "impl/tensor_api/arch/vector/utils/mask_utils.h"
 
 namespace AscendC {
 namespace Te {

@@ -10,17 +10,17 @@
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #warning                                                                                                               \
-    "impl/tensor_api/arch/vector/cast/instruction.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+    "impl/tensor_api/arch/vector/utils/mask_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
 
 /*!
-* \file instruction.h
+* \file mask_utils.h
 * \brief
 */
-#ifndef IMPL_TENSOR_API_ARCH_VECTOR_CAST_INSTRUCTION_H
-#define IMPL_TENSOR_API_ARCH_VECTOR_CAST_INSTRUCTION_H
+#ifndef IMPL_TENSOR_API_ARCH_VECTOR_UTILS_MASK_UTILS_H
+#define IMPL_TENSOR_API_ARCH_VECTOR_UTILS_MASK_UTILS_H
 
 #include "impl/tensor_api/tensor/pointer_pattern.h"
 #include "impl/tensor_api/tensor/tensor_impl.h"
@@ -30,35 +30,45 @@ namespace AscendC {
 namespace Te {
 namespace Inst {
 
-class Cast {
+class CreateMask {
 public:
-    template<typename... Args>
-    __simd_callee__ inline static void Run(const Args&... args) {}
-};
-
-class Ceil {
-public:
-    template <typename T>
-    __simd_callee__ inline static void Run(T& dst, T src, vector_bool mask) {
-        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            asc_ceil(dst, src, mask);
+    template <typename T, typename PatType>
+    __simd_callee__ inline static vector_bool Run()
+    {
+        if constexpr (sizeof(T) == sizeof(uint32_t)) {
+            return asc_create_mask_b32(PatType());
+        } else if constexpr (sizeof(T) == sizeof(uint16_t)) {
+            return asc_create_mask_b16(PatType());
+        } else if constexpr (sizeof(T) == sizeof(uint8_t)) {
+            return asc_create_mask_b8(PatType());
+        } else {
+            return vector_bool{};
         }
     }
 };
 
-class U82U16 {
+class UpdateMask {
 public:
     template <typename T, typename U>
-    __simd_callee__ inline static void Run(T& dst, U src, vector_bool mask) {
-        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            asc_uint82uint16(dst, src, mask);
+    __simd_callee__ inline static vector_bool Run(U& value)
+    {
+        if constexpr (sizeof(T) == sizeof(uint32_t)) {
+            return asc_update_mask_b32(value);
+        } else if constexpr (sizeof(T) == sizeof(uint16_t)) {
+            return asc_update_mask_b16(value);
+        } else if constexpr (sizeof(T) == sizeof(uint8_t)) {
+            return asc_update_mask_b8(value);
+        } else {
+            return vector_bool{};
         }
     }
 };
 
-}}}
+}
+}
+}
 
-#endif // IMPL_TENSOR_API_ARCH_VECTOR_CAST_INSTRUCTION_H
+#endif // IMPL_TENSOR_API_ARCH_VECTOR_UTILS_MASK_UTILS_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

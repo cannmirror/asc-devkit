@@ -23,6 +23,7 @@
 #define IMPL_TENSOR_API_ARCH_VECTOR_CAST_CAST_VF_H
 
 #include "impl/tensor_api/arch/vector/cast/instruction.h"
+#include "impl/tensor_api/arch/vector/utils/mask_utils.h"
 
 namespace AscendC {
 namespace Te {
@@ -63,7 +64,7 @@ public:
 
         uint32_t dstSize = dst.Size();
 
-        constexpr uint16_t VECTOR_REG_WIDTH = 256;
+        constexpr uint16_t VECTOR_REG_WIDTH = asc_get_vf_len();
         using greaterType = Std::conditional_t<(sizeof(dstType) > sizeof(srcType)), dstType, srcType>;
         constexpr uint16_t oneRepSize = VECTOR_REG_WIDTH / sizeof(greaterType);
 

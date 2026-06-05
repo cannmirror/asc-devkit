@@ -10,7 +10,7 @@
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #warning                                                                                                               \
-    "impl/tensor_api/arch/vector/cast/instruction.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+    "impl/tensor_api/arch/vector/unary/instruction.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
@@ -19,8 +19,8 @@
 * \file instruction.h
 * \brief
 */
-#ifndef IMPL_TENSOR_API_ARCH_VECTOR_CAST_INSTRUCTION_H
-#define IMPL_TENSOR_API_ARCH_VECTOR_CAST_INSTRUCTION_H
+#ifndef IMPL_TENSOR_API_ARCH_VECTOR_UNARY_INSTRUCTION_H
+#define IMPL_TENSOR_API_ARCH_VECTOR_UNARY_INSTRUCTION_H
 
 #include "impl/tensor_api/tensor/pointer_pattern.h"
 #include "impl/tensor_api/tensor/tensor_impl.h"
@@ -30,35 +30,58 @@ namespace AscendC {
 namespace Te {
 namespace Inst {
 
-class Cast {
-public:
-    template<typename... Args>
-    __simd_callee__ inline static void Run(const Args&... args) {}
-};
-
-class Ceil {
+class Not {
 public:
     template <typename T>
     __simd_callee__ inline static void Run(T& dst, T src, vector_bool mask) {
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            asc_ceil(dst, src, mask);
+            asc_not(dst, src, mask);
         }
     }
 };
 
-class U82U16 {
+class Ln {
 public:
-    template <typename T, typename U>
-    __simd_callee__ inline static void Run(T& dst, U src, vector_bool mask) {
+    template <typename T>
+    __simd_callee__ inline static void Run(T& dst, T src, vector_bool mask) {
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            asc_uint82uint16(dst, src, mask);
+            asc_ln(dst, src, mask);
         }
     }
 };
 
+class Abs {
+public:
+    template <typename T>
+    __simd_callee__ inline static void Run(T& dst, T src, vector_bool mask) {
+        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
+            asc_abs(dst, src, mask);
+        }
+    }
+};
+
+class Sqrt {
+public:
+    template <typename T>
+    __simd_callee__ inline static void Run(T& dst, T src, vector_bool mask) {
+        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
+            asc_sqrt(dst, src, mask);
+        }
+    }
+};
+
+class Exp {
+public:
+    template <typename T>
+    __simd_callee__ inline static void Run(T& dst, T src, vector_bool mask) {
+        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
+            asc_exp(dst, src, mask);
+        }
+    }
+};
 }}}
 
-#endif // IMPL_TENSOR_API_ARCH_VECTOR_CAST_INSTRUCTION_H
+#endif // IMPL_TENSOR_API_ARCH_VECTOR_UNARY_INSTRUCTION_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
