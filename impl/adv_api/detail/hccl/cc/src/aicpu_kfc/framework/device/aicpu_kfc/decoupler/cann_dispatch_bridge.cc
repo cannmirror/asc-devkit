@@ -12,7 +12,6 @@
 
 #include <dlfcn.h>
 
-#include <cstdlib>
 #include <memory>
 #include <string>
 #include <vector>
@@ -44,10 +43,7 @@ const CannSyms &LoadCannSyms()
 {
     static CannSyms syms = [] () -> CannSyms {
         CannSyms s;
-        const char *libName = std::getenv("MC2_ALLTOALL_CANN_LIB");
-        if (libName == nullptr) {
-            libName = kDefaultCannLib;
-        }
+        const char *libName = kDefaultCannLib;
         // 优先复用已加载实例(RTLD_LOCAL 降低符号冲突面)。
         s.handle = dlopen(libName, RTLD_NOW | RTLD_LOCAL | RTLD_NOLOAD);
         if (s.handle == nullptr) {

@@ -11,7 +11,6 @@
 
 #include <dlfcn.h>
 
-#include <cstdlib>
 #include <memory>
 #include <string>
 
@@ -85,10 +84,7 @@ const CannSyms& LoadCannSyms()
 {
     static CannSyms syms = []() -> CannSyms {
         CannSyms s;
-        const char* libName = std::getenv("MC2_HOST_CANN_LIB");
-        if (libName == nullptr) {
-            libName = kDefaultCannLib;
-        }
+        const char* libName = kDefaultCannLib;
         s.handle = dlopen(libName, RTLD_NOW | RTLD_LOCAL | RTLD_NOLOAD);
         if (s.handle == nullptr) {
             s.handle = dlopen(libName, RTLD_NOW | RTLD_LOCAL);
