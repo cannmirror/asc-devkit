@@ -6,9 +6,9 @@
 
 -   **\_\_NPU\_ARCH\_\_**
 
-    \_\_NPU\_ARCH\_\_是Device侧AI Core代码中的预处理宏，用于标识AI处理器的架构版本。该宏由四位数字组成，其中前三位数字用于标识AI Core的IP核\(Intellectual Property Core\)类型，第四位数字标识该AI Core同一个IP核的配置版本。通过该宏，开发者可以针对不同AI处理器，差异化进行代码适配和优化。AI处理器型号和\_\_NPU\_ARCH\_\_对应关系如下表所示：
+    \_\_NPU\_ARCH\_\_是Device侧AI Core代码中的预处理宏，用于标识AI处理器的架构版本。该宏由四位数字组成，其中前三位数字用于标识AI Core的IP核\(Intellectual Property Core\)类型，第四位数字标识该AI Core同一个IP核的配置版本。通过该宏，开发者可以针对不同AI处理器，差异化进行代码适配和优化。产品型号和NPU架构版本的对应关系如下表所示：
 
-    **表 1** AI处理器型号和\_\_NPU\_ARCH\_\_的对应关系
+    **表 1** 产品型号和NPU架构版本的对应关系
 
     <a name="table65291052154114"></a>
     <table><thead align="left"><tr id="row1852915527411"><th class="cellrowborder" valign="top" width="49.59%" id="mcps1.2.3.1.1"><p id="p12529952134112"><a name="p12529952134112"></a><a name="p12529952134112"></a><span id="ph5758231184918"><a name="ph5758231184918"></a><a name="ph5758231184918"></a>AI处理器</span>型号</p>
