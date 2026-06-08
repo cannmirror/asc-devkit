@@ -1,6 +1,6 @@
-# Swish接口<a name="ZH-CN_TOPIC_0000001875986245"></a>
+# Swish接口
 
--   **[Swish](Swish.md)**  
+-   **[Swish](Swish.md)**
 
--   **[GetSwishTmpSize](GetSwishTmpSize.md)**  
+-   **[GetSwishTmpSize](GetSwishTmpSize.md)**
 

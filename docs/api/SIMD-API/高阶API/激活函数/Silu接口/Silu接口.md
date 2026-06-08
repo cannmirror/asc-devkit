@@ -1,6 +1,6 @@
-# Silu接口<a name="ZH-CN_TOPIC_0000001829306766"></a>
+# Silu接口
 
--   **[Silu](Silu.md)**  
+-   **[Silu](Silu.md)**
 
--   **[GetSiluTmpSize](GetSiluTmpSize.md)**  
+-   **[GetSiluTmpSize](GetSiluTmpSize.md)**
 

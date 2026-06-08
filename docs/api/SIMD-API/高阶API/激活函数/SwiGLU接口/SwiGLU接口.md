@@ -1,8 +1,8 @@
-# SwiGLU接口<a name="ZH-CN_TOPIC_0000001867693549"></a>
+# SwiGLU接口
 
--   **[SwiGLU](SwiGLU.md)**  
+-   **[SwiGLU](SwiGLU.md)**
 
--   **[GetSwiGLUMaxMinTmpSize](GetSwiGLUMaxMinTmpSize.md)**  
+-   **[GetSwiGLUMaxMinTmpSize](GetSwiGLUMaxMinTmpSize.md)**
 
--   **[GetSwiGLUTmpBufferFactorSize](GetSwiGLUTmpBufferFactorSize.md)**  
+-   **[GetSwiGLUTmpBufferFactorSize](GetSwiGLUTmpBufferFactorSize.md)**
 

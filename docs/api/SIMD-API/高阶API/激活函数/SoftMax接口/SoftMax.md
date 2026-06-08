@@ -1,63 +1,18 @@
-# SoftMax<a name="ZH-CN_TOPIC_0000001621597661"></a>
+# SoftMax
 
-## 产品支持情况<a name="section1550532418810"></a>
+## 产品支持情况
 
-<a name="table38301303189"></a>
-<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>产品</span></p>
-</th>
-<th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p783113012187"><a name="p783113012187"></a><a name="p783113012187"></a>是否支持</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p107991559204017"><a name="p107991559204017"></a><a name="p107991559204017"></a>√</p>
-</td>
-</tr>
-<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
-</td>
-</tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
-</td>
-</tr>
-<tr id="row103361763242"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1983180181813"><a name="p1983180181813"></a><a name="p1983180181813"></a><span id="ph783112021813"><a name="ph783112021813"></a><a name="ph783112021813"></a><term id="zh-cn_topic_0000001312391781_term354143892110"><a name="zh-cn_topic_0000001312391781_term354143892110"></a><a name="zh-cn_topic_0000001312391781_term354143892110"></a>Atlas 200I/500 A2 推理产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1695483941817"><a name="p1695483941817"></a><a name="p1695483941817"></a>√</p>
-</td>
-</tr>
-<tr id="row18403312418"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1898493283210"><a name="p1898493283210"></a><a name="p1898493283210"></a><span id="ph1498417326325"><a name="ph1498417326325"></a><a name="ph1498417326325"></a><term id="zh-cn_topic_0000001312391781_term1964153212227"><a name="zh-cn_topic_0000001312391781_term1964153212227"></a><a name="zh-cn_topic_0000001312391781_term1964153212227"></a>Atlas 推理系列产品</term>AI Core</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1680812310331"><a name="p1680812310331"></a><a name="p1680812310331"></a>√</p>
-</td>
-</tr>
-<tr id="row041413315316"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p8192738133217"><a name="p8192738133217"></a><a name="p8192738133217"></a><span id="ph1119217385324"><a name="ph1119217385324"></a><a name="ph1119217385324"></a><term id="zh-cn_topic_0000001312391781_term1463893615224"><a name="zh-cn_topic_0000001312391781_term1463893615224"></a><a name="zh-cn_topic_0000001312391781_term1463893615224"></a>Atlas 推理系列产品</term>Vector Core</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p124151433133113"><a name="p124151433133113"></a><a name="p124151433133113"></a>x</p>
-</td>
-</tr>
-<tr id="row17253142120252"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p38313021813"><a name="p38313021813"></a><a name="p38313021813"></a><span id="ph58317041819"><a name="ph58317041819"></a><a name="ph58317041819"></a><term id="zh-cn_topic_0000001312391781_term71949488213"><a name="zh-cn_topic_0000001312391781_term71949488213"></a><a name="zh-cn_topic_0000001312391781_term71949488213"></a>Atlas 训练系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p395243920186"><a name="p395243920186"></a><a name="p395243920186"></a>x</p>
-</td>
-</tr>
-<tr id="row045013133410"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p545003103418"><a name="p545003103418"></a><a name="p545003103418"></a><span id="ph65453251349"><a name="ph65453251349"></a><a name="ph65453251349"></a>Kirin X90</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p745011311343"><a name="p745011311343"></a><a name="p745011311343"></a>√</p>
-</td>
-</tr>
-<tr id="row15480181392814"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p18480313182816"><a name="p18480313182816"></a><a name="p18480313182816"></a><span id="ph1193483642813"><a name="ph1193483642813"></a><a name="ph1193483642813"></a>Kirin 9030</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p124801213152817"><a name="p124801213152817"></a><a name="p124801213152817"></a>√</p>
-</td>
-</tr>
-</tbody>
-</table>
+- Ascend 950PR/Ascend 950DT：支持
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持
+- Atlas 200I/500 A2 推理产品：支持
+- Atlas 推理系列产品AI Core：支持
+- Atlas 推理系列产品Vector Core：不支持
+- Atlas 训练系列产品：不支持
+- Kirin X90：支持
+- Kirin 9030：支持
 
-## 功能说明<a name="section618mcpsimp"></a>
+## 功能说明
 
 将输入tensor\[m<sub>0</sub>, m<sub>1</sub>, ...m<sub>t</sub>, n\]（t大于等于0）的非尾轴长度相乘的结果看作m，则输入tensor的shape看作\[m, n\]。对输入tensor\[m, n\]按行做如下SoftMax计算：
 
@@ -79,17 +34,17 @@ def softmax(src):
 
 当输入的数据排布格式不同时，内部的reduce过程会有所不同：当输入为ND格式时，内部的reduce过程按last轴进行；当输入为NZ格式时，内部的reduce过程按照last轴和first轴进行，reduce过程如下图所示：
 
-**图 1**  ND格式的reduce过程<a name="fig5210550552"></a>  
+**图 1**  ND格式的reduce过程  
 ![](../../../../figures/ND格式的reduce过程.png "ND格式的reduce过程")
 
 **图 2**  NZ格式的reduce过程<a name="fig0172155842215"></a>  
 ![](../../../../figures/NZ格式的reduce过程.png "NZ格式的reduce过程")
 
-## 实现原理<a name="section118311010576"></a>
+## 实现原理
 
 以float类型，ND格式，shape为\[m, k\]的输入Tensor为例，描述SoftMax高阶API内部算法框图，如下图所示。
 
-**图 3**  SoftMax算法框图<a name="fig03757321297"></a>  
+**图 3**  SoftMax算法框图  
 ![](../../../../figures/SoftMax算法框图.png "SoftMax算法框图")
 
 计算过程分为如下几步，均在Vector上进行：
@@ -102,7 +57,7 @@ def softmax(src):
 6.  broadcast步骤：对temp\(\[m, 1\]\)做一个按datablock为单位的填充，比如float类型下，把\[m, 1\]扩展成\[m, 8\]，同时输出sum；
 7.  div步骤：对exp后的结果的所有数据按行除以sum，得到最终结果。
 
-## 函数原型<a name="section620mcpsimp"></a>
+## 函数原型
 
 -   接口框架申请临时空间
     -   LocalTensor的数据类型相同
@@ -156,58 +111,17 @@ def softmax(src):
 
 接口框架申请的方式，开发者需要预留临时空间；通过sharedTmpBuffer传入的情况，开发者需要为tensor申请空间。临时空间大小BufferSize的获取方式如下：通过[SoftMax/SimpleSoftMax Tiling](SoftMax-SimpleSoftMax-Tiling.md)中提供的GetSoftMaxMaxTmpSize/GetSoftMaxMinTmpSize接口获取所需最大和最小临时空间大小，最小空间可以保证功能正确，最大空间用于提升性能。
 
-## 参数说明<a name="section622mcpsimp"></a>
+## 参数说明
 
 **表 1**  模板参数说明
 
-<a name="table575571914269"></a>
-<table><thead align="left"><tr id="row18755131942614"><th class="cellrowborder" valign="top" width="19.38%" id="mcps1.2.3.1.1"><p id="p675519193268"><a name="p675519193268"></a><a name="p675519193268"></a>参数名</p>
-</th>
-<th class="cellrowborder" valign="top" width="80.62%" id="mcps1.2.3.1.2"><p id="p375511918267"><a name="p375511918267"></a><a name="p375511918267"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row14755141911264"><td class="cellrowborder" valign="top" width="19.38%" headers="mcps1.2.3.1.1 "><p id="p47551198266"><a name="p47551198266"></a><a name="p47551198266"></a>T</p>
-</td>
-<td class="cellrowborder" valign="top" width="80.62%" headers="mcps1.2.3.1.2 "><p id="p125969172719"><a name="p125969172719"></a><a name="p125969172719"></a>操作数的数据类型。支持的数据类型为：half、float。</p>
-</td>
-</tr>
-<tr id="row9756719122620"><td class="cellrowborder" valign="top" width="19.38%" headers="mcps1.2.3.1.1 "><p id="p1682112447268"><a name="p1682112447268"></a><a name="p1682112447268"></a>isReuseSource</p>
-</td>
-<td class="cellrowborder" valign="top" width="80.62%" headers="mcps1.2.3.1.2 "><p id="p98212044172612"><a name="p98212044172612"></a><a name="p98212044172612"></a>该参数预留，传入默认值false即可。</p>
-</td>
-</tr>
-<tr id="row9184124919159"><td class="cellrowborder" valign="top" width="19.38%" headers="mcps1.2.3.1.1 "><p id="p11692440141619"><a name="p11692440141619"></a><a name="p11692440141619"></a>isBasicBlock</p>
-</td>
-<td class="cellrowborder" valign="top" width="80.62%" headers="mcps1.2.3.1.2 "><p id="p1153245821619"><a name="p1153245821619"></a><a name="p1153245821619"></a>srcTensor和dstTensor的shape信息和Tiling切分策略满足基本块要求的情况下，可以开启该参数用于提升性能，默认不开启。是否满足基本块的要求，可以采用如下两种方式之一判断：</p>
-<a name="ul353295811167"></a><a name="ul353295811167"></a><ul id="ul353295811167"><li>srcTensor和dstTensor的shape信息[m,n]需要满足如下条件：<a name="ul09181366549"></a><a name="ul09181366549"></a><ul id="ul09181366549"><li>尾轴长度n小于2048并且大于等于256/sizeof(T)（即half场景下n最小为128，float场景下n最小为64），同时n是64的倍数；</li><li>非尾轴长度的乘积m为8的倍数。</li></ul>
-</li><li>在Tiling实现中，通过调用<a href="IsBasicBlockInSoftMax.md">IsBasicBlockInSoftMax</a>判断Tiling切分策略是否满足基本块的切分要求。</li></ul>
-<p id="p353205814166"><a name="p353205814166"></a><a name="p353205814166"></a>针对<span id="ph45321658191619"><a name="ph45321658191619"></a><a name="ph45321658191619"></a><term id="zh-cn_topic_0000001312391781_term354143892110_1"><a name="zh-cn_topic_0000001312391781_term354143892110_1"></a><a name="zh-cn_topic_0000001312391781_term354143892110_1"></a>Atlas 200I/500 A2 推理产品</term></span>，该参数为预留参数，暂未启用，为后续的功能扩展做保留，保持默认值即可。</p>
-</td>
-</tr>
-<tr id="row1276635121510"><td class="cellrowborder" valign="top" width="19.38%" headers="mcps1.2.3.1.1 "><p id="p1495244819166"><a name="p1495244819166"></a><a name="p1495244819166"></a>isDataFormatNZ</p>
-</td>
-<td class="cellrowborder" valign="top" width="80.62%" headers="mcps1.2.3.1.2 "><p id="p207441566176"><a name="p207441566176"></a><a name="p207441566176"></a>当前输入输出的数据格式是否为NZ格式，默认数据格式为ND，即默认取值为false。</p>
-<p id="p8744865179"><a name="p8744865179"></a><a name="p8744865179"></a>针对<span id="ph1274416671714"><a name="ph1274416671714"></a><a name="ph1274416671714"></a><term id="zh-cn_topic_0000001312391781_term354143892110_2"><a name="zh-cn_topic_0000001312391781_term354143892110_2"></a><a name="zh-cn_topic_0000001312391781_term354143892110_2"></a>Atlas 200I/500 A2 推理产品</term></span>，不支持配置为NZ格式。</p>
-</td>
-</tr>
-<tr id="row1925664115510"><td class="cellrowborder" valign="top" width="19.38%" headers="mcps1.2.3.1.1 "><p id="p69641412246"><a name="p69641412246"></a><a name="p69641412246"></a>config</p>
-</td>
-<td class="cellrowborder" valign="top" width="80.62%" headers="mcps1.2.3.1.2 "><p id="p1744211392255"><a name="p1744211392255"></a><a name="p1744211392255"></a>结构体模板参数，此参数可选配，SoftmaxConfig类型，具体定义如下方代码所示，其中参数的含义为：</p>
-<a name="ul8731410514"></a><a name="ul8731410514"></a><ul id="ul8731410514"><li>isCheckTiling：是否需要检查shape和tiling的一致性；若不一致，API内会根据shape重新计算所需tiling。默认取值true：API内部会检查一致性。</li><li>oriSrcM：原始非尾轴长度的乘积。设置该参数后，将shape常量化，编译过程中使用常量化的shape。</li><li>oriSrcK：原始尾轴长度。设置该参数后，将shape常量化，编译过程中使用常量化的shape。</li><li>mode：预留参数。</li></ul>
-<p id="p19442739102517"><a name="p19442739102517"></a><a name="p19442739102517"></a>此参数一般用于配合kernel侧tiling计算的接口使用。</p>
-<p id="p693216275219"><a name="p693216275219"></a><a name="p693216275219"></a>注意：设置了oriSrcM与oriSrcK后，模板参数isBasicBlock不生效，计算数据是否为基本块由API内部判断并处理。</p>
-<p id="p16541183012147"><a name="p16541183012147"></a><a name="p16541183012147"></a><span id="ph254193071416"><a name="ph254193071416"></a><a name="ph254193071416"></a>Ascend 950PR/Ascend 950DT</span>，该参数为预留参数，暂未启用，保持默认值即可。</p>
-<p id="p9572132616819"><a name="p9572132616819"></a><a name="p9572132616819"></a><span id="ph757217266813"><a name="ph757217266813"></a><a name="ph757217266813"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持该参数，不支持配置mode。</p>
-<p id="p17572172617810"><a name="p17572172617810"></a><a name="p17572172617810"></a><span id="ph657215261283"><a name="ph657215261283"></a><a name="ph657215261283"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持该参数，不支持配置mode。</p>
-<p id="p1857262618818"><a name="p1857262618818"></a><a name="p1857262618818"></a>针对<span id="ph1857217261284"><a name="ph1857217261284"></a><a name="ph1857217261284"></a><term id="zh-cn_topic_0000001312391781_term1964153212227_1"><a name="zh-cn_topic_0000001312391781_term1964153212227_1"></a><a name="zh-cn_topic_0000001312391781_term1964153212227_1"></a>Atlas 推理系列产品</term>AI Core</span>，该参数为预留参数，暂未启用，保持默认值即可。</p>
-<p id="p1757219261482"><a name="p1757219261482"></a><a name="p1757219261482"></a>针对<span id="ph75728260816"><a name="ph75728260816"></a><a name="ph75728260816"></a><term id="zh-cn_topic_0000001312391781_term354143892110_3"><a name="zh-cn_topic_0000001312391781_term354143892110_3"></a><a name="zh-cn_topic_0000001312391781_term354143892110_3"></a>Atlas 200I/500 A2 推理产品</term></span>，该参数为预留参数，暂未启用，保持默认值即可。</p>
-<p id="p13613202055516"><a name="p13613202055516"></a><a name="p13613202055516"></a>针对<span id="ph144614117566"><a name="ph144614117566"></a><a name="ph144614117566"></a>Kirin X90</span>，该参数为预留参数，暂未启用，保持默认值即可。</p>
-<p id="p67861730114512"><a name="p67861730114512"></a><a name="p67861730114512"></a>针对<span id="ph1477518399457"><a name="ph1477518399457"></a><a name="ph1477518399457"></a>Kirin 9030</span>，该参数为预留参数，暂未启用，保持默认值即可。</p>
-</td>
-</tr>
-</tbody>
-</table>
+| 参数名 | 描述 |
+| --- | --- |
+| T | 操作数的数据类型。支持的数据类型为：half、float。 |
+| isReuseSource | 该参数预留，传入默认值false即可。 |
+| isBasicBlock | srcTensor和dstTensor的shape信息和Tiling切分策略满足基本块要求的情况下，可以开启该参数用于提升性能，默认不开启。是否满足基本块的要求，可以采用如下两种方式之一判断：<br>srcTensor和dstTensor的shape信息[m,n]需要满足如下条件：尾轴长度n小于2048并且大于等于256/sizeof(T)（即half场景下n最小为128，float场景下n最小为64），同时n是64的倍数；非尾轴长度的乘积m为8的倍数。<br>在Tiling实现中，通过调用[IsBasicBlockInSoftMax](IsBasicBlockInSoftMax.md)判断Tiling切分策略是否满足基本块的切分要求。<br><br>针对Atlas 200I/500 A2 推理产品，该参数为预留参数，暂未启用，为后续的功能扩展做保留，保持默认值即可。 |
+| isDataFormatNZ | 当前输入输出的数据格式是否为NZ格式，默认数据格式为ND，即默认取值为false。<br><br>针对Atlas 200I/500 A2 推理产品，不支持配置为NZ格式。 |
+| config | 结构体模板参数，此参数可选配，SoftmaxConfig类型，具体定义如下方代码所示，其中参数的含义为：<br>isCheckTiling：是否需要检查shape和tiling的一致性；若不一致，API内会根据shape重新计算所需tiling。默认取值true：API内部会检查一致性。<br>oriSrcM：原始非尾轴长度的乘积。设置该参数后，将shape常量化，编译过程中使用常量化的shape。<br>oriSrcK：原始尾轴长度。设置该参数后，将shape常量化，编译过程中使用常量化的shape。<br>mode：预留参数。<br><br>此参数一般用于配合kernel侧tiling计算的接口使用。<br><br>注意：设置了oriSrcM与oriSrcK后，模板参数isBasicBlock不生效，计算数据是否为基本块由API内部判断并处理。<br><br>Ascend 950PR/Ascend 950DT，该参数为预留参数，暂未启用，保持默认值即可。<br><br>Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持该参数，不支持配置mode。<br><br>Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持该参数，不支持配置mode。<br><br>针对Atlas 推理系列产品AI Core，该参数为预留参数，暂未启用，保持默认值即可。<br><br>针对Atlas 200I/500 A2 推理产品，该参数为预留参数，暂未启用，保持默认值即可。<br><br>针对Kirin X90，该参数为预留参数，暂未启用，保持默认值即可。<br><br>针对Kirin 9030，该参数为预留参数，暂未启用，保持默认值即可。 |
 
 ```
 enum class SoftmaxMode {
@@ -215,7 +129,7 @@ enum class SoftmaxMode {
     SOFTMAX_OUTPUT_WITHOUT_BRC = 1,
 };
 struct SoftmaxConfig{
-    bool isCheckTiling = true; 
+    bool isCheckTiling = true;
     uint32_t oriSrcM = 0;
     uint32_t oriSrcK = 0;
     SoftmaxMode mode = SoftmaxMode::SOFTMAX_NORMAL;
@@ -230,96 +144,30 @@ constexpr SoftmaxConfig SOFTMAX_DEFAULT_CFG = {true, 0, 0, SoftmaxMode::SOFTMAX_
 
 **表 2**  接口参数说明
 
-<a name="zh-cn_topic_0235751031_table33761356"></a>
-<table><thead align="left"><tr id="zh-cn_topic_0235751031_row27598891"><th class="cellrowborder" valign="top" width="17.77%" id="mcps1.2.4.1.1"><p id="zh-cn_topic_0235751031_p20917673"><a name="zh-cn_topic_0235751031_p20917673"></a><a name="zh-cn_topic_0235751031_p20917673"></a>参数名</p>
-</th>
-<th class="cellrowborder" valign="top" width="9.69%" id="mcps1.2.4.1.2"><p id="zh-cn_topic_0235751031_p16609919"><a name="zh-cn_topic_0235751031_p16609919"></a><a name="zh-cn_topic_0235751031_p16609919"></a>输入/输出</p>
-</th>
-<th class="cellrowborder" valign="top" width="72.54%" id="mcps1.2.4.1.3"><p id="zh-cn_topic_0235751031_p59995477"><a name="zh-cn_topic_0235751031_p59995477"></a><a name="zh-cn_topic_0235751031_p59995477"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row42461942101815"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p462911347151"><a name="p462911347151"></a><a name="p462911347151"></a>dstTensor</p>
-</td>
-<td class="cellrowborder" valign="top" width="9.69%" headers="mcps1.2.4.1.2 "><p id="p186293346150"><a name="p186293346150"></a><a name="p186293346150"></a>输出</p>
-</td>
-<td class="cellrowborder" valign="top" width="72.54%" headers="mcps1.2.4.1.3 "><p id="p242825624218"><a name="p242825624218"></a><a name="p242825624218"></a>目的操作数。</p>
-<p id="p16703131355116"><a name="p16703131355116"></a><a name="p16703131355116"></a><span id="zh-cn_topic_0000001530181537_ph173308471594"><a name="zh-cn_topic_0000001530181537_ph173308471594"></a><a name="zh-cn_topic_0000001530181537_ph173308471594"></a><span id="zh-cn_topic_0000001530181537_ph9902231466"><a name="zh-cn_topic_0000001530181537_ph9902231466"></a><a name="zh-cn_topic_0000001530181537_ph9902231466"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816"><a name="zh-cn_topic_0000001530181537_ph1782115034816"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816"></a>类型为<a href="../../../基础数据结构/LocalTensor/LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
-<p id="p1327102402720"><a name="p1327102402720"></a><a name="p1327102402720"></a>dst的shape和源操作数src一致。</p>
-</td>
-</tr>
-<tr id="row2137145181815"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p10629534161513"><a name="p10629534161513"></a><a name="p10629534161513"></a>sumTensor</p>
-</td>
-<td class="cellrowborder" valign="top" width="9.69%" headers="mcps1.2.4.1.2 "><p id="p176295348152"><a name="p176295348152"></a><a name="p176295348152"></a>输出</p>
-</td>
-<td class="cellrowborder" valign="top" width="72.54%" headers="mcps1.2.4.1.3 "><p id="p17367152119417"><a name="p17367152119417"></a><a name="p17367152119417"></a>目的操作数。</p>
-<p id="p799691782011"><a name="p799691782011"></a><a name="p799691782011"></a><span id="zh-cn_topic_0000001530181537_ph173308471594_1"><a name="zh-cn_topic_0000001530181537_ph173308471594_1"></a><a name="zh-cn_topic_0000001530181537_ph173308471594_1"></a><span id="zh-cn_topic_0000001530181537_ph9902231466_1"><a name="zh-cn_topic_0000001530181537_ph9902231466_1"></a><a name="zh-cn_topic_0000001530181537_ph9902231466_1"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816_1"><a name="zh-cn_topic_0000001530181537_ph1782115034816_1"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816_1"></a>类型为<a href="../../../基础数据结构/LocalTensor/LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
-<p id="p19237153711415"><a name="p19237153711415"></a><a name="p19237153711415"></a>用于保存SoftMax计算过程中reducesum的结果。</p>
-<a name="ul12308151213513"></a><a name="ul12308151213513"></a><ul id="ul12308151213513"><li>sumTensor的last轴长度固定为32Byte，即一个<span id="ph68171939163014"><a name="ph68171939163014"></a><a name="ph68171939163014"></a>datablock</span>长度。该<span id="ph138891342173012"><a name="ph138891342173012"></a><a name="ph138891342173012"></a>datablock</span>中的所有数据为同一个值，比如half数据类型下，该<span id="ph194256461302"><a name="ph194256461302"></a><a name="ph194256461302"></a>datablock</span>中的16个数均为相同的reducesum的值。</li><li>非last轴的长度与dst保持一致。</li></ul>
-</td>
-</tr>
-<tr id="row19615183817191"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p7629183411514"><a name="p7629183411514"></a><a name="p7629183411514"></a>maxTensor</p>
-</td>
-<td class="cellrowborder" valign="top" width="9.69%" headers="mcps1.2.4.1.2 "><p id="p8629193419159"><a name="p8629193419159"></a><a name="p8629193419159"></a>输出</p>
-</td>
-<td class="cellrowborder" valign="top" width="72.54%" headers="mcps1.2.4.1.3 "><p id="p14929162874710"><a name="p14929162874710"></a><a name="p14929162874710"></a>目的操作数。</p>
-<p id="p106669246207"><a name="p106669246207"></a><a name="p106669246207"></a><span id="zh-cn_topic_0000001530181537_ph173308471594_2"><a name="zh-cn_topic_0000001530181537_ph173308471594_2"></a><a name="zh-cn_topic_0000001530181537_ph173308471594_2"></a><span id="zh-cn_topic_0000001530181537_ph9902231466_2"><a name="zh-cn_topic_0000001530181537_ph9902231466_2"></a><a name="zh-cn_topic_0000001530181537_ph9902231466_2"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816_2"><a name="zh-cn_topic_0000001530181537_ph1782115034816_2"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816_2"></a>类型为<a href="../../../基础数据结构/LocalTensor/LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
-<p id="p296320351261"><a name="p296320351261"></a><a name="p296320351261"></a>用于保存SoftMax计算过程中reducemax的结果。</p>
-<a name="ul9474401463"></a><a name="ul9474401463"></a><ul id="ul9474401463"><li>maxTensor的last轴长度固定为32Byte，即一个<span id="ph1217011525305"><a name="ph1217011525305"></a><a name="ph1217011525305"></a>datablock</span>长度。该<span id="ph166671453193017"><a name="ph166671453193017"></a><a name="ph166671453193017"></a>datablock</span>中的所有数据为同一个值。比如half数据类型下，该<span id="ph89115620307"><a name="ph89115620307"></a><a name="ph89115620307"></a>datablock</span>中的16个数均为相同的reducemax的值。</li><li>非last轴的长度与dst保持一致。</li></ul>
-</td>
-</tr>
-<tr id="row250163914199"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p1762920347151"><a name="p1762920347151"></a><a name="p1762920347151"></a>srcTensor</p>
-</td>
-<td class="cellrowborder" valign="top" width="9.69%" headers="mcps1.2.4.1.2 "><p id="p1662903414157"><a name="p1662903414157"></a><a name="p1662903414157"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="72.54%" headers="mcps1.2.4.1.3 "><p id="p1663083415154"><a name="p1663083415154"></a><a name="p1663083415154"></a>源操作数。</p>
-<p id="p193795318204"><a name="p193795318204"></a><a name="p193795318204"></a><span id="zh-cn_topic_0000001530181537_ph173308471594_3"><a name="zh-cn_topic_0000001530181537_ph173308471594_3"></a><a name="zh-cn_topic_0000001530181537_ph173308471594_3"></a><span id="zh-cn_topic_0000001530181537_ph9902231466_3"><a name="zh-cn_topic_0000001530181537_ph9902231466_3"></a><a name="zh-cn_topic_0000001530181537_ph9902231466_3"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816_3"><a name="zh-cn_topic_0000001530181537_ph1782115034816_3"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816_3"></a>类型为<a href="../../../基础数据结构/LocalTensor/LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
-<p id="p10724195415422"><a name="p10724195415422"></a><a name="p10724195415422"></a>last轴长度需要32Byte对齐。</p>
-</td>
-</tr>
-<tr id="row358412552316"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p1358462510237"><a name="p1358462510237"></a><a name="p1358462510237"></a>sharedTmpBuffer</p>
-</td>
-<td class="cellrowborder" valign="top" width="9.69%" headers="mcps1.2.4.1.2 "><p id="p15584152512313"><a name="p15584152512313"></a><a name="p15584152512313"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="72.54%" headers="mcps1.2.4.1.3 "><p id="p155841325182310"><a name="p155841325182310"></a><a name="p155841325182310"></a>临时空间。</p>
-<p id="p5983205412394"><a name="p5983205412394"></a><a name="p5983205412394"></a><span id="zh-cn_topic_0000001530181537_ph173308471594_4"><a name="zh-cn_topic_0000001530181537_ph173308471594_4"></a><a name="zh-cn_topic_0000001530181537_ph173308471594_4"></a><span id="zh-cn_topic_0000001530181537_ph9902231466_4"><a name="zh-cn_topic_0000001530181537_ph9902231466_4"></a><a name="zh-cn_topic_0000001530181537_ph9902231466_4"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816_4"><a name="zh-cn_topic_0000001530181537_ph1782115034816_4"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816_4"></a>类型为<a href="../../../基础数据结构/LocalTensor/LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
-<p id="p104071111204211"><a name="p104071111204211"></a><a name="p104071111204211"></a>接口内部复杂计算时用于存储中间变量，由开发者提供。</p>
-<p id="p5881016172817"><a name="p5881016172817"></a><a name="p5881016172817"></a>临时空间大小BufferSize的获取方式请参考<a href="SoftMax-SimpleSoftMax-Tiling.md">SoftMax/SimpleSoftMax Tiling</a>。</p>
-</td>
-</tr>
-<tr id="row041413392198"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p4630634141515"><a name="p4630634141515"></a><a name="p4630634141515"></a>tiling</p>
-</td>
-<td class="cellrowborder" valign="top" width="9.69%" headers="mcps1.2.4.1.2 "><p id="p263018345154"><a name="p263018345154"></a><a name="p263018345154"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="72.54%" headers="mcps1.2.4.1.3 "><p id="p13630123491515"><a name="p13630123491515"></a><a name="p13630123491515"></a>SoftMax计算所需Tiling信息，Tiling信息的获取请参考<a href="SoftMax-SimpleSoftMax-Tiling.md">SoftMax/SimpleSoftMax Tiling</a>。</p>
-</td>
-</tr>
-<tr id="row27339151729"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p0734515621"><a name="p0734515621"></a><a name="p0734515621"></a>softmaxShapeInfo</p>
-</td>
-<td class="cellrowborder" valign="top" width="9.69%" headers="mcps1.2.4.1.2 "><p id="p1973441513219"><a name="p1973441513219"></a><a name="p1973441513219"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="72.54%" headers="mcps1.2.4.1.3 "><p id="p1573415151214"><a name="p1573415151214"></a><a name="p1573415151214"></a>src的shape信息。SoftMaxShapeInfo类型，具体定义如下方代码所示，其中参数的含义为：</p>
-<a name="ul17391226714"></a><a name="ul17391226714"></a><ul id="ul17391226714"><li>srcM：非尾轴长度的乘积。</li><li>srcK：尾轴长度，必须32Byte对齐</li><li>oriSrcM：原始非尾轴长度的乘积。</li><li>oriSrcK：原始尾轴长度。</li></ul>
-<p id="p1065853610376"><a name="p1065853610376"></a><a name="p1065853610376"></a>需要注意，当输入输出的数据格式为NZ格式时，尾轴长度为reduce轴长度即<a href="#fig0172155842215">图2</a>中的W0*W1，非尾轴为H0*H1。</p>
-</td>
-</tr>
-</tbody>
-</table>
+| 参数名 | 输入/输出 | 描述 |
+| --- | --- | --- |
+| dstTensor | 输出 | 目的操作数。<br><br>类型为[LocalTensor](../../../基础数据结构/LocalTensor/LocalTensor.md)，支持的TPosition为VECIN/VECCALC/VECOUT。<br><br>dst的shape和源操作数src一致。 |
+| sumTensor | 输出 | 目的操作数。<br><br>类型为[LocalTensor](../../../基础数据结构/LocalTensor/LocalTensor.md)，支持的TPosition为VECIN/VECCALC/VECOUT。<br><br>用于保存SoftMax计算过程中reducesum的结果。<br>sumTensor的last轴长度固定为32Byte，即一个datablock长度。该datablock中的所有数据为同一个值，比如half数据类型下，该datablock中的16个数均为相同的reducesum的值。<br>非last轴的长度与dst保持一致。 |
+| maxTensor | 输出 | 目的操作数。<br><br>类型为[LocalTensor](../../../基础数据结构/LocalTensor/LocalTensor.md)，支持的TPosition为VECIN/VECCALC/VECOUT。<br><br>用于保存SoftMax计算过程中reducemax的结果。<br>maxTensor的last轴长度固定为32Byte，即一个datablock长度。该datablock中的所有数据为同一个值。比如half数据类型下，该datablock中的16个数均为相同的reducemax的值。<br>非last轴的长度与dst保持一致。 |
+| srcTensor | 输入 | 源操作数。<br><br>类型为[LocalTensor](../../../基础数据结构/LocalTensor/LocalTensor.md)，支持的TPosition为VECIN/VECCALC/VECOUT。<br><br>last轴长度需要32Byte对齐。 |
+| sharedTmpBuffer | 输入 | 临时空间。<br><br>类型为[LocalTensor](../../../基础数据结构/LocalTensor/LocalTensor.md)，支持的TPosition为VECIN/VECCALC/VECOUT。<br><br>接口内部复杂计算时用于存储中间变量，由开发者提供。<br><br>临时空间大小BufferSize的获取方式请参考[SoftMax/SimpleSoftMax Tiling](SoftMax-SimpleSoftMax-Tiling.md)。 |
+| tiling | 输入 | SoftMax计算所需Tiling信息，Tiling信息的获取请参考[SoftMax/SimpleSoftMax Tiling](SoftMax-SimpleSoftMax-Tiling.md)。 |
+| softmaxShapeInfo | 输入 | src的shape信息。SoftMaxShapeInfo类型，具体定义如下方代码所示，其中参数的含义为：<br>srcM：非尾轴长度的乘积。<br>srcK：尾轴长度，必须32Byte对齐。<br>oriSrcM：原始非尾轴长度的乘积。<br>oriSrcK：原始尾轴长度。<br><br>需要注意，当输入输出的数据格式为NZ格式时，尾轴长度为reduce轴长度即[图2](#fig0172155842215)中的W0\*W1，非尾轴为H0\*H1。 |
 
 ```
 struct SoftMaxShapeInfo {
-  uint32_t srcM; 
-  uint32_t srcK; 
-  uint32_t oriSrcM;  
-  uint32_t oriSrcK;  
+  uint32_t srcM;
+  uint32_t srcK;
+  uint32_t oriSrcM;
+  uint32_t oriSrcK;
 };
 ```
 
-## 返回值说明<a name="section640mcpsimp"></a>
+## 返回值说明
 
 无
 
-## 约束说明<a name="section633mcpsimp"></a>
+## 约束说明
 
 -   src和dst的Tensor空间可以复用。
 -   sumTensor和maxTensor为输出，并且last轴长度必须固定32Byte，非last轴大小需要和src以及dst保持一致。
@@ -329,7 +177,7 @@ struct SoftMaxShapeInfo {
 -   不支持sharedTmpBuffer与源操作数和目的操作数地址重叠。
 -   当参数softmaxShapeInfo中srcM != oriSrcM 或者 srcK != oriSrcK时，开发者需要对GM上的原始输入\(oriSrcM, oriSrcK\)在M或K方向补齐数据到\(srcM, srcK\)，补齐的数据会参与部分运算，在输入输出复用的场景下，API的计算结果会覆盖srcTensor中补齐的原始数据，在输入输出不复用的场景下，API的计算结果会覆盖dstTensor中对应srcTensor补齐位置的数据。
 
-## 调用示例<a name="section94691236101419"></a>
+## 调用示例
 
 ```
 // dstLocal: 存放SoftMax计算结果的Tensor
@@ -340,9 +188,9 @@ struct SoftMaxShapeInfo {
 // softmaxTiling：存放SoftMax计算所需Tiling信息，可通过SoftMaxTilingFunc接口获取
 
 AscendC::SoftMaxShapeInfo softmaxInfo(
-    /* 非尾轴长度的乘积          */ srcM, 
-    /* 尾轴长度，必须32Bytes对齐 */ srcK, 
-    /* 原始非尾轴长度的乘积      */ oriSrcM, 
+    /* 非尾轴长度的乘积          */ srcM,
+    /* 尾轴长度，必须32Bytes对齐 */ srcK,
+    /* 原始非尾轴长度的乘积      */ oriSrcM,
     /* 原始尾轴长度              */ oriSrcK
 );
 

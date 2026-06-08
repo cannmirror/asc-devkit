@@ -1,10 +1,10 @@
-# Gelu接口<a name="ZH-CN_TOPIC_0000001917869833"></a>
+# Gelu接口
 
--   **[Gelu](Gelu.md)**  
+-   **[Gelu](Gelu.md)**
 
--   **[FasterGelu](FasterGelu.md)**  
+-   **[FasterGelu](FasterGelu.md)**
 
--   **[FasterGeluV2](FasterGeluV2.md)**  
+-   **[FasterGeluV2](FasterGeluV2.md)**
 
--   **[GetGeluMaxMinTmpSize](GetGeluMaxMinTmpSize.md)**  
+-   **[GetGeluMaxMinTmpSize](GetGeluMaxMinTmpSize.md)**
 

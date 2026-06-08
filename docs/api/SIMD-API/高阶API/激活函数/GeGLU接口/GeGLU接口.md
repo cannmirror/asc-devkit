@@ -1,8 +1,8 @@
-# GeGLU接口<a name="ZH-CN_TOPIC_0000001867533741"></a>
+# GeGLU接口
 
--   **[GeGLU](GeGLU.md)**  
+-   **[GeGLU](GeGLU.md)**
 
--   **[GetGeGLUMaxMinTmpSize](GetGeGLUMaxMinTmpSize.md)**  
+-   **[GetGeGLUMaxMinTmpSize](GetGeGLUMaxMinTmpSize.md)**
 
--   **[GetGeGLUTmpBufferFactorSize](GetGeGLUTmpBufferFactorSize.md)**  
+-   **[GetGeGLUTmpBufferFactorSize](GetGeGLUTmpBufferFactorSize.md)**
 

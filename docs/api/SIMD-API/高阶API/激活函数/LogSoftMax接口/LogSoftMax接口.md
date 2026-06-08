@@ -1,6 +1,6 @@
-# LogSoftMax接口<a name="ZH-CN_TOPIC_0000001917790205"></a>
+# LogSoftMax接口
 
--   **[LogSoftMax](LogSoftMax.md)**  
+-   **[LogSoftMax](LogSoftMax.md)**
 
--   **[LogSoftMax Tiling](LogSoftMax-Tiling.md)**  
+-   **[LogSoftMax Tiling](LogSoftMax-Tiling.md)**
 

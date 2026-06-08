@@ -17,7 +17,7 @@ void GetReduceAnyMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dat
 
 **表 1**  接口参数列表
 
-| 接口 | 输入/输出 | 功能 |
+| 参数名 | 输入/输出 | 功能 |
 | --- | --- | --- |
 | srcShape | 输入 | 输入的shape信息，参数取值与ReduceAny接口的srcShape参数保持一致。 |
 | dataType | 输入 | 输入的数据类型，ge::DataType类型，当前支持的数据类型与ReduceAny接口的模板参数T保持一致。 |

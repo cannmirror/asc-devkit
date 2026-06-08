@@ -1,6 +1,6 @@
-# Sigmoid接口<a name="ZH-CN_TOPIC_0000001817928776"></a>
+# Sigmoid接口
 
--   **[Sigmoid](Sigmoid.md)**  
+-   **[Sigmoid](Sigmoid.md)**
 
--   **[GetSigmoidMaxMinTmpSize](GetSigmoidMaxMinTmpSize.md)**  
+-   **[GetSigmoidMaxMinTmpSize](GetSigmoidMaxMinTmpSize.md)**
 

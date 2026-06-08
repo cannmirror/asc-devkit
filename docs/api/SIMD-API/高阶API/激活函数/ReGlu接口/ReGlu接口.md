@@ -1,6 +1,6 @@
-# ReGlu接口<a name="ZH-CN_TOPIC_0000001871750704"></a>
+# ReGlu接口
 
--   **[ReGlu](ReGlu.md)**  
+-   **[ReGlu](ReGlu.md)**
 
--   **[GetReGluMaxMinTmpSize](GetReGluMaxMinTmpSize.md)**  
+-   **[GetReGluMaxMinTmpSize](GetReGluMaxMinTmpSize.md)**
 
