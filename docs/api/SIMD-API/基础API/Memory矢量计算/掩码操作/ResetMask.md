@@ -49,11 +49,13 @@
 
 ## 功能说明<a name="section618mcpsimp"></a>
 
+头文件路径为:`"basic_api/kernel_common.h"`。
+
 恢复mask的值为默认值（全1），表示矢量计算中每次迭代内的所有元素都将参与运算。
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
-```
+```cpp
 __aicore__ inline void ResetMask()
 ```
 
@@ -67,14 +69,15 @@ __aicore__ inline void ResetMask()
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
-无
+调用SetVectorMask接口之后，如需恢复mask的值为默认值（全1），可调用本接口实现。
 
 ## 调用示例<a name="section837496171220"></a>
 
 用[SetVectorMask](SetVectorMask.md)设置mask值并使用完成后，使用ResetMask恢复mask的值为默认值。
 
-```
+```cpp
 AscendC::SetVectorMask<half, AscendC::MaskMode::NORMAL>(128);
 AscendC::ResetMask();
 ```
 
+更多示例请参考[接口外设置Mask](../SIMD计算说明/掩码/接口外设置Mask.md)。

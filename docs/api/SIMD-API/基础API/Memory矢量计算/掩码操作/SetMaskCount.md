@@ -59,11 +59,13 @@
 
 ## 功能说明<a name="section618mcpsimp"></a>
 
-设置mask模式为Counter模式。该模式下，不需要开发者去感知迭代次数、处理非对齐的尾块等操作，可直接传入计算数据量，实际迭代次数由Vector计算单元自动推断。mask模式分为Counter模式和Normal模式，两种模式的概念和使用场景请参考[如何使用掩码操作API](https://gitcode.com/cann/asc-devkit/blob/master/docs/guide/编程指南/类库API/基础API/常用操作速查指导/如何使用掩码操作API.md)。
+头文件路径为：`"basic_api/kernel_common.h"`。
+
+设置Mask模式为Counter模式。该模式下，不需要开发者去感知迭代次数、处理非对齐的尾块等操作，可直接传入计算数据量，实际迭代次数由Vector计算单元自动推断。本接口推荐配合API中isSetMask模板参数使用，当isSetMask为false时，支持用户调用本接口手动管理Counter模式，并通过[SetVectorMask](SetVectorMask.md)设置Counter模式下参与计算的元素个数。
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
-```
+```cpp
 __aicore__ inline void SetMaskCount()
 ```
 
@@ -77,9 +79,8 @@ __aicore__ inline void SetMaskCount()
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
-设置为Counter模式的场景需要在矢量计算使用完之后调用[SetMaskNorm](SetMaskNorm.md)将mask模式恢复为Normal模式。
+设置为Counter模式的场景，需要在矢量计算使用完之后调用[SetMaskNorm](SetMaskNorm.md)将Mask模式恢复为Normal模式，以避免影响后续计算。
 
 ## 调用示例<a name="section837496171220"></a>
 
-请参考[Counter模式调用示例](SetVectorMask.md#li4954135522812)。
-
+请参考[Counter模式调用示例](SetVectorMask.md#section837496171220)。
