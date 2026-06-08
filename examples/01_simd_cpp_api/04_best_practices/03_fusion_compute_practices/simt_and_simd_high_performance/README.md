@@ -395,9 +395,9 @@ __aicore__ inline void CopyOut(uint32_t tileIdx, uint32_t count, AscendC::LocalT
 
   在本样例目录下执行如下命令。
   ```bash
-  SCENARIO=1                                                           # 选择执行场景
+  SCENARIO_NUM=1                                                       # 选择执行场景
   mkdir -p build && cd build;                                          # 创建并进入 build 目录
-  cmake -DCMAKE_ASC_RUN_MODE=npu -DSCENARIO_NUM=$SCENARIO -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j;  # 编译工程
+  cmake -DCMAKE_ASC_RUN_MODE=npu -DSCENARIO_NUM=$SCENARIO_NUM -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j;  # 编译工程
   python3 ../scripts/gen_data.py
   ./demo
   python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确

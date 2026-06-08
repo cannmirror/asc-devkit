@@ -439,9 +439,9 @@ Atlas A2/A3上表现不同：Scenario 2中`aiv_vec_time`为235.872μs，高于`a
 
   在本样例目录下执行如下命令。
   ```bash
-  SCENARIO=1                                                           # 选择执行场景
+  SCENARIO_NUM=1                                                       # 选择执行场景
   mkdir -p build && cd build;                                          # 创建并进入 build 目录
-  cmake -DCMAKE_ASC_RUN_MODE=npu -DSCENARIO_NUM=$SCENARIO -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;  # 编译工程
+  cmake -DCMAKE_ASC_RUN_MODE=npu -DSCENARIO_NUM=$SCENARIO_NUM -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;  # 编译工程
   python3 ../scripts/gen_data.py
   ./demo
   python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
@@ -451,7 +451,7 @@ Atlas A2/A3上表现不同：Scenario 2中`aiv_vec_time`为235.872μs，高于`a
 
   示例如下：
   ```bash
-  cmake -DCMAKE_ASC_RUN_MODE=sim -DSCENARIO_NUM=$SCENARIO -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # NPU仿真模式
+  cmake -DCMAKE_ASC_RUN_MODE=sim -DSCENARIO_NUM=$SCENARIO_NUM -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j; # NPU仿真模式
   ```
 
   > **注意：** 切换编译模式前需清理 cmake 缓存，可在 build 目录下执行 `rm CMakeCache.txt` 后重新 cmake。
