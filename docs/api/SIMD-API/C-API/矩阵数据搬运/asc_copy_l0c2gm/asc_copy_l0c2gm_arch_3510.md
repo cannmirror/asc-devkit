@@ -17,7 +17,7 @@ quant_pre可选量化模式，分别为：
 - DEQF16：int32_t量化成half。量化结果不支持INF_NAN模式。
 - VDEQF16：int32_t量化成half。量化结果不支持INF_NAN模式。
 - QF322B8_PRE：float量化成uint8_t/int8_t。scalar量化。
-- VQF322B8_PRE：float量化成uint8_t/int8_t。scalar量化。
+- VQF322B8_PRE：float量化成uint8_t/int8_t。矢量量化。
 - REQ8：int32_t量化成uint8_t/int8_t。scalar量化。
 - VREQ8：int32_t量化成uint8_t/int8_t。矢量量化。
 - QF322FP8_PRE：float量化成fp8_e4m3fn_t，scalar量化。

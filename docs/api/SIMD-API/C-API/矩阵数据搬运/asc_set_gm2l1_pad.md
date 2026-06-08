@@ -37,9 +37,9 @@ PIPE_S
 ## 调用示例
 
 ```cpp
-asc_set_gm2l1_loop_size(loop1_size, loop2_size);
-asc_set_gm2l1_loop1_stride(loop1_src_stride, loop1_dst_stride);
-asc_set_gm2l1_loop2_stride(loop2_src_stride, loop2_dst_stride);
+asc_set_gm2l1_loop_size(2, 2);
+asc_set_gm2l1_loop1_stride(96, 128);
+asc_set_gm2l1_loop2_stride(192, 288);
 // 源操作数非对齐，需要填补数据
 asc_set_gm2l1_pad(0);
 constexpr uint32_t n_burst = 2;

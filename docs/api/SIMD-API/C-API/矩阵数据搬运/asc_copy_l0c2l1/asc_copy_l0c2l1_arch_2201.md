@@ -17,7 +17,7 @@
 - QF322B8_PRE：float量化成uint8_t/int8_t。scalar量化。
 - REQ8：int32_t量化成uint8_t/int8_t。scalar量化。
 - VDEQF16：int32_t量化成half。量化结果不支持INF_NAN模式。
-- VQF322B8_PRE：float量化成uint8_t/int8_t。scalar量化。
+- VQF322B8_PRE：float量化成uint8_t/int8_t。矢量量化。
 - VREQ8：int32_t量化成uint8_t/int8_t。矢量量化。
 
 此外，该搬运指令还支持int4b_t类型的量化，相关量化类型分为两种：int32_t量化为int4b_t；float量化为int4b_t。
@@ -97,6 +97,6 @@ uint8_t unit_flag_mode = 0;
 uint64_t quant_pre = DEQF16;
 uint8_t relu_pre = 0;
 bool channel_split = false;
-bool nz2nd_en = false;
+bool enable_nd2nz = false;
 asc_copy_l0c2l1(dst, src, n_size, m_size, dst_stride, src_stride, unit_flag_mode, quant_pre, relu_pre, enable_channel_split, enable_nd2nz);
 ```

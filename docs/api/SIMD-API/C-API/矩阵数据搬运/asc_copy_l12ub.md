@@ -18,7 +18,7 @@
     ```
 
 - 同步搬运
-    ```c++
+    ```cpp
     __aicore__ inline void asc_copy_l12ub_sync(__ubuf__ void * dst_addr, __cbuf__ void * src_addr, bool sub_blockid, uint16_t n_burst, uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap)
     ```
 

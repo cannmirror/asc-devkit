@@ -8,6 +8,8 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_load3d_v2_config](数据结构/asc_load3d_v2_config.md) | Load3Dv2接口的repeat参数。 |
 | [asc_store_atomic_config](数据结构/asc_store_atomic_config.md) | 原子操作使能位与原子操作类型的值。 |
 | [asc_fill_value_config](数据结构/asc_fill_value_config.md) | fill_value的初始化参数结构体，包含[asc_fill_l0a](矩阵数据搬运/asc_fill_l0a.md)/[asc_fill_l0b](矩阵数据搬运/asc_fill_l0b.md)/[asc_fill_l1](矩阵数据搬运/asc_fill_l1.md)接口需要配置的各种初始化参数。 |
+| [asc_l13d_fmatrix_config](数据结构/asc_l13d_fmatrix_config.md) | 用于设置[asc_copy_l12l0a](矩阵数据搬运/asc_copy_l12l0a)/[asc_copy_l12l0b](矩阵数据搬运/asc_copy_l12l0b)3D格式搬运接口的Feature map属性参数。 |
+| [asc_ndim_pad_count_config](数据结构/asc_ndim_pad_count_config.md) | 用于[asc_set_ndim_pad_count](矢量数据搬运/asc_set_ndim_pad_count.md)接口中，设置[asc_ndim_copy_gm2ub](矢量数据搬运/asc_ndim_copy_gm2ub.md)接口的各个维度左右侧的padding元素个数。 |
 
 ## 矢量计算
 
@@ -165,6 +167,15 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_copy_ub2gm_align](矢量数据搬运/asc_copy_ub2gm_align)                                                                | 将数据从Unified Buffer搬运到 Global Memory，支持8位/16位/32位分块拷贝操作。 |
 | [asc_set_copy_pad_val](矢量数据搬运/asc_set_copy_pad_val.md)                                                             | 和asc_copy_gm2ub_align或asc_copy_ub2gm_align接口配合使用，设置连续搬运数据块左右两侧需要填补的数据值。 |
 | [asc_copy_ub2l1](矢量数据搬运/asc_copy_ub2l1.md)                                                                         | 将数据从Unified Buffer (UB) 搬运到L1 Buffer。 |
+| [asc_ndim_copy_gm2ub](矢量数据搬运/asc_ndim_copy_gm2ub.md)                                                               | 多维数据搬运接口，将数据从Global Memory (GM) 搬运到 Unified Buffer (UB)。 |
+| [asc_set_gm2ub_loop1_stride](矢量数据搬运/asc_set_gm2ub_loop1_stride.md)                                                 | 使用[asc_copy_gm2ub_align](矢量数据搬运/asc_copy_gm2ub_align)将数据从Global Memory (GM) 搬运到 Unified Buffer (UB)时，设置内层循环中相邻迭代数据块间的间隔。 |
+| [asc_set_gm2ub_loop2_stride](矢量数据搬运/asc_set_gm2ub_loop2_stride.md)                                                 | 使用[asc_copy_gm2ub_align](矢量数据搬运/asc_copy_gm2ub_align)将数据从Global Memory (GM) 搬运到 Unified Buffer (UB)时，设置外层循环中相邻迭代数据块间的间隔。 |
+| [asc_set_gm2ub_loop_size](矢量数据搬运/asc_set_gm2ub_loop_size.md)                                                       | 使用[asc_copy_gm2ub_align](矢量数据搬运/asc_copy_gm2ub_align)将数据从Global Memory (GM) 搬运到 Unified Buffer (UB)时，设置数据搬运流程中的循环次数。 |
+| [asc_set_ub2gm_loop1_stride](矢量数据搬运/asc_set_ub2gm_loop1_stride.md)                                                 | 使用[asc_copy_ub2gm_align](矢量数据搬运/asc_copy_ub2gm_align)将数据从Unified Buffer (UB) 搬运到 Global Memory (GM)时，设置内层循环中源操作数在相邻迭代间的数据块间隔，以及目的操作数在相邻迭代间的数据块间隔。 |
+| [asc_set_ub2gm_loop2_stride](矢量数据搬运/asc_set_ub2gm_loop2_stride.md)                                                 | 使用[asc_copy_ub2gm_align](矢量数据搬运/asc_copy_ub2gm_align)将数据从Unified Buffer (UB) 搬运到 Global Memory (GM)时，设置外层循环中源操作数在相邻迭代间的数据块间隔，以及目的操作数在相邻迭代间的数据块间隔。 |
+| [asc_set_ub2gm_loop_size](矢量数据搬运/asc_set_ub2gm_loop_size.md)                                                       | 使用[asc_copy_ub2gm_align](矢量数据搬运/asc_copy_ub2gm_align)将数据从Unified Buffer (UB) 搬运到 Global Memory (GM)时，设置内层循环和外层循环的次数。 |
+| [asc_set_ndim_loop_stride](矢量数据搬运/asc_set_ndim_loop_stride.md)                                                     | 设置[asc_ndim_copy_gm2ub](矢量数据搬运/asc_ndim_copy_gm2ub.md)在进行多维搬运时每个维度内的源操作数与目的操作数的元素之间的间隔，最多设置5个维度。 |
+| [asc_set_ndim_pad_value](矢量数据搬运/asc_set_ndim_pad_value.md)                                                         | 设置[asc_ndim_copy_gm2ub](矢量数据搬运/asc_ndim_copy_gm2ub.md)接口Padding的填充固定值。 |
 
 ## 标量操作
 
@@ -180,10 +191,12 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_ffz](标量计算/asc_ffz.md) | 获取一个uint64_t类型数字的二进制表示中从最低有效位开始的第一个0出现的位置，如果没找到则返回-1。 |
 | [asc_popc](标量计算/asc_popc.md) | 获取一个uint64_t类型数字的二进制中1的个数。 |
 | [asc_zero_bits_cnt](标量计算/asc_zero_bits_cnt.md) | 获取一个uint64_t类型数字的二进制中0的个数。 |
+| [asc_store_dev](标量计算/asc_store_dev.md) | 不经过DCache向GM地址上写数据。 |
+| [asc_float2int32](标量计算/asc_float2int32.md) | 将float类型转化为int32_t类型，并支持多种舍入模式。 |
 
 ## 矩阵计算
 
-标量操作类API，单独使用时可以引入cube_compute.h，此类API列表如下：
+矩阵计算类API，单独使用时可以引入cube_compute.h，此类API列表如下：
 
 |   API名称   |   说明   |
 |----------|-----------|
@@ -305,6 +318,8 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 
 ## Reg数据搬运
 
+Reg数据搬运类API，单独使用时可以引入reg_load.h，此类API列表如下：
+
 |   API名称   |   说明   |
 |----------|-----------|
 | [asc_loadalign](Reg矢量计算/reg_load/asc_loadalign/) | 对齐数据搬运接口，从UB连续对齐搬入目的操作数，支持多种搬入模式。 |
@@ -321,6 +336,8 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_storeunalign_postupdate](Reg矢量计算/reg_store/asc_storeunalign_postupdate.md) | reg计算数据搬运接口，适用于从矢量数据寄存器连续非32B对齐的起始地址连续搬出到UB的场景。 |
 
 ## Reg矢量计算
+
+Reg矢量计算类API，单独使用时可以引入reg_vector.h，此类API列表如下：
 
 |   API名称   |   说明   |
 |----------|-----------|

@@ -76,5 +76,5 @@ for( int i = 0; i < total_length; i++) {
    src[i] = i;
 }
 // 由于首地址64B对齐，调用asc_dcci指令后，会立刻刷新前32个数
-asc_dcci_single(reinterpret_cast<__gm__ uint64_t*>(src))
+asc_dcci_single(reinterpret_cast<__gm__ uint64_t*>(src));
 ```

@@ -20,6 +20,9 @@
 __aicore__ inline void asc_set_fp32_mode()
 ```
 
+## 参数说明
+
+无
 
 ## 返回值说明
 

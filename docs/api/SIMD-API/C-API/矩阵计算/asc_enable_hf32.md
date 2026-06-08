@@ -19,6 +19,9 @@
 __aicore__ inline void asc_enable_hf32()
 ```
 
+## 参数说明
+
+无
 
 ## 返回值说明
 
