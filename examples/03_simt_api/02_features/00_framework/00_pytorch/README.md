@@ -8,4 +8,4 @@
 
 | 目录名称                                                | 功能描述                   |
 |-----------------------------------------------------|------------------------|
-| [torch_library_roll](./torch_library_roll) | 展示使用Pytorch的torch.library机制注册并调用自定义Roll算子的相关样例。 |
+| [torch_library_roll](./torch_library_roll) | 展示使用PyTorch的torch.library机制注册并调用自定义Roll算子的相关样例。 |

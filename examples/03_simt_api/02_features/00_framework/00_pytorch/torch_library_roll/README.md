@@ -109,7 +109,7 @@
 - 安装前置依赖
 
   ```bash
-  pip3 install expecttest
+  pip3 install expecttest     # torch_npu.testing.testcase 的依赖
   ```
 
 - 配置环境变量  
@@ -127,7 +127,7 @@
 
   ```bash
   mkdir -p build && cd build;      # 创建并进入build目录
-  cmake ..;make -j;                # 编译工程
+  cmake -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j;                # 编译工程
   python3 ../roll_custom_test.py   # 执行样例
   ```
 
