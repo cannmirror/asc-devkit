@@ -484,13 +484,6 @@ export default defineConfig({
     },
   },
 
-  transformHtml(code) {
-    return code.replace(
-      /(<div[^>]*class="[^"]*vp-doc[^"]*")([^>]*>)/,
-      '$1 data-pagefind-body$2'
-    )
-  },
-
   transformPageData(pageData) {
     const cache = loadHeaderCache(pageData.filePath)
     if (cache && cache.length > 0) {
@@ -499,6 +492,14 @@ export default defineConfig({
   },
 
   buildConcurrency: 1,
+
+  transformHtml(code) {
+    code = code.replace(/<body\b/, '<body data-pagefind-body')
+    return code.replace(
+      /<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<[^>]+>|[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff]+/g,
+      m => m.startsWith('<') ? m : m.replace(/(.)(?=.)/g, '$1\u200A')
+    )
+  },
 
   vite: {
     sourcemap: false,
@@ -512,9 +513,10 @@ export default defineConfig({
     },
     plugins: [htmlAsMdPlugin(), placeholderPlugin(), pagefindPlugin({
       btnPlaceholder: '搜索',
-      placeholder: '搜索文档',
+      placeholder: '简易搜索，暂不支持多语言和特殊符号',
       emptyText: '未找到结果',
       heading: '共: {{searchResult}} 条结果',
+      forceLanguage: 'en',
     }), {
       name: 'vitepress-override-search-vue',
       enforce: 'post',

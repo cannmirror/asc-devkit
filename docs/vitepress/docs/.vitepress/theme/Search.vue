@@ -15,7 +15,6 @@ if (typeof window !== 'undefined' && !window.__pagefind__) {
   import('/pagefind/pagefind.js').then(m => {
     if (!window.__pagefind__) {
       window.__pagefind__ = m
-      m.init()
     }
   }).catch(() => {})
 }
@@ -103,16 +102,8 @@ function inlineSearch() {
 }
 
 const chineseRegex = /[\u4E00-\u9FA5]/g
-const segmenterCh = Intl?.Segmenter && new Intl.Segmenter('zh-CN', { granularity: 'word' })
 function chineseSearchOptimize(input: string) {
-  if (segmenterCh) {
-    const splitWords = Array.from(segmenterCh?.segment(input))
-    return splitWords.map(v => v.segment).join(' ')
-  }
-  return input
-    .replace(chineseRegex, ' $& ')
-    .replace(/\s+/g, ' ')
-    .trim()
+  return input.replace(chineseRegex, '\u200A$&\u200A').replace(/\s+/g, '\u200A').trim()
 }
 
 const searchDelayTime = computed(() => finalSearchConfig.value?.delay ?? 300)
@@ -136,7 +127,7 @@ watch(
     const searchText
       = typeof finalSearchConfig.value.customSearchQuery === 'function'
         ? finalSearchConfig.value.customSearchQuery(searchWords.value)
-        : searchWords.value
+        : (/[\u4E00-\u9FA5]/.test(searchWords.value) ? chineseSearchOptimize(searchWords.value) : searchWords.value)
 
     try {
       const pagefindSearchResult: any = await window?.__pagefind__
@@ -286,7 +277,7 @@ const pageResultCount = computed(() => finalSearchConfig.value.pageResultCount |
       <span class="search-tip">{{
         finalSearchConfig?.btnPlaceholder || 'Search'
       }}</span>
-      <span class="metaKey"> {{ metaKey }} K </span>
+      <span v-if="metaKey" class="metaKey"> {{ metaKey }} K </span>
     </div>
     <ClientOnly>
       <Command.Dialog :visible="searchModal" theme="algolia">
