@@ -279,12 +279,12 @@ Stride = ((StrideRow0, StrideRow1), (StrideColumn0, StrideColumn1))
     Stride = ((_0{}, _1{}), (_0{}, row))
     ```
 
-MX scaleA要求在矩阵GM上按照ScaleAND Layout或ScaleADN Layout格式排布，在L1上需满足满足按行读取需求，即按照ZZ Layout格式排布。如下图所示，若GM上scaleA矩阵为ScaleAND或者ScaleADN分形排布，搬运到L1后分形为ZZ排布。
+MX scaleA要求在矩阵GM上按照ScaleAND Layout或ScaleADN Layout格式排布，在L1上需满足按行读取需求，即按照ZZ Layout格式排布。如下图所示，若GM上scaleA矩阵为ScaleAND或者ScaleADN分形排布，搬运到L1后分形为ZZ排布。
 
 **图8** scaleA矩阵在不同位置上的排布格式
 ![scaleA矩阵在不同位置上的排布格式](../../figures/scaleA矩阵在不同位置上的排布格式.png)
 
-MX scaleB要求在矩阵GM上按照ScaleBND Layout或ScaleBDN Layout格式排布，在L1上需满足满足按列读取需求，即按照NN Layout格式排布。如下图所示，若GM上scaleB矩阵为ScaleBND或者ScaleBDN分形排布，搬运到L1后分形为NN排布。
+MX scaleB要求在矩阵GM上按照ScaleBND Layout或ScaleBDN Layout格式排布，在L1上需满足按列读取需求，即按照NN Layout格式排布。如下图所示，若GM上scaleB矩阵为ScaleBND或者ScaleBDN分形排布，搬运到L1后分形为NN排布。
 
 **图9** scaleB矩阵在不同位置上的排布格式
 ![scaleB矩阵在不同位置上的排布格式](../../figures/scaleB矩阵在不同位置上的排布格式.png)

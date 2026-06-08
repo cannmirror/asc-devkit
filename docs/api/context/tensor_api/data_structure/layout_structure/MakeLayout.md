@@ -66,5 +66,5 @@ auto layout2 = MakeLayout(MakeShape(8, 16, 32));
 
 // 示例3：嵌套Shape自动推导嵌套Stride
 auto layout3 = MakeLayout(MakeShape(MakeShape(2, 4), MakeShape(8, 16)));
-// 推导得到stride为嵌套结构，用于描述FrameLayout
+// 推导得到stride为嵌套结构，用于描述Layout
 ```
