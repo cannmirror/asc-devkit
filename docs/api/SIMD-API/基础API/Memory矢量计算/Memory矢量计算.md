@@ -1,5 +1,7 @@
 # Memory矢量计算<a name="ZH-CN_TOPIC_0000001376097986"></a>
 
+-   **[Vector逻辑架构](Vector逻辑架构/Vector逻辑架构.md)**  
+
 -   **[SIMD计算说明](SIMD计算说明/SIMD计算说明.md)**  
 
 -   **[基础算术](基础算术/基础算术.md)**  
