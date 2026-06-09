@@ -1,51 +1,36 @@
-# SetBatchNum<a name="ZH-CN_TOPIC_0000001663813760"></a>
+# SetBatchNum
 
-## 功能说明<a name="section618mcpsimp"></a>
+## 功能说明
 
 设置多Batch计算的最大Batch数，最大Batch数为A矩阵[batchA](../../Matmul-Kernel侧接口/SetBatchNum.md#table9646134355611)和B矩阵[batchB](../../Matmul-Kernel侧接口/SetBatchNum.md#table9646134355611)中的最大值。调用[IterateBatch](../../Matmul-Kernel侧接口/IterateBatch.md)接口之前，需要在Host侧Tiling实现中通过本接口设置多Batch计算的Batch数。
 
-## 函数原型<a name="section620mcpsimp"></a>
+## 函数原型
 
 ```
 int32_t SetBatchNum(int32_t batch)
 ```
 
-## 参数说明<a name="section622mcpsimp"></a>
+## 参数说明
 
 **表 1**  参数说明
 
-<a name="table9646134355611"></a>
-<table><thead align="left"><tr id="row964714433565"><th class="cellrowborder" valign="top" width="14.99%" id="mcps1.2.4.1.1"><p id="zh-cn_topic_0235751031_p20917673"><a name="zh-cn_topic_0235751031_p20917673"></a><a name="zh-cn_topic_0235751031_p20917673"></a>参数名</p>
-</th>
-<th class="cellrowborder" valign="top" width="12.02%" id="mcps1.2.4.1.2"><p id="zh-cn_topic_0235751031_p16609919"><a name="zh-cn_topic_0235751031_p16609919"></a><a name="zh-cn_topic_0235751031_p16609919"></a>输入/输出</p>
-</th>
-<th class="cellrowborder" valign="top" width="72.99%" id="mcps1.2.4.1.3"><p id="zh-cn_topic_0235751031_p59995477"><a name="zh-cn_topic_0235751031_p59995477"></a><a name="zh-cn_topic_0235751031_p59995477"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row106481443135617"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p17933133145916"><a name="p17933133145916"></a><a name="p17933133145916"></a>batch</p>
-</td>
-<td class="cellrowborder" valign="top" width="12.02%" headers="mcps1.2.4.1.2 "><p id="p893343112595"><a name="p893343112595"></a><a name="p893343112595"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p99335312592"><a name="p99335312592"></a><a name="p99335312592"></a>多Batch计算的Batch数，Batch数为A矩阵batchA和B矩阵batchB中的最大值。</p>
-</td>
-</tr>
-</tbody>
-</table>
+| 参数名 | 输入/输出 | 描述 |
+| --- | --- | --- |
+| batch | 输入 | 多Batch计算的Batch数，Batch数为A矩阵batchA和B矩阵batchB中的最大值。 |
 
-## 返回值说明<a name="section640mcpsimp"></a>
+## 返回值说明
 
 -1表示设置失败； 0表示设置成功。
 
-## 约束说明<a name="section633mcpsimp"></a>
+## 约束说明
 
 调用[IterateBatch](../../Matmul-Kernel侧接口/IterateBatch.md)接口之前，需要在Host侧Tiling实现中通过本接口设置多Batch计算的Batch数。
 
-## 调用示例<a name="section1665082013318"></a>
+## 调用示例
 
 ```
 auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
-matmul_tiling::MultiCoreMatmulTiling tiling(ascendcPlatform);   
+matmul_tiling::MultiCoreMatmulTiling tiling(ascendcPlatform);
 int32_t M = 32;
 int32_t N = 256;
 int32_t K = 64;

@@ -1,29 +1,29 @@
-# EnableL1BankConflictOptimise<a name="ZH-CN_TOPIC_0000002454330405"></a>
+# EnableL1BankConflictOptimise
 
-## 功能说明<a name="section618mcpsimp"></a>
+## 功能说明
 
 根据[GetTiling](GetTiling.md)接口计算出的Tiling参数，获取是否可以开启L1 Bank冲突优化功能。若可以开启该功能，则与TilingKey机制配合使用，通过增加TilingKey，关联Host侧与Kernel侧实现，并在Kernel侧增加代码实现分支，将MatmulConfig中的[enableL1BankConflictOptimise](../../Matmul-Kernel侧接口/MatmulConfig.md#p84588523128)设置为true，即可优化L1上的Bank冲突。
 
-## 函数原型<a name="section620mcpsimp"></a>
+## 函数原型
 
 ```
 bool EnableL1BankConflictOptimise()
 ```
 
-## 参数说明<a name="section622mcpsimp"></a>
+## 参数说明
 
 无
 
-## 返回值说明<a name="section640mcpsimp"></a>
+## 返回值说明
 
 -   false：Kernel侧不能开启L1 Bank冲突优化。
 -   true：Kernel侧可以开启L1 Bank冲突优化。
 
-## 约束说明<a name="section633mcpsimp"></a>
+## 约束说明
 
 使用创建的Tiling对象调用本接口，且需在完成Tiling计算（[GetTiling](GetTiling.md)）后调用本接口。
 
-## 调用示例<a name="section1665082013318"></a>
+## 调用示例
 
 ```
 auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());

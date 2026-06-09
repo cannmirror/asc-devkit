@@ -1,82 +1,82 @@
-# Matmul Tiling类<a name="ZH-CN_TOPIC_0000001570916154"></a>
+# Matmul Tiling类
 
--   **[Matmul Tiling类使用说明](Matmul-Tiling类使用说明.md)**  
+-   **[Matmul Tiling类使用说明](Matmul-Tiling类使用说明.md)**
 
--   **[Matmul Tiling类构造函数](Matmul-Tiling类构造函数.md)**  
+-   **[Matmul Tiling类构造函数](Matmul-Tiling类构造函数.md)**
 
--   **[TCubeTiling结构体](TCubeTiling结构体.md)**  
+-   **[TCubeTiling结构体](TCubeTiling结构体.md)**
 
--   **[SetAType](SetAType.md)**  
+-   **[SetAType](SetAType.md)**
 
--   **[SetBType](SetBType.md)**  
+-   **[SetBType](SetBType.md)**
 
--   **[SetScaleAType](SetScaleAType.md)**  
+-   **[SetScaleAType](SetScaleAType.md)**
 
--   **[SetScaleBType](SetScaleBType.md)**  
+-   **[SetScaleBType](SetScaleBType.md)**
 
--   **[SetCType](SetCType.md)**  
+-   **[SetCType](SetCType.md)**
 
--   **[SetBiasType](SetBiasType.md)**  
+-   **[SetBiasType](SetBiasType.md)**
 
--   **[SetSingleShape](SetSingleShape-86.md)**  
+-   **[SetSingleShape](SetSingleShape-86.md)**
 
--   **[SetShape](SetShape.md)**  
+-   **[SetShape](SetShape.md)**
 
--   **[SetOrgShape](SetOrgShape-87.md)**  
+-   **[SetOrgShape](SetOrgShape-87.md)**
 
--   **[SetFixSplit](SetFixSplit.md)**  
+-   **[SetFixSplit](SetFixSplit.md)**
 
--   **[EnableMultiCoreSplitK](EnableMultiCoreSplitK.md)**  
+-   **[EnableMultiCoreSplitK](EnableMultiCoreSplitK.md)**
 
--   **[EnableBias](EnableBias.md)**  
+-   **[EnableBias](EnableBias.md)**
 
--   **[SetBufferSpace](SetBufferSpace.md)**  
+-   **[SetBufferSpace](SetBufferSpace.md)**
 
--   **[SetTraverse](SetTraverse.md)**  
+-   **[SetTraverse](SetTraverse.md)**
 
--   **[SetMadType](SetMadType.md)**  
+-   **[SetMadType](SetMadType.md)**
 
--   **[SetSplitRange](SetSplitRange.md)**  
+-   **[SetSplitRange](SetSplitRange.md)**
 
--   **[SetDoubleBuffer](SetDoubleBuffer.md)**  
+-   **[SetDoubleBuffer](SetDoubleBuffer.md)**
 
--   **[GetBaseM](GetBaseM.md)**  
+-   **[GetBaseM](GetBaseM.md)**
 
--   **[GetBaseN](GetBaseN.md)**  
+-   **[GetBaseN](GetBaseN.md)**
 
--   **[GetBaseK](GetBaseK.md)**  
+-   **[GetBaseK](GetBaseK.md)**
 
--   **[GetTiling](GetTiling.md)**  
+-   **[GetTiling](GetTiling.md)**
 
--   **[EnableL1BankConflictOptimise](EnableL1BankConflictOptimise.md)**  
+-   **[EnableL1BankConflictOptimise](EnableL1BankConflictOptimise.md)**
 
--   **[SetDim](SetDim.md)**  
+-   **[SetDim](SetDim.md)**
 
--   **[SetSingleRange](SetSingleRange.md)**  
+-   **[SetSingleRange](SetSingleRange.md)**
 
--   **[GetSingleShape](GetSingleShape.md)**  
+-   **[GetSingleShape](GetSingleShape.md)**
 
--   **[GetCoreNum](GetCoreNum.md)**  
+-   **[GetCoreNum](GetCoreNum.md)**
 
--   **[SetAlignSplit](SetAlignSplit.md)**  
+-   **[SetAlignSplit](SetAlignSplit.md)**
 
--   **[SetDequantType](SetDequantType.md)**  
+-   **[SetDequantType](SetDequantType.md)**
 
--   **[SetALayout](SetALayout.md)**  
+-   **[SetALayout](SetALayout.md)**
 
--   **[SetBLayout](SetBLayout.md)**  
+-   **[SetBLayout](SetBLayout.md)**
 
--   **[SetCLayout](SetCLayout.md)**  
+-   **[SetCLayout](SetCLayout.md)**
 
--   **[SetBatchNum](SetBatchNum-88.md)**  
+-   **[SetBatchNum](SetBatchNum-88.md)**
 
--   **[SetBatchInfoForNormal](SetBatchInfoForNormal.md)**  
+-   **[SetBatchInfoForNormal](SetBatchInfoForNormal.md)**
 
--   **[SetMatmulConfigParams](SetMatmulConfigParams.md)**  
+-   **[SetMatmulConfigParams](SetMatmulConfigParams.md)**
 
--   **[SetBias](SetBias-89.md)**  
+-   **[SetBias](SetBias-89.md)**
 
--   **[SetSplitK](SetSplitK.md)**  
+-   **[SetSplitK](SetSplitK.md)**
 
--   **[SetSparse](SetSparse.md)**  
+-   **[SetSparse](SetSparse.md)**
 

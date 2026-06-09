@@ -1,14 +1,14 @@
-# 获取Matmul计算所需空间<a name="ZH-CN_TOPIC_0000001683196464"></a>
+# 获取Matmul计算所需空间
 
--   **[MultiCoreMatmulGetTmpBufSize](MultiCoreMatmulGetTmpBufSize.md)**  
+-   **[MultiCoreMatmulGetTmpBufSize](MultiCoreMatmulGetTmpBufSize.md)**
 
--   **[MultiCoreMatmulGetTmpBufSizeV2](MultiCoreMatmulGetTmpBufSizeV2.md)**  
+-   **[MultiCoreMatmulGetTmpBufSizeV2](MultiCoreMatmulGetTmpBufSizeV2.md)**
 
--   **[BatchMatmulGetTmpBufSize](BatchMatmulGetTmpBufSize.md)**  
+-   **[BatchMatmulGetTmpBufSize](BatchMatmulGetTmpBufSize.md)**
 
--   **[BatchMatmulGetTmpBufSizeV2](BatchMatmulGetTmpBufSizeV2.md)**  
+-   **[BatchMatmulGetTmpBufSizeV2](BatchMatmulGetTmpBufSizeV2.md)**
 
--   **[MatmulGetTmpBufSize](MatmulGetTmpBufSize.md)**  
+-   **[MatmulGetTmpBufSize](MatmulGetTmpBufSize.md)**
 
--   **[MatmulGetTmpBufSizeV2](MatmulGetTmpBufSizeV2.md)**  
+-   **[MatmulGetTmpBufSizeV2](MatmulGetTmpBufSizeV2.md)**
 
