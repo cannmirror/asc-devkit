@@ -96,7 +96,7 @@
 
 - `__mix__(1, 2)`场景下SetDim和kernel启动核数配置说明：
 
-  MIX场景（包含矩阵计算和适量计算），分离模式下（本样例支持的产品的基本架构为分离模式），Matmul API是从AIV侧发起的，AIV调用`Iterate`时通知AIC做矩阵计算，AIC完成后再通知AIV。因此tiling侧按AIV视角切分任务。
+  MIX场景（包含矩阵计算和矢量计算），分离模式下（本样例支持的产品的基本架构为分离模式），Matmul API是从AIV侧发起的，AIV调用`Iterate`时通知AIC做矩阵计算，AIC完成后再通知AIV。因此tiling侧按AIV视角切分任务。
 
   本样例中`SetDim(2)`表示tiling侧按照2个AIV逻辑核生成Matmul分核参数；`__mix__(1, 2)`表示每个AI Core组合包含1个AIC和2个AIV；
   

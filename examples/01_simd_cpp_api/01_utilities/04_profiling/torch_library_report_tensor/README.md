@@ -17,10 +17,8 @@
 ```
 ├── torch_library_report_tensor
 │   ├── CMakeLists.txt           // 编译工程文件
-│   ├── add_custom_test.py       // PyTorch调用脚本
-│   ├── add_custom.asc           // torch.library算子注册、Profiling上报和Add Kernel实现
-│   ├── README.md                // 中文说明文档
-│   ├── README_en.md             // 英文说明文档
+│   ├── torch_library_report_tensor.py   // PyTorch调用脚本
+│   └── torch_library_report_tensor.asc  // torch.library算子注册、Profiling上报和Add Kernel实现
 ```
 
 ## 样例描述
@@ -51,7 +49,7 @@
 
   1. `torch.library`算子注册
 
-     `add_custom.asc`中定义了`ascendc_ops`命名空间，并通过`TORCH_LIBRARY`和`TORCH_LIBRARY_IMPL`注册`ascendc_add`。Python侧可以通过如下方式调用：
+     `torch_library_report_tensor.asc`中定义了`ascendc_ops`命名空间，并通过`TORCH_LIBRARY`和`TORCH_LIBRARY_IMPL`注册`ascendc_add`。Python侧可以通过如下方式调用：
 
      ```python
      torch.ops.ascendc_ops.ascendc_add(x.npu(), y.npu())
@@ -88,7 +86,7 @@
 
 - Python测试脚本
 
-  在`add_custom_test.py`调用脚本中，通过`torch.ops.load_library`加载生成的自定义动态库，调用注册的`ascendc_add`函数，并将NPU计算结果与CPU的`torch.add`结果进行比对。
+  在`torch_library_report_tensor.py`调用脚本中，通过`torch.ops.load_library`加载生成的自定义动态库，调用注册的`ascendc_add`函数，并将NPU计算结果与CPU的`torch.add`结果进行比对。
 
 ## 编译运行
 

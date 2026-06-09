@@ -22,7 +22,7 @@
 ## 目录结构介绍
 
 ```
-├── simd_and_simt_integer_fast_div
+├── simt_and_simd_integer_fast_div
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── integer_div.asc         // 整数除法样例实现
 │   └── README.md
