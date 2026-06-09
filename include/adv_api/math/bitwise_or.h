@@ -23,7 +23,7 @@
 #define LIB_MATH_BITWISE_OR_H
 
 #include "kernel_tensor.h"
-#include "bitwise_or_utils.h"
+#include "include/adv_api/math/bitwise_or_utils.h"
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 #include "../../../impl/adv_api/detail/math/bitwise_or/bitwise_or_3510_impl.h"

@@ -21,7 +21,7 @@
 #define LIB_MATH_PHILOX_H
 
 #include "kernel_tensor.h"
-#include "philox_utils.h"
+#include "include/adv_api/math/philox_utils.h"
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 #include "../../../impl/adv_api/detail/math/philox/philox_3510_impl.h"

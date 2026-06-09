@@ -23,7 +23,7 @@
 #define LIB_MATH_IS_NAN_H
 
 #include "kernel_tensor.h"
-#include "is_nan_utils.h"
+#include "include/adv_api/math/is_nan_utils.h"
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 #include "../../../impl/adv_api/detail/math/isnan/is_nan_common_impl.h"
