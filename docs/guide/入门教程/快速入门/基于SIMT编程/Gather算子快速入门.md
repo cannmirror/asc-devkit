@@ -14,11 +14,11 @@
 
     计算逻辑：根据索引张量`index`中的每个元素，从一维输入向量`input`中采集对应位置的数据，并写入输出张量`output`。
 
-- **算子设计**
+- **算子设计**：
 
     - **Device端核函数编程接口**
         - 核函数定义：通过 [\_\_global\_\_](../../../编程指南/语言扩展层/SIMT-BuiltIn关键字.md) 修饰符声明。
-        - 数据分块（Tiling）：使用内置关键字 [threadIdx、blockIdx、blockDim](../../../编程指南/语言扩展层/SIMT-BuiltIn关键字.md) 确定每个线程负责处理的数据。
+        - 数据划分：使用内置关键字 [threadIdx、blockIdx、blockDim](../../../编程指南/语言扩展层/SIMT-BuiltIn关键字.md) 计算线程索引，并为每个线程分配需要处理的数据元素。
         - 数据搬入：无需额外接口，直接通过指针访问即可。
         - 数据计算：根据`index`中的索引值及操作符`[]`读取输入数据。
         - 数据搬出：无需额外接口，直接通过指针访问即可。
@@ -26,7 +26,7 @@
         - 内存分配：使用 `aclrtMallocHost`分配Host Memory，`aclrtMalloc`分配Device Memory。
         - 数据搬入：使用 `aclrtMemcpy` 将输入数据从Host Memory拷贝到Device Memory。
         - 启动NPU计算任务：通过 `<<<...>>>`语法糖启动核函数。
-        - 同步等待：调用 `aclrtSynchronizeStream`或 `aclrtSynchronizeDevice`等待任务完成。
+        - 同步等待：调用`aclrtSynchronizeStream`等待当前Stream上的任务完成，或调用`aclrtSynchronizeDevice`等待Device上所有任务完成。
         - 数据搬出：使用 `aclrtMemcpy`将计算结果从Device Memory拷贝回Host Memory。
 
 - **算子代码实现**：
@@ -68,7 +68,10 @@
             aclrtMemcpy(input_device, input_total_byte_size, input_host, input_total_byte_size, ACL_MEMCPY_HOST_TO_DEVICE);
             aclrtMemcpy(index_device, index_total_byte_size, index_host, index_total_byte_size, ACL_MEMCPY_HOST_TO_DEVICE);
 
-            // Configure kernel launch parameters
+            // Configure kernel launch parameters.
+            // In this sample, index.size() is 48 * 256, so 48 blocks and 256 threads per block
+            // cover one output element per thread. For general input lengths, use
+            // blocks_per_grid = (index.size() + threads_per_block - 1) / threads_per_block.
             uint32_t blocks_per_grid = 48; // Number of thread blocks (Grid size)
             uint32_t threads_per_block = 256; // Number of threads per block (Block size)
             uint32_t dyn_ubuf_size = 0;  // No dynamic memory required in this sample
