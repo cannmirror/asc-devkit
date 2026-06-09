@@ -34,7 +34,7 @@ namespace AscendC {
  * dst[i+1] = dst[i] + diffValue
  *
  * \note support data type: half, float, int16_t, int32_t
- * \note Ascend910 support data type: half, float, int16_t, int32_t, int64_t
+ * \note Ascend950 support data type: half, float, int16_t, int32_t, int64_t
  *
  * \param [out] dst, output LocalTensor
  * \param [in] firstValue, first value of arithmetic sequence
