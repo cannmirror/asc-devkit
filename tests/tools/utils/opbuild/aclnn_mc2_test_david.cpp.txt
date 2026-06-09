@@ -60,6 +60,8 @@ enum NnopbaseHcclServerType {
 uint32_t socSupportList[] = {SOC_VERSION_ASCEND950};
 uint32_t socSupportListLen = 1;
 
+static const char *socNameList[] = {"ascend950"};
+static const size_t socNameListLen = 1;
 NnopbaseHcclServerType hcclServerTypeList[] = {NNOPBASE_HCCL_SERVER_TYPE_CCU};
 
 TensorDesc inputDesc0_0[1] =
@@ -102,11 +104,13 @@ extern aclnnStatus NnopbaseAddBoolArrayAttr(void *executor, const aclBoolArray* 
 extern aclnnStatus NnopbaseAddArrayAttrWithDtype(void *executor, void *array, const size_t len, const size_t elementSize, const size_t index, const NnopbaseAttrDtype dtype);
 extern uint64_t NnopbaseMsprofSysTime();
 extern uint32_t __attribute__((weak)) NnopbaseGetSocEnum();
+extern const char* __attribute__((weak)) NnopbaseGetSocName();
 extern aclnnStatus NnopbaseAddTilingId(void *executor, NnopbaseDfxId *tilingId);
 extern void NnopbaseReportApiInfo(const uint64_t beginTime, NnopbaseDfxId &dfxId);
 extern aclnnStatus NnopbaseRunForWorkspace(void *executor, uint64_t *workspaceLen);
 extern aclnnStatus NnopbaseRunWithWorkspace(void *executor, aclrtStream stream, void *workspace, uint64_t workspaceSize);
 extern aclnnStatus NnopbaseAddSupportList(void *executor, OpSupportList *list, uint32_t *socSupportList, size_t socSupportListLen);
+extern aclnnStatus __attribute__((weak)) NnopbaseAddSocNameList(void *executor, OpSupportList *list, const char * const *socNameList, size_t socNameListLen);
 extern aclnnStatus NnopbaseAddScalarInput(void *executor, const aclScalar *scalar, const uint32_t index, const int32_t srcIndex, const ge::DataType dtype);
 extern aclnnStatus NnopbaseAddScalarListInput(void *executor, const aclScalarList *scalarList, const uint32_t index, const int32_t srcIndex, const ge::DataType dtype);
 extern void NnopbaseAddOpTypeId(void *executor, const uint32_t opTypeId);
@@ -115,9 +119,11 @@ extern aclnnStatus __attribute__((weak)) NnopbaseSetFormatMatchMode(void *execut
 extern aclnnStatus NnopbaseSetRef(void *executor, const size_t inputIrIdx, const size_t outputIrIdx);
 extern void __attribute__((weak)) NnopbaseSetMatchArgsFlag(void *executor);
 extern bool __attribute__((weak)) NnopbaseMatchArgs(void *executor, uint64_t *workspaceLen);
+extern void __attribute__((weak)) NnopbaseSetParamCheckMode(void *executor, const uint32_t mode);
 extern aclnnStatus NnopbaseSetMc2(void *const executor);
 extern aclnnStatus NnopbaseSetHcomGroup(void *const executor, char *const group);
-extern void NnopbaseSetHcclServerTypeList(void *executor, NnopbaseHcclServerType *hcclServerTypeList, uint32_t *socSupportList, size_t socSupportListLen);
+extern void NnopbaseSetHcclServerTypeList(void *executor, NnopbaseHcclServerType *hcclServerTypeList, const uint32_t *socSupportList, size_t socSupportListLen);
+extern aclnnStatus __attribute__((weak)) NnopbaseSetHcclServerTypeBySocName(void *executor, NnopbaseHcclServerType *hcclServerTypeList, const char * const *socNameList, size_t socNameListLen);
 
 #define ACLNN_SUCCESS  0
 #define ACLNN_ERR_PARAM_NULLPTR 161001
@@ -173,7 +179,11 @@ aclnnStatus aclnnMC2TestDavidGetWorkspaceSize(
     if (NnopbaseSetMatchArgsFlag != NULL) {
         NnopbaseSetMatchArgsFlag(*executor);
     }
-    NnopbaseSetHcclServerTypeList(*executor, hcclServerTypeList, socSupportList, socSupportListLen);
+    if (NnopbaseSetHcclServerTypeBySocName != NULL) {
+        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseSetHcclServerTypeBySocName(*executor, hcclServerTypeList, socNameList, socNameListLen));
+    } else {
+        NnopbaseSetHcclServerTypeList(*executor, hcclServerTypeList, socSupportList, socSupportListLen);
+    }
     NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, x, 0));
     NNOPBASE_ASSERT_NOTNULL_RETVAL(group1);
     NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddAttrWithDtype(*executor, static_cast<void*>(group1), strlen(group1) + 1, 0, kNnopbaseString));
@@ -197,7 +207,11 @@ aclnnStatus aclnnMC2TestDavidGetWorkspaceSize(
         NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddParamName(*executor, 0, "x", true));
         NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddParamName(*executor, 0, "out", false));
     }
-    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddSupportList(*executor, &supportList, socSupportList, socSupportListLen));
+    if (NnopbaseAddSocNameList != NULL) {
+        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddSocNameList(*executor, &supportList, socNameList, socNameListLen));
+    } else {
+        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddSupportList(*executor, &supportList, socSupportList, socSupportListLen));
+    }
     NNOPBASE_ASSERT_OK_RETVAL(NnopbaseRunForWorkspace(*executor, workspaceSize));
     NnopbaseReportApiInfo(timeStamp, dfxId);
     return ACLNN_SUCCESS;

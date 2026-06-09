@@ -1308,7 +1308,8 @@ TEST_F(TEST_OPBUILD, GenMc2Failed03)
 
     std::vector<std::string> opsvec({"MC2TestHcclServerTypeFail"});
     AclnnOpGenerator opGen(opsvec);
-    opGen.AclnnOpGenHcclServerTypeList(opDef, outfile);
+    auto socEntries = opGen.BuildUnifiedSocList(opDef);
+    opGen.AclnnOpGenHcclServerTypeList(opDef, socEntries, outfile);
     outfile.close();
 
     std::vector<std::string> errMessage = Generator::GetErrorMessage();
@@ -1333,23 +1334,17 @@ TEST_F(TEST_OPBUILD, AclnnGenFailedWithoutSoc)
 
     std::vector<std::string> opsvec({"TestFail"});
     AclnnOpGenerator opGen(opsvec);
-    opGen.AclnnOpGenOpSupportListAll(opDef, outfile);
+    auto socEntries = opGen.BuildUnifiedSocList(opDef);
+    opGen.AclnnOpGenOpSupportListAll(opDef, socEntries, outfile);
     outfile.close();
 
-    std::vector<std::string> errMessage = Generator::GetErrorMessage();
-    bool hasErrorMessage = false;
-    const std::string err =
-        "The soc version of op TestFail is not configured,"
-        " at least one soc version must be configured."
-        " Check whether the soc version is added to the op proto type"
-        " definition in the host implementation(Opdef, through AddConfig).";
-    for (size_t i = 0U; i < errMessage.size(); i++) {
-        if (errMessage[i] == err) {
-            hasErrorMessage = true;
-            break;
-        }
-    }
-    EXPECT_TRUE(hasErrorMessage);
+    std::ifstream resultFile(fileName);
+    std::string content((std::istreambuf_iterator<char>(resultFile)),
+                         std::istreambuf_iterator<char>());
+    resultFile.close();
+    bool hasEmptySupportList = (content.find("OpSupportList supportList = {opSocSupportList, 0};") != std::string::npos);
+    EXPECT_TRUE(hasEmptySupportList);
+    remove(fileName.c_str());
 }
 
 TEST_F(TEST_OPBUILD, AclnnGenVersionFailed01)
@@ -1606,7 +1601,8 @@ TEST_F(TEST_OPBUILD, AclnnKirinX90socVersion)
 
     std::vector<std::string> opsvec({"Test"});
     AclnnOpGenerator opGen(opsvec);
-    opGen.AclnnOpGenSocSupportList(opDef, outfile);
+    auto socEntries = opGen.BuildUnifiedSocList(opDef);
+    opGen.AclnnOpGenSocSupportList(socEntries, outfile);
     outfile.close();
 
     std::vector<std::string> errMessage = Generator::GetErrorMessage();
@@ -1649,7 +1645,8 @@ TEST_F(TEST_OPBUILD, AclnnErrorInputDtypeSize)
 
     std::vector<std::string> opsvec({"ErrorInput"});
     AclnnOpGenerator opGen(opsvec);
-    opGen.AclnnOpGenOpSupportListAll(opDef, outfile);
+    auto socEntries = opGen.BuildUnifiedSocList(opDef);
+    opGen.AclnnOpGenOpSupportListAll(opDef, socEntries, outfile);
     outfile.close();
 
     std::vector<std::string> errMessage = Generator::GetErrorMessage();
@@ -1685,7 +1682,8 @@ TEST_F(TEST_OPBUILD, AclnnErrorOutputDtypeSize)
 
     std::vector<std::string> opsvec({"ErrorOutput"});
     AclnnOpGenerator opGen(opsvec);
-    opGen.AclnnOpGenOpSupportListAll(opDef, outfile);
+    auto socEntries = opGen.BuildUnifiedSocList(opDef);
+    opGen.AclnnOpGenOpSupportListAll(opDef, socEntries, outfile);
     outfile.close();
 
     std::vector<std::string> errMessage = Generator::GetErrorMessage();
@@ -1853,6 +1851,47 @@ TEST_F(TEST_OPBUILD, AclnnSocVersionDynamicIgnoreContRunSuccess)
         gen_ss.str("");
         system(("rm -rf " + gen_file).c_str());
     }
+}
+
+TEST_F(TEST_OPBUILD, AclnnAddTik2WithComputeUnitRunSuccess)
+{
+    char buf[1024];
+    char *cur_path = getcwd(buf, 1023);
+    char *so_path = getenv("OPS_DSO_FILE_PATH");
+    char *src_path = getenv("OPS_SRC_FILE_PATH");
+    EXPECT_TRUE(nullptr != so_path);
+    EXPECT_TRUE(nullptr != src_path);
+    setenv("OPS_PROJECT_NAME", "aclnn_compute_unit", 1);
+    setenv("OPS_DIRECT_ACCESS_PREFIX", "aclnn", 1);
+    opbuild::Params::GetInstance().optionParams_["compute_unit"] = "ascend910b";
+    (void)opbuild_main(3, {"opbuild", so_path, "."});
+    opbuild::Params::GetInstance().optionParams_.erase("compute_unit");
+    std::string src_file, gen_file;
+    std::ifstream src_if, gen_if;
+    std::stringstream src_ss, gen_ss;
+    std::vector<std::string> src_files = {"/aclnn_compute_unit_add_tik2.h.txt",
+        "/aclnn_compute_unit_add_tik2.cpp.txt"};
+    std::vector<std::string> gen_files = {"/aclnn_compute_unit_add_tik2.h",
+        "/aclnn_compute_unit_add_tik2.cpp"};
+    for (size_t i = 0U; i < src_files.size(); i++) {
+        src_file = std::string(src_path) + src_files[i];
+        gen_file = std::string(cur_path) + gen_files[i];
+        std::cout << "compare " << src_file << " and " << gen_file << std::endl;
+        src_if.open(src_file);
+        EXPECT_TRUE(src_if.is_open());
+        src_ss << src_if.rdbuf();
+        gen_if.open(gen_file);
+        EXPECT_TRUE(gen_if.is_open());
+        gen_ss << gen_if.rdbuf();
+        EXPECT_EQ(src_ss.str(), gen_ss.str());
+        src_if.close();
+        gen_if.close();
+        src_ss.str("");
+        gen_ss.str("");
+        system(("rm -rf " + gen_file).c_str());
+    }
+    unsetenv("OPS_PROJECT_NAME");
+    unsetenv("OPS_DIRECT_ACCESS_PREFIX");
 }
 
 } // namespace ops

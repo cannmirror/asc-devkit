@@ -128,7 +128,7 @@ public:
             .DynamicShapeSupportFlag(true)
             .NeedCheckSupportFlag(true)
             .PrecisionReduceFlag(true);
-        this->AICore().AddConfig("ascend310p", aicConfig);
+        this->AICore().AddConfig("ascend310p");
         this->AICore().AddConfig("ascend910", aicConfig);
         this->AICore().AddConfig("ascendxxx", aicConfig);
         this->FormatMatchMode(FormatCheckOption::STRICT);
@@ -252,7 +252,7 @@ public:
     RefContiguousTest(const char* name) : OpDef(name)
     {
         this->Input("self").DataType({ ge::DT_FLOAT }).AutoContiguous();
-        this->Input("x").DataType({ ge::DT_INT64 });
+        this->Input("x").DataType({ ge::DT_INT64 }).AutoContiguous();
         this->Output("self").DataType({ ge::DT_FLOAT });
         OpAICoreConfig aicConfig;
         this->AICore().AddConfig("ascend910", aicConfig);
@@ -334,6 +334,7 @@ public:
         this->AICore().AddConfig("ascend950", aicConfig);
         this->MC2().HcclGroup({"group2", "group1"});
         this->MC2().HcclServerType(HcclServerType::CCU, "ascend950");
+        this->MC2().HcclServerType(HcclServerType::CCU, "ascend_undefined_soc");
         this->EnableFallBack();
     }
 };
@@ -393,6 +394,7 @@ public:
         config_b.Input("x3").ParamType(REQUIRED).DataType({ ge::DT_INT64 });
         config_b.Output("y1").ParamType(REQUIRED).DataType({ ge::DT_INT64 });
         this->AICore().AddConfig("ascend910b", config_b);
+        this->AICore().AddConfig("ascend_undefined_soc", config_b);
     }
 };
 OP_ADD(SocVersionTest1);
@@ -549,5 +551,21 @@ public:
     }
 };
 OP_ADD(RmsNormGradTest);
+
+class InvalidSocTest : public OpDef {
+public:
+    InvalidSocTest(const char* name) : OpDef(name)
+    {
+        this->Input("x1").DataType({ ge::DT_FLOAT16 });
+        this->Input("x2").DataType({ ge::DT_FLOAT16 }).ParamType(DYNAMIC);
+        OpAICoreConfig aicConfig;
+        this->AICore().AddConfig("ascend_invalid_soc", aicConfig);
+        this->AICore().AddConfig("ASCEND_INVALID_SOC", aicConfig);
+        this->AICore().AddConfig("ASCEND_INVALID_SOC", aicConfig);
+        this->MC2().HcclServerType(HcclServerType::AICORE, "ASCEND_INVALID_SOC");
+    }
+};
+
+OP_ADD(InvalidSocTest);
 
 } // namespace ops

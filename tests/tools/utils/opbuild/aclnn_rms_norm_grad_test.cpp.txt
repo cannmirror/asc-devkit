@@ -54,6 +54,8 @@ enum NnopbaseAttrDtype {
 uint32_t socSupportList[] = {SOC_VERSION_ASCEND310P,SOC_VERSION_ASCEND910A,SOC_VERSION_ASCEND910_93,SOC_VERSION_ASCEND910B};
 uint32_t socSupportListLen = 4;
 
+static const char *socNameList[] = {"ascend310p", "ascend910", "ascend910_93", "ascend910b"};
+static const size_t socNameListLen = 4;
 TensorDesc inputDesc0_0[4] =
     {{ge::DT_FLOAT16, ge::FORMAT_ND},
      {ge::DT_FLOAT16, ge::FORMAT_ND},
@@ -196,6 +198,26 @@ OpSocSupportInfo opSocSupportList[4] = {socSupportInfo0, socSupportInfo1, socSup
 OpSupportList supportList = {opSocSupportList, 4};
 
 [[maybe_unused]] uint32_t NNOPBASE_RmsNormGradTest = 0U;
+static bool NnopbaseMatchSocName(const char *socName, const char * const *nameList, size_t nameCount) {
+    if (socName == NULL) return false;
+    for (size_t i = 0; i < nameCount; i++) {
+        if (strcmp(socName, nameList[i]) == 0) return true;
+    }
+    return false;
+}
+static bool NnopbaseMatchSocEnum(uint32_t socEnum, const uint32_t *enumList, size_t enumCount) {
+    if (enumList == NULL) return false;
+    for (size_t i = 0; i < enumCount; i++) {
+        if (socEnum == enumList[i]) return true;
+    }
+    return false;
+}
+static const char *socMatch0Names[] = {"ascend910_93", "ascend910b"};
+static const uint32_t socMatch0Enums[] = {SOC_VERSION_ASCEND910_93, SOC_VERSION_ASCEND910B};
+static const char *socMatch1Names[] = {"ascend310p"};
+static const uint32_t socMatch1Enums[] = {SOC_VERSION_ASCEND310P};
+static const char *socMatch2Names[] = {"ascend910", "ascend910_93", "ascend910b"};
+static const uint32_t socMatch2Enums[] = {SOC_VERSION_ASCEND910A, SOC_VERSION_ASCEND910_93, SOC_VERSION_ASCEND910B};
 } // namespace
 
 extern void NnopbaseOpLogE(const aclnnStatus code, const char *const expr);
@@ -224,11 +246,13 @@ extern aclnnStatus NnopbaseAddBoolArrayAttr(void *executor, const aclBoolArray* 
 extern aclnnStatus NnopbaseAddArrayAttrWithDtype(void *executor, void *array, const size_t len, const size_t elementSize, const size_t index, const NnopbaseAttrDtype dtype);
 extern uint64_t NnopbaseMsprofSysTime();
 extern uint32_t __attribute__((weak)) NnopbaseGetSocEnum();
+extern const char* __attribute__((weak)) NnopbaseGetSocName();
 extern aclnnStatus NnopbaseAddTilingId(void *executor, NnopbaseDfxId *tilingId);
 extern void NnopbaseReportApiInfo(const uint64_t beginTime, NnopbaseDfxId &dfxId);
 extern aclnnStatus NnopbaseRunForWorkspace(void *executor, uint64_t *workspaceLen);
 extern aclnnStatus NnopbaseRunWithWorkspace(void *executor, aclrtStream stream, void *workspace, uint64_t workspaceSize);
 extern aclnnStatus NnopbaseAddSupportList(void *executor, OpSupportList *list, uint32_t *socSupportList, size_t socSupportListLen);
+extern aclnnStatus __attribute__((weak)) NnopbaseAddSocNameList(void *executor, OpSupportList *list, const char * const *socNameList, size_t socNameListLen);
 extern aclnnStatus NnopbaseAddScalarInput(void *executor, const aclScalar *scalar, const uint32_t index, const int32_t srcIndex, const ge::DataType dtype);
 extern aclnnStatus NnopbaseAddScalarListInput(void *executor, const aclScalarList *scalarList, const uint32_t index, const int32_t srcIndex, const ge::DataType dtype);
 extern void NnopbaseAddOpTypeId(void *executor, const uint32_t opTypeId);
@@ -237,6 +261,7 @@ extern aclnnStatus __attribute__((weak)) NnopbaseSetFormatMatchMode(void *execut
 extern aclnnStatus NnopbaseSetRef(void *executor, const size_t inputIrIdx, const size_t outputIrIdx);
 extern void __attribute__((weak)) NnopbaseSetMatchArgsFlag(void *executor);
 extern bool __attribute__((weak)) NnopbaseMatchArgs(void *executor, uint64_t *workspaceLen);
+extern void __attribute__((weak)) NnopbaseSetParamCheckMode(void *executor, const uint32_t mode);
 extern aclnnStatus NnopbaseGetUnContiguousTensors(void *executor, const aclTensorList **inTensors);
 extern aclnnStatus NnopbaseSetUnContExecutor(void *executor, aclOpExecutor *inExe, const size_t inWsSize);
 extern aclnnStatus NnopbaseGetUnContExecutor(void *executor, aclOpExecutor **inExe, size_t *inWsSize);
@@ -309,29 +334,21 @@ aclnnStatus aclnnRmsNormGradTestGetWorkspaceSize(
     if (NnopbaseSetMatchArgsFlag != NULL) {
         NnopbaseSetMatchArgsFlag(*executor);
     }
-    uint32_t currentSoc = SOC_VERSION_INVALID;
-    if (NnopbaseGetSocEnum != NULL) {
-        currentSoc = NnopbaseGetSocEnum();
-        if (currentSoc == SOC_VERSION_INVALID) {
-            NnopbaseOpLogE(ACLNN_ERR_PARAM_INVALID, "Aclnn does not support current socVersion!");
-            return ACLNN_ERR_PARAM_INVALID;
-        }
-        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, dy, 0));
-        if (currentSoc == SOC_VERSION_ASCEND910_93 || currentSoc == SOC_VERSION_ASCEND910B) {
-            NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContinuesInput(*executor, x, 1));
-        } else {
-            NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, x, 1));
-        }
-        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, rstd, 2));
-        if (currentSoc == SOC_VERSION_ASCEND310P) {
-            NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContinuesInput(*executor, gamma, 3));
-        } else {
-            NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, gamma, 3));
-        }
-    } else {
-        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, dy, 0));
+    const char *currentSocName = (NnopbaseGetSocName != NULL) ? NnopbaseGetSocName() : NULL;
+    uint32_t currentSocEnum = SOC_VERSION_INVALID;
+    if (currentSocName == NULL && NnopbaseGetSocEnum != NULL) {
+        currentSocEnum = NnopbaseGetSocEnum();
+    }
+    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, dy, 0));
+    if ((currentSocName != NULL && NnopbaseMatchSocName(currentSocName, socMatch0Names, 2)) || (currentSocName == NULL && NnopbaseMatchSocEnum(currentSocEnum, socMatch0Enums, 2))) {
         NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContinuesInput(*executor, x, 1));
-        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, rstd, 2));
+    } else {
+        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, x, 1));
+    }
+    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, rstd, 2));
+    if ((currentSocName != NULL && NnopbaseMatchSocName(currentSocName, socMatch1Names, 1)) || (currentSocName == NULL && NnopbaseMatchSocEnum(currentSocEnum, socMatch1Enums, 1))) {
+        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContinuesInput(*executor, gamma, 3));
+    } else {
         NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, gamma, 3));
     }
     NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddOutput(*executor, dxOut, 0));
@@ -350,11 +367,15 @@ aclnnStatus aclnnRmsNormGradTestGetWorkspaceSize(
         NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddParamName(*executor, 0, "dxOut", false));
         NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddParamName(*executor, 1, "dgammaOut", false));
     }
-    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddSupportList(*executor, &supportList, socSupportList, socSupportListLen));
+    if (NnopbaseAddSocNameList != NULL) {
+        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddSocNameList(*executor, &supportList, socNameList, socNameListLen));
+    } else {
+        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddSupportList(*executor, &supportList, socSupportList, socSupportListLen));
+    }
 
     uint64_t inContWorkspaceSize = 0U;
     const aclTensorList *inUnContTensors = nullptr;
-    if (NnopbaseGetSocEnum == NULL || (currentSoc == SOC_VERSION_ASCEND910A || currentSoc == SOC_VERSION_ASCEND910_93 || currentSoc == SOC_VERSION_ASCEND910B)) {
+    if ((NnopbaseGetSocName == NULL && NnopbaseGetSocEnum == NULL) || (currentSocName != NULL && NnopbaseMatchSocName(currentSocName, socMatch2Names, 3)) || (currentSocName == NULL && NnopbaseMatchSocEnum(currentSocEnum, socMatch2Enums, 3))) {
         aclOpExecutor *aclInExecutor = nullptr;
         NnopbaseGetUnContiguousTensors(*executor, &inUnContTensors);
         if (inUnContTensors != nullptr) {
@@ -379,14 +400,15 @@ aclnnStatus aclnnRmsNormGradTest(
 {
     uint64_t timeStamp = NnopbaseMsprofSysTime();
     static NnopbaseDfxId dfxId = {0x60000, __func__, false};
+    const char *currentSocName = (NnopbaseGetSocName != NULL) ? NnopbaseGetSocName() : NULL;
+    uint32_t currentSocEnum = SOC_VERSION_INVALID;
+    if (currentSocName == NULL && NnopbaseGetSocEnum != NULL) {
+        currentSocEnum = NnopbaseGetSocEnum();
+    }
     uint64_t inContWorkspaceSize = 0U;
     aclOpExecutor *aclInExecutor = nullptr;
     void *inWorkspace = nullptr;
-    uint32_t currentSoc = SOC_VERSION_INVALID;
-    if (NnopbaseGetSocEnum != NULL) {
-        currentSoc = NnopbaseGetSocEnum();
-    }
-    if (NnopbaseGetSocEnum == NULL || (currentSoc == SOC_VERSION_ASCEND910A || currentSoc == SOC_VERSION_ASCEND910_93 || currentSoc == SOC_VERSION_ASCEND910B)) {
+    if ((NnopbaseGetSocName == NULL && NnopbaseGetSocEnum == NULL) || (currentSocName != NULL && NnopbaseMatchSocName(currentSocName, socMatch2Names, 3)) || (currentSocName == NULL && NnopbaseMatchSocEnum(currentSocEnum, socMatch2Enums, 3))) {
         NnopbaseGetUnContExecutor(executor, &aclInExecutor, &inContWorkspaceSize);
         if (workspaceSize < inContWorkspaceSize) {
             NnopbaseOpLogE(ACLNN_ERR_PARAM_INVALID, "input workspaceSize must be larger than contiguous size!");

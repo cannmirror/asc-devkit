@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file op_aclnn_generator.cpp
@@ -24,9 +24,259 @@
 
 namespace {
 using namespace std;
+
+constexpr const char* OP_ACLNN_STRUCT_INFO = "typedef struct {\n"
+                                              "    uint32_t id;\n"
+                                              "    const char *funcName;\n"
+                                              "    bool hasReg;\n"
+                                              "} NnopbaseDfxId;\n"
+                                              "typedef struct {\n"
+                                              "    ge::DataType dtype;\n"
+                                              "    ge::Format format;\n"
+                                              "} TensorDesc;\n"
+                                              "typedef struct {\n"
+                                              "    TensorDesc *inputsDesc;\n"
+                                              "    size_t inputsNum;\n"
+                                              "    TensorDesc *outputsDesc;\n"
+                                              "    size_t outputsNum;\n"
+                                              "} SupportInfo;\n"
+                                              "typedef struct {\n"
+                                              "    SupportInfo *supportInfo;\n"
+                                              "    size_t num;\n"
+                                              "} OpSocSupportInfo;\n"
+                                              "typedef struct {\n"
+                                              "    OpSocSupportInfo *socSupportInfo;\n"
+                                              "    size_t num;\n"
+                                              "} OpSupportList;\n";
+constexpr const char* OP_ACLNN_SOC_INFO = "enum SocType {\n"
+                                          "    SOC_VERSION_ASCEND910A = 1,\n"
+                                          "    SOC_VERSION_ASCEND910B = 2,\n"
+                                          "    SOC_VERSION_ASCEND910_93 = 3,\n"
+                                          "    SOC_VERSION_ASCEND950 = 4,\n"
+                                          "    SOC_VERSION_ASCEND310P = 5,\n"
+                                          "    SOC_VERSION_ASCEND310B = 6,\n"
+                                          "    SOC_VERSION_BS9SX1A = 7,\n"
+                                          "    SOC_VERSION_ASCEND610Lite = 8,\n"
+                                          "    SOC_VERSION_MC61AM21A = 10, // 9 is deprecated\n"
+                                          "    SOC_VERSION_MC62CM12A = 11,\n"
+                                          "    SOC_VERSION_BS9SX2A = 12,\n"
+                                          "    SOC_VERSION_ASCEND910_96 = 13,\n"
+                                          "    SOC_VERSION_KIRINX90 = 14,\n"
+                                          "    SOC_VERSION_KIRIN9030 = 15,\n"
+                                          "    SOC_VERSION_ASCEND350 = 16,\n"
+                                          "    SOC_VERSION_INVALID = 99\n"
+                                          "};\n";
+constexpr const char* OP_ACLNN_SOC_MATCH_HELPER =
+    "static bool NnopbaseMatchSocName(const char *socName, const char * const *nameList, size_t nameCount) {\n"
+    "    if (socName == NULL) return false;\n"
+    "    for (size_t i = 0; i < nameCount; i++) {\n"
+    "        if (strcmp(socName, nameList[i]) == 0) return true;\n"
+    "    }\n"
+    "    return false;\n"
+    "}\n"
+    "static bool NnopbaseMatchSocEnum(uint32_t socEnum, const uint32_t *enumList, size_t enumCount) {\n"
+    "    if (enumList == NULL) return false;\n"
+    "    for (size_t i = 0; i < enumCount; i++) {\n"
+    "        if (socEnum == enumList[i]) return true;\n"
+    "    }\n"
+    "    return false;\n"
+    "}\n";
+constexpr const char* OP_ACLNN_NNOPBASE_ATTR_DTYPE_INFO = "enum NnopbaseAttrDtype {\n"
+                                                          "    kNnopbaseBool = 0U,\n"
+                                                          "    kNnopbaseFloat,\n"
+                                                          "    kNnopbaseInt,\n"
+                                                          "    kNnopbaseString,\n"
+                                                          "    kNnopbaseAttrEnd\n"
+                                                          "};\n";
+constexpr const char* OP_ACLNN_EXTERN_FUNC =
+    "#ifdef __cplusplus\n"
+    "extern \"C\" {\n"
+    "#endif\n\n"
+    "extern aclnnStatus NnopbaseCreateExecutorSpace(void **space);\n"
+    "extern void *NnopbaseGetExecutor(void *space, const char *opType, char *inputsDesc, uint32_t inputNum,\n"
+    "                                 char *outputsDesc, uint32_t outputNum, char *attrsDesc, uint32_t attrsNum);\n"
+    "extern aclnnStatus NnopbaseAddInput(void *executor, const aclTensor *tensor, const uint32_t index);\n"
+    "extern aclnnStatus NnopbaseAddIgnoreContinuesInput(void *executor,\n"
+    "                                                   const aclTensor *tensor, const uint32_t index);\n"
+    "extern aclnnStatus NnopbaseAddIntArrayInput(void *executor, const aclIntArray *array, const uint32_t index);\n"
+    "extern aclnnStatus NnopbaseAddBoolArrayInput(void *executor, const aclBoolArray *array, "
+    "const uint32_t index);\n"
+    "extern aclnnStatus NnopbaseAddFloatArrayInput(void *executor, const aclFloatArray *array, "
+    "const uint32_t index);\n"
+    "extern aclnnStatus NnopbaseAddOutput(void *executor, const aclTensor *tensor, const uint32_t index);\n"
+    "extern aclnnStatus NnopbaseAddDynamicInput(void *executor, const aclTensorList *tensor_list, "
+    "const uint32_t index);\n"
+    "extern aclnnStatus __attribute__((weak)) NnopbaseAddIgnoreContiguousDynamicInput(void *executor, "
+    "const aclTensorList *tensor_list, const uint32_t index);\n"
+    "extern aclnnStatus NnopbaseAddDynamicOutput(void *executor, const aclTensorList *tensor_list, "
+    "const uint32_t index);\n"
+    "extern aclnnStatus NnopbaseAddAttrWithDtype(void *executor, void *attrAddr, size_t attrLen, "
+    "const size_t index, const NnopbaseAttrDtype dtype);\n"
+    "extern aclnnStatus NnopbaseAddIntArrayAttr(void *executor, const aclIntArray* array, const size_t index);\n"
+    "extern aclnnStatus NnopbaseAddFloatArrayAttr(void *executor, const aclFloatArray* array, "
+    "const size_t index);\n"
+    "extern aclnnStatus NnopbaseAddBoolArrayAttr(void *executor, const aclBoolArray* array, const size_t index);\n"
+    "extern aclnnStatus NnopbaseAddArrayAttrWithDtype(void *executor, void *array, const size_t len, "
+    "const size_t elementSize, const size_t index, const NnopbaseAttrDtype dtype);\n"
+    "extern uint64_t NnopbaseMsprofSysTime();\n"
+    "extern uint32_t __attribute__((weak)) NnopbaseGetSocEnum();\n"
+    "extern const char* __attribute__((weak)) NnopbaseGetSocName();\n"
+    "extern aclnnStatus NnopbaseAddTilingId(void *executor, NnopbaseDfxId *tilingId);\n"
+    "extern void NnopbaseReportApiInfo(const uint64_t beginTime, NnopbaseDfxId &dfxId);\n"
+    "extern aclnnStatus NnopbaseRunForWorkspace(void *executor, uint64_t *workspaceLen);\n"
+    "extern aclnnStatus NnopbaseRunWithWorkspace(void *executor, aclrtStream stream, void *workspace, "
+    "uint64_t workspaceSize);\n"
+    "extern aclnnStatus NnopbaseAddSupportList(void *executor, OpSupportList *list, "
+    "uint32_t *socSupportList, size_t socSupportListLen);\n"
+    "extern aclnnStatus __attribute__((weak)) NnopbaseAddSocNameList(void *executor, "
+    "OpSupportList *list, const char * const *socNameList, size_t socNameListLen);\n"
+    "extern aclnnStatus NnopbaseAddScalarInput(void *executor, const aclScalar *scalar, const uint32_t index, "
+    "const int32_t srcIndex, const ge::DataType dtype);\n"
+    "extern aclnnStatus NnopbaseAddScalarListInput(void *executor, const aclScalarList *scalarList, "
+    "const uint32_t index, const int32_t srcIndex, const ge::DataType dtype);\n"
+    "extern void NnopbaseAddOpTypeId(void *executor, const uint32_t opTypeId);\n"
+    "extern aclnnStatus __attribute__((weak)) NnopbaseAddParamName(void *executor, const uint32_t index, "
+    "const char *name, const bool isInput);\n"
+    "extern aclnnStatus __attribute__((weak)) NnopbaseSetFormatMatchMode(void *executor, const uint32_t mode);\n"
+    "extern aclnnStatus NnopbaseSetRef(void *executor, const size_t inputIrIdx, const size_t outputIrIdx);\n"
+    "extern void __attribute__((weak)) NnopbaseSetMatchArgsFlag(void *executor);\n"
+    "extern bool __attribute__((weak)) NnopbaseMatchArgs(void *executor, uint64_t *workspaceLen);\n"
+     "extern void __attribute__((weak)) NnopbaseSetParamCheckMode(void *executor, const uint32_t mode);\n";
+
+constexpr const int32_t K_DIFF_NUM = 32;
+constexpr const size_t OP_ACLNN_REF_SUFFIX_LEN = 3U;
+const std::map<ops::HcclServerType, std::string> HCCL_SERVER_TYPE_MAP = {
+    {ops::HcclServerType::AICPU, "NNOPBASE_HCCL_SERVER_TYPE_AICPU"},
+    {ops::HcclServerType::AICORE, "NNOPBASE_HCCL_SERVER_TYPE_MTE"},
+    {ops::HcclServerType::CCU, "NNOPBASE_HCCL_SERVER_TYPE_CCU"},
+    {ops::HcclServerType::MAX, "NNOPBASE_HCCL_SERVER_TYPE_END"},
+};
+
+const std::map<std::string, std::string> SOC_SUPPORT_MAP = {
+    {"ascend910", "SOC_VERSION_ASCEND910A"},
+    {"ascend910b", "SOC_VERSION_ASCEND910B"},
+    {"ascend910_93", "SOC_VERSION_ASCEND910_93"},
+    {"ascend950", "SOC_VERSION_ASCEND950"},
+    {"ascend310p", "SOC_VERSION_ASCEND310P"},
+    {"ascend310b", "SOC_VERSION_ASCEND310B"},
+    {"bs9sx1a", "SOC_VERSION_BS9SX1A"},
+    {"bs9sx2a", "SOC_VERSION_BS9SX2A"},
+    {"ascend610lite", "SOC_VERSION_ASCEND610Lite"},
+    {"ascend910_55", "SOC_VERSION_ASCEND910_55"},
+    {"mc61am21a", "SOC_VERSION_MC61AM21A"},
+    {"mc62cm12a", "SOC_VERSION_MC62CM12A"},
+    {"ascend910_96", "SOC_VERSION_ASCEND910_96"},
+    {"kirinx90", "SOC_VERSION_KIRINX90"},
+    {"kirin9030", "SOC_VERSION_KIRIN9030"},
+    {"ascend350", "SOC_VERSION_ASCEND350"}
+};
+
+const std::map<int, std::string> DTYPE_SUPPORT_MAP = {
+    {ge::DT_FLOAT, "ge::DT_FLOAT"},
+    {ge::DT_FLOAT16, "ge::DT_FLOAT16"},
+    {ge::DT_INT8, "ge::DT_INT8"},
+    {ge::DT_INT16, "ge::DT_INT16"},
+    {ge::DT_UINT16, "ge::DT_UINT16"},
+    {ge::DT_UINT8, "ge::DT_UINT8"},
+    {ge::DT_INT32, "ge::DT_INT32"},
+    {ge::DT_INT64, "ge::DT_INT64"},
+    {ge::DT_UINT32, "ge::DT_UINT32"},
+    {ge::DT_UINT64, "ge::DT_UINT64"},
+    {ge::DT_BOOL, "ge::DT_BOOL"},
+    {ge::DT_DOUBLE, "ge::DT_DOUBLE"},
+    {ge::DT_STRING, "ge::DT_STRING"},
+    {ge::DT_COMPLEX32, "ge::DT_COMPLEX32"},
+    {ge::DT_COMPLEX64, "ge::DT_COMPLEX64"},
+    {ge::DT_COMPLEX128, "ge::DT_COMPLEX128"},
+    {ge::DT_RESOURCE, "ge::DT_RESOURCE"},
+    {ge::DT_STRING_REF, "ge::DT_STRING_REF"},
+    {ge::DT_DUAL, "ge::DT_DUAL"},
+    {ge::DT_VARIANT, "ge::DT_VARIANT"},
+    {ge::DT_INT4, "ge::DT_INT4"},
+    {ge::DT_UINT1, "ge::DT_UINT1"},
+    {ge::DT_INT2, "ge::DT_INT2"},
+    {ge::DT_UINT2, "ge::DT_UINT2"},
+    {ge::DT_DUAL_SUB_INT8, "ge::DT_DUAL_SUB_INT8"},
+    {ge::DT_DUAL_SUB_UINT8, "ge::DT_DUAL_SUB_UINT8"},
+    {ge::DT_QINT8, "ge::DT_QINT8"},
+    {ge::DT_QINT16, "ge::DT_QINT16"},
+    {ge::DT_QINT32, "ge::DT_QINT32"},
+    {ge::DT_QUINT8, "ge::DT_QUINT8"},
+    {ge::DT_QUINT16, "ge::DT_QUINT16"},
+    {ge::DT_BF16, "ge::DT_BF16"},
+    {ge::DT_HIFLOAT8, "ge::DT_HIFLOAT8"},
+    {ge::DT_FLOAT8_E5M2, "ge::DT_FLOAT8_E5M2"},
+    {ge::DT_FLOAT8_E4M3FN, "ge::DT_FLOAT8_E4M3FN"},
+    {ge::DT_FLOAT8_E8M0, "ge::DT_FLOAT8_E8M0"},
+    {ge::DT_FLOAT6_E3M2, "ge::DT_FLOAT6_E3M2"},
+    {ge::DT_FLOAT6_E2M3, "ge::DT_FLOAT6_E2M3"},
+    {ge::DT_FLOAT4_E2M1, "ge::DT_FLOAT4_E2M1"},
+    {ge::DT_FLOAT4_E1M2, "ge::DT_FLOAT4_E1M2"}};
+const std::map<int, std::string> FORMAT_SUPPORT_MAP = {
+    {ge::FORMAT_NCHW, "ge::FORMAT_NCHW"},
+    {ge::FORMAT_NHWC, "ge::FORMAT_NHWC"},
+    {ge::FORMAT_ND, "ge::FORMAT_ND"},
+    {ge::FORMAT_NC1HWC0, "ge::FORMAT_NC1HWC0"},
+    {ge::FORMAT_FRACTAL_Z, "ge::FORMAT_FRACTAL_Z"},
+    {ge::FORMAT_NC1C0HWPAD, "ge::FORMAT_NC1C0HWPAD"},
+    {ge::FORMAT_NHWC1C0, "ge::FORMAT_NHWC1C0"},
+    {ge::FORMAT_FSR_NCHW, "ge::FORMAT_FSR_NCHW"},
+    {ge::FORMAT_FRACTAL_DECONV, "ge::FORMAT_FRACTAL_DECONV"},
+    {ge::FORMAT_C1HWNC0, "ge::FORMAT_C1HWNC0"},
+    {ge::FORMAT_FRACTAL_DECONV_TRANSPOSE, "ge::FORMAT_FRACTAL_DECONV_TRANSPOSE"},
+    {ge::FORMAT_FRACTAL_DECONV_SP_STRIDE_TRANS, "ge::FORMAT_FRACTAL_DECONV_SP_STRIDE_TRANS"},
+    {ge::FORMAT_NC1HWC0_C04, "ge::FORMAT_NC1HWC0_C04"},
+    {ge::FORMAT_FRACTAL_Z_C04, "ge::FORMAT_FRACTAL_Z_C04"},
+    {ge::FORMAT_CHWN, "ge::FORMAT_CHWN"},
+    {ge::FORMAT_HWCN, "ge::FORMAT_HWCN"},
+    {ge::FORMAT_FRACTAL_DECONV_SP_STRIDE8_TRANS, "ge::FORMAT_FRACTAL_DECONV_SP_STRIDE8_TRANS"},
+    {ge::FORMAT_NC1KHKWHWC0, "ge::FORMAT_NC1KHKWHWC0"},
+    {ge::FORMAT_BN_WEIGHT, "ge::FORMAT_BN_WEIGHT"},
+    {ge::FORMAT_FILTER_HWCK, "ge::FORMAT_FILTER_HWCK"},
+    {ge::FORMAT_MD, "ge::FORMAT_MD"},
+    {ge::FORMAT_HASHTABLE_LOOKUP_LOOKUPS, "ge::FORMAT_HASHTABLE_LOOKUP_LOOKUPS"},
+    {ge::FORMAT_HASHTABLE_LOOKUP_KEYS, "ge::FORMAT_HASHTABLE_LOOKUP_KEYS"},
+    {ge::FORMAT_HASHTABLE_LOOKUP_VALUE, "ge::FORMAT_HASHTABLE_LOOKUP_VALUE"},
+    {ge::FORMAT_HASHTABLE_LOOKUP_OUTPUT, "ge::FORMAT_HASHTABLE_LOOKUP_OUTPUT"},
+    {ge::FORMAT_HASHTABLE_LOOKUP_HITS, "ge::FORMAT_HASHTABLE_LOOKUP_HITS"},
+    {ge::FORMAT_C1HWNCoC0, "ge::FORMAT_C1HWNCoC0"},
+    {ge::FORMAT_NDHWC, "ge::FORMAT_NDHWC"},
+    {ge::FORMAT_FRACTAL_ZZ, "ge::FORMAT_FRACTAL_ZZ"},
+    {ge::FORMAT_FRACTAL_NZ, "ge::FORMAT_FRACTAL_NZ"},
+    {ge::FORMAT_NCDHW, "ge::FORMAT_NCDHW"},
+    {ge::FORMAT_DHWCN, "ge::FORMAT_DHWCN"},
+    {ge::FORMAT_NDC1HWC0, "ge::FORMAT_NDC1HWC0"},
+    {ge::FORMAT_FRACTAL_Z_3D, "ge::FORMAT_FRACTAL_Z_3D"},
+    {ge::FORMAT_CN, "ge::FORMAT_CN"},
+    {ge::FORMAT_NC, "ge::FORMAT_NC"},
+    {ge::FORMAT_DHWNC, "ge::FORMAT_DHWNC"},
+    {ge::FORMAT_FRACTAL_Z_3D_TRANSPOSE, "ge::FORMAT_FRACTAL_Z_3D_TRANSPOSE"},
+    {ge::FORMAT_FRACTAL_ZN_LSTM, "ge::FORMAT_FRACTAL_ZN_LSTM"},
+    {ge::FORMAT_FRACTAL_Z_G, "ge::FORMAT_FRACTAL_Z_G"},
+    {ge::FORMAT_RESERVED, "ge::FORMAT_RESERVED"},
+    {ge::FORMAT_FRACTAL_ZN_RNN, "ge::FORMAT_FRACTAL_ZN_RNN"},
+    {ge::FORMAT_NULL, "ge::FORMAT_NULL"},
+    {ge::FORMAT_ALL, "ge::FORMAT_ALL"},
+    {ge::FORMAT_ND_RNN_BIAS, "ge::FORMAT_ND_RNN_BIAS"},
+    {ge::FORMAT_NYUV, "ge::FORMAT_NYUV"},
+    {ge::FORMAT_NYUV_A, "ge::FORMAT_NYUV_A"},
+    {ge::FORMAT_NCL, "ge::FORMAT_NCL"},
+    {ge::FORMAT_FRACTAL_Z_WINO, "ge::FORMAT_FRACTAL_Z_WINO"},
+    {ge::FORMAT_C1HWC0, "ge::FORMAT_C1HWC0"},
+    {ge::FORMAT_FRACTAL_NZ_C0_2, "ge::FORMAT_FRACTAL_NZ_C0_2"},
+    {ge::FORMAT_FRACTAL_NZ_C0_4, "ge::FORMAT_FRACTAL_NZ_C0_4"},
+    {ge::FORMAT_FRACTAL_NZ_C0_8, "ge::FORMAT_FRACTAL_NZ_C0_8"},
+    {ge::FORMAT_FRACTAL_NZ_C0_16, "ge::FORMAT_FRACTAL_NZ_C0_16"},
+    {ge::FORMAT_FRACTAL_NZ_C0_32, "ge::FORMAT_FRACTAL_NZ_C0_32"}};
+const std::unordered_set<ge::DataType> VALUE_DEPEND_SUPPORT_DTYPES = {
+    ge::DT_FLOAT,  ge::DT_BOOL,  ge::DT_INT64,  ge::DT_UINT64, ge::DT_INT32,
+    ge::DT_UINT32, ge::DT_INT16, ge::DT_UINT16, ge::DT_INT8,   ge::DT_UINT8};
+const std::unordered_set<ge::DataType> VALUE_DEPEND_SUPPORT_INT_DTYPES = {
+    ge::DT_INT64, ge::DT_UINT64, ge::DT_INT32, ge::DT_UINT32, ge::DT_INT16, ge::DT_UINT16, ge::DT_INT8, ge::DT_UINT8};
+
 /**
-* 输入输出属性名称转成小驼峰命名
-*/
+ * 输入输出属性名称转成小驼峰命名
+ */
 std::string ConvertName(const char* s)
 {
     string str(s);
@@ -63,7 +313,8 @@ bool AreAllInputDataTypesSame(const std::vector<ge::DataType>& inputDataTypes)
     return true;
 }
 
-bool AreInputDataTypesSupported(const std::unordered_set<ge::DataType>& supportDateTypeSet, const std::vector<ge::DataType>& inputDataTypes)
+bool AreInputDataTypesSupported(
+    const std::unordered_set<ge::DataType>& supportDateTypeSet, const std::vector<ge::DataType>& inputDataTypes)
 {
     for (size_t i = 0U; i < inputDataTypes.size(); ++i) {
         if (supportDateTypeSet.find(inputDataTypes[i]) == supportDateTypeSet.cend()) {
@@ -108,12 +359,12 @@ ofstream AclnnOpGenerator::AclnnOpGenHeaderFileStart(string& fileName, string& m
     } else {
         string decName = name + "_H_\n";
         AclnnOpGenHeaderFileDel(decName, outfile, true);
-        outfile <<"\n";
+        outfile << "\n";
     }
     const char* str = "#include \"aclnn/acl_meta.h\"\n\n"
-        "#ifdef __cplusplus\n"
-        "extern \"C\" {\n"
-        "#endif\n\n";
+                      "#ifdef __cplusplus\n"
+                      "extern \"C\" {\n"
+                      "#endif\n\n";
     outfile << str;
     return outfile;
 }
@@ -130,16 +381,18 @@ bool AclnnOpGenerator::AclnnOpGenFunProtoValueDependParam(
         return true;
     }
     ge::DataType firstType = dataTypes[0];
-    std::string errMsg = "ValueDepend input dtypes of op " + opType +  " must satisfy one of the following conditions:\n"
-                       " 1. All input dtypes are float.\n"
-                       " 2. All input dtypes are bool.\n"
-                       " 3. All input dtypes are integers or unsigned integers form the supported set: [int64, uint64, int32, uint32, int16, uint16, int8, uint8].";
+    std::string errMsg = "ValueDepend input dtypes of op " + opType +
+                         " must satisfy one of the following conditions:\n"
+                         " 1. All input dtypes are float.\n"
+                         " 2. All input dtypes are bool.\n"
+                         " 3. All input dtypes are integers or unsigned integers form the supported set: [int64, "
+                         "uint64, int32, uint32, int16, uint16, int8, uint8].";
     if (firstType == ge::DT_FLOAT && AreAllInputDataTypesSame(dataTypes)) {
         outfile << "    const aclFloatArray *" << valueDependParamName << ",\n";
     } else if (firstType == ge::DT_BOOL && AreAllInputDataTypesSame(dataTypes)) {
         outfile << "    const aclBoolArray *" << valueDependParamName << ",\n";
     } else if (firstType == ge::DT_INT64 && AreAllInputDataTypesSame(dataTypes)) {
-         outfile << "    const aclIntArray *" << valueDependParamName << ",\n";
+        outfile << "    const aclIntArray *" << valueDependParamName << ",\n";
     } else if (AreInputDataTypesSupported(VALUE_DEPEND_SUPPORT_INT_DTYPES, dataTypes)) {
         if (AclnnCheckForInt64CombinationWithValueDepend(opDef, paramIndex, opType)) {
             outfile << "    const aclIntArray *" << valueDependParamName << ",\n";
@@ -153,7 +406,8 @@ bool AclnnOpGenerator::AclnnOpGenFunProtoValueDependParam(
     return true;
 }
 
-std::vector<std::vector<ge::DataType>> AclnnOpGenerator::AclnnGetInputAndOutputDataTypeList(std::vector<OpParamDef>& inputs, std::vector<OpParamDef>& outputs) const
+std::vector<std::vector<ge::DataType>> AclnnOpGenerator::AclnnGetInputAndOutputDataTypeList(
+    std::vector<OpParamDef>& inputs, std::vector<OpParamDef>& outputs) const
 {
     std::vector<std::vector<ge::DataType>> paramDataTypeList;
     size_t dataTypeNum = inputs[0].GetDataTypes().size();
@@ -197,10 +451,11 @@ std::vector<size_t> AclnnOpGenerator::AclnnGetValueDependIntTypeIndex(std::vecto
     return valueDependIndex;
 }
 
-std::string AclnnOpGenerator::AclnnBuildValueDependDataTypeErrorMessage(const std::vector<std::string>& paramOriginNames, const std::vector<ge::DataType>& originDataTypes, 
+std::string AclnnOpGenerator::AclnnBuildValueDependDataTypeErrorMessage(
+    const std::vector<std::string>& paramOriginNames, const std::vector<ge::DataType>& originDataTypes,
     const std::vector<ge::DataType>& requiredDataTypes, int valueDependIndex, const string& opType) const
 {
-    std::string errMsg = "One combination of input and output dtypes of op " + opType +" is [";
+    std::string errMsg = "One combination of input and output dtypes of op " + opType + " is [";
     for (size_t j = 0U; j < paramOriginNames.size(); ++j) {
         errMsg = errMsg + paramOriginNames[j] + ": " + DTYPE_SUPPORT_MAP.at(originDataTypes[j]);
         if (j != paramOriginNames.size() - 1) {
@@ -218,13 +473,11 @@ std::string AclnnOpGenerator::AclnnBuildValueDependDataTypeErrorMessage(const st
     return errMsg;
 }
 
-bool AclnnOpGenerator::AclnnCheckForInt64CombinationWithValueDepend(OpDef& opDef, size_t paramIndex, const std::string& opType) const
+bool AclnnOpGenerator::AclnnCheckForInt64CombinationWithValueDepend(
+    OpDef& opDef, size_t paramIndex, const std::string& opType) const
 {
     for (auto& aicoreItem : opDef.AICore().GetAICoreConfigs()) {
-        std::string socVer = aicoreItem.first.GetString();
-        if (SOC_SUPPORT_MAP.find(socVer) == SOC_SUPPORT_MAP.end()) {
-            continue;
-        }
+        std::string socVer = ToLower(aicoreItem.first.GetString());
         OpAICoreConfig aicoreConfig = aicoreItem.second;
         std::vector<OpParamDef> inputs = opDef.GetMergeInputs(aicoreConfig);
         std::vector<OpParamDef> outputs = opDef.GetMergeOutputs(aicoreConfig);
@@ -251,8 +504,9 @@ bool AclnnOpGenerator::AclnnCheckForInt64CombinationWithValueDepend(OpDef& opDef
             if (hasInt64Combination) {
                 continue;
             }
-            
-            std::string errMsg = AclnnBuildValueDependDataTypeErrorMessage(paramOriginNames, paramDataTypeList[i], inputDataTypes, paramIndex, opType);
+
+            std::string errMsg = AclnnBuildValueDependDataTypeErrorMessage(
+                paramOriginNames, paramDataTypeList[i], inputDataTypes, paramIndex, opType);
             Generator::SetErrorMessage(errMsg);
             return false;
         }
@@ -260,7 +514,8 @@ bool AclnnOpGenerator::AclnnCheckForInt64CombinationWithValueDepend(OpDef& opDef
     return true;
 }
 
-bool AclnnOpGenerator::AclnnIsValueDependDataTypeSupport(std::vector<OpParamDef>& inputs, const std::string& opType) const
+bool AclnnOpGenerator::AclnnIsValueDependDataTypeSupport(
+    std::vector<OpParamDef>& inputs, const std::string& opType) const
 {
     for (auto& input : inputs) {
         if (!input.IsValueDepend()) {
@@ -273,15 +528,17 @@ bool AclnnOpGenerator::AclnnIsValueDependDataTypeSupport(std::vector<OpParamDef>
 
         ge::DataType firstType = dataTypes[0];
         if (VALUE_DEPEND_SUPPORT_DTYPES.find(firstType) == VALUE_DEPEND_SUPPORT_DTYPES.cend()) {
-            std::string str = "ValueDepend input dtypes of op " + opType +  " must be [float, bool, "
-                                + "int64, uint64, int32, uint32, int16, uint16, int8, uint8].";
+            std::string str = "ValueDepend input dtypes of op " + opType + " must be [float, bool, " +
+                              "int64, uint64, int32, uint32, int16, uint16, int8, uint8].";
             Generator::SetErrorMessage(str);
             return false;
         }
-        std::string errMsg = "ValueDepend input dtypes of op " + opType +  " must satisfy one of the following conditions:\n"
-                        " 1. All input dtypes are float.\n"
-                        " 2. All input dtypes are bool.\n"
-                        " 3. All input dtypes are integers or unsigned integers form the supported set: [int64, uint64, int32, uint32, int16, uint16, int8, uint8].";
+        std::string errMsg = "ValueDepend input dtypes of op " + opType +
+                             " must satisfy one of the following conditions:\n"
+                             " 1. All input dtypes are float.\n"
+                             " 2. All input dtypes are bool.\n"
+                             " 3. All input dtypes are integers or unsigned integers form the supported set: [int64, "
+                             "uint64, int32, uint32, int16, uint16, int8, uint8].";
         if (firstType == ge::DT_FLOAT && AreAllInputDataTypesSame(dataTypes)) {
             continue;
         } else if (firstType == ge::DT_BOOL && AreAllInputDataTypesSame(dataTypes)) {
@@ -305,8 +562,9 @@ bool AclnnOpGenerator::AclnnIsRefParam(const std::string& inputName) const
     return false;
 }
 
-void AclnnOpGenerator::AclnnOpGenFunProtoParam(const OpParamDef& param, const std::string& paramName,
-    int32_t paramType, bool hasOutputShapeDepend, ofstream& outfile) const
+void AclnnOpGenerator::AclnnOpGenFunProtoParam(
+    const OpParamDef& param, const std::string& paramName, int32_t paramType, bool hasOutputShapeDepend,
+    ofstream& outfile) const
 {
     if (param.IsScalar()) {
         outfile << "    const aclScalar *" << paramName << ",\n";
@@ -348,7 +606,7 @@ void AclnnOpGenerator::AclnnOpGenFunProtoInputParams(
             if (!AclnnOpGenFunProtoValueDependParam(opDef, opdefName, i, outfile, opType)) {
                 return;
             }
-        }else {
+        } else {
             AclnnOpGenFunProtoParam(params[i], paramNames[i], type, opdefName.hasOutputShapeDepend, outfile);
         }
     }
@@ -368,9 +626,11 @@ void AclnnOpGenerator::AclnnOpGenFunProtoOutputParams(
         const char* const valueDepend = params[i].GetValueDepend().GetString();
         if (AclnnIsRefParam(paramNames[i])) {
             continue;
-        } else if (!valDependApi && ((std::string(valueDepend) == "required") || (std::string(valueDepend) == "optional"))) {
+        } else if (
+            !valDependApi && ((std::string(valueDepend) == "required") || (std::string(valueDepend) == "optional"))) {
             Generator::SetErrorMessage(
-                    "Valuedepend does not support output " + std::string(params[i].GetParamName().GetString()) + " of op " + opType + ".");
+                "Valuedepend does not support output " + std::string(params[i].GetParamName().GetString()) + " of op " +
+                opType + ".");
             return;
         } else {
             AclnnOpGenFunProtoParam(params[i], paramNames[i], type, opdefName.hasOutputShapeDepend, outfile);
@@ -441,19 +701,19 @@ void AclnnOpGenerator::AclnnOpGenValueDependInput(
 {
     ge::DataType dataType = input.GetDataTypes()[0];
     if (dataType == ge::DT_FLOAT) {
-        outfile << indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddFloatArrayInput(*executor, " << name << ", " << index <<
-                   "));\n";
+        outfile << indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddFloatArrayInput(*executor, " << name << ", " << index
+                << "));\n";
     } else if (dataType == ge::DT_BOOL) {
-        outfile << indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddBoolArrayInput(*executor, " << name << ", " << index <<
-                   "));\n";
+        outfile << indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddBoolArrayInput(*executor, " << name << ", " << index
+                << "));\n";
     } else {
-        outfile << indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIntArrayInput(*executor, " << name << ", " << index <<
-                   "));\n";
+        outfile << indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIntArrayInput(*executor, " << name << ", " << index
+                << "));\n";
     }
 }
 
-bool AclnnOpGenerator::AclOpGenScalarInputWithIndent(OpDefIoDesc& opDefIoDesc,
-    OpDefName& opdefName, ofstream& outfile, string funcName, const std::string& indent) const
+bool AclnnOpGenerator::AclOpGenScalarInputWithIndent(
+    OpDefIoDesc& opDefIoDesc, OpDefName& opdefName, ofstream& outfile, string funcName, const std::string& indent) const
 {
     auto& index = opDefIoDesc.index;
     auto& input = opDefIoDesc.input;
@@ -480,8 +740,8 @@ bool AclnnOpGenerator::AclOpGenScalarInputWithIndent(OpDefIoDesc& opDefIoDesc,
     return true;
 }
 
-void AclnnOpGenerator::AclnnOpGenCodeAddInputTensors(OpDef& opDef, OpDefName& opdefName, ofstream& outfile, bool valueDependApi, bool needSocCheck)
-const
+void AclnnOpGenerator::AclnnOpGenCodeAddInputTensors(
+    OpDef& opDef, OpDefName& opdefName, ofstream& outfile, bool valueDependApi, bool needSocCheck) const
 {
     std::vector<OpParamDef>& inputs = opDef.GetInputs();
     const std::string opType = opDef.GetOpType().GetString();
@@ -490,40 +750,27 @@ const
     }
     std::vector<InputContiguousConfig> contConfigs = GetInputContiguousConfigs(opDef);
     if (needSocCheck) {
-        outfile << "    uint32_t currentSoc = SOC_VERSION_INVALID;\n";
-        outfile << "    if (NnopbaseGetSocEnum != NULL) {\n";
-        outfile << "        currentSoc = NnopbaseGetSocEnum();\n";
-        outfile << "        if (currentSoc == SOC_VERSION_INVALID) {\n";
-        outfile << "            NnopbaseOpLogE(ACLNN_ERR_PARAM_INVALID, \"Aclnn does not support current socVersion!\");\n";
-        outfile << "            return ACLNN_ERR_PARAM_INVALID;\n";
-        outfile << "        }\n";
+        GenerateCurrentSocDeclaration(outfile, "    ");
         for (size_t i = 0U; i < inputs.size(); i++) {
-            OpDefIoDesc opDefIoDesc {inputs[i], opdefName.inputsName[i], i, opType};
+            OpDefIoDesc opDefIoDesc{inputs[i], opdefName.inputsName[i], i, opType};
             if (inputs[i].IsOutputShapeDependOnCompute()) {
-                Generator::SetErrorMessage("Input " + std::string(inputs[i].GetParamName().GetString()) +
-                    " of " + opType + " does not support OutputShapeDependOnCompute.");
+                Generator::SetErrorMessage(
+                    "Input " + std::string(inputs[i].GetParamName().GetString()) + " of " + opType +
+                    " does not support OutputShapeDependOnCompute.");
                 return;
             }
-            GenSingleInputCode(opDefIoDesc, opdefName, outfile, {valueDependApi, false, false, "        "}, 
-                contConfigs);
+            GenSingleInputCode(opDefIoDesc, opdefName, outfile, {valueDependApi, true, false, "    "}, contConfigs);
         }
-        outfile << "    } else {\n";
-        for (size_t i = 0U; i < inputs.size(); i++) {
-            OpDefIoDesc opDefIoDesc {inputs[i], opdefName.inputsName[i], i, opType};
-            GenSingleInputCode(opDefIoDesc, opdefName, outfile, {valueDependApi, false, true, "        "},
-                contConfigs);
-        }
-        outfile << "    }\n";
     } else {
         for (size_t i = 0U; i < inputs.size(); i++) {
             if (inputs[i].IsOutputShapeDependOnCompute()) {
-                Generator::SetErrorMessage("Input " + std::string(inputs[i].GetParamName().GetString()) +
-                    " of " + opType + " does not support OutputShapeDependOnCompute.");
+                Generator::SetErrorMessage(
+                    "Input " + std::string(inputs[i].GetParamName().GetString()) + " of " + opType +
+                    " does not support OutputShapeDependOnCompute.");
                 return;
             }
-            OpDefIoDesc opDefIoDesc {inputs[i], opdefName.inputsName[i], i, opType};
-            GenSingleInputCode(opDefIoDesc, opdefName, outfile, {valueDependApi, false, false, "    "},
-                contConfigs);
+            OpDefIoDesc opDefIoDesc{inputs[i], opdefName.inputsName[i], i, opType};
+            GenSingleInputCode(opDefIoDesc, opdefName, outfile, {valueDependApi, false, false, "    "}, contConfigs);
         }
     }
 }
@@ -535,12 +782,12 @@ void AclnnOpGenerator::AclnnOpGenCodeAddOutputShapeDependTensors(
     for (size_t i = 0; i < outputs.size(); i++) {
         int32_t type = outputs[i].GetParamType();
         if (type == DYNAMIC) {
-            outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddDynamicOutput(*executor, " << name[i] << ", "
-                    << i << "));\n";
+            outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddDynamicOutput(*executor, " << name[i] << ", " << i
+                    << "));\n";
         } else {
             if (outputs[i].IsOutputShapeDependOnCompute()) {
-                outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddOutputShapeDependTensor(*executor, "
-                        << name[i] << ", " << i << "));\n";
+                outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddOutputShapeDependTensor(*executor, " << name[i]
+                        << ", " << i << "));\n";
             } else {
                 outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddOutput(*executor, " << name[i] << ", " << i
                         << "));\n";
@@ -550,8 +797,9 @@ void AclnnOpGenerator::AclnnOpGenCodeAddOutputShapeDependTensors(
     outfile << "    }\n";
 }
 
-void AclnnOpGenerator::AclnnOpGenCodeAddOutputTensors(std::vector<OpParamDef>& outputs, std::vector<std::string>& name,
-    bool hasOutputShapeDepend, ofstream& outfile) const
+void AclnnOpGenerator::AclnnOpGenCodeAddOutputTensors(
+    std::vector<OpParamDef>& outputs, std::vector<std::string>& name, bool hasOutputShapeDepend,
+    ofstream& outfile) const
 {
     if (hasOutputShapeDepend) {
         AclnnOpGenCodeAddOutputShapeDependTensors(outputs, name, outfile);
@@ -577,7 +825,7 @@ void AclnnOpGenerator::AclnnoOpGenCodeAttrValue(OpAttrDef& attr, size_t* len, of
     for (size_t i = 1U; i < strSize - 1U; i++) {
         outfile << val[i];
         if (val[i] == ',') {
-            outfile <<" ";
+            outfile << " ";
             (*len)++;
         }
     }
@@ -589,17 +837,16 @@ void AclnnOpGenerator::AclnnOpGenCodeOptionalStrAttr(
 {
     if (attr.IsRequired()) {
         outfile << "    NNOPBASE_ASSERT_NOTNULL_RETVAL(" << name << ");\n";
-        outfile << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddAttrWithDtype(*executor, static_cast<void*>(" << name <<
-                   "), strlen(" << name << ") + 1, " << index << ", kNnopbaseString));\n";
+        outfile << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddAttrWithDtype(*executor, static_cast<void*>(" << name
+                << "), strlen(" << name << ") + 1, " << index << ", kNnopbaseString));\n";
     } else {
         outfile << "    if (" << name << ") {\n";
-        outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddAttrWithDtype(*executor, static_cast<void*>(" <<
-                   name << "), strlen(" << name << ") + 1, " << index << ", kNnopbaseString));\n";
+        outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddAttrWithDtype(*executor, static_cast<void*>(" << name
+                << "), strlen(" << name << ") + 1, " << index << ", kNnopbaseString));\n";
         outfile << "    } else {\n";
-        outfile << "        static char *" << name << "Def = \"" << attr.GetAttrDefaultVal("[]").GetString()
-                << "\";\n";
-        outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddAttrWithDtype(*executor, static_cast<void*>("
-                << name << "Def), strlen(" << name << "Def) + 1, " << index << ", kNnopbaseString));\n    }\n";
+        outfile << "        static char *" << name << "Def = \"" << attr.GetAttrDefaultVal("[]").GetString() << "\";\n";
+        outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddAttrWithDtype(*executor, static_cast<void*>(" << name
+                << "Def), strlen(" << name << "Def) + 1, " << index << ", kNnopbaseString));\n    }\n";
     }
 }
 
@@ -608,12 +855,12 @@ void AclnnOpGenerator::AclnnOpGenCodeOptionalBoolAttr(
 {
     if (attr.IsRequired()) {
         outfile << "    NNOPBASE_ASSERT_NOTNULL_RETVAL(" << name << ");\n";
-        outfile << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddBoolArrayAttr(*executor, " << name <<
-                   ", " << index << "));\n";
+        outfile << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddBoolArrayAttr(*executor, " << name << ", " << index
+                << "));\n";
     } else {
         outfile << "    if (" << name << ") {\n";
-        outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddBoolArrayAttr(*executor, " << name <<
-                   ", " << index << "));\n";
+        outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddBoolArrayAttr(*executor, " << name << ", " << index
+                << "));\n";
         outfile << "    } else {\n";
         outfile << "        static bool " << name << "Def[] = {";
         size_t len = 0U;
@@ -629,12 +876,12 @@ void AclnnOpGenerator::AclnnOpGenCodeOptionalFloatAttr(
 {
     if (attr.IsRequired()) {
         outfile << "    NNOPBASE_ASSERT_NOTNULL_RETVAL(" << name << ");\n";
-        outfile << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddFloatArrayAttr(*executor, " << name <<
-                   ", " << index << "));\n";
+        outfile << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddFloatArrayAttr(*executor, " << name << ", " << index
+                << "));\n";
     } else {
         outfile << "    if (" << name << ") {\n";
-        outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddFloatArrayAttr(*executor, " << name <<
-                   ", " << index << "));\n";
+        outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddFloatArrayAttr(*executor, " << name << ", " << index
+                << "));\n";
         outfile << "    } else {\n";
         outfile << "        static float " << name << "Def[] = {";
         size_t len = 0U;
@@ -650,12 +897,12 @@ void AclnnOpGenerator::AclnnOpGenCodeOptionalIntAttr(
 {
     if (attr.IsRequired()) {
         outfile << "    NNOPBASE_ASSERT_NOTNULL_RETVAL(" << name << ");\n";
-        outfile << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIntArrayAttr(*executor, " << name <<
-                   ", " << index << "));\n";
+        outfile << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIntArrayAttr(*executor, " << name << ", " << index
+                << "));\n";
     } else {
         outfile << "    if (" << name << ") {\n";
-        outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIntArrayAttr(*executor, " << name <<
-                   ", " << index << "));\n";
+        outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIntArrayAttr(*executor, " << name << ", " << index
+                << "));\n";
         outfile << "    } else {\n";
         outfile << "        static int64_t " << name << "Def[] = {";
         size_t len = 0U;
@@ -743,8 +990,8 @@ void AclnnOpGenerator::AclnnOpGenCodeFunIoTypeCommentImpl(
 }
 
 void AclnnOpGenerator::AclnnOpGenCodeFunInputComment(
-    std::vector<OpParamDef>& inputs, std::vector<OpParamDef>& outputs,
-    OpDefName& opdefName, ofstream& outfile, uint32_t version) const
+    std::vector<OpParamDef>& inputs, std::vector<OpParamDef>& outputs, OpDefName& opdefName, ofstream& outfile,
+    uint32_t version) const
 {
     for (size_t i = 0U; i < inputs.size(); i++) {
         if (inputs[i].GetVersion() > version) {
@@ -769,8 +1016,8 @@ void AclnnOpGenerator::AclnnOpGenCodeFunInputComment(
 }
 
 void AclnnOpGenerator::AclnnOpGenCodeFunOutputComment(
-    std::vector<OpParamDef>& inputs, std::vector<OpParamDef>& outputs,
-    std::vector<std::string>& paramName, bool *hasOutputShapeDepend, ofstream& outfile) const
+    std::vector<OpParamDef>& inputs, std::vector<OpParamDef>& outputs, std::vector<std::string>& paramName,
+    bool* hasOutputShapeDepend, ofstream& outfile) const
 {
     for (size_t i = 0U; i < outputs.size(); i++) {
         if (outputs[i].IsOutputShapeDependOnCompute()) {
@@ -798,15 +1045,15 @@ void AclnnOpGenerator::AclnnOpGenCodeFunOutputComment(
     }
 }
 
-bool AclnnOpGenerator::IsBaseTypeOfAttr(const char *type) const
+bool AclnnOpGenerator::IsBaseTypeOfAttr(const char* type) const
 {
-    return ((strcmp(type, OP_ACLNN_ATTR_STR) == 0) || (strcmp(type, OP_ACLNN_ATTR_LISTBOOL) == 0) ||
-            (strcmp(type, OP_ACLNN_ATTR_LISTFLOAT) == 0) || (strcmp(type, OP_ACLNN_ATTR_LISTINT) == 0));
+    return (
+        (strcmp(type, "str") == 0) || (strcmp(type, "listBool") == 0) ||
+        (strcmp(type, "listFloat") == 0) || (strcmp(type, "listInt") == 0));
 }
 
 void AclnnOpGenerator::AclnnOpGenCodeFunAttrComment(
-    std::vector<OpAttrDef>& attrs, std::vector<std::string>& paramName,
-    ofstream& outfile, uint32_t version) const
+    std::vector<OpAttrDef>& attrs, std::vector<std::string>& paramName, ofstream& outfile, uint32_t version) const
 {
     for (size_t i = 0; i < attrs.size(); i++) {
         if (attrs[i].GetVersion() > version) {
@@ -818,7 +1065,7 @@ void AclnnOpGenerator::AclnnOpGenCodeFunAttrComment(
             outfile << " * " << name << " : ";
             outfile << "required\n";
         } else {
-            const char *type = attrs[i].GetCfgDataType().GetString();
+            const char* type = attrs[i].GetCfgDataType().GetString();
             if (IsBaseTypeOfAttr(type)) {
                 name += "Optional";
             }
@@ -906,8 +1153,7 @@ void AclnnOpGenerator::AclnnOpGenCodeIoParamCheck(
 }
 
 void AclnnOpGenerator::AclnnOpGenCodeParamCheck(
-    std::vector<OpParamDef>& inputs, std::vector<OpParamDef>& outputs,
-    OpDefName& opdefName, ofstream& outfile) const
+    std::vector<OpParamDef>& inputs, std::vector<OpParamDef>& outputs, OpDefName& opdefName, ofstream& outfile) const
 {
     if (inputs.size() == 0U && outputs.size() == 0U) {
         return;
@@ -919,8 +1165,8 @@ void AclnnOpGenerator::AclnnOpGenCodeParamCheck(
 void AclnnOpGenerator::AclnnGenCodeCommFunDelcare(ofstream& outfile) const
 {
     const char* str = "#define ACLNN_SUCCESS  0\n"
-        "#define ACLNN_ERR_PARAM_NULLPTR 161001\n"
-        "#define ACLNN_ERR_PARAM_INVALID 161002\n\n";
+                      "#define ACLNN_ERR_PARAM_NULLPTR 161001\n"
+                      "#define ACLNN_ERR_PARAM_INVALID 161002\n\n";
     outfile << str;
 }
 
@@ -944,8 +1190,8 @@ void AclnnOpGenerator::AclnnOpGenCodeWorkspaceDelcare(
     outfile << ";\n\n";
 }
 
-void AclnnOpGenerator::AclnnOpGenCodeIoParamDesc(std::vector<OpParamDef>& params, const string& desc,
-    ofstream& outfile, uint32_t version) const
+void AclnnOpGenerator::AclnnOpGenCodeIoParamDesc(
+    std::vector<OpParamDef>& params, const string& desc, ofstream& outfile, uint32_t version) const
 {
     outfile << "    char " << desc << "[] = {";
     for (size_t i = 0U; i < params.size(); i++) {
@@ -967,8 +1213,8 @@ void AclnnOpGenerator::AclnnOpGenCodeIoParamDesc(std::vector<OpParamDef>& params
     outfile << "};\n";
 }
 
-void AclnnOpGenerator::AclnnOpGenCodeAttrParamDesc(std::vector<OpAttrDef>& attrs, const string& desc,
-    ofstream& outfile, uint32_t version) const
+void AclnnOpGenerator::AclnnOpGenCodeAttrParamDesc(
+    std::vector<OpAttrDef>& attrs, const string& desc, ofstream& outfile, uint32_t version) const
 {
     outfile << "    char " << desc << "[] = {";
     for (size_t i = 0U; i < attrs.size(); i++) {
@@ -1008,15 +1254,13 @@ std::vector<std::string> AclnnOpGenerator::Spilt(const std::string& str, const c
 
 std::string AclnnOpGenerator::ToLower(std::string str) const
 {
-    std::transform(str.begin(), str.end(), str.begin(), [](char c) {
-        return std::tolower(c);
-    });
+    std::transform(str.begin(), str.end(), str.begin(), [](char c) { return std::tolower(c); });
     return str;
 }
 
 bool AclnnOpGenerator::IsSupportProduct(OpDef& opDef) const
 {
-    const char *productEnv = nullptr;
+    const char* productEnv = nullptr;
     MM_SYS_GET_ENV(MM_ENV_OPS_PRODUCT_NAME, productEnv);
     if (productEnv != nullptr && strlen(productEnv) != 0) {
         std::string productStr = productEnv;
@@ -1024,7 +1268,7 @@ bool AclnnOpGenerator::IsSupportProduct(OpDef& opDef) const
         const auto& products = Spilt(productStr, ';');
         const auto& map = opDef.AICore().GetAICoreConfigs();
         for (const auto& it : map) {
-            const std::string& socVer = it.first.GetString();
+            const std::string socVer = ToLower(it.first.GetString());
             for (const auto& product : products) {
                 if (socVer == product) {
                     return true;
@@ -1038,20 +1282,20 @@ bool AclnnOpGenerator::IsSupportProduct(OpDef& opDef) const
 void AclnnOpGenerator::AclnnOpGenCodeExecutor(OpDef& opDef, ofstream& outfile) const
 {
     static std::string str = "\n"
-        "    if (!executorSpace) {\n"
-        "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseCreateExecutorSpace(&executorSpace));\n"
-        "    }\n"
-        "    nnopExecutor = NnopbaseGetExecutor(executorSpace, opType, inputDesc, "
-        "sizeof(inputDesc) / sizeof(char), outputDesc,\n"
-        "                                       sizeof(outputDesc) / sizeof(char), attrDesc, "
-        "sizeof(attrDesc) / sizeof(char));\n"
-        "    NNOPBASE_ASSERT_NOTNULL_RETVAL(nnopExecutor);\n"
-        "    NNOPBASE_ASSERT_NOTNULL_RETVAL(executor);\n"
-        "    *executor = reinterpret_cast<aclOpExecutor *>(nnopExecutor);\n"
-        "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddTilingId(*executor, &tilingId));\n"
-        "    if (NnopbaseSetMatchArgsFlag != NULL) {\n"
-        "        NnopbaseSetMatchArgsFlag(*executor);\n"
-        "    }\n";
+                             "    if (!executorSpace) {\n"
+                             "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseCreateExecutorSpace(&executorSpace));\n"
+                             "    }\n"
+                             "    nnopExecutor = NnopbaseGetExecutor(executorSpace, opType, inputDesc, "
+                             "sizeof(inputDesc) / sizeof(char), outputDesc,\n"
+                             "                                       sizeof(outputDesc) / sizeof(char), attrDesc, "
+                             "sizeof(attrDesc) / sizeof(char));\n"
+                             "    NNOPBASE_ASSERT_NOTNULL_RETVAL(nnopExecutor);\n"
+                             "    NNOPBASE_ASSERT_NOTNULL_RETVAL(executor);\n"
+                             "    *executor = reinterpret_cast<aclOpExecutor *>(nnopExecutor);\n"
+                             "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddTilingId(*executor, &tilingId));\n"
+                             "    if (NnopbaseSetMatchArgsFlag != NULL) {\n"
+                             "        NnopbaseSetMatchArgsFlag(*executor);\n"
+                             "    }\n";
     outfile << str;
     if (IsSupportProduct(opDef)) {
         outfile << "#ifdef ACLNN_WITH_BINARY\n";
@@ -1060,35 +1304,34 @@ void AclnnOpGenerator::AclnnOpGenCodeExecutor(OpDef& opDef, ofstream& outfile) c
     }
 }
 
-void AclnnOpGenerator::AclnnOpGenSocSupportList(OpDef& opDef, ofstream& outfile) const
+std::vector<AclnnOpGenerator::SocEntry> AclnnOpGenerator::BuildUnifiedSocList(OpDef& opDef) const
 {
-    uint32_t socSupportListLen = 0;
-    outfile << "uint32_t socSupportList[] = {";
-    string str;
-    std::map<ge::AscendString, OpAICoreConfig> map = opDef.AICore().GetAICoreConfigs();
-    std::unordered_set<std::string> socSupportSet;
+    std::vector<SocEntry> entries;
+    std::unordered_set<std::string> seenEnums;
     const std::string opType = opDef.GetOpType().GetString();
+    std::map<ge::AscendString, OpAICoreConfig> map = opDef.AICore().GetAICoreConfigs();
+
     for (auto iter = map.begin(); iter != map.end(); ++iter) {
-        std::string socVer = iter->first.GetString();
-        auto it = SOC_SUPPORT_MAP.find(socVer);
-        if (it == SOC_SUPPORT_MAP.end()) {
-            std::string soc = "Invalid socVersion ";
-            soc.append(socVer);
-            soc += " of op " + opType +
-                ", please check whether AddConfig are correctly configured in Opdef.";
-            ASCENDLOGW("%s\n", soc.c_str());
- 	        continue;
-        }
-        if ((it->first).find("kirin") == 0) {
+        std::string socVer = ToLower(iter->first.GetString());
+        if (socVer.find("kirin") == 0) {
             continue;
         }
-        socSupportSet.insert(it->second);
-        if (!str.empty()) {
-            str.append(",");
+        SocEntry entry;
+        entry.socName = socVer;
+        entry.hasAicoreConfig = true;
+        entry.originalKey = iter->first;
+        auto it = SOC_SUPPORT_MAP.find(socVer);
+        if (it == SOC_SUPPORT_MAP.end()) {
+            ASCENDLOGW("Opbuild: op %s soc version %s is not in SOC_SUPPORT_MAP, "
+                       "filling SOC_VERSION_INVALID.", opType.c_str(), socVer.c_str());
+            entry.enumConstant = "SOC_VERSION_INVALID";
+        } else {
+            entry.enumConstant = it->second;
+            seenEnums.insert(it->second);
         }
-        str.append(it->second);
-        socSupportListLen++;
+        entries.push_back(std::move(entry));
     }
+
     auto computeUnitCfg = opbuild::Params::GetInstance().Optional("compute_unit");
     if (computeUnitCfg.size() != 0) {
         std::vector<std::string> computeUnits;
@@ -1097,65 +1340,93 @@ void AclnnOpGenerator::AclnnOpGenSocSupportList(OpDef& opDef, ofstream& outfile)
             std::string socVer = computeUnits[i];
             auto it = SOC_SUPPORT_MAP.find(socVer);
             if (it == SOC_SUPPORT_MAP.end()) {
-                std::string soc = "Invalid socVersion ";
-                soc.append(socVer);
-                soc += " of op " + opType + ", please check whether ASCEND_COMPUTE_UNIT is correctly configured.";
-                ASCENDLOGW("%s\n", soc.c_str());
                 continue;
             }
-            if ((socSupportSet.find(it->second) == socSupportSet.end()) && ((it->first).find("kirin") != 0)) {
-                if (!str.empty()) {
-                    str.append(",");
-                }
-                str.append(it->second);
-                socSupportListLen++;
+            if (seenEnums.find(it->second) == seenEnums.end()) {
+                SocEntry entry;
+                entry.socName = socVer;
+                entry.enumConstant = it->second;
+                entry.hasAicoreConfig = false;
+                seenEnums.insert(it->second);
+                entries.push_back(std::move(entry));
             }
         }
     }
-    if (str.empty()) {
-        std::string warnMsg = "Invalid socVersion of op " + opType + " in OpDef and ASCEND_COMPUTE_UNIT, please make sure at least one is correct.";
-        ASCENDLOGW("%s\n", warnMsg.c_str());
-    }
-    outfile << str;
-    outfile << "};\n";
-    outfile << "uint32_t socSupportListLen = " << socSupportListLen << ";\n\n";
+    return entries;
 }
 
-void AclnnOpGenerator::AclnnOpGenHcclServerTypeList(OpDef& opDef, ofstream& outfile) const
+void AclnnOpGenerator::AclnnOpGenSocSupportList(const std::vector<SocEntry>& entries, ofstream& outfile) const
 {
-    string str;
-    std::map<ge::AscendString, OpAICoreConfig> map = opDef.AICore().GetAICoreConfigs();
+    outfile << "uint32_t socSupportList[] = {";
+    for (size_t i = 0; i < entries.size(); i++) {
+        if (i > 0) {
+            outfile << ",";
+        }
+        outfile << entries[i].enumConstant;
+    }
+    outfile << "};\n";
+    outfile << "uint32_t socSupportListLen = " << entries.size() << ";\n\n";
+
+    outfile << "static const char *socNameList[] = {";
+    for (size_t i = 0; i < entries.size(); i++) {
+        if (i > 0) {
+            outfile << ", ";
+        }
+        outfile << "\"" << entries[i].socName << "\"";
+    }
+    outfile << "};\n";
+    outfile << "static const size_t socNameListLen = " << entries.size() << ";\n";
+}
+
+void AclnnOpGenerator::AclnnOpGenHcclServerTypeList(OpDef& opDef, const std::vector<SocEntry>& entries, ofstream& outfile) const
+{
     const std::string opType = opDef.GetOpType().GetString();
-    for (auto iter = map.begin(); iter != map.end(); ++iter) {
-        std::string socVer = iter->first.GetString();
-        auto it = SOC_SUPPORT_MAP.find(socVer);
-        if (it == SOC_SUPPORT_MAP.end()) {
-            std::string warnMsg = "Invalid socVersion" + socVer + "of op " + opType + " when setting HcclServerType.";
-            ASCENDLOGW("%s\n", warnMsg.c_str());
+    bool hasGlobalMc2Config = opDef.MC2().GetHcclServerType() != HcclServerType::MAX;
+    bool hasAnyHcclConfig = false;
+    std::string str;
+
+    for (size_t i = 0; i < entries.size(); i++) {
+        if (!str.empty()) {
+            str.append(",");
+        }
+        const auto& entry = entries[i];
+        if (!entry.hasAicoreConfig) {
+            str.append("NNOPBASE_HCCL_SERVER_TYPE_END");
             continue;
         }
-        auto type = opDef.MC2().GetHcclServerType(iter->first);
+        auto type = opDef.MC2().GetHcclServerType(entry.originalKey);
         if (type == HcclServerType::MAX) {
-            // server type has not been set, no need to gen code
+            str.append("NNOPBASE_HCCL_SERVER_TYPE_END");
             continue;
         }
+        hasAnyHcclConfig = true;
         auto serverTypeIter = HCCL_SERVER_TYPE_MAP.find(type);
         if (serverTypeIter == HCCL_SERVER_TYPE_MAP.end()) {
-            Generator::SetErrorMessage("HcclServerType params of op " + opType +
-                                       " must be an enumeration value of enum class HcclServerType.");
+            Generator::SetErrorMessage(
+                "HcclServerType params of op " + opType +
+                " must be an enumeration value of enum class HcclServerType.");
+            str.append("NNOPBASE_HCCL_SERVER_TYPE_END");
             continue;
         }
         str.append(serverTypeIter->second);
-        if (iter != std::prev(map.end())) {
-            str.append(",");
-        }
     }
-    if (str.empty()) {
+    if (!hasAnyHcclConfig && !hasGlobalMc2Config) {
         return;
     }
-    outfile << "NnopbaseHcclServerType hcclServerTypeList[] = {";
-    outfile << str;
-    outfile << "};\n\n";
+    if (!hasAnyHcclConfig) {
+        std::string socListStr;
+        for (size_t i = 0; i < entries.size(); i++) {
+            if (!socListStr.empty()) {
+                socListStr.append(", ");
+            }
+            socListStr.append(entries[i].socName);
+        }
+        ASCENDLOGW("Opbuild: op %s has HcclServerType configured but none of the MC2 SOC names "
+                   "match the AddConfig SOC list [%s]. Please check if the SOC name in "
+                   "HcclServerType matches one of the AddConfig SOCs.",
+                   opType.c_str(), socListStr.c_str());
+    }
+    outfile << "NnopbaseHcclServerType hcclServerTypeList[] = {" << str << "};\n\n";
 }
 
 void AclnnOpGenerator::AclnnOpGenIoTensorDesc(
@@ -1188,8 +1459,9 @@ void AclnnOpGenerator::AclnnOpGenIoTensorDesc(
         }
     }
 }
-void AclnnOpGenerator::AclnnOpGenTensorDesc(size_t index, std::vector<OpParamDef>& inputs,
-    std::vector<OpParamDef>& outputs, ofstream& outfile, const std::string opType) const
+void AclnnOpGenerator::AclnnOpGenTensorDesc(
+    size_t index, std::vector<OpParamDef>& inputs, std::vector<OpParamDef>& outputs, ofstream& outfile,
+    const std::string opType) const
 {
     if (inputs.size() > 0) {
         for (size_t i = 0U; i < inputs[0].GetDataTypes().size(); i++) {
@@ -1209,24 +1481,25 @@ void AclnnOpGenerator::AclnnOpGenTensorDesc(size_t index, std::vector<OpParamDef
 
     if (inputs.size() == 0) {
         for (size_t i = 0U; i < outputs[0].GetDataTypes().size(); i++) {
-            outfile << "SupportInfo list" << index << "_" << i << " = {nullptr, 0, outputDesc" << index << "_" << i << ", " <<
-                outputs.size() << "};\n";
+            outfile << "SupportInfo list" << index << "_" << i << " = {nullptr, 0, outputDesc" << index << "_" << i
+                    << ", " << outputs.size() << "};\n";
         }
     } else if (outputs.size() == 0) {
         for (size_t i = 0U; i < inputs[0].GetDataTypes().size(); i++) {
-            outfile << "SupportInfo list" << index << "_" << i << " = {inputDesc" << index << "_" << i << ", " <<
-                inputs.size() << ", nullptr, 0};\n";
+            outfile << "SupportInfo list" << index << "_" << i << " = {inputDesc" << index << "_" << i << ", "
+                    << inputs.size() << ", nullptr, 0};\n";
         }
     } else {
         for (size_t i = 0U; i < inputs[0].GetDataTypes().size(); i++) {
-            outfile << "SupportInfo list" << index << "_" << i << " = {inputDesc" << index << "_" << i << ", " <<
-                inputs.size() << ", outputDesc" << index << "_" << i << ", " << outputs.size() << "};\n";
+            outfile << "SupportInfo list" << index << "_" << i << " = {inputDesc" << index << "_" << i << ", "
+                    << inputs.size() << ", outputDesc" << index << "_" << i << ", " << outputs.size() << "};\n";
         }
     }
 }
 
-void AclnnOpGenerator::AclnnOpGenOpSupportList(size_t index, std::vector<OpParamDef>& inputs,
-    std::vector<OpParamDef>& outputs, ofstream& outfile, const std::string opType) const
+void AclnnOpGenerator::AclnnOpGenOpSupportList(
+    size_t index, std::vector<OpParamDef>& inputs, std::vector<OpParamDef>& outputs, ofstream& outfile,
+    const std::string opType) const
 {
     AclnnOpGenTensorDesc(index, inputs, outputs, outfile, opType);
     size_t size = 0U;
@@ -1254,39 +1527,46 @@ void AclnnOpGenerator::AclnnOpGenOpSupportList(size_t index, std::vector<OpParam
     outfile << "OpSocSupportInfo socSupportInfo" << index << "= {supportInfo" << index << ", " << size << "};\n\n";
 }
 
-void AclnnOpGenerator::AclnnOpGenOpSupportListAll(OpDef& opDef, ofstream& outfile) const
+void AclnnOpGenerator::AclnnOpGenOpSupportListAll(
+    OpDef& opDef, const std::vector<SocEntry>& socEntries, ofstream& outfile) const
 {
-    size_t i = 0U;
     const std::string opType = opDef.GetOpType().GetString();
-    for (auto& aicoreItem : opDef.AICore().GetAICoreConfigs()) {
-        std::string socVer = aicoreItem.first.GetString();
-        if (SOC_SUPPORT_MAP.find(socVer) == SOC_SUPPORT_MAP.end()) {
-            continue;
-        }
-        OpAICoreConfig aicoreConfig = aicoreItem.second;
-        std::vector<OpParamDef> inputs = opDef.GetMergeInputs(aicoreConfig);
-        std::vector<OpParamDef> outputs = opDef.GetMergeOutputs(aicoreConfig);
-        AclnnOpGenOpSupportList(i, inputs, outputs, outfile, opType);
-        if (!AclnnIsValueDependDataTypeSupport(inputs, opType)) {
-            return;
-        }
-        i++;
-    }
-    if (i == 0U) {
-        std::string localopType = opDef.GetOpType().GetString();
-        Generator::SetErrorMessage(
-            "The soc version of op " + localopType + 
-            " is not configured, at least one soc version must be configured."
-            " Check whether the soc version is added to the op proto type"
-            " definition in the host implementation(Opdef, through AddConfig).");
+    if (socEntries.empty()) {
+        ASCENDLOGW("Opbuild: op %s has no soc version configured (only kirin or none), "
+                    "generating empty supportList.", opType.c_str());
+        outfile << "OpSocSupportInfo opSocSupportList[1] = {{nullptr, 0}};\n";
+        outfile << "OpSupportList supportList = {opSocSupportList, 0};\n";
         return;
     }
-    outfile << "OpSocSupportInfo opSocSupportList[" << i << "] = {";
-    for (size_t index = 0U; index < i - 1; index++) {
-        outfile << "socSupportInfo" << index << ", ";
+    auto aicoreMap = opDef.AICore().GetAICoreConfigs();
+    OpAICoreConfig firstConfig = aicoreMap.empty() ? OpAICoreConfig() : aicoreMap.begin()->second;
+    size_t reuseIdx = socEntries.size();
+    for (size_t i = 0U; i < socEntries.size(); i++) {
+        std::vector<OpParamDef> inputs;
+        std::vector<OpParamDef> outputs;
+        if (socEntries[i].hasAicoreConfig) {
+            auto it = aicoreMap.find(socEntries[i].originalKey);
+            inputs = opDef.GetMergeInputs(it->second);
+            outputs = opDef.GetMergeOutputs(it->second);
+            AclnnOpGenOpSupportList(i, inputs, outputs, outfile, opType);
+            if (!AclnnIsValueDependDataTypeSupport(inputs, opType)) { return; }
+        } else if (reuseIdx == socEntries.size()) {
+            reuseIdx = i;
+            inputs = opDef.GetMergeInputs(firstConfig);
+            outputs = opDef.GetMergeOutputs(firstConfig);
+            AclnnOpGenOpSupportList(i, inputs, outputs, outfile, opType);
+            if (!AclnnIsValueDependDataTypeSupport(inputs, opType)) { return; }
+        }
     }
-    outfile << "socSupportInfo" << (i - 1U) << "};\n";
-    outfile << "OpSupportList supportList = {opSocSupportList, " << i << "};\n";
+    size_t total = socEntries.size();
+    outfile << "OpSocSupportInfo opSocSupportList[" << total << "] = {";
+    for (size_t index = 0U; index < total; index++) {
+        if (index > 0U) { outfile << ", "; }
+        bool isReuse = !socEntries[index].hasAicoreConfig && reuseIdx < total;
+        outfile << "socSupportInfo" << (isReuse ? reuseIdx : index);
+    }
+    outfile << "};\n";
+    outfile << "OpSupportList supportList = {opSocSupportList, " << total << "};\n";
 }
 
 void AclnnOpGenerator::AclnnGenOpTypeId(OpDef& opDef, ofstream& outfile) const
@@ -1296,10 +1576,11 @@ void AclnnOpGenerator::AclnnGenOpTypeId(OpDef& opDef, ofstream& outfile) const
 
 void AclnnOpGenerator::AclnnGenNameSpaceInfo(ofstream& outfile, OpDef& opDef) const
 {
+    CollectSocMatchArrays(opDef);
     outfile << "namespace {\n";
- 	outfile << OP_ACLNN_STRUCT_INFO;
+    outfile << OP_ACLNN_STRUCT_INFO;
     outfile << OP_ACLNN_SOC_INFO;
- 	outfile << OP_ACLNN_NNOPBASE_ATTR_DTYPE_INFO;
+    outfile << OP_ACLNN_NNOPBASE_ATTR_DTYPE_INFO;
     if (opDef.MC2().GetHcclServerType() != HcclServerType::MAX) {
         outfile << "enum NnopbaseHcclServerType {\n";
         outfile << "    NNOPBASE_HCCL_SERVER_TYPE_AICPU = 0,\n";
@@ -1314,11 +1595,16 @@ void AclnnOpGenerator::AclnnGenNameSpaceInfo(ofstream& outfile, OpDef& opDef) co
         outfile << "} // namespace\n\n";
         return;
     }
-    AclnnOpGenSocSupportList(opDef, outfile);
-    AclnnOpGenHcclServerTypeList(opDef, outfile);
-    AclnnOpGenOpSupportListAll(opDef, outfile);
+    auto socEntries = BuildUnifiedSocList(opDef);
+    AclnnOpGenSocSupportList(socEntries, outfile);
+    AclnnOpGenHcclServerTypeList(opDef, socEntries, outfile);
+    AclnnOpGenOpSupportListAll(opDef, socEntries, outfile);
     outfile << "\n";
     AclnnGenOpTypeId(opDef, outfile);
+    if (!socMatchArrays_.empty()) {
+        outfile << OP_ACLNN_SOC_MATCH_HELPER;
+        EmitSocMatchArrays(outfile);
+    }
     outfile << "} // namespace\n\n";
 }
 
@@ -1326,22 +1612,22 @@ void AclnnOpGenerator::AclnnGenCheckInfo(ofstream& outfile) const
 {
     AclnnGenCodeCommFunDelcare(outfile);
     const char* str = "#define NNOPBASE_ASSERT_OK_RETVAL(v)                                    \\\n"
-        "    do {                                                                \\\n"
-        "        const aclnnStatus _chk_stutus = (v);                            \\\n"
-        "        if (_chk_stutus != ACLNN_SUCCESS) {                             \\\n"
-        "            NnopbaseOpLogE(_chk_stutus, #v);                            \\\n"
-        "            return _chk_stutus;                                         \\\n"
-        "        }                                                               \\\n"
-        "    } while (false)\n"
-        "\n"
-        "#define NNOPBASE_ASSERT_NOTNULL_RETVAL(v)                               \\\n"
-        "    do {                                                                \\\n"
-        "        if ((v) == nullptr) {                                           \\\n"
-        "            NnopbaseOpLogE(ACLNN_ERR_PARAM_NULLPTR, #v \" != nullptr\");  \\\n"
-        "            return ACLNN_ERR_PARAM_NULLPTR;                             \\\n"
-        "        }                                                               \\\n"
-        "    } while (false)\n"
-        "\n";
+                      "    do {                                                                \\\n"
+                      "        const aclnnStatus _chk_stutus = (v);                            \\\n"
+                      "        if (_chk_stutus != ACLNN_SUCCESS) {                             \\\n"
+                      "            NnopbaseOpLogE(_chk_stutus, #v);                            \\\n"
+                      "            return _chk_stutus;                                         \\\n"
+                      "        }                                                               \\\n"
+                      "    } while (false)\n"
+                      "\n"
+                      "#define NNOPBASE_ASSERT_NOTNULL_RETVAL(v)                               \\\n"
+                      "    do {                                                                \\\n"
+                      "        if ((v) == nullptr) {                                           \\\n"
+                      "            NnopbaseOpLogE(ACLNN_ERR_PARAM_NULLPTR, #v \" != nullptr\");  \\\n"
+                      "            return ACLNN_ERR_PARAM_NULLPTR;                             \\\n"
+                      "        }                                                               \\\n"
+                      "    } while (false)\n"
+                      "\n";
     outfile << str;
 }
 
@@ -1355,13 +1641,13 @@ bool AclnnOpGenerator::IsSupportAutoContiguous(std::vector<OpParamDef>& inputs) 
     return false;
 }
 
-void AclnnOpGenerator::AnalyzeSocAutoContiguousSupport(OpDef& opDef, bool& allSupport, bool& noneSupport,
-    std::vector<std::string>& autoContSocs) const
+void AclnnOpGenerator::AnalyzeSocAutoContiguousSupport(
+    OpDef& opDef, bool& allSupport, bool& noneSupport, std::vector<std::string>& autoContSocs) const
 {
     std::map<std::string, bool> socAutoContMap = GetSocAutoContiguousMap(opDef);
     allSupport = true;
     noneSupport = true;
-    
+
     for (auto& pair : socAutoContMap) {
         if (pair.second) {
             noneSupport = false;
@@ -1382,46 +1668,115 @@ bool AclnnOpGenerator::HasDefaultAutoContiguous(std::vector<OpParamDef>& inputs)
     return false;
 }
 
-void AclnnOpGenerator::GenerateSocConditionCode(const std::vector<std::string>& socNames, std::ofstream& outfile,
-    bool withNullCheck, const std::string& indent) const
+void AclnnOpGenerator::GenerateSocConditionCode(
+    const std::vector<std::string>& socNames, std::ofstream& outfile, bool withNullCheck,
+    const std::string& indent) const
 {
+    size_t matchIdx = GetOrCreateSocMatchArray(socNames);
+    const auto& arr = socMatchArrays_[matchIdx];
+
+    outfile << indent << "if (";
     if (withNullCheck) {
-        outfile << indent << "if (NnopbaseGetSocEnum == NULL || (currentSoc == ";
-        for (size_t i = 0; i < socNames.size(); i++) {
-            auto socIt = SOC_SUPPORT_MAP.find(socNames[i]);
-            if (socIt != SOC_SUPPORT_MAP.end()) {
-                if (i > 0) {
-                    outfile << " || currentSoc == ";
-                }
-                outfile << socIt->second;
-            }
-        }
-        outfile << ")) {\n";
-    } else {
-        outfile << indent << "if (";
-        for (size_t i = 0; i < socNames.size(); i++) {
-            auto socIt = SOC_SUPPORT_MAP.find(socNames[i]);
-            if (socIt != SOC_SUPPORT_MAP.end()) {
-                if (i > 0) {
-                    outfile << " || ";
-                }
-                outfile << "currentSoc == " << socIt->second;
-            }
-        }
-        outfile << ") {\n";
+        outfile << "(NnopbaseGetSocName == NULL && NnopbaseGetSocEnum == NULL) || ";
     }
+    outfile << "(currentSocName != NULL && NnopbaseMatchSocName(currentSocName, "
+            << "socMatch" << matchIdx << "Names, " << arr.names.size() << ")) || ";
+    outfile << "(currentSocName == NULL && NnopbaseMatchSocEnum(currentSocEnum, ";
+    if (!arr.enumConstants.empty()) {
+        outfile << "socMatch" << matchIdx << "Enums, " << arr.enumConstants.size();
+    } else {
+        outfile << "NULL, 0";
+    }
+    outfile << "))";
+    outfile << ") {\n";
 }
 
 void AclnnOpGenerator::GenerateCurrentSocDeclaration(std::ofstream& outfile, const std::string& indent) const
 {
-    outfile << indent << "uint32_t currentSoc = SOC_VERSION_INVALID;\n";
-    outfile << indent << "if (NnopbaseGetSocEnum != NULL) {\n";
-    outfile << indent << "    currentSoc = NnopbaseGetSocEnum();\n";
+    outfile << indent << "const char *currentSocName = (NnopbaseGetSocName != NULL) ? NnopbaseGetSocName() : NULL;\n";
+    outfile << indent << "uint32_t currentSocEnum = SOC_VERSION_INVALID;\n";
+    outfile << indent << "if (currentSocName == NULL && NnopbaseGetSocEnum != NULL) {\n";
+    outfile << indent << "    currentSocEnum = NnopbaseGetSocEnum();\n";
     outfile << indent << "}\n";
 }
 
-void AclnnOpGenerator::GetIgnoreContSocsForInput(const std::vector<InputContiguousConfig>& contConfigs, size_t idx,
-    bool& hasIgnoreCont, std::vector<std::string>& ignoreContSocs) const
+size_t AclnnOpGenerator::GetOrCreateSocMatchArray(const std::vector<std::string>& socNames) const
+{
+    std::string key;
+    for (const auto& name : socNames) {
+        if (!key.empty())
+            key += ";";
+        key += name;
+    }
+    auto it = socMatchArrayIndex_.find(key);
+    if (it != socMatchArrayIndex_.end()) {
+        return it->second;
+    }
+    size_t index = socMatchCounter_++;
+    SocMatchArrayInfo info;
+    info.names = socNames;
+    for (const auto& name : socNames) {
+        auto mapIt = SOC_SUPPORT_MAP.find(name);
+        if (mapIt != SOC_SUPPORT_MAP.end()) {
+            info.enumConstants.push_back(mapIt->second);
+        }
+    }
+    socMatchArrays_.push_back(std::move(info));
+    socMatchArrayIndex_[key] = index;
+    return index;
+}
+
+void AclnnOpGenerator::CollectSocMatchArrays(OpDef& opDef) const
+{
+    socMatchArrays_.clear();
+    socMatchArrayIndex_.clear();
+    socMatchCounter_ = 0;
+
+    std::vector<InputContiguousConfig> contConfigs = GetInputContiguousConfigs(opDef);
+    std::vector<OpParamDef>& inputs = opDef.GetInputs();
+    for (size_t i = 0; i < inputs.size(); i++) {
+        bool hasIgnoreCont = false;
+        std::vector<std::string> ignoreContSocs;
+        GetIgnoreContSocsForInput(contConfigs, i, hasIgnoreCont, ignoreContSocs);
+        if (hasIgnoreCont && ignoreContSocs.size() < contConfigs[i].socContiguousType.size()) {
+            GetOrCreateSocMatchArray(ignoreContSocs);
+        }
+    }
+
+    bool allSupport = false, noneSupport = false;
+    std::vector<std::string> autoContSocs;
+    AnalyzeSocAutoContiguousSupport(opDef, allSupport, noneSupport, autoContSocs);
+    if (!noneSupport && !allSupport && !autoContSocs.empty()) {
+        GetOrCreateSocMatchArray(autoContSocs);
+    }
+}
+
+void AclnnOpGenerator::EmitSocMatchArrays(std::ofstream& outfile) const
+{
+    for (size_t idx = 0; idx < socMatchArrays_.size(); idx++) {
+        const auto& arr = socMatchArrays_[idx];
+        outfile << "static const char *socMatch" << idx << "Names[] = {";
+        for (size_t i = 0; i < arr.names.size(); i++) {
+            if (i > 0)
+                outfile << ", ";
+            outfile << "\"" << arr.names[i] << "\"";
+        }
+        outfile << "};\n";
+        if (!arr.enumConstants.empty()) {
+            outfile << "static const uint32_t socMatch" << idx << "Enums[] = {";
+            for (size_t i = 0; i < arr.enumConstants.size(); i++) {
+                if (i > 0)
+                    outfile << ", ";
+                outfile << arr.enumConstants[i];
+            }
+            outfile << "};\n";
+        }
+    }
+}
+
+void AclnnOpGenerator::GetIgnoreContSocsForInput(
+    const std::vector<InputContiguousConfig>& contConfigs, size_t idx, bool& hasIgnoreCont,
+    std::vector<std::string>& ignoreContSocs) const
 {
     hasIgnoreCont = false;
     ignoreContSocs.clear();
@@ -1435,8 +1790,9 @@ void AclnnOpGenerator::GetIgnoreContSocsForInput(const std::vector<InputContiguo
     }
 }
 
-void AclnnOpGenerator::GenDynamicInputIgnoreContCode(OpDefIoDesc& opDefIoDesc,
-    const std::vector<InputContiguousConfig>& contConfigs, std::ofstream& outfile, const OpCodeGenConfig& genConfig) const
+void AclnnOpGenerator::GenDynamicInputIgnoreContCode(
+    OpDefIoDesc& opDefIoDesc, const std::vector<InputContiguousConfig>& contConfigs, std::ofstream& outfile,
+    const OpCodeGenConfig& genConfig) const
 {
     bool hasIgnoreCont = false;
     std::vector<std::string> ignoreContSocs;
@@ -1458,20 +1814,21 @@ void AclnnOpGenerator::GenDynamicInputIgnoreContCode(OpDefIoDesc& opDefIoDesc,
     }
 }
 
-void AclnnOpGenerator::GenDynamicInputWeakSymbolCode(OpDefIoDesc& opDefIoDesc,
-    std::ofstream& outfile, const std::string& indent) const
+void AclnnOpGenerator::GenDynamicInputWeakSymbolCode(
+    OpDefIoDesc& opDefIoDesc, std::ofstream& outfile, const std::string& indent) const
 {
     outfile << "if (NnopbaseAddIgnoreContiguousDynamicInput != NULL) {\n"
             << indent << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContiguousDynamicInput(*executor, "
             << opDefIoDesc.inputName << ", " << opDefIoDesc.index << "));\n"
             << indent << "} else {\n"
-            << indent << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddDynamicInput(*executor, "
-            << opDefIoDesc.inputName << ", " << opDefIoDesc.index << "));\n"
+            << indent << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddDynamicInput(*executor, " << opDefIoDesc.inputName
+            << ", " << opDefIoDesc.index << "));\n"
             << indent << "}\n";
 }
 
-void AclnnOpGenerator::GenInputIgnoreContCode(OpDefIoDesc& opDefIoDesc,
-    const std::vector<InputContiguousConfig>& contConfigs, std::ofstream& outfile, const OpCodeGenConfig& genConfig) const
+void AclnnOpGenerator::GenInputIgnoreContCode(
+    OpDefIoDesc& opDefIoDesc, const std::vector<InputContiguousConfig>& contConfigs, std::ofstream& outfile,
+    const OpCodeGenConfig& genConfig) const
 {
     bool hasIgnoreCont = false;
     std::vector<std::string> ignoreContSocs;
@@ -1488,29 +1845,35 @@ void AclnnOpGenerator::GenInputIgnoreContCode(OpDefIoDesc& opDefIoDesc,
         outfile << genConfig.indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContinuesInput(*executor, "
                 << opDefIoDesc.inputName << ", " << opDefIoDesc.index << "));\n";
     } else {
-        outfile << genConfig.indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, "
-                << opDefIoDesc.inputName << ", " << opDefIoDesc.index << "));\n";
+        outfile << genConfig.indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, " << opDefIoDesc.inputName
+                << ", " << opDefIoDesc.index << "));\n";
     }
 }
 
-void AclnnOpGenerator::GenSingleInputCode(OpDefIoDesc& opDefIoDesc,
-    OpDefName& opdefName, std::ofstream& outfile, const OpCodeGenConfig& genConfig, const std::vector<InputContiguousConfig>& contConfigs) const
+void AclnnOpGenerator::GenSingleInputCode(
+    OpDefIoDesc& opDefIoDesc, OpDefName& opdefName, std::ofstream& outfile, const OpCodeGenConfig& genConfig,
+    const std::vector<InputContiguousConfig>& contConfigs) const
 {
     const char* const valueDepend = opDefIoDesc.input.GetValueDepend().GetString();
     if (!genConfig.valueDependApi && !std::string(valueDepend).empty()) {
-        AclnnOpGenValueDependInput(opDefIoDesc.input, opDefIoDesc.inputName, opDefIoDesc.index, outfile, genConfig.indent);
+        AclnnOpGenValueDependInput(
+            opDefIoDesc.input, opDefIoDesc.inputName, opDefIoDesc.index, outfile, genConfig.indent);
     } else if (opDefIoDesc.input.IsScalar()) {
-        if (!AclOpGenScalarInputWithIndent(opDefIoDesc, opdefName, outfile, "NnopbaseAddScalarInput", genConfig.indent)) {
+        if (!AclOpGenScalarInputWithIndent(
+                opDefIoDesc, opdefName, outfile, "NnopbaseAddScalarInput", genConfig.indent)) {
             std::string str = "Dtype of input " + std::string(opDefIoDesc.input.GetParamName().GetString());
             AclnnSetErrorMessage(str, opDefIoDesc.opType);
         }
     } else if (opDefIoDesc.input.IsScalarList()) {
-        if (!AclOpGenScalarInputWithIndent(opDefIoDesc, opdefName, outfile, "NnopbaseAddScalarListInput", genConfig.indent)) {
+        if (!AclOpGenScalarInputWithIndent(
+                opDefIoDesc, opdefName, outfile, "NnopbaseAddScalarListInput", genConfig.indent)) {
             std::string str = "Dtype of input " + std::string(opDefIoDesc.input.GetParamName().GetString());
             AclnnSetErrorMessage(str, opDefIoDesc.opType);
         }
     } else if (opDefIoDesc.input.GetParamType() == DYNAMIC) {
-        if (genConfig.useBaseConfig) {
+        if (genConfig.needSocCheck) {
+            GenDynamicInputIgnoreContCode(opDefIoDesc, contConfigs, outfile, genConfig);
+        } else if (genConfig.useBaseConfig) {
             if (opDefIoDesc.input.GetIgnoreContiguous()) {
                 outfile << genConfig.indent;
                 GenDynamicInputWeakSymbolCode(opDefIoDesc, outfile, genConfig.indent);
@@ -1518,9 +1881,15 @@ void AclnnOpGenerator::GenSingleInputCode(OpDefIoDesc& opDefIoDesc,
                 outfile << genConfig.indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddDynamicInput(*executor, "
                         << opDefIoDesc.inputName << ", " << opDefIoDesc.index << "));\n";
             }
+        } else if (opDefIoDesc.input.GetIgnoreContiguous()) {
+            outfile << genConfig.indent;
+            GenDynamicInputWeakSymbolCode(opDefIoDesc, outfile, genConfig.indent);
         } else {
-            GenDynamicInputIgnoreContCode(opDefIoDesc, contConfigs, outfile, genConfig);
+            outfile << genConfig.indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddDynamicInput(*executor, "
+                    << opDefIoDesc.inputName << ", " << opDefIoDesc.index << "));\n";
         }
+    } else if (genConfig.needSocCheck) {
+        GenInputIgnoreContCode(opDefIoDesc, contConfigs, outfile, genConfig);
     } else if (genConfig.useBaseConfig) {
         if (opDefIoDesc.input.GetIgnoreContiguous()) {
             outfile << genConfig.indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContinuesInput(*executor, "
@@ -1537,34 +1906,29 @@ void AclnnOpGenerator::GenSingleInputCode(OpDefIoDesc& opDefIoDesc,
 bool AclnnOpGenerator::ValidateInputContiguousConflict(OpDef& opDef) const
 {
     const std::string opType = opDef.GetOpType().GetString();
-    
+
     // 检查baseInputs（默认配置）是否有冲突
     std::vector<OpParamDef>& baseInputs = opDef.GetInputs();
     for (auto& input : baseInputs) {
         if (input.GetIgnoreContiguous() && input.GetAutoContiguous()) {
-            std::string errMsg = "Input '" + std::string(input.GetParamName().GetString()) +
-                "' of op " + opType + 
-                " has both AutoContiguous and IgnoreContiguous configured, which is conflicting.";
+            std::string errMsg = "Input '" + std::string(input.GetParamName().GetString()) + "' of op " + opType +
+                                 " has both AutoContiguous and IgnoreContiguous configured, which is conflicting.";
             Generator::SetErrorMessage(errMsg);
             return false;
         }
     }
-    
+
     // 检查每个SOC配置是否有冲突
     for (auto& aicoreItem : opDef.AICore().GetAICoreConfigs()) {
-        std::string socVer = aicoreItem.first.GetString();
-        if (SOC_SUPPORT_MAP.find(socVer) == SOC_SUPPORT_MAP.end()) {
-            continue;
-        }
+        std::string socVer = ToLower(aicoreItem.first.GetString());
         OpAICoreConfig aicoreConfig = aicoreItem.second;
         std::vector<OpParamDef> mergedInputs = opDef.GetMergeInputs(aicoreConfig);
-        
+
         for (auto& input : mergedInputs) {
             if (input.GetIgnoreContiguous() && input.GetAutoContiguous()) {
-                std::string errMsg = "Input '" + std::string(input.GetParamName().GetString()) +
-                    "' of op " + opType + 
-                    " has both AutoContiguous and IgnoreContiguous configured on SOC " + socVer +
-                    ", which is conflicting.";
+                std::string errMsg = "Input '" + std::string(input.GetParamName().GetString()) + "' of op " + opType +
+                                     " has both AutoContiguous and IgnoreContiguous configured on SOC " + socVer +
+                                     ", which is conflicting.";
                 Generator::SetErrorMessage(errMsg);
                 return false;
             }
@@ -1579,7 +1943,7 @@ void AclnnOpGenerator::CheckAutoContiguousWarning(OpDef& opDef) const
 {
     const std::string opType = opDef.GetOpType().GetString();
     std::vector<InputContiguousConfig> contConfigs = GetInputContiguousConfigs(opDef);
-    
+
     // 收集所有SOC版本
     std::set<std::string> allSocs;
     for (const auto& config : contConfigs) {
@@ -1587,22 +1951,23 @@ void AclnnOpGenerator::CheckAutoContiguousWarning(OpDef& opDef) const
             allSocs.insert(pair.first);
         }
     }
-    
+
     // 辅助函数：将输入名称列表拼接为逗号分隔的字符串
     auto joinInputs = [](const std::vector<std::string>& inputs) -> std::string {
         std::string result;
         for (size_t i = 0; i < inputs.size(); i++) {
-            if (i > 0) result += ", ";
+            if (i > 0)
+                result += ", ";
             result += inputs[i];
         }
         return result;
     };
-    
+
     // 遍历每个SOC，检查AutoContiguous配置
     for (const std::string& socVer : allSocs) {
-        std::vector<std::string> autoContInputs;  // 配置了AutoContiguous的输入
-        std::vector<std::string> defaultInputs;   // 既没有AutoContiguous也没有IgnoreContiguous的输入
-        
+        std::vector<std::string> autoContInputs; // 配置了AutoContiguous的输入
+        std::vector<std::string> defaultInputs;  // 既没有AutoContiguous也没有IgnoreContiguous的输入
+
         for (const auto& config : contConfigs) {
             auto it = config.socContiguousType.find(socVer);
             if (it != config.socContiguousType.end()) {
@@ -1613,14 +1978,14 @@ void AclnnOpGenerator::CheckAutoContiguousWarning(OpDef& opDef) const
                 }
             }
         }
-        
+
         // 如果有AutoContiguous输入，且有默认输入，打印WARNING
         if (!autoContInputs.empty() && !defaultInputs.empty()) {
-            ASCENDLOGW("In %s, op %s has inputs [%s] configured with AutoContiguous, "
+            ASCENDLOGW(
+                "In %s, op %s has inputs [%s] configured with AutoContiguous, "
                 "but inputs [%s] have no AutoContiguous or IgnoreContiguous configured. "
                 "During aclnn execution, these inputs will also transform from non-contiguous to contiguous tensor.\n",
-                socVer.c_str(), opType.c_str(),
-                joinInputs(autoContInputs).c_str(), joinInputs(defaultInputs).c_str());
+                socVer.c_str(), opType.c_str(), joinInputs(autoContInputs).c_str(), joinInputs(defaultInputs).c_str());
         }
     }
 }
@@ -1629,7 +1994,7 @@ std::vector<InputContiguousConfig> AclnnOpGenerator::GetInputContiguousConfigs(O
 {
     std::vector<InputContiguousConfig> configs;
     std::vector<OpParamDef>& baseInputs = opDef.GetInputs();
-    
+
     // 初始化每个输入的配置
     for (size_t i = 0; i < baseInputs.size(); i++) {
         InputContiguousConfig config;
@@ -1637,16 +2002,16 @@ std::vector<InputContiguousConfig> AclnnOpGenerator::GetInputContiguousConfigs(O
         config.inputIndex = static_cast<int32_t>(i);
         configs.push_back(config);
     }
-    
+
     // 遍历每个Soc配置，收集每个输入的contiguous类型
     for (auto& aicoreItem : opDef.AICore().GetAICoreConfigs()) {
-        std::string socVer = aicoreItem.first.GetString();
-        if (SOC_SUPPORT_MAP.find(socVer) == SOC_SUPPORT_MAP.end()) {
+        std::string socVer = ToLower(aicoreItem.first.GetString());
+        if (socVer.find("kirin") == 0U) {
             continue;
         }
         OpAICoreConfig aicoreConfig = aicoreItem.second;
         std::vector<OpParamDef> mergedInputs = opDef.GetMergeInputs(aicoreConfig);
-        
+
         for (size_t i = 0; i < mergedInputs.size() && i < configs.size(); i++) {
             ContiguousType contType = ContiguousType::Default;
             if (mergedInputs[i].GetIgnoreContiguous()) {
@@ -1657,22 +2022,22 @@ std::vector<InputContiguousConfig> AclnnOpGenerator::GetInputContiguousConfigs(O
             configs[i].socContiguousType[socVer] = contType;
         }
     }
-    
+
     return configs;
 }
 
 std::map<std::string, bool> AclnnOpGenerator::GetSocAutoContiguousMap(OpDef& opDef) const
 {
     std::map<std::string, bool> socAutoContMap;
-    
+
     for (auto& aicoreItem : opDef.AICore().GetAICoreConfigs()) {
-        std::string socVer = aicoreItem.first.GetString();
-        if (SOC_SUPPORT_MAP.find(socVer) == SOC_SUPPORT_MAP.end()) {
+        std::string socVer = ToLower(aicoreItem.first.GetString());
+        if (socVer.find("kirin") == 0U) {
             continue;
         }
         OpAICoreConfig aicoreConfig = aicoreItem.second;
         std::vector<OpParamDef> mergedInputs = opDef.GetMergeInputs(aicoreConfig);
-        
+
         bool hasAutoCont = false;
         for (auto& input : mergedInputs) {
             if (input.GetAutoContiguous()) {
@@ -1682,7 +2047,7 @@ std::map<std::string, bool> AclnnOpGenerator::GetSocAutoContiguousMap(OpDef& opD
         }
         socAutoContMap[socVer] = hasAutoCont;
     }
-    
+
     return socAutoContMap;
 }
 
@@ -1692,7 +2057,7 @@ bool AclnnOpGenerator::NeedSocCheckForContiguous(OpDef& opDef) const
     if (!ValidateInputContiguousConflict(opDef)) {
         return false;
     }
-    
+
     // 检查Input的IgnoreContiguous配置是否有SOC差异
     std::vector<InputContiguousConfig> contConfigs = GetInputContiguousConfigs(opDef);
     for (auto& config : contConfigs) {
@@ -1710,7 +2075,7 @@ bool AclnnOpGenerator::NeedSocCheckForContiguous(OpDef& opDef) const
             return true;
         }
     }
-    
+
     // 检查AutoContiguous配置是否有SOC差异
     std::map<std::string, bool> socAutoContMap = GetSocAutoContiguousMap(opDef);
     bool hasAutoCont = false;
@@ -1726,7 +2091,7 @@ bool AclnnOpGenerator::NeedSocCheckForContiguous(OpDef& opDef) const
     if (hasAutoCont && hasNotAutoCont) {
         return true;
     }
-    
+
     return false;
 }
 
@@ -1773,8 +2138,12 @@ void AclnnOpGenerator::AclnnGenMc2Declaration(OpDef& opDef, ofstream& outfile) c
         outfile << "extern aclnnStatus NnopbaseSetHcomGroup(void *const executor, char *const group);\n";
     }
     if (opDef.MC2().GetHcclServerType() != HcclServerType::MAX) {
-        outfile << "extern void NnopbaseSetHcclServerTypeList(void *executor, NnopbaseHcclServerType *hcclServerTypeList, "
-                "uint32_t *socSupportList, size_t socSupportListLen);\n";
+        outfile
+            << "extern void NnopbaseSetHcclServerTypeList(void *executor, NnopbaseHcclServerType *hcclServerTypeList, "
+               "const uint32_t *socSupportList, size_t socSupportListLen);\n";
+        outfile << "extern aclnnStatus __attribute__((weak)) NnopbaseSetHcclServerTypeBySocName(void *executor, "
+                   "NnopbaseHcclServerType *hcclServerTypeList, const char * const *socNameList, "
+                   "size_t socNameListLen);\n";
     }
 }
 
@@ -1843,8 +2212,8 @@ void AclnnOpGenerator::AclnnGenCodeImplStart(
 void AclnnOpGenerator::AclnnGenCodeImplEnd(ofstream& outfile) const
 {
     const char* str = "#ifdef __cplusplus\n"
-        "}\n"
-        "#endif\n";
+                      "}\n"
+                      "#endif\n";
     outfile << str;
 }
 
@@ -1855,8 +2224,8 @@ void AclnnOpGenerator::AclopGenDfxInfo(OpDef& opDef, string& opName, string& pre
     if (IsSupportProduct(opDef)) {
         const std::string& opType = opDef.GetOpType().GetString();
         outfile << "#ifdef ACLNN_WITH_BINARY" << "\n";
-        outfile << "    static uint32_t " << opType << "OpTypeId = op::GenOpTypeId(\"" << opType << "\", " <<
-                   opType  << "_RESOURCES);\n";
+        outfile << "    static uint32_t " << opType << "OpTypeId = op::GenOpTypeId(\"" << opType << "\", " << opType
+                << "_RESOURCES);\n";
         outfile << "#endif" << "\n";
     }
     outfile << "    static NnopbaseDfxId dfxId = {0x60000, __func__, false};\n";
@@ -1873,13 +2242,19 @@ void AclnnOpGenerator::AclnnOpGenCodeSetUnContInfo(OpDef& opDef, ofstream& outfi
     bool allSupport = false, noneSupport = false;
     std::vector<std::string> autoContSocs;
     AnalyzeSocAutoContiguousSupport(opDef, allSupport, noneSupport, autoContSocs);
-    if (noneSupport) { return; }
+    if (noneSupport) {
+        return;
+    }
     bool hasRef = false;
     for (auto& input : baseInputs) {
         for (auto& output : outputs) {
-            if (input.GetParamName() == output.GetParamName()) { hasRef = true; break; }
+            if (input.GetParamName() == output.GetParamName()) {
+                hasRef = true;
+                break;
+            }
         }
-        if (hasRef) break;
+        if (hasRef)
+            break;
     }
     outfile << "\n    uint64_t inContWorkspaceSize = 0U;\n";
     outfile << "    const aclTensorList *inUnContTensors = nullptr;\n";
@@ -1893,7 +2268,8 @@ void AclnnOpGenerator::AclnnOpGenCodeSetUnContInfo(OpDef& opDef, ofstream& outfi
                     << indent << "NnopbaseGetUnContiguousTensors(*executor, &inUnContTensors);\n";
         }
         outfile << indent << "if (inUnContTensors != nullptr) {\n"
-                << indent << "    static AclnnContiguousGetWorkspaceSizeFunc aclnnContiguousGetWorkspaceSize = "
+                << indent
+                << "    static AclnnContiguousGetWorkspaceSizeFunc aclnnContiguousGetWorkspaceSize = "
                    "(AclnnContiguousGetWorkspaceSizeFunc)NnopbaseGetApiFunc(\"aclnnContiguousGetWorkspaceSize\");\n"
                 << indent << "    NNOPBASE_ASSERT_NOTNULL_RETVAL(aclnnContiguousGetWorkspaceSize);\n"
                 << indent << "    NNOPBASE_ASSERT_OK_RETVAL(aclnnContiguousGetWorkspaceSize(inUnContTensors, "
@@ -1928,17 +2304,17 @@ void AclnnOpGenerator::AclnnOpGenCodeHcclGroup(
             if (group == attrs[i].GetName()) {
                 index = i;
                 if (attrTypes[i] != OP_ACLNN_ATTR_TYPE_STR) {
-                    Generator::SetErrorMessage("HcclGroup params of op " + opType +
-                                            " must be String attr name, but " + group.GetString() +
-                                            " is not String attr.");
+                    Generator::SetErrorMessage(
+                        "HcclGroup params of op " + opType + " must be String attr name, but " + group.GetString() +
+                        " is not String attr.");
                     return;
                 }
             }
         }
         if (index == -1) {
             std::string str(group.GetString());
-            Generator::SetErrorMessage("HcclGroup params of op " + opType + " must be String attr name, but " +
-                                       str + " is not attr name.");
+            Generator::SetErrorMessage(
+                "HcclGroup params of op " + opType + " must be String attr name, but " + str + " is not attr name.");
             return;
         }
         outfile << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseSetHcomGroup(*executor, " << name[index] << "));\n";
@@ -1961,8 +2337,8 @@ void AclnnOpGenerator::AclnnOpGenAddParamName(OpDef& opDef, const OpDefName& opd
     outfile << "    }\n";
 }
 
-void AclnnOpGenerator::AclnnOpGenCodeSetRef(std::vector<OpParamDef>& inputs,
-    std::vector<OpParamDef>& outputs, ofstream& outfile) const
+void AclnnOpGenerator::AclnnOpGenCodeSetRef(
+    std::vector<OpParamDef>& inputs, std::vector<OpParamDef>& outputs, ofstream& outfile) const
 {
     for (size_t i = 0U; i < inputs.size(); i++) {
         for (size_t j = 0U; j < outputs.size(); j++) {
@@ -2001,15 +2377,20 @@ void AclnnOpGenerator::AclopGenCodeCommon(
     AclnnOpGenCodeParamCheck(opDef.GetInputs(), outputs, opdefName, outfile);
     AclnnOpGenCodeExecutor(opDef, outfile);
     if (opDef.MC2().GetHcclServerType() != HcclServerType::MAX) {
-        outfile << "    NnopbaseSetHcclServerTypeList(*executor, hcclServerTypeList, "
-            "socSupportList, socSupportListLen);\n";
+        outfile << "    if (NnopbaseSetHcclServerTypeBySocName != NULL) {\n";
+        outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseSetHcclServerTypeBySocName(*executor, hcclServerTypeList, "
+                   "socNameList, socNameListLen));\n";
+        outfile << "    } else {\n";
+        outfile << "        NnopbaseSetHcclServerTypeList(*executor, hcclServerTypeList, "
+                   "socSupportList, socSupportListLen);\n";
+        outfile << "    }\n";
     }
-    
+
     // 检查是否需要SOC判断
     bool needSocCheck = NeedSocCheckForContiguous(opDef);
     // 标记是否需要SOC判断，传递给后续函数使用
     // 不再在此处声明currentSoc，而是在AclnnOpGenCodeAddInputTensors中处理
-    
+
     AclnnOpGenFormatMode(opDef, outfile);
     AclnnOpGenCodeSetRef(opDef.GetInputs(), outputs, outfile);
     AclnnOpGenCodeAddInputTensors(opDef, opdefName, outfile, valueDependApi, needSocCheck);
@@ -2028,15 +2409,35 @@ void AclnnOpGenerator::AclopGenCodeCommon(
         return;
     } else {
         AclnnOpGenAddParamName(opDef, opdefName, outfile);
-        outfile << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddSupportList(*executor, &supportList, socSupportList" <<
-                   ", socSupportListLen));\n";
+        outfile << "    if (NnopbaseAddSocNameList != NULL) {\n";
+        outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddSocNameList(*executor, &supportList, socNameList, socNameListLen));\n";
+        outfile << "    } else {\n";
+        outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddSupportList(*executor, &supportList, socSupportList"
+                << ", socSupportListLen));\n";
+        outfile << "    }\n";
     }
     AclnnOpGenCodeSetUnContInfo(opDef, outfile, needSocCheck);
+    const char* optionalParamCheckEnv = getenv("ACLNN_OPTIONAL_PARAM_CHECK");
+    if (optionalParamCheckEnv != nullptr && strlen(optionalParamCheckEnv) != 0U) {
+        uint32_t optionalParamCheckMode = 0U;
+        char* endPtr = nullptr;
+        unsigned long parsedVal = strtoul(optionalParamCheckEnv, &endPtr, 10);
+        if (*endPtr != '\0' || parsedVal == 0UL || parsedVal > UINT32_MAX) {
+            ASCENDLOGW("Opbuild: ACLNN_OPTIONAL_PARAM_CHECK value '%s' is invalid, expected positive integer, using 0.",
+                       optionalParamCheckEnv);
+            parsedVal = 0U;
+        }
+        optionalParamCheckMode = static_cast<uint32_t>(parsedVal);
+        outfile << "    if (NnopbaseSetParamCheckMode != NULL) {\n";
+        outfile << "        NnopbaseSetParamCheckMode(*executor, "
+                << optionalParamCheckMode << "U);\n";
+        outfile << "    }\n";
+    }
 }
 
 void AclnnOpGenerator::AclnnOpGenIoParam(
-    std::vector<OpParamDef>& params, std::vector<std::string>& paramName,
-    uint32_t version, const bool isInput, ofstream& outfile) const
+    std::vector<OpParamDef>& params, std::vector<std::string>& paramName, uint32_t version, const bool isInput,
+    ofstream& outfile) const
 {
     for (size_t i = 0U; i < params.size(); i++) {
         if (!isInput && AclnnIsRefParam(paramName[i])) {
@@ -2058,8 +2459,8 @@ void AclnnOpGenerator::AclnnOpGenAttrDefParam(
 }
 
 void AclnnOpGenerator::AclnnOpGenDefaultArrayAttr(
-    OpAttrDef& attr, std::string attrsName, std::vector<std::string>& defaultAttrsName,
-    int32_t type, ofstream& outfile) const
+    OpAttrDef& attr, std::string attrsName, std::vector<std::string>& defaultAttrsName, int32_t type,
+    ofstream& outfile) const
 {
     switch (type) {
         case OP_ACLNN_ATTR_TYPE_LISTBOOL: {
@@ -2166,10 +2567,11 @@ void AclnnOpGenerator::AclnnOpGenCodeRunForWorkspaceVersionImpl(
     AclnnGenCodeDecImpl(decName, outfile);
     outfile << "#include \"" << decFile + "_v" + to_string(maxVersion) << ".h\"\n\n";
     const char* str = "\n#ifdef __cplusplus\n"
-        "extern \"C\" {\n"
-        "#endif\n\n";
+                      "extern \"C\" {\n"
+                      "#endif\n\n";
     outfile << str;
-    outfile << "aclnnStatus __attribute__((weak)) NnopbaseDisableOptionalInput(void *executor, const size_t irIndex);\n\n";
+    outfile
+        << "aclnnStatus __attribute__((weak)) NnopbaseDisableOptionalInput(void *executor, const size_t irIndex);\n\n";
     AclnnOpGenCodeRunForWSFunProto(opDef, opdefName, outfile, version);
     outfile << "\n{\n";
     AclnnOpGenDefaultAttr(opDef, opdefName, version, outfile);
@@ -2200,7 +2602,7 @@ void AclnnOpGenerator::AclopGenCodeRefContiguous(OpDef& opDef, OpDefName& opdefN
 {
     // 获取每个Soc的AutoContiguous支持情况
     std::map<std::string, bool> socAutoContMap = GetSocAutoContiguousMap(opDef);
-    
+
     // 检查是否有任何Soc支持AutoContiguous
     bool anySupport = false;
     for (auto& pair : socAutoContMap) {
@@ -2209,11 +2611,11 @@ void AclnnOpGenerator::AclopGenCodeRefContiguous(OpDef& opDef, OpDefName& opdefN
             break;
         }
     }
-    
+
     if (!anySupport || !HasRef(opdefName.inputsName)) {
         return;
     }
-    
+
     outfile << "\n";
     outfile << "    aclOpExecutor *viewcopyExecutor = nullptr;\n";
     outfile << "    uint64_t viewcopyWsSize = 0U;\n";
@@ -2245,7 +2647,7 @@ void AclnnOpGenerator::AclnnOpGenCodeRunForWorkspaceImpl(
         AclnnOpGenCodeRunForWSFunProto(opDef, opdefName, outfile, version);
         AclopGenDfxInfo(opDef, opdefName.opName, opdefName.prefixName, outfile);
         AclopGenCodeCommon(opDef, opdefName, outfile, version, valDependApi);
-    } else if (IsOpValueDepend(opDef)){
+    } else if (IsOpValueDepend(opDef)) {
         AclnnOpGenCodeTensorRunForWSFunProto(opDef, opdefName, outfile, version);
         AclopGenDfxInfo(opDef, opdefName.opName, opdefName.prefixName, outfile);
         AclopGenCodeCommon(opDef, opdefName, outfile, version, valDependApi);
@@ -2255,14 +2657,14 @@ void AclnnOpGenerator::AclnnOpGenCodeRunForWorkspaceImpl(
     // 检查是否有任何Soc支持AutoContiguous
     std::map<std::string, bool> socAutoContMap = GetSocAutoContiguousMap(opDef);
     bool noneSupport = true;
-    
+
     for (auto& pair : socAutoContMap) {
         if (pair.second) {
             noneSupport = false;
             break;
         }
     }
-    
+
     // inContWorkspaceSize默认值是0，对于不支持AutoContiguous的soc，+= 0没有影响
     if (!noneSupport) {
         outfile << "    *workspaceSize += inContWorkspaceSize;\n";
@@ -2272,14 +2674,15 @@ void AclnnOpGenerator::AclnnOpGenCodeRunForWorkspaceImpl(
     outfile << "}\n\n";
 }
 
-void AclnnOpGenerator::AclnnOpGenCodeRunUnContWithWorkspaceImpl(OpDef& opDef, OpDefName& opDefName,
-                                                                ofstream& outfile) const
+void AclnnOpGenerator::AclnnOpGenCodeRunUnContWithWorkspaceImpl(
+    OpDef& opDef, OpDefName& opDefName, ofstream& outfile) const
 {
     std::vector<OpParamDef>& baseInputs = opDef.GetInputs();
     bool allSupport = false, noneSupport = false;
     std::vector<std::string> autoContSocs;
     AnalyzeSocAutoContiguousSupport(opDef, allSupport, noneSupport, autoContSocs);
-    if (noneSupport) return;
+    if (noneSupport)
+        return;
     bool needSocCheck = NeedSocCheckForContiguous(opDef);
     bool hasDefaultAutoCont = HasDefaultAutoContiguous(baseInputs);
     outfile << "    uint64_t inContWorkspaceSize = 0U;\n";
@@ -2288,37 +2691,45 @@ void AclnnOpGenerator::AclnnOpGenCodeRunUnContWithWorkspaceImpl(OpDef& opDef, Op
     auto hasRef = HasRef(opDefName.inputsName);
     if (hasRef) {
         outfile << "    aclOpExecutor *viewcopyExecutor = nullptr;\n"
-            << "    const aclTensorList *viewcopyTensors = nullptr;\n";
+                << "    const aclTensorList *viewcopyTensors = nullptr;\n";
     }
     auto genContiguousCode = [&outfile, &opDefName, &hasRef](const std::string& indent) {
         outfile << indent << "NnopbaseGetUnContExecutor(executor, &aclInExecutor, &inContWorkspaceSize);\n"
                 << indent << "if (workspaceSize < inContWorkspaceSize) {\n"
-                << indent << "    NnopbaseOpLogE(ACLNN_ERR_PARAM_INVALID, \"input workspaceSize must be larger than "
+                << indent
+                << "    NnopbaseOpLogE(ACLNN_ERR_PARAM_INVALID, \"input workspaceSize must be larger than "
                    "contiguous size!\");\n"
-                << indent << "    return ACLNN_ERR_PARAM_INVALID;\n" << indent << "}\n"
+                << indent << "    return ACLNN_ERR_PARAM_INVALID;\n"
+                << indent << "}\n"
                 << indent << "workspaceSize -= inContWorkspaceSize;\n"
                 << indent << "inWorkspace = (char *)workspace + workspaceSize;\n"
                 << indent << "if (aclInExecutor != nullptr) {\n"
-                << indent << "    static AclnnFunc aclnnContiguous = (AclnnFunc)NnopbaseGetApiFunc(\"aclnnContiguous\");\n"
+                << indent
+                << "    static AclnnFunc aclnnContiguous = (AclnnFunc)NnopbaseGetApiFunc(\"aclnnContiguous\");\n"
                 << indent << "    NNOPBASE_ASSERT_NOTNULL_RETVAL(aclnnContiguous);\n"
-                << indent << "    NNOPBASE_ASSERT_OK_RETVAL(aclnnContiguous(inWorkspace, inContWorkspaceSize, "
-                   "aclInExecutor, stream));\n" << indent << "}\n";
+                << indent
+                << "    NNOPBASE_ASSERT_OK_RETVAL(aclnnContiguous(inWorkspace, inContWorkspaceSize, "
+                   "aclInExecutor, stream));\n"
+                << indent << "}\n";
         if (hasRef) {
-            outfile << indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseGetViewCopyExecutor(executor, &viewcopyExecutor));\n"
-                    << indent << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseReleaseRefContiguousTensors(executor, "
+            outfile << indent
+                    << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseGetViewCopyExecutor(executor, &viewcopyExecutor));\n"
+                    << indent
+                    << "NNOPBASE_ASSERT_OK_RETVAL(NnopbaseReleaseRefContiguousTensors(executor, "
                        "&viewcopyTensors));\n";
         }
     };
-    
-    if (allSupport || !needSocCheck) { genContiguousCode("    "); }
-    else if (hasDefaultAutoCont) {
-        GenerateCurrentSocDeclaration(outfile);
+
+    if (allSupport || !needSocCheck) {
+        genContiguousCode("    ");
+    } else if (hasDefaultAutoCont) {
         GenerateSocConditionCode(autoContSocs, outfile, true);
-        genContiguousCode("        "); outfile << "    }\n";
+        genContiguousCode("        ");
+        outfile << "    }\n";
     } else {
-        GenerateCurrentSocDeclaration(outfile);
         GenerateSocConditionCode(autoContSocs, outfile, false);
-        genContiguousCode("        "); outfile << "    }\n";
+        genContiguousCode("        ");
+        outfile << "    }\n";
     }
 }
 
@@ -2327,17 +2738,17 @@ void AclnnOpGenerator::GenerateViewDeclaration(std::ofstream& outfile, const std
     outfile << indent << "if (viewcopyExecutor != nullptr) {\n";
     outfile << indent << "    static AclnnFunc aclnnViewCopy = (AclnnFunc)NnopbaseGetApiFunc(\"aclnnViewCopy\");\n";
     outfile << indent << "    NNOPBASE_ASSERT_NOTNULL_RETVAL(aclnnViewCopy);\n";
-    outfile << indent << "    NNOPBASE_ASSERT_OK_RETVAL(aclnnViewCopy(inWorkspace, inContWorkspaceSize, viewcopyExecutor,"
-                " stream));\n";
-    outfile << indent << "    if (viewcopyTensors != nullptr) {\n";      
+    outfile << indent
+            << "    NNOPBASE_ASSERT_OK_RETVAL(aclnnViewCopy(inWorkspace, inContWorkspaceSize, viewcopyExecutor,"
+               " stream));\n";
+    outfile << indent << "    if (viewcopyTensors != nullptr) {\n";
     outfile << indent << "        NNOPBASE_ASSERT_OK_RETVAL(aclDestroyTensorList(viewcopyTensors));\n";
     outfile << indent << "    }\n";
     outfile << indent << "}\n";
 }
 
-
-void AclnnOpGenerator::AclnnOpGenCodeRunRefUnContWithWorkspaceImpl(OpDef& opDef, OpDefName& opDefName,
-                                                                   ofstream& outfile) const
+void AclnnOpGenerator::AclnnOpGenCodeRunRefUnContWithWorkspaceImpl(
+    OpDef& opDef, OpDefName& opDefName, ofstream& outfile) const
 {
     std::vector<OpParamDef>& baseInputs = opDef.GetInputs();
     std::vector<std::string> autoContSocs;
@@ -2358,31 +2769,11 @@ void AclnnOpGenerator::AclnnOpGenCodeRunRefUnContWithWorkspaceImpl(OpDef& opDef,
     if (allSupport || !needSocCheck) {
         GenerateViewDeclaration(outfile, "    ");
     } else if (hasDefaultAutoCont) {
-        outfile << "    if (NnopbaseGetSocEnum == NULL || (currentSoc == ";
-        for (size_t i = 0; i < autoContSocs.size(); i++) {
-            auto socIt = SOC_SUPPORT_MAP.find(autoContSocs[i]);
-            if (socIt != SOC_SUPPORT_MAP.end()) {
-                if (i > 0) {
-                    outfile << " || currentSoc == ";
-                }
-                outfile << socIt->second;
-            }
-        }
-        outfile << ")) {\n";
+        GenerateSocConditionCode(autoContSocs, outfile, true);
         GenerateViewDeclaration(outfile, "        ");
         outfile << "    }\n";
     } else {
-        outfile << "    if (";
-        for (size_t i = 0; i < autoContSocs.size(); i++) {
-            auto socIt = SOC_SUPPORT_MAP.find(autoContSocs[i]);
-            if (socIt != SOC_SUPPORT_MAP.end()) {
-                if (i > 0) {
-                    outfile << " || currentSoc == ";
-                }
-                outfile << "currentSoc == " << socIt->second;
-            }
-        }
-        outfile << ") {\n";
+        GenerateSocConditionCode(autoContSocs, outfile, false);
         GenerateViewDeclaration(outfile, "        ");
         outfile << "    }\n";
     }
@@ -2392,7 +2783,7 @@ void AclnnOpGenerator::AclnnOpGenCodeRunWithWorkspaceVersionImpl(OpDefName& opde
 {
     AclnnOpGenCodeRunWithWSFunProto(opdefName.prefixName, outfile);
     outfile << "\n{\n";
-    outfile << "    return " << opdefName.maxVersionName <<"(workspace, workspaceSize, executor, stream);\n";
+    outfile << "    return " << opdefName.maxVersionName << "(workspace, workspaceSize, executor, stream);\n";
     outfile << "}\n\n";
     AclnnGenCodeImplEnd(outfile);
     outfile.close();
@@ -2404,9 +2795,12 @@ void AclnnOpGenerator::AclnnOpGenCodeRunWithWorkspaceImpl(OpDef& opDef, OpDefNam
     outfile << "\n{\n";
     outfile << "    uint64_t timeStamp = NnopbaseMsprofSysTime();\n";
     outfile << "    static NnopbaseDfxId dfxId = {0x60000, __func__, false};\n";
-    
-    // SOC判断逻辑已在AclnnOpGenCodeRunUnContWithWorkspaceImpl中处理
-    
+
+    bool needSocCheck = NeedSocCheckForContiguous(opDef);
+    if (needSocCheck) {
+        GenerateCurrentSocDeclaration(outfile, "    ");
+    }
+
     AclnnOpGenCodeRunUnContWithWorkspaceImpl(opDef, opDefName, outfile);
     outfile << "    NNOPBASE_ASSERT_OK_RETVAL(NnopbaseRunWithWorkspace(executor, stream, workspace, workspaceSize));\n";
     AclnnOpGenCodeRunRefUnContWithWorkspaceImpl(opDef, opDefName, outfile);
@@ -2522,7 +2916,7 @@ void AclnnOpGenerator::AclopGenVersionCode(
             headerStream = AclnnOpGenHeaderFileStart(decFileName, opdefName.macroNmae, *it);
             AclnnOpGenCodeWorkspaceDelcare(opDef, opdefName, headerStream, *it);
             AclnnOpGenHeaderFileDel(decFileName, headerStream, false);
-            string implFileName = opdefName.fileName + "_v" +  to_string(*it) + ".cpp";
+            string implFileName = opdefName.fileName + "_v" + to_string(*it) + ".cpp";
             ofstream outVersionfile = ofstream(implFileName);
             chmod(implFileName.c_str(), S_IRUSR | S_IWUSR);
             AclnnOpGenCodeRunForWorkspaceVersionImpl(opDef, opdefName, *it, maxVersion, outVersionfile);
@@ -2616,8 +3010,5 @@ static opbuild::Status AclnnOpGeneratorBuilder(std::vector<std::string>& ops)
 }
 
 static void AddAclnnOpGenerator(void) __attribute__((constructor));
-void AddAclnnOpGenerator(void)
-{
-    GeneratorFactory::AddBuilder("aclopnn", AclnnOpGeneratorBuilder);
-}
+void AddAclnnOpGenerator(void) { GeneratorFactory::AddBuilder("aclopnn", AclnnOpGeneratorBuilder); }
 } // namespace ops

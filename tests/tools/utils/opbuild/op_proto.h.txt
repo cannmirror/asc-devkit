@@ -151,6 +151,11 @@ REG_OP(RmsNormGradTest)
     .OUTPUT(dgamma, ge::TensorType::ALL())
     .OP_END_FACTORY_REG(RmsNormGradTest);
 
+REG_OP(InvalidSocTest)
+    .INPUT(x1, ge::TensorType::ALL())
+    .DYNAMIC_INPUT(x2, ge::TensorType::ALL())
+    .OP_END_FACTORY_REG(InvalidSocTest);
+
 }
 
 #endif
