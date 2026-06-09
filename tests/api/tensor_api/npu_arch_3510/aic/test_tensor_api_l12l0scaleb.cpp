@@ -66,10 +66,10 @@ TEST_F(Tensor_Api_Cube_Copy_L12L0ScaleB_3510, CopyL12L0ScaleBRoutesToCubeArchCop
     __cbuf__ fp8_e8m0_t src[m * n] = {0};
     __cb__ fp8_e8m0_t dst[m * n] = {0};
 
-    auto l1Tensor = MakeTensor(MakeMemPtr<Location::L1>(src), MakeFrameLayout<NNLayoutPtn, AscendC::Std::Int<2>>(m, n));
+    auto l1Tensor = MakeTensor(MakeMemPtr<Location::L1>(src), MakeFrameLayout<NNLayoutPtn, _2>(m, n));
     auto dstPtr = MakeMemPtr<Location::L0ScaleB, fp8_e8m0_t>((reinterpret_cast<uint64_t>(dst)) / 16);
-    auto l0bTensor = MakeTensor(dstPtr, MakeFrameLayout<NNLayoutPtn, AscendC::Std::Int<2>>(m, n));
-    auto coord = MakeCoord(AscendC::Std::Int<0>{}, AscendC::Std::Int<0>{});
+    auto l0bTensor = MakeTensor(dstPtr, MakeFrameLayout<NNLayoutPtn, _2>(m, n));
+    auto coord = MakeCoord(_0{}, _0{});
 
     RunCopyCallPaths<CopyL12L0ScaleB, CopyL12L0ScaleBTraitDefault>(l0bTensor, l1Tensor);
     RunCopyWithPaths<CopyL12L0ScaleB, CopyL12L0ScaleBTraitDefault>(l0bTensor, l1Tensor);

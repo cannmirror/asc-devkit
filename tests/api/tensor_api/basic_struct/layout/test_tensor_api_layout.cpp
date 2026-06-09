@@ -89,9 +89,9 @@ TEST_F(Tensor_Api_Layout_Struct, TestMakeIntTuple)
 {
     using namespace AscendC::Te;
 
-    auto shape = MakeShape(AscendC::Std::_4{}, AscendC::Std::_5{});
-    auto stride = MakeStride(AscendC::Std::_5{}, AscendC::Std::_1{});
-    auto coord = MakeCoord(AscendC::Std::_1{}, AscendC::Std::_3{});
+    auto shape = MakeShape(_4{}, _5{});
+    auto stride = MakeStride(_5{}, _1{});
+    auto coord = MakeCoord(_1{}, _3{});
 
     EXPECT_EQ(AscendC::Std::get<0>(shape).value, 4);
     EXPECT_EQ(AscendC::Std::get<1>(shape).value, 5);

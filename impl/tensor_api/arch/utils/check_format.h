@@ -38,18 +38,18 @@ struct CheckNzLayoutPattern {
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>,
                       "Layout->Shape->Row->ZeroDim must be Int<16>!");
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<C0_ELEMENT>>,
-                      "Layout->Shape->Column->ZeroDim is differnt from C0_ELEMENT!");
+                      "Layout->Shape->Column->ZeroDim is different from C0_ELEMENT!");
 
         using StrideRow0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Row, 0>::type;
         using StrideColumn0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 0>::type;
         using StrideRow1 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Row, 1>::type;
         static_assert(Std::is_same_v<StrideRow0, Std::Int<C0_ELEMENT>>,
-                      "Layout->Stride->Row->ZeroDim is differnt from C0_ELEMENT!");
+                      "Layout->Stride->Row->ZeroDim is different from C0_ELEMENT!");
         static_assert(Std::is_same_v<StrideColumn0, _1>,
                       "Layout->Stride->Column->ZeroDim must be Int<1>!");
         static_assert(
             Std::is_same_v<StrideRow1, Std::Int<C0_ELEMENT * FRACTAL_FIXED>>,
-            "Layout->Stride->Column->ZeroDim is differnt from C0_ELEMENT * FRACTAL_FIXED!");
+            "Layout->Stride->Column->ZeroDim is different from C0_ELEMENT * FRACTAL_FIXED!");
     }
 };
 
@@ -127,15 +127,15 @@ struct CheckZzLayoutPattern {
         using ShapeRow0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Row, 0>::type;
         using ShapeColumn0 = typename GetNDimType<T, AttrInfo::Shape, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<C0_ELEMENT>>,
-                      "Layout->Shape->Column->ZeroDim must is differnt from C0_ELEMENT!");
+                      "Layout->Shape->Column->ZeroDim is different from C0_ELEMENT!");
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>,
                       "Layout->Shape->Row->ZeroDim must be Int<16>!");
 
         using StrideRow0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Row, 0>::type;
         using StrideColumn0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 0>::type;
-        static_assert(Std::is_same_v<StrideColumn0, _1>, "Layout->Stride->Column-ZeroDim must be Int<1>!");
+        static_assert(Std::is_same_v<StrideColumn0, _1>, "Layout->Stride->Column->ZeroDim must be Int<1>!");
         static_assert(Std::is_same_v<StrideRow0, Std::Int<C0_ELEMENT>>,
-                      "Layout->Stride->Row->ZeroDim is differnt from C0_ELEMENT!");
+                      "Layout->Stride->Row->ZeroDim is different from C0_ELEMENT!");
     }
 };
 
@@ -148,12 +148,12 @@ struct CheckZnLayoutPattern {
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<FRACTAL_FIXED>>,
                       "Layout->Shape->Column->ZeroDim must be Int<16>!");
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<C0_ELEMENT>>,
-                      "Layout->Shape->Row->ZeroDim is differnt from C0_ELEMENT!");
+                      "Layout->Shape->Row->ZeroDim is different from C0_ELEMENT!");
 
         using StrideRow0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Row, 0>::type;
         using StrideColumn0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<C0_ELEMENT>>,
-                      "Layout->Stride->Column-ZeroDim is differnt from C0_ELEMENT!");
+                      "Layout->Stride->Column->ZeroDim is different from C0_ELEMENT!");
         static_assert(Std::is_same_v<StrideRow0, _1>,
                       "Layout->Stride->Row->ZeroDim must be Int<1>!");
     }
@@ -171,8 +171,8 @@ struct CheckScaleANDLayoutPattern {
         using StrideColumn0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 0>::type;
         using StrideColumn1 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 1>::type;
         static_assert(Std::is_same_v<StrideRow0, _0>, "Layout->Stride->Row->ZeroDim must be Int<0>!");
-        static_assert(Std::is_same_v<StrideColumn0, _0>, "Layout->Stride->Column-ZeroDim must be Int<0>!");
-        static_assert(Std::is_same_v<StrideColumn1, _1>, "Layout->Stride->Column-OneDim must be Int<1>!");
+        static_assert(Std::is_same_v<StrideColumn0, _0>, "Layout->Stride->Column->ZeroDim must be Int<0>!");
+        static_assert(Std::is_same_v<StrideColumn1, _1>, "Layout->Stride->Column->OneDim must be Int<1>!");
     }
 };
 
@@ -189,7 +189,7 @@ struct CheckScaleADNLayoutPattern {
         using StrideColumn0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<StrideRow0, _0>, "Layout->Stride->Row->ZeroDim must be Int<0>!");
         static_assert(Std::is_same_v<StrideRow1, _2>, "Layout->Stride->Row->OneDim must be Int<2>!");
-        static_assert(Std::is_same_v<StrideColumn0, _1>, "Layout->Stride->Column-OneDim must be Int<1>!");
+        static_assert(Std::is_same_v<StrideColumn0, _1>, "Layout->Stride->Column->OneDim must be Int<1>!");
     }
 };
 
@@ -205,8 +205,8 @@ struct CheckScaleBNDLayoutPattern {
         using StrideColumn0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 0>::type;
         using StrideColumn1 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 1>::type;
         static_assert(Std::is_same_v<StrideRow0, _1>, "Layout->Stride->Row->ZeroDim must be Int<1>!");
-        static_assert(Std::is_same_v<StrideColumn0, _0>, "Layout->Stride->Column-ZeroDim must be Int<0>!");
-        static_assert(Std::is_same_v<StrideColumn1, _2>, "Layout->Stride->Column-OneDim must be Int<2>!");
+        static_assert(Std::is_same_v<StrideColumn0, _0>, "Layout->Stride->Column->ZeroDim must be Int<0>!");
+        static_assert(Std::is_same_v<StrideColumn1, _2>, "Layout->Stride->Column->OneDim must be Int<2>!");
     }
 };
 
@@ -223,7 +223,7 @@ struct CheckScaleBDNLayoutPattern {
         using StrideColumn0 = typename GetNDimType<T, AttrInfo::Stride, AttrInfo::Column, 0>::type;
         static_assert(Std::is_same_v<StrideRow0, _0>, "Layout->Stride->Row->ZeroDim must be Int<0>!");
         static_assert(Std::is_same_v<StrideRow1, _1>, "Layout->Stride->Row->OneDim must be Int<1>!");
-        static_assert(Std::is_same_v<StrideColumn0, _0>, "Layout->Stride->Column-OneDim must be Int<0>!");
+        static_assert(Std::is_same_v<StrideColumn0, _0>, "Layout->Stride->Column->OneDim must be Int<0>!");
     }
 };
 
