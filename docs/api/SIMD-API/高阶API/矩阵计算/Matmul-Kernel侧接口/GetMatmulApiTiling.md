@@ -1,58 +1,17 @@
-# GetMatmulApiTiling<a name="ZH-CN_TOPIC_0000001994625056"></a>
+# GetMatmulApiTiling
 
-## 产品支持情况<a name="section1550532418810"></a>
+## 产品支持情况
 
-<a name="table1334714391211"></a>
-<table><thead align="left"><tr id="row1334743121213"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p834713321216"><a name="p834713321216"></a><a name="p834713321216"></a><span id="ph834783101215"><a name="ph834783101215"></a><a name="ph834783101215"></a>产品</span></p>
-</th>
-<th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p2347234127"><a name="p2347234127"></a><a name="p2347234127"></a>是否支持</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row113472312122"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p234710320128"><a name="p234710320128"></a><a name="p234710320128"></a><span id="ph103471336127"><a name="ph103471336127"></a><a name="ph103471336127"></a>Ascend 950PR/Ascend 950DT</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p4751940181211"><a name="p4751940181211"></a><a name="p4751940181211"></a>√</p>
-</td>
-</tr>
-<tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7751240111217"><a name="p7751240111217"></a><a name="p7751240111217"></a>√</p>
-</td>
-</tr>
-<tr id="row33481333123"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p2034813321217"><a name="p2034813321217"></a><a name="p2034813321217"></a><span id="ph334833191213"><a name="ph334833191213"></a><a name="ph334833191213"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p20751740131216"><a name="p20751740131216"></a><a name="p20751740131216"></a>√</p>
-</td>
-</tr>
-<tr id="row1534812312127"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p173482319125"><a name="p173482319125"></a><a name="p173482319125"></a><span id="ph15348143131210"><a name="ph15348143131210"></a><a name="ph15348143131210"></a><term id="zh-cn_topic_0000001312391781_term354143892110"><a name="zh-cn_topic_0000001312391781_term354143892110"></a><a name="zh-cn_topic_0000001312391781_term354143892110"></a>Atlas 200I/500 A2 推理产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p136721153015"><a name="p136721153015"></a><a name="p136721153015"></a>x</p>
-</td>
-</tr>
-<tr id="row103481371220"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p163483310121"><a name="p163483310121"></a><a name="p163483310121"></a><span id="ph163561737112019"><a name="ph163561737112019"></a><a name="ph163561737112019"></a><term id="zh-cn_topic_0000001312391781_term1964153212227"><a name="zh-cn_topic_0000001312391781_term1964153212227"></a><a name="zh-cn_topic_0000001312391781_term1964153212227"></a>Atlas 推理系列产品</term>AI Core</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p87601002239"><a name="p87601002239"></a><a name="p87601002239"></a>x</p>
-</td>
-</tr>
-<tr id="row242332080"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p10519331187"><a name="p10519331187"></a><a name="p10519331187"></a><span id="ph1335623792013"><a name="ph1335623792013"></a><a name="ph1335623792013"></a><term id="zh-cn_topic_0000001312391781_term1463893615224"><a name="zh-cn_topic_0000001312391781_term1463893615224"></a><a name="zh-cn_topic_0000001312391781_term1463893615224"></a>Atlas 推理系列产品</term>Vector Core</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p13382204414121"><a name="p13382204414121"></a><a name="p13382204414121"></a>x</p>
-</td>
-</tr>
-<tr id="row73487318125"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p2348123141220"><a name="p2348123141220"></a><a name="p2348123141220"></a><span id="ph15348183141219"><a name="ph15348183141219"></a><a name="ph15348183141219"></a><term id="zh-cn_topic_0000001312391781_term71949488213"><a name="zh-cn_topic_0000001312391781_term71949488213"></a><a name="zh-cn_topic_0000001312391781_term71949488213"></a>Atlas 训练系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p169451421311"><a name="p169451421311"></a><a name="p169451421311"></a>x</p>
-</td>
-</tr>
-<tr id="row91238341120"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p101235340216"><a name="p101235340216"></a><a name="p101235340216"></a><span id="ph155329569312"><a name="ph155329569312"></a><a name="ph155329569312"></a>Kirin X90</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p85788238"><a name="p85788238"></a><a name="p85788238"></a>√</p>
-</td>
-</tr>
-</tbody>
-</table>
+- Ascend 950PR/Ascend 950DT：支持
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持
+- Atlas 200I/500 A2 推理产品：不支持
+- Atlas 推理系列产品AI Core：不支持
+- Atlas 推理系列产品Vector Core：不支持
+- Atlas 训练系列产品：不支持
+- Kirin X90：支持
 
-## 功能说明<a name="section618mcpsimp"></a>
+## 功能说明
 
 本接口用于在编译期间获取常量化的Matmul Tiling参数。
 
@@ -62,98 +21,50 @@ Matmul Tiling常量化功能为在编译期期间获取常量化的Matmul Tiling
 
 经过上述部分常量化或全部常量化后，将得到带有常量化参数的MatmulConfig模板，然后使用本接口将Tiling参数常量化。本接口的返回值包含常量化的Matmul Tiling参数和MatmulConfig模板。
 
-## 函数原型<a name="section620mcpsimp"></a>
+## 函数原型
 
 ```
 template<class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE>
 __aicore__ constexpr MatmulApiStaticTiling GetMatmulApiTiling(const MatmulConfig& mmCFG, int32_t l1Size = Impl::L1_SIZE)
 ```
 
-## 参数说明<a name="section622mcpsimp"></a>
+## 参数说明
 
 **表 1**  模板参数说明
 
-<a name="table4835205712588"></a>
-<table><thead align="left"><tr id="zh-cn_topic_0000001429830437_row118356578583"><th class="cellrowborder" valign="top" width="50%" id="mcps1.2.3.1.1"><p id="zh-cn_topic_0000001429830437_p48354572582"><a name="zh-cn_topic_0000001429830437_p48354572582"></a><a name="zh-cn_topic_0000001429830437_p48354572582"></a>参数名</p>
-</th>
-<th class="cellrowborder" valign="top" width="50%" id="mcps1.2.3.1.2"><p id="zh-cn_topic_0000001429830437_p583535795817"><a name="zh-cn_topic_0000001429830437_p583535795817"></a><a name="zh-cn_topic_0000001429830437_p583535795817"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="zh-cn_topic_0000001429830437_row1835857145817"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p5835457165816"><a name="zh-cn_topic_0000001429830437_p5835457165816"></a><a name="zh-cn_topic_0000001429830437_p5835457165816"></a>A_TYPE</p>
-</td>
-<td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p9561175153016"><a name="p9561175153016"></a><a name="p9561175153016"></a>A矩阵类型信息，通过<a href="Matmul使用说明.md#table1188045714378">MatmulType</a>来定义。</p>
-</td>
-</tr>
-<tr id="row1648615377"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p1212015191874"><a name="p1212015191874"></a><a name="p1212015191874"></a>B_TYPE</p>
-</td>
-<td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p1912061914715"><a name="p1912061914715"></a><a name="p1912061914715"></a>B矩阵类型信息，通过<a href="Matmul使用说明.md#table1188045714378">MatmulType</a>来定义。</p>
-</td>
-</tr>
-<tr id="row068983542919"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p12689103517298"><a name="p12689103517298"></a><a name="p12689103517298"></a>C_TYPE</p>
-</td>
-<td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p27722268302"><a name="p27722268302"></a><a name="p27722268302"></a>C矩阵类型信息，通过<a href="Matmul使用说明.md#table1188045714378">MatmulType</a>来定义。</p>
-</td>
-</tr>
-<tr id="row227517394296"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p15275143942912"><a name="p15275143942912"></a><a name="p15275143942912"></a>BIAS_TYPE</p>
-</td>
-<td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p13660122733017"><a name="p13660122733017"></a><a name="p13660122733017"></a>BIAS矩阵类型信息，通过<a href="Matmul使用说明.md#table1188045714378">MatmulType</a>来定义。</p>
-</td>
-</tr>
-</tbody>
-</table>
+| 参数名 | 描述 |
+| --- | --- |
+| A_TYPE | A矩阵类型信息，通过[MatmulType](Matmul使用说明.md#table1188045714378)来定义。 |
+| B_TYPE | B矩阵类型信息，通过[MatmulType](Matmul使用说明.md#table1188045714378)来定义。 |
+| C_TYPE | C矩阵类型信息，通过[MatmulType](Matmul使用说明.md#table1188045714378)来定义。 |
+| BIAS_TYPE | BIAS矩阵类型信息，通过[MatmulType](Matmul使用说明.md#table1188045714378)来定义。 |
 
 **表 2**  参数说明
 
-<a name="table9646134355611"></a>
-<table><thead align="left"><tr id="row964714433565"><th class="cellrowborder" valign="top" width="14.99%" id="mcps1.2.4.1.1"><p id="zh-cn_topic_0235751031_p20917673"><a name="zh-cn_topic_0235751031_p20917673"></a><a name="zh-cn_topic_0235751031_p20917673"></a>参数名</p>
-</th>
-<th class="cellrowborder" valign="top" width="12.02%" id="mcps1.2.4.1.2"><p id="zh-cn_topic_0235751031_p16609919"><a name="zh-cn_topic_0235751031_p16609919"></a><a name="zh-cn_topic_0235751031_p16609919"></a>输入/输出</p>
-</th>
-<th class="cellrowborder" valign="top" width="72.99%" id="mcps1.2.4.1.3"><p id="zh-cn_topic_0235751031_p59995477"><a name="zh-cn_topic_0235751031_p59995477"></a><a name="zh-cn_topic_0235751031_p59995477"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row10312181416266"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p6307141482619"><a name="p6307141482619"></a><a name="p6307141482619"></a>mmCFG</p>
-</td>
-<td class="cellrowborder" valign="top" width="12.02%" headers="mcps1.2.4.1.2 "><p id="p1783442222713"><a name="p1783442222713"></a><a name="p1783442222713"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p63071114122618"><a name="p63071114122618"></a><a name="p63071114122618"></a>获取的<a href="MatmulConfig.md#table1761013213153">MatmulConfig</a>模板。</p>
-<p id="p4805114144610"><a name="p4805114144610"></a><a name="p4805114144610"></a>对于<span id="ph280519415461"><a name="ph280519415461"></a><a name="ph280519415461"></a>Ascend 950PR/Ascend 950DT</span>，支持常量化的为全部模板：Norm, IBShare, MDL模板。</p>
-<p id="p1543569102919"><a name="p1543569102919"></a><a name="p1543569102919"></a>对于<span id="ph427511110342"><a name="ph427511110342"></a><a name="ph427511110342"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持常量化的模板有：Norm, MDL模板。</p>
-<p id="p3918222046"><a name="p3918222046"></a><a name="p3918222046"></a>对于<span id="ph1292674871116"><a name="ph1292674871116"></a><a name="ph1292674871116"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持常量化的模板有：Norm, MDL模板。</p>
-<p id="p124094586432"><a name="p124094586432"></a><a name="p124094586432"></a>对于<span id="ph29311041134413"><a name="ph29311041134413"></a><a name="ph29311041134413"></a>Kirin X90</span>，支持常量化的模板有：Norm, MDL模板。</p>
-</td>
-</tr>
-<tr id="row431281415261"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p123074143264"><a name="p123074143264"></a><a name="p123074143264"></a>l1Size</p>
-</td>
-<td class="cellrowborder" valign="top" width="12.02%" headers="mcps1.2.4.1.2 "><p id="p12307814132615"><a name="p12307814132615"></a><a name="p12307814132615"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p831221402620"><a name="p831221402620"></a><a name="p831221402620"></a>可用的L1大小，默认值L1_SIZE。</p>
-</td>
-</tr>
-</tbody>
-</table>
+| 参数名 | 输入/输出 | 描述 |
+| --- | --- | --- |
+| mmCFG | 输入 | 获取的[MatmulConfig](MatmulConfig.md#table1761013213153)模板。<br><br>对于Ascend 950PR/Ascend 950DT，支持常量化的为全部模板：Norm, IBShare, MDL模板。<br><br>对于Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持常量化的模板有：Norm, MDL模板。<br><br>对于Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持常量化的模板有：Norm, MDL模板。<br><br>对于Kirin X90，支持常量化的模板有：Norm, MDL模板。 |
+| l1Size | 输入 | 可用的L1大小，默认值L1_SIZE。 |
 
-## 返回值说明<a name="section640mcpsimp"></a>
+## 返回值说明
 
 [MatmulApiStaticTiling](Matmul模板参数.md#table7939847143412)
 
-## 约束说明<a name="section633mcpsimp"></a>
+## 约束说明
 
 -   入参mmCFG，在调用获取MatmulConfig模板的接口获取时，需要使用常数值指定\(baseM, baseN, baseK\)或者指定\(baseM, baseN, baseK, singleCoreM, singleCoreN, singleCoreK\)，并且指定的参数值需要和Tiling计算的值保持一致。
 -   Batch Matmul场景支持全量常量化，但不支持使用空指针替代REGIST\_MATMUL\_OBJ的入参Tiling。
 
-## 调用示例<a name="section98751211152118"></a>
+## 调用示例
 
 ```
 //定义Matmul对象
-typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> aType; 
-typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> bType; 
-typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> cType; 
-typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> biasType; 
+typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> aType;
+typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> bType;
+typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> cType;
+typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> biasType;
 // 这里CFG使用GetNormalConfig接口获取，并指定已知的singleshape信息和baseM,baseN,baseK，指定的数值跟运行时tiling保持一致
 constexpr auto staticTiling = GetMatmulApiTiling<aType, bType, cType, biasType>(CFG, 524288); // 该示例L1 Buffer可用大小为512KB
-AscendC::Matmul<aType, bType, cType, biasType, staticTiling > mm; 
+AscendC::Matmul<aType, bType, cType, biasType, staticTiling > mm;
 ```
 

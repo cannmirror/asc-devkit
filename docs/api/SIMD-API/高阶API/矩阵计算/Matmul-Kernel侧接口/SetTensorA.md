@@ -1,67 +1,22 @@
-# SetTensorA<a name="ZH-CN_TOPIC_0000001571391994"></a>
+# SetTensorA
 
-## 产品支持情况<a name="section1550532418810"></a>
+## 产品支持情况
 
-<a name="table1334714391211"></a>
-<table><thead align="left"><tr id="row1334743121213"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p834713321216"><a name="p834713321216"></a><a name="p834713321216"></a><span id="ph834783101215"><a name="ph834783101215"></a><a name="ph834783101215"></a>产品</span></p>
-</th>
-<th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p2347234127"><a name="p2347234127"></a><a name="p2347234127"></a>是否支持</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row113472312122"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p234710320128"><a name="p234710320128"></a><a name="p234710320128"></a><span id="ph103471336127"><a name="ph103471336127"></a><a name="ph103471336127"></a>Ascend 950PR/Ascend 950DT</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p4751940181211"><a name="p4751940181211"></a><a name="p4751940181211"></a>√</p>
-</td>
-</tr>
-<tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7751240111217"><a name="p7751240111217"></a><a name="p7751240111217"></a>√</p>
-</td>
-</tr>
-<tr id="row33481333123"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p2034813321217"><a name="p2034813321217"></a><a name="p2034813321217"></a><span id="ph334833191213"><a name="ph334833191213"></a><a name="ph334833191213"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p20751740131216"><a name="p20751740131216"></a><a name="p20751740131216"></a>√</p>
-</td>
-</tr>
-<tr id="row1534812312127"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p173482319125"><a name="p173482319125"></a><a name="p173482319125"></a><span id="ph15348143131210"><a name="ph15348143131210"></a><a name="ph15348143131210"></a><term id="zh-cn_topic_0000001312391781_term354143892110"><a name="zh-cn_topic_0000001312391781_term354143892110"></a><a name="zh-cn_topic_0000001312391781_term354143892110"></a>Atlas 200I/500 A2 推理产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p136721153015"><a name="p136721153015"></a><a name="p136721153015"></a>√</p>
-</td>
-</tr>
-<tr id="row103481371220"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p163483310121"><a name="p163483310121"></a><a name="p163483310121"></a><span id="ph163561737112019"><a name="ph163561737112019"></a><a name="ph163561737112019"></a><term id="zh-cn_topic_0000001312391781_term1964153212227"><a name="zh-cn_topic_0000001312391781_term1964153212227"></a><a name="zh-cn_topic_0000001312391781_term1964153212227"></a>Atlas 推理系列产品</term>AI Core</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p575164014120"><a name="p575164014120"></a><a name="p575164014120"></a>√</p>
-</td>
-</tr>
-<tr id="row242332080"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p10519331187"><a name="p10519331187"></a><a name="p10519331187"></a><span id="ph1335623792013"><a name="ph1335623792013"></a><a name="ph1335623792013"></a><term id="zh-cn_topic_0000001312391781_term1463893615224"><a name="zh-cn_topic_0000001312391781_term1463893615224"></a><a name="zh-cn_topic_0000001312391781_term1463893615224"></a>Atlas 推理系列产品</term>Vector Core</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p13382204414121"><a name="p13382204414121"></a><a name="p13382204414121"></a>x</p>
-</td>
-</tr>
-<tr id="row73487318125"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p2348123141220"><a name="p2348123141220"></a><a name="p2348123141220"></a><span id="ph15348183141219"><a name="ph15348183141219"></a><a name="ph15348183141219"></a><term id="zh-cn_topic_0000001312391781_term71949488213"><a name="zh-cn_topic_0000001312391781_term71949488213"></a><a name="zh-cn_topic_0000001312391781_term71949488213"></a>Atlas 训练系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p169451421311"><a name="p169451421311"></a><a name="p169451421311"></a>x</p>
-</td>
-</tr>
-<tr id="row83809351212"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p938116357116"><a name="p938116357116"></a><a name="p938116357116"></a><span id="ph36491722332"><a name="ph36491722332"></a><a name="ph36491722332"></a>Kirin X90</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p838111352113"><a name="p838111352113"></a><a name="p838111352113"></a>√</p>
-</td>
-</tr>
-<tr id="row1192255943017"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p142462448111"><a name="p142462448111"></a><a name="p142462448111"></a><span id="ph49484268126"><a name="ph49484268126"></a><a name="ph49484268126"></a>Kirin 9030</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p9246184415111"><a name="p9246184415111"></a><a name="p9246184415111"></a>√</p>
-</td>
-</tr>
-</tbody>
-</table>
+- Ascend 950PR/Ascend 950DT：支持
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持
+- Atlas 200I/500 A2 推理产品：支持
+- Atlas 推理系列产品AI Core：支持
+- Atlas 推理系列产品Vector Core：不支持
+- Atlas 训练系列产品：不支持
+- Kirin X90：支持
+- Kirin 9030：支持
 
-## 功能说明<a name="section618mcpsimp"></a>
+## 功能说明
 
 设置矩阵乘的左矩阵A。
 
-## 函数原型<a name="section620mcpsimp"></a>
+## 函数原型
 
 ```
 __aicore__ inline void SetTensorA(const GlobalTensor<SrcAT>& gm, bool isTransposeA = false)
@@ -79,86 +34,57 @@ Atlas 推理系列产品AI Core不支持SetTensorA\(SrcAT aScalar\)接口原型�
 
 Atlas 200I/500 A2 推理产品，不支持SetTensorA\(SrcAT aScalar\)接口原型。
 
-## 参数说明<a name="section622mcpsimp"></a>
+## 参数说明
 
 **表 1**  参数说明
 
-<a name="table9646134355611"></a>
-<table><thead align="left"><tr id="row964714433565"><th class="cellrowborder" valign="top" width="14.99%" id="mcps1.2.4.1.1"><p id="zh-cn_topic_0235751031_p20917673"><a name="zh-cn_topic_0235751031_p20917673"></a><a name="zh-cn_topic_0235751031_p20917673"></a>参数名</p>
-</th>
-<th class="cellrowborder" valign="top" width="12%" id="mcps1.2.4.1.2"><p id="zh-cn_topic_0235751031_p16609919"><a name="zh-cn_topic_0235751031_p16609919"></a><a name="zh-cn_topic_0235751031_p16609919"></a>输入/输出</p>
-</th>
-<th class="cellrowborder" valign="top" width="73.00999999999999%" id="mcps1.2.4.1.3"><p id="zh-cn_topic_0235751031_p59995477"><a name="zh-cn_topic_0235751031_p59995477"></a><a name="zh-cn_topic_0235751031_p59995477"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row106481443135617"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p3302181710507"><a name="p3302181710507"></a><a name="p3302181710507"></a>gm</p>
-</td>
-<td class="cellrowborder" valign="top" width="12%" headers="mcps1.2.4.1.2 "><p id="p1030218179501"><a name="p1030218179501"></a><a name="p1030218179501"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="73.00999999999999%" headers="mcps1.2.4.1.3 "><p id="p163443910213"><a name="p163443910213"></a><a name="p163443910213"></a>A矩阵。<span id="ph15942199192220"><a name="ph15942199192220"></a><a name="ph15942199192220"></a><span id="ph1294215916225"><a name="ph1294215916225"></a><a name="ph1294215916225"></a><span id="ph894279182218"><a name="ph894279182218"></a><a name="ph894279182218"></a>类型为<a href="../../../基础数据结构/GlobalTensor/GlobalTensor.md">GlobalTensor</a>。</span></span></span>SrcAT参数表示A矩阵的数据类型。</p>
-<p id="p199691464514"><a name="p199691464514"></a><a name="p199691464514"></a><span id="ph189698695115"><a name="ph189698695115"></a><a name="ph189698695115"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half/float/bfloat16_t/int8_t/fp8_e4m3fn_t/fp8_e5m2_t/hifloat8_t</p>
-<p id="p169694814194"><a name="p169694814194"></a><a name="p169694814194"></a><span id="ph13754548217"><a name="ph13754548217"></a><a name="ph13754548217"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half/float/bfloat16_t/int8_t/int4b_t</p>
-<p id="p116811630632"><a name="p116811630632"></a><a name="p116811630632"></a><span id="ph1292674871116"><a name="ph1292674871116"></a><a name="ph1292674871116"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half/float/bfloat16_t/int8_t/int4b_t</p>
-<p id="p10782432151516"><a name="p10782432151516"></a><a name="p10782432151516"></a><span id="ph750620211814"><a name="ph750620211814"></a><a name="ph750620211814"></a><term id="zh-cn_topic_0000001312391781_term1964153212227_2"><a name="zh-cn_topic_0000001312391781_term1964153212227_2"></a><a name="zh-cn_topic_0000001312391781_term1964153212227_2"></a>Atlas 推理系列产品</term>AI Core</span>，支持的数据类型为：half/float/int8_t</p>
-<p id="p450233534319"><a name="p450233534319"></a><a name="p450233534319"></a><span id="ph155224473130"><a name="ph155224473130"></a><a name="ph155224473130"></a><term id="zh-cn_topic_0000001312391781_term354143892110_2"><a name="zh-cn_topic_0000001312391781_term354143892110_2"></a><a name="zh-cn_topic_0000001312391781_term354143892110_2"></a>Atlas 200I/500 A2 推理产品</term></span>，支持的数据类型为：half/float/bfloat16_t/int8_t</p>
-<p id="p1234745313393"><a name="p1234745313393"></a><a name="p1234745313393"></a><span id="ph2279113194114"><a name="ph2279113194114"></a><a name="ph2279113194114"></a>Kirin X90</span>，支持的数据类型为：half/int8_t</p>
-<p id="p7902185813180"><a name="p7902185813180"></a><a name="p7902185813180"></a><span id="ph49671559151811"><a name="ph49671559151811"></a><a name="ph49671559151811"></a>Kirin 9030</span>，支持的数据类型为：half</p>
-</td>
-</tr>
-<tr id="row36481043185619"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p530231765010"><a name="p530231765010"></a><a name="p530231765010"></a>leftMatrix</p>
-</td>
-<td class="cellrowborder" valign="top" width="12%" headers="mcps1.2.4.1.2 "><p id="p43021717155017"><a name="p43021717155017"></a><a name="p43021717155017"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="73.00999999999999%" headers="mcps1.2.4.1.3 "><p id="p178213914173"><a name="p178213914173"></a><a name="p178213914173"></a>A矩阵。<span id="ph173308471594"><a name="ph173308471594"></a><a name="ph173308471594"></a><span id="ph9902231466"><a name="ph9902231466"></a><a name="ph9902231466"></a><span id="ph1782115034816"><a name="ph1782115034816"></a><a name="ph1782115034816"></a>类型为<a href="../../../基础数据结构/LocalTensor/LocalTensor.md">LocalTensor</a>，支持的TPosition为TSCM/VECOUT。</span></span></span>SrcAT参数表示A矩阵的数据类型。</p>
-<p id="p92105518514"><a name="p92105518514"></a><a name="p92105518514"></a><span id="ph132125575116"><a name="ph132125575116"></a><a name="ph132125575116"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half/float/bfloat16_t/int8_t/fp8_e4m3fn_t/fp8_e5m2_t/hifloat8_t</p>
-<p id="p15693192062113"><a name="p15693192062113"></a><a name="p15693192062113"></a><span id="ph1169318209217"><a name="ph1169318209217"></a><a name="ph1169318209217"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half/float/bfloat16_t/int8_t/int4b_t</p>
-<p id="p712420217558"><a name="p712420217558"></a><a name="p712420217558"></a><span id="ph62201149777"><a name="ph62201149777"></a><a name="ph62201149777"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half/float/bfloat16_t/int8_t/int4b_t</p>
-<p id="p88851711151715"><a name="p88851711151715"></a><a name="p88851711151715"></a><span id="ph09101412131719"><a name="ph09101412131719"></a><a name="ph09101412131719"></a><term id="zh-cn_topic_0000001312391781_term1964153212227_3"><a name="zh-cn_topic_0000001312391781_term1964153212227_3"></a><a name="zh-cn_topic_0000001312391781_term1964153212227_3"></a>Atlas 推理系列产品</term>AI Core</span>，支持的数据类型为：half/float/int8_t</p>
-<p id="p1733413820145"><a name="p1733413820145"></a><a name="p1733413820145"></a><span id="ph1433463851410"><a name="ph1433463851410"></a><a name="ph1433463851410"></a><term id="zh-cn_topic_0000001312391781_term354143892110_3"><a name="zh-cn_topic_0000001312391781_term354143892110_3"></a><a name="zh-cn_topic_0000001312391781_term354143892110_3"></a>Atlas 200I/500 A2 推理产品</term></span>，支持的数据类型为：half/float/bfloat16_t/int8_t</p>
-<p id="p117992040194119"><a name="p117992040194119"></a><a name="p117992040194119"></a><span id="ph1535441174119"><a name="ph1535441174119"></a><a name="ph1535441174119"></a>Kirin X90</span>，支持的数据类型为：half/int8_t</p>
-<p id="p6764121617207"><a name="p6764121617207"></a><a name="p6764121617207"></a><span id="ph1976411682013"><a name="ph1976411682013"></a><a name="ph1976411682013"></a>Kirin 9030</span>，支持的数据类型为：half</p>
-<p id="p17963113164410"><a name="p17963113164410"></a><a name="p17963113164410"></a>若设置TSCM首地址，默认矩阵可全载，已经位于TSCM，Iterate接口无需再进行GM-&gt;A1/B1搬运。</p>
-</td>
-</tr>
-<tr id="row19424155114252"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p842415112510"><a name="p842415112510"></a><a name="p842415112510"></a>aScalar</p>
-</td>
-<td class="cellrowborder" valign="top" width="12%" headers="mcps1.2.4.1.2 "><p id="p11424251182517"><a name="p11424251182517"></a><a name="p11424251182517"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="73.00999999999999%" headers="mcps1.2.4.1.3 "><p id="p133243216288"><a name="p133243216288"></a><a name="p133243216288"></a>A矩阵中设置的值。支持传入标量数据，标量数据会被扩展为一个形状为[1, K]的tensor参与矩阵乘计算，tensor的数值均为该标量值。例如，开发者可以通过将aScalar设置为1来实现矩阵B在K方向的reduce sum操作。SrcAT参数表示A矩阵的数据类型。</p>
-<p id="p32866407528"><a name="p32866407528"></a><a name="p32866407528"></a><span id="ph9286114015210"><a name="ph9286114015210"></a><a name="ph9286114015210"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half/float</p>
-<p id="p1254942982117"><a name="p1254942982117"></a><a name="p1254942982117"></a><span id="ph85491029142115"><a name="ph85491029142115"></a><a name="ph85491029142115"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_3"><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_3"><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half/float</p>
-<p id="p533219326285"><a name="p533219326285"></a><a name="p533219326285"></a><span id="ph1160819351281"><a name="ph1160819351281"></a><a name="ph1160819351281"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_3"><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half/float</p>
-<p id="p1963123915181"><a name="p1963123915181"></a><a name="p1963123915181"></a><span id="ph1896313913186"><a name="ph1896313913186"></a><a name="ph1896313913186"></a><term id="zh-cn_topic_0000001312391781_term1964153212227_4"><a name="zh-cn_topic_0000001312391781_term1964153212227_4"></a><a name="zh-cn_topic_0000001312391781_term1964153212227_4"></a>Atlas 推理系列产品</term>AI Core</span>不支持该参数。</p>
-<p id="p2054210525141"><a name="p2054210525141"></a><a name="p2054210525141"></a><span id="ph354211520148"><a name="ph354211520148"></a><a name="ph354211520148"></a><term id="zh-cn_topic_0000001312391781_term354143892110_4"><a name="zh-cn_topic_0000001312391781_term354143892110_4"></a><a name="zh-cn_topic_0000001312391781_term354143892110_4"></a>Atlas 200I/500 A2 推理产品</term></span>不支持该参数。</p>
-<p id="p141974343205"><a name="p141974343205"></a><a name="p141974343205"></a><span id="ph1619711343208"><a name="ph1619711343208"></a><a name="ph1619711343208"></a>Kirin X90</span>，支持的数据类型为：half</p>
-<p id="p141977340207"><a name="p141977340207"></a><a name="p141977340207"></a><span id="ph1419713348201"><a name="ph1419713348201"></a><a name="ph1419713348201"></a>Kirin 9030</span>，支持的数据类型为：half</p>
-</td>
-</tr>
-<tr id="row16491543185617"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p630261795013"><a name="p630261795013"></a><a name="p630261795013"></a>isTransposeA</p>
-</td>
-<td class="cellrowborder" valign="top" width="12%" headers="mcps1.2.4.1.2 "><p id="p1730221745016"><a name="p1730221745016"></a><a name="p1730221745016"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="73.00999999999999%" headers="mcps1.2.4.1.3 "><p id="p7302161716503"><a name="p7302161716503"></a><a name="p7302161716503"></a>A矩阵是否需要转置。</p>
-<p id="p541620426441"><a name="p541620426441"></a><a name="p541620426441"></a><strong id="b1241616422444"><a name="b1241616422444"></a><a name="b1241616422444"></a>注意：</strong></p>
-<a name="ul178115519265"></a><a name="ul178115519265"></a><ul id="ul178115519265"><li>若A矩阵MatmulType的ISTRANS参数设置为true，该参数可以为true也可以为false，即运行时可以转置和非转置交替使用；</li><li>若A矩阵MatmulType的ISTRANS参数设置为false，该参数只能设置为false，若强行设置为true，精度会有异常；</li><li>对于非half、非bfloat16_t输入类型的场景，为了确保Tiling侧与Kernel侧<span id="ph456826193017"><a name="ph456826193017"></a><a name="ph456826193017"></a>L1 Buffer</span>空间计算大小保持一致及结果精度正确，该参数取值必须与Kernel侧定义A矩阵MatmulType的<a href="Matmul使用说明.md#p84551411817">ISTRANS</a>参数以及Tiling侧SetAType()接口的<a href="../Matmul-Tiling侧接口/Matmul-Tiling类/SetAType.md#p2934103115919">isTrans</a>参数保持一致，即上述三个参数必须同时设置为true或同时设置为false。</li></ul>
-<p id="p489518384719"><a name="p489518384719"></a><a name="p489518384719"></a><span id="ph1589513124719"><a name="ph1589513124719"></a><a name="ph1589513124719"></a><term id="zh-cn_topic_0000001312391781_term1964153212227_5"><a name="zh-cn_topic_0000001312391781_term1964153212227_5"></a><a name="zh-cn_topic_0000001312391781_term1964153212227_5"></a>Atlas 推理系列产品</term>AI Core</span>，A矩阵为int8_t数据类型时不支持转置，即不支持该参数设置为true。</p>
-<p id="p15225145183715"><a name="p15225145183715"></a><a name="p15225145183715"></a><span id="ph10225659377"><a name="ph10225659377"></a><a name="ph10225659377"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_4"><a name="zh-cn_topic_0000001312391781_term11962195213215_4"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_4"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_4"><a name="zh-cn_topic_0000001312391781_term184716139811_4"></a><a name="zh-cn_topic_0000001312391781_term184716139811_4"></a>Atlas A2 推理系列产品</term></span>，A矩阵为int4b_t数据类型时不支持转置，即不支持该参数设置为true。</p>
-<p id="p131391396303"><a name="p131391396303"></a><a name="p131391396303"></a><span id="ph2140392303"><a name="ph2140392303"></a><a name="ph2140392303"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_4"><a name="zh-cn_topic_0000001312391781_term1253731311225_4"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_4"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_4"><a name="zh-cn_topic_0000001312391781_term131434243115_4"></a><a name="zh-cn_topic_0000001312391781_term131434243115_4"></a>Atlas A3 推理系列产品</term></span>，A矩阵为int4b_t数据类型时不支持转置，即不支持该参数设置为true。</p>
-</td>
-</tr>
-</tbody>
-</table>
+| 参数名 | 输入/输出 | 描述 |
+| --- | --- | --- |
+| gm | 输入 | A矩阵。类型为[GlobalTensor](../../../基础数据结构/GlobalTensor/GlobalTensor.md)。SrcAT参数表示A矩阵的数据类型。不同型号支持的数据类型请参考[gm和leftMatrix支持的数据类型](#li12616155731720)。|
+| leftMatrix | 输入 | A矩阵。类型为[LocalTensor](../../../基础数据结构/LocalTensor/LocalTensor.md)，支持的TPosition为TSCM/VECOUT。SrcAT参数表示A矩阵的数据类型。不同型号支持的数据类型请参考[gm和leftMatrix支持的数据类型](#li12616155731720)<br><br>若设置TSCM首地址，默认矩阵可全载，已经位于TSCM，Iterate接口无需再进行GM->A1/B1搬运。 |
+| aScalar | 输入 | A矩阵中设置的值。支持传入标量数据，标量数据会被扩展为一个形状为[1, K]的tensor参与矩阵乘计算，tensor的数值均为该标量值。例如，开发者可以通过将aScalar设置为1来实现矩阵B在K方向的reduce sum操作。SrcAT参数表示A矩阵的数据类型。不同型号支持的数据类型请参考[aScalar支持的数据类型](#li12616155731723)。 |
+| isTransposeA | 输入 | A矩阵是否需要转置。<br><br>注意：<br>若A矩阵MatmulType的ISTRANS参数设置为true，该参数可以为true也可以为false，即运行时可以转置和非转置交替使用；<br>若A矩阵MatmulType的ISTRANS参数设置为false，该参数只能设置为false，若强行设置为true，精度会有异常；<br>对于非half、非bfloat16_t输入类型的场景，为了确保Tiling侧与Kernel侧L1 Buffer空间计算大小保持一致及结果精度正确，该参数取值必须与Kernel侧定义A矩阵MatmulType的[ISTRANS](Matmul使用说明.md#p84551411817)参数以及Tiling侧SetAType()接口的[isTrans](../Matmul-Tiling侧接口/Matmul-Tiling类/SetAType.md#p2934103115919)参数保持一致，即上述三个参数必须同时设置为true或同时设置为false。<br><br>Atlas 推理系列产品AI Core，A矩阵为int8_t数据类型时不支持转置，即不支持该参数设置为true。<br><br>Atlas A2 训练系列产品/Atlas A2 推理系列产品，A矩阵为int4b_t数据类型时不支持转置，即不支持该参数设置为true。<br><br>Atlas A3 训练系列产品/Atlas A3 推理系列产品，A矩阵为int4b_t数据类型时不支持转置，即不支持该参数设置为true。 |
 
-## 返回值说明<a name="section640mcpsimp"></a>
+## 返回值说明
 
 无
 
-## 约束说明<a name="section633mcpsimp"></a>
+## 约束说明
 
-传入的TensorA地址空间大小需要保证不小于singleM \* singleK。
+-   传入的TensorA地址空间大小需要保证不小于singleM \* singleK。
+-   gm和leftMatrix支持的数据类型<a id="li12616155731720"></a>
 
-## 调用示例<a name="section1665082013318"></a>
+    Ascend 950PR/Ascend 950DT，支持的数据类型为：half、bfloat16_t、int8_t、float、fp8_e4m3fn_t、fp8_e5m2_t、hifloat8_t。
+
+    Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持的数据类型为：int4b_t、half、bfloat16_t、int8_t、float。
+
+    Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持的数据类型为：int4b_t、half、bfloat16_t、int8_t、float。
+
+    Atlas 推理系列产品AI Core，支持的数据类型为：half、int8_t、float。
+
+    Atlas 200I/500 A2 推理产品，支持的数据类型为：half、bfloat16_t、int8_t、float。
+
+    Kirin X90，支持的数据类型为：half、int8_t。
+
+    Kirin 9030，支持的数据类型为：half。
+
+-   aScalar支持的数据类型<a id="li12616155731723"></a>
+
+    Ascend 950PR/Ascend 950DT，支持的数据类型为：half、float。
+
+    Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持的数据类型为：half、float。
+
+    Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持的数据类型为：half、float。
+
+    Atlas 推理系列产品AI Core，不支持该参数。
+
+    Atlas 200I/500 A2 推理产品，不支持该参数。
+
+    Kirin X90，支持的数据类型为：half。
+
+    Kirin 9030，支持的数据类型为：half。
+
+## 调用示例
 
 ```
 REGIST_MATMUL_OBJ(&pipe, GetSysWorkSpacePtr(), mm, &tiling);
@@ -175,4 +101,3 @@ mm.SetTensorA(local_a, isTransposeA);
 // 示例三：设置标量数据
 mm.SetTensorA(scalar_a, isTransposeA);
 ```
-

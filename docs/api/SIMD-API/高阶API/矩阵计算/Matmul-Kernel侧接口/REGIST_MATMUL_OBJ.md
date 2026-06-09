@@ -1,58 +1,30 @@
-# REGIST\_MATMUL\_OBJ<a name="ZH-CN_TOPIC_0000001666716332"></a>
+# REGIST\_MATMUL\_OBJ
 
-## 功能说明<a name="section618mcpsimp"></a>
+## 功能说明
 
 初始化Matmul对象。
 
-## 函数原型<a name="section620mcpsimp"></a>
+## 函数原型
 
 ```
 REGIST_MATMUL_OBJ(tpipe, workspace, ...)
 ```
 
-## 参数说明<a name="section622mcpsimp"></a>
+## 参数说明
 
 **表 1**  参数说明
 
-<a name="table9646134355611"></a>
-<table><thead align="left"><tr id="row964714433565"><th class="cellrowborder" valign="top" width="14.99%" id="mcps1.2.4.1.1"><p id="zh-cn_topic_0235751031_p20917673"><a name="zh-cn_topic_0235751031_p20917673"></a><a name="zh-cn_topic_0235751031_p20917673"></a>参数名</p>
-</th>
-<th class="cellrowborder" valign="top" width="12.02%" id="mcps1.2.4.1.2"><p id="zh-cn_topic_0235751031_p16609919"><a name="zh-cn_topic_0235751031_p16609919"></a><a name="zh-cn_topic_0235751031_p16609919"></a>输入/输出</p>
-</th>
-<th class="cellrowborder" valign="top" width="72.99%" id="mcps1.2.4.1.3"><p id="zh-cn_topic_0235751031_p59995477"><a name="zh-cn_topic_0235751031_p59995477"></a><a name="zh-cn_topic_0235751031_p59995477"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row106481443135617"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p17933133145916"><a name="p17933133145916"></a><a name="p17933133145916"></a>tpipe</p>
-</td>
-<td class="cellrowborder" valign="top" width="12.02%" headers="mcps1.2.4.1.2 "><p id="p893343112595"><a name="p893343112595"></a><a name="p893343112595"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p34832371222"><a name="p34832371222"></a><a name="p34832371222"></a>Tpipe对象。</p>
-</td>
-</tr>
-<tr id="row1491191772211"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p1491121722216"><a name="p1491121722216"></a><a name="p1491121722216"></a>workspace</p>
-</td>
-<td class="cellrowborder" valign="top" width="12.02%" headers="mcps1.2.4.1.2 "><p id="p13491141719223"><a name="p13491141719223"></a><a name="p13491141719223"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p2491161714221"><a name="p2491161714221"></a><a name="p2491161714221"></a>系统workspace指针。</p>
-</td>
-</tr>
-<tr id="row1037102214225"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p1538822102212"><a name="p1538822102212"></a><a name="p1538822102212"></a>...</p>
-</td>
-<td class="cellrowborder" valign="top" width="12.02%" headers="mcps1.2.4.1.2 "><p id="p53822282215"><a name="p53822282215"></a><a name="p53822282215"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p438182211226"><a name="p438182211226"></a><a name="p438182211226"></a>可变参数，传入Matmul对象和与之对应的Tiling结构，要求Tiling结构的数据类型为<a href="../Matmul-Tiling侧接口/Matmul-Tiling类/TCubeTiling结构体.md#table1563162142915">TCubeTiling结构</a>。</p>
-<p id="p124601322113216"><a name="p124601322113216"></a><a name="p124601322113216"></a>Tiling参数可以通过Host侧<a href="../Matmul-Tiling侧接口/Matmul-Tiling类/GetTiling.md">GetTiling</a>接口获取，并传递到kernel侧使用。</p>
-</td>
-</tr>
-</tbody>
-</table>
+| 参数名 | 输入/输出 | 描述 |
+| --- | --- | --- |
+| tpipe | 输入 | Tpipe对象。 |
+| workspace | 输入 | 系统workspace指针。 |
+| ... | 输入 | 可变参数，传入Matmul对象和与之对应的Tiling结构，要求Tiling结构的数据类型为[TCubeTiling结构](../Matmul-Tiling侧接口/Matmul-Tiling类/TCubeTiling结构体.md#table1563162142915)。<br><br>Tiling参数可以通过Host侧[GetTiling](../Matmul-Tiling侧接口/Matmul-Tiling类/GetTiling.md)接口获取，并传递到kernel侧使用。 |
 
-## 返回值说明<a name="section640mcpsimp"></a>
+## 返回值说明
 
 无
 
-## 约束说明<a name="section633mcpsimp"></a>
+## 约束说明
 
 -   在分离模式中，本接口必须在[InitBuffer](../../../基础API/资源管理/Pipe和Que框架/TPipe/InitBuffer.md)接口前调用。
 -   在程序中，最多支持定义4个Matmul对象。
@@ -63,7 +35,7 @@ REGIST_MATMUL_OBJ(tpipe, workspace, ...)
     -   [Matmul Kernel侧接口](Matmul-Kernel侧接口.md)。
     -   [基础数据搬运](../../../基础API/Memory数据搬运/DataCopy/基础数据搬运.md)和[随路转换ND2NZ搬运](../../../基础API/Memory数据搬运/DataCopy/随路转换ND2NZ搬运.md)接口，仅支持数据通路为GM -\> A1、B1的数据搬运。
 
-## 调用示例<a name="section15468239131714"></a>
+## 调用示例
 
 ```
 Tpipe pipe;

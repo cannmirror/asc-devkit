@@ -1,102 +1,102 @@
-# Matmul Kernel侧接口<a name="ZH-CN_TOPIC_0000001621666281"></a>
+# Matmul Kernel侧接口
 
--   **[Matmul使用说明](Matmul使用说明.md)**  
+-   **[Matmul使用说明](Matmul使用说明.md)**
 
--   **[Matmul模板参数](Matmul模板参数.md)**  
+-   **[Matmul模板参数](Matmul模板参数.md)**
 
--   **[MatmulConfig](MatmulConfig.md)**  
+-   **[MatmulConfig](MatmulConfig.md)**
 
--   **[MatmulCallBackFunc](MatmulCallBackFunc.md)**  
+-   **[MatmulCallBackFunc](MatmulCallBackFunc.md)**
 
--   **[MatmulPolicy](MatmulPolicy.md)**  
+-   **[MatmulPolicy](MatmulPolicy.md)**
 
--   **[GetNormalConfig](GetNormalConfig.md)**  
+-   **[GetNormalConfig](GetNormalConfig.md)**
 
--   **[GetMDLConfig](GetMDLConfig.md)**  
+-   **[GetMDLConfig](GetMDLConfig.md)**
 
--   **[GetSpecialMDLConfig](GetSpecialMDLConfig.md)**  
+-   **[GetSpecialMDLConfig](GetSpecialMDLConfig.md)**
 
--   **[GetIBShareNormConfig](GetIBShareNormConfig.md)**  
+-   **[GetIBShareNormConfig](GetIBShareNormConfig.md)**
 
--   **[GetBasicConfig](GetBasicConfig.md)**  
+-   **[GetBasicConfig](GetBasicConfig.md)**
 
--   **[GetMMConfig](GetMMConfig.md)**  
+-   **[GetMMConfig](GetMMConfig.md)**
 
--   **[REGIST\_MATMUL\_OBJ](REGIST_MATMUL_OBJ.md)**  
+-   **[REGIST\_MATMUL\_OBJ](REGIST_MATMUL_OBJ.md)**
 
--   **[Init](Init-85.md)**  
+-   **[Init](Init-85.md)**
 
--   **[SetTensorA](SetTensorA.md)**  
+-   **[SetTensorA](SetTensorA.md)**
 
--   **[SetTensorB](SetTensorB.md)**  
+-   **[SetTensorB](SetTensorB.md)**
 
--   **[SetTensorScaleA](SetTensorScaleA.md)**  
+-   **[SetTensorScaleA](SetTensorScaleA.md)**
 
--   **[SetTensorScaleB](SetTensorScaleB.md)**  
+-   **[SetTensorScaleB](SetTensorScaleB.md)**
 
--   **[SetBias](SetBias.md)**  
+-   **[SetBias](SetBias.md)**
 
--   **[DisableBias](DisableBias.md)**  
+-   **[DisableBias](DisableBias.md)**
 
--   **[GetBatchTensorC](GetBatchTensorC.md)**  
+-   **[GetBatchTensorC](GetBatchTensorC.md)**
 
--   **[Iterate](Iterate.md)**  
+-   **[Iterate](Iterate.md)**
 
--   **[GetTensorC](GetTensorC.md)**  
+-   **[GetTensorC](GetTensorC.md)**
 
--   **[IterateAll](IterateAll.md)**  
+-   **[IterateAll](IterateAll.md)**
 
--   **[WaitIterateAll](WaitIterateAll.md)**  
+-   **[WaitIterateAll](WaitIterateAll.md)**
 
--   **[IterateBatch](IterateBatch.md)**  
+-   **[IterateBatch](IterateBatch.md)**
 
--   **[WaitIterateBatch](WaitIterateBatch.md)**  
+-   **[WaitIterateBatch](WaitIterateBatch.md)**
 
--   **[IterateNBatch](IterateNBatch.md)**  
+-   **[IterateNBatch](IterateNBatch.md)**
 
--   **[End](End.md)**  
+-   **[End](End.md)**
 
--   **[SetHF32](SetHF32.md)**  
+-   **[SetHF32](SetHF32.md)**
 
--   **[SetTail](SetTail.md)**  
+-   **[SetTail](SetTail.md)**
 
--   **[SetBatchNum](SetBatchNum.md)**  
+-   **[SetBatchNum](SetBatchNum.md)**
 
--   **[SetQuantScalar](SetQuantScalar.md)**  
+-   **[SetQuantScalar](SetQuantScalar.md)**
 
--   **[SetQuantVector](SetQuantVector.md)**  
+-   **[SetQuantVector](SetQuantVector.md)**
 
--   **[SetOrgShape](SetOrgShape.md)**  
+-   **[SetOrgShape](SetOrgShape.md)**
 
--   **[SetSingleShape](SetSingleShape.md)**  
+-   **[SetSingleShape](SetSingleShape.md)**
 
--   **[SetLocalWorkspace](SetLocalWorkspace.md)**  
+-   **[SetLocalWorkspace](SetLocalWorkspace.md)**
 
--   **[SetWorkspace](SetWorkspace.md)**  
+-   **[SetWorkspace](SetWorkspace.md)**
 
--   **[SetAntiQuantScalar](SetAntiQuantScalar.md)**  
+-   **[SetAntiQuantScalar](SetAntiQuantScalar.md)**
 
--   **[SetAntiQuantVector](SetAntiQuantVector.md)**  
+-   **[SetAntiQuantVector](SetAntiQuantVector.md)**
 
--   **[WaitGetTensorC](WaitGetTensorC.md)**  
+-   **[WaitGetTensorC](WaitGetTensorC.md)**
 
--   **[GetOffsetC](GetOffsetC.md)**  
+-   **[GetOffsetC](GetOffsetC.md)**
 
--   **[AsyncGetTensorC](AsyncGetTensorC.md)**  
+-   **[AsyncGetTensorC](AsyncGetTensorC.md)**
 
--   **[SetSubBlockIdx](SetSubBlockIdx.md)**  
+-   **[SetSubBlockIdx](SetSubBlockIdx.md)**
 
--   **[GetSubBlockIdx](GetSubBlockIdx.md)**  
+-   **[GetSubBlockIdx](GetSubBlockIdx.md)**
 
--   **[SetUserDefInfo](SetUserDefInfo.md)**  
+-   **[SetUserDefInfo](SetUserDefInfo.md)**
 
--   **[SetSelfDefineData](SetSelfDefineData.md)**  
+-   **[SetSelfDefineData](SetSelfDefineData.md)**
 
--   **[GetMatmulApiTiling](GetMatmulApiTiling.md)**  
+-   **[GetMatmulApiTiling](GetMatmulApiTiling.md)**
 
--   **[ClearBias](ClearBias.md)**  
+-   **[ClearBias](ClearBias.md)**
 
--   **[GetBatchC](GetBatchC.md)**  
+-   **[GetBatchC](GetBatchC.md)**
 
--   **[SetSparseIndex](SetSparseIndex.md)**  
+-   **[SetSparseIndex](SetSparseIndex.md)**
 

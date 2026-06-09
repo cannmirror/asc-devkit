@@ -1,112 +1,52 @@
-# MatmulPolicy<a name="ZH-CN_TOPIC_0000002070559816"></a>
+# MatmulPolicy
 
-## 产品支持情况<a name="section1550532418810"></a>
+## 产品支持情况
 
-<a name="table1334714391211"></a>
-<table><thead align="left"><tr id="row1334743121213"><th class="cellrowborder" valign="top" width="41.980000000000004%" id="mcps1.1.6.1.1"><p id="p834713321216"><a name="p834713321216"></a><a name="p834713321216"></a><span id="ph834783101215"><a name="ph834783101215"></a><a name="ph834783101215"></a>产品</span></p>
-</th>
-<th class="cellrowborder" valign="top" width="14.37%" id="mcps1.1.6.1.2"><p id="p9688124518177"><a name="p9688124518177"></a><a name="p9688124518177"></a>MatmulPolicy</p>
-</th>
-<th class="cellrowborder" valign="top" width="13.139999999999999%" id="mcps1.1.6.1.3"><p id="p134861747161717"><a name="p134861747161717"></a><a name="p134861747161717"></a>TrianUpperMatmulPolicy/TrianLowerMatmulPolicy</p>
-</th>
-<th class="cellrowborder" valign="top" width="12.26%" id="mcps1.1.6.1.4"><p id="p888344921719"><a name="p888344921719"></a><a name="p888344921719"></a>NBuffer33MatmulPolicy</p>
-</th>
-<th class="cellrowborder" align="center" valign="top" width="18.25%" id="mcps1.1.6.1.5"><p id="p2347234127"><a name="p2347234127"></a><a name="p2347234127"></a>MatmulWithScalePolicy/SplitMMatmulPolicy/SplitNMatmulPolicy</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row113472312122"><td class="cellrowborder" valign="top" width="41.980000000000004%" headers="mcps1.1.6.1.1 "><p id="p234710320128"><a name="p234710320128"></a><a name="p234710320128"></a><span id="ph103471336127"><a name="ph103471336127"></a><a name="ph103471336127"></a>Ascend 950PR/Ascend 950DT</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="14.37%" headers="mcps1.1.6.1.2 "><p id="p86881345151713"><a name="p86881345151713"></a><a name="p86881345151713"></a>√</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="13.139999999999999%" headers="mcps1.1.6.1.3 "><p id="p114863471177"><a name="p114863471177"></a><a name="p114863471177"></a>√</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="12.26%" headers="mcps1.1.6.1.4 "><p id="p1288324991719"><a name="p1288324991719"></a><a name="p1288324991719"></a>√</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="18.25%" headers="mcps1.1.6.1.5 "><p id="p4751940181211"><a name="p4751940181211"></a><a name="p4751940181211"></a>√</p>
-</td>
-</tr>
-<tr id="row1834733191219"><td class="cellrowborder" valign="top" width="41.980000000000004%" headers="mcps1.1.6.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="14.37%" headers="mcps1.1.6.1.2 "><p id="p368844581717"><a name="p368844581717"></a><a name="p368844581717"></a>√</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="13.139999999999999%" headers="mcps1.1.6.1.3 "><p id="p1448654713172"><a name="p1448654713172"></a><a name="p1448654713172"></a>√</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="12.26%" headers="mcps1.1.6.1.4 "><p id="p12883174912174"><a name="p12883174912174"></a><a name="p12883174912174"></a>√</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="18.25%" headers="mcps1.1.6.1.5 "><p id="p7751240111217"><a name="p7751240111217"></a><a name="p7751240111217"></a>x</p>
-</td>
-</tr>
-<tr id="row33481333123"><td class="cellrowborder" valign="top" width="41.980000000000004%" headers="mcps1.1.6.1.1 "><p id="p2034813321217"><a name="p2034813321217"></a><a name="p2034813321217"></a><span id="ph334833191213"><a name="ph334833191213"></a><a name="ph334833191213"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="14.37%" headers="mcps1.1.6.1.2 "><p id="p1068894514179"><a name="p1068894514179"></a><a name="p1068894514179"></a>√</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="13.139999999999999%" headers="mcps1.1.6.1.3 "><p id="p15486447171715"><a name="p15486447171715"></a><a name="p15486447171715"></a>√</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="12.26%" headers="mcps1.1.6.1.4 "><p id="p138831549121712"><a name="p138831549121712"></a><a name="p138831549121712"></a>√</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="18.25%" headers="mcps1.1.6.1.5 "><p id="p20751740131216"><a name="p20751740131216"></a><a name="p20751740131216"></a>x</p>
-</td>
-</tr>
-<tr id="row1534812312127"><td class="cellrowborder" valign="top" width="41.980000000000004%" headers="mcps1.1.6.1.1 "><p id="p173482319125"><a name="p173482319125"></a><a name="p173482319125"></a><span id="ph15348143131210"><a name="ph15348143131210"></a><a name="ph15348143131210"></a><term id="zh-cn_topic_0000001312391781_term354143892110"><a name="zh-cn_topic_0000001312391781_term354143892110"></a><a name="zh-cn_topic_0000001312391781_term354143892110"></a>Atlas 200I/500 A2 推理产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="14.37%" headers="mcps1.1.6.1.2 "><p id="p66881245101714"><a name="p66881245101714"></a><a name="p66881245101714"></a>√</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="13.139999999999999%" headers="mcps1.1.6.1.3 "><p id="p948617478174"><a name="p948617478174"></a><a name="p948617478174"></a>x</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="12.26%" headers="mcps1.1.6.1.4 "><p id="p8883114931716"><a name="p8883114931716"></a><a name="p8883114931716"></a>x</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="18.25%" headers="mcps1.1.6.1.5 "><p id="p175164011123"><a name="p175164011123"></a><a name="p175164011123"></a>x</p>
-</td>
-</tr>
-<tr id="row103481371220"><td class="cellrowborder" valign="top" width="41.980000000000004%" headers="mcps1.1.6.1.1 "><p id="p163483310121"><a name="p163483310121"></a><a name="p163483310121"></a><span id="ph163561737112019"><a name="ph163561737112019"></a><a name="ph163561737112019"></a><term id="zh-cn_topic_0000001312391781_term1964153212227"><a name="zh-cn_topic_0000001312391781_term1964153212227"></a><a name="zh-cn_topic_0000001312391781_term1964153212227"></a>Atlas 推理系列产品</term>AI Core</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="14.37%" headers="mcps1.1.6.1.2 "><p id="p5688124511177"><a name="p5688124511177"></a><a name="p5688124511177"></a>√</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="13.139999999999999%" headers="mcps1.1.6.1.3 "><p id="p34861478177"><a name="p34861478177"></a><a name="p34861478177"></a>x</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="12.26%" headers="mcps1.1.6.1.4 "><p id="p19883144918177"><a name="p19883144918177"></a><a name="p19883144918177"></a>x</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="18.25%" headers="mcps1.1.6.1.5 "><p id="p575164014120"><a name="p575164014120"></a><a name="p575164014120"></a>x</p>
-</td>
-</tr>
-<tr id="row242332080"><td class="cellrowborder" valign="top" width="41.980000000000004%" headers="mcps1.1.6.1.1 "><p id="p10519331187"><a name="p10519331187"></a><a name="p10519331187"></a><span id="ph1335623792013"><a name="ph1335623792013"></a><a name="ph1335623792013"></a><term id="zh-cn_topic_0000001312391781_term1463893615224"><a name="zh-cn_topic_0000001312391781_term1463893615224"></a><a name="zh-cn_topic_0000001312391781_term1463893615224"></a>Atlas 推理系列产品</term>Vector Core</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="14.37%" headers="mcps1.1.6.1.2 "><p id="p7688134510171"><a name="p7688134510171"></a><a name="p7688134510171"></a>x</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="13.139999999999999%" headers="mcps1.1.6.1.3 "><p id="p104861947181718"><a name="p104861947181718"></a><a name="p104861947181718"></a>x</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="12.26%" headers="mcps1.1.6.1.4 "><p id="p18883154991715"><a name="p18883154991715"></a><a name="p18883154991715"></a>x</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="18.25%" headers="mcps1.1.6.1.5 "><p id="p13382204414121"><a name="p13382204414121"></a><a name="p13382204414121"></a>x</p>
-</td>
-</tr>
-<tr id="row73487318125"><td class="cellrowborder" valign="top" width="41.980000000000004%" headers="mcps1.1.6.1.1 "><p id="p2348123141220"><a name="p2348123141220"></a><a name="p2348123141220"></a><span id="ph15348183141219"><a name="ph15348183141219"></a><a name="ph15348183141219"></a><term id="zh-cn_topic_0000001312391781_term71949488213"><a name="zh-cn_topic_0000001312391781_term71949488213"></a><a name="zh-cn_topic_0000001312391781_term71949488213"></a>Atlas 训练系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="14.37%" headers="mcps1.1.6.1.2 "><p id="p2688845111713"><a name="p2688845111713"></a><a name="p2688845111713"></a>x</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="13.139999999999999%" headers="mcps1.1.6.1.3 "><p id="p18486184710178"><a name="p18486184710178"></a><a name="p18486184710178"></a>x</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="12.26%" headers="mcps1.1.6.1.4 "><p id="p168836496179"><a name="p168836496179"></a><a name="p168836496179"></a>x</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="18.25%" headers="mcps1.1.6.1.5 "><p id="p169451421311"><a name="p169451421311"></a><a name="p169451421311"></a>x</p>
-</td>
-</tr>
-<tr id="row27091753543"><td class="cellrowborder" valign="top" width="41.980000000000004%" headers="mcps1.1.6.1.1 "><p id="p1194015282449"><a name="p1194015282449"></a><a name="p1194015282449"></a><span id="ph3940142844419"><a name="ph3940142844419"></a><a name="ph3940142844419"></a>Kirin X90</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="14.37%" headers="mcps1.1.6.1.2 "><p id="p490492419559"><a name="p490492419559"></a><a name="p490492419559"></a>√</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="13.139999999999999%" headers="mcps1.1.6.1.3 "><p id="p1690422416550"><a name="p1690422416550"></a><a name="p1690422416550"></a>√</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="12.26%" headers="mcps1.1.6.1.4 "><p id="p1090462416551"><a name="p1090462416551"></a><a name="p1090462416551"></a>√</p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="18.25%" headers="mcps1.1.6.1.5 "><p id="p1904624195511"><a name="p1904624195511"></a><a name="p1904624195511"></a>x</p>
-</td>
-</tr>
-</tbody>
-</table>
+### MatmulPolicy
 
-## 功能说明<a name="section451064612817"></a>
+- Ascend 950PR/Ascend 950DT：支持
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持
+- Atlas 200I/500 A2 推理产品：支持
+- Atlas 推理系列产品AI Core：支持
+- Atlas 推理系列产品Vector Core：不支持
+- Atlas 训练系列产品：不支持
+- Kirin X90：支持
+
+### TrianUpperMatmulPolicy/TrianLowerMatmulPolicy
+
+- Ascend 950PR/Ascend 950DT：支持
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持
+- Atlas 200I/500 A2 推理产品：不支持
+- Atlas 推理系列产品AI Core：不支持
+- Atlas 推理系列产品Vector Core：不支持
+- Atlas 训练系列产品：不支持
+- Kirin X90：支持
+
+### NBuffer33MatmulPolicy
+
+- Ascend 950PR/Ascend 950DT：支持
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持
+- Atlas 200I/500 A2 推理产品：不支持
+- Atlas 推理系列产品AI Core：不支持
+- Atlas 推理系列产品Vector Core：不支持
+- Atlas 训练系列产品：不支持
+- Kirin X90：支持
+
+### MatmulWithScalePolicy/SplitMMatmulPolicy/SplitNMatmulPolicy
+
+- Ascend 950PR/Ascend 950DT：支持
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：不支持
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：不支持
+- Atlas 200I/500 A2 推理产品：不支持
+- Atlas 推理系列产品AI Core：不支持
+- Atlas 推理系列产品Vector Core：不支持
+- Atlas 训练系列产品：不支持
+- Kirin X90：不支持
+
+## 功能说明
 
 模板参数MatmulPolicy用于定义Matmul可拓展模块策略。目前支持设置以下四种Matmul内置模板策略。
 
@@ -118,28 +58,28 @@
 
     一次矩阵乘指令计算的结果为[baseM \* baseN](../Matmul-Tiling侧接口/Matmul-Tiling类/TCubeTiling结构体.md#p17899165811566)大小的矩阵块，称该矩阵块为基本块。若Matmul结果矩阵C中的基本块位于下三角位置，则Matmul内部做数据计算和数据搬出时，将不对该基本块进行处理，最后得到的矩阵C为一个上三角矩阵。上三角模板策略如下图所示，图示中矩阵形状的相关大小为M=N=512，K=256，baseM=baseN=baseK=32。
 
-    **图 1**  上三角模板策略示意图<a name="fig981211473248"></a>  
+    **图 1**  上三角模板策略示意图  
     ![](../../../../figures/上三角模板策略示意图.png "上三角模板策略示意图")
 
 -   TrianLowerMatmulPolicy（下三角模板策略）
 
     一次矩阵乘指令计算的结果为[baseM \* baseN](../Matmul-Tiling侧接口/Matmul-Tiling类/TCubeTiling结构体.md#p17899165811566)大小的矩阵块，称该矩阵块为基本块。若Matmul结果矩阵C中的基本块位于上三角位置，则Matmul内部做数据计算和数据搬出时，将不对该基本块进行处理，最后得到的矩阵C为一个下三角矩阵。下三角模板策略如下图所示，图示中矩阵形状的相关大小为M=N=512，K=256，baseM=baseN=baseK=32。
 
-    **图 2**  下三角模板策略示意图<a name="fig131201039102716"></a>  
+    **图 2**  下三角模板策略示意图  
     ![](../../../../figures/下三角模板策略示意图.png "下三角模板策略示意图")
 
 -   NBuffer33MatmulPolicy（NBuffer33模板策略）
 
     一次矩阵乘指令计算的结果为[baseM \* baseN](../Matmul-Tiling侧接口/Matmul-Tiling类/TCubeTiling结构体.md#p17899165811566)大小的矩阵块，称该矩阵块为基本块。单核计算的A矩阵切分为3x3个基本块，该3x3个A矩阵的基本块全载和保持在L1 Buffer中，每次与3x1个B矩阵的基本块计算矩阵乘，同时DoubleBuffer并行搬入下次计算所需的3x1个B矩阵基本块，直到singleCoreN方向的矩阵乘计算完成。NBuffer33模板策略如下图所示，图中[singleCoreM、singleCoreN、singleCoreK](../Matmul-Tiling侧接口/Matmul-Tiling类/TCubeTiling结构体.md#p11899125875617)表示单核内A、B矩阵的shape大小，单核计算的A矩阵切分为3x3个基本块，3x3个基本块全载在L1 Buffer上，这些基本块每次与B矩阵的3x1个基本块计算矩阵乘。
 
-    **图 3**  NBuffer33模板策略示意图<a name="fig173669299148"></a>  
+    **图 3**  NBuffer33模板策略示意图  
     ![](../../../../figures/NBuffer33模板策略示意图.png "NBuffer33模板策略示意图")
 
 -   MatmulWithScalePolicy（MxMatmul模板策略）
 
     实现带有量化系数的矩阵乘法，即左矩阵和右矩阵均有对应的量化系数矩阵，左量化系数矩阵scaleA和右量化系数矩阵scaleB。MxMatmul场景中，左量化系数矩阵与左矩阵乘积，右量化系数矩阵与右矩阵乘积，对两个乘积的结果做矩阵乘法。
 
-    图4 MxMatmul模板策略示意图
+    **图4** MxMatmul模板策略示意图
 
     ![](../../../../figures/MatmulMx公式图示.png)
 
@@ -147,17 +87,17 @@
 
     Matmul一次[Iterate](Iterate.md)的计算结果从L0C Buffer搬到Unified Buffer时，采用双输出模式，即在分离模式下，AIC核与AIV核的核数比为1：2时，在调用[GetTensorC](GetTensorC.md)接口后，Matmul一次Iterate的计算结果在矩阵的M方向一分为二，将被切分后的两块结果数据分别搬运到两个AIV核的Unified Buffer。模板策略示意图如下所示。
 
-    **图 4**  SplitM模板策略示意图<a name="fig1338985851817"></a>  
+    **图 5**  SplitM模板策略示意图  
     ![](../../../../figures/SplitM模板策略示意图.png "SplitM模板策略示意图")
 
 -   SplitNMatmulPolicy（SplitN模板策略）
 
     Matmul一次[Iterate](Iterate.md)的计算结果从L0C Buffer搬到Unified Buffer时，采用双输出模式，即在分离模式下，AIC核与AIV核的核数比为1：2时，在调用[GetTensorC](GetTensorC.md)接口后，Matmul一次Iterate的计算结果在矩阵的N方向一分为二，将被切分后的两块结果数据分别搬运到两个AIV核的Unified Buffer。模板策略示意图如下所示。
 
-    **图 5**  SplitN模板策略示意图<a name="fig1117644818584"></a>  
+    **图 6**  SplitN模板策略示意图  
     ![](../../../../figures/SplitN模板策略示意图.png "SplitN模板策略示意图")
 
-## 约束说明<a name="section176217152520"></a>
+## 约束说明
 
 -   TrianUpperMatmulPolicy当前只支持[Norm模板](MatmulConfig.md#p159827389308)和[MDL模板](MatmulConfig.md#p109823386305)。
 -   TrianLowerMatmulPolicy当前只支持[Norm模板](MatmulConfig.md#p159827389308)和[MDL模板](MatmulConfig.md#p109823386305)。
@@ -186,7 +126,7 @@
     -   [Tiling参数](../Matmul-Tiling侧接口/Matmul-Tiling类/TCubeTiling结构体.md#table1563162142915)必须满足：singleCoreM = baseM，singleCoreN = baseN，singleCoreK = baseK。
     -   A矩阵、B矩阵类型信息MatmulType中的参数[IBSHARE](Matmul使用说明.md#p1613334125414)必须为true。
 
-## 调用示例<a name="section2366122094418"></a>
+## 调用示例
 
 默认模板策略MatmulPolicy为模板参数的默认值，下面主要介绍TrianUpperMatmulPolicy（上三角模板策略）和TrianLowerMatmulPolicy（下三角模板策略）的使用方式。
 
@@ -194,14 +134,14 @@
 
     ```cpp
     #include "lib/matmul_intf.h"
-    
-    typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> aType; 
+
+    typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> aType;
     typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> bType;
-    typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> cType; 
+    typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> cType;
     typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> biasType;
     // Matmul定义时传入TrianUpperMatmulPolicy
-    AscendC::Matmul<aType, bType, cType, biasType, CFG_NORM, MatmulCallBackFunc<nullptr, nullptr, nullptr>, AscendC::Impl::Detail::TrianUpperMatmulPolicy> mm; 
-    
+    AscendC::Matmul<aType, bType, cType, biasType, CFG_NORM, MatmulCallBackFunc<nullptr, nullptr, nullptr>, AscendC::Impl::Detail::TrianUpperMatmulPolicy> mm;
+
     // 常规Matmul计算，最后输出上三角形式的结果
     TPipe pipe;
     TCubeTiling tiling;
@@ -219,14 +159,14 @@
 
     ```cpp
     #include "lib/matmul_intf.h"
-    
-    typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> aType; 
+
+    typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> aType;
     typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> bType;
-    typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> cType; 
+    typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> cType;
     typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> biasType;
     // Matmul定义时传入TrianLowerMatmulPolicy
-    AscendC::Matmul<aType, bType, cType, biasType, CFG_NORM, MatmulCallBackFunc<nullptr, nullptr, nullptr>, AscendC::Impl::Detail::TrianLowerMatmulPolicy> mm; 
-    
+    AscendC::Matmul<aType, bType, cType, biasType, CFG_NORM, MatmulCallBackFunc<nullptr, nullptr, nullptr>, AscendC::Impl::Detail::TrianLowerMatmulPolicy> mm;
+
     // 常规Matmul计算，最后输出下三角形式的结果
     TPipe pipe;
     TCubeTiling tiling;
@@ -245,15 +185,15 @@
     ```cpp
     #define ASCENDC_CUBE_ONLY
     #include "lib/matmul_intf.h"
-    
-    typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> aType; 
+
+    typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> aType;
     typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> bType;
-    typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> cType; 
+    typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> cType;
     typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> biasType;
     // Matmul定义时传入NBuffer33MatmulPolicy
-    
-    AscendC::Matmul<aType, bType, cType, biasType, CFG_MDL, MatmulCallBackFunc<nullptr, nullptr, nullptr>, AscendC::Impl::Detail::NBuffer33MatmulPolicy> mm; 
-    
+
+    AscendC::Matmul<aType, bType, cType, biasType, CFG_MDL, MatmulCallBackFunc<nullptr, nullptr, nullptr>, AscendC::Impl::Detail::NBuffer33MatmulPolicy> mm;
+
     // 使用NBuffer33逻辑进行Matmul计算，最后输结果
     TPipe pipe;
     TCubeTiling tiling;
@@ -273,11 +213,11 @@
     #include "lib/matmul_intf.h"
     typedef MatmulTypeWithScale<AscendC::TPosition::GM, AscendC::TPosition::GM, CubeFormat::ND, AType, isTransposeA> aType;
     typedef MatmulTypeWithScale<AscendC::TPosition::GM, AscendC::TPosition::GM, CubeFormat::ND, BType, isTransposeB> bType;
-    typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> cType; 
+    typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> cType;
     typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> biasType;
     // Matmul定义时传入MatmulWithScalePolicy
-    AscendC::Matmul<aType, bType, cType, biasType, CFG_NORM, MatmulCallBackFunc<nullptr, nullptr, nullptr>, AscendC::Impl::Detail::MatmulWithScalePolicy> mm; 
-    
+    AscendC::Matmul<aType, bType, cType, biasType, CFG_NORM, MatmulCallBackFunc<nullptr, nullptr, nullptr>, AscendC::Impl::Detail::MatmulWithScalePolicy> mm;
+
     // MxMatmul计算逻辑，最后输出结果
     TPipe pipe;
     TCubeTiling tiling;
@@ -297,10 +237,10 @@
 
     ```cpp
     #include "lib/matmul_intf.h"
-    
-    typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half, LayoutMode::NONE, true> aType; 
+
+    typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half, LayoutMode::NONE, true> aType;
     typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half, LayoutMode::NONE, true> bType;
-    typedef AscendC::MatmulType<AscendC::TPosition::VECCALC, CubeFormat::ND, float> cType; 
+    typedef AscendC::MatmulType<AscendC::TPosition::VECCALC, CubeFormat::ND, float> cType;
     typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> biasType;
     // Matmul定义时传入SplitMMatmulPolicy
     AscendC::Matmul<aType, bType, cType, biasType, CFG_NORM, MatmulCallBackFunc<nullptr, nullptr, nullptr>, AscendC::Impl::Detail::SplitMMatmulPolicy> mm;
@@ -313,7 +253,7 @@
     if (tiling.isBias) {
         mm.SetBias(gmBias);
     }
-    
+
     // 调用GetTensorC接口后，将Matmul一次Iterate的计算结果一分为二，搬运到两个AIV核的Unified Buffer。
     pipe.InitBuffer(resultCMatrix, 1, tiling.M * tiling.N * sizeof(C_T));
     mm.template Iterate<false>();
@@ -322,13 +262,13 @@
     uint16_t mIter_ = Ceil(tiling.singleCoreM, tiling.baseM);
     uint16_t mnIter_ = nIter_ * mIter_;
     for (int i = 0; i < mnIter_; i++) {
-         mm.template GetTensorC<false>(bufferC, false, false);  // false // kfc vec0 iterate             
+         mm.template GetTensorC<false>(bufferC, false, false);  // false // kfc vec0 iterate
          PipeBarrier<PIPE_ALL>();
     }
     mm.End();
     resultCMatrix.EnQue(bufferC);
     bufferC = resultCMatrix.DeQue<C_T>();
-    
+
     uint16_t baseOffset = tiling.M / 2 * tiling.N;
     uint16_t stride = tiling.M / 2 * tiling.N * sizeof(C_T) / 32;  // 32B
     const uint16_t blockCount = tiling.M / tiling.M;
@@ -343,10 +283,10 @@
 
     ```cpp
     #include "lib/matmul_intf.h"
-    
-    typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half, LayoutMode::NONE, true> aType; 
+
+    typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half, LayoutMode::NONE, true> aType;
     typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half, LayoutMode::NONE, true> bType;
-    typedef AscendC::MatmulType<AscendC::TPosition::VECCALC, CubeFormat::ND, float> cType; 
+    typedef AscendC::MatmulType<AscendC::TPosition::VECCALC, CubeFormat::ND, float> cType;
     typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> biasType;
     // Matmul定义时传入SplitNMatmulPolicy
     AscendC::Matmul<aType, bType, cType, biasType, CFG_NORM, MatmulCallBackFunc<nullptr, nullptr, nullptr>, AscendC::Impl::Detail::SplitNMatmulPolicy> mm;
@@ -359,7 +299,7 @@
     if (tiling.isBias) {
         mm.SetBias(gmBias);
     }
-    
+
     // 调用GetTensorC接口后，将Matmul一次Iterate的计算结果一分为二，搬运到两个AIV核的Unified Buffer。
     pipe.InitBuffer(resultCMatrix, 1, tiling.M * tiling.N * sizeof(C_T));
     mm.template Iterate<false>();
@@ -368,13 +308,13 @@
     uint16_t mIter_ = Ceil(tiling.singleCoreM, tiling.baseM);
     uint16_t mnIter_ = nIter_ * mIter_;
     for (int i = 0; i < mnIter_; i++) {
-         mm.template GetTensorC<false>(bufferC, false, false);  // false // kfc vec0 iterate             
+         mm.template GetTensorC<false>(bufferC, false, false);  // false // kfc vec0 iterate
          PipeBarrier<PIPE_ALL>();
     }
     mm.End();
     resultCMatrix.EnQue(bufferC);
     bufferC = resultCMatrix.DeQue<C_T>();
-    
+
     uint16_t baseOffset = tiling.N / 2;
     uint16_t blockCount = tiling.M;
     uint16_t blockLen = (tiling.N / 2 * sizeof(C_T)) / 32;
