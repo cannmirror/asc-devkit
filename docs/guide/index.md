@@ -141,8 +141,7 @@
 
                 -   [TensorFlow框架](./编程指南/高级编程/高级特性/AI框架算子适配/TensorFlow框架.md)
 
-            -   [SIMT协作组](./编程指南/高级编程/高级特性/SIMT协作组/SIMT协作组简介.md)
-                -   [简介](./编程指南/高级编程/高级特性/SIMT协作组/SIMT协作组简介.md)
+            -   [SIMT协作组](./编程指南/高级编程/高级特性/SIMT协作组.md)
 
     -   [附录](编程指南/附录/show_kernel_debug_data工具.md)
         -   [show_kernel_debug_data工具](编程指南/附录/show_kernel_debug_data工具.md)
