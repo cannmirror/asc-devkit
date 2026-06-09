@@ -37,7 +37,7 @@ public:
             LoadDataImpl<trait, T, U>(dst, src);
         } else {
             static_assert(T::layoutType::depth == FOUR_DIM_DATA || T::layoutType::depth == FIVE_DIM_DATA,
-                "LoadDataL12L0ANZ2NZ only supports the plain fractal layout "
+                "LoadDataL12L0AZN2NZ only supports the plain fractal layout "
                 "((row0,row1),(col0,col1)) or the batch layout (B,((row0,row1),(col0,col1))).");
         }
     }

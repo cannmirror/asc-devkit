@@ -9,6 +9,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <mockcpp/mockcpp.hpp>
 #include "tensor_api/stub/cce_stub.h"
 #include "include/tensor_api/tensor.h"
 
@@ -55,6 +56,22 @@ void RunCopyWithPaths(const DstTensor& dst, const SrcTensor& src)
     Copy(atom, dst, src);
 }
 
+uint64_t gExpectedMxDstAddr = 0;
+__cbuf__ void* gExpectedMxSrc = nullptr;
+
+void load_cbuf_to_ca_mx_batch_stub(uint64_t dst, __cbuf__ void* src, uint16_t xStartPos, uint16_t yStartPos,
+    uint8_t xStep, uint8_t yStep, uint16_t srcStride, uint16_t dstStride)
+{
+    EXPECT_EQ(dst, gExpectedMxDstAddr);
+    EXPECT_EQ(src, gExpectedMxSrc);
+    EXPECT_EQ(xStartPos, 0);
+    EXPECT_EQ(yStartPos, 0);
+    EXPECT_EQ(xStep, 3);
+    EXPECT_EQ(yStep, 16);
+    EXPECT_EQ(srcStride, 16);
+    EXPECT_EQ(dstStride, 16);
+}
+
 } // namespace
 
 TEST_F(Tensor_Api_Cube_Copy_L12L0ScaleA_3510, CopyL12L0ScaleARoutesToCubeArchCopy)
@@ -76,4 +93,34 @@ TEST_F(Tensor_Api_Cube_Copy_L12L0ScaleA_3510, CopyL12L0ScaleARoutesToCubeArchCop
     CopyAtom<CopyTraits<CopyL12L0ScaleA, CopyL12L0ScaleATraitDefault>>{}.Call(l0aTensor, l1Tensor, coord);
 
     EXPECT_EQ(dst[0], static_cast<fp8_e8m0_t>(0));
+}
+
+TEST_F(Tensor_Api_Cube_Copy_L12L0ScaleA_3510, CopyL12L0ScaleABatch)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t batch = 3;
+    constexpr uint32_t m = 16;
+    constexpr uint32_t n = 32;
+    __cbuf__ fp8_e8m0_t src[batch * m * n] = {0};
+    __ca__ fp8_e8m0_t dst[batch * m * n] = {0};
+
+    auto baseLayout = MakeFrameLayout<ZZLayoutPtn, AscendC::Std::Int<2>>(m, n);
+    using LayoutTraitType = GetLayoutTrait<decltype(baseLayout)>;
+    auto batchLayout = MakeBatchPatternLayout<ZZLayoutPtn, LayoutTraitType>(batch, baseLayout);
+    auto l1Tensor = MakeTensor(MakeMemPtr<Location::L1>(src), batchLayout);
+    auto dstPtr = MakeMemPtr<Location::L0ScaleA, fp8_e8m0_t>((reinterpret_cast<uint64_t>(dst)) / 16);
+    auto l0aTensor = MakeTensor(dstPtr, batchLayout);
+
+    gExpectedMxDstAddr = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst)) / 16;
+    gExpectedMxSrc = reinterpret_cast<__cbuf__ void*>(src);
+
+    MOCKER_CPP(load_cbuf_to_ca_mx,
+        void(uint64_t, __cbuf__ void*, uint16_t, uint16_t, uint8_t, uint8_t, uint16_t, uint16_t))
+        .times(1)
+        .will(invoke(&load_cbuf_to_ca_mx_batch_stub));
+
+    Copy(CopyAtom<CopyTraits<CopyL12L0ScaleA, CopyL12L0ScaleATraitDefault>>{}, l0aTensor, l1Tensor);
+
+    mockcpp::GlobalMockObject::verify();
 }

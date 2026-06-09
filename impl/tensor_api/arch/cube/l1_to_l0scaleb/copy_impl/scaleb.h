@@ -31,7 +31,15 @@ class LoadDataL12L0MxScaleB3510 {
 public:
     template <const CopyL12L0ScaleBTrait& trait, typename T, typename U>
     __aicore__ inline static void Run(const T& dst, const U& src) {
-        LoadDataImpl<trait, T, U>(dst, src);
+        if constexpr (T::layoutType::depth == FIVE_DIM_DATA) {
+            BatchLoadDataImpl<trait, T, U>(dst, src);
+        } else if constexpr (T::layoutType::depth == FOUR_DIM_DATA) {
+            LoadDataImpl<trait, T, U>(dst, src);
+        } else {
+            static_assert(T::layoutType::depth == FOUR_DIM_DATA || T::layoutType::depth == FIVE_DIM_DATA,
+                "LoadDataL12L0MxScaleB3510 only supports the plain fractal layout "
+                "((row0,row1),(col0,col1)) or the batch layout (B,((row0,row1),(col0,col1))).");
+        }
     }
 
 private:
@@ -53,6 +61,26 @@ private:
         auto mStep = GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(dstLayout);
         auto kStep = GetElement<AttrInfo::Shape, AttrInfo::Row, 1>(dstLayout);
         auto srcStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(srcLayout) >> 5;
+        auto dstStride = kStep;
+        uint64_t mxDstAddr = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.Data().Get()));
+        LoadCbufToL0MxScaleB3510::LoadData(mxDstAddr, src, mStartPosition, kStartPosition, mStep, kStep,
+            srcStride, dstStride);
+    }
+
+    template <const CopyL12L0ScaleBTrait& trait, typename T, typename U>
+    __aicore__ inline static void BatchLoadDataImpl(const T& dst, const U& src)
+    {
+        CheckTemplate<trait, T, U>();
+        auto dstLayout = dst.Layout();
+        auto srcLayout = src.Layout();
+        auto dstNoBatchLayout = RemoveBatchDim(dstLayout);
+        auto srcNoBatchLayout = RemoveBatchDim(srcLayout);
+        uint16_t mStartPosition = 0;
+        uint16_t kStartPosition = 0;
+        uint8_t mStep = GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(dstNoBatchLayout);
+        mStep *= Get<0>(dstLayout.Shape());
+        auto kStep = GetElement<AttrInfo::Shape, AttrInfo::Row, 1>(dstNoBatchLayout);
+        auto srcStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(srcNoBatchLayout) >> 5;
         auto dstStride = kStep;
         uint64_t mxDstAddr = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.Data().Get()));
         LoadCbufToL0MxScaleB3510::LoadData(mxDstAddr, src, mStartPosition, kStartPosition, mStep, kStep,
