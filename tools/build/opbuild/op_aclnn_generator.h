@@ -289,7 +289,6 @@ public:
     mutable size_t socMatchCounter_ = 0;
     struct SocMatchArrayInfo {
         std::vector<std::string> names;
-        std::vector<std::string> enumConstants;
     };
     mutable std::vector<SocMatchArrayInfo> socMatchArrays_;
     mutable std::map<std::string, size_t> socMatchArrayIndex_;

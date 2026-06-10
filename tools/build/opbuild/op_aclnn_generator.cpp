@@ -73,13 +73,6 @@ constexpr const char* OP_ACLNN_SOC_MATCH_HELPER =
     "        if (strcmp(socName, nameList[i]) == 0) return true;\n"
     "    }\n"
     "    return false;\n"
-    "}\n"
-    "static bool NnopbaseMatchSocEnum(uint32_t socEnum, const uint32_t *enumList, size_t enumCount) {\n"
-    "    if (enumList == NULL) return false;\n"
-    "    for (size_t i = 0; i < enumCount; i++) {\n"
-    "        if (socEnum == enumList[i]) return true;\n"
-    "    }\n"
-    "    return false;\n"
     "}\n";
 constexpr const char* OP_ACLNN_NNOPBASE_ATTR_DTYPE_INFO = "enum NnopbaseAttrDtype {\n"
                                                           "    kNnopbaseBool = 0U,\n"
@@ -118,9 +111,8 @@ constexpr const char* OP_ACLNN_EXTERN_FUNC =
     "extern aclnnStatus NnopbaseAddBoolArrayAttr(void *executor, const aclBoolArray* array, const size_t index);\n"
     "extern aclnnStatus NnopbaseAddArrayAttrWithDtype(void *executor, void *array, const size_t len, "
     "const size_t elementSize, const size_t index, const NnopbaseAttrDtype dtype);\n"
-    "extern uint64_t NnopbaseMsprofSysTime();\n"
-    "extern uint32_t __attribute__((weak)) NnopbaseGetSocEnum();\n"
-    "extern const char* __attribute__((weak)) NnopbaseGetSocName();\n"
+     "extern uint64_t NnopbaseMsprofSysTime();\n"
+     "extern const char* __attribute__((weak)) NnopbaseGetSocName();\n"
     "extern aclnnStatus NnopbaseAddTilingId(void *executor, NnopbaseDfxId *tilingId);\n"
     "extern void NnopbaseReportApiInfo(const uint64_t beginTime, NnopbaseDfxId &dfxId);\n"
     "extern aclnnStatus NnopbaseRunForWorkspace(void *executor, uint64_t *workspaceLen);\n"
@@ -1677,27 +1669,16 @@ void AclnnOpGenerator::GenerateSocConditionCode(
 
     outfile << indent << "if (";
     if (withNullCheck) {
-        outfile << "(NnopbaseGetSocName == NULL && NnopbaseGetSocEnum == NULL) || ";
+        outfile << "NnopbaseGetSocName == NULL || ";
     }
     outfile << "(currentSocName != NULL && NnopbaseMatchSocName(currentSocName, "
-            << "socMatch" << matchIdx << "Names, " << arr.names.size() << ")) || ";
-    outfile << "(currentSocName == NULL && NnopbaseMatchSocEnum(currentSocEnum, ";
-    if (!arr.enumConstants.empty()) {
-        outfile << "socMatch" << matchIdx << "Enums, " << arr.enumConstants.size();
-    } else {
-        outfile << "NULL, 0";
-    }
-    outfile << "))";
+            << "socMatch" << matchIdx << "Names, " << arr.names.size() << "))";
     outfile << ") {\n";
 }
 
 void AclnnOpGenerator::GenerateCurrentSocDeclaration(std::ofstream& outfile, const std::string& indent) const
 {
     outfile << indent << "const char *currentSocName = (NnopbaseGetSocName != NULL) ? NnopbaseGetSocName() : NULL;\n";
-    outfile << indent << "uint32_t currentSocEnum = SOC_VERSION_INVALID;\n";
-    outfile << indent << "if (currentSocName == NULL && NnopbaseGetSocEnum != NULL) {\n";
-    outfile << indent << "    currentSocEnum = NnopbaseGetSocEnum();\n";
-    outfile << indent << "}\n";
 }
 
 size_t AclnnOpGenerator::GetOrCreateSocMatchArray(const std::vector<std::string>& socNames) const
@@ -1715,12 +1696,6 @@ size_t AclnnOpGenerator::GetOrCreateSocMatchArray(const std::vector<std::string>
     size_t index = socMatchCounter_++;
     SocMatchArrayInfo info;
     info.names = socNames;
-    for (const auto& name : socNames) {
-        auto mapIt = SOC_SUPPORT_MAP.find(name);
-        if (mapIt != SOC_SUPPORT_MAP.end()) {
-            info.enumConstants.push_back(mapIt->second);
-        }
-    }
     socMatchArrays_.push_back(std::move(info));
     socMatchArrayIndex_[key] = index;
     return index;
@@ -1762,15 +1737,6 @@ void AclnnOpGenerator::EmitSocMatchArrays(std::ofstream& outfile) const
             outfile << "\"" << arr.names[i] << "\"";
         }
         outfile << "};\n";
-        if (!arr.enumConstants.empty()) {
-            outfile << "static const uint32_t socMatch" << idx << "Enums[] = {";
-            for (size_t i = 0; i < arr.enumConstants.size(); i++) {
-                if (i > 0)
-                    outfile << ", ";
-                outfile << arr.enumConstants[i];
-            }
-            outfile << "};\n";
-        }
     }
 }
 

@@ -107,17 +107,8 @@ static bool NnopbaseMatchSocName(const char *socName, const char * const *nameLi
     }
     return false;
 }
-static bool NnopbaseMatchSocEnum(uint32_t socEnum, const uint32_t *enumList, size_t enumCount) {
-    if (enumList == NULL) return false;
-    for (size_t i = 0; i < enumCount; i++) {
-        if (socEnum == enumList[i]) return true;
-    }
-    return false;
-}
 static const char *socMatch0Names[] = {"ascend910b", "ascend_undefined_soc"};
-static const uint32_t socMatch0Enums[] = {SOC_VERSION_ASCEND910B};
 static const char *socMatch1Names[] = {"ascend310p", "ascend910b", "ascend_undefined_soc"};
-static const uint32_t socMatch1Enums[] = {SOC_VERSION_ASCEND310P, SOC_VERSION_ASCEND910B};
 } // namespace
 
 extern void NnopbaseOpLogE(const aclnnStatus code, const char *const expr);
@@ -145,7 +136,6 @@ extern aclnnStatus NnopbaseAddFloatArrayAttr(void *executor, const aclFloatArray
 extern aclnnStatus NnopbaseAddBoolArrayAttr(void *executor, const aclBoolArray* array, const size_t index);
 extern aclnnStatus NnopbaseAddArrayAttrWithDtype(void *executor, void *array, const size_t len, const size_t elementSize, const size_t index, const NnopbaseAttrDtype dtype);
 extern uint64_t NnopbaseMsprofSysTime();
-extern uint32_t __attribute__((weak)) NnopbaseGetSocEnum();
 extern const char* __attribute__((weak)) NnopbaseGetSocName();
 extern aclnnStatus NnopbaseAddTilingId(void *executor, NnopbaseDfxId *tilingId);
 extern void NnopbaseReportApiInfo(const uint64_t beginTime, NnopbaseDfxId &dfxId);
@@ -231,12 +221,8 @@ aclnnStatus aclnnSocVersionTest1GetWorkspaceSize(
         NnopbaseSetMatchArgsFlag(*executor);
     }
     const char *currentSocName = (NnopbaseGetSocName != NULL) ? NnopbaseGetSocName() : NULL;
-    uint32_t currentSocEnum = SOC_VERSION_INVALID;
-    if (currentSocName == NULL && NnopbaseGetSocEnum != NULL) {
-        currentSocEnum = NnopbaseGetSocEnum();
-    }
     NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, x1, 0));
-    if ((currentSocName != NULL && NnopbaseMatchSocName(currentSocName, socMatch0Names, 2)) || (currentSocName == NULL && NnopbaseMatchSocEnum(currentSocEnum, socMatch0Enums, 1))) {
+    if ((currentSocName != NULL && NnopbaseMatchSocName(currentSocName, socMatch0Names, 2))) {
         NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddIgnoreContinuesInput(*executor, x2, 1));
     } else {
         NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddInput(*executor, x2, 1));
@@ -263,7 +249,7 @@ aclnnStatus aclnnSocVersionTest1GetWorkspaceSize(
 
     uint64_t inContWorkspaceSize = 0U;
     const aclTensorList *inUnContTensors = nullptr;
-    if ((currentSocName != NULL && NnopbaseMatchSocName(currentSocName, socMatch1Names, 3)) || (currentSocName == NULL && NnopbaseMatchSocEnum(currentSocEnum, socMatch1Enums, 2))) {
+    if ((currentSocName != NULL && NnopbaseMatchSocName(currentSocName, socMatch1Names, 3))) {
         aclOpExecutor *aclInExecutor = nullptr;
         NnopbaseGetUnContiguousTensors(*executor, &inUnContTensors);
         if (inUnContTensors != nullptr) {
@@ -289,14 +275,10 @@ aclnnStatus aclnnSocVersionTest1(
     uint64_t timeStamp = NnopbaseMsprofSysTime();
     static NnopbaseDfxId dfxId = {0x60000, __func__, false};
     const char *currentSocName = (NnopbaseGetSocName != NULL) ? NnopbaseGetSocName() : NULL;
-    uint32_t currentSocEnum = SOC_VERSION_INVALID;
-    if (currentSocName == NULL && NnopbaseGetSocEnum != NULL) {
-        currentSocEnum = NnopbaseGetSocEnum();
-    }
     uint64_t inContWorkspaceSize = 0U;
     aclOpExecutor *aclInExecutor = nullptr;
     void *inWorkspace = nullptr;
-    if ((currentSocName != NULL && NnopbaseMatchSocName(currentSocName, socMatch1Names, 3)) || (currentSocName == NULL && NnopbaseMatchSocEnum(currentSocEnum, socMatch1Enums, 2))) {
+    if ((currentSocName != NULL && NnopbaseMatchSocName(currentSocName, socMatch1Names, 3))) {
         NnopbaseGetUnContExecutor(executor, &aclInExecutor, &inContWorkspaceSize);
         if (workspaceSize < inContWorkspaceSize) {
             NnopbaseOpLogE(ACLNN_ERR_PARAM_INVALID, "input workspaceSize must be larger than contiguous size!");

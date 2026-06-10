@@ -122,7 +122,6 @@ extern aclnnStatus NnopbaseAddFloatArrayAttr(void *executor, const aclFloatArray
 extern aclnnStatus NnopbaseAddBoolArrayAttr(void *executor, const aclBoolArray* array, const size_t index);
 extern aclnnStatus NnopbaseAddArrayAttrWithDtype(void *executor, void *array, const size_t len, const size_t elementSize, const size_t index, const NnopbaseAttrDtype dtype);
 extern uint64_t NnopbaseMsprofSysTime();
-extern uint32_t __attribute__((weak)) NnopbaseGetSocEnum();
 extern const char* __attribute__((weak)) NnopbaseGetSocName();
 extern aclnnStatus NnopbaseAddTilingId(void *executor, NnopbaseDfxId *tilingId);
 extern void NnopbaseReportApiInfo(const uint64_t beginTime, NnopbaseDfxId &dfxId);
