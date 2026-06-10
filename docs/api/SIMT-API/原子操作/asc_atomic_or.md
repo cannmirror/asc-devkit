@@ -70,13 +70,29 @@ Unified Buffer或Global Memory上的初始数据。
 
 ## 调用示例
 
+示例场景为：多个线程分别检测到不同特征，使用`asc_atomic_or`接口将这些特征合并到同一个共享bitmask中。输入参数说明如下：
+
+| 名称 | 说明 |
+| --- | --- |
+| `observed_flags` | 每个元素表示一个线程观察到的特征位。 |
+| `flags` | Global Memory中的汇总bitmask，kernel启动前清零。 |
+| `n` | 特征来源数量。 |
+
+核心代码实现如下：
+
 -   SIMT编程场景：
 
-    ```
-    __global__ __launch_bounds__(1024) void KernelAtomicOr(int32_t* dst, int32_t* src)
+    ```cpp
+    __global__ __launch_bounds__(256) void merge_observed_flags(uint32_t *flags,
+                                                               uint32_t *observed_flags,
+                                                               uint32_t n)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        asc_atomic_or(dst + idx, src[idx]);
+        uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= n) {
+            return;
+        }
+
+        asc_atomic_or(flags, observed_flags[idx]);
     }
     ```
 
@@ -84,11 +100,23 @@ Unified Buffer或Global Memory上的初始数据。
 
     SIMD与SIMT混合编程场景，需要显式使用地址空间限定符表示地址空间：\_\_gm\_\_表示Global Memory内存空间，\_\_ubuf\_\_表示Unified Buffer内存空间。
 
-    ```
-    __simt_vf__ __launch_bounds__(1024) inline void KernelAtomicOr(__gm__ int32_t* dst, __gm__ int32_t* src)
+    ```cpp
+    __simt_vf__ __launch_bounds__(1024) inline void merge_observed_flags(__gm__ uint32_t *flags,
+                                                                        __gm__ uint32_t *observed_flags,
+                                                                        uint32_t n)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        asc_atomic_or(dst + idx, src[idx]);
+        uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= n) {
+            return;
+        }
+
+        asc_atomic_or(flags, observed_flags[idx]);
     }
     ```
 
+输出结果示例如下：
+
+```
+observed_flags: 0x1, 0x4, 0x2
+flags: 0x7 // 表明3个线程观察到的特征位被合并
+```

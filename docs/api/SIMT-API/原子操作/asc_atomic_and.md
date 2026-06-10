@@ -70,13 +70,30 @@ Unified Buffer或Global Memory上的初始数据。
 
 ## 调用示例
 
+示例场景为：多个线程根据各自检测结果清除共享状态字中的某些bit，使用`asc_atomic_and`接口保证不同线程清除不同bit时不会覆盖彼此的修改。输入参数说明如下：
+
+| 名称 | 说明 |
+| --- | --- |
+| `flags` | Global Memory中的共享状态位。 |
+| `clear_bits` | 每个元素表示需要清除的bit，kernel内部会转换为AND掩码。 |
+| `n` | 掩码数量。 |
+
+核心代码实现如下：
+
 -   SIMT编程场景：
 
-    ```
-    __global__ __launch_bounds__(1024) void KernelAtomicAnd(int32_t* dst, int32_t* src)
+    ```cpp
+    __global__ __launch_bounds__(256) void clear_status_bits(uint32_t *flags,
+                                                            uint32_t *clear_bits,
+                                                            uint32_t n)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        asc_atomic_and(dst + idx, src[idx]);
+        uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= n) {
+            return;
+        }
+
+        uint32_t mask = ~clear_bits[idx];
+        asc_atomic_and(flags, mask);
     }
     ```
 
@@ -84,11 +101,25 @@ Unified Buffer或Global Memory上的初始数据。
 
     SIMD与SIMT混合编程场景，需要显式使用地址空间限定符表示地址空间：\_\_gm\_\_表示Global Memory内存空间，\_\_ubuf\_\_表示Unified Buffer内存空间。
 
-    ```
-    __simt_vf__ __launch_bounds__(1024) inline void KernelAtomicAnd(__gm__ int32_t* dst, __gm__ int32_t* src)
+    ```cpp
+    __simt_vf__ __launch_bounds__(1024) inline void clear_status_bits(__gm__ uint32_t *flags,
+                                                                     __gm__ uint32_t *clear_bits,
+                                                                     uint32_t n)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        asc_atomic_and(dst + idx, src[idx]);
+        uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= n) {
+            return;
+        }
+
+        uint32_t mask = ~clear_bits[idx];
+        asc_atomic_and(flags, mask);
     }
     ```
 
+输出结果示例如下：
+
+```cpp
+flags before: 0xF
+clear_bits: 0x2, 0x4
+flags after: 0x9 // 表明bit1和bit2被并发清除
+```

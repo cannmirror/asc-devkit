@@ -90,13 +90,33 @@ Unified Buffer或Global Memory上的初始数据。
 
 ## 调用示例
 
+示例场景为：多个线程扫描故障标志，检测到故障的线程使用`asc_atomic_exch`接口将共享状态置为故障状态，并记录替换前的旧状态。输入参数说明如下：
+
+| 名称 | 说明 |
+| --- | --- |
+| `fault_flags` | 每个元素表示一条检测结果，0为无故障，非0为故障。 |
+| `status` | Global Memory中的共享状态，0表示正常，1表示故障。 |
+| `old_status` | 保存每个故障线程执行交换前读到的旧状态。 |
+| `n` | 输入元素个数。 |
+
+核心代码实现如下：
+
 -   SIMT编程场景：
 
-    ```
-    __global__ __launch_bounds__(1024) void KernelAtomicExch(int32_t* dst, int32_t* src)
+    ```cpp
+    __global__ __launch_bounds__(256) void publish_fault_status(uint32_t *status,
+                                                               uint32_t *old_status,
+                                                               uint32_t *fault_flags,
+                                                               uint32_t n)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        asc_atomic_exch(dst + idx, src[idx]);
+        uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= n) {
+            return;
+        }
+
+        if (fault_flags[idx] != 0U) {
+            old_status[idx] = asc_atomic_exch(status, 1U);
+        }
     }
     ```
 
@@ -104,11 +124,28 @@ Unified Buffer或Global Memory上的初始数据。
 
     SIMD与SIMT混合编程场景，需要显式使用地址空间限定符表示地址空间：\_\_gm\_\_表示Global Memory内存空间，\_\_ubuf\_\_表示Unified Buffer内存空间。
 
-    ```
-    __simt_vf__ __launch_bounds__(1024) inline void KernelAtomicExch(__gm__ int32_t* dst, __gm__ int32_t* src)
+    ```cpp
+    __simt_vf__ __launch_bounds__(1024) inline void publish_fault_status(__gm__ uint32_t *status,
+                                                                        __gm__ uint32_t *old_status,
+                                                                        __gm__ uint32_t *fault_flags,
+                                                                        uint32_t n)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        asc_atomic_exch(dst + idx, src[idx]);
+        uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= n) {
+            return;
+        }
+
+        if (fault_flags[idx] != 0U) {
+            old_status[idx] = asc_atomic_exch(status, 1U);
+        }
     }
     ```
+
+输出结果示例如下：
+
+```cpp
+fault_flags: 0, 1, 0, 1
+status before: 0
+status after: 1 // 表明至少有一个线程检测到故障并发布故障状态
+```
 
