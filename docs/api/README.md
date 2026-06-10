@@ -2552,6 +2552,8 @@
         -   [asc\_ldca](SIMT-API/访存函数/asc_ldca.md)
         -   [asc\_stcg](SIMT-API/访存函数/asc_stcg.md)
         -   [asc\_stwt](SIMT-API/访存函数/asc_stwt.md)
+        -   [asc\_dcci\_single](SIMT-API/访存函数/asc_dcci_single.md)
+        -   [asc\_dcci\_entire](SIMT-API/访存函数/asc_dcci_entire.md)
 
 
 -   [Utils API](Utils-API/Utils-API.md)
