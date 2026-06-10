@@ -186,6 +186,8 @@ __aicore__ inline void GenMaskForSign(
     SetVectorMask<float>(0, calCount);
 }
 
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Power is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void CommonPowerF(
     const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor0, const LocalTensor<float>& srcTensor1,
     const LocalTensor<float>& tmpScalar, const AscPowerFParams& powerParam, const uint32_t calCount)

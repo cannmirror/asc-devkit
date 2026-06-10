@@ -94,6 +94,8 @@ __aicore__ inline void LayerNormExe(
 {}
 
 template <>
+__ASC_USE_RESERVED_UBUF__(2201,
+    "LayerNorm is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void LayerNormExe<half>(
     const LocalTensor<half>& inputX, const LocalTensor<half>& gamma, const LocalTensor<half>& beta,
     const LocalTensor<half>& output, const LocalTensor<float>& outputMean, const LocalTensor<float>& outputVariance,
@@ -120,6 +122,8 @@ __aicore__ inline void LayerNormExe<half>(
 }
 
 template <>
+__ASC_USE_RESERVED_UBUF__(2201,
+    "LayerNorm is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void LayerNormExe<float>(
     const LocalTensor<float>& inputX, const LocalTensor<float>& gamma, const LocalTensor<float>& beta,
     const LocalTensor<float>& output, const LocalTensor<float>& outputMean, const LocalTensor<float>& outputVariance,

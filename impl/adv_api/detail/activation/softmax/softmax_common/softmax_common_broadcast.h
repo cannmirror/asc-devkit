@@ -28,6 +28,8 @@
 namespace AscendC {
 
 template <typename T>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SoftMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AlignedBrcbImpl(
     const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const uint32_t brcbCount)
 {
@@ -44,6 +46,8 @@ __aicore__ inline void AlignedBrcbImpl(
     }
 }
 
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SoftMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void ContinuousColumnBrcbImpl(
     const LocalTensor<float>& dstLocal, const LocalTensor<float>& srcLocal, const uint32_t& repeat,
     const uint32_t& brcbCount)
@@ -78,6 +82,8 @@ __aicore__ inline void ContinuousColumnBrcbImpl(
     }
 }
 
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SoftMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AlignedColumnBrcbImpl(
     const LocalTensor<float>& dstLocal, const LocalTensor<float>& srcLocal, const uint32_t& repeat,
     const uint32_t& brcbCount)
@@ -112,6 +118,8 @@ __aicore__ inline void AlignedColumnBrcbImpl(
     }
 }
 
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SoftMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void BroadCastNZImpl(
     const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint32_t srcM)
 {
@@ -139,6 +147,8 @@ __aicore__ inline void BroadCastNZImpl(
 }
 
 template <typename T>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SoftMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void BroadCastLastCompute(
     const LocalTensor<T>& dst, const LocalTensor<T>& src, const BroadCastLastND& brcParam,
     const uint32_t scalarStackDepth, const uint32_t index)

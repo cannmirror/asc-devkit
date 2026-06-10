@@ -25,6 +25,8 @@
 
 namespace AscendC {
 
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SoftMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void ReduceMaxBlockNZImpl(
     const LocalTensor<float>& dst, const LocalTensor<float>& src, const ReduceLastND& reduceParam)
 {
@@ -44,6 +46,8 @@ __aicore__ inline void ReduceMaxBlockNZImpl(
     ResetMask();
 }
 
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SoftMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void ReduceSumBlockNZImpl(
     const LocalTensor<float>& dst, const LocalTensor<float>& src, const ReduceLastND& reduceParam)
 {
@@ -63,6 +67,8 @@ __aicore__ inline void ReduceSumBlockNZImpl(
     ResetMask();
 }
 
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SoftMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void BigBlockReduceMax(
     const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint32_t splitBlock, const uint32_t splitM,
     const uint32_t splitK)
@@ -84,6 +90,8 @@ __aicore__ inline void BigBlockReduceMax(
     }
 }
 
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SoftMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void BigBlockReduceSum(
     const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint32_t splitBlock, const uint32_t splitM,
     const uint32_t splitK)

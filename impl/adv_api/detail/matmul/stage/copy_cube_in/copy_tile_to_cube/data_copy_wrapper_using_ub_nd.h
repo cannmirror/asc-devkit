@@ -145,6 +145,8 @@ public:
     };
 
     template <typename SrcTensor, typename DstTensor>
+    __ASC_USE_RESERVED_UBUF__(3510,
+        "Matmul is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
     __aicore__ inline void CopyND2NZOnTheFly(
         const DstTensor& dst, const SrcTensor& src, int row, int col, int height, int width, int gCol)
     {

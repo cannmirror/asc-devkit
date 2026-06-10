@@ -52,12 +52,14 @@ namespace AscendC {
  */
 // Cast::Level 0 - mask bit mode
 template <typename T, typename U, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Cast is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Cast(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const RoundMode& roundMode, const uint64_t mask[], const uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams);
 
 // Cast::Level 0 - mask count mode
 template <typename T, typename U, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Cast is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Cast(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const RoundMode& roundMode, const uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
@@ -85,20 +87,26 @@ __aicore__ inline void Cast(const LocalTensor<T>& dst, const LocalTensor<U>& src
  * @param [in] repeatParams.srcRepStride src repeat stride
  */
 template <typename T, typename U, bool isSetMask = true, bool isVecDeq = true, bool halfBlock = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "CastDequant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void CastDequant(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const uint64_t mask[], uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, typename U, bool isSetMask = true, bool isVecDeq = true, bool halfBlock = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "CastDequant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void CastDequant(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const int32_t mask, uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 // CastDeq has been updated, please use CastDequant instead.
 template <typename T, typename U, bool isSetMask = true, bool isVecDeq = true, bool halfBlock = true>
+__ASC_USE_RESERVED_UBUF__(3510, "CastDeq is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void CastDeq(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const uint64_t mask[], uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 // CastDeq has been updated, please use CastDequant instead.
 template <typename T, typename U, bool isSetMask = true, bool isVecDeq = true, bool halfBlock = true>
+__ASC_USE_RESERVED_UBUF__(3510, "CastDeq is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void CastDeq(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const int32_t mask, uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
@@ -138,11 +146,15 @@ __aicore__ inline void CastDeq(const LocalTensor<T>& dst, const LocalTensor<U>& 
  */
 // AddReluCast::Level 0 - mask count mode
 template <typename T, typename U, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AddReluCast is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AddReluCast(const LocalTensor<T>& dst, const LocalTensor<U>& src0,
     const LocalTensor<U>& src1, uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams& repeatParams);
 
 // AddReluCast::Level 0 - mask bit mode
 template <typename T, typename U, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AddReluCast is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AddReluCast(const LocalTensor<T>& dst, const LocalTensor<U>& src0,
     const LocalTensor<U>& src1, uint64_t mask[], const uint8_t repeatTime,
     const BinaryRepeatParams& repeatParams);
@@ -179,11 +191,15 @@ __aicore__ inline void AddReluCast(const LocalTensor<T>& dst, const LocalTensor<
  */
 // SubReluCast::Level 0 - mask count mode
 template <typename T, typename U, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SubReluCast is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void SubReluCast(const LocalTensor<T>& dst, const LocalTensor<U>& src0,
     const LocalTensor<U>& src1, uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams& repeatParams);
 
 // SubReluCast::Level 0 - mask bit mode
 template <typename T, typename U, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SubReluCast is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void SubReluCast(const LocalTensor<T>& dst, const LocalTensor<U>& src0,
     const LocalTensor<U>& src1, uint64_t mask[], const uint8_t repeatTime,
     const BinaryRepeatParams& repeatParams);

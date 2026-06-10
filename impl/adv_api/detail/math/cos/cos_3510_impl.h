@@ -234,6 +234,8 @@ __aicore__ inline void CosImpl(
     CosImpl<T, isReuseSource, config>(dstTensor, srcTensor, sharedTmpBuffer, calCount);
 }
 
+__ASC_USE_RESERVED_UBUF__(3510,
+    "Cos is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void CosCastFullMask(
     const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor, RoundMode castType)
 {

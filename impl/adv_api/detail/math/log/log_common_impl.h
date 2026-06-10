@@ -40,6 +40,8 @@
 
 namespace AscendC {
 template <typename T>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "Log2 is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Log2Compute(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor)
 {
     // Log2x = Lnx/Ln2
@@ -51,6 +53,8 @@ __aicore__ inline void Log2Compute(const LocalTensor<T>& dstTensor, const LocalT
 }
 
 template <typename T>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "Log2 is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Log2Compute(
     const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& tmpTensor)
 {
@@ -81,6 +85,8 @@ __aicore__ inline void Log2Compute(
 }
 
 template <typename T, bool isReuseSource = false>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "Log is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void LogImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, uint32_t calCount)
 {
     // Logx = Lnx
@@ -136,6 +142,8 @@ __aicore__ inline void Log2Impl(
 }
 
 template <typename T, bool isReuseSource = false>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "Log10 is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Log10Impl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, uint32_t calCount)
 {
     // Log10x = Lnx/Ln10

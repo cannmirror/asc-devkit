@@ -37,6 +37,8 @@ namespace AscendC {
  * \param [in] info, firstAxis, srcLastAxis and maskLastAxis
  */
 template <typename T, bool isInitBitMode = false, uint32_t dropOutMode = 0>
+__ASC_USE_RESERVED_UBUF__(2201,
+    "DropOut is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void DropOut(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal,
     const LocalTensor<uint8_t>& maskLocal, const LocalTensor<uint8_t>& sharedTmpBuffer, const float keepProb,
     const DropOutShapeInfo& info)
@@ -57,6 +59,8 @@ __aicore__ inline void DropOut(const LocalTensor<T>& dstLocal, const LocalTensor
  * \param [in] info, firstAxis, srcLastAxis and maskLastAxis
  */
 template <typename T, bool isInitBitMode = false, uint32_t dropOutMode = 0>
+__ASC_USE_RESERVED_UBUF__(2201,
+    "DropOut is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void DropOut(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal,
     const LocalTensor<uint8_t>& maskLocal, const float keepProb, const DropOutShapeInfo& info)
 {

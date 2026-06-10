@@ -25,6 +25,8 @@
 
 namespace AscendC {
 
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SoftMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void TailMaxImpl(
     const LocalTensor<half>& dst, const LocalTensor<half>& src, const ReduceLastND& reduceParam, const uint64_t mask,
     const uint8_t srcRepeatStride, const uint32_t splitCount)
@@ -50,6 +52,8 @@ __aicore__ inline void TailMaxImpl(
         }
     }
 }
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SoftMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void TailMaxImpl(
     const LocalTensor<float>& dst, const LocalTensor<float>& src, const ReduceLastND& reduceParam, const uint64_t mask,
     const uint8_t srcRepeatStride, const uint32_t splitCount)
@@ -75,6 +79,8 @@ __aicore__ inline void TailMaxImpl(
         }
     }
 }
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SoftMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void TailAddImpl(
     const LocalTensor<float>& dst, const LocalTensor<float>& src, const ReduceLastND& reduceParam, const uint64_t mask,
     const uint8_t srcRepeatStride, const uint32_t splitCount)
@@ -101,6 +107,8 @@ __aicore__ inline void TailAddImpl(
     }
 }
 
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SoftMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void NextBlockMaxImpl(
     const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint8_t splitM, const uint8_t srcRepstride,
     const uint32_t splitBlock, const uint32_t srcK)
@@ -127,6 +135,8 @@ __aicore__ inline void NextBlockMaxImpl(
     }
 }
 
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SoftMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void NextBlockAddImpl(
     const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint8_t splitM, const uint8_t srcRepstride,
     const uint32_t splitBlock, const uint32_t srcK)
@@ -153,6 +163,8 @@ __aicore__ inline void NextBlockAddImpl(
     }
 }
 
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SoftMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void BasicBlockMaxImpl(
     const LocalTensor<float>& dst, const LocalTensor<float>& src, uint8_t splitM, uint8_t offset,
     const uint32_t splitBlock)
@@ -176,6 +188,8 @@ __aicore__ inline void BasicBlockMaxImpl(
     }
 }
 
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SoftMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void BasicBlockAddImpl(
     const LocalTensor<float>& dst, const LocalTensor<float>& src, uint8_t splitM, uint8_t offset,
     const uint32_t splitBlock)
@@ -199,6 +213,8 @@ __aicore__ inline void BasicBlockAddImpl(
     }
 }
 
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SoftMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void GenericSubNDImpl(
     const LocalTensor<float>& dst, const LocalTensor<float>& src0, const LocalTensor<float>& src1,
     const uint32_t originalSrcM, const uint32_t srcK, const uint32_t srcReduceK)
@@ -228,6 +244,8 @@ __aicore__ inline void GenericSubNDImpl(
     }
 }
 
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SoftMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void GenericDivNDImpl(
     const LocalTensor<float>& dst, const LocalTensor<float>& src0, const LocalTensor<float>& src1,
     const uint32_t originalSrcM, const uint32_t srcK, const uint32_t srcReduceK)
@@ -257,6 +275,8 @@ __aicore__ inline void GenericDivNDImpl(
     }
 }
 
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SoftMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void GenericMulNDImpl(
     const LocalTensor<float>& dst, const LocalTensor<float>& src0, const LocalTensor<float>& src1,
     const uint32_t originalSrcM, const uint32_t srcK, const uint32_t srcReduceK)
@@ -286,6 +306,8 @@ __aicore__ inline void GenericMulNDImpl(
     }
 }
 
+__ASC_USE_RESERVED_UBUF__(3510,
+    "SoftMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void TransDivToMulImpl(
     const LocalTensor<float>& dst, const LocalTensor<float>& src, const LocalTensor<float>& tmpbuffer,
     const uint32_t originalSrcM, const uint32_t srcK, const uint32_t srcReduceK)

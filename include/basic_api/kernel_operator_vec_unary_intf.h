@@ -53,9 +53,11 @@ namespace AscendC {
  * @param [in] repeatParams.src0RepStride src repeat stride
  */
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Relu is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Relu(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Relu is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Relu(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
@@ -84,9 +86,11 @@ __aicore__ inline void Relu(const LocalTensor<T>& dst, const LocalTensor<T>& src
  */
 #if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <typename T, bool isSetMask = true, const ExpConfig& config = DEFAULT_EXP_CONFIG>
+__ASC_USE_RESERVED_UBUF__(3510, "Exp is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Exp(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 template <typename T, bool isSetMask = true, const ExpConfig& config = DEFAULT_EXP_CONFIG>
+__ASC_USE_RESERVED_UBUF__(3510, "Exp is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Exp(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 #else
@@ -128,9 +132,11 @@ __aicore__ inline void Exp(const LocalTensor<T>& dst, const LocalTensor<T>& src,
  */
 #if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <typename T, bool isSetMask = true, const LnConfig& config = DEFAULT_LN_CONFIG>
+__ASC_USE_RESERVED_UBUF__(3510, "Ln is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Ln(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 template <typename T, bool isSetMask = true, const LnConfig& config = DEFAULT_LN_CONFIG>
+__ASC_USE_RESERVED_UBUF__(3510, "Ln is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Ln(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 #else
@@ -171,9 +177,11 @@ __aicore__ inline void Ln(const LocalTensor<T>& dst, const LocalTensor<T>& src, 
  * @param [in] repeatParams.src0RepStride src repeat stride
  */
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Abs is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Abs(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Abs is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Abs(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
@@ -214,9 +222,13 @@ __aicore__ inline void Abs(const LocalTensor<T>& dst, const LocalTensor<U>& src,
  */
 #if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <typename T, bool isSetMask = true, const ReciprocalConfig& config = DEFAULT_RECIPROCAL_CONFIG>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "Reciprocal is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Reciprocal(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 template <typename T, bool isSetMask = true, const ReciprocalConfig& config = DEFAULT_RECIPROCAL_CONFIG>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "Reciprocal is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Reciprocal(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 #else
@@ -260,9 +272,11 @@ __aicore__ inline void Reciprocal(const LocalTensor<T>& dst, const LocalTensor<T
  */
 #if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <typename T, bool isSetMask = true, const RsqrtConfig& config = DEFAULT_RSQRT_CONFIG>
+__ASC_USE_RESERVED_UBUF__(3510, "Rsqrt is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Rsqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 template <typename T, bool isSetMask = true, const RsqrtConfig& config = DEFAULT_RSQRT_CONFIG>
+__ASC_USE_RESERVED_UBUF__(3510, "Rsqrt is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Rsqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 #else
@@ -304,9 +318,11 @@ __aicore__ inline void Rsqrt(const LocalTensor<T>& dst, const LocalTensor<T>& sr
  */
 #if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <typename T, bool isSetMask = true, const SqrtConfig& config = DEFAULT_SQRT_CONFIG>
+__ASC_USE_RESERVED_UBUF__(3510, "Sqrt is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Sqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 template <typename T, bool isSetMask = true, const SqrtConfig& config = DEFAULT_SQRT_CONFIG>
+__ASC_USE_RESERVED_UBUF__(3510, "Sqrt is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Sqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 #else
@@ -347,9 +363,11 @@ __aicore__ inline void Sqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src
  * @param [in] repeatParams.src0RepStride src repeat stride
  */
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Not is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Not(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Not is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Not(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 

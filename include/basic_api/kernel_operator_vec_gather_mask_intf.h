@@ -37,6 +37,8 @@ __aicore__ inline void GatherMask(const LocalTensor<T>& dst, const LocalTensor<T
     const GatherMaskParams& gatherMaskParams, uint64_t& rsvdCnt);
 
 template <typename T, GatherMaskMode mode = defaultGatherMaskMode>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "GatherMask is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void GatherMask(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
     const uint8_t src1Pattern, const bool reduceMode, const uint32_t mask, const GatherMaskParams& gatherMaskParams,
     uint64_t& rsvdCnt);

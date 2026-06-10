@@ -34,27 +34,39 @@ namespace AscendC {
 #pragma begin_pipe(V)
 
 template <ReduceType reduceType, typename T, typename U, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "ReduceDataBlock is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void ReduceDataBlock(const LocalTensor<T>& dst, const LocalTensor<U>& src, const int32_t mask,
     const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride);
 
 template <ReduceType reduceType, typename T, typename U, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "ReduceDataBlock is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void ReduceDataBlock(const LocalTensor<T>& dst, const LocalTensor<U>& src, const uint64_t mask[],
     const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride);
 
 template <ReduceType reduceType, typename T, typename U, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "ReducePairElem is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void ReducePairElem(const LocalTensor<T>& dst, const LocalTensor<U>& src, const int32_t mask,
     const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride);
 
 template <ReduceType reduceType, typename T, typename U, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "ReducePairElem is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void ReducePairElem(const LocalTensor<T>& dst, const LocalTensor<U>& src, const uint64_t mask[],
     const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride);
 
 template <ReduceType reduceType, typename T, typename U, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "ReduceRepeat is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void ReduceRepeat(const LocalTensor<T>& dst, const LocalTensor<U>& src, const int32_t mask,
     const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride,
     ReduceOrder order = ReduceOrder::ORDER_VALUE_INDEX);
 
 template <ReduceType reduceType, typename T, typename U, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "ReduceRepeat is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void ReduceRepeat(const LocalTensor<T>& dst, const LocalTensor<U>& src, const uint64_t mask[],
     const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride,
     ReduceOrder order = ReduceOrder::ORDER_VALUE_INDEX);

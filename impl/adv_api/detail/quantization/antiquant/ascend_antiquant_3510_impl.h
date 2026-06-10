@@ -267,6 +267,8 @@ __aicore__ inline void AscendAntiQuantTranspose(
 }
 
 template <typename SrcType, typename OutputDataType, bool isTranspose>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AscendAntiQuantImpl(
     const LocalTensor<OutputDataType>& dst, const LocalTensor<SrcType>& src, const LocalTensor<fp8_e8m0_t>& scale,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t k, const AntiQuantShapeInfo& shapeInfo = {})
@@ -773,6 +775,8 @@ __aicore__ inline void AntiQuantPerchannelImpl(
 }
 
 template <typename SrcType, bool withOffset = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AntiQuantInnerLoop(
     const LocalTensor<bfloat16_t>& dst, const LocalTensor<SrcType>& src, const LocalTensor<bfloat16_t>& offset,
     const LocalTensor<bfloat16_t>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer,
@@ -817,6 +821,8 @@ __aicore__ inline void AntiQuantInnerLoop(
 }
 
 template <typename SrcType, bool withOffset = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AntiQuantInnerLoop(
     const LocalTensor<bfloat16_t>& dst, const LocalTensor<SrcType>& src, const bfloat16_t offset,
     const bfloat16_t scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const UnaryRepeatParams& unaryParamsCastSrc,
@@ -854,6 +860,8 @@ __aicore__ inline void AntiQuantInnerLoop(
 }
 
 template <typename SrcType>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AscendAntiQuantNoTransposePerformance(
     const LocalTensor<bfloat16_t>& dst, const LocalTensor<SrcType>& src, const LocalTensor<bfloat16_t>& offset,
     const LocalTensor<bfloat16_t>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t K,
@@ -909,6 +917,8 @@ __aicore__ inline void AscendAntiQuantNoTransposePerformance(
 }
 
 template <typename SrcType>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AscendAntiQuantNoTransposePerformanceTail(
     const LocalTensor<bfloat16_t>& dst, const LocalTensor<SrcType>& src, const LocalTensor<bfloat16_t>& offset,
     const LocalTensor<bfloat16_t>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t K,
@@ -989,6 +999,8 @@ __aicore__ inline bool AntiQuantCheckPerformanceMode(
 // scale * (src + offset)   src: N * K, scale: N, offset: N  NOffset: offset used for tmpTensorOffset, tmpTensorScale
 // For now, calCount must equal to N * K then can use brcb
 template <typename SrcType, typename OutputDataType, bool isOffset>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void CalculationMax(
     const LocalTensor<SrcType>& src, const LocalTensor<OutputDataType>& dst, AntiquantParams<float>& params,
     const uint32_t calCount, const uint32_t N, const uint32_t K, const uint32_t NOffset)
@@ -1093,6 +1105,8 @@ __aicore__ inline void CastAndBrcb(
 // scale * (src + offset)   src: N * K, scale: N, offset: N  NOffset: offset used for tmpTensorOffset, tmpTensorScale
 // For now, calCount must equal to N * K then can use brcb   calCount: 64 * N
 template <typename SrcType, typename OutputDataType, bool withOffset>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void CalculationMin(
     const LocalTensor<SrcType>& src, const LocalTensor<OutputDataType>& dst, AntiquantParams<float>& params,
     const uint32_t calCount, const uint32_t n, const uint32_t srcN, const uint32_t k)
@@ -1146,6 +1160,8 @@ __aicore__ inline void CalculationMin(
 
 // Method2: min: N * 64
 template <typename SrcType, typename OutputDataType>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void CalculateByBrcbMin(
     const LocalTensor<OutputDataType>& dst, const LocalTensor<SrcType>& src, const LocalTensor<OutputDataType>& offset,
     const LocalTensor<OutputDataType>& scale, const LocalTensor<float>& stackBuffer, const uint32_t calCount,
@@ -1169,6 +1185,8 @@ __aicore__ inline void CalculateByBrcbMin(
 }
 
 template <typename SrcType, typename OutputDataType>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void CalculateByBrcbMin(
     const LocalTensor<OutputDataType>& dst, const LocalTensor<SrcType>& src, const LocalTensor<OutputDataType>& scale,
     const LocalTensor<float>& stackBuffer, const uint32_t calCount, const uint32_t n, const uint32_t k)
@@ -1226,6 +1244,8 @@ __aicore__ inline void AntiQuantFp16Brcb(
 }
 
 template <typename SrcType, typename OutputDataType>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AscendAntiQuantTranspose(
     const LocalTensor<OutputDataType>& dst, const LocalTensor<SrcType>& src, const LocalTensor<OutputDataType>& offset,
     const LocalTensor<OutputDataType>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t K,
@@ -1248,6 +1268,8 @@ __aicore__ inline void AscendAntiQuantTranspose(
 }
 
 template <typename SrcType, typename OutputDataType>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AscendAntiQuantTranspose(
     const LocalTensor<OutputDataType>& dst, const LocalTensor<SrcType>& src, const LocalTensor<OutputDataType>& scale,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t K, const AntiQuantShapeInfo& shapeInfo = {})

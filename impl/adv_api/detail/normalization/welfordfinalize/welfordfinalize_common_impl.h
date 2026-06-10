@@ -73,6 +73,8 @@ __aicore__ inline void welfordFinalizeOutputPre(
 }
 
 template <bool isReuseSource = false>
+__ASC_USE_RESERVED_UBUF__(2201,
+    "WelfordFinalize is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void WelfordFinalizeExeVariance(
     const LocalTensor<float>& inputMean, const LocalTensor<float>& inputVariance,
     const LocalTensor<float>& outputVariance, const LocalTensor<int32_t>& counts,
@@ -289,6 +291,8 @@ __aicore__ inline void WelfordFinalizeExeMean(
 }
 
 template <bool isReuseSource = false>
+__ASC_USE_RESERVED_UBUF__(2201,
+    "WelfordFinalize is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void WelfordFinalizeExeVariance(
     const LocalTensor<float>& inputMean, const LocalTensor<float>& inputVariance,
     const LocalTensor<float>& outputVariance, WelfordFinalizeTmpTensors<float>& tempTensors,
@@ -315,6 +319,8 @@ __aicore__ inline void WelfordFinalizeExeVariance(
 }
 
 template <bool isReuseSource = false>
+__ASC_USE_RESERVED_UBUF__(2201,
+    "WelfordFinalize is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void WelfordFinalizeComputeImpl(
     const LocalTensor<float>& inputMean, const LocalTensor<float>& inputVariance, const LocalTensor<float>& outputMean,
     const LocalTensor<float>& outputVariance, WelfordFinalizeTmpTensors<float>& tempTensors,
@@ -386,6 +392,8 @@ __aicore__ inline void WelfordFinalizeComputeImpl(
 }
 
 template <bool isReuseSource = false>
+__ASC_USE_RESERVED_UBUF__(2201,
+    "WelfordFinalize is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void WelfordFinalizeComputeImpl(
     const LocalTensor<float>& inputMean, const LocalTensor<float>& inputVariance, const LocalTensor<float>& outputMean,
     const LocalTensor<float>& outputVariance, const LocalTensor<int32_t>& counts,

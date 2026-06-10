@@ -37,6 +37,8 @@ namespace AscendC {
  * \param [in] isTranspose, enable transpose of input
  */
 template <typename InputDataType, typename OutputDataType, bool isTranspose>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, const LocalTensor<InputDataType>& src,
     const LocalTensor<OutputDataType>& offset, const LocalTensor<OutputDataType>& scale,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t k, const AntiQuantShapeInfo& shapeInfo = {})
@@ -59,6 +61,8 @@ __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, c
  * \param [in] isTranspose, enable transpose of input
  */
 template <typename InputDataType, typename OutputDataType, bool isTranspose>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, const LocalTensor<InputDataType>& src,
     const LocalTensor<OutputDataType>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t k,
     const AntiQuantShapeInfo& shapeInfo = {})
@@ -80,6 +84,8 @@ __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, c
  * \param [in] isTranspose, enable transpose of input
  */
 template <typename InputDataType, typename OutputDataType, bool isTranspose>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, const LocalTensor<InputDataType>& src,
     const LocalTensor<OutputDataType>& offset, const LocalTensor<OutputDataType>& scale, const uint32_t k,
     const AntiQuantShapeInfo& shapeInfo = {})
@@ -102,6 +108,8 @@ __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, c
  * \param [in] isTranspose, enable transpose of input
  */
 template <typename InputDataType, typename OutputDataType, bool isTranspose>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, const LocalTensor<InputDataType>& src,
     const OutputDataType offset, const OutputDataType scale, const LocalTensor<uint8_t>& sharedTmpBuffer,
     const uint32_t k, const AntiQuantShapeInfo& shapeInfo = {})
@@ -124,6 +132,8 @@ __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, c
  * \param [in] isTranspose, enable transpose of input
  */
 template <typename InputDataType, typename OutputDataType, bool isTranspose>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, const LocalTensor<InputDataType>& src,
     const OutputDataType scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t k,
     const AntiQuantShapeInfo& shapeInfo = {})
@@ -145,6 +155,8 @@ __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, c
  * \param [in] isTranspose, enable transpose of input
  */
 template <typename InputDataType, typename OutputDataType, bool isTranspose>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, const LocalTensor<InputDataType>& src,
     const OutputDataType offset, const OutputDataType scale, const uint32_t k, const AntiQuantShapeInfo& shapeInfo = {})
 {
@@ -156,6 +168,8 @@ __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, c
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 template <typename InputDataType, typename OutputDataType, bool isTranspose>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, const LocalTensor<InputDataType>& src,
     const LocalTensor<fp8_e8m0_t>& scale, const uint32_t k, const AntiQuantShapeInfo& shapeInfo = {})
 {
@@ -166,6 +180,8 @@ __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, c
 }
 
 template <typename InputDataType, typename OutputDataType, bool isTranspose>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, const LocalTensor<InputDataType>& src,
     const LocalTensor<fp8_e8m0_t>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t k,
     const AntiQuantShapeInfo& shapeInfo = {})
@@ -177,6 +193,8 @@ __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, c
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendAntiQuantConfig& config, const AscendAntiQuantPolicy& policy>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AscendAntiQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
                                        const LocalTensor<scaleT> &scaleTensor, const LocalTensor<scaleT> &offsetTensor,
                                        const AscendAntiQuantParam& para)
@@ -185,6 +203,8 @@ __aicore__ inline void AscendAntiQuant(const LocalTensor<dstT>& dstTensor, const
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendAntiQuantConfig& config, const AscendAntiQuantPolicy& policy>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void AscendAntiQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
                                        const LocalTensor<scaleT> &scaleTensor, const LocalTensor<scaleT> &offsetTensor,
                                        const LocalTensor<uint8_t> &sharedTmpBuffer, const AscendAntiQuantParam& para)

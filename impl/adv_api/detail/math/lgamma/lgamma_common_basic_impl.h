@@ -213,6 +213,8 @@ __aicore__ inline void LGammaGenRangeMask(
 }
 
 // Select the value of src at mask 1, and accumulate the result onto dst, used tmp1
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Lgamma is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void LGammaSelect(
     const LocalTensor<float>& dst, const LocalTensor<float>& src, const LocalTensor<uint8_t>& mask,
     const LGammaParams& params)
@@ -226,6 +228,8 @@ __aicore__ inline void LGammaSelect(
 }
 
 // tmp6 is |x|, res on tmp5
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Lgamma is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void LGammaPositive(const LGammaParams& params)
 {
     Duplicate<float, false>(params.tmp5, 0.0f, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
@@ -302,6 +306,8 @@ __aicore__ inline void LGammaCalNegTmp1(const LGammaParams& params)
 }
 
 // input is tmp2, mask for odd, tmpMask1 for even, result on tmp2
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Lgamma is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void LGammaCalNegTmp2(const LGammaParams& params)
 {
     // tmp3 = tmp2 * tmp2
@@ -361,6 +367,8 @@ __aicore__ inline void LGammaCalMinNeg(const LocalTensor<float>& src, const LGam
 }
 
 // cal for x < 0, result on tmp4, tmp6 is |x|, tmp5 is pos res
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Lgamma is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void LGammaNegative(const LGammaParams& params)
 {
     Duplicate<float, false>(params.tmp4, 0.0f, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);

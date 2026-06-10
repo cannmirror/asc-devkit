@@ -50,20 +50,24 @@ namespace AscendC {
  * @param [in] repeatParams.src0RepStride src repeat stride
  */
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Adds is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Adds(const LocalTensor<T>& dst, const LocalTensor<T>& src, const T& scalarValue,
     uint64_t mask[], const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, typename U, bool isSetMask = true,
     typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Adds is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Adds(const LocalTensor<T>& dst, const LocalTensor<T>& src, const U& scalarValue,
     uint64_t mask[], const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Adds is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Adds(const LocalTensor<T>& dst, const LocalTensor<T>& src, const T& scalarValue,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, typename U, bool isSetMask = true,
     typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Adds is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Adds(const LocalTensor<T>& dst, const LocalTensor<T>& src, const U& scalarValue,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
@@ -71,11 +75,13 @@ __aicore__ inline void Adds(const LocalTensor<T>& dst, const LocalTensor<T>& src
 // One of src0/src1 should be scalar or single point LocalTensor
 template <typename T = BinaryDefaultType, bool isSetMask = true, const BinaryConfig& config = DEFAULT_BINARY_CONFIG,
           typename U, typename S, typename V>
+__ASC_USE_RESERVED_UBUF__(3510, "Adds is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Adds(const U& dst, const S& src0, const V& src1, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T = BinaryDefaultType, bool isSetMask = true, const BinaryConfig& config = DEFAULT_BINARY_CONFIG,
           typename U, typename S, typename V>
+__ASC_USE_RESERVED_UBUF__(3510, "Adds is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Adds(const U& dst, const S& src0, const V& src1,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 #endif
@@ -121,20 +127,24 @@ __aicore__ inline void Adds(const U& dst, const S& src0, const V& src1, const in
  * @param [in] repeatParams.src0RepStride src repeat stride
  */
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Muls is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Muls(const LocalTensor<T>& dst, const LocalTensor<T>& src, const T& scalarValue,
     uint64_t mask[], const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, typename U, bool isSetMask = true,
     typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Muls is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Muls(const LocalTensor<T>& dst, const LocalTensor<T>& src, const U& scalarValue,
     uint64_t mask[], const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Muls is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Muls(const LocalTensor<T>& dst, const LocalTensor<T>& src, const T& scalarValue,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, typename U, bool isSetMask = true,
     typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Muls is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Muls(const LocalTensor<T>& dst, const LocalTensor<T>& src, const U& scalarValue,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
@@ -142,11 +152,13 @@ __aicore__ inline void Muls(const LocalTensor<T>& dst, const LocalTensor<T>& src
 // One of src0/src1 should be scalar or single point LocalTensor
 template <typename T = BinaryDefaultType, bool isSetMask = true, const BinaryConfig& config = DEFAULT_BINARY_CONFIG,
           typename U, typename S, typename V>
+__ASC_USE_RESERVED_UBUF__(3510, "Muls is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Muls(const U& dst, const S& src0, const V& src1, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T = BinaryDefaultType, bool isSetMask = true, const BinaryConfig& config = DEFAULT_BINARY_CONFIG,
           typename U, typename S, typename V>
+__ASC_USE_RESERVED_UBUF__(3510, "Muls is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Muls(const U& dst, const S& src0, const V& src1,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 #endif
@@ -192,20 +204,24 @@ __aicore__ inline void Muls(const U& dst, const S& src0, const V& src1, const in
  * @param [in] repeatParams.src0RepStride src repeat stride
  */
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Maxs is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Maxs(const LocalTensor<T>& dst, const LocalTensor<T>& src, const T& scalarValue,
     uint64_t mask[], const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, typename U, bool isSetMask = true,
     typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Maxs is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Maxs(const LocalTensor<T>& dst, const LocalTensor<T>& src, const U& scalarValue,
     uint64_t mask[], const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Maxs is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Maxs(const LocalTensor<T>& dst, const LocalTensor<T>& src, const T& scalarValue,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, typename U, bool isSetMask = true,
     typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Maxs is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Maxs(const LocalTensor<T>& dst, const LocalTensor<T>& src, const U& scalarValue,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
@@ -213,11 +229,13 @@ __aicore__ inline void Maxs(const LocalTensor<T>& dst, const LocalTensor<T>& src
 // One of src0/src1 should be scalar or single point LocalTensor
 template <typename T = BinaryDefaultType, bool isSetMask = true, const BinaryConfig& config = DEFAULT_BINARY_CONFIG,
           typename U, typename S, typename V>
+__ASC_USE_RESERVED_UBUF__(3510, "Maxs is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Maxs(const U& dst, const S& src0, const V& src1, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T = BinaryDefaultType, bool isSetMask = true, const BinaryConfig& config = DEFAULT_BINARY_CONFIG,
           typename U, typename S, typename V>
+__ASC_USE_RESERVED_UBUF__(3510, "Maxs is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Maxs(const U& dst, const S& src0, const V& src1,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 #endif
@@ -263,20 +281,24 @@ __aicore__ inline void Maxs(const U& dst, const S& src0, const V& src1, const in
  * @param [in] repeatParams.src0RepStride src repeat stride
  */
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Mins is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Mins(const LocalTensor<T>& dst, const LocalTensor<T>& src, const T& scalarValue,
     uint64_t mask[], const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, typename U, bool isSetMask = true,
     typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Mins is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Mins(const LocalTensor<T>& dst, const LocalTensor<T>& src, const U& scalarValue,
     uint64_t mask[], const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Mins is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Mins(const LocalTensor<T>& dst, const LocalTensor<T>& src, const T& scalarValue,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, typename U, bool isSetMask = true,
     typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Mins is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Mins(const LocalTensor<T>& dst, const LocalTensor<T>& src, const U& scalarValue,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
@@ -284,11 +306,13 @@ __aicore__ inline void Mins(const LocalTensor<T>& dst, const LocalTensor<T>& src
 // One of src0/src1 should be scalar or single point LocalTensor
 template <typename T = BinaryDefaultType, bool isSetMask = true, const BinaryConfig& config = DEFAULT_BINARY_CONFIG,
           typename U, typename S, typename V>
+__ASC_USE_RESERVED_UBUF__(3510, "Mins is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Mins(const U& dst, const S& src0, const V& src1, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T = BinaryDefaultType, bool isSetMask = true, const BinaryConfig& config = DEFAULT_BINARY_CONFIG,
           typename U, typename S, typename V>
+__ASC_USE_RESERVED_UBUF__(3510, "Mins is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Mins(const U& dst, const S& src0, const V& src1,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 #endif
@@ -334,20 +358,24 @@ __aicore__ inline void Mins(const U& dst, const S& src0, const V& src1, const in
  * @param [in] repeatParams.src0RepStride src repeat stride
  */
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "ShiftLeft is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void ShiftLeft(const LocalTensor<T>& dst, const LocalTensor<T>& src, const T& scalarValue,
     uint64_t mask[], const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, typename U, bool isSetMask = true,
     typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
+__ASC_USE_RESERVED_UBUF__(3510, "ShiftLeft is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void ShiftLeft(const LocalTensor<T>& dst, const LocalTensor<T>& src, const U& scalarValue,
     uint64_t mask[], const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "ShiftLeft is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void ShiftLeft(const LocalTensor<T>& dst, const LocalTensor<T>& src, const T& scalarValue,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, typename U, bool isSetMask = true,
     typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
+__ASC_USE_RESERVED_UBUF__(3510, "ShiftLeft is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void ShiftLeft(const LocalTensor<T>& dst, const LocalTensor<T>& src, const U& scalarValue,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
@@ -385,20 +413,28 @@ __aicore__ inline void ShiftLeft(const LocalTensor<T>& dst, const LocalTensor<T>
  * @param [in] repeatParams.src0RepStride src repeat stride
  */
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "ShiftRight is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void ShiftRight(const LocalTensor<T>& dst, const LocalTensor<T>& src, const T& scalarValue,
     uint64_t mask[], const uint8_t repeatTime, const UnaryRepeatParams& repeatParams, bool roundEn = false);
 
 template <typename T, typename U, bool isSetMask = true,
     typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "ShiftRight is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void ShiftRight(const LocalTensor<T>& dst, const LocalTensor<T>& src, const U& scalarValue,
     uint64_t mask[], const uint8_t repeatTime, const UnaryRepeatParams& repeatParams, bool roundEn);
 
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "ShiftRight is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void ShiftRight(const LocalTensor<T>& dst, const LocalTensor<T>& src, const T& scalarValue,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams, bool roundEn = false);
 
 template <typename T, typename U, bool isSetMask = true,
     typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "ShiftRight is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void ShiftRight(const LocalTensor<T>& dst, const LocalTensor<T>& src, const U& scalarValue,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams, bool roundEn);
 
@@ -436,20 +472,24 @@ __aicore__ inline void ShiftRight(const LocalTensor<T>& dst, const LocalTensor<T
  * @param [in] repeatParams.src0RepStride src repeat stride
  */
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "LeakyRelu is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void LeakyRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src, const T& scalarValue,
     uint64_t mask[], const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, typename U, bool isSetMask = true,
     typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
+__ASC_USE_RESERVED_UBUF__(3510, "LeakyRelu is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void LeakyRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src, const U& scalarValue,
     uint64_t mask[], const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "LeakyRelu is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void LeakyRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src, const T& scalarValue,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, typename U, bool isSetMask = true,
     typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
+__ASC_USE_RESERVED_UBUF__(3510, "LeakyRelu is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void LeakyRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src, const U& scalarValue,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
@@ -488,11 +528,13 @@ __aicore__ inline void LeakyRelu(const LocalTensor<T>& dst, const LocalTensor<T>
  */
 template <typename T = BinaryDefaultType, bool isSetMask = true, const BinaryConfig& config = DEFAULT_BINARY_CONFIG,
           typename U, typename S, typename V>
+__ASC_USE_RESERVED_UBUF__(3510, "Subs is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Subs(const U& dst, const S& src0, const V& src1, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T = BinaryDefaultType, bool isSetMask = true, const BinaryConfig& config = DEFAULT_BINARY_CONFIG,
           typename U, typename S, typename V>
+__ASC_USE_RESERVED_UBUF__(3510, "Subs is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Subs(const U& dst, const S& src0, const V& src1,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
@@ -526,11 +568,13 @@ __aicore__ inline void Subs(const U& dst, const S& src0, const V& src1, const in
  */
 template <typename T = BinaryDefaultType, bool isSetMask = true, const BinaryConfig& config = DEFAULT_BINARY_CONFIG,
           typename U, typename S, typename V>
+__ASC_USE_RESERVED_UBUF__(3510, "Divs is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Divs(const U& dst, const S& src0, const V& src1, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T = BinaryDefaultType, bool isSetMask = true, const BinaryConfig& config = DEFAULT_BINARY_CONFIG,
           typename U, typename S, typename V>
+__ASC_USE_RESERVED_UBUF__(3510, "Divs is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Divs(const U& dst, const S& src0, const V& src1,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
@@ -564,11 +608,13 @@ __aicore__ inline void Divs(const U& dst, const S& src0, const V& src1, const in
  */
 template <typename T = BinaryDefaultType, bool isSetMask = true, const BinaryConfig& config = DEFAULT_BINARY_CONFIG,
           typename U, typename S, typename V>
+__ASC_USE_RESERVED_UBUF__(3510, "Ands is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Ands(const U& dst, const S& src0, const V& src1, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T = BinaryDefaultType, bool isSetMask = true, const BinaryConfig& config = DEFAULT_BINARY_CONFIG,
           typename U, typename S, typename V>
+__ASC_USE_RESERVED_UBUF__(3510, "Ands is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Ands(const U& dst, const S& src0, const V& src1,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
@@ -602,11 +648,13 @@ __aicore__ inline void Ands(const U& dst, const S& src0, const V& src1, const in
  */
 template <typename T = BinaryDefaultType, bool isSetMask = true, const BinaryConfig& config = DEFAULT_BINARY_CONFIG,
           typename U, typename S, typename V>
+__ASC_USE_RESERVED_UBUF__(3510, "Ors is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Ors(const U& dst, const S& src0, const V& src1, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T = BinaryDefaultType, bool isSetMask = true, const BinaryConfig& config = DEFAULT_BINARY_CONFIG,
           typename U, typename S, typename V>
+__ASC_USE_RESERVED_UBUF__(3510, "Ors is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Ors(const U& dst, const S& src0, const V& src1,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 

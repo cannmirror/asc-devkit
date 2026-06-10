@@ -70,6 +70,8 @@ struct AscPowerIParams {
 };
 
 // select from tensor src0 and scalar src1 with sel for power
+__ASC_USE_RESERVED_UBUF__(2201, 3510,
+    "Power is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void VselPowerTensorScalar(
     const LocalTensor<float>& dst, const LocalTensor<uint8_t>& sel, const LocalTensor<float>& src0,
     const LocalTensor<float>& tmpScalar, SELMODE selMode, int32_t repeat, const BinaryRepeatParams& binaryParam,
@@ -82,6 +84,8 @@ __aicore__ inline void VselPowerTensorScalar(
 }
 
 // select from tensor src0 and tensor src1 with sel for power
+__ASC_USE_RESERVED_UBUF__(2201, 3510,
+    "Power is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void VselPowerTensorTensor(
     const LocalTensor<float>& dst, const LocalTensor<uint8_t>& sel, const LocalTensor<float>& src0,
     const LocalTensor<float>& src1, const LocalTensor<float>& tmpScalar, SELMODE selMode, int32_t repeat,

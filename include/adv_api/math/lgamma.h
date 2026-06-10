@@ -39,6 +39,8 @@ namespace AscendC {
  * @param [out] dstTensor, output LocalTensor
  */
 template <typename T, bool isReuseSource = false>
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Lgamma is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Lgamma(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
@@ -60,6 +62,8 @@ __aicore__ inline void Lgamma(const LocalTensor<T>& dstTensor, const LocalTensor
  * @param [out] dstTensor, output LocalTensor
  */
 template <typename T, bool isReuseSource = false>
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Lgamma is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Lgamma(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
     // Only for AI Vector Core.

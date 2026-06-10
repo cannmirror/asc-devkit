@@ -40,6 +40,8 @@ constexpr int32_t MAX_BLOCK_COUNT_SIZE_MM_API = 4095;
 constexpr int32_t MM_NUM_TWO = 2;
 
 template <typename TransT>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "Matmul is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void NDPadZeroForWidth(
     LocalTensor<TransT>& dst, const int height, const int calcWidth, const int tail, int offset)
 {
@@ -91,6 +93,8 @@ __aicore__ inline void NDPadZeroForWidth(
 }
 
 template <typename TransT>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "Matmul is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void NDPadZeros(
     LocalTensor<TransT>& dst, const int height, const int calcWidth, const int gCol, const int width,
     bool isBankConflict)
@@ -389,6 +393,8 @@ __aicore__ inline void CopyNZ2NZImpl(
 }
 
 template <typename TransT>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "Matmul is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void NDTrans2NZForInt8(
     LocalTensor<TransT>& dst, LocalTensor<TransT>& src, const int calcHeight, const int calcWidth,
     const bool isBankConflict)
@@ -443,6 +449,8 @@ __aicore__ inline void NDTrans2NZForInt8(
 }
 
 template <typename SrcT, typename TransT>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "Matmul is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void NDTrans2NZForFP16(
     LocalTensor<TransT>& dst, LocalTensor<TransT>& src, const int calcHeight, const int calcWidth,
     const bool isBankConflict)
@@ -497,6 +505,8 @@ __aicore__ inline void NDTrans2NZForFP16(
 }
 
 template <typename SrcT, typename TransT>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "Matmul is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void NDTrans2NZ(
     LocalTensor<TransT>& dst, LocalTensor<TransT>& src, const int calcHeight, const int calcWidth,
     const bool isBankConflict)

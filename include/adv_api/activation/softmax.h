@@ -238,6 +238,8 @@ __aicore__ inline void SoftMax(const LocalTensor<half>& dstTensor, const LocalTe
  * \return if true means inmax result has the from value
  */
 template <typename T1, typename T2, bool isDataFormatNZ = false, uint8_t stepSizeMode = 0>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "AdjustSoftMaxRes is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline bool AdjustSoftMaxRes(const LocalTensor<T1>& softMaxRes, const LocalTensor<T2>& maxTensor,
     const uint32_t from, const T1 to, const SoftMaxShapeInfo& softmaxShapeInfo)
 {

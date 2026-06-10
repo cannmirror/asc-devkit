@@ -45,10 +45,12 @@ namespace AscendC {
  * @param [in] repeatParams.src0RepStride src repeat stride
  */
 template <typename T, typename U, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Axpy is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Axpy(const LocalTensor<T>& dst, const LocalTensor<U>& src, const U& scalarValue,
     uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, typename U, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Axpy is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void Axpy(const LocalTensor<T>& dst, const LocalTensor<U>& src, const U& scalarValue,
     uint64_t mask[], const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 

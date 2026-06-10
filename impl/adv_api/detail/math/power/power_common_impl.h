@@ -33,6 +33,8 @@
 
 namespace AscendC {
 // PowerImpl(tensor, tensor) half input
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Power is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void PowerImpl(
     const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor0, const LocalTensor<half>& srcTensor1,
     const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
@@ -89,6 +91,8 @@ __aicore__ inline void PowerImpl(
 }
 
 // PowerImpl(tensor, tensor) float input
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Power is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void PowerImpl(
     const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor0, const LocalTensor<float>& srcTensor1,
     const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
@@ -123,6 +127,8 @@ __aicore__ inline void PowerImpl(
 }
 
 // PowerImpl(tensor, tensor) int32_t input
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Power is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void PowerImpl(
     const LocalTensor<int32_t>& dstTensor, const LocalTensor<int32_t>& srcTensor0,
     const LocalTensor<int32_t>& srcTensor1, const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
@@ -152,6 +158,8 @@ __aicore__ inline void PowerImpl(
 }
 
 // PowerImpl(tensor, scalar) half input
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Power is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void PowerImpl(
     const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor0, const half& scalarValue,
     const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
@@ -205,6 +213,8 @@ __aicore__ inline void PowerImpl(
 }
 
 // PowerImpl(tensor, scalar) float input
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Power is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void PowerImpl(
     const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor0, const float& scalarValue,
     const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
@@ -241,6 +251,8 @@ __aicore__ inline void PowerImpl(
 }
 
 // PowerImpl(tensor, scalar) int32_t input
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Power is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void PowerImpl(
     const LocalTensor<int32_t>& dstTensor, const LocalTensor<int32_t>& srcTensor0, const int32_t& scalarValue,
     const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
@@ -272,6 +284,8 @@ __aicore__ inline void PowerImpl(
 }
 
 // PowerImpl(scalar, tensor) half input
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Power is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void PowerImpl(
     const LocalTensor<half>& dstTensor, const half& scalarValue, const LocalTensor<half>& srcTensor1,
     const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
@@ -326,6 +340,8 @@ __aicore__ inline void PowerImpl(
 }
 
 // PowerImpl(scalar, tensor) float input
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Power is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void PowerImpl(
     const LocalTensor<float>& dstTensor, const float& scalarValue, const LocalTensor<float>& srcTensor1,
     const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
@@ -363,6 +379,8 @@ __aicore__ inline void PowerImpl(
 }
 
 // PowerImpl(scalar, tensor) int32_t input
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Power is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void PowerImpl(
     const LocalTensor<int32_t>& dstTensor, const int32_t& scalarValue, const LocalTensor<int32_t>& srcTensor1,
     const LocalTensor<uint8_t>& stackTensor, uint32_t calCount)
@@ -398,6 +416,8 @@ Power(scalar, tensor) Converts scalar to tensor for processing.
 The interface input parameter contains tmpTensor.
 */
 template <typename T, bool isReuseSource = false>
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Power is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void PowerCommonImpl(
     const LocalTensor<T>& dstTensor, const T& scalarValue, const LocalTensor<T>& srcTensor1,
     const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
@@ -419,6 +439,8 @@ Power(tensor, scalar) Converts scalar to tensor for processing.
 The interface input parameter contains tmpTensor.
 */
 template <typename T, bool isReuseSource = false>
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Power is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void PowerCommonImpl(
     const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0, const T& scalarValue,
     const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
@@ -440,6 +462,8 @@ Power(tensor, tensor)
 The interface input parameter contains tmpTensor.
 */
 template <typename T, bool isReuseSource = false>
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Power is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void PowerCommonImpl(
     const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0, const LocalTensor<T>& srcTensor1,
     const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
@@ -456,6 +480,8 @@ __aicore__ inline void PowerCommonImpl(
 }
 
 template <typename T, bool isReuseSource = false>
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Power is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void PowerCommonImpl(
     const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor,
     uint32_t calCount)
@@ -468,6 +494,8 @@ __aicore__ inline void PowerCommonImpl(
 }
 
 template <typename T, bool isReuseSource = false>
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Power is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void PowerCommonImpl(
     const LocalTensor<T>& dstTensor, const T& src0Scalar, const LocalTensor<T>& src1Tensor, uint32_t calCount)
 {
@@ -479,6 +507,8 @@ __aicore__ inline void PowerCommonImpl(
 }
 
 template <typename T, bool isReuseSource = false>
+__ASC_USE_RESERVED_UBUF__(2201,
+    "Power is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void PowerCommonImpl(
     const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const T& src1Scalar, uint32_t calCount)
 {

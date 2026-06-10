@@ -51,6 +51,8 @@ namespace AscendC {
  * \param [in] tiling, layernormtiling
  */
 template <typename T, bool isReuseSource = false>
+__ASC_USE_RESERVED_UBUF__(2201,
+    "LayerNorm is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void LayerNorm(const LocalTensor<T>& output, const LocalTensor<T>& outputMean,
     const LocalTensor<T>& outputVariance, const LocalTensor<T>& inputX, const LocalTensor<T>& gamma,
     const LocalTensor<T>& beta, const LocalTensor<uint8_t>& sharedTmpBuffer, const T epsilon, LayerNormTiling& tiling)
@@ -76,6 +78,8 @@ __aicore__ inline void LayerNorm(const LocalTensor<T>& output, const LocalTensor
  * \param [in] tiling, layernormtiling
  */
 template <typename T, bool isReuseSource = false>
+__ASC_USE_RESERVED_UBUF__(2201,
+    "LayerNorm is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void LayerNorm(const LocalTensor<T>& output, const LocalTensor<T>& outputMean,
     const LocalTensor<T>& outputVariance, const LocalTensor<T>& inputX, const LocalTensor<T>& gamma,
     const LocalTensor<T>& beta, const T epsilon, LayerNormTiling& tiling)
@@ -101,6 +105,8 @@ __aicore__ inline void LayerNorm(const LocalTensor<T>& output, const LocalTensor
  * \param [in] tiling, LayerNormSeparateTiling
  */
 template <typename U, typename T, bool isReuseSource = false, const LayerNormConfig& config = LNCFG_NORM>
+__ASC_USE_RESERVED_UBUF__(2201,
+    "LayerNorm is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void LayerNorm(const LocalTensor<T>& output,  const LocalTensor<float>& outputMean,
     const LocalTensor<float>& outputRstd, const LocalTensor<T>& inputX, const LocalTensor<U>& gamma,
     const LocalTensor<U>& beta, const float epsilon, const LayerNormPara& para, const LayerNormSeparateTiling& tiling)
@@ -131,6 +137,8 @@ __aicore__ inline void LayerNorm(const LocalTensor<T>& output,  const LocalTenso
  * \param [in] tiling, LayerNormSeparateTiling
  */
 template <typename U, typename T, bool isReuseSource = false, const LayerNormConfig& config = LNCFG_NORM>
+__ASC_USE_RESERVED_UBUF__(2201,
+    "LayerNorm is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void LayerNorm(const LocalTensor<T>& output,  const LocalTensor<float>& outputMean,
     const LocalTensor<float>& outputRstd, const LocalTensor<T>& inputX, const LocalTensor<U>& gamma,
     const LocalTensor<U>& beta, const float epsilon, const LocalTensor<uint8_t>& sharedTmpBuffer,

@@ -154,6 +154,8 @@ __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTens
  */
 template <typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false,
     enum TopKMode topkMode = TopKMode::TOPK_NORMAL, const TopKConfig& config = defaultTopKConfig>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "TopK is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal,
     const LocalTensor<T>& srcLocal, const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal,
     const int32_t k, const TopkTiling& tilling, const TopKInfo& topKInfo, const bool isLargest = true)

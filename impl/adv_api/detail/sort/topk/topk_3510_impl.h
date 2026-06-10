@@ -69,6 +69,8 @@ void TopkInputCheck(const int32_t k, const TopKInfo& topKInfo)
 #endif
 
 template <typename T>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "TopK is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void GatherDstValAndDstIdx(
     const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& tmpLocal,
     const TopkTiling& tilling, const int32_t dstOffsetFourBytes, const int outterIdx)
@@ -113,6 +115,8 @@ __aicore__ inline void TmpLocalSort32(
 }
 
 template <typename T, bool isInitIndex, bool isHasfinish>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "TopK is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void TopKCompute(
     const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& srcLocal,
     const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal, const LocalTensor<T>& tmpLocal,
@@ -138,6 +142,8 @@ __aicore__ inline void TopKCompute(
 }
 
 template <typename T>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "TopK is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void TopKNSmallGetTopKValue(
     const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& tmpLocal,
     const int32_t k, const TopkTiling& tilling, const TopKInfo& topKInfo)
@@ -1307,6 +1313,8 @@ __aicore__ inline void TopKNormal(
 template <
     typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false,
     const TopKConfig& config = defaultTopKConfig>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "TopK is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void TopKNSmall(
     const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& srcLocal,
     const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal, const LocalTensor<T>& tempBuffer,
@@ -1370,6 +1378,8 @@ __aicore__ inline void TopKNormal(
 }
 
 template <typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "TopK is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void TopKNSmall(
     const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& srcLocal,
     const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal, const LocalTensor<T>& tempBuffer,

@@ -32,10 +32,12 @@
 #pragma begin_pipe(V)
 namespace AscendC {
 template <typename T, typename U, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "MulCast is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void MulCast(const LocalTensor<T> &dst, const LocalTensor<U> &src0,
     const LocalTensor<U> &src1, uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams &repeatParams);
 
 template <typename T, typename U, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "MulCast is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void MulCast(const LocalTensor<T> &dst, const LocalTensor<U> &src0,
     const LocalTensor<U> &src1, uint64_t mask[], const uint8_t repeatTime,
     const BinaryRepeatParams &repeatParams);

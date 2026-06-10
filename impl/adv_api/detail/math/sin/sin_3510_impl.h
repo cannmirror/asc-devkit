@@ -224,6 +224,8 @@ __aicore__ inline void SinImpl(
     }
 }
 
+__ASC_USE_RESERVED_UBUF__(3510,
+    "Sin is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void SinCastFullMask(
     const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor, RoundMode castType)
 {

@@ -169,12 +169,14 @@ __aicore__ inline void DataCopy(const LocalTensor<T>& dst, const LocalTensor<U>&
  */
 // Copy::Level 0 - mask bit mode
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Copy is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline __inout_pipe__(V) void Copy(const LocalTensor<T>& dst, const LocalTensor<T>& src,
                                               const uint64_t mask[], const uint8_t repeatTime,
                                               const CopyRepeatParams& repeatParams);
 
 // Copy::Level 0 - mask count mode
 template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510, "Copy is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline __inout_pipe__(V) void Copy(const LocalTensor<T>& dst, const LocalTensor<T>& src,
                                               const uint64_t mask, const uint8_t repeatTime,
                                               const CopyRepeatParams& repeatParams);

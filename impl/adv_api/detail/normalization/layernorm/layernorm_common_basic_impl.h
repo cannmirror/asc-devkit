@@ -117,6 +117,8 @@ __aicore__ inline void LayerNormReduceSumImpl(
     SetMaskCount();
 }
 
+__ASC_USE_RESERVED_UBUF__(2201,
+    "LayerNorm is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void BroadcastLastDim(
     const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint32_t bsLength, const uint32_t hLength)
 {
@@ -356,6 +358,8 @@ __aicore__ inline void GetLayerNormOutputMean(
     LayerNormReduceSumImpl(tmpMean, outputMean, params.tempTensorC, tiling.bsCurLength, tiling.hLength);
 }
 
+__ASC_USE_RESERVED_UBUF__(2201,
+    "LayerNorm is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void GetLayerNormOutputVariance(
     const LocalTensor<float>& outputVariance, const LocalTensor<float>& inputX, const LocalTensor<float>& inputMean,
     const LayerNormTiling& tiling, const LayerNormParams<float>& params, const LocalTensor<float>& tmpVariance)
@@ -409,6 +413,8 @@ __aicore__ inline void WelfordUpdateInplace(
     WelfordUpdateInplaceCompute(outMean, outVar, inMean, inVar, para, B16_DATA_NUM_PER_BLOCK);
 }
 
+__ASC_USE_RESERVED_UBUF__(2201,
+    "LayerNorm is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
 __aicore__ inline void GetLayerNormOutputPre(
     const LocalTensor<float>& xSubMean, const LocalTensor<float>& inputVariance, const float epsilon,
     const LayerNormTiling& tiling, const LayerNormParams<float>& params)
