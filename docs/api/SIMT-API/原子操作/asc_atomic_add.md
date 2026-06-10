@@ -100,6 +100,8 @@ Unified Buffer或Global Memory上的初始数据。
 
 ## 调用示例
 
+完整样例请参考[MemoryFence样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/03_simt_api/02_features/01_api_features/02_atomic_operation/histogram/README.md)。
+
 -   SIMT编程场景：
 
     ```
@@ -121,4 +123,3 @@ Unified Buffer或Global Memory上的初始数据。
         asc_atomic_add(dst + idx, src[idx]);
     }
     ```
-

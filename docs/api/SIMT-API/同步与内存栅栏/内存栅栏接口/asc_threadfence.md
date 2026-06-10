@@ -66,6 +66,8 @@ inline void asc_threadfence()
 
 ## 调用示例
 
+完整样例请参考[MemoryFence样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/03_simt_api/02_features/01_api_features/01_sync_instruction/memory_fence/README.md)。
+
 -   SIMT编程场景：
 
     ```
@@ -87,4 +89,3 @@ inline void asc_threadfence()
         dst[0] = src[0];
     }
     ```
-

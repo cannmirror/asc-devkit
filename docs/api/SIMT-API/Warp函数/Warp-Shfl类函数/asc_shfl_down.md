@@ -88,6 +88,8 @@ Warp内指定线程的var值。
 
 ## 调用示例
 
+完整样例请参考[Sobel边缘检测样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/03_simt_api/02_features/01_api_features/03_warp_instruction/sobel_warp_shfl/README.md)。
+
 -   SIMT编程场景：
 
     ```
