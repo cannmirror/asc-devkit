@@ -230,19 +230,25 @@
                 -   [Truncate\(ISASI\)](SIMD-API/基础API/Memory矢量计算/类型转换/Truncate(ISASI).md)
 
             -   [归约计算](SIMD-API/基础API/Memory矢量计算/归约计算/归约计算.md)
-                -   [ReduceMax](SIMD-API/基础API/Memory矢量计算/归约计算/ReduceMax.md)
-                -   [ReduceMin](SIMD-API/基础API/Memory矢量计算/归约计算/ReduceMin.md)
-                -   [ReduceSum](SIMD-API/基础API/Memory矢量计算/归约计算/ReduceSum.md)
-                -   [WholeReduceMax](SIMD-API/基础API/Memory矢量计算/归约计算/WholeReduceMax.md)
-                -   [WholeReduceMin](SIMD-API/基础API/Memory矢量计算/归约计算/WholeReduceMin.md)
-                -   [WholeReduceSum](SIMD-API/基础API/Memory矢量计算/归约计算/WholeReduceSum.md)
-                -   [BlockReduceMax](SIMD-API/基础API/Memory矢量计算/归约计算/BlockReduceMax.md)
-                -   [BlockReduceMin](SIMD-API/基础API/Memory矢量计算/归约计算/BlockReduceMin.md)
-                -   [BlockReduceSum](SIMD-API/基础API/Memory矢量计算/归约计算/BlockReduceSum.md)
-                -   [PairReduceSum](SIMD-API/基础API/Memory矢量计算/归约计算/PairReduceSum.md)
-                -   [RepeatReduceSum](SIMD-API/基础API/Memory矢量计算/归约计算/RepeatReduceSum.md)
-                -   [GetReduceRepeatSumSpr\(ISASI\)](SIMD-API/基础API/Memory矢量计算/归约计算/GetReduceRepeatSumSpr(ISASI).md)
-                -   [GetReduceRepeatMaxMinSpr\(ISASI\)](SIMD-API/基础API/Memory矢量计算/归约计算/GetReduceRepeatMaxMinSpr(ISASI).md)
+            
+                - [概述](SIMD-API/基础API/Memory矢量计算/归约计算/Introduction.md)
+                
+                - [ReduceDataBlock](SIMD-API/基础API/Memory矢量计算/归约计算/ReduceDataBlock.md) 
+                
+                - [ReduceRepeat](SIMD-API/基础API/Memory矢量计算/归约计算/ReduceRepeat.md)  
+                
+                - [ReducePairElem](SIMD-API/基础API/Memory矢量计算/归约计算/ReducePairElem.md)  
+                
+                - [ReduceMax](SIMD-API/基础API/Memory矢量计算/归约计算/ReduceMax.md)  
+                
+                - [ReduceMin](SIMD-API/基础API/Memory矢量计算/归约计算/ReduceMin.md)  
+                
+                - [ReduceSum](SIMD-API/基础API/Memory矢量计算/归约计算/ReduceSum.md)  
+                
+                - [寄存器辅助接口](SIMD-API/基础API/Memory矢量计算/归约计算/寄存器辅助接口/寄存器辅助接口.md)
+
+                    - [GetReduceRepeatSumSpr\(ISASI\)](SIMD-API/基础API/Memory矢量计算/归约计算/寄存器辅助接口/GetReduceRepeatSumSpr(ISASI).md)
+                    - [GetReduceRepeatMaxMinSpr\(ISASI\)](SIMD-API/基础API/Memory矢量计算/归约计算/寄存器辅助接口/GetReduceRepeatMaxMinSpr(ISASI).md)
 
             -   [数据排布转换](SIMD-API/基础API/Memory矢量计算/数据排布转换/数据排布转换.md)
                 -   [Transpose](SIMD-API/基础API/Memory矢量计算/数据排布转换/Transpose.md)
