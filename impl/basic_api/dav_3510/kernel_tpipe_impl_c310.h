@@ -96,6 +96,11 @@ __aicore__ inline TPipe::~TPipe()
 
 __aicore__ inline void TPipe::Init()
 {
+// disabled on CPU mode for compatiablilty
+#if defined(ASCENDC_DEBUG) && !defined(ASCENDC_CPU_DEBUG)
+    ASCENDC_DEBUG_ASSERT(GetTPipePtr() == nullptr, KERNEL_LOG_INTERNAL(KERNEL_ERROR, "TPipe has already been constructed at %p!\n", (void*)g_lastTpipeInitPos));
+    g_lastTpipeInitPos = get_pc();
+#endif
     ResetPool();
     // for matmul macro, set flag M_MTE1 at the begining of operator, and also wait flag at the end.
     // matmul macro only use M_MTE1 event id 0 1 currently.
@@ -748,6 +753,10 @@ template <TPosition pos> __aicore__ inline uint64_t TPipe::GetQueueEndAddress()
 
 __aicore__ inline void TPipe::DestroyWithoutPipeAll()
 {
+// disabled on CPU mode for compatiablilty
+#if defined(ASCENDC_DEBUG) && !defined(ASCENDC_CPU_DEBUG)
+    Internal::ResetTPipePtr(); // Reset global tpipe ptr to nullptr for next Initialazation.
+#endif
     if ASCEND_IS_AIC {
         g_tpipeImpl.isDestroy = true;
         auto ptr = this->g_tpipeImpl.buf_;

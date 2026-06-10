@@ -209,6 +209,7 @@ foreach(product_type ${BASIC_UT_PRODUCT_TYPE_LIST})
     target_compile_options(ascendc_ut_basic_api_${product_type} PRIVATE
         -fno-access-control
         -Werror
+        -UASCENDC_DEBUG
     )
 
     target_link_libraries(ascendc_ut_basic_api_${product_type} PRIVATE

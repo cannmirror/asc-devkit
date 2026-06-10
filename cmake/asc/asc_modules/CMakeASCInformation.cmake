@@ -207,7 +207,7 @@ if(CMAKE_ASC_RUN_MODE STREQUAL "cpu")
 -isystem$ENV{ASCEND_HOME_PATH}/asc/include/tiling -isystem$ENV{ASCEND_HOME_PATH}/asc/include/utils")
 
         # 添加编译选项
-        string(APPEND CMAKE_ASC_FLAGS " -g -D_GLIBCXX_USE_CXX11_ABI=0 -DASCENDC_DEBUG=1 -D__NPU_ARCH__=${_SHORT_NPU_ARCH} --run-mode=cpu ${ASC_CPU_SYSTEM_INCLUDE_OPTIONS}")
+        string(APPEND CMAKE_ASC_FLAGS " -g -D_GLIBCXX_USE_CXX11_ABI=0 -D__NPU_ARCH__=${_SHORT_NPU_ARCH} --run-mode=cpu ${ASC_CPU_SYSTEM_INCLUDE_OPTIONS}")
 
         # 配置链接选项
         string(APPEND CMAKE_ASC_LINK_FLAGS "--run-mode=cpu -Wl,--disable-new-dtags")

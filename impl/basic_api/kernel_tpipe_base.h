@@ -295,6 +295,19 @@ private:
     static constexpr bool isTbufPool = true;
 };
 
+namespace Internal {
+__aicore__ inline void ResetTPipePtr()
+{
+#ifdef SPLIT_CORE_CUBE
+    g_cubeTPipePtr = nullptr;
+#elif defined(SPLIT_CORE_VEC)
+    g_vecTPipePtr = nullptr;
+#else
+    g_tPipePtr = nullptr;
+#endif
+}
+} // namespace Internal
+
 }  // namespace AscendC
 #endif  // ASCENDC_MODULE_TPIPE_BASE_H
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TPIPE_BASE_H__)

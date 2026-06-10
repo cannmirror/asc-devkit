@@ -56,6 +56,7 @@ foreach(product_type ${ASCENDC_UT_PRODUCT_TYPE_LIST})
     target_compile_options(ascendc_ut_std_api_${product_type} PRIVATE
         -fno-access-control
         -Werror
+        -UASCENDC_DEBUG
     )
 
     target_link_libraries(ascendc_ut_std_api_${product_type} PRIVATE
