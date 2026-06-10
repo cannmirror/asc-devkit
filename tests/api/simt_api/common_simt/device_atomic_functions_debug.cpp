@@ -20,9 +20,18 @@
 #include "stub_def.h"
 
 template <typename T>
+T AtomicAddCPU(__gm__ T *address, T val)
+{
+    T ret = *address;
+    *address = *address + val;
+    return ret;
+}
+
+template <typename T>
 T AtomicSubCPU(__gm__ T *address, T val)
 {
     T ret = *address;
+    *address = *address - val;
     return ret;
 }
 
@@ -30,6 +39,23 @@ template <typename T>
 T AtomicExchCPU(__gm__ T *address, T val)
 {
     T ret = *address;
+    *address = val;
+    return ret;
+}
+
+template <typename T>
+T AtomicMaxCPU(__gm__ T *address, T val)
+{
+    T ret = *address;
+    *address = (*address > val) ? *address : val;
+    return ret;
+}
+
+template <typename T>
+T AtomicMinCPU(__gm__ T *address, T val)
+{
+    T ret = *address;
+    *address = (*address < val) ? *address : val;
     return ret;
 }
 
@@ -37,6 +63,7 @@ template <typename T>
 T AtomicIncCPU(__gm__ T *address, T val)
 {
     T ret = *address;
+    *address = (*address >= val) ? 0 : *address + 1;
     return ret;
 }
 
@@ -44,6 +71,7 @@ template <typename T>
 T AtomicDecCPU(__gm__ T *address, T val)
 {
     T ret = *address;
+    *address = (*address == 0 || *address > val) ? val : *address - 1;
     return ret;
 }
 
@@ -51,6 +79,7 @@ template <typename T>
 T AtomicCasCPU(__gm__ T *address, T compare, T val)
 {
     T ret = *address;
+    *address = (*address == compare) ? val : *address;
     return ret;
 }
 
@@ -58,6 +87,7 @@ template <typename T>
 T AtomicAndCPU(__gm__ T *address, T val)
 {
     T ret = *address;
+    *address = *address & val;
     return ret;
 }
 
@@ -65,6 +95,7 @@ template <typename T>
 T AtomicOrCPU(__gm__ T *address, T val)
 {
     T ret = *address;
+    *address = *address | val;
     return ret;
 }
 
@@ -72,8 +103,23 @@ template <typename T>
 T AtomicXorCPU(__gm__ T *address, T val)
 {
     T ret = *address;
+    *address = *address ^ val;
     return ret;
 }
+
+#define REGISTER_SIMT_ATOMIC_ADD(INTRI, TYPE)                                   \
+    TYPE INTRI(__gm__ TYPE *dst, TYPE val)                                      \
+    {                                                                           \
+        return AtomicAddCPU<TYPE>(dst, val);                                    \
+    }
+
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+REGISTER_SIMT_ATOMIC_ADD(atomicAdd, uint32_t);
+REGISTER_SIMT_ATOMIC_ADD(atomicAdd, int32_t);
+REGISTER_SIMT_ATOMIC_ADD(atomicAdd, uint64_t);
+REGISTER_SIMT_ATOMIC_ADD(atomicAdd, int64_t);
+REGISTER_SIMT_ATOMIC_ADD(atomicAdd, float);
+#endif
 
 #define REGISTER_SIMT_ATOMIC_SUB(INTRI, TYPE)                                   \
     TYPE INTRI(__gm__ TYPE *dst, TYPE val)                                      \
@@ -96,9 +142,39 @@ REGISTER_SIMT_ATOMIC_SUB(atomicSub, float);
     }
 
 #if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+REGISTER_SIMT_ATOMIC_EXCH(atomicExch, uint32_t);
 REGISTER_SIMT_ATOMIC_EXCH(atomicExch, int32_t);
+REGISTER_SIMT_ATOMIC_EXCH(atomicExch, uint64_t);
 REGISTER_SIMT_ATOMIC_EXCH(atomicExch, int64_t);
 REGISTER_SIMT_ATOMIC_EXCH(atomicExch, float);
+#endif
+
+#define REGISTER_SIMT_ATOMIC_MAX(INTRI, TYPE)                                   \
+    TYPE INTRI(__gm__ TYPE *dst, TYPE val)                                      \
+    {                                                                           \
+        return AtomicMaxCPU<TYPE>(dst, val);                                    \
+    }
+
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+REGISTER_SIMT_ATOMIC_MAX(atomicMax, uint32_t);
+REGISTER_SIMT_ATOMIC_MAX(atomicMax, int32_t);
+REGISTER_SIMT_ATOMIC_MAX(atomicMax, uint64_t);
+REGISTER_SIMT_ATOMIC_MAX(atomicMax, int64_t);
+REGISTER_SIMT_ATOMIC_MAX(atomicMax, float);
+#endif
+
+#define REGISTER_SIMT_ATOMIC_MIN(INTRI, TYPE)                                   \
+    TYPE INTRI(__gm__ TYPE *dst, TYPE val)                                      \
+    {                                                                           \
+        return AtomicMinCPU<TYPE>(dst, val);                                    \
+    }
+
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+REGISTER_SIMT_ATOMIC_MIN(atomicMin, uint32_t);
+REGISTER_SIMT_ATOMIC_MIN(atomicMin, int32_t);
+REGISTER_SIMT_ATOMIC_MIN(atomicMin, uint64_t);
+REGISTER_SIMT_ATOMIC_MIN(atomicMin, int64_t);
+REGISTER_SIMT_ATOMIC_MIN(atomicMin, float);
 #endif
 
 #define REGISTER_SIMT_ATOMIC_INC(INTRI, TYPE)                                   \
@@ -130,7 +206,9 @@ REGISTER_SIMT_ATOMIC_DEC(atomicDec, uint64_t);
     }
 
 #if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+REGISTER_SIMT_ATOMIC_CAS(atomicCAS, uint32_t);
 REGISTER_SIMT_ATOMIC_CAS(atomicCAS, int32_t);
+REGISTER_SIMT_ATOMIC_CAS(atomicCAS, uint64_t);
 REGISTER_SIMT_ATOMIC_CAS(atomicCAS, int64_t);
 REGISTER_SIMT_ATOMIC_CAS(atomicCAS, float);
 #endif

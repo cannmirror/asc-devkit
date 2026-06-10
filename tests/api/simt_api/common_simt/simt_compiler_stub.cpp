@@ -65,9 +65,3 @@ bool CheckFunVecBinaryScalarImpl(VecBinaryScalarApiParams &chkParams, const uint
 bool CheckFunVecBinaryScalarImpl(VecBinaryScalarApiParams &chkParams, const char *intriName) { return true; }
 }
 }
-
-uint64_t atomicAdd(uint64_t *addr, uint64_t val) {
-    uint64_t ret = *addr;
-    *addr += val;
-    return ret;
-}
