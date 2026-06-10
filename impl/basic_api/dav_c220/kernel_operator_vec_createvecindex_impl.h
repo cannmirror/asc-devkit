@@ -31,10 +31,22 @@ namespace AscendC {
 constexpr int32_t maskBitNum = 64;
 
 template <typename T>
+__aicore__ inline T GetCreateVecIndexValue(const T &firstValue, int32_t offset)
+{
+    if constexpr (SupportType<T, int8_t, int16_t, int32_t, int64_t>()) {
+        return static_cast<T>(static_cast<int64_t>(firstValue) + static_cast<int64_t>(offset));
+    } else if constexpr (SupportType<T, uint8_t, uint16_t, uint32_t, uint64_t>()) {
+        return static_cast<T>(static_cast<uint64_t>(firstValue) + static_cast<uint64_t>(offset));
+    } else {
+        return static_cast<T>(static_cast<float>(firstValue) + static_cast<float>(offset));
+    }
+}
+
+template <typename T>
 __aicore__ inline void CreateVecIndexOneBlk(const LocalTensor<T> &dst, const T &firstValue, uint32_t count)
 {
     for (int32_t i = 0; i < static_cast<int32_t>(count); i++) {
-        dst.SetValue(i, static_cast<float>(firstValue) + static_cast<float>(i));
+        dst.SetValue(i, GetCreateVecIndexValue(firstValue, i));
     }
     auto eventIdSToV = GetTPipePtr()->FetchEventID(HardEvent::S_V);
     SetFlag<HardEvent::S_V>(eventIdSToV);
@@ -55,7 +67,7 @@ __aicore__ inline void CreateVecIndexOneRep(const LocalTensor<T> &dst, const T &
                     uint32_t index = i * maskBitNum + j;
                     uint32_t blkIndex = index / eleCntOfOneBlk;
                     uint32_t eleIndex = blkIndex * eleCntOfOneBlk * dstBlkStride + index % eleCntOfOneBlk;
-                    dst.SetValue(eleIndex, static_cast<float>(firstValue) + static_cast<float>(i * maskBitNum + j));
+                    dst.SetValue(eleIndex, GetCreateVecIndexValue(firstValue, i * maskBitNum + j));
                 }
                 maskValue <<= 1;
             }
@@ -66,7 +78,7 @@ __aicore__ inline void CreateVecIndexOneRep(const LocalTensor<T> &dst, const T &
             if (mask[0] & maskValue) {
                 uint32_t blkIndex = j / eleCntOfOneBlk;
                 uint32_t eleIndex = blkIndex * eleCntOfOneBlk * dstBlkStride + j % eleCntOfOneBlk;
-                dst.SetValue(eleIndex, static_cast<float>(firstValue) + static_cast<float>(j));
+                dst.SetValue(eleIndex, GetCreateVecIndexValue(firstValue, j));
             }
             maskValue <<= 1;
         }

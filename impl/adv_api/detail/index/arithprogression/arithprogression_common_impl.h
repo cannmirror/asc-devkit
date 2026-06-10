@@ -55,6 +55,16 @@ __aicore__ inline void GetBaseArithProgression(
 }
 
 template <typename T>
+__aicore__ inline T GetArithProgressionStep(const T diffValue, const int32_t stepNum)
+{
+    if constexpr (SupportType<T, int16_t, int32_t, int64_t>()) {
+        return static_cast<T>(static_cast<int64_t>(diffValue) * static_cast<int64_t>(stepNum));
+    } else {
+        return static_cast<T>(static_cast<float>(diffValue) * static_cast<float>(stepNum));
+    }
+}
+
+template <typename T>
 __aicore__ inline void ArithProgressionImpl(
     const LocalTensor<T>& dstLocal, const T firstValue, const T diffValue, const int32_t count)
 {
@@ -83,7 +93,7 @@ __aicore__ inline void ArithProgressionImpl(
             for (int i = 0; i < DEFAULT_BLK_NUM - 1; i++) {
                 Adds<T, false>(
                     dstLocal[(i + 1) * BLOCK_NUM], dstLocal[i * BLOCK_NUM],
-                    static_cast<T>(static_cast<float>(diffValue) * static_cast<float>(BLOCK_NUM)), MASK_PLACEHOLDER,
+                    GetArithProgressionStep<T>(diffValue, BLOCK_NUM), MASK_PLACEHOLDER,
                     (uint16_t)1, addsParamsStride1);
                 PipeBarrier<PIPE_V>();
             }
@@ -95,7 +105,7 @@ __aicore__ inline void ArithProgressionImpl(
             for (int i = 0; i < repeat - 1; i++) {
                 Adds<T, false>(
                     dstLocal[(i + 1) * REPEAT_NUM], dstLocal[i * REPEAT_NUM],
-                    static_cast<T>(static_cast<float>(diffValue) * static_cast<float>(REPEAT_NUM)), MASK_PLACEHOLDER,
+                    GetArithProgressionStep<T>(diffValue, REPEAT_NUM), MASK_PLACEHOLDER,
                     (uint16_t)1, addsParamsStride8);
                 PipeBarrier<PIPE_V>();
             }
@@ -105,7 +115,7 @@ __aicore__ inline void ArithProgressionImpl(
                 PipeBarrier<PIPE_V>();
                 Adds<T, false>(
                     dstLocal[repeat * REPEAT_NUM], dstLocal[(repeat - 1) * REPEAT_NUM],
-                    static_cast<T>(static_cast<float>(diffValue) * static_cast<float>(REPEAT_NUM)), MASK_PLACEHOLDER,
+                    GetArithProgressionStep<T>(diffValue, REPEAT_NUM), MASK_PLACEHOLDER,
                     (uint16_t)1, addsParamsStride8);
                 PipeBarrier<PIPE_V>();
             }
@@ -118,7 +128,7 @@ __aicore__ inline void ArithProgressionImpl(
             for (int i = 0; i < repeat - 1; i++) {
                 Adds<T, false>(
                     dstLocal[(i + 1) * BLOCK_NUM], dstLocal[i * BLOCK_NUM],
-                    static_cast<T>(static_cast<float>(diffValue) * static_cast<float>(BLOCK_NUM)), MASK_PLACEHOLDER,
+                    GetArithProgressionStep<T>(diffValue, BLOCK_NUM), MASK_PLACEHOLDER,
                     (uint16_t)1, addsParamsStride1);
                 PipeBarrier<PIPE_V>();
             }
