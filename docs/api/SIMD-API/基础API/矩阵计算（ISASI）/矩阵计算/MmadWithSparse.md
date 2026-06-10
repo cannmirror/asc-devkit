@@ -1,348 +1,206 @@
-# MmadWithSparse<a name="ZH-CN_TOPIC_0000001914859080"></a>
+# MmadWithSparse<a name="ZH-CN_TOPIC_000000253823118110"></a>
 
-## 产品支持情况<a name="section1550532418810"></a>
+## 产品支持情况
 
-<a name="table38301303189"></a>
-<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>产品</span></p>
-</th>
-<th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p783113012187"><a name="p783113012187"></a><a name="p783113012187"></a>是否支持</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>x</p>
-</td>
-</tr>
-<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
-</td>
-</tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
-</td>
-</tr>
-<tr id="row103361763242"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1983180181813"><a name="p1983180181813"></a><a name="p1983180181813"></a><span id="ph783112021813"><a name="ph783112021813"></a><a name="ph783112021813"></a><term id="zh-cn_topic_0000001312391781_term354143892110"><a name="zh-cn_topic_0000001312391781_term354143892110"></a><a name="zh-cn_topic_0000001312391781_term354143892110"></a>Atlas 200I/500 A2 推理产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1695483941817"><a name="p1695483941817"></a><a name="p1695483941817"></a>x</p>
-</td>
-</tr>
-<tr id="row18403312418"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p78319051815"><a name="p78319051815"></a><a name="p78319051815"></a><span id="ph163561737112019"><a name="ph163561737112019"></a><a name="ph163561737112019"></a><term id="zh-cn_topic_0000001312391781_term1964153212227"><a name="zh-cn_topic_0000001312391781_term1964153212227"></a><a name="zh-cn_topic_0000001312391781_term1964153212227"></a>Atlas 推理系列产品</term>AI Core</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1695443971810"><a name="p1695443971810"></a><a name="p1695443971810"></a>x</p>
-</td>
-</tr>
-<tr id="row242332080"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p10519331187"><a name="p10519331187"></a><a name="p10519331187"></a><span id="ph1335623792013"><a name="ph1335623792013"></a><a name="ph1335623792013"></a><term id="zh-cn_topic_0000001312391781_term1463893615224"><a name="zh-cn_topic_0000001312391781_term1463893615224"></a><a name="zh-cn_topic_0000001312391781_term1463893615224"></a>Atlas 推理系列产品</term>Vector Core</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1851933589"><a name="p1851933589"></a><a name="p1851933589"></a>x</p>
-</td>
-</tr>
-<tr id="row17253142120252"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p38313021813"><a name="p38313021813"></a><a name="p38313021813"></a><span id="ph58317041819"><a name="ph58317041819"></a><a name="ph58317041819"></a><term id="zh-cn_topic_0000001312391781_term71949488213"><a name="zh-cn_topic_0000001312391781_term71949488213"></a><a name="zh-cn_topic_0000001312391781_term71949488213"></a>Atlas 训练系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p395243920186"><a name="p395243920186"></a><a name="p395243920186"></a>x</p>
-</td>
-</tr>
-</tbody>
-</table>
 
-## 功能说明<a name="section618mcpsimp"></a>
+| 产品                                        | 是否支持 |
+| ------------------------------------------- | -------- |
+| Ascend 950PR/Ascend 950DT                   | x        |
+| Atlas A3 训练系列产品/Atlas A3 推理系列产品 | √       |
+| Atlas A2 训练系列产品/Atlas A2 推理系列产品 | √       |
+| Atlas 200I/500 A2 推理产品                  | x        |
+| Atlas 推理系列产品AI Core                   | x        |
+| Atlas 推理系列产品Vector Core               | x        |
+| Atlas 训练系列产品                          | x        |
 
-完成矩阵乘加操作，传入的左矩阵A为稀疏矩阵， 右矩阵B为稠密矩阵 。对于矩阵A，在MmadWithSparse计算时完成稠密化；对于矩阵B，在计算执行前的输入数据准备时自行完成稠密化（按照下文中介绍的稠密算法进行稠密化），所以输入本接口的B矩阵为稠密矩阵。B稠密矩阵需要通过调用[LoadDataWithSparse](../数据搬运/LoadDataWithSparse.md)载入，同时加载索引矩阵，索引矩阵在矩阵B稠密化的过程中生成，再用于A矩阵的稠密化。
+## 功能说明
 
-## 函数原型<a name="section620mcpsimp"></a>
+头文件路径为：\#include "basic\_api/kernel\_operator\_mm\_intf.h"。
 
-```
+MmadWithSparse接口负责完成特殊稀疏矩阵乘加操作。稀疏矩阵是一种特殊类型的矩阵，即矩阵中包含较多的零元素。4：2结构化稀疏要求一个连续的4个权重或激活值的组（通常是张量中的一行或一列）中，最多只有2个值为非零，其余2个强制为零。
+
+MmadWithSparse接口传入的左矩阵A为稀疏矩阵，右矩阵B为稠密矩阵。矩阵A是个全尺寸矩阵，在MmadWithSparse计算时完成稠密化；矩阵B是经过4：2结构化稀疏过滤掉零值之后的稠密矩阵，需要在计算执行前的输入数据准备时自行完成稠密化（按照下文中介绍的稠密算法进行稠密化）。B稠密矩阵需要通过调用LoadDataWithSparse载入，同时加载索引矩阵，索引矩阵在矩阵B稠密化的过程中生成，再用于A矩阵的稠密化。索引矩阵存储在内部缓冲区，该索引矩阵的布局和布局大小与矩阵B相同，用于在进行矩阵乘加操作之前进一步将矩阵A压缩。
+
+跟Mmad接口实现昇腾NPU矩阵乘计算能力类似，MmadWithSparse接口的数学表达式为：
+
+$$
+C = A \times B + C
+$$
+
+完整示例请参考：[MmadWithSparse样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/02_features/03_basic_api/01_matrix_compute/mmad_with_sparse)
+
+**表 1**  Sparse矩阵计算矩阵A、B、C解释说明
+
+<table>
+    <thead>
+      <tr>
+        <th>矩阵计算逻辑</th>
+        <th>矩阵计算物理位置</th>
+        <th>维度</th>
+        <th>输入/输出数据格式</th>
+        <th>数据类型</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>A</td>
+        <td>L0A Buffer</td>
+        <td>M x K</td>
+        <td>Zz</td>
+        <td rowspan="3"><a href="#zh_cn_topic_mmadsparse_section_datatype">数据类型</a></td>
+      </tr>
+      <tr>
+        <td>B</td>
+        <td>L0B Buffer</td>
+        <td>K/2 x N</td>
+        <td>Zn</td>
+      </tr>
+      <tr>
+        <td>C</td>
+        <td>L0C Buffer</td>
+        <td>M x N</td>
+        <td>Nz</td>
+      </tr>
+    </tbody>
+  </table>
+
+下面的图展示了Cube如何计算出其中一行和一列的内积：
+
+**图 1**  MmadWithSparse接口计算流程示意图
+![MmadWithSparse接口计算流程示意图](../../../../figures/mmadwithsparse_workflow_demo.png "MmadWithSparse接口计算流程示意图")
+
+其中矩阵A原始分形为\(16, 2\*C0\)，索引矩阵Index分形为\(C0，16\)，每一行矩阵A的数据会基于索引矩阵Index中对应的一列数据进行4选2，索引矩阵分形格式及生成方式请参考4选2稀疏索引矩阵，选择算法参考[矩阵A稀疏选择算法说明](#zh-cn_topic_0000002535726174_li1829819426378)；经过选择处理后的矩阵A分形变成\(16, C0\)，矩阵B原始分形为\(C0, 16\)，接下来会执行普通Mmad运算，即矩阵A中一行和矩阵B中一列完成内积运算得到结果矩阵C中对应一个元素。
+
+- <a name="zh-cn_topic_0000002535726174_li1829819426378"></a>**矩阵A稀疏选择算法说明**
+
+  索引矩阵经过LoadDataWithSparse指令后存储于Cube上内置的专用buffer空间，数据类型为uint8，分形格式为小n大Z，对应上图中的分形大小为（32，16）。每一个uint8类型的索引元素由4个uint2的原始数据组成，每两个2位索引数据可对应4位原始矩阵A。针对每一组2个索引数据，A矩阵的4个元素的选择过滤规则示例如下表：
+
+  - 第一个索引数据0用于指示前3个元素中第1个非零元素的相对位置。
+  - 第二个索引数据1用于指示第2个非零元素在后3个元素中的相对位置。
+  - 其中，“-”表示不关心该位置上的值，即会被过滤。
+
+    **表 2**  矩阵A选择过滤规则表
+
+
+    | 索引数据0 | 索引数据1 | 元素0 | 元素1 | 元素2 | 元素3 |
+    | --------- | --------- | ----- | ----- | ----- | ----- |
+    | 2’b10    | 2’b10    | -     | -     | X     | Y     |
+    | 2’b01    | 2’b10    | -     | X     | -     | Y     |
+    | 2’b00    | 2’b10    | X     | -     | -     | Y     |
+    | 2’b01    | 2’b01    | -     | X     | Y     | -     |
+    | 2’b00    | 2’b01    | X     | -     | Y     | -     |
+    | 2’b00    | 2’b00    | X     | Y     | -     | -     |
+    | 2’b00    | 2’b10    | X     | -     | -     | Y     |
+    | 2’b10    | 2’b00    | -     | X     | Y     | -     |
+    | 2’b01    | 2’b00    | -     | X/X   | -     | -     |
+    | 2’b00    | 2’b00    | X     | Y     | -     | -     |
+    | 2’b00    | 2’b00    | X     | Y     | -     | -     |
+
+    **图 2**  矩阵A 4：2选择算法模型<a name="zh-cn_topic_0000002535726174_fig14223210123816"></a>
+    ![矩阵A-4-2选择算法模型](../../../../figures/sparse_mmad_4select2.png "矩阵A-4-2选择算法模型")
+
+    [图2](#zh-cn_topic_0000002535726174_fig14223210123816)展示了一个uint8类型的索引元素对应选择8个原始矩阵A元素的算法模型，最后输出4个选择后的矩阵A元素。
+
+
+    1. 在正常使用情况下，软件应确保最多存在两个非零元素。如果发生错误，即存在三个或更多非零元素时，只会使用最低有效位（LSB）位置的前两个非零元素。
+    2. 上表中使用的“-”表示“不关心该位置上的值”，即暗示可能存在三个或更多非零元素的情况。
+
+## 函数原型
+
+```cpp
 template <typename T = int32_t, typename U = int8_t, typename Std::enable_if<Std::is_same<PrimT<T>, int32_t>::value, bool>::type = true, typename Std::enable_if<Std::is_same<PrimT<U>, int8_t>::value, bool>::type = true>
 __aicore__ inline void MmadWithSparse(const LocalTensor<T>& dst, const LocalTensor<U>& fm, const LocalTensor<U>& filter, const MmadParams& mmadParams)
 ```
 
-## 参数说明<a name="section622mcpsimp"></a>
+## 参数说明
 
-**表 1**  模板参数说明
+**表 3**  模板参数说明
 
-<a name="table4835205712588"></a>
-<table><thead align="left"><tr id="zh-cn_topic_0000001429830437_row118356578583"><th class="cellrowborder" valign="top" width="13.34%" id="mcps1.2.3.1.1"><p id="zh-cn_topic_0000001429830437_p48354572582"><a name="zh-cn_topic_0000001429830437_p48354572582"></a><a name="zh-cn_topic_0000001429830437_p48354572582"></a>参数名</p>
-</th>
-<th class="cellrowborder" valign="top" width="86.66%" id="mcps1.2.3.1.2"><p id="zh-cn_topic_0000001429830437_p583535795817"><a name="zh-cn_topic_0000001429830437_p583535795817"></a><a name="zh-cn_topic_0000001429830437_p583535795817"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="zh-cn_topic_0000001429830437_row1835857145817"><td class="cellrowborder" valign="top" width="13.34%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p5835457165816"><a name="zh-cn_topic_0000001429830437_p5835457165816"></a><a name="zh-cn_topic_0000001429830437_p5835457165816"></a>T</p>
-</td>
-<td class="cellrowborder" valign="top" width="86.66%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>dst的数据类型。</p>
-</td>
-</tr>
-<tr id="row14306152011913"><td class="cellrowborder" valign="top" width="13.34%" headers="mcps1.2.3.1.1 "><p id="p1030652081918"><a name="p1030652081918"></a><a name="p1030652081918"></a>U</p>
-</td>
-<td class="cellrowborder" valign="top" width="86.66%" headers="mcps1.2.3.1.2 "><p id="p14306152041916"><a name="p14306152041916"></a><a name="p14306152041916"></a>fm、filter的数据类型。</p>
-<a name="ul3987732122120"></a><a name="ul3987732122120"></a><ul id="ul3987732122120"><li>当dst、fm、filter为基础数据类型时， T必须为int32_t类型，U必须为int8_t类型，否则编译失败。</li></ul>
-<a name="ul17416131483320"></a><a name="ul17416131483320"></a><ul id="ul17416131483320"><li>当dst、fm、filter为<a href="../../../基础数据结构/TensorTrait/TensorTrait.md">TensorTrait</a>类型时，T的LiteType必须为int32_t类型，U的LiteType必须为int8_t类型，否则编译失败。</li></ul>
-<p id="p882014184212"><a name="p882014184212"></a><a name="p882014184212"></a>最后两个模板参数仅用于上述数据类型检查，用户无需关注。</p>
-</td>
-</tr>
-</tbody>
-</table>
 
-**表 2**  参数说明
+| 参数名 | 描述                                                                                                               |
+| ------ | ------------------------------------------------------------------------------------------------------------------ |
+| T      | dst的数据类型。                                                                                                    |
+| U      | fm、filter的数据类型。<br>当dst、fm、filter为基础数据类型时，T必须为int32_t类型，U必须为int8_t类型，否则编译失败。 |
 
-<a name="table8955841508"></a>
-<table><thead align="left"><tr id="row15956194105014"><th class="cellrowborder" valign="top" width="13.661366136613662%" id="mcps1.2.4.1.1"><p id="p7956144195014"><a name="p7956144195014"></a><a name="p7956144195014"></a>参数名称</p>
-</th>
-<th class="cellrowborder" valign="top" width="10.35103510351035%" id="mcps1.2.4.1.2"><p id="p1295624145013"><a name="p1295624145013"></a><a name="p1295624145013"></a>输入/输出</p>
-</th>
-<th class="cellrowborder" valign="top" width="75.98759875987598%" id="mcps1.2.4.1.3"><p id="p16956144145011"><a name="p16956144145011"></a><a name="p16956144145011"></a>含义</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row5956546509"><td class="cellrowborder" valign="top" width="13.661366136613662%" headers="mcps1.2.4.1.1 "><p id="p19287714181617"><a name="p19287714181617"></a><a name="p19287714181617"></a>dst</p>
-</td>
-<td class="cellrowborder" valign="top" width="10.35103510351035%" headers="mcps1.2.4.1.2 "><p id="p192871614151615"><a name="p192871614151615"></a><a name="p192871614151615"></a>输出</p>
-</td>
-<td class="cellrowborder" valign="top" width="75.98759875987598%" headers="mcps1.2.4.1.3 "><p id="p16287121461618"><a name="p16287121461618"></a><a name="p16287121461618"></a>目的操作数，结果矩阵，类型为LocalTensor，支持的TPosition为CO1。</p>
-<p id="p5170152413011"><a name="p5170152413011"></a><a name="p5170152413011"></a><span id="ph1479701815419"><a name="ph1479701815419"></a><a name="ph1479701815419"></a>LocalTensor的起始地址需要256个元素（<span id="ph12315302272"><a name="ph12315302272"></a><a name="ph12315302272"></a>1024字节</span>）对齐。</span></p>
-</td>
-</tr>
-<tr id="row4956154125018"><td class="cellrowborder" valign="top" width="13.661366136613662%" headers="mcps1.2.4.1.1 "><p id="p142871414131614"><a name="p142871414131614"></a><a name="p142871414131614"></a>fm</p>
-</td>
-<td class="cellrowborder" valign="top" width="10.35103510351035%" headers="mcps1.2.4.1.2 "><p id="p628711148165"><a name="p628711148165"></a><a name="p628711148165"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="75.98759875987598%" headers="mcps1.2.4.1.3 "><p id="p0287191420164"><a name="p0287191420164"></a><a name="p0287191420164"></a>源操作数，左矩阵A，类型为LocalTensor，支持的TPosition为A2。</p>
-<p id="p122771447172412"><a name="p122771447172412"></a><a name="p122771447172412"></a><span id="ph14913134718242"><a name="ph14913134718242"></a><a name="ph14913134718242"></a>LocalTensor的起始地址需要512字节对齐。</span></p>
-</td>
-</tr>
-<tr id="row9486215111718"><td class="cellrowborder" valign="top" width="13.661366136613662%" headers="mcps1.2.4.1.1 "><p id="p1648712150175"><a name="p1648712150175"></a><a name="p1648712150175"></a>filter</p>
-</td>
-<td class="cellrowborder" valign="top" width="10.35103510351035%" headers="mcps1.2.4.1.2 "><p id="p19487171515178"><a name="p19487171515178"></a><a name="p19487171515178"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="75.98759875987598%" headers="mcps1.2.4.1.3 "><p id="p3487131516175"><a name="p3487131516175"></a><a name="p3487131516175"></a>源操作数，右矩阵B，类型为LocalTensor，支持的TPosition为B2。</p>
-<p id="p104786272518"><a name="p104786272518"></a><a name="p104786272518"></a><span id="ph04781226252"><a name="ph04781226252"></a><a name="ph04781226252"></a>LocalTensor的起始地址需要512字节对齐。</span></p>
-</td>
-</tr>
-<tr id="row1075785651510"><td class="cellrowborder" valign="top" width="13.661366136613662%" headers="mcps1.2.4.1.1 "><p id="p1728791441620"><a name="p1728791441620"></a><a name="p1728791441620"></a>mmadParams</p>
-</td>
-<td class="cellrowborder" valign="top" width="10.35103510351035%" headers="mcps1.2.4.1.2 "><p id="p11287151451610"><a name="p11287151451610"></a><a name="p11287151451610"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="75.98759875987598%" headers="mcps1.2.4.1.3 "><p id="p152541610124614"><a name="p152541610124614"></a><a name="p152541610124614"></a>矩阵乘相关参数，类型为MmadParams。</p>
-<p id="p17376814155615"><a name="p17376814155615"></a><a name="p17376814155615"></a>具体定义请参考<span id="ph10562197165916"><a name="ph10562197165916"></a><a name="ph10562197165916"></a>${INSTALL_DIR}</span>/include/ascendc/basic_api/interface/kernel_struct_mm.h，<span id="ph14322531015"><a name="ph14322531015"></a><a name="ph14322531015"></a>${INSTALL_DIR}</span>请替换为CANN软件安装后文件存储路径。</p>
-<p id="p12287014111614"><a name="p12287014111614"></a><a name="p12287014111614"></a>参数说明请参考<a href="Mmad.md#table15780447181917">表3</a>。</p>
-</td>
-</tr>
-</tbody>
-</table>
+**表 4**  参数说明
 
-## 约束说明<a name="section633mcpsimp"></a>
 
--   原始稀疏矩阵B每4个元素中应保证最多2个非零元素，如果存在3个或更多非零元素，则仅使用前2个非零元素。
--   当M、K、N中的任意一个值为0时，该指令不会被执行。
+| 参数名称   | 输入/输出 | 含义                                                                                                                                                                                                                                                     |
+| ---------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| dst        | 输出      | 目的操作数，结果矩阵，类型为LocalTensor，支持的物理存储位置为L0C Buffer（TPosition:CO1）。<br><br>LocalTensor的起始地址需要256个元素（1024字节）对齐。                                                                                                   |
+| fm         | 输入      | 源操作数，左矩阵A，类型为LocalTensor，支持的物理存储位置为L0A Buffer（TPosition: A2）。<br><br>LocalTensor的起始地址需要512字节对齐。                                                                                                                    |
+| filter     | 输入      | 源操作数，右矩阵B，类型为LocalTensor，支持的物理存储位置为L0B Buffer（TPosition:B2）。<br><br>LocalTensor的起始地址需要512字节对齐。                                                                                                                     |
+| mmadParams | 输入      | 矩阵乘相关参数，类型为MmadParams。<br><br>具体定义请参考\${INSTALL_DIR}/include/ascendc/basic_api/interface/kernel_struct_mm.h，${INSTALL_DIR}请替换为CANN软件安装后文件存储路径。<br><br>参数说明请参考[表5](#zh_cn_topic_mmadsparse_section5_table5)。 |
 
--   操作数地址对齐要求请参见[通用地址对齐约束](../../../通用说明和约束.md#section796754519912)。
+**表 5**  MmadParams结构体内参数说明（Sparse场景）<a id="zh_cn_topic_mmadsparse_section5_table5"></a>
 
-## 稠密算法说明<a name="section19443175724215"></a>
 
-假设原始稀疏矩阵B的每4个元素中至少有2个零，稠密化后的矩阵B是一个在每4个元素中过滤掉2个零的稠密矩阵。矩阵B稠密化的过程中生成索引矩阵，过程如下：对于稀疏矩阵B中的每4个元素，将在index矩阵中生成2个2位索引，并按照以下规则进行编码。索引必须在\{0, 1, 2\}范围内。
+| 参数名称        | 含义                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| m               | 左矩阵Height，取值范围：m∈[0，4095]。默认值为0。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| n               | 右矩阵Width，取值范围：n∈[0，4095]。默认值为0。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| k               | 左矩阵Width、右矩阵Height，取值范围：k∈[0，4095]。默认值为0。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| cmatrixInitVal  | 是否使能C矩阵默认初始化清零操作。默认值true。<br>true：C矩阵默认初始化为0；false：C矩阵不进行默认操作，通过设置cmatrixSource参数进行初始化。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| cmatrixSource   | 配置C矩阵初始值是否来源于BT Buffer。默认值为false。<br>false：不对L0C进行初始化操作；<br>true：使用BT Buffer（TPosition:C2）的数据对L0C进行初始化操作。<br><br>Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持配置为true/false。<br><br>Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持配置为true/false。<br><br>Atlas 200I/500 A2 推理产品，支持配置为true/false。<br><br>注意：带bias输入的接口配置该参数无效，会根据bias输入的位置来判断C矩阵初始值是否来源于BT Buffer。                                                                                                                                                                           |
+| isBias          | 该参数废弃，新开发内容不要使用该参数。如果需要累加初始矩阵，请使用带bias的接口来实现；也可以通过cmatrixInitVal和cmatrixSource参数配置C矩阵的初始值来源来实现。推荐使用带bias的接口，相比于配置cmatrixInitVal和cmatrixSource参数更加简单方便。<br><br>配置是否需要累加初始矩阵，默认值为false，取值说明如下：<br>false：矩阵乘，无需累加初始矩阵，C = A \* B。true：矩阵乘加，需要累加初始矩阵，C += A \* B。                                                                                                                                                                                                                                              |
+| unitFlag        | unitFlag是一种Mmad指令和Fixpipe指令细粒度的并行，使能该功能后，硬件每计算完一个分形，计算结果就会被搬出。取值说明如下：<br><br>0（2'b00）：不使能unitFlag；<br><br>1（2'b01）：保留值；<br><br>2（2'b10）：使能unitFlag，硬件执行完指令之后，不复位单元标记位；<br><br>3（2'b11）：使能unitFlag，硬件执行完指令之后，复位单元标记位。<br><br>使能该功能时，须将Mmad指令和Fixpipe指令的unitFlag值设置为2或3。<br><br>该参数仅支持如下型号：<br><br>Atlas A2 训练系列产品/Atlas A2 推理系列产品<br><br>Atlas A3 训练系列产品/Atlas A3 推理系列产品<br><br>参数设置方案和特性细节可参考： [UnitFlag](关键特性说明/UnitFlag.md#ZH-CN_TOPIC_00000025690709788) |
+| kDirectionAlign | Sparse场景本开关默认为false，不支持配置为true。K方向对齐的核心功能是通过`kDirectionAlign` 参数控制在使用float数据类型时，L0A和L0B矩阵在K方向上的对齐方式。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| fmOffset        | 左矩阵offset（整个左矩阵对应一个值），支持Scalar（应与src_fm.dtype一致）/立即数，默认0。<br><br>注：未使用，兼容旧款产品接口传入，Atlas A2 训练系列产品/Atlas A2 推理系列产品及往后产品不做处理。                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| enSsparse       | 使能结构化稀疏特性，默认false；<br><br>注：未使用，兼容旧款产品接口传入，Atlas A2 训练系列产品/Atlas A2 推理系列产品及往后产品不做处理。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| enWinogradA     | 指示矩阵a是否通过winograd_feature_map_transform() 生成，用于支持winograd特性，bool类型，默认false；<br><br>注：未使用，兼容旧款产品接口传入，Atlas A2 训练系列产品/Atlas A2 推理系列产品及往后产品不做处理。                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| enWinogradB     | 指示矩阵b是否通过winograd_weight_transform()生成，用于支持winograd特性，bool类型，默认false；<br><br>注：未使用，兼容旧款产品接口传入，Atlas A2 训练系列产品/Atlas A2 推理系列产品及往后产品不做处理。                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 
--   第一个索引用于指示前3个元素中第1个非零元素的相对位置。
--   第二个索引用于指示第2个非零元素在后3个元素中的相对位置。
+## 数据类型<a id="zh_cn_topic_mmadsparse_section_datatype"></a>
 
-具体可参考下表。其中，“-”表示算法不关心该位置上的值，因为其会被过滤。
+**表 6**  A、B、C支持的精度类型组合（Atlas 200I/500 A2 推理产品）（Atlas A2 训练系列产品/Atlas A2 推理系列产品）（Atlas A3 训练系列产品/Atlas A3 推理系列产品）
 
-<a name="table07754782315"></a>
-<table><thead align="left"><tr id="row108341479237"><th class="cellrowborder" valign="top" width="23.212321232123216%" id="mcps1.1.8.1.1"><p id="p1583477172315"><a name="p1583477172315"></a><a name="p1583477172315"></a>示例</p>
-</th>
-<th class="cellrowborder" valign="top" width="10.491049104910491%" id="mcps1.1.8.1.2"><p id="p88342074230"><a name="p88342074230"></a><a name="p88342074230"></a>ele0</p>
-</th>
-<th class="cellrowborder" valign="top" width="10.491049104910491%" id="mcps1.1.8.1.3"><p id="p483419712316"><a name="p483419712316"></a><a name="p483419712316"></a>ele1</p>
-</th>
-<th class="cellrowborder" valign="top" width="9.150915091509152%" id="mcps1.1.8.1.4"><p id="p16834177122310"><a name="p16834177122310"></a><a name="p16834177122310"></a>ele2</p>
-</th>
-<th class="cellrowborder" valign="top" width="10.491049104910491%" id="mcps1.1.8.1.5"><p id="p48341274235"><a name="p48341274235"></a><a name="p48341274235"></a>ele3</p>
-</th>
-<th class="cellrowborder" valign="top" width="18.081808180818083%" id="mcps1.1.8.1.6"><p id="p28341732311"><a name="p28341732311"></a><a name="p28341732311"></a>Index_a[i]</p>
-</th>
-<th class="cellrowborder" valign="top" width="18.081808180818083%" id="mcps1.1.8.1.7"><p id="p68341571237"><a name="p68341571237"></a><a name="p68341571237"></a>Index_b[i]</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row15834187202317"><td class="cellrowborder" rowspan="6" valign="top" width="23.212321232123216%" headers="mcps1.1.8.1.1 "><p id="p3834207112311"><a name="p3834207112311"></a><a name="p3834207112311"></a>Two non-zero elements</p>
-</td>
-<td class="cellrowborder" valign="top" width="10.491049104910491%" headers="mcps1.1.8.1.2 "><p id="p383417722319"><a name="p383417722319"></a><a name="p383417722319"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" width="10.491049104910491%" headers="mcps1.1.8.1.3 "><p id="p19834117122313"><a name="p19834117122313"></a><a name="p19834117122313"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" width="9.150915091509152%" headers="mcps1.1.8.1.4 "><p id="p1483412715234"><a name="p1483412715234"></a><a name="p1483412715234"></a>X</p>
-</td>
-<td class="cellrowborder" valign="top" width="10.491049104910491%" headers="mcps1.1.8.1.5 "><p id="p383417152318"><a name="p383417152318"></a><a name="p383417152318"></a>Y</p>
-</td>
-<td class="cellrowborder" valign="top" width="18.081808180818083%" headers="mcps1.1.8.1.6 "><p id="p0834879233"><a name="p0834879233"></a><a name="p0834879233"></a>2’b10</p>
-</td>
-<td class="cellrowborder" valign="top" width="18.081808180818083%" headers="mcps1.1.8.1.7 "><p id="p88345712232"><a name="p88345712232"></a><a name="p88345712232"></a>2’b10</p>
-</td>
-</tr>
-<tr id="row38341715232"><td class="cellrowborder" valign="top" headers="mcps1.1.8.1.1 "><p id="p683487192315"><a name="p683487192315"></a><a name="p683487192315"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.2 "><p id="p1983416719235"><a name="p1983416719235"></a><a name="p1983416719235"></a>X</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.3 "><p id="p178346720235"><a name="p178346720235"></a><a name="p178346720235"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.4 "><p id="p98341377231"><a name="p98341377231"></a><a name="p98341377231"></a>Y</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.5 "><p id="p1383419742320"><a name="p1383419742320"></a><a name="p1383419742320"></a>2’b01</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.6 "><p id="p118341672238"><a name="p118341672238"></a><a name="p118341672238"></a>2’b10</p>
-</td>
-</tr>
-<tr id="row1283537182312"><td class="cellrowborder" valign="top" headers="mcps1.1.8.1.1 "><p id="p78351711232"><a name="p78351711232"></a><a name="p78351711232"></a>X</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.2 "><p id="p198359712237"><a name="p198359712237"></a><a name="p198359712237"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.3 "><p id="p4835137192314"><a name="p4835137192314"></a><a name="p4835137192314"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.4 "><p id="p18350712319"><a name="p18350712319"></a><a name="p18350712319"></a>Y</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.5 "><p id="p208354772313"><a name="p208354772313"></a><a name="p208354772313"></a>2’b00</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.6 "><p id="p88359712237"><a name="p88359712237"></a><a name="p88359712237"></a>2’b10</p>
-</td>
-</tr>
-<tr id="row18351873238"><td class="cellrowborder" valign="top" headers="mcps1.1.8.1.1 "><p id="p148351577232"><a name="p148351577232"></a><a name="p148351577232"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.2 "><p id="p683587132318"><a name="p683587132318"></a><a name="p683587132318"></a>X</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.3 "><p id="p1583514732311"><a name="p1583514732311"></a><a name="p1583514732311"></a>Y</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.4 "><p id="p98356713238"><a name="p98356713238"></a><a name="p98356713238"></a>-</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.5 "><p id="p583527102311"><a name="p583527102311"></a><a name="p583527102311"></a>2’b01</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.6 "><p id="p128351175234"><a name="p128351175234"></a><a name="p128351175234"></a>2’b01</p>
-</td>
-</tr>
-<tr id="row68357717233"><td class="cellrowborder" valign="top" headers="mcps1.1.8.1.1 "><p id="p17835117162318"><a name="p17835117162318"></a><a name="p17835117162318"></a>X</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.2 "><p id="p48359711235"><a name="p48359711235"></a><a name="p48359711235"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.3 "><p id="p15835376236"><a name="p15835376236"></a><a name="p15835376236"></a>Y</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.4 "><p id="p78358712238"><a name="p78358712238"></a><a name="p78358712238"></a>-</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.5 "><p id="p18835179231"><a name="p18835179231"></a><a name="p18835179231"></a>2’b00</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.6 "><p id="p6835276236"><a name="p6835276236"></a><a name="p6835276236"></a>2’b01</p>
-</td>
-</tr>
-<tr id="row483515713236"><td class="cellrowborder" valign="top" headers="mcps1.1.8.1.1 "><p id="p168351476239"><a name="p168351476239"></a><a name="p168351476239"></a>X</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.2 "><p id="p183519716231"><a name="p183519716231"></a><a name="p183519716231"></a>Y</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.3 "><p id="p5835375231"><a name="p5835375231"></a><a name="p5835375231"></a>-</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.4 "><p id="p178359715234"><a name="p178359715234"></a><a name="p178359715234"></a>-</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.5 "><p id="p6835371234"><a name="p6835371234"></a><a name="p6835371234"></a>2’b00</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.6 "><p id="p108356742310"><a name="p108356742310"></a><a name="p108356742310"></a>2’b00</p>
-</td>
-</tr>
-<tr id="row38351718232"><td class="cellrowborder" rowspan="4" valign="top" width="23.212321232123216%" headers="mcps1.1.8.1.1 "><p id="p18356782318"><a name="p18356782318"></a><a name="p18356782318"></a>One non-zero element</p>
-</td>
-<td class="cellrowborder" valign="top" width="10.491049104910491%" headers="mcps1.1.8.1.2 "><p id="p14835177122311"><a name="p14835177122311"></a><a name="p14835177122311"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" width="10.491049104910491%" headers="mcps1.1.8.1.3 "><p id="p12835177233"><a name="p12835177233"></a><a name="p12835177233"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" width="9.150915091509152%" headers="mcps1.1.8.1.4 "><p id="p188355722312"><a name="p188355722312"></a><a name="p188355722312"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" width="10.491049104910491%" headers="mcps1.1.8.1.5 "><p id="p383511711230"><a name="p383511711230"></a><a name="p383511711230"></a>X</p>
-</td>
-<td class="cellrowborder" valign="top" width="18.081808180818083%" headers="mcps1.1.8.1.6 "><p id="p1883657152313"><a name="p1883657152313"></a><a name="p1883657152313"></a>2’b00</p>
-</td>
-<td class="cellrowborder" valign="top" width="18.081808180818083%" headers="mcps1.1.8.1.7 "><p id="p198361719234"><a name="p198361719234"></a><a name="p198361719234"></a>2’b10</p>
-</td>
-</tr>
-<tr id="row1983610762312"><td class="cellrowborder" valign="top" headers="mcps1.1.8.1.1 "><p id="p0836137112320"><a name="p0836137112320"></a><a name="p0836137112320"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.2 "><p id="p1083614792317"><a name="p1083614792317"></a><a name="p1083614792317"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.3 "><p id="p1183611711234"><a name="p1183611711234"></a><a name="p1183611711234"></a>X</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.4 "><p id="p08361377230"><a name="p08361377230"></a><a name="p08361377230"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.5 "><p id="p208361071238"><a name="p208361071238"></a><a name="p208361071238"></a>2’b10</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.6 "><p id="p583647112313"><a name="p583647112313"></a><a name="p583647112313"></a>2’b00</p>
-</td>
-</tr>
-<tr id="row283612742314"><td class="cellrowborder" valign="top" headers="mcps1.1.8.1.1 "><p id="p383657142311"><a name="p383657142311"></a><a name="p383657142311"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.2 "><p id="p78361474235"><a name="p78361474235"></a><a name="p78361474235"></a>X</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.3 "><p id="p1483637172312"><a name="p1483637172312"></a><a name="p1483637172312"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.4 "><p id="p118368720239"><a name="p118368720239"></a><a name="p118368720239"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.5 "><p id="p168363719232"><a name="p168363719232"></a><a name="p168363719232"></a>2’b01</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.6 "><p id="p1783620717239"><a name="p1783620717239"></a><a name="p1783620717239"></a>2’b00</p>
-</td>
-</tr>
-<tr id="row5836107162312"><td class="cellrowborder" valign="top" headers="mcps1.1.8.1.1 "><p id="p483617172310"><a name="p483617172310"></a><a name="p483617172310"></a>X</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.2 "><p id="p11836197172319"><a name="p11836197172319"></a><a name="p11836197172319"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.3 "><p id="p383618772313"><a name="p383618772313"></a><a name="p383618772313"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.4 "><p id="p3836207192310"><a name="p3836207192310"></a><a name="p3836207192310"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.5 "><p id="p5836157132310"><a name="p5836157132310"></a><a name="p5836157132310"></a>2’b00</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.1.8.1.6 "><p id="p7836127132317"><a name="p7836127132317"></a><a name="p7836127132317"></a>2’b00</p>
-</td>
-</tr>
-<tr id="row13836127132310"><td class="cellrowborder" valign="top" width="23.212321232123216%" headers="mcps1.1.8.1.1 "><p id="p5836278236"><a name="p5836278236"></a><a name="p5836278236"></a>All zero</p>
-</td>
-<td class="cellrowborder" valign="top" width="10.491049104910491%" headers="mcps1.1.8.1.2 "><p id="p10836197142315"><a name="p10836197142315"></a><a name="p10836197142315"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" width="10.491049104910491%" headers="mcps1.1.8.1.3 "><p id="p1983619720233"><a name="p1983619720233"></a><a name="p1983619720233"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" width="9.150915091509152%" headers="mcps1.1.8.1.4 "><p id="p16836875233"><a name="p16836875233"></a><a name="p16836875233"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" width="10.491049104910491%" headers="mcps1.1.8.1.5 "><p id="p1836179237"><a name="p1836179237"></a><a name="p1836179237"></a>0</p>
-</td>
-<td class="cellrowborder" valign="top" width="18.081808180818083%" headers="mcps1.1.8.1.6 "><p id="p68366718231"><a name="p68366718231"></a><a name="p68366718231"></a>2’b00</p>
-</td>
-<td class="cellrowborder" valign="top" width="18.081808180818083%" headers="mcps1.1.8.1.7 "><p id="p16836079231"><a name="p16836079231"></a><a name="p16836079231"></a>2’b00</p>
-</td>
-</tr>
-</tbody>
-</table>
 
-该索引矩阵用于A矩阵的稠密化，根据索引矩阵从MatrixA中的4个元素中选择2个元素参与计算，如下图所示：
+| 左矩阵A | 右矩阵B | 结果矩阵C |
+| ------- | ------- | --------- |
+| int8_t  | int8_t  | int32_t   |
 
-![](../../../../figures/绘图4-26.png)
+## 返回值说明
 
-## 调用示例<a name="section642mcpsimp"></a>
+无
+
+## 约束说明
+
+- 不同矩阵对于存储位置的约束：
+
+  - 结果矩阵C只支持位于物理存储位置为L0C Buffer（TPosition:CO1）
+  - 左矩阵A只支持位于物理存储位置为L0A Buffer（TPosition:A2）
+  - 右矩阵B只支持位于物理存储位置为L0B Buffer（TPosition:B2）
+- 原始稀疏矩阵B每4个元素中应保证最多2个非零元素，如果存在3个或更多非零元素，则仅使用前2个非零元素。
+- 当M、K、N中的任意一个值为0时，表示指令不会执行，该接口将被视为NOP（空操作）。
+- MmadWithSparse接口不支持Gemv模式。
+- 其他特殊场景约束可参考[Mmad接口约束说明](Mmad.md#约束说明)。
+
+## 调用示例
 
 完整使用样例请参见[MmadWithSparse样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/02_features/03_basic_api/01_matrix_compute/mmad_with_sparse)。
 
-```
-// a2Local：Mmad计算的左矩阵Tensor，TPosition位于A2
-// b1Local/b2Local：Mmad计算的右矩阵Tensor，TPosition分别位于B1/B2
-// idxB1Local：稀疏矩阵Tensor，TPosition位于B1
-// cLocal：Mmad计算的输出C矩阵Tensor，TPosition位于CO1
+```cpp
+AscendC::LocalTensor<int8_t> a1Local(AscendC::TPosition::A1, a1Addr, aSize);
+AscendC::LocalTensor<int8_t> a2Local(AscendC::TPosition::A2, a2Addr, aSize);
+AscendC::LocalTensor<int8_t> b1Local(AscendC::TPosition::B1, b1Addr, bSize);
+AscendC::LocalTensor<uint8_t> idxB1Local(AscendC::TPosition::B1, idxB1Addr, bSize / 4);
+AscendC::LocalTensor<int8_t> b2Local(AscendC::TPosition::B2, b2Addr, bSize);
+AscendC::LocalTensor<int32_t> cLocal(AscendC::TPosition::CO1, cAddr, cSize);
 
-// 左矩阵A为非稀疏矩阵，右矩阵B为稠密化后的矩阵
-// transform nz to zn, 稀疏矩阵的加载需要配合稀疏的索引和loadDataWithSparse接口进行稀疏数据加载
-AscendC::LoadData2DParams loadDataParams;
-loadDataParams.repeatTimes = kBlocks * nBlocks / 2;
-loadDataParams.srcStride = 0;
-loadDataParams.ifTranspose = false;
-AscendC::LoadDataWithSparse(b2Local, b1Local, idxB1Local, loadDataParams);
+// GM->L1，将原始矩阵a，稠密化矩阵b与对应idx矩阵搬运至L1
+CopyIn(a1Local, b1Local, idxB1Local);
+AscendC::SetFlag<AscendC::HardEvent::MTE2_MTE1>(EVENT_ID0);
+AscendC::WaitFlag<AscendC::HardEvent::MTE2_MTE1>(EVENT_ID0);
+
+// L1->L0, 将原始矩阵a，稠密化矩阵b与对应idx矩阵搬运至L0
+SplitA(a1Local, a2Local);
+SplitB(b2Local, b1Local, idxB1Local);
+AscendC::SetFlag<AscendC::HardEvent::MTE1_M>(EVENT_ID0);
+AscendC::WaitFlag<AscendC::HardEvent::MTE1_M>(EVENT_ID0);
 
 // mmad 需要指定矩阵的维度进行计算
-uint32 m = 16;
+uint32 m = 128;
 uint32 k = 64;
-uint32 n = 16;
-AscendC::MmadWithSparse(cLocal, a2Local, b2Local, { m, n, k, false, 0, false, false, false });
+uint32 n = 128;
+AscendC::MmadWithSparse(c1Local, a2Local, b2Local, { m, n, k, false, 0, false, false, false });
 ```
-

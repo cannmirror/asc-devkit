@@ -149,12 +149,45 @@
 
             -   [矩阵计算](SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算/矩阵计算.md)
                 -   [Mmad](SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算/Mmad.md)
+
+                <cann-filter npu-type="950">
+
+                -   [MmadMx](SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算/MmadMx.md)
                 -   [MmadBitMode](SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算/MmadBitMode.md)
+
+                </cann-filter>
+
+                <cann-filter npu-type="910b,A3">
+
                 -   [MmadWithSparse](SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算/MmadWithSparse.md)
-                -   [SetMMRowMajor](SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算/SetMMRowMajor.md)
-                -   [SetMMColumnMajor](SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算/SetMMColumnMajor.md)
-                -   [SetHF32Mode](SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算/SetHF32Mode.md)
-                -   [SetHF32TransMode](SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算/SetHF32TransMode.md)
+
+                </cann-filter>
+
+                -   [关键特性说明](SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算/关键特性说明.md)
+                    -   [GEMV](SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算/关键特性说明/GEMV.md)
+
+                    <cann-filter npu-type="950,910b,A3,310b">
+
+                    -   [HF32](SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算/关键特性说明/HF32.md)
+                    -   [UnitFlag](SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算/关键特性说明/UnitFlag.md)
+
+                    </cann-filter>
+
+                    <cann-filter npu-type="910b,A3,x90,9030">
+
+                    -   [K方向对齐约束](SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算/关键特性说明/K方向对齐约束.md)
+
+                    </cann-filter>
+
+                <cann-filter npu-type="950,910b,A3,310b">
+
+                -   [寄存器配置说明](SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算/寄存器配置说明.md)
+                    -   [SetMMColumnMajor/SetMMRowMajor](SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算/寄存器配置说明/SetMMColumnMajor-SetMMRowMajor.md)
+                    -   [SetHF32Mode](SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算/寄存器配置说明/SetHF32Mode.md)
+                    -   [SetHF32TransMode](SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算/寄存器配置说明/SetHF32TransMode.md)
+
+                </cann-filter>
+
                 -   [Conv2D（废弃）](SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算/Conv2D（废弃）.md)
                 -   [Gemm（废弃）](SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算/Gemm（废弃）.md)
         -   [Memory矢量计算](SIMD-API/基础API/Memory矢量计算/Memory矢量计算.md)
