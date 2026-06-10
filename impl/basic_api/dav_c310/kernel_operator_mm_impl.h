@@ -110,9 +110,10 @@ __aicore__ inline void LoadData2DL12L0BCal(__cb__ T* dst, __cbuf__ T* src, const
 template <typename T>
 __aicore__ inline void LoadData2DL12L0ACal(__ca__ T *dst, __cbuf__ T *src, const Load2DBitModeParam &loadDataParam)
 {
-    static_assert(SupportType<T, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, half, bfloat16_t,
-                float, int32_t, uint32_t>(),
-        "LoadData 2dv2 only support uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
+    static_assert(
+        SupportType<T, fp4x2_e2m1_t, fp4x2_e1m2_t, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, half,
+                    bfloat16_t, float, int32_t, uint32_t>(),
+        "LoadData 2dv2 only support fp4x2_e2m1_t, fp4x2_e1m2_t, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
          half, bfloat16_t, float, int32_t, uint32_t on current device!");
     if ASCEND_IS_AIC {
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
@@ -160,9 +161,10 @@ __aicore__ inline void LoadData2DL12L0ACal(__ca__ T *dst, __cbuf__ T *src, const
 template <typename T>
 __aicore__ inline void LoadData2DL12L0BCal(__cb__ T *dst, __cbuf__ T *src, const Load2DBitModeParam &loadDataParam)
 {
-    static_assert(SupportType<T, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, half, bfloat16_t,
-                float, int32_t, uint32_t>(),
-        "LoadData 2dv2 only support uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
+    static_assert(
+        SupportType<T, fp4x2_e2m1_t, fp4x2_e1m2_t, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, half,
+                    bfloat16_t, float, int32_t, uint32_t>(),
+        "LoadData 2dv2 only support fp4x2_e2m1_t, fp4x2_e1m2_t, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
          half, bfloat16_t, float, int32_t, uint32_t on current device!");
     if ASCEND_IS_AIC {
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
@@ -210,31 +212,32 @@ __aicore__ inline void LoadData2DL12L0BCal(__cb__ T *dst, __cbuf__ T *src, const
 template <typename T>
 __aicore__ inline void LoadData2DL12L0ACal(__ca__ T *dst, __cbuf__ T *src, const LoadData2DParamsV2 &loadDataParam)
 {
-    static_assert(SupportType<T, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, half, bfloat16_t,
-                float, int32_t, uint32_t>(),
-        "LoadData 2dv2 only support uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
+    static_assert(
+        SupportType<T, fp4x2_e2m1_t, fp4x2_e1m2_t, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, half,
+                    bfloat16_t, float, int32_t, uint32_t>(),
+        "LoadData 2dv2 only support fp4x2_e2m1_t, fp4x2_e1m2_t, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
          half, bfloat16_t, float, int32_t, uint32_t on current device!");
     if ASCEND_IS_AIC {
-        if (loadDataParam.ifTranspose) {
-            load_cbuf_to_ca(dst,
-                src,
-                loadDataParam.mStartPosition,
-                loadDataParam.kStartPosition,
-                loadDataParam.mStep,
-                loadDataParam.kStep,
-                loadDataParam.srcStride,
-                loadDataParam.dstStride,
-                1);
+        if constexpr (SupportType<T, fp4x2_e2m1_t, fp4x2_e1m2_t>()) {
+            if (loadDataParam.ifTranspose) {
+                load_cbuf_to_ca_s4(dst, src, loadDataParam.mStartPosition, loadDataParam.kStartPosition,
+                                   loadDataParam.mStep, loadDataParam.kStep, loadDataParam.srcStride,
+                                   loadDataParam.dstStride, 1);
+            } else {
+                load_cbuf_to_ca_s4(dst, src, loadDataParam.mStartPosition, loadDataParam.kStartPosition,
+                                   loadDataParam.mStep, loadDataParam.kStep, loadDataParam.srcStride,
+                                   loadDataParam.dstStride, 0);
+            }
         } else {
-            load_cbuf_to_ca(dst,
-                src,
-                loadDataParam.mStartPosition,
-                loadDataParam.kStartPosition,
-                loadDataParam.mStep,
-                loadDataParam.kStep,
-                loadDataParam.srcStride,
-                loadDataParam.dstStride,
-                0);
+            if (loadDataParam.ifTranspose) {
+                load_cbuf_to_ca(dst, src, loadDataParam.mStartPosition, loadDataParam.kStartPosition,
+                                loadDataParam.mStep, loadDataParam.kStep, loadDataParam.srcStride,
+                                loadDataParam.dstStride, 1);
+            } else {
+                load_cbuf_to_ca(dst, src, loadDataParam.mStartPosition, loadDataParam.kStartPosition,
+                                loadDataParam.mStep, loadDataParam.kStep, loadDataParam.srcStride,
+                                loadDataParam.dstStride, 0);
+            }
         }
     }
 }
@@ -242,31 +245,32 @@ __aicore__ inline void LoadData2DL12L0ACal(__ca__ T *dst, __cbuf__ T *src, const
 template <typename T>
 __aicore__ inline void LoadData2DL12L0BCal(__cb__ T *dst, __cbuf__ T *src, const LoadData2DParamsV2 &loadDataParam)
 {
-    static_assert(SupportType<T, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, half, bfloat16_t,
-                float, int32_t, uint32_t>(),
-        "LoadData 2dv2 only support uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
+    static_assert(
+        SupportType<T, fp4x2_e2m1_t, fp4x2_e1m2_t, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, half,
+                    bfloat16_t, float, int32_t, uint32_t>(),
+        "LoadData 2dv2 only support fp4x2_e2m1_t, fp4x2_e1m2_t, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
          half, bfloat16_t, float, int32_t, uint32_t on current device!");
     if ASCEND_IS_AIC {
-        if (loadDataParam.ifTranspose) {
-            load_cbuf_to_cb(dst,
-                src,
-                loadDataParam.mStartPosition,
-                loadDataParam.kStartPosition,
-                loadDataParam.mStep,
-                loadDataParam.kStep,
-                loadDataParam.srcStride,
-                loadDataParam.dstStride,
-                1);
+        if constexpr (SupportType<T, fp4x2_e2m1_t, fp4x2_e1m2_t>()) {
+            if (loadDataParam.ifTranspose) {
+                load_cbuf_to_cb_s4(dst, src, loadDataParam.mStartPosition, loadDataParam.kStartPosition,
+                                   loadDataParam.mStep, loadDataParam.kStep, loadDataParam.srcStride,
+                                   loadDataParam.dstStride, 1);
+            } else {
+                load_cbuf_to_cb_s4(dst, src, loadDataParam.mStartPosition, loadDataParam.kStartPosition,
+                                   loadDataParam.mStep, loadDataParam.kStep, loadDataParam.srcStride,
+                                   loadDataParam.dstStride, 0);
+            }
         } else {
-            load_cbuf_to_cb(dst,
-                src,
-                loadDataParam.mStartPosition,
-                loadDataParam.kStartPosition,
-                loadDataParam.mStep,
-                loadDataParam.kStep,
-                loadDataParam.srcStride,
-                loadDataParam.dstStride,
-                0);
+            if (loadDataParam.ifTranspose) {
+                load_cbuf_to_cb(dst, src, loadDataParam.mStartPosition, loadDataParam.kStartPosition,
+                                loadDataParam.mStep, loadDataParam.kStep, loadDataParam.srcStride,
+                                loadDataParam.dstStride, 1);
+            } else {
+                load_cbuf_to_cb(dst, src, loadDataParam.mStartPosition, loadDataParam.kStartPosition,
+                                loadDataParam.mStep, loadDataParam.kStep, loadDataParam.srcStride,
+                                loadDataParam.dstStride, 0);
+            }
         }
     }
 }
