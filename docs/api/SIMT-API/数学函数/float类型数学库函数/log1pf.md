@@ -52,23 +52,40 @@ inline float log1pf(float x)
 
 ## 调用示例
 
--   SIMT编程场景：
+- SIMT编程场景：
 
     ```
-    __global__ __launch_bounds__(1024) void KernelLog1p(float* dst, float* x)
+    __global__ __launch_bounds__(256) void compute_log1pf(float *result, const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = log1pf(x[idx]);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = log1pf(x[idx]);
     }
     ```
 
--   SIMD与SIMT混合编程场景：
+- SIMD与SIMT混合编程场景：
 
     ```
-    __simt_vf__ __launch_bounds__(1024) inline void KernelLog1p(__gm__ float* dst, __gm__ float* x)
+    __simt_vf__ __launch_bounds__(256) inline void compute_log1pf_vf(__gm__ float *result, __gm__ const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = log1pf(x[idx]);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = log1pf(x[idx]);
+    }
+
+    __global__ __vector__ void run_log1pf(__gm__ float *result, __gm__ const float *x, uint32_t count)
+    {
+        asc_vf_call<compute_log1pf_vf>(dim3(256), result, x, count);
     }
     ```
 
+输入输出示例如下：
+
+```
+x：0.25, 1.25, 2.25, 3.25
+result: 0.2231435 0.8109302 1.178655 1.446919
+```

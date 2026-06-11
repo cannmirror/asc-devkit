@@ -53,23 +53,40 @@ inline float asinhf(float x)
 
 ## 调用示例
 
--   SIMT编程场景：
+- SIMT编程场景：
 
     ```
-    __global__ __launch_bounds__(1024) void KernelAsinh(float* dst, float* x)
+    __global__ __launch_bounds__(256) void compute_asinhf(float *result, const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = asinhf(x[idx]); // 对src源地址的第idx个元素取双曲反正弦值
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = asinhf(x[idx]);
     }
     ```
 
--   SIMD与SIMT混合编程场景：
+- SIMD与SIMT混合编程场景：
 
     ```
-    __simt_vf__ __launch_bounds__(1024) inline void KernelAsinh(__gm__ float* dst, __gm__ float* x)
+    __simt_vf__ __launch_bounds__(256) inline void compute_asinhf_vf(__gm__ float *result, __gm__ const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = asinhf(x[idx]); // 对src源地址的第idx个元素取双曲反正弦值
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = asinhf(x[idx]);
+    }
+
+    __global__ __vector__ void run_asinhf(__gm__ float *result, __gm__ const float *x, uint32_t count)
+    {
+        asc_vf_call<compute_asinhf_vf>(dim3(256), result, x, count);
     }
     ```
 
+输入输出示例如下：
+
+```
+x：0.25, 0.75, 1.25, 1.75
+result: 0.2474664 0.6931472 1.047593 1.325898
+```

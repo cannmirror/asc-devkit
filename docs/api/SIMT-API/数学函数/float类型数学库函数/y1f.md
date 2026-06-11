@@ -53,23 +53,40 @@ inline float y1f(float x)
 
 ## 调用示例
 
--   SIMT编程场景：
+- SIMT编程场景：
 
     ```
-    __global__ __launch_bounds__(256) void KernelY1(float* dst, float* x)
+    __global__ __launch_bounds__(256) void compute_y1f(float *result, const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = y1f(x[idx]);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = y1f(x[idx]);
     }
     ```
 
--   SIMD与SIMT混合编程场景：
+- SIMD与SIMT混合编程场景：
 
     ```
-    __simt_vf__ __launch_bounds__(256) inline void KernelY1(__gm__ float* dst, __gm__ float* x)
+    __simt_vf__ __launch_bounds__(256) inline void compute_y1f_vf(__gm__ float *result, __gm__ const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = y1f(x[idx]);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = y1f(x[idx]);
+    }
+
+    __global__ __vector__ void run_y1f(__gm__ float *result, __gm__ const float *x, uint32_t count)
+    {
+        asc_vf_call<compute_y1f_vf>(dim3(256), result, x, count);
     }
     ```
 
+输入输出示例如下：
+
+```
+x：1, 2, 3, 4
+result: -0.7812128 -0.1070324 0.3246745 0.3979257
+```

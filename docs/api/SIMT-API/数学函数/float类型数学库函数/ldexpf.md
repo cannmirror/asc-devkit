@@ -53,23 +53,41 @@ inline float ldexpf(float x, int exp)
 
 ## 调用示例
 
--   SIMT编程场景：
+- SIMT编程场景：
 
     ```
-    __global__ __launch_bounds__(1024) void KernelLdexp(float* dst, float* x, int* exp)
+    __global__ __launch_bounds__(256) void compute_ldexpf(float *result, const int *n, const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = ldexpf(x[idx], exp[idx]);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = ldexpf(x[idx], n[idx]);
     }
     ```
 
--   SIMD与SIMT混合编程场景：
+- SIMD与SIMT混合编程场景：
 
     ```
-    __simt_vf__ __launch_bounds__(1024) inline void KernelLdexp(__gm__ float* dst, __gm__ float* x, __gm__ int* exp)
+    __simt_vf__ __launch_bounds__(256) inline void compute_ldexpf_vf(__gm__ float *result, __gm__ const int *n, __gm__ const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = ldexpf(x[idx], exp[idx]);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = ldexpf(x[idx], n[idx]);
+    }
+
+    __global__ __vector__ void run_ldexpf(__gm__ float *result, __gm__ const int *n, __gm__ const float *x, uint32_t count)
+    {
+        asc_vf_call<compute_ldexpf_vf>(dim3(256), result, n, x, count);
     }
     ```
 
+输入输出示例如下：
+
+```
+n：1, 2, 3, 1
+x：0.25, 0.75, 1.25, 1.75
+result: 0.5 3 10 3.5
+```

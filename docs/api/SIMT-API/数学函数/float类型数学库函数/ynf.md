@@ -56,23 +56,41 @@ inline float ynf(int n, float x)
 
 ## 调用示例
 
--   SIMT编程场景：
+- SIMT编程场景：
 
     ```
-    __global__ __launch_bounds__(256) void KernelYn(float* dst, int* n, float* x)
+    __global__ __launch_bounds__(256) void compute_ynf(float *result, const int *n, const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = ynf(n[idx], x[idx]);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = ynf(n[idx], x[idx]);
     }
     ```
 
--   SIMD与SIMT混合编程场景：
+- SIMD与SIMT混合编程场景：
 
     ```
-    __simt_vf__ __launch_bounds__(256) inline void KernelYn(__gm__ float* dst, __gm__ int* n, __gm__ float* x)
+    __simt_vf__ __launch_bounds__(256) inline void compute_ynf_vf(__gm__ float *result, __gm__ const int *n, __gm__ const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = ynf(n[idx], x[idx]);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = ynf(n[idx], x[idx]);
+    }
+
+    __global__ __vector__ void run_ynf(__gm__ float *result, __gm__ const int *n, __gm__ const float *x, uint32_t count)
+    {
+        asc_vf_call<compute_ynf_vf>(dim3(256), result, n, x, count);
     }
     ```
 
+输入输出示例如下：
+
+```
+n：1, 2, 3, 1
+x：1, 2, 3, 4
+result: -2.704105 -2.629746 -3.233874 -0.253973
+```

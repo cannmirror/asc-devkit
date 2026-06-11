@@ -36,7 +36,7 @@ inline float frexpf(float x, int *exp)
 将x转换为归一化\[1/2, 1\)的有符号数乘以2的积分幂时，返回该有符号数。
 
 -   当x为inf时，返回值为inf，exp为0。
--   当x为-inf时，返回值为inf，exp为0。
+-   当x为-inf时，返回值为-inf，exp为0。
 -   当x为nan时，返回值为nan，exp为0。
 
 ## 约束说明
@@ -53,24 +53,41 @@ inline float frexpf(float x, int *exp)
 
 ## 调用示例
 
--   SIMT编程场景：
+- SIMT编程场景：
 
     ```
-    __global__ __launch_bounds__(1024) void KernelFrexp(float* dst1, int* dst2, float* x)
+    __global__ __launch_bounds__(256) void compute_frexpf(float *result, int *exp_out, const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst1[idx] = frexpf(x[idx], dst2 + idx);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = frexpf(x[idx], exp_out + idx);
     }
     ```
 
--   SIMD与SIMT混合编程场景：
-
-    SIMD与SIMT混合编程场景，需要显式使用地址空间限定符表示地址空间：\_\_gm\_\_表示Global Memory内存空间，\_\_ubuf\_\_表示Unified Buffer内存空间，栈空间无需添加地址空间限定符。
+- SIMD与SIMT混合编程场景：
 
     ```
-    __simt_vf__ __launch_bounds__(1024) inline void KernelFrexp(__gm__ float* dst1, __gm__ int* dst2, __gm__ float* x)
+    __simt_vf__ __launch_bounds__(256) inline void compute_frexpf_vf(__gm__ float *result, __gm__ int *exp_out, __gm__ const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst1[idx] = frexpf(x[idx], dst2 + idx);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = frexpf(x[idx], exp_out + idx);
+    }
+
+    __global__ __vector__ void run_frexpf(__gm__ float *result, __gm__ int *exp_out, __gm__ const float *x, uint32_t count)
+    {
+        asc_vf_call<compute_frexpf_vf>(dim3(256), result, exp_out, x, count);
     }
     ```
+
+输入输出示例如下：
+
+```
+x：0.25, 0.75, 1.25, 1.75
+result: 0.5 0.75 0.625 0.875
+exp_out: -1 0 1 1
+```

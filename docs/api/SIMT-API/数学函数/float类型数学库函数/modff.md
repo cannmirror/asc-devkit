@@ -51,25 +51,41 @@ inline float modff(float x, float *n)
 
 ## 调用示例
 
--   SIMT编程场景：
+- SIMT编程场景：
 
     ```
-    __global__ __launch_bounds__(1024) void KernelModff(float* dst, float* out, float* x)
+    __global__ __launch_bounds__(256) void compute_modff(float *result, float *integer_part, const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = modff(x[idx], out + idx);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = modff(x[idx], integer_part + idx);
     }
     ```
 
--   SIMD与SIMT混合编程场景：
-
-    SIMD与SIMT混合编程场景，需要显式使用地址空间限定符表示地址空间：\_\_gm\_\_表示Global Memory内存空间，\_\_ubuf\_\_表示Unified Buffer内存空间，栈空间无需添加地址空间限定符。
+- SIMD与SIMT混合编程场景：
 
     ```
-    __simt_vf__ __launch_bounds__(1024) inline void KernelModff(__gm__ float* dst, __gm__ float* out, __gm__ float* x)
+    __simt_vf__ __launch_bounds__(256) inline void compute_modff_vf(__gm__ float *result, __gm__ float *integer_part, __gm__ const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = modff(x[idx], out + idx);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = modff(x[idx], integer_part + idx);
+    }
+
+    __global__ __vector__ void run_modff(__gm__ float *result, __gm__ float *integer_part, __gm__ const float *x, uint32_t count)
+    {
+        asc_vf_call<compute_modff_vf>(dim3(256), result, integer_part, x, count);
     }
     ```
 
+输入输出示例如下：
+
+```
+x：0.25, 0.75, 1.25, 1.75
+result: 0.25 0.75 0.25 0.75
+integer_part: 0 0 1 1
+```

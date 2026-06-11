@@ -52,23 +52,40 @@ inline float erfinvf(float x)
 
 ## 调用示例
 
--   SIMT编程场景：
+- SIMT编程场景：
 
     ```
-    __global__ __launch_bounds__(1024) void KernelErfc(float* x, float* y)
+    __global__ __launch_bounds__(256) void compute_erfinvf(float *result, const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        y[idx] = erfinvf(x[idx]);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = erfinvf(x[idx]);
     }
     ```
 
--   SIMD与SIMT混合编程场景：
+- SIMD与SIMT混合编程场景：
 
     ```
-    __simt_vf__ __launch_bounds__(1024) inline void KernelErfc(__gm__ float* x, __gm__ float* y)
+    __simt_vf__ __launch_bounds__(256) inline void compute_erfinvf_vf(__gm__ float *result, __gm__ const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        y[idx] = erfinvf(x[idx]);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = erfinvf(x[idx]);
+    }
+
+    __global__ __vector__ void run_erfinvf(__gm__ float *result, __gm__ const float *x, uint32_t count)
+    {
+        asc_vf_call<compute_erfinvf_vf>(dim3(256), result, x, count);
     }
     ```
 
+输入输出示例如下：
+
+```
+x：-0.75, -0.25, 0.25, 0.75
+result: -0.8134198 -0.2253121 0.2253121 0.8134198
+```

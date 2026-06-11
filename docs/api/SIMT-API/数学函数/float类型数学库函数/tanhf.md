@@ -52,23 +52,40 @@ inline float tanhf(float x)
 
 ## 调用示例
 
--   SIMT编程场景：
+- SIMT编程场景：
 
     ```
-    __global__ __launch_bounds__(1024) void KernelTanh(float* dst, float* x)
+    __global__ __launch_bounds__(256) void compute_tanhf(float *result, const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = tanhf(x[idx]);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = tanhf(x[idx]);
     }
     ```
 
--   SIMD与SIMT混合编程场景：
+- SIMD与SIMT混合编程场景：
 
     ```
-    __simt_vf__ __launch_bounds__(1024) inline void KernelTanh(__gm__ float* dst, __gm__ float* x)
+    __simt_vf__ __launch_bounds__(256) inline void compute_tanhf_vf(__gm__ float *result, __gm__ const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = tanhf(x[idx]);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = tanhf(x[idx]);
+    }
+
+    __global__ __vector__ void run_tanhf(__gm__ float *result, __gm__ const float *x, uint32_t count)
+    {
+        asc_vf_call<compute_tanhf_vf>(dim3(256), result, x, count);
     }
     ```
 
+输入输出示例如下：
+
+```
+x：0.25, 0.75, 1.25, 1.75
+result: 0.2449186 0.6351489 0.8482836 0.9413756
+```

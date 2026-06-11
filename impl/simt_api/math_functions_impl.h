@@ -797,8 +797,18 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float atan2f(float y, float x)
     }
 
     int d = (y >= 0) ? 1 : -1;
-
-    if (isinf(y) && isinf(x)) {
+    if (y == 0.0f) {
+        if (x > 0.0f) {
+            return y;
+        }
+        uint32_t x_bits = *reinterpret_cast<uint32_t *>(&x);
+        if ((x_bits & ASCRT_NEG_SIGN_BIT_U) != 0) {
+            uint32_t y_bits = *reinterpret_cast<uint32_t *>(&y);
+            int zero_sign = ((y_bits & ASCRT_NEG_SIGN_BIT_U) != 0) ? -1 : 1;
+            return zero_sign * ASCRT_PI_F;
+        }
+        return y;
+    } else if (isinf(y) && isinf(x)) {
         int s = 1;
         if (x < 0) {
             s = 3; // 3 : ATAN2_THREE
@@ -814,9 +824,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float atan2f(float y, float x)
     }
 
     if (x == 0) {
-        if (y == 0) {
-            d = 0;
-        }
         return d * ASCRT_PIO2_F;
     } else if (x > 0) {
         d = 0;
@@ -1440,11 +1447,14 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float logbf(float x)
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t ilogbf(float x)
 {
+    if (x == 0.0f || isnan(x)) {
+        return ASCRT_MIN_VAL_S;
+    }
+    if (isinf(x)) {
+        return ASCRT_MAX_VAL_S;
+    }
     if (x < 0) {
         x = -x;
-    }
-    if (isnan(x)) {
-        return ASCRT_MIN_VAL_S;
     }
     return static_cast<int>(logbf(x));
 }

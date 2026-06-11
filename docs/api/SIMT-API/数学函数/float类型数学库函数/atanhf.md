@@ -52,23 +52,40 @@ inline float atanhf(float x)
 
 ## 调用示例
 
--   SIMT编程场景：
+- SIMT编程场景：
 
     ```
-    __global__ __launch_bounds__(1024) void KernelAtanh(float* dst, float* x)
+    __global__ __launch_bounds__(256) void compute_atanhf(float *result, const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = atanhf(x[idx]);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = atanhf(x[idx]);
     }
     ```
 
--   SIMD与SIMT混合编程场景：
+- SIMD与SIMT混合编程场景：
 
     ```
-    __simt_vf__ __launch_bounds__(1024) inline void KernelAtanh(__gm__ float* dst, __gm__ float* x)
+    __simt_vf__ __launch_bounds__(256) inline void compute_atanhf_vf(__gm__ float *result, __gm__ const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = atanhf(x[idx]);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = atanhf(x[idx]);
+    }
+
+    __global__ __vector__ void run_atanhf(__gm__ float *result, __gm__ const float *x, uint32_t count)
+    {
+        asc_vf_call<compute_atanhf_vf>(dim3(256), result, x, count);
     }
     ```
 
+输入输出示例如下：
+
+```
+x：-0.75, -0.25, 0.25, 0.75
+result: -0.972955 -0.2554128 0.2554128 0.9729551
+```

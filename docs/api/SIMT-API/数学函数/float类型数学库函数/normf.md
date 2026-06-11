@@ -55,25 +55,41 @@ a\[0\]^2 + a\[1\]^2 + ...+ a\[n-1\]^2的平方根。
 
 ## 调用示例
 
--   SIMT编程场景：
+- SIMT编程场景：
 
     ```
-    __global__ __launch_bounds__(1024) void KernelNorm(float* dst, int* n, float* a)
+    __global__ __launch_bounds__(256) void compute_normf(float *result, const int *n, float *vector_data, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = normf(n[idx], a);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = normf(n[idx], vector_data + idx * 4);
     }
     ```
 
--   SIMD与SIMT混合编程场景：
-
-    SIMD与SIMT混合编程场景，需要显式使用地址空间限定符表示地址空间：\_\_gm\_\_表示Global Memory内存空间，\_\_ubuf\_\_表示Unified Buffer内存空间，栈空间无需添加地址空间限定符。
+- SIMD与SIMT混合编程场景：
 
     ```
-    __simt_vf__ __launch_bounds__(1024) inline void KernelNorm(__gm__ float* dst, __gm__ int* n, __gm__ float* a)
+    __simt_vf__ __launch_bounds__(256) inline void compute_normf_vf(__gm__ float *result, __gm__ const int *n, __gm__ float *vector_data, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = normf(n[idx], a);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = normf(n[idx], vector_data + idx * 4);
+    }
+
+    __global__ __vector__ void run_normf(__gm__ float *result, __gm__ const int *n, __gm__ float *vector_data, uint32_t count)
+    {
+        asc_vf_call<compute_normf_vf>(dim3(256), result, n, vector_data, count);
     }
     ```
 
+输入输出示例如下：
+
+```
+n：1, 2, 3, 1
+vector_data：[[1, 2, 3, 4], [2, 3, 4, 5], [3, 4, 5, 6], [4, 5, 6, 7]]
+result: 1 3.605551 7.071068 4
+```

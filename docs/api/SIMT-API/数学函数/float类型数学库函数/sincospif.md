@@ -51,25 +51,41 @@ inline void sincospif(float x, float *s, float *c)
 
 ## 调用示例
 
--   SIMT编程场景：
+- SIMT编程场景：
 
     ```
-    __global__ __launch_bounds__(1024) void KernelSinCospi(float* s, float* c, float* x)
+    __global__ __launch_bounds__(256) void compute_sincospif(float *sin_result, float *cos_result, const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        sincospif(x[idx], s + idx, c + idx); // 对源地址的第idx个元素取与π相乘后的三角函数正弦值和余弦值
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        sincospif(x[idx], sin_result + idx, cos_result + idx);
     }
     ```
 
--   SIMD与SIMT混合编程场景：
-
-    SIMD与SIMT混合编程场景，需要显式使用地址空间限定符表示地址空间：\_\_gm\_\_表示Global Memory内存空间，\_\_ubuf\_\_表示Unified Buffer内存空间，栈空间无需添加地址空间限定符。
+- SIMD与SIMT混合编程场景：
 
     ```
-    __simt_vf__ __launch_bounds__(1024) inline void KernelSinCospi(__gm__ float* s, __gm__ float* c, __gm__ float* x)
+    __simt_vf__ __launch_bounds__(256) inline void compute_sincospif_vf(__gm__ float *sin_result, __gm__ float *cos_result, __gm__ const float *x, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        sincospif(x[idx], s + idx, c + idx); // 对源地址的第idx个元素取与π相乘后的三角函数正弦值和余弦值
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        sincospif(x[idx], sin_result + idx, cos_result + idx);
+    }
+
+    __global__ __vector__ void run_sincospif(__gm__ float *sin_result, __gm__ float *cos_result, __gm__ const float *x, uint32_t count)
+    {
+        asc_vf_call<compute_sincospif_vf>(dim3(256), sin_result, cos_result, x, count);
     }
     ```
 
+输入输出示例如下：
+
+```
+x：0.25, 0.75, 1.25, 1.75
+sin_result: 0.7071068 0.7071068 -0.7071069 -0.7071065
+cos_result: 0.7071068 -0.7071068 -0.7071066 0.707107
+```

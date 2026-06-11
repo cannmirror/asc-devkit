@@ -53,25 +53,42 @@ inline float remquof(float x, float y, int *quo)
 
 ## 调用示例
 
--   SIMT编程场景：
+- SIMT编程场景：
 
     ```
-    __global__ __launch_bounds__(1024) void KernelRemQuo(float* dst, float* x, float* y, int* quo)
+    __global__ __launch_bounds__(256) void compute_remquof(float *result, int *quo, const float *x, const float *y, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = remquof(x[idx], y[idx], quo + idx);
-     }
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = remquof(x[idx], y[idx], quo + idx);
+    }
     ```
 
--   SIMD与SIMT混合编程场景：
-
-    SIMD与SIMT混合编程场景，需要显式使用地址空间限定符表示地址空间：\_\_gm\_\_表示Global Memory内存空间，\_\_ubuf\_\_表示Unified Buffer内存空间，栈空间无需添加地址空间限定符。
+- SIMD与SIMT混合编程场景：
 
     ```
-    __simt_vf__ __launch_bounds__(1024) inline void KernelRemQuo(__gm__ float* dst, __gm__ float* x, __gm__ float* y, __gm__ int* quo)
+    __simt_vf__ __launch_bounds__(256) inline void compute_remquof_vf(__gm__ float *result, __gm__ int *quo, __gm__ const float *x, __gm__ const float *y, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = remquof(x[idx], y[idx], quo + idx);
-     }
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = remquof(x[idx], y[idx], quo + idx);
+    }
+
+    __global__ __vector__ void run_remquof(__gm__ float *result, __gm__ int *quo, __gm__ const float *x, __gm__ const float *y, uint32_t count)
+    {
+        asc_vf_call<compute_remquof_vf>(dim3(256), result, quo, x, y, count);
+    }
     ```
 
+输入输出示例如下：
+
+```
+x：0.25, 0.75, 1.25, 1.75
+y：1.25, 2.25, 3.25, 4.25
+result: 0.25 0.75 1.25 1.75
+quo: 0 0 0 0
+```

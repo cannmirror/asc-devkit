@@ -57,40 +57,41 @@ inline float nextafterf(float x, float y)
 
 ## 调用示例
 
--   SIMT编程场景：
+- SIMT编程场景：
 
     ```
-    __simt_vf__ __launch_bounds__(1024) inline void KernelNextAfter(__gm__ float* dst, __gm__ float* x, __gm__ float* y)
+    __global__ __launch_bounds__(256) void compute_nextafterf(float *result, const float *x, const float *y, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = nextafterf(x[idx], y[idx]);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = nextafterf(x[idx], y[idx]);
     }
     ```
 
--   SIMD与SIMT混合编程场景：
+- SIMD与SIMT混合编程场景：
 
     ```
-    __simt_vf__ __launch_bounds__(1024) inline void KernelNextAfter(__gm__ float* dst, __gm__ float* x, __gm__ float* y)
+    __simt_vf__ __launch_bounds__(256) inline void compute_nextafterf_vf(__gm__ float *result, __gm__ const float *x, __gm__ const float *y, uint32_t count)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-        dst[idx] = nextafterf(x[idx], y[idx]);
-        printf("x[%d] = %f, y[%d] = %f, dst[%d] = %f, 输入x的16进制表示为: 0x%x, 输出dst的16进制表示为: 0x%x\n", idx, x[idx], idx, y[idx], idx, dst[idx], x[idx], dst[idx]);
+        const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= count) {
+            return;
+        }
+        result[idx] = nextafterf(x[idx], y[idx]);
+    }
+
+    __global__ __vector__ void run_nextafterf(__gm__ float *result, __gm__ const float *x, __gm__ const float *y, uint32_t count)
+    {
+        asc_vf_call<compute_nextafterf_vf>(dim3(256), result, x, y, count);
     }
     ```
 
-    程序输入为：
+输入输出示例如下：
 
-    ```
-    x:[10.0f 10.0f -10.0f -10.0f ...]
-    y:[20.0f -20.0f 20.0f -20.0f ...]
-    ```
-
-    程序前4个线程的运行时打印效果如下：
-
-    ```
-    x[0] = 10.000000, y[0] = 20.000000, dst[0] = 10.000001, 输入x的16进制表示为: 0x41200000, 输出dst的16进制表示为: 0x41200001
-    x[1] = 10.000000, y[1] = -20.000000, dst[1] = 9.999999, 输入x的16进制表示为: 0x41200000, 输出dst的16进制表示为: 0x411fffff
-    x[2] = -10.000000, y[2] = 20.000000, dst[2] = -9.999999, 输入x的16进制表示为: 0xc1200000, 输出dst的16进制表示为: 0xc11fffff
-    x[3] = -10.000000, y[3] = -20.000000, dst[3] = -10.000001, 输入x的16进制表示为: 0xc1200000, 输出dst的16进制表示为: 0xc1200001
-    ```
-
+```
+x：0.25, 0.75, 1.25, 1.75
+y：1.5, 2.5, 3.5, 4.5
+result: 0.25 0.7500001 1.25 1.75
+```

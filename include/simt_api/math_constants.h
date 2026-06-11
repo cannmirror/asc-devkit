@@ -69,6 +69,7 @@ constexpr int ASCRT_NEG_ZERO_F_VALUE = 0x80000000U;
 
 #define ASCRT_MIN_VAL_S                        0x80000000 
 #define ASCRT_INT32_INF_S                      2139095040
+#define ASCRT_MAX_VAL_S                        0x7FFFFFFF
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_CONSTANTS_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
