@@ -11,6 +11,8 @@
 # ----------------------------------------------------------------------------------------------------------
 
 import copy
+import ast
+import operator
 import re
 from enum import Enum, auto
 from dataclasses import dataclass
@@ -154,6 +156,39 @@ ASCENDC_COMPILE_DATAFORMAT_MAP = {
     "FORMAT_MAX": ["unknown", ASCENDC_TPL_DATAFORMAT_MAX],  # 0xff = 255
 }
 ASCENDC_COMPILE_DATAFORMAT_REVERT_MAP = {v[-1]: v[0] for v in ASCENDC_COMPILE_DATAFORMAT_MAP.values()}
+SAFE_EXPR_BIN_OPS = {
+    ast.Add: operator.add,
+    ast.Sub: operator.sub,
+    ast.Mult: operator.mul,
+    ast.FloorDiv: operator.floordiv,
+    ast.Div: operator.floordiv,
+    ast.Mod: operator.mod,
+    ast.LShift: operator.lshift,
+    ast.RShift: operator.rshift,
+    ast.BitOr: operator.or_,
+    ast.BitAnd: operator.and_,
+    ast.BitXor: operator.xor,
+}
+SAFE_EXPR_UNARY_OPS = {
+    ast.UAdd: operator.pos,
+    ast.USub: operator.neg,
+    ast.Invert: operator.invert,
+}
+
+
+def safe_eval_int_expr(expr):
+    def _eval(node):
+        if isinstance(node, ast.Expression):
+            return _eval(node.body)
+        if isinstance(node, ast.Constant) and isinstance(node.value, int):
+            return node.value
+        if isinstance(node, ast.BinOp) and type(node.op) in SAFE_EXPR_BIN_OPS:
+            return SAFE_EXPR_BIN_OPS[type(node.op)](_eval(node.left), _eval(node.right))
+        if isinstance(node, ast.UnaryOp) and type(node.op) in SAFE_EXPR_UNARY_OPS:
+            return SAFE_EXPR_UNARY_OPS[type(node.op)](_eval(node.operand))
+        raise ValueError("unsupported integer expression")
+
+    return _eval(ast.parse(expr, mode="eval"))
 
 
 def extract_num(s):
@@ -172,7 +207,7 @@ def safe_parse_value(s):
     except Exception:
         pass
     try:
-        result = int(eval(s))
+        result = int(safe_eval_int_expr(s))
         return result
     except Exception:
         pass

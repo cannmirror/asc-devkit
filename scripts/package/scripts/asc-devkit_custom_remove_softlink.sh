@@ -36,7 +36,7 @@ done
 get_arch_name() {
     local pkg_dir="$1"
     local scene_file="$pkg_dir/scene.info"
-    grep '^arch=' $scene_file | cut -d"=" -f2
+    grep '^arch=' "$scene_file" | cut -d"=" -f2
 }
 
 remove_stub_softlink() {
@@ -49,14 +49,17 @@ remove_stub_softlink() {
         return
     fi
     local pwdbak="$(pwd)"
-    cd $stub_dir && chmod u+w . && ls -1 "$ref_dir" | xargs --no-run-if-empty rm -rf
-    [ -L "x86_64" ] && rm -rf "x86_64"
-    [ -L "aarch64" ] && rm -rf "aarch64"
-    cd $pwdbak
+    cd "$stub_dir" && chmod u+w .
+    find "$ref_dir" -mindepth 1 -maxdepth 1 -exec basename {} \; | while IFS= read -r item; do
+        rm -rf -- "$item"
+    done
+    [ -L "x86_64" ] && rm -rf -- "x86_64"
+    [ -L "aarch64" ] && rm -rf -- "aarch64"
+    cd "$pwdbak"
 }
 
 do_remove_stub_softlink() {
-    local arch_name="$(get_arch_name $install_path/$version_dir/share/info/asc-devkit)"
+    local arch_name="$(get_arch_name "$install_path/$version_dir/share/info/asc-devkit")"
     local arch_linux_path="$install_path/$latest_dir/$arch_name-linux"
     if [ ! -e "$arch_linux_path" ] || [ -L "$arch_linux_path" ]; then
         return
@@ -109,7 +112,13 @@ python_dir_chmod_set() {
 }
 
 remove_softlink() {
-    rm -rf $WHL_SOFTLINK_INSTALL_DIR_PATH/$1 > /dev/null 2>&1
+    local pattern="$1"
+    local _path
+    for _path in "$WHL_SOFTLINK_INSTALL_DIR_PATH"/$pattern; do
+        if [ -e "$_path" ] || [ -L "$_path" ]; then
+            rm -rf -- "$_path" > /dev/null 2>&1
+        fi
+    done
 }
 
 remove_empty_dir() {

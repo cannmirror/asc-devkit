@@ -23,11 +23,13 @@ logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s line:%(lineno)d %(levelname)s:%(name)s:%(message)s',
                     datefmt='%H:%M:%S')
 
+
 def _get_sign_filename() -> Tuple[Optional[str], Optional[str]]:
     """获取签名文件名。"""
     crlfile = "SWSCRL.crl"
     cmstag = ".p7s"
     return crlfile, cmstag
+
 
 def _get_sign_crl(signtype, default_crl):
     """获取crl路径"""
@@ -44,6 +46,7 @@ def _get_sign_crl(signtype, default_crl):
 
     return sign_crl
 
+
 def _check_result(inputfile) -> bool:
     """签名后处理"""
     crlfile, cmstag = _get_sign_filename()
@@ -57,6 +60,7 @@ def _check_result(inputfile) -> bool:
             return False
     return True
 
+
 def _help():
     print("==================================== 帮助信息 ==================================")
     print("通用命令，命令格式如下:")
@@ -69,33 +73,40 @@ def _help():
     print("  %s: 待签名的文件路径,支持多target,各target以空格分开" % ("target".ljust(8)))
     print("====================================== END =====================================")
 
-def get_sign_cmd(file, rootdir) -> str:
+
+def get_sign_cmd(file, rootdir) -> List[str]:
     """获取签名命令。"""
     sign_crl = os.path.join(rootdir, "scripts/signtool/signature/SWSCRL.crl")
-    sign_command = ("sudo /home/jenkins/signatrust_client/signatrust_client --config /home/jenkins/signatrust_client/client.toml add "
-                    "--file-type p7s --key-type x509 --key-name SignCert --detached ")
-    sign_suffix=" --timestamp-key TimeCert --crl "
-    cmd = "{} {} {} {}".format(sign_command, file, sign_suffix, sign_crl)
-    return cmd
+    return [
+        "sudo", "/home/jenkins/signatrust_client/signatrust_client",
+        "--config", "/home/jenkins/signatrust_client/client.toml",
+        "add", "--file-type", "p7s", "--key-type", "x509",
+        "--key-name", "SignCert", "--detached", file,
+        "--timestamp-key", "TimeCert", "--crl", sign_crl,
+    ]
+
 
 def _run_sign(inputfiles, rootdir):
     """执行签名。"""
     crlfile, cmstag = _get_sign_filename()
-    ret=True
+    ret = True
     for file in inputfiles:
         if not os.path.isfile(file):
             logging.warning("input file:%s is not exist", file)
             continue
         cmd = get_sign_cmd(file, rootdir)
 
-        logging.info("run sign cmd %s in %s", cmd, mypath)
-        result = subprocess.run(cmd, cwd=mypath, shell=True, check=False, stdout=PIPE, stderr=STDOUT)
+        logging.info("run sign cmd %s in %s", " ".join(cmd), mypath)
+        result = subprocess.run(
+            cmd, cwd=mypath, shell=False, check=False,
+            stdout=PIPE, stderr=STDOUT)
         if 0 != result.returncode:
             logging.error(result.stdout.decode())
-            logging.error("file %s signed error",file)
+            logging.error("file %s signed error", file)
             ret = False
             break
     return ret
+
 
 # 多个文件签名场景需要拆分分别签
 def main(argv):
@@ -119,6 +130,7 @@ def main(argv):
         logging.error("signature build fail")
         sys.exit(1)
     sys.exit(0)
+
 
 if __name__ == '__main__':
     main(sys.argv)
