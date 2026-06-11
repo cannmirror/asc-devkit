@@ -10,7 +10,7 @@
 
 将src中被mask选择的有效元素依次复制到dst，有效元素在dst上连续排列。dst中剩余位置元素置为0。
 
-asc_squeeze_v2接口搭配[asc_storeunalign_postupdate](../reg_store/asc_storeunalign_postupdate.md)接口使用时，会将有效数据大小保存至AR寄存器，搬出时使用该值作为存储偏移量。AR寄存器中的数值可以通过[asc_get_ar_spr](../../sys_var/asc_get_ar_spr.md)接口获取。
+asc_squeeze_v2接口搭配[asc_storeunalign_postupdate](../reg_store/asc_storeunalign_postupdate.md)接口使用时，会将有效数据大小保存至AR寄存器，搬出时使用该值作为存储偏移量。AR寄存器中的数值可以通过[asc_get_ar_spr](../../系统变量/asc_get_ar_spr.md)接口获取。
 
 ## 函数原型
 

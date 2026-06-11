@@ -30,7 +30,7 @@ int64_t valueOut = AscendC::CountBitsCntSameAsSignBit(0x0100000000000020ULL); //
 
 **图 1**  CountBitsCntSameAsSignBit计算示意图<a name="fig1"></a>
 
-![CountBitsCntSameAsSignBit计算示意图](../../../figures/CountBitsCntSameAsSignBit.png "CountBitsCntSameAsSignBit计算示意图")
+![CountBitsCntSameAsSignBit计算示意图](../../../figures/CountBitsCntSameAsSignBit.png)
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
