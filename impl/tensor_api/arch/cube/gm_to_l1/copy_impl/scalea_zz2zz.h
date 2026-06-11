@@ -47,10 +47,21 @@ private:
     __aicore__ inline static void DataCopyImpl(const T& dst, const U& src)
     {
         CheckTemplate<trait, T, U>();
+        if constexpr (U::layoutType::depth == FIVE_DIM_DATA) {
+            auto srcLayout = src.Layout();
+            auto dstLayout = dst.Layout();
+            EmitCopy(dst, src, RemoveBatchDim(srcLayout), RemoveBatchDim(dstLayout), Get<0>(srcLayout.Shape()),
+                Get<0>(srcLayout.Stride()), Get<0>(dstLayout.Stride()));
+        } else {
+            EmitCopy(dst, src, src.Layout(), dst.Layout(), 1, 0, 0);
+        }
+    }
 
+    template <typename T, typename U, typename SrcLayout, typename DstLayout>
+    __aicore__ inline static void EmitCopy(const T& dst, const U& src, const SrcLayout& srcLayout,
+        const DstLayout& dstLayout, uint16_t batchNum, uint64_t srcBatchStride, uint64_t dstBatchStride)
+    {
         using type = typename U::elementType;
-        auto dstLayout = dst.Layout();
-        auto srcLayout = src.Layout();
 
         auto srcShapeRowsB = GetElement<AttrInfo::Shape, AttrInfo::Row, 1>(srcLayout);
         auto srcShapeRowsS = GetElement<AttrInfo::Shape, AttrInfo::Row, 0>(srcLayout);
@@ -73,9 +84,12 @@ private:
 
         uint8_t leftPaddingCnt = 0;
         uint8_t rightPaddingCnt = 0;
-        CopyGmToCbufAlignV2Base::CopyGmToCbufAlignV2((__cbuf__ half*)(dst.Data().Get()),
-                                                     (__gm__ half*)(src.Data().Get()), blockCount, blockLen,
-                                                     leftPaddingCnt, rightPaddingCnt, cacheMode, srcStride, dstStride);
+        for (uint16_t batchIndex = 0; batchIndex < batchNum; ++batchIndex) {
+            CopyGmToCbufAlignV2Base::CopyGmToCbufAlignV2(
+                (__cbuf__ half*)((dst.Data() + batchIndex * dstBatchStride).Get()),
+                (__gm__ half*)((src.Data() + batchIndex * srcBatchStride).Get()), blockCount, blockLen,
+                leftPaddingCnt, rightPaddingCnt, cacheMode, srcStride, dstStride);
+        }
     }
 };
 

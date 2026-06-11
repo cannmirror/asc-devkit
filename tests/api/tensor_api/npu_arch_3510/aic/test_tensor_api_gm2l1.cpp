@@ -2490,6 +2490,240 @@ CAPTURE_GM_TO_L1_IMPL(uint16_t);
 CAPTURE_GM_TO_L1_IMPL(float);
 CAPTURE_GM_TO_L1_IMPL(uint32_t);
 
+#define RUN_GM2L1_SCALE_BATCH_COPY(type, batch, gmBaseLayoutExpr, l1BaseLayoutExpr)                                   \
+    using T = type;                                                                                                   \
+    constexpr uint32_t B = batch;                                                                                     \
+    auto gmBaseLayout = (gmBaseLayoutExpr);                                                                           \
+    auto l1BaseLayout = (l1BaseLayoutExpr);                                                                           \
+    using GmTrait = GetLayoutTrait<decltype(gmBaseLayout)>;                                                          \
+    using L1Trait = GetLayoutTrait<decltype(l1BaseLayout)>;                                                          \
+    using GmPattern = GetLayoutPattern<decltype(gmBaseLayout)>;                                                       \
+    using L1Pattern = GetLayoutPattern<decltype(l1BaseLayout)>;                                                       \
+    auto gmBatchLayout = MakeBatchPatternLayout<GmPattern, GmTrait>(B, gmBaseLayout);                                 \
+    auto l1BatchLayout = MakeBatchPatternLayout<L1Pattern, L1Trait>(B, l1BaseLayout);                                 \
+    auto gmA = MakeTensor(MakeMemPtr<Location::GM>(reinterpret_cast<T*>(src0Gm)), gmBatchLayout);                     \
+    auto l1ATensor = MakeTensor(MakeMemPtr<Location::L1>(reinterpret_cast<T*>(l1ABuf)), l1BatchLayout);               \
+    InitializeData<T>();                                                                                              \
+    MakeCopy(CopyGM2L1{}, CopyGM2L1TraitDefault{}).Call(l1ATensor, gmA);                                              \
+    auto srcBatchStride = Get<0>(gmBatchLayout.Stride());                                                             \
+    auto dstBatchStride = Get<0>(l1BatchLayout.Stride());                                                             \
+    for (uint32_t batchIdx = 0; batchIdx < B; ++batchIdx) {                                                           \
+        auto gmSingle = MakeTensor(                                                                                   \
+            MakeMemPtr<Location::GM>(reinterpret_cast<T*>(src0Gm) + batchIdx * srcBatchStride), gmBaseLayout);        \
+        auto l1GoldenSingle = MakeTensor(                                                                             \
+            MakeMemPtr<Location::L1>(reinterpret_cast<T*>(l1ABufGolden) + batchIdx * dstBatchStride), l1BaseLayout);  \
+        DataCopyGm2L1Sim(l1GoldenSingle, gmSingle);                                                                   \
+    }                                                                                                                 \
+    bool result = std::equal(l1ABuf, l1ABuf + L1Size, l1ABufGolden);                                                  \
+    EXPECT_TRUE(result);                                                                                              \
+    if (gDebugPrint || !result) {                                                                                     \
+        PrintCaptureData();                                                                                           \
+    }
+
+TEST_F(TensorApiGm2L1, CopyGm2L1Batch_ScaleAND2Zz_RoutesToSingleDn2Nz)
+{
+    using T = fp8_e8m0_t;
+
+    constexpr uint32_t B = 3;
+    constexpr uint32_t M = 64;
+    constexpr uint32_t N = 4;
+    auto gmBaseLayout = MakeScaleAND<T>(M, N);
+    auto l1BaseLayout = MakeZZ<T>(M, N);
+    using GmTrait = GetLayoutTrait<decltype(gmBaseLayout)>;
+    using L1Trait = GetLayoutTrait<decltype(l1BaseLayout)>;
+    auto gmBatchLayout = MakeBatchPatternLayout<ScaleANDLayoutPtn, GmTrait>(B, gmBaseLayout);
+    auto l1BatchLayout = MakeBatchPatternLayout<ZZLayoutPtn, L1Trait>(B, l1BaseLayout);
+    auto gmA = MakeTensor(MakeMemPtr<Location::GM>(reinterpret_cast<T*>(src0Gm)), gmBatchLayout);
+    auto l1ATensor = MakeTensor(MakeMemPtr<Location::L1>(reinterpret_cast<T*>(l1ABuf)), l1BatchLayout);
+
+    InitializeData<T>();
+    MakeCopy(CopyGM2L1{}, CopyGM2L1TraitDefault{}).Call(l1ATensor, gmA);
+
+    auto srcBatchStride = Get<0>(gmBatchLayout.Stride());
+    auto dstBatchStride = Get<0>(l1BatchLayout.Stride());
+    for (uint32_t batchIdx = 0; batchIdx < B; ++batchIdx) {
+        auto gmSingle = MakeTensor(
+            MakeMemPtr<Location::GM>(reinterpret_cast<T*>(src0Gm) + batchIdx * srcBatchStride), gmBaseLayout);
+        auto l1GoldenSingle = MakeTensor(
+            MakeMemPtr<Location::L1>(reinterpret_cast<T*>(l1ABufGolden) + batchIdx * dstBatchStride), l1BaseLayout);
+        DataCopyGm2L1Sim(l1GoldenSingle, gmSingle);
+    }
+    bool result = std::equal(l1ABuf, l1ABuf + L1Size, l1ABufGolden);
+    EXPECT_TRUE(result);
+    if (gDebugPrint || !result) {
+        PrintCaptureData();
+    }
+
+    ASSERT_EQ(gGm2L1DN2NzCaptures.size(), 1);
+    ASSERT_EQ(gGm2L1NzParaCaptures.size(), 1);
+    const auto& dn2nz = gGm2L1DN2NzCaptures.back();
+    const auto& nzPara = gGm2L1NzParaCaptures.back();
+    auto expectedLoop3DstStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(l1BaseLayout) * sizeof(T) /
+        C0_SIZE<>;
+    auto expectedLoop4DstStride = dstBatchStride * sizeof(T) / C0_SIZE<>;
+    auto expectedLoop1SrcStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(gmBaseLayout) * sizeof(T);
+    auto expectedLoop4SrcStride = srcBatchStride * sizeof(T);
+    EXPECT_EQ(nzPara.ndNum, B);
+    EXPECT_EQ(nzPara.loop2DstStride, 1);
+    EXPECT_EQ(nzPara.loop3DstStride, expectedLoop3DstStride);
+    EXPECT_EQ(nzPara.loop4DstStride, expectedLoop4DstStride);
+    EXPECT_EQ(dn2nz.loop1SrcStride, expectedLoop1SrcStride);
+    EXPECT_EQ(dn2nz.nValue, N / 2);
+    EXPECT_EQ(dn2nz.dValue, M);
+    EXPECT_EQ(dn2nz.loop4SrcStride, expectedLoop4SrcStride);
+    EXPECT_FALSE(dn2nz.enableSmallC0);
+}
+
+TEST_F(TensorApiGm2L1, CopyGm2L1Batch_ScaleADN2Zz_RoutesToSingleNd2Nz)
+{
+    constexpr uint32_t M = 64;
+    constexpr uint32_t N = 32;
+    RUN_GM2L1_SCALE_BATCH_COPY(fp8_e8m0_t, 3, MakeScaleADN<T>(M, N), MakeZZ<T>(M, N));
+
+    ASSERT_EQ(gGm2L1ND2NzCaptures.size(), 1);
+    ASSERT_EQ(gGm2L1NzParaCaptures.size(), 1);
+    const auto& nd2nz = gGm2L1ND2NzCaptures.back();
+    const auto& nzPara = gGm2L1NzParaCaptures.back();
+    auto expectedLoop3DstStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(l1BaseLayout) * sizeof(T) /
+        C0_SIZE<>;
+    auto expectedLoop4DstStride = dstBatchStride * sizeof(T) / C0_SIZE<>;
+    auto expectedLoop1SrcStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(gmBaseLayout) * sizeof(T);
+    auto expectedLoop4SrcStride = srcBatchStride * sizeof(T);
+    EXPECT_EQ(nzPara.ndNum, B);
+    EXPECT_EQ(nzPara.loop2DstStride, 1);
+    EXPECT_EQ(nzPara.loop3DstStride, expectedLoop3DstStride);
+    EXPECT_EQ(nzPara.loop4DstStride, expectedLoop4DstStride);
+    EXPECT_EQ(nd2nz.loop1SrcStride, expectedLoop1SrcStride);
+    EXPECT_EQ(nd2nz.nValue, (GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(gmBaseLayout)));
+    EXPECT_EQ(nd2nz.dValue, (GetElement<AttrInfo::Shape, AttrInfo::Row, 1>(gmBaseLayout)));
+    EXPECT_EQ(nd2nz.loop4SrcStride, expectedLoop4SrcStride);
+    EXPECT_FALSE(nd2nz.enableSmallC0);
+}
+
+TEST_F(TensorApiGm2L1, CopyGm2L1Batch_ScaleBND2Nn_RoutesToSingleNd2Nz)
+{
+    constexpr uint32_t M = 64;
+    constexpr uint32_t N = 32;
+    RUN_GM2L1_SCALE_BATCH_COPY(fp8_e8m0_t, 3, MakeScaleBND<T>(M, N), MakeNN<T>(M, N));
+
+    ASSERT_EQ(gGm2L1ND2NzCaptures.size(), 1);
+    ASSERT_EQ(gGm2L1NzParaCaptures.size(), 1);
+    const auto& nd2nz = gGm2L1ND2NzCaptures.back();
+    const auto& nzPara = gGm2L1NzParaCaptures.back();
+    auto expectedLoop3DstStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(l1BaseLayout) * sizeof(T) /
+        C0_SIZE<>;
+    auto expectedLoop4DstStride = dstBatchStride * sizeof(T) / C0_SIZE<>;
+    auto expectedLoop1SrcStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(gmBaseLayout) * sizeof(T);
+    auto expectedLoop4SrcStride = srcBatchStride * sizeof(T);
+    EXPECT_EQ(nzPara.ndNum, B);
+    EXPECT_EQ(nzPara.loop2DstStride, 1);
+    EXPECT_EQ(nzPara.loop3DstStride, expectedLoop3DstStride);
+    EXPECT_EQ(nzPara.loop4DstStride, expectedLoop4DstStride);
+    EXPECT_EQ(nd2nz.loop1SrcStride, expectedLoop1SrcStride);
+    EXPECT_EQ(nd2nz.nValue, (GetElement<AttrInfo::Shape, AttrInfo::Row, 1>(gmBaseLayout)));
+    EXPECT_EQ(nd2nz.dValue, (GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(gmBaseLayout)));
+    EXPECT_EQ(nd2nz.loop4SrcStride, expectedLoop4SrcStride);
+    EXPECT_FALSE(nd2nz.enableSmallC0);
+}
+
+TEST_F(TensorApiGm2L1, CopyGm2L1Batch_ScaleBDN2Nn_RoutesToSingleDn2Nz)
+{
+    constexpr uint32_t M = 64;
+    constexpr uint32_t N = 32;
+    RUN_GM2L1_SCALE_BATCH_COPY(fp8_e8m0_t, 3, MakeScaleBDN<T>(M, N), MakeNN<T>(M, N));
+
+    ASSERT_EQ(gGm2L1DN2NzCaptures.size(), 1);
+    ASSERT_EQ(gGm2L1NzParaCaptures.size(), 1);
+    const auto& dn2nz = gGm2L1DN2NzCaptures.back();
+    const auto& nzPara = gGm2L1NzParaCaptures.back();
+    auto expectedLoop3DstStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(l1BaseLayout) * sizeof(T) /
+        C0_SIZE<>;
+    auto expectedLoop4DstStride = dstBatchStride * sizeof(T) / C0_SIZE<>;
+    auto expectedLoop1SrcStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(gmBaseLayout) * sizeof(T);
+    auto expectedLoop4SrcStride = srcBatchStride * sizeof(T);
+    EXPECT_EQ(nzPara.ndNum, B);
+    EXPECT_EQ(nzPara.loop2DstStride, 1);
+    EXPECT_EQ(nzPara.loop3DstStride, expectedLoop3DstStride);
+    EXPECT_EQ(nzPara.loop4DstStride, expectedLoop4DstStride);
+    EXPECT_EQ(dn2nz.loop1SrcStride, expectedLoop1SrcStride);
+    EXPECT_EQ(dn2nz.nValue, (GetElement<AttrInfo::Shape, AttrInfo::Row, 1>(gmBaseLayout) >> 1));
+    EXPECT_EQ(dn2nz.dValue, (GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(gmBaseLayout)));
+    EXPECT_EQ(dn2nz.loop4SrcStride, expectedLoop4SrcStride);
+    EXPECT_FALSE(dn2nz.enableSmallC0);
+}
+
+TEST_F(TensorApiGm2L1, CopyGm2L1Batch_ScaleAZz2Zz_ContinuousRoutesToPerBatchAlignV2)
+{
+    constexpr uint32_t M = 64;
+    constexpr uint32_t N = 32;
+    RUN_GM2L1_SCALE_BATCH_COPY(fp8_e8m0_t, 3, MakeZZ<T>(M, N), MakeZZ<T>(M, N));
+
+    ASSERT_EQ(gGm2L1AlignV2Captures.size(), B);
+    const auto& alignV2 = gGm2L1AlignV2Captures.back();
+    auto baseBlockCount = GetElement<AttrInfo::Shape, AttrInfo::Row, 1>(gmBaseLayout);
+    auto baseBlockLen = GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(gmBaseLayout) * sizeof(T) *
+        GetElement<AttrInfo::Shape, AttrInfo::Row, 0>(gmBaseLayout) *
+        GetElement<AttrInfo::Stride, AttrInfo::Row, 0>(gmBaseLayout);
+    auto expectedSrcStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(gmBaseLayout) * sizeof(T);
+    auto expectedDstStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(l1BaseLayout) * sizeof(T);
+    EXPECT_EQ(alignV2.blockCount, baseBlockCount);
+    EXPECT_EQ(alignV2.blockLen, baseBlockLen);
+    EXPECT_EQ(alignV2.srcStride, expectedSrcStride);
+    EXPECT_EQ(alignV2.dstStride, expectedDstStride);
+}
+
+TEST_F(TensorApiGm2L1, CopyGm2L1Batch_ScaleAZz2Zz_NonContinuousDstFallsBackToPerBatchAlignV2)
+{
+    constexpr uint32_t M = 64;
+    constexpr uint32_t N = 32;
+    RUN_GM2L1_SCALE_BATCH_COPY(fp8_e8m0_t, 3, MakeZZ<T>(M, N), MakeZZ<T>(M + 16, N));
+
+    ASSERT_EQ(gGm2L1AlignV2Captures.size(), B);
+    const auto& alignV2 = gGm2L1AlignV2Captures.back();
+    auto baseBlockCount = GetElement<AttrInfo::Shape, AttrInfo::Row, 1>(gmBaseLayout);
+    auto baseBlockLen = GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(gmBaseLayout) * sizeof(T) *
+        GetElement<AttrInfo::Shape, AttrInfo::Row, 0>(gmBaseLayout) *
+        GetElement<AttrInfo::Stride, AttrInfo::Row, 0>(gmBaseLayout);
+    EXPECT_EQ(alignV2.blockCount, baseBlockCount);
+    EXPECT_EQ(alignV2.blockLen, baseBlockLen);
+}
+
+TEST_F(TensorApiGm2L1, CopyGm2L1Batch_ScaleBNn2Nn_ContinuousRoutesToPerBatchAlignV2)
+{
+    constexpr uint32_t M = 64;
+    constexpr uint32_t N = 32;
+    RUN_GM2L1_SCALE_BATCH_COPY(fp8_e8m0_t, 3, MakeNN<T>(M, N), MakeNN<T>(M, N));
+
+    ASSERT_EQ(gGm2L1AlignV2Captures.size(), B);
+    const auto& alignV2 = gGm2L1AlignV2Captures.back();
+    auto baseBlockCount = GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(gmBaseLayout);
+    auto baseBlockLen = GetElement<AttrInfo::Shape, AttrInfo::Row, 1>(gmBaseLayout) * sizeof(T) *
+        GetElement<AttrInfo::Shape, AttrInfo::Column, 0>(gmBaseLayout) *
+        GetElement<AttrInfo::Stride, AttrInfo::Column, 0>(gmBaseLayout);
+    auto expectedSrcStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(gmBaseLayout) * sizeof(T);
+    auto expectedDstStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(l1BaseLayout) * sizeof(T);
+    EXPECT_EQ(alignV2.blockCount, baseBlockCount);
+    EXPECT_EQ(alignV2.blockLen, baseBlockLen);
+    EXPECT_EQ(alignV2.srcStride, expectedSrcStride);
+    EXPECT_EQ(alignV2.dstStride, expectedDstStride);
+}
+
+TEST_F(TensorApiGm2L1, CopyGm2L1Batch_ScaleBNn2Nn_NonContinuousDstFallsBackToPerBatchAlignV2)
+{
+    constexpr uint32_t M = 64;
+    constexpr uint32_t N = 32;
+    RUN_GM2L1_SCALE_BATCH_COPY(fp8_e8m0_t, 3, MakeNN<T>(M, N), MakeNN<T>(M, N + 16));
+
+    ASSERT_EQ(gGm2L1AlignV2Captures.size(), B);
+    const auto& alignV2 = gGm2L1AlignV2Captures.back();
+    auto baseBlockCount = GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(gmBaseLayout);
+    auto baseBlockLen = GetElement<AttrInfo::Shape, AttrInfo::Row, 1>(gmBaseLayout) * sizeof(T) *
+        GetElement<AttrInfo::Shape, AttrInfo::Column, 0>(gmBaseLayout) *
+        GetElement<AttrInfo::Stride, AttrInfo::Column, 0>(gmBaseLayout);
+    EXPECT_EQ(alignV2.blockCount, baseBlockCount);
+    EXPECT_EQ(alignV2.blockLen, baseBlockLen);
+}
+
 // =========================================================================
 // Batch ND2ND (gm_to_l1)
 //
