@@ -11,7 +11,7 @@
 矩阵计算完成后，对结果进行量化处理，之后将处理结果搬运到GM中。量化参数共有2个：quant_pre和quant_post，分别对应预处理和后处理阶段。
 
 quant_pre可选量化模式，分别为：
-- NoQuant：不使能量化功能。
+- NoQuant：不开启量化功能。
 - F322BF16：float量化成bfloat16_t。量化结果不支持INF_NAN模式。
 - F322F16：float量化成half。量化结果支持INF_NAN模式。
 - DEQF16：int32_t量化成half。量化结果不支持INF_NAN模式。
@@ -36,7 +36,7 @@ quant_pre可选量化模式，分别为：
 - VQF322F32_PRE：float量化成float，矢量量化。该量化模式精度无法达到双万分之一，可以达到双千分之一。
 
 quant_post可选量化模式分别为：
-- NoConv：不使能量化功能。
+- NoConv：不开启量化功能。
 - QS162B8_POST：int16_t量化成uint8_t/int8_t，scalar量化。
 - VQS162B8_POST：int16_t量化成uint8_t/int8_t，矢量量化。
 - QF162B8_POST：half量化成uint8_t/int8_t，scalar量化。
@@ -212,25 +212,25 @@ quant_post可选量化模式分别为：
 |:-----------------|:------|:---------------------------------------------------------------------------------------------------------------------------------|
 | dst_addr              | 输出    | 目的操作数（矢量）的起始地址。                                                                                                                  |
 | src_addr              | 输入    | 源操作数（矢量）的起始地址。                                                                                                                   |
-| n_size           | 输入    | 源NZ矩阵在N方向上的大小。<br/>&bull; 不使能NZ2ND功能，取值范围：[1, 4095]；<br/>&bull; 使能NZ2ND功能，取值范围：[1, 4095]。                                        |
-| m_size           | 输入    | 源NZ矩阵在M方向上的大小。<br/>&bull; 不使能NZ2ND功能，取值范围：[1, 65535]；<br/>&bull; 使能NZ2ND功能，取值范围：[1, 8192]。                                       |
-| loop_dst_stride       | 输入    | <br> - 不使能NZ2ND功能,目的NZ矩阵中相邻Z排布的起始地址偏移，取值不为0， 单位：element。<br> - 使能NZ2ND/NZ2DN功能,目的ND矩阵每一行中的元素个数，取值不为0 ，单位：element。  |
+| n_size           | 输入    | 源NZ矩阵在N方向上的大小。<br/>&bull; 不开启NZ2ND功能，取值范围：[1, 4095]；<br/>&bull; 开启NZ2ND功能，取值范围：[1, 4095]。                                        |
+| m_size           | 输入    | 源NZ矩阵在M方向上的大小。<br/>&bull; 不开启NZ2ND功能，取值范围：[1, 65535]；<br/>&bull; 开启NZ2ND功能，取值范围：[1, 8192]。                                       |
+| loop_dst_stride       | 输入    | <br> - 不开启NZ2ND功能,目的NZ矩阵中相邻Z排布的起始地址偏移，取值不为0， 单位：element。<br> - 开启NZ2ND/NZ2DN功能,目的ND矩阵每一行中的元素个数，取值不为0 ，单位：element。  |
 | loop_src_stride       | 输入    | 源NZ矩阵中相邻Z排布的起始地址偏移，取值范围：[0, 65535]， 单位：C0_Size(16*sizeof(T), T为src_addr的数据类型)。 |
 | l2_cache_ctl | 输入 | 配置数据在L2 Cache中的管理策略。取值说明如下：  <br>&bull; 0：DISABLE模式，适用于仅需访问一次的数据。 <br>&bull; 1：NORMAL模式，适用于重用模式未知或不极端的数据。 <br>&bull; 2：LAST模式，适用于高频重复访问的数据。 <br>&bull; 4：PERSISTENT模式，适用于需要长期驻留在缓存中的数据。 |
-| clip_relu_pre    | 输入    | 预处理阶段使能clip_relu，需搭配normal relu（归一化的relu函数）一起使用且需要使能量化功能。                                                                        |
-| unit_flag_ctl   | 输入    | 与unit_flag参数相关，取值如下：<br/>&bull;0 保留值；<br/>&bull;2 使能unit_flag，硬件执行完指令之后，不会设置寄存器；<br/>&bull;3 使能unit_flag，硬件执行完指令后，会将unit_flag关闭。 |
+| clip_relu_pre    | 输入    | 预处理阶段开启clip_relu，需搭配normal relu（归一化的relu函数）一起使用且需要开启量化功能。                                                                        |
+| unit_flag_ctl   | 输入    | 与unit_flag参数相关，取值如下：<br/>&bull;0 保留值；<br/>&bull;2 开启unit_flag，硬件执行完指令之后，不会设置寄存器；<br/>&bull;3 开启unit_flag，硬件执行完指令后，会将unit_flag关闭。 |
 | quant_pre        | 输入    | 预处理阶段量化参数。取值见[功能说明](#功能说明)。                                                                        |
-| relu_pre         | 输入    | 预处理阶段使能relu。                                                                                                                     |
-| split_en    | 输入    | 是否使能通道拆分的功能，默认false，不使能该功能。仅在src_addr和dst_addr都为float时才能使能通道拆分，且不能同时使能split_en和NZ2ND功能。                                               |
-| NZ2ND_en         | 输入    | 使能NZ2ND开关。<br/>&bull;false：不使能；<br/>&bull;true：使能。                                                                               |
+| relu_pre         | 输入    | 预处理阶段开启relu。                                                                                                                     |
+| split_en    | 输入    | 是否开启通道拆分的功能，默认false，不开启该功能。仅在src_addr和dst_addr都为float时才能开启通道拆分，且不能同时开启split_en和NZ2ND功能。                                               |
+| NZ2ND_en         | 输入    | 开启NZ2ND开关。<br/>&bull;false：不开启；<br/>&bull;true：开启。                                                                               |
 | quant_post       | 输入    | 后处理阶段量化参数。取值见[功能说明](#功能说明)。                                                                        |
-| relu_post        | 输入    | 后处理阶段使能relu。                                                                                                                     |
-| clip_relu_post   | 输入    | 后处理阶段使能clip_relu，需搭配normal relu一起使用，且需要使能量化功能。                                                                                   |
+| relu_post        | 输入    | 后处理阶段开启relu。                                                                                                                     |
+| clip_relu_post   | 输入    | 后处理阶段开启clip_relu，需搭配normal relu一起使用，且需要开启量化功能。                                                                                   |
 | eltwise_op       | 输入    | 定义数据从l0c搬运至gm时的目的操作数地址和通道步长。                                                                                                     |
-| eltwise_antq_en | 输入    | 按位使能元素的反量化操作。                                                                                                                    |
-| C0_pad_en        | 输入    | 使能为C0配置填充位，C0是通道循环的目标步长。                                                                                                     |
-| broadcast_en        | 输入    | 是否使能广播能力。<br/>&bull;false：不使能；<br/>&bull;true：使能，在数据搬运时沿M轴方向进行数据广播。                                                                                                         |
-| NZ2DN_en        | 输入    |  使能NZ2DN开关。<br/>&bull;false：不使能；<br/>&bull;true：使能。                                                                                       |
+| eltwise_antq_en | 输入    | 按位开启元素的反量化操作。                                                                                                                    |
+| C0_pad_en        | 输入    | 开启为C0配置填充位，C0是通道循环的目标步长。                                                                                                     |
+| broadcast_en        | 输入    | 是否开启广播能力。<br/>&bull;false：不开启；<br/>&bull;true：开启，在数据搬运时沿M轴方向进行数据广播。                                                                                                         |
+| NZ2DN_en        | 输入    |  开启NZ2DN开关。<br/>&bull;false：不开启；<br/>&bull;true：开启。                                                                                       |
 
 ## 返回值说明
 

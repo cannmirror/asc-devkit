@@ -54,7 +54,7 @@ for (int32_t i = 0; i < srcLen; ++i) {
 
 ## Scalar读写数据时的同步<a name="section554364118119"></a>
 
-Scalar读写Global Memory和Unified Buffer时属于PIPE\_S（Scalar流水）操作，当用户使用SetValue或者GetValue接口，且算子工程使能自动同步时，不需要手动插入同步事件。
+Scalar读写Global Memory和Unified Buffer时属于PIPE\_S（Scalar流水）操作，当用户使用SetValue或者GetValue接口，且算子工程开启自动同步时，不需要手动插入同步事件。
 
 如果用户关闭算子工程的自动同步功能时，则需要手动插入同步事件：
 

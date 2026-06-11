@@ -280,7 +280,7 @@ Load3D用于完成image to column操作，将多维feature map转为二维矩阵
 </tr>
 <tr id="row613719185337"><td class="cellrowborder" valign="top" width="18.56%" headers="mcps1.2.3.1.1 "><p id="p19634173453320"><a name="p19634173453320"></a><a name="p19634173453320"></a>padValue</p>
 </td>
-<td class="cellrowborder" valign="top" width="81.44%" headers="mcps1.2.3.1.2 "><p id="p4635143418336"><a name="p4635143418336"></a><a name="p4635143418336"></a>Pad填充值的数值，数据类型需要与src保持一致。默认为0。若不想使能padding，可将padList设为全0。</p>
+<td class="cellrowborder" valign="top" width="81.44%" headers="mcps1.2.3.1.2 "><p id="p4635143418336"><a name="p4635143418336"></a><a name="p4635143418336"></a>Pad填充值的数值，数据类型需要与src保持一致。默认为0。若不想启用padding，可将padList设为全0。</p>
 </td>
 </tr>
 </tbody>
@@ -381,13 +381,13 @@ Load3D用于完成image to column操作，将多维feature map转为二维矩阵
 </tr>
 <tr id="row2353632173414"><td class="cellrowborder" valign="top" width="18.56%" headers="mcps1.2.3.1.1 "><p id="p1544417435359"><a name="p1544417435359"></a><a name="p1544417435359"></a>enSmallK</p>
 </td>
-<td class="cellrowborder" valign="top" width="81.44%" headers="mcps1.2.3.1.2 "><p id="p124441543123520"><a name="p124441543123520"></a><a name="p124441543123520"></a>是否使能small k特性，每个分形矩阵大小为16*4，支持数据类型为 bool，默认为false。当前产品形态，该特性已不再支持。</p>
-<a name="ul125422143611"></a><a name="ul125422143611"></a><ul id="ul125422143611"><li>true：使能</li><li>false：不使能</li></ul>
+<td class="cellrowborder" valign="top" width="81.44%" headers="mcps1.2.3.1.2 "><p id="p124441543123520"><a name="p124441543123520"></a><a name="p124441543123520"></a>是否开启small k特性，每个分形矩阵大小为16*4，支持数据类型为 bool，默认为false。当前产品形态，该特性已不再支持。</p>
+<a name="ul125422143611"></a><a name="ul125422143611"></a><ul id="ul125422143611"><li>true：开启</li><li>false：不开启</li></ul>
 </td>
 </tr>
 <tr id="row13531232133416"><td class="cellrowborder" valign="top" width="18.56%" headers="mcps1.2.3.1.1 "><p id="p5444643113512"><a name="p5444643113512"></a><a name="p5444643113512"></a>padValue</p>
 </td>
-<td class="cellrowborder" valign="top" width="81.44%" headers="mcps1.2.3.1.2 "><p id="p7444443193510"><a name="p7444443193510"></a><a name="p7444443193510"></a>Pad填充值的数值，数据类型需要与src保持一致。默认为0。若不想使能padding，可将padList设为全0。</p>
+<td class="cellrowborder" valign="top" width="81.44%" headers="mcps1.2.3.1.2 "><p id="p7444443193510"><a name="p7444443193510"></a><a name="p7444443193510"></a>Pad填充值的数值，数据类型需要与src保持一致。默认为0。若不想启用padding，可将padList设为全0。</p>
 </td>
 </tr>
 <tr id="row367113177316"><td class="cellrowborder" valign="top" width="18.56%" headers="mcps1.2.3.1.1 "><p id="p1442152993114"><a name="p1442152993114"></a><a name="p1442152993114"></a>filterSizeW</p>
@@ -434,8 +434,8 @@ Load3D用于完成image to column操作，将多维feature map转为二维矩阵
 </tr>
 <tr id="row198062311146"><td class="cellrowborder" valign="top" width="18.56%" headers="mcps1.2.3.1.1 "><p id="p118062311942"><a name="p118062311942"></a><a name="p118062311942"></a>enSmallK</p>
 </td>
-<td class="cellrowborder" valign="top" width="81.44%" headers="mcps1.2.3.1.2 "><p id="p198064316413"><a name="p198064316413"></a><a name="p198064316413"></a>是否使能small k特性，每个分形矩阵大小为16*4，支持数据类型为bool，默认为false。当前产品形态，该特性已不再支持。</p>
-<a name="ul16806173116414"></a><a name="ul16806173116414"></a><ul id="ul16806173116414"><li>true：使能</li><li>false：不使能</li></ul>
+<td class="cellrowborder" valign="top" width="81.44%" headers="mcps1.2.3.1.2 "><p id="p198064316413"><a name="p198064316413"></a><a name="p198064316413"></a>是否开启small k特性，每个分形矩阵大小为16*4，支持数据类型为bool，默认为false。当前产品形态，该特性已不再支持。</p>
+<a name="ul16806173116414"></a><a name="ul16806173116414"></a><ul id="ul16806173116414"><li>true：开启</li><li>false：不开启</li></ul>
 </td>
 </tr>
 <tr id="row678812152919"><td class="cellrowborder" valign="top" width="18.56%" headers="mcps1.2.3.1.1 "><p id="p712818336200"><a name="p712818336200"></a><a name="p712818336200"></a>filterSizeW</p>
@@ -474,7 +474,7 @@ Load3D用于完成image to column操作，将多维feature map转为二维矩阵
 -   操作数地址对齐要求请参见[通用地址对齐约束](../../../../通用说明和约束.md#section796754519912)。
 
 -   LoadData3DParamsV1 cSize特性的开启，需要保证A1/B1中的feature map为 4 channel对齐。
--   调用Load3Dv2/Load3Dv2Pro指令需要通过[SetLoadDataRepeat](../SetLoadDataRepeat.md)接口配置dstStride，若不使能repeat模式，接口内repeat相关参数使用默认构造值。
+-   调用Load3Dv2/Load3Dv2Pro指令需要通过[SetLoadDataRepeat](../SetLoadDataRepeat.md)接口配置dstStride，若不开启repeat模式，接口内repeat相关参数使用默认构造值。
 
 ## Load3d数据格式说明<a name="section726316123184"></a>
 

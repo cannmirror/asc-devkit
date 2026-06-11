@@ -88,7 +88,7 @@ __simd_callee__ inline void Cast(S& dstReg, V& srcReg, MaskReg& mask)
 </td>
 <td class="cellrowborder" valign="top" width="81.42%" headers="mcps1.2.3.1.2 "><p id="p129251358135613"><a name="p129251358135613"></a><a name="p129251358135613"></a>类型转换模式结构体。</p>
 <p id="p1337682765714"><a name="p1337682765714"></a><a name="p1337682765714"></a>包括<a href="../数据类型/RegLayout.md">RegLayout</a>、<a href="../数据类型/SatMode.md">SatMode</a>、<a href="../数据类型/MaskMergeMode.md">MaskMergeMode</a>、<a href="../数据类型/RoundMode.md">RoundMode</a>。</p>
-<p id="p173031248202111"><a name="p173031248202111"></a><a name="p173031248202111"></a>使能SatMode生效需与<a href="../../特殊寄存器访问/SetCtrlSpr(ISASI).md">SetCtrlSpr(ISASI)</a>配合使用。</p>
+<p id="p173031248202111"><a name="p173031248202111"></a><a name="p173031248202111"></a>开启SatMode生效需与<a href="../../特殊寄存器访问/SetCtrlSpr(ISASI).md">SetCtrlSpr(ISASI)</a>配合使用。</p>
 </td>
 </tr>
 <tr id="row13956192410456"><td class="cellrowborder" valign="top" width="18.58%" headers="mcps1.2.3.1.1 "><p id="p1897872818010"><a name="p1897872818010"></a><a name="p1897872818010"></a>S</p>

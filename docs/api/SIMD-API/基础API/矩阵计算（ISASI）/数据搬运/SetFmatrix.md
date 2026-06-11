@@ -133,7 +133,7 @@ uint16_t C0, C1;
 uint8_t dilationH = 2, dilationW = 2;
 
 uint8_t padList[PAD_SIZE] = {0, 0, 0, 0};
-AscendC::SetFmatrix(H, W, padList, FmatrixMode::FMATRIX_LEFT); // 使能FM内存排布模式， 从left寄存器获取信息
+AscendC::SetFmatrix(H, W, padList, FmatrixMode::FMATRIX_LEFT); // 启用FM内存排布模式， 从left寄存器获取信息
 AscendC::SetLoadDataPaddingValue(0);
 AscendC::SetLoadDataRepeat({0, 1, 0});
 AscendC::SetLoadDataBoundary((uint32_t)0);

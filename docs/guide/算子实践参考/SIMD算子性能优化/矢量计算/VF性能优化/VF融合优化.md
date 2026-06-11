@@ -8,7 +8,7 @@
 
 VF融合优化可分为三个阶段：VF浅度融合、VF深度融合和VF内自动同步：
 
-**VF浅度融合**：编译器首先会分析两个VF的控制流是否等价，构建Cost Model分析是否有正向收益，如果满足VF融合条件，将VF外部的控制流融入到VF内，将VF外的Software Loop硬化成VF内的Hardware Loop，然后使能VF自动融合的基础能力，将两个VF融合成一个VF，为后续的VF深度融合提供基础。
+**VF浅度融合**：编译器首先会分析两个VF的控制流是否等价，构建Cost Model分析是否有正向收益，如果满足VF融合条件，将VF外部的控制流融入到VF内，将VF外的Software Loop硬化成VF内的Hardware Loop，然后开启VF自动融合的基础能力，将两个VF融合成一个VF，为后续的VF深度融合提供基础。
 
 ![](../../../../figures/VF融合.png)
 

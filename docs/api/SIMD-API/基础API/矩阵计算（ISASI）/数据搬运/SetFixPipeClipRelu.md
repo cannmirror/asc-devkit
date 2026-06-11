@@ -94,7 +94,7 @@ __aicore__ inline void SetFixPipeClipRelu(uint64_t config)
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
-使能Relu的情况下，先进行Relu操作，之后再进行ClipRelu。
+开启Relu的情况下，先进行Relu操作，之后再进行ClipRelu。
 
 ## 返回值说明<a name="section640mcpsimp"></a>
 
@@ -106,6 +106,6 @@ __aicore__ inline void SetFixPipeClipRelu(uint64_t config)
 
 ```
 uint64_t clipReluMaxVal = 0x3c00;
-SetFixPipeClipRelu(clipReluMaxVal); // 使能Relu的情况下，先进行Relu操作，再进行clip，clipReluMaxVal为通过该接口设置的最大值
+SetFixPipeClipRelu(clipReluMaxVal); // 开启Relu的情况下，先进行Relu操作，再进行clip，clipReluMaxVal为通过该接口设置的最大值
 ```
 

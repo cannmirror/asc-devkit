@@ -51,7 +51,7 @@ __aicore__ inline void SetSaturationFlag(bool enableSat)
 
 ## 调用示例
 
-如下示例中使能整数转整数时精度转换的饱和模式。
+如下示例中开启整数转整数时精度转换的饱和模式。
 
 ```cpp
 AscendC::SetSaturationFlag<AscendC::SaturationMode::CAST>(true);

@@ -2,7 +2,7 @@
 
 Ascend 950PR/Ascend 950DT对应的架构中，Vector Function（VF）是实现高性能向量计算的核心载体。VF函数中可以包含最多四层嵌套循环，每层循环中还可以包含多个串行循环，同时支持非循环的向量操作和标量操作。VF循环对控制结构的支持有限，仅支持for循环和条件判断，不支持switch、do-while和 while-do等其他控制结构。VF循环通过尽可能优化为硬件级向量循环（Hardware Loop），从而实现性能优化。
 
-当VF函数中的循环满足[Hardware Loop编码规范](#section11326136133217)时，会被编译器优化为Hardware Loop，提升整体的编码性能，否则它的循环逻辑会由迭代变量和条件判断语句构成Software Loop，无法使能VF循环优化。
+当VF函数中的循环满足[Hardware Loop编码规范](#section11326136133217)时，会被编译器优化为Hardware Loop，提升整体的编码性能，否则它的循环逻辑会由迭代变量和条件判断语句构成Software Loop，无法开启VF循环优化。
 
 在遵循Hardware Loop编码规范，确保循环可被优化为Hardware Loop基础上，可以通过成员变量访问、指令分布优化和地址管理优化等方面进一步提升性能。
 
@@ -185,7 +185,7 @@ for(uint16_t i = 0;i < extent1; i++){
 特别地，当四层循环构成连续访问场景时，地址管理可被简化为一维模式，从而实现更高效的搬运优化，进一步提升数据访问的局部性和执行效率。
 
 ```
-// 使能向量地址生成指令优化
+// 开启向量地址生成指令优化
 __simd_vf__ inline void ComputeModeVF(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint32_t oneRepeatSize, uint16_t repeatTimes)
 {
     AscendC::Reg::RegTensor<T> dstReg;

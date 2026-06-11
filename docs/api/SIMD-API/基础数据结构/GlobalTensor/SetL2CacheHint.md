@@ -49,7 +49,7 @@
 
 ## 功能说明<a name="section618mcpsimp"></a>
 
-设置GlobalTensor是否使能L2 Cache，默认使能L2 Cache。
+设置GlobalTensor是否启用L2 Cache，默认启用L2 Cache。
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
@@ -100,13 +100,13 @@ RW = 3
 </td>
 <td class="cellrowborder" valign="top" width="73.07000000000001%" headers="mcps1.2.4.1.3 "><p id="p6389114616514"><a name="p6389114616514"></a><a name="p6389114616514"></a>用户指定的L2 Cache模式。</p>
 <a name="screen1440994812502"></a><a name="screen1440994812502"></a><pre class="screen" codetype="Cpp" id="screen1440994812502">enum class CacheMode : uint8_t {
-CACHE_MODE_DISABLE = 0, // 不使能L2 Cache
-CACHE_MODE_NORMAL = 1,  // 使能L2 Cache
-CACHE_MODE_PERSISTENT = 4,  // 使能L2 Cache 驻留模式
+CACHE_MODE_DISABLE = 0, // 不启用L2 Cache
+CACHE_MODE_NORMAL = 1,  // 启用L2 Cache
+CACHE_MODE_PERSISTENT = 4,  // 启用L2 Cache 驻留模式
 };</pre>
 <p id="p595815581177"><a name="p595815581177"></a><a name="p595815581177"></a>当特定GlobalTensor启用L2 Cache后实测性能反而下降时，可考虑手动禁用该GlobalTensor的L2 Cache功能。例如，若某算子仅对特定GlobalTensor执行单次读取操作，将其数据缓存至L2 Cache不仅无法带来性能收益，反而可能因数据频繁搬运至L2 Cache而引入额外的开销，此时建议关闭该GlobalTensor的L2 Cache。</p>
 <p id="p595815581177"><a name="p595815581177"></a><a name="p595815581177"></a>通常情况下，L2 Cache可采用CACHE_MODE_NORMAL模式运行。在此模式下，当L2 Cache容量耗尽时会触发数据置换机制，已存入L2 Cache中的数据可能被替换。若需确保特定GlobalTensor的数据始终保留在L2 Cache中，可采用驻留模式。目前该驻留模式功能尚在开发中，暂不支持，计划于Ascend 950PR/Ascend 950DT产品上提供支持。</p>
-<p id="p165951277168"><a name="p165951277168"></a><a name="p165951277168"></a>如果不调用该接口，默认为CacheMode::CACHE_MODE_NORMAL，即GlobalTensor会使能L2 Cache。</p>
+<p id="p165951277168"><a name="p165951277168"></a><a name="p165951277168"></a>如果不调用该接口，默认为CacheMode::CACHE_MODE_NORMAL，即GlobalTensor会启用L2 Cache。</p>
 </td>
 </tr>
 </tbody>
@@ -118,7 +118,7 @@ CACHE_MODE_PERSISTENT = 4,  // 使能L2 Cache 驻留模式
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
-使用mssanitizer工具时，默认使能L2 Cache，无法通过本接口设置L2 Cache模式为CACHE\_MODE\_DISABLE和CACHE\_MODE\_PERSISTENT。
+使用mssanitizer工具时，默认启用L2 Cache，无法通过本接口设置L2 Cache模式为CACHE\_MODE\_DISABLE和CACHE\_MODE\_PERSISTENT。
 
 ## 调用示例<a name="section17531157161314"></a>
 

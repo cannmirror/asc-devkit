@@ -90,7 +90,7 @@
 </td>
 <td class="cellrowborder" valign="top" width="11.93%" headers="mcps1.1.4.1.2 "><p id="p59396564285"><a name="p59396564285"></a><a name="p59396564285"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="71.58%" headers="mcps1.1.4.1.3 "><p id="p183314251610"><a name="p183314251610"></a><a name="p183314251610"></a>预留参数，当前不使能。</p>
+<td class="cellrowborder" valign="top" width="71.58%" headers="mcps1.1.4.1.3 "><p id="p183314251610"><a name="p183314251610"></a><a name="p183314251610"></a>预留参数，当前不开启。</p>
 <p id="p15604318228"><a name="p15604318228"></a><a name="p15604318228"></a>SuperKernel相关特性的掩码。</p>
 <a name="ul138368184718"></a><a name="ul138368184718"></a><ul id="ul138368184718"><li>4 表示 DCCI（默认值，建议使用）</li><li>2 表示 early start set flag</li><li>1 表示 early start wait flag</li></ul>
 </td>

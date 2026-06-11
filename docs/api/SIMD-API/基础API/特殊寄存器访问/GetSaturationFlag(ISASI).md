@@ -45,7 +45,7 @@ __aicore__ inline bool GetSaturationFlag()
 
 ## 调用示例
 
-如下示例中查询是否使能整数转整数时精度转换的饱和模式。
+如下示例中查询是否开启整数转整数时精度转换的饱和模式。
 
 ```cpp
 bool res = AscendC::GetSaturationFlag<AscendC::SaturationMode::CAST>();

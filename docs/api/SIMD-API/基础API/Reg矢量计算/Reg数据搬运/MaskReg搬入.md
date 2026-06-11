@@ -195,7 +195,7 @@ __simd_callee__ inline void MaskGenWithRegTensor(MaskReg& dst, U& srcReg);
 </td>
 <td class="cellrowborder" valign="top" width="12.47875212478752%" headers="mcps1.2.4.1.2 "><p id="p883792893817"><a name="p883792893817"></a><a name="p883792893817"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="74.25257474252575%" headers="mcps1.2.4.1.3 "><p id="p1246583315216"><a name="p1246583315216"></a><a name="p1246583315216"></a>用于控制是否使能post update。</p>
+<td class="cellrowborder" valign="top" width="74.25257474252575%" headers="mcps1.2.4.1.3 "><p id="p1246583315216"><a name="p1246583315216"></a><a name="p1246583315216"></a>用于控制是否开启post update。</p>
 <a name="ul121721550125114"></a><a name="ul121721550125114"></a><ul id="ul121721550125114"><li>POST_MODE_NORMAL，正常场景，UB操作数地址不更新。</li></ul>
 <a name="ul51081954165116"></a><a name="ul51081954165116"></a><ul id="ul51081954165116"><li>POST_MODE_UPDATE，POST_MODE_UPDATE场景使用，UB地址同时作为输入和输出，每次调用会更新。</li></ul>
 </td>

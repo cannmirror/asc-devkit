@@ -1301,12 +1301,12 @@
 </tr>
 <tr id="row5515201016501"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p4496814165013"><a name="p4496814165013"></a><a name="p4496814165013"></a><a href="基础API/原子操作/SetStoreAtomicConfig(ISASI).md">SetStoreAtomicConfig</a></p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p95151510125017"><a name="p95151510125017"></a><a name="p95151510125017"></a>设置原子操作使能位与原子操作类型。</p>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p95151510125017"><a name="p95151510125017"></a><a name="p95151510125017"></a>设置原子操作启用位与原子操作类型。</p>
 </td>
 </tr>
 <tr id="row466110104502"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p949614146509"><a name="p949614146509"></a><a name="p949614146509"></a><a href="基础API/原子操作/GetStoreAtomicConfig(ISASI).md">GetStoreAtomicConfig</a></p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p4576142854016"><a name="p4576142854016"></a><a name="p4576142854016"></a>获取原子操作使能位与原子操作类型的值。</p>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p4576142854016"><a name="p4576142854016"></a><a name="p4576142854016"></a>获取原子操作启用位与原子操作类型的值。</p>
 </td>
 </tr>
 <tr id="row161503191126"><td class="cellrowborder" valign="top" width="12.379999999999999%" headers="mcps1.2.4.1.1 "><p id="p1715151915126"><a name="p1715151915126"></a><a name="p1715151915126"></a>调试接口</p>

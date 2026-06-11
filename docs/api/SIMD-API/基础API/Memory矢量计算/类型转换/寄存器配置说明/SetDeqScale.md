@@ -58,10 +58,10 @@
 | 模式 | 比特位数 | 变量名 | 含义 |
 | :--- | :------- | :----- | :--- |
 | [AddDeqRelu](../../复合计算/AddDeqRelu.md#AddDeqRelu)、[Cast](../Cast.md)、[CastDequant](../../复合计算/CastDequant.md#CastDequant)的s322f16场景 | 0~15 | scale | 一个half类型数据。 |
-| CastDequant不使能向量量化的s162b8场景 | 0~31 | scale | 一个float类型数据M（硬件在计算时将其视为(1,8,10)格式，即1个符号位、8个指数位和10个尾数位）。 |
-| CastDequant不使能向量量化的s162b8场景 | 37~45 | offset | 一个有符号的9位整数。 |
-| CastDequant不使能向量量化的s162b8场景 | 46 | signMode | 用于指示量化结果是否有符号（其中0表示无符号，1表示有符号）。 |
-| CastDequant使能向量量化的s162b8场景 | 0~13 | vdeqAddr | 被硬件视为一个地址，指向UB中的一块空间，该空间大小为128B。空间被切分为16个64bit，每64bit可用于1次量化计算。 |
+| CastDequant不开启向量量化的s162b8场景 | 0~31 | scale | 一个float类型数据M（硬件在计算时将其视为(1,8,10)格式，即1个符号位、8个指数位和10个尾数位）。 |
+| CastDequant不开启向量量化的s162b8场景 | 37~45 | offset | 一个有符号的9位整数。 |
+| CastDequant不开启向量量化的s162b8场景 | 46 | signMode | 用于指示量化结果是否有符号（其中0表示无符号，1表示有符号）。 |
+| CastDequant开启向量量化的s162b8场景 | 0~13 | vdeqAddr | 被硬件视为一个地址，指向UB中的一块空间，该空间大小为128B。空间被切分为16个64bit，每64bit可用于1次量化计算。 |
 
 ## 函数原型<a name="zh-cn_topic_0000002563051145_section21861260618"></a>
 
@@ -71,13 +71,13 @@
   __aicore__ inline void SetDeqScale(half scale)
   ```
 
-- 用于CastDequant不使能向量量化的s162b8场景。
+- 用于CastDequant不开启向量量化的s162b8场景。
 
   ```cpp
   __aicore__ inline void SetDeqScale(float scale, int16_t offset, bool signMode)
   ```
 
-- 用于CastDequant使能向量量化的s162b8场景。
+- 用于CastDequant开启向量量化的s162b8场景。
 
   ```cpp
   template <typename T>

@@ -94,7 +94,7 @@ struct DivSpecificMode {
     bool precisionMode = false;
     DivAlgo algo = DivAlgo::INTRINSIC;
 };</pre>
-<p id="p175231030713"><a name="p175231030713"></a><a name="p175231030713"></a>当precisionMode为true时，使能更高精度的Div计算，使用差值补偿算法得出结果，最大精度误差为0 ulp。目前只针对float数据类型生效。</p>
+<p id="p175231030713"><a name="p175231030713"></a><a name="p175231030713"></a>当precisionMode为true时，开启更高精度的Div计算，使用差值补偿算法得出结果，最大精度误差为0 ulp。目前只针对float数据类型生效。</p>
 </li></ul>
 <a name="ul11875104117375"></a><a name="ul11875104117375"></a><ul id="ul11875104117375"><li>algo：用于配置Subnormal模式。<a name="ul1639612391388"></a><a name="ul1639612391388"></a><ul id="ul1639612391388"><li>DivAlgo::INTRINSIC、DivAlgo::PRECISION_1ULP_FTZ_TRUE，使用单指令计算得出结果，最大精度误差为1 ulp。</li><li>DivAlgo::DIFF_COMPENSATION、DivAlgo::PRECISION_0ULP_FTZ_TRUE，使用差值补偿算法得出结果，最大精度误差为0 ulp。目前，该算法支持float、complex64数据类型。</li><li>DivAlgo::PRECISION_0ULP_FTZ_FALSE，支持Subnormal数据计算，使用差值补偿算法得出结果，最大精度误差为0 ulp。目前，该算法支持float数据类型。</li><li>DivAlgo::PRECISION_1ULP_FTZ_FALSE，支持Subnormal数据计算，使用单指令计算得出结果，最大精度误差为1 ulp。目前，该算法支持half、float数据类型。</li></ul>
 </li></ul>

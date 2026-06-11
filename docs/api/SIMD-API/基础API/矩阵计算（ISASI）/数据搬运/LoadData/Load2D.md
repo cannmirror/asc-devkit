@@ -188,14 +188,14 @@ A1-\>A2; B1-\>B2。
 <tr id="row1321772919185"><td class="cellrowborder" valign="top" width="18.56%" headers="mcps1.2.3.1.1 "><p id="p125531449181816"><a name="p125531449181816"></a><a name="p125531449181816"></a>dstGap</p>
 </td>
 <td class="cellrowborder" valign="top" width="81.44%" headers="mcps1.2.3.1.2 "><p id="p1755412492183"><a name="p1755412492183"></a><a name="p1755412492183"></a>相邻迭代间，目的操作数前一个分形结束地址与后一个分形起始地址的间隔，单位：512B。取值范围：dstGap∈[0, 65535]。默认为0。</p>
-<p id="p18133144820275"><a name="p18133144820275"></a><a name="p18133144820275"></a>注：<span id="ph181256595166"><a name="ph181256595166"></a><a name="ph181256595166"></a><term id="zh-cn_topic_0000001312391781_term71949488213_2"><a name="zh-cn_topic_0000001312391781_term71949488213_2"></a><a name="zh-cn_topic_0000001312391781_term71949488213_2"></a>Atlas 训练系列产品</term></span>此参数不使能。</p>
+<p id="p18133144820275"><a name="p18133144820275"></a><a name="p18133144820275"></a>注：<span id="ph181256595166"><a name="ph181256595166"></a><a name="ph181256595166"></a><term id="zh-cn_topic_0000001312391781_term71949488213_2"><a name="zh-cn_topic_0000001312391781_term71949488213_2"></a><a name="zh-cn_topic_0000001312391781_term71949488213_2"></a>Atlas 训练系列产品</term></span>此参数不开启。</p>
 </td>
 </tr>
 <tr id="row16697631171819"><td class="cellrowborder" valign="top" width="18.56%" headers="mcps1.2.3.1.1 "><p id="p1555415492180"><a name="p1555415492180"></a><a name="p1555415492180"></a>ifTranspose</p>
 </td>
 <td class="cellrowborder" valign="top" width="81.44%" headers="mcps1.2.3.1.2 "><p id="p1955414941814"><a name="p1955414941814"></a><a name="p1955414941814"></a>是否启用转置功能，对每个分形矩阵进行转置，默认为false:</p>
 <a name="ul7554154914184"></a><a name="ul7554154914184"></a><ul id="ul7554154914184"><li>true：启用</li><li>false：不启用</li></ul>
-<p id="p15554134918181"><a name="p15554134918181"></a><a name="p15554134918181"></a>注意：只有A1-&gt;A2和B1-&gt;B2通路才能使能转置，使能转置功能时，源操作数、目的操作数仅支持b16数据类型。</p>
+<p id="p15554134918181"><a name="p15554134918181"></a><a name="p15554134918181"></a>注意：只有A1-&gt;A2和B1-&gt;B2通路才能启用转置，启用转置功能时，源操作数、目的操作数仅支持b16数据类型。</p>
 </td>
 </tr>
 <tr id="row497391184"><td class="cellrowborder" valign="top" width="18.56%" headers="mcps1.2.3.1.1 "><p id="p16554134921816"><a name="p16554134921816"></a><a name="p16554134921816"></a>addrMode</p>
@@ -254,7 +254,7 @@ A1-\>A2; B1-\>B2。
 </td>
 <td class="cellrowborder" valign="top" width="81.63%" headers="mcps1.2.3.1.2 "><p id="p384571192517"><a name="p384571192517"></a><a name="p384571192517"></a>是否启用转置功能，对每个分形矩阵进行转置，默认为false。</p>
 <a name="ul1084512113258"></a><a name="ul1084512113258"></a><ul id="ul1084512113258"><li>true：启用</li><li>false：不启用</li></ul>
-<p id="p816810169287"><a name="p816810169287"></a><a name="p816810169287"></a>注意：只有A1-&gt;A2和B1-&gt;B2通路才能使能转置。使能转置功能时，支持的数据类型约束如下：</p>
+<p id="p816810169287"><a name="p816810169287"></a><a name="p816810169287"></a>注意：只有A1-&gt;A2和B1-&gt;B2通路才能启用转置。启用转置功能时，支持的数据类型约束如下：</p>
 <p id="p208454112251"><a name="p208454112251"></a><a name="p208454112251"></a></p>
 <p id="p332283913013"><a name="p332283913013"></a><a name="p332283913013"></a>对于<span id="ph136962433110"><a name="ph136962433110"></a><a name="ph136962433110"></a>Ascend 950PR/Ascend 950DT</span>，源操作数、目的操作数支持b4、b8、b16、b32数据类型。</p>
 </td>

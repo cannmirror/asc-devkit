@@ -175,7 +175,7 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>&
 </td>
 <td class="cellrowborder" valign="top" width="81.54%" headers="mcps1.2.3.1.2 "><p id="p1745211862812"><a name="p1745211862812"></a><a name="p1745211862812"></a>是否启用转置功能，对每个分形矩阵进行转置，默认为false。含义与LoadData2DParamsV2结构体中的同名参数含义相同，具体参考<a href="Load2D.md#table49630346128">表4</a>。</p>
 <a name="ul8452918152813"></a><a name="ul8452918152813"></a><ul id="ul8452918152813"><li>true：启用</li><li>false：不启用</li></ul>
-<p id="p1745221818285"><a name="p1745221818285"></a><a name="p1745221818285"></a>注意：只有A1-&gt;A2和B1-&gt;B2通路才能使能转置。使能转置功能时，支持的数据类型约束如下：</p>
+<p id="p1745221818285"><a name="p1745221818285"></a><a name="p1745221818285"></a>注意：只有A1-&gt;A2和B1-&gt;B2通路才能启用转置。启用转置功能时，支持的数据类型约束如下：</p>
 <p id="p84521718112811"><a name="p84521718112811"></a><a name="p84521718112811"></a>源操作数、目的操作数支持b4、b8、b16、b32数据类型。</p>
 </td>
 </tr>

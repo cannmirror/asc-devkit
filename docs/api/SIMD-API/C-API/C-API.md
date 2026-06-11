@@ -6,7 +6,7 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 |结构名|说明|
 |-----------------------|-----------------------|
 | [asc_load3d_v2_config](数据结构/asc_load3d_v2_config.md) | Load3Dv2接口的repeat参数。 |
-| [asc_store_atomic_config](数据结构/asc_store_atomic_config.md) | 原子操作使能位与原子操作类型的值。 |
+| [asc_store_atomic_config](数据结构/asc_store_atomic_config.md) | 原子操作启用位与原子操作类型的值。 |
 | [asc_fill_value_config](数据结构/asc_fill_value_config.md) | fill_value的初始化参数结构体，包含[asc_fill_l0a](矩阵数据搬运/asc_fill_l0a.md)/[asc_fill_l0b](矩阵数据搬运/asc_fill_l0b.md)/[asc_fill_l1](矩阵数据搬运/asc_fill_l1.md)接口需要配置的各种初始化参数。 |
 | [asc_l13d_fmatrix_config](数据结构/asc_l13d_fmatrix_config.md) | 用于设置[asc_copy_l12l0a](矩阵数据搬运/asc_copy_l12l0a)/[asc_copy_l12l0b](矩阵数据搬运/asc_copy_l12l0b)3D格式搬运接口的Feature map属性参数。 |
 | [asc_ndim_pad_count_config](数据结构/asc_ndim_pad_count_config.md) | 用于[asc_set_ndim_pad_count](矢量数据搬运/asc_set_ndim_pad_count.md)接口中，设置[asc_ndim_copy_gm2ub](矢量数据搬运/asc_ndim_copy_gm2ub.md)接口的各个维度左右侧的padding元素个数。 |
@@ -303,9 +303,9 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_set_atomic_min_int](原子操作/asc_set_atomic_min.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int32_t数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
 | [asc_set_atomic_min_int8](原子操作/asc_set_atomic_min.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int8_t数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
 | [asc_set_atomic_min_int16](原子操作/asc_set_atomic_min.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int16_t数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
-| [asc_set_store_atomic_config_v1](原子操作/asc_set_store_atomic_config_v1.md)| 设置原子操作使能位与原子操作类型的值，适用于Atlas A3 训练系列产品/Atlas A3 推理系列产品和Atlas A2 训练系列产品/Atlas A2 推理系列产品。 |
-| <cann-filter npu_type = "950" > [asc_set_store_atomic_config_v2](原子操作/asc_set_store_atomic_config_v2.md)| 设置原子操作使能位与原子操作类型的值，适用于Ascend 950PR/Ascend 950DT。</cann-filter>|
-| [asc_get_store_atomic_config](原子操作/asc_get_store_atomic_config.md)| 获取原子操作使能位与原子操作类型的值。 |
+| [asc_set_store_atomic_config_v1](原子操作/asc_set_store_atomic_config_v1.md)| 设置原子操作启用位与原子操作类型的值，适用于Atlas A3 训练系列产品/Atlas A3 推理系列产品和Atlas A2 训练系列产品/Atlas A2 推理系列产品。 |
+| <cann-filter npu_type = "950" > [asc_set_store_atomic_config_v2](原子操作/asc_set_store_atomic_config_v2.md)| 设置原子操作启用位与原子操作类型的值，适用于Ascend 950PR/Ascend 950DT。</cann-filter>|
+| [asc_get_store_atomic_config](原子操作/asc_get_store_atomic_config.md)| 获取原子操作启用位与原子操作类型的值。 |
 | [asc_set_atomic_none](原子操作/asc_set_atomic_none.md) | 清空原子操作的状态。 |
 
 ## 其他操作

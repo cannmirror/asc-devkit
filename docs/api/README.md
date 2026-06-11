@@ -2823,7 +2823,7 @@
         -   [aclrtcGetCompileLog](Utils-API/RTC/aclrtcGetCompileLog.md)
         -   [RTC错误码](Utils-API/RTC/RTC错误码.md)
 
-    -   [log](Utils-API/log/log1.md)
+    -   [log](Utils-API/log/log.md)
         -   [ASC\_CPU\_LOG](Utils-API/log/ASC_CPU_LOG.md)
 
     -   [调测接口](Utils-API/调测接口/调测接口.md)

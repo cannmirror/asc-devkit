@@ -44,7 +44,7 @@ __aicore__ static inline void ResetCtrlSpr()
 
 ## 调用示例
 
-如下示例中重置CTRL[48]比特位，使能饱和模式。
+如下示例中重置CTRL[48]比特位，开启饱和模式。
 
 ```cpp
 AscendC::SetCtrlSpr<48, 48>(1);

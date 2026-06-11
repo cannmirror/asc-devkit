@@ -145,7 +145,7 @@
 <tr id="row157395356314"><td class="cellrowborder" valign="top" width="16.580000000000002%" headers="mcps1.2.3.1.1 "><p id="p67393352310"><a name="p67393352310"></a><a name="p67393352310"></a>U</p>
 </td>
 <td class="cellrowborder" valign="top" width="83.42%" headers="mcps1.2.3.1.2 "><p id="p824034219439"><a name="p824034219439"></a><a name="p824034219439"></a>输出的数据类型，需要在搬运接口配置同样的数据类型，如<a href="LoadImageToLocal.md">LoadImageToLocal</a>的dstLocal参数数据类型。</p>
-<a name="ul19236182417132"></a><a name="ul19236182417132"></a><ul id="ul19236182417132"><li>如果不使能数据类型转换功能，需要与输入类型保持一致；</li><li>如果使能数据类型转换功能，需要与期望转换后的类型保持一致。</li></ul>
+<a name="ul19236182417132"></a><a name="ul19236182417132"></a><ul id="ul19236182417132"><li>如果不开启数据类型转换功能，需要与输入类型保持一致；</li><li>如果开启数据类型转换功能，需要与期望转换后的类型保持一致。</li></ul>
 </td>
 </tr>
 </tbody>
@@ -668,7 +668,7 @@ struct AippChannelPaddingParams {
     </tbody>
     </table>
 
--   对于XRGB输入格式的数据，芯片在处理的时候会默认丢弃掉第四个通道的数据输出RGB格式的数据，所以如果是X在channel0的场景下，为了达成上述目的，X通道后移的功能必须使能，将输入的通道转换为RGBX；反之如果是X在channel3的场景下，X通道后移的功能必须不使能以输出RGB格式的数据。
+-   对于XRGB输入格式的数据，芯片在处理的时候会默认丢弃掉第四个通道的数据输出RGB格式的数据，所以如果是X在channel0的场景下，为了达成上述目的，X通道后移的功能必须开启，将输入的通道转换为RGBX；反之如果是X在channel3的场景下，X通道后移的功能必须不开启以输出RGB格式的数据。
 
 ## 返回值说明<a name="section640mcpsimp"></a>
 

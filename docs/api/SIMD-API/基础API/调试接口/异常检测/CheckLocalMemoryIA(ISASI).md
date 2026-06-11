@@ -145,8 +145,8 @@ __aicore__ inline void CheckLocalMemoryIA(const CheckLocalMemoryIAParam& checkPa
 </tr>
 <tr id="row8835135993514"><td class="cellrowborder" valign="top" width="15.229999999999999%" headers="mcps1.2.3.1.1 "><p id="p2083665923512"><a name="p2083665923512"></a><a name="p2083665923512"></a>isEnable</p>
 </td>
-<td class="cellrowborder" valign="top" width="84.77%" headers="mcps1.2.3.1.2 "><p id="p18836135916359"><a name="p18836135916359"></a><a name="p18836135916359"></a>是否使能enableBit参数配置的异常寄存器。</p>
-<a name="ul1094851015117"></a><a name="ul1094851015117"></a><ul id="ul1094851015117"><li>false：不使能，默认为false。</li><li>true：使能。</li></ul>
+<td class="cellrowborder" valign="top" width="84.77%" headers="mcps1.2.3.1.2 "><p id="p18836135916359"><a name="p18836135916359"></a><a name="p18836135916359"></a>是否开启enableBit参数配置的异常寄存器。</p>
+<a name="ul1094851015117"></a><a name="ul1094851015117"></a><ul id="ul1094851015117"><li>false：不开启，默认为false。</li><li>true：开启。</li></ul>
 </td>
 </tr>
 <tr id="row1510111409485"><td class="cellrowborder" valign="top" width="15.229999999999999%" headers="mcps1.2.3.1.1 "><p id="p21011540194818"><a name="p21011540194818"></a><a name="p21011540194818"></a>reserved</p>

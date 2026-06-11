@@ -23,7 +23,7 @@ __aicore__ inline uint64_t asc_get_l0c2gm_unitflag()
 
 ## 返回值说明
 
-unit_flag设置。unit_flag是一种矩阵计算指令和矩阵搬运指令细粒度的并行，使能该功能后，硬件每计算完一个分形，计算结果就会被搬出，该功能不适用于L0C Buffer累加的场景。
+unit_flag设置。unit_flag是一种矩阵计算指令和矩阵搬运指令细粒度的并行，开启该功能后，硬件每计算完一个分形，计算结果就会被搬出，该功能不适用于L0C Buffer累加的场景。
 
 ## 流水类型
 

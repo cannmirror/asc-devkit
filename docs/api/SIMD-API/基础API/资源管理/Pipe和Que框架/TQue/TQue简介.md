@@ -151,7 +151,7 @@ QUE的Buffer数量最大也分别为8个或4个，即能插入的同步事件的
 
 ## 调用示例<a name="section45805354920"></a>
 
-以下用例通过传入TQueConfig使能bufferNumber的编译期计算。vector算子不涉及数据格式的转换，所以nd2nz和nz2nd是false。
+以下用例通过传入TQueConfig开启bufferNumber的编译期计算。vector算子不涉及数据格式的转换，所以nd2nz和nz2nd是false。
 
 ```
 // 用户自定义的构造TQueConfig的元函数
