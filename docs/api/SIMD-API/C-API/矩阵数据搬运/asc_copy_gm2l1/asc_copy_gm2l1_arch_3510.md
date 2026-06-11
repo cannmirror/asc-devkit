@@ -88,7 +88,7 @@
 | src | 输入 | 源操作数（矢量）的起始地址。 |
 | m_start_position | 输入 | M方向上的起始位置。 |
 | k_start_position | 输入 | K方向上的起始位置。 |
-| dst_stride | 输入 | 目的操作数步长。 |
+| dst_stride | 输入 | 目的操作数步长。<br>单位为512字节。 |
 | m_step | 输入 | M方向上的步长。 |
 | k_step | 输入 | K方向上的步长。 |
 | decomp_mode | 输入 | 设置不同的压缩模式。 |
