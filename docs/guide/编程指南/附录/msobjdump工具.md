@@ -12,17 +12,14 @@
 >    - ELF文件权限错误
 >    - ELF文件存在但不支持解析或解压
 
-## 产品支持情况<a name="section15615918103719"></a>
+## 产品支持情况
 
-<a name="table38301303189"></a>
-| 产品 | 是否支持 |
-| ---- | ---- |
-| Ascend 950PR/Ascend 950DT | √ |
-| Atlas A3 训练系列产品/Atlas A3 推理系列产品 | √ |
-| Atlas A2 训练系列产品/Atlas A2 推理系列产品 | √ |
-| Atlas 200I/500 A2 推理产品 | √ |
-| Atlas 推理系列产品 | √ |
-| Atlas 训练系列产品 | √ |
+- Ascend 950PR/Ascend 950DT：支持
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持
+- Atlas 200I/500 A2 推理产品：支持
+- Atlas 推理系列产品：支持
+- Atlas 训练系列产品：支持
 
 ## 工具安装<a name="section2423188195113"></a>
 
