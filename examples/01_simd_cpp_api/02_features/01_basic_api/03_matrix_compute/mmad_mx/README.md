@@ -193,7 +193,7 @@ MX矩阵乘法计算公式：$$ C = (ScaleA ⊗ A) x (ScaleB ⊗ B) + Bias $$
   python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
   ```
 
-  使用 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
+  使用 CPU调试 或 NPU仿真 模式时，添加 `-DCMAKE_ASC_RUN_MODE=cpu` 或 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
 
   示例如下：
   ```bash
@@ -208,7 +208,7 @@ MX矩阵乘法计算公式：$$ C = (ScaleA ⊗ A) x (ScaleB ⊗ B) + Bias $$
   | 选项 | 可选值 | 说明 |
   |------|--------|------|
   | `CMAKE_ASC_ARCHITECTURES` | `dav-3510`（默认） | NPU架构：dav-3510 对应 Ascend 950PR/Ascend 950DT |
-  | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`sim`、`cpu` | 运行模式：NPU运行、NPU仿真、CPU仿真 |
+  | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`sim`、`cpu` | 运行模式：NPU运行、NPU仿真、CPU调试 |
   | `SCENARIO_NUM` |  `1`（默认）、`2`、`3`、`4` | 场景编号，对应场景说明中的4种场景 |
 
 - 执行结果
