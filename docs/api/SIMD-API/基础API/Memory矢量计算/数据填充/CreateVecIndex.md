@@ -75,14 +75,14 @@ def CreateVecIndex(dst, firstValue, count):
     - mask逐bit模式
 
         ```cpp
-        template <typename T, bool isSetMask = true> 
+        template <typename T> 
         __aicore__ inline void CreateVecIndex(LocalTensor<T> &dst, const T &firstValue, uint64_t mask[], uint8_t repeatTime, uint16_t dstBlkStride, uint8_t dstRepStride)  
         ```
 
     - mask连续模式
 
         ```cpp
-        template <typename T, bool isSetMask = true> 
+        template <typename T> 
         __aicore__ inline void CreateVecIndex(LocalTensor<T> &dst, const T &firstValue, uint64_t mask, uint8_t repeatTime, uint16_t dstBlkStride, uint8_t dstRepStride) 
         ```
 
