@@ -9,43 +9,61 @@
 
 ## 功能说明
 
-将矩阵数据从Global Memory搬运到L1 Buffer中。
+将矩阵数据从Global Memory搬运到L1 Buffer中，并支持不同类型的pad模式。
 
 ## 函数原型
 
 - 普通搬运模式
 
     ```cpp
+    // 不进行pad操作
     __aicore__ inline void asc_copy_gm2l1(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
+    // 以32B为单位，每1B插入31B的pad
     __aicore__ inline void asc_copy_gm2l1_pad1(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
+    // 以32B为单位，每1B插入15B的pad
     __aicore__ inline void asc_copy_gm2l1_pad2(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
+    // 以32B为单位，每2B插入14B的pad
     __aicore__ inline void asc_copy_gm2l1_pad3(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
+    // 以32B为单位，每4B插入12B的pad
     __aicore__ inline void asc_copy_gm2l1_pad4(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
+    // 以32B为单位，每8B插入8B的pad
     __aicore__ inline void asc_copy_gm2l1_pad5(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
+    // 每32B删除最高位的28B, 最低位的4B连续存储
     __aicore__ inline void asc_copy_gm2l1_pad6(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
+    // 每32B删除最高位的24B, 最低位的8B连续存储
     __aicore__ inline void asc_copy_gm2l1_pad7(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
+    // 每32B删除最高位的16B, 最低位的16B连续存储
     __aicore__ inline void asc_copy_gm2l1_pad8(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
     ```
 
 - 普通搬运模式（高维切分）
 
     ```cpp
+    // 不进行pad操作
     __aicore__ inline void asc_copy_gm2l1(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
                                       uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap)
+    // 以32B为单位，每1B插入31B的pad
     __aicore__ inline void asc_copy_gm2l1_pad1(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
                                       uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap)
+    // 以32B为单位，每1B插入15B的pad
     __aicore__ inline void asc_copy_gm2l1_pad2(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
                                       uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap)
+    // 以32B为单位，每2B插入14B的pad
     __aicore__ inline void asc_copy_gm2l1_pad3(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
                                       uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap)
+    // 以32B为单位，每4B插入12B的pad
     __aicore__ inline void asc_copy_gm2l1_pad4(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
                                       uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap)
+    // 以32B为单位，每8B插入8B的pad
     __aicore__ inline void asc_copy_gm2l1_pad5(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
                                       uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap)
+    // 每32B删除最高位的28B, 最低位的4B连续存储
     __aicore__ inline void asc_copy_gm2l1_pad6(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
                                       uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap)
+    // 每32B删除最高位的24B, 最低位的8B连续存储
     __aicore__ inline void asc_copy_gm2l1_pad7(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
                                       uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap)
+    // 每32B删除最高位的16B, 最低位的16B连续存储
     __aicore__ inline void asc_copy_gm2l1_pad8(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
                                       uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap)
     ```
@@ -53,38 +71,61 @@
 - 普通搬运模式（同步）
 
     ```cpp
+    // 不进行pad操作
     __aicore__ inline void asc_copy_gm2l1_sync(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
+    // 以32B为单位，每1B插入31B的pad
     __aicore__ inline void asc_copy_gm2l1_pad1_sync(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
+    // 以32B为单位，每1B插入15B的pad
     __aicore__ inline void asc_copy_gm2l1_pad2_sync(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
+    // 以32B为单位，每2B插入14B的pad
     __aicore__ inline void asc_copy_gm2l1_pad3_sync(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
+    // 以32B为单位，每4B插入12B的pad
     __aicore__ inline void asc_copy_gm2l1_pad4_sync(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
+    // 以32B为单位，每8B插入8B的pad
     __aicore__ inline void asc_copy_gm2l1_pad5_sync(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
+    // 每32B删除最高位的28B, 最低位的4B连续存储
     __aicore__ inline void asc_copy_gm2l1_pad6_sync(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
+    // 每32B删除最高位的24B, 最低位的8B连续存储
     __aicore__ inline void asc_copy_gm2l1_pad7_sync(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
+    // 每32B删除最高位的16B, 最低位的16B连续存储
     __aicore__ inline void asc_copy_gm2l1_pad8_sync(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
     ```
 
 - 2D搬运模式
 
     ```cpp
+    // 2D搬运bfloat16_t类型矩阵数据
     __aicore__ inline void asc_copy_gm2l1(__cbuf__ bfloat16_t* dst, __gm__ bfloat16_t* src, uint16_t base_idx, uint8_t repeat, uint16_t src_stride, uint16_t dst_gap)
+    // 2D搬运half类型矩阵数据
     __aicore__ inline void asc_copy_gm2l1(__cbuf__ half* dst, __gm__ half* src, uint16_t base_idx, uint8_t repeat, uint16_t src_stride, uint16_t dst_gap)
+    // 2D搬运float类型矩阵数据
     __aicore__ inline void asc_copy_gm2l1(__cbuf__ float* dst, __gm__ float* src, uint16_t base_idx, uint8_t repeat, uint16_t src_stride, uint16_t dst_gap)
+    // 2D搬运int32_t类型矩阵数据
     __aicore__ inline void asc_copy_gm2l1(__cbuf__ int32_t* dst, __gm__ int32_t* src, uint16_t base_idx, uint8_t repeat, uint16_t src_stride, uint16_t dst_gap)
+    // 2D搬运int8_t类型矩阵数据
     __aicore__ inline void asc_copy_gm2l1(__cbuf__ int8_t* dst, __gm__ int8_t* src, uint16_t base_idx, uint8_t repeat, uint16_t src_stride, uint16_t dst_gap)
+    // 2D搬运uint32_t类型矩阵数据
     __aicore__ inline void asc_copy_gm2l1(__cbuf__ uint32_t* dst, __gm__ uint32_t* src, uint16_t base_idx, uint8_t repeat, uint16_t src_stride, uint16_t dst_gap)
+    // 2D搬运uint8_t类型矩阵数据
     __aicore__ inline void asc_copy_gm2l1(__cbuf__ uint8_t* dst, __gm__ uint8_t* src, uint16_t base_idx, uint8_t repeat, uint16_t src_stride, uint16_t dst_gap)
     ```
 
 - 2D搬运模式（同步）
 
     ```cpp
+    // 2D搬运bfloat16_t类型矩阵数据（同步）
     __aicore__ inline void asc_copy_gm2l1_sync(__cbuf__ bfloat16_t* dst, __gm__ bfloat16_t* src, uint16_t base_idx, uint8_t repeat, uint16_t src_stride, uint16_t dst_gap)
+    // 2D搬运half类型矩阵数据（同步）
     __aicore__ inline void asc_copy_gm2l1_sync(__cbuf__ half* dst, __gm__ half* src, uint16_t base_idx, uint8_t repeat, uint16_t src_stride, uint16_t dst_gap)
+    // 2D搬运float类型矩阵数据（同步）
     __aicore__ inline void asc_copy_gm2l1_sync(__cbuf__ float* dst, __gm__ float* src, uint16_t base_idx, uint8_t repeat, uint16_t src_stride, uint16_t dst_gap)
+    // 2D搬运int32_t类型矩阵数据（同步）
     __aicore__ inline void asc_copy_gm2l1_sync(__cbuf__ int32_t* dst, __gm__ int32_t* src, uint16_t base_idx, uint8_t repeat, uint16_t src_stride, uint16_t dst_gap)
+    // 2D搬运int8_t类型矩阵数据（同步）
     __aicore__ inline void asc_copy_gm2l1_sync(__cbuf__ int8_t* dst, __gm__ int8_t* src, uint16_t base_idx, uint8_t repeat, uint16_t src_stride, uint16_t dst_gap)
+    // 2D搬运uint32_t类型矩阵数据（同步）
     __aicore__ inline void asc_copy_gm2l1_sync(__cbuf__ uint32_t* dst, __gm__ uint32_t* src, uint16_t base_idx, uint8_t repeat, uint16_t src_stride, uint16_t dst_gap)
+    // 2D搬运uint8_t类型矩阵数据（同步）
     __aicore__ inline void asc_copy_gm2l1_sync(__cbuf__ uint8_t* dst, __gm__ uint8_t* src, uint16_t base_idx, uint8_t repeat, uint16_t src_stride, uint16_t dst_gap)
     ```
 
@@ -108,10 +149,10 @@
 | :----- | :------- | :------- |
 | dst | 输出 | 目的操作数（矢量）的起始地址。 |
 | src | 输入 | 源操作数（矢量）的起始地址。 |
-| base_idx | 输入 | 以16*16个数对矩阵进行分块，搬运的起始分块ID。 |
+| base_idx | 输入 | 分形矩阵ID，说明搬运起始位置为源操作数中的第几个分形（0为源操作数中的第一个分形矩阵）。取值范围：[0, 65535]。单位512B。默认为0。 |
 | repeat | 输入 | 迭代次数。 |
-| src_stride |输入| 输入数据中两个相邻连续数据块之间的距离。 |
-| dst_gap | 输入 | 目的操作数相邻连续数据块的间隔（前面一个数据块的尾与后面一个数据块的头的间隔）。<br>单位为512字节。 |
+| src_stride |输入| 相邻迭代间，源操作数前一个分形与后一个分形起始地址的间隔，单位：512B。取值范围：[0, 65535]。默认为0。 |
+| dst_gap | 输入 | 相邻迭代间，目的操作数前一个分形结束地址与后一个分形起始地址的间隔，单位：512B。取值范围：[0, 65536]。默认为0。 |
 
 ## 返回值说明
 
