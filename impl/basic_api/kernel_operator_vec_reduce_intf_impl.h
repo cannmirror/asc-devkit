@@ -319,6 +319,419 @@ __aicore__ inline constexpr const __gm__ char* GetReduceRepeatApiName()
 
 }  // namespace Internal
 
+/* *************** BlockReduceMax /BlockReduceMin /BlockReduceSum PairReduceSum ********************* */
+/*
+ * BlockReduceSum has been updated, please use ReduceDataBlock instead.
+ * @ingroup BlockReduceSum
+ * @brief Sum all elements in each block
+ * @param [out] dst output LocalTensor
+ * @param [in] src input LocalTensor
+ * @param [in] repeatTime repeat times
+ * @param [in] mask[]/maskcount mask array/count
+ * @param [in] dstRepStride dst repeat stride
+ * @param [in] srcBlkStride src block stride
+ * @param [in] srcRepStride src repeat stride
+ */
+template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+                          "BlockReduceSum is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void BlockReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+                                      const int32_t repeatTime, const int32_t mask, const int32_t dstRepStride, const int32_t srcBlkStride,
+                                      const int32_t srcRepStride)
+{
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecReduceBlkInfo(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "BlockReduceSum");
+#endif
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    Internal::CheckReduceDataBlockParams<T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride,
+    srcRepStride, "BlockReduceSum(deprecated, use ReduceDataBlock instead)");
+#endif
+    Internal::ReduceDataBlockCommon<ReduceType::SUM, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
+}
+
+/*
+ * BlockReduceMax has been updated, please use ReduceDataBlock instead.
+ * @ingroup BlockReduceMax
+ * @brief Maximize all elements in each block
+ * @param [out] dst output LocalTensor
+ * @param [in] src input LocalTensor
+ * @param [in] repeatTime repeat times
+ * @param [in] mask[]/maskcount mask array/count
+ * @param [in] dstRepStride dst repeat stride
+ * @param [in] srcBlkStride src block stride
+ * @param [in] srcRepStride src repeat stride
+ */
+template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+                          "BlockReduceMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void BlockReduceMax(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+                                      const int32_t repeatTime, const int32_t mask, const int32_t dstRepStride, const int32_t srcBlkStride,
+                                      const int32_t srcRepStride)
+{
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecReduceBlkInfo(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "BlockReduceMax");
+#endif
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    Internal::CheckReduceDataBlockParams<T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride,
+    srcRepStride, "BlockReduceMax(deprecated, use ReduceDataBlock instead)");
+#endif
+    Internal::ReduceDataBlockCommon<ReduceType::MAX, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
+}
+
+/*
+ * BlockReduceMin has been updated, please use ReduceDataBlock instead.
+ * @ingroup BlockReduceMin
+ * @brief Find the minimum value of all elements in each block
+ * @param [out] dst output LocalTensor
+ * @param [in] src input LocalTensor
+ * @param [in] repeatTime repeat times
+ * @param [in] mask[]/maskcount mask array/count
+ * @param [in] dstRepStride dst repeat stride
+ * @param [in] srcBlkStride src block stride
+ * @param [in] srcRepStride src repeat stride
+ */
+template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+                          "BlockReduceMin is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void BlockReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+                                      const int32_t repeatTime, const int32_t mask, const int32_t dstRepStride, const int32_t srcBlkStride,
+                                      const int32_t srcRepStride)
+{
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecReduceBlkInfo(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "BlockReduceMin");
+#endif
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    Internal::CheckReduceDataBlockParams<T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride,
+    srcRepStride, "BlockReduceMin(deprecated, use ReduceDataBlock instead)");
+#endif
+    Internal::ReduceDataBlockCommon<ReduceType::MIN, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
+}
+
+/*
+ * PairReduceSum has been updated, please use ReducePairElem instead.
+ * @ingroup PairReduceSum
+ * @brief Sum of adjacent inner pair (parity) elements
+ * @param [out] dst output LocalTensor
+ * @param [in] src input LocalTensor
+ * @param [in] repeatTime repeat times
+ * @param [in] mask[]/maskcount mask array/count
+ * @param [in] dstRepStride dst repeat stride
+ * @param [in] srcBlkStride src block stride
+ * @param [in] srcRepStride src repeat stride
+ */
+template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+                          "PairReduceSum is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void PairReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+                                     const int32_t repeatTime, const int32_t mask, const int32_t dstRepStride, const int32_t srcBlkStride,
+                                     const int32_t srcRepStride)
+{
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecReducePairInfo(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "PairReduceSum");
+#endif
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    Internal::CheckReducePairElemParams<T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride,
+    srcRepStride, "PairReduceSum(deprecated, use ReducePairElem instead)");
+#endif
+    Internal::ReducePairElemCommon<ReduceType::SUM, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
+}
+
+// BlockReduceSum has been updated, please use ReduceDataBlock instead.
+template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+                          "BlockReduceSum is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void BlockReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+                                      const int32_t repeatTime, const uint64_t mask[], const int32_t dstRepStride, const int32_t srcBlkStride,
+                                      const int32_t srcRepStride)
+{
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecReduceBlkInfo(dst, src, mask[0], mask[1], repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "BlockReduceSum");
+#endif
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    Internal::CheckReduceDataBlockParams<T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride,
+    srcRepStride, "BlockReduceSum(deprecated, use ReduceDataBlock instead)");
+#endif
+    Internal::ReduceDataBlockCommon<ReduceType::SUM, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
+}
+
+// BlockReduceMax has been updated, please use ReduceDataBlock instead.
+template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+                          "BlockReduceMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void BlockReduceMax(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+                                      const int32_t repeatTime, const uint64_t mask[], const int32_t dstRepStride, const int32_t srcBlkStride,
+                                      const int32_t srcRepStride)
+{
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecReduceBlkInfo(dst, src, mask[0], mask[1], repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "BlockReduceMax");
+#endif
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    Internal::CheckReduceDataBlockParams<T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride,
+    srcRepStride, "BlockReduceMax(deprecated, use ReduceDataBlock instead)");
+#endif
+    Internal::ReduceDataBlockCommon<ReduceType::MAX, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
+}
+
+// BlockReduceMin has been updated, please use ReduceDataBlock instead.
+template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+                          "BlockReduceMin is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void BlockReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+                                      const int32_t repeatTime, const uint64_t mask[], const int32_t dstRepStride, const int32_t srcBlkStride,
+                                      const int32_t srcRepStride)
+{
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecReduceBlkInfo(dst, src, mask[0], mask[1], repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "BlockReduceMin");
+#endif
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    Internal::CheckReduceDataBlockParams<T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride,
+    srcRepStride, "BlockReduceMin(deprecated, use ReduceDataBlock instead)");
+#endif
+    Internal::ReduceDataBlockCommon<ReduceType::MIN, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
+}
+
+// PairReduceSum has been updated, please use ReducePairElem instead.
+template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+                          "PairReduceSum is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void PairReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+                                     const int32_t repeatTime, const uint64_t mask[], const int32_t dstRepStride, const int32_t srcBlkStride,
+                                     const int32_t srcRepStride)
+{
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecReducePairInfo(dst, src, mask[0], mask[1], repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "PairReduceSum");
+#endif
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    Internal::CheckReducePairElemParams<T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride,
+    srcRepStride, "PairReduceSum(deprecated, use ReducePairElem instead)");
+#endif
+    Internal::ReducePairElemCommon<ReduceType::SUM, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
+}
+
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+    // RepeatReduceSum has been updated, please use ReduceRepeat instead.
+template <typename T, bool isSetMask = true, typename U = T>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "RepeatReduceSum is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void RepeatReduceSum(const LocalTensor<U>& dst, const LocalTensor<T>& src,
+    const int32_t repeatTime, const int32_t mask, const int32_t dstBlkStride, const int32_t srcBlkStride,
+    const int32_t dstRepStride, const int32_t srcRepStride)
+{
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecReduceInfo(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "RepeatReduceSum");
+#endif
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    Internal::CheckReduceRepeatParams<ReduceType::SUM, U, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride,
+        srcBlkStride, srcRepStride, "RepeatReduceSum(deprecated, use ReduceRepeat instead)");
+#endif
+    // the typename in ReduceRepeat is reversed for better readability of dst/src
+    Internal::ReduceRepeatCommon<ReduceType::SUM, U, T, isSetMask>(dst, src, mask, repeatTime,
+        dstRepStride, srcBlkStride, srcRepStride);
+}
+#else
+// RepeatReduceSum has been updated, please use ReduceRepeat instead.
+template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+                          "RepeatReduceSum is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void RepeatReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+                                       const int32_t repeatTime, const int32_t mask, const int32_t dstBlkStride, const int32_t srcBlkStride,
+                                       const int32_t dstRepStride, const int32_t srcRepStride)
+{
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecReduceInfo(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "RepeatReduceSum");
+#endif
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    Internal::CheckReduceRepeatParams<ReduceType::SUM, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride,
+    srcBlkStride, srcRepStride, "RepeatReduceSum(deprecated, use ReduceRepeat instead)");
+#endif
+    Internal::ReduceRepeatCommon<ReduceType::SUM, T, T, isSetMask>(dst, src, mask, repeatTime,
+                                                                   dstRepStride, srcBlkStride, srcRepStride);
+}
+#endif
+
+/* **************************************** Whole Reduce Interface ****************************************** */
+/*
+ * WholeReduceSum has been updated, please use ReduceRepeat instead.
+ * @ingroup WholeReduceSum
+ * @brief Sum of all effective elements in each repeatTime
+ * @param [out] dst output LocalTensor
+ * @param [in] src input LocalTensor
+ * @param [in] repeatTime repeat times
+ * @param [in] mask[]/maskcount mask array/count
+ * @param [in] dstRepStride dst repeat stride
+ * @param [in] srcBlkStride src block stride
+ * @param [in] srcRepStride src repeat stride
+ */
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+    template <typename T, bool isSetMask = true, typename U = T>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "WholeReduceSum is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void WholeReduceSum(const LocalTensor<U>& dst, const LocalTensor<T>& src,
+    const uint64_t mask[], const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
+    const int32_t srcRepStride)
+{
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecReduceInfo(dst, src, mask[0], mask[1], repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "WholeReduceSum");
+#endif
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    Internal::CheckReduceRepeatParams<ReduceType::SUM, U, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride,
+        srcBlkStride, srcRepStride, "WholeReduceSum(deprecated, use ReduceRepeat instead)");
+#endif
+    // the typename in ReduceRepeat is reversed for better readability of dst/src
+    Internal::ReduceRepeatCommon<ReduceType::SUM, U, T, isSetMask>(dst, src, mask, repeatTime,
+        dstRepStride, srcBlkStride, srcRepStride);
+}
+#else
+// WholeReduceSum has been updated, please use ReduceRepeat instead.
+template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+                          "WholeReduceSum is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void WholeReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+                                      const uint64_t mask[], const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
+                                      const int32_t srcRepStride)
+{
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecReduceInfo(dst, src, mask[0], mask[1], repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "WholeReduceSum");
+#endif
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    Internal::CheckReduceRepeatParams<ReduceType::SUM, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride,
+    srcBlkStride, srcRepStride, "WholeReduceSum(deprecated, use ReduceRepeat instead)");
+#endif
+    Internal::ReduceRepeatCommon<ReduceType::SUM, T, T, isSetMask>(dst, src, mask, repeatTime,
+                                                                   dstRepStride, srcBlkStride, srcRepStride);
+}
+#endif
+
+/*
+ * WholeReduceMax has been updated, please use ReduceRepeat instead.
+ * @ingroup WholeReduceMax
+ * @brief Index of the maximum value of all elements in each repeat
+ * @param [out] dst output LocalTensor
+ * @param [in] src input LocalTensor
+ * @param [in] repeatTime repeat times
+ * @param [in] mask[]/maskcount mask array/count
+ * @param [in] dstRepStride dst repeat stride
+ * @param [in] srcBlkStride src block stride
+ * @param [in] srcRepStride src repeat stride
+ */
+template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+                          "WholeReduceMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void WholeReduceMax(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+                                      const uint64_t mask[], const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
+                                      const int32_t srcRepStride, ReduceOrder order = ReduceOrder::ORDER_VALUE_INDEX)
+{
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecReduceInfo(dst, src, mask[0], mask[1], repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "WholeReduceMax");
+#endif
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    Internal::CheckReduceRepeatParams<ReduceType::MAX, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride,
+    srcBlkStride, srcRepStride, order,
+    "WholeReduceMax(deprecated, use ReduceRepeat instead)");
+#endif
+    Internal::ReduceRepeatCommon<ReduceType::MAX, T, T, isSetMask>(dst, src, mask, repeatTime,
+                                                                   dstRepStride, srcBlkStride, srcRepStride, order);
+}
+
+// WholeReduceMin has been updated, please use ReduceRepeat instead.
+template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+                          "WholeReduceMin is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void WholeReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+                                      const uint64_t mask[], const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
+                                      const int32_t srcRepStride, ReduceOrder order = ReduceOrder::ORDER_VALUE_INDEX)
+{
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecReduceInfo(dst, src, mask[0], mask[1], repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "WholeReduceMin");
+#endif
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    Internal::CheckReduceRepeatParams<ReduceType::MIN, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride,
+    srcBlkStride, srcRepStride, order, "WholeReduceMin(deprecated, use ReduceRepeat instead)");
+#endif
+    Internal::ReduceRepeatCommon<ReduceType::MIN, T, T, isSetMask>(dst, src, mask, repeatTime,
+                                                                   dstRepStride, srcBlkStride, srcRepStride, order);
+}
+
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+    // WholeReduceSum has been updated, please use ReduceRepeat instead.
+template <typename T, bool isSetMask = true, typename U = T>
+__ASC_USE_RESERVED_UBUF__(3510,
+    "WholeReduceSum is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void WholeReduceSum(const LocalTensor<U>& dst, const LocalTensor<T>& src,
+    const int32_t mask, const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
+    const int32_t srcRepStride)
+{
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecReduceInfo(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "WholeReduceSum");
+#endif
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    Internal::CheckReduceRepeatParams<ReduceType::SUM, U, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride,
+        srcBlkStride, srcRepStride, "WholeReduceSum(deprecated, use ReduceRepeat instead)");
+#endif
+    // the typename in ReduceRepeat is reversed for better readability of dst/src
+    Internal::ReduceRepeatCommon<ReduceType::SUM, U, T, isSetMask>(dst, src, mask, repeatTime,
+        dstRepStride, srcBlkStride, srcRepStride);
+}
+#else
+// WholeReduceSum has been updated, please use ReduceRepeat instead.
+template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+                          "WholeReduceSum is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void WholeReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+                                      const int32_t mask, const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
+                                      const int32_t srcRepStride)
+{
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecReduceInfo(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "WholeReduceSum");
+#endif
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    Internal::CheckReduceRepeatParams<ReduceType::SUM, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride,
+    srcBlkStride, srcRepStride, "WholeReduceSum(deprecated, use ReduceRepeat instead)");
+#endif
+    Internal::ReduceRepeatCommon<ReduceType::SUM, T, T, isSetMask>(dst, src, mask, repeatTime,
+                                                                   dstRepStride, srcBlkStride, srcRepStride);
+}
+#endif
+
+// WholeReduceMax has been updated, please use ReduceRepeat instead.
+template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+                          "WholeReduceMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void WholeReduceMax(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+                                      const int32_t mask, const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
+                                      const int32_t srcRepStride, ReduceOrder order = ReduceOrder::ORDER_VALUE_INDEX)
+{
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecReduceInfo(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "WholeReduceMax");
+#endif
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    Internal::CheckReduceRepeatParams<ReduceType::MAX, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride,
+    srcBlkStride, srcRepStride, order, "WholeReduceMax(deprecated, use ReduceRepeat instead)");
+#endif
+    Internal::ReduceRepeatCommon<ReduceType::MAX, T, T, isSetMask>(dst, src, mask, repeatTime,
+                                                                   dstRepStride, srcBlkStride, srcRepStride, order);
+}
+
+// WholeReduceMin has been updated, please use ReduceRepeat instead.
+template <typename T, bool isSetMask = true>
+__ASC_USE_RESERVED_UBUF__(3510,
+                          "WholeReduceMin is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void WholeReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+                                      const int32_t mask, const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
+                                      const int32_t srcRepStride, ReduceOrder order = ReduceOrder::ORDER_VALUE_INDEX)
+{
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecReduceInfo(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "WholeReduceMin");
+#endif
+#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
+    Internal::CheckReduceRepeatParams<ReduceType::MIN, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride,
+    srcBlkStride, srcRepStride, order, "WholeReduceMin(deprecated, use ReduceRepeat instead)");
+#endif
+    Internal::ReduceRepeatCommon<ReduceType::MIN, T, T, isSetMask>(dst, src, mask, repeatTime,
+                                                                   dstRepStride, srcBlkStride, srcRepStride, order);
+}
+
+#if defined(__NPU_ARCH__)
 template <ReduceType reduceType, typename T, typename U, bool isSetMask>
 __aicore__ inline void ReduceDataBlock(const LocalTensor<T>& dst, const LocalTensor<U>& src, const int32_t mask,
     const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride)
@@ -404,418 +817,6 @@ __aicore__ inline void ReduceRepeat(const LocalTensor<T>& dst, const LocalTensor
         srcBlkStride, srcRepStride, order, Internal::GetReduceRepeatApiName<reduceType>());
 #endif
     Internal::ReduceRepeatCommon<reduceType, T, U, isSetMask>(dst, src, mask, repeatTime,
-        dstRepStride, srcBlkStride, srcRepStride, order);
-}
-
-/* *************** BlockReduceMax /BlockReduceMin /BlockReduceSum PairReduceSum ********************* */
-/*
- * BlockReduceSum has been updated, please use ReduceDataBlock instead.
- * @ingroup BlockReduceSum
- * @brief Sum all elements in each block
- * @param [out] dst output LocalTensor
- * @param [in] src input LocalTensor
- * @param [in] repeatTime repeat times
- * @param [in] mask[]/maskcount mask array/count
- * @param [in] dstRepStride dst repeat stride
- * @param [in] srcBlkStride src block stride
- * @param [in] srcRepStride src repeat stride
- */
-template <typename T, bool isSetMask = true>
-__ASC_USE_RESERVED_UBUF__(3510,
-    "BlockReduceSum is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void BlockReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t repeatTime, const int32_t mask, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride)
-{
-#ifdef __MSTX_DFX_REPORT__
-    MstxTensor::GetMstxVecReduceBlkInfo(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "BlockReduceSum");
-#endif
-#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
-    Internal::CheckReduceDataBlockParams<T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride,
-        srcRepStride, "BlockReduceSum(deprecated, use ReduceDataBlock instead)");
-#endif
-    Internal::ReduceDataBlockCommon<ReduceType::SUM, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
-}
-
-/*
- * BlockReduceMax has been updated, please use ReduceDataBlock instead.
- * @ingroup BlockReduceMax
- * @brief Maximize all elements in each block
- * @param [out] dst output LocalTensor
- * @param [in] src input LocalTensor
- * @param [in] repeatTime repeat times
- * @param [in] mask[]/maskcount mask array/count
- * @param [in] dstRepStride dst repeat stride
- * @param [in] srcBlkStride src block stride
- * @param [in] srcRepStride src repeat stride
- */
-template <typename T, bool isSetMask = true>
-__ASC_USE_RESERVED_UBUF__(3510,
-    "BlockReduceMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void BlockReduceMax(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t repeatTime, const int32_t mask, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride)
-{
-#ifdef __MSTX_DFX_REPORT__
-    MstxTensor::GetMstxVecReduceBlkInfo(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "BlockReduceMax");
-#endif
-#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
-    Internal::CheckReduceDataBlockParams<T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride,
-        srcRepStride, "BlockReduceMax(deprecated, use ReduceDataBlock instead)");
-#endif
-    Internal::ReduceDataBlockCommon<ReduceType::MAX, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
-}
-
-/*
- * BlockReduceMin has been updated, please use ReduceDataBlock instead.
- * @ingroup BlockReduceMin
- * @brief Find the minimum value of all elements in each block
- * @param [out] dst output LocalTensor
- * @param [in] src input LocalTensor
- * @param [in] repeatTime repeat times
- * @param [in] mask[]/maskcount mask array/count
- * @param [in] dstRepStride dst repeat stride
- * @param [in] srcBlkStride src block stride
- * @param [in] srcRepStride src repeat stride
- */
-template <typename T, bool isSetMask = true>
-__ASC_USE_RESERVED_UBUF__(3510,
-    "BlockReduceMin is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void BlockReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t repeatTime, const int32_t mask, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride)
-{
-#ifdef __MSTX_DFX_REPORT__
-    MstxTensor::GetMstxVecReduceBlkInfo(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "BlockReduceMin");
-#endif
-#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
-    Internal::CheckReduceDataBlockParams<T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride,
-        srcRepStride, "BlockReduceMin(deprecated, use ReduceDataBlock instead)");
-#endif
-    Internal::ReduceDataBlockCommon<ReduceType::MIN, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
-}
-
-/*
- * PairReduceSum has been updated, please use ReducePairElem instead.
- * @ingroup PairReduceSum
- * @brief Sum of adjacent inner pair (parity) elements
- * @param [out] dst output LocalTensor
- * @param [in] src input LocalTensor
- * @param [in] repeatTime repeat times
- * @param [in] mask[]/maskcount mask array/count
- * @param [in] dstRepStride dst repeat stride
- * @param [in] srcBlkStride src block stride
- * @param [in] srcRepStride src repeat stride
- */
-template <typename T, bool isSetMask = true>
-__ASC_USE_RESERVED_UBUF__(3510,
-    "PairReduceSum is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void PairReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t repeatTime, const int32_t mask, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride)
-{
-#ifdef __MSTX_DFX_REPORT__
-    MstxTensor::GetMstxVecReducePairInfo(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "PairReduceSum");
-#endif
-#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
-    Internal::CheckReducePairElemParams<T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride,
-        srcRepStride, "PairReduceSum(deprecated, use ReducePairElem instead)");
-#endif
-    Internal::ReducePairElemCommon<ReduceType::SUM, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
-}
-
-// BlockReduceSum has been updated, please use ReduceDataBlock instead.
-template <typename T, bool isSetMask = true>
-__ASC_USE_RESERVED_UBUF__(3510,
-    "BlockReduceSum is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void BlockReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t repeatTime, const uint64_t mask[], const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride)
-{
-#ifdef __MSTX_DFX_REPORT__
-    MstxTensor::GetMstxVecReduceBlkInfo(dst, src, mask[0], mask[1], repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "BlockReduceSum");
-#endif
-#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
-    Internal::CheckReduceDataBlockParams<T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride,
-        srcRepStride, "BlockReduceSum(deprecated, use ReduceDataBlock instead)");
-#endif
-    Internal::ReduceDataBlockCommon<ReduceType::SUM, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
-}
-
-// BlockReduceMax has been updated, please use ReduceDataBlock instead.
-template <typename T, bool isSetMask = true>
-__ASC_USE_RESERVED_UBUF__(3510,
-    "BlockReduceMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void BlockReduceMax(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t repeatTime, const uint64_t mask[], const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride)
-{
-#ifdef __MSTX_DFX_REPORT__
-    MstxTensor::GetMstxVecReduceBlkInfo(dst, src, mask[0], mask[1], repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "BlockReduceMax");
-#endif
-#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
-    Internal::CheckReduceDataBlockParams<T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride,
-        srcRepStride, "BlockReduceMax(deprecated, use ReduceDataBlock instead)");
-#endif
-    Internal::ReduceDataBlockCommon<ReduceType::MAX, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
-}
-
-// BlockReduceMin has been updated, please use ReduceDataBlock instead.
-template <typename T, bool isSetMask = true>
-__ASC_USE_RESERVED_UBUF__(3510,
-    "BlockReduceMin is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void BlockReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t repeatTime, const uint64_t mask[], const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride)
-{
-#ifdef __MSTX_DFX_REPORT__
-    MstxTensor::GetMstxVecReduceBlkInfo(dst, src, mask[0], mask[1], repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "BlockReduceMin");
-#endif
-#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
-    Internal::CheckReduceDataBlockParams<T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride,
-        srcRepStride, "BlockReduceMin(deprecated, use ReduceDataBlock instead)");
-#endif
-    Internal::ReduceDataBlockCommon<ReduceType::MIN, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
-}
-
-// PairReduceSum has been updated, please use ReducePairElem instead.
-template <typename T, bool isSetMask = true>
-__ASC_USE_RESERVED_UBUF__(3510,
-    "PairReduceSum is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void PairReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t repeatTime, const uint64_t mask[], const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride)
-{
-#ifdef __MSTX_DFX_REPORT__
-    MstxTensor::GetMstxVecReducePairInfo(dst, src, mask[0], mask[1], repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "PairReduceSum");
-#endif
-#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
-    Internal::CheckReducePairElemParams<T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride,
-        srcRepStride, "PairReduceSum(deprecated, use ReducePairElem instead)");
-#endif
-    Internal::ReducePairElemCommon<ReduceType::SUM, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
-}
-
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
-// RepeatReduceSum has been updated, please use ReduceRepeat instead.
-template <typename T, bool isSetMask = true, typename U = T>
-__ASC_USE_RESERVED_UBUF__(3510,
-    "RepeatReduceSum is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void RepeatReduceSum(const LocalTensor<U>& dst, const LocalTensor<T>& src,
-    const int32_t repeatTime, const int32_t mask, const int32_t dstBlkStride, const int32_t srcBlkStride,
-    const int32_t dstRepStride, const int32_t srcRepStride)
-{
-#ifdef __MSTX_DFX_REPORT__
-    MstxTensor::GetMstxVecReduceInfo(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "RepeatReduceSum");
-#endif
-#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
-    Internal::CheckReduceRepeatParams<ReduceType::SUM, U, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride,
-        srcBlkStride, srcRepStride, "RepeatReduceSum(deprecated, use ReduceRepeat instead)");
-#endif
-    // the typename in ReduceRepeat is reversed for better readability of dst/src
-    Internal::ReduceRepeatCommon<ReduceType::SUM, U, T, isSetMask>(dst, src, mask, repeatTime,
-        dstRepStride, srcBlkStride, srcRepStride);
-}
-#else
-// RepeatReduceSum has been updated, please use ReduceRepeat instead.
-template <typename T, bool isSetMask = true>
-__ASC_USE_RESERVED_UBUF__(3510,
-    "RepeatReduceSum is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void RepeatReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t repeatTime, const int32_t mask, const int32_t dstBlkStride, const int32_t srcBlkStride,
-    const int32_t dstRepStride, const int32_t srcRepStride)
-{
-#ifdef __MSTX_DFX_REPORT__
-    MstxTensor::GetMstxVecReduceInfo(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "RepeatReduceSum");
-#endif
-#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
-    Internal::CheckReduceRepeatParams<ReduceType::SUM, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride,
-        srcBlkStride, srcRepStride, "RepeatReduceSum(deprecated, use ReduceRepeat instead)");
-#endif
-    Internal::ReduceRepeatCommon<ReduceType::SUM, T, T, isSetMask>(dst, src, mask, repeatTime,
-        dstRepStride, srcBlkStride, srcRepStride);
-}
-#endif
-
-/* **************************************** Whole Reduce Interface ****************************************** */
-/*
- * WholeReduceSum has been updated, please use ReduceRepeat instead.
- * @ingroup WholeReduceSum
- * @brief Sum of all effective elements in each repeatTime
- * @param [out] dst output LocalTensor
- * @param [in] src input LocalTensor
- * @param [in] repeatTime repeat times
- * @param [in] mask[]/maskcount mask array/count
- * @param [in] dstRepStride dst repeat stride
- * @param [in] srcBlkStride src block stride
- * @param [in] srcRepStride src repeat stride
- */
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
-template <typename T, bool isSetMask = true, typename U = T>
-__ASC_USE_RESERVED_UBUF__(3510,
-    "WholeReduceSum is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void WholeReduceSum(const LocalTensor<U>& dst, const LocalTensor<T>& src,
-    const uint64_t mask[], const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride)
-{
-#ifdef __MSTX_DFX_REPORT__
-    MstxTensor::GetMstxVecReduceInfo(dst, src, mask[0], mask[1], repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "WholeReduceSum");
-#endif
-#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
-    Internal::CheckReduceRepeatParams<ReduceType::SUM, U, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride,
-        srcBlkStride, srcRepStride, "WholeReduceSum(deprecated, use ReduceRepeat instead)");
-#endif
-    // the typename in ReduceRepeat is reversed for better readability of dst/src
-    Internal::ReduceRepeatCommon<ReduceType::SUM, U, T, isSetMask>(dst, src, mask, repeatTime,
-        dstRepStride, srcBlkStride, srcRepStride);
-}
-#else
-// WholeReduceSum has been updated, please use ReduceRepeat instead.
-template <typename T, bool isSetMask = true>
-__ASC_USE_RESERVED_UBUF__(3510,
-    "WholeReduceSum is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void WholeReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const uint64_t mask[], const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride)
-{
-#ifdef __MSTX_DFX_REPORT__
-    MstxTensor::GetMstxVecReduceInfo(dst, src, mask[0], mask[1], repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "WholeReduceSum");
-#endif
-#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
-    Internal::CheckReduceRepeatParams<ReduceType::SUM, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride,
-        srcBlkStride, srcRepStride, "WholeReduceSum(deprecated, use ReduceRepeat instead)");
-#endif
-    Internal::ReduceRepeatCommon<ReduceType::SUM, T, T, isSetMask>(dst, src, mask, repeatTime,
-        dstRepStride, srcBlkStride, srcRepStride);
-}
-#endif
-
-/*
- * WholeReduceMax has been updated, please use ReduceRepeat instead.
- * @ingroup WholeReduceMax
- * @brief Index of the maximum value of all elements in each repeat
- * @param [out] dst output LocalTensor
- * @param [in] src input LocalTensor
- * @param [in] repeatTime repeat times
- * @param [in] mask[]/maskcount mask array/count
- * @param [in] dstRepStride dst repeat stride
- * @param [in] srcBlkStride src block stride
- * @param [in] srcRepStride src repeat stride
- */
-template <typename T, bool isSetMask = true>
-__ASC_USE_RESERVED_UBUF__(3510,
-    "WholeReduceMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void WholeReduceMax(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const uint64_t mask[], const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride, ReduceOrder order = ReduceOrder::ORDER_VALUE_INDEX)
-{
-#ifdef __MSTX_DFX_REPORT__
-    MstxTensor::GetMstxVecReduceInfo(dst, src, mask[0], mask[1], repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "WholeReduceMax");
-#endif
-#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
-    Internal::CheckReduceRepeatParams<ReduceType::MAX, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride,
-        srcBlkStride, srcRepStride, order,
-        "WholeReduceMax(deprecated, use ReduceRepeat instead)");
-#endif
-    Internal::ReduceRepeatCommon<ReduceType::MAX, T, T, isSetMask>(dst, src, mask, repeatTime,
-        dstRepStride, srcBlkStride, srcRepStride, order);
-}
-
-// WholeReduceMin has been updated, please use ReduceRepeat instead.
-template <typename T, bool isSetMask = true>
-__ASC_USE_RESERVED_UBUF__(3510,
-    "WholeReduceMin is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void WholeReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const uint64_t mask[], const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride, ReduceOrder order = ReduceOrder::ORDER_VALUE_INDEX)
-{
-#ifdef __MSTX_DFX_REPORT__
-    MstxTensor::GetMstxVecReduceInfo(dst, src, mask[0], mask[1], repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "WholeReduceMin");
-#endif
-#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
-    Internal::CheckReduceRepeatParams<ReduceType::MIN, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride,
-        srcBlkStride, srcRepStride, order, "WholeReduceMin(deprecated, use ReduceRepeat instead)");
-#endif
-    Internal::ReduceRepeatCommon<ReduceType::MIN, T, T, isSetMask>(dst, src, mask, repeatTime,
-        dstRepStride, srcBlkStride, srcRepStride, order);
-}
-
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
-// WholeReduceSum has been updated, please use ReduceRepeat instead.
-template <typename T, bool isSetMask = true, typename U = T>
-__ASC_USE_RESERVED_UBUF__(3510,
-    "WholeReduceSum is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void WholeReduceSum(const LocalTensor<U>& dst, const LocalTensor<T>& src,
-    const int32_t mask, const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride)
-{
-#ifdef __MSTX_DFX_REPORT__
-    MstxTensor::GetMstxVecReduceInfo(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "WholeReduceSum");
-#endif
-#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
-    Internal::CheckReduceRepeatParams<ReduceType::SUM, U, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride,
-        srcBlkStride, srcRepStride, "WholeReduceSum(deprecated, use ReduceRepeat instead)");
-#endif
-    // the typename in ReduceRepeat is reversed for better readability of dst/src
-    Internal::ReduceRepeatCommon<ReduceType::SUM, U, T, isSetMask>(dst, src, mask, repeatTime,
-        dstRepStride, srcBlkStride, srcRepStride);
-}
-#else
-// WholeReduceSum has been updated, please use ReduceRepeat instead.
-template <typename T, bool isSetMask = true>
-__ASC_USE_RESERVED_UBUF__(3510,
-    "WholeReduceSum is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void WholeReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t mask, const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride)
-{
-#ifdef __MSTX_DFX_REPORT__
-    MstxTensor::GetMstxVecReduceInfo(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "WholeReduceSum");
-#endif
-#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
-    Internal::CheckReduceRepeatParams<ReduceType::SUM, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride,
-        srcBlkStride, srcRepStride, "WholeReduceSum(deprecated, use ReduceRepeat instead)");
-#endif
-    Internal::ReduceRepeatCommon<ReduceType::SUM, T, T, isSetMask>(dst, src, mask, repeatTime,
-        dstRepStride, srcBlkStride, srcRepStride);
-}
-#endif
-
-// WholeReduceMax has been updated, please use ReduceRepeat instead.
-template <typename T, bool isSetMask = true>
-__ASC_USE_RESERVED_UBUF__(3510,
-    "WholeReduceMax is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void WholeReduceMax(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t mask, const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride, ReduceOrder order = ReduceOrder::ORDER_VALUE_INDEX)
-{
-#ifdef __MSTX_DFX_REPORT__
-    MstxTensor::GetMstxVecReduceInfo(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "WholeReduceMax");
-#endif
-#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
-    Internal::CheckReduceRepeatParams<ReduceType::MAX, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride,
-        srcBlkStride, srcRepStride, order, "WholeReduceMax(deprecated, use ReduceRepeat instead)");
-#endif
-    Internal::ReduceRepeatCommon<ReduceType::MAX, T, T, isSetMask>(dst, src, mask, repeatTime,
-        dstRepStride, srcBlkStride, srcRepStride, order);
-}
-
-// WholeReduceMin has been updated, please use ReduceRepeat instead.
-template <typename T, bool isSetMask = true>
-__ASC_USE_RESERVED_UBUF__(3510,
-    "WholeReduceMin is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void WholeReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t mask, const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
-    const int32_t srcRepStride, ReduceOrder order = ReduceOrder::ORDER_VALUE_INDEX)
-{
-#ifdef __MSTX_DFX_REPORT__
-    MstxTensor::GetMstxVecReduceInfo(dst, src, mask, repeatTime, dstRepStride, srcBlkStride, srcRepStride, isSetMask, "WholeReduceMin");
-#endif
-#if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
-    Internal::CheckReduceRepeatParams<ReduceType::MIN, T, T, isSetMask>(dst, src, mask, repeatTime, dstRepStride,
-        srcBlkStride, srcRepStride, order, "WholeReduceMin(deprecated, use ReduceRepeat instead)");
-#endif
-    Internal::ReduceRepeatCommon<ReduceType::MIN, T, T, isSetMask>(dst, src, mask, repeatTime,
         dstRepStride, srcBlkStride, srcRepStride, order);
 }
 
@@ -1247,6 +1248,7 @@ __aicore__ inline void ReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>
     }
 #endif
 }
+#endif
 #pragma end_pipe
 
 // GetReduceMaxMinCount has been updated, please use GetReduceRepeatMaxMinSpr instead.

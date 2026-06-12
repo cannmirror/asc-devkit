@@ -51,6 +51,14 @@
 #endif
 
 namespace AscendC {
+__aicore__ inline void PrintTimeStamp(uint32_t descId)
+{
+#ifdef ASCENDC_TIME_STAMP_ON  // 打点开关宏
+    DumpTimeStampImpl(descId);
+#endif
+}
+
+#if defined(__NPU_ARCH__)
 template <typename T>
 __aicore__ inline void DumpTensor(const LocalTensor<T> &input, uint32_t desc, uint32_t dumpSize)
 {
@@ -240,15 +248,10 @@ __aicore__ inline void AssertImpl(__gm__ const char* fmt, Args&&... args)
 }
 #endif // __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 2002
 
-__aicore__ inline void PrintTimeStamp(uint32_t descId)
-{
-#ifdef ASCENDC_TIME_STAMP_ON  // 打点开关宏
-    DumpTimeStampImpl(descId);
-#endif
-}
-
+#endif // defined(__NPU_ARCH__)
 }  // namespace AscendC
 #endif  // END OF ASCENDC_MODULE_OPERATOR_DUMP_TENSOR_INTERFACE_IMPL_H
+
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_DUMP_TENSOR_INTF_IMPL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_DUMP_TENSOR_INTF_IMPL_H__

@@ -234,7 +234,11 @@ private:
 template <typename T> class GlobalTensor : public BaseGlobalTensor<T>, public BaseTensorTraitTensor<T> {
 public:
     using PrimType = PrimT<T>;
+#if defined(__NPU_ARCH__)
     __aicore__ inline GlobalTensor<T>();
+#else
+    __aicore__ inline GlobalTensor<T>(){}
+#endif
 #ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
     __aicore__ inline ~GlobalTensor<T>();
 #endif
@@ -297,9 +301,7 @@ private:
 };
 } // namespace AscendC
 
-#if defined(__NPU_ARCH__)
 #include "../../impl/basic_api/kernel_tensor_impl.h"
-#endif
 #endif // KERNEL_TENSOR_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TENSOR_H__)

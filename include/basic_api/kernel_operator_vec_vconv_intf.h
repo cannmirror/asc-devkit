@@ -236,9 +236,7 @@ __aicore__ inline void Truncate(const LocalTensor<T> &dst, const LocalTensor<T> 
     const uint32_t count);
 } // namespace AscendC
 
-#if defined(__NPU_ARCH__)
 #include "../../impl/basic_api/kernel_operator_vec_vconv_intf_impl.h"
-#endif
 #endif // ASCENDC_MODULE_OPERATOR_VEC_VCONV_INTERFACE_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_VCONV_INTF_H__)

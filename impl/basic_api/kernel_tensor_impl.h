@@ -27,6 +27,22 @@
 #include "kernel_operator_symbol_override_impl.h"
 
 namespace AscendC {
+template <Hardware pos>
+__aicore__ inline uint32_t GetDynamicMemStartPos() {
+// dynamic array is not supported in cpu mode
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510 && !defined(ASCENDC_CPU_DEBUG)
+    if constexpr (pos == Hardware::UB) {
+    extern __ubuf__ uint32_t dynamicStartUB[];
+    return (uint64_t)(&dynamicStartUB[0]);
+} else {
+    return 0;
+}
+#else
+    return 0;
+#endif
+}
+
+#if defined(__NPU_ARCH__)
 template <typename Shape, size_t... Is>
 __aicore__ inline constexpr auto ProdImpl(const Shape& t, Std::index_sequence<Is...>) {
     return (Std::get<Is>(t) * ... * 1);
@@ -37,20 +53,6 @@ __aicore__ inline constexpr auto Prod(const Shape<Args...>& t) {
     return ProdImpl(t, Std::make_index_sequence<sizeof...(Args)>{});
 }
 
-template <Hardware pos>
-__aicore__ inline uint32_t GetDynamicMemStartPos() {
-// dynamic array is not supported in cpu mode
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510 && !defined(ASCENDC_CPU_DEBUG)
-    if constexpr (pos == Hardware::UB) {
-        extern __ubuf__ uint32_t dynamicStartUB[];
-        return (uint64_t)(&dynamicStartUB[0]);
-    } else {
-        return 0;
-    }
-#else
-    return 0;
-#endif
-}
 
 // CPU Impl
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
@@ -1703,9 +1705,11 @@ __aicore__ inline typename Std::enable_if<is_layout_v<LayoutType>, LocalTensor<D
     LocalTensor<DataType> tensorOut(head_, layout);
     head_ += SizeOfBits<liteType>::value * tensorOut.GetSize() / SizeOfBits<uint8_t>::value;
     return tensorOut;
-}   
+}
+#endif // defined(__NPU_ARCH__)
 }
 #endif // KERNEL_TENSOR_H
+
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TENSOR_IMPL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TENSOR_IMPL_H__
