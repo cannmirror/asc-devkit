@@ -42,13 +42,13 @@ AI Core SIMD的基本编译流程如下：Host代码使用Host编译器编译成
   下方示例中，definition.asc 定义了变量和函数，example.asc 对其进行引用；两个文件将分别编译，最终链接为完整可执行文件。
   ```c++
   // ------- definition.asc -------
-  extern __gm__ int dev_var = 5;
+  __gm__ int dev_var = 5;
   __aicore__ int device_function();
  
   // ------- example.asc -------
-  extern __aicore__ int device_varibale;
+  extern __gm__ int dev_var;
   __aicore__  int device_function();
-  __global__  __aicore__ void kernel(int *var) {
+  __global__  __vector__ void kernel(int *var) {
     dev_var = 0;
     *var = device_function();
   }
@@ -299,7 +299,7 @@ add_executable(demo
 | CMAKE_ASC_COMPILER_AR | 静态库归档工具，默认使用系统ar工具。设置后，静态库的归档命令将使用该工具替代默认ar。 |
 | CMAKE_ASC_COMPILER_LINKER | 链接驱动，默认使用bisheng编译器作为链接驱动，仅在有明确替换需求时设置。 |
 | CMAKE_ASC_ENABLE_SIMT | 是否启用SIMT编译模式，设置为ON时在编译命令中自动注入--enable-simt选项，默认为OFF。 |
-| CMAKE_INSTALL_PREFIX | 用于指定CMake执行install时，安装的路径前缀，执行install后编译产物（ascendc_library中指定的target以及对应的头文件）会安装在该路径下。默认路径为当前目录的out目录下。 |
+| CMAKE_INSTALL_PREFIX | 为CMake的内置变量，用于指定CMake执行install命令时，安装的路径前缀。|
 
 >[!CAUTION]注意
 > 在CMake工程中，影响Ascend C语言初始化、编译器探测和编译规则生成的变量，
@@ -395,9 +395,11 @@ add_executable(demo
 </tbody>
 </table>
 
-### 高阶API常用链接库 <a name="section57020345148"></a>
-
-| 使用场景 |名称  | 动态库路径 |
-|--|--|--|
-| 使用高阶API相关的Tiling接口时需要同时链接。 |libtiling_api.a</br> libregister.so</br> libgraph_base.so | ${ASCEND_HOME_PATH}/lib64  |
-| 使用PlatformAscendC相关硬件平台信息接口时需要链接。 | libplatform.so | ${ASCEND_HOME_PATH}/lib64 |
+### 高阶API常用链接库 
+在使用高阶API时，必须链接以下库，因为这些库是高阶API功能所依赖的。在其他场景下，可以根据具体需求选择是否链接这些库。
+|链接库名称|作用描述|使用场景|动态库路径|
+|--|--|--|--|
+|libtiling_api.a|Tiling函数相关库。|使用高阶API相关的Tiling接口时需要链接。|${ASCEND_HOME_PATH}/lib64|
+|libregister.so|Tiling函数相关库。|使用高阶API相关的Tiling接口时需要链接。|${ASCEND_HOME_PATH}/lib64|
+|libgraph_base.so|基础数据结构和接口库。|调用ge::Shape，ge::DataType等基础结构体时需要链接。|${ASCEND_HOME_PATH}/lib64|
+|libplatform.so|硬件平台信息库。|使用PlatformAscendC相关硬件平台信息接口时需要链接。|${ASCEND_HOME_PATH}/lib64|
