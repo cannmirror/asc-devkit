@@ -248,7 +248,7 @@ add_executable(demo
 ```cmake
 # CMAKE_ASC_ARCHITECTURES：指定NPU架构版本，可通过-DCMAKE_ASC_ARCHITECTURES=dav-xxxx覆盖默认值
 set(CMAKE_ASC_ARCHITECTURES "dav-3510" CACHE STRING "NPU architecture")
-# 启用SIMT编译模式
+# CMAKE_ASC_ENABLE_SIMT：启用SIMT编译模式，需要在find_package(ASC)前设置
 set(CMAKE_ASC_ENABLE_SIMT ON)
 
 find_package(ASC)
@@ -300,6 +300,12 @@ add_executable(demo
 | CMAKE_ASC_COMPILER_LINKER | 链接驱动，默认使用bisheng编译器作为链接驱动，仅在有明确替换需求时设置。 |
 | CMAKE_ASC_ENABLE_SIMT | 是否启用SIMT编译模式，设置为ON时在编译命令中自动注入--enable-simt选项，默认为OFF。 |
 | CMAKE_INSTALL_PREFIX | 用于指定CMake执行install时，安装的路径前缀，执行install后编译产物（ascendc_library中指定的target以及对应的头文件）会安装在该路径下。默认路径为当前目录的out目录下。 |
+
+>[!CAUTION]注意
+> 在CMake工程中，影响Ascend C语言初始化、编译器探测和编译规则生成的变量，
+> 需要在`find_package(ASC)`前设置，或在执行`cmake`配置命令时通过`-D`指定。
+> 这些变量在Ascend C语言初始化过程中会被读取，若在`find_package(ASC)`之后再设置，
+> 可能不会影响已经生成的编译规则。
 
 ## 其他编译相关说明
 

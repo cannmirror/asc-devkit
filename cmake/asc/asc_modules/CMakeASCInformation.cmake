@@ -160,6 +160,16 @@ endif()
 
 set(CMAKE_ASC_INFORMATION_LOADED 1)   # 标记Cmake已经加载初始化ASC编程语言
 
+if(NOT DEFINED CMAKE_ASC_RUN_MODE OR CMAKE_ASC_RUN_MODE STREQUAL "")
+    set(CMAKE_ASC_RUN_MODE "npu")
+endif()
+
+set(_ASC_SUPPORTED_RUN_MODES npu cpu sim)
+if(NOT CMAKE_ASC_RUN_MODE IN_LIST _ASC_SUPPORTED_RUN_MODES)
+    message(FATAL_ERROR
+        "ASC: CMAKE_ASC_RUN_MODE='${CMAKE_ASC_RUN_MODE}' is unsupported, should be npu, cpu, or sim.")
+endif()
+
 if(CMAKE_ASC_RUN_MODE STREQUAL "sim")
     set(_ARCH_TO_DIR_MAP
         "dav-2002" "dav_2002"
