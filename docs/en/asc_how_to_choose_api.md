@@ -118,8 +118,8 @@ You can also refer to the following key dimensions for quick decision-making:
 - Scenarios that want to reuse mature algorithm implementations and shorten development cycles.
 
 **Examples**
-- [Softmax API Example](../../examples/01_simd_cpp_api/03_libraries/01_activation/softmax/softmax.asc)
-- [Matmul API Example](../../examples/01_simd_cpp_api/03_libraries/00_matrix)
+- [Softmax API Example](../../examples/01_simd_cpp_api/04_advanced_api/01_activation/softmax/softmax.asc)
+- [Matmul API Example](../../examples/01_simd_cpp_api/04_advanced_api/00_matmul)
 
 ---
 

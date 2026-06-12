@@ -44,28 +44,28 @@ EXAMPLE_LIST=(
     01_simd_cpp_api/00_introduction/02_matrix/matmul_advanced_api
     01_simd_cpp_api/00_introduction/03_fusion_operation/matmul_leakyrelu_advanced_api
     01_simd_cpp_api/01_utilities/06_cpu_debug
-    01_simd_cpp_api/02_features/01_basic_api/03_matrix_compute/batch_matmul
-    01_simd_cpp_api/02_features/01_basic_api/03_matrix_compute/load_data_l12l0
-    01_simd_cpp_api/02_features/01_basic_api/03_matrix_compute/mmad_load3dv2
-    01_simd_cpp_api/02_features/01_basic_api/01_memory_vector_compute/brcb
-    01_simd_cpp_api/02_features/01_basic_api/01_memory_vector_compute/compare
-    01_simd_cpp_api/02_features/01_basic_api/01_memory_vector_compute/gather
-    01_simd_cpp_api/02_features/01_basic_api/01_memory_vector_compute/mrg_sort
-    01_simd_cpp_api/02_features/01_basic_api/05_sync_control/group_barrier
-    01_simd_cpp_api/02_features/01_basic_api/06_atomic/data_movement_with_atomic_operations
-    01_simd_cpp_api/02_features/01_basic_api/07_tpipe_tque/get_tpipe_ptr
-    01_simd_cpp_api/03_libraries/00_matrix/matmul_fused_manual
-    01_simd_cpp_api/03_libraries/00_matrix/matmul_a2b2_share
-    01_simd_cpp_api/03_libraries/00_matrix/matmul_tscm
-    01_simd_cpp_api/03_libraries/01_activation/gelu
-    01_simd_cpp_api/03_libraries/02_normalization/layernorm
-    01_simd_cpp_api/03_libraries/03_quantization/dequant
-    01_simd_cpp_api/03_libraries/04_reduce/reducemax
-    01_simd_cpp_api/03_libraries/05_sort/sort
-    01_simd_cpp_api/03_libraries/06_index/arange
-    01_simd_cpp_api/03_libraries/07_filter/dropout
-    01_simd_cpp_api/03_libraries/08_transpose/broadcast
-    01_simd_cpp_api/03_libraries/10_math/acosh
+    01_simd_cpp_api/03_basic_api/03_matrix_compute/batch_matmul
+    01_simd_cpp_api/03_basic_api/03_matrix_compute/load_data_l12l0
+    01_simd_cpp_api/03_basic_api/03_matrix_compute/mmad_load3dv2
+    01_simd_cpp_api/03_basic_api/01_memory_vector_compute/brcb
+    01_simd_cpp_api/03_basic_api/01_memory_vector_compute/compare
+    01_simd_cpp_api/03_basic_api/01_memory_vector_compute/gather
+    01_simd_cpp_api/03_basic_api/01_memory_vector_compute/mrg_sort
+    01_simd_cpp_api/03_basic_api/05_sync_control/group_barrier
+    01_simd_cpp_api/03_basic_api/06_atomic/data_movement_with_atomic_operations
+    01_simd_cpp_api/03_basic_api/07_tpipe_tque/get_tpipe_ptr
+    01_simd_cpp_api/04_advanced_api/00_matmul/matmul_fused_manual
+    01_simd_cpp_api/04_advanced_api/00_matmul/matmul_a2b2_share
+    01_simd_cpp_api/04_advanced_api/00_matmul/matmul_tscm
+    01_simd_cpp_api/04_advanced_api/01_activation/gelu
+    01_simd_cpp_api/04_advanced_api/02_normalization/layernorm
+    01_simd_cpp_api/04_advanced_api/03_quantization/dequant
+    01_simd_cpp_api/04_advanced_api/04_reduce/reducemax
+    01_simd_cpp_api/04_advanced_api/05_sort/sort
+    01_simd_cpp_api/04_advanced_api/06_index/arange
+    01_simd_cpp_api/04_advanced_api/07_filter/dropout
+    01_simd_cpp_api/04_advanced_api/08_transpose/broadcast
+    01_simd_cpp_api/04_advanced_api/10_math/acosh
     02_simd_c_api/00_introduction/01_add/c_api_async_add
     02_simd_c_api/00_introduction/01_add/c_api_delicacy_async_add
     02_simd_c_api/00_introduction/01_add/c_api_sync_add

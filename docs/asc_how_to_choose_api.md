@@ -118,8 +118,8 @@ graph TD
 - 希望复用成熟算法实现、缩短开发周期的场景。
 
 **示例**
-- [Softmax API 示例](../examples/01_simd_cpp_api/03_libraries/01_activation/softmax/softmax.asc)
-- [Matmul API 示例](../examples/01_simd_cpp_api/03_libraries/00_matrix)
+- [Softmax API 示例](../examples/01_simd_cpp_api/04_advanced_api/01_activation/softmax/softmax.asc)
+- [Matmul API 示例](../examples/01_simd_cpp_api/04_advanced_api/00_matmul)
 
 ---
 

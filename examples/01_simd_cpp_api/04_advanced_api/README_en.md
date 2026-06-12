@@ -2,13 +2,13 @@
 
 ## Overview
 
-This section contains usage samples based on Ascend C API libraries, introducing API libraries such as math libraries and activation functions through the <<<>>> direct call implementation method.
+This section contains usage samples based on Ascend C high-level APIs, introducing the usage of high-level APIs through the <<<>>> direct call implementation method.
 
 ## Sample List
 
 | Directory Name | Description |
 | ----------------------------------------------------------- |-----------------------------------------|
-| [00_matrix](./00_matrix) | This sample set introduces typical usage of different Matmul API features and provides corresponding end-to-end implementations |
+| [00_matmul](./00_matmul) | This sample set introduces typical usage of different Matmul API features and provides corresponding end-to-end implementations |
 | [01_activation](./01_activation) | This sample set introduces typical usage of activation functions with different operator features and provides corresponding end-to-end implementations |
 | [02_normalization](./02_normalization) | This sample set introduces typical usage of normalization operations with different features and provides corresponding end-to-end implementations |
 | [03_quantization](./03_quantization) | This sample set introduces typical usage of quantization operations with different operator features and provides corresponding end-to-end implementations |

@@ -192,7 +192,7 @@
 
 ## 调用示例<a name="section11276201527"></a>
 
-完整使用样例请参见[Scatter兼容性样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/05_compatibility_guide/scatter)。
+完整使用样例请参见[Scatter兼容性样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/06_compatibility_guide/scatter)。
 
 ```
 uint32_t COUNT = 128;

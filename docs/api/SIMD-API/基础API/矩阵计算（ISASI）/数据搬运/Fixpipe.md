@@ -659,7 +659,7 @@ M方向切分：
 
 ## 调用示例<a name="section93513321362"></a>
 
--   示例一：通路CO1-\>GM。输入A矩阵和B矩阵的数据类型为half，输出C矩阵为float，默认配置使能Nz2Nd的格式转换。完整样例可以参考[样例链接](https://gitcode.com/cann/asc-devkit/blob/master/examples/01_simd_cpp_api/02_features/01_basic_api/03_matrix_compute/fixpipe_l0c2gm)。
+-   示例一：通路CO1-\>GM。输入A矩阵和B矩阵的数据类型为half，输出C矩阵为float，默认配置使能Nz2Nd的格式转换。完整样例可以参考[样例链接](https://gitcode.com/cann/asc-devkit/blob/master/examples/01_simd_cpp_api/03_basic_api/03_matrix_compute/fixpipe_l0c2gm)。
 
     ```
         AscendC::GlobalTensor<outputType> cGM;
@@ -680,7 +680,7 @@ M方向切分：
         AscendC::Fixpipe<outputType, l0cType, AscendC::CFG_ROW_MAJOR>(cGM, c, fixpipeParams);
     ```
 
--   示例二：通路CO1-\>C1。输入A矩阵和B矩阵的数据类型为half，输出C矩阵为int8\_t，不使能Nz2Nd的格式转换，使能Scalar量化。完整样例可以参考[样例链接](https://gitcode.com/cann/asc-devkit/blob/master/examples/01_simd_cpp_api/02_features/01_basic_api/03_matrix_compute/fixpipe_l0c2l1)。
+-   示例二：通路CO1-\>C1。输入A矩阵和B矩阵的数据类型为half，输出C矩阵为int8\_t，不使能Nz2Nd的格式转换，使能Scalar量化。完整样例可以参考[样例链接](https://gitcode.com/cann/asc-devkit/blob/master/examples/01_simd_cpp_api/03_basic_api/03_matrix_compute/fixpipe_l0c2l1)。
 
     ```
         AscendC::LocalTensor<outputType> c1Local(AscendC::TPosition::C1, c1Addr, cSizeAlignL1);
@@ -725,7 +725,7 @@ M方向切分：
     #endif
     ```
 
--   示例三：通路CO1-\>UB。输入A矩阵和B矩阵的数据类型为half，输出C矩阵为float，默认配置使能Nz2Nd的格式转换。完整样例可以参考[样例链接](https://gitcode.com/cann/asc-devkit/blob/master/examples/01_simd_cpp_api/02_features/01_basic_api/03_matrix_compute/fixpipe_l0c2ub)。
+-   示例三：通路CO1-\>UB。输入A矩阵和B矩阵的数据类型为half，输出C矩阵为float，默认配置使能Nz2Nd的格式转换。完整样例可以参考[样例链接](https://gitcode.com/cann/asc-devkit/blob/master/examples/01_simd_cpp_api/03_basic_api/03_matrix_compute/fixpipe_l0c2ub)。
 
     ```
     AscendC::LocalTensor<outputType> cUB;
