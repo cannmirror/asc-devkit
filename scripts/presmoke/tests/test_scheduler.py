@@ -7,7 +7,14 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from presmoke.cli import detect_cpu_count, main, resolve_cpu_build_jobs, resolve_cpu_run_slots, resolve_jobs, resolve_make_jobs
+from presmoke.cli import (
+    detect_cpu_count,
+    main,
+    resolve_cpu_build_jobs,
+    resolve_cpu_run_slots,
+    resolve_jobs,
+    resolve_make_jobs,
+)
 from presmoke.model import Cell, Command, ExampleSpec
 from presmoke.scheduler import (
     custom_op_dependency_violation_s,
@@ -402,6 +409,95 @@ class SchedulerTest(unittest.TestCase):
         self.assertEqual(rc, 0)
         self.assertEqual([item["example"] for item in payload["results"]], ["b", "a", "c"])
 
+    def test_cli_strict_fixed_schedule_rejects_schedule_only_cases(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for name in ["a", "b"]:
+                runner = root / "scripts" / "presmoke" / "cases" / name / "run.sh"
+                runner.parent.mkdir(parents=True, exist_ok=True)
+                runner.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
+            manifest = root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+            manifest.parent.mkdir(parents=True, exist_ok=True)
+            manifest.write_text(
+                json.dumps(
+                    [
+                        {"case": "a", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
+                        {"case": "b", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            schedule_file = root / "scripts" / "presmoke" / "schedules" / "dav-2201_npu.txt"
+            schedule_file.parent.mkdir(parents=True, exist_ok=True)
+            schedule_file.write_text("a\nb\nmissing\n", encoding="utf-8")
+
+            with mock.patch.dict(os.environ, {"PRESMOKE_PROJECT_ROOT": str(root)}):
+                rc = main(
+                    [
+                        "--runner-mode",
+                        "case-runner",
+                        "--arch",
+                        "dav-2201",
+                        "--modes",
+                        "npu",
+                        "--dry-run",
+                        "--schedule",
+                        "fixed",
+                        "--strict-schedule",
+                        "--report-format",
+                        "json",
+                        "--results",
+                        str(root / "out"),
+                    ]
+                )
+
+        self.assertEqual(rc, 2)
+
+    def test_cli_strict_fixed_schedule_rejects_unscheduled_planned_cases(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for name in ["a", "b", "new-case"]:
+                runner = root / "scripts" / "presmoke" / "cases" / name / "run.sh"
+                runner.parent.mkdir(parents=True, exist_ok=True)
+                runner.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
+            manifest = root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+            manifest.parent.mkdir(parents=True, exist_ok=True)
+            manifest.write_text(
+                json.dumps(
+                    [
+                        {"case": "a", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
+                        {"case": "b", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
+                        {"case": "new-case", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            schedule_file = root / "scripts" / "presmoke" / "schedules" / "dav-2201_npu.txt"
+            schedule_file.parent.mkdir(parents=True, exist_ok=True)
+            schedule_file.write_text("a\nb\n", encoding="utf-8")
+
+            with mock.patch.dict(os.environ, {"PRESMOKE_PROJECT_ROOT": str(root)}):
+                rc = main(
+                    [
+                        "--runner-mode",
+                        "case-runner",
+                        "--arch",
+                        "dav-2201",
+                        "--modes",
+                        "npu",
+                        "--dry-run",
+                        "--schedule",
+                        "fixed",
+                        "--strict-schedule",
+                        "--report-format",
+                        "json",
+                        "--results",
+                        str(root / "out"),
+                    ]
+                )
+
+        self.assertEqual(rc, 2)
+
     def test_cli_fixed_schedule_falls_back_when_builtin_cpu_schedule_is_missing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -445,6 +541,33 @@ class SchedulerTest(unittest.TestCase):
 
         self.assertEqual(rc, 0)
         self.assertEqual([item["example"] for item in payload["results"]], ["a", "b"])
+
+    def test_builtin_910b_npu_schedule_matches_manifest(self) -> None:
+        project_root = Path(__file__).resolve().parents[3]
+        manifest_path = project_root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+        schedule_path = project_root / "scripts" / "presmoke" / "schedules" / "dav-2201_npu.txt"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        planned = {
+            item["case"]
+            for item in manifest
+            if item.get("target_runnable", True)
+            and "dav-2201" in item.get("supported_archs", [])
+            and "npu" in item.get("supported_modes", [])
+        }
+        scheduled = {
+            line.strip()
+            for line in schedule_path.read_text(encoding="utf-8").splitlines()
+            if line.strip() and not line.lstrip().startswith("#")
+        }
+
+        self.assertEqual(scheduled - planned, set())
+        self.assertEqual(planned - scheduled, set())
+        missing_runners = [
+            name
+            for name in scheduled
+            if not (project_root / "scripts" / "presmoke" / "cases" / name / "run.sh").is_file()
+        ]
+        self.assertEqual(missing_runners, [])
 
     def test_cli_schedule_file_overrides_builtin_schedule_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

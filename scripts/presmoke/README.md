@@ -160,6 +160,7 @@ They preserve the required custom-op ordering:
 - `aclnn`, `aclop`, `onnx`, `tensorflow`, and `tiling_sink` run after `custom_op`.
 
 New cases not listed in a schedule file are appended to the end, then the custom-op dependency order is enforced again.
+The full watch entry enables strict fixed-schedule coverage checks by default, so stale or missing entries fail fast.
 
 To regenerate a fixed schedule from a previous run:
 

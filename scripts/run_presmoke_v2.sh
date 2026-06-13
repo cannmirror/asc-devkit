@@ -19,6 +19,7 @@ MODES="${MODES:-${MODE:-npu}}"
 RUNNER_MODE="${RUNNER_MODE:-case-runner}"
 SCHEDULE="${SCHEDULE:-fixed}"
 SCHEDULE_FILE="${SCHEDULE_FILE:-}"
+STRICT_SCHEDULE="${STRICT_SCHEDULE:-1}"
 JOBS="${JOBS:-auto}"
 NPU_SLOTS="${NPU_SLOTS:-1}"
 CPU_RUN_SLOTS="${CPU_RUN_SLOTS:-auto}"
@@ -154,6 +155,25 @@ should_clean_cann_vendors() {
     return 0
 }
 
+truthy() {
+    case "${1:-}" in
+        1|true|TRUE|yes|YES|on|ON) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+should_strict_schedule() {
+    local arg
+    [[ "$SCHEDULE" == "fixed" ]] || return 1
+    truthy "$STRICT_SCHEDULE" || return 1
+    for arg in "$@"; do
+        case "$arg" in
+            --filter|--filter=*|--exclude|--exclude=*|--suggestions-only) return 1 ;;
+        esac
+    done
+    return 0
+}
+
 run_presmoke() {
     local name="$1"
     local card="$2"
@@ -171,6 +191,7 @@ run_presmoke() {
         echo "runner_mode=$RUNNER_MODE"
         echo "schedule=$SCHEDULE"
         echo "schedule_file=$SCHEDULE_FILE"
+        echo "strict_schedule=$STRICT_SCHEDULE"
         echo "jobs=$JOBS"
         echo "npu_slots=$NPU_SLOTS"
         echo "cpu_run_slots=$CPU_RUN_SLOTS"
@@ -211,6 +232,9 @@ run_presmoke() {
         )
         if [[ -n "$SCHEDULE_FILE" ]]; then
             args+=(--schedule-file "$SCHEDULE_FILE")
+        fi
+        if should_strict_schedule "$@"; then
+            args+=(--strict-schedule)
         fi
         run_python_presmoke "${args[@]}" "$@"
     ) > "$run_dir/stdout.log" 2> "$run_dir/stderr.log"

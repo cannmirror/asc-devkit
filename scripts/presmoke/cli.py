@@ -34,7 +34,7 @@ from .planner import build_cells_with_skips
 from .readme_spec import parse_readme
 from .report import print_console, write_json, write_markdown, write_suggestions
 from .runner import CPU_RUN_TIMEOUT, PipelineOptions, run_cells_pipeline_with_options
-from .scheduler import export_schedule_file, schedule_cells, ScheduleOptions
+from .scheduler import export_schedule_file, read_schedule_file, schedule_cells, ScheduleOptions
 from .suggest import dedupe_suggestions
 
 
@@ -73,7 +73,11 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     configure_parallel_env(config.project_root, config.make_jobs)
     selected = collect_cases(args, config)
-    cells = schedule_selected_cases(selected.cells, args, config)
+    try:
+        cells = schedule_selected_cases(selected, args, config)
+    except (FileNotFoundError, ValueError) as err:
+        LOG.error("%s", err)
+        return 2
     if args.export_schedule:
         export_schedule_file(cells, Path(args.export_schedule).resolve())
     if args.suggestions_only:
@@ -146,19 +150,55 @@ def collect_cases(args: argparse.Namespace, config: RuntimeConfig) -> CaseSelect
     return CaseSelection(cells, dedupe_suggestions(suggestions), skipped_results)
 
 
-def schedule_selected_cases(cells: list, args: argparse.Namespace, config: RuntimeConfig) -> list:
+def schedule_selected_cases(selected: CaseSelection, args: argparse.Namespace, config: RuntimeConfig) -> list:
+    schedule_file = resolve_schedule_file(
+        config.project_root, config.host_arch, config.modes, args.schedule, args.schedule_file
+    )
+    validate_fixed_schedule_coverage(selected, args, schedule_file)
     return schedule_cells(
-        cells,
+        selected.cells,
         ScheduleOptions(
             schedule=args.schedule,
             schedule_report=Path(args.schedule_report).resolve() if args.schedule_report else None,
-            schedule_file=resolve_schedule_file(
-                config.project_root, config.host_arch, config.modes, args.schedule, args.schedule_file
-            ),
+            schedule_file=schedule_file,
             frontload_count=args.schedule_frontload_count,
             jobs=config.jobs,
         ),
     )
+
+
+def validate_fixed_schedule_coverage(
+    selected: CaseSelection,
+    args: argparse.Namespace,
+    schedule_file: Path | None,
+) -> None:
+    if args.schedule != "fixed" or schedule_file is None:
+        return
+    if args.filter or args.exclude:
+        return
+
+    schedule_order = read_schedule_file(schedule_file)
+    schedule_names = set(schedule_order)
+    planned_names = {cell.example.rel_path for cell in selected.cells}
+    planned_names.update(result.example for result in selected.skipped_results)
+
+    schedule_only = sorted(schedule_names - planned_names)
+    planned_only = sorted(planned_names - schedule_names)
+    duplicates = sorted({name for name in schedule_order if schedule_order.count(name) > 1})
+    if not schedule_only and not planned_only and not duplicates:
+        return
+
+    lines = [f"fixed schedule coverage mismatch: {schedule_file}"]
+    if schedule_only:
+        lines.append(f"  schedule-only cases ({len(schedule_only)}): {', '.join(schedule_only)}")
+    if planned_only:
+        lines.append(f"  unscheduled planned cases ({len(planned_only)}): {', '.join(planned_only)}")
+    if duplicates:
+        lines.append(f"  duplicate schedule cases ({len(duplicates)}): {', '.join(duplicates)}")
+    message = "\n".join(lines)
+    if args.strict_schedule:
+        raise ValueError(message)
+    LOG.warning(message)
 
 
 def emit_suggestions_only(args: argparse.Namespace, config: RuntimeConfig, suggestions: List[Suggestion]) -> int:
@@ -259,6 +299,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--schedule-file")
     parser.add_argument("--export-schedule")
     parser.add_argument("--schedule-frontload-count", type=int, default=1)
+    parser.add_argument("--strict-schedule", action="store_true")
     parser.add_argument("--suggestions-only", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("-v", "--verbose", action="store_true")
