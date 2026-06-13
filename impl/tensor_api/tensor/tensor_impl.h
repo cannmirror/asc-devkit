@@ -35,22 +35,20 @@ class GlobalTensor;
 template <typename T>
 class LocalTensor;
 
-namespace Te {
-
 template <typename EngineType, typename LayoutType>
 struct TensorAttribute {};
 
-template <typename T>
-struct BaseTensor {};
+namespace Te {
 
-template <typename LocationType, typename TensorType>
+template <typename LocationType, typename EngineType, typename LayoutType>
 struct MakeTensorResult {
     using type = typename Std::conditional<Std::is_same_v<LocationType, Location::GM>,
-        AscendC::GlobalTensor<TensorType>, AscendC::LocalTensor<TensorType>>::type;
+        AscendC::GlobalTensor<TensorAttribute<EngineType, LayoutType>>,
+        AscendC::LocalTensor<TensorAttribute<EngineType, LayoutType>>>::type;
 };
 
 template <typename EngineType, typename LayoutType>
-struct BaseTensor<TensorAttribute<EngineType, LayoutType>> {
+struct BaseTensor {
     using iterator = typename EngineType::iterator;
     using valueType = typename EngineType::valueType;
     using elementType = typename EngineType::elementType;
@@ -158,8 +156,7 @@ private:
         const SliceEngine& sliceEngine, const SliceLayout& sliceLayout)
     {
         using Location = GetMemLocation<SliceEngine>;
-        using AttrTensor = TensorAttribute<SliceEngine, SliceLayout>;
-        using ResultTensor = typename MakeTensorResult<Location, AttrTensor>::type;
+        using ResultTensor = typename MakeTensorResult<Location, SliceEngine, SliceLayout>::type;
         return ResultTensor{sliceEngine, sliceLayout};
     }
 
@@ -182,18 +179,16 @@ template <typename Arg0, typename... Args>
         using Engine = ViewEngine<Arg0>;
         if constexpr (sizeof...(Args) == 1 && (IsLayoutV<Args> && ...)) {
             using Layout = typename Std::tuple_element<0, Std::tuple<Args...>>::type;
-            using AttrTensor = TensorAttribute<Engine, Layout>;
             using Location = GetMemLocation<Engine>;
-            using ResultTensor = typename MakeTensorResult<Location, AttrTensor>::type;
+            using ResultTensor = typename MakeTensorResult<Location, Engine, Layout>::type;
             return ResultTensor{Engine{arg0}, args...};
         } else if constexpr (sizeof...(Args) == 2 && (Std::is_tuple_v<Std::remove_cvref_t<Args>> && ...)) {
             using Layout = decltype(MakeLayout(args...));
-            using AttrTensor = TensorAttribute<Engine, Layout>;
             using Location = GetMemLocation<Engine>;
-            using ResultTensor = typename MakeTensorResult<Location, AttrTensor>::type;
+            using ResultTensor = typename MakeTensorResult<Location, Engine, Layout>::type;
             return ResultTensor{Engine{arg0}, MakeLayout(args...)};
         } else {
-            static_assert(sizeof...(Args) != sizeof...(Args),
+            static_assert(sizeof...(Args) != sizeof...(Args), 
                 "MakeTensor expected a hardware memory pointer and data structure like Layout or Shape and Stride");
         }
     }
@@ -202,17 +197,37 @@ template <typename Arg0, typename... Args>
 template <typename Iterator, typename... Args>
 __aicore__ inline constexpr auto MakeTensor(const Iterator& iter, const Args&... args)
 {
-    static_assert(IsHardwareMemPtrV<Iterator>,
-        "MakeTensor expects the first argument to be a hardware memory pointer or iterator");
+    static_assert(IsHardwareMemPtrV <Iterator>,
+        "MakeTensor expects the first argument to be a memory pointer or iterator");
     return MakeTensorBuilder<Iterator>{}(iter, args...);
+}
+
+// Construct a single-batch sub-tensor from a batched tensor by offsetting the engine pointer
+// and stripping the leading batch axis from the layout. Layout depth 5 -> 4 (e.g. NZ fractal)
+// or 3 -> 2 (e.g. ND row/col). Other depths trigger a compile-time error.
+template <typename Tensor>
+__aicore__ inline constexpr auto MakeSingleBatchSubTensor(const Tensor& t, uint32_t batchIdx)
+{
+    using LayoutType = typename Tensor::layoutType;
+    static_assert(LayoutType::depth == THREE_DIM_DATA || LayoutType::depth == FIVE_DIM_DATA,
+        "MakeSingleBatchSubTensor only supports batched layouts of depth 3 or 5.");
+    auto layout = t.Layout();
+    auto batchStride = Get<0>(layout.Stride());
+    auto subEngine = t.Engine() + batchStride * batchIdx;
+    auto subLayout = RemoveBatchDim(layout);
+    using NewEngine = Std::remove_cvref_t<decltype(subEngine)>;
+    using NewLayout = Std::remove_cvref_t<decltype(subLayout)>;
+    using Location = GetMemLocation<NewEngine>;
+    using NewTensor = typename MakeTensorResult<Location, NewEngine, NewLayout>::type;
+    return NewTensor{subEngine, subLayout};
 }
 
 } // namespace Te
 
 template <typename EngineType, typename LayoutType>
-struct GlobalTensor<Te::TensorAttribute<EngineType, LayoutType>>
-    : public Te::BaseTensor<Te::TensorAttribute<EngineType, LayoutType>> {
-    using TensorApiBase = Te::BaseTensor<Te::TensorAttribute<EngineType, LayoutType>>;
+struct GlobalTensor<TensorAttribute<EngineType, LayoutType>>
+    : public Te::BaseTensor<EngineType, LayoutType> {
+    using TensorApiBase = Te::BaseTensor<EngineType, LayoutType>;
 
     using TensorApiBase::TensorApiBase;
 
@@ -224,9 +239,9 @@ struct GlobalTensor<Te::TensorAttribute<EngineType, LayoutType>>
 };
 
 template <typename EngineType, typename LayoutType>
-struct LocalTensor<Te::TensorAttribute<EngineType, LayoutType>>
-    : public Te::BaseTensor<Te::TensorAttribute<EngineType, LayoutType>> {
-    using TensorApiBase = Te::BaseTensor<Te::TensorAttribute<EngineType, LayoutType>>;
+struct LocalTensor<TensorAttribute<EngineType, LayoutType>>
+    : public Te::BaseTensor<EngineType, LayoutType> {
+    using TensorApiBase = Te::BaseTensor<EngineType, LayoutType>;
 
     using TensorApiBase::TensorApiBase;
 

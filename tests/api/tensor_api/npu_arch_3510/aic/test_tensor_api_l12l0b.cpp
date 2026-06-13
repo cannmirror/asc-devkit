@@ -90,10 +90,96 @@ void load_cbuf_to_cb_stub(__cb__ T* dst, __cbuf__ T* src,
     EXPECT_EQ(transposed, transpose);
 }
 
+template <typename T, uint32_t BATCH, uint32_t M, uint32_t N>
+auto MakeBatchZNLayout()
+{
+    using namespace AscendC::Te;
+    constexpr uint32_t C0 = C0_ELEMENT<T>;
+
+    auto shape = MakeShape(AscendC::Std::Int<BATCH>{},
+        MakeShape(MakeShape(AscendC::Std::Int<C0>{}, AscendC::Std::ceil_division(AscendC::Std::Int<M>{},
+            AscendC::Std::Int<C0>{})),
+        MakeShape(AscendC::Std::Int<FRACTAL_FIXED>{}, AscendC::Std::ceil_division(AscendC::Std::Int<N>{},
+            AscendC::Std::Int<FRACTAL_FIXED>{}))));
+    auto stride = MakeStride(AscendC::Std::Int<M * N>{},
+        MakeStride(MakeStride(AscendC::Std::Int<1>{}, AscendC::Std::Int<C0>{} *
+            AscendC::Std::ceil_align(AscendC::Std::Int<N>{}, AscendC::Std::Int<FRACTAL_FIXED>{})),
+        MakeStride(AscendC::Std::Int<C0>{}, AscendC::Std::Int<C0 * FRACTAL_FIXED>{})));
+    return MakePatternLayout<ZNLayoutPtn, LayoutTraitDefault<T>>(shape, stride);
+}
+
+template <typename T, uint32_t BATCH, uint32_t M, uint32_t N>
+auto MakeBatchNZLayout()
+{
+    using namespace AscendC::Te;
+    constexpr uint32_t C0 = C0_ELEMENT<T>;
+
+    auto shape = MakeShape(AscendC::Std::Int<BATCH>{},
+        MakeShape(MakeShape(AscendC::Std::Int<FRACTAL_FIXED>{}, AscendC::Std::ceil_division(AscendC::Std::Int<M>{},
+            AscendC::Std::Int<FRACTAL_FIXED>{})),
+        MakeShape(AscendC::Std::Int<C0>{}, AscendC::Std::ceil_division(AscendC::Std::Int<N>{},
+            AscendC::Std::Int<C0>{}))));
+    auto stride = MakeStride(AscendC::Std::Int<M * N>{},
+        MakeStride(MakeStride(AscendC::Std::Int<C0>{}, AscendC::Std::Int<C0 * FRACTAL_FIXED>{}),
+        MakeStride(AscendC::Std::Int<1>{}, AscendC::Std::Int<C0>{} *
+            AscendC::Std::ceil_align(AscendC::Std::Int<M>{}, AscendC::Std::Int<FRACTAL_FIXED>{}))));
+    return MakePatternLayout<NZLayoutPtn, LayoutTraitDefault<T>>(shape, stride);
+}
+
+TEST_F(Tensor_Api_Cube_Copy_3510, CopyL12L0BZN2ZNBatchRoutesToSingleBatchCopy)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t batch = 2;
+    constexpr uint32_t m = 16;
+    constexpr uint32_t n = 16;
+    __cbuf__ half src[batch * m * n] = {0};
+    __cb__ half dst[batch * m * n] = {0};
+
+    auto srcLayout = MakeBatchZNLayout<half, batch, m, n>();
+    auto dstLayout = MakeBatchZNLayout<half, batch, m, n>();
+    auto srcTensor = MakeTensor(MakeMemPtr<Location::L1>(src), srcLayout);
+    auto dstTensor = MakeTensor(MakeMemPtr<Location::L0B>(dst), dstLayout);
+
+    MOCKER_CPP(load_cbuf_to_cb, void(__cb__ half*, __cbuf__ half*, uint16_t, uint16_t, uint8_t, uint8_t, int16_t,
+        uint16_t, bool))
+        .expects(once())
+        .will(invoke(&load_cbuf_to_cb_stub<false, half, 1, batch>));
+
+    Copy(CopyAtom<CopyTraits<CopyL12L0B, CopyL12L0BTraitDefault>>{}, dstTensor, srcTensor);
+
+    mockcpp::GlobalMockObject::verify();
+}
+
+TEST_F(Tensor_Api_Cube_Copy_3510, CopyL12L0BNZ2ZNBatchRoutesToSingleBatchCopy)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t batch = 2;
+    constexpr uint32_t m = 16;
+    constexpr uint32_t n = 16;
+    __cbuf__ half src[batch * m * n] = {0};
+    __cb__ half dst[batch * m * n] = {0};
+
+    auto srcLayout = MakeBatchNZLayout<half, batch, m, n>();
+    auto dstLayout = MakeBatchZNLayout<half, batch, m, n>();
+    auto srcTensor = MakeTensor(MakeMemPtr<Location::L1>(src), srcLayout);
+    auto dstTensor = MakeTensor(MakeMemPtr<Location::L0B>(dst), dstLayout);
+
+    MOCKER_CPP(load_cbuf_to_cb, void(__cb__ half*, __cbuf__ half*, uint16_t, uint16_t, uint8_t, uint8_t, int16_t,
+        uint16_t, bool))
+        .expects(exactly(batch))
+        .will(invoke(&load_cbuf_to_cb_stub<true, half, 1, 1>));
+
+    Copy(CopyAtom<CopyTraits<CopyL12L0B, CopyL12L0BTraitDefault>>{}, dstTensor, srcTensor);
+
+    mockcpp::GlobalMockObject::verify();
+}
+
 #define MAKE_LAYOUT_TYPE(fmt) fmt##LayoutPtn
 
-#define TEST_TENSOR_API_LOAD_DATA(TYPE, M, N, SRC_FORMAT, DST_FORMAT, SRC_POS, DST_POS, SRC_TAG, DST_TAG, TRANSPOSE, COORD_I, COORD_J) \
-TEST_F(Tensor_Api_Cube_Copy_3510, TestLoadData_##TYPE##M##N##SRC_FORMAT##DST_FORMAT##SRC_POS##DST_POS##SRC_TAG##DST_TAG##TRANSPOSE##COORD_I##COORD_J) { \
+#define TEST_TENSOR_API_LOAD_DATA(TYPE, M, N, SRC_FORMAT, DST_FORMAT, SRC_POS, DST_POS, SRC_TAG, DST_TAG, TRANSPOSE) \
+TEST_F(Tensor_Api_Cube_Copy_3510, TestLoadData_##TYPE##M##N##SRC_FORMAT##DST_FORMAT##SRC_POS##DST_POS##SRC_TAG##DST_TAG##TRANSPOSE) { \
     using namespace AscendC::Te; \
     __##DST_TAG##__ TYPE dst[M * N] = {0}; \
     auto dstIterator = MakeMemPtr<Location::DST_POS>(dst); \
@@ -105,20 +191,18 @@ TEST_F(Tensor_Api_Cube_Copy_3510, TestLoadData_##TYPE##M##N##SRC_FORMAT##DST_FOR
     auto srcMatrixLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(SRC_FORMAT), LayoutTraitDefault<TYPE>>(M, N); \
     auto srcTensor = MakeTensor(srcIterator, srcMatrixLayout); \
  \
-    auto coord = MakeCoord(AscendC::Std::Int<COORD_I>{}, AscendC::Std::Int<COORD_J>{}); \
     constexpr int M_STEP = (sizeof(TYPE) == 1 && TRANSPOSE) ? 2 : 1; \
     constexpr int K_STEP = (sizeof(TYPE) == 4 && TRANSPOSE) ? 2 : 1; \
     MOCKER_CPP(load_cbuf_to_##DST_TAG, void(__##DST_TAG##__ TYPE*, __cbuf__ TYPE*, uint16_t, uint16_t, uint8_t, uint8_t, int16_t, uint16_t, bool)) \
-        .times(2) \
+        .times(1) \
         .will(invoke(&load_cbuf_to_##DST_TAG##_stub<TRANSPOSE, TYPE, M_STEP, K_STEP>)); \
     Copy(CopyAtom<CopyTraits<CopyL12##DST_POS, CopyL12##DST_POS##TraitDefault>>{}, dstTensor, srcTensor); \
-    CopyAtom<CopyTraits<CopyL12##DST_POS, CopyL12##DST_POS##TraitDefault>>{}.Call(dstTensor, srcTensor, coord); \
  \
     mockcpp::GlobalMockObject::verify(); \
 }
 
-#define TEST_TENSOR_API_LOAD_S4_DATA(TYPE, M, N, SRC_FORMAT, DST_FORMAT, SRC_POS, DST_POS, SRC_TAG, DST_TAG, TRANSPOSE, COORD_I, COORD_J) \
-TEST_F(Tensor_Api_Cube_Copy_3510, TestLoadData_##TYPE##M##N##SRC_FORMAT##DST_FORMAT##SRC_POS##DST_POS##SRC_TAG##DST_TAG##TRANSPOSE##COORD_I##COORD_J) { \
+#define TEST_TENSOR_API_LOAD_S4_DATA(TYPE, M, N, SRC_FORMAT, DST_FORMAT, SRC_POS, DST_POS, SRC_TAG, DST_TAG, TRANSPOSE) \
+TEST_F(Tensor_Api_Cube_Copy_3510, TestLoadData_##TYPE##M##N##SRC_FORMAT##DST_FORMAT##SRC_POS##DST_POS##SRC_TAG##DST_TAG##TRANSPOSE) { \
     using namespace AscendC::Te; \
     __##DST_TAG##__ TYPE dst[M * N]; \
     auto dstIterator = MakeMemPtr<Location::DST_POS>(dst); \
@@ -130,53 +214,34 @@ TEST_F(Tensor_Api_Cube_Copy_3510, TestLoadData_##TYPE##M##N##SRC_FORMAT##DST_FOR
     auto srcMatrixLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(SRC_FORMAT), LayoutTraitFP4>(M, N); \
     auto srcTensor = MakeTensor(srcIterator, srcMatrixLayout); \
  \
-    auto coord = MakeCoord(AscendC::Std::Int<COORD_I>{}, AscendC::Std::Int<COORD_J>{}); \
     Copy(CopyAtom<CopyTraits<CopyL12##DST_POS, CopyL12##DST_POS##TraitDefault>>{}, dstTensor, srcTensor); \
-    CopyAtom<CopyTraits<CopyL12##DST_POS, CopyL12##DST_POS##TraitDefault>>{}.Call(dstTensor, srcTensor, coord); \
  \
     mockcpp::GlobalMockObject::verify(); \
 }
 
-// l1 -> l0B ZN2ZN非转置，覆盖所有TYPE，覆盖传入Coord
-TEST_TENSOR_API_LOAD_S4_DATA(fp4x2_e1m2_t, 64, 16, ZN, ZN, L1, L0B, cbuf, cb, false, 0, 0);
-TEST_TENSOR_API_LOAD_S4_DATA(fp4x2_e2m1_t, 64, 16, ZN, ZN, L1, L0B, cbuf, cb, false, 0, 0);
-TEST_TENSOR_API_LOAD_DATA(bfloat16_t, 16, 16, ZN, ZN, L1, L0B, cbuf, cb, false, 0, 0);
-TEST_TENSOR_API_LOAD_DATA(bfloat16_t, 16, 16, ZN, ZN, L1, L0B, cbuf, cb, false, 1, 1);
-TEST_TENSOR_API_LOAD_DATA(half, 16, 16, ZN, ZN, L1, L0B, cbuf, cb, false, 0, 0);
-TEST_TENSOR_API_LOAD_DATA(half, 16, 16, ZN, ZN, L1, L0B, cbuf, cb, false, 1, 1);
-TEST_TENSOR_API_LOAD_DATA(float, 8, 16, ZN, ZN, L1, L0B, cbuf, cb, false, 0, 0);
-TEST_TENSOR_API_LOAD_DATA(float, 8, 16, ZN, ZN, L1, L0B, cbuf, cb, false, 1, 1);
-TEST_TENSOR_API_LOAD_DATA(int32_t, 8, 16, ZN, ZN, L1, L0B, cbuf, cb, false, 0, 0);
-TEST_TENSOR_API_LOAD_DATA(int32_t, 8, 16, ZN, ZN, L1, L0B, cbuf, cb, false, 1, 1);
-TEST_TENSOR_API_LOAD_DATA(uint32_t, 8, 16, ZN, ZN, L1, L0B, cbuf, cb, false, 0, 0);
-TEST_TENSOR_API_LOAD_DATA(uint32_t, 8, 16, ZN, ZN, L1, L0B, cbuf, cb, false, 1, 1);
-TEST_TENSOR_API_LOAD_DATA(int8_t, 32, 16, ZN, ZN, L1, L0B, cbuf, cb, false, 0, 0);
-TEST_TENSOR_API_LOAD_DATA(int8_t, 32, 16, ZN, ZN, L1, L0B, cbuf, cb, false, 1, 1);
-TEST_TENSOR_API_LOAD_DATA(uint8_t, 32, 16, ZN, ZN, L1, L0B, cbuf, cb, false, 0, 0);
-TEST_TENSOR_API_LOAD_DATA(uint8_t, 32, 16, ZN, ZN, L1, L0B, cbuf, cb, false, 1, 1);
-TEST_TENSOR_API_LOAD_DATA(int16_t, 16, 16, ZN, ZN, L1, L0B, cbuf, cb, false, 0, 0);
-TEST_TENSOR_API_LOAD_DATA(int16_t, 16, 16, ZN, ZN, L1, L0B, cbuf, cb, false, 1, 1);
-TEST_TENSOR_API_LOAD_DATA(uint16_t, 16, 16, ZN, ZN, L1, L0B, cbuf, cb, false, 0, 0);
-TEST_TENSOR_API_LOAD_DATA(uint16_t, 16, 16, ZN, ZN, L1, L0B, cbuf, cb, false, 1, 1);
+// l1 -> l0B ZN2ZN非转置，覆盖所有TYPE
+TEST_TENSOR_API_LOAD_S4_DATA(fp4x2_e1m2_t, 64, 16, ZN, ZN, L1, L0B, cbuf, cb, false);
+TEST_TENSOR_API_LOAD_S4_DATA(fp4x2_e2m1_t, 64, 16, ZN, ZN, L1, L0B, cbuf, cb, false);
+TEST_TENSOR_API_LOAD_DATA(bfloat16_t, 16, 16, ZN, ZN, L1, L0B, cbuf, cb, false);
+TEST_TENSOR_API_LOAD_DATA(half, 16, 16, ZN, ZN, L1, L0B, cbuf, cb, false);
+TEST_TENSOR_API_LOAD_DATA(float, 8, 16, ZN, ZN, L1, L0B, cbuf, cb, false);
+TEST_TENSOR_API_LOAD_DATA(int32_t, 8, 16, ZN, ZN, L1, L0B, cbuf, cb, false);
+TEST_TENSOR_API_LOAD_DATA(uint32_t, 8, 16, ZN, ZN, L1, L0B, cbuf, cb, false);
+TEST_TENSOR_API_LOAD_DATA(int8_t, 32, 16, ZN, ZN, L1, L0B, cbuf, cb, false);
+TEST_TENSOR_API_LOAD_DATA(uint8_t, 32, 16, ZN, ZN, L1, L0B, cbuf, cb, false);
+TEST_TENSOR_API_LOAD_DATA(int16_t, 16, 16, ZN, ZN, L1, L0B, cbuf, cb, false);
+TEST_TENSOR_API_LOAD_DATA(uint16_t, 16, 16, ZN, ZN, L1, L0B, cbuf, cb, false);
 
-// l1 -> l0B NZ2ZN转置，覆盖所有TYPE，覆盖传入Coord
-TEST_TENSOR_API_LOAD_S4_DATA(fp4x2_e1m2_t, 64, 64, NZ, ZN, L1, L0B, cbuf, cb, true, 0, 0);
-TEST_TENSOR_API_LOAD_S4_DATA(fp4x2_e2m1_t, 64, 16, NZ, ZN, L1, L0B, cbuf, cb, true, 0, 0);
-TEST_TENSOR_API_LOAD_DATA(bfloat16_t, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true, 0, 0);
-TEST_TENSOR_API_LOAD_DATA(bfloat16_t, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true, 1, 1);
-TEST_TENSOR_API_LOAD_DATA(half, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true, 0, 0);
-TEST_TENSOR_API_LOAD_DATA(half, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true, 1, 1);
-TEST_TENSOR_API_LOAD_DATA(float, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true, 0, 0);
-TEST_TENSOR_API_LOAD_DATA(float, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true, 1, 1);
-TEST_TENSOR_API_LOAD_DATA(int32_t, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true, 0, 0);
-TEST_TENSOR_API_LOAD_DATA(int32_t, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true, 1, 1);
-TEST_TENSOR_API_LOAD_DATA(uint32_t, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true, 0, 0);
-TEST_TENSOR_API_LOAD_DATA(uint32_t, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true, 1, 1);
-TEST_TENSOR_API_LOAD_DATA(int8_t, 32, 16, NZ, ZN, L1, L0B, cbuf, cb, true, 0, 0);
-TEST_TENSOR_API_LOAD_DATA(int8_t, 32, 32, NZ, ZN, L1, L0B, cbuf, cb, true, 1, 1);
-TEST_TENSOR_API_LOAD_DATA(uint8_t, 32, 32, NZ, ZN, L1, L0B, cbuf, cb, true, 0, 0);
-TEST_TENSOR_API_LOAD_DATA(uint8_t, 32, 32, NZ, ZN, L1, L0B, cbuf, cb, true, 1, 1);
-TEST_TENSOR_API_LOAD_DATA(int16_t, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true, 0, 0);
-TEST_TENSOR_API_LOAD_DATA(int16_t, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true, 1, 1);
-TEST_TENSOR_API_LOAD_DATA(uint16_t, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true, 0, 0);
-TEST_TENSOR_API_LOAD_DATA(uint16_t, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true, 1, 1);
+// l1 -> l0B NZ2ZN转置，覆盖所有TYPE
+TEST_TENSOR_API_LOAD_S4_DATA(fp4x2_e1m2_t, 64, 64, NZ, ZN, L1, L0B, cbuf, cb, true);
+TEST_TENSOR_API_LOAD_S4_DATA(fp4x2_e2m1_t, 64, 16, NZ, ZN, L1, L0B, cbuf, cb, true);
+TEST_TENSOR_API_LOAD_DATA(bfloat16_t, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true);
+TEST_TENSOR_API_LOAD_DATA(half, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true);
+TEST_TENSOR_API_LOAD_DATA(float, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true);
+TEST_TENSOR_API_LOAD_DATA(int32_t, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true);
+TEST_TENSOR_API_LOAD_DATA(uint32_t, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true);
+TEST_TENSOR_API_LOAD_DATA(int8_t, 32, 16, NZ, ZN, L1, L0B, cbuf, cb, true);
+TEST_TENSOR_API_LOAD_DATA(int8_t, 32, 32, NZ, ZN, L1, L0B, cbuf, cb, true);
+TEST_TENSOR_API_LOAD_DATA(uint8_t, 32, 32, NZ, ZN, L1, L0B, cbuf, cb, true);
+TEST_TENSOR_API_LOAD_DATA(int16_t, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true);
+TEST_TENSOR_API_LOAD_DATA(uint16_t, 16, 16, NZ, ZN, L1, L0B, cbuf, cb, true);

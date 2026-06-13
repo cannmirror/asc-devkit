@@ -51,7 +51,9 @@ using _2048 = Std::Int<2048>;
 using _4096 = Std::Int<4096>;
 
 constexpr size_t TWO_DIM_DATA = 2;
+constexpr size_t THREE_DIM_DATA = 3;
 constexpr size_t FOUR_DIM_DATA = 4;
+constexpr size_t FIVE_DIM_DATA = 5;
 constexpr size_t FRACTAL_FIXED = 16;
 constexpr size_t MX_SCALE_K0 = 2;
 constexpr uint32_t BLOCK_CUBE = 16;
@@ -76,11 +78,8 @@ constexpr uint32_t CURRENT_ARCH_VERSION = GetArchVersion{}();
 
 namespace CopyMode {
     struct NORMAL {};
-    struct NORMAL_COORD {};
     struct TRANS {};
-    struct TRANS_COORD {};
     struct TRANS_B8B4 {};
-    struct TRANS_B8B4_COORD {};
 };
 
 namespace Location {
@@ -116,10 +115,6 @@ public:
 template <typename T>
 constexpr bool IsHardwareV = IsHardware<T>::value;
 
-template <typename... Ts>
-struct HasZeroIntegralConstant : Std::bool_constant<
-    (... || Std::is_same_v<Std::remove_cvref_t<Ts>, Std::Int<0>>)> {};
-    
 template <typename TupleType>
 using tuple_sequence = Std::make_index_sequence<Std::tuple_size_v<Std::remove_cvref_t<TupleType>>>;
 

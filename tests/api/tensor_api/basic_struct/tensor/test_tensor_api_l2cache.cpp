@@ -12,17 +12,13 @@
 #include "tensor_api/stub/cce_stub.h"
 #include "include/tensor_api/tensor.h"
 
-#define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
-#include "impl/tensor_api/tensor/tensor_impl.h"
-#undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
-
 namespace {
 
 template <typename T>
 struct IsTensorApiGlobalTensor : AscendC::Std::false_type {};
 
 template <typename Engine, typename Layout>
-struct IsTensorApiGlobalTensor<AscendC::GlobalTensor<AscendC::Te::TensorAttribute<Engine, Layout>>>
+struct IsTensorApiGlobalTensor<AscendC::GlobalTensor<AscendC::TensorAttribute<Engine, Layout>>>
     : AscendC::Std::true_type {};
 
 template <typename T>
@@ -33,7 +29,7 @@ template <typename T>
 struct IsTensorApiLocalTensor : AscendC::Std::false_type {};
 
 template <typename Engine, typename Layout>
-struct IsTensorApiLocalTensor<AscendC::LocalTensor<AscendC::Te::TensorAttribute<Engine, Layout>>>
+struct IsTensorApiLocalTensor<AscendC::LocalTensor<AscendC::TensorAttribute<Engine, Layout>>>
     : AscendC::Std::true_type {};
 
 template <typename T>
@@ -57,8 +53,8 @@ TEST_F(Tensor_Api_Tensor_CacheMode, SetL2CacheHint)
     constexpr uint32_t TILE_LENGTH = 8;
     __gm__ float data[TILE_LENGTH] = {0, 1, 2, 3, 4, 5, 6, 7};
     auto ptr = MakeMemPtr<Location::GM>(data);
-    auto tensor = MakeTensor(ptr, MakeShape(_2{}, _2{}, _2{}),
-                             MakeStride(_4{}, _2{}, _1{}));
+    auto tensor = MakeTensor(ptr, MakeShape(AscendC::Std::Int<2>{}, AscendC::Std::Int<2>{}, AscendC::Std::Int<2>{}),
+                             MakeStride(AscendC::Std::Int<4>{}, AscendC::Std::Int<2>{}, AscendC::Std::Int<1>{}));
 
     tensor.SetL2CacheHint(CacheMode::CACHE_MODE_DISABLE);
     EXPECT_EQ(tensor.Engine().GetCacheMode(), static_cast<uint8_t>(CacheMode::CACHE_MODE_DISABLE));

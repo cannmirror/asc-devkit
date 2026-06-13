@@ -23,8 +23,7 @@
 #ifndef IMPL_TENSOR_API_ARCH_CUBE_L1_TO_L0SCALEA_ROUTING_H
 #define IMPL_TENSOR_API_ARCH_CUBE_L1_TO_L0SCALEA_ROUTING_H
 
-#include "impl/tensor_api/arch/cube/l1_to_l0scalea/npu_arch_3510/scalea.h"
-#include "impl/tensor_api/arch/cube/l1_to_l0scalea/npu_arch_3510/scalea_with_coord.h"
+#include "impl/tensor_api/arch/cube/l1_to_l0scalea/copy_impl/scalea.h"
 
 namespace AscendC {
 namespace Te {
@@ -37,25 +36,17 @@ public:
     }
 };
 
-template <typename dstPos, typename srcPos, uint32_t Version, typename DstLayoutPattern, typename SrcLayoutPattern,
-    typename CopyMode>
-struct CopyL12L0ScaleATensor2Tensor {
+template <uint32_t Version, typename DstLayoutPattern, typename SrcLayoutPattern>
+struct CopyL12L0ScaleARouting {
     using type = CopyL12L0ScaleAIgnore;
 };
 
-template <>
-struct CopyL12L0ScaleATensor2Tensor<Location::L0ScaleA, Location::L1, ArchVersion::V3510, ZZLayoutPtn, ZZLayoutPtn,
-    CopyMode::NORMAL>
+template <uint32_t Version>
+struct CopyL12L0ScaleARouting<Version, ZZLayoutPtn, ZZLayoutPtn>
 {
     using type = LoadDataL12L0MxScaleA3510;
 };
 
-template <>
-struct CopyL12L0ScaleATensor2Tensor<Location::L0ScaleA, Location::L1, ArchVersion::V3510, ZZLayoutPtn, ZZLayoutPtn,
-    CopyMode::NORMAL_COORD>
-{
-    using type = LoadDataL12L0MxScaleAWithCoord3510;
-};
 } // namespace Te
 } // namespace AscendC
 #endif // IMPL_TENSOR_API_ARCH_CUBE_L1_TO_L0SCALEA_ROUTING_H

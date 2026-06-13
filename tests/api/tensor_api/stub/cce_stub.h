@@ -13,6 +13,32 @@
 #include <cstdint>
 #include "stub_fun.h"
 
+using float8_e4m3_t = fp8_e4m3fn_t;
+using float8_e5m2_t = fp8_e5m2_t;
+using float4_e1m2x2_t = fp4x2_e1m2_t;
+using float4_e2m1x2_t = fp4x2_e2m1_t;
+
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ != 3510)
+    using vector_uint8_t = uint8_t;
+    using vector_uint16_t = uint8_t;
+    using vector_uint32_t = uint8_t;
+    using vector_uint64_t = uint8_t;
+    using vector_int8_t = uint8_t;
+    using vector_int16_t = uint8_t;
+    using vector_int32_t = uint8_t;
+    using vector_int64_t = uint8_t;
+    using vector_bfloat16_t = uint8_t;
+    using vector_half = uint8_t;
+    using vector_float = uint8_t;
+    using vector_hifloat8_t = uint8_t;
+    using vector_fp8_e4m3fn_t = uint8_t;
+    using vector_fp8_e5m2_t = uint8_t;
+    using vector_fp8_e8m0_t = uint8_t;
+    using vector_int4x2_t = uint8_t;
+    using vector_fp4x2_e2m1_t = uint8_t;
+    using vector_fp4x2_e1m2_t = uint8_t;
+#endif
+
 static bool is_mock_copy_matrix_cc_to_gm = false;	 
 static uint16_t n_size_global = 0;	 
 static uint16_t m_size_global = 0;	 
@@ -21,6 +47,8 @@ static uint16_t src_stride_global = 0;
 static bool NZ2ND_en_global = false; 
 static bool NZ2DN_en_global = false; 
 static void* gm_addr_global = nullptr; 
+static bool is_mock_copy_matrix_cc_to_ub = false;
+static void* ub_addr_global = nullptr;
 static uint64_t quant_pre_global = 0; 
  
  
@@ -38,7 +66,9 @@ inline void copy_matrix_cc_to_gm( \
             EXPECT_EQ(loop_src_stride, src_stride_global); \	 
             EXPECT_EQ(NZ2ND_en, NZ2ND_en_global); \	 
             EXPECT_EQ(NZ2DN_en, NZ2DN_en_global); \ 
-            EXPECT_EQ(dst_addr, gm_addr_global); \ 
+            if (gm_addr_global != nullptr) { \
+                EXPECT_EQ(dst_addr, gm_addr_global); \
+            } \
             EXPECT_EQ(quant_pre, quant_pre_global); \ 
         } \ 
     } \ 
@@ -74,11 +104,6 @@ void vsts(vector_f4e1m2x2 src0, vector_f4e1m2x2 src1, __ubuf__ fp4x2_e1m2_t* bas
 
 void vcgadd(vector_u32 & dst, vector_u16 src, vector_bool pg, int32_t mode);
 void vcgadd(vector_s32 & dst, vector_s16 src, vector_bool pg, int32_t mode);
-
-using float8_e4m3_t = fp8_e4m3fn_t;
-using float8_e5m2_t = fp8_e5m2_t;
-using float4_e1m2x2_t = fp4x2_e1m2_t;
-using float4_e2m1x2_t = fp4x2_e2m1_t;
 
 // ==========copy_matrix_cc_to_cbuf_s4===========
 inline void copy_matrix_cc_to_cbuf_s4(__cbuf__ void *dst_addr, __cc__ float *src_addr, uint8_t sid, uint16_t n_size, uint16_t m_size,
@@ -233,7 +258,21 @@ inline void copy_matrix_cc_to_ub(__ubuf__ float *dst_addr, __cc__ float *src_add
     uint32_t loop_dst_stride, uint16_t loop_src_stride, uint8_t dual_dst_ctl, bool sub_blockid, uint8_t clip_relu_pre, uint8_t unit_flag_ctl,
     uint64_t quant_pre, uint8_t relu_pre, bool split_en, bool NZ2ND_en, uint64_t quant_post, uint8_t relu_post, bool clip_relu_post,
     bool loop_enhance_en, uint8_t eltwise_op, bool eltwise_antq_en, bool loop_enhance_merge_en, bool C0_pad_en, bool wino_post_en,
-    bool broadcast_en, bool NZ2DN_en) {}
+    bool broadcast_en, bool NZ2DN_en)
+{
+    if (is_mock_copy_matrix_cc_to_ub) {
+        EXPECT_EQ(n_size, n_size_global);
+        EXPECT_EQ(m_size, m_size_global);
+        EXPECT_EQ(loop_dst_stride, dst_stride_global);
+        EXPECT_EQ(loop_src_stride, src_stride_global);
+        EXPECT_EQ(NZ2ND_en, NZ2ND_en_global);
+        EXPECT_EQ(NZ2DN_en, NZ2DN_en_global);
+        if (ub_addr_global != nullptr) {
+            EXPECT_EQ(reinterpret_cast<void*>(dst_addr), ub_addr_global);
+        }
+        EXPECT_EQ(quant_pre, quant_pre_global);
+    }
+}
 
 inline void copy_matrix_cc_to_ub(__ubuf__ bfloat16_t *dst_addr, __cc__ int32_t *src_addr, uint8_t sid, uint16_t n_size, uint16_t m_size,
     uint32_t loop_dst_stride, uint16_t loop_src_stride, uint8_t dual_dst_ctl, bool sub_blockid, uint8_t clip_relu_pre, uint8_t unit_flag_ctl,
