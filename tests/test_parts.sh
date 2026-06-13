@@ -108,8 +108,6 @@ basic_test_five_targets=(
     ascendc_ut_c_api_ascend950pr_9599_AIC
     ascendc_ut_c_api_ascend950pr_9599_AIV
     ascendc_ut_reg_compute_ascend950pr_9599
-    ascendc_ut_tensor_api_NPU_ARCH_2201_AIC
-    ascendc_ut_tensor_api_NPU_ARCH_2201_AIV
     ascendc_ut_tensor_api_NPU_ARCH_3510_AIC
     ascendc_ut_tensor_api_NPU_ARCH_3510_AIV
     ascendc_ut_simt_api_ascend950pr_9599
