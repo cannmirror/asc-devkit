@@ -115,17 +115,23 @@ __aicore__ inline Load3DBitModeParam(const LoadData3DParamsV2<T> &loadData3DPara
 示例代码片段如下：
 
 ```cpp
-uint16_t C1 = 2;
+// featureMapA1为half类型、位于L1 Buffer，featureMapA2为half类型、位于L0A Buffer
 uint16_t H = 4, W = 4;
 uint8_t Kh = 2, Kw = 2;
-uint16_t Cout = 16;
 uint16_t C0 = 16;
 uint8_t dilationH = 2, dilationW = 2;
 uint8_t padTop = 1, padBottom = 1, padLeft = 1, padRight = 1;
 uint8_t strideH = 1, strideW = 1;
 uint8_t padList[4] = {padLeft, padRight, padTop, padBottom};
-LoadData3DParamsV2 param = { padList, H, W, 0, 0, 0, -1, -1, strideW, strideH, Kw, Kh, dilationW, dilationH, 1, 0, fmRepeat, 0, (half)(0)};
-Load3DBitModeParam paramBitMode(param);
-AscendC::LoadData<A2, A1, half>(featureMapA2, featureMapA1, paramBitMode);
-// AscendC::LoadData(weightB2, weightB1, { 0, weRepeat, 1, 0, 0, false, 0 });
+
+// 使用LoadData3DParamsV2结构体对象初始化Load3DBitModeParam
+// 构造参数顺序：padList, l1H, l1W, channelSize, kExtension, mExtension, kStartPt, mStartPt,
+//             strideW, strideH, filterW, filterH, dilationFilterW, dilationFilterH,
+//             enTranspose, enSmallK, padValue, filterSizeW, filterSizeH, fMatrixCtrl
+AscendC::LoadData3DParamsV2<half> param = {
+    padList, H, W, C0, C0, static_cast<uint16_t>(H * W), 0, 0,
+    strideW, strideH, Kw, Kh, dilationW, dilationH,
+    false, false, (half)0, false, false, false};
+AscendC::Load3DBitModeParam paramBitMode(param);
+AscendC::LoadData<AscendC::TPosition::A2, AscendC::TPosition::A1, half>(featureMapA2, featureMapA1, paramBitMode);
 ```

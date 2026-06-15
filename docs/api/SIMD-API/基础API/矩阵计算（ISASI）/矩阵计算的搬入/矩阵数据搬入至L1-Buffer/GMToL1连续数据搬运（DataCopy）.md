@@ -129,10 +129,15 @@ __aicore__ inline void DataCopy(const LocalTensor<T>& dst, const GlobalTensor<T>
 
 ## 调用示例<a id="zh-cn_topic_0000002535739034_section088124295117"></a>
 
-示例代码片段如下：
+以[图1 连续搬运示意图](#zh-cn_topic_0000002535739034_fig79455329161)所示场景为例：
 
 ```cpp
-// srcLocal为half类型的LocalTensor，srcGlobal为half类型的GlobalTensor
-// 使用传入count参数的搬运接口，完成连续搬运
-AscendC::DataCopy(srcLocal, srcGlobal, 512);
+constexpr uint32_t copyCount = 128;
+// 源操作数：GM上连续存放的128个half。
+AscendC::GlobalTensor<half> srcGm;
+srcGm.SetGlobalBuffer((__gm__ half *)src, copyCount);
+// 目的操作数：L1 Buffer。
+AscendC::LocalTensor<half> dstLocal(AscendC::TPosition::A1, 0, copyCount);
+// count = 128，表示搬运128个half元素，实际搬运字节数256B满足32B对齐约束。
+AscendC::DataCopy(dstLocal, srcGm, copyCount);
 ```

@@ -106,14 +106,26 @@ ND2NZ转换示意图如下，样例中参数设置值和解释说明如下：
 
 ## 调用示例<a id="section10309141400"></a>
 
-intriParams参数解析请参考[图1](#fig128961542184620)。
-
-示例代码片段如下：
+示例场景如[图1](#fig128961542184620)所示，示例代码片段如下：
 
 ```cpp
-// srcLocal为half类型的L1 Buffer空间上的LocalTensor
-// workLocal为half类型的UB空间上的LocalTensor
-AscendC::Nd2NzParams intriParams{1, 32, 32, 0, 32, 32, 1, 0};
-// UB -> L1 Buffer，搬运过程中完成ND->NZ格式转换
-AscendC::DataCopy(srcLocal, workLocal, intriParams);
+AscendC::Nd2NzParams nd2nzParams;
+// 传输2个ND矩阵。
+nd2nzParams.ndNum = 2;
+// 每个ND矩阵高度为2行。
+nd2nzParams.nValue = 2;
+// 每行宽度为24个half；不足32B对齐的部分在目的端补0。
+nd2nzParams.dValue = 24;
+// 源端相邻ND矩阵起始地址间隔为9个DataBlock，即9 * 16 = 144个half。
+nd2nzParams.srcNdMatrixStride = 144;
+// 源端同一ND矩阵相邻行起始地址间隔为3个DataBlock，即3 * 16 = 48个half。
+nd2nzParams.srcDValue = 48;
+// 目的NZ中同一源行拆出的相邻C0块间隔为11个DataBlock。
+nd2nzParams.dstNzC0Stride = 11;
+// 目的NZ中相邻源行转换后的起始地址间隔为2个DataBlock。
+nd2nzParams.dstNzNStride = 2;
+// 目的端相邻NZ矩阵起始地址间隔为6个DataBlock，即6 * 16 = 96个half。
+nd2nzParams.dstNzMatrixStride = 96;
+
+AscendC::DataCopy(dstLocal, srcLocal, nd2nzParams);
 ```

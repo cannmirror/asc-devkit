@@ -113,7 +113,7 @@ __aicore__ inline void DataCopy(const LocalTensor<T>& dst, const LocalTensor<T>&
 
 ## 调用示例
 
-示例代码片段如下：
+示例代码片段如下，完整示例请参考：[DataCopy_UB2L1样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_basic_api/00_data_movement/data_copy_ub2l1)。
 
 ```cpp
 // dstLocal、srcLocal为half类型的LocalTensor，分别位于L1 Buffer和UB

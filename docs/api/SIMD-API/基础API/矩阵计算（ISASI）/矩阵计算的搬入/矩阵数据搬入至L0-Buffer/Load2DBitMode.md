@@ -133,4 +133,61 @@ Load2DBitModeConfig1结构体参数的含义与LoadData2DParamsV2结构体中的
 
 ## 调用示例<a id="section6461234123118"></a>
 
-无
+完整搬运流程请参考[Load2DV2样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_basic_api/03_matrix_compute/load_data_2dv2_l12l0)。Load2DBitMode的使用可以参考下面的调用示例，L1上为NZ数据排布、shape为[M,K]的A矩阵，调用LoadData指令完成L1->L0A的Nz2Nz搬运。
+
+- 示例一：使用LoadData2DParamsV2构造Load2DBitModeParam
+
+```cpp
+constexpr uint32_t fractalElemCount = 256;
+constexpr uint32_t tensorElemCount = 4 * fractalElemCount;
+
+// 源操作数：L1 Buffer，存放32x32的half矩阵。
+AscendC::LocalTensor<half> srcLocal(AscendC::TPosition::A1, a1Addr, tensorElemCount);
+
+// 目的操作数：L0A Buffer，预留4个512B分形接收完整32x32 half矩阵。
+AscendC::LocalTensor<half> dstLocal(AscendC::TPosition::A2, a2Addr, tensorElemCount);
+
+AscendC::LoadData2DParamsV2 loadDataParams;
+// 从源矩阵M轴第0个16元素开始搬运。
+loadDataParams.mStartPosition = 0;
+// 从源矩阵K轴第0个32B开始搬运。
+loadDataParams.kStartPosition = 0;
+// M方向搬运2 * 16个元素。
+loadDataParams.mStep = 2;
+// K方向搬运32个half，即2 * 32B。
+loadDataParams.kStep = 2;
+// 源L1的M方向有2个分形，K方向相邻源分形起始地址间隔为2 * 512B。
+loadDataParams.srcStride = 2;
+// 目的L0A按2个M方向分形连续排布，K方向相邻目的分形起始地址间隔为2 * 512B。
+loadDataParams.dstStride = 2;
+// 不对每个分形做转置，保持L1中的分形方向搬入L0A。
+loadDataParams.ifTranspose = false;
+// 预留参数，固定配置为0。
+loadDataParams.sid = 0;
+
+// 使用LoadData2DParamsV2构造bit mode参数，底层以bit位形式传递上述搬运配置。
+AscendC::Load2DBitModeParam bitModeParams(loadDataParams);
+AscendC::LoadData<AscendC::TPosition::A2, AscendC::TPosition::A1, half>(dstLocal, srcLocal, bitModeParams);
+```
+
+- 示例二：使用Set函数修改Load2DBitModeParam
+
+```cpp
+AscendC::Load2DBitModeParam bitModeParams;
+// 从源矩阵M轴第0个16元素开始搬运。
+bitModeParams.SetMStartPosition(0);
+// 从源矩阵K轴第0个32B开始搬运。
+bitModeParams.SetKStartPosition(0);
+// M方向搬运2 * 16个元素。
+bitModeParams.SetMStep(2);
+// K方向搬运32个half，即2 * 32B。
+bitModeParams.SetKStep(2);
+// 源L1的M方向有2个分形，K方向相邻源分形起始地址间隔为2 * 512B。
+bitModeParams.SetSrcStride(2);
+// 目的L0A按2个M方向分形连续排布，K方向相邻目的分形起始地址间隔为2 * 512B。
+bitModeParams.SetDstStride(2);
+// 不对每个分形做转置，保持L1中的分形方向搬入L0A。
+bitModeParams.SetIfTranspose(false);
+
+AscendC::LoadData<AscendC::TPosition::A2, AscendC::TPosition::A1, half>(dstLocal, srcLocal, bitModeParams);
+```

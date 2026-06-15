@@ -77,26 +77,56 @@ __aicore__ inline void LoadImageToLocal(const LocalTensor<T>& dst, const LoadIma
 该调用示例支持的运行平台为Atlas 推理系列产品AI Core，示例图片格式为YUV420SP。
 
 ```cpp
-uint16_t horizSize = 32, vertSize = 32, horizStartPos = 0, vertStartPos = 0, srcHorizSize = 32, srcVertSize = 32, leftPadSize = 0, rightPadSize = 0;
-uint32_t dstHorizSize = 32, dstVertSize = 32, cSize = 32;
-uint8_t topPadSize = 0, botPadSize = 0;
-uint32_t gmSrc0Size = 0, gmSrc1Size = 0, dstSize = 0;
-AscendC::AippInputFormat inputFormat = AscendC::AippInputFormat::YUV420SP_U8;
-uint32_t cPadMode = 0;
-int8_t cPaddingValue = 0;
+constexpr uint16_t imageWidth = 32;
+constexpr uint16_t imageHeight = 32;
+constexpr uint32_t yPlaneSize = imageWidth * imageHeight;
+constexpr uint32_t inputSize = yPlaneSize * 3 / 2;
+constexpr uint32_t outputChannels = 32;
+constexpr uint32_t dstElemCount = imageWidth * imageHeight * outputChannels;
 
-AscendC::TPipe pipe;
-AscendC::TQue<AscendC::TPosition::A1, 1> inQueueA1;
-AscendC::TQue<AscendC::TPosition::VECOUT, 1> outQueueUB;
-AscendC::LocalTensor<int8_t> featureMapA1 = inQueueA1.AllocTensor<int8_t>();
-uint64_t fm_addr = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(fmGlobal.GetPhyAddr()));
-// aipp config
+// 源操作数：GM上一张32x32 YUV420SP图片，前1024B为Y平面，后512B为UV平面。
+AscendC::GlobalTensor<uint8_t> fmGlobal;
+fmGlobal.SetGlobalBuffer((__gm__ uint8_t *)src, inputSize);
+
+// 目的操作数：L1 Buffer。
+AscendC::LocalTensor<int8_t> featureMapA1(AscendC::TPosition::A1, a1Addr, dstElemCount);
+
+// format = YUV420SP_U8，表示输入为uint8_t类型的YUV420 Semi-Planar图片。
+AscendC::AippInputFormat inputFormat = AscendC::AippInputFormat::YUV420SP_U8;
+
 AscendC::AippParams<int8_t> aippConfig;
-aippConfig.cPaddingParams.cPaddingMode = cPadMode;
-aippConfig.cPaddingParams.cPaddingValue = cPaddingValue;
-// fmGlobal为整张输入图片，src1参数处填入图片UV维度的起始地址
-AscendC::SetAippFunctions(fmGlobal, fmGlobal[gmSrc0Size], inputFormat, aippConfig);
-AscendC::LoadImageToLocal(featureMapA1, { horizSize, vertSize, horizStartPos, vertStartPos, srcHorizSize, topPadSize, botPadSize, leftPadSize, rightPadSize });
+// 本示例不做HW padding、通道交换、单行读取、均值/缩放和色域转换，这些子参数使用结构体默认值。
+// 输出U = int8_t时将通道padding到32通道，即每个像素输出32B。
+aippConfig.cPaddingParams.cPaddingMode = 0;
+// 通道padding补0，目的Tensor额外通道写入0。
+aippConfig.cPaddingParams.cPaddingValue = static_cast<int8_t>(0);
+
+// src0为Y平面起始地址；src1为UV平面起始地址，YUV420SP 32x32的UV偏移为32 * 32 = 1024个uint8_t。
+AscendC::SetAippFunctions(fmGlobal, fmGlobal[yPlaneSize], inputFormat, aippConfig);
+
+AscendC::LoadImageToLocalParams loadParams;
+// 从源图加载32像素宽，等于整张32x32示例图的宽度。
+loadParams.horizSize = 32;
+// 从源图加载32像素高，等于整张32x32示例图的高度。
+loadParams.vertSize = 32;
+// 水平起始位置为第0个像素；YUV420SP场景要求为偶数，0满足约束。
+loadParams.horizStartPos = 0;
+// 垂直起始位置为第0行；YUV420SP场景要求为偶数，0满足约束。
+loadParams.vertStartPos = 0;
+// 源图每行宽度为32像素；YUV420SP场景要求为偶数，32满足约束。
+loadParams.srcHorizSize = 32;
+// 顶部不做HW方向padding。
+loadParams.topPadSize = 0;
+// 底部不做HW方向padding。
+loadParams.botPadSize = 0;
+// 左侧不做HW方向padding。
+loadParams.leftPadSize = 0;
+// 右侧不做HW方向padding。
+loadParams.rightPadSize = 0;
+// 预留参数，固定配置为0。
+loadParams.sid = 0;
+
+AscendC::LoadImageToLocal(featureMapA1, loadParams);
 ```
 
 </cann-filter>

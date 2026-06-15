@@ -80,4 +80,29 @@ src数据类型支持uint64_t，dst数据类型支持uint64_t。
 
 ## 调用示例<a id="section_call_example"></a>
 
-无
+L1 Buffer(C1)->Fixpipe Buffer(C2PIPE2GM)，搬运Vector量化参数。
+
+```cpp
+// c1Addr = 0、fbAddr = 0、N = 256、n = 256；burstLen = CeilAlign(256 * sizeof(uint64_t), 128) / 128 = 16，dataCopyParams = {1, 16, 0, 0}。
+AscendC::LocalTensor<uint64_t> quantAlphaTensor(AscendC::TPosition::C1, c1Addr, N);
+
+if constexpr (scenarioNum == 2 || scenarioNum == 4 || scenarioNum == 6) {
+    CopyQuantAlphaGmToL1(quantAlphaTensor);
+}
+
+// vector quant mode
+if constexpr (scenarioNum == 2) {
+    intriParams.quantPre = QuantMode_t::VDEQF16;
+} else if constexpr (scenarioNum == 4) {
+    intriParams.quantPre = QuantMode_t::VQF322B8_PRE;
+} else {
+    intriParams.quantPre = QuantMode_t::VREQ8;
+}
+AscendC::LocalTensor<uint64_t> fbTensor(AscendC::TPosition::C2PIPE2GM, fbAddr, N);
+uint16_t burstLen = CeilAlign(n * sizeof(uint64_t), 128) / 128;
+AscendC::DataCopyParams dataCopyParams(1, burstLen, 0, 0);
+AscendC::DataCopy(fbTensor, quantAlphaTensor, dataCopyParams);
+AscendC::SetFixPipeConfig(fbTensor);
+```
+
+完整示例请参考[L1->Fixpipe Buffer数据搬运(DataCopy)](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_basic_api/00_data_movement/data_copy_l0c2gm)中场景2、4、6。

@@ -32,6 +32,8 @@ Atlas A2 训练系列产品/Atlas A2 推理系列产品；
 
 **使用示例：**
 
+完整示例请参考[fixpipe_l0c2gm样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_basic_api/03_matrix_compute/fixpipe_l0c2gm)场景7。
+
 如下图所示，当开启Channel Split功能后，shape为\[64,32\]的源操作数将会被拆分为16个独立的16x8分形矩阵。
 
 **图 1** F32 Channel Split示意图1<a name="zh-cn_topic_0000002515660950_fig222295694112"></a>  

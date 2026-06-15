@@ -294,4 +294,4 @@ $$C = A \times B + C$$
 
 ## 调用示例
 
-矩阵乘的样例请参考[Mmad样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_basic_api/01_matrix_compute/mmad)。
+矩阵乘的样例请参考[Mmad样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_basic_api/03_matrix_compute/mmad)。

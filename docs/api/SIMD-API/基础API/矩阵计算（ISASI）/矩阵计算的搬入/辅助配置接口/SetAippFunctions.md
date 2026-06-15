@@ -201,29 +201,6 @@
 
 ## 调用示例<a name="section6461234123118"></a>
 
-- 该调用示例支持的运行平台为Atlas 推理系列产品AI Core，示例图片格式为YUV420SP。
-
-    ```cpp
-    uint16_t horizSize = 32, vertSize = 32, horizStartPos = 0, vertStartPos = 0, srcHorizSize = 32, srcVertSize = 32, leftPadSize = 0, rightPadSize = 0;
-    uint32_t dstHorizSize = 32, dstVertSize = 32, cSize = 32;
-    uint8_t topPadSize = 0, botPadSize = 0;
-    uint32_t gmSrc0Size = 0, gmSrc1Size = 0, dstSize = 0;
-    AscendC::AippInputFormat inputFormat = AscendC::AippInputFormat::YUV420SP_U8;
-    uint32_t cPadMode = 0;
-    int8_t cPaddingValue = 0;
-    
-    AscendC::TPipe pipe;
-    AscendC::TQue<AscendC::TPosition::A1, 1> inQueueA1;
-    AscendC::TQue<AscendC::TPosition::VECOUT, 1> outQueueUB;
-    AscendC::LocalTensor<int8_t> featureMapA1 = inQueueA1.AllocTensor<int8_t>();
-    uint64_t fm_addr = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(fmGlobal.GetPhyAddr()));
-    // aipp config
-    AscendC::AippParams<int8_t> aippConfig;
-    aippConfig.cPaddingParams.cPaddingMode = cPadMode;
-    aippConfig.cPaddingParams.cPaddingValue = cPaddingValue;
-    // fmGlobal为整张输入图片，src1参数处填入图片UV维度的起始地址
-    AscendC::SetAippFunctions(fmGlobal, fmGlobal[gmSrc0Size], inputFormat, aippConfig);
-    AscendC::LoadImageToLocal(featureMapA1, { horizSize, vertSize, horizStartPos, vertStartPos, srcHorizSize, topPadSize, botPadSize, leftPadSize, rightPadSize });
-    ```
+SetAippFunctions需与[LoadImageToLocal](LoadImageToLocal.md)接口配合使用，完整调用示例（含搬运过程）请参考[LoadImageToLocal的调用示例](LoadImageToLocal.md#section22811728184217)。
 
 </cann-filter>

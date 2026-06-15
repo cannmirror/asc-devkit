@@ -58,7 +58,9 @@ __aicore__ inline void DataCopy(const LocalTensor<T>& dst, const LocalTensor<T>&
 
 下图呈现了DataCopyParams结构体参数的使用方法，样例中完成了2个连续传输数据块的搬运，每个数据块含有8个DataBlock，源操作数相邻数据块之间无间隔，目的操作数相邻数据块尾与头之间间隔1个DataBlock。
 
-![](../../../../../figures/repeat-times.png)
+**图 1**  DataCopyParams结构体参数使用示意图<a id="fig_repeat_times_demo"></a>
+
+![](../../../../../figures/repeat-times.png "DataCopyParams结构体参数使用示意图")
 
 ## 数据类型
 
@@ -126,15 +128,30 @@ __aicore__ inline void DataCopy(const LocalTensor<T>& dst, const LocalTensor<T>&
 
 ## 调用示例
 
+示例场景如[图 1](#fig_repeat_times_demo)所示。
+
 示例代码片段如下：
 
 ```cpp
-// dstLocal、srcLocal为half类型的LocalTensor，分别位于L1 Buffer和UB
-// 使用传入DataCopyParams参数的搬运接口，支持连续和非连续搬运
-DataCopyParams intriParams;
-intriParams.blockCount = 1; // 连续数据块个数为1
-intriParams.blockLen = 512 * sizeof(half) / 32; // 连续数据块长度，单位为DataBlock
-intriParams.srcGap = 0; // 源操作数做连续搬运
-intriParams.dstGap = 0; // 目的操作数连续排布
-AscendC::DataCopy(dstLocal, srcLocal, intriParams);
+constexpr uint32_t dataBlockElemCount = 16;
+constexpr uint32_t srcElemCount = 2 * 8 * dataBlockElemCount;
+constexpr uint32_t dstElemCount = (2 * 8 + 1) * dataBlockElemCount;
+
+// 源操作数：UB，2个数据块在源端紧密排列，每块8个DataBlock，共16个DataBlock。
+AscendC::LocalTensor<half> srcLocal(AscendC::TPosition::VECIN, ubAddr, srcElemCount);
+
+// 目的操作数：L1 Buffer，两个目的数据块之间预留1个DataBlock间隔，总跨度为17个DataBlock。
+AscendC::LocalTensor<half> dstLocal(AscendC::TPosition::A1, a1Addr, dstElemCount);
+
+AscendC::DataCopyParams repeatParams;
+// 搬运2个连续传输数据块。
+repeatParams.blockCount = 2;
+// 每个数据块长度为8个DataBlock，即256B，等于128个half。
+repeatParams.blockLen = 8;
+// 源UB相邻数据块尾与头之间无间隔，两个数据块紧密读取。
+repeatParams.srcGap = 0;
+// 目的A1相邻数据块尾与头之间间隔1个DataBlock，即32B，等于16个half。
+repeatParams.dstGap = 1;
+
+AscendC::DataCopy(dstLocal, srcLocal, repeatParams);
 ```

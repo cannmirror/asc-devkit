@@ -90,4 +90,4 @@ L1 Buffer->L0A Buffer、L1 Buffer->L0B Buffer
 
 ## 调用示例
 
-无
+完整调用示例请参考[Load2DMX样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_basic_api/03_matrix_compute/load_data_2dmx_l12l0)。

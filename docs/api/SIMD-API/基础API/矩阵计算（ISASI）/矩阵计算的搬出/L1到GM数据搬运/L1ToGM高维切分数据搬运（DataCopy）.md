@@ -166,13 +166,27 @@ Kirin 9030，支持数据类型为：int8_t、uint8_t、int16_t、uint16_t、hal
 
 ## 调用示例<a name="zh-cn_topic_0000002540558032_section088124295117"></a>
 
+以[图2](#zh-cn_topic_0000002540558032_fig123821924175312)所示场景为例，展示非连续搬运时的调用示例：
+
 ```cpp
-// dstLocal为half类型的LocalTensor，dstGlobal为half类型的GlobalTensor
-// 使用传入DataCopyParams参数的搬运接口，支持连续和非连续搬运
-DataCopyParams intriParams;
-intriParams.blockCount = 1; // 连续数据块个数为1
-intriParams.blockLen = 512 * sizeof(half) / 32; // 连续数据块长度，单位为DataBlock，此处长度为512个half元素
-intriParams.srcGap = 0; // 源操作数做连续搬运
-intriParams.dstGap = 0; // 目的操作数连续排布
-AscendC::DataCopy(dstGlobal, dstLocal, intriParams);
+constexpr uint32_t srcElemCount = 112;
+constexpr uint32_t dstElemCount = 128;
+
+// 源操作数：L1 Buffer，按“48个有效half + 16个跳过half + 48个有效half”排布。
+AscendC::LocalTensor<half> srcLocal(AscendC::TPosition::A1, a1Addr, srcElemCount);
+
+// 目的操作数：GM上预留128个half，两个有效数据块之间保留32个half间隔。
+AscendC::GlobalTensor<half> dstGm;
+dstGm.SetGlobalBuffer((__gm__ half *)dst, dstElemCount);
+
+AscendC::DataCopyParams repeatParams;
+// 搬运2个连续传输数据块。
+repeatParams.blockCount = 2;
+// 每个数据块长度为3个DataBlock。
+repeatParams.blockLen = 3;
+// 源端相邻数据块之间跳过1个DataBlock。
+repeatParams.srcGap = 1;
+// 目的端相邻数据块之间间隔2个DataBlock。
+repeatParams.dstGap = 2;
+AscendC::DataCopy(dstGm, srcLocal, repeatParams);
 ```
