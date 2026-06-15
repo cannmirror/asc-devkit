@@ -42,12 +42,10 @@
   | `asc_dump<T>` | `__ubuf__` / Reg | `asc_dump<float>(input, desc, dump_size);` |
 
   参数说明：
-   - 模板参数`T`：指定数据类型（float/half等）
+  - 模板参数`T`：指定数据类型（float/half等）
   - `input`：UB数据地址或Reg寄存器对象
   - `desc`：打印控制描述符
   - `dump_size`：单次dump的数据元素个数
-
-   
 
 - 调用实现
 
