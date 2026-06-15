@@ -127,12 +127,13 @@ __aicore__ constexpr uint32_t align_print_tlv_len(const uint32_t dataLen)
 }
 
 template <typename... Args>
-__aicore__ inline uint32_t get_print_tlv_len(uint32_t& argsNum, __gm__ const char* fmt, Args&&... args)
+__aicore__ inline uint32_t get_print_tlv_len(uint32_t& argsNum, __gm__ const char* fmt, __gm__ const char* dumphead, Args&&... args)
 {
     constexpr uint32_t printInfoLen = sizeof(PrintTlv);
     const uint32_t argsLen = get_args_len(argsNum, args...);
     const uint32_t fmtLen = get_cstring_len(fmt);
-    return align_print_tlv_len(printInfoLen + argsLen + fmtLen); // gm need 8 byte align
+    const uint32_t dumpheadLen = get_cstring_len(dumphead) - 1; // without '\0'
+    return align_print_tlv_len(printInfoLen + argsLen + fmtLen + dumpheadLen); // gm need 8 byte align
 }
 
 __aicore__ inline void set_print_tlv_info(
@@ -147,27 +148,30 @@ __aicore__ inline void set_print_tlv_info(
 }
 
 template <typename... Args>
-__aicore__ inline void set_print_tlv_data(__gm__ PrintTlv* printTlv, __gm__ const char* fmt, Args&&... args)
+__aicore__ inline void set_print_tlv_data(__gm__ PrintTlv* printTlv, __gm__ const char* fmt, __gm__ const char* dumphead, Args&&... args)
 {
+    const uint32_t& dumpheadLen = get_cstring_len(dumphead) - 1;
     const uint32_t& strLen = get_cstring_len(fmt);
     __gm__ uint8_t* paramAddr =
         reinterpret_cast<__gm__ uint8_t*>(printTlv + 1);
-    __gm__ uint8_t* fmtAddr = paramAddr + printTlv->fmtOffset - sizeof(uint64_t);
-    __gm__ uint8_t* strParamAddr = reinterpret_cast<__gm__ uint8_t*>(fmtAddr) + strLen;
+    __gm__ uint8_t* dumpheadAddr = paramAddr + printTlv->fmtOffset - sizeof(uint64_t);
+    __gm__ uint8_t* fmtAddr = reinterpret_cast<__gm__ uint8_t*>(dumpheadAddr) + dumpheadLen;
+    __gm__ uint8_t* strParamAddr = reinterpret_cast<__gm__ uint8_t*>(dumpheadAddr) + dumpheadLen + strLen;
+    mem_copy_gm_to_gm(dumpheadAddr, reinterpret_cast<__gm__ const uint8_t*>(dumphead), dumpheadLen);
     mem_copy_gm_to_gm(fmtAddr, reinterpret_cast<__gm__ const uint8_t*>(fmt), strLen);
-    uint32_t strParamOffset = printTlv->fmtOffset + strLen;
+    uint32_t strParamOffset = printTlv->fmtOffset + strLen + dumpheadLen;
     set_param(paramAddr, 0, strParamOffset, args...);
 }
 
 template <class... Args>
-__aicore__ inline void scalar_printf_impl(DumpType debugType, __gm__ const char* fmt, Args&&... args)
+__aicore__ inline void scalar_printf_impl(DumpType debugType, __gm__ const char* fmt, __gm__ const char* dumphead, Args&&... args)
 {
     __gm__ DebugBlockHeadInfo* blockInfo = get_block_info();
     if (blockInfo == nullptr) {
         return;
     }
     uint32_t argsNum = 0;
-    const uint32_t tlvLen = get_print_tlv_len(argsNum, fmt, args...);
+    const uint32_t tlvLen = get_print_tlv_len(argsNum, fmt, dumphead, args...);
     if (!check_ringbuf_space(blockInfo, tlvLen)) {
         return;
     }
@@ -175,7 +179,7 @@ __aicore__ inline void scalar_printf_impl(DumpType debugType, __gm__ const char*
     __gm__ PrintTlv* printTlv = reinterpret_cast<__gm__ PrintTlv*>(get_ringbuf_tlv_addr(blockInfo));
 
     set_print_tlv_info(debugType, printTlv, tlvLen, argsNum);
-    set_print_tlv_data(printTlv, fmt, args...);
+    set_print_tlv_data(printTlv, fmt, dumphead, args...);
 
     __gm__ DebugBlockWriteInfo* writeInfo = get_block_write_info(blockInfo);
 
@@ -199,20 +203,10 @@ __aicore__ inline void print_common_head()
     __gm__ char* __ascendc_versionStr = nullptr;
     asc_debug_get_cann_vserion(__ascendc_versionStr, __ascendc_version, __ascendc_tStamp);
     if (__ascendc_tStamp == 0) {
-        scalar_printf_impl(DumpType::DUMP_SCALAR, "[WARNING]: CANN TimeStamp is invalid, CANN TimeStamp is %u\n", __ascendc_tStamp);
+        scalar_printf_impl(DumpType::DUMP_SCALAR, "[WARNING]: CANN TimeStamp is invalid, CANN TimeStamp is %u\n", "", __ascendc_tStamp);
     } else {
-        scalar_printf_impl(DumpType::DUMP_SCALAR, "CANN Version: %s, TimeStamp: %u\n", (__gm__ const char*)(__ascendc_versionStr), __ascendc_tStamp);
+        scalar_printf_impl(DumpType::DUMP_SCALAR, "CANN Version: %s, TimeStamp: %u\n", "", (__gm__ const char*)(__ascendc_versionStr), __ascendc_tStamp);
     }
-}
-
-template <class... Args>
-__aicore__ inline void print_dump_head(DumpType debugType)
-{
-#ifdef __DAV_VEC__
-    scalar_printf_impl(debugType, "[AIV Block %u/%u] ", asc_debug_get_block_idx(), asc_debug_get_block_total_num());
-#else
-    scalar_printf_impl(debugType, "[AIC Block %u/%u] ", asc_debug_get_block_idx(), asc_debug_get_block_total_num());
-#endif
 }
 
 template <class... Args>
@@ -225,8 +219,11 @@ __aicore__ inline void printf_impl_common(DumpType debugType, __gm__ const char*
         print_common_head();
     }
 #endif
-    print_dump_head(debugType);
-    scalar_printf_impl(debugType, fmt, args...);
+#ifdef __DAV_VEC__
+    scalar_printf_impl(debugType, fmt, "[AIV Block %u/%u] ", asc_debug_get_block_idx(), asc_debug_get_block_total_num(), args...);
+#else
+    scalar_printf_impl(debugType, fmt, "[AIC Block %u/%u] ", asc_debug_get_block_idx(), asc_debug_get_block_total_num(), args...);
+#endif
     set_ctrl(ctrlValue);
 }
 
@@ -251,10 +248,14 @@ inline __aicore__ void printf_impl_assert_msg(const __gm__ char* __assertion, co
 
     enable_asc_assert();
     set_atomic_none();
-    scalar_printf_impl(DumpType::DUMP_ASSERT, fmt, args...);
-    print_dump_head(DumpType::DUMP_ASSERT);
+
+#ifdef __DAV_VEC__
+    scalar_printf_impl(DumpType::DUMP_ASSERT, fmt, "[AIV Block %u/%u] ", asc_debug_get_block_idx(), asc_debug_get_block_total_num(), args...);
+#else
+    scalar_printf_impl(DumpType::DUMP_ASSERT, fmt, "[AIC Block %u/%u] ", asc_debug_get_block_idx(), asc_debug_get_block_total_num(), args...);
+#endif
     scalar_printf_impl(DumpType::DUMP_ASSERT, "[ASSERT] %s:%u: %s: Assertion `%s' failed.\n",
-                       __file, __line, __function, __assertion);
+                       "", __file, __line, __function, __assertion);
     set_ctrl(ctrlValue);
 }
 
@@ -287,7 +288,7 @@ inline __aicore__ void printf_impl_assert_msg(const __gm__ char* __assertion, co
 }
 
 template <class... Args>
-__aicore__ inline void scalar_printf_impl(DumpType debugType, __gm__ const char* fmt, Args&&... args) {}
+__aicore__ inline void scalar_printf_impl(DumpType debugType, __gm__ const char* fmt, __gm__ const char* dumphead, Args&&... args) {}
 
 __aicore__ inline void enable_asc_diagnostics() {}
 
