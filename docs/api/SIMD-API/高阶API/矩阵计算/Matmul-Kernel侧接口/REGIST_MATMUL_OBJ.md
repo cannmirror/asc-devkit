@@ -33,7 +33,7 @@ REGIST_MATMUL_OBJ(tpipe, workspace, ...)
 -   当代码中有多个Matmul对象时，必须满足Matmul对象与其tiling参数一一对应，依次传入，具体方式请参考调用示例。
 -   在分离模式中，调用本接口后，AIC核不会主动执行接口，仅在AIV核执行到下述接口后，才会触发AIC核的执行，其他接口则不会在AIC核上执行。
     -   [Matmul Kernel侧接口](Matmul-Kernel侧接口.md)。
-    -   [基础数据搬运](../../../基础API/Memory数据搬运/DataCopy/基础数据搬运.md)和[随路转换ND2NZ搬运](../../../基础API/Memory数据搬运/DataCopy/随路转换ND2NZ搬运.md)接口，仅支持数据通路为GM -\> A1、B1的数据搬运。
+    -   [GM与L1连续数据搬运(DataCopy)](../../../基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L1-Buffer/GMToL1连续数据搬运（DataCopy）.md)、[GM与L1高维切分数据搬运(DataCopy)](../../../基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L1-Buffer/GMToL1高维切分数据搬运（DataCopy）.md)、[GMToL1随路转换-ND2NZ搬运(DataCopy)](../../../基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L1-Buffer/GMToL1随路转换-ND2NZ搬运（DataCopy）.md)。
 
 ## 调用示例
 
@@ -47,4 +47,3 @@ REGIST_MATMUL_OBJ(&pipe, GetSysWorkSpacePtr(), mm1, mm1tiling, mm2, mm2tiling, m
 REGIST_MATMUL_OBJ(&pipe, GetSysWorkSpacePtr(), mm);
 mm.Init(&tiling);
 ```
-

@@ -41,29 +41,7 @@
 
 ## 基础API<a name="section117632211201"></a>
 
-**表 2**  Memory数据搬运API列表
-
-<a name="table1199372172410"></a>
-<table><thead align="left"><tr id="row69936217246"><th class="cellrowborder" valign="top" width="40.37%" id="mcps1.2.3.1.1"><p id="p1799422162414"><a name="p1799422162414"></a><a name="p1799422162414"></a>接口名</p>
-</th>
-<th class="cellrowborder" valign="top" width="59.63%" id="mcps1.2.3.1.2"><p id="p89941221202417"><a name="p89941221202417"></a><a name="p89941221202417"></a>功能描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row19994142132410"><td class="cellrowborder" valign="top" width="40.37%" headers="mcps1.2.3.1.1 "><p id="p119488415242"><a name="p119488415242"></a><a name="p119488415242"></a><a href="基础API/Memory数据搬运/DataCopy/DataCopy.md">DataCopy</a></p>
-</td>
-<td class="cellrowborder" valign="top" width="59.63%" headers="mcps1.2.3.1.2 "><p id="p1188623312246"><a name="p1188623312246"></a><a name="p1188623312246"></a>数据搬运接口，包括普通数据搬运、增强数据搬运、切片数据搬运、随路格式转换。</p>
-</td>
-</tr>
-<tr id="row29942216241"><td class="cellrowborder" valign="top" width="40.37%" headers="mcps1.2.3.1.1 "><p id="p138851338243"><a name="p138851338243"></a><a name="p138851338243"></a><a href="基础API/Memory数据搬运/Copy.md">Copy</a></p>
-</td>
-<td class="cellrowborder" valign="top" width="59.63%" headers="mcps1.2.3.1.2 "><p id="p1488517337242"><a name="p1488517337242"></a><a name="p1488517337242"></a>VECIN、VECCALC、VECOUT之间的搬运指令，支持mask操作和<span id="ph1256166185416"><a name="ph1256166185416"></a><a name="ph1256166185416"></a>DataBlock</span>间隔操作。</p>
-</td>
-</tr>
-</tbody>
-</table>
-
-**表 3**  Memory矢量计算API列表
+**表 2**  Memory矢量计算API列表
 
 <a name="table107281858237"></a>
 <table><thead align="left"><tr id="row1372812592319"><th class="cellrowborder" valign="top" width="15.590000000000002%" id="mcps1.2.4.1.1"><p id="p28543193914"><a name="p28543193914"></a><a name="p28543193914"></a>分类</p>
@@ -74,7 +52,69 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1972815510234"><td class="cellrowborder" rowspan="18" valign="top" width="15.590000000000002%" headers="mcps1.2.4.1.1 "><p id="p28542192920"><a name="p28542192920"></a><a name="p28542192920"></a>基础算术</p>
+<tbody><tr id="row_data_copy_001"><td class="cellrowborder" rowspan="12" valign="top" width="15.590000000000002%" headers="mcps1.2.4.1.1 "><p id="p_data_copy_cat_001"><a name="p_data_copy_cat_001"></a><a name="p_data_copy_cat_001"></a>数据搬运</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.64%" headers="mcps1.2.4.1.2 "><p id="p_data_copy_if_001"><a name="p_data_copy_if_001"></a><a name="p_data_copy_if_001"></a><a href="基础API/Memory矢量计算/数据搬运/GM与UB数据搬运/GM与UB连续数据搬运(DataCopy).md">DataCopy</a></p>
+</td>
+<td class="cellrowborder" valign="top" width="59.77%" headers="mcps1.2.4.1.3 "><p id="p_data_copy_desc_001"><a name="p_data_copy_desc_001"></a><a name="p_data_copy_desc_001"></a>GM与UB之间的连续数据搬运。</p>
+</td>
+</tr>
+<tr id="row_data_copy_002"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p_data_copy_if_002"><a name="p_data_copy_if_002"></a><a name="p_data_copy_if_002"></a><a href="基础API/Memory矢量计算/数据搬运/GM与UB数据搬运/GM与UB高维切分数据搬运(DataCopy).md">DataCopy</a></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p_data_copy_desc_002"><a name="p_data_copy_desc_002"></a><a name="p_data_copy_desc_002"></a>GM与UB之间的高维切分数据搬运，支持非连续和连续的数据搬运。</p>
+</td>
+</tr>
+<tr id="row_data_copy_003"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p_data_copy_if_003"><a name="p_data_copy_if_003"></a><a name="p_data_copy_if_003"></a><a href="基础API/Memory矢量计算/数据搬运/GM与UB数据搬运/GM与UB切片数据搬运(DataCopy).md">DataCopy</a></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p_data_copy_desc_003"><a name="p_data_copy_desc_003"></a><a name="p_data_copy_desc_003"></a>支持数据的切片搬运，提取多维Tensor数据的子集进行搬运。</p>
+</td>
+</tr>
+<tr id="row_data_copy_004"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p_data_copy_if_004"><a name="p_data_copy_if_004"></a><a name="p_data_copy_if_004"></a><a href="基础API/Memory矢量计算/数据搬运/GM与UB数据搬运/GMToUB随路转换ND2NZ搬运(DataCopy).md">DataCopy</a></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p_data_copy_desc_004"><a name="p_data_copy_desc_004"></a><a name="p_data_copy_desc_004"></a>在GM到UB的数据搬运过程中进行ND到NZ格式的转换。</p>
+</td>
+</tr>
+<tr id="row_data_copy_005"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p_data_copy_if_005"><a name="p_data_copy_if_005"></a><a name="p_data_copy_if_005"></a><a href="基础API/Memory矢量计算/数据搬运/GM与UB数据搬运/UBToGM随路转换NZ2ND搬运(DataCopy).md">DataCopy</a></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p_data_copy_desc_005"><a name="p_data_copy_desc_005"></a><a name="p_data_copy_desc_005"></a>在UB到GM的数据搬运过程中进行NZ到ND格式的转换。</p>
+</td>
+</tr>
+<tr id="row_data_copy_006"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p_data_copy_if_006"><a name="p_data_copy_if_006"></a><a name="p_data_copy_if_006"></a><a href="基础API/Memory矢量计算/数据搬运/GM与UB数据搬运/GMToUB多维数据搬运NDDMA(DataCopy).md">DataCopy</a></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p_data_copy_desc_006"><a name="p_data_copy_desc_006"></a><a name="p_data_copy_desc_006"></a>多维数据搬运接口，可自由配置搬入的维度信息以及对应的Stride。</p>
+</td>
+</tr>
+<tr id="row_data_copy_007"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p_data_copy_if_007"><a name="p_data_copy_if_007"></a><a name="p_data_copy_if_007"></a><a href="基础API/Memory矢量计算/数据搬运/GM与UB数据搬运/GMToUB非对齐数据搬运(DataCopyPad).md">DataCopyPad</a></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p_data_copy_desc_007"><a name="p_data_copy_desc_007"></a><a name="p_data_copy_desc_007"></a>将数据从GM非对齐搬运至UB，支持自定义填充数据。</p>
+</td>
+</tr>
+<tr id="row_data_copy_008"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p_data_copy_if_008"><a name="p_data_copy_if_008"></a><a name="p_data_copy_if_008"></a><a href="基础API/Memory矢量计算/数据搬运/GM与UB数据搬运/UBToGM非对齐数据搬运(DataCopyPad).md">DataCopyPad</a></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p_data_copy_desc_008"><a name="p_data_copy_desc_008"></a><a name="p_data_copy_desc_008"></a>将数据从UB非对齐搬运至GM。</p>
+</td>
+</tr>
+<tr id="row_data_copy_009"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p_data_copy_if_009"><a name="p_data_copy_if_009"></a><a name="p_data_copy_if_009"></a><a href="基础API/Memory矢量计算/数据搬运/UB与UB数据搬运/UBToUB连续数据搬运(DataCopy).md">DataCopy</a></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p_data_copy_desc_009"><a name="p_data_copy_desc_009"></a><a name="p_data_copy_desc_009"></a>UB与UB之间的连续数据搬运。</p>
+</td>
+</tr>
+<tr id="row_data_copy_010"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p_data_copy_if_010"><a name="p_data_copy_if_010"></a><a name="p_data_copy_if_010"></a><a href="基础API/Memory矢量计算/数据搬运/UB与UB数据搬运/UBToUB高维切分数据搬运(DataCopy).md">DataCopy</a></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p_data_copy_desc_010"><a name="p_data_copy_desc_010"></a><a name="p_data_copy_desc_010"></a>UB与UB之间的高维切分数据搬运，支持非连续和连续的数据搬运。</p>
+</td>
+</tr>
+<tr id="row_data_copy_011"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p_data_copy_if_011"><a name="p_data_copy_if_011"></a><a name="p_data_copy_if_011"></a><a href="基础API/Memory矢量计算/数据搬运/UB与UB数据搬运/UBToUB连续数据搬运(Copy).md">Copy</a></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p_data_copy_desc_011"><a name="p_data_copy_desc_011"></a><a name="p_data_copy_desc_011"></a>UB与UB之间的连续数据搬运，支持VECIN/VECCALC/VECOUT任意通路。</p>
+</td>
+</tr>
+<tr id="row_data_copy_012"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p_data_copy_if_012"><a name="p_data_copy_if_012"></a><a name="p_data_copy_if_012"></a><a href="基础API/Memory矢量计算/数据搬运/UB与UB数据搬运/UBToUB掩码式高维数据搬运(Copy).md">Copy</a></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p_data_copy_desc_012"><a name="p_data_copy_desc_012"></a><a name="p_data_copy_desc_012"></a>UB与UB之间的数据搬运，支持mask操作和DataBlock间隔操作。</p>
+</td>
+</tr>
+<tr id="row1972815510234"><td class="cellrowborder" rowspan="18" valign="top" width="15.590000000000002%" headers="mcps1.2.4.1.1 "><p id="p28542192920"><a name="p28542192920"></a><a name="p28542192920"></a>基础算术</p>
 </td>
 <td class="cellrowborder" valign="top" width="24.64%" headers="mcps1.2.4.1.2 "><p id="p472817542311"><a name="p472817542311"></a><a name="p472817542311"></a><a href="基础API/Memory矢量计算/基础算术/Exp.md">Exp</a></p>
 </td>
@@ -403,7 +443,7 @@
 </tbody>
 </table>
 
-**表 4**  标量计算API列表
+**表 3**  标量计算API列表
 
 <a name="table339023582010"></a>
 <table><thead align="left"><tr id="row1539063572010"><th class="cellrowborder" valign="top" width="40.37%" id="mcps1.2.3.1.1"><p id="p13390235192015"><a name="p13390235192015"></a><a name="p13390235192015"></a>接口名</p>
@@ -450,7 +490,7 @@
 </tbody>
 </table>
 
-**表 5**  资源管理API列表
+**表 4**  资源管理API列表
 
 <a name="table1267664316264"></a>
 <table><thead align="left"><tr id="row15676154310267"><th class="cellrowborder" valign="top" width="40.37%" id="mcps1.2.3.1.1"><p id="p6676543192617"><a name="p6676543192617"></a><a name="p6676543192617"></a>接口名</p>
@@ -522,7 +562,7 @@
 </tbody>
 </table>
 
-**表 6**  同步控制API列表
+**表 5**  同步控制API列表
 
 <a name="table921112251162"></a>
 <table><thead align="left"><tr id="row975619311161"><th class="cellrowborder" valign="top" width="40.37%" id="mcps1.2.3.1.1"><p id="p8307249121617"><a name="p8307249121617"></a><a name="p8307249121617"></a>接口名</p>
@@ -579,7 +619,7 @@
 </tbody>
 </table>
 
-**表 7**  缓存处理API列表
+**表 6**  缓存处理API列表
 
 <a name="table5254131810573"></a>
 <table><thead align="left"><tr id="row32541018135711"><th class="cellrowborder" valign="top" width="40.27%" id="mcps1.2.3.1.1"><p id="p17682103125810"><a name="p17682103125810"></a><a name="p17682103125810"></a>接口名</p>
@@ -601,7 +641,7 @@
 </tbody>
 </table>
 
-**表 8**  系统变量访问API列表
+**表 7**  系统变量访问API列表
 
 <a name="table26716458301"></a>
 <table><thead align="left"><tr id="row15672134518304"><th class="cellrowborder" valign="top" width="40.37%" id="mcps1.2.3.1.1"><p id="p18672144511306"><a name="p18672144511306"></a><a name="p18672144511306"></a>接口名</p>
@@ -638,7 +678,7 @@
 </tbody>
 </table>
 
-**表 9**  原子操作接口列表
+**表 8**  原子操作接口列表
 
 <a name="table1395854383210"></a>
 <table><thead align="left"><tr id="row12958043173211"><th class="cellrowborder" valign="top" width="40.089999999999996%" id="mcps1.2.3.1.1"><p id="p2958104363212"><a name="p2958104363212"></a><a name="p2958104363212"></a>接口名</p>
@@ -690,7 +730,7 @@
 </tbody>
 </table>
 
-**表 10**  调试接口列表
+**表 9**  调试接口列表
 
 <a name="table18295429109"></a>
 <table><thead align="left"><tr id="row530154201012"><th class="cellrowborder" valign="top" width="37.71%" id="mcps1.2.3.1.1"><p id="p113014281016"><a name="p113014281016"></a><a name="p113014281016"></a>接口名</p>
@@ -784,7 +824,7 @@
 </tbody>
 </table>
 
-**表 11**  工具函数接口列表
+**表 10**  工具函数接口列表
 
 <a name="table9496143191816"></a>
 <table><thead align="left"><tr id="row14962043181812"><th class="cellrowborder" valign="top" width="40.089999999999996%" id="mcps1.2.3.1.1"><p id="p449784310180"><a name="p449784310180"></a><a name="p449784310180"></a>接口名</p>
@@ -821,7 +861,7 @@
 </tbody>
 </table>
 
-**表 12**  Kernel Tiling接口列表
+**表 11**  Kernel Tiling接口列表
 
 <a name="table2017815711517"></a>
 <table><thead align="left"><tr id="row11179357358"><th class="cellrowborder" valign="top" width="39.900000000000006%" id="mcps1.2.3.1.1"><p id="p417975719517"><a name="p417975719517"></a><a name="p417975719517"></a>接口名</p>
@@ -878,7 +918,7 @@
 </tbody>
 </table>
 
-**表 13**  ISASI接口列表
+**表 12**  ISASI接口列表
 
 <a name="table19526741203211"></a>
 <table><thead align="left"><tr id="row352624118322"><th class="cellrowborder" valign="top" width="12.379999999999999%" id="mcps1.2.4.1.1"><p id="p88065174816"><a name="p88065174816"></a><a name="p88065174816"></a>分类</p>
@@ -1025,12 +1065,12 @@
 </tr>
 <tr id="row224111331412"><td class="cellrowborder" rowspan="2" valign="top" width="12.379999999999999%" headers="mcps1.2.4.1.1 "><p id="p711814301143"><a name="p711814301143"></a><a name="p711814301143"></a>数据搬运</p>
 </td>
-<td class="cellrowborder" valign="top" width="27.63%" headers="mcps1.2.4.1.2 "><p id="p148821245184915"><a name="p148821245184915"></a><a name="p148821245184915"></a><a href="基础API/Memory数据搬运/DataCopyPad(ISASI).md">DataCopyPad</a></p>
+<td class="cellrowborder" valign="top" width="27.63%" headers="mcps1.2.4.1.2 "><p id="p148821245184915"><a name="p148821245184915"></a><a name="p148821245184915"></a><a href="基础API/Memory矢量计算/数据搬运/GM与UB数据搬运/GMToUB非对齐数据搬运(DataCopyPad).md">DataCopyPad</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="59.99%" headers="mcps1.2.4.1.3 "><p id="p019795716484"><a name="p019795716484"></a><a name="p019795716484"></a>该接口提供数据非对齐搬运的功能。</p>
 </td>
 </tr>
-<tr id="row7375515151412"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p148821245194911"><a name="p148821245194911"></a><a name="p148821245194911"></a><a href="基础API/Memory数据搬运/SetPadValue(ISASI).md">SetPadValue</a></p>
+<tr id="row7375515151412"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p148821245194911"><a name="p148821245194911"></a><a name="p148821245194911"></a><a href="基础API/Memory矢量计算/数据搬运/GM与UB数据搬运/寄存器配置说明/SetPadValue(ISASI).md">SetPadValue</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p6689192111598"><a name="p6689192111598"></a><a name="p6689192111598"></a>设置DataCopyPad接口填充的数值。</p>
 </td>
@@ -1077,92 +1117,92 @@
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p14116577483"><a name="p14116577483"></a><a name="p14116577483"></a>根据输入的切分规则，将给定的两个输入张量做矩阵乘，输出至结果张量。将A和B两个输入矩阵乘法在一起，得到一个输出矩阵C。</p>
 </td>
 </tr>
-<tr id="row147451115151916"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p45523300491"><a name="p45523300491"></a><a name="p45523300491"></a><a href="基础API/矩阵计算（ISASI）/数据搬运/SetFixPipeConfig.md">SetFixPipeConfig</a></p>
+<tr id="row147451115151916"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p45523300491"><a name="p45523300491"></a><a name="p45523300491"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬出/寄存器配置说明/SetFixPipeConfig.md">SetFixPipeConfig</a></p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p17851154862112"><a name="p17851154862112"></a><a name="p17851154862112"></a><a href="基础API/Memory数据搬运/DataCopy/随路量化激活搬运.md">DataCopy</a>（CO1-&gt;GM、CO1-&gt;A1）过程中进行随路量化时，通过调用该接口设置量化流程中tensor量化参数。</p>
-</td>
-</tr>
-<tr id="row294174016209"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p65522030174916"><a name="p65522030174916"></a><a name="p65522030174916"></a><a href="基础API/矩阵计算（ISASI）/数据搬运/SetFixpipeNz2ndFlag.md">SetFixpipeNz2ndFlag</a></p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p2898124417263"><a name="p2898124417263"></a><a name="p2898124417263"></a><a href="基础API/Memory数据搬运/DataCopy/随路量化激活搬运.md">DataCopy</a>（CO1-&gt;GM、CO1-&gt;A1）过程中进行随路格式转换（NZ2ND）时，通过调用该接口设置NZ2ND相关配置。</p>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p17851154862112"><a name="p17851154862112"></a><a name="p17851154862112"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬出/L0C到GM数据搬运（DataCopy）.md">DataCopy</a>（CO1-&gt;GM、CO1-&gt;A1）过程中进行随路量化时，通过调用该接口设置量化流程中tensor量化参数。</p>
 </td>
 </tr>
-<tr id="row11129104162017"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p165521930144913"><a name="p165521930144913"></a><a name="p165521930144913"></a><a href="基础API/矩阵计算（ISASI）/数据搬运/SetFixpipePreQuantFlag.md">SetFixpipePreQuantFlag</a></p>
+<tr id="row294174016209"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p65522030174916"><a name="p65522030174916"></a><a name="p65522030174916"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬出/寄存器配置说明/SetFixpipeNz2ndFlag.md">SetFixpipeNz2ndFlag</a></p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p16332111515234"><a name="p16332111515234"></a><a name="p16332111515234"></a><a href="基础API/Memory数据搬运/DataCopy/随路量化激活搬运.md">DataCopy</a>（CO1-&gt;GM、CO1-&gt;A1）过程中进行随路量化时，通过调用该接口设置量化流程中scalar量化参数。</p>
-</td>
-</tr>
-<tr id="row19331114117200"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p278152219274"><a name="p278152219274"></a><a name="p278152219274"></a><a href="基础API/矩阵计算（ISASI）/数据搬运/SetFixPipeClipRelu.md">SetFixPipeClipRelu</a></p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p10787226279"><a name="p10787226279"></a><a name="p10787226279"></a><a href="基础API/Memory数据搬运/DataCopy/随路量化激活搬运.md">DataCopy</a>（CO1-&gt;GM）过程中进行随路量化后，通过调用该接口设置ClipRelu操作的最大值。</p>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p2898124417263"><a name="p2898124417263"></a><a name="p2898124417263"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬出/L0C到GM数据搬运（DataCopy）.md">DataCopy</a>（CO1-&gt;GM、CO1-&gt;A1）过程中进行随路格式转换（NZ2ND）时，通过调用该接口设置NZ2ND相关配置。</p>
 </td>
 </tr>
-<tr id="row0541441152019"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1674634112715"><a name="p1674634112715"></a><a name="p1674634112715"></a><a href="基础API/矩阵计算（ISASI）/数据搬运/SetFixPipeAddr.md">SetFixPipeAddr</a></p>
+<tr id="row11129104162017"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p165521930144913"><a name="p165521930144913"></a><a name="p165521930144913"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬出/寄存器配置说明/SetFixpipePreQuantFlag.md">SetFixpipePreQuantFlag</a></p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p71911024132712"><a name="p71911024132712"></a><a name="p71911024132712"></a><a href="基础API/Memory数据搬运/DataCopy/随路量化激活搬运.md">DataCopy</a>（CO1-&gt;GM）过程中进行随路量化后，通过调用该接口设置element-wise操作时LocalTensor的地址。</p>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p16332111515234"><a name="p16332111515234"></a><a name="p16332111515234"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬出/L0C到GM数据搬运（DataCopy）.md">DataCopy</a>（CO1-&gt;GM、CO1-&gt;A1）过程中进行随路量化时，通过调用该接口设置量化流程中scalar量化参数。</p>
 </td>
 </tr>
-<tr id="row08411461812"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1955143017499"><a name="p1955143017499"></a><a name="p1955143017499"></a><a href="基础API/矩阵计算（ISASI）/数据搬运/Fill.md">Fill</a></p>
+<tr id="row19331114117200"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p278152219274"><a name="p278152219274"></a><a name="p278152219274"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬出/寄存器配置说明/SetFixPipeClipRelu.md">SetFixPipeClipRelu</a></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p10787226279"><a name="p10787226279"></a><a name="p10787226279"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬出/L0C到GM数据搬运（DataCopy）.md">DataCopy</a>（CO1-&gt;GM）过程中进行随路量化后，通过调用该接口设置ClipRelu操作的最大值。</p>
+</td>
+</tr>
+<tr id="row0541441152019"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1674634112715"><a name="p1674634112715"></a><a name="p1674634112715"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬出/寄存器配置说明/SetFixPipeAddr.md">SetFixPipeAddr</a></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p71911024132712"><a name="p71911024132712"></a><a name="p71911024132712"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬出/L0C到GM数据搬运（DataCopy）.md">DataCopy</a>（CO1-&gt;GM）过程中进行随路量化后，通过调用该接口设置element-wise操作时LocalTensor的地址。</p>
+</td>
+</tr>
+<tr id="row08411461812"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1955143017499"><a name="p1955143017499"></a><a name="p1955143017499"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬入/辅助配置接口/Fill.md">Fill</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p1489215634815"><a name="p1489215634815"></a><a name="p1489215634815"></a>初始化LocalTensor（TPosition为A1/A2/B1/B2）为某一个具体的数值。</p>
 </td>
 </tr>
-<tr id="row696114470313"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p455133074917"><a name="p455133074917"></a><a name="p455133074917"></a><a href="基础API/矩阵计算（ISASI）/数据搬运/LoadData/LoadData.md">LoadData</a></p>
+<tr id="row696114470313"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p455133074917"><a name="p455133074917"></a><a name="p455133074917"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L0-Buffer/矩阵数据搬入至L0-Buffer.md">LoadData</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p3448142813492"><a name="p3448142813492"></a><a name="p3448142813492"></a>LoadData包括Load2D和Load3D数据加载功能。</p>
 </td>
 </tr>
-<tr id="row8181746635"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p20551143074919"><a name="p20551143074919"></a><a name="p20551143074919"></a><a href="基础API/矩阵计算（ISASI）/数据搬运/LoadDataWithTranspose.md">LoadDataWithTranspose</a></p>
+<tr id="row8181746635"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p20551143074919"><a name="p20551143074919"></a><a name="p20551143074919"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L0-Buffer/LoadDataWithTranspose.md">LoadDataWithTranspose</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p124281245667"><a name="p124281245667"></a><a name="p124281245667"></a>该接口实现带转置的2D格式数据从A1/B1到A2/B2的加载。</p>
 </td>
 </tr>
-<tr id="row194791339636"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p12211416165318"><a name="p12211416165318"></a><a name="p12211416165318"></a><a href="基础API/矩阵计算（ISASI）/数据搬运/SetAippFunctions.md">SetAippFunctions</a></p>
+<tr id="row194791339636"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p12211416165318"><a name="p12211416165318"></a><a name="p12211416165318"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬入/辅助配置接口/SetAippFunctions.md">SetAippFunctions</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p192129164538"><a name="p192129164538"></a><a name="p192129164538"></a>设置图片预处理（AIPP，AI core pre-process）相关参数。</p>
 </td>
 </tr>
-<tr id="row1948463715319"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1061103015541"><a name="p1061103015541"></a><a name="p1061103015541"></a><a href="基础API/矩阵计算（ISASI）/数据搬运/LoadImageToLocal.md">LoadImageToLocal</a></p>
+<tr id="row1948463715319"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1061103015541"><a name="p1061103015541"></a><a name="p1061103015541"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬入/辅助配置接口/LoadImageToLocal.md">LoadImageToLocal</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p792614613548"><a name="p792614613548"></a><a name="p792614613548"></a>将图像数据从GM搬运到A1/B1。 搬运过程中可以完成图像预处理操作：包括图像翻转，改变图像尺寸（抠图，裁边，缩放，伸展），以及色域转换，类型转换等。</p>
 </td>
 </tr>
-<tr id="row0248535339"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p16995181110545"><a name="p16995181110545"></a><a name="p16995181110545"></a><a href="基础API/矩阵计算（ISASI）/数据搬运/LoadUnzipIndex.md">LoadUnZipIndex</a></p>
+<tr id="row0248535339"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p16995181110545"><a name="p16995181110545"></a><a name="p16995181110545"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬入/辅助配置接口/LoadUnzipIndex.md">LoadUnZipIndex</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p20995111113541"><a name="p20995111113541"></a><a name="p20995111113541"></a>加载GM上的压缩索引表到内部寄存器。</p>
 </td>
 </tr>
-<tr id="row132838331033"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1434981445411"><a name="p1434981445411"></a><a name="p1434981445411"></a><a href="基础API/矩阵计算（ISASI）/数据搬运/LoadDataUnzip.md">LoadDataUnzip</a></p>
+<tr id="row132838331033"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1434981445411"><a name="p1434981445411"></a><a name="p1434981445411"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬入/辅助配置接口/LoadDataUnzip.md">LoadDataUnzip</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p2349121415547"><a name="p2349121415547"></a><a name="p2349121415547"></a>将GM上的数据解压并搬运到A1/B1/B2上。</p>
 </td>
 </tr>
-<tr id="row7838730733"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1418115368566"><a name="p1418115368566"></a><a name="p1418115368566"></a><a href="基础API/矩阵计算（ISASI）/数据搬运/LoadDataWithSparse.md">LoadDataWithSparse</a></p>
+<tr id="row7838730733"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1418115368566"><a name="p1418115368566"></a><a name="p1418115368566"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L0-Buffer/LoadDataWithSparse.md">LoadDataWithSparse</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p7263112805617"><a name="p7263112805617"></a><a name="p7263112805617"></a>用于搬运存放在B1里的512B的稠密权重矩阵到B2里，同时读取128B的索引矩阵用于稠密矩阵的稀疏化。</p>
 </td>
 </tr>
-<tr id="row66591928736"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1552163012493"><a name="p1552163012493"></a><a name="p1552163012493"></a><a href="基础API/矩阵计算（ISASI）/数据搬运/SetFmatrix.md">SetFmatrix</a></p>
+<tr id="row66591928736"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1552163012493"><a name="p1552163012493"></a><a name="p1552163012493"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬入/辅助配置接口/SetFmatrix.md">SetFmatrix</a></p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p1365632015497"><a name="p1365632015497"></a><a name="p1365632015497"></a>用于调用<a href="基础API/矩阵计算（ISASI）/数据搬运/LoadData/LoadData.md">Load3Dv1/Load3Dv2</a>时设置FeatureMap的属性描述。</p>
-</td>
-</tr>
-<tr id="row07692515218"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p055233018498"><a name="p055233018498"></a><a name="p055233018498"></a><a href="基础API/矩阵计算（ISASI）/数据搬运/SetLoadDataBoundary.md">SetLoadDataBoundary</a></p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p37801058115614"><a name="p37801058115614"></a><a name="p37801058115614"></a>设置<a href="基础API/矩阵计算（ISASI）/数据搬运/LoadData/LoadData.md">Load3D</a>时A1/B1边界值。</p>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p1365632015497"><a name="p1365632015497"></a><a name="p1365632015497"></a>用于调用<a href="基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L0-Buffer/Load3D.md">Load3Dv1/Load3Dv2</a>时设置FeatureMap的属性描述。</p>
 </td>
 </tr>
-<tr id="row3787671224"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1155273074915"><a name="p1155273074915"></a><a name="p1155273074915"></a><a href="基础API/矩阵计算（ISASI）/数据搬运/SetLoadDataRepeat.md">SetLoadDataRepeat</a></p>
+<tr id="row07692515218"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p055233018498"><a name="p055233018498"></a><a name="p055233018498"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬入/辅助配置接口/SetLoadDataBoundary.md">SetLoadDataBoundary</a></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p37801058115614"><a name="p37801058115614"></a><a name="p37801058115614"></a>设置<a href="基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L0-Buffer/Load3D.md">Load3D</a>时A1/B1边界值。</p>
+</td>
+</tr>
+<tr id="row3787671224"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1155273074915"><a name="p1155273074915"></a><a name="p1155273074915"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬入/辅助配置接口/SetLoadDataRepeat.md">SetLoadDataRepeat</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p532619442559"><a name="p532619442559"></a><a name="p532619442559"></a>用于设置Load3Dv2接口的repeat参数。设置repeat参数后，可以通过调用一次Load3Dv2接口完成多个迭代的数据搬运。</p>
 </td>
 </tr>
-<tr id="row4662691428"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p18552183094913"><a name="p18552183094913"></a><a name="p18552183094913"></a><a href="基础API/矩阵计算（ISASI）/数据搬运/SetLoadDataPaddingValue.md">SetLoadDataPaddingValue</a></p>
+<tr id="row4662691428"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p18552183094913"><a name="p18552183094913"></a><a name="p18552183094913"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬入/辅助配置接口/SetLoadDataPaddingValue.md">SetLoadDataPaddingValue</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p53183549554"><a name="p53183549554"></a><a name="p53183549554"></a>设置padValue，用于Load3Dv1/Load3Dv2。</p>
 </td>
 </tr>
-<tr id="row165019119218"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p12552123034913"><a name="p12552123034913"></a><a name="p12552123034913"></a><a href="基础API/矩阵计算（ISASI）/数据搬运/Fixpipe.md">Fixpipe</a></p>
+<tr id="row165019119218"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p12552123034913"><a name="p12552123034913"></a><a name="p12552123034913"></a><a href="基础API/矩阵计算（ISASI）/矩阵计算的搬出/L0C到GM数据搬运（DataCopy）.md">Fixpipe</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p7194151162615"><a name="p7194151162615"></a><a name="p7194151162615"></a>矩阵计算完成后，对结果进行处理，例如对计算结果进行量化操作，并把数据从CO1搬迁到Global Memory中。</p>
 </td>
@@ -1313,7 +1353,7 @@
 
 ## 高阶API
 
-**表 14**  数学计算API列表
+**表 13**  数学计算API列表
 
 | 接口名 | 功能描述 |
 | --- | --- |
@@ -1367,7 +1407,7 @@
 | [BitwiseXor](高阶API/数学计算/BitwiseXor接口/BitwiseXor.md) | 逐比特对两个输入进行异或操作。 |
 | [Where](高阶API/数学计算/Where接口/Where.md) | 根据指定的条件，从两个源操作数中选择元素，生成目标操作数。 |
 
-**表 15**  量化操作API列表
+**表 14**  量化操作API列表
 
 | 接口名 | 功能描述 |
 | --- | --- |
@@ -1378,7 +1418,7 @@
 | [Quantize](高阶API/量化操作/Quantize.md) | 按元素做量化计算，比如将half/float数据类型量化为int8_t数据类型。 |
 | [AscendQuant](高阶API/量化操作/AscendQuant.md) | 按元素做量化计算，比如将half/float数据类型量化为int8_t数据类型。 |
 
-**表 16**  归一化操作API列表
+**表 15**  归一化操作API列表
 
 | 接口名 | 功能描述 |
 | --- | --- |
@@ -1393,7 +1433,7 @@
 | [WelfordUpdate](高阶API/归一化操作/WelfordUpdate.md) | 实现Welford算法的前处理。 |
 | [WelfordFinalize](高阶API/归一化操作/WelfordFinalize.md) | 实现Welford算法的后处理。 |
 
-**表 17**  激活函数API列表
+**表 16**  激活函数API列表
 
 | 接口名 | 功能描述 |
 | --- | --- |
@@ -1416,7 +1456,7 @@
 | [SwiGLU](高阶API/激活函数/SwiGLU接口/SwiGLU.md) | 采用Swish作为激活函数的GLU变体。 |
 | [Swish](高阶API/激活函数/Swish接口/Swish.md) | 神经网络中的Swish激活函数。 |
 
-**表 18**  归约操作API列表
+**表 17**  归约操作API列表
 
 | 接口名 | 功能描述 |
 | --- | --- |
@@ -1431,7 +1471,7 @@
 | [ReduceAll](高阶API/归约操作/ReduceAll接口/ReduceAll.md) | 对一个多维向量在指定的维度求逻辑与。 |
 | [ReduceProd](高阶API/归约操作/ReduceProd接口/ReduceProd.md) | 对一个多维向量在指定的维度求积。 |
 
-**表 19**  排序操作API列表
+**表 18**  排序操作API列表
 
 | 接口名 | 功能描述 |
 | --- | --- |
@@ -1441,14 +1481,14 @@
 | [Sort](高阶API/排序操作/Sort.md) | 排序函数，按照数值大小进行降序排序。 |
 | [MrgSort](高阶API/排序操作/MrgSort-93.md) | 将已经排好序的最多4条队列，合并排列成1条队列，结果按照score域由大到小排序。 |
 
-**表 20**  数据过滤API列表
+**表 19**  数据过滤API列表
 
 | 接口名 | 功能描述 |
 | --- | --- |
 | [Select](高阶API/数据过滤/Select-95.md) | 给定两个源操作数src0和src1，根据maskTensor相应位置的值（非bit位）选取元素，得到目的操作数dst。 |
 | [DropOut](高阶API/数据过滤/DropOut.md) | 提供根据MaskTensor对源操作数进行过滤的功能，得到目的操作数。 |
 
-**表 21**  张量变换API列表
+**表 20**  张量变换API列表
 
 | 接口名 | 功能描述 |
 | --- | --- |
@@ -1459,25 +1499,25 @@
 | [UnPad](高阶API/张量变换/UnPad.md) | 对height * width的二维Tensor在width方向上进行unpad。 |
 | [Fill](高阶API/张量变换/Fill-97.md) | 将Global Memory上的数据初始化为指定值。 |
 
-**表 22**  索引计算API列表
+**表 21**  索引计算API列表
 
 | 接口名 | 功能描述 |
 | --- | --- |
 | [Arange](高阶API/索引计算/Arange-94.md) | 给定起始值，等差值和长度，返回一个等差数列。 |
 
-**表 23**  矩阵计算API列表
+**表 22**  矩阵计算API列表
 
 | 接口名 | 功能描述 |
 | --- | --- |
 | [Matmul](高阶API/矩阵计算/Matmul-Kernel侧接口/Matmul-Kernel侧接口.md) | Matmul矩阵乘法的运算。 |
 
-**表 24**  HCCL通信类API列表
+**表 23**  HCCL通信类API列表
 
 | 接口名 | 功能描述 |
 | --- | --- |
 | [HCCL通信类](高阶API/HCCL通信类/HCCL通信类.md) | 在AI Core侧编排集合通信任务。 |
 
-**表 25**  卷积计算API列表
+**表 24**  卷积计算API列表
 
 | 接口名 | 功能描述 |
 | --- | --- |
@@ -1485,7 +1525,7 @@
 | [Conv3DBackpropInput](高阶API/卷积计算/Conv3DBackpropInput/Conv3DBackpropInput.md) | 卷积的反向运算，求解特征矩阵的反向传播误差。 |
 | [Conv3DBackpropFilter](高阶API/卷积计算/Conv3DBackpropFilter/Conv3DBackpropFilter.md) | 卷积的反向运算，求解权重的反向传播误差。 |
 
-**表 26**  随机函数API列表
+**表 25**  随机函数API列表
 
 | 接口名 | 功能描述 |
 | --- | --- |
