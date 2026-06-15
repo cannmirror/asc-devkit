@@ -26,15 +26,15 @@
 ## 样例描述
 
 - 样例功能：  
-  Histogram样例对固定大小的输入字节流进行统计，统计各个字节数值（0-255）出现的频率。输入数据的Shape为 `294912` 。
+  Histogram样例对固定大小的输入字节流进行统计，统计各个字节数值（0-255）出现的频率。输入数据的shape为[294912]。
 
 - 样例规格：
   <table>
   <tr><td align="center">样例类型(OpType)</td><td colspan="4" align="center">histogram</td></tr>
   <tr><td rowspan="2" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">input</td><td align="center">294912</td><td align="center">uint8</td><td align="center">ND</td></tr>
+  <tr><td align="center">input</td><td align="center">[294912]</td><td align="center">uint8</td><td align="center">ND</td></tr>
   <tr><td rowspan="2" align="center">样例输出</td></tr>
-  <tr><td align="center">actual_histogram</td><td align="center">256</td><td align="center">uint32</td><td align="center">ND</td></tr>
+  <tr><td align="center">actual_histogram</td><td align="center">[256]</td><td align="center">uint32</td><td align="center">ND</td></tr>
   </table>
 
 - 数据切分：

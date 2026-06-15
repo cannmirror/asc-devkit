@@ -11,7 +11,7 @@
 
 /* !
  * \file main.cpp
- * \brief
+ * \brief Runs and verifies the SIMT gather sample for separate compilation.
  */
 
 #include <iostream>

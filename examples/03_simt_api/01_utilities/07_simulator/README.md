@@ -32,7 +32,7 @@
   z = x + y
   ```
 
-  样例中`x`和`y`的shape为`48 * 256`，数据类型为`float`。`scripts/gen_data.py`用于生成输入数据和golden数据，样例执行后将结果写入`output/output.bin`，再通过`scripts/verify_result.py`完成结果校验。
+  样例中`x`和`y`的shape为`[48,256]`，数据类型为`float`。`scripts/gen_data.py`用于生成输入数据和golden数据，样例执行后将结果写入`output/output.bin`，再通过`scripts/verify_result.py`完成结果校验。
 
 - 样例规格
 
@@ -40,9 +40,9 @@
   <caption>表1：Add样例规格描述</caption>
   <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="4" align="center">Add</td></tr>
   <tr><td align="center">字段</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td rowspan="2" align="center">样例输入</td><td align="center">x</td><td align="center">[48, 256]</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">y</td><td align="center">[48, 256]</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">样例输出</td><td align="center">z</td><td align="center">[48, 256]</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td rowspan="2" align="center">样例输入</td><td align="center">x</td><td align="center">[48,256]</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">y</td><td align="center">[48,256]</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">样例输出</td><td align="center">z</td><td align="center">[48,256]</td><td align="center">float</td><td align="center">ND</td></tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_custom</td></tr>
   </table>
 

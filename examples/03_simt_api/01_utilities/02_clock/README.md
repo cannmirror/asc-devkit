@@ -69,7 +69,7 @@
   
       uint64_t end = clock();
       if (blockIdx.x == 0 && threadIdx.x == 0) {
-          printf("simt_gather execute cycle : %lu\n", end - start);
+          printf("%s execute cycle : %lu\n", "simt_gather", end - start);
       }
   }
   ```

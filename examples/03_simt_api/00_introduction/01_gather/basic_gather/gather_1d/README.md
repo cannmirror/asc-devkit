@@ -14,7 +14,7 @@
 
 ## 目录结构
 
-```
+```text
 ├── gather_1d
 │   ├── CMakeLists.txt         # cmake编译文件
 │   ├── gather_1d.asc          # SIMT实现一维gather调用样例
@@ -24,9 +24,9 @@
 ## 算子描述
 
 - 算子功能：  
-  gather_1d算子实现了从长度为100000的一维输入向量中，根据index中每个元素获取1个数据的功能。算子输出output第i个元素计算公式为：
+  gather_1d算子实现了从shape为[100000]的一维输入张量中，根据index中每个元素获取1个数据的功能。算子输出output第i个元素计算公式为：
 
-  ```
+  ```text
   output[i] = input[index[i]]
   ```
 
@@ -34,9 +34,9 @@
   <table>
   <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">gather_1d</td></tr>
   <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">input</td><td align="center">100000</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">index</td><td align="center">12288</td><td align="center">int32_t</td><td align="center">ND</td></tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">output</td><td align="center">12288</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">input</td><td align="center">[100000]</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">index</td><td align="center">[12288]</td><td align="center">int32_t</td><td align="center">ND</td></tr>
+  <tr><td rowspan="1" align="center">算子输出</td><td align="center">output</td><td align="center">[12288]</td><td align="center">float</td><td align="center">ND</td></tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">gather_1d_custom</td></tr>
   </table>
 

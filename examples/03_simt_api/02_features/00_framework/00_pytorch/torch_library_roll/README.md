@@ -27,7 +27,7 @@
 
   Roll算子对2维输入张量沿指定维度 `dims` 进行元素滚动，滚动步数为 `shifts`。超出边界的元素从另一侧绕回。
 
-  以 `input.shape=[4, 4]`、`shifts=1`、`dims=0` 为例，沿dim0（行方向）正向滚动1步的效果如下：
+  以 `input.shape=[4,4]`、`shifts=1`、`dims=0` 为例，沿dim0（行方向）正向滚动1步的效果如下：
 
   <p align="center">
     <img src="./figures/roll.png" width="50%">
@@ -44,11 +44,11 @@
   <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="4" align="center">RollCustom</td></tr>
   </tr>
   <tr><td rowspan="4" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">input</td><td align="center">[8, 2048]</td><td align="center">float32</td><td align="center">ND</td></tr>
+  <tr><td align="center">input</td><td align="center">[8,2048]</td><td align="center">float32</td><td align="center">ND</td></tr>
   <tr><td align="center">shifts</td><td align="center">[1]</td><td align="center">int32</td><td align="center">ND</td></tr>
   <tr><td align="center">dims</td><td align="center">[1]</td><td align="center">int32</td><td align="center">ND</td></tr>
   </tr>
-  <tr><td rowspan="1" align="center">样例输出</td><td align="center">output</td><td align="center">[8, 2048]</td><td align="center">float32</td><td align="center">ND</td></tr>
+  <tr><td rowspan="1" align="center">样例输出</td><td align="center">output</td><td align="center">[8,2048]</td><td align="center">float32</td><td align="center">ND</td></tr>
   </tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">roll_custom</td></tr>
   </table>
