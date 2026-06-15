@@ -9,7 +9,7 @@
 
 ## 功能说明
 
-在[asc_sync_block_wait](../sync/asc_sync_block_wait.md)和[asc_sync_block_arrive](../sync/asc_sync_block_arrive.md)之前使用，设置核间同步寄存器的基地址。需要在Host侧调用接口aclrtGetHardwareSyncAddr获取，并作为参数传入。
+在[asc_sync_block_wait](../同步控制/asc_sync_block_wait.md)和[asc_sync_block_arrive](../同步控制/asc_sync_block_arrive.md)之前使用，设置核间同步寄存器的基地址。需要在Host侧调用接口aclrtGetHardwareSyncAddr获取，并作为参数传入。
 
 ```cpp
 aclError aclrtGetHardwareSyncAddr(void **addr);
@@ -37,7 +37,7 @@ PIPE_S
 
 ## 约束说明
 
-- 在使用[asc_sync_block_wait](../sync/asc_sync_block_wait.md)和[asc_sync_block_arrive](../sync/asc_sync_block_arrive.md)之前必须使用本接口设置基地址。
+- 在使用[asc_sync_block_wait](../同步控制/asc_sync_block_wait.md)和[asc_sync_block_arrive](../同步控制/asc_sync_block_arrive.md)之前必须使用本接口设置基地址。
 
 ## 调用示例
 

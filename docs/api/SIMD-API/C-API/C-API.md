@@ -143,8 +143,8 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_set_l13d_size](矩阵数据搬运/asc_set_l13d_size.md)                                                                     | 设置[asc_copy_l12l0a](矩阵数据搬运/asc_copy_l12l0a/asc_copy_l12l0a_arch_2201.md)/[asc_copy_l12l0b](矩阵数据搬运/asc_copy_l12l0b/asc_copy_l12l0b_arch_2201.md)的3D格式搬运接口在L1 Buffer的边界值。 |
 | [asc_load_image_to_cbuf](矩阵数据搬运/asc_load_image_to_cbuf.md)                                                           | 将图像数据从Global Memory搬运到L1 Buffer。 |
 | [asc_copy_l12bt](矩阵数据搬运/asc_copy_l12bt)                                                                              | 将MMAD指令的Bias数据从L1 Buffer搬运到BiasTable Buffer中。 |
-| [asc_copy_l12fb_arch_2201](矩阵数据搬运/asc_copy_l12fb_arch_2201.md)                                                                              | 将数据从L1 Buffer搬运到Fixpipe Buffer中，Fixpipe Buffer用于存放量化参数。 |
-| [asc_copy_l12fb_arch_3510](矩阵数据搬运/asc_copy_l12fb_arch_3510.md)                                                                     | 将数据从L1 Buffer搬运到Fixpipe Buffer中，Fixpipe Buffer用于存放量化参数。 |
+| [asc_copy_l12fb_arch_2201](矩阵数据搬运/asc_copy_l12fb/asc_copy_l12fb_arch_2201.md)                                                                              | 将数据从L1 Buffer搬运到Fixpipe Buffer中，Fixpipe Buffer用于存放量化参数。 |
+| [asc_copy_l12fb_arch_3510](矩阵数据搬运/asc_copy_l12fb/asc_copy_l12fb_arch_3510.md)                                                                     | 将数据从L1 Buffer搬运到Fixpipe Buffer中，Fixpipe Buffer用于存放量化参数。 |
 | [asc_copy_l12l0a](矩阵数据搬运/asc_copy_l12l0a)                                                                            | 用于搬运存放在L1 Buffer里的512B大小的矩阵到L0A Buffer里。 |
 | <cann-filter npu_type = "950"> [asc_copy_l12ub](矩阵数据搬运/asc_copy_l12ub.md)                                            | 将数据从L1 Buffer搬运到Unified Buffer中。</cann-filter> |
 | [asc_copy_l12l0b](矩阵数据搬运/asc_copy_l12l0b)                                                                            | 用于搬运存放在L1 Buffer里的512B大小的矩阵到L0B Buffer里。 |

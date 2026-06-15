@@ -56,7 +56,7 @@ PIPE_MTE2
 
 - src的起始地址要求按照对应数据类型所占字节数对齐。
 - dst的起始地址要求32字节对齐。
-- 如果需要执行多条asc_copy_gm2ub_align指令，且asc_copy_gm2ub_align指令的目的地址存在重叠，需要插入同步指令（[asc_sync_notify](../../sync/asc_sync_notify.md)和[asc_sync_wait](../../sync/asc_sync_wait.md)），保证多个asc_copy_gm2ub_align指令的串行化，防止出现异常数据。
+- 如果需要执行多条asc_copy_gm2ub_align指令，且asc_copy_gm2ub_align指令的目的地址存在重叠，需要插入同步指令（[asc_sync_notify](../../同步控制/asc_sync_notify.md)和[asc_sync_wait](../../同步控制/asc_sync_wait.md)），保证多个asc_copy_gm2ub_align指令的串行化，防止出现异常数据。
 - left_padding_num、right_padding_num的字节数均不能超过32Bytes。
 
 ## 调用示例
