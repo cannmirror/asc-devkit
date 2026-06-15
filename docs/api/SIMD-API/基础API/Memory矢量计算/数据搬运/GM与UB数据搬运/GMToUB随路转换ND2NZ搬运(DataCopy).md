@@ -1,4 +1,4 @@
-# GM -> UB随路转换ND2NZ搬运(DataCopy)<a name="ZH-CN_TOPIC_0000002349187356"></a>
+# GMToUB随路转换ND2NZ搬运(DataCopy)<a name="ZH-CN_TOPIC_0000002349187356"></a>
 
 ## 产品支持情况<a name="section1550532418810"></a>
 

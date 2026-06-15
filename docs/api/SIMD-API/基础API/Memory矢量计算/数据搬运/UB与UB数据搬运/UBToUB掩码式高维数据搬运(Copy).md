@@ -1,4 +1,4 @@
-# UB -> UB掩码式高维数据搬运\(Copy\)<a name="ZH-CN_TOPIC_0000002575088175"></a>
+# UBToUB掩码式高维数据搬运(Copy)<a name="ZH-CN_TOPIC_0000002575088175"></a>
 
 ## 产品支持情况<a name="zh-cn_topic_0000002567699435_section796754519912"></a>
 
