@@ -24,12 +24,12 @@
 #include "kernel_tensor.h"
 #include "kernel_log.h"
 #include "utils/debug/asc_assert.h"
+#include "utils/debug/asc_printf.h"
 
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
 #include <cstdint>
 #include "stub_def.h"
 #endif
-
 
 namespace AscendC {
 template <typename T>
@@ -48,13 +48,9 @@ __aicore__ inline void DumpAccChkPoint(const LocalTensor<T> &tensor,
 template <typename T>
 __aicore__ inline void DumpAccChkPoint(const GlobalTensor<T> &tensor,
     uint32_t index, uint32_t countOff, uint32_t dumpSize);
-#ifndef ASCENDC_CPU_DEBUG
-template <class... Args>
-__aicore__ inline void PRINTF(__gm__ const char* fmt, Args&&... args);
-template <class... Args>
-__aicore__ inline void printf(__gm__ const char* fmt, Args&&... args);
-#endif
 
+using __asc_aicore::printf;
+using __asc_aicore::PRINTF;
 }  // namespace AscendC
 
 #include "../../impl/basic_api/kernel_operator_dump_tensor_intf_impl.h"
