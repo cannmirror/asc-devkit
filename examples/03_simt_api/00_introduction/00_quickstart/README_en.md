@@ -8,4 +8,4 @@ Introduces the kernel function direct invocation method based on Ascend C SIMT p
 
 |  Directory Name                                                   |  Description                                              |
 | ------------------------------------------------------------ | ---------------------------------------------------- |
-| [hello_world_simt](./hello_world_simt/) | HelloWorld example kernel function direct invocation method based on Ascend C |
+| [hello_world_simt](./hello_world_simt/) | HelloWorld example kernel function direct invocation method based on Ascend C SIMT programming |

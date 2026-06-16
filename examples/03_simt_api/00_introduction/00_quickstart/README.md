@@ -8,4 +8,4 @@
 
 |  目录名称                                                   |  功能描述                                              |
 | ------------------------------------------------------------ | ---------------------------------------------------- |
-| [hello_world_simt](./hello_world_simt/) | 基于Ascend C的HelloWorld样例核函数直调方法 |
+| [hello_world_simt](./hello_world_simt/) | 基于Ascend C SIMT编程的HelloWorld样例核函数直调方法 |
