@@ -25,7 +25,7 @@
 
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
            (__NPU_ARCH__ == 3113))
-#include "kernel_macros.h"
+#include "../../../impl/basic_api/kernel_macros.h"
 #endif
 
 namespace AscendC {

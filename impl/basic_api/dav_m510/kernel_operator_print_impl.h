@@ -20,10 +20,10 @@
 #ifndef ASCENDC_MODULE_OPERATOR_PRINT_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_PRINT_IMPL_H
 
-#include "kernel_tpipe_impl.h"
+#include "../kernel_tpipe_impl.h"
 #include "kernel_operator_common_impl.h"
 #include "kernel_operator_data_copy_impl.h"
-#include "kernel_pop_stack_buffer.h"
+#include "../kernel_pop_stack_buffer.h"
 
 namespace AscendC {
 __BLOCK_LOCAL__ __inline__ __gm__ uint8_t* g_dumpWorkspaceReserved;

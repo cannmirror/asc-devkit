@@ -19,7 +19,7 @@
 #endif
 #ifndef ASCENDC_MODULE_OPERATOR_ATOMIC_INTERFACE_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_ATOMIC_INTERFACE_IMPL_H
-#include "kernel_tensor.h"
+#include "../../include/basic_api/kernel_tensor.h"
 
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3510))
 #if (__NPU_ARCH__ == 5102)

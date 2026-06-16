@@ -19,7 +19,7 @@
 #endif
 #ifndef ASCENDC_MODULE_UTILS_DUMP_CONSTANTS_H
 #define ASCENDC_MODULE_UTILS_DUMP_CONSTANTS_H
-#include "utils/kernel_utils_ceil_oom_que.h"
+#include "kernel_utils_ceil_oom_que.h"
 namespace AscendC {
 const int32_t ONE_DUMP_BACKUP_SIZE = 1024;
 const int32_t DUMP_UB_SIZE = 256;
@@ -34,7 +34,7 @@ const uint32_t BLOCK_INFO_MAGIC_POS = 4;
 const uint32_t BLOCK_INFO_RSV_POS = 5;
 const uint32_t BLOCK_INFO_DUMP_ADDR = 6;
 const uint32_t BLOCK_INFO_MAGIC_NUM = 0x5aa5bccd;
-// DUMP_META Pos ÒÔuint8_tÎªµ¥Î»¼ÆËãÎ»ÖÃ
+// DUMP_META Pos ï¿½ï¿½uint8_tÎªï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
 const uint32_t DUMP_META_TYPE_POS = 0;
 const uint32_t DUMP_META_LEN_POS = 4;
 const uint16_t DUMP_META_BLOCK_DIM_POS = 8;

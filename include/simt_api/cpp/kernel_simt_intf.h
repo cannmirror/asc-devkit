@@ -17,14 +17,14 @@
 
 #include "kernel_tensor.h"
 #include "kernel_tpipe.h"
-#include "kernel_utils.h"
+#include "../../../impl/basic_api/kernel_utils.h"
 #include "kernel_common.h"
 #include "kernel_operator_data_copy_intf.h"
 #include "kernel_operator_vec_binary_scalar_intf.h"
 #if (__NPU_ARCH__ == 5102)
-#include "dav_m510/kernel_operator_common_impl.h"
+#include "../../../impl/basic_api/dav_m510/kernel_operator_common_impl.h"
 #else
-#include "dav_3510/kernel_operator_common_impl.h"
+#include "../../../impl/basic_api/dav_3510/kernel_operator_common_impl.h"
 #endif
 
 #ifdef ASCENDC_CPU_DEBUG

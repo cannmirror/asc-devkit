@@ -15,7 +15,7 @@
 
 #ifndef ASCENDC_MODULE_OPERATOR_SCM_DATA_COPY_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_SCM_DATA_COPY_IMPL_H
-#include "dav_m510/kfc/kfc_comm_client.h"
+#include "kfc/kfc_comm_client.h"
 
 namespace AscendC {
 struct Gm2L1Params {

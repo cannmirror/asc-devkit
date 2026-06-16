@@ -21,7 +21,7 @@
 #ifndef ASCENDC_MODULE_REG_COMPUTE_INTERFACE_H
 #define ASCENDC_MODULE_REG_COMPUTE_INTERFACE_H
 
-#include "kernel_macros.h"
+#include "../../../impl/basic_api/kernel_macros.h"
 
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || \
     ((__NPU_ARCH__ == 3113))) || defined(__ASC_NPU_HOST__)

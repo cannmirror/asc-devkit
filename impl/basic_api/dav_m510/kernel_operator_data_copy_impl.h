@@ -17,8 +17,8 @@
 #define ASCENDC_MODULE_OPERATOR_DATA_COPY_IMPL_H
 #include "kernel_operator_vec_duplicate_impl.h"
 #include "kernel_operator_sync_impl.h"
-#include "kernel_pop_stack_buffer.h"
-#include "kernel_struct_unary.h"
+#include "../kernel_pop_stack_buffer.h"
+#include "../../../include/basic_api/kernel_struct_unary.h"
 #include "kernel_operator_vec_template_impl.h"
 #include "kernel_operator_vec_binary_scalar_impl.h"
 #include <utility>

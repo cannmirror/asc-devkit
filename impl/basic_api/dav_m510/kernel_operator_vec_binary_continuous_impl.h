@@ -15,7 +15,7 @@
 
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_BINARY_CONTINUOUS_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_BINARY_CONTINUOUS_IMPL_H
-#include "kernel_utils.h"
+#include "../kernel_utils.h"
 #include "kernel_operator_common_impl.h"
 
 namespace AscendC {
