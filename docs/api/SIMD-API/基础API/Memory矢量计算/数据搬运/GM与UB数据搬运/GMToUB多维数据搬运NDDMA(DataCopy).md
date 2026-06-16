@@ -1,4 +1,4 @@
-# GM -> UB多维数据搬运NDDMA(DataCopy)<a name="ZH-CN_TOPIC_0000002544407954"></a>
+# GMToUB多维数据搬运NDDMA(DataCopy)<a name="ZH-CN_TOPIC_0000002544407954"></a>
 
 ## 产品支持情况<a name="section1550532418810"></a>
 

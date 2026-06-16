@@ -1,4 +1,4 @@
-# UB -> UB连续数据搬运(DataCopy)<a name="ZH-CN_TOPIC_0000002382908021"></a>
+# UBToUB连续数据搬运(DataCopy)<a name="ZH-CN_TOPIC_0000002382908021"></a>
 
 ## 产品支持情况<a name="section1550532418810"></a>
 
