@@ -8,6 +8,4 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 add_subdirectory(aicpu)
-if(MC2_CLIENT_ENABLE_CCU)
-    add_subdirectory(ccu)
-endif()
+add_subdirectory(ccu)
