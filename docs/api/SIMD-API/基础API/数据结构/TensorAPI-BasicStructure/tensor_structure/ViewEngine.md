@@ -8,7 +8,7 @@
 
 ## 功能说明
 
-ViewEngine是Tensor API中的视图引擎，负责持有一个指针对象Iterator，通过Begin（）返回这段视图的起始位置。在LocalTensor中，ViewEngine和Layout一起组成一个tensor的视图。
+ViewEngine是Tensor API中的视图引擎，负责持有一个指针对象Iterator，通过Begin()返回这段视图的起始位置。在LocalTensor中，ViewEngine和Layout一起组成一个Tensor的视图。
 
 ```cpp
 LocalTensor<TensorAttribute<ViewEngine<Iterator>, LayoutType>>
@@ -73,11 +73,11 @@ LocalTensor<TensorAttribute<ViewEngine<Iterator>, LayoutType>>
 
 - 返回值说明
 
-- 返回构造时保存的`storage`，即当前视图的起始指针/迭代器。
+- 返回构造时保存的storage，即当前视图的起始指针/迭代器。
 
 ## 约束说明
 
-传入的iterators必须是有效的随机访问迭代器，以确保能够正确访问和操作数据。
+传入的iterator对象必须是有效的随机访问迭代器，以确保能够正确访问和操作数据。
 
 ## 调用示例
 
@@ -85,7 +85,7 @@ LocalTensor<TensorAttribute<ViewEngine<Iterator>, LayoutType>>
   using namespace AscendC::Te;
 
   constexpr int32_t size = 256;
-  __gm__ float data[size];
+  __ubuf__ float data[size];
   auto ptr = MakeMemPtr(data);
 
   auto layout = MakeLayout(MakeShape(2, 2), MakeStride(2, 1));

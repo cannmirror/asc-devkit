@@ -10,7 +10,7 @@
 
 需要包含的头文件为：#include "tensor_api/tensor.h"。
 
-Cosize表示Layout陪域的大小，陪域（codomain）的跨度大小，即逻辑坐标经Layout映射为一维索引后，所有可能索引值所处区间的长度。Cosize和Coshape在扁平与嵌套Layout场景下等价。
+Cosize表示Layout陪域（codomain）的跨度大小，即逻辑坐标经Layout映射为一维索引后，所有可能索引值所处区间的长度。Cosize和Coshape在扁平与嵌套Layout场景下等价。
 
 ## 函数原型
 
@@ -21,7 +21,7 @@ __aicore__ inline constexpr auto Cosize(const Layout<Shape, Stride>& layout)
 
 ## 参数说明
 
-**表 1** 模板参数说明
+**表1** 模板参数说明
 
   | 参数名 | 类型 | 描述 |
 |--------|------|------|
@@ -29,7 +29,7 @@ __aicore__ inline constexpr auto Cosize(const Layout<Shape, Stride>& layout)
 | Stride | 输入 | 组成Layout的stride的类型，即元组（tuple）类型。 |
 | Is... | size_t | 索引序列，可通过模板参数Is...指定子维度范围。用于编译时递归选择shape和stride的子结构。 |
 
-**表 2** 参数说明
+**表2** 参数说明
 
   | 参数名 | 类型 | 描述 |
 |--------|------|------|
@@ -48,7 +48,7 @@ Is...必须为有效范围内的索引。
 ```cpp
 using namespace AscendC::Te;
 
-// 示例1：扁平 Layout，Cosize = Coshape
+// 示例1：扁平Layout，Cosize = Coshape
 auto layout = MakeLayout(MakeShape(10, 20), MakeStride(1, 100));
 auto cosize = Cosize(layout);
 // Coshape = (10-1)*1 + (20-1)*100 + 1 = 1910

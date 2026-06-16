@@ -100,7 +100,7 @@ struct LocalTensor<TensorAttribute<EngineType, LayoutType>>
 
 Tensor相关类型本身为类型定义，不直接返回值。
 
-通过MakeTensor（...）构造张量时：若存放Global Memory（外部存储）的全局数据，则返回GlobalTensor，存放AI Core中Local Memory（内部存储）的数据返回LocalTensor。
+通过MakeTensor构造张量时：若存放Global Memory（外部存储）的全局数据，则返回GlobalTensor，存放AI Core中Local Memory（内部存储）的数据则返回LocalTensor。
 
 ## 成员函数
 
@@ -273,7 +273,7 @@ Tensor相关类型本身为类型定义，不直接返回值。
   | coord | 输入 | 多维逻辑坐标。 |
 
 - 约束说明
-    仅__gm__, __ubuf__地址空间支持使用该接口，AICore上的地址空间（__ca__，__cb__，__cc__，__cbuf__）不具备标量直接访问能力。
+    仅\_\_gm_\_、 \_\_ubuf_\_地址空间支持使用该接口，AI Core上的地址空间（\_\_ca_\_、\_\_cb_\_、\_\_cc_\_、\_\_cbuf_\_）不具备标量直接访问能力。
 
 - 返回值说明
 
@@ -341,7 +341,7 @@ Tensor相关类型本身为类型定义，不直接返回值。
 
 - 返回值说明
 
-    返回切片后的子张量对象。新张量的Engine指向切片起始位置，Layout由`MakeSliceLayout(coord, Layout(), info)`生成。
+    返回切片后的子张量对象。新张量的Engine指向切片起始位置，Layout由MakeSliceLayout(coord, Layout(), info)生成。
 
 ---
 
@@ -375,6 +375,7 @@ Tensor相关类型本身为类型定义，不直接返回值。
 
 ```cpp
 using namespace AscendC::Te;
+constexpr uint64_t gmAddr = 128;
 
 // 示例1：构造一个GM张量
 auto gmLayout = MakeLayout(MakeShape(128, 128), MakeStride(128, 1));

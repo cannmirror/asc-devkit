@@ -10,7 +10,7 @@
 
 需要包含的头文件为：#include "tensor_api/tensor.h"。
 
-MakeMemPtr用于构造带物理存储位置标记和数据类型信息的内存指针适配器HardwareMemPtr。支持的物理位置如[表](#支持的物理位置)所示。
+MakeMemPtr用于构造带物理存储位置标记和数据类型信息的内存指针适配器HardwareMemPtr，支持的物理位置如下表所示。
 
 MakeMemPtr提供三种调用形式：
 
@@ -45,7 +45,7 @@ MakeMemPtr提供三种调用形式：
 
 ## 参数说明
 
-**表 1** 支持的物理位置
+**表1** 支持的物理位置
 
 | Location | 说明 | 用途 |
 | :--- | :--- | :--- |
@@ -60,7 +60,7 @@ MakeMemPtr提供三种调用形式：
 | Location::BIAS | BiasTable Buffer | 偏置表缓存，带偏置矩阵计算的偏置存放区 |
 | Location::FIXBUF | Fixpipe Buffer | Fixpipe输出缓存，L0C到GM/UB的中转区 |
 
-**表 2** 模板参数说明
+**表2** 模板参数说明
 
 | 参数名 | 类型 | 描述 |
 | :--- | :---: | :--- |
@@ -69,7 +69,7 @@ MakeMemPtr提供三种调用形式：
 | Addr | 输入 | 原始地址类型。 |
 | Iterator | 输入 | 迭代器类型或已有指针适配器类型。 |
 
-**表 3** 参数说明
+**表3** 参数说明
 
 | 参数名 | 类型 | 描述 |
 | :--- | :---: | :--- |
@@ -93,12 +93,15 @@ MakeMemPtr提供三种调用形式：
 
 ```cpp
 using namespace AscendC::Te;
-
+constexpr uint64_t gmOffset = 128;
+constexpr uint64_t l1Offset = 128;
+constexpr uint64_t l0aOffset = 128;
+constexpr uint64_t ubOffset = 128;
 // 1. 从原始地址构造：指定物理位置和数据类型
-auto gmPtr = MakeMemPtr<Location::GM, float>(gmBuf);
-auto l1Ptr = MakeMemPtr<Location::L1, float>(l1Buf);
-auto l0aPtr = MakeMemPtr<Location::L0A, half>(l0aBuf);
-auto ubPtr = MakeMemPtr<Location::UB, bfloat16_t>(ubBuf);
+auto gmPtr = MakeMemPtr<Location::GM, float>(gmOffset);
+auto l1Ptr = MakeMemPtr<Location::L1, float>(l1Offset);
+auto l0aPtr = MakeMemPtr<Location::L0A, half>(l0aOffset);
+auto ubPtr = MakeMemPtr<Location::UB, bfloat16_t>(ubOffset);
 
 // 2. 配合MakeTensor构造张量
 auto gmA = MakeTensor(gmPtr, MakeFrameLayout<NDExtLayoutPtn, LayoutTraitDefault<float>>(m, n));

@@ -21,7 +21,7 @@ __aicore__ inline constexpr decltype(auto) Slice(Tensor&& tensor, const Coord& c
 
 ## 参数说明
 
-**表 1** 模板参数说明
+**表1** 模板参数说明
 
 | 参数名 | 类型 | 描述 |
 |--------|------|------|
@@ -29,7 +29,7 @@ __aicore__ inline constexpr decltype(auto) Slice(Tensor&& tensor, const Coord& c
 | Coord | 输入 | 坐标类型，通常为Coord<...>元组类型。 |
 | Info | 输入 | 切片描述类型，可以为Shape类型或Layout类型。传入Shape时，表示按给定形状截取子张量；传入Layout时，表示按Layout中的Shape信息截取子张量并保持原有布局模式和Stride结构。 |
 
-**表 2** 参数说明
+**表2** 参数说明
 
 | 参数名 | 类型 | 描述 |
 |--------|------|------|
@@ -45,12 +45,13 @@ __aicore__ inline constexpr decltype(auto) Slice(Tensor&& tensor, const Coord& c
 
 - coord的tuple结构必须与当前Tensor的Layout.Shape()结构一致。
 - 当info为Shape时：info必须是二维Shape；当前Tensor的Layout必须为二维或四维。
-- 当info为Layout时，info的必须与当前Tensor的Layout的维度相同。
+- 当info为Layout时，info必须与当前Tensor的Layout的维度相同。
 
 ## 调用示例
 
 ```cpp
 using namespace AscendC::Te;
+constexpr uint64_t gmAddr = 128;
 
 // 示例1：按Shape切片
 auto layout1 = MakeLayout(MakeShape(10, 20), MakeStride(20, 1));

@@ -50,7 +50,7 @@ __aicore__ inline constexpr auto MakeLayout(const ShapeType& shape)
 
 ## 约束说明
 
-构造的Layout类型不含有LayoutPattern和LayoutTrait信息，需要通过[MakePatternLayout](MakePatternLayout.md)造带有完整类型信息的Layout对象。
+构造的Layout类型不含有LayoutPattern和LayoutTrait信息，需要通过[MakePatternLayout](MakePatternLayout.md)构造带有完整类型信息的Layout对象。
 
 ## 调用示例
 
@@ -62,7 +62,7 @@ auto layout1 = MakeLayout(MakeShape(8, 16), MakeStride(16, 1));
 
 // 示例2：仅指定Shape，自动推导连续布局的Stride
 auto layout2 = MakeLayout(MakeShape(8, 16, 32));
-// 推导得到 stride = (16 * 32, 32, 1) = (512, 32, 1)
+// 推导得到stride = (16 * 32, 32, 1) = (512, 32, 1)
 
 // 示例3：嵌套Shape自动推导嵌套Stride
 auto layout3 = MakeLayout(MakeShape(MakeShape(2, 4), MakeShape(8, 16)));

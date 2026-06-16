@@ -35,7 +35,7 @@ constexpr bool IsAttrTensorV = IsAttrTensor<Std::remove_cvref_t<T>>::value;
 
 ```cpp
 using namespace AscendC::Te;
-
+constexpr uint64_t gmAddr = 128;
 auto layout = MakeLayout(MakeShape(16, 16), MakeStride(16, 1));
 auto tensor = MakeTensor(MakeMemPtr<Location::GM, float>(gmAddr), layout);
 
