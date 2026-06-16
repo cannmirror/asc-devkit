@@ -99,7 +99,7 @@ __aicore__ inline void WaitFlag(int32_t eventID)
 
 - 在**使用TPipe和TQue编程方式**时，eventID需要通过[AllocEventID](../../资源管理/Pipe和Que框架/TPipe/AllocEventID.md)或者[FetchEventID](../../资源管理/Pipe和Que框架/TPipe/FetchEventID.md)来获取。
 
-- 在使用**静态Tensor编程方式**时，事件的类型和事件ID由开发者自行管理，建议使用事件ID0-5，事件ID6用于系统内部规划（当前未使用），事件ID7用于TPipe编程中的**自动同步**功能，目前暂不建议直接使用事件ID6-7。
+- 在使用**静态Tensor编程范式**时，事件的类型和事件ID由开发者自行管理，建议使用事件ID0-5，事件ID6用于系统内部规划（当前未使用），事件ID7用于TPipe编程中的**自动同步**功能，目前暂不建议直接使用事件ID6-7。
 
 - eventID的取值范围如下：
 <cann-filter npu-type="950">
