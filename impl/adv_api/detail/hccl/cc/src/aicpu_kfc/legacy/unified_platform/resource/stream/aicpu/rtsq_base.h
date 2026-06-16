@@ -35,22 +35,22 @@ public:
 
     virtual void Reset();
 
-    inline u32 GetSqDepth() const
+    inline u32 GetSqDepth()
     {
         return sqDepth_;
     }
 
-    inline u32 GetHead() const
+    inline u32 GetHead()
     {
         return sqHead_;
     }
 
-    inline u32 GetTail() const
+    inline u32 GetTail()
     {
         return sqTail_;
     }
 
-    inline u32 GetTaskId() const
+    inline u32 GetTaskId()
     {
         return taskId_;
     }
@@ -194,8 +194,8 @@ public:
         MACRO_THROW(NotSupportException, StringFormat("not supported."));
     }
 
-    u32 QuerySqHead() const;
-    u32 QuerySqTail() const;
+    u32 QuerySqHead();
+    u32 QuerySqTail();
 
     virtual bool IsRtsqQueueSpaceSufficient()
     {
@@ -234,9 +234,9 @@ protected:
 
     std::function<void()> checkOpExecStatusCallback_{nullptr};
 
-    u32 QuerySqDepth() const;
+    u32 QuerySqDepth();
 
-    std::string GetHwSqDescribe() const;
+    std::string GetHwSqDescribe();
 
     void ConfigSqTail(u32 value);
     void ConfigDisableToEnable(u32 value);
@@ -244,10 +244,10 @@ protected:
     HcclResult SetTaskIdBySqeId();
 
 private:
-    u64 QuerySqBaseAddr() const;
-    u32 QueryCqeStatus() const;
+    u64 QuerySqBaseAddr();
+    u32 QueryCqeStatus();
 
-    u32 QuerySqStatusByType(drvSqCqPropType_t givenType) const;
+    u32 QuerySqStatusByType(drvSqCqPropType_t givenType);
     void ConfigSqStatusByType(drvSqCqPropType_t givenType, u32 value);
 };
 
