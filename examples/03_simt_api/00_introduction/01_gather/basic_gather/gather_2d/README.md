@@ -14,7 +14,7 @@
 
 ## 目录结构介绍
 
-```
+```text
 ├── gather_2d
 │   ├── CMakeLists.txt            # cmake编译文件
 │   ├── gather_2d.asc             # SIMT实现二维gather调用样例
@@ -24,9 +24,9 @@
 ## 算子描述
 
 - 算子功能：  
-  gather_2d算子实现了从形状为100000 * 128的二维向量中获取指定索引的12288行数据的功能。算子输出output第i行数据计算公式为：
+  gather_2d算子实现了从shape为[100000,128]的二维向量中获取指定索引的12288行数据的功能。算子输出output第i行数据计算公式为：
   
-  ```
+  ```text
   output[i] = input[index[i]]
   ```
 
@@ -34,9 +34,9 @@
   <table>
   <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">gather_2d</td></tr>
   <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">input</td><td align="center">100000 * 128</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">index</td><td align="center">12288</td><td align="center">uint32_t</td><td align="center">ND</td></tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">output</td><td align="center">12288 * 128</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">input</td><td align="center">[100000,128]</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">index</td><td align="center">[12288]</td><td align="center">uint32_t</td><td align="center">ND</td></tr>
+  <tr><td rowspan="1" align="center">算子输出</td><td align="center">output</td><td align="center">[12288,128]</td><td align="center">float</td><td align="center">ND</td></tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">gather_2d_custom</td></tr>
   </table>
 
@@ -82,6 +82,6 @@
 
   执行结果如下，说明精度对比成功。
 
-  ```
+  ```text
   [Success] Case accuracy is verification passed.
   ```

@@ -11,7 +11,7 @@
 
 /* !
  * \file main.cpp
- * \brief
+ * \brief Runs and verifies the SIMT gather sample built as a dynamic library.
  */
 
 #include <iostream>

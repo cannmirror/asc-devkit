@@ -28,13 +28,13 @@
 
 本样例计算输入灰度图像的边缘幅值，并将满足阈值条件的边缘像素输出到紧凑列表edge_list。edge_list中每行包含边缘像素的x坐标、y坐标和边缘幅值（strength）。
 
-本样例使用 **Sobel 边缘检测算法** 计算边缘幅值。Sobel 是一种常用的图像边缘检测算法，用于根据像素周围的灰度变化计算该像素的边缘幅值。对于图像中坐标为(x, y)的非边界像素，Sobel 使用该像素周围的 3×3 邻域分别计算水平梯度 `Gx` 和垂直梯度 `Gy`：
+本样例使用 **Sobel 边缘检测算法** 计算边缘幅值。Sobel 是一种常用的图像边缘检测算法，用于根据像素周围的灰度变化计算该像素的边缘幅值。对于图像中坐标为(x, y)的非边界像素，Sobel 使用该像素周围的 3×3 邻域分别计算水平梯度`Gx`和垂直梯度`Gy`：
 
 <p align="center">
   <img src="./figures/sobel.png" width="45%">
 </p>
 
-`Gx` 和 `Gy` 的计算方式如下：
+`Gx`和`Gy`的计算方式如下：
 
 ```text
 Gx = -top_left + top_right - 2 * middle_left + 2 * middle_right - bottom_left + bottom_right
@@ -188,4 +188,3 @@ if (edge_mask & lanemask_eq()) {
   ```
   [Success] Case accuracy verification passed.
   ```
-

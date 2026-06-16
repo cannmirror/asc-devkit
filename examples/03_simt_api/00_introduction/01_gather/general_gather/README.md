@@ -27,7 +27,7 @@
 ### 1. gather算子
 
 - 算子功能：   
-  gather算子实现了从形状为M * N的二维输入张量input中获取指定索引的m行数据的功能，这m行的行索引由输入index指定。算子输出output第i行数据的计算公式为：
+  gather算子实现了从shape为[M,N]的二维输入张量input中获取指定索引的m行数据的功能，这m行的行索引由输入index指定。算子输出output第i行数据的计算公式为：
 
   ```text
   output[i] = input[index[i]]
@@ -37,9 +37,9 @@
   <table>
   <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">gather</td></tr>
   <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">input</td><td align="center">M, N</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">index</td><td align="center">m (m < M, m < 65535 * 2048)</td><td align="center">uint32_t</td><td align="center">ND</td></tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">output</td><td align="center">m, N</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">input</td><td align="center">[M,N]</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">index</td><td align="center">[m] (m < M, m <= 65535 * 2048)</td><td align="center">uint32_t</td><td align="center">ND</td></tr>
+  <tr><td rowspan="1" align="center">算子输出</td><td align="center">output</td><td align="center">[m,N]</td><td align="center">float</td><td align="center">ND</td></tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">gather_custom</td></tr>
   </table>
 
@@ -60,7 +60,7 @@
 - 算子功能：   
   gather_v2算子实现了从多维输入张量input中按照指定维度axis收集数据的功能，indices张量指定了要收集的索引位置。支持batch_dims批量处理模式，让不同的batch使用不同的索引集合。
 - 处理流程：   
-  例如输入张量input的shape为(2, 2, 3, 2)，索引张量indices的shape为(2, 2)：
+  例如输入张量input的shape为[2,2,3,2]，索引张量indices的shape为[2,2]：
 
   ```text
   input:
@@ -107,14 +107,14 @@
 
 - 算子规格：
   <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">gather_v2</td></tr>
-  <tr><td rowspan="5" align="center">算子输入</td><td align="center">name</td><td align="center">data type</td><td align="center">format</td><td align="center">description</td></tr>
-  <tr><td align="center">input</td><td align="center">float</td><td align="center">ND</td><td align="center">多维输入张量</td></tr>
-  <tr><td align="center">indices</td><td align="center">uint32_t / int32_t</td><td align="center">ND</td><td align="center">索引张量，指定收集位置</td></tr>
-  <tr><td align="center">axis</td><td align="center">int32_t</td><td align="center">-</td><td align="center">标量，用于指定收集维度</td></tr>
-  <tr><td align="center">batch_dims</td><td align="center">int32_t</td><td align="center">-</td><td align="center">标量，用于指定批处理维度</td></tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">output</td><td align="center">float</td><td align="center">ND</td><td align="center">收集后的输出张量</td></tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">gather_custom_v2</td></tr>
+  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="5" align="center">gather_v2</td></tr>
+  <tr><td rowspan="5" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">description</td></tr>
+  <tr><td align="center">input</td><td align="center">[128,20000,512]</td><td align="center">float</td><td align="center">ND</td><td align="center">多维输入张量</td></tr>
+  <tr><td align="center">indices</td><td align="center">[128,2048]</td><td align="center">uint32_t / int32_t</td><td align="center">ND</td><td align="center">索引张量，指定收集位置</td></tr>
+  <tr><td align="center">axis</td><td align="center">-</td><td align="center">int32_t</td><td align="center">-</td><td align="center">标量，用于指定收集维度</td></tr>
+  <tr><td align="center">batch_dims</td><td align="center">-</td><td align="center">int32_t</td><td align="center">-</td><td align="center">标量，用于指定批处理维度</td></tr>
+  <tr><td rowspan="1" align="center">算子输出</td><td align="center">output</td><td align="center">[128,2048,512]</td><td align="center">float</td><td align="center">ND</td><td align="center">收集后的输出张量</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">gather_custom_v2</td></tr>
   </table>
 - 约束说明：
   * indices：indices的前batch_dims维必须与input的前batch_dims维相同，即indices.shape[0:batch_dims] = input.shape[0:batch_dims]

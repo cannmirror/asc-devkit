@@ -11,7 +11,7 @@
 
 /* !
  * \file data_utils.h
- * \brief
+ * \brief Data file utilities for SIMT simulator samples.
  */
 
 #ifndef DATA_UTILS_H
