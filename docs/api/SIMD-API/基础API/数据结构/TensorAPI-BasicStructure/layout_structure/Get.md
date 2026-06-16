@@ -64,9 +64,9 @@ auto v0 = Get<0>(t);
 auto v1 = Get<1, 0>(t);
 // v1 = 2
 
-auto layout = MakeLayout(MakeShape(10, 20, 30));
+auto layout = MakeLayout(MakeShape(MakeShape(10, 20), MakeShape(20, 30)), MakeStride(MakeStride(10, 200), MakeStride(1, 4000)));
 
-// 提取第0和第1维度
-auto subLayout = Get<0, 1>(layout);
-// subLayout = MakeLayout(MakeShape(10, 20), ...对应的stride)
+// 提取第 1 维度
+auto subLayout = Get<1>(layout);
+// subLayout  = MakeLayout(MakeShape(20, 30), MakeStride(1, 4000));
 ```

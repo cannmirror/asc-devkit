@@ -29,7 +29,7 @@ constexpr bool IsIntegralConstantV = IsIntegralConstant<T>::value;
 
 ## 返回值说明
 
-若T是Std::Int<Value>类型，则返回true；否则返回`false`。
+若T是Std::Int<Value>类型，则返回true；否则返回false。
 
 ## 调用示例
 

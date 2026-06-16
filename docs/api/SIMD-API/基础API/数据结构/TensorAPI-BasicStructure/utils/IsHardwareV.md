@@ -29,7 +29,7 @@ constexpr bool IsHardwareV = IsHardware<T>::value;
 
 ## 返回值说明
 
-若T硬件位置类型，则返回true，否则返回false。
+若T是硬件位置类型，则返回true，否则返回false。
 
 ## 调用示例
 

@@ -51,6 +51,7 @@ __aicore__ inline constexpr decltype(auto) Slice(Tensor&& tensor, const Coord& c
 
 ```cpp
 using namespace AscendC::Te;
+constexpr uint64_t gmAddr = 128;
 
 // 示例1：按Shape切片
 auto layout1 = MakeLayout(MakeShape(10, 20), MakeStride(20, 1));
