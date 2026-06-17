@@ -56,6 +56,9 @@ void RunCopyWithPaths(const DstTensor& dst, const SrcTensor& src)
 __ca__ float* gBatchDstBase = nullptr;
 __cbuf__ float* gBatchSrcBase = nullptr;
 uint32_t gBatchCallIndex = 0;
+__ca__ fp4x2_e1m2_t* gBatchB4DstBase = nullptr;
+__cbuf__ fp4x2_e1m2_t* gBatchB4SrcBase = nullptr;
+uint32_t gBatchB4CallIndex = 0;
 
 } // namespace
 
@@ -122,6 +125,27 @@ void load_cbuf_to_ca_batch_offset_stub(
     ++gBatchCallIndex;
 }
 
+template <
+    typename T, int M_STEP, int K_STEP, int SRC_STRIDE, int DST_STRIDE, uint32_t SRC_BATCH_STRIDE,
+    uint32_t DST_BATCH_STRIDE, uint32_t DST_SPLIT_STRIDE, uint32_t SPLIT_NUM>
+void load_cbuf_to_ca_batch_b4_split_stub(
+    __ca__ T* dst, __cbuf__ T* src, uint16_t mStartPosition, uint16_t kStartPosition, uint8_t mStep, uint8_t kStep,
+    int16_t srcStride, uint16_t dstStride, bool transposed)
+{
+    const auto batchIdx = gBatchB4CallIndex / SPLIT_NUM;
+    const auto splitIdx = gBatchB4CallIndex % SPLIT_NUM;
+    EXPECT_EQ(dst, gBatchB4DstBase + batchIdx * DST_BATCH_STRIDE + splitIdx * DST_SPLIT_STRIDE);
+    EXPECT_EQ(src, gBatchB4SrcBase + batchIdx * SRC_BATCH_STRIDE);
+    EXPECT_EQ(mStartPosition, splitIdx * M_STEP);
+    EXPECT_EQ(kStartPosition, 0);
+    EXPECT_EQ(mStep, M_STEP);
+    EXPECT_EQ(kStep, K_STEP);
+    EXPECT_EQ(srcStride, SRC_STRIDE);
+    EXPECT_EQ(dstStride, DST_STRIDE);
+    EXPECT_TRUE(transposed);
+    ++gBatchB4CallIndex;
+}
+
 TEST_F(Tensor_Api_Cube_Copy_3510, CopyL12L0ABatchNz2Nz)
 {
     using namespace AscendC::Te;
@@ -181,6 +205,43 @@ TEST_F(Tensor_Api_Cube_Copy_3510, CopyL12L0ABatchZn2Nz)
     Copy(CopyAtom<CopyTraits<CopyL12L0A, CopyL12L0ATraitDefault>>{}, l0aTensor, l1Tensor);
 
     EXPECT_EQ(gBatchCallIndex, batch);
+    mockcpp::GlobalMockObject::verify();
+}
+
+TEST_F(Tensor_Api_Cube_Copy_3510, CopyL12L0ABatchZn2NzB8B4)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t batch = 2;
+    constexpr uint32_t m = 16;
+    constexpr uint32_t n = 128;
+    constexpr uint32_t srcBatchStride = 4096;
+    constexpr uint32_t dstBatchStride = 1024;
+    constexpr uint32_t dstSplitStride = 512;
+    constexpr uint32_t splitNum = 2;
+    __cbuf__ fp4x2_e1m2_t src[batch * srcBatchStride];
+    __ca__ fp4x2_e1m2_t dst[batch * dstBatchStride];
+
+    auto srcBatchLayout = MakeFrameLayout<ZNLayoutPtn, LayoutTraitFP4>(batch, m, n);
+    auto dstBatchLayout = MakeFrameLayout<NZLayoutPtn, LayoutTraitFP4>(batch, m, n);
+    auto l1Tensor = MakeTensorAt<Location::L1>(src, srcBatchLayout);
+    auto l0aTensor = MakeTensorAt<Location::L0A>(dst, dstBatchLayout);
+
+    gBatchB4DstBase = dst;
+    gBatchB4SrcBase = src;
+    gBatchB4CallIndex = 0;
+
+    MOCKER_CPP(
+        load_cbuf_to_ca_s4, void(
+                                __ca__ fp4x2_e1m2_t*, __cbuf__ fp4x2_e1m2_t*, uint16_t, uint16_t, uint8_t, uint8_t,
+                                int16_t, uint16_t, bool))
+        .times(batch * splitNum)
+        .will(invoke(&load_cbuf_to_ca_batch_b4_split_stub<
+                     fp4x2_e1m2_t, 4, 1, 8, 1, srcBatchStride, dstBatchStride, dstSplitStride, splitNum>));
+
+    Copy(CopyAtom<CopyTraits<CopyL12L0A, CopyL12L0ATraitDefault>>{}, l0aTensor, l1Tensor);
+
+    EXPECT_EQ(gBatchB4CallIndex, batch * splitNum);
     mockcpp::GlobalMockObject::verify();
 }
 
