@@ -32,10 +32,21 @@ public:
     template <const CopyL12L0BTrait& trait, typename T, typename U>
     __aicore__ inline static void Run(const T& dst, const U& src) {
         CheckTemplate<trait, T, U>();
-        LoadDataImpl<trait, T, U>(dst, src);
+        if constexpr (T::layoutType::depth == FIVE_DIM_DATA) {
+            BatchLoadDataImpl<trait, T, U>(dst, src);
+        } else if constexpr (T::layoutType::depth == FOUR_DIM_DATA) {
+            LoadDataImpl<trait, T, U>(dst, src);
+        } else {
+            static_assert(T::layoutType::depth == FOUR_DIM_DATA || T::layoutType::depth == FIVE_DIM_DATA,
+                "LoadDataL12L0BNZ2ZNB8B4 only supports the plain fractal layout "
+                "((col0,col1),(row0,row1)) or the batch layout (B,((col0,col1),(row0,row1))).");
+        }
     }
 
 private:
+    static constexpr uint8_t M_STEP_MIN_VAL_B4 = 4;
+    static constexpr uint8_t M_STEP_MIN_VAL_B8 = 2;
+
     template <const CopyL12L0BTrait& trait, typename T, typename U>
     __aicore__ inline static constexpr void CheckTemplate()
     {
@@ -43,48 +54,26 @@ private:
         CheckDataType::CheckL12L0BDataType<T, U>();
     }
 
-    template <const CopyL12L0BTrait& trait, typename T, typename U>
-    __aicore__ inline static void LoadDataImplB4(const T& dst, const U& src, uint16_t mStartPosition,
+    template <uint8_t mStepMinVal, typename T, typename U>
+    __aicore__ inline static void LoadDataImplSplit(const T& dst, const U& src, uint16_t mStartPosition,
         uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride)
     {
-        using DstType = typename T::elementType;
-        auto dstLayout = dst.Layout();
-        constexpr int SHIFT_M_STEP_B4 = 2;
-        constexpr int M_STEP_MIN_VAL_B4 = 4;
-        uint16_t nLoop = mStep >> SHIFT_M_STEP_B4;
-        mStep = M_STEP_MIN_VAL_B4;
+        uint16_t nLoop = mStep / mStepMinVal;
+        mStep = mStepMinVal;
         for (uint16_t idx = 0; idx < nLoop; ++idx) {
             auto sliceDst = dst(MakeCoord(MakeCoord(0, idx), MakeCoord(0, 0)));
             LoadCbufToCb::LoadData<true>(sliceDst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
-            mStartPosition += M_STEP_MIN_VAL_B4;
+            mStartPosition += mStepMinVal;
         }
     }
 
-    template <const CopyL12L0BTrait& trait, typename T, typename U>
-    __aicore__ inline static void LoadDataImplB8(const T& dst, const U& src, uint16_t mStartPosition,
-        uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride)
+    template <typename DstT, typename SrcT, typename DstLayoutT, typename SrcLayoutT>
+    __aicore__ inline static void LoadDataFractal(const DstT& dst, const SrcT& src,
+        const DstLayoutT& dstLayout, const SrcLayoutT& srcLayout)
     {
-        using DstType = typename T::elementType;
-        auto dstLayout = dst.Layout();
-        constexpr const int SHIFT_M_STEP_B8 = 1;
-        constexpr const int M_STEP_MIN_VAL_B8 = 2;
-        uint16_t nLoop = mStep >> SHIFT_M_STEP_B8;
-        mStep = M_STEP_MIN_VAL_B8;
-        for (uint16_t idx = 0; idx < nLoop; ++idx) {
-            auto sliceDst = dst(MakeCoord(MakeCoord(0, idx), MakeCoord(0, 0)));
-            LoadCbufToCb::LoadData<true>(sliceDst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
-            mStartPosition += M_STEP_MIN_VAL_B8;
-        }
-    }
-
-    template <const CopyL12L0BTrait& trait, typename T, typename U>
-    __aicore__ inline static void LoadDataImpl(const T& dst, const U& src)
-    {
-        using DstType = typename T::elementType;
-        auto dstLayout = dst.Layout();
-        auto srcLayout = src.Layout();
-        auto mStartPosition = 0;
-        auto kStartPosition = 0;
+        using DstType = typename DstT::elementType;
+        uint16_t mStartPosition = 0;
+        uint16_t kStartPosition = 0;
         auto n1 = GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(srcLayout) *
                   GetElement<AttrInfo::Shape, AttrInfo::Column, 0>(srcLayout) -
                   GetElement<AttrInfo::Shape, AttrInfo::Column, 1>(dstLayout) *
@@ -96,18 +85,36 @@ private:
         constexpr uint32_t STRIDE_UNIT = C0_ELEMENT<DstType> * FRACTAL_FIXED;
         auto srcStride = GetElement<AttrInfo::Stride, AttrInfo::Column, 1>(srcLayout) / STRIDE_UNIT;
         auto dstStride = GetElement<AttrInfo::Stride, AttrInfo::Row, 1>(dstLayout) / STRIDE_UNIT;
-        if constexpr (IsB4Type<DstType>) {
-            if (n1 < FRACTAL_FIXED) {
-                LoadCbufToCb::LoadData<true>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
-            } else {
-                LoadDataImplB4<trait, T, U>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
-            }
+        if (n1 < FRACTAL_FIXED) {
+            LoadCbufToCb::LoadData<true>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+        } else if constexpr (IsB4Type<DstType>) {
+            LoadDataImplSplit<M_STEP_MIN_VAL_B4>(
+                dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
         } else {
-            if (n1 < FRACTAL_FIXED) {
-                LoadCbufToCb::LoadData<true>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
-            } else {
-                LoadDataImplB8<trait, T, U>(dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
-            }
+            LoadDataImplSplit<M_STEP_MIN_VAL_B8>(
+                dst, src, mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
+        }
+    }
+
+    template <const CopyL12L0BTrait& trait, typename T, typename U>
+    __aicore__ inline static void LoadDataImpl(const T& dst, const U& src)
+    {
+        LoadDataFractal(dst, src, dst.Layout(), src.Layout());
+    }
+
+    template <const CopyL12L0BTrait& trait, typename T, typename U>
+    __aicore__ inline static void BatchLoadDataImpl(const T& dst, const U& src)
+    {
+        auto dstLayout = dst.Layout();
+        auto srcLayout = src.Layout();
+        auto dstNoBatchLayout = RemoveBatchDim(dstLayout);
+        auto srcNoBatchLayout = RemoveBatchDim(srcLayout);
+        auto batchNum = Get<0>(dstLayout.Shape());
+        for (uint32_t i = 0; i < batchNum; ++i) {
+            LoadDataFractal(
+                MakeSingleBatchSubTensor(dst, i),
+                MakeSingleBatchSubTensor(src, i),
+                dstNoBatchLayout, srcNoBatchLayout);
         }
     }
 };

@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2026 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2026 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #include <gtest/gtest.h>
 #include "tensor_api/stub/cce_stub.h"
@@ -18,15 +18,9 @@ protected:
     static void SetUpTestCase() {}
     static void TearDownTestCase() {}
 
-    void SetUp() override 
-    {
-        AscendC::SetGCoreType(1);
-    }
+    void SetUp() override { AscendC::SetGCoreType(1); }
 
-    void TearDown() override 
-    {
-        AscendC::SetGCoreType(0);
-    }
+    void TearDown() override { AscendC::SetGCoreType(0); }
 };
 
 namespace {
@@ -62,6 +56,9 @@ void RunCopyWithPaths(const DstTensor& dst, const SrcTensor& src)
 __ca__ float* gBatchDstBase = nullptr;
 __cbuf__ float* gBatchSrcBase = nullptr;
 uint32_t gBatchCallIndex = 0;
+__ca__ fp4x2_e1m2_t* gBatchB4DstBase = nullptr;
+__cbuf__ fp4x2_e1m2_t* gBatchB4SrcBase = nullptr;
+uint32_t gBatchB4CallIndex = 0;
 
 } // namespace
 
@@ -83,23 +80,21 @@ TEST_F(Tensor_Api_Cube_Copy_3510, CopyL12L0ARoutesToCubeArchCopy)
     EXPECT_EQ(dst[0], 0);
 }
 
-template<bool transpose, typename T, int M_STEP, int K_STEP>
-void load_cbuf_to_ca_stub(__ca__ T* dst, __cbuf__ T* src,
-                          uint16_t mStartPosition, uint16_t kStartPosition,
-                          uint8_t mStep, uint8_t kStep,
-                          int16_t srcStride, uint16_t dstStride,
-                          bool transposed) {
+template <bool transpose, typename T, int M_STEP, int K_STEP>
+void load_cbuf_to_ca_stub(
+    __ca__ T* dst, __cbuf__ T* src, uint16_t mStartPosition, uint16_t kStartPosition, uint8_t mStep, uint8_t kStep,
+    int16_t srcStride, uint16_t dstStride, bool transposed)
+{
     EXPECT_EQ(mStep, M_STEP);
     EXPECT_EQ(kStep, K_STEP);
     EXPECT_EQ(transposed, transpose);
 }
 
-template<typename T, int M_STEP, int K_STEP, int SRC_STRIDE, int DST_STRIDE>
-void load_cbuf_to_ca_batch_stub(__ca__ T* dst, __cbuf__ T* src,
-                                uint16_t mStartPosition, uint16_t kStartPosition,
-                                uint8_t mStep, uint8_t kStep,
-                                int16_t srcStride, uint16_t dstStride,
-                                bool transposed) {
+template <typename T, int M_STEP, int K_STEP, int SRC_STRIDE, int DST_STRIDE>
+void load_cbuf_to_ca_batch_stub(
+    __ca__ T* dst, __cbuf__ T* src, uint16_t mStartPosition, uint16_t kStartPosition, uint8_t mStep, uint8_t kStep,
+    int16_t srcStride, uint16_t dstStride, bool transposed)
+{
     EXPECT_EQ(dst, gBatchDstBase);
     EXPECT_EQ(src, gBatchSrcBase);
     EXPECT_EQ(mStartPosition, 0);
@@ -112,12 +107,11 @@ void load_cbuf_to_ca_batch_stub(__ca__ T* dst, __cbuf__ T* src,
     ++gBatchCallIndex;
 }
 
-template<typename T, int M_STEP, int K_STEP, int SRC_STRIDE, int DST_STRIDE, uint32_t BATCH_STRIDE, bool TRANSPOSE>
-void load_cbuf_to_ca_batch_offset_stub(__ca__ T* dst, __cbuf__ T* src,
-                                       uint16_t mStartPosition, uint16_t kStartPosition,
-                                       uint8_t mStep, uint8_t kStep,
-                                       int16_t srcStride, uint16_t dstStride,
-                                       bool transposed) {
+template <typename T, int M_STEP, int K_STEP, int SRC_STRIDE, int DST_STRIDE, uint32_t BATCH_STRIDE, bool TRANSPOSE>
+void load_cbuf_to_ca_batch_offset_stub(
+    __ca__ T* dst, __cbuf__ T* src, uint16_t mStartPosition, uint16_t kStartPosition, uint8_t mStep, uint8_t kStep,
+    int16_t srcStride, uint16_t dstStride, bool transposed)
+{
     const auto expectedOffset = gBatchCallIndex * BATCH_STRIDE;
     EXPECT_EQ(dst, gBatchDstBase + expectedOffset);
     EXPECT_EQ(src, gBatchSrcBase + expectedOffset);
@@ -129,6 +123,27 @@ void load_cbuf_to_ca_batch_offset_stub(__ca__ T* dst, __cbuf__ T* src,
     EXPECT_EQ(dstStride, DST_STRIDE);
     EXPECT_EQ(transposed, TRANSPOSE);
     ++gBatchCallIndex;
+}
+
+template <
+    typename T, int M_STEP, int K_STEP, int SRC_STRIDE, int DST_STRIDE, uint32_t SRC_BATCH_STRIDE,
+    uint32_t DST_BATCH_STRIDE, uint32_t DST_SPLIT_STRIDE, uint32_t SPLIT_NUM>
+void load_cbuf_to_ca_batch_b4_split_stub(
+    __ca__ T* dst, __cbuf__ T* src, uint16_t mStartPosition, uint16_t kStartPosition, uint8_t mStep, uint8_t kStep,
+    int16_t srcStride, uint16_t dstStride, bool transposed)
+{
+    const auto batchIdx = gBatchB4CallIndex / SPLIT_NUM;
+    const auto splitIdx = gBatchB4CallIndex % SPLIT_NUM;
+    EXPECT_EQ(dst, gBatchB4DstBase + batchIdx * DST_BATCH_STRIDE + splitIdx * DST_SPLIT_STRIDE);
+    EXPECT_EQ(src, gBatchB4SrcBase + batchIdx * SRC_BATCH_STRIDE);
+    EXPECT_EQ(mStartPosition, splitIdx * M_STEP);
+    EXPECT_EQ(kStartPosition, 0);
+    EXPECT_EQ(mStep, M_STEP);
+    EXPECT_EQ(kStep, K_STEP);
+    EXPECT_EQ(srcStride, SRC_STRIDE);
+    EXPECT_EQ(dstStride, DST_STRIDE);
+    EXPECT_TRUE(transposed);
+    ++gBatchB4CallIndex;
 }
 
 TEST_F(Tensor_Api_Cube_Copy_3510, CopyL12L0ABatchNz2Nz)
@@ -149,7 +164,8 @@ TEST_F(Tensor_Api_Cube_Copy_3510, CopyL12L0ABatchNz2Nz)
     gBatchSrcBase = src;
     gBatchCallIndex = 0;
 
-    MOCKER_CPP(load_cbuf_to_ca,
+    MOCKER_CPP(
+        load_cbuf_to_ca,
         void(__ca__ float*, __cbuf__ float*, uint16_t, uint16_t, uint8_t, uint8_t, int16_t, uint16_t, bool))
         .times(1)
         .will(invoke(&load_cbuf_to_ca_batch_stub<float, 8, 2, 8, 8>));
@@ -180,7 +196,8 @@ TEST_F(Tensor_Api_Cube_Copy_3510, CopyL12L0ABatchZn2Nz)
     gBatchSrcBase = src;
     gBatchCallIndex = 0;
 
-    MOCKER_CPP(load_cbuf_to_ca,
+    MOCKER_CPP(
+        load_cbuf_to_ca,
         void(__ca__ float*, __cbuf__ float*, uint16_t, uint16_t, uint8_t, uint8_t, int16_t, uint16_t, bool))
         .times(batch)
         .will(invoke(&load_cbuf_to_ca_batch_offset_stub<float, 2, 4, 2, 2, batchStride, true>));
@@ -191,48 +208,95 @@ TEST_F(Tensor_Api_Cube_Copy_3510, CopyL12L0ABatchZn2Nz)
     mockcpp::GlobalMockObject::verify();
 }
 
+TEST_F(Tensor_Api_Cube_Copy_3510, CopyL12L0ABatchZn2NzB8B4)
+{
+    using namespace AscendC::Te;
+
+    constexpr uint32_t batch = 2;
+    constexpr uint32_t m = 16;
+    constexpr uint32_t n = 128;
+    constexpr uint32_t srcBatchStride = 4096;
+    constexpr uint32_t dstBatchStride = 1024;
+    constexpr uint32_t dstSplitStride = 512;
+    constexpr uint32_t splitNum = 2;
+    __cbuf__ fp4x2_e1m2_t src[batch * srcBatchStride];
+    __ca__ fp4x2_e1m2_t dst[batch * dstBatchStride];
+
+    auto srcBatchLayout = MakeFrameLayout<ZNLayoutPtn, LayoutTraitFP4>(batch, m, n);
+    auto dstBatchLayout = MakeFrameLayout<NZLayoutPtn, LayoutTraitFP4>(batch, m, n);
+    auto l1Tensor = MakeTensorAt<Location::L1>(src, srcBatchLayout);
+    auto l0aTensor = MakeTensorAt<Location::L0A>(dst, dstBatchLayout);
+
+    gBatchB4DstBase = dst;
+    gBatchB4SrcBase = src;
+    gBatchB4CallIndex = 0;
+
+    MOCKER_CPP(
+        load_cbuf_to_ca_s4, void(
+                                __ca__ fp4x2_e1m2_t*, __cbuf__ fp4x2_e1m2_t*, uint16_t, uint16_t, uint8_t, uint8_t,
+                                int16_t, uint16_t, bool))
+        .times(batch * splitNum)
+        .will(invoke(&load_cbuf_to_ca_batch_b4_split_stub<
+                     fp4x2_e1m2_t, 4, 1, 8, 1, srcBatchStride, dstBatchStride, dstSplitStride, splitNum>));
+
+    Copy(CopyAtom<CopyTraits<CopyL12L0A, CopyL12L0ATraitDefault>>{}, l0aTensor, l1Tensor);
+
+    EXPECT_EQ(gBatchB4CallIndex, batch * splitNum);
+    mockcpp::GlobalMockObject::verify();
+}
+
 #define MAKE_LAYOUT_TYPE(fmt) fmt##LayoutPtn
 
-#define TEST_TENSOR_API_LOAD_DATA(TYPE, M, N, SRC_FORMAT, DST_FORMAT, SRC_POS, DST_POS, SRC_TAG, DST_TAG, TRANSPOSE) \
-TEST_F(Tensor_Api_Cube_Copy_3510, TestLoadData_##TYPE##M##N##SRC_FORMAT##DST_FORMAT##SRC_POS##DST_POS##SRC_TAG##DST_TAG##TRANSPOSE) { \
-    using namespace AscendC::Te; \
-    __##DST_TAG##__ TYPE dst[M * N] = {0}; \
-    auto dstIterator = MakeMemPtr<Location::DST_POS>(dst); \
-    auto dstMatrixLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(DST_FORMAT), LayoutTraitDefault<TYPE>>(M, N); \
-    auto dstTensor = MakeTensor(dstIterator, dstMatrixLayout); \
- \
-    __##SRC_TAG##__ TYPE src[M * N] = {0}; \
-    auto srcIterator = MakeMemPtr<Location::SRC_POS>(src); \
-    auto srcMatrixLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(SRC_FORMAT), LayoutTraitDefault<TYPE>>(M, N); \
-    auto srcTensor = MakeTensor(srcIterator, srcMatrixLayout); \
- \
-    constexpr int M_STEP = (sizeof(TYPE) == 1 && TRANSPOSE) ? 2 : 1; \
-    constexpr int K_STEP = (sizeof(TYPE) == 4 && TRANSPOSE) ? 2 : 1; \
-    MOCKER_CPP(load_cbuf_to_##DST_TAG, void(__##DST_TAG##__ TYPE*, __cbuf__ TYPE*, uint16_t, uint16_t, uint8_t, uint8_t, int16_t, uint16_t, bool)) \
-        .times(1) \
-        .will(invoke(&load_cbuf_to_##DST_TAG##_stub<TRANSPOSE, TYPE, M_STEP, K_STEP>)); \
-    Copy(CopyAtom<CopyTraits<CopyL12##DST_POS, CopyL12##DST_POS##TraitDefault>>{}, dstTensor, srcTensor); \
- \
-    mockcpp::GlobalMockObject::verify(); \
-}
+#define TEST_TENSOR_API_LOAD_DATA(TYPE, M, N, SRC_FORMAT, DST_FORMAT, SRC_POS, DST_POS, SRC_TAG, DST_TAG, TRANSPOSE)   \
+    TEST_F(                                                                                                            \
+        Tensor_Api_Cube_Copy_3510,                                                                                     \
+        TestLoadData_##TYPE##M##N##SRC_FORMAT##DST_FORMAT##SRC_POS##DST_POS##SRC_TAG##DST_TAG##TRANSPOSE)              \
+    {                                                                                                                  \
+        using namespace AscendC::Te;                                                                                   \
+        __##DST_TAG##__ TYPE dst[M * N] = {0};                                                                         \
+        auto dstIterator = MakeMemPtr<Location::DST_POS>(dst);                                                         \
+        auto dstMatrixLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(DST_FORMAT), LayoutTraitDefault<TYPE>>(M, N);          \
+        auto dstTensor = MakeTensor(dstIterator, dstMatrixLayout);                                                     \
+                                                                                                                       \
+        __##SRC_TAG##__ TYPE src[M * N] = {0};                                                                         \
+        auto srcIterator = MakeMemPtr<Location::SRC_POS>(src);                                                         \
+        auto srcMatrixLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(SRC_FORMAT), LayoutTraitDefault<TYPE>>(M, N);          \
+        auto srcTensor = MakeTensor(srcIterator, srcMatrixLayout);                                                     \
+                                                                                                                       \
+        constexpr int M_STEP = (sizeof(TYPE) == 1 && TRANSPOSE) ? 2 : 1;                                               \
+        constexpr int K_STEP = (sizeof(TYPE) == 4 && TRANSPOSE) ? 2 : 1;                                               \
+        MOCKER_CPP(                                                                                                    \
+            load_cbuf_to_##DST_TAG,                                                                                    \
+            void(                                                                                                      \
+                __##DST_TAG##__ TYPE*, __cbuf__ TYPE*, uint16_t, uint16_t, uint8_t, uint8_t, int16_t, uint16_t, bool)) \
+            .times(1)                                                                                                  \
+            .will(invoke(&load_cbuf_to_##DST_TAG##_stub<TRANSPOSE, TYPE, M_STEP, K_STEP>));                            \
+        Copy(CopyAtom<CopyTraits<CopyL12##DST_POS, CopyL12##DST_POS##TraitDefault>>{}, dstTensor, srcTensor);          \
+                                                                                                                       \
+        mockcpp::GlobalMockObject::verify();                                                                           \
+    }
 
-#define TEST_TENSOR_API_LOAD_S4_DATA(TYPE, M, N, SRC_FORMAT, DST_FORMAT, SRC_POS, DST_POS, SRC_TAG, DST_TAG, TRANSPOSE) \
-TEST_F(Tensor_Api_Cube_Copy_3510, TestLoadData_##TYPE##M##N##SRC_FORMAT##DST_FORMAT##SRC_POS##DST_POS##SRC_TAG##DST_TAG##TRANSPOSE) { \
-    using namespace AscendC::Te; \
-    __##DST_TAG##__ TYPE dst[M * N]; \
-    auto dstIterator = MakeMemPtr<Location::DST_POS>(dst); \
-    auto dstMatrixLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(DST_FORMAT), LayoutTraitFP4>(M, N); \
-    auto dstTensor = MakeTensor(dstIterator, dstMatrixLayout); \
- \
-    __##SRC_TAG##__ TYPE src[M * N]; \
-    auto srcIterator = MakeMemPtr<Location::SRC_POS>(src); \
-    auto srcMatrixLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(SRC_FORMAT), LayoutTraitFP4>(M, N); \
-    auto srcTensor = MakeTensor(srcIterator, srcMatrixLayout); \
- \
-    Copy(CopyAtom<CopyTraits<CopyL12##DST_POS, CopyL12##DST_POS##TraitDefault>>{}, dstTensor, srcTensor); \
- \
-    mockcpp::GlobalMockObject::verify(); \
-}
+#define TEST_TENSOR_API_LOAD_S4_DATA(                                                                         \
+    TYPE, M, N, SRC_FORMAT, DST_FORMAT, SRC_POS, DST_POS, SRC_TAG, DST_TAG, TRANSPOSE)                        \
+    TEST_F(                                                                                                   \
+        Tensor_Api_Cube_Copy_3510,                                                                            \
+        TestLoadData_##TYPE##M##N##SRC_FORMAT##DST_FORMAT##SRC_POS##DST_POS##SRC_TAG##DST_TAG##TRANSPOSE)     \
+    {                                                                                                         \
+        using namespace AscendC::Te;                                                                          \
+        __##DST_TAG##__ TYPE dst[M * N];                                                                      \
+        auto dstIterator = MakeMemPtr<Location::DST_POS>(dst);                                                \
+        auto dstMatrixLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(DST_FORMAT), LayoutTraitFP4>(M, N);           \
+        auto dstTensor = MakeTensor(dstIterator, dstMatrixLayout);                                            \
+                                                                                                              \
+        __##SRC_TAG##__ TYPE src[M * N];                                                                      \
+        auto srcIterator = MakeMemPtr<Location::SRC_POS>(src);                                                \
+        auto srcMatrixLayout = MakeFrameLayout<MAKE_LAYOUT_TYPE(SRC_FORMAT), LayoutTraitFP4>(M, N);           \
+        auto srcTensor = MakeTensor(srcIterator, srcMatrixLayout);                                            \
+                                                                                                              \
+        Copy(CopyAtom<CopyTraits<CopyL12##DST_POS, CopyL12##DST_POS##TraitDefault>>{}, dstTensor, srcTensor); \
+                                                                                                              \
+        mockcpp::GlobalMockObject::verify();                                                                  \
+    }
 
 // l1 -> l0A NZ2NZ非转置，覆盖所有TYPE
 TEST_TENSOR_API_LOAD_S4_DATA(fp4x2_e1m2_t, 16, 64, NZ, NZ, L1, L0A, cbuf, ca, false);
