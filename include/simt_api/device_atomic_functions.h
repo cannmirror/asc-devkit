@@ -20,6 +20,7 @@
 
 #if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 
+namespace __asc_simt_vf {
 #ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t asc_atomic_add(__ubuf__ int32_t *address, int32_t val);
 
@@ -164,6 +165,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t asc_atomic_xor(__gm__ uint32_t *a
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int64_t asc_atomic_xor(__gm__ int64_t *address, int64_t val);
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint64_t asc_atomic_xor(__gm__ uint64_t *address, uint64_t val);
+}
 
 #else
 #ifndef ASCENDC_CPU_DEBUG
