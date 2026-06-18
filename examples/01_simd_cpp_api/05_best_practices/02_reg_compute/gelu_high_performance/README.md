@@ -4,7 +4,7 @@
 
 本样例以Gelu计算为例，介绍RegBase的向量性能调优方法，样例展示使能VF融合和循环展开之后的性能收益情况。
 
-> **前置阅读**：[Gelu算子入门样例](https://gitcode.com/cann/asc-devkit/blob/master/examples/01_simd_cpp_api/00_introduction/04_vector_reg/gelu/README.md)，本样例基于入门样例进行性能优化，建议先阅读入门样例了解基础概念。
+> **前置阅读**：[Gelu算子入门样例](https://gitcode.com/cann/asc-devkit/blob/master/examples/01_simd_cpp_api/00_introduction/04_reg_compute/gelu/README.md)，本样例基于入门样例进行性能优化，建议先阅读入门样例了解基础概念。
 
 **优化路径**：
 - Case 0: Gelu未使能VF融合能力（基准）
@@ -279,7 +279,7 @@ __aicore__ inline void GeluCompute(
 | `LoadAlign` | 连续对齐搬运，将数据从 UB 加载到寄存器 | [连续对齐搬入](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Reg矢量计算/Reg数据搬运/连续对齐搬入.md) |
 | `StoreAlign` | 连续对齐搬运，将数据从寄存器写回 UB | [连续对齐搬出](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Reg矢量计算/Reg数据搬运/连续对齐搬出.md) |
 | `asc_vf_call` | VF 函数调用入口，在核函数中调用 VF 函数 | [asc_vf_call](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Reg矢量计算/asc_vf_call.md) |
-| `UpdateMask` | 根据剩余元素数更新掩码寄存器 | [MoveMask](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Reg矢量计算/MaskReg计算/MoveMask.md) |
+| `UpdateMask` | 根据剩余元素数更新掩码寄存器 | [UpdateMask](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Reg矢量计算/寄存器数据类型/MaskReg.md) |
 
 **原理解析**：
 
