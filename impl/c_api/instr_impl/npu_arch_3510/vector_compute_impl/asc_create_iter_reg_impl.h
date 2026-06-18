@@ -16,7 +16,7 @@
 #ifndef IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_VECTOR_COMPUTE_IMPL_ASC_CREATE_ITER_REG_IMPL_H
 #define IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_VECTOR_COMPUTE_IMPL_ASC_CREATE_ITER_REG_IMPL_H
 
-#include "instr_impl/npu_arch_3510/utils_impl.h"
+#include "../utils_impl.h"
 
 __simd_callee__ inline iter_reg asc_create_iter_reg_b32_impl(uint32_t offset)
 {

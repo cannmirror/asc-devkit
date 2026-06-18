@@ -24,6 +24,8 @@ asc-devkit:
       - impl/experimental/tensor_api/utils/*.h
       - impl/c_api/instr_impl/npu_arch_2201/utils_impl/**/*.h
       - impl/c_api/instr_impl/npu_arch_3510/utils_impl/**/*.h
+      - impl/c_api/instr_impl/npu_arch_3510/utils_impl.h
+      - impl/c_api/instr_impl/npu_arch_2201/misc_impl.h
       - impl/basic_api/reg_compute/kernel_reg_compute_struct_intf_impl.h
       - impl/basic_api/reg_compute/kernel_reg_compute_common_intf_impl.h
       - impl/basic_api/reg_compute/kernel_reg_compute_intf_impl.h
@@ -71,6 +73,10 @@ asc-devkit:
       - impl/adv_api/detail/hccl/cc
       - impl/c_api/instr_impl/npu_arch_2201/sync_impl/asc_sync_data_barrier_impl.h
       - impl/c_api/instr_impl/npu_arch_3510/sync_impl/asc_sync_data_barrier_impl.h
+      - impl/c_api/instr_impl/npu_arch_2201/sync_impl/asc_set_flag_impl.h
+      - impl/c_api/instr_impl/npu_arch_2201/sync_impl/asc_wait_flag_impl.h
+      - impl/c_api/instr_impl/npu_arch_3510/sync_impl/asc_sync_wait_impl.h
+      - impl/c_api/instr_impl/npu_arch_3510/sync_impl/asc_sync_notify_impl.h
       - impl/c_api/instr_impl/npu_arch_3510/sync_impl/asc_lock_impl.h
       - impl/c_api/instr_impl/npu_arch_3510/sync_impl/asc_unlock_impl.h
       - impl/c_api/instr_impl/npu_arch_2201/sync_impl.h

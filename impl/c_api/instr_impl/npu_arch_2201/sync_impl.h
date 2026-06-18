@@ -27,7 +27,7 @@
 #ifndef IMPL_C_API_C_API_INSTR_IMPL_SYNC_C_API_IMPL_SYNC_C_API_IMPL_H
 #define IMPL_C_API_C_API_INSTR_IMPL_SYNC_C_API_IMPL_SYNC_C_API_IMPL_H
 
-#include "instr_impl/npu_arch_2201/utils_impl/utils_impl.h"
+#include "utils_impl/utils_impl.h"
 
 #include "sync_impl/asc_set_flag_impl.h"
 #include "sync_impl/asc_wait_flag_impl.h"

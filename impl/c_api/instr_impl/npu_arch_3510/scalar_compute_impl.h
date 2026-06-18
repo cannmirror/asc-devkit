@@ -11,16 +11,16 @@
 #ifndef IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_SCALAR_COMPUTE_IMPL_H
 #define IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_SCALAR_COMPUTE_IMPL_H
 
-#include "instr_impl/npu_arch_3510/scalar_compute_impl/asc_popc_impl.h"
-#include "instr_impl/npu_arch_3510/scalar_compute_impl/asc_clz_impl.h"
-#include "instr_impl/npu_arch_3510/scalar_compute_impl/asc_zero_bits_cnt_impl.h"
-#include "instr_impl/npu_arch_3510/scalar_compute_impl/asc_ffs_impl.h"
-#include "instr_impl/npu_arch_3510/scalar_compute_impl/asc_store_dev_impl.h"
-#include "instr_impl/npu_arch_3510/scalar_compute_impl/asc_float2int32_impl.h"
-#include "instr_impl/npu_arch_3510/scalar_compute_impl/asc_sflbits_impl.h"
-#include "instr_impl/npu_arch_3510/scalar_compute_impl/asc_ffz_impl.h"
-#include "instr_impl/npu_arch_3510/scalar_compute_impl/asc_clear_nthbit_impl.h"
-#include "instr_impl/npu_arch_3510/scalar_compute_impl/asc_set_nthbit_impl.h"
+#include "scalar_compute_impl/asc_popc_impl.h"
+#include "scalar_compute_impl/asc_clz_impl.h"
+#include "scalar_compute_impl/asc_zero_bits_cnt_impl.h"
+#include "scalar_compute_impl/asc_ffs_impl.h"
+#include "scalar_compute_impl/asc_store_dev_impl.h"
+#include "scalar_compute_impl/asc_float2int32_impl.h"
+#include "scalar_compute_impl/asc_sflbits_impl.h"
+#include "scalar_compute_impl/asc_ffz_impl.h"
+#include "scalar_compute_impl/asc_clear_nthbit_impl.h"
+#include "scalar_compute_impl/asc_set_nthbit_impl.h"
 
 // ==========asc_clz==========
 __aicore__ inline int64_t asc_clz(uint64_t value_in)

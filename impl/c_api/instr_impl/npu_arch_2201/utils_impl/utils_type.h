@@ -18,8 +18,8 @@
 #ifndef IMPL_C_API_C_API_INSTR_IMPL_UTILS_C_API_IMPL_UTILS_C_API_TYPE_H
 #define IMPL_C_API_C_API_INSTR_IMPL_UTILS_C_API_IMPL_UTILS_C_API_TYPE_H
 
-#include "impl/utils/sys_macros.h"
-#include "impl/utils/common_types.h"
+#include "../../../../utils/sys_macros.h"
+#include "../../../../utils/common_types.h"
 
 #endif
 

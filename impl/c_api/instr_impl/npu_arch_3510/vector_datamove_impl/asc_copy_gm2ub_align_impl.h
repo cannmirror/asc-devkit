@@ -23,7 +23,7 @@
 #ifndef IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_VECTOR_DATAMOVE_IMPL_ASC_COPY_GM2UB_ALIGN_IMPL_H
 #define IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_VECTOR_DATAMOVE_IMPL_ASC_COPY_GM2UB_ALIGN_IMPL_H
 
-#include "instr_impl/npu_arch_3510/utils_impl/utils_impl.h"
+#include "../utils_impl/utils_impl.h"
 
 __aicore__ inline void asc_copy_gm2ub_align_impl(__ubuf__ uint8_t* dst, __gm__ uint8_t* src, uint16_t n_burst, uint32_t len_burst,
             uint8_t left_padding_num, uint8_t right_padding_num, bool enable_constant_pad, uint8_t l2_cache_mode, uint64_t src_gap, uint32_t dst_gap)
