@@ -38,7 +38,7 @@ inline void asc_dcci_entire(void *dst)
 
 ## 约束说明
 
-无
+输入必须为有效的Global Memory地址。传入非Global Memory地址或无效地址时，不能保证Cache刷新行为有效。
 
 ## 需要包含的头文件
 

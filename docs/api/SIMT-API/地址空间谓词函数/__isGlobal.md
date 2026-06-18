@@ -30,7 +30,19 @@ unsigned int __isGlobal(const void* ptr)
 
 ## 返回值说明
 
-如果输入的指针指向Global Memory内存空间的地址，则返回1，否则返回0。
+如果输入的指针指向Global Memory内存空间的地址，则返回1，否则返回0。  
+该接口根据输入指针的地址空间信息进行分类判断，不校验该指针是否为可安全访问的有效地址。`__isGlobal`返回1仅表示该指针被分类为Global Memory地址，不代表该地址一定可以安全访问。特殊场景说明如下：  
+| 输入场景 | 返回值 |
+| --- | --- |
+| `ptr`为有效Unified Buffer指针 | 0 |
+| `ptr`为有效栈空间指针 | 0 |
+| `ptr`为`nullptr` | 0 |
+| `ptr`为`(void*)0x1` | 0 |
+| `ptr`为全1地址 | 1 |
+| `ptr`由`__cvta_global_to_generic(0)`或`__cvta_global_to_generic(1)`返回 | 0 |
+| `ptr`由`__cvta_global_to_generic(全1)`返回 | 1 |
+
+因此，不能仅依据`__isGlobal(ptr) == 1`判断`ptr`是否为可安全访问的Global Memory地址。
 
 ## 约束说明
 
