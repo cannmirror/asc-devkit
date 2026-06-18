@@ -14,8 +14,9 @@
  */
 #ifndef LIB_NORMALIZATION_NORMALIZE_TILING_H
 #define LIB_NORMALIZATION_NORMALIZE_TILING_H
+#include <cstdint>
+
 #include "graph/tensor.h"
-#include "tiling/platform/platform_ascendc.h"
 namespace AscendC {
 /*!
  * \brief calculate max and min tmp buffer size for Normalize interface.
