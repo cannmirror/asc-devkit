@@ -78,6 +78,18 @@ __aicore__ inline void asc_set_atomic_max_float();
 
 __aicore__ inline void asc_set_store_atomic_config_v2(uint16_t type, uint16_t op);
 
+__aicore__ inline void asc_set_atomic_max_int();
+
+__aicore__ inline void asc_set_atomic_max_int8();
+
+__aicore__ inline void asc_set_atomic_max_int16();
+
+__aicore__ inline void asc_set_atomic_min_int();
+
+__aicore__ inline void asc_set_atomic_min_int8();
+
+__aicore__ inline void asc_set_atomic_min_int16();
+
 #endif
 
 #endif
