@@ -8,6 +8,11 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
+/*!
+ * \file rtc_hello_world.cpp
+ * \brief 简单的hello world样例，展示aclrtc的基本用法
+ */
+
 #include <cstdio>
 #include <vector>
 #include "acl/acl.h"

@@ -8,6 +8,11 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
+/*!
+ * \file rtc_template_add.cpp
+ * \brief aclrtc的add模板样例，展示模板global函数情况下核函数别名的获取与使用
+ */
+
 #include <iostream>
 #include <fstream>
 #include <vector>
