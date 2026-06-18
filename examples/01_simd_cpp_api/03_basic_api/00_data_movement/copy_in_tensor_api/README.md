@@ -188,6 +188,7 @@
   |------|--------|------|
   | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`sim` | 运行模式：NPU 运行、NPU仿真 |
   | `CMAKE_ASC_ARCHITECTURES` | `dav-3510` | NPU 架构：dav-3510 对应 Ascend 950PR/Ascend 950DT |
+  | `SCENARIO_NUM` | `0`（默认）、`1`、`2`、`3` | 场景编号：0=AB不转置 half，1=AB不转置 float，2=AB转置 half，3=AB转置 float |
 
 - 执行结果
 

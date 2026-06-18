@@ -301,8 +301,8 @@
 
   - **约束条件**：
     1. baseM/baseK/baseN满足16对齐
-    2. baseM/baseK/baseN能被singleCoreM/singleCoreK/singleCoreN整除
-    3. singleCoreM/singleCoreK/singleCoreN能被M/K/N整除，不支持非整切场景
+    2. M/N应能被singleCoreM/singleCoreN整除
+    3. singleCoreM/singleCoreN应能被baseM/baseN整除，K应能被baseK整除，不支持非整切场景
     4. Vector核数是Cube核数的2倍
 
   - **调用实现**：
@@ -554,8 +554,8 @@ msprof ./demo   # 分析性能
 ```bash
 PROF_xxxx_XXXXXX
 ├── device_{id}
-└── host
-└── mindstudio_profiler_log
+├── host
+├── mindstudio_profiler_log
 └── mindstudio_profiler_output    # 保存Host和各个Device的性能数据汇总
     ├── msprof_*.json
     ├── xx_*.csv

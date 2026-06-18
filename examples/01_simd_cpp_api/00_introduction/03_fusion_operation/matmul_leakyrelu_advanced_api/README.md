@@ -56,7 +56,7 @@
     - 创建`matmul_tiling::MultiCoreMatmulTiling`对象`tilingApi`，用于生成多核Matmul所需的tiling参数。
     - `SetDim(2)`表示tiling侧配置2个AIV逻辑核参与Matmul计算发起。
     - `SetAType`、`SetBType`、`SetCType`、`SetBiasType`分别设置A、B、C、Bias的数据来源位置、数据格式和数据类型；其中C类型设置为`VECIN`，便于后续执行LeakyRelu激活。
-    - `SetOrgShape(M, N, K)`设置原始完整矩阵形状，`SetShape(M, N, K)`设置本次实际参与Matmul计算的`M, N, K方向的大小（单位为元素）`。
+    - `SetOrgShape(M, N, K)`设置原始完整矩阵形状，`SetShape(M, N, K)`设置本次实际参与Matmul计算的`M`、`N`、`K`方向的大小（单位为元素）。
     - `EnableBias(true)`表示Matmul计算带Bias输入。
     - `SetFixSplit(128, 64, 128)`固定Matmul基础分块大小。
     - `SetBufferSpace(-1, -1, ubSize - usedUb)`设置Matmul可使用的L1/L0C/UB空间大小。L1和L0C传入`-1`表示使用当前AI处理器对应buffer的默认大小；`usedUb = baseM * baseN * sizeof(float)`用于扣除LeakyRelu需要使用的一块UB缓存。

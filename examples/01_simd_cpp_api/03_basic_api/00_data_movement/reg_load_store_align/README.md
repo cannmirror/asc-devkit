@@ -128,7 +128,7 @@
   <tr><td align="center">x</td><td align="center">[1, 1024]</td><td align="center">half</td></tr>
   <tr><td align="center">y</td><td align="center">[1, 1024]</td><td align="center">half</td></tr>
   <tr><td rowspan="1" align="center">样例输出</td><td align="center">z</td><td align="center">[1, 512]</td><td align="center">half</td></tr>
-  <tr><td rowspan="1" align="center">VF函数名</td><td colspan="4" align="center">CopyWithAddrRegVF</td></tr>
+  <tr><td rowspan="1" align="center">VF函数名</td><td colspan="4" align="center">CopyDataBlock</td></tr>
   </table>
 
 **场景5：广播（broadcast）模式搬入**

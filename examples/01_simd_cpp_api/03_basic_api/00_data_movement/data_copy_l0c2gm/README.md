@@ -81,7 +81,7 @@
 - 样例功能  
   将矩阵乘的结果从L0C Buffer搬运到GM（Global Memory），支持以下两种随路量化模式：
   - Scalar量化：使用SetFixpipePreQuantFlag接口设置Scalar量化参数。
-  - Tensor量化：使用SetFixPipeConfig接口设置Tensor量化参数。  
+  - Vector量化：使用SetFixPipeConfig接口设置Vector量化参数。
   并支持与随路NZ2ND、relu激活能力组合。接口资料参考随路量化激活搬运。
 
 - 样例规格
@@ -94,7 +94,7 @@
   <tr><td align="center">y</td><td align="center">[128, 256]</td><td align="center">int8_t</td><td align="center">ND</td></tr>
   <tr><td rowspan="2" align="center">样例输出</td></tr>
   <tr><td align="center">z</td><td align="center">[128, 256]</td><td align="center">half</td><td align="center">ND</td></tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">KernelDataCopyL0c2Gm</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">data_copy_l0c2gm</td></tr>
   </table>
 
   <table>
@@ -105,7 +105,7 @@
   <tr><td align="center">y</td><td align="center">[128, 256]</td><td align="center">int8_t</td><td align="center">ND</td></tr>
   <tr><td rowspan="2" align="center">样例输出</td></tr>
   <tr><td align="center">z</td><td align="center">[128, 256]</td><td align="center">half</td><td align="center">NZ</td></tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">KernelDataCopyL0c2Gm</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">data_copy_l0c2gm</td></tr>
   </table>
 
   <table>
@@ -116,7 +116,7 @@
   <tr><td align="center">y</td><td align="center">[128, 256]</td><td align="center">half</td><td align="center">ND</td></tr>
   <tr><td rowspan="2" align="center">样例输出</td></tr>
   <tr><td align="center">z</td><td align="center">[128, 256]</td><td align="center">int8_t</td><td align="center">NZ</td></tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">KernelDataCopyL0c2Gm</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">data_copy_l0c2gm</td></tr>
   </table>
 
   <table>
@@ -127,7 +127,7 @@
   <tr><td align="center">y</td><td align="center">[128, 256]</td><td align="center">half</td><td align="center">ND</td></tr>
   <tr><td rowspan="2" align="center">样例输出</td></tr>
   <tr><td align="center">z</td><td align="center">[128, 256]</td><td align="center">int8_t</td><td align="center">ND</td></tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">KernelDataCopyL0c2Gm</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">data_copy_l0c2gm</td></tr>
   </table>
 
   <table>
@@ -138,7 +138,7 @@
   <tr><td align="center">y</td><td align="center">[128, 256]</td><td align="center">int8_t</td><td align="center">ND</td></tr>
   <tr><td rowspan="2" align="center">样例输出</td></tr>
   <tr><td align="center">z</td><td align="center">[128, 256]</td><td align="center">int8_t</td><td align="center">ND</td></tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">KernelDataCopyL0c2Gm</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">data_copy_l0c2gm</td></tr>
   </table>
 
   <table>
@@ -149,7 +149,7 @@
   <tr><td align="center">y</td><td align="center">[128, 256]</td><td align="center">int8_t</td><td align="center">ND</td></tr>
   <tr><td rowspan="2" align="center">样例输出</td></tr>
   <tr><td align="center">z</td><td align="center">[128, 256]</td><td align="center">int8_t</td><td align="center">NZ</td></tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">KernelDataCopyL0c2Gm</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">data_copy_l0c2gm</td></tr>
   </table>
 
 - 样例实现

@@ -24,7 +24,7 @@
 
 完成样例工程创建后，会在样例工程目录下生成framework/tf_plugin目录，用于存放TensorFlow框架适配插件实现文件。
 
-本样例展示将Add计算映射到TensorFlow内置算子Add上，核心流程如下：
+本样例展示将Add计算映射到TensorFlow内置算子AddV2上，核心流程如下：
 1. 使用`np.random.uniform`生成随机输入数据，并通过`tf.compat.v1.placeholder`定义输入节点。
 2. 构建计算图：使用`tf.math.add`实现张量加法运算。
 3. 分别创建CPU和NPU会话，通过`session.run`执行计算图并传入输入数据。

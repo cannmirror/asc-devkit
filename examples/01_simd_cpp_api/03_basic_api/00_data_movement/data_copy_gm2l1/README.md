@@ -121,6 +121,8 @@
   | `CMAKE_ASC_ARCHITECTURES` | `dav-2201`（默认）、`dav-3510` | NPU 架构：dav-2201 对应 Atlas A2 训练系列产品/Atlas A2 推理系列产品和 Atlas A3 训练系列产品/Atlas A3 推理系列产品，dav-3510 对应 Ascend 950PR/Ascend 950DT |
   | `SCENARIO_NUM` | 1-5 | 场景编号，场景3仅支持dav-3510架构 |
 
+- 执行结果
+
   执行结果如下，说明精度对比成功。
   ```bash
   test pass!

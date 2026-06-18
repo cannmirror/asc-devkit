@@ -47,7 +47,7 @@
     <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="3" align="center">AIV样例</td></tr>
     <tr><td rowspan="3" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td></tr>
     <tr><td align="center">src</td><td align="center">[1, 1024]</td><td align="center">half</td></tr>
-    <tr><td align="center">index</td><td align="center">[1, 128]</td><td align="center">uint16</td></tr>
+    <tr><td align="center">index</td><td align="center">[1, 128]</td><td align="center">uint16_t</td></tr>
     <tr><td rowspan="1" align="center">样例输出</td><td align="center">dst</td><td align="center">[1, 128]</td><td align="center">half</td></tr>
     <tr><td rowspan="1" align="center">核函数名</td><td colspan="3" align="center">gather_ld_reg</td></tr>
     </table>
@@ -64,7 +64,7 @@
     <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="3" align="center">AIV样例</td></tr>
     <tr><td rowspan="3" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td></tr>
     <tr><td align="center">src</td><td align="center">[1, 1024]</td><td align="center">half</td></tr>
-    <tr><td align="center">index</td><td align="center">[1, 8]</td><td align="center">uint32</td></tr>
+    <tr><td align="center">index</td><td align="center">[1, 8]</td><td align="center">uint32_t</td></tr>
     <tr><td rowspan="1" align="center">样例输出</td><td align="center">dst</td><td align="center">[1, 128]</td><td align="center">half</td></tr>
     <tr><td rowspan="1" align="center">核函数名</td><td colspan="3" align="center">gather_ld_reg</td></tr>
     </table>

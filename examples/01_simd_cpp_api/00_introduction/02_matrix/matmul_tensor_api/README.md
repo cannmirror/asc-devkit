@@ -126,6 +126,7 @@
   | 选项 | 可选值 | 说明 |
   |------|--------|------|
   | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`sim` | 运行模式：NPU 运行、NPU仿真 |
+  | `CMAKE_ASC_ARCHITECTURES` | `dav-3510` | NPU 架构：dav-3510 对应 Ascend 950PR/Ascend 950DT |
 
   > **说明：** 本样例仅支持dav-3510架构（对应 Ascend 950PR/Ascend 950DT）。
 

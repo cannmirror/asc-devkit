@@ -43,13 +43,13 @@
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_custom</td></tr>
   </table>
 
-- 自定义样例注册：
+- 自定义算子注册：
 
-  本样例在`add_custom.asc`中定义了一个名为`ascendc_ops`的命名空间，并在其中注册了`ascendc_add`函数。
+  本样例在`add_custom.asc`中定义了一个名为`ascendc_ops`的C++命名空间，并在其中实现`ascendc_add`函数。
 
   pybind11可以实现PyTorch框架调用样例Kernel程序，从而实现Ascend C样例在PyTorch框架的集成部署。
 
-  `add_custom.asc`使用了`pybind11`库来将c++代码封装成python模块。该代码实现中定义了一个名为`m`的pybind11模块，其中包含一个名为`ascendc_add`的函数。该函数与`ascendc_ops::ascendc_add`函数相同，用于将c++函数转成python函数，例如：
+  `add_custom.asc`使用`pybind11`库将C++代码封装成Python模块。`PYBIND11_MODULE(ascendc_ops, m)`中的`ascendc_ops`是导出的Python模块名，`m`是pybind11模块对象；`m.def`将C++函数`ascendc_ops::ascendc_add`绑定为Python侧可调用的`ascendc_add`函数，例如：
 
   ```cpp
   PYBIND11_MODULE(ascendc_ops, m)

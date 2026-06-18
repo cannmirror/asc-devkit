@@ -31,7 +31,7 @@
   <table>  
   <tr><td rowspan="2" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">切片参数</td></tr>  
   <tr><td align="center">x</td><td align="center">[3, 87]</td><td align="center">float32</td><td align="center">ND</td><td align="center">[[0, 16:40], [0, 47:71]], [[2, 16:40]，[2, 47:71]]</td></tr>  
-  <tr><td rowspan="1" align="center">样例输出</td><td align="center">y</td><td align="center">[2, 48]</td><td align="center">float32</td><td align="center">ND</td><td align="center">\</td></tr>  
+  <tr><td rowspan="1" align="center">样例输出</td><td align="center">y</td><td align="center">[2, 48]</td><td align="center">float32</td><td align="center">ND</td><td align="center">连续写入Tensor[2, 48]</td></tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">kernel_slice</td></tr>  
   </table>
 

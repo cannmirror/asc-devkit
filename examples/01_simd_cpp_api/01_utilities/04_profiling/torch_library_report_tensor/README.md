@@ -139,7 +139,7 @@
 
 - Shape信息展示
 
-  打开`PROF_000001_*/mindstudio_profiler_output/op_summary_*.csv`，查看Shape信息，样例中Shape信息写入如下字段。
+  打开`../result/PROF_000001_*/mindstudio_profiler_output/op_summary_*.csv`，查看Shape信息，样例中Shape信息写入如下字段。
 
   <table>
     <tr>

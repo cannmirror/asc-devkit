@@ -43,7 +43,7 @@
   </table>
 
 - 样例实现：  
-  Vector Core中SIMT单元和SIMD单元共享片上存储，可以使用片上存储完成SIMT和SIMD的混合编程。本例中样例输入index的shape为[8192]，可设置核数为8，每个核处理数据量为1024，设置线程数THREAD_COUNT为1024，每个线程处理1个数据元素，单个核只需调用1次simt_gather函数即可完成gather运算。
+  Vector Core中SIMT单元和SIMD单元共享片上存储，可以使用片上存储完成SIMT和SIMD的混合编程。本例中样例输入index的shape为[8192]，可设置核数为8，每个核处理数据量为1024，设置线程数`thread_count`为1024，每个线程处理1个数据元素，单个核只需调用1次simt_gather函数即可完成gather运算。
 
   > ⚠️ **注意** 当单核处理数据量大于设置的线程数时，需要切分数据到多个线程块，可使用asc_vf_call多次调用simt_gather函数启动多个线程块完成获取指定索引数据的操作。
 
@@ -118,5 +118,5 @@
 - 执行结果  
   执行结果如下，说明精度对比成功。
   ```
-  [Success] Case accuracy is verification passed.
+  test pass!
   ```

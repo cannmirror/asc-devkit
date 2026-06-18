@@ -23,7 +23,7 @@
 ## 样例描述
 - 样例功能：  
   从UB上读取4个标量数据，和向量x进行Adds计算。向量x shape为[1, 512]，通过for循环控制每个标量和128个连续的向量元素进行计算。  
-  - AuxScalar读取标量在VF函数内可以直接使用，在mainScalar（VF函数外）使用时需要加同步指令
+  - AuxScalar读取标量在VF函数内可以直接使用，在MainScalar（VF函数外）使用时需要加同步指令
   
   **AuxScalar + Adds模式**
   - 使用AuxScalar方式（`__ubuf__`指针下标访问，如`scalarAddr[0]`）从UB读取标量，结合Adds进行向量与标量加法
@@ -32,7 +32,7 @@
     <tr><td rowspan="1" align="center">样例类型(OpType)</td><td colspan="3" align="center">AIV样例</td></tr>
     <tr><td rowspan="3" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td></tr>
     <tr><td align="center">x</td><td align="center">[1, 512]</td><td align="center">half</td></tr>
-    <tr><td align="center">scalar</td><td align="center">[1, 4]</td><td align="center">half</td></tr>
+    <tr><td align="center">scalar</td><td align="center">[1, 4]（input_y.bin实际包含16个half数，用于32B对齐，后12个为padding）</td><td align="center">half</td></tr>
     <tr><td rowspan="1" align="center">样例输出</td><td align="center">z</td><td align="center">[1, 512]</td><td align="center">half</td></tr>
     <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">auxscalar_reg</td></tr>
     </table>

@@ -1,4 +1,4 @@
-# Utilities Functions
+# Utility Functions
 
 ## Overview
 
