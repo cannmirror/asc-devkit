@@ -22,14 +22,13 @@ project(kernel_samples LANGUAGES ASC CXX)
 #   1 - ReduceRepeat<MAX>：每个repeat内求最大值，输入[1, 1024]，输出[1, 8]
 #   2 - ReduceRepeat<MIN>：每个repeat内求最小值及索引，输入[1, 1024]，输出[1, 16]
 #   3 - ReduceRepeat<SUM>：每个repeat内求和，输入float类型[1, 2048]，输出[1, 32]
-#   4 - ReduceRepeat<MIN> + GetReduceRepeatMaxMinSpr：求全局最小值及索引，输入[1, 1024]，输出[1, 16]
-#   5 - ReduceRepeat<SUM>非对齐场景：对每行非对齐数据求和，输入float类型[13, 57]，输出[1, 13]
-set(SCENARIO_NUM "1" CACHE STRING "Scene number (1-5)")
+#   4 - ReduceRepeat<SUM>非对齐场景：对每行非对齐数据求和，输入float类型[13, 57]，输出[1, 13]
+set(SCENARIO_NUM "1" CACHE STRING "Scene number (1-4)")
 
 message(STATUS "[INFO] SCENARIO_NUM is ${SCENARIO_NUM}")
 
-if(NOT SCENARIO_NUM MATCHES "^[1-5]$")
-    message(FATAL_ERROR "SCENARIO_NUM must be 1,2,3,4,5, got: ${SCENARIO_NUM}")
+if(NOT SCENARIO_NUM MATCHES "^[1-4]$")
+    message(FATAL_ERROR "SCENARIO_NUM must be 1,2,3,4, got: ${SCENARIO_NUM}")
 endif()
 
 add_executable(demo
