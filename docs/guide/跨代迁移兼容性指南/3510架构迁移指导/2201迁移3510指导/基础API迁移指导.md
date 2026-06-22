@@ -342,7 +342,7 @@
 
         ![](../../../figures/3_zn.png)
 
-    **兼容方案**：非L0A Buffer切分的场景兼容2201版本，L0A Buffer切分的场景需要根据新的分形重新适配。具体代码可参考[pattern_transformation兼容性样例](https://gitcode.com/cann/asc-devkit/tree/c6dc78cfbccfb1a8f910ed4b6845bfacde5d2d9f/examples/01_simd_cpp_api/06_compatibility_guide/pattern_transformation)。
+    **兼容方案**：非L0A Buffer切分的场景兼容2201版本，L0A Buffer切分的场景需要根据新的分形重新适配。具体代码可参考[pattern_transformation兼容性样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/06_compatibility_guide/pattern_transformation)。
 
     在2201架构中，矩阵计算要求左矩阵为ZZ分形（3510中为NZ），右矩阵为ZN分形，由于L1 Buffer的数据分形为NZ，所以2201架构下将左矩阵从L1 Buffer搬运到L0A Buffer需要额外做NZ分形到ZZ分形的转换，3510架构下则不用转换分形。
 
