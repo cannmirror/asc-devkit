@@ -2,10 +2,9 @@
 
 ## 概述
 
-本样例介绍归约类接口在多种场景下的使用方法，包括`ReduceRepeat`，以及`ReduceRepeat<MIN>`配合`GetReduceRepeatMaxMinSpr`获取全局最小值及索引的使用方法。这些接口用于对LocalTensor中每个repeat内所有元素进行归约运算（求最大值、最小值或求和），归约结果存放到目的LocalTensor中。
+本样例介绍归约类接口`ReduceRepeat`在多种场景下的使用方法。这些接口用于对LocalTensor中每个repeat内所有元素进行归约运算（求最大值、最小值或求和），归约结果存放到目的LocalTensor中。
 
 注：`ReduceRepeat`为 CANN 9.1.0 重命名后的 API。CANN 9.0.0 及之前版本请使用`WholeReduceMax`，`WholeReduceMin`，`WholeReduceSum`。
-注：`GetReduceRepeatMaxMinSpr`为 CANN 9.0.0 重命名后的 API。CANN 8.5.0 及之前版本请使用`GetReduceMaxMinCount`。
 
 ## 本样例支持的产品及CANN软件版本
 
@@ -53,14 +52,7 @@
 - 实现：`ReduceRepeat<ReduceType::SUM, float>(dstLocal, srcLocal, mask=64, repeat=32, 1, 1, 8)`
 - 说明：每个repeat独立求和，共输出32个求和结果
 
-**场景4：`ReduceRepeat<MIN>` + `GetReduceRepeatMaxMinSpr`**
-
-- 输入：[1, 1024]个half元素，mask逐bit模式（uint64_t[2]全1），repeat=8（1024/128）
-- 输出：[1, 16]个half元素（仅前2个元素有效：全局最小值 + 全局最小值索引）
-- 实现：先调用 `ReduceRepeat<ReduceType::MIN, half>(dstLocal, srcLocal, mask=uint64_t[2]{-1,-1}, repeat=8, 1, 1, 8)`，再调用 `GetReduceRepeatMaxMinSpr<half>(val, idx)` 获取全局最小值及其索引，通过 `SetFlag<HardEvent::V_S>` / `WaitFlag<HardEvent::V_S>` 同步向量计算到标量计算
-- 说明：`ReduceRepeat<MIN>`对8个repeat分别求局部最小值，`GetReduceRepeatMaxMinSpr`从硬件寄存器中读取所有repeat中的全局最小值及其在源数据中的索引位置，结果写入dstLocal的前两个元素
-
-**场景5：`ReduceRepeat<SUM>`非对齐场景**
+**场景4：`ReduceRepeat<SUM>`非对齐场景**
 
 - 输入：[13, 57]个float元素（13行×57列，列数57×4字节=228字节，非32字节对齐）
 - 输出：[1, 13]个float元素（每行的求和结果）
@@ -79,7 +71,7 @@
 </table>
 
 <table border="2">
-<caption>表2：样例输入输出规格（场景2/4）</caption>
+<caption>表2：样例输入输出规格（场景2）</caption>
 <tr><td rowspan="2" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
 <tr><td align="center">x</td><td align="center">[1, 1024]</td><td align="center">half</td><td align="center">ND</td></tr>
 <tr><td rowspan="2" align="center">样例输出</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
@@ -97,7 +89,7 @@
 </table>
 
 <table border="2">
-<caption>表4：样例输入输出规格（场景5）</caption>
+<caption>表4：样例输入输出规格（场景4）</caption>
 <tr><td rowspan="2" align="center">样例输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
 <tr><td align="center">x</td><td align="center">[13, 57]</td><td align="center">float</td><td align="center">ND</td></tr>
 <tr><td rowspan="2" align="center">样例输出</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
@@ -148,7 +140,7 @@
   |------|--------|------|
   | `CMAKE_ASC_RUN_MODE` | `npu`（默认）、`cpu`、`sim` | 运行模式：NPU 运行、CPU调试、NPU仿真 |
   | `CMAKE_ASC_ARCHITECTURES` | `dav-2201`（默认）、`dav-3510` | NPU 架构：dav-2201 对应 Atlas A2 训练系列产品/Atlas A2 推理系列产品和 Atlas A3 训练系列产品/Atlas A3 推理系列产品，dav-3510 对应 Ascend 950PR/Ascend 950DT |
-  | `SCENARIO_NUM` | `1`（默认）、`2`、`3`、`4`、`5` | 场景编号：1（`ReduceRepeat<MAX>`）、2（`ReduceRepeat<MIN>`）、3（`ReduceRepeat<SUM>`）、4（`ReduceRepeat<MIN>`+`GetReduceRepeatMaxMinSpr`）、5（非对齐`ReduceRepeat<SUM>`） |
+  | `SCENARIO_NUM` | `1`（默认）、`2`、`3`、`4` | 场景编号：1（`ReduceRepeat<MAX>`）、2（`ReduceRepeat<MIN>`）、3（`ReduceRepeat<SUM>`）、4（非对齐`ReduceRepeat<SUM>`） |
 
 - 执行结果
 

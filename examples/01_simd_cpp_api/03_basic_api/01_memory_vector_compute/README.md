@@ -20,7 +20,7 @@
 | [interleave_pair](./interleave_pair) |  本样例基于Interleave和DeInterleave接口实现元素交织和解交织功能 | Ascend 950PR/Ascend 950DT |
 | [mrg_sort](./mrg_sort) |  本样例基于Sort32和MrgSort基础API实现将已排好序的最多4条队列，合并成1条队列，结果按照score域由大到小排序 | Ascend 950PR/Ascend 950DT<br>Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 |
 | [reduce_data_block](./reduce_data_block) |  本样例基于`ReduceDataBlock`实现归约计算 | Ascend 950PR/Ascend 950DT<br>Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 |
-| [reduce_repeat](./reduce_repeat) |  本样例介绍归约类接口在多种场景下的使用方法，包括`ReduceRepeat`，以及`ReduceRepeat<MIN>`配合`GetReduceRepeatMaxMinSpr`获取全局最小值及索引的使用方法。 | Ascend 950PR/Ascend 950DT<br>Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 |
+| [reduce_repeat](./reduce_repeat) |  本样例介绍归约类接口`ReduceRepeat`在多种场景下的使用方法。 | Ascend 950PR/Ascend 950DT<br>Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 |
 | [reduce_pair_elem](./reduce_pair_elem) |  本样例基于`ReducePairElem<SUM>`实现相邻奇偶元素对求和归约 | Ascend 950PR/Ascend 950DT<br>Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 |
 | [reduce_computation](./reduce_computation) |  本样例基于`ReduceMax`、`ReduceMin`、`ReduceSum`接口实现归约计算 | Ascend 950PR/Ascend 950DT<br>Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 |
 | [region_proposal_sort](./region_proposal_sort) |  本样例介绍Region Proposal相关的排序接口使用方法 | Atlas 推理系列产品AI Core |

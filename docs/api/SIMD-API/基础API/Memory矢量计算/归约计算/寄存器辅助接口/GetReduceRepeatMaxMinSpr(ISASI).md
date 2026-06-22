@@ -4,7 +4,7 @@
 
 | 产品 | 是否支持 |
 | --- | --- |
-| <cann-filter npu-type="950">Ascend 950PR/Ascend 950DT | √ </cann-filter>|
+| <cann-filter npu-type="950">Ascend 950PR/Ascend 950DT | x </cann-filter>|
 | <cann-filter npu-type="A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品 | √ </cann-filter>|
 | <cann-filter npu-type="910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品 | √ </cann-filter>|
 | <cann-filter npu-type="310b">Atlas 200I/500 A2 推理产品 | x </cann-filter>|
@@ -20,15 +20,9 @@
 
 ## 函数原型
 
-<cann-filter npu-type="950,A3,910b">
+<cann-filter npu-type="A3,910b">
 
 - 获取调用[ReduceRepeat<MAX/MIN>](../ReduceRepeat.md)时所有repeat内的最值及其索引，或获取调用[ReduceMax](../ReduceMax.md)/[ReduceMin](../ReduceMin.md)得到的最值（此时获取的索引不准确）。该函数原型仅支持如下型号：
-    
-    <cann-filter npu-type="950">
-
-    - Ascend 950PR/Ascend 950DT
-
-    </cann-filter>
 
     <cann-filter npu-type="A3">
 
@@ -97,11 +91,9 @@
 
 1. 调用`ReduceRepeat<MAX>`后，所有repeat内的最大值及索引。
 
-    <cann-filter npu-type="950,A3,910b">
+    <cann-filter npu-type="A3,910b">
 
     - 针对如下型号：
-      - <cann-filter npu-type="950">Ascend 950PR/Ascend 950DT</cann-filter>
-
       - <cann-filter npu-type = "A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品</cann-filter>
       - <cann-filter npu-type = "910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品</cann-filter>
 
@@ -134,10 +126,9 @@
 
 2. 调用`ReduceMax`后，获取最大值。
 
-    <cann-filter npu-type = "950,A3,910b">
+    <cann-filter npu-type = "A3,910b">
 
     - 针对如下型号，`GetReduceRepeatMaxMinSpr`仅用于获取最大值，不能用于获取`ReduceMax`对应的准确索引。
-      - <cann-filter npu-type = "950">Ascend 950PR/Ascend 950DT</cann-filter>
       - <cann-filter npu-type = "A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品</cann-filter>
       - <cann-filter npu-type = "910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品</cann-filter>
 
