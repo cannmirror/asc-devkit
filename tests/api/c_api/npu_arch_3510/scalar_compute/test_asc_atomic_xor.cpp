@@ -15,31 +15,28 @@
 
 using namespace __asc_aicore;
 
-#define TEST_ATOMIC_XOR_GM(data_type)                                                              \
-class TestAtomicXor##Gm##_##data_type##CApi : public testing::Test {                               \
-protected:                                                                                         \
-    void SetUp() {}                                                                                \
-    void TearDown() {}                                                                             \
-};                                                                                                 \
-                                                                                                   \
-namespace {                                                                                        \
-data_type atomicXOr##_##gm##_##data_type##Stub(__gm__ data_type* address, data_type val)          \
-{                                                                                                  \
-    return val;                                                                                    \
-}                                                                                                  \
-}                                                                                                  \
-                                                                                                   \
-TEST_F(TestAtomicXor##Gm##_##data_type##CApi, c_api_atomic_xor_gm_##data_type##_Succ)              \
-{                                                                                                  \
-    data_type addr = 0xFF;                                                                         \
-    data_type val = 0x0F;                                                                          \
-    MOCKER_CPP(atomicXOr, data_type(__gm__ data_type*, data_type))                                 \
-        .times(1)                                                                                  \
-        .will(invoke(atomicXOr##_##gm##_##data_type##Stub));                                       \
-    data_type res = asc_atomic_xor((__gm__ data_type*)&addr, val);                                 \
-    EXPECT_EQ(res, val);                                                                           \
-    GlobalMockObject::verify();                                                                    \
-}
+#define TEST_ATOMIC_XOR_GM(data_type)                                                                        \
+    class TestAtomicXor##Gm##_##data_type##CApi : public testing::Test {                                     \
+    protected:                                                                                               \
+        void SetUp() {}                                                                                      \
+        void TearDown() {}                                                                                   \
+    };                                                                                                       \
+                                                                                                             \
+    namespace {                                                                                              \
+    data_type atomicXOr##_##gm##_##data_type##Stub(__gm__ data_type* address, data_type val) { return val; } \
+    }                                                                                                        \
+                                                                                                             \
+    TEST_F(TestAtomicXor##Gm##_##data_type##CApi, c_api_atomic_xor_gm_##data_type##_Succ)                    \
+    {                                                                                                        \
+        data_type addr = 0xFF;                                                                               \
+        data_type val = 0x0F;                                                                                \
+        MOCKER_CPP(atomicXOr, data_type(__gm__ data_type*, data_type))                                       \
+            .times(1)                                                                                        \
+            .will(invoke(atomicXOr##_##gm##_##data_type##Stub));                                             \
+        data_type res = asc_atomic_xor((__gm__ data_type*)&addr, val);                                       \
+        EXPECT_EQ(res, val);                                                                                 \
+        GlobalMockObject::verify();                                                                          \
+    }
 
 TEST_ATOMIC_XOR_GM(int32_t)
 TEST_ATOMIC_XOR_GM(uint32_t)

@@ -15,31 +15,28 @@
 
 using namespace __asc_aicore;
 
-#define TEST_ATOMIC_MIN_GM(data_type)                                                              \
-class TestAtomicMin##Gm##_##data_type##CApi : public testing::Test {                               \
-protected:                                                                                         \
-    void SetUp() {}                                                                                \
-    void TearDown() {}                                                                             \
-};                                                                                                 \
-                                                                                                   \
-namespace {                                                                                        \
-data_type atomicMin##_##gm##_##data_type##Stub(__gm__ data_type* address, data_type val)          \
-{                                                                                                  \
-    return val;                                                                                    \
-}                                                                                                  \
-}                                                                                                  \
-                                                                                                   \
-TEST_F(TestAtomicMin##Gm##_##data_type##CApi, c_api_atomic_min_gm_##data_type##_Succ)              \
-{                                                                                                  \
-    data_type addr = 10;                                                                           \
-    data_type val = 5;                                                                             \
-    MOCKER_CPP(atomicMin, data_type(__gm__ data_type*, data_type))                                 \
-        .times(1)                                                                                  \
-        .will(invoke(atomicMin##_##gm##_##data_type##Stub));                                       \
-    data_type res = asc_atomic_min((__gm__ data_type*)&addr, val);                                 \
-    EXPECT_EQ(res, val);                                                                           \
-    GlobalMockObject::verify();                                                                    \
-}
+#define TEST_ATOMIC_MIN_GM(data_type)                                                                        \
+    class TestAtomicMin##Gm##_##data_type##CApi : public testing::Test {                                     \
+    protected:                                                                                               \
+        void SetUp() {}                                                                                      \
+        void TearDown() {}                                                                                   \
+    };                                                                                                       \
+                                                                                                             \
+    namespace {                                                                                              \
+    data_type atomicMin##_##gm##_##data_type##Stub(__gm__ data_type* address, data_type val) { return val; } \
+    }                                                                                                        \
+                                                                                                             \
+    TEST_F(TestAtomicMin##Gm##_##data_type##CApi, c_api_atomic_min_gm_##data_type##_Succ)                    \
+    {                                                                                                        \
+        data_type addr = 10;                                                                                 \
+        data_type val = 5;                                                                                   \
+        MOCKER_CPP(atomicMin, data_type(__gm__ data_type*, data_type))                                       \
+            .times(1)                                                                                        \
+            .will(invoke(atomicMin##_##gm##_##data_type##Stub));                                             \
+        data_type res = asc_atomic_min((__gm__ data_type*)&addr, val);                                       \
+        EXPECT_EQ(res, val);                                                                                 \
+        GlobalMockObject::verify();                                                                          \
+    }
 
 TEST_ATOMIC_MIN_GM(int32_t)
 TEST_ATOMIC_MIN_GM(uint32_t)

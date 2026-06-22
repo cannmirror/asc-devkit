@@ -27,6 +27,12 @@ fi
 
 set -e
 
+_oat_verbose() {
+    if [ "${OAT_VERBOSE:-0}" = "1" ]; then
+        echo "$@"
+    fi
+}
+
 # ---------------------------------------------------------------------------
 # 0. Locate Python interpreter
 # ---------------------------------------------------------------------------
@@ -52,15 +58,19 @@ fi
 # ---------------------------------------------------------------------------
 _OAT_OK=$("$_PYTHON" -c "import importlib.util; print('ok' if importlib.util.find_spec('oat') else 'missing')" 2>/dev/null || echo "missing")
 if [ "$_OAT_OK" != "ok" ]; then
-    echo "[OAT] oat-py not found. Installing oat-py>=1.0.1 ..."
-    "$_PYTHON" -m pip install --quiet "oat-py>=1.0.1"
+    _oat_verbose "[OAT] oat-py not found. Installing oat-py>=1.0.1 ..."
+    if ! PIP_ROOT_USER_ACTION=ignore "$_PYTHON" -m pip install --quiet --disable-pip-version-check "oat-py>=1.0.1" >/dev/null 2>&1; then
+        echo "[OAT] [WARNING] Failed to install oat-py. Please run: pip install oat-py>=1.0.1"
+        echo "[OAT] Skipping OAT check, continuing commit..."
+        exit 0
+    fi
     _OAT_OK=$("$_PYTHON" -c "import importlib.util; print('ok' if importlib.util.find_spec('oat') else 'missing')" 2>/dev/null || echo "missing")
     if [ "$_OAT_OK" != "ok" ]; then
         echo "[OAT] [WARNING] Failed to install oat-py. Please run: pip install oat-py>=1.0.1"
         echo "[OAT] Skipping OAT check, continuing commit..."
         exit 0
     fi
-    echo "[OAT] oat-py installed successfully."
+    _oat_verbose "[OAT] oat-py installed successfully."
 fi
 
 # ---------------------------------------------------------------------------
@@ -71,8 +81,8 @@ REPO_NAME=$(basename "$REPO_ROOT")
 OAT_REPORT_DIR="$REPO_ROOT/oat_reports"
 RUN_REPORT_DIR=""
 
-echo "[OAT] Running OAT scan (Python Edition) — INCREMENTAL MODE"
-echo "[OAT] Project: $REPO_NAME"
+_oat_verbose "[OAT] Running OAT scan (Python Edition) — INCREMENTAL MODE"
+_oat_verbose "[OAT] Project: $REPO_NAME"
 
 # ---------------------------------------------------------------------------
 # 3. Collect staged files
@@ -97,7 +107,7 @@ if [ $# -gt 0 ]; then
 else
     _STAGED=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || true)
     if [ -z "$_STAGED" ]; then
-        echo "[OAT] No staged files to check. Skipping."
+        echo "[OAT] PASS: no staged files to check."
         exit 0
     fi
     FILE_COUNT=$(echo "$_STAGED" | wc -l | tr -d ' ')
@@ -117,11 +127,11 @@ else
 fi
 
 if [ -z "$FILE_LIST" ]; then
-    echo "[OAT] No existing staged files found. Skipping."
+    echo "[OAT] PASS: no existing staged files to check."
     exit 0
 fi
 
-echo "[OAT] Checking $FILE_COUNT input file(s)..."
+_oat_verbose "[OAT] Checking $FILE_COUNT input file(s)..."
 
 # ---------------------------------------------------------------------------
 # 4. Ensure oat_reports/ exists and is in .gitignore
@@ -133,15 +143,15 @@ _GITIGNORE="$REPO_ROOT/.gitignore"
 for _entry in "oat_reports" "log"; do
     if ! grep -qE "^${_entry}/?$" "$_GITIGNORE" 2>/dev/null; then
         printf "\n%s/\n" "$_entry" >> "$_GITIGNORE" 2>/dev/null || true
-        echo "[OAT] Added ${_entry}/ to .gitignore"
+        _oat_verbose "[OAT] Added ${_entry}/ to .gitignore"
     fi
 done
 
 # ---------------------------------------------------------------------------
 # 5. Run oat scan
 # ---------------------------------------------------------------------------
-echo ""
-echo "[OAT] Running compliance scan..."
+_oat_verbose ""
+_oat_verbose "[OAT] Running compliance scan..."
 
 _OAT_XML="$REPO_ROOT/OAT.xml"
 _OAT_LOG="$RUN_REPORT_DIR/oat.log"
@@ -333,6 +343,37 @@ _register_result() {
     _release_result_lock
 }
 
+_print_issue_section() {
+    _summary_file="$1"
+    _marker="$2"
+    _label="$3"
+    _count="$4"
+
+    [ "$_count" -gt 0 ] || return 0
+
+    printf "[OAT] %s: %s\n" "$_label" "$_count"
+    _details=$(_extract_section "$_summary_file" "$_marker" | awk 'NR > 1 && /^Name:/ { sub(/^Name:[[:space:]]*/, "  - "); print }')
+    if [ -n "$_details" ]; then
+        printf "%s\n" "$_details"
+    else
+        printf "  - See report for details: %s\n" "$_summary_file"
+    fi
+}
+
+_print_issue_summary() {
+    _summary_file="$1"
+    _invalid_type="$2"
+    _license_invalid="$3"
+    _copyright_invalid="$4"
+    _total=$(( _invalid_type + _license_invalid + _copyright_invalid ))
+
+    printf "[OAT] FAIL: %s issue(s) found.\n" "$_total"
+    _print_issue_section "$_summary_file" "Invalid File Type Total Count:" "Invalid File Type" "$_invalid_type"
+    _print_issue_section "$_summary_file" "License Header Invalid Total Count:" "License Header Invalid" "$_license_invalid"
+    _print_issue_section "$_summary_file" "Copyright Header Invalid Total Count:" "Copyright Header Invalid" "$_copyright_invalid"
+    printf "[OAT] Report: %s\n" "$_summary_file"
+}
+
 if [ ! -f "$REPORT_FILE" ]; then
     if [ "$_OAT_RC" -ne 0 ]; then
         echo ""
@@ -363,6 +404,7 @@ if [ ! -f "$REPORT_FILE" ]; then
         echo "==================================="
     } > "$RESULT_FILE"
     _register_result
+    echo "[OAT] PASS: no OAT issues found ($FILE_COUNT file(s) checked)."
     exit 0
 fi
 
@@ -414,33 +456,13 @@ rm -f "$REPORT_FILE"
 TOTAL_ISSUES=$(( _INVALID_TYPE + _LICENSE_INVALID + _COPYRIGHT_INVALID ))
 
 if [ "$TOTAL_ISSUES" -gt 0 ]; then
-    echo ""
-    echo "===================================================================="
-    echo "  OAT: Compliance issues found. Commit blocked."
-    echo "===================================================================="
-    echo ""
-    echo "[OAT] Found $TOTAL_ISSUES compliance issue(s):"
-    echo "  - Invalid File Type:       $_INVALID_TYPE"
-    echo "  - License Header Invalid:  $_LICENSE_INVALID"
-    echo "  - Copyright Header Invalid: $_COPYRIGHT_INVALID"
-    echo ""
-    echo "[OAT] Details:"
-    echo "  cat $LATEST_RESULT_FILE"
-    echo "  cat $RESULT_FILE"
-    echo ""
-    echo "Fix the issues and recommit, or skip with:"
-    echo "  git commit --no-verify"
-    echo ""
+    _print_issue_summary "$LATEST_RESULT_FILE" "${_AGG_INVALID_TYPE:-$_INVALID_TYPE}" "${_AGG_LICENSE_INVALID:-$_LICENSE_INVALID}" "${_AGG_COPYRIGHT_INVALID:-$_COPYRIGHT_INVALID}"
     exit 1
 fi
 
-echo ""
 if [ "${_AGG_TOTAL_ISSUES:-0}" -gt 0 ]; then
-    echo "[OAT] [OK] Current batch passed ($FILE_COUNT file(s) checked)."
-    echo "[OAT] Aggregate summary still has $_AGG_TOTAL_ISSUES issue(s): cat $LATEST_RESULT_FILE"
+    _print_issue_summary "$LATEST_RESULT_FILE" "${_AGG_INVALID_TYPE:-0}" "${_AGG_LICENSE_INVALID:-0}" "${_AGG_COPYRIGHT_INVALID:-0}"
 else
-    echo "[OAT] [OK] All checks passed ($_AGG_FILES file(s) checked across $_AGG_RUNS run(s))."
-    echo "[OAT] Summary: cat $LATEST_RESULT_FILE"
+    echo "[OAT] PASS: no OAT issues found ($_AGG_FILES file(s) checked across $_AGG_RUNS run(s))."
 fi
-echo ""
 exit 0

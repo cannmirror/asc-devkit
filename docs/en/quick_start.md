@@ -106,7 +106,7 @@ For users with NPU devices, you can use the CANN official Docker image for devel
 
 For users with NPU devices, we recommend using DevContainer for ecosystem developer contribution.
 
-DevContainer is based on VS Code Dev Containers. It automatically builds a consistent containerized development environment through `.devcontainer` configuration in the repository. It has built-in `conda`, `Python` and other development toolchains. It shares device access with the host's NPU driver, suitable for scenarios that require compiling source code, running UT, and contributing code to this repository. For detailed instructions, refer to [`.devcontainer/README.md`](../.devcontainer/README.md).
+DevContainer is based on VS Code Dev Containers. It automatically builds a consistent containerized development environment through `.devcontainer` configuration in the repository. It has built-in `conda`, `Python` and other development toolchains. It shares device access with the host's NPU driver, suitable for scenarios that require compiling source code, running UT, and contributing code to this repository. For detailed instructions, refer to [`.devcontainer/README_en.md`](../../.devcontainer/README_en.md).
 
 > [!NOTE] Usage Instructions
 > DevContainer only mounts the host's NPU driver (read-only). **CANN toolkit and ops packages need to be manually installed after container starts**. Refer to [Download and Install CANN Package](#📥-download-and-install-cann-package).

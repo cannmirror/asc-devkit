@@ -51,7 +51,7 @@
 
 ListTensorDesc用来解析符合以下内存排布格式的数据，并在kernel侧根据索引获取储存对应数据的地址及shape信息。
 
-![](../../figures/Tiling---副本.png)
+![](../../../../figures/Tiling---副本.png)
 
 ## 需要包含的头文件<a name="section12341115212912"></a>
 
@@ -164,7 +164,7 @@ class ListTensorDesc {
 
 示例中待解析的srcGm内存排布如下图所示：
 
-![](../../figures/zh-cn_image_0000001866617737.png)
+![](../../../../figures/zh-cn_image_0000001866617737.png)
 
 ```cpp
 AscendC::ListTensorDesc listTensorDesc(reinterpret_cast<__gm__ void *>(srcGm)); // srcGm为待解析的gm地址

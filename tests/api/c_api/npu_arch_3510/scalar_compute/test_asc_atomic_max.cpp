@@ -15,31 +15,28 @@
 
 using namespace __asc_aicore;
 
-#define TEST_ATOMIC_MAX_GM(data_type)                                                              \
-class TestAtomicMax##Gm##_##data_type##CApi : public testing::Test {                               \
-protected:                                                                                         \
-    void SetUp() {}                                                                                \
-    void TearDown() {}                                                                             \
-};                                                                                                 \
-                                                                                                   \
-namespace {                                                                                        \
-data_type atomicMax##_##gm##_##data_type##Stub(__gm__ data_type* address, data_type val)          \
-{                                                                                                  \
-    return val;                                                                                    \
-}                                                                                                  \
-}                                                                                                  \
-                                                                                                   \
-TEST_F(TestAtomicMax##Gm##_##data_type##CApi, c_api_atomic_max_gm_##data_type##_Succ)              \
-{                                                                                                  \
-    data_type addr = 10;                                                                           \
-    data_type val = 5;                                                                             \
-    MOCKER_CPP(atomicMax, data_type(__gm__ data_type*, data_type))                                 \
-        .times(1)                                                                                  \
-        .will(invoke(atomicMax##_##gm##_##data_type##Stub));                                       \
-    data_type res = asc_atomic_max((__gm__ data_type*)&addr, val);                                 \
-    EXPECT_EQ(res, val);                                                                           \
-    GlobalMockObject::verify();                                                                    \
-}
+#define TEST_ATOMIC_MAX_GM(data_type)                                                                        \
+    class TestAtomicMax##Gm##_##data_type##CApi : public testing::Test {                                     \
+    protected:                                                                                               \
+        void SetUp() {}                                                                                      \
+        void TearDown() {}                                                                                   \
+    };                                                                                                       \
+                                                                                                             \
+    namespace {                                                                                              \
+    data_type atomicMax##_##gm##_##data_type##Stub(__gm__ data_type* address, data_type val) { return val; } \
+    }                                                                                                        \
+                                                                                                             \
+    TEST_F(TestAtomicMax##Gm##_##data_type##CApi, c_api_atomic_max_gm_##data_type##_Succ)                    \
+    {                                                                                                        \
+        data_type addr = 10;                                                                                 \
+        data_type val = 5;                                                                                   \
+        MOCKER_CPP(atomicMax, data_type(__gm__ data_type*, data_type))                                       \
+            .times(1)                                                                                        \
+            .will(invoke(atomicMax##_##gm##_##data_type##Stub));                                             \
+        data_type res = asc_atomic_max((__gm__ data_type*)&addr, val);                                       \
+        EXPECT_EQ(res, val);                                                                                 \
+        GlobalMockObject::verify();                                                                          \
+    }
 
 TEST_ATOMIC_MAX_GM(int32_t)
 TEST_ATOMIC_MAX_GM(uint32_t)

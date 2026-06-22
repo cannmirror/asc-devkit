@@ -137,7 +137,7 @@ __aicore__ inline MmadBitModeParams(const MmadBitModeParams &mmadParams_);
 - K需要是64的倍数。
 - 对于fp4场景a/b矩阵的起始地址需要按照512字节对齐，对于fp8场景a/b矩阵的起始地址需要按照1024字节对齐。
 - 左矩阵a/b对应的scale矩阵起始地址为：a/b矩阵起始对应地址/16。
-- 其他特殊场景约束可参考[Mmad接口约束说明](Mmad.md#约束说明)。
+- 其他特殊场景约束可参考[Mmad接口约束说明](../Mmad计算/Mmad.md#约束说明)。
 
 ## 调用示例
 

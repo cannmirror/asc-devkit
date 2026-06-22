@@ -18,7 +18,7 @@ Crd2Idx函数用于将多维坐标（Coordinate）通过布局（Layout）转换
 
 对于一个布局Layout，其Shape为\(d<sub>0</sub>, d<sub>1</sub>, ..., d<sub>n</sub>\)，Stride为\(s<sub>0</sub>, s<sub>1</sub>, ..., s<sub>n</sub>\)，Coordinate为\(c<sub>0</sub>, c<sub>1</sub>, ..., c<sub>n</sub>\)到线性索引Index的转换公式为：
 
-![](../../../figures/zh-cn_formulaimage_0000002372135864.png)
+![](../../../../../figures/zh-cn_formulaimage_0000002372135864.png)
 
 例如，对于Shape \(3, 4, 5\)，Stride \(20, 5, 1\)和Coordinate \(1, 2, 3\)：
 
@@ -33,7 +33,7 @@ Index = 20 + 10 + 3 = 33
 
 去线性化的方法介绍如下：对于一个n维数组，形状为\(d<sub>0</sub>, d<sub>1</sub>, ..., d<sub>n</sub>\)，线性坐标c对应的多维坐标\(c<sub>0</sub>, c<sub>1</sub>, ..., c<sub>n</sub>\)，可以通过以下公式进行转换：
 
-![](../../../figures/zh-cn_formulaimage_0000002405659569.png)
+![](../../../../../figures/zh-cn_formulaimage_0000002405659569.png)
 
 例如：对于Shape \(\(2, 4\), \(3, 5\)\)，Stride\(\(3, 6\), \(1, 24\)\)，Layout \(\(2, 4\), \(3, 5\)\) : \(\(3, 6\), \(1, 24\)\)，Coordinate（11, 12），按照列优先原则，Crd2Idx的结果为：
 
@@ -47,17 +47,17 @@ crd2idx = delinearize(11, 12) * stride
 
 总结上述过程，计算公式如下：
 
-![](../../../figures/zh-cn_formulaimage_0000002404172833.png)
+![](../../../../../figures/zh-cn_formulaimage_0000002404172833.png)
 
-![](../../../figures/zh-cn_formulaimage_0000002426040106.png)
+![](../../../../../figures/zh-cn_formulaimage_0000002426040106.png)
 
-![](../../../figures/zh-cn_formulaimage_0000002370455372.png)
+![](../../../../../figures/zh-cn_formulaimage_0000002370455372.png)
 
-![](../../../figures/zh-cn_formulaimage_0000002370616000.png)
+![](../../../../../figures/zh-cn_formulaimage_0000002370616000.png)
 
 其中\(d<sub>0</sub>, d<sub>1</sub>, ..., d<sub>n</sub>\)为Shape，\(s<sub>0</sub>, s<sub>1</sub>, ..., s<sub>n</sub>\)为Stride，delinearize公式展开如下：
 
-![](../../../figures/zh-cn_formulaimage_0000002370590770.png)
+![](../../../../../figures/zh-cn_formulaimage_0000002370590770.png)
 
 ## 函数原型
 

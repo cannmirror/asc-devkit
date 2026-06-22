@@ -274,7 +274,7 @@
 **示例**：输入：$1.75$。
 
 - **CAST_ROUND模式**输出：$2$。
-- **CAST_HYBRID模式**，参考[half to hifloat8_t类型转换规则](../Reg矢量计算/类型转换/Cast-45.md#table163085984311)的输出。
+- **CAST_HYBRID模式**，参考[half to hifloat8_t类型转换规则](../Reg矢量计算/类型转换/Cast.md#half转hifloat8_t转换规则)的输出。
 
 ---
 
@@ -483,7 +483,7 @@
 **示例**：输入：$1.75$。
 
 - **CAST_ROUND模式**输出：$2$。
-- **CAST_HYBRID模式**，参考[float to hifloat8_t类型转换规则](../Reg矢量计算/类型转换/Cast-45.md#table1352142520363)的输出。
+- **CAST_HYBRID模式**，参考[float to hifloat8_t类型转换规则](../Reg矢量计算/类型转换/Cast.md#float转hifloat8_t转换规则)的输出。
 
 ---
 

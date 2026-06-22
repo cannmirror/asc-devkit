@@ -73,7 +73,7 @@ T* GetDataPtr()
 
 示例中待解析的srcGm内存排布如下图所示：
 
-![](../../../figures/zh-cn_image_0000002340320301.png)
+![](../../../../../figures/zh-cn_image_0000002340320301.png)
 
 ```cpp
 AscendC::ListTensorDesc listTensorDesc(reinterpret_cast<__gm__ void *>(srcGm)); // srcGm为待解析的gm地址

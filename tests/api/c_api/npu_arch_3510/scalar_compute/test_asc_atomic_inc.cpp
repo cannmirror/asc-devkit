@@ -15,31 +15,28 @@
 
 using namespace __asc_aicore;
 
-#define TEST_ATOMIC_INC_GM(data_type)                                                              \
-class TestAtomicInc##Gm##_##data_type##CApi : public testing::Test {                               \
-protected:                                                                                         \
-    void SetUp() {}                                                                                \
-    void TearDown() {}                                                                             \
-};                                                                                                 \
-                                                                                                   \
-namespace {                                                                                        \
-data_type atomicInc##_##gm##_##data_type##Stub(__gm__ data_type* address, data_type val)          \
-{                                                                                                  \
-    return val;                                                                                    \
-}                                                                                                  \
-}                                                                                                  \
-                                                                                                   \
-TEST_F(TestAtomicInc##Gm##_##data_type##CApi, c_api_atomic_inc_gm_##data_type##_Succ)              \
-{                                                                                                  \
-    data_type addr = 10;                                                                           \
-    data_type val = 5;                                                                             \
-    MOCKER_CPP(atomicInc, data_type(__gm__ data_type*, data_type))                                 \
-        .times(1)                                                                                  \
-        .will(invoke(atomicInc##_##gm##_##data_type##Stub));                                       \
-    data_type res = asc_atomic_inc((__gm__ data_type*)&addr, val);                                 \
-    EXPECT_EQ(res, val);                                                                           \
-    GlobalMockObject::verify();                                                                    \
-}
+#define TEST_ATOMIC_INC_GM(data_type)                                                                        \
+    class TestAtomicInc##Gm##_##data_type##CApi : public testing::Test {                                     \
+    protected:                                                                                               \
+        void SetUp() {}                                                                                      \
+        void TearDown() {}                                                                                   \
+    };                                                                                                       \
+                                                                                                             \
+    namespace {                                                                                              \
+    data_type atomicInc##_##gm##_##data_type##Stub(__gm__ data_type* address, data_type val) { return val; } \
+    }                                                                                                        \
+                                                                                                             \
+    TEST_F(TestAtomicInc##Gm##_##data_type##CApi, c_api_atomic_inc_gm_##data_type##_Succ)                    \
+    {                                                                                                        \
+        data_type addr = 10;                                                                                 \
+        data_type val = 5;                                                                                   \
+        MOCKER_CPP(atomicInc, data_type(__gm__ data_type*, data_type))                                       \
+            .times(1)                                                                                        \
+            .will(invoke(atomicInc##_##gm##_##data_type##Stub));                                             \
+        data_type res = asc_atomic_inc((__gm__ data_type*)&addr, val);                                       \
+        EXPECT_EQ(res, val);                                                                                 \
+        GlobalMockObject::verify();                                                                          \
+    }
 
 TEST_ATOMIC_INC_GM(uint32_t)
 TEST_ATOMIC_INC_GM(uint64_t)

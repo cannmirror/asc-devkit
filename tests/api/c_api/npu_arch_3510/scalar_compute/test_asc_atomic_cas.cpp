@@ -15,33 +15,32 @@
 
 using namespace __asc_aicore;
 
-#define TEST_ATOMIC_CAS_GM(data_type)                                                              \
-class TestAtomicCas##Gm##_##data_type##CApi : public testing::Test {                               \
-protected:                                                                                         \
-    void SetUp() {}                                                                                \
-    void TearDown() {}                                                                             \
-};                                                                                                 \
-                                                                                                   \
-namespace {                                                                                        \
-data_type atomicCAS##_##gm##_##data_type##Stub(__gm__ data_type* address, data_type compare,      \
-    data_type val)                                                                                 \
-{                                                                                                  \
-    return compare;                                                                                \
-}                                                                                                  \
-}                                                                                                  \
-                                                                                                   \
-TEST_F(TestAtomicCas##Gm##_##data_type##CApi, c_api_atomic_cas_gm_##data_type##_Succ)              \
-{                                                                                                  \
-    data_type addr = 10;                                                                           \
-    data_type compare = 10;                                                                        \
-    data_type val = 5;                                                                             \
-    MOCKER_CPP(atomicCAS, data_type(__gm__ data_type*, data_type, data_type))                      \
-        .times(1)                                                                                  \
-        .will(invoke(atomicCAS##_##gm##_##data_type##Stub));                                       \
-    data_type res = asc_atomic_cas((__gm__ data_type*)&addr, compare, val);                        \
-    EXPECT_EQ(res, compare);                                                                       \
-    GlobalMockObject::verify();                                                                    \
-}
+#define TEST_ATOMIC_CAS_GM(data_type)                                                                           \
+    class TestAtomicCas##Gm##_##data_type##CApi : public testing::Test {                                        \
+    protected:                                                                                                  \
+        void SetUp() {}                                                                                         \
+        void TearDown() {}                                                                                      \
+    };                                                                                                          \
+                                                                                                                \
+    namespace {                                                                                                 \
+    data_type atomicCAS##_##gm##_##data_type##Stub(__gm__ data_type* address, data_type compare, data_type val) \
+    {                                                                                                           \
+        return compare;                                                                                         \
+    }                                                                                                           \
+    }                                                                                                           \
+                                                                                                                \
+    TEST_F(TestAtomicCas##Gm##_##data_type##CApi, c_api_atomic_cas_gm_##data_type##_Succ)                       \
+    {                                                                                                           \
+        data_type addr = 10;                                                                                    \
+        data_type compare = 10;                                                                                 \
+        data_type val = 5;                                                                                      \
+        MOCKER_CPP(atomicCAS, data_type(__gm__ data_type*, data_type, data_type))                               \
+            .times(1)                                                                                           \
+            .will(invoke(atomicCAS##_##gm##_##data_type##Stub));                                                \
+        data_type res = asc_atomic_cas((__gm__ data_type*)&addr, compare, val);                                 \
+        EXPECT_EQ(res, compare);                                                                                \
+        GlobalMockObject::verify();                                                                             \
+    }
 
 TEST_ATOMIC_CAS_GM(int32_t)
 TEST_ATOMIC_CAS_GM(uint32_t)
