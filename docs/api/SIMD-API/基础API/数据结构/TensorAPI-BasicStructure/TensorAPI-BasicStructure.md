@@ -33,8 +33,3 @@
 
 - **工具接口**
     - **[GetLayoutPattern](utils/GetLayoutPattern.md)**
-    - **[GetLayoutTrait](utils/GetLayoutTrait.md)**
-    - **[IsAttrTensorV](utils/IsAttrTensorV.md)**
-    - **[IsHardwareV](utils/IsHardwareV.md)**
-    - **[IsIntegralConstantV](utils/IsIntegralConstantV.md)**
-    - **[IsLayoutV](utils/IsLayoutV.md)**
