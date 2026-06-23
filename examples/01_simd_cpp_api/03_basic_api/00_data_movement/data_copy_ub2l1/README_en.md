@@ -25,7 +25,7 @@ This example implements data transfer from UB (Unified Buffer) to L1 (L1 Buffer)
 ## Example Description
 
 - Example functionality:
-  Transfers data from UB (Unified Buffer) to L1 (L1 Buffer), then performs Mmad matrix multiplication computation, and finally transfers the result to GM (Global Memory) via Fixpipe. Refer to [Inline Basic Data Transfer](../../../../../docs/api/SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L1-Buffer/UBToL1连续数据搬运（DataCopy）.md) for API documentation.
+  Transfers data from UB (Unified Buffer) to L1 (L1 Buffer), then performs Mmad matrix multiplication computation, and finally transfers the result to GM (Global Memory) via Fixpipe. Refer to [Inline Basic Data Transfer](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L1-Buffer/UBToL1连续数据搬运（DataCopy）.md) for API documentation.
 - Example specifications:
   <table>
   <tr><td rowspan="3" align="center">Example Input</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
