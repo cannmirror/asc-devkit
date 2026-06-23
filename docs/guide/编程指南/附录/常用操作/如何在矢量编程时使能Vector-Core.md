@@ -1,10 +1,10 @@
-# 如何在矢量编程时使能Vector Core<a name="ZH-CN_TOPIC_0000001883181813"></a>
+# 如何在矢量编程时启用Vector Core<a name="ZH-CN_TOPIC_0000001883181813"></a>
 
-针对Atlas 推理系列产品，其硬件架构除了AI Core外，还额外设置了单独的Vector Core，作为AI Core中Vector计算单元的补充，从而缓解Vector计算瓶颈。Vector Core只包括了两种基础计算资源：向量计算单元（Vector Unit）和标量计算单元（Scalar Unit），分别用于完成向量与标量的数据计算。矢量算子开发时，使能Vector Core，算子执行时会同时启动AI Core和Vector Core，这些核并行执行相同的核函数代码。
+针对Atlas 推理系列产品，其硬件架构除了AI Core外，还额外设置了单独的Vector Core，作为AI Core中Vector计算单元的补充，从而缓解Vector计算瓶颈。Vector Core只包括了两种基础计算资源：向量计算单元（Vector Unit）和标量计算单元（Scalar Unit），分别用于完成向量与标量的数据计算。矢量算子开发时，启用Vector Core，算子执行时会同时启动AI Core和Vector Core，这些核并行执行相同的核函数代码。
 
-本节将重点介绍如何使能Atlas 推理系列产品中的Vector Core。学习本节内容之前，建议您先熟悉[算子实现](../../../算子实践参考/SIMD算子实现/矢量编程/概述.md)、[基于样例工程完成Kernel直调](../基于样例工程完成Kernel直调.md)、[工程化算子开发](../../高级编程/高级特性/Aclnn算子工程化开发/概述.md)的相关内容，掌握基于AI Core的算子端到端开发流程。在此基础上本章将重点阐述使能Vector Core时的差异点。具体如下：
+本节将重点介绍如何启用Atlas 推理系列产品中的Vector Core。学习本节内容之前，建议您先熟悉[算子实现](../../../算子实践参考/SIMD算子实现/矢量编程/概述.md)、[基于样例工程完成Kernel直调](../基于样例工程完成Kernel直调.md)、[工程化算子开发](../../高级编程/高级特性/Aclnn算子工程化开发/概述.md)的相关内容，掌握基于AI Core的算子端到端开发流程。在此基础上本章将重点阐述启用Vector Core时的差异点。具体如下：
 
-1.  完成算子kernel侧开发时，需要通过宏[KERNEL\_TASK\_TYPE\_DEFAULT](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta3/API/ascendcopapi/atlasascendc_api_07_0218.html)使能Vector Core，算子执行时会同时启动AI Core和Vector Core， 此时AI Core会当成Vector Core使用。如下的代码样例展示了使能Vector Core的方法：
+1.  完成算子kernel侧开发时，需要通过宏[KERNEL\_TASK\_TYPE\_DEFAULT](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta3/API/ascendcopapi/atlasascendc_api_07_0218.html)启用Vector Core，算子执行时会同时启动AI Core和Vector Core， 此时AI Core会当成Vector Core使用。如下的代码样例展示了启用Vector Core的方法：
 
     ```
     extern "C" __global__ __aicore__ void add_custom(__gm__ uint8_t *x, __gm__ uint8_t *y, __gm__ uint8_t *z, __gm__ uint8_t *workspace, __gm__ uint8_t *tiling)
@@ -16,7 +16,7 @@
         GM_ADDR usr = AscendC::GetUserWorkspace(workspace);
         KernelAdd op;
         op.Init(x, y, z, tilingData.numBlocks, tilingData.totalLength, tilingData.tileNum);
-        KERNEL_TASK_TYPE_DEFAULT(KERNEL_TYPE_MIX_VECTOR_CORE); // 使能VectorCore
+        KERNEL_TASK_TYPE_DEFAULT(KERNEL_TYPE_MIX_VECTOR_CORE); // 启用VectorCore
         if (TILING_KEY_IS(1)) {
             op.Process1();
         } else if (TILING_KEY_IS(2)) {
@@ -46,7 +46,7 @@
         // 配套的host侧tiling函数示例：
         ge::graphStatus TilingFunc(gert::TilingContext* context)
         {	
-            // 使能VectorCore，将numBlocks置为AI Core中vector核数 + Vector Core中的vector核数
+            // 启用VectorCore，将numBlocks置为AI Core中vector核数 + Vector Core中的vector核数
             auto ascendcPlatform = platform_ascendc::PlatformAscendC(platformInfo);
             auto totalCoreNum = ascendcPlatform.GetCoreNumAic();
             // ASCENDXXX请替换为实际的版本型号
