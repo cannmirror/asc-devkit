@@ -289,7 +289,7 @@ tilingData.set_stepKa(8);
 
 **分析**：
 - 相比Case 4，Task Duration从5039.86μs降低到4156.76μs，耗时降低**17.52%**
-- aic_mte2_time从4051.458μs降低到3778.555μs，MTE2搬运时间降低了**6.47%**
+- aic_mte2_time从4051.458μs降低到3778.555μs，MTE2搬运时间降低了**6.74%**
 - aic_mac_ratio从69.4%提85.4%，cube利用率提升了**23.05%**
 - 后续优化方向：aic_mte2_ratio达到**96.3%**，达到MTE2 bound，成为性能提升瓶颈，后续将优化L2Cache以缓解MTE2 bound
 
@@ -423,7 +423,7 @@ UnitFlag功能示意图：
 ### Atlas A2训练系列芯片性能数据
 
 **综合优化效果**：
-- 本样例cube利用率提升了**67.7%**(18.7% → 86.4%)，已达到芯片峰值算力的**86.4%**
+- 本样例cube利用率（Cube计算单元时间占AI Core时间的比例，即`aic_mac_ratio`）提升了**67.7个百分点**(18.7% → 86.4%)
 - 通过Case 0到Case 8的递进优化，样例耗时降幅达**99.47%**(759363.98μs → 4012.44μs)
 
 | Case version | Task Duration(μs) | 端到端耗时相对Case 0 | Block Num | aicore_time(μs) | aic_mac_time(μs) | aic_mac_ratio | aic_scalar_time(μs) | aic_scalar_ratio | aic_mte1_time(μs) | aic_mte1_ratio | aic_mte2_time(μs) | aic_mte2_ratio | aic_fixpipe_time(μs) | aic_fixpipe_ratio |
@@ -457,7 +457,7 @@ $$误差 = \frac{aic\_mac\_time - cube\_time}{cube\_time} = \frac{{3076.396\mu s
 #### MTE2带宽分析
 
 读入数据总量：
-$$读入数据总量 = \left[\frac{N}{baseN} \times M \times K\right] + \left[\frac{M}{baseM} \times K \times N\right] \times dataType = (32 \times 8192 \times 8192) + (64 \times 8192 \times 8192) \times 2B = 12GB$$
+$$读入数据总量 = \left(\left[\frac{N}{baseN} \times M \times K\right] + \left[\frac{M}{baseM} \times K \times N\right]\right) \times dataType = (32 \times 8192 \times 8192 + 64 \times 8192 \times 8192) \times 2B = 12GB$$
 
 理想情况下假设L2Cache容量足够大，首次从HBM中载入数据，后续数据均从L2Cache中读取，L2Cache峰值带宽约为5TB/s，HBM带宽约为1.8TB/s。
 $$第一次从HBM读入的数据总量 = M \times K \times dataType + K \times N \times dataType = 256MB$$
@@ -501,7 +501,7 @@ $$误差 = \frac{aic\_mac\_time - cube\_time}{cube\_time} = \frac{{2549.657\mu s
 #### MTE2带宽分析
 
 读入数据总量：
-$$读入数据总量 = \left[\frac{N}{baseN} \times M \times K\right] + \left[\frac{M}{baseM} \times K \times N\right] \times dataType = (32 \times 8192 \times 8192) + (32 \times 8192 \times 8192) \times 2B = 8GB$$
+$$读入数据总量 = \left(\left[\frac{N}{baseN} \times M \times K\right] + \left[\frac{M}{baseM} \times K \times N\right]\right) \times dataType = (32 \times 8192 \times 8192 + 32 \times 8192 \times 8192) \times 2B = 8GB$$
 
 理想情况下假设L2Cache容量足够大，首次从HBM中载入数据，后续数据均从L2Cache中读取，L2Cache峰值带宽约为5TB/s，HBM带宽约为1.6TB/s。
 $$第一次从HBM读入的数据总量 = M \times K \times dataType + K \times N \times dataType = 256MB$$

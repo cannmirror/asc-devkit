@@ -32,8 +32,7 @@
 <table>
 <caption>样例规格表</caption>
 <tr><td rowspan="1" align="center">类别</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-<tr><td rowspan="3" align="center">样例输入</td></tr>
-<tr><td align="center">x</td><td align="center">[32, 32]</td><td align="center">half</td><td align="center">ND</td></tr>
+<tr><td rowspan="2" align="center">样例输入</td><td align="center">x</td><td align="center">[32, 32]</td><td align="center">half</td><td align="center">ND</td></tr>
 <tr><td align="center">y</td><td align="center">[32, 32]</td><td align="center">half</td><td align="center">ND</td></tr>
 <tr><td rowspan="1" align="center">样例输出</td><td align="center">z</td><td align="center">[32, 32]</td><td align="center">float</td><td align="center">ND</td></tr>
 <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">set_loaddata_boundary</td></tr>

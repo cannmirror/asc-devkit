@@ -2,7 +2,7 @@
 
 ## Overview
 
-This section provides several examples for features that are incompatible with Atlas A2 Training Series Products/Atlas A2 Inference Series Products and Ascend 950PR/Ascend 950DT. Users can migrate according to the examples.
+This section provides several examples for features that have compatibility differences among Atlas A2 Training Series Products/Atlas A2 Inference Series Products, Atlas A3 Training Series Products/Atlas A3 Inference Series Products, and Ascend 950PR/Ascend 950DT. Users can migrate and adapt according to the examples.
 
 This section uses the `<<<>>>` kernel call operator to complete the basic flow of running operator kernel functions on the NPU side, providing corresponding end-to-end implementations.
 

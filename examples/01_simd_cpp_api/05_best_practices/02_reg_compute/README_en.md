@@ -2,7 +2,7 @@
 
 ## Overview
 
-VF-based performance optimization examples using the <<<>>> direct invocation implementation method, introducing VF fusion optimization and loop unrolling optimization methods.
+VF-based performance optimization examples using the `<<<>>>` kernel direct invocation operator, introducing VF fusion optimization, loop splitting optimization, and loop unrolling optimization methods.
 
 ## Example List
 | Directory Name | Description | Supported Products |

@@ -37,10 +37,10 @@
 
 **样例功能**：
 
-样例实现FloorMod计算，FloorMod常用于张量计算中的周期性索引、分组映射等需要保持负数取模语义一致的场景。计算公式如下：
+样例实现FloorMod计算，FloorMod常用于张量计算中的周期性索引、分组映射等需要保持负数取模语义一致的场景。其中 $r$ 为 C/C++ 取余结果（即 $r = x - \operatorname{trunc}(x / y) \times y$，符号跟随被除数 $x$），再经符号修正得到 FloorMod 结果 $z$（符号跟随除数 $y$）。计算公式如下：
 
 $$
-r = x \bmod y
+r = x - \operatorname{trunc}(x / y) \times y
 $$
 
 $$
@@ -64,6 +64,8 @@ $$
 <tr><td align="center">SCENARIO_NUM=2</td><td colspan="3" align="center"><code>floor_mod_simt_non_contiguous_custom</code></td></tr>
 <tr><td align="center">SCENARIO_NUM=3</td><td colspan="3" align="center"><code>floor_mod_simt_contiguous_custom</code></td></tr>
 </table>
+
+> **输入约束：** 除数 $y$ 取值必须为非零（SIMT 路径直接执行取模，$y$ 为 0 会触发除零问题）。数据生成脚本会避开 0 值。
 
 ## 样例实现
 
@@ -231,7 +233,7 @@ __aicore__ inline void CopyIn(
 }
 
 // SIMT Compute(UB)
-template <typename T>
+template <typename T, uint32_t TileLength>
 __simt_vf__ inline void floor_mod_simt_non_contiguous(
     __ubuf__ T* x, __ubuf__ T* y, __ubuf__ T* z, uint32_t inputTotalLength)
 {
@@ -404,7 +406,7 @@ __aicore__ inline void CopyOut(uint32_t tileIdx, uint32_t count, AscendC::LocalT
   python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
   ```
 
- 使用NPU仿真模式时，添加 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
+  使用NPU仿真模式时，添加 `-DCMAKE_ASC_RUN_MODE=sim` 参数即可。
 
 - 编译选项说明
 

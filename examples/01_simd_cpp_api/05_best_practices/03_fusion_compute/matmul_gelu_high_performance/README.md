@@ -188,7 +188,7 @@ AIC侧每完成一个 (baseM × baseN)大小子块的Fixpipe输出后，通过 `
 // AIC侧 CopyOutAic():
 AscendC::CrossCoreSetFlag<0x2, PIPE_FIX>(0x8);  // 通知AIV数据就绪
 
-// AIV侧 GeluAndCopyOutAivSeparate() / GeluAndCopyOutAiv():
+// AIV侧 GeluFromGM() / GeluFromUB():
 AscendC::CrossCoreWaitFlag(0x8);  // 等待AIC侧Fixpipe完成
 ```
 
@@ -283,7 +283,7 @@ AscendC::DataCopyPad<float>(cGM[gmOffset], geluOutUB, copyOutParams);
 
 **性能数据**
 
-> 以下数据基于msprof工具测量，取5次中位数。矩阵规格M=4096, K=1024, N=1536(A2)/N=1024(950PR)，输入数据类型float16，输出数据类型float32。
+> 以下数据基于msprof工具测量，取5次中位数。矩阵规格M=8192, K=8192, N=8192，输入数据类型float16，输出数据类型float32。
 
 ##### Atlas A2训练系列芯片
 
@@ -371,7 +371,7 @@ AscendC::DataCopyPad<float>(cGM[mBlockIdx * baseM * N + nBlockIdx * baseN + loca
 
 **性能数据**
 
-> 以下数据基于msprof工具测量，取5次中位数。矩阵规格M=4096, K=1024, N=1024，输入数据类型float16，输出数据类型float32。
+> 以下数据基于msprof工具测量，取5次中位数。矩阵规格M=8192, K=8192, N=8192，输入数据类型float16，输出数据类型float32。
 
 ##### Ascend 950PR芯片
 
@@ -405,7 +405,7 @@ AscendC::DataCopyPad<float>(cGM[mBlockIdx * baseM * N + nBlockIdx * baseN + loca
 
 - 配置环境变量
 
-  请根据当前环境上CANN开发套件包的[安装方式](https://gitcode.com/cann/asc-devkit/blob/master/docs/quick_start.md#prepare&install)，配置环境变量。
+  请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，配置环境变量。
   ```bash
   source ${install_path}/cann/set_env.sh
   ```

@@ -99,7 +99,7 @@ for (uint32_t i = 0; i < mBlocks; ++i) {
     int srcOffset = 0;
     int dstOffset = 0;
     for (uint32_t i = 0; i < mBlocks; ++i) {
-        AscendC::Load2DParams loadDataParams;
+        AscendC::LoadData2DParams loadDataParams;
         loadDataParams.repeatTimes = kBlocks;
         loadDataParams.srcStride = mBlocks;
         loadDataParams.ifTranspose = false;
@@ -118,7 +118,7 @@ constexpr uint32_t kBlocks = K / CUBE_BLOCK;
 int srcOffset = 0;
 int dstOffset = 0;
 for (uint32_t i = 0; i < kBlocks; ++i) {
-    AscendC::Load2DParams loadDataParams;
+    AscendC::LoadData2DParams loadDataParams;
     loadDataParams.repeatTimes = mBlocks;
     loadDataParams.srcStride = 1;
     loadDataParams.ifTranspose = false;
@@ -190,6 +190,11 @@ AscendC::Mmad(co1Local, a2, b2, mmadParams);
 - `SCENARIO_NUM=2`（L0A 复用）：将 A 矩阵按 M 轴拆分为上下两半，分别计算 C1=A1×B 和 C2=A2×B。
 
 ```cpp
+mmadParams.m = M / 2;  // M 轴拆分为上下两半，每次计算半个 M
+mmadParams.n = N;
+mmadParams.k = K;
+mmadParams.cmatrixInitVal = true;
+mmadParams.isBias = false;
 AscendC::Mmad(co1Local, a2, b2, mmadParams);
 AscendC::Mmad(co1Local[M * N / 2], a2[M * K / 2], b2, mmadParams);  // 下半部分 A2[32, 64]
 ```

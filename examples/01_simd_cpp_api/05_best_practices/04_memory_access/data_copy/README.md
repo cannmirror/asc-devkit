@@ -28,7 +28,7 @@
 
 ## 样例描述
 
-本样例输入为 half 类型二维矩阵，格式为 ND。对齐场景输入shape为[12288, 12288], 非对齐场景输入shape为[12287, 12287]。通过编译选项 `COPY_DST` 选择目标存储位置，通过 `SCENARIO_NUM` 选择不同搬运场景。
+本样例输入为 half 类型二维矩阵，格式为 ND。对齐场景输入shape为[12288, 12288], 非对齐场景输入shape为[12288, 12287]。通过编译选项 `COPY_DST` 选择目标存储位置，通过 `SCENARIO_NUM` 选择不同搬运场景。
 
 - `COPY_DST=UB`：使用 AIV 核执行 GM 到 UB 搬运，Kernel 名为 `kernel_data_copy_pad_gm2ub`
 - `COPY_DST=L1`：使用 AIC 核执行 GM 到 L1 搬运，Kernel 名为 `kernel_data_copy_gm2l1`
@@ -424,7 +424,7 @@ for (uint32_t mBlockIdx = 0; mBlockIdx < fullMBlockCount; mBlockIdx++) {
   示例：
 
   ```bash
-  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..
+  cmake -DSCENARIO_NUM=$SCENARIO_NUM -DCOPY_DST=$COPY_DST -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..
   make -j
   ```
 

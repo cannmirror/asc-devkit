@@ -109,7 +109,7 @@ __global__ __vector__ void empty_kernel(...)
 
 ---
 
-### Case 1: vf调用次数对头开销的影响（SCENARIO_NUM=6-8）
+### Case 1: vf调用次数对调度头开销的影响（SCENARIO_NUM=6-8）
 
 **样例目标**：
 
@@ -347,12 +347,14 @@ __global__ __vector__ void gather_kernel(..., uint32_t thread_num)
   ./grid_config                        # 执行样例
   ```
 
-  编译选项说明
+- 编译选项说明
 
   | 选项             | 可选值      | 说明              |
   | ---------------- | ----------- | ----------------- |
   | `CMAKE_ASC_ARCHITECTURES` | `dav-3510` | NPU 架构：本样例仅支持 dav-3510（Ascend 950PR/Ascend 950DT） |
   | `SCENARIO_NUM` | `1`-`16` | 样例类型，默认为1 |
+
+- 执行结果
 
   执行结果如下，说明精度对比成功。
 
@@ -373,8 +375,8 @@ msprof ./grid_config   # 分析性能
 ```bash
 PROF_xxxx_XXXXXX
 ├── device_{id}
-└── host
-└── mindstudio_profiler_log
+├── host
+├── mindstudio_profiler_log
 └── mindstudio_profiler_output    # 保存Host和各个Device的性能数据汇总
     ├── msprof_*.json
     ├── xx_*.csv

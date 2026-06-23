@@ -110,8 +110,8 @@ $$
   |  B:CopyGM2L1 / ScaleB:CopyGM2L1   MTE2
   v
   L1
-  |  A:CopyL10L0A / ScaleA:CopyL10L0ScaleA        MTE1
-  |  B:CopyL10L0B / ScaleB:CopyL10L0ScaleB        MTE1
+  |  A:CopyL12L0A / ScaleA:CopyL12L0ScaleA        MTE1
+  |  B:CopyL12L0B / ScaleB:CopyL12L0ScaleB        MTE1
   v
   L0A / L0B / L0ScaleA / L0ScaleB
   |
@@ -153,7 +153,7 @@ MxMatmul 的输入不是两路，而是四路：A、B、ScaleA、ScaleB。因此
 |------|----------|-----------|---------|
 | A | `Copy` | `[singleCoreM, singleCoreK]` | `[baseM, stepK * baseK]` |
 | B | `Copy` | `[singleCoreN, singleCoreK]` | `[baseN, stepK * baseK]` |
-| ScaleA | `Copy` | `[singleCoreM, singleCoreSK]` | `[baseM, scaleFactorK * stepK * baseK]` |
+| ScaleA | `Copy` | `[singleCoreM, singleCoreSK]` | `[baseM, scaleFactorK * stepK * baseSK]` |
 | ScaleB | `Copy` | `[singleCoreN, singleCoreSK]` | `[baseN, scaleFactorK * stepK * baseK]` |
 
 通过 `stepK=2` 一次搬入 `stepK * baseM * baseK` 的 A 矩阵数据 和 `stepK * baseN * baseK` 的 B 矩阵数据，减少搬运指令数量，提高 GM 到 L1 的搬运效率。
@@ -166,7 +166,7 @@ scale 的搬运粒度由 `scaleFactorK=4` 控制，一次搬入 `scaleFactorK * 
 AscendC::Te::Copy(gm2L1Atom, l1TensorAPing, a.Slice(AscendC::Te::MakeCoord(mBlockIdx * baseM, dataNextKChunkIdx * baseK), AscendC::Te::MakeShape(curM, stepCurK)));
 ```
 
-以 ScaleA 矩阵数据搬运为例。`Copy` 一次搬入 `scaleFactorK * stepK` 个 K 方向 base 块，每个base块为 `baseM * baseK`：
+以 ScaleA 矩阵数据搬运为例。`Copy` 一次搬入 `scaleFactorK * stepK` 个 K 方向 base 块，每个base块为 `baseM * baseSK`（其中 `baseSK = align_even(ceil(baseK / 32))`）：
 
 ```cpp
 AscendC::Te::Copy(gm2L1Atom, l1TensorAsPing, as.Slice(AscendC::Te::MakeCoord(mBlockIdx * baseM, scaleNextKChunkIdx * baseScaleK), AscendC::Te::MakeShape(curM, stepCurScaleK)));
@@ -360,7 +360,7 @@ Ascend 950PR 芯片性能数据如下：
 |------|------------------|-----------|----------------|-----------------|---------------|-------------------|-----------------|------------------|----------------|------------------|----------------|--------------------|-------------------|
 | Tensor API MxMatmul | 682.316 | 32 | 681.54 | 640.591 | 0.94 | 63.466 | 0.093 | 315.894 | 0.464 | 589.308 | 0.865 | 31.646 | 0.046 |
 
-可以看到，本样例已达到理论性能峰值的 `94.0%`（即表中的`aic_mac_ratio`）。
+可以看到，本样例的 Cube 计算时间占比（即表中的`aic_mac_ratio`）达到 `94.0%`。
 
 ### Cube计算性能分析
 

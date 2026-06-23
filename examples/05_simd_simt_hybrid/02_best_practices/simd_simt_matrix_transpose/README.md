@@ -211,7 +211,7 @@ output_tile[tile_col + tile_row * height] = input_tile[tile_col * TILE_DIM + til
 - 通过Case 0到Case 1的访存合并优化，样例Task Duration从63.731μs降低到30.602μs，耗时下降约52.0%。
 - Case 1相对Case 0性能提升约2.08倍，说明通过UB中转改善GM写回连续性后，端到端耗时有明显收益。
 
-| Case version | Task Duration(μs) | 端到端耗时相对Case 0 | 优化点                           |
+| Case version | Task Duration(μs) | 端到端性能相对Case 0 | 优化点                           |
 | ------------ | ----------------- | -------------------- | -------------------------------- |
 | Case 0       | 63.731            | **1x**         | 直接索引转置，GM连续读、非连续写 |
 | Case 1       | 30.602            | **2.08x**      | UB中转，全局访存合并             |
@@ -244,15 +244,16 @@ output_tile[tile_col + tile_row * height] = input_tile[tile_col * TILE_DIM + til
   ./demo                               # 执行样例
   ```
 
-  编译选项说明
+- 编译选项说明
 
   | 选项             | 可选值      | 说明              |
   | ---------------- | ----------- | ----------------- |
   | `CMAKE_ASC_ARCHITECTURES` | `dav-3510` | NPU 架构：本样例仅支持 dav-3510（Ascend 950PR/Ascend 950DT） |
   | `SCENARIO_NUM` | `0`-`1` | 样例类型，默认为0 |
 
-  执行结果如下，说明精度对比成功。
+- 执行结果
 
+  执行结果如下，说明精度对比成功。
 
   ```text
   [Success] Case accuracy is verification passed.

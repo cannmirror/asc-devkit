@@ -98,7 +98,9 @@ __simd_vf__ inline static void GeluEltwiseBasic(
     AscendC::Reg::RegTensor<float> xReg, yReg;
 
     for (uint16_t i = 0; i < loopNum; ++i) {
-        mask = AscendC::Reg::UpdateMask<float>(n);
+        // Case 0（scenarioNum == 0）固定使用 VL32 掩码（32 个 float、128 bytes 并行度）；
+        // 非 Case 0 才使用 UpdateMask<float>(n) 按剩余元素数更新掩码
+        mask = AscendC::Reg::CreateMask<float, AscendC::Reg::MaskPattern::VL32>();
         // Gelu计算
         AscendC::Reg::LoadAlign(xReg, xAddr + i * oneRepeatSize);
         AscendC::Reg::Mul(yReg, xReg, xReg, mask);
