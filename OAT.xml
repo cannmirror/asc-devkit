@@ -27,6 +27,7 @@
                 <filteritem type="filename" name="*.yml" desc="configuration file"/>
                 <filteritem type="filename" name=".clang-format" desc="tool configuration file"/>
                 <filteritem type="filename" name=".clangd" desc="tool configuration file"/>
+                <filteritem type="filename" name=".clangd.in" desc="tool configuration template"/>
                 <filteritem type="filename" name=".gitattributes" desc="git attributes file"/>
                 <filteritem type="filename" name="LICENSE" desc="license text"/>
                 <filteritem type="filename" name="OAT.xml" desc="audit tool configuration file"/>
@@ -50,6 +51,7 @@
                 <filteritem type="filename" name="*.yml" desc="configuration file"/>
                 <filteritem type="filename" name=".clang-format" desc="tool configuration file"/>
                 <filteritem type="filename" name=".clangd" desc="tool configuration file"/>
+                <filteritem type="filename" name=".clangd.in" desc="tool configuration template"/>
                 <filteritem type="filename" name=".gitattributes" desc="git attributes file"/>
                 <filteritem type="filename" name="LICENSE" desc="license text"/>
                 <filteritem type="filename" name="OAT.xml" desc="audit tool configuration file"/>
@@ -67,6 +69,7 @@
             <filefilter name="binaryFileTypePolicyFilter" desc="Filters for binary file policies">
                 <filteritem type="filename" name="*.png" desc="png file"/>
                 <filteritem type="filename" name=".clangd" desc="tool configuration file"/>
+                <filteritem type="filename" name=".clangd.in" desc="tool configuration template"/>
                 <filteritem type="filename" name="SWSCRL.crl" desc="certificate revocation list"/>
             </filefilter>
         </filefilterlist>

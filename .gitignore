@@ -1,5 +1,6 @@
 .vscode
 .idea/
+.clangd.local
 /build/
 build_out
 output
