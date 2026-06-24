@@ -49,7 +49,7 @@
 
 ## 功能说明<a name="section618mcpsimp"></a>
 
-头文件路径为："basic_api/kernel_operator_vec_ternary_scalar_intf.h"。
+头文件路径为：`"basic_api/kernel_operator_vec_ternary_scalar_intf.h"`。
 
 依次计算按元素求和、结果进行deq量化后再进行relu计算（结果和0对比取较大值）。计算公式如下：
 
@@ -146,7 +146,7 @@ $$
 ## 约束说明<a name="section633mcpsimp"></a>
 
 - 地址对齐约束参考[地址对齐约束](../../../通用说明和约束.md#section796754519912)。
-- 操作数地址重叠约束请参考[地址重叠约束](../../../通用说明和约束.md#section796754519912)。
+- 操作数地址重叠约束请参考[地址重叠约束](../../../通用说明和约束.md#section668772811100)。
 - 该接口需要与`SetDeqScale`配合使用，关系映射表如下：
 
   | AddDeqRelu使用场景 | 对应使用的`SetDeqScale`函数原型                  |
