@@ -4,7 +4,9 @@
 
 -   **[asc\_vf\_call](asc_vf_call.md)**  
 
--   **[Reg数据搬运](Reg数据搬运/Reg数据搬运.md)**  
+-   **[Reg数据搬入](Reg数据搬入/Reg数据搬入.md)**  
+
+-   **[Reg数据搬出](Reg数据搬出/Reg数据搬出.md)**  
 
 -   **[MaskReg计算](MaskReg计算/MaskReg计算.md)**  
 
