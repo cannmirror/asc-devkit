@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file layernormgrad.h
@@ -61,14 +61,17 @@ namespace AscendC {
  * \param [in] shapeInfo, LayerNormGrad Shape Info
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void LayerNormGrad(const LocalTensor<T>& outputPdX, const LocalTensor<T>& resForGamma,
-    const LocalTensor<T>& inputDy, const LocalTensor<T>& inputX, const LocalTensor<T>& inputVariance,
-    const LocalTensor<T>& inputMean, const LocalTensor<T>& inputGamma, LocalTensor<uint8_t>& sharedTmpBuffer, T epsilon,
-    LayerNormGradTiling& tiling, const LayerNormGradShapeInfo& shapeInfo = {})
+__aicore__ inline void LayerNormGrad(
+    const LocalTensor<T>& outputPdX, const LocalTensor<T>& resForGamma, const LocalTensor<T>& inputDy,
+    const LocalTensor<T>& inputX, const LocalTensor<T>& inputVariance, const LocalTensor<T>& inputMean,
+    const LocalTensor<T>& inputGamma, LocalTensor<uint8_t>& sharedTmpBuffer, T epsilon, LayerNormGradTiling& tiling,
+    const LayerNormGradShapeInfo& shapeInfo = {})
 {
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
-    LayerNormGradImpl<T, isReuseSource>(outputPdX, resForGamma, inputDy, inputX, inputVariance, inputMean, inputGamma,
-        sharedTmpBuffer, epsilon, tiling, shapeInfo);
+#if defined(__NPU_ARCH__) && \
+    (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+    LayerNormGradImpl<T, isReuseSource>(
+        outputPdX, resForGamma, inputDy, inputX, inputVariance, inputMean, inputGamma, sharedTmpBuffer, epsilon, tiling,
+        shapeInfo);
 #endif
 }
 /* !
@@ -88,14 +91,16 @@ __aicore__ inline void LayerNormGrad(const LocalTensor<T>& outputPdX, const Loca
  * \param [in] shapeInfo, LayerNormGrad Shape Info
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void LayerNormGrad(const LocalTensor<T>& outputPdX, const LocalTensor<T>& resForGamma,
-    const LocalTensor<T>& inputDy, const LocalTensor<T>& inputX, const LocalTensor<T>& inputVariance,
-    const LocalTensor<T>& inputMean, const LocalTensor<T>& inputGamma, T epsilon, LayerNormGradTiling& tiling,
+__aicore__ inline void LayerNormGrad(
+    const LocalTensor<T>& outputPdX, const LocalTensor<T>& resForGamma, const LocalTensor<T>& inputDy,
+    const LocalTensor<T>& inputX, const LocalTensor<T>& inputVariance, const LocalTensor<T>& inputMean,
+    const LocalTensor<T>& inputGamma, T epsilon, LayerNormGradTiling& tiling,
     const LayerNormGradShapeInfo& shapeInfo = {})
 {
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
-    LayerNormGradImpl<T, isReuseSource>(outputPdX, resForGamma, inputDy, inputX, inputVariance, inputMean, inputGamma,
-        epsilon, tiling, shapeInfo);
+#if defined(__NPU_ARCH__) && \
+    (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+    LayerNormGradImpl<T, isReuseSource>(
+        outputPdX, resForGamma, inputDy, inputX, inputVariance, inputMean, inputGamma, epsilon, tiling, shapeInfo);
 #endif
 }
 #pragma end_pipe

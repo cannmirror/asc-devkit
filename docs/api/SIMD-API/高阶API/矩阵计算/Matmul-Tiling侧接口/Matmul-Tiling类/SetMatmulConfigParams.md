@@ -29,16 +29,17 @@ void SetMatmulConfigParams(const MatmulConfigParams& configParams)
 | configParams | 输入 | config相关参数，类型为MatmulConfigParams，结构体具体定义如下方代码所示。其中的参数说明请参考[表2](#table15780447181917)。 |
 
 ```
-struct MatmulConfigParams
-{
+struct MatmulConfigParams {
     int32_t mmConfigType;
     bool enableL1CacheUB;
     ScheduleType scheduleType;
     MatrixTraverse traverse;
     bool enVecND2NZ;
-    MatmulConfigParams(int32_t mmConfigTypeIn = 1, bool enableL1CacheUBIn = false,
+    MatmulConfigParams(
+        int32_t mmConfigTypeIn = 1, bool enableL1CacheUBIn = false,
         ScheduleType scheduleTypeIn = ScheduleType::INNER_PRODUCT, MatrixTraverse traverseIn = MatrixTraverse::NOSET,
-        bool enVecND2NZIn = false) {
+        bool enVecND2NZIn = false)
+    {
         mmConfigType = mmConfigTypeIn;
         enableL1CacheUB = enableL1CacheUBIn;
         scheduleType = scheduleTypeIn;
@@ -81,8 +82,9 @@ tiling.SetShape(1024, 1024, 1024);
 tiling.SetOrgShape(1024, 1024, 1024);
 tiling.SetBias(true);
 tiling.SetBufferSpace(-1, -1, -1);
-tiling.SetMatmulConfigParams(0);  // 额外设置
-// matmul_tiling::MatmulConfigParams configParams = {1, false, matmul_tiling::ScheduleType::OUTER_PRODUCT, matmul_tiling::MatrixTraverse::FIRSTM};
+tiling.SetMatmulConfigParams(0); // 额外设置
+// matmul_tiling::MatmulConfigParams configParams =
+//     {1, false, matmul_tiling::ScheduleType::OUTER_PRODUCT, matmul_tiling::MatrixTraverse::FIRSTM};
 // tiling.SetMatmulConfigParams(configParams);
 optiling::TCubeTiling tilingData;
 int ret = tiling.GetTiling(tilingData);

@@ -18,7 +18,7 @@
         ```
 
         ```
-        explicit BatchMatmulTiling(const platform_ascendc::PlatformAscendC &ascendcPlatform)
+        explicit BatchMatmulTiling(const platform_ascendc::PlatformAscendC& ascendcPlatform)
         ```
 
     -   使用PlatformInfo传入信息
@@ -30,7 +30,7 @@
         ```
 
         ```
-        explicit MultiCoreMatmulTiling(const PlatformInfo &platform)
+        explicit MultiCoreMatmulTiling(const PlatformInfo& platform)
         ```
 
 -   无参构造函数

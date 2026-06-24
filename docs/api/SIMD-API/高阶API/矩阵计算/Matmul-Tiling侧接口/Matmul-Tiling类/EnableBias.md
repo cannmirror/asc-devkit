@@ -32,5 +32,5 @@ int32_t EnableBias(bool isBiasIn = false)
 auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
 matmul_tiling::MatmulApiTiling tiling(ascendcPlatform);
 
-tiling.EnableBias(true);  // 设置Bias是否参与运算
+tiling.EnableBias(true); // 设置Bias是否参与运算
 ```

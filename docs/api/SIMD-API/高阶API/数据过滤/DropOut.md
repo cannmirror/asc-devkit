@@ -126,10 +126,10 @@ __aicore__ inline void DropOut(const LocalTensor<T>& dstLocal, const LocalTensor
 
 ```
 struct DropOutShapeInfo {
-    __aicore__ DropOutShapeInfo(){};
-    uint32_t firstAxis = 0; 
-    uint32_t srcLastAxis = 0; 
-    uint32_t maskLastAxis = 0; 
+    __aicore__ DropOutShapeInfo() {};
+    uint32_t firstAxis = 0;
+    uint32_t srcLastAxis = 0;
+    uint32_t maskLastAxis = 0;
 };
 ```
 

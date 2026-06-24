@@ -30,7 +30,7 @@ uint32_t SetDebugMode(uint8_t debugMode)
 ## 调用示例
 
 ```
-const char *groupName = "testGroup";
+const char* groupName = "testGroup";
 uint32_t opType = HCCL_CMD_REDUCE_SCATTER;
 std::string algConfig = "ReduceScatter=level0:fullmesh";
 uint32_t reduceType = HCCL_REDUCE_SUM;

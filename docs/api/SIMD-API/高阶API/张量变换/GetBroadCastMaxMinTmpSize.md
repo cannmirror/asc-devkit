@@ -47,5 +47,5 @@ ge::Shape srcShape(srcShapeVec);
 ge::Shape dstShape(dstShapeVec);
 uint32_t maxValue{0};
 uint32_t minValue{0};
-AscendC::GetBroadCastMaxMinTmpSize(ascendcPlatform, srcShape,dstShape, 2, false, maxValue, minValue);
+AscendC::GetBroadCastMaxMinTmpSize(ascendcPlatform, srcShape, dstShape, 2, false, maxValue, minValue);
 ```

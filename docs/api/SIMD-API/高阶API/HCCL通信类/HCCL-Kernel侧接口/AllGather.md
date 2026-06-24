@@ -68,26 +68,28 @@ __aicore__ inline HcclHandle AllGather(GM_ADDR sendBuf, GM_ADDR recvBuf, uint64_
     ![非多轮切分场景下4卡AllGather通信](../../../../figures/非多轮切分场景下4卡AllGather通信.png)
 
     ```
-    extern "C" __global__ __aicore__ void all_gather_custom(GM_ADDR xGM, GM_ADDR yGM, GM_ADDR workspaceGM, GM_ADDR tilingGM) {
-        auto sendBuf = xGM;  // xGM为AllGather的输入GM地址
-        auto recvBuf = yGM;  // yGM为AllGather的输出GM地址
-        uint64_t sendCount = 300;  // 每张卡均有300个float16的数据
-        uint64_t strideCount = 0;  // 非切分场景strideCount可设置为0
-        REGISTER_TILING_DEFAULT(AllGatherCustomTilingData); //AllGatherCustomTilingData为对应算子头文件定义的结构体
+    extern "C" __global__ __aicore__ void all_gather_custom(GM_ADDR xGM, GM_ADDR yGM, GM_ADDR workspaceGM, GM_ADDR tilingGM)
+    {
+        auto sendBuf = xGM;                                 // xGM为AllGather的输入GM地址
+        auto recvBuf = yGM;                                 // yGM为AllGather的输出GM地址
+        uint64_t sendCount = 300;                           // 每张卡均有300个float16的数据
+        uint64_t strideCount = 0;                           // 非切分场景strideCount可设置为0
+        REGISTER_TILING_DEFAULT(AllGatherCustomTilingData); // AllGatherCustomTilingData为对应算子头文件定义的结构体
         GET_TILING_DATA_WITH_STRUCT(AllGatherCustomTilingData, tilingData, tilingGM);
 
         Hccl hccl;
-        GM_ADDR contextGM = AscendC::GetHcclContext<0>();  // AscendC自定义算子kernel中，通过此方式获取HCCL context
+        GM_ADDR contextGM = AscendC::GetHcclContext<0>(); // AscendC自定义算子kernel中，通过此方式获取HCCL context
 
-        if (AscendC::g_coreType == AIV) {  // 指定AIV核通信
+        if (AscendC::g_coreType == AIV) { // 指定AIV核通信
             hccl.InitV2(contextGM, &tilingData);
             auto ret = hccl.SetCcTilingV2(offsetof(AllGatherCustomTilingData, allGatherCcTiling));
             if (ret != HCCL_SUCCESS) {
-              return;
+                return;
             }
-            HcclHandle handleId1 = hccl.AllGather<true>(sendBuf, recvBuf, sendCount, HcclDataType::HCCL_DATA_TYPE_FP16, strideCount);
+            HcclHandle handleId1 =
+                hccl.AllGather<true>(sendBuf, recvBuf, sendCount, HcclDataType::HCCL_DATA_TYPE_FP16, strideCount);
             hccl.Wait(handleId1);
-            AscendC::SyncAll<true>();  // 全AIV核同步，防止0核执行过快，提前调用hccl.Finalize()接口，导致其他核Wait卡死
+            AscendC::SyncAll<true>(); // 全AIV核同步，防止0核执行过快，提前调用hccl.Finalize()接口，导致其他核Wait卡死
             hccl.Finalize();
         }
     }
@@ -106,41 +108,44 @@ __aicore__ inline HcclHandle AllGather(GM_ADDR sendBuf, GM_ADDR recvBuf, uint64_
     ![第一轮4卡AllGather示意图](../../../../figures/第一轮4卡AllGather示意图.png)
 
     ```
-    extern "C" __global__ __aicore__ void all_gather_custom(GM_ADDR xGM, GM_ADDR yGM, GM_ADDR workspaceGM, GM_ADDR tilingGM) {
-        constexpr uint32_t tileNum = 2U;   // 首块数量
-        constexpr uint64_t tileLen = 128U; // 首块数据个数
-        constexpr uint32_t tailNum = 1U;   // 尾块数量
-        constexpr uint64_t tailLen = 44U;  // 尾块数据个数
-        auto sendBuf = xGM;  // xGM为AllGather的输入GM地址
-        auto recvBuf = yGM;  // yGM为AllGather的输出GM地址
-        REGISTER_TILING_DEFAULT(AllGatherCustomTilingData); //AllGatherCustomTilingData为对应算子头文件定义的结构体
+    extern "C" __global__ __aicore__ void all_gather_custom(GM_ADDR xGM, GM_ADDR yGM, GM_ADDR workspaceGM, GM_ADDR tilingGM)
+    {
+        constexpr uint32_t tileNum = 2U;                    // 首块数量
+        constexpr uint64_t tileLen = 128U;                  // 首块数据个数
+        constexpr uint32_t tailNum = 1U;                    // 尾块数量
+        constexpr uint64_t tailLen = 44U;                   // 尾块数据个数
+        auto sendBuf = xGM;                                 // xGM为AllGather的输入GM地址
+        auto recvBuf = yGM;                                 // yGM为AllGather的输出GM地址
+        REGISTER_TILING_DEFAULT(AllGatherCustomTilingData); // AllGatherCustomTilingData为对应算子头文件定义的结构体
         GET_TILING_DATA_WITH_STRUCT(AllGatherCustomTilingData, tilingData, tilingGM);
 
         Hccl hccl;
-        GM_ADDR contextGM = AscendC::GetHcclContext<0>();  // AscendC自定义算子kernel中，通过此方式获取HCCL context
-        if (AscendC::g_coreType == AIV) {  // 指定AIV核通信
+        GM_ADDR contextGM = AscendC::GetHcclContext<0>(); // AscendC自定义算子kernel中，通过此方式获取HCCL context
+        if (AscendC::g_coreType == AIV) {                 // 指定AIV核通信
             hccl.InitV2(contextGM, &tilingData);
             auto ret = hccl.SetCcTilingV2(offsetof(AllGatherCustomTilingData, allGatherCcTiling));
             if (ret != HCCL_SUCCESS) {
-              return;
+                return;
             }
             uint64_t strideCount = tileLen * tileNum + tailLen * tailNum;
             // 2个首块处理
             constexpr uint32_t tileRepeat = tileNum;
             // 除了sendBuf和recvBuf入参不同，处理2个首块的其余参数相同。故使用repeat=2，第2个首块AllGather任务的sendBuf、recvBuf将由API内部自行更新
-            HcclHandle handleId1 = hccl.AllGather<true>(sendBuf, recvBuf, tileLen, HcclDataType::HCCL_DATA_TYPE_FP16, strideCount, tileRepeat);
+            HcclHandle handleId1 =
+                hccl.AllGather<true>(sendBuf, recvBuf, tileLen, HcclDataType::HCCL_DATA_TYPE_FP16, strideCount, tileRepeat);
             // 1个尾块处理
             constexpr uint32_t kSizeOfFloat16 = 2U;
             sendBuf += tileLen * tileNum * kSizeOfFloat16;
             recvBuf += tileLen * tileNum * kSizeOfFloat16;
             constexpr uint32_t tailRepeat = tailNum;
-            HcclHandle handleId2 = hccl.AllGather<true>(sendBuf, recvBuf, tailLen, HcclDataType::HCCL_DATA_TYPE_FP16, strideCount, tailRepeat);
+            HcclHandle handleId2 =
+                hccl.AllGather<true>(sendBuf, recvBuf, tailLen, HcclDataType::HCCL_DATA_TYPE_FP16, strideCount, tailRepeat);
 
-            for (uint8_t i=0; i<tileRepeat; i++) {
+            for (uint8_t i = 0; i < tileRepeat; i++) {
                 hccl.Wait(handleId1);
             }
             hccl.Wait(handleId2);
-            AscendC::SyncAll<true>();  // 全AIV核同步，防止0核执行过快，提前调用hccl.Finalize()接口，导致其他核Wait卡死
+            AscendC::SyncAll<true>(); // 全AIV核同步，防止0核执行过快，提前调用hccl.Finalize()接口，导致其他核Wait卡死
             hccl.Finalize();
         }
     }

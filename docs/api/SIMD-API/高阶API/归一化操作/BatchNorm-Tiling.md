@@ -96,14 +96,15 @@ bool GetBatchNormNDTilingInfo(const ge::Shape& srcShape, const ge::Shape& origin
 1.  将BatchNormTiling结构体参数增加至TilingData结构体，作为TilingData结构体的一个字段。
 
     ```
-    BEGIN_TILING_DATA_DEF(TilingData)               // 注册一个tiling的类，以tiling的名字作为入参
-      TILING_DATA_FIELD_DEF(uint32_t, tileNum);     // 添加tiling字段，每个核上总计算数据分块个数
-      TILING_DATA_FIELD_DEF(uint32_t, bLength);     // 添加tiling字段，输入shape的b维度长度
-      TILING_DATA_FIELD_DEF(uint32_t, sLength);     // 添加tiling字段，输入shape的s维度长度
-      TILING_DATA_FIELD_DEF(uint32_t, hLength);     // 添加tiling字段，输入shape的h维度长度
-      TILING_DATA_FIELD_DEF(uint32_t, originalBLength);     // 添加tiling字段，输入shape原始b维度长度
-      ...                                           // 添加其他tiling字段
-      TILING_DATA_FIELD_DEF_STRUCT(BatchNormTiling, batchNormTilingData); // 将BatchNormTiling结构体参数增加至TilingData结构体
+    BEGIN_TILING_DATA_DEF(TilingData)                 // 注册一个tiling的类，以tiling的名字作为入参
+        TILING_DATA_FIELD_DEF(uint32_t, tileNum);         // 添加tiling字段，每个核上总计算数据分块个数
+        TILING_DATA_FIELD_DEF(uint32_t, bLength);         // 添加tiling字段，输入shape的b维度长度
+        TILING_DATA_FIELD_DEF(uint32_t, sLength);         // 添加tiling字段，输入shape的s维度长度
+        TILING_DATA_FIELD_DEF(uint32_t, hLength);         // 添加tiling字段，输入shape的h维度长度
+        TILING_DATA_FIELD_DEF(uint32_t, originalBLength); // 添加tiling字段，输入shape原始b维度长度
+        ...                                               // 添加其他tiling字段
+        TILING_DATA_FIELD_DEF_STRUCT(
+            BatchNormTiling, batchNormTilingData); // 将BatchNormTiling结构体参数增加至TilingData结构体
     END_TILING_DATA_DEF;
     ```
 
@@ -121,8 +122,8 @@ bool GetBatchNormNDTilingInfo(const ge::Shape& srcShape, const ge::Shape& origin
         tiling.set_tileNum(TILE_NUM);
         // 设置其他Tiling参数
         ...
-        std::vector<int64_t> shapeVec = {16, 16, 16};//{b,s,h}
-        std::vector<int64_t> originShapeVec = {15, 16, 16};//{originB,originS,originH}
+        std::vector<int64_t> shapeVec = {16, 16, 16};   //{b,s,h}
+        std::vector<int64_t> originShapeVec = {15, 16, 16}; //{originB,originS,originH}
         ge::Shape srcShape(shapeVec);
         ge::Shape originSrcShape(originShapeVec);
         uint32_t minSize = 0;
@@ -130,8 +131,9 @@ bool GetBatchNormNDTilingInfo(const ge::Shape& srcShape, const ge::Shape& origin
         // 本样例中仅作为样例说明，通过GetBatchNormMaxMinTmpSize获取最小值并传入，来保证功能正确，开发者可以根据需要传入合适的空间大小
         AscendC::GetBatchNormMaxMinTmpSize(srcShape, originSrcShape, sizeof(half), false, maxSize, minSize, false);
         // 获取BatchNorm Tiling参数
-        AscendC::GetBatchNormNDTilingInfo(srcShape, originSrcShape, minSize, sizeof(half), false, tiling.batchNormTilingData, false);
-         ... // 其他逻辑
+        AscendC::GetBatchNormNDTilingInfo(
+            srcShape, originSrcShape, minSize, sizeof(half), false, tiling.batchNormTilingData, false);
+        ... // 其他逻辑
         tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());
         context->GetRawTilingData()->SetDataSize(tiling.GetDataSize());
         context->SetTilingKey(1);
@@ -143,7 +145,9 @@ bool GetBatchNormNDTilingInfo(const ge::Shape& srcShape, const ge::Shape& origin
 3.  对应的kernel侧通过在核函数中调用GET\_TILING\_DATA获取TilingData，继而将TilingData中的BatchNormTiling信息传入BatchNorm接口参与计算。完整的kernel侧样例请参考[BatchNorm](BatchNorm.md)。
 
     ```
-    extern "C" __global__ __aicore__ void func_custom(GM_ADDR inputX_gm, GM_ADDR gamm_gm, GM_ADDR beta_gm, GM_ADDR output_gm, GM_ADDR outputMean_gm, GM_ADDR outputVariance_gm, GM_ADDR tiling)
+    extern "C" __global__ __aicore__ void func_custom(
+        GM_ADDR inputX_gm, GM_ADDR gamm_gm, GM_ADDR beta_gm, GM_ADDR output_gm, GM_ADDR outputMean_gm,
+        GM_ADDR outputVariance_gm, GM_ADDR tiling)
     {
         GET_TILING_DATA(tilingData, tiling);
         KernelBatchnorm<half, false, false> op;

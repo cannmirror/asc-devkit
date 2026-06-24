@@ -82,10 +82,12 @@
 1.  将ConfusionTransposeTiling结构体参数增加至TilingData结构体，作为TilingData结构体的一个字段。
 
     ```
-    BEGIN_TILING_DATA_DEF(TilingData)               // 注册一个tiling的类，以tiling的名字作为入参
-      TILING_DATA_FIELD_DEF(uint32_t, tileNum);     // 添加tiling字段，每个核上总计算数据分块个数
-      ...                                           // 添加其他tiling字段
-      TILING_DATA_FIELD_DEF_STRUCT(ConfusionTransposeTiling, confusionTransposeTilingData); // 将ConfusionTransposeTiling结构体参数增加至TilingData结构体
+    BEGIN_TILING_DATA_DEF(TilingData)         // 注册一个tiling的类，以tiling的名字作为入参
+        TILING_DATA_FIELD_DEF(uint32_t, tileNum); // 添加tiling字段，每个核上总计算数据分块个数
+        ...                                       // 添加其他tiling字段
+        TILING_DATA_FIELD_DEF_STRUCT(
+            ConfusionTransposeTiling,
+            confusionTransposeTilingData); // 将ConfusionTransposeTiling结构体参数增加至TilingData结构体
     END_TILING_DATA_DEF;
     ```
 
@@ -113,8 +115,10 @@
         // 本样例中仅作为样例说明，获取最小值并传入，来保证功能正确，开发者可以根据需要传入合适的空间大小
         const uint32_t stackBufferSize = minValue;
         // 获取Transpose Tiling参数
-        AscendC::GetTransposeTilingInfo(srcShape, stackBufferSize, sizeof(half), transposeTypeIn, tiling.confusionTransposeTilingData);
-         ... // 其他逻辑
+        AscendC::GetTransposeTilingInfo(
+            srcShape, stackBufferSize, sizeof(half), transposeTypeIn, tiling.confusionTransposeTilingData);
+        ...
+        // 其他逻辑
         tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());
         context->GetRawTilingData()->SetDataSize(tiling.GetDataSize());
         context->SetTilingKey(1);
@@ -126,7 +130,7 @@
 3.  对应的kernel侧通过在核函数中调用GET\_TILING\_DATA获取TilingData，继而将TilingData中的ConfusionTransposeTiling信息传入Transpose接口参与计算。完整的kernel侧样例请参考[Transpose](Transpose-96.md)。
 
     ```
-    extern "C" __global__ __aicore__ void  func_custom(GM_ADDR src_gm, GM_ADDR dst_gm, GM_ADDR workspace, GM_ADDR tiling)
+    extern "C" __global__ __aicore__ void func_custom(GM_ADDR src_gm, GM_ADDR dst_gm, GM_ADDR workspace, GM_ADDR tiling)
     {
         GET_TILING_DATA(TilingData, tiling);
         KernelTranspose<half> op;

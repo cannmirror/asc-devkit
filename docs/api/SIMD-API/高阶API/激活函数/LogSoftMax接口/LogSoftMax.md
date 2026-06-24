@@ -117,9 +117,9 @@ AscendC::SoftMaxShapeInfo softmaxInfo(
     /* 非尾轴长度的乘积          */ srcM,
     /* 尾轴长度，必须32Bytes对齐 */ srcK,
     /* 原始非尾轴长度的乘积      */ oriSrcM,
-    /* 原始尾轴长度              */ oriSrcK
-);
-AscendC::LogSoftMax<DTYPE_X, false>(dstLocal, sumLocal, maxLocal, srcLocal, sharedTmpBuffer, softmaxTiling, softmaxInfo);
+    /* 原始尾轴长度              */ oriSrcK);
+AscendC::LogSoftMax<DTYPE_X, false>(
+    dstLocal, sumLocal, maxLocal, srcLocal, sharedTmpBuffer, softmaxTiling, softmaxInfo);
 ```
 
 结果示例如下：

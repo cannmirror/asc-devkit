@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 #ifndef HCCL_RES_H
 #define HCCL_RES_H
 
@@ -17,18 +17,18 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif  // __cplusplus
+#endif // __cplusplus
 
 /**
  * @brief 内存句柄类型（不透明结构）
  */
-typedef void *HcclMemHandle;
+typedef void* HcclMemHandle;
 
 /// HCCL资源标识最大长度（字节）
 const uint32_t HCCL_RES_TAG_MAX_LEN = 255;
 
 const uint32_t HCCL_CHANNEL_MAGIC_WORD = 0x0f0f0f0f;
-const uint32_t HCCL_CHANNEL_VERSION = 1;    // HcclChannelDesc更新时，HCCL_CHANNEL_VERSION + 1
+const uint32_t HCCL_CHANNEL_VERSION = 1; // HcclChannelDesc更新时，HCCL_CHANNEL_VERSION + 1
 
 /**
  * @brief 通道描述参数
@@ -38,21 +38,21 @@ const uint32_t HCCL_CHANNEL_VERSION = 1;    // HcclChannelDesc更新时，HCCL_C
  */
 typedef struct {
     CommAbiHeader header;
-    uint32_t remoteRank;    ///< 远端rankId
+    uint32_t remoteRank;          ///< 远端rankId
     CommProtocol channelProtocol; ///< 通信协议
-    EndpointDesc localEndpoint; ///< 本地网络设备端侧描述
-    EndpointDesc remoteEndpoint; ///< 远端网络设备端侧描述
-    uint32_t notifyNum;  ///< channel上使用的通知消息数量
-    HcclMemHandle *memHandles; ///< 注册到通信域的待交换内存句柄
-    uint32_t memHandleNum; ///< 注册到通信域的待交换内存句柄数量
+    EndpointDesc localEndpoint;   ///< 本地网络设备端侧描述
+    EndpointDesc remoteEndpoint;  ///< 远端网络设备端侧描述
+    uint32_t notifyNum;           ///< channel上使用的通知消息数量
+    HcclMemHandle* memHandles;    ///< 注册到通信域的待交换内存句柄
+    uint32_t memHandleNum;        ///< 注册到通信域的待交换内存句柄数量
     union {
         uint8_t raws[128]; ///< 通用缓存
         struct {
-            uint32_t queueNum;        ///< QP数量
-            uint32_t retryCnt;        ///< 最大重传次数
-            uint32_t retryInterval;   ///< 重传间隔(ms)（对应协议计算公式）
-            uint8_t tc;               ///< 流量类别(QoS)
-            uint8_t sl;               ///< 服务等级(QoS)
+            uint32_t queueNum;      ///< QP数量
+            uint32_t retryCnt;      ///< 最大重传次数
+            uint32_t retryInterval; ///< 重传间隔(ms)（对应协议计算公式）
+            uint8_t tc;             ///< 流量类别(QoS)
+            uint8_t sl;             ///< 服务等级(QoS)
         } roceAttr;
     };
 } HcclChannelDesc;
@@ -69,23 +69,23 @@ typedef struct {
  * @param[in] descNum 描述数量
  * @return HcclResult 执行结果状态码
  */
-static inline HcclResult HcclChannelDescInit(HcclChannelDesc *channelDesc, uint32_t descNum)
+static inline HcclResult HcclChannelDescInit(HcclChannelDesc* channelDesc, uint32_t descNum)
 {
     for (uint32_t idx = 0; idx < descNum; idx++) {
         if (channelDesc != nullptr) {
             // 先用0xFF填充整个结构体
             (void)memset_s(channelDesc, sizeof(HcclChannelDesc), 0xFF, sizeof(HcclChannelDesc));
-            
+
             // 初始化ABI头信息
-            channelDesc->header.version     = HCCL_CHANNEL_VERSION;
-            channelDesc->header.magicWord   = HCCL_CHANNEL_MAGIC_WORD;
-            channelDesc->header.size        = sizeof(HcclChannelDesc);
-            channelDesc->header.reserved    = 0;
+            channelDesc->header.version = HCCL_CHANNEL_VERSION;
+            channelDesc->header.magicWord = HCCL_CHANNEL_MAGIC_WORD;
+            channelDesc->header.size = sizeof(HcclChannelDesc);
+            channelDesc->header.reserved = 0;
 
             // 初始化关键字段
-            channelDesc->remoteRank = ~0U;  // 保持原始无效值标记
+            channelDesc->remoteRank = ~0U; // 保持原始无效值标记
             channelDesc->channelProtocol = COMM_PROTOCOL_RESERVED;
-            channelDesc->notifyNum  = 0;
+            channelDesc->notifyNum = 0;
             channelDesc->memHandles = nullptr;
             channelDesc->memHandleNum = 0;
 
@@ -94,7 +94,7 @@ static inline HcclResult HcclChannelDescInit(HcclChannelDesc *channelDesc, uint3
                 UNLIKELY(EndpointDescInit(&channelDesc->remoteEndpoint, 1) != HCCL_SUCCESS)) {
                 return HCCL_E_INTERNAL;
             }
-            channelDesc++;  // 移动到下一个描述符
+            channelDesc++; // 移动到下一个描述符
         } else {
             return HCCL_E_PTR;
         }
@@ -114,7 +114,7 @@ static inline HcclResult HcclChannelDescInit(HcclChannelDesc *channelDesc, uint3
  * @return HcclResult 执行结果状态码
  * @warning 重要约束：返回的buffer内存由库内管理，调用者严禁释放
  */
-extern HcclResult HcclGetHcclBuffer(HcclComm comm, void **buffer, uint64_t *size);
+extern HcclResult HcclGetHcclBuffer(HcclComm comm, void** buffer, uint64_t* size);
 
 /**
  * @defgroup 通信引擎资源管理
@@ -131,8 +131,8 @@ extern HcclResult HcclGetHcclBuffer(HcclComm comm, void **buffer, uint64_t *size
  * @param[out] threads 返回的线程句柄
  * @return HcclResult 执行结果状态码
  */
-extern HcclResult HcclThreadAcquire(HcclComm comm, CommEngine engine, uint32_t threadNum,
-    uint32_t notifyNumPerThread, ThreadHandle *threads);
+extern HcclResult HcclThreadAcquire(
+    HcclComm comm, CommEngine engine, uint32_t threadNum, uint32_t notifyNumPerThread, ThreadHandle* threads);
 
 /**
  * @brief 基于已有rts stream获取指定notifyNum的通信线程资源
@@ -144,10 +144,10 @@ extern HcclResult HcclThreadAcquire(HcclComm comm, CommEngine engine, uint32_t t
  * @note 当前适用于CPU_TS场景
  * @return HcclResult 执行结果状态码
  */
-extern HcclResult HcclThreadAcquireWithStream(HcclComm comm, CommEngine engine, aclrtStream stream,
-    uint32_t notifyNum, ThreadHandle *thread);
+extern HcclResult HcclThreadAcquireWithStream(
+    HcclComm comm, CommEngine engine, aclrtStream stream, uint32_t notifyNum, ThreadHandle* thread);
 
-/** @} */  // 通信引擎资源管理
+/** @} */ // 通信引擎资源管理
 
 /**
  * @defgroup 通信通道管理接口
@@ -164,8 +164,9 @@ extern HcclResult HcclThreadAcquireWithStream(HcclComm comm, CommEngine engine, 
  * @return HcclResult 执行结果状态码
  * @warning 重要约束：channelDescs必须使用HcclChannelDescInit进行初始化
  */
-extern HcclResult HcclChannelAcquire(HcclComm comm, CommEngine engine, const HcclChannelDesc *channelDescs,
-    uint32_t channelNum, ChannelHandle *channels);
+extern HcclResult HcclChannelAcquire(
+    HcclComm comm, CommEngine engine, const HcclChannelDesc* channelDescs, uint32_t channelNum,
+    ChannelHandle* channels);
 
 /**
  * @brief 获取指定channel的Hccl通信缓存
@@ -175,9 +176,9 @@ extern HcclResult HcclChannelAcquire(HcclComm comm, CommEngine engine, const Hcc
  * @param[out] size Hccl缓存大小
  * @return HcclResult 执行结果状态码
  */
-extern HcclResult HcclChannelGetHcclBuffer(HcclComm comm, ChannelHandle channel, void **buffer, uint64_t *size);
+extern HcclResult HcclChannelGetHcclBuffer(HcclComm comm, ChannelHandle channel, void** buffer, uint64_t* size);
 
- /**
+/**
  * @defgroup 通信引擎上下文管理接口（编程控制面可选接口）
  * @{
  */
@@ -191,7 +192,7 @@ extern HcclResult HcclChannelGetHcclBuffer(HcclComm comm, ChannelHandle channel,
  * @param[out] ctx 通信引擎上下文
  * @return HcclResult 执行结果状态码
  */
-extern HcclResult HcclEngineCtxCreate(HcclComm comm, const char *ctxTag, CommEngine engine, uint64_t size, void **ctx);
+extern HcclResult HcclEngineCtxCreate(HcclComm comm, const char* ctxTag, CommEngine engine, uint64_t size, void** ctx);
 
 /**
  * @brief 获取算子通信引擎上下文
@@ -203,7 +204,7 @@ extern HcclResult HcclEngineCtxCreate(HcclComm comm, const char *ctxTag, CommEng
  * @return HcclResult 执行结果状态码
  * @note 使用者可先查询ctx是否已存在，再决定是否重新申请ctx地址
  */
-extern HcclResult HcclEngineCtxGet(HcclComm comm, const char *ctxTag, CommEngine engine, void **ctx, uint64_t *size);
+extern HcclResult HcclEngineCtxGet(HcclComm comm, const char* ctxTag, CommEngine engine, void** ctx, uint64_t* size);
 
 /**
  * @brief 拷贝算子通信引擎上下文
@@ -216,8 +217,8 @@ extern HcclResult HcclEngineCtxGet(HcclComm comm, const char *ctxTag, CommEngine
  * @return HcclResult 执行结果状态码
  * @note 1、目标ctx通过ctxTag获取
  */
-extern HcclResult HcclEngineCtxCopy(HcclComm comm, CommEngine engine, const char *ctxTag, const void *srcCtx,
-    uint64_t size, uint64_t dstCtxOffset);
+extern HcclResult HcclEngineCtxCopy(
+    HcclComm comm, CommEngine engine, const char* ctxTag, const void* srcCtx, uint64_t size, uint64_t dstCtxOffset);
 
 /**
  * @brief 销毁通信引擎资源上下文
@@ -226,7 +227,7 @@ extern HcclResult HcclEngineCtxCopy(HcclComm comm, CommEngine engine, const char
  * @param[in] engine 通信引擎类型
  * @return HcclResult 执行结果状态码
  */
-extern HcclResult HcclEngineCtxDestroy(HcclComm comm, const char *ctxTag, CommEngine engine);
+extern HcclResult HcclEngineCtxDestroy(HcclComm comm, const char* ctxTag, CommEngine engine);
 
 /**
  * @brief 向通信域注册内存
@@ -238,7 +239,7 @@ extern HcclResult HcclEngineCtxDestroy(HcclComm comm, const char *ctxTag, CommEn
  * @note 通信域内以memTag作为key存储该内存。
  * @warning
  */
-extern HcclResult HcclCommMemReg(HcclComm comm, const char *memTag, const CommMem *mem, HcclMemHandle *memHandle);
+extern HcclResult HcclCommMemReg(HcclComm comm, const char* memTag, const CommMem* mem, HcclMemHandle* memHandle);
 
 /**
  * @brief 获取channel中全部交换获得的远端内存信息
@@ -250,8 +251,8 @@ extern HcclResult HcclCommMemReg(HcclComm comm, const char *memTag, const CommMe
  * @return HcclResult 执行结果状态码
  * @warning
  */
-extern HcclResult HcclChannelGetRemoteMems(HcclComm comm, ChannelHandle channel, uint32_t *memNum, CommMem **remoteMems,
-    char ***memTags);
+extern HcclResult HcclChannelGetRemoteMems(
+    HcclComm comm, ChannelHandle channel, uint32_t* memNum, CommMem** remoteMems, char*** memTags);
 
 // 支持获取的底层资源类型
 typedef enum {
@@ -278,9 +279,10 @@ typedef aclrtStream ThreadResTypeStream;
  * @endcode
  * @return HcclResult 执行结果状态码
  */
-extern HcclResult HcclThreadResGetInfo(HcclComm comm, ThreadHandle thread, ThreadResType resType, uint32_t infoLen, void **info);
+extern HcclResult HcclThreadResGetInfo(
+    HcclComm comm, ThreadHandle thread, ThreadResType resType, uint32_t infoLen, void** info);
 
 #ifdef __cplusplus
 }
-#endif  // __cplusplus
+#endif // __cplusplus
 #endif

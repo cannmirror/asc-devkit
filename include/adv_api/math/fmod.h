@@ -1,18 +1,17 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file fmod.h
  * \brief
  */
-
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
@@ -54,8 +53,9 @@ namespace AscendC {
  * \note src/dst Tensor must be 32B aligned, and it doesn't allow src/dst/sharedTmpBuffer tensor address overlap.
  */
 template <typename T, bool isReuseSource = false, const FmodConfig& config = DEFAULT_FMOD_CONFIG>
-__aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
-    const LocalTensor<T>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void Fmod(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
     FmodImpl<T, isReuseSource, config>(dstTensor, src0Tensor, src1Tensor, sharedTmpBuffer, calCount);
 }
@@ -71,8 +71,9 @@ __aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T
  * \note src/dst Tensor must be 32B aligned, and it doesn't allow src/dst/sharedTmpBuffer tensor address overlap.
  */
 template <typename T, bool isReuseSource = false, const FmodConfig& config = DEFAULT_FMOD_CONFIG>
-__aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
-    const LocalTensor<T>& src1Tensor, const uint32_t calCount)
+__aicore__ inline void Fmod(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor,
+    const uint32_t calCount)
 {
     LocalTensor<uint8_t> sharedTmpBuffer;
     bool ret = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);
@@ -95,8 +96,9 @@ __aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T
  * \note src/dst Tensor must be 32B aligned, and it doesn't allow src/dst/sharedTmpBuffer tensor address overlap.
  */
 template <typename T, bool isReuseSource = false, const FmodConfig& config = DEFAULT_FMOD_CONFIG>
-__aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
-    const LocalTensor<T>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer)
+__aicore__ inline void Fmod(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer)
 {
     FmodImpl<T, isReuseSource, config>(dstTensor, src0Tensor, src1Tensor, sharedTmpBuffer, src0Tensor.GetSize());
 }
@@ -111,8 +113,8 @@ __aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T
  * \note src/dst Tensor must be 32B aligned, and it doesn't allow src/dst/sharedTmpBuffer tensor address overlap.
  */
 template <typename T, bool isReuseSource = false, const FmodConfig& config = DEFAULT_FMOD_CONFIG>
-__aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
-    const LocalTensor<T>& src1Tensor)
+__aicore__ inline void Fmod(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor)
 {
     LocalTensor<uint8_t> sharedTmpBuffer;
     bool ret = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);
@@ -136,8 +138,9 @@ __aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T
  * \note src/dst Tensor must be 32B aligned, and it doesn't allow src/dst/sharedTmpBuffer tensor address overlap.
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
-    const LocalTensor<T>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void Fmod(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
     FmodImpl<T, isReuseSource>(dstTensor, src0Tensor, src1Tensor, sharedTmpBuffer, calCount);
@@ -155,8 +158,9 @@ __aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T
  * \note src/dst Tensor must be 32B aligned, and it doesn't allow src/dst/sharedTmpBuffer tensor address overlap.
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
-    const LocalTensor<T>& src1Tensor, const uint32_t calCount)
+__aicore__ inline void Fmod(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor,
+    const uint32_t calCount)
 {
     LocalTensor<uint8_t> sharedTmpBuffer;
     bool ret = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);
@@ -181,8 +185,9 @@ __aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T
  * \note src/dst Tensor must be 32B aligned, and it doesn't allow src/dst/sharedTmpBuffer tensor address overlap.
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
-    const LocalTensor<T>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer)
+__aicore__ inline void Fmod(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer)
 {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
     FmodImpl<T, isReuseSource>(dstTensor, src0Tensor, src1Tensor, sharedTmpBuffer, src0Tensor.GetSize());
@@ -199,8 +204,8 @@ __aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T
  * \note src/dst Tensor must be 32B aligned, and it doesn't allow src/dst/sharedTmpBuffer tensor address overlap.
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
-    const LocalTensor<T>& src1Tensor)
+__aicore__ inline void Fmod(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor)
 {
     LocalTensor<uint8_t> sharedTmpBuffer;
     bool ret = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);

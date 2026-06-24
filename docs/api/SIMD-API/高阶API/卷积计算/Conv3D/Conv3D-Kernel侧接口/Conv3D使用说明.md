@@ -59,27 +59,29 @@ Kernel侧实现Conv3D运算的步骤概括为：
     ```
     template <TPosition POSITION, ConvFormat FORMAT, typename TYPE>
     struct ConvType {
-        constexpr static TPosition pos = POSITION;    // Conv3d输入或输出在内存上的位置
-        constexpr static ConvFormat format = FORMAT;  // Conv3d输入或者输出的数据格式
-        using T = TYPE;                               // Conv3d输入或输出的数据类型
+        constexpr static TPosition pos = POSITION;   // Conv3d输入或输出在内存上的位置
+        constexpr static ConvFormat format = FORMAT; // Conv3d输入或者输出的数据格式
+        using T = TYPE;                              // Conv3d输入或输出的数据类型
     };
     ```
 
     下面简要介绍在创建对象时使用到的相关数据结构，开发者可选择性地了解这些内容。用于创建Conv3D对象的数据结构定义如下：
 
     ```
-    template <class INPUT_TYPE, class WEIGHT_TYPE, class OUTPUT_TYPE, class BIAS_TYPE = biasType, class CONV_CFG = Conv3dParam>
-    using Conv3D = Conv3dIntfExt<Config<ConvApi::ConvDataType<INPUT_TYPE, WEIGHT_TYPE, OUTPUT_TYPE, BIAS_TYPE, CONV_CFG>>, Impl, Intf>
+    template <
+        class INPUT_TYPE, class WEIGHT_TYPE, class OUTPUT_TYPE, class BIAS_TYPE = biasType, class CONV_CFG = Conv3dParam>
+    using Conv3D =
+        Conv3dIntfExt<Config<ConvApi::ConvDataType<INPUT_TYPE, WEIGHT_TYPE, OUTPUT_TYPE, BIAS_TYPE, CONV_CFG>>, Impl, Intf>
     ```
 
     其中，Conv3dIntfExt和Conv3dParam数据结构定义如下：
 
     ```
-    template <class Conv3dCfg, template <typename, class, bool> class Impl = Conv3dApiImpl,
+    template <
+        class Conv3dCfg, template <typename, class, bool> class Impl = Conv3dApiImpl,
         template <class, template <typename, class, bool> class> class Intf = Conv3dIntf>
     struct Conv3dIntfExt : public Intf<Conv3dCfg, Impl> {
-        __aicore__ inline Conv3dIntfExt()
-        {}
+        __aicore__ inline Conv3dIntfExt() {}
     };
     struct Conv3dParam : public ConvApi::ConvParam {
         __aicore__ inline Conv3dParam(){};
@@ -97,17 +99,13 @@ Kernel侧实现Conv3D运算的步骤概括为：
         using BiasT = typename Config::BiasT;
         using L0cT = typename Config::L0cT;
         using ConvParam = typename Config::ConvParam;
-        __aicore__ inline Conv3dIntf()
-        {}
-    }
-    template <class ConvDataType>
+        __aicore__ inline Conv3dIntf() {}
+    } template <class ConvDataType>
     struct Conv3dCfg : public ConvApi::ConvConfig<ConvDataType> {
     public:
-        __aicore__ inline Conv3dCfg()
-        {}
+        __aicore__ inline Conv3dCfg() {}
         using ContextData = struct _ : public ConvApi::ConvConfig<ConvDataType>::ContextData {
-            __aicore__ inline _()
-            {}
+            __aicore__ inline _() {}
         };
     };
     ```

@@ -132,7 +132,7 @@ enum class SoftmaxMode {
     SOFTMAX_NORMAL = 0,
     SOFTMAX_OUTPUT_WITHOUT_BRC = 1,
 };
-struct SoftmaxConfig{
+struct SoftmaxConfig {
     bool isCheckTiling = true;
     uint32_t oriSrcM = 0;
     uint32_t oriSrcK = 0;
@@ -160,10 +160,10 @@ constexpr SoftmaxConfig SOFTMAX_DEFAULT_CFG = {true, 0, 0, SoftmaxMode::SOFTMAX_
 
 ```
 struct SoftMaxShapeInfo {
-  uint32_t srcM;
-  uint32_t srcK;
-  uint32_t oriSrcM;
-  uint32_t oriSrcK;
+    uint32_t srcM;
+    uint32_t srcK;
+    uint32_t oriSrcM;
+    uint32_t oriSrcK;
 };
 ```
 
@@ -195,11 +195,11 @@ AscendC::SoftMaxShapeInfo softmaxInfo(
     /* 非尾轴长度的乘积          */ srcM,
     /* 尾轴长度，必须32Bytes对齐 */ srcK,
     /* 原始非尾轴长度的乘积      */ oriSrcM,
-    /* 原始尾轴长度              */ oriSrcK
-);
+    /* 原始尾轴长度              */ oriSrcK);
 
 // 通过sharedTmpBuffer入参传入临时空间，带sumTensor和maxTensor参数，传入模板参数将shape常量化
-AscendC::SoftMax<T, false, false, false, static_config>(dstLocal, sumTempLocal, maxTempLocal, srcLocal, sharedTmpBuffer, softmaxTiling, softmaxInfo);
+AscendC::SoftMax<T, false, false, false, static_config>(
+    dstLocal, sumTempLocal, maxTempLocal, srcLocal, sharedTmpBuffer, softmaxTiling, softmaxInfo);
 // 通过sharedTmpBuffer入参传入临时空间，带sumTensor和maxTensor参数
 AscendC::SoftMax<T>(dstLocal, sumTempLocal, maxTempLocal, srcLocal, sharedTmpBuffer, softmaxTiling, softmaxInfo);
 // 通过sharedTmpBuffer入参传入临时空间，不带sumTensor和maxTensor参数

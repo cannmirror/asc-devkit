@@ -42,21 +42,23 @@ __aicore__ inline int32_t Query(HcclHandle handleId)
 ## 调用示例
 
 ```
-REGISTER_TILING_DEFAULT(ReduceScatterCustomTilingData); //ReduceScatterCustomTilingData为对应算子头文件定义的结构体
+REGISTER_TILING_DEFAULT(ReduceScatterCustomTilingData); // ReduceScatterCustomTilingData为对应算子头文件定义的结构体
 GET_TILING_DATA_WITH_STRUCT(ReduceScatterCustomTilingData, tilingData, tilingGM);
 Hccl hccl;
-GM_ADDR contextGM = AscendC::GetHcclContext<0>();  // AscendC自定义算子kernel中，通过此方式获取HCCL context
+GM_ADDR contextGM = AscendC::GetHcclContext<0>(); // AscendC自定义算子kernel中，通过此方式获取HCCL context
 hccl.InitV2(contextGM, &tilingData);
 auto ret = hccl.SetCcTiling(offsetof(ReduceScatterCustomTilingData, mc2CcTiling));
 if (ret != HCCL_SUCCESS) {
-  return;
+    return;
 }
 if (AscendC::g_coreType == AIC) {
     auto repeat = 10;
-    HcclHandle handleId = hccl.ReduceScatter(sendBuf, recvBuf, 100, HcclDataType::HCCL_DATA_TYPE_INT8, HcclReduceOp::HCCL_REDUCE_SUM, repeat);
-    hccl.Commit(handleId ); // 通知服务端可以执行上述的ReduceScatter任务
+    HcclHandle handleId = hccl.ReduceScatter(
+        sendBuf, recvBuf, 100, HcclDataType::HCCL_DATA_TYPE_INT8, HcclReduceOp::HCCL_REDUCE_SUM, repeat);
+    hccl.Commit(handleId); // 通知服务端可以执行上述的ReduceScatter任务
     int32_t finishedCount = hccl.Query(handleId);
-    while (hccl.Query(handleId) < repeat) {} // 等待查询到handleId对应的通信任务执行repeat次
+    while (hccl.Query(handleId) < repeat) {
+    }                // 等待查询到handleId对应的通信任务执行repeat次
     hccl.Finalize(); // 后续无其他通信任务，通知服务端执行上述ReduceScatter任务之后即可以退出
 }
 ```

@@ -39,14 +39,14 @@ __aicore__ inline GM_ADDR GetWindowsInAddr(uint32_t rankId)
 ## 调用示例
 
 ```
-REGISTER_TILING_DEFAULT(ReduceScatterCustomTilingData); //ReduceScatterCustomTilingData为对应算子头文件定义的结构体
+REGISTER_TILING_DEFAULT(ReduceScatterCustomTilingData); // ReduceScatterCustomTilingData为对应算子头文件定义的结构体
 GET_TILING_DATA_WITH_STRUCT(ReduceScatterCustomTilingData, tilingData, tilingGM);
 Hccl hccl;
-GM_ADDR contextGM = AscendC::GetHcclContext<0>();  // AscendC自定义算子kernel中，通过此方式获取HCCL context
+GM_ADDR contextGM = AscendC::GetHcclContext<0>(); // AscendC自定义算子kernel中，通过此方式获取HCCL context
 hccl.InitV2(contextGM, &tilingData);
 
 auto winInAddr = hccl.GetWindowsInAddr(0);
 auto winOutAddr = hccl.GetWindowsOutAddr(0);
 auto rankId = hccl.GetRankId();
-auto rankDim = hccl.GetRankDim();  // 4张卡
+auto rankDim = hccl.GetRankDim(); // 4张卡
 ```

@@ -67,8 +67,7 @@ constexpr MatmulConfig MM_CFG = GetNormalConfig(
     /* scheduleType      */ ScheduleType::INNER_PRODUCT,
     /* enUnitFlag        */ true,
     /* enableMixDualMaster */ false,
-    /* bmmOutMode        */ BatchOutMode::SINGLE_BATCH
-);
+    /* bmmOutMode        */ BatchOutMode::SINGLE_BATCH);
 // 常规Matmul计算，最后输出使用自定义Norm模板的计算结果
 AscendC::Matmul<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG> mm;
 REGIST_MATMUL_OBJ(&pipe, GetSysWorkSpacePtr(), mm, &tiling);

@@ -70,7 +70,7 @@ __aicore__ inline void Where(const LocalTensor<T>& dst, const U& src0, const S& 
 AscendC::LocalTensor<half> dst, src0, src1;
 AscendC::LocalTensor<bool> condition;
 uint32_t count = 512; // 参与计算的元素个数
-AscendC::Where(dst, src0, src1,  condition, count);
+AscendC::Where(dst, src0, src1, condition, count);
 ```
 
 结果示例如下：

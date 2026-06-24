@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file groupnorm_tiling.h
@@ -31,8 +31,9 @@ namespace AscendC {
  * \return flag for whether the tmp buffer size is calculated successfully
  *         If src shape is illegal for basic block, it will return false.
  */
-void GetGroupNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
-    const uint32_t groupNum, uint32_t& maxValue, uint32_t& minValue);
+void GetGroupNormMaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, const uint32_t groupNum,
+    uint32_t& maxValue, uint32_t& minValue);
 
 /*!
  * \brief calculate tiling params for GroupNorm interface
@@ -48,9 +49,11 @@ void GetGroupNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSiz
  * \return flag for whether the tiling is calculated successfully
    if src shape and origin src shape is illeagl or input stackBufferSize is not big enough, it will return false.
  */
-void GetGroupNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const bool isReuseSource, const uint32_t groupNum, optiling::GroupNormTiling& tiling);
-void GetGroupNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const bool isReuseSource, const uint32_t groupNum, AscendC::tiling::GroupNormTiling& tiling);
-}
+void GetGroupNormNDTilingInfo(
+    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
+    const uint32_t groupNum, optiling::GroupNormTiling& tiling);
+void GetGroupNormNDTilingInfo(
+    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
+    const uint32_t groupNum, AscendC::tiling::GroupNormTiling& tiling);
+} // namespace AscendC
 #endif // LIB_NORMALIZATION_GROUPNORM_TILING_H

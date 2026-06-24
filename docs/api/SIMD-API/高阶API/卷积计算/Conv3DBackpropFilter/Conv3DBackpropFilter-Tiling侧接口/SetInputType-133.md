@@ -34,7 +34,6 @@ void SetInputType(ConvCommonApi::TPosition pos, ConvCommonApi::ConvFormat format
 optiling::Conv3DBackpropFilterTilingData tilingData;
 auto ascendcPlatform = platform_ascendc::PlatformAscendCManager::GetInstance();
 ConvBackpropApi::Conv3dBpFilterTiling conv3dBpDwTiling(*ascendcPlatform);
-conv3dBpDwTiling.SetInputType(ConvCommonApi::TPosition::GM,
-                                 ConvCommonApi::ConvFormat::NDC1HWC0,
-                                 ConvCommonApi::ConvDtype::FLOAT16);
+conv3dBpDwTiling.SetInputType(
+    ConvCommonApi::TPosition::GM, ConvCommonApi::ConvFormat::NDC1HWC0, ConvCommonApi::ConvDtype::FLOAT16);
 ```

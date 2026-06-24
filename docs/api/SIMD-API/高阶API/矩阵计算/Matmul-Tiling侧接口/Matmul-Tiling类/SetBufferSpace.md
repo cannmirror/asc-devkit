@@ -34,5 +34,5 @@ int32_t SetBufferSpace(int32_t l1Size = -1, int32_t l0CSize = -1, int32_t ubSize
 ```
 auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
 matmul_tiling::MatmulApiTiling tiling(ascendcPlatform);
-tiling.SetBufferSpace(-1, -1, -1, -1);  // 设置计算时可用的L1/L0C/UB/BT空间大小
+tiling.SetBufferSpace(-1, -1, -1, -1); // 设置计算时可用的L1/L0C/UB/BT空间大小
 ```

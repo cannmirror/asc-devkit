@@ -47,28 +47,30 @@ void GetWelfordUpdateMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typ
 
     ```
     BEGIN_TILING_DATA_DEF(WelfordUpdateCustomTilingData) // 注册一个tiling的类，以tiling的名字作为入参
-      TILING_DATA_FIELD_DEF(uint32_t, inplace); // 添加tiling字段，output是否复用input
-      TILING_DATA_FIELD_DEF(uint32_t, nLength);
-      TILING_DATA_FIELD_DEF(uint32_t, rLength);
-      TILING_DATA_FIELD_DEF(uint32_t, abComputeLength);
-      TILING_DATA_FIELD_DEF(uint32_t, nRec);
+        TILING_DATA_FIELD_DEF(uint32_t, inplace);            // 添加tiling字段，output是否复用input
+        TILING_DATA_FIELD_DEF(uint32_t, nLength);
+        TILING_DATA_FIELD_DEF(uint32_t, rLength);
+        TILING_DATA_FIELD_DEF(uint32_t, abComputeLength);
+        TILING_DATA_FIELD_DEF(uint32_t, nRec);
     END_TILING_DATA_DEF;
-    REGISTER_TILING_DATA_CLASS(WelfordUpdateCustom, WelfordUpdateCustomTilingData) // 将WelfordUpdateCustomTilingData结构体参数增加至TilingData结构体
+    REGISTER_TILING_DATA_CLASS(
+        WelfordUpdateCustom,
+        WelfordUpdateCustomTilingData) // 将WelfordUpdateCustomTilingData结构体参数增加至TilingData结构体
     ```
 
 2.  Tiling实现函数中，首先调用**GetWelfordUpdateMaxMinTmpSize**接口获取WelfordUpdate接口能完成计算所需最大/最小临时空间大小，根据该范围结合实际的内存使用情况设置合适的空间大小，然后根据输入shape、剩余的可供计算的空间大小等信息获取WelfordUpdate kernel侧接口所需tiling参数。
 
     ```
     namespace optiling {
-    static ge::graphStatus TilingFunc(gert::TilingContext *context)
+    static ge::graphStatus TilingFunc(gert::TilingContext* context)
     {
         WelfordUpdateCustomTilingData tiling;
-        const gert::RuntimeAttrs *attrs = context->GetAttrs();
+        const gert::RuntimeAttrs* attrs = context->GetAttrs();
         const uint32_t inplace = *(attrs->GetAttrPointer<uint32_t>(0));
         const uint32_t abComputeLength = *(attrs->GetAttrPointer<uint32_t>(1));
         const uint32_t sharedtmpbuffer = *(attrs->GetAttrPointer<uint32_t>(2));
 
-        const gert::StorageShape *x1_shape = context->GetInputShape(1);
+        const gert::StorageShape* x1_shape = context->GetInputShape(1);
         const gert::Shape shape = x1_shape->GetStorageShape();
         auto nLength = shape.GetDim(0);
         auto rLength = shape.GetDim(1);
@@ -86,7 +88,7 @@ void GetWelfordUpdateMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typ
         context->SetTilingKey(1);
         tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());
         context->GetRawTilingData()->SetDataSize(tiling.GetDataSize());
-        size_t *currentWorkspace = context->GetWorkspaceSizes(1);
+        size_t* currentWorkspace = context->GetWorkspaceSizes(1);
         currentWorkspace[0] = 0;
         return ge::GRAPH_SUCCESS;
     }
@@ -96,23 +98,23 @@ void GetWelfordUpdateMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typ
 3.  对应的kernel侧通过在核函数中调用GET\_TILING\_DATA获取TilingData，继而将TilingData中的WelfordUpdate Tiling信息传入WelfordUpdate接口参与计算。完整的kernel侧样例请参考[WelfordUpdate](WelfordUpdate.md)。
 
     ```
-    extern "C" __global__ __aicore__ void
-    welford_update_custom(
-        GM_ADDR inputX_gm, GM_ADDR mean_gm, GM_ADDR var_gm, GM_ADDR outputMean_gm, GM_ADDR outputVariance_gm, GM_ADDR workspace, GM_ADDR tiling)
+    extern "C" __global__ __aicore__ void welford_update_custom(
+        GM_ADDR inputX_gm, GM_ADDR mean_gm, GM_ADDR var_gm, GM_ADDR outputMean_gm, GM_ADDR outputVariance_gm,
+        GM_ADDR workspace, GM_ADDR tiling)
     {
         GET_TILING_DATA(tilingData, tiling);
-        if (TILING_KEY_IS(1))
-        {
-            if (tilingData.inplace)
-            {
+        if (TILING_KEY_IS(1)) {
+            if (tilingData.inplace) {
                 KernelWelfordUpdate<DTYPE_INPUTX, DTYPE_U, true> op;
-                op.Init(inputX_gm, mean_gm, var_gm, outputMean_gm, outputVariance_gm, tilingData.nLength, tilingData.rLength, tilingData.abComputeLength);
+                op.Init(
+                    inputX_gm, mean_gm, var_gm, outputMean_gm, outputVariance_gm, tilingData.nLength, tilingData.rLength,
+                    tilingData.abComputeLength);
                 op.Process();
-            }
-            else
-            {
+            } else {
                 KernelWelfordUpdate<DTYPE_INPUTX, DTYPE_U, false> op;
-                op.Init(inputX_gm, mean_gm, var_gm, outputMean_gm, outputVariance_gm, tilingData.nLength, tilingData.rLength, tilingData.abComputeLength);
+                op.Init(
+                    inputX_gm, mean_gm, var_gm, outputMean_gm, outputVariance_gm, tilingData.nLength, tilingData.rLength,
+                    tilingData.abComputeLength);
                 op.Process();
             }
         }

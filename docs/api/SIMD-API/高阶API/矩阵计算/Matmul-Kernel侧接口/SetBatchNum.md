@@ -53,7 +53,7 @@ typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, BiasType> bi
 AscendC::Matmul<aType, bType, cType, biasType> mm1;
 mm1.SetTensorA(gm_a, isTransposeAIn);
 mm1.SetTensorB(gm_b, isTransposeBIn);
-if(tiling.isBias) {
+if (tiling.isBias) {
     mm1.SetBias(gm_bias);
 }
 mm1.SetBatchNum(batchA, batchB);

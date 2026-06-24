@@ -93,12 +93,7 @@ struct QuantizeConfig {
     RoundMode roundMode = RoundMode::CAST_RINT;
     int32_t kDim = 1;
 };
-enum class QuantizePolicy : int32_t {
-    PER_TENSOR,
-    PER_CHANNEL,
-    PER_TOKEN,
-    PER_GROUP
-};
+enum class QuantizePolicy : int32_t { PER_TENSOR, PER_CHANNEL, PER_TOKEN, PER_GROUP };
 ```
 
 **表2**  接口参数说明

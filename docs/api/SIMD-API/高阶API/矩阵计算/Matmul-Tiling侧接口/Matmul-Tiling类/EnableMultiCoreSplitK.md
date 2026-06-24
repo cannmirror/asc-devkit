@@ -34,5 +34,5 @@ void EnableMultiCoreSplitK(bool flag)
 auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
 matmul_tiling::MultiCoreMatmulTiling tiling(ascendcPlatform);
 
-tiling.EnableMultiCoreSplitK(true);  // 开启切K轴
+tiling.EnableMultiCoreSplitK(true); // 开启切K轴
 ```

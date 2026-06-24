@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file constant_tiling.h
@@ -35,7 +35,7 @@ namespace AscendC {
  * @return MatmulApiStaticTiling Constantized Matmul Tiling parameters obtained
  */
 template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE>
-__aicore__ constexpr MatmulApiStaticTiling GetMatmulApiTiling(const MatmulConfig &mmCFG, int32_t l1Size = Impl::L1_SIZE)
+__aicore__ constexpr MatmulApiStaticTiling GetMatmulApiTiling(const MatmulConfig& mmCFG, int32_t l1Size = Impl::L1_SIZE)
 {
     MatmulApiStaticTiling tiling;
     tiling.cfg = mmCFG;
@@ -81,8 +81,8 @@ __aicore__ constexpr MatmulApiStaticTiling GetMatmulApiTiling(const MatmulConfig
     tiling.dbL0C = 1;
     tiling.transLength = GetTransLength<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE>(mmCFG, l1Factor);
     tiling.shareMode = 0;
-    tiling.shareL1Size = GetL1UsedSize<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE>(mmCFG, l1Factor,
-        tiling.depthA1, tiling.depthB1);
+    tiling.shareL1Size =
+        GetL1UsedSize<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE>(mmCFG, l1Factor, tiling.depthA1, tiling.depthB1);
     tiling.shareL0CSize = mmCFG.basicM * mmCFG.basicN * GetBitSize<float>() / ONE_BYTE_BIT_SIZE;
     // tiling constant not support v200
     tiling.shareUbSize = 0;
@@ -90,10 +90,10 @@ __aicore__ constexpr MatmulApiStaticTiling GetMatmulApiTiling(const MatmulConfig
 }
 
 template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, class SingleShape, class L1Shape, class BaseShape>
-__aicore__ constexpr MatmulApiStaticTiling GetMatmulApiTiling(const MatmulConfig &mmCFG, int32_t l1Size = Impl::L1_SIZE)
+__aicore__ constexpr MatmulApiStaticTiling GetMatmulApiTiling(const MatmulConfig& mmCFG, int32_t l1Size = Impl::L1_SIZE)
 {
-    constexpr auto singleM  = Std::tuple_element<0, SingleShape>::type::value;
-    constexpr auto singleN  = Std::tuple_element<1, SingleShape>::type::value;
+    constexpr auto singleM = Std::tuple_element<0, SingleShape>::type::value;
+    constexpr auto singleN = Std::tuple_element<1, SingleShape>::type::value;
     constexpr auto singleKa = Std::tuple_element<2, SingleShape>::type::value;
     constexpr auto singleKb = []() {
         if constexpr (Std::tuple_size_v<SingleShape> > 3) {
@@ -102,8 +102,8 @@ __aicore__ constexpr MatmulApiStaticTiling GetMatmulApiTiling(const MatmulConfig
             return singleKa;
         }
     }();
-    constexpr auto l1M  = Std::tuple_element<0, L1Shape>::type::value;
-    constexpr auto l1N  = Std::tuple_element<1, L1Shape>::type::value;
+    constexpr auto l1M = Std::tuple_element<0, L1Shape>::type::value;
+    constexpr auto l1N = Std::tuple_element<1, L1Shape>::type::value;
     constexpr auto l1Ka = Std::tuple_element<2, L1Shape>::type::value;
     constexpr auto l1Kb = []() {
         if constexpr (Std::tuple_size_v<L1Shape> > 3) {
@@ -125,9 +125,11 @@ __aicore__ constexpr MatmulApiStaticTiling GetMatmulApiTiling(const MatmulConfig
     tiling.baseN = baseN;
     tiling.baseK = baseK;
     tiling.dbL0A = 2 * baseM * baseK * GetBitSize<typename A_TYPE::T>() / ONE_BYTE_BIT_SIZE <= TOTAL_L0A_SIZE ?
-        Impl::DB_ON : Impl::DB_OFF;
+                       Impl::DB_ON :
+                       Impl::DB_OFF;
     tiling.dbL0B = 2 * baseK * baseN * GetBitSize<typename B_TYPE::T>() / ONE_BYTE_BIT_SIZE <= TOTAL_L0B_SIZE ?
-        Impl::DB_ON : Impl::DB_OFF;
+                       Impl::DB_ON :
+                       Impl::DB_OFF;
     tiling.isBias = mmCFG.enableSetBias;
     tiling.M = singleM;
     tiling.N = singleN;
@@ -166,5 +168,5 @@ __aicore__ constexpr MatmulApiStaticTiling GetMatmulApiTiling(const MatmulConfig
     tiling.shareUbSize = 0;
     return tiling;
 }
-} // namespace matmul
+} // namespace AscendC
 #endif // LIB_MATMUL_CONSTANT_TILING_H

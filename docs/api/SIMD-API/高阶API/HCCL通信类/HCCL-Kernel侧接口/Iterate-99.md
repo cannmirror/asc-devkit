@@ -23,7 +23,7 @@
 
 ```
 template <bool sync = true>
-__aicore__ inline int32_t Iterate(HcclHandle handleId, uint16_t *seqSlices, uint16_t seqSliceLen)
+__aicore__ inline int32_t Iterate(HcclHandle handleId, uint16_t* seqSlices, uint16_t seqSliceLen)
 ```
 
 ## 参数说明
@@ -59,7 +59,9 @@ __aicore__ inline int32_t Iterate(HcclHandle handleId, uint16_t *seqSlices, uint
 ## 调用示例
 
 ```
-extern "C" __global__ __aicore__ void alltoallv_custom(GM_ADDR sendBuf, GM_ADDR recvBuf, GM_ADDR workspaceGM, GM_ADDR tilingGM) {
+extern "C" __global__ __aicore__ void alltoallv_custom(
+    GM_ADDR sendBuf, GM_ADDR recvBuf, GM_ADDR workspaceGM, GM_ADDR tilingGM)
+{
     // 指定AIV核通信
     if (AscendC::g_coreType != AIV) {
         return;
@@ -67,26 +69,14 @@ extern "C" __global__ __aicore__ void alltoallv_custom(GM_ADDR sendBuf, GM_ADDR 
 
     constexpr uint32_t RANK_NUM = 4U;
     constexpr uint32_t STEP_SIZE = 1U; // 细粒度通信步长，通常使用SetStepSize接口设置，示例代码简化成1
-    constexpr uint64_t sendCounts[RANK_NUM][RANK_NUM] = {
-        {3, 3, 3, 3}, {2, 2, 3, 2},
-        {1, 4, 4, 4}, {3, 3, 3, 3}
-    };
-    constexpr uint64_t sDisplacements[RANK_NUM][RANK_NUM] = {
-        {0, 3, 6, 9}, {0, 2, 4, 7},
-        {0, 1, 5, 9}, {0, 3, 6, 9}
-    };
-    constexpr uint64_t recvCounts[RANK_NUM][RANK_NUM] = {
-        {3, 2, 1, 3}, {3, 2, 4, 3},
-        {3, 3, 4, 3}, {3, 2, 4, 3}
-    };
-    constexpr uint64_t rDisplacements[RANK_NUM][RANK_NUM] = {
-        {0, 3, 5, 6}, {0, 3, 5, 9},
-        {0, 3, 6, 10}, {0, 3, 5, 9}
-    };
+    constexpr uint64_t sendCounts[RANK_NUM][RANK_NUM] = {{3, 3, 3, 3}, {2, 2, 3, 2}, {1, 4, 4, 4}, {3, 3, 3, 3}};
+    constexpr uint64_t sDisplacements[RANK_NUM][RANK_NUM] = {{0, 3, 6, 9}, {0, 2, 4, 7}, {0, 1, 5, 9}, {0, 3, 6, 9}};
+    constexpr uint64_t recvCounts[RANK_NUM][RANK_NUM] = {{3, 2, 1, 3}, {3, 2, 4, 3}, {3, 3, 4, 3}, {3, 2, 4, 3}};
+    constexpr uint64_t rDisplacements[RANK_NUM][RANK_NUM] = {{0, 3, 5, 6}, {0, 3, 5, 9}, {0, 3, 6, 10}, {0, 3, 5, 9}};
     HcclDataType dtype = HcclDataType::HCCL_DATA_TYPE_FP16;
     REGISTER_TILING_DEFAULT(AllToAllVCustomTilingData); // AllToAllVCustomTilingData为对应算子头文件定义的结构体
     GET_TILING_DATA_WITH_STRUCT(AllToAllVCustomTilingData, tilingData, tilingGM);
-    GM_ADDR contextGM = AscendC::GetHcclContext<0>();  // AscendC自定义算子kernel中，通过此方式获取HCCL context
+    GM_ADDR contextGM = AscendC::GetHcclContext<0>(); // AscendC自定义算子kernel中，通过此方式获取HCCL context
     Hccl hccl;
     hccl.InitV2(contextGM, &tilingData);
     auto ret = hccl.SetCcTilingV2(offsetof(AllToAllVCustomTilingData, alltoallvCcTiling));
@@ -101,8 +91,9 @@ extern "C" __global__ __aicore__ void alltoallv_custom(GM_ADDR sendBuf, GM_ADDR 
 
     if (TILING_KEY_IS(1000UL)) {
         // 通算融合中的“先通信后计算”场景，即每一步都是先通信，再将通信的输出作为计算的输入并执行计算
-        const auto handleId = hccl.AlltoAllV<true>(sendBuf, sendCounts[selfRankId], sDisplacements[selfRankId], dtype,
-                                                   recvBuf, recvCounts[selfRankId], rDisplacements[selfRankId], dtype);
+        const auto handleId = hccl.AlltoAllV<true>(
+            sendBuf, sendCounts[selfRankId], sDisplacements[selfRankId], dtype, recvBuf, recvCounts[selfRankId],
+            rDisplacements[selfRankId], dtype);
         // 模板参数sync = true，表示该接口会阻塞等待每一步通信结果，并将输出数据块的下标索引填入sliceInfo中
         while (hccl.Iterate<true>(handleId, sliceInfo, sizeof(sliceInfo) / sizeof(sliceInfo[0]))) {
             // 每一步通信的输出数据块的下标索引保存在sliceInfo中，可以插入相应的计算流程，实现细粒度的通算融合
@@ -112,9 +103,9 @@ extern "C" __global__ __aicore__ void alltoallv_custom(GM_ADDR sendBuf, GM_ADDR 
     } else if (TILING_KEY_IS(1001UL)) {
         // 通算融合中的“先计算后通信”场景，即每一步都是先计算，再将计算的结果作为通信的输入并提交通信事务
         const uint8_t tileNum = 2U;
-        const auto handleId = hccl.AlltoAllV<false>(sendBuf, sendCounts[selfRankId], sDisplacements[selfRankId], dtype,
-                                                    recvBuf, recvCounts[selfRankId], rDisplacements[selfRankId], dtype,
-                                                    tileNum);
+        const auto handleId = hccl.AlltoAllV<false>(
+            sendBuf, sendCounts[selfRankId], sDisplacements[selfRankId], dtype, recvBuf, recvCounts[selfRankId],
+            rDisplacements[selfRankId], dtype, tileNum);
         for (uint8_t i = 0; i < tileNum; ++i) {
             for (uint8_t j = 0; j < RANK_NUM; ++j) {
                 // 模板参数sync = false，表示该接口不会阻塞等待，只会将当前这一步通信的输入数据块填入sliceInfo中

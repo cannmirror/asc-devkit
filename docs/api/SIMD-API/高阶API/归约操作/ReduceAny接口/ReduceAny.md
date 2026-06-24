@@ -92,9 +92,11 @@
 ## 调用示例
 
 ```
-uint32_t shape[] = { 2, 8 };
+uint32_t shape[] = {2, 8};
 constexpr bool isReuse = true;
-AscendC::ReduceAny<float, AscendC::Pattern::Reduce::AR, isReuse>(dstLocal, srcLocal, tmp, shape, true); // tmp为传入的临时空间大小，shape为srcLocal输入的shape， true表示地址是否32B对齐
+AscendC::ReduceAny<float, AscendC::Pattern::Reduce::AR, isReuse>(
+    dstLocal, srcLocal, tmp, shape,
+    true); // tmp为传入的临时空间大小，shape为srcLocal输入的shape， true表示地址是否32B对齐
 ```
 
 结果示例如下：

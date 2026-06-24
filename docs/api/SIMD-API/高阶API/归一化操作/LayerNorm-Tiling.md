@@ -53,7 +53,7 @@ Ascend C提供一组LayerNorm Tiling API，方便用户获取LayerNorm kernel计
     -   输出归一化结果、均值和标准差的倒数的LayerNorm接口所需的Tiling结构体
 
         ```
-        struct LayerNormSeparateTiling{
+        struct LayerNormSeparateTiling {
             uint32_t aLength = 0;
             uint32_t rLength = 0;
             uint32_t halfAddRepeatTimes = 0;
@@ -168,11 +168,12 @@ Ascend C提供一组LayerNorm Tiling API，方便用户获取LayerNorm kernel计
 1.  将LayerNormTiling结构体参数增加至TilingData结构体，作为TilingData结构体的一个字段。
 
     ```
-    BEGIN_TILING_DATA_DEF(TilingData)               // 注册一个tiling的类，以tiling的名字作为入参
-      TILING_DATA_FIELD_DEF(uint32_t, totalLength); // 添加tiling字段，总计算数据量
-      TILING_DATA_FIELD_DEF(uint32_t, tileNum);     // 添加tiling字段，每个核上总计算数据分块个数
-      ...                                           // 添加其他tiling字段
-      TILING_DATA_FIELD_DEF_STRUCT(LayerNormTiling, layernormTilingData); // 将LayerNormTiling结构体参数增加至TilingData结构体
+    BEGIN_TILING_DATA_DEF(TilingData)             // 注册一个tiling的类，以tiling的名字作为入参
+        TILING_DATA_FIELD_DEF(uint32_t, totalLength); // 添加tiling字段，总计算数据量
+        TILING_DATA_FIELD_DEF(uint32_t, tileNum);     // 添加tiling字段，每个核上总计算数据分块个数
+        ...                                           // 添加其他tiling字段
+        TILING_DATA_FIELD_DEF_STRUCT(
+            LayerNormTiling, layernormTilingData); // 将LayerNormTiling结构体参数增加至TilingData结构体
     END_TILING_DATA_DEF;
     ```
 
@@ -200,7 +201,7 @@ Ascend C提供一组LayerNorm Tiling API，方便用户获取LayerNorm kernel计
         AscendC::GetLayerNormMaxMinTmpSize(srcShape, sizeof(half), false, max, min);
         // 获取Layernorm Tiling参数
         AscendC::GetLayerNormNDTilingInfo(srcShape, min, sizeof(half), false, tiling.layernormTilingData);
-         ... // 其他逻辑
+        ... // 其他逻辑
         tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());
         context->GetRawTilingData()->SetDataSize(tiling.GetDataSize());
         context->SetTilingKey(1);
@@ -216,7 +217,7 @@ Ascend C提供一组LayerNorm Tiling API，方便用户获取LayerNorm kernel计
     {
         GET_TILING_DATA(tilingData, tiling);
         KernelFunc op;
-        op.Init(x, y, z, tilingData.totalLength, tilingData.tileNum,tilingData.layernormTilingData);
+        op.Init(x, y, z, tilingData.totalLength, tilingData.tileNum, tilingData.layernormTilingData);
         if (TILING_KEY_IS(1)) {
             op.Process();
         }
@@ -228,11 +229,12 @@ Ascend C提供一组LayerNorm Tiling API，方便用户获取LayerNorm kernel计
 1.  将LayerNormTiling结构体参数增加至TilingData结构体，作为TilingData结构体的一个字段。
 
     ```
-    BEGIN_TILING_DATA_DEF(TilingData)                         // 注册一个tiling的类，以tiling的名字作为入参
-      TILING_DATA_FIELD_DEF(uint32_t, aLength);                // 添加tiling字段，a轴长度
-      TILING_DATA_FIELD_DEF(uint32_t, rLengthWithPadding);     // 添加tiling字段，r轴对齐32B后的长度
-      ...                                                     // 添加其他tiling字段
-      TILING_DATA_FIELD_DEF_STRUCT(LayerNormSeparateTiling, layernormTilingData); // 将LayerNormSeparateTiling结构体参数增加至TilingData结构体
+    BEGIN_TILING_DATA_DEF(TilingData)                    // 注册一个tiling的类，以tiling的名字作为入参
+        TILING_DATA_FIELD_DEF(uint32_t, aLength);            // 添加tiling字段，a轴长度
+        TILING_DATA_FIELD_DEF(uint32_t, rLengthWithPadding); // 添加tiling字段，r轴对齐32B后的长度
+        ...                                                  // 添加其他tiling字段
+        TILING_DATA_FIELD_DEF_STRUCT(
+            LayerNormSeparateTiling, layernormTilingData); // 将LayerNormSeparateTiling结构体参数增加至TilingData结构体
     END_TILING_DATA_DEF;
     ```
 
@@ -263,8 +265,9 @@ Ascend C提供一组LayerNorm Tiling API，方便用户获取LayerNorm kernel计
         // auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
         // AscendC::GetLayerNormMaxMinTmpSize(srcShape, sizeof(half), false, true, false, ascendcPlatform, max, min);
         // 获取Layernorm Tiling参数
-        // AscendC::GetLayerNormNDTilingInfo(srcShape, min, sizeof(half), false, true, ascendcPlatform, tiling.layernormTilingData);
-         ... // 其他逻辑
+        // AscendC::GetLayerNormNDTilingInfo(srcShape, min, sizeof(half), false, true, ascendcPlatform,
+        // tiling.layernormTilingData);
+        ... // 其他逻辑
         tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());
         context->GetRawTilingData()->SetDataSize(tiling.GetDataSize());
         context->SetTilingKey(1);
@@ -276,7 +279,8 @@ Ascend C提供一组LayerNorm Tiling API，方便用户获取LayerNorm kernel计
 3.  对应的kernel侧通过在核函数中调用GET\_TILING\_DATA获取TilingData，继而将TilingData中的LayerNormTiling信息传入LayerNorm接口参与计算。
 
     ```
-    extern "C" __global__ __aicore__ void func_custom(GM_ADDR x, GM_ADDR gamma, GM_ADDR beta, GM_ADDR mean, GM_ADDR rstd, GM_ADDR y, GM_ADDR workspace, GM_ADDR tiling)
+    extern "C" __global__ __aicore__ void func_custom(
+        GM_ADDR x, GM_ADDR gamma, GM_ADDR beta, GM_ADDR mean, GM_ADDR rstd, GM_ADDR y, GM_ADDR workspace, GM_ADDR tiling)
     {
         GET_TILING_DATA(tilingData, tiling);
         float epsilon = tilingData.epsilon;

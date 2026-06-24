@@ -88,11 +88,11 @@
 
 ```
 enum class TanhAlgo {
-  INTRINSIC = 0,
-  SUBSECTION_COMPENSATION,
+    INTRINSIC = 0,
+    SUBSECTION_COMPENSATION,
 };
 struct TanhConfig {
-  TanhAlgo algo = TanhAlgo::INTRINSIC;
+    TanhAlgo algo = TanhAlgo::INTRINSIC;
 };
 ```
 
@@ -132,7 +132,7 @@ AscendC::Tanh(dstLocal, srcLocal, sharedTmpBuffer);
 // 通过sharedTmpBuffer入参传入临时空间，部分参与计算,需要参与计算的元素个数为512
 AscendC::Tanh(dstLocal, srcLocal, sharedTmpBuffer, 512);
 static constexpr AscendC::TanhAlgo algo = AscendC::TanhAlgo::SUBSECTION_COMPENSATION;
-static constexpr AscendC::TanhConfig config = { algo };
+static constexpr AscendC::TanhConfig config = {algo};
 AscendC::Tanh<half, false, config>(dstLocal, srcLocal, sharedTmpBuffer, 512);
 ```
 

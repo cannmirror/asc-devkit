@@ -38,6 +38,6 @@ tiling.SetBufferSpace(-1, -1, -1);
 
 optiling::TCubeTiling tilingData;
 int ret = tiling.GetTiling(tilingData);
-int baseM = tiling.GetBaseM();  // 获取Tiling计算得到的baseM
+int baseM = tiling.GetBaseM(); // 获取Tiling计算得到的baseM
 ```
 

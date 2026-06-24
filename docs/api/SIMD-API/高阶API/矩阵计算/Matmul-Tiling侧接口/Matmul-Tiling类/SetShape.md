@@ -42,6 +42,6 @@ int32_t SetShape(int32_t m, int32_t n, int32_t k)
 auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
 matmul_tiling::MatmulApiTiling tiling(ascendcPlatform);
 
-tiling.SetShape(1024, 1024, 1024);  // 设置Matmul计算的形状
+tiling.SetShape(1024, 1024, 1024); // 设置Matmul计算的形状
 tiling.SetOrgShape(1024, 1024, 1024);
 ```

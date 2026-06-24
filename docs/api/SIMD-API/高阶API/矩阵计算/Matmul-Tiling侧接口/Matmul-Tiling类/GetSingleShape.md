@@ -7,7 +7,7 @@
 ## 函数原型
 
 ```
-int32_t GetSingleShape(int32_t &shapeM, int32_t &shapeN, int32_t &shapeK)
+int32_t GetSingleShape(int32_t& shapeM, int32_t& shapeN, int32_t& shapeK)
 ```
 
 ## 参数说明

@@ -39,7 +39,7 @@ tiling.SetCType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND, mat
 tiling.SetBiasType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);
 tiling.SetShape(1024, 1024, 1024);
 tiling.SetOrgShape(1024, 1024, 1024);
-tiling.SetBias(true);  // 设置Bias是否参与运算
+tiling.SetBias(true); // 设置Bias是否参与运算
 tiling.SetBufferSpace(-1, -1, -1);
 optiling::TCubeTiling tilingData;
 int ret = tiling.GetTiling(tilingData);

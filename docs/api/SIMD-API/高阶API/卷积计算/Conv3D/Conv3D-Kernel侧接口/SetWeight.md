@@ -50,6 +50,6 @@ __aicore__ inline void SetWeight(const AscendC::GlobalTensor<WeightT>& weight)
 
 ```
 GlobalTensor<half> weightGm;
-weightGm.SetGlobalBuffer(reinterpret_cast<__gm__ half *>(weight));
+weightGm.SetGlobalBuffer(reinterpret_cast<__gm__ half*>(weight));
 conv3dApi.SetWeight(weightGm);
 ```

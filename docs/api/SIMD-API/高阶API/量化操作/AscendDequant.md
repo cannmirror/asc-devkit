@@ -188,8 +188,8 @@ __aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const L
 
 ```
 struct AscendDeQuantConfig {
-        bool hasOffset;
-        int32_t kDim = 1;
+    bool hasOffset;
+    int32_t kDim = 1;
 }
 ```
 
@@ -204,8 +204,7 @@ struct AscendDeQuantConfig {
 | params | 输入 | srcTensor的shape信息。DequantParams类型，定义如下方代码所示，其中参数的含义如下。<br>m：srcTensor的行数。<br>n：srcTensor的列数。<br>calCount：针对srcTensor每一行，前calCount个数为有效数据，与deqScale的前calCount个数或者deqScale标量进行乘法计算。<br><br>请注意：<br>DequantParams.n * sizeof(T)必须是32字节的整数倍，T为srcTensor中元素的数据类型。<br>因为是每n个数中的前calCount个数进行乘法运算，因此DequantParams.n和calCount需要满足以下关系：1 <= DequantParams.calCount <= DequantParams.n。<br>deqScale为矢量时，DequantParams.calCount <= deqScale的元素个数。 |
 
 ```
-struct DequantParams
-{
+struct DequantParams {
     uint32_t m;
     uint32_t n;
     uint32_t calCount;
@@ -225,10 +224,10 @@ struct DequantParams
 
 ```
 struct AscendDeQuantParam {
-        uint32_t m;
-        uint32_t n;
-        uint32_t calCount;
-        uint32_t groupSize = 0;
+    uint32_t m;
+    uint32_t n;
+    uint32_t calCount;
+    uint32_t groupSize = 0;
 }
 ```
 
@@ -310,7 +309,7 @@ struct AscendDeQuantParam {
     <!-- npu="9030" id6 -->
     Kirin 9030，当deqScale为矢量时，支持的数据类型为：uint64\_t、float；当deqScale为标量时，支持的数据类型为float。
     <!-- end id6 -->
-    
+
 ## 调用示例
 
 ```
@@ -319,9 +318,9 @@ struct AscendDeQuantParam {
 // deqScaleLocal: 存放反量化计算量反量化系数的输入Tensor
 // sharedTmpBuffer: 存放反量化计算过程中临时缓存的Tensor
 
-uint32_t m = 4;  // srcTensor的行数
-uint32_t n = 8;  // srcTensor的列数
-uint32_t calCount = 6;  // 每行srcTensor的前calCount个数参与反量化计算
+uint32_t m = 4;        // srcTensor的行数
+uint32_t n = 8;        // srcTensor的列数
+uint32_t calCount = 6; // 每行srcTensor的前calCount个数参与反量化计算
 
 // 反量化参数deqScale为矢量，通过sharedTmpBuffer入参传入临时空间。
 AscendC::AscendDequant(dstLocal, srcLocal, deqScaleLocal, sharedTmpBuffer, {m, n, calCount});

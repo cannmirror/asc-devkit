@@ -29,7 +29,7 @@
 ## 函数原型
 
 ```
-__aicore__ inline void SetWeight(const AscendC::GlobalTensor<SrcT> &weight)
+__aicore__ inline void SetWeight(const AscendC::GlobalTensor<SrcT>& weight)
 ```
 
 ## 参数说明

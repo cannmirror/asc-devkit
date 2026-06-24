@@ -35,5 +35,5 @@ int32_t SetFixSplit(int32_t baseMIn = -1, int32_t baseNIn = -1, int32_t baseKIn 
 auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
 matmul_tiling::MatmulApiTiling tiling(ascendcPlatform);
 
-tiling.SetFixSplit(16, 16, -1);  // 设置固定的baseM、baseN
+tiling.SetFixSplit(16, 16, -1); // 设置固定的baseM、baseN
 ```

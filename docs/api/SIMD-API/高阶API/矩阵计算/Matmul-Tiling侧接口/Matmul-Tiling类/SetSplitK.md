@@ -33,7 +33,7 @@ void SetSplitK(bool flag)
 
 ```
 auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo())
-matmul_tiling::MultiCoreMatmulTiling tiling(ascendcPlatform);
+    matmul_tiling::MultiCoreMatmulTiling tiling(ascendcPlatform);
 tiling.SetDim(useCoreNums);
 tiling.SetAType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT16);
 tiling.SetBType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT16);

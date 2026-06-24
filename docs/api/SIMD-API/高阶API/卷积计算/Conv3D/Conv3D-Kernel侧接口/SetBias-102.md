@@ -50,7 +50,7 @@ __aicore__ inline void SetBias(const AscendC::GlobalTensor<BiasT>& bias)
 
 ```
 GlobalTensor<float> biasGm;
-biasGm.SetGlobalBuffer(reinterpret_cast<__gm__ half *>(bias));
+biasGm.SetGlobalBuffer(reinterpret_cast<__gm__ half*>(bias));
 if (biasFlag) {
     conv3dApi.SetBias(biasGm);
 }

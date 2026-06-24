@@ -52,5 +52,5 @@ typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> cType
 typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> biasType;
 
 MatmulImpl<aType, bType, cType, biasType, CFG_NORM> mm;
-mm.SetSubBlockIdx(0);  // 子核ID设置为0
+mm.SetSubBlockIdx(0); // 子核ID设置为0
 ```

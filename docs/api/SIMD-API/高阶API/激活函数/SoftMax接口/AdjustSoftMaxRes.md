@@ -61,10 +61,10 @@ __aicore__ inline bool AdjustSoftMaxRes(const LocalTensor<T1>& softMaxRes, const
 
 ```
 struct SoftMaxShapeInfo {
-  uint32_t srcM;
-  uint32_t srcK;
-  uint32_t oriSrcM;
-  uint32_t oriSrcK;
+    uint32_t srcM;
+    uint32_t srcK;
+    uint32_t oriSrcM;
+    uint32_t oriSrcK;
 };
 ```
 

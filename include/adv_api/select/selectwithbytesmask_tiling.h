@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file selectwithbytesmask_tiling.h
@@ -32,11 +32,13 @@ namespace AscendC {
  * \param [in] isReuseMask, whether to reuse the input space of the mask operand
  * \return minValue, minimum temporary space required
  */
-uint32_t GetSelectWithBytesMaskMinTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Shape,
-    const uint32_t srcTypeSize, const ge::Shape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask);
+uint32_t GetSelectWithBytesMaskMinTmpSize(
+    const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize, const ge::Shape& maskShape,
+    const uint32_t maskTypeSize, const bool isReuseMask);
 
-uint32_t GetSelectMinTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize,
-    const ge::Shape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask);
+uint32_t GetSelectMinTmpSize(
+    const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize, const ge::Shape& maskShape,
+    const uint32_t maskTypeSize, const bool isReuseMask);
 
 /* !
  * \brief This interface is used to obtain the maximum temporary space reserved or applied.
@@ -51,11 +53,13 @@ uint32_t GetSelectMinTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Sh
  * \param [in] isReuseMask, whether to reuse the input space of the mask operand
  * \return maxValue, maximum temporary space required
  */
-uint32_t GetSelectWithBytesMaskMaxTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Shape,
-    const uint32_t srcTypeSize, const ge::Shape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask);
+uint32_t GetSelectWithBytesMaskMaxTmpSize(
+    const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize, const ge::Shape& maskShape,
+    const uint32_t maskTypeSize, const bool isReuseMask);
 
-uint32_t GetSelectMaxTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize,
-    const ge::Shape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask);
+uint32_t GetSelectMaxTmpSize(
+    const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize, const ge::Shape& maskShape,
+    const uint32_t maskTypeSize, const bool isReuseMask);
 
 /* !
  * \brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.
@@ -71,12 +75,12 @@ uint32_t GetSelectMaxTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Sh
  * \param [out] maxValue, maximum temporary space required
  * \param [out] minValue, minimum temporary space required
  */
-void GetSelectWithBytesMaskMaxMinTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Shape,
-    const uint32_t srcTypeSize, const ge::Shape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask,
-    uint32_t& maxValue, uint32_t& minValue);
+void GetSelectWithBytesMaskMaxMinTmpSize(
+    const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize, const ge::Shape& maskShape,
+    const uint32_t maskTypeSize, const bool isReuseMask, uint32_t& maxValue, uint32_t& minValue);
 
-void GetSelectMaxMinTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize,
-    const ge::Shape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask, uint32_t& maxValue,
-    uint32_t& minValue);
+void GetSelectMaxMinTmpSize(
+    const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize, const ge::Shape& maskShape,
+    const uint32_t maskTypeSize, const bool isReuseMask, uint32_t& maxValue, uint32_t& minValue);
 } // namespace AscendC
 #endif // LIB_SELECT_SELECT_WITH_BYTES_MASK_TILING_H

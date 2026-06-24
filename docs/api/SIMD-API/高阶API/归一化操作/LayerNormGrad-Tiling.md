@@ -101,11 +101,12 @@ void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stack
 1.  将LayerNormGradTiling结构体参数增加至TilingData结构体，作为TilingData结构体的一个字段。
 
     ```
-    BEGIN_TILING_DATA_DEF(TilingData)               // 注册一个tiling的类，以tiling的名字作为入参
-      TILING_DATA_FIELD_DEF(uint32_t, totalLength); // 添加tiling字段，总计算数据量
-      TILING_DATA_FIELD_DEF(uint32_t, tileNum);     // 添加tiling字段，每个核上总计算数据分块个数
-      ...                                           // 添加其他tiling字段
-      TILING_DATA_FIELD_DEF_STRUCT(LayerNormGradTiling, layernormGradTilingData); // 将LayerNormGradTiling结构体参数增加至TilingData结构体
+    BEGIN_TILING_DATA_DEF(TilingData)             // 注册一个tiling的类，以tiling的名字作为入参
+        TILING_DATA_FIELD_DEF(uint32_t, totalLength); // 添加tiling字段，总计算数据量
+        TILING_DATA_FIELD_DEF(uint32_t, tileNum);     // 添加tiling字段，每个核上总计算数据分块个数
+        ...                                           // 添加其他tiling字段
+        TILING_DATA_FIELD_DEF_STRUCT(
+            LayerNormGradTiling, layernormGradTilingData); // 将LayerNormGradTiling结构体参数增加至TilingData结构体
     END_TILING_DATA_DEF;
     ```
 
@@ -133,7 +134,7 @@ void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stack
         AscendC::GetLayerNormGradMaxMinTmpSize(srcShape, sizeof(half), false, max, min);
         // 获取LayerNormGrad Tiling参数
         AscendC::GetLayerNormGradNDTilingInfo(srcShape, min, sizeof(half), false, tiling.layernormGradTilingData);
-         ... // 其他逻辑
+        ... // 其他逻辑
         tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());
         context->GetRawTilingData()->SetDataSize(tiling.GetDataSize());
         context->SetTilingKey(1);
@@ -149,7 +150,7 @@ void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stack
     {
         GET_TILING_DATA(tilingData, tiling);
         KernelFunc op;
-        op.Init(x, y, z, tilingData.totalLength, tilingData.tileNum,tilingData.layernormGradTilingData);
+        op.Init(x, y, z, tilingData.totalLength, tilingData.tileNum, tilingData.layernormGradTilingData);
         if (TILING_KEY_IS(1)) {
             op.Process();
         }

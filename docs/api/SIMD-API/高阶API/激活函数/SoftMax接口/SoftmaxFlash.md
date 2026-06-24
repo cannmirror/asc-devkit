@@ -56,7 +56,7 @@ def softmax_flash(src, inmax=None, insum=None, update=None):
 
     ```
     template <typename T, bool isReuseSource = false, bool isBasicBlock = false>
-    __aicore__ inline void SoftmaxFlash(const LocalTensor<T> &dstTensor, const LocalTensor<T> &sumTensor, const LocalTensor<T> &maxTensor, const LocalTensor<T> &srcTensor, const LocalTensor<T> &expMaxTensor, const LocalTensor<T> &inSumTensor, const LocalTensor<T> &inMaxTensor, const SoftMaxTiling &tiling, bool isUpdate = false, const SoftMaxShapeInfo &softmaxShapeInfo = {})
+    __aicore__ inline void SoftmaxFlash(const LocalTensor<T>& dstTensor, const LocalTensor<T>& sumTensor, const LocalTensor<T>& maxTensor, const LocalTensor<T>& srcTensor, const LocalTensor<T>& expMaxTensor, const LocalTensor<T>& inSumTensor, const LocalTensor<T>& inMaxTensor, const SoftMaxTiling& tiling, bool isUpdate = false, const SoftMaxShapeInfo& softmaxShapeInfo = {})
     ```
 
     ```
@@ -112,10 +112,10 @@ def softmax_flash(src, inmax=None, insum=None, update=None):
 
 ```
 struct SoftMaxShapeInfo {
-  uint32_t srcM;
-  uint32_t srcK;
-  uint32_t oriSrcM;
-  uint32_t oriSrcK;
+    uint32_t srcM;
+    uint32_t srcK;
+    uint32_t oriSrcM;
+    uint32_t oriSrcK;
 };
 ```
 
@@ -140,16 +140,15 @@ struct SoftMaxShapeInfo {
 template <typename T>
 class KernelSoftmaxFlash {
 public:
-    __aicore__ inline KernelSoftmaxFlash()
-    {}
+    __aicore__ inline KernelSoftmaxFlash() {}
     __aicore__ inline void Init(
-        GM_ADDR srcGm, GM_ADDR inMaxGm, GM_ADDR inSumGm, GM_ADDR dstGm, const SoftMaxTiling &tilingData)
+        GM_ADDR srcGm, GM_ADDR inMaxGm, GM_ADDR inSumGm, GM_ADDR dstGm, const SoftMaxTiling& tilingData)
     {
         elementNumPerBlk = 32 / sizeof(T);
-        srcGlobal.SetGlobalBuffer((__gm__ T *)srcGm);
-        maxGlobal.SetGlobalBuffer((__gm__ T *)inMaxGm);
-        sumGlobal.SetGlobalBuffer((__gm__ T *)inSumGm);
-        dstGlobal.SetGlobalBuffer((__gm__ T *)dstGm);
+        srcGlobal.SetGlobalBuffer((__gm__ T*)srcGm);
+        maxGlobal.SetGlobalBuffer((__gm__ T*)inMaxGm);
+        sumGlobal.SetGlobalBuffer((__gm__ T*)inSumGm);
+        dstGlobal.SetGlobalBuffer((__gm__ T*)dstGm);
         pipe.InitBuffer(inQueueSrc, 1, height * width * sizeof(T));
         pipe.InitBuffer(outQueueDst, 1, height * width * sizeof(T));
         pipe.InitBuffer(inMaxQueue, 1, height * elementNumPerBlk * sizeof(T));
@@ -186,16 +185,8 @@ private:
         AscendC::LocalTensor<T> inSumLocal = inSumQueue.AllocTensor<T>();
         AscendC::LocalTensor<T> expMaxTensor = expMaxQueue.AllocTensor<T>();
         AscendC::SoftMaxShapeInfo srcShape = {height, width, height, width};
-        AscendC::SoftmaxFlash<T, false>(srcLocal,
-            inSumLocal,
-            inMaxLocal,
-            srcLocal,
-            expMaxTensor,
-            inSumLocal,
-            inMaxLocal,
-            tiling,
-            false,
-            srcShape);
+        AscendC::SoftmaxFlash<T, false>(
+            srcLocal, inSumLocal, inMaxLocal, srcLocal, expMaxTensor, inSumLocal, inMaxLocal, tiling, false, srcShape);
 
         AscendC::DataCopy(dstLocal, srcLocal, height * width);
 
@@ -229,7 +220,8 @@ private:
     SoftMaxTiling tiling;
 };
 
-extern "C" __global__ __aicore__ void softmax_flash_kernel_half(GM_ADDR srcGm, GM_ADDR inMaxGm, GM_ADDR inSumGm, GM_ADDR dstGm, GM_ADDR tiling)
+extern "C" __global__ __aicore__ void softmax_flash_kernel_half(
+    GM_ADDR srcGm, GM_ADDR inMaxGm, GM_ADDR inSumGm, GM_ADDR dstGm, GM_ADDR tiling)
 {
     GET_TILING_DATA(tilingData, tiling);
     KernelSoftmaxFlash<half> op;

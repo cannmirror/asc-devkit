@@ -7,11 +7,11 @@
 ## 函数原型
 
 ```
-int64_t GetTiling(optiling::TCubeTiling &tiling)
+int64_t GetTiling(optiling::TCubeTiling& tiling)
 ```
 
 ```
-int64_t GetTiling(AscendC::tiling::TCubeTiling &tiling)
+int64_t GetTiling(AscendC::tiling::TCubeTiling& tiling)
 ```
 
 ## 参数说明
@@ -44,5 +44,5 @@ tiling.SetOrgShape(1024, 1024, 1024);
 tiling.SetBias(true);
 tiling.SetBufferSpace(-1, -1, -1);
 optiling::TCubeTiling tilingData;
-int ret = tiling.GetTiling(tilingData);  // 获取Tiling参数
+int ret = tiling.GetTiling(tilingData); // 获取Tiling参数
 ```

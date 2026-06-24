@@ -52,10 +52,11 @@ uint32_t GetAscendAntiQuantMinTmpSize(const ge::Shape& srcShape, const ge::Shape
 ```
 uint32_t maxValue = 0;
 uint32_t minValue = 0;
-std::vector<int64_t> srcDims = { 64, 512 };
+std::vector<int64_t> srcDims = {64, 512};
 auto srcShape = ge::Shape(srcDims);
-std::vector<int64_t> scaleDims = { 1, 512 };
+std::vector<int64_t> scaleDims = {1, 512};
 auto scaleShape = ge::Shape(scaleDims);
 bool isTranspose = false;
-AscendC::GetAscendAntiQuantMaxMinTmpSize(srcShape, scaleShape, isTranspose, ge::DT_INT8, ge::DT_BF16, maxValue, minValue);
+AscendC::GetAscendAntiQuantMaxMinTmpSize(
+    srcShape, scaleShape, isTranspose, ge::DT_INT8, ge::DT_BF16, maxValue, minValue);
 ```

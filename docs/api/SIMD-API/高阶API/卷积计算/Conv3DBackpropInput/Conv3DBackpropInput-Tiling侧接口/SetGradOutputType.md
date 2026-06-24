@@ -33,7 +33,6 @@ void SetGradOutputType(ConvCommonApi::TPosition pos, ConvCommonApi::ConvFormat f
 ```
 auto ascendcPlatform = platform_ascendc::PlatformAscendCManager::GetInstance();
 ConvBackpropApi::Conv3DBpInputTiling conv3DBpDxTiling(*ascendcPlatform);
-conv3DBpDxTiling.SetGradOutputType(ConvCommonApi::TPosition::GM,
-                                   ConvCommonApi::ConvFormat::NDC1HWC0,
-                                   ConvCommonApi::ConvDtype::FLOAT16);
+conv3DBpDxTiling.SetGradOutputType(
+    ConvCommonApi::TPosition::GM, ConvCommonApi::ConvFormat::NDC1HWC0, ConvCommonApi::ConvDtype::FLOAT16);
 ```

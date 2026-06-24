@@ -92,12 +92,9 @@ Sin\(x\)的泰勒展开式为：
 
 ```
 struct SinConfig {
-  SinAlgo algo = SinAlgo::POLYNOMIAL_APPROXIMATION;
+    SinAlgo algo = SinAlgo::POLYNOMIAL_APPROXIMATION;
 };
-enum class SinAlgo {
-  POLYNOMIAL_APPROXIMATION = 0,
-  RADIAN_REDUCTION
-};
+enum class SinAlgo { POLYNOMIAL_APPROXIMATION = 0, RADIAN_REDUCTION };
 ```
 
 **表2**  参数说明
@@ -150,7 +147,7 @@ AscendC::Sin(dstLocal, srcLocal, sharedTmpBuffer);
 // 通过sharedTmpBuffer入参传入临时空间，部分参与计算,需要参与计算的元素个数为512
 AscendC::Sin(dstLocal, srcLocal, sharedTmpBuffer, 512);
 constexpr AscendC::SinAlgo algo = AscendC::SinAlgo::RADIAN_REDUCTION;
-constexpr AscendC::SinConfig config = { algo };
+constexpr AscendC::SinConfig config = {algo};
 AscendC::Sin<half, false, config>(dstLocal, srcLocal, sharedTmpBuffer, 512);
 ```
 

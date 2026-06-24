@@ -50,6 +50,6 @@ __aicore__ inline void SetInput(const AscendC::GlobalTensor<InputT>& input)
 
 ```
 GlobalTensor<half> inputGm;
-inputGm.SetGlobalBuffer(reinterpret_cast<__gm__ half *>(input));
+inputGm.SetGlobalBuffer(reinterpret_cast<__gm__ half*>(input));
 conv3dApi.SetInput(inputGm);
 ```

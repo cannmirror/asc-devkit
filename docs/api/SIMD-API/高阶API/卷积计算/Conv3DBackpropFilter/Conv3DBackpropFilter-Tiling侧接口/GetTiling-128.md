@@ -38,22 +38,19 @@ int64_t GetTiling(AscendC::tiling::Conv3DBackpropFilterTilingData& tiling)
 optiling::Conv3DBackpropFilterTilingData tilingData;
 auto ascendcPlatform = platform_ascendc::PlatformAscendCManager::GetInstance();
 ConvBackpropApi::Conv3dBpFilterTiling conv3dBpDwTiling(*ascendcPlatform);
-conv3dBpDwTiling.SetWeightType(ConvCommonApi::TPosition::GM,
-                                   ConvCommonApi::ConvFormat::FRACTAL_Z_3D,
-                                   ConvCommonApi::ConvDtype::FLOAT32);
-conv3dBpDwTiling.SetInputType(ConvCommonApi::TPosition::GM,
-                                 ConvCommonApi::ConvFormat::NDC1HWC0,
-                                 ConvCommonApi::ConvDtype::FLOAT16);
-conv3dBpDwTiling.SetGradOutputType(ConvCommonApi::TPosition::GM,
-                                   ConvCommonApi::ConvFormat::NDC1HWC0,
-                                   ConvCommonApi::ConvDtype::FLOAT16);
+conv3dBpDwTiling.SetWeightType(
+    ConvCommonApi::TPosition::GM, ConvCommonApi::ConvFormat::FRACTAL_Z_3D, ConvCommonApi::ConvDtype::FLOAT32);
+conv3dBpDwTiling.SetInputType(
+    ConvCommonApi::TPosition::GM, ConvCommonApi::ConvFormat::NDC1HWC0, ConvCommonApi::ConvDtype::FLOAT16);
+conv3dBpDwTiling.SetGradOutputType(
+    ConvCommonApi::TPosition::GM, ConvCommonApi::ConvFormat::NDC1HWC0, ConvCommonApi::ConvDtype::FLOAT16);
 conv3dBpDwTiling.SetInputShape(n, c, d, h, w);
 conv3dBpDwTiling.SetGradOutputShape(n, c, d, h, w);
 conv3dBpDwTiling.SetWeightShape(cout, cin, d, h, w);
 conv3dBpDwTiling.SetPadding(padFront, padBack, padUp, padDown, padLeft, padRight);
 conv3dBpDwTiling.SetStride(strideD, strideH, strideW);
 conv3dBpDwTiling.SetDilation(dilationD, dilationH, dilationW);
-int ret = conv3dBpDwTiling.GetTiling(tilingData);    // 获取tiling参数
+int ret = conv3dBpDwTiling.GetTiling(tilingData); // 获取tiling参数
 // 使用AscendC::tiling命名空间中的Tiling结构体获取tiling参数
 AscendC::tiling::Conv3DBackpropFilterTilingData tilingDataNotOp;
 ret = conv3dBpDwTiling.GetTiling(tilingDataNotOp);

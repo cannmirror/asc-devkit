@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file power_tiling_intf.h
@@ -30,8 +30,9 @@ namespace AscendC {
  * @param [out] maxValue: max temporary local space size
  * @param [out] minValue: min temporary local space size
  */
-void GetPowerMaxMinTmpSize(const ge::Shape& srcShape1, const ge::Shape& srcShape2, const bool typeIsInt,
-    const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue);
+void GetPowerMaxMinTmpSize(
+    const ge::Shape& srcShape1, const ge::Shape& srcShape2, const bool typeIsInt, const uint32_t typeSize,
+    const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue);
 
 /*
  * @ingroup GetPowerTmpBufferFactorSize for V220
@@ -47,7 +48,7 @@ void GetPowerMaxMinTmpSize(const ge::Shape& srcShape1, const ge::Shape& srcShape
  * @param [out] extraBuffer: the size of the extra temporary space
  */
 void GetPowerTmpBufferFactorSize(
-    const bool baseIsTensor, const bool expIsTensor, const bool typeIsInt,
-    const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer);
+    const bool baseIsTensor, const bool expIsTensor, const bool typeIsInt, const uint32_t typeSize,
+    uint32_t& maxLiveNodeCount, uint32_t& extraBuffer);
 } // namespace AscendC
 #endif // LIB_MATH_POWER_TILING_H

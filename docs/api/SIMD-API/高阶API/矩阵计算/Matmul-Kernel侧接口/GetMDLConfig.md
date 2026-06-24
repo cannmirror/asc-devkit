@@ -71,8 +71,7 @@ constexpr MatmulConfig MM_CFG = GetMDLConfig(
     /* enableUBReuse        */ true,
     /* enableL1CacheUB      */ false,
     /* enableMixDualMaster  */ false,
-    /* enableKdimReorderLoad*/ false
-);
+    /* enableKdimReorderLoad*/ false);
 // 常规Matmul计算，最后输出使用自定义MDL模板的计算结果
 AscendC::Matmul<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG> mm;
 REGIST_MATMUL_OBJ(&pipe, GetSysWorkSpacePtr(), mm, &tiling);

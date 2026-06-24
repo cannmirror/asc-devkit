@@ -95,10 +95,10 @@ def softmax_grad(grad, src, isFront = None):
 
 ```
 struct SoftMaxShapeInfo {
-  uint32_t srcM;
-  uint32_t srcK;
-  uint32_t oriSrcM;
-  uint32_t oriSrcK;
+    uint32_t srcM;
+    uint32_t srcK;
+    uint32_t oriSrcM;
+    uint32_t oriSrcK;
 };
 ```
 
@@ -126,9 +126,8 @@ AscendC::SoftMaxShapeInfo softmaxInfo(
     /* 非尾轴长度的乘积          */ srcM,
     /* 尾轴长度，必须32Bytes对齐 */ srcK,
     /* 原始非尾轴长度的乘积      */ oriSrcM,
-    /* 原始尾轴长度              */ oriSrcK
-);
-bool isFront = false;  // 不开启isFront计算
+    /* 原始尾轴长度              */ oriSrcK);
+bool isFront = false; // 不开启isFront计算
 
 // 通过sharedTmpBuffer入参传入临时空间
 AscendC::SoftmaxGrad<T>(dstLocal, gradLocal, srcLocal, sharedTmpBuffer, softmaxTiling, isFront, softmaxInfo);

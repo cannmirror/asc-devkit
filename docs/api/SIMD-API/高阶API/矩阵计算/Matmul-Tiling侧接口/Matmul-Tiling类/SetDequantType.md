@@ -54,7 +54,7 @@ tiling.SetBiasType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND, 
 tiling.SetShape(M, N, K);
 tiling.SetOrgShape(M, N, K);
 tiling.EnableBias(true);
-tiling.SetDequantType(DequantType::SCALAR);  // 设置同一系数的量化/反量化模式
+tiling.SetDequantType(DequantType::SCALAR); // 设置同一系数的量化/反量化模式
 // tiling.SetDequantType(DequantType::TENSOR);  // 设置向量的量化/反量化模式
 tiling.SetBufferSpace(-1, -1, -1);
 optiling::TCubeTiling tilingData;

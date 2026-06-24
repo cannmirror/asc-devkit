@@ -92,7 +92,7 @@ def simple_softmax(src, max, sum):
 | config | 结构体模板参数，此参数可选配，SoftmaxConfig类型，具体定义如下方代码所示，其中参数的含义为：<br>isCheckTiling：是否需要检查shape和tiling的一致性；若不一致，API内会根据shape重新计算所需tiling。默认取值true：API内部会检查一致性。<br>oriSrcM：原始非尾轴长度的乘积。设置该参数后，将shape常量化，编译过程中使用常量化的shape。<br>oriSrcK：原始尾轴长度。设置该参数后，将shape常量化，编译过程中使用常量化的shape。<br><br>此参数一般用于配合kernel侧tiling计算的接口使用。<br><br>注意：config参数生效的优先级低于模板参数isBasicBlock，即开启isBasicBlock参数时，接口内部做基本块的切分优化，config参数的shape常量化不生效。<br><br>Ascend 950PR/Ascend 950DT，该参数为预留参数，暂未启用，保持默认值即可。<br><br>Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持该参数。<br><br>Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持该参数。<br><br>Atlas 推理系列产品AI Core，支持该参数。<br><br>针对Atlas 200I/500 A2 推理产品，该参数为预留参数，暂未启用，保持默认值即可。 |
 
 ```
-struct SoftmaxConfig{
+struct SoftmaxConfig {
     bool isCheckTiling = true;
     uint32_t oriSrcM = 0;
     uint32_t oriSrcK = 0;
@@ -119,10 +119,10 @@ constexpr SoftmaxConfig SOFTMAX_DEFAULT_CFG = {true, 0, 0};
 
 ```
 struct SoftMaxShapeInfo {
-  uint32_t srcM;
-  uint32_t srcK;
-  uint32_t oriSrcM;
-  uint32_t oriSrcK;
+    uint32_t srcM;
+    uint32_t srcK;
+    uint32_t oriSrcM;
+    uint32_t oriSrcK;
 };
 ```
 
@@ -153,11 +153,11 @@ AscendC::SoftMaxShapeInfo softmaxInfo(
     /* 非尾轴长度的乘积          */ srcM,
     /* 尾轴长度，必须32Bytes对齐 */ srcK,
     /* 原始非尾轴长度的乘积      */ oriSrcM,
-    /* 原始尾轴长度              */ oriSrcK
-);
+    /* 原始尾轴长度              */ oriSrcK);
 
 // 通过sharedTmpBuffer入参传入临时空间，传入模板参数将shape常量化
-AscendC::SimpleSoftMax<T, false, false, false, static_config>(dstLocal, sumTempLocal, maxTempLocal, srcLocal, sharedTmpBuffer, softmaxTiling, softmaxInfo);
+AscendC::SimpleSoftMax<T, false, false, false, static_config>(
+    dstLocal, sumTempLocal, maxTempLocal, srcLocal, sharedTmpBuffer, softmaxTiling, softmaxInfo);
 // 通过sharedTmpBuffer入参传入临时空间
 AscendC::SimpleSoftMax<T>(dstLocal, sumTempLocal, maxTempLocal, srcLocal, sharedTmpBuffer, softmaxTiling, softmaxInfo);
 // 接口框架申请临时空间

@@ -33,7 +33,6 @@ void SetWeightType(ConvCommonApi::TPosition pos, ConvCommonApi::ConvFormat forma
 ```
 auto ascendcPlatform = platform_ascendc::PlatformAscendCManager::GetInstance();
 ConvBackpropApi::Conv3DBpInputTiling conv3DBpDxTiling(*ascendcPlatform);
-conv3DBpDxTiling.SetWeightType(ConvCommonApi::TPosition::GM,
-                                   ConvCommonApi::ConvFormat::FRACTAL_Z_3D,
-                                   ConvCommonApi::ConvDtype::FLOAT16);
+conv3DBpDxTiling.SetWeightType(
+    ConvCommonApi::TPosition::GM, ConvCommonApi::ConvFormat::FRACTAL_Z_3D, ConvCommonApi::ConvDtype::FLOAT16);
 ```

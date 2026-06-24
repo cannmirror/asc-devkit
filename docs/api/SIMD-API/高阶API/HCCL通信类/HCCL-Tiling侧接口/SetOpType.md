@@ -30,7 +30,7 @@ uint32_t SetOpType(uint32_t opType)
 ## 调用示例
 
 ```
-const char *groupName = "testGroup";
+const char* groupName = "testGroup";
 uint32_t opType = HCCL_CMD_REDUCE_SCATTER;
 std::string algConfig = "ReduceScatter=level0:doublering";
 AscendC::Mc2CcTilingConfig mc2CcTilingConfig(groupName, opType, algConfig, HCCL_REDUCE_RESERVED);

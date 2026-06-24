@@ -54,11 +54,11 @@ void UnPadTilingFunc(const ge::Shape srcShape, const uint32_t stackBufferSize, c
 1.  将UnPadTiling结构体参数增加至TilingData结构体，作为TilingData结构体的一个字段。
 
     ```
-    BEGIN_TILING_DATA_DEF(TilingData)               // 注册一个tiling的类，以tiling的名字作为入参
-      TILING_DATA_FIELD_DEF(uint32_t, totalLength); // 添加tiling字段，总计算数据量
-      TILING_DATA_FIELD_DEF(uint32_t, tileNum);     // 添加tiling字段，每个核上总计算数据分块个数
-      ...                                           // 添加其他tiling字段
-      TILING_DATA_FIELD_DEF_STRUCT(UnPadTiling, unpadTilingData); // 将UnPadTiling结构体参数增加至TilingData结构体
+    BEGIN_TILING_DATA_DEF(TilingData)             // 注册一个tiling的类，以tiling的名字作为入参
+        TILING_DATA_FIELD_DEF(uint32_t, totalLength); // 添加tiling字段，总计算数据量
+        TILING_DATA_FIELD_DEF(uint32_t, tileNum);     // 添加tiling字段，每个核上总计算数据分块个数
+        ...                                           // 添加其他tiling字段
+        TILING_DATA_FIELD_DEF_STRUCT(UnPadTiling, unpadTilingData); // 将UnPadTiling结构体参数增加至TilingData结构体
     END_TILING_DATA_DEF;
     ```
 
@@ -77,7 +77,7 @@ void UnPadTilingFunc(const ge::Shape srcShape, const uint32_t stackBufferSize, c
         tiling.set_tileNum(TILE_NUM);
         // 设置其他Tiling参数
         ...
-        std::vector<int64_t> shapeVec = {320,64};
+        std::vector<int64_t> shapeVec = {320, 64};
         ge::Shape srcShape(shapeVec);
         uint32_t maxValue = 0;
         uint32_t minValue = 0;
@@ -86,8 +86,8 @@ void UnPadTilingFunc(const ge::Shape srcShape, const uint32_t stackBufferSize, c
         AscendC::GetUnPadMaxMinTmpSize(ascendcPlatform, srcShape, sizeof(half), maxValue, minValue);
         // 本样例中仅作为样例说明，获取最小值并传入，来保证功能正确，开发者可以根据需要传入合适的空间大小
         const uint32_t localWorkSpaceSize = minValue;
-        AscendC::UnPadTilingFunc(srcShape, localWorkSpaceSize , sizeof(half), tiling.unpadTilingData);
-         ...
+        AscendC::UnPadTilingFunc(srcShape, localWorkSpaceSize, sizeof(half), tiling.unpadTilingData);
+        ...
         tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());
         context->GetRawTilingData()->SetDataSize(tiling.GetDataSize());
         context->SetTilingKey(1);
@@ -103,7 +103,7 @@ void UnPadTilingFunc(const ge::Shape srcShape, const uint32_t stackBufferSize, c
     {
         GET_TILING_DATA(tilingData, tiling);
         KernelFunc op;
-        op.Init(x, y, z, tilingData.totalLength, tilingData.tileNum,tilingData.unpadTilingData);
+        op.Init(x, y, z, tilingData.totalLength, tilingData.tileNum, tilingData.unpadTilingData);
         if (TILING_KEY_IS(1)) {
             op.Process();
         }

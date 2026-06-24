@@ -97,7 +97,7 @@ struct SinCosConfig {
     pipe.InitBuffer(tmpQue, 1, bufferSize); // bufferSize通过Host侧tiling参数获取
     LocalTensor<uint8_t> sharedTmpBuffer = tmpQue.AllocTensor<uint8_t>();
     // 输入tensor长度为1024,算子输入的数据类型为half,实际计算个数为512
-    static constexpr AscendC::SinCosConfig sincosConfig = { false };  // 不修改源操作数
+    static constexpr AscendC::SinCosConfig sincosConfig = {false}; // 不修改源操作数
     // dst0、dst1、src为half类型的LocalTensor
     AscendC::SinCos<sincosConfig, half>(dst0, dst1, src, sharedTmpBuffer, 512);
     ```
@@ -109,7 +109,7 @@ struct SinCosConfig {
     AscendC::TQue<AscendC::TPosition::VECCALC, 1> tmpQue;
     pipe.InitBuffer(tmpQue, 1, bufferSize); // bufferSize通过Host侧tiling参数获取
     // 输入tensor长度为1024,算子输入的数据类型为half,实际计算个数为512
-    static constexpr AscendC::SinCosConfig sincosConfig = { false };  // 不修改源操作数
+    static constexpr AscendC::SinCosConfig sincosConfig = {false}; // 不修改源操作数
     // dst0、dst1、src为half类型的LocalTensor
     AscendC::SinCos<sincosConfig, half>(dst0, dst1, src, 512);
     ```

@@ -56,10 +56,16 @@ Kirin X90产品不支持SetSelfDefineData\(T dataPtr\)接口原型。
 ## 调用示例
 
 ```
-//用户自定义回调函数
-void DataCopyOut(const __gm__ void *gm, const LocalTensor<int8_t> &co1Local, const void *dataCopyOutParams, const uint64_t tilingPtr, const uint64_t dataPtr);
-void CopyA1(const LocalTensor<int8_t> &aMatrix, const __gm__ void *gm, int row, int col, int useM, int useK, const uint64_t tilingPtr, const uint64_t dataPtr);
-void CopyB1(const LocalTensor<int8_t> &bMatrix, const __gm__ void *gm, int row, int col, int useK, int useN, const uint64_t tilingPtr, const uint64_t dataPtr);
+// 用户自定义回调函数
+void DataCopyOut(
+    const __gm__ void* gm, const LocalTensor<int8_t>& co1Local, const void* dataCopyOutParams, const uint64_t tilingPtr,
+    const uint64_t dataPtr);
+void CopyA1(
+    const LocalTensor<int8_t>& aMatrix, const __gm__ void* gm, int row, int col, int useM, int useK,
+    const uint64_t tilingPtr, const uint64_t dataPtr);
+void CopyB1(
+    const LocalTensor<int8_t>& bMatrix, const __gm__ void* gm, int row, int col, int useK, int useN,
+    const uint64_t tilingPtr, const uint64_t dataPtr);
 
 typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> aType;
 typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> bType;

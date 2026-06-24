@@ -64,7 +64,8 @@ using Conv3D = Conv3dIntfExt<Config<ConvApi::ConvDataType<INPUT_TYPE, WEIGHT_TYP
 using inputType = ConvApi::ConvType<AscendC::TPosition::GM, ConvFormat::NDC1HWC0, bfloat16_t>;
 using weightType = ConvApi::ConvType<AscendC::TPosition::GM, ConvFormat::FRACTAL_Z_3D, bfloat16_t>;
 using outputType = ConvApi::ConvType<AscendC::TPosition::GM, ConvFormat::NDC1HWC0, bfloat16_t>;
-using biasType = ConvApi::ConvType<AscendC::TPosition::GM, ConvFormat::ND, float>; // 可选参数，如果不带Bias场景，可以不传
+// 可选参数，如果不带Bias场景，可以不传
+using biasType = ConvApi::ConvType<AscendC::TPosition::GM, ConvFormat::ND, float>;
 struct ConvCustom : public ConvApi::ConvParam {
     __aicore__ inline ConvCustom(){};
 }; // 可选参数，当前版本只支持基础模板，不开启性能优化，可以不传

@@ -7,11 +7,11 @@
 ## 函数原型
 
 ```
-int64_t GetTiling(optiling::Conv3DBackpropInputTilingData &tiling)
+int64_t GetTiling(optiling::Conv3DBackpropInputTilingData& tiling)
 ```
 
 ```
-int64_t GetTiling(AscendC::tiling::Conv3DBackpropInputTilingData &tiling)
+int64_t GetTiling(AscendC::tiling::Conv3DBackpropInputTilingData& tiling)
 ```
 
 ## 参数说明
@@ -43,7 +43,7 @@ tiling.SetPadding(0, 0, 1, 1, 1, 1);
 tiling.SetDilation(1, 1, 1);
 tiling.SetStride(1, 1, 1);
 optiling::Conv3DBackpropInputTilingData tilingData;
-int ret = tiling.GetTiling(tilingData);  // 获取Tiling参数
+int ret = tiling.GetTiling(tilingData); // 获取Tiling参数
 AscendC::tiling::Conv3DBackpropInputTilingData tilingDataNotOp;
 ret = tiling.GetTiling(tilingDataNotOp); // 使用AscendC::tiling::Conv3DBackpropInputTilingData获取Tiling参数
 ```
@@ -59,5 +59,5 @@ tiling.SetDilation(1, 1, 1);
 tiling.SetStride(1, 1, 1);
 tiling.SetOutputPadding(0, 0, 0); // 对Conv3dTranspose的输出Y进行padding
 optiling::Conv3DBackpropInputTilingData tilingData;
-int ret = tiling.GetTiling(tilingData);  // 获取Tiling参数
+int ret = tiling.GetTiling(tilingData); // 获取Tiling参数
 ```

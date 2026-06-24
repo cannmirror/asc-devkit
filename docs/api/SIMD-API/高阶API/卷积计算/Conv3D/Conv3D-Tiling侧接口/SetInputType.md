@@ -32,6 +32,7 @@ void SetInputType(const ConvCommonApi::TPosition pos, const ConvCommonApi::ConvF
 // 实例化Conv3D Api
 auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
 Conv3dTilingApi::Conv3dTiling conv3dApiTiling(ascendcPlatform);
-conv3dApiTiling.SetInputType(ConvCommonApi::TPosition::GM, ConvCommonApi::ConvFormat::NDC1HWC0, ConvCommonApi::ConvDtype::BF16);
+conv3dApiTiling.SetInputType(
+    ConvCommonApi::TPosition::GM, ConvCommonApi::ConvFormat::NDC1HWC0, ConvCommonApi::ConvDtype::BF16);
 ```
 

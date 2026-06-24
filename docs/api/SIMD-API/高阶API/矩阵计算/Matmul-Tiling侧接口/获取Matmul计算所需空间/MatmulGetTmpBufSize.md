@@ -7,7 +7,7 @@
 ## 函数原型
 
 ```
-int32_t MatmulGetTmpBufSize(optiling::TCubeTiling &tiling, matmul_tiling::SysTilingTempBufSize &bufSize)
+int32_t MatmulGetTmpBufSize(optiling::TCubeTiling& tiling, matmul_tiling::SysTilingTempBufSize& bufSize)
 ```
 
 ## 参数说明
@@ -21,8 +21,8 @@ int32_t MatmulGetTmpBufSize(optiling::TCubeTiling &tiling, matmul_tiling::SysTil
 
 ```
 struct SysTilingTempBufSize {
-    int32_t ubSize = 0; // Unified Buffer大小
-    int32_t l1Size = 0; // L1 Buffer大小
+    int32_t ubSize = 0;  // Unified Buffer大小
+    int32_t l1Size = 0;  // L1 Buffer大小
     int32_t l0cSize = 0; // L0C Buffer大小
 };
 ```
@@ -41,8 +41,8 @@ struct SysTilingTempBufSize {
 auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
 matmul_tiling::MatmulApiTiling tiling(ascendcPlatform);
 optiling::TCubeTiling tilingData;
-...  // 初始化tilingData，详见MatmulTiling类使用说明
-int ret = tiling.GetTiling(tilingData);    // 获取Tiling参数
+...                                         // 初始化tilingData，详见MatmulTiling类使用说明
+    int ret = tiling.GetTiling(tilingData); // 获取Tiling参数
 SysTilingTempBufSize bufSize;
 MatmulGetTmpBufSize(tilingData, bufSize);
 ```

@@ -95,10 +95,7 @@ struct CumSumConfig {
     bool outputLastRow{false};
     CumSumAlgorithm algorithm{CumSumAlgorithm::CUMSUM_ALGORITHM_LINEBYLINE};
 };
-enum class CumSumAlgorithm {
-    CUMSUM_ALGORITHM_LINEBYLINE = 0,
-    CUMSUM_ALGORITHM_SKLANSKY = 1
-};
+enum class CumSumAlgorithm { CUMSUM_ALGORITHM_LINEBYLINE = 0, CUMSUM_ALGORITHM_SKLANSKY = 1 };
 ```
 
 **表2**  接口参数说明
@@ -112,8 +109,7 @@ enum class CumSumAlgorithm {
 | cumSumInfo | 输入 | srcTensor的shape信息。CumSumInfo类型，具体定义如下方代码所示，其中参数的含义为：<br><br>outter：表示输入数据的外轴长度。<br><br>inner：表示输入数据的内轴长度。<br><br>请注意：<br><br>cumSumInfo.outter和cumSumInfo.inner都应大于0。<br><br>cumSumInfo.outter * cumSumInfo.inner不能大于dstTensor或srcTensor的大小。<br><br>cumSumInfo.inner * sizeof(T)必须是32字节的整数倍。<br><br>当模板参数config中的outputLastRow取值为true时，cumSumInfo.inner不能大于lastRowTensor输出的最后一行数据的大小。 |
 
 ```
-struct CumSumInfo
-{
+struct CumSumInfo {
     uint32_t outter{0};
     uint32_t inner{0};
 };

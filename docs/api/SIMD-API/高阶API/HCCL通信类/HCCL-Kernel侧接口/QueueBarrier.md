@@ -30,12 +30,7 @@ __aicore__ inline void QueueBarrier(uint16_t queueID)
 | type | 输入 | 表示阻塞服务端的通信任务范围。类型为ScopeType，定义如下代码所示，其中参数含义为：<br> ALL：阻塞所有队列上的通信任务<br>    QUEUE：暂不支持<br>    BLOCK：暂不支持<br>    INVALID_TYPE：暂不支持<br><br> 该参数的默认值为ScopeType::ALL。当前参数仅支持取值为ScopeType::ALL。|
 
 ```
-enum class ScopeType: uint8_t {
-    ALL, 
-    QUEUE, 
-    BLOCK, 
-    INVALID_TYPE 
-};
+enum class ScopeType : uint8_t { ALL, QUEUE, BLOCK, INVALID_TYPE };
 ```
 
 **表2**  接口参数说明

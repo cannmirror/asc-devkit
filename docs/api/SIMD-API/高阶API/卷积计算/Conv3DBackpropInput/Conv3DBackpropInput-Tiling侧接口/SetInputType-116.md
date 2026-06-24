@@ -33,7 +33,6 @@ void SetInputType(ConvCommonApi::TPosition pos, ConvCommonApi::ConvFormat format
 ```
 auto ascendcPlatform = platform_ascendc::PlatformAscendCManager::GetInstance();
 ConvBackpropApi::Conv3DBpInputTiling conv3DBpDxTiling(*ascendcPlatform);
-conv3DBpDxTiling.SetInputType(ConvCommonApi::TPosition::GM,
-                                 ConvCommonApi::ConvFormat::NDC1HWC0,
-                                 ConvCommonApi::ConvDtype::FLOAT16);
+conv3DBpDxTiling.SetInputType(
+    ConvCommonApi::TPosition::GM, ConvCommonApi::ConvFormat::NDC1HWC0, ConvCommonApi::ConvDtype::FLOAT16);
 ```

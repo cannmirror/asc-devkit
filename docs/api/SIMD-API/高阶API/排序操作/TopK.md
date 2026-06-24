@@ -256,15 +256,8 @@ struct TopKConfig {
     TopKOrder order = TopKOrder::UNSET;
     bool sorted = true;
 };
-enum class TopKAlgo {
-    RADIX_SELECT,
-    MERGE_SORT
-};
-enum class TopKOrder {
-    UNSET,
-    LARGEST,
-    SMALLEST
-};
+enum class TopKAlgo { RADIX_SELECT, MERGE_SORT };
+enum class TopKOrder { UNSET, LARGEST, SMALLEST };
 ```
 
 **表2**  接口参数说明
@@ -285,8 +278,8 @@ enum class TopKOrder {
 ```
 struct TopKInfo {
     int32_t outter = 1;
-    int32_t inner; 
-    int32_t n; 
+    int32_t inner;
+    int32_t n;
 };
 ```
 
@@ -351,9 +344,12 @@ struct TopKInfo {
 // isLargest：取值为true时默认降序排列，获取前k个最大值；取值为false时进行升序排列，获取前k个最小值
 
 // 通过sharedTmpBuffer入参传入临时空间
-AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_NORMAL>(dstLocalValue, dstLocalIndex, srcLocalValue, srcLocalIndex, srcLocalFinish, sharedTmpBuffer, k, topKTilingData, topKInfo, isLargest);
+AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_NORMAL>(
+    dstLocalValue, dstLocalIndex, srcLocalValue, srcLocalIndex, srcLocalFinish, sharedTmpBuffer, k, topKTilingData,
+    topKInfo, isLargest);
 // 接口框架申请临时空间
-AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_NORMAL>(dstLocalValue, dstLocalIndex, srcLocalValue, srcLocalIndex, srcLocalFinish, k, topKTilingData, topKInfo, isLargest);
+AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_NORMAL>(
+    dstLocalValue, dstLocalIndex, srcLocalValue, srcLocalIndex, srcLocalFinish, k, topKTilingData, topKInfo, isLargest);
 ```
 
 ```
@@ -370,9 +366,12 @@ AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_N
 // defaultTopKConfig：TopK计算的相关配置，包括算法选择、取最大值或最小值、是否对结果排序
 
 // 通过sharedTmpBuffer入参传入临时空间
-AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_NORMAL, defaultTopKConfig>(dstLocalValue, dstLocalIndex, srcLocalValue, srcLocalIndex, srcLocalFinish, sharedTmpBuffer, k, topKTilingData, topKInfo, isLargest);
+AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_NORMAL, defaultTopKConfig>(
+    dstLocalValue, dstLocalIndex, srcLocalValue, srcLocalIndex, srcLocalFinish, sharedTmpBuffer, k, topKTilingData,
+    topKInfo, isLargest);
 // 接口框架申请临时空间
-AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_NORMAL, defaultTopKConfig>(dstLocalValue, dstLocalIndex, srcLocalValue, srcLocalIndex, srcLocalFinish, k, topKTilingData, topKInfo, isLargest);
+AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_NORMAL, defaultTopKConfig>(
+    dstLocalValue, dstLocalIndex, srcLocalValue, srcLocalIndex, srcLocalFinish, k, topKTilingData, topKInfo, isLargest);
 ```
 
 **表3**  Normal模式的样例解析
@@ -397,9 +396,12 @@ AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_N
 // isLargest：取值为true时默认降序排列，获取前k个最大值；取值为false时进行升序排列，获取前k个最小值
 
 // 通过sharedTmpBuffer入参传入临时空间
-AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_NSMALL>(dstLocalValue, dstLocalIndex, srcLocalValue, srcLocalIndex, srcLocalFinish, sharedTmpBuffer, k, topKTilingData, topKInfo, isLargest);
+AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_NSMALL>(
+    dstLocalValue, dstLocalIndex, srcLocalValue, srcLocalIndex, srcLocalFinish, sharedTmpBuffer, k, topKTilingData,
+    topKInfo, isLargest);
 // 接口框架申请临时空间
-AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_NSMALL>(dstLocalValue, dstLocalIndex, srcLocalValue, srcLocalIndex, srcLocalFinish, k, topKTilingData, topKInfo, isLargest);
+AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_NSMALL>(
+    dstLocalValue, dstLocalIndex, srcLocalValue, srcLocalIndex, srcLocalFinish, k, topKTilingData, topKInfo, isLargest);
 ```
 
 ```
@@ -416,9 +418,12 @@ AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_N
 // defaultTopKConfig：TopK计算的相关配置，包括算法选择、取最大值或最小值、是否对结果排序
 
 // 通过sharedTmpBuffer入参传入临时空间
-AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_NSMALL, defaultTopKConfig>(dstLocalValue, dstLocalIndex, srcLocalValue, srcLocalIndex, srcLocalFinish, sharedTmpBuffer, k, topKTilingData, topKInfo, isLargest);
+AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_NSMALL, defaultTopKConfig>(
+    dstLocalValue, dstLocalIndex, srcLocalValue, srcLocalIndex, srcLocalFinish, sharedTmpBuffer, k, topKTilingData,
+    topKInfo, isLargest);
 // 接口框架申请临时空间
-AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_NSMALL, defaultTopKConfig>(dstLocalValue, dstLocalIndex, srcLocalValue, srcLocalIndex, srcLocalFinish, k, topKTilingData, topKInfo, isLargest);
+AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_NSMALL, defaultTopKConfig>(
+    dstLocalValue, dstLocalIndex, srcLocalValue, srcLocalIndex, srcLocalFinish, k, topKTilingData, topKInfo, isLargest);
 ```
 
 **表4**  Small模式的样例解析

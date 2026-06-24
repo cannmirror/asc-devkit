@@ -46,7 +46,10 @@ Kernel侧实现Matmul矩阵乘运算的步骤概括为：
     创建对象时需要传入A、B、C、Bias的参数类型信息，类型信息通过[MatmulType](#table1188045714378)来定义，包括：内存逻辑位置、数据格式、数据类型、数据来源的内存逻辑位置。
 
     ```
-    template <AscendC::TPosition POSITION, CubeFormat FORMAT, typename TYPE, bool ISTRANS = false, LayoutMode LAYOUT = LayoutMode::NONE, bool IBSHARE = false, TPosition SRCPOS = TPosition::GM> struct MatmulType {
+    template <
+        AscendC::TPosition POSITION, CubeFormat FORMAT, typename TYPE, bool ISTRANS = false,
+        LayoutMode LAYOUT = LayoutMode::NONE, bool IBSHARE = false, TPosition SRCPOS = TPosition::GM>
+    struct MatmulType {
         constexpr static AscendC::TPosition pos = POSITION;
         constexpr static CubeFormat format = FORMAT;
         using T = TYPE;
@@ -168,7 +171,7 @@ Kernel侧实现Matmul矩阵乘运算的步骤概括为：
         CO1_.template DeQue<L0cT>();
         Fixpipe<cType, L0cT, CFG_ROW_MAJOR>(gm[dstOffset], l0cTensor, params);
 
-        //释放CO1内存
+        // 释放CO1内存
         CO1_.FreeTensor(l0cTensor);
         ```
 

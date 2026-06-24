@@ -25,7 +25,7 @@
 ## 函数原型
 
 ```
-__aicore__ inline void SetAntiQuantVector(const LocalTensor<SrcT> &offsetTensor, const LocalTensor<SrcT> &scaleTensor)
+__aicore__ inline void SetAntiQuantVector(const LocalTensor<SrcT>& offsetTensor, const LocalTensor<SrcT>& scaleTensor)
 ```
 
 ## 参数说明

@@ -86,10 +86,10 @@
 | sumParams | 输入 | srcTensor的shape信息。SumParams类型，具体定义如下方代码所示，其中参数的含义为：<br>outter：输入数据的外轴长度。<br>inner：输入数据内轴实际元素个数32字节补齐后的元素个数，inner\*sizeof(T)必须是32字节的整数倍。<br>n：输入数据内轴的实际元素个数。<br>请注意：sumParams.inner是sumParams.n向上32字节对齐后的值，inner = (n *sizeof(T) + 32 - 1) / 32 * 32 / sizeof(T)，因此sumParams.n的大小应该满足：1 <= sumParams.n <= sumParams.inner。 |
 
 ```
-struct SumParams{
-    uint32_t outter = 1; 
-    uint32_t inner; 
-    uint32_t n; 
+struct SumParams {
+    uint32_t outter = 1;
+    uint32_t inner;
+    uint32_t n;
 };
 ```
 

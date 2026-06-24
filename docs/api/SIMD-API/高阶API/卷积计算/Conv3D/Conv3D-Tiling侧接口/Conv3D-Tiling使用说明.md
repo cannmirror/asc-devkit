@@ -28,11 +28,11 @@ conv3dApiTiling.SetInputType(TPosition::GM, inputFormat, inputDtype);
 conv3dApiTiling.SetWeightType(TPosition::GM, weightFormat, weightDtype);
 conv3dApiTiling.SetOutputType(TPosition::CO1, outputFormat, outputDtype);
 if (biasFlag) {
-   conv3dApiTiling.SetBiasType(TPosition::GM, biasFormat, biasDtype);
+    conv3dApiTiling.SetBiasType(TPosition::GM, biasFormat, biasDtype);
 }
 // 调用GetTiling接口获取核内切分策略，如果返回-1代表获取tiling失败
 if (conv3dApiTiling.GetTiling(tilingData.conv3dApiTilingData) == -1) {
-   return false;
+    return false;
 }
 ```
 

@@ -16,22 +16,22 @@ Conv3DBackpropInput Tiling API提供一个GetTiling接口获取Tiling参数，�
 optiling::Conv3DBackpropInputTilingData tilingData;
 auto ascendcPlatform = platform_ascendc::PlatformAscendCManager::GetInstance();
 ConvBackpropApi::Conv3DBpInputTiling conv3DBpDxTiling(*ascendcPlatform);
-conv3DBpDxTiling.SetWeightType(Convolution3DBackprop::TPosition::GM,
-                                   Convolution3DBackprop::ConvFormat::FRACTAL_Z_3D,
-                                   Convolution3DBackprop::ConvDtype::FLOAT32);
-conv3DBpDxTiling.SetGradOutputType(Convolution3DBackprop::TPosition::GM,
-                                   Convolution3DBackprop::ConvFormat::NDC1HWC0,
-                                   Convolution3DBackprop::ConvDtype::FLOAT16);
-conv3DBpDxTiling.SetInputType(Convolution3DBackprop::TPosition::CO1,
-                                 Convolution3DBackprop::ConvFormat::NDC1HWC0,
-                                 Convolution3DBackprop::ConvDtype::FLOAT16);
+conv3DBpDxTiling.SetWeightType(
+    Convolution3DBackprop::TPosition::GM, Convolution3DBackprop::ConvFormat::FRACTAL_Z_3D,
+    Convolution3DBackprop::ConvDtype::FLOAT32);
+conv3DBpDxTiling.SetGradOutputType(
+    Convolution3DBackprop::TPosition::GM, Convolution3DBackprop::ConvFormat::NDC1HWC0,
+    Convolution3DBackprop::ConvDtype::FLOAT16);
+conv3DBpDxTiling.SetInputType(
+    Convolution3DBackprop::TPosition::CO1, Convolution3DBackprop::ConvFormat::NDC1HWC0,
+    Convolution3DBackprop::ConvDtype::FLOAT16);
 conv3DBpDxTiling.SetInputShape(orgN, orgCi, orgDi, orgHi, orgWi);
 conv3DBpDxTiling.SetGradOutputShape(orgCo, orgDo, orgHo, orgWo);
 conv3DBpDxTiling.SetWeightShape(orgKd, orgKh, orgKw);
 conv3DBpDxTiling.SetPadding(padFront, padBack, padUp, padDown, padLeft, padRight);
 conv3DBpDxTiling.SetStride(strideD, strideH, strideW);
 conv3DBpDxTiling.SetDilation(dilationD, dilationH, dilationW);
-int ret = conv3DBpDxTiling.GetTiling(tilingData);    // if ret = -1, get tiling failed
+int ret = conv3DBpDxTiling.GetTiling(tilingData); // if ret = -1, get tiling failed
 ```
 
 ## 需要包含的头文件

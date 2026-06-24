@@ -19,7 +19,7 @@
 Hccl类定义如下，模板参数说明见[表1 Hccl类模板参数说明](#table884518212555)。
 
 ```
-template <HcclServerType serverType = HcclServerType::HCCL_SERVER_TYPE_AICPU, const auto &config = DEFAULT_CFG>
+template <HcclServerType serverType = HcclServerType::HCCL_SERVER_TYPE_AICPU, const auto& config = DEFAULT_CFG>
 class Hccl;
 ```
 
@@ -37,19 +37,15 @@ class Hccl;
 enum HcclServerType {
     HCCL_SERVER_TYPE_AICPU = 0,
     HCCL_SERVER_TYPE_CCU,
-    HCCL_SERVER_TYPE_END  // 预留参数，不支持使用
+    HCCL_SERVER_TYPE_END // 预留参数，不支持使用
 };
 
 struct HcclServerConfig {
-    CoreType type;  
-    int64_t blockId; 
+    CoreType type;
+    int64_t blockId;
 };
 
-enum class CoreType: uint8_t {
-    DEFAULT,  
-    ON_AIV,   
-    ON_AIC   
-};
+enum class CoreType : uint8_t { DEFAULT, ON_AIV, ON_AIC };
 ```
 
 ## 返回值说明

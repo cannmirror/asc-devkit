@@ -93,14 +93,14 @@
 // 使用GroupNorm接口实现Group Normalization
 // 若数据类型T为float且允许修改inputX，可设置isReuseSource = true复用inputX内存空间以节省内存
 AscendC::GroupNorm<T, isReuseSource>(
-    output,           // 输出：归一化并缩放平移后的结果
-    outputMean,       // 输出：每组的均值
-    outputVariance,   // 输出：每组的方差
-    inputX,           // 输入：原始特征图
-    gamma,            // 输入：缩放参数 γ
-    beta,             // 输入：偏置参数 β
-    epsilon,          // 输入：防止除零的系数 ε
-    tiling            // 输入：Tiling调度信息
+    output,         // 输出：归一化并缩放平移后的结果
+    outputMean,     // 输出：每组的均值
+    outputVariance, // 输出：每组的方差
+    inputX,         // 输入：原始特征图
+    gamma,          // 输入：缩放参数 γ
+    beta,           // 输入：偏置参数 β
+    epsilon,        // 输入：防止除零的系数 ε
+    tiling          // 输入：Tiling调度信息
 );
 ```
 

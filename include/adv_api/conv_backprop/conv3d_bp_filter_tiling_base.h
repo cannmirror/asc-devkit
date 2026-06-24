@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file conv3d_bp_filter_tiling_base.h
@@ -33,13 +33,15 @@ struct Conv3DBpCalcShape {
 
 // descInfo
 struct Conv3DBpDesc {
-    ConvBpType fMapType  = {ConvCommonApi::ConvFormat::NDC1HWC0, ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::TPosition::GM};
-    ConvBpType weightType  = {ConvCommonApi::ConvFormat::FRACTAL_Z_3D, ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::TPosition::GM};
-    ConvBpType outBackpropType = {ConvCommonApi::ConvFormat::NDC1HWC0, ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::TPosition::CO1};
+    ConvBpType fMapType = {
+        ConvCommonApi::ConvFormat::NDC1HWC0, ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::TPosition::GM};
+    ConvBpType weightType = {
+        ConvCommonApi::ConvFormat::FRACTAL_Z_3D, ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::TPosition::GM};
+    ConvBpType outBackpropType = {
+        ConvCommonApi::ConvFormat::NDC1HWC0, ConvCommonApi::ConvDtype::FLOAT16, ConvCommonApi::TPosition::CO1};
 };
 
-struct TilingValueDw
-{
+struct TilingValueDw {
     int64_t singleCoreBatch;
     int64_t singleCoreGroup;
     int64_t singleCoreDk;
@@ -62,8 +64,7 @@ struct TilingValueDw
     int64_t bl1Bound;
 };
 
-struct BasicBlockTilingParams
-{
+struct BasicBlockTilingParams {
     int64_t usedCoreNum = 1;
     int64_t totalCnt = 0;
     int64_t blockBaseM = 128;
@@ -86,8 +87,7 @@ struct BasicBlockTilingParams
     int64_t coreBindOrder = 1;
 };
 
-struct MatMulInfo
-{
+struct MatMulInfo {
     uint64_t mValue = 0;
     uint64_t kValue = 0;
     uint64_t nValue = 0;
@@ -108,12 +108,14 @@ public:
 
     void SetWeightType(ConvCommonApi::TPosition pos, ConvCommonApi::ConvFormat format, ConvCommonApi::ConvDtype dtype);
     void SetInputType(ConvCommonApi::TPosition pos, ConvCommonApi::ConvFormat format, ConvCommonApi::ConvDtype dtype);
-    void SetGradOutputType(ConvCommonApi::TPosition pos, ConvCommonApi::ConvFormat format, ConvCommonApi::ConvDtype dtype);
+    void SetGradOutputType(
+        ConvCommonApi::TPosition pos, ConvCommonApi::ConvFormat format, ConvCommonApi::ConvDtype dtype);
 
-    void SetPadding(int64_t padFront, int64_t padBack, int64_t padUp, int64_t padDown,
-                    int64_t padLeft, int64_t padRight);
+    void SetPadding(
+        int64_t padFront, int64_t padBack, int64_t padUp, int64_t padDown, int64_t padLeft, int64_t padRight);
     void SetStride(int64_t strideD, int64_t strideH, int64_t strideW);
     void SetDilation(int64_t dilationD, int64_t dilationH, int64_t dilationW);
+
 protected:
     virtual int64_t Compute() = 0;
     virtual void SetFinalTiling(optiling::Conv3DBackpropFilterTilingData& tiling);
@@ -133,6 +135,7 @@ protected:
 
     uint32_t coreNum_ = 1;
     uint32_t dtypeByte_ = 2;
+
 private:
     bool CheckInputAttr();
     bool CheckInputShape();
@@ -144,6 +147,6 @@ private:
     void SetHF32(bool hf32Enable);
     bool hf32Enable_ = false;
 };
-} // ConvBackpropApi
+} // namespace ConvBackpropApi
 
 #endif // CONV3D_BP_FILTER_TILING_BASE_H

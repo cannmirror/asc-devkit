@@ -80,7 +80,9 @@ static ge::graphStatus TilingFunc(gert::TilingContext* context)
     auto platformInfo = context->GetPlatformInfo();
     auto ascendcPlatform = platform_ascendc::PlatformAscendC(platformInfo);
     uint64_t tailSize = 0; // ub剩余空间大小
-    ascendcPlatform.GetCoreMemSize(platform_ascendc::CoreMemType::UB, tailSize); // 本样例中使用完整的ub空间，实际情况下tailSize需要减掉用户已使用的ub空间
+    // 本样例中使用完整的ub空间，实际情况下tailSize需要减掉用户已使用的ub空间
+    ascendcPlatform.GetCoreMemSize(
+        platform_ascendc::CoreMemType::UB, tailSize); 
     auto tmpSize = tailSize >= maxValue ? maxValue : tailSize;
 
     DropoutCustomTilingData tiling;

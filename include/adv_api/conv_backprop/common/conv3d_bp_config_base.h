@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file conv3d_bp_config_base.h
@@ -48,16 +48,12 @@ struct GetDstType<bfloat16_t> {
 // ConvType，定义卷积输入输出对象的属�?
 template <AscendC::TPosition POSITION, ConvCommonApi::ConvFormat FORMAT, typename T>
 struct ConvType {
-    constexpr static AscendC::TPosition pos = POSITION;    // Convolution输入或输出时的scope
-    constexpr static ConvCommonApi::ConvFormat format = FORMAT;  // Convolution输入或者输出的format
-    using Type = T;                               // Convolution输入或输出的数据类型
+    constexpr static AscendC::TPosition pos = POSITION;         // Convolution输入或输出时的scope
+    constexpr static ConvCommonApi::ConvFormat format = FORMAT; // Convolution输入或者输出的format
+    using Type = T;                                             // Convolution输入或输出的数据类型
 };
 
-enum class B2Condition : uint8_t {
-    BASEK_LT_HKWK = 0,
-    BASEK_GE_HKWK,
-    HKWK_EQ_ONE
-};
+enum class B2Condition : uint8_t { BASEK_LT_HKWK = 0, BASEK_GE_HKWK, HKWK_EQ_ONE };
 
 struct Conv3dConfig {
     // loadB2Condition含义:
@@ -69,9 +65,9 @@ struct Conv3dConfig {
 };
 
 constexpr Conv3dConfig CONV3D_CFG_DEFAULT = {
-        .loadB2Condition = B2Condition::BASEK_GE_HKWK,
-        .enableKernelSplit = false,
-    };
+    .loadB2Condition = B2Condition::BASEK_GE_HKWK,
+    .enableKernelSplit = false,
+};
 
 // 打包字段，内部实现的上下文，包含了用户构造的ConvBpParam
 template <class A, class B, class C, class D>
@@ -99,5 +95,5 @@ struct ConvBpContext {
         __aicore__ inline _() {}
     };
 };
-}  // namespace ConvBackpropApi
+} // namespace ConvBackpropApi
 #endif

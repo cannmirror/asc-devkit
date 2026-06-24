@@ -163,7 +163,7 @@ def softmax_flash_2(src, inmax=None, insum=None, update=None):
 | config | 结构体模板参数，此参数可选配，SoftmaxConfig类型，具体定义如下方代码所示，其中参数的含义为：<br>isCheckTiling：是否需要检查shape和tiling的一致性；若不一致，API内会根据shape重新计算所需tiling。默认取值true：API内部会检查一致性。<br>oriSrcM：原始非尾轴长度的乘积。设置该参数后，将shape常量化，编译过程中使用常量化的shape。<br>oriSrcK：原始尾轴长度。设置该参数后，将shape常量化，编译过程中使用常量化的shape。<br>mode：输出shape的处理模式。当输入输出的数据格式为NZ格式时，不支持配置mode参数。SoftmaxMode类型，取值如下：<br>SOFTMAX_NORMAL ：默认值，常规模式，对输出数据做Broadcast，使得输出shape由(m, 1)拓展成(m, 8)（输出为float数据类型）或者(m, 16)（输出为half数据类型）。<br>SOFTMAX_OUTPUT_WITHOUT_BRC ：非拓展模式，不对输出数据做Broadcast，输出shape均为(m, 1)，相应的输入参数（例如inExpSumTensor、inMaxTensor），shape也均为(m, 1)。<br><br>此参数一般用于配合kernel侧tiling计算的接口使用。<br><br>注意：设置了oriSrcM与oriSrcK后，模板参数isBasicBlock不生效，计算数据是否为基本块由API内部判断并处理。<br><br>针对Ascend 950PR/Ascend 950DT，支持该参数。<br><br>Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持该参数。<br><br>Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持该参数。<br><br>针对Atlas 200I/500 A2 推理产品，该参数为预留参数，暂未启用，保持默认值即可。<br><br>Atlas 推理系列产品AI Core，支持该参数，不支持配置mode。<br><br><!-- npu="x90" id3 -->针对Kirin X90，支持该参数。<!-- end id3 --><br><br><!-- npu="9030" id4 -->针对Kirin 9030，支持该参数。<!-- end id4 --> |
 
 ```
-struct SoftmaxConfig{
+struct SoftmaxConfig {
     bool isCheckTiling = true;
     uint32_t oriSrcM = 0;
     uint32_t oriSrcK = 0;
@@ -195,10 +195,10 @@ constexpr SoftmaxConfig SOFTMAX_DEFAULT_CFG = {true, 0, 0, SoftmaxMode::SOFTMAX_
 
 ```
 struct SoftMaxShapeInfo {
-  uint32_t srcM;
-  uint32_t srcK;
-  uint32_t oriSrcM;
-  uint32_t oriSrcK;
+    uint32_t srcM;
+    uint32_t srcK;
+    uint32_t oriSrcM;
+    uint32_t oriSrcK;
 };
 ```
 
@@ -241,15 +241,19 @@ struct SoftMaxShapeInfo {
         /* 非尾轴长度的乘积          */ 320,
         /* 尾轴长度，必须32Bytes对齐 */ 64,
         /* 原始非尾轴长度的乘积      */ 320,
-        /* 原始尾轴长度              */ 64
-    );
+        /* 原始尾轴长度              */ 64);
 
     // 通过sharedTmpBuffer入参传入临时空间，不输出ReduceMax，传入模板参数将shape常量化
-    AscendC::SoftmaxFlashV2<T, true, false, false, false, static_config>(dstLocal, expSumLocal, maxLocal, srcLocal, expMaxLocal, inExpSumLocal, inMaxLocal, sharedTmpBuffer, tiling, softmaxInfo);
+    AscendC::SoftmaxFlashV2<T, true, false, false, false, static_config>(
+        dstLocal, expSumLocal, maxLocal, srcLocal, expMaxLocal, inExpSumLocal, inMaxLocal, sharedTmpBuffer, tiling,
+        softmaxInfo);
     // 通过sharedTmpBuffer入参传入临时空间，不输出ReduceMax
-    AscendC::SoftmaxFlashV2<T, true>(dstLocal, expSumLocal, maxLocal, srcLocal, expMaxLocal, inExpSumLocal, inMaxLocal, sharedTmpBuffer, tiling, softmaxInfo);
+    AscendC::SoftmaxFlashV2<T, true>(
+        dstLocal, expSumLocal, maxLocal, srcLocal, expMaxLocal, inExpSumLocal, inMaxLocal, sharedTmpBuffer, tiling,
+        softmaxInfo);
     // 接口框架申请临时空间，带sumTensor和maxTensor参数
-    AscendC::SoftmaxFlashV2<T, true>(dstLocal, expSumLocal, maxLocal, srcLocal, expMaxLocal, inExpSumLocal, inMaxLocal, tiling, softmaxInfo);
+    AscendC::SoftmaxFlashV2<T, true>(
+        dstLocal, expSumLocal, maxLocal, srcLocal, expMaxLocal, inExpSumLocal, inMaxLocal, tiling, softmaxInfo);
     ```
 
     结果示例如下：
@@ -305,7 +309,8 @@ struct SoftMaxShapeInfo {
     // compute阶段
     // 由于发生padding，API调用时shape和原始shape发生了不一致
     AscendC::SoftMaxShapeInfo srcShape = {height, padWidth, height, width};
-    AscendC::SoftmaxFlashV2<T, true>(dstLocal, expSumLocal, maxLocal, srcLocal, expMaxLocal, inExpSumLocal, inMaxLocal, tiling, srcShape);
+    AscendC::SoftmaxFlashV2<T, true>(
+        dstLocal, expSumLocal, maxLocal, srcLocal, expMaxLocal, inExpSumLocal, inMaxLocal, tiling, srcShape);
     // copyout阶段
     AscendC::DataCopyExtParams copyParams{static_cast<uint16_t>(height), static_cast<uint32_t>(width * sizeof(T)), 0, 0, 0};
     AscendC::DataCopyPad(dstGlobal, dstLocal, copyParams);

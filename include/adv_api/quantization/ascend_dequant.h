@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file ascend_dequant.h
@@ -23,7 +23,7 @@
 #include "include/adv_api/quantization/ascend_dequant_utils.h"
 #include "kernel_tensor.h"
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
-    __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+                              __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #include "../../../impl/adv_api/detail/quantization/dequant/ascend_dequant_common_impl.h"
 #endif
 
@@ -52,13 +52,14 @@ namespace AscendC {
  * \param [in] params: DequantParams with m, n, calcount to describe the calculation process like above.
  */
 template <typename dstT, typename scaleT, DeQuantMode mode = DeQuantMode::DEQUANT_WITH_SINGLE_ROW>
-__aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const LocalTensor<int32_t>& srcTensor,
-    const LocalTensor<scaleT>& deqScale, const LocalTensor<uint8_t>& sharedTmpBuffer, DequantParams params)
+__aicore__ inline void AscendDequant(
+    const LocalTensor<dstT>& dstTensor, const LocalTensor<int32_t>& srcTensor, const LocalTensor<scaleT>& deqScale,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, DequantParams params)
 {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
-    __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
-    AscendDequantImpl<dstT, scaleT, true, mode>(dstTensor, srcTensor, deqScale, sharedTmpBuffer, params,
-        params.m * params.n);
+                              __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+    AscendDequantImpl<dstT, scaleT, true, mode>(
+        dstTensor, srcTensor, deqScale, sharedTmpBuffer, params, params.m * params.n);
 #endif
 }
 
@@ -79,18 +80,18 @@ __aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const L
  * \param [in] params: DequantParams with m, n, calcount to describe the calculation process like above.
  */
 template <typename dstT, typename scaleT, DeQuantMode mode = DeQuantMode::DEQUANT_WITH_SINGLE_ROW>
-__aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const LocalTensor<int32_t>& srcTensor,
-    const LocalTensor<scaleT>& deqScale, DequantParams params)
+__aicore__ inline void AscendDequant(
+    const LocalTensor<dstT>& dstTensor, const LocalTensor<int32_t>& srcTensor, const LocalTensor<scaleT>& deqScale,
+    DequantParams params)
 {
     if ASCEND_IS_AIC {
         return;
     }
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
-    __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+                              __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     AscendDequantImpl<dstT, scaleT, mode>(dstTensor, srcTensor, deqScale, params);
 #endif
 }
-
 
 /*!
  * \ingroup AscendDequant
@@ -113,11 +114,12 @@ __aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const L
  * \param [in] calCount: The number of elements in srcTensor to be processed.
  */
 template <typename dstT, typename scaleT, DeQuantMode mode = DeQuantMode::DEQUANT_WITH_SINGLE_ROW>
-__aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const LocalTensor<int32_t>& srcTensor,
-    const LocalTensor<scaleT>& deqScale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void AscendDequant(
+    const LocalTensor<dstT>& dstTensor, const LocalTensor<int32_t>& srcTensor, const LocalTensor<scaleT>& deqScale,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
-    __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+                              __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     AscendDequantCalcountImpl<dstT, scaleT, mode>(dstTensor, srcTensor, deqScale, sharedTmpBuffer, calCount);
 #endif
 }
@@ -138,14 +140,15 @@ __aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const L
  * \param [in] calCount: The number of elements in srcTensor to be processed.
  */
 template <typename dstT, typename scaleT, DeQuantMode mode = DeQuantMode::DEQUANT_WITH_SINGLE_ROW>
-__aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const LocalTensor<int32_t>& srcTensor,
-    const LocalTensor<scaleT>& deqScale, const uint32_t calCount)
+__aicore__ inline void AscendDequant(
+    const LocalTensor<dstT>& dstTensor, const LocalTensor<int32_t>& srcTensor, const LocalTensor<scaleT>& deqScale,
+    const uint32_t calCount)
 {
     if ASCEND_IS_AIC {
         return;
     }
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
-    __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+                              __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     AscendDequantCalcountImpl<dstT, scaleT, mode>(dstTensor, srcTensor, deqScale, calCount);
 #endif
 }
@@ -171,11 +174,12 @@ __aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const L
  *             is not guaranteed that the shared space will be cleared after usage, the data could be anything.
  */
 template <typename dstT, typename scaleT, DeQuantMode mode = DeQuantMode::DEQUANT_WITH_SINGLE_ROW>
-__aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const LocalTensor<int32_t>& srcTensor,
-    const LocalTensor<scaleT>& deqScale, const LocalTensor<uint8_t>& sharedTmpBuffer)
+__aicore__ inline void AscendDequant(
+    const LocalTensor<dstT>& dstTensor, const LocalTensor<int32_t>& srcTensor, const LocalTensor<scaleT>& deqScale,
+    const LocalTensor<uint8_t>& sharedTmpBuffer)
 {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
-    __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+                              __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     AscendDequantNoCalcountImpl<dstT, scaleT, mode>(dstTensor, srcTensor, deqScale, sharedTmpBuffer);
 #endif
 }
@@ -196,14 +200,14 @@ __aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const L
  * \param [in] deqScale: Input deqScale localTensor
  */
 template <typename dstT, typename scaleT, DeQuantMode mode = DeQuantMode::DEQUANT_WITH_SINGLE_ROW>
-__aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const LocalTensor<int32_t>& srcTensor,
-    const LocalTensor<scaleT>& deqScale)
+__aicore__ inline void AscendDequant(
+    const LocalTensor<dstT>& dstTensor, const LocalTensor<int32_t>& srcTensor, const LocalTensor<scaleT>& deqScale)
 {
     if ASCEND_IS_AIC {
         return;
     }
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
-    __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+                              __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     AscendDequantNoCalcountImpl<dstT, scaleT, mode>(dstTensor, srcTensor, deqScale);
 #endif
 }
@@ -230,14 +234,15 @@ __aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const L
  * \param [in] params: DequantParams with m, n, calcount to describe the calculation process like above.
  */
 template <typename dstT, typename scaleT, DeQuantMode mode = DeQuantMode::DEQUANT_WITH_SINGLE_ROW>
-__aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const LocalTensor<int32_t>& srcTensor,
-    const scaleT deqScale, const LocalTensor<uint8_t>& sharedTmpBuffer, DequantParams params)
+__aicore__ inline void AscendDequant(
+    const LocalTensor<dstT>& dstTensor, const LocalTensor<int32_t>& srcTensor, const scaleT deqScale,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, DequantParams params)
 {
     if ASCEND_IS_AIC {
         return;
     }
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
-    __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+                              __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     AscendDequantScalarImpl<dstT, scaleT, true, mode>(dstTensor, srcTensor, deqScale, sharedTmpBuffer, params);
 #endif
 }
@@ -259,35 +264,40 @@ __aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const L
  * \param [in] params: DequantParams with m, n, calcount to describe the calculation process like above.
  */
 template <typename dstT, typename scaleT, DeQuantMode mode = DeQuantMode::DEQUANT_WITH_SINGLE_ROW>
-__aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const LocalTensor<int32_t>& srcTensor,
-    const scaleT deqScale, DequantParams params)
+__aicore__ inline void AscendDequant(
+    const LocalTensor<dstT>& dstTensor, const LocalTensor<int32_t>& srcTensor, const scaleT deqScale,
+    DequantParams params)
 {
     if ASCEND_IS_AIC {
         return;
     }
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
-    __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+                              __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     AscendDequantScalarImpl<dstT, scaleT, mode>(dstTensor, srcTensor, deqScale, params);
 #endif
 }
 
-template <typename dstT, typename srcT, typename scaleT, const AscendDeQuantConfig& config, const AscendDeQuantPolicy& policy>
-__aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
-                                     const LocalTensor<scaleT> &scaleTensor, const LocalTensor<scaleT> &offsetTensor,
-                                     const AscendDeQuantParam& para)
+template <
+    typename dstT, typename srcT, typename scaleT, const AscendDeQuantConfig& config, const AscendDeQuantPolicy& policy>
+__aicore__ inline void AscendDequant(
+    const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor, const LocalTensor<scaleT>& scaleTensor,
+    const LocalTensor<scaleT>& offsetTensor, const AscendDeQuantParam& para)
 {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
     AscendDequantImpl<dstT, srcT, scaleT, config, policy>(dstTensor, srcTensor, scaleTensor, offsetTensor, para);
 #endif
 }
 
-template <typename dstT, typename srcT, typename scaleT, const AscendDeQuantConfig& config, const AscendDeQuantPolicy& policy>
-__aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
-                                     const LocalTensor<scaleT> &scaleTensor, const LocalTensor<scaleT> &offsetTensor,
-                                     const LocalTensor<uint8_t> &sharedTmpBuffer, const AscendDeQuantParam& para)
+template <
+    typename dstT, typename srcT, typename scaleT, const AscendDeQuantConfig& config, const AscendDeQuantPolicy& policy>
+__aicore__ inline void AscendDequant(
+    const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor, const LocalTensor<scaleT>& scaleTensor,
+    const LocalTensor<scaleT>& offsetTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const AscendDeQuantParam& para)
 {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
-    AscendDequantImpl<dstT, srcT, scaleT, config, policy>(dstTensor, srcTensor, sharedTmpBuffer, scaleTensor, offsetTensor, para);
+    AscendDequantImpl<dstT, srcT, scaleT, config, policy>(
+        dstTensor, srcTensor, sharedTmpBuffer, scaleTensor, offsetTensor, para);
 #endif
 }
 #pragma end_pipe

@@ -49,7 +49,7 @@ tiling.SetBias(true);
 tiling.SetBufferSpace(-1, -1, -1);
 
 constexpr int32_t BATCH_NUM = 3;
-tiling.SetBatchInfoForNormal(BATCH_NUM, BATCH_NUM, M, N, K);  // 设置矩阵排布
+tiling.SetBatchInfoForNormal(BATCH_NUM, BATCH_NUM, M, N, K); // 设置矩阵排布
 tiling.SetBufferSpace(-1, -1, -1);
 
 optiling::TCubeTiling tilingData;

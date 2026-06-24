@@ -63,7 +63,7 @@ constexpr int32_t C_DNUM = 256;
 constexpr int32_t BATCH_NUM = 3;
 tiling.SetALayout(A_BNUM, A_SNUM, 1, A_GNUM, A_DNUM);
 tiling.SetBLayout(B_BNUM, B_SNUM, 1, B_GNUM, B_DNUM);
-tiling.SetCLayout(C_BNUM, C_SNUM, 1, C_GNUM, C_DNUM);  // 设置C矩阵排布
+tiling.SetCLayout(C_BNUM, C_SNUM, 1, C_GNUM, C_DNUM); // 设置C矩阵排布
 tiling.SetBatchNum(BATCH_NUM);
 tiling.SetBufferSpace(-1, -1, -1);
 

@@ -62,10 +62,11 @@ enum class ReducePattern : uint32_t {
 
 ```
 // 输入shape为16*32的矩阵;算子输入的数据类型为float;不允许修改源操作数
-auto shape = ge::Shape({ 16, 32 });
+auto shape = ge::Shape({16, 32});
 uint32_t maxValue = 0;
 uint32_t minValue = 0;
 bool isSrcInnerPad = true;
 bool isReuseSource = false;
-AscendC::GetReduceAllMaxMinTmpSize(shape, ge::DataType::DT_FLOAT, AscendC::ReducePattern::AR, isSrcInnerPad, isReuseSource, maxValue, minValue);
+AscendC::GetReduceAllMaxMinTmpSize(
+    shape, ge::DataType::DT_FLOAT, AscendC::ReducePattern::AR, isSrcInnerPad, isReuseSource, maxValue, minValue);
 ```

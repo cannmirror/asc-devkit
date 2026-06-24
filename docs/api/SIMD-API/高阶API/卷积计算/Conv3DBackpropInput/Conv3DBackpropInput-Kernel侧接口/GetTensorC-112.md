@@ -30,7 +30,7 @@
 
 ```
 template <bool sync = true>
-__aicore__ inline void GetTensorC(const AscendC::GlobalTensor<DstT> &output, uint8_t enAtomic = 0, bool enSequentialWrite = false)
+__aicore__ inline void GetTensorC(const AscendC::GlobalTensor<DstT>& output, uint8_t enAtomic = 0, bool enSequentialWrite = false)
 ```
 
 ## 参数说明

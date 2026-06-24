@@ -64,6 +64,7 @@ enum class ReducePattern : uint32_t {
 // 输入shape为16*32的矩阵;算子输入的数据类型为float;isReuseSource传入默认值false
 uint32_t maxSize;
 uint32_t minSize;
-auto shape = ge::Shape({ 16, 32 });
-AscendC::GetReduceProdMaxMinTmpSize(shape, ge::DataType::DT_FLOAT, AscendC::ReducePattern::AR, true, false, maxSize, minSize);
+auto shape = ge::Shape({16, 32});
+AscendC::GetReduceProdMaxMinTmpSize(
+    shape, ge::DataType::DT_FLOAT, AscendC::ReducePattern::AR, true, false, maxSize, minSize);
 ```

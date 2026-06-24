@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file bmm_tiling.h
@@ -30,7 +30,7 @@ namespace matmul_tiling {
  * Users only need to pass information such as the Position, Format, and Dtype of matrices A/B/C,
  * and by calling the API interface, they can get the relevant parameters from the
  * TCubeTiling structure in the Matmul Init API.
-*/
+ */
 class MultiCoreMatmulTiling : public MatmulApiTilingBase {
 public:
     /**
@@ -41,15 +41,14 @@ public:
      * @brief Use the PlatformAscendC class to pass information.
      * @param ascendcPlatform : hardware platform information.
      */
-    explicit MultiCoreMatmulTiling(const platform_ascendc::PlatformAscendC &ascendcPlatform)
-        : MatmulApiTilingBase(ascendcPlatform){};
+    explicit MultiCoreMatmulTiling(const platform_ascendc::PlatformAscendC& ascendcPlatform)
+        : MatmulApiTilingBase(ascendcPlatform) {};
     /**
      * @brief Use the PlatformInfo class to pass information.
      * Input hardware version and memory size provided by each hardware unit in the AI Core.
      * @param platform : platform information.
      */
-    explicit MultiCoreMatmulTiling(const PlatformInfo &platform)
-        : MatmulApiTilingBase(platform) {};
+    explicit MultiCoreMatmulTiling(const PlatformInfo& platform) : MatmulApiTilingBase(platform) {};
     /**
      * @brief Set the allowed block dim.
      * @param dim : core number.
@@ -63,7 +62,7 @@ public:
      * @param n : Set the N-direction size calculated by Matmul. The unit is element.
      * @param k : Set the K-direction size calculated by Matmul. The unit is element.
      */
-    int32_t SetShape(int32_t m, int32_t n, int32_t k) override;  // Set the size of the original input
+    int32_t SetShape(int32_t m, int32_t n, int32_t k) override; // Set the size of the original input
     /**
      * @brief Set the shape for single-core computation of Matmul as singleMIn, singleNIn, and singleKIn,
         with units in elements.
@@ -83,13 +82,13 @@ public:
      * @param tiling : The Tiling structure stores the final tiling results. The TCubeTiling structure with the
         optiling namespace, which define the Matmul TilingData on the Host side.
      */
-    int64_t GetTiling(optiling::TCubeTiling &tiling) override;
+    int64_t GetTiling(optiling::TCubeTiling& tiling) override;
     /**
      * @brief Get Tiling parameters.
      * @param tiling : The Tiling structure stores the final tiling results. The TCubeTiling structure without the
         optiling namespace, Matmul TilingData defined on the Kernel side.
      */
-    int64_t GetTiling(AscendC::tiling::TCubeTiling &tiling) override;
+    int64_t GetTiling(AscendC::tiling::TCubeTiling& tiling) override;
     /**
      * @brief Set the maximum and minimum values for singleCoreM/singleCoreN/singleCoreK.
      * @param maxM : Set the maximum value of singleCoreM to -1, which indicates that no specific maximum value
@@ -105,8 +104,9 @@ public:
      * @param minK : Set the minimum value of singleCoreK to -1, which indicates that no specific minimum value
         for singleCoreK is set. This value is calculated by the Tiling function itself.
      */
-    virtual int32_t SetSingleRange(int32_t maxM = -1, int32_t maxN = -1, int32_t maxK = -1,
-        int32_t minM = -1, int32_t minN = -1, int32_t minK = -1)
+    virtual int32_t SetSingleRange(
+        int32_t maxM = -1, int32_t maxN = -1, int32_t maxK = -1, int32_t minM = -1, int32_t minN = -1,
+        int32_t minK = -1)
     {
         this->maxSingleM = maxM;
         this->maxSingleN = maxN;
@@ -134,7 +134,7 @@ public:
      * @param shapeN : Get the singleCoreN value calculated form multi-core tiling.
      * @param shapeK : Get the singleCoreK value calculated form multi-core tiling.
      */
-    int32_t GetSingleShape(int32_t &shapeM, int32_t &shapeN, int32_t &shapeK);
+    int32_t GetSingleShape(int32_t& shapeM, int32_t& shapeN, int32_t& shapeK);
     /**
      * @brief Get the NumBlocks used after multi core tiling. It is carried by users to the kernel to control
         the service logic in the kernel.
@@ -142,17 +142,14 @@ public:
      * @param mDim : Determine the number of core required for the M direction during computation.
      * @param nDim : Determine the number of core required for the N direction during computation.
      */
-    int32_t GetCoreNum(int32_t &dim, int32_t &mDim, int32_t &nDim);
+    int32_t GetCoreNum(int32_t& dim, int32_t& mDim, int32_t& nDim);
     /**
      * @brief In a multi-core scenario, this interface enables the split of the K-axis. if this interface
         is not called, the K-axis will not be split by default. It should be used before calling the
         GetTiling interface.
      * @param flag : whether to enable the K-axis cutting.
      */
-    void EnableMultiCoreSplitK(bool flag)
-    {
-        enableSplitK_ = flag;
-    }
+    void EnableMultiCoreSplitK(bool flag) { enableSplitK_ = flag; }
     /**
      * @brief Controls whether to enable K-axis splitting in multi-core scenarios
      *
@@ -167,10 +164,7 @@ public:
      * @note This interface must be used before calling the GetTiling interface to ensure that the K-axis splitting
      *       configuration is correctly applied to the tensor tiling process.
      */
-    void SetSplitK(bool flag)
-    {
-        EnableMultiCoreSplitK(flag);
-    }
+    void SetSplitK(bool flag) { EnableMultiCoreSplitK(flag); }
 
     /**
      * @brief Whether can enable L1BankConflictOptimise
@@ -192,8 +186,8 @@ protected:
 class BatchMatmulTiling : public MatmulApiTilingBase {
 public:
     BatchMatmulTiling() {};
-    explicit BatchMatmulTiling(const platform_ascendc::PlatformAscendC &ascendcPlatform)
-        : MatmulApiTilingBase(ascendcPlatform){};
+    explicit BatchMatmulTiling(const platform_ascendc::PlatformAscendC& ascendcPlatform)
+        : MatmulApiTilingBase(ascendcPlatform) {};
     /**
      * @brief Retrieves the NumBlocks used after multi-core splitting
      *
@@ -208,7 +202,7 @@ public:
      *
      * @return 0 if the core numbers are successfully retrieved; -1 if the retrieval fails
      */
-    int32_t GetCoreNum(int32_t &dim, int32_t &mDim, int32_t &nDim, int32_t &batchCoreM, int32_t &batchCoreN);
+    int32_t GetCoreNum(int32_t& dim, int32_t& mDim, int32_t& nDim, int32_t& batchCoreM, int32_t& batchCoreN);
     /**
      * @brief Retrieves the tiling parameters
      *
@@ -222,7 +216,7 @@ public:
      *                 - Any value other than -1: Tiling calculation succeeded, and the tiling structure can be used.
      *                 - -1: Tiling calculation failed, and the tiling result cannot be used.
      */
-    int64_t GetTiling(optiling::TCubeTiling &tiling) override;
+    int64_t GetTiling(optiling::TCubeTiling& tiling) override;
     /**
      * @brief Retrieves the tiling parameters
      *
@@ -236,9 +230,11 @@ public:
      *                 - Any value other than -1: Tiling calculation succeeded, and the tiling structure can be used.
      *                 - -1: Tiling calculation failed, and the tiling result cannot be used.
      */
-    int64_t GetTiling(AscendC::tiling::TCubeTiling &tiling) override;
+    int64_t GetTiling(AscendC::tiling::TCubeTiling& tiling) override;
+
 protected:
     int64_t Compute() override;
+
 private:
     int32_t SetBatch(int32_t batchMIn = 1, int32_t batchNIn = 1);
     // Set the batch axis tiling mode.
@@ -257,7 +253,7 @@ extern "C" {
  *
  * @return 0 if the core numbers are successfully retrieved; -1 if the retrieval fails
  */
-int32_t MultiCoreMatmulGetTmpBufSize(optiling::TCubeTiling &tiling, matmul_tiling::SysTilingTempBufSize &bufSize);
+int32_t MultiCoreMatmulGetTmpBufSize(optiling::TCubeTiling& tiling, matmul_tiling::SysTilingTempBufSize& bufSize);
 /**
  * @brief Get L1/Unified/L0C buffer sizes for BatchMatmul
  *
@@ -268,7 +264,7 @@ int32_t MultiCoreMatmulGetTmpBufSize(optiling::TCubeTiling &tiling, matmul_tilin
  *
  * @return 0 if the core numbers are successfully retrieved; -1 if the retrieval fails
  */
-int32_t BatchMatmulGetTmpBufSize(optiling::TCubeTiling &tiling, matmul_tiling::SysTilingTempBufSize &bufSize);
+int32_t BatchMatmulGetTmpBufSize(optiling::TCubeTiling& tiling, matmul_tiling::SysTilingTempBufSize& bufSize);
 /**
  * @brief Get L1/Unified/L0C buffer sizes for BatchMatmul
  *
@@ -279,7 +275,8 @@ int32_t BatchMatmulGetTmpBufSize(optiling::TCubeTiling &tiling, matmul_tiling::S
  *
  * @return 0 if the core numbers are successfully retrieved; -1 if the retrieval fails
  */
-int32_t MultiCoreMatmulGetTmpBufSizeV2(AscendC::tiling::TCubeTiling &tiling, matmul_tiling::SysTilingTempBufSize &bufSize);
+int32_t MultiCoreMatmulGetTmpBufSizeV2(
+    AscendC::tiling::TCubeTiling& tiling, matmul_tiling::SysTilingTempBufSize& bufSize);
 /**
  * @brief Get L1/Unified/L0C buffer sizes for BatchMatmul
  *
@@ -290,7 +287,7 @@ int32_t MultiCoreMatmulGetTmpBufSizeV2(AscendC::tiling::TCubeTiling &tiling, mat
  *
  * @return 0 if the core numbers are successfully retrieved; -1 if the retrieval fails
  */
-int32_t BatchMatmulGetTmpBufSizeV2(AscendC::tiling::TCubeTiling &tiling, matmul_tiling::SysTilingTempBufSize &bufSize);
+int32_t BatchMatmulGetTmpBufSizeV2(AscendC::tiling::TCubeTiling& tiling, matmul_tiling::SysTilingTempBufSize& bufSize);
 };
 
 #endif // LIB_MATMUL_BMM_TILING_H

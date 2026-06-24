@@ -7,7 +7,7 @@
 ## 函数原型
 
 ```
-uint32_t SetAlgConfig(const std::string &algConfig)
+uint32_t SetAlgConfig(const std::string& algConfig)
 ```
 
 ## 参数说明

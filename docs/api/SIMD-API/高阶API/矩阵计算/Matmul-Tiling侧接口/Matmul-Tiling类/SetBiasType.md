@@ -33,5 +33,6 @@ int32_t SetBiasType(TPosition pos, CubeFormat type, DataType dataType)
 ```
 auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
 matmul_tiling::MatmulApiTiling tiling(ascendcPlatform);
-tiling.SetBiasType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);  // 设置Bias矩阵
+tiling.SetBiasType(
+    matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT); // 设置Bias矩阵
 ```

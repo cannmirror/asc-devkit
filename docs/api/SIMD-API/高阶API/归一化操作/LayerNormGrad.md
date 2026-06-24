@@ -49,7 +49,7 @@ res_for_gamma(BSH) = (data_x - data_mean) * np.power((data_variance + EPSILON), 
 
     ```
     template <typename T, bool isReuseSource = false>
-    __aicore__ inline void LayerNormGrad(const LocalTensor<T>& outputPdX, const LocalTensor<T>& resForGamma, const LocalTensor<T>& inputDy, const LocalTensor<T>& inputX, const LocalTensor<T>& inputVariance, const LocalTensor<T>& inputMean, const LocalTensor<T>& inputGamma, LocalTensor<uint8_t>& sharedTmpBuffer, T epsilon, LayerNormGradTiling &tiling, const LayerNormGradShapeInfo& shapeInfo = {})
+    __aicore__ inline void LayerNormGrad(const LocalTensor<T>& outputPdX, const LocalTensor<T>& resForGamma, const LocalTensor<T>& inputDy, const LocalTensor<T>& inputX, const LocalTensor<T>& inputVariance, const LocalTensor<T>& inputMean, const LocalTensor<T>& inputGamma, LocalTensor<uint8_t>& sharedTmpBuffer, T epsilon, LayerNormGradTiling& tiling, const LayerNormGradShapeInfo& shapeInfo = {})
     ```
 
     该方式下开发者需自行申请并管理临时内存空间，并在接口调用完成后，复用该部分内存，内存不会反复申请释放，灵活性较高，内存利用率也较高。
@@ -125,17 +125,17 @@ struct LayerNormGradShapeInfo {
 
 // 使用LayerNormGrad接口执行Layer Normalization的反向传播计算：
 AscendC::LayerNormGrad<float, isReuseSource>(
-    outputPdX,        // 输出：输入梯度dX，shape [B, S, H]
-    resForGamma,      // 输出：中间结果，用于计算dgamma/dbeta
-    inputDy,          // 输入：上层梯度dy，shape [B, S, H]
-    inputX,           // 输入：原始输入X，shape [B, S, H]
-    inputVariance,    // 输入：前向计算的方差variance，shape [B, S]
-    inputMean,        // 输入：前向计算的均值mean，shape [B, S]
-    inputGamma,       // 输入：缩放参数gamma，shape [H]
-    sharedTmpBuffer,  // 输入：开发者提供的临时空间（需通过GetLayerNormGradMaxMinTmpSize获取大小）
-    epsilon,          // 输入：防除零系数ε
-    tiling,           // 输入：Tiling信息，由Tiling工具生成
-    {DataFormat::ND}  // 输入：shapeInfo，默认为DataFormat::ND
+    outputPdX,       // 输出：输入梯度dX，shape [B, S, H]
+    resForGamma,     // 输出：中间结果，用于计算dgamma/dbeta
+    inputDy,         // 输入：上层梯度dy，shape [B, S, H]
+    inputX,          // 输入：原始输入X，shape [B, S, H]
+    inputVariance,   // 输入：前向计算的方差variance，shape [B, S]
+    inputMean,       // 输入：前向计算的均值mean，shape [B, S]
+    inputGamma,      // 输入：缩放参数gamma，shape [H]
+    sharedTmpBuffer, // 输入：开发者提供的临时空间（需通过GetLayerNormGradMaxMinTmpSize获取大小）
+    epsilon,         // 输入：防除零系数ε
+    tiling,          // 输入：Tiling信息，由Tiling工具生成
+    {DataFormat::ND} // 输入：shapeInfo，默认为DataFormat::ND
 );
 ```
 

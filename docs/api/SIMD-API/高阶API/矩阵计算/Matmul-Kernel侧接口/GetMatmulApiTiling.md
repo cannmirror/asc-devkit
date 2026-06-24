@@ -60,12 +60,13 @@ __aicore__ constexpr MatmulApiStaticTiling GetMatmulApiTiling(const MatmulConfig
 ## 调用示例
 
 ```
-//定义Matmul对象
+// 定义Matmul对象
 typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> aType;
 typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> bType;
 typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> cType;
 typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> biasType;
 // 这里CFG使用GetNormalConfig接口获取，并指定已知的singleshape信息和baseM,baseN,baseK，指定的数值跟运行时tiling保持一致
-constexpr auto staticTiling = GetMatmulApiTiling<aType, bType, cType, biasType>(CFG, 524288); // 该示例L1 Buffer可用大小为512KB
-AscendC::Matmul<aType, bType, cType, biasType, staticTiling > mm;
+// 该示例L1 Buffer可用大小为512KB
+constexpr auto staticTiling = GetMatmulApiTiling<aType, bType, cType, biasType>(CFG, 524288);
+AscendC::Matmul<aType, bType, cType, biasType, staticTiling> mm;
 ```

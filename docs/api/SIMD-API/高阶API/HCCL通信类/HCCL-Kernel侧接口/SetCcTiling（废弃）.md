@@ -20,7 +20,7 @@
 ## 函数原型
 
 ```
-__aicore__ inline int32_t SetCcTiling(__gm__ void *ccOpTilingData)
+__aicore__ inline int32_t SetCcTiling(__gm__ void* ccOpTilingData)
 ```
 
 ## 参数说明

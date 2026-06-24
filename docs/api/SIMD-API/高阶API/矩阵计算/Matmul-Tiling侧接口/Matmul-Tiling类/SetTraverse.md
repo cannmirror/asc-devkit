@@ -31,5 +31,5 @@ int32_t SetTraverse(MatrixTraverse traverse)
 ```
 auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
 matmul_tiling::MatmulApiTiling tiling(ascendcPlatform);
-tiling.SetTraverse(MatrixTraverse::FIRSTM);  // 设置遍历方式
+tiling.SetTraverse(MatrixTraverse::FIRSTM); // 设置遍历方式
 ```

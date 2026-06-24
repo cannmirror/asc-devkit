@@ -94,15 +94,8 @@ struct TopKConfig {
     TopKOrder order = TopKOrder::UNSET;
     bool sorted = true;
 };
-enum class TopKAlgo {
-    RADIX_SELECT,
-    MERGE_SORT
-};
-enum class TopKOrder {
-    UNSET,
-    LARGEST,
-    SMALLEST
-};
+enum class TopKAlgo { RADIX_SELECT, MERGE_SORT };
+enum class TopKOrder { UNSET, LARGEST, SMALLEST };
 ```
 
 **表2**  TopKTilingFunc接口参数列表
@@ -140,7 +133,7 @@ TopKTilingFunc返回值为true/false，true表示成功拿到TopK的Tiling各项
     BEGIN_TILING_DATA_DEF(TilingData)
         TILING_DATA_FIELD_DEF(uint32_t, totalLength);
         TILING_DATA_FIELD_DEF(uint32_t, tilenum);
-        //添加其他tiling字段
+        // 添加其他tiling字段
         ...
         TILING_DATA_FIELD_DEF(int32_t, k);
         TILING_DATA_FIELD_DEF(bool, islargest);
@@ -155,7 +148,7 @@ TopKTilingFunc返回值为true/false，true表示成功拿到TopK的Tiling各项
         TILING_DATA_FIELD_DEF_STRUCT(TopkTiling, topkTilingData);
     END_TILING_DATA_DEF;
     REGISTER_TILING_DATA_CLASS(TopkCustom, TilingData)
-    }
+    } // namespace optiling
     ```
 
 2.  Tiling实现函数中，首先调用GetTopKMaxMinTmpSize接口获取TopK接口能完成计算所需最大/最小临时空间大小，根据该范围结合实际的内存使用情况设置合适的空间大小；然后根据输入shape等信息获取TopK kernel侧接口所需tiling参数。MERGE\_SORT算法参考如下调用示例。
@@ -189,15 +182,19 @@ TopKTilingFunc返回值为true/false，true表示成功拿到TopK的Tiling各项
         // 本样例中仅作为样例说明，通过GetTopKMaxMinTmpSize获取最小值并传入，来保证功能正确，开发者可以根据需要传入合适的空间大小。
         uint32_t maxsize = 0;
         uint32_t minsize = 0;
-        uint32_t dtypesize = 4;  // float类型
+        uint32_t dtypesize = 4; // float类型
         auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
-        AscendC::TopKTilingFunc(ascendcPlatform, tiling.inner, tiling.outter, tiling.k, dtypesize, tiling.isinitindex, AscendC::TopKMode::TOPK_NSMALL, tiling.islargest, tiling.topkTilingData);
-        AscendC::GetTopKMaxMinTmpSize(ascendcPlatform, tiling.inner, tiling.outter, IS_REUSESOURCE, tiling.isinitindex, AscendC::TopKMode::TOPK_NSMALL, tiling.islargest, dtypesize, maxsize, minsize);
+        AscendC::TopKTilingFunc(
+            ascendcPlatform, tiling.inner, tiling.outter, tiling.k, dtypesize, tiling.isinitindex,
+            AscendC::TopKMode::TOPK_NSMALL, tiling.islargest, tiling.topkTilingData);
+        AscendC::GetTopKMaxMinTmpSize(
+            ascendcPlatform, tiling.inner, tiling.outter, IS_REUSESOURCE, tiling.isinitindex,
+            AscendC::TopKMode::TOPK_NSMALL, tiling.islargest, dtypesize, maxsize, minsize);
         tiling.set_tmpsize(minsize);
-         ... // 其他逻辑
+        ... // 其他逻辑
         tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());
         context->GetRawTilingData()->SetDataSize(tiling.GetDataSize());
-        size_t *currentWorkspace = context->GetWorkspaceSizes(1);
+        size_t* currentWorkspace = context->GetWorkspaceSizes(1);
         currentWorkspace[0] = 0;
         return ge::GRAPH_SUCCESS;
     }
@@ -207,83 +204,86 @@ TopKTilingFunc返回值为true/false，true表示成功拿到TopK的Tiling各项
     RADIX\_SELECT算法参考如下调用示例。
 
     ```
-    namespace optiling
+    namespace optiling {
+    static ge::graphStatus TilingFunc(gert::TilingContext* context)
     {
-        static ge::graphStatus TilingFunc(gert::TilingContext *context)
-        {
-            std::map<ge::DataType, uint32_t> dtypeSizes = {
-                {ge::DataType::DT_UINT32, 4},
-                {ge::DataType::DT_INT32, 4}
-            };
-            RadixtopkCustomTilingData tiling;
-            const gert::RuntimeAttrs *attrs = context->GetAttrs();
-            const uint32_t is_init_index = *(attrs->GetAttrPointer<uint32_t>(0));
-            const uint32_t is_reuse_src = *(attrs->GetAttrPointer<uint32_t>(1));
-            const uint32_t order = *(attrs->GetAttrPointer<uint32_t>(2));
-            const uint32_t is_largest = *(attrs->GetAttrPointer<uint32_t>(3));
-            const uint32_t outter = *(attrs->GetAttrPointer<uint32_t>(4));
-            const uint32_t inner = *(attrs->GetAttrPointer<uint32_t>(5));
-            const uint32_t n = *(attrs->GetAttrPointer<uint32_t>(6));
-            const uint32_t k = *(attrs->GetAttrPointer<uint32_t>(7));
-            const uint32_t k_pad = *(attrs->GetAttrPointer<uint32_t>(8));
-            const uint32_t sorted = *(attrs->GetAttrPointer<uint32_t>(9));
-            const uint32_t top_mode = *(attrs->GetAttrPointer<uint32_t>(10));
+        std::map<ge::DataType, uint32_t> dtypeSizes = {{ge::DataType::DT_UINT32, 4}, {ge::DataType::DT_INT32, 4}};
+        RadixtopkCustomTilingData tiling;
+        const gert::RuntimeAttrs* attrs = context->GetAttrs();
+        const uint32_t is_init_index = *(attrs->GetAttrPointer<uint32_t>(0));
+        const uint32_t is_reuse_src = *(attrs->GetAttrPointer<uint32_t>(1));
+        const uint32_t order = *(attrs->GetAttrPointer<uint32_t>(2));
+        const uint32_t is_largest = *(attrs->GetAttrPointer<uint32_t>(3));
+        const uint32_t outter = *(attrs->GetAttrPointer<uint32_t>(4));
+        const uint32_t inner = *(attrs->GetAttrPointer<uint32_t>(5));
+        const uint32_t n = *(attrs->GetAttrPointer<uint32_t>(6));
+        const uint32_t k = *(attrs->GetAttrPointer<uint32_t>(7));
+        const uint32_t k_pad = *(attrs->GetAttrPointer<uint32_t>(8));
+        const uint32_t sorted = *(attrs->GetAttrPointer<uint32_t>(9));
+        const uint32_t top_mode = *(attrs->GetAttrPointer<uint32_t>(10));
 
-            auto xDType = context->GetInputTensor(0)->GetDataType();
-            uint32_t typeSize = dtypeSizes.at(xDType);
-            AscendC::TopKConfig config;
-            config.algo = AscendC::TopKAlgo::RADIX_SELECT;
-            if (order == 1) {
-                config.order = AscendC::TopKOrder::LARGEST;
-            } else if (order == 2) {
-                config.order = AscendC::TopKOrder::SMALLEST;
-            } else {
-                config.order = AscendC::TopKOrder::UNSET;
-            }
-            if (sorted == 0) {
-                config.sorted = false;
-            } else {
-                config.sorted = true;
-            }
-            uint32_t maxValue = 0;
-            uint32_t minValue = 0;
-
-            if (top_mode == 0) {
-                AscendC::GetTopKMaxMinTmpSize(inner, outter, k, is_reuse_src, is_init_index, AscendC::TopKMode::TOPK_NORMAL, is_largest, xDType, config, maxValue, minValue);
-                context->SetTilingKey(0);
-            } else {
-                AscendC::GetTopKMaxMinTmpSize(inner, outter, k, is_reuse_src, is_init_index, AscendC::TopKMode::TOPK_NSMALL, is_largest, xDType, config, maxValue, minValue);
-                context->SetTilingKey(1);
-            }
-            context->SetBlockDim(1);
-            tiling.set_is_init_index(is_init_index);
-            tiling.set_is_reuse_src(is_reuse_src);
-            tiling.set_order(order);
-            tiling.set_is_largest(is_largest);
-            tiling.set_outter(outter);
-            tiling.set_inner(inner);
-            tiling.set_n(n);
-            tiling.set_k(k);
-            tiling.set_k_pad(k_pad);
-            tiling.set_sorted(sorted);
-            tiling.set_top_mode(top_mode);
-            tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());
-            context->GetRawTilingData()->SetDataSize(tiling.GetDataSize());
-            size_t *currentWorkspace = context->GetWorkspaceSizes(1);
-            currentWorkspace[0] = 0;
-            return ge::GRAPH_SUCCESS;
+        auto xDType = context->GetInputTensor(0)->GetDataType();
+        uint32_t typeSize = dtypeSizes.at(xDType);
+        AscendC::TopKConfig config;
+        config.algo = AscendC::TopKAlgo::RADIX_SELECT;
+        if (order == 1) {
+            config.order = AscendC::TopKOrder::LARGEST;
+        } else if (order == 2) {
+            config.order = AscendC::TopKOrder::SMALLEST;
+        } else {
+            config.order = AscendC::TopKOrder::UNSET;
         }
+        if (sorted == 0) {
+            config.sorted = false;
+        } else {
+            config.sorted = true;
+        }
+        uint32_t maxValue = 0;
+        uint32_t minValue = 0;
+
+        if (top_mode == 0) {
+            AscendC::GetTopKMaxMinTmpSize(
+                inner, outter, k, is_reuse_src, is_init_index, AscendC::TopKMode::TOPK_NORMAL, is_largest, xDType, config,
+                maxValue, minValue);
+            context->SetTilingKey(0);
+        } else {
+            AscendC::GetTopKMaxMinTmpSize(
+                inner, outter, k, is_reuse_src, is_init_index, AscendC::TopKMode::TOPK_NSMALL, is_largest, xDType, config,
+                maxValue, minValue);
+            context->SetTilingKey(1);
+        }
+        context->SetBlockDim(1);
+        tiling.set_is_init_index(is_init_index);
+        tiling.set_is_reuse_src(is_reuse_src);
+        tiling.set_order(order);
+        tiling.set_is_largest(is_largest);
+        tiling.set_outter(outter);
+        tiling.set_inner(inner);
+        tiling.set_n(n);
+        tiling.set_k(k);
+        tiling.set_k_pad(k_pad);
+        tiling.set_sorted(sorted);
+        tiling.set_top_mode(top_mode);
+        tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());
+        context->GetRawTilingData()->SetDataSize(tiling.GetDataSize());
+        size_t* currentWorkspace = context->GetWorkspaceSizes(1);
+        currentWorkspace[0] = 0;
+        return ge::GRAPH_SUCCESS;
+    }
     } // namespace optiling
     ```
 
 3.  对应的kernel侧通过在核函数中调用GET\_TILING\_DATA获取TilingData，继而将TilingData中的TopK Tiling信息传入TopK接口参与计算。完整的kernel侧样例请参考[调用示例](TopK.md#section94691236101419)。
 
     ```
-    extern "C" __global__ __aicore__ void topk_custom(GM_ADDR srcVal, GM_ADDR srcIdx, GM_ADDR finishLocal, GM_ADDR dstVal, GM_ADDR dstIdx, GM_ADDR tiling)
+    extern "C" __global__ __aicore__ void topk_custom(
+        GM_ADDR srcVal, GM_ADDR srcIdx, GM_ADDR finishLocal, GM_ADDR dstVal, GM_ADDR dstIdx, GM_ADDR tiling)
     {
         GET_TILING_DATA(tilingData, tiling);
         KernelTopK<float, true, true, false, false, AscendC::TopKMode::TOPK_NSMALL> op;
-        op.Init(srcVal, srcIdx, finishLocal, dstVal, dstIdx, tilingData.k, tilingData.islargest, tilingData.tmpsize, tilingData.outter, tilingData.inner, tilingData.n,tilingData.topkTilingData);
+        op.Init(
+            srcVal, srcIdx, finishLocal, dstVal, dstIdx, tilingData.k, tilingData.islargest, tilingData.tmpsize,
+            tilingData.outter, tilingData.inner, tilingData.n, tilingData.topkTilingData);
         op.Process();
     }
     ```

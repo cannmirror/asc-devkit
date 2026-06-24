@@ -123,25 +123,24 @@ struct NormalizePara {
 // para: 包含A、R维度信息的NormalizePara结构体
 // config: Normalize配置参数，指定是否跳过gamma/beta、reduce模式等
 
-constexpr AscendC::NormalizeConfig CONFIG {
+constexpr AscendC::NormalizeConfig CONFIG{
     .reducePattern = AscendC::ReducePattern::AR,
     .aLength = -1,
     .isNoBeta = isNoBeta,
     .isNoGamma = isNoGamma,
-    .isOnlyOutput = false
-};
+    .isOnlyOutput = false};
 
 // 使用Normalize接口执行层归一化计算
 AscendC::Normalize<DTYPE_Y, DTYPE_X, false, CONFIG>(
-    yLocal,          // 输出：归一化结果y，shape [A, R]
-    rstdLocal,       // 输出：标准差倒数rstd，shape [A]
-    meanLocal,       // 输入：均值mean，shape [A]
-    varianceLocal,   // 输入：方差variance，shape [A]
-    xLocal,          // 输入：原始数据X，shape [A, R]
-    gammaLocal,      // 输入：缩放系数γ，shape [R]
-    betaLocal,       // 输入：平移系数β，shape [R]
-    epsilon,         // 输入：防除零系数ε
-    para             // 输入：Tiling参数，包含aLength、rLength、rLengthWithPadding
+    yLocal,        // 输出：归一化结果y，shape [A, R]
+    rstdLocal,     // 输出：标准差倒数rstd，shape [A]
+    meanLocal,     // 输入：均值mean，shape [A]
+    varianceLocal, // 输入：方差variance，shape [A]
+    xLocal,        // 输入：原始数据X，shape [A, R]
+    gammaLocal,    // 输入：缩放系数γ，shape [R]
+    betaLocal,     // 输入：平移系数β，shape [R]
+    epsilon,       // 输入：防除零系数ε
+    para           // 输入：Tiling参数，包含aLength、rLength、rLengthWithPadding
 );
 ```
 

@@ -133,7 +133,7 @@ AscendC::Atan(dstLocal, srcLocal, sharedTmpBuffer);
 AscendC::Atan(dstLocal, srcLocal, sharedTmpBuffer, 512);
 
 // 指定输入算法为POLYNOMIAL_APPROXIMATION,输入的数据类型为float,实际计算个数为512
-static constexpr AscendC::AtanConfig atanConfig = { AscendC::AtanAlgo::POLYNOMIAL_APPROXIMATION};
+static constexpr AscendC::AtanConfig atanConfig = {AscendC::AtanAlgo::POLYNOMIAL_APPROXIMATION};
 AscendC::Atan<float, false, atanConfig>(dstLocal, srcLocal, sharedTmpBuffer, 512);
 ```
 

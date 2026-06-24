@@ -57,7 +57,8 @@ __aicore__ inline int32_t SetCcTilingV2(uint64_t offset)
 -   <a name="li71505119260"></a>类型不同、Tiling参数不同的通信
 
     ```
-    extern "C" __global__ __aicore__ void userKernel(GM_ADDR aGM, GM_ADDR workspaceGM, GM_ADDR tilingGM) {
+    extern "C" __global__ __aicore__ void userKernel(GM_ADDR aGM, GM_ADDR workspaceGM, GM_ADDR tilingGM)
+    {
         REGISTER_TILING_DEFAULT(UserCustomTilingData);
         GET_TILING_DATA_WITH_STRUCT(UserCustomTilingData, tilingData, tilingGM);
 
@@ -73,7 +74,8 @@ __aicore__ inline int32_t SetCcTilingV2(uint64_t offset)
         const auto agHandleId = hccl.AllGather<true>(sendBuf, recvBuf, dataCount, HcclDataType::HCCL_DATA_TYPE_FP16);
         hccl.Wait(agHandleId);
 
-        const auto arHandleId = hccl.AllReduce<true>(sendBuf, recvBuf, dataCount, HcclDataType::HCCL_DATA_TYPE_FP16, HcclReduceOp::HCCL_REDUCE_SUM);
+        const auto arHandleId = hccl.AllReduce<true>(
+            sendBuf, recvBuf, dataCount, HcclDataType::HCCL_DATA_TYPE_FP16, HcclReduceOp::HCCL_REDUCE_SUM);
         hccl.Wait(arHandleId);
 
         hccl.Finalize();
@@ -83,7 +85,8 @@ __aicore__ inline int32_t SetCcTilingV2(uint64_t offset)
 -   <a name="li1163031215116"></a>类型相同、Tiling参数不同的通信
 
     ```
-    extern "C" __global__ __aicore__ void userKernel(GM_ADDR aGM, GM_ADDR workspaceGM, GM_ADDR tilingGM) {
+    extern "C" __global__ __aicore__ void userKernel(GM_ADDR aGM, GM_ADDR workspaceGM, GM_ADDR tilingGM)
+    {
         REGISTER_TILING_DEFAULT(UserCustomTilingData);
         GET_TILING_DATA_WITH_STRUCT(UserCustomTilingData, tilingData, tilingGM);
 
@@ -95,14 +98,16 @@ __aicore__ inline int32_t SetCcTilingV2(uint64_t offset)
         if (hccl.SetCcTilingV2(offsetof(UserCustomTilingData, allReduceTiling1)) != HCCL_SUCCESS) {
             return;
         }
-        const auto arHandleId1 = hccl.AllReduce<true>(sendBuf, recvBuf, dataCount, HcclDataType::HCCL_DATA_TYPE_FP16, HcclReduceOp::HCCL_REDUCE_SUM);
+        const auto arHandleId1 = hccl.AllReduce<true>(
+            sendBuf, recvBuf, dataCount, HcclDataType::HCCL_DATA_TYPE_FP16, HcclReduceOp::HCCL_REDUCE_SUM);
         hccl.Wait(arHandleId1);
 
         // 第二次AllReduce的Tiling参数与第一次不同，在第一次Prepare之后再调用SetCcTilingV2
         if (hccl.SetCcTilingV2(offsetof(UserCustomTilingData, allReduceTiling2)) != HCCL_SUCCESS) {
             return;
         }
-        const auto arHandleId2 = hccl.AllReduce<true>(sendBuf, recvBuf, dataCount, HcclDataType::HCCL_DATA_TYPE_FP16, HcclReduceOp::HCCL_REDUCE_SUM);
+        const auto arHandleId2 = hccl.AllReduce<true>(
+            sendBuf, recvBuf, dataCount, HcclDataType::HCCL_DATA_TYPE_FP16, HcclReduceOp::HCCL_REDUCE_SUM);
         hccl.Wait(arHandleId2);
 
         hccl.Finalize();

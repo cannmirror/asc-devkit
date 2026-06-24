@@ -129,8 +129,11 @@ struct TransDataParams {
 };
 
 AscendC::Layout ncdhwLayout = AscendC::MakeLayout(AscendC::MakeShape(n, c, d, h, w), AscendC::MakeStride());
-AscendC::Layout fractalzLayout = AscendC::MakeLayout(AscendC::MakeShape(d, c1, h, w, n1, n0, c0), AscendC::MakeStride());
-AscendC::TransDataParams&lt;decltype(ncdhwLayout), decltype(fractalzLayout)&gt; params = {ncdhwLayout, fractalzLayout};
+AscendC::Layout fractalzLayout =
+    AscendC::MakeLayout(AscendC::MakeShape(d, c1, h, w, n1, n0, c0), AscendC::MakeStride());
+AscendC::TransDataParams& lt;
+decltype(ncdhwLayout), decltype(fractalzLayout)& gt;
+params = {ncdhwLayout, fractalzLayout};
 ```
 
 ## 返回值说明

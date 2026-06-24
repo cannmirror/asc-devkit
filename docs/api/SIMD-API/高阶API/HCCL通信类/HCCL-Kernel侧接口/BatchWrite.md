@@ -104,12 +104,12 @@ struct BatchWriteItem {
         GET_TILING_DATA_WITH_STRUCT(BatchWriteCustomTilingData, tilingData, tilingGM);
         GM_ADDR contextGM = AscendC::GetHcclContext<0>();
 
-        if constexpr (g_coreType == AscendC::AIV) {
+        if constexpr (g_coreType == AscendC::AIV) {
             Hccl hccl;
             hccl.InitV2(contextGM, &tilingData);
             hccl.SetCcTilingV2(offsetof(BatchWriteCustomTilingData, mc2CcTiling));
 
-            __gm__ BatchWriteItem *sendInfo = reinterpret_cast<__gm__ BatchWriteItem *>(workspace);
+            __gm__ BatchWriteItem* sendInfo = reinterpret_cast<__gm__ BatchWriteItem*>(workspace);
 
             // 需要提前将待发送的数据从inputGM搬运到localBuf所填的window地址上
             sendInfo->localBuf = hccl.GetWindowsOutAddr(hccl.GetRankId());
@@ -128,7 +128,7 @@ struct BatchWriteItem {
 
             // 确保cache中的数据已刷新到GM地址上
             GlobalTensor<int64_t> tempTensor;
-            tempTensor.SetGlobalBuffer((__gm__ int64_t *)sendInfo);
+            tempTensor.SetGlobalBuffer((__gm__ int64_t*)sendInfo);
             DataCacheCleanAndInvalid<int64_t, CacheLine::SINGLE_CACHE_LINE, DcciDst::CACHELINE_OUT>(tempTensor);
 
             auto handleId = hccl.BatchWrite<true>(sendInfo, 2U);
@@ -154,7 +154,7 @@ struct BatchWriteItem {
         context->SetTilingKey(1000);
 
         // 省略无关代码
-        SdmaBatchWriteCustomTilingData *tiling = context->GetTilingData<SdmaBatchWriteCustomTilingData>();
+        SdmaBatchWriteCustomTilingData* tiling = context->GetTilingData<SdmaBatchWriteCustomTilingData>();
         AscendC::Mc2CcTilingConfig mc2CcTilingConfig(groupName, 18, "BatchWrite=level0:fullmesh", 0);
         mc2CcTilingConfig.GetTiling(tiling->mc2InitTiling);
         mc2CcTilingConfig.GetTiling(tiling->mc2CcTiling);
@@ -178,7 +178,8 @@ struct BatchWriteItem {
         uint32_t res2[4];
     }; // 按接口的约定定义格式
 
-    extern "C" __global__ __aicore__ void BatchWrite_custom(GM_ADDR inputGM, GM_ADDR outputGM1, GM_ADDR outputGM2, GM_ADDR tilingGM)
+    extern "C" __global__ __aicore__ void BatchWrite_custom(
+        GM_ADDR inputGM, GM_ADDR outputGM1, GM_ADDR outputGM2, GM_ADDR tilingGM)
     {
         GM_ADDR userWS = GetUserWorkspace(workspace);
         if (userWS == nullptr) {
@@ -188,12 +189,12 @@ struct BatchWriteItem {
         GET_TILING_DATA_WITH_STRUCT(BatchWriteCustomTilingData, tilingData, tilingGM);
         GM_ADDR contextGM = AscendC::GetHcclContext<0>();
 
-        if constexpr (g_coreType == AscendC::AIV) {
+        if constexpr (g_coreType == AscendC::AIV) {
             Hccl hccl;
             hccl.InitV2(contextGM, &tilingData);
             hccl.SetCcTilingV2(offsetof(BatchWriteCustomTilingData, mc2CcTiling));
 
-            __gm__ BatchWriteItem *sendInfo = reinterpret_cast<__gm__ BatchWriteItem *>(inputGM);
+            __gm__ BatchWriteItem* sendInfo = reinterpret_cast<__gm__ BatchWriteItem*>(inputGM);
 
             sendInfo->type = 0UL;
             sendInfo->length = 64U;
@@ -212,7 +213,7 @@ struct BatchWriteItem {
 
             // 确保cache中的数据已刷新到GM地址上
             GlobalTensor<int64_t> tempTensor;
-            tempTensor.SetGlobalBuffer((__gm__ int64_t *)sendInfo);
+            tempTensor.SetGlobalBuffer((__gm__ int64_t*)sendInfo);
             DataCacheCleanAndInvalid<int64_t, CacheLine::SINGLE_CACHE_LINE, DcciDst::CACHELINE_OUT>(tempTensor);
 
             // 分别将两次拷贝部署在队列0、队列1上
@@ -248,7 +249,7 @@ struct BatchWriteItem {
         context->SetTilingKey(1000);
 
         // 省略无关代码
-        SdmaBatchWriteCustomTilingData *tiling = context->GetTilingData<SdmaBatchWriteCustomTilingData>();
+        SdmaBatchWriteCustomTilingData* tiling = context->GetTilingData<SdmaBatchWriteCustomTilingData>();
         AscendC::Mc2CcTilingConfig mc2CcTilingConfig(groupName, 18, "BatchWrite=level0:fullmesh", 0);
         mc2CcTilingConfig.SetCommBlockNum(24U);
         mc2CcTilingConfig.SetQueueNum(2U);

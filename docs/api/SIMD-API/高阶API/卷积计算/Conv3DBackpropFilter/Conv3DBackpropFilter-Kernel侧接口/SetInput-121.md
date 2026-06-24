@@ -29,7 +29,7 @@
 ## 函数原型
 
 ```
-__aicore__ inline void SetInput(const AscendC::GlobalTensor<SrcT> &input)
+__aicore__ inline void SetInput(const AscendC::GlobalTensor<SrcT>& input)
 ```
 
 ## 参数说明

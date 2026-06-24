@@ -162,49 +162,49 @@ AI CPU启动下发通信任务前，需获取固定的通信配置[Mc2Msg](#tabl
 ```
 // 声明Mc2Msg结构
 BEGIN_TILING_DATA_DEF(Mc2Msg)
-    TILING_DATA_FIELD_DEF(uint32_t, preparePosition);
-    TILING_DATA_FIELD_DEF(uint32_t, sendOff);
-    TILING_DATA_FIELD_DEF(uint32_t, recvOff);
-    TILING_DATA_FIELD_DEF(uint32_t, tailSendOff);
-    TILING_DATA_FIELD_DEF(uint32_t, tailRecvOff);
-    TILING_DATA_FIELD_DEF(uint64_t, sendCnt);
-    TILING_DATA_FIELD_DEF(uint32_t, recvCnt);
-    TILING_DATA_FIELD_DEF(uint32_t, tailSendCnt);
-    TILING_DATA_FIELD_DEF(uint32_t, tailRecvCnt);
-    TILING_DATA_FIELD_DEF(uint32_t, totalCnt);
-    TILING_DATA_FIELD_DEF(uint32_t, turnNum);
-    TILING_DATA_FIELD_DEF(uint32_t, tailNum);
-    TILING_DATA_FIELD_DEF(uint32_t, stride);
-    TILING_DATA_FIELD_DEF(uint32_t, workspaceOff);
-    TILING_DATA_FIELD_DEF(uint32_t, notifyOff);
-    TILING_DATA_FIELD_DEF(uint16_t, notifyBeginCnt);
-    TILING_DATA_FIELD_DEF(uint16_t, notifyEndCnt);
-    TILING_DATA_FIELD_DEF(uint8_t, useBufferType);
-    TILING_DATA_FIELD_DEF(uint8_t, funID);
-    TILING_DATA_FIELD_DEF(uint8_t, dataType);
-    TILING_DATA_FIELD_DEF(uint8_t, groupNum);
-    TILING_DATA_FIELD_DEF(uint8_t, reuseMode);
-    TILING_DATA_FIELD_DEF(uint8_t, commType);
-    TILING_DATA_FIELD_DEF(uint8_t, reduceOp);
-    TILING_DATA_FIELD_DEF(uint8_t, commOrder);
-    TILING_DATA_FIELD_DEF(uint8_t, waitPolicy);
-    TILING_DATA_FIELD_DEF(uint8_t, rspPolicy);
-    TILING_DATA_FIELD_DEF(uint8_t, exitPolicy);
-    TILING_DATA_FIELD_DEF(uint8_t, commAlg);
-    TILING_DATA_FIELD_DEF(uint8_t, taskType);
-    TILING_DATA_FIELD_DEF(uint8_t, debugMode);
-    TILING_DATA_FIELD_DEF(uint8_t, stepSize);
-    TILING_DATA_FIELD_DEF(uint8_t, sendArgIndex);
-    TILING_DATA_FIELD_DEF(uint8_t, recvArgIndex);
-    TILING_DATA_FIELD_DEF(uint8_t, commOutArgIndex);
-    TILING_DATA_FIELD_DEF(uint8_t, hasCommOut);
-    TILING_DATA_FIELD_DEF(uint8_t, reserve);
-    TILING_DATA_FIELD_DEF(uint32_t, reserve2);
+TILING_DATA_FIELD_DEF(uint32_t, preparePosition);
+TILING_DATA_FIELD_DEF(uint32_t, sendOff);
+TILING_DATA_FIELD_DEF(uint32_t, recvOff);
+TILING_DATA_FIELD_DEF(uint32_t, tailSendOff);
+TILING_DATA_FIELD_DEF(uint32_t, tailRecvOff);
+TILING_DATA_FIELD_DEF(uint64_t, sendCnt);
+TILING_DATA_FIELD_DEF(uint32_t, recvCnt);
+TILING_DATA_FIELD_DEF(uint32_t, tailSendCnt);
+TILING_DATA_FIELD_DEF(uint32_t, tailRecvCnt);
+TILING_DATA_FIELD_DEF(uint32_t, totalCnt);
+TILING_DATA_FIELD_DEF(uint32_t, turnNum);
+TILING_DATA_FIELD_DEF(uint32_t, tailNum);
+TILING_DATA_FIELD_DEF(uint32_t, stride);
+TILING_DATA_FIELD_DEF(uint32_t, workspaceOff);
+TILING_DATA_FIELD_DEF(uint32_t, notifyOff);
+TILING_DATA_FIELD_DEF(uint16_t, notifyBeginCnt);
+TILING_DATA_FIELD_DEF(uint16_t, notifyEndCnt);
+TILING_DATA_FIELD_DEF(uint8_t, useBufferType);
+TILING_DATA_FIELD_DEF(uint8_t, funID);
+TILING_DATA_FIELD_DEF(uint8_t, dataType);
+TILING_DATA_FIELD_DEF(uint8_t, groupNum);
+TILING_DATA_FIELD_DEF(uint8_t, reuseMode);
+TILING_DATA_FIELD_DEF(uint8_t, commType);
+TILING_DATA_FIELD_DEF(uint8_t, reduceOp);
+TILING_DATA_FIELD_DEF(uint8_t, commOrder);
+TILING_DATA_FIELD_DEF(uint8_t, waitPolicy);
+TILING_DATA_FIELD_DEF(uint8_t, rspPolicy);
+TILING_DATA_FIELD_DEF(uint8_t, exitPolicy);
+TILING_DATA_FIELD_DEF(uint8_t, commAlg);
+TILING_DATA_FIELD_DEF(uint8_t, taskType);
+TILING_DATA_FIELD_DEF(uint8_t, debugMode);
+TILING_DATA_FIELD_DEF(uint8_t, stepSize);
+TILING_DATA_FIELD_DEF(uint8_t, sendArgIndex);
+TILING_DATA_FIELD_DEF(uint8_t, recvArgIndex);
+TILING_DATA_FIELD_DEF(uint8_t, commOutArgIndex);
+TILING_DATA_FIELD_DEF(uint8_t, hasCommOut);
+TILING_DATA_FIELD_DEF(uint8_t, reserve);
+TILING_DATA_FIELD_DEF(uint32_t, reserve2);
 END_TILING_DATA_DEF;
 REGISTER_TILING_DATA_CLASS(Mc2MsgOp, Mc2Msg)
 
 BEGIN_TILING_DATA_DEF(AllGatherMatmulCustomTilingData)
-    TILING_DATA_FIELD_DEF_STRUCT(Mc2Msg, msg);
+TILING_DATA_FIELD_DEF_STRUCT(Mc2Msg, msg);
 END_TILING_DATA_DEF;
 ```
 

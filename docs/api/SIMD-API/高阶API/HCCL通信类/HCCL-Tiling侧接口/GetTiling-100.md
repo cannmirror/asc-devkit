@@ -7,11 +7,11 @@
 ## 函数原型
 
 ```
-uint32_t GetTiling(::Mc2InitTiling &tiling)
+uint32_t GetTiling(::Mc2InitTiling& tiling)
 ```
 
 ```
-uint32_t GetTiling(::Mc2CcTiling &tiling)
+uint32_t GetTiling(::Mc2CcTiling& tiling)
 ```
 
 ## 参数说明
@@ -34,7 +34,7 @@ uint32_t GetTiling(::Mc2CcTiling &tiling)
 ## 调用示例
 
 ```
-const char *groupName = "testGroup";
+const char* groupName = "testGroup";
 uint32_t opType = HCCL_CMD_REDUCE_SCATTER;
 std::string algConfig = "ReduceScatter=level0:fullmesh";
 uint32_t reduceType = HCCL_REDUCE_SUM;

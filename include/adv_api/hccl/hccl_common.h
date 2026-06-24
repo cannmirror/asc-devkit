@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 /*!
  * \file hccl_common.h
  * \brief
@@ -16,10 +16,10 @@
 
 #include <cstdint>
 namespace AscendC {
-constexpr uint32_t HCCL_GROUP_ID_0 = 0;  // communication group id, 0 for only one communication group
+constexpr uint32_t HCCL_GROUP_ID_0 = 0; // communication group id, 0 for only one communication group
 using HcclHandle = int8_t;
 
-enum class HcclCMDType {  // use enum class to differentiate from enum AicpuComType
+enum class HcclCMDType { // use enum class to differentiate from enum AicpuComType
     HCCL_CMD_INVALID = 0,
     HCCL_CMD_BROADCAST = 1,
     HCCL_CMD_ALLREDUCE,
@@ -62,17 +62,9 @@ enum class MC2_BUFFER_LOCATION {
     MC2_BUFFER_TYPE_END
 };
 
-enum HcclServerType {
-    HCCL_SERVER_TYPE_AICPU = 0,
-    HCCL_SERVER_TYPE_CCU = 5,
-    HCCL_SERVER_TYPE_END
-};
+enum HcclServerType { HCCL_SERVER_TYPE_AICPU = 0, HCCL_SERVER_TYPE_CCU = 5, HCCL_SERVER_TYPE_END };
 
-enum class CoreType: uint8_t {
-    DEFAULT,
-    ON_AIV,
-    ON_AIC
-};
+enum class CoreType : uint8_t { DEFAULT, ON_AIV, ON_AIC };
 
 struct HcclServerConfig {
     CoreType type;
@@ -80,34 +72,34 @@ struct HcclServerConfig {
 };
 
 enum HcclDataType {
-    HCCL_DATA_TYPE_INT8 = 0,   // int8
-    HCCL_DATA_TYPE_INT16 = 1,  // int16
-    HCCL_DATA_TYPE_INT32 = 2,  // int32
-    HCCL_DATA_TYPE_FP16 = 3,   // fp16
-    HCCL_DATA_TYPE_FP32 = 4,   // fp32
-    HCCL_DATA_TYPE_INT64 = 5,  // int64
-    HCCL_DATA_TYPE_UINT64 = 6, // uint64
-    HCCL_DATA_TYPE_UINT8 = 7,  // uint8
-    HCCL_DATA_TYPE_UINT16 = 8, // uint16
-    HCCL_DATA_TYPE_UINT32 = 9, // uint32
-    HCCL_DATA_TYPE_FP64 = 10,  // fp64
-    HCCL_DATA_TYPE_BFP16 = 11, // bfp16
-    HCCL_DATA_TYPE_INT128 = 12, // int128
-    HCCL_DATA_TYPE_HIF8 = 14, // hif8
-    HCCL_DATA_TYPE_FP8E4M3 = 15, // fp8e4m3
-    HCCL_DATA_TYPE_FP8E5M2 = 16, // fp8e5m2
-    HCCL_DATA_TYPE_FP8E8M0 = 17, // fp8e8m0
-    HCCL_DATA_TYPE_MXFP8 = 18, // mxfp8
-    HCCL_DATA_TYPE_RESERVED = 255    // reserved
+    HCCL_DATA_TYPE_INT8 = 0,      // int8
+    HCCL_DATA_TYPE_INT16 = 1,     // int16
+    HCCL_DATA_TYPE_INT32 = 2,     // int32
+    HCCL_DATA_TYPE_FP16 = 3,      // fp16
+    HCCL_DATA_TYPE_FP32 = 4,      // fp32
+    HCCL_DATA_TYPE_INT64 = 5,     // int64
+    HCCL_DATA_TYPE_UINT64 = 6,    // uint64
+    HCCL_DATA_TYPE_UINT8 = 7,     // uint8
+    HCCL_DATA_TYPE_UINT16 = 8,    // uint16
+    HCCL_DATA_TYPE_UINT32 = 9,    // uint32
+    HCCL_DATA_TYPE_FP64 = 10,     // fp64
+    HCCL_DATA_TYPE_BFP16 = 11,    // bfp16
+    HCCL_DATA_TYPE_INT128 = 12,   // int128
+    HCCL_DATA_TYPE_HIF8 = 14,     // hif8
+    HCCL_DATA_TYPE_FP8E4M3 = 15,  // fp8e4m3
+    HCCL_DATA_TYPE_FP8E5M2 = 16,  // fp8e5m2
+    HCCL_DATA_TYPE_FP8E8M0 = 17,  // fp8e8m0
+    HCCL_DATA_TYPE_MXFP8 = 18,    // mxfp8
+    HCCL_DATA_TYPE_RESERVED = 255 // reserved
 };
 
-enum class ScopeType: uint8_t {
+enum class ScopeType : uint8_t {
     ALL,
     QUEUE,
     BLOCK,
 
     INVALID_TYPE
 };
-}  // namespace AscendC
+} // namespace AscendC
 
-#endif  // LIB_HCCL_HCCL_COMMON_H
+#endif // LIB_HCCL_HCCL_COMMON_H

@@ -39,7 +39,7 @@ tiling.SetBType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND, mat
 tiling.SetCType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);
 tiling.SetBiasType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);
 tiling.SetShape(1024, 1024, 1024);
-tiling.SetAlignSplit(-1, 64, -1);  // 设置singleCoreM/singleCoreN/singleCoreK的对齐值
+tiling.SetAlignSplit(-1, 64, -1); // 设置singleCoreM/singleCoreN/singleCoreK的对齐值
 tiling.SetOrgShape(1024, 1024, 1024);
 tiling.SetBias(true);
 tiling.SetBufferSpace(-1, -1, -1);

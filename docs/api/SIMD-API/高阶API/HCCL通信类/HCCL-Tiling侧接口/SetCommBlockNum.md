@@ -30,7 +30,7 @@ uint32_t SetCommBlockNum(uint16_t num)
 ## 调用示例
 
 ```
-const char *groupName = "testGroup";
+const char* groupName = "testGroup";
 uint32_t opType = HCCL_CMD_BATCH_WRITE;
 std::string algConfig = "BatchWrite=level0:fullmesh";
 uint32_t reduceType = HCCL_REDUCE_SUM;

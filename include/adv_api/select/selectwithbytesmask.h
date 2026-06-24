@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file selectwithbytesmask.h
@@ -22,8 +22,8 @@
 #define LIB_SELECT_SELECT_WITH_BYTES_MASK_H
 #include "kernel_tensor.h"
 #include "../../../impl/basic_api/kernel_utils.h"
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || \
-    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#if defined(__NPU_ARCH__) && \
+    (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #include "../../../impl/adv_api/detail/select/selectwithbytesmask/selectwithbytesmask_3510_impl.h"
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
 #include "../../../impl/adv_api/detail/select/selectwithbytesmask/selectwithbytesmask_impl.h"
@@ -52,13 +52,14 @@ namespace AscendC {
  * \param [in] info: shape information of input/mask tensors
  */
 template <typename T, typename U, bool isReuseMask = true>
-__ASC_USE_RESERVED_UBUF__(2201,
-    "SelectWithBytesMask is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void Select(const LocalTensor<T>& dst, const LocalTensor<T>& src0, T src1, const LocalTensor<U>& mask,
+__ASC_USE_RESERVED_UBUF__(
+    2201, "SelectWithBytesMask is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void Select(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src0, T src1, const LocalTensor<U>& mask,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const SelectWithBytesMaskShapeInfo& info)
 {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
-__NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+                              __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     SelectWithBytesMaskImpl<T, U, isReuseMask, false>(dst, src0, src1, mask, sharedTmpBuffer, info);
 #endif
 }
@@ -84,13 +85,14 @@ __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
  * \param [in] info: shape information of input/mask tensors
  */
 template <typename T, typename U, bool isReuseMask = true>
-__ASC_USE_RESERVED_UBUF__(2201,
-    "SelectWithBytesMask is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void Select(const LocalTensor<T>& dst, T src0, const LocalTensor<T>& src1, const LocalTensor<U>& mask,
+__ASC_USE_RESERVED_UBUF__(
+    2201, "SelectWithBytesMask is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void Select(
+    const LocalTensor<T>& dst, T src0, const LocalTensor<T>& src1, const LocalTensor<U>& mask,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const SelectWithBytesMaskShapeInfo& info)
 {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
-__NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+                              __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     SelectWithBytesMaskImpl<T, U, isReuseMask, true>(dst, src1, src0, mask, sharedTmpBuffer, info);
 #endif
 }

@@ -65,7 +65,7 @@ __aicore__ inline void SetQuantScalar(const uint64_t quantScalar)
 
 ```
 REGIST_MATMUL_OBJ(&pipe, GetSysWorkSpacePtr(), mm, &tiling);
-float tmp = 0.1;  // 输出gm时会乘以0.1
+float tmp = 0.1; // 输出gm时会乘以0.1
 // 将浮点值的量化或反量化系数，转换为uint64_t类型
 uint64_t ans = static_cast<uint64_t>(*reinterpret_cast<int32_t*>(&tmp));
 mm.SetQuantScalar(ans);

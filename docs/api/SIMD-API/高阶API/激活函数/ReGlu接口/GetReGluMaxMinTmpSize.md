@@ -37,10 +37,10 @@ void GetReGluMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, c
 
 ```
 // 算子输入的数据类型为half，isReuseSource传入默认值false
-const std::vector<int64_t> srcShapeDims = { 8, 128 };
+const std::vector<int64_t> srcShapeDims = {8, 128};
 const auto srcShape = ge::Shape(srcShapeDims);
 uint32_t typeSize = 2;
 uint32_t maxValue = 0;
 uint32_t minValue = 0;
-AscendC::GetReGluMaxMinTmpSize(srcShape, typeSize, isReuseSource, maxValue,  minValue);
+AscendC::GetReGluMaxMinTmpSize(srcShape, typeSize, isReuseSource, maxValue, minValue);
 ```

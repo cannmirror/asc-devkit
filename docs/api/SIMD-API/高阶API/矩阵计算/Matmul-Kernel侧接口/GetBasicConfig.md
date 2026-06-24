@@ -62,8 +62,7 @@ constexpr MatmulConfig MM_CFG = GetBasicConfig(
     /* basicK              */ 64,
     /* intrinsicsLimit     */ false,
     /* batchLoop           */ false,
-    /* batchMode           */ BatchMode::BATCH_LESS_THAN_L1
-);
+    /* batchMode           */ BatchMode::BATCH_LESS_THAN_L1);
 // 常规Matmul计算，最后输出使用自定义BasicBlock模板的计算结果
 AscendC::Matmul<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG> mm;
 REGIST_MATMUL_OBJ(&pipe, GetSysWorkSpacePtr(), mm, &tiling);

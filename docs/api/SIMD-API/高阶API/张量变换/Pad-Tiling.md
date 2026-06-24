@@ -54,11 +54,11 @@ void PadTilingFunc(const ge::Shape srcShape, const ge::Shape oriSrcShape, const 
 1.  将PadTiling结构体参数增加至TilingData结构体，作为TilingData结构体的一个字段。
 
     ```
-    BEGIN_TILING_DATA_DEF(TilingData)               // 注册一个tiling的类，以tiling的名字作为入参
-      TILING_DATA_FIELD_DEF(uint32_t, totalLength); // 添加tiling字段，总计算数据量
-      TILING_DATA_FIELD_DEF(uint32_t, tileNum);     // 添加tiling字段，每个核上总计算数据分块个数
-      ...                                           // 添加其他tiling字段
-      TILING_DATA_FIELD_DEF_STRUCT(PadTiling, padTilingData); // 将PadTiling结构体参数增加至TilingData结构体
+    BEGIN_TILING_DATA_DEF(TilingData)             // 注册一个tiling的类，以tiling的名字作为入参
+        TILING_DATA_FIELD_DEF(uint32_t, totalLength); // 添加tiling字段，总计算数据量
+        TILING_DATA_FIELD_DEF(uint32_t, tileNum);     // 添加tiling字段，每个核上总计算数据分块个数
+        ...                                           // 添加其他tiling字段
+        TILING_DATA_FIELD_DEF_STRUCT(PadTiling, padTilingData); // 将PadTiling结构体参数增加至TilingData结构体
     END_TILING_DATA_DEF;
     ```
 
@@ -77,9 +77,9 @@ void PadTilingFunc(const ge::Shape srcShape, const ge::Shape oriSrcShape, const 
         tiling.set_tileNum(TILE_NUM);
         // 设置其他Tiling参数
         ...
-        std::vector<int64_t> shapeVec = {320,63};
+        std::vector<int64_t> shapeVec = {320, 63};
         ge::Shape srcShape(shapeVec);
-        std::vector<int64_t> oriShapeVec = {320,63};
+        std::vector<int64_t> oriShapeVec = {320, 63};
         ge::Shape oriSrcShape(oriShapeVec);
 
         uint32_t maxValue = 0;
@@ -87,7 +87,7 @@ void PadTilingFunc(const ge::Shape srcShape, const ge::Shape oriSrcShape, const 
         AscendC::GetPadMaxMinTmpSize(srcShape, sizeof(half), maxValue, minValue);
         // 本样例中仅作为样例说明，获取最小值并传入，来保证功能正确，开发者可以根据需要传入合适的空间大小
         const uint32_t localWorkSpaceSize = minValue;
-        AscendC::PadTilingFunc(srcShape, oriSrcShape, localWorkSpaceSize , sizeof(half), tiling.padTilingData);
+        AscendC::PadTilingFunc(srcShape, oriSrcShape, localWorkSpaceSize, sizeof(half), tiling.padTilingData);
         // 其他逻辑
         ...
         tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());
@@ -105,7 +105,7 @@ void PadTilingFunc(const ge::Shape srcShape, const ge::Shape oriSrcShape, const 
     {
         GET_TILING_DATA(tilingData, tiling);
         KernelFunc op;
-        op.Init(x, y, z, tilingData.totalLength, tilingData.tileNum,tilingData.padTilingData);
+        op.Init(x, y, z, tilingData.totalLength, tilingData.tileNum, tilingData.padTilingData);
         if (TILING_KEY_IS(1)) {
             op.Process();
         }

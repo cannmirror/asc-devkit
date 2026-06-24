@@ -94,12 +94,7 @@ struct AntiQuantizeConfig {
     bool hasOffset;
     int32_t kDim = 1;
 };
-enum class AntiQuantizePolicy : int32_t {
-    PER_TENSOR,
-    PER_CHANNEL,
-    PER_TOKEN,
-    PER_GROUP
-};
+enum class AntiQuantizePolicy : int32_t { PER_TENSOR, PER_CHANNEL, PER_TOKEN, PER_GROUP };
 ```
 
 **表2**  接口参数说明

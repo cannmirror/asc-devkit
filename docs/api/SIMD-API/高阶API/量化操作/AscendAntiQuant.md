@@ -143,7 +143,7 @@ PER\_TOKEN/PER\_GROUP b8/float4场景的计算逻辑如下：
 
         ```
         template <typename InputDataType, typename OutputDataType, bool isTranspose>
-        __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType> &dst, const LocalTensor<InputDataType> &src, const OutputDataType scale, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t k, const AntiQuantShapeInfo& shapeInfo = {})
+        __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, const LocalTensor<InputDataType>& src, const OutputDataType scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t k, const AntiQuantShapeInfo& shapeInfo = {})
         ```
 
     -   PER\_GROUP float4场景（按组量化）
@@ -227,9 +227,9 @@ PER\_TOKEN/PER\_GROUP b8/float4场景的计算逻辑如下：
 
 ```
 struct AscendAntiQuantConfig {
-        bool hasOffset;
-        bool isTranspose;
-        int32_t kDim = 1;
+    bool hasOffset;
+    bool isTranspose;
+    int32_t kDim = 1;
 };
 ```
 
@@ -269,10 +269,10 @@ struct AscendAntiQuantConfig {
 
 ```
 struct AntiQuantShapeInfo {
-    uint32_t offsetHeight{0};  // offset的高
+    uint32_t offsetHeight{0}; // offset的高
     uint32_t offsetWidth{0};  // offset的宽
     uint32_t scaleHeight{0};  // scale的高
-    uint32_t scaleWidth{0};  // scale的宽
+    uint32_t scaleWidth{0};   // scale的宽
 };
 ```
 
@@ -289,10 +289,10 @@ struct AntiQuantShapeInfo {
 
 ```
 struct AscendAntiQuantParam {
-        uint32_t m;
-        uint32_t n;
-        uint32_t calCount;
-        uint32_t groupSize = 0;
+    uint32_t m;
+    uint32_t n;
+    uint32_t calCount;
+    uint32_t groupSize = 0;
 }
 ```
 
@@ -392,7 +392,8 @@ struct AscendAntiQuantParam {
 // k：k轴长度
 // shapeInfo：offsetLocal和scaleLocal张量的shape信息
 AscendC::AntiQuantShapeInfo shapeInfo = {1, elementCountOfOffset, 1, elementCountOfOffset};
-AscendC::AscendAntiQuant<InputType, OutType, false>(dstLocal, srcLocal, offsetLocal, scaleLocal, sharedTmpBuffer, k, shapeInfo);
+AscendC::AscendAntiQuant<InputType, OutType, false>(
+    dstLocal, srcLocal, offsetLocal, scaleLocal, sharedTmpBuffer, k, shapeInfo);
 ```
 
 结果示例如下：

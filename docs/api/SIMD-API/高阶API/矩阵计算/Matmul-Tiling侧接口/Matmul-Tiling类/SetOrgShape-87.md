@@ -41,5 +41,5 @@ auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInf
 matmul_tiling::MatmulApiTiling tiling(ascendcPlatform);
 
 tiling.SetShape(1024, 1024, 1024);
-tiling.SetOrgShape(1024, 1024, 1024);  // 设置原始完整的形状
+tiling.SetOrgShape(1024, 1024, 1024); // 设置原始完整的形状
 ```

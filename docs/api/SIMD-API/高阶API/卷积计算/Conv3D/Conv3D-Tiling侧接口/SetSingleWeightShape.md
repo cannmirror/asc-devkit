@@ -32,7 +32,7 @@ void SetSingleWeightShape(int64_t singleCi, int64_t singleKd, int64_t singleKh, 
 ```
 // 实例化Conv3D Api
 auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
-Conv3dTilingApi::Conv3dTiling conv3dApiTiling(ascendcPlatform );
+Conv3dTilingApi::Conv3dTiling conv3dApiTiling(ascendcPlatform);
 conv3dApiTiling.SetSingleWeightShape(singleCi, singleKd, singleKh, singleKw);
 ```
 

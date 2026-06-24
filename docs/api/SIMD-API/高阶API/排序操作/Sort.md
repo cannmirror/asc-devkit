@@ -206,12 +206,12 @@
 
     ```
     enum class SortType {
-        RADIX_SORT,  // 使用基排序算法实现
-        MERGE_SORT   // 使用归并排序算法实现
+        RADIX_SORT, // 使用基排序算法实现
+        MERGE_SORT  // 使用归并排序算法实现
     };
     struct SortConfig {
         SortType type = SortType::RADIX_SORT; // 排序算法
-        bool isDescend = false; // 是否降序排序，默认值为false，输出结果升序排序
+        bool isDescend = false;               // 是否降序排序，默认值为false，输出结果升序排序
     };
     ```
 

@@ -38,8 +38,8 @@ AI CPU启动下发通信任务前，需获取固定的通信配置，如[表1](#
 | skipBufferWindowCopy | 预留字段，不需要配置。 |
 | stepSize | 预留字段，不需要配置。 |
 | reserved | 预留字段，不需要配置。 |
-| groupName | 当前通信任务所在的通信域。char *类型，支持最大长度128。 |
-| algConfig | 通信算法配置。char *类型，支持最大长度128。<br><br>当前支持的取值为：<br>"AllGather=level0:doublering"：AllGather通信任务。<br>"ReduceScatter=level0:doublering"：ReduceScatter通信任务。<br>"AlltoAll=level0:fullmesh;level1:pairwise"：AlltoAllV通信任务。 |
+| groupName | 当前通信任务所在的通信域。char*类型，支持最大长度128。 |
+| algConfig | 通信算法配置。char*类型，支持最大长度128。<br><br>当前支持的取值为：<br>"AllGather=level0:doublering"：AllGather通信任务。<br>"ReduceScatter=level0:doublering"：ReduceScatter通信任务。<br>"AlltoAll=level0:fullmesh;level1:pairwise"：AlltoAllV通信任务。 |
 | opType | 表示通信任务类型。uint32_t类型，取值详见[HcclCMDType](HCCL-Tiling构造函数.md#table2469980529)参数说明。 |
 | reduceType | 归约操作类型，仅对有归约操作的通信任务生效。uint32_t类型，取值详见[HcclReduceOp](../HCCL-Kernel侧接口/HCCL使用说明.md#table2469980529)参数说明。 |
 
@@ -56,7 +56,7 @@ AI CPU启动下发通信任务前，需获取固定的通信配置，如[表1](#
 namespace ops {
 class AlltoallvDoubleCommCustom : public OpDef {
 public:
-    explicit AlltoallvDoubleCommCustom(const char *name) : OpDef(name)
+    explicit AlltoallvDoubleCommCustom(const char* name) : OpDef(name)
     {
         this->Input("x1")
             .ParamType(REQUIRED)
@@ -89,7 +89,7 @@ public:
     }
 };
 OP_ADD(AlltoallvDoubleCommCustom);
-}
+} // namespace ops
 ```
 
 如下为该自定义算子Tiling Data声明和实现。
@@ -99,10 +99,12 @@ OP_ADD(AlltoallvDoubleCommCustom);
 ```
 // HCCL TilingData声明
 BEGIN_TILING_DATA_DEF(AlltoallvDoubleCommCustomTilingData)
-    TILING_DATA_FIELD_DEF(uint32_t, version);                           // HCCL tiling结构体的版本，设为2
-    TILING_DATA_FIELD_DEF(uint32_t, mc2HcommCnt);                       // 各通信域中的通信算子总个数，当前最多支持3个。AlltoallvDoubleCommCustom算子kernel实现中每个通信域中均用了1个AlltoAllV，因此设为2
-    TILING_DATA_FIELD_DEF_STRUCT(Mc2ServerCfg, serverCfg);    // server通用参数配置，融合算子级
-    TILING_DATA_FIELD_DEF_STRUCT(Mc2HcommCfg, hcom1);         // 各通信域中的每个通信任务参数配置，算子级，共有mc2HcommCnt个Mc2HcommCfg
+    TILING_DATA_FIELD_DEF(uint32_t, version); // HCCL tiling结构体的版本，设为2
+    // 各通信域中的通信算子总个数，当前最多支持3个。AlltoallvDoubleCommCustom算子kernel实现中每个通信域中均用了1个AlltoAllV，因此设为2
+    TILING_DATA_FIELD_DEF(uint32_t, mc2HcommCnt);
+    TILING_DATA_FIELD_DEF_STRUCT(Mc2ServerCfg, serverCfg); // server通用参数配置，融合算子级
+    // 各通信域中的每个通信任务参数配置，算子级，共有mc2HcommCnt个Mc2HcommCfg
+    TILING_DATA_FIELD_DEF_STRUCT(Mc2HcommCfg, hcom1); 
     TILING_DATA_FIELD_DEF_STRUCT(Mc2HcommCfg, hcom2);
 END_TILING_DATA_DEF;
 
@@ -111,10 +113,10 @@ REGISTER_TILING_DATA_CLASS(AlltoallvDoubleCommCustom, AlltoallvDoubleCommCustomT
 
 ```
 // HCCL TilingData配置片段
-static ge::graphStatus AlltoAllVDoubleCommCustomTilingFunc(gert::TilingContext *context)
+static ge::graphStatus AlltoAllVDoubleCommCustomTilingFunc(gert::TilingContext* context)
 {
-    char *group1 = const_cast<char *>(context->GetAttrs()->GetAttrPointer<char>(0));
-    char *group2 = const_cast<char *>(context->GetAttrs()->GetAttrPointer<char>(1));
+    char* group1 = const_cast<char*>(context->GetAttrs()->GetAttrPointer<char>(0));
+    char* group2 = const_cast<char*>(context->GetAttrs()->GetAttrPointer<char>(1));
 
     AlltoallvDoubleCommCustomTilingData tiling;
     tiling.set_version(2);
@@ -135,5 +137,4 @@ static ge::graphStatus AlltoAllVDoubleCommCustomTilingFunc(gert::TilingContext *
     context->GetRawTilingData()->SetDataSize(tiling.GetDataSize());
     return ge::GRAPH_SUCCESS;
 }
-
 ```

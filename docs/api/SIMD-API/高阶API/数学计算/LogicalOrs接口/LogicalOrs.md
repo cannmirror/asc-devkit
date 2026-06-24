@@ -84,7 +84,7 @@ uint32_t count = 512; // 参与计算的元素个数
 // 标量在后
 AscendC::LogicalOrs(dst, src0, src1, count);
 // 标量在前
-static constexpr AscendC::LogicalOrsConfig config= { false, 0 };
+static constexpr AscendC::LogicalOrsConfig config = {false, 0};
 AscendC::LogicalOrs<config>(dst, src0, src1, count);
 ```
 

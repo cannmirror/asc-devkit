@@ -57,12 +57,14 @@ __aicore__ inline HcclHandle AlltoAllvWrite(GM_ADDR usrIn, GM_ADDR sendOffsets, 
 ## 调用示例
 
 ```
-extern "C" __global__ __aicore__ void alltoallvwrite_custom(GM_ADDR xGM, GM_ADDR yGM, GM_ADDR workspaceGM, GM_ADDR tilingGM) {
-
-    REGISTER_TILING_DEFAULT(AllToAllVWriteCustomTilingData); //AllToAllVWriteCustomTilingData为对应算子头文件定义的结构体
+extern "C" __global__ __aicore__ void alltoallvwrite_custom(
+    GM_ADDR xGM, GM_ADDR yGM, GM_ADDR workspaceGM, GM_ADDR tilingGM)
+{
+    REGISTER_TILING_DEFAULT(
+        AllToAllVWriteCustomTilingData); // AllToAllVWriteCustomTilingData为对应算子头文件定义的结构体
     GET_TILING_DATA_WITH_STRUCT(AllToAllVWriteCustomTilingData, tilingData, tilingGM);
 
-    auto &&cfg       = tilingData.param;
+    auto&& cfg = tilingData.param;
     uint32_t M = cfg.M;
     uint32_t K = cfg.K;
     uint32_t dataType = cfg.dataType;
@@ -79,9 +81,10 @@ extern "C" __global__ __aicore__ void alltoallvwrite_custom(GM_ADDR xGM, GM_ADDR
     uint64_t perRankDataSize_ = M * K * dataTypeSize / rankDim;
     GM_ADDR sendSizeGM_ = workspaceGM;
     GM_ADDR sendOffsetGM_ = sendSizeGM_ + rankDim * sizeof(uint64_t) * 2;
-    __gm__ uint64_t *sendSizes = reinterpret_cast<__gm__ uint64_t *>(sendSizeGM_);
-    __gm__ uint64_t *sendOffsets = reinterpret_cast<__gm__ uint64_t *>(sendOffsetGM_);
-    for (uint32_t i = 0U; i < rankDim; i++) { // 当前ccu通信都是双die，所以sendSize和sendOffset需要等分切成die0和die1的数据
+    __gm__ uint64_t* sendSizes = reinterpret_cast<__gm__ uint64_t*>(sendSizeGM_);
+    __gm__ uint64_t* sendOffsets = reinterpret_cast<__gm__ uint64_t*>(sendOffsetGM_);
+    // 当前ccu通信都是双die，所以sendSize和sendOffset需要等分切成die0和die1的数据
+    for (uint32_t i = 0U; i < rankDim; i++) { 
         sendSizes[i] = perRankDataSize_ / 2;
         sendSizes[i + rankDim] = perRankDataSize_ - perRankDataSize_ / 2;
         sendOffsets[i] = i * perRankDataSize_;
@@ -94,7 +97,7 @@ extern "C" __global__ __aicore__ void alltoallvwrite_custom(GM_ADDR xGM, GM_ADDR
             AscendC::HcclHandle handleId = -1;
             handleId = hccl.AlltoAllvWrite<true>(xGM, sendOffsetGM_, sendSizeGM_, remoteWinOffset, localDataSize);
             hccl.Wait(handleId);
-            AscendC::SyncAll<true>();  // 全AIV核同步，防止0核执行过快，提前调用hccl.Finalize()接口，导致其他核Wait卡死
+            AscendC::SyncAll<true>(); // 全AIV核同步，防止0核执行过快，提前调用hccl.Finalize()接口，导致其他核Wait卡死
             hccl.Finalize();
         }
     }

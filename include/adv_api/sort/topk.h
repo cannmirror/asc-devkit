@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file topk.h
@@ -31,8 +31,8 @@
 #endif // ASCENDC_CPU_DEBUG
 #include "../../../impl/adv_api/detail/api_check/kernel_api_check.h"
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || \
-    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
+                              __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
 #include "../../../impl/adv_api/detail/sort/topk/topk_common_impl.h"
 #endif
@@ -41,16 +41,16 @@
 #include "../../../impl/adv_api/detail/sort/topk/topk_v220_impl.h"
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 #include "../../../impl/adv_api/detail/sort/topk/topk_v200_impl.h"
-#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || \
-    __NPU_ARCH__ == 3113)
+#elif defined(__NPU_ARCH__) && \
+    (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #include "../../../impl/adv_api/detail/sort/topk/topk_3510_impl.h"
 #endif
 #endif
 
 namespace AscendC {
 #pragma begin_pipe(V)
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || \
-    __NPU_ARCH__ == 3113)
+#if defined(__NPU_ARCH__) && \
+    (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 /*
  * @ingroup TopK
  * @brief Get the top k maximum or minimum values and their corresponding indices of the last dimension.
@@ -78,10 +78,12 @@ namespace AscendC {
  * @param [in] isLargest: Descending or ascending order. The value true indicates descending order,
                           and the value false indicates ascending order.
  */
-template <typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false,
+template <
+    typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false,
     enum TopKMode topkMode = TopKMode::TOPK_NORMAL, const TopKConfig& config = defaultTopKConfig>
-__aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal,
-    const LocalTensor<T>& srcLocal, const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal,
+__aicore__ inline void TopK(
+    const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& srcLocal,
+    const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal,
     const LocalTensor<uint8_t>& tmpLocal, const int32_t k, const TopkTiling& tilling, const TopKInfo& topKInfo,
     const bool isLargest = true)
 {
@@ -96,19 +98,23 @@ __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTens
     LocalTensor<T> tempBuffer = tmpLocal.template ReinterpretCast<T>();
 
     if constexpr (config.algo == TopKAlgo::RADIX_SELECT) {
-        static_assert((SupportType<T, uint8_t, int8_t, uint16_t, int16_t, half, float, bfloat16_t, uint32_t, int32_t,
-                          uint64_t, int64_t>()),
+        static_assert(
+            (SupportType<
+                T, uint8_t, int8_t, uint16_t, int16_t, half, float, bfloat16_t, uint32_t, int32_t, uint64_t,
+                int64_t>()),
             "Type must be uint8_t/int8_t/uint16_t/int16_t/half/float/bfloat16_t/uint32_t/int32_t/uint64_t/int64_t in "
             "topk radix select algorithm.");
         static_assert((!isHasfinish), "Topk radix select algorithm cannot support to set finish flag.");
         if constexpr (topkMode == TopKMode::TOPK_NORMAL) {
-            Reg::RadixSelectTopK::TopKNormal<T, isInitIndex, isHasfinish, isReuseSrc, config>(dstValueLocal,
-                dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, tempBuffer, k, tilling, topKInfo, isLargest);
+            Reg::RadixSelectTopK::TopKNormal<T, isInitIndex, isHasfinish, isReuseSrc, config>(
+                dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, tempBuffer, k, tilling, topKInfo,
+                isLargest);
         }
 
         if constexpr (topkMode == TopKMode::TOPK_NSMALL) {
-            Reg::RadixSelectTopK::TopKNSmall<T, isInitIndex, isHasfinish, isReuseSrc, config>(dstValueLocal,
-                dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, tempBuffer, k, tilling, topKInfo, isLargest);
+            Reg::RadixSelectTopK::TopKNSmall<T, isInitIndex, isHasfinish, isReuseSrc, config>(
+                dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, tempBuffer, k, tilling, topKInfo,
+                isLargest);
         }
         return;
     }
@@ -116,12 +122,14 @@ __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTens
     if constexpr (config.algo == TopKAlgo::MERGE_SORT) {
         static_assert((SupportType<T, half, float>()), "Type must be half/float in topk merge select algorithm.");
         if constexpr (topkMode == TopKMode::TOPK_NORMAL) {
-            TopKNormal<T, isInitIndex, isHasfinish, isReuseSrc>(dstValueLocal, dstIndexLocal, srcLocal,
-                srcIndexLocal, finishLocal, tempBuffer, k, tilling, topKInfo, isLargest);
+            TopKNormal<T, isInitIndex, isHasfinish, isReuseSrc>(
+                dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, tempBuffer, k, tilling, topKInfo,
+                isLargest);
         }
         if constexpr (topkMode == TopKMode::TOPK_NSMALL) {
-            TopKNSmall<T, isInitIndex, isHasfinish, isReuseSrc>(dstValueLocal, dstIndexLocal, srcLocal,
-                srcIndexLocal, finishLocal, tempBuffer, k, tilling, topKInfo, isLargest);
+            TopKNSmall<T, isInitIndex, isHasfinish, isReuseSrc>(
+                dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, tempBuffer, k, tilling, topKInfo,
+                isLargest);
         }
     }
 }
@@ -152,13 +160,14 @@ __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTens
  * @param [in] isLargest: Descending or ascending order. The value true indicates descending order,
                           and the value false indicates ascending order.
  */
-template <typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false,
+template <
+    typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false,
     enum TopKMode topkMode = TopKMode::TOPK_NORMAL, const TopKConfig& config = defaultTopKConfig>
-__ASC_USE_RESERVED_UBUF__(3510,
-    "TopK is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
-__aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal,
-    const LocalTensor<T>& srcLocal, const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal,
-    const int32_t k, const TopkTiling& tilling, const TopKInfo& topKInfo, const bool isLargest = true)
+__ASC_USE_RESERVED_UBUF__(3510, "TopK is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")
+__aicore__ inline void TopK(
+    const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& srcLocal,
+    const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal, const int32_t k,
+    const TopkTiling& tilling, const TopKInfo& topKInfo, const bool isLargest = true)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -174,10 +183,9 @@ __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTens
     auto stackTensorSize = stackTensor.GetSize();
     bool ans = stackTensorSize >= tilling.tmpLocalSize;
     ASCENDC_ASSERT(ans, {
-        KERNEL_LOG(KERNEL_ERROR,
-            "The pop stack buffer is insufficient, topk api need %d, but only %d exists.",
-            tilling.tmpLocalSize,
-            stackTensorSize);
+        KERNEL_LOG(
+            KERNEL_ERROR, "The pop stack buffer is insufficient, topk api need %d, but only %d exists.",
+            tilling.tmpLocalSize, stackTensorSize);
     });
 
     TopkInputCheck<T, isInitIndex, topkMode, config>(k, topKInfo);
@@ -185,19 +193,23 @@ __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTens
     stackTensor.SetSize(tilling.tmpLocalSize);
 
     if constexpr (config.algo == TopKAlgo::RADIX_SELECT) {
-        static_assert((SupportType<T, uint8_t, int8_t, uint16_t, int16_t, half, float, bfloat16_t, uint32_t, int32_t,
-                          uint64_t, int64_t>()),
+        static_assert(
+            (SupportType<
+                T, uint8_t, int8_t, uint16_t, int16_t, half, float, bfloat16_t, uint32_t, int32_t, uint64_t,
+                int64_t>()),
             "Type must be uint8_t/int8_t/uint16_t/int16_t/half/float/bfloat16_t/uint32_t/int32_t/uint64_t/int64_t in "
             "topk radix select algorithm.");
         static_assert((!isHasfinish), "Topk radix select algorithm cannot support to set finish flag.");
         if constexpr (topkMode == TopKMode::TOPK_NORMAL) {
-            Reg::RadixSelectTopK::TopKNormal<T, isInitIndex, isHasfinish, isReuseSrc, config>(dstValueLocal,
-                dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, stackTensor, k, tilling, topKInfo, isLargest);
+            Reg::RadixSelectTopK::TopKNormal<T, isInitIndex, isHasfinish, isReuseSrc, config>(
+                dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, stackTensor, k, tilling, topKInfo,
+                isLargest);
         }
 
         if constexpr (topkMode == TopKMode::TOPK_NSMALL) {
-            Reg::RadixSelectTopK::TopKNSmall<T, isInitIndex, isHasfinish, isReuseSrc, config>(dstValueLocal,
-                dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, stackTensor, k, tilling, topKInfo, isLargest);
+            Reg::RadixSelectTopK::TopKNSmall<T, isInitIndex, isHasfinish, isReuseSrc, config>(
+                dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, stackTensor, k, tilling, topKInfo,
+                isLargest);
         }
         return;
     }
@@ -206,13 +218,13 @@ __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTens
         static_assert((SupportType<T, half, float>()), "Type must be half/float in topk merge select algorithm.");
         if constexpr (topkMode == TopKMode::TOPK_NORMAL) {
             TopKNormal<T, isInitIndex, isHasfinish, isReuseSrc>(
-                dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, stackTensor, k, tilling,
-                topKInfo, isLargest);
+                dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, stackTensor, k, tilling, topKInfo,
+                isLargest);
         }
         if constexpr (topkMode == TopKMode::TOPK_NSMALL) {
             TopKNSmall<T, isInitIndex, isHasfinish, isReuseSrc>(
-                dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, stackTensor, k, tilling,
-                topKInfo, isLargest);
+                dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, stackTensor, k, tilling, topKInfo,
+                isLargest);
         }
     }
 }
@@ -244,10 +256,12 @@ __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTens
  * @param [in] isLargest: Descending or ascending order. The value true indicates descending order,
                           and the value false indicates ascending order.
  */
-template <typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false,
+template <
+    typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false,
     enum TopKMode topkMode = TopKMode::TOPK_NORMAL>
-__aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal,
-    const LocalTensor<T>& srcLocal, const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal,
+__aicore__ inline void TopK(
+    const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& srcLocal,
+    const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal,
     const LocalTensor<uint8_t>& tmpLocal, const int32_t k, const TopkTiling& tilling, const TopKInfo& topKInfo,
     const bool isLargest = true)
 {
@@ -256,16 +270,20 @@ __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTens
         return;
     }
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
-    CHECK_FUNC_HIGHLEVEL_API(TopK, (T, isInitIndex, isHasfinish, isReuseSrc, topkMode), (
-        dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, tmpLocal, k, tilling, topKInfo, isLargest));
+    CHECK_FUNC_HIGHLEVEL_API(
+        TopK, (T, isInitIndex, isHasfinish, isReuseSrc, topkMode),
+        (dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, tmpLocal, k, tilling, topKInfo,
+         isLargest));
 
     if constexpr (topkMode == TopKMode::TOPK_NORMAL) {
-        TopKNormal<T, isInitIndex, isHasfinish, isReuseSrc>(dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal,
-            finishLocal, tmpLocal, k, tilling, topKInfo, isLargest);
+        TopKNormal<T, isInitIndex, isHasfinish, isReuseSrc>(
+            dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, tmpLocal, k, tilling, topKInfo,
+            isLargest);
     }
     if constexpr (topkMode == TopKMode::TOPK_NSMALL) {
-        TopKNSmall<T, isInitIndex, isHasfinish, isReuseSrc>(dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal,
-            finishLocal, tmpLocal, k, tilling, topKInfo, isLargest);
+        TopKNSmall<T, isInitIndex, isHasfinish, isReuseSrc>(
+            dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, tmpLocal, k, tilling, topKInfo,
+            isLargest);
     }
 #endif
 }
@@ -296,11 +314,13 @@ __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTens
  * @param [in] isLargest: Descending or ascending order. The value true indicates descending order,
                           and the value false indicates ascending order.
  */
-template <typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false,
+template <
+    typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false,
     enum TopKMode topkMode = TopKMode::TOPK_NORMAL>
-__aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal,
-    const LocalTensor<T>& srcLocal, const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal,
-    const int32_t k, const TopkTiling& tilling, const TopKInfo& topKInfo, const bool isLargest = true)
+__aicore__ inline void TopK(
+    const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& srcLocal,
+    const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal, const int32_t k,
+    const TopkTiling& tilling, const TopKInfo& topKInfo, const bool isLargest = true)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -308,8 +328,9 @@ __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTens
     }
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
-    CHECK_FUNC_HIGHLEVEL_API(TopK, (T, isInitIndex, isHasfinish, isReuseSrc, topkMode), (
-        dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, k, tilling, topKInfo, isLargest));
+    CHECK_FUNC_HIGHLEVEL_API(
+        TopK, (T, isInitIndex, isHasfinish, isReuseSrc, topkMode),
+        (dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, k, tilling, topKInfo, isLargest));
 
     if constexpr (topkMode == TopKMode::TOPK_NORMAL) {
         TopKNormal<T, isInitIndex, isHasfinish, isReuseSrc>(
@@ -324,9 +345,9 @@ __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTens
 #endif
 
 #pragma end_pipe
-}  // namespace AscendC
+} // namespace AscendC
 
-#endif  // LIB_SORT_TOPK_H
+#endif // LIB_SORT_TOPK_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TOPK_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

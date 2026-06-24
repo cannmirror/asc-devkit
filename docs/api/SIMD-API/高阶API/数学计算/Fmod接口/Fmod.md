@@ -146,8 +146,9 @@ AscendC::Fmod(dstLocal, src0Local, src1Local, sharedTmpBuffer, 512);
 ```
 
 ```
-__aicore__ constexpr AscendC::FmodConfig GetConfig() {
-    return { .algo = AscendC::FmodAlgo::ITERATION_COMPENSATION, .iterationNum = 11 };
+__aicore__ constexpr AscendC::FmodConfig GetConfig()
+{
+    return {.algo = AscendC::FmodAlgo::ITERATION_COMPENSATION, .iterationNum = 11};
 }
 static constexpr AscendC::FmodConfig config = GetConfig();
 AscendC::Fmod<float, false, config>(dstLocal, src0Local, src1Local, sharedTmpBuffer, 512);

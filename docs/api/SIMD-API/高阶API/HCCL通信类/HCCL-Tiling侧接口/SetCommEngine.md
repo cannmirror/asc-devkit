@@ -30,9 +30,9 @@ uint32_t SetCommEngine(uint8_t commEngine)
 ## 调用示例
 
 ```
-static ge::graphStatus AllToAllVCustomTilingFunc(gert::TilingContext *context)
+static ge::graphStatus AllToAllVCustomTilingFunc(gert::TilingContext* context)
 {
-    AllToAllVCustomV3TilingData *tiling = context->GetTilingData<AllToAllVCustomV3TilingData>();
+    AllToAllVCustomV3TilingData* tiling = context->GetTilingData<AllToAllVCustomV3TilingData>();
     const std::string groupName = "testGroup";
     const std::string algConfig = "AlltoAll=level0:fullmesh;level1:pairwise";
     AscendC::Mc2CcTilingConfig mc2CcTilingConfig(groupName, HCCL_CMD_ALLTOALLV, algConfig, 0);

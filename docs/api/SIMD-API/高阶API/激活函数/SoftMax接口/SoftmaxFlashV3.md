@@ -172,13 +172,16 @@ AscendC::SoftMaxParams params(
     /* 原始尾轴长度              */ oriSrcK,
     /* 循环次数，update为true时大于等于1    */ loopCn,
     /* 每一行平均值时的分块个数，仅支持为8  */ splitMeanCnt,
-    /* 计算参数，推荐取值0.9375、0.96889、0.984497 */ alpha
-);
+    /* 计算参数，推荐取值0.9375、0.96889、0.984497 */ alpha);
 
 // 通过sharedTmpBuffer入参传入临时空间
-AscendC::SoftmaxFlashV3<T, U, true>(dstLocal, meanLocal, expSumLocal, maxLocal, srcLocal, expMaxLocal, inMeanLocal, inExpSumLocal, inMaxLocal, sharedTmpBuffer, tiling, params);
+AscendC::SoftmaxFlashV3<T, U, true>(
+    dstLocal, meanLocal, expSumLocal, maxLocal, srcLocal, expMaxLocal, inMeanLocal, inExpSumLocal, inMaxLocal,
+    sharedTmpBuffer, tiling, params);
 // 接口框架申请临时空间
-AscendC::SoftmaxFlashV3<T, U, true>(dstLocal, meanLocal, expSumLocal, maxLocal, srcLocal, expMaxLocal, inMeanLocal, inExpSumLocal, inMaxLocal, tiling, params);
+AscendC::SoftmaxFlashV3<T, U, true>(
+    dstLocal, meanLocal, expSumLocal, maxLocal, srcLocal, expMaxLocal, inMeanLocal, inExpSumLocal, inMaxLocal, tiling,
+    params);
 ```
 
 结果示例如下：

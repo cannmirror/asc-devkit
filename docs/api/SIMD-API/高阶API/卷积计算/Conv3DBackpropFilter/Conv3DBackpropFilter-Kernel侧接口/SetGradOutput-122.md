@@ -29,7 +29,7 @@
 ## 函数原型
 
 ```
-__aicore__ inline void SetGradOutput(const AscendC::GlobalTensor<SrcT> &gradOutput)
+__aicore__ inline void SetGradOutput(const AscendC::GlobalTensor<SrcT>& gradOutput)
 ```
 
 ## 参数说明

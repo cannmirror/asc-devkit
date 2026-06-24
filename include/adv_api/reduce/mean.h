@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file mean.h
@@ -49,13 +49,13 @@ namespace AscendC {
  * \param [in] sharedTmpBuffer, input local temporary Tensor
  * \param [in] meanParams, shape information of srcTensor
  */
-template <typename T, typename accType = T, bool isReuseSource = false, bool isBasicBlock = false,
-    int32_t reduceDim = -1>
-__aicore__ inline void Mean(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const MeanParams& meanParams)
+template <
+    typename T, typename accType = T, bool isReuseSource = false, bool isBasicBlock = false, int32_t reduceDim = -1>
+__aicore__ inline void Mean(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const MeanParams& meanParams)
 {
-    if ASCEND_IS_AIC
-    {
+    if ASCEND_IS_AIC {
         return;
     }
     MeanImpl<T, accType, isReuseSource, isBasicBlock, reduceDim>(dstTensor, srcTensor, sharedTmpBuffer, meanParams);
@@ -72,13 +72,12 @@ __aicore__ inline void Mean(const LocalTensor<T>& dstTensor, const LocalTensor<T
  * \param [in] srcTensor, input LocalTensor
  * \param [in] meanParams, shape information of srcTensor
  */
-template <typename T, typename accType = T, bool isReuseSource = false, bool isBasicBlock = false,
-    int32_t reduceDim = -1>
+template <
+    typename T, typename accType = T, bool isReuseSource = false, bool isBasicBlock = false, int32_t reduceDim = -1>
 __aicore__ inline void Mean(
     const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const MeanParams& meanParams)
 {
-    if ASCEND_IS_AIC
-    {
+    if ASCEND_IS_AIC {
         return;
     }
     LocalTensor<uint8_t> sharedTmpBuffer;
@@ -87,9 +86,9 @@ __aicore__ inline void Mean(
     Mean<T, accType, isReuseSource, isBasicBlock, reduceDim>(dstTensor, srcTensor, sharedTmpBuffer, meanParams);
 }
 #pragma end_pipe
-}  // namespace AscendC
+} // namespace AscendC
 
-#endif  // LIB_REDUCE_MEAN_H
+#endif // LIB_REDUCE_MEAN_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MEAN_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

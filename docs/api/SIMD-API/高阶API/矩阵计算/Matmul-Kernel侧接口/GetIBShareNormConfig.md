@@ -59,11 +59,13 @@ constexpr MatmulConfig MM_CFG = GetIBShareNormConfig(
     /* isVecND2NZ           */ false,
     /* bmmMode              */ BatchMode::BATCH_LESS_THAN_L1,
     /* isMsgReuse           */ false,
-    /* enableUBReuse        */ true
-);
+    /* enableUBReuse        */ true);
 // 常规Matmul计算，最后输出使用自定义IBShare模板的计算结果
 typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> aType;
-typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half, true/*开启矩阵转置*/, LayoutMode::NONE/*不开启BatchMatmul*/, true/*开启IBShare*/> bType;
+typedef AscendC::MatmulType<
+    AscendC::TPosition::GM, CubeFormat::ND, half, true /*开启矩阵转置*/, LayoutMode::NONE /*不开启BatchMatmul*/,
+    true /*开启IBShare*/>
+    bType;
 typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> cType;
 typedef AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> biasType;
 AscendC::Matmul<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG> mm;

@@ -33,11 +33,14 @@ Kernel侧实现Conv3DBackpropFilter求解反向传播误差运算的步骤概括
     ```
     #include "lib/conv_backprop/conv3d_bp_filter_api.h"
 
-    using inputType = ConvBackpropApi::ConvType <ConvCommonApi::TPosition::GM, ConvCommonApi::ConvFormat::NDC1HWC0, inputType>;
+    using inputType =
+        ConvBackpropApi::ConvType<ConvCommonApi::TPosition::GM, ConvCommonApi::ConvFormat::NDC1HWC0, inputType>;
     using weightSizeType = ConvBackpropApi::ConvType<ConvCommonApi::TPosition::GM, ConvCommonApi::ConvFormat::ND, int32_t>;
-    using gradOutputType = ConvBackpropApi::ConvType<ConvCommonApi::TPosition::GM, ConvCommonApi::ConvFormat::NDC1HWC0, gradOutputType>;
-    using gradWeightType = ConvBackpropApi::ConvType <ConvCommonApi::TPosition::GM, ConvCommonApi::ConvFormat::FRACTAL_Z_3D, gradWeightType>;
-    ConvBackpropApi::Conv3DBackpropFilter <inputType, weightSizeType, gradOutputType, gradWeightType> gradWeight_;
+    using gradOutputType =
+        ConvBackpropApi::ConvType<ConvCommonApi::TPosition::GM, ConvCommonApi::ConvFormat::NDC1HWC0, gradOutputType>;
+    using gradWeightType =
+        ConvBackpropApi::ConvType<ConvCommonApi::TPosition::GM, ConvCommonApi::ConvFormat::FRACTAL_Z_3D, gradWeightType>;
+    ConvBackpropApi::Conv3DBackpropFilter<inputType, weightSizeType, gradOutputType, gradWeightType> gradWeight_;
     ```
 
     创建对象时需要传入特征矩阵Input、权重矩阵Weight的shape信息WeightSize、GradOutput和GradWeight的参数类型信息，类型信息通过[ConvType](#table19081115275)来定义，包括：内存逻辑位置、数据格式、数据类型。
@@ -45,30 +48,29 @@ Kernel侧实现Conv3DBackpropFilter求解反向传播误差运算的步骤概括
     ```
     template <TPosition POSITION, ConvFormat FORMAT, typename T>
     struct ConvType {
-        constexpr static TPosition pos = POSITION;    // Convolution输入或输出的逻辑位置
-        constexpr static ConvFormat format = FORMAT;  // Convolution输入或输出的数据格式
-        using Type = T;                               // Convolution输入或输出的数据类型
+        constexpr static TPosition pos = POSITION;   // Convolution输入或输出的逻辑位置
+        constexpr static ConvFormat format = FORMAT; // Convolution输入或输出的数据格式
+        using Type = T;                              // Convolution输入或输出的数据类型
     };
     ```
 
     下面简要介绍在创建对象时使用到的相关数据结构，开发者可选择性地了解这些内容。用于创建Conv3DBackpropFilter对象的数据结构定义如下：
 
     ```
-    using Conv3DBackpropFilter = Conv3DBpFilterIntf<Conv3DBpFilterCfg<INPUT_TYPE, WEIGHT_TYPE, GRAD_OUTPUT_TYPE, GRAD_WEIGHT_TYPE>, Conv3DBpFilterImpl>;
+    using Conv3DBackpropFilter = Conv3DBpFilterIntf<
+        Conv3DBpFilterCfg<INPUT_TYPE, WEIGHT_TYPE, GRAD_OUTPUT_TYPE, GRAD_WEIGHT_TYPE>, Conv3DBpFilterImpl>;
     ```
 
     其中，Conv3DBpFilterIntf、Conv3DBpFilterCfg数据结构定义如下：
 
     ```
     template <class Config_, template <typename, class> class Impl>
-    struct Conv3DBpFilterIntf {
-    }
+    struct Conv3DBpFilterIntf {}
     ```
 
     ```
     template <class A, class B, class C, class D>
-    struct Conv3DBpFilterCfg : public ConvBpContext<A, B, C, D>{
-    }
+    struct Conv3DBpFilterCfg : public ConvBpContext<A, B, C, D> {}
     ```
 
     **表1**  ConvType说明

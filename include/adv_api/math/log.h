@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file log.h
@@ -34,8 +34,7 @@ namespace AscendC {
  * @param [in] calCount, amount of data to be calculated
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Log(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    uint32_t calCount)
+__aicore__ inline void Log(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, uint32_t calCount)
 {
     // Only for AI Vector Core.
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
@@ -44,7 +43,7 @@ __aicore__ inline void Log(const LocalTensor<T>& dstTensor, const LocalTensor<T>
     }
 #endif
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
-    __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+                              __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     LogImpl<T, isReuseSource>(dstTensor, srcTensor, calCount);
 #endif
 }
@@ -70,8 +69,9 @@ __aicore__ inline void Log(const LocalTensor<T>& dstTensor, const LocalTensor<T>
  * @param [in] calCount, amount of data to be calculated
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Log2(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
+__aicore__ inline void Log2(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    uint32_t calCount)
 {
     // Only for AI Vector Core.
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
@@ -80,7 +80,7 @@ __aicore__ inline void Log2(const LocalTensor<T>& dstTensor, const LocalTensor<T
     }
 #endif
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
-    __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+                              __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     Log2Impl<T, isReuseSource>(dstTensor, srcTensor, sharedTmpBuffer, calCount);
 #endif
 }
@@ -93,8 +93,8 @@ __aicore__ inline void Log2(const LocalTensor<T>& dstTensor, const LocalTensor<T
  * @param [in] sharedTmpBuffer, input local temporary Tensor
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Log2(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer)
+__aicore__ inline void Log2(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer)
 {
     Log2<T, isReuseSource>(dstTensor, srcTensor, sharedTmpBuffer, srcTensor.GetSize());
 }
@@ -107,15 +107,13 @@ __aicore__ inline void Log2(const LocalTensor<T>& dstTensor, const LocalTensor<T
  * @param [in] calCount, amount of data to be calculated
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Log2(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    uint32_t calCount)
+__aicore__ inline void Log2(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, uint32_t calCount)
 {
     LocalTensor<uint8_t> stackTensor;
     // Only half requires tmpbuf.
     if constexpr (std::is_same<T, half>::value) {
         bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(stackTensor);
-        ASCENDC_ASSERT((ans),
-                { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
+        ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
     }
 
     Log2<T, isReuseSource>(dstTensor, srcTensor, stackTensor, calCount);
@@ -141,8 +139,7 @@ __aicore__ inline void Log2(const LocalTensor<T>& dstTensor, const LocalTensor<T
  * @param [in] calCount, amount of data to be calculated
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Log10(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    uint32_t calCount)
+__aicore__ inline void Log10(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, uint32_t calCount)
 {
     // Only for AI Vector Core.
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
@@ -151,7 +148,7 @@ __aicore__ inline void Log10(const LocalTensor<T>& dstTensor, const LocalTensor<
     }
 #endif
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
-    __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+                              __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     Log10Impl<T, isReuseSource>(dstTensor, srcTensor, calCount);
 #endif
 }
@@ -169,9 +166,9 @@ __aicore__ inline void Log10(const LocalTensor<T>& dstTensor, const LocalTensor<
 }
 
 #pragma end_pipe
-}  // namespace AscendC
+} // namespace AscendC
 
-#endif  // LIB_MATH_LOG_H
+#endif // LIB_MATH_LOG_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LOG_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

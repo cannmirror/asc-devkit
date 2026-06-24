@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file hccl.h
@@ -40,12 +40,12 @@ static constexpr HcclServerConfig DEFAULT_CFG = {CoreType::DEFAULT, 0};
  *          4) Call the Wait interface (blocking) to wait for the server to complete the corresponding comm task.
  *          5) Call the Finalize interface to notify the server that there will be no comm tasks in the future.
  *             Once all comm tasks are executed, server can exit.
- *        On Atlas A2 训练系列产品/Atlas A2 推理系列产品/Ascend 910_93, users must specify whether the interface runs on the AICube core or the AIVector
- *        core when calling interfaces in class Hccl.
+ *        On Atlas A2 训练系列产品/Atlas A2 推理系列产品/Ascend 910_93, users must specify whether
+ *        the interface runs on the AICube core or the AIVector core when calling interfaces in class Hccl.
  * @tparam serverType: Only HcclServerType::HCCL_SERVER_TYPE_AICPU supported.
  *         config: The configuration for the HCCL instance.
  */
-template <HcclServerType serverType = HcclServerType::HCCL_SERVER_TYPE_AICPU, const auto &config = DEFAULT_CFG>
+template <HcclServerType serverType = HcclServerType::HCCL_SERVER_TYPE_AICPU, const auto& config = DEFAULT_CFG>
 class Hccl {
 public:
     /*!
@@ -96,8 +96,9 @@ public:
      *       2) Only the core 0 can write fields for hcclMsgArea.
      */
     template <bool commit = false>
-    __aicore__ inline HcclHandle AllGather(GM_ADDR sendBuf, GM_ADDR recvBuf, uint64_t sendCount,
-                                           HcclDataType dataType, uint64_t strideCount, uint8_t repeat = 1);
+    __aicore__ inline HcclHandle AllGather(
+        GM_ADDR sendBuf, GM_ADDR recvBuf, uint64_t sendCount, HcclDataType dataType, uint64_t strideCount,
+        uint8_t repeat = 1);
 
     /*!
      * @class Hccl
@@ -112,8 +113,9 @@ public:
      *                        sendBuf is equal to recvCount * rank size.
      * @param [in] dataType: The datatype of data participating in the ReduceScatter operation.
      * @param [in] op: Reduce type.
-     * @param [in] strideCount: Send reduced data at offset count i*strideCount of sendBuf to rank i, if strideCount>0;
-     * 							Send reduced data at offset count i*recvCount of sendBuf to rank i, if strideCount=0.
+     * @param [in] strideCount: Send reduced data at offset count i*strideCount of sendBuf to rank i,
+     *                          if strideCount > 0; Send reduced data at offset count i*recvCount of sendBuf to rank i,
+     *                          if strideCount = 0.
      * @param [in] repeat: Indicate the number of comm tasks launched by ReduceScatter in the continuous memory
      *                     scenario. Repeat >= 1, and be set 1 as default. When repeat > 1, the sendBuf and recvBuf of
      *                     next comm task will be calculated by server automatically using formula as follow:
@@ -124,8 +126,9 @@ public:
      *       2) Only the core 0 can write fields for hcclMsgArea.
      */
     template <bool commit = false>
-    __aicore__ inline HcclHandle ReduceScatter(GM_ADDR sendBuf, GM_ADDR recvBuf, uint64_t recvCount,
-        HcclDataType dataType, HcclReduceOp op, uint64_t strideCount, uint8_t repeat = 1);
+    __aicore__ inline HcclHandle ReduceScatter(
+        GM_ADDR sendBuf, GM_ADDR recvBuf, uint64_t recvCount, HcclDataType dataType, HcclReduceOp op,
+        uint64_t strideCount, uint8_t repeat = 1);
 
     /*!
      * @class Hccl
@@ -155,8 +158,9 @@ public:
      *       2) Only the core 0 can write fields for hcclMsgArea.
      */
     template <bool commit = false>
-    __aicore__ inline HcclHandle AlltoAll(GM_ADDR sendBuf, GM_ADDR recvBuf, uint64_t dataCount,
-                                          HcclDataType dataType, uint64_t strideCount = 0, uint8_t repeat = 1);
+    __aicore__ inline HcclHandle AlltoAll(
+        GM_ADDR sendBuf, GM_ADDR recvBuf, uint64_t dataCount, HcclDataType dataType, uint64_t strideCount = 0,
+        uint8_t repeat = 1);
 
     /*!
      * @class Hccl
@@ -192,10 +196,10 @@ public:
      *       2) Only the core 0 can write fields for hcclMsgArea.
      */
     template <bool commit = false>
-    __aicore__ inline HcclHandle AlltoAllV(GM_ADDR sendBuf, void *sendCounts, void *sdispls, HcclDataType sendType,
-                                           GM_ADDR recvBuf, void *recvCounts, void *rdispls, HcclDataType recvType,
-                                           uint8_t repeat = 1);
-    
+    __aicore__ inline HcclHandle AlltoAllV(
+        GM_ADDR sendBuf, void* sendCounts, void* sdispls, HcclDataType sendType, GM_ADDR recvBuf, void* recvCounts,
+        void* rdispls, HcclDataType recvType, uint8_t repeat = 1);
+
     /*!
      * @class Hccl
      * @brief The task launching interface of the BatchWrite collective communication operator, returns the identifier
@@ -223,9 +227,9 @@ public:
 
     /*!
      * @class Hccl
-     * @brief The task launching interface of the AlltoAllvWrite collective communication operator, returns the identifier
-     *        handleId. (task content: Each communication will send a segment of data to a specified memory address on
-     *        the designated rank, supporting multiple communications in batch.)
+     * @brief The task launching interface of the AlltoAllvWrite collective communication operator, returns the
+     *        identifier handleId. (task content: Each communication will send a segment of data to a specified
+     *        memory addresson the designated rank, supporting multiple communications in batch.)
      * @tparam commit: true/false true: simultaneously notify server to execute the task launched by AlltoAllvWrite.
      * @param [in] usrIn: Source data buffer address.
      * @param [in] sendOffsets: A uint64 array represents the offset of data sent by this rank, where 'sendOffsets[i]=n'
@@ -238,11 +242,12 @@ public:
      * @param [in] localDataSize: The size of data send to local rank, using byte as the basic unit.
      * @return The identifier(handleId) of AlltoAllvWrite task. HandleId >= 0 when successful, otherwise return -1.
      * @note 1) This func is used when the size of sendOffsets and sendSizes are large;
-     *       2) The size of sendSizes is rankDim, the value of sendSizes[localRank] is not used, use localDataSize instead for performance;.
+     *       2) The size of sendSizes is rankDim, and sendSizes[localRank] is not used.
+     *          Use localDataSize instead for performance.
      */
     template <bool commit = false>
-    __aicore__ inline HcclHandle AlltoAllvWrite(GM_ADDR usrIn, GM_ADDR sendOffsets, GM_ADDR sendSizes,
-                                                uint64_t remoteWinOffset, uint64_t localDataSize);
+    __aicore__ inline HcclHandle AlltoAllvWrite(
+        GM_ADDR usrIn, GM_ADDR sendOffsets, GM_ADDR sendSizes, uint64_t remoteWinOffset, uint64_t localDataSize);
 
 public:
     /*!
@@ -253,7 +258,7 @@ public:
      * @note Must be called after Init
      */
     [[deprecated("It is obsoleted and use SetCcTilingV2 instead.")]]
-    __aicore__ inline int32_t SetCcTiling(__gm__ void *ccOpTilingData);
+    __aicore__ inline int32_t SetCcTiling(__gm__ void* ccOpTilingData);
 
     /*!
      * @class Hccl
@@ -272,7 +277,7 @@ public:
      * @note Must be called first to initialize Hccl instance.
      */
     [[deprecated("It is obsoleted and use InitV2 instead.")]]
-    __aicore__ inline void Init(GM_ADDR context, __gm__ void *initTiling = nullptr);
+    __aicore__ inline void Init(GM_ADDR context, __gm__ void* initTiling = nullptr);
 
     /*!
      * @class Hccl
@@ -281,7 +286,7 @@ public:
      * @param [in] initTiling: Address of InitTilingData
      * @note Must be called first to initialize Hccl instance.
      */
-    __aicore__ inline void InitV2(GM_ADDR context, const void *initTiling);
+    __aicore__ inline void InitV2(GM_ADDR context, const void* initTiling);
 
     /*!
      * @class Hccl
@@ -345,7 +350,7 @@ public:
      * @return Returns the actual length of the sequence, -1 when fails.
      */
     template <bool sync = true>
-    __aicore__ inline int32_t Iterate(HcclHandle handleId, uint16_t *seqSlices, uint16_t seqSliceLen);
+    __aicore__ inline int32_t Iterate(HcclHandle handleId, uint16_t* seqSlices, uint16_t seqSliceLen);
 
     /*!
      * @class Hccl
@@ -404,10 +409,10 @@ public:
 private:
     HcclImpl<serverType, config> impl_;
 };
-}  // namespace AscendC
+} // namespace AscendC
 
 #include "../../../impl/adv_api/detail/hccl/impl/hccl_impl.h"
-#endif  // LIB_HCCL_HCCL_H
+#endif // LIB_HCCL_HCCL_H
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HCCL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

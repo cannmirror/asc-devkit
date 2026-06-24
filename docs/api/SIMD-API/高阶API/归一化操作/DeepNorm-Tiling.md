@@ -101,11 +101,12 @@ bool GetDeepNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrc
 1.  将DeepNorm Tiling结构体参数增加至TilingData结构体，作为TilingData结构体的一个字段。
 
     ```
-    BEGIN_TILING_DATA_DEF(TilingData)               // 注册一个tiling的类，以tiling的名字作为入参
-      TILING_DATA_FIELD_DEF(uint32_t, totalLength); // 添加tiling字段，总计算数据量
-      TILING_DATA_FIELD_DEF(uint32_t, tileNum);     // 添加tiling字段，每个核上总计算数据分块个数
-      ...                                           // 添加其他tiling字段
-      TILING_DATA_FIELD_DEF_STRUCT(DeepNormTiling, deepnormTilingData); // 将DeepNormTiling结构体参数增加至TilingData结构体
+    BEGIN_TILING_DATA_DEF(TilingData)             // 注册一个tiling的类，以tiling的名字作为入参
+        TILING_DATA_FIELD_DEF(uint32_t, totalLength); // 添加tiling字段，总计算数据量
+        TILING_DATA_FIELD_DEF(uint32_t, tileNum);     // 添加tiling字段，每个核上总计算数据分块个数
+        ...                                           // 添加其他tiling字段
+        TILING_DATA_FIELD_DEF_STRUCT(
+            DeepNormTiling, deepnormTilingData); // 将DeepNormTiling结构体参数增加至TilingData结构体
     END_TILING_DATA_DEF;
     ```
 
@@ -134,9 +135,10 @@ bool GetDeepNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrc
         uint32_t maxValue = 0;
         AscendC::GetDeepNormMaxMinTmpSize(srcShape, sizeof(half), isReuseSrc, isBasicBlock, maxValue, minValue);
         // 获取DeepNorm Tiling参数
-        AscendC::GetDeepNormTilingInfo(srcShape, originSrcShape, minValue, sizeof(half), isReuseSrc, isBasicBlock, tiling.deepnormTilingData);
+        AscendC::GetDeepNormTilingInfo(
+            srcShape, originSrcShape, minValue, sizeof(half), isReuseSrc, isBasicBlock, tiling.deepnormTilingData);
 
-         ... // 其他逻辑
+        ... // 其他逻辑
         tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());
         context->GetRawTilingData()->SetDataSize(tiling.GetDataSize());
         context->SetTilingKey(1);
@@ -148,11 +150,15 @@ bool GetDeepNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrc
 3.  对应的kernel侧通过在核函数中调用GET\_TILING\_DATA获取TilingData，继而将TilingData中的DeepNorm Tiling信息传入DeepNorm接口参与计算。完整的kernel侧样例请参考[DeepNorm](DeepNorm.md)。
 
     ```
-    extern "C" __global__ __aicore__ void deepnorm_custom(GM_ADDR inputX, GM_ADDR inputGx, GM_ADDR beta, GM_ADDR gamma, GM_ADDR output, GM_ADDR outputMean, GM_ADDR outputVariance, GM_ADDR tiling)
+    extern "C" __global__ __aicore__ void deepnorm_custom(
+        GM_ADDR inputX, GM_ADDR inputGx, GM_ADDR beta, GM_ADDR gamma, GM_ADDR output, GM_ADDR outputMean,
+        GM_ADDR outputVariance, GM_ADDR tiling)
     {
         GET_TILING_DATA(tilingData, tiling);
         KernelDeepNorm op;
-        op.Init(inputX, inputGx, beta, gamma, output, outputMean, outputVariance,  tilingData.totalLength, tilingData.tileNum, tilingData.deepnormTilingData);
+        op.Init(
+            inputX, inputGx, beta, gamma, output, outputMean, outputVariance, tilingData.totalLength, tilingData.tileNum,
+            tilingData.deepnormTilingData);
         if (TILING_KEY_IS(1)) {
             op.Process();
         }

@@ -23,7 +23,7 @@
 ## 函数原型
 
 ```
-void GetQuantizeTmpBufferFactorSize(uint32_t &maxLiveNodeCount, uint32_t &extraBuf)
+void GetQuantizeTmpBufferFactorSize(uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 ```
 
 ## 参数说明

@@ -32,6 +32,7 @@ void SetBiasType(const ConvCommonApi::TPosition pos, const ConvCommonApi::ConvFo
 // 实例化Conv3D Api
 auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
 Conv3dTilingApi::Conv3dTiling conv3dApiTiling(ascendcPlatform);
-conv3dApiTiling.SetBiasType(ConvCommonApi::TPosition::GM, ConvCommonApi::ConvFormat::ND, ConvCommonApi::ConvDtype::FLOAT32);
+conv3dApiTiling.SetBiasType(
+    ConvCommonApi::TPosition::GM, ConvCommonApi::ConvFormat::ND, ConvCommonApi::ConvDtype::FLOAT32);
 ```
 

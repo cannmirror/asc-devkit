@@ -7,7 +7,7 @@
 ## 函数原型
 
 ```
-uint32_t SetGroupName(const std::string &groupName)
+uint32_t SetGroupName(const std::string& groupName)
 ```
 
 ## 参数说明

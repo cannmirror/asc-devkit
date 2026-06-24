@@ -11,7 +11,7 @@ HCCL Tiling API获取Tiling参数的流程如下：
 1.  创建一个[Mc2CcTilingConfig](HCCL-Tiling构造函数.md)类对象。
 
     ```
-    const char *groupName = "testGroup";
+    const char* groupName = "testGroup";
     uint32_t opType = HCCL_CMD_REDUCE_SCATTER;
     std::string algConfig = "ReduceScatter=level0:fullmesh";
     uint32_t reduceType = HCCL_REDUCE_SUM;

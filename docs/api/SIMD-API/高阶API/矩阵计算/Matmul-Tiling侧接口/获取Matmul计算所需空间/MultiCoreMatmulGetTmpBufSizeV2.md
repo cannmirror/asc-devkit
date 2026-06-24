@@ -7,7 +7,7 @@
 ## 函数原型
 
 ```
-int32_t MultiCoreMatmulGetTmpBufSizeV2(AscendC::tiling::TCubeTiling &tiling, matmul_tiling::SysTilingTempBufSize &bufSize)
+int32_t MultiCoreMatmulGetTmpBufSizeV2(AscendC::tiling::TCubeTiling& tiling, matmul_tiling::SysTilingTempBufSize& bufSize)
 ```
 
 ## 参数说明
@@ -41,8 +41,8 @@ struct SysTilingTempBufSize {
 auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
 matmul_tiling::MultiCoreMatmulTiling tiling(ascendcPlatform);
 AscendC::tiling::TCubeTiling tilingData;
-...  // 初始化tilingData，详见MatmulTiling类使用说明
-int ret = tiling.GetTiling(tilingData);    // 获取Tiling参数
+...                                         // 初始化tilingData，详见MatmulTiling类使用说明
+    int ret = tiling.GetTiling(tilingData); // 获取Tiling参数
 SysTilingTempBufSize bufSize;
 MultiCoreMatmulGetTmpBufSizeV2(tilingData, bufSize);
 ```

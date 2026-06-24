@@ -35,7 +35,7 @@ int32_t SetSingleShape(int32_t singleMIn = -1, int32_t singleNIn = -1, int32_t s
 auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
 matmul_tiling::MultiCoreMatmulTiling tiling(ascendcPlatform);
 
-tiling.SetShape(1024, 1024, 1024);  // 设置Matmul单次计算的形状
-tiling.SetSingleShape(1024, 1024, 1024);  // 设置单核计算的形状
+tiling.SetShape(1024, 1024, 1024);       // 设置Matmul单次计算的形状
+tiling.SetSingleShape(1024, 1024, 1024); // 设置单核计算的形状
 tiling.SetOrgShape(1024, 1024, 1024);
 ```

@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file conv3d_bp_input_intf.h
@@ -41,7 +41,7 @@ public:
 public:
     __aicore__ inline Conv3DBpInputIntf() {}
 
-    __aicore__ inline void Init(const TConv3DBackpropInputTiling *__restrict tiling)
+    __aicore__ inline void Init(const TConv3DBackpropInputTiling* __restrict tiling)
     {
         using Local = typename Ext::Init;
         if constexpr (CHECK_FUN(Local, ConvBackpropInputFunc, this, tiling)) {
@@ -49,7 +49,7 @@ public:
         }
     }
 
-    __aicore__ inline void SetWeight(const AscendC::GlobalTensor<SrcT> &weight)
+    __aicore__ inline void SetWeight(const AscendC::GlobalTensor<SrcT>& weight)
     {
         using Local = typename Ext::SetWeight;
         if constexpr (CHECK_FUN(Local, ConvBackpropInputFunc, this, weight)) {
@@ -57,7 +57,7 @@ public:
         }
     }
 
-    __aicore__ inline void SetGradOutput(const AscendC::GlobalTensor<SrcT> &gradOutput)
+    __aicore__ inline void SetGradOutput(const AscendC::GlobalTensor<SrcT>& gradOutput)
     {
         using Local = typename Ext::SetOutBackprop;
         if constexpr (CHECK_FUN(Local, ConvBackpropInputFunc, this, gradOutput)) {
@@ -91,8 +91,8 @@ public:
     }
 
     template <bool sync = true>
-    __aicore__ inline void GetTensorC(const AscendC::GlobalTensor<DstT> &output, uint8_t enAtomic = 0,
-                                      bool enSequentialWrite = false)
+    __aicore__ inline void GetTensorC(
+        const AscendC::GlobalTensor<DstT>& output, uint8_t enAtomic = 0, bool enSequentialWrite = false)
     {
         using Local = typename Ext::template GetTensorC<sync>;
         if constexpr (CHECK_FUN(Local, ConvBackpropInputFunc, this, output, enAtomic, enSequentialWrite)) {
@@ -109,7 +109,7 @@ public:
     }
 };
 
-}  // namespace ConvBackpropApi
+} // namespace ConvBackpropApi
 
 #endif
 

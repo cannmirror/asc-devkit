@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file matmul_client.h
@@ -51,7 +51,8 @@ constexpr uint16_t NUM_FORTYEIGHT = 48;
  *
  * Service function of matrix multiplication on the AIV client side, acting as the unit for message sending.
  */
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG = CFG_NORM,
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG = CFG_NORM,
     class MM_CB = MatmulCallBackFunc<nullptr, nullptr, nullptr>, MATMUL_POLICY_DEFAULT_OF(MatmulPolicy)>
 class MatmulClientBase {
     using SrcAT = typename A_TYPE::T;
@@ -75,7 +76,7 @@ public:
         ASSERT(cubeTiling != nullptr && "tiling cannot be nullptr when init matmul client");
         ASSERT(sizeof(TCubeTiling) % sizeof(uint64_t) == 0);
         // copy tiling to the last mem in ssbuf
-        MSG_POS TilingInfo *tilingSSbuf = reinterpret_cast<MSG_POS TilingInfo *>(GetTilingAddr(GetSubBlockIdxImpl()));
+        MSG_POS TilingInfo* tilingSSbuf = reinterpret_cast<MSG_POS TilingInfo*>(GetTilingAddr(GetSubBlockIdxImpl()));
         while (tilingSSbuf->valid) {
         }
         tilingSSbuf->valid = 1;
@@ -122,7 +123,7 @@ public:
         int32_t ubAddr = -1;
         GM_ADDR tilingGM = client->AllocUB(tCubeTilingSize, ubAddr);
         auto tempTilingGM = reinterpret_cast<__gm__ uint32_t*>(tilingGM);
-        auto tempTiling = reinterpret_cast<uint32_t*>(const_cast<TCubeTiling*> (cubeTiling));
+        auto tempTiling = reinterpret_cast<uint32_t*>(const_cast<TCubeTiling*>(cubeTiling));
         for (int i = 0; i < sizeof(TCubeTiling) / sizeof(uint32_t); ++i, ++tempTilingGM, ++tempTiling) {
             *tempTilingGM = *tempTiling;
         }
@@ -162,16 +163,20 @@ public:
         Init(&cubeTiling, tpipe);
     }
 #endif
-    template <class T> __aicore__ inline void SetWorkspace(GlobalTensor<T>& addr)
+    template <class T>
+    __aicore__ inline void SetWorkspace(GlobalTensor<T>& addr)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "SetWorkspace not support when enableMixDualMaster is enabled");
         ASSERT(addr.GetSize() > 0);
         SetWorkspace(addr.GetPhyAddr(), addr.GetSize() * sizeof(T));
     }
-    template <class T> __aicore__ inline void SetWorkspace(__gm__ const T* addr, int size)
+    template <class T>
+    __aicore__ inline void SetWorkspace(__gm__ const T* addr, int size)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "SetWorkspace not support when enableMixDualMaster is enabled");
         ASSERT(addr != nullptr);
         if constexpr (ToMatmulConfig(MM_CFG).singleCoreM == 0) {
@@ -291,22 +296,24 @@ public:
 #if defined(USE_SSBUF)
     __aicore__ inline void SetTensorA(const LocalTensor<SrcAT>& leftMatrix, bool isTransposeA = false)
     {
-        static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
+        static_assert(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster,
             "SetTensorA localTensor not support when enableMixDualMaster is enabled");
-        ASSERT(isTransposeA <= A_TYPE::isTrans &&
+        ASSERT(
+            isTransposeA <= A_TYPE::isTrans &&
             "It is not allowed to do A transpose when matmul A transpose is not defined.");
         kfcMsg_.body.isTransA = static_cast<uint32_t>(isTransposeA);
         kfcMsg_.body.setTensorA = 1;
         kfcMsg_.body.isFirstIter = 1;
         if constexpr (A_TYPE::pos == TPosition::TSCM) {
             auto tmpAddr = GetTscmAddr(leftMatrix);
-            auto intraId = (reinterpret_cast<TBufType *>(leftMatrix.GetBufferHandle()))->enQueEvtID;
+            auto intraId = (reinterpret_cast<TBufType*>(leftMatrix.GetBufferHandle()))->enQueEvtID;
             // 8 bit for intraID, 32 bit for addr
             kfcMsg_.body.aAddr = (((uint64_t)intraId) << VALID_ADDR_BITS_NUM) + tmpAddr;
             sizeAmatrix_ = leftMatrix.GetSize() * sizeof(SrcAT);
         } else {
-            MSG_POS MsgMatmulL1Addr *matmulL1AddrMsg =
-                (MSG_POS MsgMatmulL1Addr *)GetMatmulL1AddrMsg(GetSubBlockIdxImpl(), this->instIdx);
+            MSG_POS MsgMatmulL1Addr* matmulL1AddrMsg =
+                (MSG_POS MsgMatmulL1Addr*)GetMatmulL1AddrMsg(GetSubBlockIdxImpl(), this->instIdx);
             while (!(matmulL1AddrMsg->valid)) {
             }
             uint64_t aL1Addr = matmulL1AddrMsg->l1aAddr;
@@ -324,7 +331,8 @@ public:
 #endif
             return;
         }
-        ASSERT(isTransposeA <= A_TYPE::isTrans &&
+        ASSERT(
+            isTransposeA <= A_TYPE::isTrans &&
             "It is not allowed to do A transpose when matmul A transpose is not defined.");
         kfcMsg_.body.isTransA = static_cast<uint32_t>(isTransposeA);
         kfcMsg_.body.setTensorA = 1;
@@ -342,9 +350,11 @@ public:
 #if defined(USE_SSBUF)
     __aicore__ inline void SetTensorB(const LocalTensor<SrcBT>& rightMatrix, bool isTransposeB = false)
     {
-        static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
+        static_assert(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster,
             "SetTensorB localTensor not support when enableMixDualMaster is enabled");
-        ASSERT(isTransposeB <= B_TYPE::isTrans &&
+        ASSERT(
+            isTransposeB <= B_TYPE::isTrans &&
             "It is not allowed to do B transpose when matmul B transpose is not defined.");
         kfcMsg_.body.isTransB = static_cast<uint32_t>(isTransposeB);
         kfcMsg_.body.setTensorB = 1;
@@ -352,12 +362,12 @@ public:
 
         if constexpr (B_TYPE::pos == TPosition::TSCM) {
             auto tmpAddr = GetTscmAddr(rightMatrix);
-            auto intraId = (reinterpret_cast<TBufType *>(rightMatrix.GetBufferHandle()))->enQueEvtID;
+            auto intraId = (reinterpret_cast<TBufType*>(rightMatrix.GetBufferHandle()))->enQueEvtID;
             kfcMsg_.body.bAddr = (((uint64_t)intraId) << VALID_ADDR_BITS_NUM) + tmpAddr;
             sizeBmatrix_ = rightMatrix.GetSize() * sizeof(SrcBT);
         } else {
-            MSG_POS MsgMatmulL1Addr *matmulL1AddrMsg =
-                (MSG_POS MsgMatmulL1Addr *)GetMatmulL1AddrMsg(GetSubBlockIdxImpl(), this->instIdx);
+            MSG_POS MsgMatmulL1Addr* matmulL1AddrMsg =
+                (MSG_POS MsgMatmulL1Addr*)GetMatmulL1AddrMsg(GetSubBlockIdxImpl(), this->instIdx);
             while (!(matmulL1AddrMsg->valid)) {
             }
             uint64_t bL1Addr = matmulL1AddrMsg->l1bAddr;
@@ -375,7 +385,8 @@ public:
 #endif
             return;
         }
-        ASSERT(isTransposeB <= B_TYPE::isTrans &&
+        ASSERT(
+            isTransposeB <= B_TYPE::isTrans &&
             "It is not allowed to do B transpose when matmul B transpose is not defined.");
         kfcMsg_.body.isTransB = static_cast<uint32_t>(isTransposeB);
         kfcMsg_.body.setTensorB = 1;
@@ -394,7 +405,8 @@ public:
 #if defined(USE_SSBUF)
     __aicore__ inline void SetBias(const LocalTensor<BiasT>& inputBias)
     {
-        static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
+        static_assert(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster,
             "SetBias localTensor not support when enableMixDualMaster is enabled");
         kfcMsg_.body.setTensorBias = 1;
         kfcMsg_.body.isFirstIter = 1;
@@ -402,8 +414,8 @@ public:
             kfcMsg_.body.biasAddr = GetTscmAddr(inputBias);
             sizeBiasmatrix_ = inputBias.GetSize() * sizeof(BiasT);
         } else {
-            MSG_POS MsgMatmulL1Addr *matmulL1AddrMsg =
-                (MSG_POS MsgMatmulL1Addr *)GetMatmulL1AddrMsg(GetSubBlockIdxImpl(), this->instIdx);
+            MSG_POS MsgMatmulL1Addr* matmulL1AddrMsg =
+                (MSG_POS MsgMatmulL1Addr*)GetMatmulL1AddrMsg(GetSubBlockIdxImpl(), this->instIdx);
             while (!(matmulL1AddrMsg->valid)) {
             }
             kfcMsg_.body.biasAddr = matmulL1AddrMsg->l1biasAddr;
@@ -440,10 +452,12 @@ public:
             return;
         }
 #if defined(USE_SSBUF)
-        static_assert((GetPhyType(A_TYPE::pos) == Hardware::GM),
+        static_assert(
+            (GetPhyType(A_TYPE::pos) == Hardware::GM),
             "SetTensorA GlobalTensor not support when A_TYPE position is not GM");
 #endif
-        ASSERT(isTransposeA <= A_TYPE::isTrans &&
+        ASSERT(
+            isTransposeA <= A_TYPE::isTrans &&
             "It is not allowed to do A transpose when matmul A transpose is not defined.");
         kfcMsg_.body.isTransA = static_cast<uint32_t>(isTransposeA);
         kfcMsg_.body.setTensorA = 1;
@@ -468,10 +482,12 @@ public:
             return;
         }
 #if defined(USE_SSBUF)
-        static_assert((GetPhyType(B_TYPE::pos) == Hardware::GM),
+        static_assert(
+            (GetPhyType(B_TYPE::pos) == Hardware::GM),
             "SetTensorB GlobalTensor not support when B_TYPE position is not GM");
 #endif
-        ASSERT(isTransposeB <= B_TYPE::isTrans &&
+        ASSERT(
+            isTransposeB <= B_TYPE::isTrans &&
             "It is not allowed to do B transpose when matmul B transpose is not defined.");
         kfcMsg_.body.isTransB = static_cast<uint32_t>(isTransposeB);
         kfcMsg_.body.setTensorB = 1;
@@ -498,7 +514,7 @@ public:
             return;
         }
         ASSERT(sizeof(T) % 4 == 0);
-        uint32_t *ptr = reinterpret_cast<uint32_t *>(&dataPtr);
+        uint32_t* ptr = reinterpret_cast<uint32_t*>(&dataPtr);
         if constexpr (sizeof(T) == 4) {
             kfcMsg_.userCustomData = *ptr;
             kfcMsg_.body.userInfoType = 1;
@@ -508,7 +524,7 @@ public:
             kfcMsg_.body.userInfoType = 1;
         } else {
             // send msg
-            uint32_t *ptrMsg = reinterpret_cast<uint32_t *>(&(kfcMsg_.body));
+            uint32_t* ptrMsg = reinterpret_cast<uint32_t*>(&(kfcMsg_.body));
             for (int i = 0; i < sizeof(T) / sizeof(uint32_t); i++) {
                 *(ptrMsg + i) = *(ptr + i);
             }
@@ -586,7 +602,8 @@ public:
 
     __aicore__ inline void SetQuantVector(const LocalTensor<uint64_t>& quantTensor)
     {
-        static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
+        static_assert(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster,
             "SetQuantVector localTensor is not supported when enableMixDualMaster is enabled.");
         kfcMsg_.body.setQuant = 1;
         kfcMsg_.body.quantMode = VECTOR_QUANT_MODE_L1;
@@ -682,16 +699,17 @@ public:
         }
     }
 
-    template <bool sync = true, typename T> __aicore__ inline bool Iterate(bool enPartialSum,
-        const LocalTensor<T>& localCmatrix)
+    template <bool sync = true, typename T>
+    __aicore__ inline bool Iterate(bool enPartialSum, const LocalTensor<T>& localCmatrix)
     {
         return false;
     }
 
-    template <bool sync = true> __aicore__ inline bool Iterate(bool enPartialSum = false)
+    template <bool sync = true>
+    __aicore__ inline bool Iterate(bool enPartialSum = false)
     {
-        static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
-                      "Iterate not support when enableMixDualMaster is enabled.");
+        static_assert(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster, "Iterate not support when enableMixDualMaster is enabled.");
 #if !defined(USE_SSBUF)
         if constexpr (A_TYPE::ibShare && B_TYPE::ibShare) {
             ASSERT(false && "Iterate not support when sameab is enabled");
@@ -714,10 +732,10 @@ public:
             }
         }
 
-        if constexpr (!sync) {  // Asynchronous mode. Only UB.
+        if constexpr (!sync) { // Asynchronous mode. Only UB.
 #if defined(USE_WORKSPACE)
-            ASSERT(cacheWorkspaceAddr != 0);  // The cache address must be configured in asynchronous mode.
-            ASSERT(PhyPosIsUB(C_TYPE::pos));  // Asynchronous mode. Only UB.
+            ASSERT(cacheWorkspaceAddr != 0); // The cache address must be configured in asynchronous mode.
+            ASSERT(PhyPosIsUB(C_TYPE::pos)); // Asynchronous mode. Only UB.
 #endif
         }
 
@@ -730,7 +748,7 @@ public:
 #if defined(USE_SSBUF)
         kfcMsg_.body.hasSetWorkspace = (cacheWorkspaceAddr != 0);
         PrepareABFromGM();
-        const bool isTransA = kfcMsg_.body.isTransA;  // kfcMsg body will be reset after postMessage
+        const bool isTransA = kfcMsg_.body.isTransA; // kfcMsg body will be reset after postMessage
         const bool isTransB = kfcMsg_.body.isTransB;
         const bool isTransScaleA = kfcMsg_.body.quantMode & 0b01;
         const bool isTransScaleB = (kfcMsg_.body.quantMode >> 1) & 0b01;
@@ -781,7 +799,8 @@ public:
     // In discontinuous scenarios, the system stops responding.
     __aicore__ inline void WaitIterateBatch()
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "WaitIterateBatch not support when enableMixDualMaster is enabled");
         ASSERT(!isSyncGetC); // Must be asynchronous mode
 #if defined(USE_SSBUF)
@@ -793,21 +812,27 @@ public:
 
 #if defined(USE_SSBUF)
     template <bool sync = true>
-    __aicore__ inline void IterateAll(const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0,
-        bool enSequentialWrite = false, bool waitIterateAll = false, bool fakeMsg = false)
+    __aicore__ inline void IterateAll(
+        const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0, bool enSequentialWrite = false, bool waitIterateAll = false,
+        bool fakeMsg = false)
     {
-        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
-        static_assert(!(ToMatmulConfig(MM_CFG).enableMixDualMaster && !(A_TYPE::ibShare && B_TYPE::ibShare)), "IBShare in A/BTYPE should be true when enableMixDualMaster is enabled.");
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), {
+            KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput.");
+        });
+        static_assert(
+            !(ToMatmulConfig(MM_CFG).enableMixDualMaster && !(A_TYPE::ibShare && B_TYPE::ibShare)),
+            "IBShare in A/BTYPE should be true when enableMixDualMaster is enabled.");
         if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
 #if ASCENDC_CPU_DEBUG
             if ASCEND_IS_AIC {
                 cubeObj.cubeObj[0].mul.IterateAll(gm, enAtomic, enSequentialWrite, waitIterateAll, fakeMsg);
                 if (sync || waitIterateAll) {
-                    CrossCoreSetFlag<INTRA_MODE, PIPE_FIX>(
-                        GetIntraFlagId(cubeObj.cubeObj[0].instID, static_cast<uint8_t>(VEC_WAIT_INTRA_Enum::WAIT_FIXP), 0U));
+                    CrossCoreSetFlag<INTRA_MODE, PIPE_FIX>(GetIntraFlagId(
+                        cubeObj.cubeObj[0].instID, static_cast<uint8_t>(VEC_WAIT_INTRA_Enum::WAIT_FIXP), 0U));
                     if constexpr (A_TYPE::ibShare && B_TYPE::ibShare) {
-                        CrossCoreSetFlag<INTRA_MODE, PIPE_FIX>(GetIntraFlagId(cubeObj.cubeObj[0].instID,
-                            static_cast<uint8_t>(VEC_WAIT_INTRA_Enum::WAIT_FIXP), 1U)); // 1 means sub_block 1
+                        CrossCoreSetFlag<INTRA_MODE, PIPE_FIX>(GetIntraFlagId(
+                            cubeObj.cubeObj[0].instID, static_cast<uint8_t>(VEC_WAIT_INTRA_Enum::WAIT_FIXP),
+                            1U)); // 1 means sub_block 1
                     }
                 }
                 cubeObj.cubeObj[0].mul.End();
@@ -849,11 +874,15 @@ public:
     }
 
     template <bool sync = true>
-    __aicore__ inline void IterateAll(const LocalTensor<DstT>& ubCmatrix, uint8_t enAtomic = 0,
-        bool enSequentialWrite = false, bool waitIterateAll = false)
+    __aicore__ inline void IterateAll(
+        const LocalTensor<DstT>& ubCmatrix, uint8_t enAtomic = 0, bool enSequentialWrite = false,
+        bool waitIterateAll = false)
     {
-        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
-        static_assert(!(ToMatmulConfig(MM_CFG).enableMixDualMaster && !(A_TYPE::ibShare && B_TYPE::ibShare)),
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), {
+            KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput.");
+        });
+        static_assert(
+            !(ToMatmulConfig(MM_CFG).enableMixDualMaster && !(A_TYPE::ibShare && B_TYPE::ibShare)),
             "IBShare in A/BTYPE should be true when enableMixDualMaster is enabled.");
         TRACE_START(TraceId::KFC_CLIENT_POST_MSG);
         if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
@@ -897,10 +926,13 @@ public:
     }
 #else
     template <bool sync = true>
-    __aicore__ inline void IterateAll(const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0,
-        bool enSequentialWrite = false, bool waitIterateAll = false, bool fakeMsg = false)
+    __aicore__ inline void IterateAll(
+        const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0, bool enSequentialWrite = false, bool waitIterateAll = false,
+        bool fakeMsg = false)
     {
-        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), {
+            KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput.");
+        });
         if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
             constexpr uint16_t eventID = 9U;
 #if ASCENDC_CPU_DEBUG
@@ -915,7 +947,7 @@ public:
             }
 #endif
             NotifyEvent<PIPE_MTE3>(eventID);
-            if constexpr(sync) {
+            if constexpr (sync) {
                 WaitEvent(this->instIdx);
             }
             return;
@@ -946,8 +978,10 @@ public:
     template <bool sync = true>
     __aicore__ inline void IterateAll(const LocalTensor<DstT>& ubCmatrix, uint8_t enAtomic = 0)
     {
-        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
-        if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster){
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), {
+            KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput.");
+        });
+        if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
 #if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113))
             ASSERT("IterateAll localTensor not support when enableMixDualMaster is enabled");
 #endif
@@ -958,8 +992,9 @@ public:
         ASSERT(enAtomic == 0);
         ASSERT(kfcMsg_.body.isFirstIter == 1);
         ASSERT((PhyPosIsL1(C_TYPE::pos)) && "IterateAll LocalTensor only support TPosition A1 or B1");
-        ASSERT(!(A_TYPE::ibShare && B_TYPE::ibShare) && "IterateAll LocalTensor not support when sameab"
-                                                        " is enabled");
+        ASSERT(
+            !(A_TYPE::ibShare && B_TYPE::ibShare) && "IterateAll LocalTensor not support when sameab"
+                                                     " is enabled");
         if (ubCmatrix.GetPosition() == static_cast<int32_t>(TPosition::TSCM)) {
             kfcMsg_.body.cAddr = GetTscmAddr(ubCmatrix);
             kfcMsg_.body.cIsTscm = 1;
@@ -982,16 +1017,19 @@ public:
 #endif
 
     template <bool sync = true, bool waitIterateBatch = false>
-    __aicore__ inline void IterateBatch(const GlobalTensor<DstT>& gm, uint32_t batchA, uint32_t batchB,
-        bool enSequentialWrite, const uint32_t matrixStrideA = 0, const uint32_t matrixStrideB = 0,
-        const uint32_t matrixStrideC = 0, const bool enPartialSum = false, const uint8_t enAtomic = 0)
+    __aicore__ inline void IterateBatch(
+        const GlobalTensor<DstT>& gm, uint32_t batchA, uint32_t batchB, bool enSequentialWrite,
+        const uint32_t matrixStrideA = 0, const uint32_t matrixStrideB = 0, const uint32_t matrixStrideC = 0,
+        const bool enPartialSum = false, const uint8_t enAtomic = 0)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "IterateBatch not support when enableMixDualMaster is enabled");
         TRACE_START(TraceId::KFC_CLIENT_POST_MSG);
         ASSERT(kfcMsg_.body.isFirstIter == 1);
-        ASSERT(!(A_TYPE::ibShare && B_TYPE::ibShare) && "IterateBatch not support when sameab"
-                                                        " is enabled");
+        ASSERT(
+            !(A_TYPE::ibShare && B_TYPE::ibShare) && "IterateBatch not support when sameab"
+                                                     " is enabled");
         kfcMsg_.body.cAddr = reinterpret_cast<uint64_t>(gm.GetPhyAddr());
         kfcMsg_.body.enSequentialWrite = enSequentialWrite;
         kfcMsg_.body.sync = sync;
@@ -1022,11 +1060,13 @@ public:
     }
 
     template <bool sync = true>
-    __aicore__ inline void IterateBatch(const LocalTensor<DstT>& ubCmatrix, uint32_t batchA, uint32_t batchB,
-        bool enSequentialWrite, const uint32_t matrixStrideA = 0, const uint32_t matrixStrideB = 0,
-        const uint32_t matrixStrideC = 0, const bool enPartialSum = false, const uint8_t enAtomic = 0)
+    __aicore__ inline void IterateBatch(
+        const LocalTensor<DstT>& ubCmatrix, uint32_t batchA, uint32_t batchB, bool enSequentialWrite,
+        const uint32_t matrixStrideA = 0, const uint32_t matrixStrideB = 0, const uint32_t matrixStrideC = 0,
+        const bool enPartialSum = false, const uint8_t enAtomic = 0)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "IterateBatch not support when enableMixDualMaster is enabled");
         TRACE_START(TraceId::KFC_CLIENT_POST_MSG);
         ASSERT(sync == true);
@@ -1074,14 +1114,18 @@ public:
     }
 
     template <bool sync = true, bool waitIterateBatch = false>
-    __aicore__ inline void IterateNBatch(const uint32_t batchLoop, uint32_t batchA, uint32_t batchB,
-        bool enSequentialWrite, const uint32_t matrixStrideA = 0, const uint32_t matrixStrideB = 0,
-        const uint32_t matrixStrideC = 0, const bool enPartialSum = false, const uint8_t enAtomic = 0)
+    __aicore__ inline void IterateNBatch(
+        const uint32_t batchLoop, uint32_t batchA, uint32_t batchB, bool enSequentialWrite,
+        const uint32_t matrixStrideA = 0, const uint32_t matrixStrideB = 0, const uint32_t matrixStrideC = 0,
+        const bool enPartialSum = false, const uint8_t enAtomic = 0)
     {
-        static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
+        static_assert(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster,
             "IterateNBatch not support when enableMixDualMaster is enabled.");
-        static_assert(A_TYPE::layout != LayoutMode::NONE && B_TYPE::layout != LayoutMode::NONE &&
-            A_TYPE::layout != LayoutMode::NORMAL && B_TYPE::layout != LayoutMode::NORMAL && C_TYPE::layout != LayoutMode::NORMAL,
+        static_assert(
+            A_TYPE::layout != LayoutMode::NONE && B_TYPE::layout != LayoutMode::NONE &&
+                A_TYPE::layout != LayoutMode::NORMAL && B_TYPE::layout != LayoutMode::NORMAL &&
+                C_TYPE::layout != LayoutMode::NORMAL,
             "BMM does not support the layout being NONE or NORMAL");
         if constexpr (!ToMatmulConfig(MM_CFG).isNBatch) {
             return;
@@ -1124,13 +1168,13 @@ public:
 
 #if defined(USE_SSBUF)
     template <bool sync = true>
-    __aicore__ inline void GetTensorC(const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0,
-        bool enSequentialWrite = false)
+    __aicore__ inline void GetTensorC(
+        const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0, bool enSequentialWrite = false)
     {
-        static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
-            "GetTensorC not support when enableMixDualMaster is enabled.");
-        static_assert(ToMatmulConfig(MM_CFG).enableGetTensorC,
-            "GetTensorC is not support when enableGetTensorC is disabled");
+        static_assert(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster, "GetTensorC not support when enableMixDualMaster is enabled.");
+        static_assert(
+            ToMatmulConfig(MM_CFG).enableGetTensorC, "GetTensorC is not support when enableGetTensorC is disabled");
         TRACE_START(TraceId::KFC_CLIENT_REV_MSG_GM);
         ASSERT(kfcMsg_.body.isFirstIter == 0);
         if (!isSyncGetC) { // Asynchronous
@@ -1169,14 +1213,14 @@ public:
     }
 
     template <bool sync = true, bool doPad = false>
-    __aicore__ inline void GetTensorC(const LocalTensor<DstT>& c, uint8_t enAtomic = 0,
-        bool enSequentialWrite = false, uint32_t height = 0, uint32_t width = 0, uint32_t srcGap = 0,
-        uint32_t dstGap = 0)
+    __aicore__ inline void GetTensorC(
+        const LocalTensor<DstT>& c, uint8_t enAtomic = 0, bool enSequentialWrite = false, uint32_t height = 0,
+        uint32_t width = 0, uint32_t srcGap = 0, uint32_t dstGap = 0)
     {
-        static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
-            "GetTensorC not support when enableMixDualMaster is enabled.");
-        static_assert(ToMatmulConfig(MM_CFG).enableGetTensorC,
-            "GetTensorC is not support when enableGetTensorC is disabled");
+        static_assert(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster, "GetTensorC not support when enableMixDualMaster is enabled.");
+        static_assert(
+            ToMatmulConfig(MM_CFG).enableGetTensorC, "GetTensorC is not support when enableGetTensorC is disabled");
         TRACE_START(TraceId::KFC_CLIENT_REV_MSG_UB);
         ASSERT(kfcMsg_.body.isFirstIter == 0);
         uint64_t singleSize;
@@ -1231,13 +1275,14 @@ public:
 #else
     // Synchronous interface. The user sends the GM address, which contains 64 bits.
     template <bool sync = true>
-    __aicore__ inline void GetTensorC(const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0,
-        bool enSequentialWrite = false)
+    __aicore__ inline void GetTensorC(
+        const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0, bool enSequentialWrite = false)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "GetTensorC not support when enableMixDualMaster is enabled");
-        static_assert(ToMatmulConfig(MM_CFG).enableGetTensorC,
-            "GetTensorC is not support when enableGetTensorC is disabled");
+        static_assert(
+            ToMatmulConfig(MM_CFG).enableGetTensorC, "GetTensorC is not support when enableGetTensorC is disabled");
         if constexpr (A_TYPE::ibShare && B_TYPE::ibShare) {
             ASSERT(false && "GetTensorC not support when sameab is enabled");
             return;
@@ -1261,14 +1306,15 @@ public:
 
     // Synchronous interface
     template <bool sync = true, bool doPad = false>
-    __aicore__ inline void GetTensorC(const LocalTensor<DstT>& c, uint8_t enAtomic = 0,
-        bool enSequentialWrite = false, uint32_t height = 0, uint32_t width = 0, uint32_t srcGap = 0,
-        uint32_t dstGap = 0)
+    __aicore__ inline void GetTensorC(
+        const LocalTensor<DstT>& c, uint8_t enAtomic = 0, bool enSequentialWrite = false, uint32_t height = 0,
+        uint32_t width = 0, uint32_t srcGap = 0, uint32_t dstGap = 0)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "GetTensorC not support when enableMixDualMaster is enabled");
-        static_assert(ToMatmulConfig(MM_CFG).enableGetTensorC,
-            "GetTensorC is not support when enableGetTensorC is disabled");
+        static_assert(
+            ToMatmulConfig(MM_CFG).enableGetTensorC, "GetTensorC is not support when enableGetTensorC is disabled");
         TRACE_START(TraceId::KFC_CLIENT_REV_MSG_UB);
         ASSERT(kfcMsg_.body.isFirstIter == 0);
         if (!isSyncGetC) { // Asynchronous
@@ -1321,13 +1367,14 @@ public:
 #endif
 
     template <bool sync = true>
-    __aicore__ inline void GetTensorC(const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& co2Local,
-        uint8_t enAtomic = 0, bool enSequentialWrite = false)
+    __aicore__ inline void GetTensorC(
+        const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& co2Local, uint8_t enAtomic = 0,
+        bool enSequentialWrite = false)
     {
-        static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
-            "GetTensorC not support when enableMixDualMaster is enabled.");
-        static_assert(ToMatmulConfig(MM_CFG).enableGetTensorC,
-            "GetTensorC is not support when enableGetTensorC is disabled");
+        static_assert(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster, "GetTensorC not support when enableMixDualMaster is enabled.");
+        static_assert(
+            ToMatmulConfig(MM_CFG).enableGetTensorC, "GetTensorC is not support when enableGetTensorC is disabled");
         TRACE_START(TraceId::KFC_CLIENT_REV_MSG_GM);
         ASSERT(kfcMsg_.body.isFirstIter == 0);
         ASSERT(isSyncGetC); // must synchronization mode
@@ -1354,10 +1401,10 @@ public:
     template <bool sync = true>
     __aicore__ inline GlobalTensor<DstT> GetTensorC(uint8_t enAtomic = 0, bool enSequentialWrite = false)
     {
-        static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
-            "GetTensorC not support when enableMixDualMaster is enabled.");
-        static_assert(ToMatmulConfig(MM_CFG).enableGetTensorC,
-            "GetTensorC is not support when enableGetTensorC is disabled");
+        static_assert(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster, "GetTensorC not support when enableMixDualMaster is enabled.");
+        static_assert(
+            ToMatmulConfig(MM_CFG).enableGetTensorC, "GetTensorC is not support when enableGetTensorC is disabled");
         TRACE_START(TraceId::KFC_CLIENT_REV_MSG_GM);
         ASSERT(kfcMsg_.body.isFirstIter == 0);
         ASSERT(!isSyncGetC); // Asynchronous only
@@ -1380,11 +1427,12 @@ public:
         GlobalTensor<DstT> global;
         if constexpr (ToMatmulConfig(MM_CFG).baseMN != 0) {
             size = ToMatmulConfig(MM_CFG).baseMN * sizeof(typename C_TYPE::T);
-            global.SetGlobalBuffer(reinterpret_cast<__gm__ DstT *>(cacheWorkspaceAddr + cOffset_),
-                ToMatmulConfig(MM_CFG).baseMN);
+            global.SetGlobalBuffer(
+                reinterpret_cast<__gm__ DstT*>(cacheWorkspaceAddr + cOffset_), ToMatmulConfig(MM_CFG).baseMN);
         } else {
             size = cubeTiling.GetBaseM() * cubeTiling.GetBaseN() * sizeof(typename C_TYPE::T);
-            global.SetGlobalBuffer(reinterpret_cast<__gm__ DstT *>(cacheWorkspaceAddr + cOffset_),
+            global.SetGlobalBuffer(
+                reinterpret_cast<__gm__ DstT*>(cacheWorkspaceAddr + cOffset_),
                 cubeTiling.GetBaseM() * cubeTiling.GetBaseN());
         }
         cOffset_ += size;
@@ -1393,9 +1441,11 @@ public:
     }
 
     template <bool sync = true>
-    __aicore__ inline GlobalTensor<DstT> GetBatchTensorC(uint32_t batchA, uint32_t batchB, bool enSequentialWrite = false)
+    __aicore__ inline GlobalTensor<DstT> GetBatchTensorC(
+        uint32_t batchA, uint32_t batchB, bool enSequentialWrite = false)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "GetBatchTensorC not support when enableMixDualMaster is enabled");
         GlobalTensor<DstT> global;
         if constexpr (!ToMatmulConfig(MM_CFG).isNBatch) {
@@ -1415,7 +1465,8 @@ public:
         }
 
         uint32_t batch = batchA > batchB ? batchA : batchB;
-        global.SetGlobalBuffer(reinterpret_cast<__gm__ DstT *>(cacheWorkspaceAddr + cOffset_),
+        global.SetGlobalBuffer(
+            reinterpret_cast<__gm__ DstT*>(cacheWorkspaceAddr + cOffset_),
             batch * cubeTiling.GetSingleCoreM() * cubeTiling.GetSingleCoreN());
         uint32_t size = batch * cubeTiling.GetSingleCoreM() * cubeTiling.GetSingleCoreN() * sizeof(typename C_TYPE::T);
         cOffset_ += size;
@@ -1426,17 +1477,18 @@ public:
     template <bool sync = true>
     __aicore__ inline GlobalTensor<DstT> GetBatchC(uint32_t batchA, uint32_t batchB, bool enSequentialWrite = false)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
-            "GetBatchC not support when enableMixDualMaster is enabled");
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster && "GetBatchC not support when enableMixDualMaster is enabled");
         return GetBatchTensorC(batchA, batchB, enSequentialWrite);
     }
 
     // coordinated use with IterateNBatch, get single IterateBatch outcome
     template <bool sync = true>
-    __aicore__ inline void GetBatchTensorC(const LocalTensor<DstT>& c, uint32_t batchA, uint32_t batchB,
-        bool enSequentialWrite = false)
+    __aicore__ inline void GetBatchTensorC(
+        const LocalTensor<DstT>& c, uint32_t batchA, uint32_t batchB, bool enSequentialWrite = false)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "GetBatchTensorC not support when enableMixDualMaster is enabled");
         if constexpr (!ToMatmulConfig(MM_CFG).isNBatch) {
             return;
@@ -1455,8 +1507,11 @@ public:
 #endif
         }
         // 计算batchC
-        uint32_t batchC = GetBatchCNum(batchA, batchB, cubeTiling.GetALayoutInfoG(), cubeTiling.GetBLayoutInfoG(), cubeTiling.GetCLayoutInfoG());
-        cOffset_ = CalcNBatchoffset<C_TYPE>(batchC, nbatchIter_, cubeTiling.GetCLayoutInfoN(), cubeTiling.GetCLayoutInfoG(), cubeTiling.GetSingleCoreN(), cubeTiling.GetCLayoutInfoS1());
+        uint32_t batchC = GetBatchCNum(
+            batchA, batchB, cubeTiling.GetALayoutInfoG(), cubeTiling.GetBLayoutInfoG(), cubeTiling.GetCLayoutInfoG());
+        cOffset_ = CalcNBatchoffset<C_TYPE>(
+            batchC, nbatchIter_, cubeTiling.GetCLayoutInfoN(), cubeTiling.GetCLayoutInfoG(),
+            cubeTiling.GetSingleCoreN(), cubeTiling.GetCLayoutInfoS1());
         CopyToUBBatch(c, cacheWorkspaceAddr + cOffset_, batchC);
         nbatchIter_ += 1;
 
@@ -1464,17 +1519,18 @@ public:
     }
 
     template <bool sync = true>
-    __aicore__ inline void GetBatchC(const LocalTensor<DstT>& c, uint32_t batchA, uint32_t batchB,
-        bool enSequentialWrite = false)
+    __aicore__ inline void GetBatchC(
+        const LocalTensor<DstT>& c, uint32_t batchA, uint32_t batchB, bool enSequentialWrite = false)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
-            "GetBatchC not support when enableMixDualMaster is enabled");
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster && "GetBatchC not support when enableMixDualMaster is enabled");
         GetBatchTensorC(c, batchA, batchB, enSequentialWrite);
     }
 
     __aicore__ inline void AsyncGetTensorC(const LocalTensor<DstT>& c)
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "AsyncGetTensorC not support when enableMixDualMaster is enabled");
         TRACE_START(TraceId::KFC_CLIENT_REV_MSG_GM);
         ASSERT(kfcMsg_.body.isFirstIter == 0);
@@ -1499,7 +1555,8 @@ public:
 
     __aicore__ inline void WaitGetTensorC()
     {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+        ASSERT(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "WaitGetTensorC not support when enableMixDualMaster is enabled");
         event_t eventID = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::MTE2_V));
         SetFlag<HardEvent::MTE2_V>(eventID);
@@ -1517,7 +1574,8 @@ public:
     __aicore__ inline void SetLocalWorkspace(const LocalTensor<uint8_t>& tmpBuffer)
     {
 #if defined(USE_SSBUF)
-        static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
+        static_assert(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster,
             "SetLocalWorkspace not support when enableMixDualMaster is enabled.");
         localWorkspace_ = tmpBuffer;
 #if ASCENDC_CPU_DEBUG
@@ -1543,9 +1601,11 @@ public:
             }
         }
         ASCENDC_ASSERT((localWorkspace_.GetSize() >= minUbNd2NzTmpSize), {
-                 KERNEL_LOG(KERNEL_ERROR, "For mxMatmul ub position input in ND format,"
-                 " scaleA/scaleB requires at latest %d Byte of temporary space.",
-                 minUbNd2NzTmpSize);
+            KERNEL_LOG(
+                KERNEL_ERROR,
+                "For mxMatmul ub position input in ND format,"
+                " scaleA/scaleB requires at latest %d Byte of temporary space.",
+                minUbNd2NzTmpSize);
         });
 #endif
 #endif
@@ -1556,9 +1616,11 @@ public:
 
     __aicore__ inline void SetTensorScaleA(const GlobalTensor<ScaleT>& gm, bool isTransposeScaleA = false)
     {
-        static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
+        static_assert(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster,
             "SetTensorScaleA not support when enableMixDualMaster is enabled.");
-        ASSERT(isTransposeScaleA <= A_TYPE::isScaleTrans &&
+        ASSERT(
+            isTransposeScaleA <= A_TYPE::isScaleTrans &&
             "It is not allowed to do scaleA transpose when matmul scaleA transpose is not defined.");
         kfcMsg_.body.quantMode = (kfcMsg_.body.quantMode & 0b10) | (static_cast<uint32_t>(isTransposeScaleA) & 0b01);
         kfcMsg_.body.quantAddr = reinterpret_cast<uint64_t>(gm.address_);
@@ -1566,20 +1628,22 @@ public:
 
     __aicore__ inline void SetTensorScaleA(const LocalTensor<ScaleT>& leftMatrix, bool isTransposeScaleA = false)
     {
-        static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
+        static_assert(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster,
             "SetTensorScaleA not support when enableMixDualMaster is enabled.");
-        ASSERT(isTransposeScaleA <= A_TYPE::isScaleTrans &&
+        ASSERT(
+            isTransposeScaleA <= A_TYPE::isScaleTrans &&
             "It is not allowed to do scaleA transpose when matmul scaleA transpose is not defined.");
         kfcMsg_.body.quantMode = (kfcMsg_.body.quantMode & 0b10) | (static_cast<uint32_t>(isTransposeScaleA) & 0b01);
         if constexpr (PhyMxScalePosIsL1<A_TYPE>()) {
             kfcMsg_.body.quantAddr = GetTscmAddr(leftMatrix);
             sizeScaleAmatrix_ = leftMatrix.GetSize() * sizeof(ScaleT);
-            auto intraId = (reinterpret_cast<TBufType *>(leftMatrix.GetBufferHandle()))->enQueEvtID;
+            auto intraId = (reinterpret_cast<TBufType*>(leftMatrix.GetBufferHandle()))->enQueEvtID;
             // 8 bit for intraID, 32 bit for addr
             kfcMsg_.body.quantAddr = (((uint64_t)intraId) << VALID_ADDR_BITS_NUM) + kfcMsg_.body.quantAddr;
         } else {
-            MSG_POS MsgMatmulL1Addr *matmulL1AddrMsg =
-                (MSG_POS MsgMatmulL1Addr *)GetMatmulL1AddrMsg(GetSubBlockIdxImpl(), this->instIdx);
+            MSG_POS MsgMatmulL1Addr* matmulL1AddrMsg =
+                (MSG_POS MsgMatmulL1Addr*)GetMatmulL1AddrMsg(GetSubBlockIdxImpl(), this->instIdx);
             while (!(matmulL1AddrMsg->valid)) {
             }
             kfcMsg_.body.quantAddr = matmulL1AddrMsg->l1aScaleAddr;
@@ -1590,30 +1654,36 @@ public:
 
     __aicore__ inline void SetTensorScaleB(const GlobalTensor<ScaleT>& gm, bool isTransposeScaleB = true)
     {
-        static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
+        static_assert(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster,
             "SetTensorScaleB not support when enableMixDualMaster is enabled.");
-        ASSERT(isTransposeScaleB <= B_TYPE::isScaleTrans &&
+        ASSERT(
+            isTransposeScaleB <= B_TYPE::isScaleTrans &&
             "It is not allowed to do scaleB transpose when matmul scaleB transpose is not defined.");
-        kfcMsg_.body.quantMode = (kfcMsg_.body.quantMode & 0b01) | ((static_cast<uint32_t>(isTransposeScaleB) & 0b01) << 1);
+        kfcMsg_.body.quantMode =
+            (kfcMsg_.body.quantMode & 0b01) | ((static_cast<uint32_t>(isTransposeScaleB) & 0b01) << 1);
         kfcMsg_.body.quantScalar = reinterpret_cast<uint64_t>(gm.address_);
     }
 
     __aicore__ inline void SetTensorScaleB(const LocalTensor<ScaleT>& rightMatrix, bool isTransposeScaleB = true)
     {
-        static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
+        static_assert(
+            !ToMatmulConfig(MM_CFG).enableMixDualMaster,
             "SetTensorScaleB not support when enableMixDualMaster is enabled.");
-        ASSERT(isTransposeScaleB <= B_TYPE::isScaleTrans &&
+        ASSERT(
+            isTransposeScaleB <= B_TYPE::isScaleTrans &&
             "It is not allowed to do scaleB transpose when matmul scaleB transpose is not defined.");
-        kfcMsg_.body.quantMode = (kfcMsg_.body.quantMode & 0b01) | ((static_cast<uint32_t>(isTransposeScaleB) & 0b01) << 1);
+        kfcMsg_.body.quantMode =
+            (kfcMsg_.body.quantMode & 0b01) | ((static_cast<uint32_t>(isTransposeScaleB) & 0b01) << 1);
         if constexpr (PhyMxScalePosIsL1<B_TYPE>()) {
             kfcMsg_.body.quantScalar = GetTscmAddr(rightMatrix);
             sizeScaleBmatrix_ = rightMatrix.GetSize() * sizeof(ScaleT);
-            auto intraId = (reinterpret_cast<TBufType *>(rightMatrix.GetBufferHandle()))->enQueEvtID;
+            auto intraId = (reinterpret_cast<TBufType*>(rightMatrix.GetBufferHandle()))->enQueEvtID;
             // 8 bit for intraID, 32 bit for addr
             kfcMsg_.body.quantScalar = (((uint64_t)intraId) << VALID_ADDR_BITS_NUM) + kfcMsg_.body.quantScalar;
         } else {
-            MSG_POS MsgMatmulL1Addr *matmulL1AddrMsg =
-                (MSG_POS MsgMatmulL1Addr *)GetMatmulL1AddrMsg(GetSubBlockIdxImpl(), this->instIdx);
+            MSG_POS MsgMatmulL1Addr* matmulL1AddrMsg =
+                (MSG_POS MsgMatmulL1Addr*)GetMatmulL1AddrMsg(GetSubBlockIdxImpl(), this->instIdx);
             while (!(matmulL1AddrMsg->valid)) {
             }
             kfcMsg_.body.quantScalar = matmulL1AddrMsg->l1bScaleAddr;
@@ -1626,14 +1696,8 @@ public:
 #if ASCENDC_CPU_DEBUG
 public:
     // this is useless code just for cpu debug
-    typename MatmulInstAux<IsSharedObj(MM_CFG),
-                                   A_TYPE,
-                                   B_TYPE,
-                                   C_TYPE,
-                                   BIAS_TYPE,
-                                   MM_CFG,
-                                   MM_CB,
-                                   MATMUL_POLICY>::MATMUL cubeObj;
+    typename MatmulInstAux<IsSharedObj(MM_CFG), A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::MATMUL
+        cubeObj;
 #endif
 
 private:
@@ -1677,11 +1741,13 @@ private:
     uint32_t scaleTmpBufSize_ = 0;
 #endif
     template <class T, class U>
-    friend __aicore__ inline void InitKfcClient(T& cubeObj, U *tiling, TPipe *tpipe, KfcCommClient *client, int instIdx,
-        GM_ADDR workspace);
-    template <class... Args> friend struct AscendC::GetCubeObjConfig;
+    friend __aicore__ inline void InitKfcClient(
+        T& cubeObj, U* tiling, TPipe* tpipe, KfcCommClient* client, int instIdx, GM_ADDR workspace);
+    template <class... Args>
+    friend struct AscendC::GetCubeObjConfig;
     constexpr static bool enableMixDualMaster = ToMatmulConfig(MM_CFG).enableMixDualMaster;
     constexpr static bool enableABShare = A_TYPE::ibShare && B_TYPE::ibShare;
+
 private:
     template <class T>
     __aicore__ inline void InitStatic(T* tiling)
@@ -1693,7 +1759,7 @@ private:
             this->cubeTiling.SetTiling(&cubeTiling);
         } else {
 #endif
-            this->cubeTiling.SetTiling((TCubeTiling *)tiling);
+            this->cubeTiling.SetTiling((TCubeTiling*)tiling);
 #if !defined(ASCENDC_CPU_DEBUG) && defined(__CCE_IS_AICORE__)
         }
 #endif
@@ -1721,7 +1787,8 @@ private:
     }
 
 #if defined(USE_WORKSPACE)
-    template <class T> __aicore__ inline uint64_t CopyGlobalAddr(GM_ADDR& gmDataAddr, const LocalTensor<T>& data)
+    template <class T>
+    __aicore__ inline uint64_t CopyGlobalAddr(GM_ADDR& gmDataAddr, const LocalTensor<T>& data)
     {
         event_t eventID = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_MTE3));
         SetFlag<HardEvent::V_MTE3>(eventID);
@@ -1736,8 +1803,8 @@ private:
         return reinterpret_cast<uint64_t>(gmDataAddr);
     }
 
-    template <class T, bool isCopy> __aicore__ inline uint64_t GetGlobalAddr(
-        const LocalTensor<T>& data)
+    template <class T, bool isCopy>
+    __aicore__ inline uint64_t GetGlobalAddr(const LocalTensor<T>& data)
     {
         uint64_t size = Ceil(data.GetSize() * sizeof(T), ONE_BLK_SIZE) * ONE_BLK_SIZE;
         if constexpr (IsSameType<T, int4b_t>::value) {
@@ -1752,7 +1819,8 @@ private:
     }
 #endif
 
-    template <class T> __aicore__ inline uint64_t GetTscmAddr(const LocalTensor<T>& data)
+    template <class T>
+    __aicore__ inline uint64_t GetTscmAddr(const LocalTensor<T>& data)
     {
 #if ASCENDC_CPU_DEBUG
         ASSERT(GetTPipePtr() != nullptr && "tpipe cannot be nullptr when matmul client post msg");
@@ -1763,24 +1831,26 @@ private:
     }
 
 #if defined(USE_SSBUF)
-    template <KFC_Enum funID, bool isAck> __aicore__ inline void PostMessage()
+    template <KFC_Enum funID, bool isAck>
+    __aicore__ inline void PostMessage()
     {
         if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
-            *((uint32_t *)&kfcMsg_.body) = 0;
+            *((uint32_t*)&kfcMsg_.body) = 0;
             return;
         }
         if constexpr (A_TYPE::ibShare && B_TYPE::ibShare) {
             if (GetSubBlockIdxImpl() == 1) {
                 client->PostSameABFakeMsg<isAck>(funID, this->instIdx);
-                *((uint32_t *)&kfcMsg_.body) = 0;
+                *((uint32_t*)&kfcMsg_.body) = 0;
                 return;
             }
         }
         auto msg = client->AllocMessage();
         ASSERT(msg != nullptr && "msg cannot be nullptr when matmul client post msg");
-        auto msgDst = reinterpret_cast<__ssbuf__ uint64_t *>(&(msg->body));
-        auto msgSrc = reinterpret_cast<uint64_t *>(&(kfcMsg_.body));
-        if constexpr (ToMatmulConfig(MM_CFG).enableQuantVector ||
+        auto msgDst = reinterpret_cast<__ssbuf__ uint64_t*>(&(msg->body));
+        auto msgSrc = reinterpret_cast<uint64_t*>(&(kfcMsg_.body));
+        if constexpr (
+            ToMatmulConfig(MM_CFG).enableQuantVector ||
             (ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_BATCH) != 0 ||
             (ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_N_BATCH) != 0 ||
             HasScalePosition<A_TYPE>::value || HasScalePosition<B_TYPE>::value) {
@@ -1800,15 +1870,16 @@ private:
         msg->head = KfcMsgMakeFlag(funID, this->instIdx, A_TYPE::ibShare && B_TYPE::ibShare);
         client->PostMessage<isAck>(msg);
         // clear flag
-        *((uint32_t *)&kfcMsg_.body) = 0;
+        *((uint32_t*)&kfcMsg_.body) = 0;
     }
 #else
-    template <KFC_Enum funID, bool isAck> __aicore__ inline void PostMessage()
+    template <KFC_Enum funID, bool isAck>
+    __aicore__ inline void PostMessage()
     {
         if constexpr (A_TYPE::ibShare && B_TYPE::ibShare) {
             ASSERT(DoMatmulNorm(MM_CFG) && "MM_CFG should use norm config when sameab is enabled");
-            if (GetSubBlockIdxImpl() == 1) { // Do not send v1's message to cube
-                *((uint32_t *)&kfcMsg_.body) = 0; // Clear all flag bits.
+            if (GetSubBlockIdxImpl() == 1) {     // Do not send v1's message to cube
+                *((uint32_t*)&kfcMsg_.body) = 0; // Clear all flag bits.
                 kfcMsg_.ubAddr = -1;
                 return;
             }
@@ -1827,32 +1898,34 @@ private:
         client->PostMessage<isAck>(msg);
 
         // clear flag
-        *((uint32_t*)&kfcMsg_.body) = 0;  // Clear all flag bits.
+        *((uint32_t*)&kfcMsg_.body) = 0; // Clear all flag bits.
         kfcMsg_.ubAddr = -1;
     }
 #endif
 
 #if defined(USE_SSBUF)
     template <bool sync = true>
-    __aicore__ inline void IterateAllCPU(const LocalTensor<DstT> &ubCmatrix, uint8_t enAtomic = 0,
-                                         bool enSequentialWrite = false, bool waitIterateAll = false)
+    __aicore__ inline void IterateAllCPU(
+        const LocalTensor<DstT>& ubCmatrix, uint8_t enAtomic = 0, bool enSequentialWrite = false,
+        bool waitIterateAll = false)
     {
 #if ASCENDC_CPU_DEBUG
         if ASCEND_IS_AIC {
             if constexpr (GetPhyType(C_TYPE::pos) == Hardware::UB) {
-                CrossCoreWaitFlag<INTRA_MODE, PIPE_FIX>(
-                    GetIntraFlagId(cubeObj.cubeObj[0].instID, static_cast<uint8_t>(CUBE_WAIT_INTRA_Enum::WAIT_FIXP), 0));
+                CrossCoreWaitFlag<INTRA_MODE, PIPE_FIX>(GetIntraFlagId(
+                    cubeObj.cubeObj[0].instID, static_cast<uint8_t>(CUBE_WAIT_INTRA_Enum::WAIT_FIXP), 0));
                 CrossCoreWaitFlag<INTRA_MODE, PIPE_FIX>(
                     cubeObj.cubeObj[0].instID + static_cast<uint8_t>(CUBE_WAIT_INTRA_Enum::WAIT_FIXP) + INTRA_NUM);
             }
             cubeObj.cubeObj[0].mul.IterateAll(ubCmatrix, enAtomic);
             if (sync || waitIterateAll) {
-                    CrossCoreSetFlag<INTRA_MODE, PIPE_FIX>(
-                        GetIntraFlagId(cubeObj.cubeObj[0].instID, static_cast<uint8_t>(VEC_WAIT_INTRA_Enum::WAIT_FIXP), 0U));
-                    if constexpr (A_TYPE::ibShare && B_TYPE::ibShare) {
-                        CrossCoreSetFlag<INTRA_MODE, PIPE_FIX>(GetIntraFlagId(cubeObj.cubeObj[0].instID,
-                            static_cast<uint8_t>(VEC_WAIT_INTRA_Enum::WAIT_FIXP), 1U)); // 1 means sub_block 1
-                    }
+                CrossCoreSetFlag<INTRA_MODE, PIPE_FIX>(GetIntraFlagId(
+                    cubeObj.cubeObj[0].instID, static_cast<uint8_t>(VEC_WAIT_INTRA_Enum::WAIT_FIXP), 0U));
+                if constexpr (A_TYPE::ibShare && B_TYPE::ibShare) {
+                    CrossCoreSetFlag<INTRA_MODE, PIPE_FIX>(GetIntraFlagId(
+                        cubeObj.cubeObj[0].instID, static_cast<uint8_t>(VEC_WAIT_INTRA_Enum::WAIT_FIXP),
+                        1U)); // 1 means sub_block 1
+                }
             }
             cubeObj.cubeObj[0].mul.End();
             return;
@@ -1860,14 +1933,14 @@ private:
 #endif
     }
 
-    __aicore__ inline void GetTensorCWithoutGm(const LocalTensor<DstT>& c, uint8_t enAtomic = 0,
-                                               bool enSequentialWrite = false)
+    __aicore__ inline void GetTensorCWithoutGm(
+        const LocalTensor<DstT>& c, uint8_t enAtomic = 0, bool enSequentialWrite = false)
     {
         // If the cache is not configured, the output is stored in the L0C buffer.
         if constexpr (A_TYPE::ibShare && B_TYPE::ibShare) {
             if (GetSubBlockIdxImpl() == 1) {
-                CrossCoreSetFlag<INTRA_MODE, PIPE_V>(static_cast<uint8_t>(CUBE_WAIT_INTRA_Enum::WAIT_FIXP) +
-                                                     this->instIdx);
+                CrossCoreSetFlag<INTRA_MODE, PIPE_V>(
+                    static_cast<uint8_t>(CUBE_WAIT_INTRA_Enum::WAIT_FIXP) + this->instIdx);
                 CrossCoreWaitFlag<INTRA_MODE, PIPE_V>(waitFixpId);
                 return;
             }
@@ -1889,7 +1962,8 @@ private:
     __aicore__ inline void PrepareABFromGM()
     {
         // there is hidden logic in c220, so only when use ssbuf need to check if gm is ready
-        if constexpr ((GetPhyType(A_TYPE::pos) == Hardware::GM && GetPhyType(A_TYPE::srcPos) == Hardware::UB) ||
+        if constexpr (
+            (GetPhyType(A_TYPE::pos) == Hardware::GM && GetPhyType(A_TYPE::srcPos) == Hardware::UB) ||
             (GetPhyType(B_TYPE::pos) == Hardware::GM && GetPhyType(B_TYPE::srcPos) == Hardware::UB) ||
             (GetPhyType(BIAS_TYPE::pos) == Hardware::GM && GetPhyType(BIAS_TYPE::srcPos) == Hardware::UB)) {
             // Op sometimes execute ub->gm in MTE3 before using iterate, can find matched wait flag in matmul server
@@ -1897,14 +1971,15 @@ private:
         }
     }
 
-    __aicore__ inline void PrepareABFromUb(bool isTransA, bool isTransB, bool isBias, bool isTransScaleA, bool isTransScaleB)
+    __aicore__ inline void PrepareABFromUb(
+        bool isTransA, bool isTransB, bool isBias, bool isTransScaleA, bool isTransScaleB)
     {
         constexpr bool isAnyInputFromUb = GetPhyType(A_TYPE::pos) == Hardware::UB ||
                                           GetPhyType(B_TYPE::pos) == Hardware::UB || PhyMxScalePosIsUB<A_TYPE>() ||
                                           PhyMxScalePosIsUB<B_TYPE>() || GetPhyType(BIAS_TYPE::pos) == Hardware::UB;
         // Ensure that the condition judgment matches the function WaitAB on the mmserver.
-        if constexpr (((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_NORMAL) != 0) &&
-                        isAnyInputFromUb) {
+        if constexpr (
+            ((ToMatmulConfig(MM_CFG).iterateMode & IterateMode::ITERATE_MODE_NORMAL) != 0) && isAnyInputFromUb) {
             // iterate mode only copy ub to l1 once
             if (cntIter_ != 0) {
                 return;
@@ -1916,7 +1991,8 @@ private:
         }
 
         if constexpr (GetPhyType(A_TYPE::pos) == Hardware::UB) {
-            if constexpr (ToMatmulConfig(MM_CFG).singleCoreM != 0 && ToMatmulConfig(MM_CFG).singleCoreN != 0 &&
+            if constexpr (
+                ToMatmulConfig(MM_CFG).singleCoreM != 0 && ToMatmulConfig(MM_CFG).singleCoreN != 0 &&
                 ToMatmulConfig(MM_CFG).singleCoreK != 0 && IsStaticPaddingEnable(MM_CFG)) {
                 CopyUbAToL1StaticTiling(isTransA);
             } else {
@@ -1962,7 +2038,8 @@ private:
     }
 
     template <class T>
-    __aicore__ inline void NDPadZeros(LocalTensor<T> &dst, const int32_t height, const int32_t width, const int32_t gCol)
+    __aicore__ inline void NDPadZeros(
+        LocalTensor<T>& dst, const int32_t height, const int32_t width, const int32_t gCol)
     {
         int32_t calcWidth = Ceil(width, c0Size_);
         if (gCol % BLOCK_CUBE) {
@@ -1980,7 +2057,8 @@ private:
                 int32_t totalRep = Ceil(height, NUM_EIGHT);
                 if (masktail != 0) {
                     // duplicate framework not support fp8/hif8, SE suggested pad by int8 0.
-                    if constexpr (IsSameType<T, hifloat8_t>::value || IsSameType<T, fp8_e5m2_t>::value ||
+                    if constexpr (
+                        IsSameType<T, hifloat8_t>::value || IsSameType<T, fp8_e5m2_t>::value ||
                         IsSameType<T, fp8_e4m3fn_t>::value) {
                         LocalTensor<int8_t> tmp = dst.template ReinterpretCast<int8_t>();
                         Duplicate(tmp[offset], (int8_t)0, mask, totalRep, stride, NUM_EIGHT * stride);
@@ -1994,7 +2072,8 @@ private:
         int tailHigh = height % BLOCK_CUBE;
         if (tailHigh) {
             auto dstOffset = height * calcWidth * BLOCK_CUBE;
-            if constexpr (IsSameType<T, hifloat8_t>::value || IsSameType<T, fp8_e5m2_t>::value ||
+            if constexpr (
+                IsSameType<T, hifloat8_t>::value || IsSameType<T, fp8_e5m2_t>::value ||
                 IsSameType<T, fp8_e4m3fn_t>::value) {
                 // duplicate framework not support fp8/hif8, SE suggested pad by int8 0.
                 LocalTensor<int8_t> tmp = dst.template ReinterpretCast<int8_t>();
@@ -2006,12 +2085,12 @@ private:
     }
 
     template <class T>
-    __aicore__ inline void NDTrans2NZ(LocalTensor<T> &dst, const LocalTensor<T> &src, const int32_t calcHigh,
-        const int32_t calcWidth)
+    __aicore__ inline void NDTrans2NZ(
+        LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t calcHigh, const int32_t calcWidth)
     {
         // Use Muls, convert to NZ format
         struct UnaryRepeatParams intriParams;
-        uint64_t mask[2] = { static_cast<uint64_t>(-1), static_cast<uint64_t>(-1) };
+        uint64_t mask[2] = {static_cast<uint64_t>(-1), static_cast<uint64_t>(-1)};
         intriParams.dstBlkStride = (BLOCK_CUBE * sizeof(T) / DEFAULT_C0_SIZE);
         intriParams.srcBlkStride = calcWidth * (BLOCK_CUBE * sizeof(T) / DEFAULT_C0_SIZE);
         intriParams.dstRepStride = intriParams.dstBlkStride * DEFAULT_BLK_NUM;
@@ -2042,8 +2121,7 @@ private:
                 srcOffset = i * BLOCK_CUBE;
                 Muls(dst[dstOffset], src[srcOffset], (T)1, mask, TWO * calcHigh, intriParams);
                 if constexpr (sizeof(T) == sizeof(float)) {
-                    Muls(dst[dstOffset + c0Size_], src[srcOffset + c0Size_], (T)1, mask, TWO * calcHigh,
-                        intriParams);
+                    Muls(dst[dstOffset + c0Size_], src[srcOffset + c0Size_], (T)1, mask, TWO * calcHigh, intriParams);
                 }
             }
         }
@@ -2051,30 +2129,31 @@ private:
 
     template <class T>
     __aicore__ inline void CopyNDBlock(
-    const LocalTensor<T>& transTensor, const LocalTensor<T>& src, const int64_t srcOffset, const int32_t height,
+        const LocalTensor<T>& transTensor, const LocalTensor<T>& src, const int64_t srcOffset, const int32_t height,
         const int32_t width)
     {
         int srcStride = 0;
         int blockLen = Ceil(width, c0Size_) * c0Size_ * sizeof(T) / DEFAULT_C0_SIZE;
         uint16_t dstStride = 0;
-        DataCopy(transTensor, src[srcOffset],
-            { static_cast<uint16_t>(height), static_cast<uint16_t>(blockLen), static_cast<uint16_t>(srcStride),
-            dstStride });
+        DataCopy(
+            transTensor, src[srcOffset],
+            {static_cast<uint16_t>(height), static_cast<uint16_t>(blockLen), static_cast<uint16_t>(srcStride),
+             dstStride});
         auto enQueEvtID = GetTPipePtr()->FetchEventID(HardEvent::MTE2_V);
         SetFlag<HardEvent::MTE2_V>((event_t)enQueEvtID);
         WaitFlag<HardEvent::MTE2_V>((event_t)enQueEvtID);
     }
 
     template <class T, InputTypeTag TAG, typename INPUT_TYPE>
-    __aicore__ inline void CopyUB2L1ND2NZ(LocalTensor<T>& dst, LocalTensor<T>& src,
-        const int32_t row, const int32_t col, const int32_t gCol, bool isTrans, const int32_t dstHeight)
+    __aicore__ inline void CopyUB2L1ND2NZ(
+        LocalTensor<T>& dst, LocalTensor<T>& src, const int32_t row, const int32_t col, const int32_t gCol,
+        bool isTrans, const int32_t dstHeight)
     {
         if constexpr (ToMatmulConfig(MM_CFG).enVecND2NZ) {
             LocalTensor<T> srcTensor = localWorkspace_[0].template ReinterpretCast<T>();
             srcTensor.SetSize(cubeTiling.GetTransLength());
             CopyNDBlock(srcTensor, src, 0, row, col);
-            LocalTensor<T> tmpBuffer =
-                localWorkspace_[cubeTiling.GetTransLength()].template ReinterpretCast<T>();
+            LocalTensor<T> tmpBuffer = localWorkspace_[cubeTiling.GetTransLength()].template ReinterpretCast<T>();
             int64_t size = Ceil(row, BLOCK_CUBE) * BLOCK_CUBE * Ceil(col, c0Size_) * c0Size_;
             tmpBuffer.SetSize(cubeTiling.GetTransLength());
             CopyUBND2UBNZ(tmpBuffer, srcTensor, row, col, gCol);
@@ -2086,8 +2165,9 @@ private:
 
     // borrowed from the same func in data_copy_wrapper_using_ub_nd.h, with only small adjustments.
     template <class T, InputTypeTag TAG, typename INPUT_TYPE>
-    __aicore__ inline void CopyND2NZOnTheFly(const LocalTensor<T> &dst, LocalTensor<T> &src, const int32_t height,
-        const int32_t width, const int32_t gCol, bool isTrans, const int32_t dstHeight)
+    __aicore__ inline void CopyND2NZOnTheFly(
+        const LocalTensor<T>& dst, LocalTensor<T>& src, const int32_t height, const int32_t width, const int32_t gCol,
+        bool isTrans, const int32_t dstHeight)
     {
         int tail = width % c0Size_;
         int calcWidthExr = Ceil(width, c0Size_);
@@ -2126,8 +2206,9 @@ private:
     }
 
     template <class T, InputTypeTag TAG>
-    __aicore__ inline void CopyND2NZOnTheFlyWithTail(const LocalTensor<T> &dst, LocalTensor<T> &src,
-        const int32_t height, const int32_t width, const int32_t gCol, bool isTrans)
+    __aicore__ inline void CopyND2NZOnTheFlyWithTail(
+        const LocalTensor<T>& dst, LocalTensor<T>& src, const int32_t height, const int32_t width, const int32_t gCol,
+        bool isTrans)
     {
         int calcWidth = width / c0Size_; // cube block numbers that do not need to be pad zero
         int tail = width % c0Size_;
@@ -2147,15 +2228,17 @@ private:
             // each block len is only 32B
             for (int i = 0; i < calcWidth; i++) {
                 for (int j = 0; j < height; j++) {
-                    DataCopy(dst[dstOffset + i * calcHeightExr * BLOCK_CUBE * c0Size_ + j * c0Size_],
-                        src[srcOffset + j * srcColOffset + i * c0Size_], { 1, 1, 0, 0 }, enhancedParams);
+                    DataCopy(
+                        dst[dstOffset + i * calcHeightExr * BLOCK_CUBE * c0Size_ + j * c0Size_],
+                        src[srcOffset + j * srcColOffset + i * c0Size_], {1, 1, 0, 0}, enhancedParams);
                 }
             }
         } else {
             // data copy stride is aligned
             for (int i = 0; i < calcWidth; i++) {
-                DataCopy(dst[dstOffset], src[srcOffset],
-                    { static_cast<uint16_t>(height), 1, static_cast<uint16_t>(srcGap), 0 }, enhancedParams);
+                DataCopy(
+                    dst[dstOffset], src[srcOffset],
+                    {static_cast<uint16_t>(height), 1, static_cast<uint16_t>(srcGap), 0}, enhancedParams);
                 dstOffset += calcHeightExr * BLOCK_CUBE * c0Size_;
                 srcOffset += c0Size_;
             }
@@ -2177,12 +2260,13 @@ private:
         // ub->l1
         int heightAlignBlock = Ceil(height, BLOCK_CUBE);
         int tailDstOffset = heightAlignBlock * BLOCK_CUBE * c0Size_ * calcWidth;
-        DataCopy(dst[tailDstOffset], trans, { static_cast<uint16_t>(height), 1, 0, 0 }, enhancedParams);
+        DataCopy(dst[tailDstOffset], trans, {static_cast<uint16_t>(height), 1, 0, 0}, enhancedParams);
     }
 
     template <class T>
-    __aicore__ inline void TailPadZero(const LocalTensor<T> &trans, const LocalTensor<T> &src,
-        const int32_t height, const int32_t width, const int32_t gCol)
+    __aicore__ inline void TailPadZero(
+        const LocalTensor<T>& trans, const LocalTensor<T>& src, const int32_t height, const int32_t width,
+        const int32_t gCol)
     {
         int calcWidth = width / c0Size_; // cube block numbers that do not need to be pad zero
         int tail = width % c0Size_;
@@ -2213,8 +2297,9 @@ private:
     }
 
     template <class T, typename INPUT_TYPE>
-    __aicore__ inline void CopyND2NZOnTheFlyWithoutTail(const LocalTensor<T> &dst, LocalTensor<T> &src,
-        const int32_t height, const int32_t width, const int32_t gCol, const int32_t dstHeight)
+    __aicore__ inline void CopyND2NZOnTheFlyWithoutTail(
+        const LocalTensor<T>& dst, LocalTensor<T>& src, const int32_t height, const int32_t width, const int32_t gCol,
+        const int32_t dstHeight)
     {
         int calcWidth = width / c0Size_; // cube block numbers that do not need to be pad zero
         int dstOffset = 0;
@@ -2230,7 +2315,7 @@ private:
             // each block len is only 32B
             for (int i = 0; i < calcWidth; i++) {
                 for (int j = 0; j < height; j++) {
-                    DataCopy(dst[dstOffset], src[srcOffset], { 1, 1, 0, 0 }, enhancedParams);
+                    DataCopy(dst[dstOffset], src[srcOffset], {1, 1, 0, 0}, enhancedParams);
                     dstOffset += c0Size_;
                     srcOffset += gCol;
                 }
@@ -2249,7 +2334,9 @@ private:
             int32_t mainHeight = height > maxRepTimes ? maxRepTimes : height;
             int32_t tailHeight = height % maxRepTimes;
             for (int i = 0; i < calcWidth; i++) {
-                DataCopy(dst[dstOffset], src[srcOffset], { static_cast<uint16_t>(mainHeight), 1, static_cast<uint16_t>(srcGap), 0 }, enhancedParams);
+                DataCopy(
+                    dst[dstOffset], src[srcOffset],
+                    {static_cast<uint16_t>(mainHeight), 1, static_cast<uint16_t>(srcGap), 0}, enhancedParams);
                 dstOffset += repDstOffset;
                 srcOffset += c0Size_;
             }
@@ -2257,7 +2344,9 @@ private:
                 dstOffset = maxRepTimes * c0Size_;
                 srcOffset = maxRepTimes * width;
                 for (int i = 0; i < calcWidth; i++) {
-                    DataCopy(dst[dstOffset], src[srcOffset], { static_cast<uint16_t>(tailHeight), 1, static_cast<uint16_t>(srcGap), 0 }, enhancedParams);
+                    DataCopy(
+                        dst[dstOffset], src[srcOffset],
+                        {static_cast<uint16_t>(tailHeight), 1, static_cast<uint16_t>(srcGap), 0}, enhancedParams);
                     dstOffset += repDstOffset;
                     srcOffset += c0Size_;
                 }
@@ -2266,8 +2355,8 @@ private:
     }
 
     template <class T>
-    __aicore__ inline void CopyUBND2UBNZ(LocalTensor<T>& dst, LocalTensor<T>& src,
-        const int32_t row, const int32_t col, const int32_t gCol)
+    __aicore__ inline void CopyUBND2UBNZ(
+        LocalTensor<T>& dst, LocalTensor<T>& src, const int32_t row, const int32_t col, const int32_t gCol)
     {
         int32_t calcHigh = Ceil(row, BLOCK_CUBE);
         int32_t calcWidth = Ceil(col, c0Size_);
@@ -2279,8 +2368,8 @@ private:
     }
 
     template <class T>
-    __aicore__ inline void CopyUB2L1NZ2NZ(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-        const int32_t row, const int32_t col)
+    __aicore__ inline void CopyUB2L1NZ2NZ(
+        const LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t row, const int32_t col)
     {
         if constexpr (HasScalePosition<A_TYPE>::value || HasScalePosition<B_TYPE>::value) {
             if (IsTypeOneOfV<T, fp4x2_e1m2_t, fp4x2_e2m1_t>) {
@@ -2303,26 +2392,33 @@ private:
             if constexpr (HasScalePosition<A_TYPE>::value) {
                 if constexpr (IsSupportMxFp8<SrcAT>()) {
                     dstHeight = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
-                    CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A, A_TYPE>(leftMatrix, srcTensor, singleCoreK_, singleCoreM_, singleCoreM_, isTrans, dstHeight);
+                    CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A, A_TYPE>(
+                        leftMatrix, srcTensor, singleCoreK_, singleCoreM_, singleCoreM_, isTrans, dstHeight);
                 } else if constexpr (IsSupportMxFp4<SrcAT>()) {
                     dstHeight = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
                     auto leftMatrixFp8 = leftMatrix.template ReinterpretCast<fp8_e4m3fn_t>();
                     auto srcFp8 = srcTensor.template ReinterpretCast<fp8_e4m3fn_t>();
                     c0Size_ = AscendC::Impl::B8_C0SIZE;
-                    CopyUB2L1ND2NZ<fp8_e4m3fn_t, InputTypeTag::A, A_TYPE>(leftMatrixFp8, srcFp8, singleCoreK_, singleCoreM_/multiOfB8b4, singleCoreM_/multiOfB8b4, isTrans, dstHeight);
-                } 
+                    CopyUB2L1ND2NZ<fp8_e4m3fn_t, InputTypeTag::A, A_TYPE>(
+                        leftMatrixFp8, srcFp8, singleCoreK_, singleCoreM_ / multiOfB8b4, singleCoreM_ / multiOfB8b4,
+                        isTrans, dstHeight);
+                }
             } else {
                 dstHeight = singleCoreK_;
-                CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A, A_TYPE>(leftMatrix, srcTensor, singleCoreK_, singleCoreM_, singleCoreM_, isTrans, dstHeight);
+                CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A, A_TYPE>(
+                    leftMatrix, srcTensor, singleCoreK_, singleCoreM_, singleCoreM_, isTrans, dstHeight);
             }
         } else {
             if constexpr (IsSupportMxFp4<SrcAT>()) {
                 auto leftMatrixFp8 = leftMatrix.template ReinterpretCast<fp8_e4m3fn_t>();
                 auto srcFp8 = srcTensor.template ReinterpretCast<fp8_e4m3fn_t>();
                 c0Size_ = AscendC::Impl::B8_C0SIZE;
-                CopyUB2L1ND2NZ<fp8_e4m3fn_t, InputTypeTag::A, A_TYPE>(leftMatrixFp8, srcFp8, singleCoreM_, singleCoreK_/multiOfB8b4, singleCoreK_/multiOfB8b4, isTrans,  Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE);
+                CopyUB2L1ND2NZ<fp8_e4m3fn_t, InputTypeTag::A, A_TYPE>(
+                    leftMatrixFp8, srcFp8, singleCoreM_, singleCoreK_ / multiOfB8b4, singleCoreK_ / multiOfB8b4,
+                    isTrans, Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE);
             } else {
-                CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A, A_TYPE>(leftMatrix, srcTensor, singleCoreM_, singleCoreK_, singleCoreK_, isTrans,
+                CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A, A_TYPE>(
+                    leftMatrix, srcTensor, singleCoreM_, singleCoreK_, singleCoreK_, isTrans,
                     Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE);
             }
         }
@@ -2350,7 +2446,8 @@ private:
     }
 
     template <class T>
-    __aicore__ inline void UbASizeCheck() {
+    __aicore__ inline void UbASizeCheck()
+    {
 #if ASCENDC_CPU_DEBUG
         int32_t innerDim = CeilAlign(singleCoreK_, c0Size_);
         int32_t outDim = singleCoreM_;
@@ -2362,17 +2459,21 @@ private:
         int32_t minAUbSize = outDim * innerDim;
         if constexpr (IsTypeOneOfV<T, fp4x2_e1m2_t, fp4x2_e2m1_t>) {
             srcUbSize = srcUbSize / AscendC::Impl::FP4_TWO;
-            minAUbSize = minAUbSize/ AscendC::Impl::FP4_TWO;
+            minAUbSize = minAUbSize / AscendC::Impl::FP4_TWO;
         }
         ASCENDC_ASSERT((srcUbSize >= minAUbSize), {
-            KERNEL_LOG(KERNEL_ERROR, "The width of matrix A on UB should be 32Byte aligned, and The expected size is height * CeilAlign(width, 32B) = %d Byte; currently, it is %d Byte.",
-            minAUbSize, srcUbSize);
+            KERNEL_LOG(
+                KERNEL_ERROR,
+                "The width of matrix A on UB should be 32Byte aligned, and The expected size is height * "
+                "CeilAlign(width, 32B) = %d Byte; currently, it is %d Byte.",
+                minAUbSize, srcUbSize);
         });
 #endif
     }
 
     template <class T>
-    __aicore__ inline void UbBSizeCheck() {
+    __aicore__ inline void UbBSizeCheck()
+    {
 #if ASCENDC_CPU_DEBUG
         int32_t innerDim = CeilAlign(singleCoreN_, c0Size_);
         int32_t outDim = singleCoreK_;
@@ -2387,22 +2488,25 @@ private:
             minBUbSize = minBUbSize / AscendC::Impl::FP4_TWO;
         }
         ASCENDC_ASSERT((srcUbSize >= minBUbSize), {
-            KERNEL_LOG(KERNEL_ERROR, "The width of matrix B on UB should be 32Byte aligned, and The expected size is height * CeilAlign(width, 32B) = %d Byte; currently, it is %d Byte.",
-            minBUbSize, srcUbSize);
+            KERNEL_LOG(
+                KERNEL_ERROR,
+                "The width of matrix B on UB should be 32Byte aligned, and The expected size is height * "
+                "CeilAlign(width, 32B) = %d Byte; currently, it is %d Byte.",
+                minBUbSize, srcUbSize);
         });
 #endif
-    }    
+    }
 
     __aicore__ inline void CopyUbAToL1(bool isTrans)
     {
         c0Size_ = AscendCUtils::GetC0Count(sizeof(SrcAT));
         auto bitSize = AscendC::GetBitSize<SrcAT>();
         int32_t orgHeightAlign = (IsNeedC0Align<SrcAT>() && A_TYPE::isTrans) ?
-            Ceil(singleCoreM_, c0Size_) * c0Size_ :
-            Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE;
+                                     Ceil(singleCoreM_, c0Size_) * c0Size_ :
+                                     Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE;
         int32_t orgWidthAlign = (IsTypeOneOfV<SrcAT, float> || IsNeedC0Align<SrcAT>()) ?
-            Ceil(singleCoreK_, c0Size_) * c0Size_ :
-            Ceil(singleCoreK_, BLOCK_CUBE) * BLOCK_CUBE;
+                                    Ceil(singleCoreK_, c0Size_) * c0Size_ :
+                                    Ceil(singleCoreK_, BLOCK_CUBE) * BLOCK_CUBE;
         TBuffAddr tbufOutTmp;
         tbufOutTmp.logicPos = (uint8_t)(TPosition::A1);
         if constexpr (HasScalePosition<A_TYPE>::value && A_TYPE::format == CubeFormat::ND) {
@@ -2411,7 +2515,7 @@ private:
         } else {
             tbufOutTmp.dataLen = orgHeightAlign * orgWidthAlign * bitSize;
         }
-        
+
         tbufOutTmp.bufferAddr = kfcMsg_.body.aAddr;
 #if ASCENDC_CPU_DEBUG
         tbufOutTmp.absAddr = GetTPipePtr()->GetBaseAddr(static_cast<uint8_t>(TPosition::A1)) + kfcMsg_.body.aAddr;
@@ -2430,7 +2534,7 @@ private:
             }
         } else if constexpr (A_TYPE::format == CubeFormat::VECTOR) {
             if (isTrans) {
-                ASCENDC_ASSERT((!isTrans), { KERNEL_LOG(KERNEL_ERROR, "A vector does not support transpose.");});
+                ASCENDC_ASSERT((!isTrans), { KERNEL_LOG(KERNEL_ERROR, "A vector does not support transpose."); });
                 return;
             }
             DataCopy(leftMatrix, srcTensor[0], {1, static_cast<uint16_t>(Ceil(singleCoreK_, c0Size_)), 0, 0});
@@ -2442,11 +2546,11 @@ private:
         c0Size_ = AscendCUtils::GetC0Count(sizeof(SrcAT));
         auto bitSize = AscendC::GetBitSize<SrcAT>();
         int32_t orgHeightAlign = (IsNeedC0Align<SrcAT>() && A_TYPE::isTrans) ?
-            Ceil(ToMatmulConfig(MM_CFG).singleCoreM, c0Size_) * c0Size_ :
-            Ceil(ToMatmulConfig(MM_CFG).singleCoreM, BLOCK_CUBE) * BLOCK_CUBE;
+                                     Ceil(ToMatmulConfig(MM_CFG).singleCoreM, c0Size_) * c0Size_ :
+                                     Ceil(ToMatmulConfig(MM_CFG).singleCoreM, BLOCK_CUBE) * BLOCK_CUBE;
         int32_t orgWidthAlign = (IsTypeOneOfV<SrcAT, float> || IsNeedC0Align<SrcAT>()) ?
-            Ceil(ToMatmulConfig(MM_CFG).singleCoreK, c0Size_) * c0Size_ :
-            Ceil(ToMatmulConfig(MM_CFG).singleCoreK, BLOCK_CUBE) * BLOCK_CUBE;
+                                    Ceil(ToMatmulConfig(MM_CFG).singleCoreK, c0Size_) * c0Size_ :
+                                    Ceil(ToMatmulConfig(MM_CFG).singleCoreK, BLOCK_CUBE) * BLOCK_CUBE;
         TBuffAddr tbufOutTmp;
         tbufOutTmp.logicPos = (uint8_t)(TPosition::A1);
         tbufOutTmp.dataLen = orgHeightAlign * orgWidthAlign * bitSize;
@@ -2460,28 +2564,33 @@ private:
         LocalTensor<SrcAT> srcTensor = GetVecTensor<SrcAT>(aAddr_, sizeAmatrix_ / bitSize);
         if constexpr (A_TYPE::format == CubeFormat::ND) {
             if (isTrans) {
-                CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A, A_TYPE>(leftMatrix, srcTensor, ToMatmulConfig(MM_CFG).singleCoreK,
-                    ToMatmulConfig(MM_CFG).singleCoreM, singleCoreM_, isTrans);
+                CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A, A_TYPE>(
+                    leftMatrix, srcTensor, ToMatmulConfig(MM_CFG).singleCoreK, ToMatmulConfig(MM_CFG).singleCoreM,
+                    singleCoreM_, isTrans);
             } else {
-                CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A, A_TYPE>(leftMatrix, srcTensor, ToMatmulConfig(MM_CFG).singleCoreM,
-                    ToMatmulConfig(MM_CFG).singleCoreK, singleCoreK_, isTrans);
+                CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A, A_TYPE>(
+                    leftMatrix, srcTensor, ToMatmulConfig(MM_CFG).singleCoreM, ToMatmulConfig(MM_CFG).singleCoreK,
+                    singleCoreK_, isTrans);
             }
         } else if constexpr (A_TYPE::format == CubeFormat::NZ) {
             if (isTrans) {
-                CopyUB2L1NZ2NZ(leftMatrix, srcTensor, ToMatmulConfig(MM_CFG).singleCoreK, ToMatmulConfig(MM_CFG).singleCoreM);
+                CopyUB2L1NZ2NZ(
+                    leftMatrix, srcTensor, ToMatmulConfig(MM_CFG).singleCoreK, ToMatmulConfig(MM_CFG).singleCoreM);
             } else {
-                CopyUB2L1NZ2NZ(leftMatrix, srcTensor, ToMatmulConfig(MM_CFG).singleCoreM, ToMatmulConfig(MM_CFG).singleCoreK);
+                CopyUB2L1NZ2NZ(
+                    leftMatrix, srcTensor, ToMatmulConfig(MM_CFG).singleCoreM, ToMatmulConfig(MM_CFG).singleCoreK);
             }
         } else if constexpr (A_TYPE::format == CubeFormat::VECTOR) {
             if (isTrans) {
-                ASCENDC_ASSERT((!isTrans), { KERNEL_LOG(KERNEL_ERROR, "A vector does not support transpose.");});
+                ASCENDC_ASSERT((!isTrans), { KERNEL_LOG(KERNEL_ERROR, "A vector does not support transpose."); });
                 return;
             }
             DataCopy(leftMatrix, srcTensor[0], {1, static_cast<uint16_t>(Ceil(singleCoreK_, c0Size_)), 0, 0});
         }
     }
 
-    __aicore__ inline void CopyUbBToL1ForND(LocalTensor<SrcBT>& rightMatrix, LocalTensor<SrcBT>& srcTensor, bool isTrans)
+    __aicore__ inline void CopyUbBToL1ForND(
+        LocalTensor<SrcBT>& rightMatrix, LocalTensor<SrcBT>& srcTensor, bool isTrans)
     {
         constexpr uint8_t multiOfB8b4 = 2;
         if (isTrans) {
@@ -2489,31 +2598,34 @@ private:
                 auto rightMatrixFp8 = rightMatrix.template ReinterpretCast<fp8_e4m3fn_t>();
                 auto srcFp8 = srcTensor.template ReinterpretCast<fp8_e4m3fn_t>();
                 c0Size_ = AscendC::Impl::B8_C0SIZE;
-                CopyUB2L1ND2NZ<fp8_e4m3fn_t, InputTypeTag::B, B_TYPE>(rightMatrixFp8, srcFp8, singleCoreN_, singleCoreK_/multiOfB8b4, singleCoreK_/multiOfB8b4,
-                                                    isTrans, Ceil(singleCoreN_, BLOCK_CUBE)*BLOCK_CUBE);
+                CopyUB2L1ND2NZ<fp8_e4m3fn_t, InputTypeTag::B, B_TYPE>(
+                    rightMatrixFp8, srcFp8, singleCoreN_, singleCoreK_ / multiOfB8b4, singleCoreK_ / multiOfB8b4,
+                    isTrans, Ceil(singleCoreN_, BLOCK_CUBE) * BLOCK_CUBE);
             } else {
-                CopyUB2L1ND2NZ<SrcBT, InputTypeTag::B, B_TYPE>(rightMatrix, srcTensor, singleCoreN_, singleCoreK_, singleCoreK_,
-                                                    isTrans, Ceil(singleCoreN_, BLOCK_CUBE)*BLOCK_CUBE);
+                CopyUB2L1ND2NZ<SrcBT, InputTypeTag::B, B_TYPE>(
+                    rightMatrix, srcTensor, singleCoreN_, singleCoreK_, singleCoreK_, isTrans,
+                    Ceil(singleCoreN_, BLOCK_CUBE) * BLOCK_CUBE);
             }
         } else {
             int32_t dstHeight;
             if constexpr (HasScalePosition<B_TYPE>::value) {
                 if constexpr (IsSupportMxFp8<SrcBT>()) {
                     dstHeight = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
-                    CopyUB2L1ND2NZ<SrcBT, InputTypeTag::B, B_TYPE>(rightMatrix, srcTensor, singleCoreK_, singleCoreN_, singleCoreN_,
-                                                        isTrans, dstHeight);
+                    CopyUB2L1ND2NZ<SrcBT, InputTypeTag::B, B_TYPE>(
+                        rightMatrix, srcTensor, singleCoreK_, singleCoreN_, singleCoreN_, isTrans, dstHeight);
                 } else if constexpr (IsSupportMxFp4<SrcBT>()) {
                     dstHeight = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
                     auto rightMatrixFp8 = rightMatrix.template ReinterpretCast<fp8_e4m3fn_t>();
                     auto srcFp8 = srcTensor.template ReinterpretCast<fp8_e4m3fn_t>();
                     c0Size_ = AscendC::Impl::B8_C0SIZE;
-                    CopyUB2L1ND2NZ<fp8_e4m3fn_t, InputTypeTag::B, B_TYPE>(rightMatrixFp8, srcFp8, singleCoreK_, singleCoreN_/multiOfB8b4, singleCoreN_/multiOfB8b4,
-                                                        isTrans, dstHeight);
-                } 
+                    CopyUB2L1ND2NZ<fp8_e4m3fn_t, InputTypeTag::B, B_TYPE>(
+                        rightMatrixFp8, srcFp8, singleCoreK_, singleCoreN_ / multiOfB8b4, singleCoreN_ / multiOfB8b4,
+                        isTrans, dstHeight);
+                }
             } else {
                 dstHeight = singleCoreK_;
-                CopyUB2L1ND2NZ<SrcBT, InputTypeTag::B, B_TYPE>(rightMatrix, srcTensor, singleCoreK_, singleCoreN_, singleCoreN_,
-                                                    isTrans, dstHeight);
+                CopyUB2L1ND2NZ<SrcBT, InputTypeTag::B, B_TYPE>(
+                    rightMatrix, srcTensor, singleCoreK_, singleCoreN_, singleCoreN_, isTrans, dstHeight);
             }
         }
     }
@@ -2522,12 +2634,11 @@ private:
     {
         c0Size_ = AscendCUtils::GetC0Count(sizeof(SrcBT));
         auto bitSize = AscendC::GetBitSize<SrcBT>();
-        int32_t orgHeightAlign = (IsNeedC0Align<SrcBT>()) ?
-            Ceil(singleCoreK_, c0Size_) * c0Size_ :
-            Ceil(singleCoreK_, BLOCK_CUBE) * BLOCK_CUBE;
+        int32_t orgHeightAlign = (IsNeedC0Align<SrcBT>()) ? Ceil(singleCoreK_, c0Size_) * c0Size_ :
+                                                            Ceil(singleCoreK_, BLOCK_CUBE) * BLOCK_CUBE;
         int32_t orgWidthAlign = (IsSameTypeV<SrcBT, float> || (IsNeedC0Align<SrcBT>() && !B_TYPE::isTrans)) ?
-            Ceil(singleCoreN_, c0Size_) * c0Size_ :
-            Ceil(singleCoreN_, BLOCK_CUBE) * BLOCK_CUBE;
+                                    Ceil(singleCoreN_, c0Size_) * c0Size_ :
+                                    Ceil(singleCoreN_, BLOCK_CUBE) * BLOCK_CUBE;
         TBuffAddr tbufOutTmp;
         tbufOutTmp.logicPos = (uint8_t)(TPosition::B1);
         if constexpr (HasScalePosition<B_TYPE>::value && B_TYPE::format == CubeFormat::ND) {
@@ -2550,7 +2661,7 @@ private:
         } else {
             tbufOutTmp.dataLen = orgHeightAlign * orgWidthAlign * bitSize;
         }
-        
+
         tbufOutTmp.bufferAddr = kfcMsg_.body.bAddr;
 #if ASCENDC_CPU_DEBUG
         tbufOutTmp.absAddr = GetTPipePtr()->GetBaseAddr(static_cast<uint8_t>(TPosition::B1)) + kfcMsg_.body.bAddr;
@@ -2586,8 +2697,8 @@ private:
         DataCopy(biasMatrix, bias, {1, static_cast<uint16_t>(Ceil(singleCoreN_, c0Size_)), 0, 0});
     }
 
-    __aicore__ inline void TransDataForScale(const LocalTensor<uint16_t>& dstU16,
-        const LocalTensor<uint16_t>& srcU16, const uint32_t h, const uint32_t w)
+    __aicore__ inline void TransDataForScale(
+        const LocalTensor<uint16_t>& dstU16, const LocalTensor<uint16_t>& srcU16, const uint32_t h, const uint32_t w)
     {
         constexpr int32_t dftTransData5hdLen = 16;
         constexpr int32_t h0 = 16;
@@ -2623,8 +2734,9 @@ private:
         }
     }
 
-    __aicore__ inline void ND2ScaleZZ(const LocalTensor<uint8_t>& l1Matrix, const LocalTensor<uint8_t>& src, 
-        uint32_t height, uint32_t width, uint32_t scaleK, uint32_t offset) 
+    __aicore__ inline void ND2ScaleZZ(
+        const LocalTensor<uint8_t>& l1Matrix, const LocalTensor<uint8_t>& src, uint32_t height, uint32_t width,
+        uint32_t scaleK, uint32_t offset)
     {
         auto dst = localWorkspace_[offset].template ReinterpretCast<uint8_t>();
         LocalTensor<uint16_t> dstTmpBuff = dst.template ReinterpretCast<uint16_t>();
@@ -2641,14 +2753,16 @@ private:
         uint16_t blockLen = actualW;
         uint16_t srcGap = b16W - actualW;
         uint16_t dstGap = 0;
-        DataCopyParams dataCopyParams = { blockCount, blockLen, srcGap, dstGap };
+        DataCopyParams dataCopyParams = {blockCount, blockLen, srcGap, dstGap};
         DataCopy(l1Matrix, dstU8, dataCopyParams);
     }
 
-    __aicore__ inline void CopyUbNZ2NZForScale(const LocalTensor<uint8_t>& l1Matrix, 
-        const LocalTensor<uint8_t>& src, uint32_t height, uint32_t width, uint32_t offset) 
+    __aicore__ inline void CopyUbNZ2NZForScale(
+        const LocalTensor<uint8_t>& l1Matrix, const LocalTensor<uint8_t>& src, uint32_t height, uint32_t width,
+        uint32_t offset)
     {
-        uint32_t dstSize = Ceil(height, BLOCK_CUBE) * BLOCK_CUBE * Ceil(width, BLOCK_CUBE) * BLOCK_CUBE * sizeof(uint8_t);
+        uint32_t dstSize =
+            Ceil(height, BLOCK_CUBE) * BLOCK_CUBE * Ceil(width, BLOCK_CUBE) * BLOCK_CUBE * sizeof(uint8_t);
         auto dst = localWorkspace_[offset].template ReinterpretCast<uint8_t>();
         dst.SetSize(dstSize);
         constexpr int32_t factor = 2;
@@ -2663,7 +2777,7 @@ private:
         uint16_t srcGap = (width / ONE_BLK_ELEMS) - 1;
         uint16_t dstGap = 0;
         uint16_t wAlignRep = width / ONE_BLK_ELEMS;
-        DataCopyParams copyParams{ repeat, blkLen, srcGap, dstGap };
+        DataCopyParams copyParams{repeat, blkLen, srcGap, dstGap};
         for (int32_t i = 0; i < wAlignRep; i++) {
             srcOffset = i * ONE_BLK_ELEMS;
             dstOffset = i * ONE_BLK_ELEMS * b16H;
@@ -2676,7 +2790,8 @@ private:
         CopyUB2L1NZ2NZ(l1Matrix, dstU8, height, width);
     }
 
-    __aicore__ inline void ScaleAUbSizeCheck(const LocalTensor<uint8_t>& srcTensor, int32_t scaleK) {
+    __aicore__ inline void ScaleAUbSizeCheck(const LocalTensor<uint8_t>& srcTensor, int32_t scaleK)
+    {
 #if ASCENDC_CPU_DEBUG
         int32_t innerDim = CeilAlign(scaleK, c0Size_);
         int32_t outDim = singleCoreM_;
@@ -2686,13 +2801,17 @@ private:
         }
         int32_t minScaleAUbSize = outDim * innerDim;
         ASCENDC_ASSERT((srcTensor.GetSize() >= minScaleAUbSize), {
-            KERNEL_LOG(KERNEL_ERROR, "The width of matrix scaleA on UB should be 32Byte aligned, and The expected size is height * CeilAlign(width, 32B) = %d Byte; currently, it is %d Byte.",
-            minScaleAUbSize, srcTensor.GetSize());
+            KERNEL_LOG(
+                KERNEL_ERROR,
+                "The width of matrix scaleA on UB should be 32Byte aligned, and The expected size is height * "
+                "CeilAlign(width, 32B) = %d Byte; currently, it is %d Byte.",
+                minScaleAUbSize, srcTensor.GetSize());
         });
 #endif
     }
 
-    __aicore__ inline void ScaleBUbSizeCheck(const LocalTensor<uint8_t>& srcTensor, int32_t scaleK) {
+    __aicore__ inline void ScaleBUbSizeCheck(const LocalTensor<uint8_t>& srcTensor, int32_t scaleK)
+    {
 #if ASCENDC_CPU_DEBUG
         int32_t innerDim = CeilAlign(singleCoreN_, c0Size_);
         int32_t outDim = scaleK;
@@ -2702,8 +2821,11 @@ private:
         }
         int32_t minScaleBUbSize = outDim * innerDim;
         ASCENDC_ASSERT((srcTensor.GetSize() >= minScaleBUbSize), {
-            KERNEL_LOG(KERNEL_ERROR, "The width of matrix scaleB on UB should be 32Byte aligned, and The expected size is height * CeilAlign(width, 32B) = %d Byte; currently, it is %d Byte.",
-            minScaleBUbSize, srcTensor.GetSize());
+            KERNEL_LOG(
+                KERNEL_ERROR,
+                "The width of matrix scaleB on UB should be 32Byte aligned, and The expected size is height * "
+                "CeilAlign(width, 32B) = %d Byte; currently, it is %d Byte.",
+                minScaleBUbSize, srcTensor.GetSize());
         });
 #endif
     }
@@ -2726,8 +2848,8 @@ private:
             }
             tbufOutTmp.dataLen = orgHeightAlign * orgWidthAlign * sizeof(ScaleT);
         } else {
-            tbufOutTmp.dataLen =
-            Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE * Ceil(singleCoreK_, BLOCK_CUBE) * BLOCK_CUBE * sizeof(ScaleT);
+            tbufOutTmp.dataLen = Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE * Ceil(singleCoreK_, BLOCK_CUBE) *
+                                 BLOCK_CUBE * sizeof(ScaleT);
         }
 
         tbufOutTmp.bufferAddr = kfcMsg_.body.quantAddr;
@@ -2738,14 +2860,15 @@ private:
         leftMatrix.SetAddr(tbufOutTmp);
         LocalTensor<ScaleT> srcTensor = GetVecTensor<ScaleT>(aScaleAddr_, sizeScaleAmatrix_ / sizeof(ScaleT));
         if constexpr (PhyMxScalePosIsUB<A_TYPE>()) {
-            if constexpr(A_TYPE::scaleFormat == CubeFormat::NZ) {
+            if constexpr (A_TYPE::scaleFormat == CubeFormat::NZ) {
                 if (isTrans) {
                     CopyUB2L1NZ2NZ(leftMatrix, srcTensor, singleCoreK_ / NUM_THIRTYTWO, singleCoreM_);
                 } else {
                     CopyUB2L1NZ2NZ(leftMatrix, srcTensor, singleCoreM_, singleCoreK_ / NUM_THIRTYTWO);
                 }
-            } else if constexpr(A_TYPE::scaleFormat == CubeFormat::VECTOR) {
-                DataCopy(leftMatrix, srcTensor,
+            } else if constexpr (A_TYPE::scaleFormat == CubeFormat::VECTOR) {
+                DataCopy(
+                    leftMatrix, srcTensor,
                     {1, static_cast<uint16_t>(Ceil(singleCoreK_ / NUM_THIRTYTWO, c0Size_)), 0, 0});
             } else if constexpr (A_TYPE::scaleFormat == CubeFormat::ND) {
                 if constexpr (SupportType<ScaleT, fp8_e8m0_t>()) {
@@ -2755,20 +2878,29 @@ private:
                 }
                 if (isTrans) {
                     if constexpr (SupportType<ScaleT, fp8_e8m0_t>()) {
-                        CopyUbNZ2NZForScale(reinterpret_cast<LocalTensor<uint8_t>&>(leftMatrix), reinterpret_cast<LocalTensor<uint8_t>&>(srcTensor),
-                            scaleK, Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE, scaleTmpBufSize_);
+                        CopyUbNZ2NZForScale(
+                            reinterpret_cast<LocalTensor<uint8_t>&>(leftMatrix),
+                            reinterpret_cast<LocalTensor<uint8_t>&>(srcTensor), scaleK,
+                            Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE, scaleTmpBufSize_);
                     } else {
-                        CopyUbNZ2NZForScale(leftMatrix, srcTensor, scaleK, Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE, scaleTmpBufSize_);
+                        CopyUbNZ2NZForScale(
+                            leftMatrix, srcTensor, scaleK, Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE,
+                            scaleTmpBufSize_);
                     }
                 } else {
                     if constexpr (SupportType<ScaleT, fp8_e8m0_t>()) {
-                        ND2ScaleZZ(reinterpret_cast<LocalTensor<uint8_t>&>(leftMatrix), reinterpret_cast<LocalTensor<uint8_t>&>(srcTensor),
-                            singleCoreM_, Ceil(scaleK, c0Size_) * c0Size_, scaleK, scaleTmpBufSize_);
+                        ND2ScaleZZ(
+                            reinterpret_cast<LocalTensor<uint8_t>&>(leftMatrix),
+                            reinterpret_cast<LocalTensor<uint8_t>&>(srcTensor), singleCoreM_,
+                            Ceil(scaleK, c0Size_) * c0Size_, scaleK, scaleTmpBufSize_);
                     } else {
-                        ND2ScaleZZ(leftMatrix, srcTensor, singleCoreM_, Ceil(scaleK, c0Size_) * c0Size_, scaleK, scaleTmpBufSize_);
+                        ND2ScaleZZ(
+                            leftMatrix, srcTensor, singleCoreM_, Ceil(scaleK, c0Size_) * c0Size_, scaleK,
+                            scaleTmpBufSize_);
                     }
                 }
-                scaleTmpBufSize_ += isTrans ? (Ceil(singleCoreM_, c0Size_) * c0Size_ * scaleK) : (Ceil(scaleK, c0Size_) * c0Size_ * singleCoreM_);
+                scaleTmpBufSize_ += isTrans ? (Ceil(singleCoreM_, c0Size_) * c0Size_ * scaleK) :
+                                              (Ceil(scaleK, c0Size_) * c0Size_ * singleCoreM_);
             }
         }
     }
@@ -2792,7 +2924,7 @@ private:
             tbufOutTmp.dataLen = orgHeightAlign * orgWidthAlign * sizeof(ScaleT);
         } else {
             tbufOutTmp.dataLen = Ceil(singleCoreK_ / NUM_THIRTYTWO, BLOCK_CUBE) * BLOCK_CUBE *
-            Ceil(singleCoreN_, BLOCK_CUBE) * BLOCK_CUBE * sizeof(ScaleT);
+                                 Ceil(singleCoreN_, BLOCK_CUBE) * BLOCK_CUBE * sizeof(ScaleT);
         }
         tbufOutTmp.bufferAddr = kfcMsg_.body.quantScalar;
 #if ASCENDC_CPU_DEBUG
@@ -2802,7 +2934,7 @@ private:
         rightMatrix.SetAddr(tbufOutTmp);
         LocalTensor<ScaleT> srcTensor = GetVecTensor<ScaleT>(bScaleAddr_, sizeScaleBmatrix_ / sizeof(ScaleT));
         if constexpr (PhyMxScalePosIsUB<B_TYPE>()) {
-            if constexpr(B_TYPE::scaleFormat == CubeFormat::NZ) {
+            if constexpr (B_TYPE::scaleFormat == CubeFormat::NZ) {
                 if (isBTrans) {
                     CopyUB2L1NZ2NZ(rightMatrix, srcTensor, singleCoreN_, singleCoreK_ / NUM_THIRTYTWO);
                 } else {
@@ -2816,20 +2948,30 @@ private:
                 }
                 if (isBTrans) {
                     if constexpr (SupportType<ScaleT, fp8_e8m0_t>()) {
-                        ND2ScaleZZ(reinterpret_cast<LocalTensor<uint8_t>&>(rightMatrix), reinterpret_cast<LocalTensor<uint8_t>&>(srcTensor),
-                            singleCoreN_, Ceil(scaleK, c0Size_) * c0Size_, scaleK, scaleTmpBufSize_);
+                        ND2ScaleZZ(
+                            reinterpret_cast<LocalTensor<uint8_t>&>(rightMatrix),
+                            reinterpret_cast<LocalTensor<uint8_t>&>(srcTensor), singleCoreN_,
+                            Ceil(scaleK, c0Size_) * c0Size_, scaleK, scaleTmpBufSize_);
                     } else {
-                        ND2ScaleZZ(rightMatrix, srcTensor, singleCoreN_, Ceil(scaleK, c0Size_) * c0Size_, scaleK, scaleTmpBufSize_);
+                        ND2ScaleZZ(
+                            rightMatrix, srcTensor, singleCoreN_, Ceil(scaleK, c0Size_) * c0Size_, scaleK,
+                            scaleTmpBufSize_);
                     }
                 } else {
                     if constexpr (SupportType<ScaleT, fp8_e8m0_t>()) {
-                        CopyUbNZ2NZForScale(reinterpret_cast<LocalTensor<uint8_t>&>(rightMatrix), reinterpret_cast<LocalTensor<uint8_t>&>(srcTensor),
-                            scaleK, Ceil(singleCoreN_, BLOCK_CUBE) * BLOCK_CUBE, scaleTmpBufSize_);
+                        CopyUbNZ2NZForScale(
+                            reinterpret_cast<LocalTensor<uint8_t>&>(rightMatrix),
+                            reinterpret_cast<LocalTensor<uint8_t>&>(srcTensor), scaleK,
+                            Ceil(singleCoreN_, BLOCK_CUBE) * BLOCK_CUBE, scaleTmpBufSize_);
                     } else {
-                        CopyUbNZ2NZForScale(rightMatrix, srcTensor, scaleK, Ceil(singleCoreN_, BLOCK_CUBE) * BLOCK_CUBE, scaleTmpBufSize_);
+                        CopyUbNZ2NZForScale(
+                            rightMatrix, srcTensor, scaleK, Ceil(singleCoreN_, BLOCK_CUBE) * BLOCK_CUBE,
+                            scaleTmpBufSize_);
                     }
                 }
-                scaleTmpBufSize_ += isBTrans ? (Ceil(singleCoreN_, BLOCK_CUBE) * BLOCK_CUBE * Ceil(scaleK, c0Size_) * c0Size_) : (scaleK * Ceil(singleCoreN_, c0Size_) * c0Size_);
+                scaleTmpBufSize_ +=
+                    isBTrans ? (Ceil(singleCoreN_, BLOCK_CUBE) * BLOCK_CUBE * Ceil(scaleK, c0Size_) * c0Size_) :
+                               (scaleK * Ceil(singleCoreN_, c0Size_) * c0Size_);
             }
         }
     }
@@ -2837,18 +2979,22 @@ private:
 
     // height width in unit of element
     template <class T, class U, bool sync = true>
-    __aicore__ inline void CopyToUBPad(const LocalTensor<T>& data, const __gm__ U* addr, uint32_t height = 0,
-        uint32_t width = 0, uint32_t srcGap = 0, uint32_t dstGap = 0)
+    __aicore__ inline void CopyToUBPad(
+        const LocalTensor<T>& data, const __gm__ U* addr, uint32_t height = 0, uint32_t width = 0, uint32_t srcGap = 0,
+        uint32_t dstGap = 0)
     {
-        ASSERT(C_TYPE::format == CubeFormat::ND_ALIGN &&
+        ASSERT(
+            C_TYPE::format == CubeFormat::ND_ALIGN &&
             "Only support padding in ND_ALIGN mode, please check template param of GetTensorC.");
 
-        DataCopyParams copyParams{ static_cast<uint16_t>(height), static_cast<uint16_t>(width * sizeof(T)),
-            static_cast<uint16_t>(srcGap), static_cast<uint16_t>(dstGap) };
-        DataCopyPadParams padParams{ true, 0,
+        DataCopyParams copyParams{
+            static_cast<uint16_t>(height), static_cast<uint16_t>(width * sizeof(T)), static_cast<uint16_t>(srcGap),
+            static_cast<uint16_t>(dstGap)};
+        DataCopyPadParams padParams{
+            true, 0,
             static_cast<uint8_t>(
-            ConstCeil(width, AscendCUtils::GetC0Count(sizeof(T))) * AscendCUtils::GetC0Count(sizeof(T)) - width),
-            0 };
+                ConstCeil(width, AscendCUtils::GetC0Count(sizeof(T))) * AscendCUtils::GetC0Count(sizeof(T)) - width),
+            0};
         GlobalTensor<T> globalTensor;
         globalTensor.SetGlobalBuffer((__gm__ T*)addr);
         DataCopyPad(data, globalTensor, copyParams, padParams);
@@ -2867,7 +3013,9 @@ private:
         globalTensor.SetGlobalBuffer((__gm__ T*)addr);
         if constexpr (C_TYPE::format == CubeFormat::ND_ALIGN) {
             CopyToUBBatchNDAlign(data, globalTensor, batchC);
-        } else if constexpr (C_TYPE::layout == LayoutMode::BNGS1S2 || C_TYPE::layout == LayoutMode::NORMAL || C_TYPE::format == CubeFormat::NZ) {
+        } else if constexpr (
+            C_TYPE::layout == LayoutMode::BNGS1S2 || C_TYPE::layout == LayoutMode::NORMAL ||
+            C_TYPE::format == CubeFormat::NZ) {
             uint32_t size = batchC * cubeTiling.GetSingleCoreM() * cubeTiling.GetSingleCoreN();
             DataCopy(data, globalTensor, size);
         } else if constexpr (C_TYPE::format == CubeFormat::ND) { // BSNGD SBNGD
@@ -2875,9 +3023,13 @@ private:
             repeatParams.blockCount = cubeTiling.GetSingleCoreM();
             repeatParams.blockLen = batchC * cubeTiling.GetSingleCoreN() * sizeof(T) / ONE_BLK_SIZE;
             if (C_TYPE::layout == LayoutMode::BSNGD) {
-                repeatParams.srcGap = (cubeTiling.GetCLayoutInfoN() * cubeTiling.GetCLayoutInfoG() - batchC) * cubeTiling.GetSingleCoreN() * sizeof(T) / ONE_BLK_SIZE;; 
+                repeatParams.srcGap = (cubeTiling.GetCLayoutInfoN() * cubeTiling.GetCLayoutInfoG() - batchC) *
+                                      cubeTiling.GetSingleCoreN() * sizeof(T) / ONE_BLK_SIZE;
             } else if (C_TYPE::layout == LayoutMode::SBNGD) {
-                repeatParams.srcGap = (cubeTiling.GetCLayoutInfoB() * cubeTiling.GetCLayoutInfoN() * cubeTiling.GetCLayoutInfoG() - batchC) * cubeTiling.GetSingleCoreN() * sizeof(T) / ONE_BLK_SIZE;;
+                repeatParams.srcGap =
+                    (cubeTiling.GetCLayoutInfoB() * cubeTiling.GetCLayoutInfoN() * cubeTiling.GetCLayoutInfoG() -
+                     batchC) *
+                    cubeTiling.GetSingleCoreN() * sizeof(T) / ONE_BLK_SIZE;
             }
             repeatParams.dstGap = repeatParams.srcGap;
             DataCopy(data, globalTensor, repeatParams);
@@ -2891,10 +3043,11 @@ private:
     }
 
     template <class T>
-    __aicore__ inline void CopyToUBBatchNDAlign(const LocalTensor<T>& data, const GlobalTensor<T> globalTensor, uint32_t batchC)
+    __aicore__ inline void CopyToUBBatchNDAlign(
+        const LocalTensor<T>& data, const GlobalTensor<T> globalTensor, uint32_t batchC)
     {
         int32_t alignedSingleCoreN = ConstCeil(cubeTiling.GetSingleCoreN(), AscendCUtils::GetC0Count(sizeof(T))) *
-                AscendCUtils::GetC0Count(sizeof(T));
+                                     AscendCUtils::GetC0Count(sizeof(T));
         int32_t offset;
         if constexpr (C_TYPE::layout == LayoutMode::BNGS1S2 || C_TYPE::layout == LayoutMode::NORMAL) {
             offset = cubeTiling.GetSingleCoreM() * alignedSingleCoreN;
@@ -2907,14 +3060,23 @@ private:
             copyParams.blockCount = cubeTiling.GetSingleCoreM();
             copyParams.blockLen = cubeTiling.GetSingleCoreN() * sizeof(T);
             if (C_TYPE::layout == LayoutMode::BSNGD) {
-                copyParams.srcStride = ((cubeTiling.GetCLayoutInfoN() * cubeTiling.GetCLayoutInfoG() - 1) * alignedSingleCoreN + padSize) * sizeof(T);
-                copyParams.dstStride = (cubeTiling.GetCLayoutInfoN() * cubeTiling.GetCLayoutInfoG() - 1) * alignedSingleCoreN * sizeof(T) / ONE_BLK_SIZE;  //对齐逻辑
+                copyParams.srcStride =
+                    ((cubeTiling.GetCLayoutInfoN() * cubeTiling.GetCLayoutInfoG() - 1) * alignedSingleCoreN + padSize) *
+                    sizeof(T);
+                copyParams.dstStride = (cubeTiling.GetCLayoutInfoN() * cubeTiling.GetCLayoutInfoG() - 1) *
+                                       alignedSingleCoreN * sizeof(T) / ONE_BLK_SIZE; // 对齐逻辑
             } else if (C_TYPE::layout == LayoutMode::SBNGD) {
-                copyParams.srcStride = ((cubeTiling.GetCLayoutInfoB() * cubeTiling.GetCLayoutInfoN() * cubeTiling.GetCLayoutInfoG() - 1) * alignedSingleCoreN + padSize)* sizeof(T);
-                copyParams.dstStride = (cubeTiling.GetCLayoutInfoB() * cubeTiling.GetCLayoutInfoN() * cubeTiling.GetCLayoutInfoG() - 1) * alignedSingleCoreN * sizeof(T) / ONE_BLK_SIZE;  //对齐逻辑
+                copyParams.srcStride =
+                    ((cubeTiling.GetCLayoutInfoB() * cubeTiling.GetCLayoutInfoN() * cubeTiling.GetCLayoutInfoG() - 1) *
+                         alignedSingleCoreN +
+                     padSize) *
+                    sizeof(T);
+                copyParams.dstStride =
+                    (cubeTiling.GetCLayoutInfoB() * cubeTiling.GetCLayoutInfoN() * cubeTiling.GetCLayoutInfoG() - 1) *
+                    alignedSingleCoreN * sizeof(T) / ONE_BLK_SIZE; // 对齐逻辑
             }
 
-            DataCopyPadParams padParams{ true, 0, static_cast<uint8_t>(padSize), 0};
+            DataCopyPadParams padParams{true, 0, static_cast<uint8_t>(padSize), 0};
             DataCopyPad(data[idx * offset], globalTensor[idx * offset], copyParams, padParams);
         }
     }
@@ -2930,19 +3092,23 @@ private:
             int32_t batchNum = 1;
             int32_t offset = 0;
             if constexpr (C_TYPE::layout != LayoutMode::NONE) {
-                int32_t alignedSingleCoreN = ConstCeil(cubeTiling.GetSingleCoreN(), AscendCUtils::GetC0Count(sizeof(T))) *
+                int32_t alignedSingleCoreN =
+                    ConstCeil(cubeTiling.GetSingleCoreN(), AscendCUtils::GetC0Count(sizeof(T))) *
                     AscendCUtils::GetC0Count(sizeof(T));
-                offset = cubeTiling.GetSingleCoreM()  * alignedSingleCoreN;
+                offset = cubeTiling.GetSingleCoreM() * alignedSingleCoreN;
                 batchNum = size / offset;
             }
             for (int32_t idx = 0; idx < batchNum; ++idx) {
-                DataCopyParams copyParams{ static_cast<uint16_t>(cubeTiling.GetSingleCoreM()),
-                    static_cast<uint16_t>(cubeTiling.GetSingleCoreN() * sizeof(T)), 0, 0 };
-                DataCopyPadParams padParams{ true, 0,
-                    static_cast<uint8_t>(ConstCeil(cubeTiling.GetSingleCoreN(), AscendCUtils::GetC0Count(sizeof(T))) *
-                    AscendCUtils::GetC0Count(sizeof(T)) -
-                    cubeTiling.GetSingleCoreN()),
-                    0 };
+                DataCopyParams copyParams{
+                    static_cast<uint16_t>(cubeTiling.GetSingleCoreM()),
+                    static_cast<uint16_t>(cubeTiling.GetSingleCoreN() * sizeof(T)), 0, 0};
+                DataCopyPadParams padParams{
+                    true, 0,
+                    static_cast<uint8_t>(
+                        ConstCeil(cubeTiling.GetSingleCoreN(), AscendCUtils::GetC0Count(sizeof(T))) *
+                            AscendCUtils::GetC0Count(sizeof(T)) -
+                        cubeTiling.GetSingleCoreN()),
+                    0};
                 DataCopyPad(data[idx * offset], globalTensor[idx * offset], copyParams, padParams);
             }
         } else {
@@ -2974,10 +3140,10 @@ private:
 };
 
 // Match Policy with CallBack parameter
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+template <
+    class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
-class MatmulClient
-: public MatmulClientBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY> {
+class MatmulClient : public MatmulClientBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY> {
 public:
     __aicore__ inline MatmulClient() {}
 };
@@ -2985,7 +3151,7 @@ public:
 // Kirin MatmulClient
 #include "../../../impl/adv_api/detail/matmul/kfc/matmul_client_impl_aicore.h"
 #endif
-} // namespace matmul
+} // namespace AscendC
 #endif
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATMUL_CLIENT_H__)

@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 #ifndef LIB_NORMALIZATION_DEEPNORM_TILING_H
 #define LIB_NORMALIZATION_DEEPNORM_TILING_H
 #include "graph/tensor.h"
@@ -26,8 +26,9 @@ namespace AscendC {
  * \return flag for whether the tmp buffer size is calculated successfully
  *         If src shape is illegal for basic block, it will return false.
  */
-bool GetDeepNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
-    const bool isBasicBlock, uint32_t& maxValue, uint32_t& minValue);
+bool GetDeepNormMaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, const bool isBasicBlock,
+    uint32_t& maxValue, uint32_t& minValue);
 
 /*!
  * \brief calculate tiling params for DeepNorm interface
@@ -44,9 +45,11 @@ bool GetDeepNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize
  * \return Flag for whether the tiling is calculated successfully. If src shape and origin src shape is illegal or
  *         input stackBufferSize is not big enough, it will return false.
  */
-bool GetDeepNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferSize,
-    const uint32_t typeSize, const bool isReuseSource, const bool isBasicBlock, optiling::DeepNormTiling& tiling);
-bool GetDeepNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferSize,
-    const uint32_t typeSize, const bool isReuseSource, const bool isBasicBlock, AscendC::tiling::DeepNormTiling& tiling);
-}
+bool GetDeepNormTilingInfo(
+    const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const bool isReuseSource, const bool isBasicBlock, optiling::DeepNormTiling& tiling);
+bool GetDeepNormTilingInfo(
+    const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const bool isReuseSource, const bool isBasicBlock, AscendC::tiling::DeepNormTiling& tiling);
+} // namespace AscendC
 #endif // LIB_NORMALIZATION_DEEPNORM_TILING_H

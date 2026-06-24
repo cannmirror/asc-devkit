@@ -95,7 +95,7 @@
 // srcLocal：输入数据
 // tmp：存储中间结果的临时空间
 // shape：输入数据的shape信息，当前仅支持2维
-uint32_t shape[] = { 2, 8 };
+uint32_t shape[] = {2, 8};
 // isReuse：是否允许修改源操作数srcLocal，true-允许，false-不允许
 constexpr bool isReuse = true;
 // 按尾轴求积，允许修改srcLocal
