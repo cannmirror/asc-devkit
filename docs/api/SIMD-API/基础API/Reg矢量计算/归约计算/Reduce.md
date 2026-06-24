@@ -156,7 +156,7 @@ uint16_t realIndex = *reinterpret_cast<uint16_t*>(&maxIndex);
 
 **提取MAX/MIN结果（值+索引）：**
 
-MAX/MIN归约产生两个有效结果，需要分别提取。以下示例中dstAddr为32B对齐地址，如果需要写出到非对齐地址，请参考[连续非对齐搬出\(StoreUnAlign\)](../Reg数据搬运/连续非对齐搬出.md)。
+MAX/MIN归约产生两个有效结果，需要分别提取。以下示例中dstAddr为32B对齐地址，如果需要写出到非对齐地址，请参考[连续非对齐搬出\(StoreUnAlign\)](../Reg数据搬出/连续非对齐搬出（StoreUnAlign）.md)。
 
 ```cpp
 AscendC::Reg::Reduce<AscendC::Reg::ReduceType::MAX>(dstReg, srcReg, pregFull); 

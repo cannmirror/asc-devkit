@@ -36,6 +36,8 @@ AllowAllArgumentsOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: true
 AlwaysBreakBeforeMultilineStrings: false
 AlwaysBreakTemplateDeclarations: true
+AttributeMacros:
+    - __aicore__
 
 BinPackArguments: true
 BreakBeforeTernaryOperators: false
