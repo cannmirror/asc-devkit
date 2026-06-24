@@ -21,7 +21,7 @@
 #ifndef IMPL_TENSOR_API_ARCH_VECTOR_GM_TO_UB_ROUTING_H
 #define IMPL_TENSOR_API_ARCH_VECTOR_GM_TO_UB_ROUTING_H
 
-#include "impl/tensor_api/arch/vector/gm_to_ub/npu_arch_3510/data_copy.h"
+#include "impl/tensor_api/arch/vector/gm_to_ub/copy_impl/data_copy.h"
 
 namespace AscendC {
 namespace Te {
@@ -34,14 +34,24 @@ public:
     }
 };
 
-template <typename dstTPos, typename srcTPos, uint32_t Version>
-struct CopyGM2UBTensor2Tensor {
+template <uint32_t Version, typename DstLayoutPtn, typename SrcLayoutPtn>
+struct CopyGM2UBRouting {
     using type = CopyGM2UBIgnore;
 };
 
-template <>
-struct CopyGM2UBTensor2Tensor<Location::UB, Location::GM, ArchVersion::V3510> {
-    using type = DataCopyGM2UB3510;
+template <uint32_t Version>
+struct CopyGM2UBRouting<Version, NDExtLayoutPtn, NDExtLayoutPtn> {
+    using type = DataCopyGM2UB;
+};
+
+template <uint32_t Version>
+struct CopyGM2UBRouting<Version, DNExtLayoutPtn, DNExtLayoutPtn> {
+    using type = DataCopyGM2UB;
+};
+
+template <uint32_t Version>
+struct CopyGM2UBRouting<Version, NZLayoutPtn, NZLayoutPtn> {
+    using type = DataCopyGM2UB;
 };
 
 } // namespace Te
