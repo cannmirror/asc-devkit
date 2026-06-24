@@ -477,7 +477,7 @@ AscendC::DumpTensor(yLocal, 1, 16);
 
 > **Notice:** The DumpTensor interface printing functionality will impact actual operator running performance and is typically used during the debugging phase. Developers can disable printing by setting ASCENDC_DUMP=0 as needed.
 
-### Performance Debugging
+## Performance Debugging
 
 Use the `msprof` tool to obtain detailed performance data:
 
