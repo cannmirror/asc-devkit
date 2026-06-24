@@ -13,7 +13,7 @@ set -euo pipefail
 
 CASE_REL=01_simd_cpp_api/05_best_practices/08_simd_simt_hybrid/simt_and_simd_grid_dim_config
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/../../../../_case_entry.sh"
+source "$SCRIPT_DIR/../../../_case_entry.sh"
 presmoke_case_init "$CASE_REL"
 
 case_build() {

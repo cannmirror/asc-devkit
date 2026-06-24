@@ -1,4 +1,4 @@
-# SIMT与SIMD混合编程实现gather和adds计算
+# SIMD与SIMT混合编程实现gather和adds计算
 
 ## 概述
 本样例基于SIMT和SIMD混合编程模式实现gather和adds计算，以SIMT编程方式实现离散内存访问操作gather，以SIMD编程方式实现连续内存访问操作adds。
@@ -13,7 +13,7 @@
 ## 目录结构介绍
 
 ```text
-├── gather_adds_simt_simd_hybrid
+├── simd_simt_gather_and_adds
 │   ├── scripts
 │   │   ├── gen_data.py         // 输入数据和真值数据生成脚本
 │   │   └── verify_result.py    // 真值对比文件
@@ -43,7 +43,7 @@
   </table>
 
 - 样例实现：  
-  Vector Core中SIMT单元和SIMD单元共享片上存储，可以使用片上存储完成SIMT和SIMD的混合编程。本例中样例输入index的shape为[8192]，可设置核数为8，每个核处理数据量为1024，设置线程数THREAD_COUNT为1024，每个线程处理1个数据元素，单个核只需调用1次simt_gather函数即可完成gather运算。
+  Vector Core中SIMT单元和SIMD单元共享片上存储，可以使用片上存储完成SIMD和SIMT的混合编程。本例中样例输入index的shape为[8192]，可设置核数为8，每个核处理数据量为1024，设置线程数THREAD_COUNT为1024，每个线程处理1个数据元素，单个核只需调用1次simt_gather函数即可完成gather运算。
 
   > ⚠️ **注意** 当单核处理数据量大于设置的线程数时，需要切分数据到多个线程块，可使用asc_vf_call多次调用simt_gather函数启动多个线程块完成获取指定索引数据的操作。
 
@@ -80,7 +80,7 @@
 
 在本样例根目录下执行如下步骤，编译并执行样例。
 - 配置环境变量  
-  请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，配置环境变量。
+  请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，配置环境变量。
   ```bash
   source ${install_path}/cann/set_env.sh
   ```
