@@ -21,7 +21,7 @@
 #ifndef IMPL_TENSOR_API_ARCH_VECTOR_UB_TO_L1_ROUTING_H
 #define IMPL_TENSOR_API_ARCH_VECTOR_UB_TO_L1_ROUTING_H
 
-#include "impl/tensor_api/arch/vector/ub_to_l1/npu_arch_3510/data_copy.h"
+#include "impl/tensor_api/arch/vector/ub_to_l1/copy_impl/data_copy.h"
 
 namespace AscendC {
 namespace Te {
@@ -34,14 +34,24 @@ public:
     }
 };
 
-template <typename dstTPos, typename srcTpos, uint32_t Version>
-struct CopyUB2L1Tensor2Tensor {
+template <uint32_t Version, typename DstLayoutPtn, typename SrcLayoutPtn>
+struct CopyUB2L1Routing {
     using type = CopyUB2L1Ignore;
 };
 
-template <>
-struct CopyUB2L1Tensor2Tensor<Location::L1, Location::UB, ArchVersion::V3510> {
-    using type = DataCopyUB2L13510;
+template <uint32_t Version>
+struct CopyUB2L1Routing<Version, NDExtLayoutPtn, NDExtLayoutPtn> {
+    using type = DataCopyUB2L1;
+};
+
+template <uint32_t Version>
+struct CopyUB2L1Routing<Version, DNExtLayoutPtn, DNExtLayoutPtn> {
+    using type = DataCopyUB2L1;
+};
+
+template <uint32_t Version>
+struct CopyUB2L1Routing<Version, NZLayoutPtn, NZLayoutPtn> {
+    using type = DataCopyUB2L1;
 };
 
 } // namespace Te

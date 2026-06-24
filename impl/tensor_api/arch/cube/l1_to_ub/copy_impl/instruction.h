@@ -48,9 +48,7 @@ private:
             return;
         }
 
-        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            asc_copy_l12ub(dst, src, 0, blockCount, blockLen, srcStride, dstStride);
-        }
+        asc_copy_l12ub(dst, src, 0, blockCount, blockLen, srcStride, dstStride);
     }
 };
 
