@@ -252,7 +252,7 @@ bank冲突主要可以分为以下三种场景：
 
 >[!NOTE]说明 
 >通过msProf工具可以进行资源冲突占比的相关性能数据采集。
->工具的具体使用方法和资源冲突占比文件性能数据文件说明请参考[《算子开发工具用户指南》](https://hiascend.com/document/redirect/CannCommercialToolOpDev)。
+>工具的具体使用方法和资源冲突占比文件性能数据文件说明请参考[《算子开发工具用户指南》](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta1/devaids/optool/docs/zh/quick_start/mskpp_quick_start.md)。
 
 ## 如何避免bank冲突<a name="section12501642143515"></a>
 
