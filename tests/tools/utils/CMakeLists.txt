@@ -206,7 +206,7 @@ target_include_directories(ops_utest PRIVATE
     ${ASCENDC_TEST_HEADER_FILES}
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base/
     ${ASCEND_CANN_PACKAGE_PATH}/include/base/
-    ${ASCENDC_DIR}/tools/build/opbuild/common/
+    ${ASCENDC_DIR}/tools/build/common/
     ${ASCEND_CANN_PACKAGE_PATH}/tools/msopgen/template/custom_operator_sample/DSL/Onnx/metadef/inc
     mmpa_headers
     slog_headers
@@ -256,7 +256,7 @@ target_compile_options(ascendc_ut_asc_tikcpp_utest_opbuild PRIVATE
 
 target_include_directories(ascendc_ut_asc_tikcpp_utest_opbuild PRIVATE
     ${ASCENDC_DIR}/tools/build/opbuild
-    ${ASCENDC_DIR}/tools/build/opbuild/common/
+    ${ASCENDC_DIR}/tools/build/common/
     ${ASCENDC_TEST_HEADER_FILES}
     ${ASCEND_CANN_PACKAGE_PATH}/include/base/
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base/

@@ -178,6 +178,23 @@ TEST_F(TEST_PACKKERNEL, ascendcPackKernelFopenError)
     EXPECT_EQ(retSize, 0);
 }
 
+TEST_F(TEST_PACKKERNEL, ascendcPackKernelFileIoRoundTrip)
+{
+    std::string fileName = GetFileName();
+    const char writeBuf[] = "ascendc-pack-kernel";
+    char readBuf[sizeof(writeBuf)] = {0};
+
+    size_t writeSize = WriteFile(fileName.c_str(), const_cast<char*>(writeBuf), sizeof(writeBuf));
+    EXPECT_EQ(writeSize, sizeof(writeBuf));
+    EXPECT_EQ(GetFileSize(fileName.c_str()), sizeof(writeBuf));
+
+    size_t readSize = ReadFile(fileName.c_str(), readBuf, sizeof(readBuf));
+    EXPECT_EQ(readSize, sizeof(writeBuf));
+    EXPECT_STREQ(readBuf, writeBuf);
+
+    (void)unlink(fileName.c_str());
+}
+
 TEST_F(TEST_PACKKERNEL, ascendcPackKernelErrorType)
 {
     std::string src0fileName = GetFileName();

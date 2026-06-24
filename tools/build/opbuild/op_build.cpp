@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file op_build.cpp
@@ -27,7 +27,7 @@ constexpr uint32_t ARG_NUM_LIB = 1;
 constexpr uint32_t ARG_NUM_PATH = 2;
 constexpr uint32_t ARG_NUM_VALID = 3;
 constexpr uint32_t ARG_NUM_MAX = 16;
-}
+} // namespace
 
 #ifndef UT_TEST
 int main(int argc, char* argv[])
@@ -59,12 +59,15 @@ int opbuild_main(int argc, std::vector<std::string> args)
     for (auto& op : allOps) {
         const std::string opType = op.GetString();
         if (!ops::IsVaildOpTypeName(opType)) {
-            ASCENDLOGW("Optype: [%s] does not comply with the naming convention; it is recommended to \
-use the PascalCase format.", opType.c_str());
+            ASCENDLOGW(
+                "Optype: [%s] does not comply with the naming convention; it is recommended to \
+use the PascalCase format.",
+                opType.c_str());
         }
         stdOps.emplace_back(opType);
     }
-    opbuild::Status result = ops::GeneratorFactory::SetGenPath(opbuild::Params::GetInstance().Required(ARG_NUM_PATH).c_str());
+    opbuild::Status result =
+        ops::GeneratorFactory::SetGenPath(opbuild::Params::GetInstance().Required(ARG_NUM_PATH).c_str());
     if (result == opbuild::OPBUILD_FAILED) {
         dlclose(handle);
         ASCENDLOGE("set generate path failed!");

@@ -18,6 +18,7 @@
 #define protected public
 #include "mockcpp/mockcpp.hpp"
 #include "op_cfg_generator.h"
+#include "op_cpu_cfg_generator.h"
 #include "op_proto_generator.h"
 #include "op_aclnn_generator.h"
 #include "op_build_params.h"
@@ -77,6 +78,151 @@ TEST_F(TEST_OPBUILD, OpBuildCoverageModeTest)
     path = "core";
     status = Generator::SetCPUMode(path);
     EXPECT_EQ(status, opbuild::OPBUILD_FAILED);
+}
+
+TEST_F(TEST_OPBUILD, CfgGeneratorParamHelperCoverage)
+{
+    std::vector<std::string> opsvec({"Adds"});
+    CfgGenerator cfgGen(opsvec);
+    std::string formats;
+    std::string dataTypes;
+    std::vector<ge::Format> formatVec = {ge::FORMAT_ND, ge::FORMAT_NCHW};
+    std::vector<ge::DataType> dataTypeVec = {
+        ge::DT_FLOAT,          ge::DT_FLOAT16,       ge::DT_INT8,        ge::DT_INT16,       ge::DT_INT32,
+        ge::DT_INT64,          ge::DT_UINT1,         ge::DT_UINT8,       ge::DT_UINT16,      ge::DT_UINT32,
+        ge::DT_UINT64,         ge::DT_BOOL,          ge::DT_DOUBLE,      ge::DT_DUAL,        ge::DT_DUAL_SUB_INT8,
+        ge::DT_DUAL_SUB_UINT8, ge::DT_STRING,        ge::DT_COMPLEX64,   ge::DT_COMPLEX128,  ge::DT_QINT8,
+        ge::DT_QINT16,         ge::DT_QINT32,        ge::DT_QUINT8,      ge::DT_QUINT16,     ge::DT_RESOURCE,
+        ge::DT_STRING_REF,     ge::DT_INT4,          ge::DT_INT2,        ge::DT_BF16,        ge::DT_COMPLEX32,
+        ge::DT_HIFLOAT8,       ge::DT_FLOAT8_E4M3FN, ge::DT_FLOAT8_E5M2, ge::DT_FLOAT8_E8M0, ge::DT_FLOAT6_E3M2,
+        ge::DT_FLOAT6_E2M3,    ge::DT_FLOAT4_E2M1,   ge::DT_FLOAT4_E1M2};
+
+    cfgGen.GetParamFormats(formatVec, formats);
+    cfgGen.GetParamDataTypes(dataTypeVec, dataTypes);
+
+    EXPECT_EQ(cfgGen.GetDataTypeName(ge::DT_FLOAT), "float32");
+    EXPECT_EQ(cfgGen.GetDataTypeName(ge::DT_INT2), "int2");
+    EXPECT_EQ(cfgGen.GetDataTypeName(ge::DT_FLOAT4_E1M2), "float4_e1m2");
+    EXPECT_EQ(cfgGen.GetDataTypeName(static_cast<ge::DataType>(-1)), "unknow");
+    EXPECT_EQ(cfgGen.GetParamTypeName(REQUIRED), "required");
+    EXPECT_EQ(cfgGen.GetParamTypeName(100U), "unknow");
+    EXPECT_EQ(formats, "ND,NCHW");
+    EXPECT_NE(dataTypes.find("float32,float16,int8,int16,int32,int64"), std::string::npos);
+    EXPECT_NE(dataTypes.find("float8_e4m3fn,float8_e5m2,float8_e8m0"), std::string::npos);
+    EXPECT_NE(dataTypes.find("float6_e3m2,float6_e2m3,float4_e2m1,float4_e1m2"), std::string::npos);
+}
+
+TEST_F(TEST_OPBUILD, CfgGeneratorGenParamInfoCoverage)
+{
+    std::string fileName = "cfg_param_info_" + std::to_string(getpid()) + ".txt";
+    std::ofstream outfile = std::ofstream(fileName);
+    OpDef opDef("CfgParamInfoCoverage");
+    opDef.Input("x1")
+        .ParamType(REQUIRED)
+        .DataType({ge::DT_FLOAT16})
+        .DataTypeForBinQuery({ge::DT_FLOAT})
+        .Format({ge::FORMAT_ND})
+        .FormatForBinQuery({ge::FORMAT_NCHW})
+        .UnknownShapeFormat({ge::FORMAT_ND})
+        .ValueDepend(REQUIRED);
+    opDef.Input("x2").ParamType(VIRTUAL).DataType({ge::DT_INT64}).InitValue(0);
+    opDef.Output("y1")
+        .ParamType(REQUIRED)
+        .DataType({ge::DT_INT16, ge::DT_FLOAT})
+        .InitValue({{ScalarType::INT16, 1}, {ScalarType::FLOAT32, 3.2}});
+    std::vector<OpParamDef> inputs = opDef.GetInputs();
+    std::vector<OpParamDef> outputs = opDef.GetOutputs();
+
+    std::vector<std::string> opsvec({"CfgParamInfoCoverage"});
+    CfgGenerator cfgGen(opsvec);
+    cfgGen.GenParamInfo(outfile, inputs, false);
+    cfgGen.GenParamInfo(outfile, outputs, true);
+    outfile.close();
+
+    std::ifstream resultFile(fileName);
+    EXPECT_TRUE(resultFile.is_open());
+    std::stringstream streamBuffer;
+    streamBuffer << resultFile.rdbuf();
+    std::string resultString(streamBuffer.str());
+    resultFile.close();
+    EXPECT_NE(resultString.find("input0.for_bin_dtype=float32"), std::string::npos);
+    EXPECT_NE(resultString.find("input0.for_bin_format=NCHW"), std::string::npos);
+    EXPECT_NE(resultString.find("input0.unknownshape_format=ND"), std::string::npos);
+    EXPECT_NE(resultString.find("input0.valueDepend=required"), std::string::npos);
+    EXPECT_NE(resultString.find("input1.paramType=optional"), std::string::npos);
+    EXPECT_NE(resultString.find("input1.virtual=true"), std::string::npos);
+    EXPECT_NE(resultString.find("input1.initValue=0"), std::string::npos);
+    EXPECT_NE(resultString.find("output0.initValue={ \"is_list\" : true"), std::string::npos);
+    EXPECT_NE(resultString.find("\"int16\": { \"type\": \"int16\", \"value\": 1 }"), std::string::npos);
+    EXPECT_NE(resultString.find("\"float32\": { \"type\": \"float32\", \"value\": 3.200000 }"), std::string::npos);
+    EXPECT_EQ(remove(fileName.c_str()), 0);
+}
+
+TEST_F(TEST_OPBUILD, CPUCfgGeneratorParamHelperCoverage)
+{
+    std::vector<std::string> opsvec({"Adds"});
+    CPUCfgGenerator cpuCfgGen(opsvec);
+    std::string formats;
+    std::string dataTypes;
+    std::vector<ge::Format> formatVec = {ge::FORMAT_ND, ge::FORMAT_NCHW};
+    std::vector<ge::DataType> dataTypeVec = {
+        ge::DT_FLOAT,          ge::DT_FLOAT16,     ge::DT_INT8,        ge::DT_INT16,       ge::DT_INT32,
+        ge::DT_INT64,          ge::DT_UINT1,       ge::DT_UINT8,       ge::DT_UINT16,      ge::DT_UINT32,
+        ge::DT_UINT64,         ge::DT_BOOL,        ge::DT_DOUBLE,      ge::DT_DUAL,        ge::DT_DUAL_SUB_INT8,
+        ge::DT_DUAL_SUB_UINT8, ge::DT_STRING,      ge::DT_COMPLEX64,   ge::DT_COMPLEX128,  ge::DT_QINT8,
+        ge::DT_QINT16,         ge::DT_QINT32,      ge::DT_QUINT8,      ge::DT_QUINT16,     ge::DT_RESOURCE,
+        ge::DT_STRING_REF,     ge::DT_INT4,        ge::DT_BF16,        ge::DT_COMPLEX32,   ge::DT_HIFLOAT8,
+        ge::DT_FLOAT8_E4M3FN,  ge::DT_FLOAT8_E5M2, ge::DT_FLOAT8_E8M0, ge::DT_FLOAT6_E3M2, ge::DT_FLOAT6_E2M3,
+        ge::DT_FLOAT4_E2M1,    ge::DT_FLOAT4_E1M2};
+
+    cpuCfgGen.GetParamFormats(formatVec, formats);
+    cpuCfgGen.GetParamDataTypes(dataTypeVec, dataTypes);
+
+    EXPECT_EQ(cpuCfgGen.GetDataTypeName(ge::DT_FLOAT), "DT_FLOAT");
+    EXPECT_EQ(cpuCfgGen.GetDataTypeName(ge::DT_FLOAT4_E1M2), "DT_FLOAT4_E1M2");
+    EXPECT_EQ(cpuCfgGen.GetDataTypeName(static_cast<ge::DataType>(-1)), "unknow");
+    EXPECT_EQ(formats, "ND,NCHW");
+    EXPECT_NE(dataTypes.find("DT_FLOAT,DT_FLOAT16,DT_INT8,DT_INT16,DT_INT32,DT_INT64"), std::string::npos);
+    EXPECT_NE(dataTypes.find("DT_FLOAT8_E4M3FN,DT_FLOAT8_E5M2,DT_FLOAT8_E8M0"), std::string::npos);
+    EXPECT_NE(dataTypes.find("DT_FLOAT6_E3M2,DT_FLOAT6_E2M3,DT_FLOAT4_E2M1,DT_FLOAT4_E1M2"), std::string::npos);
+}
+
+TEST_F(TEST_OPBUILD, CPUCfgGeneratorGenParamInfoCoverage)
+{
+    std::string fileName = "cpu_cfg_param_info_" + std::to_string(getpid()) + ".txt";
+    std::ofstream outfile = std::ofstream(fileName);
+    OpDef opDef("CPUCfgParamInfoCoverage");
+    opDef.Input("x1")
+        .ParamType(DYNAMIC)
+        .DataType({ge::DT_FLOAT, ge::DT_FLOAT16, ge::DT_INT32})
+        .Format({ge::FORMAT_ND, ge::FORMAT_NCHW});
+    opDef.Output("y1").ParamType(REQUIRED).DataType({ge::DT_FLOAT4_E1M2}).Format({ge::FORMAT_ND});
+    std::vector<OpParamDef> inputs = opDef.GetInputs();
+    std::vector<OpParamDef> outputs = opDef.GetOutputs();
+    std::map<ge::AscendString, ge::AscendString> config = {
+        {ge::AscendString("launch"), ge::AscendString("hostcpu")},
+        {ge::AscendString("worker"), ge::AscendString("enabled")}};
+
+    std::vector<std::string> opsvec({"CPUCfgParamInfoCoverage"});
+    CPUCfgGenerator cpuCfgGen(opsvec);
+    cpuCfgGen.GenParamInfo(outfile, inputs, false);
+    cpuCfgGen.GenParamInfo(outfile, outputs, true);
+    cpuCfgGen.GenConfigInfo(outfile, config);
+    outfile.close();
+
+    std::ifstream resultFile(fileName);
+    EXPECT_TRUE(resultFile.is_open());
+    std::stringstream streamBuffer;
+    streamBuffer << resultFile.rdbuf();
+    std::string resultString(streamBuffer.str());
+    resultFile.close();
+    EXPECT_NE(resultString.find("dynamic_input0.name=x1"), std::string::npos);
+    EXPECT_NE(resultString.find("dynamic_input0.type=DT_FLOAT,DT_FLOAT16,DT_INT32"), std::string::npos);
+    EXPECT_NE(resultString.find("input0.format=ND,NCHW"), std::string::npos);
+    EXPECT_NE(resultString.find("output0.type=DT_FLOAT4_E1M2"), std::string::npos);
+    EXPECT_NE(resultString.find("launch=hostcpu"), std::string::npos);
+    EXPECT_NE(resultString.find("worker=enabled"), std::string::npos);
+    EXPECT_EQ(remove(fileName.c_str()), 0);
 }
 
 TEST_F(TEST_OPBUILD, NotGenerateAclnnInterface)
@@ -196,6 +342,10 @@ TEST_F(TEST_OPBUILD, OpBuildRunTest)
     opbuild::Params::GetInstance().requiredParams_ = {};
     EXPECT_EQ(ret, 0);
     ret = opbuild_main(4, {"opbuild", so_path, ".", "--aicpu"});
+    opbuild::Params::GetInstance().optionParams_ = {};
+    opbuild::Params::GetInstance().requiredParams_ = {};
+    EXPECT_EQ(ret, 0);
+    ret = opbuild_main(4, {"opbuild", so_path, ".", "--hostcpu"});
     opbuild::Params::GetInstance().optionParams_ = {};
     opbuild::Params::GetInstance().requiredParams_ = {};
     EXPECT_EQ(ret, 0);

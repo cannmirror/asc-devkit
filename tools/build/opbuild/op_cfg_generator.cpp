@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file op_cfg_generator.cpp
@@ -21,54 +21,10 @@
 #include "ascendc_tool_log.h"
 #include "op_cfg_generator.h"
 #include "op_build_params.h"
+#include "op_dtype_name_utils.h"
 
 namespace ops {
-std::string CfgGenerator::GetDataTypeName(const ge::DataType& type) const
-{
-    static const std::map<ge::DataType, std::string> DTYPE_NAMES { { ge::DT_FLOAT, "float32" },
-        { ge::DT_FLOAT16, "float16" },
-        { ge::DT_INT8, "int8" },
-        { ge::DT_INT16, "int16" },
-        { ge::DT_INT32, "int32" },
-        { ge::DT_INT64, "int64" },
-        { ge::DT_UINT1, "uint1" },
-        { ge::DT_UINT8, "uint8" },
-        { ge::DT_UINT16, "uint16" },
-        { ge::DT_UINT32, "uint32" },
-        { ge::DT_UINT64, "uint64" },
-        { ge::DT_BOOL, "bool" },
-        { ge::DT_DOUBLE, "double" },
-        { ge::DT_DUAL, "dual" },
-        { ge::DT_DUAL_SUB_INT8, "dual_sub_int8" },
-        { ge::DT_DUAL_SUB_UINT8, "dual_sub_uint8" },
-        { ge::DT_STRING, "string" },
-        { ge::DT_COMPLEX64, "complex64" },
-        { ge::DT_COMPLEX128, "complex128" },
-        { ge::DT_QINT8, "qint8" },
-        { ge::DT_QINT16, "qint16" },
-        { ge::DT_QINT32, "qint32" },
-        { ge::DT_QUINT8, "quint8" },
-        { ge::DT_QUINT16, "quint16" },
-        { ge::DT_RESOURCE, "resource" },
-        { ge::DT_STRING_REF, "string_ref" },
-        { ge::DT_INT4, "int4" },
-        { ge::DT_INT2, "int2" },
-        { ge::DT_BF16, "bfloat16" },
-        { ge::DT_COMPLEX32, "complex32" },
-        { ge::DT_HIFLOAT8, "hifloat8" },
-        { ge::DT_FLOAT8_E4M3FN, "float8_e4m3fn" },
-        { ge::DT_FLOAT8_E5M2, "float8_e5m2" },
-        { ge::DT_FLOAT8_E8M0, "float8_e8m0" },
-        { ge::DT_FLOAT6_E3M2, "float6_e3m2" },
-        { ge::DT_FLOAT6_E2M3, "float6_e2m3" },
-        { ge::DT_FLOAT4_E2M1, "float4_e2m1" },
-        { ge::DT_FLOAT4_E1M2, "float4_e1m2" } };
-    auto it = DTYPE_NAMES.find(type);
-    if (it != DTYPE_NAMES.end()) {
-        return it->second;
-    }
-    return "unknow";
-}
+std::string CfgGenerator::GetDataTypeName(const ge::DataType& type) const { return FindCfgDataTypeName(type); }
 
 std::string CfgGenerator::GetParamTypeName(uint32_t paramType) const
 {
@@ -97,14 +53,16 @@ void CfgGenerator::GetParamDataTypes(std::vector<ge::DataType>& types, std::stri
     tpstr.resize(tpstr.size() - 1);
 }
 
-bool inline CfgDtypeFormatCheck(const std::string& paramterName, const std::string& firstArgName,
-    const std::string& secondArgName, const size_t firstArgSize, const size_t secondArgSize)
+bool inline CfgDtypeFormatCheck(
+    const std::string& paramterName, const std::string& firstArgName, const std::string& secondArgName,
+    const size_t firstArgSize, const size_t secondArgSize)
 {
     // Check if size of arg1 and arg2 are equal.
     if (firstArgSize > 0 && secondArgSize > 0 && firstArgSize != secondArgSize) {
-        ASCENDLOGE("InitValue parameter :%s %s and %s size do not match, %s size is %zu, %s size is %zu",
-            paramterName.c_str(), firstArgName.c_str(), secondArgName.c_str(), firstArgName.c_str(), firstArgSize,
-            secondArgName.c_str(), secondArgSize);
+        ASCENDLOGE(
+            "InitValue parameter :%s %s and %s size do not match, %s size is %zu, %s size is %zu", paramterName.c_str(),
+            firstArgName.c_str(), secondArgName.c_str(), firstArgName.c_str(), firstArgSize, secondArgName.c_str(),
+            secondArgSize);
         Generator::SetErrorMessage("CfgDtypeFormatCheck: InitValue size do not match dtype, View plog for details");
         return false;
     }
@@ -153,12 +111,14 @@ void GenSingleInitValueTypeAndValue(std::ofstream& outfile, const ScalarVar& sca
     return;
 }
 
-void CfgGenerator::GenVectorInitValue(std::ofstream& outfile, OpParamDef& def,
-    const std::vector<ge::DataType>& dataTypeVec, const std::string& typeName) const
+void CfgGenerator::GenVectorInitValue(
+    std::ofstream& outfile, OpParamDef& def, const std::vector<ge::DataType>& dataTypeVec,
+    const std::string& typeName) const
 {
     auto& scalarVec = def.GetInitValueList();
     // check initValue and dtype size are equal.
-    if (!CfgDtypeFormatCheck(def.GetParamName().GetString(), "initValue", typeName, scalarVec.size(), dataTypeVec.size())) {
+    if (!CfgDtypeFormatCheck(
+            def.GetParamName().GetString(), "initValue", typeName, scalarVec.size(), dataTypeVec.size())) {
         return;
     }
     // push initValue into map and check initvalues of the same type are the same.
@@ -170,7 +130,8 @@ void CfgGenerator::GenVectorInitValue(std::ofstream& outfile, OpParamDef& def,
                 continue;
             }
             // if initValue of the same type are not the same, print error log and exit.
-            ASCENDLOGE("InitValue(std::vector<ScalarVar>) should ensure that same type has the same initValue "
+            ASCENDLOGE(
+                "InitValue(std::vector<ScalarVar>) should ensure that same type has the same initValue "
                 "Scalar, paramName: %s, dtype %s has more than two different initValue",
                 def.GetParamName().GetString(), GetDataTypeName(dataTypeVec[scalarIndex]).c_str());
             Generator::SetErrorMessage(
@@ -178,10 +139,10 @@ void CfgGenerator::GenVectorInitValue(std::ofstream& outfile, OpParamDef& def,
             return;
         } else {
             typeToScalars.emplace(dataTypeVec[scalarIndex], scalarVec[scalarIndex]);
-            ASCENDLOGI("InitValue push back, dtype: %s initValue type: %u, initValue num: %lu\n",
-                        GetDataTypeName(dataTypeVec[scalarIndex]).c_str(),
-                        static_cast<uint32_t>(scalarVec[scalarIndex].scalar_type),
-                        scalarVec[scalarIndex].scalar_num.value_u64);
+            ASCENDLOGI(
+                "InitValue push back, dtype: %s initValue type: %u, initValue num: %lu\n",
+                GetDataTypeName(dataTypeVec[scalarIndex]).c_str(),
+                static_cast<uint32_t>(scalarVec[scalarIndex].scalar_type), scalarVec[scalarIndex].scalar_num.value_u64);
         }
     }
     bool commmaFlag = true;
@@ -197,8 +158,8 @@ void CfgGenerator::GenVectorInitValue(std::ofstream& outfile, OpParamDef& def,
     }
 }
 
-void CfgGenerator::GenInitValue(std::ofstream& outfile, const std::string& type, const size_t ind,
-    OpParamDef& def) const
+void CfgGenerator::GenInitValue(
+    std::ofstream& outfile, const std::string& type, const size_t ind, OpParamDef& def) const
 {
     bool hasGenInitValue = false;
     // initValue by InitValue(uint64_t).
@@ -207,13 +168,15 @@ void CfgGenerator::GenInitValue(std::ofstream& outfile, const std::string& type,
             case InitValueType::INIT_VALUE_UINT64_T:
                 hasGenInitValue = true;
                 if (def.GetInitValue().value_u64 != 0) {
-                    ASCENDLOGW("Parameter: %s initValue is %lu, when the parameter type is not uint64_t, undefined "
+                    ASCENDLOGW(
+                        "Parameter: %s initValue is %lu, when the parameter type is not uint64_t, undefined "
                         "behavior may occur.",
                         def.GetParamName().GetString(), def.GetInitValue().value_u64);
                     Generator::SetErrorMessage(
                         "GenInitValue: The parameter type of initvalue is not uint64_t, View plog for details");
                 }
-                ASCENDLOGI("The initial value of the paramete: %s is set to %lu by InitValue(uint64_t).",
+                ASCENDLOGI(
+                    "The initial value of the paramete: %s is set to %lu by InitValue(uint64_t).",
                     def.GetParamName().GetString(), def.GetInitValue().value_u64);
                 outfile << type << ind << ".initValue=" << std::to_string(def.GetInitValue().value_u64) << std::endl;
                 break;
@@ -227,7 +190,8 @@ void CfgGenerator::GenInitValue(std::ofstream& outfile, const std::string& type,
     // initValue by InitValue(ScalarVar) or InitValue(std::vector<ScalarVar>)
     if (def.GetInitValueList().size() > 0) {
         if (hasGenInitValue) {
-            ASCENDLOGW("Parameter: %s set initvalue in different ways at the same time results in undefined behavior.",
+            ASCENDLOGW(
+                "Parameter: %s set initvalue in different ways at the same time results in undefined behavior.",
                 def.GetParamName().GetString());
             Generator::SetErrorMessage("GenInitValue: Set initvalue in different ways at the same time results in "
                                        "undefined behavior, View plog for details");
@@ -235,14 +199,15 @@ void CfgGenerator::GenInitValue(std::ofstream& outfile, const std::string& type,
         }
         // initValue by InitValue(ScalarVar)
         if (def.GetInitValueList().size() == 1) {
-            ASCENDLOGI("The initValue of the paramete: %s is set by InitValue(ScalarVar).",
-                def.GetParamName().GetString());
+            ASCENDLOGI(
+                "The initValue of the paramete: %s is set by InitValue(ScalarVar).", def.GetParamName().GetString());
             auto scalar = def.GetInitValueList()[0];
             outfile << type << ind << ".initValue={ \"is_list\" : false, ";
             GenSingleInitValueTypeAndValue(outfile, scalar);
             outfile << "}" << std::endl;
         } else { // initValue by InitValue(std::vector<ScalarVar>)
-            ASCENDLOGI("The initValue of the parameter: %s is set by InitValue(std::vector<ScalarVar>).",
+            ASCENDLOGI(
+                "The initValue of the parameter: %s is set by InitValue(std::vector<ScalarVar>).",
                 def.GetParamName().GetString());
             outfile << type << ind << ".initValue={ \"is_list\" : true, ";
             // type not set by list
@@ -316,11 +281,11 @@ void CfgGenerator::GenAttrInfo(std::ofstream& outfile, std::vector<OpAttrDef>& a
     for (auto attr : attrs) {
         outfile << "attr_" << attr.GetName().GetString() << ".type=" << attr.GetCfgDataType().GetString() << std::endl;
         outfile << "attr_" << attr.GetName().GetString() << ".value=all" << std::endl;
-        outfile << "attr_" << attr.GetName().GetString() << ".paramType=" <<
-            (attr.IsRequired() ? "required" : "optional") << std::endl;
+        outfile << "attr_" << attr.GetName().GetString()
+                << ".paramType=" << (attr.IsRequired() ? "required" : "optional") << std::endl;
         if (!attr.IsRequired()) {
-            outfile << "attr_" << attr.GetName().GetString() << ".defaultValue=" <<
-                attr.GetAttrDefaultVal("[]").GetString() << std::endl;
+            outfile << "attr_" << attr.GetName().GetString()
+                    << ".defaultValue=" << attr.GetAttrDefaultVal("[]").GetString() << std::endl;
         }
     }
 }
@@ -405,8 +370,8 @@ void Split(const std::string& str, const char delimiter, std::vector<std::string
     }
 }
 
-void CfgGenerator::ParseSingleComputeUnitOfOp(OpDef& opsDef, std::string& opType, OpAICoreConfig& aicoreConfig,
-    bool enableFallBack, std::ofstream& outfile) const
+void CfgGenerator::ParseSingleComputeUnitOfOp(
+    OpDef& opsDef, std::string& opType, OpAICoreConfig& aicoreConfig, bool enableFallBack, std::ofstream& outfile) const
 {
     outfile << "[" << opsDef.GetOpType().GetString() << "]" << std::endl;
     std::vector<OpParamDef> inputs = opsDef.GetMergeInputs(aicoreConfig);
@@ -422,8 +387,9 @@ void CfgGenerator::ParseSingleComputeUnitOfOp(OpDef& opsDef, std::string& opType
     }
 }
 
-void CfgGenerator::GetOutFilePtr(std::string& genPath, std::string& socVer, std::ofstream& outfile,
-    const std::string resolvedGenPath, std::map<std::string, std::string>& cfgFileStreams) const
+void CfgGenerator::GetOutFilePtr(
+    std::string& genPath, std::string& socVer, std::ofstream& outfile, const std::string resolvedGenPath,
+    std::map<std::string, std::string>& cfgFileStreams) const
 {
     std::string cfgFileName = genPath + "/aic-" + socVer + "-ops-info.ini";
     std::string realCfgFile = std::string(resolvedGenPath) + "/aic-" + socVer + "-ops-info.ini";
@@ -436,8 +402,9 @@ void CfgGenerator::GetOutFilePtr(std::string& genPath, std::string& socVer, std:
     }
 }
 
-void CfgGenerator::GenAllOpCfgWithoutComputeUint(const std::vector<std::string>& ops, std::string& genPath, 
- 	    const std::string resolvedGenPath, std::map<std::string, std::string>& cfgFileStreams) const
+void CfgGenerator::GenAllOpCfgWithoutComputeUint(
+    const std::vector<std::string>& ops, std::string& genPath, const std::string resolvedGenPath,
+    std::map<std::string, std::string>& cfgFileStreams) const
 {
     for (auto op : ops) {
         OpDef opsDef = OpDefFactory::OpDefCreate(op.c_str());
@@ -466,7 +433,7 @@ opbuild::Status CfgGenerator::GenerateCode(void)
     }
     std::vector<std::string> ops = this->GetAllOp();
     std::map<std::string, std::string> cfgFileStreams;
-    
+
     auto computeUnitCfg = opbuild::Params::GetInstance().Optional("compute_unit");
     ASCENDLOGI("Compute unit cfg is %s ", computeUnitCfg.c_str());
     if (computeUnitCfg.size() == 0) {
@@ -477,7 +444,7 @@ opbuild::Status CfgGenerator::GenerateCode(void)
 
     std::vector<std::string> computeUnits;
     Split(computeUnitCfg, ';', computeUnits);
- 
+
     for (auto op : ops) {
         OpDef opsDef = OpDefFactory::OpDefCreate(op.c_str());
         bool enableFallBack = opsDef.IsEnableFallBack();
@@ -486,7 +453,7 @@ opbuild::Status CfgGenerator::GenerateCode(void)
             auto socVer = computeUnits[i];
             if (VALID_SOC_SET.find(socVer) == VALID_SOC_SET.end()) {
                 ASCENDLOGW("Invlid soc version %s\n of ASCEND_COMPUTE_UNIT", socVer.c_str());
- 	            continue;
+                continue;
             }
             ge::AscendString curCompUnit(socVer.c_str());
             auto cfgIter = allAICoreConfig.find(curCompUnit);
@@ -506,10 +473,7 @@ opbuild::Status CfgGenerator::GenerateCode(void)
     return opbuild::OPBUILD_SUCCESS;
 }
 
-CfgGenerator::CfgGenerator(std::vector<std::string>& ops) : Generator(ops)
-{
-    ASCENDLOGI("Stub Generator construct!");
-}
+CfgGenerator::CfgGenerator(std::vector<std::string>& ops) : Generator(ops) { ASCENDLOGI("Stub Generator construct!"); }
 
 static opbuild::Status CfgGeneratorBuilder(std::vector<std::string>& ops)
 {
@@ -518,8 +482,5 @@ static opbuild::Status CfgGeneratorBuilder(std::vector<std::string>& ops)
 }
 
 static void AddCfgGenerator(void) __attribute__((constructor));
-void AddCfgGenerator(void)
-{
-    GeneratorFactory::AddBuilder("cfg", CfgGeneratorBuilder);
-}
-}
+void AddCfgGenerator(void) { GeneratorFactory::AddBuilder("cfg", CfgGeneratorBuilder); }
+} // namespace ops

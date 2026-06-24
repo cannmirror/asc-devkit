@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file ascendc_pack_kernel.c
@@ -23,7 +23,7 @@
 
 size_t GetFileSize(const char* filePath)
 {
-    FILE *file = fopen(filePath, "rb");
+    FILE* file = fopen(filePath, "rb");
     if (file == NULL) {
         printf("[Error] open file: %s failed.\n", filePath);
         return 0;
@@ -39,7 +39,7 @@ size_t GetFileSize(const char* filePath)
     return size;
 }
 
-size_t ReadFile(const char *file, void *buf, size_t len)
+size_t ReadFile(const char* file, void* buf, size_t len)
 {
     int fd = open(file, O_RDONLY);
     size_t size = (size_t)read(fd, buf, len);
@@ -50,7 +50,7 @@ size_t ReadFile(const char *file, void *buf, size_t len)
     return size;
 }
 
-size_t WriteFile(const char *file, void *buf, size_t len)
+size_t WriteFile(const char* file, void* buf, size_t len)
 {
     int fd = open(file, O_CREAT | O_WRONLY | O_TRUNC, S_IRUSR | S_IWUSR);
     size_t size = (size_t)write(fd, buf, len);
@@ -62,9 +62,9 @@ size_t WriteFile(const char *file, void *buf, size_t len)
 }
 
 #if !(defined(UT_TEST) || defined(ST_TEST))
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 #else
-int AscendcPackKernelMain(int argc, char *argv[])
+int AscendcPackKernelMain(int argc, char* argv[])
 #endif
 {
     if (argc != 0x5) {
@@ -83,13 +83,13 @@ int AscendcPackKernelMain(int argc, char *argv[])
         return 1;
     }
 
-    uint8_t *src = (uint8_t *)malloc(srcFileSize);
+    uint8_t* src = (uint8_t*)malloc(srcFileSize);
     CHECK_COND_AND_DO((src == NULL), {
         printf("[Error] malloc src failed!\n");
         return 1;
     });
 
-    uint8_t *dst = (uint8_t *)malloc(srcFileSize);
+    uint8_t* dst = (uint8_t*)malloc(srcFileSize);
     CHECK_COND_AND_DO((dst == NULL), {
         printf("[Error] malloc dst failed!\n");
         free(src);
@@ -97,7 +97,7 @@ int AscendcPackKernelMain(int argc, char *argv[])
     });
 
     // read kernel file to copy kernel to section
-    uint8_t *sec = (uint8_t *)malloc(kernelFileSize);
+    uint8_t* sec = (uint8_t*)malloc(kernelFileSize);
     CHECK_COND_AND_DO((sec == NULL), {
         printf("[Error] malloc sec failed!\n");
         free(src);

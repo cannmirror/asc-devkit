@@ -1,18 +1,17 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file op_build_params.cpp
  * \brief
  */
-
 
 #include "op_build_params.h"
 #include <cstring>
@@ -67,11 +66,7 @@ bool Params::Parse(int argc, char* argv[])
             } else {
                 key = "cpu_mode";
                 val = arg;
-                static const std::unordered_set<std::string> validKey = {
-                    "--aicpu",
-                    "--aicore",
-                    "--hostcpu"
-                };
+                static const std::unordered_set<std::string> validKey = {"--aicpu", "--aicore", "--hostcpu"};
                 if (validKey.find(val) == validKey.end()) {
                     ASCENDLOGE("Invalid key: %s, must be one of: --aicpu, --aicore, --hostcpu", val.c_str());
                     return false;
@@ -87,7 +82,8 @@ bool Params::Parse(int argc, char* argv[])
     return Check(std::string(argv[ARG_NUM_BIN]));
 }
 
-bool Params::Check(std::string param) const {
+bool Params::Check(std::string param) const
+{
     if (requiredParams_.size() < ARG_NUM_VALID) {
         ASCENDLOGE("usage: %s <op shared library> <output directory>", param.c_str());
         return false;
@@ -95,4 +91,4 @@ bool Params::Check(std::string param) const {
     return true;
 }
 
-}
+} // namespace opbuild

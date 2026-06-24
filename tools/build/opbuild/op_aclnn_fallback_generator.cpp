@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file op_aclnn_fallback_generator.cpp
@@ -21,7 +21,7 @@
 
 namespace ops {
 using namespace std;
-void AclnnFallBackGenerator::AclnnGenFallBackImplStart(ofstream &outfile) const
+void AclnnFallBackGenerator::AclnnGenFallBackImplStart(ofstream& outfile) const
 {
     outfile << "#include <vector>\n";
     outfile << "#include \"aclnn/acl_meta.h\"\n";
@@ -30,7 +30,7 @@ void AclnnFallBackGenerator::AclnnGenFallBackImplStart(ofstream &outfile) const
     outfile << "#include \"register/op_impl_registry.h\"\n\n";
     outfile << "extern void NnopbaseOpLogE(const aclnnStatus code, const char *const expr);\n\n";
 
-    const char *str =
+    const char* str =
         "#ifdef __cplusplus\n"
         "extern \"C\" {\n"
         "#endif\n\n"
@@ -59,11 +59,11 @@ void AclnnFallBackGenerator::AclnnGenFallBackImplStart(ofstream &outfile) const
     outfile << str;
 }
 
-void AclnnFallBackGenerator::AclnnGenGetInputTensor(std::vector<OpParamDef> &param, ofstream &outfile) const
+void AclnnFallBackGenerator::AclnnGenGetInputTensor(std::vector<OpParamDef>& param, ofstream& outfile) const
 {
     for (size_t i = 0U; i < param.size(); i++) {
         int32_t type = param[i].GetParamType();
-        const char *name = param[i].GetParamName().GetString();
+        const char* name = param[i].GetParamName().GetString();
         if (type == DYNAMIC) {
             outfile << "    size_t index_" << i << " = 0U;\n";
             outfile << "    std::vector<const gert::Tensor*> " << name << ";\n";
@@ -84,12 +84,12 @@ void AclnnFallBackGenerator::AclnnGenGetInputTensor(std::vector<OpParamDef> &par
 }
 
 void AclnnFallBackGenerator::AclnnGenGetOutputTensor(
-    std::vector<OpParamDef> &param, const std::vector<size_t> &refIndex, ofstream &outfile) const
+    std::vector<OpParamDef>& param, const std::vector<size_t>& refIndex, ofstream& outfile) const
 {
     for (size_t i = 0U; i < param.size(); i++) {
         if (std::find(refIndex.begin(), refIndex.end(), i) == refIndex.end()) {
             int32_t type = param[i].GetParamType();
-            const char *name = param[i].GetParamName().GetString();
+            const char* name = param[i].GetParamName().GetString();
             if (type == DYNAMIC) {
                 outfile << "    size_t outIndex_" << i << " = 0U;\n";
                 outfile << "    std::vector<const gert::Tensor*> " << name << ";\n";
@@ -112,7 +112,7 @@ void AclnnFallBackGenerator::AclnnGenGetOutputTensor(
     outfile << "\n";
 }
 
-void AclnnFallBackGenerator::AclnnGenGetAttrsImpl(std::string &name, int32_t type, ofstream &outfile) const
+void AclnnFallBackGenerator::AclnnGenGetAttrsImpl(std::string& name, int32_t type, ofstream& outfile) const
 {
     switch (type) {
         case OP_ACLNN_ATTR_TYPE_FLOAT: {
@@ -152,7 +152,7 @@ void AclnnFallBackGenerator::AclnnGenGetAttrsImpl(std::string &name, int32_t typ
     }
 }
 
-void AclnnFallBackGenerator::AclnnGenGetAttrs(std::vector<OpAttrDef> &attrs, ofstream &outfile) const
+void AclnnFallBackGenerator::AclnnGenGetAttrs(std::vector<OpAttrDef>& attrs, ofstream& outfile) const
 {
     if (attrs.size() > 0U) {
         outfile << "    auto attrs = host_api_ctx->GetAttrs();\n";
@@ -175,10 +175,10 @@ void AclnnFallBackGenerator::AclnnGenGetAttrs(std::vector<OpAttrDef> &attrs, ofs
     }
 }
 
-void AclnnFallBackGenerator::AclnnGenValueDependTensor(OpParamDef &param, ofstream &outfile) const
+void AclnnFallBackGenerator::AclnnGenValueDependTensor(OpParamDef& param, ofstream& outfile) const
 {
     ge::DataType dataType = param.GetDataTypes()[0];
-    const char *name = param.GetParamName().GetString();
+    const char* name = param.GetParamName().GetString();
     if (dataType == ge::DT_FLOAT) {
         outfile << "    aclFloatArray *" << name << "_tensor = NnopbaseCovertFloatArray(" << name << ");\n";
     } else if (dataType == ge::DT_INT64) {
@@ -188,21 +188,22 @@ void AclnnFallBackGenerator::AclnnGenValueDependTensor(OpParamDef &param, ofstre
     }
 }
 
-void AclnnFallBackGenerator::GetHostInputs(std::vector<size_t> &hostInputs, bool isInput, size_t index) const
+void AclnnFallBackGenerator::GetHostInputs(std::vector<size_t>& hostInputs, bool isInput, size_t index) const
 {
     if (isInput) {
         hostInputs.push_back(index);
     }
 }
 
-void AclnnFallBackGenerator::AclnnGenCovertTensor(std::vector<OpParamDef> &param, ofstream &outfile,
-    std::vector<size_t> &hostInputs, const std::vector<size_t> refIndex, bool isInput) const
+void AclnnFallBackGenerator::AclnnGenCovertTensor(
+    std::vector<OpParamDef>& param, ofstream& outfile, std::vector<size_t>& hostInputs,
+    const std::vector<size_t> refIndex, bool isInput) const
 {
     for (size_t i = 0U; i < param.size(); i++) {
-        if ((!isInput) &&(std::find(refIndex.begin(), refIndex.end(), i) != refIndex.end())) {
+        if ((!isInput) && (std::find(refIndex.begin(), refIndex.end(), i) != refIndex.end())) {
             continue;
         }
-        const char *name = param[i].GetParamName().GetString();
+        const char* name = param[i].GetParamName().GetString();
         if (std::string(param[i].GetValueDepend().GetString()) != "") {
             GetHostInputs(hostInputs, isInput, i);
             AclnnGenValueDependTensor(param[i], outfile);
@@ -220,7 +221,7 @@ void AclnnFallBackGenerator::AclnnGenCovertTensor(std::vector<OpParamDef> &param
     }
 }
 
-void AclnnFallBackGenerator::AclnnGenCovertAttr(std::vector<OpAttrDef> &attrs, ofstream &outfile) const
+void AclnnFallBackGenerator::AclnnGenCovertAttr(std::vector<OpAttrDef>& attrs, ofstream& outfile) const
 {
     for (size_t i = 0U; i < attrs.size(); i++) {
         std::string name = std::string(attrs[i].GetName().GetString());
@@ -240,26 +241,28 @@ void AclnnFallBackGenerator::AclnnGenCovertAttr(std::vector<OpAttrDef> &attrs, o
     }
 }
 
-void AclnnFallBackGenerator::AclnnGenGetOpApiFuncHandle(OpDef &opDef, ofstream &outfile) const
+void AclnnFallBackGenerator::AclnnGenGetOpApiFuncHandle(OpDef& opDef, ofstream& outfile) const
 {
     const string opName = opDef.GetOpType().GetString();
     outfile << "    if (NnopbaseGetOpApiFunc == NULL) {return ge::GRAPH_FAILED;}\n";
-    outfile << "    static AclnnGetWorkspaceSizeFunc aclnn" << opName << "GetWorkspaceSize = "
+    outfile << "    static AclnnGetWorkspaceSizeFunc aclnn" << opName
+            << "GetWorkspaceSize = "
                "(AclnnGetWorkspaceSizeFunc)NnopbaseGetOpApiFunc(\"aclnn"
             << opName << "GetWorkspaceSize\");\n";
     outfile << "    FALLBACK_ASSERT_NOTNULL_RETVAL(aclnn" << opName << "GetWorkspaceSize);\n";
-    outfile << "    static AclnnFunc aclnn" << opName << "= (AclnnFunc)NnopbaseGetOpApiFunc(\"aclnn" << opName << "\");\n";
+    outfile << "    static AclnnFunc aclnn" << opName << "= (AclnnFunc)NnopbaseGetOpApiFunc(\"aclnn" << opName
+            << "\");\n";
     outfile << "    FALLBACK_ASSERT_NOTNULL_RETVAL(aclnn" << opName << ");\n";
 }
 
 void AclnnFallBackGenerator::AclnnGenOpapiFuncIoName(
-    std::vector<OpParamDef> &param, const std::vector<size_t> refIndex, bool isOutput, ofstream &outfile) const
+    std::vector<OpParamDef>& param, const std::vector<size_t> refIndex, bool isOutput, ofstream& outfile) const
 {
     for (size_t i = 0U; i < param.size(); i++) {
-        if ((isOutput) &&(std::find(refIndex.begin(), refIndex.end(), i) != refIndex.end())) {
+        if ((isOutput) && (std::find(refIndex.begin(), refIndex.end(), i) != refIndex.end())) {
             continue;
         }
-        const char *name = param[i].GetParamName().GetString();
+        const char* name = param[i].GetParamName().GetString();
         if (std::string(param[i].GetValueDepend().GetString()) != "") {
             outfile << name << "_tensor, ";
         } else if (param[i].IsScalar()) {
@@ -274,7 +277,7 @@ void AclnnFallBackGenerator::AclnnGenOpapiFuncIoName(
     }
 }
 
-void AclnnFallBackGenerator::AclnnGenOpapiFuncAttrName(std::vector<OpAttrDef> &attrs, ofstream &outfile) const
+void AclnnFallBackGenerator::AclnnGenOpapiFuncAttrName(std::vector<OpAttrDef>& attrs, ofstream& outfile) const
 {
     for (size_t i = 0U; i < attrs.size(); i++) {
         std::string name = std::string(attrs[i].GetName().GetString());
@@ -297,7 +300,7 @@ void AclnnFallBackGenerator::AclnnGenOpapiFuncAttrName(std::vector<OpAttrDef> &a
 }
 
 void AclnnFallBackGenerator::AclnnGenCallGetWorkspaceSizeFunc(
-    OpDef &opDef, const std::vector<size_t> refIndex, ofstream &outfile) const
+    OpDef& opDef, const std::vector<size_t> refIndex, ofstream& outfile) const
 {
     outfile << "\n    uint64_t workspaceSize = 0;\n";
     outfile << "    aclOpExecutor *executor = nullptr;\n";
@@ -310,10 +313,10 @@ void AclnnFallBackGenerator::AclnnGenCallGetWorkspaceSizeFunc(
     outfile << "    FALLBACK_ASSERT_OK_RETVAL(ret);\n";
 }
 
-void AclnnFallBackGenerator::AclnnDestroyValueDependTensor(OpParamDef &param, ofstream &outfile) const
+void AclnnFallBackGenerator::AclnnDestroyValueDependTensor(OpParamDef& param, ofstream& outfile) const
 {
     ge::DataType dataType = param.GetDataTypes()[0];
-    const char *name = param.GetParamName().GetString();
+    const char* name = param.GetParamName().GetString();
     if (dataType == ge::DT_FLOAT) {
         outfile << "    NnopbaseDestroyFloatArray(" << name << "_tensor);\n";
     } else if (dataType == ge::DT_INT64) {
@@ -324,13 +327,13 @@ void AclnnFallBackGenerator::AclnnDestroyValueDependTensor(OpParamDef &param, of
 }
 
 void AclnnFallBackGenerator::AclnnGenDestroyImpl(
-    std::vector<OpParamDef> &param, ofstream &outfile, const std::vector<size_t> &refIndex, bool isInput) const
+    std::vector<OpParamDef>& param, ofstream& outfile, const std::vector<size_t>& refIndex, bool isInput) const
 {
     for (size_t i = 0U; i < param.size(); i++) {
-        if ((!isInput) &&(std::find(refIndex.begin(), refIndex.end(), i) != refIndex.end())) {
+        if ((!isInput) && (std::find(refIndex.begin(), refIndex.end(), i) != refIndex.end())) {
             continue;
         }
-        const char *name = param[i].GetParamName().GetString();
+        const char* name = param[i].GetParamName().GetString();
         if (std::string(param[i].GetValueDepend().GetString()) != "") {
             AclnnDestroyValueDependTensor(param[i], outfile);
         } else if (param[i].IsScalar()) {
@@ -345,7 +348,7 @@ void AclnnFallBackGenerator::AclnnGenDestroyImpl(
     }
 }
 
-void AclnnFallBackGenerator::AclnnGenDestroyAttr(std::vector<OpAttrDef> &attrs, ofstream &outfile) const
+void AclnnFallBackGenerator::AclnnGenDestroyAttr(std::vector<OpAttrDef>& attrs, ofstream& outfile) const
 {
     for (size_t i = 0U; i < attrs.size(); i++) {
         std::string name = std::string(attrs[i].GetName().GetString());
@@ -363,7 +366,8 @@ void AclnnFallBackGenerator::AclnnGenDestroyAttr(std::vector<OpAttrDef> &attrs, 
     }
 }
 
-void AclnnFallBackGenerator::AclnnGenCallApiFunc(OpDef &opDef, ofstream &outfile, const std::vector<size_t> &refIndex) const
+void AclnnFallBackGenerator::AclnnGenCallApiFunc(
+    OpDef& opDef, ofstream& outfile, const std::vector<size_t>& refIndex) const
 {
     outfile << "    void *workspace = nullptr;\n";
     outfile << "    if (workspaceSize > 0) {\n";
@@ -382,7 +386,7 @@ void AclnnFallBackGenerator::AclnnGenCallApiFunc(OpDef &opDef, ofstream &outfile
 }
 
 void AclnnFallBackGenerator::AclnnGenFallBackImplFunc(
-    OpDef &opDef, ofstream &outfile, std::vector<size_t> &hostInputs, const std::vector<size_t> &refIndex) const
+    OpDef& opDef, ofstream& outfile, std::vector<size_t>& hostInputs, const std::vector<size_t>& refIndex) const
 {
     AclnnGenGetInputTensor(opDef.GetInputs(), outfile);
     AclnnGenGetOutputTensor(opDef.GetOutputs(), refIndex, outfile);
@@ -395,7 +399,7 @@ void AclnnFallBackGenerator::AclnnGenFallBackImplFunc(
     AclnnGenCallApiFunc(opDef, outfile, refIndex);
 }
 
-void AclnnFallBackGenerator::AclnnGenValueDependIoFunc(OpParamDef param, ofstream &outfile) const
+void AclnnFallBackGenerator::AclnnGenValueDependIoFunc(OpParamDef param, ofstream& outfile) const
 {
     std::vector<ge::DataType> dataTypes = param.GetDataTypes();
     if (dataTypes.size() > 0U) {
@@ -410,7 +414,7 @@ void AclnnFallBackGenerator::AclnnGenValueDependIoFunc(OpParamDef param, ofstrea
 }
 
 bool AclnnFallBackGenerator::IsRef(
-    std::vector<OpParamDef> &outputs, ge::AscendString name, std::vector<size_t> &refIndex) const
+    std::vector<OpParamDef>& outputs, ge::AscendString name, std::vector<size_t>& refIndex) const
 {
     for (size_t j = 0U; j < outputs.size(); j++) {
         if (name == outputs[j].GetParamName()) {
@@ -422,17 +426,17 @@ bool AclnnFallBackGenerator::IsRef(
 }
 
 void AclnnFallBackGenerator::AclnnGenFallBackInputsFunc(
-    OpDef &opDef, std::vector<size_t> &refIndex, ofstream &outfile) const
+    OpDef& opDef, std::vector<size_t>& refIndex, ofstream& outfile) const
 {
-    std::vector<OpParamDef> &inputs = opDef.GetInputs();
-    std::vector<OpParamDef> &outputs = opDef.GetOutputs();
+    std::vector<OpParamDef>& inputs = opDef.GetInputs();
+    std::vector<OpParamDef>& outputs = opDef.GetOutputs();
     for (size_t i = 0U; i < inputs.size(); i++) {
         bool isRef = IsRef(outputs, inputs[i].GetParamName(), refIndex);
         if (!isRef) {
             outfile << "const ";
         }
         int32_t type = inputs[i].GetParamType();
-        const char *const valueDepend = inputs[i].GetValueDepend().GetString();
+        const char* const valueDepend = inputs[i].GetValueDepend().GetString();
         if ((std::string(valueDepend) == "required") || (std::string(valueDepend) == "optional")) {
             AclnnGenValueDependIoFunc(inputs[i], outfile);
         } else if (inputs[i].IsScalar()) {
@@ -447,7 +451,7 @@ void AclnnFallBackGenerator::AclnnGenFallBackInputsFunc(
     }
 }
 
-void AclnnFallBackGenerator::HasOutputShapeDepend(std::vector<OpParamDef> &outputs, bool &hasOutputShapeDepend) const
+void AclnnFallBackGenerator::HasOutputShapeDepend(std::vector<OpParamDef>& outputs, bool& hasOutputShapeDepend) const
 {
     for (size_t i = 0U; i < outputs.size(); i++) {
         if (outputs[i].IsOutputShapeDependOnCompute()) {
@@ -457,9 +461,9 @@ void AclnnFallBackGenerator::HasOutputShapeDepend(std::vector<OpParamDef> &outpu
 }
 
 void AclnnFallBackGenerator::AclnnGenFallBackOutputsFunc(
-    OpDef &opDef, std::vector<size_t> &refIndex, ofstream &outfile) const
+    OpDef& opDef, std::vector<size_t>& refIndex, ofstream& outfile) const
 {
-    std::vector<OpParamDef> &outputs = opDef.GetOutputs();
+    std::vector<OpParamDef>& outputs = opDef.GetOutputs();
     bool hasOutputShapeDepend = false;
     HasOutputShapeDepend(outputs, hasOutputShapeDepend);
     for (size_t i = 0U; i < outputs.size(); i++) {
@@ -468,7 +472,7 @@ void AclnnFallBackGenerator::AclnnGenFallBackOutputsFunc(
                 outfile << "const ";
             }
             int32_t type = outputs[i].GetParamType();
-            const char *const valueDepend = outputs[i].GetValueDepend().GetString();
+            const char* const valueDepend = outputs[i].GetValueDepend().GetString();
             if ((std::string(valueDepend) == "required") || (std::string(valueDepend) == "optional")) {
                 AclnnGenValueDependIoFunc(outputs[i], outfile);
             } else if (outputs[i].IsScalar()) {
@@ -485,7 +489,7 @@ void AclnnFallBackGenerator::AclnnGenFallBackOutputsFunc(
 }
 
 void AclnnFallBackGenerator::AclnnGenFallBackAttrFuncImpl(
-    const OpAttrDef &attr, const int32_t type, ofstream &outfile) const
+    const OpAttrDef& attr, const int32_t type, ofstream& outfile) const
 {
     switch (type) {
         case OP_ACLNN_ATTR_TYPE_STR: {
@@ -523,7 +527,7 @@ void AclnnFallBackGenerator::AclnnGenFallBackAttrFuncImpl(
     }
 }
 
-void AclnnFallBackGenerator::AclnnGenFallBackAttrFunc(std::vector<OpAttrDef> &attrs, ofstream &outfile) const
+void AclnnFallBackGenerator::AclnnGenFallBackAttrFunc(std::vector<OpAttrDef>& attrs, ofstream& outfile) const
 {
     for (size_t i = 0U; i < attrs.size(); i++) {
         auto iter = ACLNN_OP_ATTR_TYPE_MAP.find(attrs[i].GetCfgDataType().GetString());
@@ -539,7 +543,7 @@ void AclnnFallBackGenerator::AclnnGenFallBackAttrFunc(std::vector<OpAttrDef> &at
 }
 
 void AclnnFallBackGenerator::AclnnGenFallBackGetWorkspaceSizeFunc(
-    OpDef &opDef, ofstream &outfile, std::vector<size_t> &refIndex) const
+    OpDef& opDef, ofstream& outfile, std::vector<size_t>& refIndex) const
 {
     outfile << "using AclnnGetWorkspaceSizeFunc = aclnnStatus (*)(";
     AclnnGenFallBackInputsFunc(opDef, refIndex, outfile);
@@ -548,7 +552,7 @@ void AclnnFallBackGenerator::AclnnGenFallBackGetWorkspaceSizeFunc(
     outfile << "uint64_t *, aclOpExecutor **);\n";
 }
 
-void AclnnFallBackGenerator::AclnnGenHostInputs(std::vector<size_t> hostInputs, ofstream &outfile) const
+void AclnnFallBackGenerator::AclnnGenHostInputs(std::vector<size_t> hostInputs, ofstream& outfile) const
 {
     outfile << ".HostInputs({";
     for (size_t i = 0U; i < hostInputs.size(); i++) {
@@ -560,31 +564,31 @@ void AclnnFallBackGenerator::AclnnGenHostInputs(std::vector<size_t> hostInputs, 
     outfile << "})";
 }
 
-void AclnnFallBackGenerator::AclnnGenFallbackCheckInfo(ofstream &outfile) const
+void AclnnFallBackGenerator::AclnnGenFallbackCheckInfo(ofstream& outfile) const
 {
     const char* str = "#define ACLNN_SUCCESS  0\n"
-        "#define ACLNN_ERR_PARAM_NULLPTR 161001\n\n"
-        "#define FALLBACK_ASSERT_OK_RETVAL(v)                                    \\\n"
-        "    do {                                                                \\\n"
-        "        const aclnnStatus _chk_stutus = (v);                            \\\n"
-        "        if (_chk_stutus != ACLNN_SUCCESS) {                             \\\n"
-        "            NnopbaseOpLogE(_chk_stutus, #v);                            \\\n"
-        "            return ge::GRAPH_FAILED;                                     \\\n"
-        "        }                                                               \\\n"
-        "    } while (false)\n"
-        "\n"
-        "#define FALLBACK_ASSERT_NOTNULL_RETVAL(v)                               \\\n"
-        "    do {                                                                \\\n"
-        "        if ((v) == nullptr) {                                           \\\n"
-        "            NnopbaseOpLogE(ACLNN_ERR_PARAM_NULLPTR, #v \" != nullptr\");  \\\n"
-        "            return ge::GRAPH_FAILED;                                    \\\n"
-        "        }                                                               \\\n"
-        "    } while (false)\n"
-        "\n";
+                      "#define ACLNN_ERR_PARAM_NULLPTR 161001\n\n"
+                      "#define FALLBACK_ASSERT_OK_RETVAL(v)                                    \\\n"
+                      "    do {                                                                \\\n"
+                      "        const aclnnStatus _chk_stutus = (v);                            \\\n"
+                      "        if (_chk_stutus != ACLNN_SUCCESS) {                             \\\n"
+                      "            NnopbaseOpLogE(_chk_stutus, #v);                            \\\n"
+                      "            return ge::GRAPH_FAILED;                                     \\\n"
+                      "        }                                                               \\\n"
+                      "    } while (false)\n"
+                      "\n"
+                      "#define FALLBACK_ASSERT_NOTNULL_RETVAL(v)                               \\\n"
+                      "    do {                                                                \\\n"
+                      "        if ((v) == nullptr) {                                           \\\n"
+                      "            NnopbaseOpLogE(ACLNN_ERR_PARAM_NULLPTR, #v \" != nullptr\");  \\\n"
+                      "            return ge::GRAPH_FAILED;                                    \\\n"
+                      "        }                                                               \\\n"
+                      "    } while (false)\n"
+                      "\n";
     outfile << str;
 }
 
-void AclnnFallBackGenerator::AclnnGenFallBackImpl(OpDef &opDef, ofstream &outfile) const
+void AclnnFallBackGenerator::AclnnGenFallBackImpl(OpDef& opDef, ofstream& outfile) const
 {
     AclnnGenFallBackImplStart(outfile);
     std::vector<size_t> refIndex;
@@ -606,7 +610,7 @@ void AclnnFallBackGenerator::AclnnGenFallBackImpl(OpDef &opDef, ofstream &outfil
     outfile << "#ifdef __cplusplus\n}\n#endif\n";
 }
 
-void AclnnFallBackGenerator::AclnnGenFallBack(OpDef &opDef) const
+void AclnnFallBackGenerator::AclnnGenFallBack(OpDef& opDef) const
 {
     const string opName = opDef.GetOpType().GetString();
     const string fileName = ConvertToSnakeCase(opName);
@@ -633,20 +637,17 @@ opbuild::Status AclnnFallBackGenerator::GenerateCode(void)
     return opbuild::OPBUILD_SUCCESS;
 }
 
-AclnnFallBackGenerator::AclnnFallBackGenerator(std::vector<std::string> &ops) : Generator(ops)
+AclnnFallBackGenerator::AclnnFallBackGenerator(std::vector<std::string>& ops) : Generator(ops)
 {
     ASCENDLOGI("Aclnn fallback Generator construct!");
 }
 
-static opbuild::Status AclnnFallBackGeneratorBuilder(std::vector<std::string> &ops)
+static opbuild::Status AclnnFallBackGeneratorBuilder(std::vector<std::string>& ops)
 {
     AclnnFallBackGenerator g(ops);
     return g.GenerateCode();
 }
 
 static void GeneratorAclnnFallBack(void) __attribute__((constructor));
-void GeneratorAclnnFallBack(void)
-{
-    GeneratorFactory::AddBuilder("fallback", AclnnFallBackGeneratorBuilder);
-}
-}  // namespace ops
+void GeneratorAclnnFallBack(void) { GeneratorFactory::AddBuilder("fallback", AclnnFallBackGeneratorBuilder); }
+} // namespace ops

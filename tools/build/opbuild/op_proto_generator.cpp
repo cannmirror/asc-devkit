@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file op_proto_generator.cpp
@@ -64,14 +64,13 @@ std::string OpProtoGenerator::GenOpShapeInferFunc(OpDef& opDef, std::ofstream& o
         rootVarName.append("_shape");
         uint32_t index = followStructMap[rootName].index_in;
         std::string relationStr = "";
-        relationStr.append("    const gert::Shape* " + rootVarName + " = context->GetInputShape(" +
-                            std::to_string(index) + ");\n");
+        relationStr.append(
+            "    const gert::Shape* " + rootVarName + " = context->GetInputShape(" + std::to_string(index) + ");\n");
         uint32_t relationCount = 0;
         for (const auto& portPair : followList) {
             std::string paramVarName = portPair.first.GetString();
             if (portPair.second == OpDef::PortStat::IN) {
-                ASCENDLOGW(
-                    "Input %s can not Follow Shape of Input %s.", paramVarName.c_str(), rootName.GetString());
+                ASCENDLOGW("Input %s can not Follow Shape of Input %s.", paramVarName.c_str(), rootName.GetString());
                 continue;
             }
             paramVarName.append("_shape");
@@ -79,9 +78,9 @@ std::string OpProtoGenerator::GenOpShapeInferFunc(OpDef& opDef, std::ofstream& o
                 paramVarName.append("_out");
             }
             index = followStructMap[rootName].index_out;
-            relationStr.append("    gert::Shape* " + paramVarName + " = context->GetOutputShape(" +
-                                std::to_string(index) + ");\n");
-            relationStr.append("    *" + paramVarName + " = *" + rootVarName +  ";\n");
+            relationStr.append(
+                "    gert::Shape* " + paramVarName + " = context->GetOutputShape(" + std::to_string(index) + ");\n");
+            relationStr.append("    *" + paramVarName + " = *" + rootVarName + ";\n");
             ++relationCount;
         }
         if (relationCount > 0) {
@@ -152,10 +151,12 @@ void OpProtoGenerator::GenOpRegImplOutputDecl(OpDef& opDef, std::ofstream& outfi
             outfile << "    .DYNAMIC_OUTPUT(";
         } else if (output.GetParamType() == OPTIONAL) {
             outfile << "    .OUTPUT(";
-            ASCENDLOGW("The operator in graph mode does not support optional outputs. The proto library will change \
+            ASCENDLOGW(
+                "The operator in graph mode does not support optional outputs. The proto library will change \
 the optional outputs to required outputs. Please confirm whether the optional output %s of the operator %s can be \
-converted into a required output in the graph.", output.GetParamName().GetString(), opDef.GetOpType().GetString());
-        } 
+converted into a required output in the graph.",
+                output.GetParamName().GetString(), opDef.GetOpType().GetString());
+        }
         std::string paramName = output.GetParamName().GetString();
         std::string paramTmpName = std::string(paramName + "_type");
         if (typeMap.find(paramTmpName) != typeMap.end()) {
@@ -392,8 +393,8 @@ void OpProtoGenerator::GenOpRegImplDeclOp(OpDef& opDef, std::ofstream& outfile) 
     outfile << "    .OP_END_FACTORY_REG(" << opDef.GetOpType().GetString() << ");" << std::endl << std::endl;
 }
 
-void OpProtoGenerator::GenOpRegImpl(OpDef& opDef, std::ofstream& outfile,
-    const std::vector<std::pair<int32_t, DependScope>>& valueDependIndexList,
+void OpProtoGenerator::GenOpRegImpl(
+    OpDef& opDef, std::ofstream& outfile, const std::vector<std::pair<int32_t, DependScope>>& valueDependIndexList,
     const std::vector<int32_t>& outShapeDependIndexList) const
 {
     std::string shapeInferName = GenOpShapeInferFunc(opDef, outfile);
@@ -433,7 +434,7 @@ void OpProtoGenerator::GenOpRegImpl(OpDef& opDef, std::ofstream& outfile,
     outfile << outFileStr << ";" << std::endl;
 }
 std::string OpProtoGenerator::GenOpRegImplSection(
-    std::string &indexInputList, std::string &indexInputListTiling, const std::string &opType) const
+    std::string& indexInputList, std::string& indexInputListTiling, const std::string& opType) const
 {
     std::string outFileStr = "";
     if (indexInputList.size() > 0) {
@@ -492,7 +493,8 @@ std::vector<int32_t> OpProtoGenerator::GetOutputShapeDependOnComputeIndexList(Op
     }
     return outShapeDependIndexList;
 }
-opbuild::Status OpProtoGenerator::GetFile(std::ofstream& fileH, std::ofstream& fileCC, const std::string& catg) {
+opbuild::Status OpProtoGenerator::GetFile(std::ofstream& fileH, std::ofstream& fileCC, const std::string& catg)
+{
     std::string filePath = fileGenPath;
     if (catg != std::string("op_proto")) {
         filePath.append("/group_proto");
@@ -625,8 +627,5 @@ static opbuild::Status OpProtoGeneratorBuilder(std::vector<std::string>& ops)
 }
 
 static void AddOpProtoGenerator(void) __attribute__((constructor));
-void AddOpProtoGenerator(void)
-{
-    GeneratorFactory::AddBuilder("op_proto", OpProtoGeneratorBuilder);
-}
-}
+void AddOpProtoGenerator(void) { GeneratorFactory::AddBuilder("op_proto", OpProtoGeneratorBuilder); }
+} // namespace ops

@@ -45,8 +45,8 @@ const std::map<std::string, int32_t> ACLNN_OP_ATTR_TYPE_MAP = {
 };
 
 struct OpDefName {
-    std::vector<std::string> originInputName;  // op_host配置的输入名称，scalar输入跟随指定参数做类型转换
-    std::vector<std::string> inputsName;       // 转换后的输入名称
+    std::vector<std::string> originInputName; // op_host配置的输入名称，scalar输入跟随指定参数做类型转换
+    std::vector<std::string> inputsName;      // 转换后的输入名称
     std::vector<std::string> outputsName;      // 转换后的输出名称
     std::vector<std::string> attrsName;        // 转换后的属性名称
     std::vector<std::string> defaultAttrsName; // 配置版本号时默认属性名称
@@ -189,7 +189,8 @@ public:
     void AclnnOpGenOpSupportList(
         size_t index, std::vector<OpParamDef>& inputs, std::vector<OpParamDef>& outputs, std::ofstream& outfile,
         const std::string opType) const;
-    void AclnnOpGenOpSupportListAll(OpDef& opDef, const std::vector<SocEntry>& socEntries, std::ofstream& outfile) const;
+    void AclnnOpGenOpSupportListAll(
+        OpDef& opDef, const std::vector<SocEntry>& socEntries, std::ofstream& outfile) const;
     void AclnnGenOpTypeId(OpDef& opDef, std::ofstream& outfile) const;
     void AclnnGenNameSpaceInfo(std::ofstream& outfile, OpDef& opDef) const;
     void AclnnGenCheckInfo(std::ofstream& outfile) const;

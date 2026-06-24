@@ -26,28 +26,28 @@ namespace {
 using namespace std;
 
 constexpr const char* OP_ACLNN_STRUCT_INFO = "typedef struct {\n"
-                                              "    uint32_t id;\n"
-                                              "    const char *funcName;\n"
-                                              "    bool hasReg;\n"
-                                              "} NnopbaseDfxId;\n"
-                                              "typedef struct {\n"
-                                              "    ge::DataType dtype;\n"
-                                              "    ge::Format format;\n"
-                                              "} TensorDesc;\n"
-                                              "typedef struct {\n"
-                                              "    TensorDesc *inputsDesc;\n"
-                                              "    size_t inputsNum;\n"
-                                              "    TensorDesc *outputsDesc;\n"
-                                              "    size_t outputsNum;\n"
-                                              "} SupportInfo;\n"
-                                              "typedef struct {\n"
-                                              "    SupportInfo *supportInfo;\n"
-                                              "    size_t num;\n"
-                                              "} OpSocSupportInfo;\n"
-                                              "typedef struct {\n"
-                                              "    OpSocSupportInfo *socSupportInfo;\n"
-                                              "    size_t num;\n"
-                                              "} OpSupportList;\n";
+                                             "    uint32_t id;\n"
+                                             "    const char *funcName;\n"
+                                             "    bool hasReg;\n"
+                                             "} NnopbaseDfxId;\n"
+                                             "typedef struct {\n"
+                                             "    ge::DataType dtype;\n"
+                                             "    ge::Format format;\n"
+                                             "} TensorDesc;\n"
+                                             "typedef struct {\n"
+                                             "    TensorDesc *inputsDesc;\n"
+                                             "    size_t inputsNum;\n"
+                                             "    TensorDesc *outputsDesc;\n"
+                                             "    size_t outputsNum;\n"
+                                             "} SupportInfo;\n"
+                                             "typedef struct {\n"
+                                             "    SupportInfo *supportInfo;\n"
+                                             "    size_t num;\n"
+                                             "} OpSocSupportInfo;\n"
+                                             "typedef struct {\n"
+                                             "    OpSocSupportInfo *socSupportInfo;\n"
+                                             "    size_t num;\n"
+                                             "} OpSupportList;\n";
 constexpr const char* OP_ACLNN_SOC_INFO = "enum SocType {\n"
                                           "    SOC_VERSION_ASCEND910A = 1,\n"
                                           "    SOC_VERSION_ASCEND910B = 2,\n"
@@ -111,8 +111,8 @@ constexpr const char* OP_ACLNN_EXTERN_FUNC =
     "extern aclnnStatus NnopbaseAddBoolArrayAttr(void *executor, const aclBoolArray* array, const size_t index);\n"
     "extern aclnnStatus NnopbaseAddArrayAttrWithDtype(void *executor, void *array, const size_t len, "
     "const size_t elementSize, const size_t index, const NnopbaseAttrDtype dtype);\n"
-     "extern uint64_t NnopbaseMsprofSysTime();\n"
-     "extern const char* __attribute__((weak)) NnopbaseGetSocName();\n"
+    "extern uint64_t NnopbaseMsprofSysTime();\n"
+    "extern const char* __attribute__((weak)) NnopbaseGetSocName();\n"
     "extern aclnnStatus NnopbaseAddTilingId(void *executor, NnopbaseDfxId *tilingId);\n"
     "extern void NnopbaseReportApiInfo(const uint64_t beginTime, NnopbaseDfxId &dfxId);\n"
     "extern aclnnStatus NnopbaseRunForWorkspace(void *executor, uint64_t *workspaceLen);\n"
@@ -133,7 +133,7 @@ constexpr const char* OP_ACLNN_EXTERN_FUNC =
     "extern aclnnStatus NnopbaseSetRef(void *executor, const size_t inputIrIdx, const size_t outputIrIdx);\n"
     "extern void __attribute__((weak)) NnopbaseSetMatchArgsFlag(void *executor);\n"
     "extern bool __attribute__((weak)) NnopbaseMatchArgs(void *executor, uint64_t *workspaceLen);\n"
-     "extern void __attribute__((weak)) NnopbaseSetParamCheckMode(void *executor, const uint32_t mode);\n";
+    "extern void __attribute__((weak)) NnopbaseSetParamCheckMode(void *executor, const uint32_t mode);\n";
 
 constexpr const int32_t K_DIFF_NUM = 32;
 constexpr const size_t OP_ACLNN_REF_SUFFIX_LEN = 3U;
@@ -160,8 +160,7 @@ const std::map<std::string, std::string> SOC_SUPPORT_MAP = {
     {"ascend910_96", "SOC_VERSION_ASCEND910_96"},
     {"kirinx90", "SOC_VERSION_KIRINX90"},
     {"kirin9030", "SOC_VERSION_KIRIN9030"},
-    {"ascend350", "SOC_VERSION_ASCEND350"}
-};
+    {"ascend350", "SOC_VERSION_ASCEND350"}};
 
 const std::map<int, std::string> DTYPE_SUPPORT_MAP = {
     {ge::DT_FLOAT, "ge::DT_FLOAT"},
@@ -1040,8 +1039,8 @@ void AclnnOpGenerator::AclnnOpGenCodeFunOutputComment(
 bool AclnnOpGenerator::IsBaseTypeOfAttr(const char* type) const
 {
     return (
-        (strcmp(type, "str") == 0) || (strcmp(type, "listBool") == 0) ||
-        (strcmp(type, "listFloat") == 0) || (strcmp(type, "listInt") == 0));
+        (strcmp(type, "str") == 0) || (strcmp(type, "listBool") == 0) || (strcmp(type, "listFloat") == 0) ||
+        (strcmp(type, "listInt") == 0));
 }
 
 void AclnnOpGenerator::AclnnOpGenCodeFunAttrComment(
@@ -1314,8 +1313,10 @@ std::vector<AclnnOpGenerator::SocEntry> AclnnOpGenerator::BuildUnifiedSocList(Op
         entry.originalKey = iter->first;
         auto it = SOC_SUPPORT_MAP.find(socVer);
         if (it == SOC_SUPPORT_MAP.end()) {
-            ASCENDLOGW("Opbuild: op %s soc version %s is not in SOC_SUPPORT_MAP, "
-                       "filling SOC_VERSION_INVALID.", opType.c_str(), socVer.c_str());
+            ASCENDLOGW(
+                "Opbuild: op %s soc version %s is not in SOC_SUPPORT_MAP, "
+                "filling SOC_VERSION_INVALID.",
+                opType.c_str(), socVer.c_str());
             entry.enumConstant = "SOC_VERSION_INVALID";
         } else {
             entry.enumConstant = it->second;
@@ -1370,7 +1371,8 @@ void AclnnOpGenerator::AclnnOpGenSocSupportList(const std::vector<SocEntry>& ent
     outfile << "static const size_t socNameListLen = " << entries.size() << ";\n";
 }
 
-void AclnnOpGenerator::AclnnOpGenHcclServerTypeList(OpDef& opDef, const std::vector<SocEntry>& entries, ofstream& outfile) const
+void AclnnOpGenerator::AclnnOpGenHcclServerTypeList(
+    OpDef& opDef, const std::vector<SocEntry>& entries, ofstream& outfile) const
 {
     const std::string opType = opDef.GetOpType().GetString();
     bool hasGlobalMc2Config = opDef.MC2().GetHcclServerType() != HcclServerType::MAX;
@@ -1413,10 +1415,11 @@ void AclnnOpGenerator::AclnnOpGenHcclServerTypeList(OpDef& opDef, const std::vec
             }
             socListStr.append(entries[i].socName);
         }
-        ASCENDLOGW("Opbuild: op %s has HcclServerType configured but none of the MC2 SOC names "
-                   "match the AddConfig SOC list [%s]. Please check if the SOC name in "
-                   "HcclServerType matches one of the AddConfig SOCs.",
-                   opType.c_str(), socListStr.c_str());
+        ASCENDLOGW(
+            "Opbuild: op %s has HcclServerType configured but none of the MC2 SOC names "
+            "match the AddConfig SOC list [%s]. Please check if the SOC name in "
+            "HcclServerType matches one of the AddConfig SOCs.",
+            opType.c_str(), socListStr.c_str());
     }
     outfile << "NnopbaseHcclServerType hcclServerTypeList[] = {" << str << "};\n\n";
 }
@@ -1524,8 +1527,10 @@ void AclnnOpGenerator::AclnnOpGenOpSupportListAll(
 {
     const std::string opType = opDef.GetOpType().GetString();
     if (socEntries.empty()) {
-        ASCENDLOGW("Opbuild: op %s has no soc version configured (only kirin or none), "
-                    "generating empty supportList.", opType.c_str());
+        ASCENDLOGW(
+            "Opbuild: op %s has no soc version configured (only kirin or none), "
+            "generating empty supportList.",
+            opType.c_str());
         outfile << "OpSocSupportInfo opSocSupportList[1] = {{nullptr, 0}};\n";
         outfile << "OpSupportList supportList = {opSocSupportList, 0};\n";
         return;
@@ -1541,19 +1546,25 @@ void AclnnOpGenerator::AclnnOpGenOpSupportListAll(
             inputs = opDef.GetMergeInputs(it->second);
             outputs = opDef.GetMergeOutputs(it->second);
             AclnnOpGenOpSupportList(i, inputs, outputs, outfile, opType);
-            if (!AclnnIsValueDependDataTypeSupport(inputs, opType)) { return; }
+            if (!AclnnIsValueDependDataTypeSupport(inputs, opType)) {
+                return;
+            }
         } else if (reuseIdx == socEntries.size()) {
             reuseIdx = i;
             inputs = opDef.GetMergeInputs(firstConfig);
             outputs = opDef.GetMergeOutputs(firstConfig);
             AclnnOpGenOpSupportList(i, inputs, outputs, outfile, opType);
-            if (!AclnnIsValueDependDataTypeSupport(inputs, opType)) { return; }
+            if (!AclnnIsValueDependDataTypeSupport(inputs, opType)) {
+                return;
+            }
         }
     }
     size_t total = socEntries.size();
     outfile << "OpSocSupportInfo opSocSupportList[" << total << "] = {";
     for (size_t index = 0U; index < total; index++) {
-        if (index > 0U) { outfile << ", "; }
+        if (index > 0U) {
+            outfile << ", ";
+        }
         bool isReuse = !socEntries[index].hasAicoreConfig && reuseIdx < total;
         outfile << "socSupportInfo" << (isReuse ? reuseIdx : index);
     }
@@ -2344,8 +2355,9 @@ void AclnnOpGenerator::AclopGenCodeCommon(
     AclnnOpGenCodeExecutor(opDef, outfile);
     if (opDef.MC2().GetHcclServerType() != HcclServerType::MAX) {
         outfile << "    if (NnopbaseSetHcclServerTypeBySocName != NULL) {\n";
-        outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseSetHcclServerTypeBySocName(*executor, hcclServerTypeList, "
-                   "socNameList, socNameListLen));\n";
+        outfile
+            << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseSetHcclServerTypeBySocName(*executor, hcclServerTypeList, "
+               "socNameList, socNameListLen));\n";
         outfile << "    } else {\n";
         outfile << "        NnopbaseSetHcclServerTypeList(*executor, hcclServerTypeList, "
                    "socSupportList, socSupportListLen);\n";
@@ -2376,7 +2388,8 @@ void AclnnOpGenerator::AclopGenCodeCommon(
     } else {
         AclnnOpGenAddParamName(opDef, opdefName, outfile);
         outfile << "    if (NnopbaseAddSocNameList != NULL) {\n";
-        outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddSocNameList(*executor, &supportList, socNameList, socNameListLen));\n";
+        outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddSocNameList(*executor, &supportList, socNameList, "
+                   "socNameListLen));\n";
         outfile << "    } else {\n";
         outfile << "        NNOPBASE_ASSERT_OK_RETVAL(NnopbaseAddSupportList(*executor, &supportList, socSupportList"
                 << ", socSupportListLen));\n";
@@ -2389,14 +2402,14 @@ void AclnnOpGenerator::AclopGenCodeCommon(
         char* endPtr = nullptr;
         unsigned long parsedVal = strtoul(optionalParamCheckEnv, &endPtr, 10);
         if (*endPtr != '\0' || parsedVal == 0UL || parsedVal > UINT32_MAX) {
-            ASCENDLOGW("Opbuild: ACLNN_OPTIONAL_PARAM_CHECK value '%s' is invalid, expected positive integer, using 0.",
-                       optionalParamCheckEnv);
+            ASCENDLOGW(
+                "Opbuild: ACLNN_OPTIONAL_PARAM_CHECK value '%s' is invalid, expected positive integer, using 0.",
+                optionalParamCheckEnv);
             parsedVal = 0U;
         }
         optionalParamCheckMode = static_cast<uint32_t>(parsedVal);
         outfile << "    if (NnopbaseSetParamCheckMode != NULL) {\n";
-        outfile << "        NnopbaseSetParamCheckMode(*executor, "
-                << optionalParamCheckMode << "U);\n";
+        outfile << "        NnopbaseSetParamCheckMode(*executor, " << optionalParamCheckMode << "U);\n";
         outfile << "    }\n";
     }
 }

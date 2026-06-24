@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 #ifndef ASCENDC_ACL_RT_COMPILE_H
 #define ASCENDC_ACL_RT_COMPILE_H
 #include <stddef.h>
@@ -16,7 +16,7 @@ extern "C" {
 #endif
 
 typedef int aclError;
-typedef void *aclrtcProg;
+typedef void* aclrtcProg;
 
 /**
  * @brief Creates an instance of aclrtcProg with the given input parameters.
@@ -28,8 +28,9 @@ typedef void *aclrtcProg;
  * @param[in] includeNames Currently must be NULL.
  * @return aclError: ACL_SUCCESS or ACL_ERROR_RTC_XXX
  */
-aclError aclrtcCreateProg(aclrtcProg *prog, const char *src, const char *name, int numHeaders, const char **headers,
-    const char **includeNames);
+aclError aclrtcCreateProg(
+    aclrtcProg* prog, const char* src, const char* name, int numHeaders, const char** headers,
+    const char** includeNames);
 
 /**
  * @brief Compiles the given program.
@@ -38,7 +39,7 @@ aclError aclrtcCreateProg(aclrtcProg *prog, const char *src, const char *name, i
  * @param[in] options Array of option strings.
  * @return aclError: ACL_SUCCESS or ACL_ERROR_RTC_XXX
  */
-aclError aclrtcCompileProg(aclrtcProg prog, int numOptions, const char **options);
+aclError aclrtcCompileProg(aclrtcProg prog, int numOptions, const char** options);
 
 /**
  * @brief Notes the given name expression denoting the address of a global function or device variable.
@@ -48,7 +49,7 @@ aclError aclrtcCompileProg(aclrtcProg prog, int numOptions, const char **options
  *                           on a subsequent call to aclrtcGetLoweredName to extract the lowered name.
  * @return aclError: ACL_SUCCESS or ACL_ERROR_RTC_XXX
  */
-aclError aclrtcAddNameExpr(aclrtcProg prog, const char *const nameExpression);
+aclError aclrtcAddNameExpr(aclrtcProg prog, const char* const nameExpression);
 
 /**
  * @brief Extracts the lowered (mangled) name for a global function or device variable.
@@ -61,14 +62,14 @@ aclError aclrtcAddNameExpr(aclrtcProg prog, const char *const nameExpression);
  *                         by aclrtcDestroyProg.
  * @return aclError: ACL_SUCCESS or ACL_ERROR_RTC_XXX
  */
-aclError aclrtcGetLoweredName(aclrtcProg prog, const char *nameExpression, const char **loweredName);
+aclError aclrtcGetLoweredName(aclrtcProg prog, const char* nameExpression, const char** loweredName);
 
 /**
  * @brief Destroys the given program.
  * @param[in,out] prog Runtime Compilation program.
  * @return aclError: ACL_SUCCESS or ACL_ERROR_RTC_XXX
  */
-aclError aclrtcDestroyProg(aclrtcProg *prog);
+aclError aclrtcDestroyProg(aclrtcProg* prog);
 
 /**
  * @brief Retrieves the compiled device ELF binary.
@@ -76,7 +77,7 @@ aclError aclrtcDestroyProg(aclrtcProg *prog);
  * @param[out] binData Compiled result.
  * @return aclError: ACL_SUCCESS or ACL_ERROR_RTC_XXX
  */
-aclError aclrtcGetBinData(aclrtcProg prog, char *binData);
+aclError aclrtcGetBinData(aclrtcProg prog, char* binData);
 
 /**
  * @brief Retrieves the size of the compiled device ELF binary.
@@ -84,7 +85,7 @@ aclError aclrtcGetBinData(aclrtcProg prog, char *binData);
  * @param[out] deviceELFSizeRet Size of the ELF binary.
  * @return aclError: ACL_SUCCESS or ACL_ERROR_RTC_XXX
  */
-aclError aclrtcGetBinDataSize(aclrtcProg prog, size_t *binDataSizeRet);
+aclError aclrtcGetBinDataSize(aclrtcProg prog, size_t* binDataSizeRet);
 
 /**
  * @brief Retrieves the size of the compilation log.
@@ -92,7 +93,7 @@ aclError aclrtcGetBinDataSize(aclrtcProg prog, size_t *binDataSizeRet);
  * @param[out] logSizeRet Size of the log string.
  * @return aclError: ACL_SUCCESS or ACL_ERROR_RTC_XXX
  */
-aclError aclrtcGetCompileLogSize(aclrtcProg prog, size_t *logSizeRet);
+aclError aclrtcGetCompileLogSize(aclrtcProg prog, size_t* logSizeRet);
 
 /**
  * @brief Retrieves the compilation log.
@@ -100,7 +101,7 @@ aclError aclrtcGetCompileLogSize(aclrtcProg prog, size_t *logSizeRet);
  * @param[out] log Compilation log.
  * @return aclError: ACL_SUCCESS or ACL_ERROR_RTC_XXX
  */
-aclError aclrtcGetCompileLog(aclrtcProg prog, char *log);
+aclError aclrtcGetCompileLog(aclrtcProg prog, char* log);
 
 #ifdef __cplusplus
 }

@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file elf_tool.c
@@ -47,14 +47,15 @@ int32_t ElfHeaderCheck(uint8_t* elf, size_t elfSize, bool checkProgHeader)
     return ELF_SUCCESS;
 }
 
-size_t ElfAddSection(uint8_t* elf, size_t elfSize, uint8_t* jit, size_t jitSize, uint8_t* sec, size_t secSize,
-    uint32_t type)
+size_t ElfAddSection(
+    uint8_t* elf, size_t elfSize, uint8_t* jit, size_t jitSize, uint8_t* sec, size_t secSize, uint32_t type)
 {
     ElfHeaderCheck(elf, elfSize, false);
     Elf_Ehdr* eh = (Elf_Ehdr*)elf;
     errno_t err = memcpy_s(jit, jitSize, elf, elfSize);
     CHECK_COND_AND_DO((err != EOK), {
-        printf("[Error] 1.ElfAddSection: jit size %lu, jit residual size %lu, entry size %u exceeded the maximum "
+        printf(
+            "[Error] 1.ElfAddSection: jit size %lu, jit residual size %lu, entry size %u exceeded the maximum "
             "capacity!\n",
             jitSize, jitSize, eh->e_ehsize);
         return 0;
@@ -62,9 +63,9 @@ size_t ElfAddSection(uint8_t* elf, size_t elfSize, uint8_t* jit, size_t jitSize,
 
     char* sec_header_tab = (char*)(jit + eh->e_shoff);
     Elf_Shdr* sh_str_tab = NULL;
-    char* sh_strtbl = (char*)(((Elf_Shdr *)(sec_header_tab + eh->e_shentsize * eh->e_shstrndx))->sh_offset + jit);
+    char* sh_strtbl = (char*)(((Elf_Shdr*)(sec_header_tab + eh->e_shentsize * eh->e_shstrndx))->sh_offset + jit);
     for (int i = 0; i < eh->e_shnum; i++) {
-        Elf_Shdr *sh = (Elf_Shdr *)(sec_header_tab + eh->e_shentsize * i);
+        Elf_Shdr* sh = (Elf_Shdr*)(sec_header_tab + eh->e_shentsize * i);
         char* sh_name = sh_strtbl + sh->sh_name;
         if (sh->sh_type == SHT_NOBITS) {
             continue;
@@ -78,13 +79,13 @@ size_t ElfAddSection(uint8_t* elf, size_t elfSize, uint8_t* jit, size_t jitSize,
         return 0;
     }
     uint8_t* sectionStartAddr = (uint8_t*)(jit + sh_str_tab->sh_offset);
-    struct AscendKernelHeader *kernelHeader = (struct AscendKernelHeader *)sectionStartAddr;
+    struct AscendKernelHeader* kernelHeader = (struct AscendKernelHeader*)sectionStartAddr;
     CHECK_COND_AND_DO((kernelHeader->version != 1), {
         printf("[Error] ascend_kernel verision %u is err\n", kernelHeader->version);
         return 0;
     })
     uint32_t typeCount = kernelHeader->typeCnt;
-    uint8_t *beginAddr = (uint8_t *)(sectionStartAddr + sizeof(struct AscendKernelHeader));
+    uint8_t* beginAddr = (uint8_t*)(sectionStartAddr + sizeof(struct AscendKernelHeader));
     uint32_t secType;
     uint32_t secLen;
     uint32_t fileLen;
@@ -123,9 +124,9 @@ int32_t ElfGetSymbolOffset(uint8_t* elf, size_t elfSize, const char* symbolName,
     char* sec_header_tab = (char*)(elf + eh->e_shoff);
     Elf_Shdr* sh_sym_tab = NULL;
     Elf_Shdr* sh_str_tab = NULL;
-    char* sh_strtbl = (char*)(((Elf_Shdr *)(sec_header_tab + eh->e_shentsize * eh->e_shstrndx))->sh_offset + elf);
+    char* sh_strtbl = (char*)(((Elf_Shdr*)(sec_header_tab + eh->e_shentsize * eh->e_shstrndx))->sh_offset + elf);
     for (int i = 0; i < eh->e_shnum; i++) {
-        Elf_Shdr *sh = (Elf_Shdr *)(sec_header_tab + eh->e_shentsize * i);
+        Elf_Shdr* sh = (Elf_Shdr*)(sec_header_tab + eh->e_shentsize * i);
         char* sh_name = sh_strtbl + sh->sh_name;
         if (sh->sh_type == SHT_NOBITS) {
             continue;
@@ -144,7 +145,7 @@ int32_t ElfGetSymbolOffset(uint8_t* elf, size_t elfSize, const char* symbolName,
     int symbol_count = (int)(sh_sym_tab->sh_size / sizeof(Elf64_Sym));
     for (int i = 0; i < symbol_count; i++) {
         if (strncmp(sym_tab[i].st_name + str_tab_addr, symbolName, symbolNameLen + 1) == 0) {
-            Elf_Shdr *sh = (Elf_Shdr *)(sec_header_tab + eh->e_shentsize * sym_tab[i].st_shndx);
+            Elf_Shdr* sh = (Elf_Shdr*)(sec_header_tab + eh->e_shentsize * sym_tab[i].st_shndx);
             *offset = sym_tab[i].st_value - sh->sh_addr + sh->sh_offset;
             *size = sym_tab[i].st_size;
             return ELF_SUCCESS;

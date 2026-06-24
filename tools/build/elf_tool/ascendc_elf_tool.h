@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file ascendc_elf_tool.h
@@ -89,7 +89,7 @@ typedef unsigned long Elf_Xword;
 
 #define ELF_ERR_NULL_POINTER 1
 #define ELF_ERR_BUFFER_TOO_SMALL 2
-#define ELF_ERR_NOT_64BIT  3
+#define ELF_ERR_NOT_64BIT 3
 #define ELF_ERR_UNEXPECTED_PROG_HEADER 4
 
 #define ELF_SUCCESS 0
@@ -135,26 +135,26 @@ typedef struct {
  * Program header
  */
 typedef struct {
-    Elf_Word p_type; /* Type of segment */
-    Elf_Word p_flags; /* Segment attributes */
-    Elf_Off p_offset; /* Offset in file */
-    Elf_Addr p_vaddr; /* Virtual address in memory */
-    Elf_Addr p_paddr; /* Reserved */
+    Elf_Word p_type;    /* Type of segment */
+    Elf_Word p_flags;   /* Segment attributes */
+    Elf_Off p_offset;   /* Offset in file */
+    Elf_Addr p_vaddr;   /* Virtual address in memory */
+    Elf_Addr p_paddr;   /* Reserved */
     Elf_Xword p_filesz; /* Size of segment in file */
-    Elf_Xword p_memsz; /* Size of segment in memory */
-    Elf_Xword p_align; /* Alignment of segment */
+    Elf_Xword p_memsz;  /* Size of segment in memory */
+    Elf_Xword p_align;  /* Alignment of segment */
 } Elf_Phdr;
 
 /*
  * Symbol table
  */
 typedef struct {
-    Elf_Word st_name; /* Symbol name */
-    unsigned char st_info; /* Type and Binding attributes */
+    Elf_Word st_name;       /* Symbol name */
+    unsigned char st_info;  /* Type and Binding attributes */
     unsigned char st_other; /* Reserved */
-    Elf_Half st_shndx; /* Section table index */
-    Elf_Addr st_value; /* Symbol value */
-    Elf_Xword st_size; /* Size of object (e.g., common) */
+    Elf_Half st_shndx;      /* Section table index */
+    Elf_Addr st_value;      /* Symbol value */
+    Elf_Xword st_size;      /* Size of object (e.g., common) */
 } Elf64_Sym;
 
 #define ASCEND_KERNEL_SECTION_LEN_POS 1
@@ -162,8 +162,8 @@ typedef struct {
 #define ASCEND_KERNEL_HEADER_CNT 3
 
 #define CHECK_COND_AND_DO(condition, dosomething) \
-    if ((condition)) {                          \
-        dosomething;                             \
+    if ((condition)) {                            \
+        dosomething;                              \
     }
 
 struct AscendKernelHeader {
@@ -174,8 +174,8 @@ struct AscendKernelHeader {
 #ifdef __cplusplus
 extern "C" {
 #endif
-size_t ElfAddSection(uint8_t* elf, size_t elfSize, uint8_t* jit, size_t jitSize, uint8_t* sec, size_t secSize,
-    uint32_t type);
+size_t ElfAddSection(
+    uint8_t* elf, size_t elfSize, uint8_t* jit, size_t jitSize, uint8_t* sec, size_t secSize, uint32_t type);
 
 int32_t ElfGetSymbolOffset(uint8_t* elf, size_t elfSize, const char* symbolName, size_t* offset, size_t* size);
 #if defined(UT_TEST) || defined(ST_TEST)

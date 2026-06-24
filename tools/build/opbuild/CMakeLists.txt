@@ -21,7 +21,7 @@ target_compile_options(op_build PRIVATE -Wextra -Wfloat-equal -fno-common -fpie 
 
 if(BUILD_OPEN_PROJECT)
   target_include_directories(op_build PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/common
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common
   )
 else()
   target_include_directories(op_build PRIVATE

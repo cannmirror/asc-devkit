@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file ascendc_runtime.cpp
@@ -62,56 +62,35 @@ static bool g_profEnable;
 namespace {
 constexpr int16_t SIZE_VAL_TWO = 2;
 constexpr size_t ASCENDC_KERNEL_ID = 69;
-}
+} // namespace
 
-#define PROF_TASK_TIME 0x00000002ULL  // dynamic profiling hwts log
+#define PROF_TASK_TIME 0x00000002ULL // dynamic profiling hwts log
 
-bool AscendCheckSoC950Version(const char *socVersion, const char* prefix)
+bool AscendCheckSoC950Version(const char* socVersion, const char* prefix)
 {
     size_t prefixLen = strlen(prefix);
     return strncmp(socVersion, prefix, prefixLen) == 0;
 }
 
-bool AscendCheckSoCVersion(const char *socVersion, char *errMsg)
+bool AscendCheckSoCVersion(const char* socVersion, char* errMsg)
 {
-    static const std::unordered_map<std::string, std::string> ascendcSocVersionMap {
-        {"ascend910b1", "ascend910b"},
-        {"ascend910b2", "ascend910b"},
-        {"ascend910b2c", "ascend910b"},
-        {"ascend910b3", "ascend910b"},
-        {"ascend910b4", "ascend910b"},
-        {"ascend910b4-1", "ascend910b"},
-        {"ascend910_9391", "ascend910b"},
-        {"ascend910_9381", "ascend910b"},
-        {"ascend910_9372", "ascend910b"},
-        {"ascend910_9392", "ascend910b"},
-        {"ascend910_9382", "ascend910b"},
-        {"ascend910_9362", "ascend910b"},
+    static const std::unordered_map<std::string, std::string> ascendcSocVersionMap{
+        {"ascend910b1", "ascend910b"},      {"ascend910b2", "ascend910b"},      {"ascend910b2c", "ascend910b"},
+        {"ascend910b3", "ascend910b"},      {"ascend910b4", "ascend910b"},      {"ascend910b4-1", "ascend910b"},
+        {"ascend910_9391", "ascend910b"},   {"ascend910_9381", "ascend910b"},   {"ascend910_9372", "ascend910b"},
+        {"ascend910_9392", "ascend910b"},   {"ascend910_9382", "ascend910b"},   {"ascend910_9362", "ascend910b"},
 
-        {"ascend910a", "ascend910"},
-        {"ascend910proa", "ascend910"},
-        {"ascend910b", "ascend910"},
-        {"ascend910prob", "ascend910"},
-        {"ascend910premiuma", "ascend910"},
+        {"ascend910a", "ascend910"},        {"ascend910proa", "ascend910"},     {"ascend910b", "ascend910"},
+        {"ascend910prob", "ascend910"},     {"ascend910premiuma", "ascend910"},
 
-        {"ascend310p1", "ascend310p"},
-        {"ascend310p3", "ascend310p"},
-        {"ascend310p5", "ascend310p"},
-        {"ascend310p7", "ascend310p"},
-        {"ascend310p3vir01", "ascend310p"},
-        {"ascend310p3vir02", "ascend310p"},
-        {"ascend310p3vir04", "ascend310p"},
-        {"ascend310p3vir08", "ascend310p"},
+        {"ascend310p1", "ascend310p"},      {"ascend310p3", "ascend310p"},      {"ascend310p5", "ascend310p"},
+        {"ascend310p7", "ascend310p"},      {"ascend310p3vir01", "ascend310p"}, {"ascend310p3vir02", "ascend310p"},
+        {"ascend310p3vir04", "ascend310p"}, {"ascend310p3vir08", "ascend310p"},
 
-        {"ascend310b1", "ascend310b"},
-        {"ascend310b2", "ascend310b"},
-        {"ascend310b3", "ascend310b"},
-        {"ascend310b4", "ascend310b"},
-        {"kirinx90", "kirinx90"},
-        {"kirin9030", "kirin9030"}
-    };
+        {"ascend310b1", "ascend310b"},      {"ascend310b2", "ascend310b"},      {"ascend310b3", "ascend310b"},
+        {"ascend310b4", "ascend310b"},      {"kirinx90", "kirinx90"},           {"kirin9030", "kirin9030"}};
 
-    static const std::unordered_map<std::string, std::string> ascendcOriSocVersionMap {
+    static const std::unordered_map<std::string, std::string> ascendcOriSocVersionMap{
         {"ascend910b1", "Ascend910B1"},
         {"ascend910b2", "Ascend910B2"},
         {"ascend910b2c", "Ascend910B2C"},
@@ -145,8 +124,7 @@ bool AscendCheckSoCVersion(const char *socVersion, char *errMsg)
         {"ascend310b3", "Ascend310B3"},
         {"ascend310b4", "Ascend310B4"},
         {"kirinx90", "KirinX90"},
-        {"kirin9030", "Kirin9030"}
-    };
+        {"kirin9030", "Kirin9030"}};
 
     std::string compileSocVersion = std::string(socVersion);
 
@@ -163,19 +141,20 @@ bool AscendCheckSoCVersion(const char *socVersion, char *errMsg)
         return true;
     }
 
-    const auto &it = ascendcSocVersionMap.find(compileSocVersion);
+    const auto& it = ascendcSocVersionMap.find(compileSocVersion);
     if (it == ascendcSocVersionMap.end()) {
         ASCENDLOGE("bin soc version %s is incorrected.", compileSocVersion.c_str());
         return false;
     }
-    const auto &it1 = ascendcSocVersionMap.find(lowerCurSocVersion);
+    const auto& it1 = ascendcSocVersionMap.find(lowerCurSocVersion);
     if (it1 == ascendcSocVersionMap.end()) {
         ASCENDLOGE("cur soc version %s not found.", lowerCurSocVersion.c_str());
         return false;
     }
 
     if (it->second != it1->second) {
-        std::string tmpMsg = "the socversion " + ascendcOriSocVersionMap.at(compileSocVersion) +
+        std::string tmpMsg =
+            "the socversion " + ascendcOriSocVersionMap.at(compileSocVersion) +
             " of bin package does not match the current device socverison " +
             ascendcOriSocVersionMap.at(lowerCurSocVersion) +
             ". Please modify default socversion in run.sh or execute run.sh with socversion parameter.";
@@ -193,8 +172,7 @@ int32_t AscendDevBinaryLazyRegister(const char* binBuf, size_t binSize, void** h
     constexpr uint32_t optLen = 2;
     aclrtBinaryLoadOption opList[optLen] = {
         {ACL_RT_BINARY_LOAD_OPT_LAZY_MAGIC, {ACL_RT_BINARY_MAGIC_ELF_AICORE}},
-        {ACL_RT_BINARY_LOAD_OPT_LAZY_LOAD, {/* isLazyLoad = */1}}
-    };
+        {ACL_RT_BINARY_LOAD_OPT_LAZY_LOAD, {/* isLazyLoad = */ 1}}};
     aclrtBinaryLoadOptions opts = {opList, optLen};
     return aclrtBinaryLoadFromData(binBuf, binSize, &opts, handle);
 }
@@ -204,7 +182,8 @@ int32_t AscendGetFuncFromBinary(void* const binHandle, const char* kernelName, v
     return aclrtBinaryGetFunction(binHandle, kernelName, funcHandle);
 }
 
-static SocVersion GetSocVersion() {
+static SocVersion GetSocVersion()
+{
     const char* socName = aclrtGetSocName();
     if (!socName) {
         ASCENDLOGE("aclrtGetSocName failed\n");
@@ -227,32 +206,32 @@ static SocVersion GetSocVersion() {
     return SocVersion::UNKNOWN;
 }
 
-int32_t AscendLaunchKernelWithHostArgs(void* funcHandle,
-    uint32_t numBlocks, void* stream, void* hostArgs, size_t argsSize, uint32_t ubufDynamicSize)
+int32_t AscendLaunchKernelWithHostArgs(
+    void* funcHandle, uint32_t numBlocks, void* stream, void* hostArgs, size_t argsSize, uint32_t ubufDynamicSize)
 {
     static SocVersion currentSoc = GetSocVersion();
     if (currentSoc == SocVersion::ASCEND310P) {
         unsigned int curKernelType;
         ASCENDC_ASSERT_RTOK_RETVAL(AscendCFunctionGetMetaInfoKtype(funcHandle, &curKernelType));
         if (curKernelType == K_TYPE_AICORE) {
-            return aclrtLaunchKernelWithHostArgs(funcHandle, numBlocks, stream, nullptr, hostArgs, argsSize, nullptr,
-                0);
+            return aclrtLaunchKernelWithHostArgs(
+                funcHandle, numBlocks, stream, nullptr, hostArgs, argsSize, nullptr, 0);
         }
         if (curKernelType == K_TYPE_AIV) {
             ASCENDLOGE("Current soc only support KERNEL_TYPE_AICORE!\n");
             return 1;
         }
     }
-    if (currentSoc == SocVersion::ASCEND910B ||((currentSoc == SocVersion::ASCEND950 ||
-        currentSoc == SocVersion::ASCEND350) && ubufDynamicSize == 0)) {
+    if (currentSoc == SocVersion::ASCEND910B ||
+        ((currentSoc == SocVersion::ASCEND950 || currentSoc == SocVersion::ASCEND350) && ubufDynamicSize == 0)) {
         return aclrtLaunchKernelWithHostArgs(funcHandle, numBlocks, stream, nullptr, hostArgs, argsSize, nullptr, 0);
     }
-    if ((currentSoc == SocVersion::ASCEND950 || currentSoc == SocVersion::ASCEND350) && ubufDynamicSize !=0) {
+    if ((currentSoc == SocVersion::ASCEND950 || currentSoc == SocVersion::ASCEND350) && ubufDynamicSize != 0) {
         constexpr uint32_t attrLen = 1;
         aclrtLaunchKernelAttrValue attrValue{};
         attrValue.dynUBufSize = ubufDynamicSize;
         aclrtLaunchKernelAttr attrList[attrLen] = {
-            {static_cast<aclrtLaunchKernelAttrId>(2)/* ACL_RT_LAUNCH_KERNEL_ATTR_DYN_UBUF_SIZE */, attrValue},
+            {static_cast<aclrtLaunchKernelAttrId>(2) /* ACL_RT_LAUNCH_KERNEL_ATTR_DYN_UBUF_SIZE */, attrValue},
         };
         aclrtLaunchKernelCfg cfg = {attrList, attrLen};
         return aclrtLaunchKernelWithHostArgs(funcHandle, numBlocks, stream, &cfg, hostArgs, argsSize, nullptr, 0);
@@ -260,7 +239,7 @@ int32_t AscendLaunchKernelWithHostArgs(void* funcHandle,
     return 1;
 }
 
-uint32_t RegisterAscendBinary(const char *fileBuf, size_t fileSize, uint32_t type, void **handle)
+uint32_t RegisterAscendBinary(const char* fileBuf, size_t fileSize, uint32_t type, void** handle)
 {
     uint32_t magic = ACL_RT_BINARY_MAGIC_ELF_AICORE;
     switch (static_cast<ElfType>(type)) {
@@ -282,26 +261,20 @@ uint32_t RegisterAscendBinary(const char *fileBuf, size_t fileSize, uint32_t typ
     return aclrtBinaryLoadFromData(fileBuf, fileSize, &loadOptions, handle);
 }
 
-uint32_t LaunchAscendKernel(void *handle, const uint64_t key, const uint32_t numBlocks, void **args, uint32_t size,
-    const rtStream_t stream)
+uint32_t LaunchAscendKernel(
+    void* handle, const uint64_t key, const uint32_t numBlocks, void** args, uint32_t size, const rtStream_t stream)
 {
     aclrtFuncHandle funcHandle;
     ASCENDC_ASSERT_RTOK_RETVAL(aclrtBinaryGetFunctionByEntry(handle, key, &funcHandle));
-    return aclrtLaunchKernelWithHostArgs(funcHandle, numBlocks, stream, nullptr, static_cast<void *>(args), size,
-        nullptr, 0);
+    return aclrtLaunchKernelWithHostArgs(
+        funcHandle, numBlocks, stream, nullptr, static_cast<void*>(args), size, nullptr, 0);
 }
 
-uint32_t GetAscendCoreSyncAddr(void **addr)
-{
-    return aclrtGetHardwareSyncAddr(addr);
-}
+uint32_t GetAscendCoreSyncAddr(void** addr) { return aclrtGetHardwareSyncAddr(addr); }
 
-int UnregisterAscendBinary(void *hdl)
-{
-    return aclrtBinaryUnLoad(hdl);
-}
+int UnregisterAscendBinary(void* hdl) { return aclrtBinaryUnLoad(hdl); }
 
-static void MsprofRc(const char *name, const uint64_t timeStamp)
+static void MsprofRc(const char* name, const uint64_t timeStamp)
 {
     MsprofAdditionalInfo info{};
 
@@ -310,7 +283,7 @@ static void MsprofRc(const char *name, const uint64_t timeStamp)
     info.timeStamp = timeStamp;
     info.threadId = static_cast<uint32_t>(mmGetTid());
     info.dataLen = static_cast<uint32_t>(sizeof(uint32_t));
-    auto contextIdInfo = reinterpret_cast<MsprofContextIdInfo *>(info.data);
+    auto contextIdInfo = reinterpret_cast<MsprofContextIdInfo*>(info.data);
     contextIdInfo->ctxIdNum = 1U;
     contextIdInfo->ctxIds[0] = 0U;
 
@@ -320,10 +293,11 @@ static void MsprofRc(const char *name, const uint64_t timeStamp)
     MsprofReportAdditionalInfo(static_cast<uint32_t>(true), &info, static_cast<uint32_t>(sizeof(MsprofAdditionalInfo)));
 }
 
-static void AscendBuildNodeBasicInfo(uint32_t numBlocks, const std::pair<uint64_t, uint64_t> &opNameAndTypeHash,
-    uint32_t taskType, uint64_t timeStamp, MsprofCompactInfo &nodeBasicInfo)
+static void AscendBuildNodeBasicInfo(
+    uint32_t numBlocks, const std::pair<uint64_t, uint64_t>& opNameAndTypeHash, uint32_t taskType, uint64_t timeStamp,
+    MsprofCompactInfo& nodeBasicInfo)
 {
-    auto &profNodeBasicInfo = nodeBasicInfo.data.nodeBasicInfo;
+    auto& profNodeBasicInfo = nodeBasicInfo.data.nodeBasicInfo;
     profNodeBasicInfo.opName = opNameAndTypeHash.first;
     profNodeBasicInfo.opType = opNameAndTypeHash.second;
     profNodeBasicInfo.taskType = taskType;
@@ -334,16 +308,16 @@ static void AscendBuildNodeBasicInfo(uint32_t numBlocks, const std::pair<uint64_
     nodeBasicInfo.threadId = static_cast<uint32_t>(mmGetTid());
 }
 
-static void MsprofRn(const char *name, uint32_t numBlocks, const uint64_t time, uint32_t taskType)
+static void MsprofRn(const char* name, uint32_t numBlocks, const uint64_t time, uint32_t taskType)
 {
     const uint64_t typeHash = MsprofStr2Id(name, strlen(name));
     MsprofCompactInfo nodeBasicInfo{};
-    AscendBuildNodeBasicInfo(numBlocks, { typeHash, typeHash }, static_cast<uint32_t>(taskType), time, nodeBasicInfo);
-    MsprofReportCompactInfo(static_cast<uint32_t>(true), &nodeBasicInfo,
-        static_cast<uint32_t>(sizeof(MsprofCompactInfo)));
+    AscendBuildNodeBasicInfo(numBlocks, {typeHash, typeHash}, static_cast<uint32_t>(taskType), time, nodeBasicInfo);
+    MsprofReportCompactInfo(
+        static_cast<uint32_t>(true), &nodeBasicInfo, static_cast<uint32_t>(sizeof(MsprofCompactInfo)));
 }
 
-inline void AscendMsprofReportApi(const uint64_t beginTime, MsprofApi &info)
+inline void AscendMsprofReportApi(const uint64_t beginTime, MsprofApi& info)
 {
     const uint64_t endTime = MsprofSysCycleTime();
     info.threadId = static_cast<uint32_t>(mmGetTid());
@@ -357,7 +331,7 @@ inline void AscendMsprofReportApi(const uint64_t beginTime, MsprofApi &info)
     }
 }
 
-static void AscendReportLaunchInfo(const uint64_t beginTime, const char *const opType)
+static void AscendReportLaunchInfo(const uint64_t beginTime, const char* const opType)
 {
     MsprofApi info{};
     info.type = MSPROF_REPORT_NODE_LAUNCH_TYPE;
@@ -367,7 +341,7 @@ static void AscendReportLaunchInfo(const uint64_t beginTime, const char *const o
     AscendMsprofReportApi(beginTime, info);
 }
 
-static int32_t AscendProfilingCallBack(uint32_t type, void *data, uint32_t len)
+static int32_t AscendProfilingCallBack(uint32_t type, void* data, uint32_t len)
 {
     if (data == nullptr) {
         ASCENDLOGE("data is nullptr\n");
@@ -382,28 +356,22 @@ static int32_t AscendProfilingCallBack(uint32_t type, void *data, uint32_t len)
         ASCENDLOGE("ProfilingCallBack, type = %u, discard this type\n", type);
         return 0;
     }
-    MsprofCommandHandle *handle = (MsprofCommandHandle *)data;
+    MsprofCommandHandle* handle = (MsprofCommandHandle*)data;
     (handle->profSwitch & PROF_TASK_TIME) != 0 ? g_profEnable = true : g_profEnable = false;
     return 0;
 }
 
-bool GetAscendProfStatus()
-{
-    return g_profEnable;
-}
+bool GetAscendProfStatus() { return g_profEnable; }
 
-void AscendProfRegister()
-{
-    MsprofRegisterCallback(ASCENDC_KERNEL_ID, AscendProfilingCallBack);
-}
+void AscendProfRegister() { MsprofRegisterCallback(ASCENDC_KERNEL_ID, AscendProfilingCallBack); }
 
-void StartAscendProf(const char *name, uint64_t *startTime)
+void StartAscendProf(const char* name, uint64_t* startTime)
 {
     (void)name;
     *startTime = MsprofSysCycleTime();
 }
 
-void ReportAscendProf(const char *name, uint32_t numBlocks, uint32_t taskType, const uint64_t startTime)
+void ReportAscendProf(const char* name, uint32_t numBlocks, uint32_t taskType, const uint64_t startTime)
 {
     static const std::vector<uint32_t> taskTypeMap = {
         static_cast<uint32_t>(MSPROF_GE_TASK_TYPE_MIX_AIC), // MIX
@@ -419,9 +387,7 @@ void ReportAscendProf(const char *name, uint32_t numBlocks, uint32_t taskType, c
         static_cast<uint32_t>(MSPROF_GE_TASK_TYPE_MIX_AIC), // KERNEL_TYPE_MIX_AIC_1_2
         static_cast<uint32_t>(MSPROF_GE_TASK_TYPE_AI_CPU)   // AICPU
     };
-    static const std::vector<uint32_t> taskRationMap = {
-        SIZE_VAL_TWO, 0, 0, 0, 0, 0, 0, 0, 0, 1, SIZE_VAL_TWO, 0
-    };
+    static const std::vector<uint32_t> taskRationMap = {SIZE_VAL_TWO, 0, 0, 0, 0, 0, 0, 0, 0, 1, SIZE_VAL_TWO, 0};
     uint32_t taskRation = taskRationMap.at(taskType);
     taskType = taskTypeMap.at(taskType);
     AscendReportLaunchInfo(startTime, name);
@@ -432,7 +398,7 @@ void ReportAscendProf(const char *name, uint32_t numBlocks, uint32_t taskType, c
     MsprofRn(name, numBlocks, startTime + 1, taskType);
 }
 
-uint32_t AllocAscendMemDevice(void **devMem, uint64_t size)
+uint32_t AllocAscendMemDevice(void** devMem, uint64_t size)
 {
     constexpr aclrtMemMallocPolicy policy =
         static_cast<aclrtMemMallocPolicy>(ACL_MEM_MALLOC_HUGE_ONLY | ACL_MEM_TYPE_HIGH_BAND_WIDTH);
@@ -444,7 +410,7 @@ uint32_t AllocAscendMemDevice(void **devMem, uint64_t size)
     return 0;
 }
 
-uint32_t FreeAscendMemDevice(void *devMem)
+uint32_t FreeAscendMemDevice(void* devMem)
 {
     const aclError rtErr = aclrtFree(devMem);
     if (rtErr != 0) {
@@ -461,11 +427,11 @@ typedef struct {
 
 static bool g_ascendCRegistedCallBack = false;
 static std::mutex g_ascStreamMtx;
-std::unordered_map<const void *, AscendCStreamForVectorCore> g_ascStreamMap;
-std::unordered_map<void *, std::shared_ptr<std::mutex>> g_ascStreamMtxMap;
+std::unordered_map<const void*, AscendCStreamForVectorCore> g_ascStreamMap;
+std::unordered_map<void*, std::shared_ptr<std::mutex>> g_ascStreamMtxMap;
 
-static uint32_t AscendCReportAdditionInfo(const char *const opType, uint32_t numBlocks,
-    uint32_t taskType, const uint64_t timeStamp, const uint64_t itemId)
+static uint32_t AscendCReportAdditionInfo(
+    const char* const opType, uint32_t numBlocks, uint32_t taskType, const uint64_t timeStamp, const uint64_t itemId)
 {
     ASCENDLOGI("[Cann Profiling] node type is %s, taskType is %u\n", opType, taskType);
     const uint64_t typeHash = itemId;
@@ -487,25 +453,25 @@ static void AscendCInnerReportLaunchInfo(const uint64_t beginTime, const uint64_
 }
 
 static inline uint32_t AscendCExecutorPreportProfiling(
-    const char *const opType, uint32_t numBlocks, const uint32_t taskType, const uint64_t launchBeginTime)
+    const char* const opType, uint32_t numBlocks, const uint32_t taskType, const uint64_t launchBeginTime)
 {
     const size_t typeLen = strlen(opType);
     const uint64_t itemId = MsprofStr2Id(opType, typeLen);
     AscendCInnerReportLaunchInfo(launchBeginTime, itemId);
-    ASCENDC_ASSERT_RTOK_RETVAL(AscendCReportAdditionInfo(opType, numBlocks, taskType,
-        launchBeginTime + 1U, itemId));
+    ASCENDC_ASSERT_RTOK_RETVAL(AscendCReportAdditionInfo(opType, numBlocks, taskType, launchBeginTime + 1U, itemId));
     return ASCENDC_SUCCESS;
 }
 
-#define OP_CHECK_NO_RETURN(cond, log_func)    \
-    do {                                      \
-        if (!(cond)) {                        \
-            log_func;                         \
-        }                                     \
+#define OP_CHECK_NO_RETURN(cond, log_func) \
+    do {                                   \
+        if (!(cond)) {                     \
+            log_func;                      \
+        }                                  \
     } while (false)
 
-static uint32_t AscendCExecutorLaunchKernel(void* binHandle, const uint64_t tilingKey, const uint32_t numBlocks,
-    void** args, uint32_t size, const rtStream_t stream)
+static uint32_t AscendCExecutorLaunchKernel(
+    void* binHandle, const uint64_t tilingKey, const uint32_t numBlocks, void** args, uint32_t size,
+    const rtStream_t stream)
 {
     ASCENDLOGI("tilingKey is %lu, numBlocks is %u, stream is %p\n", tilingKey, numBlocks, stream);
     aclrtFuncHandle funcHandle;
@@ -520,14 +486,14 @@ static uint32_t AscendCExecutorLaunchKernel(void* binHandle, const uint64_t tili
         {ACL_RT_LAUNCH_KERNEL_ATTR_BLOCKDIM_OFFSET, blkValue},
     };
     aclrtLaunchKernelCfg cfg = {attrList, attrLen};
-    ASCENDC_ASSERT_RTOK_RETVAL(aclrtLaunchKernelWithHostArgs(
-        funcHandle, numBlocks, stream, &cfg,
-        static_cast<void *>(args), size, nullptr, 0));
+    ASCENDC_ASSERT_RTOK_RETVAL(
+        aclrtLaunchKernelWithHostArgs(funcHandle, numBlocks, stream, &cfg, static_cast<void*>(args), size, nullptr, 0));
     return ASCENDC_SUCCESS;
 }
 
-static uint32_t AscendCExecutorVectorCoreLaunchKernel(void* binHandle, const uint64_t tilingKey,
-    const uint32_t numBlocks, void** args, uint32_t size, const rtStream_t stream, uint32_t aivNumBlocksOffset)
+static uint32_t AscendCExecutorVectorCoreLaunchKernel(
+    void* binHandle, const uint64_t tilingKey, const uint32_t numBlocks, void** args, uint32_t size,
+    const rtStream_t stream, uint32_t aivNumBlocksOffset)
 {
     ASCENDLOGI("tilingKey is %lu, aiv numBlocks is %u\n", tilingKey, numBlocks);
     aclrtFuncHandle funcHandle;
@@ -542,29 +508,29 @@ static uint32_t AscendCExecutorVectorCoreLaunchKernel(void* binHandle, const uin
         {ACL_RT_LAUNCH_KERNEL_ATTR_BLOCKDIM_OFFSET, blkValue},
     };
     aclrtLaunchKernelCfg cfg = {attrList, attrLen};
-    ASCENDC_ASSERT_RTOK_RETVAL(aclrtLaunchKernelWithHostArgs(
-        funcHandle, numBlocks, stream, &cfg,
-        static_cast<void *>(args), size, nullptr, 0));
+    ASCENDC_ASSERT_RTOK_RETVAL(
+        aclrtLaunchKernelWithHostArgs(funcHandle, numBlocks, stream, &cfg, static_cast<void*>(args), size, nullptr, 0));
     return ASCENDC_SUCCESS;
 }
 
-void StreamStateCallback(aclrtStream stream, aclrtStreamState state, void *args)
+void StreamStateCallback(aclrtStream stream, aclrtStreamState state, void* args)
 {
     (void)args;
     if (state == ACL_RT_STREAM_STATE_CREATE_POST) {
         return;
     }
     if (g_ascStreamMap.find(stream) != g_ascStreamMap.end()) {
-        ASCENDLOGI("start callback main stream is %p, subStream %p, eventA %p, eventB %p",
-            stream,
-            g_ascStreamMap[stream].stream,
-            g_ascStreamMap[stream].eventA,
-            g_ascStreamMap[stream].eventB);
-        OP_CHECK_NO_RETURN(aclrtDestroyStream(g_ascStreamMap[stream].stream) == RT_ERROR_NONE,
+        ASCENDLOGI(
+            "start callback main stream is %p, subStream %p, eventA %p, eventB %p", stream,
+            g_ascStreamMap[stream].stream, g_ascStreamMap[stream].eventA, g_ascStreamMap[stream].eventB);
+        OP_CHECK_NO_RETURN(
+            aclrtDestroyStream(g_ascStreamMap[stream].stream) == RT_ERROR_NONE,
             ASCENDLOGE("Destroy stream %p failed.", g_ascStreamMap[stream].stream));
-        OP_CHECK_NO_RETURN(aclrtDestroyEvent(g_ascStreamMap[stream].eventA) == RT_ERROR_NONE,
+        OP_CHECK_NO_RETURN(
+            aclrtDestroyEvent(g_ascStreamMap[stream].eventA) == RT_ERROR_NONE,
             ASCENDLOGE("Destroy event %p failed.", g_ascStreamMap[stream].eventA));
-        OP_CHECK_NO_RETURN(aclrtDestroyEvent(g_ascStreamMap[stream].eventB) == RT_ERROR_NONE,
+        OP_CHECK_NO_RETURN(
+            aclrtDestroyEvent(g_ascStreamMap[stream].eventB) == RT_ERROR_NONE,
             ASCENDLOGE("Destroy event %p failed.", g_ascStreamMap[stream].eventB));
         g_ascStreamMap.erase(stream);
         ASCENDLOGI("after g_ascStreamMap.size() is %zu.", g_ascStreamMap.size());
@@ -573,10 +539,10 @@ void StreamStateCallback(aclrtStream stream, aclrtStreamState state, void *args)
 }
 
 static uint32_t AscendCExecutorGetStreamAndEvent(
-    const rtStream_t stream, rtStream_t *subStream, rtEvent_t *evtA, rtEvent_t *evtB,
-    std::shared_ptr<std::mutex> &streamLckPtr)
+    const rtStream_t stream, rtStream_t* subStream, rtEvent_t* evtA, rtEvent_t* evtB,
+    std::shared_ptr<std::mutex>& streamLckPtr)
 {
-    const uint32_t RT_STREAM_PRIORITY_DEFAULT_VAL = 0U;      // RT_STREAM_PRIORITY_DEFAULT = 0U
+    const uint32_t RT_STREAM_PRIORITY_DEFAULT_VAL = 0U; // RT_STREAM_PRIORITY_DEFAULT = 0U
     const std::lock_guard<std::mutex> lock(g_ascStreamMtx);
     rtStream_t mainStream = stream;
     if (stream == nullptr) {
@@ -594,13 +560,17 @@ static uint32_t AscendCExecutorGetStreamAndEvent(
         *evtB = g_ascStreamMap[mainStream].eventB;
         ASCENDLOGI("find main stream is %p, subStream %p, eventA %p, eventB %p", mainStream, *subStream, *evtA, *evtB);
     } else {
-        CHECK_COND(aclrtCreateStreamWithConfig(subStream, RT_STREAM_PRIORITY_DEFAULT_VAL,
-                                           ACL_STREAM_FAST_LAUNCH | ACL_STREAM_FAST_SYNC) == RT_ERROR_NONE,
-                   ASCENDC_ERR_RUNTIME_ERROR, "create stream %p failed.", subStream);
-        CHECK_COND(aclrtCreateEventExWithFlag(evtA, ACL_EVENT_SYNC) == RT_ERROR_NONE,
-                   ASCENDC_ERR_RUNTIME_ERROR, "create event %p failed.", evtA);
-        CHECK_COND(aclrtCreateEventExWithFlag(evtB, ACL_EVENT_SYNC) == RT_ERROR_NONE,
-                   ASCENDC_ERR_RUNTIME_ERROR, "create event %p failed.", evtB);
+        CHECK_COND(
+            aclrtCreateStreamWithConfig(
+                subStream, RT_STREAM_PRIORITY_DEFAULT_VAL, ACL_STREAM_FAST_LAUNCH | ACL_STREAM_FAST_SYNC) ==
+                RT_ERROR_NONE,
+            ASCENDC_ERR_RUNTIME_ERROR, "create stream %p failed.", subStream);
+        CHECK_COND(
+            aclrtCreateEventExWithFlag(evtA, ACL_EVENT_SYNC) == RT_ERROR_NONE, ASCENDC_ERR_RUNTIME_ERROR,
+            "create event %p failed.", evtA);
+        CHECK_COND(
+            aclrtCreateEventExWithFlag(evtB, ACL_EVENT_SYNC) == RT_ERROR_NONE, ASCENDC_ERR_RUNTIME_ERROR,
+            "create event %p failed.", evtB);
         g_ascStreamMap[mainStream] = {*subStream, *evtA, *evtB};
     }
     ASCENDLOGI("main stream is %p, subStream %p, eventA %p, eventB %p.", mainStream, *subStream, *evtA, *evtB);
@@ -614,17 +584,17 @@ static uint32_t AscendCExecutorGetStreamAndEvent(
     return ASCENDC_SUCCESS;
 }
 
-uint32_t LaunchAscendKernelForVectorCore(const char* opType, void* handle, const uint64_t key, void** args,
-    uint32_t size, const rtStream_t stream, bool enableProf, uint32_t aicNumBlocks, uint32_t aivNumBlocks,
-    uint32_t aivNumBlocksOffset)
+uint32_t LaunchAscendKernelForVectorCore(
+    const char* opType, void* handle, const uint64_t key, void** args, uint32_t size, const rtStream_t stream,
+    bool enableProf, uint32_t aicNumBlocks, uint32_t aivNumBlocks, uint32_t aivNumBlocksOffset)
 {
-    ASCENDLOGI("aicNumBlocks is %u, aivNumBlocks is %u, aivNumBlocksOffset is %u.\n", aicNumBlocks, aivNumBlocks,
+    ASCENDLOGI(
+        "aicNumBlocks is %u, aivNumBlocks is %u, aivNumBlocksOffset is %u.\n", aicNumBlocks, aivNumBlocks,
         aivNumBlocksOffset);
     AscendCStreamForVectorCore ascBaseStream = {};
     std::shared_ptr<std::mutex> streamLckPtr;
-    ASCENDC_ASSERT_RTOK_RETVAL(
-        AscendCExecutorGetStreamAndEvent(
-            stream, &ascBaseStream.stream, &ascBaseStream.eventA, &ascBaseStream.eventB, streamLckPtr));
+    ASCENDC_ASSERT_RTOK_RETVAL(AscendCExecutorGetStreamAndEvent(
+        stream, &ascBaseStream.stream, &ascBaseStream.eventA, &ascBaseStream.eventB, streamLckPtr));
     ASCENDC_ASSERT_NOTNULL_RETVAL(streamLckPtr);
     std::lock_guard<std::mutex> lock(*streamLckPtr);
     ASCENDC_ASSERT_RTOK_RETVAL(aclrtRecordEvent(ascBaseStream.eventA, stream));
@@ -640,8 +610,8 @@ uint32_t LaunchAscendKernelForVectorCore(const char* opType, void* handle, const
     ASCENDC_ASSERT_RTOK_RETVAL(AscendCExecutorLaunchKernel(handle, key, aicNumBlocks, args, size, stream));
 
     if (enableProf) {
-        ASCENDC_ASSERT_RTOK_RETVAL(AscendCExecutorPreportProfiling(
-            opType, aicNumBlocks, MSPROF_GE_TASK_TYPE_AI_CORE, launchMainBeginTime));
+        ASCENDC_ASSERT_RTOK_RETVAL(
+            AscendCExecutorPreportProfiling(opType, aicNumBlocks, MSPROF_GE_TASK_TYPE_AI_CORE, launchMainBeginTime));
     }
     ASCENDLOGI("Main stream launch sucess.\n");
 
@@ -649,11 +619,11 @@ uint32_t LaunchAscendKernelForVectorCore(const char* opType, void* handle, const
         launchSubBeginTime = MsprofSysCycleTime();
     }
     // vector core kernel launch
-    ASCENDC_ASSERT_RTOK_RETVAL(AscendCExecutorVectorCoreLaunchKernel(handle, key, aivNumBlocks,
-        args, size, ascBaseStream.stream, aivNumBlocksOffset));
+    ASCENDC_ASSERT_RTOK_RETVAL(AscendCExecutorVectorCoreLaunchKernel(
+        handle, key, aivNumBlocks, args, size, ascBaseStream.stream, aivNumBlocksOffset));
     if (enableProf) {
-        ASCENDC_ASSERT_RTOK_RETVAL(AscendCExecutorPreportProfiling(
-            opType, aivNumBlocks, MSPROF_GE_TASK_TYPE_AIV, launchSubBeginTime));
+        ASCENDC_ASSERT_RTOK_RETVAL(
+            AscendCExecutorPreportProfiling(opType, aivNumBlocks, MSPROF_GE_TASK_TYPE_AIV, launchSubBeginTime));
     }
     ASCENDC_ASSERT_RTOK_RETVAL(aclrtRecordEvent(ascBaseStream.eventB, ascBaseStream.stream));
     ASCENDC_ASSERT_RTOK_RETVAL(aclrtStreamWaitEvent(stream, ascBaseStream.eventB));
@@ -662,18 +632,14 @@ uint32_t LaunchAscendKernelForVectorCore(const char* opType, void* handle, const
     return ASCENDC_SUCCESS;
 }
 
-uint32_t GetCoreNumForMixVectorCore(uint32_t *aiCoreNum, uint32_t *vectorCoreNum)
+uint32_t GetCoreNumForMixVectorCore(uint32_t* aiCoreNum, uint32_t* vectorCoreNum)
 {
     int32_t deviceId = 0;
     int64_t aicoreNum64 = 0;
     int64_t vectorCoreNum64 = 0;
     ASCENDC_ASSERT_RTOK_RETVAL(aclrtGetDevice(&deviceId));
-    ASCENDC_ASSERT_RTOK_RETVAL(
-        aclrtGetDeviceInfo(deviceId, ACL_DEV_ATTR_AICORE_CORE_NUM, &aicoreNum64)
-    );
-     ASCENDC_ASSERT_RTOK_RETVAL(
-        aclrtGetDeviceInfo(deviceId, ACL_DEV_ATTR_VECTOR_CORE_NUM, &vectorCoreNum64)
-    );
+    ASCENDC_ASSERT_RTOK_RETVAL(aclrtGetDeviceInfo(deviceId, ACL_DEV_ATTR_AICORE_CORE_NUM, &aicoreNum64));
+    ASCENDC_ASSERT_RTOK_RETVAL(aclrtGetDeviceInfo(deviceId, ACL_DEV_ATTR_VECTOR_CORE_NUM, &vectorCoreNum64));
     *aiCoreNum = static_cast<uint32_t>(aicoreNum64);
     *vectorCoreNum = static_cast<uint32_t>(vectorCoreNum64);
     ASCENDLOGI("aicore num: %u, vector core num %u\n", *aiCoreNum, *vectorCoreNum);
@@ -689,7 +655,7 @@ typedef struct {
     unsigned short taskRation1;
 } AscendCFunMetaMixCoreType;
 
-uint32_t AscendCFunctionGetMetaInfoKtype(const rtFuncHandle funcHandle, unsigned int *kernelType)
+uint32_t AscendCFunctionGetMetaInfoKtype(const rtFuncHandle funcHandle, unsigned int* kernelType)
 {
     size_t size;
     rtError_t rtErr = rtFunctionGetMetaInfoSize(funcHandle, RT_FUNCTION_TYPE_KERNEL_TYPE, &size);
@@ -715,8 +681,8 @@ uint32_t AscendCFunctionGetMetaInfoKtype(const rtFuncHandle funcHandle, unsigned
     return 0;
 }
 
-uint32_t AscendCFunctionGetMetaInfoCoreRation(const rtFuncHandle funcHandle, unsigned short *aicRation,
-    unsigned short *aivRation)
+uint32_t AscendCFunctionGetMetaInfoCoreRation(
+    const rtFuncHandle funcHandle, unsigned short* aicRation, unsigned short* aivRation)
 {
     size_t size;
     rtError_t rtErr = rtFunctionGetMetaInfoSize(funcHandle, RT_FUNCTION_TYPE_MIX_TASK_RATION, &size);
@@ -746,19 +712,14 @@ uint32_t AscendCFunctionGetMetaInfoCoreRation(const rtFuncHandle funcHandle, uns
 uint32_t AscendCGetProfkTypeImpl(const rtFuncHandle funcHandle)
 {
     static const std::unordered_map<KernelMetaTypeAsc, uint32_t> kernelTaskTypeMap = {
-        {KERNEL_TYPE_AICORE, 2},
-        {KERNEL_TYPE_AIV_ONLY, 5},
-        {KERNEL_TYPE_AIC_ONLY, 6},
-        {KERNEL_TYPE_MIX_AIV_1_0, 7},
-        {KERNEL_TYPE_MIX_AIC_1_0, 8},
-        {KERNEL_TYPE_MIX_AIC_1_1, 9},
-        {KERNEL_TYPE_MIX_AIC_1_2, 10}
-    };
+        {KERNEL_TYPE_AICORE, 2},      {KERNEL_TYPE_AIV_ONLY, 5},    {KERNEL_TYPE_AIC_ONLY, 6},
+        {KERNEL_TYPE_MIX_AIV_1_0, 7}, {KERNEL_TYPE_MIX_AIC_1_0, 8}, {KERNEL_TYPE_MIX_AIC_1_1, 9},
+        {KERNEL_TYPE_MIX_AIC_1_2, 10}};
     unsigned int curKernelType;
     uint32_t ret = AscendCFunctionGetMetaInfoKtype(funcHandle, &curKernelType);
     if (ret != 0) {
         ASCENDLOGE(" AscendCFunctionGetMetaInfoKtype failure! ret %d \n", ret);
-        return 5;  // 5 is KERNEL_TYPE_AIV_ONLY
+        return 5; // 5 is KERNEL_TYPE_AIV_ONLY
     }
     if (curKernelType == K_TYPE_MIX_AIC_MAIN || curKernelType == K_TYPE_MIX_AIV_MAIN) {
         unsigned short coreAicRation;
@@ -766,7 +727,7 @@ uint32_t AscendCGetProfkTypeImpl(const rtFuncHandle funcHandle)
         uint32_t res = AscendCFunctionGetMetaInfoCoreRation(funcHandle, &coreAicRation, &coreAivRation);
         if (res != 0) {
             ASCENDLOGE(" AscendCFunctionGetMetaInfoCoreRation failure! ret %d \n", ret);
-            return 5;  // 5 is KERNEL_TYPE_AIV_ONLY
+            return 5; // 5 is KERNEL_TYPE_AIV_ONLY
         }
         if (curKernelType == K_TYPE_MIX_AIV_MAIN && coreAicRation == 0 && coreAivRation == 1) {
             return kernelTaskTypeMap.at(KERNEL_TYPE_MIX_AIV_1_0);
@@ -790,9 +751,9 @@ uint32_t AscendCGetProfkTypeImpl(const rtFuncHandle funcHandle)
         return kernelTaskTypeMap.at(KERNEL_TYPE_AICORE);
     } else {
         ASCENDLOGE(" Get unsupported kernel Type %d \n", curKernelType);
-        return 5;  // 5 is KERNEL_TYPE_AIV_ONLY
+        return 5; // 5 is KERNEL_TYPE_AIV_ONLY
     }
-    return 5;  // 5 is KERNEL_TYPE_AIV_ONLY
+    return 5; // 5 is KERNEL_TYPE_AIV_ONLY
 }
 
 #ifdef __cplusplus

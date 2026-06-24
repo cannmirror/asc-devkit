@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file op_generator.cpp
@@ -25,27 +25,29 @@ static std::vector<std::string> g_errorInfo;
 std::mutex g_opbuildMtx;
 std::mutex g_opbuildCPUMtx;
 
-Generator::Generator(std::vector<std::string>& ops)
-{
-    this->opmodels_ = ops;
-}
+Generator::Generator(std::vector<std::string>& ops) { this->opmodels_ = ops; }
 
-bool IsVaildOpTypeName(const std::string& opType) {
+bool IsVaildOpTypeName(const std::string& opType)
+{
     if (opType.empty()) {
         return false;
     }
     // the first letter must be capitalized
     if (!isupper(static_cast<unsigned char>(opType[0]))) {
-        ASCENDLOGW("Optype: [%s] does not comply with the naming convention; \
-The first letter must be capitalized", opType.c_str());
+        ASCENDLOGW(
+            "Optype: [%s] does not comply with the naming convention; \
+The first letter must be capitalized",
+            opType.c_str());
         return false;
     }
 
     for (size_t i = 1; i < opType.size(); ++i) {
         char character = opType[i];
         if (!std::isalnum(static_cast<unsigned char>(character))) {
-            ASCENDLOGW("Optype: [%s] does not comply with the naming convention; \
-There are characters [%c], that are neither numbers nor letters.", opType.c_str(), character);
+            ASCENDLOGW(
+                "Optype: [%s] does not comply with the naming convention; \
+There are characters [%c], that are neither numbers nor letters.",
+                opType.c_str(), character);
             return false;
         }
     }
@@ -75,11 +77,7 @@ opbuild::Status Generator::SetCPUMode(const std::string& arg)
         ASCENDLOGE("arg is empty");
         return opbuild::OPBUILD_FAILED;
     }
-    static const std::unordered_set<std::string> validCpuModes = {
-        "--aicpu",
-        "--aicore",
-        "--hostcpu"
-    };
+    static const std::unordered_set<std::string> validCpuModes = {"--aicpu", "--aicore", "--hostcpu"};
     if (validCpuModes.find(arg) == validCpuModes.end()) {
         ASCENDLOGE("Invalid CPU mode: %s, must be one of: --aicpu, --aicore, --hostcpu", arg.c_str());
         return opbuild::OPBUILD_FAILED;
@@ -88,7 +86,7 @@ opbuild::Status Generator::SetCPUMode(const std::string& arg)
     g_cpuArg = arg;
     return opbuild::OPBUILD_SUCCESS;
 }
- 
+
 void Generator::GetCPUMode(std::string& arg)
 {
     const std::lock_guard<std::mutex> lock(g_opbuildCPUMtx);
@@ -107,15 +105,9 @@ const std::vector<std::string>& Generator::GetErrorMessage()
     return g_errorInfo;
 }
 
-const std::vector<std::string>& Generator::GetAllOp(void)
-{
-    return this->opmodels_;
-}
+const std::vector<std::string>& Generator::GetAllOp(void) { return this->opmodels_; }
 
-opbuild::Status Generator::GenerateCode(void)
-{
-    return opbuild::OPBUILD_SUCCESS;
-}
+opbuild::Status Generator::GenerateCode(void) { return opbuild::OPBUILD_SUCCESS; }
 
 /**
  * 将aclnnOpType转换成全大写的宏名称，遇到大写字符且上一个字符是小写，中间加_分割，连续大写的场景不做处理
@@ -164,4 +156,4 @@ std::string ConvertToSnakeCase(const std::string& ins)
     }
     return str;
 }
-}
+} // namespace ops

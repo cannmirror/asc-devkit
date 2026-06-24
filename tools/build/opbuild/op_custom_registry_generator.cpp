@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /*!
  * \file op_custom_registry_generator.cpp
@@ -107,7 +107,8 @@ void OpCustomGenerator::OpCustomGenUtilsFunc(std::ofstream& outfile) const
     outfile << "bool CheckWritePermission(const std::string& path)\n";
     outfile << "{\n";
     outfile << "    if (access(path.c_str(), W_OK) != 0) {\n";
-    outfile << "        LOG_ERROR(\"No write permission for the path: %s, errno: %d, error: %s\", path.c_str(), errno, strerror(errno));\n";
+    outfile << "        LOG_ERROR(\"No write permission for the path: %s, errno: %d, error: %s\", path.c_str(), errno, "
+               "strerror(errno));\n";
     outfile << "        return false;\n";
     outfile << "    }\n";
     outfile << "    return true;\n";
@@ -298,18 +299,21 @@ void OpCustomGenerator::OpCustomGenRegistrylastFunc(std::ofstream& outfile) cons
     outfile << "        LOG_ERROR(\"Failed to get system architecture name\");\n";
     outfile << "        return 1;\n";
     outfile << "    }\n";
-    outfile << "    std::string opmasterPath = basePath + vendorName + \"/op_impl/ai_core/tbe/op_tiling/lib/linux/\" +\n";
+    outfile
+        << "    std::string opmasterPath = basePath + vendorName + \"/op_impl/ai_core/tbe/op_tiling/lib/linux/\" +\n";
     outfile << "        arch + \"/libcust_opmaster_rt2.0.so\";\n";
     outfile << "    if (!CreateSymlink(targetPath, opmasterPath)) {\n";
     outfile << "        LOG_ERROR(\"Failed to create symlink for libcust_opmaster_rt2.0.so\");\n";
     outfile << "        return 1;\n";
     outfile << "    }\n";
-    outfile << "    std::string opsprotoPath = basePath + vendorName + \"/op_proto/lib/linux/\" + arch + \"/libcust_opsproto_rt2.0.so\";\n";
+    outfile << "    std::string opsprotoPath = basePath + vendorName + \"/op_proto/lib/linux/\" + arch + "
+               "\"/libcust_opsproto_rt2.0.so\";\n";
     outfile << "    if (!CreateSymlink(targetPath, opsprotoPath)) {\n";
     outfile << "        LOG_ERROR(\"Failed to create symlink for libcust_opsproto_rt2.0.so\");\n";
     outfile << "        return 1;\n";
     outfile << "    }\n";
-    outfile << "    std::string optilingPath = basePath + vendorName + \"/op_impl/ai_core/tbe/op_tiling/liboptiling.so\";\n";
+    outfile << "    std::string optilingPath = basePath + vendorName + "
+               "\"/op_impl/ai_core/tbe/op_tiling/liboptiling.so\";\n";
     outfile << "    if (!CreateSymlink(targetPath, optilingPath)) {\n";
     outfile << "        LOG_ERROR(\"Failed to create symlink for liboptiling.so\");\n";
     outfile << "        return 1;\n";
@@ -364,24 +368,24 @@ void OpCustomGenerator::OpCustomGenRemoveDirFunc(std::ofstream& outfile) const
 void OpCustomGenerator::OpCustomGenMacro(std::ofstream& outfile) const
 {
     outfile << "#define ASCENDC_MODULE_NAME static_cast<int32_t>(ASCENDCKERNEL)\n";
-    outfile
-        << "#define LOG_ERROR(format, ...)                                                                                                   \\\n";
-    outfile
-        << "    do {                                                                                                                         \\\n";
+    outfile << "#define LOG_ERROR(format, ...)                                                                         "
+               "                          \\\n";
+    outfile << "    do {                                                                                               "
+               "                          \\\n";
     outfile
         << "        dlog_error(ASCENDC_MODULE_NAME, \"[%s] \" format \"\\n\", __FUNCTION__, ##__VA_ARGS__);      \\\n";
     outfile << "    } while (0)\n";
-    outfile
-        << "#define LOG_WARN(format, ...)                                                                                                    \\\n";
-    outfile
-        << "    do {                                                                                                                         \\\n";
+    outfile << "#define LOG_WARN(format, ...)                                                                          "
+               "                          \\\n";
+    outfile << "    do {                                                                                               "
+               "                          \\\n";
     outfile
         << "        dlog_warn(ASCENDC_MODULE_NAME, \"[%s] \" format \"\\n\", __FUNCTION__, ##__VA_ARGS__);       \\\n";
     outfile << "    } while (0)\n";
-    outfile
-        << "#define LOG_INFO(format, ...)                                                                                                    \\\n";
-    outfile
-        << "    do {                                                                                                                         \\\n";
+    outfile << "#define LOG_INFO(format, ...)                                                                          "
+               "                          \\\n";
+    outfile << "    do {                                                                                               "
+               "                          \\\n";
     outfile
         << "        dlog_info(ASCENDC_MODULE_NAME, \"[%s] \" format \"\\n\", __FUNCTION__, ##__VA_ARGS__);       \\\n";
     outfile << "    } while (0)\n";
@@ -457,8 +461,5 @@ static opbuild::Status OpCustomGeneratorBuilder(std::vector<std::string>& ops)
 }
 
 static void AddOpCustomGenerator(void) __attribute__((constructor));
-void AddOpCustomGenerator(void)
-{
-    GeneratorFactory::AddBuilder("custom_op_registry", OpCustomGeneratorBuilder);
-}
-}
+void AddOpCustomGenerator(void) { GeneratorFactory::AddBuilder("custom_op_registry", OpCustomGeneratorBuilder); }
+} // namespace ops

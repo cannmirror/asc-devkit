@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #include "acl_rt_compile.h"
 
@@ -27,50 +27,31 @@
 #if !defined(UT_TEST) && !defined(ST_TEST)
 namespace {
 #endif
-const int ACL_ERROR_RTC_INVALID_PROG = 176000;                          // 无效的aclrtcProg (hanle)
-const int ACL_ERROR_RTC_INVALID_INPUT = 176001;                         // 除prog以外的入参错误
-const int ACL_ERROR_RTC_INVALID_OPTION = 176002;                        // 编译选项错误
-const int ACL_ERROR_RTC_COMPILATION = 176003;                           // 编译报错
-const int ACL_ERROR_RTC_LINKING = 176004;                               // 链接报错
-const int ACL_ERROR_RTC_NO_NAME_EXPR_AFTER_COMPILATION = 176005;        // 编译后没有函数名
-const int ACL_ERROR_RTC_NO_LOWERED_NAMES_BEFORE_COMPILATION = 176006;   // 编译后核函数名无法转换成Mangling名称
-const int ACL_ERROR_RTC_NAME_EXPR_NOT_VALID = 176007;                   // 传入无效的核函数名
-const int ACL_ERROR_RTC_PROG_CREATION_FAILURE = 276000;                 // 创建aclrtcProg (hanle) 失败
-const int ACL_ERROR_RTC_OUT_OF_MEMORY = 276001;                         // 内存不足
-const int ACL_ERROR_RTC_FAILURE = 576000;                               // ACLRTC内部错误
+const int ACL_ERROR_RTC_INVALID_PROG = 176000;                        // 无效的aclrtcProg (hanle)
+const int ACL_ERROR_RTC_INVALID_INPUT = 176001;                       // 除prog以外的入参错误
+const int ACL_ERROR_RTC_INVALID_OPTION = 176002;                      // 编译选项错误
+const int ACL_ERROR_RTC_COMPILATION = 176003;                         // 编译报错
+const int ACL_ERROR_RTC_LINKING = 176004;                             // 链接报错
+const int ACL_ERROR_RTC_NO_NAME_EXPR_AFTER_COMPILATION = 176005;      // 编译后没有函数名
+const int ACL_ERROR_RTC_NO_LOWERED_NAMES_BEFORE_COMPILATION = 176006; // 编译后核函数名无法转换成Mangling名称
+const int ACL_ERROR_RTC_NAME_EXPR_NOT_VALID = 176007;                 // 传入无效的核函数名
+const int ACL_ERROR_RTC_PROG_CREATION_FAILURE = 276000;               // 创建aclrtcProg (hanle) 失败
+const int ACL_ERROR_RTC_OUT_OF_MEMORY = 276001;                       // 内存不足
+const int ACL_ERROR_RTC_FAILURE = 576000;                             // ACLRTC内部错误
 // ACL_SUCCESS  0
 
-enum class AclrtcType : uint32_t {
-    ACL_RTC_TYPE_ASC = 0,
-    ACL_RTC_TYPE_AICPU,
-    ACL_RTC_TYPE_CCE
-};
+enum class AclrtcType : uint32_t { ACL_RTC_TYPE_ASC = 0, ACL_RTC_TYPE_AICPU, ACL_RTC_TYPE_CCE };
 
 class AclrtcProgram {
 public:
     AclrtcProgram() = default;
-    AclrtcProgram(void *program) : program_(program) {}
-    AclrtcProgram(void *program, AclrtcType type) : program_(program), type_(type) {}
-    aclrtcProg GetProgram()
-    {
-        return program_;
-    }
-    void SetProgram(aclrtcProg program)
-    {
-        program_ = program;
-    }
-    AclrtcType GetType() const
-    {
-        return type_;
-    }
-    void SetType(AclrtcType type)
-    {
-        type_ = type;
-    }
-    std::string& GetLog()
-    {
-        return log_;
-    }
+    AclrtcProgram(void* program) : program_(program) {}
+    AclrtcProgram(void* program, AclrtcType type) : program_(program), type_(type) {}
+    aclrtcProg GetProgram() { return program_; }
+    void SetProgram(aclrtcProg program) { program_ = program; }
+    AclrtcType GetType() const { return type_; }
+    void SetType(AclrtcType type) { type_ = type; }
+    std::string& GetLog() { return log_; }
 
 private:
     aclrtcProg program_ = nullptr;
@@ -105,7 +86,8 @@ inline bool EndsWith(std::string_view str, std::string_view suffix) noexcept
     return str.substr(str.length() - suffix.length()) == suffix;
 }
 
-std::string ExtractCannPath(const std::string& pluginPath) {
+std::string ExtractCannPath(const std::string& pluginPath)
+{
     const std::vector<std::string> potentialPath = {
         "/x86_64-linux/lib64/libacl_rtc.so",
         "/aarch64-linux/lib64/libacl_rtc.so",
@@ -118,7 +100,8 @@ std::string ExtractCannPath(const std::string& pluginPath) {
     return std::string();
 }
 
-std::string GetCannPath() {
+std::string GetCannPath()
+{
     Dl_info info;
     const void* symbolAddr = reinterpret_cast<const void*>(&aclrtcCreateProg);
     if (dladdr(symbolAddr, &info) != 0) {
@@ -131,7 +114,8 @@ std::string GetCannPath() {
     return "";
 }
 
-bool PathCheck(const char* path) {
+bool PathCheck(const char* path)
+{
     return (access(path, W_OK) == 0 || access(path, R_OK) == 0 || access(path, F_OK) == 0);
 }
 
@@ -139,11 +123,7 @@ inline AclrtcType GetAclrtcTypeWithSuffix(const char* name)
 {
     AclrtcType aclrtcType = AclrtcType::ACL_RTC_TYPE_ASC;
     auto checkAndSetType = [name, &aclrtcType](AclrtcType type) {
-        constexpr const char* compile_suffix_list[] = {
-            ".asc",
-            ".aicpu",
-            ".cce"
-        };
+        constexpr const char* compile_suffix_list[] = {".asc", ".aicpu", ".cce"};
         if (EndsWith(name, compile_suffix_list[static_cast<uint32_t>(type)])) {
             aclrtcType = type;
         }
@@ -184,7 +164,8 @@ asrtcGetLoweredNameFuncPtr asrtcGetLoweredNamePtr = nullptr;
 asrtcGetProgramLogSizeFuncPtr asrtcGetProgramLogSizePtr = nullptr;
 asrtcGetProgramLogFuncPtr asrtcGetProgramLogPtr = nullptr;
 
-aclError LoadExtraLib() {
+aclError LoadExtraLib()
+{
     std::string cannPath = GetCannPath();
     std::string libPathX86 = cannPath + "/x86_64-linux/ccec_compiler/lib/libasrtc.so";
     std::string libPathArm = cannPath + "/aarch64-linux/ccec_compiler/lib/libasrtc.so";
@@ -211,7 +192,8 @@ aclError LoadExtraLib() {
     return ACL_SUCCESS;
 }
 
-void __attribute__((destructor)) UnloadExtraLib() {
+void __attribute__((destructor)) UnloadExtraLib()
+{
     if (handle != nullptr) {
         dlclose(handle);
         handle = nullptr;
@@ -234,7 +216,8 @@ const std::unordered_map<asrtcResult, aclError> ccecRet2AclrtcRet = {
     {asrtcResult::ASRTC_ERROR_NO_NAME_EXPRESSION_AFTER_COMPILATION, ACL_ERROR_RTC_NO_NAME_EXPR_AFTER_COMPILATION},
 };
 
-aclError ErrorCodeProcess(asrtcResult result) {
+aclError ErrorCodeProcess(asrtcResult result)
+{
     auto it = ccecRet2AclrtcRet.find(result);
     if (it != ccecRet2AclrtcRet.end()) {
         return it->second;
@@ -245,8 +228,10 @@ aclError ErrorCodeProcess(asrtcResult result) {
 }
 #endif
 
-aclError aclrtcCreateProg(aclrtcProg *prog, const char *src, const char *name, int numHeaders, const char **headers,
-    const char **includeNames) {
+aclError aclrtcCreateProg(
+    aclrtcProg* prog, const char* src, const char* name, int numHeaders, const char** headers,
+    const char** includeNames)
+{
     if (prog == nullptr || src == nullptr || name == nullptr) {
         return ACL_ERROR_RTC_INVALID_INPUT;
     }
@@ -266,7 +251,8 @@ aclError aclrtcCreateProg(aclrtcProg *prog, const char *src, const char *name, i
     return ret;
 }
 
-aclError aclrtcCompileProg(aclrtcProg prog, int numOptions, const char **options) {
+aclError aclrtcCompileProg(aclrtcProg prog, int numOptions, const char** options)
+{
     if (prog == nullptr) {
         return ACL_ERROR_RTC_INVALID_INPUT;
     }
@@ -307,7 +293,8 @@ aclError aclrtcCompileProg(aclrtcProg prog, int numOptions, const char **options
     return ErrorCodeProcess(asrtcCompileProgramPtr(ascProg->GetProgram(), optionsPlugin.size(), optionsPlugin.data()));
 }
 
-aclError aclrtcAddNameExpr(aclrtcProg prog, const char *const nameExpression) {
+aclError aclrtcAddNameExpr(aclrtcProg prog, const char* const nameExpression)
+{
     if (prog == nullptr || nameExpression == nullptr) {
         return ACL_ERROR_RTC_INVALID_INPUT;
     }
@@ -315,7 +302,8 @@ aclError aclrtcAddNameExpr(aclrtcProg prog, const char *const nameExpression) {
     return ErrorCodeProcess(asrtcAddNameExpressionPtr(ascProg->GetProgram(), nameExpression));
 }
 
-aclError aclrtcGetLoweredName(aclrtcProg prog, const char *nameExpression, const char **loweredName) {
+aclError aclrtcGetLoweredName(aclrtcProg prog, const char* nameExpression, const char** loweredName)
+{
     if (prog == nullptr || nameExpression == nullptr || loweredName == nullptr) {
         return ACL_ERROR_RTC_INVALID_INPUT;
     }
@@ -323,7 +311,8 @@ aclError aclrtcGetLoweredName(aclrtcProg prog, const char *nameExpression, const
     return ErrorCodeProcess(asrtcGetLoweredNamePtr(ascProg->GetProgram(), nameExpression, loweredName));
 }
 
-aclError aclrtcDestroyProg(aclrtcProg *prog) {
+aclError aclrtcDestroyProg(aclrtcProg* prog)
+{
     if (prog == nullptr) {
         return ACL_ERROR_RTC_INVALID_INPUT;
     }
@@ -334,7 +323,8 @@ aclError aclrtcDestroyProg(aclrtcProg *prog) {
     return ret;
 }
 
-aclError aclrtcGetBinData(aclrtcProg prog, char *binData) {
+aclError aclrtcGetBinData(aclrtcProg prog, char* binData)
+{
     if (prog == nullptr || binData == nullptr) {
         return ACL_ERROR_RTC_INVALID_INPUT;
     }
@@ -342,7 +332,8 @@ aclError aclrtcGetBinData(aclrtcProg prog, char *binData) {
     return ErrorCodeProcess(asrtcGetDeviceELFPtr(ascProg->GetProgram(), binData));
 }
 
-aclError aclrtcGetBinDataSize(aclrtcProg prog, size_t *binDataSizeRet) {
+aclError aclrtcGetBinDataSize(aclrtcProg prog, size_t* binDataSizeRet)
+{
     if (prog == nullptr || binDataSizeRet == nullptr) {
         return ACL_ERROR_RTC_INVALID_INPUT;
     }
@@ -350,7 +341,8 @@ aclError aclrtcGetBinDataSize(aclrtcProg prog, size_t *binDataSizeRet) {
     return ErrorCodeProcess(asrtcGetDeviceELFSizePtr(ascProg->GetProgram(), binDataSizeRet));
 }
 
-aclError aclrtcGetCompileLogSize(aclrtcProg prog, size_t *logSizeRet) {
+aclError aclrtcGetCompileLogSize(aclrtcProg prog, size_t* logSizeRet)
+{
     if (prog == nullptr || logSizeRet == nullptr) {
         return ACL_ERROR_RTC_INVALID_INPUT;
     }
@@ -360,7 +352,8 @@ aclError aclrtcGetCompileLogSize(aclrtcProg prog, size_t *logSizeRet) {
     return ret;
 }
 
-aclError aclrtcGetCompileLog(aclrtcProg prog, char *log) {
+aclError aclrtcGetCompileLog(aclrtcProg prog, char* log)
+{
     if (prog == nullptr || log == nullptr) {
         return ACL_ERROR_RTC_INVALID_INPUT;
     }
