@@ -57,7 +57,9 @@ inline float ynf(int n, float x)
 
 -   使用本接口时，配置的线程数不应超过256，否则有栈溢出风险。
 -   n的最大取值为128。
--   不支持Subnormal场景：本接口内部实现使用到了[除法运算符](https://gitcode.com/cann/asc-devkit/blob/master/docs/guide/编程指南/语言扩展层/SIMT-BuiltIn关键字.md#运算符)，由于除法运算符/不支持Subnormal场景，在极少数场景下内部计算的除数为Subnormal数据，导致本接口最终结果为±Inf。
+<!-- npu="950" id7 -->
+-   针对Ascend 950PR/Ascend 950DT，本接口不支持Subnormal场景：本接口内部实现使用到了除法运算符，由于除法运算符不支持Subnormal场景，在极少数场景下内部计算的除数为Subnormal数据，导致本接口最终结果为±inf。
+<!-- end id7 -->
 
 ## 需要包含的头文件
 
