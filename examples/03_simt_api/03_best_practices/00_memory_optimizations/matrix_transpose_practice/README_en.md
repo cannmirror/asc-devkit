@@ -49,7 +49,7 @@ This example implements different memory access strategies through 4 independent
 | Case 0 | Read/write at the same coordinates, no transpose, contiguous GM read and write | copy_kernel                           | Matrix copy version (baseline)                |
 | Case 1 | Directly compute output coordinates according to the transpose formula | transpose_naive_kernel                | Direct-index transpose version                |
 | Case 2 | Stage tiles in UB and swap read/write directions for more contiguous GM access | transpose_coalesced_kernel            | UB staging + global memory coalescing         |
-| Case 3 | Add padding in UB tiles to reduce bank conflicts                 | transpose_avoid_bank_conflicts_kernel | UB staging + global memory coalescing + UB Bank conflict avoidance |
+| Case 3 | Add padding in UB tiles to avoid bank conflicts                  | transpose_avoid_bank_conflicts_kernel | UB staging + global memory coalescing + UB Bank conflict avoidance |
 
 #### Thread Block Layout
 
@@ -98,12 +98,12 @@ Substituting into the 1D address formula:
 
 | Metric                | Description                                                                              |
 | --------------------- | ---------------------------------------------------------------------------------------- |
-| Task Duration(us)     | Total task duration, including scheduling time to the accelerator, execution time on the accelerator, and response completion time |
-| aiv_time(us)          | Theoretical execution time of the task on the AI Vector Core, in microseconds            |
+| Task Duration(μs)     | Total task duration, including scheduling time to the accelerator, execution time on the accelerator, and response completion time |
+| aiv_time(μs)          | Theoretical execution time of the task on the AI Vector Core, in microseconds            |
 | aiv_total_cycles      | Total execution cycles on each AI Vector Core compute unit after the task is assigned    |
-| aiv_vec_time(us)      | Duration of vec-type instructions (vector computation instructions), in microseconds      |
+| aiv_vec_time(μs)      | Duration of vec-type instructions (vector computation instructions), in microseconds      |
 | aiv_vec_ratio         | Ratio of vec-type instruction cycles to total cycles                                     |
-| aiv_scalar_time(us)   | Duration of scalar-type instructions (scalar computation instructions), in microseconds   |
+| aiv_scalar_time(μs)   | Duration of scalar-type instructions (scalar computation instructions), in microseconds   |
 | aiv_scalar_ratio      | Ratio of scalar-type instruction cycles to total cycles                                  |
 
 Except for Task Duration, all other metrics in this example show the average values across all blocks.
@@ -133,13 +133,13 @@ output[index] = input[index];
 
 **Performance Data**:
 
-| Task Duration(us) | aiv_time(us) | aiv_total_cycles | aiv_vec_time(us) | aiv_vec_ratio | aiv_scalar_time(us) | aiv_scalar_ratio |
+| Task Duration(μs) | aiv_time(μs) | aiv_total_cycles | aiv_vec_time(μs) | aiv_vec_ratio | aiv_scalar_time(μs) | aiv_scalar_ratio |
 | :---------------: | :----------: | :--------------: | :--------------: | :-----------: | :-----------------: | :--------------: |
-|      24.777      |    1.054    |     1739.820     |      0.889      |     0.847     |        0.153        |      0.141      |
+|      21.751      |    0.919    |     1515.731     |      0.743      |     0.817     |        0.164        |      0.169      |
 
 **Analysis**:
 
-- The Task Duration of Case 0 is 24.777us, serving as the latency baseline for contiguous GM read/write scenarios
+- The Task Duration of Case 0 is 21.751μs, serving as the latency baseline for contiguous GM read/write scenarios
 - Subsequent transpose versions need to complete coordinate swapping while staying as close to this baseline as possible
 
 ---
@@ -155,7 +155,7 @@ output[index] = input[index];
 - The thread first reads the input element from GM using the original coordinates, then computes the transposed output position and writes the data directly to the transposed GM address
 - GM read direction is contiguous, GM write direction is non-contiguous
 
-The figure below shows the data flow of Case 1, where the highlighted elements show the elements processed by one Warp when reading from and writing to GM. Threads in the same Warp read one row of elements from the input tile in GM and write back to one column of the output tile in GM. When reading GM input, adjacent threads access contiguous element addresses, which is contiguous read. When writing back to output, adjacent threads are scattered to different rows of the output matrix, which is non-contiguous write. Therefore, the core issue of this version is that the transposed write-back addresses are no longer contiguous, which typically significantly affects overall throughput.
+The figure below shows the data flow of Case 1, where the highlighted elements show the elements processed by one Warp when reading from and writing to GM. Threads in the same Warp read one row of elements from the input tile in GM and write back to one column of the output tile in GM. When reading GM input, adjacent threads access contiguous element addresses, which is contiguous read. When writing back to output, adjacent threads access addresses scattered across different rows of the output matrix, which is non-contiguous write. Therefore, the core issue of this version is that the transposed write-back addresses are no longer contiguous, affecting overall throughput.
 
 <img src="./figures/case1.png" width="60%">
 
@@ -170,13 +170,13 @@ output[index_out] = input[index_in];
 
 **Performance Data**:
 
-| Task Duration(us) | aiv_time(us) | aiv_total_cycles | aiv_vec_time(us) | aiv_vec_ratio | aiv_scalar_time(us) | aiv_scalar_ratio |
+| Task Duration(μs) | aiv_time(μs) | aiv_total_cycles | aiv_vec_time(μs) | aiv_vec_ratio | aiv_scalar_time(μs) | aiv_scalar_ratio |
 | :---------------: | :----------: | :--------------: | :--------------: | :-----------: | :-----------------: | :--------------: |
-|      60.477      |    3.516    |     5801.925     |      3.357      |     0.955     |        0.147        |      0.041      |
+|      61.508      |    3.609    |     5954.297     |      3.441      |     0.954     |        0.156        |      0.043      |
 
 **Analysis**:
 
-- Compared to the Case 0 copy baseline, Task Duration increases from 24.777us to 60.477us, approximately 2.44x the copy version
+- Compared to the Case 0 copy baseline, Task Duration increases from 21.751μs to 61.508μs, approximately 2.83x the copy version
 - The computation in direct-index transpose is minimal, but the transposed GM write-back becomes cross-row, non-contiguous access, so the end-to-end latency is significantly higher than the copy baseline
 - GM reads in this version remain contiguous, but GM write-back addresses are non-contiguous, making it difficult to efficiently merge write requests from the same Warp, which is the main cause of the increased Task Duration
 
@@ -197,7 +197,7 @@ The figure below shows the data flow of Case 2, where the highlighted elements s
 
 <img src="./figures/case2.png" width="60%">
 
-Unlike Case 1, where threads "directly write input elements to the transposed GM positions" causing adjacent threads to scatter across different rows of the output matrix, Case 2 first places data in UB, transferring the non-contiguous global write access to non-contiguous reads within UB. Therefore, the core benefit of this version is: although it adds one UB read/write and one synchronization, it achieves a "contiguous read, contiguous write" access pattern on the GM side, and the overall latency is typically significantly lower than Case 1.
+Unlike Case 1, where threads "directly write input elements to the transposed GM positions" causing adjacent threads to scatter across different rows of the output matrix, Case 2 first places data in UB, transferring the non-contiguous global write access to non-contiguous reads within UB. Therefore, the core benefit of this version is: although it adds one UB read/write and one synchronization, it achieves a "contiguous read, contiguous write" access pattern on the GM side, and the overall latency is significantly lower than Case 1.
 
 **Key Code**:
 
@@ -220,60 +220,58 @@ output[index_out] = tile[threadIdx.x][threadIdx.y];
 
 **Performance Data**:
 
-| Task Duration(us) | aiv_time(us) | aiv_total_cycles | aiv_vec_time(us) | aiv_vec_ratio | aiv_scalar_time(us) | aiv_scalar_ratio |
+| Task Duration(μs) | aiv_time(μs) | aiv_total_cycles | aiv_vec_time(μs) | aiv_vec_ratio | aiv_scalar_time(μs) | aiv_scalar_ratio |
 | :---------------: | :----------: | :--------------: | :--------------: | :-----------: | :-----------------: | :--------------: |
-|      35.945      |    1.814    |     2993.315     |      1.646      |     0.910     |        0.156        |      0.083      |
+|      31.926      |    1.606    |     2650.112     |      1.442      |     0.900     |        0.152        |      0.092      |
 
 **Analysis**:
 
-- Compared to the naive transpose in Case 1, Task Duration decreases from 60.477us to 35.945us, a reduction of approximately 40.6%, with overall performance improvement of approximately 1.68x
+- Compared to the naive transpose in Case 1, Task Duration decreases from 61.508μs to 31.926μs, a reduction of approximately 48.1%, with overall performance improvement of approximately 1.93x
 - Case 2 transfers the non-contiguous GM writes in Case 1 to UB-side access through UB staging, making both GM read and write more contiguous, so Task Duration decreases significantly
-- Compared to the Case 0 copy baseline, Case 2 Task Duration is still approximately 45.1% higher. This gap mainly comes from the additional UB read/write, synchronization, and transpose-direction UB access overhead
+- Compared to the Case 0 copy baseline, Case 2 Task Duration is still approximately 46.8% higher. Case 2 introduces additional UB read/write, synchronization, and transpose-direction UB access overhead compared with the copy version
 
 ---
 
 ### Case 3: UB Staging + Global Memory Coalescing + UB Bank Conflict Avoidance Transpose Version
 
-**Optimization Goal**: Based on the global memory coalescing version, reduce bank conflicts during the transpose read phase through UB padding
+**Optimization Goal**: Based on the global memory coalescing version, avoid bank conflicts during the transpose read phase through UB padding
 
 **Core Implementation**:
 
 - The GM-to-UB phase is identical to Case 2
-- The only difference is the UB layout, changed from 32x32 to 32x33
+- The only difference is the UB layout, changed from 32x32 to 32x34
 - After synchronization, the UB-to-GM write-back is identical to Case 2
 - This version does not change the algorithm path, nor the block and thread partitioning; it only adjusts the physical layout in UB
 
-The following uses the UB partitioning rules of Ascend 950PR/Ascend 950DT as an example to explain how Bank Conflicts arise in this example and the theoretical conflict intensity differences between Case 2 and Case 3.
+The following uses the UB partitioning rules of Ascend 950PR/Ascend 950DT as an example to explain how bank conflicts arise in this example and the theoretical conflict intensity differences between Case 2 and Case 3.
 
-The bank partitioning in UB is shown in the figure below. The total UB size is 256KB, which can be viewed as two rows, each 128KB. The first 128KB corresponds to bank0 through bank7, and the second 128KB corresponds to bank8 through bank15. Bank0 and bank8 belong to the same group, bank1 and bank9 belong to the same group, and so on.
+The bank partitioning in UB is shown in the figure below. The total UB size is 256KB, divided into 16 banks. Each bank contains 512 rows, each row is 32B, for a total of 16KB per bank. These 16 banks are further organized into 8 bank groups. Each bank group contains 2 banks: bank i and bank i+8 belong to bank group i, namely `bank_group_id = bank_id % 8`. In SIMT programming mode, each bank is further divided into 4 subbanks, and each subbank has a width of 8B.
 
 <img src="./figures/bank结构示意图.png">
 
-For SIMT, the key concern is whether concurrent threads in the same Warp concentrate access on a few banks under the same UB access instruction.
+In SIMT scenarios, multiple threads in the same Warp may access UB concurrently within the same UB access instruction. When the accessed data belongs to subbank resources with the same index in the same bank group, the hardware cannot process all requests in one cycle, so the requests must queue, forming subbank conflicts and increasing access latency. If the accessed data belongs to the same 8B address range in the same row of the same subbank, the hardware merges these requests and no subbank conflict is formed.
 
-- **Read-Write Conflict**: A read operation and a write operation simultaneously attempt to access the same bank.
-- **Write-Write Conflict**: Multiple write operations simultaneously attempt to access the same bank group.
-- **Read-Read Conflict**: Two read operations simultaneously attempt to access the same bank, or more than two read operations simultaneously attempt to access the same bank group.
+**Low-bit interleaving is used for addresses:** As shown in the following figure, consecutive UB addresses are mapped to bank0 through bank15 at 32B granularity. The first 32B address segment maps to bank0, the second maps to bank1, and so on. The 16th segment maps to bank15, and the 17th segment maps back to the next row of bank0.
 
-Since the tiles in this example are small:
+<img src="./figures/bank内存排布示意图.png">
 
-- `32x32x4B = 4096B`
-- `32x33x4B = 4224B`
+The main subbank conflict types in SIMT programming are as follows:
 
-Much smaller than 128KB, so one tile typically falls within the first 128KB region. In this analysis, it can be approximated as only using `bank0~bank7`.
+- **Write-Write Conflict**: Multiple write operations simultaneously attempt to access subbanks with the same index in the same bank group.
+- **Read-Read Conflict**: Multiple read operations simultaneously attempt to access subbanks with the same index in the same bank group.
 
-In Case 2, the first 10 rows of the UB tile array are stored in row-major order as shown below. For illustration purposes, only the first 10 rows are shown; the remaining rows follow the same pattern. Each row of 32 float elements spans exactly 4 banks, with the first element of each row marked in blue. In Case 2, threads in one Warp read one column of elements from the tile and write them back to GM output. When accessing UB, 32 threads concentrate on two banks, meaning one bank has 16 threads accessing simultaneously, generating a large number of read conflicts.
+In Case 2, the first 10 rows of the UB tile array are stored in row-major order as shown below. According to the low-bit address interleaving rule, row 1 of the tile array covers bank 0 through bank 3, row 2 covers bank 4 through bank 7, row 3 covers bank 8 through bank 11, and the remaining rows follow the same pattern. For illustration purposes, only the first 10 rows are shown. Each row of 32 float elements spans exactly 4 banks, with the first element of each row marked in blue. In Case 2, one Warp reads one column of the tile and writes it back to GM output. When accessing UB, the 32 threads concentrate on subbank 0 in two bank groups, which is a read-read conflict scenario.
 
 <img src="./figures/case2bank.png">
 
-In Case 3, one column of padding is added to the tile array in UB, changing from 32 elements per row to 33 elements per row. The layout in UB is shown below. Since each row of 33 elements spans 5 banks, elements in the same column are distributed across different banks. In Case 3, when accessing UB, the access from 32 threads is distributed across 8 banks, meaning one bank has 4 threads accessing simultaneously, greatly reducing the conflict scale.
+In Case 3, two columns of padding are added to the tile array in UB, changing from 32 elements per row to 34 elements per row. The layout in UB is shown below. Since each row has 34 elements, the row stride becomes 17 subbanks, so elements in the same column are staggered across different subbanks. When Case 3 accesses UB, the accesses from 32 threads are distributed across each subbank of each bank group. In other words, each subbank is accessed by only one thread under the same access instruction, avoiding the read-read conflict described above.
 
 <img src="./figures/case3bank.png">
 
 **Key Code**:
 
 ```cpp
-__ubuf__ float tile[TILE_DIM][TILE_DIM + 1];
+__ubuf__ float tile[TILE_DIM][TILE_DIM + 2];
 
 tile[threadIdx.y][threadIdx.x] = input[index_in];
 asc_syncthreads();
@@ -287,21 +285,21 @@ output[index_out] = tile[threadIdx.x][threadIdx.y];
 
 **Optimization Methods**:
 
-- Add +1 padding to the UB tile, changing the per-row stride from 32 floats to 33 floats
-- Change the bank distribution of same-column elements in UB to reduce the probability of concentrated access on a few banks during the transpose read phase of the same Warp
+- Add +2 padding to the UB tile, changing the per-row stride from 32 floats to 34 floats
+- Change the bank and subbank distribution of same-column elements in UB to avoid read-read conflicts during the transpose read phase of the same Warp
 
 **Performance Data**:
 
-| Task Duration(us) | aiv_time(us) | aiv_total_cycles | aiv_vec_time(us) | aiv_vec_ratio | aiv_scalar_time(us) | aiv_scalar_ratio |
+| Task Duration(μs) | aiv_time(μs) | aiv_total_cycles | aiv_vec_time(μs) | aiv_vec_ratio | aiv_scalar_time(μs) | aiv_scalar_ratio |
 | :---------------: | :----------: | :--------------: | :--------------: | :-----------: | :-----------------: | :--------------: |
-|      26.725      |    1.224    |     2018.943     |      1.059      |     0.869     |        0.152        |      0.121      |
+|      23.483      |    1.055    |     1740.038     |      0.883      |     0.847     |        0.151        |      0.138      |
 
 **Analysis**:
 
-- Compared to the transpose_coalesced_kernel in Case 2, Task Duration decreases from 35.945us to 26.725us, a reduction of approximately 25.7%, with overall performance improvement of approximately 1.35x
-- Case 3 builds on Case 2 by reducing UB bank conflicts during the transpose read phase through padding, so the end-to-end Task Duration continues to decrease
-- Compared to the naive transpose in Case 1, Case 3 Task Duration decreases by approximately 55.8%, with overall performance improvement of approximately 2.26x, demonstrating that "GM memory coalescing + UB bank conflict reduction" optimizations stack effectively on end-to-end latency
-- Compared to the Case 0 copy baseline, Case 3 Task Duration is only approximately 7.9% higher, already close to the contiguous GM read/write baseline. The remaining gap mainly comes from UB staging, synchronization, and the small number of bank conflicts that still exist during UB read/write
+- Compared to the transpose_coalesced_kernel in Case 2, Task Duration decreases from 31.926μs to 23.483μs, a reduction of approximately 26.4%, with overall performance improvement of approximately 1.36x
+- Case 3 builds on Case 2 by avoiding UB bank conflicts during the transpose read phase through padding, so the end-to-end Task Duration continues to decrease
+- Compared to the naive transpose in Case 1, Case 3 Task Duration decreases by approximately 61.8%, with overall performance improvement of approximately 2.62x, demonstrating that "GM memory coalescing + UB bank conflict avoidance" optimizations stack effectively on end-to-end latency
+- Compared to the Case 0 copy baseline, Case 3 Task Duration is only approximately 8.0% higher, already close to the contiguous GM read/write baseline. Compared with the copy version, Case 3 still needs UB staging, synchronization, and UB transpose reads. The summary metrics alone do not further break down the remaining gap.
 
 ---
 
@@ -311,22 +309,22 @@ output[index_out] = tile[threadIdx.x][threadIdx.y];
 
 **Overall Optimization Effect**:
 
-- From Case 1 direct-index transpose to Case 3 fully optimized version, Task Duration decreases from 60.477us to 26.725us, a reduction of approximately 55.8%, with overall performance improvement of approximately 2.26x
-- Case 3 is only approximately 7.9% higher than the Case 0 copy baseline, indicating that through GM memory coalescing and UB Bank conflict optimization, matrix transpose is already close to the contiguous GM read/write baseline
+- From Case 1 direct-index transpose to Case 3 fully optimized version, Task Duration decreases from 61.508μs to 23.483μs, a reduction of approximately 61.8%, with overall performance improvement of approximately 2.62x
+- Case 3 is only approximately 8.0% higher than the Case 0 copy baseline, indicating that through GM memory coalescing and UB bank conflict avoidance, matrix transpose is already close to the contiguous GM read/write baseline
 
-| Case version | Task Duration(us) | Task Duration Relative to Case 0 | Optimization Points                          |
+| Case version | Task Duration(μs) | Task Duration Relative to Case 0 | Optimization Points                          |
 | ------------ | ----------------- | -------------------------------- | -------------------------------------------- |
-| Case 0       | 24.777            | **1x**                     | Matrix copy baseline, contiguous GM read/write |
-| Case 1       | 60.477            | **2.44x latency**           | Direct-index transpose, contiguous GM read, non-contiguous write |
-| Case 2       | 35.945            | **1.45x latency**           | UB staging, global memory coalescing         |
-| Case 3       | 26.725            | **1.08x latency**           | UB staging, global memory coalescing, UB Bank conflict avoidance |
+| Case 0       | 21.751            | **1x**                     | Matrix copy baseline, contiguous GM read/write |
+| Case 1       | 61.508            | **2.83x latency**           | Direct-index transpose, contiguous GM read, non-contiguous write |
+| Case 2       | 31.926            | **1.47x latency**           | UB staging, global memory coalescing         |
+| Case 3       | 23.483            | **1.08x latency**           | UB staging, global memory coalescing, UB Bank conflict avoidance |
 
 ## Tuning Recommendations
 
 1. **Establish a copy baseline first**: When analyzing the performance of memory-access operators, measure the copy scenario latency first, then compare the actual operator performance against it.
 2. **Prioritize GM memory access contiguity**: Matrix transpose computation is minimal; end-to-end latency is primarily affected by the read/write memory access pattern.
 3. **Use UB staging to improve write-back patterns**: When direct transpose causes non-contiguous GM writes, transfer non-contiguous access to the UB side in exchange for contiguous GM read/write.
-4. **Continue analyzing UB Bank conflicts**: After GM memory coalescing, UB bank conflicts during the transpose read phase may become the next bottleneck. Adjust the UB physical layout through padding or similar methods.
+4. **Continue analyzing UB Bank conflicts**: After GM memory coalescing, UB bank conflicts during the transpose read phase may become the next bottleneck. Adjust the UB physical layout through padding, adjusting the row stride, or reordering data to avoid bank conflicts.
 
 ## Build and Run
 

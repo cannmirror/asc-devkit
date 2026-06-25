@@ -106,7 +106,7 @@ int index = x_index + width * y_index;
 | aiv_scalar_time(μs) | scalar类型指令（标量类运算指令）耗时，单位为μs                                            |
 | aiv_scalar_ratio    | scalar类型指令（标量类运算指令）的cycle数在total cycle数中的占用比                        |
 
-除Task Duration外，本例中其余指标均展示的为所有block上性能指标的平均值。
+除Task Duration外，本例中其余指标展示的是所有block上性能指标的平均值。
 
 ### Case 0: 矩阵复制版本
 
@@ -135,11 +135,11 @@ output[index] = input[index];
 
 | Task Duration(μs) | aiv_time(μs) | aiv_total_cycles | aiv_vec_time(μs) | aiv_vec_ratio | aiv_scalar_time(μs) | aiv_scalar_ratio |
 | :---------------: | :----------: | :--------------: | :--------------: | :-----------: | :-----------------: | :--------------: |
-|      24.777      |    1.054    |     1739.820     |      0.889      |     0.847     |        0.153        |      0.141      |
+|      21.751      |    0.919    |     1515.731     |      0.743      |     0.817     |        0.164        |      0.169      |
 
 **分析**：
 
-- Case 0的Task Duration为24.777μs，作为连续GM读写场景的耗时基线
+- Case 0的Task Duration为21.751μs，作为连续GM读写场景的耗时基线
 - 后续转置版本需要在完成坐标交换的同时尽量接近该基线
 
 ---
@@ -155,7 +155,7 @@ output[index] = input[index];
 - 线程先按原坐标从GM读取输入元素，再计算该元素转置后的输出位置，并把数据直接写到转置后的GM地址
 - GM读取方向连续，GM写回方向不连续
 
-下图展示了Case 1的数据流，其中标红展示了一个Warp在读取GM和写入GM时处理的元素。对于同一个Warp的线程会读取GM输入中tile的一行元素，写回到GM输出中tile的一列。在读取GM输入时，相邻线程访问的元素地址连续，为连续读，在写回到输出时，相邻线程却被拆散到输出矩阵的不同行上，为不连续写。因此，这一版的核心问题是转置后的写回地址不再连续，这通常会显著影响整体吞吐。
+下图展示了Case 1的数据流，其中标红元素表示一个Warp在读取GM和写入GM时处理的元素。同一个Warp的线程读取GM输入中tile的一行元素，写回到GM输出中tile的一列。在读取GM输入时，相邻线程访问的元素地址连续，为连续读；在写回到输出时，相邻线程访问的地址分散到输出矩阵的不同行上，为不连续写。因此，这一版的核心问题是转置后的写回地址不再连续，整体吞吐受到影响。
 
 <img src="./figures/case1.png" width="60%">
 
@@ -172,11 +172,11 @@ output[index_out] = input[index_in];
 
 | Task Duration(μs) | aiv_time(μs) | aiv_total_cycles | aiv_vec_time(μs) | aiv_vec_ratio | aiv_scalar_time(μs) | aiv_scalar_ratio |
 | :---------------: | :----------: | :--------------: | :--------------: | :-----------: | :-----------------: | :--------------: |
-|      60.477      |    3.516    |     5801.925     |      3.357      |     0.955     |        0.147        |      0.041      |
+|      61.508      |    3.609    |     5954.297     |      3.441      |     0.954     |        0.156        |      0.043      |
 
 **分析**：
 
-- 与Case 0的copy基线相比，Task Duration从24.777μs增加到60.477μs，约为copy版本的2.44倍
+- 与Case 0的copy基线相比，Task Duration从21.751μs增加到61.508μs，约为copy版本的2.83倍
 - 直接索引转置本身计算量很小，但转置后的GM写回变为跨行、非连续访问，因此端到端耗时明显高于copy基线
 - 该版本GM读取仍然是连续读，但GM写回地址不连续，同一个Warp的写请求难以高效合并，这是Task Duration上升的主要原因
 
@@ -197,7 +197,7 @@ output[index_out] = input[index_in];
 
 <img src="./figures/case2.png" width="60%">
 
-与Case 1不同的是，Case 1中线程是“直接把输入元素写到转置后的GM位置”，所以相邻线程会被打散到输出矩阵的不同行上，而Case 2中，线程先把数据放到UB里，把原来不连续的全局写访问转移到UB内的不连续读。因此，这一版的核心收益是：虽然增加了一次UB读写和一次同步，但换来了GM侧“读连续、写也连续”的访问模式，整体耗时通常会明显低于Case 1。
+与Case 1不同的是，Case 1中线程是“直接把输入元素写到转置后的GM位置”，所以相邻线程访问的输出地址分散到矩阵的不同行上；Case 2中，线程先把数据放到UB里，把原来不连续的全局写访问转移到UB内的不连续读。因此，这一版的核心收益是：虽然增加了一次UB读写和一次同步，但换来了GM侧“读连续、写也连续”的访问模式，本组数据中整体耗时明显低于Case 1。
 
 **关键代码**：
 
@@ -222,58 +222,56 @@ output[index_out] = tile[threadIdx.x][threadIdx.y];
 
 | Task Duration(μs) | aiv_time(μs) | aiv_total_cycles | aiv_vec_time(μs) | aiv_vec_ratio | aiv_scalar_time(μs) | aiv_scalar_ratio |
 | :---------------: | :----------: | :--------------: | :--------------: | :-----------: | :-----------------: | :--------------: |
-|      35.945      |    1.814    |     2993.315     |      1.646      |     0.910     |        0.156        |      0.083      |
+|      31.926      |    1.606    |     2650.112     |      1.442      |     0.900     |        0.152        |      0.092      |
 
 **分析**：
 
-- 相比Case 1的naive transpose，Task Duration从60.477μs降低到35.945μs，耗时下降约40.6%，整体性能提升约1.68倍
+- 相比Case 1的naive transpose，Task Duration从61.508μs降低到31.926μs，耗时下降约48.1%，整体性能提升约1.93倍
 - Case 2通过UB中转把Case 1中的非连续GM写转移为UB侧访问，使GM读写都更接近连续访问，因此Task Duration明显降低
-- 与Case 0的copy基线相比，Case 2的Task Duration仍高约45.1%。这部分差距主要来自额外的UB读写、同步以及转置方向的UB访问开销
+- 与Case 0的copy基线相比，Case 2的Task Duration仍高约46.8%。Case 2相比copy版本额外引入了UB读写、同步以及转置方向的UB访问开销
 
 ---
 
 ### Case 3: UB中转 + 全局访存合并 + 避免UB Bank冲突的转置版本
 
-**优化目标**：在全局访存合并版本的基础上，通过UB padding降低转置读阶段的bank冲突
+**优化目标**：在全局访存合并版本的基础上，通过UB padding避免转置读阶段的bank冲突
 
 **核心实现**：
 
 - GM到UB阶段与Case 2完全一致
-- 差异只在UB布局，从32×32改成32×33
+- 差异只在UB布局，从32×32改成32×34
 - 同步后，从UB写回到GM与Case 2完全一致
 - 该版本没有改变算法路径，也没有改变block和线程切分，只是调整了UB中的物理布局
 
-下面以Ascend 950PR/Ascend 950DT的UB划分规则为例，说明本样例中Bank Conflict是如何产生的，以及Case 2和Case 3理论上的冲突强度差异。
+下面以Ascend 950PR/Ascend 950DT的UB划分规则为例，说明本样例中bank冲突是如何产生的，以及Case 2和Case 3理论上的冲突强度差异。
 
-UB中的bank划分如下图所示。UB总大小为256KB，可以看成前后两行，每行128KB，前128KB对应bank0到bank7，后128KB对应bank8到bank15。bank0和bank8属于同一个group，bank1和bank9属于同一个group，依此类推。
+UB中的bank划分如下图所示。UB总大小256KB，划分为16个bank（每个bank512行 × 32B = 16KB）；这16个bank进一步组织为8个bank group，每个bank group包含2个bank（bank i与bank i+8同属bank group i，即 `bank_group_id = bank_id % 8`）。在SIMT编程模式下，每个bank又会被划分为4个subbank，每个subbank的宽度为8B。
+
+SIMT场景下，同一个Warp内的多个线程可能在同一条UB访问指令中同时访问UB；当这些访问数据属于同一个bank group的相同编号的subbank资源时，硬件无法在一个周期内处理全部请求，需要排队等待，从而形成subbank冲突并增加访问延迟；如果这些访问数据属于同一个subbank的同一行内的8B地址范围，硬件会将这些请求合并处理，不会形成subbank冲突。
 
 <img src="./figures/bank结构示意图.png">
 
-对SIMT来说，最关键的是同一条UB访问指令下，同一Warp的并发线程是否会集中访问少数几个bank。
+**地址采用低位交织：** 如下图所示，UB内连续地址按32B粒度映射到bank0~bank15 —— 第1个32B地址段映射到bank0、第2个映射到bank1、……、第16个映射到bank15，第17个映射回bank0的下一行，依次类推。
 
-- **读写冲突**：读操作和写操作同时尝试访问同一个bank。
-- **写写冲突**：多个写操作同时尝试访问同一个bank group。
-- **读读冲突**：两个读操作同时尝试访问同一个bank，或者两个以上读操作同时尝试访问同一个bank group。
+<img src="./figures/bank内存排布示意图.png">
 
-由于本样例中的tile很小：
+SIMT编程方式下subbank冲突主要有以下几种：
 
-- `32×32×4B = 4096B`
-- `32×33×4B = 4224B`
+- **写写冲突**：多个写操作同时尝试访问同一个bank group的相同编号的subbank。
+- **读读冲突**：多个读操作同时尝试访问同一个bank group的相同编号的subbank。
 
-远小于128KB，所以一个tile通常只会落在前128KB区域内。在本文分析里，可以把它近似看成只使用`bank0~bank7`。
-
-case 2中UB的tile数组前10行元素按照行优先存储的排布图如下，为了展示方便这里只展示了前10行元素排布，其余行依次类推。每行32个float数据会恰好跨越4个bank存储，其中每行第一个元素用了蓝色标记。在case 2中，一个Warp的线程会读取tile的一列元素写回到GM输出，在访问UB时，32个线程会集中访问两个bank，也就是一个bank会有16个线程同时访问，产生大量的读冲突。
+Case 2中UB的tile数组前10行元素按照行优先存储的排布图如下，按照地址低位交织的规则，tile数组的第一行row 1刚好覆盖bank 0～bank 3，row 2覆盖bank 4～bank 7，row 3则覆盖bank 8～bank 11，为了展示方便这里只展示前10行元素排布，其余行依次类推。每行32个float数据会恰好跨越4个bank存储，其中每行第一个元素用了蓝色标记。在Case 2中，一个Warp的线程会读取tile的一列元素写回到GM输出；访问UB时，32个线程会集中访问两个bank group的subbank 0，属于读读冲突场景。
 
 <img src="./figures/case2bank.png">
 
-case 3中对UB中的tile数组增加一列padding，由每行32个元素改为33个元素，其在UB上的排列如下图所示。由于每行有33个元素跨越5个bank存储，此时同一列的元素会被错开排布在不同的bank。case 3中在访问UB时，32个线程的访问会被分布到8个bank中，也就是一个bank会有4个线程同时访问，大大降低了冲突的规模。
+Case 3中对UB中的tile数组增加两列padding，由每行32个元素改为34个元素，其在UB上的排列如下图所示。由于每行有34个元素，行跨度变为17个subbank，同一列元素会错开排布到不同的subbank。Case 3访问UB时，32个线程的访问会分布到各个bank group的每个subbank中，即同一条访问指令下每个subbank仅有一个线程访问，从而避免上述读读冲突。
 
 <img src="./figures/case3bank.png">
 
 **关键代码**：
 
 ```cpp
-__ubuf__ float tile[TILE_DIM][TILE_DIM + 1];
+__ubuf__ float tile[TILE_DIM][TILE_DIM + 2];
 
 tile[threadIdx.y][threadIdx.x] = input[index_in];
 asc_syncthreads();
@@ -287,21 +285,21 @@ output[index_out] = tile[threadIdx.x][threadIdx.y];
 
 **优化手段**：
 
-- 对UB tile增加+1 padding，使每行stride从32个float变为33个float
-- 通过改变UB中同一列元素的bank分布，降低同一Warp转置读阶段集中访问少数bank的概率
+- 对UB tile增加+2 padding，使每行stride从32个float变为34个float
+- 通过改变UB中同一列元素的bank和subbank分布，避免同一Warp转置读阶段的读读冲突
 
 **性能数据**：
 
 | Task Duration(μs) | aiv_time(μs) | aiv_total_cycles | aiv_vec_time(μs) | aiv_vec_ratio | aiv_scalar_time(μs) | aiv_scalar_ratio |
 | :---------------: | :----------: | :--------------: | :--------------: | :-----------: | :-----------------: | :--------------: |
-|      26.725      |    1.224    |     2018.943     |      1.059      |     0.869     |        0.152        |      0.121      |
+|      23.483      |    1.055    |     1740.038     |      0.883      |     0.847     |        0.151        |      0.138      |
 
 **分析**：
 
-- 相比Case 2的transpose_coalesced_kernel，Task Duration从35.945μs降低到26.725μs，耗时下降约25.7%，整体性能提升约1.35倍
-- Case 3在Case 2的基础上通过padding降低UB转置读阶段的bank冲突，因此端到端Task Duration继续下降
-- 相比Case 1的naive transpose，Case 3的Task Duration下降约55.8%，整体性能提升约2.26倍，说明“GM访存合并 + UB bank冲突降低”两步优化在端到端耗时上叠加生效
-- 与Case 0的copy基线相比，Case 3的Task Duration只高约7.9%，已经接近连续GM读写的基准水平。剩余差距主要来自UB中转、同步以及UB读写时仍然存在的少量bank冲突
+- 相比Case 2的transpose_coalesced_kernel，Task Duration从31.926μs降低到23.483μs，耗时下降约26.4%，整体性能提升约1.36倍
+- Case 3在Case 2的基础上通过padding避免UB转置读阶段的bank冲突，因此端到端Task Duration继续下降
+- 相比Case 1的naive transpose，Case 3的Task Duration下降约61.8%，整体性能提升约2.62倍，说明“GM访存合并 + UB bank冲突避免”两步优化在端到端耗时上叠加生效
+- 与Case 0的copy基线相比，Case 3的Task Duration只高约8.0%，已经接近连续GM读写的基准水平。Case 3相比copy版本仍需执行UB中转、同步和UB转置读，仅凭汇总指标不再进一步拆分归因
 
 ---
 
@@ -311,29 +309,31 @@ output[index_out] = tile[threadIdx.x][threadIdx.y];
 
 **综合优化效果**：
 
-- 从Case 1直接索引转置到Case 3完整优化版本，Task Duration从60.477μs降低到26.725μs，耗时下降约55.8%，整体性能提升约2.26倍
-- Case 3相比Case 0 copy基线仅高约7.9%，说明通过GM访存合并和UB Bank冲突优化后，矩阵转置已经接近连续GM读写基线
+- 从Case 1直接索引转置到Case 3完整优化版本，Task Duration从61.508μs降低到23.483μs，耗时下降约61.8%，整体性能提升约2.62倍
+- Case 3相比Case 0 copy基线仅高约8.0%，说明通过GM访存合并和避免UB bank冲突后，矩阵转置已经接近连续GM读写基线
 
 | Case version | Task Duration(μs) | Task Duration相对Case 0 | 优化点                                |
 | ------------ | ----------------- | ----------------------- | ------------------------------------- |
-| Case 0       | 24.777            | **1x**            | 矩阵复制基线，GM连续读、连续写        |
-| Case 1       | 60.477            | **2.44x耗时**     | 直接索引转置，GM连续读、非连续写      |
-| Case 2       | 35.945            | **1.45x耗时**     | UB中转，全局访存合并                  |
-| Case 3       | 26.725            | **1.08x耗时**     | UB中转，全局访存合并，避免UB Bank冲突 |
+| Case 0       | 21.751            | **1x**            | 矩阵复制基线，GM连续读、连续写        |
+| Case 1       | 61.508            | **2.83x耗时**     | 直接索引转置，GM连续读、非连续写      |
+| Case 2       | 31.926            | **1.47x耗时**     | UB中转，全局访存合并                  |
+| Case 3       | 23.483            | **1.08x耗时**     | UB中转，全局访存合并，避免UB Bank冲突 |
 
 ## 调优建议
 
 1. **先建立copy基线**：在分析访存类算子性能时，建议先测量copy场景耗时，再用实际算子的性能与其做对比。
 2. **优先关注GM访存连续性**：矩阵转置计算量很小，端到端耗时主要受读写访存模式影响。
 3. **使用UB中转改善写回模式**：当直接转置导致GM非连续写时，可以将不连续访问转移到UB侧，换取GM侧连续读写。
-4. **继续分析UB Bank冲突**：GM访存合并后，UB转置读阶段的bank冲突可能成为下一层瓶颈，可以通过padding等方式调整UB物理布局。
+4. **继续分析UB Bank冲突**：GM访存合并后，UB转置读阶段的bank冲突可能成为下一层瓶颈，可以通过padding等方式调整UB物理布局，避免同一Warp的并发线程集中访问相同bank资源。
 
 ## 编译运行
 
 在本样例根目录下执行如下步骤，编译并执行样例。
 
-- 配置环境变量  
+- 配置环境变量
+  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，配置环境变量。
+
   ```bash
   source ${install_path}/cann/set_env.sh
   ```
@@ -350,13 +350,12 @@ output[index_out] = tile[threadIdx.x][threadIdx.y];
   cmake -DCMAKE_ASC_ARCHITECTURES=dav-3510 -DSCENARIO_NUM=$SCENARIO_NUM ..;make -j;  # 编译工程
   ./matrix_transpose                   # 执行样例
   ```
-
 - 编译选项说明
 
-  | 选项             | 可选值      | 说明              |
-  | ---------------- | ----------- | ----------------- |
-  | `CMAKE_ASC_ARCHITECTURES` | `dav-3510` | NPU 架构：本样例仅支持 dav-3510（Ascend 950PR/Ascend 950DT） |
-  | `SCENARIO_NUM` | `0`-`3` | 样例类型，默认为3 |
+  | 选项                        | 可选值       | 说明                                                         |
+  | --------------------------- | ------------ | ------------------------------------------------------------ |
+  | `CMAKE_ASC_ARCHITECTURES` | `dav-3510` | NPU 架构：本样例仅支持dav-3510（Ascend 950PR/Ascend 950DT） |
+  | `SCENARIO_NUM`            | `0`-`3`  | 样例类型，默认为3                                            |
 
   执行结果如下，说明精度对比成功。
 
