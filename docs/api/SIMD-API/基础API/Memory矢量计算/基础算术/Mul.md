@@ -40,6 +40,12 @@ $dst_i = src0_i \times src1_i$
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
+- 整个tensor参与计算
+
+    ```cpp
+    dst = src0 * src1;
+    ```
+
 - tensor前n个数据连续计算
 
     ```cpp
