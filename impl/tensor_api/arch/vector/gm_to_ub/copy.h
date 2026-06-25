@@ -51,8 +51,13 @@ private:
     {
         using dstTPos = GetMemLocation<T>;
         using srcTPos = GetMemLocation<U>;
-        using Tensor2Tensor = typename CopyGM2UBTensor2Tensor<dstTPos, srcTPos, CURRENT_ARCH_VERSION>::type;
-        Tensor2Tensor::template Run<trait, T, U>(dst, src);
+        static_assert(Std::is_same_v<dstTPos, Location::UB>, "When Copy tensor from GM to UB, dst tensor must on UB");
+        static_assert(Std::is_same_v<srcTPos, Location::GM>, "When Copy tensor from GM to UB, src tensor must on GM");
+        using DstLayoutPtn = GetLayoutPattern<typename T::layoutType>;
+        using SrcLayoutPtn = GetLayoutPattern<typename U::layoutType>;
+        using CopyGM2UBImpl =
+            typename CopyGM2UBRouting<CURRENT_ARCH_VERSION, DstLayoutPtn, SrcLayoutPtn>::type;
+        CopyGM2UBImpl::template Run<trait, T, U>(dst, src);
     }
 };
 
