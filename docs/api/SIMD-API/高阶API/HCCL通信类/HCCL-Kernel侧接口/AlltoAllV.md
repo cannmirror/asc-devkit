@@ -16,7 +16,7 @@
 
 AlltoAllV的功能为：通信域内的卡互相发送和接收数据，并且定制每张卡给其它卡发送的数据量和从其它卡接收的数据量，以及定制发送和接收的数据在内存中的偏移。结合原型中的参数，描述接口功能，具体为：第i张卡发送sendBuf内存中第j块数据到第j张卡，该块数据在sendBuf中偏移为sdispls\[j\]的位置，且数据量为sendCounts\[j\]，第j张卡将该数据存放到本卡recvBuf中偏移为rdispls\[i\]的位置，接收数据量为recvCounts\[i\]，这里的sendCounts\[j\]与recvCounts\[i\]需要相等。注意：这里的偏移和数据量均为数据的个数，单位为sizeof\(sendType\)。
 
-![](../../../../figures/allreduce-61.png)
+![](../../../../figures/AlltoAllV.png)
 
 ## 函数原型
 

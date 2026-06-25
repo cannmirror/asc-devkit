@@ -14,7 +14,7 @@
 
 集合通信算子ReduceScatter的任务下发接口，返回该任务的标识handleId给用户。ReduceScatter的功能为：将所有rank的输入相加（或其他归约操作）后，再把结果按照rank编号均匀分散到各个rank的输出buffer，每个进程拿到其他进程1/ranksize份的数据进行归约操作。
 
-![](../../../../figures/allgather-57.png)
+![](../../../../figures/ReduceScatter.png)
 
 ## 函数原型
 
