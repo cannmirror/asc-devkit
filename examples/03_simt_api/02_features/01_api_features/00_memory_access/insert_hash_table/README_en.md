@@ -39,6 +39,50 @@ A common hash collision resolution method is open addressing: when a collision o
 
 Since the storage location of each key-value pair is determined by the computed hash value, and these values are typically random and discrete, plus the existence of hash collisions requiring multiple conditional checks before actual data writes, hash tables are not suitable for SIMD programming model implementation. In contrast, in SIMT programming, each thread can independently handle branch judgments and supports discrete memory access, making it more advantageous for implementing hash tables.
 
+## Struct Design
+
+The hash table insertion process involves multiple pieces of information, such as the hash table base address, capacity, bucket size, and input key/value data. Passing these parameters one by one between functions would make interfaces verbose and increase coupling between modules. Therefore, this example uses separate structs to encapsulate the hash table context and input data, improving code readability and maintainability.
+
+`Bucket` is the target memory structure that actually stores key-value pairs in the hash table. Here, `key` stores the key, `value` stores the corresponding value, `state` is used to synchronize key write status, and `flag` is used to control bucket write permission.
+
+```C++
+struct Bucket {
+    int64_t key;            // Key
+    uint32_t state;         // Key value write status flag
+    uint32_t flag;          // Atomic operation flag
+    float value[32];        // Value
+};
+```
+
+`KeyValueData` is used to encapsulate the data of key-value pairs to be inserted, including input keys, input values, value dimension, and the number of key-value pairs.
+
+```C++
+struct KeyValueData {
+    int64_t* keys;       // Input keys
+    float* values;       // Input values
+    uint32_t value_dim;  // Value dimension
+    uint32_t key_num;    // Number of key-value pairs
+
+    __aicore__ inline int64_t load_key(uint32_t kv_idx) const; // Load key
+    __aicore__ inline float load_value(uint32_t kv_idx, uint32_t j) const; // Load value
+};
+```
+
+`HashTableContext` stores the parameters of the hash table itself, including the hash table base address, capacity, and bucket size. Its interfaces are used to compute bucket addresses and find and occupy target buckets. When writing values, the `insert` function reads the corresponding input values through the `KeyValueData` parameter.
+
+```C++
+struct HashTableContext {
+    uint8_t* table_addr;     // Hash table base address
+    uint32_t capacity;       // Hash table capacity
+    uint32_t bucket_size;    // Bucket size
+
+    __aicore__ inline Bucket* get_bucket(uint32_t bucket_idx) const; // Get bucket address
+    __aicore__ inline Bucket* query(int64_t key, int32_t& success); // Find and occupy target bucket
+    __aicore__ inline void insert(Bucket* bucket, const KeyValueData* input,
+                                  uint32_t kv_idx, int32_t lane_id); // Write value
+};
+```
+
 ## Algorithm Analysis
 
 SIMT can efficiently process large amounts of data through concurrent execution of many threads, but it also brings two problems: multi-thread write conflicts and inter-core data synchronization.
@@ -50,15 +94,6 @@ When multiple threads operate on the same memory block, resource conflicts are i
 ### Inter-core Data Synchronization Problem
 
 When a hash collision occurs, a thread needs to determine whether the key stored in the current bucket is the same as the key to be inserted. This requires the current thread to read data written by other threads and ensure data integrity. In the implementation, a flag bit "state" is added to the Bucket struct to identify the write status of the key value. After writing the key, the write thread sets the state flag to 1, and calls the [`asc_threadfence()`](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMT-API/同步与内存栅栏/内存栅栏接口/asc_threadfence.md) interface between the two operations to ensure that when state is set to 1, the key write operation has already completed. In the read thread, a while loop polls the state value until state is set to 1, and then reads the key value.
-
-```C++
-struct Bucket {
-    int64_t key;            // Key
-    uint32_t state;         // Key value write status flag
-    uint32_t flag;          // Atomic operation flag
-    float value[32];        // Value
-};
-```
 
 ## Operator Description
 
