@@ -20,7 +20,7 @@
 #ifndef ASCENDC_MODULE_OPERATOR_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_INTERFACE_H
 #if defined(__NPU_ARCH__) &&                                                                                    \
-    ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) ||    \
+    ((__NPU_ARCH__ == 3003) ||    \
      (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3510)) || defined(__ASC_NPU_HOST__)
 // MICRO API
 #include "reg_compute/kernel_reg_compute_intf.h"
@@ -67,7 +67,7 @@
 #include "core_mng/roc/kernel_operator_group_barrier_intf.h"
 #endif
 
-#if ((__NPU_ARCH__ != 3102) && (__NPU_ARCH__ != 3510)) && (__NPU_ARCH__ != 5102)
+#if ((__NPU_ARCH__ != 3102) && (__NPU_ARCH__ != 3510)) 
 #include "include/adv_api/filter/dropout.h"
 #include "include/adv_api/activation/sigmoid.h"
 #include "include/adv_api/activation/softmax.h"
@@ -132,7 +132,7 @@
 #include "include/adv_api/reduce/reduce_xor_sum.h"
 #include "include/adv_api/math/cumsum.h"
 #endif
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) 
 // SIMT API
 #include "simt_api/cpp/kernel_simt_intf.h"
 #endif

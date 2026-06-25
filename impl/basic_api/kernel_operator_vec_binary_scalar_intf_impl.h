@@ -37,8 +37,6 @@
 #include "dav_m310/kernel_operator_vec_binary_scalar_impl.h"
 #elif __NPU_ARCH__ == 3510
 #include "dav_3510/kernel_operator_vec_binary_scalar_impl.h"
-#elif (__NPU_ARCH__ == 5102)
-#include "dav_m510/kernel_operator_vec_binary_scalar_impl.h"
 #elif __NPU_ARCH__ == 3003
 #include "dav_l300/kernel_operator_vec_binary_scalar_impl.h"
 #elif __NPU_ARCH__ == 3113
@@ -1117,7 +1115,7 @@ __aicore__ inline void LeakyRelu(const LocalTensor<T>& dst, const LocalTensor<T>
         (__ubuf__ PrimType*)src.GetPhyAddr(), scalarValue, count);
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 /* **************************************************************************************************
  * Adds                                             *
  * ************************************************************************************************* */
@@ -1837,7 +1835,7 @@ __aicore__ inline void MulsCast(const T2 &dst, const T3 &src0, const T4 &src1, c
 {
     using ActualT = typename T2::PrimType;
     CheckTensorPos<ActualT>(dst, Hardware::UB, "dst", "VECIN / VECCALC / VECOUT", "MulsCast");
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) 
     static_assert(!TypeUtils::IsInnerDefaultType<T3, T4>(), "One of src0 and src1 should be Tensor");
     static_assert(TypeUtils::IsLocalTensorType<T2>());
     static_assert(SupportType<typename T2::PrimType, half>());
@@ -1895,7 +1893,7 @@ __aicore__ inline void FusedMulsCast(const T2 &dst, const T3 &src0, const T4 &sr
 {
     using ActualT = typename T2::PrimType;
     CheckTensorPos<ActualT>(dst, Hardware::UB, "dst", "VECIN / VECCALC / VECOUT", "FusedMulsCast");
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) 
     static_assert(!TypeUtils::IsInnerDefaultType<T3, T4>(), "One of src0 and src1 should be Tensor");
     static_assert(TypeUtils::IsLocalTensorType<T2>());
     static_assert(SupportType<typename T2::PrimType, half>());

@@ -25,7 +25,7 @@
 #include "kernel_tensor.h"
 #include "include/adv_api/math/logical_and_utils.h"
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 #include "../../../impl/adv_api/detail/math/logical_and/logical_and_common_impl.h"
 #endif
 
@@ -42,7 +42,7 @@ template <const LogicalAndConfig& config = DEFAULT_LOGICAL_AND_CONFIG, typename 
 __aicore__ inline void LogicalAnd(const LocalTensor<T>& dst, const LocalTensor<U>& src0,
     const LocalTensor<U>& src1, const uint32_t count)
 {
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     LogicalAndImpl<config, T, U>(dst, src0, src1, count);
 #endif
 }

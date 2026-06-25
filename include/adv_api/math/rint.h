@@ -25,7 +25,7 @@
 #include "kernel_tensor.h"
 #include "include/adv_api/math/rint_utils.h"
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 #include "../../../impl/adv_api/detail/math/rint/rint_common_impl.h"
 #endif
 
@@ -42,7 +42,7 @@ template <const RintConfig& config = DEFAULT_RINT_CONFIG, typename T>
 __aicore__ inline void Rint(const LocalTensor<T>& dst, const LocalTensor<T>& src,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t count)
 {
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     RintImpl<config, T>(dst, src, sharedTmpBuffer, count);
 #endif
 }
@@ -57,7 +57,7 @@ __aicore__ inline void Rint(const LocalTensor<T>& dst, const LocalTensor<T>& src
 template <const RintConfig& config = DEFAULT_RINT_CONFIG, typename T>
 __aicore__ inline void Rint(const LocalTensor<T>& dst, const LocalTensor<T>& src, const uint32_t count)
 {
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     RintImpl<config, T>(dst, src, count);
 #endif
 }

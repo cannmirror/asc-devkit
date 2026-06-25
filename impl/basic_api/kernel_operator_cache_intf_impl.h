@@ -37,8 +37,6 @@
 #include "dav_m310/kernel_operator_cache_impl.h"
 #elif __NPU_ARCH__ == 3510
 #include "dav_3510/kernel_operator_cache_impl.h"
-#elif (__NPU_ARCH__ == 5102)
-#include "dav_m510/kernel_operator_cache_impl.h"
 #elif (__NPU_ARCH__ == 3113)
 #include "dav_l311/kernel_operator_cache_impl.h"
 #endif
@@ -48,7 +46,7 @@ namespace AscendC {
 template <typename T>
 __aicore__ inline void DataCachePreload(const GlobalTensor<uint64_t> &src, const T cacheOffset)
 {
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) 
     DataCachePreloadImpl((__gm__ uint64_t*)src.GetPhyAddr(), cacheOffset);
 #else
     DataCachePreloadImpl(src, cacheOffset);
@@ -56,7 +54,7 @@ __aicore__ inline void DataCachePreload(const GlobalTensor<uint64_t> &src, const
 }
 
 #if defined(__NPU_ARCH__) &&            \
-    ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+    ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
 template <typename T, CacheLine entireType, DcciDst dcciDst>
 __aicore__ inline void DataCacheCleanAndInvalid(const GlobalTensor<T>& dst)
 {
@@ -72,7 +70,7 @@ __aicore__ inline void DataCacheCleanAndInvalid(const LocalTensor<T>& dst)
 
 #if defined(__NPU_ARCH__) &&                                                            \
     ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 3002) ||      \
-    (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+    (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
 template <typename T, CacheLine entireType>
 __aicore__ inline void DataCacheCleanAndInvalid(const GlobalTensor<T>& dst)
 {

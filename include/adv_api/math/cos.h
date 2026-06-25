@@ -16,7 +16,7 @@
  * and then calculating by function approximation.
  * k=round(x/π + 1/2), x0=x-kπ, x0 belongs to [-π, 0], (x0 + π/2) belongs to [-π/2, π/2]
  * π=π_0+π_1+π_2+π_3+π_4 achieve final precision compensation.
- * Final solution�?
+ * Final solution�?
  *   k = round(x * invpi + 1/2)
  *   x -= k * pi_0
  *   x -= k * pi_1
@@ -46,10 +46,10 @@
 #include "include/adv_api/math/cos_utils.h"
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
-    __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+     __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #include "../../../impl/adv_api/detail/math/cos/cos_common_impl.h"
-#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || \
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || \
     __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #include "../../../impl/adv_api/detail/math/cos/cos_3510_impl.h"
 #endif
@@ -58,7 +58,7 @@
 namespace AscendC {
 #pragma begin_pipe(V)
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || \
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || \
     __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 /*!
  * \ingroup Cos

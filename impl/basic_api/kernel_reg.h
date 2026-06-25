@@ -57,21 +57,15 @@ __aicore__ inline void ResetMaskImpl()
     }
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 template <pipe_t pipe> __aicore__ inline void PipeBarrierImpl()
 {
-#if (__NPU_ARCH__ == 5102)
-    if constexpr (pipe == PIPE_MTE3) {
-        return;
-    }
-#else
     static_assert(pipe != PIPE_S, "PipeBarrier<PIPE_S> is not supported on current device!");
     if ASCEND_IS_AIC {
         if constexpr (pipe == PIPE_MTE3) {
             return;
         }
     }
-#endif
     if constexpr (pipe != PIPE_V) {
         pipe_barrier(pipe);
     }
@@ -119,7 +113,7 @@ enum class DcciDst : uint64_t {
 
 #if defined(__NPU_ARCH__) &&                                                \
      ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) ||                   \
-      (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+      (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
 template <typename T, CacheLine entireType, DcciDst dcciDst>
 __aicore__ inline void DcciGMImpl(__gm__ T* dst)
 {
@@ -135,7 +129,7 @@ __aicore__ inline void DcciUBImpl(__ubuf__ T* dst)
 
 #if defined(__NPU_ARCH__ ) &&                                                           \
      ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 3002) ||     \
-      (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+      (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
 template <typename T, CacheLine entireType>
 __aicore__ inline void DcciGMImpl(__gm__ T* dst)
 {
@@ -211,11 +205,11 @@ __aicore__ inline void SetCastOverflowModeImpl()
 
 #if defined(__NPU_ARCH__) &&                                                        \
     ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 3002) ||  \
-     (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+     (__NPU_ARCH__ == 3510))
 template <typename T>
 __aicore__ inline void SetAippFunctionsImpl0(__gm__ T* src0)
 {
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
     Internal::g_aippSrc0 = reinterpret_cast<uint64_t>(src0) & 0xffffffffffff;
 #else
     uint64_t aippConfig0 = reinterpret_cast<uint64_t>(src0) & 0xffffffffffff;
@@ -227,7 +221,7 @@ __aicore__ inline void SetAippFunctionsImpl0(__gm__ T* src0)
 template <typename T, typename U>
 __aicore__ inline void SetAippFunctionsImpl1(__gm__ T* src1, AippParams<U>& config)
 {
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
     Internal::g_aippSrc1 = reinterpret_cast<uint64_t>(src1) & 0xffffffffffff;
     if (config.cscParams.isEnableCsc) {
         Internal::g_aippSrc1 |= static_cast<uint64_t>(1) << AIPP_OFFSET_CSC_ENABLE;
@@ -251,7 +245,7 @@ __aicore__ inline void SetAippFunctionsImpl2(AippParams<T>& config)
     uint16_t cscMatrixR0C2 = GetScalarBitcodeValue(config.cscParams.cscMatrixR0C2);
     uint16_t cscMatrixR1C0 = GetScalarBitcodeValue(config.cscParams.cscMatrixR1C0);
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
     Internal::g_aippCscRc0 = static_cast<uint64_t>(cscMatrixR0C0);
     Internal::g_aippCscRc0 |= static_cast<uint64_t>(cscMatrixR0C1) << AIPP_OFFSET_CH1;
     Internal::g_aippCscRc0 |= static_cast<uint64_t>(cscMatrixR0C2) << AIPP_OFFSET_CH2;
@@ -274,7 +268,7 @@ __aicore__ inline void SetAippFunctionsImpl3(AippParams<T>& config)
     uint16_t cscMatrixR2C0 = GetScalarBitcodeValue(config.cscParams.cscMatrixR2C0);
     uint16_t cscMatrixR2C1 = GetScalarBitcodeValue(config.cscParams.cscMatrixR2C1);
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
     Internal::g_aippCscRc1 = static_cast<uint64_t>(cscMatrixR1C1);
     Internal::g_aippCscRc1 |= static_cast<uint64_t>(cscMatrixR1C2) << AIPP_OFFSET_CH1;
     Internal::g_aippCscRc1 |= static_cast<uint64_t>(cscMatrixR2C0) << AIPP_OFFSET_CH2;
@@ -300,7 +294,7 @@ __aicore__ inline void SetAippFunctionsImpl4(AippParams<T>& config)
     uint8_t cscBiasIn1 = GetScalarBitcodeValue(config.cscParams.cscBiasIn1);
     uint8_t cscBiasIn2 = GetScalarBitcodeValue(config.cscParams.cscBiasIn2);
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
     Internal::g_aippCscBias = static_cast<uint64_t>(cscMatrixR2C2);
     Internal::g_aippCscBias |= static_cast<uint64_t>(cscBiasOut0) << AIPP_OFFSET_CSC_OUT_CH0;
     Internal::g_aippCscBias |= static_cast<uint64_t>(cscBiasOut1) << AIPP_OFFSET_CSC_OUT_CH1;
@@ -331,7 +325,7 @@ __aicore__ inline void SetAippFunctionsImpl5(AippParams<T>& config)
     uint8_t dtcMeanCh1 = GetScalarBitcodeValue(config.dtcParams.dtcMeanCh1);
     uint8_t dtcMeanCh2 = GetScalarBitcodeValue(config.dtcParams.dtcMeanCh2);
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
     Internal::g_aippDtcMean = static_cast<uint64_t>(dtcMeanCh0);
     Internal::g_aippDtcMean |= static_cast<uint64_t>(dtcMeanCh1) << AIPP_OFFSET_CH1;
     Internal::g_aippDtcMean |= static_cast<uint64_t>(dtcMeanCh2) << AIPP_OFFSET_CH2;
@@ -354,7 +348,7 @@ __aicore__ inline void SetAippFunctionsImpl6(AippParams<T>& config)
     uint16_t dtcMinCh1 = GetScalarBitcodeValue(config.dtcParams.dtcMinCh1);
     uint16_t dtcMinCh2 = GetScalarBitcodeValue(config.dtcParams.dtcMinCh2);
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
     Internal::g_aippDtcMin = static_cast<uint64_t>(dtcMinCh0);
     Internal::g_aippDtcMin |= static_cast<uint64_t>(dtcMinCh1) << AIPP_OFFSET_CH1;
     Internal::g_aippDtcMin |= static_cast<uint64_t>(dtcMinCh2) << AIPP_OFFSET_CH2;
@@ -377,7 +371,7 @@ __aicore__ inline void SetAippFunctionsImpl7(AippParams<T>& config)
     uint16_t dtcVarCh1 = GetScalarBitcodeValue(config.dtcParams.dtcVarCh1);
     uint16_t dtcVarCh2 = GetScalarBitcodeValue(config.dtcParams.dtcVarCh2);
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
     Internal::g_aippDtcVar = static_cast<uint64_t>(dtcVarCh0);
     Internal::g_aippDtcVar |= static_cast<uint64_t>(dtcVarCh1) << AIPP_OFFSET_CH1;
     Internal::g_aippDtcVar |= static_cast<uint64_t>(dtcVarCh2) << AIPP_OFFSET_CH2;
@@ -400,7 +394,7 @@ __aicore__ inline void SetAippFunctionsImpl8(AippParams<T>& config)
         uint8_t paddingValueCh2 = GetScalarBitcodeValue(config.paddingParams.paddingValueCh2);
         uint8_t paddingValueCh3 = GetScalarBitcodeValue(config.paddingParams.paddingValueCh3);
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
         Internal::g_aippPaddingVal = static_cast<uint64_t>(paddingValueCh0);
         Internal::g_aippPaddingVal |= static_cast<uint64_t>(paddingValueCh1) << AIPP_OFFSET_CH1;
         Internal::g_aippPaddingVal |= static_cast<uint64_t>(paddingValueCh2) << AIPP_OFFSET_CH2;
@@ -419,7 +413,7 @@ __aicore__ inline void SetAippFunctionsImpl8(AippParams<T>& config)
         uint16_t paddingValueCh2 = GetScalarBitcodeValue(config.paddingParams.paddingValueCh2);
         uint16_t paddingValueCh3 = GetScalarBitcodeValue(config.paddingParams.paddingValueCh3);
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
         Internal::g_aippPaddingVal = static_cast<uint64_t>(paddingValueCh0);
         Internal::g_aippPaddingVal |= static_cast<uint64_t>(paddingValueCh1) << AIPP_OFFSET_CH1;
         Internal::g_aippPaddingVal |= static_cast<uint64_t>(paddingValueCh2) << AIPP_OFFSET_CH2;
@@ -478,7 +472,7 @@ __aicore__ inline void SetAippFunctionsImpl9(AippInputFormat format, AippParams<
 template <typename T>
 __aicore__ inline void SetAippFunctionsImpl18(AippParams<T>& config)
 {
-#if __NPU_ARCH__ != 3002 && (__NPU_ARCH__ != 5102)
+#if __NPU_ARCH__ != 3002 
     return;
 #endif
     float dtcVarCh0f = static_cast<float>(config.dtcParams.dtcVarCh0);
@@ -495,7 +489,7 @@ __aicore__ inline void SetAippFunctionsImpl18(AippParams<T>& config)
 template <typename T>
 __aicore__ inline void SetAippFunctionsImpl19(AippParams<T>& config)
 {
-#if __NPU_ARCH__ != 3002 && (__NPU_ARCH__ != 5102)
+#if __NPU_ARCH__ != 3002 
     return;
 #endif
     float dtcVarCh2f = static_cast<float>(config.dtcParams.dtcVarCh2);
@@ -507,7 +501,7 @@ __aicore__ inline void SetAippFunctionsImpl19(AippParams<T>& config)
 template <typename T>
 __aicore__ inline void SetAippFunctionsImpl20(AippParams<T>& config)
 {
-#if __NPU_ARCH__ != 3002 && (__NPU_ARCH__ != 5102)
+#if __NPU_ARCH__ != 3002 
     return;
 #endif
     float dtcMeanCh0f = static_cast<float>(config.dtcParams.dtcMeanCh0 * 1.0f);
@@ -525,7 +519,7 @@ __aicore__ inline void SetAippFunctionsImpl20(AippParams<T>& config)
 template <typename T>
 __aicore__ inline void SetAippFunctionsImpl21(AippParams<T>& config)
 {
-#if __NPU_ARCH__ != 3002 && (__NPU_ARCH__ != 5102)
+#if __NPU_ARCH__ != 3002 
     return;
 #endif
     float dtcMeanCh2f = static_cast<float>(config.dtcParams.dtcMeanCh2 * 1.0f);
@@ -534,7 +528,7 @@ __aicore__ inline void SetAippFunctionsImpl21(AippParams<T>& config)
     set_aipp_spr_21(aippConfig21);
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 template <typename T>
 __aicore__ inline void SetAippFunctionsImpl22(AippInputFormat format, AippParams<T>& config)
 {
@@ -578,7 +572,7 @@ __aicore__ inline void SetAippFunctionsImpl(__gm__ T* src0, __gm__ T* src1,
         return;
     }
 #endif // __NPU_ARCH__ == 2201
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
     static_assert(SupportType<T, uint8_t>(), "Input type T only supports uint8_t on current device.");
     static_assert(SupportType<U, uint8_t, int8_t, half>(), "Input type T only supports uint8_t, int8_t, half on current device.");
 #endif
@@ -604,7 +598,7 @@ __aicore__ inline void SetAippFunctionsImpl(__gm__ T* src0, __gm__ T* src1,
     SetAippFunctionsImpl6<U>(config);
     SetAippFunctionsImpl7<U>(config);
     SetAippFunctionsImpl8<U>(config);
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
     SetAippFunctionsImpl22<U>(format, config);
 #else
     SetAippFunctionsImpl9<U>(format, config);

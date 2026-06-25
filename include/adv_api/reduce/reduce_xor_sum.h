@@ -24,7 +24,7 @@
 #include "kernel_tensor.h"
 #include "kernel_basic_intf.h"
 #include "kernel_pop_stack_buffer.h"
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 #include "../../../impl/adv_api/detail/reduce/reduce_xor_sum/reduce_xor_sum_3510_impl.h"
 #else
 #include "../../../impl/adv_api/detail/reduce/reduce_xor_sum/reduce_xor_sum_common_impl.h"
@@ -57,8 +57,7 @@ __aicore__ inline void ReduceXorSum(LocalTensor<T>& dstTensor, const LocalTensor
     if ASCEND_IS_AIC {
         return;
     }
-#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
-    __NPU_ARCH__ == 5102))
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510))
     ReduceXorSumCompute<T, isReuseSource>(dstTensor, src0Tensor, src1Tensor, sharedTmpBuffer, calCount);
 #endif
 }
@@ -83,8 +82,7 @@ __aicore__ inline void ReduceXorSum(LocalTensor<T>& dstTensor, const LocalTensor
     if ASCEND_IS_AIC {
         return;
     }
-#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
-    __NPU_ARCH__ == 5102))
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510))
     LocalTensor<uint8_t> tmp;
     const bool ret = PopStackBuffer<uint8_t, TPosition::LCM>(tmp);
     ASCENDC_ASSERT((ret), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });

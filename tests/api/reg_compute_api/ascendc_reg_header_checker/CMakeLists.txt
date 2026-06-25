@@ -41,7 +41,6 @@ endif()
 set(CONFIGS_LIST
     "dav-c310-vec|3510|-D__DAV_C310__|-D__DAV_C310_VEC__|-DASCENDC_DEBUG=1|-DASCENDC_DUMP=1"
     "dav-c310-cube|3510|-D__DAV_C310__|-D__DAV_C310_CUBE__|-DASCENDC_DEBUG=1|-DASCENDC_DUMP=1"
-    "dav-510r2|5102|-DASCENDC_DEBUG=1|-DASCENDC_DUMP=1"
 )
 
 # ==========================================

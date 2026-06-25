@@ -26,7 +26,6 @@
 #include "stub_def.h"
 #endif
 
-
 namespace AscendC {
 template <typename T>
 __aicore__ inline T AtomicAdd(__gm__ T *address, T value);

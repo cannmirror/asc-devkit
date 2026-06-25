@@ -52,7 +52,7 @@ template <auto funcPtr, typename... Args> __aicore__ inline void asc_vf_call(Arg
     }
 }
 
-#if __NPU_ARCH__ == 2201 || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if __NPU_ARCH__ == 2201 || (__NPU_ARCH__ == 3510)
 __BLOCK_LOCAL__ __inline__ uint32_t g_super_kernel_early_start_config;
 #endif
 
@@ -76,7 +76,7 @@ __BLOCK_LOCAL__ __inline__ AscendC::TPipe* g_tPipePtr;
 #endif
 #endif // end ASCENDC_DEBUG
 
-#if __NPU_ARCH__ == 3002 || __NPU_ARCH__ == 3102 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+#if __NPU_ARCH__ == 3002 || __NPU_ARCH__ == 3102 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
 __BLOCK_LOCAL__ __inline__ uint64_t g_maskCount;
 #if __NPU_ARCH__ == 3002 || __NPU_ARCH__ == 3102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
 __BLOCK_LOCAL__ __inline__ half g_deqValue;
@@ -140,7 +140,7 @@ public:
     template <pipe_t pipe>
     static __aicore__ inline void Lock(MutexID id)
     {
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
         ASCENDC_ASSERT((id <= MAX_MUTEXID),
             { KERNEL_LOG(KERNEL_ERROR, "For Mutex::Lock current id is %u, max MutexID is %u", id, MAX_MUTEXID); });
         GetBufInternal<pipe, 0>(id);
@@ -150,7 +150,7 @@ public:
     template <pipe_t pipe>
     static __aicore__ inline void Unlock(MutexID id)
     {
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
         ASCENDC_ASSERT((id <= MAX_MUTEXID),
             { KERNEL_LOG(KERNEL_ERROR, "For Mutex::Unlock current id is %u, max MutexID is %u", id, MAX_MUTEXID); });
         RlsBufInternal<pipe, 0>(id);
@@ -160,7 +160,7 @@ public:
 
 __aicore__ inline MutexID AllocMutexID()
 {
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
     MutexID id = static_cast<uint8_t>(sff0(Internal::g_bufId));
     Internal::g_bufId = sbitset1(Internal::g_bufId, id);
     ASCENDC_ASSERT((id <= MAX_MUTEXID), {
@@ -175,7 +175,7 @@ __aicore__ inline MutexID AllocMutexID()
 
 __aicore__ inline void ReleaseMutexID(MutexID id)
 {
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
     ASCENDC_ASSERT((id < MAX_MUTEXID), {
         KERNEL_LOG(KERNEL_ERROR, "current id is %d, which should be larger than or equals to 0, and smaller than %d",
             static_cast<int32_t>(id), MAX_MUTEXID);
@@ -219,7 +219,7 @@ __aicore__ inline void SetAippFunctions(const GlobalTensor<T>& src0, AippInputFo
 {
 #if defined(__NPU_ARCH__) &&                                                            \
     ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 3002) ||      \
-     (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+     (__NPU_ARCH__ == 3510))
     SetAippFunctionsImpl<PrimT<T>, U>(const_cast<__gm__ PrimT<T>*>(src0.GetPhyAddr()), format, config);
 #endif
 }
@@ -230,7 +230,7 @@ __aicore__ inline void SetAippFunctions(const GlobalTensor<T>& src0, const Globa
 {
 #if defined(__NPU_ARCH__) &&                                                            \
     ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 3002) ||      \
-     (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+     (__NPU_ARCH__ == 3510))
     SetAippFunctionsImpl<PrimT<T>, U>(const_cast<__gm__ PrimT<T>*>(src0.GetPhyAddr()),
                                       const_cast<__gm__ PrimT<T>*>(src1.GetPhyAddr()), format, config);
 #endif // (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 3002)

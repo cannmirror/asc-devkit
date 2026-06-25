@@ -166,7 +166,7 @@ __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, c
     AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, offset, scale, k, shapeInfo);
 }
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 template <typename InputDataType, typename OutputDataType, bool isTranspose>
 __ASC_USE_RESERVED_UBUF__(3510,
     "AscendAntiQuant is forbidden when compile option --cce-disable-asc-reserved-ubuf is enabled")

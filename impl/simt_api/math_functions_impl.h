@@ -26,7 +26,7 @@
 #include "simt_api/math_constants.h"
 #include "impl/simt_api/internal_functions_impl.h"
 
-#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) 
 
 #define ASCRT_FOUR_BYTE_LEN_U       32U
 

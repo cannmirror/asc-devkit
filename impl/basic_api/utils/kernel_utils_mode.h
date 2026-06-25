@@ -106,7 +106,7 @@ enum class RoundMode : uint8_t {
     CAST_ROUND, // away-zero
     CAST_TRUNC, // to-zero
     CAST_ODD,   // Von Neumann rounding
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003))|| defined(__ASC_NPU_HOST__)
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 3003))|| defined(__ASC_NPU_HOST__)
     CAST_HYBRID,  // hybrid round
     CAST_EVEN,
     CAST_ZERO,

@@ -24,7 +24,7 @@
 
 #include "kernel_tensor.h"
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 #include "../../../impl/adv_api/detail/math/where/where_3510_impl.h"
 #endif
 
@@ -45,7 +45,7 @@ __aicore__ inline void Where(const LocalTensor<T>& dst, const U& src0, const S& 
     if ASCEND_IS_AIC {
         return;
     }
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     WhereImpl<T, U, S, V>(dst, src0, src1, condition, count);
 #endif
 }

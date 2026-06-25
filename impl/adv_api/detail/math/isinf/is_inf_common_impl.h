@@ -21,7 +21,7 @@
 #endif
 #ifndef LIB_MATH_IS_INF_IMPL_H
 #define LIB_MATH_IS_INF_IMPL_H
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 #include "kernel_tensor.h"
 #include "kernel_basic_intf.h"
 #include "include/adv_api/math/is_inf_utils.h"

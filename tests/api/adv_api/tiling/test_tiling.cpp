@@ -35,7 +35,7 @@ protected:
 extern void platfrom_stub_set_chip_version(const char *num);
 extern void platfrom_stub_set_npuarch(const char *num);
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 TEST_F(TestTiling, testTransDataTilingUnalignedHw)
 {
     uint32_t maxSize;
@@ -5974,7 +5974,7 @@ TEST_P(RnnTilingbTestSuite, TestMatmulApiTilngRnnRealCase)
         rnnParams.baseK = rnnMatmul.GetBaseK(); // get output info after cut
         ret = rnnMatmul.GetSingleShape(rnnParams.singleM, rnnParams.singleN, rnnParams.singleK); // get single process info
         ret = rnnMatmul.GetCoreNum(dim, mDim,
-            nDim); // get used numBlocks after multi-cores cut, carried by user to kernelï¼Œ contrl Kernel
+            nDim); // get used numBlocks after multi-cores cut, carried by user to kernelï¼?contrl Kernel
         // input mm
         int32_t l1_left = 512 * 1024 - 64 - rnnParams.singleN * (input_align + hidden_align) * sizeof(float) * 2;
         ret = rnnMatmul1.SetBufferSpace(l1_left, rnnParams.maxUbSize, rnnParams.maxUbSize);
@@ -6032,7 +6032,7 @@ TEST_P(RnnTilingbTestSuite, TestMatmulApiTilngRnnRealCase)
             ret = rnnMatmul.GetSingleShape(rnnParams.singleM, rnnParams.singleN,
                 rnnParams.singleK); // get single process info
             ret = rnnMatmul.GetCoreNum(dim, mDim,
-                nDim); // get used numBlocks after multi-cores cut, carried by user to kernelï¼Œ contrl Kernel business
+                nDim); // get used numBlocks after multi-cores cut, carried by user to kernelï¼?contrl Kernel business
             // input mm
             ret = rnnMatmul1.SetBufferSpace(-1, rnnParams.maxUbSize, rnnParams.maxUbSize);
             ret = rnnMatmul1.SetOrgShape(rnnParams.batch, rnnParams.hiddenSize * 4, rnnParams.inputSize);
@@ -6109,7 +6109,7 @@ TEST_P(RnnTilingbTestSuite, TestMatmulApiTilngRnnRealCase)
             ret = rnnMatmul.GetSingleShape(rnnParams.singleM, rnnParams.singleN,
                 rnnParams.singleK); // get single core data
             ret = rnnMatmul.GetCoreNum(dim, mDim,
-                nDim); // get used numBlocks after multi-cores cut, carried by user to kernelï¼Œ contrl Kernel business
+                nDim); // get used numBlocks after multi-cores cut, carried by user to kernelï¼?contrl Kernel business
             // input mm
             ret = rnnMatmul1.SetBufferSpace(-1, rnnParams.maxUbSize, rnnParams.maxUbSize);
             ret = rnnMatmul1.SetOrgShape(rnnParams.batch, rnnParams.hiddenSize * 4, rnnParams.inputSize);

@@ -404,10 +404,8 @@ const static std::map<std::string, std::string> AICPUshortVersionToNpuArchMap = 
     {"Ascend310B", "3002"},
     {"Ascend950", "3510"},
     {"Ascend350", "3510"},
-    {"MC62", "5102"},
-    {"KirinX90", "3003"},
+{"KirinX90", "3003"},
     {"Kirin9030", "3113"},
-    {"MC32DM11A", "5102"},
 };
 
 bool SwitchIntoShortSocVersion(const char *socVersionStr, std::string &shortSocVersion)

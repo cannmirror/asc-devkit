@@ -56,7 +56,6 @@ foreach(product_type ${SIMT_PRODUCT_TYPE_LIST})
         ASCENDC_CPU_DEBUG=1
         ASCENDC_DEBUG=1
         $<$<STREQUAL:${product_type},ascend950pr_9599>:__NPU_ARCH__=3510;__DAV_C310__;__DAV_C310_VEC__>
-        $<$<STREQUAL:${product_type},mc62cm12aa>:__NPU_ARCH__=5102>
     )
 
     target_include_directories(ascendc_ut_simt_api_${product_type} PRIVATE

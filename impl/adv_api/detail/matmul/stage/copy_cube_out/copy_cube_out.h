@@ -22,7 +22,7 @@
 #ifndef IMPL_MATMUL_STAGE_COPY_CUBE_OUT_COPY_CUBE_OUT_H
 #define IMPL_MATMUL_STAGE_COPY_CUBE_OUT_COPY_CUBE_OUT_H
 
-#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3510) 
     #include "copy_cube_out_fixpipe.h"
     #include "copy_cube_out_atop.h"
 #else

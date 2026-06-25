@@ -194,9 +194,6 @@ foreach(product_type ${BASIC_UT_PRODUCT_TYPE_LIST})
         $<$<STREQUAL:${product_type},ascend950pr_9599_AIC>:__NPU_ARCH__=3510;__DAV_C310__;__DAV_C310_CUBE__>
         $<$<STREQUAL:${product_type},ascend950pr_9599_AIV_BASIC>:__NPU_ARCH__=3510;__DAV_C310__;__DAV_C310_VEC__>
         $<$<STREQUAL:${product_type},ascend950pr_9599_AIV_FRAMEWORK>:__NPU_ARCH__=3510;__DAV_C310__;__DAV_C310_VEC__>
-        $<$<STREQUAL:${product_type},mc62cm12aa_AIC>:__NPU_ARCH__=5102>
-        $<$<STREQUAL:${product_type},mc62cm12aa_BASIC>:__NPU_ARCH__=5102>
-        $<$<STREQUAL:${product_type},mc62cm12aa_FRAMEWORK>:__NPU_ARCH__=5102>
         __disable_kernel_type_autoinfer__=
     )
 

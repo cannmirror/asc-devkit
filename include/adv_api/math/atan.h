@@ -16,7 +16,7 @@
  * when x < 0, Atan(x) = atan(-x)
  * when x belongs to (0, tan(pi/8)), Atan(x) = atan(x)
  * when x belongs to (tan(pi/8), tan(pi/4)), Atan(x) = pi/8 + atan((x- tan(pi/8)) / (1+ x*tan(pi/8)))
- * when x belongs to (tan(pi/4), +ï¿½?, Atan(x) = pi/4 + atan((x-1)/(x+1))
+ * when x belongs to (tan(pi/4), +ï¿?, Atan(x) = pi/4 + atan((x-1)/(x+1))
  */
 
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
@@ -31,10 +31,10 @@
 #include "include/adv_api/math/atan_utils.h"
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
-    __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+     __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #include "../../../impl/adv_api/detail/math/atan/atan_common_impl.h"
-#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || \
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || \
     __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #include "../../../impl/adv_api/detail/math/atan/atan_3510_impl.h"
 #endif
@@ -42,7 +42,7 @@
 
 namespace AscendC {
 #pragma begin_pipe(V)
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102 || \
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || \
     __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
  /*!
  * \ingroup Atan

@@ -21,7 +21,7 @@
 constexpr int32_t MAX_SHLF_OFFSET = 31;
 constexpr int32_t WARP_SIZE = 32;
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 int32_t __all(int32_t predicate)
 {
     uint32_t warpId = AscendC::Simt::GetWarpId();
@@ -85,7 +85,7 @@ T AscShflCPU(T var, int32_t num)
         return AscShflCPU<TYPE>(var, num);                                      \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_SIMT_ASC_SHFL(__shfl, uint32_t);
 REGISTER_SIMT_ASC_SHFL(__shfl, int32_t);
 REGISTER_SIMT_ASC_SHFL(__shfl, uint64_t);
@@ -121,7 +121,7 @@ T AscShflUpCPU(T var, int32_t num)
         return AscShflUpCPU<TYPE>(var, num);                                    \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_SIMT_ASC_SHFL_UP(__shfl_up, uint32_t);
 REGISTER_SIMT_ASC_SHFL_UP(__shfl_up, int32_t);
 REGISTER_SIMT_ASC_SHFL_UP(__shfl_up, uint64_t);
@@ -159,7 +159,7 @@ T AscShflDownCPU(T var, int32_t num)
         return AscShflDownCPU<TYPE>(var, num);                                  \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_SIMT_ASC_SHFL_DOWN(__shfl_down, uint32_t);
 REGISTER_SIMT_ASC_SHFL_DOWN(__shfl_down, int32_t);
 REGISTER_SIMT_ASC_SHFL_DOWN(__shfl_down, uint64_t);
@@ -197,7 +197,7 @@ T AscShflXorCPU(T var, int32_t num)
         return AscShflXorCPU<TYPE>(var, num);                                   \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_SIMT_ASC_SHFL_XOR(__shfl_xor, uint32_t);
 REGISTER_SIMT_ASC_SHFL_XOR(__shfl_xor, int32_t);
 REGISTER_SIMT_ASC_SHFL_XOR(__shfl_xor, uint64_t);
@@ -224,7 +224,7 @@ T ReduceAddCPU(T val)
         return ReduceAddCPU<TYPE>(val);                                         \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_SIMT_REDUCE_ADD(__reduce_add, uint32_t);
 REGISTER_SIMT_REDUCE_ADD(__reduce_add, int32_t);
 REGISTER_SIMT_REDUCE_ADD(__reduce_add, float);
@@ -246,7 +246,7 @@ T ReduceMaxCPU(T val)
         return ReduceMaxCPU<TYPE>(val);                                         \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_SIMT_REDUCE_MAX(__reduce_max, uint32_t);
 REGISTER_SIMT_REDUCE_MAX(__reduce_max, int32_t);
 REGISTER_SIMT_REDUCE_MAX(__reduce_max, float);
@@ -268,7 +268,7 @@ T ReduceMinCPU(T val)
         return ReduceMinCPU<TYPE>(val);                                         \
     }
 
-#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
+#if defined (__NPU_ARCH__) && ((__NPU_ARCH__ == 3510))
 REGISTER_SIMT_REDUCE_MIN(__reduce_min, uint32_t);
 REGISTER_SIMT_REDUCE_MIN(__reduce_min, int32_t);
 REGISTER_SIMT_REDUCE_MIN(__reduce_min, float);

@@ -26,7 +26,7 @@
 #include "kernel_tiling/kernel_tiling.h"
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #include "../../../impl/adv_api/detail/normalization/layernorm/layernorm_common_impl.h"
-#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 #include "../../../impl/adv_api/detail/normalization/layernorm/layernorm_3510_impl.h"
 #include "../../../impl/adv_api/detail/normalization/layernorm/regbase/3510/layernorm_variance_impl.h"
 #endif
@@ -57,7 +57,7 @@ __aicore__ inline void LayerNorm(const LocalTensor<T>& output, const LocalTensor
     const LocalTensor<T>& outputVariance, const LocalTensor<T>& inputX, const LocalTensor<T>& gamma,
     const LocalTensor<T>& beta, const LocalTensor<uint8_t>& sharedTmpBuffer, const T epsilon, LayerNormTiling& tiling)
 {
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510)
     LayerNormImpl<T, isReuseSource>(output, outputMean, outputVariance, inputX, gamma, beta, sharedTmpBuffer, epsilon,
         tiling);
 #endif
@@ -84,7 +84,7 @@ __aicore__ inline void LayerNorm(const LocalTensor<T>& output, const LocalTensor
     const LocalTensor<T>& outputVariance, const LocalTensor<T>& inputX, const LocalTensor<T>& gamma,
     const LocalTensor<T>& beta, const T epsilon, LayerNormTiling& tiling)
 {
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510)
     LayerNormImpl<T, isReuseSource>(output, outputMean, outputVariance, inputX, gamma, beta, epsilon, tiling);
 #endif
 }
@@ -114,7 +114,7 @@ __aicore__ inline void LayerNorm(const LocalTensor<T>& output,  const LocalTenso
     if ASCEND_IS_AIC {
         return;
     }
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510)
     LayerNormImpl<U, T, isReuseSource, config>(output, outputMean, outputRstd, inputX, gamma, beta, epsilon, para,
         tiling);
 #endif
@@ -147,7 +147,7 @@ __aicore__ inline void LayerNorm(const LocalTensor<T>& output,  const LocalTenso
     if ASCEND_IS_AIC {
         return;
     }
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510)
     LayerNormImpl<U, T, isReuseSource, config>(output, outputMean, outputRstd, inputX, gamma, beta, epsilon,
         sharedTmpBuffer, para, tiling);
 #endif
@@ -173,7 +173,7 @@ __aicore__ inline void WelfordUpdate(const LocalTensor<U>& outputMean, const Loc
     if ASCEND_IS_AIC {
         return;
     }
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510)
     WelfordUpdateImpl<T, U, isReuseSource, config>(outputMean, outputVariance, inputMean, inputVariance, inputX, para);
 #endif
 }
@@ -199,7 +199,7 @@ __aicore__ inline void WelfordUpdate(const LocalTensor<U>& outputMean, const Loc
     if ASCEND_IS_AIC {
         return;
     }
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510)
     WelfordUpdateImpl<T, U, isReuseSource, config>(outputMean, outputVariance, inputMean, inputVariance, inputX,
         sharedTmpBuffer, para);
 #endif

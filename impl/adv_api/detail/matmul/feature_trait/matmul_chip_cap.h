@@ -80,8 +80,6 @@ private:
         return CHIP_TYPE_L311;
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
         return CHIP_TYPE_310;
-#elif __NPU_ARCH__ == 5102
-        return CHIP_TYPE_510R2;
 #else
         static_assert("Find invalid chip type!");
         return CHIP_TYPE_100;

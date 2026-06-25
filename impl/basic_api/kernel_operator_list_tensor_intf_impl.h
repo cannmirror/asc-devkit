@@ -33,11 +33,8 @@
 #include "dav_l300/kernel_operator_list_tensor_impl.h"
 #elif __NPU_ARCH__ == 3113
 #include "dav_l311/kernel_operator_list_tensor_impl.h"
-#elif __NPU_ARCH__ == 5102
-#include "dav_m510/kernel_operator_list_tensor_impl.h"
 #endif
-
-#endif // ASCENDC_MODULE_OPERATOR_LIST_TENSOR_INTERFACE_IMPL_H
+#endif  // ASCENDC_MODULE_OPERATOR_LIST_TENSOR_INTERFACE_IMPL_H
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_LIST_TENSOR_INTF_IMPL_H__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_LIST_TENSOR_INTF_IMPL_H__

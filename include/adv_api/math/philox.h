@@ -23,7 +23,7 @@
 #include "kernel_tensor.h"
 #include "include/adv_api/math/philox_utils.h"
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 #include "../../../impl/adv_api/detail/math/philox/philox_3510_impl.h"
 #endif
 
@@ -34,7 +34,7 @@ template <uint16_t Rounds = 7, typename T>
 __aicore__ inline void PhiloxRandom(
     const LocalTensor<T>& dstLocal, const PhiloxKey& philoxKey, const PhiloxCounter& philoxCounter, uint16_t count)
 {
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     PhiloxRandomImpl<Rounds>(dstLocal, philoxKey, philoxCounter, count);
 #endif
 }
@@ -43,7 +43,7 @@ template <uint16_t Rounds = 7, typename T>
 __aicore__ inline void PhiloxRandom(const LocalTensor<T>& dstLocal, const PhiloxKey& philoxKey,
     const PhiloxCounter& philoxCounter, const PhiloxRandomParams& params)
 {
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     PhiloxRandomImpl<Rounds>(dstLocal, philoxKey, philoxCounter, params);
 #endif
 }

@@ -84,7 +84,6 @@ __aicore__ inline void SetSaturationFlag(bool enableSat);
 template <SaturationMode mode>
 __aicore__ inline bool GetSaturationFlag();
 }  // namespace AscendC
-
 #if defined(__NPU_ARCH__)
 #include "../../impl/basic_api/kernel_operator_common_intf_impl.h"
 #endif
