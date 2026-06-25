@@ -96,15 +96,28 @@
 
 </cann-filter>
 
-<cann-filter npu-type = "A3,910b">
+<!-- npu="A3,910b,310p" id1 -->
+- 针对如下型号，当一对相邻元素的掩码均为0，对应的目的元素将跳过写入，保持不变。
+  <!-- npu="A3" id3 -->
+  - Atlas A3 训练系列产品/Atlas A3 推理系列产品
+  <!-- end id3 -->
+  <!-- npu="910b" id4 -->
+  - Atlas A2 训练系列产品/Atlas A2 推理系列产品
+  <!-- end id4 -->
+  <!-- npu="310p" id5 -->
+  - Atlas 推理系列产品AI Core
+  <!-- end id5 -->
+<!-- end id1 -->
 
-  - 针对如下型号，当一对相邻元素的掩码均为0，对应的目的元素将跳过写入，保持不变。
-    - <cann-filter npu-type = "A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品</cann-filter>
-    - <cann-filter npu-type = "910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品</cann-filter>
-
-</cann-filter>
-
-- <cann-filter npu-type = "310b">对于Atlas 200I/500 A2 推理产品，当一对相邻元素的掩码均为0，对应的目的操作数中的值会置为0。</cann-filter>
+  <!-- npu="950,310b" id2 -->
+- 针对如下型号，当一对相邻元素的掩码均为0，对应的目的操作数中的值会置为0。
+  <!-- npu="950" id6 -->
+  - Ascend 950PR/Ascend 950DT
+  <!-- end id6 -->
+  <!-- npu="310b" id7 -->
+  - Atlas 200I/500 A2 推理产品
+  <!-- end id7 -->
+  <!-- end id2 -->
 
 ## 调用示例
 
