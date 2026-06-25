@@ -47,7 +47,7 @@ GET_TILING_DATA_WITH_STRUCT(ReduceScatterCustomTilingData, tilingData, tilingGM)
 Hccl hccl;
 GM_ADDR contextGM = AscendC::GetHcclContext<0>(); // AscendC自定义算子kernel中，通过此方式获取HCCL context
 hccl.InitV2(contextGM, &tilingData);
-auto ret = hccl.SetCcTiling(offsetof(ReduceScatterCustomTilingData, mc2CcTiling));
+auto ret = hccl.SetCcTilingV2(offsetof(ReduceScatterCustomTilingData, mc2CcTiling));
 if (ret != HCCL_SUCCESS) {
     return;
 }
