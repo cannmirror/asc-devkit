@@ -37,7 +37,18 @@ AllowAllParametersOfDeclarationOnNextLine: true
 AlwaysBreakBeforeMultilineStrings: false
 AlwaysBreakTemplateDeclarations: true
 AttributeMacros:
+    - __global__
     - __aicore__
+    - __cube__
+    - __vector__
+    - __mix__
+    - __host__
+    - __aicpu__
+    - __simd_vf__
+    - __simt_vf__
+    - __gm__
+    - __ubuf__
+    - __kfc_workspace__
 
 BinPackArguments: true
 BreakBeforeTernaryOperators: false

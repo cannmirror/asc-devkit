@@ -129,40 +129,66 @@ find_lychee() {
     fi
 
     mkdir -p "$CARGO_BIN"
-    export CARGO_HOME="$CARGO_HOME_DIR"
-    export PATH="$CARGO_BIN:$PATH"
 
-    if download_lychee_archive; then
+    local lock_dir lock_wait
+    lock_dir="$CACHE_ROOT/lychee-$LYCHEE_VERSION.install.lock"
+    lock_wait=0
+    until mkdir "$lock_dir" 2>/dev/null; do
+        if [ -x "$LYCHEE_BIN" ]; then
+            printf '%s\n' "$LYCHEE_BIN"
+            return 0
+        fi
+        if [ "$lock_wait" -ge 300 ]; then
+            echo "[Markdown check] Timed out waiting for lychee install lock: $lock_dir" >&2
+            exit 1
+        fi
+        sleep 1
+        lock_wait=$((lock_wait + 1))
+    done
+
+    if (
+        trap 'rmdir "$lock_dir"' EXIT
+        export CARGO_HOME="$CARGO_HOME_DIR"
+        export PATH="$CARGO_BIN:$PATH"
+
+        if [ -x "$LYCHEE_BIN" ]; then
+            exit 0
+        fi
+
+        if download_lychee_archive; then
+            exit 0
+        fi
+
+        if command -v cargo-binstall >/dev/null 2>&1; then
+            BINSTALL=(cargo-binstall)
+        elif command -v cargo >/dev/null 2>&1 && cargo binstall -V >/dev/null 2>&1; then
+            BINSTALL=(cargo binstall)
+        else
+            echo "[Markdown check] Installing cargo-binstall..." >&2
+            CARGO_BINSTALL_INSTALLER_URL="${MARKDOWN_LINK_CHECK_CARGO_BINSTALL_INSTALLER_URL:-https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh}"
+            curl -L --proto '=https' --tlsv1.2 -sSf \
+                "$CARGO_BINSTALL_INSTALLER_URL" \
+                | CARGO_HOME="$CARGO_HOME_DIR" BASH_XTRACEFD=7 bash 7>/dev/null >&2
+            BINSTALL=("$CARGO_BIN/cargo-binstall")
+        fi
+
+        echo "[Markdown check] Installing lychee@$LYCHEE_VERSION..." >&2
+        BINSTALL_ARGS=(-y --install-path "$CARGO_BIN")
+        if [ -n "${MARKDOWN_LINK_CHECK_LYCHEE_PKG_URL:-}" ]; then
+            BINSTALL_ARGS+=(--pkg-url "$MARKDOWN_LINK_CHECK_LYCHEE_PKG_URL")
+        fi
+        BINSTALL_ARGS+=("lychee@$LYCHEE_VERSION")
+        "${BINSTALL[@]}" "${BINSTALL_ARGS[@]}" >&2
+        if [ ! -x "$CARGO_BIN/lychee" ]; then
+            echo "[Markdown check] lychee binary was not installed." >&2
+            exit 1
+        fi
+        mv -f "$CARGO_BIN/lychee" "$LYCHEE_BIN"
+    ); then
         printf '%s\n' "$LYCHEE_BIN"
         return 0
     fi
-
-    if command -v cargo-binstall >/dev/null 2>&1; then
-        BINSTALL=(cargo-binstall)
-    elif command -v cargo >/dev/null 2>&1 && cargo binstall -V >/dev/null 2>&1; then
-        BINSTALL=(cargo binstall)
-    else
-        echo "[Markdown check] Installing cargo-binstall..." >&2
-        CARGO_BINSTALL_INSTALLER_URL="${MARKDOWN_LINK_CHECK_CARGO_BINSTALL_INSTALLER_URL:-https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh}"
-        curl -L --proto '=https' --tlsv1.2 -sSf \
-            "$CARGO_BINSTALL_INSTALLER_URL" \
-            | CARGO_HOME="$CARGO_HOME_DIR" BASH_XTRACEFD=7 bash 7>/dev/null >&2
-        BINSTALL=("$CARGO_BIN/cargo-binstall")
-    fi
-
-    echo "[Markdown check] Installing lychee@$LYCHEE_VERSION..." >&2
-    BINSTALL_ARGS=(-y --install-path "$CARGO_BIN")
-    if [ -n "${MARKDOWN_LINK_CHECK_LYCHEE_PKG_URL:-}" ]; then
-        BINSTALL_ARGS+=(--pkg-url "$MARKDOWN_LINK_CHECK_LYCHEE_PKG_URL")
-    fi
-    BINSTALL_ARGS+=("lychee@$LYCHEE_VERSION")
-    "${BINSTALL[@]}" "${BINSTALL_ARGS[@]}" >&2
-    if [ ! -x "$CARGO_BIN/lychee" ]; then
-        echo "[Markdown check] lychee binary was not installed." >&2
-        exit 1
-    fi
-    mv -f "$CARGO_BIN/lychee" "$LYCHEE_BIN"
-    printf '%s\n' "$LYCHEE_BIN"
+    exit 1
 }
 
 SCAN_SET_FILE=$(mktemp)
@@ -288,10 +314,9 @@ def existing_markdown_files():
 def staged_markdown_changes():
     try:
         result = subprocess.run(
-            ["git", "diff", "--cached", "--name-status", "--diff-filter=ADMR"],
+            ["git", "diff", "--cached", "--name-status", "-z", "--diff-filter=ADMR"],
             cwd=repo_root,
             check=False,
-            text=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
         )
@@ -300,12 +325,27 @@ def staged_markdown_changes():
 
     changed = []
     needs_full = False
-    for line in result.stdout.splitlines():
-        parts = line.split("\t")
-        if not parts:
+    fields = result.stdout.split(b"\0")
+    index = 0
+    while index < len(fields):
+        if not fields[index]:
+            index += 1
             continue
-        status = parts[0]
-        paths = parts[1:]
+        status = fields[index].decode("utf-8", errors="ignore")
+        index += 1
+
+        if status.startswith(("R", "C")):
+            raw_paths = fields[index:index + 2]
+            index += 2
+        else:
+            raw_paths = fields[index:index + 1]
+            index += 1
+
+        paths = [
+            raw_path.decode("utf-8", errors="ignore")
+            for raw_path in raw_paths
+            if raw_path
+        ]
         markdown_paths = [p for p in paths if is_markdown_path(p)]
         if not markdown_paths:
             continue

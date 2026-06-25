@@ -27,8 +27,8 @@ public:
 };
 
 template <typename T>
-__simt_vf__ LAUNCH_BOUND(1024) inline __aicore__
-    void KernelSignOverrideCompute(__gm__ T* dst, __gm__ T* src0, __gm__ T* src1, const int mode)
+__simt_vf__ LAUNCH_BOUND(1024) inline
+    __aicore__ void KernelSignOverrideCompute(__gm__ T* dst, __gm__ T* src0, __gm__ T* src1, const int mode)
 {
     for (int idx = GetThreadIdx<0>() + block_idx * GetThreadNum<0>(); idx < 128; idx += block_num * GetThreadNum<0>()) {
         if (mode == 0) {

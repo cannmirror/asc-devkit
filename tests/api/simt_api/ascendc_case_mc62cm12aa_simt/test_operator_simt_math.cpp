@@ -25,8 +25,8 @@ public:
 };
 
 template <typename T>
-__simt_vf__ LAUNCH_BOUND(1024) inline __aicore__
-    void KernelSimtUintDivComputeCompute(__gm__ T* dst, T n, T magic, T shift)
+__simt_vf__ LAUNCH_BOUND(1024) inline
+    __aicore__ void KernelSimtUintDivComputeCompute(__gm__ T* dst, T n, T magic, T shift)
 {
     for (int idx = GetThreadIdx<0>() + block_idx * GetThreadNum<0>(); idx < THREAD_DIM;
          idx += block_num * GetThreadNum<0>()) {

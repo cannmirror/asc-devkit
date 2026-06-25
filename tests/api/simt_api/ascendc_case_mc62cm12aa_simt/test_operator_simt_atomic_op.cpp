@@ -29,8 +29,8 @@ public:
 };
 
 template <typename T>
-__simt_vf__ LAUNCH_BOUND(1024) inline __aicore__
-    void KernelAtomicCompute(__gm__ T* dst, T value, T compare, const int num, const int mode)
+__simt_vf__ LAUNCH_BOUND(1024) inline
+    __aicore__ void KernelAtomicCompute(__gm__ T* dst, T value, T compare, const int num, const int mode)
 {
     for (int idx = AscendC::Simt::GetThreadIdx<0>() + block_idx * AscendC::Simt::GetThreadNum<0>(); idx < num;
          idx += block_num * AscendC::Simt::GetThreadNum<0>()) {

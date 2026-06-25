@@ -26,8 +26,8 @@ public:
 };
 
 template <typename T>
-__simt_vf__ LAUNCH_BOUND(1024) inline __aicore__
-    void KernelFloatComputeCompute(__gm__ T* dst, __gm__ T* src0, __gm__ T* src1, __gm__ T* src2, const int mode)
+__simt_vf__ LAUNCH_BOUND(1024) inline __aicore__ void KernelFloatComputeCompute(
+    __gm__ T* dst, __gm__ T* src0, __gm__ T* src1, __gm__ T* src2, const int mode)
 {
     int quo;
     int32_t s32n;
