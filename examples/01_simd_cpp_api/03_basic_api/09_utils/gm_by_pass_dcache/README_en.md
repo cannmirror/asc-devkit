@@ -66,12 +66,11 @@ Run the following steps in the root directory of this example to build and run t
   python3 ../scripts/verify_result.py output/output.bin output/golden.bin  # Verify whether the output result is correct
   ```
 
-  To use CPU debug or NPU simulation mode, add the `-DCMAKE_ASC_RUN_MODE=cpu` or `-DCMAKE_ASC_RUN_MODE=sim` parameter. Note that NPU simulation mode is not supported when the architecture is `dav-2201`. 
+  To use CPU debug mode, add the `-DCMAKE_ASC_RUN_MODE=cpu` parameter.
 
   Examples:
   ```bash
-  cmake -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j;  # CPU debug mode
-  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;  # NPU simulation mode
+  cmake -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;  # CPU debug mode
   ```
 
   > **Notice:** Clear the cmake cache before switching build modes. Run `rm CMakeCache.txt` in the build directory and then re-run cmake.
@@ -80,7 +79,7 @@ Run the following steps in the root directory of this example to build and run t
 
   | Option | Values | Description |
   |--------|--------|-------------|
-  | `CMAKE_ASC_RUN_MODE` | `npu` (default), `cpu`, `sim` | Run mode: NPU execution, CPU debug, NPU simulation |
+  | `CMAKE_ASC_RUN_MODE` | `npu` (default), `cpu` | Run mode: NPU execution, CPU debug |
   | `CMAKE_ASC_ARCHITECTURES` | `dav-2201` (default), `dav-3510` | NPU architecture: dav-2201 corresponds to Atlas A2 Training Series Products/Atlas A2 Inference Series Products/Atlas A3 Training Series Products/Atlas A3 Inference Series Products, dav-3510 corresponds to Ascend 950PR/Ascend 950DT |
   
 - Execution result
