@@ -106,22 +106,23 @@ __aicore__ inline constexpr LoadL0bInstrType GetLoadL0bInstrType()
 template <typename INPUT_TYPE>
 __aicore__ inline constexpr auto GetAuxDataType()
 {
+#if defined(__NPU_ARCH__)
     // Mx auxData is fp8, sparse auxData is uint8_t
     if constexpr (HasSparseIndex<INPUT_TYPE>()) {
         uint8_t auxData = 0;
         return auxData;
     } else if constexpr (HasScalePosition<INPUT_TYPE>::value) {
-#ifdef IS_AICORE
         uint8_t mxData = get_imm(0);
-#else
-        uint8_t mxData = 0;
-#endif
         fp8_e8m0_t mxType = *(reinterpret_cast<fp8_e8m0_t*>(&mxData));
         return mxType;
     } else {
         uint8_t defaultData = 0;
         return defaultData;
     }
+#else
+    uint8_t defaultData = 0;
+    return defaultData;
+#endif
 }
 }  // namespace Detail
 }  // namespace Impl

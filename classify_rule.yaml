@@ -118,6 +118,7 @@ asc-devkit:
       - impl/basic_api/dav_m300/kernel_operator_vec_gather_impl.h
       - impl/simt_api/cpp/kernel_simt_print_intf_impl.h
       - impl/adv_api/detail/matmul/stage/copy_cube_in/copy_tile_to_cube/copy_lut_to_ub.h
+      - impl/adv_api/detail/matmul/stage/split/load_to_l0_utils.h
       - impl/basic_api/dav_3510/kernel_tpipe_impl_c310.h
       - impl/adv_api/detail/matmul/stage/copy_cube_in/copy_tile_to_cube/copy_tile_to_cube.h
       - impl/adv_api/detail/api_check/kernel_check/math/logical_ands/logical_ands_check.h
