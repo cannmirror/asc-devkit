@@ -30,7 +30,12 @@ size_t __cvta_generic_to_global(const void* ptr)
 
 ## 返回值说明
 
-输入指针指向Global Memory内存空间的地址值。
+输入指针指向Global Memory内存空间的地址值。  
+该接口不校验输入地址是否为可安全访问的有效地址。只有当`ptr`实际指向Global Memory内存空间时，返回值才是有效的Global Memory地址值。特殊场景说明如下：  
+| 输入场景 | 返回值 |
+| --- | --- |
+| `ptr`为`nullptr` | 返回`0`。 |
+| `ptr`为Unified Buffer或栈空间指针 | 在编译阶段报错。|
 
 ## 约束说明
 

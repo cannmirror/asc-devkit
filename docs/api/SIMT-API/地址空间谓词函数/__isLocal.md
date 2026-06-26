@@ -30,7 +30,19 @@ unsigned int __isLocal(const void* ptr)
 
 ## 返回值说明
 
-如果输入的指针指向栈空间的地址，则返回1，否则返回0。
+如果输入的指针指向栈空间的地址，则返回1，否则返回0。  
+该接口根据输入指针的地址空间信息进行分类判断，不校验该指针是否为可安全访问的有效地址。`__isLocal`返回1仅表示该指针被分类为栈空间地址，不代表该地址一定可以安全访问。特殊场景说明如下：  
+| 输入场景 | 返回值 |
+| --- | --- |
+| `ptr`为有效Global Memory指针 | 0 |
+| `ptr`为有效Unified Buffer指针 | 0 |
+| `ptr`为`nullptr` | 0 |
+| `ptr`为伪造的低位地址，如`(void*)0x1` | 0 |
+| `ptr`为伪造的全1地址 | 0 |
+| `ptr`由`__cvta_local_to_generic(0)`或`__cvta_local_to_generic(1)`返回 | 1 |
+| `ptr`由`__cvta_local_to_generic(全1)`返回 | 0 |
+
+因此，不能仅依据`__isLocal(ptr) == 1`判断`ptr`是否为可安全访问的栈空间地址。
 
 ## 约束说明
 

@@ -2010,6 +2010,7 @@
         -   [binary_partition](SIMT-API/协作组/binary_partition.md)
 
     -   [同步与内存栅栏](SIMT-API/同步与内存栅栏/同步与内存栅栏.md)
+        -   [同步与内存栅栏简介](SIMT-API/同步与内存栅栏/同步与内存栅栏简介.md)
         -   [同步接口](SIMT-API/同步与内存栅栏/同步接口/同步接口.md)
             -   [asc\_syncthreads](SIMT-API/同步与内存栅栏/同步接口/asc_syncthreads.md)
 
@@ -2018,6 +2019,7 @@
             -   [asc\_threadfence\_block](SIMT-API/同步与内存栅栏/内存栅栏接口/asc_threadfence_block.md)
 
     -   [原子操作](SIMT-API/原子操作/原子操作-149.md)
+        -   [原子操作简介](SIMT-API/原子操作/原子操作简介.md)
         -   [asc\_atomic\_add](SIMT-API/原子操作/asc_atomic_add.md)
         -   [asc\_atomic\_sub](SIMT-API/原子操作/asc_atomic_sub.md)
         -   [asc\_atomic\_exch](SIMT-API/原子操作/asc_atomic_exch.md)
@@ -2031,6 +2033,7 @@
         -   [asc\_atomic\_xor](SIMT-API/原子操作/asc_atomic_xor.md)
 
     -   [Warp函数](SIMT-API/Warp函数/Warp函数.md)
+        -   [Warp函数简介](SIMT-API/Warp函数/Warp函数简介.md)
         -   [Warp Vote类函数](SIMT-API/Warp函数/Warp-Vote类函数/Warp-Vote类函数.md)
             -   [asc\_all](SIMT-API/Warp函数/Warp-Vote类函数/asc_all.md)
             -   [asc\_any](SIMT-API/Warp函数/Warp-Vote类函数/asc_any.md)
@@ -2700,6 +2703,7 @@
         -   [\_\_cvta\_local\_to\_generic](SIMT-API/地址空间转换函数/__cvta_local_to_generic.md)
 
     -   [访存函数](SIMT-API/访存函数/访存函数.md)
+        -   [访存函数简介](SIMT-API/访存函数/访存函数简介.md)
         -   [asc\_ldcg](SIMT-API/访存函数/asc_ldcg.md)
         -   [asc\_ldca](SIMT-API/访存函数/asc_ldca.md)
         -   [asc\_stcg](SIMT-API/访存函数/asc_stcg.md)
