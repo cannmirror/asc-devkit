@@ -121,10 +121,6 @@ struct BatchWriteItem {
 
     extern "C" __global__ __aicore__ void BatchWrite_custom(GM_ADDR inputGM, GM_ADDR workspace, GM_ADDR tilingGM)
     {
-        GM_ADDR userWS = GetUserWorkspace(workspace);
-        if (userWS == nullptr) {
-            return;
-        }
         REGISTER_TILING_DEFAULT(BatchWriteCustomTilingData); // BatchWriteCustomTilingData为对应算子头文件定义的结构体
         GET_TILING_DATA_WITH_STRUCT(BatchWriteCustomTilingData, tilingData, tilingGM);
         GM_ADDR contextGM = AscendC::GetHcclContext<0>();
@@ -206,12 +202,8 @@ struct BatchWriteItem {
     }; // 按接口的约定定义格式
 
     extern "C" __global__ __aicore__ void BatchWrite_custom(
-        GM_ADDR inputGM, GM_ADDR outputGM1, GM_ADDR outputGM2, GM_ADDR tilingGM)
+        GM_ADDR inputGM, GM_ADDR outputGM1, GM_ADDR outputGM2, GM_ADDR workspace, GM_ADDR tilingGM)
     {
-        GM_ADDR userWS = GetUserWorkspace(workspace);
-        if (userWS == nullptr) {
-            return;
-        }
         REGISTER_TILING_DEFAULT(BatchWriteCustomTilingData); // BatchWriteCustomTilingData为对应算子头文件定义的结构体
         GET_TILING_DATA_WITH_STRUCT(BatchWriteCustomTilingData, tilingData, tilingGM);
         GM_ADDR contextGM = AscendC::GetHcclContext<0>();
