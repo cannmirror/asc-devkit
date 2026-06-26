@@ -536,7 +536,7 @@ __simd_callee__ inline void asc_int162half_rna(vector_half& dst, vector_int16_t 
 
 __simd_callee__ inline void asc_int162half_ru(vector_half& dst, vector_int16_t src, vector_bool mask);
 
-__simd_callee__ inline void asc_int162half_rc(vector_half& dst, vector_int16_t src, vector_bool mask);
+__simd_callee__ inline void asc_int162half_rz(vector_half& dst, vector_int16_t src, vector_bool mask);
 
 //================asc_int4x22half==============
 __simd_callee__ inline void asc_int4x22half(vector_half& dst, vector_int4x2_t src, vector_bool mask);
