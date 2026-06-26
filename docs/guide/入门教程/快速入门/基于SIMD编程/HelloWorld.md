@@ -22,24 +22,28 @@
     
 - **Host端代码实现**：
  
-    Host端通过<<<>>>语法糖调用Device端代码。
+    Host端通过<<<>>>语法糖调用Device端代码片段。
     ```cpp
     int main(int argc, char const* argv[])
     {
-        aclrtSetDevice(0); 
+        ...
+        constexpr uint32_t numBlocks = 8;
+        ...
+        
+        aclrtStream stream = nullptr;
+        aclrtCreateStream(&stream);
         // Launch kernel <<<numBlocks, dynUBufSize, stream>>>
         // numBlocks : Number of blocks. Default to 8 in this example.
         // dynUBufSize : Dynamic unified buffer size. Default to 0 in this example.
-        // nullptr : Runtime stream. Uses default stream in this example.
-        hello_world<<<8, 0, nullptr>>>();
-        aclrtSynchronizeDevice(); 
-        return 0;
+        // stream : Runtime stream. Uses stream created by aclrtCreateStream API in this example.
+        hello_world<<<numBlocks, 0, stream>>>();
+        ...
     }
     ```
 
 - **算子编译与运行**：
  
-    ```
+    ```bash
     bisheng hello_world.asc --npu-arch=dav-2201 -o demo
     ./demo
     ```
@@ -50,6 +54,6 @@
     >    - Ascend 950PR/Ascend 950DT
     >    - Atlas A3 训练系列产品/Atlas A3 推理系列产品
     >    - Atlas A2 训练系列产品/Atlas A2 推理系列产品
-    > - 编译选项 `--npu-arch` 用于指定NPU架构版本，`dav-` 后为架构版本号，请替换为您实际使用的版本。各 AI 处理器型号对应的架构版本号请通过[AI 处理器型号和 \_\_NPU\_ARCH\_\_ 的对应关系](../../../编程指南/语言扩展层/SIMD-BuiltIn关键字.md#table65291052154114) 查询。
+    > - 编译选项`--npu-arch`用于指定NPU架构版本，`dav-`后为架构版本号，请替换为您实际使用的版本。各AI处理器型号对应的架构版本号请通过[AI处理器型号和 \_\_NPU\_ARCH\_\_ 的对应关系](../../../编程指南/语言扩展层/SIMD-BuiltIn关键字.md#table65291052154114)查询。
 
-如需进一步了解Ascend C的SIMD与SIMT编程模型，请参阅[Ascend C 编程模型概述](../../../编程指南/编程模型/编程模型概述.md)。
+如需进一步了解Ascend C的SIMD与SIMT编程模型，请参阅[Ascend C编程模型概述](../../../编程指南/编程模型/编程模型概述.md)。
