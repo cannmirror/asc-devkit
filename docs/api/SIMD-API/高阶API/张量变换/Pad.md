@@ -106,7 +106,7 @@ struct PadParams {
 // srcLocal：输入Tensor
 // padParams：控制填充的参数
 AscendC::PadParams padParams{0, 1, 321}; // 左边填充0列，右边填充1列，填充值为321
-AscendC::Pad(dstLocal, srcOutLocal, padParams, tilingData.padTilingData);
+AscendC::Pad(dstLocal, srcLocal, padParams, tilingData.padTilingData);
 ```
 
 ```
