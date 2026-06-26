@@ -22,8 +22,8 @@ __aicore__ inline void asc_sync_wait(pipe_t pipe, pipe_t tpipe, event_t id)
 
 | 参数名 | 输入/输出 | 描述 |
 | :--- | :--- | :--- |
-| pipe | 输入 | 等待的源流水线类型。需传入编译期常量。 |
-| tpipe | 输入 | 当前流水线类型。需传入编译期常量。 |
+| pipe | 输入 | 源流水线类型。需传入编译期常量。 |
+| tpipe | 输入 | 目标流水线类型。需传入编译期常量。 |
 | id | 输入 | 同步ID。 |
 
 ## 返回值说明
