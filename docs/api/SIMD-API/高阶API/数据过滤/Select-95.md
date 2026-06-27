@@ -84,11 +84,11 @@
 | sharedTmpBuffer | 输入 | 该API用于计算的临时空间，所需空间大小根据[GetSelectMaxMinTmpSize](GetSelectMaxMinTmpSize.md)获取。 |
 | info | 输入 | 描述SrcTensor和maskTensor的shape信息。SelectWithBytesMaskShapeInfo类型，定义如下方代码所示，其中参数的含义为：<br>firstAxis：srcLocal/maskTensor的前轴元素个数。<br>srcLastAxis：srcLocal的尾轴元素个数。<br>maskLastAxis：maskTensor的尾轴元素个数。<br>注意：<br>需要满足srcTensor和maskTensor的前轴元素个数相同，均为firstAxis。<br>需要满足firstAxis * srcLastAxis = srcTensor.GetSize() ；firstAxis * maskLastAxis = maskTensor.GetSize()。<br>maskTensor尾轴的元素个数大于等于srcTensor尾轴的元素个数，计算时会丢弃maskTensor多余部分，不参与计算。 |
 
-```
+```cpp
 struct SelectWithBytesMaskShapeInfo {
-    __aicore__ SelectShapeInfo(){};
-    uint32_t firstAxis = 0;    
-    uint32_t srcLastAxis = 0; 
+    __aicore__ SelectWithBytesMaskShapeInfo() {};
+    uint32_t firstAxis = 0;
+    uint32_t srcLastAxis = 0;
     uint32_t maskLastAxis = 0;
 };
 ```
