@@ -55,7 +55,7 @@
 | 参数名 | 描述 |
 | --- | --- |
 | T | 操作数数据类型。 |
-| isSetMask | 是否在接口内部设置mask模式和mask值。<br>&bull; true，表示在接口内部设置。<br>&nbsp; tensor前n个数据计算API内部使用了mask的[Counter模式](../SIMD计算说明/掩码/概述.md#mask-mode)，一般情况下保持isSetMask默认值即可，表示在API内部根据开发者传入的count参数进行mask模式和mask值的设置。<br>&bull; false，表示在接口外部设置。<br>&nbsp; 开发者需要使用[SetVectorMask](../掩码操作/SetVectorMask.md)接口设置mask值。此时，接口入参中的count不生效，建议设置成1。<br>&bull; false，表示在接口外部设置。<br>&nbsp; 开发者需要使用[SetVectorMask](../掩码操作/SetVectorMask.md)接口设置mask值。此时，接口入参中的count不生效，建议设置成1。<br>部分产品型号该参数不生效，详情请参考[约束说明](#约束说明)。 |
+| isSetMask | 是否在接口内部设置mask模式和mask值。<br>&bull; true，表示在接口内部设置。<br>&nbsp; tensor前n个数据计算API内部使用了mask的[Counter模式](../SIMD计算说明/掩码/概述.md#mask-mode)，一般情况下保持isSetMask默认值即可，表示在API内部根据开发者传入的count参数进行mask模式和mask值的设置。<br>&bull; false，表示在接口外部设置。<br>&nbsp; 开发者需要使用[SetVectorMask](../掩码操作/SetVectorMask.md)接口设置mask值。此时，接口入参中的count不生效，建议设置成1。<br>部分产品型号该参数不生效，详情请参考[约束说明](#约束说明)。 |
 
 **表2**  参数说明
 
