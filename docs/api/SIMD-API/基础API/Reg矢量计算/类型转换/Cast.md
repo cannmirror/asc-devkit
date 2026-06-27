@@ -28,13 +28,22 @@
 
 头文件路径：`"basic_api/reg_compute/kernel_reg_compute_vec_vconv_intf.h"`。
 
-Cast用于数据类型精度转换，将源操作数数据类型转换成目的操作数数据类型，能够实现[浮点转整数](#表6-浮点转整数)、[浮点转浮点](#表7-浮点转浮点)、[整数转浮点](#表8-整数转浮点)、[整数转整数](#表9-整数转整数)的数据类型转换。
-
-
+Cast用于数据类型精度转换，将源操作数数据类型转换成目的操作数数据类型，能够实现[浮点转整数](#表6-浮点转整数)、[浮点转浮点](#表7-浮点转浮点)、[整数转浮点](#表8-整数转浮点)、[整数转整数](#表9-整数转整数)的数据类型转换。转换过程中，由于位宽变化、精度变化，支持配置如下参数进行功能实现：
 - [RegLayout](../数据类型/RegLayout.md)：源操作数和目的操作数位宽不同时，单条指令计算量以位宽更大的数据类型为准，RegLayout用于控制位宽小的元素在寄存器中的排布方式。
 - [SatMode](../数据类型/SatMode.md)：用于设置饱和与不饱和模式。
 - [MaskMergeMode](../数据类型/MaskMergeMode.md)：用于指定写入寄存器数据模式，mask未选择的元素在dst中置零或保留dst原值。
 - [RoundMode](../数据类型/RoundMode.md)：用于设置舍入模式。
+
+不同数据类型下元素对应的mask位宽不一致，在Cast进行类型转换时，MaskReg根据输入的源操作数进行有效元素筛选。
+图[b16到b32类型转换过程](#fig1)和图[b32到b16类型转换过程](#fig2)展示了MaskReg和RegLayout同时作用时b16和b32进行类型转换的过程。
+
+**图1** b16到b32类型转换过程<a id="fig1"></a>  
+
+![](../../../../figures/b16到b32类型转换过程.png)
+
+**图2** b32到b16类型转换过程<a id="fig2"></a>  
+
+![](../../../../figures/b32到b16类型转换过程.png)
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
@@ -110,13 +119,13 @@ __simd_callee__ inline void Cast(S& dstReg, V& srcReg, MaskReg& mask);
 
 - 特别地，int4x2_t/fp4x2_e2m1_t/fp4x2_e1m2_t和b16之间的转换，指令会以每2个元素为一对进行读写，大转小时mask有效位以偶数位为准。
 
-    图1和图2展示了MaskReg和RegLayout同时作用时fp4x2_e2m1_t和bfloat16_t之间的转换。
+    图[fp4x2_e2m1_t到bfloat16_t转换过程](#fig3)和图[bfloat16_t到fp4x2_e2m1_t转换过程](#fig4)展示了MaskReg和RegLayout同时作用时fp4x2_e2m1_t和bfloat16_t之间的转换。
 
-    **图 1**  fp4x2_e2m1_t到bfloat16_t转换过程  
+    **图3**  fp4x2_e2m1_t到bfloat16_t转换过程<a id="fig3"></a>  
     
     ![](../../../../figures/reg_cast_1.png)
 
-    **图 2**  bfloat16_t到fp4x2_e2m1_t转换过程  
+    **图4**  bfloat16_t到fp4x2_e2m1_t转换过程<a id="fig4"></a>  
     ![](../../../../figures/reg_cast_2.png)
 
 ## 关键特性说明

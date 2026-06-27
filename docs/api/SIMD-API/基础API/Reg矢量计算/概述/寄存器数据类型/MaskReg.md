@@ -79,7 +79,7 @@ MaskReg
 
 ### Cast精度转换中的MaskReg
 
-不同数据类型下元素对应的mask位宽不一致，在cast进行类型转换时，maskReg根据输入的源操作数进行有效元素筛选。
+不同数据类型下元素对应的mask位宽不一致，在Cast进行类型转换时，MaskReg根据输入的源操作数进行有效元素筛选。
 
 图[b16到b32类型转换过程](#fig4)和图[b32到b16类型转换过程](#fig5)展示了MaskReg和RegLayout同时作用时b16和b32进行类型转换的过程。
 

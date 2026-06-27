@@ -1,12 +1,13 @@
 # RegLayout<a name="ZH-CN_TOPIC_0000001956862301"></a>
 
+源操作数和目的操作数位宽不同时，单条指令计算量以位宽更大的数据类型为准，RegLayout用于控制位宽小的元素在寄存器中的排布方式。更多特性说明请参考[Cast](../../类型转换/Cast.md)。
 ```cpp
 enum class RegLayout { 
     UNKNOWN = -1, 
-    ZERO, 
-    ONE, 
-    TWO, 
-    THREE 
+    ZERO,         // 大转小（dst位宽小）：结果位于dst组内第0个位宽小位置；小转大（src位宽小）：选取src组内第0个位宽小元素
+    ONE,          // 大转小（dst位宽小）：结果位于dst组内第1个位宽小位置；小转大（src位宽小）：选取src组内第1个位宽小元素
+    TWO,          // 大转小（dst位宽小）：结果位于dst组内第2个位宽小位置；小转大（src位宽小）：选取src组内第2个位宽小元素
+    THREE         // 大转小（dst位宽小）：结果位于dst组内第3个位宽小位置；小转大（src位宽小）：选取src组内第3个位宽小元素
 };
 ```
 
