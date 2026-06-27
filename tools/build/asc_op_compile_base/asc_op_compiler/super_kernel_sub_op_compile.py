@@ -84,6 +84,8 @@ def gen_gm_get_set_value_dcci_compile_options(compile_option_tuple, compile_info
     # dcci-all before sub op end has been removed in sk, so call dcci in global tensor get set value by default
     # in case of performance degradation, try dcci-before-kernel-start or dcci-after-kernel-end or
     # dcci-disable-on-kernel options
+    if is_sub_combine and compile_info.super_kernel_info["sp_options"].get('dcci-disable-on-kernel', "") == "":
+        return
     compile_option_tuple.compile_options.append("-D__ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__")
 
 
