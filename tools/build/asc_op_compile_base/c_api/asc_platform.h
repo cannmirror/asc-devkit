@@ -137,6 +137,7 @@ constexpr const char* Ascend950PR_9589 = "Ascend950PR_9589";
 constexpr const char* Ascend950PR_958b = "Ascend950PR_958b";
 constexpr const char* Ascend950PR_9579 = "Ascend950PR_9579";
 constexpr const char* Ascend950PR_957b = "Ascend950PR_957b";
+constexpr const char* Ascend950PR_957bx = "Ascend950PR_957bx";
 constexpr const char* Ascend950PR_957c = "Ascend950PR_957c";
 constexpr const char* Ascend950PR_957d = "Ascend950PR_957d";
 constexpr const char* Ascend950PR_950z = "Ascend950PR_950z";
@@ -150,6 +151,7 @@ constexpr const char* Ascend950DT_9595 = "Ascend950DT_9595";
 constexpr const char* Ascend950DT_9596 = "Ascend950DT_9596";
 constexpr const char* Ascend950DT_9581 = "Ascend950DT_9581";
 constexpr const char* Ascend950DT_9582 = "Ascend950DT_9582";
+constexpr const char* Ascend950DT_9582x = "Ascend950DT_9582x";
 constexpr const char* Ascend950DT_9583 = "Ascend950DT_9583";
 constexpr const char* Ascend950DT_9584 = "Ascend950DT_9584";
 constexpr const char* Ascend950DT_9585 = "Ascend950DT_9585";
@@ -635,10 +637,10 @@ class CceConfBase {
       MC62DM23AB,       MC62CM12AA,       MC62DM22AA,       MC62CM12AC,       MC62DM22AC,       MC62CM12AD, 
       MC62DM22AD,       MC62CM12AE,       MC62DM22AE,       MC62CM12AF,       MC62DM22AF,       MC62CM12AB,
       MC62DM22AB,      KirinX90,           Kirin9030,
-      Ascend950PR_9599, Ascend950PR_958a, Ascend950PR_9589, Ascend950PR_958b, Ascend950PR_9579, Ascend950PR_957b,
+      Ascend950PR_9599, Ascend950PR_958a, Ascend950PR_9589, Ascend950PR_958b, Ascend950PR_9579, Ascend950PR_957b, Ascend950PR_957bx,
       Ascend950PR_957c, Ascend950PR_957d, Ascend950PR_950z, Ascend950DT_950x, Ascend950DT_950y, Ascend950DT_95A1,
       Ascend950DT_95A2, Ascend950DT_9591, Ascend950DT_9592, Ascend950DT_9595, Ascend950DT_9596, Ascend950DT_9581,
-      Ascend950DT_9582, Ascend950DT_9583, Ascend950DT_9584, Ascend950DT_9585, Ascend950DT_9586, Ascend950DT_9587,
+      Ascend950DT_9582, Ascend950DT_9582x, Ascend950DT_9583, Ascend950DT_9584, Ascend950DT_9585, Ascend950DT_9586, Ascend950DT_9587,
       Ascend950DT_9588, Ascend950DT_9571, Ascend950DT_9572, Ascend950DT_9573, Ascend950DT_9574, Ascend950DT_9575,
       Ascend950DT_9576, Ascend950DT_9577, Ascend950DT_9578, MC32DM11AA, MC32DM11AB, MC32DM11AC,
       Ascend350_354f,   Ascend350_355e
