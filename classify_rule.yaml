@@ -52,6 +52,7 @@ asc-devkit:
       - impl/tensor_api/arch/cube/**/routing.h
       - impl/tensor_api/arch/vector/**/routing.h
       - impl/tensor_api/arch/vector/transform/transform_vf_set.h
+      - impl/tensor_api/arch/vector/cast/cast_trait_map.h
       - impl/c_api/instr_impl/npu_arch_3510/sys_var_impl/asc_get_vf_len_impl.h
   llt:
     ut_check: true

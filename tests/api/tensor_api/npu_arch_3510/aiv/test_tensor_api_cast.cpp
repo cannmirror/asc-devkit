@@ -500,3 +500,147 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_U322UInt16_Sat_Even)
 
     EXPECT_EQ(z[0], zUB[0]);
 }
+
+// ===================================================================
+// 10. half → int32_t (1:2 扩宽)
+// ===================================================================
+
+using CastTraitHalf2Int32RDNoSat = CastTrait<
+    AscendC::Te::CastRoundMode::RD,
+    AscendC::Te::CastSatMode::NoSat,
+    AscendC::Std::ignore_t>;
+
+TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Half2Int32_RD_NoSat)
+{
+    constexpr uint32_t TILE_LENGTH = 2048;
+
+    __gm__ half x[TILE_LENGTH] = {0};
+    __gm__ int32_t z[TILE_LENGTH] = {0};
+
+    __ubuf__ half xUB[TILE_LENGTH] = {0};
+    __ubuf__ int32_t zUB[TILE_LENGTH] = {0};
+
+    TestTransformBinary<int32_t, half, AscendC::Te::Inst::Cast, CastTraitHalf2Int32RDNoSat>(z, x, zUB, xUB);
+
+    EXPECT_EQ(z[0], zUB[0]);
+}
+
+// ===================================================================
+// 11. float → int16_t (2:1 收缩)
+// ===================================================================
+
+using CastTraitFloat2Int16RNSat = CastTrait<
+    AscendC::Te::CastRoundMode::RN,
+    AscendC::Te::CastSatMode::Sat,
+    AscendC::Std::ignore_t>;
+
+TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Float2Int16_RN_Sat)
+{
+    constexpr uint32_t TILE_LENGTH = 2048;
+
+    __gm__ float x[TILE_LENGTH] = {0};
+    __gm__ int16_t z[TILE_LENGTH] = {0};
+
+    __ubuf__ float xUB[TILE_LENGTH] = {0};
+    __ubuf__ int16_t zUB[TILE_LENGTH] = {0};
+
+    TestTransformBinary<int16_t, float, AscendC::Te::Inst::Cast, CastTraitFloat2Int16RNSat>(z, x, zUB, xUB);
+
+    EXPECT_EQ(z[0], zUB[0]);
+}
+
+// ===================================================================
+// 12. int8_t → int32_t (1:4 扩宽)
+// ===================================================================
+
+using CastTraitInt82Int32RDNoSatPartP0 = CastTrait<
+    AscendC::Std::ignore_t,
+    AscendC::Te::CastSatMode::NoSat,
+    AscendC::Te::CastIndexPos::PartP0>;
+
+TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Int82Int32_RD_NoSat_PartP0)
+{
+    constexpr uint32_t TILE_LENGTH = 2048;
+
+    __gm__ int8_t x[TILE_LENGTH] = {0};
+    __gm__ int32_t z[TILE_LENGTH] = {0};
+
+    __ubuf__ int8_t xUB[TILE_LENGTH] = {0};
+    __ubuf__ int32_t zUB[TILE_LENGTH] = {0};
+
+    TestTransformBinary<int32_t, int8_t, AscendC::Te::Inst::Cast, CastTraitInt82Int32RDNoSatPartP0>(z, x, zUB, xUB);
+
+    EXPECT_EQ(z[0], zUB[0]);
+}
+
+// ===================================================================
+// 13. int32_t → uint8_t (4:1 收缩)
+// ===================================================================
+
+using CastTraitInt322UInt8SatPartP0 = CastTrait<
+    AscendC::Std::ignore_t,
+    AscendC::Te::CastSatMode::Sat,
+    AscendC::Te::CastIndexPos::PartP0>;
+
+TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Int322UInt8_Sat_PartP0)
+{
+    constexpr uint32_t TILE_LENGTH = 2048;
+
+    __gm__ int32_t x[TILE_LENGTH] = {0};
+    __gm__ uint8_t z[TILE_LENGTH] = {0};
+
+    __ubuf__ int32_t xUB[TILE_LENGTH] = {0};
+    __ubuf__ uint8_t zUB[TILE_LENGTH] = {0};
+
+    TestTransformBinary<uint8_t, int32_t, AscendC::Te::Inst::Cast, CastTraitInt322UInt8SatPartP0>(z, x, zUB, xUB);
+
+    EXPECT_EQ(z[0], zUB[0]);
+}
+
+// ===================================================================
+// 14. bfloat16_t → float (1:2 扩宽)
+// ===================================================================
+
+using CastTraitBf162FloatEven = CastTrait<
+    AscendC::Std::ignore_t,
+    AscendC::Std::ignore_t,
+    AscendC::Te::CastIndexPos::Even>;
+
+TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Bf162Float_Even)
+{
+    constexpr uint32_t TILE_LENGTH = 2048;
+
+    __gm__ bfloat16_t x[TILE_LENGTH] = {0};
+    __gm__ float z[TILE_LENGTH] = {0};
+
+    __ubuf__ bfloat16_t xUB[TILE_LENGTH] = {0};
+    __ubuf__ float zUB[TILE_LENGTH] = {0};
+
+    TestTransformBinary<float, bfloat16_t, AscendC::Te::Inst::Cast, CastTraitBf162FloatEven>(z, x, zUB, xUB);
+
+    EXPECT_EQ(z[0], zUB[0]);
+}
+
+// ===================================================================
+// 15. float → bfloat16_t (2:1 收缩)
+// ===================================================================
+
+using CastTraitFloat2Bf16RNNoSatEven = CastTrait<
+    AscendC::Te::CastRoundMode::RN,
+    AscendC::Te::CastSatMode::NoSat,
+    AscendC::Te::CastIndexPos::Even>;
+
+TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Float2Bf16_RN_NoSat_Even)
+{
+    constexpr uint32_t TILE_LENGTH = 2048;
+
+    __gm__ float x[TILE_LENGTH] = {0};
+    __gm__ bfloat16_t z[TILE_LENGTH] = {0};
+
+    __ubuf__ float xUB[TILE_LENGTH] = {0};
+    __ubuf__ bfloat16_t zUB[TILE_LENGTH] = {0};
+
+    TestTransformBinary<bfloat16_t, float, AscendC::Te::Inst::Cast, CastTraitFloat2Bf16RNNoSatEven>(z, x, zUB, xUB);
+
+    EXPECT_EQ(z[0], zUB[0]);
+}
