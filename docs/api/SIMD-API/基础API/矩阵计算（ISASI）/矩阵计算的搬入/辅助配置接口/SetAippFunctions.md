@@ -2,15 +2,27 @@
 
 ## 产品支持情况<a name="section1550532418810"></a>
 
-| 产品 | 是否支持 |
-| --- | :---: |
-| <cann-filter npu-type = "950">Ascend 950PR/Ascend 950DT | √ </cann-filter> |
-| <cann-filter npu-type = "A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品 | √ </cann-filter> |
-| <cann-filter npu-type = "910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品 | √ </cann-filter> |
-| <cann-filter npu-type = "310b">Atlas 200I/500 A2 推理产品 | √ </cann-filter> |
-| <cann-filter npu-type = "310p">Atlas 推理系列产品AI Core | √ </cann-filter> |
-| <cann-filter npu-type = "310p">Atlas 推理系列产品Vector Core | x </cann-filter> |
-| <cann-filter npu-type = "910">Atlas 训练系列产品 | x </cann-filter> |
+<!-- npu="950" id1 -->
+- Ascend 950PR/Ascend 950DT：支持
+<!-- end id1 -->
+<!-- npu="A3" id2 -->
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持
+<!-- end id2 -->
+<!-- npu="910b" id3 -->
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持
+<!-- end id3 -->
+<!-- npu="310b" id4 -->
+- Atlas 200I/500 A2 推理产品：支持
+<!-- end id4 -->
+<!-- npu="310p" id5 -->
+- Atlas 推理系列产品AI Core：支持
+<!-- end id5 -->
+<!-- npu="310p" id6 -->
+- Atlas 推理系列产品Vector Core：不支持
+<!-- end id6 -->
+<!-- npu="910" id7 -->
+- Atlas 训练系列产品：不支持
+<!-- end id7 -->
 
 ## 功能说明<a name="section618mcpsimp"></a>
 
@@ -49,6 +61,7 @@
 
 - **单行读取：** 源图片中仅读取一行。
 
+    > [!NOTE]说明
     > 调用数据搬运接口时，若开启了单行读取，设置的目的图片高度参数将无效，如[LoadImageToLocal](LoadImageToLocal.md)接口的loadImageToLocalParams.vertSize。
 
 - **数据类型转换：** 转换像素的数据类型，支持uint8\_t转换为int8\_t或half。当uint8\_t转换成int8\_t的时候，输出数据范围限制在\[-128，127\]。
@@ -60,8 +73,9 @@
     uint8_t -> fp16:  output[i][j][k] = (input[i][j][k] - mean[k] - min[k]) * var[k]
     ```
 
+    > [!NOTE]说明
     > 转换后的数据类型由模板参数U决定，U为uint8\_t时数据类型转换功能不生效。
-    >调用数据搬运接口时，目的Tensor的数据类型需要与本接口输出数据类型保持一致，如[LoadImageToLocal](LoadImageToLocal.md)的dstLocal参数的数据类型。
+    > 调用数据搬运接口时，目的Tensor的数据类型需要与本接口输出数据类型保持一致，如[LoadImageToLocal](LoadImageToLocal.md)的dstLocal参数的数据类型。
 
 - **通道填充：** 在图片通道方向上padding。默认为模式0。
 
@@ -69,7 +83,7 @@
 
     - 模式1：将通道padding至4通道。
 
-- **色域转换：** RGB格式转换为YUV格式，或YUV模式转换为RGB格式。
+- **色域转换：** RGB格式转换为YUV格式，或YUV格式转换为RGB格式。
 
     ![](../../../../../figures/zh-cn_formulaimage_0000001938335310.png)
 
@@ -148,7 +162,8 @@
 | dtcVarCh2 | 输入 | 计算公式内的var值，channel2，数据类型为half，默认值为1.0。 |
 | dtcRoundMode | 输入 | 控制dtc做数据类型转换的模式，数据类型为uint32_t，默认值为0。<br>0：四舍五入到最接近的整数值（C语言round）。<br>1：四舍五入到最接近的偶数（C语言rint）。 |
 
-**说明：参数dtcRoundMode，仅在Atlas 200I/500 A2 推理产品支持配置。**
+> [!NOTE]说明
+> 参数dtcRoundMode，仅在Atlas 200I/500 A2 推理产品支持配置。
 
 **表7** AippChannelPaddingParams结构体内参数说明<a name="table163681812917"></a>
 
@@ -197,10 +212,8 @@
 
 - 对于XRGB输入格式的数据，芯片会默认丢弃第四个通道的数据输出RGB格式的数据。如果X在channel0的场景下，X通道后移功能必须使能，将输入通道转换为RGBX；反之如果X在channel3的场景下，X通道后移功能必须不使能，以输出RGB格式的数据。
 
-<cann-filter npu-type = "310p">
-
+<!-- npu="310p" id8 -->
 ## 调用示例<a name="section6461234123118"></a>
 
 SetAippFunctions需与[LoadImageToLocal](LoadImageToLocal.md)接口配合使用，完整调用示例（含搬运过程）请参考[LoadImageToLocal的调用示例](LoadImageToLocal.md#section22811728184217)。
-
-</cann-filter>
+<!-- end id8 -->

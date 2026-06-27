@@ -2,17 +2,33 @@
 
 ## 产品支持情况<a id="section1550532418810"></a>
 
-| 产品 | 是否支持 |
-| ---------- | :----------: |
-| <cann-filter npu-type = "950">Ascend 950PR/Ascend 950DT | √ </cann-filter> |
-| <cann-filter npu-type = "A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品 | x </cann-filter> |
-| <cann-filter npu-type = "910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品 | x </cann-filter> |
-| <cann-filter npu-type = "310b">Atlas 200I/500 A2 推理产品 | x </cann-filter> |
-| <cann-filter npu-type = "310p">Atlas 推理系列产品AI Core | x </cann-filter> |
-| <cann-filter npu-type = "310p">Atlas 推理系列产品Vector Core | x </cann-filter> |
-| <cann-filter npu-type = "910">Atlas 训练系列产品 | x </cann-filter> |
-| <cann-filter npu-type = "x90">Kirin X90 | x </cann-filter> |
-| <cann-filter npu-type = "9030">Kirin 9030 | x </cann-filter> |
+<!-- npu="950" id1 -->
+- Ascend 950PR/Ascend 950DT：支持
+<!-- end id1 -->
+<!-- npu="A3" id2 -->
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：不支持
+<!-- end id2 -->
+<!-- npu="910b" id3 -->
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：不支持
+<!-- end id3 -->
+<!-- npu="310b" id4 -->
+- Atlas 200I/500 A2 推理产品：不支持
+<!-- end id4 -->
+<!-- npu="310p" id5 -->
+- Atlas 推理系列产品AI Core：不支持
+<!-- end id5 -->
+<!-- npu="310p" id6 -->
+- Atlas 推理系列产品Vector Core：不支持
+<!-- end id6 -->
+<!-- npu="910" id7 -->
+- Atlas 训练系列产品：不支持
+<!-- end id7 -->
+<!-- npu="x90" id8 -->
+- Kirin X90：不支持
+<!-- end id8 -->
+<!-- npu="9030" id9 -->
+- Kirin 9030：不支持
+<!-- end id9 -->
 
 ## 功能说明<a id="section618mcpsimp"></a>
 
@@ -80,7 +96,7 @@ __aicore__ inline Load3DBitModeParam(const LoadData3DParamsV2<T> &loadData3DPara
 | kStep | 该指令在目的操作数width维度的传输长度，如果不覆盖最右侧的分形，对于half类型，应为16的倍数，对于int8_t/uint8_t应为32的倍数；覆盖的情况则无倍数要求。取值范围：kStep∈[1, 65535]。<br>（与[Load3D](Load3D.md)中的kExtension含义相同）。<br>该参数是位域结构体的最低位参数，占用16bit，可以使用Load3DBitModeParam类对象的SetKExtension()函数设置其值，使用GetKExtension()函数获取其值。 |
 | mStep | 该指令在目的操作数height维度的传输长度，如果不覆盖最下侧的分形，对于half/int8_t/uint8_t，应为16的倍数；覆盖的情况则无倍数要求。取值范围：mStep∈[1, 65535]。<br>（与[Load3D](Load3D.md)中的mExtension含义相同）。<br>该参数是位域结构体的第二低位参数，占用16bit，可以使用Load3DBitModeParam类对象的SetMExtension()函数设置其值，使用GetMExtension()函数获取其值。 |
 | kPos | 该指令在目的操作数width维度的起点，对于half类型，应为16的倍数，对于int8_t/uint8_t应为32的倍数。取值范围[0, 65535]。默认为0。<br>（与[Load3D](Load3D.md)中的kStartPt含义相同）。<br>该参数是位域结构体的第三低位参数，占用16bit，可以使用Load3DBitModeParam类对象的SetKStartPt()函数设置其值，使用GetKStartPt()函数获取其值。 |
-| mPos | 该指令在目的操作数height维度的起点，如果不覆盖最下侧的分形，对于half/int8_t/uint8_t，应为16的倍数；覆盖的情况则无倍数要求。取值范围[0, 65535]。默认为0。<br>（与[Load3D](Load3D.md)中的mStartPt含义相同）。<br>该参数是位域结构体的最高位参数，占用16bit，可以使用Load3DBitModeParam类对象的SetMStartPt()函数设置其值，使用GetMStartPt()函数获取其值。 |
+| mPos | 该指令在目的操作数height维度的起点，取值范围[0, 32767]。默认为0。<br>（与[Load3D](Load3D.md)中的mStartPt含义相同）。<br>该参数是位域结构体的最高位参数，占用16bit，可以使用Load3DBitModeParam类对象的SetMStartPt()函数设置其值，使用GetMStartPt()函数获取其值。 |
 
 **表5** Load3DBitModeConfig1结构体参数说明<a name="table87491086815"></a>
 

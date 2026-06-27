@@ -2,21 +2,37 @@
 
 ## 产品支持情况<a id="section1550532418810"></a>
 
-| 产品 | 是否支持 |
-| ---------- | :----------: |
-| <cann-filter npu-type = "950">Ascend 950PR/Ascend 950DT | √ </cann-filter> |
-| <cann-filter npu-type = "A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品 | √ </cann-filter> |
-| <cann-filter npu-type = "910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品 | √ </cann-filter> |
-| <cann-filter npu-type = "310b">Atlas 200I/500 A2 推理产品 | x </cann-filter> |
-| <cann-filter npu-type = "310p">Atlas 推理系列产品AI Core | x </cann-filter> |
-| <cann-filter npu-type = "310p">Atlas 推理系列产品Vector Core | x </cann-filter> |
-| <cann-filter npu-type = "910">Atlas 训练系列产品 | x </cann-filter> |
-| <cann-filter npu-type = "x90">Kirin X90 | x </cann-filter> |
-| <cann-filter npu-type = "9030">Kirin 9030 | x </cann-filter> |
+<!-- npu="950" id1 -->
+- Ascend 950PR/Ascend 950DT：支持
+<!-- end id1 -->
+<!-- npu="A3" id2 -->
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持
+<!-- end id2 -->
+<!-- npu="910b" id3 -->
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持
+<!-- end id3 -->
+<!-- npu="310b" id4 -->
+- Atlas 200I/500 A2 推理产品：不支持
+<!-- end id4 -->
+<!-- npu="310p" id5 -->
+- Atlas 推理系列产品AI Core：不支持
+<!-- end id5 -->
+<!-- npu="310p" id6 -->
+- Atlas 推理系列产品Vector Core：不支持
+<!-- end id6 -->
+<!-- npu="910" id7 -->
+- Atlas 训练系列产品：不支持
+<!-- end id7 -->
+<!-- npu="x90" id8 -->
+- Kirin X90：不支持
+<!-- end id8 -->
+<!-- npu="9030" id9 -->
+- Kirin 9030：不支持
+<!-- end id9 -->
 
 ## 功能说明<a id="section12840195813362"></a>
 
-> **说明：**
+> [!NOTE]说明
 > 本接口为软件仿真实现，是在Matmul高阶API的基础上，利用Matmul高阶API中的workspace GM空间作为数据中转空间，数据先搬入GM，再搬入L1 Buffer。因此，在使用本接口时，需要先使用REGISTER_MATMUL注册高阶API。
 
 头文件路径为：basic_api/kernel_operator_data_copy_intf.h。
@@ -57,7 +73,7 @@ __aicore__ inline void DataCopy(const LocalTensor<T>& dst, const LocalTensor<T>&
 | srcDValue | 源操作数同一ND矩阵的相邻行起始地址间的偏移，取值范围：srcDValue∈[1, 65535]，单位为元素。 |
 | dstNzC0Stride | ND转换到NZ格式后，源操作数中的一行会转换为目的操作数的多行。dstNzC0Stride表示，目的NZ矩阵中，来自源操作数同一行的多行数据相邻行起始地址间的偏移，取值范围：dstNzC0Stride∈[1, 16384]，单位：C0_SIZE（32字节）。 |
 | dstNzNStride | 目的NZ矩阵中，Z型矩阵相邻行起始地址之间的偏移。取值范围：dstNzNStride∈[1, 16384]，单位：C0_SIZE（32字节）。 |
-| dstNzMatrixStride | 目的NZ矩阵中，相邻NZ矩阵起始地址间的偏移，取值范围：dstNzMatrixStride∈[0, 65535]，单位为元素。 |
+| dstNzMatrixStride | 目的NZ矩阵中，相邻NZ矩阵起始地址间的偏移，取值范围：dstNzMatrixStride∈[0, 16384]，单位为元素。 |
 
 ND2NZ转换示意图如下，样例中参数设置值和解释说明如下：
 
@@ -78,23 +94,17 @@ ND2NZ转换示意图如下，样例中参数设置值和解释说明如下：
 
 源矩阵和目的矩阵支持的数据类型保持一致。
 
-<cann-filter npu-type = "950">
-
+<!-- npu="950" id10 -->
 针对Ascend 950PR/Ascend 950DT，支持数据类型为：bool、int8_t、uint8_t、hifloat8_t、fp8_e5m2_t、fp8_e4m3fn_t、fp8_e8m0_t、int16_t、uint16_t、half、bfloat16_t、int32_t、uint32_t、float、complex32。
+<!-- end id10 -->
 
-</cann-filter>
-
-<cann-filter npu-type = "A3">
-
+<!-- npu="A3" id11 -->
 针对Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持数据类型为：int8_t、uint8_t、int16_t、uint16_t、int32_t、uint32_t、half、bfloat16_t、float。
+<!-- end id11 -->
 
-</cann-filter>
-
-<cann-filter npu-type = "910b">
-
+<!-- npu="910b" id12 -->
 针对Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持数据类型为：int8_t、uint8_t、int16_t、uint16_t、int32_t、uint32_t、half、bfloat16_t、float。
-
-</cann-filter>
+<!-- end id12 -->
 
 ## 返回值说明
 
@@ -102,7 +112,34 @@ ND2NZ转换示意图如下，样例中参数设置值和解释说明如下：
 
 ## 约束说明
 
-无
+- 本接口通过软件仿真实现，首先会进行数据分形的转换，然后再通过搬运指令进行数据的搬运。
+- 本接口内部会申请一块临时的UB空间用于数据分形的转换，开发者无需申请，但是需要预留临时空间的大小，空间大小计算公式如下（单位为字节）：
+
+$$((dValue \times sizeof(T) / 32 - 1) \times dstNzC0Stride + (nValue - 1) \times dstNzNStride + 1) \times 32$$
+
+- 本接口仅支持配置ndNum为1。
+- 位于Unified Buffer的源地址必须32字节对齐，位于L1 Buffer的目的地址必须32字节对齐。
+- Nd2NzParams结构体参数ndNum、nValue、dValue设置不能为0。
+- 搬运至L1 Buffer的数据不能重叠，如果存在重叠写入，硬件不会产生任何警告或错误，并且不保证重叠数据的写入顺序。
+
+<!-- npu="950" id13 -->
+- 针对Ascend 950PR/Ascend 950DT，支持ub->L1 Buffer的1:2硬通道的方式；同时提供1:1的兼容模式，解决A2/A3的代码迁移兼容问题，这种模式通过Global Memory进行中转，效率稍低。
+<!-- end id13 -->
+
+- Nd2NzParams结构体参数的值需在取值范围内，参数取值范围如[表4](#table_ub_nd2nz_range)所示。
+
+**表 4**  Nd2NzParams结构体参数取值范围<a id="table_ub_nd2nz_range"></a>
+
+|参数名称|取值范围|
+|----------|----------|
+|ndNum|[1]|
+|nValue|[1, 16384]|
+|dValue|[1, 65535]|
+|srcNdMatrixStride|[0, 65535]|
+|srcDValue|[1, 65535]|
+|dstNzC0Stride|[1, 16384]|
+|dstNzNStride|[1, 16384]|
+|dstNzMatrixStride|[0, 16384]|
 
 ## 调用示例<a id="section10309141400"></a>
 

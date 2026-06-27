@@ -2,15 +2,27 @@
 
 ## 产品支持情况<a name="section1550532418810"></a>
 
-| 产品 | 是否支持 |
-| --- | :---: |
-| <cann-filter npu-type = "950">Ascend 950PR/Ascend 950DT | √ </cann-filter> |
-| <cann-filter npu-type = "A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品 | √ </cann-filter> |
-| <cann-filter npu-type = "910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品 | √ </cann-filter> |
-| <cann-filter npu-type = "310b">Atlas 200I/500 A2 推理产品 | √ </cann-filter> |
-| <cann-filter npu-type = "310p">Atlas 推理系列产品AI Core | x </cann-filter> |
-| <cann-filter npu-type = "310p">Atlas 推理系列产品Vector Core | x </cann-filter> |
-| <cann-filter npu-type = "910">Atlas 训练系列产品 | x </cann-filter> |
+<!-- npu="950" id1 -->
+- Ascend 950PR/Ascend 950DT：支持
+<!-- end id1 -->
+<!-- npu="A3" id2 -->
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持
+<!-- end id2 -->
+<!-- npu="910b" id3 -->
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持
+<!-- end id3 -->
+<!-- npu="310b" id4 -->
+- Atlas 200I/500 A2 推理产品：支持
+<!-- end id4 -->
+<!-- npu="310p" id5 -->
+- Atlas 推理系列产品AI Core：不支持
+<!-- end id5 -->
+<!-- npu="310p" id6 -->
+- Atlas 推理系列产品Vector Core：不支持
+<!-- end id6 -->
+<!-- npu="910" id7 -->
+- Atlas 训练系列产品：不支持
+<!-- end id7 -->
 
 ## 功能说明<a name="section618mcpsimp"></a>
 
@@ -46,29 +58,21 @@ __aicore__ inline void SetLoadDataRepeat(const LoadDataRepeatParam& repeatParams
 
 ### dstStride参数支持度说明
 
-<cann-filter npu-type = "950">
-
+<!-- npu="950" id8 -->
 - 针对Ascend 950PR/Ascend 950DT，新增dstStride参数，调用该接口必须配置参数dstStride。
+<!-- end id8 -->
 
-</cann-filter>
-
-<cann-filter npu-type = "910b">
-
+<!-- npu="910b" id9 -->
 - 针对Atlas A2 训练系列产品/Atlas A2 推理系列产品，不支持该参数。
+<!-- end id9 -->
 
-</cann-filter>
-
-<cann-filter npu-type = "A3">
-
+<!-- npu="A3" id10 -->
 - 针对Atlas A3 训练系列产品/Atlas A3 推理系列产品，不支持该参数。
+<!-- end id10 -->
 
-</cann-filter>
-
-<cann-filter npu-type = "310b">
-
+<!-- npu="310b" id11 -->
 - 针对Atlas 200I/500 A2 推理产品，不支持该参数。
-
-</cann-filter>
+<!-- end id11 -->
 
 ## 返回值说明
 
@@ -79,37 +83,27 @@ __aicore__ inline void SetLoadDataRepeat(const LoadDataRepeatParam& repeatParams
 - 迭代沿height方向时，repeatStride的单位为16个元素，迭代沿width方向时，repeatStride的单位为32/sizeof\(data\_type\)个元素。
 - repeatTime=0表示Load3D不执行搬运，Load3D接口将被视为NOP（空操作）。
 
-<cann-filter npu-type = "950">
-
+<!-- npu="950" id12 -->
 - 针对Ascend 950PR/Ascend 950DT，调用Load3D指令时，必须配置本接口中dstStride参数。
-
-</cann-filter>
+<!-- end id12 -->
 
 - 不同芯片型号，repeatStride的单位不同，具体参考如下：
     
-    <cann-filter npu-type = "950">
-    
+    <!-- npu="950" id13 -->
     - Ascend 950PR/Ascend 950DT，repeatStride的单位为32/sizeof(data_type)个元素。
+    <!-- end id13 -->
 
-    </cann-filter>
-
-    <cann-filter npu-type = "910b">
-
+    <!-- npu="910b" id14 -->
     - Atlas A2 训练系列产品/Atlas A2 推理系列产品，repeatStride的单位为32/sizeof(data_type)个元素。
+    <!-- end id14 -->
 
-    </cann-filter>
-
-    <cann-filter npu-type = "A3">
-
+    <!-- npu="A3" id15 -->
     - Atlas A3 训练系列产品/Atlas A3 推理系列产品，repeatStride的单位为32/sizeof(data_type)个元素。
+    <!-- end id15 -->
 
-    </cann-filter>
-
-    <cann-filter npu-type = "310b">
-
+    <!-- npu="310b" id16 -->
     - Atlas 200I/500 A2 推理产品，repeatStride的单位为64/sizeof(data_type)个元素。
-
-    </cann-filter>
+    <!-- end id16 -->
 
 ## 调用示例<a name="section642mcpsimp"></a>
 

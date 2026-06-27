@@ -2,17 +2,33 @@
 
 ## 产品支持情况
 
-| 产品 | 是否支持 |
-| ---------- | :----------: |
-| <cann-filter npu-type = "950">Ascend 950PR/Ascend 950DT | √ </cann-filter> |
-| <cann-filter npu-type = "A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品 | √ </cann-filter> |
-| <cann-filter npu-type = "910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品 | √ </cann-filter> |
-| <cann-filter npu-type = "310b">Atlas 200I/500 A2 推理产品 | √ </cann-filter> |
-| <cann-filter npu-type = "310p">Atlas 推理系列产品AI Core | √ </cann-filter> |
-| <cann-filter npu-type = "310p">Atlas 推理系列产品Vector Core | x </cann-filter> |
-| <cann-filter npu-type = "910">Atlas 训练系列产品 | √ </cann-filter> |
-| <cann-filter npu-type = "x90">Kirin X90 | √ </cann-filter> |
-| <cann-filter npu-type = "9030">Kirin 9030 | √ </cann-filter> |
+<!-- npu="950" id1 -->
+- Ascend 950PR/Ascend 950DT：支持
+<!-- end id1 -->
+<!-- npu="A3" id2 -->
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持
+<!-- end id2 -->
+<!-- npu="910b" id3 -->
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持
+<!-- end id3 -->
+<!-- npu="310b" id4 -->
+- Atlas 200I/500 A2 推理产品：支持
+<!-- end id4 -->
+<!-- npu="310p" id5 -->
+- Atlas 推理系列产品AI Core：支持
+<!-- end id5 -->
+<!-- npu="310p" id6 -->
+- Atlas 推理系列产品Vector Core：不支持
+<!-- end id6 -->
+<!-- npu="910" id7 -->
+- Atlas 训练系列产品：支持
+<!-- end id7 -->
+<!-- npu="x90" id8 -->
+- Kirin X90：支持
+<!-- end id8 -->
+<!-- npu="9030" id9 -->
+- Kirin 9030：支持
+<!-- end id9 -->
 
 ## 功能说明
 
@@ -21,9 +37,9 @@
 负责完成普通矩阵计算所需的2D格式数据的搬运，以大小为512字节的数据分形为单位进行搬运，支持如下数据通路的搬运：
 
 - 支持GM->L0A Buffer、GM->L0B Buffer、L1 Buffer->L0A Buffer、L1 Buffer->L0B Buffer。
-<cann-filter npu-type = "950">
+<!-- npu="950" id10 -->
 - 特别针对Ascend 950PR/Ascend 950DT：仅支持L1 Buffer->L0A Buffer、L1 Buffer->L0B Buffer。
-</cann-filter>
+<!-- end id10 -->
 
 对于不同的数据类型，每个数据分形对应的矩阵如下：
 
@@ -43,15 +59,14 @@ template <typename T>
 __aicore__ inline void LoadData(const LocalTensor<T>& dst, const GlobalTensor<T>& src, const LoadData2DParams& loadDataParams)
 ```
 
-<cann-filter npu-type = "950">
+<!-- npu="950" id11 -->
 针对Ascend 950PR/Ascend 950DT：
 
 ```cpp
 template <typename T>
 __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LoadData2DParams& loadDataParams)
 ```
-
-</cann-filter>
+<!-- end id11 -->
 
 ## 参数说明
 
@@ -61,9 +76,9 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>&
 | ---------- | ----------- | ------ |
 | dst | 输出 | 目的操作数，类型为LocalTensor。<br>分形约束参考[矩阵计算输入搬运约束](../矩阵计算输入搬运约束.md)。<br>起始地址对齐约束参考[对齐约束](../矩阵计算输入搬运约束.md)。<br>数据类型和src的数据类型保持一致。<br>支持的物理存储位置为L0A Buffer（TPosition: A2）/L0B Buffer（TPosition: B2）。<br>数据连续排列顺序由目的操作数所在TPosition决定：A2对应ZZ格式/NZ格式，分形大小为16×(32字节/sizeof(T))；B2对应ZN格式，分形大小为(32字节/sizeof(T))×16。 |
 | src | 输入 | 源操作数，类型为LocalTensor或GlobalTensor。<br>分形约束参考[矩阵计算输入搬运约束](../矩阵计算输入搬运约束.md)。<br>起始地址对齐约束参考[对齐约束](../矩阵计算输入搬运约束.md)。<br>数据类型和dst的数据类型保持一致。<br>位于L1 Buffer（TPosition: A1/B1）时无格式要求，一般情况下为NZ格式，分形大小为16×(32字节/sizeof(T))。 |
-| loadDataParams | 输入 | LoadData参数结构体，类型为LoadData2DParams，具体参考[表2](#表2)。 |
+| loadDataParams | 输入 | LoadData参数结构体，类型为LoadData2DParams，具体参考[表2](#table_load2d_params)。 |
 
-**表2** LoadData2DParams结构体内参数说明<a id="表2"></a>
+**表2** LoadData2DParams结构体内参数说明<a id="table_load2d_params"></a>
 
 | 参数名称 | 含义 |
 | ---------- | ------ |
@@ -77,53 +92,37 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>&
 
 ## 数据类型
 
-<cann-filter npu-type = "950">
-
+<!-- npu="950" id12 -->
 Ascend 950PR/Ascend 950DT，支持数据类型为：uint8_t、int8_t、uint16_t、int16_t、half、bfloat16_t、uint32_t、int32_t、float。
+<!-- end id12 -->
 
-</cann-filter>
-
-<cann-filter npu-type = "A3">
-
+<!-- npu="A3" id13 -->
 Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持数据类型为：int4b_t、uint8_t、int8_t、uint16_t、int16_t、half、bfloat16_t、uint32_t、int32_t、float；**注：int4b_t仅支持L1 Buffer->L0A Buffer、L1 Buffer->L0B Buffer通路。**
+<!-- end id13 -->
 
-</cann-filter>
-
-<cann-filter npu-type = "910b">
-
+<!-- npu="910b" id14 -->
 Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持数据类型为：int4b_t、uint8_t、int8_t、uint16_t、int16_t、half、bfloat16_t、uint32_t、int32_t、float；**注：int4b_t仅支持L1 Buffer->L0A Buffer、L1 Buffer->L0B Buffer通路。**
+<!-- end id14 -->
 
-</cann-filter>
-
-<cann-filter npu-type = "310b">
-
+<!-- npu="310b" id15 -->
 Atlas 200I/500 A2 推理产品，支持数据类型为：uint8_t、int8_t、uint16_t、int16_t、half、bfloat16_t、uint32_t、int32_t、float。
+<!-- end id15 -->
 
-</cann-filter>
-
-<cann-filter npu-type = "910">
-
+<!-- npu="910" id16 -->
 Atlas 训练系列产品，支持数据类型为：uint8_t、int8_t、uint16_t、int16_t、half。
+<!-- end id16 -->
 
-</cann-filter>
-
-<cann-filter npu-type = "310p">
-
+<!-- npu="310p" id17 -->
 Atlas 推理系列产品AI Core，支持数据类型为：int4b_t、uint8_t、int8_t、uint16_t、int16_t、half；**注：int4b_t仅支持L1 Buffer->L0A Buffer、L1 Buffer->L0B Buffer通路。**
+<!-- end id17 -->
 
-</cann-filter>
-
-<cann-filter npu-type = "x90">
-
+<!-- npu="x90" id18 -->
 Kirin X90，支持数据类型为：int8_t、half。
+<!-- end id18 -->
 
-</cann-filter>
-
-<cann-filter npu-type = "9030">
-
+<!-- npu="9030" id19 -->
 Kirin 9030，支持数据类型为：half。
-
-</cann-filter>
+<!-- end id19 -->
 
 ## 返回值说明
 
@@ -133,26 +132,21 @@ Kirin 9030，支持数据类型为：half。
 
 - repeatTimes为0时，表示不执行搬运，该接口将被视为NOP（空操作）。
 - 只有L1 Buffer->L0A Buffer/L0B Buffer通路才能开启转置，开启转置功能时，源操作数、目的操作数仅支持b16数据类型。
-- 当目的地址位于L0A Buffer/L0B Buffer时，地址必须512字节对齐。当源地址或目的地址位于L1 Buffer时，地址必须32字节对齐。当源地址位于GM时，地址必须字节对齐。
+- 当目的地址位于L0A Buffer/L0B Buffer时，地址必须512字节对齐。当源地址或目的地址位于L1 Buffer时，地址必须32字节对齐。当源地址位于GM时，地址必须1字节对齐。
 - 当源地址位于GM时，指令执行占用的流水为PIPE_MTE2；当源地址位于L1 Buffer时，指令执行占用的流水为PIPE_MTE1。
 - 当srcStride=0时，表示连续的repeat之间读取源操作数中的同一块数据分形。
-<cann-filter npu-type = "310p">
+<!-- npu="310p" id20 -->
 - 对于Atlas 推理系列产品AI Core，在配合Mmad接口使用、B矩阵数据类型为S4场景下，如果通过ifTranspose参数启用转置，只支持64×64的分形。
-</cann-filter>
+<!-- end id20 -->
 - 不同型号的物理存储位置不同，开发者可以参考如下：
     - 支持的物理存储位置为Global Memory（TPosition: GM）/L1 Buffer（TPosition: A1/B1）。
-    
-    <cann-filter npu-type = "950">
-    
+    <!-- npu="950" id21 -->
     - 特别针对Ascend 950PR/Ascend 950DT，支持的物理存储位置为L1 Buffer（TPosition: A1/B1）。
-    
-    </cann-filter>
+    <!-- end id21 -->
 
-<cann-filter npu-type = "950">
-
+<!-- npu="950" id22 -->
 - 特别针对Ascend 950PR/Ascend 950DT，设置dstGap参数无效。
-
-</cann-filter>
+<!-- end id22 -->
 
 ## 关键特性说明
 
