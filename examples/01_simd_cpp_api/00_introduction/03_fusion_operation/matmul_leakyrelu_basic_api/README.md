@@ -507,7 +507,7 @@
 | L1/L0双缓冲流水线 | Cube核内GM→L1→L0A/L0B→L0C→GM各阶段串行执行，搬运和计算无法重叠 | Ping-Pong双缓冲使MTE2搬运和MTE1/Mmad计算并行，大幅提升吞吐量 |
 | Fixpipe与Mmad细粒度并行 | 当前Mmad和Fixpipe整块串行，Mmad计算时Fixpipe空闲，Fixpipe搬出时Mmad空闲 | 拆分为更小粒度的块，Mmad和Fixpipe交替执行，减少流水线气泡 |
 | UB双缓冲 | Vector核内GM→UB→计算→GM串行执行 | UB Ping-Pong双缓冲使MTE2搬运和VEC计算并行 |
-| Vector核VF融合 | 当前使用MemBase API，中间结果需写回UB | 使用RegBase + [asc_vf_call](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Reg矢量计算/asc_vf_call.md)进行VF融合，中间计算在寄存器完成，减少UB读写次数 |
+| Vector核VF融合 | 当前使用MemBase API，中间结果需写回UB | 使用RegBase + [asc_vf_call](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Reg矢量计算/VF调用/asc_vf_call.md)进行VF融合，中间计算在寄存器完成，减少UB读写次数 |
 | 大包搬运 | 当前仅搬运单块baseM×baseN数据 | 增大singleCoreM/singleCoreN，减少搬运次数，提高带宽利用率 |
 | GM中转优化 | Cube核结果需经GM中转给Vector核（L0C→GM→UB），两次搬运开销大 | Ascend 950PR支持Fixpipe直接写入UB（L0C→UB），省去GM中转开销 |
 
