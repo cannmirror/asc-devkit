@@ -111,7 +111,7 @@ __aicore__ inline void Fill(const LocalTensor<T>& dst, const InitConstValueParam
 ```cpp
 uint32 mLength = 16;
 uint32 kLength = 16;
-Fill(leftMatrix, {1, static_cast<uint16_t>(mLength * kLength * sizeof(float) / 32), 0, 1}); // 给leftMatrix填充mLength * kLength长度的数据为1，按32B的颗粒进行填充
+Fill(leftMatrix, {1, static_cast<uint16_t>(mLength * kLength * sizeof(float) / 32), 0, 1}); // 给leftMatrix填充mLength * kLength长度的数据为1，按32B的颗粒度进行填充
 ```
 
 若接口用于对L1 Buffer/L0A Buffer/L0B Buffer上的LocalTensor清0使用，示例请参考：[Fill调用样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/06_compatibility_guide/fill)。

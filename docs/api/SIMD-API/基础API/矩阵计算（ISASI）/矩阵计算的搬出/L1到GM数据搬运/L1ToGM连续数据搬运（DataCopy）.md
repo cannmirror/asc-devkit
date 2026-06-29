@@ -2,17 +2,33 @@
 
 ## 产品支持情况<a name="zh-cn_topic_0000002540198372_section796754519912"></a>
 
-| 产品 | 是否支持 |
-| ---------- | :----------: |
-| <cann-filter npu-type = "950">Ascend 950PR/Ascend 950DT | x </cann-filter> |
-| <cann-filter npu-type = "A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品 | √ </cann-filter> |
-| <cann-filter npu-type = "910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品 | √ </cann-filter> |
-| <cann-filter npu-type = "310b">Atlas 200I/500 A2 推理产品 | x </cann-filter> |
-| <cann-filter npu-type = "310p">Atlas 推理系列产品AI Core | x </cann-filter> |
-| <cann-filter npu-type = "310p">Atlas 推理系列产品Vector Core | x </cann-filter> |
-| <cann-filter npu-type = "910">Atlas 训练系列产品 | x </cann-filter> |
-| <cann-filter npu-type = "x90">Kirin X90 | √ </cann-filter> |
-| <cann-filter npu-type = "9030">Kirin 9030 | √ </cann-filter> |
+<!-- npu="950" id1 -->
+- Ascend 950PR/Ascend 950DT：不支持
+<!-- end id1 -->
+<!-- npu="A3" id2 -->
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持
+<!-- end id2 -->
+<!-- npu="910b" id3 -->
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持
+<!-- end id3 -->
+<!-- npu="310b" id4 -->
+- Atlas 200I/500 A2 推理产品：不支持
+<!-- end id4 -->
+<!-- npu="310p" id5 -->
+- Atlas 推理系列产品AI Core：不支持
+<!-- end id5 -->
+<!-- npu="310p" id6 -->
+- Atlas 推理系列产品Vector Core：不支持
+<!-- end id6 -->
+<!-- npu="910" id7 -->
+- Atlas 训练系列产品：不支持
+<!-- end id7 -->
+<!-- npu="x90" id8 -->
+- Kirin X90：支持
+<!-- end id8 -->
+<!-- npu="9030" id9 -->
+- Kirin 9030：支持
+<!-- end id9 -->
 
 ## 功能说明<a name="zh-cn_topic_0000002540198372_section106841136114319"></a>
 
@@ -53,29 +69,21 @@ __aicore__ inline void DataCopy(const GlobalTensor<T>& dst, const LocalTensor<T>
 
 源矩阵和目的矩阵支持的数据类型保持一致。
 
-<cann-filter npu-type = "A3">
-
+<!-- npu="A3" id10 -->
 针对Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持数据类型为：int8_t、uint8_t、int16_t、uint16_t、half、bfloat16_t、int32_t、uint32_t、float、int64_t、uint64_t、double。
+<!-- end id10 -->
 
-</cann-filter>
-
-<cann-filter npu-type = "910b">
-
+<!-- npu="910b" id11 -->
 Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持数据类型为：int8_t、uint8_t、int16_t、uint16_t、half、bfloat16_t、int32_t、uint32_t、float、int64_t、uint64_t、double。
+<!-- end id11 -->
 
-</cann-filter>
-
-<cann-filter npu-type = "x90">
-
+<!-- npu="x90" id12 -->
 针对Kirin X90，支持数据类型为：int8_t、uint8_t、int16_t、uint16_t、half、int32_t、uint32_t、float、int64_t、uint64_t、double。
+<!-- end id12 -->
 
-</cann-filter>
-
-<cann-filter npu-type = "9030">
-
+<!-- npu="9030" id13 -->
 Kirin 9030，支持数据类型为：int8_t、uint8_t、int16_t、uint16_t、half、int32_t、uint32_t、float、int64_t、uint64_t、double。
-
-</cann-filter>
+<!-- end id13 -->
 
 ## 返回值说明
 
@@ -84,27 +92,17 @@ Kirin 9030，支持数据类型为：int8_t、uint8_t、int16_t、uint16_t、hal
 ## 约束说明<a name="zh-cn_topic_0000002540198372_section2045914466492"></a>
 
 - 位于L1 Buffer的源地址必须32字节对齐，位于Global Memory的目的地址必须1字节对齐。
-- 调用连续搬运接口时，count \* sizeof\(T\)需要32字节对齐， 若未对齐，则搬运量会向下取整到32字节对齐。
-
-<cann-filter npu-type = "A3,910b">
-
+- 调用连续搬运接口时，count \* sizeof\(T\)需要32字节对齐，若未对齐，则搬运量会向下取整到32字节对齐。
+<!-- npu="A3,910b" id14 -->
 - 针对如下产品型号：
-
-    <cann-filter npu-type = "910b">
-    
-    Atlas A2 训练系列产品/Atlas A2 推理系列产品；
-
-    </cann-filter>
-    
-    <cann-filter npu-type = "A3">
-
-    Atlas A3 训练系列产品/Atlas A3 推理系列产品；
-
-    </cann-filter>
-
+    <!-- npu="A3" id15 -->
+    Atlas A3 训练系列产品/Atlas A3 推理系列产品
+    <!-- end id15 -->
+    <!-- npu="910b" id16 -->
+    Atlas A2 训练系列产品/Atlas A2 推理系列产品
+    <!-- end id16 -->
     在跨卡通信算子开发场景，DataCopy类接口支持跨卡数据搬运，仅支持HCCS物理链路，不支持其他通路；开发者开发过程中，需要关注涉及卡间通信的物理通路，可通过npu-smi info -t topo命令查询HCCS物理链路。
-
-</cann-filter>
+<!-- end id14 -->
 
 ## 调用示例<a name="zh-cn_topic_0000002540198372_section088124295117"></a>
 

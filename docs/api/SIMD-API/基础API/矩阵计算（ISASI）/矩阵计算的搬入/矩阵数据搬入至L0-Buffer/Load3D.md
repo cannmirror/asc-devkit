@@ -525,7 +525,7 @@ isSetFMatrix配置为true，表示在Load3D接口内部设置FeatureMap的属性
 
 isSetPadding配置为true，表示在接口内部设置Pad属性描述（即padValue参数，参数介绍参考[表4](#zh-cn_topic_0000002512171652_table193501032193419)）；设置为false，表示该接口传入的Pad属性不生效，开发者需要通过SetLoadDataPaddingValue进行设置。
 
-### Load3d数据格式说明<a id="zh-cn_topic_0000002512171652_section726316123184"></a>
+### Load3D数据格式说明<a id="zh-cn_topic_0000002512171652_section726316123184"></a>
 
 要求输入的feature map和filter的格式是NC1HWC0，其中C0是最低维度而且C0是固定值为16（对于u8/s8类型为32），C1=C/C0。
 
