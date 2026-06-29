@@ -164,7 +164,7 @@ public:
     void AclnnOpGenCodeParamCheck(
         std::vector<OpParamDef>& inputs, std::vector<OpParamDef>& outputs, OpDefName& opdefName,
         std::ofstream& outfile) const;
-    void AclnnGenCodeCommFunDelcare(std::ofstream& outfile) const;
+    void AclnnGenCodeCommFunDelcare(std::ofstream& outfile, bool needInvalidArgumentReport = false) const;
     void AclnnOpGenCodeWorkspaceDelcare(
         OpDef& opDef, OpDefName& opdefName, std::ofstream& outfile, uint32_t version) const;
     void AclnnOpGenCodeIoParamDesc(
@@ -193,7 +193,7 @@ public:
         OpDef& opDef, const std::vector<SocEntry>& socEntries, std::ofstream& outfile) const;
     void AclnnGenOpTypeId(OpDef& opDef, std::ofstream& outfile) const;
     void AclnnGenNameSpaceInfo(std::ofstream& outfile, OpDef& opDef) const;
-    void AclnnGenCheckInfo(std::ofstream& outfile) const;
+    void AclnnGenCheckInfo(std::ofstream& outfile, bool needInvalidArgumentReport = false) const;
     bool IsSupportAutoContiguous(std::vector<OpParamDef>& inputs) const;
     // 获取每个输入在不同Soc上的Contiguous配置
     std::vector<InputContiguousConfig> GetInputContiguousConfigs(OpDef& opDef) const;
@@ -206,7 +206,8 @@ public:
     // 检查AutoContiguous配置并打印WARNING日志
     void CheckAutoContiguousWarning(OpDef& opDef) const;
     void AclnnGenUncontDeclaration(OpDef& opDef, std::ofstream& outfile) const;
-    void AclnnGenCodeDecImpl(std::string& declFile, std::ofstream& outfile) const;
+    void AclnnGenCodeDecImpl(
+        std::string& declFile, std::ofstream& outfile, bool needInvalidArgumentReport = false) const;
     void AclnnGenCodeImplStart(
         std::string& declFile, bool hasOutputShapeDepend, std::ofstream& outfile, OpDef& opDef) const;
     void AclnnGenCodeImplEnd(std::ofstream& outfile) const;
