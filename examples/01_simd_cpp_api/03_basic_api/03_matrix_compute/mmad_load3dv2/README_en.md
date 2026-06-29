@@ -25,17 +25,18 @@ This example introduces the usage scenarios and methods of the LoadData3DV2 inst
 │   ├── mmad_load3dv2.asc                    // Ascend C operator implementation & invocation example
 │   └── README.md                            // Example documentation
 ```
-## Operator Description
+## Example Description
 
-The LoadData3DV2 instruction (hereafter referred to as load3dv2) has transpose capabilities and supported data types that depend on the storage location of the destination address:
+The LoadData3DV2 instruction (referred to as load3dv2 in this example) supports the following data types:
+- Ascend 950PR/Ascend 950DT: int8_t, uint8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, half, bfloat16_t, int32_t, uint32_t, float.
 
-1. When the destination address is on L0A, supported data types are: uint8_t/int8_t/half/bfloat16_t/uint32_t/int32_t/float/int4b_t;
+- Atlas A3 Training Series Products/Atlas A3 Inference Series Products and Atlas A2 Training Series Products/Atlas A2 Inference Series Products:
+    - When the destination address is on A2: int4b_t, int8_t, uint8_t, half, bfloat16_t, int32_t, uint32_t, float.
+    - When the destination address is on B2: half, bfloat16_t, int32_t, uint32_t, float.
 
-```cpp
-When the destination address is on L0B, supported data types are: half/bfloat16_t/uint32_t/int32_t/float.
-```
-2. When the destination address is on L0A, enTranspose can determine whether to enable the transpose function;
-    When the destination address is on L0B, the transpose function is enabled by default (even when enTranspose=false, the transpose function is still enabled).
+Transpose capabilities of the load3dv2 instruction for 2D matrices:
+- Ascend 950PR/Ascend 950DT: the enTranspose parameter takes effect only when the destination address is on A2 and the data type is B8/B16/B32.
+- Atlas A3 Training Series Products/Atlas A3 Inference Series Products and Atlas A2 Training Series Products/Atlas A2 Inference Series Products: the enTranspose parameter takes effect only when the destination address is on A2 and the data type is B16/B32.
 
 Since this example does not currently support int4b_t input data type, it demonstrates the following five load3dv2 usage scenarios in matrix multiplication:
 
@@ -49,7 +50,7 @@ Since this example does not currently support int4b_t input data type, it demons
 | 4 | float | Transpose | No transpose |
 | 5 | int8_t | No transpose | Transpose |
 
-Note: When the input data type is B8 and the destination address is on L0B, the load3dv2 instruction is not supported. Therefore, when scenarioNum=5, SplitB calls the load2d instruction.
+Note: For Atlas A3 Training Series Products/Atlas A3 Inference Series Products and Atlas A2 Training Series Products/Atlas A2 Inference Series Products, when the input data type is B8 and the destination address is on L0B, the load3dv2 instruction is not supported. For compatibility, when scenarioNum=5, SplitB calls the load2d instruction.
 
   In this example, the A matrix in scenarioNum=3 and 4 is consistent with scenarioNum=12 and 13 in the [load_data_l12l0](../load_data_l12l0/README.md) example respectively, and the B matrix is consistent with scenarioNum=13 in that example. Therefore, the specific parameter configuration and diagrams of the load3dv2 instruction can be found in the "6. L1 to L0 (LoadData)" section of that example's readme.
 

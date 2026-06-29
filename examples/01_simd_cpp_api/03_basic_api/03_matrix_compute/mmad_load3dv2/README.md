@@ -28,13 +28,16 @@
 ```
 ## 算子描述
 
-LoadData3DV2指令以下简称load3dv2，该指令对于二维矩阵的转置能力和支持的数据类型都与目的地址所处的存储位置有关，具体来说：
+LoadData3DV2指令以下简称load3dv2，该指令支持的数据类型：
+- Ascend 950PR/Ascend 950DT，支持数据类型为：int8_t、uint8_t、hifloat8_t、fp8_e5m2_t、fp8_e4m3fn_t、half、bfloat16_t、int32_t、uint32_t、float。
 
-1. 目的地址位于L0A上时，支持数据类型为：uint8_t/int8_t/half/bfloat16_t/uint32_t/int32_t/float/int4b_t；  
-   目的地址位于L0B上，支持数据类型为：half/bfloat16_t/uint32_t/int32_t/float。
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品和Atlas A2 训练系列产品/Atlas A2 推理系列产品：
+    - 目的地址位于A2时，支持数据类型为：int4b_t、int8_t、uint8_t、half、bfloat16_t、int32_t、uint32_t、float。
+    - 目的地址位于B2时，支持数据类型为：half、bfloat16_t、int32_t、uint32_t、float。
 
-2. 目的地址位于L0A上时，enTranspose能够决定是否启用转置功能；  
-   目的地址位于L0B上，默认启用转置功能（enTranspose=false时，依然会启用转置功能）。
+load3dv2指令对于二维矩阵的转置能力：
+- Ascend 950PR/Ascend 950DT，目的地址位于A2，并且类型为b8/b16/b32时，enTranspose参数有效。
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品和Atlas A2 训练系列产品/Atlas A2 推理系列，目的地址位于A2，并且类型为b16/b32时，enTranspose参数有效。
 
 由于本样例暂不支持输入数据类型为int4b_t，因此本样例展示了以下五种load3dv2在矩阵乘法的使用：
 
@@ -48,7 +51,7 @@ LoadData3DV2指令以下简称load3dv2，该指令对于二维矩阵的转置能
 | 4 | float | 转置 | 不转置 |
 | 5 | int8_t | 不转置 | 转置 |
 
-注：输入数据类型为B8时且目的地址位于L0B时，不支持load3dv2指令，因此当scenarioNum=5时，SplitB中调用的是load2d指令。
+注：Atlas A3 训练系列产品/Atlas A3 推理系列产品和Atlas A2 训练系列产品/Atlas A2 推理系列产品，输入数据类型为B8时且目的地址位于L0B时，不支持load3dv2指令，为保种兼容性，当scenarioNum=5时，SplitB中调用的是load2d指令。
 
   本样例中scenarioNum=3和4中A矩阵分别与样例[load_data_l12l0](../load_data_l12l0/README.md)中scenarioNum=12和13场景一致，B矩阵与该样例中scenarioNum=13场景一致，因此load3dv2指令具体的参数配置和示意图可以参考该样例readme的"6. L1到L0（LoadData）"小节中对Load3DV2接口的介绍。
 

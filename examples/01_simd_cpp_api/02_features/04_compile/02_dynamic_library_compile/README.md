@@ -6,7 +6,7 @@
 
 <p align="center">
   <img src="./figures/dynamic_library_compile.png" width="50%">
-   </p>
+</p>
 <p align="center">
 图1：代码结构与调用关系
 </p>
