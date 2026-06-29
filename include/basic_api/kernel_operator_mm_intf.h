@@ -99,10 +99,7 @@ __aicore__ inline void LoadData(
 template <typename T, typename U>
 __aicore__ inline __inout_pipe__(MTE2) void LoadData(
     const LocalTensor<T>& dst, const GlobalTensor<U>& src, const LoadData2DParamsV2& loadDataParams,
-    const Nd2NzParamsV2& nd2nzParams)
-{
-    LoadDataImpl(dst, src, loadDataParams, nd2nzParams);
-}
+    const Nd2NzParamsV2& nd2nzParams);
 #endif
 
 /* **************************************************************************************************

@@ -30,6 +30,8 @@
 #include "kernel_operator_data_copy_base_impl.h"
 
 namespace AscendC {
+__aicore__ inline void PrintTimeStamp(uint32_t descId);
+
 /* **************************************************************************************************
  * DataCopy                                             *
  * ************************************************************************************************* */
@@ -47,6 +49,9 @@ template <typename T>
 __aicore__ inline void __inout_pipe__(MTE2) DataCopy(const LocalTensor<T>& dst, const GlobalTensor<T>& src,
     const DataCopyParams& repeatParams)
 {
+#ifdef ASCENDC_TIME_STAMP_ON
+    PrintTimeStamp(static_cast<uint32_t>(TimeStampId::TIME_STAMP_MTE2_DATACOPY));
+#endif
 #ifdef __MSTX_DFX_REPORT__
     MstxTensor::GetMstxDataCopyInfo(dst, src, repeatParams, "DataCopy");
 #endif
@@ -120,6 +125,9 @@ template <typename T, bool enableSmallC0>
 __aicore__ inline __inout_pipe__(MTE2) void DataCopy(const LocalTensor<T>& dst, const GlobalTensor<T>& src,
     const Nd2NzParams& intriParams)
 {
+#ifdef ASCENDC_TIME_STAMP_ON
+    PrintTimeStamp(static_cast<uint32_t>(TimeStampId::TIME_STAMP_MTE2_DATACOPY));
+#endif
     CheckNd2NzParams(intriParams, "DataCopy with Nd2NzParams");
     using PrimType = PrimT<T>;
     const Hardware dstHWPos = GetPhyType((TPosition)dst.GetPosition());
@@ -163,6 +171,9 @@ template <typename T>
 __aicore__ inline __inout_pipe__(MTE2) void DataCopy(const LocalTensor<T>& dst, const GlobalTensor<T>& src,
     const Nd2NzParams& intriParams)
 {
+#ifdef ASCENDC_TIME_STAMP_ON
+    PrintTimeStamp(static_cast<uint32_t>(TimeStampId::TIME_STAMP_MTE2_DATACOPY));
+#endif
     CheckNd2NzParams(intriParams, "DataCopy with Nd2NzParams");
     using PrimType = PrimT<T>;
     const Hardware dstHWPos = GetPhyType((TPosition)dst.GetPosition());
@@ -207,6 +218,9 @@ template <typename T, bool enableSmallC0>
 __aicore__ inline __inout_pipe__(MTE2) void DataCopy(const LocalTensor<T>& dst, const GlobalTensor<T>& src,
     const Dn2NzParams& intriParams)
 {
+#ifdef ASCENDC_TIME_STAMP_ON
+    PrintTimeStamp(static_cast<uint32_t>(TimeStampId::TIME_STAMP_MTE2_DATACOPY));
+#endif
     using PrimType = PrimT<T>;
     const Hardware dstHWPos = GetPhyType((TPosition)dst.GetPosition());
     if (dstHWPos == Hardware::L1) {  // GM -> L1
@@ -581,6 +595,9 @@ template <typename T>
 __aicore__ inline __inout_pipe__(MTE2) void DataCopy(const LocalTensor<T> &dst, const GlobalTensor<T> &src,
     const SliceInfo dstSliceInfo[], const SliceInfo srcSliceInfo[], const uint32_t dimValue)
 {
+#ifdef ASCENDC_TIME_STAMP_ON
+    PrintTimeStamp(static_cast<uint32_t>(TimeStampId::TIME_STAMP_MTE2_DATACOPY));
+#endif
     using PrimType = PrimT<T>;
     static_assert(Std::is_same<PrimType, T>::value, "TensorTrait is not supported by DataCopy with SliceInfo!");
 #if ASCENDC_CPU_DEBUG
@@ -617,7 +634,6 @@ __aicore__ inline __inout_pipe__(MTE2) void DataCopy(const LocalTensor<T> &dst, 
 #if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
     const uint8_t cacheMode = ExtractCacheMode(src);
 #endif
-
     if ((srcSliceInfo[0].stride * sizeof(T)) % AscendCUtils::GetC0Size() == 0) {
         repeatParams.srcStride = srcSliceInfo[0].stride * sizeof(T) / AscendCUtils::GetC0Size();
         for (uint32_t i = 0; i < srcOffsetListSize; i++) {
@@ -941,6 +957,9 @@ template <typename T>
 __aicore__ inline __inout_pipe__(MTE2) void DataCopy(const LocalTensor<T>& dst, const GlobalTensor<T>& src,
     const DataCopyParams& intriParams, const DataCopyEnhancedParams& enhancedParams)
 {
+#ifdef ASCENDC_TIME_STAMP_ON
+    PrintTimeStamp(static_cast<uint32_t>(TimeStampId::TIME_STAMP_MTE2_DATACOPY));
+#endif
 #ifdef __MSTX_DFX_REPORT__
     MstxTensor::GetMstxDataCopyInfo(dst, src, intriParams, "DataCopy");
 #endif
@@ -1270,6 +1289,9 @@ template <typename T, PaddingMode mode>
 __aicore__ inline __inout_pipe__(MTE2) void DataCopyPad(const LocalTensor<T> &dst,
     const GlobalTensor<T> &src, const DataCopyParams &dataCopyParams, const DataCopyPadParams &padParams)
 {
+#ifdef ASCENDC_TIME_STAMP_ON
+    PrintTimeStamp(static_cast<uint32_t>(TimeStampId::TIME_STAMP_MTE2_DATACOPY));
+#endif
 #ifdef __MSTX_DFX_REPORT__
     MstxTensor::GetMstxDataCopyPadInfo(dst, src, dataCopyParams, padParams, "DataCopyPad");
 #endif
@@ -1341,6 +1363,9 @@ template <typename T>
 __aicore__ inline __inout_pipe__(MTE2) void DataCopyPad(const LocalTensor<T> &dst,
     const GlobalTensor<T> &src, const DataCopyParams &dataCopyParams, const DataCopyPadParams &padParams)
 {
+#ifdef ASCENDC_TIME_STAMP_ON
+    PrintTimeStamp(static_cast<uint32_t>(TimeStampId::TIME_STAMP_MTE2_DATACOPY));
+#endif
 #ifdef __MSTX_DFX_REPORT__
     MstxTensor::GetMstxDataCopyPadInfo(dst, src, dataCopyParams, padParams, "DataCopyPad");
 #endif
@@ -1459,6 +1484,9 @@ template <typename T, PaddingMode mode>
 __aicore__ inline __inout_pipe__(MTE2) void DataCopyPad(const LocalTensor<T> &dst,
     const GlobalTensor<T> &src, const DataCopyExtParams &dataCopyParams, const DataCopyPadExtParams<T> &padParams)
 {
+#ifdef ASCENDC_TIME_STAMP_ON
+    PrintTimeStamp(static_cast<uint32_t>(TimeStampId::TIME_STAMP_MTE2_DATACOPY));
+#endif
 #ifdef __MSTX_DFX_REPORT__
     MstxTensor::GetMstxDataCopyPadInfo(dst, src, dataCopyParams, padParams, "DataCopyPad");
 #endif
@@ -1488,6 +1516,9 @@ template <typename T>
 __aicore__ inline __inout_pipe__(MTE2) void DataCopyPad(const LocalTensor<T> &dst,
     const GlobalTensor<T> &src, const DataCopyExtParams &dataCopyParams, const DataCopyPadExtParams<T> &padParams)
 {
+#ifdef ASCENDC_TIME_STAMP_ON
+    PrintTimeStamp(static_cast<uint32_t>(TimeStampId::TIME_STAMP_MTE2_DATACOPY));
+#endif
 #ifdef __MSTX_DFX_REPORT__
     MstxTensor::GetMstxDataCopyPadInfo(dst, src, dataCopyParams, padParams, "DataCopyPad");
 #endif
@@ -1541,6 +1572,9 @@ template <typename T, typename U, typename Std::enable_if<Std::is_same<PrimT<T>,
 __aicore__ inline __inout_pipe__(MTE2) void DataCopyPad(const LocalTensor<T> &dst,
     const GlobalTensor<T> &src, const DataCopyExtParams &dataCopyParams, const DataCopyPadExtParams<U> &padParams)
 {
+#ifdef ASCENDC_TIME_STAMP_ON
+    PrintTimeStamp(static_cast<uint32_t>(TimeStampId::TIME_STAMP_MTE2_DATACOPY));
+#endif
 #ifdef __MSTX_DFX_REPORT__
     MstxTensor::GetMstxDataCopyPadInfo(dst, src, dataCopyParams, padParams, "DataCopyPad");
 #endif
@@ -1683,6 +1717,9 @@ template <typename T, uint8_t dim, const NdDmaConfig &config>
 __aicore__ inline void DataCopy(const LocalTensor<T> &dst, const GlobalTensor<T> &src,
     const MultiCopyParams<T, dim> &params)
 {
+#ifdef ASCENDC_TIME_STAMP_ON
+    PrintTimeStamp(static_cast<uint32_t>(TimeStampId::TIME_STAMP_MTE2_DATACOPY));
+#endif
 #if (__NPU_ARCH__ != 5102)
     if ASCEND_IS_AIC {
         return;

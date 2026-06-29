@@ -20,14 +20,15 @@
 #include "impl/utils/debug/asc_debug_utils.h"
 
 namespace __asc_aicore {
-__aicore__ inline void asc_time_stamp_impl(uint32_t desc_id)
+
+#ifdef ASCENDC_TIME_STAMP_ON
+__BLOCK_LOCAL__ __inline__ uint8_t g_timeStampEntryFlag = 0;
+#endif
+
+__aicore__ inline void asc_write_time_stamp_tlv(__gm__ DebugBlockHeadInfo* block_info, uint32_t desc_id, uint64_t cycle,
+    uint64_t entry)
 {
-#ifdef ASCENDC_TIME_STAMP_ON 
-    __gm__ DebugBlockHeadInfo* block_info = get_block_info();
-    if (block_info == nullptr) {
-        return;
-    }
-    uint32_t tlv_len = sizeof(TimeStampTlv);
+    constexpr uint32_t tlv_len = sizeof(TimeStampTlv);
     if (!check_ringbuf_space(block_info, tlv_len)) {
         return;
     }
@@ -38,9 +39,9 @@ __aicore__ inline void asc_time_stamp_impl(uint32_t desc_id)
     time_stamp_tlv->descId = desc_id;
     time_stamp_tlv->blockIdx = static_cast<uint16_t>(asc_debug_get_block_idx());
     time_stamp_tlv->resv = static_cast<uint16_t>(0U);
-    time_stamp_tlv->cycle = asc_debug_get_system_cycle();
+    time_stamp_tlv->cycle = cycle;
     time_stamp_tlv->pc = static_cast<uint64_t>(asc_debug_get_program_counter());
-    time_stamp_tlv->entry = static_cast<uint64_t>(__get_entry_sys_cnt()); 
+    time_stamp_tlv->entry = entry;
     time_stamp_tlv->resvMem[0] = static_cast<uint32_t>(0U);
     time_stamp_tlv->resvMem[1] = static_cast<uint32_t>(0U);
     asc_entire_dcci((__gm__ uint64_t*)time_stamp_tlv);
@@ -48,6 +49,23 @@ __aicore__ inline void asc_time_stamp_impl(uint32_t desc_id)
     __gm__ DebugBlockWriteInfo* write_info = get_block_write_info(block_info);
 
     update_write_info(write_info, tlv_len);
+}
+
+__aicore__ inline void asc_time_stamp_impl(uint32_t desc_id)
+{
+#ifdef ASCENDC_TIME_STAMP_ON
+    const uint64_t time = asc_debug_get_system_cycle();
+    const uint64_t entry = static_cast<uint64_t>(__get_entry_sys_cnt());
+    __gm__ DebugBlockHeadInfo* block_info = get_block_info();
+    if (block_info == nullptr) {
+        return;
+    }
+    if (g_timeStampEntryFlag == 0) {
+        g_timeStampEntryFlag = 1;
+        asc_write_time_stamp_tlv(block_info, static_cast<uint32_t>(AscendC::TimeStampId::TIME_STAMP_WRAP_FIRST), entry,
+            entry);
+    }
+    asc_write_time_stamp_tlv(block_info, desc_id, time, entry);
 #endif
 }
 
