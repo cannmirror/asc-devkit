@@ -2,15 +2,27 @@
 
 ## 产品支持情况
 
-| 产品 | 是否支持 |
-| --- | :---: |
-| <cann-filter npu-type = "950">Ascend 950PR/Ascend 950DT | x </cann-filter> |
-| <cann-filter npu-type = "A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品 | x </cann-filter> |
-| <cann-filter npu-type = "910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品 | x </cann-filter> |
-| <cann-filter npu-type = "310b">Atlas 200I/500 A2 推理产品 | x </cann-filter> |
-| <cann-filter npu-type = "310p">Atlas 推理系列产品AI Core | √ </cann-filter> |
-| <cann-filter npu-type = "310p">Atlas 推理系列产品Vector Core | x </cann-filter> |
-| <cann-filter npu-type = "910">Atlas 训练系列产品 | √ </cann-filter> |
+<!-- npu="950" id1 -->
+- Ascend 950PR/Ascend 950DT：不支持
+<!-- end id1 -->
+<!-- npu="A3" id2 -->
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：不支持
+<!-- end id2 -->
+<!-- npu="910b" id3 -->
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：不支持
+<!-- end id3 -->
+<!-- npu="310b" id4 -->
+- Atlas 200I/500 A2 推理产品：不支持
+<!-- end id4 -->
+<!-- npu="310p" id5 -->
+- Atlas 推理系列产品AI Core：支持
+<!-- end id5 -->
+<!-- npu="310p" id6 -->
+- Atlas 推理系列产品Vector Core：不支持
+<!-- end id6 -->
+<!-- npu="910" id7 -->
+- Atlas 训练系列产品：支持
+<!-- end id7 -->
 
 ## 功能说明
 
@@ -38,9 +50,9 @@ __aicore__ inline Conv2dTilling GetConv2dTiling(Conv2dParams& conv2dParams)
 
 | 参数名称 | 类型 | 说明 |
 | --- | --- | --- |
-| dst | 输出 | 目的操作数。<br><br><cann-filter npu-type = "910">Atlas 训练系列产品，支持的TPosition为：CO1，CO2</cann-filter><br><cann-filter npu-type = "310p">Atlas 推理系列产品AI Core，支持的TPosition为：CO1，CO2</cann-filter><br><br>结果中有效张量格式为[Cout/16, Ho, Wo, 16]，大小为Cout \* Ho \* Wo，Ho与Wo可以根据其他数据计算得出。<br>Ho = floor((H + pad_top + pad_bottom - dilation_h \* (Kh - 1) - 1) / stride_h + 1)<br>Wo = floor((W + pad_left + pad_right - dilation_w \* (Kw - 1) - 1) / stride_w + 1)<br>由于硬件要求Ho\*Wo需为16倍数，在申请dst Tensor时，shape应向上16对齐，实际申请shape大小应为Cout \* round_howo。<br>round_howo = ceil(Ho \* Wo /16) \* 16。 |
-| featureMap | 输入 | 输入张量，Tensor的TPosition为A1。<br><br>输入张量"feature_map"的形状，格式是[C1, H, W, C0]。<br>C1\*C0为输入的channel数，要求如下：<br>&bull; 当feature_map的数据类型为half时，C0=16。<br>&bull; 当feature_map的数据类型为int8_t时，C0=32。<br>&bull; C1取值范围：[1,4]，输入的channel的范围：[16，32，64，128]。<br><br>H为高，取值范围：[1,40]。<br>W为宽，取值范围：[1,40]。 |
-| weight | 输入 | 卷积核（权重）张量，Tensor的TPosition为B1。<br><br>卷积核张量"weight"的形状，格式是[C1, Kh, Kw, Cout, C0]。<br>C1\*C0为输入的channel数，对于C0要求如下：<br>&bull; 当feature_map的数据类型为half时，C0=16。<br>&bull; 当feature_map的数据类型为int8_t时，C0=32。<br>&bull; C1取值范围：[1,4]。<br>&bull; kernel_shape输入的channel数需与fm_shape输入的channel数保持一致。<br><br>Cout为卷积核数目，取值范围：[16，32，64，128]，Cout必须为16的倍数。<br>Kh为卷积核高；值的范围：[1,5]。<br>Kw表示卷积核宽；值的范围：[1,5]。 |
+| dst | 输出 | 目的操作数。<br><br><!-- npu="910" id8 -->Atlas 训练系列产品，支持的TPosition为：CO1，CO2<!-- end id8 --><br><!-- npu="310p" id9 -->Atlas 推理系列产品AI Core，支持的TPosition为：CO1，CO2<!-- end id9 --><br><br>结果中有效张量格式为[Cout/16, Ho, Wo, 16]，大小为Cout \* Ho \* Wo，Ho与Wo可以根据其他数据计算得出。<br>Ho = floor((H + pad_top + pad_bottom - dilation_h \* (Kh - 1) - 1) / stride_h + 1)<br>Wo = floor((W + pad_left + pad_right - dilation_w \* (Kw - 1) - 1) / stride_w + 1)<br>由于硬件要求Ho\*Wo需为16倍数，在申请dst Tensor时，shape应向上16对齐，实际申请shape大小应为Cout \* round_howo。<br>round_howo = ceil(Ho \* Wo /16) \* 16。 |
+| featureMap | 输入 | 输入张量，Tensor的TPosition为A1。<br><br>输入张量"feature_map"的形状，格式是[C1, H, W, C0]。<br>C1\*C0为输入的channel数，要求如下：<br>&bull;当feature_map的数据类型为half时，C0=16。<br>&bull;当feature_map的数据类型为int8_t时，C0=32。<br>&bull; C1取值范围：[1,4]，输入的channel的范围：[16，32，64，128]。<br><br>H为高，取值范围：[1,40]。<br>W为宽，取值范围：[1,40]。 |
+| weight | 输入 | 卷积核（权重）张量，Tensor的TPosition为B1。<br><br>卷积核张量"weight"的形状，格式是[C1, Kh, Kw, Cout, C0]。<br>C1\*C0为输入的channel数，对于C0要求如下：<br>&bull;当feature_map的数据类型为half时，C0=16。<br>&bull;当feature_map的数据类型为int8_t时，C0=32。<br>&bull; C1取值范围：[1,4]。<br>&bull; kernel_shape输入的channel数需与fm_shape输入的channel数保持一致。<br><br>Cout为卷积核数目，取值范围：[16，32，64，128]，Cout必须为16的倍数。<br>Kh为卷积核高；值的范围：[1,5]。<br>Kw表示卷积核宽；值的范围：[1,5]。 |
 | conv2dParams | 输入 | 输入矩阵形状等状态参数，类型为Conv2dParams。结构体具体定义为：<br><br><pre><br>struct Conv2dParams {<br>    uint32_t imgShape[CONV2D_IMG_SIZE];       // [H, W]<br>    uint32_t kernelShapeIn[CONV2D_KERNEL_SIZE]; // [Kh, Kw]<br>    uint32_t stride[CONV2D_STRIDE];          // [stride_h, stride_w]<br>    uint32_t cin;                            // cin = C0 * C1;<br>    uint32_t cout;<br>    uint32_t padList[CONV2D_PAD];       // [pad_left, pad_right, pad_top, pad_bottom]<br>    uint32_t dilation[CONV2D_DILATION]; // [dilation_h, dilation_w]<br>    uint32_t initY;<br>    uint32_t partialSum;<br>};<br></pre> |
 | tilling | 输入 | 分形控制参数，类型为Conv2dTilling。结构体具体定义为：<br><br><pre>struct Conv2dTilling {<br>    const uint32_t blockSize = 16; // # M block size is always 16<br>    LoopMode loopMode = LoopMode::MODE_NM;<br><br>    uint32_t c0Size = 32;<br>    uint32_t dTypeSize = 1;<br><br>    uint32_t strideH = 0;<br>    uint32_t strideW = 0;<br>    uint32_t dilationH = 0;<br>    uint32_t dilationW = 0;<br>    uint32_t hi = 0;<br>    uint32_t wi = 0;<br>    uint32_t ho = 0;<br>    uint32_t wo = 0;<br><br>    uint32_t height = 0;<br>    uint32_t width = 0;<br><br>    uint32_t howo = 0;<br><br>    uint32_t mNum = 0;<br>    uint32_t nNum = 0;<br>    uint32_t kNum = 0;<br><br>    uint32_t mBlockNum = 0;<br>    uint32_t kBlockNum = 0;<br>    uint32_t nBlockNum = 0;<br><br>    uint32_t roundM = 0;<br>    uint32_t roundN = 0;<br>    uint32_t roundK = 0;<br><br>    uint32_t mTileBlock = 0;<br>    uint32_t nTileBlock = 0;<br>    uint32_t kTileBlock = 0;<br><br>    uint32_t mIterNum = 0;<br>    uint32_t nIterNum = 0;<br>    uint32_t kIterNum = 0;<br><br>    uint32_t mTileNums = 0;<br><br>    bool mHasTail = false;<br>    bool nHasTail = false;<br>    bool kHasTail = false;<br><br>    uint32_t kTailBlock = 0;<br>    uint32_t mTailBlock = 0;<br>    uint32_t nTailBlock = 0;<br><br>    uint32_t mTailNums = 0;<br>};<br></pre> |
 
