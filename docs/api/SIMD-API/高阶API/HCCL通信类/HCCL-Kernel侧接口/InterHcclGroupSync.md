@@ -51,10 +51,10 @@ __aicore__ inline void InterHcclGroupSync(int8_t srcGroupID, HcclHandle srcHandl
 
 ## 调用示例
 
-本示例构造一个通信融合算子，该算子有1个输入xGM，2个输出alltoallGM和allgatherGM。算子内有2个通信域，首先通信域0对输入进行AlltoAll通信，将结果输出至alltoallGM。当结果数据输出到alltoallGM完成后，通信域1将该结果alltoallGM作为AllGather通信的输入，并将通信结果输出至allgatherGM。
+本示例构造一个通信融合算子，该算子有1个输入xGM，2个输出alltoallGM和allgatherGM，另有tilingGM传入tiling数据。算子内有2个通信域，首先通信域0对输入进行AlltoAll通信，将结果输出至alltoallGM。当结果数据输出到alltoallGM完成后，通信域1将该结果alltoallGM作为AllGather通信的输入，并将通信结果输出至allgatherGM。
 
 ```
-extern "C" __global__ __aicore__ void alltoall_allgather_custom(GM_ADDR xGM, GM_ADDR alltoallGM, GM_ADDR allgatherGM)
+extern "C" __global__ __aicore__ void alltoall_allgather_custom(GM_ADDR xGM, GM_ADDR alltoallGM, GM_ADDR allgatherGM, GM_ADDR tilingGM)
 {
     REGISTER_TILING_DEFAULT(
         AlltoAllAllGatherCustomTilingData); // AlltoAllAllGatherCustomTilingData为对应算子头文件定义的结构体
@@ -67,7 +67,6 @@ extern "C" __global__ __aicore__ void alltoall_allgather_custom(GM_ADDR xGM, GM_
     HcclDataType dtype = HcclDataType::HCCL_DATA_TYPE_FP16;
     const uint64_t dataCount = 10U;
     const uint64_t strideCount = 0U;
-    const uint64_t rankNum = 4U;
     if (AscendC::g_coreType == AIV) { // 仅使用AIV核进行通信
         hccl0.InitV2(contextGM0, &tilingData);
         hccl1.InitV2(contextGM1, &tilingData);
@@ -79,9 +78,8 @@ extern "C" __global__ __aicore__ void alltoall_allgather_custom(GM_ADDR xGM, GM_
 
         // 通信域1下发跨域依赖任务，保证通信域1后续的AllGather任务在通信域0的AlltoAll执行结束后，才开始执行
         hccl1.InterHcclGroupSync(0, group0_handle);
-        // 通信域1下发1个ReduceScatter任务
-        HcclReduceOp op = HcclReduceOp::HCCL_REDUCE_SUM;
-        auto group1_handle = hccl1.AllGather(alltoallGM, allgatherGM, dataCount, dtype, op, strideCount);
+        // 通信域1下发1个AllGather任务
+        auto group1_handle = hccl1.AllGather(alltoallGM, allgatherGM, dataCount, dtype, strideCount);
 
         hccl0.Commit(group0_handle);
         hccl1.Commit(group1_handle);
@@ -94,4 +92,3 @@ extern "C" __global__ __aicore__ void alltoall_allgather_custom(GM_ADDR xGM, GM_
     }
 }
 ```
-
