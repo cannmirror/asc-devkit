@@ -112,7 +112,7 @@ __aicore__ inline Load3DBitModeParam(const LoadData3DParamsV2<T> &loadData3DPara
 | filterH | 是否在filterH的基础上将卷积核height增加256个元素。true，增加；false，不增加。<br>（与[Load3D](Load3D.md)中的filterSizeH含义相同）。<br>该参数是位域结构体的第八低位参数，占用1bit，可以使用Load3DBitModeParam类对象的SetFilterSizeH()函数设置其值，使用GetFilterSizeH()函数获取其值。 |
 | transpose | 是否启用转置功能，对整个目标矩阵进行转置，支持数据类型为bool，仅在目的TPosition为A2，且源操作数为half类型时有效。默认为false。<br>&nbsp;&nbsp;&bull; true：启用<br>&nbsp;&nbsp;&bull; false：不启用<br>（与[Load3D](Load3D.md)中的enTranspose含义相同）。<br>该参数是位域结构体的第九低位参数，占用1bit，可以使用Load3DBitModeParam类对象的SetTranspose()函数设置其值，使用GetTranspose()函数获取其值。 |
 | fmatrixCtrl | 表示LoadData3DV2指令从左矩阵还是右矩阵获取FeatureMap的属性描述，与SetFmatrix配合使用，当前只支持设置为false，默认值为false。<br>&nbsp;&nbsp;&bull; true：从右矩阵中获取FeatureMap的属性描述；<br>&nbsp;&nbsp;&bull; false：从左矩阵中获取FeatureMap的属性描述。<br>（与[Load3D](Load3D.md)中的fMatrixCtrl含义相同）。<br>该参数是位域结构体的第十低位参数，占用1bit，可以使用Load3DBitModeParam类对象的SetFmatrixCtrl()函数设置其值，使用GetFmatrixCtrl()函数获取其值。 |
-| sizeChannel | 源操作数的通道数，取值范围：channelSize∈[1, 63]。<br>channelSize的取值要求为：对于uint32_t/int32_t/float，channelSize可取值为4，N\*8，N\*8+4；对于half/bfloat16，channelSize可取值为4，8，N\*16，N\*16+4，N\*16+8；对于int8_t/uint8_t，channelSize可取值为4，8，16，32\*N，N\*32+4，N\*32+8，N\*32+16；对于int4b_t，ChannelSize可取值为8，16，32，N \* 64，N\*64+8，N\*64+16，N\*64+32。N为正整数。<br>（与[Load3D](Load3D.md)中的channelSize含义相同）。<br>该参数是位域结构体的最高位参数，占用16bit，可以使用Load3DBitModeParam类对象的SetChannelSize()函数设置其值，使用GetChannelSize()函数获取其值。 |
+| sizeChannel | 源操作数的通道数，取值范围：sizeChannel∈[1, 63]。<br>sizeChannel的取值要求为：对于uint32_t/int32_t/float，sizeChannel可取值为4，N\*8，N\*8+4；对于half/bfloat16，sizeChannel可取值为4，8，N\*16，N\*16+4，N\*16+8；对于int8_t/uint8_t，sizeChannel可取值为4，8，16，32\*N，N\*32+4，N\*32+8，N\*32+16；对于int4b_t，sizeChannel可取值为8，16，32，N \* 64，N\*64+8，N\*64+16，N\*64+32。N为正整数。<br>（与[Load3D](Load3D.md)中的channelSize含义相同）。<br>该参数是位域结构体的最高位参数，占用16bit，可以使用Load3DBitModeParam类对象的SetChannelSize()函数设置其值，使用GetChannelSize()函数获取其值。 |
 
 ## 数据类型
 
@@ -141,7 +141,7 @@ uint8_t strideH = 1, strideW = 1;
 uint8_t padList[4] = {padLeft, padRight, padTop, padBottom};
 
 // 使用LoadData3DParamsV2结构体对象初始化Load3DBitModeParam
-// 构造参数顺序：padList, l1H, l1W, channelSize, kExtension, mExtension, kStartPt, mStartPt,
+// 构造参数顺序：padList, l1H, l1W, sizeChannel, kExtension, mExtension, kStartPt, mStartPt,
 //             strideW, strideH, filterW, filterH, dilationFilterW, dilationFilterH,
 //             enTranspose, enSmallK, padValue, filterSizeW, filterSizeH, fMatrixCtrl
 AscendC::LoadData3DParamsV2<half> param = {
