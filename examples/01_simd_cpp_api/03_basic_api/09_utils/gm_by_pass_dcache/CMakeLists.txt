@@ -12,6 +12,11 @@
 cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "NPU architecture: dav-2201, dav-3510")
+set(CMAKE_ASC_RUN_MODE "npu" CACHE STRING "Run mode: npu, cpu")
+
+if(CMAKE_ASC_RUN_MODE STREQUAL "sim")
+    message(FATAL_ERROR "CMAKE_ASC_RUN_MODE can not be sim")
+endif()
 
 find_package(ASC REQUIRED)
 
