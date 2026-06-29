@@ -44,9 +44,13 @@ inline float __bfloat162float(const bfloat16_t x)
 
 输入转换为浮点数的结果。特别场景说明如下：
 
--   当x为nan时，返回值为nan。
--   当x为inf时，返回值为inf。
--   当x为-inf时，返回值为-inf。
+| x值 | 返回值 |
+|---|---|
+| 0 | 0 |
+| -0 | -0 |
+| nan | nan |
+| inf | inf |
+| -inf | -inf |
 
 ## 约束说明
 

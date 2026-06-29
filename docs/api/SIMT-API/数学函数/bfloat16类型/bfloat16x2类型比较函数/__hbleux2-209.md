@@ -45,8 +45,36 @@ bool __hbleux2(bfloat16x2_t x, bfloat16x2_t y)
 
 比较输入各分量是否均满足第一个数小于或等于第二个数的结果。
 
--   true：各分量均满足第一个数小于或等于第二个数。任一输入的分量为nan，该分量的比较结果为true。
+-   true：各分量均满足第一个数小于或等于第二个数。
 -   false：任一分量不满足第一个数小于或等于第二个数。
+
+特殊值如下：
+
+<table>
+  <thead>
+    <tr>
+      <th>x分量值</th>
+      <th>y分量值</th>
+      <th>返回值</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="2">任一分量含nan</td>
+      <td>true</td>
+    </tr>
+    <tr>
+      <td>±0</td>
+      <td>±0</td>
+      <td>true</td>
+    </tr>
+    <tr>
+      <td>±inf</td>
+      <td>±inf</td>
+      <td>符合浮点序关系</td>
+    </tr>
+  </tbody>
+</table>
 
 ## 约束说明
 

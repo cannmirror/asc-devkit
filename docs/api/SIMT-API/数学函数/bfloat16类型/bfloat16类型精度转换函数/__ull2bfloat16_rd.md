@@ -42,7 +42,17 @@ inline bfloat16_t __ull2bfloat16_rd(const unsigned long long int x)
 
 ## 返回值说明
 
-输入遵循CAST\_FLOOR模式转换成的bfloat16类型数据。
+输入遵循CAST\_FLOOR模式转换成的bfloat16类型数据。特殊值如下：
+
+| x值 | 返回值 |
+|---|---|
+| 0 | 0 |
+| 257 | 256 |
+| 511 | 510 |
+| 513 | 512 |
+| 1025 | 1024 |
+| 65537 | 65536 |
+| 18446744073709551615（ULLONG_MAX） | 1.84467e+19 |
 
 ## 约束说明
 

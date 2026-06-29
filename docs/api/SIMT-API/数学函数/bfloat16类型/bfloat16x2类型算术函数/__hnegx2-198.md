@@ -44,9 +44,14 @@ bfloat16x2_t __hnegx2(const bfloat16x2_t x)
 
 输入数据各分量的负值。
 
--   当输入元素为±0时，返回值为∓0。
--   当输入元素为±inf时，返回值为∓inf。
--   当输入元素为nan时，返回值为nan。
+ | 输入 | 返回值 |
+|---|---|
+| 0 | -0 |
+| -0 | 0 |
+| nan | nan |
+| inf | -inf |
+| -inf | inf |
+| ASCRT_MAX_NORMAL_BF16 | -ASCRT_MAX_NORMAL_BF16 |
 
 ## 约束说明
 

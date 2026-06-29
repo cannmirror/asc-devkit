@@ -46,13 +46,62 @@ bfloat16x2_t __hfmax2(const bfloat16x2_t x, const bfloat16x2_t y, const bfloat16
 
 输入数据各分量乘加的结果。计算的分量a、b、c满足：
 
--   a为±inf，b为±0，返回nan。
--   a为±0，b为±inf，返回nan。
--   a\*b为inf，c为-inf，返回nan。
--   a\*b为-inf，c为inf，返回nan。
--   a\*b+c超出对应类型范围的最大值，返回inf。
--   a\*b+c小于对应类型范围的最小值，返回-inf。
--   a、b、c任意一个为nan，返回nan。
+<table>
+  <thead>
+    <tr>
+      <th>x分量值</th>
+      <th>y分量值</th>
+      <th>z分量值</th>
+      <th>返回值</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="3">x、y、z任意一个为nan</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <td>±inf</td>
+      <td>±0</td>
+      <td>任意值</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <td>±0</td>
+      <td>±inf</td>
+      <td>任意值</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <td colspan="2">x*y为inf</td>
+      <td>-inf</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <td colspan="2">x*y为-inf</td>
+      <td>inf</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <td>±inf</td>
+      <td>任意值</td>
+      <td>0</td>
+      <td>±inf</td>
+    </tr>
+    <tr>
+      <td>inf</td>
+      <td>inf</td>
+      <td>0</td>
+      <td>inf</td>
+    </tr>
+    <tr>
+      <td>inf</td>
+      <td>-inf</td>
+      <td>0</td>
+      <td>-inf</td>
+    </tr>
+  </tbody>
+</table>
 
 ## 约束说明
 

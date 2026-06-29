@@ -42,7 +42,17 @@ inline bfloat16_t __float2bfloat16_rd_sat(const float x)
 
 ## 返回值说明
 
-饱和模式下将输入遵循CAST\_FLOOR模式转换成的bfloat16类型数据。
+饱和模式下将输入遵循CAST\_FLOOR模式转换成的bfloat16类型数据。特殊值如下：
+
+| x值 | 非饱和模式返回值 | 饱和模式返回值 |
+|---|---|---|
+| 0 | 0 | 0 |
+| -0 | -0 | -0 |
+| nan | nan | 0 |
+| inf | inf | ASCRT_MAX_NORMAL_BF16 |
+| -inf | -inf | -ASCRT_MAX_NORMAL_BF16 |
+| ＞ASCRT_MAX_NORMAL_BF16 | ASCRT_MAX_NORMAL_BF16 | ASCRT_MAX_NORMAL_BF16 |
+| ＜-ASCRT_MAX_NORMAL_BF16 | -inf | -ASCRT_MAX_NORMAL_BF16 |
 
 ## 约束说明
 

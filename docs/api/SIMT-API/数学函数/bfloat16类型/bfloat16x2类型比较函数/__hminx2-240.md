@@ -43,16 +43,23 @@ bfloat16x2_t __hminx2(const bfloat16x2_t x, const bfloat16x2_t y)
 
 ## 返回值说明
 
-输入数据各分量的最小值。比较的分量a和b满足：
+输入数据各分量的最小值。比较的分量x和y特殊值满足：
 
--   a为-0，b为+0时，返回a。
--   a为+0，b为-0时，返回b。
--   a为nan时，返回值为b。
--   b为nan时，返回值为a。
--   a，b同时为nan时，返回值为nan。
--   a，b任意一个为-inf时，返回值为-inf。
--   a为inf时，返回值为b。
--   b为inf时，返回值为a。
+| x分量值 | y分量值 | 返回值 |
+|---|---|---|
+| nan | 非nan | nan |
+| 非nan | nan | nan |
+| nan | nan | nan |
+| 0 | -0 | -0 |
+| -0 | 0 | -0 |
+| 0 | 0 | 0 |
+| -0 | -0 | -0 |
+| inf | 有限值 | y |
+| 有限值 | inf | x |
+| -inf | 有限值 | -inf |
+| 有限值 | -inf | -inf |
+| inf | -inf | -inf |
+| -inf | inf | -inf |
 
 ## 约束说明
 

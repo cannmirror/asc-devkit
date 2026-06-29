@@ -42,7 +42,15 @@ inline bfloat16_t __uint2bfloat16_rz(const unsigned int x)
 
 ## 返回值说明
 
-输入遵循CAST\_TRUNC模式转换成的bfloat16类型数据。
+输入遵循CAST\_TRUNC模式转换成的bfloat16类型数据。特殊值如下：
+
+| 输入 | 返回值 |
+|---|---|
+| 0 | 0 |
+| 257 | 256 |
+| 514 | 512 |
+| 1002 | 1000 |
+| 4294967295（UINT32_MAX） | 4278190080 |
 
 ## 约束说明
 

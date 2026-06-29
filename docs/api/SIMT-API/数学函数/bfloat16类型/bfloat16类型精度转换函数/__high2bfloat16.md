@@ -42,7 +42,17 @@ inline bfloat16_t __high2bfloat16(const bfloat16x2_t x)
 
 ## 返回值说明
 
-返回输入bfloat16x2的高16位。
+返回输入bfloat16x2的高16位。特殊值如下：
+
+| x值高16位 | 返回值 |
+|---|---|
+| 0 | 0 |
+| -0 | -0 |
+| nan | nan |
+| inf | inf |
+| -inf | -inf |
+| ASCRT_MAX_NORMAL_BF16 | ASCRT_MAX_NORMAL_BF16 |
+| -ASCRT_MAX_NORMAL_BF16 | -ASCRT_MAX_NORMAL_BF16 |
 
 ## 约束说明
 

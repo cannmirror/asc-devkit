@@ -45,8 +45,46 @@ bool __hbneux2(bfloat16x2_t x, bfloat16x2_t y)
 
 比较输入数据各分量是否均不相等的结果。
 
--   true：输入数据各分量均不相等。任一输入的分量为nan，该分量的比较结果为true。
+-   true：输入数据各分量均不相等。
 -   false：输入数据任一分量相等。
+
+特殊值如下：
+
+<table>
+  <thead>
+    <tr>
+      <th>x分量值</th>
+      <th>y分量值</th>
+      <th>返回值</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>±0</td>
+      <td>±0</td>
+      <td>false</td>
+    </tr>
+    <tr>
+      <td>inf</td>
+      <td>inf</td>
+      <td>false</td>
+    </tr>
+    <tr>
+      <td>-inf</td>
+      <td>-inf</td>
+      <td>false</td>
+    </tr>
+    <tr>
+      <td>inf</td>
+      <td>-inf</td>
+      <td>true</td>
+    </tr>
+    <tr>
+      <td colspan="2">任一分量含nan</td>
+      <td>true（任一输入分量为nan时，该分量≠比较结果为true）</td>
+    </tr>
+  </tbody>
+</table>
 
 ## 约束说明
 

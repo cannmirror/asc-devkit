@@ -43,7 +43,15 @@ inline bfloat16x2_t __highs2bfloat162(const bfloat16x2_t x, const bfloat16x2_t y
 
 ## 返回值说明
 
-提取两个bfloat162输入的高16位，并填充到bfloat162中的结果。
+提取两个bfloat162输入的高16位，并填充到bfloat162中的结果。特殊值如下：
+
+| 输入高16位值 | 返回值 |
+|---|---|
+| ±0 | ±0 |
+| nan | nan |
+| ±inf | ±inf |
+| ASCRT_MAX_NORMAL_BF16 | ASCRT_MAX_NORMAL_BF16 |
+| -ASCRT_MAX_NORMAL_BF16 | -ASCRT_MAX_NORMAL_BF16 |
 
 ## 约束说明
 

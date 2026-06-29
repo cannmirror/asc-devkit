@@ -42,7 +42,16 @@ inline bfloat16x2_t __float22bfloat162_rz_sat(const float2 x)
 
 ## 返回值说明
 
-饱和模式下将输入的两个分量遵循CAST\_TRUNC模式转换成的bfloat16x2\_t类型数据。
+饱和模式下将输入的两个分量遵循CAST\_TRUNC模式转换成的bfloat16x2\_t类型数据。特殊值如下：
+
+| x分量值 | 非饱和模式返回值 | 饱和模式返回值 |
+|---|---|---|
+| ±0 | ±0 | ±0 |
+| nan | nan | 0 |
+| inf | inf | ASCRT_MAX_NORMAL_BF16 |
+| -inf | -inf | -ASCRT_MAX_NORMAL_BF16 |
+| ASCRT_MAX_NORMAL_F | ASCRT_MAX_NORMAL_BF16 | ASCRT_MAX_NORMAL_BF16 |
+| -ASCRT_MAX_NORMAL_F | -ASCRT_MAX_NORMAL_BF16 | -ASCRT_MAX_NORMAL_BF16 |
 
 ## 约束说明
 

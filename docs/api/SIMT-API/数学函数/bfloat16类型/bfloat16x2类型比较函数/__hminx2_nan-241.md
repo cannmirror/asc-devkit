@@ -43,14 +43,63 @@ bfloat16x2_t __hminx2_nan(const bfloat16x2_t x, const bfloat16x2_t y)
 
 ## 返回值说明
 
-输入数据各分量的最小值。比较的分量a和b满足：
+输入数据各分量的最小值。比较的分量x和y特殊值满足：
 
--   a为-0，b为+0时，返回a。
--   a为+0，b为-0时，返回b。
--   a，b任意一个为nan时，返回值为nan。
--   a，b任意一个为-inf时，返回值为-inf。
--   a为inf时，返回值为b。
--   b为inf时，返回值为a。
+<table>
+  <thead>
+    <tr>
+      <th>x分量值</th>
+      <th>y分量值</th>
+      <th>返回值</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>-0</td>
+      <td>-0</td>
+    </tr>
+    <tr>
+      <td>-0</td>
+      <td>0</td>
+      <td>-0</td>
+    </tr>
+    <tr>
+      <td colspan="2">任一分量含nan</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <td>inf</td>
+      <td>有限值</td>
+      <td>y</td>
+    </tr>
+    <tr>
+      <td>有限值</td>
+      <td>inf</td>
+      <td>x</td>
+    </tr>
+    <tr>
+      <td>inf</td>
+      <td>-inf</td>
+      <td>-inf</td>
+    </tr>
+    <tr>
+      <td>-inf</td>
+      <td>inf</td>
+      <td>-inf</td>
+    </tr>
+    <tr>
+      <td>-inf</td>
+      <td>非nan</td>
+      <td>-inf</td>
+    </tr>
+    <tr>
+      <td>非nan</td>
+      <td>-inf</td>
+      <td>-inf</td>
+    </tr>
+  </tbody>
+</table>
 
 ## 约束说明
 

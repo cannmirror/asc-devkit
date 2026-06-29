@@ -43,7 +43,13 @@ inline bfloat16x2_t __halves2bfloat162(const bfloat16_t x, const bfloat16_t y)
 
 ## 返回值说明
 
-输入的数据分别填充为bfloat16x2前后两个分量，返回填充后数据。
+输入的数据分别填充为bfloat16x2前后两个分量，返回填充后数据。特殊值如下：
+
+| 输入 | 返回值 |
+|---|---|
+| ±0 | ±0 |
+| nan | nan |
+| ±inf | ±inf |
 
 ## 约束说明
 

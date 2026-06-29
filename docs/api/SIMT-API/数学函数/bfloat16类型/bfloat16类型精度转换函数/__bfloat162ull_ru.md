@@ -44,9 +44,15 @@ inline unsigned long long int __bfloat162ull_ru(const bfloat16_t x)
 
 输入遵循CAST\_CEIL模式转换成的64位无符号整数。特别场景说明如下：
 
--   当x为nan时，返回值为0。
--   当x为inf时，返回值为18446744073709551615。
--   当x为-inf时，返回值为0。
+| x值 | 返回值 |
+|---|---|
+| ±0 | 0 |
+| nan | 0 |
+| inf | 18446744073709551615（ULLONG_MAX） |
+| -inf | 0 |
+| ASCRT_MAX_NORMAL_BF16 | 18446744073709551615（ULLONG_MAX） |
+| -ASCRT_MAX_NORMAL_BF16 | 0 |
+| ASCRT_MIN_DENORM_BF16 | 1 |
 
 ## 约束说明
 

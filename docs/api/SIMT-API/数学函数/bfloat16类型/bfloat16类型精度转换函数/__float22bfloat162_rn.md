@@ -42,7 +42,17 @@ inline bfloat16x2_t __float22bfloat162_rn(const float2 x)
 
 ## 返回值说明
 
-将输入的两个分量遵循CAST\_RINT模式转换成的bfloat16x2类型数据。
+将输入的两个分量遵循CAST\_RINT模式转换成的bfloat16x2类型数据。本接口受全局饱和模式影响，特殊值如下：
+
+| x分量值 | 非饱和模式返回值 | 饱和模式返回值 |
+|---|---|---|
+| 0 | 0 | 0 |
+| -0 | -0 | -0 |
+| nan | nan | 0 |
+| inf | inf | ASCRT_MAX_NORMAL_BF16 |
+| -inf | -inf | -ASCRT_MAX_NORMAL_BF16 |
+| ＞ASCRT_MAX_NORMAL_BF16 | inf | ASCRT_MAX_NORMAL_BF16 |
+| ＜-ASCRT_MAX_NORMAL_BF16 | -inf | -ASCRT_MAX_NORMAL_BF16 |
 
 ## 约束说明
 

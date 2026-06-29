@@ -42,7 +42,15 @@ inline bfloat16x2_t __lowhigh2highlow(const bfloat16x2_t x)
 
 ## 返回值说明
 
-输入数据的高低16位进行交换的结果。
+输入数据的高低16位进行交换的结果。特殊值如下：
+
+| x值 | 返回值 |
+|---|---|
+| (0, -0) | (-0, 0) |
+| (nan, 正常值) | (正常值, nan) |
+| (inf, -inf) | (-inf, inf) |
+| (ASCRT_MAX_NORMAL_BF16, -ASCRT_MAX_NORMAL_BF16) | (-ASCRT_MAX_NORMAL_BF16, ASCRT_MAX_NORMAL_BF16) |
+| (nan, nan) | (nan, nan) |
 
 ## 约束说明
 

@@ -42,7 +42,13 @@ inline bfloat16_t __uint2bfloat16_rna(const unsigned int x)
 
 ## 返回值说明
 
-输入遵循CAST\_ROUND模式转换成的bfloat16类型数据。
+输入遵循CAST\_ROUND模式转换成的bfloat16类型数据。特殊值如下：
+
+| x值 | 返回值 |
+|---|---|
+| 0 | 0 |
+| 257 | 258 |
+| 4294967295（UINT32_MAX） | 4294967296 |
 
 ## 约束说明
 

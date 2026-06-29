@@ -43,16 +43,16 @@ bfloat16x2_t __hmaxx2(const bfloat16x2_t x, const bfloat16x2_t y)
 
 ## 返回值说明
 
-输入数据各分量的最大值。比较的分量a和b满足：
+输入数据各分量的最大值。比较的分量x和y特殊值满足：
 
--   a为+0，b为-0时，返回a。
--   a为-0，b为+0时，返回b。
--   a为nan时，返回值为b。
--   b为nan时，返回值为a。
--   a，b同时为nan时，返回值为nan。
--   a，b任意一个为inf时，返回值为inf。
--   a为-inf时，返回值为b。
--   b为-inf时，返回值为a。
+| x分量值 | y分量值 | 返回值 |
+|---|---|---|
+| 0 | -0 | 0 |
+| -0 | 0 | 0 |
+| nan | 任意值 | nan |
+| 任意值 | nan | nan |
+| inf | 非nan | inf |
+| 非nan | inf | inf |
 
 ## 约束说明
 

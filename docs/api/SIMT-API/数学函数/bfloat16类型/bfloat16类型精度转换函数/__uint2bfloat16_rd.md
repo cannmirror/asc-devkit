@@ -42,7 +42,14 @@ inline bfloat16_t __uint2bfloat16_rd(const unsigned int x)
 
 ## 返回值说明
 
-输入遵循CAST\_FLOOR模式转换成的bfloat16类型数据。
+输入遵循CAST\_FLOOR模式转换成的bfloat16类型数据。特殊值如下：
+
+| x值 | 返回值 |
+|---|---|
+| 0 | 0 |
+| 257 | 256 |
+| 1000000 | 999424 |
+| 4294967295（UINT32_MAX） | 4.27819e+09 |
 
 ## 约束说明
 

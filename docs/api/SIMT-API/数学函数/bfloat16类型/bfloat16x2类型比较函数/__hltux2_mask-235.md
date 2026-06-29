@@ -43,8 +43,36 @@ unsigned int __hltux2_mask(bfloat16x2_t x, bfloat16x2_t y)
 
 ## 返回值说明
 
--   比较输入数据各分量是否满足第一个数小于第二个数的结果：满足时对应16位掩码结果为0xFFFF，不满足时对应16位掩码结果为0x0。
--   任一输入的分量为nan时，该分量的16位掩码结果为0xFFFF。
+比较输入数据各分量是否满足第一个数小于第二个数的结果：满足时对应16位掩码结果为0xFFFF，不满足时对应16位掩码结果为0x0。特殊值如下：
+
+<table>
+  <thead>
+    <tr>
+      <th>x分量值</th>
+      <th>y分量值</th>
+      <th>对应分量返回值</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="2">x&lt;y</td>
+      <td>0xFFFF</td>
+    </tr>
+    <tr>
+      <td colspan="2">x≥y</td>
+      <td>0x0000</td>
+    </tr>
+    <tr>
+      <td colspan="2">x或y为nan</td>
+      <td>0xFFFF</td>
+    </tr>
+    <tr>
+      <td>±0</td>
+      <td>±0</td>
+      <td>0x0000</td>
+    </tr>
+  </tbody>
+</table>
 
 ## 约束说明
 

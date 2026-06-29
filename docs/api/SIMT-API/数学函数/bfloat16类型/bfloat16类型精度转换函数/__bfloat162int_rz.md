@@ -44,9 +44,14 @@ inline int __bfloat162int_rz(const bfloat16_t x)
 
 输入遵循CAST\_TRUNC模式转换成的有符号整数。特别场景说明如下：
 
--   当x为nan时，返回值为0。
--   当x为inf时，返回值为2147483647。
--   当x为-inf时，返回值为-2147483648。
+| x值 | 返回值 |
+|---|---|
+| ±0 | 0 |
+| nan | 0 |
+| inf | 2147483647（INT32_MAX） |
+| -inf | -2147483648（INT32_MIN） |
+| ASCRT_MAX_NORMAL_BF16 | 2147483647（INT32_MAX） |
+| -ASCRT_MAX_NORMAL_BF16 | -2147483648（INT32_MIN） |
 
 ## 约束说明
 

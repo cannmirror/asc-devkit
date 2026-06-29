@@ -45,11 +45,52 @@ bfloat16x2_t __hmulx2(const bfloat16x2_t x, const bfloat16x2_t y)
 
 输入数据各分量相乘的结果。相乘的分量x和y满足：
 
--   当输入和结果都不为nan时，x\*y的符号为x和y符号的异或。
--   x为非0值，y为±inf时，返回值符号由x和y的符号异或决定，值为inf。
--   x为±0，y为±inf时，返回值为nan。
--   x为±0，y为有限值时，返回值符号由x和y的符号异或决定，值为0。
--   x，y任意一个为nan时，返回值为nan。
+<table>
+  <thead>
+    <tr>
+      <th>x分量值</th>
+      <th>y分量值</th>
+      <th>返回值</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>±0</td>
+      <td>±0</td>
+      <td>±0（符号由x和y符号异或决定）</td>
+    </tr>
+    <tr>
+      <td>±0</td>
+      <td>±inf</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <td>±inf</td>
+      <td>±0</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <td>±inf</td>
+      <td>±inf</td>
+      <td>±inf（符号由x和y符号异或决定）</td>
+    </tr>
+    <tr>
+      <td colspan="2">x，y任意一个为nan</td>
+      <td>nan</td>
+    </tr>
+    <tr>
+      <td>ASCRT_MAX_NORMAL_BF16</td>
+      <td>大于1的正数</td>
+      <td>inf</td>
+    </tr>
+    <tr>
+      <td>-ASCRT_MAX_NORMAL_BF16</td>
+      <td>大于1的正数</td>
+      <td>-inf</td>
+    </tr>
+  </tbody>
+</table>
+
 
 ## 约束说明
 

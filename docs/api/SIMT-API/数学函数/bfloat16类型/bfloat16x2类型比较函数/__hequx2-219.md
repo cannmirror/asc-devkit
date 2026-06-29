@@ -43,8 +43,53 @@ bfloat16x2_t __hequx2(bfloat16x2_t x, bfloat16x2_t y)
 
 ## 返回值说明
 
--   比较输入数据各分量是否相等的结果：满足时对应结果为1.0，不满足时对应结果为0.0。
--   任一输入的分量为nan时，该分量的比较结果为1.0。
+比较输入数据各分量是否相等的结果：满足时对应结果为1.0，不满足时对应结果为0.0。特殊值如下：
+
+<table>
+  <thead>
+    <tr>
+      <th>x分量值</th>
+      <th>y分量值</th>
+      <th>返回值</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="2">任一分量含nan</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <td>inf</td>
+      <td>inf</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <td>-inf</td>
+      <td>-inf</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <td>inf</td>
+      <td>-inf</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>±0</td>
+      <td>±0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <td>ASCRT_MAX_NORMAL_BF16</td>
+      <td>ASCRT_MAX_NORMAL_BF16</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <td>-ASCRT_MAX_NORMAL_BF16</td>
+      <td>-ASCRT_MAX_NORMAL_BF16</td>
+      <td>1.0</td>
+    </tr>
+  </tbody>
+</table>
 
 ## 约束说明
 

@@ -44,9 +44,14 @@ inline long long int __bfloat162ll_rna(const bfloat16_t x)
 
 输入遵循CAST\_ROUND模式转换成的64位有符号整数。特别场景说明如下：
 
--   当x为nan时，返回值为0。
--   当x为inf时，返回值为9223372036854775807。
--   当x为-inf时，返回值为-9223372036854775808。
+| x值 | 返回值 |
+|---|---|
+| ±0 | 0 |
+| nan | 0 |
+| inf | 9223372036854775807（INT64_MAX） |
+| -inf | -9223372036854775808（INT64_MIN） |
+| 超出 long long int 范围的 bfloat16_t 正值 | 9223372036854775807（INT64_MAX） |
+| 超出 long long int 范围的 bfloat16_t 负值 | -9223372036854775808（INT64_MIN） |
 
 ## 约束说明
 

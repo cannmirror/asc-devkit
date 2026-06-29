@@ -44,9 +44,17 @@ inline unsigned int __bfloat162uint_rna(const bfloat16_t x)
 
 输入遵循CAST\_ROUND模式转换成的无符号整数。特别场景说明如下：
 
--   当x为nan时，返回值为0。
--   当x为inf时，返回值为4294967295。
--   当x为-inf时，返回值为0。
+| x值 | 返回值 |
+|---|---|
+| ±0 | 0 |
+| nan | 0 |
+| inf | 4294967295（UINT32_MAX） |
+| -inf | 0 |
+| ASCRT_MAX_NORMAL_BF16 | 4294967295（UINT32_MAX） |
+| -ASCRT_MAX_NORMAL_BF16 | 0 |
+| 0.5 | 1 |
+| 1.5 | 2 |
+| 2.5 | 3 |
 
 ## 约束说明
 
