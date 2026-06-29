@@ -2,7 +2,7 @@
 
 ## Overview
 
-This example implements repeated allocation and release of TPipe based on the TPipe::Init and TPipe::Destroy interfaces.
+This example implements repeated allocation and release of TPipe based on the TPipe constructor and TPipe::Destroy interfaces.
 
 > **Notice:** This example is only applicable to the TPipe and TQue programming model.
 
@@ -31,7 +31,7 @@ This example implements repeated allocation and release of TPipe based on the TP
 
 - Example function
 
-  This example uses two complete Muls computations to demonstrate repeated allocation and release of TPipe. The TPipe object of the first computation must be Destroyed before the TPipe object of the second computation can be Initialized.
+  This example uses two complete Muls computations to demonstrate repeated allocation and release of TPipe. The TPipe object of the first computation must be Destroyed before the TPipe object of the second computation can be constructed.
 
 - Example specifications
 
@@ -67,9 +67,9 @@ This example implements repeated allocation and release of TPipe based on the TP
 
   - Kernel implementation
 
-    - Create a pipe1 object, call the TPipe::Init interface to initialize it, compute, and call the TPipe::Destroy interface to destroy the pipe1 object.
+    - Create a pipe1 object, compute, and call the TPipe::Destroy interface to destroy the pipe1 object.
 
-    - Create a pipe2 object, call the TPipe::Init interface to initialize it, compute, and call the TPipe::Destroy interface to destroy the pipe2 object.
+    - Create a pipe2 object, compute, and call the TPipe::Destroy interface to destroy the pipe2 object.
 
   - Invocation implementation
 
