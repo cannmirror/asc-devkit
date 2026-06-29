@@ -83,8 +83,7 @@ function parseMdSidebar(filePath, urlPrefix) {
   function addCollapsed(items) {
     return items.map(item => {
       if (item.items && item.items.length > 0) {
-        const { link, ...rest } = item
-        return { ...rest, collapsed: true, items: addCollapsed(item.items) }
+        return { ...item, collapsed: true, items: addCollapsed(item.items) }
       }
       return item
     })
@@ -159,6 +158,8 @@ function normalizeHtml(html) {
   html = escapeCodeAngleBrackets(html)
   html = html.replace(/<!--cann-filter:([\w,]+)-->/g, '<cann-filter npu-type="$1">')
   html = html.replace(/<!--\/cann-filter-->/g, '</cann-filter>')
+  html = html.replace(/<!--\s*npu\s*=\s*"([^"]*)"\s+(\w+)\s*-->/g, '<cann-filter npu-type="$1">')
+  html = html.replace(/<!--\s*end\s+(\w+)\s*-->/g, '</cann-filter>')
   const $ = cheerioLoad(html, {
     xml: {
       xmlMode: false,
@@ -279,6 +280,37 @@ function placeholderPlugin() {
       return resolved
     },
   }
+}
+
+function replaceNpuCommentTags(html) {
+  const tokenRegex = /<!--\s*(?:npu\s*=\s*"([^"]*)"\s+(\w+)|end\s+(\w+))\s*-->/g
+  const parts = []
+  const stack = []
+  let lastIdx = 0
+  let match
+  while ((match = tokenRegex.exec(html)) !== null) {
+    const pos = match.index
+    const npuType = match[1]
+    const openId = match[2]
+    const closeId = match[3]
+    parts.push(html.slice(lastIdx, pos))
+    lastIdx = pos + match[0].length
+    if (closeId) {
+      if (stack.length > 0 && stack[stack.length - 1].id === closeId) {
+        stack.pop()
+        parts.push('</div>')
+      }
+    } else if (npuType && openId) {
+      stack.push({ id: openId })
+      parts.push(`<div data-filter="${npuType}">`)
+    }
+  }
+  parts.push(html.slice(lastIdx))
+  while (stack.length > 0) {
+    stack.pop()
+    parts.push('</div>')
+  }
+  return parts.join('')
 }
 
 function replaceCannFilterTags(src, replacer) {
@@ -502,6 +534,7 @@ function balanceDivTags(html) {
   return parts.join('')
 }
 
+          html = replaceNpuCommentTags(html)
           html = replaceCannFilterTags(html, {
             start(type) { return `<div data-filter="${type}">` },
             end() { return '</div>' },
@@ -559,7 +592,7 @@ function balanceDivTags(html) {
             )
             return '$$' + inside.trim() + '$$'
           })
-          html = html.replace(/\$(?!\{)([^$\n]+?)\$/g, (match) => {
+          html = html.replace(/\$(?!\{[\w]+\})([^$\n]+?)\$/g, (match) => {
             let inside = match.slice(1, -1)
             inside = inside.replace(/<em>/g, '_').replace(/<\/em>/g, '_')
             inside = inside.replace(/<[^>]+>/g, '')
@@ -569,7 +602,7 @@ function balanceDivTags(html) {
           })
 
           html = html.replace(/\$\$([\s\S]*?)\$\$/g, (_, tex) => renderMathTex(tex, true))
-          html = html.replace(/\$(?!\{)([^$\n]+?)\$/g, (_, tex) => renderMathTex(tex, false))
+          html = html.replace(/\$(?!\{[\w]+\})([^$\n]+?)\$/g, (_, tex) => renderMathTex(tex, false))
 
           html = html.replace(/<mjx-assistive-mml[\s\S]*?<\/mjx-assistive-mml>/gi, '')
 

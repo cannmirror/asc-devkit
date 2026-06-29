@@ -25,10 +25,44 @@ function getFilterVersion() {
   }
 }
 
+function filterNpuComments(src, version) {
+  const tokenRegex = /<!--\s*(?:npu\s*=\s*"([^"]*)"\s+(\w+)|end\s+(\w+))\s*-->/g
+  if (version === 'all') {
+    return src.replace(tokenRegex, '')
+  }
+  const parts = []
+  const stack = []
+  let lastIdx = 0
+  let match
+  while ((match = tokenRegex.exec(src)) !== null) {
+    const pos = match.index
+    const npuType = match[1]
+    const openId = match[2]
+    const closeId = match[3]
+    const before = src.slice(lastIdx, pos)
+    const suppressed = stack.length > 0 && !stack[stack.length - 1].include
+    if (!suppressed) parts.push(before)
+    lastIdx = pos + match[0].length
+    if (closeId) {
+      if (stack.length > 0 && stack[stack.length - 1].id === closeId) {
+        stack.pop()
+      }
+    } else if (npuType && openId) {
+      const types = npuType.split(',').map(s => s.trim())
+      stack.push({ id: openId, include: types.includes(version) })
+    }
+  }
+  if (stack.length === 0 || stack[stack.length - 1].include) {
+    parts.push(src.slice(lastIdx))
+  }
+  return parts.join('')
+}
+
 function filterContentByVersion(content, version) {
   const htmlBlockRegex = /<p>\s*CANNFILTER_DIV_([A-Za-z0-9_,]+)_OPEN\s*<\/p>([\s\S]*?)<p>\s*CANNFILTER_DIV_\1_CLOSE\s*<\/p>/g
   const plainBlockRegex = /CANNFILTER_DIV_([A-Za-z0-9_,]+)_OPEN[ \t]*\n?([\s\S]*?)CANNFILTER_DIV_\1_CLOSE/g
 
+  content = filterNpuComments(content, version)
   content = filterCannFilterTags(content, version)
 
   if (version === 'all') {

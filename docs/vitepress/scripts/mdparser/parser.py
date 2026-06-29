@@ -406,6 +406,7 @@ def _highlight_code(html: str) -> str:
         lang = m.group(1)
         code = m.group(2)
         text = html_mod.unescape(code)
+        text = re.sub(r'<br\s*/?>', '\n', text)
         if not lang:
             lang = "text"
         label = _PYGMENTS_LANG_LABELS.get(lang.lower(), lang.capitalize())
