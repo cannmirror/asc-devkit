@@ -336,6 +336,9 @@ __aicore__ inline uint32_t HcommImpl<COMM_PROTOCOL_UBC_CTP>::PollCq(
         __gm__ uint8_t* cqeAddr = (__gm__ uint8_t*)(cqBaseAddr + cqeSize * (curTail & (cqDepth - 1)));
         AscendC::GlobalTensor<uint32_t> cqeGlobal;
         cqeGlobal.SetGlobalBuffer((__gm__ uint32_t*)cqeAddr);
+        SyncAction<HardEvent::S_MTE2>();
+        DataCopy(cqeItem_, cqeGlobal, cqeSize / sizeof(uint32_t));
+        SyncAction<HardEvent::MTE2_S>();
         bool validOwner = (curTail / cqDepth) & 1;
         uint32_t times = 0;
         while ((validOwner ^ cqeUb->owner) == 0 && times < HCOMM_URMA_MAX_RETRY_TIMES) {

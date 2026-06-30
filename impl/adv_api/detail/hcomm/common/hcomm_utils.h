@@ -65,7 +65,11 @@ __aicore__ inline uint64_t HtoNLL(uint64_t x)
 template<HardEvent event>
 __aicore__ inline void SyncAction()
 {
-    TEventID eventID = GetTPipePtr()->FetchEventID(event);
+    auto tPipePtr = GetTPipePtr();
+    TEventID eventID = 0;
+    if (tPipePtr != nullptr) {
+        eventID = tPipePtr->FetchEventID(event);
+    }
     SetFlag<event>(eventID);
     WaitFlag<event>(eventID);
 }
