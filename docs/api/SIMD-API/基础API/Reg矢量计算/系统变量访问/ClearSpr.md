@@ -79,7 +79,7 @@ __simd_callee__ inline void ClearSpr()
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
-本接口只能在VF函数内调用，命名空间为AscendC::Reg，函数标记符为__simd_callee__。如果需要在VF外调用，命名空间为AscendC，函数标记符为__aicore__。
+本接口只能在VF函数内调用，命名空间为AscendC::Reg，函数标记符为__simd_callee__。如果需要在VF外调用，命名空间为AscendC，函数标记符为__aicore__，具体请参考[ClearSpr](../../特殊寄存器访问/ClearSpr.md)。
 
 ## 调用示例<a name="section642mcpsimp"></a>
 

@@ -24,8 +24,6 @@
 - Atlas 训练系列产品：不支持
 <!-- end id7 -->
 
-
-
 ## 功能说明<a name="section618mcpsimp"></a>
 
 按元素进行取相反数操作，计算公式如下：
@@ -41,7 +39,7 @@ __aicore__ inline void Neg(const LocalTensor<T>& dst, const LocalTensor<T>& src,
 
 ## 参数说明<a name="section176711403104"></a>
 
-**表1**  模板参数说明
+**表1** 模板参数说明
 
 <a name="table4835205712588"></a>
 <table><thead align="left"><tr id="zh-cn_topic_0000001429830437_row118356578583"><th class="cellrowborder" valign="top" width="16.34%" id="mcps1.2.3.1.1"><p id="zh-cn_topic_0000001429830437_p48354572582"><a name="zh-cn_topic_0000001429830437_p48354572582"></a><a name="zh-cn_topic_0000001429830437_p48354572582"></a>参数名</p>
@@ -59,7 +57,7 @@ __aicore__ inline void Neg(const LocalTensor<T>& dst, const LocalTensor<T>& src,
 </tbody>
 </table>
 
-**表2**  参数说明
+**表2** 参数说明
 
 <a name="table1055216132132"></a>
 <table><thead align="left"><tr id="row105531513121315"><th class="cellrowborder" valign="top" width="16.49%" id="mcps1.2.4.1.1"><p id="p5553171319138"><a name="p5553171319138"></a><a name="p5553171319138"></a>参数名</p>

@@ -24,8 +24,6 @@
 - Atlas 训练系列产品：不支持
 <!-- end id7 -->
 
-
-
 ## 功能说明<a name="section1769835112451"></a>
 
 对前count个输入数据src0、src1按元素相乘操作，将结果写入dst0Local，溢出部分写入dst1Local。计算过程如下：
@@ -41,7 +39,7 @@ __aicore__ inline void Mull(const LocalTensor<T>& dst0, const LocalTensor<T>& ds
 
 ## 参数说明<a name="section622mcpsimp"></a>
 
-**表1**  模板参数说明
+**表 1**  模板参数说明
 
 <a name="table4835205712588"></a>
 <table><thead align="left"><tr id="row118356578583"><th class="cellrowborder" valign="top" width="18.32%" id="mcps1.2.3.1.1"><p id="p48354572582"><a name="p48354572582"></a><a name="p48354572582"></a>参数名</p>
@@ -59,7 +57,7 @@ __aicore__ inline void Mull(const LocalTensor<T>& dst0, const LocalTensor<T>& ds
 </tbody>
 </table>
 
-**表2**  参数说明
+**表 2**  参数说明
 
 <a name="zh-cn_topic_0235751031_table33761356"></a>
 <table><thead align="left"><tr id="zh-cn_topic_0235751031_row27598891"><th class="cellrowborder" valign="top" width="18.54%" id="mcps1.2.4.1.1"><p id="zh-cn_topic_0235751031_p20917673"><a name="zh-cn_topic_0235751031_p20917673"></a><a name="zh-cn_topic_0235751031_p20917673"></a>参数名</p>

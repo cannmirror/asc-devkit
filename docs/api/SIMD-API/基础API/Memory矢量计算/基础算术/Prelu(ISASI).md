@@ -24,8 +24,6 @@
 - Atlas 训练系列产品：不支持
 <!-- end id7 -->
 
-
-
 ## 功能说明<a name="section618mcpsimp"></a>
 
 源操作数src0大于0的情况下直接将src0写入目的操作数dst，否则将源操作数src0 \* src1的结果写入dst。计算公式如下：
@@ -41,7 +39,7 @@ __aicore__ inline void Prelu(const LocalTensor<T>& dst, const LocalTensor<T>& sr
 
 ## 参数说明<a name="section622mcpsimp"></a>
 
-**表1**  模板参数说明
+**表1** 模板参数说明
 
 <a name="table4835205712588"></a>
 <table><thead align="left"><tr id="row118356578583"><th class="cellrowborder" valign="top" width="18.52%" id="mcps1.2.3.1.1"><p id="p48354572582"><a name="p48354572582"></a><a name="p48354572582"></a>参数名</p>
@@ -59,7 +57,7 @@ __aicore__ inline void Prelu(const LocalTensor<T>& dst, const LocalTensor<T>& sr
 </tbody>
 </table>
 
-**表2**  参数说明
+**表2** 参数说明
 
 <a name="zh-cn_topic_0235751031_table33761356"></a>
 <table><thead align="left"><tr id="zh-cn_topic_0235751031_row27598891"><th class="cellrowborder" valign="top" width="18.54%" id="mcps1.2.4.1.1"><p id="zh-cn_topic_0235751031_p20917673"><a name="zh-cn_topic_0235751031_p20917673"></a><a name="zh-cn_topic_0235751031_p20917673"></a>参数名</p>

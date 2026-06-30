@@ -1,6 +1,6 @@
 # Subs<a name="ZH-CN_TOPIC_0000002167791269"></a>
 
-## 产品支持情况
+## 产品支持情况<a name="section1550532418810"></a>
 
 <!-- npu="950" id1 -->
 - Ascend 950PR/Ascend 950DT：支持
@@ -24,8 +24,6 @@
 - Atlas 训练系列产品：不支持
 <!-- end id7 -->
 
-
-
 ## 功能说明<a name="section618mcpsimp"></a>
 
 矢量内每个元素和标量间做减法，支持标量在前和标量在后两种场景，其中标量输入支持配置LocalTensor单点元素。计算公式如下，idx表示LocalTensor单点元素的位置系数。
@@ -36,7 +34,7 @@
 
 -   tensor前n个数据计算
 
-    ```
+    ```cpp
     template <typename T = BinaryDefaultType, bool isSetMask = true, const BinaryConfig& config = DEFAULT_BINARY_CONFIG, typename U, typename S, typename V>
     __aicore__ inline void Subs(const U& dst, const S& src0, const V& src1, const int32_t& count)
     ```
@@ -44,21 +42,21 @@
 -   tensor高维切分计算
     -   mask逐bit模式
 
-        ```
+        ```cpp
         template <typename T = BinaryDefaultType, bool isSetMask = true, const BinaryConfig& config = DEFAULT_BINARY_CONFIG, typename U, typename S, typename V>
         __aicore__ inline void Subs(const U& dst, const S& src0, const V& src1, uint64_t mask[], const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
         ```
 
     -   mask连续模式
 
-        ```
+        ```cpp
         template <typename T = BinaryDefaultType, bool isSetMask = true, const BinaryConfig& config = DEFAULT_BINARY_CONFIG, typename U, typename S, typename V>
         __aicore__ inline void Subs(const U& dst, const S& src0, const V& src1, uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
         ```
 
 ## 参数说明<a name="section622mcpsimp"></a>
 
-**表1**  模板参数说明
+**表1** 模板参数说明
 
 <a name="table4835205712588"></a>
 <table><thead align="left"><tr id="zh-cn_topic_0000001429830437_row118356578583"><th class="cellrowborder" valign="top" width="13.91%" id="mcps1.2.3.1.1"><p id="zh-cn_topic_0000001429830437_p48354572582"><a name="zh-cn_topic_0000001429830437_p48354572582"></a><a name="zh-cn_topic_0000001429830437_p48354572582"></a>参数名</p>
@@ -109,7 +107,7 @@ constexpr BinaryConfig DEFAULT_BINARY_CONFIG = {1};</pre>
 </tbody>
 </table>
 
-**表2**  参数说明
+**表2** 参数说明
 
 <a name="table1549711469155"></a>
 <table><thead align="left"><tr id="row12534194619150"><th class="cellrowborder" valign="top" width="14.510000000000002%" id="mcps1.2.4.1.1"><p id="p115341446121510"><a name="p115341446121510"></a><a name="p115341446121510"></a><strong id="b125344463152"><a name="b125344463152"></a><a name="b125344463152"></a>参数名</strong></p>
@@ -153,11 +151,7 @@ constexpr BinaryConfig DEFAULT_BINARY_CONFIG = {1};</pre>
 </td>
 <td class="cellrowborder" valign="top" width="6.43%" headers="mcps1.2.4.1.2 "><p id="p10535746191515"><a name="p10535746191515"></a><a name="p10535746191515"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="79.06%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0000001530181537_p0554313181312"><a name="zh-cn_topic_0000001530181537_p0554313181312"></a><a name="zh-cn_topic_0000001530181537_p0554313181312"></a><span id="zh-cn_topic_0000001530181537_ph793119540147"><a name="zh-cn_topic_0000001530181537_ph793119540147"></a><a name="zh-cn_topic_0000001530181537_ph793119540147"></a><span id="zh-cn_topic_0000001530181537_ph199431319161515"><a name="zh-cn_topic_0000001530181537_ph199431319161515"></a><a name="zh-cn_topic_0000001530181537_ph199431319161515"></a><a href="../SIMD计算说明/高维切分.md" target="_blank" rel="noopener noreferrer">mask</a></span>用于控制每次迭代内参与计算的元素。</span></p>
-<a name="zh-cn_topic_0000001530181537_ul1255411133132"></a><a name="zh-cn_topic_0000001530181537_ul1255411133132"></a><ul id="zh-cn_topic_0000001530181537_ul1255411133132"><li>逐bit模式：可以按位控制哪些元素参与计算，bit位的值为1表示参与计算，0表示不参与。<p id="zh-cn_topic_0000001530181537_p121114581013"><a name="zh-cn_topic_0000001530181537_p121114581013"></a><a name="zh-cn_topic_0000001530181537_p121114581013"></a>mask为数组形式，数组长度和数组元素的取值范围和操作数的数据类型有关。当操作数为16位时，数组长度为2，mask[0]、mask[1]∈[0, 2<sup id="zh-cn_topic_0000001530181537_sup1411059101"><a name="zh-cn_topic_0000001530181537_sup1411059101"></a><a name="zh-cn_topic_0000001530181537_sup1411059101"></a>64</sup>-1]并且不同时为0；当操作数为32位时，数组长度为1，mask[0]∈(0, 2<sup id="zh-cn_topic_0000001530181537_sup1711155161017"><a name="zh-cn_topic_0000001530181537_sup1711155161017"></a><a name="zh-cn_topic_0000001530181537_sup1711155161017"></a>64</sup>-1]；当操作数为64位时，数组长度为1，mask[0]∈(0, 2<sup id="zh-cn_topic_0000001530181537_sup181195111019"><a name="zh-cn_topic_0000001530181537_sup181195111019"></a><a name="zh-cn_topic_0000001530181537_sup181195111019"></a>32</sup>-1]。</p>
-<p id="zh-cn_topic_0000001530181537_p711354105"><a name="zh-cn_topic_0000001530181537_p711354105"></a><a name="zh-cn_topic_0000001530181537_p711354105"></a>例如，mask=[8, 0]，8=0b1000，表示仅第4个元素参与计算。</p>
-</li></ul>
-<a name="zh-cn_topic_0000001530181537_ul18554121313135"></a><a name="zh-cn_topic_0000001530181537_ul18554121313135"></a><ul id="zh-cn_topic_0000001530181537_ul18554121313135"><li>连续模式：表示前面连续的多少个元素参与计算。取值范围和操作数的数据类型有关，数据类型不同，每次迭代内能够处理的元素个数最大值不同。当操作数为16位时，mask∈[1, 128]；当操作数为32位时，mask∈[1, 64]；当操作数为64位时，mask∈[1, 32]。</li></ul>
+<td class="cellrowborder" valign="top" width="79.06%" headers="mcps1.2.4.1.3 "><p>mask用于控制每次迭代内参与计算的元素。详细设置参考<a href="../SIMD计算说明/掩码/掩码.md">掩码</a>。</p>
 </td>
 </tr>
 <tr id="row1953574611513"><td class="cellrowborder" valign="top" width="14.510000000000002%" headers="mcps1.2.4.1.1 "><p id="p3535194615157"><a name="p3535194615157"></a><a name="p3535194615157"></a>repeatTime</p>
@@ -201,18 +195,18 @@ constexpr BinaryConfig DEFAULT_BINARY_CONFIG = {1};</pre>
 
 -   tensor高维切分计算样例-mask连续模式
 
-    ```
+    ```cpp
     // dstLocal：输出Tensor
     // src0Local：输入Tensor
     // src1Local：输入Tensor
-    
+
     uint64_t mask = 128;
     // repeatTime = 4,单次迭代处理128个数，计算512个数需要迭代4次
     // dstBlkStride, srcBlkStride = 1,每个迭代内src0参与计算的数据地址间隔为1个datablock，表示单次迭代内数据连续读取和写入
     // dstRepStride, srcRepStride = 8,相邻迭代间的地址间隔为8个datablock，表示相邻迭代间数据连续读取和写入
     // 标量在后示例
     AscendC::Subs(dstLocal, src0Local, src1Local[0], mask, 4, {1, 1, 8, 8});
-    
+
     // 标量在前示例
     static constexpr AscendC::BinaryConfig config = { 0 };
     AscendC::Subs<BinaryDefaultType, true, config>(dstLocal, src0Local[0], src1Local, mask, 4, {1, 1, 8, 8});
@@ -220,18 +214,18 @@ constexpr BinaryConfig DEFAULT_BINARY_CONFIG = {1};</pre>
 
 -   tensor高维切分计算样例-mask逐bit模式
 
-    ```
+    ```cpp
     // dstLocal：输出Tensor
     // src0Local：输入Tensor
     // src1Local：输入Tensor
-    
+
     uint64_t mask[2] = { UINT64_MAX, UINT64_MAX };
     // repeatTime = 4,单次迭代处理128个数，计算512个数需要迭代4次
     // dstBlkStride, srcBlkStride = 1,每个迭代内src0参与计算的数据地址间隔为1个datablock，表示单次迭代内数据连续读取和写入
     // dstRepStride, srcRepStride = 8,相邻迭代间的地址间隔为8个datablock，表示相邻迭代间数据连续读取和写入
     // 标量在后示例
     AscendC::Subs(dstLocal, src0Local, src1Local[0], mask, 4, {1, 1, 8, 8});
-    
+
     // 标量在前示例
     static constexpr AscendC::BinaryConfig config = { 0 };
     AscendC::Subs<BinaryDefaultType, true, config>(dstLocal, src0Local[0], src1Local, mask, 4, {1, 1, 8, 8});
@@ -239,10 +233,10 @@ constexpr BinaryConfig DEFAULT_BINARY_CONFIG = {1};</pre>
 
 -   tensor前n个数据计算样例
 
-    ```
+    ```cpp
     // 标量在后示例
     AscendC::Subs(dstLocal, src0Local, src1Local[0], 512);
-    
+
     // 标量在前示例
     static constexpr AscendC::BinaryConfig config = { 0 };
     AscendC::Subs<BinaryDefaultType, true, config>(dstLocal, src0Local[0], src1Local, 512);
@@ -250,7 +244,7 @@ constexpr BinaryConfig DEFAULT_BINARY_CONFIG = {1};</pre>
 
 结果示例如下：
 
-```
+```bash
 输入数据src0Local：[1 2 3 ... 512]
 输入数据src1Local：[1 2 3 ... 512]
 // 标量在前，src0Local[0]作为标量
