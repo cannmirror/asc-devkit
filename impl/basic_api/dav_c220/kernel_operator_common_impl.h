@@ -153,31 +153,9 @@ __aicore__ static inline int64_t GetCtrlSprImpl()
 
 namespace Internal {
 template <SaturationMode mode>
-__aicore__ inline constexpr int8_t GetSaturationModeBit()
+__aicore__ inline constexpr bool IsSupportedSaturationMode()
 {
-    // FLOAT => bit 48; CAST => bit 59
-    if constexpr(mode == SaturationMode::FLOAT) {
-        return 48;
-    } else {
-        return 59;
-    }
-}
-
-template <SaturationMode mode>
-__aicore__ static inline void SetSaturationFlagImpl(bool enableSat)
-{
-    constexpr int8_t sprBit = GetSaturationModeBit<mode>();
-    int64_t ctrlValue = get_ctrl();
-    uint64_t value = enableSat ? (sbitset0(ctrlValue, sprBit)) : sbitset1(ctrlValue, sprBit);  // bit=0 means saturate
-    set_ctrl(value);
-}
-
-template <SaturationMode mode>
-__aicore__ static inline bool GetSaturationFlagImpl()
-{
-    constexpr int8_t sprBit = GetSaturationModeBit<mode>();
-    int64_t value = (get_ctrl() >> sprBit) & 1;   // current value is bit value. value=0 means saturate=true
-    return !value;
+    return mode == SaturationMode::FLOAT || mode == SaturationMode::INT || mode == SaturationMode::CAST;
 }
 } // namespace Internal
 

@@ -40,6 +40,13 @@ void CtrlSprKernel()
     SetSaturationFlag<SaturationMode::CAST>(true);
     res = GetSaturationFlag<SaturationMode::CAST>();
     EXPECT_EQ(res, true);
+
+    SetSaturationFlag<SaturationMode::INT>(false);
+    res = GetSaturationFlag<SaturationMode::INT>();
+    EXPECT_EQ(res, false);
+    SetSaturationFlag<SaturationMode::INT>(true);
+    res = GetSaturationFlag<SaturationMode::INT>();
+    EXPECT_EQ(res, true);
 }
 
 struct CtrlSprTestParams {

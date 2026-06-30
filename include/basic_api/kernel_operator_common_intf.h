@@ -83,6 +83,11 @@ __aicore__ inline void SetSaturationFlag(bool enableSat);
 
 template <SaturationMode mode>
 __aicore__ inline bool GetSaturationFlag();
+
+template <OverrideStrategy strategy>
+__aicore__ inline void SetSaturationStrategy();
+
+__aicore__ inline OverrideStrategy GetSaturationStrategy();
 }  // namespace AscendC
 
 #if defined(__NPU_ARCH__)

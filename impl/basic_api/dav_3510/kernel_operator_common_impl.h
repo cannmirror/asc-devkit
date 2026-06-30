@@ -18,6 +18,7 @@
 #include "../../../include/basic_api/kernel_common.h"
 #include "../kernel_utils.h"
 #include "../../../include/basic_api/kernel_struct_mm.h"
+#include "../../../include/basic_api/kernel_base_types.h"
 namespace AscendC {
 
 __aicore__ inline void SetSysWorkspace(GM_ADDR workspace)
@@ -139,6 +140,16 @@ __aicore__ static inline void ResetCtrlSprImpl()
     value = value | defaultCtrl;
     set_ctrl(value);
 }
+
+namespace Internal {
+template <SaturationMode mode>
+__aicore__ inline constexpr bool IsSupportedSaturationMode()
+{
+    return mode == SaturationMode::FLOAT || mode == SaturationMode::FLOAT8 || mode == SaturationMode::INT ||
+           mode == SaturationMode::CAST;
+}
+} // namespace Internal
+
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_COMMON_IMPL_H
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_COMMON_IMPL_H__)

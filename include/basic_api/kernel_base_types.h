@@ -26,7 +26,14 @@ namespace AscendC {
 
 enum class SaturationMode : uint8_t {
     FLOAT,
+    FLOAT8,
+    INT,
     CAST
+};
+
+enum class OverrideStrategy : uint8_t {
+    USE_API = 0,
+    USE_GLOBAL = 1
 };
 
 } // namespace AscendC
