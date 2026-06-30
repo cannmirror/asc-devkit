@@ -40,13 +40,14 @@ file(GLOB ASCENDC_UT_ascend910B1_AIC_CASE_SRC
 )
 
 file(GLOB ASCENDC_UT_ascend910B1_AIV_CASE_SRC
-    npu_arch_2201/atomic/*.cpp
+    npu_arch_2201/simd_atomic/*.cpp
     npu_arch_2201/cache_ctrl/*.cpp
     npu_arch_2201/sync/*.cpp
     npu_arch_2201/sys_var/*.cpp
     npu_arch_2201/vector_compute/*.cpp
     npu_arch_2201/vector_datamove/*.cpp
     npu_arch_2201/scalar_compute/*.cpp
+    npu_arch_2201/misc/*.cpp
     npu_arch_2201/cache_ctrl/*.cpp
 )
 
