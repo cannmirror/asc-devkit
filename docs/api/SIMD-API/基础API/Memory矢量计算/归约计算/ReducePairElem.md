@@ -2,15 +2,27 @@
 
 ## 产品支持情况
 
-| 产品 | 是否支持 |
-| ---- | -------- |
-| <cann-filter npu-type = "950">Ascend 950PR/Ascend 950DT | √</cann-filter> |
-| <cann-filter npu-type = "A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品 | √</cann-filter> |
-| <cann-filter npu-type = "910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品 | √</cann-filter> |
-| <cann-filter npu-type = "310b">Atlas 200I/500 A2 推理产品 | √</cann-filter> |
-| <cann-filter npu-type = "310p">Atlas 推理系列产品AI Core | √</cann-filter> |
-| <cann-filter npu-type = "310p">Atlas 推理系列产品Vector Core | x</cann-filter> |
-| <cann-filter npu-type = "910">Atlas 训练系列产品 | √</cann-filter> |
+<!-- npu="950" id1 -->
+- Ascend 950PR/Ascend 950DT：支持
+<!-- end id1 -->
+<!-- npu="A3" id2 -->
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持
+<!-- end id2 -->
+<!-- npu="910b" id3 -->
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持
+<!-- end id3 -->
+<!-- npu="310b" id4 -->
+- Atlas 200I/500 A2 推理产品：支持
+<!-- end id4 -->
+<!-- npu="310p" id5 -->
+- Atlas 推理系列产品AI Core：支持
+<!-- end id5 -->
+<!-- npu="310p" id6 -->
+- Atlas 推理系列产品Vector Core：不支持
+<!-- end id6 -->
+<!-- npu="910" id7 -->
+- Atlas 训练系列产品：支持
+<!-- end id7 -->
 
 ## 功能说明
 
@@ -69,12 +81,24 @@
 
 支持的数据类型如下：
 
-- <cann-filter npu-type = "950">Ascend 950PR/Ascend 950DT，支持half、float。</cann-filter>
-- <cann-filter npu-type = "A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持half、float。</cann-filter>
-- <cann-filter npu-type = "910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持half、float。</cann-filter>
-- <cann-filter npu-type = "310b">Atlas 200I/500 A2 推理产品，支持half、float。</cann-filter>
-- <cann-filter npu-type = "310p">Atlas 推理系列产品AI Core，支持half、float。</cann-filter>
-- <cann-filter npu-type = "910">Atlas 训练系列产品，支持half。</cann-filter>
+<!-- npu="950" id8 -->
+- Ascend 950PR/Ascend 950DT，支持half、float。
+<!-- end id8 -->
+<!-- npu="A3" id9 -->
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持half、float。
+<!-- end id9 -->
+<!-- npu="910b" id10 -->
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持half、float。
+<!-- end id10 -->
+<!-- npu="310b" id11 -->
+- Atlas 200I/500 A2 推理产品，支持half、float。
+<!-- end id11 -->
+<!-- npu="310p" id12 -->
+- Atlas 推理系列产品AI Core，支持half、float。
+<!-- end id12 -->
+<!-- npu="910" id13 -->
+- Atlas 训练系列产品，支持half。
+<!-- end id13 -->
 
 目的操作数与源操作数的数据类型需要保持一致。
 
@@ -88,36 +112,54 @@
 - 操作数地址重叠约束请参考[通用地址重叠约束](../../../通用说明和约束.md#通用地址重叠约束)。
 - `dstRepStride`、`srcBlkStride`、`srcRepStride`取值范围为[0, $2^{16}-1$]，需要结合UB的实际大小避免出现越界。
 
-<cann-filter npu-type = "A3,910b">
+<!-- npu="950,A3,910b" id14 -->
+- 当参数count或repeatTime取值为0时，该接口的行为如下：
+  <!-- npu="A3,910b" id15 -->
+  - 针对如下型号，当参数mask或repeatTime取值为0时，不会执行计算操作，不会对目的操作数进行写入，该接口将被视为NOP（空操作）。
+    <!-- npu="A3" id16 -->
+    - Atlas A3 训练系列产品/Atlas A3 推理系列产品
+    <!-- end id16 -->
+    <!-- npu="910b" id17 -->
+    - Atlas A2 训练系列产品/Atlas A2 推理系列产品
+    <!-- end id17 -->
+  <!-- end id15 -->
 
-- 针对如下型号，当`mask=0`或`repeatTime=0`时，不会执行归约操作，不会对目的操作数进行写入，该接口将被视为`NOP`（空操作）。
-  - <cann-filter npu-type = "A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品</cann-filter>
-  - <cann-filter npu-type = "910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品</cann-filter>
+  <!-- npu="950" id18 -->
+  - 针对Ascend 950PR/Ascend 950DT，该接口通过VF调用[Reg矢量计算](../../Reg矢量计算/Reg矢量计算.md)API实现兼容，当参数mask或repeatTime取值为0时，不保证该接口被视为NOP（空操作）。
+  <!-- end id18 -->
+<!-- end id14 -->
 
-</cann-filter>
+<!-- npu="950" id19 -->
+- 对UB空间的占用说明。针对Ascend 950PR/Ascend 950DT：
+  - tensor高维切分计算占用8KB Unified Buffer。
+  - tensor前n个数据连续计算不涉及8KB Unified Buffer的占用。
+<!-- end id19 -->
 
-<!-- npu="A3,910b,310p" id1 -->
-- 针对如下型号，当一对相邻元素的掩码均为0，对应的目的元素将跳过写入，保持不变。
-  <!-- npu="A3" id3 -->
-  - Atlas A3 训练系列产品/Atlas A3 推理系列产品
-  <!-- end id3 -->
-  <!-- npu="910b" id4 -->
-  - Atlas A2 训练系列产品/Atlas A2 推理系列产品
-  <!-- end id4 -->
-  <!-- npu="310p" id5 -->
-  - Atlas 推理系列产品AI Core
-  <!-- end id5 -->
-<!-- end id1 -->
+<!-- npu="950,A3,910b,310p,310b" id20 -->
+- 当一对相邻元素的掩码均为0时，该接口的行为如下：
+  <!-- npu="A3,910b,310p" id21 -->
+  - 针对如下型号，对应的目的元素将跳过写入，保持不变。
+    <!-- npu="A3" id22 -->
+    - Atlas A3 训练系列产品/Atlas A3 推理系列产品
+    <!-- end id22 -->
+    <!-- npu="910b" id23 -->
+    - Atlas A2 训练系列产品/Atlas A2 推理系列产品
+    <!-- end id23 -->
+    <!-- npu="310p" id24 -->
+    - Atlas 推理系列产品AI Core
+    <!-- end id24 -->
+  <!-- end id21 -->
 
-  <!-- npu="950,310b" id2 -->
-- 针对如下型号，当一对相邻元素的掩码均为0，对应的目的操作数中的值会置为0。
-  <!-- npu="950" id6 -->
-  - Ascend 950PR/Ascend 950DT
-  <!-- end id6 -->
-  <!-- npu="310b" id7 -->
-  - Atlas 200I/500 A2 推理产品
-  <!-- end id7 -->
-  <!-- end id2 -->
+  <!-- npu="950,310b" id25 -->
+  - 针对如下型号，对应的目的操作数中的值会置为0。
+    <!-- npu="950" id26 -->
+    - Ascend 950PR/Ascend 950DT
+    <!-- end id26 -->
+    <!-- npu="310b" id27 -->
+    - Atlas 200I/500 A2 推理产品
+    <!-- end id27 -->
+  <!-- end id25 -->
+<!-- end id20 -->
 
 ## 调用示例
 

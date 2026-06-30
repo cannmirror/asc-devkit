@@ -2,17 +2,33 @@
 
 ## 产品支持情况
 
-| 产品 | 是否支持 |
-| --- | --- |
-| <cann-filter npu-type="950">Ascend 950PR/Ascend 950DT | √ </cann-filter>|
-| <cann-filter npu-type="A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品 | √ </cann-filter>|
-| <cann-filter npu-type="910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品 | √ </cann-filter>|
-| <cann-filter npu-type="310b">Atlas 200I/500 A2 推理产品 | √ </cann-filter>|
-| <cann-filter npu-type="310p">Atlas 推理系列产品AI Core | √ </cann-filter>|
-| <cann-filter npu-type="310p">Atlas 推理系列产品Vector Core | x </cann-filter>|
-| <cann-filter npu-type="910">Atlas 训练系列产品 | √ </cann-filter>|
-| <cann-filter npu-type="x90">Kirin X90 | √ </cann-filter>|
-| <cann-filter npu-type="9030">Kirin 9030 | √ </cann-filter>|
+<!-- npu="950" id1 -->
+- Ascend 950PR/Ascend 950DT：支持
+<!-- end id1 -->
+<!-- npu="A3" id2 -->
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持
+<!-- end id2 -->
+<!-- npu="910b" id3 -->
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持
+<!-- end id3 -->
+<!-- npu="310b" id4 -->
+- Atlas 200I/500 A2 推理产品：支持
+<!-- end id4 -->
+<!-- npu="310p" id5 -->
+- Atlas 推理系列产品AI Core：支持
+<!-- end id5 -->
+<!-- npu="310p" id6 -->
+- Atlas 推理系列产品Vector Core：不支持
+<!-- end id6 -->
+<!-- npu="910" id7 -->
+- Atlas 训练系列产品：支持
+<!-- end id7 -->
+<!-- npu="x90" id8 -->
+- Kirin X90：支持
+<!-- end id8 -->
+<!-- npu="9030" id9 -->
+- Kirin 9030：支持
+<!-- end id9 -->
 
 ## 功能说明
 
@@ -75,14 +91,30 @@
 
 支持的数据类型如下：
 
-- <cann-filter npu-type = "950">Ascend 950PR/Ascend 950DT，支持half、float、int64_t、uint64_t。</cann-filter>
-- <cann-filter npu-type = "A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持half、float。</cann-filter>
-- <cann-filter npu-type = "910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持half、float。</cann-filter>
-- <cann-filter npu-type = "310b">Atlas 200I/500 A2 推理产品，支持half、float。</cann-filter>
-- <cann-filter npu-type = "310p">Atlas 推理系列产品AI Core，支持half、float。</cann-filter>
-- <cann-filter npu-type = "910">Atlas 训练系列产品，支持half。</cann-filter>
-- <cann-filter npu-type = "x90">Kirin X90，支持half、float。</cann-filter>
-- <cann-filter npu-type = "9030">Kirin 9030，支持half、float。</cann-filter>
+<!-- npu="950" id10 -->
+- Ascend 950PR/Ascend 950DT，支持half、float、int64_t、uint64_t。数据类型int64_t、uint64_t仅支持tensor前n个数据计算接口。
+<!-- end id10 -->
+<!-- npu="A3" id11 -->
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持half、float。
+<!-- end id11 -->
+<!-- npu="910b" id12 -->
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持half、float。
+<!-- end id12 -->
+<!-- npu="310b" id13 -->
+- Atlas 200I/500 A2 推理产品，支持half、float。
+<!-- end id13 -->
+<!-- npu="310p" id14 -->
+- Atlas 推理系列产品AI Core，支持half、float。
+<!-- end id14 -->
+<!-- npu="910" id15 -->
+- Atlas 训练系列产品，支持half。
+<!-- end id15 -->
+<!-- npu="x90" id16 -->
+- Kirin X90，支持half、float。
+<!-- end id16 -->
+<!-- npu="9030" id17 -->
+- Kirin 9030，支持half、float。
+<!-- end id17 -->
 
 ## 返回值说明
 
@@ -94,37 +126,46 @@
 - 操作数地址重叠约束请参考[通用地址重叠约束](../../../通用说明和约束.md#通用地址重叠约束)。
 - 需要使用`sharedTmpBuffer`的情况下，支持`dst`与`sharedTmpBuffer`地址重叠（通常情况下`dst`比`sharedTmpBuffer`所需的空间要小），此时`sharedTmpBuffer`必须满足所需空间要求，详情请参考[关键特性说明](#关键特性说明)。
 
-<cann-filter npu-type = "A3,910b">
+<!-- npu="950,A3,910b" id18 -->
+- 当参数count或repeatTime取值为0时，该接口的行为如下：
+  <!-- npu="A3,910b" id19 -->
+  - 针对如下型号，当参数count或repeatTime取值为0时，不会执行计算操作，不会对目的操作数进行写入，该接口将被视为NOP（空操作）。
+    <!-- npu="A3" id20 -->
+    - Atlas A3 训练系列产品/Atlas A3 推理系列产品
+    <!-- end id20 -->
+    <!-- npu="910b" id21 -->
+    - Atlas A2 训练系列产品/Atlas A2 推理系列产品
+    <!-- end id21 -->
+  <!-- end id19 -->
 
-- 针对如下型号，当`mask=0`或`repeatTime=0`时，不会执行归约操作，不会对目的操作数进行写入，该接口将被视为`NOP`（空操作）。
-  - <cann-filter npu-type = "A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品</cann-filter>
-  - <cann-filter npu-type = "910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品</cann-filter>
+  <!-- npu="950" id22 -->
+  - 针对Ascend 950PR/Ascend 950DT，该接口通过VF调用[Reg矢量计算](../../Reg矢量计算/Reg矢量计算.md)API实现兼容，当参数count或repeatTime取值为0时，不保证该接口被视为NOP（空操作）。
+  <!-- end id22 -->
+<!-- end id18 -->
 
-</cann-filter>
-
-- <cann-filter npu-type = "950">针对Ascend 950PR/Ascend 950DT，`int64_t`/`uint64_t`数据类型仅支持tensor前n个数据计算接口。</cann-filter>
 - `srcRepStride`取值范围为[0, $2^{16}-1$]，需要结合UB的实际大小避免出现越界。
-<!-- npu="950,910,310p,310b,x90,9030" id1 -->
+
+<!-- npu="950,910,310p,310b,x90,9030" id23 -->
 - 针对以下型号，模板参数`isSetMask`参数不生效，保持默认值即可：
-  <!-- npu="950" id2 -->
+  <!-- npu="950" id24 -->
   - Ascend 950PR/Ascend 950DT
-  <!-- end id2 -->
-  <!-- npu="310b" id3 -->
+  <!-- end id24 -->
+  <!-- npu="310b" id25 -->
   - Atlas 200I/500 A2 推理产品
-  <!-- end id3 -->
-  <!-- npu="310p" id4 -->
+  <!-- end id25 -->
+  <!-- npu="310p" id26 -->
   - Atlas 推理系列产品AI Core
-  <!-- end id4 -->
-  <!-- npu="910" id5 -->
+  <!-- end id26 -->
+  <!-- npu="910" id27 -->
   - Atlas 训练系列产品
-  <!-- end id5 -->
-  <!-- npu="x90" id6 -->
+  <!-- end id27 -->
+  <!-- npu="x90" id28 -->
   - Kirin X90
-  <!-- end id6 -->
-  <!-- npu="9030" id7 -->
+  <!-- end id28 -->
+  <!-- npu="9030" id29 -->
   - Kirin 9030
-  <!-- end id7 -->
-  <!-- end id1 -->
+  <!-- end id29 -->
+<!-- end id23 -->
 
 ## 关键特性说明
 
@@ -132,6 +173,7 @@
 
 - 方式一：同一repeat内采用二叉树累加，不同repeat的结果按顺序累加。
 - 方式二：同一repeat内采用二叉树累加，不同repeat的结果也按二叉树累加。
+- 方式三：不同repeat间通过向量加法将数据合并为一个repeat，repeat内采用二叉树累加。
 
 `ReduceSum`接口以二叉树累加的方式完成每个repeat内的求和，详情请参考[ReduceDataBlock关键特性说明](./ReduceDataBlock.md#关键特性说明)。
 
@@ -153,14 +195,33 @@
 
 **不同硬件形态对应的`ReduceSum`相加方式如下：**
 
-- <cann-filter npu-type = "950">Ascend 950PR/Ascend 950DT，采用方式二。</cann-filter>
-- <cann-filter npu-type = "A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品，tensor前n个数据计算接口采用方式一，tensor高维切分计算接口采用方式二。</cann-filter>
-- <cann-filter npu-type = "910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品，tensor前n个数据计算接口采用方式一，tensor高维切分计算接口采用方式二。</cann-filter>
-- <cann-filter npu-type = "310b">Atlas 200I/500 A2 推理产品，采用方式二。</cann-filter>
-- <cann-filter npu-type = "310p">Atlas 推理系列产品AI Core，采用方式二。</cann-filter>
-- <cann-filter npu-type = "910">Atlas 训练系列产品，采用方式二。</cann-filter>
-- <cann-filter npu-type = "x90">Kirin X90，采用方式二。</cann-filter>
-- <cann-filter npu-type = "9030">Kirin 9030，采用方式二。</cann-filter>
+<!-- npu="950" id30 -->
+- Ascend 950PR/Ascend 950DT，按场景采用不同的累加方式：
+  - int64_t、uint64_t采用方式三。
+  - [Counter模式](../SIMD计算说明/掩码/概述.md#mask-mode)且数据量在256~1024字节之间采用方式三；否则采用方式二。
+  - [Normal模式](../SIMD计算说明/掩码/概述.md#mask-mode)采用方式二。
+<!-- end id30 -->
+<!-- npu="A3" id31 -->
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品，tensor前n个数据计算接口采用方式一，tensor高维切分计算接口采用方式二。
+<!-- end id31 -->
+<!-- npu="910b" id32 -->
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品，tensor前n个数据计算接口采用方式一，tensor高维切分计算接口采用方式二。
+<!-- end id32 -->
+<!-- npu="310b" id33 -->
+- Atlas 200I/500 A2 推理产品，采用方式二。
+<!-- end id33 -->
+<!-- npu="310p" id34 -->
+- Atlas 推理系列产品AI Core，采用方式二。
+<!-- end id34 -->
+<!-- npu="910" id35 -->
+- Atlas 训练系列产品，采用方式二。
+<!-- end id35 -->
+<!-- npu="x90" id36 -->
+- Kirin X90，采用方式二。
+<!-- end id36 -->
+<!-- npu="9030" id37 -->
+- Kirin 9030，采用方式二。
+<!-- end id37 -->
 
 ## 调用示例
 

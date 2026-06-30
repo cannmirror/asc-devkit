@@ -2,60 +2,33 @@
 
 ## 产品支持情况<a name="section1550532418810"></a>
 
-<a name="table38301303189"></a>
-<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>产品</span></p>
-</th>
-<th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p783113012187"><a name="p783113012187"></a><a name="p783113012187"></a>是否支持</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
-</td>
-</tr>
-<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
-</td>
-</tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
-</td>
-</tr>
-<tr id="row103361763242"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1983180181813"><a name="p1983180181813"></a><a name="p1983180181813"></a><span id="ph783112021813"><a name="ph783112021813"></a><a name="ph783112021813"></a><term id="zh-cn_topic_0000001312391781_term354143892110"><a name="zh-cn_topic_0000001312391781_term354143892110"></a><a name="zh-cn_topic_0000001312391781_term354143892110"></a>Atlas 200I/500 A2 推理产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1695483941817"><a name="p1695483941817"></a><a name="p1695483941817"></a>√</p>
-</td>
-</tr>
-<tr id="row18403312418"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p78319051815"><a name="p78319051815"></a><a name="p78319051815"></a><span id="ph163561737112019"><a name="ph163561737112019"></a><a name="ph163561737112019"></a><term id="zh-cn_topic_0000001312391781_term1964153212227"><a name="zh-cn_topic_0000001312391781_term1964153212227"></a><a name="zh-cn_topic_0000001312391781_term1964153212227"></a>Atlas 推理系列产品</term>AI Core</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1695443971810"><a name="p1695443971810"></a><a name="p1695443971810"></a>√</p>
-</td>
-</tr>
-<tr id="row242332080"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p10519331187"><a name="p10519331187"></a><a name="p10519331187"></a><span id="ph1335623792013"><a name="ph1335623792013"></a><a name="ph1335623792013"></a><term id="zh-cn_topic_0000001312391781_term1463893615224"><a name="zh-cn_topic_0000001312391781_term1463893615224"></a><a name="zh-cn_topic_0000001312391781_term1463893615224"></a>Atlas 推理系列产品</term>Vector Core</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1851933589"><a name="p1851933589"></a><a name="p1851933589"></a>x</p>
-</td>
-</tr>
-<tr id="row17253142120252"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p38313021813"><a name="p38313021813"></a><a name="p38313021813"></a><span id="ph58317041819"><a name="ph58317041819"></a><a name="ph58317041819"></a><term id="zh-cn_topic_0000001312391781_term71949488213"><a name="zh-cn_topic_0000001312391781_term71949488213"></a><a name="zh-cn_topic_0000001312391781_term71949488213"></a>Atlas 训练系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p395243920186"><a name="p395243920186"></a><a name="p395243920186"></a>√</p>
-</td>
-</tr>
-<tr id="row134818471256"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p07746191307"><a name="p07746191307"></a><a name="p07746191307"></a><span id="ph880814542020"><a name="ph880814542020"></a><a name="ph880814542020"></a>Kirin X90</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p18774619608"><a name="p18774619608"></a><a name="p18774619608"></a>√</p>
-</td>
-</tr>
-<tr id="row361684714257"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p4336317115"><a name="p4336317115"></a><a name="p4336317115"></a><span id="ph115418716"><a name="ph115418716"></a><a name="ph115418716"></a>Kirin 9030</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p73313312117"><a name="p73313312117"></a><a name="p73313312117"></a>√</p>
-</td>
-</tr>
-</tbody>
-</table>
+<!-- npu="950" id1 -->
+- Ascend 950PR/Ascend 950DT：支持
+<!-- end id1 -->
+<!-- npu="A3" id2 -->
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持
+<!-- end id2 -->
+<!-- npu="910b" id3 -->
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持
+<!-- end id3 -->
+<!-- npu="310b" id4 -->
+- Atlas 200I/500 A2 推理产品：支持
+<!-- end id4 -->
+<!-- npu="310p" id5 -->
+- Atlas 推理系列产品AI Core：支持
+<!-- end id5 -->
+<!-- npu="310p" id6 -->
+- Atlas 推理系列产品Vector Core：不支持
+<!-- end id6 -->
+<!-- npu="910" id7 -->
+- Atlas 训练系列产品：支持
+<!-- end id7 -->
+<!-- npu="x90" id8 -->
+- Kirin X90：支持
+<!-- end id8 -->
+<!-- npu="9030" id9 -->
+- Kirin 9030：支持
+<!-- end id9 -->
 
 ## 功能说明<a name="section618mcpsimp"></a>
 
@@ -129,7 +102,7 @@ dst_nchw = np.transpose(src_nhwc, axes=(0,3,1,2))
 | wSize | w轴长度。默认值为0。<br/>•二维矩阵数据块转置，固定传入16。<br/>•[N,C,H,W]与[N,H,W,C]数据格式互相转换，取值范围：hSize \* wSize ∈[0, 4095]，hSize \* wSize \* sizeof(T)需要保证32B对齐。 |
 | transposeType | 数据排布及reshape的类型，类型为TransposeType枚举类。默认值为TRANSPOSE_ND2ND_B16。<pre>enum class TransposeType : uint8_t {<br/>    TRANSPOSE_TYPE_NONE,           // API不做任何处理<br/>    TRANSPOSE_NZ2ND_0213,          // 当前不支持<br/>    TRANSPOSE_NZ2NZ_0213,          // 当前不支持<br/>    TRANSPOSE_NZ2NZ_012_WITH_N,    // 当前不支持<br/>    TRANSPOSE_NZ2ND_012_WITH_N,    // 当前不支持<br/>    TRANSPOSE_NZ2ND_012_WITHOUT_N, // 当前不支持<br/>    TRANSPOSE_NZ2NZ_012_WITHOUT_N, // 当前不支持<br/>    TRANSPOSE_ND2ND_ONLY,          // 当前不支持<br/>    TRANSPOSE_ND_UB_GM,            // 当前不支持<br/>    TRANSPOSE_GRAD_ND_UB_GM,       // 当前不支持<br/>    TRANSPOSE_ND2ND_B16,           // [16,16]二维矩阵转置<br/>    TRANSPOSE_NCHW2NHWC,           // [N,C,H,W]-&gt;[N,H,W,C]，<br/>    TRANSPOSE_NHWC2NCHW            // [N,H,W,C]-&gt;[N,C,H,W]<br/>};</pre> |
 
-<cann-filter npu-type="950">
+<!-- npu="950" id10 -->
 
 **表**  Ascend 950PR/Ascend 950DT sharedTmpBuffer所需的内存<a id="table4"></a>
 
@@ -139,9 +112,9 @@ dst_nchw = np.transpose(src_nhwc, axes=(0,3,1,2))
 | TRANSPOSE_NCHW2NHWC | 临时Buffer的大小按照下述计算规则（伪代码）进行计算。<pre>auto h0 = 16; // 当数据类型的位宽为8时，h0 = 32；其他情况下，h0 = 16<br/>auto w0 = 32 / sizeof(type);  // type代表数据类型<br/>auto tmpBufferSize = (cSize + 2)  * h0 \* w0 \* sizeof(type);</pre> |
 | TRANSPOSE_NHWC2NCHW | 临时Buffer的大小按照下述计算规则（伪代码）进行计算。<pre>auto h0 = 16; // 当数据类型的位宽为8时，h0 = 32；其他情况下，h0 = 16<br/>auto w0 = 32 / sizeof(type);  // type代表数据类型<br/>auto tmpBufferSize = (cSize \* 2 + 1) \* h0 \* w0 \* sizeof(type);</pre> |
 
-</cann-filter>
+<!-- end id10 -->
 
-<cann-filter npu-type="A3">
+<!-- npu="A3" id11 -->
 
 **表**  Atlas A3 训练系列产品/Atlas A3 推理系列产品sharedTmpBuffer所需的内存<a id="table4"></a>
 
@@ -151,9 +124,9 @@ dst_nchw = np.transpose(src_nhwc, axes=(0,3,1,2))
 | TRANSPOSE_NCHW2NHWC | 临时Buffer的大小按照下述计算规则（伪代码）进行计算。<pre>auto h0 = 16; // 当数据类型的位宽为8时，h0 = 32；其他情况下，h0 = 16<br/>auto w0 = 32 / sizeof(type);  // type代表数据类型<br/>auto tmpBufferSize = (cSize + 2)  * h0 \* w0 \* sizeof(type);</pre> |
 | TRANSPOSE_NHWC2NCHW | 临时Buffer的大小按照下述计算规则（伪代码）进行计算。<pre>auto h0 = 16; // 当数据类型的位宽为8时，h0 = 32；其他情况下，h0 = 16<br/>auto w0 = 32 / sizeof(type);  // type代表数据类型<br/>auto tmpBufferSize = (cSize \* 2 + 1) \* h0 \* w0 \* sizeof(type);</pre> |
 
-</cann-filter>
+<!-- end id11 -->
 
-<cann-filter npu-type="910b">
+<!-- npu="910b" id12 -->
 
 **表**  Atlas A2 训练系列产品/Atlas A2 推理系列产品sharedTmpBuffer所需的内存<a id="table4"></a>
 
@@ -163,9 +136,9 @@ dst_nchw = np.transpose(src_nhwc, axes=(0,3,1,2))
 | TRANSPOSE_NCHW2NHWC | 临时Buffer的大小按照下述计算规则（伪代码）进行计算。<pre>auto h0 = 16; // 当数据类型的位宽为8时，h0 = 32；其他情况下，h0 = 16<br/>auto w0 = 32 / sizeof(type);  // type代表数据类型<br/>auto tmpBufferSize = (cSize + 2)  * h0 \* w0 \* sizeof(type);</pre> |
 | TRANSPOSE_NHWC2NCHW | 临时Buffer的大小按照下述计算规则（伪代码）进行计算。<pre>auto h0 = 16; // 当数据类型的位宽为8时，h0 = 32；其他情况下，h0 = 16<br/>auto w0 = 32 / sizeof(type);  // type代表数据类型<br/>auto tmpBufferSize = (cSize \* 2 + 1) \* h0 \* w0 \* sizeof(type);</pre> |
 
-</cann-filter>
+<!-- end id12 -->
 
-<cann-filter npu-type="310b">
+<!-- npu="310b" id13 -->
 
 **表**  Atlas 200I/500 A2 推理产品sharedTmpBuffer所需的内存<a id="table4"></a>
 
@@ -173,9 +146,9 @@ dst_nchw = np.transpose(src_nhwc, axes=(0,3,1,2))
 | :-- | :-- |
 | TRANSPOSE_ND2ND_B16 | 不需要临时Buffer。 |
 
-</cann-filter>
+<!-- end id13 -->
 
-<cann-filter npu-type="310p">
+<!-- npu="310p" id14 -->
 
 **表**  Atlas 推理系列产品AI Core sharedTmpBuffer所需的内存<a id="table4"></a>
 
@@ -185,9 +158,9 @@ dst_nchw = np.transpose(src_nhwc, axes=(0,3,1,2))
 | TRANSPOSE_NCHW2NHWC | 不需要临时Buffer。 |
 | TRANSPOSE_NHWC2NCHW | 不需要临时Buffer。 |
 
-</cann-filter>
+<!-- end id14 -->
 
-<cann-filter npu-type="x90">
+<!-- npu="x90" id15 -->
 
 **表**  Kirin X90 sharedTmpBuffer所需的内存<a id="table4"></a>
 
@@ -197,9 +170,9 @@ dst_nchw = np.transpose(src_nhwc, axes=(0,3,1,2))
 | TRANSPOSE_NCHW2NHWC | 临时Buffer的大小按照下述计算规则（伪代码）进行计算。<pre>auto h0 = 16; // 当数据类型的位宽为8时，h0 = 32；其他情况下，h0 = 16<br/>auto w0 = 32 / sizeof(type);  // type代表数据类型<br/>auto tmpBufferSize = (cSize + 2)  * h0 \* w0 \* sizeof(type);</pre> |
 | TRANSPOSE_NHWC2NCHW | 临时Buffer的大小按照下述计算规则（伪代码）进行计算。<pre>auto h0 = 16; // 当数据类型的位宽为8时，h0 = 32；其他情况下，h0 = 16<br/>auto w0 = 32 / sizeof(type);  // type代表数据类型<br/>auto tmpBufferSize = (cSize \* 2 + 1) \* h0 \* w0 \* sizeof(type);</pre> |
 
-</cann-filter>
+<!-- end id15 -->
 
-<cann-filter npu-type="9030">
+<!-- npu="9030" id16 -->
 
 **表**  Kirin 9030 sharedTmpBuffer所需的内存<a id="table4"></a>
 
@@ -209,54 +182,92 @@ dst_nchw = np.transpose(src_nhwc, axes=(0,3,1,2))
 | TRANSPOSE_NCHW2NHWC | 临时Buffer的大小按照下述计算规则（伪代码）进行计算。<pre>auto h0 = 16; // 当数据类型的位宽为8时，h0 = 32；其他情况下，h0 = 16<br/>auto w0 = 32 / sizeof(type);  // type代表数据类型<br/>auto tmpBufferSize = (cSize + 2)  * h0 \* w0 \* sizeof(type);</pre> |
 | TRANSPOSE_NHWC2NCHW | 临时Buffer的大小按照下述计算规则（伪代码）进行计算。<pre>auto h0 = 16; // 当数据类型的位宽为8时，h0 = 32；其他情况下，h0 = 16<br/>auto w0 = 32 / sizeof(type);  // type代表数据类型<br/>auto tmpBufferSize = (cSize \* 2 + 1) \* h0 \* w0 \* sizeof(type);</pre> |
 
-</cann-filter>
+<!-- end id16 -->
 
 ## 数据类型
 
 - 普通转置：
 
-  <cann-filter npu-type="950">Ascend 950PR/Ascend 950DT，操作数支持的数据类型为：int16_t、uint16_t、half。</cann-filter>
+  <!-- npu="950" id17 -->
+  Ascend 950PR/Ascend 950DT，操作数支持的数据类型为：int16_t、uint16_t、half。
+  <!-- end id17 -->
 
-  <cann-filter npu-type="A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品，操作数支持的数据类型为：int16_t、uint16_t、half。</cann-filter>
+  <!-- npu="A3" id18 -->
+  Atlas A3 训练系列产品/Atlas A3 推理系列产品，操作数支持的数据类型为：int16_t、uint16_t、half。
+  <!-- end id18 -->
 
-  <cann-filter npu-type="910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品，操作数支持的数据类型为：int16_t、uint16_t、half。</cann-filter>
+  <!-- npu="910b" id19 -->
+  Atlas A2 训练系列产品/Atlas A2 推理系列产品，操作数支持的数据类型为：int16_t、uint16_t、half。
+  <!-- end id19 -->
 
-  <cann-filter npu-type="310b">Atlas 200I/500 A2 推理产品，操作数支持的数据类型为：int16_t、uint16_t、half。</cann-filter>
+  <!-- npu="310b" id20 -->
+  Atlas 200I/500 A2 推理产品，操作数支持的数据类型为：int16_t、uint16_t、half。
+  <!-- end id20 -->
 
-  <cann-filter npu-type="310p">Atlas 推理系列产品AI Core，操作数支持的数据类型为：int16_t、uint16_t、half。</cann-filter>
+  <!-- npu="310p" id21 -->
+  Atlas 推理系列产品AI Core，操作数支持的数据类型为：int16_t、uint16_t、half。
+  <!-- end id21 -->
 
-  <cann-filter npu-type="910">Atlas 训练系列产品，操作数支持的数据类型为：int16_t、uint16_t、half。</cann-filter>
+  <!-- npu="910" id22 -->
+  Atlas 训练系列产品，操作数支持的数据类型为：int16_t、uint16_t、half。
+  <!-- end id22 -->
 
-  <cann-filter npu-type="x90">Kirin X90，操作数支持的数据类型为：int16_t、uint16_t、half。</cann-filter>
+  <!-- npu="x90" id23 -->
+  Kirin X90，操作数支持的数据类型为：int16_t、uint16_t、half。
+  <!-- end id23 -->
 
-  <cann-filter npu-type="9030">Kirin 9030，操作数支持的数据类型为：int16_t、uint16_t、half。</cann-filter>
+  <!-- npu="9030" id24 -->
+  Kirin 9030，操作数支持的数据类型为：int16_t、uint16_t、half。
+  <!-- end id24 -->
 
 - 增强转置：
   - transposeType为TRANSPOSE\_ND2ND\_B16：
 
-    <cann-filter npu-type="950">Ascend 950PR/Ascend 950DT，操作数支持的数据类型为：int16_t、uint16_t、half。</cann-filter>
+    <!-- npu="950" id25 -->
+    Ascend 950PR/Ascend 950DT，操作数支持的数据类型为：int16_t、uint16_t、half。
+    <!-- end id25 -->
 
-    <cann-filter npu-type="A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品，操作数支持的数据类型为：uint16_t。</cann-filter>
+    <!-- npu="A3" id26 -->
+    Atlas A3 训练系列产品/Atlas A3 推理系列产品，操作数支持的数据类型为：uint16_t。
+    <!-- end id26 -->
 
-    <cann-filter npu-type="910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品，操作数支持的数据类型为：uint16_t。</cann-filter>
+    <!-- npu="910b" id27 -->
+    Atlas A2 训练系列产品/Atlas A2 推理系列产品，操作数支持的数据类型为：uint16_t。
+    <!-- end id27 -->
 
-    <cann-filter npu-type="310b">Atlas 200I/500 A2 推理产品，操作数支持的数据类型为：uint16_t。</cann-filter>
+    <!-- npu="310b" id28 -->
+    Atlas 200I/500 A2 推理产品，操作数支持的数据类型为：uint16_t。
+    <!-- end id28 -->
 
-    <cann-filter npu-type="310p">Atlas 推理系列产品AI Core，操作数支持的数据类型为：uint16_t。</cann-filter>
+    <!-- npu="310p" id29 -->
+    Atlas 推理系列产品AI Core，操作数支持的数据类型为：uint16_t。
+    <!-- end id29 -->
 
   - transposeType为TRANSPOSE\_NCHW2NHWC或TRANSPOSE\_NHWC2NCHW：
 
-    <cann-filter npu-type="950">Ascend 950PR/Ascend 950DT，操作数支持的数据类型为：int8_t、uint8_t、fp4x2_e2m1_t、fp4x2_e1m2_t、hifloat8_t、fp8_e8m0_t、fp8_e5m2_t、fp8_e4m3fn_t、int4x2_t、int16_t、uint16_t、half、bfloat16_t、int32_t、uint32_t、float、complex32。</cann-filter>
+    <!-- npu="950" id30 -->
+    Ascend 950PR/Ascend 950DT，操作数支持的数据类型为：int8_t、uint8_t、fp4x2_e2m1_t、fp4x2_e1m2_t、hifloat8_t、fp8_e8m0_t、fp8_e5m2_t、fp8_e4m3fn_t、int4x2_t、int16_t、uint16_t、half、bfloat16_t、int32_t、uint32_t、float、complex32。
+    <!-- end id30 -->
 
-    <cann-filter npu-type="A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品，操作数支持的数据类型为：int8_t、uint8_t、int16_t、uint16_t、half、int32_t、uint32_t、float。</cann-filter>
+    <!-- npu="A3" id31 -->
+    Atlas A3 训练系列产品/Atlas A3 推理系列产品，操作数支持的数据类型为：int8_t、uint8_t、int16_t、uint16_t、half、int32_t、uint32_t、float。
+    <!-- end id31 -->
 
-    <cann-filter npu-type="910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品，操作数支持的数据类型为：int8_t、uint8_t、int16_t、uint16_t、half、int32_t、uint32_t、float。</cann-filter>
+    <!-- npu="910b" id32 -->
+    Atlas A2 训练系列产品/Atlas A2 推理系列产品，操作数支持的数据类型为：int8_t、uint8_t、int16_t、uint16_t、half、int32_t、uint32_t、float。
+    <!-- end id32 -->
 
-    <cann-filter npu-type="310p">Atlas 推理系列产品AI Core，操作数支持的数据类型为：int8_t、uint8_t、int16_t、uint16_t、half、int32_t、uint32_t、float。</cann-filter>
+    <!-- npu="310p" id33 -->
+    Atlas 推理系列产品AI Core，操作数支持的数据类型为：int8_t、uint8_t、int16_t、uint16_t、half、int32_t、uint32_t、float。
+    <!-- end id33 -->
 
-    <cann-filter npu-type="x90">Kirin X90，操作数支持的数据类型为：int8_t、uint8_t、int16_t、uint16_t、half、int32_t、uint32_t、float。</cann-filter>
+    <!-- npu="x90" id34 -->
+    Kirin X90，操作数支持的数据类型为：int8_t、uint8_t、int16_t、uint16_t、half、int32_t、uint32_t、float。
+    <!-- end id34 -->
 
-    <cann-filter npu-type="9030">Kirin 9030，操作数支持的数据类型为：int8_t、uint8_t、int16_t、uint16_t、half、int32_t、uint32_t、float。</cann-filter>
+    <!-- npu="9030" id35 -->
+    Kirin 9030，操作数支持的数据类型为：int8_t、uint8_t、int16_t、uint16_t、half、int32_t、uint32_t、float。
+    <!-- end id35 -->
 
 ## 返回值说明
 
