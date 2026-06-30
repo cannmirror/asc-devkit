@@ -192,14 +192,13 @@ T支持的数据类型为：half、float。
     AscendC::Exp(dstLocal, srcLocal, 512);
     ```
 
-
 <!-- npu="950" id23 -->
 以下示例仅支持Ascend 950PR/Ascend 950DT
 
-    ```cpp
-    static constexpr ExpConfig config = { ExpAlgo::PRECISION_1ULP_FTZ_FALSE };
-    AscendC::Exp<T, config>(dstLocal, srcLocal, 512);
-    ```
+```cpp
+static constexpr ExpConfig config = { ExpAlgo::PRECISION_1ULP_FTZ_FALSE };
+AscendC::Exp<T, config>(dstLocal, srcLocal, 512);
+```
 <!-- end id23 -->
 
 结果示例如下：
