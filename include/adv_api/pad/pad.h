@@ -25,7 +25,10 @@
 #include "kernel_tensor.h"
 #include "kernel_pop_stack_buffer.h"
 #include "kernel_tiling/kernel_tiling.h"
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || \
+                              __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 #include "../../../impl/adv_api/detail/pad/pad/pad_common_impl.h"
+#endif
 namespace AscendC {
 /* **************************************************************************************************
  * Pad                                             *
@@ -45,9 +48,12 @@ template <typename T>
 __aicore__ inline void Pad(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, PadParams& padParams,
     const LocalTensor<uint8_t>& sharedTmpBuffer, PadTiling& tiling)
 {
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || \
+                              __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
     TRACE_START(TraceId::Pad);
     PadImpl<T>(dstTensor, srcTensor, padParams, sharedTmpBuffer, tiling);
     TRACE_STOP(TraceId::Pad);
+#endif
 }
 
 /* **************************************************************************************************
@@ -70,7 +76,10 @@ __aicore__ inline void Pad(
     bool res = PopStackBuffer<uint8_t, TPosition::LCM>(tmpBuffer);
     ASCENDC_ASSERT(res, { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
 
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || \
+                              __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
     PadImpl<T>(dstTensor, srcTensor, padParams, tmpBuffer, tiling);
+#endif
 }
 
 /* **************************************************************************************************
@@ -89,7 +98,10 @@ template <typename T>
 __aicore__ inline void UnPad(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, UnPadParams& unPadParams,
     LocalTensor<uint8_t>& sharedTmpBuffer, UnPadTiling& tiling)
 {
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || \
+                              __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
     UnPadImpl<T>(dstTensor, srcTensor, unPadParams, sharedTmpBuffer, tiling);
+#endif
 }
 
 /* **************************************************************************************************
@@ -111,7 +123,10 @@ __aicore__ inline void UnPad(
     bool res = PopStackBuffer<uint8_t, TPosition::LCM>(tmpBuffer);
     ASCENDC_ASSERT(res, { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
 
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || \
+                              __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
     UnPadImpl<T>(dstTensor, srcTensor, unPadParams, tmpBuffer, tiling);
+#endif
 }
 #pragma end_pipe
 } // namespace AscendC
