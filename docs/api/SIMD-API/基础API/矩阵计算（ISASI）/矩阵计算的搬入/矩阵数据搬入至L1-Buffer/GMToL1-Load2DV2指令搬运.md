@@ -40,7 +40,7 @@
 
 ```cpp
 template <typename T>
-__aicore__ inline void LoadData(const LocalTensor<T>& dst, const GlobalTensor<T>& src, const LoadData2DParamsV2& loadDataParam)
+__aicore__ inline void LoadData(const LocalTensor<T>& dst, const GlobalTensor<T>& src, const LoadData2DParamsV2& loadDataParams)
 ```
 
 ## 参数说明<a id="section622mcpsimp"></a>
@@ -57,7 +57,7 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const GlobalTensor<T>
 | ---------- | ---------- | ---------- |
 | dst | 输出 | 目的操作数，类型为LocalTensor。支持的物理存储位置为L1 Buffer（TPosition为A1/B1）。<br>数据分形无格式要求，一般情况下为NZ格式。NZ格式下，对应的分形大小为16 \* (32字节 / sizeof(T))。 |
 | src | 输入 | 源操作数，类型为GlobalTensor。数据类型需要与dst保持一致。 |
-| loadDataParam | 输入 | LoadData参数结构体，类型为LoadData2DParamsV2，具体参考[表3](#table49630346128)。 |
+| loadDataParams | 输入 | LoadData参数结构体，类型为LoadData2DParamsV2，具体参考[表3](#table49630346128)。 |
 
 **表 3** LoadData2DParamsV2结构体内参数说明<a id="table49630346128"></a>
 

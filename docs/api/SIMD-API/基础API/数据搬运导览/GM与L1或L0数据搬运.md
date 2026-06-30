@@ -190,13 +190,13 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const GlobalTensor<T>
 
 搬运的数据用于[矩阵计算](../矩阵计算（ISASI）/矩阵计算（ISASI）.md)，接口具体介绍请参考：[GMToL1-Load2DV2指令搬运](../矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L1-Buffer/GMToL1-Load2DV2指令搬运.md)。
 
-src和dst分别为源操作数和目的操作数；loadDataParam为搬运参数。
+src和dst分别为源操作数和目的操作数；loadDataParams为搬运参数。
 
 - 仅Ascend 950PR/Ascend 950DT支持
 
     ```cpp
     template <typename T>
-    __aicore__ inline void LoadData(const LocalTensor<T>& dst, const GlobalTensor<T>& src, const LoadData2DParamsV2& loadDataParam)
+    __aicore__ inline void LoadData(const LocalTensor<T>& dst, const GlobalTensor<T>& src, const LoadData2DParamsV2& loadDataParams)
     ```
 
 </cann-filter>

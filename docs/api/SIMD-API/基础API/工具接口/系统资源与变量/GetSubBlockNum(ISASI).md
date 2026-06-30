@@ -54,12 +54,12 @@ __aicore__ inline int64_t GetSubBlockNum()
 
 | 算子类型 | 限定符 | AIC | AIV |
 | --- | --- | --- | --- |
-| Vector算子 | __vector__ | - | 1 |
-| Cube算子 | __cube__ | 1 | - |
-| Mix算子 | __mix__(0, 1) | - | 1 |
-| Mix算子 | __mix__(1, 0) | 1 | - |
-| Mix算子 | __mix__(1, 1) | 1 | 1 |
-| Mix算子 | __mix__(1, 2) | 1 | 2 |
+| Vector算子 | \_\_vector\_\_ | - | 1 |
+| Cube算子 | \_\_cube\_\_ | 1 | - |
+| Mix算子 | \_\_mix\_\_(0, 1) | - | 1 |
+| Mix算子 | \_\_mix\_\_(1, 0) | 1 | - |
+| Mix算子 | \_\_mix\_\_(1, 1) | 1 | 1 |
+| Mix算子 | \_\_mix\_\_(1, 2) | 1 | 2 |
 
 在自定义算子工程和Kernel直调工程场景下，不同Kernel类型（通过[设置Kernel类型](../../Kernel-Tiling/设置Kernel类型.md)设置）在AIC和AIV上调用该接口的返回值如下：
 
