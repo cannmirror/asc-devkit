@@ -33,6 +33,8 @@
 #include "sys_var_impl/asc_get_status_impl.h"
 #include "sys_var_impl/asc_get_sys_virtual_base_impl.h"
 
+[[deprecated("NOTICE: asc_get_ar_spr is deprecated. "
+             "Currently asc_get_ar_spr is an unsupported API on current device.")]]
 __aicore__ inline int64_t asc_get_ar_spr()
 {
     return asc_get_ar_spr_impl();

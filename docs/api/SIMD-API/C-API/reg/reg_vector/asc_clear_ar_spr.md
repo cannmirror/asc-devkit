@@ -8,7 +8,7 @@
 
 ## 功能说明
 
-对AR寄存器进行清理，AR寄存器通常由[asc_squeeze](./asc_squeeze.md)接口使用。
+对AR寄存器进行清理，AR寄存器通常由[asc_squeeze（废弃）](./asc_squeeze_deprecated.md)接口使用。
 
 ## 函数原型
 

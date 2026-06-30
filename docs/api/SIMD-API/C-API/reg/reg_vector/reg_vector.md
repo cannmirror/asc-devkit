@@ -16,9 +16,9 @@
 
 - **[asc_axpy](asc_axpy.md)**
 
-- **[asc_bfloat162e1m2x2](asc_bfloat162e1m2x2.md)**
+- **[asc_bfloat162e1m2x2（废弃）](asc_bfloat162e1m2x2_deprecated.md)**
 
-- **[asc_bfloat162e2m1x2](asc_bfloat162e2m1x2.md)**
+- **[asc_bfloat162e2m1x2（废弃）](asc_bfloat162e2m1x2_deprecated.md)**
 
 - **[asc_bfloat162float](asc_bfloat162float.md)**
 
@@ -44,13 +44,13 @@
 
 - **[asc_duplicate_scalar](asc_duplicate_scalar.md)**
 
-- **[asc_e1m2x22bfloat16](asc_e1m2x22bfloat16.md)**
+- **[asc_e1m2x22bfloat16（废弃）](asc_e1m2x22bfloat16_deprecated.md)**
 
-- **[asc_e2m1x22bfloat16](asc_e2m1x22bfloat16.md)**
+- **[asc_e2m1x22bfloat16（废弃）](asc_e2m1x22bfloat16_deprecated.md)**
 
-- **[asc_e4m32float](asc_e4m32float.md)**
+- **[asc_e4m32float（废弃）](asc_e4m32float_deprecated.md)**
 
-- **[asc_e5m22float](asc_e5m22float.md)**
+- **[asc_e5m22float（废弃）](asc_e5m22float_deprecated.md)**
 
 - **[asc_eq](asc_eq.md)**
 
@@ -58,17 +58,17 @@
 
 - **[asc_exp](asc_exp.md)**
 
-- **[asc_exp_sub](asc_exp_sub.md)**
+- **[asc_exp_sub（废弃）](asc_exp_sub_deprecated.md)**
 
 - **[asc_float2bfloat16](asc_float2bfloat16.md)**
 
-- **[asc_float2e4m3](asc_float2e4m3.md)**
+- **[asc_float2e4m3（废弃）](asc_float2e4m3_deprecated.md)**
 
-- **[asc_float2e5m2](asc_float2e5m2.md)**
+- **[asc_float2e5m2（废弃）](asc_float2e5m2_deprecated.md)**
 
 - **[asc_float2half](asc_float2half.md)**
 
-- **[asc_float2hif8](asc_float2hif8.md)**
+- **[asc_float2hif8（废弃）](asc_float2hif8_deprecated.md)**
 
 - **[asc_float2int16](asc_float2int16.md)**
 
@@ -96,13 +96,13 @@
 
 - **[asc_half2int32](asc_half2int32.md)**
 
-- **[asc_half2int4x2](asc_half2int4x2.md)**
+- **[asc_half2int4x2（废弃）](asc_half2int4x2_deprecated.md)**
 
 - **[asc_half2int8](asc_half2int8.md)**
 
 - **[asc_half2uint8](asc_half2uint8.md)**
 
-- **[asc_hif82float](asc_hif82float.md)**
+- **[asc_hif82float（废弃）](asc_hif82float_deprecated.md)**
 
 - **[asc_hif82half](asc_hif82half.md)**
 
@@ -124,13 +124,13 @@
 
 - **[asc_int322uint16](asc_int322uint16.md)**
 
-- **[asc_int322uint8](asc_int322uint8.md)**
+- **[asc_int322uint8（废弃）](asc_int322uint8_deprecated.md)**
 
-- **[asc_int4x22bfloat16](asc_int4x22bfloat16.md)**
+- **[asc_int4x22bfloat16（废弃）](asc_int4x22bfloat16_deprecated.md)**
 
-- **[asc_int4x22half](asc_int4x22half.md)**
+- **[asc_int4x22half（废弃）](asc_int4x22half_deprecated.md)**
 
-- **[asc_int4x22int16](asc_int4x22int16.md)**
+- **[asc_int4x22int16（废弃）](asc_int4x22int16_deprecated.md)**
 
 - **[asc_int642float](asc_int642float.md)**
 
@@ -140,7 +140,7 @@
 
 - **[asc_int82int16](asc_int82int16.md)**
 
-- **[asc_int82int32](asc_int82int32.md)**
+- **[asc_int82int32（废弃）](asc_int82int32_deprecated.md)**
 
 - **[asc_intlv](asc_intlv.md)**
 
@@ -174,7 +174,7 @@
 
 - **[asc_mull](asc_mull.md)**
 
-- **[asc_muls](asc_muls.md)**
+- **[asc_muls（废弃）](asc_muls_deprecated.md)**
 
 - **[asc_ne](asc_ne.md)**
 
@@ -186,7 +186,7 @@
 
 - **[asc_or](asc_or.md)**
 
-- **[asc_pack](asc_pack.md)**
+- **[asc_pack（废弃）](asc_pack_deprecated.md)**
 
 - **[asc_pair_reduce_sum](asc_pair_reduce_sum.md)**
 
@@ -218,7 +218,7 @@
 
 - **[asc_sqrt](asc_sqrt.md)**
 
-- **[asc_squeeze](asc_squeeze.md)**
+- **[asc_squeeze（废弃）](asc_squeeze_deprecated.md)**
 
 - **[asc_sub](asc_sub.md)**
 
@@ -234,13 +234,13 @@
 
 - **[asc_uint322uint16](asc_uint322uint16.md)**
 
-- **[asc_uint322uint8](asc_uint322uint8.md)**
+- **[asc_uint322uint8（废弃）](asc_uint322uint8_deprecated.md)**
 
 - **[asc_uint82half](asc_uint82half.md)**
 
 - **[asc_uint82uint16](asc_uint82uint16.md)**
 
-- **[asc_uint82uint32](asc_uint82uint32.md)**
+- **[asc_uint82uint32（废弃）](asc_uint82uint32_deprecated.md)**
 
 - **[asc_unpack](asc_unpack.md)**
 
