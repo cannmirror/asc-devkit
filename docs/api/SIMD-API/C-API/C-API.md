@@ -161,9 +161,9 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_set_l13d_fmatrix_b](矩阵数据搬运/asc_set_l13d_fmatrix_b.md)                                                           | 设置Feature map属性描述，用于在调用[asc_copy_l12l0a](矩阵数据搬运/asc_copy_l12l0a)/[asc_copy_l12l0b](矩阵数据搬运/asc_copy_l12l0b)的3D格式搬运接口时配置填充数值。从右矩阵获取FeatureMap的属性时使用该接口。|
 | [asc_set_l0c2gm_lrelu_alpha](矩阵数据搬运/asc_set_l0c2gm_lrelu_alpha.md)                                                   | 用于设置asc_copy_l0c2l1或asc_copy_l0c2gm接口计算过程中使用的Leaky ReLU alpha值。该值只支持half和float两种数据类型。 |
 | [asc_copy_ub2ub](矢量数据搬运/asc_copy_ub2ub.md)                                                                         | 将数据从Unified Buffer搬运到Unified Buffer。 |
-| [asc_copy_gm2ub](矢量数据搬运/asc_copy_gm2ub.md)                                                                         | 将数据从Global Memory搬运到 Unified Buffer。 |
+| [asc_copy_gm2ub](vector_datamove/asc_copy_gm2ub/asc_copy_gm2ub.md)                                                                         | 将数据从Global Memory搬运到Unified Buffer。 |
 | [asc_copy_gm2ub_align](矢量数据搬运/asc_copy_gm2ub_align)                                                                | 提供数据非对齐搬运的功能，将数据从Global Memory搬运到 Unified Buffer，并支持8位/16位/32位数据类型搬运。 |
-| [asc_copy_ub2gm](矢量数据搬运/asc_copy_ub2gm.md)                                                                         | 将数据从Unified Buffer搬运到 Global Memory。 |
+| [asc_copy_ub2gm](vector_datamove/asc_copy_ub2gm/asc_copy_ub2gm.md)                                                                         | 将数据从Unified Buffer搬运到Global Memory。 |
 | [asc_copy_ub2gm_align](矢量数据搬运/asc_copy_ub2gm_align)                                                                | 将数据从Unified Buffer搬运到 Global Memory，支持8位/16位/32位分块拷贝操作。 |
 | [asc_set_copy_pad_val](矢量数据搬运/asc_set_copy_pad_val.md)                                                             | 和asc_copy_gm2ub_align或asc_copy_ub2gm_align接口配合使用，设置连续搬运数据块左右两侧需要填补的数据值。 |
 | [asc_copy_ub2l1](矢量数据搬运/asc_copy_ub2l1.md)                                                                         | 将数据从Unified Buffer (UB) 搬运到L1 Buffer。 |
@@ -200,9 +200,11 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 
 |   API名称   |   说明   |
 |----------|-----------|
-| [asc_set_mmad_direction_m](矩阵计算/asc_set_mmad_direction_m.md)| 设置mmad计算时优先通过M/N中的N方向，然后通过M方向产生结果，M为矩阵的行，N为矩阵的列。 |
-| [asc_set_mmad_direction_n](矩阵计算/asc_set_mmad_direction_n.md)| 设置mmad计算时优先通过M/N中的M方向，然后通过N方向产生结果，M为矩阵的行，N为矩阵的列。 |
+| [asc_set_mmad_direction_m](矩阵计算/asc_set_mmad_direction_m.md)| 设置mmad计算时优先通过M/N中的M方向生成结果，然后通过N方向产生结果，M为矩阵的行，N为矩阵的列。 |
+| [asc_set_mmad_direction_n](矩阵计算/asc_set_mmad_direction_n.md)| 设置mmad计算时优先通过M/N中的N方向生成结果，然后通过M方向产生结果，M为矩阵的行，N为矩阵的列。 |
 | [asc_enable_hf32_trans](矩阵计算/asc_enable_hf32_trans.md)| 设置HF32模式取整方式，需要先使用asc_enable_hf32开启HF32取整模式。 |
+| <cann-filter npu_type = "950"> [asc_enable_hif8](矩阵计算/asc_enable_hif8.md) | 用于设置Mmad计算开启HiF8模式，开启该模式后L0A Buffer/L0B Buffer中的8bit数据将在参与矩阵乘法运算前被转化为hifloat8_t类型数据。 </cann-filter> |
+| <cann-filter npu_type = "950"> [asc_enable_fp8](矩阵计算/asc_enable_fp8.md) | 用于设置Mmad计算开启FP8模式，开启该模式后L0A Buffer/L0B Buffer中的FP8数据在参与Mmad计算之前不会被转化为hifloat8_t类型数据。 </cann-filter> |
 | [asc_mmad](矩阵计算/asc_mmad.md) | 完成矩阵乘加操作。 |
 | [asc_mmad_sparse](矩阵计算/asc_mmad_sparse.md) | 完成矩阵乘加操作，传入的左矩阵A为稀疏矩阵，右矩阵B为稠密矩阵。 |
 | [asc_set_fp32_mode](矩阵计算/asc_set_fp32_mode.md) | 用于设置Mmad计算开启FP32模式，开启该模式后L0A Buffer/L0B Buffer中的FP32数据在参与Mmad计算之前不做舍入处理。 |
@@ -233,7 +235,10 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_sync_block_wait](同步控制/asc_sync_block_wait.md) | 和[asc_sync_block_arrive](同步控制/asc_sync_block_arrive.md)配合使用（通过flag_id关联），用于等待所有同步对象到达flag_id对应的同步点。 |
 | <cann-filter npu_type = "950"> [asc_sync_intra_wait](同步控制/asc_sync_intra_wait.md)| 等待核间同步寄存器同步标志。 </cann-filter> |
 | <cann-filter npu_type = "950"> [asc_sync_intra_arrive](同步控制/asc_sync_intra_arrive.md)| 向核间同步寄存器发送同步信号。 </cann-filter> |
-| <cann-filter npu_type = "950"> [asc_sync_inter_wait](同步控制/asc_sync_inter_wait.md)| 等待block内同步标志。 </cann-filter> |
+| [asc_sync_inter_arrive](同步控制/asc_sync_inter_arrive.md)| 和[asc_sync_inter_wait](同步控制/asc_sync_inter_wait.md)配合使用（通过flag_id关联），用于组间block的信号同步。|
+| [asc_sync_inter_wait](同步控制/asc_sync_inter_wait.md)| 等待block内同步标志。|
+| [asc_sync_subblock_arrive](同步控制/asc_sync_subblock_arrive.md)| 和[asc_sync_subblock_wait](同步控制/asc_sync_subblock_wait.md)配合使用（通过flag_id关联），用于组内subblock间的信号同步。 |
+| [asc_sync_subblock_wait](同步控制/asc_sync_subblock_wait.md)| 等待subblock间同步标志。 |
 
 ## 系统变量
 
