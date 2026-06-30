@@ -11,9 +11,6 @@
 - Atlas 推理系列产品AI Core：支持
 - Atlas 推理系列产品Vector Core：不支持
 - Atlas 训练系列产品：不支持
-<!-- npu="x90" id1 -->
-- Kirin X90：支持
-<!-- end id1 -->
 
 ### TrianUpperMatmulPolicy/TrianLowerMatmulPolicy
 
@@ -24,9 +21,6 @@
 - Atlas 推理系列产品AI Core：不支持
 - Atlas 推理系列产品Vector Core：不支持
 - Atlas 训练系列产品：不支持
-<!-- npu="x90" id2 -->
-- Kirin X90：支持
-<!-- end id2 -->
 
 ### NBuffer33MatmulPolicy
 
@@ -37,9 +31,6 @@
 - Atlas 推理系列产品AI Core：不支持
 - Atlas 推理系列产品Vector Core：不支持
 - Atlas 训练系列产品：不支持
-<!-- npu="x90" id3 -->
-- Kirin X90：支持
-<!-- end id3 -->
 
 ### MatmulWithScalePolicy/SplitMMatmulPolicy/SplitNMatmulPolicy
 
@@ -50,9 +41,6 @@
 - Atlas 推理系列产品AI Core：不支持
 - Atlas 推理系列产品Vector Core：不支持
 - Atlas 训练系列产品：不支持
-<!-- npu="x90" id4 -->
-- Kirin X90：不支持
-<!-- end id4 -->
 
 ## 功能说明
 

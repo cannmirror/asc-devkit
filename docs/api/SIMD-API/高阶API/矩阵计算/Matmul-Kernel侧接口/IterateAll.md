@@ -9,9 +9,6 @@
 - Atlas 推理系列产品AI Core：支持
 - Atlas 推理系列产品Vector Core：不支持
 - Atlas 训练系列产品：不支持
-<!-- npu="x90" id1 -->
-- Kirin X90：支持
-<!-- end id1 -->
 
 ## 功能说明
 
@@ -64,10 +61,6 @@ template <bool sync = true> __aicore__ inline void IterateAll(const LocalTensor<
     Atlas 推理系列产品AI Core，不支持包含ubCmatrix参数的原型，对于包含gm参数的原型，支持的数据类型为：half、float、int8_t、int32_t。
 
     Atlas 200I/500 A2 推理产品，支持的数据类型为：half、float、bfloat16_t、int32_t。
-
-    <!-- npu="x90" id2 -->
-    Kirin X90，支持的数据类型为：half、int8_t、int32_t。
-    <!-- end id2 -->
 
 ## 调用示例
 

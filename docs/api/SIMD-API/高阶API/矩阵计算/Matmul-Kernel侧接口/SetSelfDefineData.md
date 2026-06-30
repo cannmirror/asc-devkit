@@ -9,9 +9,6 @@
 - Atlas 推理系列产品AI Core：不支持
 - Atlas 推理系列产品Vector Core：不支持
 - Atlas 训练系列产品：不支持
-<!-- npu="x90" id1 -->
-- Kirin X90：支持
-<!-- end id1 -->
 
 ## 功能说明
 
@@ -30,10 +27,6 @@ __aicore__ inline void SetSelfDefineData(T dataPtr)
 Atlas A3 训练系列产品/Atlas A3 推理系列产品不支持SetSelfDefineData\(T dataPtr\)接口原型。
 
 Atlas A2 训练系列产品/Atlas A2 推理系列产品不支持SetSelfDefineData\(T dataPtr\)接口原型。
-
-<!-- npu="x90" id2 -->
-Kirin X90产品不支持SetSelfDefineData\(T dataPtr\)接口原型。
-<!-- end id2 -->
 
 ## 参数说明
 
