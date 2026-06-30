@@ -73,7 +73,7 @@ $$
 
   ```cpp
   template <typename T, typename U>
-  __aicore__ inline void Axpy(const LocalTensor<T>& dst, const LocalTensor<U>& src, const U& scalar, const int32_t count)
+  __aicore__ inline void Axpy(const LocalTensor<T>& dst, const LocalTensor<U>& src, const U& scalarValue, const int32_t& count)
   ```
 
 - tensor高维切分计算
@@ -121,7 +121,7 @@ PAR列表示矢量计算单元一个迭代能够处理的元素个数。
 
 **表**  Ascend 950PR/Ascend 950DT支持的数据类型组合情况
 
-| src数据类型 | scalar数据类型 | dst数据类型 | PAR |
+| src数据类型 | scalarValue数据类型 | dst数据类型 | PAR |
 | ----------- | -------------- | ----------- | --- |
 | half        | half           | half        | 128 |
 | float       | float          | float       | 64  |
@@ -136,7 +136,7 @@ PAR列表示矢量计算单元一个迭代能够处理的元素个数。
 
 **表** Atlas A3 训练系列产品/Atlas A3 推理系列产品支持的数据类型组合情况
 
-| src数据类型 | scalar数据类型 | dst数据类型 | PAR |
+| src数据类型 | scalarValue数据类型 | dst数据类型 | PAR |
 | ----------- | -------------- | ----------- | --- |
 | half        | half           | half        | 128 |
 | float       | float          | float       | 64  |
@@ -148,7 +148,7 @@ PAR列表示矢量计算单元一个迭代能够处理的元素个数。
 
 **表** Atlas A2 训练系列产品/Atlas A2 推理系列产品支持的数据类型组合情况
 
-| src数据类型 | scalar数据类型 | dst数据类型 | PAR |
+| src数据类型 | scalarValue数据类型 | dst数据类型 | PAR |
 | ----------- | -------------- | ----------- | --- |
 | half        | half           | half        | 128 |
 | float       | float          | float       | 64  |
@@ -160,7 +160,7 @@ PAR列表示矢量计算单元一个迭代能够处理的元素个数。
 
 **表** Atlas 200I/500 A2 推理产品支持的数据类型组合情况
 
-| src数据类型 | scalar数据类型 | dst数据类型 | PAR |
+| src数据类型 | scalarValue数据类型 | dst数据类型 | PAR |
 | ----------- | -------------- | ----------- | --- |
 | half        | half           | half        | 128 |
 | float       | float          | float       | 64  |
@@ -172,7 +172,7 @@ PAR列表示矢量计算单元一个迭代能够处理的元素个数。
 
 **表** Atlas 推理系列产品AI Core支持的数据类型组合情况
 
-| src数据类型 | scalar数据类型 | dst数据类型 | PAR |
+| src数据类型 | scalarValue数据类型 | dst数据类型 | PAR |
 | ----------- | -------------- | ----------- | --- |
 | half        | half           | half        | 128 |
 | float       | float          | float       | 64  |
@@ -184,7 +184,7 @@ PAR列表示矢量计算单元一个迭代能够处理的元素个数。
 
 **表** Atlas 训练系列产品支持的数据类型组合情况
 
-| src数据类型 | scalar数据类型 | dst数据类型 | PAR |
+| src数据类型 | scalarValue数据类型 | dst数据类型 | PAR |
 | ----------- | -------------- | ----------- | --- |
 | half        | half           | half        | 128 |
 | float       | float          | float       | 64  |
@@ -196,7 +196,7 @@ PAR列表示矢量计算单元一个迭代能够处理的元素个数。
 
 **表** Kirin X90支持的数据类型组合情况
 
-| src数据类型 | scalar数据类型 | dst数据类型 | PAR |
+| src数据类型 | scalarValue数据类型 | dst数据类型 | PAR |
 | ----------- | -------------- | ----------- | --- |
 | half        | half           | half        | 128 |
 | float       | float          | float       | 64  |
@@ -208,7 +208,7 @@ PAR列表示矢量计算单元一个迭代能够处理的元素个数。
 
 **表** Kirin 9030支持的数据类型组合情况
 
-| src数据类型 | scalar数据类型 | dst数据类型 | PAR |
+| src数据类型 | scalarValue数据类型 | dst数据类型 | PAR |
 | ----------- | -------------- | ----------- | --- |
 | half        | half           | half        | 128 |
 | float       | float          | float       | 64  |
@@ -225,7 +225,7 @@ PAR列表示矢量计算单元一个迭代能够处理的元素个数。
 - 地址对齐约束参考[地址对齐约束](../../../通用说明和约束.md#section796754519912)。
 - 操作数地址重叠约束请参考[地址重叠约束](../../../通用说明和约束.md#section668772811100)。
 - 源操作数的数据类型为half、目的操作数的数据类型为float的情况下，不支持地址重叠。
-- 使用tensor高维切分计算接口时，src和scalar的数据类型为half、dst的数据类型为float的情况下，一个迭代处理内最多处理64个输入数据。
+- 使用tensor高维切分计算接口时，src和scalarValue的数据类型为half、dst的数据类型为float的情况下，一个迭代处理内最多处理64个输入数据。
 - <cann-filter npu-type="950">针对Ascend 950PR/Ascend 950DT，int64_t、uint64_t数据类型仅支持tensor前n个数据计算接口。</cann-filter>
 
 ## 调用示例<a name="section642mcpsimp"></a>
@@ -236,12 +236,12 @@ PAR列表示矢量计算单元一个迭代能够处理的元素个数。
 
   ```cpp
   // repeatTime = 4, mask = 128, 128 elements one repeat, 512 elements total
-  // srcLocal数据类型为half，scalar数据类型为half，dstLocal数据类型为half
+  // srcLocal数据类型为half，scalarValue数据类型为half，dstLocal数据类型为half
   // dstBlkStride, srcBlkStride = 1, no gap between blocks in one repeat
   // dstRepStride, srcRepStride = 8, no gap between repeats 
   AscendC::Axpy(dstLocal, srcLocal, (half)2.0, 128, 4,{ 1, 1, 8, 8 });
   
-  // srcLocal数据类型为half，scalar数据类型为half，dstLocal数据类型为float
+  // srcLocal数据类型为half，scalarValue数据类型为half，dstLocal数据类型为float
   // repeatTime = 8, mask = 64, 64 elements one repeat, 512 elements total
   // dstBlkStride, srcBlkStride = 1, no gap between blocks in one repeat
   // dstRepStride = 8, srcRepStride = 4, no gap between repeats 

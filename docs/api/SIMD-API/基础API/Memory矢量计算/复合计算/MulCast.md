@@ -71,14 +71,14 @@ $$
 
     ```cpp
     template <typename T, typename U, bool isSetMask = true>
-    __aicore__ inline void MulCast(const LocalTensor<T> &dst, const LocalTensor<U> &src0, const LocalTensor<U> src1, uint64_t mask[], const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+    __aicore__ inline void MulCast(const LocalTensor<T> &dst, const LocalTensor<U> &src0, const LocalTensor<U> &src1, uint64_t mask[], const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
     ```
 
   - mask连续模式
 
     ```cpp
     template <typename T, typename U, bool isSetMask = true>
-    __aicore__ inline void MulCast(const LocalTensor<T> &dst, const LocalTensor<U> &src0, const LocalTensor<U> src1, uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+    __aicore__ inline void MulCast(const LocalTensor<T> &dst, const LocalTensor<U> &src0, const LocalTensor<U> &src1, uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
     ```
 
 ## 参数说明<a name="section622mcpsimp"></a>
