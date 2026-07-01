@@ -443,6 +443,7 @@ def resolve_base_commit():
         "PR_TARGET_BRANCH",
         "CHANGE_TARGET",
         "CI_MERGE_REQUEST_TARGET_BRANCH_NAME",
+        "GIT_TARGET_BRANCH",
         "TARGET_BRANCH",
         "BASE_REF",
     ):
@@ -562,6 +563,41 @@ def normalize_target(source_file, target):
     return normalized
 
 
+def normalize_branch_name(branch):
+    if branch.startswith("refs/heads/"):
+        return branch[len("refs/heads/"):]
+    if branch.startswith("origin/"):
+        return branch[len("origin/"):]
+    return branch
+
+
+def resolve_target_branch():
+    for env_name in (
+        "PR_TARGET_BRANCH",
+        "CHANGE_TARGET",
+        "CI_MERGE_REQUEST_TARGET_BRANCH_NAME",
+        "GIT_TARGET_BRANCH",
+        "TARGET_BRANCH",
+        "BASE_REF",
+    ):
+        branch = os.environ.get(env_name)
+        if branch:
+            return normalize_branch_name(branch)
+    return None
+
+
+def split_gitcode_branch_path(parts):
+    target_branch = resolve_target_branch()
+    if target_branch:
+        branch_parts = target_branch.split("/")
+        if parts[:len(branch_parts)] == branch_parts and len(parts) > len(branch_parts):
+            return target_branch, parts[len(branch_parts):]
+        if len(branch_parts) > 1 and parts[0] == branch_parts[0] and len(parts) > len(branch_parts):
+            return "/".join(parts[:len(branch_parts)]), parts[len(branch_parts):]
+
+    return parts[0], parts[1:]
+
+
 def normalize_gitcode_self_target(target):
     parsed = urlparse(target.strip().strip("<>").strip("\"'"))
     if parsed.scheme not in ("http", "https") or parsed.netloc != "gitcode.com":
@@ -573,7 +609,8 @@ def normalize_gitcode_self_target(target):
     if parts[0:2] != ["cann", "asc-devkit"] or parts[2] not in ("blob", "tree"):
         return None
 
-    normalized = posixpath.normpath("/".join(parts[4:]))
+    _, path_parts = split_gitcode_branch_path(parts[3:])
+    normalized = posixpath.normpath("/".join(path_parts))
     if normalized.startswith("../") or normalized == ".":
         return None
     return normalized
@@ -589,56 +626,49 @@ else:
     ci_changes = []
     ci_reverse_targets = set()
     reverse_targets = set()
-    skip_scan = False
     if ci_mod_filelist_exists:
         ci_changes, ci_reverse_targets = ci_markdown_changes()
-        if should_skip_chunk(input_paths, ci_changes):
-            skip_scan = True
-        else:
-            changed = list(dict.fromkeys(ci_changes))
-            reverse_targets = set(ci_reverse_targets)
+        changed = list(dict.fromkeys(ci_changes))
+        reverse_targets = set(ci_reverse_targets)
 
-    if skip_scan:
+    staged_changes, staged_reverse_targets = staged_markdown_changes()
+    if not ci_mod_filelist_exists and staged_changes and should_skip_chunk(input_paths, staged_changes):
         scan_set = []
     else:
-        staged_changes, staged_reverse_targets = staged_markdown_changes()
-        if not ci_mod_filelist_exists and staged_changes and should_skip_chunk(input_paths, staged_changes):
-            scan_set = []
-        else:
-            reverse_targets.update(staged_reverse_targets)
-            if not changed:
-                changed = staged_changes
+        reverse_targets.update(staged_reverse_targets)
+        if not changed:
+            changed = staged_changes
 
-            if not ci_mod_filelist_exists:
-                base_changes, base_reverse_targets = base_markdown_changes()
-                changed.extend(path for path in base_changes if path not in changed)
-                reverse_targets.update(base_reverse_targets)
+        if not ci_mod_filelist_exists:
+            base_changes, base_reverse_targets = base_markdown_changes()
+            changed.extend(path for path in base_changes if path not in changed)
+            reverse_targets.update(base_reverse_targets)
 
-            changed_targets = {path for path in changed if path}
-            changed_targets.update(reverse_targets)
-            changed_existing = {
-                path for path in changed_targets
-                if (repo_root / path).is_file()
-            }
+        changed_targets = {path for path in changed if path}
+        changed_targets.update(reverse_targets)
+        changed_existing = {
+            path for path in changed_targets
+            if (repo_root / path).is_file()
+        }
 
-            all_markdown = existing_markdown_files()
-            scan_set = set(changed_existing)
-            for source in all_markdown:
-                source_path = repo_root / source
-                try:
-                    text = source_path.read_text(encoding="utf-8")
-                except UnicodeDecodeError:
-                    text = source_path.read_text(encoding="utf-8", errors="ignore")
-                except OSError:
-                    continue
+        all_markdown = existing_markdown_files()
+        scan_set = set(changed_existing)
+        for source in all_markdown:
+            source_path = repo_root / source
+            try:
+                text = source_path.read_text(encoding="utf-8")
+            except UnicodeDecodeError:
+                text = source_path.read_text(encoding="utf-8", errors="ignore")
+            except OSError:
+                continue
 
-                for target in extract_link_targets(text):
-                    normalized = normalize_target(source, target)
-                    if normalized is None:
-                        normalized = normalize_gitcode_self_target(target)
-                    if normalized in changed_targets:
-                        scan_set.add(source)
-                        break
+            for target in extract_link_targets(text):
+                normalized = normalize_target(source, target)
+                if normalized is None:
+                    normalized = normalize_gitcode_self_target(target)
+                if normalized in changed_targets:
+                    scan_set.add(source)
+                    break
 
     scan_set = sorted(scan_set)
 
@@ -883,6 +913,7 @@ set -e
 
 set +e
 python3 - "$REPO_ROOT" "$SCAN_SET_FILE" "$GITCODE_LINK_OUTPUT_FILE" "$(markdown_check_duration)" <<'PY'
+import os
 import posixpath
 import re
 import subprocess
@@ -966,6 +997,7 @@ def git_ref_for_branch(branch):
         f"refs/remotes/origin/{branch}",
         branch,
         f"refs/heads/{branch}",
+        f"refs/tags/{branch}",
     ]
     for candidate in candidates:
         result = subprocess.run(
@@ -1003,6 +1035,47 @@ def worktree_object_type(path):
     return None
 
 
+def normalize_branch_name(branch):
+    if branch.startswith("refs/heads/"):
+        return branch[len("refs/heads/"):]
+    if branch.startswith("origin/"):
+        return branch[len("origin/"):]
+    return branch
+
+
+def resolve_target_branch():
+    for env_name in (
+        "PR_TARGET_BRANCH",
+        "CHANGE_TARGET",
+        "CI_MERGE_REQUEST_TARGET_BRANCH_NAME",
+        "GIT_TARGET_BRANCH",
+        "TARGET_BRANCH",
+        "BASE_REF",
+    ):
+        branch = os.environ.get(env_name)
+        if branch:
+            return normalize_branch_name(branch)
+    return None
+
+
+def split_gitcode_branch_path(parts, target_branch):
+    if target_branch:
+        branch_parts = target_branch.split("/")
+        if parts[:len(branch_parts)] == branch_parts and len(parts) > len(branch_parts):
+            return target_branch, parts[len(branch_parts):]
+        if len(branch_parts) > 1 and parts[0] == branch_parts[0] and len(parts) > len(branch_parts):
+            return "/".join(parts[:len(branch_parts)]), parts[len(branch_parts):]
+
+    for branch_len in range(len(parts) - 1, 0, -1):
+        branch = "/".join(parts[:branch_len])
+        if branch not in ref_cache:
+            ref_cache[branch] = git_ref_for_branch(branch)
+        if ref_cache[branch] is not None:
+            return branch, parts[branch_len:]
+
+    return parts[0], parts[1:]
+
+
 def asc_devkit_gitcode_target(target):
     parsed = urlparse(target.strip().strip("<>").strip("\"'"))
     if parsed.scheme not in ("http", "https") or parsed.netloc != "gitcode.com":
@@ -1016,8 +1089,8 @@ def asc_devkit_gitcode_target(target):
     if parts[2] not in ("blob", "tree"):
         return None
 
-    branch = parts[3]
-    path = posixpath.normpath("/".join(parts[4:]))
+    branch, path_parts = split_gitcode_branch_path(parts[3:], target_branch)
+    path = posixpath.normpath("/".join(path_parts))
     if path.startswith("../") or path == ".":
         return None
     return branch, path
@@ -1032,6 +1105,7 @@ for raw_line in scan_set_file.read_text(encoding="utf-8").splitlines():
 errors = []
 ref_cache = {}
 object_cache = {}
+target_branch = resolve_target_branch()
 for source in scan_files:
     source_path = repo_root / source
     try:
@@ -1055,7 +1129,13 @@ for source in scan_files:
                 continue
 
             branch, target_path = parsed
-            if branch in ("master", "main"):
+            if target_branch is not None and branch != target_branch:
+                errors.append(
+                    f"{source}:{line_number}: GitCode link branch must match PR target branch: "
+                    f"{target} uses {branch}, target branch is {target_branch}"
+                )
+                continue
+            if target_branch is not None and branch == target_branch:
                 ref = "working tree"
                 cache_key = (ref, target_path)
                 if cache_key not in object_cache:
