@@ -44,3 +44,37 @@ enum class RegLayout {
   <a id="fig4"></a>
 
   ![](../../../../figures/源操作数与目的操作数位宽比为4比1.png "源操作数与目的操作数位宽比为4:1")
+
+Cast在不同RegLayout取值下的数据排布伪代码如下，其中layout参数与枚举值的映射关系为：0对应RegLayout::ZERO，1对应RegLayout::ONE，2对应RegLayout::TWO，3对应RegLayout::THREE：
+```python
+import numpy as np
+
+# MaskReg行为：MaskReg长度为256bit，每4bit最低位为1时选取对应位置的b32元素进行转换。
+def cast_b32_to_b16(src, dst, layout):
+    dst[:] = 0
+    dst[layout:128:2] = src[0:64].astype(np.int16)
+
+# MaskReg行为：MaskReg长度为256bit，每2bit最低位为1时选取对应位置的b16元素进行转换。
+def cast_b16_to_b32(src, dst, layout):
+    dst[0:64] = src[layout:128:2].astype(np.int32)
+
+# MaskReg行为：MaskReg长度为256bit，每4bit最低位为1时选取对应位置的b32元素进行转换。
+def cast_b32_to_b8(src, dst, layout):
+    dst[:] = 0
+    dst[layout:256:4] = src[0:64].astype(np.uint8)
+
+# MaskReg行为：MaskReg长度为256bit，每1bit为1时选取对应位置的b8元素进行转换。
+def cast_b8_to_b32(src, dst, layout):
+    dst[0:64] = src[layout:256:4].astype(np.int32)
+
+# MaskReg行为：MaskReg长度为256bit，每4bit最低位为1时选取对应位置连续的两个b16元素进行转换。
+def cast_b16_to_b4(src, dst, layout):
+    dst[:] = 0
+    dst[2*layout    : 512 : 8] = src[0:128:2].astype(np.uint8)
+    dst[2*layout + 1: 512 : 8] = src[1:128:2].astype(np.uint8)
+
+# MaskReg行为：MaskReg长度为256bit，每1bit为1时选取对应位置连续的两个b4元素进行转换。
+def cast_b4_to_b16(src, dst, layout):
+    dst[0:128:2] = src[2*layout    : 512 : 8].astype(np.int16)
+    dst[1:128:2] = src[2*layout + 1: 512 : 8].astype(np.int16)
+```
