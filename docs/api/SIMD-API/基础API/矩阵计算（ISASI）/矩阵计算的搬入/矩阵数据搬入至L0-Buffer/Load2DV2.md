@@ -1,4 +1,4 @@
-﻿# Load2DV2
+# Load2DV2
 
 ## 产品支持情况
 
@@ -49,7 +49,7 @@
 
 ```cpp
 template <typename T>
-__aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LoadData2DParamsV2& loadDataParam)
+__aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LoadData2DParamsV2& loadDataParams)
 ```
 
 ## 参数说明
@@ -66,7 +66,7 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>&
 | ---------- | ----------- | ------ |
 | dst | 输出 | 目的操作数，类型为LocalTensor。<br>分形约束参考[矩阵计算输入搬运约束](../矩阵计算输入搬运约束.md)。<br>起始地址对齐约束参考[对齐约束](../矩阵计算输入搬运约束.md)。<br>数据类型和src的数据类型保持一致。<br>支持的物理存储位置为L0A Buffer（TPosition: A2）/L0B Buffer（TPosition: B2）。 |
 | src | 输入 | 源操作数，类型为LocalTensor。<br>分形约束参考[矩阵计算输入搬运约束](../矩阵计算输入搬运约束.md)。<br>起始地址对齐约束参考[对齐约束](../矩阵计算输入搬运约束.md)。<br>数据类型和dst的数据类型保持一致。<br>支持的物理存储位置为L1 Buffer（TPosition: A1/B1）。|
-| loadDataParam | 输入 | LoadData参数结构体，类型为LoadData2DParamsV2，具体参考[表3](#table_load2dv2_params)。 |
+| loadDataParams | 输入 | LoadData参数结构体，类型为LoadData2DParamsV2，具体参考[表3](#table_load2dv2_params)。 |
 
 **表3** LoadData2DParamsV2结构体内参数说明<a id="table_load2dv2_params"></a>
 
