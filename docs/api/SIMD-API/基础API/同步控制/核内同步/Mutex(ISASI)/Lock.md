@@ -2,129 +2,142 @@
 
 ## 产品支持情况<a name="section73648168211"></a>
 
-<a name="table38301303189"></a>
-<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>产品</span></p>
-</th>
-<th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p783113012187"><a name="p783113012187"></a><a name="p783113012187"></a>是否支持</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
-</td>
-</tr>
-<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1581911815572"><a name="p1581911815572"></a><a name="p1581911815572"></a>x</p>
-</td>
-</tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p365911910579"><a name="p365911910579"></a><a name="p365911910579"></a>x</p>
-</td>
-</tr>
-<tr id="row103361763242"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1983180181813"><a name="p1983180181813"></a><a name="p1983180181813"></a><span id="ph783112021813"><a name="ph783112021813"></a><a name="ph783112021813"></a><term id="zh-cn_topic_0000001312391781_term354143892110"><a name="zh-cn_topic_0000001312391781_term354143892110"></a><a name="zh-cn_topic_0000001312391781_term354143892110"></a>Atlas 200I/500 A2 推理产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1695483941817"><a name="p1695483941817"></a><a name="p1695483941817"></a>x</p>
-</td>
-</tr>
-<tr id="row18403312418"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p78319051815"><a name="p78319051815"></a><a name="p78319051815"></a><span id="ph163561737112019"><a name="ph163561737112019"></a><a name="ph163561737112019"></a><term id="zh-cn_topic_0000001312391781_term1964153212227"><a name="zh-cn_topic_0000001312391781_term1964153212227"></a><a name="zh-cn_topic_0000001312391781_term1964153212227"></a>Atlas 推理系列产品</term>AI Core</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1695443971810"><a name="p1695443971810"></a><a name="p1695443971810"></a>x</p>
-</td>
-</tr>
-<tr id="row242332080"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p10519331187"><a name="p10519331187"></a><a name="p10519331187"></a><span id="ph1335623792013"><a name="ph1335623792013"></a><a name="ph1335623792013"></a><term id="zh-cn_topic_0000001312391781_term1463893615224"><a name="zh-cn_topic_0000001312391781_term1463893615224"></a><a name="zh-cn_topic_0000001312391781_term1463893615224"></a>Atlas 推理系列产品</term>Vector Core</span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1851933589"><a name="p1851933589"></a><a name="p1851933589"></a>x</p>
-</td>
-</tr>
-<tr id="row17253142120252"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p38313021813"><a name="p38313021813"></a><a name="p38313021813"></a><span id="ph58317041819"><a name="ph58317041819"></a><a name="ph58317041819"></a><term id="zh-cn_topic_0000001312391781_term71949488213"><a name="zh-cn_topic_0000001312391781_term71949488213"></a><a name="zh-cn_topic_0000001312391781_term71949488213"></a>Atlas 训练系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p395243920186"><a name="p395243920186"></a><a name="p395243920186"></a>x</p>
-</td>
-</tr>
-</tbody>
-</table>
+<!-- npu="950" id1 -->
+- Ascend 950PR/Ascend 950DT：支持
+<!-- end id1 -->
+<!-- npu="A3" id2 -->
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：不支持
+<!-- end id2 -->
+<!-- npu="910b" id3 -->
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：不支持
+<!-- end id3 -->
+<!-- npu="310b" id4 -->
+- Atlas 200I/500 A2 推理产品：不支持
+<!-- end id4 -->
+<!-- npu="310p" id5 -->
+- Atlas 推理系列产品AI Core：不支持
+<!-- end id5 -->
+<!-- npu="310p" id6 -->
+- Atlas 推理系列产品Vector Core：不支持
+<!-- end id6 -->
+<!-- npu="910" id7 -->
+- Atlas 训练系列产品：不支持
+<!-- end id7 -->
 
-## 功能说明<a name="zh-cn_topic_0000002078486173_zh-cn_topic_0000001576727153_zh-cn_topic_0000001389787297_section36583473819"></a>
+## 功能说明<a name="section54681522111017"></a>
 
-根据MutexID获取Mutex，并阻塞当前流水指令队列，直到对应的MutexID被Unlock。
+头文件路径为：`"basic_api/kernel_common.h"`。
 
-## 函数原型<a name="zh-cn_topic_0000002078486173_zh-cn_topic_0000001576727153_zh-cn_topic_0000001389787297_section13230182415108"></a>
+根据MutexID获取Mutex，若Mutex已被锁定，将阻塞后续指定流水指令队列，直到当前流水的前序指令中对应MutexID的Mutex被[Unlock](Unlock.md)。
 
-```
+> [!NOTE]说明
+> Lock接口需与[Unlock](Unlock.md)接口配合使用，对同一个MutexID，Lock和Unlock必须严格成对出现，否则硬件行为将不可预测。具体约束请参见[约束说明](#约束说明)。
+
+## 函数原型<a name="section1568410468104"></a>
+
+```cpp
 template <pipe_t pipe>
 static __aicore__ inline void Lock(MutexID id)
 ```
 
-## 参数说明<a name="zh-cn_topic_0000002078486173_zh-cn_topic_0000001576727153_zh-cn_topic_0000001389787297_section75395119104"></a>
+## 参数说明<a name="section74061251191017"></a>
 
-**表1**  模板参数说明
+**表 1**  模板参数说明
 
-<a name="table1965616488585"></a>
-<table><thead align="left"><tr id="row865644816588"><th class="cellrowborder" valign="top" width="18.29%" id="mcps1.2.3.1.1"><p id="p765612483583"><a name="p765612483583"></a><a name="p765612483583"></a>参数名</p>
-</th>
-<th class="cellrowborder" valign="top" width="81.71000000000001%" id="mcps1.2.3.1.2"><p id="p1657204895812"><a name="p1657204895812"></a><a name="p1657204895812"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row865704865817"><td class="cellrowborder" valign="top" width="18.29%" headers="mcps1.2.3.1.1 "><p id="p8657048165815"><a name="p8657048165815"></a><a name="p8657048165815"></a>pipe</p>
-</td>
-<td class="cellrowborder" valign="top" width="81.71000000000001%" headers="mcps1.2.3.1.2 "><p id="p1465784819589"><a name="p1465784819589"></a><a name="p1465784819589"></a>模板参数，表示流水类别。</p>
-<p id="p66571048135814"><a name="p66571048135814"></a><a name="p66571048135814"></a>支持的流水参考<a href="../核内同步能力概述.md#section1272612276459">硬件流水类型</a>。</p>
-</td>
-</tr>
-</tbody>
-</table>
+| 参数名 | 描述 |
+| --- | --- |
+| pipe | 模板参数，表示流水类别。支持的流水类型为PIPE_S/PIPE_M/PIPE_V/PIPE_MTE1/PIPE_MTE2/PIPE_MTE3/PIPE_FIX |
 
-**表2**  参数说明
+**表 2**  参数说明
 
-<a name="table103102222579"></a>
-<table><thead align="left"><tr id="row631032216571"><th class="cellrowborder" valign="top" width="18.54%" id="mcps1.2.4.1.1"><p id="p231082295719"><a name="p231082295719"></a><a name="p231082295719"></a>参数名</p>
-</th>
-<th class="cellrowborder" valign="top" width="10.05%" id="mcps1.2.4.1.2"><p id="p2031014221576"><a name="p2031014221576"></a><a name="p2031014221576"></a>输入/输出</p>
-</th>
-<th class="cellrowborder" valign="top" width="71.41%" id="mcps1.2.4.1.3"><p id="p103112022105713"><a name="p103112022105713"></a><a name="p103112022105713"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row83111722195716"><td class="cellrowborder" valign="top" width="18.54%" headers="mcps1.2.4.1.1 "><p id="p131119221575"><a name="p131119221575"></a><a name="p131119221575"></a>id</p>
-</td>
-<td class="cellrowborder" valign="top" width="10.05%" headers="mcps1.2.4.1.2 "><p id="p63110229572"><a name="p63110229572"></a><a name="p63110229572"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="71.41%" headers="mcps1.2.4.1.3 "><p id="p9311822145713"><a name="p9311822145713"></a><a name="p9311822145713"></a>进行流水同步管理的MutexID。</p>
-<p id="p195452267225"><a name="p195452267225"></a><a name="p195452267225"></a>该id可通过用户自定义（范围为0-27）或者通过<a href="../AllocMutexID-(ISASI).md">AllocMutexID/ReleaseMutexID</a>进行申请释放。</p>
-</td>
-</tr>
-</tbody>
-</table>
+| 参数名 | 输入/输出 | 描述 |
+| --- | --- | --- |
+| id | 输入 | 进行流水同步管理的MutexID。在不同编程范式中，该ID的获取以及释放方式不同，详细情况参考[约束说明](#约束说明)。 |
 
-## 返回值说明<a name="zh-cn_topic_0000002078486173_zh-cn_topic_0000001576727153_zh-cn_topic_0000001389787297_section25791320141317"></a>
+## 返回值说明<a name="section640mcpsimp"></a>
 
 无
 
-## 约束说明<a name="zh-cn_topic_0000002078486173_zh-cn_topic_0000001576727153_zh-cn_topic_0000001389787297_section19165124931511"></a>
+## 约束说明<a name="section184751024101111"></a>
 
--   用户在使用Lock/Unlock时且自定义MutexID情况时，禁止同时使用[TQue](../../../资源管理/Pipe和Que框架/TQue/TQue.md)、[TQueBind](../../../资源管理/Pipe和Que框架/TQueBind/TQueBind.md)、[TBufPool](../../../资源管理/Pipe和Que框架/TBufPool/TBufPool.md)中的相关接口。
--   对于同一个MutexID，必须按照Lock/Unlock配套使用，且指定的pipe也需相同，即当且只有完成一个流水的Lock/Unlock之后，才能进行其余流水的操作。
--   相同流水之间存在数据依赖的场景，这种情况建议使用[PipeBarrier](../PipeBarrier(ISASI).md)接口。
+- 每个锁有固定的一个MutexID，在不同编程范式中，该ID的获取以及释放方式不同：
+    - 采用[TPipe-TQue框架编程范式](https://gitcode.com/cann/asc-devkit/blob/master/docs/guide/编程指南/编程模型/AI-Core-SIMD编程/基于TPipe-TQue框架编程/TPipe-TQue框架编程范式.md)时，MutexID需要通过[AllocMutexID](../AllocMutexID-(ISASI).md)/[ReleaseMutexID](../ReleaseMutexID-(ISASI).md)进行申请释放。
+    - 采用[静态Tensor编程范式](https://gitcode.com/cann/asc-devkit/blob/master/docs/guide/编程指南/编程模型/AI-Core-SIMD编程/基于Tensor的CPP编程/静态Tensor编程.md)时，MutexID由开发者自行管理，建议使用0-27，28-31为系统内部规划预留，不建议使用。
+- 对于同一个MutexID，必须先执行Lock，然后才能执行Unlock，且指定的pipe需要相同。如果Lock和Unlock没有按照这种"成对出现"的顺序排列，硬件行为将不可预测。以下是常见的错误用法与正确用法示例：
 
-## 调用示例<a name="zh-cn_topic_0000002078486173_zh-cn_topic_0000001576727153_zh-cn_topic_0000001389787297_section320753512363"></a>
+    ```cpp
+    // 错误写法 1：先Unlock再Lock，顺序颠倒。
+    AscendC::Mutex::Unlock<PIPE_V>(0);
+    AscendC::Mutex::Lock<PIPE_V>(0);
+    
+    // 错误写法 2：连续两次Lock后再连续两次Unlock，未遵循成对使用原则。
+    AscendC::Mutex::Lock<PIPE_V>(0);
+    AscendC::Mutex::Lock<PIPE_V>(0);
+    AscendC::Mutex::Unlock<PIPE_V>(0);
+    AscendC::Mutex::Unlock<PIPE_V>(0);
 
-完整算子样例参考：[Mutex样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_basic_api/05_sync_control/mutex)。
 
+    
+    
+    // 正确写法：Lock和Unlock严格成对出现。
+    AscendC::Mutex::Lock<PIPE_V>(0);
+    AscendC::Mutex::Unlock<PIPE_V>(0);
+    AscendC::Mutex::Lock<PIPE_V>(0);
+    AscendC::Mutex::Unlock<PIPE_V>(0);
+    ```
+
+- 使用相同MutexID、相同流水的两组Lock/UnLock指令时，第二次Lock不会再阻塞流水，这种情况建议使用[PipeBarrier](../PipeBarrier(ISASI).md)接口。以下是错误用法与正确用法的示例：
+
+    ```cpp
+    // 错误写法：第二次Lock已不再阻塞，起不到同步效果。
+    AscendC::Mutex::Lock<PIPE_V>(0);
+    AscendC::Add(zLocal, xLocal, yLocal, TILE_LENGTH);
+    AscendC::Mutex::Unlock<PIPE_V>(0);
+    // 不能达到阻塞PIPE_V的效果。
+    AscendC::Mutex::Lock<PIPE_V>(0); 
+    AscendC::Add(zLocal, xLocal, yLocal, TILE_LENGTH);
+    AscendC::Mutex::Unlock<PIPE_V>(0);
+    
+    // 正确写法：使用PipeBarrier进行单流水内同步。
+    AscendC::Add(zLocal, xLocal, yLocal, TILE_LENGTH);
+    AscendC::PipeBarrier<PIPE_V>();
+    AscendC::Add(zLocal, xLocal, yLocal, TILE_LENGTH);
+    ```
+
+## 调用示例<a name="section123275308128"></a>
+
+```cpp
+// 申请两个 MutexID，供双缓冲流水交替复用。
+uint8_t mutexId0 = AscendC::AllocMutexID();
+uint8_t mutexId1 = AscendC::AllocMutexID();
+
+// 交替使用两个 MutexID，保证 MTE2、V、MTE3 三段流水按顺序串联。
+for (int32_t i = 0; i < loopCount; i++) {
+    uint8_t mutexId = (i % 2 == 0) ? mutexId0 : mutexId1;
+
+    // 锁住 MTE2 流水，保证当前 tile 的搬入按该 MutexID 顺序执行。
+    AscendC::Mutex::Lock<PIPE_MTE2>(mutexId);
+    AscendC::DataCopy(xLocal, src0Global[TILE_LENGTH * progress], TILE_LENGTH);
+    AscendC::DataCopy(yLocal, src1Global[TILE_LENGTH * progress], TILE_LENGTH);
+    // 搬入完成后解锁 MTE2 流水，允许后续阶段继续推进。
+    AscendC::Mutex::Unlock<PIPE_MTE2>(mutexId);
+
+    // 锁住 V 流水，等待对应 tile 的搬入完成后再开始计算。
+    AscendC::Mutex::Lock<PIPE_V>(mutexId);
+    AscendC::Add(zLocal, xLocal, yLocal, TILE_LENGTH);
+    // 计算完成后解锁 V 流水，放行后续计算或搬出。
+    AscendC::Mutex::Unlock<PIPE_V>(mutexId);
+
+    // 锁住 MTE3 流水，确保计算结果完成后再写回 GM。
+    AscendC::Mutex::Lock<PIPE_MTE3>(mutexId);
+    AscendC::DataCopy(dstGlobal[TILE_LENGTH * progress], zLocal, TILE_LENGTH);
+    // 搬出完成后解锁 MTE3 流水，结束当前 tile 的处理。
+    AscendC::Mutex::Unlock<PIPE_MTE3>(mutexId);
+}
+
+// 释放本次样例申请的两个 MutexID。
+AscendC::ReleaseMutexID(mutexId0);
+AscendC::ReleaseMutexID(mutexId1);
 ```
-// 锁定MTE2 流水线互斥锁，确保当前线程独占MTE2 资源进行数据搬运
-AscendC::Mutex::Lock<PIPE_MTE2>(mutexId);
-AscendC::DataCopy(xLocal, src0Global[TILE_LENGTH * progress], TILE_LENGTH);
-AscendC::DataCopy(yLocal, src1Global[TILE_LENGTH * progress], TILE_LENGTH);
-// 解锁MTE2 流水线，允许其他线程使用MTE2
-AscendC::Mutex::Unlock<PIPE_MTE2>(mutexId);
 
-// 锁定Vector流水线互斥锁，确保当前线程独占向量计算资源
-AscendC::Mutex::Lock<PIPE_V>(mutexId);
-AscendC::Add(zLocal, xLocal, yLocal, TILE_LENGTH);
-// 解锁Vector流水线，释放计算资源供其他线程使用
-AscendC::Mutex::Unlock<PIPE_V>(mutexId);
-```
+完整样例请参考：[Mutex样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_basic_api/05_sync_control/mutex)。
