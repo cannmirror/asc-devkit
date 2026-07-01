@@ -56,6 +56,12 @@ __aicore__ inline uint64_t asc_debug_get_block_idx_impl()
     return get_block_idx();
 }
 
+__aicore__ inline void sync_all_impl()
+{
+    pipe_barrier(pipe_t::PIPE_ALL);
+}
+
+
 template <typename T>
 __aicore__ constexpr inline DumpTensorDataType get_dump_datatype_impl()
 {
@@ -83,14 +89,21 @@ __aicore__ constexpr inline DumpTensorDataType get_dump_datatype_impl()
         return DumpTensorDataType::ACL_FLOAT16;
     } else if (std::is_same<T, bfloat16_t>::value) {
         return DumpTensorDataType::ACL_BF16;
+    } else if (std::is_same<T, hifloat8_t>::value) {
+        return DumpTensorDataType::ACL_HIFLOAT8;
+    } else if (std::is_same<T, float8_e5m2_t>::value) {
+        return DumpTensorDataType::ACL_FLOAT8_E5M2;
+    } else if (std::is_same<T, float8_e4m3_t>::value) {
+        return DumpTensorDataType::ACL_FLOAT8_E4M3FN;
+    } else if (std::is_same<T, float8_e8m0_t>::value) {
+        return DumpTensorDataType::ACL_FLOAT8_E8M0;
+    } else if (std::is_same<T, float4_e2m1x2_t>::value) {
+        return DumpTensorDataType::ACL_FLOAT4_E2M1;
+    } else if (std::is_same<T, float4_e1m2x2_t>::value) {
+        return DumpTensorDataType::ACL_FLOAT4_E1M2;
     } else {
         return DumpTensorDataType::ACL_MAX;
     }
-}
-
-__aicore__ inline void sync_all_impl()
-{
-    pipe_barrier(pipe_t::PIPE_ALL);
 }
 
 } // namespace __asc_aicore

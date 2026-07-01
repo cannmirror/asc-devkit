@@ -22,24 +22,22 @@ namespace __asc_aicore {
 template <typename T>
 __aicore__ inline void set_scalar_param_impl(__gm__ uint8_t* paramAddr, uint32_t paramIdx, T scalar)
 {
-    static_assert(!std::is_same<T, double>::value, "printf unsupport double type");
     __gm__ uint64_t *scalarAddr = (__gm__ uint64_t *)paramAddr + paramIdx;
     *scalarAddr = 0;
 
     if constexpr (is_same_in_list<T, half, float>()) {
         *((__gm__ float *)scalarAddr) = static_cast<float>(scalar);
-    } else if constexpr(is_same_in_list<T, bfloat16_t>()) {
-        *((__gm__ float *)scalarAddr) = to_float(scalar);
     } else if constexpr (std::is_signed<T>::value) {
         *((__gm__ int64_t *)scalarAddr) = static_cast<int64_t>(scalar);
     } else if constexpr(std::is_unsigned<T>::value) {
         *((__gm__ uint64_t *)scalarAddr) = static_cast<uint64_t>(scalar);
+    } else if constexpr(is_same_in_list<T, bfloat16_t, float8_e5m2_t, float8_e8m0_t, float8_e4m3_t, hifloat8_t>()) {
+        *((__gm__ float *)scalarAddr) = to_float(scalar);
     } else if constexpr(std::is_pointer<T>::value) {
         *((__gm__ uint64_t *)scalarAddr) = (uintptr_t)scalar;
     } else if constexpr(std::is_enum<T>::value) {
         *((__gm__ uint64_t *)scalarAddr) = static_cast<uint64_t>(scalar);
     }
-
     asc_entire_dcci((__gm__ uint64_t*)scalarAddr);
 }
 
