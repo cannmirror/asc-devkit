@@ -51,7 +51,7 @@ This sample implements gather and adds computation based on SIMD and SIMT hybrid
 
   > ⚠️ **Note** The addition operation in simd_adds can actually be implemented directly in the simt_gather function quickly. The purpose of this sample is only to demonstrate the hybrid programming approach of SIMT and SIMD programming modes through a simple use case, which is not the best practice for this sample.
 
-  The implementation flow of the gather & adds sample is mainly divided into 3 steps: simt_gather, simd_adds, and DataCopy.
+  The implementation flow of the gather & adds sample is mainly divided into 3 steps: simt_gather, simd_adds, and copying data from UB to GM.
 
   (1) simt_gather obtains data with specified indexes from GM (Global Memory) input.
   ```
@@ -59,19 +59,19 @@ This sample implements gather and adds computation based on SIMD and SIMT hybrid
   ...
   uint32_t gather_idx = index[idx];
   ...
-  gather_output[threadIdx.x] = input[gather_idx];
+  local_output[threadIdx.x] = input[gather_idx];
   ```
 
   (2) simd_adds performs the add 1 operation on the data in UB (Unified Buffer). Call Reg::LoadAlign to move data from UB (Unified Buffer) to the register, call Reg::Adds to complete the add 1 operation and output to the destination register, and finally call Reg::StoreAlign to move data from the register to UB. Repeat the above operation to complete the add 1 operation on 1024 data elements.
   ```
   for (uint16_t i = 0; i < repeat_times; i++) {
       AscendC::Reg::LoadAlign(src_reg0, input + i * one_repeat_size);
-      AscendC::Reg::Adds(dst_reg0, src_reg0, adds_addend, mask_reg);
+      AscendC::Reg::Adds(dst_reg0, src_reg0, ADDS_ADDEND, mask_reg);
       AscendC::Reg::StoreAlign(output + i * one_repeat_size, dst_reg0, mask_reg);
   }
   ```
 
-  (3) DataCopy moves the output data from UB (Unified Buffer) to GM (Global Memory).
+  (3) Copy the output data from UB (Unified Buffer) to GM (Global Memory).
 
 - Call Implementation:  
   Use the kernel call operator <<<>>> to call the kernel function.
