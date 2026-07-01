@@ -78,7 +78,7 @@ __aicore__ inline void SetPadValue(T paddingValue)
 
 ```cpp
 // 场景1：使用SetPadValue进行自定义填充。
-// DataCopyExtParams参数：blockCount=1, blockLen=20*sizeof(half), srcBlkStride=0, srcRepStride=0, reserved=0。
+// DataCopyExtParams参数：blockCount=1, blockLen=20*sizeof(half), srcStride=0, dstStride=0, rsv=0。
 // DataCopyPadExtParams参数：isPad=false, leftPadding=0, rightPadding=12。
 // SetPadValue设置填充值为1，配合isPad=false使用。
 AscendC::DataCopyExtParams copyParams{1, srcCols * sizeof(T), 0, 0, 0};

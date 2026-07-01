@@ -229,7 +229,7 @@
 - 场景1：使用SetPadValue进行自定义填充
 
     ```cpp
-    // DataCopyExtParams参数：blockCount=1, blockLen=20*sizeof(half), srcBlkStride=0, srcRepStride=0, reserved=0
+    // DataCopyExtParams参数：blockCount=1, blockLen=20*sizeof(half), srcStride=0, dstStride=0, rsv=0
     // DataCopyPadExtParams参数：isPad=false, leftPadding=0, rightPadding=12
     // SetPadValue设置填充值为1，配合isPad=false使用。
     AscendC::DataCopyExtParams copyParams{1, srcCols * sizeof(T), 0, 0, 0};
@@ -245,7 +245,7 @@
 - 场景2：使用rightPadding进行默认填充
 
     ```cpp
-    // DataCopyExtParams参数：blockCount=32, blockLen=59*sizeof(float), srcBlkStride=0, srcRepStride=0, reserved=0
+    // DataCopyExtParams参数：blockCount=32, blockLen=59*sizeof(float), srcStride=0, dstStride=0, rsv=0
     // DataCopyPadExtParams参数：isPad=true, leftPadding=0, rightPadding=5
     // isPad=true时填充值为0，不使用SetPadValue。
     AscendC::DataCopyExtParams copyParams{srcRows, srcCols * sizeof(float), 0, 0, 0};
@@ -260,7 +260,7 @@
 - 场景3：使用Compact模式进行紧凑填充（仅支持Ascend 950PR/Ascend 950DT）
 
     ```cpp
-    // DataCopyExtParams参数：blockCount=3, blockLen=24*sizeof(half), srcBlkStride=0, srcRepStride=0, reserved=0
+    // DataCopyExtParams参数：blockCount=3, blockLen=24*sizeof(half), srcStride=0, dstStride=0, rsv=0
     // DataCopyPadExtParams参数：isPad=true, leftPadding=0, rightPadding=16
     // PaddingMode::Compact：将多行数据紧凑排列到一行，填充区域紧凑放置在数据之后。
     // 输入[3, 24]紧凑排列为[1, 80]，前72个元素为3行数据，后8个元素为填充区域。
@@ -328,7 +328,7 @@
     AscendC::DataCopyExtParams copyParams{
         64,  // blockCount=64（第3维搬运64次）
         126,  // blockLen=126（第4维搬运126字节，padding到128）
-        0, 0, 0  // srcStride/dstStride=0
+        0, 0, 0  // srcStride=0, dstStride=0, rsv=0
     };
     AscendC::DataCopyPadExtParams<int8_t> padParams{true, 0, 0, 0};
 
