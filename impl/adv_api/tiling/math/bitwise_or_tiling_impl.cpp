@@ -16,6 +16,7 @@
 #include "../../detail/host_log.h"
 #include "graph/tensor.h"
 #include "../../../../include/adv_api/math/bitwise_or_tiling.h"
+#include "../../../../include/utils/tiling/platform/platform_ascendc.h"
 #include "../../detail/api_check/host_apicheck.h"
 namespace AscendC {
 namespace {

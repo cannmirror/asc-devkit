@@ -17,7 +17,6 @@
 #include <cstdint>
 
 #include "graph/tensor.h"
-#include "tiling/platform/platform_ascendc.h"
 namespace AscendC {
 /*
  * @ingroup GetPowerMaxMinTmpSize for V220
