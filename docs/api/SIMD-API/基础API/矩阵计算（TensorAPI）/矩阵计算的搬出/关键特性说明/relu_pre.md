@@ -50,5 +50,5 @@ Copy(atom, ub, l0c);
 ## 约束说明
 
 - `enableRelu`为编译期trait配置，默认不使能。
-- 量化和Relu参数不能为INF、NaN或非规格化数。
+- 量化和Relu参数不能为inf、nan或非规格化数。
 - 当前Tensor API不支持随路PRelu。

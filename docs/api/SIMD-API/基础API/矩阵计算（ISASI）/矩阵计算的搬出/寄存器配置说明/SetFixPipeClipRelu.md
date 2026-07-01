@@ -48,7 +48,7 @@ __aicore__ inline void SetFixPipeClipRelu(uint64_t config)
 
 | 参数名称 | 输入/输出 | 含义 |
 | ---------- | ---------- | ---------- |
-| config | 输入 | clipReluMaxVal，ClipReLU操作中的最大值。clipReluMaxVal只占用0-15bit，必须大于0，不能为Inf/NaN。 |
+| config | 输入 | clipReluMaxVal，ClipReLU操作中的最大值。clipReluMaxVal只占用0-15bit，必须大于0，不能为inf/nan。 |
 
 ## 数据类型
 

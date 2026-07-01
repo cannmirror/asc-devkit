@@ -1,19 +1,16 @@
 # Mmad接口边界值汇总<a name="ZH-CN_TOPIC_0000002607849175"></a>
 
-<cann-filter npu-type="A3,910b">
+本节汇总介绍了Mmad计算接口在边界值输入下的输出结果，数据类型见基础API下的[mmad](../SIMD-API/基础API/矩阵计算（ISASI）/Mmad计算/Mmad.md)，以下内容针对如下型号生效：
 
-本节汇总介绍了Mmad计算接口在边界值输入下的输出结果，以下内容针对如下型号生效：
-
-<cann-filter npu-type="A3">
-
+<!-- npu="950" id1 -->
+- Ascend 950PR/Ascend 950DT
+<!-- end id1 -->
+<!-- npu="A3" id2 -->
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
-
-</cann-filter>
-<cann-filter npu-type="910b">
-
+<!-- end id2 -->
+<!-- npu="910b" id3 -->
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品
-
-</cann-filter>
+<!-- end id3 -->
 
 **表1**  Mmad特殊值/边界值输入的计算结果说明
 
@@ -42,8 +39,4 @@
 
 注：
 
-（1）INF/NAN模式（非饱和模式）下，乘法阶段：inf\*非零值输出inf，inf\*0输出nan，输入包含nan时输出为nan。加法阶段：正负inf相加时输出为nan。
-
-（2）饱和模式下，+inf按照数据类型取对应max，-inf按照数据类型取对应min值参与计算，nan值按照0参与计算。
-
-</cann-filter>
+INF/NAN模式（非饱和模式）下，乘法阶段：inf\*非零值输出inf，inf\*0输出nan，输入包含nan时输出为nan。加法阶段：正负inf相加时输出为nan。

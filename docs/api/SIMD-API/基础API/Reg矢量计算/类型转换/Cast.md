@@ -245,7 +245,7 @@ Ev = tmp2[30 : 23] - 8'b01111111, thr = tmp2[13 : 0];
 if (Ev == 128 && tmp2[22 : 0] != 23'b0) then
     tmp3[7 : 0] = HiF8NAN(8'b10000000);
 else if ((Ev == 128 && tmp2[22 : 0] == 23'b0) || (Ev > 15)) then
-    tmp3[7 : 0] = (tmp2[31] == 1'b0) ? HiF8+INF(8'b01101111) : HiF8-INF(8'b11101111);
+    tmp3[7 : 0] = (tmp2[31] == 1'b0) ? HiF8+inf(8'b01101111) : HiF8-inf(8'b11101111);
 else if (Ev < -23) then
     tmp3[7 : 0] = HiF8ZERO (8'b00000000);
 else if (Ev == -23) then
@@ -293,7 +293,7 @@ Ev = tmp2[14 : 10] - 5'b01111, thr = {tmp2[0], 1’b1};
 if (Ev == 16 && tmp2[9 : 0] != 10'b0) then
     tmp3[7 : 0] = HiF8NAN(8'b10000000);
 else if (Ev == 16 && tmp2[9:0] == 10'b0) && (Ev > 15) then
-    tmp3[7 : 0] = (tmp2[31] == 1'b0) ? HiF8+INF(8'b01101111) : HiF8-INF(8'b11101111);
+    tmp3[7 : 0] = (tmp2[31] == 1'b0) ? HiF8+inf(8'b01101111) : HiF8-inf(8'b11101111);
 else if (Ev < -23) then
     tmp3[7 : 0] = HiF8ZERO(8'b00000000);
 else if (Ev == -23) then
