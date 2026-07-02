@@ -373,7 +373,7 @@ Kirin X90，支持数据类型：int8_t、half。
 
 ### b8数据类型，A矩阵需要转置的场景示例
 
-在数据类型为b8，A矩阵转置的场景下，Load2D接口不支持转置，因此需要调用LoadDataWithTranspose接口完成数据搬运。
+在数据类型为b8，A矩阵转置的场景下，LoadData接口不支持转置，因此需要调用LoadDataWithTranspose接口完成数据搬运。
 
 搬运过程的数据排布变化示意图如下：
 
