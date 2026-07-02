@@ -89,9 +89,9 @@
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
     ```cpp
-    matmul_ibshareb_custom<<<tilingData.usedCoreNum / MIX_RATIO, nullptr, stream>>>(x1, x2, bias, y, workspaceDevice,
+    matmul_ibshareb_custom<<<tilingData.usedCoreNum / MIX_RATIO, 0, stream>>>(x1, x2, bias, y, workspaceDevice,
                           tilingDevice);       // 方式一：非纯Cube模式，SetDim设置为AIV:AIC组合的核数
-    matmul_ibshareb_custom<<<tilingData.usedCoreNum, nullptr, stream>>>(x1, x2, bias, y, workspaceDevice,
+    matmul_ibshareb_custom<<<tilingData.usedCoreNum, 0, stream>>>(x1, x2, bias, y, workspaceDevice,
                           tilingDevice);       // 方式二：纯Cube模式，SetDim设置为AIC的核数                          
     ```
 

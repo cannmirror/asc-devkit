@@ -81,7 +81,7 @@
 
   3. Add Kernel实现
 
-     Device侧`add_custom` Kernel采用静态Tensor编程方式实现最小Add计算。Kernel模板参数只包含固定Shape：`<8, 2048>`；Kernel启动时通过`<<<blockNum, nullptr, stream>>>`传入block数量，Kernel内部通过`AscendC::GetBlockNum()`计算每个block处理的数据长度。
+     Device侧`add_custom` Kernel采用静态Tensor编程方式实现最小Add计算。Kernel模板参数只包含固定Shape：`<8, 2048>`；Kernel启动时通过`<<<blockNum, 0, stream>>>`传入block数量，Kernel内部通过`AscendC::GetBlockNum()`计算每个block处理的数据长度。
 
      本样例Kernel仅支持`[8, 2048]`、`float16`输入。如果输入Shape不符合要求，Host侧会通过`TORCH_CHECK`报错。
 

@@ -81,7 +81,7 @@ This example demonstrates how to display operator input/output Shape, data type,
 
   3. Add Kernel Implementation
 
-     The device-side `add_custom` Kernel uses static Tensor programming to implement minimal Add computation. The Kernel template parameters only include a fixed Shape: `<8, 2048>`. When the Kernel launches, the block count is passed through `<<<blockNum, nullptr, stream>>>`, and the Kernel internally calculates the data length processed by each block through `AscendC::GetBlockNum()`.
+     The device-side `add_custom` Kernel uses static Tensor programming to implement minimal Add computation. The Kernel template parameters only include a fixed Shape: `<8, 2048>`. When the Kernel launches, the block count is passed through `<<<blockNum, 0, stream>>>`, and the Kernel internally calculates the data length processed by each block through `AscendC::GetBlockNum()`.
 
      This example Kernel only supports `[8, 2048]`, `float16` input. If the input Shape does not meet the requirements, the host side reports an error through `TORCH_CHECK`.
 

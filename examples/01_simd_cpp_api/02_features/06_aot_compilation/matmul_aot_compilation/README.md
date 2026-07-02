@@ -145,7 +145,7 @@ aot::AOTDispatcher<AscendC::tiling::TCubeTiling, MatmulTilingAOTRegistry>::templ
     tilPtr,                             // 运行时 Tiling 字节指针
     [&](auto tiling_holder, AscendC::tiling::TCubeTiling value) {
         using Holder = decltype(tiling_holder);
-        matmul_custom<Holder><<<numBlocks, nullptr, stream>>>(aDevice, bDevice, cDevice, workspaceDevice, tiling);
+        matmul_custom<Holder><<<numBlocks, 0, stream>>>(aDevice, bDevice, cDevice, workspaceDevice, tiling);
         if constexpr (std::is_same_v<Holder, aot::RuntimeHolder<AscendC::tiling::TCubeTiling>>) {
             printf("##### 使用运行时 Tiling\n");
         } else {

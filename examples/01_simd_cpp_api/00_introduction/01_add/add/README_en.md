@@ -86,7 +86,7 @@ __vector__ __global__ void add_custom(__gm__ float* x, __gm__ float* y, __gm__ f
 }
 ```
 
-Invocation method: Use the kernel invocation operator `<<<numBlocks, nullptr, stream>>>` to call the kernel function, with `numBlocks=8` specifying 8 cores for parallel execution.
+Invocation method: Use the kernel invocation operator `<<<numBlocks, 0, stream>>>` to call the kernel function, with `numBlocks=8` specifying 8 cores for parallel execution.
 
 ## Implementation Flow Analysis
 
