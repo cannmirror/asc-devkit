@@ -454,6 +454,9 @@ __aicore__ inline void WholeReduceMinImpl(__ubuf__ T *dstLocal, __ubuf__ T *srcL
     if (sizeof(T) == 2 && order == ReduceOrder::ORDER_ONLY_INDEX) {
         oneRepOffset = 2;
     }
+
+    ReduceTemplate<isSetMask, false, Reg::ReduceMin<T, Reg::MaskMergeMode::ZEROING, Reg::RegTensor<T>>>(
+        dstLocal, srcLocal, repeat, dstRepStride, oneRepOffset, srcBlkStride, srcRepStride, maskReg, order);
 }
 
 template <typename T, bool isSetMask = true, typename U = T>
