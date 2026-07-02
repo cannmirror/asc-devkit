@@ -575,10 +575,7 @@ def gen_kernel_fun(compile_info: CompileInfo, func_name: str, opinfo: OpInfo, \
     if global_var_storage.get_variable("ascendc_enable_super_kernel") is True:
         align_size = compile_info.super_kernel_info["sp_options"].get('func-align', 512)
         gen_func_attributes = gen_func_align_attribute(align_size)
-        if '--cce-auto-sync=off' not in compile_options and '--cce-auto-sync' in compile_options:
-            gen_func_attributes += " __sk__"
-        else:
-            gen_func_attributes += " [aicore]"
+        gen_func_attributes += " __sk__"
     else:
         gen_func_attributes += " [aicore]"
 
