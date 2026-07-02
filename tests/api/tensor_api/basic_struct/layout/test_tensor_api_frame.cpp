@@ -217,10 +217,10 @@ TEST_F(Tensor_Api_Frame_Layout, NDAndDNGroupIntegralConstantTrait)
 {
     using namespace AscendC::Te;
 
-    auto ndLayout = MakeFrameLayout<NDLayoutPtn, AscendC::Std::_16>(8, 16);
-    auto dnLayout = MakeFrameLayout<DNLayoutPtn, AscendC::Std::_16>(8, 16);
-    auto ndExtLayout = MakeFrameLayout<NDExtLayoutPtn, AscendC::Std::_16>(8, 16);
-    auto dnExtLayout = MakeFrameLayout<DNExtLayoutPtn, AscendC::Std::_16>(8, 16);
+    auto ndLayout = MakeFrameLayout<NDLayoutPtn, _16>(8, 16);
+    auto dnLayout = MakeFrameLayout<DNLayoutPtn, _16>(8, 16);
+    auto ndExtLayout = MakeFrameLayout<NDExtLayoutPtn, _16>(8, 16);
+    auto dnExtLayout = MakeFrameLayout<DNExtLayoutPtn, _16>(8, 16);
 
     EXPECT_EQ(AscendC::Std::get<0>(GetShape(ndLayout)), 8);
     EXPECT_EQ(AscendC::Std::get<1>(GetShape(ndLayout)), 16);
@@ -444,10 +444,10 @@ TEST_F(Tensor_Api_Frame_Layout, OtherGroupIntegralConstantTrait)
 {
     using namespace AscendC::Te;
 
-    auto nzLayout = MakeFrameLayout<NZLayoutPtn, AscendC::Std::_16>(32, 64);
-    auto znLayout = MakeFrameLayout<ZNLayoutPtn, AscendC::Std::_16>(32, 64);
-    auto zzLayout = MakeFrameLayout<ZZLayoutPtn, AscendC::Std::_16>(32, 64);
-    auto nnLayout = MakeFrameLayout<NNLayoutPtn, AscendC::Std::_2>(16, 32);
+    auto nzLayout = MakeFrameLayout<NZLayoutPtn, _16>(32, 64);
+    auto znLayout = MakeFrameLayout<ZNLayoutPtn, _16>(32, 64);
+    auto zzLayout = MakeFrameLayout<ZZLayoutPtn, _16>(32, 64);
+    auto nnLayout = MakeFrameLayout<NNLayoutPtn, _2>(16, 32);
 
     EXPECT_EQ(AscendC::Std::get<0>(GetShape<0>(nzLayout)), 16);
     EXPECT_EQ(AscendC::Std::get<1>(GetShape<0>(nzLayout)), 2);

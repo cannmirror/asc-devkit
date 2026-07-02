@@ -193,11 +193,11 @@ TEST_F(Tensor_Api_Tensor_Struct, FormatTraitsSupportGlobalLocalAndCvRefTensor)
     using UbStrideCol0 = typename GetNDimType<const decltype(ubTensor)&, AttrInfo::Stride, AttrInfo::Column, 0>::type;
     using UbStrideCol1 = typename GetNDimType<const decltype(ubTensor)&, AttrInfo::Stride, AttrInfo::Column, 1>::type;
 
-    static_assert(AscendC::Std::is_same_v<GmShapeRow0, AscendC::Std::_1>);
-    static_assert(AscendC::Std::is_same_v<GmShapeCol0, AscendC::Std::_1>);
-    static_assert(AscendC::Std::is_same_v<UbStrideRow0, AscendC::Std::_0>);
-    static_assert(AscendC::Std::is_same_v<UbStrideCol0, AscendC::Std::_0>);
-    static_assert(AscendC::Std::is_same_v<UbStrideCol1, AscendC::Std::_1>);
+    static_assert(AscendC::Std::is_same_v<GmShapeRow0, _1>);
+    static_assert(AscendC::Std::is_same_v<GmShapeCol0, _1>);
+    static_assert(AscendC::Std::is_same_v<UbStrideRow0, _0>);
+    static_assert(AscendC::Std::is_same_v<UbStrideCol0, _0>);
+    static_assert(AscendC::Std::is_same_v<UbStrideCol1, _1>);
 
     EXPECT_EQ(gmTensor.Size(), m * n);
     EXPECT_EQ(ubTensor.Size(), m * n);

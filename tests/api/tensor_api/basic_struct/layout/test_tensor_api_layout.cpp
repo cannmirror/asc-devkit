@@ -69,98 +69,98 @@ TEST_F(Tensor_Api_Layout_Struct, TestGetLayoutPatternFromMakeLayoutFractal)
     using namespace AscendC::Te;
 
     auto nzLayout = MakeLayout(
-        MakeShape(MakeShape(AscendC::Std::_16{}, AscendC::Std::_2{}),
-            MakeShape(AscendC::Std::_16{}, AscendC::Std::_3{})),
-        MakeStride(MakeStride(AscendC::Std::_16{}, AscendC::Std::_256{}),
-            MakeStride(AscendC::Std::_1{}, AscendC::Std::_512{})));
+        MakeShape(MakeShape(_16{}, _2{}),
+            MakeShape(_16{}, _3{})),
+        MakeStride(MakeStride(_16{}, _256{}),
+            MakeStride(_1{}, _512{})));
     auto znLayout = MakeLayout(
-        MakeShape(MakeShape(AscendC::Std::_16{}, AscendC::Std::_2{}),
-            MakeShape(AscendC::Std::_16{}, AscendC::Std::_3{})),
-        MakeStride(MakeStride(AscendC::Std::_1{}, AscendC::Std::_512{}),
-            MakeStride(AscendC::Std::_16{}, AscendC::Std::_256{})));
+        MakeShape(MakeShape(_16{}, _2{}),
+            MakeShape(_16{}, _3{})),
+        MakeStride(MakeStride(_1{}, _512{}),
+            MakeStride(_16{}, _256{})));
     auto zzLayout = MakeLayout(
-        MakeShape(MakeShape(AscendC::Std::_16{}, AscendC::Std::_2{}),
-            MakeShape(AscendC::Std::_16{}, AscendC::Std::_3{})),
-        MakeStride(MakeStride(AscendC::Std::_16{}, AscendC::Std::_512{}),
-            MakeStride(AscendC::Std::_1{}, AscendC::Std::_256{})));
+        MakeShape(MakeShape(_16{}, _2{}),
+            MakeShape(_16{}, _3{})),
+        MakeStride(MakeStride(_16{}, _512{}),
+            MakeStride(_1{}, _256{})));
     auto nnLayout = MakeLayout(
-        MakeShape(MakeShape(AscendC::Std::_2{}, AscendC::Std::_4{}),
-            MakeShape(AscendC::Std::_16{}, AscendC::Std::_3{})),
-        MakeStride(MakeStride(AscendC::Std::_1{}, AscendC::Std::_32{}),
-            MakeStride(AscendC::Std::_2{}, AscendC::Std::_128{})));
+        MakeShape(MakeShape(_2{}, _4{}),
+            MakeShape(_16{}, _3{})),
+        MakeStride(MakeStride(_1{}, _32{}),
+            MakeStride(_2{}, _128{})));
     auto ndExtLayout = MakeLayout(
-        MakeShape(MakeShape(AscendC::Std::_1{}, AscendC::Std::_4{}),
-            MakeShape(AscendC::Std::_1{}, AscendC::Std::_5{})),
-        MakeStride(MakeStride(AscendC::Std::_0{}, AscendC::Std::_5{}),
-            MakeStride(AscendC::Std::_0{}, AscendC::Std::_1{})));
+        MakeShape(MakeShape(_1{}, _4{}),
+            MakeShape(_1{}, _5{})),
+        MakeStride(MakeStride(_0{}, _5{}),
+            MakeStride(_0{}, _1{})));
     auto dnExtLayout = MakeLayout(
-        MakeShape(MakeShape(AscendC::Std::_1{}, AscendC::Std::_4{}),
-            MakeShape(AscendC::Std::_1{}, AscendC::Std::_5{})),
-        MakeStride(MakeStride(AscendC::Std::_0{}, AscendC::Std::_1{}),
-            MakeStride(AscendC::Std::_0{}, AscendC::Std::_4{})));
-    auto ndLayout = MakeLayout(MakeShape(AscendC::Std::_4{}, AscendC::Std::_5{}),
-        MakeStride(AscendC::Std::_5{}, AscendC::Std::_1{}));
-    auto dnLayout = MakeLayout(MakeShape(AscendC::Std::_4{}, AscendC::Std::_5{}),
-        MakeStride(AscendC::Std::_1{}, AscendC::Std::_4{}));
+        MakeShape(MakeShape(_1{}, _4{}),
+            MakeShape(_1{}, _5{})),
+        MakeStride(MakeStride(_0{}, _1{}),
+            MakeStride(_0{}, _4{})));
+    auto ndLayout = MakeLayout(MakeShape(_4{}, _5{}),
+        MakeStride(_5{}, _1{}));
+    auto dnLayout = MakeLayout(MakeShape(_4{}, _5{}),
+        MakeStride(_1{}, _4{}));
     auto batchedNzLayout = MakeLayout(
-        MakeShape(AscendC::Std::_2{}, MakeShape(MakeShape(AscendC::Std::_16{}, AscendC::Std::_2{}),
-            MakeShape(AscendC::Std::_16{}, AscendC::Std::_3{}))),
-        MakeStride(AscendC::Std::Int<1536>{}, MakeStride(MakeStride(AscendC::Std::_16{}, AscendC::Std::_256{}),
-            MakeStride(AscendC::Std::_1{}, AscendC::Std::_512{}))));
+        MakeShape(_2{}, MakeShape(MakeShape(_16{}, _2{}),
+            MakeShape(_16{}, _3{}))),
+        MakeStride(AscendC::Std::Int<1536>{}, MakeStride(MakeStride(_16{}, _256{}),
+            MakeStride(_1{}, _512{}))));
     auto batchedZnLayout = MakeLayout(
-        MakeShape(AscendC::Std::_2{}, MakeShape(MakeShape(AscendC::Std::_16{}, AscendC::Std::_2{}),
-            MakeShape(AscendC::Std::_16{}, AscendC::Std::_3{}))),
-        MakeStride(AscendC::Std::Int<1536>{}, MakeStride(MakeStride(AscendC::Std::_1{}, AscendC::Std::_512{}),
-            MakeStride(AscendC::Std::_16{}, AscendC::Std::_256{}))));
+        MakeShape(_2{}, MakeShape(MakeShape(_16{}, _2{}),
+            MakeShape(_16{}, _3{}))),
+        MakeStride(AscendC::Std::Int<1536>{}, MakeStride(MakeStride(_1{}, _512{}),
+            MakeStride(_16{}, _256{}))));
     auto batchedZzLayout = MakeLayout(
-        MakeShape(AscendC::Std::_2{}, MakeShape(MakeShape(AscendC::Std::_16{}, AscendC::Std::_2{}),
-            MakeShape(AscendC::Std::_16{}, AscendC::Std::_3{}))),
-        MakeStride(AscendC::Std::Int<1536>{}, MakeStride(MakeStride(AscendC::Std::_16{}, AscendC::Std::_512{}),
-            MakeStride(AscendC::Std::_1{}, AscendC::Std::_256{}))));
+        MakeShape(_2{}, MakeShape(MakeShape(_16{}, _2{}),
+            MakeShape(_16{}, _3{}))),
+        MakeStride(AscendC::Std::Int<1536>{}, MakeStride(MakeStride(_16{}, _512{}),
+            MakeStride(_1{}, _256{}))));
     auto batchedNnLayout = MakeLayout(
-        MakeShape(AscendC::Std::_2{}, MakeShape(MakeShape(AscendC::Std::_2{}, AscendC::Std::_4{}),
-            MakeShape(AscendC::Std::_16{}, AscendC::Std::_3{}))),
-        MakeStride(AscendC::Std::Int<384>{}, MakeStride(MakeStride(AscendC::Std::_1{}, AscendC::Std::_32{}),
-            MakeStride(AscendC::Std::_2{}, AscendC::Std::_128{}))));
+        MakeShape(_2{}, MakeShape(MakeShape(_2{}, _4{}),
+            MakeShape(_16{}, _3{}))),
+        MakeStride(AscendC::Std::Int<384>{}, MakeStride(MakeStride(_1{}, _32{}),
+            MakeStride(_2{}, _128{}))));
     auto batchedNdExtLayout = MakeLayout(
-        MakeShape(AscendC::Std::_2{}, MakeShape(MakeShape(AscendC::Std::_1{}, AscendC::Std::_4{}),
-            MakeShape(AscendC::Std::_1{}, AscendC::Std::_5{}))),
-        MakeStride(AscendC::Std::Int<20>{}, MakeStride(MakeStride(AscendC::Std::_0{}, AscendC::Std::_5{}),
-            MakeStride(AscendC::Std::_0{}, AscendC::Std::_1{}))));
+        MakeShape(_2{}, MakeShape(MakeShape(_1{}, _4{}),
+            MakeShape(_1{}, _5{}))),
+        MakeStride(AscendC::Std::Int<20>{}, MakeStride(MakeStride(_0{}, _5{}),
+            MakeStride(_0{}, _1{}))));
     auto batchedDnExtLayout = MakeLayout(
-        MakeShape(AscendC::Std::_2{}, MakeShape(MakeShape(AscendC::Std::_1{}, AscendC::Std::_4{}),
-            MakeShape(AscendC::Std::_1{}, AscendC::Std::_5{}))),
-        MakeStride(AscendC::Std::Int<20>{}, MakeStride(MakeStride(AscendC::Std::_0{}, AscendC::Std::_1{}),
-            MakeStride(AscendC::Std::_0{}, AscendC::Std::_4{}))));
+        MakeShape(_2{}, MakeShape(MakeShape(_1{}, _4{}),
+            MakeShape(_1{}, _5{}))),
+        MakeStride(AscendC::Std::Int<20>{}, MakeStride(MakeStride(_0{}, _1{}),
+            MakeStride(_0{}, _4{}))));
     auto batchedNdLayout = MakeLayout(
-        MakeShape(AscendC::Std::_2{}, MakeShape(AscendC::Std::_4{}, AscendC::Std::_5{})),
-        MakeStride(AscendC::Std::Int<20>{}, MakeStride(AscendC::Std::_5{}, AscendC::Std::_1{})));
+        MakeShape(_2{}, MakeShape(_4{}, _5{})),
+        MakeStride(AscendC::Std::Int<20>{}, MakeStride(_5{}, _1{})));
     auto batchedDnLayout = MakeLayout(
-        MakeShape(AscendC::Std::_2{}, MakeShape(AscendC::Std::_4{}, AscendC::Std::_5{})),
-        MakeStride(AscendC::Std::Int<20>{}, MakeStride(AscendC::Std::_1{}, AscendC::Std::_4{})));
+        MakeShape(_2{}, MakeShape(_4{}, _5{})),
+        MakeStride(AscendC::Std::Int<20>{}, MakeStride(_1{}, _4{})));
     auto batchNdUnContinuousLayout = MakeLayout(
-        MakeShape(AscendC::Std::_3{}, MakeShape(AscendC::Std::_4{}, AscendC::Std::_5{})),
-        MakeStride(AscendC::Std::_5{}, MakeStride(AscendC::Std::Int<15>{}, AscendC::Std::_1{})));
+        MakeShape(_3{}, MakeShape(_4{}, _5{})),
+        MakeStride(_5{}, MakeStride(AscendC::Std::Int<15>{}, _1{})));
     auto batchDnUnContinuousLayout = MakeLayout(
-        MakeShape(AscendC::Std::_3{}, MakeShape(AscendC::Std::_4{}, AscendC::Std::_5{})),
-        MakeStride(AscendC::Std::_4{}, MakeStride(AscendC::Std::_1{}, AscendC::Std::Int<12>{})));
-    auto invalidFlatLayout = MakeLayout(MakeShape(AscendC::Std::_4{}, AscendC::Std::_5{}),
-        MakeStride(AscendC::Std::_4{}, AscendC::Std::_5{}));
+        MakeShape(_3{}, MakeShape(_4{}, _5{})),
+        MakeStride(_4{}, MakeStride(_1{}, AscendC::Std::Int<12>{})));
+    auto invalidFlatLayout = MakeLayout(MakeShape(_4{}, _5{}),
+        MakeStride(_4{}, _5{}));
     auto invalidFractalLayout = MakeLayout(
-        MakeShape(MakeShape(AscendC::Std::_4{}, AscendC::Std::_5{}),
-            MakeShape(AscendC::Std::_8{}, AscendC::Std::_9{})),
-        MakeStride(MakeStride(AscendC::Std::_2{}, AscendC::Std::_3{}),
-            MakeStride(AscendC::Std::_4{}, AscendC::Std::_5{})));
+        MakeShape(MakeShape(_4{}, _5{}),
+            MakeShape(_8{}, _9{})),
+        MakeStride(MakeStride(_2{}, _3{}),
+            MakeStride(_4{}, _5{})));
     auto invalidScaleADNLayout = MakeLayout(
-        MakeShape(MakeShape(AscendC::Std::_1{}, AscendC::Std::_4{}),
-            MakeShape(AscendC::Std::_1{}, AscendC::Std::_5{})),
-        MakeStride(MakeStride(AscendC::Std::_0{}, AscendC::Std::_2{}),
-            MakeStride(AscendC::Std::_1{}, AscendC::Std::_8{})));
+        MakeShape(MakeShape(_1{}, _4{}),
+            MakeShape(_1{}, _5{})),
+        MakeStride(MakeStride(_0{}, _2{}),
+            MakeStride(_1{}, _8{})));
     auto invalidBatchedFractalLayout = MakeLayout(
-        MakeShape(AscendC::Std::_2{}, MakeShape(MakeShape(AscendC::Std::_4{}, AscendC::Std::_5{}),
-            MakeShape(AscendC::Std::_8{}, AscendC::Std::_9{}))),
-        MakeStride(AscendC::Std::Int<180>{}, MakeStride(MakeStride(AscendC::Std::_2{}, AscendC::Std::_3{}),
-            MakeStride(AscendC::Std::_4{}, AscendC::Std::_5{}))));
+        MakeShape(_2{}, MakeShape(MakeShape(_4{}, _5{}),
+            MakeShape(_8{}, _9{}))),
+        MakeStride(AscendC::Std::Int<180>{}, MakeStride(MakeStride(_2{}, _3{}),
+            MakeStride(_4{}, _5{}))));
 
     static_assert(AscendC::Std::is_same_v<GetLayoutPattern<decltype(nzLayout)>, NZLayoutPtn>);
     static_assert(AscendC::Std::is_same_v<GetLayoutPattern<decltype(znLayout)>, ZNLayoutPtn>);
@@ -255,9 +255,9 @@ TEST_F(Tensor_Api_Layout_Struct, TestMakeIntTuple)
 {
     using namespace AscendC::Te;
 
-    auto shape = MakeShape(AscendC::Std::_4{}, AscendC::Std::_5{});
-    auto stride = MakeStride(AscendC::Std::_5{}, AscendC::Std::_1{});
-    auto coord = MakeCoord(AscendC::Std::_1{}, AscendC::Std::_3{});
+    auto shape = MakeShape(_4{}, _5{});
+    auto stride = MakeStride(_5{}, _1{});
+    auto coord = MakeCoord(_1{}, _3{});
 
     EXPECT_EQ(AscendC::Std::get<0>(shape).value, 4);
     EXPECT_EQ(AscendC::Std::get<1>(shape).value, 5);

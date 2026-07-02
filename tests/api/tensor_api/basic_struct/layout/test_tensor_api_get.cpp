@@ -42,8 +42,8 @@ TEST_F(Tensor_Api_Layout_Get, TestGetStaticLayouts)
 {
     using namespace AscendC::Te;
 
-    auto layout = MakeLayout(MakeShape(MakeShape(AscendC::Std::_2{}, AscendC::Std::_3{}), MakeShape(AscendC::Std::_4{}, AscendC::Std::_5{})),
-                             MakeStride(MakeStride(AscendC::Std::_1{}, AscendC::Std::_8{}), MakeStride(AscendC::Std::_2{}, AscendC::Std::_24{})));
+    auto layout = MakeLayout(MakeShape(MakeShape(_2{}, _3{}), MakeShape(_4{}, _5{})),
+                             MakeStride(MakeStride(_1{}, _8{}), MakeStride(_2{}, _24{})));
 
     auto inner = Get<1, 0>(layout);
 

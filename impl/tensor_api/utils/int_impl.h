@@ -9,62 +9,25 @@
 */
 
 /*!
- * \file Int.h
+ * \file int_impl.h
  * \brief
  */
-#ifndef IMPL_STD_ASCENDC_STD_INT_IMPL__H
-#define IMPL_STD_ASCENDC_STD_INT_IMPL__H
-#include "integral_constant.h"
-#include "enable_if.h"
-#include "is_const.h"
-#include "../algorithm/max.h"
-#include "../algorithm/min.h"
-#include "../cmath/divide.h"
-#include "../cmath/ceil_division.h"
-#include "../cmath/ceil_align.h"
-#include "../cmath/sqrt.h"
-#include "is_integral.h"
+#ifndef IMPL_TENSOR_API_UTILS_INT_IMPL_H
+#define IMPL_TENSOR_API_UTILS_INT_IMPL_H
+
+#include "impl/utils/std/type_traits/integral_constant.h"
+#include "impl/utils/std/type_traits/enable_if.h"
+#include "impl/utils/std/type_traits/is_const.h"
+#include "impl/utils/std/algorithm/max.h"
+#include "impl/utils/std/algorithm/min.h"
+#include "impl/utils/std/cmath/divide.h"
+#include "impl/utils/std/cmath/ceil_division.h"
+#include "impl/utils/std/cmath/ceil_align.h"
+#include "impl/utils/std/cmath/sqrt.h"
+#include "impl/utils/std/type_traits/is_integral.h"
 
 namespace AscendC {
 namespace Std {
-template <size_t v>
-using Int = integral_constant<size_t, v>;
-
-using _0      = Int<0>;
-using _1      = Int<1>;
-using _2      = Int<2>;
-using _3      = Int<3>;
-using _4      = Int<4>;
-using _5      = Int<5>;
-using _6      = Int<6>;
-using _7      = Int<7>;
-using _8      = Int<8>;
-using _9      = Int<9>;
-using _10     = Int<10>;
-using _16     = Int<16>;
-using _24     = Int<24>;
-using _32     = Int<32>;
-using _64     = Int<64>;
-using _128    = Int<128>;
-using _256    = Int<256>;
-using _512    = Int<512>;
-using _1024   = Int<1024>;
-using _2048   = Int<2048>;
-using _4096   = Int<4096>;
-
-
-#define STD_INT_BINARY_OP(OP) \
-template <auto t, auto u> \
-__aicore__ inline constexpr Int<(t OP u)> operator OP (Int<t>, Int<u>) { \
-    return {}; \
-}
-
-STD_INT_BINARY_OP(+);
-STD_INT_BINARY_OP(-);
-STD_INT_BINARY_OP(*);
-STD_INT_BINARY_OP(/);
-STD_INT_BINARY_OP(%);
-#undef STD_INT_BINARY_OP
 
 #define STD_INT_NAMED_BINARY_FN(OP, CMP) \
 template <auto t, auto u> \
@@ -102,6 +65,7 @@ STD_INT_BINARY_FN(divide, (t / u));
 STD_INT_BINARY_FN(ceil_division, ((t + u - 1) / u));
 STD_INT_BINARY_FN(ceil_align, (((t + u - 1) / u) * u));
 #undef STD_INT_BINARY_FN
+
 }
 }
-#endif
+#endif // IMPL_TENSOR_API_UTILS_INT_IMPL_H

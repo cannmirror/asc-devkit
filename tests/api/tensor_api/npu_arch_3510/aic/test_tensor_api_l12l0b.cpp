@@ -134,7 +134,7 @@ auto MakeBatchZNLayout()
         MakeShape(AscendC::Std::Int<FRACTAL_FIXED>{}, AscendC::Std::ceil_division(AscendC::Std::Int<N>{},
             AscendC::Std::Int<FRACTAL_FIXED>{}))));
     auto stride = MakeStride(AscendC::Std::Int<M * N>{},
-        MakeStride(MakeStride(AscendC::Std::_1{}, AscendC::Std::Int<C0>{} *
+        MakeStride(MakeStride(_1{}, AscendC::Std::Int<C0>{} *
             AscendC::Std::ceil_align(AscendC::Std::Int<N>{}, AscendC::Std::Int<FRACTAL_FIXED>{})),
         MakeStride(AscendC::Std::Int<C0>{}, AscendC::Std::Int<C0 * FRACTAL_FIXED>{})));
     return MakePatternLayout<ZNLayoutPtn, LayoutTraitDefault<T>>(shape, stride);
@@ -153,7 +153,7 @@ auto MakeBatchNZLayout()
             AscendC::Std::Int<C0>{}))));
     auto stride = MakeStride(AscendC::Std::Int<M * N>{},
         MakeStride(MakeStride(AscendC::Std::Int<C0>{}, AscendC::Std::Int<C0 * FRACTAL_FIXED>{}),
-        MakeStride(AscendC::Std::_1{}, AscendC::Std::Int<C0>{} *
+        MakeStride(_1{}, AscendC::Std::Int<C0>{} *
             AscendC::Std::ceil_align(AscendC::Std::Int<M>{}, AscendC::Std::Int<FRACTAL_FIXED>{}))));
     return MakePatternLayout<NZLayoutPtn, LayoutTraitDefault<T>>(shape, stride);
 }
