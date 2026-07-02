@@ -8,6 +8,8 @@
 
 ## 功能说明
 
+**该接口已废弃，请使用[asc_get_squeeze_status](asc_get_squeeze_status.md)实现此功能。**
+
 读取指定特殊寄存器的值。
 
 ## 函数原型

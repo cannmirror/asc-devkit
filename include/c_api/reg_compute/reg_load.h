@@ -374,68 +374,132 @@ __simd_callee__ inline void asc_loadalign_unpack(vector_uint32_t& dst, __ubuf__ 
 
 __simd_callee__ inline void asc_loadalign_unpack(vector_float& dst, __ubuf__ float* src);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_int8_t& dst, __ubuf__ int8_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_uint8_t& dst, __ubuf__ uint8_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_int4x2_t& dst, __ubuf__ int4b_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_int8_t& dst, __ubuf__ int8_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_uint8_t& dst, __ubuf__ uint8_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_int4x2_t& dst, __ubuf__ int4b_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_int16_t& dst, __ubuf__ int16_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_uint16_t& dst, __ubuf__ uint16_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_half& dst, __ubuf__ half* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_int32_t& dst, __ubuf__ int32_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_uint32_t& dst, __ubuf__ uint32_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_float& dst, __ubuf__ float* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_int16_t& dst, __ubuf__ int16_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_uint16_t& dst, __ubuf__ uint16_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_half& dst, __ubuf__ half* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_int32_t& dst, __ubuf__ int32_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_uint32_t& dst, __ubuf__ uint32_t* src);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_float& dst, __ubuf__ float* src);
 
 __simd_callee__ inline void asc_loadalign_deintlv(vector_int8_t& dst0, vector_int8_t& dst1, __ubuf__ int8_t* src);
@@ -622,68 +686,132 @@ __simd_callee__ inline void asc_loadalign_unpack(vector_uint32_t& dst, __ubuf__ 
 
 __simd_callee__ inline void asc_loadalign_unpack(vector_float& dst, __ubuf__ float* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_int8_t& dst, __ubuf__ int8_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_uint8_t& dst, __ubuf__ uint8_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_int4x2_t& dst, __ubuf__ int4b_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_int8_t& dst, __ubuf__ int8_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_uint8_t& dst, __ubuf__ uint8_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_int4x2_t& dst, __ubuf__ int4b_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_int16_t& dst, __ubuf__ int16_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_uint16_t& dst, __ubuf__ uint16_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_half& dst, __ubuf__ half* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_int32_t& dst, __ubuf__ int32_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_uint32_t& dst, __ubuf__ uint32_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_float& dst, __ubuf__ float* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_int16_t& dst, __ubuf__ int16_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_uint16_t& dst, __ubuf__ uint16_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_half& dst, __ubuf__ half* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_int32_t& dst, __ubuf__ int32_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_uint32_t& dst, __ubuf__ uint32_t* src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_float& dst, __ubuf__ float* src, int32_t offset);
 
 __simd_callee__ inline void asc_loadalign_deintlv(vector_int8_t& dst0, vector_int8_t& dst1, __ubuf__ int8_t* src, int32_t offset);
@@ -918,95 +1046,159 @@ __simd_callee__ inline void asc_loadalign_unpack_postupdate(
 
 __simd_callee__ inline void asc_loadalign_unpack_postupdate(vector_float& dst, __ubuf__ float*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_postupdate_v2(
     vector_int8_t& dst, __ubuf__ int8_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_postupdate_v2(
     vector_uint8_t& dst, __ubuf__ uint8_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_postupdate_v2(
     vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_postupdate_v2(
     vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_postupdate_v2(
     vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_postupdate_v2(
     vector_int4x2_t& dst, __ubuf__ int4b_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_postupdate_v2(
     vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_postupdate_v2(
     vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_postupdate_v2(
     vector_hifloat8_t& dst, __ubuf__ hifloat8_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v2(vector_int8_t& dst, __ubuf__ int8_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v2(
     vector_uint8_t& dst, __ubuf__ uint8_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v2(
     vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v2(
     vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v2(
     vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v2(
     vector_int4x2_t& dst, __ubuf__ int4b_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v2(
     vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v2(
     vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v2(
     vector_hifloat8_t& dst, __ubuf__ hifloat8_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v2(
     vector_int16_t& dst, __ubuf__ int16_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v2(
     vector_uint16_t& dst, __ubuf__ uint16_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v2(vector_half& dst, __ubuf__ half*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v2(
     vector_bfloat16_t& dst, __ubuf__ bfloat16_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v2(
     vector_int32_t& dst, __ubuf__ int32_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v2(
     vector_uint32_t& dst, __ubuf__ uint32_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v2(vector_float& dst, __ubuf__ float*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v3(
     vector_int16_t& dst, __ubuf__ int16_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v3(
     vector_uint16_t& dst, __ubuf__ uint16_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v3(vector_half& dst, __ubuf__ half*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v3(
     vector_bfloat16_t& dst, __ubuf__ bfloat16_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v3(
     vector_int32_t& dst, __ubuf__ int32_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v3(
     vector_uint32_t& dst, __ubuf__ uint32_t*& src, int32_t offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_postupdate_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock_postupdate instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_postupdate_v3(vector_float& dst, __ubuf__ float*& src, int32_t offset);
 
 __simd_callee__ inline void asc_loadalign_deintlv_postupdate(
@@ -1520,69 +1712,133 @@ __simd_callee__ inline void asc_loadalign_unpack(vector_int32_t& dst, __ubuf__ i
 
 __simd_callee__ inline void asc_loadalign_unpack(vector_float& dst, __ubuf__ float* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_int4x2_t& dst, __ubuf__ int4b_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_uint8_t& dst, __ubuf__ uint8_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_int8_t& dst, __ubuf__ int8_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_unpack_v2 is deprecated. "
+             "Please use asc_loadalign_unpack4 instead.")]]
 __simd_callee__ inline void asc_loadalign_unpack_v2(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_int4x2_t& dst, __ubuf__ int4b_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_uint8_t& dst, __ubuf__ uint8_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_int8_t& dst, __ubuf__ int8_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_uint16_t& dst, __ubuf__ uint16_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_int16_t& dst, __ubuf__ int16_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_half& dst, __ubuf__ half* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_uint32_t& dst, __ubuf__ uint32_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_int32_t& dst, __ubuf__ int32_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v2 is deprecated. "
+             "Please use asc_loadalign_brc_datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v2(vector_float& dst, __ubuf__ float* src, iter_reg offset);
 
 /// brc_v3(B16/B32)
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_uint16_t& dst, __ubuf__ uint16_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_int16_t& dst, __ubuf__ int16_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_half& dst, __ubuf__ half* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_uint32_t& dst, __ubuf__ uint32_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_int32_t& dst, __ubuf__ int32_t* src, iter_reg offset);
 
+[[deprecated("NOTICE: asc_loadalign_brc_v3 is deprecated. "
+             "Please use asc_loadalign_brc_elem2datablock instead.")]]
 __simd_callee__ inline void asc_loadalign_brc_v3(vector_float& dst, __ubuf__ float* src, iter_reg offset);
 
 //==============asc_scatter=============
@@ -1629,5 +1885,408 @@ __simd_callee__ inline void asc_loadalign_upsample_postupdate(
 
 __simd_callee__ inline void asc_loadalign_downsample_postupdate(
     vector_bool& dst, __ubuf__ uint32_t*& src, int32_t offset);
+
+
+// ==========asc_loadalign_brc_elem==========
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_int8_t& dst, __ubuf__ int8_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_uint8_t& dst, __ubuf__ uint8_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_int4x2_t& dst, __ubuf__ int4b_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_int16_t& dst, __ubuf__ int16_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_uint16_t& dst, __ubuf__ uint16_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_half& dst, __ubuf__ half* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_int32_t& dst, __ubuf__ int32_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_uint32_t& dst, __ubuf__ uint32_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_float& dst, __ubuf__ float* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_int8_t& dst, __ubuf__ int8_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_uint8_t& dst, __ubuf__ uint8_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_int4x2_t& dst, __ubuf__ int4b_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_int16_t& dst, __ubuf__ int16_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_uint16_t& dst, __ubuf__ uint16_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_half& dst, __ubuf__ half* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_int32_t& dst, __ubuf__ int32_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_uint32_t& dst, __ubuf__ uint32_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_float& dst, __ubuf__ float* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_int4x2_t& dst, __ubuf__ int4b_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_uint8_t& dst, __ubuf__ uint8_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_int8_t& dst, __ubuf__ int8_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_uint16_t& dst, __ubuf__ uint16_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_int16_t& dst, __ubuf__ int16_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_half& dst, __ubuf__ half* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_uint32_t& dst, __ubuf__ uint32_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_int32_t& dst, __ubuf__ int32_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem(vector_float& dst, __ubuf__ float* src, iter_reg offset);
+
+
+// ==========asc_loadalign_unpack4==========
+__simd_callee__ inline void asc_loadalign_unpack4(vector_int8_t& dst, __ubuf__ int8_t* src);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_uint8_t& dst, __ubuf__ uint8_t* src);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_int4x2_t& dst, __ubuf__ int4b_t* src);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_int8_t& dst, __ubuf__ int8_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_uint8_t& dst, __ubuf__ uint8_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_int4x2_t& dst, __ubuf__ int4b_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_int4x2_t& dst, __ubuf__ int4b_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_uint8_t& dst, __ubuf__ uint8_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_int8_t& dst, __ubuf__ int8_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src, iter_reg offset);
+
+
+// ==========asc_loadalign_brc_datablock==========
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_int8_t& dst, __ubuf__ int8_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_uint8_t& dst, __ubuf__ uint8_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_int4x2_t& dst, __ubuf__ int4b_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_int16_t& dst, __ubuf__ int16_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_uint16_t& dst, __ubuf__ uint16_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_half& dst, __ubuf__ half* src);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_int32_t& dst, __ubuf__ int32_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_uint32_t& dst, __ubuf__ uint32_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_float& dst, __ubuf__ float* src);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_int8_t& dst, __ubuf__ int8_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_uint8_t& dst, __ubuf__ uint8_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_int4x2_t& dst, __ubuf__ int4b_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_int16_t& dst, __ubuf__ int16_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_uint16_t& dst, __ubuf__ uint16_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_half& dst, __ubuf__ half* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_int32_t& dst, __ubuf__ int32_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_uint32_t& dst, __ubuf__ uint32_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_float& dst, __ubuf__ float* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_int4x2_t& dst, __ubuf__ int4b_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_uint8_t& dst, __ubuf__ uint8_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_int8_t& dst, __ubuf__ int8_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_uint16_t& dst, __ubuf__ uint16_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_int16_t& dst, __ubuf__ int16_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_half& dst, __ubuf__ half* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_uint32_t& dst, __ubuf__ uint32_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_int32_t& dst, __ubuf__ int32_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock(vector_float& dst, __ubuf__ float* src, iter_reg offset);
+
+
+// ==========asc_loadalign_brc_elem2datablock==========
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_int16_t& dst, __ubuf__ int16_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_uint16_t& dst, __ubuf__ uint16_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_half& dst, __ubuf__ half* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_int32_t& dst, __ubuf__ int32_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_uint32_t& dst, __ubuf__ uint32_t* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_float& dst, __ubuf__ float* src);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_int16_t& dst, __ubuf__ int16_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_uint16_t& dst, __ubuf__ uint16_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_half& dst, __ubuf__ half* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_int32_t& dst, __ubuf__ int32_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_uint32_t& dst, __ubuf__ uint32_t* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_float& dst, __ubuf__ float* src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_uint16_t& dst, __ubuf__ uint16_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_int16_t& dst, __ubuf__ int16_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_half& dst, __ubuf__ half* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_uint32_t& dst, __ubuf__ uint32_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_int32_t& dst, __ubuf__ int32_t* src, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_float& dst, __ubuf__ float* src, iter_reg offset);
+
+
+
+
+// ==========asc_loadalign_brc_elem_postupdate==========
+__simd_callee__ inline void asc_loadalign_brc_elem_postupdate(vector_int8_t& dst, __ubuf__ int8_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem_postupdate(vector_uint8_t& dst, __ubuf__ uint8_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem_postupdate(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem_postupdate(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem_postupdate(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem_postupdate(vector_int4x2_t& dst, __ubuf__ int4b_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem_postupdate(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem_postupdate(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem_postupdate(vector_hifloat8_t& dst, __ubuf__ hifloat8_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem_postupdate(vector_int16_t& dst, __ubuf__ int16_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem_postupdate(vector_uint16_t& dst, __ubuf__ uint16_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem_postupdate(vector_half& dst, __ubuf__ half*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem_postupdate(vector_bfloat16_t& dst, __ubuf__ bfloat16_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem_postupdate(vector_int32_t& dst, __ubuf__ int32_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem_postupdate(vector_uint32_t& dst, __ubuf__ uint32_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem_postupdate(vector_float& dst, __ubuf__ float*& src, int32_t offset);
+
+
+// ==========asc_loadalign_unpack4_postupdate==========
+__simd_callee__ inline void asc_loadalign_unpack4_postupdate(vector_int8_t& dst, __ubuf__ int8_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4_postupdate(vector_uint8_t& dst, __ubuf__ uint8_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4_postupdate(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4_postupdate(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4_postupdate(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4_postupdate(vector_int4x2_t& dst, __ubuf__ int4b_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4_postupdate(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4_postupdate(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_unpack4_postupdate(vector_hifloat8_t& dst, __ubuf__ hifloat8_t*& src, int32_t offset);
+
+
+// ==========asc_loadalign_brc_datablock_postupdate==========
+__simd_callee__ inline void asc_loadalign_brc_datablock_postupdate(vector_int8_t& dst, __ubuf__ int8_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock_postupdate(vector_uint8_t& dst, __ubuf__ uint8_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock_postupdate(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock_postupdate(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock_postupdate(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock_postupdate(vector_int4x2_t& dst, __ubuf__ int4b_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock_postupdate(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock_postupdate(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock_postupdate(vector_hifloat8_t& dst, __ubuf__ hifloat8_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock_postupdate(vector_int16_t& dst, __ubuf__ int16_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock_postupdate(vector_uint16_t& dst, __ubuf__ uint16_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock_postupdate(vector_half& dst, __ubuf__ half*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock_postupdate(vector_bfloat16_t& dst, __ubuf__ bfloat16_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock_postupdate(vector_int32_t& dst, __ubuf__ int32_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock_postupdate(vector_uint32_t& dst, __ubuf__ uint32_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_datablock_postupdate(vector_float& dst, __ubuf__ float*& src, int32_t offset);
+
+
+// ==========asc_loadalign_brc_elem2datablock_postupdate==========
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock_postupdate(vector_int16_t& dst, __ubuf__ int16_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock_postupdate(vector_uint16_t& dst, __ubuf__ uint16_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock_postupdate(vector_half& dst, __ubuf__ half*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock_postupdate(vector_bfloat16_t& dst, __ubuf__ bfloat16_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock_postupdate(vector_int32_t& dst, __ubuf__ int32_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock_postupdate(vector_uint32_t& dst, __ubuf__ uint32_t*& src, int32_t offset);
+
+__simd_callee__ inline void asc_loadalign_brc_elem2datablock_postupdate(vector_float& dst, __ubuf__ float*& src, int32_t offset);
+
 
 #endif

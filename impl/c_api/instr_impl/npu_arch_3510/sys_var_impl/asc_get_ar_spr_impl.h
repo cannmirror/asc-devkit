@@ -30,6 +30,11 @@ __aicore__ inline int64_t asc_get_ar_spr_impl()
     return get_ar();
 }
 
+__aicore__ inline int64_t asc_get_squeeze_status_impl()
+{
+    return asc_get_ar_spr_impl();
+}
+
 #endif
 
 #if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)

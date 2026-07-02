@@ -8,6 +8,8 @@
 
 ## 功能说明
 
+**该接口已废弃，请使用[asc_loadalign_postupdate](../asc_loadalign_postupdate.md)实现此功能。**
+
 对齐数据搬运接口，从UB连续对齐搬入目的操作数，支持多种搬入模式，接口使用repeat stride模式。
 
 ## 函数原型

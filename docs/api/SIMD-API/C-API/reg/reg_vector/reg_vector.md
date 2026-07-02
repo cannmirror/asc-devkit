@@ -218,7 +218,11 @@
 
 - **[asc_sqrt](asc_sqrt.md)**
 
-- **[asc_squeeze（废弃）](asc_squeeze_deprecated.md)**
+- **[asc_squeeze](asc_squeeze.md)**
+
+- **[asc_squeeze_v2（废弃）](asc_squeeze_deprecated.md)**
+
+- **[asc_squeeze_with_status](asc_squeeze_with_status.md)**
 
 - **[asc_sub](asc_sub.md)**
 

@@ -2273,4 +2273,68 @@ __simd_callee__ inline void asc_storealign_pack_postupdate_impl(__ubuf__ uint8_t
     }
 }
 
+
+// asc_storealign_pack_quarter_impl forwards to asc_storealign_pack_v2_impl
+__simd_callee__ inline void asc_storealign_pack_quarter_impl(__ubuf__ int32_t* dst_align32b, vector_int32_t src, vector_bool mask)
+{
+    asc_storealign_pack_v2_impl(dst_align32b, src, mask);
+}
+
+__simd_callee__ inline void asc_storealign_pack_quarter_impl(__ubuf__ uint32_t* dst_align32b, vector_uint32_t src, vector_bool mask)
+{
+    asc_storealign_pack_v2_impl(dst_align32b, src, mask);
+}
+
+__simd_callee__ inline void asc_storealign_pack_quarter_impl(__ubuf__ float* dst_align32b, vector_float src, vector_bool mask)
+{
+    asc_storealign_pack_v2_impl(dst_align32b, src, mask);
+}
+
+__simd_callee__ inline void asc_storealign_pack_quarter_impl(__ubuf__ int32_t* dst_align32b, vector_int32_t src, int32_t offset, vector_bool mask)
+{
+    asc_storealign_pack_v2_impl(dst_align32b, src, offset, mask);
+}
+
+__simd_callee__ inline void asc_storealign_pack_quarter_impl(__ubuf__ uint32_t* dst_align32b, vector_uint32_t src, int32_t offset, vector_bool mask)
+{
+    asc_storealign_pack_v2_impl(dst_align32b, src, offset, mask);
+}
+
+__simd_callee__ inline void asc_storealign_pack_quarter_impl(__ubuf__ float* dst_align32b, vector_float src, int32_t offset, vector_bool mask)
+{
+    asc_storealign_pack_v2_impl(dst_align32b, src, offset, mask);
+}
+
+__simd_callee__ inline void asc_storealign_pack_quarter_impl(__ubuf__ int32_t* dst_align32b, vector_int32_t src, iter_reg offset, vector_bool mask)
+{
+    asc_storealign_pack_v2_impl(dst_align32b, src, offset, mask);
+}
+
+__simd_callee__ inline void asc_storealign_pack_quarter_impl(__ubuf__ uint32_t* dst_align32b, vector_uint32_t src, iter_reg offset, vector_bool mask)
+{
+    asc_storealign_pack_v2_impl(dst_align32b, src, offset, mask);
+}
+
+__simd_callee__ inline void asc_storealign_pack_quarter_impl(__ubuf__ float* dst_align32b, vector_float src, iter_reg offset, vector_bool mask)
+{
+    asc_storealign_pack_v2_impl(dst_align32b, src, offset, mask);
+}
+
+// asc_storealign_pack_quarter_postupdate_impl forwards to asc_storealign_pack_postupdate_v2_impl
+__simd_callee__ inline void asc_storealign_pack_quarter_postupdate_impl(__ubuf__ int32_t*& dst_align32b, vector_int32_t src, int32_t offset, vector_bool mask)
+{
+    asc_storealign_pack_postupdate_v2_impl(dst_align32b, src, offset, mask);
+}
+
+__simd_callee__ inline void asc_storealign_pack_quarter_postupdate_impl(__ubuf__ uint32_t*& dst_align32b, vector_uint32_t src, int32_t offset, vector_bool mask)
+{
+    asc_storealign_pack_postupdate_v2_impl(dst_align32b, src, offset, mask);
+}
+
+__simd_callee__ inline void asc_storealign_pack_quarter_postupdate_impl(__ubuf__ float*& dst_align32b, vector_float src, int32_t offset, vector_bool mask)
+{
+    asc_storealign_pack_postupdate_v2_impl(dst_align32b, src, offset, mask);
+}
+
+
 #endif
