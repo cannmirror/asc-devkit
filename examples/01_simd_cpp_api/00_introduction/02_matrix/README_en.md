@@ -2,7 +2,7 @@
 
 ## Overview
 
-Introduction to matrix multiplication computation based on Ascend C.
+This section introduces matrix multiplication computation based on Ascend C.
 
 ## Sample List
 

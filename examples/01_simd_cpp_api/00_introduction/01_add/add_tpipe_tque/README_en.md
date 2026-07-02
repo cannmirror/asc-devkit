@@ -21,7 +21,7 @@ This sample implements the Add vector addition operation based on the memory and
 │   │   └── verify_result.py        // Verification script for checking consistency between output data and ground truth data
 │   ├── CMakeLists.txt              // Build project file
 │   ├── data_utils.h                // Data read and write functions
-│   ├── add_tpipe_tque.asc          // Ascend C sample implementation, TQue manages memory & sample call
+│   ├── add_tpipe_tque.asc          // Ascend C sample implementation, TPipe and TQue manage memory and synchronization & sample call
 │   └── README.md                   // Sample documentation
 ```
 
@@ -32,7 +32,7 @@ This sample implements the Add vector addition operation based on the memory and
   ```
   z = x + y
   ```
-  This sample performs element-wise addition of two tensors with the same shape and writes the result to the output tensor. The sample inputs are two `float` type tensors `x` and `y`, both with shape `[8, 2048]`, and the output `z` has the same shape as the inputs. The kernel function launches 8 cores for parallel computation, with each core responsible for processing a contiguous segment of data.
+  This sample performs element-wise addition of two tensors with the same shape and writes the result to the output tensor. The sample inputs are two `float` type tensors `x` and `y`, both with shape `[8, 2048]`, and the output `z` has the same shape as the inputs. The sample launches the kernel with 8 cores for parallel computation, with each core responsible for processing a contiguous segment of data.
 
 - Processing Flow:
   1. `add_custom` serves as the kernel entry point and receives `totalLength`.

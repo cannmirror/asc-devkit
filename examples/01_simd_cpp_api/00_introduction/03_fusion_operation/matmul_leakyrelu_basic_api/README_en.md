@@ -301,8 +301,8 @@ This example implements Matmul and LeakyRelu fusion computation based on the sta
 
   - **Constraints**:
     1. baseM/baseK/baseN satisfy 16-alignment
-    2. baseM/baseK/baseN are divisible by singleCoreM/singleCoreK/singleCoreN
-    3. singleCoreM/singleCoreK/singleCoreN are divisible by M/K/N, non-integer division scenarios are not supported
+    2. M/N are divisible by singleCoreM/singleCoreN
+    3. singleCoreM/singleCoreN are divisible by baseM/baseN, K is divisible by baseK, non-integer division scenarios are not supported
     4. Vector core count is 2 times the Cube core count
 
   - **Invocation Implementation**:

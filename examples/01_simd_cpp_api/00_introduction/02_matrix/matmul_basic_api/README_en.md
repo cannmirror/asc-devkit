@@ -220,7 +220,7 @@ Example:
 AscendC::printf("matmul blockIdx=%d\n", AscendC::GetBlockIdx());
 ```
 
-> [!CAUTION]Note
+> [!CAUTION]
 > The printf (PRINTF) interface printing functionality has a certain impact on the actual running performance of the operator and is typically used during the debugging phase. Developers can disable the printing functionality by setting ASCENDC_DUMP=0 as needed.
 
 ### DumpTensor
@@ -233,7 +233,7 @@ Call the DumpTensor interface in the operator kernel-side implementation code wh
 AscendC::DumpTensor(cLocal, baseM * baseN);
 ```
 
-> [!CAUTION]Note
+> [!CAUTION]
 > The DumpTensor interface printing functionality has a certain impact on the actual running performance of the operator and is typically used during the debugging phase. Developers can disable the printing functionality by setting ASCENDC_DUMP=0 as needed.
 
 ## Performance Debugging
@@ -251,8 +251,8 @@ A folder with the PROF_ prefix is generated in the current directory. The `minds
 ```bash
 PROF_xxxx_XXXXXX
 ├── device_{id}
-└── host
-└── mindstudio_profiler_log
+├── host
+├── mindstudio_profiler_log
 └── mindstudio_profiler_output    # Saves Host and each Device performance data summary
     ├── msprof_*.json
     ├── xx_*.csv

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This directory contains samples for multiple APIs related to data movement. Each sample uses Ascend C's `<<<>>>` direct invocation method, supporting implementation of main function and kernel function in the same cpp file.
+This directory contains samples for multiple APIs related to data movement. Each sample uses Ascend C's `<<<>>>` direct invocation method, supporting implementation of main function and kernel function in the same .asc file.
 
 ## Sample List
 

@@ -16,9 +16,9 @@ This example implements dynamic Shape matrix multiplication with Bias based on t
 
 ```text
 ├── copy_out_tensor_api
-│   └── scripts
-│       ├── gen_data.py                    // Input data and ground truth generation script
-│       └── verify_result.py               // Ground truth comparison file
+│   ├── scripts
+│   │   ├── gen_data.py                    // Input data and ground truth generation script
+│   │   └── verify_result.py               // Ground truth comparison file
 │   ├── CMakeLists.txt                     // Build configuration file
 │   ├── data_utils.h                       // Data read/write functions
 │   ├── copy_out_tensor_api.asc            // Ascend C example implementation & invocation example

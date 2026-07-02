@@ -62,7 +62,7 @@ This example introduces the usage of the printf API to print kernel function rel
 
 - Invocation implementation
 
-  Use the kernel launch syntax <<<>>> to call the kernel function.
+  Use the kernel launch syntax `<<<>>>` to call the kernel function.
 
 ## Build and Run
 
@@ -79,6 +79,7 @@ Run the following steps in the root directory of this example to build and run t
 - Run the example
 
   Run the following commands in the example directory.
+
   ```bash
   mkdir -p build && cd build;                                               # Create and enter the build directory
   cmake -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;                      # Build the project
@@ -95,6 +96,7 @@ Run the following steps in the root directory of this example to build and run t
 
 - Execution result
   The final execution result is as follows, indicating successful accuracy comparison.
+
   ```bash
   test pass!
   ```

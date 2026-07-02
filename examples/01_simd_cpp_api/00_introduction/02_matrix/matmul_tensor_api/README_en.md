@@ -126,6 +126,7 @@ Execute the following steps in the root directory of this example to build and r
   | Option | Available Values | Description |
   |--------|------------------|-------------|
   | `CMAKE_ASC_RUN_MODE` | `npu` (default), `sim` | Run mode: NPU execution, NPU simulation |
+  | `CMAKE_ASC_ARCHITECTURES` | `dav-3510` | NPU architecture: dav-3510 corresponds to Ascend 950PR/Ascend 950DT |
 
   > **Note:** This example only supports dav-3510 architecture (corresponding to Ascend 950PR/Ascend 950DT).
 

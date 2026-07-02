@@ -156,8 +156,8 @@ msprof ./demo   # 分析性能
 ```bash
 PROF_xxxx_XXXXXX
 ├── device_{id}
-└── host
-└── mindstudio_profiler_log
+├── host
+├── mindstudio_profiler_log
 └── mindstudio_profiler_output    # 保存Host和各个Device的性能数据汇总
     ├── msprof_*.json
     ├── xx_*.csv

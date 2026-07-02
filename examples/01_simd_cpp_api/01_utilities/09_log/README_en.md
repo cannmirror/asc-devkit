@@ -118,6 +118,7 @@ Run the following steps in the root directory of this example to build and execu
   > **Notice:** Before switching build modes, clean the cmake cache by running `rm CMakeCache.txt` in the build directory and then re-run cmake.
 
 - Build Options Description
+
   | Option | Values | Description |
   |------|--------|------|
   | `CMAKE_ASC_RUN_MODE` | `npu` (default), `cpu`, `sim` | Run mode: NPU execution, CPU debugging, NPU simulation |

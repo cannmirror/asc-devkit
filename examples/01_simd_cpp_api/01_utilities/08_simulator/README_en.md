@@ -27,16 +27,16 @@ This example uses MatmulLeakyRelu fused computation as the carrier to demonstrat
 
 - Example features
 
-  This example implements fused matrix multiplication, Bias addition, and LeakyRelu activation function computation through the high-level Matmul API. The computation formula is:
+  This example implements fused matrix multiplication and LeakyRelu activation function computation through the Matmul API. The computation formula is:
 
   ```text
-  C = A * B + Bias
+  C = A * B
   C = C > 0 ? C : C * 0.001
   ```
 
-  Where `LeakyRelu` means: when `Temp >= 0`, output `Temp`; when `Temp < 0`, output `Temp * 0.001`.
+  Where `LeakyRelu` means: when `C >= 0`, output `C`; when `C < 0`, output `C * 0.001`.
 
-  In the example, `M = 512`, `K = 128`, `N = 16`. `scripts/gen_data.py` generates input data and golden data. After execution, the result is written to `output/output.bin`, and `scripts/verify_result.py` performs result verification.
+  In the example, `M = 512`, `K = 128`, `N = 128`. `scripts/gen_data.py` generates input data and golden data. After execution, the result is written to `output/output.bin`, and `scripts/verify_result.py` performs result verification.
 
 - Example specifications
 
@@ -44,10 +44,9 @@ This example uses MatmulLeakyRelu fused computation as the carrier to demonstrat
   <caption>Table 1: MatmulLeakyRelu Example Specification Description</caption>
   <tr><td rowspan="1" align="center">Example Type (OpType)</td><td colspan="4" align="center">MatmulLeakyRelu</td></tr>
   <tr><td align="center"></td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">Example Input</td><td align="center">A</td><td align="center">[512, 128]</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">Example Input</td><td align="center">B</td><td align="center">[128, 16]</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">Example Input</td><td align="center">Bias</td><td align="center">[16]</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">Example Output</td><td align="center">C</td><td align="center">[512, 16]</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">Example Input</td><td align="center">A</td><td align="center">[512, 128]</td><td align="center">half</td><td align="center">ND</td></tr>
+  <tr><td align="center">Example Input</td><td align="center">B</td><td align="center">[128, 128]</td><td align="center">half</td><td align="center">ND</td></tr>
+  <tr><td align="center">Example Output</td><td align="center">C</td><td align="center">[512, 128]</td><td align="center">half</td><td align="center">ND</td></tr>
   <tr><td rowspan="1" align="center">Kernel Function Name</td><td colspan="4" align="center">matmul_leakyrelu_custom</td></tr>
   </table>
 

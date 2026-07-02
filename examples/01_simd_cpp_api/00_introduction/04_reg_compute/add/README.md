@@ -1,4 +1,4 @@
-# 基于RegBase编程add样例
+# 基于RegBase编程的add样例
 
 ## 概述
 本样例基于RegBase编程范式实现向量自加计算，计算逻辑为`y = x + x`。样例先将输入数据从GM（Global Memory）搬运到UB（Unified Buffer），再通过VF函数调用RegBase接口完成寄存器级别的Add计算，最后将结果从UB写回GM。

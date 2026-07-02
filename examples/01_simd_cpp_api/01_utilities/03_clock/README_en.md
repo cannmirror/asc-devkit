@@ -23,7 +23,7 @@ This example demonstrates the usage of the `clock()` API for timestamp marking i
 
 - Example features:
 
-  This example references [SIMT and SIMD Hybrid Programming for Gather and Adds Computation](../../../05_simd_simt_hybrid/00_introduction/simd_simt_gather_and_adds/README.md) to perform fused Gather and Adds computation. The computation formula is:
+  This example references [SIMT and SIMD Hybrid Programming for Gather and Adds Computation](../../../05_simd_simt_hybrid/00_introduction/simd_simt_gather_and_adds/README_en.md) to perform fused Gather and Adds computation. The computation formula is:
 
   ```text
   output[i] = input[index[i]] + 1

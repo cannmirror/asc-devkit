@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例以MatmulLeakyRelu融合计算为载体，展示Ascend C程序在CAmodel仿真模式下的编译、运行、结果校验与性能数据采集流程。用户可通过`msprof op simulator`获取仿真性能数据，用于分析性能瓶颈，提升性能分析效率。
+本样例以MatmulLeakyRelu融合计算为载体，展示Ascend C程序在CAmodel仿真模式下的编译、运行、结果校验与性能数据采集流程。用户可通过`msprof op simulator`获取仿真性能数据，用于分析性能瓶颈、提升性能分析效率。
 
 ## 本样例支持的产品及CANN软件版本
 

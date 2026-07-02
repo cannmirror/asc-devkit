@@ -97,7 +97,7 @@
       >
       > 同步机制说明：
       > - **核内同步**：[SetFlag](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/同步控制/核内同步/SetFlag-WaitFlag(ISASI).md)/[WaitFlag](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/同步控制/核内同步/SetFlag-WaitFlag(ISASI).md)用于同一核内不同流水线引擎之间的依赖同步，如MTE2搬运完成后通知MTE1可以开始搬运
-      > - **核间同步**：[CrossCoreSetFlag](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/同步控制/核间同步/CrossCoreSetFlag(ISASI).md)/[CrossCoreWaitFlag](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/同步控制/核间同步/CrossCoreSetFlag(ISASI).md)用于不同核之间的依赖同步，如Cube核完成计算后通知Vector核可以开始读取数据
+      > - **核间同步**：[CrossCoreSetFlag](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/同步控制/核间同步/CrossCoreSetFlag(ISASI).md)/[CrossCoreWaitFlag](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/同步控制/核间同步/CrossCoreWaitFlag(ISASI).md)用于不同核之间的依赖同步，如Cube核完成计算后通知Vector核可以开始读取数据
 
       **1）数据流路径**
 
@@ -118,9 +118,9 @@
                 ND->Nz              Nz->Zn(转置)
       ```
 
-      > **注意**：L0A分型在不同产品上有差异：
-      > - Ascend 950PR/Ascend 950DT产品：L0A的分型为Nz
-      > - Atlas A2/A3系列产品：L0A的分型为Zz
+      > **注意**：L0A分形在不同产品上有差异：
+      > - Ascend 950PR/Ascend 950DT产品：L0A的分形为Nz
+      > - Atlas A2/A3系列产品：L0A的分形为Zz
 
       核间同步与Vector侧数据流（1个Cube核的结果由2个Vector核处理）：
       ```
@@ -253,7 +253,7 @@
           ```
 
       2. **Vector核计算阶段**：
-          - **核间同步**：Vector核通过[CrossCoreWaitFlag](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/同步控制/核间同步/CrossCoreSetFlag(ISASI).md)（核间同步标志等待，阻塞直到标志被设置）等待Cube核完成Fixpipe写回，确保Matmul计算完成后才开始LeakyRelu
+          - **核间同步**：Vector核通过[CrossCoreWaitFlag](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/同步控制/核间同步/CrossCoreWaitFlag(ISASI).md)（核间同步标志等待，阻塞直到标志被设置）等待Cube核完成Fixpipe写回，确保Matmul计算完成后才开始LeakyRelu
           - **LocalTensor创建**：使用UB allocator创建`VECCALC`位置的[LocalTensor](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor简介.md)，用于承载当前Vector核处理的半块结果
           - **GM → UB**：使用[DataCopyPad](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Memory矢量计算/数据搬运/GM与UB数据搬运/GMToUB非对齐数据搬运(DataCopyPad).md)（带Padding的GM与UB之间数据搬运）将Matmul结果搬运到UB，每个Vector核处理baseM/2×baseN的数据
           - **UB计算**：使用[LeakyRelu](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Memory矢量计算/基础算术/LeakyRelu.md)（LeakyReLU激活函数，负值部分乘以negativeSlope）执行激活计算，负值部分乘以0.001
@@ -432,7 +432,7 @@
 
 - 配置环境变量
 
-  请根据当前环境上CANN开发套件包的[安装方式](https://gitcode.com/cann/asc-devkit/blob/master/docs/quick_start.md#prepare&install)，配置环境变量。
+  请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，配置环境变量。
   ```bash
   source ${install_path}/cann/set_env.sh
   ```
@@ -494,9 +494,9 @@
 
 | 阶段 | 数据流动/行为 | 实现目的/原因 |
 |:---|:---|:---|
-| 核间同步 | [CrossCoreWaitFlag](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/同步控制/核间同步/CrossCoreSetFlag(ISASI).md)等待Cube核Fixpipe完成 | 阻塞直到Cube核通知数据就绪，确保读取到完整的Matmul结果 |
+| 核间同步 | [CrossCoreWaitFlag](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/同步控制/核间同步/CrossCoreWaitFlag(ISASI).md)等待Cube核Fixpipe完成 | 阻塞直到Cube核通知数据就绪，确保读取到完整的Matmul结果 |
 | 初始化 | 使用UB allocator分配VECCALC位置的[LocalTensor](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor简介.md) | 为GM→UB搬运和Vector计算分配UB缓冲区 |
-| GM → UB | [DataCopyPad](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Memory矢量计算/数据搬运/GM与UB数据搬运/GMToUB非对齐数据搬运(DataCopyPad).md)将Matmul结果从GM搬入UB，每个Vector核读取baseM/2×baseN行 | Vector核从GM读取Cube核写回的Matmul结果，每个Vector核处理半块数据 |
+| GM → UB | [DataCopyPad](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Memory矢量计算/数据搬运/GM与UB数据搬运/GMToUB非对齐数据搬运(DataCopyPad).md)将Matmul结果从GM搬入UB，每个Vector核读取baseM/2行、每行baseN个元素 | Vector核从GM读取Cube核写回的Matmul结果，每个Vector核处理半块数据 |
 | UB计算 | [LeakyRelu](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Memory矢量计算/基础算术/LeakyRelu.md)执行激活计算，负值部分乘以0.001 | 对Matmul结果施加LeakyRelu激活函数，完成融合计算 |
 | UB → GM | [DataCopyPad](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Memory矢量计算/数据搬运/GM与UB数据搬运/UBToGM非对齐数据搬运(DataCopyPad).md)将LeakyRelu结果写回GM | 将最终计算结果输出到GM供后续使用 |
 

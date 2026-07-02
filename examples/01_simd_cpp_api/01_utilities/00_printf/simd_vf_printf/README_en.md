@@ -47,9 +47,11 @@ This example introduces the usage of the printf API on the simd_vf side. The ker
 
 ## Build and Run
 
+Run the following steps in the root directory of this example to build and run the example.
+
 - Configure environment variables
-  Run the following steps in the root directory of this example to build and run the example.
   Configure environment variables based on the [installation method](../../../../../docs/quick_start.md#prepare&install) of the CANN development kit on the current environment.
+
   ```bash
   source ${install_path}/cann/set_env.sh
   ```
@@ -59,6 +61,7 @@ This example introduces the usage of the printf API on the simd_vf side. The ker
 - Run the example
 
   Run the following commands in the example directory.
+
   ```bash
   mkdir -p build && cd build;                                               # Create and enter the build directory
   cmake -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j;                      # Build the project
@@ -73,6 +76,7 @@ This example introduces the usage of the printf API on the simd_vf side. The ker
 
 - Execution result
   The execution log shows printf output from both the AICore side and the simd_vf side.
+
   ```bash
   [AIV Block 0/1] [aicore] simd_vf printf demo start ...
   [AIV Block 0/1] [aicore] blockIdx=0
