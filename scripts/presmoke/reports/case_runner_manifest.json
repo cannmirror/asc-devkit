@@ -722,10 +722,12 @@
       "special_02_features_00_01_02"
     ],
     "commands": [
-      "cmake .. -DCMAKE_ASC_ARCHITECTURES=dav-2201",
+      "cmake .. -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=1",
       "make -j",
-      "./demo 1",
-      "./demo 2"
+      "./demo",
+      "cmake .. -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=2",
+      "make -j",
+      "./demo"
     ]
   },
   {

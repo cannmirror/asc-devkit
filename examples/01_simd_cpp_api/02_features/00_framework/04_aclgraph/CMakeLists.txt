@@ -12,10 +12,26 @@ cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "NPU architecture: dav-2201, dav-3510")
 
+# 场景参数（通过命令行传入）
+# SCENARIO_NUM: ACLGraph捕获场景编号
+#   1 - 单流捕获
+#   2 - 双流捕获
+set(SCENARIO_NUM "1" CACHE STRING "ACLGraph scenario number: 1-2")
+
+message(STATUS "[INFO] SCENARIO_NUM is ${SCENARIO_NUM}")
+
+if(NOT SCENARIO_NUM MATCHES "^[1-2]$")
+    message(FATAL_ERROR "SCENARIO_NUM must be 1 or 2, got: ${SCENARIO_NUM}")
+endif()
+
 find_package(ASC REQUIRED)
 
 project(aclgraph_add_demo LANGUAGES ASC CXX)
 
 add_executable(demo
     add.asc
+)
+
+target_compile_definitions(demo PRIVATE
+    SCENARIO_NUM=${SCENARIO_NUM}
 )

@@ -30,12 +30,12 @@ This example uses the Add operator to show how to capture Ascend C `<<<>>>` kern
 
 ## Scenario Details
 
-This example uses the runtime parameter `mode` to select different ACLGraph capture scenarios. The following table describes the values of `mode`. All scenarios use the same Add operator specification: the input and output shapes are `[8, 2048]`, the data type is `float`, and the kernel function name is `add_custom`.
+This example uses the CMake build parameter `SCENARIO_NUM` to select different ACLGraph capture scenarios. The following table describes the values of `SCENARIO_NUM`. All scenarios use the same Add operator specification: the input and output shapes are `[8, 2048]`, the data type is `float`, and the kernel function name is `add_custom`.
 
 <table>
 <caption style="font-weight: normal;">
-         <span style="font-weight: bold; font-size: 1.2em;">📌 Table 1: Values of mode</span></caption>
-<tr><td rowspan="1" align="center">mode</td><td align="center">Scenario</td><td align="center">Task organization</td><td align="center">Description</td></tr>
+         <span style="font-weight: bold; font-size: 1.2em;">📌 Table 1: Values of SCENARIO_NUM</span></caption>
+<tr><td rowspan="1" align="center">SCENARIO_NUM</td><td align="center">Scenario</td><td align="center">Task organization</td><td align="center">Description</td></tr>
 <tr><td align="center">1</td><td align="center">Single stream</td><td align="center">All tasks are submitted to <code>mainStream</code></td><td align="center">Demonstrates the basic linear task capture and repeated execution process</td></tr>
 <tr><td align="center">2</td><td align="center">Double stream</td><td align="center"><code>mainStream</code> and <code>computeStream</code> synchronize through events</td><td align="center">Demonstrates how to capture cross-stream tasks and event synchronization relationships</td></tr>
 </table>
@@ -125,24 +125,20 @@ The example also calls `aclmdlRIDebugJsonPrint` to output the captured task info
   Run the following steps in the root directory of this example.
 
   ```bash
+  SCENARIO_NUM=1  # Set the scenario number.
   mkdir -p build && cd build;
-  cmake -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..;make -j;
-  ./demo 1
+  cmake -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DSCENARIO_NUM=$SCENARIO_NUM ..;make -j;
+  ./demo
   ```
 
-  `./demo 1` runs the single-stream capture scenario. `./demo 2` runs the double-stream capture scenario. If no runtime parameter is specified, the single-stream capture scenario is run by default.
+  `SCENARIO_NUM=1` builds the single-stream capture scenario. `SCENARIO_NUM=2` builds the double-stream capture scenario. If `SCENARIO_NUM` is not specified, the single-stream capture scenario is built by default.
 
 - Build option description
 
   | Option | Values | Description |
   |--------|--------|-------------|
   | `CMAKE_ASC_ARCHITECTURES` | `dav-2201` (default), `dav-3510` | NPU architecture: dav-2201 corresponds to Atlas A2 Training Series Products/Atlas A2 Inference Series Products and Atlas A3 Training Series Products/Atlas A3 Inference Series Products; dav-3510 corresponds to Ascend 950PR/Ascend 950DT |
-
-- Runtime parameter description
-
-  | Parameter | Values | Description |
-  |-----------|--------|-------------|
-  | `mode` | 1, 2 | Capture scenario number: 1 indicates single-stream capture, and 2 indicates double-stream capture. If this parameter is not specified, the default value is 1 |
+  | `SCENARIO_NUM` | `1` (default), `2` | Capture scenario number: 1 indicates single-stream capture, and 2 indicates double-stream capture |
 
 - Execution result
 
