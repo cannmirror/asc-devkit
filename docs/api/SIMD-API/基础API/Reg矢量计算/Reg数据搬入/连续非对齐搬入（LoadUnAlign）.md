@@ -147,27 +147,27 @@ PostUpdate扩展搬运接口POST_MODE_UPDATE模式示例片段如下：
 template <typename T>
 __simd_vf__ inline void LoadUnAlignVF(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint32_t postUpdateStride, uint16_t repeatTimes)
 {
-    AscendC::Reg::RegTensor<T> srcReg;
-    AscendC::Reg::UnalignRegForLoad ureg0;
-    AscendC::Reg::UnalignRegForStore ureg1;
+    AscendC::Reg::RegTensor<T> dstReg;
+    AscendC::Reg::UnalignRegForLoad ureg1;
+    AscendC::Reg::UnalignRegForStore ureg2;
     // 非对齐搬入初始化，只需在迭代开始前调用一次。
-    AscendC::Reg::LoadUnAlignPre(ureg0, srcAddr);
+    AscendC::Reg::LoadUnAlignPre(ureg1, srcAddr);
     for (uint16_t i = 0; i < repeatTimes; ++i) {
-        AscendC::Reg::LoadUnAlign(srcReg, ureg0, srcAddr, postUpdateStride);
-        AscendC::Reg::StoreUnAlign(dstAddr, srcReg, ureg1, postUpdateStride);
+        AscendC::Reg::LoadUnAlign(dstReg, ureg1, srcAddr, postUpdateStride);
+        AscendC::Reg::StoreUnAlign(dstAddr, dstReg, ureg2, postUpdateStride);
     }
     // 非对齐搬出后处理，只需在迭代结束后调用一次。
-    AscendC::Reg::StoreUnAlignPost(dstAddr, ureg1, 0);
+    AscendC::Reg::StoreUnAlignPost(dstAddr, ureg2, 0);
 }
 ```
 
 具体的搬运步骤如下：
 
-1.  非对齐搬入初始化：更新ureg1 = [1, 2, 3, 4]；
-2.  非对齐搬入：tmpReg = [5, 6, 7, ..., 68]，tmpReg部分数据和ureg1数据写入dstReg = [1, 2, 3, ..., 64]，更新ureg1 = [61, 62, 63, ..., 68];
-3.  非对齐搬出：dstReg部分数据[1, 2, 3, ..., 60]写入UB地址48 ~ 288，更新ureg2 = [61, 62, 63, 64]；
-4.  非对齐搬入：tmpReg = [69, 70, 71, ...,128]，tmpReg数据和ureg1部分数据写dstReg = [65, 66 67, ..., 128]；
-5.  非对齐搬出：ureg2数据[61, 62, 63, 64]和dstReg部分数据[65, 66, 67, ..., 124]写入UB地址288 ~ 544，更新ureg2 = [125, 126, 127, 128]；
+1.  非对齐搬入初始化：更新ureg1 = [1, 2, 3, 4]。
+2.  非对齐搬入：tmpReg = [5, 6, 7, ..., 68]，tmpReg部分数据和ureg1数据写入dstReg = [1, 2, 3, ..., 64]，更新ureg1 = [61, 62, 63, ..., 68]。
+3.  非对齐搬出：dstReg部分数据[1, 2, 3, ..., 60]写入UB地址48 ~ 288，更新ureg2 = [61, 62, 63, 64]。
+4.  非对齐搬入：tmpReg = [69, 70, 71, ...,128]，tmpReg数据和ureg1部分数据写入dstReg = [65, 66, 67, ..., 128]。
+5.  非对齐搬出：ureg2数据[61, 62, 63, 64]和dstReg部分数据[65, 66, 67, ..., 124]写入UB地址288 ~ 544，更新ureg2 = [125, 126, 127, 128]。
 6.  非对齐搬出后处理：将ureg2中缓存的数据[125, 126, 127, 128]写入UB地址544 ~ 560。
 
 ## 调用示例<a name="section15860211204820"></a>

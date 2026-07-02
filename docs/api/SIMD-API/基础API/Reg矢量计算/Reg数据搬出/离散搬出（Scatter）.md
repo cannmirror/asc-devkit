@@ -28,7 +28,7 @@
 
 头文件路径为：`"basic_api/reg_compute/kernel_reg_compute_datacopy_intf.h"`。
 
-该指令会根据索引值index将源操作数srcReg中的元素分散到目的操作数UB中。收集过程如图1所示：
+该指令会根据索引值index将源操作数srcReg中的元素分散到目的操作数UB中。分散过程如图1所示：
 
 **图 1**  Scatter功能说明
 
@@ -47,10 +47,10 @@ __simd_callee__ inline void Scatter(__ubuf__ T* baseAddr, S& srcReg, V& index, M
 
 | 参数名 | 描述 |
 |-----|-----|
-| T | 目的操作数和源操作数的数据类型。支持的数据类型请参考[数据类型](#数据类型)。 |
+| T | 目的操作数的数据类型。支持的数据类型请参考[数据类型](#数据类型)。 |
 | U | 索引值index的数据类型。支持的数据类型请参考[数据类型](#数据类型)。 |
-| S | 源操作数操作数的RegTensor类型。例如RegTensor\<half>，由编译器自动推导，用户不需要手动填写。 |
-| V | 索引值的RegTensor类型，例如RegTensor<uint16_t>，由编译器自动推导，用户不需要手动填写。 |
+| S | 源操作数的RegTensor类型。例如RegTensor\<half>，由编译器自动推导，用户不需要手动填写。 |
+| V | 索引值的RegTensor类型，例如RegTensor\<uint16_t>，由编译器自动推导，用户不需要手动填写。 |
 
 **表 2**  参数说明
 
@@ -65,7 +65,7 @@ __simd_callee__ inline void Scatter(__ubuf__ T* baseAddr, S& srcReg, V& index, M
 
 **表 3**  Scatter操作数数据类型对应表
 
-| T（baseAddr/srcReg） | U（index） |
+| 目的操作数 | 索引值 |
 |-----|-----|
 | int8_t | uint16_t |
 | uint8_t | uint16_t |
@@ -90,20 +90,20 @@ __simd_callee__ inline void Scatter(__ubuf__ T* baseAddr, S& srcReg, V& index, M
 - 位于Unified Buffer的首地址必须32B对齐。
 - 当T为int8_t或者uint8_t数据类型时，源操作数中仅偶数位元素有效。即srcReg中的偶数位置[0, 2, 4, ..., 252, 254]的数据会被分散存储到目的操作数中。
 - index中的值必须唯一。若存在重复的index值，系统仅保留其中一个对应的数据，其余将被忽略。无法确定具体保留哪一个，因此必须确保index值不重复。
-- 当源操作数数据类型T为B64时，T、U、S、V只支持以下组合：
+- 当目的操作数的数据类型T为B64时，T、U、S、V只支持以下组合：
 
-    | T（baseAddr/dstReg） | V（index） | S（dstReg） | V（index） | 备注 |
+    | T | U | S（自动推导） | V（自动推导） | 备注 |
     |-----|-----|-----|-----|-----|
-    | uint64_t | uint32_t | RegTensor<uint64_t, RegTraitNumOne> | RegTensor<uint32_t> | index的前32个数有效 |
     | int64_t | uint32_t | RegTensor<int64_t, RegTraitNumOne> | RegTensor<uint32_t> | index的前32个数有效 |
-    | uint64_t | uint32_t | RegTensor<uint64_t, RegTraitNumTwo> | RegTensor<uint32_t> | - |
-    | int64_t | uint32_t | RegTensor<int64_t, RegTraitNumTwo> |RegTensor<uint32_t> | - |
-    | uint64_t | uint64_t |  RegTensor<uint64_t, RegTraitNumOne> | RegTensor<uint64_t, RegTraitNumOne> | - |
+    | int64_t | uint32_t | RegTensor<int64_t, RegTraitNumTwo> | RegTensor<uint32_t> | - |
     | int64_t | uint64_t | RegTensor<int64_t, RegTraitNumOne> | RegTensor<uint64_t, RegTraitNumOne> | - |
-    | uint64_t | uint64_t | RegTensor<uint64_t, RegTraitNumOne> | RegTensor<uint64_t, RegTraitNumTwo> | index的前32个数有效 |
     | int64_t | uint64_t | RegTensor<int64_t, RegTraitNumOne> | RegTensor<uint64_t, RegTraitNumTwo> | index的前32个数有效 |
-    | uint64_t | uint64_t | RegTensor<uint64_t, RegTraitNumTwo> | RegTensor<uint64_t, RegTraitNumTwo> | - |
     | int64_t | uint64_t | RegTensor<int64_t, RegTraitNumTwo> | RegTensor<uint64_t, RegTraitNumTwo> | - |
+    | uint64_t | uint32_t | RegTensor<uint64_t, RegTraitNumOne> | RegTensor<uint32_t> | index的前32个数有效 |
+    | uint64_t | uint32_t | RegTensor<uint64_t, RegTraitNumTwo> | RegTensor<uint32_t> | - |
+    | uint64_t | uint64_t |  RegTensor<uint64_t, RegTraitNumOne> | RegTensor<uint64_t, RegTraitNumOne> | - |
+    | uint64_t | uint64_t | RegTensor<uint64_t, RegTraitNumOne> | RegTensor<uint64_t, RegTraitNumTwo> | index的前32个数有效 |
+    | uint64_t | uint64_t | RegTensor<uint64_t, RegTraitNumTwo> | RegTensor<uint64_t, RegTraitNumTwo> | - |
 
 ## 调用示例<a name="section642mcpsimp"></a>
 

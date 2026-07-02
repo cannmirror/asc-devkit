@@ -28,7 +28,9 @@
 
 头文件路径为：`"basic_api/reg_compute/kernel_reg_compute_datacopy_intf.h"`。
 
-该指令会根据索引值index将源操作数按元素收集到目的操作数dstReg中。收集过程如下图1所示：
+该指令会根据索引值index将源操作数按元素收集到目的操作数dstReg中。收集过程如图1所示：
+
+**图 1**  Gather功能说明
 
 ![图1 Gather功能说明](../../../../figures/reg_gather_ub2reg.png)  
 
@@ -65,7 +67,7 @@ __simd_callee__ inline void Gather(T3& dstReg, __ubuf__ T1* baseAddr, T4& index,
 
 **表 3**  Gather操作数数据类型对应表
 
-| T0（dstReg） | T1（baseAddr） | T2（index） |
+| 目的操作数 | 源操作数 | 索引值 |
 |-----|-----|-----|
 | int16_t | int8_t | uint16_t |
 | int16_t | int16_t | uint16_t |
@@ -97,18 +99,18 @@ __simd_callee__ inline void Gather(T3& dstReg, __ubuf__ T1* baseAddr, T4& index,
 
 - 当源操作数数据类型T1为B64时，T0、T1、T2、T3、T4只支持以下组合：
 
-    | T0（dstReg） | T1（baseAddr） | T2（index） | T3（dstReg） | T4（index） | 备注 |
+    | T0 | T1 | T2 | T3（自动推导） | T4（自动推导） | 备注 |
     |-----|-----|-----|-----|-----|-----|
-    | uint64_t | uint64_t | uint32_t | RegTensor<uint64_t, RegTraitNumOne> | RegTensor<uint32_t> | index的前32个数有效 |
     | int64_t | int64_t | uint32_t | RegTensor<int64_t, RegTraitNumOne> | RegTensor<uint32_t> | index的前32个数有效 |
-    | uint64_t | uint64_t | uint32_t | RegTensor<uint64_t, RegTraitNumTwo> | RegTensor<uint32_t> | - |
     | int64_t | int64_t | uint32_t | RegTensor<int64_t, RegTraitNumTwo> | RegTensor<uint32_t> | - |
-    | uint64_t | uint64_t | uint64_t | RegTensor<uint64_t, RegTraitNumOne> | RegTensor<uint64_t, RegTraitNumOne> | - |
     | int64_t | int64_t | uint64_t | RegTensor<int64_t, RegTraitNumOne> | RegTensor<uint64_t, RegTraitNumOne> | - |
-    | uint64_t | uint64_t | uint64_t | RegTensor<uint64_t, RegTraitNumOne> | RegTensor<uint64_t, RegTraitNumTwo> | index的前32个数有效 |
     | int64_t | int64_t | uint64_t | RegTensor<int64_t, RegTraitNumOne> | RegTensor<uint64_t, RegTraitNumTwo> | index的前32个数有效 |
-    | uint64_t | uint64_t | uint64_t | RegTensor<uint64_t, RegTraitNumTwo> | RegTensor<uint64_t, RegTraitNumTwo> | - |
     | int64_t | int64_t | uint64_t | RegTensor<int64_t, RegTraitNumTwo> | RegTensor<uint64_t, RegTraitNumTwo> | - |
+    | uint64_t | uint64_t | uint32_t | RegTensor<uint64_t, RegTraitNumOne> | RegTensor<uint32_t> | index的前32个数有效 |
+    | uint64_t | uint64_t | uint32_t | RegTensor<uint64_t, RegTraitNumTwo> | RegTensor<uint32_t> | - |
+    | uint64_t | uint64_t | uint64_t | RegTensor<uint64_t, RegTraitNumOne> | RegTensor<uint64_t, RegTraitNumOne> | - |
+    | uint64_t | uint64_t | uint64_t | RegTensor<uint64_t, RegTraitNumOne> | RegTensor<uint64_t, RegTraitNumTwo> | index的前32个数有效 |
+    | uint64_t | uint64_t | uint64_t | RegTensor<uint64_t, RegTraitNumTwo> | RegTensor<uint64_t, RegTraitNumTwo> | - |
 
 ## 调用示例<a name="section642mcpsimp"></a>
 

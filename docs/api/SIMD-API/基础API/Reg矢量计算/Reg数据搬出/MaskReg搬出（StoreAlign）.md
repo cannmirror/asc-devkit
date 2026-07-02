@@ -76,7 +76,7 @@ StoreAlign能够实现数据从[MaskReg](../寄存器数据类型/MaskReg.md)搬
 |-----|-----|-----|
 | dstAddr | 输入/输出 | 目的操作数，UB起始地址，需要32字节对齐。 |
 | mask | 输入 | 源操作数，类型为[MaskReg](../寄存器数据类型/MaskReg.md)。 |
-| offset | 输入 | &bull; 当数据类型为AddrReg，为地址偏移寄存器，需要在搬运前调用CreateAddrReg设定地址偏移量，实际搬运UB地址为srcAddr + 寄存器中存储的偏移量。AddrReg寄存器中存储的偏移量 * sizeof(T)的对齐约束请参考[表3 MaskDist参数说明](#表3-MaskDist参数说明)。<br>&bull; 当数据类型为int32_t，为地址更新步长，单位：字节。offset的对齐约束请参考[表3 MaskDist参数说明](#表3-MaskDist参数说明)。根据postMode的取值有两种情况：<br>&nbsp;&nbsp;&bull; POST_MODE_NORMAL：不支持。<br>&nbsp;&nbsp;&bull; POST_MODE_UPDATE：实际搬运UB起始地址为srcAddr，搬运后执行地址更新 srcAddr += offset。 |
+| offset | 输入 | &bull; 当数据类型为AddrReg，为地址偏移寄存器，需要在搬运前调用CreateAddrReg设定地址偏移量，实际搬运UB地址为dstAddr + 寄存器中存储的偏移量。AddrReg寄存器中存储的偏移量 * sizeof(T)的对齐约束请参考[表3 MaskDist参数说明](#表3-MaskDist参数说明)。<br>&bull; 当数据类型为int32_t，为地址更新步长，单位：字节。offset的对齐约束请参考[表3 MaskDist参数说明](#表3-MaskDist参数说明)。根据postMode的取值有两种情况：<br>&nbsp;&nbsp;&bull; POST_MODE_NORMAL：不支持。<br>&nbsp;&nbsp;&bull; POST_MODE_UPDATE：实际搬运UB起始地址为dstAddr，搬运后执行地址更新 dstAddr += offset。 |
 
 <a id="表3-MaskDist参数说明"></a>
 **表 3**  MaskDist参数说明
@@ -104,7 +104,7 @@ StoreAlign能够实现数据从[MaskReg](../寄存器数据类型/MaskReg.md)搬
 - 普通搬运接口
     ```cpp
     template <typename T>
-    __simd_vf__ inline void ComputeMode01(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint32_t count, uint16_t oneRepeatSize, uint16_t repeatTimes)
+    __simd_vf__ inline void ComputeMode01(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint16_t oneRepeatSize, uint16_t repeatTimes)
     {
         AscendC::Reg::MaskReg mask;
         for (uint16_t i = 0; i < repeatTimes; ++i) {
@@ -117,12 +117,12 @@ StoreAlign能够实现数据从[MaskReg](../寄存器数据类型/MaskReg.md)搬
 - PostUpdate扩展搬运接口
     ```cpp
     template <typename T>
-    __simd_vf__ inline void StoreAlignVF(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint32_t count, uint16_t oneRepeatSize, uint16_t repeatTimes)
+    __simd_vf__ inline void StoreAlignVF(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint16_t oneRepeatSize, uint16_t repeatTimes)
     {
         AscendC::Reg::MaskReg mask;
         for (uint16_t i = 0; i < repeatTimes; ++i) {
-            AscendC::Reg::LoadAlign(mask, srcAddr, oneRepeatSize);
-            AscendC::Reg::StoreAlign(dstAddr, mask, oneRepeatSize);
+            AscendC::Reg::LoadAlign<T, AscendC::Reg::PostLiteral::POST_MODE_UPDATE>(mask, srcAddr, oneRepeatSize);
+            AscendC::Reg::StoreAlign<T, AscendC::Reg::PostLiteral::POST_MODE_UPDATE>(dstAddr, mask, oneRepeatSize);
         }
     }
     ```

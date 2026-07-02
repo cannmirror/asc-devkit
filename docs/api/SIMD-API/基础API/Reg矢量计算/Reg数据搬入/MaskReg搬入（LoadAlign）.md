@@ -115,17 +115,43 @@ LoadAlign能够实现数据从Unified Buffer（UB）搬运至[MaskReg](../寄存
 
 ## 调用示例<a name="section642mcpsimp"></a>
 
-```cpp
-template <typename T>
-__simd_vf__ inline void LoadAlignVF(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint32_t count, uint32_t oneRepeatSize, uint16_t repeatTimes)
-{
-    AscendC::Reg::MaskReg mask;
-    for (uint16_t i = 0; i < repeatTimes; ++i) {
-        mask = AscendC::Reg::UpdateMask<T>(count);
-        AscendC::Reg::AddrReg offset = AscendC::Reg::CreateAddrReg<T>(i, oneRepeatSize);
-        AscendC::Reg::LoadAlign(mask, srcAddr, offset);
-        AscendC::Reg::StoreAlign(dstAddr, mask, offset);
+- 普通搬运接口
+    ```cpp
+    template <typename T>
+    __simd_vf__ inline void ComputeMode01(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint16_t oneRepeatSize, uint16_t repeatTimes)
+    {
+        AscendC::Reg::MaskReg mask;
+        for (uint16_t i = 0; i < repeatTimes; ++i) {
+            AscendC::Reg::LoadAlign(mask, srcAddr + i * oneRepeatSize);
+            AscendC::Reg::StoreAlign(dstAddr + i * oneRepeatSize, mask);
+        }
     }
-}
-```
+    ```
+
+- PostUpdate扩展搬运接口
+    ```cpp
+    template <typename T>
+    __simd_vf__ inline void StoreAlignVF(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint16_t oneRepeatSize, uint16_t repeatTimes)
+    {
+        AscendC::Reg::MaskReg mask;
+        for (uint16_t i = 0; i < repeatTimes; ++i) {
+            AscendC::Reg::LoadAlign<T, AscendC::Reg::PostLiteral::POST_MODE_UPDATE>(mask, srcAddr, oneRepeatSize);
+            AscendC::Reg::StoreAlign<T, AscendC::Reg::PostLiteral::POST_MODE_UPDATE>(dstAddr, mask, oneRepeatSize);
+        }
+    }
+    ```
+
+- 使用AddrReg存储偏移量接口
+    ```cpp
+    __simd_vf__ inline void ComputeMode03(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint16_t oneRepeatSize, uint16_t repeatTimes)
+    {
+        AscendC::Reg::MaskReg mask;
+        AscendC::Reg::AddrReg aReg;
+        for (uint16_t i = 0; i < repeatTimes; ++i) {
+            aReg = AscendC::Reg::CreateAddrReg<T>(i, oneRepeatSize);
+            AscendC::Reg::LoadAlign(mask, srcAddr, aReg);
+            AscendC::Reg::StoreAlign(dstAddr, mask, aReg);
+        }
+    }
+    ```
 

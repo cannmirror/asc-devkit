@@ -46,7 +46,7 @@ __simd_callee__ inline void Load(U& dstReg, __ubuf__ T* srcAddr)
 | 参数名 | 描述 |
 | --- | --- |
 | T | 操作数数据类型。支持的数据类型请参考[数据类型](#数据类型)。 |
-| U | 目的操作数的[RegTensor](../寄存器数据类型/RegTensor.md)类型，例如RegTensor\<half>，由编译器自动推导，用户不需要填写。 |
+| U | 目的操作数的RegTensor类型，例如RegTensor\<half>，由编译器自动推导，用户不需要手动填写。 |
 
 **表2**  参数说明
 
