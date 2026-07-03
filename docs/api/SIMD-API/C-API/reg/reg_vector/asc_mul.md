@@ -52,11 +52,15 @@ PIPE_V
 ## 调用示例
 
 ```cpp
+constexpr uint32_t total_length = 128;
+__ubuf__ half src0_addr[total_length];
+__ubuf__ half src1_addr[total_length];
+
 vector_half src0;
 vector_half src1;
 vector_half dst;
 vector_bool mask = asc_create_mask_b16(PAT_ALL);
-asc_loadalign(src0, src0_addr);  // src0_addr是外部输入的UB内存空间地址
-asc_loadalign(src1, src1_addr);  // src0_addr是外部输入的UB内存空间地址
+asc_loadalign(src0, src0_addr);
+asc_loadalign(src1, src1_addr);
 asc_mul(dst, src0, src1, mask);
 ```

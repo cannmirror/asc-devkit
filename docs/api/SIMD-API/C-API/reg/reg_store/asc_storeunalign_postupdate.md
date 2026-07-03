@@ -155,7 +155,7 @@ PIPE_V
         // 跨32B边界的尾块缓存在ureg中
         asc_storeunalign_postupdate(dst, ureg, src);
     }
-    // 循环结束后调用一次post，将ureg中剩余数据刷至UB；src1_dst已自增至结束位置，offset为0
+    // 循环结束后调用一次post，将ureg中剩余数据刷至UB；dst已自增至结束位置，offset为0
     asc_storeunalign_post(dst, ureg, 0);
     ```
 

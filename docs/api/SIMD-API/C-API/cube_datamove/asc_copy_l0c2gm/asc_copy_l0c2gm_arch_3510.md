@@ -248,8 +248,8 @@ PIPE_FIX
 ## 调用示例
 
 ```cpp
-__gm__ bfloat16_t dst[256];
-__cc__ bfloat16_t src[256];
+// dst是外部输入的float类型的GM地址。
+__cc__ float src[256];
 uint16_t n_size = 1;
 uint16_t m_size = 1;
 uint32_t loop_dst_stride = 0;
@@ -257,13 +257,13 @@ uint16_t loop_src_stride = 0;
 uint8_t l2_cache_ctl = 0;
 uint8_t clip_relu_pre = 0;
 uint8_t unit_flag_ctl = 0;
-uint64_t quant_pre = DEQF16;
+uint64_t quant_pre = QuantMode_t::QF322F32_PRE;
 uint8_t relu_pre = 0;
 bool split_en = true;
-bool NZ2ND_en = true;
-uint64_t quant_post = VQS162B8_POST;
+bool NZ2ND_en = false;
+uint64_t quant_post = QuantMode_t::NoConv;
 uint8_t relu_post = 0;
-bool clip_relu_post = true;
+bool clip_relu_post = false;
 uint8_t eltwise_op = 0;
 bool eltwise_antq_en = true;
 bool C0_pad_en = true;

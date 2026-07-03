@@ -26,7 +26,7 @@ __aicore__ inline int64_t asc_get_sub_block_num()
 
 不同Kernel类型下，在AIC和AIV上调用该接口的返回值如下：
 
-|Kernel类型|KERNEL_TYPE_AIV_ONLY|KERNEL_TYPE_AIC_ONLY|KERNEL_TYPE_MIX__AIC_1_2|KERNEL_TYPE_MIX_AIC_1_1|KERNEL_TYPE_MIX_AIC_1_0|KERNEL_TYPE_MIX_AIV_1_0|
+|Kernel类型|KERNEL_TYPE_AIV_ONLY|KERNEL_TYPE_AIC_ONLY|KERNEL_TYPE_MIX_AIC_1_2|KERNEL_TYPE_MIX_AIC_1_1|KERNEL_TYPE_MIX_AIC_1_0|KERNEL_TYPE_MIX_AIV_1_0|
 | :------ | :------------------ | :----------------- | :-------------------- | :--------------------- | :-------------------- | :-------------------- |
 |AIV      |1                    |-                   |2                      |1                       |-                      |1                      |
 |AIC      |-                    |1                   |1                      |1                       |1                      |-                      |

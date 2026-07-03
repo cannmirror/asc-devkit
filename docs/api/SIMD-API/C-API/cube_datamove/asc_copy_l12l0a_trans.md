@@ -125,7 +125,7 @@ uint16_t index_id = 0;
 uint16_t src_stride = 1;
 uint16_t dst_gap = 1;
 bool enable_addr_decrement = false;
-uint64_t dst_frac_gap = 0;
+uint16_t dst_frac_gap = 0;
 
 // 搬运过程
 asc_copy_l12l0a_trans(dst, src, index_id, repeat, src_stride, dst_gap, enable_addr_decrement, dst_frac_gap);
