@@ -8,6 +8,8 @@
 
 ## 功能说明
 
+头文件路径：`"c_api/reg_compute/reg_load.h"`。
+
 用于在进行非对齐数据搬入前的初始化，需配合[asc_loadunalign](./asc_loadunalign.md)接口使用。
 
 - asc_loadunalign_pre（不带iter_reg入参）：配合asc_loadunalign（不带iter_reg入参）接口使用。

@@ -8,6 +8,8 @@
 
 ## 功能说明
 
+头文件路径：`"c_api/reg_compute/reg_vector.h"`。
+
 madd（multiply-add），对源操作数执行逐元素乘法和加法。计算公式如下：
 
 $$

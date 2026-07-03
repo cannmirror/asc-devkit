@@ -8,6 +8,8 @@
 
 ## 功能说明
 
+头文件路径：`"c_api/reg_compute/reg_vector.h"`。
+
 按元素执行Leaky ReLU（Leaky Rectified Linear Unit）操作。Leaky ReLU带泄露性整流函数是一种人工神经网络中常用的激活函数，其数学表达式为：
 
 $$

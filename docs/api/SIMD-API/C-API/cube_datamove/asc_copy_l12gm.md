@@ -9,6 +9,8 @@
 
 ## 功能说明
 
+头文件路径：`"c_api/cube_datamove/cube_datamove.h"`。
+
 将数据从L1 Buffer搬运到Global Memory。
 
 ## 函数原型

@@ -8,6 +8,8 @@
 
 ## 功能说明
 
+头文件路径：`"c_api/reg_compute/reg_vector.h"`。
+
 PairReduceSum: 相邻两个（奇偶）元素求和，结果写入dst。例如：src={1,2,3,4}，则dst={3,7}。
 
 ## 函数原型

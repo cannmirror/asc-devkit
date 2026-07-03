@@ -8,6 +8,8 @@
 
 ## 功能说明
 
+头文件路径：`"c_api/reg_compute/reg_convert.h"`。
+
 将uint16_t类型转化为uint8_t类型，无舍入模式，支持饱和/非饱和模式。
 
 关于饱和/非饱和模式的详细说明，请参见[舍入模式](./rounding_mode.md)。

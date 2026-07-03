@@ -8,6 +8,8 @@
 
 ## 功能说明
 
+头文件路径：`"c_api/reg_compute/reg_vector.h"`。
+
 将源操作数src0和src1中的元素交织存入目的操作数dst0和dst1中。操作数为掩码寄存器时，不同数据类型的接口决定了交织的位宽大小，例如对于b32类型，交织时以4bit为一组。
 
 ![asc_intlf示例](../../figures/asc_intlf示例.png)

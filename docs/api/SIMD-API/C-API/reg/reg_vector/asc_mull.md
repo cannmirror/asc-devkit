@@ -8,6 +8,8 @@
 
 ## 功能说明
 
+头文件路径：`"c_api/reg_compute/reg_vector.h"`。
+
 根据mask对输入数据src0、src1按元素相乘，将结果写入dst0，溢出部分写入dst1。
 
 ![asc_mull示例](../../figures/asc_mull示例.png)

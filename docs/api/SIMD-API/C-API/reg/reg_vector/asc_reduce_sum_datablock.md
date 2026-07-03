@@ -8,6 +8,8 @@
 
 ## 功能说明
 
+头文件路径：`"c_api/reg_compute/reg_vector.h"`。
+
 归约求和功能，用于将src每个DataBlock(32B)中参与计算的元素求和，得到的结果依次保存在dst中。
 
 ## 函数原型

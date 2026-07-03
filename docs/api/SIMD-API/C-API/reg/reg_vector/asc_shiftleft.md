@@ -8,6 +8,8 @@
 
 ## 功能说明
 
+头文件路径：`"c_api/reg_compute/reg_vector.h"`。
+
 根据掩码mask对输入数据src0，按照src1对应元素进行左移操作，完成后将结果写入dst中。
 
 ## 函数原型

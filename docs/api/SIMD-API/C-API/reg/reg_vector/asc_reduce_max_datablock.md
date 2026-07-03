@@ -8,6 +8,8 @@
 
 ## 功能说明
 
+头文件路径：`"c_api/reg_compute/reg_vector.h"`。
+
 找出DataBlock中的最大值，并将最终的计算结果依次保存在dst中的最低位。
 
 ## 函数原型
