@@ -39,12 +39,12 @@
 
 | SCENARIO_NUM | 输入数据类型 | 数据源 | 执行路径 | 说明 | 理论带宽(Byte/cycle) | 带宽延迟(cycle) |
 |--------------|--------------|--------|----------|------|----------------------|-----------------|
-| 1 | bfloat16 | A矩阵 | L1 -> L0A | Load2D 从 L1 加载到 L0A | 256 | 28 |
-| 2 | bfloat16 | B矩阵 | L1 -> L0B | Load2D 从 L1 加载到 L0B | 128 | 28 |
+| 1 | bfloat16 | A矩阵 | L1 -> L0A | LoadData（2D矩阵搬运） 从 L1 加载到 L0A | 256 | 28 |
+| 2 | bfloat16 | B矩阵 | L1 -> L0B | LoadData（2D矩阵搬运） 从 L1 加载到 L0B | 128 | 28 |
 | 3 | bfloat16 | A矩阵 | L1 -> L0A（转置） | LoadDataWithTranspose 从 L1 加载到 L0A（转置） | 256 | 28 |
 | 4 | bfloat16 | B矩阵 | L1 -> L0B（转置） | LoadDataWithTranspose 从 L1 加载到 L0B（转置） | 128 | 28 |
-| 5 | bfloat16 | A矩阵 | L1 -> L0A | Load3Dv2 从 L1 加载到 L0A | 32-256 | 50 |
-| 6 | bfloat16 | B矩阵 | L1 -> L0B | Load3Dv2 从 L1 加载到 L0B | 28.4-128 | 50 |
+| 5 | bfloat16 | A矩阵 | L1 -> L0A | LoadData（卷积数据搬运）v2 从 L1 加载到 L0A | 32-256 | 50 |
+| 6 | bfloat16 | B矩阵 | L1 -> L0B | LoadData（卷积数据搬运）v2 从 L1 加载到 L0B | 28.4-128 | 50 |
 | 7 | int8_t | B矩阵 | L1 -> L0B | LoadDataWithSparse 从 L1 加载到 L0B（稀疏加载） | 128 | 30 |
 | 8 | float | Bias | L1 -> BiasTable Buffer | 从 L1 加载到 BiasTable Buffer | 32 | 20 |
 | 9 | uint64_t | FixPipe | L1 -> Fixpipe Buffer | 从 L1 加载到 Fixpipe Buffer | 32 | 20 |
@@ -53,12 +53,12 @@
 
 | SCENARIO_NUM | 输入数据类型 | 数据源 | 执行路径 | 说明 | 理论带宽(Byte/cycle) | 带宽延迟(cycle) |
 |--------------|--------------|--------|----------|------|----------------------|-----------------|
-| 11 | bfloat16 | A矩阵 | L1 -> L0A | Load2Dv2 从 L1 加载到 L0A | 256 | 30 |
-| 12 | bfloat16 | B矩阵 | L1 -> L0B | Load2Dv2 从 L1 加载到 L0B | 256 | 30 |
-| 13 | fp8_e4m3fn | A矩阵 + ScaleA | L1 -> L0A + L0A_MX | Load2DMx 从 L1 加载到 L0A 和 L0A_MX（带 scale） | 256/32 | 30 |
-| 14 | fp8_e4m3fn | B矩阵 + ScaleB | L1 -> L0B + L0B_MX | Load2DMx 从 L1 加载到 L0B 和 L0B_MX（带 scale） | 256/32 | 30 |
-| 15 | bfloat16 | A矩阵 | L1 -> L0A | Load3Dv2 从 L1 加载到 L0A | 32-256 | 50 |
-| 16 | bfloat16 | B矩阵 | L1 -> L0B | Load3Dv2 从 L1 加载到 L0B | 32-256 | 50 |
+| 11 | bfloat16 | A矩阵 | L1 -> L0A | LoadData（2D矩阵搬运V2） 从 L1 加载到 L0A | 256 | 30 |
+| 12 | bfloat16 | B矩阵 | L1 -> L0B | LoadData（2D矩阵搬运V2） 从 L1 加载到 L0B | 256 | 30 |
+| 13 | fp8_e4m3fn | A矩阵 + ScaleA | L1 -> L0A + L0A_MX | LoadData（MX矩阵搬运） 从 L1 加载到 L0A 和 L0A_MX（带 scale） | 256/32 | 30 |
+| 14 | fp8_e4m3fn | B矩阵 + ScaleB | L1 -> L0B + L0B_MX | LoadData（MX矩阵搬运） 从 L1 加载到 L0B 和 L0B_MX（带 scale） | 256/32 | 30 |
+| 15 | bfloat16 | A矩阵 | L1 -> L0A | LoadData（卷积数据搬运）v2 从 L1 加载到 L0A | 32-256 | 50 |
+| 16 | bfloat16 | B矩阵 | L1 -> L0B | LoadData（卷积数据搬运）v2 从 L1 加载到 L0B | 32-256 | 50 |
 | 17 | bfloat16 | B矩阵 | L1 -> L0B（转置） | LoadDataWithTranspose 从 L1 加载到 L0B（转置） | 256 | 28 |
 | 18 | float | Bias | L1 -> BiasTable Buffer | 从 L1 加载到 BiasTable Buffer | 32 | 20 |
 | 19 | uint64_t | FixPipe | L1 -> Fixpipe Buffer | 从 L1 加载到 Fixpipe Buffer | 32 | 26 |
@@ -326,5 +326,5 @@ python3 generate_roofline_with_latency.py \
 
 1. 场景编号与平台架构必须匹配：Atlas A3/A2 训练/推理平台使用场景 1-9，Ascend 950PR/950DT 平台使用场景 11-19。
 2. 场景 7（LoadSparse）仅支持 dav-2201 架构。
-3. 场景 13/14（Load2DMx）仅支持 dav-3510 架构。
+3. 场景 13/14（LoadData（MX矩阵搬运））仅支持 dav-3510 架构。
 4. 不同场景对矩阵规格有不同的对齐要求，建议使用符合对齐要求的矩阵规格（如 16、32、64 的倍数）。

@@ -21,7 +21,7 @@
 | [load_data_with_stride](./load_data_with_stride) |  本样例介绍LoadDataWithStride指令在矩阵乘法中的使用场景和方法，配合SetLoadDataRepeatWithStride可以将二维的A、B矩阵从L1搬运到L0A/L0B | Ascend 950PR/Ascend 950DT |
 | [mmad](./mmad) |  本样例介绍了输入为ND格式，B4 / B8 / B16 / B32输入数据类型（具体以int4_t / int8_t / bfloat16 / float为例），四种输入数据类型下的矩阵乘法，说明如何通过Mmad指令实现矩阵乘法计算（C = A x B + Bias） | Ascend 950PR/Ascend 950DT<br>Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 |
 | [mmad_gemv](./mmad_gemv) |  本样例介绍了GEMV（M=1）模式下的矩阵乘法 | Ascend 950PR/Ascend 950DT<br>Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 |
-| [mmad_load3dv2](./mmad_load3dv2) |  本样例介绍LoadData3DV2指令在矩阵乘法中的使用场景和方法。LoadData3DV2可以将二维的A、B矩阵从L1搬运到L0A/L0B，其中 A 和 B 分别表示矩阵乘法的左右输入矩阵 | Ascend 950PR/Ascend 950DT<br>Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 |
+| [mmad_load3dv2](./mmad_load3dv2) |  本样例介绍LoadData（卷积数据搬运）v2指令在矩阵乘法中的使用场景和方法。LoadData（卷积数据搬运）v2可以将二维的A、B矩阵从L1搬运到L0A/L0B，其中 A 和 B 分别表示矩阵乘法的左右输入矩阵 | Ascend 950PR/Ascend 950DT<br>Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 |
 | [mmad_mx](./mmad_mx)  |  本样例介绍了输入为ND格式，A、B矩阵为FP4（fp4x2_e1m2_t、fp4x2_e2m1_t）和FP8（fp8_e4m3fn_t、fp8_e5m2_t）数据类型，量化系数矩阵scaleA、scaleB为fp8_e8m0_t数据类型，左矩阵和左量化系数矩阵不转置、右矩阵和右量化系数矩阵转置共 4 种带有量化功能的矩阵乘（简称：MX矩阵乘法） | Ascend 950PR/Ascend 950DT |
 | [mmad_tensor_api](./mmad_tensor_api) |  本样例基于Tensor API编程方式实现动态Shape矩阵乘法和随路量化计算 | Ascend 950PR/Ascend 950DT |
 | [mmad_unitflag](./mmad_unitflag) |  本样例介绍了如何在调用Mmad指令时，使用unitFlag功能。 | Ascend 950PR/Ascend 950DT<br>Atlas A3 训练系列产品/Atlas A3 推理系列产品<br>Atlas A2 训练系列产品/Atlas A2 推理系列产品 |

@@ -189,7 +189,7 @@ nd2nzParams.dValue = baseK * stepKa;  // 大包包含 stepKa 个 baseM * baseK
 
 #### 6. LoadData3D 替代 LoadData2D——减少指令队列占用
 
-在 Atlas A2/A3 架构上，本样例使用 [`LoadData3DParamsV2`](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L0-Buffer/Load3D.md)（即 [LoadData3D](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L0-Buffer/Load3D.md)）替代 [`LoadData2DParams`](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L0-Buffer/Load2D.md)（即 LoadData2D）完成 L1→L0 的数据搬运。这是一个关键的指令队列优化。
+在 Atlas A2/A3 架构上，本样例使用 [`LoadData3DParamsV2`](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L0-Buffer/LoadData_3D.md)（即 [LoadData3D](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L0-Buffer/LoadData_3D.md)）替代 [`LoadData2DParams`](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L0-Buffer/LoadData_2D.md)（即 LoadData2D）完成 L1→L0 的数据搬运。这是一个关键的指令队列优化。
 
 **问题背景**：MTE1 指令队列深度为 32。使用 LoadData2D 时，由于单条 LoadData2D 指令搬运粒度有限，搬运一个 baseM×baseK 的切片需要用 for 循环发射多条 LoadData2D 指令。例如 baseM=128、baseK=64 时，最少需要发射 `baseK/16 = 4` 条 LoadData2D 指令。
 

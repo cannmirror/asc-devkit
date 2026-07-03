@@ -32,7 +32,7 @@
 
 ## 功能说明<a name="section618mcpsimp"></a>
 
-用于调用[Load3D](../矩阵数据搬入至L0-Buffer/Load3D.md)时设置FeatureMap的属性描述。Load3D的模板参数isSetFMatrix设置为false时，表示Load3D传入的FeatureMap的属性（包括l1H、l1W、padList，参数介绍参考[表3 LoadData3DParamsV1结构体内参数说明](../矩阵数据搬入至L0-Buffer/Load3D.md#zh-cn_topic_0000002512171652_table679014222918)、[表4 LoadData3DParamsV2结构体内参数说明](../矩阵数据搬入至L0-Buffer/Load3D.md#zh-cn_topic_0000002512171652_table193501032193419)）将不生效，开发者需要通过该接口进行设置。
+用于调用[LoadData（卷积数据搬运）](../矩阵数据搬入至L0-Buffer/LoadData_3D.md)时设置FeatureMap的属性描述。LoadData（卷积数据搬运）的模板参数isSetFMatrix设置为false时，表示LoadData（卷积数据搬运）传入的FeatureMap的属性（包括l1H、l1W、padList，参数介绍参考[表3 LoadData3DParamsV1结构体内参数说明](../矩阵数据搬入至L0-Buffer/LoadData_3D.md#zh-cn_topic_0000002512171652_table679014222918)、[表4 LoadData3DParamsV2结构体内参数说明](../矩阵数据搬入至L0-Buffer/LoadData_3D.md#zh-cn_topic_0000002512171652_table193501032193419)）将不生效，开发者需要通过该接口进行设置。
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
@@ -65,7 +65,7 @@ SetFMatrixBitMode类参数设计思想说明：
 
 SetFMatrixBitMode类使用union与bit-field方法，采用bit位表达参数类型，使用bit-field结构体自动处理入参的bit位数，并利用union的特性实现多参数融合传递，仅需传递一个入参即可包含全部所需信息，对应底层接口仅需要接收一个参数。同时，当需要修改参数中某一bit位的值时，仅通过循环和位运算即可实现，不需要重新传入参数，减少了scalar计算，实现性能提升。
 
-SetFMatrixBitMode类可以直接使用[LoadData3DParamsV2结构体](../矩阵数据搬入至L0-Buffer/Load3D.md#zh-cn_topic_0000002512171652_table193501032193419)类型对象初始化：
+SetFMatrixBitMode类可以直接使用[LoadData3DParamsV2结构体](../矩阵数据搬入至L0-Buffer/LoadData_3D.md#zh-cn_topic_0000002512171652_table193501032193419)类型对象初始化：
 
 ```cpp
 template <typename T>
@@ -81,7 +81,7 @@ __aicore__ inline SetFMatrixBitModeParams(const LoadData3DParamsV2<T> &loadData3
 | --- | --- |
 | l1H | 源操作数height，取值范围：l1H∈[1, 32767]。该参数是位域结构体的最低位参数，占用16bit，可以使用SetFMatrixBitMode类对象的SetL1H()函数设置其值。 |
 | l1W | 源操作数width，取值范围：l1W∈[1, 32767]。该参数是位域结构体的第二低位参数，占用16bit，可以使用SetFMatrixBitMode类对象的SetL1W()函数设置其值。 |
-| padList0 | 对应[表LoadData3DParamsV2结构体内参数说明](../矩阵数据搬入至L0-Buffer/Load3D.md#zh-cn_topic_0000002512171652_table193501032193419)中padding列表中的padding_left值，取值范围：[0,255]。默认为0。该参数是位域结构体的第三低位参数，占用8bit，可以使用SetFMatrixBitMode类对象的SetPadList()函数设置其值。 |
+| padList0 | 对应[表LoadData3DParamsV2结构体内参数说明](../矩阵数据搬入至L0-Buffer/LoadData_3D.md#zh-cn_topic_0000002512171652_table193501032193419)中padding列表中的padding_left值，取值范围：[0,255]。默认为0。该参数是位域结构体的第三低位参数，占用8bit，可以使用SetFMatrixBitMode类对象的SetPadList()函数设置其值。 |
 | padList1 | 对应[表1](SetFmatrix.md#table8955841508)中padding列表中的padding_right值，取值范围：[0,255]。默认为0。该参数是位域结构体的第四低位参数，占用8bit，可以使用SetFMatrixBitMode类对象的SetPadList()函数设置其值。 |
 | padList2 | 对应[表1](SetFmatrix.md#table8955841508)中padding列表中的padding_top值，取值范围：[0,255]。默认为0。该参数是位域结构体的第五低位参数，占用8bit，可以使用SetFMatrixBitMode类对象的SetPadList()函数设置其值。 |
 | padList3 | 对应[表1](SetFmatrix.md#table8955841508)中padding列表中的padding_bottom值，取值范围：[0,255]。默认为0。该参数是位域结构体的最高位参数，占用8bit，可以使用SetFMatrixBitMode类对象的SetPadList()函数设置其值。 |
@@ -92,7 +92,7 @@ __aicore__ inline SetFMatrixBitModeParams(const LoadData3DParamsV2<T> &loadData3
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
-- 该接口需要配合[Load3D](../矩阵数据搬入至L0-Buffer/Load3D.md)接口一起使用，需要在[Load3D](../矩阵数据搬入至L0-Buffer/Load3D.md)接口之前调用。
+- 该接口需要配合[LoadData（卷积数据搬运）](../矩阵数据搬入至L0-Buffer/LoadData_3D.md)接口一起使用，需要在[LoadData（卷积数据搬运）](../矩阵数据搬入至L0-Buffer/LoadData_3D.md)接口之前调用。
 - 操作数地址对齐要求请参见[通用地址对齐约束](../../../../通用说明和约束.md#section796754519912)。
 
 ## 调用示例<a name="section642mcpsimp"></a>

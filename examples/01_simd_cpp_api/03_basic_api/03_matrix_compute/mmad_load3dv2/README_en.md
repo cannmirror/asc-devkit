@@ -1,8 +1,8 @@
-# LoadData3DV2 Data Transfer Example in Matrix Multiplication
+# LoadData (convolution data transfer) v2 Data Transfer Example in Matrix Multiplication
 
 ## Overview
 
-This example introduces the usage scenarios and methods of the LoadData3DV2 instruction in matrix multiplication. LoadData3DV2 can transfer 2D A and B matrices from L1 to L0A/L0B, where A and B represent the left and right input matrices of matrix multiplication respectively.
+This example introduces the usage scenarios and methods of the LoadData (convolution data transfer) v2 instruction in matrix multiplication. LoadData (convolution data transfer) v2 can transfer 2D A and B matrices from L1 to L0A/L0B, where A and B represent the left and right input matrices of matrix multiplication respectively.
 
 ## Supported Products and CANN Versions
 
@@ -27,7 +27,7 @@ This example introduces the usage scenarios and methods of the LoadData3DV2 inst
 ```
 ## Example Description
 
-The LoadData3DV2 instruction (referred to as load3dv2 in this example) supports the following data types:
+The LoadData (convolution data transfer) v2 instruction (referred to as load3dv2 in this example) supports the following data types:
 - Ascend 950PR/Ascend 950DT: int8_t, uint8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, half, bfloat16_t, int32_t, uint32_t, float.
 
 - Atlas A3 Training Series Products/Atlas A3 Inference Series Products and Atlas A2 Training Series Products/Atlas A2 Inference Series Products:
@@ -40,7 +40,7 @@ Transpose capabilities of the load3dv2 instruction for 2D matrices:
 
 Since this example does not currently support int4b_t input data type, it demonstrates the following five load3dv2 usage scenarios in matrix multiplication:
 
-### Load3Dv2 Interface Scenario Table
+### LoadData (convolution data transfer) v2 Interface Scenario Table
 
 | scenarioNum | Input Data Type | A Matrix Transpose | B Matrix Transpose |
 | --- | --- | --- | --- |

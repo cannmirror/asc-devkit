@@ -12,8 +12,8 @@ The fractal transformation involves compatibility adaptation for the following t
 1. L0A is not reused. A single mmad computation is performed on an entire A matrix.
 2. L0A is reused. The M axis is split, the A matrix is divided into two sub-matrices, and two mmad computations are performed.
 
-**For Scenario 1**, the logic of the L1>L0A transfer process needs to be modified, changing from Nz->Zz fractal transformation to Nz->Nz. For details, refer to [Example Implementation](./README.md#样例实现).  
-**For Scenario 2**, on Atlas A2/A3 Series Products, since the Zz fractal is inherently continuous along the M axis, the L1->L0A transfer logic is the same as Scenario 1. For Ascend 950PR/Ascend 950DT Series Products, splitting the M axis causes matrix discontinuity, requiring splitting into two Nz matrices. For details, refer to [Example Implementation](./README.md#样例实现).
+**For Scenario 1**, the logic of the L1>L0A transfer process needs to be modified, changing from Nz->Zz fractal transformation to Nz->Nz. For details, refer to [Example Implementation](#example-implementation).  
+**For Scenario 2**, on Atlas A2/A3 Series Products, since the Zz fractal is inherently continuous along the M axis, the L1->L0A transfer logic is the same as Scenario 1. For Ascend 950PR/Ascend 950DT Series Products, splitting the M axis causes matrix discontinuity, requiring splitting into two Nz matrices. For details, refer to [Example Implementation](#example-implementation).
 
 ## Supported Products and CANN Versions
 
@@ -56,8 +56,8 @@ The fractal transformation involves compatibility adaptation for the following t
 ![L0A Non-Reuse Scenario](./figures/普通兼容场景.png)
 
 Figure 1 shows the L1→L0A data transfer differences for the two chip types in the L0A non-reuse scenario:
-- Atlas A2/A3 Series: L0A uses Zz fractal, requiring Nz→Zz fractal transformation through Load2D.
-- Ascend 950PR/Ascend 950DT: L0A uses Nz fractal, which is the same as L1, requiring no fractal transformation, and Load2D parameters are more concise.
+- Atlas A2/A3 Series: L0A uses Zz fractal, requiring Nz→Zz fractal transformation through LoadData (2D matrix transfer).
+- Ascend 950PR/Ascend 950DT: L0A uses Nz fractal, which is the same as L1, requiring no fractal transformation, and LoadData (2D matrix transfer) parameters are more concise.
 
 ***Figure 2 L0A Reuse Scenario Overview***
 
@@ -65,7 +65,7 @@ Figure 1 shows the L1→L0A data transfer differences for the two chip types in 
 
 Figure 2 shows the adaptation logic for the two chip types in the L0A reuse (M axis split) scenario:
 - Atlas A2/A3 Series: Under Zz fractal, A1 and A2 remain continuous in L0A after M axis splitting, requiring only adjustment of the second Mmad offset.
-- Ascend 950PR/Ascend 950DT: Under Nz fractal, A1 and A2 are not continuous after M axis splitting. Two Load2D transfer instructions are needed to separately transfer the upper and lower Nz sub-matrices, without changing the Mmad computation logic or pipeline arrangement.
+- Ascend 950PR/Ascend 950DT: Under Nz fractal, A1 and A2 are not continuous after M axis splitting. Two LoadData (2D matrix transfer) instructions are needed to separately transfer the upper and lower Nz sub-matrices, without changing the Mmad computation logic or pipeline arrangement.
 
 ### GM->L1
 
@@ -89,7 +89,7 @@ In Atlas A2/A3 Series Products, the L0A data layout is Zz fractal, while in Asce
 
 #### L0A Non-Reuse Scenario
 
-In Atlas A2/A3 Series Products, L1->L0A requires transformation from Nz fractal to Zz fractal, implemented through the Load2D interface. The relevant code is as follows:
+In Atlas A2/A3 Series Products, L1->L0A requires transformation from Nz fractal to Zz fractal, implemented through the LoadData (2D matrix transfer) interface. The relevant code is as follows:
 
 ```cpp
 ...
@@ -110,7 +110,7 @@ for (uint32_t i = 0; i < mBlocks; ++i) {
 }
 ```
 
-In Ascend 950PR/Ascend 950DT, L1->L0A does not require fractal transformation and maintains the Nz fractal. It is implemented through the Load2D interface. The relevant code is as follows:
+In Ascend 950PR/Ascend 950DT, L1->L0A does not require fractal transformation and maintains the Nz fractal. It is implemented through the LoadData (2D matrix transfer) interface. The relevant code is as follows:
 
 ```cpp
 constexpr uint32_t mBlocks = M / CUBE_BLOCK;
@@ -142,7 +142,7 @@ $$
 
 That is, A can be split by rows into A1 and A2, each multiplied with B to produce C1 and C2, which are then concatenated to form C.
 In Atlas A2/A3 Series Products, since L0A uses Zz fractal, A1 and A2 remain continuous after M axis splitting. The second mmad computation only requires modifying the A matrix offset.
-In Ascend 950PR/Ascend 950DT, since L0A uses Nz fractal, A1 and A2 are not continuous after M axis splitting. To avoid changing the mmad computation logic and subsequent pipeline arrangement, the Load2D transfer instruction is used to split the entire Nz matrix into two sub-Nz matrices. The relevant code is as follows:
+In Ascend 950PR/Ascend 950DT, since L0A uses Nz fractal, A1 and A2 are not continuous after M axis splitting. To avoid changing the mmad computation logic and subsequent pipeline arrangement, the LoadData (2D matrix transfer) instruction is used to split the entire Nz matrix into two sub-Nz matrices. The relevant code is as follows:
 
 ```cpp
 // Transfer the upper Nz fractal
@@ -164,7 +164,7 @@ for (uint32_t i = 0; i < kBlocks; ++i) {
 
 ### L1->L0B
 
-The L1 to L0B transfer uses Load2D for Nz format transfer on all products and **requires no compatibility adaptation**. The relevant code is as follows:
+The L1 to L0B transfer uses LoadData (2D matrix transfer) for Nz format transfer on all products and **requires no compatibility adaptation**. The relevant code is as follows:
 
 ```cpp
 ...

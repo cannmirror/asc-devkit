@@ -4,7 +4,7 @@
 
 This example implements the setting of L1 Buffer boundary values, isolating different hardware implementations through compile-time macros.
 
-Atlas A2/A3 Series Products set the L1 Buffer boundary value through the `SetLoadDataBoundary` interface, while the new Ascend 950PR/950DT architecture does not support this interface and requires manually splitting Load3D instructions to implement the data wrap-around function for circular data reading.
+Atlas A2/A3 Series Products set the L1 Buffer boundary value through the `SetLoadDataBoundary` interface, while the new Ascend 950PR/950DT architecture does not support this interface and requires manually splitting LoadData (convolution data transfer) instructions to implement the data wrap-around function for circular data reading.
 
 ## Supported Products and CANN Versions
 
@@ -41,9 +41,9 @@ Atlas A2/A3 Series Products set the L1 Buffer boundary value through the `SetLoa
 
 ## Example Implementation
     
-- **Atlas A2/A3 Training/Inference Series Products**: Set the L1 Buffer boundary value to 1024 bytes through the SetLoadDataBoundary interface. When the Load3D instruction processes the source operand, if the source operand address on the L1 Buffer exceeds the set boundary, data is automatically read from the start address of the L1 Buffer, implementing the circular data reading function.
+- **Atlas A2/A3 Training/Inference Series Products**: Set the L1 Buffer boundary value to 1024 bytes through the SetLoadDataBoundary interface. When the LoadData (convolution data transfer) instruction processes the source operand, if the source operand address on the L1 Buffer exceeds the set boundary, data is automatically read from the start address of the L1 Buffer, implementing the circular data reading function.
 
-- **Ascend 950PR/950DT**: The new architecture hardware has removed the L1 Buffer boundary value setting registers and no longer supports the SetLoadDataBoundary interface. To implement the same circular data reading function, the Load3D interface must be manually split into multiple instructions, implementing manual wrap-around by adjusting the destination operand address offset.
+- **Ascend 950PR/950DT**: The new architecture hardware has removed the L1 Buffer boundary value setting registers and no longer supports the SetLoadDataBoundary interface. To implement the same circular data reading function, the LoadData (convolution data transfer) interface must be manually split into multiple instructions, implementing manual wrap-around by adjusting the destination operand address offset.
 
 ## Build and Run
 

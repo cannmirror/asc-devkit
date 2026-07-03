@@ -13,10 +13,10 @@ Global Memory与L1 Buffer/L0 Buffer之间的数据搬运提供了灵活、分层
 | Global Memory->L1 Buffer | 随路转换-[ND2NZ](<../矩阵计算（ISASI）/矩阵计算分形介绍/关键分形格式详解.md#ZH-CN_TOPIC_0000002568950893>)搬运(DataCopy) | 支持在数据搬运时进行[ND](<../矩阵计算（ISASI）/矩阵计算分形介绍/关键分形格式详解.md#zh-cn_topic_0000002545089965_section958745018719>)到[NZ](<../矩阵计算（ISASI）/矩阵计算分形介绍/关键分形格式详解.md#zh-cn_topic_0000002545089965_section363412741113>)格式的转换。 |
 | Global Memory->L1 Buffer | 随路转换-[DN2NZ](<../矩阵计算（ISASI）/矩阵计算分形介绍/关键分形格式详解.md#ZH-CN_TOPIC_0000002568950893>)搬运(DataCopy) | 支持在数据搬运时进行[DN](<../矩阵计算（ISASI）/矩阵计算分形介绍/关键分形格式详解.md#zh-cn_topic_0000002545089965_section958745018719>)到[NZ](<../矩阵计算（ISASI）/矩阵计算分形介绍/关键分形格式详解.md#zh-cn_topic_0000002545089965_section363412741113>)格式的转换。 |
 | Global Memory->L1 Buffer | 非对齐数据搬运(DataCopyPad) | 支持数据非对齐搬运，可以根据开发者的需要自行填充数据。 |
-| Global Memory->L1 Buffer | [NZ](<../矩阵计算（ISASI）/矩阵计算分形介绍/关键分形格式详解.md#zh-cn_topic_0000002545089965_section363412741113>)数据搬运(Load2D) | 负责完成[NZ](<../矩阵计算（ISASI）/矩阵计算分形介绍/关键分形格式详解.md#zh-cn_topic_0000002545089965_section363412741113>)矩阵的数据搬运。 |
-| Global Memory->L1 Buffer | [NZ](<../矩阵计算（ISASI）/矩阵计算分形介绍/关键分形格式详解.md#zh-cn_topic_0000002545089965_section363412741113>)数据搬运(Load2DV2) | 负责完成[NZ](<../矩阵计算（ISASI）/矩阵计算分形介绍/关键分形格式详解.md#zh-cn_topic_0000002545089965_section363412741113>)矩阵的数据搬运。 |
-| Global Memory->L0A Buffer | 2D格式分形矩阵搬运(Load2D) | 负责完成普通矩阵计算所需的2D格式数据的搬运。 |
-| Global Memory->L0B Buffer | 2D格式分形矩阵搬运(Load2D) | 负责完成普通矩阵计算所需的2D格式数据的搬运。 |
+| Global Memory->L1 Buffer | [NZ](<../矩阵计算（ISASI）/矩阵计算分形介绍/关键分形格式详解.md#zh-cn_topic_0000002545089965_section363412741113>)数据搬运(LoadData（2D矩阵搬运）) | 负责完成[NZ](<../矩阵计算（ISASI）/矩阵计算分形介绍/关键分形格式详解.md#zh-cn_topic_0000002545089965_section363412741113>)矩阵的数据搬运。 |
+| Global Memory->L1 Buffer | [NZ](<../矩阵计算（ISASI）/矩阵计算分形介绍/关键分形格式详解.md#zh-cn_topic_0000002545089965_section363412741113>)数据搬运(LoadData（2D矩阵搬运V2）) | 负责完成[NZ](<../矩阵计算（ISASI）/矩阵计算分形介绍/关键分形格式详解.md#zh-cn_topic_0000002545089965_section363412741113>)矩阵的数据搬运。 |
+| Global Memory->L0A Buffer | 2D格式分形矩阵搬运(LoadData（2D矩阵搬运）) | 负责完成普通矩阵计算所需的2D格式数据的搬运。 |
+| Global Memory->L0B Buffer | 2D格式分形矩阵搬运(LoadData（2D矩阵搬运）) | 负责完成普通矩阵计算所需的2D格式数据的搬运。 |
 | L0C Buffer->Global Memory | 随路量化激活搬运(DataCopy) | 支持多种随路能力的组合，需要设置不同的寄存器，配合DataCopy接口使能不同的数据搬运能力。 |
 | L0C Buffer->Global Memory | 随路量化激活搬运(FixPipe) | 支持多种随路能力的组合，FixPipe接口内包含了设置寄存器与数据搬运能力。 |
 
@@ -159,7 +159,7 @@ src和dst分别为源操作数和目的操作数；dataCopyParams和padParams为
 
 </cann-filter>
 
-## GMToL1 NZ数据搬运(Load2D)<a name="ZH-CN_TOPIC_0000002543422574"></a>
+## GMToL1 NZ数据搬运(LoadData（2D矩阵搬运）)<a name="ZH-CN_TOPIC_0000002543422574"></a>
 
 该接口主要实现将数据从Global Memory搬运至L1 Buffer，负责完成普通矩阵计算所需的2D格式数据的搬运，以大小为512Byte的数据分形为单位进行搬运。
 
@@ -168,7 +168,7 @@ src和dst分别为源操作数和目的操作数；dataCopyParams和padParams为
 - Global Memory -> L1 Buffer
     - GM -> A1/B1
 
-搬运的数据用于[矩阵计算](../矩阵计算（ISASI）/矩阵计算（ISASI）.md)，接口具体介绍请参考：[GMToL1-Load2D指令搬运](../矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L1-Buffer/GMToL1-Load2D指令搬运.md)。
+搬运的数据用于[矩阵计算](../矩阵计算（ISASI）/矩阵计算（ISASI）.md)，接口具体介绍请参考：[GMToL1-2D矩阵搬运（LoadData）](../矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L1-Buffer/GMToL1-2D矩阵搬运（LoadData）.md)。
 
 src和dst分别为源操作数和目的操作数；loadDataParams为搬运参数。
 
@@ -179,7 +179,7 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const GlobalTensor<T>
 
 <cann-filter npu-type="950">
 
-## GMToL1 NZ数据搬运(Load2DV2)
+## GMToL1 NZ数据搬运(LoadData（2D矩阵搬运V2）)
 
 该接口主要实现将数据从Global Memory搬运至L1 Buffer，负责完成普通矩阵计算所需的2D格式数据的搬运，以大小为512Byte的数据分形为单位进行搬运。
 
@@ -188,7 +188,7 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const GlobalTensor<T>
 - Global Memory -> L1 Buffer
     - GM -> A1/B1
 
-搬运的数据用于[矩阵计算](../矩阵计算（ISASI）/矩阵计算（ISASI）.md)，接口具体介绍请参考：[GMToL1-Load2DV2指令搬运](../矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L1-Buffer/GMToL1-Load2DV2指令搬运.md)。
+搬运的数据用于[矩阵计算](../矩阵计算（ISASI）/矩阵计算（ISASI）.md)，接口具体介绍请参考：[GMToL1-2D矩阵搬运V2（LoadData）](../矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L1-Buffer/GMToL1-2D矩阵搬运V2（LoadData）.md)。
 
 src和dst分别为源操作数和目的操作数；loadDataParams为搬运参数。
 
@@ -201,7 +201,7 @@ src和dst分别为源操作数和目的操作数；loadDataParams为搬运参数
 
 </cann-filter>
 
-## GMToL0A 2D格式分形矩阵搬运(Load2D)<a name="ZH-CN_TOPIC_0000002574022815"></a>
+## GMToL0A 2D格式分形矩阵搬运(LoadData（2D矩阵搬运）)<a name="ZH-CN_TOPIC_0000002574022815"></a>
 
 该接口主要实现将数据从Global Memory搬运至L0A Buffer，负责完成普通矩阵计算所需的2D格式数据的搬运，以大小为512Byte的数据分形为单位进行搬运。
 
@@ -210,7 +210,7 @@ src和dst分别为源操作数和目的操作数；loadDataParams为搬运参数
 - Global Memory -> L0A Buffer
     - GM -> A2
 
-搬运的数据用于[矩阵计算](../矩阵计算（ISASI）/矩阵计算（ISASI）.md)，接口具体介绍请参考：[Load2D](../矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L0-Buffer/Load2D.md)。
+搬运的数据用于[矩阵计算](../矩阵计算（ISASI）/矩阵计算（ISASI）.md)，接口具体介绍请参考：[LoadData（2D矩阵搬运）](../矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L0-Buffer/LoadData_2D.md)。
 
 src和dst分别为源操作数和目的操作数；loadDataParams为搬运参数。
 
@@ -219,7 +219,7 @@ template <typename T>
 __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LoadData2DParams& loadDataParams)
 ```
 
-## GMToL0B 2D格式分形矩阵搬运(Load2D)<a name="ZH-CN_TOPIC_0000002543262918"></a>
+## GMToL0B 2D格式分形矩阵搬运(LoadData（2D矩阵搬运）)<a name="ZH-CN_TOPIC_0000002543262918"></a>
 
 该接口主要实现将数据从Global Memory搬运至L0B Buffer，负责完成普通矩阵计算所需的2D格式数据的搬运，以大小为512Byte的数据分形为单位进行搬运。
 
@@ -228,7 +228,7 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>&
 - Global Memory -> L0B Buffer
     - GM -> B2
 
-搬运的数据用于[矩阵计算](../矩阵计算（ISASI）/矩阵计算（ISASI）.md)，接口具体介绍请参考：[Load2D](../矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L0-Buffer/Load2D.md)。
+搬运的数据用于[矩阵计算](../矩阵计算（ISASI）/矩阵计算（ISASI）.md)，接口具体介绍请参考：[LoadData（2D矩阵搬运）](../矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L0-Buffer/LoadData_2D.md)。
 
 src和dst分别为源操作数和目的操作数；loadDataParams为搬运参数。
 
