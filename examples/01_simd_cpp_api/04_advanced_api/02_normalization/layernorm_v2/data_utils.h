@@ -15,12 +15,29 @@
 
 #ifndef DATA_UTILS_H
 #define DATA_UTILS_H
+#ifdef ASCENDC_CPU_DEBUG
+#include "tiling/platform/platform_ascendc.h"
+#endif
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fstream>
 
 #define ERROR_LOG(fmt, args...) fprintf(stdout, "[ERROR]  " fmt "\n", ##args)
+
+static inline void InitCpuDebugPlatform()
+{
+#if defined(ASCENDC_CPU_DEBUG) && defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510))
+#if __NPU_ARCH__ == 2201
+    const char* socVersion = "Ascend910B1";
+#elif __NPU_ARCH__ == 3510
+    const char* socVersion = "Ascend950PR_9589";
+#endif
+    if (platform_ascendc::PlatformAscendCManager::GetInstance(socVersion) == nullptr) {
+        ERROR_LOG("Failed to initialize CPU debug platform for %s.", socVersion);
+    }
+#endif
+}
 
 bool ReadFile(const std::string& filePath, size_t& fileSize, void* buffer, size_t bufferSize)
 {
