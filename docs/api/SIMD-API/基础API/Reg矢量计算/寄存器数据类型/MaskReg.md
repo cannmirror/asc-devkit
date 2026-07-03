@@ -281,7 +281,7 @@ __simd_callee__ inline void Add(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask
 
   - 当操作数类型为b8时，每一个element对应1bit MaskReg；当操作数类型为b16时，每一个element对应2bit MaskReg，且仅2bit中的最低位是有效的；当操作数类型为b32时，每一个element对应4bit MaskReg，且仅4bit中的最低位是有效的。
 
-**图6** NPU架构版本2201的Memory矢量计算与NPU架构版本3510的Reg矢量计算Mask机制对比<a id="fig8"></a>
+**图8** NPU架构版本2201的Memory矢量计算与NPU架构版本3510的Reg矢量计算Mask机制对比<a id="fig8"></a>
 
 ![](../../../../figures/Memory矢量计算与Reg矢量计算Mask机制对比.png "NPU架构版本2201的Memory矢量计算与NPU架构版本3510的Reg矢量计算Mask机制对比")
 

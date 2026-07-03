@@ -118,7 +118,7 @@ __simd_vf__ inline void ReduceVF(__ubuf__ half* dstAddr, __ubuf__ half* srcAddr,
     AscendC::Reg::RegTensor<T> srcReg;
     AscendC::Reg::RegTensor<T> dstReg;
     AscendC::Reg::MaskReg mask;    
-    AscendC::Reg::LoadAlign(srcReg, srcAddr + i * oneRepeatSize);
+    AscendC::Reg::LoadAlign(srcReg, srcAddr);
     mask = AscendC::Reg::UpdateMask<T>(count);
     AscendC::Reg::Reduce<AscendC::Reg::ReduceType::MAX>(dstReg, srcReg, mask); 
     AscendC::Reg::StoreAlign(dstAddr, dstReg, mask);
