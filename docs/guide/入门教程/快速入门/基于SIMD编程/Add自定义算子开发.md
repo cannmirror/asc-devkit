@@ -41,17 +41,17 @@
     -   Add算子有两个输入：x与y，输出为z。
     -   本样例中算子输入支持的数据类型为float，算子输出的数据类型与输入数据类型相同。
     -   算子输入支持的shape为（8，2048），输出shape与输入shape相同。
-    -   算子输入支持的[format](../../../编程指南/概念原理和术语/神经网络和算子/数据排布格式.md)为：ND。
+    -   算子输入支持的[format](../../../技术附录/概念原理和术语/神经网络和算子/数据排布格式.md)为：ND。
 
 3.  确定核函数名称和参数。
     -   本样例中核函数命名为add\_custom。
     -   根据对算子输入输出的分析，确定核函数有3个参数x，y，z；x，y为输入参数，z为输出参数。
 
 4.  确定算子实现所需接口。
-    -   实现涉及外部存储和内部存储间的数据搬运，查看Ascend C  API参考中的数据搬运接口，需要使用[DataCopy](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/DataCopy.md)来实现数据搬移。
-    -   本样例只涉及矢量计算的加法操作，查看Ascend C  API参考中的矢量计算接口[Memory矢量计算](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/Memory矢量计算.md)，初步分析可使用Add接口[Add](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/Add.md)实现x+y。
-    -   计算中使用到的Tensor数据结构，使用[AllocTensor](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/AllocTensor.md)、[FreeTensor](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/FreeTensor.md)进行申请和释放。
-    -   并行流水任务之间使用Queue队列完成同步，会使用到[EnQue](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/EnQue.md)、[DeQue](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/DeQue.md)等接口。
+    -   实现涉及外部存储和内部存储间的数据搬运，查看Ascend C  API参考中的数据搬运接口，需要使用[DataCopy](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta2/API/ascendcopapi/atlasascendc_api_07_0101.html)来实现数据搬移。
+    -   本样例只涉及矢量计算的加法操作，查看Ascend C  API参考中的矢量计算接口，初步分析可使用Add接口[Add](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta2/API/ascendcopapi/atlasascendc_api_07_0035.html)实现x+y。
+    -   计算中使用到的Tensor数据结构，使用[AllocTensor](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta2/API/ascendcopapi/atlasascendc_api_07_0138.html)、[FreeTensor](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta2/API/ascendcopapi/atlasascendc_api_07_0139.html)进行申请和释放。
+    -   并行流水任务之间使用Queue队列完成同步，会使用到[EnQue](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta2/API/ascendcopapi/atlasascendc_api_07_0140.html)、[DeQue](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta2/API/ascendcopapi/atlasascendc_api_07_0141.html)等接口。
 
 通过以上分析，得到Ascend C  Add算子的设计规格如下：
 
@@ -210,14 +210,14 @@
 
     每个核上处理的数据地址需要在起始地址上增加GetBlockIdx\(\) \* blockLength（每个block处理的数据长度）的偏移来获取。这样也就实现了多核并行计算的数据切分。
 
-    以输入x为例，x + blockLength \* GetBlockIdx\(\)即为单核处理程序中x在Global Memory上的内存偏移地址，获取偏移地址后，使用GlobalTensor类的[SetGlobalBuffer](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/GlobalTensor.md)接口设定该核上Global Memory的起始地址以及长度。具体示意图如下。
+    以输入x为例，x + blockLength \* GetBlockIdx\(\)即为单核处理程序中x在Global Memory上的内存偏移地址，获取偏移地址后，使用GlobalTensor类的[SetGlobalBuffer](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta2/API/ascendcopapi/atlasascendc_api_07_00024.html)接口设定该核上Global Memory的起始地址以及长度。具体示意图如下。
 
     **图 3**  多核并行处理示意图<a name="zh-cn_topic_0000001565030288_fig744312161511"></a>  
     ![](../../../figures/多核并行处理示意图.png "多核并行处理示意图")
 
     **上面已经实现了多核数据的切分，那么单核上的处理数据如何进行切分？**
 
-    对于单核上的处理数据，可以进行数据切块（Tiling），在本示例中，仅作为参考，将数据切分成8块（并不意味着8块就是性能最优）。切分后的每个数据块再次切分成2块，即可开启[double buffer](../../../编程指南/概念原理和术语/性能优化技术原理/DoubleBuffer.md)，实现流水线之间的并行。
+    对于单核上的处理数据，可以进行数据切块（Tiling），在本示例中，仅作为参考，将数据切分成8块（并不意味着8块就是性能最优）。切分后的每个数据块再次切分成2块，即可开启[double buffer](../../../技术附录/概念原理和术语/性能优化技术原理/DoubleBuffer.md)，实现流水线之间的并行。
 
     这样单核上的数据（2048个数）被切分成16块，每块tileLength（128）个数据。TPipe为inQueueX分配了两块大小为tileLength \* sizeof\(float\)个字节的内存块，每个内存块能容纳tileLength（128）个float类型数据。数据切分示意图如下。
 
@@ -267,8 +267,8 @@
 
     1.  CopyIn函数实现。
 
-        1.  使用[DataCopy](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/DataCopy.md)接口将GlobalTensor数据拷贝到LocalTensor。
-        2.  使用[EnQue](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/EnQue.md)将LocalTensor放入VecIn的Queue中。
+        1.  使用[DataCopy](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta2/API/ascendcopapi/atlasascendc_api_07_0101.html)接口将GlobalTensor数据拷贝到LocalTensor。
+        2.  使用[EnQue](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta2/API/ascendcopapi/atlasascendc_api_07_0140.html)将LocalTensor放入VecIn的Queue中。
 
         ```
         __aicore__ inline void CopyIn( int32_t progress)
@@ -287,10 +287,10 @@
 
     2.  Compute函数实现。
 
-        1.  使用[DeQue](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/DeQue.md)从VecIn中取出LocalTensor。
-        2.  使用Ascend C接口[Add](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/Add.md)完成矢量计算。
-        3.  使用[EnQue](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/EnQue.md)将计算结果LocalTensor放入到VecOut的Queue中。
-        4.  使用[FreeTensor](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/FreeTensor.md)将释放不再使用的LocalTensor。
+        1.  使用[DeQue](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta2/API/ascendcopapi/atlasascendc_api_07_0141.html)从VecIn中取出LocalTensor。
+        2.  使用Ascend C接口[Add](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta2/API/ascendcopapi/atlasascendc_api_07_0035.html)完成矢量计算。
+        3.  使用[EnQue](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta2/API/ascendcopapi/atlasascendc_api_07_0140.html)将计算结果LocalTensor放入到VecOut的Queue中。
+        4.  使用[FreeTensor](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta2/API/ascendcopapi/atlasascendc_api_07_0139.html)将释放不再使用的LocalTensor。
 
         ```
         __aicore__ inline void Compute(int32_t progress)
@@ -311,9 +311,9 @@
 
     3.  CopyOut函数实现。
 
-        1.  使用[DeQue](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/DeQue.md)接口从VecOut的Queue中取出LocalTensor。
-        2.  使用[DataCopy](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/DataCopy.md)接口将LocalTensor拷贝到GlobalTensor上。
-        3.  使用[FreeTensor](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/context/FreeTensor.md)将不再使用的LocalTensor进行回收。
+        1.  使用[DeQue](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta2/API/ascendcopapi/atlasascendc_api_07_0141.html)接口从VecOut的Queue中取出LocalTensor。
+        2.  使用[DataCopy](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta2/API/ascendcopapi/atlasascendc_api_07_0101.html)接口将LocalTensor拷贝到GlobalTensor上。
+        3.  使用[FreeTensor](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910beta2/API/ascendcopapi/atlasascendc_api_07_0139.html)将不再使用的LocalTensor进行回收。
 
         ```
          __aicore__ inline void CopyOut(int32_t progress)
