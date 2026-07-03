@@ -154,7 +154,6 @@ Kirin 9030，支持的数据类型为：int8_t、uint8_t、int16_t、uint16_t、
   transDataParams.repeatTimes = 1;    // 重复迭代次数，每次repeat处理16个DataBlock
   transDataParams.dstRepStride = 0;
   transDataParams.srcRepStride = 0;
-  AscendC::LocalTensor<int8_t> dstLocalList[16];
   int width = 32 / sizeof(int8_t); // 每个DataBlock存储的元素个数，此处为32个
   uint64_t dstLocalList[16];
   for (int i = 0; i < 16; i++) {   // dstLocal为int8_t类型的LocalTensor
