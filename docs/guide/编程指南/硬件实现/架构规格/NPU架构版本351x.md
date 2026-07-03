@@ -65,7 +65,7 @@
 
 **Cube计算单元**
 
--   Cube计算单元支持FP32/FP16/BF16/HiF8/FP8\_E4M3/U8/S8。 一拍完成一个float16数据类型的16x16与16x16大小的矩阵乘；如果是int8\_t数据类型，则一拍完成16\*32与32\*16大小的矩阵乘。
+-   Cube计算单元支持FP32/FP16/BF16/HiF8/FP8\_E4M3/FP8\_E5M2/U8/S8。 一拍完成一个float16数据类型的16x16与16x16大小的矩阵乘；如果是int8\_t数据类型，则一拍完成16\*32与32\*16大小的矩阵乘。
 -   Cube计算单元可以访问的存储单元有L0A Buffer、L0B Buffer、L0C Buffer，其中L0A Buffer存储左矩阵，L0B Buffer存储右矩阵，L0C Buffer存储矩阵乘的结果和中间结果。
 
 **Scalar单元**
@@ -325,4 +325,3 @@ Channel merge支持S8、U8、S4和U4数据类型，而Channel split支持FP32数
     -   **默认流水类型**
 
         CrossCoreWaitFlag不需要显式设置指令所在的流水类型，默认使用PIPE\_S。
-
