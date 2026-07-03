@@ -97,6 +97,11 @@ asc-devkit:
       - impl/tensor_api/tensor/pointer_mem_impl.h
       - impl/tensor_api/arch/cube/**/routing.h
       - impl/tensor_api/arch/vector/**/routing.h
+      - impl/tensor_api/arch/vector/transform/transform_vf_set.h
+      - impl/tensor_api/arch/vector/cast/instruction/*.h
+      - impl/tensor_api/arch/vector/cast/instruction.h
+      - impl/tensor_api/arch/vector/cast/cast_enums.h
+      - impl/tensor_api/arch/vector/cast/cast_trait_map.h
       - impl/basic_api/dav_c310/kernel_operator_proposal_impl.h
       - impl/basic_api/dav_c310/kfc/kfc_comm_server.h
       - impl/adv_api/detail/reduce/**/*_3510_impl.h
