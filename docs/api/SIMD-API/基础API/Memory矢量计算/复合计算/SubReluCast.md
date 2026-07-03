@@ -34,6 +34,12 @@ $$
 dst_i = Cast(Relu(src0_i - src1_i))
 $$
 
+其中Relu的计算公式如下：
+
+$$
+Relu(x) = max(0, x)
+$$
+
 ## 函数原型<a name="section620mcpsimp"></a>
 
 - tensor前n个数据计算

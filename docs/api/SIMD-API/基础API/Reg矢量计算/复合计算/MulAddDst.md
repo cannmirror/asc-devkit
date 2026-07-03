@@ -104,6 +104,7 @@ __simd_vf__ inline void MulAddDstVF(__ubuf__ T* dstAddr, __ubuf__ T* src0Addr, _
         mask = AscendC::Reg::UpdateMask<T>(count);
         AscendC::Reg::LoadAlign(srcReg0, src0Addr + i * oneRepeatSize);
         AscendC::Reg::LoadAlign(srcReg1, src1Addr + i * oneRepeatSize);
+        AscendC::Reg::LoadAlign(dstReg, dstAddr + i * oneRepeatSize);
         AscendC::Reg::MulAddDst(dstReg, srcReg0, srcReg1, mask);
         AscendC::Reg::StoreAlign(dstAddr + i * oneRepeatSize, dstReg, mask);
     }

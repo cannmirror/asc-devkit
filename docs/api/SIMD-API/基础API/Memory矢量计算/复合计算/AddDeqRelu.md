@@ -40,6 +40,12 @@ $$
 Deq(x) = Cast(x \times scale)
 $$
 
+其中Relu的计算公式如下：
+
+$$
+Relu(x) = max(0, x)
+$$
+
 ## 函数原型<a name="section620mcpsimp"></a>
 
 - tensor前n个数据计算
@@ -153,6 +159,14 @@ $$
     8K, & \text{if } count \gt 2K
   \end{cases}
   $$
+
+## 关键特性
+
+### 溢出保护
+
+该接口在执行int32_t到half数据类型的反量化时，会进行防溢出保护处理：
+$$Deq(x) = Cast(x \times (1/2^{17}) \times scale \times 2^{17}) = Cast(x \times scale)$$
+中间缩小步骤将数值控制在安全范围内，有效避免了浮点溢出。
 
 ## 调用示例<a name="section837496171220"></a>
 

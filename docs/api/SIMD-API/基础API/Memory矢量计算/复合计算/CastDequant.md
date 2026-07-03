@@ -190,6 +190,14 @@
   |输入类型为int16_t，开启向量量化模式|<pre>template &lt;typename T&gt;<br>\_\_aicore\_\_ inline void SetDeqScale(const LocalTensor&lt;T&gt;& vdeq, const VdeqInfo& vdeqInfo)</pre>|
   |输入类型为int32_t，输出数据类型为half类型|<pre>\_\_aicore\_\_ inline void SetDeqScale(half scale)</pre>|
 
+## 关键特性
+
+### 溢出保护
+
+该接口在执行int32_t到half数据类型的反量化时，会进行防溢出保护处理：
+$$dst_i = Cast(src_i / 2^{17} \times scale \times 2^{17}) = Cast(src_i \times scale)$$
+中间缩小步骤将数值控制在安全范围内，有效避免了浮点溢出。
+
 ## 调用示例<a name="section642mcpsimp"></a>
 
 完整的调用样例可参考[复合计算样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_basic_api/01_memory_vector_compute/element_wise_compound_compute)。
