@@ -82,7 +82,7 @@ __aicore__ inline void Cast(const LocalTensor<T>& dst, const LocalTensor<U>& src
         DstPrimType, SrcPrimType>::type;
 #if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
     CheckVectorTensor("Cast", NamedTensor(dst, "dst"), NamedTensor(src, "src"));
-    CheckMaskRepeat<MaskCheckType>(mask, repeatTime, "Cast");
+    CheckMaskRepeat<MaskCheckType, isSetMask>(mask, repeatTime, "Cast");
 #endif
 #ifdef __MSTX_DFX_REPORT__
     MstxTensor::GetMstxVecUnaryCastInfo<T, U, isSetMask>(dst, src, mask[0], mask[1], repeatTime, repeatParams, "Cast");
@@ -117,7 +117,7 @@ __aicore__ inline void Cast(const LocalTensor<T>& dst, const LocalTensor<U>& src
         DstPrimType, SrcPrimType>::type;
 #if defined(ASCENDC_DEBUG) || defined(ASCENDC_CPU_DEBUG)
     CheckVectorTensor("Cast", NamedTensor(dst, "dst"), NamedTensor(src, "src"));
-    CheckMaskRepeat<MaskCheckType>(mask, repeatTime, "Cast");
+    CheckMaskRepeat<MaskCheckType, isSetMask>(mask, repeatTime, "Cast");
 #endif
 #ifdef __MSTX_DFX_REPORT__
     MstxTensor::GetMstxVecUnaryCastInfo<T, U, isSetMask>(dst, src, mask, repeatTime, repeatParams, "Cast");
