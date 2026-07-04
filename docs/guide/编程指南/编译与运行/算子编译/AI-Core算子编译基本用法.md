@@ -22,11 +22,14 @@ AI Core SIMD的基本编译流程如下：Host代码使用Host编译器编译成
   __global__ __vector__ add_custom(__gm__ float* x, __gm__ float* y, __gm__ float* z)
 
   bisheng -c add_kernel.asc -o add_kernel.o --npu-arch=dav-xxxx
-  bisheng -c main.cpp -o main.o
+  bisheng -c main.cpp -o main.o -I${INSTALL_DIR}/include
   bisheng add_kernel.o main.o -o main
   // 或
   bisheng main.cpp add_kernel.asc -o main --npu-arch=dav-xxxx
   ```
+
+  > [!NOTE] 说明
+  > ${INSTALL_DIR}请替换为CANN软件安装后文件存储路径。以root用户安装为例，安装后文件默认存储路径为：/usr/local/Ascend/cann。
 
 - 单独编译，完整样例请参考[LINK](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/02_features/04_compile/01_separate_compile/README.md)。
 
