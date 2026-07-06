@@ -28,6 +28,7 @@ class CaseRunnerOptions:
     modes: Iterable[str]
     includes: Iterable[str]
     excludes: Iterable[str]
+    exact_includes: Iterable[str] | None = None
     werror: bool = False
 
 
@@ -46,6 +47,7 @@ class CaseRunnerContext:
 @dataclass(frozen=True)
 class RunnerInfo:
     rel_path: str
+    source_case: str
     supported_archs: List[str]
     supported_modes: List[str]
     skip: bool
@@ -62,7 +64,7 @@ def build_case_runner_cells_with_skips(
     runners_root = project_root / "scripts" / "presmoke" / "cases"
     manifest = load_manifest(project_root)
     runner_dirs = sorted(path.parent for path in runners_root.rglob("run.sh"))
-    runner_dirs = filter_examples(runner_dirs, options.includes, options.excludes)
+    runner_dirs = filter_examples(runner_dirs, options.includes, options.excludes, options.exact_includes)
     modes_list = list(options.modes)
     context = CaseRunnerContext(
         project_root=project_root,
@@ -95,6 +97,7 @@ def load_runner_info(context: CaseRunnerContext, runner_dir: Path, manifest: dic
     info = manifest.get(rel_path, {})
     return RunnerInfo(
         rel_path=rel_path,
+        source_case=info.get("source_case") or rel_path,
         supported_archs=list(info.get("supported_archs") or [context.arch]),
         supported_modes=list(info.get("supported_modes") or context.modes or ["npu"]),
         skip=bool(info.get("skip")),
@@ -182,7 +185,7 @@ def make_runner_cell(context: CaseRunnerContext, runner_dir: Path, info: RunnerI
         Command(f"bash {runner} verify", "verify", command_env),
     ]
     spec = ExampleSpec(
-        path=context.project_root / "examples" / info.rel_path,
+        path=context.project_root / "examples" / info.source_case,
         rel_path=info.rel_path,
         commands=commands,
         archs=info.supported_archs,

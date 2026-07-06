@@ -14,6 +14,8 @@
 from __future__ import annotations
 
 import json
+import csv
+import re
 import statistics
 from dataclasses import dataclass
 from pathlib import Path
@@ -74,7 +76,7 @@ def schedule_cells(cells: Iterable[Cell], options: ScheduleOptions = ScheduleOpt
 
 
 def schedule_npu_idle_min(cells: List[Cell], report_path: Path, jobs: int) -> List[Cell]:
-    timings = load_stage_seconds(report_path)
+    timings = load_pipeline_stage_seconds(report_path)
     if not timings:
         return enforce_required_order(cells)
 
@@ -83,8 +85,8 @@ def schedule_npu_idle_min(cells: List[Cell], report_path: Path, jobs: int) -> Li
         candidates,
         key=lambda candidate: (
             custom_op_dependency_violation_s(candidate, report_path, jobs=max(jobs, 1)),
-            simulate_npu_idle(candidate, report_path, jobs=max(jobs, 1)),
-            simulate_npu_makespan(candidate, report_path, jobs=max(jobs, 1)),
+            simulate_pipeline_npu_idle(candidate, report_path, jobs=max(jobs, 1)),
+            simulate_pipeline_makespan(candidate, report_path, jobs=max(jobs, 1)),
             [cell.example.rel_path for cell in candidate],
         ),
     )
@@ -126,18 +128,29 @@ def export_schedule_file(cells: List[Cell], output_path: Path) -> None:
 
 def build_npu_idle_candidates(
     cells: List[Cell],
-    timings: dict[str, tuple[float, float]],
+    timings: dict[str, tuple[float, float, float]],
     jobs: int,
 ) -> List[List[Cell]]:
     indexed = list(enumerate(cells))
-    build_seconds = with_default_seconds({case: build_s for case, (build_s, _) in timings.items()}, cells)
-    run_seconds = with_default_seconds({case: run_s for case, (_, run_s) in timings.items()}, cells)
+    build_seconds = with_default_seconds({case: timing[0] for case, timing in timings.items()}, cells)
+    run_seconds = with_default_seconds({case: timing[1] for case, timing in timings.items()}, cells)
+    verify_seconds = with_default_seconds({case: timing[2] for case, timing in timings.items()}, cells)
 
     candidates: List[List[Cell]] = [
         cells,
         [cell for _, cell in sorted(indexed, key=lambda item: (-build_seconds[item[1].example.rel_path], item[0]))],
         [cell for _, cell in sorted(indexed, key=lambda item: (build_seconds[item[1].example.rel_path], item[0]))],
         [cell for _, cell in sorted(indexed, key=lambda item: (-run_seconds[item[1].example.rel_path], item[0]))],
+        [cell for _, cell in sorted(indexed, key=lambda item: (-verify_seconds[item[1].example.rel_path], item[0]))],
+        [
+            cell for _, cell in sorted(
+                indexed,
+                key=lambda item: (
+                    -(run_seconds[item[1].example.rel_path] + verify_seconds[item[1].example.rel_path]),
+                    item[0],
+                ),
+            )
+        ],
     ]
     candidates.append(frontload_long_builds(cells, build_seconds, jobs))
     for long_count in range(1, max(jobs, 1)):
@@ -187,32 +200,48 @@ def add_next_from(cells: List[Cell], used: set[str], result: List[Cell], count: 
         used.add(next_cell.key)
 
 
-def simulate_npu_idle(cells: List[Cell], report_path: Path, jobs: int = 1) -> float:
-    timings = load_stage_seconds(report_path)
-    build_seconds = with_default_seconds({case: build_s for case, (build_s, _) in timings.items()}, cells)
-    run_seconds = with_default_seconds({case: run_s for case, (_, run_s) in timings.items()}, cells)
+def simulate_pipeline_npu_idle(cells: List[Cell], report_path: Path, jobs: int = 1) -> float:
+    return simulate_pipeline(cells, report_path, jobs)[0]
+
+
+def simulate_pipeline_makespan(cells: List[Cell], report_path: Path, jobs: int = 1) -> float:
+    return simulate_pipeline(cells, report_path, jobs)[1]
+
+
+def simulate_pipeline(cells: List[Cell], report_path: Path, jobs: int = 1) -> tuple[float, float]:
+    timings = load_pipeline_stage_seconds(report_path)
+    build_seconds = with_default_seconds({case: timing[0] for case, timing in timings.items()}, cells)
+    run_seconds = with_default_seconds({case: timing[1] for case, timing in timings.items()}, cells)
+    verify_seconds = with_default_seconds({case: timing[2] for case, timing in timings.items()}, cells)
     build_finishes = simulate_build_finishes(cells, build_seconds, jobs)
 
     npu_available = 0.0
     idle_s = 0.0
-    for ready_at, _, cell in sorted(build_finishes, key=lambda item: (item[0], item[1])):
+    verify_ready: list[tuple[float, int, Cell]] = []
+    for ready_at, index, cell in sorted(build_finishes, key=lambda item: (item[0], item[1])):
         if npu_available < ready_at:
             idle_s += ready_at - npu_available
             npu_available = ready_at
         npu_available += run_seconds[cell.example.rel_path]
-    return idle_s
+        verify_ready.append((npu_available, index, cell))
+
+    verify_done = simulate_verify_done(verify_ready, verify_seconds, jobs)
+    if verify_done > npu_available:
+        idle_s += verify_done - npu_available
+    return idle_s, max(npu_available, verify_done)
 
 
-def simulate_npu_makespan(cells: List[Cell], report_path: Path, jobs: int = 1) -> float:
-    timings = load_stage_seconds(report_path)
-    build_seconds = with_default_seconds({case: build_s for case, (build_s, _) in timings.items()}, cells)
-    run_seconds = with_default_seconds({case: run_s for case, (_, run_s) in timings.items()}, cells)
-    build_finishes = simulate_build_finishes(cells, build_seconds, jobs)
-
-    npu_available = 0.0
-    for ready_at, _, cell in sorted(build_finishes, key=lambda item: (item[0], item[1])):
-        npu_available = max(npu_available, ready_at) + run_seconds[cell.example.rel_path]
-    return npu_available
+def simulate_verify_done(
+    verify_ready: list[tuple[float, int, Cell]],
+    verify_seconds: dict[str, float],
+    jobs: int,
+) -> float:
+    worker_available = [0.0 for _ in range(max(jobs, 1))]
+    for ready_at, _, cell in sorted(verify_ready, key=lambda item: (item[0], item[1])):
+        worker = min(range(len(worker_available)), key=lambda idx: worker_available[idx])
+        start = max(worker_available[worker], ready_at)
+        worker_available[worker] = start + verify_seconds[cell.example.rel_path]
+    return max(worker_available) if worker_available else 0.0
 
 
 def custom_op_dependency_violation_s(cells: List[Cell], report_path: Path, jobs: int = 1) -> float:
@@ -241,14 +270,14 @@ def custom_op_dependency_violation_from_builds(
 
 def delay_custom_op_dependents(
     cells: List[Cell],
-    timings: dict[str, tuple[float, float]],
+    timings: dict[str, tuple[float, float, float]],
     jobs: int,
 ) -> List[Cell]:
     names = {cell.example.rel_path for cell in cells}
     if CUSTOM_OP_CASE not in names or not (CUSTOM_OP_DEPENDENT_CASES & names):
         return cells
 
-    build_seconds = with_default_seconds({case: build_s for case, (build_s, _) in timings.items()}, cells)
+    build_seconds = with_default_seconds({case: timing[0] for case, timing in timings.items()}, cells)
     if custom_op_dependency_violation_from_builds(cells, build_seconds, jobs) <= 0:
         return cells
 
@@ -337,21 +366,74 @@ def load_build_seconds(report_path: Path) -> dict[str, float]:
 
 
 def load_stage_seconds(report_path: Path) -> dict[str, tuple[float, float]]:
+    return {case: (timing[0], timing[1]) for case, timing in load_pipeline_stage_seconds(report_path).items()}
+
+
+def load_pipeline_stage_seconds(report_path: Path) -> dict[str, tuple[float, float, float]]:
     if not report_path.exists():
         return {}
+    if report_path.is_dir():
+        timings = report_path / "ALL_CASE_TIMINGS.tsv"
+        if timings.exists():
+            return load_pipeline_stage_seconds(timings)
+        estimates: dict[str, tuple[float, float, float]] = {}
+        for report in sorted(report_path.glob("*/results/report.json")):
+            estimates.update(load_pipeline_stage_seconds(report))
+        return estimates
+    if report_path.suffix == ".tsv":
+        return load_pipeline_stage_seconds_from_tsv(report_path)
     data = json.loads(report_path.read_text(encoding="utf-8"))
-    estimates: dict[str, tuple[float, float]] = {}
+    estimates: dict[str, tuple[float, float, float]] = {}
     for result in data.get("results", []):
         example = result.get("example")
         if not example:
             continue
         build_s = 0.0
         run_s = 0.0
+        verify_s = 0.0
         for step in result.get("steps", []):
             kind = step.get("kind")
             if kind in {"clean", "build"}:
                 build_s += float(step.get("duration_s") or 0.0)
             elif kind == "run":
                 run_s += float(step.get("duration_s") or 0.0)
-        estimates[example] = (build_s, run_s)
+            elif kind == "verify":
+                verify_s += float(step.get("duration_s") or 0.0)
+        estimates[example] = (build_s, run_s, verify_s)
     return estimates
+
+
+def load_pipeline_stage_seconds_from_tsv(report_path: Path) -> dict[str, tuple[float, float, float]]:
+    estimates: dict[str, tuple[float, float, float]] = {}
+    with report_path.open(encoding="utf-8", newline="") as handle:
+        for row in csv.DictReader(handle, delimiter="\t"):
+            example = row.get("example", "")
+            if not example:
+                continue
+            if {"build_s", "run_s", "verify_s"} <= set(row):
+                estimates[example] = (
+                    parse_float(row.get("build_s")),
+                    parse_float(row.get("run_s")),
+                    parse_float(row.get("verify_s")),
+                )
+                continue
+            if not row.get("steps"):
+                continue
+            build_s = parse_stage_duration(row.get("steps", ""), "clean")
+            build_s += parse_stage_duration(row.get("steps", ""), "build")
+            run_s = parse_stage_duration(row.get("steps", ""), "run")
+            verify_s = parse_stage_duration(row.get("steps", ""), "verify")
+            estimates[example] = (build_s, run_s, verify_s)
+    return estimates
+
+
+def parse_stage_duration(steps: str, kind: str) -> float:
+    match = re.search(r"(?:^|; )%s:([0-9.]+)s" % re.escape(kind), steps)
+    return float(match.group(1)) if match else 0.0
+
+
+def parse_float(value: object) -> float:
+    try:
+        return float(value or 0.0)
+    except (TypeError, ValueError):
+        return 0.0

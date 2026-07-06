@@ -7,6 +7,9 @@ build_out
 output
 __pycache__/
 /examples/**/build/
+/examples/**/build_npu*/
+/examples/**/build_cpu*/
+/examples/**/build_sim*/
 AGENTS.md
 CLAUDE.md
 oat_reports/

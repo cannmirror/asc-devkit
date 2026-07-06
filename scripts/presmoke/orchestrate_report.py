@@ -19,13 +19,13 @@ import datetime
 import json
 import logging
 import re
+import statistics
 import sys
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 from xml.dom import minidom
-
 
 _XML_INVALID_CHARS = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
 _JUNIT_LOG_TAIL_BYTES = 100_000
@@ -68,6 +68,334 @@ def timeout_examples(report_path: Path) -> list[str]:
         for result in data.get("results", [])
         if result.get("status") == "FAIL" and result.get("reason") == "timeout"
     ]
+
+
+def list_examples(report_path: Path) -> list[str]:
+    data = read_json(report_path)
+    if not data:
+        return []
+    return [str(result.get("example", "")) for result in data.get("results", []) if result.get("example")]
+
+
+def shard_examples(
+    report_path: Path,
+    cards: list[str],
+    manifest_path: Path | None = None,
+    schedule_report: Path | None = None,
+    excludes: set[str] | None = None,
+    keep_source_groups: bool = True,
+    jobs: int | None = None,
+) -> list[tuple[str, str]]:
+    examples = [example for example in list_examples(report_path) if example not in (excludes or set())]
+    if not cards or not examples:
+        return []
+
+    source_case = load_source_case_map(manifest_path) if keep_source_groups else {}
+    schedule_report = schedule_report or builtin_timing_report(report_path)
+    stage_timings = load_pipeline_stage_seconds(schedule_report) if schedule_report else {}
+    if stage_timings:
+        return shard_examples_by_pipeline_makespan(
+            examples,
+            cards,
+            source_case,
+            stage_timings,
+            resolve_shard_jobs(report_path, jobs),
+        )
+
+    weights = load_duration_seconds(schedule_report)
+    default_weight = default_duration_weight(weights, examples)
+    groups = group_examples_by_source_case(examples, source_case)
+    order_index = {example: index for index, example in enumerate(examples)}
+    group_items = []
+    for source, group_examples in groups.items():
+        group_weight = sum(weights.get(example, default_weight) for example in group_examples)
+        first_index = min(order_index[example] for example in group_examples)
+        group_items.append((group_weight, first_index, source, group_examples))
+
+    card_loads = {card: 0.0 for card in cards}
+    card_groups: dict[str, list[list[str]]] = {card: [] for card in cards}
+    for group_weight, _, _, group_examples in sorted(group_items, key=lambda item: (-item[0], item[1])):
+        card = min(cards, key=lambda item: (card_loads[item], cards.index(item)))
+        card_loads[card] += group_weight
+        card_groups[card].append(group_examples)
+
+    assignments = []
+    for card in cards:
+        for example in interleave_group_examples(card_groups[card], order_index):
+            assignments.append((card, example))
+    return assignments
+
+
+def shard_examples_by_pipeline_makespan(
+    examples: list[str],
+    cards: list[str],
+    source_case: dict[str, str],
+    stage_timings: dict[str, tuple[float, float, float]],
+    jobs: int,
+) -> list[tuple[str, str]]:
+    groups = group_examples_by_source_case(examples, source_case)
+    order_index = {example: index for index, example in enumerate(examples)}
+    default_timing = default_stage_timing(stage_timings, examples)
+    group_items = []
+    for source, group_examples in groups.items():
+        group_weight = sum(sum(stage_timings.get(example, default_timing)) for example in group_examples)
+        first_index = min(order_index[example] for example in group_examples)
+        group_items.append((group_weight, first_index, source, group_examples))
+
+    card_groups: dict[str, list[list[str]]] = {card: [] for card in cards}
+    card_makespans = {card: 0.0 for card in cards}
+    for _, first_index, _, group_examples in sorted(group_items, key=lambda item: (-item[0], item[1])):
+        best_card = min(
+            cards,
+            key=lambda card: (
+                estimate_card_makespan(card_groups[card] + [group_examples], order_index, stage_timings, jobs),
+                card_makespans[card],
+                cards.index(card),
+            ),
+        )
+        card_groups[best_card].append(group_examples)
+        card_makespans[best_card] = estimate_card_makespan(
+            card_groups[best_card],
+            order_index,
+            stage_timings,
+            jobs,
+        )
+
+    assignments = []
+    for card in cards:
+        for example in interleave_group_examples(card_groups[card], order_index):
+            assignments.append((card, example))
+    return assignments
+
+
+def estimate_card_makespan(
+    groups: list[list[str]],
+    order_index: dict[str, int],
+    stage_timings: dict[str, tuple[float, float, float]],
+    jobs: int,
+) -> float:
+    examples = interleave_group_examples(groups, order_index)
+    default_timing = default_stage_timing(stage_timings, examples)
+    return simulate_pipeline_makespan_for_examples(examples, stage_timings, default_timing, jobs)
+
+
+def simulate_pipeline_makespan_for_examples(
+    examples: list[str],
+    stage_timings: dict[str, tuple[float, float, float]],
+    default_timing: tuple[float, float, float],
+    jobs: int,
+) -> float:
+    worker_available = [0.0 for _ in range(max(jobs, 1))]
+    build_finishes = []
+    for index, example in enumerate(examples):
+        worker = min(range(len(worker_available)), key=lambda idx: worker_available[idx])
+        start = worker_available[worker]
+        build_s = stage_timings.get(example, default_timing)[0]
+        worker_available[worker] = start + build_s
+        build_finishes.append((worker_available[worker], index, example))
+
+    npu_available = 0.0
+    verify_ready = []
+    for ready_at, index, example in sorted(build_finishes, key=lambda item: (item[0], item[1])):
+        npu_available = max(npu_available, ready_at) + stage_timings.get(example, default_timing)[1]
+        verify_ready.append((npu_available, index, example))
+
+    verify_workers = [0.0 for _ in range(max(jobs, 1))]
+    for ready_at, _, example in sorted(verify_ready, key=lambda item: (item[0], item[1])):
+        worker = min(range(len(verify_workers)), key=lambda idx: verify_workers[idx])
+        verify_workers[worker] = max(verify_workers[worker], ready_at) + stage_timings.get(example, default_timing)[2]
+    return max(npu_available, max(verify_workers) if verify_workers else 0.0)
+
+
+def default_stage_timing(
+    stage_timings: dict[str, tuple[float, float, float]],
+    examples: list[str],
+) -> tuple[float, float, float]:
+    known = [stage_timings[example] for example in examples if example in stage_timings]
+    if not known:
+        return (1.0, 1.0, 0.0)
+    return tuple(statistics.median(timing[index] for timing in known) for index in range(3))
+
+
+def builtin_timing_report(report_path: Path) -> Path | None:
+    data = read_json(report_path)
+    if not data:
+        return None
+    arch = data.get("arch")
+    modes = data.get("modes") or []
+    if not arch or not modes:
+        for result in data.get("results", []):
+            arch = arch or result.get("arch")
+            if not modes and result.get("mode"):
+                modes = [result.get("mode")]
+            if arch and modes:
+                break
+    if not arch or not modes:
+        return None
+    mode = str(modes[0])
+    candidate_root = Path(__file__).resolve().parents[2]
+    for root in [Path.cwd(), candidate_root]:
+        candidate = root / "scripts" / "presmoke" / "schedules" / f"{arch}_{mode}_timings.tsv"
+        if candidate.exists():
+            return candidate
+    return None
+
+
+def resolve_shard_jobs(report_path: Path, jobs: int | None) -> int:
+    if jobs and jobs > 0:
+        return jobs
+    data = read_json(report_path) or {}
+    parallel_config = data.get("parallel_config") or {}
+    try:
+        return max(int(parallel_config.get("jobs") or 1), 1)
+    except (TypeError, ValueError):
+        return 1
+
+
+def load_source_case_map(manifest_path: Path | None) -> dict[str, str]:
+    if manifest_path is None or not manifest_path.exists():
+        return {}
+    data = json.loads(manifest_path.read_text(encoding="utf-8"))
+    return {
+        str(item.get("case")): str(item.get("source_case") or item.get("case"))
+        for item in data
+        if item.get("case")
+    }
+
+
+def group_examples_by_source_case(examples: list[str], source_case: dict[str, str]) -> dict[str, list[str]]:
+    groups: dict[str, list[str]] = {}
+    for example in examples:
+        groups.setdefault(source_case.get(example, example), []).append(example)
+    return groups
+
+
+def interleave_group_examples(groups: list[list[str]], order_index: dict[str, int]) -> list[str]:
+    queues = [sorted(group, key=lambda item: order_index[item]) for group in groups if group]
+    queues.sort(key=lambda group: order_index[group[0]])
+    ordered: list[str] = []
+    while queues:
+        next_queues: list[list[str]] = []
+        for group in queues:
+            ordered.append(group.pop(0))
+            if group:
+                next_queues.append(group)
+        queues = sorted(next_queues, key=lambda group: order_index[group[0]])
+    return ordered
+
+
+def load_duration_seconds(report_path: Path | None) -> dict[str, float]:
+    if report_path is None or not report_path.exists():
+        return {}
+    if report_path.is_dir():
+        timings = report_path / "ALL_CASE_TIMINGS.tsv"
+        if timings.exists():
+            return load_duration_seconds(timings)
+        weights: dict[str, float] = {}
+        for report in sorted(report_path.glob("*/results/report.json")):
+            weights.update(load_duration_seconds(report))
+        return weights
+    if report_path.suffix == ".tsv":
+        return load_duration_seconds_from_tsv(report_path)
+    data = read_json(report_path)
+    if not data:
+        return {}
+    return {
+        str(result.get("example")): float(result.get("duration_s") or 0)
+        for result in data.get("results", [])
+        if result.get("example")
+    }
+
+
+def load_duration_seconds_from_tsv(report_path: Path) -> dict[str, float]:
+    weights: dict[str, float] = {}
+    with report_path.open(encoding="utf-8", newline="") as handle:
+        for row in csv.DictReader(handle, delimiter="\t"):
+            example = row.get("example", "")
+            if not example:
+                continue
+            try:
+                weights[example] = float(row.get("duration_s") or 0)
+            except ValueError:
+                weights[example] = 0.0
+    return weights
+
+
+def load_pipeline_stage_seconds(report_path: Path | None) -> dict[str, tuple[float, float, float]]:
+    if report_path is None or not report_path.exists():
+        return {}
+    if report_path.is_dir():
+        timings = report_path / "ALL_CASE_TIMINGS.tsv"
+        if timings.exists():
+            return load_pipeline_stage_seconds(timings)
+        estimates: dict[str, tuple[float, float, float]] = {}
+        for report in sorted(report_path.glob("*/results/report.json")):
+            estimates.update(load_pipeline_stage_seconds(report))
+        return estimates
+    if report_path.suffix == ".tsv":
+        return load_pipeline_stage_seconds_from_tsv(report_path)
+    data = read_json(report_path)
+    if not data:
+        return {}
+    estimates: dict[str, tuple[float, float, float]] = {}
+    for result in data.get("results", []):
+        example = result.get("example")
+        if not example:
+            continue
+        build_s = 0.0
+        run_s = 0.0
+        verify_s = 0.0
+        for step in result.get("steps", []):
+            kind = step.get("kind")
+            if kind in {"clean", "build"}:
+                build_s += parse_float(step.get("duration_s"))
+            elif kind == "run":
+                run_s += parse_float(step.get("duration_s"))
+            elif kind == "verify":
+                verify_s += parse_float(step.get("duration_s"))
+        estimates[str(example)] = (build_s, run_s, verify_s)
+    return estimates
+
+
+def load_pipeline_stage_seconds_from_tsv(report_path: Path) -> dict[str, tuple[float, float, float]]:
+    estimates: dict[str, tuple[float, float, float]] = {}
+    with report_path.open(encoding="utf-8", newline="") as handle:
+        for row in csv.DictReader(handle, delimiter="\t"):
+            example = row.get("example", "")
+            if not example:
+                continue
+            if {"build_s", "run_s", "verify_s"} <= set(row):
+                estimates[example] = (
+                    parse_float(row.get("build_s")),
+                    parse_float(row.get("run_s")),
+                    parse_float(row.get("verify_s")),
+                )
+                continue
+            if not row.get("steps"):
+                continue
+            build_s = parse_stage_duration(row.get("steps", ""), "clean")
+            build_s += parse_stage_duration(row.get("steps", ""), "build")
+            run_s = parse_stage_duration(row.get("steps", ""), "run")
+            verify_s = parse_stage_duration(row.get("steps", ""), "verify")
+            estimates[example] = (build_s, run_s, verify_s)
+    return estimates
+
+
+def parse_stage_duration(steps: str, kind: str) -> float:
+    match = re.search(r"(?:^|; )%s:([0-9.]+)s" % re.escape(kind), steps)
+    return float(match.group(1)) if match else 0.0
+
+
+def parse_float(value: object) -> float:
+    try:
+        return float(value or 0.0)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def default_duration_weight(weights: dict[str, float], examples: list[str]) -> float:
+    known = [weights[example] for example in examples if weights.get(example, 0) > 0]
+    return statistics.median(known) if known else 1.0
 
 
 def retry_status(report_path: Path) -> str:
@@ -157,19 +485,98 @@ def log_failed_cases(results: list[dict[str, Any]]) -> None:
 
 
 def load_primary_run(root: Path) -> tuple[str, Path, dict[str, str], dict[str, Any]] | None:
+    runs = load_primary_runs(root)
+    if not runs:
+        return None
+    if len(runs) == 1:
+        return runs[0]
+    return merge_primary_runs(root, runs)
+
+
+def load_primary_runs(root: Path) -> list[tuple[str, Path, dict[str, str], dict[str, Any]]]:
+    primary_runs: list[tuple[str, Path, dict[str, str], dict[str, Any]]] = []
     for report in sorted(root.glob("*/results/report.json")):
         run_dir = report.parents[1]
         if not run_dir.name.startswith("full_card"):
             continue
         data = read_json(report)
         if data:
-            return run_dir.name, run_dir, read_meta(run_dir / "meta.txt"), data
-    return None
+            primary_runs.append((run_dir.name, run_dir, read_meta(run_dir / "meta.txt"), data))
+    return primary_runs
+
+
+def merge_primary_runs(
+    root: Path,
+    runs: list[tuple[str, Path, dict[str, str], dict[str, Any]]],
+) -> tuple[str, Path, dict[str, str], dict[str, Any]]:
+    first_meta = dict(runs[0][2])
+    results: list[dict[str, Any]] = []
+    busy_s = 0.0
+    idle_s = 0.0
+    for _, _, _, data in runs:
+        results.extend(data.get("results", []))
+        npu_stats = data.get("npu_stats") or {}
+        busy_s += float(npu_stats.get("busy_s") or 0)
+        idle_s += float(npu_stats.get("idle_s") or 0)
+
+    summary = {
+        "PASS": sum(1 for result in results if result.get("status") == "PASS"),
+        "FAIL": sum(1 for result in results if result.get("status") == "FAIL"),
+        "SKIP": sum(1 for result in results if result.get("status") == "SKIP"),
+    }
+    unique_cards = sorted({meta.get("card", "") for _, _, meta, _ in runs if meta.get("card", "")}, key=int)
+    first_meta["card"] = ",".join(unique_cards)
+    first_meta["elapsed_sec"] = merged_elapsed_sec(runs)
+    first_meta["npu_slots"] = str(len(unique_cards) or len(runs))
+
+    total_s = busy_s + idle_s
+    parallel_config = dict(runs[0][3].get("parallel_config") or {})
+    parallel_config["npu_slots"] = len(unique_cards) or len(runs)
+    merged_data = {
+        "summary": summary,
+        "results": results,
+        "parallel_config": parallel_config,
+        "npu_stats": {
+            "busy_s": busy_s,
+            "idle_s": idle_s,
+            "utilization": busy_s / total_s if total_s > 0 else 0,
+            "queue_model": "multi-card",
+        },
+    }
+    return "full_multi", root, first_meta, merged_data
+
+
+def merged_elapsed_sec(runs: list[tuple[str, Path, dict[str, str], dict[str, Any]]]) -> str:
+    starts = [parse_meta_time(meta.get("started_at", "")) for _, _, meta, _ in runs]
+    finishes = [parse_meta_time(meta.get("finished_at", "")) for _, _, meta, _ in runs]
+    starts = [value for value in starts if value]
+    finishes = [value for value in finishes if value]
+    if starts and finishes:
+        return str(int((max(finishes) - min(starts)).total_seconds()))
+    elapsed_values = [
+        int(meta.get("elapsed_sec") or 0)
+        for _, _, meta, _ in runs
+        if str(meta.get("elapsed_sec") or "").isdigit()
+    ]
+    return str(max(elapsed_values) if elapsed_values else "")
+
+
+def parse_meta_time(value: str) -> datetime.datetime | None:
+    if not value:
+        return None
+    try:
+        return datetime.datetime.fromisoformat(value)
+    except ValueError:
+        pass
+    try:
+        return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S%z")
+    except ValueError:
+        return None
 
 
 def write_final_report(root: Path) -> None:
     runs = load_runs(root)
-    primary = next((item for item in runs if item[0].startswith("full_card")), None)
+    primary = load_primary_run(root)
     retry_by_example = collect_retry_results(runs)
 
     timings_path = root / "ALL_CASE_TIMINGS.tsv"
@@ -622,6 +1029,16 @@ def main() -> int:
     subparsers = parser.add_subparsers(dest="command", required=True)
     timeout_parser = subparsers.add_parser("timeout-examples")
     timeout_parser.add_argument("report", type=Path)
+    list_parser = subparsers.add_parser("list-examples")
+    list_parser.add_argument("report", type=Path)
+    shard_parser = subparsers.add_parser("shard-examples")
+    shard_parser.add_argument("report", type=Path)
+    shard_parser.add_argument("--cards", nargs="+", required=True)
+    shard_parser.add_argument("--manifest", type=Path)
+    shard_parser.add_argument("--schedule-report", type=Path)
+    shard_parser.add_argument("--exclude", action="append", default=[])
+    shard_parser.add_argument("--split-source-groups", action="store_true")
+    shard_parser.add_argument("--jobs", type=int)
     status_parser = subparsers.add_parser("retry-status")
     status_parser.add_argument("report", type=Path)
     report_parser = subparsers.add_parser("write-final-report")
@@ -633,6 +1050,20 @@ def main() -> int:
     if args.command == "timeout-examples":
         for example in timeout_examples(args.report):
             LOG.info("%s", example)
+    elif args.command == "list-examples":
+        for example in list_examples(args.report):
+            LOG.info("%s", example)
+    elif args.command == "shard-examples":
+        for card, example in shard_examples(
+            args.report,
+            args.cards,
+            args.manifest,
+            args.schedule_report,
+            set(args.exclude),
+            keep_source_groups=not args.split_source_groups,
+            jobs=args.jobs,
+        ):
+            LOG.info("%s\t%s", card, example)
     elif args.command == "retry-status":
         LOG.info("%s", retry_status(args.report))
     elif args.command == "write-final-report":

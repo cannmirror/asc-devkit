@@ -28,10 +28,7 @@ from typing import Iterator, List
 
 from .arch import detect_arch
 from .case_runners import CaseRunnerOptions, build_case_runner_cells_with_skips
-from .discover import discover_examples, filter_examples
 from .model import RunReport, RunResult, Suggestion
-from .planner import build_cells_with_skips
-from .readme_spec import parse_readme
 from .report import print_console, write_json, write_markdown, write_suggestions
 from .runner import CPU_RUN_TIMEOUT, PipelineOptions, run_cells_pipeline_with_options
 from .scheduler import export_schedule_file, read_schedule_file, schedule_cells, ScheduleOptions
@@ -50,7 +47,6 @@ class RuntimeConfig:
     cpu_run_slots: int
     cpu_run_timeout: int
     project_root: Path
-    examples_root: Path
     host_arch: str
     results_dir: Path
     log_dir: Path
@@ -81,8 +77,6 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     if args.export_schedule:
         export_schedule_file(cells, Path(args.export_schedule).resolve())
-    if args.suggestions_only:
-        return emit_suggestions_only(args, config, selected.suggestions)
     if args.dry_run:
         return emit_dry_run(args, config, cells, selected)
     return run_and_emit(args, config, cells, selected)
@@ -103,7 +97,6 @@ def build_runtime_config(args: argparse.Namespace) -> RuntimeConfig:
         cpu_run_slots=cpu_run_slots,
         cpu_run_timeout=cpu_run_timeout,
         project_root=project_root,
-        examples_root=Path(args.examples_root).resolve() if args.examples_root else project_root / "examples",
         host_arch=detect_arch(args.arch),
         results_dir=results_dir,
         log_dir=Path(args.log_dir).resolve() if args.log_dir else results_dir / "logs",
@@ -130,33 +123,17 @@ def parallel_config(
 
 
 def collect_cases(args: argparse.Namespace, config: RuntimeConfig) -> CaseSelection:
-    suggestions: List[Suggestion] = []
-    skipped_results: List[RunResult] = []
-    if args.runner_mode == "case-runner":
-        cells, runner_suggestions, skipped_results = build_case_runner_cells_with_skips(
-            config.project_root,
-            CaseRunnerOptions(
-                arch=config.host_arch,
-                modes=config.modes,
-                includes=args.filter,
-                excludes=args.exclude,
-                werror=args.werror,
-            ),
-        )
-        suggestions.extend(runner_suggestions)
-    else:
-        examples = discover_examples(config.examples_root)
-        examples = filter_examples(examples, args.filter, args.exclude)
-        specs = [parse_readme(path, config.examples_root) for path in examples]
-        for spec in specs:
-            suggestions.extend(spec.suggestions)
-        cells, planner_suggestions, skipped_results = build_cells_with_skips(
-            specs,
-            config.host_arch,
-            config.modes,
+    cells, suggestions, skipped_results = build_case_runner_cells_with_skips(
+        config.project_root,
+        CaseRunnerOptions(
+            arch=config.host_arch,
+            modes=config.modes,
+            includes=args.filter,
+            excludes=args.exclude,
+            exact_includes=args.exact_filter,
             werror=args.werror,
-        )
-        suggestions.extend(planner_suggestions)
+        ),
+    )
     return CaseSelection(cells, dedupe_suggestions(suggestions), skipped_results)
 
 
@@ -209,20 +186,6 @@ def validate_fixed_schedule_coverage(
     if args.strict_schedule:
         raise ValueError(message)
     LOG.warning(message)
-
-
-def emit_suggestions_only(args: argparse.Namespace, config: RuntimeConfig, suggestions: List[Suggestion]) -> int:
-    report = RunReport(
-        config.host_arch,
-        config.modes,
-        config.started_at,
-        now_iso(),
-        [],
-        suggestions,
-        parallel_config=config.parallel_config,
-    )
-    emit_reports(report, args, config.results_dir)
-    return 0
 
 
 def emit_dry_run(args: argparse.Namespace, config: RuntimeConfig, cells: list, selected: CaseSelection) -> int:
@@ -284,8 +247,6 @@ def run_and_emit(args: argparse.Namespace, config: RuntimeConfig, cells: list, s
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="asc-devkit presmoke watcher v2")
-    parser.add_argument("--examples-root")
-    parser.add_argument("--runner-mode", choices=["readme", "case-runner"], default="readme")
     parser.add_argument("--arch")
     parser.add_argument("--modes", default="npu")
     parser.add_argument("--jobs", default="1")
@@ -294,6 +255,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--make-jobs", default="auto")
     parser.add_argument("--cpu-run-timeout", default=str(CPU_RUN_TIMEOUT))
     parser.add_argument("--filter", action="append", default=[])
+    parser.add_argument("--exact-filter", action="append", default=[])
     parser.add_argument("--exclude", action="append", default=[])
     parser.add_argument("--timeout", type=int, default=120)
     parser.add_argument("--report-format", choices=["console", "json", "markdown", "all"], default="console")
@@ -310,7 +272,6 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--export-schedule")
     parser.add_argument("--schedule-frontload-count", type=int, default=1)
     parser.add_argument("--strict-schedule", action="store_true")
-    parser.add_argument("--suggestions-only", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--werror", action="store_true")
     parser.add_argument("-v", "--verbose", action="store_true")

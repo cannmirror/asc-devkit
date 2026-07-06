@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Iterable, List
 
 from presmoke.discover import discover_examples
-from presmoke.model import Cell, Command
+from presmoke.model import Cell, Command, ExampleSpec
 from presmoke.planner import is_cmake_configure
 from presmoke.planner import build_cells, rewrite_command
 from presmoke.readme_spec import parse_readme
@@ -139,6 +139,7 @@ class CaseReport:
     runner: str
     source: str
     confidence: str
+    source_case: str = ""
     supported_archs: List[str] = field(default_factory=list)
     supported_modes: List[str] = field(default_factory=list)
     target_runnable: bool = False
@@ -155,6 +156,8 @@ class RunnerRenderSpec:
     build_cmds: List[Command]
     run_cmds: List[Command]
     verify_cmds: List[Command]
+    source_rel: str = ""
+    scenario_num: int | None = None
     custom_op_dependency: bool = False
     custom_op_package_case: bool = False
     skip_reason: str = ""
@@ -174,8 +177,11 @@ def main() -> int:
     specs = [parse_readme(path, examples_root) for path in discover_examples(examples_root)]
     apply_case_overrides(specs)
     cells, _ = build_cells(specs, args.arch, [args.mode])
+    cells = expand_scenario_cells(cells, project_root)
+    cells = [cell for cell in cells if args.arch in cell.example.archs and args.mode in cell.example.modes]
     runnable_by_rel = {cell.example.rel_path: cell for cell in cells}
     all_cells = [cell_for_spec(spec, args.arch, args.mode) for spec in specs]
+    all_cells = expand_scenario_cells(all_cells, project_root)
     reports: List[CaseReport] = []
     for cell in all_cells:
         report = write_runner(
@@ -230,6 +236,7 @@ def write_runner(project_root: Path, runners_root: Path, cell, runnable_on_targe
     return CaseReport(
         case=rel,
         runner=runner.relative_to(project_root).as_posix(),
+        source_case=source_rel_for_cell(project_root, cell),
         source=cell.example.source,
         confidence=confidence,
         supported_archs=cell.example.archs,
@@ -243,6 +250,206 @@ def write_runner(project_root: Path, runners_root: Path, cell, runnable_on_targe
     )
 
 
+def expand_scenario_cells(cells: Iterable[Cell], project_root: Path) -> List[Cell]:
+    expanded: List[Cell] = []
+    for cell in cells:
+        expanded.append(cell)
+        cmake_file = cell.example.path / "CMakeLists.txt"
+        values = parse_scenario_values_from_cmake(cmake_file)
+        if len(values) <= 1:
+            continue
+        default_value = default_scenario_value(cell, cmake_file)
+        for value in values:
+            if value == default_value:
+                continue
+            expanded.append(make_scenario_cell(cell, project_root, value))
+    return expanded
+
+
+def parse_scenario_values_from_cmake(cmake_file: Path) -> List[int]:
+    if not cmake_file.exists():
+        return []
+    text = cmake_file.read_text(encoding="utf-8", errors="ignore")
+    if "SCENARIO_NUM" not in text:
+        return []
+
+    values: set[int] = set()
+    for match in re.finditer(r"set\s*\(\s*SCENARIO_NUM\s+[^)]*CACHE\s+STRING\s+\"([^\"]*)\"", text):
+        values.update(parse_scenario_values_from_text(match.group(1)))
+    for match in re.finditer(r"SCENARIO_NUM[^\n\r\"]*\"([^\"]*)\"", text):
+        values.update(parse_scenario_values_from_text(match.group(1)))
+    for match in re.finditer(r"set\s*\(\s*VALID_SCENARIOS\s+([^)]+)\)", text):
+        values.update(parse_scenario_values_from_text(match.group(1)))
+    for match in re.finditer(r"SCENARIO_NUM[^\n\r]*(?:must be|Valid values are|specify)[^\n\r]*", text):
+        values.update(parse_scenario_values_from_text(match.group(0)))
+    return sorted(value for value in values if 0 <= value <= 32)
+
+
+def parse_scenario_values_from_text(text: str) -> List[int]:
+    values: set[int] = set()
+    text = collect_regex_character_class_scenarios(text, values)
+    for start, end in re.findall(r"(?<!\d)(\d+)\s*-\s*(\d+)(?!\d)", text):
+        first = int(start)
+        last = int(end)
+        if 0 <= first <= last <= 32:
+            values.update(range(first, last + 1))
+    for number in re.findall(r"(?<!\d)(\d+)(?!\d)", text):
+        value = int(number)
+        if 0 <= value <= 32:
+            values.add(value)
+    return sorted(values)
+
+
+def collect_regex_character_class_scenarios(text: str, values: set[int]) -> str:
+    def replace(match: re.Match) -> str:
+        for char in match.group(1):
+            values.add(int(char))
+        return " "
+
+    return re.sub(r"\^\[([0-9]+)\]\$", replace, text)
+
+
+def default_scenario_value(cell: Cell, cmake_file: Path) -> int | None:
+    for command in cell.commands:
+        value = scenario_value_from_command(command)
+        if value is not None:
+            return value
+    if not cmake_file.exists():
+        return None
+    text = cmake_file.read_text(encoding="utf-8", errors="ignore")
+    match = re.search(r"set\s*\(\s*SCENARIO_NUM\s+\"?(\d+)\"?", text)
+    return int(match.group(1)) if match else None
+
+
+def scenario_value_from_command(command: Command) -> int | None:
+    if "SCENARIO_NUM" in command.env:
+        value = command.env["SCENARIO_NUM"]
+        if value.isdigit():
+            return int(value)
+    match = re.search(r"(?:-DSCENARIO_NUM=|SCENARIO_NUM=)(\d+)", command.raw)
+    return int(match.group(1)) if match else None
+
+
+def make_scenario_cell(cell: Cell, project_root: Path, scenario_num: int) -> Cell:
+    source_rel = source_rel_for_cell(project_root, cell)
+    scenario_rel = f"{source_rel}__scenario_{scenario_num}"
+    commands = [rewrite_command_for_scenario(command, scenario_num) for command in cell.commands]
+    archs = supported_archs_for_scenario(cell.example.archs, cell.example.path / "CMakeLists.txt", scenario_num)
+    example = ExampleSpec(
+        cell.example.path,
+        scenario_rel,
+        commands,
+        archs,
+        cell.example.modes,
+        cell.example.source,
+        cell.example.suggestions,
+    )
+    return Cell(example, cell.arch, cell.mode, commands, cell.example.path / f"build_{cell.mode}_scenario_{scenario_num}")
+
+
+def rewrite_command_for_scenario(command: Command, scenario_num: int) -> Command:
+    raw = command.raw
+    if raw:
+        raw = replace_scenario_num_arg(raw, scenario_num)
+        if command.kind == "cmake" and is_cmake_configure(raw) and "-DSCENARIO_NUM=" not in raw:
+            raw = f"{raw} -DSCENARIO_NUM={scenario_num}"
+    env = dict(command.env)
+    env["SCENARIO_NUM"] = str(scenario_num)
+    return Command(raw, command.kind, env)
+
+
+def replace_scenario_num_arg(command: str, scenario_num: int) -> str:
+    value = str(scenario_num)
+    patterns = [
+        r"(-DSCENARIO_NUM=)(?:\$\{?SCENARIO_NUM\}?|\d+)",
+        r"(-scenarioNum(?:=|\s+))(?:\$\{?SCENARIO_NUM\}?|\d+)",
+        r"(-scenario_num(?:=|\s+))(?:\$\{?SCENARIO_NUM\}?|\d+)",
+        r"(--scenario(?:=|\s+))(?:\$\{?SCENARIO_NUM\}?|\d+)",
+    ]
+    for pattern in patterns:
+        command = re.sub(pattern, lambda match: match.group(1) + value, command)
+    return command
+
+
+def supported_archs_for_scenario(base_archs: List[str], cmake_file: Path, scenario_num: int) -> List[str]:
+    if not cmake_file.exists():
+        return base_archs
+    text = scenario_arch_text(cmake_file)
+    if scenario_only_supports_arch(text, scenario_num, "dav-3510"):
+        return [arch for arch in base_archs if arch == "dav-3510"]
+    if scenario_only_supports_arch(text, scenario_num, "dav-2201"):
+        return [arch for arch in base_archs if arch == "dav-2201"]
+    return base_archs
+
+
+def scenario_arch_text(cmake_file: Path) -> str:
+    parts = [cmake_file.read_text(encoding="utf-8", errors="ignore")]
+    readme = cmake_file.parent / "README.md"
+    if readme.exists():
+        parts.append(readme.read_text(encoding="utf-8", errors="ignore"))
+    for asc_file in sorted(cmake_file.parent.glob("*.asc")):
+        parts.append(asc_file.read_text(encoding="utf-8", errors="ignore"))
+    return "\n".join(parts)
+
+
+def scenario_only_supports_arch(text: str, scenario_num: int, arch: str) -> bool:
+    scenario = str(scenario_num)
+    if re.search(rf"场景[0-9/、,，\s]*{scenario}[0-9/、,，\s]*仅支持{arch}", text):
+        return True
+    if re.search(
+        rf"<tr>(?:(?!</tr>).)*<td>\s*{scenario}\s*</td>(?:(?!</tr>).)*仅支持\s*{arch}(?:(?!</tr>).)*</tr>",
+        text,
+        flags=re.S,
+    ):
+        return True
+    if arch == "dav-3510" and re.search(
+        rf"(?:场景|Scenario)\s*{scenario}[^\n\r]*(?:仅在|only supports)[^\n\r]*Ascend\s*950",
+        text,
+        flags=re.IGNORECASE,
+    ):
+        return True
+    if re.search(rf"{scenario}\s*=[^\n\r,，)]*(?:仅|only supports).*(?:Ascend\s*950|{arch})", text):
+        return True
+    if arch == "dav-3510" and scenario != "1":
+        if re.search(r"A2/A3架构仅支持Scenario\s*1", text, flags=re.IGNORECASE):
+            return True
+
+    for match in re.finditer(r"if\s*\((.*?)\)(.*?)(?:endif\s*\(\)|$)", text, flags=re.S):
+        condition = match.group(1)
+        body = match.group(2)
+        if not re.search(rf"SCENARIO_NUM[^\n\r)]*(?:STREQUAL|EQUAL)\s*\"?{scenario}\"?", condition):
+            continue
+        combined = condition + "\n" + body
+        if arch == "dav-3510" and (
+            f'NOT CMAKE_ASC_ARCHITECTURES STREQUAL "{arch}"' in combined
+            or f"only supports {arch}" in combined
+            or f"仅支持{arch}" in combined
+            or "仅Ascend 950" in combined
+        ):
+            return True
+        if arch == "dav-2201" and (
+            f'CMAKE_ASC_ARCHITECTURES STREQUAL "dav-3510"' in combined
+            and "only supports dav-2201" in combined
+        ):
+            return True
+    return False
+
+
+def scenario_num_from_case_rel(rel: str) -> int | None:
+    match = re.search(r"__scenario_(\d+)$", rel)
+    return int(match.group(1)) if match else None
+
+
+def source_rel_for_cell(project_root: Path | None, cell: Cell) -> str:
+    if project_root is None:
+        return re.sub(r"__scenario_\d+$", "", cell.example.rel_path)
+    examples_root = project_root / "examples"
+    try:
+        return cell.example.path.relative_to(examples_root).as_posix()
+    except ValueError:
+        return re.sub(r"__scenario_\d+$", "", cell.example.rel_path)
+
+
 def runner_confidence(cell, runnable_on_target: bool) -> tuple[str, List[str]]:
     confidence, reasons = classify_confidence(cell)
     if not runnable_on_target:
@@ -253,6 +460,7 @@ def runner_confidence(cell, runnable_on_target: bool) -> tuple[str, List[str]]:
 
 def build_runner_render_spec(cell, confidence: str, reasons: List[str]) -> tuple[RunnerRenderSpec, str]:
     rel = cell.example.rel_path
+    source_rel = source_rel_for_cell(None, cell)
     build_cmds = build_commands_for_runner(cell.commands)
     run_cmds = run_commands_for_runner(cell.commands, build_cmds)
     build_cmds, run_cmds = merge_export_commands_into_run(build_cmds, run_cmds)
@@ -264,9 +472,9 @@ def build_runner_render_spec(cell, confidence: str, reasons: List[str]) -> tuple
             confidence = downgrade(confidence)
     if not verify_cmds:
         verify_cmds = [Command(":", "verify")]
-    custom_op_package_case = rel == CUSTOM_OP_PACKAGE_CASE
-    custom_op_dependency = requires_custom_op_package(rel)
-    skip_reason, skip_modes = explicit_skip_config(rel)
+    custom_op_package_case = source_rel == CUSTOM_OP_PACKAGE_CASE
+    custom_op_dependency = requires_custom_op_package(source_rel)
+    skip_reason, skip_modes = explicit_skip_config(source_rel)
     all_modes_skipped = skip_reason and all(mode in skip_modes for mode in cell.example.modes)
     if all_modes_skipped:
         reasons.append("explicit_skip")
@@ -283,6 +491,8 @@ def build_runner_render_spec(cell, confidence: str, reasons: List[str]) -> tuple
     return (
         RunnerRenderSpec(
             rel=rel,
+            source_rel=source_rel,
+            scenario_num=scenario_num_from_case_rel(rel),
             build_cmds=build_cmds,
             run_cmds=run_cmds,
             verify_cmds=verify_cmds,
@@ -417,6 +627,7 @@ def explicit_skip_config(rel: str) -> tuple[str, List[str]]:
 def render_runner(
     spec: RunnerRenderSpec,
 ) -> str:
+    spec = apply_scenario_to_render_spec(spec)
     if spec.rel == PARALLEL_OPS_PACKAGE_CASE:
         return render_parallel_ops_package_runner(spec)
     if spec.rel == TILING_SINK_PROGRAMMING_CASE:
@@ -440,6 +651,23 @@ def render_runner(
         "",
     ]
     return "\n".join(lines)
+
+
+def apply_scenario_to_render_spec(spec: RunnerRenderSpec) -> RunnerRenderSpec:
+    if spec.scenario_num is None:
+        return spec
+    return RunnerRenderSpec(
+        rel=spec.rel,
+        build_cmds=[rewrite_command_for_scenario(command, spec.scenario_num) for command in spec.build_cmds],
+        run_cmds=[rewrite_command_for_scenario(command, spec.scenario_num) for command in spec.run_cmds],
+        verify_cmds=[rewrite_command_for_scenario(command, spec.scenario_num) for command in spec.verify_cmds],
+        source_rel=spec.source_rel,
+        scenario_num=spec.scenario_num,
+        custom_op_dependency=spec.custom_op_dependency,
+        custom_op_package_case=spec.custom_op_package_case,
+        skip_reason=spec.skip_reason,
+        skip_modes=spec.skip_modes,
+    )
 
 
 def render_tiling_sink_programming_runner(spec: RunnerRenderSpec) -> str:
@@ -500,18 +728,29 @@ def custom_op_guard(enabled: bool, skip_reason: str) -> List[str]:
 
 
 def runner_header(spec: RunnerRenderSpec) -> List[str]:
+    source_rel = spec.source_rel or spec.rel
     return [
         *BASH_LICENSE_HEADER,
         "",
         "set -euo pipefail",
         "",
-        f'CASE_REL={shlex.quote(spec.rel)}',
+        f'CASE_REL={shlex.quote(source_rel)}',
         *skip_reason_lines(spec.skip_reason),
         *skip_modes_lines(spec.skip_modes),
         'SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"',
         f'source "$SCRIPT_DIR/{case_entry_relative_path(spec.rel)}"',
         'presmoke_case_init "$CASE_REL"',
+        *scenario_build_dir_lines(spec.scenario_num),
         "",
+    ]
+
+
+def scenario_build_dir_lines(scenario_num: int | None) -> List[str]:
+    if scenario_num is None:
+        return []
+    return [
+        f'BUILD_DIR="$CASE_DIR/build_${{MODE}}_scenario_{scenario_num}"',
+        "export BUILD_DIR",
     ]
 
 

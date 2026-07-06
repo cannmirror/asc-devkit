@@ -30,8 +30,8 @@ def verify_result(scenarioNum, output, golden):
         output = output[0:2]
         golden = golden[0:2]
     else:
-        output = output[0]
-        golden = golden[0]
+        output = output[0:1]
+        golden = golden[0:1]
     different_element_results = np.isclose(output,
                                            golden,
                                            rtol=RELATIVE_TOL,

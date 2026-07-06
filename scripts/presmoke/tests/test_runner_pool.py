@@ -24,9 +24,8 @@ from pathlib import Path
 from presmoke.case_runners import CaseRunnerOptions, build_case_runner_cells_with_skips
 from presmoke.cli import parse_args, presmoke_run_lock
 from presmoke.model import Cell, Command, ExampleSpec, RunReport
-from presmoke.pool import NpuSlotPool
 from presmoke.report import write_json, write_markdown
-from presmoke.runner import PipelineOptions, RunOptions
+from presmoke.runner import NpuSlotPool, PipelineOptions, RunOptions
 from presmoke.runner import run_cell_with_options
 from presmoke.runner import run_cells_pipeline_with_options
 
@@ -35,6 +34,13 @@ def cell(tmp: Path, name: str, mode: str = "npu", commands=None) -> Cell:
     spec = ExampleSpec(tmp / name, name, commands or [], ["dav-2201"], [mode], "test")
     spec.path.mkdir(parents=True, exist_ok=True)
     return Cell(spec, "dav-2201", mode, commands or [], spec.path / f"build_{mode}")
+
+
+def source_cell(tmp: Path, source: str, name: str, mode: str = "npu", commands=None) -> Cell:
+    source_path = tmp / source
+    source_path.mkdir(parents=True, exist_ok=True)
+    spec = ExampleSpec(source_path, name, commands or [], ["dav-2201"], [mode], "case-runner")
+    return Cell(spec, "dav-2201", mode, commands or [], source_path / f"build_{mode}")
 
 
 class RunnerPoolTest(unittest.TestCase):
@@ -53,6 +59,9 @@ class RunnerPoolTest(unittest.TestCase):
             ["--changed-only"],
             ["--since", "HEAD~1"],
             ["--host-timeout", "1"],
+            ["--examples-root", "examples"],
+            ["--runner-mode", "readme"],
+            ["--suggestions-only"],
         ]
 
         for option in removed_options:
@@ -121,8 +130,6 @@ class RunnerPoolTest(unittest.TestCase):
 
             def work(c):
                 nonlocal active, max_active
-                command = Command("./demo", "run")
-
                 def gated() -> int:
                     nonlocal active, max_active
                     with lock:
@@ -133,7 +140,7 @@ class RunnerPoolTest(unittest.TestCase):
                         active -= 1
                     return 0
 
-                pool.gate(c, command, gated)
+                pool.gate(gated)
                 return c.key
 
             cells = [cell(Path(tmp), f"x{i}") for i in range(5)]
@@ -186,6 +193,67 @@ class RunnerPoolTest(unittest.TestCase):
         self.assertEqual(skipped, [])
         self.assertEqual(len(suggestions), 1)
         self.assertIn("Excluded on unsupported arch dav-2201", suggestions[0].message)
+
+    def test_exact_filter_matches_only_full_case_path(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for case in ["01/add", "01/add_tpipe_tque"]:
+                runner = root / "scripts/presmoke/cases" / case / "run.sh"
+                runner.parent.mkdir(parents=True)
+                runner.write_text("#!/usr/bin/env bash\n", encoding="utf-8")
+            manifest = root / "scripts/presmoke/reports/case_runner_manifest.json"
+            manifest.parent.mkdir(parents=True)
+            manifest.write_text(
+                """[
+                    {"case":"01/add","skip":false,"supported_archs":["dav-2201"],"supported_modes":["npu"]},
+                    {"case":"01/add_tpipe_tque","skip":false,"supported_archs":["dav-2201"],"supported_modes":["npu"]}
+                ]""",
+                encoding="utf-8",
+            )
+
+            cells, _, _ = build_case_runner_cells_with_skips(
+                root,
+                CaseRunnerOptions(
+                    arch="dav-2201",
+                    modes=["npu"],
+                    includes=[],
+                    excludes=[],
+                    exact_includes=["01/add"],
+                ),
+            )
+
+        self.assertEqual([item.example.rel_path for item in cells], ["01/add"])
+
+    def test_scenario_case_runner_uses_source_case_path(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            case = "01/add__scenario_2"
+            source_case = "01/add"
+            runner = root / "scripts/presmoke/cases" / case / "run.sh"
+            runner.parent.mkdir(parents=True)
+            runner.write_text("#!/usr/bin/env bash\n", encoding="utf-8")
+            manifest = root / "scripts/presmoke/reports/case_runner_manifest.json"
+            manifest.parent.mkdir(parents=True)
+            manifest.write_text(
+                """[
+                    {
+                        "case":"01/add__scenario_2",
+                        "source_case":"01/add",
+                        "skip":false,
+                        "supported_archs":["dav-2201"],
+                        "supported_modes":["npu"]
+                    }
+                ]""",
+                encoding="utf-8",
+            )
+
+            cells, _, _ = build_case_runner_cells_with_skips(
+                root,
+                CaseRunnerOptions(arch="dav-2201", modes=["npu"], includes=[], excludes=[]),
+            )
+
+        self.assertEqual(cells[0].example.rel_path, case)
+        self.assertEqual(cells[0].example.path, root / "examples" / source_case)
 
     def test_case_runner_cell_starts_with_clean_step(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -284,6 +352,36 @@ class RunnerPoolTest(unittest.TestCase):
         self.assertEqual(by_name["slow-run"].status, "PASS")
         self.assertEqual(by_name["npu-queued"].status, "PASS")
         self.assertEqual(by_name["third-build"].status, "PASS")
+
+    def test_pipeline_serializes_same_source_case_lifecycle(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            active_lock = root / "active-source"
+            guarded_build = (
+                f"if mkdir {active_lock}; then sleep 0.1; rmdir {active_lock}; "
+                "else echo same-source-race; exit 17; fi"
+            )
+            cells = [
+                source_cell(
+                    root,
+                    "shared-source",
+                    "shared-source__scenario_1",
+                    commands=[Command(guarded_build, "build"), Command(":", "run"), Command(":", "verify")],
+                ),
+                source_cell(
+                    root,
+                    "shared-source",
+                    "shared-source__scenario_2",
+                    commands=[Command(guarded_build, "build"), Command(":", "run"), Command(":", "verify")],
+                ),
+            ]
+
+            run = run_cells_pipeline_with_options(
+                cells,
+                PipelineOptions(root / "logs", timeout=1, keep_artifacts=True, jobs=2, npu_slots=1),
+            )
+
+        self.assertEqual([result.status for result in run.results], ["PASS", "PASS"])
 
     def test_pipeline_does_not_block_next_npu_run_on_verify(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

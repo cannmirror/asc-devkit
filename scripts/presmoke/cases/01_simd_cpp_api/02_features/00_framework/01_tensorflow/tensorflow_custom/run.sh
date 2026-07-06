@@ -14,6 +14,8 @@ set -euo pipefail
 CASE_REL=01_simd_cpp_api/02_features/00_framework/01_tensorflow/tensorflow_custom
 SKIP_REASON='requires TensorFlow 2.6.5 environment; skipped by presmoke'
 
+SKIP_MODES=(npu)
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../../../../../_case_entry.sh"
 presmoke_case_init "$CASE_REL"

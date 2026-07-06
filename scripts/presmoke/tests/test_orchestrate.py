@@ -54,22 +54,108 @@ if [[ "${1:-}" != "-m" || "${2:-}" != "presmoke" ]]; then
 fi
 shift 2
 results=""
+dry_run=0
+filters=()
 while [[ $# -gt 0 ]]; do
-    if [[ "$1" == "--results" ]]; then
-        results="$2"
-        shift 2
-        continue
-    fi
-    shift
+    case "$1" in
+        --results)
+            results="$2"
+            shift 2
+            ;;
+        --dry-run)
+            dry_run=1
+            shift
+            ;;
+        --filter)
+            filters+=("$2")
+            shift 2
+            ;;
+        --filter=*)
+            filters+=("${1#--filter=}")
+            shift
+            ;;
+        --exact-filter)
+            filters+=("$2")
+            shift 2
+            ;;
+        --exact-filter=*)
+            filters+=("${1#--exact-filter=}")
+            shift
+            ;;
+        *)
+            shift
+            ;;
+    esac
 done
 mkdir -p "$results"
-if [[ "${PRESMOKE_STUB_RC:-0}" == "0" ]]; then
+run_file="$(dirname "$results")/run_env.txt"
+{
+    echo "device=${ASCEND_RT_VISIBLE_DEVICES:-}"
+    printf 'filters=%s\\n' "${filters[*]:-}"
+    echo "dry_run=$dry_run"
+} > "$run_file"
+if [[ "$dry_run" == "1" ]]; then
 cat > "$results/report.json" <<'JSON'
-{"summary":{"PASS":0,"FAIL":0,"SKIP":0},"results":[],"npu_stats":{"busy_s":9,"idle_s":1,"utilization":0.9}}
+{"summary":{"PASS":0,"FAIL":0,"SKIP":5},"results":[
+{"example":"case/a","arch":"dav-2201","mode":"npu","status":"SKIP","reason":"dry-run","rc":0,"duration_s":0,"steps":[]},
+{"example":"case/b","arch":"dav-2201","mode":"npu","status":"SKIP","reason":"dry-run","rc":0,"duration_s":0,"steps":[]},
+{"example":"case/c","arch":"dav-2201","mode":"npu","status":"SKIP","reason":"dry-run","rc":0,"duration_s":0,"steps":[]},
+{"example":"case/d","arch":"dav-2201","mode":"npu","status":"SKIP","reason":"dry-run","rc":0,"duration_s":0,"steps":[]},
+{"example":"case/e","arch":"dav-2201","mode":"npu","status":"SKIP","reason":"dry-run","rc":0,"duration_s":0,"steps":[]}
+],"npu_stats":{"busy_s":0,"idle_s":0,"utilization":0}}
 JSON
+elif [[ "${PRESMOKE_STUB_RC:-0}" == "0" ]]; then
+python_args=("$results/report.json")
+if [[ "${#filters[@]}" -gt 0 ]]; then
+    python_args+=("${filters[@]}")
+fi
+"${REAL_PYTHON}" - "${python_args[@]}" <<'PY'
+import json
+import sys
+
+report = sys.argv[1]
+filters = sys.argv[2:]
+results = [
+    {
+        "example": item,
+        "arch": "dav-2201",
+        "mode": "npu",
+        "status": "PASS",
+        "reason": "",
+        "rc": 0,
+        "duration_s": 1,
+        "steps": [],
+    }
+    for item in filters
+]
+with open(report, "w", encoding="utf-8") as handle:
+    json.dump(
+        {
+            "summary": {"PASS": len(results), "FAIL": 0, "SKIP": 0},
+            "results": results,
+            "npu_stats": {"busy_s": 9, "idle_s": 1, "utilization": 0.9},
+        },
+        handle,
+    )
+PY
 else
 cat > "$results/report.json" <<'JSON'
-{"summary":{"PASS":0,"FAIL":1,"SKIP":0},"results":[{"example":"stub/fail","arch":"dav-2201","mode":"npu","status":"FAIL","reason":"nonzero rc","rc":1,"duration_s":1,"steps":[]}],"npu_stats":{"busy_s":0,"idle_s":0,"utilization":0}}
+{
+  "summary": {"PASS": 0, "FAIL": 1, "SKIP": 0},
+  "results": [
+    {
+      "example": "stub/fail",
+      "arch": "dav-2201",
+      "mode": "npu",
+      "status": "FAIL",
+      "reason": "nonzero rc",
+      "rc": 1,
+      "duration_s": 1,
+      "steps": []
+    }
+  ],
+  "npu_stats": {"busy_s": 0, "idle_s": 0, "utilization": 0}
+}
 JSON
 fi
 cat > "$results/report.md" <<'MD'
@@ -80,6 +166,19 @@ exit "${PRESMOKE_STUB_RC:-0}"
             encoding="utf-8",
         )
         fake_python.chmod(0o755)
+        fake_npu_smi = fake_bin / "npu-smi"
+        fake_npu_smi.write_text(
+            """#!/usr/bin/env bash
+cat <<'EOF'
++----+------+------+
+| 0  | 910B | OK   |
+| 1  | 910B | OK   |
+| 2  | 910B | OK   |
+EOF
+""",
+            encoding="utf-8",
+        )
+        fake_npu_smi.chmod(0o755)
         return script
 
     def test_full_run_cleans_cann_vendors_before_presmoke(self) -> None:
@@ -95,6 +194,7 @@ exit "${PRESMOKE_STUB_RC:-0}"
                 PROJECT_ROOT=str(root),
                 OUT_ROOT=str(root / "out"),
                 ASCEND_OPP_PATH=str(root / "opp"),
+                NPU_CARDS="0",
             )
 
             result = subprocess.run(["bash", str(script)], text=True, capture_output=True, env=env, check=False)
@@ -120,7 +220,13 @@ exit "${PRESMOKE_STUB_RC:-0}"
                 ASCEND_OPP_PATH=str(root / "opp"),
             )
 
-            result = subprocess.run(["bash", str(script), "--dry-run"], text=True, capture_output=True, env=env, check=False)
+            result = subprocess.run(
+                ["bash", str(script), "--dry-run"],
+                text=True,
+                capture_output=True,
+                env=env,
+                check=False,
+            )
 
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn(f"out_root={root / 'presmoke_reports' / 'presmoke_dav-2201_'}", result.stdout)
@@ -137,7 +243,13 @@ exit "${PRESMOKE_STUB_RC:-0}"
                 ASCEND_OPP_PATH=str(root / "opp"),
             )
 
-            result = subprocess.run(["bash", str(script), "--dry-run"], text=True, capture_output=True, env=env, check=False)
+            result = subprocess.run(
+                ["bash", str(script), "--dry-run"],
+                text=True,
+                capture_output=True,
+                env=env,
+                check=False,
+            )
 
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("schedule=default", result.stdout)
@@ -153,7 +265,13 @@ exit "${PRESMOKE_STUB_RC:-0}"
                 ASCEND_OPP_PATH=str(root / "opp"),
             )
 
-            result = subprocess.run(["bash", str(script), "--dry-run"], text=True, capture_output=True, env=env, check=False)
+            result = subprocess.run(
+                ["bash", str(script), "--dry-run"],
+                text=True,
+                capture_output=True,
+                env=env,
+                check=False,
+            )
 
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("modes=cpu", result.stdout)
@@ -223,6 +341,7 @@ exit "${PRESMOKE_STUB_RC:-0}"
                 OUT_ROOT=str(root / "out"),
                 ASCEND_OPP_PATH=str(root / "opp"),
                 PRESMOKE_STUB_RC="1",
+                NPU_CARDS="0",
             )
 
             result = subprocess.run(["bash", str(script)], text=True, capture_output=True, env=env, check=False)
@@ -231,6 +350,89 @@ exit "${PRESMOKE_STUB_RC:-0}"
             self.assertIn("Presmoke Summary:", result.stdout)
             self.assertIn("Cases: total=1 pass=0 fail=1 skip=0", result.stdout)
             self.assertIn("execute samples failed", result.stderr)
+
+    def test_default_npu_cards_shards_cases_across_detected_cards(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            script = self.copy_orchestrate_fixture(root)
+            env = self.base_env(
+                root,
+                PROJECT_ROOT=str(root),
+                OUT_ROOT=str(root / "out"),
+                ASCEND_OPP_PATH=str(root / "opp"),
+            )
+
+            result = subprocess.run(["bash", str(script)], text=True, capture_output=True, env=env, check=False)
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertTrue((root / "out/full_card0/results/report.json").exists())
+            self.assertTrue((root / "out/full_card1/results/report.json").exists())
+            self.assertTrue((root / "out/full_card2/results/report.json").exists())
+            self.assertTrue((root / "out/.workspaces/card_0/scripts/run_presmoke_v2.sh").exists())
+            self.assertIn("multi_card_start cards=0 1 2 cases=5", result.stdout)
+            self.assertIn(
+                f"project_root={root / 'out/.workspaces/card_0'}",
+                (root / "out/full_card0/meta.txt").read_text(encoding="utf-8"),
+            )
+            self.assertIn("device=0", (root / "out/full_card0/run_env.txt").read_text(encoding="utf-8"))
+            self.assertIn("device=1", (root / "out/full_card1/run_env.txt").read_text(encoding="utf-8"))
+            self.assertIn("device=2", (root / "out/full_card2/run_env.txt").read_text(encoding="utf-8"))
+            self.assertIn("filters=case/a case/d", (root / "out/full_card0/run_env.txt").read_text(encoding="utf-8"))
+            self.assertIn("filters=case/b case/e", (root / "out/full_card1/run_env.txt").read_text(encoding="utf-8"))
+            self.assertIn("filters=case/c", (root / "out/full_card2/run_env.txt").read_text(encoding="utf-8"))
+            self.assertIn("Cases: total=5 pass=5 fail=0 skip=0", result.stdout)
+
+    def test_auto_npu_cards_prefers_davinci_devices_over_npu_smi(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            script = self.copy_orchestrate_fixture(root)
+            dev_dir = root / "dev"
+            dev_dir.mkdir()
+            (dev_dir / "davinci4").touch()
+            (dev_dir / "davinci6").touch()
+            env = self.base_env(
+                root,
+                PROJECT_ROOT=str(root),
+                OUT_ROOT=str(root / "out"),
+                ASCEND_OPP_PATH=str(root / "opp"),
+                NPU_CARD_DEV_GLOB=str(dev_dir / "davinci[0-9]*"),
+            )
+
+            result = subprocess.run(["bash", str(script)], text=True, capture_output=True, env=env, check=False)
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertTrue((root / "out/full_card4/results/report.json").exists())
+            self.assertTrue((root / "out/full_card6/results/report.json").exists())
+            self.assertFalse((root / "out/full_card0/results/report.json").exists())
+            self.assertIn("multi_card_start cards=4 6 cases=5", result.stdout)
+
+    def test_single_detected_npu_card_is_used_for_single_run(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            script = self.copy_orchestrate_fixture(root)
+            dev_dir = root / "dev"
+            dev_dir.mkdir()
+            (dev_dir / "davinci7").touch()
+            env = self.base_env(
+                root,
+                PROJECT_ROOT=str(root),
+                OUT_ROOT=str(root / "out"),
+                ASCEND_OPP_PATH=str(root / "opp"),
+                NPU_CARD_DEV_GLOB=str(dev_dir / "davinci[0-9]*"),
+            )
+
+            result = subprocess.run(
+                ["bash", str(script), "--filter", "case/a"],
+                text=True,
+                capture_output=True,
+                env=env,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertTrue((root / "out/full_card7/results/report.json").exists())
+            self.assertFalse((root / "out/full_card0/results/report.json").exists())
+            self.assertIn("device=7", (root / "out/full_card7/run_env.txt").read_text(encoding="utf-8"))
 
     def test_make_wrapper_limits_explicit_parallel_jobs(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -29,10 +29,12 @@ from presmoke.generate_case_runners import (
     explicit_skip_config,
     is_atc_prerequisite_command,
     merge_export_commands_into_run,
+    parse_scenario_values_from_cmake,
     quote_env_value,
     render_runner,
     requires_custom_op_package,
     RunnerRenderSpec,
+    supported_archs_for_scenario,
 )
 from presmoke.model import Command, ExampleSpec
 
@@ -46,10 +48,14 @@ def render_runner_from_parts(
     custom_op_package_case: bool = False,
     skip_reason: str = "",
     skip_modes: list[str] = [],
+    source_rel: str = "",
+    scenario_num: int | None = None,
 ) -> str:
     return render_runner(
         RunnerRenderSpec(
             rel=rel,
+            source_rel=source_rel,
+            scenario_num=scenario_num,
             build_cmds=build_cmds,
             run_cmds=run_cmds,
             verify_cmds=verify_cmds,
@@ -140,6 +146,30 @@ class GenerateCaseRunnersTest(unittest.TestCase):
                 missing.append(rel_path)
 
         self.assertEqual(missing, [])
+
+    def test_softmax_scenario_range_is_discovered_from_cmake(self) -> None:
+        project_root = Path(__file__).resolve().parents[3]
+        cmake_file = (
+            project_root
+            / "examples/01_simd_cpp_api/05_best_practices/02_reg_compute/softmax_high_performance/CMakeLists.txt"
+        )
+
+        self.assertEqual(parse_scenario_values_from_cmake(cmake_file), [0, 1, 2, 3, 4, 5])
+
+    def test_scenario_runner_uses_source_case_and_unique_build_dir(self) -> None:
+        script = render_runner_from_parts(
+            "01_simd_cpp_api/05_best_practices/02_reg_compute/softmax_high_performance__scenario_5",
+            [Command("cmake .. -DSCENARIO_NUM=0", "cmake")],
+            [Command("./demo", "run")],
+            [],
+            source_rel="01_simd_cpp_api/05_best_practices/02_reg_compute/softmax_high_performance",
+            scenario_num=5,
+        )
+
+        self.assertIn("CASE_REL=01_simd_cpp_api/05_best_practices/02_reg_compute/softmax_high_performance", script)
+        self.assertIn('BUILD_DIR="$CASE_DIR/build_${MODE}_scenario_5"', script)
+        self.assertIn("SCENARIO_NUM=5", script)
+        self.assertIn("-DSCENARIO_NUM=5", script)
 
     def test_atc_prerequisite_python_stays_in_build_before_atc(self) -> None:
         commands = [
@@ -341,6 +371,64 @@ class GenerateCaseRunnersTest(unittest.TestCase):
         apply_case_overrides([spec])
         self.assertEqual(spec.archs, ["dav-3510"])
 
+    def test_scenario_arch_limit_accepts_compact_chinese_text(self) -> None:
+        project_root = Path(__file__).resolve().parents[3]
+        cmake_file = (
+            project_root
+            / "examples/01_simd_cpp_api/03_basic_api/00_data_movement/data_copy_gm2l1/CMakeLists.txt"
+        )
+
+        archs = supported_archs_for_scenario(["dav-2201", "dav-3510"], cmake_file, 3)
+
+        self.assertEqual(archs, ["dav-3510"])
+
+    def test_scenario_arch_limit_handles_a2_a3_only_scenario_one(self) -> None:
+        project_root = Path(__file__).resolve().parents[3]
+        cmake_file = (
+            project_root
+            / "examples/01_simd_cpp_api/05_best_practices/03_fusion_compute/"
+            / "matmul_gelu_high_performance/CMakeLists.txt"
+        )
+
+        archs = supported_archs_for_scenario(["dav-2201", "dav-3510"], cmake_file, 2)
+
+        self.assertEqual(archs, ["dav-3510"])
+
+    def test_scenario_arch_limit_reads_readme_table_only_supports_arch(self) -> None:
+        project_root = Path(__file__).resolve().parents[3]
+        cmake_file = (
+            project_root
+            / "examples/01_simd_cpp_api/03_basic_api/01_memory_vector_compute/element_wise_logic/CMakeLists.txt"
+        )
+
+        archs = supported_archs_for_scenario(["dav-2201", "dav-3510"], cmake_file, 2)
+
+        self.assertEqual(archs, ["dav-3510"])
+
+    def test_scenario_arch_limit_keeps_supported_rows_when_later_rows_are_950_only(self) -> None:
+        project_root = Path(__file__).resolve().parents[3]
+        cmake_file = (
+            project_root
+            / "examples/01_simd_cpp_api/03_basic_api/00_data_movement/data_copy_pad_gm2ub_ub2gm/CMakeLists.txt"
+        )
+
+        scenario_two_archs = supported_archs_for_scenario(["dav-2201", "dav-3510"], cmake_file, 2)
+        scenario_three_archs = supported_archs_for_scenario(["dav-2201", "dav-3510"], cmake_file, 3)
+
+        self.assertEqual(scenario_two_archs, ["dav-2201", "dav-3510"])
+        self.assertEqual(scenario_three_archs, ["dav-3510"])
+
+    def test_scenario_arch_limit_reads_readme_heading_only_supports_ascend_950(self) -> None:
+        project_root = Path(__file__).resolve().parents[3]
+        cmake_file = (
+            project_root
+            / "examples/01_simd_cpp_api/03_basic_api/01_memory_vector_compute/element_wise_logic/CMakeLists.txt"
+        )
+
+        archs = supported_archs_for_scenario(["dav-2201", "dav-3510"], cmake_file, 3)
+
+        self.assertEqual(archs, ["dav-3510"])
+
     def test_rendered_runner_delegates_common_boilerplate_to_case_common(self) -> None:
         script = render_runner_from_parts(
             "01_simd_cpp_api/00_introduction/00_quickstart/hello_world",
@@ -495,6 +583,61 @@ presmoke_ensure_custom_op_package
             self.assertIn("custom_op package already installed", result.stderr)
             self.assertTrue((opp / "vendors/customize/op_impl/ai_core/tbe/customize_impl/dynamic/add_custom_tiling_sink.py").exists())
             self.assertTrue((add_custom_dynamic / "add_custom_tiling.h").exists())
+
+    def test_custom_op_package_install_does_not_pass_unused_cmake_arch(self) -> None:
+        project_root = Path(__file__).resolve().parents[3]
+        case_common = project_root / "scripts/presmoke/case_common.sh"
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            custom_op = root / "examples/01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"
+            custom_op.mkdir(parents=True)
+            opp = root / "opp"
+            log = root / "cmake_args.log"
+
+            script = f"""
+set -euo pipefail
+source {case_common}
+export PRESMOKE_PROJECT_ROOT={root}
+export ASCEND_OPP_PATH={opp}
+export PRESMOKE_ARCH=dav-2201
+export PRESMOKE_MODE=npu
+presmoke_run_command() {{
+    printf '%q ' "$@" >> {log}
+    printf '\\n' >> {log}
+    if [[ "$1" == "make" ]]; then
+        cat > custom_opp_test.run <<'RUN'
+#!/usr/bin/env bash
+set -euo pipefail
+vendor="$ASCEND_OPP_PATH/vendors/customize"
+mkdir -p "$vendor/op_impl/ai_core/tbe/customize_impl/dynamic"
+mkdir -p "$vendor/op_api/include" "$vendor/op_api/lib"
+mkdir -p "$vendor/framework/onnx" "$vendor/op_impl/ai_core/tbe/op_master_device/lib"
+touch "$vendor/op_impl/ai_core/tbe/customize_impl/dynamic/add_custom.py"
+touch "$vendor/op_impl/ai_core/tbe/customize_impl/dynamic/add_custom_tiling_sink.py"
+touch "$vendor/op_api/include/aclnn_add_custom.h"
+touch "$vendor/op_api/include/aclnn_add_custom_tiling_sink.h"
+touch "$vendor/op_api/lib/libcust_opapi.so"
+touch "$vendor/framework/onnx/libcust_onnx_parsers.so"
+touch "$vendor/op_impl/ai_core/tbe/op_master_device/lib/libcust_opmaster.so"
+RUN
+        chmod +x custom_opp_test.run
+        return 0
+    fi
+    if [[ "$1" == "./custom_opp_test.run" ]]; then
+        "$@"
+        return
+    fi
+    return 0
+}}
+presmoke_ensure_custom_op_package
+"""
+
+            result = subprocess.run(["bash", "-c", script], text=True, capture_output=True, check=False)
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("cmake ..", log.read_text(encoding="utf-8"))
+            self.assertNotIn("CMAKE_ASC_ARCHITECTURES", log.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

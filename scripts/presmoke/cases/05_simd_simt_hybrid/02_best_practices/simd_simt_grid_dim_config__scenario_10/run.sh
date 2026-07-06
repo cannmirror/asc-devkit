@@ -1,6 +1,4 @@
-#!/usr/bin/python3
-# coding=utf-8
-
+#!/bin/bash
 # ----------------------------------------------------------------------------------------------------------
 # Copyright (c) 2026 Huawei Technologies Co., Ltd.
 # This program is free software, you can redistribute it and/or modify it under the terms and conditions of
@@ -11,23 +9,33 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
-from __future__ import annotations
+set -euo pipefail
 
-import threading
-import time
-from typing import Callable
+CASE_REL=05_simd_simt_hybrid/02_best_practices/simd_simt_grid_dim_config
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../../../_case_entry.sh"
+presmoke_case_init "$CASE_REL"
+BUILD_DIR="$CASE_DIR/build_${MODE}_scenario_10"
+export BUILD_DIR
 
-from .model import Cell, Command
+case_build() {
+    mkdir -p "$BUILD_DIR"
+    (cd "$BUILD_DIR" && SCENARIO_NUM=10 soc_version=$SOC_VERSION bash -lc 'cmake -DSCENARIO_NUM=10 .. -DCMAKE_ASC_ARCHITECTURES="$ARCH" $RUN_MODE_ARG')
+    (cd "$BUILD_DIR" && SCENARIO_NUM=10 soc_version=$SOC_VERSION bash -lc 'make -j')
+}
 
+case_run() {
+    mkdir -p "$BUILD_DIR"
+    (cd "$BUILD_DIR" && SCENARIO_NUM=10 soc_version=$SOC_VERSION bash -lc ./grid_config)
+}
 
-class NpuSlotPool:
-    def __init__(self, slots: int) -> None:
-        if slots <= 0:
-            raise ValueError("npu slots must be positive")
-        self._sem = threading.BoundedSemaphore(slots)
+case_verify() {
+    mkdir -p "$BUILD_DIR"
+    :
+}
 
-    def gate(self, cell: Cell, command: Command, fn: Callable[[], int]) -> tuple[int, float]:
-        started = time.monotonic()
-        with self._sem:
-            wait_s = time.monotonic() - started
-            return fn(), wait_s
+case_clean() {
+    presmoke_default_clean
+}
+
+presmoke_case_main "$@"

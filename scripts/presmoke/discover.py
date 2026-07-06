@@ -26,12 +26,21 @@ def discover_examples(examples_root: Path) -> List[Path]:
     return sorted(examples, key=lambda p: p.relative_to(examples_root).as_posix())
 
 
-def filter_examples(paths: Iterable[Path], includes: Iterable[str], excludes: Iterable[str]) -> List[Path]:
+def filter_examples(
+    paths: Iterable[Path],
+    includes: Iterable[str],
+    excludes: Iterable[str],
+    exact_includes: Iterable[str] | None = None,
+) -> List[Path]:
     include_terms = [x for x in includes if x]
+    exact_include_terms = {x for x in (exact_includes or []) if x}
     exclude_terms = [x for x in excludes if x]
     result: List[Path] = []
     for path in paths:
         text = path.as_posix()
+        exact_match = any(text == term or text.endswith(f"/{term}") for term in exact_include_terms)
+        if exact_include_terms and not exact_match:
+            continue
         if include_terms and not any(term in text for term in include_terms):
             continue
         if exclude_terms and any(term in text for term in exclude_terms):

@@ -126,7 +126,11 @@ presmoke_case_init() {
         RUN_MODE_ARG="-DCMAKE_ASC_RUN_MODE=$MODE"
     fi
     BUILD_DIR="$(presmoke_build_dir "$CASE_DIR")"
+    TORCH_DEVICE_BACKEND_AUTOLOAD="${TORCH_DEVICE_BACKEND_AUTOLOAD:-0}"
+    ASCEND_SLOG_PRINT_TO_STDOUT="${PRESMOKE_ASCEND_SLOG_PRINT_TO_STDOUT:-0}"
     export CASE_DIR MODE ARCH SOC_VERSION RUN_MODE_ARG BUILD_DIR
+    export TORCH_DEVICE_BACKEND_AUTOLOAD
+    export ASCEND_SLOG_PRINT_TO_STDOUT
 }
 
 run_in_build_dir() {
@@ -299,7 +303,7 @@ _presmoke_ensure_custom_op_package_locked() {
         rm -f "$stamp"
     fi
 
-    local cmake_args=(cmake .. "-DCMAKE_ASC_ARCHITECTURES=$arch")
+    local cmake_args=(cmake ..)
     if [[ -n "${NLOHMANN_JSON_URL:-}" ]]; then
         cmake_args+=("-DNLOHMANN_JSON_URL=$NLOHMANN_JSON_URL")
     fi

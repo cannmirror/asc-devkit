@@ -16,39 +16,15 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../../../../_case_entry.sh"
 presmoke_case_init "$CASE_REL"
 
-scenario_build_dir() {
-    printf '%s_scenario%s\n' "$BUILD_DIR" "$1"
-}
-
 case_build() {
-    local scenario_num
-    local scenario_dir
-    for scenario_num in 1 2; do
-        scenario_dir="$(scenario_build_dir "$scenario_num")"
-        mkdir -p "$scenario_dir"
-        (
-            cd "$scenario_dir"
-            SCENARIO_NUM=$scenario_num soc_version=$SOC_VERSION bash -lc \
-                'cmake .. -DCMAKE_ASC_ARCHITECTURES="$ARCH" -DSCENARIO_NUM=$SCENARIO_NUM $RUN_MODE_ARG'
-        )
-        (
-            cd "$scenario_dir"
-            SCENARIO_NUM=$scenario_num soc_version=$SOC_VERSION bash -lc 'make -j'
-        )
-    done
+    mkdir -p "$BUILD_DIR"
+    (cd "$BUILD_DIR" && SCENARIO_NUM=1 soc_version=$SOC_VERSION bash -lc 'cmake -DSCENARIO_NUM=$SCENARIO_NUM .. -DCMAKE_ASC_ARCHITECTURES="$ARCH" $RUN_MODE_ARG')
+    (cd "$BUILD_DIR" && SCENARIO_NUM=1 soc_version=$SOC_VERSION bash -lc 'make -j')
 }
 
 case_run() {
-    local scenario_num
-    local scenario_dir
-    for scenario_num in 1 2; do
-        scenario_dir="$(scenario_build_dir "$scenario_num")"
-        mkdir -p "$scenario_dir"
-        (
-            cd "$scenario_dir"
-            SCENARIO_NUM=$scenario_num soc_version=$SOC_VERSION bash -lc './demo'
-        )
-    done
+    mkdir -p "$BUILD_DIR"
+    (cd "$BUILD_DIR" && SCENARIO_NUM=1 soc_version=$SOC_VERSION bash -lc ./demo)
 }
 
 case_verify() {
@@ -57,7 +33,7 @@ case_verify() {
 }
 
 case_clean() {
-    rm -rf "$BUILD_DIR" "$(scenario_build_dir 1)" "$(scenario_build_dir 2)"
+    presmoke_default_clean
 }
 
 presmoke_case_main "$@"

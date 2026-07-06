@@ -27,15 +27,27 @@ from pathlib import Path
 from typing import Callable, Dict, Iterable, Iterator, List, Optional, Union
 
 from .model import Cell, Command, NpuStats, RunCellsResult, RunResult, StepResult
-from .pool import NpuSlotPool
 
 
-NpuGate = Callable[[Cell, Command, Callable[[], int]], tuple[int, float]]
+NpuGate = Callable[[Callable[[], int]], tuple[int, float]]
 
 PRESERVE_BUILD_ARTIFACT_CASES = {
     "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op",
 }
 CPU_RUN_TIMEOUT = 300
+
+
+class NpuSlotPool:
+    def __init__(self, slots: int) -> None:
+        if slots <= 0:
+            raise ValueError("npu slots must be positive")
+        self._sem = threading.BoundedSemaphore(slots)
+
+    def gate(self, fn: Callable[[], int]) -> tuple[int, float]:
+        started = time.monotonic()
+        with self._sem:
+            wait_s = time.monotonic() - started
+            return fn(), wait_s
 
 
 @dataclass(frozen=True)
@@ -233,6 +245,7 @@ class _PipelineExecutor:
         self.results: List[RunResult] = []
         self.results_lock = threading.Lock()
         self.npu_stats = _NpuPipelineStats(self.run_slots, queue_model)
+        self.source_locks = _SourceCaseLockPool()
 
     @staticmethod
     def _start_threads(npu_threads: List[threading.Thread], verify_threads: List[threading.Thread]) -> None:
@@ -264,21 +277,28 @@ class _PipelineExecutor:
             self.results.append(result)
 
     def build_worker(self, cell: Cell) -> None:
-        item = run_cell_stage(
-            cell,
-            StageRunOptions(
-                self.options.log_dir,
-                self.options.timeout,
-                self.options.cpu_run_timeout,
-                keep_artifacts=True,
-                stage_name="build",
-            ),
-            commands=build_stage_commands(cell.commands),
-        )
-        if item.result.status == "PASS":
-            self.ready.put(item)
-        else:
-            self.append_result(item.result)
+        source_lock = self.source_locks.acquire(cell)
+        try:
+            item = run_cell_stage(
+                cell,
+                StageRunOptions(
+                    self.options.log_dir,
+                    self.options.timeout,
+                    self.options.cpu_run_timeout,
+                    keep_artifacts=True,
+                    stage_name="build",
+                ),
+                commands=build_stage_commands(cell.commands),
+            )
+            item.source_lock = source_lock
+            if item.result.status == "PASS":
+                self.ready.put(item)
+            else:
+                self.append_result(item.result)
+                release_item_source_lock(item)
+        except BaseException:
+            source_lock.release()
+            raise
 
     def npu_worker(self, slot_idx: int) -> None:
         while True:
@@ -288,7 +308,11 @@ class _PipelineExecutor:
             try:
                 if item is None:
                     return
-                self.finish_npu_item(item, slot_idx)
+                try:
+                    self.finish_npu_item(item, slot_idx)
+                except BaseException:
+                    release_item_source_lock(item)
+                    raise
             finally:
                 self.ready.task_done()
 
@@ -305,6 +329,7 @@ class _PipelineExecutor:
             self.verify_ready.put(item)
         else:
             self.append_result(result)
+            release_item_source_lock(item)
 
     def verify_worker(self) -> None:
         while True:
@@ -319,6 +344,10 @@ class _PipelineExecutor:
                     keep_artifacts=self.options.keep_artifacts,
                 )
                 self.append_result(result)
+                release_item_source_lock(item)
+            except BaseException:
+                release_item_source_lock(item)
+                raise
             finally:
                 self.verify_ready.task_done()
 
@@ -373,6 +402,19 @@ class _NpuPipelineStats:
         )
 
 
+class _SourceCaseLockPool:
+    def __init__(self) -> None:
+        self._guard = threading.Lock()
+        self._locks: Dict[str, threading.Lock] = {}
+
+    def acquire(self, cell: Cell) -> threading.Lock:
+        key = str(cell.example.path)
+        with self._guard:
+            lock = self._locks.setdefault(key, threading.Lock())
+        lock.acquire()
+        return lock
+
+
 @dataclass
 class _PipelineItem:
     cell: Cell
@@ -381,10 +423,19 @@ class _PipelineItem:
     log_file: Path
     started: float
     ready_at: float = 0.0
+    source_lock: Optional[threading.Lock] = None
 
     def __post_init__(self) -> None:
         if not self.ready_at:
             self.ready_at = time.monotonic()
+
+
+def release_item_source_lock(item: _PipelineItem) -> None:
+    if item.source_lock is None:
+        return
+    source_lock = item.source_lock
+    item.source_lock = None
+    source_lock.release()
 
 
 def run_cell_stage(
@@ -642,8 +693,6 @@ def execute_command_step(
     step_timeout = select_timeout(context.cell, command, uses_npu, options.timeout, options.cpu_run_timeout)
     if uses_npu and options.npu_gate:
         step_rc, wait_s = options.npu_gate(
-            context.cell,
-            command,
             lambda: _run_command(command, context.run_dir, _TeeLog(context.log, context.stage_log), step_timeout),
         )
     else:
