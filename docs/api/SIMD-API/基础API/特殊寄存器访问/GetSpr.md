@@ -26,7 +26,7 @@
 
 ## 功能说明<a name="section11971757181915"></a>
 
-头文件路径为：`"basic\_api/kernel\_operator\_sys\_var\_intf.h"`。
+头文件路径为：`"basic_api/kernel_operator_sys_var_intf.h"`。
 
 获取指定特殊寄存器的值。当前支持[表SpecialPurposeReg模板参数说明](#table37531617424)。
 
@@ -61,7 +61,7 @@ __aicore__ inline int64_t GetSpr()
 
 ## 约束说明<a name="section162221734202016"></a>
 
-本接口只能在VF函数外调用，命名空间为AscendC::Reg，函数标记符为\_\_aicore\_\_。
+本接口只能在VF函数外调用，命名空间为AscendC，函数标记符为\_\_aicore\_\_。
 
 ## 调用示例<a name="section849174212202"></a>
 
@@ -101,6 +101,8 @@ __aicore__ inline void Process()
 
     asc_vf_call<SqueezeVF<float>>(xAddr, yAddr, repeatTimes, oneRepeatSize);
     int64_t arNum = AscendC::GetSpr<AscendC::SpecialPurposeReg::AR>();
+    // 可通过printf打印
+    AscendC::printf("arNum的值为:%lld\n", arNum);
 
     AscendC::SetFlag<AscendC::HardEvent::V_MTE3>(EVENT_ID0);
     AscendC::WaitFlag<AscendC::HardEvent::V_MTE3>(EVENT_ID0);
@@ -113,5 +115,5 @@ __aicore__ inline void Process()
 ```cpp
 输入256个float的数据(xLocal): [1.0 1.0 1.0 ... ] // 数据为全1.0的数
 输入64个float的数据(yLocal): [1.0 1.0 1.0 ... ] // 数据为全1.0的数
-arNum的值为256
+arNum的值为:256
 ```

@@ -599,7 +599,6 @@
                 -   [LocalMemBar](SIMD-API/基础API/Reg矢量计算/同步控制/LocalMemBar.md)
 
             -   [系统变量访问](SIMD-API/基础API/Reg矢量计算/系统变量访问/系统变量访问.md)
-                -   [GetSpr](SIMD-API/基础API/Reg矢量计算/系统变量访问/GetSpr.md)
                 -   [ClearSpr](SIMD-API/基础API/Reg矢量计算/系统变量访问/ClearSpr.md)
 
             -   [辅助数据类型](SIMD-API/基础API/Reg矢量计算/辅助数据类型/辅助数据类型.md)

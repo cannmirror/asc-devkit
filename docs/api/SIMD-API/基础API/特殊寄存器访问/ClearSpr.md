@@ -26,7 +26,7 @@
 
 ## 功能说明<a name="section11971757181915"></a>
 
-头文件路径为：`"basic\_api/kernel\_operator\_sys\_var\_intf.h"`。
+头文件路径为：`"basic_api/kernel_operator_sys_var_intf.h"`。
 
 对指定的特殊寄存器进行清零。当前支持[表SpecialPurposeReg模板参数说明](GetSpr.md#table37531617424)。
 
