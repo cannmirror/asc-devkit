@@ -4986,163 +4986,163 @@ export default {
                       "items": [
                         {
                           "text": "Matmul Tiling类使用说明",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/Matmul-Tiling类使用说明"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/Matmul-Tiling类使用说明"
                         },
                         {
                           "text": "Matmul Tiling类构造函数",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/Matmul-Tiling类构造函数"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/Matmul-Tiling类构造函数"
                         },
                         {
                           "text": "TCubeTiling结构体",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/TCubeTiling结构体"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/TCubeTiling结构体"
                         },
                         {
                           "text": "SetAType",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetAType"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetAType"
                         },
                         {
                           "text": "SetBType",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetBType"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetBType"
                         },
                         {
                           "text": "SetScaleAType",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetScaleAType"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetScaleAType"
                         },
                         {
                           "text": "SetScaleBType",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetScaleBType"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetScaleBType"
                         },
                         {
                           "text": "SetCType",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetCType"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetCType"
                         },
                         {
                           "text": "SetBiasType",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetBiasType"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetBiasType"
                         },
                         {
                           "text": "SetSingleShape",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetSingleShape-86"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetSingleShape-86"
                         },
                         {
                           "text": "SetShape",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetShape"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetShape"
                         },
                         {
                           "text": "SetOrgShape",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetOrgShape-87"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetOrgShape-87"
                         },
                         {
                           "text": "SetFixSplit",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetFixSplit"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetFixSplit"
                         },
                         {
                           "text": "EnableMultiCoreSplitK",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/EnableMultiCoreSplitK"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/EnableMultiCoreSplitK"
                         },
                         {
                           "text": "EnableBias",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/EnableBias"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/EnableBias"
                         },
                         {
                           "text": "SetBufferSpace",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetBufferSpace"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetBufferSpace"
                         },
                         {
                           "text": "SetTraverse",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetTraverse"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetTraverse"
                         },
                         {
                           "text": "SetMadType",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetMadType"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetMadType"
                         },
                         {
                           "text": "SetSplitRange",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetSplitRange"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetSplitRange"
                         },
                         {
                           "text": "SetDoubleBuffer",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetDoubleBuffer"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetDoubleBuffer"
                         },
                         {
                           "text": "GetBaseM",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/GetBaseM"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/GetBaseM"
                         },
                         {
                           "text": "GetBaseN",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/GetBaseN"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/GetBaseN"
                         },
                         {
                           "text": "GetBaseK",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/GetBaseK"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/GetBaseK"
                         },
                         {
                           "text": "GetTiling",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/GetTiling"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/GetTiling"
                         },
                         {
                           "text": "EnableL1BankConflictOptimise",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/EnableL1BankConflictOptimise"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/EnableL1BankConflictOptimise"
                         },
                         {
                           "text": "SetDim",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetDim"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetDim"
                         },
                         {
                           "text": "SetSingleRange",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetSingleRange"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetSingleRange"
                         },
                         {
                           "text": "GetSingleShape",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/GetSingleShape"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/GetSingleShape"
                         },
                         {
                           "text": "GetCoreNum",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/GetCoreNum"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/GetCoreNum"
                         },
                         {
                           "text": "SetAlignSplit",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetAlignSplit"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetAlignSplit"
                         },
                         {
                           "text": "SetDequantType",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetDequantType"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetDequantType"
                         },
                         {
                           "text": "SetALayout",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetALayout"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetALayout"
                         },
                         {
                           "text": "SetBLayout",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetBLayout"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetBLayout"
                         },
                         {
                           "text": "SetCLayout",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetCLayout"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetCLayout"
                         },
                         {
                           "text": "SetBatchNum",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetBatchNum-88"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetBatchNum-88"
                         },
                         {
                           "text": "SetBatchInfoForNormal",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetBatchInfoForNormal"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetBatchInfoForNormal"
                         },
                         {
                           "text": "SetMatmulConfigParams",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetMatmulConfigParams"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetMatmulConfigParams"
                         },
                         {
                           "text": "SetBias",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetBias-89"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetBias-89"
                         },
                         {
                           "text": "SetSplitK",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetSplitK"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetSplitK"
                         },
                         {
                           "text": "SetSparse",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/Matmul-Tiling类/SetSparse"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling类/SetSparse"
                         }
                       ]
                     },
@@ -5152,27 +5152,27 @@ export default {
                       "items": [
                         {
                           "text": "MultiCoreMatmulGetTmpBufSize",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/获取Matmul计算所需空间/MultiCoreMatmulGetTmpBufSize"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/获取Matmul计算所需空间/MultiCoreMatmulGetTmpBufSize"
                         },
                         {
                           "text": "MultiCoreMatmulGetTmpBufSizeV2",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/获取Matmul计算所需空间/MultiCoreMatmulGetTmpBufSizeV2"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/获取Matmul计算所需空间/MultiCoreMatmulGetTmpBufSizeV2"
                         },
                         {
                           "text": "BatchMatmulGetTmpBufSize",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/获取Matmul计算所需空间/BatchMatmulGetTmpBufSize"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/获取Matmul计算所需空间/BatchMatmulGetTmpBufSize"
                         },
                         {
                           "text": "BatchMatmulGetTmpBufSizeV2",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/获取Matmul计算所需空间/BatchMatmulGetTmpBufSizeV2"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/获取Matmul计算所需空间/BatchMatmulGetTmpBufSizeV2"
                         },
                         {
                           "text": "MatmulGetTmpBufSize",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/获取Matmul计算所需空间/MatmulGetTmpBufSize"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/获取Matmul计算所需空间/MatmulGetTmpBufSize"
                         },
                         {
                           "text": "MatmulGetTmpBufSizeV2",
-                          "link": "/api/SIMD-API/高阶API/矩阵计算/Matmul-Tiling侧接口/获取Matmul计算所需空间/MatmulGetTmpBufSizeV2"
+                          "link": "/api/SIMD-API/高阶API/矩阵计算/获取Matmul计算所需空间/MatmulGetTmpBufSizeV2"
                         }
                       ]
                     }
