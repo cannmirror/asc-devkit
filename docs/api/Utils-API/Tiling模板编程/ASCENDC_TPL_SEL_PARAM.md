@@ -11,7 +11,7 @@ Tiling模板编程时，开发者通过调用此接口自动生成并配置Tilin
 ```
 #define ASCENDC_TPL_SEL_PARAM(context, ...)           \
 do {                                                  \
-    uint64_t key = GET_TPL_TILING_KEY({__VA_ARGS__}); \
+    uint64_t key = GET_TPL_TILING_KEY(__VA_ARGS__); \
     context->SetTilingKey(key);                       \
 } while(0)
 // context指代TilingFunc(gert::TilingContext *context)中的context
