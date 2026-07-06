@@ -142,6 +142,11 @@
     - 通用的Counter模式：Mask代表**整个矢量计算参与计算的元素个数，迭代次数不生效。**
     - Copy高维切分计算API的Counter模式：Mask代表**每次Repeat中处理的元素个数，迭代次数生效。**
 
+    图1中Copy高维切分计算API的Counter模式时，迭代次数生效，每次迭代参与计算的DataBlock个数可通过Mask计算得出：
+        
+    $$\text{N}=\text{ceil}(\text{Mask}*\text{sizeof(T)}/\text{datablockSize})$$
+
+    **图1**  Copy高维切分计算API的Counter模式  
     ![](../../../../../figures/repeat-times-12.png)
 
 ## 调用示例<a name="zh-cn_topic_0000002567699435_section088124295117"></a>
