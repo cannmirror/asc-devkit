@@ -7,16 +7,16 @@
 ## 函数原型<a name="zh-cn_topic_0000001576728165_section129451113125413"></a>
 
 ```
-#define REGISTER_TILING_DATA_CLASS(op_type, class_name)
-  class op_type##class_name##Helper {
-  public:
-    op_type##class_name##Helper() {
-      CTilingDataClassFactory::RegisterTilingData(#op_type, op_type##class_name##Helper::CreateTilingDataInstance);
-    }
-    static std::shared_ptr<TilingDef> CreateTilingDataInstance() {
-      return std::make_shared<class_name>();
-    }
-  };
+#define REGISTER_TILING_DATA_CLASS(op_type, class_name) \
+  class op_type##class_name##Helper { \
+  public: \
+    op_type##class_name##Helper() { \
+      CTilingDataClassFactory::RegisterTilingData(#op_type, op_type##class_name##Helper::CreateTilingDataInstance); \
+    } \
+    static std::shared_ptr<TilingDef> CreateTilingDataInstance() { \
+      return std::make_shared<class_name>(); \
+    } \
+  }; \
   op_type##class_name##Helper g_tilingdata_##op_type##class_name##helper;
 ```
 

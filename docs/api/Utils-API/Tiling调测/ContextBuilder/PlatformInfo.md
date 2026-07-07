@@ -47,7 +47,7 @@ void AddPlatformInfo(fe::PlatFormInfos *platformInfo)
     ......
     auto kernelContextHolder = context_ascendc::ContextBuilder()
                                      ...... // 增加算子输入输出接口的调用
-                                     .PlatformInfo(reinterpret_cast<void*>(platformInfo));
+                                     .PlatformInfo(reinterpret_cast<void*>(platformInfo))
                                      .BuildTilingContext();
 
     ......

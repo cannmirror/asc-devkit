@@ -36,7 +36,7 @@ TilingFunc GetTilingFunc(const char *opType) const
 获取成功，则返回对应的Tiling函数指针；失败则返回空指针。Tiling函数指针定义如下：
 
 ```
-using TilingFunc = uint32_t(*)(gert::TilingContext*)
+using TilingFunc = uint32_t(*)(gert::TilingContext*);
 ```
 
 ## 约束说明<a name="zh-cn_topic_0000002078486173_zh-cn_topic_0000001576727153_zh-cn_topic_0000001389787297_section19165124931511"></a>

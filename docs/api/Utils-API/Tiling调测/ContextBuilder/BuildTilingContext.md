@@ -25,7 +25,7 @@ std::shared_ptr<KernelRunContextHolder> BuildTilingContext()
 ## 调用示例<a name="zh-cn_topic_0000001867289945_zh-cn_topic_0000001389787297_section320753512363"></a>
 
 ```
-auto tilingContextHolder = context_ascendc::ContextBuilder().
+auto tilingContextHolder = context_ascendc::ContextBuilder()
   .SetOpNameType(...,...)
   .NodeIoNum(...)
   .IrInstanceNum(...)
