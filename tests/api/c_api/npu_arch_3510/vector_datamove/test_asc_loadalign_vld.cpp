@@ -23,7 +23,7 @@
                                                                                                       \
     namespace {                                                                                       \
     void c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub(                                    \
-        dst_type& dst, __ubuf__ src_type* src, iter_reg offset, Literal load_dist)                    \
+        dst_type& dst, __ubuf__ src_type* src, addr_reg offset, Literal load_dist)                    \
     {}                                                                                                \
     }                                                                                                 \
                                                                                                       \
@@ -33,9 +33,9 @@
     {                                                                                                 \
         dst_type dst;                                                                                 \
         __ubuf__ src_type* src;                                                                       \
-        iter_reg offset;                                                                              \
+        addr_reg offset;                                                                              \
                                                                                                       \
-        MOCKER_CPP(cce_name, void(dst_type&, __ubuf__ src_type*, iter_reg, Literal))                  \
+        MOCKER_CPP(cce_name, void(dst_type&, __ubuf__ src_type*, addr_reg, Literal))                  \
             .times(1)                                                                                 \
             .will(invoke(c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub));                  \
                                                                                                       \
@@ -53,7 +53,7 @@
                                                                                                         \
     namespace {                                                                                         \
     void c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub(                                      \
-        vector_uint8_t& dst, __ubuf__ uint8_t* src, iter_reg offset, Literal load_dist)                 \
+        vector_uint8_t& dst, __ubuf__ uint8_t* src, addr_reg offset, Literal load_dist)                 \
     {}                                                                                                  \
     }                                                                                                   \
                                                                                                         \
@@ -63,9 +63,9 @@
     {                                                                                                   \
         dst_type dst;                                                                                   \
         __ubuf__ src_type* src;                                                                         \
-        iter_reg offset;                                                                                \
+        addr_reg offset;                                                                                \
                                                                                                         \
-        MOCKER_CPP(cce_name, void(vector_uint8_t&, __ubuf__ uint8_t*, iter_reg, Literal))               \
+        MOCKER_CPP(cce_name, void(vector_uint8_t&, __ubuf__ uint8_t*, addr_reg, Literal))               \
             .times(1)                                                                                   \
             .will(invoke(c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub));                    \
                                                                                                         \
@@ -83,7 +83,7 @@
                                                                                                         \
     namespace {                                                                                         \
     void c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub(                                      \
-        vector_fp4x2_e1m2_t& dst, __ubuf__ float4_e1m2x2_t* src, iter_reg offset, Literal load_dist)    \
+        vector_fp4x2_e1m2_t& dst, __ubuf__ float4_e1m2x2_t* src, addr_reg offset, Literal load_dist)    \
     {}                                                                                                  \
     }                                                                                                   \
                                                                                                         \
@@ -93,9 +93,9 @@
     {                                                                                                   \
         dst_type dst;                                                                                   \
         __ubuf__ src_type* src;                                                                         \
-        iter_reg offset;                                                                                \
+        addr_reg offset;                                                                                \
                                                                                                         \
-        MOCKER_CPP(cce_name, void(vector_fp4x2_e1m2_t&, __ubuf__ float4_e1m2x2_t*, iter_reg, Literal))  \
+        MOCKER_CPP(cce_name, void(vector_fp4x2_e1m2_t&, __ubuf__ float4_e1m2x2_t*, addr_reg, Literal))  \
             .times(1)                                                                                   \
             .will(invoke(c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub));                    \
                                                                                                         \
@@ -113,7 +113,7 @@
                                                                                                            \
     namespace {                                                                                            \
     void c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub(                                         \
-        dst_type& dst0, dst_type& dst1, __ubuf__ src_type* src, iter_reg offset, Literal load_dist)        \
+        dst_type& dst0, dst_type& dst1, __ubuf__ src_type* src, addr_reg offset, Literal load_dist)        \
     {}                                                                                                     \
     }                                                                                                      \
                                                                                                            \
@@ -124,9 +124,9 @@
         dst_type dst0;                                                                                     \
         dst_type dst1;                                                                                     \
         __ubuf__ src_type* src;                                                                            \
-        iter_reg offset;                                                                                   \
+        addr_reg offset;                                                                                   \
                                                                                                            \
-        MOCKER_CPP(cce_name, void(dst_type&, dst_type&, __ubuf__ src_type*, iter_reg, Literal))            \
+        MOCKER_CPP(cce_name, void(dst_type&, dst_type&, __ubuf__ src_type*, addr_reg, Literal))            \
             .times(1)                                                                                      \
             .will(invoke(c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub));                       \
                                                                                                            \
@@ -144,7 +144,7 @@
                                                                                                                 \
     namespace {                                                                                                 \
     void c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub(                                              \
-        vector_uint8_t& dst0, vector_uint8_t& dst1, __ubuf__ uint8_t* src, iter_reg offset, Literal load_dist)  \
+        vector_uint8_t& dst0, vector_uint8_t& dst1, __ubuf__ uint8_t* src, addr_reg offset, Literal load_dist)  \
     {}                                                                                                          \
     }                                                                                                           \
                                                                                                                 \
@@ -155,9 +155,9 @@
         dst_type dst0;                                                                                          \
         dst_type dst1;                                                                                          \
         __ubuf__ src_type* src;                                                                                 \
-        iter_reg offset;                                                                                        \
+        addr_reg offset;                                                                                        \
                                                                                                                 \
-        MOCKER_CPP(cce_name, void(vector_uint8_t&, vector_uint8_t&, __ubuf__ uint8_t*, iter_reg, Literal))      \
+        MOCKER_CPP(cce_name, void(vector_uint8_t&, vector_uint8_t&, __ubuf__ uint8_t*, addr_reg, Literal))      \
             .times(1)                                                                                           \
             .will(invoke(c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub));                            \
                                                                                                                 \
@@ -175,7 +175,7 @@
                                                                                                                       \
     namespace {                                                                                                       \
     void c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub(                                                    \
-        vector_fp4x2_e1m2_t& dst0, vector_fp4x2_e1m2_t& dst1, __ubuf__ float4_e1m2x2_t* src, iter_reg offset,         \
+        vector_fp4x2_e1m2_t& dst0, vector_fp4x2_e1m2_t& dst1, __ubuf__ float4_e1m2x2_t* src, addr_reg offset,         \
         Literal load_dist)                                                                                            \
     {}                                                                                                                \
     }                                                                                                                 \
@@ -187,10 +187,10 @@
         dst_type dst0;                                                                                                \
         dst_type dst1;                                                                                                \
         __ubuf__ src_type* src;                                                                                       \
-        iter_reg offset;                                                                                              \
+        addr_reg offset;                                                                                              \
                                                                                                                       \
         MOCKER_CPP(                                                                                                   \
-            cce_name, void(vector_fp4x2_e1m2_t&, vector_fp4x2_e1m2_t&, __ubuf__ float4_e1m2x2_t*, iter_reg, Literal)) \
+            cce_name, void(vector_fp4x2_e1m2_t&, vector_fp4x2_e1m2_t&, __ubuf__ float4_e1m2x2_t*, addr_reg, Literal)) \
             .times(1)                                                                                                 \
             .will(invoke(c_api_name##_##dst_type##_##dst_type##_##src_type##_Stub));                                  \
                                                                                                                       \

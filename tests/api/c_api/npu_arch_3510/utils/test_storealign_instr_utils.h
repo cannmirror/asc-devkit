@@ -620,7 +620,7 @@
                                                                                                             \
     namespace {                                                                                             \
     void cce_name##_##data_type##_Stub_##index(                                                             \
-        vector_##data_type src, __ubuf__ data_type* dst, iter_reg offset, Literal dist, vector_bool mask)   \
+        vector_##data_type src, __ubuf__ data_type* dst, addr_reg offset, Literal dist, vector_bool mask)   \
     {}                                                                                                      \
     }                                                                                                       \
                                                                                                             \
@@ -629,9 +629,9 @@
         __ubuf__ data_type* dst = reinterpret_cast<__ubuf__ data_type*>(0);                                 \
         vector_##data_type src;                                                                             \
         vector_bool mask;                                                                                   \
-        iter_reg offset;                                                                                    \
+        addr_reg offset;                                                                                    \
                                                                                                             \
-        MOCKER_CPP(cce_name, void(vector_##data_type, __ubuf__ data_type*, iter_reg, Literal, vector_bool)) \
+        MOCKER_CPP(cce_name, void(vector_##data_type, __ubuf__ data_type*, addr_reg, Literal, vector_bool)) \
             .times(1)                                                                                       \
             .will(invoke(cce_name##_##data_type##_Stub_##index));                                           \
                                                                                                             \
@@ -649,7 +649,7 @@
                                                                                                          \
     namespace {                                                                                          \
     void cce_name##_##data_type##_Stub_##index(                                                          \
-        vector_uint8_t src, __ubuf__ uint8_t* dst, iter_reg offset, Literal dist, vector_bool mask)      \
+        vector_uint8_t src, __ubuf__ uint8_t* dst, addr_reg offset, Literal dist, vector_bool mask)      \
     {}                                                                                                   \
     }                                                                                                    \
                                                                                                          \
@@ -658,9 +658,9 @@
         __ubuf__ data_type* dst = reinterpret_cast<__ubuf__ data_type*>(0);                              \
         vector_##data_type src;                                                                          \
         vector_bool mask;                                                                                \
-        iter_reg offset;                                                                                 \
+        addr_reg offset;                                                                                 \
                                                                                                          \
-        MOCKER_CPP(cce_name, void(vector_uint8_t, __ubuf__ uint8_t*, iter_reg, Literal, vector_bool))    \
+        MOCKER_CPP(cce_name, void(vector_uint8_t, __ubuf__ uint8_t*, addr_reg, Literal, vector_bool))    \
             .times(1)                                                                                    \
             .will(invoke(cce_name##_##data_type##_Stub_##index));                                        \
                                                                                                          \
@@ -678,7 +678,7 @@
                                                                                                                    \
     namespace {                                                                                                    \
     void cce_name##_##data_type##_Stub_##index(                                                                    \
-        vector_fp4x2_e1m2_t src, __ubuf__ float4_e1m2x2_t* dst, iter_reg offset, Literal dist, vector_bool mask)   \
+        vector_fp4x2_e1m2_t src, __ubuf__ float4_e1m2x2_t* dst, addr_reg offset, Literal dist, vector_bool mask)   \
     {}                                                                                                             \
     }                                                                                                              \
                                                                                                                    \
@@ -687,9 +687,9 @@
         __ubuf__ data_type* dst = reinterpret_cast<__ubuf__ data_type*>(0);                                        \
         vector_int4x2_t src;                                                                                       \
         vector_bool mask;                                                                                          \
-        iter_reg offset;                                                                                           \
+        addr_reg offset;                                                                                           \
                                                                                                                    \
-        MOCKER_CPP(cce_name, void(vector_fp4x2_e1m2_t, __ubuf__ float4_e1m2x2_t*, iter_reg, Literal, vector_bool)) \
+        MOCKER_CPP(cce_name, void(vector_fp4x2_e1m2_t, __ubuf__ float4_e1m2x2_t*, addr_reg, Literal, vector_bool)) \
             .times(1)                                                                                              \
             .will(invoke(cce_name##_##data_type##_Stub_##index));                                                  \
                                                                                                                    \
@@ -707,7 +707,7 @@
                                                                                                             \
     namespace {                                                                                             \
     void cce_name##_##data_type##_Stub_##index(                                                             \
-        vector_##data_type src, __ubuf__ data_type* dst, iter_reg offset, Literal dist, vector_bool mask)   \
+        vector_##data_type src, __ubuf__ data_type* dst, addr_reg offset, Literal dist, vector_bool mask)   \
     {}                                                                                                      \
     }                                                                                                       \
                                                                                                             \
@@ -715,9 +715,9 @@
     {                                                                                                       \
         __ubuf__ data_type* dst = reinterpret_cast<__ubuf__ data_type*>(0);                                 \
         vector_##data_type src;                                                                             \
-        iter_reg offset;                                                                                    \
+        addr_reg offset;                                                                                    \
                                                                                                             \
-        MOCKER_CPP(cce_name, void(vector_##data_type, __ubuf__ data_type*, iter_reg, Literal, vector_bool)) \
+        MOCKER_CPP(cce_name, void(vector_##data_type, __ubuf__ data_type*, addr_reg, Literal, vector_bool)) \
             .times(1)                                                                                       \
             .will(invoke(cce_name##_##data_type##_Stub_##index));                                           \
                                                                                                             \
@@ -735,7 +735,7 @@
                                                                                                                \
     namespace {                                                                                                \
     void cce_name##_##data_type##_Stub_##index(                                                                \
-        vector_uint8_t src, __ubuf__ uint8_t* dst, iter_reg offset, Literal dist, vector_bool mask)            \
+        vector_uint8_t src, __ubuf__ uint8_t* dst, addr_reg offset, Literal dist, vector_bool mask)            \
     {}                                                                                                         \
     }                                                                                                          \
                                                                                                                \
@@ -743,9 +743,9 @@
     {                                                                                                          \
         __ubuf__ data_type* dst = reinterpret_cast<__ubuf__ data_type*>(0);                                    \
         vector_##data_type src;                                                                                \
-        iter_reg offset;                                                                                       \
+        addr_reg offset;                                                                                       \
                                                                                                                \
-        MOCKER_CPP(cce_name, void(vector_uint8_t, __ubuf__ uint8_t*, iter_reg, Literal, vector_bool))          \
+        MOCKER_CPP(cce_name, void(vector_uint8_t, __ubuf__ uint8_t*, addr_reg, Literal, vector_bool))          \
             .times(1)                                                                                          \
             .will(invoke(cce_name##_##data_type##_Stub_##index));                                              \
                                                                                                                \
@@ -763,7 +763,7 @@
                                                                                                                    \
     namespace {                                                                                                    \
     void cce_name##_##data_type##_Stub_##index(                                                                    \
-        vector_fp4x2_e1m2_t src, __ubuf__ float4_e1m2x2_t* dst, iter_reg offset, Literal dist, vector_bool mask)   \
+        vector_fp4x2_e1m2_t src, __ubuf__ float4_e1m2x2_t* dst, addr_reg offset, Literal dist, vector_bool mask)   \
     {}                                                                                                             \
     }                                                                                                              \
                                                                                                                    \
@@ -771,9 +771,9 @@
     {                                                                                                              \
         __ubuf__ data_type* dst = reinterpret_cast<__ubuf__ data_type*>(0);                                        \
         vector_int4x2_t src;                                                                                       \
-        iter_reg offset;                                                                                           \
+        addr_reg offset;                                                                                           \
                                                                                                                    \
-        MOCKER_CPP(cce_name, void(vector_fp4x2_e1m2_t, __ubuf__ float4_e1m2x2_t*, iter_reg, Literal, vector_bool)) \
+        MOCKER_CPP(cce_name, void(vector_fp4x2_e1m2_t, __ubuf__ float4_e1m2x2_t*, addr_reg, Literal, vector_bool)) \
             .times(1)                                                                                              \
             .will(invoke(cce_name##_##data_type##_Stub_##index));                                                  \
                                                                                                                    \
@@ -791,7 +791,7 @@
                                                                                                                   \
     namespace {                                                                                                   \
     void cce_name##_##data_type##_Stub_##index(                                                                   \
-        vector_##data_type src0, vector_##data_type src1, __ubuf__ data_type* dst, iter_reg offset, Literal dist, \
+        vector_##data_type src0, vector_##data_type src1, __ubuf__ data_type* dst, addr_reg offset, Literal dist, \
         vector_bool mask)                                                                                         \
     {}                                                                                                            \
     }                                                                                                             \
@@ -801,11 +801,11 @@
         __ubuf__ data_type* dst = reinterpret_cast<__ubuf__ data_type*>(0);                                       \
         vector_##data_type src0;                                                                                  \
         vector_##data_type src1;                                                                                  \
-        iter_reg offset;                                                                                          \
+        addr_reg offset;                                                                                          \
                                                                                                                   \
         MOCKER_CPP(                                                                                               \
             cce_name,                                                                                             \
-            void(vector_##data_type, vector_##data_type, __ubuf__ data_type*, iter_reg, Literal, vector_bool))    \
+            void(vector_##data_type, vector_##data_type, __ubuf__ data_type*, addr_reg, Literal, vector_bool))    \
             .times(1)                                                                                             \
             .will(invoke(cce_name##_##data_type##_Stub_##index));                                                 \
                                                                                                                   \
@@ -823,7 +823,7 @@
                                                                                                                       \
     namespace {                                                                                                       \
     void cce_name##_##data_type##_Stub_##index(                                                                       \
-        vector_uint8_t src0, vector_uint8_t src1, __ubuf__ uint8_t* dst, iter_reg offset, Literal dist,               \
+        vector_uint8_t src0, vector_uint8_t src1, __ubuf__ uint8_t* dst, addr_reg offset, Literal dist,               \
         vector_bool mask)                                                                                             \
     {}                                                                                                                \
     }                                                                                                                 \
@@ -833,9 +833,9 @@
         __ubuf__ data_type* dst = reinterpret_cast<__ubuf__ data_type*>(0);                                           \
         vector_##data_type src0;                                                                                      \
         vector_##data_type src1;                                                                                      \
-        iter_reg offset;                                                                                              \
+        addr_reg offset;                                                                                              \
                                                                                                                       \
-        MOCKER_CPP(cce_name, void(vector_uint8_t, vector_uint8_t, __ubuf__ uint8_t*, iter_reg, Literal, vector_bool)) \
+        MOCKER_CPP(cce_name, void(vector_uint8_t, vector_uint8_t, __ubuf__ uint8_t*, addr_reg, Literal, vector_bool)) \
             .times(1)                                                                                                 \
             .will(invoke(cce_name##_##data_type##_Stub_##index));                                                     \
                                                                                                                       \
@@ -853,7 +853,7 @@
                                                                                                                        \
     namespace {                                                                                                        \
     void cce_name##_##data_type##_Stub_##index(                                                                        \
-        vector_fp4x2_e1m2_t src0, vector_fp4x2_e1m2_t src1, __ubuf__ float4_e1m2x2_t* dst, iter_reg offset,            \
+        vector_fp4x2_e1m2_t src0, vector_fp4x2_e1m2_t src1, __ubuf__ float4_e1m2x2_t* dst, addr_reg offset,            \
         Literal dist, vector_bool mask)                                                                                \
     {}                                                                                                                 \
     }                                                                                                                  \
@@ -863,11 +863,11 @@
         __ubuf__ data_type* dst = reinterpret_cast<__ubuf__ data_type*>(0);                                            \
         vector_int4x2_t src0;                                                                                          \
         vector_int4x2_t src1;                                                                                          \
-        iter_reg offset;                                                                                               \
+        addr_reg offset;                                                                                               \
                                                                                                                        \
         MOCKER_CPP(                                                                                                    \
             cce_name,                                                                                                  \
-            void(vector_fp4x2_e1m2_t, vector_fp4x2_e1m2_t, __ubuf__ float4_e1m2x2_t*, iter_reg, Literal, vector_bool)) \
+            void(vector_fp4x2_e1m2_t, vector_fp4x2_e1m2_t, __ubuf__ float4_e1m2x2_t*, addr_reg, Literal, vector_bool)) \
             .times(1)                                                                                                  \
             .will(invoke(cce_name##_##data_type##_Stub_##index));                                                      \
                                                                                                                        \

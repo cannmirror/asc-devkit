@@ -21,31 +21,31 @@ constexpr uint32_t OFFSET2 = 96;
 constexpr uint32_t OFFSET3 = 128;
 
 #define DEFINE_VAG_STUBS(cce_name)                                                                     \
-    iter_reg cce_name##_stub_1(uint32_t offset)                                                        \
+    addr_reg cce_name##_stub_1(uint32_t offset)                                                        \
     {                                                                                                  \
         EXPECT_EQ(OFFSET0, offset);                                                                    \
-        return iter_reg{};                                                                             \
+        return addr_reg{};                                                                             \
     }                                                                                                  \
-    iter_reg cce_name##_stub_2(uint32_t offset0, uint32_t offset1)                                     \
+    addr_reg cce_name##_stub_2(uint32_t offset0, uint32_t offset1)                                     \
     {                                                                                                  \
         EXPECT_EQ(OFFSET0, offset0);                                                                   \
         EXPECT_EQ(OFFSET1, offset1);                                                                   \
-        return iter_reg{};                                                                             \
+        return addr_reg{};                                                                             \
     }                                                                                                  \
-    iter_reg cce_name##_stub_3(uint32_t offset0, uint32_t offset1, uint32_t offset2)                   \
+    addr_reg cce_name##_stub_3(uint32_t offset0, uint32_t offset1, uint32_t offset2)                   \
     {                                                                                                  \
         EXPECT_EQ(OFFSET0, offset0);                                                                   \
         EXPECT_EQ(OFFSET1, offset1);                                                                   \
         EXPECT_EQ(OFFSET2, offset2);                                                                   \
-        return iter_reg{};                                                                             \
+        return addr_reg{};                                                                             \
     }                                                                                                  \
-    iter_reg cce_name##_stub_4(uint32_t offset0, uint32_t offset1, uint32_t offset2, uint32_t offset3) \
+    addr_reg cce_name##_stub_4(uint32_t offset0, uint32_t offset1, uint32_t offset2, uint32_t offset3) \
     {                                                                                                  \
         EXPECT_EQ(OFFSET0, offset0);                                                                   \
         EXPECT_EQ(OFFSET1, offset1);                                                                   \
         EXPECT_EQ(OFFSET2, offset2);                                                                   \
         EXPECT_EQ(OFFSET3, offset3);                                                                   \
-        return iter_reg{};                                                                             \
+        return addr_reg{};                                                                             \
     }
 
 DEFINE_VAG_STUBS(vag_b8)
@@ -56,45 +56,45 @@ DEFINE_VAG_STUBS(vag_b32)
 
 } // namespace
 
-#define TEST_CREATE_ITER_REG_AIV(bxx, cce_name)                                                                \
-    class TestCreateIterReg##bxx : public testing::Test {                                                      \
+#define TEST_CREATE_ADDR_REG_AIV(bxx, cce_name)                                                                \
+    class TestCreateAddrReg##bxx : public testing::Test {                                                      \
     protected:                                                                                                 \
         void SetUp() {}                                                                                        \
         void TearDown() {}                                                                                     \
     };                                                                                                         \
                                                                                                                \
-    TEST_F(TestCreateIterReg##bxx, asc_create_iter_reg_##bxx##_1param_Succ)                                    \
+    TEST_F(TestCreateAddrReg##bxx, asc_create_addr_reg_##bxx##_1param_Succ)                                    \
     {                                                                                                          \
-        MOCKER_CPP(cce_name, iter_reg(uint32_t)).times(1).will(invoke(cce_name##_stub_1));                     \
-        asc_create_iter_reg_##bxx(OFFSET0);                                                                    \
+        MOCKER_CPP(cce_name, addr_reg(uint32_t)).times(1).will(invoke(cce_name##_stub_1));                     \
+        asc_create_addr_reg_##bxx(OFFSET0);                                                                    \
         GlobalMockObject::verify();                                                                            \
     }                                                                                                          \
                                                                                                                \
-    TEST_F(TestCreateIterReg##bxx, asc_create_iter_reg_##bxx##_2param_Succ)                                    \
+    TEST_F(TestCreateAddrReg##bxx, asc_create_addr_reg_##bxx##_2param_Succ)                                    \
     {                                                                                                          \
-        MOCKER_CPP(cce_name, iter_reg(uint32_t, uint32_t)).times(1).will(invoke(cce_name##_stub_2));           \
-        asc_create_iter_reg_##bxx(OFFSET0, OFFSET1);                                                           \
+        MOCKER_CPP(cce_name, addr_reg(uint32_t, uint32_t)).times(1).will(invoke(cce_name##_stub_2));           \
+        asc_create_addr_reg_##bxx(OFFSET0, OFFSET1);                                                           \
         GlobalMockObject::verify();                                                                            \
     }                                                                                                          \
                                                                                                                \
-    TEST_F(TestCreateIterReg##bxx, asc_create_iter_reg_##bxx##_3param_Succ)                                    \
+    TEST_F(TestCreateAddrReg##bxx, asc_create_addr_reg_##bxx##_3param_Succ)                                    \
     {                                                                                                          \
-        MOCKER_CPP(cce_name, iter_reg(uint32_t, uint32_t, uint32_t)).times(1).will(invoke(cce_name##_stub_3)); \
-        asc_create_iter_reg_##bxx(OFFSET0, OFFSET1, OFFSET2);                                                  \
+        MOCKER_CPP(cce_name, addr_reg(uint32_t, uint32_t, uint32_t)).times(1).will(invoke(cce_name##_stub_3)); \
+        asc_create_addr_reg_##bxx(OFFSET0, OFFSET1, OFFSET2);                                                  \
         GlobalMockObject::verify();                                                                            \
     }                                                                                                          \
                                                                                                                \
-    TEST_F(TestCreateIterReg##bxx, asc_create_iter_reg_##bxx##_4param_Succ)                                    \
+    TEST_F(TestCreateAddrReg##bxx, asc_create_addr_reg_##bxx##_4param_Succ)                                    \
     {                                                                                                          \
-        MOCKER_CPP(cce_name, iter_reg(uint32_t, uint32_t, uint32_t, uint32_t))                                 \
+        MOCKER_CPP(cce_name, addr_reg(uint32_t, uint32_t, uint32_t, uint32_t))                                 \
             .times(1)                                                                                          \
             .will(invoke(cce_name##_stub_4));                                                                  \
-        asc_create_iter_reg_##bxx(OFFSET0, OFFSET1, OFFSET2, OFFSET3);                                         \
+        asc_create_addr_reg_##bxx(OFFSET0, OFFSET1, OFFSET2, OFFSET3);                                         \
         GlobalMockObject::verify();                                                                            \
     }
 
-TEST_CREATE_ITER_REG_AIV(b8, vag_b8)
-TEST_CREATE_ITER_REG_AIV(b16, vag_b16)
-TEST_CREATE_ITER_REG_AIV(b32, vag_b32)
+TEST_CREATE_ADDR_REG_AIV(b8, vag_b8)
+TEST_CREATE_ADDR_REG_AIV(b16, vag_b16)
+TEST_CREATE_ADDR_REG_AIV(b32, vag_b32)
 
-#undef TEST_CREATE_ITER_REG_AIV
+#undef TEST_CREATE_ADDR_REG_AIV

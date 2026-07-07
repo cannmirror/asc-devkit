@@ -119,16 +119,16 @@ TEST_VECTOR_DATAMOVE_LOADUNALIGN_PRE_INT4(LoadUnalignPre, asc_loadunalign_pre, v
                                                                                                               \
     namespace {                                                                                               \
                                                                                                               \
-    void cce_name##_##data_type##_Stub(vector_load_unalign& dst, __ubuf__ data_type* src, iter_reg offset) {} \
+    void cce_name##_##data_type##_Stub(vector_load_unalign& dst, __ubuf__ data_type* src, addr_reg offset) {} \
     }                                                                                                         \
                                                                                                               \
     TEST_F(TestVectorDatamove##class_name##data_type##CApi, c_api_name##_Succ)                                \
     {                                                                                                         \
         vector_load_unalign dst;                                                                              \
         __ubuf__ data_type* src;                                                                              \
-        iter_reg offset;                                                                                      \
+        addr_reg offset;                                                                                      \
                                                                                                               \
-        MOCKER_CPP(cce_name, void(vector_load_unalign&, __ubuf__ data_type*, iter_reg offset))                \
+        MOCKER_CPP(cce_name, void(vector_load_unalign&, __ubuf__ data_type*, addr_reg offset))                \
             .times(1)                                                                                         \
             .will(invoke(cce_name##_##data_type##_Stub));                                                     \
                                                                                                               \
@@ -146,16 +146,16 @@ TEST_VECTOR_DATAMOVE_LOADUNALIGN_PRE_INT4(LoadUnalignPre, asc_loadunalign_pre, v
                                                                                                             \
     namespace {                                                                                             \
                                                                                                             \
-    void cce_name##_##data_type##_Stub(vector_load_unalign& dst, __ubuf__ uint8_t* src, iter_reg offset) {} \
+    void cce_name##_##data_type##_Stub(vector_load_unalign& dst, __ubuf__ uint8_t* src, addr_reg offset) {} \
     }                                                                                                       \
                                                                                                             \
     TEST_F(TestVectorDatamove##class_name##data_type##CApi, c_api_name##_Succ)                              \
     {                                                                                                       \
         vector_load_unalign dst;                                                                            \
         __ubuf__ data_type* src;                                                                            \
-        iter_reg offset;                                                                                    \
+        addr_reg offset;                                                                                    \
                                                                                                             \
-        MOCKER_CPP(cce_name, void(vector_load_unalign&, __ubuf__ uint8_t*, iter_reg offset))                \
+        MOCKER_CPP(cce_name, void(vector_load_unalign&, __ubuf__ uint8_t*, addr_reg offset))                \
             .times(1)                                                                                       \
             .will(invoke(cce_name##_##data_type##_Stub));                                                   \
                                                                                                             \
@@ -173,16 +173,16 @@ TEST_VECTOR_DATAMOVE_LOADUNALIGN_PRE_INT4(LoadUnalignPre, asc_loadunalign_pre, v
                                                                                                                     \
     namespace {                                                                                                     \
                                                                                                                     \
-    void cce_name##_##data_type##_Stub(vector_load_unalign& dst, __ubuf__ float4_e1m2x2_t* src, iter_reg offset) {} \
+    void cce_name##_##data_type##_Stub(vector_load_unalign& dst, __ubuf__ float4_e1m2x2_t* src, addr_reg offset) {} \
     }                                                                                                               \
                                                                                                                     \
     TEST_F(TestVectorDatamove##class_name##data_type##CApi, c_api_name##_Succ)                                      \
     {                                                                                                               \
         vector_load_unalign dst;                                                                                    \
         __ubuf__ data_type* src;                                                                                    \
-        iter_reg offset;                                                                                            \
+        addr_reg offset;                                                                                            \
                                                                                                                     \
-        MOCKER_CPP(cce_name, void(vector_load_unalign&, __ubuf__ float4_e1m2x2_t*, iter_reg offset))                \
+        MOCKER_CPP(cce_name, void(vector_load_unalign&, __ubuf__ float4_e1m2x2_t*, addr_reg offset))                \
             .times(1)                                                                                               \
             .will(invoke(cce_name##_##data_type##_Stub));                                                           \
                                                                                                                     \

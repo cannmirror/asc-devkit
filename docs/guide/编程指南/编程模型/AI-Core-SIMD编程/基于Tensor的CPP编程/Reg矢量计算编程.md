@@ -32,7 +32,7 @@ Reg矢量编程的硬件原理、内存层级、VF函数执行域、流水线同
 | 命名风格 | `LoadAlign`、`StoreUnAlignPost` | `asc_loadalign`、`asc_storeunalign_post` |
 | 矢量数据寄存器 | `RegTensor<T>` | `vector_float`、`vector_half`、`vector_int32_t`等 |
 | 掩码寄存器 | `MaskReg` | `vector_bool` |
-| 地址寄存器 | `AddrReg` | `iter_reg` |
+| 地址寄存器 | `AddrReg` | `addr_reg` |
 | 非对齐搬入/搬出寄存器 | `UnalignRegForLoad` / `UnalignRegForStore` | `vector_load_unalign` / `vector_store_unalign` |
 | 数据类型选择 | 模板参数`T`，通常可由参数推导 | 类型名或接口后缀，例如`_b8`、`_b16`、`_b32` |
 | PostUpdate | `PostLiteral`模板参数 | 接口名后缀，例如`_postupdate` |
@@ -44,7 +44,7 @@ Reg矢量编程的硬件原理、内存层级、VF函数执行域、流水线同
 | --- | --- | --- |
 | 创建全量mask | `CreateMask<T, MaskPattern::ALL>()` | `asc_create_mask_b*()` |
 | 更新尾块mask | `UpdateMask<T>(count)` | `asc_update_mask_b*()` |
-| 创建地址寄存器 | `CreateAddrReg<T>(...)` | `asc_create_iter_reg_b*()` |
+| 创建地址寄存器 | `CreateAddrReg<T>(...)` | `asc_create_addr_reg_b*()` |
 | 通用搬入/搬出 | `Load` / `Store` | `asc_load` / `asc_store` |
 | 对齐搬入/搬出 | `LoadAlign` / `StoreAlign` | `asc_loadalign` / `asc_storealign` |
 | 非对齐搬入 | `LoadUnAlignPre` + `LoadUnAlign` | `asc_loadunalign_pre` + `asc_loadunalign` |

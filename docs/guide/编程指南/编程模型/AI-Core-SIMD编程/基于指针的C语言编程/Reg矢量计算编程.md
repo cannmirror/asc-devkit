@@ -160,7 +160,7 @@ for (i = 0; i < repeat_times; ++i) {
 | --- | --- | --- |
 | 矢量数据寄存器 | `vector_*`，例如vector_float | VL = 256B |
 | 掩码寄存器 | `vector_bool` | VL/8 = 32B |
-| 地址寄存器 | `iter_reg` | 32bits = 8B |
+| 地址寄存器 | `addr_reg` | 32bits = 8B |
 | 搬入非对齐寄存器 | `vector_load_unalign` | DataBlock = 32B |
 | 搬出非对齐寄存器 | `vector_store_unalign` | DataBlock = 32B |
 
@@ -241,15 +241,15 @@ asc_and(dst_mask_reg, src0_mask_reg, src1_mask_reg, mask_reg);
 
 #### 地址迭代寄存器
 
-`iter_reg`用于保存UB访问的地址偏移量。它把原本需要在循环体内反复执行的标量地址计算转化为寄存器化的地址管理，最多支持四维偏移叠加。`AddrReg`通过`asc_create_iter_reg_b*`初始化，偏移量计算公式为：`offset = index0*stride0 + index1*stride1 + ...`。
+`addr_reg`用于保存UB访问的地址偏移量。它把原本需要在循环体内反复执行的标量地址计算转化为寄存器化的地址管理，最多支持四维偏移叠加。`AddrReg`通过`asc_create_addr_reg_b*`初始化，偏移量计算公式为：`offset = index0*stride0 + index1*stride1 + ...`。
 
 ```cpp
 // Allocate address iteration register
-iter_reg a_reg;
+addr_reg a_reg;
 // Use as 2D offset accumulation for b32 elements
 for(uint16_t i = 0;i < extent1; i++){
     for(uint16_t j = 0;j < extent2; j++){
-        a_reg = asc_create_iter_reg_b32(i, stride0, j, stride1);
+        a_reg = asc_create_addr_reg_b32(i, stride0, j, stride1);
         asc_loadalign(src_reg, src_addr, a_reg);
     }
 }
@@ -496,19 +496,19 @@ PostUpdate的优势在于：
 
 #### 使用地址寄存器搬运
 
-当循环中存在固定stride或多维索引时，可以使用`iter_reg`管理地址偏移，由硬件自动计算偏移减少标量指令消耗。例如两层循环示例如下：
+当循环中存在固定stride或多维索引时，可以使用`addr_reg`管理地址偏移，由硬件自动计算偏移减少标量指令消耗。例如两层循环示例如下：
 
 ```cpp
-iter_reg a_reg;
+addr_reg a_reg;
 for (uint16_t i = 0; i < extent1; ++i) {
     for (uint16_t j = 0; j < extent2; ++j) {
-        a_reg = asc_create_iter_reg(i, stride0, j, stride1);
+        a_reg = asc_create_addr_reg_b32(i, stride0, j, stride1);
         asc_loadalign(src_reg, src_addr, a_reg);
     }
 }
 ```
 
-`iter_reg`最多支持四维寻址，偏移量公式为`offset = index0*stride0 + index1*stride1 + index2*stride2 + index3*stride3`。
+`addr_reg`最多支持四维寻址，偏移量公式为`offset = index0*stride0 + index1*stride1 + index2*stride2 + index3*stride3`。
 
 ### 矢量计算
 

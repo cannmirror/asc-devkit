@@ -15,7 +15,7 @@
 支持三种偏移方式：
 - 偏移固定传入0，由用户自行更新源操作数的地址。
 - 通过int32_t传入偏移，用户可以选择更新偏移或者更新源操作数的地址。
-- 通过iter_reg地址寄存器传入偏移，用户可以选择更新偏移或者更新源操作数的地址。
+- 通过addr_reg地址寄存器传入偏移，用户可以选择更新偏移或者更新源操作数的地址。
 
 ## 函数原型
 
@@ -39,15 +39,15 @@
   __simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_uint32_t& dst, __ubuf__ uint32_t* src, int32_t offset)
   __simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_float& dst, __ubuf__ float* src, int32_t offset)
   ```
-- 通过iter_reg地址寄存器传入偏移
+- 通过addr_reg地址寄存器传入偏移
   ```cpp
-  __simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_uint16_t& dst, __ubuf__ uint16_t* src, iter_reg offset)
-  __simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_int16_t& dst, __ubuf__ int16_t* src, iter_reg offset)
-  __simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src, iter_reg offset)
-  __simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_half& dst, __ubuf__ half* src, iter_reg offset)
-  __simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_uint32_t& dst, __ubuf__ uint32_t* src, iter_reg offset)
-  __simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_int32_t& dst, __ubuf__ int32_t* src, iter_reg offset)
-  __simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_float& dst, __ubuf__ float* src, iter_reg offset)
+  __simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_uint16_t& dst, __ubuf__ uint16_t* src, addr_reg offset)
+  __simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_int16_t& dst, __ubuf__ int16_t* src, addr_reg offset)
+  __simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src, addr_reg offset)
+  __simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_half& dst, __ubuf__ half* src, addr_reg offset)
+  __simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_uint32_t& dst, __ubuf__ uint32_t* src, addr_reg offset)
+  __simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_int32_t& dst, __ubuf__ int32_t* src, addr_reg offset)
+  __simd_callee__ inline void asc_loadalign_brc_elem2datablock(vector_float& dst, __ubuf__ float* src, addr_reg offset)
   ```
 
 ## 参数说明

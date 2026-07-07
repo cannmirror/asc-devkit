@@ -19,7 +19,7 @@ reg数据搬运接口，适用于从UB搬入MaskReg。
     ```cpp
     __simd_callee__ inline void asc_loadalign(vector_bool& dst, __ubuf__ uint32_t* src)
     __simd_callee__ inline void asc_loadalign(vector_bool& dst, __ubuf__ uint32_t* src, int32_t offset)
-    __simd_callee__ inline void asc_loadalign(vector_bool& dst, __ubuf__ uint32_t* src, iter_reg offset)
+    __simd_callee__ inline void asc_loadalign(vector_bool& dst, __ubuf__ uint32_t* src, addr_reg offset)
     ```
 
 - 上采样搬运
@@ -27,7 +27,7 @@ reg数据搬运接口，适用于从UB搬入MaskReg。
     ```cpp
     __simd_callee__ inline void asc_loadalign_upsample(vector_bool& dst, __ubuf__ uint32_t* src)
     __simd_callee__ inline void asc_loadalign_upsample(vector_bool& dst, __ubuf__ uint32_t* src, int32_t offset)
-    __simd_callee__ inline void asc_loadalign_upsample(vector_bool& dst, __ubuf__ uint32_t* src, iter_reg offset)
+    __simd_callee__ inline void asc_loadalign_upsample(vector_bool& dst, __ubuf__ uint32_t* src, addr_reg offset)
     ```
 
 - 下采样搬运
@@ -35,7 +35,7 @@ reg数据搬运接口，适用于从UB搬入MaskReg。
     ```cpp
     __simd_callee__ inline void asc_loadalign_downsample(vector_bool& dst, __ubuf__ uint32_t* src)
     __simd_callee__ inline void asc_loadalign_downsample(vector_bool& dst, __ubuf__ uint32_t* src, int32_t offset)
-    __simd_callee__ inline void asc_loadalign_downsample(vector_bool& dst, __ubuf__ uint32_t* src, iter_reg offset)
+    __simd_callee__ inline void asc_loadalign_downsample(vector_bool& dst, __ubuf__ uint32_t* src, addr_reg offset)
     ```
 
 ## 参数说明
@@ -65,6 +65,6 @@ PIPE_V
 constexpr uint64_t total_length = 256;
 vector_bool dst = asc_create_mask_b16(PAT_ALL);
 __ubuf__ uint32_t src[total_length];
-iter_reg offset = asc_create_iter_reg_b32(64);
+addr_reg offset = asc_create_addr_reg_b32(64);
 asc_loadalign(dst, src, offset);
 ```

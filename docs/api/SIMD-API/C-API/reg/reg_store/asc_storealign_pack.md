@@ -38,17 +38,17 @@
   __simd_callee__ inline void asc_storealign_pack(__ubuf__ float* dst_align32b, vector_float src, int32_t offset, vector_bool mask)
   __simd_callee__ inline void asc_storealign_pack(__ubuf__ bfloat16_t* dst_align32b, vector_bfloat16_t src, int32_t offset, vector_bool mask)
   ```
-- 通过iter_reg地址寄存器传入偏移
+- 通过addr_reg地址寄存器传入偏移
   ```cpp
-  __simd_callee__ inline void asc_storealign_pack(__ubuf__ int16_t* dst_align32b, vector_int16_t src, iter_reg offset, vector_bool mask)
-  __simd_callee__ inline void asc_storealign_pack(__ubuf__ uint16_t* dst_align32b, vector_uint16_t src, iter_reg offset, vector_bool mask)
-  __simd_callee__ inline void asc_storealign_pack(__ubuf__ int32_t* dst_align32b, vector_int32_t src, iter_reg offset, vector_bool mask)
-  __simd_callee__ inline void asc_storealign_pack(__ubuf__ uint32_t* dst_align32b, vector_uint32_t src, iter_reg offset, vector_bool mask)
-  __simd_callee__ inline void asc_storealign_pack(__ubuf__ int64_t* dst_align32b, vector_int64_t src, iter_reg offset, vector_bool mask)
-  __simd_callee__ inline void asc_storealign_pack(__ubuf__ uint64_t* dst_align32b, vector_uint64_t src, iter_reg offset, vector_bool mask)
-  __simd_callee__ inline void asc_storealign_pack(__ubuf__ half* dst_align32b, vector_half src, iter_reg offset, vector_bool mask)
-  __simd_callee__ inline void asc_storealign_pack(__ubuf__ float* dst_align32b, vector_float src, iter_reg offset, vector_bool mask)
-  __simd_callee__ inline void asc_storealign_pack(__ubuf__ bfloat16_t* dst_align32b, vector_bfloat16_t src, iter_reg offset, vector_bool mask)
+  __simd_callee__ inline void asc_storealign_pack(__ubuf__ int16_t* dst_align32b, vector_int16_t src, addr_reg offset, vector_bool mask)
+  __simd_callee__ inline void asc_storealign_pack(__ubuf__ uint16_t* dst_align32b, vector_uint16_t src, addr_reg offset, vector_bool mask)
+  __simd_callee__ inline void asc_storealign_pack(__ubuf__ int32_t* dst_align32b, vector_int32_t src, addr_reg offset, vector_bool mask)
+  __simd_callee__ inline void asc_storealign_pack(__ubuf__ uint32_t* dst_align32b, vector_uint32_t src, addr_reg offset, vector_bool mask)
+  __simd_callee__ inline void asc_storealign_pack(__ubuf__ int64_t* dst_align32b, vector_int64_t src, addr_reg offset, vector_bool mask)
+  __simd_callee__ inline void asc_storealign_pack(__ubuf__ uint64_t* dst_align32b, vector_uint64_t src, addr_reg offset, vector_bool mask)
+  __simd_callee__ inline void asc_storealign_pack(__ubuf__ half* dst_align32b, vector_half src, addr_reg offset, vector_bool mask)
+  __simd_callee__ inline void asc_storealign_pack(__ubuf__ float* dst_align32b, vector_float src, addr_reg offset, vector_bool mask)
+  __simd_callee__ inline void asc_storealign_pack(__ubuf__ bfloat16_t* dst_align32b, vector_bfloat16_t src, addr_reg offset, vector_bool mask)
   ```
 
 ## 参数说明

@@ -15,7 +15,7 @@
 支持三种偏移方式：
 - 偏移固定传入0，由用户自行更新目的操作数的地址。
 - 通过int32_t传入偏移，用户可以选择更新偏移或者更新目的操作数的地址。
-- 通过iter_reg地址寄存器传入偏移，用户可以选择更新偏移或者更新目的操作数的地址。
+- 通过addr_reg地址寄存器传入偏移，用户可以选择更新偏移或者更新目的操作数的地址。
 
 支持Post Update模式，接口调用后自动更新目的操作数地址。
 
@@ -33,11 +33,11 @@
   __simd_callee__ inline void asc_storealign_pack_quarter(__ubuf__ uint32_t* dst_align32b, vector_uint32_t src, int32_t offset, vector_bool mask)
   __simd_callee__ inline void asc_storealign_pack_quarter(__ubuf__ float* dst_align32b, vector_float src, int32_t offset, vector_bool mask)
   ```
-- 通过iter_reg地址寄存器传入偏移，用户可以选择更新偏移或者更新目的操作数的地址
+- 通过addr_reg地址寄存器传入偏移，用户可以选择更新偏移或者更新目的操作数的地址
   ```cpp
-  __simd_callee__ inline void asc_storealign_pack_quarter(__ubuf__ int32_t* dst_align32b, vector_int32_t src, iter_reg offset, vector_bool mask)
-  __simd_callee__ inline void asc_storealign_pack_quarter(__ubuf__ uint32_t* dst_align32b, vector_uint32_t src, iter_reg offset, vector_bool mask)
-  __simd_callee__ inline void asc_storealign_pack_quarter(__ubuf__ float* dst_align32b, vector_float src, iter_reg offset, vector_bool mask)
+  __simd_callee__ inline void asc_storealign_pack_quarter(__ubuf__ int32_t* dst_align32b, vector_int32_t src, addr_reg offset, vector_bool mask)
+  __simd_callee__ inline void asc_storealign_pack_quarter(__ubuf__ uint32_t* dst_align32b, vector_uint32_t src, addr_reg offset, vector_bool mask)
+  __simd_callee__ inline void asc_storealign_pack_quarter(__ubuf__ float* dst_align32b, vector_float src, addr_reg offset, vector_bool mask)
   ```
 
 ## 参数说明
