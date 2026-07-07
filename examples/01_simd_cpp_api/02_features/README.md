@@ -12,4 +12,5 @@
 | [02_tiling_selector](./02_tiling_selector) | 展示SIMD矢量计算场景下多核Tiling切分策略和Tiling参数选择方式。 |
 | [04_compile](./04_compile) | 展示SIMD编译相关的特性样例。 |
 | [05_aclrtc](./05_aclrtc) | 样例主要介绍使用Aclrtc（运行时编译）接口在Host侧编译字符串形式的Ascend C核函数，并完成编译结果的加载和执行的过程 |
+| [06_aot_compilation](./06_aot_compilation) | 样例主要介绍基于AOT（Ahead-of-Time）编译的性能优化方法 |
 | [99_acl_based](./99_acl_based) | 本样例介绍了自定义算子编译工程和Aclnn/Aclop算子调用的实现方法 |
