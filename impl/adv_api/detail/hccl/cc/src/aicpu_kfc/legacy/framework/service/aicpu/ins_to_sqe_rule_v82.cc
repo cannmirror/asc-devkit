@@ -1,12 +1,13 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
 #include <regex>
 #include "ins_to_sqe_rule.h"
 #include "drv_api_exception.h"
@@ -27,12 +28,13 @@
 
 namespace Hccl {
 
-constexpr u32 DATA_SIZE         = 64;
-constexpr u32 INLINE_WRITE_SIZE = 4;
 constexpr u32 BASE_BIT = 1; // 用于左移设置二进制数的特定位
 
 template <typename INS_TYPE> MemTransportLite &GetTransportLite(const INS_TYPE &ins, ResMgrFetcher *resMgrFetcher)
 {
+    if (ins.GetLink() == nullptr) {
+        THROW<NullPtrException>(StringFormat("%s ins.GetLink() is nullptr", ins.Describe().c_str()));
+    }
     MemTransportLite *transport = nullptr;
     if (resMgrFetcher->GetCurrentOp().opMode == OpMode::OPBASE) {
         transport = resMgrFetcher->GetTransportLiteMgr()->GetOpbase(*ins.GetLink()); // 单算子，采用 GetOpBase
@@ -128,8 +130,8 @@ void Interpret(const InsLocalPostTo &ins, const StreamLite &stream, ResMgrFetche
     taskParam.beginTime                = ProfGetCurCpuTimestamp();
     taskParam.taskPara.Notify.notifyID = notifyId;
     taskParam.taskPara.Notify.value    = value;
-    auto taskInfo = std::make_shared<TaskInfo>(stream.GetSqId(), taskId, INVALID_VALUE_RANKID, taskParam);
-    resMgrFetcher->GetMirrorTaskMgrLite()->AddTaskInfo(taskInfo);
+    auto taskInfo = std::make_unique<TaskInfo>(stream.GetSqId(), taskId, INVALID_VALUE_RANKID, taskParam);
+    resMgrFetcher->GetMirrorTaskMgrLite()->AddTaskInfo(std::move(taskInfo));
 }
 
 void Interpret(const InsLocalWaitFrom &ins, const StreamLite &stream, ResMgrFetcher *resMgrFetcher)
@@ -157,8 +159,8 @@ void Interpret(const InsLocalWaitFrom &ins, const StreamLite &stream, ResMgrFetc
     taskParam.beginTime                = ProfGetCurCpuTimestamp();
     taskParam.taskPara.Notify.notifyID = notifyId;
     taskParam.taskPara.Notify.value    = value;
-    auto taskInfo = std::make_shared<TaskInfo>(stream.GetSqId(), taskId, INVALID_VALUE_RANKID, taskParam);
-    resMgrFetcher->GetMirrorTaskMgrLite()->AddTaskInfo(taskInfo);
+    auto taskInfo = std::make_unique<TaskInfo>(stream.GetSqId(), taskId, INVALID_VALUE_RANKID, taskParam);
+    resMgrFetcher->GetMirrorTaskMgrLite()->AddTaskInfo(std::move(taskInfo));
 }
 
 void Interpret(const InsLocalCopy &ins, const StreamLite &stream, ResMgrFetcher *resMgrFetcher)
@@ -167,7 +169,7 @@ void Interpret(const InsLocalCopy &ins, const StreamLite &stream, ResMgrFetcher 
         return;
     }
 
-    // 传入数据大小不能超过 u32最大值， 需要进行切分
+    // � 入数据大小不能超过 u32最大值， 需要进行切分
     u64 u32Max = UINT32_MAX;
     double countSplitingTimes = static_cast<double>(ins.GetSrcSlice().GetSize()) / static_cast<double>(u32Max);
     u64 splitingTimes = static_cast<int>(std::ceil(countSplitingTimes));
@@ -181,7 +183,7 @@ void Interpret(const InsLocalCopy &ins, const StreamLite &stream, ResMgrFetcher 
             blockSize = ins.GetSrcSlice().GetSize() - u32Max * (splitingTimes - 1);
             offset = 0;
         }
-        
+
         auto taskId = stream.GetRtsq()->GetTaskId();
         stream.GetRtsq()->SdmaCopy(src, dst, blockSize, 0); // 待确认， PART_ID是否固定设置为 0
         HCCL_INFO("InsLocalCopy srcA:0x%llx dstA:0x%llx,size=0x%llx", src, dst, blockSize);
@@ -194,10 +196,10 @@ void Interpret(const InsLocalCopy &ins, const StreamLite &stream, ResMgrFetcher 
         taskParam.taskPara.DMA.notifyID = INVALID_VALUE_NOTIFYID;
         taskParam.taskPara.DMA.linkType = DfxLinkType::ONCHIP;
         taskParam.taskPara.DMA.dmaOp    = DmaOp::HCCL_DMA_READ;
-        auto taskInfo = std::make_shared<TaskInfo>(stream.GetSqId(), taskId, INVALID_VALUE_RANKID, taskParam);
-        resMgrFetcher->GetMirrorTaskMgrLite()->AddTaskInfo(taskInfo);   
+        auto taskInfo = std::make_unique<TaskInfo>(stream.GetSqId(), taskId, INVALID_VALUE_RANKID, taskParam);
+        resMgrFetcher->GetMirrorTaskMgrLite()->AddTaskInfo(std::move(taskInfo));
         src += offset;
-        dst += offset;    
+        dst += offset;
     }
 }
 
@@ -208,7 +210,7 @@ void Interpret(const InsLocalCopyExtend &ins, const StreamLite &stream, ResMgrFe
         return;
     }
 
-    // 传入数据大小不能超过 u32最大值， 需要进行切分
+    // � 入数据大小不能超过 u32最大值， 需要进行切分
     u64 u32Max = UINT32_MAX;
     double countSplitingTimes = static_cast<double>(ins.GetSrcBuffer().GetSize()) / static_cast<double>(u32Max);
     u64 splitingTimes = static_cast<int>(std::ceil(countSplitingTimes));
@@ -222,7 +224,7 @@ void Interpret(const InsLocalCopyExtend &ins, const StreamLite &stream, ResMgrFe
             blockSize = ins.GetSrcBuffer().GetSize() - u32Max * (splitingTimes - 1);
             offset = 0;
         }
-    
+
         auto taskId = stream.GetRtsq()->GetTaskId();
         stream.GetRtsq()->SdmaCopy(src, dst, blockSize, 0); // 待确认， PART_ID是否固定设置为 0
         HCCL_INFO("InsLocalCopyExtend srcA:0x%llx dstA:0x%llx,size=0x%llx", src, dst, blockSize);
@@ -235,10 +237,10 @@ void Interpret(const InsLocalCopyExtend &ins, const StreamLite &stream, ResMgrFe
         taskParam.taskPara.DMA.notifyID = INVALID_VALUE_NOTIFYID;
         taskParam.taskPara.DMA.linkType = DfxLinkType::ONCHIP;
         taskParam.taskPara.DMA.dmaOp    = DmaOp::HCCL_DMA_READ;
-        auto taskInfo = std::make_shared<TaskInfo>(stream.GetSqId(), taskId, INVALID_VALUE_RANKID, taskParam);
-        resMgrFetcher->GetMirrorTaskMgrLite()->AddTaskInfo(taskInfo);
+        auto taskInfo = std::make_unique<TaskInfo>(stream.GetSqId(), taskId, INVALID_VALUE_RANKID, taskParam);
+        resMgrFetcher->GetMirrorTaskMgrLite()->AddTaskInfo(std::move(taskInfo));
         src += offset;
-        dst += offset; 
+        dst += offset;
     }
 }
 
@@ -264,7 +266,7 @@ void Interpret(const InsLocalReduce &ins, const StreamLite &stream, ResMgrFetche
         HCCL_WARNING("%s InsLocalReduce srcSlice size is not equal to dstSlice size, return", __func__);
         return;
     }
-    
+
     AicpuCheckLocalReduceIns(ins);
     RmaBufferLite* srcPtr = resMgrFetcher->GetRmaBufferLite(ins.GetSrcSlice().GetType());
     RmaBufferLite* dstPtr = resMgrFetcher->GetRmaBufferLite(ins.GetDstSlice().GetType());
@@ -278,11 +280,11 @@ void Interpret(const InsLocalReduce &ins, const StreamLite &stream, ResMgrFetche
     u64 src = srcPtr->GetAddr() + srcOffset;
     u64 dst = dstPtr->GetAddr() + dstOffset;
     ReduceIn reduceIn(ins.GetDataType(), ins.GetReduceOp());
-    
+
+    auto taskId = stream.GetRtsq()->GetTaskId();
     stream.GetRtsq()->SdmaReduce(src, dst, ins.GetSrcSlice().GetSize(), 0, reduceIn); // 待确认， PART_ID是否固定设置为 0
 
     HCCL_INFO("InsLocalReduce srcA:0x%llx dstA:0x%llx,size=0x%llx", src, dst, ins.GetSrcSlice().GetSize());
-    auto taskId = stream.GetRtsq()->GetTaskId();
     TaskParam taskParam{};
     taskParam.taskType              = TaskParamType::TASK_REDUCE_INLINE;
     taskParam.beginTime             = ProfGetCurCpuTimestamp();
@@ -293,8 +295,8 @@ void Interpret(const InsLocalReduce &ins, const StreamLite &stream, ResMgrFetche
     taskParam.taskPara.Reduce.linkType = DfxLinkType::ONCHIP;
     taskParam.taskPara.Reduce.dataType = DataTypeToHcclDataType(ins.GetDataType());
     taskParam.taskPara.Reduce.reduceOp = ReduceOpToHcclReduceOp(ins.GetReduceOp());
-    auto taskInfo = std::make_shared<TaskInfo>(stream.GetSqId(), taskId, INVALID_VALUE_RANKID, taskParam);
-    resMgrFetcher->GetMirrorTaskMgrLite()->AddTaskInfo(taskInfo);
+    auto taskInfo = std::make_unique<TaskInfo>(stream.GetSqId(), taskId, INVALID_VALUE_RANKID, taskParam);
+    resMgrFetcher->GetMirrorTaskMgrLite()->AddTaskInfo(std::move(taskInfo));
 }
 
 void Interpret(const InsLocalWaitGroup &ins, const StreamLite &stream, ResMgrFetcher *resMgrFetcher)
@@ -317,8 +319,8 @@ void Interpret(const InsLocalWaitGroup &ins, const StreamLite &stream, ResMgrFet
     taskParam.beginTime                = ProfGetCurCpuTimestamp();
     taskParam.taskPara.Notify.notifyID = notify.GetId();
     taskParam.taskPara.Notify.value    = value;
-    auto taskInfo = std::make_shared<TaskInfo>(stream.GetSqId(), taskId, INVALID_VALUE_RANKID, taskParam);
-    resMgrFetcher->GetMirrorTaskMgrLite()->AddTaskInfo(taskInfo);
+    auto taskInfo = std::make_unique<TaskInfo>(stream.GetSqId(), taskId, INVALID_VALUE_RANKID, taskParam);
+    resMgrFetcher->GetMirrorTaskMgrLite()->AddTaskInfo(std::move(taskInfo));
 }
 
 void Interpret(const InsLocalBcastPost &ins, const StreamLite &stream, ResMgrFetcher *resMgrFetcher)
@@ -337,8 +339,8 @@ void Interpret(const InsLocalBcastPost &ins, const StreamLite &stream, ResMgrFet
     taskParam.beginTime                = ProfGetCurCpuTimestamp();
     taskParam.taskPara.Notify.notifyID = notify.GetId();
     taskParam.taskPara.Notify.value    = value;
-    auto taskInfo = std::make_shared<TaskInfo>(stream.GetSqId(), taskId, INVALID_VALUE_RANKID, taskParam);
-    resMgrFetcher->GetMirrorTaskMgrLite()->AddTaskInfo(taskInfo);
+    auto taskInfo = std::make_unique<TaskInfo>(stream.GetSqId(), taskId, INVALID_VALUE_RANKID, taskParam);
+    resMgrFetcher->GetMirrorTaskMgrLite()->AddTaskInfo(std::move(taskInfo));
 }
 
 void Interpret(const InsPostReady &ins, const StreamLite &stream, ResMgrFetcher *resMgrFetcher)
@@ -672,7 +674,7 @@ void Interpret(const InsStreamSync &insStreamSync, const StreamLite &stream, Res
             HCCL_INFO("[StreamSync]Current state. sqid:%d, head:%u, tail:%u",
                 sqId, head, tail);
         }
-    } while (head != tail);  
+    } while (head != tail);
 }
 
 void Interpret(const InsPreStreamSync &insPreStreamSync, const StreamLite &stream, ResMgrFetcher *resMgrFetcher)
@@ -697,7 +699,7 @@ void Interpret(const InsAicpuReduce &insAicpuReduce, const StreamLite &stream, R
         HCCL_WARNING("%s InsAicpuReduce srcSlice size is not equal to dstSlice size, return", __func__);
         return;
     }
-    
+
     RmaBufferLite* srcPtr = resMgrFetcher->GetRmaBufferLite(insAicpuReduce.GetSrcSlice().GetType());
     RmaBufferLite* dstPtr = resMgrFetcher->GetRmaBufferLite(insAicpuReduce.GetDstSlice().GetType());
     u64 srcOffset = insAicpuReduce.GetSrcSlice().GetOffset();
@@ -723,8 +725,8 @@ void Interpret(const InsAicpuReduce &insAicpuReduce, const StreamLite &stream, R
     taskParam.taskPara.Reduce.linkType = DfxLinkType::ONCHIP;
     taskParam.taskPara.Reduce.dataType = DataTypeToHcclDataType(insAicpuReduce.GetDataType());
     taskParam.taskPara.Reduce.reduceOp = ReduceOpToHcclReduceOp(insAicpuReduce.GetReduceOp());
-    auto taskInfo = std::make_shared<TaskInfo>(stream.GetSqId(), taskId, INVALID_VALUE_RANKID, taskParam);
-    resMgrFetcher->GetMirrorTaskMgrLite()->AddTaskInfo(taskInfo);
+    auto taskInfo = std::make_unique<TaskInfo>(stream.GetSqId(), taskId, INVALID_VALUE_RANKID, taskParam);
+    resMgrFetcher->GetMirrorTaskMgrLite()->AddTaskInfo(std::move(taskInfo));
 }
 
 const std::unordered_map<InstructionType, InsToSqeRule91095, std::EnumClassHash> insRule91095Map{
@@ -756,7 +758,7 @@ const std::unordered_map<InstructionType, InsToSqeRule91095, std::EnumClassHash>
     {InstructionType::WAIT_FIN_ACK, Rule91095<InsWaitFinAck>()},
     {InstructionType::STREAM_SYNC, Rule91095<InsStreamSync>()},
     {InstructionType::PRE_STREAM_SYNC, Rule91095<InsPreStreamSync>()},
-    {InstructionType::AICPU_REDUCE, Rule91095<InsAicpuReduce>()} 
+    {InstructionType::AICPU_REDUCE, Rule91095<InsAicpuReduce>()}
 };
 
 void Interpret(const Instruction &ins, const StreamLite &stream, ResMgrFetcher *resMgrFetcher)

@@ -1,12 +1,13 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
 #include <shared_mutex>
 #include "inc/aicpu_utils.h"
 #include "log.h"
@@ -37,12 +38,18 @@ void AicpuUtils::CreateSingleInstance(void *args) const
     auto *kernelParam = reinterpret_cast<HcclKernelParamLite *>(args);
     UbConnLiteMgr::GetInstance();
     AicpuDaemonService::GetInstance();
-    TaskExceptionFunc::GetInstance().SetEnable(kernelParam->envConfig.taskExceptionEnable); // 根据环境变量使能TaskException
+    TaskExceptionFunc::GetInstance().SetEnable(kernelParam->envConfig.taskExceptionEnable); //  据环境变量使能TaskException
     AicpuCommDestroyFunc::GetInstance();
     TaskExceptionHandlerLite::GetInstance();
     ProfilingHandlerLite::GetInstance();
     DevCapability::GetInstance();
     CommunicatorImplLiteMgr::GetInstance().SetEnvConfig(kernelParam->envConfig); // 初始化并设置Device侧环境变量
+}
+
+HcclResult AicpuUtils::Init() const
+{
+    CHK_RET(ProfilingHandlerLite::GetInstance().Init());
+    return HCCL_SUCCESS;
 }
 
 HcclResult AicpuUtils::WaitCommFree(CommunicatorImplLite *communicatorImplLite, const char* funcName) const
@@ -88,7 +95,7 @@ HcclResult AicpuUtils::GetCommHandle(CommunicatorImplLite *communicatorImplLite,
                     kernelParam_->op.algOperator.opMode.Describe().c_str());
         return HCCL_E_PARA;
     }
-    
+
     *opHandle = reinterpret_cast<void *>(communicatorImplLite);
     return HCCL_SUCCESS;
 }
@@ -422,7 +429,7 @@ HcclResult AicpuUtils::RecoverKernelParam(CommunicatorImplLite *communicatorImpl
     }
     if (kernelParam_->op.algOperator.opType != OP_TYPE_MAP.at(data->opType)) {
         HCCL_ERROR("[%s]Args kernelParam_->op.algOperator.opType %s is not equal to data->opType %s, commId %u.", __func__,
-                   kernelParam_->op.algOperator.opType.Describe().c_str(), OP_TYPE_MAP.at(data->opType).Describe().c_str(), 
+                   kernelParam_->op.algOperator.opType.Describe().c_str(), OP_TYPE_MAP.at(data->opType).Describe().c_str(),
                    communicatorImplLite->GetCommIdIndex());
         return HCCL_E_PARA;
     }

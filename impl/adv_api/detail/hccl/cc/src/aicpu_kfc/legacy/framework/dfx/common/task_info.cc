@@ -1,12 +1,13 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
 #include <sstream>
 #include "task_info.h"
 #include "log.h"
@@ -17,20 +18,22 @@
 namespace Hccl {
 using namespace std;
 
-TaskInfo::TaskInfo(u32 streamId, u32 taskId, u32 remoteRank, TaskParam taskParam, std::shared_ptr<DfxOpInfo> dfxOpInfo, bool isMaster)
+TaskInfo::TaskInfo(u32 streamId, u32 taskId, u32 remoteRank, const TaskParam& taskParam, const std::shared_ptr<DfxOpInfo>& dfxOpInfo, bool isMaster)
     : streamId_(streamId), taskId_(taskId), remoteRank_(remoteRank), taskParam_(taskParam), dfxOpInfo_(dfxOpInfo), isMaster_(isMaster)
 {}
 
 std::string TaskInfo::Describe() const
 {
-    return StringFormat("TaskInfo[streamId(sqId):[%u], taskId(sqeId):[%u], remoteRank:[%u], taskParam:[%s], dftOpInfo:[%s], isMaster[%d]]",
-                        streamId_, taskId_, remoteRank_, taskParam_.Describe().c_str(), dfxOpInfo_->Describe().c_str(), isMaster_);
+    return StringFormat("TaskInfo[streamId(sqId):[%u], taskId(sqeId):[%u], remoteRank:[%u], taskParam:[%s], dfxOpInfo:[%s], isMaster[%d]]",
+                        streamId_, taskId_, remoteRank_, taskParam_.Describe().c_str(),
+                        dfxOpInfo_ == nullptr ? "nullptr" : dfxOpInfo_->Describe().c_str(), isMaster_);
 }
 
 string TaskInfo::GetAlgTypeName() const
 {
     if (this->dfxOpInfo_ == nullptr) {
-        HCCL_ERROR("[TaskInfo][%s]TaskInfo dfxOpInfo is nullptr.", __func__);
+        HCCL_ERROR("[TaskInfo][%s]dfxOpInfo is nullptr, no op info registered, return default value. "
+            "streamId(sqId)[%u], taskId(sqeId)[%u].", __func__, streamId_, taskId_);
         return "NULL";
     }
     return this->dfxOpInfo_->algType_;
@@ -39,7 +42,8 @@ string TaskInfo::GetAlgTypeName() const
 string TaskInfo::GetBaseInfo() const
 {
     if (this->dfxOpInfo_ == nullptr) {
-        HCCL_ERROR("[TaskInfo][%s]TaskInfo dfxOpInfo is nullptr.", __func__);
+        HCCL_ERROR("[TaskInfo][%s]dfxOpInfo is nullptr, no op info registered, return default value. "
+            "streamId(sqId)[%u], taskId(sqeId)[%u].", __func__, streamId_, taskId_);
         return "";
     }
     return StringFormat("streamID(sqId):[%u], taskID(sqeId):[%u], taskType:[%s], tag:[%s], algType:[%s]",
@@ -58,6 +62,10 @@ string TaskInfo::GetParaInfo() const
         case TaskParamType::TASK_SEND_PAYLOAD:
         case TaskParamType::TASK_UB_INLINE_WRITE:
         case TaskParamType::TASK_UB:
+        case TaskParamType::TASK_WRITE_WITH_NOTIFY:
+        case TaskParamType::TASK_WRITE_REDUCE_WITH_NOTIFY:
+        case TaskParamType::TASK_DPU_INLINE_WRITE:
+        case TaskParamType::TASK_DPU_WRITE_WITH_NOTIFY:
             return GetParaDMA();
         case TaskParamType::TASK_REDUCE_INLINE:
         case TaskParamType::TASK_UB_REDUCE_INLINE:
@@ -66,9 +74,11 @@ string TaskInfo::GetParaInfo() const
         case TaskParamType::TASK_NOTIFY_RECORD:
         case TaskParamType::TASK_NOTIFY_WAIT:
         case TaskParamType::TASK_SEND_NOTIFY:
-        case TaskParamType::TASK_WRITE_WITH_NOTIFY:
-        case TaskParamType::TASK_WRITE_REDUCE_WITH_NOTIFY:
+        case TaskParamType::TASK_DPU_NOTIFY_WAIT:
+        case TaskParamType::TASK_DPU_CHANNEL_FENCE:
             return GetParaNotify();
+        case TaskParamType::TASK_AIV:
+            return GetParaAiv();
         default:
             return this->taskParam_.taskType.Describe();
     }
@@ -114,7 +124,8 @@ string TaskInfo::GetParaNotify() const
 string TaskInfo::GetOpInfo() const
 {
     if (this->dfxOpInfo_ == nullptr) {
-        HCCL_ERROR("[TaskInfo][%s]TaskInfo dfxOpInfo is nullptr.", __func__);
+        HCCL_ERROR("[TaskInfo][%s]dfxOpInfo is nullptr, no op info registered, return default value. "
+            "streamId(sqId)[%u], taskId(sqeId)[%u].", __func__, streamId_, taskId_);
         return "";
     }
     const auto opInfo = this->dfxOpInfo_;
@@ -130,7 +141,7 @@ string TaskInfo::GetOpInfo() const
 string TaskInfo::GetRemoteRankInfo(bool needConcise) const
 {
     string invRank = needConcise ? "/" : "local";
-    return (this->remoteRank_ == UINT32_MAX) ? invRank : to_string(this->remoteRank_);
+    return (this->GetRemoteRankId() == INVALID_VALUE_RANKID) ? invRank : to_string(this->GetRemoteRankId());
 }
 
 string TaskInfo::GetTaskConciseName() const
@@ -183,7 +194,7 @@ string TaskInfo::GetNotifyInfo() const
         return "/";
     } else {
         stringstream paraStr;
-        paraStr << std::hex << static_cast<u32>(notifyInfo);
+        paraStr << notifyInfo;
         return paraStr.str();
     }
 }
@@ -198,11 +209,56 @@ string TaskInfo::GetConciseBaseInfo() const
     if (taskType == TaskParamType::TASK_RDMA || taskType == TaskParamType::TASK_NOTIFY_RECORD ||
         taskType == TaskParamType::TASK_NOTIFY_WAIT || taskType == TaskParamType::TASK_SEND_NOTIFY ||
         taskType == TaskParamType::TASK_WRITE_WITH_NOTIFY || taskType == TaskParamType::TASK_WRITE_REDUCE_WITH_NOTIFY ||
- 	    taskType == TaskParamType::TASK_UB_INLINE_WRITE) {
+         taskType == TaskParamType::TASK_UB_INLINE_WRITE) {
         taskConciseInfo << "," << this->GetNotifyInfo();
     }
     taskConciseInfo << ")";
     return taskConciseInfo.str();
+}
+
+string TaskInfo::GetIndopBaseInfo() const
+{
+    return Hccl::StringFormat("streamID(sqId):[%u], taskID(sqeId):[%u], taskType:[%s]",
+        this->streamId_, this->taskId_, this->taskParam_.taskType.Describe().c_str());
+}
+
+string TaskInfo::GetIndopDataInfo() const
+{
+    if (this->dfxOpInfo_ == nullptr) {
+        HCCL_ERROR("[TaskInfo][%s]dfxOpInfo is nullptr, no op info registered, return default value. "
+            "streamId(sqId)[%u], taskId(sqeId)[%u].", __func__, streamId_, taskId_);
+        return "";
+    }
+
+    const auto &opInfo = this->dfxOpInfo_;
+    return Hccl::StringFormat("opIndex[%u], algTag[%s], count[%llu], reduceType[%s], dataType[%s], "\
+        "input: ptr[0x%llx] size[%llu], output: ptr[0x%llx] size[%llu]",
+        opInfo->opIndex_,
+        opInfo->algTag_.c_str(),
+        opInfo->op_.dataCount,
+        opInfo->op_.reduceOp.Describe().c_str(),
+        opInfo->op_.dataType.Describe().c_str(),
+        opInfo->op_.inputMem == nullptr ? 0 : static_cast<u64>(opInfo->op_.inputMem->GetAddr()),
+        opInfo->op_.inputMem == nullptr ? 0 : opInfo->op_.inputMem->GetSize(),
+        opInfo->op_.outputMem == nullptr ? 0 : static_cast<u64>(opInfo->op_.outputMem->GetAddr()),
+        opInfo->op_.outputMem == nullptr ? 0 : opInfo->op_.outputMem->GetSize());
+}
+
+string TaskInfo::GetParaAiv() const
+{
+    const auto &taskPara = this->taskParam_.taskPara;
+    return StringFormat("cmdType:[%d], tag:[%u], count:[%llu], numBlocks:[%u], rankSize:[%u], "
+                        "rank:[%u], sendRecvRemoteRank:[%u], dataType:[%d], remote rank:[%s]",
+                        static_cast<int>(taskPara.Aiv.cmdType), taskPara.Aiv.tag,
+                        taskPara.Aiv.count, taskPara.Aiv.numBlocks, taskPara.Aiv.rankSize,
+                        taskPara.Aiv.rank, taskPara.Aiv.sendRecvRemoteRank,
+                        static_cast<int>(taskPara.Aiv.dataType),
+                        this->GetRemoteRankInfo().c_str());
+}
+
+u32 TaskInfo::GetRemoteRankId() const
+{
+    return getRemoteRankByHandle_ ? getRemoteRankByHandle_(channelHandle_) : remoteRank_;
 }
 
 } // namespace Hccl

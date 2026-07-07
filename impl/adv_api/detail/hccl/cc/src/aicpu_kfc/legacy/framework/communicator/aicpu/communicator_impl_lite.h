@@ -1,12 +1,13 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
 #ifndef HCCL_AICPU_COMMUNICATOR_IMPL_LITE_H_
 #define HCCL_AICPU_COMMUNICATOR_IMPL_LITE_H_
 
@@ -49,7 +50,7 @@ public:
     CntNto1NotifyLiteMgr        *GetCntNto1NotifyLiteMgr() override;
     ConnectedLinkMgr            *GetConnectedLinkMgr() override;
     DevId                        GetDevPhyId() override;
-    u32                          GetExecTimeOut() override;  
+    u32                          GetExecTimeOut() override;
 
     MemTransportLiteMgr *GetTransportLiteMgr() override
     {
@@ -94,7 +95,7 @@ public:
     {
         return mirrorTaskMgrLite.get();
     }
-    
+
     string GetId() const
     {
         return commId;
@@ -128,7 +129,7 @@ public:
     {
         needClean = flag;
     }
-    
+
     bool IsNeedClean() const
     {
         return needClean;
@@ -201,13 +202,11 @@ public:
 
     void ResetErrorReported() {
         isErrorReported_ = false;
-    } 
+    }
 
     void UnfoldOp(HcclKernelParamLite *kernelParam);
     void RegisterRtsqCallback();
-#ifdef CCL_KERNEL_AICPU
-    void RegisterProfCallBack();
-#endif
+
     void CheckOpExecStatus() const;
     bool CheckNeedUpdateRes(HcclKernelParamLite *kernelParam);
     void UpdateCommParam(HcclKernelParamLite *kernelParam);
@@ -232,6 +231,8 @@ private:
     std::unique_ptr<MirrorTaskManagerLite>   mirrorTaskMgrLite       = std::make_unique<MirrorTaskManagerLite>();
     std::unique_ptr<ProfilingReporterLite> profilingReporterLite
         = std::make_unique<ProfilingReporterLite>(mirrorTaskMgrLite.get(), &ProfilingHandlerLite::GetInstance());
+
+    HcclResult InitProfilingReporterLite();
 
     std::unique_ptr<MemTransportLiteMgr> transportLiteMgr = std::make_unique<MemTransportLiteMgr>( mirrorTaskMgrLite.get());
 

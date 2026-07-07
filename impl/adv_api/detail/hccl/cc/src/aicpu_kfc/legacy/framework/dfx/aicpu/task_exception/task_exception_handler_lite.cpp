@@ -1,12 +1,13 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
 #include "task_exception_handler_lite.h"
 #include "task_exception_func.h"
 #include "communicator_impl_lite.h"
@@ -14,9 +15,10 @@
 #include "dlhal_function_v2.h"
 #include "task_param.h"
 #include "kernel_param_lite.h"
+#include "adapter_error_manager_pub.h"
 
 #include "task_struct_v2.h"
-#include "task_scheduler_error.h"
+#include "hcomm_task_scheduler_error.h"
 #include "orion_adapter_hal.h"
 #include "internal_exception.h"
 
@@ -47,7 +49,7 @@ void TaskExceptionHandlerLite::Register() const
     TaskExceptionFunc::GetInstance().RegisterCallback(Process);
 }
 
-void GetUbErrMsgInfo(std::shared_ptr<TaskInfo> taskInfo, ErrorMessageReport &errMsgInfo, const rtLogicCqReport_t* exceptionInfo) {
+void GetUbErrMsgInfo(TaskInfo* taskInfo, ErrorMessageReport &errMsgInfo, const rtLogicCqReport_t* exceptionInfo) {
     if (taskInfo->taskParam_.taskType == TaskParamType::TASK_WRITE_WITH_NOTIFY
         || taskInfo->taskParam_.taskType == TaskParamType::TASK_UB_INLINE_WRITE
         || taskInfo->taskParam_.taskType == TaskParamType::TASK_UB) {
@@ -55,7 +57,7 @@ void GetUbErrMsgInfo(std::shared_ptr<TaskInfo> taskInfo, ErrorMessageReport &err
         errMsgInfo.rmtEid = taskInfo->taskParam_.taskPara.DMA.rmtEid;
         errMsgInfo.ubCqeStatus = exceptionInfo->errorCode & 0xFF;
         errMsgInfo.linkType = taskInfo->taskParam_.taskPara.DMA.linkType;
- 	    errMsgInfo.size = taskInfo->taskParam_.taskPara.DMA.size;
+         errMsgInfo.size = taskInfo->taskParam_.taskPara.DMA.size;
         errMsgInfo.taskSrcAddr = reinterpret_cast<u64>(taskInfo->taskParam_.taskPara.DMA.src);
         errMsgInfo.taskDstAddr = reinterpret_cast<u64>(taskInfo->taskParam_.taskPara.DMA.dst);
     } else if (taskInfo->taskParam_.taskType == TaskParamType::TASK_UB_REDUCE_INLINE
@@ -64,7 +66,7 @@ void GetUbErrMsgInfo(std::shared_ptr<TaskInfo> taskInfo, ErrorMessageReport &err
         errMsgInfo.rmtEid = taskInfo->taskParam_.taskPara.Reduce.rmtEid;
         errMsgInfo.ubCqeStatus = exceptionInfo->errorCode & 0xFF;
         errMsgInfo.linkType = taskInfo->taskParam_.taskPara.Reduce.linkType;
- 	    errMsgInfo.size = taskInfo->taskParam_.taskPara.Reduce.size;
+         errMsgInfo.size = taskInfo->taskParam_.taskPara.Reduce.size;
         errMsgInfo.taskSrcAddr = reinterpret_cast<u64>(taskInfo->taskParam_.taskPara.Reduce.src);
         errMsgInfo.taskDstAddr = reinterpret_cast<u64>(taskInfo->taskParam_.taskPara.Reduce.dst);
     }
@@ -72,7 +74,7 @@ void GetUbErrMsgInfo(std::shared_ptr<TaskInfo> taskInfo, ErrorMessageReport &err
     errMsgInfo.rtCqErrorCode = exceptionInfo->errorCode;
 }
 
-HcclResult GenerateErrorMessageReport(const CommunicatorImplLite *aicpuComm, std::shared_ptr<TaskInfo> taskInfo, ErrorMessageReport &errMsgInfo, const rtLogicCqReport_t* exceptionInfo)
+HcclResult GenerateErrorMessageReport(const CommunicatorImplLite *aicpuComm, TaskInfo* taskInfo, ErrorMessageReport &errMsgInfo, const rtLogicCqReport_t* exceptionInfo)
 {
     // 获取需要上报的关键信息
     errMsgInfo.remoteUserRank = taskInfo->remoteRank_;
@@ -80,7 +82,6 @@ HcclResult GenerateErrorMessageReport(const CommunicatorImplLite *aicpuComm, std
     errMsgInfo.taskId = taskInfo->taskId_;
     errMsgInfo.rankId = aicpuComm->GetMyRank();
     errMsgInfo.rankSize = aicpuComm->GetRankSize();
-    strcpy_s(errMsgInfo.algType, MAX_NAME_LEN, taskInfo->dfxOpInfo_ == nullptr ? AlgType{AlgType::MESH}.Describe().c_str() : taskInfo->dfxOpInfo_->algType_.c_str());
     errMsgInfo.opIndex = taskInfo->dfxOpInfo_ == nullptr ? 0 : taskInfo->dfxOpInfo_->commIndex_;
     errMsgInfo.opType = taskInfo->dfxOpInfo_->op_.opType;
     errMsgInfo.count = taskInfo->dfxOpInfo_->op_.dataCount;
@@ -108,7 +109,7 @@ HcclResult GenerateErrorMessageReport(const CommunicatorImplLite *aicpuComm, std
         errMsgInfo.reduceType = taskInfo->taskParam_.taskPara.Reduce.reduceOp;
     }
 
-    memcpy_s(errMsgInfo.tag, sizeof(errMsgInfo.tag), taskInfo->dfxOpInfo_->op_.opTag.c_str(), taskInfo->dfxOpInfo_->op_.opTag.size());
+    memcpy_s(errMsgInfo.tag, sizeof(errMsgInfo.tag), aicpuComm->GetId().c_str(), aicpuComm->GetId().size());
     memcpy_s(errMsgInfo.group, sizeof(errMsgInfo.group), aicpuComm->GetId().c_str(), aicpuComm->GetId().size());
 
     GetUbErrMsgInfo(taskInfo, errMsgInfo, exceptionInfo);
@@ -122,13 +123,14 @@ HcclResult SendErrorMessageReportToHost(CommunicatorImplLite *aicpuComm, ErrorMe
     return HCCL_SUCCESS;
 }
 
-constexpr u32 RT_SDMA_COMPERR = 0x9; // A3 sdma error类型为0x9时，表示写拷贝发生超时代答，或者数据搬移时地址译码错误
+constexpr u32 RT_SDMA_COMPERR = 0x9; // A3 sdma error类型为0x9时，表示写拷贝发生超时代答，或者数据搬移时地址译� �错误
 constexpr u32 RT_SDMA_COMPDATAERR = 0xa; // A3 sdma error类型为0xa时，表示读拷贝发生超时代答，或者读HBM返回ERROR
 constexpr u32 RT_SDMA_DATAERR = 0x8; // A3 sdma error类型为0x8时，表示读HBM返回ERROR
 constexpr u32 RT_UB_LOCAL_OPERATIOINERR = 0x2; // A5 ub error类型为0x2时，表示UB本端返回ERROR
 constexpr u32 RT_UB_REMOTE_OPERATIOINERR = 0x3; // A5 ub error类型为0x3时，表示UB远端返回ERROR
+constexpr u32 RT_UB_LINK_FAILEDERR = 0x5; // A5 ub error类型为0x5时，表示网络异常，taack超时
 
-// 把SDMA类错误码转换成Ts对应的错误码
+// 把SDMA类错误� �转换成Ts对应的错误� �
 uint16_t SwitchSdmaCqeErrCodeToTsErrCode(u32 cqeErrCode){
     switch (cqeErrCode) {
         case RT_SDMA_COMPERR:
@@ -142,16 +144,44 @@ uint16_t SwitchSdmaCqeErrCodeToTsErrCode(u32 cqeErrCode){
     }
 }
 
-// 把UB类错误码转换成Ts对应的错误码
+// 把UB类错误� �转换成Ts对应的错误� �
 uint16_t SwitchUBCqeErrCodeToTsErrCode(u32 cqeErrCode){
     switch (cqeErrCode) {
         case RT_UB_LOCAL_OPERATIOINERR:
-            return TS_ERROR_LOCAL_MEM_ERROR;
+            return TS_ERROR_HCCL_OP_UB_DDRC_FAILED;
         case RT_UB_REMOTE_OPERATIOINERR:
-            return TS_ERROR_REMOTE_MEM_ERROR;
+            return TS_ERROR_HCCL_OP_UB_POISON_FAILED;
+        case RT_UB_LINK_FAILEDERR:
+            return TS_ERROR_HCCL_OP_UB_LINK_FAILED;
         default:
             return TS_ERROR_HCCL_OTHER_ERROR;
     }
+}
+
+static std::string GetSdmaErrorDesc(u32 errorCode)
+{
+    switch (errorCode) {
+        case RT_SDMA_DATAERR:
+            return "read HBM return ERROR";
+        case RT_SDMA_COMPERR:
+            return "write copy timeout or address decode ERROR";
+        case RT_SDMA_COMPDATAERR:
+            return "read copy timeout or read HBM return ERROR";
+        default:
+            return "unknown SDMA ERROR";
+    }
+}
+
+static void ReportSdmaError(u32 localDeviceId, u32 notifyId, u32 tsId, s32 userStreamId, u32 errorCode,
+    const std::string &remoteRankId, const std::string &groupRankContent)
+{
+    std::string baseInfo = "localDeviceId=" + std::to_string(localDeviceId);
+    std::string taskInfo = "notifyId= " + std::to_string(notifyId) + ", tsId=" + std::to_string(tsId) +
+        ", streamId=" + std::to_string(userStreamId) + ", error_code=" + std::to_string(errorCode) +
+        ", description=" + GetSdmaErrorDesc(errorCode);
+    RPT_INPUT_ERR(true, "EI0012", std::vector<std::string>({"remote_rankid", "base_information",
+        "task_information", "group_rank_content"}),
+        std::vector<std::string>({remoteRankId, baseInfo, taskInfo, groupRankContent}));
 }
 
 HcclResult SendTaskExceptionByMBox(const u32 localDeviceId, const u32 notifyId, const u32 tsId,
@@ -220,8 +250,16 @@ HcclResult SendTaskExceptionByMBox(CommunicatorImplLite *aicpuComm, const rtLogi
     }
     HCCL_INFO("[TaskExceptionHandlerLite][SendTaskExceptionByMBox] HostToDeviceLogicId[%u], localDeviceid[%u]",
         devPhyId, localDeviceId);
-    
+
     CHK_RET(SendTaskExceptionByMBox(localDeviceId, notifyId, 0, aicpuComm->GetUserStreamId(), exceptionInfo));
+
+    if (exceptionInfo->errorType != 1) {
+        std::string remoteRankId = std::to_string(aicpuComm->GetMyRank());
+        std::string groupRankContent = "group:[" + aicpuComm->GetId() + "], rankSize[" +
+            std::to_string(aicpuComm->GetRankSize()) + "], rankId[" + std::to_string(aicpuComm->GetMyRank()) + "]";
+        ReportSdmaError(localDeviceId, notifyId, 0, aicpuComm->GetUserStreamId(), exceptionInfo->errorCode,
+            remoteRankId, groupRankContent);
+    }
     return HCCL_SUCCESS;
 }
 
@@ -244,7 +282,7 @@ string GetOpDataInfo(const TaskInfo& taskInfo)
     return StringFormat("deviceId[%u], %s", localDeviceId, taskInfo.GetOpInfo().c_str());
 }
 
-void PrintEid(std::shared_ptr<TaskInfo> taskInfo) {
+void PrintEid(TaskInfo* taskInfo) {
     if (taskInfo->taskParam_.taskType == TaskParamType::TASK_UB_REDUCE_INLINE || taskInfo->taskParam_.taskType == TaskParamType::TASK_WRITE_REDUCE_WITH_NOTIFY) {
         HCCL_ERROR("[PrintEid] Error UB link info: localEid[%s], remoteEid[%s]. ", taskInfo->taskParam_.taskPara.Reduce.locEid.Describe().c_str(),
             taskInfo->taskParam_.taskPara.Reduce.rmtEid.Describe().c_str());
@@ -305,12 +343,12 @@ void TaskExceptionHandlerLite::Process(CommunicatorImplLite *aicpuComm, rtLogicC
     HCCL_ERROR("[TaskExceptionHandlerLite]Task run failed, base information is %s.", curTask->GetBaseInfo().c_str());
     HCCL_ERROR("[TaskExceptionHandlerLite]Task run failed, para information is %s.", curTask->GetParaInfo().c_str());
     HCCL_ERROR("[TaskExceptionHandlerLite]Task run failed, groupRank information is %s.", GetGroupRankInfo(*curTask).c_str());
- 	if(curTask->dfxOpInfo_ != nullptr && curTask->dfxOpInfo_->headOpCounterAddr_ != 0 && curTask->dfxOpInfo_->tailOpCounterAddr_ != 0) {
- 	    HCCL_ERROR("[TaskExceptionHandlerLite]Task run failed, headOpCounter[%u] tailOpCounter[%u] opIndex[%u].",
- 	    static_cast<u32>(*(reinterpret_cast<float *>(curTask->dfxOpInfo_->headOpCounterAddr_))),
- 	    static_cast<u32>(*(reinterpret_cast<float *>(curTask->dfxOpInfo_->tailOpCounterAddr_))),
- 	    curTask->dfxOpInfo_->opIndex_);
- 	}
+     if(curTask->dfxOpInfo_ != nullptr && curTask->dfxOpInfo_->headOpCounterAddr_ != 0 && curTask->dfxOpInfo_->tailOpCounterAddr_ != 0) {
+         HCCL_ERROR("[TaskExceptionHandlerLite]Task run failed, headOpCounter[%u] tailOpCounter[%u] opIndex[%u].",
+         static_cast<u32>(*(reinterpret_cast<float *>(curTask->dfxOpInfo_->headOpCounterAddr_))),
+         static_cast<u32>(*(reinterpret_cast<float *>(curTask->dfxOpInfo_->tailOpCounterAddr_))),
+         curTask->dfxOpInfo_->opIndex_);
+     }
     HCCL_ERROR("[TaskExceptionHandlerLite]Task run failed, opData information is %s.", GetOpDataInfo(*curTask).c_str());
 }
 
@@ -322,7 +360,7 @@ string TaskExceptionHandlerLite::GetGroupRankInfo(const TaskInfo& taskInfo)
     }
     const CommunicatorImplLite* commImplLite = static_cast<CommunicatorImplLite*>(taskInfo.dfxOpInfo_->comm_);
     return StringFormat("group:[%s], rankSize[%u], localRank[%d], remoteRank[%u]",
- 	    commImplLite->GetId().c_str(), commImplLite->GetRankSize(), commImplLite->GetMyRank(), taskInfo.remoteRank_);
+         commImplLite->GetId().c_str(), commImplLite->GetRankSize(), commImplLite->GetMyRank(), taskInfo.remoteRank_);
 }
 
 void TaskExceptionHandlerLite::PrintTaskContextInfo(CommunicatorImplLite *aicpuComm, uint32_t sqId, uint32_t taskId)
@@ -334,7 +372,7 @@ void TaskExceptionHandlerLite::PrintTaskContextInfo(CommunicatorImplLite *aicpuC
         return;
     }
 
-    auto func = [taskId] (const shared_ptr<TaskInfo>& task) { return task->taskId_ == taskId; };
+    auto func = [taskId] (const unique_ptr<TaskInfo>& task) { return task->taskId_ == taskId; };
     auto taskItorPtr = queue->Find(func);
     if (taskItorPtr == nullptr || *taskItorPtr == *queue->End()) {
         // 在队列中未找到异常对应的TaskInfo
@@ -343,13 +381,13 @@ void TaskExceptionHandlerLite::PrintTaskContextInfo(CommunicatorImplLite *aicpuC
     }
 
     // 找到当前异常task的前50个task(至多)
-    vector<shared_ptr<TaskInfo>> taskContext {};
+    vector<TaskInfo*> taskContext {};
     for (uint32_t i = 0; i < TASK_CONTEXT_SIZE && *taskItorPtr != *queue->Begin(); ++i, --(*taskItorPtr)) {
         if ((**taskItorPtr)->taskId_ > taskId) {
             break;
         }
         if ((**taskItorPtr)->taskId_ != taskId) {
-            taskContext.emplace_back(**taskItorPtr);
+            taskContext.emplace_back((**taskItorPtr).get());
         }
     }
 
