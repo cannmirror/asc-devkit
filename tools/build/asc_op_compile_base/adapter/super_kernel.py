@@ -133,7 +133,7 @@ def get_sync_code_by_kernel_type(kernel_type):
         return "AscendC::SyncAll<false>();\n\n"
     elif kernel_type in [SuperKernelKernelType.KERNEL_TYPE_AIC_ONLY, \
                 SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_0]:
-        return """
+        return f"""
 ffts_cross_core_sync(PIPE_FIX, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIC_FLAG));
 {get_wait_flag_for_chip("AscendC::SYNC_AIC_FLAG")}
 """
