@@ -1058,6 +1058,126 @@ def resolve_target_branch():
     return None
 
 
+def resolve_base_commit():
+    base_candidates = []
+    configured_base = os.environ.get("MARKDOWN_LINK_CHECK_BASE_REF")
+    if configured_base:
+        base_candidates.append(configured_base)
+
+    for env_name in (
+        "PR_TARGET_BRANCH",
+        "CHANGE_TARGET",
+        "CI_MERGE_REQUEST_TARGET_BRANCH_NAME",
+        "GIT_TARGET_BRANCH",
+        "TARGET_BRANCH",
+        "BASE_REF",
+    ):
+        branch = os.environ.get(env_name)
+        if branch:
+            base_candidates.extend([f"origin/{branch}", branch])
+
+    base_candidates.extend(["origin/master", "origin/main", "master", "main"])
+
+    for base_ref in dict.fromkeys(base_candidates):
+        try:
+            verify = subprocess.run(
+                ["git", "rev-parse", "--verify", f"{base_ref}^{{commit}}"],
+                cwd=repo_root,
+                check=False,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+            )
+            if verify.returncode != 0:
+                continue
+            merge_base = subprocess.run(
+                ["git", "merge-base", base_ref, "HEAD"],
+                cwd=repo_root,
+                check=False,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+            )
+            if merge_base.returncode == 0:
+                commit = merge_base.stdout.decode("utf-8", errors="ignore").strip()
+                if commit:
+                    return commit
+        except OSError:
+            continue
+    return None
+
+
+def parse_added_lines(diff_text):
+    added_lines = {}
+    current_file = None
+    hunk_pattern = re.compile(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@")
+
+    for line in diff_text.splitlines():
+        if line.startswith("+++ b/"):
+            current_file = line[len("+++ b/"):]
+            added_lines.setdefault(current_file, set())
+            continue
+        if current_file is None:
+            continue
+
+        match = hunk_pattern.match(line)
+        if not match:
+            continue
+        start = int(match.group(1))
+        count = int(match.group(2) or "1")
+        if start == 0 or count == 0:
+            continue
+        added_lines[current_file].update(range(start, start + count))
+
+    return added_lines
+
+
+def merge_added_lines(target, source):
+    for path, lines in source.items():
+        target.setdefault(path, set()).update(lines)
+
+
+def diff_added_lines(args):
+    try:
+        result = subprocess.run(
+            args,
+            cwd=repo_root,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            check=False,
+        )
+    except OSError:
+        return {}
+    if result.returncode not in (0, 1):
+        return {}
+    return parse_added_lines(result.stdout)
+
+
+def gitcode_added_line_map(scan_files, full_scan):
+    if full_scan:
+        return None
+
+    added_lines = {source: set() for source in scan_files}
+    base_commit = resolve_base_commit()
+    if base_commit:
+        merge_added_lines(
+            added_lines,
+            diff_added_lines(["git", "diff", "--unified=0", "--no-ext-diff", base_commit, "HEAD", "--", *scan_files]),
+        )
+
+    merge_added_lines(
+        added_lines,
+        diff_added_lines(["git", "diff", "--cached", "--unified=0", "--no-ext-diff", "--", *scan_files]),
+    )
+    merge_added_lines(
+        added_lines,
+        diff_added_lines(["git", "diff", "--unified=0", "--no-ext-diff", "--", *scan_files]),
+    )
+
+    if not base_commit and not any(added_lines.values()):
+        return None
+    return added_lines
+
+
 def split_gitcode_branch_path(parts, target_branch):
     if target_branch:
         branch_parts = target_branch.split("/")
@@ -1097,8 +1217,12 @@ def asc_devkit_gitcode_target(target):
 
 
 scan_files = []
+full_scan = False
 for raw_line in scan_set_file.read_text(encoding="utf-8").splitlines():
-    if not raw_line or raw_line.startswith("# full scan:"):
+    if raw_line.startswith("# full scan:"):
+        full_scan = True
+        continue
+    if not raw_line:
         continue
     scan_files.append(raw_line)
 
@@ -1106,6 +1230,7 @@ errors = []
 ref_cache = {}
 object_cache = {}
 target_branch = resolve_target_branch()
+added_line_map = gitcode_added_line_map(scan_files, full_scan)
 for source in scan_files:
     source_path = repo_root / source
     try:
@@ -1129,7 +1254,8 @@ for source in scan_files:
                 continue
 
             branch, target_path = parsed
-            if target_branch is not None and branch != target_branch:
+            is_added_line = added_line_map is None or line_number in added_line_map.get(source, set())
+            if target_branch is not None and branch != target_branch and is_added_line:
                 errors.append(
                     f"{source}:{line_number}: GitCode link branch must match PR target branch: "
                     f"{target} uses {branch}, target branch is {target_branch}"
