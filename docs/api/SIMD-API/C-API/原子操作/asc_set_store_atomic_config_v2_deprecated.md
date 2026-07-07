@@ -1,4 +1,4 @@
-# asc_set_store_atomic_config_v2
+# asc_set_store_atomic_config_v2（废弃）
 
 ## 产品支持情况
 
@@ -7,6 +7,8 @@
 | Ascend 950PR/Ascend 950DT | √ |
 
 ## 功能说明
+
+**该接口已废弃。原子加操作请使用[asc_atomic_add](../标量计算/asc_atomic_add.md)实现。**
 
 设置原子操作启用位与原子操作类型的值。
 

@@ -42,10 +42,11 @@ PIPE_S
 ## 调用示例
 
 ```cpp
-// total_length指参与计算的数据长度，dst是外部输入的float类型的GM内存。
+// total_length指参与计算的数据长度，dst是外部输入的int8_t类型的GM内存地址。
 constexpr uint32_t total_length = 256;
 __ubuf__ int8_t src0[total_length];
 __ubuf__ int8_t src1[total_length];
+
 asc_copy_ub2gm(dst, src0, total_length * sizeof(int8_t));
 asc_sync_pipe(PIPE_MTE3);
 asc_set_atomic_min_int8();
