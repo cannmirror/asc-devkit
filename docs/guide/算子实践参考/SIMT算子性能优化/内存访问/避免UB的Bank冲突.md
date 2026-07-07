@@ -4,7 +4,7 @@
 
 【描述】SIMT编程模式下，一个Warp内的多个线程可能在同一条UB访问指令中同时访问UB。对于使用UB中转做转置、重排等操作的算子，即使GM读写已经连续，仍需要分析UB访问模式，避免UB内部访问成为新的性能瓶颈。
 
-以Ascend 950PR/Ascend 950DT为例，下图为UB bank结构示意图。UB总大小为256KB，划分为16个bank，每个bank包含512行，每行32B，共16KB。这16个bank进一步组织为8个bank group，每个bank group包含2个bank，bank i与bank i+8同属bank group i，即 `bank_group_id = bank_id % 8`。在SIMT编程模式下，每个bank又会被划分为4个subbank，每个subbank的宽度为8B。
+<!-- npu="950" id1 -->以Ascend 950PR/Ascend 950DT为例，<!-- end id1 -->下图为UB bank结构示意图。UB总大小为256KB，划分为16个bank，每个bank包含512行，每行32B，共16KB。这16个bank进一步组织为8个bank group，每个bank group包含2个bank，bank i与bank i+8同属bank group i，即 `bank_group_id = bank_id % 8`。在SIMT编程模式下，每个bank又会被划分为4个subbank，每个subbank的宽度为8B。
 
 SIMT场景下，同一个Warp内的多个线程可能在同一条UB访问指令中同时访问UB；当这些访问数据属于同一个bank group的相同编号的subbank资源时，硬件无法在一个周期内处理全部请求，需要排队等待，从而形成subbank冲突并增加访问延迟；如果这些访问数据属于同一个subbank的同一行内的8B地址范围，硬件会将这些请求合并处理，不会形成subbank冲突。
 

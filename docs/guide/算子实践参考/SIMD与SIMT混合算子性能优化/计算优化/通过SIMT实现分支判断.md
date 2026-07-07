@@ -1,8 +1,10 @@
 # 通过SIMT实现分支判断<a name="ZH-CN_TOPIC_0000002552896537"></a>
 
+<!-- npu="950" id1 -->
 >[!NOTE]说明 
 >该性能优化建议适用于如下型号：
 >-   Ascend 950PR/Ascend 950DT
+<!-- end id1 -->
 
 【优先级】高
 
