@@ -101,7 +101,8 @@ meanParams.n = n;
 // inner = (n * sizeof(half) + 32 - 1)/32 * 32 / sizeof(half) = 16
 meanParams.inner = inner;
 // T为half，accTypes为实际计算的类型这里是half
-// dstLocal输出数据，srcLocal输入数据，tmplocalTensor用户传入的临时缓存AscendC::Mean<T, accType>(dstLocal, srcLocal, tmplocalTensor, meanParams)
+// dstLocal输出数据，srcLocal输入数据，tmplocalTensor用户传入的临时缓存
+AscendC::Mean<T, accType>(dstLocal, srcLocal, tmplocalTensor, meanParams)
 // 也可不使用tmplocalTensor。调用如下
 // AscendC::Mean<T, accType>(dstLocal, srcLocal, meanParams);
 ```

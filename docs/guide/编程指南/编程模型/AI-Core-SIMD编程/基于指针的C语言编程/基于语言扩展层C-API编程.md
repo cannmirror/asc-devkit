@@ -6,7 +6,7 @@
 
 C API通过C风格的地址限定符描述不同层级内存，并且可以通过指针直接操作内存地址，从而精准控制数据存放位置。不同存储单元的地址限定符介绍如下：
 
-**表 1**  不同存储单元的地址限定符
+**表1**  不同存储单元的地址限定符
 
 <a name="table16278354141117"></a>
 <table><thead align="left"><tr id="row1827835418116"><th class="cellrowborder" valign="top" width="22.33%" id="mcps1.2.4.1.1"><p id="p1927845481114"><a name="p1927845481114"></a><a name="p1927845481114"></a>存储单元</p>
@@ -86,7 +86,7 @@ __ubuf__ half* src0 = (__ubuf__ half*)asc_get_phy_buf_addr(offset);    // 获取
 
 NPU内部有不同的计算单元，在计算前往往需要把计算数据搬运到计算单元上。不同计算单元上的计算过程、数据搬运过程可划分为不同的流水线。如下表所示：
 
-**表 2**  指令流水类型和相关说明
+**表2**  指令流水类型和相关说明
 
 <a name="table122172503915"></a>
 <table><thead align="left"><tr id="row82178506918"><th class="cellrowborder" valign="top" width="23.03%" id="mcps1.2.3.1.1"><p id="p1821725011911"><a name="p1821725011911"></a><a name="p1821725011911"></a>流水类型</p>

@@ -87,7 +87,7 @@ template <typename ComputeT> class KernelExample {
 
 【性能对比】
 
-**图 1**  aiv\_vec\_time优化前后对比<a name="fig74881227195511"></a>  
+**图1**  aiv\_vec\_time优化前后对比<a name="fig74881227195511"></a>  
 
 ![](../../../figures/1.png)
 

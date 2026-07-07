@@ -15,7 +15,7 @@
 -   axis：表示对输入的哪个维度进行Broadcast。
 -   coef：表示Broadcast的输入需要扩维的倍数。例如，x shape为\(m, 1\)，y shape为\(m, n\)，则coef = n。如下图所示，图中相同颜色部分为单次计算的数据块。
 
-**图 1**  axis=1时coef示意图<a name="zh-cn_topic_0000002201157446_fig202632320133"></a>  
+**图1**  axis=1时coef示意图<a name="zh-cn_topic_0000002201157446_fig202632320133"></a>  
 ![](../../../figures/axis-1时coef示意图.png "axis-1时coef示意图")
 
 Tiling结构体定义代码如下所示：
