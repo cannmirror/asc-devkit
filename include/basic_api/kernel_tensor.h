@@ -115,7 +115,7 @@ struct ShapeInfoParams<TensorTrait<T>, T> {
 
 __aicore__ inline uint64_t GetShapeSize(const ShapeInfo& shapeInfo)
 {
-    int shapeSize = 1;
+    uint64_t shapeSize = 1;
     for (int index = 0; index < shapeInfo.shapeDim; ++index) {
         shapeSize *= shapeInfo.shape[index];
     }
