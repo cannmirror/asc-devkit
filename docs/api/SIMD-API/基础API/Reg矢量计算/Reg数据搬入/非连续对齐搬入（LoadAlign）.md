@@ -94,6 +94,7 @@ LoadAlign能够实现数据从Unified Buffer（UB）非连续搬运至[RegTensor
 ## 调用示例<a name="section642mcpsimp"></a>
 
 ```cpp
+template <typename T>
 __simd_vf__ inline void Compute(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint16_t repeatTimes)
 {
     AscendC::Reg::RegTensor<T> srcReg;

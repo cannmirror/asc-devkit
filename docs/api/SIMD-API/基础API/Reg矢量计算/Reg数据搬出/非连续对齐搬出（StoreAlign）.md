@@ -94,6 +94,7 @@ StoreAlign能够实现数据从[RegTensor](../寄存器数据类型/RegTensor.md
 ## 调用示例<a name="section642mcpsimp"></a>
 
 ```cpp
+template <typename T>
 __simd_vf__ inline void Compute(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint16_t repeatTimes)
 {
     AscendC::Reg::RegTensor<T> srcReg;
