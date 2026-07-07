@@ -135,7 +135,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void enable_printf()
 }
 
 template <uint32_t count = 1>
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void nop()
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void __internal_nop()
 {
     #pragma unroll
     for (uint32_t i = 0; i < count; ++i) {
@@ -212,15 +212,17 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline __simt_gm__ RingBufWriteInfo* get_ring_buf
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void ring_buffer_wait(__simt_gm__ RingBufReadInfo* read_info, uint64_t end_offset)
 {
-    constexpr uint32_t nop_count = 65536;   // max core 72 * max warp 64 * 200 / 15 = 61440, ceil to 2^n, use 65536
+    constexpr uint32_t nop_count = 3413;   // max warp 64 * 800 / 15 = 3413
 #ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
     volatile uint64_t tmp = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>(&read_info->bufOffset);
     while (end_offset >= tmp) {
         tmp = __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>(&read_info->bufOffset);
-        nop<nop_count>();
+        __internal_nop<nop_count>();
     }
 #else
-    while (end_offset > *reinterpret_cast<volatile uint64_t*>(&read_info->bufOffset)) {}
+    while (end_offset > *reinterpret_cast<volatile uint64_t*>(&read_info->bufOffset)) {
+        __internal_nop<nop_count>();
+    }
 #endif
 }
 
@@ -248,7 +250,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint64_t check_and_wait_ring_buf_space(
         }
     }
     uint32_t idx = __popc(active_thread & lanemask_lt());
-    start_offset = __shfl(start_offset, (0x1f << 8) | lane_id) + tlv_len * idx;
+    start_offset = __shfl(start_offset, lane_id, warpSize) + tlv_len * idx;
     return start_offset;
 }
 
