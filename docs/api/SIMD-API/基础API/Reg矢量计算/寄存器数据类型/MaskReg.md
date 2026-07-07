@@ -28,7 +28,7 @@
 
 头文件引用路径为"basic_api/reg_compute/kernel_reg_compute_maskreg_intf.h"。
 
-MaskReg用于指示在计算过程中哪些元素参与计算，宽度为<a href="./RegTensor.md">RegTensor</a>的八分之一（VL/8）。如下图所示，当操作数类型为b8时，每一个element对应1bit MaskReg；当操作数类型为b16时，每一个element对应2bit MaskReg，且仅2bit中的最低位是有效的；当操作数类型为b32时，每一个element对应4bit MaskReg，且仅4bit中的最低位是有效的。
+MaskReg寄存器用于指示在计算过程中哪些元素参与计算，宽度为<a href="./RegTensor.md">RegTensor</a>的八分之一（VL/8）。如下图所示，当操作数类型为b8时，每一个element对应1bit MaskReg；当操作数类型为b16时，每一个element对应2bit MaskReg，且仅2bit中的最低位是有效的；当操作数类型为b32时，每一个element对应4bit MaskReg，且仅4bit中的最低位是有效的。
 
 **图1** MaskReg计算过程<a id="fig1"></a>
 
@@ -64,7 +64,7 @@ MaskReg用于指示在计算过程中哪些元素参与计算，宽度为<a href
 | :-- | :------------ | :------------ |
 | T | 输入 | 模板参数，支持的数据类型为b8、b16、b32、b64。 |
 | regTrait | 输入 | 该参数默认值为RegTraitNumOne。 |
-| scalarValue | 输入/输出 | 矢量计算需要操作的元素的具体数量，生成对应的MaskReg，元素有效范围从0到VL\_T（位宽为VL的T类型元素个数）。<br>执行完该函数后，scalarValue会减去VL\_T。<br>`scalarValue = (scalarValue < VL_T) ? 0 : (scalarValue - VL_T)` |
+| scalarValue | 输入/输出 | 矢量计算需要操作的元素的具体数量，生成对应的MaskReg，元素有效范围从0到VL_T（一个位宽为VL的向量寄存器中能够存放VL_T个数据类型为T的元素）。<br>执行完该函数后，scalarValue会减去VL_T。<br>`scalarValue = (scalarValue < VL_T) ? 0 : (scalarValue - VL_T)` |
 
 
 ## 返回值说明<a name="section1575141714439"></a>
