@@ -1154,7 +1154,7 @@ def diff_added_lines(args):
 
 def gitcode_added_line_map(scan_files, full_scan):
     if full_scan:
-        return None
+        return "all"
 
     added_lines = {source: set() for source in scan_files}
     base_commit = resolve_base_commit()
@@ -1254,7 +1254,10 @@ for source in scan_files:
                 continue
 
             branch, target_path = parsed
-            is_added_line = added_line_map is None or line_number in added_line_map.get(source, set())
+            is_added_line = (
+                added_line_map == "all"
+                or (added_line_map is not None and line_number in added_line_map.get(source, set()))
+            )
             if target_branch is not None and branch != target_branch and is_added_line:
                 errors.append(
                     f"{source}:{line_number}: GitCode link branch must match PR target branch: "

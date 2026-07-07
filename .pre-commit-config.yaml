@@ -40,6 +40,7 @@ repos:
         entry: env LYCHEE_VERSION=0.23.0 bash scripts/markdown_link_check.sh
         language: system
         files: \.(md|markdown|mdx)$
+        exclude: ^CHANGELOG(_en)?\.md$
         pass_filenames: true
         always_run: true
         stages: [pre-commit, manual]
