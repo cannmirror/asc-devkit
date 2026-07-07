@@ -75,7 +75,7 @@ LoadAlign能够实现数据从Unified Buffer（UB）搬运至[MaskReg](../寄存
 
 ## 参数说明<a name="section622mcpsimp"></a>
 
-**表 1**  模板参数说明
+**表1**  模板参数说明
 
 | 参数名 | 描述 |
 |-----|-----|
@@ -83,16 +83,16 @@ LoadAlign能够实现数据从Unified Buffer（UB）搬运至[MaskReg](../寄存
 | postMode | 用于控制是否使能UB地址会自动更新功能（post update），PostLiteral类型。具体参数说明请参考[PostLiteral](../辅助数据类型/PostLiteral.md)。 |
 | dist | 搬运模式，MaskDist类型。具体参数说明请参考[表3 MaskDist参数说明](#表3-MaskDist参数说明)。 |
 
-**表 2**  参数说明
+**表2**  参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 |-----|-----|-----|
 | mask | 输出 | 目的操作数，类型为[MaskReg](../寄存器数据类型/MaskReg.md)。 |
 | srcAddr | 输入/输出 | 源操作数，UB起始地址。 |
-| offset | 输入 | &bull; 当数据类型为AddrReg，为地址偏移寄存器，需要在搬运前调用CreateAddrReg设定地址偏移量，实际搬运UB地址为srcAddr + 寄存器中存储的偏移量。AddrReg寄存器中存储的偏移量 * sizeof(T)的对齐约束请参考[表3 MaskDist参数说明](#表3-MaskDist参数说明)。<br>&bull; 当数据类型为int32_t，为地址更新步长，单位：字节。offset的对齐约束请参考[表3 MaskDist参数说明](#表3-MaskDist参数说明)。根据postMode的取值有两种情况：<br>&nbsp;&nbsp;&bull; POST_MODE_NORMAL：不支持。<br>&nbsp;&nbsp;&bull; POST_MODE_UPDATE：实际搬运UB起始地址为srcAddr，搬运后执行地址更新 srcAddr += offset。 |
+| offset | 输入 | &bull; 当数据类型为AddrReg，为地址偏移寄存器，需要在搬运前调用CreateAddrReg设定地址偏移量，实际搬运UB地址为srcAddr + 寄存器中存储的偏移量。AddrReg寄存器中存储的偏移量 * sizeof(T)的对齐约束请参考[表3 MaskDist参数说明](#表3-MaskDist参数说明)。<br>&bull; 当数据类型为int32_t，为地址更新步长，单位：字节。offset的对齐约束请参考[表3 MaskDist参数说明](#表3-MaskDist参数说明)。根据postMode的取值有两种情况：<br>&nbsp;&nbsp;&bull; POST_MODE_NORMAL：不支持。<br>&nbsp;&nbsp;&bull; POST_MODE_UPDATE：实际搬运UB起始地址为srcAddr，搬运后执行地址更新srcAddr += offset。 |
 
 <a id="表3-MaskDist参数说明"></a>
-**表 3**  MaskDist参数说明
+**表3**  MaskDist参数说明
 
 | MaskDist取值 | 含义 | 搬运对齐约束（Byte） |
 |-----|-----|-----|

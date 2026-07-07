@@ -23,7 +23,7 @@ __aicore__ inline constexpr tuple<unwrap_decay_t<Tps>...> make_tuple(Tps&& ...ar
 
 ## 参数说明
 
-**表 1**  模板参数说明
+**表1**  模板参数说明
 
 | 参数名 | 含义 |
 | --- | --- |

@@ -99,7 +99,7 @@ constexpr uint32_t dst_length = 4;
 __ubuf__ half dst[dst_length];
 
 uint8_t repeat = 2;
-// 单位为 sizeof(half)*2 = 4字节，连续存放
+// 单位为sizeof(half)*2 = 4字节，连续存放
 uint16_t dst_repeat_stride = 1;
 uint16_t src_block_stride = 1;
 uint16_t src_repeat_stride = 8;

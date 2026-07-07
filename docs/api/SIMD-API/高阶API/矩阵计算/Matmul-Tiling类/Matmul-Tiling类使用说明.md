@@ -75,7 +75,7 @@ Matmul Tiling API分为Matmul单核Tiling接口、多核Tiling接口和BatchMatm
 
 接口列表如下：
 
-**表 1**  MatmulApiTiling/MultiCoreMatmulTiling/BatchMatmulTiling共有接口列表
+**表1**  MatmulApiTiling/MultiCoreMatmulTiling/BatchMatmulTiling共有接口列表
 
 | 接口 | 功能 |
 | --- | --- |
@@ -105,7 +105,7 @@ Matmul Tiling API分为Matmul单核Tiling接口、多核Tiling接口和BatchMatm
 | GetBaseK | 获取baseK值。 |
 | GetTiling | 获取Tiling参数。 |
 
-**表 2**  MultiCoreMatmulTiling其他接口
+**表2**  MultiCoreMatmulTiling其他接口
 
 | 接口 | 功能 |
 | --- | --- |
@@ -118,7 +118,7 @@ Matmul Tiling API分为Matmul单核Tiling接口、多核Tiling接口和BatchMatm
 | SetSplitK | 多核场景，开启切K轴。建议使用EnableMultiCoreSplitK接口。 |
 | EnableMultiCoreSplitK | 多核场景，开启切K轴。 |
 
-**表 3**  BatchMatmulTiling其他接口
+**表3**  BatchMatmulTiling其他接口
 
 | 接口 | 功能 |
 | --- | --- |

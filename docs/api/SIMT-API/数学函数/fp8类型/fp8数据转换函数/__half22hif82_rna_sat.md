@@ -22,7 +22,7 @@ inline hifloat8x2_t __half22hif82_rna_sat(const half2 x)
 
 ## 参数说明
 
-**表 1**  参数说明
+**表1**  参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |

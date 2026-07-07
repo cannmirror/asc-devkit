@@ -1,6 +1,6 @@
 # RTC错误码<a name="ZH-CN_TOPIC_0000002487335325"></a>
 
-**表 1**  aclrtc接口返回aclError错误码说明
+**表1**  aclrtc接口返回aclError错误码说明
 
 <a name="table1098718523239"></a>
 <table><thead align="left"><tr id="row298895218235"><th class="cellrowborder" valign="top" width="43.65%" id="mcps1.2.4.1.1"><p id="p14988852132312"><a name="p14988852132312"></a><a name="p14988852132312"></a>错误码名称</p>

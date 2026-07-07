@@ -71,7 +71,7 @@ using Matmul = AscendC::MatmulImpl<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM
 
 ## 参数说明
 
-**表 1**  MatmulApiStaticTiling常量化Tiling参数说明
+**表1**  MatmulApiStaticTiling常量化Tiling参数说明
 
 <a name="table7939847143412"></a>
 | 参数 | 数据类型 | 说明 |

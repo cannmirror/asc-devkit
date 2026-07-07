@@ -45,13 +45,13 @@ __aicore__ inline void DataCopy(const GlobalTensor<T>& dst, const LocalTensor<T>
 
 ## 参数说明<a name="zh-cn_topic_0000002540198372_section16128134420472"></a>
 
-**表 1** 模板参数说明
+**表1** 模板参数说明
 
 | 参数名 | 描述 |
 | ---------- | ---------- |
 | T | 源操作数或者目的操作数的数据类型。支持的数据类型请参考[数据类型](#zh-cn_topic_0000002540198372_section4219135304818)。 |
 
-**表 2** 参数说明
+**表2** 参数说明
 
 | 参数名称 | 输入/输出 | 含义 |
 | ---------- | ---------- | ---------- |
@@ -61,7 +61,7 @@ __aicore__ inline void DataCopy(const GlobalTensor<T>& dst, const LocalTensor<T>
 
 以half数据类型为例，源操作数的shape为1 \* 128。当count = 128时，[图1](#zh-cn_topic_0000002540198372_fig826614454819)将源操作数中128个元素连续搬运至目的操作数。
 
-**图 1** 连续搬运示意图<a id="zh-cn_topic_0000002540198372_fig826614454819"></a>  
+**图1** 连续搬运示意图<a id="zh-cn_topic_0000002540198372_fig826614454819"></a>  
 
 ![](../../../../../figures/L12GM_Continuous_Transporting.png)
 

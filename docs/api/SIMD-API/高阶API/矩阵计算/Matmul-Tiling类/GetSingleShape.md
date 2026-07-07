@@ -12,7 +12,7 @@ int32_t GetSingleShape(int32_t &shapeM, int32_t &shapeN, int32_t &shapeK)
 
 ## 参数说明
 
-**表 1**  参数说明
+**表1**  参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |

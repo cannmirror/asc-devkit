@@ -17,7 +17,7 @@ void GetPowerMaxMinTmpSize(const ge::Shape& srcShape1, const ge::Shape& srcShape
 
 ## 参数说明
 
-**表 1**  接口参数列表
+**表1**  接口参数列表
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |

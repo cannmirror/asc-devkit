@@ -22,7 +22,7 @@ bfloat16_t __hfma_relu(const bfloat16_t x, const bfloat16_t y, const bfloat16_t 
 
 ## 参数说明
 
-**表 1**  参数说明
+**表1**  参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |

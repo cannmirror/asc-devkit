@@ -74,7 +74,7 @@ class ListTensorDesc {
 
 ## 函数说明<a name="section396516531098"></a>
 
-**表 1**  模板参数说明
+**表1**  模板参数说明
 
 <a name="table13588175515344"></a>
 <table><thead align="left"><tr id="row1160915519346"><th class="cellrowborder" valign="top" width="21.8%" id="mcps1.2.3.1.1"><p id="p9609105553412"><a name="p9609105553412"></a><a name="p9609105553412"></a>参数名</p>
@@ -91,7 +91,7 @@ class ListTensorDesc {
 </tbody>
 </table>
 
-**表 2**  函数及参数说明
+**表2**  函数及参数说明
 
 <a name="table153364918102"></a>
 <table><thead align="left"><tr id="row7363209171013"><th class="cellrowborder" valign="top" width="22.58%" id="mcps1.2.4.1.1"><p id="p136399171010"><a name="p136399171010"></a><a name="p136399171010"></a><strong id="b137544519107"><a name="b137544519107"></a><a name="b137544519107"></a>函数名称</strong></p>

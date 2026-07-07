@@ -80,7 +80,7 @@
 
 -   对RegTensor操作
 
-    **表 1**  模板参数说明
+    **表1**  模板参数说明
 
     <a name="table1878811121758"></a>
     <table><thead align="left"><tr id="row97885121457"><th class="cellrowborder" valign="top" width="18.2%" id="mcps1.2.3.1.1"><p id="p2078817124511"><a name="p2078817124511"></a><a name="p2078817124511"></a>参数名</p>
@@ -109,7 +109,7 @@
     </tbody>
     </table>
 
-    **表 2**  参数说明
+    **表2**  参数说明
 
     <a name="table378911128510"></a>
     <table><thead align="left"><tr id="row157893121054"><th class="cellrowborder" valign="top" width="18.54%" id="mcps1.2.4.1.1"><p id="p978911212516"><a name="p978911212516"></a><a name="p978911212516"></a>参数名</p>
@@ -158,7 +158,7 @@
 
 -   对MaskReg操作
 
-    **表 3**  参数说明
+    **表3**  参数说明
 
     <a name="table481714378514"></a>
     <table><thead align="left"><tr id="row98171837059"><th class="cellrowborder" valign="top" width="50%" id="mcps1.2.3.1.1"><p id="p1181793716511"><a name="p1181793716511"></a><a name="p1181793716511"></a>参数名</p>

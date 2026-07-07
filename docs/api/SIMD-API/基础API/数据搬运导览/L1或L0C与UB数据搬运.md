@@ -4,7 +4,7 @@
 
 L1 Buffer/L0C Buffer与Unified Buffer之间的数据搬运提供了灵活的接口支持，能够充分适配多样化的计算场景（见[表1](#zh-cn_topic_0000002534897870_table1417935217588)）。其中，Unified Buffer-\>L1 Buffer的数据搬运用于矩阵计算（参考[矩阵计算的搬入](../矩阵计算（ISASI）/矩阵计算的搬入/矩阵计算的搬入.md)），L0C Buffer-\>Unified Buffer、L1 Buffer-\>Unified Buffer用于将矩阵计算结果搬出，完成矩阵计算的输出流程（参考[矩阵计算的搬出](../矩阵计算（ISASI）/矩阵计算的搬出/矩阵计算的搬出.md)）。
 
-**表 1**  L1 Buffer/L0C Buffer与Unified Buffer数据搬运接口概述<a name="zh-cn_topic_0000002534897870_table1417935217588"></a>
+**表1**  L1 Buffer/L0C Buffer与Unified Buffer数据搬运接口概述<a name="zh-cn_topic_0000002534897870_table1417935217588"></a>
 
 | 数据通路 | 功能 | 描述 |
 |----------|------|------|

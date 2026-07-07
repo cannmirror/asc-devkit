@@ -33,7 +33,7 @@
 针对DequantParams \{m, n, calCount\}， 若同时满足以下3个条件：
 
 1.  m = 1
-2.  calCount为 32 / sizeof\(dstT\)的倍数
+2.  calCount为32 / sizeof\(dstT\)的倍数
 3.  n % calCount = 0
 
 此时 \{1, n, calCount\}会被视作为** \{n / calCount, calCount, calCount\}**  进行反量化的计算。
@@ -61,7 +61,7 @@
 
 以数据类型int32\_t，shape为\[m, n\]的输入srcTensor，数据类型scaleT，shape为\[n\]的输入deqScale和数据类型dstT，shape为\[m, n\]的输出dstTensor为例，描述AscendDequant高阶API内部算法框图，如下图所示。
 
-**图 1**  AscendDequant内部算法框图  
+**图1**  AscendDequant内部算法框图  
 ![](../../../figures/AscendDequant内部算法框图.png "AscendDequant内部算法框图")
 
 计算过程分为如下几步，均在Vector上进行：
@@ -72,7 +72,7 @@
 
 PER\_TOKEN/PER\_GROUP场景下，输入srcTensor数据类型是int32\_t/float，此时内部算法框图如下所示。
 
-**图 2**  AscendDequant PER\_TOKEN/PER\_GROUP内部算法框图  
+**图2**  AscendDequant PER\_TOKEN/PER\_GROUP内部算法框图  
 ![](../../../figures/AscendDequant-PER_TOKEN-PER_GROUP内部算法框图.png "AscendDequant-PER_TOKEN-PER_GROUP内部算法框图")
 
 PER\_TOKEN/PER\_GROUP场景的计算逻辑如下：
@@ -164,15 +164,15 @@ __aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const L
 
 ## 参数说明
 
-**表 1**  模板参数说明
+**表1**  模板参数说明
 
 | 参数名 | 描述 |
 | --- | --- |
 | dstT | 目的操作数的数据类型。 |
 | scaleT | deqScale的数据类型。 |
-| mode | 决定当DequantParams为{1, n, calCount}时的计算逻辑，传入enum DeQuantMode，支持以下 2 种配置：<br>DEQUANT_WITH_SINGLE_ROW：当DequantParams {m, n, calCount} 同时满足以下条件：1、m = 1；2、calCount为 32 / sizeof(dstT)的倍数；3、n % calCount = 0时，即 {1, n, calCount} 会当作 {n / calCount, calCount, calCount} 进行计算。<br>DEQUANT_WITH_MULTI_ROW：即使满足上述所有条件，{1, n, calCount} 依然只会当作 {1, n, calCount} 进行计算， 即总共n个数，前calCount个数进行反量化的计算。 |
+| mode | 决定当DequantParams为{1, n, calCount}时的计算逻辑，传入enum DeQuantMode，支持以下2 种配置：<br>DEQUANT_WITH_SINGLE_ROW：当DequantParams {m, n, calCount} 同时满足以下条件：1、m = 1；2、calCount为32 / sizeof(dstT)的倍数；3、n % calCount = 0时，即 {1, n, calCount} 会当作 {n / calCount, calCount, calCount} 进行计算。<br>DEQUANT_WITH_MULTI_ROW：即使满足上述所有条件，{1, n, calCount} 依然只会当作 {1, n, calCount} 进行计算， 即总共n个数，前calCount个数进行反量化的计算。 |
 
-**表 2**  PER\_TOKEN/PER\_GROUP场景模板参数说明
+**表2**  PER\_TOKEN/PER\_GROUP场景模板参数说明
 
 | 参数名 | 描述 |
 | --- | --- |
@@ -187,7 +187,7 @@ struct AscendDeQuantConfig {
 }
 ```
 
-**表 3**  接口参数说明
+**表3**  接口参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |
@@ -206,7 +206,7 @@ struct DequantParams
 };
 ```
 
-**表 4**  PER\_TOKEN/PER\_GROUP场景接口参数说明
+**表4**  PER\_TOKEN/PER\_GROUP场景接口参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |
@@ -226,7 +226,7 @@ struct AscendDeQuantParam {
 }
 ```
 
-**表 5**  支持的数据类型组合（deqScale为LocalTensor）
+**表5**  支持的数据类型组合（deqScale为LocalTensor）
 
 | dstTensor | srcTensor | deqScale |
 | --- | --- | --- |
@@ -236,7 +236,7 @@ struct AscendDeQuantParam {
 | bfloat16_t | int32_t | bfloat16_t |
 | bfloat16_t | int32_t | float |
 
-**表 6**  支持的数据类型组合（deqScale为标量）
+**表6**  支持的数据类型组合（deqScale为标量）
 
 | dstTensor | srcTensor | deqScale |
 | --- | --- | --- |
@@ -245,7 +245,7 @@ struct AscendDeQuantParam {
 | float | int32_t | bfloat16_t |
 | float | int32_t | float |
 
-**表 7**  PER\_TOKEN/PER\_GROUP场景支持的数据类型组合
+**表7**  PER\_TOKEN/PER\_GROUP场景支持的数据类型组合
 
 | srcDtype | scaleDtype | dstDtype |
 | --- | --- | --- |

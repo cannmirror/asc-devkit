@@ -66,7 +66,7 @@ auto v1 = Get<1, 0>(t);
 
 auto layout = MakeLayout(MakeShape(MakeShape(10, 20), MakeShape(20, 30)), MakeStride(MakeStride(10, 200), MakeStride(1, 4000)));
 
-// 提取第 1 维度
+// 提取第1 维度
 auto subLayout = Get<1>(layout);
 // subLayout  = MakeLayout(MakeShape(20, 30), MakeStride(1, 4000));
 ```

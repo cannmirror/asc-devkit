@@ -12,7 +12,7 @@ int32_t SetSingleShape(int32_t singleMIn = -1, int32_t singleNIn = -1, int32_t s
 
 ## 参数说明
 
-**表 1**  参数说明
+**表1**  参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |

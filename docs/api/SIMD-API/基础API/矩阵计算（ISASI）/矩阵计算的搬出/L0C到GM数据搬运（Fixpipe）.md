@@ -47,7 +47,7 @@
 <!-- end id11 -->
 
 <!-- npu="950" id13 -->
-**图 2** L0C2GM流程图（[NPU架构版本3510](https://gitcode.com/cann/asc-devkit/blob/master/docs/guide/编程指南/语言扩展层/SIMD-BuiltIn关键字.md)）<a id="zh-cn_topic_0000002542828493_fig542810249613"></a>  
+**图2** L0C2GM流程图（[NPU架构版本3510](https://gitcode.com/cann/asc-devkit/blob/master/docs/guide/编程指南/语言扩展层/SIMD-BuiltIn关键字.md)）<a id="zh-cn_topic_0000002542828493_fig542810249613"></a>  
 
 ![](../../../../figures/L0C2GM_Function_Combination_950.png)
 <!-- end id13 -->
@@ -107,7 +107,7 @@
 
 ## 参数说明<a id="zh-cn_topic_0000002542828493_section16128134420472"></a>
 
-**表 1** Fixpipe模板参数说明
+**表1** Fixpipe模板参数说明
 
 | 参数名 | 描述 |
 | ---------- | ---------- |
@@ -115,7 +115,7 @@
 | config | Fixpipe相关配置参数，类型为FixpipeConfig。取值如下：<br>&nbsp;&nbsp;&bull; **CFG_ROW_MAJOR（默认取值）**：开启NZ2ND，输出数据格式为ND格式。<br>&nbsp;&nbsp;&bull; CFG_NZ：NZ2NZ，输出数据格式为NZ格式。<br><!-- npu="950" id14 -->&nbsp;&nbsp;&bull; CFG_COLUMN_MAJOR：针对Ascend 950PR/Ascend 950DT，开启NZ2DN，输出数据格式为DN格式。<br><!-- end id14 --><pre>struct FixpipeConfig {<br>    CO2Layout format;<br>    bool isToUB; // 用于用户指定目的地址的位置是否是UB <br>};<br>enum class CO2Layout : uint8_t {<br>    NZ = 0, // 输出数据格式仍为NZ格式。<br>    ROW_MAJOR, // 开启NZ2ND，输出数据格式为ND格式。<br><!-- npu="950" id15 -->    COLUMN_MAJOR, // 仅Ascend 950PR/Ascend 950DT支持，开启NZ2DN，输出数据格式为DN格式。<br><!-- end id15 -->};<br>constexpr FixpipeConfig CFG_NZ = {CO2Layout::NZ};<br>constexpr FixpipeConfig CFG_ROW_MAJOR = {CO2Layout::ROW_MAJOR};<!-- npu="950" id16 --><br>constexpr FixpipeConfig CFG_COLUMN_MAJOR = {CO2Layout::COLUMN_MAJOR}; // 仅Ascend 950PR/Ascend 950DT支持<!-- end id16 --></pre> |
 | S | 参数cbufWorkspace的数据类型，即随路量化参数的数据类型。<br>&nbsp;&nbsp;&bull; 当目的操作数、源操作数、cbufWorkspace使用基础数据类型时，模板参数S必须为uint64_t类型，否则编译失败。<br>&nbsp;&nbsp;&bull; 当目的操作数、源操作数、cbufWorkspace使用TensorTrait类型时，模板参数S的LiteType必须为uint64_t类型，否则编译失败。<br>模板参数S后一个模板参数仅用于上述数据类型检查，用户无需关注。 |
 
-**表 2** Fixpipe参数说明
+**表2** Fixpipe参数说明
 
 | 参数名称 | 输入/输出 | 含义 |
 | ---------- | ---------- | ---------- |
@@ -124,7 +124,7 @@
 | intriParams | 输入 | Fixpipe搬运参数，具体定义请参考 "basic_api/interface/kernel_struct_fixpipe.h"。<br>参数说明请参考Fixpipe搬运参数（FixpipeParamsArch3510、FixpipeParamsV220、FixpipeParamsM300）结构体说明。 |
 | cbufWorkspace | 输入 | 量化参数，类型为`LocalTensor<uint64_t>`，支持的物理地址为L1 Buffer（TPosition为C1），地址需满足32字节对齐。<br>&nbsp;&nbsp;&bull; 当quantPre为VDEQF16、VQF322B8_PRE、VREQ8时支持。<br><!-- npu="950" id18 -->&nbsp;&nbsp;&bull; 针对Ascend 950PR/Ascend 950DT，除上述外还有VQF322FP8_PRE、VQF322HIF8_PRE、VQF322HIF8_PRE_HYBRID、VQS322BF16_PRE、VQF322F16_PRE、VQF322BF16_PRE、VQF322F32_PRE支持。<br><!-- end id18 -->quantPre介绍请参考Fixpipe搬运参数结构体中quantPre部分。 |
 
-**表 3** Fixpipe搬运参数（FixpipeParamsArch3510）结构体说明
+**表3** Fixpipe搬运参数（FixpipeParamsArch3510）结构体说明
 
 | 参数名称 | 数据类型 | 含义 |
 | --- | --- | --- |
@@ -141,7 +141,7 @@
 | subBlockId | 可选输入 | 此参数仅在L0C Buffer到Unified Buffer通路下有效。 |
 | [isChannelSplit](./关键特性说明/F32-Channel-Split.md) | 可选输入 | 是否开启通道拆分的功能。默认为false，不开启该功能。仅在src和dst都为float时才能开启通道拆分，且不能同时开启ChannelSplit和NZ2ND/NZ2DN功能。 |
 
-**表 4** Fixpipe搬运参数（FixpipeParamsV220）结构体说明
+**表4** Fixpipe搬运参数（FixpipeParamsV220）结构体说明
 
 | 参数名称 | 数据类型 | 含义 |
 | --- | --- | --- |
@@ -158,7 +158,7 @@
 | srcNdStride | 可选输入 | 不同NZ矩阵起始地址之间的间隔，取值范围为srcNdStride∈[0, 512]，单位为数据块16*C0_Size。当ndNum配置为1时，srcNdStride配置为0即可，不生效。 |
 | dstNdStride | 可选输入 | 目的相邻ND矩阵起始地址之间的偏移，取值范围为dstNdStride∈[0, 65535]，单位为element。当ndNum配置为1时，dstNdStride配置为0即可，不生效。 |
 
-**表 5** Fixpipe搬运参数（FixpipeParamsM300）结构体说明
+**表5** Fixpipe搬运参数（FixpipeParamsM300）结构体说明
 
 | 参数名称 | 数据类型 | 含义 |
 | ---------- | ---------- | ---------- |

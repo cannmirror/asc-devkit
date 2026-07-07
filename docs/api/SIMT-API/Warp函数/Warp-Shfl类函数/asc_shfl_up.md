@@ -18,7 +18,7 @@
 
 例如，Warp内32个活跃线程调用asc\_shfl\_up\(LaneId, 2, 16\)接口，每个线程的返回值为当前线程Lane ID - 2对应线程的var值，或者当前线程的var值。
 
-**图 1**  asc\_shfl\_up结果示意图
+**图1**  asc\_shfl\_up结果示意图
 
 ![](../../../figures/asc_shfl_up结果示意图.png "asc_shfl_up结果示意图")
 
@@ -62,7 +62,7 @@ inline bfloat16x2_t asc_shfl_up(bfloat16x2_t var, uint32_t delta, int32_t width 
 
 ## 参数说明
 
-**表 1**  参数说明
+**表1**  参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |

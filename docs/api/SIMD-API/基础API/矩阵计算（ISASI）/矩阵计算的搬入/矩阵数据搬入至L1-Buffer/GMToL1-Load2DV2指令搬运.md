@@ -45,13 +45,13 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const GlobalTensor<T>
 
 ## 参数说明<a id="section622mcpsimp"></a>
 
-**表 1** 模板参数说明
+**表1** 模板参数说明
 
 | 参数名称 | 含义 |
 | ---------- | ---------- |
 | T | 源操作数和目的操作数的数据类型。 |
 
-**表 2** 通用参数说明
+**表2** 通用参数说明
 
 | 参数名称 | 输入/输出 | 含义 |
 | ---------- | ---------- | ---------- |
@@ -59,7 +59,7 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const GlobalTensor<T>
 | src | 输入 | 源操作数，类型为GlobalTensor。数据类型需要与dst保持一致。 |
 | loadDataParams | 输入 | LoadData参数结构体，类型为LoadData2DParamsV2，具体参考[表3](#table49630346128)。 |
 
-**表 3** LoadData2DParamsV2结构体内参数说明<a id="table49630346128"></a>
+**表3** LoadData2DParamsV2结构体内参数说明<a id="table49630346128"></a>
 
 | 参数名称 | 含义 |
 | ---------- | ---------- |
@@ -83,7 +83,7 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const GlobalTensor<T>
 - ifTranspose = false，表示不启用转置。
 - sid = 0，预留参数，配置为0即可。
 
-**图 1** LoadData2DParamsV2结构体参数示例（以half数据类型，不启用转置为例）<a id="fig13901164574218"></a>
+**图1** LoadData2DParamsV2结构体参数示例（以half数据类型，不启用转置为例）<a id="fig13901164574218"></a>
 
 ![](../../../../../figures/LoadData2DParamsV2结构体参数示例（以half数据类型-不启用转置为例）.png)
 
@@ -102,7 +102,7 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const GlobalTensor<T>
 
 ## 调用示例<a id="section6461234123118"></a>
 
-以[图 1](#fig13901164574218)所示的场景为例，源矩阵为GM上Nz排布的half数据，从M轴第2个分形、K轴第2个32B块开始，搬运2个M方向分形、3个K方向32B块到L1 Buffer。
+以[图1](#fig13901164574218)所示的场景为例，源矩阵为GM上Nz排布的half数据，从M轴第2个分形、K轴第2个32B块开始，搬运2个M方向分形、3个K方向32B块到L1 Buffer。
 
 ```cpp
 constexpr uint32_t fractalElemCount = 256;

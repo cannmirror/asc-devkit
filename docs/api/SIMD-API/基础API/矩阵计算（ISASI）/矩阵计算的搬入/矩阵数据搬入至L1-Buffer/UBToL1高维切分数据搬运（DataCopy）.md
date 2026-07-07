@@ -74,7 +74,7 @@ __aicore__ inline void DataCopy(const LocalTensor<T>& dst, const LocalTensor<T>&
 
 下图呈现了DataCopyParams结构体参数的使用方法，样例中完成了2个连续传输数据块的搬运，每个数据块含有8个DataBlock，源操作数相邻数据块之间无间隔，目的操作数相邻数据块尾与头之间间隔1个DataBlock。
 
-**图 1**  DataCopyParams结构体参数使用示意图<a id="fig_repeat_times_demo"></a>
+**图1**  DataCopyParams结构体参数使用示意图<a id="fig_repeat_times_demo"></a>
 
 ![](../../../../../figures/repeat-times.png "DataCopyParams结构体参数使用示意图")
 
@@ -128,7 +128,7 @@ __aicore__ inline void DataCopy(const LocalTensor<T>& dst, const LocalTensor<T>&
 
 ## 调用示例
 
-示例场景如[图 1](#fig_repeat_times_demo)所示。
+示例场景如[图1](#fig_repeat_times_demo)所示。
 
 示例代码片段如下：
 

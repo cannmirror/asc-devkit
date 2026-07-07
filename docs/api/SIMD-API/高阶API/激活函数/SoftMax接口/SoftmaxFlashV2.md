@@ -48,7 +48,7 @@ def softmax_flash_2(src, inmax=None, insum=None, update=None):
 
 以float类型，ND格式，shape为\[m, k\]的输入Tensor为例，描述SoftmaxFlashV2高阶API内部算法框图，如下图所示。
 
-**图 1**  SoftmaxFlashV2算法框图  
+**图1**  SoftmaxFlashV2算法框图  
 ![](../../../../figures/SoftmaxFlashV2算法框图.png "SoftmaxFlashV2算法框图")
 
 计算过程根据isUpdate是否开启分为两个分支处理，均在Vector上进行。
@@ -145,7 +145,7 @@ def softmax_flash_2(src, inmax=None, insum=None, update=None):
 
 ## 参数说明
 
-**表 1**  模板参数说明
+**表1**  模板参数说明
 
 | 参数名 | 描述 |
 | --- | --- |
@@ -171,7 +171,7 @@ struct SoftmaxConfig{
 constexpr SoftmaxConfig SOFTMAX_DEFAULT_CFG = {true, 0, 0, SoftmaxMode::SOFTMAX_NORMAL};
 ```
 
-**表 2**  接口参数说明
+**表2**  接口参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |
@@ -212,7 +212,7 @@ struct SoftMaxShapeInfo {
 
 -   操作数地址对齐要求请参见[通用地址对齐约束](../../../通用说明和约束.md#section796754519912)。
 -   不支持sharedTmpBuffer与源操作数和目的操作数地址重叠。
--   当参数softmaxShapeInfo中srcM != oriSrcM 或者 srcK != oriSrcK时，开发者需要对GM上的原始输入\(oriSrcM, oriSrcK\)在M或K方向补齐数据到\(srcM, srcK\)，补齐的数据会参与部分运算，在输入输出复用的场景下，API的计算结果会覆盖srcTensor中补齐的原始数据，在输入输出不复用的场景下，API的计算结果会覆盖dstTensor中对应srcTensor补齐位置的数据。
+-   当参数softmaxShapeInfo中srcM != oriSrcM 或者srcK != oriSrcK时，开发者需要对GM上的原始输入\(oriSrcM, oriSrcK\)在M或K方向补齐数据到\(srcM, srcK\)，补齐的数据会参与部分运算，在输入输出复用的场景下，API的计算结果会覆盖srcTensor中补齐的原始数据，在输入输出不复用的场景下，API的计算结果会覆盖dstTensor中对应srcTensor补齐位置的数据。
 
 ## 调用示例
 
@@ -289,7 +289,7 @@ struct SoftMaxShapeInfo {
 
     ```
     #include "kernel_operator.h"
-    // init阶段  height=320, width=63
+    // init阶段height=320, width=63
     padWidth = AlignUp(width * sizeof(T), 32) / sizeof(T);
     // copyin阶段
     AscendC::DataCopyExtParams copyParams{static_cast<uint16_t>(height), static_cast<uint32_t>(width * sizeof(T)), 0, 0, 0};

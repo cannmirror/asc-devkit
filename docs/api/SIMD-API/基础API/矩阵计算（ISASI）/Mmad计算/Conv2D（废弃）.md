@@ -46,7 +46,7 @@ __aicore__ inline Conv2dTilling GetConv2dTiling(Conv2dParams& conv2dParams)
 
 ## 参数说明
 
-**表 1** 接口参数说明
+**表1** 接口参数说明
 
 | 参数名称 | 类型 | 说明 |
 | --- | --- | --- |
@@ -56,7 +56,7 @@ __aicore__ inline Conv2dTilling GetConv2dTiling(Conv2dParams& conv2dParams)
 | conv2dParams | 输入 | 输入矩阵形状等状态参数，类型为Conv2dParams。结构体具体定义为：<br><br><pre><br>struct Conv2dParams {<br>    uint32_t imgShape[CONV2D_IMG_SIZE];       // [H, W]<br>    uint32_t kernelShapeIn[CONV2D_KERNEL_SIZE]; // [Kh, Kw]<br>    uint32_t stride[CONV2D_STRIDE];          // [stride_h, stride_w]<br>    uint32_t cin;                            // cin = C0 * C1;<br>    uint32_t cout;<br>    uint32_t padList[CONV2D_PAD];       // [pad_left, pad_right, pad_top, pad_bottom]<br>    uint32_t dilation[CONV2D_DILATION]; // [dilation_h, dilation_w]<br>    uint32_t initY;<br>    uint32_t partialSum;<br>};<br></pre> |
 | tilling | 输入 | 分形控制参数，类型为Conv2dTilling。结构体具体定义为：<br><br><pre>struct Conv2dTilling {<br>    const uint32_t blockSize = 16; // # M block size is always 16<br>    LoopMode loopMode = LoopMode::MODE_NM;<br><br>    uint32_t c0Size = 32;<br>    uint32_t dTypeSize = 1;<br><br>    uint32_t strideH = 0;<br>    uint32_t strideW = 0;<br>    uint32_t dilationH = 0;<br>    uint32_t dilationW = 0;<br>    uint32_t hi = 0;<br>    uint32_t wi = 0;<br>    uint32_t ho = 0;<br>    uint32_t wo = 0;<br><br>    uint32_t height = 0;<br>    uint32_t width = 0;<br><br>    uint32_t howo = 0;<br><br>    uint32_t mNum = 0;<br>    uint32_t nNum = 0;<br>    uint32_t kNum = 0;<br><br>    uint32_t mBlockNum = 0;<br>    uint32_t kBlockNum = 0;<br>    uint32_t nBlockNum = 0;<br><br>    uint32_t roundM = 0;<br>    uint32_t roundN = 0;<br>    uint32_t roundK = 0;<br><br>    uint32_t mTileBlock = 0;<br>    uint32_t nTileBlock = 0;<br>    uint32_t kTileBlock = 0;<br><br>    uint32_t mIterNum = 0;<br>    uint32_t nIterNum = 0;<br>    uint32_t kIterNum = 0;<br><br>    uint32_t mTileNums = 0;<br><br>    bool mHasTail = false;<br>    bool nHasTail = false;<br>    bool kHasTail = false;<br><br>    uint32_t kTailBlock = 0;<br>    uint32_t mTailBlock = 0;<br>    uint32_t nTailBlock = 0;<br><br>    uint32_t mTailNums = 0;<br>};<br></pre> |
 
-**表 2** Conv2DParams结构体内参数说明：
+**表2** Conv2DParams结构体内参数说明：
 
 | 参数名称 | 类型 | 说明 |
 | --- | --- | --- |
@@ -70,7 +70,7 @@ __aicore__ inline Conv2dTilling GetConv2dTiling(Conv2dParams& conv2dParams)
 | initY | uint32_t | 表示dst是否需要初始化。<br>&bull; 取值0：不使用bias，L0C Buffer需要初始化，dst初始矩阵保存有之前结果，新计算结果会累加前一次Conv2D计算结果。<br>&bull; 取值1：不使用bias，L0C Buffer不需要初始化，dst初始矩阵中数据无意义，计算结果直接覆盖dst中的数据。 |
 | partialSum | uint32_t | 当dst参数所在的TPosition为CO2时，通过该参数控制计算结果是否搬出。<br>&bull; 取值0：搬出计算结果<br>&bull; 取值1：不搬出计算结果，可以进行后续计算 |
 
-**表 3** Conv2dTilling结构体内参数说明
+**表3** Conv2dTilling结构体内参数说明
 
 | 参数名称 | 类型 | 说明 |
 | --- | --- | --- |
@@ -115,7 +115,7 @@ __aicore__ inline Conv2dTilling GetConv2dTiling(Conv2dParams& conv2dParams)
 
 ## 数据类型
 
-**表 4** feature_map、weight和dst的数据类型组合
+**表4** feature_map、weight和dst的数据类型组合
 
 | feature_map.dtype | weight.dtype | dst.dtype |
 | --- | --- | --- |

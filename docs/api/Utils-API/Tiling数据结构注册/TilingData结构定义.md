@@ -45,7 +45,7 @@
 
 ## 参数说明<a name="zh-cn_topic_0000001576606633_section552316288018"></a>
 
-**表 1** **BEGIN\_TILING\_DATA\_DEF**参数说明
+**表1** **BEGIN\_TILING\_DATA\_DEF**参数说明
 
 <a name="zh-cn_topic_0000001576606633_zh-cn_topic_0000001389733241_table111938719446"></a>
 <table><thead align="left"><tr id="zh-cn_topic_0000001576606633_zh-cn_topic_0000001389733241_row6223476444"><th class="cellrowborder" valign="top" width="17.22%" id="mcps1.2.4.1.1"><p id="zh-cn_topic_0000001576606633_zh-cn_topic_0000001389733241_p10223674448"><a name="zh-cn_topic_0000001576606633_zh-cn_topic_0000001389733241_p10223674448"></a><a name="zh-cn_topic_0000001576606633_zh-cn_topic_0000001389733241_p10223674448"></a>参数</p>
@@ -66,7 +66,7 @@
 </tbody>
 </table>
 
-**表 2** **TILING\_DATA\_FIELD\_DEF**参数说明
+**表2** **TILING\_DATA\_FIELD\_DEF**参数说明
 
 <a name="zh-cn_topic_0000001576606633_table396666731"></a>
 <table><thead align="left"><tr id="zh-cn_topic_0000001576606633_row296610614315"><th class="cellrowborder" valign="top" width="17.22%" id="mcps1.2.4.1.1"><p id="zh-cn_topic_0000001576606633_p1496666238"><a name="zh-cn_topic_0000001576606633_p1496666238"></a><a name="zh-cn_topic_0000001576606633_p1496666238"></a>参数</p>
@@ -94,7 +94,7 @@
 </tbody>
 </table>
 
-**表 3** **TILING\_DATA\_FIELD\_DEF\_ARR**参数说明
+**表3** **TILING\_DATA\_FIELD\_DEF\_ARR**参数说明
 
 <a name="zh-cn_topic_0000001576606633_table164915116419"></a>
 <table><thead align="left"><tr id="zh-cn_topic_0000001576606633_row13490116418"><th class="cellrowborder" valign="top" width="17.22%" id="mcps1.2.4.1.1"><p id="zh-cn_topic_0000001576606633_p124919111447"><a name="zh-cn_topic_0000001576606633_p124919111447"></a><a name="zh-cn_topic_0000001576606633_p124919111447"></a>参数</p>
@@ -129,7 +129,7 @@
 </tbody>
 </table>
 
-**表 4** **TILING\_DATA\_FIELD\_DEF\_STRUCT**参数说明
+**表4** **TILING\_DATA\_FIELD\_DEF\_STRUCT**参数说明
 
 <a name="zh-cn_topic_0000001576606633_table69741814053"></a>
 <table><thead align="left"><tr id="zh-cn_topic_0000001576606633_row1197414141052"><th class="cellrowborder" valign="top" width="17.22%" id="mcps1.2.4.1.1"><p id="zh-cn_topic_0000001576606633_p4974814859"><a name="zh-cn_topic_0000001576606633_p4974814859"></a><a name="zh-cn_topic_0000001576606633_p4974814859"></a>参数</p>

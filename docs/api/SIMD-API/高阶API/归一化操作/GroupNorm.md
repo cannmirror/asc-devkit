@@ -48,14 +48,14 @@
 
 ## 参数说明
 
-**表 1**  模板参数说明
+**表1**  模板参数说明
 
 | 参数名 | 描述 |
 | --- | --- |
 | T | 操作数的数据类型。支持的数据类型为：half、float。 |
 | isReuseSource | 是否允许修改源操作数，默认值为false。如果开发者允许源操作数被改写，可以设置该参数取值为true开启，开启后能够节省部分内存空间。<br><br>设置为true，则本接口内部计算时复用inputX的内存空间，节省内存空间；设置为false，则本接口内部计算时不复用inputX的内存空间。<br><br>对于float数据类型的输入支持开启该参数，half数据类型的输入不支持开启该参数。<br><br>isReuseSource的使用样例请参考[更多样例](../数学计算/更多样例-83.md#section639165323915)。 |
 
-**表 2**  接口参数说明
+**表2**  接口参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |
@@ -81,16 +81,16 @@
 ## 调用示例
 
 ```
-// output: 存放 GroupNorm 计算结果的 Tensor
-// outputMean: 输出每个 group 的均值
-// outputVariance: 输出每个 group 的方差
+// output: 存放GroupNorm 计算结果的Tensor
+// outputMean: 输出每个group 的均值
+// outputVariance: 输出每个group 的方差
 // inputX: 输入数据X，shape 为 [N, C, H, W]
 // gamma: LayerNorm 的缩放参数 γ，shape 为 [C]
 // beta: LayerNorm 的偏置参数 β，shape 为 [C]
 // epsilon: 防除零系数ε
-// tiling: 预计算的 Tiling 信息，包含分组数、维度等参数
+// tiling: 预计算的Tiling 信息，包含分组数、维度等参数
 
-// 使用 GroupNorm 接口实现 Group Normalization
+// 使用GroupNorm 接口实现Group Normalization
 // 若数据类型T为float且允许修改inputX，可设置isReuseSource = true复用inputX内存空间以节省内存
 AscendC::GroupNorm<T, isReuseSource>(
     output,           // 输出：归一化并缩放平移后的结果

@@ -12,7 +12,7 @@
 
 ## 函数原型
 
-- 常规搬运 2D格式
+- 常规搬运2D格式
 
      ```cpp
 
@@ -34,7 +34,7 @@
 
     ```
 
-- 同步常规搬运 2D格式
+- 同步常规搬运2D格式
 
      ```cpp
 
@@ -56,7 +56,7 @@
 
     ```
 
-- 转置搬运 2D格式
+- 转置搬运2D格式
 
      ```cpp
 
@@ -78,7 +78,7 @@
 
     ```
 
-- 同步转置搬运 2D格式
+- 同步转置搬运2D格式
 
      ```cpp
 
@@ -100,7 +100,7 @@
     
     ```
 
-- 高维切分搬运 3D格式
+- 高维切分搬运3D格式
 
     ```cpp
 
@@ -119,7 +119,7 @@
 
     ```
 
-- 同步高维切分搬运 3D格式
+- 同步高维切分搬运3D格式
 
 ```cpp
 
@@ -188,35 +188,35 @@ PIPE_MTE1
 
 ## 3D数据格式说明
 
-要求输入的feature map和filter的格式是 NC1HWC0，其中 C0 是最低维度而且 C0 是固定值为 16（对于u8/s8类型为32），C1=C/C0。
+要求输入的feature map和filter的格式是NC1HWC0，其中C0 是最低维度而且C0 是固定值为16（对于u8/s8类型为32），C1=C/C0。
 
-为了简化场景，以下场景假设输入的 feature map 的 channel 为4，即 Ci=4。输入 feature maps 在 A1 中的形状为 (Hi,Wi,Ci)，经过 load3dv1 处理后在 A2 的数据形状为(Wo*Ho, Hk*Wk*Ci)。其中 Wo 和 Ho 是卷积后输出的shape，Hk 和 Wk 是 filter 的 shape。
+为了简化场景，以下场景假设输入的feature map 的channel 为4，即Ci=4。输入feature maps 在A1 中的形状为 (Hi,Wi,Ci)，经过load3dv1 处理后在A2 的数据形状为(Wo*Ho, Hk*Wk*Ci)。其中Wo 和Ho 是卷积后输出的shape，Hk 和Wk 是filter 的shape。
 
-直观的来看，img2col 的过程就是 filter 在 feature map 上扫过，将对应 feature map 的数据展开成输出数据的每一行的过程。filter 首先在W方向上滑动 Wo 步，然后在 H 方向上走一步然后重复以上过程，最终输出 Wo * Ho 行数据。下图中红色和黄色的数据分别代表第一行和第二行。数字表示原始输入数据，filter 和输出数据三者之间的关联关系。可以看到，load3dv1 首先在输入数据的 Ci 维度搬运对应于 00 的 4 个数，然后搬运对应于 01 的四个数，最终这一行的大小为 Hk*Wk*Ci 即 3*3*4=36 个数。
+直观的来看，img2col 的过程就是filter 在feature map 上扫过，将对应feature map 的数据展开成输出数据的每一行的过程。filter 首先在W方向上滑动Wo 步，然后在H 方向上走一步然后重复以上过程，最终输出Wo * Ho 行数据。下图中红色和黄色的数据分别代表第一行和第二行。数字表示原始输入数据，filter 和输出数据三者之间的关联关系。可以看到，load3dv1 首先在输入数据的Ci 维度搬运对应于00 的4 个数，然后搬运对应于01 的四个数，最终这一行的大小为Hk*Wk*Ci 即3*3*4=36 个数。
 
 - 对应的feature map格式如下图：
 
 ![ ](../../figures/load3d_01.png)
 
-- 对应的 filter 的格式如下图：
+- 对应的filter 的格式如下图：
 
 ![ ](../../figures/load3d_02.png)
 
-其中 n 为 filter 的个数，可以看出维度排布为 (Hk,Wk,Ci,n)，但是需要注意的是下图的格式还需要根据Mmad中B矩阵的格式转换。
+其中n 为filter 的个数，可以看出维度排布为 (Hk,Wk,Ci,n)，但是需要注意的是下图的格式还需要根据Mmad中B矩阵的格式转换。
 
 实际操作中，由于存储空间或者计算能力限制，我们通常会将整个卷积计算分块，一次只搬运并计算一小块数据。
 
 ![ ](../../figures/load3d_03.png)
 
-对于 A2 的 feature map 来说有两种方案，水平分块和垂直分块。分别对应参数中 repeatMode 的 0 和 1。
+对于A2 的feature map 来说有两种方案，水平分块和垂直分块。分别对应参数中repeatMode 的0 和1。
 
-注：下图中的分形矩阵大小为 4x4，实际应该为 16x16 (对于 u8/s8 类型为 16x32)
+注：下图中的分形矩阵大小为4x4，实际应该为16x16 (对于u8/s8 类型为16x32)
 
-repeatMode =0 时，每次 repeat 会改变在 filter 窗口中读取数据点的位置，然后跳到下一个 C0 的位置。
+repeatMode =0 时，每次repeat 会改变在filter 窗口中读取数据点的位置，然后跳到下一个C0 的位置。
 
 ![ ](../../figures/load3d_04.png)
 
-repeatMode =1 的时候 filter 窗口中读取数据的位置保持不变，每个 repeat 在 feature map 中前进 C0 个元素。
+repeatMode =1 的时候filter 窗口中读取数据的位置保持不变，每个repeat 在feature map 中前进C0 个元素。
 
 ![ ](../../figures/load3d_05.png)
 

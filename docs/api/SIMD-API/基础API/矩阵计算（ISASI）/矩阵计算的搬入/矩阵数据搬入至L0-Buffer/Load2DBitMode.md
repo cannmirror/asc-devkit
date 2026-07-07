@@ -15,10 +15,10 @@
 - Atlas 200I/500 A2 推理产品：不支持
 <!-- end id4 -->
 <!-- npu="310p" id5 -->
-- Atlas 推理系列产品 AI Core：不支持
+- Atlas 推理系列产品AI Core：不支持
 <!-- end id5 -->
 <!-- npu="310p" id6 -->
-- Atlas 推理系列产品 Vector Core：不支持
+- Atlas 推理系列产品Vector Core：不支持
 <!-- end id6 -->
 <!-- npu="910" id7 -->
 - Atlas 训练系列产品：不支持
@@ -45,7 +45,7 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>&
 
 ## 参数说明<a id="section622mcpsimp"></a>
 
-**表 1** 模板参数说明
+**表1** 模板参数说明
 
 | 参数名称 | 含义 |
 | ---------- | ---------- |
@@ -53,7 +53,7 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>&
 | Src | 源操作数存储的逻辑位置（TPosition），支持的取值为A1和B1，仅Load2DBitMode接口使用。 |
 | Dst | 目的操作数存储的逻辑位置（TPosition），支持的取值为A2和B2，仅Load2DBitMode接口使用。 |
 
-**表 2** 通用参数说明
+**表2** 通用参数说明
 
 | 参数名称 | 输入/输出 | 含义 |
 | ---------- | ---------- | ---------- |
@@ -61,7 +61,7 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>&
 | src | 输入 | 源操作数，类型为LocalTensor。<br>数据类型需要与dst保持一致。 |
 | loadDataParams | 输入 | LoadData参数结构体，类型为Load2DBitModeParam，具体参考[表3](#table10539223195311)。<br>上述结构体参数定义请参考\$\{INSTALL\_DIR\}/include/ascendc/basic\_api/interface/kernel\_struct\_mm.h，\$\{INSTALL\_DIR\}请替换为CANN软件安装后文件存储路径。 |
 
-**表 3** Load2DBitModeParam类参数说明<a id="table10539223195311"></a>
+**表3** Load2DBitModeParam类参数说明<a id="table10539223195311"></a>
 
 | 参数名称 | 含义 |
 | ---------- | ---------- |
@@ -98,7 +98,7 @@ Load2DBitModeParam params(loadDataParams);  // 直接使用LoadData2DParamsV2结
 
 也可以使用各参数的Set函数修改参数值，并且由于使用了联合体，还可以对config0和config1直接进行逐bit位修改来修改参数。
 
-**表 4** Load2DBitModeConfig0结构体参数说明<a name="table4109172132317"></a>
+**表4** Load2DBitModeConfig0结构体参数说明<a name="table4109172132317"></a>
 
 | 参数名称 | 含义 |
 | ---------- | ---------- |
@@ -109,7 +109,7 @@ Load2DBitModeParam params(loadDataParams);  // 直接使用LoadData2DParamsV2结
 
 Load2DBitModeConfig0结构体参数的含义与LoadData2DParamsV2结构体中的同名参数含义相同，具体参考[Load2D](Load2D.md)。
 
-**表 5** Load2DBitModeConfig1结构体参数说明<a name="table122891852142311"></a>
+**表5** Load2DBitModeConfig1结构体参数说明<a name="table122891852142311"></a>
 
 | 参数名称 | 含义 |
 | ---------- | ---------- |
@@ -118,7 +118,7 @@ Load2DBitModeConfig0结构体参数的含义与LoadData2DParamsV2结构体中的
 
 Load2DBitModeConfig1结构体参数的含义与LoadData2DParamsV2结构体中的同名参数含义相同，具体参考[Load2D](Load2D.md)。
 
-**表 6** Load2DBitModeParam类成员函数说明<a name="table1123714295457"></a>
+**表6** Load2DBitModeParam类成员函数说明<a name="table1123714295457"></a>
 
 | 函数名称 | 功能 |
 | ---------- | ---------- |

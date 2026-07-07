@@ -29,7 +29,7 @@
 
 以float类型，ND格式，\[m, 1\]广播到\[m, k\]为例，描述Broadcast高阶API内部算法框图，如下图所示。
 
-**图 1**  Broadcast算法框图  
+**图1**  Broadcast算法框图  
 ![](../../../figures/Broadcast算法框图.png "Broadcast算法框图")
 
 计算过程分为如下几步，均在Vector上进行：
@@ -83,7 +83,7 @@
 
 ## 参数说明
 
-**表 1**  模板参数说明
+**表1**  模板参数说明
 
 | 参数名称 | 功能 |
 | --- | --- |
@@ -92,7 +92,7 @@
 | axis | 要广播的维度，目前仅支持0和1。参数取值为0代表要广播第1维，取值为1代表要广播第2维。 |
 | isReuseSource | 是否允许修改源操作数。该参数预留，传入默认值false即可。 |
 
-**表 2**  支持动态shape接口的模板参数说明
+**表2**  支持动态shape接口的模板参数说明
 
 | 参数名称 | 功能 |
 | --- | --- |
@@ -102,7 +102,7 @@
 | constSrcShape | 输入tensor的shape。uint32_t类型的数组。<br>该数组中任一维度取值为0，表示该维度为动态场景，实际shape由参数srcShape决定。<br>该数组中任一维度取值大于0，表示该维度为静态场景，与参数srcShape中对应维度取值相同。<br><br>该参数预留，传入默认值nullptr即可。 |
 | constSrcInnerPad | 表示输入的最后一维srcShape[rank-1]是否32B对齐，其中rank为输入/输出tensor的维度数目。<br><br>该参数预留，传入默认值false即可。 |
 
-**表 3**  接口参数说明
+**表3**  接口参数说明
 
 | 参数名称 | 输入/输出 | 描述 |
 | --- | --- | --- |
@@ -112,7 +112,7 @@
 | srcShape | 输入 | 输入tensor的shape：uint32_t类型的数组，长度为1或者2， 输入/输出的shape维度数目必须一致。 |
 | sharedTmpBuffer | 输入 | 临时缓存。<br><br>类型为[LocalTensor](../../基础API/数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor.md)，支持的TPosition为VECIN/VECCALC/VECOUT。<br><br>用于Broadcast内部复杂计算时存储中间变量，由开发者提供。<br><br>临时空间大小BufferSize的获取方式请参考[GetBroadCastMaxMinTmpSize](GetBroadCastMaxMinTmpSize.md)。 |
 
-**表 4**  支持动态shape接口的参数说明
+**表4**  支持动态shape接口的参数说明
 
 | 参数名称 | 输入/输出 | 描述 |
 | --- | --- | --- |
@@ -122,7 +122,7 @@
 | srcShape | 输入 | 输入tensor的shape：uint32_t类型的数组，长度取值范围为[1, 9]。输入/输出的shape维度数目必须一致，且满足条件dstShape[i] >= srcShape[i]。<br><br>当srcShape[i]的值为1，且dstShape[i]不等于srcShape[i]时，表示i轴为广播轴。 |
 | tiling | 输入 | Broadcast接口所需的Tiling信息。BroadcastTiling*类型，通过调用Kernel侧的tiling计算接口GetBroadcastTilingInfo获取。 |
 
-**表 5**  kernel侧tiling计算接口参数说明
+**表5**  kernel侧tiling计算接口参数说明
 
 <a name="table5458981523"></a>
 | 参数名称 | 输入/输出 | 功能 |

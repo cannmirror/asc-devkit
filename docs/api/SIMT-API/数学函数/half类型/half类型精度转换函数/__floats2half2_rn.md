@@ -22,7 +22,7 @@ inline half2 __floats2half2_rn(const float x, const float y)
 
 ## 参数说明
 
-**表 1**  参数说明
+**表1**  参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |

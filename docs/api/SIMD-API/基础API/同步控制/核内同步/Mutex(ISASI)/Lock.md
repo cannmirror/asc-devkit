@@ -42,13 +42,13 @@ static __aicore__ inline void Lock(MutexID id)
 
 ## 参数说明<a name="section74061251191017"></a>
 
-**表 1**  模板参数说明
+**表1**  模板参数说明
 
 | 参数名 | 描述 |
 | --- | --- |
 | pipe | 模板参数，表示流水类别。支持的流水类型为PIPE_S/PIPE_M/PIPE_V/PIPE_MTE1/PIPE_MTE2/PIPE_MTE3/PIPE_FIX |
 
-**表 2**  参数说明
+**表2**  参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |
@@ -66,11 +66,11 @@ static __aicore__ inline void Lock(MutexID id)
 - 对于同一个MutexID，必须先执行Lock，然后才能执行Unlock，且指定的pipe需要相同。如果Lock和Unlock没有按照这种"成对出现"的顺序排列，硬件行为将不可预测。以下是常见的错误用法与正确用法示例：
 
     ```cpp
-    // 错误写法 1：先Unlock再Lock，顺序颠倒。
+    // 错误写法1：先Unlock再Lock，顺序颠倒。
     AscendC::Mutex::Unlock<PIPE_V>(0);
     AscendC::Mutex::Lock<PIPE_V>(0);
     
-    // 错误写法 2：连续两次Lock后再连续两次Unlock，未遵循成对使用原则。
+    // 错误写法2：连续两次Lock后再连续两次Unlock，未遵循成对使用原则。
     AscendC::Mutex::Lock<PIPE_V>(0);
     AscendC::Mutex::Lock<PIPE_V>(0);
     AscendC::Mutex::Unlock<PIPE_V>(0);
@@ -107,35 +107,35 @@ static __aicore__ inline void Lock(MutexID id)
 ## 调用示例<a name="section123275308128"></a>
 
 ```cpp
-// 申请两个 MutexID，供双缓冲流水交替复用。
+// 申请两个MutexID，供双缓冲流水交替复用。
 uint8_t mutexId0 = AscendC::AllocMutexID();
 uint8_t mutexId1 = AscendC::AllocMutexID();
 
-// 交替使用两个 MutexID，保证 MTE2、V、MTE3 三段流水按顺序串联。
+// 交替使用两个MutexID，保证MTE2、V、MTE3 三段流水按顺序串联。
 for (int32_t i = 0; i < loopCount; i++) {
     uint8_t mutexId = (i % 2 == 0) ? mutexId0 : mutexId1;
 
-    // 锁住 MTE2 流水，保证当前 tile 的搬入按该 MutexID 顺序执行。
+    // 锁住MTE2 流水，保证当前tile 的搬入按该MutexID 顺序执行。
     AscendC::Mutex::Lock<PIPE_MTE2>(mutexId);
     AscendC::DataCopy(xLocal, src0Global[TILE_LENGTH * progress], TILE_LENGTH);
     AscendC::DataCopy(yLocal, src1Global[TILE_LENGTH * progress], TILE_LENGTH);
-    // 搬入完成后解锁 MTE2 流水，允许后续阶段继续推进。
+    // 搬入完成后解锁MTE2 流水，允许后续阶段继续推进。
     AscendC::Mutex::Unlock<PIPE_MTE2>(mutexId);
 
-    // 锁住 V 流水，等待对应 tile 的搬入完成后再开始计算。
+    // 锁住V 流水，等待对应tile 的搬入完成后再开始计算。
     AscendC::Mutex::Lock<PIPE_V>(mutexId);
     AscendC::Add(zLocal, xLocal, yLocal, TILE_LENGTH);
-    // 计算完成后解锁 V 流水，放行后续计算或搬出。
+    // 计算完成后解锁V 流水，放行后续计算或搬出。
     AscendC::Mutex::Unlock<PIPE_V>(mutexId);
 
-    // 锁住 MTE3 流水，确保计算结果完成后再写回 GM。
+    // 锁住MTE3 流水，确保计算结果完成后再写回GM。
     AscendC::Mutex::Lock<PIPE_MTE3>(mutexId);
     AscendC::DataCopy(dstGlobal[TILE_LENGTH * progress], zLocal, TILE_LENGTH);
-    // 搬出完成后解锁 MTE3 流水，结束当前 tile 的处理。
+    // 搬出完成后解锁MTE3 流水，结束当前tile 的处理。
     AscendC::Mutex::Unlock<PIPE_MTE3>(mutexId);
 }
 
-// 释放本次样例申请的两个 MutexID。
+// 释放本次样例申请的两个MutexID。
 AscendC::ReleaseMutexID(mutexId0);
 AscendC::ReleaseMutexID(mutexId1);
 ```

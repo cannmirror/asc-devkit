@@ -139,7 +139,7 @@ __aicore__ inline void DataCopy(const LocalTensor<T>& dst, const GlobalTensor<T>
 - 搬运至L1 Buffer的数据不能重叠，如果存在重叠写入，硬件不会产生任何警告或错误，并且不保证重叠数据的写入顺序。
 - Dn2NzParams结构体参数的值需在取值范围内，参数取值范围如[表4](#table_dn2nz_range)所示。
 
-**表 4**  Dn2NzParams结构体参数取值范围<a id="table_dn2nz_range"></a>
+**表4**  Dn2NzParams结构体参数取值范围<a id="table_dn2nz_range"></a>
 
 |参数名称|取值范围|
 |----------|----------|

@@ -20,7 +20,7 @@ void GetPowerTmpBufferFactorSize(const bool baseIsTensor, const bool expIsTensor
 
 ## 参数说明
 
-**表 1**  参数列表
+**表1**  参数列表
 
 | 参数名 | 输入/输出 | 功能 |
 | --- | --- | --- |

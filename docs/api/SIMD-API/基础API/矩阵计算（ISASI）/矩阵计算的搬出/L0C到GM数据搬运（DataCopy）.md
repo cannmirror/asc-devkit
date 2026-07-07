@@ -73,14 +73,14 @@ DataCopy矩阵搬出接口支持多种随路能力的组合，需要设置不同
 
 ## 参数说明<a id="zh-cn_topic_0000002542828493_section16128134420472"></a>
 
-**表 1** 数据搬运DataCopy模板参数说明
+**表1** 数据搬运DataCopy模板参数说明
 
 | 参数名 | 描述 |
 | ---------- | ---------- |
 | T | 目的操作数的数据类型。支持的数据类型请参考[数据类型](#zh-cn_topic_0000002542828493_section4219135304818)。 |
 | U | 源操作数的数据类型。支持的数据类型请参考[数据类型](#zh-cn_topic_0000002542828493_section4219135304818)。 |
 
-**表 2** 数据搬运DataCopy接口参数说明
+**表2** 数据搬运DataCopy接口参数说明
 
 | 参数名称 | 输入/输出 | 含义 |
 | ---------- | ---------- | ---------- |
@@ -88,7 +88,7 @@ DataCopy矩阵搬出接口支持多种随路能力的组合，需要设置不同
 | src | 输入 | 源操作数，类型为LocalTensor，支持的物理地址为L0C Buffer（TPosition为CO1），为Mmad接口计算的结果。数据格式为NZ格式，地址需要满足64字节对齐。 |
 | intriParams | 输入 | 搬运参数，类型为[DataCopyCO12DstParams](#zh-cn_topic_0000002542828493_table35908519282)。 <br>具体定义请参考\$\{INSTALL\_DIR\}/include/ascendc/basic\_api/interface/kernel\_struct\_data_copy.h，\$\{INSTALL\_DIR\}请替换为CANN软件安装后文件存储路径。 |
 
-**表 3** DataCopyCO12DstParams结构体参数定义<a id="zh-cn_topic_0000002542828493_table35908519282"></a>
+**表3** DataCopyCO12DstParams结构体参数定义<a id="zh-cn_topic_0000002542828493_table35908519282"></a>
 
 | 参数名称 | 含义 |
 | ---------- | ---------- |

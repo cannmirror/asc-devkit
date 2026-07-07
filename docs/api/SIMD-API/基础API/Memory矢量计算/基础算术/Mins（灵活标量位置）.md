@@ -157,7 +157,7 @@ $dst_i = \operatorname{Min}(scalar, src_i)$
 
 ```bash
 输入数据(src0Local): [1 2 3 ... 512]
-输入数据 src1Local= [2 2 2 ... 2]
+输入数据src1Local= [2 2 2 ... 2]
 // 标量在前，src0Local[0]作为标量
 输出数据(dstLocal): [1 1 1 ... 1]
 // 标量在后，src1Local[0]作为标量

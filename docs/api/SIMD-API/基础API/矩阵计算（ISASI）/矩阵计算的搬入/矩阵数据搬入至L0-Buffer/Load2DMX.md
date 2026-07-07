@@ -15,10 +15,10 @@
 - Atlas 200I/500 A2 推理产品：不支持
 <!-- end id4 -->
 <!-- npu="310p" id5 -->
-- Atlas 推理系列产品 AI Core：不支持
+- Atlas 推理系列产品AI Core：不支持
 <!-- end id5 -->
 <!-- npu="310p" id6 -->
-- Atlas 推理系列产品 Vector Core：不支持
+- Atlas 推理系列产品Vector Core：不支持
 <!-- end id6 -->
 <!-- npu="910" id7 -->
 - Atlas 训练系列产品：不支持
@@ -59,14 +59,14 @@ __aicore__ inline void LoadData(const LocalTensor<U>& dst, const LocalTensor<T>&
 
 ## 参数说明<a id="section622mcpsimp"></a>
 
-**表 1** 模板参数说明<a name="table07381635103112"></a>
+**表1** 模板参数说明<a name="table07381635103112"></a>
 
 | 参数名称 | 含义 |
 | ---------- | ---------- |
 | T | T用来表示src的数据类型。<br>支持数据类型为：fp4x2_e2m1_t/fp4x2_e1m2_t/fp8_e4m3fn_t/fp8_e5m2_t。 |
 | U | U用来表示dst的数据类型。<br>支持数据类型为：fp4x2_e2m1_t/fp4x2_e1m2_t/fp8_e4m3fn_t/fp8_e5m2_t。 |
 
-**表 2** 通用参数说明<a name="table18368155193919"></a>
+**表2** 通用参数说明<a name="table18368155193919"></a>
 
 | 参数名称 | 输入/输出 | 含义 |
 | ---------- | ---------- | ---------- |
@@ -76,7 +76,7 @@ __aicore__ inline void LoadData(const LocalTensor<U>& dst, const LocalTensor<T>&
 | loadDataParams | 输入 | LoadData参数结构体，类型为LoadData2DParamsV2。具体参考表[Load2DV2](Load2DV2.md)中的LoadData2DParamsV2结构体内参数说明。 <br>**本结构体用于控制左右矩阵数据的搬运。**  <br>|
 | loadMxDataParams | 输入 | LoadData参数结构体，类型为LoadData2DMxParams。具体参考[表3](#table15901153712305)。<br>**本结构体用于控制左右量化系数矩阵的搬运。**  <br>上述结构体参数定义请参考\$\{INSTALL\_DIR\}/include/ascendc/basic\_api/interface/kernel\_struct\_mm.h，\$\{INSTALL\_DIR\}请替换为CANN软件安装后文件存储路径。 |
 
-**表 3** LoadData2DMxParams结构体参数说明<a name="table15901153712305"></a>
+**表3** LoadData2DMxParams结构体参数说明<a name="table15901153712305"></a>
 
 | 参数名称 | 含义 |
 | ---------- | ---------- |
@@ -89,13 +89,13 @@ __aicore__ inline void LoadData(const LocalTensor<U>& dst, const LocalTensor<T>&
 
 下面通过一个具体的示例来解释LoadData2DMxParams结构体参数。假设A矩阵shape为（M，K），则ScaleA矩阵shape为（M，K/32），ScaleA数据类型为fp8_e8m0_t，ScaleA矩阵分形排布见[图1](#fig138710913432)。
 
-**图 1** ScaleA在L0A Buffer的分形排布<a id="fig138710913432"></a>
+**图1** ScaleA在L0A Buffer的分形排布<a id="fig138710913432"></a>
 
 ![](../../../../../figures/ScaleA在L0A的分形排布.png "ScaleA在L0A Buffer的分形排布")
 
 下图为ScaleA从L1 Buffer搬运至L0A Buffer过程中的配置参数示意。每一行为32字节，对应着[图1](#fig138710913432)中的一个分形。xStep为M维度分形的个数，如图中的xStep = M / 16 = 3，yStep为K维度32字节的个数，如图中的yStep = K / 32 / 2 = 21，srcStride和dstStride同理，表示在K维度上32字节的个数。
 
-**图 2**  ScaleA从L1 Buffer搬运至L0A Buffer的配置参数示意
+**图2**  ScaleA从L1 Buffer搬运至L0A Buffer的配置参数示意
 
 ![](../../../../../figures/Nd2Nz转换示意图.png "ScaleA从L1 Buffer搬运至L0A Buffer的配置参数示意")
 

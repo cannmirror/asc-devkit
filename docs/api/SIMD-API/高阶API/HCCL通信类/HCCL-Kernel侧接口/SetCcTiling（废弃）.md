@@ -25,7 +25,7 @@ __aicore__ inline int32_t SetCcTiling(__gm__ void *ccOpTilingData)
 
 ## 参数说明
 
-**表 1**  接口参数说明
+**表1**  接口参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |

@@ -30,7 +30,7 @@
 
 该指令会根据索引值indexReg将源操作数srcReg按元素收集到目的操作数dstReg中。收集过程如下图所示：
 
-**图 1**  Gather功能说明  
+**图1**  Gather功能说明  
 ![](../../../../figures/reg_gather_1.png "Gather功能说明")
 
 ## 函数原型<a name="section620mcpsimp"></a>
@@ -42,7 +42,7 @@ __simd_callee__ inline void Gather(S& dstReg, S& srcReg, V& indexReg)
 
 ## 参数说明<a name="section622mcpsimp"></a>
 
-**表 1**  模板参数说明
+**表1**  模板参数说明
 
 | 参数名 | 描述 |
 | --- | --- |
@@ -51,7 +51,7 @@ __simd_callee__ inline void Gather(S& dstReg, S& srcReg, V& indexReg)
 | S | 目的操作数的[RegTensor](../寄存器数据类型/RegTensor.md)类型，例如RegTensor&lt;half&gt;，由编译器自动推导，用户不需要手动填写。 |
 | V | 索引值的[RegTensor](../寄存器数据类型/RegTensor.md)类型，例如RegTensor&lt;uint16_t&gt;，由编译器自动推导，用户不需要手动填写。 |
 
-**表 2**  函数参数说明
+**表2**  函数参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |

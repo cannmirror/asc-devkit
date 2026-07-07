@@ -80,7 +80,7 @@
 
 -   对RegTensor操作
 
-    **表 1**  模板参数说明
+    **表1**  模板参数说明
 
     <a name="table172551105016"></a>
     <table><thead align="left"><tr id="row152514120505"><th class="cellrowborder" valign="top" width="18.2%" id="mcps1.2.3.1.1"><p id="p1325101195013"><a name="p1325101195013"></a><a name="p1325101195013"></a>参数名</p>
@@ -109,7 +109,7 @@
     </tbody>
     </table>
 
-    **表 2**  参数说明
+    **表2**  参数说明
 
     <a name="table14261514502"></a>
     <table><thead align="left"><tr id="row3262116508"><th class="cellrowborder" valign="top" width="18.54%" id="mcps1.2.4.1.1"><p id="p6267118507"><a name="p6267118507"></a><a name="p6267118507"></a>参数名</p>

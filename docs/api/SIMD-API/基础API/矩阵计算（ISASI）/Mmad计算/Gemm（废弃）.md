@@ -48,7 +48,7 @@
 
 ## 参数说明
 
-**表 1** 接口参数说明
+**表1** 接口参数说明
 
 | 参数名称 | 类型 | 说明 |
 | --- | --- | --- |
@@ -62,7 +62,7 @@
 | partialsum | 输入 | 当dst参数所在的TPosition为CO2时，通过该参数控制计算结果是否搬出。<br>&bull; 取值0：搬出计算结果；<br>&bull; 取值1：不搬出计算结果，可以进行后续计算。 |
 | initValue | 输入 | 表示dst是否需要初始化。<br>&bull; 取值0：dst需要初始化，dst初始矩阵保存有之前结果，新计算结果会累加前一次Gemm计算结果。<br>&bull; 取值1：dst不需要初始化，dst初始矩阵中数据无意义，计算结果直接覆盖dst中的数据。 |
 
-**表 2** src0、src1和dst的数据类型组合
+**表2** src0、src1和dst的数据类型组合
 
 | src0.dtype | src1.dtype | dst.dtype |
 | --- | --- | --- |
@@ -70,7 +70,7 @@
 | half | half | float |
 | half | half | half |
 
-**表 3** GemmTiling结构内参数说明<a id="table3"></a>
+**表3** GemmTiling结构内参数说明<a id="table3"></a>
 
 | 参数名称 | 类型 | 说明 |
 | --- | --- | --- |
@@ -104,7 +104,7 @@
 
 ## 数据类型
 
-**表 4** src0、src1和dst的数据类型组合
+**表4** src0、src1和dst的数据类型组合
 
 | src0.dtype | src1.dtype | dst.dtype |
 | --- | --- | --- |

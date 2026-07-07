@@ -60,7 +60,7 @@ src1固定为uint32\_t类型，无论src0是float还是half类型，dst中的（
 - 当src0为float类型时，dst中的index存储在高4B，score存储在低4B；
 - 当src0为half类型时，dst中index存储在高4B，score存储在低2B，中间的2B保留。
 
-**图 1**  Sort32排序示意图
+**图1**  Sort32排序示意图
 
 ![](../../../../figures/sort32.png)<a id="图1-Sort32排序示意图"></a>
 

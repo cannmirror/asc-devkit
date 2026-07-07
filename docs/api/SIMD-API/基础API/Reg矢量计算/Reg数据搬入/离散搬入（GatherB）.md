@@ -30,7 +30,7 @@
 
 该指令会根据索引值index将源操作数按DataBlock（32B）收集到目的操作数dstReg中。收集过程如图1所示：
 
-**图 1**  GatherB功能说明
+**图1**  GatherB功能说明
 
 ![图1 GatherB功能说明](../../../../figures/reg_gatherb.png)
 
@@ -43,7 +43,7 @@ __simd_callee__ inline void GatherB(U& dstReg, __ubuf__ T* baseAddr, S& index, M
 
 ## 参数说明<a name="section622mcpsimp"></a>
 
-**表 1**  模板参数说明
+**表1**  模板参数说明
 
 | 参数名 | 描述 |
 |-----|-----|
@@ -51,7 +51,7 @@ __simd_callee__ inline void GatherB(U& dstReg, __ubuf__ T* baseAddr, S& index, M
 | U | 目的操作数的RegTensor类型。例如RegTensor\<half>，由编译器自动推导，用户不需要手动填写。 |
 | S | 索引值的RegTensor类型，例如RegTensor\<uint32_t>，由编译器自动推导，用户不需要手动填写。 |
 
-**表 2**  参数说明
+**表2**  参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 |-----|-----|-----|

@@ -39,7 +39,7 @@ __aicore__ inline void DataCopyPad(const LocalTensor<T>& dst, const GlobalTensor
 
 ## 参数说明<a name="section622mcpsimp"></a>
 
-**表 1** 模板参数说明
+**表1** 模板参数说明
 
 <a name="table4835205712588"></a>
 
@@ -48,7 +48,7 @@ __aicore__ inline void DataCopyPad(const LocalTensor<T>& dst, const GlobalTensor
 | T | 操作数以及paddingValue（待填充数据值）的数据类型。 |
 | mode | 配置数据搬运模式。PaddingMode类型，定义如下：<br><pre>enum class PaddingMode : uint8_t {<br>    Normal = 0,  // 默认模式，与原有数据搬运格式保持一致，每次数据搬运都会补齐至32字节对齐<br>    Compact,     // 紧凑模式，允许单次搬运不对齐，统一在整块数据末尾补齐至32字节对齐<br>};</pre> |
 
-**表 2** 接口参数说明
+**表2** 接口参数说明
 
 <a name="zh-cn_topic_0235751031_table33761356"></a>
 
@@ -59,7 +59,7 @@ __aicore__ inline void DataCopyPad(const LocalTensor<T>& dst, const GlobalTensor
 | dataCopyParams | 输入 | 搬运参数。<br>&nbsp;&nbsp;&bull; DataCopyExtParams类型，具体参数说明请参考[表4](#table10572141063919)。 |
 | padParams | 输入 | 从Global Memory搬运数据至Local Memory时，可以根据开发者需要，在搬运数据左边或右边填充数据。padParams是用于控制数据填充过程的参数。<br>&nbsp;&nbsp;&bull; DataCopyPadExtParams类型，具体参数请参考[表6](#table844881954715)。 |
 
-**表 3** DataCopyExtParams结构体参数定义
+**表3** DataCopyExtParams结构体参数定义
 
 <a name="table10572141063919"></a>
 
@@ -71,7 +71,7 @@ __aicore__ inline void DataCopyPad(const LocalTensor<T>& dst, const GlobalTensor
 | dstStride | 目的操作数，相邻连续数据块间的间隔（前面一个数据块的尾与后面数据块的头的间隔），单位为dataBlock(32字节)，取值范围为[0, 65535]。 |
 | rsv | 保留字段。 |
 
-**表 4** DataCopyPadExtParams<T\>结构体参数定义
+**表4** DataCopyPadExtParams<T\>结构体参数定义
 
 <a name="table844881954715"></a>
 
@@ -97,7 +97,7 @@ __aicore__ inline void DataCopyPad(const LocalTensor<T>& dst, const GlobalTensor
 
         **Compact模式下leftPadding、rightPadding均不生效**，有效数据紧密排列后，统一在整块数据末尾补齐至32字节对齐。此处示例中，blockLen \* blockCount = 48 \* 3 = 144字节，在整块数据末尾补齐16字节满足32字节对齐，目的操作数的总长度为160字节。
 
-**图 1**  Normal模式与Compact模式搬运配置示意图<a id="fig_paddingmode_demo"></a>
+**图1**  Normal模式与Compact模式搬运配置示意图<a id="fig_paddingmode_demo"></a>
 
 ![](../../../../../figures/paddingMode.png "Normal模式与Compact模式搬运配置示意图")
 
@@ -115,7 +115,7 @@ __aicore__ inline void DataCopyPad(const LocalTensor<T>& dst, const GlobalTensor
 
 ## 调用示例<a name="section177231425115410"></a>
 
-示例场景如[图 1](#fig_paddingmode_demo)所示，该接口仅支持Ascend 950PR/Ascend 950DT。
+示例场景如[图1](#fig_paddingmode_demo)所示，该接口仅支持Ascend 950PR/Ascend 950DT。
 
 Normal模式调用示例如下：
 

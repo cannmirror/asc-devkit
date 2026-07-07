@@ -24,7 +24,7 @@ bfloat16_t __hmax_nan(const bfloat16_t x, const bfloat16_t y)
 
 ## 参数说明
 
-**表 1**  参数说明
+**表1**  参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |

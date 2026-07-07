@@ -22,7 +22,7 @@
 
 ## 参数说明<a name="zh-cn_topic_0000001576728165_section552316288018"></a>
 
-**表 1**  参数说明
+**表1**  参数说明
 
 <a name="zh-cn_topic_0000001576728165_zh-cn_topic_0000001389733241_table111938719446"></a>
 <table><thead align="left"><tr id="zh-cn_topic_0000001576728165_zh-cn_topic_0000001389733241_row6223476444"><th class="cellrowborder" valign="top" width="17.22%" id="mcps1.2.4.1.1"><p id="zh-cn_topic_0000001576728165_zh-cn_topic_0000001389733241_p10223674448"><a name="zh-cn_topic_0000001576728165_zh-cn_topic_0000001389733241_p10223674448"></a><a name="zh-cn_topic_0000001576728165_zh-cn_topic_0000001389733241_p10223674448"></a>参数</p>

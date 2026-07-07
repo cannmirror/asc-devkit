@@ -24,7 +24,7 @@ __aicore__ constexpr MatmulConfig GetIBShareNormConfig(const bool intrinsicsLimi
 
 本接口的所有参数用于设置[MatmulConfig结构体](MatmulConfig.md#table1761013213153)中的参数，其中互相对应的参数的功能作用相同。
 
-**表 1**  接口参数说明
+**表1**  接口参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |

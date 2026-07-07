@@ -75,7 +75,7 @@ $$C = A \times B + C$$
 <!-- npu="950" id19 -->
 针对Ascend 950PR/Ascend 950DT：
 
-**表 1** 矩阵计算矩阵A、B、C解释说明
+**表1** 矩阵计算矩阵A、B、C解释说明
 
 | 矩阵计算逻辑 | 矩阵计算物理位置 | 维度 | 输入/输出数据格式 | 数据类型 |
 | --- | --- | --- | --- | --- |
@@ -150,7 +150,7 @@ Atlas A2 训练系列产品/Atlas A2 推理系列产品
 
 ## 参数说明
 
-**表 3** 参数说明
+**表3** 参数说明
 
 | 参数名称 | 输入/输出 | 含义 |
 | --- | --- | --- |
@@ -160,7 +160,7 @@ Atlas A2 训练系列产品/Atlas A2 推理系列产品
 | bias | 输入 | 源操作数，Bias矩阵，类型为LocalTensor，支持的物理存储位置为BT Buffer（TPosition:C2）。<br>LocalTensor的起始地址需要按照64字节对齐。 |
 | mmadParams | 输入 | 矩阵乘相关参数。<br>该参数类型的具体定义请参考\$\{INSTALL_DIR\}/include/ascendc/basic_api/interface/kernel_struct_mm.h，\$\{INSTALL_DIR\}请替换为CANN软件安装后文件存储路径。<br>MmadParams参数说明请参考[表4](#zh_cn_topic_mmad_section4_table4)。 |
 
-**表 4** MmadParams结构体内参数说明<a id="zh_cn_topic_mmad_section4_table4"></a>
+**表4** MmadParams结构体内参数说明<a id="zh_cn_topic_mmad_section4_table4"></a>
 
 | 参数名称 | 含义 |
 | --- | --- |
@@ -195,7 +195,7 @@ Atlas A2 训练系列产品/Atlas A2 推理系列产品
 | fp8_e5m2_t | fp8_e5m2_t | float |
 | hifloat8_t | hifloat8_t | float |
 
-**表 6** dst、fm、filter、bias支持的精度类型组合（Ascend 950PR/Ascend 950DT）
+**表6** dst、fm、filter、bias支持的精度类型组合（Ascend 950PR/Ascend 950DT）
 
 | 左矩阵fm type | 右矩阵filter type | bias type | 结果矩阵dst type |
 | --- | --- | --- | --- |
@@ -221,7 +221,7 @@ Atlas A2 训练系列产品/Atlas A2 推理系列产品
 | bfloat16_t | bfloat16_t | float |
 | int4b_t | int4b_t | int32_t |
 
-**表 8** dst、fm、filter、bias支持的精度类型组合（Atlas A2 训练系列产品/Atlas A2 推理系列产品）（Atlas A3 训练系列产品/Atlas A3 推理系列产品）（Atlas 200I/500 A2 推理产品）
+**表8** dst、fm、filter、bias支持的精度类型组合（Atlas A2 训练系列产品/Atlas A2 推理系列产品）（Atlas A3 训练系列产品/Atlas A3 推理系列产品）（Atlas 200I/500 A2 推理产品）
 
 | 左矩阵fm type | 右矩阵filter type | bias type | 结果矩阵dst type |
 | --- | --- | --- | --- |

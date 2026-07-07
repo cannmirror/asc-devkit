@@ -30,7 +30,7 @@
 
 该指令会根据索引值index将源操作数srcReg中的元素分散到目的操作数UB中。分散过程如图1所示：
 
-**图 1**  Scatter功能说明
+**图1**  Scatter功能说明
 
 ![图1 Scatter功能说明](../../../../figures/reg_scatter.png)
 
@@ -43,7 +43,7 @@ __simd_callee__ inline void Scatter(__ubuf__ T* baseAddr, S& srcReg, V& index, M
 
 ## 参数说明<a name="section622mcpsimp"></a>
 
-**表 1**  模板参数说明
+**表1**  模板参数说明
 
 | 参数名 | 描述 |
 |-----|-----|
@@ -52,7 +52,7 @@ __simd_callee__ inline void Scatter(__ubuf__ T* baseAddr, S& srcReg, V& index, M
 | S | 源操作数的RegTensor类型。例如RegTensor\<half>，由编译器自动推导，用户不需要手动填写。 |
 | V | 索引值的RegTensor类型，例如RegTensor\<uint16_t>，由编译器自动推导，用户不需要手动填写。 |
 
-**表 2**  参数说明
+**表2**  参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 |-----|-----|-----|
@@ -63,7 +63,7 @@ __simd_callee__ inline void Scatter(__ubuf__ T* baseAddr, S& srcReg, V& index, M
 
 ## 数据类型
 
-**表 3**  Scatter操作数数据类型对应表
+**表3**  Scatter操作数数据类型对应表
 
 | 目的操作数 | 索引值 |
 |-----|-----|

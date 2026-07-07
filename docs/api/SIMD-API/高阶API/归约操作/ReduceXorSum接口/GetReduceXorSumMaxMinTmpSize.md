@@ -15,7 +15,7 @@ void GetReduceXorSumMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t type
 
 ## 参数说明
 
-**表 1**  接口参数列表
+**表1**  接口参数列表
 
 | 接口 | 输入/输出 | 功能 |
 | --- | --- | --- |

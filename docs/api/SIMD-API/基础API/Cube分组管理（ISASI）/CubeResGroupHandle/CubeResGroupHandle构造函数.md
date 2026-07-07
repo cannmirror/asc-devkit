@@ -62,7 +62,7 @@ __aicore__ inline CubeResGroupHandle(GM_ADDR workspace, uint8_t blockStart, uint
 
 ## 参数说明<a name="zh-cn_topic_0000001526206862_section129451113125413"></a>
 
-**表 1**  CubeResGroupHandle参数说明
+**表1**  CubeResGroupHandle参数说明
 
 <a name="zh-cn_topic_0000001526206862_zh-cn_topic_0000001389783361_table111938719446"></a>
 <table><thead align="left"><tr id="zh-cn_topic_0000001526206862_zh-cn_topic_0000001389783361_row6223476444"><th class="cellrowborder" valign="top" width="17.22%" id="mcps1.2.4.1.1"><p id="zh-cn_topic_0000001526206862_zh-cn_topic_0000001389783361_p10223674448"><a name="zh-cn_topic_0000001526206862_zh-cn_topic_0000001389783361_p10223674448"></a><a name="zh-cn_topic_0000001526206862_zh-cn_topic_0000001389783361_p10223674448"></a>参数</p>
@@ -113,7 +113,7 @@ __aicore__ inline CubeResGroupHandle(GM_ADDR workspace, uint8_t blockStart, uint
 
 如下图所示，CubeResGroupHandle1的blockStart为4，blockSize为4，表示起始的AIC序号为2，即blockStart / 2；AIC数量为2，即blockSize / 2。msgQueueSize为10，表示消息队列个数为10，每个Block分配的消息队列个数为Ceil\(msgQueueSize，blockSize/2\)，Block2和Block3分配到的消息队列个数均为5。CubeResGroupHandle2的msgQueueSize数量为11，最后一个Block只能分配5个消息队列。
 
-**图 1**  Block和消息队列映射示意图<a name="fig38005710136"></a>  
+**图1**  Block和消息队列映射示意图<a name="fig38005710136"></a>  
 ![](../../../../figures/Block和消息队列映射示意图.png "Block和消息队列映射示意图")
 
 ## 约束说明<a name="zh-cn_topic_0000001526206862_section65498832"></a>

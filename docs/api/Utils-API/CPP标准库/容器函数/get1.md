@@ -38,7 +38,7 @@ __aicore__ inline const typename tuple_element<N, tuple<Tps...> >::type&& get(co
 
 ## 参数说明
 
-**表 1**  模板参数说明
+**表1**  模板参数说明
 
 | 参数名 | 含义 |
 | --- | --- |

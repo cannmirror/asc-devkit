@@ -78,7 +78,7 @@
 
 ## 实现原理
 
-**图 1**  AscendAntiQuant算法框图  
+**图1**  AscendAntiQuant算法框图  
 ![](../../../figures/AscendAntiQuant算法框图.png "AscendAntiQuant算法框图")
 
 如上图所示，为AscendAntiQuant的典型场景算法框图，计算过程分为如下几步，均在Vector上进行：
@@ -87,7 +87,7 @@
 2.  计算offset：当offset为向量时做Add计算，当offset为scalar时做Adds计算；
 3.  计算scale：当scale为向量时做Mul计算，当scale为scalar时做Muls计算。
 
-**图 2**  isTranspose为False且输出为bfloat16的AscendAntiQuant算法框图  
+**图2**  isTranspose为False且输出为bfloat16的AscendAntiQuant算法框图  
 ![](../../../figures/isTranspose为False且输出为bfloat16的AscendAntiQuant算法框图.png "isTranspose为False且输出为bfloat16的AscendAntiQuant算法框图")
 
 在Atlas A2 训练系列产品/Atlas A2 推理系列产品上，当输出为bfloat16时，计算过程分为如下几步：
@@ -99,7 +99,7 @@
 5.  计算scale：当输入的scale为向量时用tmp2做Mul计算，为scalar时做Muls计算；
 6.  dst精度转换：将tmp1转换为bf16类型。
 
-**图 3**  AscendAntiQuant PER\_TOKEN/PER\_GROUP算法框图  
+**图3**  AscendAntiQuant PER\_TOKEN/PER\_GROUP算法框图  
 ![](../../../figures/AscendAntiQuant-PER_TOKEN-PER_GROUP算法框图.png "AscendAntiQuant-PER_TOKEN-PER_GROUP算法框图")
 
 PER\_TOKEN/PER\_GROUP b8/float4场景的计算逻辑如下：
@@ -201,7 +201,7 @@ PER\_TOKEN/PER\_GROUP b8/float4场景的计算逻辑如下：
 
 ## 参数说明
 
-**表 1**  模板参数说明
+**表1**  模板参数说明
 
 | 参数名 | 描述 |
 | --- | --- |
@@ -209,7 +209,7 @@ PER\_TOKEN/PER\_GROUP b8/float4场景的计算逻辑如下：
 | OutputDataType | 输出的数据类型。 |
 | isTranspose | 是否开启输入数据转置。 |
 
-**表 2**  PER\_TOKEN/PER\_GROUP b8/float4场景模板参数说明
+**表2**  PER\_TOKEN/PER\_GROUP b8/float4场景模板参数说明
 
 | 参数名 | 描述 |
 | --- | --- |
@@ -227,7 +227,7 @@ struct AscendAntiQuantConfig {
 };
 ```
 
-**表 3**  PER\_TOKEN/PER\_GROUP b8/float4场景支持的数据类型组合
+**表3**  PER\_TOKEN/PER\_GROUP b8/float4场景支持的数据类型组合
 
 | srcDtype | scaleDtype/offsetDtype | dstDtype |
 | --- | --- | --- |
@@ -249,7 +249,7 @@ struct AscendAntiQuantConfig {
 | fp4x2_e1m2_t/fp4x2_e2m1_t<br><br>（当前均只支持PER_GROUP场景） | fp8_e8m0_t | half |
 | fp4x2_e1m2_t/fp4x2_e2m1_t<br><br>（当前均只支持PER_GROUP场景） | fp8_e8m0_t | bfloat16_t |
 
-**表 4**  接口参数说明
+**表4**  接口参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |
@@ -270,7 +270,7 @@ struct AntiQuantShapeInfo {
 };
 ```
 
-**表 5**  PER\_TOKEN/PER\_GROUP b8/float4场景接口参数说明
+**表5**  PER\_TOKEN/PER\_GROUP b8/float4场景接口参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |

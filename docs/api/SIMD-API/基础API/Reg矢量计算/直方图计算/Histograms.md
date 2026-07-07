@@ -53,16 +53,16 @@
 
 -   频率统计
 
-    如下图所示，在低位模式下，dstReg（即 dst0）用于统计srcReg中\[0-127\]范围内（前半部分）各个值的出现频率；而在高位模式下，dstReg（即dst1）则统计\[128-255\]范围内（后半部分）的频率。dst0和dst1中的第n位（bit）表示srcReg中数值n的出现次数，并在原始dstReg数据的基础上进行累加。
+    如下图所示，在低位模式下，dstReg（即dst0）用于统计srcReg中\[0-127\]范围内（前半部分）各个值的出现频率；而在高位模式下，dstReg（即dst1）则统计\[128-255\]范围内（后半部分）的频率。dst0和dst1中的第n位（bit）表示srcReg中数值n的出现次数，并在原始dstReg数据的基础上进行累加。
 
-    **图 1**  频率统计<a name="fig1436621813216"></a>  
+    **图1**  频率统计<a name="fig1436621813216"></a>  
     ![](../../../../figures/频率统计.png "频率统计")
 
 -   累计统计
 
     如下图所示，在低位模式下，目的寄存器dstReg（即dst0）会统计源寄存器srcReg中值落在低位区间\[0-127\]的数据分布情况；在高位模式下，目的寄存器dstReg（即dst1）则会统计srcReg中值落在高位区间\[128-255\]的数据分布情况。在dst0 和dst1中，第n位的数据表示srcReg中从0到n的所有数值在对应区间中出现的总频率。最终，统计结果会在目的寄存器原始数据的基础上进行累加。
 
-    **图 2**  累计统计<a name="fig117001116340"></a>  
+    **图2**  累计统计<a name="fig117001116340"></a>  
     ![](../../../../figures/累计统计.png "累计统计")
 
 ## 函数原型<a name="section620mcpsimp"></a>
@@ -74,7 +74,7 @@ __simd_callee__ inline void Histograms(V& dstReg, S& srcReg, MaskReg& mask)
 
 ## 参数说明<a name="section622mcpsimp"></a>
 
-**表 1**  模板参数说明
+**表1**  模板参数说明
 
 <a name="table4835205712588"></a>
 <table><thead align="left"><tr id="row118356578583"><th class="cellrowborder" valign="top" width="17.94%" id="mcps1.2.3.1.1"><p id="p48354572582"><a name="p48354572582"></a><a name="p48354572582"></a>参数名</p>
@@ -120,7 +120,7 @@ __simd_callee__ inline void Histograms(V& dstReg, S& srcReg, MaskReg& mask)
 </tbody>
 </table>
 
-**表 2**  参数说明
+**表2**  参数说明
 
 <a name="zh-cn_topic_0235751031_table33761356"></a>
 <table><thead align="left"><tr id="zh-cn_topic_0235751031_row27598891"><th class="cellrowborder" valign="top" width="18.54%" id="mcps1.2.4.1.1"><p id="zh-cn_topic_0235751031_p20917673"><a name="zh-cn_topic_0235751031_p20917673"></a><a name="zh-cn_topic_0235751031_p20917673"></a>参数名</p>

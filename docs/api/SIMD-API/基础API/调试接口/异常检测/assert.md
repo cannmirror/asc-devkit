@@ -84,7 +84,7 @@ define assert(expr, __gm__ const char *fmt, Args&&... args)
 
 ## 参数说明<a name="section158061867342"></a>
 
-**表 1**  参数说明
+**表1**  参数说明
 
 | 参数名称 | 输入/输出 | 描述 |
 | ------ | ------ | ------ |

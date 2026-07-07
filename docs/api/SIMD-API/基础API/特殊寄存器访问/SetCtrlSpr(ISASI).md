@@ -54,7 +54,7 @@ __aicore__ static inline void SetCtrlSpr(int64_t value)
 
 <!-- npu="950" id10 -->
 
-**表 3** Ascend 950PR/Ascend 950DT常用CTRL寄存器比特位说明<a id="tab-950"></a>
+**表3** Ascend 950PR/Ascend 950DT常用CTRL寄存器比特位说明<a id="tab-950"></a>
 
 | CTRL寄存器比特位 | 功能 | 默认值 | 配合使用的API |
 | --- | --- | --- | --- |
@@ -71,7 +71,7 @@ __aicore__ static inline void SetCtrlSpr(int64_t value)
 
 <!-- npu="A3" id11 -->
 
-**表 4** Atlas A3 训练系列产品/Atlas A3 推理系列产品常用CTRL寄存器比特位说明
+**表4** Atlas A3 训练系列产品/Atlas A3 推理系列产品常用CTRL寄存器比特位说明
 
 | CTRL寄存器比特位 | 功能 | 默认值 | 配合使用的API |
 | --- | --- | --- | --- |
@@ -83,7 +83,7 @@ __aicore__ static inline void SetCtrlSpr(int64_t value)
 
 <!-- npu="910b" id12 -->
 
-**表 5** Atlas A2 训练系列产品/Atlas A2 推理系列产品常用CTRL寄存器比特位说明
+**表5** Atlas A2 训练系列产品/Atlas A2 推理系列产品常用CTRL寄存器比特位说明
 
 | CTRL寄存器比特位 | 功能 | 默认值 | 配合使用的API |
 | --- | --- | --- | --- |
@@ -95,7 +95,7 @@ __aicore__ static inline void SetCtrlSpr(int64_t value)
 
 <!-- npu="950" id13 -->
 
-**表 6** Ascend 950PR/Ascend 950DT饱和模式全局或单指令生效配置表<a id="table231122118201"></a>
+**表6** Ascend 950PR/Ascend 950DT饱和模式全局或单指令生效配置表<a id="table231122118201"></a>
 
 | 全局开启位 | 控制位 | 功能描述 |
 | --- | --- | --- |

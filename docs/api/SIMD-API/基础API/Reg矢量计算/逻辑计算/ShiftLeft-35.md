@@ -60,7 +60,7 @@ __simd_callee__ inline void ShiftLeft(S& dstReg, S& srcReg0, V& srcReg1, MaskReg
 
 ## 参数说明<a name="section622mcpsimp"></a>
 
-**表 1**  模板参数说明
+**表1**  模板参数说明
 
 <a name="table4835205712588"></a>
 <table><thead align="left"><tr id="row118356578583"><th class="cellrowborder" valign="top" width="18.35%" id="mcps1.2.3.1.1"><p id="p48354572582"><a name="p48354572582"></a><a name="p48354572582"></a>参数名</p>
@@ -101,7 +101,7 @@ __simd_callee__ inline void ShiftLeft(S& dstReg, S& srcReg0, V& srcReg1, MaskReg
 </tbody>
 </table>
 
-**表 2**  参数说明
+**表2**  参数说明
 
 <a name="zh-cn_topic_0235751031_table33761356"></a>
 <table><thead align="left"><tr id="zh-cn_topic_0235751031_row27598891"><th class="cellrowborder" valign="top" width="18.54%" id="mcps1.2.4.1.1"><p id="zh-cn_topic_0235751031_p20917673"><a name="zh-cn_topic_0235751031_p20917673"></a><a name="zh-cn_topic_0235751031_p20917673"></a>参数名</p>
@@ -148,7 +148,7 @@ __simd_callee__ inline void ShiftLeft(S& dstReg, S& srcReg0, V& srcReg1, MaskReg
 </tbody>
 </table>
 
-**表 3**  源操作数和目的操作数的数据类型约束
+**表3**  源操作数和目的操作数的数据类型约束
 
 <a name="table15348612514"></a>
 <table><thead align="left"><tr id="row3341061250"><th class="cellrowborder" valign="top" width="50%" id="mcps1.2.3.1.1"><p id="p10342614250"><a name="p10342614250"></a><a name="p10342614250"></a>srcReg0/dstReg数据类型</p>

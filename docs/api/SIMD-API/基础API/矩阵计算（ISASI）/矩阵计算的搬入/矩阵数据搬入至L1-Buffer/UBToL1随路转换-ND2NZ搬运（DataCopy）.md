@@ -128,7 +128,7 @@ $$((dValue \times sizeof(T) / 32 - 1) \times dstNzC0Stride + (nValue - 1) \times
 
 - Nd2NzParams结构体参数的值需在取值范围内，参数取值范围如[表4](#table_ub_nd2nz_range)所示。
 
-**表 4**  Nd2NzParams结构体参数取值范围<a id="table_ub_nd2nz_range"></a>
+**表4**  Nd2NzParams结构体参数取值范围<a id="table_ub_nd2nz_range"></a>
 
 |参数名称|取值范围|
 |----------|----------|

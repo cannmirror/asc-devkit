@@ -51,7 +51,7 @@ StoreAlign能够实现数据从[RegTensor](../寄存器数据类型/RegTensor.md
 
 ## 参数说明<a name="section622mcpsimp"></a>
 
-**表 1**  模板参数说明
+**表1**  模板参数说明
 
 | 参数名 | 描述 |
 |-----|-----|
@@ -60,7 +60,7 @@ StoreAlign能够实现数据从[RegTensor](../寄存器数据类型/RegTensor.md
 | postMode | 用于控制是否使能UB地址会自动更新功能（post update），PostLiteral类型。具体参数说明请参考[PostLiteral](../辅助数据类型/PostLiteral.md)。 |
 | U | 源操作数的RegTensor类型。例如RegTensor\<half>，由编译器自动推导，用户不需要手动填写。 |
 
-**表 2**  参数说明
+**表2**  参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 |-----|-----|-----|
@@ -71,7 +71,7 @@ StoreAlign能够实现数据从[RegTensor](../寄存器数据类型/RegTensor.md
 | mask | 输入 | 源操作数元素操作的有效指示，详细说明请参考[MaskReg](../寄存器数据类型/MaskReg.md)。<br>注：当DataBlock中所有元素都被mask筛选成无效元素时，即使UB越界也不会报错。 |
 
 <a id="表3-DataCopyMode参数说明"></a>
-**表 3**  DataCopyMode参数说明
+**表3**  DataCopyMode参数说明
 
 | 参数名 | 含义 |
 |-----|-----|

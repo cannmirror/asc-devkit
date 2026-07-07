@@ -47,13 +47,13 @@
 
 ## 参数说明<a name="zh-cn_topic_0000002565968945_section16128134420472"></a>
 
-**表 1**  模板参数说明
+**表1**  模板参数说明
 
 | 参数名 | 描述 |
 | :--- | :--- |
 | T | 源操作数或者目的操作数的数据类型。支持的数据类型请参考[数据类型](#zh-cn_topic_0000002565968945_section4219135304818)。 |
 
-**表 2**  参数说明
+**表2**  参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | :--- | :---: | :--- |
@@ -63,7 +63,7 @@
 | srcSliceInfo | 输入 | 源操作数切片信息，类型为SliceInfo。通过该参数可以配置切片的起始和终止元素个数、间隔、长度等信息。<br>具体定义请参考\$\{INSTALL\_DIR\}/include/ascendc/basic\_api/interface/kernel\_struct\_data\_copy.h，\$\{INSTALL\_DIR\}请替换为CANN软件安装后文件存储路径。<br>SliceInfo参数说明请参考[表3](#table_slice_3)。 |
 | dimValue | 输入 | 操作数维度信息，默认值为1。 |
 
-**表 3**  SliceInfo结构体参数定义<a name="table_slice_3"></a>
+**表3**  SliceInfo结构体参数定义<a name="table_slice_3"></a>
 
 | 参数名 | 描述 |
 | :--- | :--- |
@@ -75,7 +75,7 @@
 
 如[图1](#fig1196816115710)所示，以float数据类型为例，切片搬运接口能从shape为3\*87的源操作中，选取四个不连续的横向切片搬运到目的操作数中，下面结合图示对SliceInfo结构体参数进行解析：
 
-**图 1**  参数解析示意图<a name="fig1196816115710"></a>  
+**图1**  参数解析示意图<a name="fig1196816115710"></a>  
 ![](../../../../../figures/slice_datacopy_parameter_analysis_diagram.png "参数解析示意图")
 
 - dimValue为2，表示操作数有2维。

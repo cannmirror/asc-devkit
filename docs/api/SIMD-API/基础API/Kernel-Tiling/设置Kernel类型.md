@@ -71,7 +71,7 @@
 
 ## 参数说明<a name="zh-cn_topic_0000001610027821_section129451113125413"></a>
 
-**表 1**  参数说明
+**表1**  参数说明
 
 <a name="table89201718635"></a>
 <table><thead align="left"><tr id="row1992019181938"><th class="cellrowborder" valign="top" width="17.22%" id="mcps1.2.4.1.1"><p id="p109201118735"><a name="p109201118735"></a><a name="p109201118735"></a>参数</p>
@@ -112,7 +112,7 @@
 </tbody>
 </table>
 
-**表 2**  kernel type取值说明
+**表2**  kernel type取值说明
 
 <a name="table76335324910"></a>
 <table><thead align="left"><tr id="row13633133211918"><th class="cellrowborder" valign="top" width="35.8%" id="mcps1.2.3.1.1"><p id="p196346329913"><a name="p196346329913"></a><a name="p196346329913"></a>参数</p>

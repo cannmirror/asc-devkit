@@ -12,7 +12,7 @@ void SetPadding(int64_t padFront, int64_t padBack, int64_t padUp, int64_t padDow
 
 ## 参数说明
 
-**表 1**  参数说明
+**表1**  参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |

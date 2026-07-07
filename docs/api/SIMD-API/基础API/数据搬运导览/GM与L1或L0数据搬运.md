@@ -4,7 +4,7 @@
 
 Global Memory与L1 Buffer/L0 Buffer之间的数据搬运提供了灵活、分层的接口支持，能够充分适配多样化的计算场景（见[表1](#zh-cn_topic_0000002565857683_table12546123753110)）。其中，Global Memory与L1 Buffer、Global Memory-\>L0A Buffer、Global Memory-\>L0B Buffer的数据搬运用于矩阵计算（参考[矩阵计算的搬入](../矩阵计算（ISASI）/矩阵计算的搬入/矩阵计算的搬入.md)），L0C Buffer-\>Global Memory用于将矩阵计算结果搬出，完成矩阵计算的输出流程（参考[矩阵计算的搬出](../矩阵计算（ISASI）/矩阵计算的搬出/矩阵计算的搬出.md)）。开发者能够通过灵活配置结构体参数，精确控制数据块数量、数据块长度及地址间隔等关键属性，实现高维切分数据搬运，充分释放硬件的数据搬运与计算协同能力，显著提升算子的执行效率与整体性能。
 
-**表 1**  Global Memory与L1 Buffer/L0 Buffer数据搬运接口概述<a name="zh-cn_topic_0000002565857683_table12546123753110"></a>
+**表1**  Global Memory与L1 Buffer/L0 Buffer数据搬运接口概述<a name="zh-cn_topic_0000002565857683_table12546123753110"></a>
 
 | 数据通路 | 功能 | 描述 |
 |----------|------|------|

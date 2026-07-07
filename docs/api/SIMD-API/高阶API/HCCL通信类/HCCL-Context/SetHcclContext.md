@@ -23,7 +23,7 @@ __aicore__ inline void SetHcclContext(__gm__ uint8_t* context)
 
 ## 参数说明
 
-**表 1**  参数说明
+**表1**  参数说明
 
 | 参数名 | 描述 |
 | --- | --- |

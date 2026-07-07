@@ -15,7 +15,7 @@ void GetCumSumMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, 
 
 ## 参数说明
 
-**表 1**  参数说明
+**表1**  参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |

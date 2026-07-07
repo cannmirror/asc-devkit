@@ -44,7 +44,7 @@ __simd_callee__ inline void MaskGenWithRegTensor(MaskReg& dst, U& srcReg)
 
 ## 参数说明
 
-**表 1**  模板参数说明
+**表1**  模板参数说明
 
 | 参数名 | 描述 |
 |-----|-----|
@@ -52,7 +52,7 @@ __simd_callee__ inline void MaskGenWithRegTensor(MaskReg& dst, U& srcReg)
 | offset | offset决定了srcReg中需要搬运的数据块，具体描述请参考[关键特性说明](#关键特性说明)。<br>&bull; 当数据类型为b16，offset∈[0, 15]。<br>&bull; 当数据类型为b32，offset∈[0, 31]。 |
 | U | 源操作数的RegTensor类型。例如RegTensor\<half>，由编译器自动推导，用户不需要手动填写。 |
 
-**表 2**  参数说明
+**表2**  参数说明
 
 | 参数名 | 输入/输出 | 描述 |
 |-----|-----|-----|
@@ -76,10 +76,10 @@ MaskGenWithRegTensor支持b16和b32，搬运原理如[图1](#fig-maskgen-b16)、
 - 当操作数类型为b16时，RegTensor的一个数据块大小为16B，每个bit经过broadcast成2bit后变为32B，即一个MaskReg（32B）。此外，一个RegTensor有256B/16B = 16个数据块，偏移量offset取值范围为[0, 15]。
 - 当操作数类型为b32时，RegTensor的一个数据块大小为8B，每个bit经过broadcast成4bit后变为32B，即一个MaskReg（32B）。此外，一个RegTensor有256B/8B = 32个数据块，偏移量offset取值范围为[0, 31]。
 
-**图 1**  MaskGenWithRegTensor搬运原理（b16）<a id="fig-maskgen-b16"></a>  
+**图1**  MaskGenWithRegTensor搬运原理（b16）<a id="fig-maskgen-b16"></a>  
 ![](../../../../figures/reg_maskgenwithregtensor_b16.png "MaskGenWithRegTensor搬运原理（b16）")
 
-**图 2**  MaskGenWithRegTensor搬运原理（b32）<a id="fig-maskgen-b32"></a>  
+**图2**  MaskGenWithRegTensor搬运原理（b32）<a id="fig-maskgen-b32"></a>  
 ![](../../../../figures/reg_maskgenwithregtensor_b32.png "MaskGenWithRegTensor搬运原理（b32）")
 
 ## 约束说明
