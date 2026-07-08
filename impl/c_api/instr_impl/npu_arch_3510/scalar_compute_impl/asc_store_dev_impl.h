@@ -20,7 +20,7 @@
 
 #include "impl/c_api/instr_impl/npu_arch_3510/utils_impl.h"
 
-constexpr int16_t ASC_C_API_DEFAULIT_OFFSET = 1;
+constexpr int16_t ASC_C_API_DEFAULIT_OFFSET = 0;
 
 __aicore__ inline void asc_store_dev_impl(__gm__ int8_t* addr, int8_t value)
 {
