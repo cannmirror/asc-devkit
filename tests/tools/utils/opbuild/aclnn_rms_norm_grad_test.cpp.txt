@@ -399,8 +399,8 @@ aclnnStatus aclnnRmsNormGradTest(
             const std::string value = std::to_string(workspaceSize);
             const std::string requiredSize = std::to_string(inContWorkspaceSize);
             const std::string reason = std::string("The passed workspace size ") + value +
-                " does not meet the workspace size " + requiredSize +
-                " actually required by the AutoContiguous() function";
+                " does not meet the minimum workspace size " + requiredSize +
+                " actually required by the AutoContiguous API";
             const std::vector<const char*> msgKey = {"value", "paraName", "reason"};
             const std::vector<const char*> msgValue = {value.c_str(), "workspaceSize", reason.c_str()};
             REPORT_PREDEFINED_ERR_MSG(NNOPBASE_INVALID_ARGUMENT, msgKey, msgValue);

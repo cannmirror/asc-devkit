@@ -2687,8 +2687,8 @@ void AclnnOpGenerator::AclnnOpGenCodeRunUnContWithWorkspaceImpl(
                 << indent << "    const std::string value = std::to_string(workspaceSize);\n"
                 << indent << "    const std::string requiredSize = std::to_string(inContWorkspaceSize);\n"
                 << indent << "    const std::string reason = std::string(\"The passed workspace size \") + value +\n"
-                << indent << "        \" does not meet the workspace size \" + requiredSize +\n"
-                << indent << "        \" actually required by the AutoContiguous() function\";\n"
+                << indent << "        \" does not meet the minimum workspace size \" + requiredSize +\n"
+                << indent << "        \" actually required by the AutoContiguous API\";\n"
                 << indent << "    const std::vector<const char*> msgKey = {\"value\", \"paraName\", \"reason\"};\n"
                 << indent
                 << "    const std::vector<const char*> msgValue = {value.c_str(), \"workspaceSize\", "
