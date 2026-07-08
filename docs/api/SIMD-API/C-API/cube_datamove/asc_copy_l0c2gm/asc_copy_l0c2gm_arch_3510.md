@@ -210,6 +210,8 @@ quant_post可选量化模式分别为：
 
 ## 参数说明
 
+**表1**  参数说明
+
 | 参数名              | 输入/输出 | 描述                                                                                                                               |
 |:-----------------|:------|:---------------------------------------------------------------------------------------------------------------------------------|
 | dst_addr              | 输出    | 目的操作数（矢量）的起始地址。                                                                                                                  |
@@ -218,7 +220,7 @@ quant_post可选量化模式分别为：
 | m_size           | 输入    | 源NZ矩阵在M方向上的大小。<br/>&bull;不开启NZ2ND功能，取值范围：[1, 65535]；<br/>&bull;开启NZ2ND功能，取值范围：[1, 8192]。                                       |
 | loop_dst_stride       | 输入    | <br> - 不开启NZ2ND功能,目的NZ矩阵中相邻Z排布的起始地址偏移，取值不为0，单位：element。<br> - 开启NZ2ND/NZ2DN功能,目的ND矩阵每一行中的元素个数，取值不为0 ，单位：element。  |
 | loop_src_stride       | 输入    | 源NZ矩阵中相邻Z排布的起始地址偏移，取值范围：[0, 65535]，单位：C0_Size(16*sizeof(T), T为src_addr的数据类型)。 |
-| l2_cache_ctl | 输入 | 配置数据在L2 Cache中的管理策略。取值说明如下：  <br>&bull; 0：DISABLE模式，适用于仅需访问一次的数据。 <br>&bull; 1：NORMAL模式，适用于重用模式未知或不极端的数据。 <br>&bull; 2：LAST模式，适用于高频重复访问的数据。 <br>&bull; 4：PERSISTENT模式，适用于需要长期驻留在缓存中的数据。 |
+| l2_cache_ctl | 输入 | 配置数据在L2 Cache中的管理策略。取值说明请参见[表2](#table2)。 |
 | clip_relu_pre    | 输入    | 预处理阶段开启clip_relu，需搭配normal relu（归一化的relu函数）一起使用且需要开启量化功能。                                                                        |
 | unit_flag_ctl   | 输入    | 与unit_flag参数相关，取值如下：<br/>&bull;0保留值；<br/>&bull;2 开启unit_flag，硬件执行完指令之后，不会设置寄存器；<br/>&bull;3 开启unit_flag，硬件执行完指令后，会将unit_flag关闭。 |
 | quant_pre        | 输入    | 预处理阶段量化参数。取值见[功能说明](#功能说明)。                                                                        |
@@ -233,6 +235,15 @@ quant_post可选量化模式分别为：
 | c0_pad_en        | 输入    | 开启为C0配置填充位，C0是通道循环的目标步长。                                                                                                     |
 | broadcast_en        | 输入    | 是否开启广播能力。<br/>&bull;false：不开启；<br/>&bull;true：开启，在数据搬运时沿M轴方向进行数据广播。                                                                                                         |
 | nz2dn_en        | 输入    |  开启NZ2DN开关。<br/>&bull;false：不开启；<br/>&bull;true：开启。                                                                                       |
+
+**表2**  l2_cache_ctl取值说明 <a id="table2"></a>
+
+| 取值 | 模式 | 含义 |
+|------|------|------|
+| 0    | NORMAL模式 | 启用L2 Cache，采用write back策略写入L2 Cache，并且将分配的Cache Line标记为高替换优先级。|
+| 1    | LAST模式 | &bull; 启用L2 Cache，采用write back策略写入L2 Cache，并且将分配的Cache Line标记为低替换优先级。<br>&bull; **LAST模式功能，暂不支持。**|
+| 2    | PERSISTENT模式 | &bull; 启用L2 Cache，采用write back策略写入L2 Cache。已存入L2 Cache中的数据可能被替换，若需确保特定GlobalTensor的数据始终保留在L2 Cache中，可采用驻留模式。<br>&bull; 注意，被标记为驻留模式的Cache Line只能被其他同样被标记为驻留模式的Cache Line替换。<br>&bull; **目前该驻留模式功能尚在开发中，暂不支持，计划于Ascend 950PR/Ascend 950DT上提供支持。**|
+| 4    | DISABLE模式 | 不启用L2 Cache。如果写入地址在L2 Cache中已经被分配了Cache Line，则将本次写入的数据覆盖Cache Line原有数据后将Cache Line中最新数据写回到GM，并且将该Cache Line标记为invalid。如果写入地址在L2 Cache中没有被分配Cache Line，则直接写回到GM。|
 
 ## 返回值说明
 

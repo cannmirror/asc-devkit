@@ -67,7 +67,8 @@ __aicore__ inline void asc_ndim_copy_gm2ub(__ubuf__ float* dst, __gm__ float* sr
 
 ## 参数说明
 
-表1参数说明
+**表1**  参数说明
+
 | 参数名 | 输入/输出 | 描述 |
 | :--- | :--- | :--- |
 | dst | 输出 | 目的UB地址。 |
@@ -80,7 +81,16 @@ __aicore__ inline void asc_ndim_copy_gm2ub(__ubuf__ float* dst, __gm__ float* sr
 | loop0_lp_count | 输入 | 表示0维左侧需要补齐的元素个数。<br> 单位为元素个数，取值范围为[0, 255]。 |
 | loop0_rp_count | 输入 | 表示0维右侧需要补齐的元素个数。<br> 单位为元素个数，取值范围为[0, 255]。 |
 | padding_mode | 输入 | 表示Padding值填取方式。<br>&bull; true：使用常数填充方式，即所有Padding值为固定值pad_value。<br>&bull; false：使用最近值填充方式，即左右Padding值会选取当前维度最左或最右的值进行填充。 |
-| cache_mode | 输入 | L2 cache模式。 |
+| cache_mode | 输入 | 配置数据在L2 Cache中的管理策略。取值说明请参见[表2](#table2)。 |
+
+**表2**  cache_mode取值说明 <a id="table2"></a>
+
+| 取值 | 模式 | 含义 |
+|------|------|------|
+| 0    | NORMAL模式 | 启用L2 Cache，并且将分配的Cache Line标记为高替换优先级。|
+| 1    | LAST模式 | &bull; 启用L2 Cache，并且将分配的Cache Line标记为低替换优先级。<br>&bull; **LAST模式功能，暂不支持。**|
+| 2    | PERSISTENT模式 | &bull; 启用L2 Cache。已存入L2 Cache中的数据可能被替换，若需确保特定GlobalTensor的数据始终保留在L2 Cache中，可采用驻留模式。<br>&bull; 注意，被标记为驻留模式的Cache Line只能被其他同样被标记为驻留模式的Cache Line替换。<br>&bull; **目前该驻留模式功能尚在开发中，暂不支持，计划于Ascend 950PR/Ascend 950DT上提供支持。**|
+| 4    | DISABLE模式 | 不启用L2 Cache，每次都直接从GM中读取，并且保持已有Cache Line的状态不变。 |
 
 ## 返回值说明
 
