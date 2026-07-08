@@ -67,6 +67,7 @@ __vector__ __global__ void add_custom(GM_ADDR x, GM_ADDR y, GM_ADDR z)
     KernelAdd op;
     op.Init(x, y, z);
     op.Process();
+    AscendC::PipeBarrier<PIPE_ALL>();
 }
 }
 )"""";
