@@ -17,24 +17,30 @@
 </div>
 
 ## 🔥Latest News
-[2026/03] v9.0.0-beta.2 版本关键特性
+[2026/05] v9.1.0-beta.2 版本关键特性
 ### 🚀 关键特性
-- Ascend 950PR支持SIMD编程模式，提供200+ [API接口](./impl/basic_api/dav_3510)跨代兼容能力，可实现Atlas A2系列产品和Atlas A3系列产品算子平滑迁移。
-- Ascend 950PR新增基于Reg的编程方式，提供Reg数据搬运、基础算术、规约计算、同步控制等90+ [Reg编程接口](./impl/basic_api/reg_compute/dav_3510)。
-- Atlas A2系列产品、Atlas A3系列产品、Ascend 950PR支持[语言扩展层纯C接口](./include/c_api)，支持数组式内存分配与指针型计算接口，提供原生纯 C 编程体验。
-- Ascend 950PR支持SIMD与SIMT混合编程，提供约700个[SIMT API接口](./include/simt_api)，包含warp、atomic、基本数学计算、类型转换等基础接口。
-- Ascend 950PR支持通信高阶API的CCU通信接口，提供基于CCU的[Allreduce，Allgather，Reducescatter，AlltoAll等主流通信原语](./impl/adv_api/detail/hccl/impl/platform_v310)；Matmul高阶API新增支持[MXFP4/8低比特数据类型的矩阵运算](./impl/adv_api/detail/matmul/mx_matmul_impl.h)，实现内存占用减半、算力吞吐倍增。
-- Ascend 950PR新增及兼容支持样例共计约260个，包含[SIMT样例](./examples/03_simt_api)、[SIMD样例](./examples/01_simd_cpp_api)（框架类、基础API、高阶API、最佳实践等），并按照编程模型和样例类别对[样例目录结构进行调整](https://gitcode.com/cann/asc-devkit/pull/1223)，提升样例目录结构的易读性。
-- 融合编译与<<<>>>调用方式支持[CPU模式](https://gitcode.com/cann/asc-tools/pull/138)以及[SIM仿真模式](https://gitcode.com/cann/asc-devkit/blob/master/cmake/asc/asc_modules/CMakeASCInformation.cmake)。
+- Ascend C框架基础API支持NPU Check（[PR#1557](https://gitcode.com/cann/asc-devkit/pull/1557) [PR#1467](https://gitcode.com/cann/asc-devkit/pull/1467)），增强算子运行时校验能力。
+- SIMD VF内支持printf和reg dump打印（[PR#1605](https://gitcode.com/cann/asc-devkit/pull/1605)），提供调试打印和寄存器数据dump能力。
+- A5支持L1 Tensor数据的DumpTensor（[PR#2175](https://gitcode.com/cann/asc-devkit/pull/2175)），扩展L1层数据调试支持。
+- 编译工程CMakeModule支持CMAKE<LANG>编译选项（[PR#2055](https://gitcode.com/cann/asc-devkit/pull/2055)）；新增optype_collector工具，支持检查optype重名（[PR#285](https://gitcode.com/cann/asc-tools/pull/285)）。
+- 基础API支持ctrl中的功能行为（饱和溢出管理）（[PR#2077](https://gitcode.com/cann/asc-devkit/pull/2077)）。
+- SIMT编程新增ld/st接口（[PR#2058](https://gitcode.com/cann/asc-devkit/pull/2058)）和AddrSpace类接口（[PR#1597](https://gitcode.com/cann/asc-devkit/pull/1597)），丰富SIMT内存访问编程能力。
+### 🎯 样例更新
+- 最佳实践样例开发：matmul+gelu融合、datacopy优化、bank冲突优化、group_matmul量化组矩阵乘、simt&simd高性能编程（[PR#1814](https://gitcode.com/cann/asc-devkit/pull/1814) [PR#2137](https://gitcode.com/cann/asc-devkit/pull/2137) [PR#2141](https://gitcode.com/cann/asc-devkit/pull/2141) [PR#2166](https://gitcode.com/cann/asc-devkit/pull/2166) [PR#2363](https://gitcode.com/cann/asc-devkit/pull/2363)）。
+- Ascend 950新特性补充及兼容性样例整改：loopmode数据搬运、interleave矢量计算、datacopy_gm2l1、loadmx（Load2DMX）、mmad_mx、data_copy_pad等（[PR#2336](https://gitcode.com/cann/asc-devkit/pull/2336) [PR#1899](https://gitcode.com/cann/asc-devkit/pull/1899) [PR#2124](https://gitcode.com/cann/asc-devkit/pull/2124)）。
+- RegBase新增基础样例：基础算术、数据类型转换、归约、比较、索引等样例（[PR#1459](https://gitcode.com/cann/asc-devkit/pull/1459) [PR#1575](https://gitcode.com/cann/asc-devkit/pull/1575) [PR#2024](https://gitcode.com/cann/asc-devkit/pull/2024)）。
+- 新增SIMD VF print样例和dump样例（[PR#2558](https://gitcode.com/cann/asc-devkit/pull/2558)）。
+- SIMT新增DCache访问优化样例（[PR#2453](https://gitcode.com/cann/asc-devkit/pull/2453)）、基于transpose的仿存合并和bank冲突样例（[PR#1753](https://gitcode.com/cann/asc-devkit/pull/1753)）、最佳实践样例：通过类型对齐提升搬运效率（[PR#2297](https://gitcode.com/cann/asc-devkit/pull/2297)）。
+- SIMT新增功能特性样例：pytorch注册自定义算子（[PR#2769](https://gitcode.com/cann/asc-devkit/pull/2769)）、编译相关样例（动态、静态、分离编译等）（[PR#2356](https://gitcode.com/cann/asc-devkit/pull/2356)）、profiling样例（[PR#1989](https://gitcode.com/cann/asc-devkit/pull/1989)）、内存屏障特性样例（[PR#1923](https://gitcode.com/cann/asc-devkit/pull/1923)）、Warp类特性样例（[PR#2876](https://gitcode.com/cann/asc-devkit/pull/2876)）、simulator样例（[PR#2692](https://gitcode.com/cann/asc-devkit/pull/2692)）、kernel log样例（[PR#2131](https://gitcode.com/cann/asc-devkit/pull/2131)）。
+- SIMT入门样例修改为gather（[PR#2405](https://gitcode.com/cann/asc-devkit/pull/2405)）。
+- 新增Tensor API入门及最佳实践样例：Matmul入门、数据搬入搬出、搬出随路量化、MX FP4最佳实践（[PR#2553](https://gitcode.com/cann/asc-devkit/pull/2553)）。
 ### 📖 资料文档
-- 新增90+ [Reg编程接口API](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Reg矢量计算/Reg矢量计算.md)资料，Reg矢量计算API是面向RegBase架构开发的API，用户可通过该API直接对芯片中涉及Vector计算的寄存器进行操作，实现更大的灵活性和更好的性能。
-- 新增SIMT[快速入门](docs/guide/入门教程/快速入门/基于SIMT编程/Gather算子快速入门.md)、[编程模型](docs/guide/编程指南/编程模型/AI-Core-SIMT编程/抽象硬件架构.md)和[算子实现](docs/guide/算子实践参考/SIMT算子实现/基础知识.md)介绍。
-- 新增SIMD与SIMT[混合编程模型](docs/guide/编程指南/高级编程/高级AI-Core编程模型/SIMD与SIMT混合编程/概述.md)、[算子实现](docs/guide/算子实践参考/SIMD与SIMT混合算子实现/基础知识.md)、[性能优化](docs/guide/算子实践参考/SIMD与SIMT混合算子性能优化/内存访问/使用Unified-Buffer提升内存访问效率.md)介绍。
-- 新增[SIMT API](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMT-API/SIMT-API.md)资料章节。
-- 新增[兼容性迁移指南](docs/guide/跨代迁移兼容性指南/Ascend-C-API兼容策略.md)（220x架构版本迁移到351x架构版本）。
-- 昇腾社区中，Ascend C算子开发新增[可视化专区](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta2/opdevg/Ascendcopdevg/atlas_ascendc_map_10_0017.html)，通过视频呈现Cube和Vector算子的执行过程。
+- 新增矩阵计算概述和计算分形介绍的文档（[PR#2533](https://gitcode.com/cann/asc-devkit/pull/2533)）。
+- 优化矢量计算API文档，补充指令约束等（[PR#2676](https://gitcode.com/cann/asc-devkit/pull/2676)）。
+- 搭建VitePress文档站点，提供AscendC资料预览功能（[PR#2547](https://gitcode.com/cann/asc-devkit/pull/2547)）。
+- 增加SIMD与SIMT混合编程性能优化概述（[PR#2736](https://gitcode.com/cann/asc-devkit/pull/2736)）。
 
-有关所有历史版本及更新的详细信息，请参阅[CHANGELOG.md](./CHANGELOG.md)
+有关所有历史版本及更新的详细信息，请参阅[CHANGELOG.md](./CHANGELOG.md)。
 
 ## 🚀概述
 
@@ -62,7 +68,7 @@ Ascend C提供三类接口，均可实现底层的完备编程能力：
 
 | API层级 |  目标用户 | 主要用途 |
 |----------|----------|----------|
-| **算子模板库 (CATLASS/ATVOSS等)** |  算法开发人员 | 基于典型算子实现进行自定义扩展，满足特定场景高性能需求 | 
+| **算子模板库 (CATLASS/ATVOSS等)** |  算法开发人员 | 基于典型算子实现进行自定义扩展，满足特定场景高性能需求 |
 | **高阶API** |算法开发人员 | 复用通用单核算法，快速完成算法验证 |
 
 

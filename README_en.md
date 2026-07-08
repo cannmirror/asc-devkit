@@ -17,24 +17,30 @@
 </div>
 
 ## 🔥Latest News
-[2026/03] Key features of v9.0.0-beta.2
+[2026/05] Key features of v9.1.0-beta.2
 ### 🚀 Key Features
-- Ascend 950PR supports SIMD programming mode and provides over 200 [API interfaces](./impl/basic_api/dav_3510) with cross-generation compatibility capabilities, enabling smooth operator migration between Atlas A2 series products and Atlas A3 series products.
-- Ascend 950PR adds Reg-based programming and provides over 90 [Reg programming interfaces](./impl/basic_api/reg_compute/dav_3510), including Reg datamove, basic arithmetic, reduction calculation, and synchronization control.
-- Atlas A2 series products, Atlas A3 series products, and Ascend 950PR support [language extension layer pure C interfaces](./include/c_api), supporting array-style memory allocation and pointer-based calculation interfaces, providing a native pure C programming experience.
-- Ascend 950PR supports SIMD and SIMT hybrid programming and provides approximately 700 [SIMT API interfaces](./include/simt_api), including warp, atomic, basic mathematical calculation, type conversion, and other fundamental interfaces.
-- Ascend 950PR supports CCU communication interfaces for communication high-level APIs and provides mainstream communication primitives based on CCU, including [Allreduce, Allgather, Reducescatter, AlltoAll, and others](./impl/adv_api/detail/hccl/impl/platform_v310). Matmul high-level API adds support for [MXFP4/8 low-bit data type matrix operations](./impl/adv_api/detail/matmul/mx_matmul_impl.h), achieving half memory usage and doubled computing throughput.
-- Ascend 950PR adds and supports approximately 260 sample cases in total, including [SIMT samples](./examples/03_simt_api), [SIMD samples](./examples/01_simd_cpp_api) (framework, basic API, high-level API, best practices, and others), and adjusts the [sample directory structure](https://gitcode.com/cann/asc-devkit/pull/1223) according to programming model and sample category to improve readability.
-- Fusion compilation and <<<>>> invocation support [CPU mode](https://gitcode.com/cann/asc-tools/pull/138) and [SIM simulation mode](https://gitcode.com/cann/asc-devkit/blob/master/cmake/asc/asc_modules/CMakeASCInformation.cmake).
+- The Ascend C framework basic API supports NPU Check ([PR#1557](https://gitcode.com/cann/asc-devkit/pull/1557) [PR#1467](https://gitcode.com/cann/asc-devkit/pull/1467)), enhancing operator runtime verification capability.
+- SIMD VF supports printf and reg dump printing ([PR#1605](https://gitcode.com/cann/asc-devkit/pull/1605)), providing debug printing and register data dump capability.
+- A5 supports DumpTensor for L1 Tensor data ([PR#2175](https://gitcode.com/cann/asc-devkit/pull/2175)), extending L1 layer data debugging support.
+- The compilation project CMakeModule supports CMAKE<LANG> compilation options ([PR#2055](https://gitcode.com/cann/asc-devkit/pull/2055)); adds the optype_collector tool, supporting optype duplicate name checking ([PR#285](https://gitcode.com/cann/asc-tools/pull/285)).
+- The basic API supports functional behavior in ctrl (saturation overflow management) ([PR#2077](https://gitcode.com/cann/asc-devkit/pull/2077)).
+- SIMT programming adds ld/st interfaces ([PR#2058](https://gitcode.com/cann/asc-devkit/pull/2058)) and AddrSpace class interfaces ([PR#1597](https://gitcode.com/cann/asc-devkit/pull/1597)), enriching SIMT memory access programming capability.
+### 🎯 Sample Updates
+- Best practice sample development: matmul+gelu fusion, datacopy optimization, bank conflict optimization, group_matmul quantized group matrix multiplication, and simt&simd high-performance programming ([PR#1814](https://gitcode.com/cann/asc-devkit/pull/1814) [PR#2137](https://gitcode.com/cann/asc-devkit/pull/2137) [PR#2141](https://gitcode.com/cann/asc-devkit/pull/2141) [PR#2166](https://gitcode.com/cann/asc-devkit/pull/2166) [PR#2363](https://gitcode.com/cann/asc-devkit/pull/2363)).
+- Ascend 950 new feature supplements and compatibility sample rectification: loopmode data movement, interleave vector computation, datacopy_gm2l1, loadmx (Load2DMX), mmad_mx, data_copy_pad, and so on ([PR#2336](https://gitcode.com/cann/asc-devkit/pull/2336) [PR#1899](https://gitcode.com/cann/asc-devkit/pull/1899) [PR#2124](https://gitcode.com/cann/asc-devkit/pull/2124)).
+- RegBase adds basic samples: basic arithmetic, data type conversion, reduction, comparison, indexing, and other samples ([PR#1459](https://gitcode.com/cann/asc-devkit/pull/1459) [PR#1575](https://gitcode.com/cann/asc-devkit/pull/1575) [PR#2024](https://gitcode.com/cann/asc-devkit/pull/2024)).
+- Adds SIMD VF print samples and dump samples ([PR#2558](https://gitcode.com/cann/asc-devkit/pull/2558)).
+- SIMT adds DCache access optimization samples ([PR#2453](https://gitcode.com/cann/asc-devkit/pull/2453)), transpose-based memory coalescing and bank conflict samples ([PR#1753](https://gitcode.com/cann/asc-devkit/pull/1753)), and best practice samples for improving data movement efficiency through type alignment ([PR#2297](https://gitcode.com/cann/asc-devkit/pull/2297)).
+- SIMT adds functional feature samples: PyTorch custom operator registration ([PR#2769](https://gitcode.com/cann/asc-devkit/pull/2769)), compilation-related samples (dynamic, static, separate compilation, and so on) ([PR#2356](https://gitcode.com/cann/asc-devkit/pull/2356)), profiling samples ([PR#1989](https://gitcode.com/cann/asc-devkit/pull/1989)), memory barrier feature samples ([PR#1923](https://gitcode.com/cann/asc-devkit/pull/1923)), Warp class feature samples ([PR#2876](https://gitcode.com/cann/asc-devkit/pull/2876)), simulator samples ([PR#2692](https://gitcode.com/cann/asc-devkit/pull/2692)), and kernel log samples ([PR#2131](https://gitcode.com/cann/asc-devkit/pull/2131)).
+- The SIMT getting-started sample is modified to gather ([PR#2405](https://gitcode.com/cann/asc-devkit/pull/2405)).
+- Adds Tensor API getting-started and best practice samples: Matmul getting started, data movement in/out, data movement out with on-path quantization, and MX FP4 best practices ([PR#2553](https://gitcode.com/cann/asc-devkit/pull/2553)).
 ### 📖 Documentation
-- Adds over 90 [Reg programming interface API](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/基础API/Reg矢量计算/Reg矢量计算.md) documentation. Reg vector calculation API is developed for the RegBase architecture. Users can directly operate registers involved in Vector calculation on the chip through this API to achieve greater flexibility and better performance.
-- Adds SIMT [quick start](docs/guide/入门教程/快速入门/基于SIMT编程/Gather算子快速入门.md), [programming model](docs/guide/编程指南/编程模型/AI-Core-SIMT编程/抽象硬件架构.md), and [operator implementation](docs/guide/算子实践参考/SIMT算子实现/基础知识.md) introduction.
-- Adds SIMD and SIMT [hybrid programming model](docs/guide/编程指南/高级编程/高级AI-Core编程模型/SIMD与SIMT混合编程/概述.md), [operator implementation](docs/guide/算子实践参考/SIMD与SIMT混合算子实现/基础知识.md), and [performance optimization](docs/guide/算子实践参考/SIMD与SIMT混合算子性能优化/内存访问/使用Unified-Buffer提升内存访问效率.md) introduction.
-- Adds [SIMT API](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMT-API/SIMT-API.md) documentation chapter.
-- Adds [compatibility migration guide](docs/guide/跨代迁移兼容性指南/Ascend-C-API兼容策略.md) (migration from 220x architecture version to 351x architecture version).
-- In the Ascend community, Ascend C operator development adds a [visualization section](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/900beta2/opdevg/Ascendcopdevg/atlas_ascendc_map_10_0017.html), presenting the execution process of Cube and Vector operators through videos.
+- Adds matrix computation overview and computation fractal introduction documentation ([PR#2533](https://gitcode.com/cann/asc-devkit/pull/2533)).
+- Optimizes vector computation API documentation, supplementing instruction constraints, and so on ([PR#2676](https://gitcode.com/cann/asc-devkit/pull/2676)).
+- Sets up a VitePress documentation site, providing AscendC documentation preview functionality ([PR#2547](https://gitcode.com/cann/asc-devkit/pull/2547)).
+- Adds SIMD and SIMT hybrid programming performance optimization overview ([PR#2736](https://gitcode.com/cann/asc-devkit/pull/2736)).
 
-For detailed information about all historical versions and updates, see [CHANGELOG.md](./CHANGELOG_en.md)
+For detailed information about all historical versions and updates, see [CHANGELOG.md](./CHANGELOG_en.md).
 
 ## 🚀 Overview
 
@@ -62,7 +68,7 @@ Additionally, Ascend C provides high-level APIs and operator template libraries 
 
 | API Level |  Target Users | Primary Use |
 |----------|----------|----------|
-| **Operator Template Library (CATLASS/ATVOSS and others)** |  Algorithm developers | Perform custom extensions based on typical operator implementations to meet high-performance requirements in specific scenarios | 
+| **Operator Template Library (CATLASS/ATVOSS and others)** |  Algorithm developers | Perform custom extensions based on typical operator implementations to meet high-performance requirements in specific scenarios |
 | **High-level API** |Algorithm developers | Reuse general single-core algorithms to quickly complete algorithm verification |
 
 
