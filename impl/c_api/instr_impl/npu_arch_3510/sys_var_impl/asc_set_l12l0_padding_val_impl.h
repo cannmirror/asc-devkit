@@ -21,7 +21,7 @@
 #include "impl/c_api/instr_impl/npu_arch_3510/utils_impl.h"
 
 __aicore__ inline void asc_set_l12l0_padding_val_impl(uint64_t config)
-{   
+{
     if ASC_IS_AIC {
         set_padding_b(config);
     }

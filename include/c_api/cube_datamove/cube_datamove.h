@@ -9,10 +9,10 @@
 */
 
 
-#if !defined(ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS)  
-#define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS  
-#define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H  
-#endif     
+#if !defined(ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
+#define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H
+#endif
 
 #ifndef INCLUDE_C_API_CUBE_DATAMOVE_CUBE_DATAMOVE_H
 #define INCLUDE_C_API_CUBE_DATAMOVE_CUBE_DATAMOVE_H
@@ -745,76 +745,76 @@ __aicore__ inline void asc_set_l13d_padding(int16_t config);
 __aicore__ inline void asc_set_l13d_padding(uint16_t config);
 
 // ==========asc_copy_l0c2gm==========
-__aicore__ inline void asc_copy_l0c2gm(__gm__ half* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size, 
-                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, 
+__aicore__ inline void asc_copy_l0c2gm(__gm__ half* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size,
+                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode,
                                             uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en);
 
-__aicore__ inline void asc_copy_l0c2gm_sync(__gm__ half* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size, 
-                                                uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, 
+__aicore__ inline void asc_copy_l0c2gm_sync(__gm__ half* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size,
+                                                uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode,
                                                 uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en);
 
-__aicore__ inline void asc_copy_l0c2gm(__gm__ bfloat16_t* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size, 
-                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, 
+__aicore__ inline void asc_copy_l0c2gm(__gm__ bfloat16_t* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size,
+                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode,
                                             uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en);
 
-__aicore__ inline void asc_copy_l0c2gm_sync(__gm__ bfloat16_t* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size, 
-                                                uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, 
+__aicore__ inline void asc_copy_l0c2gm_sync(__gm__ bfloat16_t* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size,
+                                                uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode,
                                                 uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en);
 
-__aicore__ inline void asc_copy_l0c2gm(__gm__ int8_t* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size, 
-                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, 
+__aicore__ inline void asc_copy_l0c2gm(__gm__ int8_t* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size,
+                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode,
                                             uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en);
 
-__aicore__ inline void asc_copy_l0c2gm_sync(__gm__ int8_t* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size, 
-                                                uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, 
+__aicore__ inline void asc_copy_l0c2gm_sync(__gm__ int8_t* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size,
+                                                uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode,
                                                 uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en);
 
-__aicore__ inline void asc_copy_l0c2gm(__gm__ uint8_t* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size, 
-                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, 
+__aicore__ inline void asc_copy_l0c2gm(__gm__ uint8_t* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size,
+                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode,
                                             uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en);
 
-__aicore__ inline void asc_copy_l0c2gm_sync(__gm__ uint8_t* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size, 
-                                                uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, 
+__aicore__ inline void asc_copy_l0c2gm_sync(__gm__ uint8_t* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size,
+                                                uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode,
                                                 uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en);
 
-__aicore__ inline void asc_copy_l0c2gm(__gm__ float* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size, 
-                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, 
+__aicore__ inline void asc_copy_l0c2gm(__gm__ float* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size,
+                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode,
                                             uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en);
 
-__aicore__ inline void asc_copy_l0c2gm_sync(__gm__ float* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size, 
-                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, 
+__aicore__ inline void asc_copy_l0c2gm_sync(__gm__ float* dst, __cc__ float* src, uint16_t n_size, uint16_t m_size,
+                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode,
                                             uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en);
 
-__aicore__ inline void asc_copy_l0c2gm(__gm__ half* dst, __cc__ int32_t* src, uint16_t n_size, uint16_t m_size, 
-                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, 
+__aicore__ inline void asc_copy_l0c2gm(__gm__ half* dst, __cc__ int32_t* src, uint16_t n_size, uint16_t m_size,
+                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode,
                                             uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en);
 
-__aicore__ inline void asc_copy_l0c2gm_sync(__gm__ half* dst, __cc__ int32_t* src, uint16_t n_size, uint16_t m_size, 
-                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, 
+__aicore__ inline void asc_copy_l0c2gm_sync(__gm__ half* dst, __cc__ int32_t* src, uint16_t n_size, uint16_t m_size,
+                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode,
                                             uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en);
 
-__aicore__ inline void asc_copy_l0c2gm(__gm__ int16_t* dst, __cc__ int32_t* src, uint16_t n_size, uint16_t m_size, 
-                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, 
+__aicore__ inline void asc_copy_l0c2gm(__gm__ int16_t* dst, __cc__ int32_t* src, uint16_t n_size, uint16_t m_size,
+                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode,
                                             uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en);
 
-__aicore__ inline void asc_copy_l0c2gm_sync(__gm__ int16_t* dst, __cc__ int32_t* src, uint16_t n_size, uint16_t m_size, 
-                                                uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, 
+__aicore__ inline void asc_copy_l0c2gm_sync(__gm__ int16_t* dst, __cc__ int32_t* src, uint16_t n_size, uint16_t m_size,
+                                                uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode,
                                                 uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en);
 
-__aicore__ inline void asc_copy_l0c2gm(__gm__ int8_t* dst, __cc__ int32_t* src, uint16_t n_size, uint16_t m_size, 
-                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, 
+__aicore__ inline void asc_copy_l0c2gm(__gm__ int8_t* dst, __cc__ int32_t* src, uint16_t n_size, uint16_t m_size,
+                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode,
                                             uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en);
 
-__aicore__ inline void asc_copy_l0c2gm_sync(__gm__ int8_t* dst, __cc__ int32_t* src, uint16_t n_size, uint16_t m_size, 
-                                                uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, 
+__aicore__ inline void asc_copy_l0c2gm_sync(__gm__ int8_t* dst, __cc__ int32_t* src, uint16_t n_size, uint16_t m_size,
+                                                uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode,
                                                 uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en);
 
-__aicore__ inline void asc_copy_l0c2gm(__gm__ int32_t* dst, __cc__ int32_t* src, uint16_t n_size, uint16_t m_size, 
-                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, 
+__aicore__ inline void asc_copy_l0c2gm(__gm__ int32_t* dst, __cc__ int32_t* src, uint16_t n_size, uint16_t m_size,
+                                            uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode,
                                             uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en);
 
-__aicore__ inline void asc_copy_l0c2gm_sync(__gm__ int32_t* dst, __cc__ int32_t* src, uint16_t n_size, uint16_t m_size, 
-                                                uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode, 
+__aicore__ inline void asc_copy_l0c2gm_sync(__gm__ int32_t* dst, __cc__ int32_t* src, uint16_t n_size, uint16_t m_size,
+                                                uint32_t dst_stride_dst_d, uint16_t src_stride, uint8_t unit_flag_mode,
                                                 uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en);
 
 // ==========asc_load_image_to_cbuf(half/int8_t)==========
@@ -2029,10 +2029,10 @@ __aicore__ inline void asc_copy_l12ub_sync(__ubuf__ void * dst_addr, __cbuf__ vo
                         uint16_t n_burst, uint16_t len_burst, uint16_t src_gap, uint16_t dst_gap);
 
 //=============asc_copy_l0c2l1===============
-__aicore__ inline void asc_copy_l0c2l1(__cbuf__ void *dst, __cc__ float *src, uint16_t n_size, 
-            uint16_t m_size, uint32_t dst_stride, uint16_t src_stride, uint8_t l2_cache_ctl, uint8_t clip_relu_pre, 
-            uint8_t unit_flag_mode, uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en, uint64_t quant_post, 
-            uint8_t relu_post, bool clip_relu_post, uint8_t eltwise_op, bool eltwise_antq_en, 
+__aicore__ inline void asc_copy_l0c2l1(__cbuf__ void *dst, __cc__ float *src, uint16_t n_size,
+            uint16_t m_size, uint32_t dst_stride, uint16_t src_stride, uint8_t l2_cache_ctl, uint8_t clip_relu_pre,
+            uint8_t unit_flag_mode, uint64_t quant_pre, uint8_t relu_pre, bool channel_split, bool nz2nd_en, uint64_t quant_post,
+            uint8_t relu_post, bool clip_relu_post, uint8_t eltwise_op, bool eltwise_antq_en,
             bool c0_pad_en, bool broadcast_en, bool nz2dn_en);
 
 __aicore__ inline void asc_copy_l0c2l1_sync(__cbuf__ void *dst, __cc__ float *src, uint16_t n_size,
@@ -2652,7 +2652,7 @@ __aicore__ inline void asc_copy_gm2l1_sync(__cbuf__ void* dst, __gm__ void* src,
 
 #endif
 
-#if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H)  
-#undef ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS  
-#undef UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H  
-#endif    
+#if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H)
+#undef ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#undef UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H
+#endif

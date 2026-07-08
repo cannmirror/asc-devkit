@@ -29,7 +29,7 @@ __aicore__ inline void asc_set_ub2gm_loop1_stride_impl(uint64_t loop1_src_stride
 {
      if ASC_IS_AIV {
         uint64_t config = loop1_src_stride << 40;
-        config |= loop1_dst_stride;      
+        config |= loop1_dst_stride;
         set_loop1_stride_ubtoout(config);
      }
 }

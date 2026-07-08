@@ -31,7 +31,7 @@
 namespace AscendC {
 struct VdeqInfo {
     __aicore__ VdeqInfo() {}
-    
+
     __aicore__ VdeqInfo(const float vdeqScaleIn[VDEQ_TENSOR_SIZE], const int16_t vdeqOffsetIn[VDEQ_TENSOR_SIZE],
         const bool vdeqSignModeIn[VDEQ_TENSOR_SIZE])
     {

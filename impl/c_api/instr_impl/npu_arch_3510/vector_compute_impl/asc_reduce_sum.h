@@ -29,42 +29,42 @@ __simd_callee__ inline void asc_reduce_sum_impl(vector_int32_t& dst, vector_int1
 {
     if ASC_IS_AIV {
          vcadd(dst, src, mask, MODE_ZEROING);
-    }   
+    }
 }
 
 __simd_callee__ inline void asc_reduce_sum_impl(vector_int32_t& dst, vector_int32_t src, vector_bool mask)
 {
     if ASC_IS_AIV {
          vcadd(dst, src, mask, MODE_ZEROING);
-    }   
+    }
 }
 
 __simd_callee__ inline void asc_reduce_sum_impl(vector_uint32_t& dst, vector_uint16_t src, vector_bool mask)
 {
     if ASC_IS_AIV {
          vcadd(dst, src, mask, MODE_ZEROING);
-    }   
+    }
 }
 
 __simd_callee__ inline void asc_reduce_sum_impl(vector_uint32_t& dst, vector_uint32_t src, vector_bool mask)
 {
     if ASC_IS_AIV {
          vcadd(dst, src, mask, MODE_ZEROING);
-    }   
+    }
 }
 
 __simd_callee__ inline void asc_reduce_sum_impl(vector_half& dst, vector_half src, vector_bool mask)
 {
     if ASC_IS_AIV {
          vcadd(dst, src, mask, MODE_ZEROING);
-    }   
+    }
 }
 
 __simd_callee__ inline void asc_reduce_sum_impl(vector_float& dst, vector_float src, vector_bool mask)
 {
     if ASC_IS_AIV {
          vcadd(dst, src, mask, MODE_ZEROING);
-    }   
+    }
 }
 
 #endif

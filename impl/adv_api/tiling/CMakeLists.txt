@@ -7,7 +7,7 @@
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
-cmake_minimum_required(VERSION 3.16.0) 
+cmake_minimum_required(VERSION 3.16.0)
 project(ascendc_tiling_api)
 
 add_library(tiling_api_headers INTERFACE)
@@ -30,7 +30,7 @@ target_include_directories(
     $<INSTALL_INTERFACE:include/ascendc/include/highlevel_api/tiling>)
 
 target_link_libraries(tiling_api_headers
-                      INTERFACE 
+                      INTERFACE
                       $<BUILD_INTERFACE:metadef_headers>
                       $<BUILD_INTERFACE:unified_dlog>
                       $<BUILD_INTERFACE:tikcfw_headers>)
@@ -175,7 +175,7 @@ target_compile_options(
           $<$<STREQUAL:${PRODUCT_SIDE},device>:-fvisibility=hidden>)
 
 target_compile_definitions(
-  tiling_api PRIVATE 
+  tiling_api PRIVATE
   $<$<STREQUAL:${PRODUCT_SIDE},device>:_FORTIFY_SOURCE=2>
   $<$<STREQUAL:${PRODUCT_SIDE},device>:ASCENDC_DEVICE_REG_STATIC>
 )

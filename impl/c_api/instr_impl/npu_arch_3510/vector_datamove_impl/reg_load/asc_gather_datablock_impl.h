@@ -318,7 +318,7 @@ __simd_callee__ inline void asc_gather_datablock_impl(vector_int4x2_t& dst, __ub
     }
 }
 
-__simd_callee__ inline void asc_gather_datablock_impl(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src, 
+__simd_callee__ inline void asc_gather_datablock_impl(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src,
     vector_uint32_t index)
 {
     if ASC_IS_AIV {

@@ -42,7 +42,7 @@ __simd_callee__ inline void asc_store_impl(__ubuf__  uint8_t* dst, vector_uint8_
     }
 }
 
-__simd_callee__ inline void asc_store_impl(__ubuf__  int16_t* dst, vector_int16_t src) 
+__simd_callee__ inline void asc_store_impl(__ubuf__  int16_t* dst, vector_int16_t src)
 {
     if ASC_IS_AIV {
         vector_store_unalign ureg;

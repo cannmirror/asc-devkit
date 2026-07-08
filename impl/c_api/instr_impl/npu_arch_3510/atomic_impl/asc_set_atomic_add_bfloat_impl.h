@@ -39,4 +39,3 @@ __aicore__ inline void asc_set_atomic_add_bfloat_impl()
 #define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
-

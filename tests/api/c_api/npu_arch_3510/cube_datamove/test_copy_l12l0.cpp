@@ -46,8 +46,8 @@
         uint8_t k_step = static_cast<uint8_t>(66);                                                                    \
         int16_t src_stride = static_cast<int16_t>(77);                                                                \
         uint16_t dst_stride = static_cast<uint16_t>(88);                                                              \
-        \    
-    MOCKER_CPP(                                                                                                       \
+                                                                                                                      \
+        MOCKER_CPP(                                                                                                   \
             cce_name,                                                                                                 \
             void(pos data_type*, __cbuf__ data_type*, uint16_t, uint16_t, uint8_t, uint8_t, int16_t, uint16_t, bool)) \
             .times(1)                                                                                                 \

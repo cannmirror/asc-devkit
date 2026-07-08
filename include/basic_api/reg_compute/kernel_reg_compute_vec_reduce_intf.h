@@ -55,4 +55,3 @@ __simd_callee__ inline void PairReduceElem(U& dstReg, U srcReg, MaskReg mask);
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_VEC_REDUCE_INTF_H__
 #endif
-

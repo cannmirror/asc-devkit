@@ -454,7 +454,7 @@ __aicore__ inline int32_t HcommImpl<COMM_PROTOCOL_UBC_CTP>::AtomicFAA(
     ChannelHandle channel, GM_ADDR dst, GM_ADDR fetchAddr, T addVal)
 {
     static_assert(
-        std::is_same<T, int32_t>::value || std::is_same<T, uint32_t>::value || 
+        std::is_same<T, int32_t>::value || std::is_same<T, uint32_t>::value ||
         std::is_same<T, int64_t>::value || std::is_same<T, uint64_t>::value,
         "AtomicFAA only supports int32_t, uint32_t, int64_t, uint64_t"
     );
@@ -467,7 +467,7 @@ __aicore__ inline int32_t HcommImpl<COMM_PROTOCOL_UBC_CTP>::AtomicCAS(
     ChannelHandle channel, GM_ADDR dst, GM_ADDR fetchAddr, T compareVal, T swapVal)
 {
     static_assert(
-        std::is_same<T, int32_t>::value || std::is_same<T, uint32_t>::value || 
+        std::is_same<T, int32_t>::value || std::is_same<T, uint32_t>::value ||
         std::is_same<T, int64_t>::value || std::is_same<T, uint64_t>::value,
         "AtomicCAS only supports int32_t, uint32_t, int64_t, uint64_t"
     );

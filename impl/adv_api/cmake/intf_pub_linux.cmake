@@ -39,10 +39,3 @@ target_compile_options(intf_pub INTERFACE
 target_link_libraries(intf_pub INTERFACE
     $<BUILD_INTERFACE:intf_pub_base>
 )
-
-
-
-
-
-
-

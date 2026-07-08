@@ -27,7 +27,7 @@ __aicore__ inline void asc_init_soc_state_impl()
         set_vector_mask(static_cast<uint64_t>(-1), static_cast<uint64_t>(-1));
     }
 }
- 
+
 #endif
 
 #if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)

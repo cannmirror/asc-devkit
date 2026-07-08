@@ -29,7 +29,7 @@ __aicore__ inline void asc_set_ub2gm_loop_size_impl(uint32_t loop1_size, uint32_
 {
      if ASC_IS_AIV {
         uint64_t config = static_cast<uint64_t>(loop2_size) << 21;
-        config |= static_cast<uint64_t>(loop1_size);         
+        config |= static_cast<uint64_t>(loop1_size);
         set_loop_size_ubtoout(config);
      }
 }

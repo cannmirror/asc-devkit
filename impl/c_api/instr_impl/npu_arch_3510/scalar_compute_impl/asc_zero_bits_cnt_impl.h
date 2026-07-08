@@ -36,4 +36,3 @@ __aicore__ inline int64_t asc_zero_bits_cnt_impl(uint64_t value)
 #undef ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #undef UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
-

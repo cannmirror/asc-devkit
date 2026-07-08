@@ -111,7 +111,7 @@ if __name__ == '__main__':
             if file.endswith("tilingdata.h"):
                 file_list.append(os.path.join(root, file))
     file_list.sort()
-    
+
     tiling_source = ""
     legacy_tiling_export = ""
     for file in file_list:

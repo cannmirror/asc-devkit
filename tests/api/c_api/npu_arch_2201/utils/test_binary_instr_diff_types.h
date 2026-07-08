@@ -30,8 +30,8 @@
         __ubuf__ dst_type* dst, __ubuf__ src_type* src0, __ubuf__ src_type* src1, uint8_t repeat,                    \
         uint8_t dst_block_stride, uint8_t src0_block_stride, uint8_t src1_block_stride, uint8_t dst_repeat_stride,   \
         uint8_t src0_repeat_stride, uint8_t src1_repeat_stride)                                                      \
-    \  
-{                                                                                                              \
+                                                                                                                     \
+    {                                                                                                                \
         EXPECT_EQ(dst, reinterpret_cast<__ubuf__ dst_type*>(11));                                                    \
         EXPECT_EQ(src0, reinterpret_cast<__ubuf__ src_type*>(22));                                                   \
         EXPECT_EQ(src1, reinterpret_cast<__ubuf__ src_type*>(33));                                                   \

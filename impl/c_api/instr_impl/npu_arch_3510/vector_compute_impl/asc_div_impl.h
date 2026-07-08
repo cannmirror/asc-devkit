@@ -29,7 +29,7 @@ __simd_callee__ inline void asc_div_impl(vector_half& dst, vector_half src0, vec
 {
     if ASC_IS_AIV{
          vdiv(dst, src0, src1, mask, MODE_ZEROING);
-    }   
+    }
 }
 
 __simd_callee__ inline void asc_div_impl(vector_float& dst, vector_float src0, vector_float src1, vector_bool mask)

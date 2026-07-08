@@ -7,6 +7,24 @@ ci:
   autoupdate_schedule: monthly
 
 repos:
+  # pre-commit 基础检查
+  - repo: https://gitcode.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        files: ^(tests/api/c_api/|include/adv_api/|include/basic_api/|impl/c_api/instr_impl/npu_arch_3510/|include/c_api/|impl/adv_api/(?!detail/(matmul|hccl)/))
+        exclude: \.md$
+      - id: end-of-file-fixer
+        files: ^(tests/api/c_api/|include/adv_api/|include/basic_api/|impl/c_api/instr_impl/npu_arch_3510/|include/c_api/|impl/adv_api/(?!detail/(matmul|hccl)/))
+        exclude: \.md$
+      - id: check-yaml
+        args: ["--allow-multiple-documents"]
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: check-json
+        exclude: ^\.devcontainer/devcontainer\.json$
+
   # C++ 代码格式化检查
   - repo: https://gitcode.com/pre-commit-clang/mirrors-clang-format
     rev: v18.1.8

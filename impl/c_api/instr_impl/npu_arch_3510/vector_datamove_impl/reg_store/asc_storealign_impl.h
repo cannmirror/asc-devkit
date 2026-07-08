@@ -536,7 +536,7 @@ __simd_callee__ inline void asc_storealign_intlv_impl(__ubuf__  int4b_t* dst_ali
     if ASC_IS_AIV {
         vector_bool mask;
         __ubuf__ float4_e1m2x2_t* dst_align32b_tmp = reinterpret_cast<__ubuf__ float4_e1m2x2_t*>(dst_align32b);
-        vsts(*reinterpret_cast<vector_fp4x2_e1m2_t*>(&src0), *reinterpret_cast<vector_fp4x2_e1m2_t*>(&src1), 
+        vsts(*reinterpret_cast<vector_fp4x2_e1m2_t*>(&src0), *reinterpret_cast<vector_fp4x2_e1m2_t*>(&src1),
                     dst_align32b_tmp, 0, INTLV_B8, mask);
     }
 }

@@ -366,10 +366,10 @@ __aicore__ inline void TopKNSmallGetHalfTopKValue(const LocalTensor<T> &dstValue
     SetFlag<HardEvent::V_S>(eventID);
     WaitFlag<HardEvent::V_S>(eventID);
     SetVectorMask<T, MaskMode::COUNTER>(0, 2);
-    Duplicate<uint16_t, false>(src1stackTensor, static_cast<uint16_t>(tilling.vreduceValMask1), MASK_PLACEHOLDER, 1, 1, 
+    Duplicate<uint16_t, false>(src1stackTensor, static_cast<uint16_t>(tilling.vreduceValMask1), MASK_PLACEHOLDER, 1, 1,
         DEFAULT_REPEAT_STRIDE);
     SetVectorMask<T, MaskMode::COUNTER>(0, 1);
-    Duplicate<uint16_t, false>(src1stackTensor, static_cast<uint16_t>(tilling.vreduceValMask0), MASK_PLACEHOLDER, 1, 1, 
+    Duplicate<uint16_t, false>(src1stackTensor, static_cast<uint16_t>(tilling.vreduceValMask0), MASK_PLACEHOLDER, 1, 1,
         DEFAULT_REPEAT_STRIDE);
     PipeBarrier<PIPE_V>();
     SetMaskNorm();
@@ -377,13 +377,13 @@ __aicore__ inline void TopKNSmallGetHalfTopKValue(const LocalTensor<T> &dstValue
     SetVectorMask<half>(topKInfo.inner);
     struct GatherMaskParams gatherMaskParams(DEFAULT_BLK_STRIDE, topKInfo.outter, ONE_FOURTH_DEFAULT_REPEAT_STRIDE, 0);
     uint64_t rsvdCnt = 0;
-    GatherMask<half, uint16_t>(dstValueLocal, tmpLocal[tilling.innerDataSize], src1stackTensor, false, 0, 
+    GatherMask<half, uint16_t>(dstValueLocal, tmpLocal[tilling.innerDataSize], src1stackTensor, false, 0,
         gatherMaskParams, rsvdCnt);
     PipeBarrier<PIPE_V>();
     LocalTensor<uint32_t> indexStackTensor = tmpLocal.template ReinterpretCast<uint32_t>();
     SetMaskCount();
     SetVectorMask<T, MaskMode::COUNTER>(0, 2);
-    Duplicate<uint32_t, false>(indexStackTensor, static_cast<uint32_t>(0), MASK_PLACEHOLDER, 1, 1, 
+    Duplicate<uint32_t, false>(indexStackTensor, static_cast<uint32_t>(0), MASK_PLACEHOLDER, 1, 1,
         DEFAULT_REPEAT_STRIDE);
     SetVectorMask<T, MaskMode::COUNTER>(0, 1);
     Duplicate<uint32_t, false>(indexStackTensor, static_cast<uint32_t>(tilling.vreduceIdxMask0), MASK_PLACEHOLDER, 1, 1,
@@ -443,7 +443,7 @@ __aicore__ inline void CopyData(LocalTensor<int32_t> indexLocalTmp, const TopKIn
     ResetMask();
     SetVectorMask<int32_t>(topKInfo.inner);
     const UnaryRepeatParams unaryParams = {1, 1, 4, 0};
-    Adds<int32_t, false>(indexLocalTmp[topKInfo.inner], indexLocalTmp, 0, MASK_PLACEHOLDER, topKInfo.outter - 1, 
+    Adds<int32_t, false>(indexLocalTmp[topKInfo.inner], indexLocalTmp, 0, MASK_PLACEHOLDER, topKInfo.outter - 1,
         unaryParams);
     PipeBarrier<PIPE_V>();
 }

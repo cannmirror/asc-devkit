@@ -182,7 +182,7 @@ __simd_callee__ inline void asc_gather_datablock(vector_uint32_t& dst, __ubuf__ 
 
 __simd_callee__ inline void asc_gather_datablock(vector_int64_t& dst, __ubuf__  int64_t* src,
     vector_uint32_t index);
-    
+
 __simd_callee__ inline void asc_gather_datablock(vector_uint64_t& dst, __ubuf__  uint64_t* src,
     vector_uint32_t index);
 

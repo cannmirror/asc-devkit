@@ -111,7 +111,7 @@ struct MultiCopyParams  {
     T constantValue;
 };
 
-template <typename T, uint8_t dim>  
+template <typename T, uint8_t dim>
 using NdDmaParams = MultiCopyParams<T, dim>;
 
 struct DataCopyEnhancedParams {

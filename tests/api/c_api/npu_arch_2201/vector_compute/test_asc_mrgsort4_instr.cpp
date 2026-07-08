@@ -26,8 +26,8 @@
         __ubuf__ data_type* dst, __ubuf__ data_type** src, uint8_t repeat, uint16_t element_length_0,                  \
         uint16_t element_length_1, uint16_t element_length_2, uint16_t element_length_3, bool if_exhausted_suspension, \
         uint8_t valid_bit)                                                                                             \
-    \ 
-{                                                                                                                 \
+                                                                                                                       \
+    {                                                                                                                  \
         EXPECT_EQ(dst, reinterpret_cast<__ubuf__ data_type*>(11));                                                     \
         EXPECT_EQ(src[0], reinterpret_cast<__ubuf__ data_type*>(22));                                                  \
         EXPECT_EQ(src[1], reinterpret_cast<__ubuf__ data_type*>(33));                                                  \

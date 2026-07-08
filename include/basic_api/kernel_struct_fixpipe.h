@@ -204,8 +204,8 @@ struct FixpipeParamsArch3510 {
 template <CO2Layout format = CO2Layout::ROW_MAJOR>
 struct FixpipeParamsC310 : FixpipeParamsArch3510<format> {
     __aicore__ FixpipeParamsC310() : FixpipeParamsArch3510<format>() {}
-    
-    __aicore__ FixpipeParamsC310(const uint16_t nSizeIn, const uint16_t mSizeIn, 
+
+    __aicore__ FixpipeParamsC310(const uint16_t nSizeIn, const uint16_t mSizeIn,
                                 const uint16_t srcStrideIn, const uint32_t dstStrideIn)
         : FixpipeParamsArch3510<format>(nSizeIn, mSizeIn, srcStrideIn, dstStrideIn) {}
 };
