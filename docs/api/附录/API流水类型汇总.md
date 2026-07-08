@@ -1,6 +1,5 @@
 # API流水类型汇总<a name="ZH-CN_TOPIC_0000002533354434"></a>
 
-<!-- npu="950,A3,910b" id1 -->
 本节汇总介绍了一些主要的API的流水类型，以下内容针对如下型号生效：
 
 <!-- npu="950" id2 -->
@@ -234,4 +233,4 @@
 | DataCacheCleanAndInvalid | PIPE_S |
 | ICachePreLoad(ISASI) | PIPE_S |
 | GetICachePreloadStatus(ISASI) | PIPE_S |
-<!-- end id1 -->
+

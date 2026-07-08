@@ -1,7 +1,5 @@
 # Vector指令理论性能汇总<a name="ZH-CN_TOPIC_0000002557396789"></a>
 
-<!-- npu="950,A3,910b" id1 -->
-
 本节汇总介绍了一些主要的Vector指令的理论性能，以下内容针对如下型号生效：
 
 <!-- npu="950" id2 -->
@@ -56,7 +54,13 @@
 <!-- end id5 -->
 
 <!-- npu="A3,910b" id6 -->
-针对Atlas A3 训练系列产品/Atlas A3 推理系列产品、Atlas A2 训练系列产品/Atlas A2 推理系列产品：<br>Vector指令理论性能汇总请参考表3-表15。
+针对如下产品型号：Vector指令理论性能汇总请参考表3-表15。
+<!-- npu="A3" id1 -->
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品
+<!-- end id1 -->
+<!-- npu="910b" id7 -->
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品
+<!-- end id7 -->
 
 **表3**  基础算术类指令理论性能汇总
 
@@ -311,4 +315,3 @@
 | GetProgramCounter | 软仿指令，不涉及理论并行度 |
 | GetArchVersion | 软仿指令，不涉及理论并行度 |
 <!-- end id6 -->
-<!-- end id1 -->

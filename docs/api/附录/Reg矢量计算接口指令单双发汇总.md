@@ -1,6 +1,5 @@
 # Reg矢量计算接口指令单双发汇总<a name="reg-vector-dual-issue"></a>
 
-<!-- npu="950" id1 -->
 本节汇总介绍了Reg矢量计算接口指令单双发的情况，指令单发指1个Cycle能够执行一条指令，指令双发指1个Cycle能够执行两条指令。
 <br>针对寄存器：1个Cycle只能写两个Reg寄存器；针对UB：1个Cycle只能读两个VL（一个VL为256B），或者1个Cycle读一个VL和写一个VL。
 
@@ -100,4 +99,3 @@ Ascend 950PR/Ascend 950DT
 | 数据压缩 | VPACK | Pack |
 | 数据压缩 | VUNPACK | UnPack |
 | 直方图计算 | DHISTv2 | Histograms |
-<!-- end id1 -->

@@ -1,6 +1,5 @@
 # Reg矢量计算接口精度标准汇总<a name="reg-vector-precision-summary"></a>
 
-<!-- npu="950" id1 -->
 本节汇总介绍了Reg矢量计算接口精度标准的情况，本节内容仅针对如下型号生效：
 
 Ascend 950PR/Ascend 950DT
@@ -43,4 +42,3 @@ Ascend 950PR/Ascend 950DT
 | int4x2_t | Cast |
 | int8_t | Cast、Add、Sub、Max、Min、Compare、Abs、Neg、Adds、Muls、Maxs、Mins、Compares、Duplicate |
 | uint8_t | Cast、Add、Sub、Max、Min、Compare、Adds、Muls、Maxs、Mins、Compares、Duplicate |
-<!-- end id1 -->
