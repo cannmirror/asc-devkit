@@ -85,3 +85,10 @@
 | [assert](调测接口/assert-291.md) | 本接口在SIMT VF调试场景下提供assert断言功能。在算子Kernel侧的SIMT VF实现代码中，如果assert的内部条件判断不为真，则会输出assert条件，并将输入的信息格式化打印在屏幕上。 |
 | [__trap](调测接口/__trap.md) | 在SIMT VF实现代码中调用此接口会中断算子的运行。 |
 | [clock](调测接口/clock.md) | 本接口在SIMT VF调试场景中提供Clock时间戳功能，用于记录从程序启动到接口调用时刻所经历的时钟周期数（Cycle Count），便于精确分析执行延迟和性能瓶颈。 |
+| [asc\_dump](调测接口/asc_dump.md) | 将对应内存上的数据打印出来，同时支持打印自定义的附加信息（仅支持uint32\_t类型的信息），比如打印当前行号等。 |
+| [asc\_time\_stamp](调测接口/asc_time_stamp.md) | 提供时间戳打点功能，用于在算子Kernel代码中标记关键执行点。 |
+| [asc\_prof\_start](调测接口/asc_prof_start.md) | 设置性能数据采集信号启动，和asc\_prof\_stop配合使用，用于指定需要调优的代码段范围。 |
+| [asc\_prof\_stop](调测接口/asc_prof_stop.md) | 设置性能数据采集信号停止，和asc\_prof\_start配合使用，用于指定需要调优的代码段范围。 |
+| [asc\_mark\_stamp](调测接口/asc_mark_stamp.md) | 在算子执行过程中标记特定位置，便于后期通过流水图分析代码执行路径与性能热点。 |
+| [TRACE\_START](调测接口/TRACE_START.md) | 通过仿真器进行算子性能仿真时，可对算子任意运行阶段打点，从而分析不同指令的流水图，以便进一步性能调优。 |
+| [TRACE\_STOP](调测接口/TRACE_STOP.md) | 通过仿真器进行算子性能仿真时，可对算子任意运行阶段打点，从而分析不同指令的流水图，以便进一步性能调优。 |
