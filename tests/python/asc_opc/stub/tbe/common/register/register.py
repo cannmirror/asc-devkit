@@ -33,7 +33,7 @@ class op_compute:
             return [tensor]
 
         return conv2d_compute
-        
+
 
 class Op:
     attrs = {}

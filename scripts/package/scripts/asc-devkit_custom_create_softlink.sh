@@ -78,18 +78,18 @@ do_create_stub_softlink() {
     if [ ! -d "$install_path/$latest_dir/compiler/bin" ]; then
         mkdir -p "$install_path/$latest_dir/compiler/bin"
     fi
-    if [ ! -d "$install_path/$latest_dir/tools/opbuild" ]; then 
-        ln -sr "$install_path/$version_dir/tools/opbuild" "$install_path/$latest_dir/tools/opbuild" 
+    if [ ! -d "$install_path/$latest_dir/tools/opbuild" ]; then
+        ln -sr "$install_path/$version_dir/tools/opbuild" "$install_path/$latest_dir/tools/opbuild"
     fi
     if [ -e "$install_path/$version_dir/${arch_name}-linux/bin/asc_opc" ]; then
-        if [ ! -L "$install_path/$version_dir/compiler/bin/asc_opc" ]; then 
+        if [ ! -L "$install_path/$version_dir/compiler/bin/asc_opc" ]; then
             ln -sr "$install_path/$version_dir/${arch_name}-linux/bin/asc_opc" "$install_path/$version_dir/compiler/bin/asc_opc"
         fi
-        if [ ! -L "$install_path/$latest_dir/compiler/bin/asc_opc" ]; then 
+        if [ ! -L "$install_path/$latest_dir/compiler/bin/asc_opc" ]; then
             ln -sr "$install_path/$version_dir/${arch_name}-linux/bin/asc_opc" "$install_path/$latest_dir/compiler/bin/asc_opc"
         fi
     fi
-    
+
     if [ -d "$arch_linux_path/pkg_inc/asc/hccl" ]; then
         chmod 750 "$arch_linux_path/pkg_inc/asc/hccl"
         ln -sr "$arch_linux_path/asc/include/adv_api/hccl/internal" "$arch_linux_path/pkg_inc/asc/hccl/internal"

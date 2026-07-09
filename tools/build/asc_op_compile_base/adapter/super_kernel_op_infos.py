@@ -295,7 +295,7 @@ class SuperOperatorInfos:
     def remove_info_by_name(self, send_op_name, recv_op_name, is_delete_recv_info, update_content=""):
         """delete sync event
         Args:
-            send_op_name (str): sent op name 
+            send_op_name (str): sent op name
             recv_op_name (str): recv op name
             is_delete_recv_info (bool): process recv_info or send_info
             update_content (res): delete directly if update_content is "" else replace dict by update_content
@@ -534,7 +534,7 @@ class SuperOperatorInfos:
 f"ERROR: super kernel do not support self send/receive pair within 1 real stream: oplist: {self.op_list} "))
                 elif connect_set:
                     self.inner_event_id_set.update(connect_set)
-                
+
 
 
     def check_sp_has_two_real_stream(self):
@@ -908,13 +908,13 @@ f"ERROR: super kernel do not support self send/receive pair within 1 real stream
         import platform
         archlinux = platform.machine()
         if ascend_home_path is None or ascend_home_path == '':
-            asc_opc_path = shutil.which("asc_opc")	
-            if asc_opc_path is not None:	
+            asc_opc_path = shutil.which("asc_opc")
+            if asc_opc_path is not None:
                 asc_opc_path_link = os.path.dirname(asc_opc_path)
                 asc_opc_real_path = os.path.realpath(asc_opc_path_link)
-                ascend_home_path = os.path.realpath(	
+                ascend_home_path = os.path.realpath(
                         os.path.join(asc_opc_real_path, "..", ".."))
-            else:	
+            else:
                 ascend_home_path = "/usr/local/Ascend/cann"
 
         if 'x86' in archlinux:
@@ -923,7 +923,7 @@ f"ERROR: super kernel do not support self send/receive pair within 1 real stream
             asc_path = os.path.realpath(os.path.join(ascend_home_path, "aarch64-linux", "asc"))
         if asc_path is None:
             asc_path = os.path.realpath(os.path.join(ascend_home_path, "compiler", "asc"))
-        
+
         options.append("-I" + os.path.join(asc_path, "impl", "adv_api"))
         options.append("-I" + os.path.join(asc_path, "impl", "basic_api"))
         options.append("-I" + os.path.join(asc_path, "impl", "c_api"))
@@ -1050,5 +1050,3 @@ split_dynamic_o_in_super_kernel(orign_bin_path, rename_file_path_list[i-1], i, s
             "send_event_list": send_event_list,
             "recv_event_list": recv_event_list
         }
-
-

@@ -26,7 +26,7 @@ const filterOptions = [
   { value: 'x90', label: 'Kirin X90' },
   { value: '9030', label: 'Kirin 9030' },
 ]
-  
+
 const selectedFilter = ref('all')
 
 function loadSavedFilter() {

@@ -43,4 +43,3 @@ class api_config():
     def __exit__(self, ptype, value, trace):
         # recover to default value
         api_config._bit_width = 32
-

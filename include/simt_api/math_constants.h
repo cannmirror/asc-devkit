@@ -67,7 +67,7 @@ constexpr int ASCRT_NEG_ZERO_F_VALUE = 0x80000000U;
 #define ASCRT_NEG_SIGN_BIT_U                   0x80000000U
 #define ASCRT_INF_U                            0x7F800000U
 
-#define ASCRT_MIN_VAL_S                        0x80000000 
+#define ASCRT_MIN_VAL_S                        0x80000000
 #define ASCRT_INT32_INF_S                      2139095040
 #define ASCRT_MAX_VAL_S                        0x7FFFFFFF
 

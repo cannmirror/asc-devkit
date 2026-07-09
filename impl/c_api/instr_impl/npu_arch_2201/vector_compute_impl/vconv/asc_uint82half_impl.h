@@ -14,11 +14,11 @@
  */
 
 
-#if !defined(ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS)  
-#warning "impl/c_api/instr_impl/npu_arch_2201/vector_compute_impl/vconv/asc_uint82half_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "c_api/asc_simd.h"" and use public functions or variables defined in interface headers files."  
-#define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS  
-#define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC  
-#endif    
+#if !defined(ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
+#warning "impl/c_api/instr_impl/npu_arch_2201/vector_compute_impl/vconv/asc_uint82half_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "c_api/asc_simd.h"" and use public functions or variables defined in interface headers files."
+#define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
+#endif
 
 #ifndef IMPL_C_API_INSTR_IMPL_NPU_ARCH_2201_VECTOR_COMPUTE_VCONV_ASC_UINT82HALF_IMPL_H
 #define IMPL_C_API_INSTR_IMPL_NPU_ARCH_2201_VECTOR_COMPUTE_VCONV_ASC_UINT82HALF_IMPL_H
@@ -36,7 +36,7 @@ __aicore__ inline void asc_uint82half_impl(__ubuf__ half* dst, __ubuf__ uint8_t*
 __aicore__ inline void asc_uint82half_impl(__ubuf__ half* dst, __ubuf__ uint8_t* src, uint32_t count)
 {
     asc_set_mask_count_begin(count);
-    asc_uint82half_impl(dst, src, ASC_C_API_DEFAULT_REPEAT.U8, ASC_C_API_DEFAULT_BLOCK_STRIDE.U16, 
+    asc_uint82half_impl(dst, src, ASC_C_API_DEFAULT_REPEAT.U8, ASC_C_API_DEFAULT_BLOCK_STRIDE.U16,
         ASC_C_API_DEFAULT_BLOCK_STRIDE.U16, ASC_C_API_DEFAULT_REPEAT_STRIDE.U16, ASC_C_API_HALF_DEFAULT_REPEAT_STRIDE.U16);
     asc_set_mask_count_end();
 }
@@ -49,8 +49,7 @@ __aicore__ inline void asc_uint82half_sync_impl(__ubuf__ half* dst, __ubuf__ uin
 
 #endif
 
-#if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)  
-#undef ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS  
-#undef UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC  
-#endif  
-
+#if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
+#undef ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#undef UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
+#endif

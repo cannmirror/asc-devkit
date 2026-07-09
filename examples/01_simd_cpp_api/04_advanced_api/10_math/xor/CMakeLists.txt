@@ -22,7 +22,7 @@ add_executable(demo
     xor.asc
 )
 
-target_link_libraries(demo PRIVATE 
+target_link_libraries(demo PRIVATE
     tiling_api
     register
     platform

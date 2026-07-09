@@ -32,5 +32,3 @@ def cann_kb_search(info_dict: str, search_config: dict, option: dict = {}) -> li
     knowledge_list = {"knowledge": {"dynamic_compile_static": "true","op_impl_switch":"dsl"}}
     results_json.append(knowledge_list)
     return results_json
-
-

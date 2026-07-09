@@ -753,7 +753,7 @@ class TestOpc02(unittest.TestCase):
         sys.argv = ["xx", op_path, "--main_func=mat_mul",
                     "--input_param=" + input_param_path, "--soc_version=Ascend910A",
                     "--output=./output", "--log=debug", "--core_type=AiCore,VectorCore",
-                    "--aicore_num=1", "--impl_mode=high_performance", 
+                    "--aicore_num=1", "--impl_mode=high_performance",
                     "--simplified_key_mode=0"]
         ret, opt_parser = opc.parse_args()
         opc.op_compile_classify(opt_parser)
@@ -930,7 +930,7 @@ class TestOpc02(unittest.TestCase):
 
         os.remove(test_root_dir + "/debug_dir/kernel_meta_Sqrt/kernel_meta/Sqrt.o")
         logger.debug("End to execute ============ test_compile_op_api ============")
-        
+
     def test_compile_op_api_fail(self):
         """test_compile_op_api"""
         logger.debug("Start to execute ============ test_compile_op_api_fail ============")

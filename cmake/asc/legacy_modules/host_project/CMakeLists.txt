@@ -54,7 +54,7 @@ else()
     )
 endif()
 
-target_include_directories(intf_host_bisheng INTERFACE 
+target_include_directories(intf_host_bisheng INTERFACE
     ${INCLUDES}
 )
 

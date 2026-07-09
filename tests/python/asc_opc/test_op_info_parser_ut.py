@@ -59,7 +59,7 @@ class TestOpcOpInfoPaserUt(unittest.TestCase):
                         -1,
                         -1,
                         -1
-                    ], 
+                    ],
                     "range": [
                         [
                             1,

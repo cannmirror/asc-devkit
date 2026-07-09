@@ -521,7 +521,7 @@ class OpcOptionParser:
                 logger.warn("Invalid tiling_key list {}.".format(tiling_key_str))
             self.set_option(OpcOptions.TILING_KEY, tiling_key_list)
             logger.info("Save tiling_key list {}.".format(tiling_key_list))
-    
+
     def check_and_save_kernel_template_input(self):
         kernel_template_input_str = self.get_option(OpcOptions.KERNEL_TEMPLATE_INPUT)
         if kernel_template_input_str is not None:
@@ -691,4 +691,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

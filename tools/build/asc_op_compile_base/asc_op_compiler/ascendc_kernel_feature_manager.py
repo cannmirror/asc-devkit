@@ -38,7 +38,7 @@ class BaseFeature(ABC):
 
         Args:
             other_version: The version to compare with.
-        
+
         Return:
             The minimum version of the two.
         """
@@ -133,7 +133,7 @@ class AscendCKernelFeatureManager:
     def unregister_feature(self, feature_name: str) -> None:
         if feature_name not in self._support_features_instances:
             raise KeyError(f"feature {feature_name} does not exists")
-        
+
         self._support_features_instances.pop(feature_name)
 
     def set_feature_value(self, feature_name: str, feature_value: any):

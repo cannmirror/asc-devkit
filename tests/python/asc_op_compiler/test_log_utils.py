@@ -78,7 +78,7 @@ class TestLogUtils(unittest.TestCase):
         output = "a detail info"
         with mock.patch('os.environ', {"ASCEND_GLOBAL_EVENT_ENABLE": 1}):
             LogUtil().detail_log_print(op_name, output, AscendCLogLevel.LOG_INFO)
-    
+
     def test_fix_string_escapes(self):
         # test simple texts
         self.assertEqual(LogUtil.fix_string_escapes("Hellow World"), "Hellow World")

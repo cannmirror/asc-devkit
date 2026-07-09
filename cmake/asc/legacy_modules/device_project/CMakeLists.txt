@@ -32,7 +32,7 @@ target_compile_options(intf_device_obj INTERFACE
     ${OPTIONS}
 )
 
-target_include_directories(intf_device_obj INTERFACE 
+target_include_directories(intf_device_obj INTERFACE
     ${INCLUDES}
 )
 
@@ -113,8 +113,3 @@ if(AIV_SOURCES)
         COMMAND_EXPAND_LISTS
     )
 endif()
-
-
-
-
-

@@ -102,8 +102,7 @@ add_custom_target(run_all_tests_and_clean ALL
     COMMAND rm -rf ${ASCENDC_DIR}/out/
     # created by run_python_llt_test
     COMMAND rm -f ${ASCENDC_DIR}/null
-    DEPENDS ascendc_pyut_asc_compile_common ascendc_pyut_asc_op_compiler asc_opc_unittest ascendc_pyut_compile_trace_log ascendc_pyut_aclrt_launch_kernel 
+    DEPENDS ascendc_pyut_asc_compile_common ascendc_pyut_asc_op_compiler asc_opc_unittest ascendc_pyut_compile_trace_log ascendc_pyut_aclrt_launch_kernel
     COMMENT "clean generated test files"
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
-

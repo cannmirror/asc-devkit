@@ -94,7 +94,7 @@ link_mode: SuperKernelLinkMode, split_mode, compile_log_path=None):
             objs += super_kernl_files
             objs += objs_cube
             objs += objs_vec
-        else:        
+        else:
             sp_vec = ""
             sp_cube = ""
             for sp_file in super_kernl_files:
@@ -121,7 +121,7 @@ def gen_system_run_cfg(kernel_type):
         file_header += "#if (defined(__DAV_VEC__) && __NPU_ARCH__ == 2201)\n"
     else:
         file_header += "#if (defined(__DAV_CUBE__) && __NPU_ARCH__ == 2201)\n"
- 
+
     file_header += f"    __gm__ struct OpSystemRunCfg g_opSystemRunCfg = {{{0}}};\n"
     file_header += f"#else\n"
     file_header += f"    extern __gm__ struct OpSystemRunCfg g_opSystemRunCfg;\n"
@@ -194,13 +194,13 @@ def gen_spk_kernel_call(super_split_info : SuperSplitInfo, split_mode, kernel_ty
         import platform
         archlinux = platform.machine()
         if ascend_home_path is None or ascend_home_path == '':
-            asc_opc_path = shutil.which("asc_opc")	
-            if asc_opc_path is not None:	
+            asc_opc_path = shutil.which("asc_opc")
+            if asc_opc_path is not None:
                 asc_opc_path_link = os.path.dirname(asc_opc_path)
                 asc_opc_real_path = os.path.realpath(asc_opc_path_link)
-                ascend_home_path = os.path.realpath(	
+                ascend_home_path = os.path.realpath(
                         os.path.join(asc_opc_real_path, "..", ".."))
-            else:	
+            else:
                 ascend_home_path = "/usr/local/Ascend/cann"
 
         if 'x86' in archlinux:
@@ -209,7 +209,7 @@ def gen_spk_kernel_call(super_split_info : SuperSplitInfo, split_mode, kernel_ty
             asc_path = os.path.realpath(os.path.join(ascend_home_path, "aarch64-linux", "asc"))
         if asc_path is None:
             asc_path = os.path.realpath(os.path.join(ascend_home_path, "compiler", "asc"))
-           
+
         cmds.append("-I" + os.path.join(asc_path, "impl", "adv_api"))
         cmds.append("-I" + os.path.join(asc_path, "impl", "basic_api"))
         cmds.append("-I" + os.path.join(asc_path, "impl", "c_api"))
@@ -268,7 +268,7 @@ def split_spk_kernel_objs(sub_objs: list, split_mode, kernel_type, compile_log_p
                 strip_sym_cmd = ['llvm-objcopy', '--strip-symbol=g_opSystemRunCfg', '{}.split{}.o'.format(_obj, i)]
                 run_local_cmd(strip_sym_cmd, compile_log_path)
             redefine_sym_cmd = ['llvm-objcopy', '--redefine-sym', '{}={}'.format(_k_name, _n_name), '{}'.format(_obj)]
-            run_local_cmd(redefine_sym_cmd, compile_log_path)            	
+            run_local_cmd(redefine_sym_cmd, compile_log_path)
             _sk_objs.append(_obj)
             _sk_funs.append(_k_name)
             _sk_new.append(_n_name)
@@ -301,7 +301,7 @@ def localization_sub_op_func_sym(dst_file: str, sub_op_kernel_info):
             end_idx = min(i + 256, length_symbols)
             localization_symbols_cmd = \
                 ["llvm-objcopy"] + [f"--localize-symbol={symbol}" for symbol in unique_symbols[i:end_idx]] + [dst_file]
-            subprocess.run(localization_symbols_cmd) 
+            subprocess.run(localization_symbols_cmd)
     except Exception as err:
         raise_tbe_python_err(TBE_DEFAULT_PYTHON_ERROR_CODE, ("localize sub op func sym failed", err))
 
@@ -342,11 +342,11 @@ def compile_super_kernel(kernel_info, compile_log_path, enable_features: dict = 
     if kernel_info["timestamp_option"]:
         compile_options.append('-DONE_CORE_DUMP_SIZE=' + str(compile_info.super_kernel_info["debug_size"] \
                                / CommonUtility.get_dump_core_num()))
-    _compile_ascendc_cce_v220_with_kernel_type_for_static(compile_info, compile_option_tuple, tiling_info) 
+    _compile_ascendc_cce_v220_with_kernel_type_for_static(compile_info, compile_option_tuple, tiling_info)
     sub_objs = gen_super_kernel_link_obj_sequence(compile_info, kernel_info["sub_operator"], kernel_info["link_mode"],
         kernel_info["split_mode"], compile_info.compile_log_path)
     ## begin add superkernel split
-    sub_objs, _sk_new = split_spk_kernel_objs(sub_objs, kernel_info["split_mode"], kernel_info["kernel_type"], 
+    sub_objs, _sk_new = split_spk_kernel_objs(sub_objs, kernel_info["split_mode"], kernel_info["kernel_type"],
         compile_info.compile_log_path)
     fatbin_objs(sub_objs, compile_info.dst_file, compile_info.is_debug, compile_info.compile_log_path)
     op_info = OpInfo()

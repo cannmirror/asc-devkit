@@ -1300,7 +1300,7 @@ def compile_op_common_part(cce_file: str, origin_func_name: str, op_info: OpInfo
 
     # dump ktype handle
     compile_info.raw_tiling_key_kernel_type = copy.deepcopy(compile_info.tiling_key_kernel_type)
-    
+
     # get super kernel option to compile info when enable super kernel
     handle_sk_codegen_options(compile_info, infered_info_from_ifile)
 

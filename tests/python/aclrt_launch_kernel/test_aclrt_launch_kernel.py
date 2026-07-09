@@ -63,7 +63,7 @@ class TestAclrtLaunchKernel(unittest.TestCase):
                 __attribute__((cce_global)) uint8_t* z,
                 AddCustomTilingData tiling) {}
             '''
-        ) 
+        )
 
         structs: Dict[str, StructRaw] = {
             'A': StructRaw(name='A', content='''
@@ -98,7 +98,7 @@ struct   AddCustomTilingData
     uint32_t tileNum;
 };
 
-# test unexpected struct code Indentation 
+# test unexpected struct code Indentation
         struct A {
     uint16_t A_uint16_1;
     uint64_t A_uint64_1;
@@ -106,7 +106,7 @@ struct   AddCustomTilingData
     bool A_bool_2;
     uint16_t A_uint16_2;
         };
-# 11 
+# 11
         '''
 
         golden = [
@@ -249,7 +249,7 @@ struct AddCustomTilingData {{
             golden_code = f.read()
             f.close()
         self.assertEqual(STUB_CPP_LICENSE + host_stub_code, golden_code)
-        
+
         dump_info ={'dump_type': '','dump_size': 1048576}
         mode = CodeMode.MIX
         func_signs_list = [FuncSignGroupWithModeBase(file_path, func_signs, dump_info, mode, base_key)]
@@ -371,7 +371,7 @@ struct AddCustomTilingData {{
         kernel_type = find_kernel_type_by_source(path, data, build_mode)
         build_mode = "c310"
         kernel_type = find_kernel_type_by_source(path, data, build_mode)
-        
+
         mock_getmode.return_value = CodeMode.KERNEL_TYPE_AIV_ONLY
         get_mode_dynamic('', '', None)
         get_mode_dynamic('', '', CodeMode.KERNEL_TYPE_AIV_ONLY)
@@ -412,11 +412,11 @@ struct AddCustomTilingData {{
                         func_params_specialization_args=(),
                     ),
                     FuncSign('', '', (), '', (), ()),
-                ), 
+                ),
                 dump_info={'dump_type': '', 'dump_size': 1048576},
                 mode=CodeMode.KERNEL_TYPE_AIV_ONLY,
                 base_key=0
-            ), 
+            ),
             FuncSignGroupWithModeBase(
                 filepath='preprocess/add_custom1.cpp.o',
                 func_signs=(
@@ -445,11 +445,11 @@ struct AddCustomTilingData {{
                         func_params_specialization_args=(),
                     ),
                     FuncSign('', '', (), '', (), ()),
-                ), 
+                ),
                 dump_info={'dump_type': '', 'dump_size': 1048576},
                 mode=CodeMode.KERNEL_TYPE_AIC_ONLY,
                 base_key=0
-            ), 
+            ),
             FuncSignGroupWithModeBase(
                 filepath='preprocess/add_custom2.cpp.o',
                 func_signs=(
@@ -478,11 +478,11 @@ struct AddCustomTilingData {{
                         func_params_specialization_args=(),
                     ),
                     FuncSign('', '', (), '', (), ()),
-                ), 
+                ),
                 dump_info={'dump_type': '', 'dump_size': 1048576},
                 mode=CodeMode.KERNEL_TYPE_MIX_AIV_1_0,
                 base_key=1
-            ), 
+            ),
             FuncSignGroupWithModeBase(
                 filepath='preprocess/add_custom3.cpp.o',
                 func_signs=(
@@ -511,11 +511,11 @@ struct AddCustomTilingData {{
                         func_params_specialization_args=(),
                     ),
                     FuncSign('', '', (), '', (), ()),
-                ), 
+                ),
                 dump_info={'dump_type': '', 'dump_size': 1048576},
                 mode=CodeMode.KERNEL_TYPE_MIX_AIC_1_0,
                 base_key=1
-            ), 
+            ),
             FuncSignGroupWithModeBase(
                 filepath='preprocess/add_custom4.cpp.o',
                 func_signs=(
@@ -544,11 +544,11 @@ struct AddCustomTilingData {{
                         func_params_specialization_args=(),
                     ),
                     FuncSign('', '', (), '', (), ()),
-                ), 
+                ),
                 dump_info={'dump_type': '', 'dump_size': 1048576},
                 mode=CodeMode.KERNEL_TYPE_MIX_AIC_1_1,
                 base_key=0
-            ), 
+            ),
             FuncSignGroupWithModeBase(
                 filepath='preprocess/add_custom5.cpp.o',
                 func_signs=(
@@ -577,7 +577,7 @@ struct AddCustomTilingData {{
                         func_params_specialization_args=(),
                     ),
                     FuncSign('', '', (), '', (), ()),
-                ), 
+                ),
                 dump_info={'dump_type': '', 'dump_size': 1048576},
                 mode=CodeMode.KERNEL_TYPE_MIX_AIC_1_2,
                 base_key=1
@@ -610,7 +610,7 @@ struct AddCustomTilingData {{
                                     func_params_specialization_args=(),
                                 ),
                                 FuncSign('', '', (), '', (), ()),
-                            ), 
+                            ),
                             dump_info={'dump_type': '', 'dump_size': 1048576},
                             mode=CodeMode.KERNEL_TYPE_MIX_AIV_1_0,
                             base_key=0
@@ -643,7 +643,7 @@ struct AddCustomTilingData {{
                                     func_params_specialization_args=(),
                                 ),
                                 FuncSign('', '', (), '', (), ()),
-                            ), 
+                            ),
                             dump_info={'dump_type': '', 'dump_size': 1048576},
                             mode=CodeMode.KERNEL_TYPE_AIV_ONLY,
                             base_key=0
@@ -678,7 +678,7 @@ struct AddCustomTilingData {{
                         func_params_specialization_args=(),
                     ),
                     FuncSign('', '', (), '', (), ()),
-                ), 
+                ),
                 dump_info={'dump_type': '', 'dump_size': 1048576},
                 kernel_type=CodeMode.KERNEL_TYPE_AIV_ONLY,
                 structs={}
@@ -713,7 +713,7 @@ struct AddCustomTilingData {{
                         func_params_specialization_args=['', ''],
                     ),
                     FuncSign('', '', (), 'int a', (), ()),
-                ), 
+                ),
                 dump_info={'dump_type': '', 'dump_size': 1048576},
                 mode=CodeMode.KERNEL_TYPE_MIX_AIC_1_2,
                 base_key=1
@@ -748,7 +748,7 @@ struct AddCustomTilingData {{
                         func_params_specialization_args=['', ''],
                     ),
                     FuncSign('', '', (), 'int a', (), ()),
-                ), 
+                ),
                 dump_info={'dump_type': '', 'dump_size': 1048576},
                 mode=CodeMode.KERNEL_TYPE_AIV_ONLY,
                 base_key=1
@@ -757,7 +757,7 @@ struct AddCustomTilingData {{
         modes = [CodeMode.KERNEL_TYPE_AIV_ONLY,]
         base_keys = list(get_base_keys(func_groups_simple, modes))
         aiv_sources = ['add_custom.cpp', 'add_custom1.cpp', 'add_custom2.cpp', 'add_custom3.cpp', 'add_custom4.cpp', 'add_custom5.cpp']
-        
+
         source_mapping = {
             'preprocess/add_custom.cpp.o':'add_custom.cpp',
             'aic/add_custom.cpp.o':'add_custom.cpp',
@@ -827,11 +827,11 @@ struct AddCustomTilingData {{
                         func_params_specialization_args=(),
                     ),
                     FuncSign('', '', (), '', (), ()),
-                ), 
+                ),
                 dump_info={'dump_type': '', 'dump_size': 1048576},
                 mode=CodeMode.AIV,
                 base_key=0
-            ), 
+            ),
         ]
         save_device_kernel_function(func_groups_m200, source_mapping, dst_dir, True)
         save_aic_aiv_config_cmake(func_groups_m200, source_mapping, dst_dir, generate_definition)
@@ -841,11 +841,11 @@ struct AddCustomTilingData {{
         self.assertEqual(os.path.exists(cpp_path), True)
         self.assertEqual(os.path.exists(aic_cmake_path), True)
         self.assertEqual(os.path.exists(aiv_cmake_path), True)
-        assert os.path.exists(cpp_path)      
+        assert os.path.exists(cpp_path)
         os.remove(cpp_path)
         os.remove(aic_cmake_path)
         os.remove(aiv_cmake_path)
-    
+
     def test_generate_host_stub_head_code(self):
         has_mix = True
         has_aic = True
@@ -878,7 +878,7 @@ struct AddCustomTilingData {{
             func_template_specialization_args=['35', '45'],
             func_params_specialization_args=['', ''],
         )
- 
+
         golden_res = f"""
 #ifndef HEADER_ACLRTLAUNCH_HELLO_WORLD_HKERNEL_H_
 #define HEADER_ACLRTLAUNCH_HELLO_WORLD_HKERNEL_H_
@@ -1100,7 +1100,7 @@ inline uint32_t hello_world(uint32_t numBlocks, void* hold, void* stream)
         self.assertIn("g_kernel_handle_aiv == nullptr", generate_code)
 
     @mock.patch('extract_host_stub.get_code_channel')
-    def test_get_mode_by_ofile(self, mock_channel):    
+    def test_get_mode_by_ofile(self, mock_channel):
         mock_channel.side_effect = [[1, CODE_DEFAULT, ""],[0, CODE_DEFAULT, ""]]
         self.assertRaises(Exception, get_mode_by_ofile, "aic", "aiv", True)
         mock_channel.side_effect = {"aic": [0, CODE_DEFAULT, ""],"aiv": [1, CODE_DEFAULT, ""]}.get
@@ -1189,7 +1189,7 @@ inline uint32_t hello_world(uint32_t numBlocks, void* hold, void* stream)
             "file": "add_custom_2.cpp"
             }
             ]
-    
+
         source_mapping = {
             'preprocess/add_custom.cpp.o':'add_custom.cpp',
             'preprocess/add_custom_1.cpp.o':'add_custom_1.cpp',
@@ -1207,7 +1207,7 @@ inline uint32_t hello_world(uint32_t numBlocks, void* hold, void* stream)
 
     @mock.patch('os.environ', {'ASCENDC_CCACHE_EXECUTABLE': '/usr/bin/ccache'})
     @mock.patch('extract_host_stub.get_mode_by_ofile')
-    @mock.patch('extract_host_stub.get_preprocessed_source_filepath')   
+    @mock.patch('extract_host_stub.get_preprocessed_source_filepath')
     def test_main(self, mock_shutil, mock_getmode):
         data = f'''extern "C" __attribute__((cce_kernel)) [aicore] void add_custom(__attribute__((cce_global)) uint8_t* x, __attribute__((cce_global)) uint8_t* y, __attribute__((cce_global)) uint8_t* z, __attribute__((cce_global)) uint8_t* workspace, __attribute__((cce_global)) uint8_t* tiling)
         {{
@@ -1228,7 +1228,7 @@ inline uint32_t hello_world(uint32_t numBlocks, void* hold, void* stream)
             'aic/add_custom.cpp.o': True,
             'aiv/add_custom.cpp.o': True,
         }
-        
+
         dst_dir = FILE_PATH + '/stub_files/'
         mock_shutil.return_value = 'add_custom.cpp'
         mock_getmode.return_value = CodeMode.KERNEL_TYPE_AIV_ONLY
@@ -1240,8 +1240,8 @@ inline uint32_t hello_world(uint32_t numBlocks, void* hold, void* stream)
                     f'''__attribute__((cce_kernel)) [aicore] void add_custom(void){{return}}''',
                     f'''__attribute__((cce_kernel)) [aicore] add_custom(){{return}}''',
                     f'''__attribute__((cce_kernel)) [aicore] void add_custom add_custom(){{return}}'''
-            ]            
-        
+            ]
+
         argv = ["preprocess/add_custom.cpp.o", "--aiv-o", "aiv/add_custom.cpp.o", "--aic-o", "aic/add_custom.cpp.o", "-d", dst_dir, "-hd", dst_dir, "--compile-commands", compile_dir]
 
         for i in range(len(read_list)):
@@ -1269,7 +1269,7 @@ inline uint32_t hello_world(uint32_t numBlocks, void* hold, void* stream)
             with mock.patch("extract_host_stub.parse_func_signature_group_by_source") as mock_extract:
                 mock_extract.side_effect=RuntimeError()
                 self.assertEqual(False, main_with_except(argv))
-        
+
         shutil.rmtree(dst_dir)
 
         with mock.patch.object(extract_host_stub, 'load_compile_commands', return_value=[source_mapping, enable_timestamp_mapping]):
@@ -1277,19 +1277,19 @@ inline uint32_t hello_world(uint32_t numBlocks, void* hold, void* stream)
                 main_with_except(["preprocess/add_custom.cpp.o", "--dynamic-mode", "--aiv-o", "aiv/add_custom.cpp.o", "--aic-o", "aic/add_custom.cpp.o", "-d", dst_dir, "-hd", dst_dir, "--compile-commands", compile_dir])
                 self.assertEqual(False, main_with_except(["preprocess/add_custom.cpp.o", "--dynamic-mode","--aic-o", "aic/add_custom.cpp.o", "-d", dst_dir, "-hd", dst_dir, "--compile-commands", compile_dir]))
                 self.assertEqual(False, main_with_except(["preprocess/add_custom.cpp.o", "--dynamic-mode", "--aiv-o", "aiv/add_custom.cpp.o", "-d", dst_dir, "-hd", dst_dir, "--compile-commands", compile_dir]))
-        
+
         shutil.rmtree(dst_dir)
 
         mock_shutil.close()
         with mock.patch.object(extract_host_stub, 'load_compile_commands', return_value=[source_mapping, enable_timestamp_mapping]):
             with mock.patch('builtins.open', mock_open) as m:
                 main_with_except(["preprocess/add_custom.cpp.o", "--build-mode", "m200", "--generate-definition", "--aiv-o", "aiv/add_custom.cpp.o", "--aic-o", "aic/add_custom.cpp.o", "-d", dst_dir, "-hd", dst_dir, "--compile-commands", compile_dir])
-        
+
         shutil.rmtree(dst_dir)
 
     @mock.patch('os.environ', {'ASCENDC_CCACHE_EXECUTABLE': '/usr/bin/ccache'})
     @mock.patch('extract_host_stub.get_mode_by_ofile')
-    @mock.patch('extract_host_stub.get_preprocessed_source_filepath')   
+    @mock.patch('extract_host_stub.get_preprocessed_source_filepath')
     def test_template_main(self, mock_shutil, mock_getmode):
         source_mapping = {
             'preprocess/add_custom.cpp.o':'add_custom.cpp',
@@ -1301,7 +1301,7 @@ inline uint32_t hello_world(uint32_t numBlocks, void* hold, void* stream)
             'aic/add_custom.cpp.o': True,
             'aiv/add_custom.cpp.o': True,
         }
-        
+
         dst_dir = FILE_PATH + '/stub_files/'
         mock_shutil.return_value = 'add_custom.cpp'
         mock_getmode.return_value = CodeMode.KERNEL_TYPE_AIV_ONLY
@@ -1309,7 +1309,7 @@ inline uint32_t hello_world(uint32_t numBlocks, void* hold, void* stream)
         dst_dir = dst_dir + 'dst'
         builtin_open = open
 
-        template_data = f'''template<int a> 
+        template_data = f'''template<int a>
          __attribute__((cce_kernel)) [aicore] void add_custom(__attribute__((cce_global)) uint8_t* x, __attribute__((cce_global)) uint8_t* y, __attribute__((cce_global)) uint8_t* z, __attribute__((cce_global)) uint8_t* workspace, __attribute__((cce_global)) uint8_t* tiling)
         {{
             auto __enable_feature_for_compile_default = KERNEL_TYPE_MIX_AIV_1_0;
@@ -1347,7 +1347,7 @@ inline uint32_t hello_world(uint32_t numBlocks, void* hold, void* stream)
             main_with_except(argv)
             mock_file.side_effect = RuntimeError()
             self.assertRaises(Exception, main_with_except, argv)
-        
+
         shutil.rmtree(dst_dir)
 
     def test_get_func_template_specialization_mangle_name(self):

@@ -20,12 +20,12 @@ def gen_golden_data_simple():
     input_total_length = 100000
     index_total_length = 8 * 1024
     adds_addend = 1.0
-    
+
     input_x = np.random.uniform(0.0, 100.0, [input_total_length]).astype(np.float32)
     index = np.random.randint(0, input_total_length, [index_total_length]).astype(np.uint32)
-    
+
     golden = input_x[index] + adds_addend
-    
+
     os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
     input_x.tofile("./input/input_x.bin")

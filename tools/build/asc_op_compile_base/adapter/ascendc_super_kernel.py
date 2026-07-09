@@ -21,7 +21,7 @@ def ascendc_super_kernel_plus(kernel_infos, called_kernel_name="ascendc_super_ke
         Args:
             kernel_infos: infos of sub kernel
                 {
-                    "op_list": 
+                    "op_list":
                         [{"op1": {"bin_path": "", "json_path": ""}, "op2": {xxx}}],
                     "super_kernel_options": compile_option
                 }

@@ -48,7 +48,7 @@ __aicore__ inline constexpr auto MakeLayout(const T& shape, const U& stride);
 template <typename T>
 __aicore__ inline constexpr auto MakeLayout(const T& shape);
 
-template <typename T, typename Shape, typename Stride> 
+template <typename T, typename Shape, typename Stride>
 __aicore__ inline constexpr auto Crd2Idx(const T& coord, const Shape& shape, const Stride& stride);
 
 template <size_t I, typename Tuple, typename Enable>

@@ -187,7 +187,7 @@ class TestOpCompilationUt(unittest.TestCase):
     #     with open(json_path, "r") as file_in:
     #         op_builtin_info_dict = json.load(file_in)
     #     SubOpInfoStore().set_op_content(op_builtin_info_dict)
-    
+
     #     opc_compile_args = {
     #         "op_path" : op_path,
     #         "input_param" : input_param_path,
@@ -847,7 +847,7 @@ class TestOpCompilationUt(unittest.TestCase):
                     open(meta_dir + test_bin_name + '.o', 'w')
                     with open(meta_dir + test_bin_name + '.json', 'w') as f:
                         f.write('{}')
-                    
+
                     return meta_dir + test_bin_name + '.json'
 
                 patchSingleOpCompile.return_value=MagicMock()
@@ -860,7 +860,7 @@ class TestOpCompilationUt(unittest.TestCase):
 
         del test_output
 
-    
+
     @patch('asc_op_compile_base.common.platform.platform_info.set_current_compile_soc_info')
     @patch('asc_op_compile_base.common.platform.platform_info.get_soc_spec')
     def test_load_op_info(self, mock_set_current_compile_soc_info, mock_get_soc_spec):

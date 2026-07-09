@@ -82,7 +82,7 @@ def update_json_file(key, value, json_path):
         print(json_path)
     finally:
         pass
-        
+
 def copy_compile_res_files_to_output(kernel_name):
         """copy .o and .json file to output path"""
         print("stub opc stub files MatMul. copy_compile_res_files_to_output")
@@ -93,11 +93,11 @@ def copy_compile_res_files_to_output(kernel_name):
 
         json_file_name = kernel_name + ".json"
         o_file_name = kernel_name + ".o"
-        
+
         test_root_dir =  os.path.abspath(os.path.join(test_file_dir, "../.."))
 
         debug_dir = test_root_dir + "/debug_dir" # same as testcase
-        json_output_path = debug_dir + "/kernel_meta_" + kernel_name + "/kernel_meta/" + json_file_name 
+        json_output_path = debug_dir + "/kernel_meta_" + kernel_name + "/kernel_meta/" + json_file_name
         o_output_path = debug_dir + "/kernel_meta_" + kernel_name + "/kernel_meta/" + o_file_name
         print("json_res_path:")
         print(json_res_path)
@@ -105,14 +105,14 @@ def copy_compile_res_files_to_output(kernel_name):
         print(json_output_path)
         print("current_dir:")
         print(current_dir)
-        
+
         try:
             if not os.path.exists(debug_dir + "/kernel_meta_" + kernel_name + "/kernel_meta"):
                 os.makedirs(debug_dir + "/kernel_meta_" + kernel_name + "/kernel_meta")
-                
+
             copy(os.path.realpath(json_res_path), json_output_path)
             copy(os.path.realpath(o_res_path), o_output_path)
-            
+
             update_json_file("binFileName", kernel_name, json_output_path)
         except Exception as e:
             raise RuntimeError("Copy [%s] to [%s] field, reason: %s." %

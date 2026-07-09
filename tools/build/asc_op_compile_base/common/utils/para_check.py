@@ -701,6 +701,3 @@ def _check_shape_range(max_rank, min_rank, param_name, shape):
             "In op, the num of dimensions of input/output[%s] should be in "
             "the range of [%s, %s], but actually is [%s]."
             % (error_info['param_name'], min_rank, max_rank, len(shape)))
-
-
-

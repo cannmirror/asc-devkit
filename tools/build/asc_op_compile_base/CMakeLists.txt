@@ -1,11 +1,11 @@
-# ----------------------------------------------------------------------------------------------------------	
-# Copyright (c) 2025 Huawei Technologies Co., Ltd.	
-# This program is free software, you can redistribute it and/or modify it under the terms and conditions of	
-# CANN Open Software License Agreement Version 2.0 (the "License").	
-# Please refer to the License for details. You may not use this file except in compliance with the License.	
-# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,	
-# INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.	
-# See LICENSE in the root of the software repository for the full text of the License.	
+# ----------------------------------------------------------------------------------------------------------
+# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+# This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+# CANN Open Software License Agreement Version 2.0 (the "License").
+# Please refer to the License for details. You may not use this file except in compliance with the License.
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+# INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+# See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 project (asc_op_compile_base)
 
@@ -35,7 +35,7 @@ else()
   )
 endif()
 
-target_link_libraries(asc_platform PRIVATE 
+target_link_libraries(asc_platform PRIVATE
   platform
   mmpa
   unified_dlog
@@ -43,7 +43,7 @@ target_link_libraries(asc_platform PRIVATE
   $<BUILD_INTERFACE:c_sec_headers>
   $<BUILD_INTERFACE:metadef_headers>
 )
-target_compile_options(asc_platform PRIVATE 
+target_compile_options(asc_platform PRIVATE
   -fPIC
   -fstack-protector-strong
   -D_FORTIFY_SOURCE=2
@@ -76,11 +76,11 @@ add_custom_target(asc_platform_test
 
 # 生成 Python whl pkg
 add_custom_target(${ASC_OP_COMPILE_BASE_WHL_NAME} ALL
-  COMMAND echo "[ASC_OP_COMPILE_BASE] Build target ${ASC_OP_COMPILE_BASE_WHL_NAME}" && pwd && 
-    mkdir -p ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/asc_op_compiler && 
+  COMMAND echo "[ASC_OP_COMPILE_BASE] Build target ${ASC_OP_COMPILE_BASE_WHL_NAME}" && pwd &&
+    mkdir -p ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/asc_op_compiler &&
     cp -rf ${ASC_OP_COMPILE_BASE_SRC}/asc_op_compiler/* ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/asc_op_compiler/ &&
     cp -rf ${ASC_OP_COMPILE_BASE_SRC}/c_api/*.py ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/c_api/ &&
-    mkdir -p ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/common && 
+    mkdir -p ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/common &&
     cp -rf ${ASC_OP_COMPILE_BASE_SRC}/common/* ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/common/ &&
     cp ${ASC_OP_COMPILE_BASE_SRC}/__init__.py ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base &&
     cp ${ASC_OP_COMPILE_BASE_SRC}/setup.py ${ASC_OP_COMPILE_BASE_DIR}/ &&

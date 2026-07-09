@@ -81,7 +81,7 @@ def main(argv: List[str]):
     dst_dir = os.path.realpath(args.dst_dir)
     if not os.path.exists(dst_dir):
         os.makedirs(dst_dir)
-    
+
     do_save_commands(
         generate_save_template_config_commands(args.filepaths, dst_dir)
     )

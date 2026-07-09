@@ -14,11 +14,11 @@
  */
 
 
-#if !defined(ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS)  
-#warning "impl/c_api/instr_impl/npu_arch_2201/vector_compute_impl/vconv/asc_vconv_float2int16_c_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "c_api/asc_simd.h"" and use public functions or variables defined in interface headers files."  
-#define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS  
-#define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC  
-#endif    
+#if !defined(ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
+#warning "impl/c_api/instr_impl/npu_arch_2201/vector_compute_impl/vconv/asc_vconv_float2int16_c_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "c_api/asc_simd.h"" and use public functions or variables defined in interface headers files."
+#define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
+#endif
 
 #ifndef IMPL_C_API_INSTR_IMPL_NPU_ARCH_2201_VECTOR_COMPUTE_VCONV_ASC_VCONV_FLOAT2INT16_C_IMPL_H
 #define IMPL_C_API_INSTR_IMPL_NPU_ARCH_2201_VECTOR_COMPUTE_VCONV_ASC_VCONV_FLOAT2INT16_C_IMPL_H
@@ -26,7 +26,7 @@
 #include "impl/c_api/instr_impl/npu_arch_2201/utils_impl/utils_impl.h"
 
 __aicore__ inline void asc_float2int16_ru_impl(__ubuf__ int16_t* dst, __ubuf__ float* src, uint8_t repeat, uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
-{   
+{
     if ASC_IS_AIV {
         vconv_f322s16c(dst, src, repeat, dst_block_stride, src_block_stride, dst_repeat_stride, src_repeat_stride);
     }
@@ -47,8 +47,7 @@ __aicore__ inline void asc_float2int16_ru_sync_impl(__ubuf__ int16_t* dst, __ubu
 }
 #endif
 
-#if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)  
-#undef ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS  
-#undef UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC  
-#endif  
-
+#if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
+#undef ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#undef UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
+#endif

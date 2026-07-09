@@ -56,7 +56,7 @@ def gen_golden_data_simple():
                 value = list("0" * (8 - len(value)) + value)[::-1]
                 line.extend(value)
             result.extend(line[:src_shape[1]])
-        
+
         index = 0
         temp = np.zeros(params[0]).astype(mask_dtype)
         for i in range(src_shape[0]):

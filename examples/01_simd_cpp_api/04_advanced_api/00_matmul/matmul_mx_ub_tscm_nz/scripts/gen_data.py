@@ -23,9 +23,9 @@ import tensorflow as tf
 bfloat16 = tf.bfloat16.as_numpy_dtype
 
 def cvt_fp4_e1m2_to_bfloat16(x):
-    Fp4e1m2ToBf16 = {'0': 0x0, '1': 0x3E80, '2': 0x3F00, '3':0x3F40, 
-                     '4': 0x3F80, '5': 0x3FA0, '6': 0x3FC0, '7':0x3FE0, 
-                     '8': 0x8000, '9': 0xBE80, '10': 0xBF00, '11':0xBF40, 
+    Fp4e1m2ToBf16 = {'0': 0x0, '1': 0x3E80, '2': 0x3F00, '3':0x3F40,
+                     '4': 0x3F80, '5': 0x3FA0, '6': 0x3FC0, '7':0x3FE0,
+                     '8': 0x8000, '9': 0xBE80, '10': 0xBF00, '11':0xBF40,
                      '12': 0xBF80, '13': 0xBFA0, '14': 0xBFC0, '15':0xBFE0
     }
 
@@ -68,7 +68,7 @@ def IsRoundOne(sign, man, truncLen):
         mask1 = 0
     else:
         mask1 = 0x1 << (truncLen - 1)
-    
+
     mask2 = mask1 - 1;
 
     #ROUND_TO_NEAREST
@@ -99,7 +99,7 @@ def cvt_bfloat16_to_fp4_e1m2(x):
         eNorm = ef - 127 + 1 # the exp bias of subnormal bf16 is 126
     else:
         eNorm = ef - 127 # the exp bias of bf16 is 127
-    
+
     if (eNorm > (maxExp - expBias)) or ((eNorm == (maxExp - expBias)) and ((mf >> mLenDelta) == 0b11)):
         return ((sRet << 3) | 0b111)
     elif eNorm <= -(expBias):
@@ -143,7 +143,7 @@ def trans_np_bfloat16_tensor_to_fp4_e1m2(in_tensor):
     fp4_tensor = np.zeros(multi_shape//2).astype(np.uint8)
     for i in range(multi_shape//2):
         fp4_tensor[i] = (out_tensor[i*2+1] << 4) | out_tensor[i*2] # 按两两交叉顺序保存b4，比如b4两个数：0100 0010 存为b8后为0010 0100
-    
+
     fp4_tensor = fp4_tensor.reshape(fp4_shape)
     return fp4_tensor
 
@@ -174,12 +174,12 @@ def gen_golden_data():
         x1_shape = [k, m]
     else:
         x1_shape = [m, k]
-    
+
     if is_trans_b:
         x2_shape = [n, k]
     else:
         x2_shape = [k, n]
-    
+
     x1_s_shape = [m, sk]
     x2_s_shape = [sk, n]
 
@@ -198,21 +198,21 @@ def gen_golden_data():
 
     x1_mx = 2 ** (x1_mx_gm.astype(np.float64) - 127)
     x2_mx = 2 ** (x2_mx_gm.astype(np.float64) - 127)
-    
+
     x1 = np.zeros(x1_shape, dtype=np.float64)
     x2 = np.zeros(x2_shape, dtype=np.float64)
 
     for i in range(x1_gm.shape[1]):
         x1[:, i] = x1_gm[:, i] * x1_mx[:, i // 32]
         x2[i, :] = x2_gm[i, :] * x2_mx[i // 32, :]
-    
+
     y_gm = np.matmul(x1.astype(np.float64), x2.astype(np.float64)).astype(dst_type)
 
     if is_trans_scalea:
         x1_mx_gm = x1_mx_gm.transpose()
     if is_trans_scaleb:
         x2_mx_gm = x2_mx_gm.transpose()
-    
+
     if a_format == "NZ":
         # x1_gm nz
         x1_gm = x1_gm.reshape((int(m / 16), 16, int(k / c0_size), c0_size)).transpose(2, 0, 1, 3)
@@ -249,7 +249,7 @@ def gen_golden_data():
     x1_tensor[x1_ori_shape//2:] = 0
     x1_tensor.tofile("./input/x1_gm.bin")
 
-    
+
     x2_ori_shape = np.prod(x2_gm.shape)
     x2_tensor = np.zeros(x2_ori_shape).astype(np.uint8)
     fp4_tensor = trans_np_bfloat16_tensor_to_fp4_e1m2(x2_gm.astype(bfloat16))

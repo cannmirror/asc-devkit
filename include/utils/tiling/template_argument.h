@@ -137,7 +137,7 @@ constexpr uint64_t INVALID_TILING_KEY = 0XFFFFFFFFFFFFFFFF;
     #undef ASC_INNER_DATATYPE_ENABLE_FLOAT8_E5M2
     #undef ASC_INNER_DATATYPE_ENABLE_FLOAT8_E4M3FN
 #endif
- 
+
 template<int dataTypeId>
 struct TypeFromId {
     using type = void;
@@ -191,7 +191,7 @@ ASCENDC_TPL_TYPE_TRANS_DEFINE(DT_FLOAT4_E2M1, float4_e2m1x2_t); // fp4_e2m1 type
 #if defined(ASC_INNER_DATATYPE_ENABLE_FLOAT4_E1M2)
 ASCENDC_TPL_TYPE_TRANS_DEFINE(DT_FLOAT4_E1M2, float4_e1m2x2_t); // fp4_e1m2 type
 #endif
- 
+
 #define ASCENDC_TPL_DTYPE_DECL(...)
 #define ASCENDC_TPL_DATATYPE_DECL(...)
 #define ASCENDC_TPL_FORMAT_DECL(...)

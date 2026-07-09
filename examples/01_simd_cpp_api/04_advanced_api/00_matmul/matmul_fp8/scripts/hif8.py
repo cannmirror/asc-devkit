@@ -211,7 +211,7 @@ def get_over_flow_res(sign, over_mode):
 
 Hif8Collection = namedtuple('Hif8Collection', \
     ['dot_hif8_value', 'sign_int_value', 'hif8_frac_value', 'exponent_hif8_bits', 'fraction_hif8_bits'])
-    
+
 
 def cvt_float16_to_hifuint8(x, round_mode="round", over_mode=True):
     ec = 0
@@ -235,7 +235,7 @@ def cvt_float16_to_hifuint8(x, round_mode="round", over_mode=True):
     if x_abs == 0.0:
         return 0
     exponent = math.floor(math.log2(x_abs))
-    
+
     cut_bit_type = get_cut_bit_type(round_mode, exponent)
     #precheck
     fraction_int = int(x_abs * pow(2, 10) * pow(2, -exponent) - pow(2, 10))
@@ -399,18 +399,18 @@ def cvt_hifuint8_to_float_else(x, sign):
             exponet_value = -exponet_int
         else:
             exponet_value = exponet_int + 2
-        fra_int = x & 7  
+        fra_int = x & 7
         m_value = 1.0 + fra_int * 0.125
     elif dot_4_value >= 2:
         #b0010
-        exponet = x & 8 
+        exponet = x & 8
         exponet_sign = exponet >> 3
         if exponet_sign >= 1:
             # b10
             exponet_value = -1
         else:
             exponet_value = 1
-        fra_int = x & 7 
+        fra_int = x & 7
         m_value = 1.0 + fra_int * 0.125
     elif dot_4_value == 1:
         #d0
@@ -420,7 +420,7 @@ def cvt_hifuint8_to_float_else(x, sign):
     elif dot_4_value == 0:
         #dml
         m_value = 1
-        exponet_value = (x & 7) - 23 
+        exponet_value = (x & 7) - 23
     else:
         logging.info("[ERROR] error, dot error")
         m_value = 0.0
@@ -459,7 +459,7 @@ def trans_np_float_tensor_to_hifint8_mp(in_tensor):
         data["index"] = i
         data["value"] = in_tensor[i]
         queue_in.put(data)
-    
+
     for _ in range(len(processes)):
         queue_in.put(None)
 
@@ -471,7 +471,7 @@ def trans_np_float_tensor_to_hifint8_mp(in_tensor):
             count += 1
         else:
             continue
-    
+
     for p in processes:
         p.join()
 
@@ -504,4 +504,3 @@ def trans_np_hifuint8_tensor_to_float32(in_tensor):
         out_tensor[i] = cvt_hifuint8_to_float(in_tensor[i])
     out_tensor = out_tensor.reshape(shape_tensor).astype(np.float32)
     return out_tensor
-    

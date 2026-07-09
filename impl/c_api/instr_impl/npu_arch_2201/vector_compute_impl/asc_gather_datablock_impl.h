@@ -24,7 +24,7 @@
 
 #include "impl/c_api/instr_impl/npu_arch_2201/utils_impl/utils_impl.h"
 
-__aicore__ inline void asc_gather_datablock_impl(__ubuf__ uint16_t* dst, __ubuf__ uint16_t* src, __ubuf__ uint32_t* src_offset, 
+__aicore__ inline void asc_gather_datablock_impl(__ubuf__ uint16_t* dst, __ubuf__ uint16_t* src, __ubuf__ uint32_t* src_offset,
             uint16_t dst_repeat_stride, uint8_t dst_block_stride, uint8_t repeat)
 {
     if ASC_IS_AIV {
@@ -39,7 +39,7 @@ __aicore__ inline void asc_gather_datablock_sync_impl(__ubuf__ uint16_t* dst, __
     asc_sync_post_process();
 }
 
-__aicore__ inline void asc_gather_datablock_impl(__ubuf__ uint32_t* dst, __ubuf__ uint32_t* src, __ubuf__ uint32_t* src_offset, 
+__aicore__ inline void asc_gather_datablock_impl(__ubuf__ uint32_t* dst, __ubuf__ uint32_t* src, __ubuf__ uint32_t* src_offset,
             uint16_t dst_repeat_stride, uint8_t dst_block_stride, uint8_t repeat)
 {
     if ASC_IS_AIV {

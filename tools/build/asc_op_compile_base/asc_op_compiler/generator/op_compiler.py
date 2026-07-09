@@ -16,7 +16,7 @@ from ..ascendc_compile_base import SingleTilingKeyCompileParams
 
 
 class OpCompilerConfig:
-    def __init__(self, cube_core_type_macro, vec_core_type_macro, dfx_gen_meta_info, dfx_set_kernel_type_mix, 
+    def __init__(self, cube_core_type_macro, vec_core_type_macro, dfx_gen_meta_info, dfx_set_kernel_type_mix,
     dfx_set_kernel_type_aic, support_raw_aic_only_dump_tensor, chip_version, compile_type):
         self.cube_core_type_macro = cube_core_type_macro
         self.vec_core_type_macro = vec_core_type_macro

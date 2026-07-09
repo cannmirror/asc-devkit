@@ -33,7 +33,7 @@ def check_optype_duplicate(args, ini_optypes):
         LogUtil.print_compile_log("check_optype_duplicate", f"no json files found", \
             AscendCLogLevel.LOG_DEBUG, LogUtil.Option.NON_SOC)
         return 0
-    
+
     optypes = []
     for json_file in json_files:
         try:
@@ -60,7 +60,7 @@ def get_optypes(args):
     op_config = configparser.ConfigParser()
     LogUtil.print_compile_log("check_optype_duplicate", f"ini file: {args.ini_file}", \
         AscendCLogLevel.LOG_DEBUG, LogUtil.Option.NON_SOC)
-    
+
     op_config.read(args.ini_file)
     return op_config.sections()
 

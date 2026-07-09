@@ -71,11 +71,10 @@ target_compile_options(intf_device INTERFACE
     ${COMPILE_OPTIONS}
 )
 
-target_include_directories(intf_device INTERFACE 
+target_include_directories(intf_device INTERFACE
     ${INCLUDES}
 )
 
 target_compile_definitions(intf_device INTERFACE
     ${DEFINITIONS}
 )
-

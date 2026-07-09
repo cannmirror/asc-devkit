@@ -62,7 +62,7 @@ def gen_golden_data_simple():
     if dtype == np.half or dtype == np.float32 or dtype == ml_dtypes.bfloat16:
         random_set_boundary([src])
     golden = np.zeros([128]).astype(dtype)
-    if scalar_type == ScalarType.BOTH_TENSOR.value: 
+    if scalar_type == ScalarType.BOTH_TENSOR.value:
         golden[:count] = np.clip(src[:count], src_min[:count], src_max[:count]).astype(dtype)
     elif scalar_type == ScalarType.TENSOR_SCALAR.value:
         golden[:count] = np.clip(src[:count], src_min[:count], src_max[0]).astype(dtype)

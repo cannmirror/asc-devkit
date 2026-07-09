@@ -61,7 +61,7 @@ class TestAscendCCompileBase(unittest.TestCase):
         file_header = gen_file_header(KernelMetaType.KERNEL_TYPE_AIV_ONLY, 1)
         self.assertIn("__NPU_ARCH__ == 2201", file_header)
 
-   
+
 
     def test_split_spk_kernel_objs(self):
         with mock.patch('builtins.open', new_callable=mock.mock_open, read_data='{}') as mock_open:

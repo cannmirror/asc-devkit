@@ -30,4 +30,3 @@ class CmdCompilerParams:
 class CmdCompiler:
     def __init__(self, params: CmdCompilerParams, config: CmdCompilerConfig):
         pass
-

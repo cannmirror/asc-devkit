@@ -49,7 +49,7 @@ class TestRegister(unittest.TestCase):
         custom_add_v2_deco = deco(custom_add_v2)
         op = get_operator("custom_add_v2")
         self.assertEqual(op.get_func().__name__, "custom_add_v2")
-    
+
     def test_op_compute(self):
         def conv_compute(inputs, weights):
             return f"conv({inputs}, {weights})"
@@ -57,7 +57,7 @@ class TestRegister(unittest.TestCase):
         @functools.wraps(conv_compute)
         def wrapper(*args, **kwargs):
             return conv_compute(*args, **kwargs)
-        
+
         global _op_computes
         _op_computes[("conv2d", "dynamic")] = OpCompute(True, wrapper)
         op_compute = get_op_compute("conv2d")
@@ -96,7 +96,7 @@ class TestRegister(unittest.TestCase):
         @register_param_generalization("conv2d")
         def conv_generalization(params):
             return params.get("kernel_size", 3)
-        
+
         global _generalization
         self.assertIn("conv2d", _generalization)
         func = get_param_generalization("conv2d")
@@ -110,4 +110,4 @@ class TestRegister(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()        
+    unittest.main()

@@ -38,12 +38,12 @@ def gen_golden_data():
         x1_shape = [k, m]
     else:
         x1_shape = [m, k]
-    
+
     if is_trans_b:
         x2_shape = [n, k]
     else:
         x2_shape = [k, n]
-    
+
     x1_s_shape = [m, sk]
     x2_s_shape = [sk, n]
 
@@ -55,21 +55,21 @@ def gen_golden_data():
 
     x1_mx = 2 ** (x1_mx_gm.astype(np.float64) - 127)
     x2_mx = 2 ** (x2_mx_gm.astype(np.float64) - 127)
-    
+
     x1 = np.zeros(x1_shape, dtype=np.float64)
     x2 = np.zeros(x2_shape, dtype=np.float64)
 
     for i in range(x1_gm.shape[1]):
         x1[:, i] = x1_gm[:, i] * x1_mx[:, i // 32]
         x2[i, :] = x2_gm[i, :] * x2_mx[i // 32, :]
-    
+
     y_gm = np.matmul(x1.astype(np.float64), x2.astype(np.float64)).astype(dst_type)
 
     if is_trans_scalea:
         x1_mx_gm = x1_mx_gm.transpose()
     if is_trans_scaleb:
         x2_mx_gm = x2_mx_gm.transpose()
-    
+
     if is_trans_scalea:
         x1_mx_gm = x1_mx_gm.reshape(int(sk / 2), 2, m).transpose(0, 2, 1)
     if not is_trans_scaleb:
@@ -87,4 +87,3 @@ def gen_golden_data():
 
 if __name__ == "__main__":
     gen_golden_data()
-    

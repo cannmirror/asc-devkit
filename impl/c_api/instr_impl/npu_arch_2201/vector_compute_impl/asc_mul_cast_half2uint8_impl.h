@@ -29,7 +29,7 @@ __aicore__ inline void asc_mul_cast_half2uint8_impl(__ubuf__ uint8_t* dst, __ubu
     uint8_t dst_repeat_stride, uint8_t src0_repeat_stride, uint8_t src1_repeat_stride)
 {
     if ASC_IS_AIV {
-        vmulconv_f162u8(dst, src0, src1, repeat, 
+        vmulconv_f162u8(dst, src0, src1, repeat,
             dst_block_stride, src0_block_stride, src1_block_stride,
             dst_repeat_stride, src0_repeat_stride, src1_repeat_stride);
     }

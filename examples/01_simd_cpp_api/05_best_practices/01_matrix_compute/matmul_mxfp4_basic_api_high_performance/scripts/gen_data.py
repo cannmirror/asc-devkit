@@ -46,7 +46,7 @@ def gen_golden_data():
 
     x1_scale_gm = np.random.randint(127, 130, [m, sk]).astype(np.uint8)
     x2_scale_gm = np.random.randint(127, 130, [sk, n]).astype(np.uint8)
-    
+
     ###################### compute ########################
     x1_mx = 2**(x1_scale_gm.astype(np.float64) - 127)
     x2_mx = 2**(x2_scale_gm.astype(np.float64) - 127)
@@ -72,4 +72,3 @@ def gen_golden_data():
 
 if __name__ == "__main__":
     gen_golden_data()
-    

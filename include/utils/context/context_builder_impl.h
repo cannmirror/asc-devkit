@@ -66,7 +66,7 @@ private:
     std::vector<std::unique_ptr<uint8_t[]>> inputTensorHolder_;
     std::vector<std::unique_ptr<uint8_t[]>> outputTensorHolder_;
     gert::ContextHolder<gert::TilingContext> ctxTilingHolder_;
-    gert::ContextHolder<gert::KernelContext> ctxRunHolder_;    
+    gert::ContextHolder<gert::KernelContext> ctxRunHolder_;
 };
 class ContextBuilderImpl {
 public:

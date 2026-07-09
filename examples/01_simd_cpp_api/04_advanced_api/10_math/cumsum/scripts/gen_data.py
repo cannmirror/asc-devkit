@@ -84,13 +84,13 @@ def gen_golden_data_simple():
             golden = dst
 
     tiling = np.array([32, 160], dtype="uint32")
-    
+
     os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
 
     src_gm.reshape(-1).tofile("./input/input_x.bin")
     tiling.tofile("./input/input_tiling.bin")
-    
+
     golden_last_row_gm = golden[-1, :]
     golden.reshape(-1).tofile("./output/golden_output_result.bin")
     golden_last_row_gm.tofile("./output/golden_output_last_row.bin")

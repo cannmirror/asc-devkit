@@ -72,4 +72,3 @@ chmod 640 "${dest_file}"
 echo -e "[INFO] Succeeded generated ${dest_file}"
 
 exit 0
-

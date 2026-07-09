@@ -398,7 +398,7 @@ class OpCompilation:
                 pass
 
         return getattr(opm, main_func)
-    
+
     def set_flag_before_compile(self, l1_fusion, l2_fusion):
         if l1_fusion == 'false':
             self.set_l1_fusion_flag(False)
@@ -419,7 +419,7 @@ class OpCompilation:
         except FileNotFoundError:
             print(f"cannot find {file_path}")
             return False
- 
+
     def __op_compile_by_json_info(self, json_dict):
         """
         parse op_list of json file to compile op
@@ -433,7 +433,7 @@ class OpCompilation:
         if py_op_path is not None:
             self.__is_ascendc = self.is_ascendc_op(py_op_path)
             logger.debug(f"__is_ascendc is {self.__is_ascendc}")
- 
+
         if comment == "single ops" or comment is None:
             op_type = json_dict.get(CompileParam.OP_TYPE)
             status_check = json_dict.get(CompileParam.STATUS_CHECK, "true").lower()

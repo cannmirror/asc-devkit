@@ -7,7 +7,7 @@
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 # -----------------------------------------------------------------------------------------------------------
-set(hccl_ut_prepare_env_list 
+set(hccl_ut_prepare_env_list
     main.cc
 )
 add_executable(hccl_ut_prepare_env  ${hccl_ut_prepare_env_list})
@@ -16,12 +16,12 @@ target_include_directories(hccl_ut_prepare_env  PRIVATE
     ${UT_COMMON_INCLUDE_LIST}
 )
 
-target_compile_options(hccl_ut_prepare_env   PRIVATE 
+target_compile_options(hccl_ut_prepare_env   PRIVATE
     -U_FORTIFY_SOURCE
     $<$<COMPILE_LANGUAGE:CXX>:-std=c++14>
 )
 
-target_compile_options(hccl_ut_prepare_env   PRIVATE 
+target_compile_options(hccl_ut_prepare_env   PRIVATE
     -U_FORTIFY_SOURCE
     -g --coverage -fprofile-arcs -ftest-coverage -fno-access-control
     $<$<COMPILE_LANGUAGE:CXX>:-std=c++14>

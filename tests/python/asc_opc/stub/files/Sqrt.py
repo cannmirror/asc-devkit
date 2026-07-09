@@ -26,11 +26,11 @@ def copy_compile_res_files_to_output(kernel_name):
 
         json_file_name = kernel_name + ".json"
         o_file_name = kernel_name + ".o"
-        
+
         test_root_dir =  os.path.abspath(os.path.join(test_file_dir, "../.."))
 
         debug_dir = test_root_dir + "/debug_dir/kernel_meta_Sqrt" # same as testcase
-        json_output_path = debug_dir + "/kernel_meta/" + json_file_name 
+        json_output_path = debug_dir + "/kernel_meta/" + json_file_name
         o_output_path = debug_dir + "/kernel_meta/" + o_file_name
         print("json_res_path:")
         print(json_res_path)
@@ -38,7 +38,7 @@ def copy_compile_res_files_to_output(kernel_name):
         print(json_output_path)
         print("current_dir:")
         print(current_dir)
-        
+
         try:
             with open(json_res_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)

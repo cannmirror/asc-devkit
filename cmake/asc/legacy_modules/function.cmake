@@ -59,7 +59,7 @@ function(ascendc_library target_name target_type)
     foreach(_source ${ARGN})
         get_filename_component(absolute_source "${_source}" ABSOLUTE)
         string(REGEX REPLACE "^.*[/\\\\]" "" base_source "${_source}")
-        string(REGEX REPLACE "\\.[^./\\]*$" "" kernel_name "${base_source}") 
+        string(REGEX REPLACE "\\.[^./\\]*$" "" kernel_name "${base_source}")
         list(APPEND SOURCES ${absolute_source})
         list(APPEND KERNELS ${kernel_name})
     endforeach()
@@ -443,7 +443,7 @@ function(ascendc_library target_name target_type)
 
         if(NOT ASCEND_KERNEL_LAUNCH_ONLY)
             add_dependencies(${target_name} ${target_name}_host)
-            
+
             add_custom_command(TARGET ${target_name}
                 POST_BUILD
                 COMMAND rm -f $<TARGET_FILE:${target_name}>

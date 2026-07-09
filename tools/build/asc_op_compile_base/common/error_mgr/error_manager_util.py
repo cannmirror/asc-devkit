@@ -53,4 +53,3 @@ def raise_runtime_error(dict_args):
     """
     raise RuntimeError(dict_args,
                        get_error_message(dict_args))
-

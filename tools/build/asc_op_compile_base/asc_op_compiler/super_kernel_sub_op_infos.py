@@ -128,7 +128,7 @@ class SubOperatorInfos:
         self.wait_param_offset = 0
         self.with_sync_all: bool = False
 
-    
+
     @staticmethod
     def gen_dcci_all_block():
         return "dcci((__gm__ uint64_t*)0, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);\n\n"
@@ -211,7 +211,7 @@ param_offset={self.notify_param_offset + index}\n"
             self.notify_block['aiv'] = notify_block_aiv if found_aiv else ''
             self.notify_block['aic'] = ''
             self.tmp_notify_block['aiv'] = ''
-            self.tmp_notify_block['aic'] = notify_block_aic if found_aic else '' 
+            self.tmp_notify_block['aic'] = notify_block_aic if found_aic else ''
 
 
     def gen_notify_from_outside(self, inner_event_id_set, enable_double_stream):
@@ -348,7 +348,7 @@ operator inherits super kernel opton."))
 donot match with super kernel split_mode: {self.split_mode} please check whether sub\
 operator inherits super kernel opton."))
         except Exception as err:
-            CommonUtility().ascendc_raise_python_err(ERR_CODE, 
+            CommonUtility().ascendc_raise_python_err(ERR_CODE,
                 (f"read sub op json file failed, json name {self.json_path}, reason is:", err))
 
     def gen_select_addr_code(self, func_addr_str, aicore_kernel_name):
@@ -481,14 +481,14 @@ GM_ADDR __ac_dynamic_block_num_{self.index}, GM_ADDR __ac_wait_lock_{self.index}
         result = ''
         if self.split_mode > 1:
             result += f'''if ((coreid % {self.split_mode}) == 0) {{
- 
+
                 {func_name}({params});'''
             for i in range(1, self.split_mode - 1):
                 result += f'''\n            }} else if ((coreid % {self.split_mode}) == {i}) {{
             {func_name}_split{i}({params});'''
             result += f'''\n            }} else {{
- 
- 
+
+
                 {func_name}_split{self.split_mode - 1}({params});
             }}'''
         else:
@@ -522,7 +522,7 @@ GM_ADDR __ac_dynamic_block_num_{self.index}, GM_ADDR __ac_wait_lock_{self.index}
     }}
 }}
 """
-        
+
 
     def gen_dynamic_op_call_func(self, enable_double_stream: bool):
         func_type = f"using FuncType = void (*)(uint64_t args_offset);"
@@ -920,7 +920,7 @@ f"""else {{
                 self.gen_call_func(preload_call_block, "ASCEND_IS_AIC", "get_block_idx", is_preload=True)
             self.set_early_start_complement_blocks("ASCEND_IS_AIC", f"get_block_idx() >= {self.block_num}")
             self.set_early_start_complement_blocks("ASCEND_IS_AIV", "true")
-        elif self.kernel_type == SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_1:  
+        elif self.kernel_type == SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_1:
             # need check of sub block id
             aicore_kernel_name = self.called_kernel_name[f"dav-{chip_version}-cube"]["func_name"]
             self.sub_kernel_names.append(aicore_kernel_name)

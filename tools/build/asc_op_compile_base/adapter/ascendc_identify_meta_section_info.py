@@ -56,7 +56,7 @@ def extract_hex_data(hex_dump: str) -> str:
         line = line.strip()
         if not line:
             continue
-        
+
         parts = line.split()
         if len(parts) < 2:
             continue
@@ -69,7 +69,7 @@ def extract_hex_data(hex_dump: str) -> str:
 
     '''
     hex_parts:
-    eg. ['01000400', '03000000', '04008c00', '00050003', '00000000', '00030002', ...]  
+    eg. ['01000400', '03000000', '04008c00', '00050003', '00000000', '00030002', ...]
     '''
     return ''.join(hex_parts)
 
@@ -106,7 +106,7 @@ def parse_hexdump_to_tlv(hexdump: str) -> str:
         for i in range(0, len(hex_chars), 8): # 8 bytes per group
             if i + 8 <= len(hex_chars):
                 hex_parts.append(hex_chars[i: i + 8])
-        
+
         formatted_hex = ' '.join(hex_parts)
         tlv_lines.append(f"{address} {formatted_hex.ljust(39)} {ascii_part}") # 39 width for hex data
 
@@ -147,16 +147,16 @@ def generate_tlv_from_object_file(object_file_path: str, kernel_name: str) -> Op
     '''
     tlv_info
     e.g.
-    Contents of section .ascend.meta.te_add_05464_kernel0:         
-    0000 01000400 03000000 04008c00 00050003 ................   
-    0010 00000000 00030002 ffffffff ffffffff ................   
+    Contents of section .ascend.meta.te_add_05464_kernel0:
+    0000 01000400 03000000 04008c00 00050003 ................
+    0010 00000000 00030002 ffffffff ffffffff ................
     ...
     00e0 0a000400 00000000                   ........
     '''
     tlv_info = tlv_info.decode('utf-8')
-    
+
     tlv_string = parse_hexdump_to_tlv(tlv_info)
-    
+
     return tlv_string
 
 
@@ -190,13 +190,13 @@ def _parse_simt_value_from_bytes(data: bytes) -> str:
     offset = 0
     while offset + 4 <= len(data): # 4 bytes for TLV header
         tlv_type, length = _parse_tlv_header_and_check(data, offset)
-        
-        if tlv_type is None:  
+
+        if tlv_type is None:
             break
-        
+
         if tlv_type == F_TYPE_AIV_TYPE_FLAG:
             return _extract_tlv_value(data, offset, length)
-        
+
         offset += 4 + length
     return None
 
@@ -223,10 +223,10 @@ def _parse_tlv_header_and_check(data: bytes, offset: int):
     """
     tlv_type = data[offset] | (data[offset + 1] << 8)
     length = data[offset + 2] | (data[offset + 3] << 8)
-    
+
     if offset + 4 + length > len(data):
         return None, None
-        
+
     return tlv_type, length
 
 

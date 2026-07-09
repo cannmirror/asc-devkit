@@ -59,7 +59,7 @@ class SingleOpCompile:
         extra_params = op_info.get(GraphDefParam.EXTRA_PARAMS, {})
         params.update(extra_params)
         context_op_info.extra_params = params
-    
+
     @staticmethod
     def set_extra_settings_for_context(extra_settings, context, context_op_info):
         if extra_settings is None or not isinstance(extra_settings, list):
@@ -239,7 +239,7 @@ class SingleOpCompile:
         tbe_debug_level_value = int(self.__opc_compile_args.get(OpcOptions.OP_DEBUG_LEVEL, 0))
         if tbe_debug_level_value == 3:
             tbe_debug_level_value = 0
-        debug_config = self.__opc_compile_args.get(OpcOptions.OP_DEBUG_CONFIG) 
+        debug_config = self.__opc_compile_args.get(OpcOptions.OP_DEBUG_CONFIG)
         status_check = self.__op_info.get(CompileParam.STATUS_CHECK) != "false"
         enable_vector_core = self.__op_info.get(CompileParam.ENABLE_VECTOR_CORE)
         enable_vector_core = False if enable_vector_core is None else enable_vector_core

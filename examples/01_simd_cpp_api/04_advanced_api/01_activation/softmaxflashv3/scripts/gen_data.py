@@ -67,14 +67,14 @@ def softmax_flash_v3(x, height, width, cnt, inmax=None, insum=None, inmean=None,
         for j in range(int(width / baseK)):
             for k in range(baseK):
                 tmpbuffer1[i][j * baseK + k] = rowMeanGlobalTmp[i][j]
-                
+
     x = x - tmpbuffer1
 
     if update == False:
         x_mean = rowMeanGlobal
     else:
         x_mean = (rowMeanGlobal + inmean * (cnt - 1)) / cnt
-    
+
     maxTmp1 = np.max(x, axis=(-1), keepdims=True)
     for i in range(height):
         for j in range(8):

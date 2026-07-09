@@ -432,7 +432,7 @@ REGISTER_TILING_DEFAULT')
             tiling_key_list, decode_tiling_result = tpl_tilingkey_kernel_type_check(
                 tiling_key_list, decode_tiling_result, tiling_key_kernel_type
             )
-            
+
             # ==================== Filter SEL : ALL to Group
             tiling_key_list, decode_tiling_result = tpl_tilingkey_native_extract(
                 tiling_key_list, decode_tiling_result, op_info
@@ -546,7 +546,7 @@ REGISTER_TILING_DEFAULT')
                     KernelInfoInfer.set_default_kernel_type_for_group(tiling_key_kernel_type_full, \
                                                                       slave_key, \
                                                                       default_kernel_type_for_group)
-    
+
     @staticmethod
     def set_default_kernel_type_for_group(tiling_key_kernel_type_full, tiling_key, \
                                           default_kernel_type_for_group):

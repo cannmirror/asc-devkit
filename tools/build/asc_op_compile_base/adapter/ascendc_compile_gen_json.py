@@ -364,7 +364,7 @@ def _dynamic_kernel_list_to_json_for_kernel_type(compile_info: CompileInfo, \
                     tiling_key_dict_slave = _dynamic_kernel_list_to_json_for_kernel_type_one(compile_info, \
                         kernel_name, tiling_key_slave, enable_deterministic, final_kernel_type)
                     js['kernelList'].append(tiling_key_dict_slave)
-        
+
     try:
         with open(dynamic_kernel_json_path, 'w') as fd_write:
             os.chmod(dynamic_kernel_json_path, stat.S_IRUSR + stat.S_IWUSR)
@@ -496,4 +496,3 @@ no need to detect SIMT type", AscendCLogLevel.LOG_INFO)
             return check_op_type_is_simt(obj_path, kernel_name)
 
     return False
-        

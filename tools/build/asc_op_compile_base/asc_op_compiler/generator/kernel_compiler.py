@@ -22,4 +22,3 @@ class KernelCompilerParams:
 class KernelCompiler:
     def __init__(self):
         pass
-

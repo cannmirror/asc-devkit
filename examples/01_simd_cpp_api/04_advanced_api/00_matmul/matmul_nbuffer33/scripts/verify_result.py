@@ -27,7 +27,7 @@ def verify_result(output, golden):
     different_element_results = np.isclose(output,
                                            golden,
                                            rtol=RELATIVE_TOL,
-                                           atol=ABSOLUTE_TOL, 
+                                           atol=ABSOLUTE_TOL,
                                            equal_nan=True)
     different_element_indexes = np.where(different_element_results == False)[0]
     for index in range(len(different_element_indexes)):
@@ -40,7 +40,7 @@ def verify_result(output, golden):
             abs(output_data - golden_data) / golden_data))
         if index == 100:
             break
-    
+
     error_ratio = float(different_element_indexes.size) / golden.size
     print("error ratio: %.4f, tolerance: %.4f" % (error_ratio, ERROR_TOL))
     if error_ratio > ERROR_TOL:

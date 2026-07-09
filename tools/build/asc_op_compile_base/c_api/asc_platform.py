@@ -15,7 +15,7 @@ import ctypes
 
 class AscPlatform:
     _lib = None
-            
+
     @staticmethod
     def _initial_lib():
         lib_path = os.path.join(os.path.dirname(__file__), "libasc_platform.so")
@@ -74,7 +74,7 @@ class AscPlatform:
         ]
         AscPlatform._lib.ASCSetCoreNumByCoreType.restype = ctypes.c_bool
 
-    
+
     @staticmethod
     def get_lib():
         if AscPlatform._lib is None:

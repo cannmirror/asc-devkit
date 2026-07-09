@@ -137,7 +137,7 @@ class CompileKernel:
         )
         tiling_key_info, op_debug_config, kernel_json_file, _, kernel_template_input_info = (
             ascendc_bin_param_build.parse_op_debug_config(
-                opc_config_file, 
+                opc_config_file,
                 self.op_soc_ver
             )
         )

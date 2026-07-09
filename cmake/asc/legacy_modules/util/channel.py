@@ -78,10 +78,10 @@ def v310_mode_vec_ofile(little_endian, binary_32) -> int:
     vec_high_mid_map = {
         '011100001': '0100', # MOV_UB_TO_L1
     }
-    high_9 = binary_32[:9] 
-    high_10 = binary_32[:10] 
-    mid_36 = binary_32[25:29] 
-    low_1 = binary_32[31] 
+    high_9 = binary_32[:9]
+    high_10 = binary_32[:10]
+    mid_36 = binary_32[25:29]
+    low_1 = binary_32[31]
 
     conditions = [
         # PIPE_V: exclude movemask
@@ -97,7 +97,7 @@ def v310_mode_vec_ofile(little_endian, binary_32) -> int:
         # DMA
         (high_10 in vec_high_low_map and low_1 == vec_high_low_map[high_10]),
         (high_10 in vec_high_map),
-        (high_9 in vec_high_mid_map and mid_36 == vec_high_mid_map[high_9]),        
+        (high_9 in vec_high_mid_map and mid_36 == vec_high_mid_map[high_9]),
     ]
 
     if any(conditions):
@@ -131,9 +131,9 @@ def v310_mode_cube_ofile(little_endian, binary_32) -> int:
         '0110010100',
         '0110010101',
     }
-    high_9 = binary_32[:9] 
-    high_10 = binary_32[:10] 
-    mid_36 = binary_32[25:29] 
+    high_9 = binary_32[:9]
+    high_10 = binary_32[:10]
+    mid_36 = binary_32[25:29]
 
     conditions = [
         # Fixpipe
@@ -197,7 +197,7 @@ def get_code_channel(dst_file: str, c310mode_cubemode_tuple: Tuple) -> Tuple[boo
                 mode |= v310_mode(inst, cubemode)
             else:
                 mode |= v220_mode(inst)
-                
+
     if mode >= CODE_MAX:
         return False, mode, f'unknown code mode {mode}.'
     return True, mode, ''

@@ -21,7 +21,7 @@ def gen_golden_data():
     os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
     src_type, dst_type = np.float16, np.float32
-                  
+
     a_layout_info = {'b': 1, 's': m, 'n': 1, 'g': b, 'd': k}
     b_layout_info = {'b': 1, 's': n, 'n': 1, 'g': b, 'd': k}
     c_layout_info = {'b': 1, 'n': 1, 'g': 1, 'd': n}
@@ -43,14 +43,14 @@ def gen_golden_data():
     input_bias = np.transpose(input_bias, axes=(0, 2, 3, 1, 4))
 
     a_broadcast_shape = [
-        max(a_layout_info['b'], b_layout_info['b']), 
-        max(a_layout_info['n'], b_layout_info['n']), 
-        max(a_layout_info['g'], b_layout_info['g']), 
+        max(a_layout_info['b'], b_layout_info['b']),
+        max(a_layout_info['n'], b_layout_info['n']),
+        max(a_layout_info['g'], b_layout_info['g']),
         a_layout_info['s'], a_layout_info['d']]
     b_broadcast_shape = [
-        max(a_layout_info['b'], b_layout_info['b']), 
-        max(a_layout_info['n'], b_layout_info['n']), 
-        max(a_layout_info['g'], b_layout_info['g']), 
+        max(a_layout_info['b'], b_layout_info['b']),
+        max(a_layout_info['n'], b_layout_info['n']),
+        max(a_layout_info['g'], b_layout_info['g']),
         b_layout_info['d'], b_layout_info['s']]
     a_broadcast = np.broadcast_to(a_t, a_broadcast_shape)
     b_broadcast = np.broadcast_to(b_t, b_broadcast_shape)
@@ -58,7 +58,7 @@ def gen_golden_data():
     golden = np.matmul(a_broadcast, b_broadcast).astype(dst_type)
     golden = golden + input_bias
     golden = np.transpose(golden, axes=(0, 3, 1, 2, 4))
-    
+
     x1_gm.tofile("./input/x1_gm.bin")
     x2_gm.tofile("./input/x2_gm.bin")
     input_bias.tofile("./input/bias_gm.bin")

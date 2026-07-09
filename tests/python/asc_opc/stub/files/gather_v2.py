@@ -1434,7 +1434,7 @@ class GatherV2():
             with tik_instance.if_scope(tik.all(self.indices_num_remaining > 0, block_id < self.indices_num_remaining)):
                 indices_num_offset = self.indices_num_each_core * self.need_core_num + block_id
                 self.process_remaining_tail_mode_5(indices_num_offset, pre_i, indices_ub, res_ub, half_ub_params_elem)
-    
+
     # 'pylint: disable=too-many-arguments,huawei-too-many-arguments
     def process_loop_mode_5(self, loop_num, indices_num_offset, pre_i, indices_ub, res_ub, half_ub_params_elem):
         """

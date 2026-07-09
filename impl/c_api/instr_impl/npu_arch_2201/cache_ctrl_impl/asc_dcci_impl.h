@@ -12,17 +12,17 @@
  * \file asc_dcci_impl.h
  * \brief
  */
- 
 
-#if !defined(ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS)  
-#warning "impl/c_api/instr_impl/npu_arch_2201/cache_ctrl_impl/asc_dcci_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "c_api/asc_simd.h"" and use public functions or variables defined in interface headers files."  
-#define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS  
-#define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC  
-#endif    
+
+#if !defined(ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
+#warning "impl/c_api/instr_impl/npu_arch_2201/cache_ctrl_impl/asc_dcci_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "c_api/asc_simd.h"" and use public functions or variables defined in interface headers files."
+#define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
+#endif
 
 #ifndef IMPL_C_API_INSTR_IMPL_NPU_ARCH_2201_CACHE_CTRL_IMPL_ASC_DCCI_IMPL_H
 #define IMPL_C_API_INSTR_IMPL_NPU_ARCH_2201_CACHE_CTRL_IMPL_ASC_DCCI_IMPL_H
- 
+
 #include "impl/c_api/instr_impl/npu_arch_2201/utils_impl/utils_impl.h"
 
 namespace __asc_aicore {
@@ -56,10 +56,10 @@ __aicore__ inline void asc_dcci_entire_atomic_impl()
 {
     dcci((__gm__ int64_t*)0, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_ATOMIC);
 }
-  
+
 #endif
 
-#if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)  
-#undef ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS  
-#undef UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC  
-#endif  
+#if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
+#undef ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#undef UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
+#endif

@@ -109,7 +109,7 @@ def check_is_regbase_v2():
     from .platform.platform_info import KIRIN_X90
     from .platform.platform_info import KIRIN_9030
 
-    if get_soc_spec("SHORT_SOC_VERSION") in [ASCEND_031, ASCEND_310B, ASCEND_610LITE, BS9SX2A, 
+    if get_soc_spec("SHORT_SOC_VERSION") in [ASCEND_031, ASCEND_310B, ASCEND_610LITE, BS9SX2A,
                                              MC61AM21A, AS31XM1, ASCEND_950, KIRIN_X90, KIRIN_9030]:
         return True
     return False
@@ -319,4 +319,3 @@ elif sys.platform.startswith('win32'):
 else:
     raise_tbe_python_err(TBE_DEFAULT_PYTHON_ERROR_CODE,
                          ('Platform % is not support now' % sys.platform))
-

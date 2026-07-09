@@ -41,7 +41,7 @@ target_link_directories(demo PRIVATE
     $<BUILD_INTERFACE:$<$<STREQUAL:${CMAKE_ASC_RUN_MODE},sim>:$ENV{ASCEND_HOME_PATH}/tools/simulator/${SOC_VERSION}/lib>>
 )
 
-target_link_libraries(demo PRIVATE 
+target_link_libraries(demo PRIVATE
     $<BUILD_INTERFACE:$<$<STREQUAL:${CMAKE_ASC_RUN_MODE},sim>:runtime_camodel>>
     $<BUILD_INTERFACE:$<$<STREQUAL:${CMAKE_ASC_RUN_MODE},sim>:npu_drv>>
     $<BUILD_INTERFACE:$<$<STREQUAL:${CMAKE_ASC_RUN_MODE},cpu>:cpudebug_acl_stub>>

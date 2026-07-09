@@ -20,7 +20,7 @@ def gen_golden_data_simple():
     dtype = np.float16
 
     b, n, s, hn_div = 1, 2, 64, 32
-    
+
     origin_shape = (b, n, s, hn_div)
 
     origin_data = np.random.uniform(-1000.0, 1000.0, origin_shape).astype(dtype)

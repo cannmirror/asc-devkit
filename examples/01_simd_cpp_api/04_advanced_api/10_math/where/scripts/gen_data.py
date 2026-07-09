@@ -46,7 +46,7 @@ def gen_golden_data_simple():
 
     for i in range(shape - count):
         golden[count + i] = 0
-    
+
     os.makedirs("input", exist_ok=True)
     src0.tofile("./input/input_src0.bin")
     src1.tofile("./input/input_src1.bin")

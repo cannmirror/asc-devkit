@@ -77,7 +77,7 @@ class BuildConfigWrapper(object):
 
     def current(self):
         return _build_cfg.get()
-        
+
 
 def build_config(**kwargs):
     """Configure the build behavior by setting config variables.
@@ -141,7 +141,6 @@ def set_current_build_config(key, value):
         _build_cfg.get()[key] = value
     elif ("tir." + key) in _build_cfg.get():
         _build_cfg.get()['tir.' + key] = value
-    
+
     if key in GlobalInfoContainer.global_info:
         GlobalInfoContainer.global_info[key] = value
-

@@ -739,7 +739,7 @@ function balanceDivTags(html) {
     },
 
     footer: {
-      message: '免责声明：本站内容由 <a href="https://gitcode.com/cann/asc-devkit/" target="_blank">asc-devkit</a> 仓 master 分支自动编译生成，属于持续开发版本，可能存在缺陷，仅供预览与参考。如需稳定及商用资料，请查阅官方 <a href="https://www.hiascend.com/zh/document" target="_blank">昇腾社区</a>。',	    
+      message: '免责声明：本站内容由 <a href="https://gitcode.com/cann/asc-devkit/" target="_blank">asc-devkit</a> 仓 master 分支自动编译生成，属于持续开发版本，可能存在缺陷，仅供预览与参考。如需稳定及商用资料，请查阅官方 <a href="https://www.hiascend.com/zh/document" target="_blank">昇腾社区</a>。',
       copyright: 'Copyright Huawei Technologies Co., Ltd.',
     },
   },

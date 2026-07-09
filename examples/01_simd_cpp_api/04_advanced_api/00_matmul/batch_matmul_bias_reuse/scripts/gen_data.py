@@ -27,7 +27,7 @@ def gen_golden_data():
     is_bias = True
     is_trans_a = False
     is_trans_b = False
-    
+
     bias_gm = np.random.uniform(-1, 1, [1, n]).astype(dst_type)
 
     for idx in range(b):
@@ -63,4 +63,3 @@ def gen_golden_data():
 
 if __name__ == "__main__":
     gen_golden_data()
-    

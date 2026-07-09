@@ -789,20 +789,20 @@ class TestAscendSuperKernel(unittest.TestCase):
         text_section_value = """
 Sections:
 Idx Name                              Size     VMA              Type
-  0                                   00000000 0000000000000000 
-  1 .strtab                           0000020b 0000000000000000 
+  0                                   00000000 0000000000000000
+  1 .strtab                           0000020b 0000000000000000
   2 .text                             00001270 0000000000000000 TEXT
-  3 .rela.text                        00000108 0000000000000000 
-  4 .ascend.stack.size.record         00000008 0000000000000000 
-  5 .group                            00000008 0000000000000000 
+  3 .rela.text                        00000108 0000000000000000
+  4 .ascend.stack.size.record         00000008 0000000000000000
+  5 .group                            00000008 0000000000000000
   6 .bl.uninit.g_sysWorkspaceReserved 00000008 0000000000000000 DATA
-  7 .group                            00000008 0000000000000000 
+  7 .group                            00000008 0000000000000000
   8 .bl.uninit.g_vecTPipePtr          00000008 0000000000000000 DATA
-  9 .group                            00000008 0000000000000000 
+  9 .group                            00000008 0000000000000000
  10 .bl.uninit.g_deqValue             00000002 0000000000000000 DATA
- 11 .comment                          00000030 0000000000000000 
- 12 .note.GNU-stack                   00000000 0000000000000000 
- 13 .llvm_addrsig                     00000000 0000000000000000 
+ 11 .comment                          00000030 0000000000000000
+ 12 .note.GNU-stack                   00000000 0000000000000000
+ 13 .llvm_addrsig                     00000000 0000000000000000
  14 .symtab                           00000138 0000000000000000
 """
         class ReturnResult:
@@ -877,23 +877,23 @@ Idx Name                              Size     VMA              Type
                                     #C Vector
                                     'bin_path': './te_quantbatchmatmulv3_a4527ebe71488258a04ac5e0770a52a4383207a648eb4d4c270186c516a8ff1c.o',
                                     'json_path': './te_quantbatchmatmulv3_a4527ebe71488258a04ac5e0770a52a4383207a648eb4d4c270186c516a8ff1c.json',
-                                    'recv_event_list': [46], 
+                                    'recv_event_list': [46],
                                     'stream_id': 0, 'task_type': 'normal'
                                 },
                                 {
-                                    #D Vector 
+                                    #D Vector
                                     'bin_path': '/root/atc_data/kernel_cache/Ascend910_9382/te_addrmsnormcast_a7c5214a7871e3ceca1201342d3601f8e8473d56ca0c995988448ff23818f78a.o',
                                     'json_path': '/root/atc_data/kernel_cache/Ascend910_9382/te_addrmsnormcast_a7c5214a7871e3ceca1201342d3601f8e8473d56ca0c995988448ff23818f78a.json',
-                                    'recv_event_list': [50], 
-                                    'send_event_list': [49], 
-                                    'stream_id': 22, 
+                                    'recv_event_list': [50],
+                                    'send_event_list': [49],
+                                    'stream_id': 22,
                                     'task_type': 'normal'
                                 },
                                 {
-                                    #F 
+                                    #F
                                     'bin_path': './te_matmulv3_cb85c153f28c9aad28d1e8b9d718a7717764ca4af6735fcf10ab76a1230447c7.o',
                                     'json_path': './te_matmulv3_cb85c153f28c9aad28d1e8b9d718a7717764ca4af6735fcf10ab76a1230447c7.json',
-                                    'stream_id': 9, 
+                                    'stream_id': 9,
                                     'task_type': 'dynamic'
                                 },
                                 {
@@ -918,7 +918,7 @@ Idx Name                              Size     VMA              Type
         with mock.patch('builtins.open', new_callable=mock.mock_open, read_data='{}') as mock_open:
             with mock.patch('json.load', return_value=op_json), mock.patch.object(CommonUtility, 'dump_compile_log'):
                 tmp = SubOperatorInfos(0, {"bin_path": "./op1.o","json_path": "op1.json", \
-                    "kernel_name": "op1", 'send_event_list': [46, 50], 'recv_event_list': [46, 51], 
+                    "kernel_name": "op1", 'send_event_list': [46, 50], 'recv_event_list': [46, 51],
                     'stream_id': 15, 'task_type': 'normal'}, 100, op_options, compile_log_path)
                 tmp.init_of_sub_operator_info()
                 tmp.kernel_type = SuperKernelKernelType.KERNEL_TYPE_AIC_ONLY
@@ -962,21 +962,21 @@ Idx Name                              Size     VMA              Type
         with mock.patch('builtins.open', new_callable=mock.mock_open, read_data='{}') as mock_open:
             with mock.patch('json.load', return_value=op_json_early_start):
                 tmp = SubOperatorInfos(0, {"bin_path": "./op1.o","json_path": "op1.json", \
-                    "kernel_name": "op1", 'send_event_list': [46, 50], 'recv_event_list': [46, 51], 
+                    "kernel_name": "op1", 'send_event_list': [46, 50], 'recv_event_list': [46, 51],
                     'stream_id': 15, 'task_type': 'normal'}, 100, op_options, compile_log_path)
                 self.assertRaises(Exception, tmp.init_of_sub_operator_info)
         op_json_early_start["sub_operator_early_start_set_flag"] = False
         with mock.patch('builtins.open', new_callable=mock.mock_open, read_data='{}') as mock_open:
             with mock.patch('json.load', return_value=op_json_early_start):
                 tmp = SubOperatorInfos(0, {"bin_path": "./op1.o","json_path": "op1.json", \
-                    "kernel_name": "op1", 'send_event_list': [46, 50], 'recv_event_list': [46, 51], 
+                    "kernel_name": "op1", 'send_event_list': [46, 50], 'recv_event_list': [46, 51],
                     'stream_id': 15, 'task_type': 'normal'}, 100, op_options, compile_log_path)
                 self.assertRaises(Exception, tmp.init_of_sub_operator_info)
         with mock.patch('builtins.open', new_callable=mock.mock_open, read_data='{}') as mock_open:
             with mock.patch('json.load', return_value=op_json_early_start):
                 mock_open.side_effect = RuntimeError()
                 tmp = SubOperatorInfos(0, {"bin_path": "./op1.o","json_path": "op1.json", \
-                    "kernel_name": "op1", 'send_event_list': [46, 50], 'recv_event_list': [46, 51], 
+                    "kernel_name": "op1", 'send_event_list': [46, 50], 'recv_event_list': [46, 51],
                     'stream_id': 15, 'task_type': 'normal'}, 100, op_options, compile_log_path)
                 self.assertRaises(Exception, tmp.init_of_sub_operator_info)
 
@@ -988,7 +988,7 @@ Idx Name                              Size     VMA              Type
         with mock.patch('builtins.open', new_callable=mock.mock_open, read_data='{}') as mock_open:
             with mock.patch('json.load', return_value=op_json):
                 tmp = SubOperatorInfos(0, {"bin_path": "./op1.o","json_path": "op1.json", \
-                    "kernel_name": "op1", 'send_event_list': [46, 50], 'recv_event_list': [46, 51], 
+                    "kernel_name": "op1", 'send_event_list': [46, 50], 'recv_event_list': [46, 51],
                     'stream_id': 15, 'task_type': 'normal'}, 100, op_options, compile_log_path)
                 tmp.init_of_sub_operator_info()
                 kernel_info_of_tiling_key = {
@@ -1003,9 +1003,9 @@ Idx Name                              Size     VMA              Type
                 kernel_type = SuperKernelKernelType.KERNEL_TYPE_MIX_AIV_1_0
                 tmp.gen_switch_case_block_of_dynamic_op(kernel_info_of_tiling_key, tiling_key, kernel_type)
                 kernel_type = SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_0
-                tmp.gen_switch_case_block_of_dynamic_op(kernel_info_of_tiling_key, tiling_key, kernel_type)             
+                tmp.gen_switch_case_block_of_dynamic_op(kernel_info_of_tiling_key, tiling_key, kernel_type)
                 kernel_type = SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_1
-                tmp.gen_switch_case_block_of_dynamic_op(kernel_info_of_tiling_key, tiling_key, kernel_type) 
+                tmp.gen_switch_case_block_of_dynamic_op(kernel_info_of_tiling_key, tiling_key, kernel_type)
                 kernel_type = SuperKernelKernelType.KERNEL_TYPE_MAX
                 self.assertRaises(Exception, tmp.gen_switch_case_block_of_dynamic_op, kernel_info_of_tiling_key, tiling_key, kernel_type)
 
@@ -1015,7 +1015,7 @@ Idx Name                              Size     VMA              Type
         with mock.patch('builtins.open', new_callable=mock.mock_open, read_data='{}') as mock_open:
             with mock.patch('json.load', return_value=op_json):
                 tmp = SubOperatorInfos(0, {"bin_path": "./op1.o","json_path": "op1.json", \
-                    "kernel_name": "op1", 'send_event_list': [46, 50], 'recv_event_list': [46, 51], 
+                    "kernel_name": "op1", 'send_event_list': [46, 50], 'recv_event_list': [46, 51],
                     'stream_id': 15, 'task_type': 'normal'}, 100, op_options, compile_log_path)
                 tmp.init_of_sub_operator_info()
                 tmp.split_mode = 1
@@ -1029,7 +1029,7 @@ Idx Name                              Size     VMA              Type
         with mock.patch('builtins.open', new_callable=mock.mock_open, read_data='{}') as mock_open:
             with mock.patch('json.load', return_value=F_op_json):
                 tmp = SubOperatorInfos(0, {"bin_path": "./op1.o","json_path": "op1.json", \
-                    "kernel_name": "op1", 'send_event_list': [46, 50], 'recv_event_list': [46, 51], 
+                    "kernel_name": "op1", 'send_event_list': [46, 50], 'recv_event_list': [46, 51],
                     'stream_id': 15, 'task_type': 'dynamic'}, 100, op_options, compile_log_path)
                 tmp.init_of_sub_operator_info()
                 tmp.early_start_set_flag = True
@@ -1039,7 +1039,7 @@ Idx Name                              Size     VMA              Type
                 with mock.patch('asc_op_compile_base.common.platform.platform_info.get_soc_spec', {'ai_core_cnt': 10}):
                     tmp.process_of_dynamic_op(True)
                     self.assertNotEqual(tmp.block_num, 9999)
-                
+
     def test_extract_sub_bin_file(self):
         op_options = {'split-mode': 1, 'stream-fusion': SuperKernelStreamFusionMode.StreamFusionEnable,
         'early-start': SuperKernelEarlyStartMode.EarlyStartDisable}
@@ -1049,7 +1049,7 @@ Idx Name                              Size     VMA              Type
                 mock.patch('subprocess.run'), \
                 mock.patch.object(CommonUtility, 'dump_compile_log'):
                 tmp = SubOperatorInfos(0, {"bin_path": "./op1.o","json_path": "op1.json", \
-                    "kernel_name": "op1", 'send_event_list': [46, 50], 'recv_event_list': [46, 51], 
+                    "kernel_name": "op1", 'send_event_list': [46, 50], 'recv_event_list': [46, 51],
                     'stream_id': 15, 'task_type': 'dynamic'}, 100, op_options, compile_log_path)
                 tmp.init_of_sub_operator_info()
                 tmp.extract_sub_bin_file("./tmp/kernel_meta/", "bin.o")
@@ -1108,7 +1108,7 @@ Idx Name                              Size     VMA              Type
                 sub_tmp2 = SubOperatorInfos(0, {"bin_path": "./op1.o","json_path": "op1.json","kernel_name": "op1"}, 100,
                     op_options, compile_log_path)
                 sub_tmp1.kernel_type = SuperKernelKernelType.KERNEL_TYPE_AIC_ONLY
-                
+
                 res = tmp.get_task_type(sub_tmp1)
                 self.assertEqual(res, "cub")
                 sub_tmp1.kernel_type = SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_1
@@ -1998,7 +1998,7 @@ dcci((__gm__ uint64_t*)0, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE
                 mock.patch('subprocess.run'), \
                 mock.patch.object(CommonUtility, 'dump_compile_log'):
                 tmp = SubOperatorInfos(0, {"bin_path": "./op1.o","json_path": "op1.json", \
-                    "kernel_name": "op1", 'send_event_list': [46, 50], 'recv_event_list': [46, 51], 
+                    "kernel_name": "op1", 'send_event_list': [46, 50], 'recv_event_list': [46, 51],
                     'stream_id': 15, 'task_type': 'dynamic'}, 100, op_options, compile_log_path)
                 tmp.feed_sync_all_mode = SuperKernelFeedSyncAllMode.FeedSyncAllEnable
                 tmp.gen_call_func_with_syncall(["test_code"], "ASCEND_IS_AIC", "get_block_idx()")
@@ -2105,7 +2105,7 @@ dcci((__gm__ uint64_t*)0, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE
                     tmp.kernel_type = SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_1
                     code = gen_clear_syncall_worskspace(tmp)
                     self.assertIn("copy_ubuf_to_gm", code)
-    
+
     def test_calc_workspace_size(self):
         op_options = {'split-mode': 4, 'stream-fusion': SuperKernelStreamFusionMode.StreamFusionEnable}
         compile_log_path = "./tmp/"

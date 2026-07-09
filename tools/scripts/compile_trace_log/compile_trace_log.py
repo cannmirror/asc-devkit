@@ -68,6 +68,7 @@ def save_info_lines(trace_events, output_file):
     try:
         with open(output_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
+            f.write("\n")
     except PermissionError:
         frame = inspect.currentframe()
         print(

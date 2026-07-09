@@ -148,7 +148,7 @@ custom_uninstall() {
         chmod +w -R "${WHL_INSTALL_DIR_PATH}/asc_op_compile_base-0.1.0.dist-info" 2> /dev/null
         whl_uninstall_package "${ASC_OP_COMPILE_BASE_NAME}" "${WHL_INSTALL_DIR_PATH}"
         remove_package_leftovers "${WHL_INSTALL_DIR_PATH}/${ASC_OP_COMPILE_BASE_NAME}"
-        
+
         chmod +w -R "${WHL_INSTALL_DIR_PATH}/asc_opc_tool" 2> /dev/null
         chmod +w -R "${WHL_INSTALL_DIR_PATH}/asc_opc_tool-0.1.0.dist-info" 2> /dev/null
         whl_uninstall_package "${ASC_OPC_TOOL_NAME}" "${WHL_INSTALL_DIR_PATH}"

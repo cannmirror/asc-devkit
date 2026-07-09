@@ -53,7 +53,7 @@ class BinParamBuilder(opdesc_parser.OpDesc):
     def set_tiling_key(self: any, tiling_key_info: Set):
         if tiling_key_info:
             self.tiling_keys.update(tiling_key_info)
-    
+
     def set_kernel_template_input(self: any, kernel_template_input_info: str):
         if kernel_template_input_info:
             self.kernel_template_input = kernel_template_input_info
@@ -235,7 +235,7 @@ class BinParamBuilder(opdesc_parser.OpDesc):
     def gen_input_json_with_super_config(self: any, param_file: str):
         with open(param_file, 'r') as f:
             data = json.load(f)
-                
+
         if 'op_list' in data and isinstance(data['op_list'], list):
             for op_node in data['op_list']:
                 if 'bin_filename' in op_node:
@@ -244,12 +244,12 @@ class BinParamBuilder(opdesc_parser.OpDesc):
                     print(f"[WARNING]The op_node in {param_file} does not have bin_filename field, please check!!!")
         else:
             print(f"[WARNING]The op_list in {param_file} is empty or not list type, please check!!!")
-        
+
         base_name = os.path.basename(param_file)
         name, ext = os.path.splitext(base_name)
         new_file_name = f"{name}_relocatable.json"
         new_file_path = os.path.join(os.path.dirname(param_file), new_file_name)
-        
+
         with open(new_file_path, 'w') as f:
             json.dump(data, f, indent='  ')
         return new_file_path
@@ -270,7 +270,7 @@ class BinParamBuilder(opdesc_parser.OpDesc):
                     self._write_build_cmd(new_param_file, bin_file, index_value, output_dir, True)
         else:
             print("[ERROR]the generation of input_json based on specified json is failed")
-    
+
     def gen_input_json_based_on_specified_json(self: any, ori_json: str, output_dir: str):
         generated_files = split_json_files(ori_json, output_dir)
         index_value = -1
@@ -630,7 +630,7 @@ def parse_op_debug_config(opc_config_file: str, soc: str) -> Dict:
 def gen_option_config(debug_config, super_config, op_debug_config):
     for _op_type, _op_option in op_debug_config.items():
         for _option in _op_option:
-            if (_option.startswith("--op_relocatable_kernel_binary") 
+            if (_option.startswith("--op_relocatable_kernel_binary")
                 and ("false" in _option or "False" in _option)):
                 continue
             elif (_option.startswith("--op_relocatable_kernel_binary")

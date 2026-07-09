@@ -22,7 +22,7 @@ def read_json(file):
 
 
 def get_config_opts(file):
-    config = read_json(file) 
+    config = read_json(file)
 
     src_dir = os.path.abspath(os.path.dirname(file))
     opts = ''

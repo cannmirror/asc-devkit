@@ -27,7 +27,7 @@ def gen_golden_data():
 
     offset_gm = np.zeros(shape=(50), dtype=np.uint64)
     offset_gm[0] = 256
-    
+
     os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
     x1_gm.tofile("./input/x1_gm.bin")
@@ -39,5 +39,3 @@ def gen_golden_data():
 
 if __name__ == "__main__":
     gen_golden_data()
-    
-    

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
-# Copyright (c) 2025 Huawei Technologies Co., Ltd.	
-# This program is free software, you can redistribute it and/or modify it under the terms and conditions of	
-# CANN Open Software License Agreement Version 2.0 (the "License").	
-# Please refer to the License for details. You may not use this file except in compliance with the License.	
-# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,	
-# INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.	
-# See LICENSE in the root of the software repository for the full text of the License.	
+# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+# This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+# CANN Open Software License Agreement Version 2.0 (the "License").
+# Please refer to the License for details. You may not use this file except in compliance with the License.
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+# INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+# See LICENSE in the root of the software repository for the full text of the License.
 
 """Extract and generate host_stub.cpp and headers."""
 
@@ -1084,7 +1084,7 @@ def generate_func_impl_code_cpu(func_sign: FuncSign,
                                 kernel_name: str) -> str:
     aiv_conditions = [
         CodeMode.AIV,
-        CodeMode.KERNEL_TYPE_AIV_ONLY, 
+        CodeMode.KERNEL_TYPE_AIV_ONLY,
         CodeMode.KERNEL_TYPE_MIX_AIV_1_0
     ]
     aic_conditions = [
@@ -1121,7 +1121,7 @@ template<>
 {func_sign.return_type} {func_sign.func_name}\
 <{func_sign.func_template_specialization_args[dehash_template_id(func_key)]}>({func_params_str})'''
     else:
-        func_declare_code = generate_auto_gen_func_sign(func_sign, 
+        func_declare_code = generate_auto_gen_func_sign(func_sign,
                                                         func_sign_to_string(new_func_sign, "", "", False, False))
     buff.write(func_declare_code)
     buff.write(r'''

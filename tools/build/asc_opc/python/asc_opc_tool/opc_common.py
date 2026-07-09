@@ -560,7 +560,7 @@ def check_and_generate_single_attr_for_simpilified_key(dtype, value, attr_str):
             attr_str = attr_str + value + ","
         else:
             attr_str = attr_str + ","
-    
+
     return False, attr_str
 
 

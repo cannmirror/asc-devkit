@@ -14,9 +14,9 @@ if(EXISTS $ENV{ASCEND_HOME_PATH}/${SYSTEM_LOWER_PROCESSOR}-linux/ccec_compiler/b
 else()
     set(AICPU_COMPILER_PATH "$ENV{ASCEND_HOME_PATH}/compiler/ccec_compiler/bin")
 endif()
-find_program(CMAKE_AICPU_COMPILER 
-    NAMES "bisheng" 
-    PATHS "${AICPU_COMPILER_PATH}" 
+find_program(CMAKE_AICPU_COMPILER
+    NAMES "bisheng"
+    PATHS "${AICPU_COMPILER_PATH}"
     DOC "AICPU Compiler"
 )
 

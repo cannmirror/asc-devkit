@@ -24,7 +24,7 @@
 
 #include "impl/c_api/instr_impl/npu_arch_2201/utils_impl/utils_impl.h"
 
-__aicore__ inline void asc_add_relu_impl(__ubuf__ int8_t* dst, __ubuf__ half* src0, __ubuf__ half* src1, uint8_t repeat, uint8_t dst_block_stride, uint8_t src0_block_stride, 
+__aicore__ inline void asc_add_relu_impl(__ubuf__ int8_t* dst, __ubuf__ half* src0, __ubuf__ half* src1, uint8_t repeat, uint8_t dst_block_stride, uint8_t src0_block_stride,
     uint8_t src1_block_stride, uint8_t dst_repeat_stride, uint8_t src0_repeat_stride, uint8_t src1_repeat_stride)
 {
     if ASC_IS_AIV {
@@ -46,7 +46,7 @@ __aicore__ inline void asc_add_relu_sync_impl(__ubuf__ int8_t* dst,  __ubuf__ ha
     asc_sync_post_process();
 }
 
-__aicore__ inline void asc_add_relu_impl(__ubuf__ int8_t* dst, __ubuf__ int16_t* src0, __ubuf__ int16_t* src1, uint8_t repeat, uint8_t dst_block_stride, uint8_t src0_block_stride, 
+__aicore__ inline void asc_add_relu_impl(__ubuf__ int8_t* dst, __ubuf__ int16_t* src0, __ubuf__ int16_t* src1, uint8_t repeat, uint8_t dst_block_stride, uint8_t src0_block_stride,
     uint8_t src1_block_stride, uint8_t dst_repeat_stride, uint8_t src0_repeat_stride, uint8_t src1_repeat_stride)
 {
     if ASC_IS_AIV {
@@ -68,7 +68,7 @@ __aicore__ inline void asc_add_relu_sync_impl(__ubuf__ int8_t* dst,  __ubuf__ in
     asc_sync_post_process();
 }
 
-__aicore__ inline void asc_add_relu_impl(__ubuf__ half* dst, __ubuf__ float* src0, __ubuf__ float* src1, uint8_t repeat, uint8_t dst_block_stride, uint8_t src0_block_stride, 
+__aicore__ inline void asc_add_relu_impl(__ubuf__ half* dst, __ubuf__ float* src0, __ubuf__ float* src1, uint8_t repeat, uint8_t dst_block_stride, uint8_t src0_block_stride,
     uint8_t src1_block_stride, uint8_t dst_repeat_stride, uint8_t src0_repeat_stride, uint8_t src1_repeat_stride)
 {
     if ASC_IS_AIV {

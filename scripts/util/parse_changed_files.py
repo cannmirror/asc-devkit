@@ -25,15 +25,15 @@ def get_file_action(path):
     """
     skip_keywords = ['.md', 'OWNERS', 'LICENSE', 'classify_rule.yaml', 'docs']
     pkg_keywords = ['examples']
-    
+
     for kw in skip_keywords:
         if kw in path:
             return "SKIP"
-    
+
     for kw in pkg_keywords:
         if kw in path:
             return "PKG"
-    
+
     return "COMPILE"
 
 
@@ -64,16 +64,16 @@ def main():
         return "COMPILE"
 
     actions = [get_file_action(f) for f in changed_files]
-    
+
     if all(a == "SKIP" for a in actions):
         return "SKIP"
-    
+
     if any(a == "PKG" for a in actions):
         if not any(a == "COMPILE" for a in actions):
             return "PKG"
         else:
             return "COMPILE"
-    
+
     return "COMPILE"
 
 

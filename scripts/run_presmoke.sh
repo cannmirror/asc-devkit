@@ -92,28 +92,28 @@ format_duration() {
 # devkit_dir_check执行函数
 run_check() {
     local base_path=$1
-    
+
     cd "${base_path}/" || return 1
-    bash devkit_dir_check.sh 
+    bash devkit_dir_check.sh
 }
 
 # 标准执行函数（cmake + make + gen_data + demo + verify）
 run_standard() {
     local base_path=$1
     local example_name=$2
-    
+
     cd "${base_path}/${example_name}/" || return 1
     rm -rf build
     mkdir -p build && cd build || return 1
     cmake .. || return 1
     make -j || return 1
-    
+
     if [ -f "../scripts/gen_data.py" ]; then
         python3 ../scripts/gen_data.py || return 1
     fi
-    
+
     ./demo || return 1
-    
+
     if [ -f "../scripts/verify_result.py" ]; then
         python3 ../scripts/verify_result.py output/output.bin output/golden.bin || return 1
     fi
@@ -123,19 +123,19 @@ run_standard() {
 run_two_outputs() {
     local base_path=$1
     local example_name=$2
-    
+
     cd "${base_path}/${example_name}/" || return 1
     rm -rf build
     mkdir -p build && cd build || return 1
     cmake .. || return 1
     make -j || return 1
-    
+
     if [ -f "../scripts/gen_data.py" ]; then
         python3 ../scripts/gen_data.py || return 1
     fi
-    
+
     ./demo || return 1
-    
+
     if [ -f "../scripts/verify_result.py" ]; then
         python3 ../scripts/verify_result.py output/output1.bin output/golden1.bin output/output2.bin output/golden2.bin || return 1
     fi
@@ -146,7 +146,7 @@ run_cpu_mode() {
     local base_path=$1
     local example_name=$2
     local executable=${3:-add}
-    
+
     cd "${base_path}/${example_name}/" || return 1
     rm -rf build
     cmake -B build -DCMAKE_ASC_RUN_MODE=cpu -DCMAKE_ASC_ARCHITECTURES=dav-2201 || return 1
@@ -162,19 +162,19 @@ run_with_params() {
     local gen_data_params=${4:-}
     local executable=${5:-demo}
     local verify_params=${6:-output/output.bin output/golden.bin}
-    
+
     cd "${base_path}/${example_name}/" || return 1
     rm -rf build
     mkdir -p build && cd build || return 1
     cmake .. ${cmake_params} || return 1
     make -j || return 1
-    
+
     if [ -f "../scripts/gen_data.py" ]; then
         python3 ../scripts/gen_data.py ${gen_data_params} || return 1
     fi
-    
+
     ./"${executable}" || return 1
-    
+
     if [ -f "../scripts/verify_result.py" ]; then
         python3 ../scripts/verify_result.py ${verify_params} || return 1
     fi
@@ -185,7 +185,7 @@ run_with_params_2() {
     local example_name=$2
     local cmake_params=${3:-}
     local executable=${4:-demo}
-    
+
     cd "${base_path}/${example_name}/" || return 1
     rm -rf build
     mkdir -p build && cd build || return 1
@@ -198,7 +198,7 @@ run_with_params_2() {
 run_c_api() {
     local base_path=$1
     local example_name=$2
-    
+
     cd "${base_path}/${example_name}/" || return 1
     rm -rf build
     mkdir -p build && cd build || return 1
@@ -211,19 +211,19 @@ run_c_api() {
 run_msprof() {
     local base_path=$1
     local example_name=$2
-    
+
     cd "${base_path}/${example_name}/" || return 1
     rm -rf build
     mkdir -p build && cd build || return 1
     cmake .. || return 1
     make -j || return 1
-    
+
     if [ -f "../scripts/gen_data.py" ]; then
         python3 ../scripts/gen_data.py || return 1
     fi
-    
+
     msprof op ./demo || return 1
-    
+
     if [ -f "../scripts/verify_result.py" ]; then
         python3 ../scripts/verify_result.py output/output.bin output/golden.bin || return 1
     fi
@@ -234,13 +234,13 @@ run_test_case() {
     local code_path=$1
     local example_name=$2
     local log_path=$3
-    
+
     local case_name="${example_name##*/}"
     local start_time end_time duration elapsed
-    
+
     start_time=$(date +%s)
     echo ">>>>>>>>>>>>>>>>>>>>> $(date '+%Y-%m-%d %H:%M:%S') run ${case_name} start! <<<<<<<<<<<<<<<<<<<<<"
-    
+
     local test_result=0
     echo ${case_name} >> ${log_path}/../devkit_cases.txt
     # 根据用例名称选择执行函数
@@ -300,15 +300,15 @@ run_test_case() {
             run_standard "${code_path}" "${example_name}" 2>&1 | tee "${log_path}/${case_name}.log"
             ;;
     esac
-    
+
     test_result=${PIPESTATUS[0]}
     end_time=$(date +%s)
     duration=$((end_time - start_time))
     elapsed=$(format_duration "${duration}")
-    
+
     echo "test case ${case_name} duration: ${elapsed}"
     echo ">>>>>>>>>>>>>>>>>>>>> $(date '+%Y-%m-%d %H:%M:%S') run ${case_name} finished! <<<<<<<<<<<<<<<<<<<<<"
-    
+
     return ${test_result}
 }
 
@@ -317,49 +317,49 @@ main() {
     echo "Current directory: ${PWD}"
     echo "Code path: ${CODE_PATH}"
     echo "Log path: ${LOG_PATH}"
-    
+
     local start_time end_time total_duration total_elapsed
-    
+
     start_time=$(date +%s)
     echo "=== $(date '+%Y-%m-%d %H:%M:%S') ==="
-    
+
     # 准备日志目录
     mkdir -p "${LOG_PATH}"
     rm -rf "${LOG_PATH:?}"/*
     rm -rf ../result_devkit.txt ../devkit_cases.txt
-    
+
     # 执行所有测试用例
     for example_name in "${EXAMPLE_LIST[@]}"; do
         run_test_case "${CODE_PATH}" "${example_name}" "${LOG_PATH}"
     done
-    
+
     # 分析测试结果
     cd "${LOG_PATH}"/..
-    
+
     local total_failed=0
     local total_passed=0
-    
+
     while read -r line; do
         if [ -z "${line}" ]; then
             continue
         fi
-        
+
         local log_file="${LOG_PATH}/${line}.log"
-        
+
         if [ ! -f "${log_file}" ]; then
             echo "Warning: Log file not found: ${log_file}" >&2
             echo "${line} fail (no log)" >> result_devkit.txt
             ((total_failed++)) || true
             continue
         fi
-        
+
         if [ ! -s "${log_file}" ]; then
             echo "Warning: Log file is empty: ${log_file}" >&2
             echo "${line} fail (empty log)" >> result_devkit.txt
             ((total_failed++)) || true
             continue
         fi
-        
+
         prf=$(grep -E "check pass|test pass|passed|\[Block \(5\/6\)\]: OUTPUT = 24" "${log_file}" || true)
         if [ -n "$prf" ]; then
             echo "${line} pass" >> result_devkit.txt
@@ -373,7 +373,7 @@ main() {
             ((total_failed++)) || true
         fi
     done < devkit_cases.txt
-    
+
     # 输出测试总结
     local total_count=$((total_passed + total_failed))
     echo "========================================"
@@ -382,7 +382,7 @@ main() {
     echo "  Passed: ${total_passed}"
     echo "  Failed: ${total_failed}"
     echo "========================================"
-    
+
     # 检查是否有失败的测试
     if [ ${total_failed} -gt 0 ]; then
         echo "execute samples failed" >&2
@@ -395,7 +395,7 @@ main() {
     else
         echo "execute samples success"
     fi
-    
+
     # 输出总耗时
     end_time=$(date +%s)
     total_duration=$((end_time - start_time))

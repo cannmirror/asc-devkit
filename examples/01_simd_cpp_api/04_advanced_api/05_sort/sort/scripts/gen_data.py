@@ -20,7 +20,7 @@ def gen_golden_data_simple():
     x1 = np.random.uniform(-60000, 60000, [128]).astype(np.float32)
     x2 = np.zeros([128]).astype(np.int32)
     golden = (-np.sort(-x1)).astype(np.float32)
-    
+
     os.makedirs("input", exist_ok=True)
     x1.tofile("./input/input_srcGmValue.bin")
     x2.tofile("./input/input_srcGmIndex.bin")

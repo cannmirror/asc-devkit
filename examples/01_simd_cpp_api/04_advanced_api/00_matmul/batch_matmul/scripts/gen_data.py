@@ -29,7 +29,7 @@ def gen_golden_data():
     aLayoutInfoN = 1
     aLayoutInfoG = 3
     aLayoutInfoD = 64
-                
+
     bLayoutInfoB = 2
     bLayoutInfoS = 256
     bLayoutInfoN = 1

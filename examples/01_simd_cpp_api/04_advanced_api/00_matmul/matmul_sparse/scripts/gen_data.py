@@ -81,7 +81,7 @@ class SparseMatmulGenData:
 
         Args:
             b_matrix: input sparse matrix b
-        
+
         Returns:
             generated dense matrix b and related index matrix, index matrix mask
         """

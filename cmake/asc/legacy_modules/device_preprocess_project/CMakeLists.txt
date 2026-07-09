@@ -72,7 +72,7 @@ if(DYNAMIC_MODE)
     add_library(aic_obj
         OBJECT ${SOURCES}
     )
-    
+
     # do not modify link order, custom options should be at the end
     target_link_libraries(aic_obj PRIVATE
         $<BUILD_INTERFACE:${BUILD_MODE}_aic_intf_pub>
@@ -89,8 +89,8 @@ if(DYNAMIC_MODE)
     )
 
     add_custom_target(${device_target}_host_cpp ALL
-        COMMAND ${ASCEND_PYTHON_EXECUTABLE} extract_host_stub.py ${preprocess_objs} --dynamic-mode 
-                    -d ${DST_DIR} -hd ${INCLUDE_DIR} --aiv-o ${aiv_objs} --aic-o ${aic_objs} 
+        COMMAND ${ASCEND_PYTHON_EXECUTABLE} extract_host_stub.py ${preprocess_objs} --dynamic-mode
+                    -d ${DST_DIR} -hd ${INCLUDE_DIR} --aiv-o ${aiv_objs} --aic-o ${aic_objs}
                     --build-mode ${BUILD_MODE} --compile-commands ${CMAKE_BINARY_DIR}/compile_commands.json ${DEFINITION_OPTION}
                     --run-mode ${RUN_MODE}
         WORKING_DIRECTORY ${ASCENDC_KERNEL_CMAKE_DIR}/util
@@ -119,7 +119,7 @@ else()
 
     add_custom_target(${device_target}_host_cpp ALL
     COMMAND ${ASCEND_PYTHON_EXECUTABLE} extract_host_stub.py ${preprocess_objs} -d ${DST_DIR}
-                -hd ${INCLUDE_DIR} --aiv-o ${m200_obj}  --aic-o ${m200_obj} --build-mode ${BUILD_MODE} --compile-commands 
+                -hd ${INCLUDE_DIR} --aiv-o ${m200_obj}  --aic-o ${m200_obj} --build-mode ${BUILD_MODE} --compile-commands
                 ${CMAKE_BINARY_DIR}/compile_commands.json ${DEFINITION_OPTION}
                 --run-mode ${RUN_MODE}
     WORKING_DIRECTORY ${ASCENDC_KERNEL_CMAKE_DIR}/util
@@ -144,7 +144,7 @@ target_compile_options(intf_device INTERFACE
     ${COMPILE_OPTIONS}
 )
 
-target_include_directories(intf_device INTERFACE 
+target_include_directories(intf_device INTERFACE
     ${INCLUDES}
 )
 

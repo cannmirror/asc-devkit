@@ -146,7 +146,7 @@ class TestCompileOp(unittest.TestCase):
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' + os.path.join(TOP_PATH, 'tests/python/adapter/stub_kernels/add_custom_unalign_tiling.h'),
                            '-DHIGH_PERFORMANCE=1', '-DDETERMINISTIC_MODE=1']
@@ -194,7 +194,7 @@ class TestCompileOp(unittest.TestCase):
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' + os.path.join(TOP_PATH, 'tests/python/adapter/stub_kernels/add_custom_unalign_tiling.h'),
                            '-DHIGH_PERFORMANCE=1', '-DDETERMINISTIC_MODE=1']
@@ -269,7 +269,7 @@ class TestCompileOp(unittest.TestCase):
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' + os.path.join(TOP_PATH, 'tests/python/adapter/stub_kernels/add_custom_unalign_tiling.h'),
                            '-DHIGH_PERFORMANCE=1', '-DDETERMINISTIC_MODE=1']
@@ -318,7 +318,7 @@ class TestCompileOp(unittest.TestCase):
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' + os.path.join(TOP_PATH, 'tests/python/adapter/stub_kernels/add_custom_unalign_tiling.h'),
                            '-DHIGH_PERFORMANCE=1', '-DDETERMINISTIC_MODE=1']
@@ -343,7 +343,7 @@ class TestCompileOp(unittest.TestCase):
                                                         return original_search(pattern, string, *args, **kwargs)
                                                     mock_search.side_effect = custom_search
                                                     # currently build/bin/toolchain/x86/ubuntu/ccec_libs/
-                                                    # ccec_x86_ubuntu_20_04_adk/bin/bisheng 
+                                                    # ccec_x86_ubuntu_20_04_adk/bin/bisheng
                                                     # not support dav-510r2 -cce-aicore-stack-size
                                                     self.assertRaises(Exception, compile_op, cce_file, origin_func_name, \
                                                         op_info, compile_options, code_channel, op_compile_option)
@@ -378,7 +378,7 @@ class TestCompileOp(unittest.TestCase):
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' + os.path.join(TOP_PATH, 'tests/python/adapter/stub_kernels/add_custom_unalign_tiling.h'),
                            '-DHIGH_PERFORMANCE=1', '-DDETERMINISTIC_MODE=1']
@@ -462,7 +462,7 @@ class TestCompileOp(unittest.TestCase):
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' + os.path.join(TOP_PATH, 'tests/python/adapter/stub_kernels/cube_custom_tiling.h'),
                            '-DHIGH_PERFORMANCE=1', '-DDETERMINISTIC_MODE=1']
@@ -603,7 +603,7 @@ class TestCompileOp(unittest.TestCase):
         tiling_file = "/tmp/tiling_data.h"
         compile_option_tuple = CompileOptionTuple(['opt'], ['opt'])
         compile_op_module.global_var_storage.set_variable("ascendc_enable_sanitizer", True)
-        compile_op_module.global_var_storage.set_variable("ascendc_enable_ccache", True) 
+        compile_op_module.global_var_storage.set_variable("ascendc_enable_ccache", True)
         from adapter.compile_op import _compile_ascendc_cce_m510
         compile_info = CompileInfo()
         tiling_info = TilingInfo()
@@ -616,7 +616,7 @@ class TestCompileOp(unittest.TestCase):
             with mock.patch.object(compile_op_module, '_gen_non_mix_sub_json', return_value=None):
                 with mock.patch.object(compile_op_module, '_dynamic_kernel_list_to_json', return_value=None):
                     _compile_ascendc_cce_m510(compile_info, compile_option_tuple, tiling_info)
-        
+
     def test_gen_compile_ascend_cmd_m5101(self):
         from adapter.compile_op import gen_compile_cmd_v220
         op_info = OpInfo(kernel_name='AddCustom_0904bc1781946e62d385bfc6e6f99d97', op_type='AddCustom')
@@ -763,7 +763,7 @@ class TestCompileOp(unittest.TestCase):
 
         original_is_c310 = CommonUtility.is_c310
         def mock_is_c310():
-            return True 
+            return True
         CommonUtility.is_c310 = mock_is_c310
 
         src_file = "test_kernel.cpp"
@@ -934,7 +934,7 @@ class TestCompileOp(unittest.TestCase):
                     '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                     '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                     '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                    '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                    '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                     '-I' + os.path.join(TOP_PATH, 'build'),
                     '-DHIGH_PERFORMANCE=1', '-DDETERMINISTIC_MODE=1'
                                             '--cce-auto-sync', '-mllvm', '-api-deps-filter', '-DONE_CORE_DUMP_SIZE=1048576', '-DASCENDC_DUMP=0', '-DL2_CACHE_HINT',
@@ -1023,7 +1023,7 @@ class TestCompileOp(unittest.TestCase):
                 _gen_static_json_for_mix_v200(compile_info, tiling_info, KernelMetaType.KERNEL_TYPE_MIX_VECTOR_CORE)
                 self.assertTrue(os.path.exists(os.path.join(TOP_PATH, 'kernel_meta', 'test.json')))
                 os.remove(os.path.join(TOP_PATH, 'kernel_meta', 'test.json'))
-    
+
     def test_gen_meta_info_section(self):
         SetCurrentSocInfo("Ascend950PR_9599")
         compile_info = CompileInfo()
@@ -1079,7 +1079,7 @@ class TestCompileOp(unittest.TestCase):
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' +
                            os.path.join(
@@ -1172,7 +1172,7 @@ class TestCompileOp(unittest.TestCase):
         with mock.patch("os.open", return_value=3) as mock_open, \
              mock.patch("os.fdopen", return_value=mock.MagicMock()) as mock_fdopen:
             with mock.patch.object(
-                DFXSectionGenerator(),  
+                DFXSectionGenerator(),
                 "generate_dfx_section_without_tiling_register",
                 return_value=mock_dfx_return
             ) as mock_method:
@@ -1219,7 +1219,7 @@ class TestCompileOp(unittest.TestCase):
                 assert mock_method.call_count > 0, \
                     "DFXSectionGenerator.generate_dfx_section_without_tiling_register should be called"
 
-                compile_info_old.no_set_kernel_type = True   
+                compile_info_old.no_set_kernel_type = True
                 # no_set_kernel_type
                 gen_tiling_struct_size_and_dfx_section_file(
                     compile_info=compile_info_old,
@@ -1268,7 +1268,7 @@ class TestCompileOp(unittest.TestCase):
                 )
                 assert mock_method.call_count > 0, \
                     "DFXSectionGenerator.generate_dfx_section_without_tiling_register should be called"
-                
+
 
     @patch('subprocess.Popen')
     def test_get_tiling_struct_without_register_size(self, mock_popen):
@@ -1321,7 +1321,7 @@ Contents of section
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' +
                            os.path.join(
@@ -1409,7 +1409,7 @@ Contents of section
         for inst, golden_result in casesvec.items():
             result = v310_mode(inst, False)
             self.assertEqual(result, golden_result)
-            
+
     def test_is_hard_sync_instr(self):
         cases = {
             "00000000": False,
@@ -1457,7 +1457,7 @@ Contents of section
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' +
                            os.path.join(
@@ -1573,7 +1573,7 @@ Contents of section
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' +
                            os.path.join(
@@ -1583,7 +1583,7 @@ Contents of section
                            '--cce-auto-sync',
                            '-mllvm',
                            '-api-deps-filter']
-        
+
         CommonUtility.get_ascendc_compiler_path()
         compile_option_tuple = CompileOptionTuple(
             [] if compile_options is None else compile_options, [])
@@ -1635,7 +1635,7 @@ Contents of section
             tiling_info.static_shape_flag = False
             DFXSectionGenerator().dfx_info_reset(op_info)
             gen_kernel_fun(compile_info, compile_info.origin_func_name, op_info, tiling_info, CompileOptionTuple([], []))
-            
+
             ret = _call_bisheng_regbase(
                 compile_info, compile_option_tuple, tiling_info, arch, code_channel)
             self.assertEqual(ret, ['1'])
@@ -1686,7 +1686,7 @@ Contents of section
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' +
                            os.path.join(
@@ -1793,7 +1793,7 @@ Contents of section
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' +
                            os.path.join(
@@ -1914,7 +1914,7 @@ Contents of section
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' +
                            os.path.join(
@@ -1992,7 +1992,7 @@ Contents of section
                 compile_info, compile_option_tuple, tiling_info)
         os.remove(compile_info.gen_kernel_func_file)
         self.assertEqual(compile_info.tiling_key_list, ['1'])
-        
+
 
     def test_dynamic_regbase_kernel_list_to_json(self):
         SetCurrentSocInfo("Ascend310P1")
@@ -2054,7 +2054,7 @@ Contents of section
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' +
                            os.path.join(
@@ -2132,7 +2132,7 @@ Contents of section
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' +
                            os.path.join(
@@ -2341,7 +2341,7 @@ Contents of section
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' + os.path.join(TOP_PATH,
                                                      'tests/python/adapter/stub_kernels/add_custom_unalign_tiling.h'),
@@ -2516,7 +2516,7 @@ Contents of section
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' + os.path.join(TOP_PATH,
                                                      'tests/python/adapter/stub_kernels/add_custom_unalign_tiling.h'),
@@ -2884,7 +2884,7 @@ Contents of section
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' + os.path.join(TOP_PATH,
                                                      'tests/python/adapter/stub_kernels/add_custom_unalign_tiling.h'),
@@ -3169,7 +3169,7 @@ Contents of section
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' + os.path.join(TOP_PATH,
                                                      'tests/python/adapter/stub_kernels/add_custom_unalign_tiling.h'),
@@ -3393,9 +3393,9 @@ Contents of section
         compile_info.super_kernel_info["timestamp_option"] = True
         compile_info.super_kernel_info["kernel_name"] = kernel_name
         compile_info.super_kernel_info["sp_options"] = {'stream-fusion': SuperKernelStreamFusionMode.StreamFusionDisable}
-        compile_info.super_kernel_info["op_list"] = [{'bin_path': './te_addcustom_c3ddf0b6b7cfcb0fa81511155a4d588722c7b8412920ecfe1b049dec430667c5.o', 
+        compile_info.super_kernel_info["op_list"] = [{'bin_path': './te_addcustom_c3ddf0b6b7cfcb0fa81511155a4d588722c7b8412920ecfe1b049dec430667c5.o',
 'json_path': './te_addcustom_c3ddf0b6b7cfcb0fa81511155a4d588722c7b8412920ecfe1b049dec430667c5.json',
- 'stream_id': 0, 'task_type': 'normal'}, {'bin_path': './te_dequantswigluquant_c15e5bac0a77649656269990f41afcf1d0bf6e714342f104a6682f80963ca17e.o', 
+ 'stream_id': 0, 'task_type': 'normal'}, {'bin_path': './te_dequantswigluquant_c15e5bac0a77649656269990f41afcf1d0bf6e714342f104a6682f80963ca17e.o',
 'json_path': './te_dequantswigluquant_c15e5bac0a77649656269990f41afcf1d0bf6e714342f104a6682f80963ca17e.json',
  'stream_id': 0, 'task_type': 'normal'}]
         compile_info.super_kernel_info["param_offset"] = [1, 8]
@@ -3441,7 +3441,7 @@ Contents of section
             mock_dump.side_effect = RuntimeError()
             self.assertRaises(Exception, _json_post_process, compile_info, op_info,
                               tiling_info, need_gen_placehoder, need_gen_placehoder, dump_info)
-    
+
     def test_json_post_process_sigle_stream(self):
         op_info = OpInfo(kernel_name='te_addcustom_c3ddf0b6b7cfcb0fa81511155a4d588722c7b8412920ecfe1b049dec430667c5',
                          op_type='AddCustom',
@@ -3507,9 +3507,9 @@ Contents of section
         compile_info.super_kernel_info["timestamp_option"] = True
         compile_info.super_kernel_info["kernel_name"] = kernel_name
         compile_info.super_kernel_info["sp_options"] = {'stream-fusion': SuperKernelStreamFusionMode.StreamFusionEnable}
-        compile_info.super_kernel_info["op_list"] = [{'bin_path': './te_addcustom_c3ddf0b6b7cfcb0fa81511155a4d588722c7b8412920ecfe1b049dec430667c5.o', 
+        compile_info.super_kernel_info["op_list"] = [{'bin_path': './te_addcustom_c3ddf0b6b7cfcb0fa81511155a4d588722c7b8412920ecfe1b049dec430667c5.o',
 'json_path': './te_addcustom_c3ddf0b6b7cfcb0fa81511155a4d588722c7b8412920ecfe1b049dec430667c5.json',
- 'stream_id': 0, 'task_type': 'normal'}, {'bin_path': './te_dequantswigluquant_c15e5bac0a77649656269990f41afcf1d0bf6e714342f104a6682f80963ca17e.o', 
+ 'stream_id': 0, 'task_type': 'normal'}, {'bin_path': './te_dequantswigluquant_c15e5bac0a77649656269990f41afcf1d0bf6e714342f104a6682f80963ca17e.o',
 'json_path': './te_dequantswigluquant_c15e5bac0a77649656269990f41afcf1d0bf6e714342f104a6682f80963ca17e.json',
  'stream_id': 0, 'task_type': 'normal'}]
         compile_info.super_kernel_info["param_offset"] = [1, 8]
@@ -3556,7 +3556,7 @@ Contents of section
             self.assertRaises(Exception, _json_post_process, compile_info, op_info,
                               tiling_info, need_gen_placehoder, need_gen_placehoder, dump_info)
 
-    
+
     def test_json_post_process_no_tiling_register(self):
         op_info = OpInfo(kernel_name='te_addcustom_c3ddf0b6b7cfcb0fa81511155a4d588722c7b8412920ecfe1b049dec430667c5',
                          op_type='AddCustom',
@@ -3622,9 +3622,9 @@ Contents of section
         compile_info.super_kernel_info["timestamp_option"] = True
         compile_info.super_kernel_info["kernel_name"] = kernel_name
         compile_info.super_kernel_info["sp_options"] = {'stream-fusion': SuperKernelStreamFusionMode.StreamFusionDisable}
-        compile_info.super_kernel_info["op_list"] = [{'bin_path': './te_addcustom_c3ddf0b6b7cfcb0fa81511155a4d588722c7b8412920ecfe1b049dec430667c5.o', 
+        compile_info.super_kernel_info["op_list"] = [{'bin_path': './te_addcustom_c3ddf0b6b7cfcb0fa81511155a4d588722c7b8412920ecfe1b049dec430667c5.o',
 'json_path': './te_addcustom_c3ddf0b6b7cfcb0fa81511155a4d588722c7b8412920ecfe1b049dec430667c5.json',
- 'stream_id': 0, 'task_type': 'normal'}, {'bin_path': './te_dequantswigluquant_c15e5bac0a77649656269990f41afcf1d0bf6e714342f104a6682f80963ca17e.o', 
+ 'stream_id': 0, 'task_type': 'normal'}, {'bin_path': './te_dequantswigluquant_c15e5bac0a77649656269990f41afcf1d0bf6e714342f104a6682f80963ca17e.o',
 'json_path': './te_dequantswigluquant_c15e5bac0a77649656269990f41afcf1d0bf6e714342f104a6682f80963ca17e.json',
  'stream_id': 0, 'task_type': 'normal'}]
         compile_info.super_kernel_info["param_offset"] = [1, 8]
@@ -3655,9 +3655,9 @@ Contents of section
         compile_info.super_kernel_info["timestamp_option"] = True
         compile_info.super_kernel_info["kernel_name"] = 'te_addcustom_c3ddf0b6b7cfcb0fa81511155a4d588722c7b8412920ecfe1b049dec430667c5'
         compile_info.super_kernel_info["sp_options"] = {'stream-fusion': SuperKernelStreamFusionMode.StreamFusionEnable}
-        compile_info.super_kernel_info["op_list"] = [{'bin_path': './te_addcustom_c3ddf0b6b7cfcb0fa81511155a4d588722c7b8412920ecfe1b049dec430667c5.o', 
+        compile_info.super_kernel_info["op_list"] = [{'bin_path': './te_addcustom_c3ddf0b6b7cfcb0fa81511155a4d588722c7b8412920ecfe1b049dec430667c5.o',
 'json_path': './te_addcustom_c3ddf0b6b7cfcb0fa81511155a4d588722c7b8412920ecfe1b049dec430667c5.json',
- 'stream_id': 0, 'task_type': 'normal'}, {'bin_path': './te_dequantswigluquant_c15e5bac0a77649656269990f41afcf1d0bf6e714342f104a6682f80963ca17e.o', 
+ 'stream_id': 0, 'task_type': 'normal'}, {'bin_path': './te_dequantswigluquant_c15e5bac0a77649656269990f41afcf1d0bf6e714342f104a6682f80963ca17e.o',
 'json_path': './te_dequantswigluquant_c15e5bac0a77649656269990f41afcf1d0bf6e714342f104a6682f80963ca17e.json',
  'stream_id': 0, 'task_type': 'normal'}]
         compile_info.super_kernel_info["param_offset"] = [1, 8]
@@ -3703,7 +3703,7 @@ Contents of section
             }
         with open(json_file_path_1, 'w', encoding='utf-8') as file:
             json.dump(content_1, file, ensure_ascii=False, indent=4)
-        
+
         with open(json_file_path_2, 'w', encoding='utf-8') as file:
             json.dump(content_2, file, ensure_ascii=False, indent=4)
 
@@ -3818,11 +3818,11 @@ Contents of section
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-DHIGH_PERFORMANCE=1', '-DDETERMINISTIC_MODE=1']
         extend_options = {'opp_kernel_hidden_dat_path': os.path.join(TOP_PATH, 'tmp')}
-        
+
         def custom_exists(path):
             if path == '/usr/local/Ascend/cann/compiler/tikcpp/../../include/version/asc_devkit_version.h':
                 return True
@@ -3877,7 +3877,7 @@ Contents of section
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-DHIGH_PERFORMANCE=1', '-DDETERMINISTIC_MODE=1']
         op_compile_option = '{}'
@@ -3955,7 +3955,7 @@ Contents of section
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' + os.path.join(TOP_PATH, 'tests/python/adapter/stub_kernels/add_custom_tiling.h'),
                            '-DHIGH_PERFORMANCE=1', '-DDETERMINISTIC_MODE=1']
@@ -4342,7 +4342,7 @@ void add_custom();
             kernel_info = KernelInfoInfer.infer_info_from_ifile(src_file, src_file, src_file, "add_custom")
             self.assertEqual(kernel_info.tiling_key_kernel_type["17435146"], KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2)
             self.assertEqual(kernel_info.no_set_kernel_type, False)
-        
+
         with open(src_file, "w") as file:
             context = """
 void add_custom();
@@ -4354,7 +4354,7 @@ void add_custom();
         with mock.patch.object(KernelInfoInfer, 'get_tiling_key_corresponding_struct', return_value={}):
             kernel_info = KernelInfoInfer.infer_info_from_ifile(src_file, src_file, src_file, "add_custom")
             self.assertEqual(kernel_info.no_set_kernel_type, True)
-        
+
         with open(src_file, "w") as file:
             context = """
 void add_custom();
@@ -4657,7 +4657,7 @@ void add_custom()
             cfg.current().config["tir.op_debug_config"] = ["oom"]
             size_value = 16
             value_string = DFXSectionGenerator()._tran_dfx_info_to_value_string(size_value)
-            
+
             aligned_size = ((size_value + 7) // 8) * 8  # 16 -> 16
             total_size = aligned_size + 8 + 8 * 0  # 16 + 8 + 0 = 24
             expected_string = [
@@ -4819,7 +4819,7 @@ const static uint64_t L0A_SIZE = 65536 * block_idx;
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' +
                            os.path.join(
@@ -4962,7 +4962,7 @@ const static uint64_t L0A_SIZE = 65536 * block_idx;
                            '-I' + os.path.join(API_ROOT_PATH, 'include/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'impl/simt_api'),
                            '-I' + os.path.join(API_ROOT_PATH, 'include/adv_api'),
-                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),                      
+                           '-I' + os.path.join(API_ROOT_PATH, 'impl/adv_api'),
                            '-I' + os.path.join(TOP_PATH, 'build'),
                            '-include' +
                            os.path.join(
@@ -5022,7 +5022,7 @@ const static uint64_t L0A_SIZE = 65536 * block_idx;
         compile_option_tuple.mllvm_options.append('-cce-aicore-dcci-before-kernel-end=')
         gen_kernel_fun(compile_info, origin_func_name, op_info, tiling_info, compile_option_tuple)
         global_var_storage.global_storage_reset()
-    
+
 
     def test_delete_tiling_section(self):
         from adapter.compile_op import delete_tiling_section
@@ -5032,7 +5032,7 @@ const static uint64_t L0A_SIZE = 65536 * block_idx;
         delete_tiling_section(compile_info)
         compile_op_module.global_var_storage.set_variable("ascendc_enable_super_kernel", False)
         delete_tiling_section(compile_info)
-    
+
 
     def test_update_tiling_size_for_oom(self):
         from adapter.ascendc_compile_gen_code import update_tiling_size_for_oom

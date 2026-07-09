@@ -59,10 +59,10 @@ class TestErrMgr(unittest.TestCase):
     def test_raise_tbe_python_err_basic(self):
         err_code = "EB0003"
         err_msg = "basic error msg"
-        
+
         with self.assertRaises(TBEPythonError) as context:
             raise_tbe_python_err(err_code, err_msg)
-        
+
         exception = context.exception
         self.assertEqual(exception.args[0], err_code)
         self.assertEqual(exception.args[4], err_msg)
@@ -84,7 +84,7 @@ class TestErrMgr(unittest.TestCase):
         }
         inner_error = TBEPythonError(inner_error_info)
         tuple_msg = ("outter error", inner_error)
-        
+
         with self.assertRaises(TBEPythonError) as context:
             raise_tbe_python_err(err_code, tuple_msg)
         exception = context.exception
@@ -110,7 +110,7 @@ class TestErrMgr(unittest.TestCase):
             "arg3": "check param types"
         }
         expected_message = "error type: data type not match, reason: wrong param types, soulution: check param types"
-        
+
         with mock.patch('builtins.open', mock.mock_open()) as mock_file:
             with mock.patch('json.load', return_value=mock_json_data):
                 result = get_error_message(args)
@@ -119,4 +119,4 @@ class TestErrMgr(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()        
+    unittest.main()

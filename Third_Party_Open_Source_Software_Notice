@@ -5,7 +5,7 @@ Please note we provide an open source software notice along with this product an
 Warranty Disclaimer
 THE OPEN SOURCE SOFTWARE IN THIS PRODUCT IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL, BUT WITHOUT ANY WARRANTY, WITHOUT EVEN THE IMPLIED WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. SEE THE APPLICABLE LICENSES FOR MORE DETAILS.
 
-Copyright Notice and License Texts 
+Copyright Notice and License Texts
 Software: LLVM 15.0.4
 Copyright notice:
 Copyright (c) 2003-2019 University of Illinois at Urbana-Champaign
@@ -418,7 +418,7 @@ examples/02_features/00_framework_launch/00_add_template/op_verify/src/main.cpp
 examples/03_libraries/00_addcdivcustom/data_utils.h
 examples/04_best_practices/00_group_matmul/data_utils.h
 cmake/asc/fwk_modules/util/gen_ops_filter.sh
-Copyright Notice(s): 
+Copyright Notice(s):
 Copyright (C) 2020. Huawei Technologies Co., Ltd
 License: Apache License V2.0
 Please see above
@@ -428,7 +428,7 @@ Official Repository: https://gitee.com/ascend/canncamp
 Usage:
 cmake/asc/fwk_modules/util/insert_op_info.py
 cmake/asc/fwk_modules/util/parse_ini_to_json.py
-Copyright Notice(s): 
+Copyright Notice(s):
 Copyright (C) 2020-2021. Huawei Technologies Co., Ltd
 License: Apache License V2.0
 Please see above
@@ -438,7 +438,7 @@ Official Repository: https://github.com/mindspore-ai/akg
 Usage:
 tests/unit/basic_api/ut/testcase/c_api/stub/cce_stub.h
 tests/unit/basic_api/ut/stub/stub_fun.h
-Copyright Notice(s): 
+Copyright Notice(s):
 Copyright (C) 2020. Huawei Technologies Co., Ltd
 License: Apache License V2.0
 Please see above
@@ -447,7 +447,7 @@ Software:akg 1.2.0
 Official Repository: https://github.com/mindspore-ai/akg
 Usage:
 impl/adv_api/detail/math/math_constant_util.h
-Copyright Notice(s): 
+Copyright Notice(s):
 Copyright (C) 2020. Huawei Technologies Co., Ltd
 License: Apache License V2.0
 Please see above
@@ -456,7 +456,7 @@ Software:tensorflow 43812c0
 Official Repository: https://gitee.com/ascend/tensorflow/repository
 Usage:
 scripts/package/scripts/run_asc-devkit_install.sh
-Copyright Notice(s): 
+Copyright Notice(s):
 Copyright (C) 2019-2020. Huawei Technologies Co., Ltd
 License: Apache License V2.0
 Please see above
@@ -465,7 +465,7 @@ Software:metadef fedff4f
 Official Repository: https://gitee.com/ascend/metadef/repository
 Usage:
 impl\utils\stub\shape.cpp
-Copyright Notice(s): 
+Copyright Notice(s):
 Copyright (C) 2020. Huawei Technologies Co., Ltd
 License: Apache License V2.0
 Please see above

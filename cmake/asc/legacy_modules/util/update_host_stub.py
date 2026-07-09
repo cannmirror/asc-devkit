@@ -95,7 +95,7 @@ def main():
         raise err
 
     update_section = update_source_section(content, args.soc_version, args.target_name)
-    
+
     update_content = update_source_content(args.obj_path, update_section)
     try:
         with open(source_file, 'w', encoding='utf-8') as file:
@@ -107,16 +107,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
-
-
-
-
-
-
-

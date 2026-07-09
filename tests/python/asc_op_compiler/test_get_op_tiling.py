@@ -245,14 +245,14 @@ public:
     AscendC::tiling::ApiStruct testApiStruct;
 }__attribute__((__may_alias__));
 
-"""     
+"""
         cust_tiling_def = TilingDef({"class_name": "CustStruct", "data_size": 0, "fields": [field_0, field_3]})
         cust_tiling_def.depth = 1
 
         api_tiling_def = TilingDef({"class_name": "ApiStruct", "data_size": 256, "fields": [field_0]})
         api_tiling_def.is_api = True
         api_tiling_def.depth = 2
-        
+
         struct_base = {"CustStruct": cust_tiling_def, "ApiStruct": api_tiling_def}
         self.assertEqual(compare_str, get_dynamic_tiling_struct(tiling_def, struct_base))
 
@@ -729,7 +729,7 @@ public:
         value_depends = {0: 'required', 1: 'optional'}
         res = is_static_shape(origin_inputs, outputs, value_depends, param_list, True)
         self.assertEqual(res, False)
-    
+
         # test TensorList
         print("test tensorList")
         origin_inputs=[[{'shape': (8, 2048), 'ori_shape': (8, 2048), 'format': 'ND',
@@ -751,7 +751,7 @@ public:
 
         value_depends = {0: 'required'}
         self.assertRaises(Exception, is_static_shape, origin_inputs, outputs, value_depends, param_list, True)
-        
+
         param_list = ['optional']
         value_depends = {0: 'required'}
         self.assertRaises(Exception, is_static_shape, origin_inputs, outputs, value_depends, param_list, True)
@@ -800,7 +800,7 @@ public:
         gen_dynamic_shape_v2(optype, tiling_struct)
 
 
-    
+
 
 
 if __name__ == "__main__":
