@@ -188,7 +188,6 @@ Note: The working set per tile is smaller, making it easier to retain in L2 Cach
 
 - Matrix: [8192, 8192], half type (128MB per matrix).
 - Evenly distributed across 64 AIV Cores.
-- dataCopyLen: 21760.
 
 **L2 strategy**: `l2_cache_mode=0` (NORMAL)
 

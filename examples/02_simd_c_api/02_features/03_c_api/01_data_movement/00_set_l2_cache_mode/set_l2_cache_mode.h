@@ -184,11 +184,7 @@ public:
     __aicore__ inline void ProcessDoubleBufferL2Bypass() { ProcessDoubleBufferImpl(4); /* l2CacheMode = DISABLE */ }
 
 private:
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
-    static constexpr uint32_t max_data_copy_len = 21840;
-#else
-    static constexpr uint32_t max_data_copy_len = 16384;
-#endif
+    static constexpr uint32_t max_data_copy_len = 20992;
 
     __aicore__ inline uint32_t GetTotalBlocks() const { return (totalElementsPerCore + dataCopyLen - 1) / dataCopyLen; }
 
@@ -198,7 +194,7 @@ private:
      */
     __aicore__ inline void ProcessDoubleBufferImpl(uint8_t l2CacheMode)
     {
-        constexpr uint32_t totalBufSize = 3 * max_data_copy_len;
+        constexpr uint32_t totalBufSize = 6 * max_data_copy_len;
         __ubuf__ half ubBuf[totalBufSize];
 
         /* Ping 偏移 */

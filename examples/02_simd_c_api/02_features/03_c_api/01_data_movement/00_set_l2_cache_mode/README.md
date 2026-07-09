@@ -184,7 +184,6 @@ GM 矩阵: [M, N]
 
 - 矩阵：[8192, 8192]，half类型（128MB每矩阵）。
 - 均匀切分到64个AIV Core。
-- dataCopyLen：21760。
 
 **L2策略**：`l2_cache_mode=0`（NORMAL）
 
