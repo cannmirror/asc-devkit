@@ -1,6 +1,6 @@
 # Warp函数
 
-> **前置知识**：本文涉及Grid、Thread Block、Thread、Warp等SIMT线程组织概念，建议先阅读编程指南[线程架构](https://gitcode.com/cann/asc-devkit/tree/9.1.0/docs/guide/编程指南/编程模型/AI-Core-SIMT编程/线程架构.md)了解相关前置知识。
+> **前置知识**：本文涉及Grid、Thread Block、Thread、Warp等SIMT线程组织概念，建议先阅读编程指南[线程架构](https://gitcode.com/cann/asc-devkit/blob/9.1.0/docs/guide/编程指南/编程模型/AI-Core-SIMT编程/线程架构.md)了解相关前置知识。
 
 Warp是SIMT线程执行和调度的基本单位。一个线程块内的线程会按照线性线程号被划分为多个Warp，当前一个Warp包含32个线程。同一Warp内的线程执行相同的指令流，但每个线程拥有独立的寄存器和Lane ID，可处理不同的数据地址和分支路径。
 
