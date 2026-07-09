@@ -1,4 +1,7 @@
 #include <string.h>
+#include <string>
+#include <vector>
+#include "base/err_msg.h"
 #include "graph/types.h"
 #include "aclnn_rms_norm_grad_test.h"
 
@@ -266,6 +269,7 @@ using AclnnFunc = aclnnStatus (*)(void *, uint64_t, aclOpExecutor *, aclrtStream
 #define ACLNN_SUCCESS  0
 #define ACLNN_ERR_PARAM_NULLPTR 161001
 #define ACLNN_ERR_PARAM_INVALID 161002
+#define NNOPBASE_INVALID_ARGUMENT "EZ1010"
 
 #define NNOPBASE_ASSERT_OK_RETVAL(v)                                    \
     do {                                                                \
@@ -392,7 +396,14 @@ aclnnStatus aclnnRmsNormGradTest(
     if (NnopbaseGetSocName == NULL || (currentSocName != NULL && NnopbaseMatchSocName(currentSocName, socMatch2Names, 3))) {
         NnopbaseGetUnContExecutor(executor, &aclInExecutor, &inContWorkspaceSize);
         if (workspaceSize < inContWorkspaceSize) {
-            NnopbaseOpLogE(ACLNN_ERR_PARAM_INVALID, "input workspaceSize must be larger than contiguous size!");
+            const std::string value = std::to_string(workspaceSize);
+            const std::string requiredSize = std::to_string(inContWorkspaceSize);
+            const std::string reason = std::string("The passed workspace size ") + value +
+                " does not meet the minimum workspace size " + requiredSize +
+                " actually required by the AutoContiguous API";
+            const std::vector<const char*> msgKey = {"value", "paraName", "reason"};
+            const std::vector<const char*> msgValue = {value.c_str(), "workspaceSize", reason.c_str()};
+            REPORT_PREDEFINED_ERR_MSG(NNOPBASE_INVALID_ARGUMENT, msgKey, msgValue);
             return ACLNN_ERR_PARAM_INVALID;
         }
         workspaceSize -= inContWorkspaceSize;
