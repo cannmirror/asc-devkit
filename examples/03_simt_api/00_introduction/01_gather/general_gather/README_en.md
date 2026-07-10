@@ -118,7 +118,7 @@ This example implements a generalized shape Gather operator based on the Ascend 
   </table>
 - Constraint Description:
   * indices: The first batch_dims dimensions of indices must match the first batch_dims dimensions of input, that is, indices.shape[0:batch_dims] = input.shape[0:batch_dims]
-  * axis: The collection dimension axis cannot be less than batch_dims and cannot exceed the number of dimensions of input, that is, batch_dims <= axis < input.rank
+  * axis: The collection dimension axis cannot be less than batch_dims and must be less than the number of dimensions of input, that is, batch_dims <= axis < input.rank
   * batch_dims: The number of batch dimensions cannot exceed the smaller dimension count of input and indices, that is, 0 <= batch_dims <= min(input.rank, indices.rank)
   * output.shape: input.shape[:axis] + indices.shape[batch_dims:] + input.shape[axis+1:]
   * In the example implementation, axis and batch_dims also support negative values and are converted to corresponding non-negative dimension indices before calculation

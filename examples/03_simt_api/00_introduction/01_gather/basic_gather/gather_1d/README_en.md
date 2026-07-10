@@ -18,7 +18,7 @@ This sample implements a one-dimensional Gather operator in a simple scenario (w
 ├── gather_1d
 │   ├── CMakeLists.txt         # CMake build file
 │   ├── gather_1d.asc          # Sample for one-dimensional gather using SIMT
-|   └── README.md
+│   └── README.md
 ```
 
 ## Operator Description

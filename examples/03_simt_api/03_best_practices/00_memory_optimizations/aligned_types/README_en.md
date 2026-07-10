@@ -42,7 +42,7 @@ This example selects 14 structs, grouped by `sizeof` into 4B, 8B, 16B, and 32B g
 
   Restrictions of `alignas`:
 
-  - **Can only increase, not decrease**: The `N` in `alignas(N)` must be >= the default `alignof` of the type, that is, the maximum `alignof` of all fields; otherwise the compiler will ignore it or report an error.
+  - **Can only increase, not decrease**: The `N` in `alignas(N)` must be greater than or equal to the default `alignof` of the type, that is, the maximum `alignof` of all fields; otherwise the compiler will ignore it or report an error.
   - **Must be a power of 2**: The `N` in `alignas(N)` must be a power of 2.
   - **Also increases sizeof**: `sizeof` must be a multiple of `alignof`, so when increasing `alignof`, `sizeof` rounds up.
 

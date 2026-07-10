@@ -42,14 +42,11 @@ This example uses the Roll operator to demonstrate how to register custom operat
   <table border="2" align="center">
   <caption>Table 1: RollCustom Example Specification Description</caption>
   <tr><td rowspan="1" align="center">Example Type (OpType)</td><td colspan="4" align="center">RollCustom</td></tr>
-  </tr>
   <tr><td rowspan="4" align="center">Example Input</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
   <tr><td align="center">input</td><td align="center">[8,2048]</td><td align="center">float32</td><td align="center">ND</td></tr>
   <tr><td align="center">shifts</td><td align="center">[1]</td><td align="center">int32</td><td align="center">ND</td></tr>
   <tr><td align="center">dims</td><td align="center">[1]</td><td align="center">int32</td><td align="center">ND</td></tr>
-  </tr>
   <tr><td rowspan="1" align="center">Example Output</td><td align="center">output</td><td align="center">[8,2048]</td><td align="center">float32</td><td align="center">ND</td></tr>
-  </tr>
   <tr><td rowspan="1" align="center">Kernel Function Name</td><td colspan="4" align="center">roll_custom</td></tr>
   </table>
 

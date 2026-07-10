@@ -107,7 +107,7 @@ __global__ void add(T* x, T* y, T* z, uint64_t size)
 - End-to-end latency: **86.478 us**
 - Write cache hit rate: **49.3%**
 - Read/write bandwidth: **7.77(GB/s) | 6.24(GB/s)**
-- Performance analysis: The Add operator performs simple X+Y=Z. When writing back results, the hit rate is below 50%, indicating that write cache miss rate exceeds 50%, triggering additional memory read-back (RMW) operations, classified as write misses. The typical cause is data misalignment or small data types preventing Warp from filling completely.
+- Performance analysis: The Add operator performs simple X+Y=Z. When writing back results, the hit rate is below 50%, indicating that write cache miss rate exceeds 50%, triggering additional memory read-back (RMW) operations, classified as write misses. The typical cause is data misalignment or small data type bit width preventing Warp from filling completely.
 
 **Performance Optimization Recommendation**:
 > **Introduce half2 type**
@@ -169,7 +169,7 @@ __global__ void add2(T* x, T* y, T* z, uint64_t size)
 **Principle Description**:  
 In SIMT programming mode, L2 Cache accesses data in units of Cache Line = 128 bytes.
 
-- Case 1 (scalar half): Incomplete cache line causes RMW write amplification  
+- Case 1 (scalar half): Unable to fill entire cache line causes RMW write amplification  
   Using scalar half (2B). When a single Warp (32 threads) issues instructions simultaneously, the total width concatenated spatially is:  
   $$
   32 * 2B = 64B
@@ -228,7 +228,7 @@ Run the following steps in the root directory of this example to build and execu
   Example:
 
   ```bash
-  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j;   # NPU simulation mode
+  cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..; make -j;   # NPU simulation mode
   ```
 
   > **Notice:** Before switching build modes, clean the cmake cache by running `rm CMakeCache.txt` in the build directory and then re-run cmake.
