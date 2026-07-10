@@ -42,7 +42,7 @@
 
     ```cpp
     template <ReduceType reduceType, typename T, typename U, bool isSetMask = true>
-    __aicore__ inline void ReducePairElem(const LocalTensor<T>& dst, const LocalTensor<U>& src, const uint64_t mask[],const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride)
+    __aicore__ inline void ReducePairElem(const LocalTensor<T>& dst, const LocalTensor<U>& src, const uint64_t mask[], const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride)
     ```
 
 - `mask`连续模式：
@@ -113,7 +113,7 @@
 - `dstRepStride`、`srcBlkStride`、`srcRepStride`取值范围为[0, $2^{16}-1$]，需要结合UB的实际大小避免出现越界。
 
 <!-- npu="950,A3,910b" id14 -->
-- 当参数count或repeatTime取值为0时，该接口的行为如下：
+- 当参数mask或repeatTime取值为0时，该接口的行为如下：
   <!-- npu="A3,910b" id15 -->
   - 针对如下型号，当参数mask或repeatTime取值为0时，不会执行计算操作，不会对目的操作数进行写入，该接口将被视为NOP（空操作）。
     <!-- npu="A3" id16 -->
@@ -196,12 +196,18 @@
 - 示例结果
 
     > 输入数据src_gm：
-    > > [1, 1, 1, -1, 2, 2, -1, 2,
-    > >  3, 3, 3, -1, 4, 4, -2, 4,
-    > >  ....
-    > > ]
-    >
+
+    ```plain
+    [1, 1, 1, -1, 2, 2, -1, 2,
+     3, 3, 3, -1, 4, 4, -2, 4,
+     ....
+    ]
+    ```
+
     > 输出数据dst_gm：
-    > > [2, 0, 4, 1, 6, 2, 8, 2,
-    > >  ....
-    > > ]
+    
+    ```plain
+    [2, 0, 4, 1, 6, 2, 8, 2,
+    ....
+    ]
+    ```
