@@ -2,15 +2,27 @@
 
 ## 产品支持情况
 
-| 产品 | 是否支持 |
-| ---- | -------- |
-| <cann-filter npu-type = "950">Ascend 950PR/Ascend 950DT | √</cann-filter> |
-| <cann-filter npu-type = "A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品 | √</cann-filter> |
-| <cann-filter npu-type = "910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品 | √</cann-filter> |
-| <cann-filter npu-type = "310b">Atlas 200I/500 A2 推理产品 | x</cann-filter> |
-| <cann-filter npu-type = "310p">Atlas 推理系列产品AI Core | √</cann-filter> |
-| <cann-filter npu-type = "310p">Atlas 推理系列产品Vector Core | √</cann-filter> |
-| <cann-filter npu-type = "910">Atlas 训练系列产品 | x</cann-filter> |
+<!-- npu="950" id12 -->
+- Ascend 950PR/Ascend 950DT：支持
+<!-- end id12 -->
+<!-- npu="A3" id13 -->
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持
+<!-- end id13 -->
+<!-- npu="910b" id14 -->
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持
+<!-- end id14 -->
+<!-- npu="310b" id15 -->
+- Atlas 200I/500 A2 推理产品：不支持
+<!-- end id15 -->
+<!-- npu="310p" id16 -->
+- Atlas 推理系列产品AI Core：支持
+<!-- end id16 -->
+<!-- npu="310p" id17 -->
+- Atlas 推理系列产品Vector Core：支持
+<!-- end id17 -->
+<!-- npu="910" id18 -->
+- Atlas 训练系列产品：不支持
+<!-- end id18 -->
 
 ## 功能说明
 
@@ -34,8 +46,7 @@
 
 **各产品实际执行的初始化项如下：**
 
-<cann-filter npu-type = "950">
-
+<!-- npu="950" id1 -->
 **表1** 针对Ascend 950PR/Ascend 950DT本接口执行的初始化项
 
 | 状态类别 | 初始化内容 |
@@ -48,11 +59,9 @@
 | AIC | Load3D接口调用时Pad填充的数值 |
 | AIV | Mask |
 | AIV | loop mode的参数 |
+<!-- end id1 -->
 
-</cann-filter>
-
-<cann-filter npu-type = "A3">
-
+<!-- npu="A3" id2 -->
 **表2** 针对Atlas A3 训练系列产品/Atlas A3 推理系列产品本接口执行的初始化项
 
 | 状态类别 | 初始化内容 |
@@ -62,11 +71,9 @@
 | AIC | Load3D接口调用时Pad填充的数值 |
 | AIC | 使用Load3D时A1/B1的边界值 |
 | AIV | Mask |
+<!-- end id2 -->
 
-</cann-filter>
-
-<cann-filter npu-type = "910b">
-
+<!-- npu="910b" id3 -->
 **表3** 针对Atlas A2 训练系列产品/Atlas A2 推理系列产品本接口执行的初始化项
 
 | 状态类别 | 初始化内容 |
@@ -76,18 +83,15 @@
 | AIC | Load3D接口调用时Pad填充的数值 |
 | AIC | 使用Load3D时A1/B1的边界值 |
 | AIV | Mask |
+<!-- end id3 -->
 
-</cann-filter>
-
-<cann-filter npu-type = "310p">
-
+<!-- npu="310p" id4 -->
 **表4** 针对Atlas 推理系列产品AI Core和Atlas 推理系列产品Vector Core本接口执行的初始化项
 
 | 状态类别 | 初始化内容 |
 | ---- | ---- |
 | 公共状态 | 原子累加状态 |
-
-</cann-filter>
+<!-- end id4 -->
 
 ## 函数原型
 

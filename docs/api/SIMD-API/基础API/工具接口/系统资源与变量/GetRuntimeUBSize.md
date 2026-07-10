@@ -2,15 +2,27 @@
 
 ## 产品支持情况
 
-| 产品 | 是否支持 |
-| --- | --- |
-| <cann-filter npu-type="950">Ascend 950PR/Ascend 950DT | √ </cann-filter>|
-| <cann-filter npu-type="A3">Atlas A3 训练系列产品/Atlas A3 推理系列产品 | x </cann-filter>|
-| <cann-filter npu-type="910b">Atlas A2 训练系列产品/Atlas A2 推理系列产品 | x </cann-filter>|
-| <cann-filter npu-type="310b">Atlas 200I/500 A2 推理产品 | x </cann-filter>|
-| <cann-filter npu-type="310p">Atlas 推理系列产品AI Core | x </cann-filter>|
-| <cann-filter npu-type="310p">Atlas 推理系列产品Vector Core | x </cann-filter>|
-| <cann-filter npu-type="910">Atlas 训练系列产品 | x </cann-filter>|
+<!-- npu="950" id9 -->
+- Ascend 950PR/Ascend 950DT：支持
+<!-- end id9 -->
+<!-- npu="A3" id10 -->
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：不支持
+<!-- end id10 -->
+<!-- npu="910b" id11 -->
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：不支持
+<!-- end id11 -->
+<!-- npu="310b" id12 -->
+- Atlas 200I/500 A2 推理产品：不支持
+<!-- end id12 -->
+<!-- npu="310p" id13 -->
+- Atlas 推理系列产品AI Core：不支持
+<!-- end id13 -->
+<!-- npu="310p" id14 -->
+- Atlas 推理系列产品Vector Core：不支持
+<!-- end id14 -->
+<!-- npu="910" id15 -->
+- Atlas 训练系列产品：不支持
+<!-- end id15 -->
 
 ## 功能说明
 
@@ -32,7 +44,9 @@ __aicore__ inline uint32_t GetRuntimeUBSize()
 
 运行时UB空间的大小，单位为Byte。
 
-<cann-filter npu-type="950">Ascend 950PR/Ascend 950DT架构下，SIMD与SIMT混合场景中，获取到的UB大小上限为216KB，非SIMD与SIMT混合场景返回值为固定值248KB。</cann-filter>
+<!-- npu="950" id1 -->
+Ascend 950PR/Ascend 950DT架构下，SIMD与SIMT混合场景中，获取到的UB大小上限为216KB，非SIMD与SIMT混合场景返回值为固定值248KB。
+<!-- end id1 -->
 
 ## 约束说明
 
