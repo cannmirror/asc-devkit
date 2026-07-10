@@ -51,11 +51,15 @@
 
 头文件路径为：`"basic_api/reg_compute/kernel_reg_compute_vec_arange_intf.h"`。
 
-该函数以传入的scalar的值为起始值，生成递增/递减的索引，并将索引保存在dstReg中。
+递增模式时，该函数以传入的scalarValue的值为起始值，生成递增的索引；递减模式时，该函数以传入的scalarValue的值为终止值，生成递减的索引，并将索引保存在dstReg中。
 
-**图 1**  Arange示意图
+**图 1**  Arange递增示意图
 
 ![Arange示意图](../../../../figures/reg_arange.png)
+
+**图 2**  Arange递减示意图
+
+![Arange示意图](../../../../figures/reg_arange_de.png)
 
 ## 函数原型<a name="section520771712327"></a>
 
@@ -71,6 +75,7 @@ __simd_callee__ inline void Arange(S& dstReg, U scalarValue);
 | 参数名称 | 描述 |
 | ------ | ------ |
 | T | 目的操作数的数据类型。 |
+| IndexOrder | 递增/递减模式。支持如下取值：<br>• INCREASE_ORDER：递增模式<br>• DECREASE_ORDER：递减模式 |
 | U | 起始索引值的数据类型。 |
 | S | 目的操作数的RegTensor类型，例如RegTensor<half>，由编译器自动推导，无需用户显式指定。 |
 
