@@ -369,6 +369,10 @@ struct SysWorkspaceDesc {
 
 __aicore__ inline void ClearWorkspaceImpl(__gm__ uint8_t* workspace)
 {
+    if (GetBlockIdxImpl() >= MAX_AIV_NUM) {
+        // the kfc does nothing with the block idx out of mix_aic_num.
+        return;
+    }
     // v0 清除  vec0: 0~size;v1 清除 vec1:size1 ~ size2; v2 清除 vec3:size2 ~ size3
     constexpr uint32_t size = BIDIRECTION_NUM * MAX_MSG_COUNT * AlignTo32(sizeof(KfcMsg));
     constexpr uint32_t sizeUbmsg = AlignTo32(sizeof(MsgUBAvailable));

@@ -375,6 +375,10 @@ struct SysWorkspaceDesc {
 
 __aicore__ inline void ClearWorkspaceImpl(__gm__ uint8_t* workspace)
 {
+    if (GetBlockIdxImpl() >= MAX_AIV_NUM / MIX_NUM) {
+        // the kfc does nothing with the block idx out of mix_aic_num.
+        return;
+    }
     constexpr uint32_t size = BIDIRECTION_NUM * MAX_MSG_COUNT * AlignTo32(sizeof(KfcMsg)) * MIX_NUM;
     constexpr uint32_t sizeUbmsg = MIX_NUM * AlignTo32(sizeof(MsgUBAvailable));
     constexpr uint32_t offsetUbMsg = MAX_AIV_NUM * BIDIRECTION_NUM * MAX_MSG_COUNT *
