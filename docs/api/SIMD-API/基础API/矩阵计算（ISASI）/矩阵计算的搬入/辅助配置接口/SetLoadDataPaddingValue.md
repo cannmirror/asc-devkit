@@ -34,7 +34,7 @@
 
 头文件路径为：basic_api/kernel_operator_mm_intf.h。
 
-用于调用[LoadData（卷积数据搬运）](../矩阵数据搬入至L0-Buffer/LoadData_3D.md)接口时设置Pad填充的数值。LoadData（卷积数据搬运）的模板参数isSetPadding设置为true时，用户需要通过本接口设置Pad填充的数值，设置为false时，本接口设置的填充值不生效。
+用于调用[LoadData（卷积数据搬运）](../矩阵数据搬入至L0-Buffer/LoadData_3D.md)接口时设置Pad填充的数值。LoadData（卷积数据搬运）的模板参数isSetPadding设置为false时，用户需要通过本接口设置Pad填充的数值，设置为true时，本接口设置的填充值不生效。
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
@@ -84,7 +84,7 @@ AscendC::LoadData3DParamsV2<T> loadDataParams;
 // 设置不在LoadData（卷积数据搬运）接口内部设置相关属性，通过外部接口显式调用设置
 static constexpr AscendC::IsResetLoad3dConfig LOAD3D_CONFIG = {false, false};
 
-// 使用SetLoadDataRepeat接口，设置LoadData（卷积数据搬运）v2接口的repeat参数
+// 使用SetLoadDataPaddingValue接口，设置LoadData（卷积数据搬运）接口的padValue参数
 AscendC::SetLoadDataPaddingValue(0);
 
 AscendC::LoadData<T, LOAD3D_CONFIG>(a2Local, a1Local, loadDataParams);
