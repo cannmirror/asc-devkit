@@ -333,6 +333,71 @@ UnitFlag functionality diagram:
 | Case 7 | 2589.09 | **423.55x** | 32 | 2588.38 | 2547.049 | 0.984 | 426.398 | 0.165 | 827.939 | 0.32 | 1895.165 | 0.732 | 33.648 | 0.013 |
 | Case 8 | 2558.155 | **428.68x** | 32 | 2557.49 | 2549.657 | 0.997 | 412.29 | 0.161 | 835.579 | 0.327 | 1900.322 | 0.743 | 213.789 | 0.084 |
 
+**Theoretical Performance Comparison**:
+
+The key parameters for Matmul theoretical performance evaluation are: Cube computation performance and MTE2 bandwidth.
+
+#### Cube Computation Performance Analysis
+
+Example parameters: M=N=K=8192, baseM=128, baseN=256, baseK=64. This example performance data was tested on Atlas A2 Training Series Products, with a chip clock frequency of 1.85GHz, processing 16×16×16 multiply-accumulate operations per cycle.
+
+Cube theoretical computation time:
+$$cube\_time = \frac{M \times N \times K}{16 \times 16 \times 16 \times core\_num \times cube\_freq} = \frac{8192 \times 8192 \times 8192}{16 \times 16 \times 16 \times 24 \times 1850} = 3022.92\mu s$$
+
+Case 8 Cube computation time error:
+$$Error = \frac{aic\_mac\_time - cube\_time}{cube\_time} = \frac{{3076.396\mu s} - {3022.92\mu s}}{{3022.92\mu s}} = 1.77\%$$
+
+Excluding startup overhead, **86%** of the chip's peak compute has been achieved
+
+#### MTE2 Bandwidth Analysis
+
+Total data read:
+$$Total\ data\ read = \left(\left[\frac{N}{baseN} \times M \times K\right] + \left[\frac{M}{baseM} \times K \times N\right]\right) \times dataType = (32 \times 8192 \times 8192 + 64 \times 8192 \times 8192) \times 2B = 12GB$$
+
+Ideally assuming L2Cache capacity is large enough, data is first loaded from HBM, and subsequent data is read from L2Cache. L2Cache peak bandwidth is approximately 5TB/s, HBM bandwidth is approximately 1.8TB/s.
+$$Data\ first\ loaded\ from\ HBM = M \times K \times dataType + K \times N \times dataType = 256MB$$
+
+MTE2 theoretical time:
+$$MTE2\ theoretical\ time =\frac{HBM\ data\ read}{1.8TB/s} +\frac{L2Cache\ data\ read}{5TB/s}$$
+
+$$=\frac{256 \times 1024 \times 1024B}{1.8 \times 10^{12}B/s} +\frac{12 \times 1024 \times 1024 \times 1024B - 256 \times 1024 \times 1024B}{5 \times 10^{12}B/s} = 149.13\mu s + 2523.29\mu s = 2672.42\mu s$$
+
+Case 8 MTE2 time error:
+$$MTE2\ time\ error = \frac{{3435.584\mu s} - {2672.42\mu s}}{{2672.42\mu s}} = 28.56\%$$
+
+The current MTE2 time differs significantly from the theoretical value because the actual chip L2Cache size is 192MB and the current L2Cache splitting strategy is relatively simple; additionally, when the MTE2 transfer scenario is ND2NZ (GM data Layout is ND, requiring ND→NZ format conversion when transferring to L1), L2Cache bandwidth is reduced. Users can further optimize the L2Cache splitting strategy to improve MTE2 bandwidth.
+
+### Ascend 950PR Chip Theoretical Performance
+
+#### Cube Computation Performance Analysis
+
+Example parameters: M=N=K=8192, baseM=256, baseN=256, baseK=64. This example performance data was tested on the Ascend 950PR chip, with a processor clock frequency of 1.65GHz, processing 16×16×16 multiply-accumulate operations per cycle.
+
+Cube theoretical computation time:
+$$cube\_time = \frac{M \times N \times K}{16 \times 16 \times 16 \times core\_num \times cube\_freq} = \frac{8192 \times 8192 \times 8192}{16 \times 16 \times 16 \times 32 \times 1650} = 2542\mu s$$
+
+Case 8 Cube computation time error:
+$$Error = \frac{aic\_mac\_time - cube\_time}{cube\_time} = \frac{{2549.657\mu s} - {2542\mu s}}{{2542\mu s}} = 0.30\%$$
+
+**99.7%** of the chip's peak compute has been achieved
+
+#### MTE2 Bandwidth Analysis
+
+Total data read:
+$$Total\ data\ read = \left(\left[\frac{N}{baseN} \times M \times K\right] + \left[\frac{M}{baseM} \times K \times N\right]\right) \times dataType = (32 \times 8192 \times 8192 + 32 \times 8192 \times 8192) \times 2B = 8GB$$
+
+Ideally assuming L2Cache capacity is large enough, data is first loaded from HBM, and subsequent data is read from L2Cache. L2Cache peak bandwidth is approximately 5TB/s, HBM bandwidth is approximately 1.6TB/s.
+$$Data\ first\ loaded\ from\ HBM = M \times K \times dataType + K \times N \times dataType = 256MB$$
+
+MTE2 theoretical time:
+$$MTE2\ theoretical\ time =\frac{HBM\ data\ read}{1.6TB/s} +\frac{L2Cache\ data\ read}{5TB/s}$$
+
+$$=\frac{256 \times 1024 \times 1024B}{1.6 \times 10^{12}B/s} +\frac{8 \times 1024 \times 1024 \times 1024B- 256 \times 1024 \times 1024B}{5 \times 10^{12}B/s} = 167.77\mu s + 1664.30\mu s = 1832.1\mu s$$
+
+Case 8 MTE2 time error:
+$$MTE2\ time\ error = \frac{{1900.322\mu s} - {1832.1\mu s}}{{1832.1\mu s}} = 3.72\%$$
+Compared to Atlas A2 Training Series chips, the Ascend 950PR chip features improved data transfer efficiency
+
 ## Tuning Recommendations
 
 1. **Start from small scale**: First use single-core basic version to verify functional correctness

@@ -463,10 +463,12 @@ $$读入数据总量 = \left(\left[\frac{N}{baseN} \times M \times K\right] + \l
 $$第一次从HBM读入的数据总量 = M \times K \times dataType + K \times N \times dataType = 256MB$$
 
 MTE2理论耗时：
-$$MTE2理论耗时 =\frac{HBM读入数据总量}{1.8TB/s} +\frac{L2Cache读入数据总量}{5TB/s} = 2672.44\mu s$$
+$$MTE2理论耗时 =\frac{HBM读入数据总量}{1.8TB/s} +\frac{L2Cache读入数据总量}{5TB/s}$$
+
+$$=\frac{256 \times 1024 \times 1024B}{1.8 \times 10^{12}B/s} +\frac{12 \times 1024 \times 1024 \times 1024B - 256 \times 1024 \times 1024B}{5 \times 10^{12}B/s} = 149.13\mu s + 2523.29\mu s = 2672.42\mu s$$
 
 Case 8 MTE2耗时误差：
-$$MTE2耗时误差 = \frac{{3435.584\mu s} - {2672.44\mu s}}{{2672.44\mu s}} = 28.56\%$$
+$$MTE2耗时误差 = \frac{{3435.584\mu s} - {2672.42\mu s}}{{2672.42\mu s}} = 28.56\%$$
 
 当前MTE2耗时与理论值相差较大，因为实际芯片L2Cache大小为192MB，当前L2Cache切分策略较简单；另一方面当MTE2搬运场景为ND2NZ（GM数据Layout为ND，搬运到L1时需做ND→NZ格式转换）时，L2Cache带宽会降低。用户可进一步优化L2Cache切分策略以提高MTE2带宽。
 
@@ -507,7 +509,9 @@ $$读入数据总量 = \left(\left[\frac{N}{baseN} \times M \times K\right] + \l
 $$第一次从HBM读入的数据总量 = M \times K \times dataType + K \times N \times dataType = 256MB$$
 
 MTE2理论耗时：
-$$MTE2理论耗时 =\frac{HBM读入数据总量}{1.6TB/s} +\frac{L2Cache读入数据总量}{5TB/s} = 1832.1\mu s$$
+$$MTE2理论耗时 =\frac{HBM读入数据总量}{1.6TB/s} +\frac{L2Cache读入数据总量}{5TB/s}$$
+
+$$=\frac{256 \times 1024 \times 1024B}{1.6 \times 10^{12}B/s} +\frac{8 \times 1024 \times 1024 \times 1024B- 256 \times 1024 \times 1024B}{5 \times 10^{12}B/s} = 167.77\mu s + 1664.30\mu s = 1832.1\mu s$$
 
 Case 8 MTE2耗时误差：
 $$MTE2耗时误差 = \frac{{1900.322\mu s} - {1832.1\mu s}}{{1832.1\mu s}} = 3.72\%$$
