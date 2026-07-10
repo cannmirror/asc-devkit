@@ -92,12 +92,15 @@ __simd_callee__ inline void ReduceDataBlock(U& dstReg, U srcReg, MaskReg mask)
 
 - 对于归约求最大值，max\(-0, +0\) = +0。
 - 对于归约求最小值，min\(-0, +0\) = -0。
-- mask为空场景异常值处理参考[mask为空与srcReg异常值处理规则](Reduce.md#mask为空与srcReg异常值处理规则)。
-- 指令内累加顺序采用二叉树累加方式，规则参考[ReduceSum累加顺序](Reduce.md#ReduceSum累加顺序)。
+- 对于归约求数据总和，mask指定源操作数是否参与计算，不参与计算的元素，被当作0进行处理。
+- 对于归约求最大值，mask指定源操作数是否参与计算，不参与计算的元素，被当作数据类型的最小值进行处理。
+- 对于归约求最小值，mask指定源操作数是否参与计算，不参与计算的元素，被当作数据类型的最大值进行处理。
+- mask为空场景及异常值处理参考[mask为空场景及异常值处理](#mask为空场景及异常值处理)。
+- 指令内累加顺序采用二叉树累加方式，规则参考[ReduceType::SUM累加顺序](#ReduceType::SUM累加顺序)。
 
 ## 关键特性<a name="zh-cn_topic_0000002568852247_section18972943153217"></a>
 
-**ReduceType::SUM累加顺序**：
+### ReduceType::SUM累加顺序<a id="ReduceType::SUM累加顺序"></a>
 
 以二叉树累加的方式计算每个DataBlock内的和。
 
@@ -110,7 +113,7 @@ __simd_callee__ inline void ReduceDataBlock(U& dstReg, U srcReg, MaskReg mask)
 **图1** ReduceDataBlock示意图<a name="zh-cn_topic_0000002568852247_fig10524085414"></a>  
 ![ReduceDataBlock示意图](../../../../figures/reg_reduce_datablock_index.png "ReduceDataBlock示意图")
 
-**mask为空与srcReg异常值处理规则：**
+### mask为空场景及异常值处理
 
 - 对于归约求数据总和，当DataBlock中的元素均不参与计算时，将目的操作数数据类型的0写入dstReg。
 - 对于归约求最大值，当DataBlock中的元素均不参与计算时，将该数据类型的最小值写入dstReg。
@@ -122,7 +125,7 @@ __simd_callee__ inline void ReduceDataBlock(U& dstReg, U srcReg, MaskReg mask)
 ```cpp
 template<typename T>
 __simd_vf__ inline void ReduceDataBlockVF(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint32_t count, 
- uint32_t oneRepeatSize, uint16_t repeatTimes)
+ uint16_t oneRepeatSize, uint16_t repeatTimes)
 {
     AscendC::Reg::RegTensor<T> srcReg;
     AscendC::Reg::RegTensor<T> dstReg;

@@ -137,7 +137,7 @@
   <!-- end id19 -->
 
   <!-- npu="950" id22 -->
-  - 当参数mask或repeatTime取值为0时，该接口通过VF调用[Reg矢量计算](../../Reg矢量计算/Reg矢量计算.md)API实现兼容，不保证该接口被视为NOP（空操作）。
+  - 针对Ascend 950PR/Ascend 950DT，该接口通过VF调用[Reg矢量计算](../../Reg矢量计算/Reg矢量计算.md)API实现兼容，当参数count或repeatTime取值为0时，不保证该接口被视为NOP（空操作）。
   <!-- end id22 -->
 <!-- end id18 -->
 
@@ -164,6 +164,14 @@
   - `reduceType == ReduceType::MIN`，操作数数据类型为`float`时填充inf，操作数数据类型为`half`时填充65504。
   - 比如`float`场景下，当`reduceType == ReduceType::MAX`，`mask=32`，即只计算前4个DataBlock，则后四个DataBlock内的最大值会返回-inf。
 <!-- end id27 -->
+
+<!-- npu="950" id28 -->
+- 针对Ascend 950PR/Ascend 950DT，若配置`mask[]/mask`参数后，存在某个DataBlock里的任何一个元素都不参与计算，则会以默认值填充对应目的操作数，默认值与`reduceType`和数据类型有关：
+  - `reduceType == ReduceType::SUM`时填充0；
+  - `reduceType == ReduceType::MAX`时填充-inf；
+  - `reduceType == ReduceType::MIN`时填充inf。
+  - 比如`float`场景下，当`reduceType == ReduceType::MAX`，`mask=32`，即只计算前4个DataBlock，则后四个DataBlock内的最大值会返回-inf。
+<!-- end id28 -->
 
 - `float`数据类型只支持寄存器非饱和模式，`half`数据类型默认是寄存器非饱和模式。寄存器的非饱和/饱和模式具体配置方式参考[SetCtrlSpr(ISASI).md](../../特殊寄存器访问/SetCtrlSpr(ISASI).md)。
     - 下图说明`reduceType`取`ReduceType::SUM`时，在饱和模式下`half`数据类型的计算过程。源操作数为$[60000,60000,-30000,100]$，首先$60000+60000$溢出，结果为$65504$，然后计算$-30000+100=-29900$，最后计算$65504-29900=35604$。

@@ -68,23 +68,30 @@ __simd_callee__ inline void PairReduceElem(U& dstReg, U srcReg, MaskReg mask)
 
 ## 约束说明<a name="section177921451558"></a>
 
-无
+- mask指定源操作数是否参与计算，不参与计算的元素，被当作0进行累加。例如：
+  - 若连续两个元素a、b均不参与计算，目的操作数结果为0。
+  - 若连续两个元素a、b仅元素a参与计算，目的操作数结果为a。
+  - 若连续两个元素a、b仅元素b参与计算，目的操作数结果为b。
+
+- 求和后，dst中仅前一半元素为有效数据，后一半填充为0。搬出至UB时需要避免数据踩踏。
 
 ## 调用示例<a name="section642mcpsimp"></a>
 
 ```cpp
 template<typename T>
 __simd_vf__ inline void PairReduceElemVF(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint32_t count, 
- uint32_t oneRepeatSize, uint16_t repeatTimes)
+ uint16_t oneRepeatSize, uint16_t repeatTimes)
 {
     AscendC::Reg::RegTensor<T> srcReg;
     AscendC::Reg::RegTensor<T> dstReg;
-    AscendC::Reg::MaskReg mask;
+    AscendC::Reg::MaskReg calMask;
+    AscendC::Reg::MaskReg carryMask = AscendC::Reg::CreateMask<T, AscendC::Reg::MaskPattern::H>();
+    uint16_t dstOneRepeatSize = oneRepeatSize >> 1;
     for (uint16_t i = 0; i < repeatTimes; i++) {
         AscendC::Reg::LoadAlign(srcReg, srcAddr + i * oneRepeatSize);
-        mask = AscendC::Reg::UpdateMask<T>(count);
-        AscendC::Reg::PairReduceElem<AscendC::Reg::PairReduce::SUM>(dstReg, srcReg, mask);
-        AscendC::Reg::StoreAlign(dstAddr + i * oneRepeatSize, dstReg, mask);
+        calMask = AscendC::Reg::UpdateMask<T>(count);
+        AscendC::Reg::PairReduceElem<AscendC::Reg::PairReduce::SUM>(dstReg, srcReg, calMask);
+        AscendC::Reg::StoreAlign(dstAddr + i * dstOneRepeatSize, dstReg, carryMask);
     }
 }
 ```
